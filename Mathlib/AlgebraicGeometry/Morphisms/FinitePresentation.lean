@@ -59,8 +59,16 @@ instance locallyOfFinitePresentation_comp {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g 
     LocallyOfFinitePresentation (f ≫ g) :=
   MorphismProperty.comp_mem _ f g hf hg
 
-lemma locallyOfFinitePresentation_isStableUnderBaseChange :
+instance locallyOfFinitePresentation_isStableUnderBaseChange :
     MorphismProperty.IsStableUnderBaseChange @LocallyOfFinitePresentation :=
   HasRingHomProperty.isStableUnderBaseChange RingHom.finitePresentation_isStableUnderBaseChange
+
+instance {X Y Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) [LocallyOfFinitePresentation g] :
+    LocallyOfFinitePresentation (Limits.pullback.fst f g) :=
+  MorphismProperty.pullback_fst _ _ inferInstance
+
+instance {X Y Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) [LocallyOfFinitePresentation f] :
+    LocallyOfFinitePresentation (Limits.pullback.snd f g) :=
+  MorphismProperty.pullback_snd _ _ inferInstance
 
 end AlgebraicGeometry

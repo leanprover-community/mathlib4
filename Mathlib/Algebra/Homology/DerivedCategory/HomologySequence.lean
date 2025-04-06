@@ -16,6 +16,8 @@ derived category.
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 universe w v u
 
 open CategoryTheory Pretriangulated
@@ -39,6 +41,18 @@ functor on the homotopy category of cochain complexes. -/
 noncomputable def homologyFunctorFactorsh (n : ℤ) : Qh ⋙ homologyFunctor C n ≅
     HomotopyCategory.homologyFunctor _ _ n :=
   HomologicalComplexUpToQuasiIso.homologyFunctorFactorsh C (ComplexShape.up ℤ) n
+
+variable {C} in
+lemma isIso_Qh_map_iff {X Y : HomotopyCategory C (ComplexShape.up ℤ)} (f : X ⟶ Y) :
+    IsIso (Qh.map f) ↔ HomotopyCategory.quasiIso C _ f := by
+  constructor
+  · intro hf
+    rw [HomotopyCategory.mem_quasiIso_iff]
+    intro n
+    rw [← NatIso.isIso_map_iff (homologyFunctorFactorsh C n) f]
+    dsimp
+    infer_instance
+  · exact Localization.inverts Qh (HomotopyCategory.quasiIso _ _) _
 
 instance (n : ℤ) : (homologyFunctor C n).IsHomological :=
   Functor.isHomological_of_localization Qh

@@ -3,7 +3,7 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Functor.ReflectsIso
+import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 import Mathlib.CategoryTheory.MorphismProperty.Basic
 
 /-!
@@ -88,7 +88,6 @@ lemma pi {J : Type w} {C : J → Type u} {D : J → Type u'}
 
 end IsInvertedBy
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- The full subcategory of `C ⥤ D` consisting of functors inverting morphisms in `W` -/
 def FunctorsInverting (W : MorphismProperty C) (D : Type*) [Category D] :=
   FullSubcategory fun F : C ⥤ D => W.IsInvertedBy F

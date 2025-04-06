@@ -3,9 +3,9 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.Normed.Lp.lpSpace
 import Mathlib.Analysis.Normed.Lp.PiLp
-import Mathlib.Topology.ContinuousMap.Bounded.Basic
+import Mathlib.Analysis.Normed.Lp.lpSpace
+import Mathlib.Topology.ContinuousMap.Bounded.Normed
 
 /-!
 # Equivalences among $L^p$ spaces
@@ -133,7 +133,6 @@ noncomputable def AddEquiv.lpBCF : lp (fun _ : α ↦ E) ∞ ≃+ (α →ᵇ E) 
   right_inv _f := rfl
   map_add' _f _g := rfl
 
-@[deprecated (since := "2024-03-16")] alias AddEquiv.lpBcf := AddEquiv.lpBCF
 
 theorem coe_addEquiv_lpBCF (f : lp (fun _ : α ↦ E) ∞) : (AddEquiv.lpBCF f : α → E) = f :=
   rfl
@@ -149,7 +148,6 @@ noncomputable def lpBCFₗᵢ : lp (fun _ : α ↦ E) ∞ ≃ₗᵢ[𝕜] α →
     map_smul' := fun _ _ ↦ rfl
     norm_map' := fun f ↦ by simp only [norm_eq_iSup_norm, lp.norm_eq_ciSup]; rfl }
 
-@[deprecated (since := "2024-03-16")] alias lpBcfₗᵢ := lpBCFₗᵢ
 
 variable {𝕜 E}
 
@@ -168,7 +166,6 @@ noncomputable def RingEquiv.lpBCF : lp (fun _ : α ↦ R) ∞ ≃+* (α →ᵇ R
   { @AddEquiv.lpBCF _ R _ _ _ with
     map_mul' := fun _f _g => rfl }
 
-@[deprecated (since := "2024-03-16")] alias RingEquiv.lpBcf := RingEquiv.lpBCF
 
 variable {R}
 
@@ -187,7 +184,6 @@ variable (α)
 noncomputable def AlgEquiv.lpBCF : lp (fun _ : α ↦ A) ∞ ≃ₐ[𝕜] α →ᵇ A :=
   { RingEquiv.lpBCF A with commutes' := fun _k ↦ rfl }
 
-@[deprecated (since := "2024-03-16")] alias AlgEquiv.lpBcf := AlgEquiv.lpBCF
 
 variable {α A 𝕜}
 

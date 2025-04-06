@@ -3,8 +3,8 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Data.Fintype.Card
 import Mathlib.CategoryTheory.FinCategory.Basic
+import Mathlib.Data.Fintype.EquivFin
 
 /-!
 # Finite categories are equivalent to category in `Type 0`.
@@ -12,8 +12,6 @@ import Mathlib.CategoryTheory.FinCategory.Basic
 
 
 universe w v u
-
-open scoped Classical
 
 noncomputable section
 
@@ -40,7 +38,7 @@ noncomputable def objAsTypeEquiv : ObjAsType α ≌ α :=
 abbrev AsType : Type :=
   Fin (Fintype.card α)
 
-@[simps (config := .lemmasOnly) id comp]
+@[simps -isSimp id comp]
 noncomputable instance categoryAsType : SmallCategory (AsType α) where
   Hom i j := Fin (Fintype.card (@Quiver.Hom (ObjAsType α) _ i j))
   id _ := Fintype.equivFin _ (𝟙 _)

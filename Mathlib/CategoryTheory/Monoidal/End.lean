@@ -141,7 +141,7 @@ theorem ε_naturality {X Y : C} (f : X ⟶ Y) [F.LaxMonoidal] :
 @[reassoc (attr := simp)]
 theorem η_naturality {X Y : C} (f : X ⟶ Y) [F.OplaxMonoidal]:
     (η F).app X ≫ (𝟙_ (C ⥤ C)).map f = (η F).app X ≫ f := by
-  aesop_cat
+  simp
 
 @[reassoc (attr := simp)]
 theorem μ_naturality {m n : M} {X Y : C} (f : X ⟶ Y) [F.LaxMonoidal] :

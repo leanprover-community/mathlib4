@@ -202,6 +202,13 @@ lemma EssFiniteType.comp_iff [EssFiniteType R S] :
     EssFiniteType R T ↔ EssFiniteType S T :=
   ⟨fun _ ↦ of_comp R S T, fun _ ↦ comp R S T⟩
 
+instance [EssFiniteType R S] (I : Ideal S) : EssFiniteType R (S ⧸ I) :=
+  .comp R S _
+
+instance [EssFiniteType R S] (M : Submonoid S) : EssFiniteType R (Localization M) :=
+  have : EssFiniteType S (Localization M) := .of_isLocalization _ M
+  .comp R S _
+
 end
 
 variable {R S} in
@@ -222,3 +229,36 @@ lemma EssFiniteType.algHom_ext [EssFiniteType R S]
   · rintro ⟨x, hx⟩ hx'; exact H x hx'
 
 end Algebra
+
+namespace RingHom
+
+variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T] {f : R →+* S}
+
+/-- A ring hom is essentially of finite type if it is the composition of a localization map
+and a ring hom of finite type. See `Algebra.EssFiniteType`. -/
+@[algebraize Algebra.EssFiniteType]
+def EssFiniteType (f : R →+* S) : Prop :=
+  letI := f.toAlgebra
+  Algebra.EssFiniteType R S
+
+/-- A choice of "essential generators" for a ring hom essentially of finite type.
+See `Algebra.EssFiniteType.ext`. -/
+noncomputable
+def EssFiniteType.finset (hf : f.EssFiniteType) : Finset S :=
+  letI := f.toAlgebra
+  haveI : Algebra.EssFiniteType R S := hf
+  Algebra.EssFiniteType.finset R S
+
+lemma FiniteType.essFiniteType (hf : f.FiniteType) : f.EssFiniteType := by
+  algebraize [f]
+  show Algebra.EssFiniteType R S
+  infer_instance
+
+lemma EssFiniteType.ext (hf : f.EssFiniteType) {g₁ g₂ : S →+* T}
+    (h₁ : g₁.comp f = g₂.comp f) (h₂ : ∀ x ∈ hf.finset, g₁ x = g₂ x) : g₁ = g₂ := by
+  algebraize [f, g₁.comp f]
+  ext x
+  exact DFunLike.congr_fun (Algebra.EssFiniteType.algHom_ext T
+    ⟨g₁, fun _ ↦ rfl⟩ ⟨g₂, DFunLike.congr_fun h₁.symm⟩ h₂) x
+
+end RingHom

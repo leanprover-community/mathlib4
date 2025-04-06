@@ -8,7 +8,7 @@ import Mathlib.MeasureTheory.Measure.Regular
 import Mathlib.MeasureTheory.Function.AEMeasurableOrder
 import Mathlib.MeasureTheory.Integral.Lebesgue
 import Mathlib.MeasureTheory.Integral.Average
-import Mathlib.MeasureTheory.Decomposition.Lebesgue
+import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
 
 /-!
 # Differentiation of measures
@@ -770,10 +770,10 @@ theorem ae_tendsto_lintegral_div {f : α → ℝ≥0∞} (hf : AEMeasurable f μ
   apply lintegral_congr_ae
   exact ae_restrict_of_ae hf.ae_eq_mk
 
-theorem ae_tendsto_lintegral_nnnorm_sub_div'_of_integrable {f : α → E} (hf : Integrable f μ)
+theorem ae_tendsto_lintegral_enorm_sub_div'_of_integrable {f : α → E} (hf : Integrable f μ)
     (h'f : StronglyMeasurable f) :
-    ∀ᵐ x ∂μ, Tendsto (fun a => (∫⁻ y in a, ‖f y - f x‖₊ ∂μ) / μ a) (v.filterAt x) (𝓝 0) := by
-  /- For every `c`, then `(∫⁻ y in a, ‖f y - c‖₊ ∂μ) / μ a` tends almost everywhere to `‖f x - c‖`.
+    ∀ᵐ x ∂μ, Tendsto (fun a => (∫⁻ y in a, ‖f y - f x‖ₑ ∂μ) / μ a) (v.filterAt x) (𝓝 0) := by
+  /- For every `c`, then `(∫⁻ y in a, ‖f y - c‖ₑ ∂μ) / μ a` tends almost everywhere to `‖f x - c‖`.
     We apply this to a countable set of `c` which is dense in the range of `f`, to deduce the
     desired convergence.
     A minor technical inconvenience is that constants are not integrable, so to apply previous
@@ -784,37 +784,31 @@ theorem ae_tendsto_lintegral_nnnorm_sub_div'_of_integrable {f : α → E} (hf : 
   have main :
     ∀ᵐ x ∂μ,
       ∀ᵉ (n : ℕ) (c ∈ t),
-        Tendsto (fun a => (∫⁻ y in a, ‖f y - (A.set n).indicator (fun _ => c) y‖₊ ∂μ) / μ a)
-          (v.filterAt x) (𝓝 ‖f x - (A.set n).indicator (fun _ => c) x‖₊) := by
+        Tendsto (fun a => (∫⁻ y in a, ‖f y - (A.set n).indicator (fun _ => c) y‖ₑ ∂μ) / μ a)
+          (v.filterAt x) (𝓝 ‖f x - (A.set n).indicator (fun _ => c) x‖ₑ) := by
     #adaptation_note /-- 2024-04-23
     The next two lines were previously just `simp_rw [ae_all_iff, ae_ball_iff t_count]`. -/
     simp_rw [ae_all_iff]
     intro x; rw [ae_ball_iff t_count]; revert x
     intro n c _
     apply ae_tendsto_lintegral_div'
-    · refine (h'f.sub ?_).ennnorm
+    · refine (h'f.sub ?_).enorm
       exact stronglyMeasurable_const.indicator (IsOpen.measurableSet (A.set_mem n))
     · apply ne_of_lt
       calc
-        (∫⁻ y, ↑‖f y - (A.set n).indicator (fun _ : α => c) y‖₊ ∂μ) ≤
-            ∫⁻ y, ‖f y‖₊ + ‖(A.set n).indicator (fun _ : α => c) y‖₊ ∂μ := by
-          apply lintegral_mono
-          intro x
-          dsimp
-          rw [← ENNReal.coe_add]
-          exact ENNReal.coe_le_coe.2 (nnnorm_sub_le _ _)
-        _ = (∫⁻ y, ‖f y‖₊ ∂μ) + ∫⁻ y, ‖(A.set n).indicator (fun _ : α => c) y‖₊ ∂μ :=
-          (lintegral_add_left h'f.ennnorm _)
+        ∫⁻ y, ‖f y - (A.set n).indicator (fun _ : α => c) y‖ₑ ∂μ
+          ≤ ∫⁻ y, ‖f y‖ₑ + ‖(A.set n).indicator (fun _ : α => c) y‖ₑ ∂μ :=
+          lintegral_mono fun x ↦ enorm_sub_le
+        _ = ∫⁻ y, ‖f y‖ₑ ∂μ + ∫⁻ y, ‖(A.set n).indicator (fun _ : α => c) y‖ₑ ∂μ :=
+          lintegral_add_left h'f.enorm _
         _ < ∞ + ∞ :=
           haveI I : Integrable ((A.set n).indicator fun _ : α => c) μ := by
             simp only [integrable_indicator_iff (IsOpen.measurableSet (A.set_mem n)),
               integrableOn_const, A.finite n, or_true]
           ENNReal.add_lt_add hf.2 I.2
   filter_upwards [main, v.ae_eventually_measure_pos] with x hx h'x
-  have M :
-    ∀ c ∈ t, Tendsto (fun a => (∫⁻ y in a, ‖f y - c‖₊ ∂μ) / μ a)
-      (v.filterAt x) (𝓝 ‖f x - c‖₊) := by
-    intro c hc
+  have M c (hc : c ∈ t) :
+      Tendsto (fun a => (∫⁻ y in a, ‖f y - c‖ₑ ∂μ) / μ a) (v.filterAt x) (𝓝 ‖f x - c‖ₑ) := by
     obtain ⟨n, xn⟩ : ∃ n, x ∈ A.set n := by simpa [← A.spanning] using mem_univ x
     specialize hx n c hc
     simp only [xn, indicator_of_mem] at hx
@@ -825,18 +819,18 @@ theorem ae_tendsto_lintegral_nnnorm_sub_div'_of_integrable {f : α → E} (hf : 
     apply setLIntegral_congr_fun h'a
     filter_upwards with y hy using (by simp only [ha hy, indicator_of_mem])
   apply ENNReal.tendsto_nhds_zero.2 fun ε εpos => ?_
-  obtain ⟨c, ct, xc⟩ : ∃ c ∈ t, (‖f x - c‖₊ : ℝ≥0∞) < ε / 2 := by
-    simp_rw [← edist_eq_coe_nnnorm_sub]
+  obtain ⟨c, ct, xc⟩ : ∃ c ∈ t, ‖f x - c‖ₑ < ε / 2 := by
+    simp_rw [← edist_eq_enorm_sub]
     have : f x ∈ closure t := ht (mem_range_self _)
     exact EMetric.mem_closure_iff.1 this (ε / 2) (ENNReal.half_pos (ne_of_gt εpos))
   filter_upwards [(tendsto_order.1 (M c ct)).2 (ε / 2) xc, h'x, v.eventually_measure_lt_top x] with
     a ha h'a h''a
   apply ENNReal.div_le_of_le_mul
   calc
-    (∫⁻ y in a, ‖f y - f x‖₊ ∂μ) ≤ ∫⁻ y in a, ‖f y - c‖₊ + ‖f x - c‖₊ ∂μ := by
+    (∫⁻ y in a, ‖f y - f x‖ₑ ∂μ) ≤ ∫⁻ y in a, ‖f y - c‖ₑ + ‖f x - c‖ₑ ∂μ := by
       apply lintegral_mono fun x => ?_
-      simpa only [← edist_eq_coe_nnnorm_sub] using edist_triangle_right _ _ _
-    _ = (∫⁻ y in a, ‖f y - c‖₊ ∂μ) + ∫⁻ _ in a, ‖f x - c‖₊ ∂μ :=
+      simpa only [← edist_eq_enorm_sub] using edist_triangle_right _ _ _
+    _ = (∫⁻ y in a, ‖f y - c‖ₑ ∂μ) + ∫⁻ _ in a, ‖f x - c‖ₑ ∂μ :=
       (lintegral_add_right _ measurable_const)
     _ ≤ ε / 2 * μ a + ε / 2 * μ a := by
       gcongr
@@ -846,10 +840,14 @@ theorem ae_tendsto_lintegral_nnnorm_sub_div'_of_integrable {f : α → E} (hf : 
         gcongr
     _ = ε * μ a := by rw [← add_mul, ENNReal.add_halves]
 
-theorem ae_tendsto_lintegral_nnnorm_sub_div_of_integrable {f : α → E} (hf : Integrable f μ) :
-    ∀ᵐ x ∂μ, Tendsto (fun a => (∫⁻ y in a, ‖f y - f x‖₊ ∂μ) / μ a) (v.filterAt x) (𝓝 0) := by
+@[deprecated (since := "2025-01-22")]
+alias ae_tendsto_lintegral_nnnorm_sub_div'_of_integrable :=
+  ae_tendsto_lintegral_enorm_sub_div'_of_integrable
+
+theorem ae_tendsto_lintegral_enorm_sub_div_of_integrable {f : α → E} (hf : Integrable f μ) :
+    ∀ᵐ x ∂μ, Tendsto (fun a => (∫⁻ y in a, ‖f y - f x‖ₑ ∂μ) / μ a) (v.filterAt x) (𝓝 0) := by
   have I : Integrable (hf.1.mk f) μ := hf.congr hf.1.ae_eq_mk
-  filter_upwards [v.ae_tendsto_lintegral_nnnorm_sub_div'_of_integrable I hf.1.stronglyMeasurable_mk,
+  filter_upwards [v.ae_tendsto_lintegral_enorm_sub_div'_of_integrable I hf.1.stronglyMeasurable_mk,
     hf.1.ae_eq_mk] with x hx h'x
   apply hx.congr _
   intro a
@@ -859,14 +857,18 @@ theorem ae_tendsto_lintegral_nnnorm_sub_div_of_integrable {f : α → E} (hf : I
   filter_upwards [hf.1.ae_eq_mk] with y hy
   rw [hy, h'x]
 
-theorem ae_tendsto_lintegral_nnnorm_sub_div {f : α → E} (hf : LocallyIntegrable f μ) :
-    ∀ᵐ x ∂μ, Tendsto (fun a => (∫⁻ y in a, ‖f y - f x‖₊ ∂μ) / μ a) (v.filterAt x) (𝓝 0) := by
+@[deprecated (since := "2025-01-22")]
+alias ae_tendsto_lintegral_nnnorm_sub_div_of_integrable :=
+  ae_tendsto_lintegral_enorm_sub_div_of_integrable
+
+theorem ae_tendsto_lintegral_enorm_sub_div {f : α → E} (hf : LocallyIntegrable f μ) :
+    ∀ᵐ x ∂μ, Tendsto (fun a => (∫⁻ y in a, ‖f y - f x‖ₑ ∂μ) / μ a) (v.filterAt x) (𝓝 0) := by
   rcases hf.exists_nat_integrableOn with ⟨u, u_open, u_univ, hu⟩
   have : ∀ n, ∀ᵐ x ∂μ,
-      Tendsto (fun a => (∫⁻ y in a, ‖(u n).indicator f y - (u n).indicator f x‖₊ ∂μ) / μ a)
+      Tendsto (fun a => (∫⁻ y in a, ‖(u n).indicator f y - (u n).indicator f x‖ₑ ∂μ) / μ a)
       (v.filterAt x) (𝓝 0) := by
     intro n
-    apply ae_tendsto_lintegral_nnnorm_sub_div_of_integrable
+    apply ae_tendsto_lintegral_enorm_sub_div_of_integrable
     exact (integrable_indicator_iff (u_open n).measurableSet).2 (hu n)
   filter_upwards [ae_all_iff.2 this] with x hx
   obtain ⟨n, hn⟩ : ∃ n, x ∈ u n := by simpa only [← u_univ, mem_iUnion] using mem_univ x
@@ -877,13 +879,16 @@ theorem ae_tendsto_lintegral_nnnorm_sub_div {f : α → E} (hf : LocallyIntegrab
   refine setLIntegral_congr_fun h'a (Eventually.of_forall (fun y hy ↦ ?_))
   rw [indicator_of_mem (ha hy) f, indicator_of_mem hn f]
 
+@[deprecated (since := "2025-01-22")]
+alias ae_tendsto_lintegral_nnnorm_sub_div := ae_tendsto_lintegral_enorm_sub_div
+
 /-- *Lebesgue differentiation theorem*: for almost every point `x`, the
 average of `‖f y - f x‖` on `a` tends to `0` as `a` shrinks to `x` along a Vitali family. -/
 theorem ae_tendsto_average_norm_sub {f : α → E} (hf : LocallyIntegrable f μ) :
     ∀ᵐ x ∂μ, Tendsto (fun a => ⨍ y in a, ‖f y - f x‖ ∂μ) (v.filterAt x) (𝓝 0) := by
-  filter_upwards [v.ae_tendsto_lintegral_nnnorm_sub_div hf] with x hx
+  filter_upwards [v.ae_tendsto_lintegral_enorm_sub_div hf] with x hx
   have := (ENNReal.tendsto_toReal ENNReal.zero_ne_top).comp hx
-  simp only [ENNReal.zero_toReal] at this
+  simp only [ENNReal.toReal_zero] at this
   apply Tendsto.congr' _ this
   filter_upwards [v.eventually_measure_lt_top x, v.eventually_filterAt_integrableOn x hf]
     with a h'a h''a
@@ -891,6 +896,7 @@ theorem ae_tendsto_average_norm_sub {f : α → E} (hf : LocallyIntegrable f μ)
   have A : IntegrableOn (fun y => (‖f y - f x‖₊ : ℝ)) a μ := by
     simp_rw [coe_nnnorm]
     exact (h''a.sub (integrableOn_const.2 (Or.inr h'a))).norm
+  dsimp [enorm]
   rw [lintegral_coe_eq_integral _ A, ENNReal.toReal_ofReal (by positivity)]
   simp only [coe_nnnorm, smul_eq_mul]
 

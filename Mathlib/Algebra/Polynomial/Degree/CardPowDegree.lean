@@ -3,7 +3,7 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Order.EuclideanAbsoluteValue
+import Mathlib.Algebra.Order.AbsoluteValue.Euclidean
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Algebra.Polynomial.FieldDivision
 
@@ -44,7 +44,6 @@ noncomputable def cardPowDegree : AbsoluteValue Fq[X] ℤ :=
   letI := Classical.decEq Fq
   { toFun := fun p => if p = 0 then 0 else (Fintype.card Fq : ℤ) ^ p.natDegree
     nonneg' := fun p => by
-      dsimp
       split_ifs
       · rfl
       exact pow_nonneg (Int.ofNat_zero_le _) _

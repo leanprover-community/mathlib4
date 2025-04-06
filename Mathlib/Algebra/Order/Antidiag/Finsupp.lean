@@ -68,7 +68,7 @@ theorem mem_finsuppAntidiag_insert {a : ι} {s : Finset ι}
   constructor
   · rintro ⟨rfl, hsupp⟩
     refine ⟨_, _, rfl, Finsupp.erase a f, ?_, ?_, ?_⟩
-    · rw [update_erase_eq_update, update_self]
+    · rw [update_erase_eq_update, Finsupp.update_self]
     · apply sum_congr rfl
       intro x hx
       rw [Finsupp.erase_ne (ne_of_mem_of_not_mem hx h)]
@@ -77,10 +77,10 @@ theorem mem_finsuppAntidiag_insert {a : ι} {s : Finset ι}
     refine ⟨?_, (support_update_subset _ _).trans (insert_subset_insert a hgsupp)⟩
     simp only [coe_update]
     apply congr_arg₂
-    · rw [update_same]
+    · rw [Function.update_self]
     · apply sum_congr rfl
       intro x hx
-      rw [update_noteq (ne_of_mem_of_not_mem hx h) n1 ⇑g]
+      rw [update_of_ne (ne_of_mem_of_not_mem hx h) n1 ⇑g]
 
 theorem finsuppAntidiag_insert {a : ι} {s : Finset ι}
     (h : a ∉ s) (n : μ) :
@@ -135,7 +135,8 @@ lemma mapRange_finsuppAntidiag_eq {e : μ ≃+ μ'} {s : Finset ι} {n : μ} :
 end AddCommMonoid
 
 section CanonicallyOrderedAddCommMonoid
-variable [DecidableEq ι] [DecidableEq μ] [CanonicallyOrderedAddCommMonoid μ] [HasAntidiagonal μ]
+variable [DecidableEq ι] [DecidableEq μ] [AddCommMonoid μ] [PartialOrder μ]
+  [CanonicallyOrderedAdd μ] [HasAntidiagonal μ]
 
 @[simp] lemma finsuppAntidiag_zero (s : Finset ι) : finsuppAntidiag s (0 : μ) = {0} := by
   ext f; simp [finsuppAntidiag, ← DFunLike.coe_fn_eq (g := f), -mem_piAntidiag, eq_comm]

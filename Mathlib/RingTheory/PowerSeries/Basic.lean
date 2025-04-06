@@ -9,6 +9,7 @@ import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.MvPowerSeries.Basic
 import Mathlib.Tactic.MoveAdd
+import Mathlib.Algebra.MvPolynomial.Equiv
 
 /-!
 # Formal power series (in one variable)
@@ -198,6 +199,8 @@ def constantCoeff : R⟦X⟧ →+* R :=
 /-- The constant formal power series. -/
 def C : R →+* R⟦X⟧ :=
   MvPowerSeries.C Unit R
+
+@[simp] lemma algebraMap_eq {R : Type*} [CommSemiring R] : algebraMap R R⟦X⟧ = C R := rfl
 
 variable {R}
 
@@ -461,7 +464,27 @@ theorem map_X : map f X = X := by
   ext
   simp [coeff_X, apply_ite f]
 
+theorem map_surjective (f : S →+* T) (hf : Function.Surjective f) :
+    Function.Surjective (PowerSeries.map f) := by
+  intro g
+  use PowerSeries.mk fun k ↦ Function.surjInv hf (PowerSeries.coeff _ k g)
+  ext k
+  simp only [Function.surjInv, coeff_map, coeff_mk]
+  exact Classical.choose_spec (hf ((coeff T k) g))
+
+theorem map_injective (f : S →+* T) (hf : Function.Injective ⇑f) :
+    Function.Injective (PowerSeries.map f) := by
+  intro u v huv
+  ext k
+  apply hf
+  rw [← PowerSeries.coeff_map, ← PowerSeries.coeff_map, huv]
+
 end Map
+
+@[simp]
+theorem map_eq_zero {R S : Type*} [DivisionSemiring R] [Semiring S] [Nontrivial S] (φ : R⟦X⟧)
+    (f : R →+* S) : φ.map f = 0 ↔ φ = 0 :=
+  MvPowerSeries.map_eq_zero _ _
 
 theorem X_pow_dvd_iff {n : ℕ} {φ : R⟦X⟧} :
     (X : R⟦X⟧) ^ n ∣ φ ↔ ∀ m, m < n → coeff R m φ = 0 := by
@@ -524,12 +547,12 @@ theorem rescale_zero : rescale 0 = (C R).comp (constantCoeff R) := by
     PowerSeries.coeff_mk _ _, coeff_C]
   split_ifs with h <;> simp [h]
 
-theorem rescale_zero_apply : rescale 0 X = C R (constantCoeff R X) := by simp
+theorem rescale_zero_apply (f : R⟦X⟧) : rescale 0 f = C R (constantCoeff R f) := by simp
 
 @[simp]
 theorem rescale_one : rescale 1 = RingHom.id R⟦X⟧ := by
   ext
-  simp only [coeff_rescale, one_pow, one_mul, RingHom.id_apply]
+  simp [coeff_rescale]
 
 theorem rescale_mk (f : ℕ → R) (a : R) : rescale a (mk f) = mk fun n : ℕ => a ^ n * f n := by
   ext
@@ -692,7 +715,7 @@ theorem eq_zero_or_eq_zero_of_mul_eq_zero [NoZeroDivisors R] (φ ψ : R⟦X⟧) 
       exact ne_of_lt this hij.symm
     contrapose! hne
     obtain rfl := le_antisymm hi hne
-    simpa [Ne, Prod.mk.inj_iff] using (add_right_inj m).mp hij
+    simpa [Ne, Prod.mk_inj] using (add_right_inj m).mp hij
   · contrapose!
     intro
     rw [mem_antidiagonal]
@@ -743,7 +766,7 @@ end IsDomain
 
 section Algebra
 
-variable {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+variable {A B : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
 theorem C_eq_algebraMap {r : R} : C R r = (algebraMap R R⟦X⟧) r :=
   rfl
@@ -754,6 +777,15 @@ theorem algebraMap_apply {r : R} : algebraMap R A⟦X⟧ r = C A (algebraMap R A
 instance [Nontrivial R] : Nontrivial (Subalgebra R R⟦X⟧) :=
   { inferInstanceAs <| Nontrivial <| Subalgebra R <| MvPowerSeries Unit R with }
 
+/-- Change of coefficients in power series, as an `AlgHom` -/
+def mapAlgHom (φ : A →ₐ[R] B) :
+    PowerSeries A →ₐ[R] PowerSeries B :=
+ MvPowerSeries.mapAlgHom φ
+
+theorem mapAlgHom_apply (φ : A →ₐ[R] B) (f : A⟦X⟧) :
+    mapAlgHom φ f = f.map φ :=
+  MvPowerSeries.mapAlgHom_apply φ f
+
 end Algebra
 
 end PowerSeries
@@ -762,8 +794,8 @@ namespace Polynomial
 
 open Finsupp Polynomial
 
-section CommSemiring
-variable {R : Type*} [CommSemiring R] (φ ψ : R[X])
+section Semiring
+variable {R : Type*} [Semiring R] (φ ψ : R[X])
 
 -- Porting note: added so we can add the `@[coe]` attribute
 /-- The natural inclusion from polynomials into formal power series. -/
@@ -818,6 +850,12 @@ theorem coe_X : ((X : R[X]) : PowerSeries R) = PowerSeries.X :=
   coe_monomial _ _
 
 @[simp]
+lemma polynomial_map_coe {U V : Type*} [CommSemiring U] [CommSemiring V] {φ : U →+* V}
+    {f : Polynomial U} : Polynomial.map φ f = PowerSeries.map φ f := by
+  ext
+  simp
+
+@[simp]
 theorem constantCoeff_coe : PowerSeries.constantCoeff R φ = φ.coeff 0 :=
   rfl
 
@@ -839,8 +877,6 @@ theorem coe_eq_zero_iff : (φ : PowerSeries R) = 0 ↔ φ = 0 := by rw [← coe_
 
 @[simp]
 theorem coe_eq_one_iff : (φ : PowerSeries R) = 1 ↔ φ = 1 := by rw [← coe_one, coe_inj]
-
-variable (φ ψ)
 
 /-- The coercion from polynomials to power series
 as a ring homomorphism.
@@ -867,6 +903,30 @@ theorem eval₂_C_X_eq_coe : φ.eval₂ (PowerSeries.C R) PowerSeries.X = ↑φ 
   intros
   rw [map_mul, map_pow, coeToPowerSeries.ringHom_apply,
     coeToPowerSeries.ringHom_apply, coe_C, coe_X]
+
+end Semiring
+
+section CommSemiring
+
+variable {R : Type*} [CommSemiring R] (φ ψ : R[X])
+
+theorem _root_.MvPolynomial.toMvPowerSeries_pUnitAlgEquiv {f : MvPolynomial PUnit R} :
+    (f.toMvPowerSeries : PowerSeries R) = (f.pUnitAlgEquiv R).toPowerSeries := by
+  induction f using MvPolynomial.induction_on' with
+  | monomial d r =>
+    --Note: this `have` should be a generic `simp` lemma for a `Unique` type with `()` replaced
+    --by any element.
+    have : single () (d ()) = d := by ext; simp
+    simp only [MvPolynomial.coe_monomial, MvPolynomial.pUnitAlgEquiv_monomial,
+      Polynomial.coe_monomial, PowerSeries.monomial, this]
+  | add f g hf hg => simp [hf, hg]
+
+theorem pUnitAlgEquiv_symm_toPowerSeries {f : Polynomial R} :
+    ((f.toPowerSeries) : MvPowerSeries PUnit R)
+      = ((MvPolynomial.pUnitAlgEquiv R).symm f).toMvPowerSeries := by
+  set g := (MvPolynomial.pUnitAlgEquiv R).symm f
+  have : f = MvPolynomial.pUnitAlgEquiv R g := by simp only [g, AlgEquiv.apply_symm_apply]
+  rw [this, MvPolynomial.toMvPowerSeries_pUnitAlgEquiv]
 
 variable (A : Type*) [Semiring A] [Algebra R A]
 

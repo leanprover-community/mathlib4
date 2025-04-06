@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.Algebra.Lie.Weights.Killing
 import Mathlib.LinearAlgebra.RootSystem.Basic
+import Mathlib.LinearAlgebra.RootSystem.Reduced
 import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
 import Mathlib.Algebra.Algebra.Rat
 
@@ -392,6 +393,8 @@ def rootSystem :
         Function.comp_apply, Set.mem_range, Subtype.exists, exists_prop]
       exact ⟨reflectRoot α β, (by simpa using reflectRoot_isNonZero α β <| by simpa using hβ), rfl⟩)
     (by convert span_weight_isNonZero_eq_top K L H; ext; simp)
+    (fun α β ↦
+      ⟨chainBotCoeff β.1 α.1 - chainTopCoeff β.1 α.1, by simp [apply_coroot_eq_cast β.1 α.1]⟩)
 
 @[simp]
 lemma corootForm_rootSystem_eq_killing :
@@ -401,24 +404,23 @@ lemma corootForm_rootSystem_eq_killing :
 
 @[simp] lemma rootSystem_toPerfectPairing_apply (f x) : (rootSystem H).toPerfectPairing f x = f x :=
   rfl
-@[deprecated (since := "2024-09-09")]
-alias rootSystem_toLin_apply := rootSystem_toPerfectPairing_apply
 @[simp] lemma rootSystem_pairing_apply (α β) : (rootSystem H).pairing β α = β.1 (coroot α.1) := rfl
 @[simp] lemma rootSystem_root_apply (α) : (rootSystem H).root α = α := rfl
 @[simp] lemma rootSystem_coroot_apply (α) : (rootSystem H).coroot α = coroot α := rfl
 
 instance : (rootSystem H).IsCrystallographic where
-  exists_int α β :=
+  exists_value α β :=
     ⟨chainBotCoeff β.1 α.1 - chainTopCoeff β.1 α.1, by simp [apply_coroot_eq_cast β.1 α.1]⟩
 
-theorem isReduced_rootSystem : (rootSystem H).IsReduced := by
-  intro ⟨α, hα⟩ ⟨β, hβ⟩ e
-  rw [LinearIndependent.pair_iff' ((rootSystem H).ne_zero _), not_forall] at e
-  simp only [Nat.succ_eq_add_one, Nat.reduceAdd, rootSystem_root_apply, ne_eq, not_not] at e
-  obtain ⟨u, hu⟩ := e
-  obtain (h | h) :=
-    eq_neg_or_eq_of_eq_smul α β (by simpa using hβ) u (by ext x; exact DFunLike.congr_fun hu.symm x)
-  · right; ext x; simpa [neg_eq_iff_eq_neg] using DFunLike.congr_fun h.symm x
-  · left; ext x; simpa using DFunLike.congr_fun h.symm x
+instance : (rootSystem H).IsReduced where
+  eq_or_eq_neg := by
+    intro ⟨α, hα⟩ ⟨β, hβ⟩ e
+    rw [LinearIndependent.pair_iff' ((rootSystem H).ne_zero _), not_forall] at e
+    simp only [Nat.succ_eq_add_one, Nat.reduceAdd, rootSystem_root_apply, ne_eq, not_not] at e
+    obtain ⟨u, hu⟩ := e
+    obtain (h | h) := eq_neg_or_eq_of_eq_smul α β (by simpa using hβ) u
+      (by ext x; exact DFunLike.congr_fun hu.symm x)
+    · right; ext x; simpa [neg_eq_iff_eq_neg] using DFunLike.congr_fun h.symm x
+    · left; ext x; simpa using DFunLike.congr_fun h.symm x
 
 end LieAlgebra.IsKilling

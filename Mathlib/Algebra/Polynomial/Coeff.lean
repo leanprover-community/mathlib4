@@ -5,7 +5,6 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Algebra.Polynomial.Basic
-import Mathlib.Algebra.Regular.Basic
 import Mathlib.Data.Nat.Choose.Sum
 
 /-!
@@ -69,20 +68,15 @@ def lsum {R A M : Type*} [Semiring R] [Semiring A] [AddCommMonoid M] [Module R A
   toFun p := p.sum (f · ·)
   map_add' p q := sum_add_index p q _ (fun n => (f n).map_zero) fun n _ _ => (f n).map_add _ _
   map_smul' c p := by
-    -- Porting note: added `dsimp only`; `beta_reduce` alone is not sufficient
-    dsimp only
     rw [sum_eq_of_subset (f · ·) (fun n => (f n).map_zero) (support_smul c p)]
     simp only [sum_def, Finset.smul_sum, coeff_smul, LinearMap.map_smul, RingHom.id_apply]
 
-variable (R)
-
+variable (R) in
 /-- The nth coefficient, as a linear map. -/
 def lcoeff (n : ℕ) : R[X] →ₗ[R] R where
   toFun p := coeff p n
   map_add' p q := coeff_add p q n
   map_smul' r p := coeff_smul r p n
-
-variable {R}
 
 @[simp]
 theorem lcoeff_apply (n : ℕ) (f : R[X]) : lcoeff R n f = coeff f n :=
@@ -172,13 +166,11 @@ theorem coeff_mul_C (p : R[X]) (n : ℕ) (a : R) : coeff (p * C a) n = coeff p n
 @[simp] lemma coeff_natCast_mul {a k : ℕ} :
   coeff ((a : R[X]) * p) k = a * coeff p k := coeff_C_mul _
 
--- See note [no_index around OfNat.ofNat]
 @[simp] lemma coeff_mul_ofNat {a k : ℕ} [Nat.AtLeastTwo a] :
-  coeff (p * (no_index (OfNat.ofNat a) : R[X])) k = coeff p k * OfNat.ofNat a := coeff_mul_C _ _ _
+  coeff (p * (ofNat(a) : R[X])) k = coeff p k * ofNat(a) := coeff_mul_C _ _ _
 
--- See note [no_index around OfNat.ofNat]
 @[simp] lemma coeff_ofNat_mul {a k : ℕ} [Nat.AtLeastTwo a] :
-  coeff ((no_index (OfNat.ofNat a) : R[X]) * p) k = OfNat.ofNat a * coeff p k := coeff_C_mul _
+  coeff ((ofNat(a) : R[X]) * p) k = ofNat(a) * coeff p k := coeff_C_mul _
 
 @[simp] lemma coeff_mul_intCast [Ring S] {p : S[X]} {a : ℤ} {k : ℕ} :
   coeff (p * (a : S[X])) k = coeff p k * (↑a : S) := coeff_mul_C _ _ _
@@ -344,9 +336,6 @@ section cast
 theorem natCast_coeff_zero {n : ℕ} {R : Type*} [Semiring R] : (n : R[X]).coeff 0 = n := by
   simp only [coeff_natCast_ite, ite_true]
 
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_coeff_zero := natCast_coeff_zero
-
 @[norm_cast]
 theorem natCast_inj {m n : ℕ} {R : Type*} [Semiring R] [CharZero R] :
     (↑m : R[X]) = ↑n ↔ m = n := by
@@ -357,15 +346,9 @@ theorem natCast_inj {m n : ℕ} {R : Type*} [Semiring R] [CharZero R] :
   · rintro rfl
     rfl
 
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_inj := natCast_inj
-
 @[simp]
 theorem intCast_coeff_zero {i : ℤ} {R : Type*} [Ring R] : (i : R[X]).coeff 0 = i := by
   cases i <;> simp
-
-@[deprecated (since := "2024-04-17")]
-alias int_cast_coeff_zero := intCast_coeff_zero
 
 @[norm_cast]
 theorem intCast_inj {m n : ℤ} {R : Type*} [Ring R] [CharZero R] : (↑m : R[X]) = ↑n ↔ m = n := by
@@ -375,9 +358,6 @@ theorem intCast_inj {m n : ℤ} {R : Type*} [Ring R] [CharZero R] : (↑m : R[X]
     simpa using h
   · rintro rfl
     rfl
-
-@[deprecated (since := "2024-04-17")]
-alias int_cast_inj := intCast_inj
 
 end cast
 

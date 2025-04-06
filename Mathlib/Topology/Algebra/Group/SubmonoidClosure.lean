@@ -28,7 +28,7 @@ theorem mapClusterPt_atTop_zpow_iff_pow [DivInvMonoid G] [TopologicalSpace G] {x
     MapClusterPt x atTop (y ^ · : ℤ → G) ↔ MapClusterPt x atTop (y ^ · : ℕ → G) := by
   simp_rw [MapClusterPt, ← Nat.map_cast_int_atTop, map_map, comp_def, zpow_natCast]
 
-variable [Group G] [TopologicalSpace G] [CompactSpace G] [TopologicalGroup G]
+variable [Group G] [TopologicalSpace G] [CompactSpace G] [IsTopologicalGroup G]
 
 @[to_additive]
 theorem mapClusterPt_self_zpow_atTop_pow (x : G) (m : ℤ) :

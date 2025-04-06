@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Alex J. Best
 -/
 import Mathlib.Algebra.CharP.Quotient
-import Mathlib.Data.Int.AbsoluteValue
-import Mathlib.Data.Int.Associated
 import Mathlib.LinearAlgebra.FreeModule.Determinant
+import Mathlib.LinearAlgebra.FreeModule.Finite.CardQuotient
 import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 import Mathlib.RingTheory.DedekindDomain.Dvr
 import Mathlib.RingTheory.DedekindDomain.Ideal
+import Mathlib.RingTheory.Ideal.Basis
 import Mathlib.RingTheory.Norm.Basic
 import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicative
 
@@ -196,8 +196,8 @@ theorem cardQuot_mul [IsDedekindDomain S] [Module.Free ℤ S] (I J : Ideal S) :
 noncomputable def Ideal.absNorm [Nontrivial S] [IsDedekindDomain S] [Module.Free ℤ S] :
     Ideal S →*₀ ℕ where
   toFun := Submodule.cardQuot
-  map_mul' I J := by dsimp only; rw [cardQuot_mul]
-  map_one' := by dsimp only; rw [Ideal.one_eq_top, cardQuot_top]
+  map_mul' I J := by rw [cardQuot_mul]
+  map_one' := by rw [Ideal.one_eq_top, cardQuot_top]
   map_zero' := by
     have : Infinite S := Module.Free.infinite ℤ S
     rw [Ideal.zero_eq_bot, cardQuot_bot]
@@ -209,7 +209,7 @@ variable [Nontrivial S] [IsDedekindDomain S] [Module.Free ℤ S]
 theorem absNorm_apply (I : Ideal S) : absNorm I = cardQuot I := rfl
 
 @[simp]
-theorem absNorm_bot : absNorm (⊥ : Ideal S) = 0 := by rw [← Ideal.zero_eq_bot, _root_.map_zero]
+theorem absNorm_bot : absNorm (⊥ : Ideal S) = 0 := by rw [← Ideal.zero_eq_bot, map_zero]
 
 @[simp]
 theorem absNorm_top : absNorm (⊤ : Ideal S) = 1 := by rw [← Ideal.one_eq_top, map_one]
@@ -233,7 +233,7 @@ theorem irreducible_of_irreducible_absNorm {I : Ideal S} (hI : Irreducible (Idea
       by
       rintro a b rfl
       simpa only [Ideal.isUnit_iff, Nat.isUnit_iff, absNorm_eq_one_iff] using
-        hI.isUnit_or_isUnit (_root_.map_mul absNorm a b)⟩
+        hI.isUnit_or_isUnit (map_mul absNorm a b)⟩
 
 theorem isPrime_of_irreducible_absNorm {I : Ideal S} (hI : Irreducible (Ideal.absNorm I)) :
     I.IsPrime :=
@@ -279,67 +279,14 @@ theorem natAbs_det_equiv (I : Ideal S) {E : Type*} [EquivLike E S I] [AddEquivCl
     have : (1 : S) ≠ 0 := one_ne_zero
     have : (1 : S) = 0 := EquivLike.injective e (Subsingleton.elim _ _)
     contradiction
-  let ι := Module.Free.ChooseBasisIndex ℤ S
-  let b := Module.Free.chooseBasis ℤ S
-  cases isEmpty_or_nonempty ι
-  · nontriviality S
-    exact (not_nontrivial_iff_subsingleton.mpr
-      (Function.Surjective.subsingleton b.repr.toEquiv.symm.surjective) (by infer_instance)).elim
-  -- Thus `(S ⧸ I)` is isomorphic to a product of `ZMod`s, so it is a fintype.
-  letI := Ideal.fintypeQuotientOfFreeOfNeBot I hI
-  -- Use the Smith normal form to choose a nice basis for `I`.
-  letI := Classical.decEq ι
-  let a := I.smithCoeffs b hI
-  let b' := I.ringBasis b hI
-  let ab := I.selfBasis b hI
-  have ab_eq := I.selfBasis_def b hI
-  let e' : S ≃ₗ[ℤ] I := b'.equiv ab (Equiv.refl _)
-  let f : S →ₗ[ℤ] S := (I.subtype.restrictScalars ℤ).comp (e' : S →ₗ[ℤ] I)
-  let f_apply : ∀ x, f x = b'.equiv ab (Equiv.refl _) x := fun x => rfl
-  suffices (LinearMap.det f).natAbs = Ideal.absNorm I by
-    calc
-      _ = (LinearMap.det ((Submodule.subtype I).restrictScalars ℤ ∘ₗ
-            (AddEquiv.toIntLinearEquiv e : S ≃ₗ[ℤ] I))).natAbs := rfl
-      _ = (LinearMap.det ((Submodule.subtype I).restrictScalars ℤ ∘ₗ _)).natAbs :=
-            Int.natAbs_eq_iff_associated.mpr (LinearMap.associated_det_comp_equiv _ _ _)
-      _ = absNorm I := this
-  have ha : ∀ i, f (b' i) = a i • b' i := by
-    intro i; rw [f_apply, b'.equiv_apply, Equiv.refl_apply, ab_eq]
-  -- `det f` is equal to `∏ i, a i`,
-  letI := Classical.decEq ι
-  calc
-    Int.natAbs (LinearMap.det f) = Int.natAbs (LinearMap.toMatrix b' b' f).det := by
-      rw [LinearMap.det_toMatrix]
-    _ = Int.natAbs (Matrix.diagonal a).det := ?_
-    _ = Int.natAbs (∏ i, a i) := by rw [Matrix.det_diagonal]
-    _ = ∏ i, Int.natAbs (a i) := map_prod Int.natAbsHom a Finset.univ
-    _ = Nat.card (S ⧸ I) := ?_
-    _ = absNorm I := (Submodule.cardQuot_apply _).symm
-  -- since `LinearMap.toMatrix b' b' f` is the diagonal matrix with `a` along the diagonal.
-  · congr 2; ext i j
-    rw [LinearMap.toMatrix_apply, ha, LinearEquiv.map_smul, Basis.repr_self, Finsupp.smul_single,
-      smul_eq_mul, mul_one]
-    by_cases h : i = j
-    · rw [h, Matrix.diagonal_apply_eq, Finsupp.single_eq_same]
-    · rw [Matrix.diagonal_apply_ne _ h, Finsupp.single_eq_of_ne (Ne.symm h)]
-  -- Now we map everything through the linear equiv `S ≃ₗ (ι → ℤ)`,
-  -- which maps `(S ⧸ I)` to `Π i, ZMod (a i).nat_abs`.
-  haveI : ∀ i, NeZero (a i).natAbs := fun i =>
-    ⟨Int.natAbs_ne_zero.mpr (Ideal.smithCoeffs_ne_zero b I hI i)⟩
-  simp_rw [Nat.card_congr (Ideal.quotientEquivPiZMod I b hI).toEquiv, Nat.card_pi,
-    Nat.card_zmod]
+  exact Submodule.natAbs_det_equiv (I.restrictScalars ℤ) e
 
 /-- Let `b` be a basis for `S` over `ℤ` and `bI` a basis for `I` over `ℤ` of the same dimension.
 Then an alternative way to compute the norm of `I` is given by taking the determinant of `bI`
 over `b`. -/
 theorem natAbs_det_basis_change {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Basis ι ℤ S)
-    (I : Ideal S) (bI : Basis ι ℤ I) : (b.det ((↑) ∘ bI)).natAbs = Ideal.absNorm I := by
-  let e := b.equiv bI (Equiv.refl _)
-  calc
-    (b.det ((Submodule.subtype I).restrictScalars ℤ ∘ bI)).natAbs =
-        (LinearMap.det ((Submodule.subtype I).restrictScalars ℤ ∘ₗ (e : S →ₗ[ℤ] I))).natAbs := by
-      rw [Basis.det_comp_basis]
-    _ = _ := natAbs_det_equiv I e
+    (I : Ideal S) (bI : Basis ι ℤ I) : (b.det ((↑) ∘ bI)).natAbs = Ideal.absNorm I :=
+  Submodule.natAbs_det_basis_change b (I.restrictScalars ℤ) bI
 
 @[simp]
 theorem absNorm_span_singleton (r : S) :
@@ -347,8 +294,8 @@ theorem absNorm_span_singleton (r : S) :
   rw [Algebra.norm_apply]
   by_cases hr : r = 0
   · simp only [hr, Ideal.span_zero, Algebra.coe_lmul_eq_mul, eq_self_iff_true, Ideal.absNorm_bot,
-      LinearMap.det_zero'', Set.singleton_zero, _root_.map_zero, Int.natAbs_zero]
-  letI := Ideal.fintypeQuotientOfFreeOfNeBot (span {r}) (mt span_singleton_eq_bot.mp hr)
+      LinearMap.det_zero'', Set.singleton_zero, map_zero, Int.natAbs_zero]
+  letI := Ideal.finiteQuotientOfFreeOfNeBot (span {r}) (mt span_singleton_eq_bot.mp hr)
   let b := Module.Free.chooseBasis ℤ S
   rw [← natAbs_det_equiv _ (b.equiv (basisSpanSingleton b hr) (Equiv.refl _))]
   congr

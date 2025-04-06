@@ -130,7 +130,7 @@ measure has the Caratheodory property.
 /-- We say that an outer measure `μ` in an (e)metric space is *metric* if `μ (s ∪ t) = μ s + μ t`
 for any two metric separated sets `s`, `t`. -/
 def IsMetric (μ : OuterMeasure X) : Prop :=
-  ∀ s t : Set X, IsMetricSeparated s t → μ (s ∪ t) = μ s + μ t
+  ∀ s t : Set X, Metric.AreSeparated s t → μ (s ∪ t) = μ s + μ t
 
 namespace IsMetric
 
@@ -138,16 +138,17 @@ variable {μ : OuterMeasure X}
 
 /-- A metric outer measure is additive on a finite set of pairwise metric separated sets. -/
 theorem finset_iUnion_of_pairwise_separated (hm : IsMetric μ) {I : Finset ι} {s : ι → Set X}
-    (hI : ∀ i ∈ I, ∀ j ∈ I, i ≠ j → IsMetricSeparated (s i) (s j)) :
+    (hI : ∀ i ∈ I, ∀ j ∈ I, i ≠ j → Metric.AreSeparated (s i) (s j)) :
     μ (⋃ i ∈ I, s i) = ∑ i ∈ I, μ (s i) := by
   classical
-  induction' I using Finset.induction_on with i I hiI ihI hI
-  · simp
-  simp only [Finset.mem_insert] at hI
-  rw [Finset.set_biUnion_insert, hm, ihI, Finset.sum_insert hiI]
-  exacts [fun i hi j hj hij => hI i (Or.inr hi) j (Or.inr hj) hij,
-    IsMetricSeparated.finset_iUnion_right fun j hj =>
-      hI i (Or.inl rfl) j (Or.inr hj) (ne_of_mem_of_not_mem hj hiI).symm]
+  induction I using Finset.induction_on with
+  | empty => simp
+  | @insert i I hiI ihI =>
+    simp only [Finset.mem_insert] at hI
+    rw [Finset.set_biUnion_insert, hm, ihI, Finset.sum_insert hiI]
+    exacts [fun i hi j hj hij => hI i (Or.inr hi) j (Or.inr hj) hij,
+      Metric.AreSeparated.finset_iUnion_right fun j hj =>
+        hI i (Or.inl rfl) j (Or.inr hj) (ne_of_mem_of_not_mem hj hiI).symm]
 
 /-- Caratheodory theorem. If `m` is a metric outer measure, then every Borel measurable set `t` is
 Caratheodory measurable: for any (not necessarily measurable) set `s` we have
@@ -156,10 +157,10 @@ theorem borel_le_caratheodory (hm : IsMetric μ) : borel X ≤ μ.caratheodory :
   rw [borel_eq_generateFrom_isClosed]
   refine MeasurableSpace.generateFrom_le fun t ht => μ.isCaratheodory_iff_le.2 fun s => ?_
   set S : ℕ → Set X := fun n => {x ∈ s | (↑n)⁻¹ ≤ infEdist x t}
-  have Ssep (n) : IsMetricSeparated (S n) t :=
+  have Ssep (n) : Metric.AreSeparated (S n) t :=
     ⟨n⁻¹, ENNReal.inv_ne_zero.2 (ENNReal.natCast_ne_top _),
       fun x hx y hy ↦ hx.2.trans <| infEdist_le_edist_of_mem hy⟩
-  have Ssep' : ∀ n, IsMetricSeparated (S n) (s ∩ t) := fun n =>
+  have Ssep' : ∀ n, Metric.AreSeparated (S n) (s ∩ t) := fun n =>
     (Ssep n).mono Subset.rfl inter_subset_right
   have S_sub : ∀ n, S n ⊆ s \ t := fun n =>
     subset_inter inter_subset_left (Ssep n).subset_compl_right
@@ -191,7 +192,6 @@ theorem borel_le_caratheodory (hm : IsMetric μ) : borel X ≤ μ.caratheodory :
     for details. -/
   have : ∀ n, S n ⊆ S (n + 1) := fun n x hx =>
     ⟨hx.1, le_trans (ENNReal.inv_le_inv.2 <| Nat.cast_le.2 n.le_succ) hx.2⟩
-  classical -- Porting note: Added this to get the next tactic to work
   refine (μ.iUnion_nat_of_monotone_of_tsum_ne_top this ?_).le; clear this
   /- While the sets `S (k + 1) \ S k` are not pairwise metric separated, the sets in each
     subsequence `S (2 * k + 1) \ S (2 * k)` and `S (2 * k + 2) \ S (2 * k)` are metric separated,
@@ -204,7 +204,7 @@ theorem borel_le_caratheodory (hm : IsMetric μ) : borel X ≤ μ.caratheodory :
   intro n
   rw [← hm.finset_iUnion_of_pairwise_separated]
   · exact μ.mono (iUnion_subset fun i => iUnion_subset fun _ x hx => mem_iUnion.2 ⟨_, hx.1⟩)
-  suffices ∀ i j, i < j → IsMetricSeparated (S (2 * i + 1 + r)) (s \ S (2 * j + r)) from
+  suffices ∀ i j, i < j → Metric.AreSeparated (S (2 * i + 1 + r)) (s \ S (2 * j + r)) from
     fun i _ j _ hij => hij.lt_or_lt.elim
       (fun h => (this i j h).mono inter_subset_left fun x hx => by exact ⟨hx.1.1, hx.2⟩)
       fun h => (this j i h).symm.mono (fun x hx => by exact ⟨hx.1.1, hx.2⟩) inter_subset_left
@@ -470,7 +470,7 @@ theorem mkMetric_apply (m : ℝ≥0∞ → ℝ≥0∞) (s : Set X) :
   simp only [← OuterMeasure.coe_mkMetric, OuterMeasure.mkMetric, OuterMeasure.mkMetric',
     OuterMeasure.iSup_apply, OuterMeasure.mkMetric'.pre, OuterMeasure.boundedBy_apply, extend]
   refine
-    surjective_id.iSup_congr (id) fun r =>
+    surjective_id.iSup_congr id fun r =>
       iSup_congr_Prop Iff.rfl fun _ =>
         surjective_id.iInf_congr _ fun t => iInf_congr_Prop Iff.rfl fun ht => ?_
   dsimp
@@ -501,7 +501,7 @@ theorem mkMetric_le_liminf_tsum {β : Type*} {ι : β → Type*} [∀ n, Countab
   haveI : ∀ n, Encodable (ι n) := fun n => Encodable.ofCountable _
   simp only [mkMetric_apply]
   refine iSup₂_le fun ε hε => ?_
-  refine le_of_forall_le_of_dense fun c hc => ?_
+  refine le_of_forall_gt_imp_ge_of_dense fun c hc => ?_
   rcases ((frequently_lt_of_liminf_lt (by isBoundedDefault) hc).and_eventually
         ((hr.eventually (gt_mem_nhds hε)).and (ht.and hst))).exists with
     ⟨n, hn, hrn, htn, hstn⟩
@@ -534,6 +534,7 @@ theorem mkMetric_le_liminf_sum {β : Type*} {ι : β → Type*} [hι : ∀ n, Fi
 def hausdorffMeasure (d : ℝ) : Measure X :=
   mkMetric fun r => r ^ d
 
+@[inherit_doc]
 scoped[MeasureTheory] notation "μH[" d "]" => MeasureTheory.Measure.hausdorffMeasure d
 
 theorem le_hausdorffMeasure (d : ℝ) (μ : Measure X) (ε : ℝ≥0∞) (h₀ : 0 < ε)
@@ -595,12 +596,11 @@ theorem hausdorffMeasure_zero_or_top {d₁ d₂ : ℝ} (h : d₁ < d₂) (s : Se
 /-- Hausdorff measure `μH[d] s` is monotone in `d`. -/
 theorem hausdorffMeasure_mono {d₁ d₂ : ℝ} (h : d₁ ≤ d₂) (s : Set X) : μH[d₂] s ≤ μH[d₁] s := by
   rcases h.eq_or_lt with (rfl | h); · exact le_rfl
-  cases' hausdorffMeasure_zero_or_top h s with hs hs
+  rcases hausdorffMeasure_zero_or_top h s with hs | hs
   · rw [hs]; exact zero_le _
   · rw [hs]; exact le_top
 
-variable (X)
-
+variable (X) in
 theorem noAtoms_hausdorff {d : ℝ} (hd : 0 < d) : NoAtoms (hausdorffMeasure d : Measure X) := by
   refine ⟨fun x => ?_⟩
   rw [← nonpos_iff_eq_zero, hausdorffMeasure_apply]
@@ -608,8 +608,6 @@ theorem noAtoms_hausdorff {d : ℝ} (hd : 0 < d) : NoAtoms (hausdorffMeasure d :
   · exact subset_iUnion (fun _ => {x} : ℕ → Set X) 0
   · simp only [EMetric.diam_singleton, zero_le]
   · simp [hd]
-
-variable {X}
 
 @[simp]
 theorem hausdorffMeasure_zero_singleton (x : X) : μH[0] ({x} : Set X) = 1 := by
@@ -848,16 +846,16 @@ end IsometryEquiv
 namespace MeasureTheory
 
 @[to_additive]
-theorem hausdorffMeasure_smul {α : Type*} [SMul α X] [IsometricSMul α X] {d : ℝ} (c : α)
+theorem hausdorffMeasure_smul {α : Type*} [SMul α X] [IsIsometricSMul α X] {d : ℝ} (c : α)
     (h : 0 ≤ d ∨ Surjective (c • · : X → X)) (s : Set X) : μH[d] (c • s) = μH[d] s :=
   (isometry_smul X c).hausdorffMeasure_image h _
 
 @[to_additive]
-instance {d : ℝ} [Group X] [IsometricSMul X X] : IsMulLeftInvariant (μH[d] : Measure X) where
+instance {d : ℝ} [Group X] [IsIsometricSMul X X] : IsMulLeftInvariant (μH[d] : Measure X) where
   map_mul_left_eq_self x := (IsometryEquiv.constSMul x).map_hausdorffMeasure _
 
 @[to_additive]
-instance {d : ℝ} [Group X] [IsometricSMul Xᵐᵒᵖ X] : IsMulRightInvariant (μH[d] : Measure X) where
+instance {d : ℝ} [Group X] [IsIsometricSMul Xᵐᵒᵖ X] : IsMulRightInvariant (μH[d] : Measure X) where
   map_mul_right_eq_self x := (IsometryEquiv.constSMul (MulOpposite.op x)).map_hausdorffMeasure _
 
 /-!

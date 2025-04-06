@@ -6,6 +6,7 @@ Authors: Anne Baanen
 
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Field.Subfield.Defs
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Ring.Subring.Basic
 import Mathlib.RingTheory.SimpleRing.Basic
 
@@ -264,15 +265,7 @@ theorem mem_iInf {ι : Sort*} {S : ι → Subfield K} {x : K} : (x ∈ ⨅ i, S 
 theorem sInf_toSubring (s : Set (Subfield K)) :
     (sInf s).toSubring = ⨅ t ∈ s, Subfield.toSubring t := by
   ext x
-  rw [mem_toSubring, mem_sInf]
-  erw [Subring.mem_sInf]
-  exact
-    ⟨fun h p ⟨p', hp⟩ => hp ▸ Subring.mem_sInf.mpr fun p ⟨hp', hp⟩ => hp ▸ h _ hp', fun h p hp =>
-      h p.toSubring
-        ⟨p,
-          Subring.ext fun x =>
-            ⟨fun hx => Subring.mem_sInf.mp hx _ ⟨hp, rfl⟩, fun hx =>
-              Subring.mem_sInf.mpr fun p' ⟨_, p'_eq⟩ => p'_eq ▸ hx⟩⟩⟩
+  simp [mem_sInf, ← sInf_image, Subring.mem_sInf]
 
 theorem isGLB_sInf (S : Set (Subfield K)) : IsGLB S (sInf S) := by
   have : ∀ {s t : Subfield K}, (s : Set K) ≤ t ↔ s ≤ t := by simp [SetLike.coe_subset_coe]
@@ -344,8 +337,7 @@ theorem closure_induction {s : Set K} {p : ∀ x ∈ closure s, Prop}
       inv_mem' := by rintro _ ⟨_, hx⟩; exact ⟨_, inv _ _ hx⟩ }
   ((closure_le (t := this)).2 (fun x hx ↦ ⟨_, mem x hx⟩) h).2
 
-variable (K)
-
+variable (K) in
 /-- `closure` forms a Galois insertion with the coercion to set. -/
 protected def gi : GaloisInsertion (@closure K _) (↑) where
   choice s _ := closure s
@@ -353,9 +345,8 @@ protected def gi : GaloisInsertion (@closure K _) (↑) where
   le_l_u _ := subset_closure
   choice_eq _ _ := rfl
 
-variable {K}
-
 /-- Closure of a subfield `S` equals `S`. -/
+@[simp]
 theorem closure_eq (s : Subfield K) : closure (s : Set K) = s :=
   (Subfield.gi K).l_u_eq s
 
@@ -447,6 +438,9 @@ def rangeRestrictField (f : K →+* L) : K →+* f.fieldRange :=
 @[simp]
 theorem coe_rangeRestrictField (f : K →+* L) (x : K) : (f.rangeRestrictField x : L) = f x :=
   rfl
+
+theorem rangeRestrictField_bijective (f : K →+* L) : Function.Bijective (rangeRestrictField f) :=
+  (Equiv.ofInjective f f.injective).bijective
 
 section eqLocus
 

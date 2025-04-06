@@ -42,18 +42,15 @@ variable (P L : Type*) [Membership P L]
 def Dual :=
   P
 
--- Porting note: was `this` instead of `h`
 instance [h : Inhabited P] : Inhabited (Dual P) :=
   h
 
 instance [Finite P] : Finite (Dual P) :=
   ‹Finite P›
 
--- Porting note: was `this` instead of `h`
 instance [h : Fintype P] : Fintype (Dual P) :=
   h
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: figure out if this is needed.
 set_option synthInstance.checkSynthOrder false in
 instance : Membership (Dual L) (Dual P) :=
   ⟨Function.swap (Membership.mem : L → P → Prop)⟩
@@ -71,11 +68,13 @@ class Nondegenerate : Prop where
 
 /-- A nondegenerate configuration in which every pair of lines has an intersection point. -/
 class HasPoints extends Nondegenerate P L where
+  /-- Intersection of two lines -/
   mkPoint : ∀ {l₁ l₂ : L}, l₁ ≠ l₂ → P
   mkPoint_ax : ∀ {l₁ l₂ : L} (h : l₁ ≠ l₂), mkPoint h ∈ l₁ ∧ mkPoint h ∈ l₂
 
 /-- A nondegenerate configuration in which every pair of points has a line through them. -/
 class HasLines extends Nondegenerate P L where
+  /-- Line through two points -/
   mkLine : ∀ {p₁ p₂ : P}, p₁ ≠ p₂ → L
   mkLine_ax : ∀ {p₁ p₂ : P} (h : p₁ ≠ p₂), p₁ ∈ mkLine h ∧ p₂ ∈ mkLine h
 
@@ -493,10 +492,10 @@ lemma crossProduct_eq_zero_of_dotProduct_eq_zero {a b c d : Fin 3 → K} (hac : 
 lemma eq_or_eq_of_orthogonal {a b c d : ℙ K (Fin 3 → K)} (hac : a.orthogonal c)
     (hbc : b.orthogonal c) (had : a.orthogonal d) (hbd : b.orthogonal d) :
     a = b ∨ c = d := by
-  induction' a with a ha
-  induction' b with b hb
-  induction' c with c hc
-  induction' d with d hd
+  induction a with | h a ha =>
+  induction b with | h b hb =>
+  induction c with | h c hc =>
+  induction d with | h d hd =>
   rw [mk_eq_mk_iff_crossProduct_eq_zero, mk_eq_mk_iff_crossProduct_eq_zero]
   exact crossProduct_eq_zero_of_dotProduct_eq_zero hac hbc had hbd
 

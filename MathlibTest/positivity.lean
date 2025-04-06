@@ -1,10 +1,11 @@
 import Mathlib.Tactic.Positivity
-import Mathlib.Data.Complex.Exponential
+import Mathlib.Data.Complex.Trigonometric
 import Mathlib.Data.Real.Sqrt
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
-import Mathlib.MeasureTheory.Integral.Bochner
+import Mathlib.MeasureTheory.Integral.Bochner.Basic
+import Mathlib.Topology.Algebra.InfiniteSum.Order
 
 /-! # Tests for the `positivity` tactic
 
@@ -14,7 +15,7 @@ set_option autoImplicit true
 
 open Finset Function Nat NNReal ENNReal
 
-variable {ι α β : Type _}
+variable {ι α β E : Type*}
 
 /- ## Numeric goals -/
 
@@ -307,8 +308,13 @@ example : 0 ≤ Real.log 1 := by positivity
 example : 0 ≤ Real.log 0 := by positivity
 example : 0 ≤ Real.log (-1) := by positivity
 
-example {V : Type _} [NormedCommGroup V] (x : V) : 0 ≤ ‖x‖ := by positivity
-example {V : Type _} [NormedAddCommGroup V] (x : V) : 0 ≤ ‖x‖ := by positivity
+example [SeminormedGroup E] {a : E} (_ha : a ≠ 1) : 0 ≤ ‖a‖ := by positivity
+example [NormedGroup E] {a : E} : 0 ≤ ‖a‖ := by positivity
+example [NormedGroup E] {a : E} (ha : a ≠ 1) : 0 < ‖a‖ := by positivity
+
+example [SeminormedAddGroup E] {a : E} (_ha : a ≠ 0) : 0 ≤ ‖a‖ := by positivity
+example [NormedAddGroup E] {a : E} : 0 ≤ ‖a‖ := by positivity
+example [NormedAddGroup E] {a : E} (ha : a ≠ 0) : 0 < ‖a‖ := by positivity
 
 example [MetricSpace α] (x y : α) : 0 ≤ dist x y := by positivity
 example [MetricSpace α] {s : Set α} : 0 ≤ Metric.diam s := by positivity
@@ -374,6 +380,19 @@ example (f g : D → E) : 0 ≤ ∫ x, ‖f x‖ + ‖g x‖ ∂μ := by positiv
 example (f : D → E) (c : ℝ) (hc : 0 < c): 0 ≤ ∫ x, c * ‖f x‖ ∂μ := by positivity
 
 end Integral
+
+/-! ## Infinite Sums -/
+
+example (f : ℕ → ℝ) : 0 ≤ ∑' n, f n ^ 2 := by positivity
+example  (f : ℕ → ℝ≥0) (c : ℝ) (hc : 0 < c) : 0 ≤ ∑' n, c * f n := by positivity
+example [LinearOrderedField α] [TopologicalSpace α] [OrderClosedTopology α] (f : ℚ → α) :
+    0 ≤ ∑' q, (f q)^2 := by
+  positivity
+
+-- Make sure that the extension doesn't produce an invalid term by accidentally unifying `?n` with
+-- `0` because of the `hf` assumption
+set_option linter.unusedVariables false in
+example (f : ℕ → ℕ) (hf : 0 ≤ f 0) : 0 ≤ ∑' n, f n := by positivity
 
 /-! ## Big operators -/
 

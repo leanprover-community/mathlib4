@@ -3,6 +3,7 @@ Copyright (c) 2023 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey, Yaël Dillies, Andrew Yang
 -/
+import Mathlib.Algebra.BigOperators.Field
 import Mathlib.Algebra.MvPolynomial.Equiv
 import Mathlib.Algebra.MvPolynomial.Variables
 import Mathlib.Algebra.Order.Group.Finset
@@ -146,7 +147,7 @@ lemma schwartz_zippel_sup_sum :
         calc
           #{x₀ ∈ S 0 | eval (cons x₀ xₜ) p = 0} ≤ #pₓ.roots.toFinset := by
             gcongr
-            simp (config := { contextual := true }) [subset_iff, eval_eq_eval_mv_eval', pₓ, hpₓ₀]
+            simp +contextual [subset_iff, eval_eq_eval_mv_eval', pₓ, hpₓ₀, p']
           _ ≤ Multiset.card pₓ.roots := pₓ.roots.toFinset_card_le
           _ ≤ pₓ.natDegree := pₓ.card_roots'
           _ = k := hpₓdeg

@@ -3,8 +3,9 @@ Copyright (c) 2020 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
 -/
-import Mathlib.Algebra.Order.Floor
 import Mathlib.Algebra.ContinuedFractions.Basic
+import Mathlib.Algebra.Order.Field.Defs
+import Mathlib.Algebra.Order.Floor.Defs
 
 /-!
 # Computable Continued Fractions
@@ -99,7 +100,6 @@ section coe
 -- Fix another type `β` which we will convert to.
 variable {β : Type*} [Coe K β]
 
--- Porting note: added so we can add the `@[coe]` attribute
 /-- The coercion between integer-fraction pairs happens componentwise. -/
 @[coe]
 def coeFn : IntFractPair K → IntFractPair β := mapFr (↑)

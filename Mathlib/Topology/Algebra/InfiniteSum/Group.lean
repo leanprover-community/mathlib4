@@ -6,7 +6,8 @@ Authors: Johannes Hölzl
 import Mathlib.SetTheory.Cardinal.Finite
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
 import Mathlib.Topology.UniformSpace.Cauchy
-import Mathlib.Topology.Algebra.UniformGroup.Defs
+import Mathlib.Topology.Algebra.IsUniformGroup.Defs
+import Mathlib.Topology.Algebra.Group.Pointwise
 
 /-!
 # Infinite sums and products in topological groups
@@ -22,9 +23,9 @@ open scoped Topology
 
 variable {α β γ : Type*}
 
-section TopologicalGroup
+section IsTopologicalGroup
 
-variable [CommGroup α] [TopologicalSpace α] [TopologicalGroup α]
+variable [CommGroup α] [TopologicalSpace α] [IsTopologicalGroup α]
 variable {f g : β → α} {a a₁ a₂ : α}
 
 -- `by simpa using` speeds up elaboration. Why?
@@ -70,9 +71,9 @@ theorem HasProd.update (hf : HasProd f a₁) (b : β) [DecidableEq β] (a : α) 
     HasProd (update f b a) (a / f b * a₁) := by
   convert (hasProd_ite_eq b (a / f b)).mul hf with b'
   by_cases h : b' = b
-  · rw [h, update_same]
+  · rw [h, update_self]
     simp [eq_self_iff_true, if_true, sub_add_cancel]
-  · simp only [h, update_noteq, if_false, Ne, one_mul, not_false_iff]
+  · simp only [h, update_of_ne, if_false, Ne, one_mul, not_false_iff]
 
 @[to_additive]
 theorem Multipliable.update (hf : Multipliable f) (b : β) [DecidableEq β] (a : α) :
@@ -184,9 +185,9 @@ theorem tprod_eq_mul_tprod_ite [DecidableEq β] (hf : Multipliable f) (b : β) :
 
 end tprod
 
-end TopologicalGroup
+end IsTopologicalGroup
 
-section UniformGroup
+section IsUniformGroup
 
 variable [CommGroup α] [UniformSpace α]
 
@@ -197,7 +198,7 @@ theorem multipliable_iff_cauchySeq_finset [CompleteSpace α] {f : β → α} :
     Multipliable f ↔ CauchySeq fun s : Finset β ↦ ∏ b ∈ s, f b := by
   classical exact cauchy_map_iff_exists_tendsto.symm
 
-variable [UniformGroup α] {f g : β → α}
+variable [IsUniformGroup α] {f g : β → α}
 
 @[to_additive]
 theorem cauchySeq_finset_iff_prod_vanishing :
@@ -310,26 +311,26 @@ theorem prod_mul_tprod_subtype_compl [T2Space α] {f : β → α} (hf : Multipli
   simp only [Finset.tprod_subtype', mul_right_inj]
   rfl
 
-end UniformGroup
+end IsUniformGroup
 
-section TopologicalGroup
+section IsTopologicalGroup
 
-variable {G : Type*} [TopologicalSpace G] [CommGroup G] [TopologicalGroup G] {f : α → G}
+variable {G : Type*} [TopologicalSpace G] [CommGroup G] [IsTopologicalGroup G] {f : α → G}
 
 @[to_additive]
 theorem Multipliable.vanishing (hf : Multipliable f) ⦃e : Set G⦄ (he : e ∈ 𝓝 (1 : G)) :
     ∃ s : Finset α, ∀ t, Disjoint t s → (∏ k ∈ t, f k) ∈ e := by
   classical
-  letI : UniformSpace G := TopologicalGroup.toUniformSpace G
-  have : UniformGroup G := comm_topologicalGroup_is_uniform
+  letI : UniformSpace G := IsTopologicalGroup.toUniformSpace G
+  have : IsUniformGroup G := isUniformGroup_of_commGroup
   exact cauchySeq_finset_iff_prod_vanishing.1 hf.hasProd.cauchySeq e he
 
 @[to_additive]
 theorem Multipliable.tprod_vanishing (hf : Multipliable f) ⦃e : Set G⦄ (he : e ∈ 𝓝 1) :
     ∃ s : Finset α, ∀ t : Set α, Disjoint t s → (∏' b : t, f b) ∈ e := by
   classical
-  letI : UniformSpace G := TopologicalGroup.toUniformSpace G
-  have : UniformGroup G := comm_topologicalGroup_is_uniform
+  letI : UniformSpace G := IsTopologicalGroup.toUniformSpace G
+  have : IsUniformGroup G := isUniformGroup_of_commGroup
   exact cauchySeq_finset_iff_tprod_vanishing.1 hf.hasProd.cauchySeq e he
 
 /-- The product over the complement of a finset tends to `1` when the finset grows to cover the
@@ -360,6 +361,13 @@ theorem Multipliable.tendsto_cofinite_one (hf : Multipliable f) : Tendsto f cofi
   · simpa using hs {x} (disjoint_singleton_left.2 hx)
 
 @[to_additive]
+theorem Multipliable.finite_mulSupport_of_discreteTopology
+    {α : Type*} [CommGroup α] [TopologicalSpace α] [DiscreteTopology α]
+    {β : Type*} (f : β → α) (h : Multipliable f) : Set.Finite f.mulSupport :=
+  haveI : IsTopologicalGroup α := ⟨⟩
+  h.tendsto_cofinite_one (discreteTopology_iff_singleton_mem_nhds.mp ‹_› 1)
+
+@[to_additive]
 theorem Multipliable.countable_mulSupport [FirstCountableTopology G] [T1Space G]
     (hf : Multipliable f) : f.mulSupport.Countable := by
   simpa only [ker_nhds] using hf.tendsto_cofinite_one.countable_compl_preimage_ker
@@ -388,4 +396,4 @@ theorem tprod_const [T2Space G] (a : G) : ∏' _ : β, a = a ^ (Nat.card β) := 
     · apply tprod_eq_one_of_not_multipliable
       simpa [multipliable_const_iff] using ha
 
-end TopologicalGroup
+end IsTopologicalGroup

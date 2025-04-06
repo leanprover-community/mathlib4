@@ -3,12 +3,13 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.BigOperators.Group.List
 import Mathlib.Data.Vector.Defs
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.OfFn
+import Mathlib.Data.List.Scan
 import Mathlib.Control.Applicative
 import Mathlib.Control.Traversable.Basic
+import Mathlib.Algebra.BigOperators.Group.List.Basic
 
 /-!
 # Additional theorems and definitions about the `Vector` type
@@ -175,7 +176,7 @@ def _root_.Equiv.vectorEquivFin (α : Type*) (n : ℕ) : Vector α n ≃ (Fin n 
   ⟨Vector.get, Vector.ofFn, Vector.ofFn_get, fun f => funext <| Vector.get_ofFn f⟩
 
 theorem get_tail (x : Vector α n) (i) : x.tail.get i = x.get ⟨i.1 + 1, by omega⟩ := by
-  cases' i with i ih; dsimp
+  obtain ⟨i, ih⟩ := i; dsimp
   rcases x with ⟨_ | _, h⟩ <;> try rfl
   rw [List.length] at h
   rw [← h] at ih
@@ -209,7 +210,7 @@ theorem tail_ofFn {n : ℕ} (f : Fin n.succ → α) : tail (ofFn f) = ofFn fun i
 
 @[simp]
 theorem toList_empty (v : Vector α 0) : v.toList = [] :=
-  List.length_eq_zero.mp v.2
+  List.length_eq_zero_iff.mp v.2
 
 /-- The list that makes up a `Vector` made up of a single element,
 retrieved via `toList`, is equal to the list of that single element. -/
@@ -232,7 +233,7 @@ theorem map_id {n : ℕ} (v : Vector α n) : Vector.map id v = v :=
   Vector.eq _ _ (by simp only [List.map_id, Vector.toList_map])
 
 theorem nodup_iff_injective_get {v : Vector α n} : v.toList.Nodup ↔ Function.Injective v.get := by
-  cases' v with l hl
+  obtain ⟨l, hl⟩ := v
   subst hl
   exact List.nodup_iff_injective_get
 
@@ -317,7 +318,7 @@ This lemma is the `cons` version of `scanl_get`.
 @[simp]
 theorem scanl_cons (x : α) : scanl f b (x ::ᵥ v) = b ::ᵥ scanl f (f b x) v := by
   simp only [scanl, toList_cons, List.scanl]; dsimp
-  simp only [cons]; rfl
+  simp only [cons]
 
 /-- The underlying `List` of a `Vector` after a `scanl` is the `List.scanl`
 of the underlying `List` of the original `Vector`.
@@ -351,8 +352,7 @@ theorem scanl_head : (scanl f b v).head = b := by
   · have : v = nil := by simp only [eq_iff_true_of_subsingleton]
     simp only [this, scanl_nil, head_cons]
   · rw [← cons_head_tail v]
-    simp only [← get_zero, get_eq_get_toList, toList_scanl, toList_cons, List.scanl, Fin.val_zero,
-      List.get]
+    simp [← get_zero, get_eq_get_toList]
 
 /-- For an index `i : Fin n`, the nth element of `scanl` of a
 vector `v : Vector α n` at `i.succ`, is equal to the application
@@ -364,7 +364,7 @@ This lemma is the `get` version of `scanl_cons`.
 @[simp]
 theorem scanl_get (i : Fin n) :
     (scanl f b v).get i.succ = f ((scanl f b v).get (Fin.castSucc i)) (v.get i) := by
-  cases' n with n
+  rcases n with - | n
   · exact i.elim0
   induction' n with n hn generalizing b
   · have i0 : i = 0 := Fin.eq_zero _
@@ -426,7 +426,6 @@ It is used as the default induction principle for the `induction` tactic.
 @[elab_as_elim, induction_eliminator]
 def inductionOn {C : ∀ {n : ℕ}, Vector α n → Sort*} {n : ℕ} (v : Vector α n)
     (nil : C nil) (cons : ∀ {n : ℕ} {x : α} {w : Vector α n}, C w → C (x ::ᵥ w)) : C v := by
-  -- Porting note: removed `generalizing`: already generalized
   induction' n with n ih
   · rcases v with ⟨_ | ⟨-, -⟩, - | -⟩
     exact nil
@@ -454,7 +453,6 @@ def inductionOn₂ {C : ∀ {n}, Vector α n → Vector β n → Sort*}
     (v : Vector α n) (w : Vector β n)
     (nil : C nil nil) (cons : ∀ {n a b} {x : Vector α n} {y}, C x y → C (a ::ᵥ x) (b ::ᵥ y)) :
     C v w := by
-  -- Porting note: removed `generalizing`: already generalized
   induction' n with n ih
   · rcases v with ⟨_ | ⟨-, -⟩, - | -⟩
     rcases w with ⟨_ | ⟨-, -⟩, - | -⟩
@@ -473,7 +471,6 @@ def inductionOn₃ {C : ∀ {n}, Vector α n → Vector β n → Vector γ n →
     (u : Vector α n) (v : Vector β n) (w : Vector γ n) (nil : C nil nil nil)
     (cons : ∀ {n a b c} {x : Vector α n} {y z}, C x y z → C (a ::ᵥ x) (b ::ᵥ y) (c ::ᵥ z)) :
     C u v w := by
-  -- Porting note: removed `generalizing`: already generalized
   induction' n with n ih
   · rcases u with ⟨_ | ⟨-, -⟩, - | -⟩
     rcases v with ⟨_ | ⟨-, -⟩, - | -⟩
@@ -542,14 +539,9 @@ theorem eraseIdx_val {i : Fin n} : ∀ {v : Vector α n}, (eraseIdx i v).val = v
   | _ => rfl
 
 @[deprecated (since := "2024-10-21")] alias eraseNth_val := eraseIdx_val
-@[deprecated (since := "2024-05-04")] alias removeNth_val := eraseIdx_val
-
 theorem eraseIdx_insertIdx {v : Vector α n} {i : Fin (n + 1)} :
     eraseIdx i (insertIdx a i v) = v :=
-  Subtype.eq <| List.eraseIdx_insertIdx i.1 v.1
-
-@[deprecated (since := "2024-05-04")] alias eraseIdx_insertNth := eraseIdx_insertIdx
-@[deprecated (since := "2024-05-04")] alias removeNth_insertNth := eraseIdx_insertIdx
+  Subtype.eq (List.eraseIdx_insertIdx ..)
 
 /-- Erasing an element after inserting an element, at different indices. -/
 theorem eraseIdx_insertIdx' {v : Vector α (n + 1)} :
@@ -567,13 +559,10 @@ theorem eraseIdx_insertIdx' {v : Vector α (n + 1)} :
       · simpa
       · simpa [Nat.lt_succ_iff] using hij
     · dsimp
-      rw [← List.insertIdx_eraseIdx_of_le i j _ _ _]
+      rw [← List.insertIdx_eraseIdx_of_le]
       · rfl
       · simpa
       · simpa [not_lt] using hij
-
-@[deprecated (since := "2024-05-04")] alias eraseIdx_insertNth' := eraseIdx_insertIdx'
-@[deprecated (since := "2024-05-04")] alias removeNth_insertNth' := eraseIdx_insertIdx'
 
 theorem insertIdx_comm (a b : α) (i j : Fin (n + 1)) (h : i ≤ j) :
     ∀ v : Vector α n,
@@ -590,7 +579,6 @@ theorem insertIdx_comm (a b : α) (i j : Fin (n + 1)) (h : i ≤ j) :
 
 end InsertIdx
 
--- Porting note: renamed to `set` from `updateNth` to align with `List`
 section Set
 
 /-- `set v n a` replaces the `n`th element of `v` with `a`. -/
@@ -623,9 +611,9 @@ theorem prod_set [Monoid α] (v : Vector α n) (i : Fin n) (a : α) :
   refine (List.prod_set v.toList i a).trans ?_
   simp_all
 
-/-- Variant of `List.Vector.prod_set` that multiplies by the inverse of the replaced element.-/
+/-- Variant of `List.Vector.prod_set` that multiplies by the inverse of the replaced element -/
 @[to_additive
-  "Variant of `List.Vector.sum_set` that subtracts the inverse of the replaced element."]
+  "Variant of `List.Vector.sum_set` that subtracts the inverse of the replaced element"]
 theorem prod_set' [CommGroup α] (v : Vector α n) (i : Fin n) (a : α) :
     (v.set i a).toList.prod = v.toList.prod * (v.get i)⁻¹ * a := by
   refine (List.prod_set' v.toList i a).trans ?_
@@ -747,7 +735,7 @@ theorem replicate_succ (val : α) :
 section Append
 variable (ys : Vector α m)
 
-@[simp] lemma get_append_cons_zero : get (append (x ::ᵥ xs) ys) ⟨0, by omega⟩ = x := rfl
+@[simp] lemma get_append_cons_zero : get (append (x ::ᵥ xs) ys) 0 = x := rfl
 
 @[simp]
 theorem get_append_cons_succ {i : Fin (n + m)} {h} :
