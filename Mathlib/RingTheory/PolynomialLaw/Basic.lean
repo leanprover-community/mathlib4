@@ -32,8 +32,8 @@ polynomials (when the module `M` is free and finite).
 
 ## Implementation notes
 
-In the literature, the theory is writen for commutative rings, but this implementation
-only assume `R` is a commutative semiring.
+In the literature, the theory is written for commutative rings, but this implementation
+only assumes `R` is a commutative semiring.
 
 ## References
 

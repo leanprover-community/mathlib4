@@ -294,7 +294,7 @@ theorem piContent_tendsto_zero {A : ℕ → Set (Π i, X i)} (A_mem : ∀ n, A n
   let B n := f ⁻¹' (A n)
   -- `Tₙ` is the same as `Sₙ` but in the product indexed by `u`
   let T n := (g n) ⁻¹' (S n)
-  -- We now tranfer the properties of `Aₙ` and `Sₙ` to `Bₙ` and `Tₙ`
+  -- We now transfer the properties of `Aₙ` and `Sₙ` to `Bₙ` and `Tₙ`
   have B_eq n : B n = cylinder (t n) (T n) := by
     simp_rw [B, A_eq, cylinder, ← Set.preimage_comp, r_comp_f]; rfl
   have mT n : MeasurableSet (T n) := (mS n).preimage (by fun_prop)
