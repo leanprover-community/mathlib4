@@ -29,15 +29,15 @@ union of the (quasi)spectra.
 
 -/
 
-section quasiregular
+variable {ι A B R : Type*} {κ : ι → Type*}
 
-variable {ι : Type*} {κ : ι → Type*} [∀ i, NonUnitalSemiring (κ i)]
-variable {A B : Type*} [NonUnitalSemiring A] [NonUnitalSemiring B]
+section quasiregular
 
 variable (κ) in
 /-- The equivalence between pre-quasiregular elements of an indexed product and the indexed product
 of pre-quasiregular elements. -/
-def PreQuasiregular.toPi : PreQuasiregular (∀ i, κ i) ≃* ∀ i, PreQuasiregular (κ i) where
+def PreQuasiregular.toPi [∀ i, NonUnitalSemiring (κ i)] :
+    PreQuasiregular (∀ i, κ i) ≃* ∀ i, PreQuasiregular (κ i) where
   toFun := fun x i => .mk <| x.val i
   invFun := fun x => .mk <| fun i => (x i).val
   left_inv _ := rfl
@@ -47,14 +47,16 @@ def PreQuasiregular.toPi : PreQuasiregular (∀ i, κ i) ≃* ∀ i, PreQuasireg
 variable (A B) in
 /-- The equivalence between pre-quasiregular elements of a product and the product of
 pre-quasiregular elements. -/
-def PreQuasiregular.toProd : PreQuasiregular (A × B) ≃* PreQuasiregular A × PreQuasiregular B where
+def PreQuasiregular.toProd [NonUnitalSemiring A] [NonUnitalSemiring B] :
+    PreQuasiregular (A × B) ≃* PreQuasiregular A × PreQuasiregular B where
   toFun := fun p => ⟨.mk p.val.1, .mk p.val.2⟩
   invFun := fun ⟨a, b⟩ => .mk ⟨a.val, b.val⟩
   left_inv _ := rfl
   right_inv _ := rfl
   map_mul' _ _ := rfl
 
-lemma isQuasiregular_pi_iff (x : ∀ i, κ i) : IsQuasiregular x ↔ ∀ i, IsQuasiregular (x i) := by
+lemma isQuasiregular_pi_iff [∀ i, NonUnitalSemiring (κ i)] (x : ∀ i, κ i) :
+    IsQuasiregular x ↔ ∀ i, IsQuasiregular (x i) := by
   refine ⟨fun ⟨u, h⟩ => ?mp, fun h => ?mpr⟩
   case mp =>
     rw [funext_iff] at h
@@ -69,7 +71,7 @@ lemma isQuasiregular_pi_iff (x : ∀ i, κ i) : IsQuasiregular x ↔ ∀ i, IsQu
     ext i
     exact Classical.choose_spec (h i)
 
-lemma isQuasiregular_prod_iff (a : A) (b : B) :
+lemma isQuasiregular_prod_iff [NonUnitalSemiring A] [NonUnitalSemiring B] (a : A) (b : B) :
     IsQuasiregular (⟨a, b⟩ : A × B) ↔ IsQuasiregular a ∧ IsQuasiregular b := by
   refine ⟨fun ⟨u, h⟩ => ?mp, fun h => ?mpr⟩
   case mp =>
@@ -87,7 +89,7 @@ lemma isQuasiregular_prod_iff (a : A) (b : B) :
     case fst => exact Classical.choose_spec h.1
     case snd => exact Classical.choose_spec h.2
 
-lemma quasispectrum.mem_iff_of_isUnit {A R : Type*} [CommSemiring R] [NonUnitalRing A]
+lemma quasispectrum.mem_iff_of_isUnit [CommSemiring R] [NonUnitalRing A]
     [Module R A] {a : A} {r : R} (hr : IsUnit r) :
     r ∈ quasispectrum R a ↔ ¬ IsQuasiregular (-(hr.unit⁻¹ • a)) :=
   ⟨fun h => h hr, fun h _ => h⟩
@@ -95,8 +97,6 @@ lemma quasispectrum.mem_iff_of_isUnit {A R : Type*} [CommSemiring R] [NonUnitalR
 end quasiregular
 
 section spectrum
-
-variable {ι R : Type*} {κ : ι → Type*}
 
 lemma Pi.spectrum_eq [CommSemiring R] [∀ i, Ring (κ i)] [∀ i, Algebra R (κ i)]
     (a : ∀ i, κ i) : spectrum R a = ⋃ i, spectrum R (a i) := by
@@ -118,7 +118,7 @@ lemma Pi.spectrum_eq [CommSemiring R] [∀ i, Ring (κ i)] [∀ i, Algebra R (κ
     push_neg
     refine ⟨i, hi⟩
 
-lemma Prod.spectrum_eq {A B : Type*} [CommSemiring R] [Ring A] [Ring B] [Algebra R A] [Algebra R B]
+lemma Prod.spectrum_eq [CommSemiring R] [Ring A] [Ring B] [Algebra R A] [Algebra R B]
     (a : A) (b : B) : spectrum R (⟨a, b⟩ : A × B) = spectrum R a ∪ spectrum R b := by
   refine subset_antisymm ?sub ?super
   case sub =>
@@ -161,7 +161,7 @@ lemma Pi.quasispectrum_eq [Nonempty ι] [CommSemiring R] [∀ i, NonUnitalRing (
       exact ⟨i, hi⟩
     · exact quasispectrum.not_isUnit_mem _ hr'
 
-lemma Prod.quasispectrum_eq {A B : Type*} [CommSemiring R] [NonUnitalRing A] [NonUnitalRing B]
+lemma Prod.quasispectrum_eq [CommSemiring R] [NonUnitalRing A] [NonUnitalRing B]
     [Module R A] [Module R B] (a : A) (b : B) :
     quasispectrum R (⟨a, b⟩ : A × B) = quasispectrum R a ∪ quasispectrum R b := by
   refine subset_antisymm ?sub ?super
