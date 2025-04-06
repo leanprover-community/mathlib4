@@ -3,7 +3,7 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.Decomposition.UnsignedHahn
+import Mathlib.MeasureTheory.Measure.Decomposition.Hahn
 import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
 import Mathlib.MeasureTheory.Measure.Sub
 
@@ -104,6 +104,9 @@ theorem mutuallySingular_singularPart (μ ν : Measure α) : μ.singularPart ν 
   · rw [singularPart_of_not_haveLebesgueDecomposition h]
     exact MutuallySingular.zero_left
 
+theorem MutuallySingular.haveLebesgueDecomposition (h : μ ⟂ₘ ν) : HaveLebesgueDecomposition μ ν :=
+  ⟨⟨(μ, 0), measurable_zero, h, by simp⟩⟩
+
 theorem haveLebesgueDecomposition_add (μ ν : Measure α) [HaveLebesgueDecomposition μ ν] :
     μ = μ.singularPart ν + ν.withDensity (μ.rnDeriv ν) :=
   (haveLebesgueDecomposition_spec μ ν).2.2
@@ -124,11 +127,11 @@ end ByDefinition
 
 section HaveLebesgueDecomposition
 
-instance instHaveLebesgueDecompositionZeroLeft : HaveLebesgueDecomposition 0 ν where
-  lebesgue_decomposition := ⟨⟨0, 0⟩, measurable_zero, MutuallySingular.zero_left, by simp⟩
+instance instHaveLebesgueDecompositionZeroLeft : HaveLebesgueDecomposition 0 ν :=
+  MutuallySingular.zero_left.haveLebesgueDecomposition
 
-instance instHaveLebesgueDecompositionZeroRight : HaveLebesgueDecomposition μ 0 where
-  lebesgue_decomposition := ⟨⟨μ, 0⟩, measurable_zero, MutuallySingular.zero_right, by simp⟩
+instance instHaveLebesgueDecompositionZeroRight : HaveLebesgueDecomposition μ 0 :=
+  MutuallySingular.zero_right.haveLebesgueDecomposition
 
 instance instHaveLebesgueDecompositionSelf : HaveLebesgueDecomposition μ μ where
   lebesgue_decomposition := ⟨⟨0, 1⟩, measurable_const, MutuallySingular.zero_left, by simp⟩
@@ -209,7 +212,7 @@ lemma _root_.AEMeasurable.withDensity_rnDeriv {β : Type*} {_ : MeasurableSpace 
     AEMeasurable f (ν.withDensity (μ.rnDeriv ν)) :=
   AEMeasurable.mono_measure hf (Measure.withDensity_rnDeriv_le _ _)
 
-lemma MutuallySingular.singularPart (h : μ ⟂ₘ ν) (ν' : Measure α) :
+protected lemma MutuallySingular.singularPart (h : μ ⟂ₘ ν) (ν' : Measure α) :
     μ.singularPart ν' ⟂ₘ ν :=
   h.mono (singularPart_le μ ν') le_rfl
 
@@ -314,12 +317,12 @@ lemma rnDeriv_self (μ : Measure α) [SigmaFinite μ] : μ.rnDeriv μ =ᵐ[μ] f
   rwa [withDensity_eq_iff_of_sigmaFinite (measurable_rnDeriv _ _).aemeasurable] at h
   exact aemeasurable_const
 
-lemma singularPart_eq_self [μ.HaveLebesgueDecomposition ν] : μ.singularPart ν = μ ↔ μ ⟂ₘ ν := by
-  have h_dec := haveLebesgueDecomposition_add μ ν
-  refine ⟨fun h ↦ ?_, fun  h ↦ ?_⟩
+lemma singularPart_eq_self : μ.singularPart ν = μ ↔ μ ⟂ₘ ν := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rw [← h]
     exact mutuallySingular_singularPart _ _
-  · conv_rhs => rw [h_dec]
+  · have := h.haveLebesgueDecomposition
+    conv_rhs => rw [← singularPart_add_rnDeriv μ ν]
     rw [(withDensity_rnDeriv_eq_zero _ _).mpr h, add_zero]
 
 @[simp]
@@ -476,6 +479,21 @@ lemma singularPart_restrict (μ ν : Measure α) [HaveLebesgueDecomposition μ �
   · ext t
     rw [withDensity_indicator hs, ← restrict_withDensity hs, ← Measure.restrict_add,
       ← μ.haveLebesgueDecomposition_add ν]
+
+/-- If a set `s` separates the absolutely continuous part of `μ` with respect to `ν`
+from the singular part, then the singular part equals the restriction of `μ` to `s`. -/
+theorem singularPart_eq_restrict' {s : Set α} [μ.HaveLebesgueDecomposition ν]
+    (hμs : μ.singularPart ν sᶜ = 0) (hνs : ν.withDensity (μ.rnDeriv ν) s = 0) :
+    μ.singularPart ν = μ.restrict s := by
+  conv_rhs => rw [← singularPart_add_rnDeriv μ ν]
+  rwa [restrict_add, restrict_eq_self_of_ae_mem, restrict_eq_zero.2 hνs, add_zero]
+
+/-- If a set `s` separates `ν` from the singular part of `μ` with respect to `ν`,
+then the singular part equals the restriction of `μ` to `s`. -/
+theorem singularPart_eq_restrict {s : Set α} [μ.HaveLebesgueDecomposition ν]
+    (hμs : μ.singularPart ν sᶜ = 0) (hνs : ν s = 0) :
+    μ.singularPart ν = μ.restrict s :=
+  singularPart_eq_restrict' hμs <| withDensity_absolutelyContinuous _ _ hνs
 
 lemma measure_sub_singularPart (μ ν : Measure α) [HaveLebesgueDecomposition μ ν]
     [IsFiniteMeasure μ] :

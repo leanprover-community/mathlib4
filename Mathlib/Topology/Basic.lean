@@ -374,7 +374,7 @@ theorem Disjoint.closure_right (hd : Disjoint s t) (hs : IsOpen s) :
     Disjoint s (closure t) :=
   (hd.symm.closure_left hs).symm
 
-theorem IsClosed.closure_eq (h : IsClosed s) : closure s = s :=
+@[simp] theorem IsClosed.closure_eq (h : IsClosed s) : closure s = s :=
   Subset.antisymm (closure_minimal (Subset.refl s) h) subset_closure
 
 theorem IsClosed.closure_subset (hs : IsClosed s) : closure s ⊆ s :=
@@ -410,7 +410,6 @@ theorem closure_eq_iff_isClosed : closure s = s ↔ IsClosed s :=
 theorem closure_subset_iff_isClosed : closure s ⊆ s ↔ IsClosed s :=
   ⟨isClosed_of_closure_subset, IsClosed.closure_subset⟩
 
-@[simp]
 theorem closure_empty : closure (∅ : Set X) = ∅ :=
   isClosed_empty.closure_eq
 
@@ -424,11 +423,9 @@ theorem closure_nonempty_iff : (closure s).Nonempty ↔ s.Nonempty := by
 
 alias ⟨Set.Nonempty.of_closure, Set.Nonempty.closure⟩ := closure_nonempty_iff
 
-@[simp]
 theorem closure_univ : closure (univ : Set X) = univ :=
   isClosed_univ.closure_eq
 
-@[simp]
 theorem closure_closure : closure (closure s) = closure s :=
   isClosed_closure.closure_eq
 
