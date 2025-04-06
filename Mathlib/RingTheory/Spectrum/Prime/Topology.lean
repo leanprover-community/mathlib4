@@ -16,8 +16,7 @@ import Mathlib.RingTheory.Spectrum.Maximal.Localization
 import Mathlib.Tactic.StacksAttribute
 import Mathlib.Topology.Constructible
 import Mathlib.Topology.KrullDimension
-import Mathlib.Topology.QuasiSeparated
-import Mathlib.Topology.Sober
+import Mathlib.Topology.Spectral.Basic
 
 /-!
 # The Zariski topology on the prime spectrum of a commutative (semi)ring
@@ -602,11 +601,6 @@ instance : QuasiSeparatedSpace (PrimeSpectrum R) :=
     simpa [← TopologicalSpace.Opens.coe_inf, ← basicOpen_mul, -basicOpen_eq_zeroLocus_compl]
       using isCompact_basicOpen _
 
--- TODO: Abstract out this lemma to spectral spaces
-lemma isRetrocompact_iff {U : Set (PrimeSpectrum R)} (hU : IsOpen U) :
-    IsRetrocompact U ↔ IsCompact U :=
-  isTopologicalBasis_basic_opens.isRetrocompact_iff_isCompact isCompact_basicOpen hU
-
 end BasicOpen
 
 section DiscreteTopology
@@ -697,6 +691,11 @@ def nhdsOrderEmbedding : PrimeSpectrum R ↪o Filter (PrimeSpectrum R) :=
 instance : T0Space (PrimeSpectrum R) :=
   ⟨nhdsOrderEmbedding.inj'⟩
 
+instance : PrespectralSpace (PrimeSpectrum R) :=
+  .of_isTopologicalBasis' isTopologicalBasis_basic_opens isCompact_basicOpen
+
+instance : SpectralSpace (PrimeSpectrum R) where
+
 end Order
 
 /-- If `x` specializes to `y`, then there is a natural map from the localization of `y` to the
@@ -752,6 +751,35 @@ lemma stableUnderSpecialization_image_iff
 
 end stableUnderSpecialization
 
+section IsQuotientMap
+
+variable {R S : Type*} [CommRing R] [CommRing S] {f : R →+* S} (h₁ : Function.Surjective (comap f))
+
+include h₁
+
+/-- If `f : Spec S → Spec R` is specializing and surjective, the topology on `Spec R` is the
+quotient topology induced by `f`. -/
+lemma isQuotientMap_of_specializingMap (h₂ : SpecializingMap (comap f)) :
+    Topology.IsQuotientMap (comap f) := by
+  rw [Topology.isQuotientMap_iff_isClosed]
+  exact ⟨h₁, fun s ↦ ⟨fun hs ↦ hs.preimage (comap f).continuous,
+    fun hsc ↦ Set.image_preimage_eq s h₁ ▸ isClosed_image_of_stableUnderSpecialization _ _ hsc
+      (h₂.stableUnderSpecialization_image hsc.stableUnderSpecialization)⟩⟩
+
+/-- If `f : Spec S → Spec R` is generalizing and surjective, the topology on `Spec R` is the
+quotient topology induced by `f`. -/
+lemma isQuotientMap_of_generalizingMap (h₂ : GeneralizingMap (comap f)) :
+    Topology.IsQuotientMap (comap f) := by
+  rw [Topology.isQuotientMap_iff_isClosed]
+  refine ⟨h₁, fun s ↦ ⟨fun hs ↦ hs.preimage (comap f).continuous,
+    fun hsc ↦ Set.image_preimage_eq s h₁ ▸ ?_⟩⟩
+  apply isClosed_image_of_stableUnderSpecialization _ _ hsc
+  rw [Set.image_preimage_eq s h₁, ← stableUnderGeneralization_compl_iff]
+  convert h₂.stableUnderGeneralization_image hsc.isOpen_compl.stableUnderGeneralization
+  rw [← Set.preimage_compl, Set.image_preimage_eq _ h₁]
+
+end IsQuotientMap
+
 section denseRange
 
 variable {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S)
@@ -770,7 +798,7 @@ lemma closure_range_comap :
 
 lemma denseRange_comap_iff_ker_le_nilRadical :
     DenseRange (comap f) ↔ RingHom.ker f ≤ nilradical R := by
-  rw [denseRange_iff_closure_range, closure_range_comap, ← Set.top_eq_univ, zeroLocus_eq_top_iff,
+  rw [denseRange_iff_closure_range, closure_range_comap, zeroLocus_eq_univ_iff,
     SetLike.coe_subset_coe]
 
 @[stacks 00FL]
@@ -890,6 +918,25 @@ lemma exists_idempotent_basicOpen_eq_of_isClopen {s : Set (PrimeSpectrum R)}
 
 @[deprecated (since := "2024-11-11")]
 alias exists_idempotent_basicOpen_eq_of_is_clopen := exists_idempotent_basicOpen_eq_of_isClopen
+
+lemma isRetrocompact_zeroLocus_compl {s : Set R} (hs : s.Finite) :
+    IsRetrocompact (zeroLocus s)ᶜ :=
+  (QuasiSeparatedSpace.isRetrocompact_iff_isCompact (isClosed_zeroLocus _).isOpen_compl).mpr
+    (isCompact_isOpen_iff.mpr ⟨hs.toFinset, by simp⟩).1
+
+lemma isRetrocompact_zeroLocus_compl_of_fg {I : Ideal R} (hI : I.FG) :
+    IsRetrocompact (zeroLocus (I : Set R))ᶜ := by
+  obtain ⟨s, rfl⟩ := hI
+  rw [zeroLocus_span]
+  exact isRetrocompact_zeroLocus_compl s.finite_toSet
+
+lemma isRetrocompact_basicOpen {f : R} :
+    IsRetrocompact (basicOpen f : Set (PrimeSpectrum R)) := by
+  simpa using isRetrocompact_zeroLocus_compl (Set.finite_singleton f)
+
+lemma isConstructible_basicOpen {f : R} :
+    IsConstructible (basicOpen f : Set (PrimeSpectrum R)) :=
+  isRetrocompact_basicOpen.isConstructible (basicOpen f).2
 
 section IsIntegral
 

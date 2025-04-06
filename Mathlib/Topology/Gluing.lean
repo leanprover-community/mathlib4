@@ -331,10 +331,7 @@ def mk' (h : MkCore.{u}) : TopCat.GlueData where
   U := h.U
   V i := (Opens.toTopCat _).obj (h.V i.1 i.2)
   f i j := (h.V i j).inclusion'
-  f_id i := by
-    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
-    beta_reduce
-    exact (h.V_id i).symm ▸ (Opens.inclusionTopIso (h.U i)).isIso_hom
+  f_id i := (h.V_id i).symm ▸ (Opens.inclusionTopIso (h.U i)).isIso_hom
   f_open := fun i j : h.J => (h.V i j).isOpenEmbedding
   t := h.t
   t_id i := by ext; rw [h.t_id]; rfl

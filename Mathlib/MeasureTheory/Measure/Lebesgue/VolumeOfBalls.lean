@@ -81,7 +81,7 @@ theorem MeasureTheory.measure_lt_one_eq_integral_div_gamma {p : ℝ} (hp : 0 < p
   { norm := g
     dist := fun x y => g (x - y)
     dist_self := by simp only [_root_.sub_self, h1, forall_const]
-    dist_comm := fun _ _ => by dsimp [dist]; rw [← h2, neg_sub]
+    dist_comm := fun _ _ => by rw [← h2, neg_sub]
     dist_triangle := fun x y z => by convert h3 (x - y) (y - z) using 1; simp [F]
     edist := fun x y => .ofReal (g (x - y))
     edist_dist := fun _ _ => rfl
@@ -124,7 +124,7 @@ theorem MeasureTheory.measure_le_eq_lt [Nontrivial E] (r : ℝ) :
   { norm := g
     dist := fun x y => g (x - y)
     dist_self := by simp only [_root_.sub_self, h1, forall_const]
-    dist_comm := fun _ _ => by dsimp [dist]; rw [← h2, neg_sub]
+    dist_comm := fun _ _ => by rw [← h2, neg_sub]
     dist_triangle := fun x y z => by convert h3 (x - y) (y - z) using 1; simp [F]
     edist := fun x y => .ofReal (g (x - y))
     edist_dist := fun _ _ => rfl
@@ -365,7 +365,7 @@ theorem volume_ball (x : E) (r : ℝ) :
   have := EuclideanSpace.volume_ball (Fin (finrank ℝ E)) ((stdOrthonormalBasis ℝ E).repr x) r
   simp_rw [Fintype.card_fin] at this
   convert this
-  simp only [LinearIsometryEquiv.preimage_ball, LinearIsometryEquiv.symm_symm, _root_.map_zero]
+  simp only [LinearIsometryEquiv.preimage_ball, LinearIsometryEquiv.symm_symm, map_zero]
 
 theorem volume_closedBall (x : E) (r : ℝ) :
     volume (Metric.closedBall x r) = (.ofReal r) ^ finrank ℝ E *
