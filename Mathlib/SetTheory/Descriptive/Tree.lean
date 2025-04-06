@@ -62,7 +62,7 @@ lemma take_mem {n : ℕ} (x : T) : x.val.take n ∈ T :=
 @[simp] lemma take_eq_take {x : T} {m n : ℕ} :
   take m x = take n x ↔ m ⊓ x.val.length = n ⊓ x.val.length := by simp [Subtype.ext_iff]
 
-/-! ### `subAt`
+-- ### `subAt`
 
 variable (T) (x y : List A)
 /-- The residual tree obtained by regarding the node x as new root -/
@@ -81,7 +81,7 @@ def subAt : tree A := ⟨(x ++ ·)⁻¹' T, fun _ _ _ ↦ mem_of_append (by rwa 
 @[simps] def drop (n : ℕ) (x : T) : subAt T (Tree.take n x).val :=
   ⟨x.val.drop n, by simp⟩
 
-/-! ### `pullSub`
+-- ### `pullSub`
 
 /-- Adjoint of `subAt`, given by pasting x before the root of T. Explicitly,
   elements are prefixes of x or x with an element of T appended -/
