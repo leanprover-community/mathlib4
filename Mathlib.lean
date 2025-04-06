@@ -268,6 +268,7 @@ import Mathlib.Algebra.Field.ULift
 import Mathlib.Algebra.Field.ZMod
 import Mathlib.Algebra.Free
 import Mathlib.Algebra.FreeAbelianGroup.Finsupp
+import Mathlib.Algebra.FreeAbelianGroup.UniqueSums
 import Mathlib.Algebra.FreeAlgebra
 import Mathlib.Algebra.FreeAlgebra.Cardinality
 import Mathlib.Algebra.FreeMonoid.Basic
