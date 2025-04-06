@@ -16,15 +16,15 @@ Criteria for tightness of sets of measures in normed and inner product spaces.
 
 * `isTightMeasureSet_iff_tendsto_measure_norm_gt`: in a proper normed group, a set of measures `S`
   is tight if and only if the function `r ↦ ⨆ μ ∈ S, μ {x | r < ‖x‖}` tends to `0` at infinity.
-* `isTightMeasureSet_iff_forall_basis_tendsto`: in a finite-dimensional inner product space
-  with orthonormal basis `b`, a set of measures `S` is tight if and only if the function
-  `r ↦ ⨆ μ ∈ S, μ {x | r < |⟪b i, x⟫|}` tends to `0` at infinity for all `i`.
+* `isTightMeasureSet_iff_inner_tendsto`: in a finite-dimensional inner product space,
+  a set of measures `S` is tight if and only if the function `r ↦ ⨆ μ ∈ S, μ {x | r < |⟪y, x⟫|}`
+  tends to `0` at infinity for all `y`.
 
 -/
 
 open Filter
 
-open scoped Topology ENNReal RealInnerProductSpace
+open scoped Topology ENNReal
 
 namespace MeasureTheory
 
@@ -86,10 +86,12 @@ lemma isTightMeasureSet_iff_tendsto_measure_norm_gt [ProperSpace E] :
 
 section InnerProductSpace
 
-variable [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] {ι : Type*} [Fintype ι]
+variable {𝕜 ι : Type*} [RCLike 𝕜] [Fintype ι] [InnerProductSpace 𝕜 E] [FiniteDimensional 𝕜 E]
 
-lemma isTightMeasureSet_of_forall_basis_tendsto (b : OrthonormalBasis ι ℝ E)
-    (h : ∀ i, Tendsto (fun r : ℝ ↦ ⨆ μ ∈ S, μ {x | r < |⟪b i, x⟫|}) atTop (𝓝 0)) :
+local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+
+lemma isTightMeasureSet_of_forall_basis_tendsto (b : OrthonormalBasis ι 𝕜 E)
+    (h : ∀ i, Tendsto (fun r : ℝ ↦ ⨆ μ ∈ S, μ {x | r < ‖⟪b i, x⟫‖}) atTop (𝓝 0)) :
     IsTightMeasureSet S := by
   rcases subsingleton_or_nontrivial E with hE | hE
   · simp only [IsTightMeasureSet, cocompact_eq_bot, smallSets_bot]
@@ -99,48 +101,66 @@ lemma isTightMeasureSet_of_forall_basis_tendsto (b : OrthonormalBasis ι ℝ E)
     simp only [← Module.finrank_eq_card_basis b.toBasis, Nat.cast_pos, Module.finrank_pos_iff]
     infer_instance
   have : Nonempty ι := by simpa [Fintype.card_pos_iff] using h_rank
+  have : ProperSpace E := FiniteDimensional.proper 𝕜 E
   refine isTightMeasureSet_of_tendsto_measure_norm_gt ?_
   have h_le : (fun r ↦ ⨆ μ ∈ S, μ {x | r < ‖x‖})
-      ≤ fun r ↦ ∑ i, ⨆ μ ∈ S, μ {x | r / √(Fintype.card ι) < |⟪b i, x⟫|} := by
+      ≤ fun r ↦ ∑ i, ⨆ μ ∈ S, μ {x | r / √(Fintype.card ι) < ‖⟪b i, x⟫‖} := by
     intro r
     calc ⨆ μ ∈ S, μ {x | r < ‖x‖}
-    _ ≤ ⨆ μ ∈ S, μ (⋃ i, {x : E | r / √(Fintype.card ι) < |⟪b i, x⟫|}) := by
+    _ ≤ ⨆ μ ∈ S, μ (⋃ i, {x : E | r / √(Fintype.card ι) < ‖⟪b i, x⟫‖}) := by
       gcongr with μ hμS
       intro x hx
       simp only [Set.mem_setOf_eq, Set.mem_iUnion] at hx ⊢
-      have hx' : r < √(Fintype.card ι) * ⨆ i, |⟪b i, x⟫| :=
-        hx.trans_le (b.norm_le_card_mul_iSup_abs_inner x)
+      have hx' : r < √(Fintype.card ι) * ⨆ i, ‖⟪b i, x⟫‖ :=
+        hx.trans_le (b.norm_le_card_mul_iSup_norm_inner x)
       rw [← div_lt_iff₀' (by positivity)] at hx'
       by_contra! h_le
       exact lt_irrefl (r / √(Fintype.card ι)) (hx'.trans_le (ciSup_le h_le))
-    _ ≤ ⨆ μ ∈ S, ∑ i, μ {x : E | r / √(Fintype.card ι) < |⟪b i, x⟫|} := by
+    _ ≤ ⨆ μ ∈ S, ∑ i, μ {x : E | r / √(Fintype.card ι) < ‖⟪b i, x⟫‖} := by
       gcongr with μ hμS
       exact measure_iUnion_fintype_le μ _
-    _ ≤ ∑ i, ⨆ μ ∈ S, μ {x | r / √(Fintype.card ι) < |⟪b i, x⟫|} := by
+    _ ≤ ∑ i, ⨆ μ ∈ S, μ {x | r / √(Fintype.card ι) < ‖⟪b i, x⟫‖} := by
       refine iSup_le fun μ ↦ (iSup_le fun hμS ↦ ?_)
       gcongr with i
-      exact le_biSup (fun μ ↦ μ {x | r / √(Fintype.card ι) < |⟪b i, x⟫|}) hμS
+      exact le_biSup (fun μ ↦ μ {x | r / √(Fintype.card ι) < ‖⟪b i, x⟫‖}) hμS
   refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds ?_ (fun _ ↦ zero_le') h_le
   rw [← Finset.sum_const_zero]
   refine tendsto_finset_sum Finset.univ fun i _ ↦ ?_
   refine (h i).comp ?_
   exact Tendsto.atTop_div_const (by positivity) tendsto_id
 
-/-- In a finite-dimensional inner product space with orthonormal basis `b`,
-a set of measures `S` is tight if and only if the function `r ↦ ⨆ μ ∈ S, μ {x | r < |⟪b i, x⟫|}`
-tends to `0` at infinity for all `i`. -/
-lemma isTightMeasureSet_iff_forall_basis_tendsto (b : OrthonormalBasis ι ℝ E) :
+lemma isTightMeasureSet_of_inner_tendsto
+    (h : ∀ y, Tendsto (fun r : ℝ ↦ ⨆ μ ∈ S, μ {x | r < ‖⟪y, x⟫‖}) atTop (𝓝 0)) :
+    IsTightMeasureSet S :=
+  isTightMeasureSet_of_forall_basis_tendsto (stdOrthonormalBasis 𝕜 E)
+    fun i ↦ h (stdOrthonormalBasis 𝕜 E i)
+
+variable (𝕜) in
+/-- In a finite-dimensional inner product space,
+a set of measures `S` is tight if and only if the function `r ↦ ⨆ μ ∈ S, μ {x | r < |⟪y, x⟫|}`
+tends to `0` at infinity for all `y`. -/
+lemma isTightMeasureSet_iff_inner_tendsto :
     IsTightMeasureSet S
-      ↔ ∀ i, Tendsto (fun r : ℝ ↦ ⨆ μ ∈ S, μ {x | r < |⟪b i, x⟫|}) atTop (𝓝 0) := by
-  refine ⟨fun h i ↦ ?_, isTightMeasureSet_of_forall_basis_tendsto b⟩
+      ↔ ∀ y, Tendsto (fun r : ℝ ↦ ⨆ μ ∈ S, μ {x | r < ‖⟪y, x⟫‖}) atTop (𝓝 0) := by
+  refine ⟨fun h y ↦ ?_, isTightMeasureSet_of_inner_tendsto⟩
+  have : ProperSpace E := FiniteDimensional.proper 𝕜 E
   rw [isTightMeasureSet_iff_tendsto_measure_norm_gt] at h
-  refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds h (fun _ ↦ zero_le') ?_
+  by_cases hy : y = 0
+  · simp only [hy, inner_zero_left, abs_zero]
+    refine (tendsto_congr' ?_).mpr tendsto_const_nhds
+    filter_upwards [eventually_ge_atTop 0] with r hr
+    simp [not_lt.mpr hr]
+  have h' : Tendsto (fun r ↦ ⨆ μ ∈ S, μ {x | r * ‖y‖⁻¹ < ‖x‖}) atTop (𝓝 0) :=
+    h.comp <| (tendsto_mul_const_atTop_of_pos (by positivity)).mpr tendsto_id
+  refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds h' (fun _ ↦ zero_le') ?_
   intro r
-  have h_le (μ : Measure E) : μ {x | r < |⟪b i, x⟫|} ≤ μ {x | r < ‖x‖} := by
+  have h_le (μ : Measure E) : μ {x | r < ‖⟪y, x⟫‖} ≤ μ {x | r * ‖y‖⁻¹ < ‖x‖} := by
     refine measure_mono fun x hx ↦ ?_
     simp only [Set.mem_setOf_eq] at hx ⊢
-    refine hx.trans_le ?_
-    exact (abs_real_inner_le_norm _ _).trans <| by simp
+    rw [mul_inv_lt_iff₀]
+    · rw [mul_comm]
+      exact hx.trans_le (norm_inner_le_norm y x)
+    · positivity
   refine iSup₂_le_iff.mpr fun μ hμS ↦ ?_
   exact le_iSup_of_le (i := μ) <| by simp [hμS, h_le]
 

@@ -436,17 +436,23 @@ protected theorem sum_inner_mul_inner (b : OrthonormalBasis ι 𝕜 E) (x y : E)
   rw [map_smul, b.repr_apply_apply, mul_comm]
   simp
 
-lemma norm_le_card_mul_iSup_abs_inner {ι E : Type*} [Fintype ι] [NormedAddCommGroup E]
-    [InnerProductSpace ℝ E] (b : OrthonormalBasis ι ℝ E) (x : E) :
-    ‖x‖ ≤ √(Fintype.card ι) * ⨆ i, |inner (b i) x| := by
+lemma sum_sq_norm_inner (b : OrthonormalBasis ι 𝕜 E) (x : E) :
+    ∑ i, ‖⟪b i, x⟫‖ ^ 2 = ‖x‖ ^ 2 := by
+  rw [@norm_eq_sqrt_inner 𝕜, ← OrthonormalBasis.sum_inner_mul_inner b x x, map_sum]
+  simp_rw [inner_mul_symm_re_eq_norm, norm_mul, ← inner_conj_symm x, starRingEnd_apply,
+    norm_star]
+  simp_rw [← pow_two]
+  rw [Real.sq_sqrt]
+  exact Fintype.sum_nonneg fun _ ↦ by positivity
+
+lemma norm_le_card_mul_iSup_norm_inner (b : OrthonormalBasis ι 𝕜 E) (x : E) :
+    ‖x‖ ≤ √(Fintype.card ι) * ⨆ i, ‖⟪b i, x⟫‖ := by
   calc ‖x‖
-  _ = √(∑ i, |inner (b i) x| ^ 2) := by
-    simp [norm_eq_sqrt_real_inner, ← OrthonormalBasis.sum_inner_mul_inner b x x,
-      real_inner_comm _ x, ← pow_two]
-  _ ≤ √(∑ _ : ι, (⨆ j, |inner (b j) x|) ^ 2) := by
+  _ = √(∑ i, ‖⟪b i, x⟫‖ ^ 2) := by rw [sum_sq_norm_inner, Real.sqrt_sq (by positivity)]
+  _ ≤ √(∑ _ : ι, (⨆ j, ‖⟪b j, x⟫‖) ^ 2) := by
     gcongr with i
-    exact le_ciSup (f := fun j ↦ |inner (b j) x|) (by simp) i
-  _ = √(Fintype.card ι) * ⨆ i, |inner (b i) x| := by
+    exact le_ciSup (f := fun j ↦ ‖⟪b j, x⟫‖) (by simp) i
+  _ = √(Fintype.card ι) * ⨆ i, ‖⟪b i, x⟫‖ := by
     simp only [Finset.sum_const, Finset.card_univ, nsmul_eq_mul, Nat.cast_nonneg, Real.sqrt_mul]
     congr
     rw [Real.sqrt_sq]
