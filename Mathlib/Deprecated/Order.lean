@@ -23,11 +23,6 @@ variable [MulOneClass α] [Zero α] [Preorder α] {a b c : α}
 
 /-! Lemmas of the form `b ≤ c → a ≤ 1 → b * a ≤ c`. -/
 
-
-/- Yaël: What's the point of these lemmas? They just chain an existing lemma with an assumption in
-all possible ways, thereby artificially inflating the API and making the truly relevant lemmas hard
-to find -/
-
 @[deprecated "No replacement, use constituent lemmas from proof." (since := "2025-02-27")]
 theorem mul_le_of_le_of_le_one_of_nonneg [PosMulMono α] (h : b ≤ c) (ha : a ≤ 1) (hb : 0 ≤ b) :
     b * a ≤ c :=
@@ -299,7 +294,6 @@ section LinearOrder
 
 variable [MulOneClass α] [Zero α] [LinearOrder α] {a b c : α}
 
--- Yaël: What's the point of this lemma? If we have `0 * 0 = 0`, then we can just take `b = 0`.
 -- proven with `a0 : 0 ≤ a` as `exists_square_le`
 @[deprecated "No replacement." (since := "2025-02-27")]
 theorem exists_square_le' [PosMulStrictMono α] (a0 : 0 < a) : ∃ b : α, b * b ≤ a := by
