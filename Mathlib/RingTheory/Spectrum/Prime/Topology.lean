@@ -34,6 +34,73 @@ whereas we denote subsets of prime spectra with `t`, `t'`, etc...
 The contents of this file draw inspiration from <https://github.com/ramonfmir/lean-scheme>
 which has contributions from Ramon Fernandez Mir, Kevin Buzzard, Kenny Lau,
 and Chris Hughes (on an earlier repository).
+
+## Main definition
+
+* `PrimeSpectrum.zariskiTopology`: the Zariski topology on the prime spectrum, whose closed sets
+  are zero loci (`zeroLocus`).
+
+* `PrimeSpectrum.basicOpen`: the complement of the zero locus of a single element.
+  The `basicOpen`s form a topological basis of the Zariski topology:
+  `PrimeSpectrum.isTopologicalBasis_basic_opens`.
+
+* `PrimeSpectrum.comap`: the continuous map between prime spectra induced by a ring homomorphism.
+
+* `IsLocalRing.closedPoint`: the maximal ideal of a local ring is the unique closed point in its
+  prime spectrum.
+
+## Main results
+
+* `PrimeSpectrum.instSpectralSpace`: every prime spectrum is a spectral space, i.e. it is
+  quasi-compact, sober (in particular T0), quasi-separated, and its compact open subsets form
+  a topological basis.
+
+* `PrimeSpectrum.discreteTopology_iff_finite_and_krullDimLE_zero`: the prime spectrum of a
+  commutative semiring is discrete iff it is finite and the semiring has zero Krull dimension
+  or is trivial.
+
+* `PrimeSpectrum.localization_comap_range`, `PrimeSpectrum.localization_comap_isEmbedding`:
+  localization at a submonoid of a commutative semiring induces an embedding between the prime
+  spectra, with range consisting of prime ideals disjoint from the submonoid.
+
+* `PrimeSpectrum.localization_away_comap_range`: for localization away from an element, the
+  range of the embedding is the `basicOpen` associated to the element.
+
+* `PrimeSpectrum.comap_isEmbedding_of_surjective`: a surjective ring homomorphism between
+  commutative semirings induces an embedding between the prime spectra.
+
+* `PrimeSpectrum.isClosedEmbedding_comap_of_surjective`: a surjective ring homomorphism between
+  commutative rings induces a closed embedding between the prime spectra.
+
+* `PrimeSpectrum.primeSpectrumProdHomeo`: the prime spectrum of a product semiring is homeomorphic
+  to the disjoint union of the prime spectra.
+
+* `PrimeSpectrum.stableUnderSpecialization_range_iff`: the range of `PrimeSpectrum.comap _` is
+  closed iff it is stable under specialization.
+
+* `PrimeSpectrum.denseRange_comap_iff_minimalPrimes`,
+  `PrimeSpectrum.denseRange_comap_iff_ker_le_nilRadical`: the range of `PrimeSpectrum.comap f` is
+  dense iff it contains all minimal primes, iff the kernel of `f` is contained in the nilradical.
+
+In the prime spectrum of a commutative semiring:
+
+* `PrimeSpectrum.isClosed_iff_zeroLocus_radical_ideal`, `PrimeSpectrum.isRadical_vanishingIdeal`,
+  `PrimeSpectrum.zeroLocus_eq_iff`, `PrimeSpectrum.vanishingIdeal_anti_mono_iff`:
+  closed subsets correspond to radical ideals.
+
+* `PrimeSpectrum.isClosed_singleton_iff_isMaximal`: closed points correspond to maximal ideals.
+
+* `PrimeSpectrum.isIrreducible_iff_vanishingIdeal_isPrime`: irreducible closed subsets correspond
+  to prime ideals.
+
+* `minimalPrimes.equivIrreducibleComponents`: irreducible components correspond to minimal primes.
+
+* `PrimeSpectrum.isIdempotentElemEquivClopens`: clopen subsets in the prime spectrum of a
+  commutative ring correspond to idempotents in the ring.
+
+* `PrimeSpectrum.mulZeroAddOneEquivClopens`: clopen subsets in the prime spectrum of a commutative
+  semiring correspond to pairs of elements that add up to 1 and multiply to 0 in the semiring.
+
 -/
 
 open Topology
@@ -312,13 +379,10 @@ theorem localization_specComap_injective [Algebra R S] (M : Submonoid R) [IsLoca
 
 theorem localization_specComap_range [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
     Set.range (algebraMap R S).specComap = { p | Disjoint (M : Set R) p.asIdeal } := by
-  ext x
-  constructor
-  · simp_rw [disjoint_iff_inf_le]
-    rintro ⟨p, rfl⟩ x ⟨hx₁, hx₂⟩
-    exact (p.2.1 : ¬_) (p.asIdeal.eq_top_of_isUnit_mem hx₂ (IsLocalization.map_units S ⟨x, hx₁⟩))
-  · intro h
-    use ⟨x.asIdeal.map (algebraMap R S), IsLocalization.isPrime_of_isPrime_disjoint M S _ x.2 h⟩
+  refine Set.ext fun x ↦ ⟨?_, fun h ↦ ?_⟩
+  · rintro ⟨p, rfl⟩
+    exact ((IsLocalization.isPrime_iff_isPrime_disjoint ..).mp p.2).2
+  · use ⟨x.asIdeal.map (algebraMap R S), IsLocalization.isPrime_of_isPrime_disjoint M S _ x.2 h⟩
     ext1
     exact IsLocalization.comap_map_of_isPrime_disjoint M S _ x.2 h
 
@@ -720,6 +784,7 @@ section stableUnderSpecialization
 
 variable {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S)
 
+@[stacks 00HY]
 lemma isClosed_range_of_stableUnderSpecialization
     (hf : StableUnderSpecialization (Set.range (comap f))) :
     IsClosed (Set.range (comap f)) := by
@@ -731,7 +796,6 @@ lemma isClosed_range_of_stableUnderSpecialization
     obtain ⟨q', hq', hq'c⟩ := Ideal.exists_minimalPrimes_comap_eq f q hq
     exact hf ((le_iff_specializes ⟨q, hq.1.1⟩ p).mp hqle) ⟨⟨q', hq'.1.1⟩, PrimeSpectrum.ext hq'c⟩
 
-@[stacks 05JL]
 lemma isClosed_image_of_stableUnderSpecialization
     (Z : Set (PrimeSpectrum S)) (hZ : IsClosed Z)
     (hf : StableUnderSpecialization (comap f '' Z)) :
@@ -744,7 +808,7 @@ lemma isClosed_image_of_stableUnderSpecialization
   exact isClosed_range_of_stableUnderSpecialization _ hf
 
 variable {f} in
-@[stacks 05JL]
+@[stacks 00HY]
 lemma stableUnderSpecialization_range_iff :
     StableUnderSpecialization (Set.range (comap f)) ↔ IsClosed (Set.range (comap f)) :=
   ⟨isClosed_range_of_stableUnderSpecialization f, fun h ↦ h.stableUnderSpecialization⟩
