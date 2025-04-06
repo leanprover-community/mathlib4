@@ -480,8 +480,8 @@ lemma rescale_homogeneous_eq_smul {n : ℕ} {r : R} {f : MvPowerSeries σ R}
   · simp only [Function.mem_support, ne_eq, not_not] at he
     simp [he, mul_zero, coeff_apply]
 
-/-- Rescale a multivariate power series, as a `MonoidHom` in the scaling parameters -/
-noncomputable def rescale_MonoidHom :
+/-- Rescale a multivariate power series, as a `MonoidHom` in the scaling parameters. -/
+noncomputable def rescaleMonoidHom :
     (σ → R) →* MvPowerSeries σ R →+* MvPowerSeries σ R where
   toFun := rescale
   map_one' := rescale_one
@@ -506,6 +506,7 @@ theorem rescale_eq_subst (a : σ → R) (f : MvPowerSeries σ R) :
   · intro hn
     simpa using hn
 
+/-- Rescale a multivariate power series, as an `AlgHom` in the scaling parameters. -/
 noncomputable def rescaleAlgHom (a : σ → R) :
     MvPowerSeries σ R →ₐ[R] MvPowerSeries σ R :=
   substAlgHom (HasSubst.smul_X a)
