@@ -79,8 +79,13 @@ and Chris Hughes (on an earlier repository).
   closed iff it is stable under specialization.
 
 * `PrimeSpectrum.denseRange_comap_iff_minimalPrimes`,
-  `PrimeSpectrum.denseRange_comap_iff_ker_le_nilRadical`: the range of `PrimeSpectrum.comap f` is
-  dense iff it contains all minimal primes, iff the kernel of `f` is contained in the nilradical.
+  `PrimeSpectrum.denseRange_comap_iff_ker_le_nilRadical`: the range of `comap f` is dense
+  iff it contains all minimal primes, iff the kernel of `f` is contained in the nilradical.
+
+* `PrimeSpectrum.isClosedMap_comap_of_isIntegral`: `comap f` is a closed map if `f` is integral.
+
+* `PrimeSpectrum.isIntegral_of_isClosedMap_comap_mapRingHom`: `f : R →+* S` is integral if
+  `comap (Polynomial.mapRingHom f)` is a closed map.
 
 In the prime spectrum of a commutative semiring:
 
