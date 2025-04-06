@@ -75,7 +75,7 @@ def prod [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMon
   ∏ i ∈ f.support, g i (f i)
 
 @[to_additive (attr := simp)]
-theorem _root_.map_dfinsupp_prod
+theorem _root_.map_dfinsuppProd
     {R S H : Type*} [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
     [CommMonoid R] [CommMonoid S] [FunLike H R S] [MonoidHomClass H R S] (h : H) (f : Π₀ i, β i)
     (g : ∀ i, β i → R) : h (f.prod g) = f.prod fun a b => h (g a b) :=
@@ -420,12 +420,12 @@ variable {R S : Type*}
 variable [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_dfinsupp_prod [MulOneClass R] [CommMonoid S] (f : Π₀ i, β i) (g : ∀ i, β i → R →* S) :
+theorem coe_dfinsuppProd [MulOneClass R] [CommMonoid S] (f : Π₀ i, β i) (g : ∀ i, β i → R →* S) :
     ⇑(f.prod g) = f.prod fun a b => ⇑(g a b) :=
   coe_finset_prod _ _
 
 @[to_additive]
-theorem dfinsupp_prod_apply [MulOneClass R] [CommMonoid S] (f : Π₀ i, β i) (g : ∀ i, β i → R →* S)
+theorem dfinsuppProd_apply [MulOneClass R] [CommMonoid S] (f : Π₀ i, β i) (g : ∀ i, β i → R →* S)
     (r : R) : (f.prod g) r = f.prod fun a b => (g a b) r :=
   finset_prod_apply _ _ _
 

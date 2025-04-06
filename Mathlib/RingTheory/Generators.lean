@@ -415,7 +415,7 @@ lemma ofComp_toAlgHom_monomial_sumElim (Q : Generators S T) (P : Generators R S)
   rw [Hom.toAlgHom_monomial, monomial_eq]
   simp only [MvPolynomial.algebraMap_apply, ofComp_val, aeval_monomial]
   rw [Finsupp.prod_sumElim]
-  simp only [Function.comp_def, Sum.elim_inl, Sum.elim_inr, ← map_pow, ← map_finsupp_prod,
+  simp only [Function.comp_def, Sum.elim_inl, Sum.elim_inr, ← map_pow, ← map_finsuppProd,
     C_mul, Algebra.smul_def, MvPolynomial.algebraMap_apply, mul_assoc]
   nth_rw 2 [mul_comm]
 

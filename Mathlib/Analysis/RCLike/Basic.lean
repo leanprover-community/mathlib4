@@ -205,9 +205,9 @@ theorem ofReal_prod {α : Type*} (s : Finset α) (f : α → ℝ) :
   map_prod (algebraMap ℝ K) _ _
 
 @[simp, rclike_simps, norm_cast]
-theorem ofReal_finsupp_prod {α M : Type*} [Zero M] (f : α →₀ M) (g : α → M → ℝ) :
+theorem ofReal_finsuppProd {α M : Type*} [Zero M] (f : α →₀ M) (g : α → M → ℝ) :
     ((f.prod fun a b => g a b : ℝ) : K) = f.prod fun a b => (g a b : K) :=
-  map_finsupp_prod _ f g
+  map_finsuppProd _ f g
 
 @[simp, norm_cast, rclike_simps]
 theorem real_smul_ofReal (r x : ℝ) : r • (x : K) = (r : K) * (x : K) :=

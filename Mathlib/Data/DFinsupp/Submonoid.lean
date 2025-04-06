@@ -31,7 +31,7 @@ open DFinsupp
 variable [DecidableEq ι]
 
 @[to_additive]
-theorem dfinsupp_prod_mem [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
+theorem dfinsuppProd_mem [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
     [CommMonoid γ] {S : Type*} [SetLike S γ] [SubmonoidClass S γ]
     (s : S) (f : Π₀ i, β i) (g : ∀ i, β i → γ)
     (h : ∀ c, f c ≠ 0 → g c (f c) ∈ s) : f.prod g ∈ s :=

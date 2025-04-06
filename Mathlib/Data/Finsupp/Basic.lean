@@ -341,7 +341,7 @@ variable [Zero M] (f : α →₀ M)
 namespace Nat
 
 @[simp, norm_cast]
-theorem cast_finsupp_prod [CommSemiring R] (g : α → M → ℕ) :
+theorem cast_finsuppProd [CommSemiring R] (g : α → M → ℕ) :
     (↑(f.prod g) : R) = f.prod fun a b => ↑(g a b) :=
   Nat.cast_prod _ _
 
@@ -355,7 +355,7 @@ end Nat
 namespace Int
 
 @[simp, norm_cast]
-theorem cast_finsupp_prod [CommRing R] (g : α → M → ℤ) :
+theorem cast_finsuppProd [CommRing R] (g : α → M → ℤ) :
     (↑(f.prod g) : R) = f.prod fun a b => ↑(g a b) :=
   Int.cast_prod _ _
 
@@ -374,7 +374,7 @@ theorem cast_finsupp_sum [DivisionRing R] [CharZero R] (g : α → M → ℚ) :
   cast_sum _ _
 
 @[simp, norm_cast]
-theorem cast_finsupp_prod [Field R] [CharZero R] (g : α → M → ℚ) :
+theorem cast_finsuppProd [Field R] [CharZero R] (g : α → M → ℚ) :
     (↑(f.prod g) : R) = f.prod fun a b => ↑(g a b) :=
   cast_prod _ _
 

@@ -163,7 +163,7 @@ theorem mul_prod_erase' (f : α →₀ M) (y : α) (g : α → M → N) (hg : �
     · rw [not_mem_support_iff.mp hyf, hg y, erase_of_not_mem_support hyf, one_mul]
 
 @[to_additive]
-theorem _root_.SubmonoidClass.finsupp_prod_mem {S : Type*} [SetLike S N] [SubmonoidClass S N]
+theorem _root_.SubmonoidClass.finsuppProd_mem {S : Type*} [SetLike S N] [SubmonoidClass S N]
     (s : S) (f : α →₀ M) (g : α → M → N) (h : ∀ c, f c ≠ 0 → g c (f c) ∈ s) : f.prod g ∈ s :=
   prod_mem fun _i hi => h _ (Finsupp.mem_support_iff.mp hi)
 
@@ -196,18 +196,18 @@ end CommMonoidWithZero
 end Finsupp
 
 @[to_additive]
-theorem map_finsupp_prod [Zero M] [CommMonoid N] [CommMonoid P] {H : Type*}
+theorem map_finsuppProd [Zero M] [CommMonoid N] [CommMonoid P] {H : Type*}
     [FunLike H N P] [MonoidHomClass H N P]
     (h : H) (f : α →₀ M) (g : α → M → N) : h (f.prod g) = f.prod fun a b => h (g a b) :=
   map_prod h _ _
 
 @[to_additive]
-theorem MonoidHom.coe_finsupp_prod [Zero β] [MulOneClass N] [CommMonoid P] (f : α →₀ β)
+theorem MonoidHom.coe_finsuppProd [Zero β] [MulOneClass N] [CommMonoid P] (f : α →₀ β)
     (g : α → β → N →* P) : ⇑(f.prod g) = f.prod fun i fi => ⇑(g i fi) :=
   MonoidHom.coe_finset_prod _ _
 
 @[to_additive (attr := simp)]
-theorem MonoidHom.finsupp_prod_apply [Zero β] [MulOneClass N] [CommMonoid P] (f : α →₀ β)
+theorem MonoidHom.finsuppProd_apply [Zero β] [MulOneClass N] [CommMonoid P] (f : α →₀ β)
     (g : α → β → N →* P) (x : N) : f.prod g x = f.prod fun i fi => g i fi x :=
   MonoidHom.finset_prod_apply _ _ _
 
