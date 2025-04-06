@@ -159,11 +159,11 @@ protected theorem induction_on₂ {δ : Quot r → Quot s → Prop} (q₁ : Quot
   Quot.ind (β := fun a ↦ δ a q₂) (fun a₁ ↦ Quot.ind (fun a₂ ↦ h a₁ a₂) q₂) q₁
 
 @[elab_as_elim]
-protected theorem induction_on₃ {δ : Quot r → Quot s → Quot t → Prop} (q₁ : Quot r)
-    (q₂ : Quot s) (q₃ : Quot t) (h : ∀ a b c, δ (Quot.mk r a) (Quot.mk s b) (Quot.mk t c)) :
-    δ q₁ q₂ q₃ :=
-  Quot.ind (β := fun a ↦ δ a q₂ q₃) (fun a₁ ↦ Quot.ind (β := fun b ↦ δ _ b q₃)
-    (fun a₂ ↦ Quot.ind (fun a₃ ↦ h a₁ a₂ a₃) q₃) q₂) q₁
+protected theorem induction_on₃ {motive : Quot r → Quot s → Quot t → Prop} (q₁ : Quot r)
+    (q₂ : Quot s) (q₃ : Quot t) (mk : ∀ a b c, motive (Quot.mk r a) (Quot.mk s b) (Quot.mk t c)) :
+    motive q₁ q₂ q₃ :=
+  Quot.ind (β := fun a ↦ motive a q₂ q₃) (fun a₁ ↦ Quot.ind (β := fun b ↦ motive _ b q₃)
+    (fun a₂ ↦ Quot.ind (fun a₃ ↦ mk a₁ a₂ a₃) q₃) q₂) q₁
 
 instance lift.decidablePred (r : α → α → Prop) (f : α → Prop) (h : ∀ a b, r a b → f a = f b)
     [hf : DecidablePred f] :

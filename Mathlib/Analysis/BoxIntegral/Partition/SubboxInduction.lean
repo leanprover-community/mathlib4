@@ -77,13 +77,13 @@ hold true.
 Then `p I` is true. See also `BoxIntegral.Box.subbox_induction_on'` for a version using
 `BoxIntegral.Box.splitCenterBox` instead of `BoxIntegral.Prepartition.splitCenter`. -/
 @[elab_as_elim]
-theorem subbox_induction_on {p : Box ι → Prop} (I : Box ι)
-    (H_ind : ∀ J ≤ I, (∀ J' ∈ splitCenter J, p J') → p J)
-    (H_nhds : ∀ z ∈ Box.Icc I, ∃ U ∈ 𝓝[Box.Icc I] z, ∀ J ≤ I, ∀ (m : ℕ),
+theorem subbox_induction_on {motive : Box ι → Prop} (I : Box ι)
+    (split : ∀ J ≤ I, (∀ J' ∈ splitCenter J, motive J') → motive J)
+    (nhds : ∀ z ∈ Box.Icc I, ∃ U ∈ 𝓝[Box.Icc I] z, ∀ J ≤ I, ∀ (m : ℕ),
       z ∈ Box.Icc J → Box.Icc J ⊆ U →
-        (∀ i, J.upper i - J.lower i = (I.upper i - I.lower i) / 2 ^ m) → p J) :
-    p I := by
-  refine subbox_induction_on' I (fun J hle hs => H_ind J hle fun J' h' => ?_) H_nhds
+        (∀ i, J.upper i - J.lower i = (I.upper i - I.lower i) / 2 ^ m) → motive J) :
+    motive I := by
+  refine subbox_induction_on' I (fun J hle hs => split J hle fun J' h' => ?_) nhds
   rcases mem_splitCenter.1 h' with ⟨s, rfl⟩
   exact hs s
 

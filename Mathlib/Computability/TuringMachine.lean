@@ -421,18 +421,21 @@ def stWrite {k : K} (v : σ) (l : List (Γ k)) : StAct K Γ σ k → List (Γ k)
 of the stack, and all other actions, which do not. This is a modified recursor which lumps the
 stack actions into one. -/
 @[elab_as_elim]
-def stmtStRec.{l} {C : TM2.Stmt Γ Λ σ → Sort l} (H₁ : ∀ (k) (s : StAct K Γ σ k) (q)
-    (_ : C q), C (stRun s q))
-    (H₂ : ∀ (a q) (_ : C q), C (TM2.Stmt.load a q))
-    (H₃ : ∀ (p q₁ q₂) (_ : C q₁) (_ : C q₂), C (TM2.Stmt.branch p q₁ q₂))
-    (H₄ : ∀ l, C (TM2.Stmt.goto l)) (H₅ : C TM2.Stmt.halt) : ∀ n, C n
-  | TM2.Stmt.push _ f q => H₁ _ (push f) _ (stmtStRec H₁ H₂ H₃ H₄ H₅ q)
-  | TM2.Stmt.peek _ f q => H₁ _ (peek f) _ (stmtStRec H₁ H₂ H₃ H₄ H₅ q)
-  | TM2.Stmt.pop _ f q => H₁ _ (pop f) _ (stmtStRec H₁ H₂ H₃ H₄ H₅ q)
-  | TM2.Stmt.load _ q => H₂ _ _ (stmtStRec H₁ H₂ H₃ H₄ H₅ q)
-  | TM2.Stmt.branch _ q₁ q₂ => H₃ _ _ _ (stmtStRec H₁ H₂ H₃ H₄ H₅ q₁) (stmtStRec H₁ H₂ H₃ H₄ H₅ q₂)
-  | TM2.Stmt.goto _ => H₄ _
-  | TM2.Stmt.halt => H₅
+def stmtStRec.{l} {C : TM2.Stmt Γ Λ σ → Sort l}
+    (stack : ∀ (k) (s : StAct K Γ σ k) (q) (_ : C q), C (stRun s q))
+    (load : ∀ (a q) (_ : C q), C (TM2.Stmt.load a q))
+    (branch : ∀ (p q₁ q₂) (_ : C q₁) (_ : C q₂), C (TM2.Stmt.branch p q₁ q₂))
+    (goto : ∀ l, C (TM2.Stmt.goto l)) (halt : C TM2.Stmt.halt) : ∀ n, C n
+  | TM2.Stmt.push _ f q => stack _ (push f) _ (stmtStRec stack load branch goto halt q)
+  | TM2.Stmt.peek _ f q => stack _ (peek f) _ (stmtStRec stack load branch goto halt q)
+  | TM2.Stmt.pop _ f q => stack _ (pop f) _ (stmtStRec stack load branch goto halt q)
+  | TM2.Stmt.load _ q => load _ _ (stmtStRec stack load branch goto halt q)
+  | TM2.Stmt.branch _ q₁ q₂ =>
+    branch _ _ _
+      (stmtStRec stack load branch goto halt q₁)
+      (stmtStRec stack load branch goto halt q₂)
+  | TM2.Stmt.goto _ => goto _
+  | TM2.Stmt.halt => halt
 
 theorem supports_run (S : Finset Λ) {k : K} (s : StAct K Γ σ k) (q : TM2.Stmt Γ Λ σ) :
     TM2.SupportsStmt S (stRun s q) ↔ TM2.SupportsStmt S q := by
@@ -680,14 +683,14 @@ theorem tr_respects : Respects (TM2.step M) (TM1.step (tr M)) TrCfg := by
   simp only [tr]
   generalize M l = N
   induction N using stmtStRec generalizing v S L hT with
-  | H₁ k s q IH => exact tr_respects_aux M hT s @IH
-  | H₂ a _ IH => exact IH _ hT
-  | H₃ p q₁ q₂ IH₁ IH₂ =>
+  | stack k s q IH => exact tr_respects_aux M hT s @IH
+  | load a _ IH => exact IH _ hT
+  | branch p q₁ q₂ IH₁ IH₂ =>
     unfold TM2.stepAux trNormal TM1.stepAux
     beta_reduce
     cases p v <;> [exact IH₂ _ hT; exact IH₁ _ hT]
-  | H₄ => exact ⟨_, ⟨_, hT⟩, ReflTransGen.refl⟩
-  | H₅ => exact ⟨_, ⟨_, hT⟩, ReflTransGen.refl⟩
+  | goto => exact ⟨_, ⟨_, hT⟩, ReflTransGen.refl⟩
+  | halt => exact ⟨_, ⟨_, hT⟩, ReflTransGen.refl⟩
 
 section
 variable [Inhabited Λ] [Inhabited σ]

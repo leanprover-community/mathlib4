@@ -46,9 +46,10 @@ theorem bubble_sort_induction' {n : ℕ} {α : Type*} [LinearOrder α] {f : Fin 
 /-- *Bubble sort induction*: Prove that the sorted version of `f` has some property `P`
 if `f` satisfies `P` and `P` is preserved when swapping two antitone values. -/
 theorem bubble_sort_induction {n : ℕ} {α : Type*} [LinearOrder α] {f : Fin n → α}
-    {P : (Fin n → α) → Prop} (hf : P f)
-    (h : ∀ (g : Fin n → α) (i j : Fin n), i < j → g j < g i → P g → P (g ∘ Equiv.swap i j)) :
-    P (f ∘ sort f) :=
-  bubble_sort_induction' hf fun _ => h _
+    {motive : (Fin n → α) → Prop} (init : motive f)
+    (swap : ∀ (g : Fin n → α) (i j : Fin n),
+      i < j → g j < g i → motive g → motive (g ∘ Equiv.swap i j)) :
+    motive (f ∘ sort f) :=
+  bubble_sort_induction' init fun _ => swap _
 
 end Tuple

@@ -82,7 +82,7 @@ instance {n : ℕ} : CanLift ℕ (Fin n) Fin.val (· < n) where
   prf k hk := ⟨⟨k, hk⟩, rfl⟩
 
 /-- A dependent variant of `Fin.elim0`. -/
-def rec0 {α : Fin 0 → Sort*} (i : Fin 0) : α i := absurd i.2 (Nat.not_lt_zero _)
+def rec0 {motive : Fin 0 → Sort*} (i : Fin 0) : motive i := absurd i.2 (Nat.not_lt_zero _)
 
 variable {n m : ℕ}
 --variable {a b : Fin n} -- this *really* breaks stuff
