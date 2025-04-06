@@ -13,6 +13,8 @@ In this file we define the class `ValuedLocalField` on a valued field `K`, requi
 * that the valuation is discrete (so, in particular, it takes values in a linearly ordered
   commutative group with zero `Γ` such that `Γˣ` is cyclic and non-trivial); and
 * that the residue field of its unit ball is finite.
+It corresponds to the classical notion of nonarchimedean local field as developed, for instance, in
+Serre's book [serre1968].
 
 ## ToDo
 * Once a more general definition of `LocalField` enters mathlib, provide instances of `LocalField`
@@ -23,6 +25,10 @@ In this file we define the class `ValuedLocalField` on a valued field `K`, requi
   `ValuedLocalField` is again a `ValuedLocalField`.
 
 ## Implementation details
+* The instance of `ValuedLocalField` on any finite extensions of a valued local field cannot be
+  synthesized, because the base field cannot be found by type-class inference. On the other hand,
+  it is possible to define such an instance on every (finite) intermediate extension inside `L/K`
+  under the assumption that `K` be a valued local field and `L/K` be separable.
 
 ### Remark:
 For discussions about this design, see
@@ -35,10 +41,21 @@ local fields, nonarchimedean valuation
 
 open Valuation
 
-variable (Γ : Type*) [LinearOrderedCommGroupWithZero Γ] [IsCyclic Γˣ] [Nontrivial Γˣ]
+variable (Γ : outParam Type*) [LinearOrderedCommGroupWithZero Γ] [IsCyclic Γˣ] [Nontrivial Γˣ]
 
-
+/-- A `ValuedLocalField` is a complete, discretely-valued field with finite residue field. It
+corresponds to the classical notion of nonarchimedean local field as developed, for instance, in
+Serre's book [serre1968]. -/
 class ValuedLocalField (K : Type*) [Field K] extends Valued K Γ where
   complete : CompleteSpace K
   isDiscrete : IsDiscrete <| Valued.v (R := K)
   finiteResidueField : Finite <| IsLocalRing.ResidueField (Valued.v (R := K)).valuationSubring
+
+variable (K : Type*) [Field K] [ValuedLocalField Γ K]
+
+instance : IsDiscrete <| Valued.v (R := K) := ValuedLocalField.isDiscrete
+
+instance : CompleteSpace K := ValuedLocalField.complete
+
+instance : Finite <| IsLocalRing.ResidueField (Valued.v (R := K)).valuationSubring :=
+  ValuedLocalField.finiteResidueField
