@@ -150,7 +150,8 @@ theorem sup_mem_closed_subalgebra (A : Subalgebra ℝ C(X, ℝ)) (h : IsClosed (
   convert sup_mem_subalgebra_closure A f g
   apply SetLike.ext'
   symm
-  erw [closure_eq_iff_isClosed]
+  dsimp
+  rw [closure_eq_iff_isClosed]
   exact h
 
 open scoped Topology
@@ -624,7 +625,7 @@ lemma ContinuousMapZero.adjoin_id_dense {s : Set 𝕜} [Zero s] (h0 : ((0 : s) :
   apply Set.eq_univ_of_forall fun f ↦ ?_
   simp only [Set.mem_preimage, toContinuousMapHom_apply, SetLike.mem_coe, RingHom.mem_ker,
     ContinuousMap.evalStarAlgHom_apply, ContinuousMap.coe_coe]
-  rw [show ⟨0, h0'⟩ = (0 : s) by ext; exact h0.symm, _root_.map_zero f]
+  rw [show ⟨0, h0'⟩ = (0 : s) by ext; exact h0.symm, map_zero f]
 
 /-- An induction principle for `C(s, 𝕜)₀`. -/
 @[elab_as_elim]
