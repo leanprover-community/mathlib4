@@ -206,24 +206,44 @@ mutual
 
 /-- Converts `ExBase sα` to `ExBase sβ`, assuming `sα` and `sβ` are defeq. -/
 partial def ExBase.cast
-    {v : Lean.Level} {β : Q(Type v)} {sβ : Q(CommSemiring $β)} {a : Q($α)} :
-    ExBase sα a → Σ a, ExBase sβ a
-  | .atom i => ⟨a, .atom i⟩
-  | .sum a => let ⟨_, vb⟩ := a.cast; ⟨_, .sum vb⟩
+    {v : Lean.Level} {β : Q(Type v)} {sβ : Q(CommSemiring $β)} {a : Q($α)} {b : Q($β)}
+    (e : ExBase sα a)
+    (huv : u =QL v := by assumption)
+    (hαβ : $α =Q $β := by assumption)
+    (hs : $sα =Q $sβ := by assumption)
+    (hab : $a =Q $b := by assumption) :
+    ExBase sβ b :=
+  match e with
+  | .atom i => .atom i
+  | .sum a => .sum a.cast
 
 /-- Converts `ExProd sα` to `ExProd sβ`, assuming `sα` and `sβ` are defeq. -/
 partial def ExProd.cast
-    {v : Lean.Level} {β : Q(Type v)} {sβ : Q(CommSemiring $β)} {a : Q($α)} :
-    ExProd sα a → Σ a, ExProd sβ a
-  | .const i h => ⟨a, .const i h⟩
-  | .mul a₁ a₂ a₃ => ⟨_, .mul a₁.cast.2 a₂ a₃.cast.2⟩
+    {v : Lean.Level} {β : Q(Type v)} {sβ : Q(CommSemiring $β)} {a : Q($α)} {b : Q($β)}
+    (e : ExProd sα a)
+    (huv : u =QL v := by assumption)
+    (hαβ : $α =Q $β := by assumption)
+    (hs : $sα =Q $sβ := by assumption)
+    (hab : $a =Q $b := by assumption) :
+    ExProd (u := v) q($sβ) q($b) :=
+  match e with
+  | .const i h => .const i h
+  | .mul a₁ a₂ a₃ =>
+    have := ExProd.mul (a₁.cast (v := v) (β := q($β))) a₂ a₃.cast
+    by convert this using 1
 
 /-- Converts `ExSum sα` to `ExSum sβ`, assuming `sα` and `sβ` are defeq. -/
 partial def ExSum.cast
-    {v : Lean.Level} {β : Q(Type v)} {sβ : Q(CommSemiring $β)} {a : Q($α)} :
-    ExSum sα a → Σ a, ExSum sβ a
-  | .zero => ⟨_, .zero⟩
-  | .add a₁ a₂ => ⟨_, .add a₁.cast.2 a₂.cast.2⟩
+    {v : Lean.Level} {β : Q(Type v)} {sβ : Q(CommSemiring $β)} {a : Q($α)} {b : Q($β)}
+    (e : ExSum sα a)
+    (huv : u =QL v := by assumption)
+    (hαβ : $α =Q $β := by assumption)
+    (hs : $sα =Q $sβ := by assumption)
+    (hab : $a =Q $b := by assumption) :
+    ExSum sβ b :=
+  match e with
+  | .zero => .zero
+  | .add a₁ a₂ => .add a₁.cast a₂.cast
 
 end
 
@@ -562,16 +582,17 @@ polynomial expressions.
 -/
 def evalNSMul {a : Q(ℕ)} {b : Q($α)} (va : ExSum sℕ a) (vb : ExSum sα b) :
     AtomM (Result (ExSum sα) q($a • $b)) := do
-  if ← isDefEq sα sℕ then
-    let ⟨_, va'⟩ := va.cast
-    have _b : Q(ℕ) := b
-    let ⟨(_c : Q(ℕ)), vc, (pc : Q($a * $_b = $_c))⟩ ← evalMul sα va' vb
-    pure ⟨_, vc, (q(smul_nat $pc) : Expr)⟩
-  else
-    let ⟨_, va', pa'⟩ ← va.evalNatCast sα
-    let ⟨_, vc, pc⟩ ← evalMul sα va' vb
-    pure ⟨_, vc, (q(smul_eq_cast $pa' $pc) : Expr)⟩
-
+  if let .defEq hu ← isLevelDefEqQ 0 u then
+    if let .defEq hα ← isDefEqQ q(ℕ) q($α) then
+      if let .defEq hsα ← isDefEqQ sℕ q($sα) then
+        let va : ExSum q($sα) a := va.cast
+        let ⟨_, va'⟩ := va.cast
+        let ⟨c, vc, pc⟩ ← evalMul sα va' vb
+        return ⟨_, vc, q(smul_nat $pc)⟩
+  let ⟨_, va', pa'⟩ ← va.evalNatCast sα
+  let ⟨_, vc, pc⟩ ← evalMul sα va' vb
+  pure ⟨_, vc, q(smul_eq_cast $pa' $pc)⟩
+#exit
 theorem neg_one_mul {R} [Ring R] {a b : R} (_ : (Int.negOfNat (nat_lit 1)).rawCast * a = b) :
     -a = b := by subst_vars; simp [Int.negOfNat]
 
