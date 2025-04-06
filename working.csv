@@ -4,7 +4,6 @@ Quot.induction_on₃,Mathlib.Data.Quot
 EuclideanDomain.GCD.induction,Mathlib.Algebra.EuclideanDomain.Defs
 Lean.Compiler.LCNF.getSpecParamInfo?,Lean.Compiler.LCNF.SpecInfo
 Set.ordConnectedProj,Mathlib.Order.Interval.Set.OrdConnectedComponent
-IsSolvableByRad.brecOn,Mathlib.FieldTheory.AbelRuffini
 List.Pairwise.forall,Mathlib.Data.List.Pairwise
 Cycle.prev,Mathlib.Data.List.Cycle
 MvPolynomial.induction_on_monomial,Mathlib.Algebra.MvPolynomial.Basic
@@ -53,12 +52,10 @@ Tuple.bubble_sort_induction,Mathlib.Data.Fin.Tuple.BubbleSortInduction
 Fin.rec0,Mathlib.Data.Fin.Basic
 WeierstrassCurve.Jacobian.negAddY,Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian.Formula
 Std.DHashMap.Raw.fold,Std.Data.DHashMap.Raw
-Lean.PrefixTreeNode.WellFormed.brecOn,Lean.Data.PrefixTree
 Quotient.hrecOn₂,Mathlib.Data.Quot
 Batteries.Tactic.Alias.getAliasInfo,Batteries.Tactic.Alias
 Std.TreeMap.Raw.getKeyGTD,Std.Data.TreeMap.Raw.Basic
 whenM,Mathlib.Control.Combinators
-Nat.Primrec.brecOn,Mathlib.Computability.Primrec
 Lean.Elab.OpenDecl.elabOpenDecl,Lean.Elab.Open
 Array.minWith,Batteries.Data.Array.Basic
 Array.findSomeRevM?.find.induct,Init.Internal.Order.Lemmas
@@ -262,7 +259,6 @@ TypeVec.typevecCasesNil₃,Mathlib.Data.TypeVec
 CategoryTheory.Limits.pushout,Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 inf_ind,Mathlib.Order.Lattice
 Nat.evenOddStrongRec,Mathlib.Data.Nat.EvenOddRec
-Lean.HashSetImp.WellFormed.brecOn,Lean.Data.HashSet
 FirstOrder.Language.DirectLimit.unify,Mathlib.ModelTheory.DirectLimit
 Nat.forRevM,Init.Data.Nat.Control
 MvPolynomial.induction_on'',Mathlib.Algebra.MvPolynomial.Basic
@@ -297,7 +293,6 @@ MonoidHom.commutatorMap,Mathlib.GroupTheory.FixedPointFree
 Subsemigroup.closure_induction',Mathlib.Algebra.Group.Subsemigroup.Basic
 Std.DTreeMap.foldlM,Std.Data.DTreeMap.Basic
 List.bidirectionalRecOn,Mathlib.Data.List.Induction
-CategoryTheory.FreeBicategory.Rel.brecOn,Mathlib.CategoryTheory.Bicategory.Free
 Sym2.rec,Mathlib.Data.Sym.Sym2
 Sym2.inductionOn₂,Mathlib.Data.Sym.Sym2
 Subsingleton.set_cases,Mathlib.Data.Set.Basic
@@ -372,7 +367,6 @@ CategoryTheory.ActionCategory.cases,Mathlib.CategoryTheory.Action
 minDefault,Mathlib.Order.Defs.LinearOrder
 Lean.Meta.foldAncestors,Lean.Meta.ExprLens
 Batteries.RBNode.Stream.foldr,Batteries.Data.RBMap.Basic
-Hindman.FP.brecOn,Mathlib.Combinatorics.Hindman
 Std.TreeSet.getLT!,Std.Data.TreeSet.Basic
 Lean.computeStructureResolutionOrder,Lean.Structure
 BoxIntegral.Box.subbox_induction_on',Mathlib.Analysis.BoxIntegral.Box.SubboxInduction
@@ -409,7 +403,6 @@ BAll.imp_left,Mathlib.Logic.Basic
 Finset.noncommProd_induction,Mathlib.Data.Finset.NoncommProd
 Aesop.Script.SScript.render.go,Aesop.Script.SScript
 Std.HashSet.Raw.forM,Std.Data.HashSet.Raw
-FirstOrder.Language.BoundedFormula.IsPrenex.brecOn,Mathlib.ModelTheory.Complexity
 Lean.Elab.Tactic.classical,Lean.Elab.Tactic.Classical
 Matroid.ofExistsMatroid.proof_3,Mathlib.Data.Matroid.IndepAxioms
 Set.restrict₂,Mathlib.Data.Set.Restrict
@@ -609,7 +602,6 @@ Exists.choose,Init.Classical
 rel_sup_add,Mathlib.Topology.Algebra.InfiniteSum.NatInt
 List.filterM,Init.Data.List.Control
 Lean.Elab.Command.withViewTypeRef,Lean.Elab.MutualInductive
-Std.DHashMap.Raw.WF.brecOn,Std.Data.DHashMap.Raw
 Std.DTreeMap.Internal.Impl.foldlM,Std.Data.DTreeMap.Internal.Queries
 Lean.PersistentArray.forM,Lean.Data.PersistentArray
 Std.DTreeMap.Raw.keyAtIndex!,Std.Data.DTreeMap.Raw.Basic
@@ -651,7 +643,6 @@ Batteries.RBMap.forM,Batteries.Data.RBMap.Basic
 Set.rangeSplitting,Mathlib.Data.Set.Operations
 Std.DTreeMap.Raw.foldlM,Std.Data.DTreeMap.Raw.Basic
 selfZPow,Mathlib.RingTheory.Localization.Away.Basic
-Holor.CPRankMax1.brecOn,Mathlib.Data.Holor
 Aesop.Script.Step.render,Aesop.Script.Step
 Topology.WithScott.rec,Mathlib.Topology.Order.ScottTopology
 List.decidableBAll.proof_1,Init.Data.List.Basic
@@ -753,7 +744,6 @@ of_not_imp,Mathlib.Logic.Basic
 Std.DHashMap.Internal.Raw₀.Const.getD,Std.Data.DHashMap.Internal.Defs
 Fin.hIterate,Init.Data.Fin.Iterate
 TopCat.Presheaf.stalk,Mathlib.Topology.Sheaves.Stalks
-Lean.Order.iterates.brecOn,Init.Internal.Order.Basic
 SimpleGraph.Walk.penultimate,Mathlib.Combinatorics.SimpleGraph.Walk
 essSup,Mathlib.MeasureTheory.Function.EssSup
 RatFunc.induction_on',Mathlib.FieldTheory.RatFunc.Defs
@@ -882,7 +872,6 @@ UV.compress,Mathlib.Combinatorics.SetFamily.Compression.UV
 Mathlib.Tactic.BicategoryLike.HorizontalComp.srcM,Mathlib.Tactic.CategoryTheory.Coherence.Normalize
 Std.HashSet.fold,Std.Data.HashSet.Basic
 MeasureTheory.L1.SimpleFunc.setToL1S,Mathlib.MeasureTheory.Integral.SetToL1
-FiniteInter.finiteInterClosure.brecOn,Mathlib.Data.Set.Constructions
 Function.FromTypes.uncurry,Mathlib.Data.Fin.Tuple.Curry
 Lean.MVarId.modifyLCtx,Lean.MetavarContext
 Std.DTreeMap.Raw.foldr,Std.Data.DTreeMap.Raw.Basic
@@ -1098,7 +1087,6 @@ Set.mulIndicator,Mathlib.Algebra.Group.Indicator
 Lean.mkIdentFromRef,Init.Meta
 Mathlib.Tactic.BicategoryLike.Mor₂Iso.srcM,Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
 MeasureTheory.Lp.induction_stronglyMeasurable_aux,Mathlib.MeasureTheory.Function.ConditionalExpectation.AEMeasurable
-FirstOrder.Language.BoundedFormula.IsExistential.brecOn,Mathlib.ModelTheory.Complexity
 Classical.existsCases,Mathlib.Logic.Basic
 ContinuousMap.induction_on_of_compact,Mathlib.Topology.ContinuousMap.StoneWeierstrass
 Multiset.Pi.empty,Mathlib.Data.Multiset.Pi
@@ -1213,7 +1201,6 @@ CategoryTheory.Limits.prod,Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 Std.TreeMap.Raw.getKeyGE!,Std.Data.TreeMap.Raw.Basic
 Polynomial.induction_with_natDegree_le,Mathlib.Algebra.Polynomial.EraseLead
 RatFunc.liftOn',Mathlib.FieldTheory.RatFunc.Defs
-CategoryTheory.MorphismProperty.multiplicativeClosure'.brecOn,Mathlib.CategoryTheory.MorphismProperty.Composition
 ULiftable.downMap,Mathlib.Control.ULiftable
 Lean.Elab.elabDeclAttrs,Lean.Elab.Attributes
 Mathlib.Meta.FunProp.letTelescope,Mathlib.Tactic.FunProp.ToBatteries
@@ -1383,7 +1370,6 @@ Lean.LocalContext.foldlM,Lean.LocalContext
 rel_sup_mul,Mathlib.Topology.Algebra.InfiniteSum.NatInt
 Batteries.ByteSubarray.forIn.loop,Batteries.Data.ByteSubarray
 CFC.rpow,Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
-Nat.le.brecOn,Init.Prelude
 Lean.Meta.traverseLambdaWithPos,Lean.Meta.ExprTraverse
 AddSubmonoid.mul_induction_on,Mathlib.Algebra.Group.Submonoid.Pointwise
 CategoryTheory.Pairwise.diagramObj,Mathlib.CategoryTheory.Category.Pairwise
@@ -1423,7 +1409,6 @@ Relation.TransGen.head_induction_on,Mathlib.Logic.Relation
 List.mapAccumLM,Mathlib.Control.Basic
 List.forall_mem_of_forall_mem_union_right,Mathlib.Data.List.Lattice
 StateRefT'.run,Init.Control.StateRef
-FreeAlgebra.Rel.brecOn,Mathlib.Algebra.FreeAlgebra
 Finsupp.prod,Mathlib.Algebra.BigOperators.Finsupp.Basic
 List.mapFinIdxM,Init.Data.List.MapIdx
 LieSubmodule.iSup_induction',Mathlib.Algebra.Lie.Submodule
@@ -1453,7 +1438,6 @@ CategoryTheory.MorphismProperty.Comma.Hom.comp.proof_2,Mathlib.CategoryTheory.Mo
 Nat.decidableBallLT.proof_1,Init.Data.Nat.Lemmas
 Sym2.sup,Mathlib.Data.Sym.Sym2.Order
 Lean.profileit,Lean.Util.Profile
-Nat.Primrec'.brecOn,Mathlib.Computability.Primrec
 Vector.mapIdxM,Init.Data.Vector.Basic
 Std.TreeMap.Raw.getKey,Std.Data.TreeMap.Raw.Basic
 ULiftable.adaptUp,Mathlib.Control.ULiftable
@@ -1596,7 +1580,6 @@ Std.TreeMap.getKeyLED,Std.Data.TreeMap.Basic
 Subarray.findRevM?,Init.Data.Array.Subarray
 modifyThe,Init.Prelude
 cast,Init.Prelude
-CategoryTheory.Coverage.Saturate.brecOn,Mathlib.CategoryTheory.Sites.Coverage
 Set.mulIndicator_rel_mulIndicator,Mathlib.Algebra.Group.Indicator
 Std.DTreeMap.Internal.Impl.forInStep,Std.Data.DTreeMap.Internal.Queries
 Lean.Meta.visitLambda,Lean.Meta.ForEachExpr
@@ -1614,7 +1597,6 @@ aeSeq.prop_of_mem_aeSeqSet,Mathlib.MeasureTheory.Function.AEMeasurableSequence
 Matrix.induction_on',Mathlib.Data.Matrix.Basis
 CategoryTheory.MorphismProperty.tensorHom_mem,Mathlib.CategoryTheory.Localization.Monoidal
 Std.DTreeMap.Internal.Impl.updateCell.induct,Std.Data.DTreeMap.Internal.WF.Lemmas
-Multiset.Rel.brecOn,Mathlib.Data.Multiset.ZeroCons
 AddSubmonoid.iSup_induction',Mathlib.Algebra.Group.Submonoid.Membership
 Std.TreeSet.Raw.forIn,Std.Data.TreeSet.Raw.Basic
 translate,Mathlib.Algebra.Group.Translate
@@ -1773,7 +1755,6 @@ Filter.Eventually.self_of_nhdsWithin,Mathlib.Topology.ContinuousOn
 Lean.unresolveNameGlobal.unresolveNameCore,Lean.ResolveName
 HomologicalComplex.extend.X,Mathlib.Algebra.Homology.Embedding.Extend
 Eq.mp,Init.Core
-List.Triplewise.brecOn,Mathlib.Data.List.Triplewise
 Quotient.inductionOn₃',Mathlib.Data.Quot
 RingTheory.Sequence.IsWeaklyRegular.recIterModByRegularWithRing,Mathlib.RingTheory.Regular.RegularSequence
 Lean.Meta.withLocalInstances,Lean.Meta.Basic
@@ -1836,7 +1817,6 @@ CategoryTheory.ObjectProperty.prop_X₃_of_shortExact,Mathlib.CategoryTheory.Obj
 Filter.Germ.inductionOn,Mathlib.Order.Filter.Germ.Basic
 Equiv.setSubtypeComm.proof_1,Mathlib.Data.Set.Basic
 Lean.forEachModuleInDir,Lean.Util.Path
-IsPoly.brecOn,Mathlib.NumberTheory.Dioph
 ShareCommonT.run,Init.ShareCommon
 Std.TreeSet.Raw.atIdxD,Std.Data.TreeSet.Raw.Basic
 Lean.activateScoped,Lean.ScopedEnvExtension
@@ -1921,7 +1901,6 @@ SequentiallyComplete.seq,Mathlib.Topology.UniformSpace.Cauchy
 FloatArray.foldlM,Init.Data.FloatArray.Basic
 Vector.foldr,Init.Data.Vector.Basic
 Combinatorics.Line.toFun,Mathlib.Combinatorics.HalesJewett
-Lean.HashMapImp.WellFormed.brecOn,Lean.Data.HashMap
 Lean.logError,Lean.Log
 Lean.Elab.enableInfoTree,Lean.Elab.InfoTree.Main
 CategoryTheory.MorphismProperty.of_pushout_inr_of_descendsAlong,Mathlib.CategoryTheory.MorphismProperty.Descent
@@ -1949,7 +1928,6 @@ Option.get!,Init.Data.Option.BasicAux
 Aesop.SimpTheorems.foldSimpEntriesM,Aesop.Util.Basic
 Fin.addCases,Init.Data.Fin.Lemmas
 Std.HashMap.getD,Std.Data.HashMap.Basic
-CategoryTheory.IsFiltered.FilteredClosure.brecOn,Mathlib.CategoryTheory.Filtered.Small
 Lean.Elab.addMacroStack,Lean.Elab.Util
 Set.WellFoundedOn.induction,Mathlib.Order.WellFoundedSet
 Aesop.Script.SScript.render.renderSTactic?,Aesop.Script.SScript
@@ -1961,7 +1939,6 @@ Lean.Elab.withSaveParentDeclInfoContext,Lean.Elab.InfoTree.Main
 Lean.Elab.isIncrementalElab,Lean.Elab.Term
 Lean.MonadQuotation.addMacroScope,Init.Prelude
 AddSubmonoid.LocalizationMap.AwayMap.negSelf,Mathlib.GroupTheory.MonoidLocalization.Away
-Std.DTreeMap.Internal.Impl.Balanced.brecOn,Std.Data.DTreeMap.Internal.Balanced
 memoFix,Mathlib.Util.MemoFix
 Lean.Order.fix_induct,Init.Internal.Order.Basic
 Lean.Meta.DiscrTree.mapArraysM,Lean.Meta.DiscrTree
@@ -1970,13 +1947,11 @@ ShrinkingLemma.PartialRefinement.chainSup.proof_4,Mathlib.Topology.ShrinkingLemm
 Std.TreeMap.getKeyD,Std.Data.TreeMap.Basic
 List.rel_of_pairwise_cons,Init.Data.List.Pairwise
 ForInStep.run,Batteries.Control.ForInStep.Basic
-List.Mem.brecOn,Init.Data.List.Basic
 Order.sequenceOfCofinals,Mathlib.Order.Ideal
 IsEmpty.elim,Mathlib.Logic.IsEmpty
 Nat.repeatTR.loop,Init.Data.Nat.Basic
 RatFunc.eval,Mathlib.FieldTheory.RatFunc.AsPolynomial
 Interval.length,Mathlib.Algebra.Order.Interval.Basic
-FirstOrder.Language.BoundedFormula.IsQF.brecOn,Mathlib.ModelTheory.Complexity
 ST.Ref.modifyGet,Init.System.ST
 Equiv.removeNone_aux,Mathlib.Logic.Equiv.Option
 Lean.Elab.Tactic.getMemType,Mathlib.Tactic.FinCases
@@ -1997,14 +1972,12 @@ Quantale.rightMulResiduation,Mathlib.Algebra.Order.Quantale
 Lean.Data.AC.evalList,Init.Data.AC
 Std.TreeSet.maxD,Std.Data.TreeSet.Basic
 Std.TreeMap.getKeyLT!,Std.Data.TreeMap.Basic
-List.Pairwise.brecOn,Init.Data.List.Basic
 AlgebraicGeometry.HasRingHomProperty.comp_of_isOpenImmersion,Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
 Mathlib.Tactic.modifyTarget,Mathlib.Util.Tactic
 Nat.ofDigits,Mathlib.Data.Nat.Digits
 RingTheory.Sequence.IsWeaklyRegular.ndrecWithRing,Mathlib.RingTheory.Regular.RegularSequence
 getModify,Init.Prelude
 Fin.removeNth,Mathlib.Data.Fin.Tuple.Basic
-Projectivization.Subspace.spanCarrier.brecOn,Mathlib.LinearAlgebra.Projectivization.Subspace
 CategoryTheory.MorphismProperty.of_isIso,Mathlib.CategoryTheory.MorphismProperty.Composition
 Quot.hrecOn₂,Mathlib.Data.Quot
 SuccOrder.prelimitRecOn,Mathlib.Order.SuccPred.Limit
@@ -2041,7 +2014,6 @@ nsmulBinRec.go,Mathlib.Algebra.Group.Defs
 WeierstrassCurve.c₆,Mathlib.AlgebraicGeometry.EllipticCurve.Weierstrass
 Lean.SubExpr.Pos.foldr,Lean.SubExpr
 FormalMultilinearSeries.sum,Mathlib.Analysis.Analytic.Basic
-Acc.brecOn,Init.WF
 MeasureTheory.condExp,Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
 CategoryTheory.MorphismProperty.pullback_map,Mathlib.CategoryTheory.MorphismProperty.Limits
 String.foldrAux,Init.Data.String.Basic
@@ -2208,7 +2180,6 @@ Lean.Unhygienic.run,Lean.Hygiene
 Std.TreeSet.Raw.get,Std.Data.TreeSet.Raw.Basic
 Localization.induction_on,Mathlib.GroupTheory.MonoidLocalization.Basic
 cond,Init.Prelude
-List.Palindrome.brecOn,Mathlib.Data.List.Palindrome
 Function.argmin,Mathlib.Order.WellFounded
 CategoryTheory.ObjectProperty.prop_of_epi,Mathlib.CategoryTheory.ObjectProperty.EpiMono
 Lean.PersistentHashMap.findD,Lean.Data.PersistentHashMap
@@ -2264,7 +2235,6 @@ Lean.MonadCacheT.run,Lean.Util.MonadCache
 Ordnode.findGeAux,Mathlib.Data.Ordmap.Ordnode
 Lean.throwError,Lean.Exception
 Lean.Meta.RefinedDiscrTree.Trie.mapArraysM,Mathlib.Lean.Meta.RefinedDiscrTree
-Std.Sat.AIG.RelabelNat.State.Inv1.brecOn,Std.Sat.AIG.RelabelNat
 ULiftable.adaptDown,Mathlib.Control.ULiftable
 Computation.rel_of_liftRel,Mathlib.Data.Seq.Computation
 Erased.out_proof,Mathlib.Data.Erased
@@ -2305,7 +2275,6 @@ Lean.Elab.withLogging,Lean.Elab.Util
 divp,Mathlib.Algebra.Group.Units.Defs
 Holor.holor_index_cons_decomp,Mathlib.Data.Holor
 Lean.Meta.DiscrTree.Trie.foldM,Lean.Meta.DiscrTree
-MeasureTheory.generateSetAlgebra.brecOn,Mathlib.MeasureTheory.SetAlgebra
 IsLocalization.mk',Mathlib.RingTheory.Localization.Defs
 SimpleGraph.otherVertexOfIncident,Mathlib.Combinatorics.SimpleGraph.Basic
 Fin.dfoldrM.loop,Batteries.Data.Fin.Basic
@@ -2479,7 +2448,6 @@ Mathlib.Tactic.BicategoryLike.NormalExpr.leftUnitorInvM,Mathlib.Tactic.CategoryT
 Lean.Elab.Term.withNarrowedArgTacticReuse,Lean.Elab.Term
 Std.TreeMap.keyAtIndex,Std.Data.TreeMap.Basic
 when,Mathlib.Control.Combinators
-generatePiSystem.brecOn,Mathlib.MeasureTheory.PiSystem
 Lean.MonadHashMapCacheAdapter.cache,Lean.Util.MonadCache
 CategoryTheory.Limits.sigmaObj,Mathlib.CategoryTheory.Limits.Shapes.Products
 WeierstrassCurve.Jacobian.add,Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian.Point
@@ -2732,7 +2700,6 @@ Lean.HashMapImp.foldM,Lean.Data.HashMap
 Lean.SimplePersistentEnvExtension.getState,Lean.Environment
 OrderHom.lfp_induction,Mathlib.Order.FixedPoints
 CategoryTheory.MorphismProperty.relative.property_snd,Mathlib.CategoryTheory.MorphismProperty.Representable
-CategoryTheory.IsCofiltered.CofilteredClosure.brecOn,Mathlib.CategoryTheory.Filtered.Small
 CategoryTheory.Limits.pairFunction,Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 ContinuousMapZero.induction_on_of_compact,Mathlib.Topology.ContinuousMap.StoneWeierstrass
 BitVec.instDecidableForallBitVecZero.proof_1,Init.Data.BitVec.Lemmas
@@ -2915,7 +2882,6 @@ Lean.Meta.map1MetaM,Lean.Meta.Basic
 Subtype.map.proof_1,Mathlib.Data.Subtype
 Finsupp.induction_linear,Mathlib.Data.Finsupp.Single
 Unitization.snd,Mathlib.Algebra.Algebra.Unitization
-List.Chain.brecOn,Batteries.Data.List.Basic
 ManyOneDegree.liftOn₂,Mathlib.Computability.Reduce
 of_not_not,Mathlib.Logic.Basic
 Lean.Compiler.LCNF.LetDecl.forFVarM,Lean.Compiler.LCNF.FVarUtil
@@ -2944,7 +2910,6 @@ Monad.cond,Mathlib.Control.Combinators
 Nat.foldRevM,Init.Data.Nat.Control
 cfc_predicate_one,Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital
 Monad.join,Mathlib.Control.Combinators
-ContextFreeRule.Rewrites.brecOn,Mathlib.Computability.ContextFreeGrammar
 tryFinally,Init.Control.Except
 Subsemigroup.iSup_induction,Mathlib.Algebra.Group.Subsemigroup.Membership
 liftM,Init.Prelude
@@ -3071,7 +3036,6 @@ List.forA,Init.Data.List.Control
 Traversable.foldMap,Mathlib.Control.Fold
 Std.TreeMap.Raw.foldl,Std.Data.TreeMap.Raw.Basic
 Mathlib.Tactic.ModCases.IntMod.onModCases_start,Mathlib.Tactic.ModCases
-List.Forall₂.brecOn,Batteries.Data.List.Basic
 Lean.HashSetImp.fold,Lean.Data.HashSet
 Finset.induction_on_pi_min,Mathlib.Data.Finset.PiInduction
 Subarray.forIn,Init.Data.Array.Subarray
@@ -3137,7 +3101,6 @@ Array.foldl,Init.Data.Array.Basic
 id,Init.Prelude
 Aesop.recordScriptSteps,Aesop.Script.ScriptM
 LDL.diagEntries,Mathlib.LinearAlgebra.Matrix.LDL
-List.Sublist.brecOn,Init.Data.List.Basic
 Submodule.mul_induction_on',Mathlib.Algebra.Algebra.Operations
 Vector.attachWith.proof_1,Init.Data.Vector.Attach
 Quotient.recOnSubsingleton₂',Mathlib.Data.Quot
@@ -3172,7 +3135,6 @@ List.Vector.head,Mathlib.Data.Vector.Defs
 FreeSemigroup.traverse,Mathlib.Algebra.Free
 Std.TreeSet.get,Std.Data.TreeSet.Basic
 Lean.HashMap.fold,Lean.Data.HashMap
-CategoryTheory.MorphismProperty.multiplicativeClosure.brecOn,Mathlib.CategoryTheory.MorphismProperty.Composition
 Lean.withHeadRefOnly,Init.Meta
 Filter.Germ.inductionOn₃,Mathlib.Order.Filter.Germ.Basic
 ULiftable.up,Mathlib.Control.ULiftable
@@ -3197,8 +3159,6 @@ ST.Ref.ptrEq,Init.System.ST
 Batteries.RBMap.foldr,Batteries.Data.RBMap.Basic
 Function.invFunOn,Mathlib.Data.Set.Function
 List.forall_mem_inter_of_forall_left,Mathlib.Data.List.Lattice
-MeasurableSpace.GenerateMeasurable.brecOn,Mathlib.MeasureTheory.MeasurableSpace.Defs
-FirstOrder.Language.BoundedFormula.IsUniversal.brecOn,Mathlib.ModelTheory.Complexity
 PiTensorProduct.induction_on,Mathlib.LinearAlgebra.PiTensorProduct
 Std.DTreeMap.getKeyGT!,Std.Data.DTreeMap.Basic
 WeierstrassCurve.Projective.addZ,Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Formula
@@ -3427,7 +3387,6 @@ Subarray.foldl,Init.Data.Array.Subarray
 Std.DHashMap.Internal.Raw₀.get!,Std.Data.DHashMap.Internal.Defs
 CategoryTheory.MorphismProperty.Comma.homFromCommaOfIsIso.proof_2,Mathlib.CategoryTheory.MorphismProperty.Comma
 Batteries.RBNode.foldl,Batteries.Data.RBMap.Basic
-List.SublistForall₂.brecOn,Mathlib.Data.List.Forall2
 Classical.by_cases,Mathlib.Logic.Basic
 Nat.binCast,Mathlib.Data.Nat.Cast.Defs
 Std.DTreeMap.Raw.maxKey!,Std.Data.DTreeMap.Raw.Basic
@@ -3446,7 +3405,6 @@ Multiset.foldr_induction,Mathlib.Data.Multiset.MapFold
 AddSubgroup.closure_induction_left,Mathlib.Algebra.Group.Subgroup.Pointwise
 IO.FS.withIsolatedStreams,Init.System.IO
 CategoryTheory.MorphismProperty.RespectsIso.postcomp,Mathlib.CategoryTheory.MorphismProperty.Basic
-TopologicalSpace.GenerateOpen.brecOn,Mathlib.Topology.Order
 FirstOrder.Language.BoundedFormula.induction_on_all_ex,Mathlib.ModelTheory.Complexity
 NonemptyInterval.length,Mathlib.Algebra.Order.Interval.Basic
 fourierCoeff,Mathlib.Analysis.Fourier.AddCircle
@@ -3544,7 +3502,6 @@ AddMonoidAlgebra.leadingCoeff,Mathlib.Algebra.MonoidAlgebra.Degree
 Lean.getDocStringText,Lean.DocString.Extension
 Aesop.recordStatsForCurrentFileIfEnabled,Aesop.Stats.Extension
 Multiset.prod_hom_rel,Mathlib.Algebra.BigOperators.Group.Multiset.Defs
-Std.DTreeMap.Internal.Impl.WF.brecOn,Std.Data.DTreeMap.Internal.WF.Defs
 zpow_induction_right,Mathlib.Algebra.Group.Basic
 ComplexShape.prev,Mathlib.Algebra.Homology.ComplexShape
 Lean.Elab.addDeclarationRangesForBuiltin,Lean.Elab.DeclarationRange
@@ -3638,10 +3595,8 @@ liftOption,Init.Data.Option.Basic
 List.forIn',Init.Data.List.Control
 SetTheory.PGame.leftMoves_mul_cases,Mathlib.SetTheory.Game.Basic
 Lean.getConstInfoDefn,Lean.MonadEnv
-Holor.CPRankMax.brecOn,Mathlib.Data.Holor
 Finset.forall_of_forall_insert,Mathlib.Data.Finset.Insert
 FreeMonoid.recOn,Mathlib.Algebra.FreeMonoid.Basic
-Std.DTreeMap.Internal.Impl.SameKeys.brecOn,Std.Data.DTreeMap.Internal.WF.Lemmas
 Lean.unreachIsNodeMissing,Lean.Syntax
 Array.flatMapM,Init.Data.Array.Basic
 zipWithM,Mathlib.Control.Basic
@@ -3649,7 +3604,6 @@ ForInStep.value,Init.Control.Basic
 Nat.rel_of_forall_rel_succ_of_le,Mathlib.Order.Monotone.Basic
 HomotopicalAlgebra.RelativeCellComplex.Cells.i,Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
 Lean.getConstInfo,Lean.MonadEnv
-List.Lex.brecOn,Init.Data.List.Basic
 Function.Iterate.rec,Mathlib.Logic.Function.Iterate
 Lean.isLevelMVarAssigned,Lean.MetavarContext
 Substring.foldr,Init.Data.String.Basic
@@ -3672,7 +3626,6 @@ Lean.LocalContext.lastDeclM,Mathlib.Lean.LocalContext
 WittVector.peval,Mathlib.RingTheory.WittVector.Defs
 Array.uget,Init.Data.Array.Basic
 Lean.Compiler.LCNF.Code.forM.go,Lean.Compiler.LCNF.Basic
-Batteries.RBNode.WF.brecOn,Batteries.Data.RBMap.Basic
 Computation.parallelRec,Mathlib.Data.Seq.Parallel
 Classical.choice_of_byContradiction',Mathlib.Logic.Basic
 Batteries.PairingHeapImp.Heap.headD,Batteries.Data.PairingHeap
@@ -3708,7 +3661,6 @@ Aesop.ScriptT.run,Aesop.Script.ScriptM
 PFunctor.M.casesOn',Mathlib.Data.PFunctor.Univariate.M
 Std.TreeSet.max!,Std.Data.TreeSet.Basic
 RingHom.IsStableUnderBaseChange.isLocalization_map,Mathlib.RingTheory.LocalProperties.Basic
-IsSumSq.brecOn,Mathlib.Algebra.Ring.SumsOfSquares
 Quotient.liftOn,Init.Core
 Lean.Core.numBinders,Lean.Meta.ExprLens
 ContinuousMap.HomotopyEquiv.toFun',Mathlib.Topology.Homotopy.Equiv
@@ -3798,7 +3750,6 @@ Std.TreeMap.Raw.getKeyLED,Std.Data.TreeMap.Raw.Basic
 Exists.snd,Mathlib.Logic.Basic
 IsBaseChange.inductionOn,Mathlib.RingTheory.IsTensorProduct
 Lean.getStructureResolutionOrder,Lean.Structure
-MeasurableSpace.DynkinSystem.GenerateHas.brecOn,Mathlib.MeasureTheory.PiSystem
 AlgebraicGeometry.compact_open_induction_on,Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
 Lean.Elab.Tactic.Ext.withExtN,Lean.Elab.Tactic.Ext
 Nat.rel_of_forall_rel_succ_of_lt,Mathlib.Order.Monotone.Basic
@@ -3815,7 +3766,6 @@ CategoryTheory.Codiscrete.counitApp,Mathlib.CategoryTheory.CodiscreteCategory
 min_rec',Mathlib.Order.Basic
 act_rel_act_of_rel_of_rel,Mathlib.Algebra.Order.Monoid.Unbundled.Defs
 Rat.castRec,Mathlib.Algebra.Field.Defs
-ChainClosure.brecOn,Mathlib.Order.Chain
 List.head!,Init.Data.List.BasicAux
 gradient,Mathlib.Analysis.Calculus.Gradient.Basic
 Aesop.checkAndTraceScript,Aesop.Script.Main
@@ -3902,7 +3852,6 @@ Vector.mapM.go,Init.Data.Vector.Basic
 Lean.Compiler.LCNF.normArg,Lean.Compiler.LCNF.CompilerM
 Equiv.prodSubtypeFstEquivSubtypeProd.proof_1,Mathlib.Logic.Equiv.Prod
 Aesop.Goal.runMetaMInPostNormState,Aesop.Tree.RunMetaM
-Hindman.FS.brecOn,Mathlib.Combinatorics.Hindman
 Lean.Meta.orelseMergeErrors,Lean.Meta.Basic
 Std.TreeSet.atIdx,Std.Data.TreeSet.Basic
 CategoryTheory.MorphismProperty.pretopology.proof_3,Mathlib.CategoryTheory.Sites.MorphismProperty
@@ -3972,7 +3921,6 @@ Aesop.recordStatsIfEnabled,Aesop.Stats.Extension
 Lean.Elab.Term.withReuseContext,Lean.Elab.Term
 Lean.MVarId.modifyDecl,Lean.MetavarContext
 Lean.Compiler.LCNF.ToExpr.run',Lean.Compiler.LCNF.ToExpr
-Nat.Partrec.brecOn,Mathlib.Computability.Partrec
 Filter.comk.proof_3,Mathlib.Order.Filter.Defs
 CategoryTheory.ULiftHom.objDown,Mathlib.CategoryTheory.Category.ULift
 Nat.anyM,Init.Data.Nat.Control
@@ -3994,7 +3942,6 @@ Array.filterSepElemsM,Init.Meta
 Int.lt.elim,Mathlib.Data.Int.Order.Basic
 RingHom.FinitePresentation.polynomial_induction,Mathlib.RingTheory.FinitePresentation
 Std.HashSet.getD,Std.Data.HashSet.Basic
-Nat.Partrec'.brecOn,Mathlib.Computability.Halting
 Nat.div.inductionOn,Init.Data.Nat.Div.Basic
 AddSubgroup.closure_induction_right,Mathlib.Algebra.Group.Subgroup.Pointwise
 ZFSet.Hereditarily.self,Mathlib.SetTheory.ZFC.Basic
@@ -4040,7 +3987,6 @@ CategoryTheory.Functor.relativelyRepresentable.pullback₃,Mathlib.CategoryTheor
 Set.Finite.dinduction_on,Mathlib.Data.Set.Finite.Basic
 PolynomialLaw.ground,Mathlib.RingTheory.PolynomialLaw.Basic
 ContinuousMap.HomotopyWith.prop,Mathlib.Topology.Homotopy.Basic
-IsFiniteLength.brecOn,Mathlib.RingTheory.FiniteLength
 Exists.elim,Init.Core
 Lean.Expr.withAppRev,Lean.Expr
 Classical.choose_spec,Init.Classical
@@ -4065,7 +4011,6 @@ CategoryTheory.Localization.induction_structuredArrow,Mathlib.CategoryTheory.Loc
 AddCon.liftOn₂,Mathlib.GroupTheory.Congruence.Defs
 RelHom.instFintype.proof_1,Mathlib.Data.Fintype.Pi
 Lean.logUnknownDecl,Lean.Log
-FreeLieAlgebra.Rel.brecOn,Mathlib.Algebra.Lie.Free
 Relation.reflTransGen_of_transitive_reflexive,Mathlib.Logic.Relation
 Int.subNatNat_elim,Init.Data.Int.Lemmas
 Lean.Elab.assignInfoHoleId,Lean.Elab.InfoTree.Main
@@ -4116,7 +4061,6 @@ Complex.HadamardThreeLines.scale,Mathlib.Analysis.Complex.Hadamard
 FreeAddMonoid.recOn,Mathlib.Algebra.FreeMonoid.Basic
 Lean.Elab.InfoTree.foldInfoTree,Lean.Server.InfoUtils
 FreeAddSemigroup.recOnAdd,Mathlib.Algebra.Free
-List.Duplicate.brecOn,Mathlib.Data.List.Duplicate
 Iff.subst,Init.Core
 Lean.logErrorAt,Lean.Log
 Std.DHashMap.Internal.AssocList.foldlM,Std.Data.DHashMap.Internal.AssocList.Basic
@@ -4132,7 +4076,6 @@ Equiv.subtypeEquiv.proof_2,Mathlib.Logic.Equiv.Basic
 WithOne.recOneCoe,Mathlib.Algebra.Group.WithOne.Defs
 Multiset.induction_on_multiset_quot,Mathlib.Data.Multiset.MapFold
 Std.DTreeMap.Internal.Impl.getKey,Std.Data.DTreeMap.Internal.Queries
-RingQuot.Rel.brecOn,Mathlib.Algebra.RingQuot
 Submodule.fg_induction,Mathlib.RingTheory.Finiteness.Basic
 FreeAddMagma.recOnAdd,Mathlib.Algebra.Free
 Complex.HadamardThreeLines.F,Mathlib.Analysis.Complex.Hadamard
@@ -4197,7 +4140,6 @@ getThe,Init.Prelude
 MonadExcept.orElse,Init.Prelude
 Lean.Compiler.LCNF.Code.forM,Lean.Compiler.LCNF.Basic
 Multiset.sum_hom_rel,Mathlib.Algebra.BigOperators.Group.Multiset.Defs
-PFunctor.Approx.Agree.brecOn,Mathlib.Data.PFunctor.Univariate.M
 Lean.Elab.addCompletionInfo,Lean.Elab.InfoTree.Main
 Quotient.induction_on_pi,Mathlib.Data.Quot
 Lean.Meta.traverseLambdaWithPos.visit,Lean.Meta.ExprTraverse
@@ -4218,7 +4160,6 @@ LieSubmodule.iSup_induction,Mathlib.Algebra.Lie.Submodule
 Classical.arbitrary,Mathlib.Logic.Nonempty
 Lean.logWarningAt,Lean.Log
 CategoryTheory.HasSplitEqualizer.equalizerOfSplit,Mathlib.CategoryTheory.Limits.Shapes.SplitEqualizer
-Std.Sat.AIG.Cache.WF.brecOn,Std.Sat.AIG.Basic
 Surreal.lift,Mathlib.SetTheory.Surreal.Basic
 Lean.Meta.withReducible,Lean.Meta.Basic
 Lean.Meta.DiscrTree.Trie.foldValuesM,Lean.Meta.DiscrTree

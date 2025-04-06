@@ -7,6 +7,7 @@ open Lean Meta IO FS
   let decls := env.constants.toList.filter fun e =>
     !e.snd.isUnsafe && !e.fst.isInternalOrNum && e.snd.hasValue true && !isMatcherCore env e.fst &&
     !isAuxRecursor env e.fst && !env.isProjectionFn e.fst &&
+    !e.fst.lastComponentAsString == "brecOn" && -- until lean4#7832 gets fixed
     !(e.fst.splitAt 1).fst.lastComponentAsString == "Simps" &&
     e.snd.type.getForallBody.withApp fun f _ => f.isBVar
   println decls.length
