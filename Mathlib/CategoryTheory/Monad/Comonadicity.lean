@@ -270,6 +270,7 @@ equalizers, and `C` has them.
 def comonadicOfHasPreservesReflectsFSplitEqualizers [HasEqualizerOfIsCosplitPair F]
     [PreservesLimitOfIsCosplitPair F] [ReflectsLimitOfIsCosplitPair F] :
     ComonadicLeftAdjoint F where
+  R := G
   adj := adj
   eqv := by
     have : ∀ (X : Coalgebra adj.toComonad), IsIso ((comparisonAdjunction adj).counit.app X) := by
@@ -360,6 +361,7 @@ coreflexive equalizers and `F` reflects isomorphisms, then `F` is comonadic.
 -/
 def comonadicOfHasPreservesCoreflexiveEqualizersOfReflectsIsomorphisms :
     ComonadicLeftAdjoint F where
+  R := G
   adj := adj
   eqv := by
     have : ∀ (X : adj.toComonad.Coalgebra), IsIso ((comparisonAdjunction adj).counit.app X) := by
