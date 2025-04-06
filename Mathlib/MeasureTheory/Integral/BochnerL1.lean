@@ -535,7 +535,7 @@ theorem integral_sub (f g : α →₁[μ] E) : integral (f - g) = integral f - i
 theorem integral_smul (c : 𝕜) (f : α →₁[μ] E) : integral (c • f) = c • integral f := by
   simp only [integral]
   show (integralCLM' 𝕜) (c • f) = c • (integralCLM' 𝕜) f
-  exact _root_.map_smul (integralCLM' 𝕜) c f
+  exact map_smul (integralCLM' 𝕜) c f
 
 theorem norm_Integral_le_one : ‖integralCLM (α := α) (E := E) (μ := μ)‖ ≤ 1 :=
   norm_setToL1_le (dominatedFinMeasAdditive_weightedSMul μ) zero_le_one

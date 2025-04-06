@@ -65,7 +65,7 @@ instance : UsableInSimplexAlgorithm DenseMatrix where
           .none
       rowVals ++ acc
   ofValues {n m : Nat} vals : DenseMatrix _ _ := Id.run do
-    let mut data : Array (Array Rat) := Array.mkArray n <| Array.mkArray m 0
+    let mut data : Array (Array Rat) := Array.replicate n <| Array.replicate m 0
     for ⟨i, j, v⟩ in vals do
       data := data.modify i fun row => row.set! j v
     return ⟨data⟩
@@ -96,7 +96,7 @@ instance : UsableInSimplexAlgorithm SparseMatrix where
       let rowVals := row.toList.map fun (j, v) => (i, j, v)
       rowVals ++ acc
   ofValues {n _ : Nat} vals := Id.run do
-    let mut data : Array (Std.HashMap Nat Rat) := Array.mkArray n .empty
+    let mut data : Array (Std.HashMap Nat Rat) := Array.replicate n ∅
     for ⟨i, j, v⟩ in vals do
       if v != 0 then
         data := data.modify i fun row => row.insert j v

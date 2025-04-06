@@ -129,9 +129,9 @@ variable {S : L.Substructure M}
 
 theorem Term.realize_mem {α : Type*} (t : L.Term α) (xs : α → M) (h : ∀ a, xs a ∈ S) :
     t.realize xs ∈ S := by
-  induction' t with a n f ts ih
-  · exact h a
-  · exact Substructure.fun_mem _ _ _ ih
+  induction t with
+  | var a => exact h a
+  | func f ts ih => exact Substructure.fun_mem _ _ _ ih
 
 namespace Substructure
 
@@ -862,7 +862,6 @@ def codRestrict (p : L.Substructure N) (f : M ↪[L] N) (h : ∀ c, f c ∈ p) :
   inj' _ _ ab := f.injective (Subtype.mk_eq_mk.1 ab)
   map_fun' {_} F x := (f.toHom.codRestrict p h).map_fun' F x
   map_rel' {n} r x := by
-    simp only
     rw [← p.subtype.map_rel]
     change RelMap r (Hom.comp p.subtype.toHom (f.toHom.codRestrict p h) ∘ x) ↔ _
     rw [Hom.subtype_comp_codRestrict, ← f.map_rel]

@@ -135,7 +135,7 @@ open Ideal Finset Submodule in
 theorem exists_smodEq (pb : PowerBasis A B) (b : B) :
     ∃ a, SModEq (Ideal.span ({pb.gen})) b (algebraMap A B a) := by
   rcases subsingleton_or_nontrivial B
-  · exact ⟨0, by rw [SModEq, Subsingleton.eq_zero b, _root_.map_zero]⟩
+  · exact ⟨0, by rw [SModEq, Subsingleton.eq_zero b, map_zero]⟩
   refine ⟨pb.basis.repr b ⟨0, pb.dim_pos⟩, ?_⟩
   have H := pb.basis.sum_repr b
   rw [← insert_erase (mem_univ ⟨0, pb.dim_pos⟩), sum_insert (not_mem_erase _ _)] at H

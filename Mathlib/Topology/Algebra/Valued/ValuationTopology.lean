@@ -84,9 +84,9 @@ is designed for the situation that there is a canonical valuation on the ring.
 TODO: show that there always exists an equivalent valuation taking values in a type belonging to
 the same universe as the ring.
 
-See Note [forgetful inheritance] for why we extend `UniformSpace`, `UniformAddGroup`. -/
+See Note [forgetful inheritance] for why we extend `UniformSpace`, `IsUniformAddGroup`. -/
 class Valued (R : Type u) [Ring R] (Γ₀ : outParam (Type v))
-  [LinearOrderedCommGroupWithZero Γ₀] extends UniformSpace R, UniformAddGroup R where
+  [LinearOrderedCommGroupWithZero Γ₀] extends UniformSpace R, IsUniformAddGroup R where
   v : Valuation R Γ₀
   is_topological_valuation : ∀ s, s ∈ 𝓝 (0 : R) ↔ ∃ γ : Γ₀ˣ, { x : R | v x < γ } ⊆ s
 
@@ -96,7 +96,7 @@ namespace Valued
 def mk' (v : Valuation R Γ₀) : Valued R Γ₀ :=
   { v
     toUniformSpace := @IsTopologicalAddGroup.toUniformSpace R _ v.subgroups_basis.topology _
-    toUniformAddGroup := @uniformAddGroup_of_addCommGroup _ _ v.subgroups_basis.topology _
+    toIsUniformAddGroup := @isUniformAddGroup_of_addCommGroup _ _ v.subgroups_basis.topology _
     is_topological_valuation := by
       letI := @IsTopologicalAddGroup.toUniformSpace R _ v.subgroups_basis.topology _
       intro s
@@ -153,13 +153,39 @@ theorem cauchy_iff {F : Filter R} : Cauchy F ↔
 
 variable (R)
 
-/-- The unit ball of a valued ring is open. -/
-theorem integer_isOpen : IsOpen (_i.v.integer : Set R) := by
+/-- An open ball centred at the origin in a valued ring is open. -/
+theorem isOpen_ball (r : Γ₀) : IsOpen (X := R) {x | v x < r} := by
+  rw [isOpen_iff_mem_nhds]
+  rcases eq_or_ne r 0 with rfl|hr
+  · simp
+  intro x hx
+  rw [mem_nhds]
+  simp only [setOf_subset_setOf]
+  exact ⟨Units.mk0 _ hr,
+    fun y hy => (sub_add_cancel y x).symm ▸ (v.map_add _ x).trans_lt (max_lt hy hx)⟩
+
+/-- A closed ball centred at the origin in a valued ring is open. -/
+theorem isOpen_closedball {r : Γ₀} (hr : r ≠ 0) : IsOpen (X := R) {x | v x ≤ r} := by
   rw [isOpen_iff_mem_nhds]
   intro x hx
   rw [mem_nhds]
-  exact ⟨1,
+  simp only [setOf_subset_setOf]
+  exact ⟨Units.mk0 _ hr,
     fun y hy => (sub_add_cancel y x).symm ▸ le_trans (v.map_add _ _) (max_le (le_of_lt hy) hx)⟩
+
+/-- A sphere centred at the origin in a valued ring is open. -/
+theorem isOpen_sphere {r : Γ₀} (hr : r ≠ 0) : IsOpen (X := R) {x | v x = r} := by
+  rw [isOpen_iff_mem_nhds]
+  intro x hx
+  rw [mem_nhds]
+  simp only [mem_setOf_eq, setOf_subset_setOf] at hx ⊢
+  refine ⟨Units.mk0 _ hr, fun y hy => (sub_add_cancel y x).symm ▸ ?_⟩
+  rwa [v.map_add_eq_of_lt_right]
+  simpa [hx] using hy
+
+/-- The closed unit ball in a valued ring is open. -/
+theorem integer_isOpen : IsOpen (_i.v.integer : Set R) :=
+  isOpen_closedball _ one_ne_zero
 
 /-- The valuation subring of a valued field is open. -/
 theorem valuationSubring_isOpen (K : Type u) [Field K] [hv : Valued K Γ₀] :

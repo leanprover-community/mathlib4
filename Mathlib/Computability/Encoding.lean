@@ -39,6 +39,7 @@ structure Encoding (α : Type u) where
   encode : α → List Γ
   /-- The decoding function -/
   decode : List Γ → Option α
+  /-- Decoding and encoding are inverses of each other. -/
   decode_encode : ∀ x, decode (encode x) = some x
 
 theorem Encoding.encode_injective {α : Type u} (e : Encoding α) : Function.Injective e.encode := by

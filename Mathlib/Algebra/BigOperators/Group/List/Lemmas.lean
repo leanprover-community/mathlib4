@@ -37,14 +37,14 @@ theorem prod_isUnit : ∀ {L : List M}, (∀ m ∈ L, IsUnit m) → IsUnit L.pro
   | [], _ => by simp
   | h :: t, u => by
     simp only [List.prod_cons]
-    exact IsUnit.mul (u h (mem_cons_self h t)) (prod_isUnit fun m mt => u m (mem_cons_of_mem h mt))
+    exact IsUnit.mul (u h mem_cons_self) (prod_isUnit fun m mt => u m (mem_cons_of_mem h mt))
 
 @[to_additive]
 theorem prod_isUnit_iff {α : Type*} [CommMonoid α] {L : List α} :
     IsUnit L.prod ↔ ∀ m ∈ L, IsUnit m := by
   refine ⟨fun h => ?_, prod_isUnit⟩
   induction L with
-  | nil => exact fun m' h' => False.elim (not_mem_nil m' h')
+  | nil => exact fun m' h' => False.elim (not_mem_nil h')
   | cons m L ih =>
     rw [prod_cons, IsUnit.mul_iff] at h
     exact fun m' h' ↦ Or.elim (eq_or_mem_of_mem_cons h') (fun H => H.substr h.1) fun H => ih h.2 _ H
@@ -128,7 +128,7 @@ lemma ranges_flatten : ∀ (l : List ℕ), l.ranges.flatten = range l.sum
 
 /-- The members of `l.ranges` have no duplicate -/
 theorem ranges_nodup {l s : List ℕ} (hs : s ∈ ranges l) : s.Nodup :=
-  (List.pairwise_flatten.mp <| by rw [ranges_flatten]; exact nodup_range _).1 s hs
+  (List.pairwise_flatten.mp <| by rw [ranges_flatten]; exact nodup_range).1 s hs
 
 @[deprecated (since := "2024-10-15")] alias ranges_join := ranges_flatten
 
