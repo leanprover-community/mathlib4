@@ -95,7 +95,7 @@ theorem HasEval.map (hφ : Continuous φ) {a : σ → R} (ha : HasEval a) :
   hpow s := (ha.hpow s).map hφ
   tendsto_zero := (map_zero φ ▸ hφ.tendsto 0).comp ha.tendsto_zero
 
-protected theorem HasEval.X:
+protected theorem HasEval.X :
     HasEval (fun s ↦ (MvPowerSeries.X s : MvPowerSeries σ R)) where
   hpow s := isTopologicallyNilpotent_of_constantCoeff_zero (constantCoeff_X s)
   tendsto_zero := variables_tendsto_zero
