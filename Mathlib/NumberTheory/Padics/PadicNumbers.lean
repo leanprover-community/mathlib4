@@ -724,7 +724,7 @@ instance normedField : NormedField ℚ_[p] :=
   { Padic.field,
     Padic.metricSpace p with
     dist_eq := fun _ _ ↦ rfl
-    norm_mul' := by simp [Norm.norm, map_mul]
+    norm_mul := by simp [Norm.norm, map_mul]
     norm := norm }
 
 instance isAbsoluteValue : IsAbsoluteValue fun a : ℚ_[p] ↦ ‖a‖ where

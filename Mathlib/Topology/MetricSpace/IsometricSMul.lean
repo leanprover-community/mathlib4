@@ -377,7 +377,7 @@ variable {Y : Type*} [PseudoEMetricSpace X] [PseudoEMetricSpace Y] [SMul M X]
   [IsIsometricSMul M X]
 
 @[to_additive]
-instance [SMul M Y] [IsIsometricSMul M Y] : IsIsometricSMul M (X × Y) :=
+instance Prod.instIsIsometricSMul [SMul M Y] [IsIsometricSMul M Y] : IsIsometricSMul M (X × Y) :=
   ⟨fun c => (isometry_smul X c).prod_map (isometry_smul Y c)⟩
 
 @[to_additive]

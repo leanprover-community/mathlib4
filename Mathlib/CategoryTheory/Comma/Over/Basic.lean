@@ -384,6 +384,11 @@ instance [F.Full] [F.EssSurj] : (Over.post (X := X) F).EssSurj where
 
 instance [F.IsEquivalence] : (Over.post (X := X) F).IsEquivalence where
 
+/-- If `F` is fully faithful, then so is `Over.post F`. -/
+def _root_.CategoryTheory.Functor.FullyFaithful.over (h : F.FullyFaithful) :
+    (post (X := X) F).FullyFaithful where
+  preimage {A B} f := Over.homMk (h.preimage f.left) <| h.map_injective (by simpa using Over.w f)
+
 /-- An equivalence of categories induces an equivalence on over categories. -/
 @[simps]
 def postEquiv (F : T ≌ D) : Over X ≌ Over (F.functor.obj X) where
@@ -667,8 +672,7 @@ instance epi_right_of_epi {f g : Under X} (k : f ⟶ g) [Epi k] : Epi k.right :=
   refine ⟨fun {Y : T} l m a => ?_⟩
   let l' : g ⟶ mk (g.hom ≫ m) := homMk l (by
     dsimp; rw [← Under.w k, Category.assoc, a, Category.assoc])
-  -- Porting note: add type ascription here to `homMk m`
-  suffices l' = (homMk m : g ⟶ mk (g.hom ≫ m)) by apply congrArg CommaMorphism.right this
+  suffices l' = (homMk m) by apply congrArg CommaMorphism.right this
   rw [← cancel_epi k]; ext; apply a
 
 /-- A functor `F : T ⥤ D` induces a functor `Under X ⥤ Under (F.obj X)` in the obvious way. -/
@@ -721,6 +725,11 @@ instance [F.Full] [F.EssSurj] : (Under.post (X := X) F).EssSurj where
     exact ⟨Under.mk f, ⟨Under.isoMk e⟩⟩
 
 instance [F.IsEquivalence] : (Under.post (X := X) F).IsEquivalence where
+
+/-- If `F` is fully faithful, then so is `Under.post F`. -/
+def _root_.CategoryTheory.Functor.FullyFaithful.under (h : F.FullyFaithful) :
+    (post (X := X) F).FullyFaithful where
+  preimage {A B} f := Under.homMk (h.preimage f.right) <| h.map_injective (by simpa using Under.w f)
 
 /-- An equivalence of categories induces an equivalence on under categories. -/
 @[simps]

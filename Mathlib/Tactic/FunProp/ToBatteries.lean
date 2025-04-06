@@ -20,11 +20,11 @@ def isOrderedSubsetOf {α} [Inhabited α] [DecidableEq α] (a b : Array α) : Bo
   if a.size > b.size then
     return false
   let mut i := 0
-  for j in [0:b.size] do
+  for h' : j in [0:b.size] do
     if i = a.size then
       break
 
-    if a[i]! = b[j]! then
+    if a[i]! = b[j] then
       i := i+1
 
   if i = a.size then
@@ -65,12 +65,11 @@ def _root_.Lean.Expr.swapBVars (e : Expr) (i j : Nat) : Expr := if i = j then e 
 For `#[x₁, .., xₙ]` create `(x₁, .., xₙ)`.
 -/
 def mkProdElem (xs : Array Expr) : MetaM Expr := do
-  match xs.size with
+  match h : xs.size with
   | 0 => return default
-  | 1 => return xs[0]!
-  | _ =>
-    let n := xs.size
-    xs[0:n-1].foldrM (init := xs[n-1]!) fun x p => mkAppM ``Prod.mk #[x,p]
+  | 1 => return xs[0]
+  | n + 1 =>
+    xs[0:n].foldrM (init := xs[n]) fun x p => mkAppM ``Prod.mk #[x,p]
 
 /--
 For `(x₀, .., xₙ₋₁)` return `xᵢ` but as a product projection.
