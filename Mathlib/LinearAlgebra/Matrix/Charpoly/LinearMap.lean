@@ -121,7 +121,7 @@ theorem Matrix.Represents.zero : (0 : Matrix ι ι R).Represents b 0 := by
 theorem Matrix.Represents.smul {A : Matrix ι ι R} {f : Module.End R M} (h : A.Represents b f)
     (r : R) : (r • A).Represents b (r • f) := by
   delta Matrix.Represents at h ⊢
-  rw [_root_.map_smul, _root_.map_smul, h]
+  rw [map_smul, map_smul, h]
 
 theorem Matrix.Represents.algebraMap (r : R) :
     (algebraMap _ (Matrix ι ι R) r).Represents b (algebraMap _ (Module.End R M) r) := by
@@ -208,11 +208,9 @@ theorem LinearMap.exists_monic_and_coeff_mem_pow_and_aeval_eq_zero_of_range_le_s
     · exact ⟨0, Polynomial.monic_of_subsingleton _, by simp⟩
     obtain ⟨s : Finset M, hs : Submodule.span R (s : Set M) = ⊤⟩ :=
       Module.Finite.fg_top (R := R) (M := M)
-    -- Porting note: `H` was `rfl`
-    obtain ⟨A, H, h⟩ :=
+    obtain ⟨A, rfl, h⟩ :=
       Matrix.isRepresentation.toEnd_exists_mem_ideal R ((↑) : s → M)
         (by rw [Subtype.range_coe_subtype, Finset.setOf_mem, hs]) f I hI
-    rw [← H]
     refine ⟨A.1.charpoly, A.1.charpoly_monic, ?_, ?_⟩
     · rw [A.1.charpoly_natDegree_eq_dim]
       exact coeff_charpoly_mem_ideal_pow h

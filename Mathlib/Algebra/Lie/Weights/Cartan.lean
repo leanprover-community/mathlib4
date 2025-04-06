@@ -90,7 +90,6 @@ def rootSpaceWeightSpaceProductAux {χ₁ χ₂ χ₃ : H → R} (hχ : χ₁ + 
           hχ ▸ lie_mem_genWeightSpace_of_mem_genWeightSpace x.property m.property⟩
       map_add' := fun m n => by simp only [LieSubmodule.coe_add, lie_add, AddMemClass.mk_add_mk]
       map_smul' := fun t m => by
-        dsimp only
         conv_lhs =>
           congr
           rw [LieSubmodule.coe_smul, lie_smul]
