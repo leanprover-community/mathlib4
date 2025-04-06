@@ -87,16 +87,11 @@ instance pullbackIsRightAdjoint {X Y : C} (f : X ⟶ Y) : (pullback f).IsRightAd
 
 open Limits
 
-section HasTerminal
-variable [HasTerminal C]
-
-/-- If `X : C` is terminal, then the over category of `X` is equivalent to `C`. -/
+/-- If `T : C` is terminal, then the over category of `T` is equivalent to `C`. -/
 @[simps!]
-noncomputable def forgetMapTerminal :
-    forget _ ≅ map (terminal.from X) ⋙ (equivalenceOfIsTerminal terminalIsTerminal).functor :=
+noncomputable def forgetMapTerminal {T : C} (hT : IsTerminal T)  :
+    forget _ ≅ map (hT.from X) ⋙ (equivalenceOfIsTerminal hT).functor :=
   NatIso.ofComponents fun X ↦ .refl _
-
-end HasTerminal
 
 section HasBinaryProducts
 variable [HasBinaryProducts C]
@@ -171,35 +166,30 @@ def pullbackComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : pushout (f ≫ g) ≅
 instance pushoutIsLeftAdjoint {X Y : C} (f : X ⟶ Y) : (pushout f).IsLeftAdjoint  :=
   ⟨_, ⟨mapPushoutAdj f⟩⟩
 
-section HasInitial
-variable [HasInitial C]
-
-/-- If `X : C` is initial, then the under category of `X` is equivalent to `C`. -/
+/-- If `T : C` is initial, then the under category of `T` is equivalent to `C`. -/
 @[simps!]
-noncomputable def forgetMapTerminal :
-    forget _ ≅ map (initial.to X) ⋙ (equivalenceOfIsInitial initialIsInitial).functor :=
+noncomputable def forgetMapInitial {T : C} (hT : IsInitial T) :
+    forget _ ≅ map (hT.to X) ⋙ (equivalenceOfIsInitial hT).functor :=
   NatIso.ofComponents fun X ↦ .refl _
-
-end HasInitial
 
 section HasBinaryCoproducts
 variable [HasBinaryCoproducts C]
 
-/-- The functor from `C` to `Under X` which sends `Y : C` to `in₁ : X ⟶ X ⨯ Y`,
+/-- The functor from `C` to `Under X` which sends `Y : C` to `in₁ : X ⟶ X ⨿ Y`,
 sometimes denoted `X*`. -/
 @[simps! obj_left obj_hom map_left]
 def star : C ⥤ Under X := Monad.free _ ⋙ algebraToUnder X
 
-/-- The functor `Under.forget X : Under X ⥤ C` has a right adjoint given by `star X`.
+/-- The functor `Under.forget X : Under X ⥤ C` has a left adjoint given by `star X`.
 
-Note that the binary coproducts assumption is necessary: the existence of a right adjoint to
-`Under.forget X` is equivalent to the existence of each binary coproduct `X ⨯ -`. -/
+Note that the binary coproducts assumption is necessary: the existence of a left adjoint to
+`Under.forget X` is equivalent to the existence of each binary coproduct `X ⨿ -`. -/
 def forgetAdjStar : star X ⊣ forget X := (Monad.adj _).comp (algebraEquivUnder X).toAdjunction
 
 instance : (star X).IsLeftAdjoint := ⟨_, ⟨forgetAdjStar X⟩⟩
 
-/-- Note that the binary products assumption is necessary: the existence of a right adjoint to
-`Under.forget X` is equivalent to the existence of each binary coproduct `X ⨯ -`. -/
+/-- Note that the binary coproducts assumption is necessary: the existence of a left adjoint to
+`Under.forget X` is equivalent to the existence of each binary coproduct `X ⨿ -`. -/
 instance : (forget X).IsRightAdjoint := ⟨_, ⟨forgetAdjStar X⟩⟩
 
 end HasBinaryCoproducts
