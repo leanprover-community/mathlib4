@@ -124,6 +124,7 @@ variable (n)
 /-- The ring congruence of matrices with entries related by `c`. -/
 def matrix (c : RingCon R) : RingCon (Matrix n n R) where
   r M N := ∀ i j, c (M i j) (N i j)
+  -- note: kept `fun` to distinguish `RingCon`'s binders from `r`'s binders.
   iseqv.refl _ := fun _ _ ↦ c.refl _
   iseqv.symm h := fun _ _ ↦ c.symm <| h _ _
   iseqv.trans h₁ h₂ := fun _ _ ↦ c.trans (h₁ _ _) (h₂ _ _)
