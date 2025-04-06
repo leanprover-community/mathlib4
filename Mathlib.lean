@@ -6101,9 +6101,9 @@ import Mathlib.Topology.Sheaves.Stalks
 import Mathlib.Topology.ShrinkingLemma
 import Mathlib.Topology.Sober
 import Mathlib.Topology.Specialization
+import Mathlib.Topology.Spectral.Basic
 import Mathlib.Topology.Spectral.Hom
 import Mathlib.Topology.Spectral.Prespectral
-import Mathlib.Topology.Spectral.Spectral
 import Mathlib.Topology.StoneCech
 import Mathlib.Topology.TietzeExtension
 import Mathlib.Topology.Ultrafilter
