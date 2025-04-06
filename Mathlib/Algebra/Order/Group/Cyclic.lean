@@ -5,7 +5,7 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
 
-/-! 
+/-!
 # Cyclic linearly ordered groups
 
 This file contains basic results about cyclic linearly ordered groups and their subgroups.
