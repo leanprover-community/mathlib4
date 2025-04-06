@@ -203,10 +203,11 @@ theorem consCases_cons {P : (∀ i : Fin n.succ, α i) → Sort v} (h : ∀ x₀
 
 /-- Recurse on a tuple by splitting into `Fin.elim0` and `Fin.cons`. -/
 @[elab_as_elim]
-def consInduction {α : Sort*} {P : ∀ {n : ℕ}, (Fin n → α) → Sort v} (h0 : P Fin.elim0)
-    (h : ∀ {n} (x₀) (x : Fin n → α), P x → P (Fin.cons x₀ x)) : ∀ {n : ℕ} (x : Fin n → α), P x
-  | 0, x => by convert h0
-  | _ + 1, x => consCases (fun _ _ ↦ h _ _ <| consInduction h0 h _) x
+def consInduction {α : Sort*} {motive : ∀ {n : ℕ}, (Fin n → α) → Sort v} (elim0 : motive Fin.elim0)
+    (cons : ∀ {n} (x₀) (x : Fin n → α), motive x → motive (Fin.cons x₀ x)) :
+    ∀ {n : ℕ} (x : Fin n → α), motive x
+  | 0, x => by convert elim0
+  | _ + 1, x => consCases (fun _ _ ↦ cons _ _ <| consInduction elim0 cons _) x
 
 theorem cons_injective_of_injective {α} {x₀ : α} {x : Fin n → α} (hx₀ : x₀ ∉ Set.range x)
     (hx : Function.Injective x) : Function.Injective (cons x₀ x : Fin n.succ → α) := by

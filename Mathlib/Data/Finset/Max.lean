@@ -473,17 +473,19 @@ ordered type : a predicate is true on all `s : Finset α` provided that:
 * for every `s : Finset α` and an element `a` such that for elements of `s` denoted by `x` we have
   `f x ≤ f a`, `p s` implies `p (insert a s)`. -/
 @[elab_as_elim]
-theorem induction_on_max_value [DecidableEq ι] (f : ι → α) {p : Finset ι → Prop} (s : Finset ι)
-    (h0 : p ∅) (step : ∀ a s, a ∉ s → (∀ x ∈ s, f x ≤ f a) → p s → p (insert a s)) : p s := by
+theorem induction_on_max_value [DecidableEq ι] (f : ι → α) {motive : Finset ι → Prop} (s : Finset ι)
+    (empty : motive ∅)
+    (insert : ∀ a s, a ∉ s → (∀ x ∈ s, f x ≤ f a) → motive s → motive (insert a s)) :
+    motive s := by
   induction' s using Finset.strongInductionOn with s ihs
   rcases (s.image f).eq_empty_or_nonempty with (hne | hne)
   · simp only [image_eq_empty] at hne
-    simp only [hne, h0]
+    simp only [hne, empty]
   · have H : (s.image f).max' hne ∈ s.image f := max'_mem (s.image f) hne
     simp only [mem_image, exists_prop] at H
     rcases H with ⟨a, has, hfa⟩
     rw [← insert_erase has]
-    refine step _ _ (not_mem_erase a s) (fun x hx => ?_) (ihs _ <| erase_ssubset has)
+    refine insert _ _ (not_mem_erase a s) (fun x hx => ?_) (ihs _ <| erase_ssubset has)
     rw [hfa]
     exact le_max' _ _ (mem_image_of_mem _ <| mem_of_mem_erase hx)
 
