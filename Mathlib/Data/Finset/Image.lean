@@ -3,13 +3,13 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
+import Mathlib.Algebra.NeZero
 import Mathlib.Data.Finset.Attach
 import Mathlib.Data.Finset.Disjoint
 import Mathlib.Data.Finset.Erase
 import Mathlib.Data.Finset.Filter
 import Mathlib.Data.Finset.Range
 import Mathlib.Data.Finset.SDiff
-import Mathlib.Algebra.NeZero
 
 /-! # Image and map operations on finite sets
 

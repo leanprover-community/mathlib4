@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Yury Kudryashov
 -/
 import Mathlib.Data.Finset.Fin
-import Mathlib.Order.Interval.Set.Fin
 import Mathlib.Order.Interval.Finset.Nat
+import Mathlib.Order.Interval.Set.Fin
 
 /-!
 # Finite intervals in `Fin n`

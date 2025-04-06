@@ -91,12 +91,6 @@ set_option linter.deprecated false
 theorem mem_fin {s : Finset ℕ} : ∀ a : Fin n, a ∈ s.fin n ↔ (a : ℕ) ∈ s
   | ⟨a, ha⟩ => by simp [Finset.fin, ha, and_comm]
 
-@[deprecated "No replacement" (since := "2025-04-01")]
-theorem attachFin_eq_fin {s : Finset ℕ} (h : ∀ m ∈ s, m < n) :
-    attachFin s h = s.fin n := by
-  ext
-  simp
-
 @[simp, deprecated coe_attachFin (since := "2025-04-01")]
 theorem coe_fin (n : ℕ) (s : Finset ℕ) : (s.fin n : Set (Fin n)) = Fin.val ⁻¹' s := by ext; simp
 
@@ -109,5 +103,11 @@ theorem fin_subset_fin (n : ℕ) {s t : Finset ℕ} (h : s ⊆ t) : s.fin n ⊆ 
 @[simp, deprecated map_valEmbedding_attachFin (since := "2025-04-01")]
 theorem fin_map {n} {s : Finset ℕ} : (s.fin n).map Fin.valEmbedding = s.filter (· < n) := by
   simp [Finset.fin, Finset.map_map]
+
+@[deprecated "No replacement" (since := "2025-04-01")]
+theorem attachFin_eq_fin {s : Finset ℕ} (h : ∀ m ∈ s, m < n) :
+    attachFin s h = s.fin n := by
+  ext
+  simp
 
 end Finset

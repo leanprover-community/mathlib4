@@ -55,9 +55,13 @@ variable {α β : Type*} {m : MeasurableSpace α}
 an add monoid) such that the empty set and non-measurable sets are mapped to zero. -/
 structure VectorMeasure (α : Type*) [MeasurableSpace α] (M : Type*) [AddCommMonoid M]
     [TopologicalSpace M] where
+  /-- The measure of sets -/
   measureOf' : Set α → M
+  /-- The empty set has measure zero -/
   empty' : measureOf' ∅ = 0
+  /-- Non-measurable sets have measure zero -/
   not_measurable' ⦃i : Set α⦄ : ¬MeasurableSet i → measureOf' i = 0
+  /-- The measure is σ-additive -/
   m_iUnion' ⦃f : ℕ → Set α⦄ : (∀ i, MeasurableSet (f i)) → Pairwise (Disjoint on f) →
     HasSum (fun i => measureOf' (f i)) (measureOf' (⋃ i, f i))
 
@@ -702,6 +706,7 @@ theorem le_iff' : v ≤ w ↔ ∀ i, v i ≤ w i := by
 
 end
 
+/-- `v ≤[i] w` is notation for `v.restrict i ≤ w.restrict i`. -/
 scoped[MeasureTheory]
   notation3:50 v " ≤[" i:50 "] " w:50 =>
     MeasureTheory.VectorMeasure.restrict v i ≤ MeasureTheory.VectorMeasure.restrict w i
