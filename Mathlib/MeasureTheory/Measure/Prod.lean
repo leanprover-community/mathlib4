@@ -194,7 +194,7 @@ variable [SFinite ν]
 
 theorem prod_apply {s : Set (α × β)} (hs : MeasurableSet s) :
     μ.prod ν s = ∫⁻ x, ν (Prod.mk x ⁻¹' s) ∂μ := by
-  simp_rw [Measure.prod, bind_apply hs (Measurable.map_prodMk_left (ν := ν)),
+  simp_rw [Measure.prod, bind_apply hs (Measurable.map_prodMk_left (ν := ν)).aemeasurable,
     map_apply measurable_prodMk_left hs]
 
 /-- The product measure of the product of two sets is the product of their measures. Note that we
@@ -765,22 +765,22 @@ theorem lintegral_prod_swap [SFinite μ] (f : α × β → ℝ≥0∞) :
     ∫⁻ z, f z.swap ∂ν.prod μ = ∫⁻ z, f z ∂μ.prod ν :=
   measurePreserving_swap.lintegral_comp_emb MeasurableEquiv.prodComm.measurableEmbedding f
 
-/-- **Tonelli's Theorem**: For `ℝ≥0∞`-valued measurable functions on `α × β`,
-  the integral of `f` is equal to the iterated integral. -/
-theorem lintegral_prod_of_measurable (f : α × β → ℝ≥0∞) (hf : Measurable f) :
-    ∫⁻ z, f z ∂μ.prod ν = ∫⁻ x, ∫⁻ y, f (x, y) ∂ν ∂μ := by
-  rw [Measure.prod, lintegral_bind Measurable.map_prodMk_left hf]
-  simp only [lintegral_map hf measurable_prodMk_left]
-
 /-- **Tonelli's Theorem**: For `ℝ≥0∞`-valued almost everywhere measurable functions on `α × β`,
   the integral of `f` is equal to the iterated integral. -/
 theorem lintegral_prod (f : α × β → ℝ≥0∞) (hf : AEMeasurable f (μ.prod ν)) :
     ∫⁻ z, f z ∂μ.prod ν = ∫⁻ x, ∫⁻ y, f (x, y) ∂ν ∂μ := by
-  have A : ∫⁻ z, f z ∂μ.prod ν = ∫⁻ z, hf.mk f z ∂μ.prod ν := lintegral_congr_ae hf.ae_eq_mk
-  have B : (∫⁻ x, ∫⁻ y, f (x, y) ∂ν ∂μ) = ∫⁻ x, ∫⁻ y, hf.mk f (x, y) ∂ν ∂μ := by
-    apply lintegral_congr_ae
-    filter_upwards [ae_ae_of_ae_prod hf.ae_eq_mk] with _ ha using lintegral_congr_ae ha
-  rw [A, B, lintegral_prod_of_measurable _ hf.measurable_mk]
+  rw [Measure.prod] at *
+  rw [lintegral_bind Measurable.map_prodMk_left.aemeasurable hf]
+  apply lintegral_congr_ae
+  filter_upwards [Measurable.map_prodMk_left.aemeasurable.ae_of_bind hf] with a ha
+  exact lintegral_map' ha (by fun_prop)
+
+/-- **Tonelli's Theorem**: For `ℝ≥0∞`-valued measurable functions on `α × β`,
+  the integral of `f` is equal to the iterated integral. -/
+@[deprecated lintegral_prod (since := "2025-04-06")]
+theorem lintegral_prod_of_measurable (f : α × β → ℝ≥0∞) (hf : Measurable f) :
+    ∫⁻ z, f z ∂μ.prod ν = ∫⁻ x, ∫⁻ y, f (x, y) ∂ν ∂μ :=
+  lintegral_prod f hf.aemeasurable
 
 /-- **Tonelli's Theorem for set integrals**: For `ℝ≥0∞`-valued almost everywhere measurable
 functions on `s ×ˢ t`, the integral of `f` on `s ×ˢ t` is equal to the iterated integral on `s`
