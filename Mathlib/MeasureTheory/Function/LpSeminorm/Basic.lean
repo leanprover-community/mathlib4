@@ -1117,6 +1117,43 @@ theorem eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul' {f : α → ε} {g : α �
     simp [ENNReal.mul_rpow_eq_ite, enorm_eq_zero, this]
   simpa [ENNReal.coe_rpow_of_nonneg _ hp.le, aux, ENNReal.rpow_le_rpow_iff hp]
 
+theorem eLpNorm'_le_mul_eLpNorm'_of_ae_le_mul {f : α → ε} {g : α → ε'} {c : ℝ≥0∞}
+    (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) {p : ℝ} (hp : 0 < p) :
+    eLpNorm' f p μ ≤ c * eLpNorm' g p μ := by
+  by_cases hc : c = ⊤
+  · by_cases hg: eLpNorm' g p μ = 0
+    · -- trouble: if ‖g ·‖ₑ ^ p is not measurable, its integral (hence eLpNorm' g) is always zero,
+      -- and we cannot deduce this statement!
+      have : ∀ᵐ (x : α) ∂μ, ‖g x‖ₑ = 0 := by
+        simp_rw [eLpNorm'_eq_lintegral_enorm] at hg
+        have hp2 : ¬(p < 0) := by linarith
+        rw [ENNReal.rpow_eq_zero_iff] at hg
+        simp [hp2, hp] at hg
+        rw [MeasureTheory.lintegral_eq_zero_iff] at hg
+        · apply hg.mono fun x hx ↦ ?_
+          simp [hp, hp2] at hx
+          exact hx
+        have : Measurable fun a ↦ ‖g a‖ₑ ^ p := sorry -- this is not given at all!
+        exact this
+      have : ∀ᵐ (x : α) ∂μ, ‖f x‖ₑ = 0 := by
+        -- want: take the intersection of h and this; if both are true, this is fine
+        sorry
+      simp only [hg, mul_zero, nonpos_iff_eq_zero]
+      -- Should this be a lemma? enorm a.e. 0 means eLpNorm' = 0?
+      rw [← eLpNorm'_zero hp (μ := μ) (ε := ε), eLpNorm'_congr_enorm_ae]
+      simp only [this, Pi.zero_apply, enorm_zero]
+    · simp_all
+  have : c ^ p ≠ ⊤ := by simp [hp.le, hc]
+  simp_rw [eLpNorm'_eq_lintegral_enorm]
+  rw [← ENNReal.rpow_le_rpow_iff hp, ENNReal.mul_rpow_of_nonneg _ _ hp.le]
+  simp_rw [← ENNReal.rpow_mul, one_div, inv_mul_cancel₀ hp.ne.symm, ENNReal.rpow_one,
+    ← lintegral_const_mul' _ _ this]
+  apply lintegral_mono_ae
+  have aux (x) : (↑c) ^ p * ‖g x‖ₑ ^ p = (↑c * ‖g x‖ₑ) ^ p := by
+    have : ¬(p < 0) := by linarith
+    simp [ENNReal.mul_rpow_eq_ite, enorm_eq_zero, this]
+  simpa [ENNReal.coe_rpow_of_nonneg _ hp.le, aux, ENNReal.rpow_le_rpow_iff hp]
+
 theorem eLpNormEssSup_le_nnreal_smul_eLpNormEssSup_of_ae_le_mul {f : α → F} {g : α → G} {c : ℝ≥0}
     (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) : eLpNormEssSup f μ ≤ c • eLpNormEssSup g μ :=
   calc
