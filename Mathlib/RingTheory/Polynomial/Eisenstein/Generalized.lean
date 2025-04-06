@@ -4,11 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 
--- import Mathlib.RingTheory.EisensteinCriterion
+import Mathlib.Algebra.Polynomial.FieldDivision
 import Mathlib.Algebra.Polynomial.SpecificDegree
 import Mathlib.Data.ZMod.QuotientRing
-import Mathlib.RingTheory.Ideal.Quotient.Operations
-import Mathlib.RingTheory.Polynomial.Content
 
 /-! # A generalized Eisenstein criterion
 
