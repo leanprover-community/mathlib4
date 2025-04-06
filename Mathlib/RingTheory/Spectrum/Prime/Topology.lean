@@ -367,6 +367,9 @@ theorem comap_isInducing_of_surjective (hf : Surjective f) : IsInducing (comap f
 @[deprecated (since := "2024-10-28")]
 alias comap_inducing_of_surjective := comap_isInducing_of_surjective
 
+/-- The embedding has closed range if the domain (and therefore the codomain) is a ring,
+  see `PrimeSpectrum.isClosedEmbedding_comap_of_surjective`.
+  On the other hand, `comap (Nat.castRingHom (ZMod 2))` does not have closed range. -/
 theorem comap_isEmbedding_of_surjective (hf : Surjective f) : IsEmbedding (comap f) :=
   (isEmbedding_iff _).2 ⟨comap_isInducing_of_surjective _ _ hf, comap_injective_of_surjective f hf⟩
 
