@@ -29,10 +29,6 @@ theorem map_finsuppSum' (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R
       ∑ p ∈ f.support.sym2, polarSym2 Q (p.map fun i ↦ g i (f i)) - f.sum fun i a ↦ Q (g i a) :=
   Q.map_sum' ..
 
-lemma polarSym2_map_smul (Q : QuadraticMap R M N) (g : ι → M) (l : ι → R) (p : Sym2 ι) :
-    polarSym2 Q (p.map (l • g)) = (p.map l).mul • polarSym2 Q (p.map g) := by
-  obtain ⟨_, _⟩ := p; simp [← smul_assoc, mul_comm]
-
 open Finsupp in
 theorem apply_linearCombination' (Q : QuadraticMap R M N) {g : ι → M} (l : ι →₀ R) :
     Q (linearCombination R g l) =
