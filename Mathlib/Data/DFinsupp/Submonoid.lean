@@ -44,6 +44,8 @@ theorem dfinsuppSumAddHom_mem [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] {S
     rw [DFinsupp.sumAddHom_apply]
     exact dfinsuppSum_mem s f (g ·) h
 
+@[deprecated (since := "2025-04-06")] alias dfinsupp_sumAddHom_mem := dfinsuppSumAddHom_mem
+
 /-- The supremum of a family of commutative additive submonoids is equal to the range of
 `DFinsupp.sumAddHom`; that is, every element in the `iSup` can be produced from taking a finite
 number of non-zero elements of `S i`, coercing them to `γ`, and summing them. -/
@@ -75,6 +77,10 @@ theorem AddSubmonoid.bsupr_eq_mrange_dfinsuppSumAddHom (p : ι → Prop) [Decida
     by_cases hp : p i
     · simp [hp]
     · simp [hp]
+
+@[deprecated (since := "2025-04-06")]
+alias AddSubmonoid.bsupr_eq_mrange_dfinsupp_sumAddHom :=
+  AddSubmonoid.bsupr_eq_mrange_dfinsuppSumAddHom
 
 theorem AddSubmonoid.mem_iSup_iff_exists_dfinsupp [AddCommMonoid γ] (S : ι → AddSubmonoid γ)
     (x : γ) : x ∈ iSup S ↔ ∃ f : Π₀ i, S i, DFinsupp.sumAddHom (fun i => (S i).subtype) f = x :=
