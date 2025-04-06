@@ -434,9 +434,9 @@ protected theorem nnnorm {β : Type*} [SeminormedAddCommGroup β] {f : α → β
 
 /-- The `enorm` of a strongly a.e. measurable function is a.e. measurable.
 
-Note that unlike `AEStrongMeasurable.norm` and `AEStronglyMeasurable.nnnorm`, this lemma proves
+Note that unlike `AEStronglyMeasurable.norm` and `AEStronglyMeasurable.nnnorm`, this lemma proves
 a.e. measurability, **not** a.e. strong measurability. This is an intentional decision:
-for functions taking values in ℝ≥0∞, a.e. measurability is much more useful than
+for functions taking values in `ℝ≥0∞`, a.e. measurability is much more useful than
 a.e. strong measurability. -/
 @[fun_prop, measurability]
 protected theorem enorm {β : Type*} [TopologicalSpace β] [ContinuousENorm β] {f : α → β}
