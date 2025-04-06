@@ -159,6 +159,13 @@ theorem lintegral_join {m : Measure (Measure α)} {f : α → ℝ≥0∞} (hf : 
   · simp_rw [lintegral_const_mul _ (hf _ _)]
   · exact fun r _ => (hf _ _).const_mul _
 
+theorem lintegral_join_le (f : α → ℝ≥0∞) (m : Measure (Measure α)) :
+    ∫⁻ x, f x ∂join m ≤ ∫⁻ μ, ∫⁻ x, f x ∂μ ∂m := by
+  rcases exists_measurable_le_lintegral_eq (join m) f with ⟨g, hgm, hgf, hfg_int⟩
+  rw [hfg_int, lintegral_join hgm]
+  gcongr
+  apply hgf
+
 /-- Monadic bind on `Measure`, only works in the category of measurable spaces and measurable
 functions. When the function `f` is not measurable the result is not well defined. -/
 def bind (m : Measure α) (f : α → Measure β) : Measure β :=
@@ -201,6 +208,10 @@ theorem measurable_bind' {g : α → Measure β} (hg : Measurable g) :
 theorem lintegral_bind {m : Measure α} {μ : α → Measure β} {f : β → ℝ≥0∞} (hμ : Measurable μ)
     (hf : Measurable f) : ∫⁻ x, f x ∂bind m μ = ∫⁻ a, ∫⁻ x, f x ∂μ a ∂m :=
   (lintegral_join hf).trans (lintegral_map (measurable_lintegral hf) hμ)
+
+theorem lintegral_bind_le {m : Measure α} {μ : α → Measure β} {f : β → ℝ≥0∞} :
+    ∫⁻ x, f x ∂bind m μ ≤ ∫⁻ a, ∫⁻ x, f x ∂μ a ∂m :=
+  (lintegral_join_le _ _).trans (lintegral_map_le _ _)
 
 theorem bind_bind {γ} [MeasurableSpace γ] {m : Measure α} {f : α → Measure β} {g : β → Measure γ}
     (hf : Measurable f) (hg : Measurable g) : bind (bind m f) g = bind m fun a => bind (f a) g := by
