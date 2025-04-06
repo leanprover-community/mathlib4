@@ -409,12 +409,13 @@ theorem image_fract (s : Set α) : fract '' s = ⋃ m : ℤ, (fun x : α => x - 
 
 section LinearOrderedField
 
-variable {k : Type*} [LinearOrderedField k] [FloorRing k] {b : k}
+variable {k : Type*} [Field k] [LinearOrder k] [IsStrictOrderedRing k] [FloorRing k] {b : k}
 
 theorem fract_div_mul_self_mem_Ico (a b : k) (ha : 0 < a) : fract (b / a) * a ∈ Ico 0 a :=
   ⟨(mul_nonneg_iff_of_pos_right ha).2 (fract_nonneg (b / a)),
     (mul_lt_iff_lt_one_left ha).2 (fract_lt_one (b / a))⟩
 
+omit [IsStrictOrderedRing k] in
 theorem fract_div_mul_self_add_zsmul_eq (a b : k) (ha : a ≠ 0) :
     fract (b / a) * a + ⌊b / a⌋ • a = b := by
   rw [zsmul_eq_mul, ← add_mul, fract_add_floor, div_mul_cancel₀ b ha]
