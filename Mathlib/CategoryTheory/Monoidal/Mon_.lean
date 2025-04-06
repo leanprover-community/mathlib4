@@ -801,9 +801,9 @@ Projects:
 * More generally, check that `Mon_ (Mon_ C) ≌ CommMon_ C` when `C` is braided.
 * Check that `Mon_ TopCat ≌ [bundled topological monoids]`.
 * Check that `Mon_ AddCommGrp ≌ RingCat`.
-  (We've already got `Mon_ (ModuleCat R) ≌ AlgebraCat R`,
+  (We've already got `Mon_ (ModuleCat R) ≌ Alg R`,
   in `Mathlib.CategoryTheory.Monoidal.Internal.Module`.)
-* Can you transport this monoidal structure to `RingCat` or `AlgebraCat R`?
+* Can you transport this monoidal structure to `RingCat` or `Alg R`?
   How does it compare to the "native" one?
 * Show that when `F` is a lax braided functor `C ⥤ D`, the functor `map_Mon F : Mon_ C ⥤ Mon_ D`
   is lax monoidal.

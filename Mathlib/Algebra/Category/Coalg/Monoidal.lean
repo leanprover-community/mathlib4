@@ -22,7 +22,7 @@ using `Monoidal.induced`.
 
 universe v u
 
-namespace CoalgebraCat
+namespace Coalg
 variable (R : Type u) [CommRing R]
 
 open CategoryTheory Coalgebra
@@ -30,21 +30,21 @@ open scoped TensorProduct MonoidalCategory
 
 @[simps]
 noncomputable instance instMonoidalCategoryStruct :
-    MonoidalCategoryStruct.{u} (CoalgebraCat R) where
+    MonoidalCategoryStruct.{u} (Coalg R) where
   tensorObj X Y := of R (X ⊗[R] Y)
   whiskerLeft X _ _ f := ofHom (f.1.lTensor X)
   whiskerRight f X := ofHom (f.1.rTensor X)
   tensorHom f g := ofHom (Coalgebra.TensorProduct.map f.1 g.1)
-  tensorUnit := CoalgebraCat.of R R
-  associator X Y Z := (Coalgebra.TensorProduct.assoc R X Y Z).toCoalgebraCatIso
-  leftUnitor X := (Coalgebra.TensorProduct.lid R X).toCoalgebraCatIso
-  rightUnitor X := (Coalgebra.TensorProduct.rid R X).toCoalgebraCatIso
+  tensorUnit := Coalg.of R R
+  associator X Y Z := (Coalgebra.TensorProduct.assoc R X Y Z).toCoalgIso
+  leftUnitor X := (Coalgebra.TensorProduct.lid R X).toCoalgIso
+  rightUnitor X := (Coalgebra.TensorProduct.rid R X).toCoalgIso
 
 /-- The data needed to induce a `MonoidalCategory` structure via
-`CoalgebraCat.instMonoidalCategoryStruct` and the forgetful functor to modules. -/
+`Coalg.instMonoidalCategoryStruct` and the forgetful functor to modules. -/
 @[simps]
 noncomputable def MonoidalCategory.inducingFunctorData :
-    Monoidal.InducingFunctorData (forget₂ (CoalgebraCat R) (ModuleCat R)) where
+    Monoidal.InducingFunctorData (forget₂ (Coalg R) (ModuleCat R)) where
   μIso _ _ := Iso.refl _
   whiskerLeft_eq X Y Z f := by ext; rfl
   whiskerRight_eq X f := by ext; rfl
@@ -54,7 +54,7 @@ noncomputable def MonoidalCategory.inducingFunctorData :
   leftUnitor_eq X := ModuleCat.hom_ext <| TensorProduct.ext <| by ext; rfl
   rightUnitor_eq X := ModuleCat.hom_ext <| TensorProduct.ext <| by ext; rfl
 
-noncomputable instance instMonoidalCategory : MonoidalCategory (CoalgebraCat R) :=
+noncomputable instance instMonoidalCategory : MonoidalCategory (Coalg R) :=
   Monoidal.induced (forget₂ _ (ModuleCat R)) (MonoidalCategory.inducingFunctorData R)
 
-end CoalgebraCat
+end Coalg
