@@ -291,7 +291,7 @@ theorem MapClusterPt.curry_prodMap {α β : Type*}
     {f : α → X} {g : β → Y} {la : Filter α} {lb : Filter β} {x : X} {y : Y}
     (hf : MapClusterPt x la f) (hg : MapClusterPt y lb g) :
     MapClusterPt (x, y) (la.curry lb) (.map f g) := by
-  rw [mapClusterPt_iff] at hf hg
+  rw [mapClusterPt_iff_frequently] at hf hg
   rw [((𝓝 x).basis_sets.prod_nhds (𝓝 y).basis_sets).mapClusterPt_iff_frequently]
   rintro ⟨s, t⟩ ⟨hs, ht⟩
   rw [frequently_curry_iff]

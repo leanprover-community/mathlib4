@@ -7,6 +7,10 @@ import Mathlib.Algebra.Algebra.Subalgebra.Tower
 import Mathlib.Data.Finite.Sum
 import Mathlib.Data.Matrix.Block
 import Mathlib.Data.Matrix.Notation
+import Mathlib.LinearAlgebra.Basis.Basic
+import Mathlib.LinearAlgebra.Basis.Fin
+import Mathlib.LinearAlgebra.Basis.Prod
+import Mathlib.LinearAlgebra.Basis.SMul
 import Mathlib.LinearAlgebra.Matrix.StdBasis
 import Mathlib.RingTheory.AlgebraTower
 import Mathlib.RingTheory.Ideal.Span
@@ -62,7 +66,6 @@ and (presumably) adding `_left` where necessary.
 linear_map, matrix, linear_equiv, diagonal, det, trace
 -/
 
-
 noncomputable section
 
 open LinearMap Matrix Set Submodule
@@ -96,7 +99,7 @@ theorem range_vecMulLinear (M : Matrix m n R) :
   unfold vecMul
   simp_rw [single_dotProduct, one_mul]
 
-theorem Matrix.vecMul_injective_iff {R : Type*} [CommRing R] {M : Matrix m n R} :
+theorem Matrix.vecMul_injective_iff {R : Type*} [Ring R] {M : Matrix m n R} :
     Function.Injective M.vecMul ↔ LinearIndependent R (fun i ↦ M i) := by
   rw [← coe_vecMulLinear]
   simp only [← LinearMap.ker_eq_bot, Fintype.linearIndependent_iff, Submodule.eq_bot_iff,
@@ -109,7 +112,7 @@ theorem Matrix.vecMul_injective_iff {R : Type*} [CommRing R] {M : Matrix m n R} 
     ext j
     simp [vecMul, dotProduct]
 
-lemma Matrix.linearIndependent_rows_of_isUnit {R : Type*} [CommRing R] {A : Matrix m m R}
+lemma Matrix.linearIndependent_rows_of_isUnit {R : Type*} [Ring R] {A : Matrix m m R}
     [DecidableEq m] (ha : IsUnit A) : LinearIndependent R (fun i ↦ A i) := by
   rw [← Matrix.vecMul_injective_iff]
   exact Matrix.vecMul_injective_of_isUnit ha
@@ -176,7 +179,6 @@ def Matrix.toLinearEquivRight'OfInv [Fintype n] [DecidableEq n] {M : Matrix m n 
     left_inv := fun x ↦ by
       rw [← Matrix.toLinearMapRight'_mul_apply, hM'M, Matrix.toLinearMapRight'_one, id_apply]
     right_inv := fun x ↦ by
-      dsimp only -- Porting note: needed due to non-flat structures
       rw [← Matrix.toLinearMapRight'_mul_apply, hMM', Matrix.toLinearMapRight'_one, id_apply] }
 
 end
@@ -410,7 +412,6 @@ def Matrix.toLin'OfInv [Fintype m] [DecidableEq m] {M : Matrix m n R} {M' : Matr
     invFun := Matrix.toLin' M
     left_inv := fun x ↦ by rw [← Matrix.toLin'_mul_apply, hMM', Matrix.toLin'_one, id_apply]
     right_inv := fun x ↦ by
-      simp only
       rw [← Matrix.toLin'_mul_apply, hM'M, Matrix.toLin'_one, id_apply] }
 
 /-- Linear maps `(n → R) →ₗ[R] (n → R)` are algebra equivalent to `Matrix n n R`. -/
@@ -666,7 +667,6 @@ def Matrix.toLinOfInv [DecidableEq m] {M : Matrix m n R} {M' : Matrix n m R} (hM
     invFun := Matrix.toLin v₂ v₁ M'
     left_inv := fun x ↦ by rw [← Matrix.toLin_mul_apply, hM'M, Matrix.toLin_one, id_apply]
     right_inv := fun x ↦ by
-      simp only
       rw [← Matrix.toLin_mul_apply, hMM', Matrix.toLin_one, id_apply] }
 
 /-- Given a basis of a module `M₁` over a commutative ring `R`, we get an algebra
@@ -808,19 +808,14 @@ such as the trace form or norm map for algebras.
 noncomputable def leftMulMatrix : S →ₐ[R] Matrix m m R where
   toFun x := LinearMap.toMatrix b b (Algebra.lmul R S x)
   map_zero' := by
-    dsimp only  -- porting node: needed due to new-style structures
-    rw [_root_.map_zero, LinearEquiv.map_zero]
+    rw [map_zero, LinearEquiv.map_zero]
   map_one' := by
-    dsimp only  -- porting node: needed due to new-style structures
-    rw [_root_.map_one, LinearMap.toMatrix_one]
+    rw [map_one, LinearMap.toMatrix_one]
   map_add' x y := by
-    dsimp only  -- porting node: needed due to new-style structures
     rw [map_add, LinearEquiv.map_add]
   map_mul' x y := by
-    dsimp only  -- porting node: needed due to new-style structures
-    rw [_root_.map_mul, LinearMap.toMatrix_mul]
+    rw [map_mul, LinearMap.toMatrix_mul]
   commutes' r := by
-    dsimp only  -- porting node: needed due to new-style structures
     ext
     rw [lmul_algebraMap, toMatrix_lsmul, algebraMap_eq_diagonal, Pi.algebraMap_def,
       Algebra.id.map_eq_self]

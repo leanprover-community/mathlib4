@@ -193,6 +193,20 @@ theorem IsCompact.elim_nhds_subcover (hs : IsCompact s) (U : X → Set X) (hU : 
     ∃ t : Finset X, (∀ x ∈ t, x ∈ s) ∧ s ⊆ ⋃ x ∈ t, U x :=
   (hs.elim_nhds_subcover_nhdsSet hU).imp fun _ h ↦ h.imp_right subset_of_mem_nhdsSet
 
+theorem IsCompact.elim_nhdsWithin_subcover' (hs : IsCompact s) (U : ∀ x ∈ s, Set X)
+    (hU : ∀ x (hx : x ∈ s), U x hx ∈ 𝓝[s] x) : ∃ t : Finset s, s ⊆ ⋃ x ∈ t, U x x.2 := by
+  choose V V_nhds hV using fun x hx => mem_nhdsWithin_iff_exists_mem_nhds_inter.1 (hU x hx)
+  refine (hs.elim_nhds_subcover' V V_nhds).imp fun t ht =>
+    subset_trans ?_ (iUnion₂_mono fun x _ => hV x x.2)
+  simpa [← iUnion_inter, ← iUnion_coe_set]
+
+theorem IsCompact.elim_nhdsWithin_subcover (hs : IsCompact s) (U : X → Set X)
+    (hU : ∀ x ∈ s, U x ∈ 𝓝[s] x) : ∃ t : Finset X, (∀ x ∈ t, x ∈ s) ∧ s ⊆ ⋃ x ∈ t, U x := by
+  choose! V V_nhds hV using fun x hx => mem_nhdsWithin_iff_exists_mem_nhds_inter.1 (hU x hx)
+  refine (hs.elim_nhds_subcover V V_nhds).imp fun t ⟨t_sub_s, ht⟩ =>
+    ⟨t_sub_s, subset_trans ?_ (iUnion₂_mono fun x hx => hV x (t_sub_s x hx))⟩
+  simpa [← iUnion_inter]
+
 /-- The neighborhood filter of a compact set is disjoint with a filter `l` if and only if the
 neighborhood filter of each point of this set is disjoint with `l`. -/
 theorem IsCompact.disjoint_nhdsSet_left {l : Filter X} (hs : IsCompact s) :
@@ -415,11 +429,9 @@ theorem IsCompact.eventually_forall_of_forall_eventually {x₀ : X} {K : Set Y} 
   simp only [nhds_prod_eq, ← eventually_iSup, ← hK.prod_nhdsSet_eq_biSup] at hP
   exact hP.curry.mono fun _ h ↦ h.self_of_nhdsSet
 
-@[simp]
 theorem isCompact_empty : IsCompact (∅ : Set X) := fun _f hnf hsf =>
   Not.elim hnf.ne <| empty_mem_iff_bot.1 <| le_principal_iff.1 hsf
 
-@[simp]
 theorem isCompact_singleton {x : X} : IsCompact ({x} : Set X) := fun _ hf hfa =>
   ⟨x, rfl, ClusterPt.of_le_nhds'
     (hfa.trans <| by simpa only [principal_singleton] using pure_le_nhds x) hf⟩
@@ -451,7 +463,7 @@ theorem isCompact_iUnion {ι : Sort*} {f : ι → Set X} [Finite ι] (h : ∀ i,
     IsCompact (⋃ i, f i) :=
   (finite_range f).isCompact_sUnion <| forall_mem_range.2 h
 
-theorem Set.Finite.isCompact (hs : s.Finite) : IsCompact s :=
+@[simp] theorem Set.Finite.isCompact (hs : s.Finite) : IsCompact s :=
   biUnion_of_singleton s ▸ hs.isCompact_biUnion fun _ _ => isCompact_singleton
 
 theorem IsCompact.finite_of_discrete [DiscreteTopology X] (hs : IsCompact s) : s.Finite := by
@@ -577,7 +589,7 @@ theorem Tendsto.isCompact_insert_range_of_cocompact {f : X → Y} {y}
   intro l hne hle
   by_cases hy : ClusterPt y l
   · exact ⟨y, Or.inl rfl, hy⟩
-  simp only [clusterPt_iff, not_forall, ← not_disjoint_iff_nonempty_inter, not_not] at hy
+  simp only [clusterPt_iff_nonempty, not_forall, ← not_disjoint_iff_nonempty_inter, not_not] at hy
   rcases hy with ⟨s, hsy, t, htl, hd⟩
   rcases mem_cocompact.1 (hf hsy) with ⟨K, hKc, hKs⟩
   have : f '' K ∈ l := by

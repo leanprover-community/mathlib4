@@ -390,6 +390,9 @@ variable [S.HasLeftHomology]
 /-- The left homology of a short complex, given by the `H` field of a chosen left homology data. -/
 noncomputable def leftHomology : C := S.leftHomologyData.H
 
+-- `S.leftHomology` is the simp normal form.
+@[simp] lemma leftHomologyData_H : S.leftHomologyData.H = S.leftHomology := rfl
+
 /-- The cycles of a short complex, given by the `K` field of a chosen left homology data. -/
 noncomputable def cycles : C := S.leftHomologyData.K
 

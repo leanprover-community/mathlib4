@@ -553,6 +553,10 @@ lemma IsLocalizedModule.eq_iff_exists [IsLocalizedModule S f] {x₁ x₂} :
     simp_rw [f.map_smul_of_tower, Submonoid.smul_def, ← Module.algebraMap_end_apply R R] at h
     exact ((Module.End_isUnit_iff _).mp <| map_units f c).1 h
 
+lemma IsLocalizedModule.injective_iff_isRegular [IsLocalizedModule S f] :
+    Function.Injective f ↔ ∀ c : S, IsSMulRegular M c := by
+  simp_rw [IsSMulRegular, Function.Injective, eq_iff_exists S, exists_imp, forall_comm (α := S)]
+
 instance IsLocalizedModule.of_linearEquiv (e : M' ≃ₗ[R] M'') [hf : IsLocalizedModule S f] :
     IsLocalizedModule S (e ∘ₗ f : M →ₗ[R] M'') where
   map_units s := by
@@ -958,6 +962,14 @@ theorem smul_injective (s : S) : Function.Injective fun m : M' => s • m :=
 include f in
 theorem smul_inj (s : S) (m₁ m₂ : M') : s • m₁ = s • m₂ ↔ m₁ = m₂ :=
   (smul_injective f s).eq_iff
+
+include f in
+lemma isRegular_of_smul_left_injective {m : M'} (inj : Function.Injective fun r : R ↦ r • m)
+    (s : S) : IsRegular (s : R) :=
+  (Commute.isRegular_iff (Commute.all _)).mpr fun r r' eq ↦ by
+    have := congr_arg (· • m) eq
+    simp_rw [mul_smul, ← Submonoid.smul_def, smul_inj f] at this
+    exact inj this
 
 /-- `mk' f m s` is the fraction `m/s` with respect to the localization map `f`. -/
 noncomputable def mk' (m : M) (s : S) : M' :=

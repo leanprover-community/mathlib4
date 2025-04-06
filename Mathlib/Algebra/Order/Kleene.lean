@@ -104,18 +104,14 @@ abbrev IdemSemiring.ofSemiring [Semiring α] (h : ∀ a : α, a + a = a) : IdemS
     le := fun a b ↦ a + b = b
     le_refl := h
     le_trans := fun a b c hab hbc ↦ by
-      simp only
       rw [← hbc, ← add_assoc, hab]
     le_antisymm := fun a b hab hba ↦ by rwa [← hba, add_comm]
     sup := (· + ·)
     le_sup_left := fun a b ↦ by
-      simp only
       rw [← add_assoc, h]
     le_sup_right := fun a b ↦ by
-      simp only
       rw [add_comm, add_assoc, h]
     sup_le := fun a b c hab hbc ↦ by
-      simp only
       rwa [add_assoc, hbc]
     bot := 0
     bot_le := zero_add }

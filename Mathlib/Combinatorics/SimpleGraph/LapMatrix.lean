@@ -60,12 +60,13 @@ theorem lapMatrix_mulVec_apply [NonAssocRing R] (v : V) (vec : V → R) :
     (G.lapMatrix R *ᵥ vec) v = G.degree v * vec v - ∑ u ∈ G.neighborFinset v, vec u := by
   simp_rw [lapMatrix, sub_mulVec, Pi.sub_apply, degMatrix_mulVec_apply, adjMatrix_mulVec_apply]
 
-theorem lapMatrix_mulVec_const_eq_zero [Ring R] : mulVec (G.lapMatrix R) (fun _ ↦ 1) = 0 := by
+theorem lapMatrix_mulVec_const_eq_zero [NonAssocRing R] :
+    mulVec (G.lapMatrix R) (fun _ ↦ 1) = 0 := by
   ext1 i
   rw [lapMatrix_mulVec_apply]
   simp
 
-theorem dotProduct_mulVec_degMatrix [CommRing R] (x : V → R) :
+theorem dotProduct_mulVec_degMatrix [CommSemiring R] (x : V → R) :
     x ⬝ᵥ (G.degMatrix R *ᵥ x) = ∑ i : V, G.degree i * x i * x i := by
   simp only [dotProduct, degMatrix, mulVec_diagonal, ← mul_assoc, mul_comm]
 
@@ -168,7 +169,7 @@ lemma linearIndependent_lapMatrix_ker_basis_aux :
 lemma top_le_span_range_lapMatrix_ker_basis_aux :
     ⊤ ≤ Submodule.span ℝ (Set.range (lapMatrix_ker_basis_aux G)) := by
   intro x _
-  rw [mem_span_range_iff_exists_fun]
+  rw [Submodule.mem_span_range_iff_exists_fun]
   use Quot.lift x.val (by rw [← lapMatrix_toLin'_apply_eq_zero_iff_forall_reachable G x,
     LinearMap.map_coe_ker])
   ext j
