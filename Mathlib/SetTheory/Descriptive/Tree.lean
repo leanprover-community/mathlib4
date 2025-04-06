@@ -53,7 +53,6 @@ lemma singleton_mem (T : tree A) {a : A} {x : List A} (h : a :: x ∈ T) : [a] �
 lemma take_mem {n : ℕ} (x : T) : x.val.take n ∈ T :=
   mem_of_prefix (x.val.take_prefix n) x.prop
 
-
 /-- A variant of `List.take` internally to a tree -/
 @[simps] def take (n : ℕ) (x : T) : T := ⟨x.val.take n, take_mem x⟩
 
@@ -63,6 +62,7 @@ lemma take_mem {n : ℕ} (x : T) : x.val.take n ∈ T :=
 @[simp] lemma take_eq_take {x : T} {m n : ℕ} :
   take m x = take n x ↔ m ⊓ x.val.length = n ⊓ x.val.length := by simp [Subtype.ext_iff]
 
+/-! ### `subAt`
 
 variable (T) (x y : List A)
 /-- The residual tree obtained by regarding the node x as new root -/
@@ -77,11 +77,11 @@ def subAt : tree A := ⟨(x ++ ·)⁻¹' T, fun _ _ _ ↦ mem_of_append (by rwa 
 @[gcongr] lemma subAt_mono (h : S ≤ T) : subAt S x ≤ subAt T x :=
   Set.preimage_mono h
 
-/-! ### `drop`
-
 /-- A variant of `List.drop` that takes values in `subAt` -/
 @[simps] def drop (n : ℕ) (x : T) : subAt T (Tree.take n x).val :=
   ⟨x.val.drop n, by simp⟩
+
+/-! ### `pullSub`
 
 /-- Adjoint of `subAt`, given by pasting x before the root of T. Explicitly,
   elements are prefixes of x or x with an element of T appended -/
