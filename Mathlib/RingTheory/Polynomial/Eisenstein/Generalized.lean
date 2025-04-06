@@ -26,6 +26,8 @@ The Eisenstein criterion is the particular case where `q := X`.
 The case of a polynomial `q := X - a` is interesting,
 then the mod `P ^ 2` hypothesis can rephrased as saying
 that `f.derivative.eval a ∉ P ^ 2`. (TODO)
+The case of cyclotomic polynomials of prime index `p` could be proved directly
+using that result, taking a = 1; the derivative is `p`.
 
 We give a (possibly non convincing) application to the irreducibility
 of the polynomial `X ^ 4 - 10 * X + 1` in `ℤ[X]`.
