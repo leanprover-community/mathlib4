@@ -212,6 +212,16 @@ theorem inv_fun_map (e : C ≌ D) (X Y : C) (f : X ⟶ Y) :
     e.inverse.map (e.functor.map f) = e.unitInv.app X ≫ f ≫ e.unit.app Y :=
   (NatIso.naturality_1 e.unitIso f).symm
 
+@[reassoc (attr := simp)]
+theorem counit_naturality (e : C ≌ D) {X Y : D} (f : X ⟶ Y) :
+    e.functor.map (e.inverse.map f) ≫ e.counit.app Y = e.counit.app X ≫ f :=
+  e.counit.naturality f
+
+@[reassoc (attr := simp)]
+theorem unit_naturality (e : C ≌ D) {X Y : C} (f : X ⟶ Y) :
+    e.unit.app X ≫ e.inverse.map (e.functor.map f) = f ≫ e.unit.app Y :=
+  (e.unit.naturality f).symm
+
 section
 
 -- In this section we convert an arbitrary equivalence to a half-adjoint equivalence.
