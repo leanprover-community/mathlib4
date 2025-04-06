@@ -101,6 +101,7 @@ theorem Ioc_eq_finset_subtype : Ioc a b = (Ioc (a : ℕ) b).fin n := attachFin_e
 @[deprecated attachFin_Ioo (since := "2025-04-06")]
 theorem Ioo_eq_finset_subtype : Ioo a b = (Ioo (a : ℕ) b).fin n := attachFin_eq_fin _
 
+set_option linter.deprecated false in
 @[deprecated attachFin_uIcc (since := "2025-04-06")]
 theorem uIcc_eq_finset_subtype : uIcc a b = (uIcc (a : ℕ) b).fin n := Icc_eq_finset_subtype _ _
 
