@@ -1,0 +1,65 @@
+/-
+Copyright (c) 2025 María Inés de Frutos-Fernández, Filippo A. E. Nuccio. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
+-/
+import Mathlib.GroupTheory.SpecificGroups.Cyclic
+
+/- # Cyclic linearly ordered groups
+
+This file contains basic results about cyclic linearly ordered groups and their subgroups.
+
+The definitions `LinearOrderedCommGroup.Subgroup.gen_lt_one` (*resp.*
+`LinearOrderedCommGroup.gen_lt_one`) yields a generator of a non-trivial subgroup of a linearly
+ordered commutative group with (*resp.* of a non-trivial linearly ordered commutative group) that
+is strictly less than `1`. The corresponding additive definitions are also provided.
+-/
+
+noncomputable section
+
+namespace LinearOrderedCommGroup
+
+open LinearOrderedCommGroup
+
+variable {G : Type*} [LinearOrderedCommGroup G] [IsCyclic G]
+
+namespace Subgroup
+
+variable (H : Subgroup G) [Nontrivial H]
+
+@[to_additive exists_neg_generator]
+lemma exists_generator_lt_one : ∃ (a : G), a < 1 ∧ Subgroup.zpowers a = H := by
+  obtain ⟨a, ha⟩ := H.isCyclic_iff_exists_zpowers_eq_top.mp H.isCyclic
+  by_cases ha1 : a < 1
+  · exact ⟨a, ha1, ha⟩
+  · simp only [not_lt, le_iff_eq_or_lt] at ha1
+    rcases ha1 with (ha1 | ha1)
+    · rw [← ha1, Subgroup.zpowers_one_eq_bot] at ha
+      exact absurd ha.symm <| (H.nontrivial_iff_ne_bot).mp (by infer_instance)
+    · use a⁻¹, Left.inv_lt_one_iff.mpr ha1
+      rw [Subgroup.zpowers_inv, ha]
+
+@[to_additive neg_gen]
+protected noncomputable def gen_lt_one : G := H.exists_generator_lt_one.choose
+
+@[to_additive neg_gen_neg]
+lemma gen_lt_one_lt_one {G : Type*} [LinearOrderedCommGroup G] [IsCyclic G]
+      (H : Subgroup G) [Nontrivial H] : H.gen_lt_one < 1 :=
+    H.exists_generator_lt_one.choose_spec.1
+
+@[to_additive (attr := simp) neg_gen_zmultiples_eq_top]
+lemma gen_lt_one_zpowers_eq_top {G : Type*} [LinearOrderedCommGroup G] [IsCyclic G]
+      (H : Subgroup G) [Nontrivial H]  : Subgroup.zpowers H.gen_lt_one = H :=
+    H.exists_generator_lt_one.choose_spec.2
+
+end Subgroup
+
+variable (G) [Nontrivial G]
+
+@[to_additive neg_gen]
+noncomputable def gen_lt_one : G := (⊤ : Subgroup G).gen_lt_one
+
+@[to_additive (attr := simp) neg_gen_eq_of_top]
+lemma gen_lt_one_eq_of_top : gen_lt_one G = (⊤ : Subgroup G).gen_lt_one := rfl
+
+end LinearOrderedCommGroup
