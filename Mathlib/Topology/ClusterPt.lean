@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
-import Mathlib.Topology.Basic
+import Mathlib.Topology.Neighborhoods
 
 /-!
 # Lemmas on cluster and accumulation points
@@ -16,15 +16,12 @@ clusters at `x` along `F : Filter α` if `MapClusterPt x F f : ClusterPt x (map 
 In particular the notion of cluster point of a sequence `u` is `MapClusterPt x atTop u`.
 -/
 
-noncomputable section
-
 open Set Filter Topology
 
-universe u v w x
+universe u v w
 
-variable {X : Type u} {Y : Type v} {ι : Sort w} {α β : Type*} {x : X} {s s₁ s₂ t : Set X}
-
-variable [TopologicalSpace X]
+variable {X : Type u} [TopologicalSpace X] {Y : Type v} {ι : Sort w} {α β : Type*}
+  {x : X} {s s₁ s₂ t : Set X}
 
 theorem ClusterPt.neBot {F : Filter X} (h : ClusterPt x F) : NeBot (𝓝 x ⊓ F) :=
   h
