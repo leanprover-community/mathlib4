@@ -521,4 +521,15 @@ instance [Module.FinitePresentation R M] :
     IsLocalizedModule S (LocalizedModule.map S (M := M) (N := N)) :=
   Module.FinitePresentation.isLocalizedModule_mapExtendScalars _ _ _ _
 
+noncomputable def Module.FinitePresentation.LinearEquiv_map [Module.FinitePresentation R M] :=
+  IsLocalizedModule.linearEquiv S (LocalizedModule.mkLinearMap S (M →ₗ[R] N))
+  (IsLocalizedModule.map S (LocalizedModule.mkLinearMap S M) (LocalizedModule.mkLinearMap S N))
+
+noncomputable def Module.FinitePresentation.LinearEquiv_mapExtendScalars
+    [Module.FinitePresentation R M] :=
+  IsLocalizedModule.linearEquiv S (LocalizedModule.mkLinearMap S (M →ₗ[R] N))
+  (IsLocalizedModule.mapExtendScalars S (LocalizedModule.mkLinearMap S M)
+    (LocalizedModule.mkLinearMap S N) (Localization S))
+
+
 end CommRing
