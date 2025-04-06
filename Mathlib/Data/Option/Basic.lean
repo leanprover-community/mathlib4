@@ -198,9 +198,6 @@ theorem none_orElse' (x : Option α) : none.orElse (fun _ ↦ x) = x := by cases
 @[simp]
 theorem orElse_none' (x : Option α) : x.orElse (fun _ ↦ none) = x := by cases x <;> rfl
 
-theorem exists_ne_none {p : Option α → Prop} : (∃ x ≠ none, p x) ↔ (∃ x : α, p x) := by
-  simp only [← exists_prop, bex_ne_none]
-
 theorem iget_mem [Inhabited α] : ∀ {o : Option α}, isSome o → o.iget ∈ o
   | some _, _ => rfl
 
