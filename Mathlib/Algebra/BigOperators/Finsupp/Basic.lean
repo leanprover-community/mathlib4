@@ -582,7 +582,7 @@ theorem Finsupp.mul_sum (b : S) (s : α →₀ R) {f : α → R → S} :
 end
 
 @[simp] lemma Multiset.card_finsuppSum [Zero M] (f : ι →₀ M) (g : ι → M → Multiset α) :
-    card (f.sum g) = f.sum fun i m ↦ card (g i m) := map_finsupp_sum cardHom ..
+    card (f.sum g) = f.sum fun i m ↦ card (g i m) := map_finsuppSum cardHom ..
 
 namespace Nat
 

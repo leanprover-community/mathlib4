@@ -189,7 +189,7 @@ theorem ofReal_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
 @[simp, rclike_simps, norm_cast]
 theorem ofReal_finsupp_sum {α M : Type*} [Zero M] (f : α →₀ M) (g : α → M → ℝ) :
     ((f.sum fun a b => g a b : ℝ) : K) = f.sum fun a b => (g a b : K) :=
-  map_finsupp_sum (algebraMap ℝ K) f g
+  map_finsuppSum (algebraMap ℝ K) f g
 
 @[rclike_simps, norm_cast]
 theorem ofReal_mul (r s : ℝ) : ((r * s : ℝ) : K) = r * s :=

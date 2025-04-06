@@ -556,14 +556,14 @@ alias isInternal_biSup_submodule_of_independent := isInternal_biSup_submodule_of
 
 theorem IsInternal.addSubmonoid_iSupIndep {M : Type*} [AddCommMonoid M] {A : ι → AddSubmonoid M}
     (h : IsInternal A) : iSupIndep A :=
-  iSupIndep_of_dfinsupp_sumAddHom_injective _ h.injective
+  iSupIndep_of_dfinsuppSumAddHom_injective _ h.injective
 
 @[deprecated (since := "2024-11-24")]
 alias IsInternal.addSubmonoid_independent := IsInternal.addSubmonoid_iSupIndep
 
 theorem IsInternal.addSubgroup_iSupIndep {G : Type*} [AddCommGroup G] {A : ι → AddSubgroup G}
     (h : IsInternal A) : iSupIndep A :=
-  iSupIndep_of_dfinsupp_sumAddHom_injective' _ h.injective
+  iSupIndep_of_dfinsuppSumAddHom_injective' _ h.injective
 
 @[deprecated (since := "2024-11-24")]
 alias IsInternal.addSubgroup_independent := IsInternal.addSubgroup_iSupIndep
