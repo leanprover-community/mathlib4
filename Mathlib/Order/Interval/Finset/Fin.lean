@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies
+Authors: Yaël Dillies, Yury Kudryashov
 -/
 import Mathlib.Data.Finset.Fin
 import Mathlib.Order.Interval.Finset.Nat
@@ -21,8 +21,19 @@ namespace Fin
 
 variable (n : ℕ)
 
-instance instLocallyFiniteOrder : LocallyFiniteOrder (Fin n) :=
-  OrderIso.locallyFiniteOrder Fin.orderIsoSubtype
+/-!
+### Locally finite order etc instances
+-/
+
+instance instLocallyFiniteOrder (n : ℕ) : LocallyFiniteOrder (Fin n) where
+  finsetIcc a b := attachFin (Icc a b) fun x hx ↦ (mem_Icc.mp hx).2.trans_lt b.2
+  finset_mem_Icc a b := by simp
+  finsetIco a b := attachFin (Ico a b) fun x hx ↦ (mem_Ico.mp hx).2.trans b.2
+  finset_mem_Ico a b := by simp
+  finsetIoc a b := attachFin (Ioc a b) fun x hx ↦ (mem_Ioc.mp hx).2.trans_lt b.2
+  finset_mem_Ioc a b := by simp
+  finsetIoo a b := attachFin (Ioo a b) fun x hx ↦ (mem_Ioo.mp hx).2.trans b.2
+  finset_mem_Ioo a b := by simp
 
 instance instLocallyFiniteOrderBot : ∀ n, LocallyFiniteOrderBot (Fin n)
   | 0 => IsEmpty.toLocallyFiniteOrderBot
@@ -32,37 +43,96 @@ instance instLocallyFiniteOrderTop : ∀ n, LocallyFiniteOrderTop (Fin n)
   | 0 => IsEmpty.toLocallyFiniteOrderTop
   | _ + 1 => inferInstance
 
-variable {n} (a b : Fin n)
-
-theorem Icc_eq_finset_subtype : Icc a b = (Icc (a : ℕ) b).fin n :=
-  rfl
-
-theorem Ico_eq_finset_subtype : Ico a b = (Ico (a : ℕ) b).fin n :=
-  rfl
-
-theorem Ioc_eq_finset_subtype : Ioc a b = (Ioc (a : ℕ) b).fin n :=
-  rfl
-
-theorem Ioo_eq_finset_subtype : Ioo a b = (Ioo (a : ℕ) b).fin n :=
-  rfl
-
-theorem uIcc_eq_finset_subtype : uIcc a b = (uIcc (a : ℕ) b).fin n := rfl
+variable {n}
+variable {m : ℕ} (a b : Fin n)
 
 @[simp]
-theorem map_valEmbedding_Icc : (Icc a b).map Fin.valEmbedding = Icc ↑a ↑b := by
-  simp [Icc_eq_finset_subtype, Finset.fin, Finset.map_map, Icc_filter_lt_of_lt_right]
+theorem attachFin_Icc :
+    attachFin (Icc a b) (fun _x hx ↦ (mem_Icc.mp hx).2.trans_lt b.2) = Icc a b :=
+  rfl
 
 @[simp]
-theorem map_valEmbedding_Ico : (Ico a b).map Fin.valEmbedding = Ico ↑a ↑b := by
-  simp [Ico_eq_finset_subtype, Finset.fin, Finset.map_map]
+theorem attachFin_Ico :
+    attachFin (Ico a b) (fun _x hx ↦ (mem_Ico.mp hx).2.trans b.2) = Ico a b :=
+  rfl
 
 @[simp]
-theorem map_valEmbedding_Ioc : (Ioc a b).map Fin.valEmbedding = Ioc ↑a ↑b := by
-  simp [Ioc_eq_finset_subtype, Finset.fin, Finset.map_map, Ioc_filter_lt_of_lt_right]
+theorem attachFin_Ioc :
+    attachFin (Ioc a b) (fun _x hx ↦ (mem_Ioc.mp hx).2.trans_lt b.2) = Ioc a b :=
+  rfl
 
 @[simp]
-theorem map_valEmbedding_Ioo : (Ioo a b).map Fin.valEmbedding = Ioo ↑a ↑b := by
-  simp [Ioo_eq_finset_subtype, Finset.fin, Finset.map_map]
+theorem attachFin_Ioo :
+    attachFin (Ioo a b) (fun _x hx ↦ (mem_Ioo.mp hx).2.trans b.2) = Ioo a b :=
+  rfl
+
+@[simp]
+theorem attachFin_uIcc :
+    attachFin (uIcc a b) (fun _x hx ↦ (mem_Icc.mp hx).2.trans_lt (max a b).2) = uIcc a b :=
+  rfl
+
+@[simp]
+theorem attachFin_Iic : attachFin (Iic a) (fun _x hx ↦ (mem_Iic.mp hx).trans_lt a.2) = Iic a := by
+  ext; simp
+
+@[simp]
+theorem attachFin_Ico_size : attachFin (Ico a n) (fun _x hx ↦ (mem_Ico.mp hx).2) = Ici a := by
+  ext; simp
+
+@[simp]
+theorem attachFin_Iio : attachFin (Iio a) (fun _x hx ↦ (mem_Iio.mp hx).trans a.2) = Iio a := by
+  ext; simp
+
+@[simp]
+theorem attachFin_Ioo_size : attachFin (Ioo a n) (fun _x hx ↦ (mem_Ioo.mp hx).2) = Ioi a := by
+  ext; simp
+
+section deprecated
+
+@[deprecated attachFin_Icc (since := "2025-04-06")]
+theorem Icc_eq_finset_subtype : Icc a b = (Icc (a : ℕ) b).fin n := attachFin_eq_fin _
+
+@[deprecated attachFin_Ico (since := "2025-04-06")]
+theorem Ico_eq_finset_subtype : Ico a b = (Ico (a : ℕ) b).fin n := attachFin_eq_fin _
+
+@[deprecated attachFin_Ioc (since := "2025-04-06")]
+theorem Ioc_eq_finset_subtype : Ioc a b = (Ioc (a : ℕ) b).fin n := attachFin_eq_fin _
+
+@[deprecated attachFin_Ioo (since := "2025-04-06")]
+theorem Ioo_eq_finset_subtype : Ioo a b = (Ioo (a : ℕ) b).fin n := attachFin_eq_fin _
+
+@[deprecated attachFin_uIcc (since := "2025-04-06")]
+theorem uIcc_eq_finset_subtype : uIcc a b = (uIcc (a : ℕ) b).fin n := Icc_eq_finset_subtype _ _
+
+@[deprecated attachFin_Ico_size (since := "2025-04-06")]
+theorem Ici_eq_finset_subtype : Ici a = (Ico (a : ℕ) n).fin n := by ext; simp
+
+@[deprecated attachFin_Ioo_size (since := "2025-04-06")]
+theorem Ioi_eq_finset_subtype : Ioi a = (Ioo (a : ℕ) n).fin n := by ext; simp
+
+@[deprecated attachFin_Iic (since := "2025-04-06")]
+theorem Iic_eq_finset_subtype : Iic b = (Iic (b : ℕ)).fin n := by ext; simp
+
+@[deprecated attachFin_Iio (since := "2025-04-06")]
+theorem Iio_eq_finset_subtype : Iio b = (Iio (b : ℕ)).fin n := by ext; simp
+
+end deprecated
+
+@[simp]
+theorem map_valEmbedding_Icc : (Icc a b).map Fin.valEmbedding = Icc ↑a ↑b :=
+  map_valEmbedding_attachFin _
+
+@[simp]
+theorem map_valEmbedding_Ico : (Ico a b).map Fin.valEmbedding = Ico ↑a ↑b :=
+  map_valEmbedding_attachFin _
+
+@[simp]
+theorem map_valEmbedding_Ioc : (Ioc a b).map Fin.valEmbedding = Ioc ↑a ↑b :=
+  map_valEmbedding_attachFin _
+
+@[simp]
+theorem map_valEmbedding_Ioo : (Ioo a b).map Fin.valEmbedding = Ioo ↑a ↑b :=
+  map_valEmbedding_attachFin _
 
 @[simp]
 theorem map_subtype_embedding_uIcc : (uIcc a b).map valEmbedding = uIcc ↑a ↑b :=
@@ -84,59 +154,28 @@ lemma card_Ioo : #(Ioo a b) = b - a - 1 := by rw [← Nat.card_Ioo, ← map_valE
 theorem card_uIcc : #(uIcc a b) = (b - a : ℤ).natAbs + 1 := by
   rw [← Nat.card_uIcc, ← map_subtype_embedding_uIcc, card_map]
 
-theorem Ici_eq_finset_subtype : Ici a = (Icc (a : ℕ) n).fin n := by
-  ext
-  simp
-
-theorem Ioi_eq_finset_subtype : Ioi a = (Ioc (a : ℕ) n).fin n := by
-  ext
-  simp
-
-theorem Iic_eq_finset_subtype : Iic b = (Iic (b : ℕ)).fin n := by
-  ext
-  simp
-
-
-theorem Iio_eq_finset_subtype : Iio b = (Iio (b : ℕ)).fin n := by
-  ext
-  simp
-
 @[simp]
 theorem map_valEmbedding_Ici : (Ici a).map Fin.valEmbedding = Icc ↑a (n - 1) := by
-  ext x
-  simp only [exists_prop, Embedding.coe_subtype, mem_Ici, mem_map, mem_Icc]
-  constructor
-  · rintro ⟨x, hx, rfl⟩
-    exact ⟨hx, Nat.le_sub_of_add_le <| x.2⟩
-  cases n
-  · exact Fin.elim0 a
-  · exact fun hx => ⟨⟨x, Nat.lt_succ_iff.2 hx.2⟩, hx.1, rfl⟩
+  rw [← attachFin_Ico_size, map_valEmbedding_attachFin, Nat.Icc_pred_right]
+  exact a.pos
 
 @[simp]
 theorem map_valEmbedding_Ioi : (Ioi a).map Fin.valEmbedding = Ioc ↑a (n - 1) := by
-  ext x
-  simp only [exists_prop, Embedding.coe_subtype, mem_Ioi, mem_map, mem_Ioc]
-  constructor
-  · rintro ⟨x, hx, rfl⟩
-    exact ⟨hx, Nat.le_sub_of_add_le <| x.2⟩
-  cases n
-  · exact Fin.elim0 a
-  · exact fun hx => ⟨⟨x, Nat.lt_succ_iff.2 hx.2⟩, hx.1, rfl⟩
+  rw [← attachFin_Ioo_size, map_valEmbedding_attachFin]
+  ext i
+  simp [Nat.le_sub_one_iff_lt a.pos]
 
 @[simp]
 theorem map_valEmbedding_Iic : (Iic b).map Fin.valEmbedding = Iic ↑b := by
-  simp [Iic_eq_finset_subtype, Finset.fin, Finset.map_map, Iic_filter_lt_of_lt_right]
+  rw [← attachFin_Iic, map_valEmbedding_attachFin]
 
 @[simp]
 theorem map_valEmbedding_Iio : (Iio b).map Fin.valEmbedding = Iio ↑b := by
-  simp [Iio_eq_finset_subtype, Finset.fin, Finset.map_map]
+  rw [← attachFin_Iio, map_valEmbedding_attachFin]
 
 @[simp]
 theorem card_Ici : #(Ici a) = n - a := by
-  cases n with
-  | zero => exact Fin.elim0 a
-  | succ =>
-    rw [← card_map, map_valEmbedding_Ici, Nat.card_Icc, Nat.add_one_sub_one]
+  rw [← attachFin_Ico_size, card_attachFin, Nat.card_Ico]
 
 @[simp]
 theorem card_Ioi : #(Ioi a) = n - 1 - a := by rw [← card_map, map_valEmbedding_Ioi, Nat.card_Ioc]
