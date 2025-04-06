@@ -681,9 +681,6 @@ instance : QuasiSeparatedSpace (PrimeSpectrum R) :=
     simpa [← TopologicalSpace.Opens.coe_inf, ← basicOpen_mul, -basicOpen_eq_zeroLocus_compl]
       using isCompact_basicOpen _
 
-instance : PrespectralSpace (PrimeSpectrum R) :=
-  .of_isTopologicalBasis isBasis_basic_opens (by simpa using isCompact_basicOpen)
-
 end BasicOpen
 
 section DiscreteTopology
