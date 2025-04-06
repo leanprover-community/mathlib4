@@ -852,8 +852,8 @@ section ENorm
 lemma enorm_one' {E : Type*} [TopologicalSpace E] [ENormedMonoid E] : ‖(1 : E)‖ₑ = 0 := by
   rw [ENormedMonoid.enorm_eq_zero]
 
-@[to_additive]
-lemma ENormedMonoid.exists_enorm_lt (E : Type*) [TopologicalSpace E] [ENormedMonoid E]
+@[to_additive exists_enorm_lt]
+lemma exists_enorm_lt' (E : Type*) [TopologicalSpace E] [ENormedMonoid E]
     [hbot : NeBot (𝓝[≠] (1 : E))] {c : ℝ≥0∞} (hc : c ≠ 0) : ∃ x ≠ (1 : E), ‖x‖ₑ < c :=
   frequently_iff_neBot.mpr hbot |>.and_eventually
     (ContinuousENorm.continuous_enorm.tendsto' 1 0 (by simp) |>.eventually_lt_const hc.bot_lt)
