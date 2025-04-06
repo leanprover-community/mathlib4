@@ -5,7 +5,6 @@ Authors: María Inés de Frutos-Fernández
 -/
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
 import Mathlib.RingTheory.DedekindDomain.Factorization
-import Mathlib.Algebra.Order.GroupWithZero.WithZero
 import Mathlib.Topology.Algebra.RestrictedProduct
 
 /-!
@@ -13,7 +12,7 @@ import Mathlib.Topology.Algebra.RestrictedProduct
 We define the ring of finite adèles of a Dedekind domain `R`.
 
 ## Main definitions
-- `DedekindDomain.finiteAdeleRing` : The finite adèle ring of `R`, defined as the
+- `DedekindDomain.FiniteAdeleRing` : The finite adèle ring of `R`, defined as the
   restricted product `Πʳ_v K_v`. We give this ring a `K`-algebra structure.
 
 ## Implementation notes
@@ -120,14 +119,9 @@ protected def algebraMap : K →+* FiniteAdeleRing R K where
   map_add' x y := Subtype.eq <| funext (fun v ↦
     UniformSpace.Completion.coe_add ((WithVal.equiv (valuation K v)).symm x) y)
 
-instance : Algebra K (FiniteAdeleRing R K) where
-  smul x y := ((FiniteAdeleRing.algebraMap R K) x) * y
-  algebraMap := DedekindDomain.FiniteAdeleRing.algebraMap R K
-  commutes' _ _ := mul_comm _ _
-  smul_def' _ _ := rfl
+instance : Algebra K (FiniteAdeleRing R K) := (FiniteAdeleRing.algebraMap R K).toAlgebra
 
-instance : Algebra R (FiniteAdeleRing R K) :=
-  ((algebraMap K (FiniteAdeleRing R K)).comp (algebraMap R K)).toAlgebra
+instance : Algebra R (FiniteAdeleRing R K) := Algebra.compHom _ (algebraMap R K)
 
 instance : IsScalarTower R K (FiniteAdeleRing R K) :=
   IsScalarTower.of_algebraMap_eq' rfl
