@@ -100,6 +100,7 @@ theorem exists_eq_C_leadingCoeff_mul_pow_add
   rwa [IsScalarTower.algebraMap_apply R (R ⧸ P) K, ne_eq,
     FaithfulSMul.algebraMap_eq_zero_iff, Ideal.Quotient.algebraMap_eq, eq_zero_iff_mem]
 
+/-- A generalized Eisenstein criterion -/
 theorem generalizedEisenstein [IsDomain R] (hP : P.IsPrime)
     (hq_irr : Irreducible (q.map (algebraMap R K))) (hq_monic : q.Monic)
     {f : R[X]} {p : ℕ}
