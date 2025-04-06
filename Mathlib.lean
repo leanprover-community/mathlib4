@@ -765,6 +765,7 @@ import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Algebra.Order.Group.Bounds
 import Mathlib.Algebra.Order.Group.CompleteLattice
 import Mathlib.Algebra.Order.Group.Cone
+import Mathlib.Algebra.Order.Group.Cyclic
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Group.DenselyOrdered
 import Mathlib.Algebra.Order.Group.End
