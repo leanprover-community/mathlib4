@@ -178,10 +178,9 @@ lemma Module.length_prod :
 
 variable (R) in
 @[simp]
-lemma Module.length_pi_of_fintype {ι : Type*} [Fintype ι]
-    (M : ι → Type*) [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)] :
+lemma Module.length_pi_of_fintype : ∀ {ι : Type*} [Fintype ι]
+    (M : ι → Type*) [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)],
     Module.length R (Π i, M i) = ∑ i, Module.length R (M i) := by
-  revert ι
   apply Fintype.induction_empty_option
   · intro α β _ e IH M _ _
     let _ : Fintype α := .ofEquiv β e.symm
@@ -241,8 +240,7 @@ variable (R M) in
 lemma Module.length_of_free_of_finite
     [StrongRankCondition R] [Module.Free R M] [Module.Finite R M] :
     Module.length R M = Module.finrank R M * Module.length R R := by
-  nontriviality R
-  rw [Module.length_of_free, Cardinal.toENat_eq_nat.mpr (Module.finrank_eq_rank _ _).symm]
+  rw [length_of_free, Cardinal.toENat_eq_nat.mpr (finrank_eq_rank _ _).symm]
 
 lemma Module.length_eq_one_iff :
     Module.length R M = 1 ↔ IsSimpleModule R M := by

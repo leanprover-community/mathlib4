@@ -73,12 +73,10 @@ lemma rank_eq_zero_iff :
     simpa using DFunLike.congr_fun (linearIndependent_iff.mp hs (Finsupp.single i a) (by simpa)) i
 
 theorem rank_pos_of_free [Module.Free R M] [Nontrivial M] :
-    0 < Module.rank R M := by
-  have i := Nonempty.some (α := Module.Free.ChooseBasisIndex R M) inferInstance
-  rw [pos_iff_ne_zero, ne_eq, rank_eq_zero_iff]
-  simp only [ne_eq, not_forall, not_exists, not_and, not_imp_not]
-  exact ⟨Module.Free.chooseBasis R M i,
-    fun x hx ↦ by simpa using congr((Module.Free.chooseBasis R M).repr $hx)⟩
+    0 < Module.rank R M :=
+  have := Module.nontrivial R M
+  (pos_of_ne_zero <| Cardinal.mk_ne_zero _).trans_le
+    (Free.chooseBasis R M).linearIndependent.cardinal_le_rank
 
 variable [Nontrivial R]
 
