@@ -47,12 +47,12 @@ theorem sum_polar_sub_repr_sq (Q : QuadraticMap R M N) (bm : Basis ι R M) (x : 
 
 variable [DecidableEq ι]
 
--- c.f. `_root_.map_finsupp_sum`
+/-- The quadratic version of `_root_.map_finsupp_sum`. -/
 theorem map_finsuppSum (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R → M) :
     Q (f.sum g) = f.sum (fun i r ↦ Q (g i r)) +
       ∑ p ∈ f.support.sym2 with ¬ p.IsDiag, polarSym2 Q (p.map fun i ↦ g i (f i)) := Q.map_sum _ _
 
--- c.f. `Finsupp.apply_linearCombination`
+/-- The quadratic version of `Finsupp.apply_linearCombination`. -/
 theorem apply_linearCombination (Q : QuadraticMap R M N) {g : ι → M} (l : ι →₀ R) :
     Q (linearCombination R g l) = linearCombination R (Q ∘ g) (l * l) +
       ∑ p ∈ l.support.sym2 with ¬ p.IsDiag, (p.map l).mul • polarSym2 Q (p.map g) := by
@@ -60,7 +60,7 @@ theorem apply_linearCombination (Q : QuadraticMap R M N) {g : ι → M} (l : ι 
   rw [(l * l).sum_of_support_subset support_mul_subset_left _ <| by simp]
   simp [Finsupp.sum, ← polarSym2_map_smul, mul_smul]
 
--- c.f. `LinearMap.sum_repr_mul_repr_mul`
+/-- The quadratic version of `LinearMap.sum_repr_mul_repr_mul`. -/
 theorem sum_repr_sq_add_sum_repr_mul_polar (Q : QuadraticMap R M N) (bm : Basis ι R M) (x : M) :
     linearCombination R (Q ∘ bm) (bm.repr x * bm.repr x) +
       ∑ p ∈ (bm.repr x).support.sym2 with ¬ p.IsDiag,
