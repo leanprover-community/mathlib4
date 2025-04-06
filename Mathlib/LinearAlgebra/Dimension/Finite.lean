@@ -99,20 +99,6 @@ theorem rank_pos [Nontrivial M] : 0 < Module.rank R M :=
 
 end
 
-variable (R M)
-
-/-- See `rank_subsingleton` that assumes `Subsingleton R` instead. -/
-theorem rank_subsingleton' [Subsingleton M] : Module.rank R M = 0 :=
-  rank_eq_zero_iff.mpr fun _ ↦ ⟨1, one_ne_zero, Subsingleton.elim _ _⟩
-
-@[simp]
-theorem rank_punit : Module.rank R PUnit = 0 := rank_subsingleton' _ _
-
-@[simp]
-theorem rank_bot : Module.rank R (⊥ : Submodule R M) = 0 := rank_subsingleton' _ _
-
-variable {R M}
-
 theorem exists_mem_ne_zero_of_rank_pos {s : Submodule R M} (h : 0 < Module.rank R s) :
     ∃ b : M, b ∈ s ∧ b ≠ 0 :=
   exists_mem_ne_zero_of_ne_bot fun eq => by rw [eq, rank_bot] at h; exact lt_irrefl _ h
