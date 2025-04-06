@@ -5824,6 +5824,8 @@ import Mathlib.Topology.Category.TopCommRingCat
 import Mathlib.Topology.Category.UniformSpace
 import Mathlib.Topology.Clopen
 import Mathlib.Topology.ClopenBox
+import Mathlib.Topology.Closure
+import Mathlib.Topology.ClusterPt
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.Compactification.OnePoint
 import Mathlib.Topology.Compactification.OnePointEquiv
@@ -5846,6 +5848,7 @@ import Mathlib.Topology.Connected.TotallyDisconnected
 import Mathlib.Topology.Constructible
 import Mathlib.Topology.Constructions
 import Mathlib.Topology.Constructions.SumProd
+import Mathlib.Topology.Continuous
 import Mathlib.Topology.ContinuousMap.Algebra
 import Mathlib.Topology.ContinuousMap.Basic
 import Mathlib.Topology.ContinuousMap.Bounded.ArzelaAscoli
@@ -6017,6 +6020,7 @@ import Mathlib.Topology.Metrizable.ContinuousMap
 import Mathlib.Topology.Metrizable.Real
 import Mathlib.Topology.Metrizable.Uniformity
 import Mathlib.Topology.Metrizable.Urysohn
+import Mathlib.Topology.Neighborhoods
 import Mathlib.Topology.NhdsSet
 import Mathlib.Topology.NoetherianSpace
 import Mathlib.Topology.OmegaCompletePartialOrder
