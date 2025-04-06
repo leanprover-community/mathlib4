@@ -87,7 +87,7 @@ lemma Ideal.disjoint_nonZeroDivisors_of_mem_minimalPrimes {p : Ideal R} (hp : p 
   simp_rw [exists_prop, @and_comm (_ * _ = _), ← mul_comm x]
   exact Ideal.exists_mul_mem_of_mem_minimalPrimes hp hxp
 
-theorem Ideal.exists_comap_eq_of_mem_minimalPrimes_of_injective {f : R →+* S}
+@[stacks 00FK] theorem Ideal.exists_comap_eq_of_mem_minimalPrimes_of_injective {f : R →+* S}
     (hf : Function.Injective f) (p) (H : p ∈ minimalPrimes R) :
     ∃ p' : Ideal S, p'.IsPrime ∧ p'.comap f = p := by
   have := H.1.1
