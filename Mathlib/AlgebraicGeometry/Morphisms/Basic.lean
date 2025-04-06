@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.AlgebraicGeometry.Pullbacks
+import Mathlib.AlgebraicGeometry.Limits
 import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.Data.List.TFAE
 
@@ -91,7 +92,7 @@ For `HasAffineProperty P Q` and `f : X ⟶ Y`, we provide these API lemmas:
 -/
 
 
-universe u
+universe u v
 
 open TopologicalSpace CategoryTheory CategoryTheory.Limits Opposite
 
@@ -293,6 +294,11 @@ lemma isLocalAtTarget [P.IsMultiplicative]
     constructor
     · exact hP _ _
     · exact fun H ↦ P.comp_mem _ _ H (of_isOpenImmersion _)
+
+lemma sigmaDesc {X : Scheme.{u}} {ι : Type v} [Small.{u} ι] {Y : ι → Scheme.{u}}
+    {f : ∀ i, Y i ⟶ X} (hf : ∀ i, P (f i)) : P (Sigma.desc f) := by
+  rw [IsLocalAtSource.iff_of_openCover (P := P) (sigmaOpenCover _)]
+  exact fun i ↦ by simp [hf]
 
 section IsLocalAtSourceAndTarget
 
