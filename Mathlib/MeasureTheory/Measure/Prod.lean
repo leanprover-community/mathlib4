@@ -326,8 +326,27 @@ theorem ae_measure_lt_top {s : Set (α × β)} (hs : MeasurableSet s) (h2s : (μ
   rw [prod_apply hs] at h2s
   exact ae_lt_top (measurable_measure_prodMk_left hs) h2s
 
-/-- Note: the assumption `hs` cannot be dropped. For a counterexample, see
-  Walter Rudin *Real and Complex Analysis*, example (c) in section 8.9. -/
+omit [SFinite ν] in
+/-- If `μ`-a.e. section `{y | (x, y) ∈ s}` of a measurable set have `ν` measure zero,
+then `s` has `μ.prod ν` measure zero.
+
+This implication requires `s` to be measurable but does not require `ν` to be s-finite.
+See also `measure_prod_null` and `measure_ae_null_of_prod_null` below. -/
+theorem measure_prod_null_of_ae_null {s : Set (α × β)} (hsm : MeasurableSet s)
+    (hs : (fun x => ν (Prod.mk x ⁻¹' s)) =ᵐ[μ] 0) : μ.prod ν s = 0 := by
+  rw [← nonpos_iff_eq_zero]
+  calc
+    μ.prod ν s ≤ ∫⁻ x, ν (Prod.mk x ⁻¹' s) ∂μ := prod_apply_le hsm
+    _ = 0 := by simp [lintegral_congr_ae hs]
+
+/-- A measurable set `s` has `μ.prod ν` measure zero, where `ν` is an s-finite measure,
+if and only if `μ`-a.e. section `{y | (x, y) ∈ s}` of `s` have `ν` measure zero.
+
+See `measure_ae_null_of_prod_null` for the forward implication without the measurability assumption
+and `measure_prod_null_of_ae_null` for the reverse implication without the s-finiteness assumption.
+
+Note: the assumption `hs` cannot be dropped. For a counterexample, see
+Walter Rudin *Real and Complex Analysis*, example (c) in section 8.9. -/
 theorem measure_prod_null {s : Set (α × β)} (hs : MeasurableSet s) :
     μ.prod ν s = 0 ↔ (fun x => ν (Prod.mk x ⁻¹' s)) =ᵐ[μ] 0 := by
   rw [prod_apply hs, lintegral_eq_zero_iff (measurable_measure_prodMk_left hs)]
@@ -344,10 +363,12 @@ theorem measure_ae_null_of_prod_null {s : Set (α × β)} (h : μ.prod ν s = 0)
         ht,
       Eventually.of_forall fun x => zero_le _⟩
 
+omit [SFinite ν] in
 theorem AbsolutelyContinuous.prod [SFinite ν'] (h1 : μ ≪ μ') (h2 : ν ≪ ν') :
     μ.prod ν ≪ μ'.prod ν' := by
   refine AbsolutelyContinuous.mk fun s hs h2s => ?_
-  rw [measure_prod_null hs] at h2s ⊢
+  apply measure_prod_null_of_ae_null hs
+  rw [measure_prod_null hs] at h2s
   exact (h2s.filter_mono h1.ae_le).mono fun _ h => h2 h
 
 /-- Note: the converse is not true. For a counterexample, see
@@ -373,14 +394,21 @@ theorem ae_prod_mem_iff_ae_ae_mem {s : Set (α × β)} (hs : MeasurableSet s) :
     (∀ᵐ z ∂μ.prod ν, z ∈ s) ↔ ∀ᵐ x ∂μ, ∀ᵐ y ∂ν, (x, y) ∈ s :=
   measure_prod_null hs.compl
 
+omit [SFinite ν] in
 theorem quasiMeasurePreserving_fst : QuasiMeasurePreserving Prod.fst (μ.prod ν) μ := by
   refine ⟨measurable_fst, AbsolutelyContinuous.mk fun s hs h2s => ?_⟩
-  rw [map_apply measurable_fst hs, ← prod_univ, prod_prod, h2s, zero_mul]
+  rw [map_apply measurable_fst hs, ← prod_univ, ← nonpos_iff_eq_zero]
+  refine (prod_prod_le _ _).trans_eq ?_
+  rw [h2s, zero_mul]
 
+omit [SFinite ν] in
 theorem quasiMeasurePreserving_snd : QuasiMeasurePreserving Prod.snd (μ.prod ν) ν := by
   refine ⟨measurable_snd, AbsolutelyContinuous.mk fun s hs h2s => ?_⟩
-  rw [map_apply measurable_snd hs, ← univ_prod, prod_prod, h2s, mul_zero]
+  rw [map_apply measurable_snd hs, ← univ_prod, ← nonpos_iff_eq_zero]
+  refine (prod_prod_le _ _).trans_eq ?_
+  rw [h2s, mul_zero]
 
+omit [SFinite ν] in
 lemma set_prod_ae_eq {s s' : Set α} {t t' : Set β} (hs : s =ᵐ[μ] s') (ht : t =ᵐ[ν] t') :
     (s ×ˢ t : Set (α × β)) =ᵐ[μ.prod ν] (s' ×ˢ t' : Set (α × β)) :=
   (quasiMeasurePreserving_fst.preimage_ae_eq hs).inter
@@ -392,6 +420,7 @@ lemma measure_prod_compl_eq_zero {s : Set α} {t : Set β}
   rw [Set.compl_prod_eq_union, measure_union_null_iff]
   simp [s_ae_univ, t_ae_univ]
 
+omit [SFinite ν] in
 lemma _root_.MeasureTheory.NullMeasurableSet.prod {s : Set α} {t : Set β}
     (s_mble : NullMeasurableSet s μ) (t_mble : NullMeasurableSet t ν) :
     NullMeasurableSet (s ×ˢ t) (μ.prod ν) :=
