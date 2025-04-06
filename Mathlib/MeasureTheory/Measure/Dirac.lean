@@ -3,9 +3,11 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.MeasureTheory.Measure.Typeclasses
-import Mathlib.MeasureTheory.Measure.MutuallySingular
 import Mathlib.MeasureTheory.MeasurableSpace.CountablyGenerated
+import Mathlib.MeasureTheory.Measure.MutuallySingular
+import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
+import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
+import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
 
 /-!
 # Dirac measure
@@ -135,6 +137,11 @@ theorem ae_eq_dirac' [MeasurableSingletonClass β] {a : α} {f : α → β} (hf 
 
 theorem ae_eq_dirac [MeasurableSingletonClass α] {a : α} (f : α → δ) :
     f =ᵐ[dirac a] const α (f a) := by simp [Filter.EventuallyEq]
+
+@[fun_prop]
+lemma aemeasurable_dirac [MeasurableSingletonClass α] {a : α} {f : α → β} :
+    AEMeasurable f (Measure.dirac a) :=
+  ⟨fun _ ↦ f a, measurable_const, ae_eq_dirac f⟩
 
 instance Measure.dirac.isProbabilityMeasure {x : α} : IsProbabilityMeasure (dirac x) :=
   ⟨dirac_apply_of_mem <| mem_univ x⟩

@@ -123,7 +123,7 @@ abbrev LinearMapClass (F : Type*) (R : outParam Type*) (M M₂ : Type*)
 protected lemma LinearMapClass.map_smul {R M M₂ : outParam Type*} [Semiring R] [AddCommMonoid M]
     [AddCommMonoid M₂] [Module R M] [Module R M₂]
     {F : Type*} [FunLike F M M₂] [LinearMapClass F R M M₂] (f : F) (r : R) (x : M) :
-    f (r • x) = r • f x := by rw [_root_.map_smul]
+    f (r • x) = r • f x := by rw [map_smul]
 
 namespace SemilinearMapClass
 
@@ -371,6 +371,11 @@ theorem map_smul_of_tower [CompatibleSMul M M₂ R S] (fₗ : M →ₗ[S] M₂) 
     fₗ (c • x) = c • fₗ x :=
   CompatibleSMul.map_smul fₗ c x
 
+theorem _root_.LinearMapClass.map_smul_of_tower {F : Type*} [CompatibleSMul M M₂ R S]
+    [FunLike F M M₂] [LinearMapClass F S M M₂] (fₗ : F) (c : R) (x : M) :
+    fₗ (c • x) = c • fₗ x :=
+  LinearMap.CompatibleSMul.map_smul (fₗ : M →ₗ[S] M₂) c x
+
 variable (R R) in
 theorem isScalarTower_of_injective [SMul R S] [CompatibleSMul M M₂ R S] [IsScalarTower R S M₂]
     (f : M →ₗ[S] M₂) (hf : Function.Injective f) : IsScalarTower R S M where
@@ -472,6 +477,8 @@ This is useful when Lean is struggling to infer the `RingHomCompTriple` instance
 notation3:80 (name := compNotation) f:81 " ∘ₗ " g:80 =>
   LinearMap.comp (σ₁₂ := RingHom.id _) (σ₂₃ := RingHom.id _) (σ₁₃ := RingHom.id _) f g
 
+@[inherit_doc] infixr:90 " ∘ₛₗ " => comp
+
 theorem comp_apply (x : M₁) : f.comp g x = f (g x) :=
   rfl
 
@@ -537,7 +544,6 @@ def inverse (f : M →ₛₗ[σ] M₂) (g : M₂ → M) (h₁ : LeftInverse g f)
     { toFun := g
       map_add' := fun x y ↦ by rw [← h₁ (g (x + y)), ← h₁ (g x + g y)]; simp [h₂]
       map_smul' := fun a b ↦ by
-        dsimp only
         rw [← h₁ (g (a • b)), ← h₁ (σ' a • g b)]
         simp [h₂] }
 

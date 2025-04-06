@@ -43,7 +43,7 @@ theorem replicate_add (m n : ℕ) (a : α) : replicate (m + n) a = replicate m a
 theorem replicate_one (a : α) : replicate 1 a = {a} := rfl
 
 @[simp] theorem card_replicate (n) (a : α) : card (replicate n a) = n :=
-  length_replicate n a
+  length_replicate
 
 theorem mem_replicate {a b : α} {n : ℕ} : b ∈ replicate n a ↔ n ≠ 0 ∧ b = a :=
   List.mem_replicate
@@ -69,7 +69,6 @@ theorem replicate_right_injective {n : ℕ} (hn : n ≠ 0) : Injective (@replica
   (replicate_right_injective h).eq_iff
 
 theorem replicate_left_injective (a : α) : Injective (replicate · a) :=
-  -- Porting note: was `fun m n h => by rw [← (eq_replicate.1 h).1, card_replicate]`
   LeftInverse.injective (card_replicate · a)
 
 theorem replicate_subset_singleton (n : ℕ) (a : α) : replicate n a ⊆ {a} :=
@@ -110,11 +109,11 @@ variable [DecidableEq α] {s t u : Multiset α}
 
 @[simp]
 theorem count_replicate_self (a : α) (n : ℕ) : count a (replicate n a) = n := by
-  convert List.count_replicate_self a n
+  convert List.count_replicate_self (a := a)
   rw [← coe_count, coe_replicate]
 
 theorem count_replicate (a b : α) (n : ℕ) : count a (replicate n b) = if b = a then n else 0 := by
-  convert List.count_replicate a b n
+  convert List.count_replicate (a := a)
   · rw [← coe_count, coe_replicate]
   · simp
 

@@ -301,57 +301,25 @@ lemma _root_.IsRetrocompact.isCompact (hs : IsRetrocompact s) : IsCompact s := b
 
 variable [QuasiSeparatedSpace X]
 
-/-- Variant of `TopologicalSpace.IsTopologicalBasis.isRetrocompact_iff_isCompact` for a
-non-indexed topological basis. -/
-@[stacks 0069 "Iff form of (2). Note that Stacks doesn't define quasi-separated spaces."]
-lemma _root_.TopologicalSpace.IsTopologicalBasis.isRetrocompact_iff_isCompact'
-    (basis : IsTopologicalBasis B) (isCompact_basis : ∀ U ∈ B, IsCompact U)
-    (hU : IsOpen U) : IsRetrocompact U ↔ IsCompact U := by
-  refine ⟨IsRetrocompact.isCompact, fun hU' {V} hV' hV ↦ ?_⟩
-  obtain ⟨s, rfl⟩ := eq_sUnion_finset_of_isTopologicalBasis_of_isCompact_open _ basis _ hU' hU
-  obtain ⟨t, rfl⟩ := eq_sUnion_finset_of_isTopologicalBasis_of_isCompact_open _ basis _ hV' hV
-  rw [Set.sUnion_inter_sUnion]
-  refine ((s.finite_toSet.image _).prod (t.finite_toSet.image _)).isCompact_biUnion ?_
-  simp only [mem_prod, mem_image, Finset.mem_coe, Subtype.exists, exists_and_right, exists_eq_right,
-    and_imp, forall_exists_index, Prod.forall]
-  exact fun u v hu _ hv _ ↦ (isCompact_basis _ hu).inter_of_isOpen (isCompact_basis _ hv)
-    (basis.isOpen hu) (basis.isOpen hv)
+omit [CompactSpace X] in
+lemma _root_.IsCompact.isRetrocompact (hU' : IsCompact U) (hU : IsOpen U) : IsRetrocompact U :=
+  fun _ hV' hV ↦ hU'.inter_of_isOpen hV' hU hV
+
+omit [CompactSpace X] in
+lemma _root_.IsCompact.isConstructible (hU' : IsCompact U) (hU : IsOpen U) : IsConstructible U :=
+  (hU'.isRetrocompact hU).isConstructible hU
 
 @[stacks 0069 "Iff form of (2). Note that Stacks doesn't define quasi-separated spaces."]
-lemma _root_.TopologicalSpace.IsTopologicalBasis.isRetrocompact_iff_isCompact
-    (basis : IsTopologicalBasis (range b)) (isCompact_basis : ∀ i, IsCompact (b i))
+lemma _root_.QuasiSeparatedSpace.isRetrocompact_iff_isCompact
     (hU : IsOpen U) : IsRetrocompact U ↔ IsCompact U :=
-  basis.isRetrocompact_iff_isCompact' (by simpa using isCompact_basis) hU
-
-/-- Variant of `TopologicalSpace.IsTopologicalBasis.isRetrocompact` for a non-indexed topological
-basis. -/
-lemma _root_.TopologicalSpace.IsTopologicalBasis.isRetrocompact' (basis : IsTopologicalBasis B)
-    (isCompact_basis : ∀ U ∈ B, IsCompact U) (hU : U ∈ B) : IsRetrocompact U :=
-  (basis.isRetrocompact_iff_isCompact' isCompact_basis <| basis.isOpen hU).2 <| isCompact_basis _ hU
-
-lemma _root_.TopologicalSpace.IsTopologicalBasis.isRetrocompact
-    (basis : IsTopologicalBasis (range b)) (isCompact_basis : ∀ i, IsCompact (b i)) (i : ι) :
-    IsRetrocompact (b i) :=
-  (basis.isRetrocompact_iff_isCompact isCompact_basis <| basis.isOpen <| mem_range_self _).2 <|
-    isCompact_basis _
-
-/-- Variant of `TopologicalSpace.IsTopologicalBasis.isConstructible` for a non-indexed topological
-basis. -/
-lemma _root_.TopologicalSpace.IsTopologicalBasis.isConstructible' (basis : IsTopologicalBasis B)
-    (isCompact_basis : ∀ U ∈ B, IsCompact U) (hU : U ∈ B) : IsConstructible U :=
-  (basis.isRetrocompact' isCompact_basis hU).isConstructible <| basis.isOpen hU
-
-lemma _root_.TopologicalSpace.IsTopologicalBasis.isConstructible
-    (basis : IsTopologicalBasis (range b)) (isCompact_basis : ∀ i, IsCompact (b i)) (i : ι) :
-    IsConstructible (b i) :=
-  (basis.isRetrocompact isCompact_basis _).isConstructible <| basis.isOpen <| mem_range_self _
+  ⟨IsRetrocompact.isCompact, (IsCompact.isRetrocompact · hU)⟩
 
 @[elab_as_elim]
 lemma IsConstructible.induction_of_isTopologicalBasis {ι : Type*} [Nonempty ι] (b : ι → Set X)
     (basis : IsTopologicalBasis (range b)) (isCompact_basis : ∀ i, IsCompact (b i))
     (sdiff : ∀ i s (hs : Set.Finite s), P (b i \ ⋃ j ∈ s, b j)
-      ((basis.isConstructible isCompact_basis _).sdiff <| .biUnion hs fun _ _ ↦
-        basis.isConstructible isCompact_basis _))
+      (((isCompact_basis _).isConstructible (basis.isOpen ⟨i, rfl⟩)).sdiff <| .biUnion hs fun _ _ ↦
+        ((isCompact_basis _).isConstructible (basis.isOpen ⟨_, rfl⟩))))
     (union : ∀ s hs t ht, P s hs → P t ht → P (s ∪ t) (hs.union ht))
     (s : Set X) (hs : IsConstructible s) : P s hs := by
   induction s, hs using BooleanSubalgebra.closure_sdiff_sup_induction with
@@ -370,11 +338,11 @@ lemma IsConstructible.induction_of_isTopologicalBasis {ι : Type*} [Nonempty ι]
     | @insert i s hi hs ih =>
       simp_rw [biUnion_insert]
       exact union _ _ _
-        (.biUnion hs fun i _ ↦ (basis.isConstructible isCompact_basis _).sdiff <|
-          .biUnion ht fun j _ ↦ basis.isConstructible isCompact_basis _)
+        (.biUnion hs fun i _ ↦ ((isCompact_basis _).isConstructible (basis.isOpen ⟨i, rfl⟩)).sdiff
+          <| .biUnion ht fun j _ ↦ (isCompact_basis _).isConstructible (basis.isOpen ⟨_, rfl⟩))
         (sdiff _ _ ht)
         (ih ⟨isOpen_biUnion fun  _ _ ↦ basis.isOpen ⟨_, rfl⟩, .biUnion hs
-          fun i _ ↦ basis.isRetrocompact isCompact_basis _⟩)
+          fun i _ ↦ (isCompact_basis _).isRetrocompact (basis.isOpen ⟨i, rfl⟩)⟩)
   | sup s _ t _ hs' ht' => exact union _ _ _ _ hs' ht'
 
 end CompactSpace
