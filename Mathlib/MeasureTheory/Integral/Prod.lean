@@ -173,11 +173,11 @@ nonrec theorem MeasureTheory.AEStronglyMeasurable.prod_swap {γ : Type*} [Topolo
   rw [← prod_swap] at hf
   exact hf.comp_measurable measurable_swap
 
-theorem MeasureTheory.AEStronglyMeasurable.fst {γ} [TopologicalSpace γ] [SFinite ν] {f : α → γ}
+theorem MeasureTheory.AEStronglyMeasurable.fst {γ} [TopologicalSpace γ] {f : α → γ}
     (hf : AEStronglyMeasurable f μ) : AEStronglyMeasurable (fun z : α × β => f z.1) (μ.prod ν) :=
   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_fst
 
-theorem MeasureTheory.AEStronglyMeasurable.snd {γ} [TopologicalSpace γ] [SFinite ν] {f : β → γ}
+theorem MeasureTheory.AEStronglyMeasurable.snd {γ} [TopologicalSpace γ] {f : β → γ}
     (hf : AEStronglyMeasurable f ν) : AEStronglyMeasurable (fun z : α × β => f z.2) (μ.prod ν) :=
   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_snd
 
@@ -284,6 +284,7 @@ theorem Integrable.integral_norm_prod_right [SFinite μ] ⦃f : α × β → E�
     (hf : Integrable f (μ.prod ν)) : Integrable (fun y => ∫ x, ‖f (x, y)‖ ∂μ) ν :=
   hf.swap.integral_norm_prod_left
 
+omit [SFinite ν] in
 theorem Integrable.op_fst_snd {F G : Type*} [NormedAddCommGroup F] [NormedAddCommGroup G]
     {op : E → F → G} (hop : Continuous op.uncurry) (hop_norm : ∃ C, ∀ x y, ‖op x y‖ ≤ C * ‖x‖ * ‖y‖)
     {f : α → E} {g : β → F} (hf : Integrable f μ) (hg : Integrable g ν) :
@@ -303,6 +304,7 @@ theorem Integrable.op_fst_snd {F G : Type*} [NormedAddCommGroup F] [NormedAddCom
       simp [lintegral_const_mul', lintegral_mul_const', hf.2.ne, hg.2.ne, mul_assoc]
     _ < ∞ := by apply_rules [ENNReal.mul_lt_top, hf.2, hg.2, ENNReal.ofReal_lt_top]
 
+omit [SFinite ν] in
 theorem Integrable.smul_prod {R : Type*} [NormedRing R] [Module R E] [IsBoundedSMul R E]
     {f : α → R} {g : β → E} (hf : Integrable f μ) (hg : Integrable g ν) :
     Integrable (fun z : α × β => f z.1 • g z.2) (μ.prod ν) :=
@@ -311,6 +313,7 @@ theorem Integrable.smul_prod {R : Type*} [NormedRing R] [Module R E] [IsBoundedS
 @[deprecated (since := "2025-04-06")]
 alias Integrable.prod_smul := Integrable.smul_prod
 
+omit [SFinite ν] in
 theorem Integrable.mul_prod {L : Type*} [NormedRing L] {f : α → L} {g : β → L} (hf : Integrable f μ)
     (hg : Integrable g ν) : Integrable (fun z : α × β => f z.1 * g z.2) (μ.prod ν) :=
   hf.smul_prod hg
@@ -498,7 +501,7 @@ theorem integral_prod_smul {𝕜 : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] (f 
     simp_rw [integral_smul, integral_smul_const]
   have H : ¬Integrable f μ ∨ ¬Integrable g ν := by
     contrapose! h
-    exact h.1.prod_smul h.2
+    exact h.1.smul_prod h.2
   rcases H with H | H <;> simp [integral_undef h, integral_undef H]
 
 theorem integral_prod_mul {L : Type*} [RCLike L] (f : α → L) (g : β → L) :
