@@ -15,11 +15,9 @@ on `X × Y` valued in a ring (with a uniform structure) can be uniformly approxi
 sums of functions of the form `f x * g y`.
 -/
 
-open Set UniformSpace
+open UniformSpace
 
-open TopologicalSpace (Opens Clopens IsOpenCover)
-
-open scoped Function Uniformity Topology
+open scoped Uniformity
 
 namespace ContinuousMap
 
@@ -29,7 +27,10 @@ variable {X Y R V : Type*}
   [AddCommGroup V] [UniformSpace V] [IsUniformAddGroup V] {S : Set (V × V)}
 
 /-- A continuous function on `X × Y`, taking values in an `R`-module with a uniform structure,
-can be uniformly approximated by sums of functions of the form `f x • g y`. -/
+can be uniformly approximated by sums of functions of the form `(x, y) ↦ f x • g y`.
+
+Note that no continuity properties are assumed either for multiplication on `R`, or for the scalar
+multiplication of `R` on `V`. -/
 lemma exists_finite_sum_smul_approximation_of_mem_uniformity [TopologicalSpace R]
     [MonoidWithZero R] [MulActionWithZero R V] (f : C(X × Y, V)) (hS : S ∈ 𝓤 V) :
     ∃ (n : ℕ) (g : Fin n → C(X, R)) (h : Fin n → C(Y, V)),
@@ -46,8 +47,11 @@ lemma exists_finite_sum_smul_approximation_of_mem_uniformity [TopologicalSpace R
   congr 1 with i
   by_cases hi : x ∈ U i <;> simp [hi]
 
-/-- A continuous function on `X × Y`, taking values in a ring `R` with a uniform structure, can be
-uniformly approximated by sums of functions of the form `f x * g y`. -/
+/-- A continuous function on `X × Y`, taking values in a ring `R` equipped with a uniformity
+compatible with addition, can be uniformly approximated by sums of functions of the form
+`(x, y) ↦ f x * g y`.
+
+Note that no assumption is needed relating the multiplication on `R` to the uniformity. -/
 lemma exists_finite_sum_mul_approximation_of_mem_uniformity [Ring R] [UniformSpace R]
     [IsUniformAddGroup R] (f : C(X × Y, R)) {S : Set (R × R)} (hS : S ∈ 𝓤 R) :
     ∃ (n : ℕ) (g : Fin n → C(X, R)) (h : Fin n → C(Y, R)),
