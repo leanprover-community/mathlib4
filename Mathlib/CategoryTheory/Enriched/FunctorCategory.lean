@@ -90,7 +90,6 @@ noncomputable def homEquiv : (F₁ ⟶ F₂) ≃ (𝟙_ V ⟶ enrichedHom V F₁
   invFun g :=
     { app := fun j ↦ (eHomEquiv V).symm (g ≫ end_.π _ j)
       naturality := fun i j f ↦ (eHomEquiv V).injective (by
-        dsimp
         simp only [eHomEquiv_comp, Equiv.apply_symm_apply, Iso.cancel_iso_inv_left]
         conv_rhs =>
           rw [tensorHom_def_assoc, MonoidalCategory.whiskerRight_id_assoc, assoc,
@@ -294,7 +293,6 @@ noncomputable def functorEnrichedHom : J ⥤ V where
   obj j := enrichedHom V (Under.forget j ⋙ F₁) (Under.forget j ⋙ F₂)
   map f := precompEnrichedHom' V (Under.map f) (Iso.refl _) (Iso.refl _)
   map_id X := by
-    dsimp
     ext j
     -- this was produced by `simp?`
     simp only [diagram_obj_obj, Functor.comp_obj, Under.forget_obj, end_.lift_π,
@@ -304,7 +302,6 @@ noncomputable def functorEnrichedHom : J ⥤ V where
     simp [Under.map, Comma.mapLeft]
     rfl
   map_comp f g := by
-    dsimp
     ext j
     -- this was produced by `simp?`
     simp only [diagram_obj_obj, Functor.comp_obj, Under.forget_obj, end_.lift_π,

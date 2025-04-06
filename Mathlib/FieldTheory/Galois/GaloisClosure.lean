@@ -25,6 +25,8 @@ In a field extension `K/k`
 
 -/
 
+open IntermediateField
+
 variable (k K : Type*) [Field k] [Field K] [Algebra k K]
 
 /-- The type of intermediate fields of `K/k` that are finite and Galois over `k` -/
@@ -140,5 +142,10 @@ theorem adjoin_simple_map_algHom [IsGalois k K] (f : K →ₐ[k] K) (x : K) :
 theorem adjoin_simple_map_algEquiv [IsGalois k K] (f : K ≃ₐ[k] K) (x : K) :
     adjoin k {f x} = adjoin k {x} :=
   adjoin_simple_map_algHom (f : K →ₐ[k] K) x
+
+nonrec lemma mem_fixingSubgroup_iff (α : K ≃ₐ[k] K) (L : FiniteGaloisIntermediateField k K) :
+    α ∈ L.fixingSubgroup ↔ α.restrictNormalHom L = 1 := by
+  simp [IntermediateField.fixingSubgroup, mem_fixingSubgroup_iff, AlgEquiv.ext_iff, Subtype.ext_iff,
+    AlgEquiv.restrictNormalHom_apply]
 
 end FiniteGaloisIntermediateField

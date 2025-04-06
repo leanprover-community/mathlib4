@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Weber
 -/
 import Mathlib.Algebra.Algebra.Field
+import Mathlib.Algebra.BigOperators.Field
 import Mathlib.FieldTheory.Differential.Basic
 import Mathlib.FieldTheory.Galois.Basic
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
@@ -153,7 +154,7 @@ private local instance isLiouville_of_finiteDimensional_galois [FiniteDimensiona
     exists ι, inferInstance, c₀, ?_, u₀, v₀
     · -- We need to prove that all `c₀` are constants.
       -- This is true because they are the division of a constant by
-      -- a natural nubmer (which is also constant)
+      -- a natural number (which is also constant)
       intro x
       simp [c₀, Derivation.leibniz_div, hc]
     · -- Proving that this works is mostly straightforward algebraic manipulation,

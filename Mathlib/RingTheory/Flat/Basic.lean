@@ -11,10 +11,10 @@ import Mathlib.Algebra.Module.CharacterModule
 import Mathlib.Algebra.Module.Injective
 import Mathlib.Algebra.Module.Projective
 import Mathlib.LinearAlgebra.DirectSum.TensorProduct
-import Mathlib.RingTheory.Finiteness.Cardinality
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-import Mathlib.RingTheory.Finiteness.TensorProduct
+import Mathlib.RingTheory.Finiteness.Small
+import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
 # Flat modules
@@ -81,7 +81,7 @@ variable {R : Type u} {M : Type v} {N P Q : Type*} [CommSemiring R] [AddCommMono
   [AddCommMonoid N] [Module R N] [AddCommMonoid P] [Module R P] [AddCommMonoid Q] [Module R Q]
 
 theorem _root_.LinearMap.rTensor_injective_of_fg {f : N →ₗ[R] P}
-    (h :  ∀ (N' : Submodule R N) (P' : Submodule R P),
+    (h : ∀ (N' : Submodule R N) (P' : Submodule R P),
       N'.FG → P'.FG → ∀ h : N' ≤ P'.comap f, Function.Injective ((f.restrict h).rTensor M)) :
     Function.Injective (f.rTensor M) := fun x y eq ↦ by
   have ⟨N', Nfg, sub⟩ := Submodule.exists_fg_le_subset_range_rTensor_subtype {x, y} (by simp)
@@ -338,7 +338,7 @@ theorem iff_characterModule_baer : Flat R M ↔ Baer R (CharacterModule M) := by
 
 /-- An `R`-module `M` is flat iff for all ideals `I` of `R`, the tensor product of the
 inclusion `I → R` and the identity `M → M` is injective. See `iff_rTensor_injective` to
-restrict to finitely generated ideals `I`. --/
+restrict to finitely generated ideals `I`. -/
 theorem iff_rTensor_injective' :
     Flat R M ↔ ∀ I : Ideal R, Function.Injective (rTensor M I.subtype) := by
   simp_rw [iff_characterModule_baer, Baer, rTensor_injective_iff_lcomp_surjective,

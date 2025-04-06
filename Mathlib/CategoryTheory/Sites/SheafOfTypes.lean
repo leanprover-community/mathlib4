@@ -142,7 +142,7 @@ is the same as a co-cone over the sieve. Constructing a co-cone from a compatibl
 any presieve, as does constructing a family of elements from a co-cone. Showing compatibility of the
 family needs the sieve condition.
 Note: This is related to `CategoryTheory.Presheaf.conesEquivSieveCompatibleFamily`
- -/
+-/
 
 def compatibleYonedaFamily_toCocone (R : Presieve X) (W : C) (x : FamilyOfElements (yoneda.obj W) R)
     (hx : FamilyOfElements.Compatible x) :
@@ -159,6 +159,7 @@ def compatibleYonedaFamily_toCocone (R : Presieve X) (W : C) (x : FamilyOfElemen
         apply hx
         simp only [Functor.id_obj, Over.w, Opposite.unop_op, Category.id_comp] }
 
+/-- Construct a family of elements from a cocone. -/
 def yonedaFamilyOfElements_fromCocone (R : Presieve X) (s : Cocone (diagram R)) :
     FamilyOfElements (yoneda.obj s.pt) R :=
   fun _ f hf => s.ι.app ⟨Over.mk f, hf⟩

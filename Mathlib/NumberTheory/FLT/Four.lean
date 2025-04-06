@@ -114,8 +114,8 @@ theorem neg_of_minimal {a b c : ℤ} : Minimal a b c → Minimal a b (-c) := by
 theorem exists_odd_minimal {a b c : ℤ} (h : Fermat42 a b c) :
     ∃ a0 b0 c0, Minimal a0 b0 c0 ∧ a0 % 2 = 1 := by
   obtain ⟨a0, b0, c0, hf⟩ := exists_minimal h
-  cases' Int.emod_two_eq_zero_or_one a0 with hap hap
-  · cases' Int.emod_two_eq_zero_or_one b0 with hbp hbp
+  rcases Int.emod_two_eq_zero_or_one a0 with hap | hap
+  · rcases Int.emod_two_eq_zero_or_one b0 with hbp | hbp
     · exfalso
       have h1 : 2 ∣ (Int.gcd a0 b0 : ℤ) :=
         Int.dvd_gcd (Int.dvd_of_emod_eq_zero hap) (Int.dvd_of_emod_eq_zero hbp)
@@ -205,7 +205,7 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
     apply @Int.Prime.dvd_pow' _ 2 _ Nat.prime_two
     rw [ht2, mul_assoc]
     exact dvd_mul_right 2 (m * n)
-  cases' hb2 with b' hb2'
+  obtain ⟨b', hb2'⟩ := hb2
   have hs : b' ^ 2 = m * (r * s) := by
     apply (mul_right_inj' (by norm_num : (4 : ℤ) ≠ 0)).mp
     linear_combination (-b - 2 * b') * hb2' + ht2 + 2 * m * htt2
@@ -258,11 +258,11 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
     rw [h0, zero_pow two_ne_zero, neg_zero, or_self_iff] at hk
     apply right_ne_zero_of_mul hrsz hk
   have hj2 : r ^ 2 = j ^ 4 := by
-    cases' hj with hjp hjp <;>
+    rcases hj with hjp | hjp <;>
       · rw [hjp]
         ring
   have hk2 : s ^ 2 = k ^ 4 := by
-    cases' hk with hkp hkp <;>
+    rcases hk with hkp | hkp <;>
       · rw [hkp]
         ring
   -- from m = r ^ 2 + s ^ 2 we now get a new solution to a ^ 4 + b ^ 4 = c ^ 2:
@@ -273,7 +273,7 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
   -- and it has a smaller c: from c = m ^ 2 + n ^ 2 we see that m is smaller than c, and i ^ 2 = m.
   have hic : Int.natAbs i < Int.natAbs c := by
     apply Int.ofNat_lt.mp
-    rw [← Int.eq_natAbs_of_zero_le (le_of_lt hc)]
+    rw [← Int.eq_natAbs_of_nonneg (le_of_lt hc)]
     apply gt_of_gt_of_ge _ (Int.natAbs_le_self_sq i)
     rw [← hi, ht3]
     apply gt_of_gt_of_ge _ (Int.le_self_sq m)

@@ -7,7 +7,7 @@ import Mathlib.Algebra.Order.Ring.Idempotent
 import Mathlib.Order.Heyting.Hom
 import Mathlib.RingTheory.Finiteness.Ideal
 import Mathlib.RingTheory.Ideal.MinimalPrime.Localization
-import Mathlib.RingTheory.Ideal.Over
+import Mathlib.RingTheory.Ideal.GoingUp
 import Mathlib.RingTheory.KrullDimension.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 import Mathlib.RingTheory.LocalRing.RingHom.Basic
@@ -219,36 +219,42 @@ instance compactSpace : CompactSpace (PrimeSpectrum R) := by
   simp_rw [hI, ← zeroLocus_iSup, zeroLocus_empty_iff_eq_top, ← top_le_iff] at S_empty ⊢
   exact Ideal.isCompactElement_top.exists_finset_of_le_iSup _ _ S_empty
 
-/-- The prime spectrum of a semiring has discrete Zariski topology iff it is finite and
-all primes are maximal. -/
-theorem discreteTopology_iff_finite_and_isPrime_imp_isMaximal : DiscreteTopology (PrimeSpectrum R) ↔
-    Finite (PrimeSpectrum R) ∧ ∀ I : Ideal R, I.IsPrime → I.IsMaximal :=
-  ⟨fun _ ↦ ⟨finite_of_compact_of_discrete, fun I hI ↦ (isClosed_singleton_iff_isMaximal ⟨I, hI⟩).mp
-    <| discreteTopology_iff_forall_isClosed.mp ‹_› _⟩, fun ⟨_, h⟩ ↦ .of_finite_of_isClosed_singleton
-    fun p ↦ (isClosed_singleton_iff_isMaximal p).mpr <| h _ p.2⟩
+/-- The prime spectrum of a commutative semiring has discrete Zariski topology iff it is finite and
+the semiring has Krull dimension zero or is trivial. -/
+theorem discreteTopology_iff_finite_and_krullDimLE_zero : DiscreteTopology (PrimeSpectrum R) ↔
+    Finite (PrimeSpectrum R) ∧ Ring.KrullDimLE 0 R :=
+  ⟨fun _ ↦ ⟨finite_of_compact_of_discrete, .mk₀ fun I h ↦ isClosed_singleton_iff_isMaximal ⟨I, h⟩
+    |>.mp <| discreteTopology_iff_forall_isClosed.mp ‹_› _⟩, fun ⟨_, _⟩ ↦
+    .of_finite_of_isClosed_singleton fun p ↦ (isClosed_singleton_iff_isMaximal p).mpr inferInstance⟩
+
+@[deprecated discreteTopology_iff_finite_and_krullDimLE_zero (since := "2025-02-05")]
+theorem discreteTopology_iff_finite_and_isPrime_imp_isMaximal :
+    DiscreteTopology (PrimeSpectrum R) ↔
+    Finite (PrimeSpectrum R) ∧ ∀ I : Ideal R, I.IsPrime → I.IsMaximal := by
+  rw [discreteTopology_iff_finite_and_krullDimLE_zero, Ring.krullDimLE_zero_iff]
 
 /-- The prime spectrum of a semiring has discrete Zariski topology iff there are only
 finitely many maximal ideals and their intersection is contained in the nilradical. -/
 theorem discreteTopology_iff_finite_isMaximal_and_sInf_le_nilradical :
     letI s := {I : Ideal R | I.IsMaximal}
-    DiscreteTopology (PrimeSpectrum R) ↔ Finite s ∧ sInf s ≤ nilradical R :=
-  discreteTopology_iff_finite_and_isPrime_imp_isMaximal.trans <| by
-    rw [(equivSubtype R).finite_iff, ← Set.coe_setOf, Set.finite_coe_iff, Set.finite_coe_iff]
-    refine ⟨fun h ↦ ⟨h.1.subset fun _ h ↦ h.isPrime, nilradical_eq_sInf R ▸ sInf_le_sInf h.2⟩,
-      fun ⟨fin, le⟩ ↦ ?_⟩
-    have hpm (I : Ideal R) (hI : I.IsPrime): I.IsMaximal := by
-      replace le := le.trans (nilradical_le_prime I)
-      rw [← fin.coe_toFinset, ← Finset.inf_id_eq_sInf, hI.inf_le'] at le
-      have ⟨M, hM, hMI⟩ := le
-      rw [fin.mem_toFinset] at hM
-      rwa [← hM.eq_of_le hI.1 hMI]
-    exact ⟨fin.subset hpm, hpm⟩
+    DiscreteTopology (PrimeSpectrum R) ↔ Finite s ∧ sInf s ≤ nilradical R := by
+  rw [discreteTopology_iff_finite_and_krullDimLE_zero, Ring.krullDimLE_zero_iff,
+    (equivSubtype R).finite_iff, ← Set.coe_setOf, Set.finite_coe_iff, Set.finite_coe_iff]
+  refine ⟨fun h ↦ ⟨h.1.subset fun _ h ↦ h.isPrime, nilradical_eq_sInf R ▸ sInf_le_sInf h.2⟩,
+    fun ⟨fin, le⟩ ↦ ?_⟩
+  have hpm (I : Ideal R) (hI : I.IsPrime): I.IsMaximal := by
+    replace le := le.trans (nilradical_le_prime I)
+    rw [← fin.coe_toFinset, ← Finset.inf_id_eq_sInf, hI.inf_le'] at le
+    have ⟨M, hM, hMI⟩ := le
+    rw [fin.mem_toFinset] at hM
+    rwa [← hM.eq_of_le hI.1 hMI]
+  exact ⟨fin.subset hpm, hpm⟩
 
 theorem discreteTopology_of_toLocalization_surjective
     (surj : Function.Surjective (toPiLocalization R)) :
     DiscreteTopology (PrimeSpectrum R) :=
-  discreteTopology_iff_finite_and_isPrime_imp_isMaximal.mpr ⟨finite_of_toPiLocalization_surjective
-    surj, fun I prime ↦ isMaximal_of_toPiLocalization_surjective surj ⟨I, prime⟩⟩
+  discreteTopology_iff_finite_and_krullDimLE_zero.mpr ⟨finite_of_toPiLocalization_surjective
+    surj, .mk₀ fun I prime ↦ isMaximal_of_toPiLocalization_surjective surj ⟨I, prime⟩⟩
 
 section Comap
 
@@ -607,11 +613,6 @@ instance : QuasiSeparatedSpace (PrimeSpectrum R) :=
     simpa [← TopologicalSpace.Opens.coe_inf, ← basicOpen_mul, -basicOpen_eq_zeroLocus_compl]
       using isCompact_basicOpen _
 
--- TODO: Abstract out this lemma to spectral spaces
-lemma isRetrocompact_iff {U : Set (PrimeSpectrum R)} (hU : IsOpen U) :
-    IsRetrocompact U ↔ IsCompact U :=
-  isTopologicalBasis_basic_opens.isRetrocompact_iff_isCompact isCompact_basicOpen hU
-
 end BasicOpen
 
 section DiscreteTopology
@@ -656,10 +657,13 @@ theorem maximalSpectrumToPiLocalization_surjective_of_discreteTopology :
 canonically isomorphic to the product of its localizations at the (finitely many) maximal ideals. -/
 @[stacks 00JA
 "See also `PrimeSpectrum.discreteTopology_iff_finite_isMaximal_and_sInf_le_nilradical`."]
-def MaximalSpectrum.toPiLocalizationEquivtoLocalizationEquiv :
+def _root_.MaximalSpectrum.toPiLocalizationEquiv :
     R ≃+* MaximalSpectrum.PiLocalization R :=
   .ofBijective _ ⟨MaximalSpectrum.toPiLocalization_injective R,
     maximalSpectrumToPiLocalization_surjective_of_discreteTopology R⟩
+
+@[deprecated (since := "2025-02-12")] noncomputable alias
+MaximalSpectrum.toPiLocalizationEquivtoLocalizationEquiv := MaximalSpectrum.toPiLocalizationEquiv
 
 theorem discreteTopology_iff_toPiLocalization_surjective {R} [CommSemiring R] :
     DiscreteTopology (PrimeSpectrum R) ↔ Function.Surjective (toPiLocalization R) :=
@@ -751,6 +755,35 @@ lemma stableUnderSpecialization_image_iff
   ⟨isClosed_image_of_stableUnderSpecialization f Z hZ, fun h ↦ h.stableUnderSpecialization⟩
 
 end stableUnderSpecialization
+
+section IsQuotientMap
+
+variable {R S : Type*} [CommRing R] [CommRing S] {f : R →+* S} (h₁ : Function.Surjective (comap f))
+
+include h₁
+
+/-- If `f : Spec S → Spec R` is specializing and surjective, the topology on `Spec R` is the
+quotient topology induced by `f`. -/
+lemma isQuotientMap_of_specializingMap (h₂ : SpecializingMap (comap f)) :
+    Topology.IsQuotientMap (comap f) := by
+  rw [Topology.isQuotientMap_iff_isClosed]
+  exact ⟨h₁, fun s ↦ ⟨fun hs ↦ hs.preimage (comap f).continuous,
+    fun hsc ↦ Set.image_preimage_eq s h₁ ▸ isClosed_image_of_stableUnderSpecialization _ _ hsc
+      (h₂.stableUnderSpecialization_image hsc.stableUnderSpecialization)⟩⟩
+
+/-- If `f : Spec S → Spec R` is generalizing and surjective, the topology on `Spec R` is the
+quotient topology induced by `f`. -/
+lemma isQuotientMap_of_generalizingMap (h₂ : GeneralizingMap (comap f)) :
+    Topology.IsQuotientMap (comap f) := by
+  rw [Topology.isQuotientMap_iff_isClosed]
+  refine ⟨h₁, fun s ↦ ⟨fun hs ↦ hs.preimage (comap f).continuous,
+    fun hsc ↦ Set.image_preimage_eq s h₁ ▸ ?_⟩⟩
+  apply isClosed_image_of_stableUnderSpecialization _ _ hsc
+  rw [Set.image_preimage_eq s h₁, ← stableUnderGeneralization_compl_iff]
+  convert h₂.stableUnderGeneralization_image hsc.isOpen_compl.stableUnderGeneralization
+  rw [← Set.preimage_compl, Set.image_preimage_eq _ h₁]
+
+end IsQuotientMap
 
 section denseRange
 
@@ -950,6 +983,25 @@ def mulZeroAddOneEquivClopens :
     exact mul_eq_zero_add_eq_one_ext_left (basicOpen_injOn_isIdempotentElem
       (this.mul (IsIdempotentElem.of_mul_add b.2.1 b.2.2).1) this h)
 
+lemma isRetrocompact_zeroLocus_compl {s : Set R} (hs : s.Finite) :
+    IsRetrocompact (zeroLocus s)ᶜ :=
+  (QuasiSeparatedSpace.isRetrocompact_iff_isCompact (isClosed_zeroLocus _).isOpen_compl).mpr
+    (isCompact_isOpen_iff.mpr ⟨hs.toFinset, by simp⟩).1
+
+lemma isRetrocompact_zeroLocus_compl_of_fg {I : Ideal R} (hI : I.FG) :
+    IsRetrocompact (zeroLocus (I : Set R))ᶜ := by
+  obtain ⟨s, rfl⟩ := hI
+  rw [zeroLocus_span]
+  exact isRetrocompact_zeroLocus_compl s.finite_toSet
+
+lemma isRetrocompact_basicOpen {f : R} :
+    IsRetrocompact (basicOpen f : Set (PrimeSpectrum R)) := by
+  simpa using isRetrocompact_zeroLocus_compl (Set.finite_singleton f)
+
+lemma isConstructible_basicOpen {f : R} :
+    IsConstructible (basicOpen f : Set (PrimeSpectrum R)) :=
+  isRetrocompact_basicOpen.isConstructible (basicOpen f).2
+
 section IsIntegral
 
 open Polynomial
@@ -1099,6 +1151,10 @@ variable [CommSemiring R] [IsLocalRing R]
 /-- The closed point in the prime spectrum of a local ring. -/
 def closedPoint : PrimeSpectrum R :=
   ⟨maximalIdeal R, (maximalIdeal.isMaximal R).isPrime⟩
+
+instance : OrderTop (PrimeSpectrum R) where
+  top := closedPoint R
+  le_top := fun _ ↦ le_maximalIdeal Ideal.IsPrime.ne_top'
 
 variable {R}
 

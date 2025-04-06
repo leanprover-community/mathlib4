@@ -43,9 +43,8 @@ theorem MeromorphicAt.eventually_eq_zero_or_eventually_ne_zero {f : 𝕜 → E} 
   rcases h.eventually_eq_zero_or_eventually_ne_zero with h₁ | h₂
   · left
     filter_upwards [nhdsWithin_le_nhds h₁, self_mem_nhdsWithin] with y h₁y h₂y
-    rcases (smul_eq_zero.1 h₁y) with h₃ | h₄
-    · exact False.elim (h₂y (sub_eq_zero.1 (pow_eq_zero_iff'.1 h₃).1))
-    · assumption
+    rw [Set.mem_compl_iff, Set.mem_singleton_iff, ← sub_eq_zero] at h₂y
+    exact smul_eq_zero_iff_right (pow_ne_zero n h₂y) |>.mp h₁y
   · right
     filter_upwards [h₂, self_mem_nhdsWithin] with y h₁y h₂y
     exact (smul_ne_zero_iff.1 h₁y).2
@@ -83,7 +82,7 @@ lemma smul {f : 𝕜 → 𝕜} {g : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f
   rcases hf with ⟨m, hf⟩
   rcases hg with ⟨n, hg⟩
   refine ⟨m + n, ?_⟩
-  convert hf.smul' hg using 2 with z
+  convert hf.fun_smul hg using 2 with z
   rw [Pi.smul_apply', smul_eq_mul]
   module
 
@@ -136,12 +135,19 @@ lemma congr {f g : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (hfg : f =ᶠ
   rcases hf with ⟨m, hf⟩
   refine ⟨m + 1, ?_⟩
   have : AnalyticAt 𝕜 (fun z ↦ z - x) x := analyticAt_id.sub analyticAt_const
-  refine (this.smul' hf).congr ?_
+  refine (this.fun_smul hf).congr ?_
   rw [eventuallyEq_nhdsWithin_iff] at hfg
   filter_upwards [hfg] with z hz
   rcases eq_or_ne z x with rfl | hn
   · simp
   · rw [hz (Set.mem_compl_singleton_iff.mp hn), pow_succ', mul_smul]
+
+/--
+If two functions agree on a punctured neighborhood, then one is meromorphic iff the other is so.
+-/
+lemma meromorphicAt_congr {f g : 𝕜 → E} {x : 𝕜} (h : f =ᶠ[𝓝[≠] x] g) :
+    MeromorphicAt f x ↔ MeromorphicAt g x :=
+  ⟨fun hf ↦ hf.congr h, fun hg ↦ hg.congr h.symm⟩
 
 @[fun_prop]
 lemma inv {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) : MeromorphicAt f⁻¹ x := by
@@ -158,7 +164,7 @@ lemma inv {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) : MeromorphicA
     have : AnalyticAt 𝕜 (fun z ↦ (z - x) ^ (m + 1)) x :=
       (analyticAt_id.sub analyticAt_const).pow _
     -- use `m + 1` rather than `m` to damp out any silly issues with the value at `z = x`
-    refine ⟨n + 1, (this.smul' <| hg_an.inv hg_ne).congr ?_⟩
+    refine ⟨n + 1, (this.fun_smul <| hg_an.inv hg_ne).congr ?_⟩
     filter_upwards [hg_eq, hg_an.continuousAt.eventually_ne hg_ne] with z hfg hg_ne'
     rcases eq_or_ne z x with rfl | hz_ne
     · simp only [sub_self, pow_succ, mul_zero, zero_smul]
@@ -203,7 +209,7 @@ lemma pow' {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (n : ℕ) :
 
 @[fun_prop]
 lemma zpow {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (n : ℤ) : MeromorphicAt (f ^ n) x := by
-  induction n with
+  cases n with
   | ofNat m => simpa only [Int.ofNat_eq_coe, zpow_natCast] using hf.pow m
   | negSucc m => simpa only [zpow_negSucc, inv_iff] using hf.pow (m + 1)
 
@@ -247,9 +253,6 @@ lemma AnalyticOnNhd.meromorphicOn {f : 𝕜 → E} {U : Set 𝕜} (hf : Analytic
     MeromorphicOn f U :=
   fun x hx ↦ (hf x hx).meromorphicAt
 
-@[deprecated (since := "2024-09-26")]
-alias AnalyticOn.meromorphicOn := AnalyticOnNhd.meromorphicOn
-
 namespace MeromorphicOn
 
 variable {s t : 𝕜 → 𝕜} {f g : 𝕜 → E} {U : Set 𝕜}
@@ -262,6 +265,17 @@ lemma const (e : E) {U : Set 𝕜} : MeromorphicOn (fun _ ↦ e) U :=
   fun x _ ↦ .const e x
 
 section arithmetic
+
+include hf in
+/-- Meromorphic functions on `U` are analytic on `U`, outside of a discrete subset. -/
+theorem analyticAt_mem_codiscreteWithin [CompleteSpace E] :
+    { x | AnalyticAt 𝕜 f x } ∈ Filter.codiscreteWithin U := by
+  rw [mem_codiscreteWithin]
+  intro x hx
+  rw [Filter.disjoint_principal_right, ← Filter.eventually_mem_set]
+  apply (hf x hx).eventually_analyticAt.mono
+  simp only [Set.mem_compl_iff, Set.mem_diff, Set.mem_setOf_eq, not_and, not_not]
+  tauto
 
 include hf in
 lemma mono_set {V : Set 𝕜} (hv : V ⊆ U) : MeromorphicOn f V := fun x hx ↦ hf x (hv hx)
