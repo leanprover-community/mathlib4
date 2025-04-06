@@ -175,22 +175,21 @@ noncomputable def forgetMapInitial {T : C} (hT : IsInitial T) :
 section HasBinaryCoproducts
 variable [HasBinaryCoproducts C]
 
-/-- The functor from `C` to `Under X` which sends `Y : C` to `in₁ : X ⟶ X ⨿ Y`,
-sometimes denoted `X*`. -/
+/-- The functor from `C` to `Under X` which sends `Y : C` to `in₁ : X ⟶ X ⨿ Y`. -/
 @[simps! obj_left obj_hom map_left]
-def star : C ⥤ Under X := Monad.free _ ⋙ algebraToUnder X
+def costar : C ⥤ Under X := Monad.free _ ⋙ algebraToUnder X
 
-/-- The functor `Under.forget X : Under X ⥤ C` has a left adjoint given by `star X`.
+/-- The functor `Under.forget X : Under X ⥤ C` has a left adjoint given by `costar X`.
 
 Note that the binary coproducts assumption is necessary: the existence of a left adjoint to
 `Under.forget X` is equivalent to the existence of each binary coproduct `X ⨿ -`. -/
-def forgetAdjStar : star X ⊣ forget X := (Monad.adj _).comp (algebraEquivUnder X).toAdjunction
+def costarAdjForget : costar X ⊣ forget X := (Monad.adj _).comp (algebraEquivUnder X).toAdjunction
 
-instance : (star X).IsLeftAdjoint := ⟨_, ⟨forgetAdjStar X⟩⟩
+instance : (costar X).IsLeftAdjoint := ⟨_, ⟨costarAdjForget X⟩⟩
 
 /-- Note that the binary coproducts assumption is necessary: the existence of a left adjoint to
 `Under.forget X` is equivalent to the existence of each binary coproduct `X ⨿ -`. -/
-instance : (forget X).IsRightAdjoint := ⟨_, ⟨forgetAdjStar X⟩⟩
+instance : (forget X).IsRightAdjoint := ⟨_, ⟨costarAdjForget X⟩⟩
 
 end HasBinaryCoproducts
 end Under
