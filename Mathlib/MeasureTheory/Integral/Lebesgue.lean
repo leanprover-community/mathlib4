@@ -1594,15 +1594,15 @@ theorem lintegral_countable' [Countable α] [MeasurableSingletonClass α] (f : �
     ∫⁻ a, f a ∂μ = ∑' a, f a * μ {a} := by
   conv_lhs => rw [← sum_smul_dirac μ, lintegral_sum_measure]
   congr 1 with a : 1
-  rw [lintegral_smul_measure, lintegral_dirac, mul_comm]
+  simp [mul_comm]
 
 theorem lintegral_singleton' {f : α → ℝ≥0∞} (hf : Measurable f) (a : α) :
     ∫⁻ x in {a}, f x ∂μ = f a * μ {a} := by
-  simp only [restrict_singleton, lintegral_smul_measure, lintegral_dirac' _ hf, mul_comm]
+  simp [lintegral_dirac' _ hf, mul_comm]
 
 theorem lintegral_singleton [MeasurableSingletonClass α] (f : α → ℝ≥0∞) (a : α) :
     ∫⁻ x in {a}, f x ∂μ = f a * μ {a} := by
-  simp only [restrict_singleton, lintegral_smul_measure, lintegral_dirac, mul_comm]
+  simp [mul_comm]
 
 theorem lintegral_countable [MeasurableSingletonClass α] (f : α → ℝ≥0∞) {s : Set α}
     (hs : s.Countable) : ∫⁻ a in s, f a ∂μ = ∑' a : s, f a * μ {(a : α)} :=
