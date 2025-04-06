@@ -214,8 +214,8 @@ end NormedDivisionRing
 
 section Pi
 
-variable {𝕜 : Type*} [NormedDivisionRing 𝕜]
-  {ι : Type*} {E : ι → Type*} [∀ i, AddCommGroup (E i)] [∀ i, Module 𝕜 (E i)]
+variable {𝕜 : Type*} {ι : Type*} {E : ι → Type*}
+variable [NormedDivisionRing 𝕜] [∀ i, AddCommGroup (E i)] [∀ i, Module 𝕜 (E i)]
 
 /-- The extended gauge of a point `x` in an indexed product
 with respect to a product of finitely many balanced sets `U i`, `i ∈ I`,
