@@ -61,13 +61,13 @@ noncomputable def mapDomainBialgHom (f : M →* N) : MonoidAlgebra R M →ₐc[R
 @[simp] lemma mapDomainBialgHom_id : mapDomainBialgHom R (.id M) = .id _ _ := by ext; simp
 
 @[simp]
+lemma mapDomainBialgHom_comp (f : N →* O) (g : M →* N) :
+    mapDomainBialgHom R (f.comp g) = (mapDomainBialgHom R f).comp (mapDomainBialgHom R g) := by
+  ext; simp
+
 lemma mapDomainBialgHom_mapDomainBialgHom (f : N →* O) (g : M →* N) (x : MonoidAlgebra R M) :
     mapDomainBialgHom R (f.comp g) x = mapDomainBialgHom R f (mapDomainBialgHom R g x) := by
   ext; simp
-
-@[simp]
-lemma mapDomainBialgHom_comp (f : N →* O) (g : M →* N) : mapDomainBialgHom R (f.comp g) =
-    (mapDomainBialgHom R f).comp (mapDomainBialgHom R g) := by ext; simp
 
 end MonoidAlgebra
 
@@ -104,8 +104,13 @@ noncomputable def mapDomainBialgHom (f : M →+ N) : R[M] →ₐc[R] R[N] where
 @[simp] lemma mapDomainBialgHom_id : mapDomainBialgHom R (.id M) = .id _ _ := by ext; simp
 
 @[simp]
-lemma mapDomainBialgHom_comp (f : N →+ O) (g : M →+ N) : mapDomainBialgHom R (f.comp g) =
-    (mapDomainBialgHom R f).comp (mapDomainBialgHom R g) := by ext; simp
+lemma mapDomainBialgHom_comp (f : N →+ O) (g : M →+ N) :
+    mapDomainBialgHom R (f.comp g) = (mapDomainBialgHom R f).comp (mapDomainBialgHom R g) := by
+  ext; simp
+
+lemma mapDomainBialgHom_mapDomainBialgHom (f : N →+ O) (g : M →+ N) (x : R[M]) :
+    mapDomainBialgHom R (f.comp g) x = mapDomainBialgHom R f (mapDomainBialgHom R g x) := by
+  ext; simp
 
 end AddMonoidAlgebra
 
