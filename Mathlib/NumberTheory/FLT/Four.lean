@@ -118,7 +118,7 @@ theorem exists_odd_minimal {a b c : ℤ} (h : Fermat42 a b c) :
   · rcases Int.emod_two_eq_zero_or_one b0 with hbp | hbp
     · exfalso
       have h1 : 2 ∣ (Int.gcd a0 b0 : ℤ) :=
-        Int.dvd_gcd (Int.dvd_of_emod_eq_zero hap) (Int.dvd_of_emod_eq_zero hbp)
+        Int.dvd_coe_gcd (Int.dvd_of_emod_eq_zero hap) (Int.dvd_of_emod_eq_zero hbp)
       rw [Int.isCoprime_iff_gcd_eq_one.mp (coprime_of_minimal hf)] at h1
       revert h1
       decide
