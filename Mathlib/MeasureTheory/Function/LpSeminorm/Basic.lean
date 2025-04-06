@@ -1129,9 +1129,7 @@ theorem eLpNorm'_le_mul_eLpNorm'_of_ae_le_mul {f : α → ε} {c : ℝ≥0∞} {
         simp [eLpNorm'_eq_lintegral_enorm, hp', hp] at hg'
         rw [MeasureTheory.lintegral_eq_zero_iff (by fun_prop)] at hg'
         exact hg'.mono fun x hx ↦ by simpa [hp, hp'] using hx
-      have : ∀ᵐ (x : α) ∂μ, ‖f x‖ₑ = 0 := by
-        -- want: take the intersection of h and this; if both are true, this is fine
-        sorry
+      have : ∀ᵐ (x : α) ∂μ, ‖f x‖ₑ = 0 := (this.and h).mono fun x ⟨h, h'⟩ ↦  by simp_all
       simp only [hg', mul_zero, nonpos_iff_eq_zero]
       -- Should this be a lemma? enorm a.e. 0 means eLpNorm' = 0?
       rw [← eLpNorm'_zero hp (μ := μ) (ε := ε), eLpNorm'_congr_enorm_ae]
