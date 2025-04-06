@@ -116,7 +116,7 @@ class LinearOrderedCommGroup (α : Type u) extends OrderedCommGroup α, LinearOr
 
 section LinearOrderedCommGroup
 
-variable [LinearOrderedCommGroup α] {a : α}
+variable [CommGroup α] [LinearOrder α] [IsOrderedMonoid α] {a : α}
 
 @[to_additive LinearOrderedAddCommGroup.add_lt_add_left]
 theorem LinearOrderedCommGroup.mul_lt_mul_left' (a b : α) (h : a < b) (c : α) : c * a < c * b :=
@@ -178,7 +178,7 @@ section NormNumLemmas
 
 /- The following lemmas are stated so that the `norm_num` tactic can use them with the
 expected signatures. -/
-variable [OrderedCommGroup α] {a b : α}
+variable [CommGroup α] [PartialOrder α] [IsOrderedMonoid α] {a b : α}
 
 @[to_additive (attr := gcongr) neg_le_neg]
 theorem inv_le_inv' : a ≤ b → b⁻¹ ≤ a⁻¹ :=

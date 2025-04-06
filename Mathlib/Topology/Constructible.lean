@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Order.BooleanSubalgebra
+import Mathlib.Topology.LocalAtTarget
 import Mathlib.Topology.QuasiSeparated
 import Mathlib.Topology.Spectral.Hom
-import Mathlib.Topology.LocalAtTarget
 import Mathlib.Topology.Spectral.Prespectral
 
 /-!

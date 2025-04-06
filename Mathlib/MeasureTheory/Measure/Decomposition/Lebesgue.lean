@@ -3,7 +3,7 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.Decomposition.UnsignedHahn
+import Mathlib.MeasureTheory.Measure.Decomposition.Hahn
 import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
 import Mathlib.MeasureTheory.Measure.Sub
 
@@ -44,8 +44,9 @@ The Lebesgue decomposition provides the Radon-Nikodym theorem readily.
 Lebesgue decomposition theorem
 -/
 
-open scoped MeasureTheory NNReal ENNReal
+assert_not_exists MeasureTheory.VectorMeasure
 
+open scoped MeasureTheory NNReal ENNReal
 open Set
 
 namespace MeasureTheory

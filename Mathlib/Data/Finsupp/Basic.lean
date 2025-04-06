@@ -742,19 +742,31 @@ theorem prod_option_index [AddZeroClass M] [CommMonoid N] (f : Option α →₀ 
     (h_add : ∀ o m₁ m₂, b o (m₁ + m₂) = b o m₁ * b o m₂) :
     f.prod b = b none (f none) * f.some.prod fun a => b (Option.some a) := by
   classical
-    apply induction_linear f
-    · simp [some_zero, h_zero]
-    · intro f₁ f₂ h₁ h₂
+    induction f using induction_linear with
+    | zero => simp [some_zero, h_zero]
+    | add f₁ f₂ h₁ h₂ =>
       rw [Finsupp.prod_add_index, h₁, h₂, some_add, Finsupp.prod_add_index]
       · simp only [h_add, Pi.add_apply, Finsupp.coe_add]
         rw [mul_mul_mul_comm]
       all_goals simp [h_zero, h_add]
-    · rintro (_ | a) m <;> simp [h_zero, h_add]
+    | single a m => cases a <;> simp [h_zero, h_add]
 
 theorem sum_option_index_smul [Semiring R] [AddCommMonoid M] [Module R M] (f : Option α →₀ R)
     (b : Option α → M) :
     (f.sum fun o r => r • b o) = f none • b none + f.some.sum fun a r => r • b (Option.some a) :=
   f.sum_option_index _ (fun _ => zero_smul _ _) fun _ _ _ => add_smul _ _ _
+
+theorem eq_option_embedding_update_none_iff [Zero M] {n : Option α →₀ M} {m : α →₀ M} {i : M} :
+    (n = (embDomain Embedding.some m).update none i) ↔
+      n none = i ∧ n.some = m := by
+  classical
+  rw [Finsupp.ext_iff, Option.forall, Finsupp.ext_iff]
+  apply and_congr
+  · simp
+  · apply forall_congr'
+    intro
+    simp only [coe_update, ne_eq, reduceCtorEq, not_false_eq_true, update_of_ne, some_apply]
+    rw [← Embedding.some_apply, embDomain_apply, Embedding.some_apply]
 
 end Option
 
