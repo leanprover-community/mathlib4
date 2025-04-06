@@ -37,10 +37,6 @@ lemma exists_fin' [Module.Finite R M] : ∃ (n : ℕ) (f : (Fin n → R) →ₗ[
   refine ⟨n, Basis.constr (Pi.basisFun R _) ℕ s, ?_⟩
   rw [← LinearMap.range_eq_top, Basis.constr_range, hs]
 
-lemma small [Module.Finite R M] [Small.{v} R] : Small.{v} M :=
-  have ⟨_, _, h⟩ := exists_fin' R M
-  small_of_surjective h
-
 variable {M}
 
 lemma _root_.Module.finite_of_finite [Finite R] [Module.Finite R M] : Finite M := by

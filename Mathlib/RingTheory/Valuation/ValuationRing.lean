@@ -199,8 +199,7 @@ def valuation : Valuation K (ValueGroup A K) where
     have : (algebraMap A K) ya ≠ 0 := IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors hya
     have : (algebraMap A K) yb ≠ 0 := IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors hyb
     obtain ⟨c, h | h⟩ := ValuationRing.cond (xa * yb) (xb * ya)
-    · dsimp
-      apply le_trans _ (le_max_left _ _)
+    · apply le_trans _ (le_max_left _ _)
       use c + 1
       rw [Algebra.smul_def]
       field_simp
@@ -267,7 +266,7 @@ instance (priority := 100) isLocalRing : IsLocalRing A :=
 instance le_total_ideal : IsTotal (Ideal A) LE.le := by
   constructor; intro α β
   by_cases h : α ≤ β; · exact Or.inl h
-  erw [not_forall] at h
+  rw [SetLike.le_def, not_forall] at h
   push_neg at h
   obtain ⟨a, h₁, h₂⟩ := h
   right

@@ -368,7 +368,7 @@ variable [Nontrivial R]
 @[nontriviality]
 theorem Module.finrank_zero_of_subsingleton [Subsingleton M] :
     finrank R M = 0 := by
-  rw [finrank, rank_subsingleton', _root_.map_zero]
+  rw [finrank, rank_subsingleton', map_zero]
 
 lemma LinearIndependent.finrank_eq_zero_of_infinite {ι} [Infinite ι] {v : ι → M}
     (hv : LinearIndependent R v) : finrank R M = 0 := toNat_eq_zero.mpr <| .inr hv.aleph0_le_rank

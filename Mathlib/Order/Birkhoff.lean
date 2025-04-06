@@ -6,6 +6,7 @@ Authors: Yaël Dillies, Filippo A. E. Nuccio, Sam van Gool
 import Mathlib.Data.Fintype.Order
 import Mathlib.Order.Interval.Finset.Basic
 import Mathlib.Order.Irreducible
+import Mathlib.Order.UpperLower.Closure
 
 /-!
 # Birkhoff representation

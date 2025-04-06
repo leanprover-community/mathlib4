@@ -120,13 +120,11 @@ instance partialOrder : PartialOrder (ENormedSpace 𝕜 V) where
 /-- The `ENormedSpace` sending each non-zero vector to infinity. -/
 noncomputable instance : Top (ENormedSpace 𝕜 V) :=
   ⟨{  toFun := fun x => if x = 0 then 0 else ⊤
-      eq_zero' := fun x => by simp only; split_ifs <;> simp [*]
+      eq_zero' := fun x => by split_ifs <;> simp [*]
       map_add_le' := fun x y => by
-        simp only
         split_ifs with hxy hx hy hy hx hy hy <;> try simp [*]
         simp [hx, hy] at hxy
       map_smul_le' := fun c x => by
-        simp only
         split_ifs with hcx hx hx <;> simp only [smul_eq_zero, not_or] at hcx
         · simp only [mul_zero, le_refl]
         · have : c = 0 := by tauto

@@ -138,13 +138,13 @@ theorem spanIntNorm_localization (I : Ideal S) (M : Submonoid R) (hM : M ≤ R�
     simp only [Submodule.coe_mk, Subtype.coe_mk, map_pow] at has ⊢
     apply_fun algebraMap _ L at has
     apply_fun Algebra.norm K at has
-    simp only [_root_.map_mul, IsScalarTower.algebraMap_apply R Rₘ Sₘ] at has
+    simp only [map_mul, IsScalarTower.algebraMap_apply R Rₘ Sₘ] at has
     rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply,
       ← IsScalarTower.algebraMap_apply,
       IsScalarTower.algebraMap_apply R K L,
       Algebra.norm_algebraMap] at has
     apply IsFractionRing.injective Rₘ K
-    simp only [_root_.map_mul, map_pow]
+    simp only [map_mul, map_pow]
     have : FiniteDimensional K L := Module.Finite_of_isLocalization R S _ _ R⁰
     rwa [Algebra.algebraMap_intNorm (L := L), ← IsScalarTower.algebraMap_apply,
       ← IsScalarTower.algebraMap_apply, Algebra.algebraMap_intNorm (L := L)]
@@ -229,14 +229,14 @@ theorem spanNorm_mul (I J : Ideal S) : spanNorm R (I * J) = spanNorm R I * spanN
     (Rₘ := Localization.AtPrime P) (Sₘ := Localization P') _ _ P.primeCompl_le_nonZeroDivisors]
   rw [← (I.map _).span_singleton_generator, ← (J.map _).span_singleton_generator,
     span_singleton_mul_span_singleton, spanNorm_singleton, spanNorm_singleton,
-    spanNorm_singleton, span_singleton_mul_span_singleton, _root_.map_mul]
+    spanNorm_singleton, span_singleton_mul_span_singleton, map_mul]
 
 /-- The relative norm `Ideal.relNorm R (I : Ideal S)`, where `R` and `S` are Dedekind domains,
 and `S` is an extension of `R` that is finite and free as a module. -/
 def relNorm : Ideal S →*₀ Ideal R where
   toFun := spanNorm R
   map_zero' := spanNorm_bot R
-  map_one' := by dsimp only; rw [one_eq_top, spanNorm_top R, one_eq_top]
+  map_one' := by rw [one_eq_top, spanNorm_top R, one_eq_top]
   map_mul' := spanNorm_mul R
 
 theorem relNorm_apply (I : Ideal S) :
