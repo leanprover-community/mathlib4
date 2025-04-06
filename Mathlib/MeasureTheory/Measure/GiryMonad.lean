@@ -209,7 +209,7 @@ theorem lintegral_bind {m : Measure α} {μ : α → Measure β} {f : β → ℝ
     (hf : Measurable f) : ∫⁻ x, f x ∂bind m μ = ∫⁻ a, ∫⁻ x, f x ∂μ a ∂m :=
   (lintegral_join hf).trans (lintegral_map (measurable_lintegral hf) hμ)
 
-theorem lintegral_bind_le {m : Measure α} {μ : α → Measure β} {f : β → ℝ≥0∞} :
+theorem lintegral_bind_le (f : β → ℝ≥0∞) (m : Measure α) (μ : α → Measure β) :
     ∫⁻ x, f x ∂bind m μ ≤ ∫⁻ a, ∫⁻ x, f x ∂μ a ∂m :=
   (lintegral_join_le _ _).trans (lintegral_map_le _ _)
 
