@@ -512,4 +512,79 @@ def PushoutCocone.isoMk {F : WalkingSpan ⥤ C} (t : Cocone F) :
       · dsimp
         simp
 
+section Under
+variable {f : X ⟶ Y} {g : X ⟶ Z} {c : PushoutCocone f g}
+
+/-- The binary cofan in `Under X` corresponding to a pushout cocone from `X`. -/
+@[simp]
+def PushoutCocone.toBinaryCofan : PushoutCocone f g ⥤ BinaryCofan (Under.mk f) (.mk g) where
+  obj c := .mk (Under.homMk (U := .mk f) (V := .mk (f ≫ c.inl)) c.inl rfl)
+      (Under.homMk (U := .mk g) (V := .mk (f ≫ c.inl)) c.inr c.condition.symm)
+  map {c1 c2} a := {
+    hom := Under.homMk a.hom
+    w := by rintro (_|_) <;> aesop_cat
+  }
+
+/-- The pushout cocone from `X` corresponding to a binary cofan in `Under X`. -/
+@[simp]
+def binaryCofanUnder.toPushoutCocone : BinaryCofan (Under.mk f) (.mk g) ⥤ PushoutCocone f g where
+  obj c := .mk c.inl.right c.inr.right (c.inl.w.symm.trans c.inr.w)
+  map {c1 c2} a := {
+    hom := a.hom.right
+    w := by rintro (_|_|_) <;> simp [← Under.comp_right]
+  }
+
+/-- Pushout cocones from `X` are the same thing as binary cofans in `Under X`. -/
+@[simp]
+def pushoutCoconeEquivBinaryCofan : PushoutCocone f g ≌ BinaryCofan (Under.mk f) (.mk g) :=
+  .mk PushoutCocone.toBinaryCofan binaryCofanUnder.toPushoutCocone
+    (NatIso.ofComponents fun c ↦ c.eta)
+    (NatIso.ofComponents (fun X ↦ BinaryCofan.ext (Under.isoMk (.refl _)
+      (by simpa using X.inl.w.symm)) (by aesop_cat) (by aesop_cat))
+      (by intros; ext; simp [BinaryCofan.ext]))
+
+/-- A pushout cocone from `X` is a colimit if its corresponding binary cofan in `Under X` is a
+colimit. -/
+def IsColimit.pushoutCoconeToBinaryCofan (hc : IsColimit c) :
+    IsColimit <| PushoutCocone.toBinaryCofan.obj c :=
+  (IsColimit.ofCoconeEquiv pushoutCoconeEquivBinaryCofan).symm hc
+
+end Under
+
+section Over
+variable {f : Y ⟶ X} {g : Z ⟶ X} {c : PullbackCone f g}
+
+/-- The binary fan in `Over X` corresponding to a pullback cone to `X`. -/
+@[simp]
+def PullbackCone.toBinaryFan : PullbackCone f g ⥤ BinaryFan (Over.mk f) (.mk g) where
+  obj c := .mk (Over.homMk (U := .mk (c.fst ≫ f)) (V := .mk f) c.fst rfl)
+      (Over.homMk (U := .mk (c.fst ≫ f)) (V := .mk g) c.snd c.condition.symm)
+  map {c1 c2} a := {
+    hom := Over.homMk a.hom
+    w := by rintro (_|_) <;> aesop_cat
+  }
+
+/-- The pullback cone to `X` corresponding to a binary fan in `Over X`. -/
+@[simp]
+def binaryFanOver.toPullbackCone : BinaryFan (Over.mk f) (.mk g) ⥤ PullbackCone f g where
+  obj c := .mk c.fst.left c.snd.left (c.fst.w.trans c.snd.w.symm)
+  map {c1 c2} a := {
+    hom := a.hom.left
+    w := by rintro (_|_|_) <;> simp [← Over.comp_left_assoc, ← Over.comp_left]
+  }
+
+/-- Pullback cones to `X` are the same thing as binary fans in `Over X`. -/
+@[simp]
+def pullbackConeEquivBinaryFan : PullbackCone f g ≌ BinaryFan (Over.mk f) (.mk g) :=
+  .mk PullbackCone.toBinaryFan binaryFanOver.toPullbackCone
+    (NatIso.ofComponents fun c ↦ c.eta)
+    (NatIso.ofComponents (fun X ↦ BinaryFan.ext (Over.isoMk (.refl _)
+      (by simpa using X.fst.w.symm)) (by aesop_cat) (by aesop_cat))
+      (by intros; ext; simp [BinaryFan.ext]))
+
+/-- A pullback cone to `X` is a limit if its corresponding binary fan in `Over X` is a limit. -/
+def IsLimit.pullbackConeToBinaryFan (hc : IsLimit c) : IsLimit <| PullbackCone.toBinaryFan.obj c :=
+  (IsLimit.ofConeEquiv pullbackConeEquivBinaryFan).symm hc
+
+end Over
 end CategoryTheory.Limits
