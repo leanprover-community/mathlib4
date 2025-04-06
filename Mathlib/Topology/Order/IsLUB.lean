@@ -142,21 +142,21 @@ theorem IsGLB.mem_of_isClosed {a : α} {s : Set α} (ha : IsGLB s a) (hs : s.Non
 
 alias IsClosed.isGLB_mem := IsGLB.mem_of_isClosed
 
-protected theorem Set.Subset.isLUB_congr {α : Type*} [TopologicalSpace α] [Preorder α]
+theorem isLUB_iff_of_subset_of_subset_closure {α : Type*} [TopologicalSpace α] [Preorder α]
     [ClosedIicTopology α] {s t : Set α} (hst : s ⊆ t) (hts : t ⊆ closure s) {x : α} :
     IsLUB s x ↔ IsLUB t x :=
   isLUB_congr <| (upperBounds_closure (s := s) ▸ upperBounds_mono_set hts).antisymm <|
     upperBounds_mono_set hst
 
-protected theorem Set.Subset.isGLB_congr {α : Type*} [TopologicalSpace α] [Preorder α]
+theorem isGLB_iff_of_subset_of_subset_closure {α : Type*} [TopologicalSpace α] [Preorder α]
     [ClosedIciTopology α] {s t : Set α} (hst : s ⊆ t) (hts : t ⊆ closure s) {x : α} :
     IsGLB s x ↔ IsGLB t x :=
-  Set.Subset.isLUB_congr (α := αᵒᵈ) hst hts
+  isLUB_iff_of_subset_of_subset_closure (α := αᵒᵈ) hst hts
 
 theorem Dense.isLUB_inter_iff {α : Type*} [TopologicalSpace α] [Preorder α] [ClosedIicTopology α]
     {s t : Set α} (hs : Dense s) (ht : IsOpen t) {x : α} :
     IsLUB (t ∩ s) x ↔ IsLUB t x :=
-  Set.Subset.isLUB_congr (by simp) <| hs.open_subset_closure_inter ht
+  isLUB_iff_of_subset_of_subset_closure (by simp) <| hs.open_subset_closure_inter ht
 
 theorem Dense.isGLB_inter_iff {α : Type*} [TopologicalSpace α] [Preorder α] [ClosedIciTopology α]
     {s t : Set α} (hs : Dense s) (ht : IsOpen t) {x : α} :
