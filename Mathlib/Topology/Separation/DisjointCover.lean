@@ -74,13 +74,13 @@ lemma exists_open_prod_subset_of_mem_nhds_diagonal (hS : S ∈ nhdsSet (diagonal
 variable [CompactSpace X]
 
 /-- If `S` is any neighbourhood of the diagonal in a compact topological space `X`, then there
-exists a finite cover of `X` by opens `U i` with `U i ×ˢ U i ⊆ S` for all `i`.
+exists a finite cover of `X` by opens `U i` such that `U i ×ˢ U i ⊆ S` for all `i`.
 
 That the indexing set is a finset of `X` is an artifact of the proof; it could be any finite type.
 -/
 lemma exists_finite_open_cover_prod_subset_of_mem_nhds_diagonal_of_compact
-    (hS : S ∈ nhdsSet (.diagonal X)) :
-    ∃ (t : Finset X) (U : t → Opens X), IsOpenCover U ∧ ∀ i, (U i : Set X) ×ˢ U i ⊆ S := by
+    (hS : S ∈ nhdsSet (diagonal X)) :
+    ∃ (D : Finset X) (U : D → Opens X), IsOpenCover U ∧ ∀ i, (U i : Set X) ×ˢ U i ⊆ S := by
   choose U hUo hUx hUp using exists_open_prod_subset_of_mem_nhds_diagonal hS
   obtain ⟨t, ht⟩ := isCompact_univ.elim_finite_subcover _ hUo (fun x _ ↦ mem_iUnion.mpr ⟨_, hUx x⟩)
   refine ⟨t, fun i ↦ ⟨_, hUo i⟩, .of_sets _ ?_, (hUp ·)⟩
@@ -92,9 +92,9 @@ variable [TotallyDisconnectedSpace X] [T2Space X]
 exists a finite cover of `X` by disjoint nonempty clopens `U i` with `U i ×ˢ U i ⊆ S` for all `i`.
 -/
 private lemma exists_finite_disjoint_nonempty_clopen_cover_of_mem_nhds_diagonal_of_profinite
-    (hS : S ∈ nhdsSet (.diagonal X)) :
+    (hS : S ∈ nhdsSet (diagonal X)) :
     ∃ (n : ℕ) (D : Fin n → Clopens X), (∀ i, D i ≠ ⊥) ∧
-    (∀ i, ∀ y ∈ D i, ∀ z ∈ D i, (y, z) ∈ S) ∧ (univ : Set X) ⊆ ⋃ i, ↑(D i) ∧
+    (∀ i, ∀ y ∈ D i, ∀ z ∈ D i, (y, z) ∈ S) ∧ (univ : Set X) ⊆ ⋃ i, D i ∧
     Pairwise (Disjoint on D) := by
   obtain ⟨t, U, hUc, hUS⟩ := exists_finite_open_cover_prod_subset_of_mem_nhds_diagonal_of_compact hS
   -- Now refine it to a disjoint covering.
@@ -109,9 +109,9 @@ For any continuous function `X → V`, with `X` profinite and `V` Hausdorff, and
 neighbourhood of the diagonal in `V × V`, there exists a finite cover of `X` by pairwise-disjoint
 nonempty clopens, on each of which `f` varies within `S`.
 -/
-lemma exists_disjoint_nonempty_clopen_cover_of_mem_nhds_diagonal (hS : S ∈ nhdsSet (.diagonal V)) :
+lemma exists_disjoint_nonempty_clopen_cover_of_mem_nhds_diagonal (hS : S ∈ nhdsSet (diagonal V)) :
     ∃ (n : ℕ) (D : Fin n → Clopens X), (∀ i, D i ≠ ⊥) ∧
-    (∀ i, ∀ y ∈ D i, ∀ z ∈ D i, (f y, f z) ∈ S) ∧ (univ : Set X) ⊆ ⋃ i, ↑(D i) ∧
+    (∀ i, ∀ y ∈ D i, ∀ z ∈ D i, (f y, f z) ∈ S) ∧ (univ : Set X) ⊆ ⋃ i, D i ∧
     Pairwise (Disjoint on D) := by
   have : (f.prodMap f) ⁻¹' S ∈ nhdsSet (.diagonal X) := by
     rw [mem_nhdsSet_iff_forall] at hS ⊢
@@ -126,14 +126,15 @@ namespace ContinuousMap
 variable {X V : Type*} [TopologicalSpace X] [TopologicalSpace V] [TotallyDisconnectedSpace X]
   [T2Space X] [CompactSpace X] {S : Set (V × V)} (f : C(X, V))
 
-/-- Any continuous function on a profinite space can be approximated by a function factoring through
-`Fin n`, for some `n`. -/
+/-- Given any neighbourhood `S` of the diagonal in `V × V`, every continuous function from a
+profinite space to `V` can be `S`-approximated by a function factoring through `Fin n`,
+for some `n`. -/
 lemma exists_finite_approximation_of_mem_nhds_diagonal (hS : S ∈ nhdsSet (diagonal V)) :
     ∃ (n : ℕ) (g : X → Fin n) (h : Fin n → V), Continuous g ∧ ∀ x, (f x, h (g x)) ∈ S := by
   obtain ⟨n, E, hEne, hES, hEuniv, hEdis⟩ :=
     exists_disjoint_nonempty_clopen_cover_of_mem_nhds_diagonal f hS
   have h_uniq (x) : ∃! i, x ∈ E i := by
-    refine match Set.mem_iUnion.mp (hEuniv <| mem_univ x) with
+    refine match mem_iUnion.mp (hEuniv <| mem_univ x) with
       | ⟨i, hi⟩ => ⟨i, hi, fun j hj ↦ hEdis.eq ?_⟩
     simpa [← Clopens.coe_disjoint, not_disjoint_iff] using ⟨x, hj, hi⟩
   choose g hg hg' using h_uniq -- for each `x`, `g x` is the unique `i` such that `x ∈ E i`
@@ -148,13 +149,13 @@ open scoped Function
 If `f` is a continuous map from a profinite space to a topological space with a commutative monoid
 structure, then we can approximate `f` by finite products of indicator functions of clopen sets.
 
-(Note no compatibility is assumed between the group structure on `V` and the topology.)
+(Note no compatibility is assumed between the monoid structure on `V` and the topology.)
 -/
 @[to_additive "If `f` is a continuous map from a profinite space to a topological space with a
-commutative additive group structure, then we can approximate `f` by finite sums of indicator
+commutative additive monoid structure, then we can approximate `f` by finite sums of indicator
 functions of clopen sets.
 
-(Note no compatibility is assumed between the group structure on `V` and the topology.)"]
+(Note no compatibility is assumed between the monoid structure on `V` and the topology.)"]
 lemma exists_finite_sum_const_mulIndicator_approximation_of_mem_nhds_diagonal [CommMonoid V]
     (hS : S ∈ nhdsSet (diagonal V)) :
     ∃ (n : ℕ) (U : Fin n → Clopens X) (v : Fin n → V),
