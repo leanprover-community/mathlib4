@@ -590,14 +590,14 @@ protected theorem induction {p : (α →₀ M) → Prop} (f : α →₀ M) (h0 :
       · apply ih _ _
         rw [support_erase, hf, Finset.erase_cons]
 
-theorem induction₂ {p : (α →₀ M) → Prop} (f : α →₀ M) (h0 : p 0)
-    (ha : ∀ (a b) (f : α →₀ M), a ∉ f.support → b ≠ 0 → p f → p (f + single a b)) : p f :=
-  suffices ∀ (s) (f : α →₀ M), f.support = s → p f from this _ _ rfl
+theorem induction₂ {motive : (α →₀ M) → Prop} (f : α →₀ M) (zero : motive 0)
+    (add_single : ∀ a b f, a ∉ f.support → b ≠ 0 → motive f → motive (f + single a b)) : motive f :=
+  suffices ∀ (s) (f : α →₀ M), f.support = s → motive f from this _ _ rfl
   fun s =>
   Finset.cons_induction_on s (fun f hf => by rwa [support_eq_empty.1 hf]) fun a s has ih f hf => by
-    suffices p (f.erase a + single a (f a)) by rwa [erase_add_single] at this
+    suffices motive (f.erase a + single a (f a)) by rwa [erase_add_single] at this
     classical
-      apply ha
+      apply add_single
       · rw [support_erase, mem_erase]
         exact fun H => H.1 rfl
       · rw [← mem_support_iff, hf]

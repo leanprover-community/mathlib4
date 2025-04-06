@@ -146,12 +146,12 @@ theorem map₂_mk (f : α → β → γ) (hr : ∀ a b₁ b₂, s b₁ b₂ → 
 
 /-- A binary version of `Quot.recOnSubsingleton`. -/
 @[elab_as_elim]
-protected def recOnSubsingleton₂ {φ : Quot r → Quot s → Sort*}
-    [h : ∀ a b, Subsingleton (φ ⟦a⟧ ⟦b⟧)] (q₁ : Quot r)
-    (q₂ : Quot s) (f : ∀ a b, φ ⟦a⟧ ⟦b⟧) : φ q₁ q₂ :=
-  @Quot.recOnSubsingleton _ r (fun q ↦ φ q q₂)
-    (fun a ↦ Quot.ind (β := fun b ↦ Subsingleton (φ (mk r a) b)) (h a) q₂) q₁
-    fun a ↦ Quot.recOnSubsingleton q₂ fun b ↦ f a b
+protected def recOnSubsingleton₂ {motive : Quot r → Quot s → Sort*}
+    [h : ∀ a b, Subsingleton (motive ⟦a⟧ ⟦b⟧)] (q₁ : Quot r)
+    (q₂ : Quot s) (mk : ∀ a b, motive ⟦a⟧ ⟦b⟧) : motive q₁ q₂ :=
+  @Quot.recOnSubsingleton _ r (fun q ↦ motive q q₂)
+    (fun a ↦ Quot.ind (β := fun b ↦ Subsingleton (motive (Quot.mk r a) b)) (h a) q₂) q₁
+    fun a ↦ Quot.recOnSubsingleton q₂ fun b ↦ mk a b
 
 @[elab_as_elim]
 protected theorem induction_on₂ {δ : Quot r → Quot s → Prop} (q₁ : Quot r) (q₂ : Quot s)

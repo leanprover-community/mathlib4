@@ -122,9 +122,9 @@ def of : M →ₗ[R] Hausdorffification I M :=
 variable {I M}
 
 @[elab_as_elim]
-theorem induction_on {C : Hausdorffification I M → Prop} (x : Hausdorffification I M)
-    (ih : ∀ x, C (of I M x)) : C x :=
-  Quotient.inductionOn' x ih
+theorem induction_on {motive : Hausdorffification I M → Prop} (x : Hausdorffification I M)
+    (of : ∀ x, motive (of I M x)) : motive x :=
+  Quotient.inductionOn' x of
 
 variable (I M)
 

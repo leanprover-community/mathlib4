@@ -143,8 +143,8 @@ See `Quot.recOnSubsingleton`. -/
 @[elab_as_elim]
 protected abbrev recOnSubsingleton {motive : Sym2 α → Sort*}
     [(p : α × α) → Subsingleton (motive (Sym2.mk p))]
-    (z : Sym2 α) (f : (p : α × α) → motive (Sym2.mk p)) : motive z :=
-  Quot.recOnSubsingleton z f
+    (z : Sym2 α) (mk : (p : α × α) → motive (Sym2.mk p)) : motive z :=
+  Quot.recOnSubsingleton z mk
 
 protected theorem «exists» {α : Sort _} {f : Sym2 α → Prop} :
     (∃ x : Sym2 α, f x) ↔ ∃ x y, f s(x, y) :=

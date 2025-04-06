@@ -77,17 +77,18 @@ def truncRecEmptyOption {P : Type u → Sort v} (of_equiv : ∀ {α β}, α ≃ 
 /-- An induction principle for finite types, analogous to `Nat.rec`. It effectively says
 that every `Fintype` is either `Empty` or `Option α`, up to an `Equiv`. -/
 @[elab_as_elim]
-theorem induction_empty_option {P : ∀ (α : Type u) [Fintype α], Prop}
-    (of_equiv : ∀ (α β) [Fintype β] (e : α ≃ β), @P α (@Fintype.ofEquiv α β ‹_› e.symm) → @P β ‹_›)
-    (h_empty : P PEmpty) (h_option : ∀ (α) [Fintype α], P α → P (Option α)) (α : Type u)
-    [h_fintype : Fintype α] : P α := by
+theorem induction_empty_option {motive : ∀ (α : Type u) [Fintype α], Prop}
+    (ofEquiv : ∀ (α β) [Fintype β] (e : α ≃ β),
+      @motive α (@Fintype.ofEquiv α β ‹_› e.symm) → @motive β ‹_›)
+    (pempty : motive PEmpty) (option : ∀ (α) [Fintype α], motive α → motive (Option α)) (α : Type u)
+    [h_fintype : Fintype α] : motive α := by
   obtain ⟨p⟩ :=
-    let f_empty := fun i => by convert h_empty
+    let f_empty := fun i => by convert pempty
     let h_option : ∀ {α : Type u} [Fintype α] [DecidableEq α],
-          (∀ (h : Fintype α), P α) → ∀ (h : Fintype (Option α)), P (Option α)  := by
+          (∀ (h : Fintype α), motive α) → ∀ (h : Fintype (Option α)), motive (Option α)  := by
       rintro α hα - Pα hα'
-      convert h_option α (Pα _)
-    @truncRecEmptyOption (fun α => ∀ h, @P α h) (@fun α β e hα hβ => @of_equiv α β hβ e (hα _))
+      convert option α (Pα _)
+    @truncRecEmptyOption (fun α => ∀ h, @motive α h) (@fun α β e hα hβ => @ofEquiv α β hβ e (hα _))
       f_empty h_option α _ (Classical.decEq α)
   exact p _
   -- ·

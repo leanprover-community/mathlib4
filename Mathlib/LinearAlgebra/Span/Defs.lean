@@ -115,14 +115,14 @@ theorem span_closure {s : Set M} : span R (AddSubmonoid.closure s : Set M) = spa
 preserved under addition and scalar multiplication, then `p` holds for all elements of the span of
 `s`. -/
 @[elab_as_elim]
-theorem span_induction {p : (x : M) → x ∈ span R s → Prop}
-    (mem : ∀ (x) (h : x ∈ s), p x (subset_span h))
-    (zero : p 0 (Submodule.zero_mem _))
-    (add : ∀ x y hx hy, p x hx → p y hy → p (x + y) (Submodule.add_mem _ ‹_› ‹_›))
-    (smul : ∀ (a : R) (x hx), p x hx → p (a • x) (Submodule.smul_mem _ _ ‹_›)) {x}
-    (hx : x ∈ span R s) : p x hx := by
+theorem span_induction {motive : (x : M) → x ∈ span R s → Prop}
+    (mem : ∀ (x) (h : x ∈ s), motive x (subset_span h))
+    (zero : motive 0 (Submodule.zero_mem _))
+    (add : ∀ x y hx hy, motive x hx → motive y hy → motive (x + y) (Submodule.add_mem _ ‹_› ‹_›))
+    (smul : ∀ (a : R) (x hx), motive x hx → motive (a • x) (Submodule.smul_mem _ _ ‹_›))
+    {x : M} (hx : x ∈ span R s) : motive x hx := by
   let p : Submodule R M :=
-    { carrier := { x | ∃ hx, p x hx }
+    { carrier := { x | ∃ hx, motive x hx }
       add_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, add _ _ _ _ hpx hpy⟩
       zero_mem' := ⟨_, zero⟩
       smul_mem' := fun r ↦ fun ⟨_, hpx⟩ ↦ ⟨_, smul r _ _ hpx⟩ }

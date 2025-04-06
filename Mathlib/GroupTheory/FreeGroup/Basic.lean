@@ -550,7 +550,7 @@ variable {β : Type v} [Group β] (f : α → β) {x y : FreeGroup α}
 
 /-- Given `f : α → β` with `β` a group, the canonical map `List (α × Bool) → β` -/
 @[to_additive "Given `f : α → β` with `β` an additive group, the canonical map
-  `list (α × bool) → β`"]
+  `List (α × Bool) → β`"]
 def Lift.aux : List (α × Bool) → β := fun L =>
   List.prod <| L.map fun x => cond x.2 (f x.1) (f x.1)⁻¹
 

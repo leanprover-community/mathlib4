@@ -144,9 +144,9 @@ instance : Monad FreeMagma where
 
 /-- Recursor on `FreeMagma` using `pure` instead of `of`. -/
 @[to_additive (attr := elab_as_elim) "Recursor on `FreeAddMagma` using `pure` instead of `of`."]
-protected def recOnPure {C : FreeMagma α → Sort l} (x) (ih1 : ∀ x, C (pure x))
-    (ih2 : ∀ x y, C x → C y → C (x * y)) : C x :=
-  FreeMagma.recOnMul x ih1 ih2
+protected def recOnPure {motive : FreeMagma α → Sort l} (x) (pure : ∀ x, motive (pure x))
+    (mul : ∀ x y, motive x → motive y → motive (x * y)) : motive x :=
+  FreeMagma.recOnMul x pure mul
 
 @[to_additive (attr := simp)]
 theorem map_pure (f : α → β) (x) : (f <$> pure x : FreeMagma β) = pure (f x) := rfl

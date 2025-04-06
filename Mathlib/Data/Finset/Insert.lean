@@ -503,8 +503,9 @@ and to show that if it holds for some `Finset α`,
 then it holds for the `Finset` obtained by inserting a new element.
 -/
 @[elab_as_elim]
-protected theorem induction_on {α : Type*} {p : Finset α → Prop} [DecidableEq α] (s : Finset α)
-    (empty : p ∅) (insert : ∀ ⦃a : α⦄ {s : Finset α}, a ∉ s → p s → p (insert a s)) : p s :=
+protected theorem induction_on {α : Type*} {motive : Finset α → Prop} [DecidableEq α] (s : Finset α)
+    (empty : motive ∅)
+    (insert : ∀ ⦃a : α⦄ {s : Finset α}, a ∉ s → motive s → motive (insert a s)) : motive s :=
   Finset.induction empty insert s
 
 /-- To prove a proposition about `S : Finset α`,

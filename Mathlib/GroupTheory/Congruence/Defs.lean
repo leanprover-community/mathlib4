@@ -778,11 +778,12 @@ theorem liftOnUnits_mk (f : ∀ x y : M, c (x * y) 1 → c (y * x) 1 → α)
   rfl
 
 @[to_additive (attr := elab_as_elim)]
-theorem induction_on_units {p : Units c.Quotient → Prop} (u : Units c.Quotient)
-    (H : ∀ (x y : M) (hxy : c (x * y) 1) (hyx : c (y * x) 1), p ⟨x, y, c.eq.2 hxy, c.eq.2 hyx⟩) :
-    p u := by
+theorem induction_on_units {motive : Units c.Quotient → Prop} (u : Units c.Quotient)
+    (mk : ∀ (x y : M) (hxy : c (x * y) 1) (hyx : c (y * x) 1),
+      motive ⟨x, y, c.eq.2 hxy, c.eq.2 hyx⟩) :
+    motive u := by
   rcases u with ⟨⟨x⟩, ⟨y⟩, h₁, h₂⟩
-  exact H x y (c.eq.1 h₁) (c.eq.1 h₂)
+  exact mk x y (c.eq.1 h₁) (c.eq.1 h₂)
 
 end Units
 

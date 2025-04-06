@@ -304,15 +304,15 @@ theorem fixInduction_spec {C : α → Sort*} {f : α →. β ⊕ α} {b : β} {a
 `a` given that `f a` inherits `P` from `a` and `P` holds for preimages of `b`.
 -/
 @[elab_as_elim]
-def fixInduction' {C : α → Sort*} {f : α →. β ⊕ α} {b : β} {a : α}
-    (h : b ∈ f.fix a) (hbase : ∀ a_final : α, Sum.inl b ∈ f a_final → C a_final)
-    (hind : ∀ a₀ a₁ : α, b ∈ f.fix a₁ → Sum.inr a₁ ∈ f a₀ → C a₁ → C a₀) : C a := by
+def fixInduction' {motive : α → Sort*} {f : α →. β ⊕ α} {b : β} {a : α}
+    (h : b ∈ f.fix a) (inl : ∀ a : α, Sum.inl b ∈ f a → motive a)
+    (inr : ∀ a₀ a₁ : α, b ∈ f.fix a₁ → Sum.inr a₁ ∈ f a₀ → motive a₁ → motive a₀) : motive a := by
   refine fixInduction h fun a' h ih => ?_
   rcases e : (f a').get (dom_of_mem_fix h) with b' | a'' <;> replace e : _ ∈ f a' := ⟨_, e⟩
-  · apply hbase
+  · apply inl
     convert e
     exact Part.mem_unique h (fix_stop e)
-  · exact hind _ _ (fix_fwd h e) e (ih _ e)
+  · exact inr _ _ (fix_fwd h e) e (ih _ e)
 
 theorem fixInduction'_stop {C : α → Sort*} {f : α →. β ⊕ α} {b : β} {a : α} (h : b ∈ f.fix a)
     (fa : Sum.inl b ∈ f a) (hbase : ∀ a_final : α, Sum.inl b ∈ f a_final → C a_final)
