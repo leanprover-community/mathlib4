@@ -767,32 +767,10 @@ theorem lintegral_prod_swap [SFinite μ] (f : α × β → ℝ≥0∞) :
 
 /-- **Tonelli's Theorem**: For `ℝ≥0∞`-valued measurable functions on `α × β`,
   the integral of `f` is equal to the iterated integral. -/
-theorem lintegral_prod_of_measurable :
-    ∀ (f : α × β → ℝ≥0∞), Measurable f → ∫⁻ z, f z ∂μ.prod ν = ∫⁻ x, ∫⁻ y, f (x, y) ∂ν ∂μ := by
-  have m := @measurable_prodMk_left
-  refine Measurable.ennreal_induction
-    (motive := fun f ↦ ∫⁻ z, f z ∂μ.prod ν = ∫⁻ x, ∫⁻ y, f (x, y) ∂ν ∂μ) ?_ ?_ ?_
-  · intro c s hs
-    conv_rhs =>
-      enter [2, x, 2, y]
-      rw [← indicator_comp_right, const_def, const_comp, ← const_def]
-    conv_rhs =>
-      enter [2, x]
-      rw [lintegral_indicator (m (x := x) hs), lintegral_const,
-        Measure.restrict_apply MeasurableSet.univ, univ_inter]
-    simp [hs, lintegral_const_mul, measurable_measure_prodMk_left (ν := ν) hs, prod_apply]
-  · rintro f g - hf _ h2f h2g
-    simp only [Pi.add_apply]
-    conv_lhs => rw [lintegral_add_left hf]
-    conv_rhs => enter [2, x]; erw [lintegral_add_left (hf.comp (m (x := x)))]
-    simp [lintegral_add_left, Measurable.lintegral_prod_right', hf, h2f, h2g]
-  · intro f hf h2f h3f
-    have kf : ∀ x n, Measurable fun y => f n (x, y) := fun x n => (hf n).comp m
-    have k2f : ∀ x, Monotone fun n y => f n (x, y) := fun x i j hij y => h2f hij (x, y)
-    have lf : ∀ n, Measurable fun x => ∫⁻ y, f n (x, y) ∂ν := fun n => (hf n).lintegral_prod_right'
-    have l2f : Monotone fun n x => ∫⁻ y, f n (x, y) ∂ν := fun i j hij x =>
-      lintegral_mono (k2f x hij)
-    simp only [lintegral_iSup hf h2f, lintegral_iSup (kf _), k2f, lintegral_iSup lf l2f, h3f]
+theorem lintegral_prod_of_measurable (f : α × β → ℝ≥0∞) (hf : Measurable f) :
+    ∫⁻ z, f z ∂μ.prod ν = ∫⁻ x, ∫⁻ y, f (x, y) ∂ν ∂μ := by
+  rw [Measure.prod, lintegral_bind Measurable.map_prodMk_left hf]
+  simp only [lintegral_map hf measurable_prodMk_left]
 
 /-- **Tonelli's Theorem**: For `ℝ≥0∞`-valued almost everywhere measurable functions on `α × β`,
   the integral of `f` is equal to the iterated integral. -/
