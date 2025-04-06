@@ -95,7 +95,7 @@ def toUnits : Circle →* Units ℂ := unitSphereToUnits ℂ
 instance : CompactSpace Circle := Metric.sphere.compactSpace _ _
 instance : IsTopologicalGroup Circle := Metric.sphere.topologicalGroup
 instance instUniformSpace : UniformSpace Circle := instUniformSpaceSubtype
-instance : UniformGroup Circle := by
+instance : IsUniformGroup Circle := by
   convert topologicalGroup_is_uniform_of_compactSpace Circle
   exact unique_uniformity_of_compact rfl rfl
 
@@ -183,10 +183,10 @@ namespace Real
 /-- The additive character from `ℝ` onto the circle, given by `fun x ↦ exp (2 * π * x * I)`.
 Denoted as `𝐞` within the `Real.FourierTransform` namespace. This uses the analyst convention that
 there is a `2 * π` in the exponent. -/
-def fourierChar : AddChar ℝ Circle where
+def fourierChar : AddChar ℝ 𝕊 where
   toFun z := .exp (2 * π * z)
-  map_zero_eq_one' := by simp only; rw [mul_zero, Circle.exp_zero]
-  map_add_eq_mul' x y := by simp only; rw [mul_add, Circle.exp_add]
+  map_zero_eq_one' := by rw [mul_zero, Circle.exp_zero]
+  map_add_eq_mul' x y := by rw [mul_add, Circle.exp_add]
 
 @[inherit_doc] scoped[FourierTransform] notation "𝐞" => Real.fourierChar
 

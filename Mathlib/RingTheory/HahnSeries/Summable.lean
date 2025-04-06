@@ -433,8 +433,8 @@ end SMul
 
 section Semiring
 
-variable [OrderedCancelAddCommMonoid Γ] [PartialOrder Γ'] [AddAction Γ Γ']
-  [IsOrderedCancelVAdd Γ Γ'] [Semiring R]
+variable [AddCommMonoid Γ] [PartialOrder Γ] [IsOrderedCancelAddMonoid Γ]
+  [PartialOrder Γ'] [AddAction Γ Γ'] [IsOrderedCancelVAdd Γ Γ'] [Semiring R]
 
 instance [AddCommMonoid V] [Module R V] : Module (HahnSeries Γ R) (SummableFamily Γ' V α) where
   smul := (· • ·)
@@ -548,8 +548,7 @@ def embDomain (s : SummableFamily Γ R α) (f : α ↪ β) : SummableFamily Γ R
   isPWO_iUnion_support' := by
     refine s.isPWO_iUnion_support.mono (Set.iUnion_subset fun b g h => ?_)
     by_cases hb : b ∈ Set.range f
-    · dsimp only at h
-      rw [dif_pos hb] at h
+    · rw [dif_pos hb] at h
       exact Set.mem_iUnion.2 ⟨Classical.choose hb, h⟩
     · simp [-Set.mem_range, dif_neg hb] at h
   finite_co_support' g :=
@@ -588,7 +587,8 @@ end EmbDomain
 
 section powers
 
-theorem support_pow_subset_closure [OrderedCancelAddCommMonoid Γ] [Semiring R] (x : HahnSeries Γ R)
+theorem support_pow_subset_closure [AddCommMonoid Γ] [PartialOrder Γ] [IsOrderedCancelAddMonoid Γ]
+    [Semiring R] (x : HahnSeries Γ R)
     (n : ℕ) : support (x ^ n) ⊆ AddSubmonoid.closure (support x) := by
   induction' n with n ih <;> intro g hn
   · simp only [pow_zero, mem_support, coeff_one, ne_eq, ite_eq_right_iff, Classical.not_imp] at hn
@@ -597,21 +597,23 @@ theorem support_pow_subset_closure [OrderedCancelAddCommMonoid Γ] [Semiring R] 
   · obtain ⟨i, hi, j, hj, rfl⟩ := support_mul_subset_add_support hn
     exact SetLike.mem_coe.2 (AddSubmonoid.add_mem _ (ih hi) (AddSubmonoid.subset_closure hj))
 
-theorem isPWO_iUnion_support_powers [LinearOrderedCancelAddCommMonoid Γ] [Semiring R]
+theorem isPWO_iUnion_support_powers [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ]
+    [Semiring R]
     {x : HahnSeries Γ R} (hx : 0 ≤ x.order) :
     (⋃ n : ℕ, (x ^ n).support).IsPWO :=
   (x.isPWO_support'.addSubmonoid_closure
     fun _ hg => le_trans hx (order_le_of_coeff_ne_zero (Function.mem_support.mp hg))).mono
     (Set.iUnion_subset fun n => support_pow_subset_closure x n)
 
-theorem co_support_zero [OrderedCancelAddCommMonoid Γ] [Semiring R] (g : Γ) :
+theorem co_support_zero [AddCommMonoid Γ] [PartialOrder Γ] [IsOrderedCancelAddMonoid Γ]
+    [Semiring R] (g : Γ) :
     {a | ¬((0 : HahnSeries Γ R) ^ a).coeff g = 0} ⊆ {0} := by
   simp only [Set.subset_singleton_iff, Set.mem_setOf_eq]
   intro n hn
   by_contra h'
   simp_all only [ne_eq, not_false_eq_true, zero_pow, coeff_zero, not_true_eq_false]
 
-variable [LinearOrderedCancelAddCommMonoid Γ] [CommRing R]
+variable [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ] [CommRing R]
 
 theorem pow_finite_co_support {x : HahnSeries Γ R} (hx : 0 < x.orderTop) (g : Γ) :
     Set.Finite {a | ((fun n ↦ x ^ n) a).coeff g ≠ 0} := by
@@ -674,7 +676,7 @@ section Inversion
 
 section CommRing
 
-variable [LinearOrderedCancelAddCommMonoid Γ] [CommRing R]
+variable [AddCommGroup Γ] [LinearOrder Γ] [IsOrderedAddMonoid Γ] [CommRing R]
 
 theorem one_minus_single_neg_mul {x y : HahnSeries Γ R} {r : R} (hr : r * x.leadingCoeff = 1)
     (hxy : x = y + single x.order x.leadingCoeff) (hxo : IsAddUnit x.order) :

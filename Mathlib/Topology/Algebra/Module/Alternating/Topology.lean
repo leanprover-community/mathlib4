@@ -40,9 +40,9 @@ lemma isClosed_range_toContinuousMultilinearMap [ContinuousSMul 𝕜 E] [T2Space
 
 end IsClosedRange
 
-section UniformAddGroup
+section IsUniformAddGroup
 
-variable [UniformSpace F] [UniformAddGroup F]
+variable [UniformSpace F] [IsUniformAddGroup F]
 
 instance instUniformSpace : UniformSpace (E [⋀^ι]→L[𝕜] F) :=
   .comap toContinuousMultilinearMap inferInstance
@@ -68,8 +68,8 @@ theorem uniformContinuous_eval_const [ContinuousSMul 𝕜 E] (x : ι → E) :
     UniformContinuous fun f : E [⋀^ι]→L[𝕜] F ↦ f x :=
   uniformContinuous_pi.1 uniformContinuous_coe_fun x
 
-instance instUniformAddGroup : UniformAddGroup (E [⋀^ι]→L[𝕜] F) :=
-  isUniformEmbedding_toContinuousMultilinearMap.uniformAddGroup
+instance instIsUniformAddGroup : IsUniformAddGroup (E [⋀^ι]→L[𝕜] F) :=
+  isUniformEmbedding_toContinuousMultilinearMap.isUniformAddGroup
     (toContinuousMultilinearMapLinear (R := ℕ))
 
 instance instUniformContinuousConstSMul {M : Type*}
@@ -77,8 +77,8 @@ instance instUniformContinuousConstSMul {M : Type*}
     UniformContinuousConstSMul M (E [⋀^ι]→L[𝕜] F) :=
   isUniformEmbedding_toContinuousMultilinearMap.uniformContinuousConstSMul fun _ _ ↦ rfl
 
-theorem isUniformInducing_postcomp {G : Type*} [AddCommGroup G] [UniformSpace G] [UniformAddGroup G]
-    [Module 𝕜 G] (g : F →L[𝕜] G) (hg : IsUniformInducing g) :
+theorem isUniformInducing_postcomp {G : Type*} [AddCommGroup G] [UniformSpace G]
+    [IsUniformAddGroup G] [Module 𝕜 G] (g : F →L[𝕜] G) (hg : IsUniformInducing g) :
     IsUniformInducing (g.compContinuousAlternatingMap : (E [⋀^ι]→L[𝕜] F) → (E [⋀^ι]→L[𝕜] G)) := by
   rw [← isUniformEmbedding_toContinuousMultilinearMap.1.of_comp_iff]
   exact (ContinuousMultilinearMap.isUniformInducing_postcomp g hg).comp
@@ -130,14 +130,14 @@ theorem uniformContinuous_restrictScalars :
 
 end RestrictScalars
 
-end UniformAddGroup
+end IsUniformAddGroup
 
 variable [TopologicalSpace F] [IsTopologicalAddGroup F]
 
 lemma isEmbedding_toContinuousMultilinearMap :
     IsEmbedding (toContinuousMultilinearMap : (E [⋀^ι]→L[𝕜] F → _)) :=
   letI := IsTopologicalAddGroup.toUniformSpace F
-  haveI := uniformAddGroup_of_addCommGroup (G := F)
+  haveI := isUniformAddGroup_of_addCommGroup (G := F)
   isUniformEmbedding_toContinuousMultilinearMap.isEmbedding
 
 @[deprecated (since := "2024-10-26")]
@@ -207,7 +207,7 @@ variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' �
 theorem isEmbedding_restrictScalars :
     IsEmbedding (restrictScalars 𝕜' : E [⋀^ι]→L[𝕜] F → E [⋀^ι]→L[𝕜'] F) :=
   letI : UniformSpace F := IsTopologicalAddGroup.toUniformSpace F
-  haveI : UniformAddGroup F := uniformAddGroup_of_addCommGroup
+  haveI : IsUniformAddGroup F := isUniformAddGroup_of_addCommGroup
   (isUniformEmbedding_restrictScalars _).isEmbedding
 
 @[deprecated (since := "2024-10-26")]

@@ -125,10 +125,10 @@ lemma homInduction_right {P : {x y : C ⊕ D} → (x ⟶ y) → Sort*}
 
 end Sum
 
+namespace Functor
+
 variable {A : Type u₁} [Category.{v₁} A] {B : Type u₂} [Category.{v₂} B] {C : Type u₃}
   [Category.{v₃} C] {D : Type u₄} [Category.{v₄} D]
-
-namespace Functor
 
 section Sum'
 
@@ -136,8 +136,7 @@ variable (F : A ⥤ C) (G : B ⥤ C)
 
 /-- The sum of two functors that land in a given category `C`. -/
 def sum' : A ⊕ B ⥤ C where
-  obj X :=
-  match X with
+  obj
   | inl X => F.obj X
   | inr X => G.obj X
   map {X Y} f := Sum.homInduction (inl := fun _ _ f ↦ F.map f) (inr := fun _ _ g ↦ G.map g) f
@@ -235,7 +234,7 @@ variable (F : A ⊕ B ⥤ C)
 
 /-- Any functor out of a sum is the sum of its precomposition with the inclusions. -/
 def isoSum : F ≅ (Sum.inl_ A B ⋙ F).sum' (Sum.inr_ A B ⋙ F) :=
-    sumIsoExt (Iso.refl _) (Iso.refl _)
+  sumIsoExt (Iso.refl _) (Iso.refl _)
 
 variable (a : A) (b : B)
 
@@ -257,14 +256,36 @@ end Functor
 
 namespace NatTrans
 
+variable {A : Type u₁} [Category.{v₁} A] {B : Type u₂} [Category.{v₂} B] {C : Type u₃}
+  [Category.{v₃} C] {D : Type u₄} [Category.{v₄} D]
+
+/-- The sum of two natural transformations, where all functors have the same target category. -/
+def sum' {F G : A ⥤ C} {H I : B ⥤ C} (α : F ⟶ G) (β : H ⟶ I) : F.sum' H ⟶ G.sum' I where
+  app X :=
+    match X with
+    | inl X => α.app X
+    | inr X => β.app X
+  naturality X Y f := by
+    cases f <;> simp
+
+@[simp]
+theorem sum'_app_inl {F G : A ⥤ C} {H I : B ⥤ C} (α : F ⟶ G) (β : H ⟶ I) (a : A) :
+    (sum' α β).app (inl a) = α.app a :=
+  rfl
+
+@[simp]
+theorem sum'_app_inr {F G : A ⥤ C} {H I : B ⥤ C} (α : F ⟶ G) (β : H ⟶ I) (b : B) :
+    (sum' α β).app (inr b) = β.app b :=
+  rfl
+
 /-- The sum of two natural transformations. -/
 def sum {F G : A ⥤ B} {H I : C ⥤ D} (α : F ⟶ G) (β : H ⟶ I) : F.sum H ⟶ G.sum I where
   app X :=
     match X with
     | inl X => (Sum.inl_ B D).map (α.app X)
     | inr X => (Sum.inr_ B D).map (β.app X)
-  naturality X Y f :=
-    by cases f <;> simp [← Functor.map_comp]
+  naturality X Y f := by
+    cases f <;> simp [← Functor.map_comp]
 
 @[simp]
 theorem sum_app_inl {F G : A ⥤ B} {H I : C ⥤ D} (α : F ⟶ G) (β : H ⟶ I) (a : A) :

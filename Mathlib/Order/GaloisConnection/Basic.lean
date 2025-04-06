@@ -5,7 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Order.Bounds.Image
 import Mathlib.Order.CompleteLattice.Basic
-import Mathlib.Order.GaloisConnection.Defs
+import Mathlib.Order.WithBot
 
 /-!
 # Galois connections, insertions and coinsertions
@@ -372,8 +372,8 @@ abbrev liftCompleteLattice [CompleteLattice α] (gi : GaloisInsertion l u) : Com
       gi.choice (sInf (u '' s)) <|
         (isGLB_sInf _).2 <|
           gi.gc.monotone_u.mem_lowerBounds_image (gi.isGLB_of_u_image <| isGLB_sInf _).1
-    sInf_le := fun s => by dsimp; rw [gi.choice_eq]; exact (gi.isGLB_of_u_image (isGLB_sInf _)).1
-    le_sInf := fun s => by dsimp; rw [gi.choice_eq]; exact (gi.isGLB_of_u_image (isGLB_sInf _)).2 }
+    sInf_le := fun s => by rw [gi.choice_eq]; exact (gi.isGLB_of_u_image (isGLB_sInf _)).1
+    le_sInf := fun s => by rw [gi.choice_eq]; exact (gi.isGLB_of_u_image (isGLB_sInf _)).2 }
 
 end lift
 

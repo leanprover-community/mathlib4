@@ -146,6 +146,7 @@ variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0}
 noncomputable instance : LinearOrderedCommMonoidWithZero ℝ≥0∞ :=
   { inferInstanceAs (LinearOrderedAddCommMonoidWithTop ℝ≥0∞),
       inferInstanceAs (CommSemiring ℝ≥0∞) with
+    bot_le _ := bot_le
     mul_le_mul_left := fun _ _ => mul_le_mul_left'
     zero_le_one := zero_le 1 }
 
@@ -246,19 +247,31 @@ theorem ofNNReal_toNNReal (x : ℝ) : (Real.toNNReal x : ℝ≥0∞) = ENNReal.o
 @[simp] theorem toNNReal_toReal_eq (z : ℝ≥0∞) : z.toReal.toNNReal = z.toNNReal := by
   ext; simp [coe_toNNReal_eq_toReal]
 
-@[simp] theorem top_toNNReal : ∞.toNNReal = 0 := rfl
+@[simp] theorem toNNReal_top : ∞.toNNReal = 0 := rfl
 
-@[simp] theorem top_toReal : ∞.toReal = 0 := rfl
+@[deprecated (since := "2025-03-20")] alias top_toNNReal := toNNReal_top
 
-@[simp] theorem one_toReal : (1 : ℝ≥0∞).toReal = 1 := rfl
+@[simp] theorem toReal_top : ∞.toReal = 0 := rfl
 
-@[simp] theorem one_toNNReal : (1 : ℝ≥0∞).toNNReal = 1 := rfl
+@[deprecated (since := "2025-03-20")] alias top_toReal := toReal_top
+
+@[simp] theorem toReal_one : (1 : ℝ≥0∞).toReal = 1 := rfl
+
+@[deprecated (since := "2025-03-20")] alias one_toReal := toReal_one
+
+@[simp] theorem toNNReal_one : (1 : ℝ≥0∞).toNNReal = 1 := rfl
+
+@[deprecated (since := "2025-03-20")] alias one_toNNReal := toNNReal_one
 
 @[simp] theorem coe_toReal (r : ℝ≥0) : (r : ℝ≥0∞).toReal = r := rfl
 
-@[simp] theorem zero_toNNReal : (0 : ℝ≥0∞).toNNReal = 0 := rfl
+@[simp] theorem toNNReal_zero : (0 : ℝ≥0∞).toNNReal = 0 := rfl
 
-@[simp] theorem zero_toReal : (0 : ℝ≥0∞).toReal = 0 := rfl
+@[deprecated (since := "2025-03-20")] alias zero_toNNReal := toNNReal_zero
+
+@[simp] theorem toReal_zero : (0 : ℝ≥0∞).toReal = 0 := rfl
+
+@[deprecated (since := "2025-03-20")] alias zero_toReal := toReal_zero
 
 @[simp] theorem ofReal_zero : ENNReal.ofReal (0 : ℝ) = 0 := by simp [ENNReal.ofReal]
 
