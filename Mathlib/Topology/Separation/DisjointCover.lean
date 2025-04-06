@@ -12,8 +12,14 @@ import Mathlib.Topology.Sets.OpenCover
 /-!
 # Disjoint covers of profinite spaces
 
-We show that if `X` is a profinite space, then any open covering of `X` can be refined to a finite
-covering by disjoint nonempty clopens.
+We prove various results about covering profinite spaces by disjoint clopens, including
+
+* `TopologicalSpace.IsOpenCover.exists_finite_nonempty_disjoint_clopen_cover`: any open cover of a
+  profinite space can be refined to a finite cover by pairwise disjoint nonempty clopens.
+
+* `ContinuousMap.exists_finite_approximation_of_mem_nhds_diagonal`: if `f : X → V` is continuous
+  with `X` profinite, and `S` is a neighbourhood of the diagonal in `V × V`, then `f` can be
+  `S`-approximated by a function factoring through `Fin n` for some `n`.
 -/
 
 open Set TopologicalSpace
@@ -80,7 +86,7 @@ That the indexing set is a finset of `X` is an artifact of the proof; it could b
 -/
 lemma exists_finite_open_cover_prod_subset_of_mem_nhds_diagonal_of_compact
     (hS : S ∈ nhdsSet (diagonal X)) :
-    ∃ (D : Finset X) (U : D → Opens X), IsOpenCover U ∧ ∀ i, (U i : Set X) ×ˢ U i ⊆ S := by
+    ∃ (t : Finset X) (U : t → Opens X), IsOpenCover U ∧ ∀ i, (U i : Set X) ×ˢ U i ⊆ S := by
   choose U hUo hUx hUp using exists_open_prod_subset_of_mem_nhds_diagonal hS
   obtain ⟨t, ht⟩ := isCompact_univ.elim_finite_subcover _ hUo (fun x _ ↦ mem_iUnion.mpr ⟨_, hUx x⟩)
   refine ⟨t, fun i ↦ ⟨_, hUo i⟩, .of_sets _ ?_, (hUp ·)⟩
@@ -93,31 +99,13 @@ exists a finite cover of `X` by disjoint nonempty clopens `U i` with `U i ×ˢ U
 -/
 private lemma exists_finite_disjoint_nonempty_clopen_cover_of_mem_nhds_diagonal_of_profinite
     (hS : S ∈ nhdsSet (diagonal X)) :
-    ∃ (n : ℕ) (D : Fin n → Clopens X), (∀ i, D i ≠ ⊥) ∧
-    (∀ i, ∀ y ∈ D i, ∀ z ∈ D i, (y, z) ∈ S) ∧ (univ : Set X) ⊆ ⋃ i, D i ∧
-    Pairwise (Disjoint on D) := by
+    ∃ (n : ℕ) (D : Fin n → Clopens X), (∀ i, D i ≠ ⊥) ∧ (∀ i, ∀ y ∈ D i, ∀ z ∈ D i, (y, z) ∈ S)
+    ∧ (univ : Set X) ⊆ ⋃ i, D i ∧ Pairwise (Disjoint on D) := by
   obtain ⟨t, U, hUc, hUS⟩ := exists_finite_open_cover_prod_subset_of_mem_nhds_diagonal_of_compact hS
   -- Now refine it to a disjoint covering.
   obtain ⟨n, W, hW₁, hW₂, hW₃⟩ := hUc.exists_finite_nonempty_disjoint_clopen_cover
   refine ⟨n, W, fun j ↦ (hW₁ j).1, fun j y hy z hz ↦ ?_, hW₂, hW₃⟩
   exact match (hW₁ j).2 with | ⟨i, hi⟩ => hUS i ⟨hi hy, hi hz⟩
-
-variable {V : Type*} [TopologicalSpace V] (f : C(X, V)) {S : Set (V × V)}
-
-/--
-For any continuous function `X → V`, with `X` profinite and `V` Hausdorff, and `S` a
-neighbourhood of the diagonal in `V × V`, there exists a finite cover of `X` by pairwise-disjoint
-nonempty clopens, on each of which `f` varies within `S`.
--/
-lemma exists_disjoint_nonempty_clopen_cover_of_mem_nhds_diagonal (hS : S ∈ nhdsSet (diagonal V)) :
-    ∃ (n : ℕ) (D : Fin n → Clopens X), (∀ i, D i ≠ ⊥) ∧
-    (∀ i, ∀ y ∈ D i, ∀ z ∈ D i, (f y, f z) ∈ S) ∧ (univ : Set X) ⊆ ⋃ i, D i ∧
-    Pairwise (Disjoint on D) := by
-  have : (f.prodMap f) ⁻¹' S ∈ nhdsSet (.diagonal X) := by
-    rw [mem_nhdsSet_iff_forall] at hS ⊢
-    rintro ⟨x, y⟩ (rfl : x = y)
-    exact (map_continuous _).continuousAt.preimage_mem_nhds (hS _ rfl)
-  exact exists_finite_disjoint_nonempty_clopen_cover_of_mem_nhds_diagonal_of_profinite this
 
 end TopologicalSpace
 
@@ -126,9 +114,24 @@ namespace ContinuousMap
 variable {X V : Type*} [TopologicalSpace X] [TopologicalSpace V] [TotallyDisconnectedSpace X]
   [T2Space X] [CompactSpace X] {S : Set (V × V)} (f : C(X, V))
 
-/-- Given any neighbourhood `S` of the diagonal in `V × V`, every continuous function from a
-profinite space to `V` can be `S`-approximated by a function factoring through `Fin n`,
-for some `n`. -/
+/--
+For any continuous function `f : X → V`, with `X` profinite, and `S` a neighbourhood of the
+diagonal in `V × V`, there exists a finite cover of `X` by pairwise-disjoint nonempty clopens, on
+each of which `f` varies within `S`.
+-/
+lemma exists_disjoint_nonempty_clopen_cover_of_mem_nhds_diagonal (hS : S ∈ nhdsSet (diagonal V)) :
+    ∃ (n : ℕ) (D : Fin n → Clopens X), (∀ i, D i ≠ ⊥) ∧ (∀ i, ∀ y ∈ D i, ∀ z ∈ D i, (f y, f z) ∈ S)
+    ∧ (univ : Set X) ⊆ ⋃ i, D i ∧ Pairwise (Disjoint on D) := by
+  have : (f.prodMap f) ⁻¹' S ∈ nhdsSet (diagonal X) := by
+    rw [mem_nhdsSet_iff_forall] at hS ⊢
+    rintro ⟨x, y⟩ (rfl : x = y)
+    exact (map_continuous _).continuousAt.preimage_mem_nhds (hS _ rfl)
+  exact exists_finite_disjoint_nonempty_clopen_cover_of_mem_nhds_diagonal_of_profinite this
+
+/--
+For any continuous function `f : X → V`, with `X` profinite, and `S` a neighbourhood of the
+diagonal in `V × V`, the function `f` can be `S`-approximated by a function factoring through
+`Fin n`, for some `n`. -/
 lemma exists_finite_approximation_of_mem_nhds_diagonal (hS : S ∈ nhdsSet (diagonal V)) :
     ∃ (n : ℕ) (g : X → Fin n) (h : Fin n → V), Continuous g ∧ ∀ x, (f x, h (g x)) ∈ S := by
   obtain ⟨n, E, hEne, hES, hEuniv, hEdis⟩ :=
@@ -144,7 +147,7 @@ lemma exists_finite_approximation_of_mem_nhds_diagonal (hS : S ∈ nhdsSet (diag
   refine ⟨n, g, f ∘ r, continuous_discrete_rng.mpr fun j ↦ ?_, fun x ↦ (hES _) _ (hg _) _ (hr _)⟩
   convert (E j).isOpen
   exact Set.ext fun x ↦ ⟨fun hj ↦ hj ▸ hg x, fun hx ↦ (hg' _ _ hx).symm⟩
-open scoped Function
+
 /--
 If `f` is a continuous map from a profinite space to a topological space with a commutative monoid
 structure, then we can approximate `f` by finite products of indicator functions of clopen sets.
