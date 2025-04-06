@@ -5,6 +5,7 @@ Authors: Michael Rothgang
 -/
 import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 import Mathlib.Topology.Algebra.Module.Equiv
+import Mathlib.Topology.Algebra.ContinuousAffineMap
 
 /-!
 # Continuous affine equivalences
@@ -20,6 +21,7 @@ which are continuous with continuous inverse.
   not the convention used in function composition and compositions of bundled morphisms.
 
 * `e.toHomeomorph`: the continuous affine equivalence `e` as a homeomorphism
+* `e.toContinuousAffineMap`: the continuous affine equivalence `e` as a continuous affine map
 * `ContinuousLinearEquiv.toContinuousAffineEquiv`: a continuous linear equivalence as a continuous
   affine equivalence
 * `ContinuousAffineEquiv.constVAdd`: `AffineEquiv.constVAdd` as a continuous affine equivalence
@@ -111,6 +113,29 @@ theorem ext {e e' : P₁ ≃ᵃL[k] P₂} (h : ∀ x, e x = e' x) : e = e' :=
 @[continuity]
 protected theorem continuous (e : P₁ ≃ᵃL[k] P₂) : Continuous e :=
   e.2
+
+/-- A continuous affine equivalence is a continuous affine map. -/
+def toContinuousAffineMap (e : P₁ ≃ᵃL[k] P₂) : P₁ →ᴬ[k] P₂ where
+  __ := e
+  cont := e.continuous_toFun
+
+@[simp]
+lemma coe_toContinuousAffineMap (e : P₁ ≃ᵃL[k] P₂) : ⇑e.toContinuousAffineMap = e :=
+  rfl
+
+lemma toContinuousAffineMap_injective :
+    Function.Injective (toContinuousAffineMap : (P₁ ≃ᵃL[k] P₂) → (P₁ →ᴬ[k] P₂)) := by
+  intro e e' h
+  ext p
+  simp_rw [← coe_toContinuousAffineMap, h]
+
+lemma toContinuousAffineMap_toAffineMap (e : P₁ ≃ᵃL[k] P₂) :
+    e.toContinuousAffineMap.toAffineMap = e.toAffineEquiv.toAffineMap :=
+  rfl
+
+lemma toContinuousAffineMap_toContinuousMap (e : P₁ ≃ᵃL[k] P₂) :
+    e.toContinuousAffineMap.toContinuousMap = toContinuousMap e.toHomeomorph :=
+  rfl
 
 end Basic
 
@@ -280,6 +305,11 @@ def _root_.ContinuousLinearEquiv.toContinuousAffineEquiv (L : E ≃L[k] F) : E �
 @[simp]
 theorem _root_.ContinuousLinearEquiv.coe_toContinuousAffineEquiv (e : E ≃L[k] F) :
     ⇑e.toContinuousAffineEquiv = e :=
+  rfl
+
+lemma _root_.ContinuousLinearEquiv.toContinuousAffineEquiv_toContinuousAffineMap (L : E ≃L[k] F) :
+    L.toContinuousAffineEquiv.toContinuousAffineMap =
+      L.toContinuousLinearMap.toContinuousAffineMap :=
   rfl
 
 variable (k P₁) in
