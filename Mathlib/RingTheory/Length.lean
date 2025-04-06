@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.Algebra.Exact
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.LinearAlgebra.Dimension.Free
-import Mathlib.LinearAlgebra.Finsupp.Pi
 import Mathlib.LinearAlgebra.Basis.VectorSpace
+import Mathlib.LinearAlgebra.Dimension.Finite
 import Mathlib.Order.KrullDimension
 import Mathlib.RingTheory.FiniteLength
 
@@ -23,7 +21,7 @@ import Mathlib.RingTheory.FiniteLength
 
 -/
 
-variable (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
+variable (R M : Type*) [Ring R] [AddCommGroup M] [Module R M]
 
 /-- The length of a module, defined as the krull dimension of its submodule lattice. -/
 noncomputable
@@ -48,11 +46,11 @@ lemma Module.length_eq_zero_iff : Module.length R M = 0 ↔ Subsingleton M := by
   rw [← WithBot.coe_inj, Module.coe_length, WithBot.coe_zero,
     Order.krullDim_eq_zero_iff_of_orderTop, Submodule.subsingleton_iff]
 
-@[nontriviality]
+@[simp, nontriviality]
 lemma Module.length_eq_zero [Subsingleton M] : Module.length R M = 0 :=
   Module.length_eq_zero_iff.mpr ‹_›
 
-@[nontriviality]
+@[simp, nontriviality]
 lemma Module.length_eq_zero_of_subsingleton_ring [Subsingleton R] : Module.length R M = 0 :=
   have := Module.subsingleton R M
   Module.length_eq_zero
@@ -183,9 +181,8 @@ variable (R) in
 lemma Module.length_pi_of_fintype {ι : Type*} [Fintype ι]
     (M : ι → Type*) [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)] :
     Module.length R (Π i, M i) = ∑ i, Module.length R (M i) := by
-  refine Fintype.induction_empty_option (P := fun ι (_ : Fintype ι) ↦
-    ∀ (M : ι → Type _) [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)],
-      Module.length R (Π i, M i) = ∑ i, Module.length R (M i)) ?_ ?_ ?_ ι M
+  revert ι
+  apply Fintype.induction_empty_option
   · intro α β _ e IH M _ _
     let _ : Fintype α := .ofEquiv β e.symm
     rw [← (LinearEquiv.piCongrLeft R M e).length_eq, IH, e.sum_comp (length R <| M ·)]
@@ -213,7 +210,7 @@ lemma Module.length_finsupp {ι : Type*} :
   exact ENat.self_le_mul_right _ length_pos.ne'
 
 @[simp]
-lemma Module.length_pi {ι : Type*} [Finite ι] :
+lemma Module.length_pi {ι : Type*} :
     Module.length R (ι → M) = ENat.card ι * Module.length R M := by
   cases finite_or_infinite ι
   · cases nonempty_fintype ι
@@ -223,32 +220,47 @@ lemma Module.length_pi {ι : Type*} [Finite ι] :
   refine le_trans ?_ (Module.length_le_of_injective Finsupp.lcoeFun DFunLike.coe_injective)
   simp [ENat.top_mul length_pos.ne']
 
+attribute [nontriviality] rank_subsingleton'
+
 variable (R M) in
 lemma Module.length_of_free [Module.Free R M] :
     Module.length R M = (Module.rank R M).toENat * Module.length R R := by
+  let b := Module.Free.chooseBasis R M
   nontriviality R
+  nontriviality M
+  by_cases H : Module.length R R = ⊤
+  · rw [b.repr.length_eq, Module.length_finsupp, H, ENat.mul_top', ENat.mul_top']
+    congr 1
+    simp [ENat.card_eq_zero_iff_empty, rank_pos_of_free.ne']
+  rw [← ne_eq, Module.length_ne_top_iff, isFiniteLength_iff_isNoetherian_isArtinian] at H
+  cases H
   let b := Module.Free.chooseBasis R M
   rw [b.repr.length_eq, Module.length_finsupp, Free.rank_eq_card_chooseBasisIndex, ENat.card]
 
 variable (R M) in
-lemma Module.length_of_free_of_finite [Module.Free R M] [Module.Finite R M] :
+lemma Module.length_of_free_of_finite
+    [StrongRankCondition R] [Module.Free R M] [Module.Finite R M] :
     Module.length R M = Module.finrank R M * Module.length R R := by
   nontriviality R
   rw [Module.length_of_free, Cardinal.toENat_eq_nat.mpr (Module.finrank_eq_rank _ _).symm]
 
-@[simp]
-lemma Module.length_self_of_field (K : Type*) [Field K] :
-    Module.length K K = 1 := by
+lemma Module.length_eq_one_iff :
+    Module.length R M = 1 ↔ IsSimpleModule R M := by
   rw [← WithBot.coe_inj, Module.coe_length, WithBot.coe_one,
     Order.krullDim_eq_one_iff_of_boundedOrder]
-  infer_instance
+
+variable (R M) in
+@[simp]
+lemma Module.length_eq_one [IsSimpleModule R M] :
+    Module.length R M = 1 :=
+  Module.length_eq_one_iff.mpr ‹_›
 
 lemma Module.length_eq_rank
-    (K M : Type*) [Field K] [AddCommGroup M] [Module K M] :
+    (K M : Type*) [DivisionRing K] [AddCommGroup M] [Module K M] :
     Module.length K M = (Module.rank K M).toENat := by
   simp [Module.length_of_free]
 
 lemma Module.length_eq_finrank
-    (K M : Type*) [Field K] [AddCommGroup M] [Module K M] [Module.Finite K M] :
+    (K M : Type*) [DivisionRing K] [AddCommGroup M] [Module K M] [Module.Finite K M] :
     Module.length K M = Module.finrank K M := by
   simp [Module.length_of_free]

@@ -72,6 +72,14 @@ lemma rank_eq_zero_iff :
     apply ha
     simpa using DFunLike.congr_fun (linearIndependent_iff.mp hs (Finsupp.single i a) (by simpa)) i
 
+theorem rank_pos_of_free [Module.Free R M] [Nontrivial M] :
+    0 < Module.rank R M := by
+  have i := Nonempty.some (α := Module.Free.ChooseBasisIndex R M) inferInstance
+  rw [pos_iff_ne_zero, ne_eq, rank_eq_zero_iff]
+  simp only [ne_eq, not_forall, not_exists, not_and, not_imp_not]
+  exact ⟨Module.Free.chooseBasis R M i,
+    fun x hx ↦ by simpa using congr((Module.Free.chooseBasis R M).repr $hx)⟩
+
 variable [Nontrivial R]
 
 section
@@ -102,6 +110,7 @@ end
 variable (R M)
 
 /-- See `rank_subsingleton` that assumes `Subsingleton R` instead. -/
+@[nontriviality]
 theorem rank_subsingleton' [Subsingleton M] : Module.rank R M = 0 :=
   rank_eq_zero_iff.mpr fun _ ↦ ⟨1, one_ne_zero, Subsingleton.elim _ _⟩
 
