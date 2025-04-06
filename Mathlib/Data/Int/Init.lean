@@ -282,18 +282,6 @@ lemma strongRec_of_lt (hn : n < m) : m.strongRec lt ge n = lt n hn := dif_pos _
 
 end strongRec
 
-/-! ### neg -/
-
--- We want to use this lemma earlier than the lemmas simp can prove them with
-
-@[simp, nolint simpNF] protected lemma neg_le_neg_iff : -a ≤ -b ↔ b ≤ a where
-  mp := Int.le_of_neg_le_neg
-  mpr := Int.neg_le_neg
-
-@[simp, nolint simpNF] protected lemma neg_lt_neg_iff : -a < -b ↔ b < a where
-  mp := Int.lt_of_neg_lt_neg
-  mpr := Int.neg_lt_neg
-
 /-! ### mul -/
 
 -- We want to use these lemmas earlier than the lemmas simp can prove them with
