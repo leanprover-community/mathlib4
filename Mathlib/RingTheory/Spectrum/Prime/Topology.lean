@@ -100,11 +100,11 @@ In the prime spectrum of a commutative semiring:
 
 * `minimalPrimes.equivIrreducibleComponents`: irreducible components correspond to minimal primes.
 
-* `PrimeSpectrum.isIdempotentElemEquivClopens`: clopen subsets in the prime spectrum of a
-  commutative ring correspond to idempotents in the ring.
+* `PrimeSpectrum.mulZeroAddOneEquivClopens`: clopen subsets correspond to pairs of elements
+  that add up to 1 and multiply to 0 in the semiring.
 
-* `PrimeSpectrum.mulZeroAddOneEquivClopens`: clopen subsets in the prime spectrum of a commutative
-  semiring correspond to pairs of elements that add up to 1 and multiply to 0 in the semiring.
+* `PrimeSpectrum.isIdempotentElemEquivClopens`: (if the semiring is a ring) clopen subsets
+  correspond to idempotents in the ring.
 
 -/
 
