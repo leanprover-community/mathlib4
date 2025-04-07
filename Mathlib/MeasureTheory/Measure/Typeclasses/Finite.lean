@@ -252,6 +252,7 @@ theorem finiteAtBot {m0 : MeasurableSpace α} (μ : Measure α) : μ.FiniteAtFil
   `SigmaFinite` is defined in terms of this: `μ` is σ-finite if there exists a sequence of
   finite spanning sets in the collection of all measurable sets. -/
 structure FiniteSpanningSetsIn {m0 : MeasurableSpace α} (μ : Measure α) (C : Set (Set α)) where
+  /-- The sequence of sets in `C` with finite measures -/
   protected set : ℕ → Set α
   protected set_mem : ∀ i, set i ∈ C
   protected finite : ∀ i, μ (set i) < ∞
