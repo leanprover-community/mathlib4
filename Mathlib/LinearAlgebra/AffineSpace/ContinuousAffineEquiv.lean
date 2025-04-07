@@ -288,6 +288,10 @@ theorem self_trans_symm (e : P₁ ≃ᵃL[k] P₂) : e.trans e.symm = refl k P�
 theorem symm_trans_self (e : P₁ ≃ᵃL[k] P₂) : e.symm.trans e = refl k P₂ :=
   ext e.apply_symm_apply
 
+lemma trans_toContinuousAffineMap (e : P₁ ≃ᵃL[k] P₂) (e' : P₂ ≃ᵃL[k] P₃) :
+    (e.trans e').toContinuousAffineMap = e'.toContinuousAffineMap.comp e.toContinuousAffineMap :=
+  rfl
+
 end ReflSymmTrans
 
 section
