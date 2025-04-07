@@ -27,7 +27,7 @@ measure.
 
 ## Main statements
 
-- `char_SeparatesPoints`: If `e` and `L` are non-trivial, then `char he hL w, w : W` separates
+- `ext_of_char_eq`: If `e` and `L` are non-trivial, then `char he hL w, w : W` separates
   points in `V`.
 - `star_mem_range_charAlgHom`: The family of `ℂ`-linear combinations of `char he hL w, w : W`, is
   closed under `star`.
