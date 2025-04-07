@@ -214,8 +214,8 @@ end NormedDivisionRing
 
 section Pi
 
-variable {𝕜 : Type*} [NormedDivisionRing 𝕜]
-  {ι : Type*} {E : ι → Type*} [∀ i, AddCommGroup (E i)] [∀ i, Module 𝕜 (E i)]
+variable {𝕜 : Type*} {ι : Type*} {E : ι → Type*}
+variable [NormedDivisionRing 𝕜] [∀ i, AddCommGroup (E i)] [∀ i, Module 𝕜 (E i)]
 
 /-- The extended gauge of a point `x` in an indexed product
 with respect to a product of finitely many balanced sets `U i`, `i ∈ I`,
@@ -240,14 +240,11 @@ theorem egauge_pi' {I : Set ι} (hI : I.Finite)
   obtain ⟨c₀, hc₀, hc₀I, hc₀r⟩ :
       ∃ c₀ : 𝕜, (c₀ ≠ 0 ∨ I = univ) ∧ (∀ i ∈ I, ‖c i‖ ≤ ‖c₀‖) ∧ ‖c₀‖ₑ < r := by
     have hr₀ : 0 < r := hr.bot_lt
-    have Hpos [hbot : (𝓝[≠] (0 : 𝕜)).NeBot] : ∃ c₀ ≠ (0 : 𝕜), ‖c₀‖ₑ < r :=
-      frequently_iff_neBot.mpr hbot |>.and_eventually
-        ((continuous_enorm.tendsto' 0 0 (by simp)).eventually_lt_const hr₀) |>.exists
     rcases I.eq_empty_or_nonempty with rfl | hIne
     · obtain hι | hbot : IsEmpty ι ∨ (𝓝[≠] (0 : 𝕜)).NeBot := by simpa [@eq_comm _ ∅] using hI₀
       · use 0
         simp [@eq_comm _ ∅, hι, hr₀]
-      · rcases Hpos with ⟨c₀, hc₀, hc₀r⟩
+      · rcases exists_enorm_lt 𝕜 hr₀.ne' with ⟨c₀, hc₀, hc₀r⟩
         exact ⟨c₀, .inl hc₀, by simp, hc₀r⟩
     · obtain ⟨i₀, hi₀I, hc_max⟩ : ∃ i₀ ∈ I, IsMaxOn (‖c ·‖ₑ) I i₀ :=
         exists_max_image _ (‖c ·‖ₑ) hI hIne
@@ -258,14 +255,11 @@ theorem egauge_pi' {I : Set ι} (hI : I.Finite)
         have heg0 (i : ι) (hi : i ∈ I) : x i = 0 :=
           zero_smul_set_subset (α := 𝕜) (U i) (hc0 i hi ▸ hc i hi)
         have : (𝓝[≠] (0 : 𝕜)).NeBot := (hI₀.resolve_left H.2).resolve_left (by simpa)
-        rcases Hpos with ⟨c₁, hc₁, hc₁r⟩
+        rcases exists_enorm_lt 𝕜 hr₀.ne' with ⟨c₁, hc₁, hc₁r⟩
         refine ⟨c₁, .inl hc₁, fun i hi ↦ ?_, hc₁r⟩
         simp [hc0 i hi]
   refine egauge_lt_iff.2 ⟨c₀, ?_, hc₀r⟩
-  suffices x ∈ I.pi fun i ↦ c₀ • U i by
-    rcases hc₀ with hc₀ | rfl
-    · simpa only [← image_smul, ← piMap_image_pi (fun _ _ ↦ MulAction.surjective₀ hc₀)] using this
-    · simpa only [← image_smul, ← piMap_image_univ_pi] using this
+  rw [smul_set_pi₀' hc₀]
   intro i hi
   exact (hU i hi).smul_mono (hc₀I i hi) (hc i hi)
 
@@ -285,7 +279,8 @@ is the supremum of the extended gauges of the components of `x`
 with respect to the corresponding balanced set.
 
 This version assumes that `𝕜` is a nontrivially normed division ring.
-See also `egauge_pi'` for a version with more choices of the technical assumptions.
+See also `egauge_univ_pi` for when `s = univ`,
+and `egauge_pi'` for a version with more choices of the technical assumptions.
 -/
 theorem egauge_pi [(𝓝[≠] (0 : 𝕜)).NeBot] {I : Set ι} {U : ∀ i, Set (E i)}
     (hI : I.Finite) (hU : ∀ i ∈ I, Balanced 𝕜 (U i)) (x : ∀ i, E i) :
