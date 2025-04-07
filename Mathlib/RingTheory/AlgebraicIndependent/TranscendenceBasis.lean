@@ -81,7 +81,7 @@ theorem IsTranscendenceBasis.isAlgebraic [Nontrivial R] (hx : IsTranscendenceBas
     Algebra.IsAlgebraic (adjoin R (range x)) A := by
   constructor
   intro a
-  rw [← not_iff_comm.1 (hx.1.option_iff _).symm]
+  rw [← not_iff_comm.1 (hx.1.option_iff_transcendental _).symm]
   intro ai
   have h₁ : range x ⊆ range fun o : Option ι => o.elim a x := by
     rintro x ⟨y, rfl⟩
