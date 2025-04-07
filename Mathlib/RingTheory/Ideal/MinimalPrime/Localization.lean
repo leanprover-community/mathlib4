@@ -228,32 +228,3 @@ theorem IsLocalization.minimalPrimes_comap [IsLocalization S A] (J : Ideal A) :
   exact subset_trans (Ideal.minimalPrimes_comap_subset (algebraMap R A) J) (by simp)
 
 end
-
-namespace Localization.AtPrime
-
-variable {R : Type*} [CommSemiring R] {I : Ideal R} [hI : I.IsPrime] (hMin : I ∈ minimalPrimes R)
-include hMin
-
-theorem _root_.IsLocalization.AtPrime.prime_unique_of_minimal {S} [CommSemiring S] [Algebra R S]
-    [IsLocalization.AtPrime S I] {J K : Ideal S} [J.IsPrime] [K.IsPrime] : J = K :=
-  haveI : Subsingleton {i : Ideal R // i.IsPrime ∧ i ≤ I} := ⟨fun i₁ i₂ ↦ Subtype.ext <| by
-    rw [minimalPrimes_eq_minimals, Set.mem_setOf] at hMin
-    rw [hMin.eq_of_le i₁.2.1 i₁.2.2, hMin.eq_of_le i₂.2.1 i₂.2.2]⟩
-  Subtype.ext_iff.mp <| (IsLocalization.AtPrime.orderIsoOfPrime S I).injective
-    (a₁ := ⟨J, ‹_›⟩) (a₂ := ⟨K, ‹_›⟩) (Subsingleton.elim _ _)
-
-theorem prime_unique_of_minimal (J : Ideal (Localization I.primeCompl)) [J.IsPrime] :
-    J = IsLocalRing.maximalIdeal (Localization I.primeCompl) :=
-  IsLocalization.AtPrime.prime_unique_of_minimal hMin
-
-theorem nilpotent_iff_mem_maximal_of_minimal {x : _} :
-    IsNilpotent x ↔ x ∈ IsLocalRing.maximalIdeal (Localization I.primeCompl) := by
-  rw [nilpotent_iff_mem_prime]
-  exact ⟨(· (IsLocalRing.maximalIdeal _) (Ideal.IsMaximal.isPrime' _)), fun _ J _ =>
-    by simpa [prime_unique_of_minimal hMin J]⟩
-
-theorem nilpotent_iff_not_unit_of_minimal {x : Localization I.primeCompl} :
-    IsNilpotent x ↔ x ∈ nonunits _ := by
-  simpa only [← IsLocalRing.mem_maximalIdeal] using nilpotent_iff_mem_maximal_of_minimal hMin
-
-end Localization.AtPrime

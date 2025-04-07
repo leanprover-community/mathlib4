@@ -72,8 +72,6 @@ notion, describing the polydisk of convergence. This notion is more specific, an
 build the general theory. We do not define it here.
 -/
 
-set_option linter.style.longFile 1700
-
 noncomputable section
 
 variable {𝕜 E F G : Type*}
@@ -870,15 +868,9 @@ theorem HasFPowerSeriesAt.coeff_zero (hf : HasFPowerSeriesAt f pf x) (v : Fin 0 
 ### Analytic functions
 -/
 
-@[simp]
-theorem AnalyticOn_empty : AnalyticOn 𝕜 f ∅ := by
-  intro
-  simp
+@[simp] theorem analyticOn_empty : AnalyticOn 𝕜 f ∅ := by intro; simp
 
-@[simp]
-theorem AnalyticOnNhd_empty : AnalyticOnNhd 𝕜 f ∅ := by
-  intro
-  simp
+@[simp] theorem analyticOnNhd_empty : AnalyticOnNhd 𝕜 f ∅ := by intro; simp
 
 @[simp] lemma analyticWithinAt_univ :
     AnalyticWithinAt 𝕜 f univ x ↔ AnalyticAt 𝕜 f x := by

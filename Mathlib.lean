@@ -479,6 +479,7 @@ import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExactSequences
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExtClass
 import Mathlib.Algebra.Homology.DerivedCategory.Fractions
+import Mathlib.Algebra.Homology.DerivedCategory.FullyFaithful
 import Mathlib.Algebra.Homology.DerivedCategory.HomologySequence
 import Mathlib.Algebra.Homology.DerivedCategory.ShortExact
 import Mathlib.Algebra.Homology.DerivedCategory.SingleTriangle
@@ -628,6 +629,8 @@ import Mathlib.Algebra.Module.LinearMap.Polynomial
 import Mathlib.Algebra.Module.LinearMap.Prod
 import Mathlib.Algebra.Module.LinearMap.Rat
 import Mathlib.Algebra.Module.LinearMap.Star
+import Mathlib.Algebra.Module.LocalizedModule.AtPrime
+import Mathlib.Algebra.Module.LocalizedModule.Away
 import Mathlib.Algebra.Module.LocalizedModule.Basic
 import Mathlib.Algebra.Module.LocalizedModule.Exact
 import Mathlib.Algebra.Module.LocalizedModule.Int
@@ -5016,6 +5019,7 @@ import Mathlib.RingTheory.Kaehler.Polynomial
 import Mathlib.RingTheory.Kaehler.TensorProduct
 import Mathlib.RingTheory.KrullDimension.Basic
 import Mathlib.RingTheory.KrullDimension.Field
+import Mathlib.RingTheory.KrullDimension.Zero
 import Mathlib.RingTheory.Lasker
 import Mathlib.RingTheory.LaurentSeries
 import Mathlib.RingTheory.Length
@@ -5740,6 +5744,7 @@ import Mathlib.Topology.Algebra.ProperAction.ProperlyDiscontinuous
 import Mathlib.Topology.Algebra.ProperConstSMul
 import Mathlib.Topology.Algebra.RestrictedProduct
 import Mathlib.Topology.Algebra.Ring.Basic
+import Mathlib.Topology.Algebra.Ring.Compact
 import Mathlib.Topology.Algebra.Ring.Ideal
 import Mathlib.Topology.Algebra.Ring.Real
 import Mathlib.Topology.Algebra.Semigroup
