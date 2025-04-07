@@ -688,6 +688,14 @@ theorem HasBasis.prod {ι ι' : Type*} {pa : ι → Prop} {sa : ι → Set α} {
     (la ×ˢ lb).HasBasis (fun i : ι × ι' => pa i.1 ∧ pb i.2) fun i => sa i.1 ×ˢ sb i.2 :=
   (hla.comap Prod.fst).inf (hlb.comap Prod.snd)
 
+protected theorem HasBasis.top_prod (h : lb.HasBasis pb sb) :
+    (⊤ ×ˢ lb : Filter (α × β)).HasBasis pb (univ ×ˢ sb ·) := by
+  simpa only [prod_eq_inf, comap_top, top_inf_eq, univ_prod] using h.comap Prod.snd
+
+protected theorem HasBasis.prod_top (h : la.HasBasis pa sa) :
+    (la ×ˢ ⊤ : Filter (α × β)).HasBasis pa (sa · ×ˢ univ) := by
+  simpa only [prod_eq_inf, comap_top, inf_top_eq, prod_univ] using h.comap Prod.fst
+
 theorem HasBasis.prod_same_index {p : ι → Prop} {sb : ι → Set β} (hla : la.HasBasis p sa)
     (hlb : lb.HasBasis p sb) (h_dir : ∀ {i j}, p i → p j → ∃ k, p k ∧ sa k ⊆ sa i ∧ sb k ⊆ sb j) :
     (la ×ˢ lb).HasBasis p fun i => sa i ×ˢ sb i := by
