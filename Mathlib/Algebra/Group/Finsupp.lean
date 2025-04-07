@@ -30,16 +30,19 @@ lemma add_apply (g₁ g₂ : ι →₀ M) (a : ι) : (g₁ + g₂) a = g₁ a + 
 
 lemma support_add [DecidableEq ι] : (g₁ + g₂).support ⊆ g₁.support ∪ g₂.support := support_zipWith
 
+-- TODO
+theorem _root_.Finset.mem_union_of_disjoint {α : Type*} [DecidableEq α]
+    {s t : Finset α} (h : Disjoint s t) {x : α} :
+    x ∈ s ∪ t ↔ (x ∈ s ∧ x ∉ t) ∨ (x ∉ s ∧ x ∈ t) := by
+  rw [Finset.mem_union]
+  have := disjoint_left.1 h
+  tauto
+
+
 lemma support_add_eq [DecidableEq ι] (h : Disjoint g₁.support g₂.support) :
     (g₁ + g₂).support = g₁.support ∪ g₂.support :=
-  le_antisymm support_zipWith fun a ha =>
-    (Finset.mem_union.1 ha).elim
-      (fun ha => by
-        have : a ∉ g₂.support := disjoint_left.1 h ha
-        simp only [mem_support_iff, not_not] at *; simpa only [add_apply, this, add_zero] )
-      fun ha => by
-      have : a ∉ g₁.support := disjoint_right.1 h ha
-      simp only [mem_support_iff, not_not] at *; simpa only [add_apply, this, zero_add]
+  le_antisymm support_zipWith fun a ha => by
+    cases (Finset.mem_union_of_disjoint h).1 ha <;> simp_all
 
 instance instAddZeroClass : AddZeroClass (ι →₀ M) :=
   fast_instance% DFunLike.coe_injective.addZeroClass _ coe_zero coe_add
