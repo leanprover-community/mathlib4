@@ -12,6 +12,9 @@ Given a category `C`, we introduce an abbreviation `CatCenter C` for
 the center of the category `C`, which is `End (𝟭 C)`, the
 type of endomorphisms of the identity functor of `C`.
 
+## References
+* https://ncatlab.org/nlab/show/center+of+a+category
+
 -/
 universe v u w
 
