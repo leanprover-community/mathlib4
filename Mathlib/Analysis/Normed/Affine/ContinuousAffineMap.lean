@@ -148,11 +148,12 @@ instance : AddTorsor (P →ᴬ[R] W) (P →ᴬ[R] Q) where
 @[simp] lemma vsub_apply (f g : P →ᴬ[R] Q) (p : P) : (f -ᵥ g) p = f p -ᵥ g p :=
   rfl
 
-lemma vadd_toAffineMap (f : P →ᴬ[R] W) (g : P →ᴬ[R] Q) :
+@[simp] lemma vadd_toAffineMap (f : P →ᴬ[R] W) (g : P →ᴬ[R] Q) :
     (f +ᵥ g).toAffineMap = f.toAffineMap +ᵥ g.toAffineMap :=
   rfl
 
-lemma vsub_toAffineMap (f g : P →ᴬ[R] Q) : (f -ᵥ g).toAffineMap = f.toAffineMap -ᵥ g.toAffineMap :=
+@[simp] lemma vsub_toAffineMap (f g : P →ᴬ[R] Q) :
+    (f -ᵥ g).toAffineMap = f.toAffineMap -ᵥ g.toAffineMap :=
   rfl
 
 section NormedSpaceStructure
