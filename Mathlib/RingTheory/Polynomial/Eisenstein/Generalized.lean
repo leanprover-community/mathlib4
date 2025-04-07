@@ -53,12 +53,7 @@ open Polynomial Ideal.Quotient
 
 namespace Polynomial
 
-variable {R : Type*} [CommRing R]
-  -- {F : Type*} [Field F] [Algebra R F] [IsFractionRing R F]
-  -- {P : Ideal R}
-  {K : Type*} [Field K] [Algebra R K] -- [Algebra (R ⧸ P) K]
-    -- [IsScalarTower R (R ⧸ P) K] [IsFractionRing (R ⧸ P) K]
-  {q : R[X]}
+variable {R : Type*} [CommRing R] {K : Type*} [Field K] [Algebra R K]
 
 theorem exists_C_leadingCoeff_mul_pow_of_dvd_pow
     {q : K[X]} (hq : Irreducible q) (hq' : Monic q)
@@ -74,9 +69,8 @@ theorem exists_C_leadingCoeff_mul_pow_of_dvd_pow
   obtain ⟨a, ha, ha'⟩ := Polynomial.isUnit_iff.mp (u⁻¹).isUnit
   rw [← ha', leadingCoeff_C]
 
-theorem exists_eq_C_leadingCoeff_mul_pow_add
+theorem exists_eq_C_leadingCoeff_mul_pow_add {q f : R[X]} {n : ℕ}
     (hq_irr : Irreducible (q.map (algebraMap R K))) (hq_monic : q.Monic)
-    {f : R[X]} {n : ℕ}
     (map_dvd_pow_q : f.map (algebraMap R K) ∣ q.map (algebraMap R K) ^ n)
     (hf_lC : algebraMap R K f.leadingCoeff ≠ 0) :
     ∃ m r, f = C f.leadingCoeff * q ^ m + r ∧ map (algebraMap R K) r = 0 := by
@@ -98,9 +92,8 @@ theorem exists_eq_C_leadingCoeff_mul_pow_add
   Assume moreover that `f.modByMonic q` is not zero in `(R ⧸ (P ^ 2))[X]`,
   where `P` is the kernel of `algebraMap R K`.
   Then `f` is irreducible. -/
-theorem generalizedEisenstein [IsDomain R]
+theorem generalizedEisenstein [IsDomain R] {q f : R[X]} {p : ℕ}
     (hq_irr : Irreducible (q.map (algebraMap R K))) (hq_monic : q.Monic)
-    {f : R[X]} {p : ℕ}
     (hfd0 : 0 < natDegree f) (hf_monic : f.Monic)
     (hfmodP : f.map (algebraMap R K) = q.map (algebraMap R K) ^ p)
     (hfmodP2 : (f.modByMonic q).map (mk ((RingHom.ker (algebraMap R K)) ^ 2)) ≠ 0) :
@@ -183,19 +176,21 @@ example : Irreducible (X ^ 4 - 10 * X ^ 2 + 1 : ℤ[X]) := by
   have h3 : RingHom.ker (algebraMap ℤ K) = Ideal.span {3} := by
     ext a
     rw [algebraMap_int_eq, ZMod.ker_intCastRingHom, Nat.cast_ofNat]
-  have mod3 : ∀ u : ZMod 3, u ^ 2 + 1 ≠ 0 := by decide
   have hq_monic : q.Monic := leadingCoeff_X_pow_add_one (by norm_num)
-  have hq_deg : (X ^ 2 + 1 : K[X]).natDegree = 2 := by
-    simp only [← C_1, Polynomial.natDegree_X_pow_add_C]
+  have hq_deg : (q.map (algebraMap ℤ K)).natDegree = 2 := by
+    simp only [algebraMap_int_eq, Polynomial.map_add, Polynomial.map_pow, map_X,
+      Polynomial.map_one, q]
+    rw [← C_1, Polynomial.natDegree_X_pow_add_C]
   have hq_irr : Irreducible (q.map (algebraMap ℤ K)) := by
-    have : map (algebraMap ℤ K) q = X ^ 2 + 1 := by simp [q]
-    rw [this]
     rw [Polynomial.irreducible_iff_roots_eq_zero_of_degree_le_three]
     · apply Multiset.eq_zero_of_forall_not_mem
       intro a
-      simp only [mem_roots', ne_eq, IsRoot.def, eval_add, eval_pow, eval_X, eval_one, not_and]
+      simp only [algebraMap_int_eq, Polynomial.map_add, Polynomial.map_pow, map_X,
+        Polynomial.map_one, mem_roots', ne_eq, IsRoot.def, eval_add, eval_pow, eval_X, eval_one,
+        not_and, q, K]
       intro _
-      apply mod3
+      revert a
+      decide
     · rw [hq_deg]
     · rw [hq_deg]; norm_num
   set f : ℤ[X] := X ^ 4 - 10 * X ^ 2 + 1 with hf_eq
