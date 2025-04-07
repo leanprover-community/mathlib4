@@ -385,14 +385,13 @@ lemma isOrthogonal_short_and_long {i : ι} (hi : P.root i ∉ allRoots P) :
     simpa [B.isOrthogonal_iff_pairingIn_eq_zero, ← P.algebraMap_pairingIn ℤ]
   simp only [mem_cons, not_mem_nil, or_false, not_or] at hi
   obtain ⟨h₁, h₂, h₃, h₄, h₅, h₆, h₇, h₈, h₉, h₁₀, h₁₁, h₁₂⟩ := hi
-  have ha := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed' i (short P) ?_ ?_
-  have hb := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed' i (long P) ?_ ?_
-  have hc := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed' i (shortAddLong P) ?_ ?_
-  have hd := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed' i (twoShortAddLong P) ?_ ?_
-  have he := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed' i (threeShortAddLong P) ?_ ?_
-  have hf := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed' i (threeShortAddTwoLong P) ?_ ?_
-  · apply isOrthogonal_short_and_long_aux rfl ha hb hc hd he hf <;> simp
-  all_goals assumption
+  have ha := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed' i (short P) ‹_› ‹_›
+  have hb := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed' i (long P) ‹_› ‹_›
+  have hc := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed' i (shortAddLong P) ‹_› ‹_›
+  have hd := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed' i (twoShortAddLong P) ‹_› ‹_›
+  have he := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed' i (threeShortAddLong P) ‹_› ‹_›
+  have hf := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed' i (threeShortAddTwoLong P) ‹_› ‹_›
+  apply isOrthogonal_short_and_long_aux rfl ha hb hc hd he hf <;> simp
 
 section IsIrreducible
 
