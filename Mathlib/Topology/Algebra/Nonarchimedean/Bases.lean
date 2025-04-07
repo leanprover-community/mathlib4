@@ -325,7 +325,7 @@ theorem nonarchimedean (hB : SubmodulesBasis B) : @NonarchimedeanAddGroup M _ hB
     hB.toModuleFilterBasis.toAddGroupFilterBasis.nhds_zero_hasBasis.mem_iff.mp hU
   exact ⟨hB.openAddSubgroup i, hi⟩
 
-library_note "nonarchimedean non instances"/--
+library_note2 nonarchimedianNonInstances /--
 The non archimedean subgroup basis lemmas cannot be instances because some instances
 (such as `MeasureTheory.AEEqFun.instAddMonoid` or `IsTopologicalAddGroup.toContinuousAdd`)
 cause the search for `@IsTopologicalAddGroup β ?m1 ?m2`, i.e. a search for a topological group where

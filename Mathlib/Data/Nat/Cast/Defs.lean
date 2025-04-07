@@ -58,7 +58,7 @@ instance (priority := 100) instOfNatAtLeastTwo {n : ℕ} [NatCast R] [Nat.AtLeas
     OfNat R n where
   ofNat := n.cast
 
-library_note "no_index around OfNat.ofNat"
+library_note2 noindexAroundOfNatOfNat
 /--
 When writing lemmas about `OfNat.ofNat` that assume `Nat.AtLeastTwo`, the term needs to be wrapped
 in `no_index` so as not to confuse `simp`, as `no_index (OfNat.ofNat n)`.
@@ -91,7 +91,7 @@ class AddMonoidWithOne (R : Type*) extends NatCast R, AddMonoid R, One R where
 /-- An `AddCommMonoidWithOne` is an `AddMonoidWithOne` satisfying `a + b = b + a`. -/
 class AddCommMonoidWithOne (R : Type*) extends AddMonoidWithOne R, AddCommMonoid R
 
-library_note "coercion into rings"
+library_note2 coercionIntoRings
 /--
 Coercions such as `Nat.castCoe` that go from a concrete structure such as
 `ℕ` to an arbitrary ring `R` should be set up as follows:

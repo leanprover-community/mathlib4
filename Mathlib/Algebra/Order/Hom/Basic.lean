@@ -45,7 +45,7 @@ Finitary versions of the current lemmas.
 -/
 
 
-library_note "out-param inheritance"/--
+library_note2 outparamInheritance /--
 Diamond inheritance cannot depend on `outParam`s in the following circumstances:
  * there are three classes `Top`, `Middle`, `Bottom`
  * all of these classes have a parameter `(α : outParam _)`
