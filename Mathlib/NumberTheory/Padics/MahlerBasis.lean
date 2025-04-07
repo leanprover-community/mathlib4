@@ -16,10 +16,10 @@ import Mathlib.Topology.MetricSpace.Ultra.ContinuousMaps
 # The Mahler basis of continuous functions
 
 In this file we introduce the Mahler basis function `mahler k`, for `k : ℕ`, which is the unique
-continuous map `ℤ_[p] → ℚ_[p]` agreeing with `n ↦ n.choose k` for `n ∈ ℕ`.
+continuous map `ℤ_[p] → ℤ_[p]` agreeing with `n ↦ n.choose k` for `n ∈ ℕ`.
 
 Using this, we prove Mahler's theorem, showing that for any any continuous function `f` on `ℤ_[p]`
-(valued in a `p`-adic normed space `E`), the Mahler series `x ↦ ∑' k, mahler k x • Δ^[n] f 0`
+(valued in a normed `ℤ_[p]`-module `E`), the Mahler series `x ↦ ∑' k, mahler k x • Δ^[n] f 0`
 converges (uniformly) to `f`, and this construction defines a Banach-space isomorphism between
 `C(ℤ_[p], E)` and the space of sequences `ℕ → E` tending to 0.
 
@@ -90,10 +90,11 @@ lemma continuous_choose (k : ℕ) : Continuous (fun x : ℤ_[p] ↦ Ring.choose 
 end PadicInt
 
 /--
-The `k`-th Mahler basis function, i.e. the unique continuous function `ℤ_[p] → ℚ_[p]`
+The `k`-th Mahler basis function, i.e. the unique continuous function `ℤ_[p] → ℤ_[p]`
 agreeing with `n ↦ n.choose k` for `n ∈ ℕ`. See [colmez2010], §1.2.1.
 -/
 noncomputable def mahler (k : ℕ) : C(ℤ_[p], ℤ_[p]) where
+  toFun x := Ring.choose x k
   continuous_toFun := PadicInt.continuous_choose k
 
 lemma mahler_apply (k : ℕ) (x : ℤ_[p]) : mahler k x = Ring.choose x k := rfl
@@ -101,17 +102,6 @@ lemma mahler_apply (k : ℕ) (x : ℤ_[p]) : mahler k x = Ring.choose x k := rfl
 /-- The function `mahler k` extends `n ↦ n.choose k` on `ℕ`. -/
 lemma mahler_natCast_eq (k n : ℕ) : mahler k (n : ℤ_[p]) = n.choose k := by
   simp only [mahler_apply, Ring.choose_natCast, PadicInt.coe_natCast]
-
-/--
-The uniform norm of the `k`-th Mahler basis function is 1, for every `k`.
--/
-@[simp] lemma norm_mahler_eq (k : ℕ) : ‖(mahler k : C(ℤ_[p], ℤ_[p]))‖ = 1 := by
-  apply le_antisymm
-  · -- Show all values have norm ≤ 1
-    exact (mahler k).norm_le_of_nonempty.mpr (fun _ ↦ PadicInt.norm_le_one _)
-  · -- Show norm 1 is attained at `x = k`
-    refine (le_of_eq ?_).trans ((mahler k).norm_coe_le_norm k)
-    rw [mahler_natCast_eq, Nat.choose_self, Nat.cast_one, norm_one]
 
 section fwdDiff
 
@@ -252,13 +242,14 @@ variable {E : Type*} [NormedAddCommGroup E] [Module ℤ_[p] E] [IsBoundedSMul �
 
 /--
 A single term of a Mahler series, given by the product of the scalar-valued continuous map
-`mahler n : ℤ_[p] → ℚ_[p]` with a constant vector in some normed `ℚ_[p]`-vector space.
+`mahler n : ℤ_[p] → ℤ_[p]` with a constant vector in some normed `ℤ_[p]`-module.
 -/
 noncomputable def mahlerTerm : C(ℤ_[p], E) := (mahler n : C(_, ℤ_[p])) • .const _ a
 
 lemma mahlerTerm_apply : mahlerTerm a n x = mahler n x • a := by
   simp only [mahlerTerm, ContinuousMap.smul_apply', ContinuousMap.const_apply]
 
+@[simp]
 lemma norm_mahlerTerm : ‖(mahlerTerm a n : C(ℤ_[p], E))‖ = ‖a‖ := by
   apply le_antisymm
   · -- Show all values have norm ≤ 1
@@ -267,6 +258,16 @@ lemma norm_mahlerTerm : ‖(mahlerTerm a n : C(ℤ_[p], E))‖ = ‖a‖ := by
   · -- Show norm 1 is attained at `x = k`
     refine le_trans ?_ <| (mahlerTerm a n).norm_coe_le_norm n
     simp [mahlerTerm_apply, mahler_natCast_eq]
+
+@[simp]
+lemma mahlerTerm_one : (mahlerTerm 1 n : C(ℤ_[p], ℤ_[p])) = mahler n := by
+  ext; simp [mahlerTerm_apply]
+
+/--
+The uniform norm of the `k`-th Mahler basis function is 1, for every `k`.
+-/
+@[simp] lemma norm_mahler_eq (k : ℕ) : ‖(mahler k : C(ℤ_[p], ℤ_[p]))‖ = 1 := by
+  simp [← mahlerTerm_one]
 
 /-- A series of the form considered in Mahler's theorem. -/
 noncomputable def mahlerSeries (a : ℕ → E) : C(ℤ_[p], E) := ∑' n, mahlerTerm (a n) n
