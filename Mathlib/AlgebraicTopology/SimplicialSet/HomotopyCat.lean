@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Emily Riehl, Joël Riou
 
 import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 import Mathlib.AlgebraicTopology.SimplicialSet.Coskeletal
+import Mathlib.AlgebraicTopology.SimplicialSet.Path
 import Mathlib.CategoryTheory.Category.ReflQuiv
 import Mathlib.Combinatorics.Quiver.ReflQuiver
 
@@ -73,6 +74,16 @@ lemma δ₂_two_comp_σ₂_one : δ₂ (2 : Fin 3) ≫ σ₂ 1 = 𝟙 _ := Simpl
 lemma δ₂_two_comp_σ₂_zero : δ₂ (2 : Fin 3) ≫ σ₂ 0 = σ₂ 0 ≫ δ₂ 1 :=
   SimplexCategory.δ_comp_σ_of_gt' (by decide)
 
+@[reassoc]
+lemma δ₂_zero_eq_mkOfSucc : (δ₂ (0 : Fin 3) _ _ : ⦋1⦌₂ ⟶ ⦋2⦌₂) =
+    Hom.tr (SimplexCategory.mkOfSucc (1 : Fin 2)) _ _ :=
+  SimplexCategory.δ_zero_eq_mkOfSucc
+
+@[reassoc]
+lemma δ₂_two_eq_mkOfSucc : (δ₂ (2 : Fin 3) _ _ : ⦋1⦌₂ ⟶ ⦋2⦌₂) =
+    Hom.tr (SimplexCategory.mkOfSucc (0 : Fin 2)) _ _ :=
+  SimplexCategory.δ_two_eq_mkOfSucc
+
 /-- The hom-types of the refl quiver underlying a simplicial set `S` are types of edges in `S _⦋1⦌₂`
 together with source and target equalities. -/
 @[ext]
@@ -83,6 +94,11 @@ structure OneTruncation₂.Hom {S : SSet.Truncated 2} (X Y : OneTruncation₂ S)
   src_eq : S.map (δ₂ 1).op edge = X
   /-- An arrow in `OneTruncation₂.Hom X Y` includes a target equality. -/
   tgt_eq : S.map (δ₂ 0).op edge = Y
+
+@[simp]
+lemma OneTruncation₂.Hom_edge {S : SSet.Truncated 2} {X Y : OneTruncation₂ S}
+    (f : S _⦋1⦌₂) (f_src_eq : S.map (δ₂ 1).op f = X) (f_tgt_eq : S.map (δ₂ 0).op f = Y) :
+    (⟨f, f_src_eq, f_tgt_eq⟩ : OneTruncation₂.Hom X Y).edge = f := rfl
 
 /-- A 2-truncated simplicial set `S` has an underlying refl quiver `SSet.OneTruncation₂ S`. -/
 instance (S : SSet.Truncated 2) : ReflQuiver (OneTruncation₂ S) where
@@ -125,6 +141,26 @@ lemma OneTruncation₂.homOfEq_edge
     (Quiver.homOfEq f hx hy).edge = f.edge := by
   subst hx hy
   rfl
+
+/-- A refl prefunctor between the underlying refl quivers of a 2-truncated simplicial sets induces a
+map on paths. -/
+def oneTruncation₂.pathMap {X Y : SSet.Truncated.{u} 2} (F : OneTruncation₂ X ⥤rq OneTruncation₂ Y)
+    {n : ℕ} (σ : Truncated.Path X n) : Truncated.Path Y n where
+      vertex i := F.obj (σ.vertex i)
+      arrow i := (F.map ⟨σ.arrow i, σ.arrow_src i, σ.arrow_tgt i⟩).edge
+      arrow_src i := (F.map ⟨σ.arrow i, σ.arrow_src i, σ.arrow_tgt i⟩).src_eq
+      arrow_tgt i := (F.map ⟨σ.arrow i, σ.arrow_src i, σ.arrow_tgt i⟩).tgt_eq
+
+@[simp]
+lemma oneTruncation₂.pathMap_vertex {X Y : SSet.Truncated.{u} 2}
+    (F : OneTruncation₂ X ⥤rq OneTruncation₂ Y) {n : ℕ} (σ : Truncated.Path X n) (i : Fin (n + 1)) :
+    (oneTruncation₂.pathMap F σ).vertex i = F.obj (σ.vertex i) := rfl
+
+@[simp]
+lemma oneTruncation₂.pathMap_arrow {X Y : SSet.Truncated.{u} 2}
+    (F : OneTruncation₂ X ⥤rq OneTruncation₂ Y) {n : ℕ} (σ : Truncated.Path X n) (i : Fin n) :
+    (oneTruncation₂.pathMap F σ).arrow i =
+      (F.map ⟨σ.arrow i, σ.arrow_src i, σ.arrow_tgt i⟩).edge := rfl
 
 section
 variable {C : Type u} [Category.{v} C]
@@ -253,7 +289,6 @@ def ev02₂ {V : SSet.Truncated 2} (φ : V _⦋2⦌₂) : ev0₂ φ ⟶ ev2₂ �
 2nd face of a 2-simplex. -/
 def ev01₂ {V : SSet.Truncated 2} (φ : V _⦋2⦌₂) : ev0₂ φ ⟶ ev1₂ φ :=
   ⟨V.map δ2₂.op φ, map_map_of_eq V (SimplexCategory.δ_comp_δ (j := 1) le_rfl), map_map_of_eq V rfl⟩
-
 
 /-- The 2-simplices in a 2-truncated simplicial set `V` generate a hom relation on the free
 category on the underlying refl quiver of `V`. -/

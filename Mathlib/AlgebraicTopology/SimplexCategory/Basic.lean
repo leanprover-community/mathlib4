@@ -492,6 +492,40 @@ lemma mkOfSucc_δ_eq {n : ℕ} {i : Fin n} {j : Fin (n + 2)}
     rw [Fin.succAbove_castSucc_self]
     rfl
 
+lemma δ_two_eq_mkOfSucc : δ (2 : Fin 3) = SimplexCategory.mkOfSucc (n := 2) 0 := by
+  ext x
+  unfold δ mkOfSucc
+  fin_cases x <;> rfl
+
+lemma δ_zero_eq_mkOfSucc : δ (0 : Fin 3) = SimplexCategory.mkOfSucc (n := 2) 1 := by
+  ext x
+  unfold δ mkOfSucc
+  fin_cases x <;> rfl
+
+lemma δ_one_δ_two_eq_const : δ (1 : Fin 2) ≫ δ (2 : Fin 3) = ⦋0⦌.const ⦋2⦌ 0 := by
+  ext x
+  unfold δ
+  fin_cases x
+  rfl
+
+lemma δ_zero_δ_two_eq_const : δ (0 : Fin 2) ≫ δ (2 : Fin 3) = ⦋0⦌.const ⦋2⦌ 1 := by
+  ext x
+  unfold δ
+  fin_cases x
+  rfl
+
+lemma δ_one_δ_zero_eq_const : δ (1 : Fin 2) ≫ δ (0 : Fin 3) = ⦋0⦌.const ⦋2⦌ 1 := by
+  ext x
+  unfold δ
+  fin_cases x
+  rfl
+
+lemma δ_zero_δ_zero_eq_const : δ (0 : Fin 2) ≫ δ (0 : Fin 3) = ⦋0⦌.const ⦋2⦌ 2 := by
+  ext x
+  unfold δ
+  fin_cases x
+  rfl
+
 theorem eq_of_one_to_two (f : ⦋1⦌ ⟶ ⦋2⦌) :
     (∃ i, f = (δ (n := 1) i)) ∨ ∃ a, f = SimplexCategory.const _ _ a := by
   have : f.toOrderHom 0 ≤ f.toOrderHom 1 := f.toOrderHom.monotone (by decide : (0 : Fin 2) ≤ 1)
