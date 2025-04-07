@@ -29,12 +29,13 @@ It is *not* the adic topology in general.
 
 ## Main results
 
-- `MvPowerSeries.WithPiTopology.tendsto_pow_zero_of_constantCoeff_nilpotent`,
-  `MvPowerSeries.WithPiTopology.tendsto_pow_zero_of_constantCoeff_zero`: if the constant coefficient
-  of `f` is nilpotent, or vanishes, then the powers of `f` converge to zero.
+- `MvPowerSeries.WithPiTopology.isTopologicallyNilpotent_of_constantCoeff_isNilpotent`,
+  `MvPowerSeries.WithPiTopology.isTopologicallyNilpotent_of_constantCoeff_zero`: if the constant
+  coefficient of `f` is nilpotent, or vanishes, then `f` is topologically nilpotent.
 
-- `MvPowerSeries.WithPiTopology.tendsto_pow_of_constantCoeff_nilpotent_iff` : the powers of `f`
-  converge to zero iff the constant coefficient of `f` is nilpotent.
+- `MvPowerSeries.WithPiTopology.isTopologicallyNilpotent_iff_constantCoeff_isNilpotent` :
+  assuming the base ring has the discrete topology, `f` is topologically nilpotent iff the constant
+  coefficient of `f` is nilpotent.
 
 - `MvPowerSeries.WithPiTopology.hasSum_of_monomials_self` : viewed as an infinite sum, a power
   series converges to itself.
@@ -47,6 +48,16 @@ TODO: add the similar result for the series of homogeneous components.
 - If the topology of `R` is T0 or T2, then so is that of `MvPowerSeries σ R`.
 - If `R` is a `IsUniformAddGroup`, then so is `MvPowerSeries σ R`.
 - If `R` is complete, then so is `MvPowerSeries σ R`.
+
+## Implementation Notes
+
+In `Mathlib.RingTheory.MvPowerSeries.LinearTopology`, we generalize the criterion for topological
+nilpotency by proving that, if the base ring is equipped with a *linear* topology, then
+a power series is topologically nilpotent if and only if its constant coefficient is.
+This is lemma `MvPowerSeries.LinearToplogy.isTopologicallyNilpotent_iff_constantCoeff`.
+
+Mathematically, everything proven in this files follows from that general statement. However,
+formalizing this creates TODO: finish
 
 -/
 
