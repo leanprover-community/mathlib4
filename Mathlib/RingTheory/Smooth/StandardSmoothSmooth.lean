@@ -24,6 +24,8 @@ section Upstream
 
 namespace Algebra
 
+open MvPolynomial
+
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
 @[simps (config := .lemmasOnly) vars]
@@ -31,7 +33,7 @@ def Generators.reindex (P : Generators.{w} R S) {ι : Type*} (e : ι ≃ P.vars)
     Generators R S where
   vars := ι
   val := P.val ∘ e
-  σ' := MvPolynomial.rename e.symm ∘ P.σ
+  σ' := rename e.symm ∘ P.σ
   aeval_val_σ' s := by
     conv_rhs => rw [← P.aeval_val_σ s]
     rw [← MvPolynomial.aeval_rename]
@@ -43,7 +45,7 @@ lemma Generators.reindex_val (P : Generators.{w} R S) {ι : Type*} (e : ι ≃ P
 
 lemma _root_.MvPolynomial.aeval_comp_rename {σ τ R S : Type*} [CommSemiring R]
     [CommSemiring S] [Algebra R S] (k : σ → τ) (g : τ → S) :
-    (MvPolynomial.aeval (R := R) g).comp (MvPolynomial.rename k) = MvPolynomial.aeval (g ∘ k) := by
+    (aeval (R := R) g).comp (rename k) = MvPolynomial.aeval (g ∘ k) := by
   ext
   simp
 
@@ -71,29 +73,23 @@ def Presentation.reindex (P : Presentation.{w, t} R S)
     Presentation R S where
   __ := P.toGenerators.reindex e
   rels := κ
-  relation := .rename e.symm ∘ P.relation ∘ f
+  relation := rename e.symm ∘ P.relation ∘ f
   span_range_relation_eq_ker := by
-    rw [Generators.ker_eq_ker_aeval_val, Generators.reindex_val]
-    rw [← MvPolynomial.aeval_comp_rename, ← AlgHom.comap_ker,
-      ← P.ker_eq_ker_aeval_val, ← P.span_range_relation_eq_ker]
-    rw [Set.range_comp, Set.range_comp, Equiv.range_eq_univ, Set.image_univ]
-    rw [← Ideal.map_span (MvPolynomial.rename ⇑e.symm)]
-    have hf : Function.Bijective (MvPolynomial.rename e.symm) :=
-      (MvPolynomial.renameEquiv R e.symm).bijective
+    rw [Generators.ker_eq_ker_aeval_val, Generators.reindex_val, ← aeval_comp_rename,
+      ← AlgHom.comap_ker, ← P.ker_eq_ker_aeval_val, ← P.span_range_relation_eq_ker,
+      Set.range_comp, Set.range_comp, Equiv.range_eq_univ, Set.image_univ,
+      ← Ideal.map_span (rename ⇑e.symm)]
+    have hf : Function.Bijective (MvPolynomial.rename e.symm) := (renameEquiv R e.symm).bijective
     apply Ideal.comap_injective_of_surjective _ hf.2
-    rw [Ideal.comap_comapₐ, MvPolynomial.rename_comp_rename]
-    simp_rw [Generators.reindex_vars, Equiv.self_comp_symm]
-    simp [Ideal.comap_map_of_bijective _ hf, MvPolynomial.rename_id']
+    simp_rw [Ideal.comap_comapₐ, rename_comp_rename, Generators.reindex_vars, Equiv.self_comp_symm]
+    simp [Ideal.comap_map_of_bijective _ hf, rename_id']
 
 @[simp]
 lemma Presentation.isFinite_reindex_iff (P : Presentation.{w, t} R S)
     {ι κ : Type*} (e : ι ≃ P.vars) (f : κ ≃ P.rels) :
-    (P.reindex e f).IsFinite ↔ P.IsFinite := by
-  constructor
-  · intro h
-    exact ⟨e.finite_iff.mp h.1, f.finite_iff.mp h.2⟩
-  · intro h
-    exact ⟨e.finite_iff.mpr h.1, f.finite_iff.mpr h.2⟩
+    (P.reindex e f).IsFinite ↔ P.IsFinite :=
+  ⟨fun h ↦ ⟨e.finite_iff.mp h.1, f.finite_iff.mp h.2⟩,
+    fun h ↦ ⟨e.finite_iff.mpr h.1, f.finite_iff.mpr h.2⟩⟩
 
 @[simps toPresentation, simps (config := .lemmasOnly) map]
 def PreSubmersivePresentation.reindex (P : PreSubmersivePresentation.{w, t} R S)
@@ -102,8 +98,7 @@ def PreSubmersivePresentation.reindex (P : PreSubmersivePresentation.{w, t} R S)
   __ := P.toPresentation.reindex e f
   map := e.symm ∘ P.map ∘ f
   map_inj := by
-    rw [Function.Injective.of_comp_iff e.symm.injective]
-    rw [Function.Injective.of_comp_iff P.map_inj]
+    rw [Function.Injective.of_comp_iff e.symm.injective, Function.Injective.of_comp_iff P.map_inj]
     exact f.injective
   relations_finite := f.finite_iff.mpr P.relations_finite
 
@@ -128,19 +123,10 @@ lemma PreSubmersivePresentation.jacobian_reindex (P : PreSubmersivePresentation.
   simp_rw [PreSubmersivePresentation.jacobian_eq_jacobiMatrix_det]
   simp only [reindex_toPresentation, Presentation.reindex_toGenerators, jacobiMatrix_reindex,
     Matrix.reindex_apply, Equiv.symm_symm, Generators.algebraMap_apply, Generators.reindex_val]
-  rw [← MvPolynomial.aeval_rename]
-  simp only [Generators.reindex_vars, Presentation.reindex_rels]
-  generalize P.jacobiMatrix = M
-  congr
-  rw [← AlgHom.mapMatrix_apply]
-  rw [← Matrix.det_submatrix_equiv_self f]
-  generalize M.submatrix f f = M
-  simp only [AlgHom.mapMatrix_apply]
-  erw [AlgHom.map_det (MvPolynomial.rename ⇑e) (M.map ⇑(MvPolynomial.rename ⇑e.symm))]
-  simp only [AlgHom.mapMatrix_apply, Matrix.map_map]
-  rw [← AlgHom.coe_comp]
-  rw [MvPolynomial.rename_comp_rename]
-  simp [MvPolynomial.rename_id']
+  simp_rw [← MvPolynomial.aeval_rename, Generators.reindex_vars, Presentation.reindex_rels,
+    ← AlgHom.mapMatrix_apply, ← Matrix.det_submatrix_equiv_self f, AlgHom.map_det,
+    AlgHom.mapMatrix_apply, Matrix.map_map]
+  simp [← AlgHom.coe_comp, rename_comp_rename, rename_id']
 
 @[simps toPreSubmersivePresentation]
 def SubmersivePresentation.reindex (P : SubmersivePresentation.{w, t} R S)
