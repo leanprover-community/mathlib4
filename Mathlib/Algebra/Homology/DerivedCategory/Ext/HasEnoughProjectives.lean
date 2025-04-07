@@ -43,9 +43,9 @@ lemma isSplitEpi_to_singleFunctor_obj_of_projective
     dsimp [α, e]
     rw [assoc, assoc, assoc, iCyclesIso_hom_inv_id_assoc,
       homologyπ_naturality_assoc]
-    erw [homologyπ_singleObjHomologySelfIso_hom_assoc]
-    rw [← singleObjCyclesSelfIso_inv_iCycles, Iso.hom_inv_id_assoc, ← cyclesMap_i]
-    rfl
+    dsimp [singleFunctor, singleFunctors]
+    rw [homologyπ_singleObjHomologySelfIso_hom_assoc,
+      ← singleObjCyclesSelfIso_inv_iCycles, Iso.hom_inv_id_assoc, ← cyclesMap_i]
   exact ⟨⟨{
       section_ := mkHomFromSingle (Projective.factorThru (𝟙 P) α) (by
         rintro _ rfl
