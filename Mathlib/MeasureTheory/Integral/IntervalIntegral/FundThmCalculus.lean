@@ -8,7 +8,7 @@ import Mathlib.Analysis.Calculus.Deriv.Comp
 import Mathlib.Analysis.Calculus.FDeriv.Measurable
 import Mathlib.Analysis.Normed.Module.Dual
 import Mathlib.MeasureTheory.Integral.DominatedConvergence
-import Mathlib.MeasureTheory.Integral.VitaliCaratheodory
+import Mathlib.MeasureTheory.Integral.Bochner.VitaliCaratheodory
 
 /-!
 # Fundamental Theorem of Calculus
