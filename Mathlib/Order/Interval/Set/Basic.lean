@@ -441,6 +441,9 @@ the equivalence in linear orders, use `Ioi_subset_Ioi_iff`. -/
 @[gcongr]
 theorem Ioi_subset_Ioi (h : a ≤ b) : Ioi b ⊆ Ioi a := fun _ hx => h.trans_lt hx
 
+theorem Ioi_ssubset_Ioi (h : a < b) : Ioi b ⊂ Ioi a :=
+  (ssubset_iff_of_subset (Ioi_subset_Ioi h.le)).mpr ⟨b, h, lt_irrefl b⟩
+
 /-- If `a ≤ b`, then `(b, +∞) ⊆ [a, +∞)`. In preorders, this is just an implication. If you need
 the equivalence in dense linear orders, use `Ioi_subset_Ici_iff`. -/
 theorem Ioi_subset_Ici (h : a ≤ b) : Ioi b ⊆ Ici a :=
@@ -450,6 +453,9 @@ theorem Ioi_subset_Ici (h : a ≤ b) : Ioi b ⊆ Ici a :=
 the equivalence in linear orders, use `Iio_subset_Iio_iff`. -/
 @[gcongr]
 theorem Iio_subset_Iio (h : a ≤ b) : Iio a ⊆ Iio b := fun _ hx => lt_of_lt_of_le hx h
+
+theorem Iio_ssubset_Iio (h : a < b) : Iio a ⊂ Iio b :=
+  (ssubset_iff_of_subset (Iio_subset_Iio h.le)).mpr ⟨a, h, lt_irrefl a⟩
 
 /-- If `a ≤ b`, then `(-∞, a) ⊆ (-∞, b]`. In preorders, this is just an implication. If you need
 the equivalence in dense linear orders, use `Iio_subset_Iic_iff`. -/

@@ -356,6 +356,9 @@ alias ⟨_, _root_.GCongr.Finset.Ici_subset_Ici⟩ := Ici_subset_Ici
 theorem Ioi_subset_Ioi (h : a ≤ b) : Ioi b ⊆ Ioi a := by
   simpa [← coe_subset] using Set.Ioi_subset_Ioi h
 
+theorem Ioi_ssubset_Ioi (h : a < b) : Ioi b ⊂ Ioi a := by
+  simpa [← coe_ssubset] using Set.Ioi_ssubset_Ioi h
+
 variable [LocallyFiniteOrder α]
 
 theorem Icc_subset_Ici_self : Icc a b ⊆ Ici a := by
@@ -412,6 +415,9 @@ alias ⟨_, _root_.GCongr.Finset.Iic_subset_Iic⟩ := Iic_subset_Iic
 @[gcongr]
 theorem Iio_subset_Iio (h : a ≤ b) : Iio a ⊆ Iio b := by
   simpa [← coe_subset] using Set.Iio_subset_Iio h
+
+theorem Iio_ssubset_Iio (h : a < b) : Iio a ⊂ Iio b := by
+  simpa [← coe_ssubset] using Set.Iio_ssubset_Iio h
 
 variable [LocallyFiniteOrder α]
 
