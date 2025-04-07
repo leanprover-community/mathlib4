@@ -94,10 +94,7 @@ theorem char_SeparatesPoints (he : Continuous e) (he' : e ≠ 1)
     module
   _ = e a := by
     congr
-    simp only [map_sub, LinearMap.sub_apply, smul_eq_mul]
-    rw [div_mul_cancel₀]
-    convert hw
-    simp
+    exact div_mul_cancel₀ a hw
   _ ≠ 1 := ha
 
 /-- Monoid homomorphism mapping `w` to `fun v ↦ e (L v w)`. -/
