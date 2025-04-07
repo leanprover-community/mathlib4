@@ -454,6 +454,7 @@ lemma mem_leAddSubgroup_iff_of_span_eq_top
   | add a b ha hb ha' hb' => exact add_smul a b x ▸ add_mem ha' hb'
   | smul r a ha ha' => exact smul_assoc r a x ▸ N.smul_mem r ha'
   | zero => simp
+
 end AddCommGroup
 
 section AddCommGroup
