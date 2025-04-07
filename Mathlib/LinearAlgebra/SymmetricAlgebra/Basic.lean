@@ -116,7 +116,7 @@ algebra homomorphism from `SymmetricAlgebra R L` to `A` is bijective. -/
 def IsSymmetricAlgebra (f : L →ₗ[R] A) : Prop :=
   Function.Bijective (SymmetricAlgebra.lift f)
 
-theorem SymmetricAlgebra.isSymmetricAlgebra : IsSymmetricAlgebra (ι R L) := by
+theorem SymmetricAlgebra.isSymmetricAlgebra_ι : IsSymmetricAlgebra (ι R L) := by
   rw [IsSymmetricAlgebra, lift_ι]
   exact Function.Involutive.bijective (congrFun rfl)
 
