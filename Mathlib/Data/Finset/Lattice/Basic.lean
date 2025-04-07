@@ -5,6 +5,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
 import Mathlib.Data.Finset.Defs
 import Mathlib.Data.Multiset.FinsetOps
+import Mathlib.Data.Finset.Empty
 
 /-!
 # Lattice structure on finite sets
@@ -336,5 +337,9 @@ theorem inter_subset_ite (s s' : Finset α) (P : Prop) [Decidable P] : s ∩ s' 
   inf_le_ite s s' P
 
 end Lattice
+
+@[simp]
+lemma Disjoint.inter_eq {s t : Finset α} [DecidableEq α] (h : Disjoint s t) : s ∩ t = ∅ :=
+  h.eq_bot
 
 end Finset
