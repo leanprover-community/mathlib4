@@ -334,7 +334,7 @@ theorem map_fixingSubgroup [Normal k E] :
     rwa [AlgEquiv.restrictNormal_commutes] at h
 
 /-- If `K / E / k` is a field extension tower with `E / k` and `K / k` normal,
-`L` is an intermediate field of `E / k`, then the indx of the fixing subgroup of `L` viewed as an
+`L` is an intermediate field of `E / k`, then the index of the fixing subgroup of `L` viewed as an
 intermediate field of `K / k` is equal to the index of the fixing subgroup of `L` viewed as an
 intermediate field of `E / k`. -/
 theorem map_fixingSubgroup_index [Normal k E] [Normal k K] :
