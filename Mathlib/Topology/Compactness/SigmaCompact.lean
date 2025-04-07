@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 import Mathlib.Topology.Compactness.LocallyCompact
+import Mathlib.Topology.Compactness.LocallyFinite
 /-!
 # Sigma-compactness in topological spaces
 
@@ -200,7 +201,7 @@ alias sigmaCompactSpace_of_locally_compact_second_countable :=
   sigmaCompactSpace_of_locallyCompact_secondCountable
 
 section
--- Porting note: doesn't work on the same line
+
 variable (X)
 variable [SigmaCompactSpace X]
 

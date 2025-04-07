@@ -114,6 +114,11 @@ protected theorem sigmaFinite {f : α → β} (hf : MeasurePreserving f μa μb)
     SigmaFinite μa :=
   SigmaFinite.of_map μa hf.aemeasurable (by rwa [hf.map_eq])
 
+protected theorem sfinite {f : α → β} (hf : MeasurePreserving f μa μb) [SFinite μa] :
+    SFinite μb := by
+  rw [← hf.map_eq]
+  infer_instance
+
 theorem measure_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
     (hs : NullMeasurableSet s μb) : μa (f ⁻¹' s) = μb s := by
   rw [← hf.map_eq] at hs ⊢
@@ -126,6 +131,15 @@ theorem measure_preimage_emb {f : α → β} (hf : MeasurePreserving f μa μb)
 theorem measure_preimage_equiv {f : α ≃ᵐ β} (hf : MeasurePreserving f μa μb) (s : Set β) :
     μa (f ⁻¹' s) = μb s :=
   measure_preimage_emb hf f.measurableEmbedding s
+
+theorem measure_preimage_le {f : α → β} (hf : MeasurePreserving f μa μb) (s : Set β) :
+    μa (f ⁻¹' s) ≤ μb s := by
+  rw [← hf.map_eq]
+  exact le_map_apply hf.aemeasurable _
+
+theorem preimage_null {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
+    (hs : μb s = 0) : μa (f ⁻¹' s) = 0 :=
+  hf.quasiMeasurePreserving.preimage_null hs
 
 theorem aeconst_comp [MeasurableSingletonClass γ] {f : α → β} (hf : MeasurePreserving f μa μb)
     {g : β → γ} (hg : NullMeasurable g μb) :

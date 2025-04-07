@@ -59,7 +59,7 @@ class NormedLinearOrderedField (α : Type*) extends LinearOrderedField α, Norm 
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x - y‖ := by aesop
   /-- The norm is multiplicative. -/
-  norm_mul' : ∀ x y : α, ‖x * y‖ = ‖x‖ * ‖y‖
+  norm_mul : ∀ x y : α, ‖x * y‖ = ‖x‖ * ‖y‖
 
 @[to_additive]
 instance (priority := 100) NormedOrderedGroup.toNormedCommGroup [NormedOrderedGroup α] :
@@ -74,7 +74,7 @@ instance (priority := 100) NormedLinearOrderedGroup.toNormedOrderedGroup
 instance (priority := 100) NormedLinearOrderedField.toNormedField (α : Type*)
     [NormedLinearOrderedField α] : NormedField α where
   dist_eq := NormedLinearOrderedField.dist_eq
-  norm_mul' := NormedLinearOrderedField.norm_mul'
+  norm_mul := NormedLinearOrderedField.norm_mul
 
 instance Rat.normedLinearOrderedField : NormedLinearOrderedField ℚ :=
   ⟨dist_eq_norm, norm_mul⟩
@@ -84,7 +84,7 @@ noncomputable instance Real.normedLinearOrderedField : NormedLinearOrderedField 
 
 @[to_additive]
 instance OrderDual.normedOrderedGroup [NormedOrderedGroup α] : NormedOrderedGroup αᵒᵈ :=
-  { @NormedOrderedGroup.toNormedCommGroup α _, OrderDual.orderedCommGroup with }
+  { @NormedOrderedGroup.toNormedCommGroup α _, OrderDual.isOrderedMonoid with }
 
 @[to_additive]
 instance OrderDual.normedLinearOrderedGroup [NormedLinearOrderedGroup α] :

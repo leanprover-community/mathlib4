@@ -206,7 +206,7 @@ include hF hc
 variable {c f g} (sq : CommSq f (c.ι.app ⊥) p g)
 
 lemma hasLift : sq.HasLift := by
-  obtain ⟨s, hs⟩ := (wellOrderInductionData c f g hF).surjective { w₂ := sq.w }
+  obtain ⟨s, hs⟩ := (wellOrderInductionData c f g hF).surjective { w₂ := sq.w, .. }
   replace hs := congr_arg SqStruct.f' hs
   dsimp at hs
   let t : Cocone F := Cocone.mk X

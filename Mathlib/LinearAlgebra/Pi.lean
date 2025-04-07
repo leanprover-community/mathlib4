@@ -10,7 +10,7 @@ import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Module.Submodule.Ker
 import Mathlib.Algebra.Module.Submodule.Range
 import Mathlib.Algebra.Module.Equiv.Basic
-import Mathlib.Logic.Equiv.Fin
+import Mathlib.Logic.Equiv.Fin.Basic
 import Mathlib.LinearAlgebra.Prod
 
 /-!
@@ -226,6 +226,11 @@ theorem lsum_apply (S) [AddCommMonoid M] [Module R M] [Fintype ι] [Semiring S]
     [Module S M] [SMulCommClass R S M] (f : (i : ι) → φ i →ₗ[R] M) :
     lsum R φ S f = ∑ i : ι, (f i).comp (proj i) := rfl
 
+theorem lsum_piSingle (S) [AddCommMonoid M] [Module R M] [Fintype ι] [Semiring S]
+    [Module S M] [SMulCommClass R S M] (f : (i : ι) → φ i →ₗ[R] M) (i : ι) (x : φ i) :
+    lsum R φ S f (Pi.single i x) = f i x := by
+  simp_rw [lsum_apply, sum_apply, comp_apply, proj_apply, apply_single, Fintype.sum_pi_single']
+
 @[simp high]
 theorem lsum_single {ι R : Type*} [Fintype ι] [DecidableEq ι] [CommSemiring R] {M : ι → Type*}
     [(i : ι) → AddCommMonoid (M i)] [(i : ι) → Module R (M i)] :
@@ -383,11 +388,14 @@ theorem le_comap_single_pi [DecidableEq ι] (p : (i : ι) → Submodule R (φ i)
   rintro j -
   rcases eq_or_ne j i with rfl | hne <;> simp [*]
 
+theorem iSup_map_single_le [DecidableEq ι] :
+    ⨆ i, map (LinearMap.single R φ i) (p i) ≤ pi I p :=
+  iSup_le fun _ => map_le_iff_le_comap.mpr <| le_comap_single_pi _
+
 theorem iSup_map_single [DecidableEq ι] [Finite ι] :
     ⨆ i, map (LinearMap.single R φ i : φ i →ₗ[R] (i : ι) → φ i) (p i) = pi Set.univ p := by
   cases nonempty_fintype ι
-  refine (iSup_le fun i => map_le_iff_le_comap.mpr <| le_comap_single_pi _).antisymm ?_
-  intro x hx
+  refine iSup_map_single_le.antisymm fun x hx => ?_
   rw [← Finset.univ_sum_single x]
   exact sum_mem_iSup fun i => mem_map_of_mem (hx i trivial)
 
@@ -560,7 +568,7 @@ theorem piFinTwo_apply (M : Fin 2 → Type v)
     (piFinTwo R M : ((i : Fin 2) → M i) → M 0 × M 1) = fun f => (f 0, f 1) := rfl
 
 /-- Linear equivalence between vectors in `M² = Fin 2 → M` and `M × M`. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def finTwoArrow : (Fin 2 → M) ≃ₗ[R] M × M :=
   { finTwoArrowEquiv M, piFinTwo R fun _ => M with }
 
