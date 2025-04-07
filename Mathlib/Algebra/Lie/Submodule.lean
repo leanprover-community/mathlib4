@@ -795,9 +795,9 @@ theorem span_union (s t : Set M) : lieSpan R L (s ∪ t) = lieSpan R L s ⊔ lie
 theorem span_iUnion {ι} (s : ι → Set M) : lieSpan R L (⋃ i, s i) = ⨆ i, lieSpan R L (s i) :=
   (LieSubmodule.gi R L M).gc.l_iSup
 
-
-
-
+/-- An induction principle for span membership. If `p` holds for 0 and all elements of `s`, and is
+preserved under addition, scalar multiplication and the Lie bracket, then `p` holds for all
+elements of the span of `s`. -/
 @[elab_as_elim]
 theorem lieSpan_induction {p : (x : M) → x ∈ lieSpan R L s → Prop}
     (mem : ∀ (x) (h : x ∈ s), p x (subset_lieSpan h))
@@ -813,7 +813,6 @@ theorem lieSpan_induction {p : (x : M) → x ∈ lieSpan R L s → Prop}
       smul_mem' := fun r ↦ fun ⟨_, hpx⟩ ↦ ⟨_, smul r _ _ hpx⟩
       lie_mem := fun ⟨_, hpy⟩ ↦ ⟨_, lie _ _ _ hpy⟩ }
   exact lieSpan_le (N := p) |>.mpr (fun y hy ↦ ⟨subset_lieSpan hy, mem y hy⟩) hx |>.elim fun _ ↦ id
-
 
 lemma isCompactElement_lieSpan_singleton (m : M) :
     CompleteLattice.IsCompactElement (lieSpan R L {m}) := by
