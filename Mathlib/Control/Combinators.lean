@@ -77,12 +77,12 @@ def sequence' {m : Type → Type u} [Monad m] {α : Type} : List (m α) → m Un
 /-- Executes `t` if `b` is `true`, doing nothing otherwise.
 
 See also `when` and `whenM`. -/
-@[deprecated "No replacement in Mathlib." (since := "2025-04-07")]
+@[deprecated "Use `if ... then` without `else` in `do` notation instead." (since := "2025-04-07")]
 def whenb {m : Type → Type} [Monad m] (b : Bool) (t : m Unit) : m Unit :=
   _root_.cond b t (return ())
 
 /-- Executes `t` if `b` is `false`, doing nothing otherwise. -/
-@[deprecated "No replacement in Mathlib." (since := "2025-04-07")]
+@[deprecated "Use `unless` in `do` notation instead." (since := "2025-04-07")]
 def unlessb {m : Type → Type} [Monad m] (b : Bool) (t : m Unit) : m Unit :=
   _root_.cond b (return ()) t
 
