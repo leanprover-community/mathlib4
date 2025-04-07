@@ -412,7 +412,7 @@ lemma mem_allRoots (i : ι) :
   obtain ⟨h₁, h₂⟩ := isOrthogonal_short_and_long P hi
   have : Fintype ι := Fintype.ofFinite ι
   have B := (P.posRootForm ℤ).toInvariantForm
-  rw [B.isOrthogonal_iff_pairingIn_eq_zero, ← B.apply_root_root_zero_iff] at h₁ h₂
+  rw [B.isOrthogonal_iff_pairing_eq_zero, ← B.apply_root_root_zero_iff] at h₁ h₂
   have key : B.form (P.root i) = 0 := by
     ext x
     have hx : x ∈ span R {longRoot P, shortRoot P} := by simp
