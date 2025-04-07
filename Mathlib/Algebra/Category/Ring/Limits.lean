@@ -17,12 +17,13 @@ the underlying types are just the limits in the category of types.
 
 
 -- We use the following trick a lot of times in this file.
-library_note "change elaboration strategy with `by apply`"/--
+/--
 Some definitions may be extremely slow to elaborate, when the target type to be constructed
 is complicated and when the type of the term given in the definition is also complicated and does
 not obviously match the target type. In this case, instead of just giving the term, prefixing it
 with `by apply` may speed up things considerably as the types are not elaborated in the same order.
 -/
+def LibraryNote.changeElaborationStrategyByApply : LibraryNote := ()
 
 
 open CategoryTheory

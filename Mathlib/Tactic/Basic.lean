@@ -160,3 +160,6 @@ elab (name := clearValue) "clear_value" hs:(ppSpace colGt term:max)+ : tactic =>
 attribute [pp_with_univ] ULift PUnit PEmpty
 
 end Mathlib.Tactic
+
+/-- A mathlib library note: the note's content should be contained in its doc-string. -/
+def LibraryNote := Unit

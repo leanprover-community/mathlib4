@@ -70,7 +70,7 @@ theorem prod_val [CommMonoid α] (s : Finset α) : s.1.prod = s.prod id := by
 
 end Finset
 
-library_note "operator precedence of big operators"/--
+/--
 There is no established mathematical convention
 for the operator precedence of big operators like `∏` and `∑`.
 We will have to make a choice.
@@ -88,6 +88,7 @@ In practice, this means that parentheses should be placed as follows:
 ```
 (Example taken from page 490 of Knuth's *Concrete Mathematics*.)
 -/
+def LibraryNote.operatorPrecendenceBigOperators : LibraryNote := ()
 
 namespace BigOperators
 open Batteries.ExtendedBinder Lean Meta

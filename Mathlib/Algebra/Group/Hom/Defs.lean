@@ -193,7 +193,6 @@ instance OneHom.funLike : FunLike (OneHom M N) M N where
 instance OneHom.oneHomClass : OneHomClass (OneHom M N) M N where
   map_one := OneHom.map_one'
 
-library_note "low priority simp lemmas"
 /--
 The hom class hierarchy allows for a single lemma, such as `map_one`, to apply to a large variety
 of morphism types, so long as they have an instance of `OneHomClass`. For example, this applies to
@@ -211,6 +210,7 @@ a significant performance hit when `map_one` fails to apply.
 To avoid this problem, we mark these widely applicable simp lemmas with key discimination tree keys
 with `low` priority in order to ensure that they are not tried first.
 -/
+def LibraryNote.lowPrioritySimpLemmas : LibraryNote := ()
 
 variable [FunLike F M N]
 
