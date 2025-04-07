@@ -267,3 +267,180 @@ lemma hasSum_taylorSeries_neg_log {z : ℂ} (hz : ‖z‖ < 1) :
   all_goals {norm_cast; exact hn.ne'}
 
 end Complex
+
+section Limits
+
+/-! Limits of functions of the form `(1 + t/x + o(1/x)) ^ x` as `x → ∞`. -/
+
+open Filter Asymptotics
+open scoped Topology
+
+private lemma g_le_div {g : ℝ → ℂ} {t : ℂ} (hg : Tendsto (fun x ↦ x * g x) atTop (𝓝 t)) :
+    ∀ᶠ x in atTop, ‖g x‖ ≤ (‖t‖ + 1) / |x| := by
+  filter_upwards [eventually_ne_atTop 0, hg.norm.eventually_le_const (lt_add_one _)] with x h0 h
+  rw [norm_mul, ← le_div_iff₀' (by simpa using h0)] at h
+  simpa using h
+
+private lemma g_lt {g : ℝ → ℂ} {t : ℂ} (hg : Tendsto (fun x ↦ x * g x) atTop (𝓝 t))
+    (y : ℝ) (hy : 0 < y := by norm_num) : ∀ᶠ x in atTop, ‖g x‖ < y := by
+  apply Tendsto.eventually_lt_const (v := 0) hy
+  apply squeeze_zero' (.of_forall fun _ ↦ norm_nonneg _) (g_le_div hg)
+  apply Tendsto.const_div_atTop
+  exact tendsto_abs_atTop_atTop
+
+/-- Converts criterion for `g : ℕ → ℂ` to criterion for `g ∘ (⌊⬝⌋₊) : ℝ → ℂ` -/
+private lemma tendsto_g_comp_floor {g : ℕ → ℂ} {t : ℂ}
+    (hg : Tendsto (fun n ↦ n * g n) atTop (𝓝 t)) :
+    Tendsto (fun x : ℝ ↦ x * g ⌊x⌋₊) atTop (𝓝 t) := by
+  -- for these two lemmas, we copy the proof over ℝ from `g_le_div` and `g_lt`
+  have hg_le_div : ∀ᶠ n in atTop, ‖g n‖ ≤ (‖t‖ + 1) / |(n : ℝ)| := by
+    filter_upwards [eventually_ne_atTop 0, hg.norm.eventually_le_const (lt_add_one _)] with x h0 h
+    rw [norm_mul, ← le_div_iff₀' (by simpa [Nat.ne_zero_iff_zero_lt] using h0)] at h
+    simpa using h
+  have hg0 : Tendsto (fun n ↦ ‖g n‖) atTop (𝓝 0) := by
+    apply squeeze_zero' (.of_forall fun _ ↦ norm_nonneg _) hg_le_div
+    apply Tendsto.const_div_atTop
+    exact tendsto_abs_atTop_atTop.comp tendsto_natCast_atTop_atTop
+  apply (hg.comp tendsto_nat_floor_atTop).congr_dist
+  refine squeeze_zero' (.of_forall fun _ ↦ dist_nonneg) ?_ (hg0.comp tendsto_nat_floor_atTop)
+  dsimp
+  filter_upwards [eventually_ge_atTop 0] with x hx0
+  rw [Complex.dist_eq, ← sub_mul, norm_mul]
+  apply mul_le_of_le_one_left (norm_nonneg _)
+  norm_cast
+  exact abs_le.mpr ⟨by linarith [Nat.lt_floor_add_one x], by linarith [Nat.floor_le hx0]⟩
+
+/-- Converts criterion for `g : ℕ → ℝ` to criterion for `g ∘ (⌊⬝⌋₊) : ℝ → ℝ` -/
+private lemma tendsto_g_comp_floor_real {g : ℕ → ℝ} {t : ℝ}
+    (hg : Tendsto (fun n ↦ n * g n) atTop (𝓝 t)) :
+    Tendsto (fun x : ℝ ↦ x * g ⌊x⌋₊) atTop (𝓝 t) := by
+  rw [← tendsto_ofReal_iff] at hg ⊢
+  push_cast at hg ⊢
+  exact tendsto_g_comp_floor hg
+
+namespace Complex
+
+/-- The limit of `x * log (1 + t/x + o(1/x))` as `(x : ℝ) → ∞` is `t` for `t ∈ ℂ`. -/
+lemma tendsto_mul_log_one_add_of_tendsto {g : ℝ → ℂ} {t : ℂ}
+    (hg : Tendsto (fun x ↦ x * g x) atTop (𝓝 t)) :
+    Tendsto (fun x ↦ x * log (1 + g x)) atTop (𝓝 t) := by
+  have : Tendsto (fun x ↦ x * logTaylor 2 (g x)) atTop (𝓝 t) := by
+    simpa [logTaylor_succ, logTaylor_zero]
+  apply this.congr_dist
+  apply squeeze_zero' (g := fun x ↦ (‖t‖ + 1) ^ 2 / |x|) (.of_forall fun _ ↦ dist_nonneg)
+  · filter_upwards [eventually_ne_atTop 0, g_le_div hg, g_lt hg (1 / 2), g_lt hg 1] with
+      x h0 hg' hg2 hg1
+    rw [dist_comm, dist_eq, ← mul_sub, norm_mul, norm_real, Real.norm_eq_abs,
+      ← le_div_iff₀' (by positivity)]
+    calc
+      _ ≤ ‖g x‖ ^ 2 * (1 - ‖g x‖)⁻¹ / 2 := by
+        simpa [one_add_one_eq_two] using norm_log_sub_logTaylor_le 1 hg1
+      _ ≤ ((‖t‖ + 1) / |x|) ^ 2 * 1 := by
+        rw [mul_div_assoc]
+        gcongr
+        · suffices 0 ≤ 1 - ‖g x‖ by positivity
+          linarith
+        · rw [div_le_one₀ (by norm_num), inv_le_comm₀ (sub_pos_of_lt hg1) two_pos]
+          linarith
+      _ = _ := by field_simp [pow_two]
+  · apply Tendsto.const_div_atTop
+    exact tendsto_abs_atTop_atTop
+
+/-- The limit of `(1 + t/x + o(1/x)) ^ x` as `(x : ℝ) → ∞` is `exp t` for `t ∈ ℂ`. -/
+lemma tendsto_one_add_cpow_exp_of_tendsto {g : ℝ → ℂ} {t : ℂ}
+    (hg : Tendsto (fun x ↦ x * g x) atTop (𝓝 t)) :
+    Tendsto (fun x ↦ (1 + g x) ^ (x : ℂ)) atTop (𝓝 (exp t)) := by
+  have h0 : ∀ᶠ x in atTop, 1 + g x ≠ 0 := by
+    filter_upwards [g_lt hg (1 / 2)] with n hg2 hg0
+    rw [← add_eq_zero_iff_neg_eq.mp hg0] at hg2
+    norm_num at hg2
+  apply ((continuous_exp.tendsto _).comp (tendsto_mul_log_one_add_of_tendsto hg)).congr'
+  filter_upwards [h0] with x h0
+  dsimp
+  rw [cpow_def_of_ne_zero h0, mul_comm]
+
+/-- The limit of `(1 + t/x) ^ x` as `x → ∞` is `exp t` for `t ∈ ℂ`. -/
+lemma tendsto_one_add_div_cpow_exp (t : ℂ) :
+    Tendsto (fun x : ℝ ↦ (1 + t / x) ^ (x : ℂ)) atTop (𝓝 (exp t)) := by
+  apply tendsto_one_add_cpow_exp_of_tendsto
+  apply tendsto_nhds_of_eventually_eq
+  filter_upwards [eventually_ne_atTop 0] with x hx0
+  exact mul_div_cancel₀ t (mod_cast hx0)
+
+/-- The limit of `n * log (1 + t/n + o(1/n))` as `(n : ℕ) → ∞` is `t` for `t ∈ ℂ`. -/
+lemma tendsto_nat_mul_log_one_add_of_tendsto {g : ℕ → ℂ} {t : ℂ}
+    (hg : Tendsto (fun n ↦ n * g n) atTop (𝓝 t)) :
+    Tendsto (fun n ↦ n * log (1 + g n)) atTop (𝓝 t) :=
+  tendsto_mul_log_one_add_of_tendsto (tendsto_g_comp_floor hg) |>.comp tendsto_natCast_atTop_atTop
+    |>.congr (by simp)
+
+/-- The limit of `(1 + t/n + o(1/n)) ^ n` as `(n : ℕ) → ∞` is `exp t` for `t ∈ ℂ`. -/
+lemma tendsto_one_add_pow_exp_of_tendsto {g : ℕ → ℂ} {t : ℂ}
+    (hg : Tendsto (fun n ↦ n * g n) atTop (𝓝 t)) :
+    Tendsto (fun n ↦ (1 + g n) ^ n) atTop (𝓝 (exp t)) :=
+  tendsto_one_add_cpow_exp_of_tendsto (tendsto_g_comp_floor hg) |>.comp tendsto_natCast_atTop_atTop
+    |>.congr (by simp)
+
+/-- The limit of `(1 + t/n) ^ n` as `n → ∞` is `exp t` for `t ∈ ℂ`. -/
+lemma tendsto_one_add_div_pow_exp (t : ℂ) :
+    Tendsto (fun n : ℕ ↦ (1 + t / n) ^ n) atTop (𝓝 (exp t)) :=
+  tendsto_one_add_div_cpow_exp t |>.comp tendsto_natCast_atTop_atTop |>.congr (by simp)
+
+end Complex
+
+namespace Real
+
+/-- The limit of `x * log (1 + t/x + o(1/x))` as `(x : ℝ) → ∞` is `t` for `t ∈ ℝ`. -/
+lemma tendsto_mul_log_one_add_of_tendsto {g : ℝ → ℝ} {t : ℝ}
+    (hg : Tendsto (fun x ↦ x * g x) atTop (𝓝 t)) :
+    Tendsto (fun x ↦ x * log (1 + g x)) atTop (𝓝 t) := by
+  rw [← tendsto_ofReal_iff] at hg ⊢
+  push_cast at hg ⊢
+  apply (Complex.tendsto_mul_log_one_add_of_tendsto hg).congr'
+  filter_upwards [g_lt hg 1] with x hg1
+  rw [Complex.ofReal_log, Complex.ofReal_add, Complex.ofReal_one]
+  rw [Complex.norm_real, norm_eq_abs] at hg1
+  linarith [abs_lt.mp hg1]
+
+/-- The limit of `(1 + t/x + o(1/x)) ^ x` as `(x : ℝ) → ∞` is `exp t` for `t ∈ ℝ`. -/
+lemma tendsto_one_add_rpow_exp_of_tendsto {g : ℝ → ℝ} {t : ℝ}
+    (hg : Tendsto (fun x ↦ x * g x) atTop (𝓝 t)) :
+    Tendsto (fun x ↦ (1 + g x) ^ x) atTop (𝓝 (exp t)) := by
+  rw [← tendsto_ofReal_iff] at hg ⊢
+  push_cast at hg ⊢
+  apply (Complex.tendsto_one_add_cpow_exp_of_tendsto hg).congr'
+  filter_upwards [g_lt hg 1] with x hg1
+  rw [Complex.ofReal_cpow, Complex.ofReal_add, Complex.ofReal_one]
+  rw [Complex.norm_real, norm_eq_abs] at hg1
+  linarith [abs_lt.mp hg1]
+
+/-- The limit of `(1 + t/x) ^ x` as `x → ∞` is `exp t` for `t ∈ ℝ`. -/
+lemma tendsto_one_add_div_rpow_exp (t : ℝ) :
+    Tendsto (fun x : ℝ ↦ (1 + t / x) ^ x) atTop (𝓝 (exp t)) := by
+  apply tendsto_one_add_rpow_exp_of_tendsto
+  apply tendsto_nhds_of_eventually_eq
+  filter_upwards [eventually_ne_atTop 0] with x hx0
+  exact mul_div_cancel₀ t (mod_cast hx0)
+
+/-- The limit of `n * log (1 + t/n + o(1/n))` as `(n : ℕ) → ∞` is `t` for `t ∈ ℝ`. -/
+lemma tendsto_nat_mul_log_one_add_of_tendsto {g : ℕ → ℝ} {t : ℝ}
+    (hg : Tendsto (fun n ↦ n * g n) atTop (𝓝 t)) :
+    Tendsto (fun n ↦ n * log (1 + g n)) atTop (𝓝 t) :=
+  tendsto_mul_log_one_add_of_tendsto (tendsto_g_comp_floor_real hg) |>.comp
+    tendsto_natCast_atTop_atTop |>.congr (by simp)
+
+/-- The limit of `(1 + t/n + o(1/n)) ^ n` as `(n : ℕ) → ∞` is `exp t` for `t ∈ ℝ`. -/
+lemma tendsto_one_add_pow_exp_of_tendsto {g : ℕ → ℝ} {t : ℝ}
+    (hg : Tendsto (fun n ↦ n * g n) atTop (𝓝 t)) :
+    Tendsto (fun n ↦ (1 + g n) ^ n) atTop (𝓝 (exp t)) :=
+  tendsto_one_add_rpow_exp_of_tendsto (tendsto_g_comp_floor_real hg) |>.comp
+    tendsto_natCast_atTop_atTop |>.congr (by simp)
+
+/-- The limit of `(1 + t/n) ^ n` as `n → ∞` is `exp t` for `t ∈ ℝ`. -/
+lemma tendsto_one_add_div_pow_exp (t : ℝ) :
+    Tendsto (fun n : ℕ ↦ (1 + t / n) ^ n) atTop (𝓝 (exp t)) :=
+  tendsto_one_add_div_rpow_exp t |>.comp tendsto_natCast_atTop_atTop |>.congr (by simp)
+
+end Real
+
+end Limits
