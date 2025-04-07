@@ -247,7 +247,7 @@ theorem mapIdxMAux'_eq_mapIdxMGo {α} (f : ℕ → α → m PUnit) (as : List α
   · simp only [mapIdxMAux', seqRight_eq, map_eq_pure_bind, seq_eq_bind, bind_pure_unit,
       LawfulMonad.bind_assoc, pure_bind, mapIdxM.go, seq_pure]
     generalize (f (Array.size arr) head) = head
-    have : (arr.push ⟨⟩).size = arr.size + 1 := Array.size_push arr ⟨⟩
+    have : (arr.push ⟨⟩).size = arr.size + 1 := Array.size_push _
     rw [← this, ih]
     simp only [seqRight_eq, map_eq_pure_bind, seq_pure, LawfulMonad.bind_assoc, pure_bind]
 

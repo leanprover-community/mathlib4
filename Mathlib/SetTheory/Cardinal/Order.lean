@@ -193,8 +193,7 @@ theorem lift_min {a b : Cardinal} : lift.{u, v} (min a b) = min (lift.{u, v} a) 
 theorem lift_max {a b : Cardinal} : lift.{u, v} (max a b) = max (lift.{u, v} a) (lift.{u, v} b) :=
   lift_monotone.map_max
 
--- Porting note: simpNF is not happy with universe levels.
-@[simp, nolint simpNF]
+-- This cannot be a `@[simp]` lemma because `simp` can't figure out the universes.
 theorem lift_umax_eq {a : Cardinal.{u}} {b : Cardinal.{v}} :
     lift.{max v w} a = lift.{max u w} b ↔ lift.{v} a = lift.{u} b := by
   rw [← lift_lift.{v, w, u}, ← lift_lift.{u, w, v}, lift_inj]
@@ -242,7 +241,7 @@ instance commSemiring : CommSemiring Cardinal.{u} where
   nsmul := nsmulRec
   npow n c := c ^ (n : Cardinal)
   npow_zero := power_zero
-  npow_succ n c := by dsimp; rw [cast_succ, power_add, power_one]
+  npow_succ n c := by rw [cast_succ, power_add, power_one]
   natCast n := lift #(Fin n)
   natCast_zero := rfl
   natCast_succ n := cast_succ n
@@ -325,6 +324,7 @@ instance noZeroDivisors : NoZeroDivisors Cardinal.{u} where
 instance : LinearOrderedCommMonoidWithZero Cardinal.{u} :=
   { Cardinal.commSemiring,
     Cardinal.linearOrder with
+    bot_le _ := bot_le
     mul_le_mul_left := @mul_le_mul_left' _ _ _ _
     zero_le_one := zero_le _ }
 

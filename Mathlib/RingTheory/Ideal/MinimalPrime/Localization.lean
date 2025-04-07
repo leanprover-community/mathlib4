@@ -50,7 +50,7 @@ theorem Ideal.iUnion_minimalPrimes :
     obtain ⟨n, hn⟩ := this (Ideal.mem_map_of_mem _ hxp)
     rw [IsLocalization.mem_map_algebraMap_iff (M := p.primeCompl)] at hn
     obtain ⟨⟨a, b⟩, hn⟩ := hn
-    rw [← map_pow, ← _root_.map_mul, IsLocalization.eq_iff_exists p.primeCompl] at hn
+    rw [← map_pow, ← map_mul, IsLocalization.eq_iff_exists p.primeCompl] at hn
     obtain ⟨t, ht⟩ := hn
     refine ⟨t * b, fun h ↦ (t * b).2 (hp₁.radical_le_iff.mpr hp₂ h), n + 1, ?_⟩
     simp only at ht
@@ -87,7 +87,7 @@ lemma Ideal.disjoint_nonZeroDivisors_of_mem_minimalPrimes {p : Ideal R} (hp : p 
   simp_rw [exists_prop, @and_comm (_ * _ = _), ← mul_comm x]
   exact Ideal.exists_mul_mem_of_mem_minimalPrimes hp hxp
 
-theorem Ideal.exists_comap_eq_of_mem_minimalPrimes_of_injective {f : R →+* S}
+@[stacks 00FK] theorem Ideal.exists_comap_eq_of_mem_minimalPrimes_of_injective {f : R →+* S}
     (hf : Function.Injective f) (p) (H : p ∈ minimalPrimes R) :
     ∃ p' : Ideal S, p'.IsPrime ∧ p'.comap f = p := by
   have := H.1.1

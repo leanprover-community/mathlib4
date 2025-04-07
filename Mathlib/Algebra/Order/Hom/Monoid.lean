@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.GroupWithZero.Hom
-import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Algebra.Order.GroupWithZero.Canonical
 import Mathlib.Algebra.Order.Monoid.Units
 import Mathlib.Order.Hom.Basic
@@ -244,7 +243,8 @@ end OrderedZero
 
 section OrderedAddCommGroup
 
-variable [OrderedAddCommGroup α] [OrderedAddCommMonoid β] [i : FunLike F α β]
+variable [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α]
+  [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β] [i : FunLike F α β]
 variable (f : F)
 
 theorem monotone_iff_map_nonneg [iamhc : AddMonoidHomClass F α β] :
@@ -265,8 +265,6 @@ theorem monotone_iff_map_nonpos : Monotone (f : α → β) ↔ ∀ a ≤ 0, f a 
 
 theorem antitone_iff_map_nonneg : Antitone (f : α → β) ↔ ∀ a ≤ 0, 0 ≤ f a :=
   monotone_comp_ofDual_iff.symm.trans <| monotone_iff_map_nonneg (α := αᵒᵈ) (iamhc := iamhc) _
-
-variable [AddLeftStrictMono β]
 
 theorem strictMono_iff_map_pos :
     StrictMono (f : α → β) ↔ ∀ a, 0 < a → 0 < f a := by
@@ -453,36 +451,40 @@ end Preorder
 
 section Mul
 
-variable [OrderedCommMonoid α] [OrderedCommMonoid β] [OrderedCommMonoid γ]
+variable [CommMonoid α] [PartialOrder α]
+  [CommMonoid β] [PartialOrder β]
+  [CommMonoid γ] [PartialOrder γ]
 
 /-- For two ordered monoid morphisms `f` and `g`, their product is the ordered monoid morphism
 sending `a` to `f a * g a`. -/
 @[to_additive "For two ordered additive monoid morphisms `f` and `g`, their product is the ordered
 additive monoid morphism sending `a` to `f a + g a`."]
-instance : Mul (α →*o β) :=
+instance [IsOrderedMonoid β] : Mul (α →*o β) :=
   ⟨fun f g => { (f * g : α →* β) with monotone' := f.monotone'.mul' g.monotone' }⟩
 
 @[to_additive (attr := simp)]
-theorem coe_mul (f g : α →*o β) : ⇑(f * g) = f * g :=
+theorem coe_mul [IsOrderedMonoid β] (f g : α →*o β) : ⇑(f * g) = f * g :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem mul_apply (f g : α →*o β) (a : α) : (f * g) a = f a * g a :=
+theorem mul_apply [IsOrderedMonoid β] (f g : α →*o β) (a : α) : (f * g) a = f a * g a :=
   rfl
 
 @[to_additive]
-theorem mul_comp (g₁ g₂ : β →*o γ) (f : α →*o β) : (g₁ * g₂).comp f = g₁.comp f * g₂.comp f :=
+theorem mul_comp [IsOrderedMonoid γ] (g₁ g₂ : β →*o γ) (f : α →*o β) :
+    (g₁ * g₂).comp f = g₁.comp f * g₂.comp f :=
   rfl
 
 @[to_additive]
-theorem comp_mul (g : β →*o γ) (f₁ f₂ : α →*o β) : g.comp (f₁ * f₂) = g.comp f₁ * g.comp f₂ :=
+theorem comp_mul [IsOrderedMonoid β] [IsOrderedMonoid γ] (g : β →*o γ) (f₁ f₂ : α →*o β) :
+    g.comp (f₁ * f₂) = g.comp f₁ * g.comp f₂ :=
   ext fun _ => map_mul g _ _
 
 end Mul
 
 section OrderedCommMonoid
 
-variable {hα : OrderedCommMonoid α} {hβ : OrderedCommMonoid β}
+variable {_ : Preorder α} {_ : Preorder β} {_ : MulOneClass α} {_ : MulOneClass β}
 
 @[to_additive (attr := simp)]
 theorem toMonoidHom_eq_coe (f : α →*o β) : f.toMonoidHom = f :=
@@ -496,7 +498,7 @@ end OrderedCommMonoid
 
 section OrderedCommGroup
 
-variable {hα : OrderedCommGroup α} {hβ : OrderedCommGroup β}
+variable {_ : CommGroup α} {_ : PartialOrder α} {_ : CommGroup β} {_ : PartialOrder β}
 
 /-- Makes an ordered group homomorphism from a proof that the map preserves multiplication. -/
 @[to_additive
@@ -661,7 +663,7 @@ end Preorder
 
 section OrderedCommGroup
 
-variable {hα : OrderedCommGroup α} {hβ : OrderedCommGroup β}
+variable {_ : CommGroup α} {_ : PartialOrder α} {_ : CommGroup β} {_ : PartialOrder β}
 
 /-- Makes an ordered group isomorphism from a proof that the map preserves multiplication. -/
 @[to_additive

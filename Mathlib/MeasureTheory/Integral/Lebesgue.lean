@@ -800,6 +800,18 @@ theorem lintegral_indicator_one {s : Set α} (hs : MeasurableSet s) :
     ∫⁻ a, s.indicator 1 a ∂μ = μ s :=
   (lintegral_indicator_const hs _).trans <| one_mul _
 
+theorem Measure.ext_iff_lintegral (ν : Measure α) :
+    μ = ν ↔ ∀ f : α → ℝ≥0∞, Measurable f → ∫⁻ a, f a ∂μ = ∫⁻ a, f a ∂ν := by
+  refine ⟨fun h _ _ ↦ by rw [h], ?_⟩
+  intro h
+  ext s hs
+  simp only [← lintegral_indicator_one hs]
+  exact h (s.indicator 1) ((measurable_indicator_const_iff 1).mpr hs)
+
+theorem Measure.ext_of_lintegral (ν : Measure α)
+    (hμν : ∀ f : α → ℝ≥0∞, Measurable f → ∫⁻ a, f a ∂μ = ∫⁻ a, f a ∂ν) : μ = ν :=
+  (μ.ext_iff_lintegral ν).mpr hμν
+
 /-- A version of **Markov's inequality** for two functions. It doesn't follow from the standard
 Markov's inequality because we only assume measurability of `g`, not `f`. -/
 theorem lintegral_add_mul_meas_add_le_le_lintegral {f g : α → ℝ≥0∞} (hle : f ≤ᵐ[μ] g)
@@ -1376,12 +1388,14 @@ theorem lintegral_map' {mβ : MeasurableSpace β} {f : β → ℝ≥0∞} {g : �
     _ = ∫⁻ a, hf.mk f (g a) ∂μ := lintegral_congr_ae <| hg.ae_eq_mk.symm.fun_comp _
     _ = ∫⁻ a, f (g a) ∂μ := lintegral_congr_ae (ae_eq_comp hg hf.ae_eq_mk.symm)
 
-theorem lintegral_map_le {mβ : MeasurableSpace β} (f : β → ℝ≥0∞) {g : α → β} (hg : Measurable g) :
+theorem lintegral_map_le {mβ : MeasurableSpace β} (f : β → ℝ≥0∞) (g : α → β) :
     ∫⁻ a, f a ∂Measure.map g μ ≤ ∫⁻ a, f (g a) ∂μ := by
-  rw [← iSup_lintegral_measurable_le_eq_lintegral, ← iSup_lintegral_measurable_le_eq_lintegral]
-  refine iSup₂_le fun i hi => iSup_le fun h'i => ?_
-  refine le_iSup₂_of_le (i ∘ g) (hi.comp hg) ?_
-  exact le_iSup_of_le (fun x => h'i (g x)) (le_of_eq (lintegral_map hi hg))
+  by_cases hg : AEMeasurable g μ
+  · rw [← iSup_lintegral_measurable_le_eq_lintegral]
+    refine iSup₂_le fun i hi => iSup_le fun h'i => ?_
+    rw [lintegral_map' hi.aemeasurable hg]
+    exact lintegral_mono fun _ ↦ h'i _
+  · simp [map_of_not_aemeasurable hg]
 
 theorem lintegral_comp [MeasurableSpace β] {f : β → ℝ≥0∞} {g : α → β} (hf : Measurable f)
     (hg : Measurable g) : lintegral μ (f ∘ g) = ∫⁻ a, f a ∂map g μ :=
@@ -1924,8 +1938,9 @@ theorem lintegral_le_of_forall_fin_meas_le [MeasurableSpace α] {μ : Measure α
 theorem SimpleFunc.exists_lt_lintegral_simpleFunc_of_lt_lintegral {m : MeasurableSpace α}
     {μ : Measure α} [SigmaFinite μ] {f : α →ₛ ℝ≥0} {L : ℝ≥0∞} (hL : L < ∫⁻ x, f x ∂μ) :
     ∃ g : α →ₛ ℝ≥0, (∀ x, g x ≤ f x) ∧ ∫⁻ x, g x ∂μ < ∞ ∧ L < ∫⁻ x, g x ∂μ := by
-  induction' f using MeasureTheory.SimpleFunc.induction with c s hs f₁ f₂ _ h₁ h₂ generalizing L
-  · simp only [hs, const_zero, coe_piecewise, coe_const, SimpleFunc.coe_zero, univ_inter,
+  induction f using MeasureTheory.SimpleFunc.induction generalizing L with
+  | @const c s hs =>
+    simp only [hs, const_zero, coe_piecewise, coe_const, SimpleFunc.coe_zero, univ_inter,
       piecewise_eq_indicator, lintegral_indicator, lintegral_const, Measure.restrict_apply',
       ENNReal.coe_indicator, Function.const_apply] at hL
     have c_ne_zero : c ≠ 0 := by
@@ -1950,7 +1965,8 @@ theorem SimpleFunc.exists_lt_lintegral_simpleFunc_of_lt_lintegral {m : Measurabl
       rwa [mul_comm, ← ENNReal.div_lt_iff]
       · simp only [c_ne_zero, Ne, ENNReal.coe_eq_zero, not_false_iff, true_or]
       · simp only [Ne, coe_ne_top, not_false_iff, true_or]
-  · replace hL : L < ∫⁻ x, f₁ x ∂μ + ∫⁻ x, f₂ x ∂μ := by
+  | @add f₁ f₂ _ h₁ h₂ =>
+    replace hL : L < ∫⁻ x, f₁ x ∂μ + ∫⁻ x, f₂ x ∂μ := by
       rwa [← lintegral_add_left f₁.measurable.coe_nnreal_ennreal]
     by_cases hf₁ : ∫⁻ x, f₁ x ∂μ = 0
     · simp only [hf₁, zero_add] at hL

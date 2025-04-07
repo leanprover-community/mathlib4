@@ -413,7 +413,6 @@ lemma set_range_inclusion' {X : TopCat} (U : Opens X) :
     exact x.2
   · intro h
     exact ⟨⟨x, h⟩, rfl⟩
-@[deprecated (since := "2024-09-07")] alias set_range_forget_map_inclusion' := set_range_inclusion'
 
 @[simp]
 theorem functor_map_eq_inf {X : TopCat} (U V : Opens X) :

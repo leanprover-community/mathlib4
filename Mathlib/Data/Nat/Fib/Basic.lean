@@ -240,7 +240,7 @@ theorem fib_gcd (m n : ℕ) : fib (gcd m n) = gcd (fib m) (fib n) := by
     rwa [gcd_fib_add_mul_self m (n % m) (n / m), gcd_comm (fib m) _]
 
 theorem fib_dvd (m n : ℕ) (h : m ∣ n) : fib m ∣ fib n := by
-  rwa [gcd_eq_left_iff_dvd, ← fib_gcd, gcd_eq_left_iff_dvd.mp]
+  rwa [← gcd_eq_left_iff_dvd, ← fib_gcd, gcd_eq_left_iff_dvd.mpr]
 
 theorem fib_succ_eq_sum_choose :
     ∀ n : ℕ, fib (n + 1) = ∑ p ∈ Finset.antidiagonal n, choose p.1 p.2 :=

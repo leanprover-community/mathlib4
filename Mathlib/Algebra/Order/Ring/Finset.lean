@@ -16,7 +16,7 @@ namespace Nat
 variable {ι R : Type*}
 
 section LinearOrderedSemiring
-variable [LinearOrderedSemiring R] {s : Finset ι}
+variable [Semiring R] [LinearOrder R] [IsStrictOrderedRing R] {s : Finset ι}
 
 set_option linter.docPrime false in
 @[simp, norm_cast]
