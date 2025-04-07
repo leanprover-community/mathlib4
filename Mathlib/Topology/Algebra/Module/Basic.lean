@@ -102,7 +102,7 @@ lemma TopologicalSpace.IsSeparable.span {R M : Type*} [AddCommMonoid M] [Semirin
     [TopologicalSpace M] [TopologicalSpace R] [SeparableSpace R]
     [ContinuousAdd M] [ContinuousSMul R M] {s : Set M} (hs : IsSeparable s) :
     IsSeparable (Submodule.span R s : Set M) := by
-  rw [span_eq_iUnion_nat]
+  rw [Submodule.span_eq_iUnion_nat]
   refine .iUnion fun n ↦ .image ?_ ?_
   · have : IsSeparable {f : Fin n → R × M | ∀ (i : Fin n), f i ∈ Set.univ ×ˢ s} := by
       apply isSeparable_pi (fun i ↦ .prod (.of_separableSpace Set.univ) hs)
