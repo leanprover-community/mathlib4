@@ -510,26 +510,26 @@ lemma excenter_singleton_mem_affineSpan_range (hn : 1 < n) (i : Fin (n + 1)) :
   (s.excenterExists_singleton hn i).excenter_mem_affineSpan_range
 
 variable {s} in
-lemma ExcenterExists.signedDist_excenter_eq_mul_sum_inv {signs : Finset (Fin (n + 1))}
+lemma ExcenterExists.signedInfDist_excenter_eq_mul_sum_inv {signs : Finset (Fin (n + 1))}
     (h : s.ExcenterExists signs) (i : Fin (n + 1)) :
-    s.signedDist i (s.excenter signs) =
+    s.signedInfDist i (s.excenter signs) =
       (if i ∈ signs then -1 else 1) * (∑ j, s.excenterWeightsUnnorm signs j)⁻¹ := by
   simp_rw [excenter_eq_affineCombination,
-    signedDist_affineCombination _ _ h.sum_excenterWeights_eq_one, excenterWeights, Pi.smul_apply,
-    ← dist_eq_norm_vsub, excenterWeightsUnnorm]
+    signedInfDist_affineCombination _ _ h.sum_excenterWeights_eq_one, excenterWeights,
+    Pi.smul_apply, ← dist_eq_norm_vsub, excenterWeightsUnnorm]
   simp
 
 variable {s} in
-lemma ExcenterExists.signedDist_excenter {signs : Finset (Fin (n + 1))} (h : s.ExcenterExists signs)
-    (i : Fin (n + 1)) :
-    s.signedDist i (s.excenter signs) = (if i ∈ signs then -1 else 1) *
+lemma ExcenterExists.signedInfDist_excenter {signs : Finset (Fin (n + 1))}
+    (h : s.ExcenterExists signs) (i : Fin (n + 1)) :
+    s.signedInfDist i (s.excenter signs) = (if i ∈ signs then -1 else 1) *
       SignType.sign (∑ j, s.excenterWeightsUnnorm signs j) * (s.exradius signs) := by
-  rw [h.signedDist_excenter_eq_mul_sum_inv, mul_assoc, exradius_eq_abs_inv_sum]
+  rw [h.signedInfDist_excenter_eq_mul_sum_inv, mul_assoc, exradius_eq_abs_inv_sum]
   congr
   rw [← mul_eq_one_iff_inv_eq₀ h, ← mul_assoc, self_mul_sign, ← abs_mul, mul_inv_cancel₀ h, abs_one]
 
-lemma signedDist_incenter (i : Fin (n + 1)) : s.signedDist i s.incenter = s.inradius := by
-  rw [incenter, exsphere_center, s.excenterExists_empty.signedDist_excenter]
+lemma signedInfDist_incenter (i : Fin (n + 1)) : s.signedInfDist i s.incenter = s.inradius := by
+  rw [incenter, exsphere_center, s.excenterExists_empty.signedInfDist_excenter]
   simp [sum_excenterWeightsUnnorm_empty_pos]
 
 variable {s} in
@@ -537,17 +537,17 @@ lemma ExcenterExists.dist_excenter {signs : Finset (Fin (n + 1))} (h : s.Excente
     (i : Fin (n + 1)) : dist (s.excenter signs) (orthogonalProjection
       (affineSpan ℝ (Set.range (s.faceOpposite i).points)) (s.excenter signs)) =
       s.exradius signs := by
-  rw [← abs_signedDist_eq_dist_of_mem_affineSpan_range i h.excenter_mem_affineSpan_range,
-    h.signedDist_excenter, abs_mul, abs_mul, abs_of_nonneg (s.exradius_nonneg signs)]
+  rw [← abs_signedInfDist_eq_dist_of_mem_affineSpan_range i h.excenter_mem_affineSpan_range,
+    h.signedInfDist_excenter, abs_mul, abs_mul, abs_of_nonneg (s.exradius_nonneg signs)]
   simp only [abs_ite, abs_neg, abs_one, ite_self, one_mul]
   rcases lt_trichotomy 0 (∑ i, s.excenterWeightsUnnorm signs i) with h' | h' | h'
   · simp [h']
   · simp [h h'.symm]
   · simp [h']
 
-lemma exists_forall_signedDist_eq_iff_excenterExists_and_eq_excenter {p : P}
+lemma exists_forall_signedInfDist_eq_iff_excenterExists_and_eq_excenter {p : P}
     (hp : p ∈ affineSpan ℝ (Set.range s.points)) {signs : Finset (Fin (n + 1))} :
-    (∃ r : ℝ, ∀ i, s.signedDist i p = (if i ∈ signs then -1 else 1) * r) ↔
+    (∃ r : ℝ, ∀ i, s.signedInfDist i p = (if i ∈ signs then -1 else 1) * r) ↔
       s.ExcenterExists signs ∧ p = s.excenter signs := by
   refine ⟨?_, ?_⟩
   · rintro ⟨r, h⟩
@@ -556,7 +556,7 @@ lemma exists_forall_signedDist_eq_iff_excenterExists_and_eq_excenter {p : P}
         orthogonalProjection (affineSpan ℝ (Set.range (s.faceOpposite i).points)) (s.points i)‖ =
           (if i ∈ signs then -1 else 1) * r := by
       intro i
-      rw [← s.signedDist_affineCombination i h1]
+      rw [← s.signedInfDist_affineCombination i h1]
       exact h i
     simp_rw [← dist_eq_norm_vsub] at h'
     have h'' : ∀ i, w i = r * s.excenterWeightsUnnorm signs i := by
@@ -578,13 +578,13 @@ lemma exists_forall_signedDist_eq_iff_excenterExists_and_eq_excenter {p : P}
     exact ⟨s.sum_excenterWeights_eq_one_iff.1 h1, rfl⟩
   · rintro ⟨h, rfl⟩
     refine ⟨SignType.sign (∑ j, s.excenterWeightsUnnorm signs j) * (s.exradius signs), fun i ↦ ?_⟩
-    rw [h.signedDist_excenter]
+    rw [h.signedInfDist_excenter]
     simp
 
-lemma exists_forall_signedDist_eq_iff_eq_incenter {p : P}
+lemma exists_forall_signedInfDist_eq_iff_eq_incenter {p : P}
     (hp : p ∈ affineSpan ℝ (Set.range s.points)) :
-    (∃ r : ℝ, ∀ i, s.signedDist i p = r) ↔ p = s.incenter := by
-  convert s.exists_forall_signedDist_eq_iff_excenterExists_and_eq_excenter hp (signs := ∅)
+    (∃ r : ℝ, ∀ i, s.signedInfDist i p = r) ↔ p = s.incenter := by
+  convert s.exists_forall_signedInfDist_eq_iff_excenterExists_and_eq_excenter hp (signs := ∅)
   · simp
   · simp [excenterExists_empty]
 
@@ -593,13 +593,13 @@ lemma exists_forall_dist_eq_iff_exists_excenterExists_and_eq_excenter {p : P}
     (∃ r : ℝ, ∀ i, dist p (orthogonalProjection
       (affineSpan ℝ (Set.range (s.faceOpposite i).points)) p) = r) ↔
       ∃ signs, s.ExcenterExists signs ∧ p = s.excenter signs := by
-  simp_rw [← abs_signedDist_eq_dist_of_mem_affineSpan_range _ hp]
+  simp_rw [← abs_signedInfDist_eq_dist_of_mem_affineSpan_range _ hp]
   refine ⟨?_, ?_⟩
   · rintro ⟨r, h⟩
-    have h' : ∀ i, s.signedDist i p = r ∨ s.signedDist i p = -r :=
+    have h' : ∀ i, s.signedInfDist i p = r ∨ s.signedInfDist i p = -r :=
       fun i ↦ eq_or_eq_neg_of_abs_eq (h i)
-    refine ⟨{i ∈ (Finset.univ : Finset (Fin (n + 1))) | s.signedDist i p = -r}, ?_⟩
-    apply (s.exists_forall_signedDist_eq_iff_excenterExists_and_eq_excenter hp).1
+    refine ⟨{i ∈ (Finset.univ : Finset (Fin (n + 1))) | s.signedInfDist i p = -r}, ?_⟩
+    apply (s.exists_forall_signedInfDist_eq_iff_excenterExists_and_eq_excenter hp).1
     refine ⟨r, ?_⟩
     simp only [Set.mem_setOf_eq, ite_mul, neg_mul, one_mul]
     intro i
@@ -608,7 +608,7 @@ lemma exists_forall_dist_eq_iff_exists_excenterExists_and_eq_excenter {p : P}
     · simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hi
       simpa [hi] using h' i
   · rintro ⟨signs, h⟩
-    replace h := (s.exists_forall_signedDist_eq_iff_excenterExists_and_eq_excenter hp).2 h
+    replace h := (s.exists_forall_signedInfDist_eq_iff_excenterExists_and_eq_excenter hp).2 h
     rcases h with ⟨r, h⟩
     refine ⟨|r|, ?_⟩
     simp [h, abs_ite]
