@@ -9,6 +9,7 @@ import Mathlib.Data.Nat.BinaryRec
 import Mathlib.Logic.Function.Defs
 import Mathlib.Tactic.Simps.Basic
 import Mathlib.Tactic.OfNat
+import Mathlib.Tactic.Basic
 import Batteries.Logic
 
 /-!
@@ -228,7 +229,7 @@ end CommMagma
 class LeftCancelSemigroup (G : Type u) extends Semigroup G where
   protected mul_left_cancel : ∀ a b c : G, a * b = a * c → b = c
 
-library_note "lower cancel priority" /--
+library_note2 lowerCancelPriority /--
 We lower the priority of inheriting from cancellative structures.
 This attempts to avoid expensive checks involving bundling and unbundling with the `IsDomain` class.
 since `IsDomain` already depends on `Semiring`, we can synthesize that one first.
@@ -349,7 +350,7 @@ include hn ha
 
 end
 
-library_note "forgetful inheritance"/--
+library_note2 forgetfulInheritance /--
 Suppose that one can put two mathematical structures on a type, a rich one `R` and a poor one
 `P`, and that one can deduce the poor structure from the rich structure through a map `F` (called a
 forgetful functor) (think `R = MetricSpace` and `P = TopologicalSpace`). A possible

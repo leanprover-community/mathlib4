@@ -193,7 +193,7 @@ instance OneHom.funLike : FunLike (OneHom M N) M N where
 instance OneHom.oneHomClass : OneHomClass (OneHom M N) M N where
   map_one := OneHom.map_one'
 
-library_note "low priority simp lemmas"
+library_note2 lowPrioritySimpLemmas
 /--
 The hom class hierarchy allows for a single lemma, such as `map_one`, to apply to a large variety
 of morphism types, so long as they have an instance of `OneHomClass`. For example, this applies to
