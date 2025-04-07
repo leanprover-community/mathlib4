@@ -399,7 +399,7 @@ theorem not_cliqueFree_of_infinite [Infinite ι] (f : ∀ (i : ι), V i) :
   fun hf ↦ not_cliqueFree_of_top_embedding (topEmbedding V f |>.comp
             <| Embedding.completeGraph <| Fin.valEmbedding.trans <| Infinite.natEmbedding ι) hf
 
-theorem not_cliqueFree_of_le_eNatCard (f : ∀ (i : ι), V i) (hc : n ≤ ENat.card ι) :
+theorem not_cliqueFree_of_le_enatCard (f : ∀ (i : ι), V i) (hc : n ≤ ENat.card ι) :
     ¬ (completeMultipartiteGraph V).CliqueFree n := by
   by_cases h : Infinite ι
   · exact not_cliqueFree_of_infinite V f
