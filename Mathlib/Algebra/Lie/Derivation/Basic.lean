@@ -106,9 +106,9 @@ lemma apply_lie_eq_add (D : LieDerivation R L L) (a b : L) :
 /-- Two Lie derivations equal on a set are equal on its Lie span. -/
 theorem eqOn_lieSpan {s : Set L} (h : Set.EqOn D1 D2 s) :
     Set.EqOn D1 D2 (LieSubalgebra.lieSpan R L s) := by
-  intro x hx
+  intro _ hx
   refine LieSubalgebra.lieSpan_induction (R := R) (L := L) ?_ ?_ ?_ ?_ ?_ hx
-  · intro x hx
+  · intro _ hx
     exact h hx
   · simp only [map_zero]
   · intro _ _ _ _ hx hy
