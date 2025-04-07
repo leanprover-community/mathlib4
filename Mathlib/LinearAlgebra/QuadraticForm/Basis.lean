@@ -73,15 +73,12 @@ theorem sum_repr_sq_add_sum_repr_mul_polar (Q : QuadraticMap R M N) (bm : Basis 
 -- g = bm
 -- l = (bm.repr x)
 -- (p.map l).mul • polarSym2 Q (p.map g)
-/-
+
 theorem basis_expansion (Q : QuadraticMap R M N) (bm : Basis ι R M) (x : M) :
-    Q x = ((bm.repr x).sum fun i r => (r * r) • Q (bm i)) +
+    Q x = linearCombination R (Q ∘ bm) (bm.repr x * bm.repr x) +
     ∑ p ∈ (bm.repr x).support.sym2 with ¬ p.IsDiag,
       (p.map (bm.repr x)).mul • polarSym2 Q (p.map bm) := by
-
-  --simp_rw [sum_repr_sq_add_sum_repr_mul_polar]
-  --rw [← apply_linearCombination, Basis.linearCombination_repr]
--/
+  rw [← apply_linearCombination, Basis.linearCombination_repr]
 
 end Finsupp
 
@@ -299,10 +296,10 @@ theorem test [LinearOrder (M₁ × M₂)] :
     let g := fun (i : (M₁ × M₂)) => i.1 ⊗ₜ[R] i.2
     let l := Finsupp.mk S (Set.indicator S.toSet (fun _ => (1 : A))) (fun _ => by simp)
     Q (Finsupp.linearCombination A g l) =
-      (l.sum fun i r => (r * r) • Q (g i)) +
+      Finsupp.linearCombination A (Q ∘ g) (l * l)
+      +
       ∑ p ∈ l.support.sym2 with ¬ p.IsDiag, (p.map l).mul • polarSym2 Q (p.map g) := by
   simp_rw [apply_linearCombination]
-  sorry
 
 end uniqueness
 
@@ -444,8 +441,8 @@ lemma tensorDistriFree_polar2 (i₁ j₁ : ι₁) (i₂ j₂ : ι₂) (h₁ : i�
 
 
 /--
--Lift the polar (Basis)
---/
+Lift the polar (Basis)
+-/
 noncomputable def polar_lift (Q : QuadraticMap A (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂))
   (bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂)) (x : M₁ ⊗[R] M₂) (p : Sym2 (ι₁ × ι₂)) :=
   (p.map (bm.repr x)).mul • polarSym2 Q (p.map bm) -- polar_lift_lc Q bm (bm.repr x)
@@ -468,10 +465,8 @@ lemma polar_lift_eq_polarnn_lift_on_symOffDiagUpper
   simp only [Sym2.map_pair_eq, Sym2.mul_mk, polarSym2_sym2Mk]
   rw [Basis.tensorProduct_apply, Basis.tensorProduct_apply]
   rcases h2 with ⟨c1,c2⟩ | ⟨c3, c4⟩
-  · rw [tensorDistriFree_polar11 bm₁ Q₁ bm₂ Q₂ _ _ _ _ c1 c2]
-    sorry
-  · rw [tensorDistriFree_polar22 _ _ _ _ _ _ _ _ c3 c4]
-    sorry
+  · rw [tensorDistriFree_polar11 bm₁ Q₁ bm₂ Q₂ _ _ _ _ c1 c2, ← smul_eq_mul, smul_assoc]
+  · rw [tensorDistriFree_polar22 _ _ _ _ _ _ _ _ c3 c4, ← smul_eq_mul, smul_assoc]
 
 lemma polar_lift_eq_zero_on_symOffDiagLower
     (s : Finset (Sym2 (ι₁ × ι₂))) (x : M₁ ⊗[R] M₂) (p : Sym2 (ι₁ × ι₂))
@@ -531,9 +526,8 @@ lemma polar_lift_eq_polarleft_lift_on_symOffDiagLeft_lc (g₁ : ι₁ → M₁ )
   obtain ⟨left, right⟩ := h
   subst e1
   simp_all only [Basis.tensorProduct_apply]
-  rw [tensorDistriFree_left_self]
-  sorry
-  --rfl
+  rw [tensorDistriFree_left_self, ← smul_eq_mul, smul_assoc]
+  rfl
 
 lemma polar_lift_eq_polarleft_lift_on_symOffDiagLeft
     (s : Finset (Sym2 (ι₁ × ι₂))) (x : M₁ ⊗[R] M₂) (p : Sym2 (ι₁ × ι₂))
@@ -560,9 +554,9 @@ lemma polar_lift_eq_polarleft_lift_on_symOffDiagLeft
   obtain ⟨left, right⟩ := h
   subst e1
   simp_all only [Basis.tensorProduct_apply]
-  sorry
-  --rw [tensorDistriFree_polar1 _ _ _ _ _ _ _ _ rfl]
-  --rfl
+  simp only [Sym2.map_pair_eq, Sym2.mul_mk, Basis.tensorProduct_apply, polarSym2_sym2Mk]
+  rw [tensorDistriFree_polar1 _ _ _ _ _ _ _ _ rfl, ← smul_eq_mul, smul_assoc]
+  rfl
 
 
 lemma sum_left (x : M₁ ⊗[R] M₂) :
@@ -611,9 +605,9 @@ lemma polar_lift_eq_polarright_lift_on_symOffDiagRight
   obtain ⟨left, right⟩ := h
   subst e1
   simp_all only [Basis.tensorProduct_apply]
-  sorry
-  --rw [tensorDistriFree_polar2 _ _ _ _ _ _ _ _ rfl]
-  --rfl
+  simp only [Sym2.map_pair_eq, Sym2.mul_mk, Basis.tensorProduct_apply, polarSym2_sym2Mk]
+  rw [tensorDistriFree_polar2 _ _ _ _ _ _ _ _ rfl, ← smul_eq_mul, smul_assoc]
+  rfl
 
 lemma sum_right (x : M₁ ⊗[R] M₂) :
     let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
@@ -659,7 +653,8 @@ theorem pre_tensor_expansion (x : M₁ ⊗[R] M₂) :
     let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
     -- (Finsupp.linearCombination R (⇑Q ∘ ⇑bm)) (bm.repr x * bm.repr x)
     let s := (bm.repr x).support.sym2
-    ((bm.repr x).sum fun i r => (r * r) • (Q₁ (bm₁ i.1) ⊗ₜ[R] Q₂ (bm₂ i.2)))
+    --((bm.repr x).sum fun i r => (r * r) • (Q₁ (bm₁ i.1) ⊗ₜ[R] Q₂ (bm₂ i.2)))
+    (Finsupp.linearCombination A (Q ∘ bm)) (bm.repr x * bm.repr x)
       + (∑ p ∈ s with symOffDiagLeft p, polar_lift Q bm x p)
       + (∑ p ∈ s with symOffDiagRight p, polar_lift Q bm x p)
       + (∑ p ∈ s with symOffDiagUpper p, polar_lift Q bm x p)
@@ -667,11 +662,12 @@ theorem pre_tensor_expansion (x : M₁ ⊗[R] M₂) :
   let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
   let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
   let s := (bm.repr x).support.sym2
-  simp_rw [sum_repr_sq_add_sum_repr_mul_polar]
-  --simp_rw [basis_expansion Q bm x]
+  intro Q_1 bm_1 s_1
+  simp_all only [Q_1, bm_1, s_1]
+  rw [basis_expansion Q bm x]
   have e1 (i : ι₁ × ι₂) : Q₁ (bm₁ i.1) ⊗ₜ Q₂ (bm₂ i.2) = Q (bm i) := by
     rw [Basis.tensorProduct_apply, tensorDistriFree_tmul]
-  simp_rw [e1]
+  --simp_rw [e1]
   simp_rw [polar_lift]
   simp_rw [← sum_on_left_right_upper_lower]
   abel
@@ -680,7 +676,7 @@ theorem tensor_expansion (x : M₁ ⊗[R] M₂) :
     let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
     let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
     let s := (bm.repr x).support.sym2
-    ((bm.repr x).sum fun i r => (r * r) • (Q₁ (bm₁ i.1) ⊗ₜ[R] Q₂ (bm₂ i.2)))
+    (Finsupp.linearCombination A (Q ∘ bm)) (bm.repr x * bm.repr x)
       + (∑ p ∈ s with symOffDiagLeft p, polar_left_lift bm₁ Q₁ bm₂ Q₂ x p)
       + (∑ p ∈ s with symOffDiagRight p, polar_right_lift bm₁ Q₁ bm₂ Q₂ x p)
       + (∑ p ∈ s with symOffDiagUpper p, polarnn_lift bm₁ Q₁ bm₂ Q₂ x p) = Q x := by
