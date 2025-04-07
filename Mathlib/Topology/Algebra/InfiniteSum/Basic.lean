@@ -620,4 +620,7 @@ lemma hasProd_zero_of_exists_eq_zero (hf : ∃ b, f b = 0) : HasProd f 0 := by
 lemma multipliable_of_exists_eq_zero (hf : ∃ b, f b = 0) : Multipliable f :=
   ⟨0, hasProd_zero_of_exists_eq_zero hf⟩
 
+lemma tprod_of_exists_eq_zero [T2Space α] (hf : ∃ b, f b = 0) : ∏' b, f b = 0 :=
+  (hasProd_zero_of_exists_eq_zero hf).tprod_eq
+
 end CommMonoidWithZero
