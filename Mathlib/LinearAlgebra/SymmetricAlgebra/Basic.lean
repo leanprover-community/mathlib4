@@ -84,7 +84,7 @@ variable {R L} {A : Type*} [CommSemiring A] [Algebra R A] (f : L →ₗ[R] A)
 
 /-- For any linear map `f : L →ₗ[R] A`, `SymmetricAlgebra.lift f` lifts the linear map to an
 R-algebra homomorphism from `SymmetricAlgebra R L` to `A`. -/
-def lift : (SymmetricAlgebra R L) →ₐ[R] A :=
+def lift : SymmetricAlgebra R L →ₐ[R] A :=
   RingQuot.liftAlgHom R (s := SymRel R L) ⟨TensorAlgebra.lift R f, fun _ _ r ↦ by
     induction r with | mul_comm x y => simp [mul_comm]⟩
 
