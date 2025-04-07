@@ -169,10 +169,8 @@ theorem covolume_div_covolume_eq_relindex' {E : Type*} [NormedAddCommGroup E]
     (EuclideanSpace.volume_preserving_measurableEquiv _).symm
   rw [← covolume_comap L₁ volume volume hf, ← covolume_comap L₂ volume volume hf,
     covolume_div_covolume_eq_relindex _ _ (fun _ h' ↦ h h'), ZLattice.comap_toAddSubgroup,
-    ZLattice.comap_toAddSubgroup, Nat.cast_inj]
-  have : f.toLinearEquiv.toLinearMap.toAddMonoidHom =
-     f.toLinearEquiv.toAddEquiv.toAddMonoidHom := rfl
-  rw [this, AddSubgroup.comap_equiv_eq_map_symm', AddSubgroup.comap_equiv_eq_map_symm',
+    ZLattice.comap_toAddSubgroup, Nat.cast_inj, LinearEquiv.toAddMonoidHom_commutes,
+    AddSubgroup.comap_equiv_eq_map_symm', AddSubgroup.comap_equiv_eq_map_symm',
     AddSubgroup.relindex_map_map_of_injective _ _ f.symm.injective]
 
 theorem volume_image_eq_volume_div_covolume {ι : Type*} [Fintype ι] [DecidableEq ι]
