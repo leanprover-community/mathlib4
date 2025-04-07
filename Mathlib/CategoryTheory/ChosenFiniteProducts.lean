@@ -639,7 +639,7 @@ def inr (X Y : C) : Y ⟶ X ⊕ₒ Y :=
   letI F : Limits.BinaryCofan X Y := (coproduct X Y).cocone
   F.inr
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 lemma inl_desc {T X Y : C} (f : X ⟶ T) (g : Y ⟶ T) : inl X Y ≫ desc f g = f := by
   simp [inl, desc]
 
