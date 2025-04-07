@@ -24,7 +24,7 @@ Criteria for tightness of sets of measures in normed and inner product spaces.
 
 open Filter
 
-open scoped Topology ENNReal
+open scoped Topology ENNReal InnerProductSpace
 
 namespace MeasureTheory
 
@@ -88,10 +88,8 @@ section InnerProductSpace
 
 variable {𝕜 ι : Type*} [RCLike 𝕜] [Fintype ι] [InnerProductSpace 𝕜 E] [FiniteDimensional 𝕜 E]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
-
 lemma isTightMeasureSet_of_forall_basis_tendsto (b : OrthonormalBasis ι 𝕜 E)
-    (h : ∀ i, Tendsto (fun r : ℝ ↦ ⨆ μ ∈ S, μ {x | r < ‖⟪b i, x⟫‖}) atTop (𝓝 0)) :
+    (h : ∀ i, Tendsto (fun r : ℝ ↦ ⨆ μ ∈ S, μ {x | r < ‖⟪b i, x⟫_𝕜‖}) atTop (𝓝 0)) :
     IsTightMeasureSet S := by
   rcases subsingleton_or_nontrivial E with hE | hE
   · simp only [IsTightMeasureSet, cocompact_eq_bot, smallSets_bot]
@@ -103,32 +101,32 @@ lemma isTightMeasureSet_of_forall_basis_tendsto (b : OrthonormalBasis ι 𝕜 E)
   have : ProperSpace E := FiniteDimensional.proper 𝕜 E
   refine isTightMeasureSet_of_tendsto_measure_norm_gt ?_
   have h_le : (fun r ↦ ⨆ μ ∈ S, μ {x | r < ‖x‖})
-      ≤ fun r ↦ ∑ i, ⨆ μ ∈ S, μ {x | r / √(Fintype.card ι) < ‖⟪b i, x⟫‖} := by
+      ≤ fun r ↦ ∑ i, ⨆ μ ∈ S, μ {x | r / √(Fintype.card ι) < ‖⟪b i, x⟫_𝕜‖} := by
     intro r
     calc ⨆ μ ∈ S, μ {x | r < ‖x‖}
-    _ ≤ ⨆ μ ∈ S, μ (⋃ i, {x : E | r / √(Fintype.card ι) < ‖⟪b i, x⟫‖}) := by
+    _ ≤ ⨆ μ ∈ S, μ (⋃ i, {x : E | r / √(Fintype.card ι) < ‖⟪b i, x⟫_𝕜‖}) := by
       gcongr with μ hμS
       intro x hx
       simp only [Set.mem_setOf_eq, Set.mem_iUnion] at hx ⊢
-      have hx' : r < √(Fintype.card ι) * ⨆ i, ‖⟪b i, x⟫‖ :=
+      have hx' : r < √(Fintype.card ι) * ⨆ i, ‖⟪b i, x⟫_𝕜‖ :=
         hx.trans_le (b.norm_le_card_mul_iSup_norm_inner x)
       rw [← div_lt_iff₀' (by positivity)] at hx'
       by_contra! h_le
       exact lt_irrefl (r / √(Fintype.card ι)) (hx'.trans_le (ciSup_le h_le))
-    _ ≤ ⨆ μ ∈ S, ∑ i, μ {x : E | r / √(Fintype.card ι) < ‖⟪b i, x⟫‖} := by
+    _ ≤ ⨆ μ ∈ S, ∑ i, μ {x : E | r / √(Fintype.card ι) < ‖⟪b i, x⟫_𝕜‖} := by
       gcongr with μ hμS
       exact measure_iUnion_fintype_le μ _
-    _ ≤ ∑ i, ⨆ μ ∈ S, μ {x | r / √(Fintype.card ι) < ‖⟪b i, x⟫‖} := by
+    _ ≤ ∑ i, ⨆ μ ∈ S, μ {x | r / √(Fintype.card ι) < ‖⟪b i, x⟫_𝕜‖} := by
       refine iSup_le fun μ ↦ (iSup_le fun hμS ↦ ?_)
       gcongr with i
-      exact le_biSup (fun μ ↦ μ {x | r / √(Fintype.card ι) < ‖⟪b i, x⟫‖}) hμS
+      exact le_biSup (fun μ ↦ μ {x | r / √(Fintype.card ι) < ‖⟪b i, x⟫_𝕜‖}) hμS
   refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds ?_ (fun _ ↦ zero_le') h_le
   rw [← Finset.sum_const_zero]
   refine tendsto_finset_sum Finset.univ fun i _ ↦ (h i).comp ?_
   exact tendsto_id.atTop_div_const (by positivity)
 
 lemma isTightMeasureSet_of_inner_tendsto
-    (h : ∀ y, Tendsto (fun r : ℝ ↦ ⨆ μ ∈ S, μ {x | r < ‖⟪y, x⟫‖}) atTop (𝓝 0)) :
+    (h : ∀ y, Tendsto (fun r : ℝ ↦ ⨆ μ ∈ S, μ {x | r < ‖⟪y, x⟫_𝕜‖}) atTop (𝓝 0)) :
     IsTightMeasureSet S :=
   isTightMeasureSet_of_forall_basis_tendsto (stdOrthonormalBasis 𝕜 E)
     fun i ↦ h (stdOrthonormalBasis 𝕜 E i)
@@ -139,7 +137,7 @@ a set of measures `S` is tight if and only if the function `r ↦ ⨆ μ ∈ S, 
 tends to `0` at infinity for all `y`. -/
 lemma isTightMeasureSet_iff_inner_tendsto :
     IsTightMeasureSet S
-      ↔ ∀ y, Tendsto (fun r : ℝ ↦ ⨆ μ ∈ S, μ {x | r < ‖⟪y, x⟫‖}) atTop (𝓝 0) := by
+      ↔ ∀ y, Tendsto (fun r : ℝ ↦ ⨆ μ ∈ S, μ {x | r < ‖⟪y, x⟫_𝕜‖}) atTop (𝓝 0) := by
   refine ⟨fun h y ↦ ?_, isTightMeasureSet_of_inner_tendsto⟩
   have : ProperSpace E := FiniteDimensional.proper 𝕜 E
   rw [isTightMeasureSet_iff_tendsto_measure_norm_gt] at h
@@ -152,7 +150,7 @@ lemma isTightMeasureSet_iff_inner_tendsto :
     h.comp <| (tendsto_mul_const_atTop_of_pos (by positivity)).mpr tendsto_id
   refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds h' (fun _ ↦ zero_le') ?_
   intro r
-  have h_le (μ : Measure E) : μ {x | r < ‖⟪y, x⟫‖} ≤ μ {x | r * ‖y‖⁻¹ < ‖x‖} := by
+  have h_le (μ : Measure E) : μ {x | r < ‖⟪y, x⟫_𝕜‖} ≤ μ {x | r * ‖y‖⁻¹ < ‖x‖} := by
     refine measure_mono fun x hx ↦ ?_
     simp only [Set.mem_setOf_eq] at hx ⊢
     rw [mul_inv_lt_iff₀]
