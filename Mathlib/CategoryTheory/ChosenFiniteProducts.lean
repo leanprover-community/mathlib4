@@ -643,7 +643,7 @@ def inr (X Y : C) : Y ⟶ X ⊕ₒ Y :=
 lemma inl_desc {T X Y : C} (f : X ⟶ T) (g : Y ⟶ T) : inl X Y ≫ desc f g = f := by
   simp [inl, desc]
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 lemma inr_desc {T X Y : C} (f : X ⟶ T) (g : Y ⟶ T) : inr X Y ≫ desc f g = g := by
   simp [inr, desc]
 
