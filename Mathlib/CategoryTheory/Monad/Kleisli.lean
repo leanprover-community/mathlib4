@@ -46,7 +46,6 @@ instance category : Category (Kleisli T) where
   id X := T.η.app X
   comp {_} {_} {Z} f g := f ≫ (T : C ⥤ C).map g ≫ T.μ.app Z
   id_comp {X} {Y} f := by
-    dsimp -- Porting note: unfold comp
     rw [← T.η.naturality_assoc f, T.left_unit]
     apply Category.comp_id
   assoc f g h := by

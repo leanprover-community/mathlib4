@@ -118,9 +118,11 @@ lemma isOpen_iff_of_cover {f : α → Set X} (ho : ∀ i, IsOpen (f i)) (hU : (�
 @[simp] theorem isOpen_empty : IsOpen (∅ : Set X) := by
   rw [← sUnion_empty]; exact isOpen_sUnion fun a => False.elim
 
-theorem Set.Finite.isOpen_sInter {s : Set (Set X)} (hs : s.Finite) :
-    (∀ t ∈ s, IsOpen t) → IsOpen (⋂₀ s) :=
-  Finite.induction_on _ hs (fun _ => by rw [sInter_empty]; exact isOpen_univ) fun _ _ ih h => by
+theorem Set.Finite.isOpen_sInter {s : Set (Set X)} (hs : s.Finite) (h : ∀ t ∈ s, IsOpen t) :
+    IsOpen (⋂₀ s) := by
+  induction s, hs using Set.Finite.induction_on with
+  | empty => rw [sInter_empty]; exact isOpen_univ
+  | insert _ _ ih =>
     simp only [sInter_insert, forall_mem_insert] at h ⊢
     exact h.1.inter (ih h.2)
 
@@ -280,8 +282,10 @@ theorem interior_inter : interior (s ∩ t) = interior s ∩ interior t :=
       isOpen_interior.inter isOpen_interior
 
 theorem Set.Finite.interior_biInter {ι : Type*} {s : Set ι} (hs : s.Finite) (f : ι → Set X) :
-    interior (⋂ i ∈ s, f i) = ⋂ i ∈ s, interior (f i) :=
-  hs.induction_on _ (by simp) <| by intros; simp [*]
+    interior (⋂ i ∈ s, f i) = ⋂ i ∈ s, interior (f i) := by
+  induction s, hs using Set.Finite.induction_on with
+  | empty => simp
+  | insert _ _ _ => simp [*]
 
 theorem Set.Finite.interior_sInter {S : Set (Set X)} (hS : S.Finite) :
     interior (⋂₀ S) = ⋂ s ∈ S, interior s := by
@@ -370,7 +374,7 @@ theorem Disjoint.closure_right (hd : Disjoint s t) (hs : IsOpen s) :
     Disjoint s (closure t) :=
   (hd.symm.closure_left hs).symm
 
-theorem IsClosed.closure_eq (h : IsClosed s) : closure s = s :=
+@[simp] theorem IsClosed.closure_eq (h : IsClosed s) : closure s = s :=
   Subset.antisymm (closure_minimal (Subset.refl s) h) subset_closure
 
 theorem IsClosed.closure_subset (hs : IsClosed s) : closure s ⊆ s :=
@@ -406,7 +410,6 @@ theorem closure_eq_iff_isClosed : closure s = s ↔ IsClosed s :=
 theorem closure_subset_iff_isClosed : closure s ⊆ s ↔ IsClosed s :=
   ⟨isClosed_of_closure_subset, IsClosed.closure_subset⟩
 
-@[simp]
 theorem closure_empty : closure (∅ : Set X) = ∅ :=
   isClosed_empty.closure_eq
 
@@ -420,11 +423,9 @@ theorem closure_nonempty_iff : (closure s).Nonempty ↔ s.Nonempty := by
 
 alias ⟨Set.Nonempty.of_closure, Set.Nonempty.closure⟩ := closure_nonempty_iff
 
-@[simp]
 theorem closure_univ : closure (univ : Set X) = univ :=
   isClosed_univ.closure_eq
 
-@[simp]
 theorem closure_closure : closure (closure s) = closure s :=
   isClosed_closure.closure_eq
 
@@ -911,9 +912,19 @@ theorem Filter.HasBasis.clusterPt_iff_frequently {ι} {p : ι → Prop} {s : ι 
   simp only [hx.clusterPt_iff F.basis_sets, Filter.frequently_iff, inter_comm (s _),
     Set.Nonempty, id, mem_inter_iff]
 
-theorem clusterPt_iff {F : Filter X} :
+theorem clusterPt_iff_frequently {F : Filter X} : ClusterPt x F ↔ ∀ s ∈ 𝓝 x, ∃ᶠ y in F, y ∈ s :=
+  (𝓝 x).basis_sets.clusterPt_iff_frequently
+
+theorem ClusterPt.frequently {F : Filter X} {p : X → Prop} (hx : ClusterPt x F)
+    (hp : ∀ᶠ y in 𝓝 x, p y) : ∃ᶠ y in F, p y :=
+  clusterPt_iff_frequently.mp hx {y | p y} hp
+
+theorem clusterPt_iff_nonempty {F : Filter X} :
     ClusterPt x F ↔ ∀ ⦃U : Set X⦄, U ∈ 𝓝 x → ∀ ⦃V⦄, V ∈ F → (U ∩ V).Nonempty :=
   inf_neBot_iff
+
+@[deprecated (since := "2025-03-16")]
+alias clusterPt_iff := clusterPt_iff_nonempty
 
 theorem clusterPt_iff_not_disjoint {F : Filter X} :
     ClusterPt x F ↔ ¬Disjoint (𝓝 x) F := by
@@ -956,6 +967,12 @@ variable {F : Filter α} {u : α → X} {x : X}
 theorem mapClusterPt_def : MapClusterPt x F u ↔ ClusterPt x (map u F) := Iff.rfl
 alias ⟨MapClusterPt.clusterPt, _⟩ := mapClusterPt_def
 
+theorem Filter.EventuallyEq.mapClusterPt_iff {v : α → X} (h : u =ᶠ[F] v) :
+    MapClusterPt x F u ↔ MapClusterPt x F v := by
+  simp only [mapClusterPt_def, map_congr h]
+
+alias ⟨MapClusterPt.congrFun, _⟩ := Filter.EventuallyEq.mapClusterPt_iff
+
 theorem MapClusterPt.mono {G : Filter α} (h : MapClusterPt x F u) (hle : F ≤ G) :
     MapClusterPt x G u :=
   h.clusterPt.mono (map_mono hle)
@@ -976,8 +993,15 @@ theorem Filter.HasBasis.mapClusterPt_iff_frequently {ι : Sort*} {p : ι → Pro
     (hx : (𝓝 x).HasBasis p s) : MapClusterPt x F u ↔ ∀ i, p i → ∃ᶠ a in F, u a ∈ s i := by
   simp_rw [MapClusterPt, hx.clusterPt_iff_frequently, frequently_map]
 
-theorem mapClusterPt_iff : MapClusterPt x F u ↔ ∀ s ∈ 𝓝 x, ∃ᶠ a in F, u a ∈ s :=
+theorem mapClusterPt_iff_frequently : MapClusterPt x F u ↔ ∀ s ∈ 𝓝 x, ∃ᶠ a in F, u a ∈ s :=
   (𝓝 x).basis_sets.mapClusterPt_iff_frequently
+
+@[deprecated (since := "2025-03-16")]
+alias mapClusterPt_iff := mapClusterPt_iff_frequently
+
+theorem MapClusterPt.frequently (h : MapClusterPt x F u) {p : X → Prop} (hp : ∀ᶠ y in 𝓝 x, p y) :
+    ∃ᶠ a in F, p (u a) :=
+  h.clusterPt.frequently hp
 
 theorem mapClusterPt_comp {φ : α → β} {u : β → X} :
     MapClusterPt x F (u ∘ φ) ↔ MapClusterPt x (map φ F) u := Iff.rfl
@@ -988,11 +1012,6 @@ theorem Filter.Tendsto.mapClusterPt [NeBot F] (h : Tendsto u F (𝓝 x)) : MapCl
 theorem MapClusterPt.of_comp {φ : β → α} {p : Filter β} (h : Tendsto φ p F)
     (H : MapClusterPt x p (u ∘ φ)) : MapClusterPt x F u :=
   H.clusterPt.mono <| map_mono h
-
-@[deprecated MapClusterPt.of_comp (since := "2024-09-07")]
-theorem mapClusterPt_of_comp {φ : β → α} {p : Filter β} [NeBot p]
-    (h : Tendsto φ p F) (H : Tendsto (u ∘ φ) p (𝓝 x)) : MapClusterPt x F u :=
-  .of_comp h H.mapClusterPt
 
 end MapClusterPt
 
@@ -1336,6 +1355,12 @@ theorem tendsto_nhds_limUnder {f : Filter α} {g : α → X} (h : ∃ x, Tendsto
     Tendsto g f (𝓝 (@limUnder _ _ _ (nonempty_of_exists h) f g)) :=
   le_nhds_lim h
 
+theorem limUnder_of_not_tendsto [hX : Nonempty X] {f : Filter α} {g : α → X}
+    (h : ¬ ∃ x, Tendsto g f (𝓝 x)) :
+    limUnder f g = Classical.choice hX := by
+  simp_rw [Tendsto] at h
+  simp_rw [limUnder, lim, Classical.epsilon, Classical.strongIndefiniteDescription, dif_neg h]
+
 end lim
 
 end TopologicalSpace
@@ -1662,10 +1687,10 @@ However, lemmas with this conclusion are not nice to use in practice because
     continuous_add.comp _
 
   example : Continuous (fun x : M ↦ x + x) :=
-    continuous_add.comp (continuous_id.prod_mk continuous_id)
+    continuous_add.comp (continuous_id.prodMk continuous_id)
   ```
   The second is a valid proof, which is accepted if you write it as
-  `continuous_add.comp (continuous_id.prod_mk continuous_id :)`
+  `continuous_add.comp (continuous_id.prodMk continuous_id :)`
 
 2. If the operation has more than 2 arguments, they are impractical to use, because in your
   application the arguments in the domain might be in a different order or associated differently.

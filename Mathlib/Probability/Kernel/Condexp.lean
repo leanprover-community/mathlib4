@@ -45,14 +45,14 @@ theorem _root_.MeasureTheory.AEStronglyMeasurable.comp_snd_map_prod_id [Topologi
     (hm : m ≤ mΩ) (hf : AEStronglyMeasurable f μ) :
     AEStronglyMeasurable[m.prod mΩ] (fun x : Ω × Ω => f x.2)
       (@Measure.map Ω (Ω × Ω) mΩ (m.prod mΩ) (fun ω => (id ω, id ω)) μ) := by
-  rw [← aestronglyMeasurable_comp_snd_map_prod_mk_iff (measurable_id'' hm)] at hf
+  rw [← aestronglyMeasurable_comp_snd_map_prodMk_iff (measurable_id'' hm)] at hf
   simp_rw [id] at hf ⊢
   exact hf
 
 theorem _root_.MeasureTheory.Integrable.comp_snd_map_prod_id [NormedAddCommGroup F] (hm : m ≤ mΩ)
     (hf : Integrable f μ) : Integrable (fun x : Ω × Ω => f x.2)
       (@Measure.map Ω (Ω × Ω) mΩ (m.prod mΩ) (fun ω => (id ω, id ω)) μ) := by
-  rw [← integrable_comp_snd_map_prod_mk_iff (measurable_id'' hm)] at hf
+  rw [← integrable_comp_snd_map_prodMk_iff (measurable_id'' hm)] at hf
   simp_rw [id] at hf ⊢
   exact hf
 
@@ -112,7 +112,7 @@ lemma compProd_trim_condExpKernel (hm : m ≤ mΩ) :
   congr
 
 lemma condExpKernel_comp_trim (hm : m ≤ mΩ) : condExpKernel μ m ∘ₘ μ.trim hm = μ := by
-  rw [← Measure.snd_compProd, compProd_trim_condExpKernel, @Measure.snd_map_prod_mk, Measure.map_id]
+  rw [← Measure.snd_compProd, compProd_trim_condExpKernel, @Measure.snd_map_prodMk, Measure.map_id]
   exact measurable_id'' hm
 
 section Measurability
@@ -177,6 +177,12 @@ alias aestronglyMeasurable'_integral_condExpKernel := aestronglyMeasurable_integ
 
 @[deprecated (since := "2025-01-21")]
 alias aestronglyMeasurable'_integral_condexpKernel := aestronglyMeasurable_integral_condExpKernel
+
+lemma aestronglyMeasurable_trim_condExpKernel (hm : m ≤ mΩ) (hf : AEStronglyMeasurable f μ) :
+    ∀ᵐ ω ∂(μ.trim hm), f =ᵐ[condExpKernel μ m ω] hf.mk f := by
+  refine Measure.ae_ae_of_ae_comp ?_
+  rw [condExpKernel_comp_trim hm]
+  exact hf.ae_eq_mk
 
 end Measurability
 
@@ -301,6 +307,28 @@ theorem condExp_ae_eq_integral_condExpKernel [NormedAddCommGroup F] {f : Ω → 
 @[deprecated (since := "2025-01-21")]
 alias condexp_ae_eq_integral_condexpKernel := condExp_ae_eq_integral_condExpKernel
 
+/-- Auxiliary lemma for `condExp_ae_eq_trim_integral_condExpKernel`. -/
+theorem condExp_ae_eq_trim_integral_condExpKernel_of_stronglyMeasurable
+    [NormedAddCommGroup F] {f : Ω → F} [NormedSpace ℝ F] [CompleteSpace F]
+    (hm : m ≤ mΩ) (hf : StronglyMeasurable f) (hf_int : Integrable f μ) :
+    μ[f|m] =ᵐ[μ.trim hm] fun ω ↦ ∫ y, f y ∂condExpKernel μ m ω := by
+ refine StronglyMeasurable.ae_eq_trim_of_stronglyMeasurable hm ?_ ?_ ?_
+ · exact stronglyMeasurable_condExp
+ · exact hf.integral_condExpKernel
+ · exact condExp_ae_eq_integral_condExpKernel hm hf_int
+
+/-- The conditional expectation of `f` with respect to a σ-algebra `m` is
+(`μ.trim hm`)-almost everywhere equal to the integral `∫ y, f y ∂(condExpKernel μ m ω)`. -/
+theorem condExp_ae_eq_trim_integral_condExpKernel [NormedAddCommGroup F] {f : Ω → F}
+    [NormedSpace ℝ F] [CompleteSpace F] (hm : m ≤ mΩ) (hf_int : Integrable f μ) :
+    μ[f|m] =ᵐ[μ.trim hm] fun ω ↦ ∫ y, f y ∂condExpKernel μ m ω := by
+  refine (condExp_congr_ae_trim hm hf_int.1.ae_eq_mk).trans ?_
+  refine (condExp_ae_eq_trim_integral_condExpKernel_of_stronglyMeasurable hm
+    hf_int.1.stronglyMeasurable_mk ?_).trans ?_
+  · rwa [integrable_congr hf_int.1.ae_eq_mk.symm]
+  filter_upwards [aestronglyMeasurable_trim_condExpKernel hm hf_int.1] with ω hω
+  rw [integral_congr_ae hω]
+
 section Cond
 
 /-! ### Relation between conditional expectation, conditional kernel and the conditional measure. -/
@@ -333,7 +361,7 @@ lemma condExp_generateFrom_singleton (hs : MeasurableSet s) {f : Ω → F} (hf :
         exact ENNReal.toReal_ne_zero.2 ⟨hμs, measure_ne_top _ _⟩
       · simp only [h, integral_const, MeasurableSet.univ, Measure.restrict_apply, univ_inter,
           ((Measure.restrict_apply_eq_zero hs.compl).2 <| compl_inter_self s ▸ measure_empty),
-          ENNReal.zero_toReal, zero_smul, setIntegral_zero_measure]
+          ENNReal.toReal_zero, zero_smul, setIntegral_zero_measure]
       · simp only [h, Measure.restrict_univ, cond, integral_smul_measure, ENNReal.toReal_inv,
           integral_const, MeasurableSet.univ, Measure.restrict_apply, univ_inter,
           smul_inv_smul₀ <| ENNReal.toReal_ne_zero.2 ⟨hμs, measure_ne_top _ _⟩]

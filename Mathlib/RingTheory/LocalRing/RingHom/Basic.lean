@@ -127,7 +127,7 @@ lemma _root_.IsLocalHom.of_surjective [CommRing R] [CommRing S] [Nontrivial S] [
 alias _root_.Function.Surjective.isLocalHom := _root_.IsLocalHom.of_surjective
 
 /-- If `f : R →+* S` is a surjective local ring hom, then the induced units map is surjective. -/
-theorem surjective_units_map_of_local_ringHom [CommRing R] [CommRing S] (f : R →+* S)
+theorem surjective_units_map_of_local_ringHom [Semiring R] [Semiring S] (f : R →+* S)
     (hf : Function.Surjective f) (h : IsLocalHom f) :
     Function.Surjective (Units.map <| f.toMonoidHom) := by
   intro a
