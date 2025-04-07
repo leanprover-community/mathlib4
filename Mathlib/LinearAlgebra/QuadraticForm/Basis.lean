@@ -662,12 +662,8 @@ theorem pre_tensor_expansion (x : M₁ ⊗[R] M₂) :
   let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
   let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
   let s := (bm.repr x).support.sym2
-  intro Q_1 bm_1 s_1
-  simp_all only [Q_1, bm_1, s_1]
+  simp only
   rw [basis_expansion Q bm x]
-  have e1 (i : ι₁ × ι₂) : Q₁ (bm₁ i.1) ⊗ₜ Q₂ (bm₂ i.2) = Q (bm i) := by
-    rw [Basis.tensorProduct_apply, tensorDistriFree_tmul]
-  --simp_rw [e1]
   simp_rw [polar_lift]
   simp_rw [← sum_on_left_right_upper_lower]
   abel
