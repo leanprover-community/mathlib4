@@ -115,8 +115,8 @@ theorem eqOn_lieSpan {s : Set L} (h : Set.EqOn D1 D2 s) :
     simp only [map_add, hx, hy]
   · intro _ _ _ hx
     simp only [map_smul, hx]
-  · intro _ _ _ _ hx hy
-    simp only [apply_lie_eq_sub, hx, hy]
+  intro _ _ _ _ hx hy
+  simp only [apply_lie_eq_sub, hx, hy]
 
 
 /-- If the Lie span of a set is the whole Lie algebra, then two Lie derivations equal on this set
