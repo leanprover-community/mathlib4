@@ -96,7 +96,8 @@ variable (R) in
 lemma isOpen_maximalIdeal : IsOpen (X := R) ↑(maximalIdeal R) :=
   Ideal.isOpen_of_isMaximal _
 
-instance : Finite (ResidueField R) := inferInstanceAs (Finite (R ⧸ _))
+instance finite_residueField_of_compactSpace : Finite (ResidueField R) :=
+  inferInstanceAs (Finite (R ⧸ _))
 
 lemma isOpen_iff_finite_quotient {I : Ideal R} :
     IsOpen (X := R) I ↔ Finite (R ⧸ I) := by
