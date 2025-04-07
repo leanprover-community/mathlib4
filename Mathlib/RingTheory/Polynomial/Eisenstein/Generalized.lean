@@ -4,10 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 
+import Mathlib.Algebra.Field.ZMod
 import Mathlib.Algebra.Polynomial.FieldDivision
 import Mathlib.Algebra.Polynomial.SpecificDegree
 import Mathlib.Data.ZMod.QuotientRing
-import Mathlib.Algebra.Field.ZMod
+import Mathlib.Tactic.ComputeDegree
 
 /-! # A generalized Eisenstein criterion
 
@@ -177,10 +178,10 @@ example : Irreducible (X ^ 4 - 10 * X ^ 2 + 1 : ℤ[X]) := by
     ext a
     rw [algebraMap_int_eq, ZMod.ker_intCastRingHom, Nat.cast_ofNat]
   have hq_monic : q.Monic := leadingCoeff_X_pow_add_one (by norm_num)
-  have hq_deg : (q.map (algebraMap ℤ K)).natDegree = 2 := by
-    simp only [algebraMap_int_eq, Polynomial.map_add, Polynomial.map_pow, map_X,
-      Polynomial.map_one, q]
-    rw [← C_1, Polynomial.natDegree_X_pow_add_C]
+  have hq_deg : q.natDegree = 2 := by simp only [q]; compute_degree!
+  have hq_deg' : (q.map (algebraMap ℤ K)).natDegree = 2 := by
+    rw [natDegree_map_of_leadingCoeff_ne_zero, hq_deg]
+    simp [q]
   have hq_irr : Irreducible (q.map (algebraMap ℤ K)) := by
     rw [Polynomial.irreducible_iff_roots_eq_zero_of_degree_le_three]
     · apply Multiset.eq_zero_of_forall_not_mem
@@ -191,22 +192,13 @@ example : Irreducible (X ^ 4 - 10 * X ^ 2 + 1 : ℤ[X]) := by
       intro _
       revert a
       decide
-    · rw [hq_deg]
-    · rw [hq_deg]; norm_num
+    · rw [hq_deg']
+    · rw [hq_deg']; norm_num
   set f : ℤ[X] := X ^ 4 - 10 * X ^ 2 + 1 with hf_eq
-  have hdeg_f : f.natDegree = 4 := by
-    simp [hf_eq]
-    conv_rhs => rw [← natDegree_X_pow (R := ℤ) 4]
-    apply natDegree_eq_of_degree_eq
-    rw [sub_add]
-    apply degree_sub_eq_left_of_degree_lt
-    apply lt_of_le_of_lt (degree_sub_le _ _)
-    rw [← map_ofNat C, degree_mul, degree_C, degree_X_pow]
-    simp; norm_num; norm_num
+  have hdeg_f : f.natDegree = 4 := by simp only [hf_eq, K, q]; compute_degree!
   have hlC_f : f.Monic := by
-    suffices coeff (1 : ℤ[X]) 4 = 0 by
-      simp [Monic, leadingCoeff, hdeg_f, f, this]
-    rw [← C_1, coeff_C, if_neg (by norm_num)]
+    simp only [Monic, leadingCoeff, hdeg_f, f]
+    compute_degree!
   have hfq : f = q ^ 2 - 12 * q + 12 := by ring
   apply generalizedEisenstein (K := K) hq_irr hq_monic (p := 2)
     (by rw [hdeg_f]; norm_num) hlC_f
