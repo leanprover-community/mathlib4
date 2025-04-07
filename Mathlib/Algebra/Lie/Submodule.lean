@@ -110,6 +110,15 @@ theorem mem_coe {x : M} : x ∈ (N : Set M) ↔ x ∈ N :=
 protected theorem zero_mem : (0 : M) ∈ N :=
   zero_mem N
 
+protected theorem add_mem {x y : M} : x ∈ N → y ∈ N → (x + y : M) ∈ N :=
+  add_mem
+
+protected theorem sub_mem {x y : M} : x ∈ N → y ∈ N → (x - y : M) ∈ N :=
+  sub_mem
+
+theorem smul_mem (t : R) {x : M} (h : x ∈ N) : t • x ∈ N :=
+  (N : Submodule R M).smul_mem t h
+
 @[simp]
 theorem mk_eq_zero {x} (h : x ∈ N) : (⟨x, h⟩ : N) = 0 ↔ x = 0 :=
   Subtype.ext_iff_val
@@ -785,6 +794,25 @@ theorem span_union (s t : Set M) : lieSpan R L (s ∪ t) = lieSpan R L s ⊔ lie
 
 theorem span_iUnion {ι} (s : ι → Set M) : lieSpan R L (⋃ i, s i) = ⨆ i, lieSpan R L (s i) :=
   (LieSubmodule.gi R L M).gc.l_iSup
+
+/-- An induction principle for span membership. If `p` holds for 0 and all elements of `s`, and is
+preserved under addition, scalar multiplication and the Lie bracket, then `p` holds for all
+elements of the Lie submodule spanned by `s`. -/
+@[elab_as_elim]
+theorem lieSpan_induction {p : (x : M) → x ∈ lieSpan R L s → Prop}
+    (mem : ∀ (x) (h : x ∈ s), p x (subset_lieSpan h))
+    (zero : p 0 (LieSubmodule.zero_mem _))
+    (add : ∀ x y hx hy, p x hx → p y hy → p (x + y) (LieSubmodule.add_mem _ ‹_› ‹_›))
+    (smul : ∀ (a : R) (x hx), p x hx → p (a • x) (LieSubmodule.smul_mem _ _ ‹_›)) {x}
+    (lie : ∀ (x : L) (y hy), p y hy → p (⁅x, y⁆) (LieSubmodule.lie_mem _ ‹_›))
+    (hx : x ∈ lieSpan R L s) : p x hx := by
+  let p : LieSubmodule R L M :=
+    { carrier := { x | ∃ hx, p x hx }
+      add_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, add _ _ _ _ hpx hpy⟩
+      zero_mem' := ⟨_, zero⟩
+      smul_mem' := fun r ↦ fun ⟨_, hpx⟩ ↦ ⟨_, smul r _ _ hpx⟩
+      lie_mem := fun ⟨_, hpy⟩ ↦ ⟨_, lie _ _ _ hpy⟩ }
+  exact lieSpan_le (N := p) |>.mpr (fun y hy ↦ ⟨subset_lieSpan hy, mem y hy⟩) hx |>.elim fun _ ↦ id
 
 lemma isCompactElement_lieSpan_singleton (m : M) :
     CompleteLattice.IsCompactElement (lieSpan R L {m}) := by
