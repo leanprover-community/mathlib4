@@ -27,11 +27,11 @@ section LinearOrder
 -/
 
 /-- Default definition of `max`. -/
-def maxDefault [LE α] [DecidableRel ((· ≤ ·) : α → α → Prop)] (a b : α) :=
+def maxDefault [LE α] [DecidableLE α] (a b : α) :=
   if a ≤ b then b else a
 
 /-- Default definition of `min`. -/
-def minDefault [LE α] [DecidableRel ((· ≤ ·) : α → α → Prop)] (a b : α) :=
+def minDefault [LE α] [DecidableLE α] (a b : α) :=
   if a ≤ b then a else b
 
 /-- This attempts to prove that a given instance of `compare` is equal to `compareOfLessAndEq` by
@@ -54,12 +54,11 @@ class LinearOrder (α : Type*) extends PartialOrder α, Min α, Max α, Ord α w
   /-- A linear order is total. -/
   le_total (a b : α) : a ≤ b ∨ b ≤ a
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
-  decidableLE : DecidableRel (· ≤ · : α → α → Prop)
+  decidableLE : DecidableLE α
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
   decidableEq : DecidableEq α := @decidableEqOfDecidableLE _ _ decidableLE
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
-  decidableLT : DecidableRel (· < · : α → α → Prop) :=
-    @decidableLTOfDecidableLE _ _ decidableLE
+  decidableLT : DecidableLT α := @decidableLTOfDecidableLE _ _ decidableLE
   min := fun a b => if a ≤ b then a else b
   max := fun a b => if a ≤ b then b else a
   /-- The minimum function is equivalent to the one you get from `minOfLe`. -/
@@ -73,7 +72,9 @@ class LinearOrder (α : Type*) extends PartialOrder α, Min α, Max α, Ord α w
 
 variable [LinearOrder α] {a b c : α}
 
-attribute [local instance] LinearOrder.decidableLE
+attribute [instance 900] LinearOrder.decidableLT
+attribute [instance 900] LinearOrder.decidableLE
+attribute [instance 900] LinearOrder.decidableEq
 
 lemma le_total : ∀ a b : α, a ≤ b ∨ b ≤ a := LinearOrder.le_total
 
@@ -114,10 +115,6 @@ lemma lt_iff_not_ge (x y : α) : x < y ↔ ¬x ≥ y := ⟨not_le_of_gt, lt_of_n
 @[simp] lemma not_lt : ¬a < b ↔ b ≤ a := ⟨le_of_not_gt, not_lt_of_ge⟩
 @[simp] lemma not_le : ¬a ≤ b ↔ b < a := (lt_iff_not_ge _ _).symm
 
-instance (priority := 900) (a b : α) : Decidable (a < b) := LinearOrder.decidableLT a b
-instance (priority := 900) (a b : α) : Decidable (a ≤ b) := LinearOrder.decidableLE a b
-instance (priority := 900) (a b : α) : Decidable (a = b) := LinearOrder.decidableEq a b
-
 lemma eq_or_lt_of_not_lt (h : ¬a < b) : a = b ∨ b < a :=
   if h₁ : a = b then Or.inl h₁ else Or.inr (lt_of_not_ge fun hge => h (lt_of_le_of_ne hge h₁))
 
@@ -125,22 +122,6 @@ lemma eq_or_lt_of_not_lt (h : ¬a < b) : a = b ∨ b < a :=
 def ltByCases (x y : α) {P : Sort*} (h₁ : x < y → P) (h₂ : x = y → P) (h₃ : y < x → P) : P :=
   if h : x < y then h₁ h
   else if h' : y < x then h₃ h' else h₂ (le_antisymm (le_of_not_gt h') (le_of_not_gt h))
-
-namespace Nat
-
-/-! Deprecated properties of inequality on `Nat` -/
-
-@[deprecated "No deprecation message was provided." (since := "2024-08-23")]
-protected def ltGeByCases {a b : Nat} {C : Sort*} (h₁ : a < b → C) (h₂ : b ≤ a → C) : C :=
-  Decidable.byCases h₁ fun h => h₂ (Or.elim (Nat.lt_or_ge a b) (fun a => absurd a h) fun a => a)
-
-set_option linter.deprecated false in
-@[deprecated ltByCases (since := "2024-08-23")]
-protected def ltByCases {a b : Nat} {C : Sort*} (h₁ : a < b → C) (h₂ : a = b → C)
-    (h₃ : b < a → C) : C :=
-  Nat.ltGeByCases h₁ fun h₁ => Nat.ltGeByCases h₃ fun h => h₂ (Nat.le_antisymm h h₁)
-
-end Nat
 
 theorem le_imp_le_of_lt_imp_lt {α β} [Preorder α] [LinearOrder β] {a b : α} {c d : β}
     (H : d < c → b < a) (h : a ≤ b) : c ≤ d :=
@@ -154,32 +135,32 @@ lemma max_def (a b : α) : max a b = if a ≤ b then b else a := by rw [LinearOr
 lemma min_le_left (a b : α) : min a b ≤ a := by
   if h : a ≤ b
   then simp [min_def, if_pos h, le_refl]
-  else simp [min_def, if_neg h]; exact le_of_not_le h
+  else simpa [min_def, if_neg h] using le_of_not_le h
 
 lemma min_le_right (a b : α) : min a b ≤ b := by
   if h : a ≤ b
-  then simp [min_def, if_pos h]; exact h
+  then simpa [min_def, if_pos h] using h
   else simp [min_def, if_neg h, le_refl]
 
 lemma le_min (h₁ : c ≤ a) (h₂ : c ≤ b) : c ≤ min a b := by
   if h : a ≤ b
-  then simp [min_def, if_pos h]; exact h₁
-  else simp [min_def, if_neg h]; exact h₂
+  then simpa [min_def, if_pos h] using h₁
+  else simpa [min_def, if_neg h] using h₂
 
 lemma le_max_left (a b : α) : a ≤ max a b := by
   if h : a ≤ b
-  then simp [max_def, if_pos h]; exact h
+  then simpa [max_def, if_pos h] using h
   else simp [max_def, if_neg h, le_refl]
 
 lemma le_max_right (a b : α) : b ≤ max a b := by
   if h : a ≤ b
   then simp [max_def, if_pos h, le_refl]
-  else simp [max_def, if_neg h]; exact le_of_not_le h
+  else simpa [max_def, if_neg h] using le_of_not_le h
 
 lemma max_le (h₁ : a ≤ c) (h₂ : b ≤ c) : max a b ≤ c := by
   if h : a ≤ b
-  then simp [max_def, if_pos h]; exact h₂
-  else simp [max_def, if_neg h]; exact h₁
+  then simpa [max_def, if_pos h] using h₂
+  else simpa [max_def, if_neg h] using h₁
 
 lemma eq_min (h₁ : c ≤ a) (h₂ : c ≤ b) (h₃ : ∀ {d}, d ≤ a → d ≤ b → d ≤ c) : c = min a b :=
   le_antisymm (le_min h₁ h₂) (h₃ (min_le_left a b) (min_le_right a b))
@@ -189,9 +170,9 @@ lemma min_comm (a b : α) : min a b = min b a :=
 
 lemma min_assoc (a b c : α) : min (min a b) c = min a (min b c) := by
   apply eq_min
-  · apply le_trans (min_le_left ..); apply min_le_left
+  · apply le_trans (min_le_left ..) (min_le_left ..)
   · apply le_min
-    · apply le_trans (min_le_left ..); apply min_le_right
+    · apply le_trans (min_le_left ..) (min_le_right ..)
     · apply min_le_right
   · intro d h₁ h₂; apply le_min
     · apply le_min h₁; apply le_trans h₂; apply min_le_left
@@ -216,9 +197,9 @@ lemma max_comm (a b : α) : max a b = max b a :=
 
 lemma max_assoc (a b c : α) : max (max a b) c = max a (max b c) := by
   apply eq_max
-  · apply le_trans (le_max_left a b); apply le_max_left
+  · apply le_trans (le_max_left a b) (le_max_left ..)
   · apply max_le
-    · apply le_trans (le_max_right a b); apply le_max_left
+    · apply le_trans (le_max_right a b) (le_max_left ..)
     · apply le_max_right
   · intro d h₁ h₂; apply max_le
     · apply max_le h₁; apply le_trans (le_max_left _ _) h₂

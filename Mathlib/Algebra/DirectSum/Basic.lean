@@ -32,16 +32,14 @@ variable (ι : Type v) (β : ι → Type w)
 
 Note: `open DirectSum` will enable the notation `⨁ i, β i` for `DirectSum ι β`. -/
 def DirectSum [∀ i, AddCommMonoid (β i)] : Type _ :=
-  -- Porting note: Failed to synthesize
-  -- Π₀ i, β i deriving AddCommMonoid, Inhabited
-  -- See https://github.com/leanprover-community/mathlib4/issues/5020
   Π₀ i, β i
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): Added inhabited instance manually
+-- The `AddCommMonoid, Inhabited` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
+
 instance [∀ i, AddCommMonoid (β i)] : Inhabited (DirectSum ι β) :=
   inferInstanceAs (Inhabited (Π₀ i, β i))
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): Added addCommMonoid instance manually
 instance [∀ i, AddCommMonoid (β i)] : AddCommMonoid (DirectSum ι β) :=
   inferInstanceAs (AddCommMonoid (Π₀ i, β i))
 
@@ -74,6 +72,16 @@ namespace DirectSum
 
 variable {ι}
 
+/-- Coercion from a `DirectSum` to a pi type is an `AddMonoidHom`. -/
+def coeFnAddMonoidHom [∀ i, AddCommMonoid (β i)] : (⨁ i, β i) →+ (Π i, β i) where
+  toFun x := x
+  __ := DFinsupp.coeFnAddMonoidHom
+
+@[simp]
+lemma coeFnAddMonoidHom_apply [∀ i, AddCommMonoid (β i)] (v : ⨁ i, β i) :
+    coeFnAddMonoidHom β v = v :=
+  rfl
+
 section AddCommGroup
 
 variable [∀ i, AddCommGroup (β i)]
@@ -89,6 +97,9 @@ theorem sub_apply (g₁ g₂ : ⨁ i, β i) (i : ι) : (g₁ - g₂) i = g₁ i 
 end AddCommGroup
 
 variable [∀ i, AddCommMonoid (β i)]
+
+@[ext] theorem ext {x y : DirectSum ι β} (w : ∀ i, x i = y i) : x = y :=
+  DFunLike.ext _ _ w
 
 @[simp]
 theorem zero_apply (i : ι) : (0 : ⨁ i, β i) i = 0 :=
@@ -169,10 +180,10 @@ theorem of_injective (i : ι) : Function.Injective (of β i) :=
   DFinsupp.single_injective
 
 @[elab_as_elim]
-protected theorem induction_on {C : (⨁ i, β i) → Prop} (x : ⨁ i, β i) (H_zero : C 0)
-    (H_basic : ∀ (i : ι) (x : β i), C (of β i x))
-    (H_plus : ∀ x y, C x → C y → C (x + y)) : C x := by
-  apply DFinsupp.induction x H_zero
+protected theorem induction_on {motive : (⨁ i, β i) → Prop} (x : ⨁ i, β i) (zero : motive 0)
+    (of : ∀ (i : ι) (x : β i), motive (of β i x))
+    (add : ∀ x y, motive x → motive y → motive (x + y)) : motive x := by
+  apply DFinsupp.induction x zero
   intro i b f h1 h2 ih
   solve_by_elim
 
@@ -390,6 +401,41 @@ theorem finite_support (A : ι → S) (x : DirectSum ι fun i => A i) :
     (Function.support fun i => (x i : M)).Finite := by
   classical
   exact (DFinsupp.support x).finite_toSet.subset (DirectSum.support_subset _ x)
+
+section map
+
+variable {ι : Type*} {α : ι → Type*} {β : ι → Type*} [∀ i, AddCommMonoid (α i)]
+variable [∀ i, AddCommMonoid (β i)] (f : ∀ (i : ι), α i →+ β i)
+
+/-- create a homomorphism from `⨁ i, α i` to `⨁ i, β i` by giving the component-wise map `f`. -/
+def map : (⨁ i, α i) →+ ⨁ i, β i := DFinsupp.mapRange.addMonoidHom f
+
+@[simp] lemma map_of [DecidableEq ι] (i : ι) (x : α i) : map f (of α i x) = of β i (f i x) :=
+  DFinsupp.mapRange_single (hf := fun _ => map_zero _)
+
+@[simp] lemma map_apply (i : ι) (x : ⨁ i, α i) : map f x i = f i (x i) :=
+  DFinsupp.mapRange_apply (hf := fun _ => map_zero _) _ _ _
+
+@[simp] lemma map_id :
+    (map (fun i ↦ AddMonoidHom.id (α i))) = AddMonoidHom.id (⨁ i, α i) :=
+  DFinsupp.mapRange.addMonoidHom_id
+
+@[simp] lemma map_comp {γ : ι → Type*} [∀ i, AddCommMonoid (γ i)]
+    (g : ∀ (i : ι), β i →+ γ i) :
+    (map (fun i ↦ (g i).comp (f i))) = (map g).comp (map f) :=
+  DFinsupp.mapRange.addMonoidHom_comp _ _
+
+lemma map_injective : Function.Injective (map f) ↔ ∀ i, Function.Injective (f i) := by
+  classical exact DFinsupp.mapRange_injective (hf := fun _ ↦ map_zero _)
+
+lemma map_surjective : Function.Surjective (map f) ↔ (∀ i, Function.Surjective (f i)) := by
+  classical exact DFinsupp.mapRange_surjective (hf := fun _ ↦ map_zero _)
+
+lemma map_eq_iff (x y : ⨁ i, α i) :
+    map f x = map f y ↔ ∀ i, f i (x i) = f i (y i) := by
+  simp_rw [DirectSum.ext_iff, map_apply]
+
+end map
 
 end DirectSum
 

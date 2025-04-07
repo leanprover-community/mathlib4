@@ -3,12 +3,13 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Heather Macbeth
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Unitization
+import Mathlib.Algebra.Algebra.Subalgebra.Tower
 import Mathlib.Analysis.RCLike.Basic
+import Mathlib.Topology.Algebra.Star.Real
 import Mathlib.Topology.Algebra.StarSubalgebra
 import Mathlib.Topology.ContinuousMap.ContinuousMapZero
-import Mathlib.Topology.ContinuousMap.Weierstrass
 import Mathlib.Topology.ContinuousMap.Lattice
+import Mathlib.Topology.ContinuousMap.Weierstrass
 
 /-!
 # The Stone-Weierstrass theorem
@@ -44,6 +45,7 @@ on non-compact spaces.
 
 -/
 
+assert_not_exists Unitization
 
 noncomputable section
 
@@ -67,11 +69,8 @@ theorem polynomial_comp_attachBound (A : Subalgebra ℝ C(X, ℝ)) (f : A) (g : 
     (g.toContinuousMapOn (Set.Icc (-‖f‖) ‖f‖)).comp (f : C(X, ℝ)).attachBound =
       Polynomial.aeval f g := by
   ext
-  simp only [ContinuousMap.coe_comp, Function.comp_apply, ContinuousMap.attachBound_apply_coe,
-    Polynomial.toContinuousMapOn_apply, Polynomial.aeval_subalgebra_coe,
-    Polynomial.aeval_continuousMap_apply, Polynomial.toContinuousMap_apply]
-  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-  erw [ContinuousMap.attachBound_apply_coe]
+  simp only [Polynomial.aeval_subalgebra_coe, Polynomial.aeval_continuousMap_apply]
+  simp
 
 /-- Given a continuous function `f` in a subalgebra of `C(X, ℝ)`, postcomposing by a polynomial
 gives another function in `A`.
@@ -131,7 +130,7 @@ theorem inf_mem_closed_subalgebra (A : Subalgebra ℝ C(X, ℝ)) (h : IsClosed (
   convert inf_mem_subalgebra_closure A f g
   apply SetLike.ext'
   symm
-  erw [closure_eq_iff_isClosed]
+  rw [Subalgebra.topologicalClosure_coe, closure_eq_iff_isClosed]
   exact h
 
 theorem sup_mem_subalgebra_closure (A : Subalgebra ℝ C(X, ℝ)) (f g : A) :
@@ -151,7 +150,8 @@ theorem sup_mem_closed_subalgebra (A : Subalgebra ℝ C(X, ℝ)) (h : IsClosed (
   convert sup_mem_subalgebra_closure A f g
   apply SetLike.ext'
   symm
-  erw [closure_eq_iff_isClosed]
+  dsimp
+  rw [closure_eq_iff_isClosed]
   exact h
 
 open scoped Topology
@@ -189,7 +189,7 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
   have U_nhd_y : ∀ x y, U x y ∈ 𝓝 y := by
     intro x y
     refine IsOpen.mem_nhds ?_ ?_
-    · apply isOpen_lt <;> continuity
+    · apply isOpen_lt <;> fun_prop
     · rw [Set.mem_setOf_eq, w₂]
       exact sub_lt_self _ pos
   -- Fixing `x` for a moment, we have a family of functions `fun y ↦ g x y`
@@ -213,10 +213,10 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
   have lt_h : ∀ x z, f z - ε < (h x : X → ℝ) z := by
     intro x z
     obtain ⟨y, ym, zm⟩ := Set.exists_set_mem_of_union_eq_top _ _ (ys_w x) z
-    dsimp
+    dsimp [h]
     simp only [Subtype.coe_mk, coe_sup', Finset.sup'_apply, Finset.lt_sup'_iff]
     exact ⟨y, ym, zm⟩
-  have h_eq : ∀ x, (h x : X → ℝ) x = f x := by intro x; simp [w₁]
+  have h_eq : ∀ x, (h x : X → ℝ) x = f x := by intro x; simp [h, w₁]
   -- For each `x`, we define `W x` to be `{z | h x z < f z + ε}`,
   let W : X → Set X := fun x => {z | (h x : X → ℝ) z < f z + ε}
   -- This is still a neighbourhood of `x`.
@@ -247,10 +247,10 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
         intros; simp only [← Metric.mem_ball, Real.ball_eq_Ioo, Set.mem_Ioo, and_comm]]
   fconstructor
   · dsimp
-    simp only [Finset.inf'_lt_iff, ContinuousMap.inf'_apply]
+    simp only [k, Finset.inf'_lt_iff, ContinuousMap.inf'_apply]
     exact Set.exists_set_mem_of_union_eq_top _ _ xs_w z
   · dsimp
-    simp only [Finset.lt_inf'_iff, ContinuousMap.inf'_apply]
+    simp only [k, Finset.lt_inf'_iff, ContinuousMap.inf'_apply]
     rintro x -
     apply lt_h
 
@@ -313,6 +313,38 @@ theorem exists_mem_subalgebra_near_continuous_of_separatesPoints (A : Subalgebra
   use g
   rwa [norm_lt_iff _ pos] at b
 
+/-- A variant of the Stone-Weierstrass theorem where `X` need not be compact:
+If `A` is a subalgebra of `C(X, ℝ)` which separates points, then, for any compact set `K ⊆ X`,
+every real-valued continuous function on `X` is within any `ε > 0` of some element of `A` on `K`. -/
+theorem exists_mem_subalgebra_near_continuous_of_isCompact_of_separatesPoints
+    {X : Type*} [TopologicalSpace X] {A : Subalgebra ℝ C(X, ℝ)} (hA : A.SeparatesPoints)
+    (f : C(X, ℝ)) {K : Set X} (hK : IsCompact K) {ε : ℝ} (pos : 0 < ε) :
+    ∃ g ∈ A, ∀ x ∈ K, ‖(g : X → ℝ) x - f x‖ < ε := by
+  let restrict_on_K : C(X, ℝ) →⋆ₐ[ℝ] C(K, ℝ) :=
+    ContinuousMap.compStarAlgHom' ℝ ℝ ⟨(Subtype.val), continuous_subtype_val⟩
+  --consider the subalgebra AK of functions with domain K
+  let AK : Subalgebra ℝ C(K, ℝ) := Subalgebra.map (restrict_on_K) A
+  have hsep : AK.SeparatesPoints := by
+    intro x y hxy
+    obtain ⟨_, ⟨g, hg1, hg2⟩, hg_sep⟩ := hA (Subtype.coe_ne_coe.mpr hxy)
+    simp only [Set.mem_image, SetLike.mem_coe, exists_exists_and_eq_and]
+    use restrict_on_K g
+    refine ⟨Subalgebra.mem_map.mpr ?_,
+      by simpa only [compStarAlgHom'_apply, comp_apply, coe_mk, ne_eq, restrict_on_K, hg2]⟩
+    use g, hg1
+    simp [AlgHom.coe_coe]
+  obtain ⟨⟨gK, hgKAK⟩, hgapprox⟩ :=
+    @ContinuousMap.exists_mem_subalgebra_near_continuous_of_separatesPoints _ _
+    (isCompact_iff_compactSpace.mp hK) AK hsep (K.restrict f)
+    (ContinuousOn.restrict (Continuous.continuousOn f.continuous)) ε pos
+  obtain ⟨g, hgA, hgKAK⟩ := Subalgebra.mem_map.mp hgKAK
+  use g, hgA
+  intro x hxK
+  have eqg : g x = gK ⟨x, hxK⟩ := by
+    rw [← hgKAK]; rfl
+  rw [eqg]
+  exact hgapprox ⟨x, hxK⟩
+
 end ContinuousMap
 
 section RCLike
@@ -346,7 +378,7 @@ theorem Subalgebra.SeparatesPoints.rclike_to_real {A : StarSubalgebra 𝕜 C(X, 
     simp only [coe_smul, coe_one, smul_apply, one_apply, Algebra.id.smul_eq_mul, mul_one,
       const_apply]
   -- Consider now the function `fun x ↦ |f x - f x₂| ^ 2`
-  refine ⟨_, ⟨⟨(‖F ·‖ ^ 2), by continuity⟩, ?_, rfl⟩, ?_⟩
+  refine ⟨_, ⟨⟨(‖F ·‖ ^ 2), by fun_prop⟩, ?_, rfl⟩, ?_⟩
   · -- This is also an element of the subalgebra, and takes only real values
     rw [SetLike.mem_coe, Subalgebra.mem_comap]
     convert (A.restrictScalars ℝ).mul_mem hFA (star_mem hFA : star F ∈ A)
@@ -593,7 +625,7 @@ lemma ContinuousMapZero.adjoin_id_dense {s : Set 𝕜} [Zero s] (h0 : ((0 : s) :
   apply Set.eq_univ_of_forall fun f ↦ ?_
   simp only [Set.mem_preimage, toContinuousMapHom_apply, SetLike.mem_coe, RingHom.mem_ker,
     ContinuousMap.evalStarAlgHom_apply, ContinuousMap.coe_coe]
-  rw [show ⟨0, h0'⟩ = (0 : s) by ext; exact h0.symm, _root_.map_zero f]
+  rw [show ⟨0, h0'⟩ = (0 : s) by ext; exact h0.symm, map_zero f]
 
 /-- An induction principle for `C(s, 𝕜)₀`. -/
 @[elab_as_elim]
@@ -628,7 +660,7 @@ theorem ContinuousMapZero.induction_on_of_compact {s : Set 𝕜} [Zero s] (h0 : 
   exact mem_closure_iff_frequently.mp this |>.mp <| .of_forall h
 
 lemma ContinuousMapZero.nonUnitalStarAlgHom_apply_mul_eq_zero {𝕜 A : Type*}
-    [RCLike 𝕜] [NonUnitalRing A] [StarRing A] [TopologicalSpace A] [TopologicalSemiring A]
+    [RCLike 𝕜] [NonUnitalRing A] [StarRing A] [TopologicalSpace A] [IsTopologicalSemiring A]
     [T2Space A] [Module 𝕜 A] [IsScalarTower 𝕜 A A] {s : Set 𝕜} [Zero s] [CompactSpace s]
     (h0 : (0 : s) = (0 : 𝕜)) (φ : C(s, 𝕜)₀ →⋆ₙₐ[𝕜] A) (a : A) (hmul_id : φ (.id h0) * a = 0)
     (hmul_star_id : φ (star (.id h0)) * a = 0) (hφ : Continuous φ) (f : C(s, 𝕜)₀) :
@@ -643,7 +675,7 @@ lemma ContinuousMapZero.nonUnitalStarAlgHom_apply_mul_eq_zero {𝕜 A : Type*}
   | frequently f h => exact h.mem_of_closed <| isClosed_eq (by fun_prop) continuous_zero
 
 lemma ContinuousMapZero.mul_nonUnitalStarAlgHom_apply_eq_zero {𝕜 A : Type*}
-    [RCLike 𝕜] [NonUnitalRing A] [StarRing A] [TopologicalSpace A] [TopologicalSemiring A]
+    [RCLike 𝕜] [NonUnitalRing A] [StarRing A] [TopologicalSpace A] [IsTopologicalSemiring A]
     [T2Space A] [Module 𝕜 A] [SMulCommClass 𝕜 A A] {s : Set 𝕜} [Zero s] [CompactSpace s]
     (h0 : (0 : s) = (0 : 𝕜)) (φ : C(s, 𝕜)₀ →⋆ₙₐ[𝕜] A) (a : A) (hmul_id : a * φ (.id h0) = 0)
     (hmul_star_id : a * φ (star (.id h0)) = 0) (hφ : Continuous φ) (f : C(s, 𝕜)₀) :

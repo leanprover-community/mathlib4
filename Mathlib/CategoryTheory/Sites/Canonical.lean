@@ -36,7 +36,6 @@ universe v u
 
 namespace CategoryTheory
 
-open scoped Classical
 open CategoryTheory Category Limits Sieve
 
 variable {C : Type u} [Category.{v} C]
@@ -140,11 +139,9 @@ theorem isSheafFor_trans (P : Cᵒᵖ ⥤ Type v) (R S : Sieve X)
     rw [this]
     apply hR' hf
 
-/-- Construct the finest (largest) Grothendieck topology for which the given presheaf is a sheaf.
-
-This is a special case of https://stacks.math.columbia.edu/tag/00Z9, but following a different
-proof (see the comments there).
--/
+/-- Construct the finest (largest) Grothendieck topology for which the given presheaf is a sheaf. -/
+@[stacks 00Z9 "This is a special case of the Stacks entry, but following a different
+proof (see the Stacks comments)."]
 def finestTopologySingle (P : Cᵒᵖ ⥤ Type v) : GrothendieckTopology C where
   sieves X S := ∀ (Y) (f : Y ⟶ X), Presieve.IsSheafFor P (S.pullback f : Presieve Y)
   top_mem' X Y f := by
@@ -165,11 +162,9 @@ def finestTopologySingle (P : Cᵒᵖ ⥤ Type v) : GrothendieckTopology C where
       rw [pullback_id, pullback_comp] at this
       apply this
 
-/--
-Construct the finest (largest) Grothendieck topology for which all the given presheaves are sheaves.
-
-This is equal to the construction of <https://stacks.math.columbia.edu/tag/00Z9>.
--/
+/-- Construct the finest (largest) Grothendieck topology for which all the given presheaves are
+sheaves. -/
+@[stacks 00Z9 "Equal to that Stacks construction"]
 def finestTopology (Ps : Set (Cᵒᵖ ⥤ Type v)) : GrothendieckTopology C :=
   sInf (finestTopologySingle '' Ps)
 
@@ -189,10 +184,8 @@ theorem le_finestTopology (Ps : Set (Cᵒᵖ ⥤ Type v)) (J : GrothendieckTopol
   exact hJ P hP (S.pullback f) (J.pullback_stable f hS)
 
 /-- The `canonicalTopology` on a category is the finest (largest) topology for which every
-representable presheaf is a sheaf.
-
-See <https://stacks.math.columbia.edu/tag/00ZA>
--/
+representable presheaf is a sheaf. -/
+@[stacks 00ZA]
 def canonicalTopology (C : Type u) [Category.{v} C] : GrothendieckTopology C :=
   finestTopology (Set.range yoneda.obj)
 

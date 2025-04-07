@@ -3,7 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.Basic
+import Mathlib.Algebra.Homology.Embedding.IsSupported
 import Mathlib.Algebra.Homology.Additive
 import Mathlib.Algebra.Homology.Opposite
 
@@ -68,8 +68,7 @@ lemma d_none_eq_zero' (i j : Option ι) (hj : j = none) :
 lemma d_eq {i j : Option ι} {a b : ι} (hi : i = some a) (hj : j = some b) :
     d K i j = (XIso K hi).hom ≫ K.d a b ≫ (XIso K hj).inv := by
   subst hi hj
-  dsimp [XIso, d]
-  erw [id_comp, comp_id]
+  simp [XIso, X, d]
 
 @[reassoc]
 lemma XOpIso_hom_d_op (i j : Option ι) :
@@ -96,8 +95,8 @@ noncomputable def mapX : ∀ (i : Option ι), X K i ⟶ X L i
 lemma mapX_some {i : Option ι} {a : ι} (hi : i = some a) :
     mapX φ i = (XIso K hi).hom ≫ φ.f a ≫ (XIso L hi).inv := by
   subst hi
-  dsimp [XIso]
-  erw [id_comp, comp_id]
+  dsimp [XIso, X]
+  rw [id_comp, comp_id]
   rfl
 
 lemma mapX_none {i : Option ι} (hi : i = none) :
@@ -112,7 +111,6 @@ noncomputable def extend : HomologicalComplex C c' where
   X i' := extend.X K (e.r i')
   d i' j' := extend.d K (e.r i') (e.r j')
   shape i' j' h := by
-    dsimp
     obtain hi'|⟨i, hi⟩ := (e.r i').eq_none_or_eq_some
     · rw [extend.d_none_eq_zero K _ _ hi']
     · obtain hj'|⟨j, hj⟩ := (e.r j').eq_none_or_eq_some
@@ -123,7 +121,6 @@ noncomputable def extend : HomologicalComplex C c' where
         intro hij
         exact h (e.rel hij)
   d_comp_d' i' j' k' _ _ := by
-    dsimp
     obtain hi'|⟨i, hi⟩ := (e.r i').eq_none_or_eq_some
     · rw [extend.d_none_eq_zero K _ _ hi', zero_comp]
     · obtain hj'|⟨j, hj⟩ := (e.r j').eq_none_or_eq_some
@@ -149,6 +146,9 @@ lemma isZero_extend_X (i' : ι') (hi' : ∀ i, e.f i ≠ i') :
     · exact hi'
     · exfalso
       exact hi' _ (e.f_eq_of_r_eq_some hi))
+
+instance : (K.extend e).IsStrictlySupported e where
+  isZero i' hi' := K.isZero_extend_X e i' hi'
 
 lemma extend_d_eq {i' j' : ι'} {i j : ι} (hi : e.f i = i') (hj : e.f j = j') :
     (K.extend e).d i' j' = (K.extendXIso e hi).hom ≫ K.d i j ≫
@@ -181,7 +181,6 @@ morphism `K.extend e ⟶ L.extend e` induced by a morphism `K ⟶ L` in
 noncomputable def extendMap : K.extend e ⟶ L.extend e where
   f _ := extend.mapX φ _
   comm' i' j' _ := by
-    dsimp
     by_cases hi : ∃ i, e.f i = i'
     · obtain ⟨i, hi⟩ := hi
       by_cases hj : ∃ j, e.f j = j'

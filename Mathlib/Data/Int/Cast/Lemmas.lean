@@ -3,6 +3,7 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Algebra.Group.TypeTags.Hom
 import Mathlib.Algebra.Ring.Hom.Basic
 import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Algebra.Ring.Parity
@@ -21,7 +22,7 @@ which were not available in the import dependencies of `Data.Int.Cast.Basic`.
 * `castRingHom`: `cast` bundled as a `RingHom`.
 -/
 
-assert_not_exists OrderedCommMonoid
+assert_not_exists RelIso OrderedCommMonoid Field
 
 open Additive Function Multiplicative Nat
 
@@ -117,10 +118,8 @@ lemma _root_.Odd.intCast (hn : Odd n) : Odd (n : α) := hn.map (castRingHom α)
 
 end Ring
 
-theorem cast_dvd_cast [CommRing α] (m n : ℤ) (h : m ∣ n) : (m : α) ∣ (n : α) :=
+theorem cast_dvd_cast [Ring α] (m n : ℤ) (h : m ∣ n) : (m : α) ∣ (n : α) :=
   RingHom.map_dvd (Int.castRingHom α) h
-
-@[deprecated (since := "2024-05-25")] alias coe_int_dvd := cast_dvd_cast
 
 end cast
 
@@ -140,10 +139,6 @@ variable [Ring α] {a x y : α}
 @[simp] lemma intCast_mul_intCast_mul (h : SemiconjBy a x y) (m n : ℤ) :
     SemiconjBy (m * a) (n * x) (n * y) := (h.intCast_mul_left m).intCast_mul_right n
 
-@[deprecated (since := "2024-05-27")] alias cast_int_mul_right := intCast_mul_right
-@[deprecated (since := "2024-05-27")] alias cast_int_mul_left := intCast_mul_left
-@[deprecated (since := "2024-05-27")] alias cast_int_mul_cast_int_mul := intCast_mul_intCast_mul
-
 end SemiconjBy
 
 namespace Commute
@@ -153,9 +148,6 @@ variable [NonAssocRing α] {a : α} {n : ℤ}
 @[simp] lemma intCast_left : Commute (n : α) a := Int.cast_commute _ _
 
 @[simp] lemma intCast_right : Commute a n := Int.commute_cast _ _
-
-@[deprecated (since := "2024-05-27")] alias cast_int_right := intCast_right
-@[deprecated (since := "2024-05-27")] alias cast_int_left := intCast_left
 
 end NonAssocRing
 
@@ -180,14 +172,6 @@ lemma intCast_mul_self : Commute ((n : α) * a) a := (Commute.refl a).intCast_mu
 lemma self_intCast_mul_intCast_mul : Commute (m * a : α) (n * a : α) :=
   (Commute.refl a).intCast_mul_intCast_mul m n
 
-@[deprecated (since := "2024-05-27")] alias cast_int_mul_right := intCast_mul_right
-@[deprecated (since := "2024-05-27")] alias cast_int_mul_left := intCast_mul_left
-@[deprecated (since := "2024-05-27")] alias cast_int_mul_cast_int_mul := intCast_mul_intCast_mul
-@[deprecated (since := "2024-05-27")] alias self_cast_int_mul := self_intCast_mul
-@[deprecated (since := "2024-05-27")] alias cast_int_mul_self := intCast_mul_self
-@[deprecated (since := "2024-05-27")]
-alias self_cast_int_mul_cast_int_mul := self_intCast_mul_intCast_mul
-
 end Ring
 end Commute
 
@@ -210,15 +194,17 @@ variable [AddGroupWithOne A]
 theorem eq_intCastAddHom (f : ℤ →+ A) (h1 : f 1 = 1) : f = Int.castAddHom A :=
   ext_int <| by simp [h1]
 
-@[deprecated (since := "2024-04-17")]
-alias eq_int_castAddHom := eq_intCastAddHom
-
 end AddMonoidHom
 
 theorem eq_intCast' [AddGroupWithOne α] [FunLike F ℤ α] [AddMonoidHomClass F ℤ α]
     (f : F) (h₁ : f 1 = 1) :
     ∀ n : ℤ, f n = n :=
   DFunLike.ext_iff.1 <| (f : ℤ →+ α).eq_intCastAddHom h₁
+
+/-- This version is primed so that the `RingHomClass` versions aren't. -/
+theorem map_intCast' [AddGroupWithOne α] [AddGroupWithOne β] [FunLike F α β]
+    [AddMonoidHomClass F α β] (f : F) (h₁ : f 1 = 1) : ∀ n : ℤ, f n = n :=
+  eq_intCast' ((f : α →+ β).comp <| Int.castAddHom _) (by simpa)
 
 @[simp]
 theorem Int.castAddHom_int : Int.castAddHom ℤ = AddMonoidHom.id ℤ :=
@@ -239,10 +225,10 @@ theorem ext_mint {f g : Multiplicative ℤ →* M} (h1 : f (ofAdd 1) = g (ofAdd 
 theorem ext_int {f g : ℤ →* M} (h_neg_one : f (-1) = g (-1))
     (h_nat : f.comp Int.ofNatHom.toMonoidHom = g.comp Int.ofNatHom.toMonoidHom) : f = g := by
   ext (x | x)
-  · exact (DFunLike.congr_fun h_nat x : _)
+  · exact (DFunLike.congr_fun h_nat x :)
   · rw [Int.negSucc_eq, ← neg_one_mul, f.map_mul, g.map_mul]
     congr 1
-    exact mod_cast (DFunLike.congr_fun h_nat (x + 1) : _)
+    exact mod_cast (DFunLike.congr_fun h_nat (x + 1) :)
 
 end MonoidHom
 
@@ -256,7 +242,7 @@ theorem ext_int {f g : ℤ →*₀ M} (h_neg_one : f (-1) = g (-1))
     (h_nat : f.comp Int.ofNatHom.toMonoidWithZeroHom = g.comp Int.ofNatHom.toMonoidWithZeroHom) :
     f = g :=
   toMonoidHom_injective <| MonoidHom.ext_int h_neg_one <|
-    MonoidHom.ext (DFunLike.congr_fun h_nat : _)
+    MonoidHom.ext (DFunLike.congr_fun h_nat :)
 
 end MonoidWithZeroHom
 
@@ -366,25 +352,3 @@ end NonAssocRing
 @[simp]
 theorem Int.castRingHom_int : Int.castRingHom ℤ = RingHom.id ℤ :=
   (RingHom.id ℤ).eq_intCast'.symm
-
-namespace Pi
-
-variable {π : ι → Type*} [∀ i, IntCast (π i)]
-
-instance instIntCast : IntCast (∀ i, π i) where intCast n _ := n
-
-theorem intCast_apply (n : ℤ) (i : ι) : (n : ∀ i, π i) i = n :=
-  rfl
-
-@[simp]
-theorem intCast_def (n : ℤ) : (n : ∀ i, π i) = fun _ => ↑n :=
-  rfl
-
-@[deprecated (since := "2024-04-05")] alias int_apply := intCast_apply
-@[deprecated (since := "2024-04-05")] alias coe_int := intCast_def
-
-end Pi
-
-theorem Sum.elim_intCast_intCast {α β γ : Type*} [IntCast γ] (n : ℤ) :
-    Sum.elim (n : α → γ) (n : β → γ) = n :=
-  Sum.elim_lam_const_lam_const (γ := γ) n

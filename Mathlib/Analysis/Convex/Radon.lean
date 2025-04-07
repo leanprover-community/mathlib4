@@ -6,7 +6,7 @@ Authors: Vasily Nesterov
 import Mathlib.Analysis.Convex.Combination
 import Mathlib.Data.Set.Card
 import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
-import Mathlib.Topology.Separation.Basic
+import Mathlib.Topology.Separation.Hausdorff
 
 /-!
 # Radon's theorem on convex sets
@@ -35,7 +35,9 @@ variable {ι 𝕜 E : Type*} [LinearOrderedField 𝕜] [AddCommGroup E] [Module 
 /-- **Radon's theorem on convex sets**.
 
 Any family `f` of affine dependent vectors contains a set `I` with the property that convex hulls of
-`I` and `Iᶜ` intersect nontrivially. -/
+`I` and `Iᶜ` intersect nontrivially.
+In particular, any `d + 2` points in a `d`-dimensional space can be partitioned this way, since they
+are affinely dependent (see `finrank_vectorSpan_le_iff_not_affineIndependent`). -/
 theorem radon_partition {f : ι → E} (h : ¬ AffineIndependent 𝕜 f) :
     ∃ I, (convexHull 𝕜 (f '' I) ∩ convexHull 𝕜 (f '' Iᶜ)).Nonempty := by
   rw [affineIndependent_iff] at h
@@ -189,7 +191,7 @@ theorem helly_theorem_compact' [TopologicalSpace E] [T2Space E] {F : ι → Set 
     (⋂ i, F i).Nonempty := by
   classical
   /- If `ι` is empty the statement is trivial. -/
-  cases' isEmpty_or_nonempty ι with _ h_nonempty
+  rcases isEmpty_or_nonempty ι with _ | h_nonempty
   · simp only [iInter_of_empty, Set.univ_nonempty]
   /- By the finite version of theorem, every finite subfamily has an intersection. -/
   have h_fin (I : Finset ι) : (⋂ i ∈ I, F i).Nonempty := by

@@ -91,7 +91,7 @@ lemma Ico_filter_modEq_cast {v : ℕ} :
   simp only [mem_map, mem_filter, mem_Ico, castEmbedding_apply]
   constructor
   · simp_rw [forall_exists_index, ← natCast_modEq_iff]; intro y ⟨h, c⟩; subst c; exact_mod_cast h
-  · intro h; lift x to ℕ using (by linarith); exact ⟨x, by simp_all [natCast_modEq_iff]⟩
+  · intro h; lift x to ℕ using (by omega); exact ⟨x, by simp_all [natCast_modEq_iff]⟩
 
 lemma Ioc_filter_modEq_cast {v : ℕ} :
     {x ∈ Ioc a b | x ≡ v [MOD r]}.map castEmbedding =
@@ -100,7 +100,7 @@ lemma Ioc_filter_modEq_cast {v : ℕ} :
   simp only [mem_map, mem_filter, mem_Ioc, castEmbedding_apply]
   constructor
   · simp_rw [forall_exists_index, ← natCast_modEq_iff]; intro y ⟨h, c⟩; subst c; exact_mod_cast h
-  · intro h; lift x to ℕ using (by linarith); exact ⟨x, by simp_all [natCast_modEq_iff]⟩
+  · intro h; lift x to ℕ using (by omega); exact ⟨x, by simp_all [natCast_modEq_iff]⟩
 
 variable (hr : 0 < r)
 include hr
@@ -127,7 +127,7 @@ theorem count_modEq_card_eq_ceil (v : ℕ) :
     max_eq_left (sub_nonneg.mpr <| by gcongr <;> positivity)]
   conv_lhs =>
     rw [← div_add_mod v r, cast_add, cast_mul, add_comm]
-    tactic => simp_rw [← sub_sub, sub_div (_ - _), mul_div_cancel_left₀ _ hr'.ne', ceil_sub_nat]
+    tactic => simp_rw [← sub_sub, sub_div (_ - _), mul_div_cancel_left₀ _ hr'.ne', ceil_sub_natCast]
     rw [sub_sub_sub_cancel_right, cast_zero, zero_sub]
   rw [sub_eq_self, ceil_eq_zero_iff, Set.mem_Ioc, div_le_iff₀ hr', lt_div_iff₀ hr', neg_one_mul,
     zero_mul, neg_lt_neg_iff, cast_lt]
@@ -140,7 +140,7 @@ theorem count_modEq_card (v : ℕ) :
   have hr' : 0 < (r : ℚ) := by positivity
   rw [← ofNat_inj, count_modEq_card_eq_ceil _ hr, cast_add]
   conv_lhs => rw [← div_add_mod b r, cast_add, cast_mul, ← add_sub, _root_.add_div,
-    mul_div_cancel_left₀ _ hr'.ne', add_comm, Int.ceil_add_nat, add_comm]
+    mul_div_cancel_left₀ _ hr'.ne', add_comm, Int.ceil_add_natCast, add_comm]
   rw [add_right_inj]
   split_ifs with h
   · rw [← cast_sub h.le, Int.ceil_eq_iff, div_le_iff₀ hr', lt_div_iff₀ hr', cast_one, Int.cast_one,

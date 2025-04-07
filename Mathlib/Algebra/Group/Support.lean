@@ -3,8 +3,10 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Prod
-import Mathlib.Order.Cover
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Algebra.Notation.Prod
+import Mathlib.Data.Set.Image
 
 /-!
 # Support of a function
@@ -13,7 +15,7 @@ In this file we define `Function.support f = {x | f x ≠ 0}` and prove its basi
 We also define `Function.mulSupport f = {x | f x ≠ 1}`.
 -/
 
-assert_not_exists MonoidWithZero
+assert_not_exists CompleteLattice MonoidWithZero
 
 open Set
 
@@ -110,8 +112,6 @@ theorem disjoint_mulSupport_iff {f : α → M} {s : Set α} :
 
 @[to_additive (attr := simp)]
 theorem mulSupport_eq_empty_iff {f : α → M} : mulSupport f = ∅ ↔ f = 1 := by
-  #adaptation_note /-- This used to be `simp_rw` rather than `rw`,
-  but this broke `to_additive` as of `nightly-2024-03-07` -/
   rw [← subset_empty_iff, mulSupport_subset_iff', funext_iff]
   simp
 
@@ -128,8 +128,12 @@ theorem range_subset_insert_image_mulSupport (f : α → M) :
 @[to_additive]
 lemma range_eq_image_or_of_mulSupport_subset {f : α → M} {k : Set α} (h : mulSupport f ⊆ k) :
     range f = f '' k ∨ range f = insert 1 (f '' k) := by
-  apply (wcovBy_insert _ _).eq_or_eq (image_subset_range _ _)
-  exact (range_subset_insert_image_mulSupport f).trans (insert_subset_insert (image_subset f h))
+  have : range f ⊆ insert 1 (f '' k) :=
+    (range_subset_insert_image_mulSupport f).trans (insert_subset_insert (image_subset f h))
+  by_cases h1 : 1 ∈ range f
+  · exact Or.inr (subset_antisymm this (insert_subset h1 (image_subset_range _ _)))
+  refine Or.inl (subset_antisymm ?_ (image_subset_range _ _))
+  rwa [← diff_singleton_eq_self h1, diff_singleton_subset_iff]
 
 @[to_additive (attr := simp)]
 theorem mulSupport_one' : mulSupport (1 : α → M) = ∅ :=

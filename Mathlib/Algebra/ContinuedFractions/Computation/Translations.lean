@@ -5,6 +5,7 @@ Authors: Kevin Kappelmann
 -/
 import Mathlib.Algebra.ContinuedFractions.Computation.Basic
 import Mathlib.Algebra.ContinuedFractions.Translations
+import Mathlib.Algebra.Order.Floor.Ring
 
 /-!
 # Basic Translation Lemmas Between Structures Defined for Computing Continued Fractions
@@ -121,7 +122,7 @@ theorem stream_succ (h : Int.fract v ≠ 0) (n : ℕ) :
     IntFractPair.stream v (n + 1) = IntFractPair.stream (Int.fract v)⁻¹ n := by
   induction n with
   | zero =>
-    have H : (IntFractPair.of v).fr = Int.fract v := rfl
+    have H : (IntFractPair.of v).fr = Int.fract v := by simp [IntFractPair.of]
     rw [stream_zero, stream_succ_of_some (stream_zero v) (ne_of_eq_of_ne H h), H]
   | succ n ih =>
     rcases eq_or_ne (IntFractPair.stream (Int.fract v)⁻¹ n) none with hnone | hsome
@@ -307,7 +308,7 @@ theorem convs'_of_int (a : ℤ) : (of (a : K)).convs' n = a := by
   induction n with
   | zero => simp only [zeroth_conv'_eq_h, of_h_eq_floor, floor_intCast]
   | succ =>
-    rw [convs', of_h_eq_floor, floor_intCast, add_right_eq_self]
+    rw [convs', of_h_eq_floor, floor_intCast, add_eq_left]
     exact convs'Aux_succ_none ((of_s_of_int K a).symm ▸ Stream'.Seq.get?_nil 0) _
 
 variable {K}

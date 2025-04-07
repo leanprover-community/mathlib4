@@ -7,7 +7,7 @@ import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.GroupTheory.MonoidLocalization.Basic
 
 /-!
-# Localizing commutative monoids away from an alement
+# Localizing commutative monoids away from an element
 
 We treat the special case of localizing away from an element in the sections
 `AwayMap` and `Away`.
@@ -16,6 +16,8 @@ We treat the special case of localizing away from an element in the sections
 localization, monoid localization, quotient monoid, congruence relation, characteristic predicate,
 commutative monoid, grothendieck group
 -/
+
+assert_not_exists MonoidWithZero
 
 open Function
 

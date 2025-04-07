@@ -82,7 +82,6 @@ def comp {M : C ⥤ D} (f : HomObj F G A) (g : HomObj G M A) : HomObj F M A wher
 def map {A' : C ⥤ Type w} (f : A' ⟶ A) (x : HomObj F G A) : HomObj F G A' where
   app Δ a := x.app Δ (f.app Δ a)
   naturality {Δ Δ'} φ a := by
-    dsimp
     rw [← x.naturality φ (f.app Δ a), FunctorToTypes.naturality _ _ f φ a]
 
 end HomObj
@@ -94,7 +93,6 @@ def homObjFunctor : (C ⥤ Type w)ᵒᵖ ⥤ Type max w v' u where
   map {A A'} f x :=
     { app := fun X a ↦ x.app X (f.unop.app _ a)
       naturality := fun {X Y} φ a ↦ by
-        dsimp
         rw [← HomObj.naturality]
         congr 2
         exact congr_fun (f.unop.naturality φ) a }
@@ -131,7 +129,7 @@ def functorHomEquiv (A : C ⥤ Type max u v v') : (A ⟶ F.functorHom G) ≃ Hom
     ext X a Y f
     exact (HomObj.congr_app (congr_fun (φ.naturality f) a) Y (𝟙 _)).trans
       (congr_arg ((φ.app X a).app Y) (by simp))
-  right_inv x := by aesop
+  right_inv x := by simp
 
 variable {F G} in
 /-- Morphisms `(𝟙_ (C ⥤ Type max v' v u) ⟶ F.functorHom G)` are in bijection with
@@ -145,7 +143,7 @@ def natTransEquiv : (𝟙_ (C ⥤ Type max v' v u) ⟶ F.functorHom G) ≃ (F �
     have := HomObj.congr_app (congr_fun (f.naturality φ) PUnit.unit) Y (𝟙 Y)
     dsimp [functorHom, homObjFunctor] at this
     aesop ⟩
-  invFun f := ⟨fun _ _ ↦ HomObj.ofNatTrans f, _⟩
+  invFun f := { app _ _ := HomObj.ofNatTrans f }
   left_inv f := by
     ext X a Y φ
     have := HomObj.congr_app (congr_fun (f.naturality φ) PUnit.unit) Y (𝟙 Y)

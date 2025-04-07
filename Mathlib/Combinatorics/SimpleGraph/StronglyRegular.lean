@@ -62,6 +62,11 @@ theorem bot_strongly_regular : (⊥ : SimpleGraph V).IsSRGWith (Fintype.card V) 
     ext
     simp [mem_commonNeighbors]
 
+/-- **Conway's 99-graph problem** (from https://oeis.org/A248380/a248380.pdf)
+can be reformulated as the existence of a strongly regular graph with params (99, 14, 1, 2).
+This is an open problem, and has no known proof of existence. -/
+proof_wanted conway_99 : ∃ α : Type*, ∃ (g : SimpleGraph α), IsSRGWith G 99 14 1 2
+
 variable [DecidableEq V]
 
 /-- Complete graphs are strongly regular. Note that `μ` can take any value
@@ -80,10 +85,7 @@ theorem IsSRGWith.card_neighborFinset_union_eq {v w : V} (h : G.IsSRGWith n k �
       2 * k - Fintype.card (G.commonNeighbors v w) := by
   apply Nat.add_right_cancel (m := Fintype.card (G.commonNeighbors v w))
   rw [Nat.sub_add_cancel, ← Set.toFinset_card]
-  -- Porting note: Set.toFinset_inter needs workaround to use unification to solve for one of the
-  -- instance arguments:
-  · simp [commonNeighbors, @Set.toFinset_inter _ _ _ _ _ _ (_),
-      ← neighborFinset_def, Finset.card_union_add_card_inter, card_neighborFinset_eq_degree,
+  · simp [commonNeighbors, ← neighborFinset_def, Finset.card_union_add_card_inter,
       h.regular.degree_eq, two_mul]
   · apply le_trans (card_commonNeighbors_le_degree_left _ _ _)
     simp [h.regular.degree_eq, two_mul]

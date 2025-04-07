@@ -25,6 +25,8 @@ differentials `(K.X p).X q ⟶ (K.X p).X (q + 1)`.
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 open CategoryTheory Category Limits Preadditive
 
 namespace HomologicalComplex₂
@@ -244,12 +246,11 @@ lemma D₁_D₂ (i₁₂ i₁₂' i₁₂'' : I₁₂) :
     K.D₁ c₁₂ i₁₂ i₁₂' ≫ K.D₂ c₁₂ i₁₂' i₁₂'' = - K.D₂ c₁₂ i₁₂ i₁₂' ≫ K.D₁ c₁₂ i₁₂' i₁₂'' := by simp
 
 /-- The total complex of a bicomplex. -/
-@[simps (config := .lemmasOnly) d]
+@[simps -isSimp d]
 noncomputable def total : HomologicalComplex C c₁₂ where
   X := K.toGradedObject.mapObj (ComplexShape.π c₁ c₂ c₁₂)
   d i₁₂ i₁₂' := K.D₁ c₁₂ i₁₂ i₁₂' + K.D₂ c₁₂ i₁₂ i₁₂'
   shape i₁₂ i₁₂' h₁₂ := by
-    dsimp
     rw [K.D₁_shape c₁₂ _ _ h₁₂, K.D₂_shape c₁₂ _ _ h₁₂, zero_add]
 
 /-- The inclusion of a summand in the total complex. -/
