@@ -24,10 +24,10 @@ noncomputable section
 section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
+variable {E : Type*} [AddCommGroup E] [TopologicalSpace E] [Module 𝕜 E]
+variable {F : Type*} [AddCommGroup F] [TopologicalSpace F] [Module 𝕜 F] [ContinuousSMul 𝕜 F]
+variable {G : Type*} [AddCommGroup G] [TopologicalSpace G] [Module 𝕜 G] [ContinuousSMul 𝕜 G]
+variable {G' : Type*} [AddCommGroup G'] [TopologicalSpace G'] [Module 𝕜 G']
 variable {f f₀ f₁ g : E → F}
 variable {f' f₀' f₁' g' : E →L[𝕜] F}
 variable (e : E →L[𝕜] F)
@@ -47,7 +47,7 @@ variable {f₂ : E → G} {f₂' : E →L[𝕜] G}
 protected theorem HasStrictFDerivAt.prodMk (hf₁ : HasStrictFDerivAt f₁ f₁' x)
     (hf₂ : HasStrictFDerivAt f₂ f₂' x) :
     HasStrictFDerivAt (fun x => (f₁ x, f₂ x)) (f₁'.prod f₂') x :=
-  .of_isLittleO <| hf₁.isLittleO.prod_left hf₂.isLittleO
+  .of_isLittleOTVS <| hf₁.isLittleOTVS.prodMk hf₂.isLittleOTVS
 
 @[deprecated (since := "2025-03-09")]
 alias HasStrictFDerivAt.prod := HasStrictFDerivAt.prodMk
@@ -55,7 +55,7 @@ alias HasStrictFDerivAt.prod := HasStrictFDerivAt.prodMk
 theorem HasFDerivAtFilter.prodMk (hf₁ : HasFDerivAtFilter f₁ f₁' x L)
     (hf₂ : HasFDerivAtFilter f₂ f₂' x L) :
     HasFDerivAtFilter (fun x => (f₁ x, f₂ x)) (f₁'.prod f₂') x L :=
-  .of_isLittleO <| hf₁.isLittleO.prod_left hf₂.isLittleO
+  .of_isLittleOTVS <| hf₁.isLittleOTVS.prodMk hf₂.isLittleOTVS
 
 @[deprecated (since := "2025-03-09")]
 alias HasFDerivAtFilter.prod := HasFDerivAtFilter.prodMk
