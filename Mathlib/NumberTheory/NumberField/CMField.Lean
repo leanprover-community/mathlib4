@@ -43,13 +43,13 @@ theorem isTotallyReal [IsCM F K] :
 theorem finrank_eq_two [IsCM F K] :
     Module.finrank F K = 2 := finrank_eq_two'
 
-section first_results
+section FirstResults
 
 variable [IsCM F K]
 
 instance : IsGalois F K :=
 { to_isSeparable := Algebra.IsSeparable.of_integral _ _
-  to_normal := normal_of_rank_eq_two _ _ (finrank_eq_two F K) }
+  to_normal := normal_of_finrank_eq_two _ _ (finrank_eq_two F K) }
 
 theorem card_infinitePlace_eq_card_infinitePlace :
     Fintype.card (InfinitePlace K) = Fintype.card (InfinitePlace F) := by
@@ -63,7 +63,7 @@ theorem units_rank_eq_units_rank :
     Units.rank K = Units.rank F := by
   rw [Units.rank, Units.rank, card_infinitePlace_eq_card_infinitePlace F K]
 
-end first_results
+end FirstResults
 
 end IsCM
 

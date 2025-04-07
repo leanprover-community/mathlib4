@@ -1166,12 +1166,23 @@ is a subset of `ℝ`. -/
 @[mk_iff] class IsTotallyReal (K : Type*) [Field K] [NumberField K] where
   isReal : ∀ v : InfinitePlace K, v.IsReal
 
-variable {K : Type*} [Field K] [NumberField K]
+variable (F : Type*) {K : Type*} [Field K] [NumberField K]
 
 theorem nrComplexPlaces_eq_zero_iff :
     nrComplexPlaces K = 0 ↔ IsTotallyReal K := by
   classical
   simp [Fintype.card_eq_zero_iff, isEmpty_subtype, isTotallyReal_iff]
+
+variable (K) in
+theorem IsTotally.of_algebra [IsTotallyReal K] [Field F] [NumberField F] [Algebra F K]  :
+    IsTotallyReal F where
+  isReal w := by
+    obtain ⟨W, rfl⟩ : ∃ W : InfinitePlace K, W.comap (algebraMap F K) = w := comap_surjective w
+    exact IsReal.comap _ (IsTotallyReal.isReal W)
+
+instance (F : IntermediateField ℚ K) [IsTotallyReal K] :
+    IsTotallyReal F :=
+  IsTotally.of_algebra F K
 
 variable (K)
 
