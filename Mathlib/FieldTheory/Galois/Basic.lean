@@ -197,9 +197,10 @@ theorem finrank_fixedField_eq_card [FiniteDimensional F E] [DecidablePred (· �
 nonrec def fixingSubgroup : Subgroup (E ≃ₐ[F] E) :=
   fixingSubgroup (E ≃ₐ[F] E) (K : Set E)
 
-protected theorem mem_fixingSubgroup_iff (f : E ≃ₐ[F] E) :
-    f ∈ K.fixingSubgroup ↔ ∀ x ∈ K, f x = x := by
-  simp only [fixingSubgroup, _root_.mem_fixingSubgroup_iff, SetLike.mem_coe, AlgEquiv.smul_def]
+/-- An element of `E ≃ₐ[F] E` is in `Gal(E/K)` if and only if it fixes every element of `K`. -/
+protected theorem mem_fixingSubgroup_iff (K : IntermediateField F E) (σ : E ≃ₐ[F] E) :
+    σ ∈ K.fixingSubgroup ↔ ∀ x ∈ K, σ x = x :=
+   ⟨fun hσ x hx => hσ ⟨x, hx⟩, fun h ⟨x, hx⟩ => h x hx⟩
 
 theorem le_iff_le : K ≤ fixedField H ↔ H ≤ fixingSubgroup K :=
   ⟨fun h g hg x => h (Subtype.mem x) ⟨g, hg⟩, fun h x hx g => h (Subtype.mem g) ⟨x, hx⟩⟩
