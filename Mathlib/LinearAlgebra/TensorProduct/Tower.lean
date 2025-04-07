@@ -231,7 +231,8 @@ lemma coe_lTensor (f : N →ₗ[R] Q) :
 
 @[simp]
 lemma restrictScalars_lTensor (f : N →ₗ[R] Q) :
-    (lTensor A M f).restrictScalars R = f.lTensor M := rfl
+    (lTensor A M f).restrictScalars R = f.lTensor M := by
+  with_unfolding_all rfl
 
 @[simp] lemma lTensor_tmul (f : N →ₗ[R] Q) (m : M) (n : N) :
     lTensor A M f (m ⊗ₜ[R] n) = m ⊗ₜ f n :=
@@ -263,7 +264,8 @@ lemma coe_rTensor (f : M →ₗ[A] P) :
 
 @[simp]
 lemma restrictScalars_rTensor (f : M →ₗ[A] P) :
-    (rTensor R N f).restrictScalars R = f.rTensor N := rfl
+    (rTensor R N f).restrictScalars R = f.rTensor N := by
+  with_unfolding_all rfl
 
 @[simp] lemma rTensor_tmul (f : M →ₗ[A] P) (m : M) (n : N) :
     rTensor R N f (m ⊗ₜ[R] n) = f m ⊗ₜ n :=
@@ -321,7 +323,8 @@ theorem congr_trans (f₁ : M ≃ₗ[A] P) (f₂ : P ≃ₗ[A] P') (g₁ : N ≃
     congr (f₁.trans f₂) (g₁.trans g₂) = (congr f₁ g₁).trans (congr f₂ g₂) :=
   LinearEquiv.toLinearMap_injective <| map_comp _ _ _ _
 
-theorem congr_symm (f : M ≃ₗ[A] P) (g : N ≃ₗ[R] Q) : congr f.symm g.symm = (congr f g).symm := rfl
+theorem congr_symm (f : M ≃ₗ[A] P) (g : N ≃ₗ[R] Q) : congr f.symm g.symm = (congr f g).symm := by
+  with_unfolding_all rfl
 
 @[simp]
 theorem congr_one : congr (1 : M ≃ₗ[A] M) (1 : N ≃ₗ[R] N) = 1 := congr_refl
