@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
 import Mathlib.Algebra.Group.Action.Faithful
-import Mathlib.Data.Set.Function
+import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Data.Set.Piecewise
 
 /-!
 # Pi instances for multiplicative actions

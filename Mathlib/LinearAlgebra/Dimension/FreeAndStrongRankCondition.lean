@@ -42,15 +42,16 @@ theorem Basis.ofRankEqZero_apply [Module.Free K V] {ι : Type*} [IsEmpty ι]
     (hV : Module.rank K V = 0) (i : ι) : Basis.ofRankEqZero hV i = 0 := rfl
 
 theorem le_rank_iff_exists_linearIndependent [Module.Free K V] {c : Cardinal} :
-    c ≤ Module.rank K V ↔ ∃ s : Set V, #s = c ∧ LinearIndependent K ((↑) : s → V) := by
+    c ≤ Module.rank K V ↔ ∃ s : Set V, #s = c ∧ LinearIndepOn K id s := by
   haveI := nontrivial_of_invariantBasisNumber K
   constructor
   · intro h
     obtain ⟨κ, t'⟩ := Module.Free.exists_basis (R := K) (M := V)
     let t := t'.reindexRange
-    have : LinearIndependent K ((↑) : Set.range t' → V) := by
-      convert t.linearIndependent
-      ext; exact (Basis.reindexRange_apply _ _).symm
+    have : LinearIndepOn K id (Set.range t') := by
+      convert t.linearIndependent.linearIndepOn_id
+      ext
+      simp [t]
     rw [← t.mk_eq_rank'', le_mk_iff_exists_subset] at h
     rcases h with ⟨s, hst, hsc⟩
     exact ⟨s, hsc, this.mono hst⟩

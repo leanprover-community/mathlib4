@@ -6,6 +6,7 @@ Authors: Adam Topaz, Kim Morrison
 import Mathlib.CategoryTheory.Comma.Basic
 import Mathlib.CategoryTheory.PUnit
 import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
+import Mathlib.CategoryTheory.Functor.EpiMono
 
 /-!
 # The category of "structured arrows"
@@ -219,13 +220,13 @@ theorem map_comp {f : S ⟶ S'} {f' : S' ⟶ S''} {h : StructuredArrow S'' T} :
   simp
 
 /-- An isomorphism `S ≅ S'` induces an equivalence `StructuredArrow S T ≌ StructuredArrow S' T`. -/
-@[simp]
+@[simps!]
 def mapIso (i : S ≅ S') : StructuredArrow S T ≌ StructuredArrow S' T :=
   Comma.mapLeftIso _ ((Functor.const _).mapIso i)
 
 /-- A natural isomorphism `T ≅ T'` induces an equivalence
     `StructuredArrow S T ≌ StructuredArrow S T'`. -/
-@[simp]
+@[simps!]
 def mapNatIso (i : T ≅ T') : StructuredArrow S T ≌ StructuredArrow S T' :=
   Comma.mapRightIso _ i
 
@@ -422,7 +423,6 @@ theorem mk_right (f : S.obj Y ⟶ T) : (mk f).right = ⟨⟨⟩⟩ :=
 theorem mk_hom_eq_self (f : S.obj Y ⟶ T) : (mk f).hom = f :=
   rfl
 
--- @[reassoc (attr := simp)] Porting note: simp can solve these
 @[reassoc]
 theorem w {A B : CostructuredArrow S T} (f : A ⟶ B) : S.map f.left ≫ B.hom = A.hom := by simp
 
@@ -566,13 +566,13 @@ theorem map_comp {f : T ⟶ T'} {f' : T' ⟶ T''} {h : CostructuredArrow S T} :
 
 /-- An isomorphism `T ≅ T'` induces an equivalence
     `CostructuredArrow S T ≌ CostructuredArrow S T'`. -/
-@[simp]
+@[simps!]
 def mapIso (i : T ≅ T') : CostructuredArrow S T ≌ CostructuredArrow S T' :=
   Comma.mapRightIso _ ((Functor.const _).mapIso i)
 
 /-- A natural isomorphism `S ≅ S'` induces an equivalence
     `CostrucutredArrow S T ≌ CostructuredArrow S' T`. -/
-@[simp]
+@[simps!]
 def mapNatIso (i : S ≅ S') : CostructuredArrow S T ≌ CostructuredArrow S' T :=
   Comma.mapLeftIso _ i
 

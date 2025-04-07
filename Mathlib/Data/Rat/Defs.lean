@@ -3,12 +3,13 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Batteries.Data.Rat.Lemmas
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Data.Int.Defs
 import Mathlib.Data.Rat.Init
 import Mathlib.Order.Basic
 import Mathlib.Tactic.Common
-import Batteries.Data.Rat.Lemmas
+import Mathlib.Data.Int.Init
+import Mathlib.Data.Nat.Basic
 
 /-!
 # Basics for the Rational Numbers
@@ -31,14 +32,13 @@ The definition of the field structure on `ℚ` will be done in `Mathlib.Data.Rat
 
 -- TODO: If `Inv` was defined earlier than `Algebra.Group.Defs`, we could have
 -- assert_not_exists Monoid
-assert_not_exists MonoidWithZero Lattice PNat Nat.dvd_mul
+assert_not_exists MonoidWithZero Lattice PNat Nat.gcd_greatest
 
 open Function
 
 namespace Rat
 variable {q : ℚ}
 
--- Porting note: the definition of `ℚ` has changed; in mathlib3 this was a field.
 theorem pos (a : ℚ) : 0 < a.den := Nat.pos_of_ne_zero a.den_nz
 
 lemma mk'_num_den (q : ℚ) : mk' q.num q.den q.den_nz q.reduced = q := rfl
@@ -64,15 +64,12 @@ lemma intCast_injective : Injective (Int.cast : ℤ → ℚ) := fun _ _ ↦ cong
 lemma natCast_injective : Injective (Nat.cast : ℕ → ℚ) :=
   intCast_injective.comp fun _ _ ↦ Int.natCast_inj.1
 
--- We want to use these lemmas earlier than the lemmas simp can prove them with
-@[simp, nolint simpNF, norm_cast] lemma natCast_inj {m n : ℕ} : (m : ℚ) = n ↔ m = n :=
+@[simp high, norm_cast] lemma natCast_inj {m n : ℕ} : (m : ℚ) = n ↔ m = n :=
   natCast_injective.eq_iff
-@[simp, nolint simpNF, norm_cast] lemma intCast_eq_zero {n : ℤ} : (n : ℚ) = 0 ↔ n = 0 := intCast_inj
-@[simp, nolint simpNF, norm_cast] lemma natCast_eq_zero {n : ℕ} : (n : ℚ) = 0 ↔ n = 0 := natCast_inj
-@[simp, nolint simpNF, norm_cast] lemma intCast_eq_one {n : ℤ} : (n : ℚ) = 1 ↔ n = 1 := intCast_inj
-@[simp, nolint simpNF, norm_cast] lemma natCast_eq_one {n : ℕ} : (n : ℚ) = 1 ↔ n = 1 := natCast_inj
-
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO Should this be namespaced?
+@[simp high, norm_cast] lemma intCast_eq_zero {n : ℤ} : (n : ℚ) = 0 ↔ n = 0 := intCast_inj
+@[simp high, norm_cast] lemma natCast_eq_zero {n : ℕ} : (n : ℚ) = 0 ↔ n = 0 := natCast_inj
+@[simp high, norm_cast] lemma intCast_eq_one {n : ℤ} : (n : ℚ) = 1 ↔ n = 1 := intCast_inj
+@[simp high, norm_cast] lemma natCast_eq_one {n : ℕ} : (n : ℚ) = 1 ↔ n = 1 := natCast_inj
 
 lemma mkRat_eq_divInt (n d) : mkRat n d = n /. d := rfl
 
@@ -100,7 +97,7 @@ theorem divInt_eq_zero {a b : ℤ} (b0 : b ≠ 0) : a /. b = 0 ↔ a = 0 := by
 theorem divInt_ne_zero {a b : ℤ} (b0 : b ≠ 0) : a /. b ≠ 0 ↔ a ≠ 0 :=
   (divInt_eq_zero b0).not
 
--- Porting note: this can move to Batteries
+-- TODO: this can move to Batteries
 theorem normalize_eq_mk' (n : Int) (d : Nat) (h : d ≠ 0) (c : Nat.gcd (Int.natAbs n) d = 1) :
     normalize n d h = mk' n d h c := (mk_eq_normalize ..).symm
 
@@ -138,8 +135,6 @@ numbers of the form `mk' n d` with `d ≠ 0`. -/
 def numDenCasesOn''.{u} {C : ℚ → Sort u} (a : ℚ)
     (H : ∀ (n : ℤ) (d : ℕ) (nz red), C (mk' n d nz red)) : C a :=
   numDenCasesOn a fun n d h h' ↦ by rw [← mk_eq_divInt _ _ h.ne' h']; exact H n d h.ne' _
-
--- Porting note: there's already an instance for `Add ℚ` is in Batteries.
 
 theorem lift_binop_eq (f : ℚ → ℚ → ℚ) (f₁ : ℤ → ℤ → ℤ → ℤ → ℤ) (f₂ : ℤ → ℤ → ℤ → ℤ → ℤ)
     (fv :
@@ -284,8 +279,6 @@ protected theorem mul_inv_cancel : a ≠ 0 → a * a⁻¹ = 1 :=
 protected theorem inv_mul_cancel (h : a ≠ 0) : a⁻¹ * a = 1 :=
   Eq.trans (Rat.mul_comm _ _) (Rat.mul_inv_cancel _ h)
 
--- Porting note: we already have a `DecidableEq ℚ`.
-
 -- Extra instances to short-circuit type class resolution
 -- TODO(Mario): this instance slows down Mathlib.Data.Real.Basic
 instance nontrivial : Nontrivial ℚ where exists_pair_ne := ⟨1, 0, by decide⟩
@@ -329,7 +322,6 @@ instance commMonoid : CommMonoid ℚ where
   npow n q := q ^ n
   npow_zero := by intros; apply Rat.ext <;> simp [Int.pow_zero]
   npow_succ n q := by
-    dsimp
     rw [← q.mk'_num_den, mk'_pow, mk'_mul_mk']
     · congr
     · rw [mk'_pow, Int.natAbs_pow]
@@ -439,11 +431,15 @@ theorem coe_int_inj (m n : ℤ) : (m : ℚ) = n ↔ m = n :=
 end Casts
 
 /--
-A version of `Rat.casesOn` that uses `/` instead of `Rat.mk'`. Use as `cases' q` for `q : Rat`.
+A version of `Rat.casesOn` that uses `/` instead of `Rat.mk'`. Use as
+```lean
+cases r with
+| div p q nonzero coprime =>
+```
 -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 def divCasesOn {C : ℚ → Sort*} (a : ℚ)
-    (h : ∀ (n : ℤ) (d : ℕ), d ≠ 0 → n.natAbs.Coprime d → C (n / d)) : C a :=
-  a.casesOn fun n d nz red => by rw [Rat.mk'_eq_divInt, Rat.divInt_eq_div]; exact h n d nz red
+    (div : ∀ (n : ℤ) (d : ℕ), d ≠ 0 → n.natAbs.Coprime d → C (n / d)) : C a :=
+  a.casesOn fun n d nz red => by rw [Rat.mk'_eq_divInt, Rat.divInt_eq_div]; exact div n d nz red
 
 end Rat

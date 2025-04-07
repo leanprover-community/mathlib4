@@ -6,6 +6,7 @@ Authors: Johan Commelin
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.GroupWithZero.NeZero
 import Mathlib.Logic.Unique
+import Mathlib.Tactic.Conv
 
 /-!
 # Groups with an adjoined zero element
@@ -406,7 +407,7 @@ lemma zero_zpow_eq_one₀ {n : ℤ} : (0 : G₀) ^ n = 1 ↔ n = 0 := by
 
 lemma zpow_add_one₀ (ha : a ≠ 0) : ∀ n : ℤ, a ^ (n + 1) = a ^ n * a
   | (n : ℕ) => by simp only [← Int.ofNat_succ, zpow_natCast, pow_succ]
-  | .negSucc 0 => by simp [ha]
+  | -1 => by simp [ha]
   | .negSucc (n + 1) => by
     rw [Int.negSucc_eq, zpow_neg, Int.neg_add, Int.neg_add_cancel_right, zpow_neg, ← Int.ofNat_succ,
       zpow_natCast, zpow_natCast, pow_succ' _ (n + 1), mul_inv_rev, mul_assoc, inv_mul_cancel₀ ha,

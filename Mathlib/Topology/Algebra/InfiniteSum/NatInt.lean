@@ -26,7 +26,8 @@ open scoped Topology
 variable {M : Type*} [CommMonoid M] [TopologicalSpace M] {m m' : M}
 
 variable {G : Type*} [CommGroup G] {g g' : G}
--- don't declare [IsTopologicalAddGroup G] here as some results require [UniformAddGroup G] instead
+-- don't declare `[IsTopologicalAddGroup G]`, here as some results require
+-- `[IsUniformAddGroup G]` instead
 
 /-!
 ## Sums over `ℕ`
@@ -257,9 +258,9 @@ theorem tendsto_prod_nat_add [T2Space G] (f : ℕ → G) :
 
 end IsTopologicalGroup
 
-section UniformGroup
+section IsUniformGroup
 
-variable [UniformSpace G] [UniformGroup G]
+variable [UniformSpace G] [IsUniformGroup G]
 
 @[to_additive]
 theorem cauchySeq_finset_iff_nat_tprod_vanishing {f : ℕ → G} :
@@ -283,7 +284,7 @@ theorem multipliable_iff_nat_tprod_vanishing {f : ℕ → G} : Multipliable f �
     ∀ e ∈ 𝓝 1, ∃ N : ℕ, ∀ t ⊆ {n | N ≤ n}, (∏' n : t, f n) ∈ e := by
   rw [multipliable_iff_cauchySeq_finset, cauchySeq_finset_iff_nat_tprod_vanishing]
 
-end UniformGroup
+end IsUniformGroup
 
 section IsTopologicalGroup
 
@@ -293,7 +294,7 @@ variable [TopologicalSpace G] [IsTopologicalGroup G]
 theorem Multipliable.nat_tprod_vanishing {f : ℕ → G} (hf : Multipliable f) ⦃e : Set G⦄
     (he : e ∈ 𝓝 1) : ∃ N : ℕ, ∀ t ⊆ {n | N ≤ n}, (∏' n : t, f n) ∈ e :=
   letI : UniformSpace G := IsTopologicalGroup.toUniformSpace G
-  have : UniformGroup G := comm_topologicalGroup_is_uniform
+  have : IsUniformGroup G := isUniformGroup_of_commGroup
   cauchySeq_finset_iff_nat_tprod_vanishing.1 hf.hasProd.cauchySeq e he
 
 @[to_additive]
@@ -494,9 +495,9 @@ lemma tprod_of_nat_of_neg [T2Space G] {f : ℤ → G}
 
 end IsTopologicalGroup
 
-section UniformGroup -- results which depend on completeness
+section IsUniformGroup -- results which depend on completeness
 
-variable [UniformSpace G] [UniformGroup G] [CompleteSpace G]
+variable [UniformSpace G] [IsUniformGroup G] [CompleteSpace G]
 
 /-- "iff" version of `Multipliable.of_nat_of_neg_add_one`. -/
 @[to_additive "\"iff\" version of `Summable.of_nat_of_neg_add_one`."]
@@ -514,7 +515,7 @@ lemma multipliable_int_iff_multipliable_nat_and_neg {f : ℤ → G} :
   apply p.comp_injective
   exacts [Nat.cast_injective, neg_injective.comp Nat.cast_injective]
 
-end UniformGroup
+end IsUniformGroup
 
 end Int
 

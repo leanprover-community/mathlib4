@@ -118,7 +118,7 @@ theorem log_stirlingSeq_sub_log_stirlingSeq_succ (n : ℕ) :
   have h₃ : (0 : ℝ) < (2 * ((n : ℝ) + 1) + 1) ^ 2 := by positivity
   have h₂ : (0 : ℝ) < 1 - (1 / (2 * ((n : ℝ) + 1) + 1)) ^ 2 := by
     rw [← mul_lt_mul_right h₃]
-    have H : 0 < (2 * ((n : ℝ) + 1) + 1) ^ 2 - 1 := by nlinarith [@cast_nonneg ℝ _ n]
+    have H : 0 < (2 * ((n : ℝ) + 1) + 1) ^ 2 - 1 := by nlinarith [cast_nonneg (α := ℝ) n]
     convert H using 1 <;> field_simp [h₃.ne']
   refine (log_stirlingSeq_diff_le_geo_sum n).trans ?_
   push_cast
@@ -129,7 +129,7 @@ theorem log_stirlingSeq_sub_log_stirlingSeq_succ (n : ℕ) :
   norm_cast
   omega
 
-/-- For any `n`, we have `log_stirlingSeq 1 - log_stirlingSeq n ≤ 1/4 * ∑' 1/k^2`  -/
+/-- For any `n`, we have `log_stirlingSeq 1 - log_stirlingSeq n ≤ 1/4 * ∑' 1/k^2` -/
 theorem log_stirlingSeq_bounded_aux :
     ∃ c : ℝ, ∀ n : ℕ, log (stirlingSeq 1) - log (stirlingSeq (n + 1)) ≤ c := by
   let d : ℝ := ∑' k : ℕ, (1 : ℝ) / (↑(k + 1) : ℝ) ^ 2
@@ -155,7 +155,7 @@ theorem log_stirlingSeq_bounded_by_constant : ∃ c, ∀ n : ℕ, c ≤ log (sti
   obtain ⟨d, h⟩ := log_stirlingSeq_bounded_aux
   exact ⟨log (stirlingSeq 1) - d, fun n => sub_le_comm.mp (h n)⟩
 
-/-- The sequence `stirlingSeq` is positive for `n > 0`  -/
+/-- The sequence `stirlingSeq` is positive for `n > 0` -/
 theorem stirlingSeq'_pos (n : ℕ) : 0 < stirlingSeq (n + 1) := by unfold stirlingSeq; positivity
 
 /-- The sequence `stirlingSeq` has a positive lower bound.

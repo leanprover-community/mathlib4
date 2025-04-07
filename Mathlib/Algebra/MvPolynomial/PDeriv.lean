@@ -125,23 +125,27 @@ lemma pderiv_rename {τ : Type*} {f : σ → τ} (hf : Function.Injective f)
     (x : σ) (p : MvPolynomial σ R) :
     pderiv (f x) (rename f p) = rename f (pderiv x p) := by
   classical
-  induction' p using MvPolynomial.induction_on with a p q hp hq p a h
-  · simp
-  · simp [hp, hq]
-  · simp only [map_mul, MvPolynomial.rename_X, Derivation.leibniz, MvPolynomial.pderiv_X,
+  induction p using MvPolynomial.induction_on with
+  | C a => simp
+  | add p q hp hq => simp [hp, hq]
+  | mul_X p a h =>
+    simp only [map_mul, MvPolynomial.rename_X, Derivation.leibniz, MvPolynomial.pderiv_X,
       Pi.single_apply, hf.eq_iff, smul_eq_mul, mul_ite, mul_one, mul_zero, h, map_add, add_left_inj]
     split_ifs <;> simp
 
-lemma aeval_sum_elim_pderiv_inl {S τ : Type*} [CommRing S] [Algebra R S]
+lemma aeval_sumElim_pderiv_inl {S τ : Type*} [CommRing S] [Algebra R S]
     (p : MvPolynomial (σ ⊕ τ) R) (f : τ → S) (j : σ) :
     aeval (Sum.elim X (C ∘ f)) ((pderiv (Sum.inl j)) p) =
       (pderiv j) ((aeval (Sum.elim X (C ∘ f))) p) := by
   classical
-  induction' p using MvPolynomial.induction_on with a p q hp hq p q h
-  · simp
-  · simp [hp, hq]
-  · simp only [Derivation.leibniz, pderiv_X, smul_eq_mul, map_add, map_mul, aeval_X, h]
+  induction p using MvPolynomial.induction_on with
+  | C a => simp
+  | add p q hp hq => simp [hp, hq]
+  | mul_X p q h =>
+    simp only [Derivation.leibniz, pderiv_X, smul_eq_mul, map_add, map_mul, aeval_X, h]
     cases q <;> simp [Pi.single_apply]
+
+@[deprecated (since := "2025-02-21")] alias aeval_sum_elim_pderiv_inl := aeval_sumElim_pderiv_inl
 
 end PDeriv
 

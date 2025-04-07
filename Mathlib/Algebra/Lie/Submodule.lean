@@ -85,10 +85,6 @@ instance : CanLift (Submodule R M) (LieSubmodule R L M) (·)
 theorem coe_toSubmodule : ((N : Submodule R M) : Set M) = N :=
   rfl
 
--- In Lean 3, `dsimp` would use theorems proved by `Iff.rfl`.
--- If that were still the case, this would useful as a `@[simp]` lemma,
--- despite the fact that it is provable by `simp` (by not `dsimp`).
-@[simp, nolint simpNF] -- See https://github.com/leanprover-community/mathlib4/issues/10675
 theorem mem_carrier {x : M} : x ∈ N.carrier ↔ x ∈ (N : Set M) :=
   Iff.rfl
 
@@ -537,24 +533,25 @@ theorem mem_iSup_of_mem {ι} {b : M} {N : ι → LieSubmodule R L M} (i : ι) (h
     b ∈ ⨆ i, N i :=
   (le_iSup N i) h
 
-lemma iSup_induction {ι} (N : ι → LieSubmodule R L M) {C : M → Prop} {x : M}
-    (hx : x ∈ ⨆ i, N i) (hN : ∀ i, ∀ y ∈ N i, C y) (h0 : C 0)
-    (hadd : ∀ y z, C y → C z → C (y + z)) : C x := by
+@[elab_as_elim]
+lemma iSup_induction {ι} (N : ι → LieSubmodule R L M) {motive : M → Prop} {x : M}
+    (hx : x ∈ ⨆ i, N i) (mem : ∀ i, ∀ y ∈ N i, motive y) (zero : motive 0)
+    (add : ∀ y z, motive y → motive z → motive (y + z)) : motive x := by
   rw [← LieSubmodule.mem_toSubmodule, LieSubmodule.iSup_toSubmodule] at hx
-  exact Submodule.iSup_induction (C := C) (fun i ↦ (N i : Submodule R M)) hx hN h0 hadd
+  exact Submodule.iSup_induction (motive := motive) (fun i ↦ (N i : Submodule R M)) hx mem zero add
 
 @[elab_as_elim]
-theorem iSup_induction' {ι} (N : ι → LieSubmodule R L M) {C : (x : M) → (x ∈ ⨆ i, N i) → Prop}
-    (hN : ∀ (i) (x) (hx : x ∈ N i), C x (mem_iSup_of_mem i hx)) (h0 : C 0 (zero_mem _))
-    (hadd : ∀ x y hx hy, C x hx → C y hy → C (x + y) (add_mem ‹_› ‹_›)) {x : M}
-    (hx : x ∈ ⨆ i, N i) : C x hx := by
-  refine Exists.elim ?_ fun (hx : x ∈ ⨆ i, N i) (hc : C x hx) => hc
-  refine iSup_induction N (C := fun x : M ↦ ∃ (hx : x ∈ ⨆ i, N i), C x hx) hx
+theorem iSup_induction' {ι} (N : ι → LieSubmodule R L M) {motive : (x : M) → (x ∈ ⨆ i, N i) → Prop}
+    (mem : ∀ (i) (x) (hx : x ∈ N i), motive x (mem_iSup_of_mem i hx)) (zero : motive 0 (zero_mem _))
+    (add : ∀ x y hx hy, motive x hx → motive y hy → motive (x + y) (add_mem ‹_› ‹_›)) {x : M}
+    (hx : x ∈ ⨆ i, N i) : motive x hx := by
+  refine Exists.elim ?_ fun (hx : x ∈ ⨆ i, N i) (hc : motive x hx) => hc
+  refine iSup_induction N (motive := fun x : M ↦ ∃ (hx : x ∈ ⨆ i, N i), motive x hx) hx
     (fun i x hx => ?_) ?_ fun x y => ?_
-  · exact ⟨_, hN _ _ hx⟩
-  · exact ⟨_, h0⟩
+  · exact ⟨_, mem _ _ hx⟩
+  · exact ⟨_, zero⟩
   · rintro ⟨_, Cx⟩ ⟨_, Cy⟩
-    exact ⟨_, hadd _ _ _ _ Cx Cy⟩
+    exact ⟨_, add _ _ _ _ Cx Cy⟩
 
 -- TODO(Yaël): turn around
 theorem disjoint_iff_toSubmodule :
@@ -729,11 +726,12 @@ def lieSpan : LieSubmodule R L M :=
 variable {R L s}
 
 theorem mem_lieSpan {x : M} : x ∈ lieSpan R L s ↔ ∀ N : LieSubmodule R L M, s ⊆ N → x ∈ N := by
-  change x ∈ (lieSpan R L s : Set M) ↔ _; erw [sInf_coe]; exact mem_iInter₂
+  rw [← SetLike.mem_coe, lieSpan, sInf_coe]
+  exact mem_iInter₂
 
 theorem subset_lieSpan : s ⊆ lieSpan R L s := by
   intro m hm
-  erw [mem_lieSpan]
+  rw [SetLike.mem_coe, mem_lieSpan]
   intro N hN
   exact hN hm
 
@@ -751,7 +749,7 @@ theorem lieSpan_mono {t : Set M} (h : s ⊆ t) : lieSpan R L s ≤ lieSpan R L t
   rw [lieSpan_le]
   exact Subset.trans h subset_lieSpan
 
-theorem lieSpan_eq : lieSpan R L (N : Set M) = N :=
+theorem lieSpan_eq (N : LieSubmodule R L M) : lieSpan R L (N : Set M) = N :=
   le_antisymm (lieSpan_le.mpr rfl.subset) subset_lieSpan
 
 theorem coe_lieSpan_submodule_eq_iff {p : Submodule R M} :
@@ -868,11 +866,8 @@ variable {f N N₂ N'}
 theorem map_le_iff_le_comap : map f N ≤ N' ↔ N ≤ comap f N' :=
   Set.image_subset_iff
 
-variable (f)
-
+variable (f) in
 theorem gc_map_comap : GaloisConnection (map f) (comap f) := fun _ _ ↦ map_le_iff_le_comap
-
-variable {f}
 
 theorem map_inf_le : (N ⊓ N₂).map f ≤ N.map f ⊓ N₂.map f :=
   Set.image_inter_subset f N N₂
@@ -1034,11 +1029,8 @@ theorem map_le_iff_le_comap : map f I ≤ J ↔ I ≤ comap f J := by
   rw [map_le]
   exact Set.image_subset_iff
 
-variable (f)
-
+variable (f) in
 theorem gc_map_comap : GaloisConnection (map f) (comap f) := fun _ _ ↦ map_le_iff_le_comap
-
-variable {f}
 
 @[simp]
 theorem map_sup : (I ⊔ I₂).map f = I.map f ⊔ I₂.map f :=
@@ -1062,7 +1054,16 @@ theorem comap_mono : Monotone (comap f) := fun J₁ J₂ h ↦ by
 
 theorem map_of_image (h : f '' I = J) : I.map f = J := by
   apply le_antisymm
-  · erw [LieSubmodule.lieSpan_le, Submodule.map_coe, h]
+  · rw [map, LieSubmodule.lieSpan_le, Submodule.map_coe]
+    /- I'm uncertain how to best resolve this `erw`.
+    ```
+    have : (↑(toLieSubalgebra R L I).toSubmodule : Set L) = I := rfl
+    rw [this]
+    simp [h]
+    ```
+    works, but still feels awkward. There are missing `simp` lemmas here.`
+    -/
+    erw [h]
   · rw [← SetLike.coe_subset_coe, ← h]; exact LieSubmodule.subset_lieSpan
 
 /-- Note that this is not a special case of `LieSubmodule.subsingleton_of_bot`. Indeed, given
@@ -1208,8 +1209,8 @@ theorem coe_map_of_surjective (h : Function.Surjective f) :
           LieSubmodule.mem_toSubmodule, Submodule.mem_carrier, Submodule.map_coe]
         use ⁅z₁, z₂⁆
         exact ⟨I.lie_mem hz₂, f.map_lie z₁ z₂⟩ }
-  erw [LieSubmodule.coe_lieSpan_submodule_eq_iff]
-  use J
+  rw [map, toLieSubalgebra_toSubmodule, LieSubmodule.coe_lieSpan_submodule_eq_iff]
+  exact ⟨J, rfl⟩
 
 theorem mem_map_of_surjective {y : L'} (h₁ : Function.Surjective f) (h₂ : y ∈ I.map f) :
     ∃ x : I, f x = y := by
@@ -1453,8 +1454,6 @@ def LieModuleEquiv.ofTop : (⊤ : LieSubmodule R L M) ≃ₗ⁅R,L⁆ M :=
 
 variable {R L}
 
--- This lemma has always been bad, but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
-@[simp, nolint simpNF]
 lemma LieModuleEquiv.ofTop_apply (x : (⊤ : LieSubmodule R L M)) :
     LieModuleEquiv.ofTop R L M x = x :=
   rfl
@@ -1486,8 +1485,6 @@ This is the Lie ideal version of `Submodule.topEquiv`. -/
 def LieIdeal.topEquiv : (⊤ : LieIdeal R L) ≃ₗ⁅R⁆ L :=
   LieSubalgebra.topEquiv
 
--- This lemma has always been bad, but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
-@[simp, nolint simpNF]
 theorem LieIdeal.topEquiv_apply (x : (⊤ : LieIdeal R L)) : LieIdeal.topEquiv x = x :=
   rfl
 

@@ -198,6 +198,14 @@ section MonoidalCategory
 
 variable {C : Type u} [Category.{v} C] [MonoidalCategory.{v} C] [BraidedCategory.{v} C]
 
+/-- In a braided monoidal category, the functors `tensorLeft X` and
+`tensorRight X` are isomorphic. -/
+@[simps]
+def tensorLeftIsoTensorRight (X : C) :
+    tensorLeft X ≅ tensorRight X where
+  hom := { app Y := (β_ X Y).hom }
+  inv := { app Y := (β_ X Y).inv }
+
 @[reassoc (attr := simp)]
 theorem braiding_naturality {X X' Y Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
     (f ⊗ g) ≫ (braiding Y Y').hom = (braiding X X').hom ≫ (g ⊗ f) := by

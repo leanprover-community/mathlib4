@@ -45,6 +45,8 @@ private def wf_lbp (H : ∃ n, true ∈ p n ∧ ∀ k < n, (p k).Dom) : WellFoun
 
 variable (H : ∃ n, true ∈ p n ∧ ∀ k < n, (p k).Dom)
 
+/-- Find the smallest `n` satisfying `p n`, where all `p k` for `k < n` are defined as false.
+Returns a subtype. -/
 def rfindX : { n // true ∈ p n ∧ ∀ m < n, false ∈ p m } :=
   suffices ∀ k, (∀ n < k, false ∈ p n) → { n // true ∈ p n ∧ ∀ m < n, false ∈ p m } from
     this 0 fun _ => (Nat.not_lt_zero _).elim
@@ -69,6 +71,8 @@ def rfindX : { n // true ∈ p n ∧ ∀ m < n, false ∈ p m } :=
 
 end Rfind
 
+/-- Find the smallest `n` satisfying `p n`, where all `p k` for `k < n` are defined as false.
+Returns a `Part`. -/
 def rfind (p : ℕ →. Bool) : Part ℕ :=
   ⟨_, fun h => (rfindX p h).1⟩
 
@@ -110,6 +114,8 @@ theorem rfind_zero_none (p : ℕ →. Bool) (p0 : p 0 = Part.none) : rfind p = P
     let ⟨_, _, h₂⟩ := rfind_dom'.1 h.fst
     (p0 ▸ h₂ (zero_le _) : (@Part.none Bool).Dom)
 
+/-- Find the smallest `n` satisfying `f n`, where all `f k` for `k < n` are defined as false.
+Returns a `Part`. -/
 def rfindOpt {α} (f : ℕ → Option α) : Part α :=
   (rfind fun n => (f n).isSome).bind fun n => f n
 
@@ -290,11 +296,14 @@ theorem nat_bodd : Computable Nat.bodd :=
 theorem nat_div2 : Computable Nat.div2 :=
   Primrec.nat_div2.to_comp
 
-theorem sum_inl : Computable (@Sum.inl α β) :=
-  Primrec.sum_inl.to_comp
+theorem sumInl : Computable (@Sum.inl α β) :=
+  Primrec.sumInl.to_comp
 
-theorem sum_inr : Computable (@Sum.inr α β) :=
-  Primrec.sum_inr.to_comp
+theorem sumInr : Computable (@Sum.inr α β) :=
+  Primrec.sumInr.to_comp
+
+@[deprecated (since := "2025-02-21")] alias sum_inl := Computable.sumInl
+@[deprecated (since := "2025-02-21")] alias sum_inr := Computable.sumInr
 
 theorem list_cons : Computable₂ (@List.cons α) :=
   Primrec.list_cons.to_comp
@@ -302,8 +311,10 @@ theorem list_cons : Computable₂ (@List.cons α) :=
 theorem list_reverse : Computable (@List.reverse α) :=
   Primrec.list_reverse.to_comp
 
-theorem list_get? : Computable₂ (@List.get? α) :=
-  Primrec.list_get?.to_comp
+theorem list_getElem? : Computable₂ ((·[·]? : List α → ℕ → Option α)) :=
+  Primrec.list_getElem?.to_comp
+
+@[deprecated (since := "2025-02-14")] alias list_get? := list_getElem?
 
 theorem list_append : Computable₂ ((· ++ ·) : List α → List α → List α) :=
   Primrec.list_append.to_comp
@@ -605,7 +616,7 @@ theorem subtype_mk {f : α → β} {p : β → Prop} [DecidablePred p] {h : ∀ 
     @Computable _ _ _ (Primcodable.subtype hp) fun a => (⟨f a, h a⟩ : Subtype p) :=
   hf
 
-theorem sum_casesOn {f : α → β ⊕ γ} {g : α → β → σ} {h : α → γ → σ} (hf : Computable f)
+theorem sumCasesOn {f : α → β ⊕ γ} {g : α → β → σ} {h : α → γ → σ} (hf : Computable f)
     (hg : Computable₂ g) (hh : Computable₂ h) :
     @Computable _ σ _ _ fun a => Sum.casesOn (f a) (g a) (h a) :=
   option_some_iff.1 <|
@@ -615,11 +626,13 @@ theorem sum_casesOn {f : α → β ⊕ γ} {g : α → β → σ} {h : α → γ
       fun a => by
         rcases f a with b | c <;> simp [Nat.div2_val]
 
+@[deprecated (since := "2025-02-21")] alias sum_casesOn := sumCasesOn
+
 theorem nat_strong_rec (f : α → ℕ → σ) {g : α → List σ → Option σ} (hg : Computable₂ g)
     (H : ∀ a n, g a ((List.range n).map (f a)) = Option.some (f a n)) : Computable₂ f :=
   suffices Computable₂ fun a n => (List.range n).map (f a) from
     option_some_iff.1 <|
-      (list_get?.comp (this.comp fst (succ.comp snd)) snd).to₂.of_eq fun a => by
+      (list_getElem?.comp (this.comp fst (succ.comp snd)) snd).to₂.of_eq fun a => by
         simp [List.getElem?_range (Nat.lt_succ_self a.2)]
   option_some_iff.1 <|
     (nat_rec snd (const (Option.some []))
@@ -659,7 +672,7 @@ theorem option_some_iff {f : α →. σ} : (Partrec fun a => (f a).map Option.so
   ⟨fun h => (Nat.Partrec.ppred.comp h).of_eq fun n => by simp [Part.bind_assoc, bind_some_eq_map],
     fun hf => hf.map (option_some.comp snd).to₂⟩
 
-theorem option_casesOn_right {o : α → Option β} {f : α → σ} {g : α → β →. σ} (ho : Computable o)
+theorem optionCasesOn_right {o : α → Option β} {f : α → σ} {g : α → β →. σ} (ho : Computable o)
     (hf : Computable f) (hg : Partrec₂ g) :
     @Partrec _ σ _ _ fun a => Option.casesOn (o a) (Part.some (f a)) (g a) :=
   have :
@@ -670,7 +683,9 @@ theorem option_casesOn_right {o : α → Option β} {f : α → σ} {g : α → 
         ((@Computable.decode β _).comp snd).ofOption.bind (hg.comp (fst.comp fst) snd).to₂
   this.of_eq fun a => by rcases o a with - | b <;> simp [encodek]
 
-theorem sum_casesOn_right {f : α → β ⊕ γ} {g : α → β → σ} {h : α → γ →. σ} (hf : Computable f)
+@[deprecated (since := "2025-02-21")] alias option_casesOn_right := optionCasesOn_right
+
+theorem sumCasesOn_right {f : α → β ⊕ γ} {g : α → β → σ} {h : α → γ →. σ} (hf : Computable f)
     (hg : Computable₂ g) (hh : Partrec₂ h) :
     @Partrec _ σ _ _ fun a => Sum.casesOn (f a) (fun b => Part.some (g a b)) (h a) :=
   have :
@@ -679,18 +694,21 @@ theorem sum_casesOn_right {f : α → β ⊕ γ} {g : α → β → σ} {h : α 
           (some (Sum.casesOn (f a) (fun b => some (g a b)) fun _ => Option.none)) fun c =>
           (h a c).map Option.some :
         Part (Option σ)) :=
-    option_casesOn_right (g := fun a n => Part.map Option.some (h a n))
-      (sum_casesOn hf (const Option.none).to₂ (option_some.comp snd).to₂)
-      (sum_casesOn (g := fun a n => Option.some (g a n)) hf (option_some.comp hg)
+    optionCasesOn_right (g := fun a n => Part.map Option.some (h a n))
+      (sumCasesOn hf (const Option.none).to₂ (option_some.comp snd).to₂)
+      (sumCasesOn (g := fun a n => Option.some (g a n)) hf (option_some.comp hg)
         (const Option.none).to₂)
       (option_some_iff.2 hh)
   option_some_iff.1 <| this.of_eq fun a => by cases f a <;> simp
 
-theorem sum_casesOn_left {f : α → β ⊕ γ} {g : α → β →. σ} {h : α → γ → σ} (hf : Computable f)
+theorem sumCasesOn_left {f : α → β ⊕ γ} {g : α → β →. σ} {h : α → γ → σ} (hf : Computable f)
     (hg : Partrec₂ g) (hh : Computable₂ h) :
     @Partrec _ σ _ _ fun a => Sum.casesOn (f a) (g a) fun c => Part.some (h a c) :=
-  (sum_casesOn_right (sum_casesOn hf (sum_inr.comp snd).to₂ (sum_inl.comp snd).to₂) hh hg).of_eq
+  (sumCasesOn_right (sumCasesOn hf (sumInr.comp snd).to₂ (sumInl.comp snd).to₂) hh hg).of_eq
     fun a => by cases f a <;> simp
+
+@[deprecated (since := "2025-02-21")] alias sum_casesOn_left := sumCasesOn_left
+@[deprecated (since := "2025-02-21")] alias sum_casesOn_right := sumCasesOn_right
 
 theorem fix_aux {α σ} (f : α →. σ ⊕ α) (a : α) (b : σ) :
     let F : α → ℕ →. σ ⊕ α := fun a n =>
@@ -733,12 +751,12 @@ theorem fix {f : α →. σ ⊕ α} (hf : Partrec f) : Partrec (PFun.fix f) := b
   let F : α → ℕ →. σ ⊕ α := fun a n =>
     n.rec (some (Sum.inr a)) fun _ IH => IH.bind fun s => Sum.casesOn s (fun _ => Part.some s) f
   have hF : Partrec₂ F :=
-    Partrec.nat_rec snd (sum_inr.comp fst).partrec
-      (sum_casesOn_right (snd.comp snd) (snd.comp <| snd.comp fst).to₂ (hf.comp snd).to₂).to₂
+    Partrec.nat_rec snd (sumInr.comp fst).partrec
+      (sumCasesOn_right (snd.comp snd) (snd.comp <| snd.comp fst).to₂ (hf.comp snd).to₂).to₂
   let p a n := @Part.map _ Bool (fun s => Sum.casesOn s (fun _ => true) fun _ => false) (F a n)
   have hp : Partrec₂ p :=
-    hF.map ((sum_casesOn Computable.id (const true).to₂ (const false).to₂).comp snd).to₂
-  exact (hp.rfind.bind (hF.bind (sum_casesOn_right snd snd.to₂ none.to₂).to₂).to₂).of_eq fun a =>
+    hF.map ((sumCasesOn Computable.id (const true).to₂ (const false).to₂).comp snd).to₂
+  exact (hp.rfind.bind (hF.bind (sumCasesOn_right snd snd.to₂ none.to₂).to₂).to₂).of_eq fun a =>
     ext fun b => by simpa [p] using fix_aux f _ _
 
 end Partrec

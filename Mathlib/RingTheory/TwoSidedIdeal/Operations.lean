@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jujian Zhang, Jireh Loreaux
+Authors: Jujian Zhang, Jireh Loreaux, Yunzhou Xie
 -/
 import Mathlib.Algebra.Group.Subgroup.Map
 import Mathlib.Algebra.Module.Opposite
@@ -9,6 +9,7 @@ import Mathlib.Algebra.Module.Submodule.Lattice
 import Mathlib.RingTheory.Congruence.Opposite
 import Mathlib.RingTheory.Ideal.Defs
 import Mathlib.RingTheory.TwoSidedIdeal.Lattice
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Operations on two-sided ideals
@@ -88,15 +89,49 @@ variable [NonUnitalRingHomClass F R S]
 
 /--
 Preimage of a two-sided ideal, as a two-sided ideal. -/
-def comap (I : TwoSidedIdeal S) : TwoSidedIdeal R where
-  ringCon := I.ringCon.comap f
+def comap : TwoSidedIdeal S →o TwoSidedIdeal R where
+  toFun I := ⟨I.ringCon.comap f⟩
+  monotone' := by
+    intro I J h
+    rw [le_iff] at h
+    intro x
+    specialize @h (f x)
+    simpa [mem_iff, RingCon.comap]
+
+lemma comap_le_comap {I J : TwoSidedIdeal S} (h : I ≤ J) :
+    comap f I ≤ comap f J :=
+  (comap f).monotone h
 
 lemma mem_comap {I : TwoSidedIdeal S} {x : R} :
     x ∈ I.comap f ↔ f x ∈ I := by
   simp [comap, RingCon.comap, mem_iff]
 
+/--
+If `R` and `S` are isomorphic as rings, then two-sided ideals of `R` and two-sided ideals of `S` are
+order isomorphic.
+-/
+def _root_.RingEquiv.mapTwoSidedIdeal (e : R ≃+* S) : TwoSidedIdeal R ≃o TwoSidedIdeal S :=
+  OrderIso.ofHomInv (comap e.symm) (comap e) (by ext; simp [mem_comap])
+    (by ext; simp [mem_comap])
+
+lemma _root_.RingEquiv.mapTwoSidedIdeal_apply (e : R ≃+* S) (I : TwoSidedIdeal R) :
+    e.mapTwoSidedIdeal I = I.comap e.symm := rfl
+
+lemma _root_.RingEquiv.mapTwoSidedIdeal_symm (e : R ≃+* S) :
+    e.mapTwoSidedIdeal.symm = e.symm.mapTwoSidedIdeal := rfl
 
 end NonUnitalNonAssocRing
+
+section NonAssocRing
+
+variable {R S T : Type*}
+variable [NonAssocRing R] [NonAssocRing S] [NonAssocRing T]
+
+lemma comap_comap (I : TwoSidedIdeal T) (f : R →+* S) (g : S →+* T) :
+    (I.comap g).comap f = I.comap (g.comp f) := by
+  ext; simp [mem_comap]
+
+end NonAssocRing
 
 section NonUnitalRing
 
@@ -177,6 +212,10 @@ section Ring
 
 variable {R : Type*} [Ring R]
 
+lemma span_le {s : Set R} {I : TwoSidedIdeal R} : span s ≤ I ↔ s ⊆ I := by
+  rw [TwoSidedIdeal.ringCon_le_iff, RingCon.gi _ |>.gc]
+  exact ⟨fun h x hx ↦ by aesop, fun h x y hxy ↦ (rel_iff I x y).mpr (h hxy)⟩
+
 open Pointwise Set in
 lemma mem_span_iff_mem_addSubgroup_closure {s : Set R} {z : R} :
     z ∈ span s ↔ z ∈ AddSubgroup.closure (univ * s * univ) := by
@@ -223,6 +262,13 @@ def subtype : I →ₗ[R] R where
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
+theorem subtype_injective : Function.Injective (subtype I) :=
+  Subtype.coe_injective
+
+@[simp]
+theorem coe_subtype : ⇑(subtype I) = Subtype.val :=
+  rfl
+
 /--
 For any `RingCon R`, when we view it as an ideal in `Rᵒᵖ`, `subtype` is the injective `Rᵐᵒᵖ`-linear
 map `I → Rᵐᵒᵖ`.
@@ -232,6 +278,9 @@ def subtypeMop : I →ₗ[Rᵐᵒᵖ] Rᵐᵒᵖ where
   toFun x := MulOpposite.op x.1
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
+
+theorem subtypeMop_injective : Function.Injective (subtypeMop I) :=
+  MulOpposite.op_injective.comp Subtype.coe_injective
 
 /-- Given an ideal `I`, `span I` is the smallest two-sided ideal containing `I`. -/
 def fromIdeal : Ideal R →o TwoSidedIdeal R where

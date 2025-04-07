@@ -43,7 +43,7 @@ theorem IsTopologicalRing.of_norm {R 𝕜 : Type*} [NonUnitalNonAssocRing R] [Li
     refine ⟨(1, ε), ⟨one_pos, ε0⟩, fun (x, y) ⟨hx, hy⟩ => ?_⟩
     simp only [sub_zero] at *
     calc norm (x * y) ≤ norm x * norm y := norm_mul_le _ _
-    _ < ε := mul_lt_of_le_one_of_lt_of_nonneg hx.le hy (norm_nonneg _)
+    _ < ε := (mul_le_of_le_one_left (norm_nonneg _) hx.le).trans_lt hy
   case hmul_left => exact fun x => h0 _ (norm x) (norm_nonneg _) (norm_mul_le x)
   case hmul_right =>
     exact fun y => h0 (· * y) (norm y) (norm_nonneg y) fun x =>
@@ -59,23 +59,32 @@ instance (priority := 100) LinearOrderedField.topologicalRing : IsTopologicalRin
 
 /-- In a linearly ordered field with the order topology, if `f` tends to `Filter.atTop` and `g`
 tends to a positive constant `C` then `f * g` tends to `Filter.atTop`. -/
-theorem Filter.Tendsto.atTop_mul {C : 𝕜} (hC : 0 < C) (hf : Tendsto f l atTop)
+theorem Filter.Tendsto.atTop_mul_pos {C : 𝕜} (hC : 0 < C) (hf : Tendsto f l atTop)
     (hg : Tendsto g l (𝓝 C)) : Tendsto (fun x => f x * g x) l atTop := by
   refine tendsto_atTop_mono' _ ?_ (hf.atTop_mul_const (half_pos hC))
-  filter_upwards [hg.eventually (lt_mem_nhds (half_lt_self hC)), hf.eventually_ge_atTop 0]
-    with x hg hf using mul_le_mul_of_nonneg_left hg.le hf
+  filter_upwards [hg.eventually (lt_mem_nhds (half_lt_self hC)), hf.eventually_ge_atTop 0] with x hg
+    hf using mul_le_mul_of_nonneg_left hg.le hf
+
+-- TODO: after removing this deprecated alias,
+-- rename `Filter.Tendsto.atTop_mul'` to `Filter.Tendsto.atTop_mul`.
+-- Same for the other 3 similar aliases below.
+@[deprecated (since := "2025-03-18")]
+alias Filter.Tendsto.atTop_mul := Filter.Tendsto.atTop_mul_pos
 
 /-- In a linearly ordered field with the order topology, if `f` tends to a positive constant `C` and
 `g` tends to `Filter.atTop` then `f * g` tends to `Filter.atTop`. -/
-theorem Filter.Tendsto.mul_atTop {C : 𝕜} (hC : 0 < C) (hf : Tendsto f l (𝓝 C))
+theorem Filter.Tendsto.pos_mul_atTop {C : 𝕜} (hC : 0 < C) (hf : Tendsto f l (𝓝 C))
     (hg : Tendsto g l atTop) : Tendsto (fun x => f x * g x) l atTop := by
-  simpa only [mul_comm] using hg.atTop_mul hC hf
+  simpa only [mul_comm] using hg.atTop_mul_pos hC hf
+
+@[deprecated (since := "2025-03-18")]
+alias Filter.Tendsto.mul_atTop := Filter.Tendsto.pos_mul_atTop
 
 /-- In a linearly ordered field with the order topology, if `f` tends to `Filter.atTop` and `g`
 tends to a negative constant `C` then `f * g` tends to `Filter.atBot`. -/
 theorem Filter.Tendsto.atTop_mul_neg {C : 𝕜} (hC : C < 0) (hf : Tendsto f l atTop)
     (hg : Tendsto g l (𝓝 C)) : Tendsto (fun x => f x * g x) l atBot := by
-  have := hf.atTop_mul (neg_pos.2 hC) hg.neg
+  have := hf.atTop_mul_pos (neg_pos.2 hC) hg.neg
   simpa only [Function.comp_def, neg_mul_eq_mul_neg, neg_neg] using
     tendsto_neg_atTop_atBot.comp this
 
@@ -87,10 +96,13 @@ theorem Filter.Tendsto.neg_mul_atTop {C : 𝕜} (hC : C < 0) (hf : Tendsto f l (
 
 /-- In a linearly ordered field with the order topology, if `f` tends to `Filter.atBot` and `g`
 tends to a positive constant `C` then `f * g` tends to `Filter.atBot`. -/
-theorem Filter.Tendsto.atBot_mul {C : 𝕜} (hC : 0 < C) (hf : Tendsto f l atBot)
+theorem Filter.Tendsto.atBot_mul_pos {C : 𝕜} (hC : 0 < C) (hf : Tendsto f l atBot)
     (hg : Tendsto g l (𝓝 C)) : Tendsto (fun x => f x * g x) l atBot := by
-  have := (tendsto_neg_atBot_atTop.comp hf).atTop_mul hC hg
+  have := (tendsto_neg_atBot_atTop.comp hf).atTop_mul_pos hC hg
   simpa [Function.comp_def] using tendsto_neg_atTop_atBot.comp this
+
+@[deprecated (since := "2025-03-18")]
+alias Filter.Tendsto.atBot_mul := Filter.Tendsto.atBot_mul_pos
 
 /-- In a linearly ordered field with the order topology, if `f` tends to `Filter.atBot` and `g`
 tends to a negative constant `C` then `f * g` tends to `Filter.atTop`. -/
@@ -101,9 +113,12 @@ theorem Filter.Tendsto.atBot_mul_neg {C : 𝕜} (hC : C < 0) (hf : Tendsto f l a
 
 /-- In a linearly ordered field with the order topology, if `f` tends to a positive constant `C` and
 `g` tends to `Filter.atBot` then `f * g` tends to `Filter.atBot`. -/
-theorem Filter.Tendsto.mul_atBot {C : 𝕜} (hC : 0 < C) (hf : Tendsto f l (𝓝 C))
+theorem Filter.Tendsto.pos_mul_atBot {C : 𝕜} (hC : 0 < C) (hf : Tendsto f l (𝓝 C))
     (hg : Tendsto g l atBot) : Tendsto (fun x => f x * g x) l atBot := by
-  simpa only [mul_comm] using hg.atBot_mul hC hf
+  simpa only [mul_comm] using hg.atBot_mul_pos hC hf
+
+@[deprecated (since := "2025-03-18")]
+alias Filter.Tendsto.mul_atBot := Filter.Tendsto.pos_mul_atBot
 
 /-- In a linearly ordered field with the order topology, if `f` tends to a negative constant `C` and
 `g` tends to `Filter.atBot` then `f * g` tends to `Filter.atTop`. -/
@@ -229,7 +244,7 @@ theorem tendsto_bdd_div_atTop_nhds_zero {f g : α → 𝕜} {b B : 𝕜}
 A version for positive real powers exists as `tendsto_rpow_neg_atTop`. -/
 theorem tendsto_pow_neg_atTop {n : ℕ} (hn : n ≠ 0) :
     Tendsto (fun x : 𝕜 => x ^ (-(n : ℤ))) atTop (𝓝 0) := by
-  simpa only [zpow_neg, zpow_natCast] using (@tendsto_pow_atTop 𝕜 _ _ hn).inv_tendsto_atTop
+  simpa only [zpow_neg, zpow_natCast] using (tendsto_pow_atTop (α := 𝕜) hn).inv_tendsto_atTop
 
 theorem tendsto_zpow_atTop_zero {n : ℤ} (hn : n < 0) :
     Tendsto (fun x : 𝕜 => x ^ n) atTop (𝓝 0) := by
@@ -259,7 +274,7 @@ theorem tendsto_const_mul_pow_nhds_iff {n : ℕ} {c d : 𝕜} (hc : c ≠ 0) :
 theorem tendsto_const_mul_zpow_atTop_nhds_iff {n : ℤ} {c d : 𝕜} (hc : c ≠ 0) :
     Tendsto (fun x : 𝕜 => c * x ^ n) atTop (𝓝 d) ↔ n = 0 ∧ c = d ∨ n < 0 ∧ d = 0 := by
   refine ⟨fun h => ?_, fun h => ?_⟩
-  · cases n with -- Porting note: Lean 3 proof used `by_cases`, then `lift` but `lift` failed
+  · cases n with
     | ofNat n =>
       left
       simpa [tendsto_const_mul_pow_nhds_iff hc] using h
@@ -284,10 +299,13 @@ instance (priority := 100) LinearOrderedSemifield.toHasContinuousInv₀ {𝕜}
   · filter_upwards [Ioi_mem_nhds (inv_lt_one_of_one_lt₀ hx)] with y hy
     exact inv_lt_of_inv_lt₀ (by positivity) hy
 
-instance (priority := 100) LinearOrderedField.toTopologicalDivisionRing :
-    TopologicalDivisionRing 𝕜 := ⟨⟩
+instance (priority := 100) LinearOrderedField.toIsTopologicalDivisionRing :
+    IsTopologicalDivisionRing 𝕜 := ⟨⟩
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to a `GroupWithZero`
+@[deprecated (since := "2025-03-25")] alias LinearOrderedField.toTopologicalDivisionRing :=
+  LinearOrderedField.toIsTopologicalDivisionRing
+
+-- TODO: generalize to a `GroupWithZero`
 theorem comap_mulLeft_nhdsGT_zero {x : 𝕜} (hx : 0 < x) : comap (x * ·) (𝓝[>] 0) = 𝓝[>] 0 := by
   rw [nhdsWithin, comap_inf, comap_principal, preimage_const_mul_Ioi _ hx, zero_div]
   congr 1

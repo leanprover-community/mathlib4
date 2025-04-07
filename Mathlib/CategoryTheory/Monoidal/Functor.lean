@@ -311,7 +311,7 @@ theorem δ_natural {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
   simp [tensorHom_def]
 
 @[reassoc (attr := simp)]
-theorem left_unitality_hom  (X : C) :
+theorem left_unitality_hom (X : C) :
     δ F (𝟙_ C) X ≫ η F ▷ F.obj X ≫ (λ_ (F.obj X)).hom = F.map (λ_ X).hom := by
   rw [← Category.assoc, ← Iso.eq_comp_inv, left_unitality, ← Category.assoc,
     ← F.map_comp, Iso.hom_inv_id, F.map_id, id_comp]
@@ -602,11 +602,9 @@ def toOplaxMonoidal : F.OplaxMonoidal where
     rw [← cancel_epi (h.μIso _ _).hom, Iso.hom_inv_id_assoc,
       ← h.μIso_hom_natural_left_assoc, Iso.hom_inv_id, comp_id]
   δ'_natural_right _ _ := by
-    dsimp
     rw [← cancel_epi (h.μIso _ _).hom, Iso.hom_inv_id_assoc,
       ← h.μIso_hom_natural_right_assoc, Iso.hom_inv_id, comp_id]
   oplax_associativity' X Y Z := by
-    dsimp
     rw [← cancel_epi (h.μIso (X ⊗ Y) Z).hom, Iso.hom_inv_id_assoc,
       ← cancel_epi ((h.μIso X Y).hom ▷ F.obj Z), hom_inv_whiskerRight_assoc,
       associativity_assoc, Iso.hom_inv_id_assoc, whiskerLeft_hom_inv, comp_id]
@@ -892,7 +890,6 @@ def rightAdjointLaxMonoidal : G.LaxMonoidal where
     erw [NatTrans.whiskerLeft_app_tensor_app adj.counit adj.counit]
     dsimp
   associativity' X Y Z := (adj.homEquiv _ _).symm.injective (by
-    dsimp
     simp only [homEquiv_unit, homEquiv_counit, map_comp, assoc, comp_whiskerRight,
       counit_naturality, counit_naturality_assoc, left_triangle_components_assoc,
       MonoidalCategory.whiskerLeft_comp]
@@ -913,7 +910,6 @@ def rightAdjointLaxMonoidal : G.LaxMonoidal where
       counit_naturality, counit_naturality_assoc, left_triangle_components_assoc,
       MonoidalCategory.whiskerLeft_comp, assoc, tensorHom_def, whisker_exchange])
   left_unitality' X := (adj.homEquiv _ _).symm.injective (by
-    dsimp
     rw [homEquiv_counit, homEquiv_counit, homEquiv_unit, homEquiv_unit, comp_whiskerRight,
       map_comp, map_comp, map_comp, map_comp, map_comp, map_comp, assoc, assoc, assoc, assoc,
       assoc, counit_naturality, counit_naturality_assoc, counit_naturality_assoc,
@@ -923,7 +919,6 @@ def rightAdjointLaxMonoidal : G.LaxMonoidal where
       left_triangle_components_assoc, id_whiskerLeft, assoc, assoc, Iso.inv_hom_id, comp_id,
       left_unitality_hom_assoc])
   right_unitality' X := (adj.homEquiv _ _).symm.injective (by
-    dsimp
     rw [homEquiv_counit, homEquiv_unit, MonoidalCategory.whiskerLeft_comp, homEquiv_unit,
       homEquiv_counit, map_comp, map_comp, map_comp, map_comp, map_comp, map_comp,
       assoc, assoc, assoc, assoc, assoc, counit_naturality, counit_naturality_assoc,

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
 -/
 import Mathlib.Data.Set.Prod
-import Mathlib.Logic.Equiv.Fin
+import Mathlib.Logic.Equiv.Fin.Basic
 import Mathlib.ModelTheory.LanguageMap
 import Mathlib.Algebra.Order.Ring.Nat
 
@@ -106,6 +106,7 @@ def varFinsetLeft [DecidableEq α] : L.Term (α ⊕ β) → Finset α
   | var (Sum.inr _i) => ∅
   | func _f ts => univ.biUnion fun i => (ts i).varFinsetLeft
 
+/-- Relabels a term's variables along a particular function. -/
 @[simp]
 def relabel (g : α → β) : L.Term α → L.Term β
   | var i => var (g i)
@@ -198,13 +199,13 @@ def constantsVarsEquiv : L[[γ]].Term α ≃ L.Term (γ ⊕ α) :=
       · cases f
         · simp [constantsToVars, varsToConstants, ih]
         · simp [constantsToVars, varsToConstants, Constants.term, eq_iff_true_of_subsingleton]
-      · cases' f with f f
+      · obtain - | f := f
         · simp [constantsToVars, varsToConstants, ih]
         · exact isEmptyElim f, by
     intro t
-    induction' t with x n f _ ih
-    · cases x <;> rfl
-    · cases n <;> · simp [varsToConstants, constantsToVars, ih]⟩
+    induction t with
+    | var x => cases x <;> rfl
+    | @func n f _ ih => cases n <;> · simp [varsToConstants, constantsToVars, ih]⟩
 
 /-- A bijection between terms with constants and terms with extra variables. -/
 def constantsVarsEquivLeft : L[[γ]].Term (α ⊕ β) ≃ L.Term ((γ ⊕ α) ⊕ β) :=
@@ -238,6 +239,7 @@ def subst : L.Term α → (α → L.Term β) → L.Term β
 
 end Term
 
+/-- `&n` is notation for the `n`-th free variable of a bounded formula. -/
 scoped[FirstOrder] prefix:arg "&" => FirstOrder.Language.Term.var ∘ Sum.inr
 
 namespace LHom
@@ -269,13 +271,16 @@ end LHom
 
 /-- Maps a term's symbols along a language equivalence. -/
 @[simps]
-def Lequiv.onTerm (φ : L ≃ᴸ L') : L.Term α ≃ L'.Term α where
+def LEquiv.onTerm (φ : L ≃ᴸ L') : L.Term α ≃ L'.Term α where
   toFun := φ.toLHom.onTerm
   invFun := φ.invLHom.onTerm
   left_inv := by
     rw [Function.leftInverse_iff_comp, ← LHom.comp_onTerm, φ.left_inv, LHom.id_onTerm]
   right_inv := by
     rw [Function.rightInverse_iff_comp, ← LHom.comp_onTerm, φ.right_inv, LHom.id_onTerm]
+
+/-- Maps a term's symbols along a language equivalence. Deprecated in favor of `LEquiv.onTerm`. -/
+@[deprecated LEquiv.onTerm (since := "2025-03-31")] alias Lequiv.onTerm := LEquiv.onTerm
 
 variable (L) (α)
 
@@ -285,7 +290,9 @@ inductive BoundedFormula : ℕ → Type max u v u'
   | falsum {n} : BoundedFormula n
   | equal {n} (t₁ t₂ : L.Term (α ⊕ (Fin n))) : BoundedFormula n
   | rel {n l : ℕ} (R : L.Relations l) (ts : Fin l → L.Term (α ⊕ (Fin n))) : BoundedFormula n
+  /-- The implication between two bounded formulas -/
   | imp {n} (f₁ f₂ : BoundedFormula n) : BoundedFormula n
+  /-- The universal quantifier over bounded formulas -/
   | all {n} (f : BoundedFormula (n + 1)) : BoundedFormula n
 
 /-- `Formula α` is the type of formulas with all free variables indexed by `α`. -/
@@ -501,7 +508,7 @@ def relabelAux (g : α → β ⊕ (Fin n)) (k : ℕ) : α ⊕ (Fin k) → β ⊕
   Sum.map id finSumFinEquiv ∘ Equiv.sumAssoc _ _ _ ∘ Sum.map g id
 
 @[simp]
-theorem sum_elim_comp_relabelAux {m : ℕ} {g : α → β ⊕ (Fin n)} {v : β → M}
+theorem sumElim_comp_relabelAux {m : ℕ} {g : α → β ⊕ (Fin n)} {v : β → M}
     {xs : Fin (n + m) → M} : Sum.elim v xs ∘ relabelAux g m =
     Sum.elim (Sum.elim v (xs ∘ castAdd m) ∘ g) (xs ∘ natAdd n) := by
   ext x
@@ -510,11 +517,15 @@ theorem sum_elim_comp_relabelAux {m : ℕ} {g : α → β ⊕ (Fin n)} {v : β �
     rcases g x with l | r <;> simp
   · simp [BoundedFormula.relabelAux]
 
+@[deprecated (since := "2025-02-21")] alias sum_elim_comp_relabelAux := sumElim_comp_relabelAux
+
 @[simp]
-theorem relabelAux_sum_inl (k : ℕ) :
+theorem relabelAux_sumInl (k : ℕ) :
     relabelAux (Sum.inl : α → α ⊕ (Fin n)) k = Sum.map id (natAdd n) := by
   ext x
   cases x <;> · simp [relabelAux]
+
+@[deprecated (since := "2025-02-21")] alias relabelAux_sum_inl := relabelAux_sumInl
 
 /-- Relabels a bounded formula's variables along a particular function. -/
 def relabel (g : α → β ⊕ (Fin n)) {k} (φ : L.BoundedFormula α k) : L.BoundedFormula β (n + k) :=
@@ -555,15 +566,17 @@ theorem relabel_ex (g : α → β ⊕ (Fin n)) {k} (φ : L.BoundedFormula α (k 
     φ.ex.relabel g = (φ.relabel g).ex := by simp [BoundedFormula.ex]
 
 @[simp]
-theorem relabel_sum_inl (φ : L.BoundedFormula α n) :
+theorem relabel_sumInl (φ : L.BoundedFormula α n) :
     (φ.relabel Sum.inl : L.BoundedFormula α (0 + n)) = φ.castLE (ge_of_eq (zero_add n)) := by
-  simp only [relabel, relabelAux_sum_inl]
+  simp only [relabel, relabelAux_sumInl]
   induction φ with
   | falsum => rfl
   | equal => simp [Fin.natAdd_zero, castLE_of_eq, mapTermRel]
   | rel => simp [Fin.natAdd_zero, castLE_of_eq, mapTermRel]; rfl
   | imp _ _ ih1 ih2 => simp_all [mapTermRel]
   | all _ ih3 => simp_all [mapTermRel]
+
+@[deprecated (since := "2025-02-21")] alias relabel_sum_inl := relabel_sumInl
 
 /-- Substitutes the variables in a given formula with terms. -/
 def subst {n : ℕ} (φ : L.BoundedFormula α n) (f : α → L.Term β) : L.BoundedFormula β n :=
@@ -696,10 +709,10 @@ end LEquiv
 @[inherit_doc] scoped[FirstOrder] infixl:88 " =' " => FirstOrder.Language.Term.bdEqual
 -- input \~- or \simeq
 
-scoped[FirstOrder] infixr:62 " ⟹ " => FirstOrder.Language.BoundedFormula.imp
+@[inherit_doc] scoped[FirstOrder] infixr:62 " ⟹ " => FirstOrder.Language.BoundedFormula.imp
 -- input \==>
 
-scoped[FirstOrder] prefix:110 "∀'" => FirstOrder.Language.BoundedFormula.all
+@[inherit_doc] scoped[FirstOrder] prefix:110 "∀'" => FirstOrder.Language.BoundedFormula.all
 
 @[inherit_doc] scoped[FirstOrder] prefix:arg "∼" => FirstOrder.Language.BoundedFormula.not
 -- input \~, the ASCII character ~ has too low precedence
@@ -744,7 +757,7 @@ noncomputable def iExs [Finite β] (φ : L.Formula (α ⊕ β)) : L.Formula α :
 
 variable (β) in
 /-- `iExsUnique f φ` transforms a `L.Formula (α ⊕ β)` into a `L.Formula β` by existentially
-quantifying over all variables `Sum.inr _` and asserting that the solution should be unique  -/
+quantifying over all variables `Sum.inr _` and asserting that the solution should be unique -/
 noncomputable def iExsUnique [Finite β] (φ : L.Formula (α ⊕ β)) : L.Formula α :=
   iExs β <| φ ⊓ iAlls β
     ((φ.relabel (fun a => Sum.elim (.inl ∘ .inl) .inr a)).imp <|
@@ -845,7 +858,7 @@ theorem distinctConstantsTheory_eq_iUnion (s : Set α) :
     rw [← image_iUnion, ← iUnion_inter]
     refine congr(_ '' ($(?_) ∩ _))
     ext ⟨i, j⟩
-    simp only [prod_mk_mem_set_prod_eq, Finset.coe_map, Function.Embedding.coe_subtype, mem_iUnion,
+    simp only [prodMk_mem_set_prod_eq, Finset.coe_map, Function.Embedding.coe_subtype, mem_iUnion,
       mem_image, Finset.mem_coe, Subtype.exists, Subtype.coe_mk, exists_and_right, exists_eq_right]
     refine ⟨fun h => ⟨{⟨i, h.1⟩, ⟨j, h.2⟩}, ⟨h.1, ?_⟩, ⟨h.2, ?_⟩⟩, ?_⟩
     · simp

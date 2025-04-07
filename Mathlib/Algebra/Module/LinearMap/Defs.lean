@@ -103,8 +103,8 @@ is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 `f (c • x) = (σ c) • f x`. -/
 class SemilinearMapClass (F : Type*) {R S : outParam Type*} [Semiring R] [Semiring S]
   (σ : outParam (R →+* S)) (M M₂ : outParam Type*) [AddCommMonoid M] [AddCommMonoid M₂]
-    [Module R M] [Module S M₂] [FunLike F M M₂]
-    extends AddHomClass F M M₂, MulActionSemiHomClass F σ M M₂ : Prop
+    [Module R M] [Module S M₂] [FunLike F M M₂] : Prop
+    extends AddHomClass F M M₂, MulActionSemiHomClass F σ M M₂
 
 end
 
@@ -123,7 +123,7 @@ abbrev LinearMapClass (F : Type*) (R : outParam Type*) (M M₂ : Type*)
 protected lemma LinearMapClass.map_smul {R M M₂ : outParam Type*} [Semiring R] [AddCommMonoid M]
     [AddCommMonoid M₂] [Module R M] [Module R M₂]
     {F : Type*} [FunLike F M M₂] [LinearMapClass F R M M₂] (f : F) (r : R) (x : M) :
-    f (r • x) = r • f x := by rw [_root_.map_smul]
+    f (r • x) = r • f x := by rw [map_smul]
 
 namespace SemilinearMapClass
 
@@ -371,10 +371,21 @@ theorem map_smul_of_tower [CompatibleSMul M M₂ R S] (fₗ : M →ₗ[S] M₂) 
     fₗ (c • x) = c • fₗ x :=
   CompatibleSMul.map_smul fₗ c x
 
+theorem _root_.LinearMapClass.map_smul_of_tower {F : Type*} [CompatibleSMul M M₂ R S]
+    [FunLike F M M₂] [LinearMapClass F S M M₂] (fₗ : F) (c : R) (x : M) :
+    fₗ (c • x) = c • fₗ x :=
+  LinearMap.CompatibleSMul.map_smul (fₗ : M →ₗ[S] M₂) c x
+
 variable (R R) in
 theorem isScalarTower_of_injective [SMul R S] [CompatibleSMul M M₂ R S] [IsScalarTower R S M₂]
     (f : M →ₗ[S] M₂) (hf : Function.Injective f) : IsScalarTower R S M where
   smul_assoc r s _ := hf <| by rw [f.map_smul_of_tower r, map_smul, map_smul, smul_assoc]
+
+@[simp] lemma _root_.map_zsmul_unit {F M N : Type*}
+    [AddGroup M] [AddGroup N] [FunLike F M N] [AddMonoidHomClass F M N]
+    (f : F) (c : ℤˣ) (m : M) :
+    f (c • m) = c • f m := by
+  simp [Units.smul_def]
 
 end
 
@@ -472,6 +483,8 @@ This is useful when Lean is struggling to infer the `RingHomCompTriple` instance
 notation3:80 (name := compNotation) f:81 " ∘ₗ " g:80 =>
   LinearMap.comp (σ₁₂ := RingHom.id _) (σ₂₃ := RingHom.id _) (σ₁₃ := RingHom.id _) f g
 
+@[inherit_doc] infixr:90 " ∘ₛₗ " => comp
+
 theorem comp_apply (x : M₁) : f.comp g x = f (g x) :=
   rfl
 
@@ -511,6 +524,15 @@ lemma _root_.Function.Injective.injective_linearMapComp_left (hf : Injective f) 
     Injective fun g : M₁ →ₛₗ[σ₁₂] M₂ ↦ f.comp g :=
   fun g₁ g₂ (h : f.comp g₁ = f.comp g₂) ↦ ext fun x ↦ hf <| by rw [← comp_apply, h, comp_apply]
 
+theorem surjective_comp_left_of_exists_rightInverse {σ₃₂ : R₃ →+* R₂}
+    [RingHomInvPair σ₂₃ σ₃₂] [RingHomCompTriple σ₁₃ σ₃₂ σ₁₂]
+    (hf : ∃ f' : M₃ →ₛₗ[σ₃₂] M₂, f.comp f' = .id) :
+    Surjective fun g : M₁ →ₛₗ[σ₁₂] M₂ ↦ f.comp g := by
+  intro h
+  obtain ⟨f', hf'⟩ := hf
+  refine ⟨f'.comp h, ?_⟩
+  simp_rw [← comp_assoc, hf', id_comp]
+
 @[simp]
 theorem cancel_left (hf : Injective f) : f.comp g = f.comp g' ↔ g = g' :=
   hf.injective_linearMapComp_left.eq_iff
@@ -528,7 +550,6 @@ def inverse (f : M →ₛₗ[σ] M₂) (g : M₂ → M) (h₁ : LeftInverse g f)
     { toFun := g
       map_add' := fun x y ↦ by rw [← h₁ (g (x + y)), ← h₁ (g x + g y)]; simp [h₂]
       map_smul' := fun a b ↦ by
-        dsimp only
         rw [← h₁ (g (a • b)), ← h₁ (σ' a • g b)]
         simp [h₂] }
 
