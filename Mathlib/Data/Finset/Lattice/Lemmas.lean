@@ -95,13 +95,9 @@ theorem induction_on_union (P : Finset α → Finset α → Prop) (symm : ∀ {a
 
 /-! #### inter -/
 
-@[simp]
-theorem inter_empty (s : Finset α) : s ∩ ∅ = ∅ :=
-  ext fun _ => mem_inter.trans <| by simp
+theorem inter_empty (s : Finset α) : s ∩ ∅ = ∅ := by simp
 
-@[simp]
-theorem empty_inter (s : Finset α) : ∅ ∩ s = ∅ :=
-  ext fun _ => mem_inter.trans <| by simp
+theorem empty_inter (s : Finset α) : ∅ ∩ s = ∅ := by simp
 
 @[simp]
 theorem insert_inter_of_mem {s₁ s₂ : Finset α} {a : α} (h : a ∈ s₂) :
