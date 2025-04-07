@@ -15,37 +15,43 @@ namespace Int
 
 /-! ### `ediv` and `fdiv` -/
 
-theorem ediv_ediv_eq_ediv_mul (m : Int) {n k : Int} (hn : 0 < n) (hk : 0 < k) :
-    m / n / k = m / (n * k) := by
-  have ineq1 := Int.ediv_le_ediv (Int.mul_pos hk hn) (calc
-    m / n / k * (k * n) ≤ m / n / k * (k * n) + (m / n % k * n + m % n) :=
-      Int.le_add_of_nonneg_right (Int.add_nonneg
-        (Int.mul_nonneg (Int.emod_nonneg _
-          (Ne.symm (Int.ne_of_lt hk))) (Int.le_of_lt hn))
-        (emod_nonneg _ (Ne.symm (Int.ne_of_lt hn))))
-    _ = (m / n / k * k + m / n % k) * n + m % n := by
-      rw [Int.add_mul, Int.mul_assoc, Int.add_assoc]
-    _ = m := by rw [ediv_add_emod', ediv_add_emod'])
-  rw [mul_ediv_cancel _ (Ne.symm (Int.ne_of_lt (Int.mul_pos hk hn))), Int.mul_comm] at ineq1
-  have ineq2 := Int.le_of_lt_add_one (Int.ediv_lt_of_lt_mul (Int.mul_pos hn hk) (calc
-    m = (m / n / k * k + m / n % k) * n + m % n := by rw [ediv_add_emod', ediv_add_emod']
-    _ = m / n / k * (n * k) + (m / n % k * n + m % n) := by
-        rw [Int.add_mul, Int.mul_assoc, Int.mul_comm n, Int.add_assoc]
-    _ < m / n / k * (n * k) + ((k-1) * n + n) := by
-      refine Int.add_lt_add_of_le_of_lt (Int.le_refl _)
-        (Int.add_lt_add_of_le_of_lt ?_ (emod_lt_of_pos _ hn))
-      exact Int.mul_le_mul_of_nonneg_right
-        (le_sub_one_of_lt (emod_lt_of_pos (m / n) hk)) (Int.le_of_lt hn)
-    _ = (m / n / k + 1) * (n * k) := by
-      rw [Int.sub_mul, Int.add_mul, Int.one_mul, Int.one_mul, Int.sub_add_cancel, Int.mul_comm k]))
-  exact Int.le_antisymm ineq1 ineq2
+theorem mul_ediv_le_mul_ediv_assoc {a : Int} (ha : 0 ≤ a) (b : Int) {c : Int} (hc : 0 ≤ c) :
+    a * (b / c) ≤ a * b / c := by
+  obtain rfl | hlt : c = 0 ∨ 0 < c := by omega
+  · simp
+  · rw [Int.le_ediv_iff_mul_le hlt, Int.mul_assoc]
+    exact Int.mul_le_mul_of_nonneg_left (Int.ediv_mul_le b (Int.ne_of_gt hlt)) ha
 
-theorem fdiv_fdiv_eq_fdiv_mul (m : Int) {n k : Int} (hn : 0 < n) (hk : 0 < k) :
+theorem ediv_ediv_eq_ediv_mul (m : Int) {n k : Int} (hn : 0 ≤ n) :
+    m / n / k = m / (n * k) := by
+  have {k : Int} (hk : 0 < k) : m / n / k = m / (n * k) := by
+    obtain rfl | hn' : n = 0 ∨ 0 < n := by omega
+    · simp
+    · apply Int.le_antisymm
+      · apply Int.le_ediv_of_mul_le (Int.mul_pos hn' hk)
+        calc
+          m / n / k * (n * k) = m / n / k * k * n := by ac_rfl
+          _ ≤ m / n * n :=
+            Int.mul_le_mul_of_nonneg_right (Int.ediv_mul_le (m / n) (Int.ne_of_gt hk)) hn
+          _ ≤ m :=
+            Int.ediv_mul_le m (Int.ne_of_gt hn')
+      · apply Int.le_ediv_of_mul_le hk
+        rw [← Int.mul_ediv_mul_of_pos_left m n hk, Int.mul_comm m k, Int.mul_comm (_ / _) k]
+        apply Int.mul_ediv_le_mul_ediv_assoc
+        · exact Int.le_of_lt hk
+        · exact Int.le_of_lt <| Int.mul_pos hn' hk
+  · rcases Int.lt_trichotomy 0 k with hk | rfl | hk
+    · exact this hk
+    · simp
+    · rw [← Int.neg_neg (m / n / k), ← Int.ediv_neg, this (Int.neg_pos_of_neg hk), ← Int.ediv_neg,
+        Int.mul_neg, Int.neg_neg]
+
+theorem fdiv_fdiv_eq_fdiv_mul (m : Int) {n k : Int} (hn : 0 ≤ n) (hk : 0 ≤ k) :
     (m.fdiv n).fdiv k = m.fdiv (n * k) := by
-  rw [Int.fdiv_eq_ediv_of_nonneg _ (Int.le_of_lt hn),
-    Int.fdiv_eq_ediv_of_nonneg _ (Int.le_of_lt hk),
-    Int.fdiv_eq_ediv_of_nonneg _ (Int.le_of_lt (Int.mul_pos hn hk)),
-    ediv_ediv_eq_ediv_mul _ hn hk]
+  rw [Int.fdiv_eq_ediv_of_nonneg _ hn,
+    Int.fdiv_eq_ediv_of_nonneg _ hk,
+    Int.fdiv_eq_ediv_of_nonneg _ (Int.mul_nonneg hn hk),
+    ediv_ediv_eq_ediv_mul _ hn]
 
 /-! ### `emod` -/
 
