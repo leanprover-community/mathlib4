@@ -53,7 +53,7 @@ lemma algHom_surjective : Function.Surjective (algHom R L) :=
 def ι : L →ₗ[R] SymmetricAlgebra R L := (algHom R L).toLinearMap.comp (TensorAlgebra.ι R (M := L))
 
 @[elab_as_elim]
-theorem induction {C : SymmetricAlgebra R L → Prop}
+theorem induction {motive : SymmetricAlgebra R L → Prop}
     (algebraMap : ∀ r, C (algebraMap R (SymmetricAlgebra R L) r)) (ι : ∀ x, C (ι R L x))
     (mul : ∀ a b, C a → C b → C (a * b)) (add : ∀ a b, C a → C b → C (a + b))
     (a : SymmetricAlgebra R L) : C a := by
