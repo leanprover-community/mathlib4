@@ -141,7 +141,6 @@ variable [CommSemiring R] [PartialOrder R] [CanonicallyOrderedAdd R]
     0 < ∏ i ∈ s, f i ↔ (∀ i ∈ s, (0 : R) < f i) :=
   CanonicallyOrderedAdd.multiset_prod_pos.trans Multiset.forall_mem_map_iff
 
-attribute [local instance] CanonicallyOrderedAdd.toIsOrderedMonoid in
 /-- If `g, h ≤ f` and `g i + h i ≤ f i`, then the product of `f` over `s` is at least the
   sum of the products of `g` and `h`. This is the version for `CanonicallyOrderedAdd`.
 -/
