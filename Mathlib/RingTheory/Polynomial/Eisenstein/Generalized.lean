@@ -83,10 +83,8 @@ private lemma generalizedEisenstein_aux {q f g : R[X]} {p : ℕ}
     suffices C (algebraMap R K g.leadingCoeff) = u by
       simp [r, ← this, Polynomial.map_sub, ← hu, Polynomial.map_mul, map_C,
         Polynomial.map_pow, sub_eq_zero, mul_comm]
-    rw [← leadingCoeff_map_of_leadingCoeff_ne_zero _ hgP']
-    rw [← hu, ← ha']
-    apply congr_arg
-    rw [leadingCoeff_mul, leadingCoeff_C, (hq_monic.map _).pow m, one_mul]
+    rw [← leadingCoeff_map_of_leadingCoeff_ne_zero _ hgP', ← hu, ← ha',
+      leadingCoeff_mul, leadingCoeff_C, (hq_monic.map _).pow m, one_mul]
   use m, r, hg, hr
   intro hm
   rw [hm, pow_zero, mul_one] at hg
@@ -173,9 +171,8 @@ example : Irreducible (X ^ 4 - 10 * X ^ 2 + 1 : ℤ[X]) := by
     rw [algebraMap_int_eq, ZMod.ker_intCastRingHom, Nat.cast_ofNat]
   have hq_monic : q.Monic := leadingCoeff_X_pow_add_one (by norm_num)
   have hq_deg : q.natDegree = 2 := by simp only [q]; compute_degree!
-  have hq_deg' : (q.map (algebraMap ℤ K)).natDegree = 2 := by
-    rw [natDegree_map_of_leadingCoeff_ne_zero, hq_deg]
-    simp [q]
+  have hq_deg' : (q.map (algebraMap ℤ K)).natDegree = 2 := by simp [q]; compute_degree!
+  -- The irreducibility of `q` follows from the fact that it has no roots in `ZMod 3`.
   have hq_irr : Irreducible (q.map (algebraMap ℤ K)) := by
     rw [Polynomial.irreducible_iff_roots_eq_zero_of_degree_le_three]
     · apply Multiset.eq_zero_of_forall_not_mem
@@ -190,12 +187,11 @@ example : Irreducible (X ^ 4 - 10 * X ^ 2 + 1 : ℤ[X]) := by
     · rw [hq_deg']; norm_num
   set f : ℤ[X] := X ^ 4 - 10 * X ^ 2 + 1 with hf_eq
   have hdeg_f : f.natDegree = 4 := by simp only [hf_eq, K, q]; compute_degree!
-  have hlC_f : f.Monic := by
-    simp only [Monic, leadingCoeff, hdeg_f, f]
-    compute_degree!
+  have hlC_f : f.Monic := by simp only [Monic, leadingCoeff, hdeg_f, f]; compute_degree!
   have hfq : f = q ^ 2 - 12 * q + 12 := by ring
   apply generalizedEisenstein (K := K) hq_irr.prime hq_monic (p := 2)
     (by rw [hdeg_f]; norm_num) hlC_f
+  -- We check that `f` equals `q ^ 2` in `ZMod 3`.
   · simp only [hfq, Polynomial.map_sub, Polynomial.map_add, Polynomial.map_pow,
       Polynomial.map_mul, ← map_ofNat C, Polynomial.map_C]
     have : (algebraMap ℤ K) (12) = 0 := by
@@ -203,6 +199,7 @@ example : Irreducible (X ^ 4 - 10 * X ^ 2 + 1 : ℤ[X]) := by
       norm_num
     rw [this]
     simp
+   -- On the other hand, `f %ₘ q = 12`, which is not a multiple of `9`.
   · suffices f %ₘ q = 12 by
       rw [this, ← map_ofNat C, Polynomial.map_C, ne_eq, C_eq_zero, eq_zero_iff_mem, h3,
         span_singleton_pow, mem_span_singleton]
