@@ -49,7 +49,7 @@ variable [IsCM F K]
 
 instance : IsGalois F K :=
 { to_isSeparable := Algebra.IsSeparable.of_integral _ _
-  to_normal := normal_of_rank_eq_two _ _ (finrank_eq_two  F K) }
+  to_normal := normal_of_rank_eq_two _ _ (finrank_eq_two F K) }
 
 theorem card_infinitePlace_eq_card_infinitePlace :
     Fintype.card (InfinitePlace K) = Fintype.card (InfinitePlace F) := by

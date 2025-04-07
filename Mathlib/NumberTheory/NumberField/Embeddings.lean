@@ -1175,6 +1175,11 @@ theorem nrComplexPlaces_eq_zero_iff :
 
 variable (K)
 
+@[simp]
+theorem IsTotallyReal.nrComplexPlaces_eq_zero [h : IsTotallyReal K] :
+    nrComplexPlaces K = 0 :=
+  nrComplexPlaces_eq_zero_iff.mpr h
+
 protected theorem IsTotallyReal.finrank [h : IsTotallyReal K] :
     finrank ℚ K = nrRealPlaces K := by
   rw [← card_add_two_mul_card_eq_rank, nrComplexPlaces_eq_zero_iff.mpr h, mul_zero, add_zero]
@@ -1210,6 +1215,11 @@ theorem nrRealPlaces_eq_zero_iff :
   simp [Fintype.card_eq_zero_iff, isEmpty_subtype, isTotallyComplex_iff]
 
 variable (K)
+
+@[simp]
+theorem IsTotallyComplex.nrRealPlaces_eq_zero [h : IsTotallyComplex K] :
+    nrRealPlaces K = 0 :=
+  nrRealPlaces_eq_zero_iff.mpr h
 
 protected theorem IsTotallyComplex.finrank [h : IsTotallyComplex K] :
     finrank ℚ K = 2 * nrComplexPlaces K := by
