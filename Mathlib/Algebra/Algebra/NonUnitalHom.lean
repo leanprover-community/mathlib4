@@ -84,7 +84,7 @@ abbrev NonUnitalAlgHomClass (F : Type*) (R A B : outParam Type*)
 
 namespace NonUnitalAlgHomClass
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) toNonUnitalRingHomClass
   {F R S A B : Type*} {_ : Monoid R} {_ : Monoid S} {φ : outParam (R →* S)}
     {_ : NonUnitalNonAssocSemiring A} [DistribMulAction R A]

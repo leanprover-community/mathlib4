@@ -107,24 +107,24 @@ section
 
 variable [MeasurableSpace α]
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) standardBorel_of_polish [τ : TopologicalSpace α]
     [BorelSpace α] [PolishSpace α] : StandardBorelSpace α := by exists τ
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) standardBorelSpace_of_discreteMeasurableSpace [DiscreteMeasurableSpace α]
     [Countable α] : StandardBorelSpace α :=
   let _ : TopologicalSpace α := ⊥
   have : DiscreteTopology α := ⟨rfl⟩
   inferInstance
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) countablyGenerated_of_standardBorel [StandardBorelSpace α] :
     MeasurableSpace.CountablyGenerated α :=
   letI := upgradeStandardBorel α
   inferInstance
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) measurableSingleton_of_standardBorel [StandardBorelSpace α] :
     MeasurableSingletonClass α :=
   letI := upgradeStandardBorel α

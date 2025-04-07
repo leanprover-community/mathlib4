@@ -47,7 +47,7 @@ class AlgEquivClass (F : Type*) (R A B : outParam Type*) [CommSemiring R] [Semir
 
 namespace AlgEquivClass
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) toAlgHomClass (F R A B : Type*) [CommSemiring R] [Semiring A]
     [Semiring B] [Algebra R A] [Algebra R B] [EquivLike F A B] [h : AlgEquivClass F R A B] :
     AlgHomClass F R A B :=

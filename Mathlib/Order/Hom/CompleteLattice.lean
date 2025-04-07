@@ -128,7 +128,7 @@ theorem map_iSup₂ [SupSet α] [SupSet β] [sSupHomClass F α β] (f : F) (g : 
 theorem map_iInf₂ [InfSet α] [InfSet β] [sInfHomClass F α β] (f : F) (g : ∀ i, κ i → α) :
     f (⨅ (i) (j), g i j) = ⨅ (i) (j), f (g i j) := by simp_rw [map_iInf]
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) sSupHomClass.toSupBotHomClass [CompleteLattice α]
     [CompleteLattice β] [sSupHomClass F α β] : SupBotHomClass F α β :=
   {  ‹sSupHomClass F α β› with
@@ -138,7 +138,7 @@ instance (priority := 100) sSupHomClass.toSupBotHomClass [CompleteLattice α]
     map_bot := fun f => by
       rw [← sSup_empty, map_sSup, Set.image_empty, sSup_empty] }
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) sInfHomClass.toInfTopHomClass [CompleteLattice α]
     [CompleteLattice β] [sInfHomClass F α β] : InfTopHomClass F α β :=
   { ‹sInfHomClass F α β› with
@@ -148,22 +148,22 @@ instance (priority := 100) sInfHomClass.toInfTopHomClass [CompleteLattice α]
     map_top := fun f => by
       rw [← sInf_empty, map_sInf, Set.image_empty, sInf_empty] }
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) FrameHomClass.tosSupHomClass [CompleteLattice α]
     [CompleteLattice β] [FrameHomClass F α β] : sSupHomClass F α β :=
   { ‹FrameHomClass F α β› with }
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) FrameHomClass.toBoundedLatticeHomClass [CompleteLattice α]
     [CompleteLattice β] [FrameHomClass F α β] : BoundedLatticeHomClass F α β :=
   { ‹FrameHomClass F α β›, sSupHomClass.toSupBotHomClass with }
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) CompleteLatticeHomClass.toFrameHomClass [CompleteLattice α]
     [CompleteLattice β] [CompleteLatticeHomClass F α β] : FrameHomClass F α β :=
   { ‹CompleteLatticeHomClass F α β›, sInfHomClass.toInfTopHomClass with }
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) CompleteLatticeHomClass.toBoundedLatticeHomClass [CompleteLattice α]
     [CompleteLattice β] [CompleteLatticeHomClass F α β] : BoundedLatticeHomClass F α β :=
   { sSupHomClass.toSupBotHomClass, sInfHomClass.toInfTopHomClass with }
@@ -174,7 +174,7 @@ section Equiv
 
 variable [EquivLike F α β]
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) OrderIsoClass.tosSupHomClass [CompleteLattice α]
     [CompleteLattice β] [OrderIsoClass F α β] : sSupHomClass F α β :=
   { show OrderHomClass F α β from inferInstance with
@@ -182,7 +182,7 @@ instance (priority := 100) OrderIsoClass.tosSupHomClass [CompleteLattice α]
       eq_of_forall_ge_iff fun c => by
         simp only [← le_map_inv_iff, sSup_le_iff, Set.forall_mem_image] }
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) OrderIsoClass.tosInfHomClass [CompleteLattice α]
     [CompleteLattice β] [OrderIsoClass F α β] : sInfHomClass F α β :=
   { show OrderHomClass F α β from inferInstance with
@@ -190,7 +190,7 @@ instance (priority := 100) OrderIsoClass.tosInfHomClass [CompleteLattice α]
       eq_of_forall_le_iff fun c => by
         simp only [← map_inv_le_iff, le_sInf_iff, Set.forall_mem_image] }
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) OrderIsoClass.toCompleteLatticeHomClass [CompleteLattice α]
     [CompleteLattice β] [OrderIsoClass F α β] : CompleteLatticeHomClass F α β :=
   -- Porting note: Used to be:

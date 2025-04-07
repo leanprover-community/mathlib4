@@ -44,7 +44,7 @@ theorem Function.Injective.noZeroSMulDivisors {R M N : Type*} [Zero R] [Zero M] 
   ⟨fun {_ _} h =>
     Or.imp_right (@hf _ _) <| h0.symm ▸ eq_zero_or_eq_zero_of_smul_eq_zero (by rw [← hs, h, h0])⟩
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) NoZeroDivisors.toNoZeroSMulDivisors [Zero R] [Mul R]
     [NoZeroDivisors R] : NoZeroSMulDivisors R R :=
   ⟨fun {_ _} => eq_zero_or_eq_zero_of_mul_eq_zero⟩

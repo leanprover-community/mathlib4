@@ -65,7 +65,7 @@ class IsOrderedCancelMonoid (α : Type*) [CommMonoid α] [PartialOrder α] exten
 section IsOrderedCancelMonoid
 variable [CommMonoid α] [PartialOrder α] [IsOrderedCancelMonoid α]
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 @[to_additive]
 instance (priority := 200) IsOrderedCancelMonoid.toMulLeftReflectLE :
     MulLeftReflectLE α :=
@@ -81,7 +81,7 @@ theorem IsOrderedCancelMonoid.toMulRightReflectLT :
     MulRightReflectLT α :=
   inferInstance
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 @[to_additive IsOrderedCancelAddMonoid.toIsCancelAdd]
 instance (priority := 100) IsOrderedCancelMonoid.toIsCancelMul : IsCancelMul α where
   mul_left_cancel _ _ _ h :=
@@ -130,7 +130,7 @@ instance OrderedCancelCommMonoid.toIsOrderedCancelMonoid :
     IsOrderedCancelMonoid α where
   le_of_mul_le_mul_left := OrderedCancelCommMonoid.le_of_mul_le_mul_left
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 @[to_additive OrderedCancelAddCommMonoid.toCancelAddCommMonoid]
 instance (priority := 100) OrderedCancelCommMonoid.toCancelCommMonoid : CancelCommMonoid α :=
   { ‹OrderedCancelCommMonoid α› with

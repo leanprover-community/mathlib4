@@ -397,7 +397,7 @@ instance (priority := 10) CommGroupWithZero.toCancelCommMonoidWithZero :
   { GroupWithZero.toCancelMonoidWithZero,
     CommGroupWithZero.toCommMonoidWithZero with }
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) CommGroupWithZero.toDivisionCommMonoid :
     DivisionCommMonoid G₀ where
   __ := ‹CommGroupWithZero G₀›

@@ -70,14 +70,14 @@ section Hom
 
 variable [FunLike F α β]
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) PseudoEpimorphismClass.toTopHomClass [PartialOrder α] [OrderTop α]
     [Preorder β] [OrderTop β] [PseudoEpimorphismClass F α β] : TopHomClass F α β where
   map_top f := by
     let ⟨b, h⟩ := exists_map_eq_of_map_le f (@le_top _ _ _ <| f ⊤)
     rw [← top_le_iff.1 h.1, h.2]
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) EsakiaHomClass.toPseudoEpimorphismClass [TopologicalSpace α] [Preorder α]
     [TopologicalSpace β] [Preorder β] [EsakiaHomClass F α β] : PseudoEpimorphismClass F α β :=
   { ‹EsakiaHomClass F α β› with
@@ -93,7 +93,7 @@ instance [TopologicalSpace α] [Preorder α] [TopologicalSpace β] [Preorder β]
 
 end Hom
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) OrderIsoClass.toPseudoEpimorphismClass [Preorder α] [Preorder β]
     [EquivLike F α β] [OrderIsoClass F α β] : PseudoEpimorphismClass F α β where
   exists_map_eq_of_map_le f _a b h :=

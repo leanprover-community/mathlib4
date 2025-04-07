@@ -50,7 +50,7 @@ instance OrderedCommGroup.toMulLeftMono (α : Type u) [OrderedCommGroup α] :
     MulLeftMono α where
       elim a b c bc := OrderedCommGroup.mul_le_mul_left b c bc a
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 @[to_additive OrderedAddCommGroup.toOrderedCancelAddCommMonoid]
 instance (priority := 100) OrderedCommGroup.toOrderedCancelCommMonoid [OrderedCommGroup α] :
     OrderedCancelCommMonoid α :=
@@ -90,7 +90,7 @@ alias OrderedCommGroup.lt_of_mul_lt_mul_left := lt_of_mul_lt_mul_left'
 
 attribute [to_additive] OrderedCommGroup.lt_of_mul_lt_mul_left
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 @[to_additive IsOrderedAddMonoid.toIsOrderedCancelAddMonoid]
 instance (priority := 100) IsOrderedMonoid.toIsOrderedCancelMonoid
     [CommGroup α] [PartialOrder α] [IsOrderedMonoid α] : IsOrderedCancelMonoid α where
@@ -154,7 +154,7 @@ instance (priority := 100) LinearOrderedCommGroup.to_noMinOrder [Nontrivial α] 
     obtain ⟨y, hy⟩ : ∃ a : α, 1 < a := exists_one_lt'
     exact fun a => ⟨a / y, (div_lt_self_iff a).mpr hy⟩⟩
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 @[to_additive]
 instance (priority := 100) LinearOrderedCommGroup.toLinearOrderedCancelCommMonoid
     [LinearOrderedCommGroup α] : LinearOrderedCancelCommMonoid α :=

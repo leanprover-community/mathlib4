@@ -103,29 +103,29 @@ section Hom
 
 variable [FunLike F α β]
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) SupBotHomClass.toBotHomClass [Max α] [Max β] [Bot α]
     [Bot β] [SupBotHomClass F α β] : BotHomClass F α β :=
   { ‹SupBotHomClass F α β› with }
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) InfTopHomClass.toTopHomClass [Min α] [Min β] [Top α]
     [Top β] [InfTopHomClass F α β] : TopHomClass F α β :=
   { ‹InfTopHomClass F α β› with }
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) BoundedLatticeHomClass.toSupBotHomClass [Lattice α] [Lattice β]
     [BoundedOrder α] [BoundedOrder β] [BoundedLatticeHomClass F α β] :
     SupBotHomClass F α β :=
   { ‹BoundedLatticeHomClass F α β› with }
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) BoundedLatticeHomClass.toInfTopHomClass [Lattice α] [Lattice β]
     [BoundedOrder α] [BoundedOrder β] [BoundedLatticeHomClass F α β] :
     InfTopHomClass F α β :=
   { ‹BoundedLatticeHomClass F α β› with }
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) BoundedLatticeHomClass.toBoundedOrderHomClass [Lattice α]
     [Lattice β] [BoundedOrder α] [BoundedOrder β] [BoundedLatticeHomClass F α β] :
     BoundedOrderHomClass F α β :=
@@ -137,17 +137,17 @@ section Equiv
 
 variable [EquivLike F α β]
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) OrderIsoClass.toSupBotHomClass [SemilatticeSup α] [OrderBot α]
     [SemilatticeSup β] [OrderBot β] [OrderIsoClass F α β] : SupBotHomClass F α β :=
   { OrderIsoClass.toSupHomClass, OrderIsoClass.toBotHomClass with }
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) OrderIsoClass.toInfTopHomClass [SemilatticeInf α] [OrderTop α]
     [SemilatticeInf β] [OrderTop β] [OrderIsoClass F α β] : InfTopHomClass F α β :=
   { OrderIsoClass.toInfHomClass, OrderIsoClass.toTopHomClass with }
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) OrderIsoClass.toBoundedLatticeHomClass [Lattice α] [Lattice β]
     [BoundedOrder α] [BoundedOrder β] [OrderIsoClass F α β] :
     BoundedLatticeHomClass F α β :=

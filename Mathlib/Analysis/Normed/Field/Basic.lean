@@ -171,7 +171,7 @@ class DenselyNormedField (α : Type*) extends NormedField α where
 section NormedField
 
 /-- A densely normed field is always a nontrivially normed field.
-See note [lower instance priority]. -/
+See `LibraryNote.lowerInstancePriority`. -/
 instance (priority := 100) DenselyNormedField.toNontriviallyNormedField [DenselyNormedField α] :
     NontriviallyNormedField α where
   non_trivial :=

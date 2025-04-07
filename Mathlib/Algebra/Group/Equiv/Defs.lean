@@ -123,13 +123,13 @@ namespace MulEquivClass
 variable (F)
 variable [EquivLike F M N]
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 @[to_additive]
 instance (priority := 100) instMulHomClass (F : Type*)
     [Mul M] [Mul N] [EquivLike F M N] [h : MulEquivClass F M N] : MulHomClass F M N :=
   { h with }
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 @[to_additive]
 instance (priority := 100) instMonoidHomClass
     [MulOneClass M] [MulOneClass N] [MulEquivClass F M N] :

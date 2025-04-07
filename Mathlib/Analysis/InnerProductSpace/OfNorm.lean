@@ -73,7 +73,7 @@ theorem InnerProductSpace.toInnerProductSpaceable [InnerProductSpace 𝕜 E] :
     InnerProductSpaceable E :=
   ⟨parallelogram_law_with_norm 𝕜⟩
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) InnerProductSpace.toInnerProductSpaceable_ofReal
     [InnerProductSpace ℝ E] : InnerProductSpaceable E :=
   ⟨parallelogram_law_with_norm ℝ⟩
@@ -252,6 +252,6 @@ variable {𝕜 E}
 variable [NormedSpace ℝ E]
 
 -- TODO: Replace `InnerProductSpace.toUniformConvexSpace`
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) InnerProductSpaceable.to_uniformConvexSpace : UniformConvexSpace E := by
   cases nonempty_innerProductSpace ℝ E; infer_instance

@@ -79,7 +79,7 @@ theorem IsTopologicalSemiring.toIsTopologicalRing [TopologicalSpace α] [NonAsso
 @[deprecated (since := "2025-02-14")] alias TopologicalSemiring.toTopologicalRing :=
   IsTopologicalSemiring.toIsTopologicalRing
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) IsTopologicalRing.to_topologicalAddGroup [NonUnitalNonAssocRing α]
     [TopologicalSpace α] [IsTopologicalRing α] : IsTopologicalAddGroup α := ⟨⟩
 

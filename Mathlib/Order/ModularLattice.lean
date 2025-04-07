@@ -140,7 +140,7 @@ alias CovBy.sup_of_inf_left := covBy_sup_of_inf_covBy_left
 
 alias CovBy.sup_of_inf_right := covBy_sup_of_inf_covBy_right
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) IsUpperModularLattice.to_isWeakUpperModularLattice :
     IsWeakUpperModularLattice α :=
   ⟨fun _ => CovBy.sup_of_inf_right⟩
@@ -165,7 +165,7 @@ alias CovBy.inf_of_sup_left := inf_covBy_of_covBy_sup_left
 
 alias CovBy.inf_of_sup_right := inf_covBy_of_covBy_sup_right
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) IsLowerModularLattice.to_isWeakLowerModularLattice :
     IsWeakLowerModularLattice α :=
   ⟨fun _ => CovBy.inf_of_sup_right⟩
@@ -297,14 +297,14 @@ def infIooOrderIsoIooSup (a b : α) : Ioo (a ⊓ b) a ≃o Ioo b (a ⊔ b) where
     @OrderIso.le_iff_le _ _ _ _ (infIccOrderIsoIccSup _ _) ⟨c.1, Ioo_subset_Icc_self c.2⟩
       ⟨d.1, Ioo_subset_Icc_self d.2⟩
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) IsModularLattice.to_isLowerModularLattice : IsLowerModularLattice α :=
   ⟨fun {a b} => by
     simp_rw [covBy_iff_Ioo_eq, sup_comm a, inf_comm a, ← isEmpty_coe_sort, right_lt_sup,
       inf_lt_left, (infIooOrderIsoIooSup b a).symm.toEquiv.isEmpty_congr]
     exact id⟩
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) IsModularLattice.to_isUpperModularLattice : IsUpperModularLattice α :=
   ⟨fun {a b} => by
     simp_rw [covBy_iff_Ioo_eq, ← isEmpty_coe_sort, right_lt_sup, inf_lt_left,

@@ -327,7 +327,7 @@ instance (priority := 100) CompletelyDistribLattice.toCompleteDistribLattice
     [CompletelyDistribLattice α] : CompleteDistribLattice α where
   __ := ‹CompletelyDistribLattice α›
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) CompleteLinearOrder.toCompletelyDistribLattice [CompleteLinearOrder α] :
     CompletelyDistribLattice α where
   __ := ‹CompleteLinearOrder α›
@@ -569,7 +569,7 @@ class CompleteBooleanAlgebra (α) extends CompleteLattice α, BooleanAlgebra α 
   /-- `⊔` distributes over `⨅`. -/
   iInf_sup_le_sup_sInf (a : α) (s : Set α) : ⨅ b ∈ s, a ⊔ b ≤ a ⊔ sInf s
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) CompleteBooleanAlgebra.toCompleteDistribLattice
     [CompleteBooleanAlgebra α] : CompleteDistribLattice α where
   __ := ‹CompleteBooleanAlgebra α›
@@ -649,13 +649,13 @@ class CompleteAtomicBooleanAlgebra (α : Type u) extends CompleteLattice α, Boo
   protected iInf_iSup_eq {ι : Type u} {κ : ι → Type u} (f : ∀ a, κ a → α) :
     (⨅ a, ⨆ b, f a b) = ⨆ g : ∀ a, κ a, ⨅ a, f a (g a)
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) CompleteAtomicBooleanAlgebra.toCompletelyDistribLattice
     [CompleteAtomicBooleanAlgebra α] : CompletelyDistribLattice α where
   __ := ‹CompleteAtomicBooleanAlgebra α›
   __ := BooleanAlgebra.toBiheytingAlgebra
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) CompleteAtomicBooleanAlgebra.toCompleteBooleanAlgebra
     [CompleteAtomicBooleanAlgebra α] : CompleteBooleanAlgebra α where
   __ := CompletelyDistribLattice.toCompleteDistribLattice

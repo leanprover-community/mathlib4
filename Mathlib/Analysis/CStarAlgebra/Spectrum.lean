@@ -255,7 +255,7 @@ lemma norm_apply_le (φ : F) (a : A) : ‖φ a‖ ≤ ‖a‖ := by
   exact_mod_cast nnnorm_apply_le φ a
 
 /-- Non-unital star algebra homomorphisms between C⋆-algebras are continuous linear maps.
-See note [lower instance priority] -/
+See `LibraryNote.lowerInstancePriority` -/
 lemma instContinuousLinearMapClassComplex : ContinuousLinearMapClass F ℂ A B :=
   { NonUnitalAlgHomClass.instLinearMapClass with
     map_continuous := fun φ =>
@@ -293,7 +293,7 @@ open scoped ComplexStarModule
 variable {F A : Type*} [CStarAlgebra A] [FunLike F A ℂ] [hF : AlgHomClass F ℂ A ℂ]
 
 /-- This instance is provided instead of `StarHomClass` to avoid type class inference loops.
-See note [lower instance priority] -/
+See `LibraryNote.lowerInstancePriority` -/
 noncomputable instance (priority := 100) Complex.instStarHomClass : StarHomClass F A ℂ where
   map_star φ a := by
     suffices hsa : ∀ s : selfAdjoint A, (φ s)⋆ = φ s by

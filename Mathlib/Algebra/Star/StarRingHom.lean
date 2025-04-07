@@ -255,13 +255,13 @@ class StarRingEquivClass (F : Type*) (A B : outParam Type*)
 
 namespace StarRingEquivClass
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 50) {F A B : Type*} [Add A] [Mul A] [Star A] [Add B] [Mul B] [Star B]
     [EquivLike F A B] [hF : StarRingEquivClass F A B] :
     StarHomClass F A B :=
   { hF with }
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) {F A B : Type*} [NonUnitalNonAssocSemiring A] [Star A]
     [NonUnitalNonAssocSemiring B] [Star B] [EquivLike F A B] [RingEquivClass F A B]
     [StarRingEquivClass F A B] : NonUnitalStarRingHomClass F A B :=

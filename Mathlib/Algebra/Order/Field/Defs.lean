@@ -31,7 +31,7 @@ class LinearOrderedSemifield (α : Type*) extends LinearOrderedCommSemiring α, 
 /-- A linear ordered field is a field with a linear order respecting the operations. -/
 class LinearOrderedField (α : Type*) extends LinearOrderedCommRing α, Field α
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) LinearOrderedField.toLinearOrderedSemifield [LinearOrderedField α] :
     LinearOrderedSemifield α :=
   { LinearOrderedRing.toLinearOrderedSemiring, ‹LinearOrderedField α› with }

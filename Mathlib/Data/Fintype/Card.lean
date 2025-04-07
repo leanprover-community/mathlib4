@@ -423,11 +423,11 @@ theorem wellFounded_of_trans_of_irrefl (r : α → α → Prop) [IsTrans α r] [
           not_forall_of_exists_not ⟨x, Classical.not_imp.2 ⟨hxy, irrefl x⟩⟩⟩
   exact Subrelation.wf (this _ _) (measure _).wf
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) to_wellFoundedLT [Preorder α] : WellFoundedLT α :=
   ⟨wellFounded_of_trans_of_irrefl _⟩
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) to_wellFoundedGT [Preorder α] : WellFoundedGT α :=
   ⟨wellFounded_of_trans_of_irrefl _⟩
 

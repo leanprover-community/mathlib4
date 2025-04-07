@@ -93,7 +93,7 @@ class KleeneAlgebra (α : Type*) extends IdemSemiring α, KStar α where
   protected mul_kstar_le_self : ∀ a b : α, b * a ≤ b → b * a∗ ≤ b
   protected kstar_mul_le_self : ∀ a b : α, a * b ≤ b → a∗ * b ≤ b
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) IdemSemiring.toOrderBot [IdemSemiring α] : OrderBot α :=
   { ‹IdemSemiring α› with }
 
@@ -154,7 +154,7 @@ theorem add_le_iff : a + b ≤ c ↔ a ≤ c ∧ b ≤ c := by simp
 theorem add_le (ha : a ≤ c) (hb : b ≤ c) : a + b ≤ c :=
   add_le_iff.2 ⟨ha, hb⟩
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) IdemSemiring.toOrderedAddCommMonoid :
     OrderedAddCommMonoid α :=
   { ‹IdemSemiring α› with
@@ -162,17 +162,17 @@ instance (priority := 100) IdemSemiring.toOrderedAddCommMonoid :
       simp_rw [add_eq_sup]
       exact sup_le_sup_left hbc _ }
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) IdemSemiring.toCanonicallyOrderedAdd :
     CanonicallyOrderedAdd α :=
   { exists_add_of_le := fun h ↦ ⟨_, h.add_eq_right.symm⟩
     le_self_add := fun a b ↦ add_eq_right_iff_le.1 <| by rw [← add_assoc, add_idem] }
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) IdemSemiring.toMulLeftMono : MulLeftMono α :=
   ⟨fun a b c hbc ↦ add_eq_left_iff_le.1 <| by rw [← mul_add, hbc.add_eq_left]⟩
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) IdemSemiring.toMulRightMono : MulRightMono α :=
   ⟨fun a b c hbc ↦ add_eq_left_iff_le.1 <| by rw [← add_mul, hbc.add_eq_left]⟩
 

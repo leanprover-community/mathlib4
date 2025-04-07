@@ -339,7 +339,7 @@ section
 
 variable [Monoid M] [AddMonoid A] [DistribMulAction M A]
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) DistribMulAction.toDistribSMul : DistribSMul M A :=
   { ‹DistribMulAction M A› with }
 

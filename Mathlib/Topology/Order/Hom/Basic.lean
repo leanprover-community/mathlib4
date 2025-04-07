@@ -53,7 +53,7 @@ namespace ContinuousOrderHomClass
 variable [Preorder α] [Preorder β] [TopologicalSpace α] [TopologicalSpace β]
   [FunLike F α β] [ContinuousOrderHomClass F α β]
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) toOrderHomClass :
     OrderHomClass F α β :=
   { ‹ContinuousOrderHomClass F α β› with

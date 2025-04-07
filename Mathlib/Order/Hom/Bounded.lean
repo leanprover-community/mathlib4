@@ -94,12 +94,12 @@ section Hom
 
 variable [FunLike F α β]
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) BoundedOrderHomClass.toTopHomClass [LE α] [LE β]
     [BoundedOrder α] [BoundedOrder β] [BoundedOrderHomClass F α β] : TopHomClass F α β :=
   { ‹BoundedOrderHomClass F α β› with }
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) BoundedOrderHomClass.toBotHomClass [LE α] [LE β]
     [BoundedOrder α] [BoundedOrder β] [BoundedOrderHomClass F α β] : BotHomClass F α β :=
   { ‹BoundedOrderHomClass F α β› with }
@@ -110,18 +110,18 @@ section Equiv
 
 variable [EquivLike F α β]
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) OrderIsoClass.toTopHomClass [LE α] [OrderTop α]
     [PartialOrder β] [OrderTop β] [OrderIsoClass F α β] : TopHomClass F α β :=
   { show OrderHomClass F α β from inferInstance with
     map_top := fun f => top_le_iff.1 <| (map_inv_le_iff f).1 le_top }
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) OrderIsoClass.toBotHomClass [LE α] [OrderBot α]
     [PartialOrder β] [OrderBot β] [OrderIsoClass F α β] : BotHomClass F α β :=
   { map_bot := fun f => le_bot_iff.1 <| (le_map_inv_iff f).1 bot_le }
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) OrderIsoClass.toBoundedOrderHomClass [LE α] [BoundedOrder α]
     [PartialOrder β] [BoundedOrder β] [OrderIsoClass F α β] : BoundedOrderHomClass F α β :=
   { show OrderHomClass F α β from inferInstance, OrderIsoClass.toTopHomClass,

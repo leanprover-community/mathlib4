@@ -118,23 +118,23 @@ instance Pi.instBoundedGENhdsClass [Finite ι] [∀ i, Preorder (π i)] [∀ i, 
 
 end BoundedGENhdsClass
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) OrderTop.to_BoundedLENhdsClass [OrderTop α] : BoundedLENhdsClass α :=
   ⟨fun _a ↦ isBounded_le_of_top⟩
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) OrderBot.to_BoundedGENhdsClass [OrderBot α] : BoundedGENhdsClass α :=
   ⟨fun _a ↦ isBounded_ge_of_bot⟩
 
 end Preorder
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) BoundedLENhdsClass.of_closedIciTopology [LinearOrder α]
     [TopologicalSpace α] [ClosedIciTopology α] : BoundedLENhdsClass α :=
   ⟨fun a ↦ ((isTop_or_exists_gt a).elim fun h ↦ ⟨a, Eventually.of_forall h⟩) <|
     Exists.imp fun _b ↦ eventually_le_nhds⟩
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) BoundedGENhdsClass.of_closedIicTopology [LinearOrder α]
     [TopologicalSpace α] [ClosedIicTopology α] : BoundedGENhdsClass α :=
   inferInstanceAs <| BoundedGENhdsClass αᵒᵈᵒᵈ

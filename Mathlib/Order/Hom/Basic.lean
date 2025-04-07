@@ -131,7 +131,7 @@ def OrderIsoClass.toOrderIso [LE α] [LE β] [EquivLike F α β] [OrderIsoClass 
 instance [LE α] [LE β] [EquivLike F α β] [OrderIsoClass F α β] : CoeTC F (α ≃o β) :=
   ⟨OrderIsoClass.toOrderIso⟩
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) OrderIsoClass.toOrderHomClass [LE α] [LE β]
     [EquivLike F α β] [OrderIsoClass F α β] : OrderHomClass F α β :=
   { EquivLike.toEmbeddingLike (E := F) with
@@ -514,7 +514,7 @@ def uliftMap (f : α →o β) : ULift α →o ULift β :=
 
 end OrderHom
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 90) OrderHomClass.toOrderHomClassOrderDual [LE α] [LE β]
     [FunLike F α β] [OrderHomClass F α β] : OrderHomClass F αᵒᵈ βᵒᵈ where
   map_rel f := map_rel f
@@ -1159,7 +1159,7 @@ end BoundedOrder
 
 end LatticeIsos
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 90) OrderIsoClass.toOrderIsoClassOrderDual [LE α] [LE β]
     [EquivLike F α β] [OrderIsoClass F α β] : OrderIsoClass F αᵒᵈ βᵒᵈ where
   map_le_map_iff f := map_le_map_iff f

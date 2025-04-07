@@ -74,7 +74,7 @@ are both a multiplicative submonoid and an additive subgroup. -/
 class SubringClass (S : Type*) (R : outParam (Type u)) [Ring R] [SetLike S R] : Prop
     extends SubsemiringClass S R, NegMemClass S R
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) SubringClass.addSubgroupClass (S : Type*) (R : Type u)
     [SetLike S R] [Ring R] [h : SubringClass S R] : AddSubgroupClass S R :=
   { h with }

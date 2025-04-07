@@ -518,7 +518,7 @@ class DiscreteMeasurableSpace (α : Type*) [MeasurableSpace α] : Prop where
 instance : @DiscreteMeasurableSpace α ⊤ :=
   @DiscreteMeasurableSpace.mk _ (_) fun _ ↦ MeasurableSpace.measurableSet_top
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) MeasurableSingletonClass.toDiscreteMeasurableSpace [MeasurableSpace α]
     [MeasurableSingletonClass α] [Countable α] : DiscreteMeasurableSpace α where
   forall_measurableSet _ := (Set.to_countable _).measurableSet
@@ -533,7 +533,7 @@ variable [MeasurableSpace α] [MeasurableSpace β] [DiscreteMeasurableSpace α] 
 
 /-- Warning: Creates a typeclass loop with `MeasurableSingletonClass.toDiscreteMeasurableSpace`.
 To be monitored. -/
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) DiscreteMeasurableSpace.toMeasurableSingletonClass :
     MeasurableSingletonClass α where
   measurableSet_singleton _ := .of_discrete

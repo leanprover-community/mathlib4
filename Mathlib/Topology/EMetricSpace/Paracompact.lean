@@ -32,7 +32,7 @@ open ENNReal Topology Set
 
 namespace EMetric
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 /-- A `PseudoEMetricSpace` is always a paracompact space.
 Formalization is based on [MR0236876]. -/
 instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : ParacompactSpace α := by

@@ -57,7 +57,7 @@ class StarOrderedRing (R : Type u) [NonUnitalSemiring R] [PartialOrder R]
 
 namespace StarOrderedRing
 
--- see note [lower instance priority]
+-- see `LibraryNote.lowerInstancePriority`
 instance (priority := 100) toOrderedAddCommMonoid [NonUnitalSemiring R] [PartialOrder R]
     [StarRing R] [StarOrderedRing R] : OrderedAddCommMonoid R where
   add_le_add_left := fun x y hle z ↦ by
@@ -66,14 +66,14 @@ instance (priority := 100) toOrderedAddCommMonoid [NonUnitalSemiring R] [Partial
     rw [hs.2, add_assoc]
     exact ⟨hs.1, rfl⟩
 
--- see note [lower instance priority]
+-- see `LibraryNote.lowerInstancePriority`
 instance (priority := 100) toExistsAddOfLE [NonUnitalSemiring R] [PartialOrder R]
     [StarRing R] [StarOrderedRing R] : ExistsAddOfLE R where
   exists_add_of_le h :=
     match (le_iff _ _).mp h with
     | ⟨p, _, hp⟩ => ⟨p, hp⟩
 
--- see note [lower instance priority]
+-- see `LibraryNote.lowerInstancePriority`
 instance (priority := 100) toOrderedAddCommGroup [NonUnitalRing R] [PartialOrder R]
     [StarRing R] [StarOrderedRing R] : OrderedAddCommGroup R where
   add_le_add_left := @add_le_add_left _ _ _ _

@@ -28,7 +28,7 @@ theorem isLocalHom_id (R : Type*) [Semiring R] : IsLocalHom (RingHom.id R) where
 @[deprecated (since := "2024-10-10")]
 alias isLocalRingHom_id := isLocalHom_id
 
--- see note [lower instance priority]
+-- see `LibraryNote.lowerInstancePriority`
 @[instance 100]
 theorem isLocalHom_toRingHom {F : Type*} [FunLike F R S]
     [RingHomClass F R S] (f : F) [IsLocalHom f] : IsLocalHom (f : R →+* S) :=

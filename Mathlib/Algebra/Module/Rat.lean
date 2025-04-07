@@ -93,12 +93,12 @@ instance SMulCommClass.rat' [Monoid α] [AddCommGroup M] [DistribMulAction α M]
 
 end
 
--- see note [lower instance priority]
+-- see `LibraryNote.lowerInstancePriority`
 instance (priority := 100) NNRatModule.noZeroSMulDivisors [AddCommMonoid M] [Module ℚ≥0 M] :
     NoZeroSMulDivisors ℕ M :=
   ⟨fun {k} {x : M} h => by simpa [← Nat.cast_smul_eq_nsmul ℚ≥0 k x] using h⟩
 
--- see note [lower instance priority]
+-- see `LibraryNote.lowerInstancePriority`
 instance (priority := 100) RatModule.noZeroSMulDivisors [AddCommGroup M] [Module ℚ M] :
     NoZeroSMulDivisors ℤ M :=
   ⟨fun {k} {x : M} h => by simpa [← Int.cast_smul_eq_zsmul ℚ k x] using h⟩

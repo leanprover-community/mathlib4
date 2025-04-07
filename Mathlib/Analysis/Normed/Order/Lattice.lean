@@ -208,7 +208,7 @@ theorem isClosed_le_of_isClosed_nonneg {G} [OrderedAddCommGroup G] [TopologicalS
   rw [this]
   exact IsClosed.preimage (continuous_snd.sub continuous_fst) h
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) NormedLatticeAddCommGroup.orderClosedTopology {E}
     [NormedLatticeAddCommGroup E] : OrderClosedTopology E :=
   ⟨isClosed_le_of_isClosed_nonneg isClosed_nonneg⟩

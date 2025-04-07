@@ -50,7 +50,7 @@ are both a multiplicative submonoid and an additive subgroup. -/
 class NonUnitalSubringClass (S : Type*) (R : Type u) [NonUnitalNonAssocRing R] [SetLike S R] : Prop
   extends NonUnitalSubsemiringClass S R, NegMemClass S R where
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) NonUnitalSubringClass.addSubgroupClass (S : Type*) (R : Type u)
     [SetLike S R] [NonUnitalNonAssocRing R] [h : NonUnitalSubringClass S R] :
     AddSubgroupClass S R :=

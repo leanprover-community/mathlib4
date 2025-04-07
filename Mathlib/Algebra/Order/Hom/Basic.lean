@@ -215,7 +215,7 @@ attribute [simp] map_inv_eq_map
 
 attribute [to_additive] GroupSeminormClass.toMulLEAddHomClass
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) AddGroupSeminormClass.toZeroHomClass [AddGroup α]
     [AddCommMonoid β] [PartialOrder β] [AddGroupSeminormClass F α β] : ZeroHomClass F α β :=
   { ‹AddGroupSeminormClass F α β› with }
@@ -245,7 +245,7 @@ theorem abs_sub_map_le_div [Group α] [AddCommGroup β] [LinearOrder β] [IsOrde
   rw [abs_sub_le_iff, sub_le_iff_le_add', sub_le_iff_le_add']
   exact ⟨le_map_add_map_div _ _ _, le_map_add_map_div' _ _ _⟩
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 @[to_additive]
 instance (priority := 100) GroupSeminormClass.toNonnegHomClass [Group α]
     [AddCommMonoid β] [LinearOrder β] [IsOrderedAddMonoid β] [GroupSeminormClass F α β] :
@@ -316,18 +316,18 @@ class MulRingNormClass (F : Type*) (α β : outParam Type*)
   extends MulRingSeminormClass F α β, AddGroupNormClass F α β
 
 -- See note [out-param inheritance]
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) RingSeminormClass.toNonnegHomClass [NonUnitalNonAssocRing α]
     [Semiring β] [LinearOrder β] [IsOrderedAddMonoid β] [RingSeminormClass F α β] :
     NonnegHomClass F α β :=
   AddGroupSeminormClass.toNonnegHomClass
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) MulRingSeminormClass.toRingSeminormClass [NonAssocRing α]
     [Semiring β] [PartialOrder β] [MulRingSeminormClass F α β] : RingSeminormClass F α β :=
   { ‹MulRingSeminormClass F α β› with map_mul_le_mul := fun _ _ _ => (map_mul _ _ _).le }
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) MulRingNormClass.toRingNormClass [NonAssocRing α]
     [Semiring β] [PartialOrder β] [MulRingNormClass F α β] : RingNormClass F α β :=
   { ‹MulRingNormClass F α β›, MulRingSeminormClass.toRingSeminormClass with }

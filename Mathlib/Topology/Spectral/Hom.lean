@@ -85,7 +85,7 @@ export SpectralMapClass (map_spectral)
 
 attribute [simp] map_spectral
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) SpectralMapClass.toContinuousMapClass [TopologicalSpace α]
     [TopologicalSpace β] [FunLike F α β] [SpectralMapClass F α β] : ContinuousMapClass F α β :=
   { ‹SpectralMapClass F α β› with map_continuous := fun f => (map_spectral f).continuous }
