@@ -59,7 +59,12 @@ def _root_.Lean.Expr.swapBVars (e : Expr) (i j : Nat) : Expr := if i = j then e 
 | .app f a => e.updateApp! (f.swapBVars i j) (a.swapBVars i j)
 | .proj _ _ b => e.updateProj! (b.swapBVars i j)
 | .mdata _ b => e.updateMData! (b.swapBVars i j)
-| _ => e
+| .lit _
+| .const _ _
+| .sort _
+| .mvar _
+| .fvar _ =>
+  e
 
 /--
 For `#[x₁, .., xₙ]` create `(x₁, .., xₙ)`.
