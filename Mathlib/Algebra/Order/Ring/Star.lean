@@ -50,7 +50,7 @@ private lemma mul_le_mul_of_nonneg_left {R : Type*} [CommSemiring R] [PartialOrd
 This is not registered as an instance because it introduces a type class loop between `CommSemiring`
 and `OrderedCommSemiring`, and it seem loops still cause issues sometimes.
 
-See note [reducible non-instances]. -/
+See `LibraryNote.reducibleNonInstances`. -/
 abbrev toOrderedCommSemiring (R : Type*) [CommSemiring R] [PartialOrder R]
     [StarRing R] [StarOrderedRing R] : OrderedCommSemiring R where
   add_le_add_left _ _ := add_le_add_left
@@ -64,7 +64,7 @@ abbrev toOrderedCommSemiring (R : Type*) [CommSemiring R] [PartialOrder R]
 This is not registered as an instance because it introduces a type class loop between `CommSemiring`
 and `OrderedCommSemiring`, and it seem loops still cause issues sometimes.
 
-See note [reducible non-instances]. -/
+See `LibraryNote.reducibleNonInstances`. -/
 abbrev toOrderedCommRing (R : Type*) [CommRing R] [PartialOrder R]
     [StarRing R] [StarOrderedRing R] : OrderedCommRing R where
   add_le_add_left _ _ := add_le_add_left

@@ -364,7 +364,7 @@ lemma smul_iterate_apply (a : M) (n : ℕ) (x : α) : (a • ·)^[n] x = a ^ n �
   rw [smul_iterate]
 
 /-- Pullback a multiplicative action along an injective map respecting `•`.
-See note [reducible non-instances]. -/
+See `LibraryNote.reducibleNonInstances`. -/
 @[to_additive
     "Pullback an additive action along an injective map respecting `+ᵥ`."]
 protected abbrev Function.Injective.mulAction [SMul M β] (f : β → α) (hf : Injective f)
@@ -374,7 +374,7 @@ protected abbrev Function.Injective.mulAction [SMul M β] (f : β → α) (hf : 
   mul_smul c₁ c₂ x := hf <| by simp only [smul, mul_smul]
 
 /-- Pushforward a multiplicative action along a surjective map respecting `•`.
-See note [reducible non-instances]. -/
+See `LibraryNote.reducibleNonInstances`. -/
 @[to_additive
     "Pushforward an additive action along a surjective map respecting `+ᵥ`."]
 protected abbrev Function.Surjective.mulAction [SMul M β] (f : α → β) (hf : Surjective f)

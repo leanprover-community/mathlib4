@@ -523,7 +523,7 @@ lemma adjoin_le_centralizer_centralizer (s : Set A) :
   simp
 
 /-- If all elements of `s : Set A` commute pairwise and also commute pairwise with elements of
-`star s`, then `StarSubalgebra.adjoin R s` is commutative. See note [reducible non-instances]. -/
+`star s`, then `StarSubalgebra.adjoin R s` is commutative. See `LibraryNote.reducibleNonInstances`. -/
 abbrev adjoinCommSemiringOfComm {s : Set A}
     (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a)
     (hcomm_star : ∀ a ∈ s, ∀ b ∈ s, a * star b = star b * a) :
@@ -540,7 +540,7 @@ abbrev adjoinCommSemiringOfComm {s : Set A}
       exact Subtype.ext <| Set.centralizer_centralizer_comm_of_comm hcomm _ h₁ _ h₂ }
 
 /-- If all elements of `s : Set A` commute pairwise and also commute pairwise with elements of
-`star s`, then `StarSubalgebra.adjoin R s` is commutative. See note [reducible non-instances]. -/
+`star s`, then `StarSubalgebra.adjoin R s` is commutative. See `LibraryNote.reducibleNonInstances`. -/
 abbrev adjoinCommRingOfComm (R : Type u) {A : Type v} [CommRing R] [StarRing R] [Ring A]
     [Algebra R A] [StarRing A] [StarModule R A] {s : Set A}
     (hcomm : ∀ a : A, a ∈ s → ∀ b : A, b ∈ s → a * b = b * a)

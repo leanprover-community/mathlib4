@@ -668,7 +668,7 @@ def Subgroup.connectedComponentOfOne (G : Type*) [TopologicalSpace G] [Group G]
 
 /-- If a subgroup of a topological group is commutative, then so is its topological closure.
 
-See note [reducible non-instances]. -/
+See `LibraryNote.reducibleNonInstances`. -/
 @[to_additive
   "If a subgroup of an additive topological group is commutative, then so is its
 topological closure.

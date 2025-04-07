@@ -62,7 +62,7 @@ lemma smul_eq_zero_of_right (a : M) {b : A} (h : b = 0) : a • b = 0 := h.symm 
 lemma right_ne_zero_of_smul {a : M} {b : A} : a • b ≠ 0 → b ≠ 0 := mt <| smul_eq_zero_of_right a
 
 /-- Pullback a zero-preserving scalar multiplication along an injective zero-preserving map.
-See note [reducible non-instances]. -/
+See `LibraryNote.reducibleNonInstances`. -/
 protected abbrev Function.Injective.smulZeroClass [Zero B] [SMul M B] (f : ZeroHom B A)
     (hf : Injective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) :
     SMulZeroClass M B where
@@ -70,7 +70,7 @@ protected abbrev Function.Injective.smulZeroClass [Zero B] [SMul M B] (f : ZeroH
   smul_zero c := hf <| by simp only [smul, map_zero, smul_zero]
 
 /-- Pushforward a zero-preserving scalar multiplication along a zero-preserving map.
-See note [reducible non-instances]. -/
+See `LibraryNote.reducibleNonInstances`. -/
 protected abbrev ZeroHom.smulZeroClass [Zero B] [SMul M B] (f : ZeroHom A B)
     (smul : ∀ (c : M) (x), f (c • x) = c • f x) :
     SMulZeroClass M B where
@@ -91,7 +91,7 @@ abbrev Function.Surjective.smulZeroClassLeft {R S M : Type*} [Zero M] [SMulZeroC
 variable (A)
 
 /-- Compose a `SMulZeroClass` with a function, with scalar multiplication `f r' • m`.
-See note [reducible non-instances]. -/
+See `LibraryNote.reducibleNonInstances`. -/
 abbrev SMulZeroClass.compFun (f : N → M) :
     SMulZeroClass N A where
   smul := SMul.comp.smul f
@@ -285,7 +285,7 @@ instance AddMonoidHom.smulZeroClass [AddZeroClass B] : SMulZeroClass M (B →+ A
 
 /-- Pullback a distributive scalar multiplication along an injective additive monoid
 homomorphism.
-See note [reducible non-instances]. -/
+See `LibraryNote.reducibleNonInstances`. -/
 protected abbrev Function.Injective.distribSMul [AddZeroClass B] [SMul M B] (f : B →+ A)
     (hf : Injective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : DistribSMul M B :=
   { hf.smulZeroClass f.toZeroHom smul with
@@ -293,7 +293,7 @@ protected abbrev Function.Injective.distribSMul [AddZeroClass B] [SMul M B] (f :
 
 /-- Pushforward a distributive scalar multiplication along a surjective additive monoid
 homomorphism.
-See note [reducible non-instances]. -/
+See `LibraryNote.reducibleNonInstances`. -/
 protected abbrev Function.Surjective.distribSMul [AddZeroClass B] [SMul M B] (f : A →+ B)
     (hf : Surjective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : DistribSMul M B :=
   { f.toZeroHom.smulZeroClass smul with
@@ -315,7 +315,7 @@ abbrev Function.Surjective.distribSMulLeft {R S M : Type*} [AddZeroClass M] [Dis
 variable (A)
 
 /-- Compose a `DistribSMul` with a function, with scalar multiplication `f r' • m`.
-See note [reducible non-instances]. -/
+See `LibraryNote.reducibleNonInstances`. -/
 abbrev DistribSMul.compFun (f : N → M) : DistribSMul N A :=
   { SMulZeroClass.compFun A f with
     smul_add := fun x => smul_add (f x) }
@@ -354,14 +354,14 @@ example :
 
 /-- Pullback a distributive multiplicative action along an injective additive monoid
 homomorphism.
-See note [reducible non-instances]. -/
+See `LibraryNote.reducibleNonInstances`. -/
 protected abbrev Function.Injective.distribMulAction [AddMonoid B] [SMul M B] (f : B →+ A)
     (hf : Injective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : DistribMulAction M B :=
   { hf.distribSMul f smul, hf.mulAction f smul with }
 
 /-- Pushforward a distributive multiplicative action along a surjective additive monoid
 homomorphism.
-See note [reducible non-instances]. -/
+See `LibraryNote.reducibleNonInstances`. -/
 protected abbrev Function.Surjective.distribMulAction [AddMonoid B] [SMul M B] (f : A →+ B)
     (hf : Surjective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : DistribMulAction M B :=
   { hf.distribSMul f smul, hf.mulAction f smul with }

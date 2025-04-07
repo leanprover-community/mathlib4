@@ -111,7 +111,7 @@ open Classical in
 /-- The quotient by a maximal ideal is a group with zero. This is a `def` rather than `instance`,
 since users will have computable inverses in some applications.
 
-See note [reducible non-instances]. -/
+See `LibraryNote.reducibleNonInstances`. -/
 protected noncomputable abbrev groupWithZero [hI : I.IsMaximal] :
     GroupWithZero (R ⧸ I) := fast_instance%
   { inv := fun a => if ha : a = 0 then 0 else Classical.choose (exists_inv ha)
@@ -124,7 +124,7 @@ protected noncomputable abbrev groupWithZero [hI : I.IsMaximal] :
 This is a `def` rather than `instance`, since users
 will have computable inverses (and `qsmul`, `ratCast`) in some applications.
 
-See note [reducible non-instances]. -/
+See `LibraryNote.reducibleNonInstances`. -/
 protected noncomputable abbrev divisionRing [I.IsMaximal] : DivisionRing (R ⧸ I) := fast_instance%
   { __ := ring _
     __ := Quotient.groupWithZero _
@@ -137,7 +137,7 @@ protected noncomputable abbrev divisionRing [I.IsMaximal] : DivisionRing (R ⧸ 
 This is a `def` rather than `instance`, since users
 will have computable inverses (and `qsmul`, `ratCast`) in some applications.
 
-See note [reducible non-instances]. -/
+See `LibraryNote.reducibleNonInstances`. -/
 protected noncomputable abbrev field {R} [CommRing R] (I : Ideal R) [I.IsMaximal] :
     Field (R ⧸ I) := fast_instance%
   { __ := commRing _

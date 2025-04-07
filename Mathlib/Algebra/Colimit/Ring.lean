@@ -336,7 +336,7 @@ protected theorem inv_mul_cancel {p : Ring.DirectLimit G f} (hp : p ≠ 0) : inv
   rw [_root_.mul_comm, DirectLimit.mul_inv_cancel G f hp]
 
 /-- Noncomputable field structure on the direct limit of fields.
-See note [reducible non-instances]. -/
+See `LibraryNote.reducibleNonInstances`. -/
 protected noncomputable abbrev field [DirectedSystem G (f' · · ·)] :
     Field (Ring.DirectLimit G (f' · · ·)) where
   -- This used to include the parent CommRing and Nontrivial instances,

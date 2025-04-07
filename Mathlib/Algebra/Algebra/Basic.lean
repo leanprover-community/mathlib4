@@ -137,7 +137,7 @@ end CommSemiring
 section Ring
 
 /-- A `Semiring` that is an `Algebra` over a commutative ring carries a natural `Ring` structure.
-See note [reducible non-instances]. -/
+See `LibraryNote.reducibleNonInstances`. -/
 abbrev semiringToRing (R : Type*) [CommRing R] [Semiring A] [Algebra R A] : Ring A :=
   { __ := (inferInstance : Semiring A)
     __ := Module.addCommMonoidToAddCommGroup R

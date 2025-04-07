@@ -53,7 +53,7 @@ variable [LinearOrderedCommMonoidWithZero α] {a b : α} {n : ℕ}
 The following facts are true more generally in a (linearly) ordered commutative monoid.
 -/
 /-- Pullback a `LinearOrderedCommMonoidWithZero` under an injective map.
-See note [reducible non-instances]. -/
+See `LibraryNote.reducibleNonInstances`. -/
 abbrev Function.Injective.linearOrderedCommMonoidWithZero {β : Type*} [Zero β] [Bot β] [One β]
     [Mul β] [Pow β ℕ] [Max β] [Min β] (f : β → α) (hf : Function.Injective f) (zero : f 0 = 0)
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)

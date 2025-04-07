@@ -169,7 +169,7 @@ theorem Subsemiring.topologicalClosure_minimal (s : Subsemiring α) {t : Subsemi
 /-- If a subsemiring of a topological semiring is commutative, then so is its
 topological closure.
 
-See note [reducible non-instances]. -/
+See `LibraryNote.reducibleNonInstances`. -/
 abbrev Subsemiring.commSemiringTopologicalClosure [T2Space α] (s : Subsemiring α)
     (hs : ∀ x y : s, x * y = y * x) : CommSemiring s.topologicalClosure :=
   { s.topologicalClosure.toSemiring, s.toSubmonoid.commMonoidTopologicalClosure hs with }
@@ -344,7 +344,7 @@ theorem Subring.topologicalClosure_minimal (s : Subring α) {t : Subring α} (h 
 
 /-- If a subring of a topological ring is commutative, then so is its topological closure.
 
-See note [reducible non-instances]. -/
+See `LibraryNote.reducibleNonInstances`. -/
 abbrev Subring.commRingTopologicalClosure [T2Space α] (s : Subring α)
     (hs : ∀ x y : s, x * y = y * x) : CommRing s.topologicalClosure :=
   { s.topologicalClosure.toRing, s.toSubmonoid.commMonoidTopologicalClosure hs with }

@@ -21,7 +21,7 @@ universe u
 variable {α : Type u} {β : Type*}
 
 /-- Pullback an `OrderedCommMonoid` under an injective map.
-See note [reducible non-instances]. -/
+See `LibraryNote.reducibleNonInstances`. -/
 @[to_additive "Pullback an `OrderedAddCommMonoid` under an injective map."]
 abbrev Function.Injective.orderedCommMonoid [OrderedCommMonoid α] {β : Type*} [One β] [Mul β]
     [Pow β ℕ] (f : β → α) (hf : Function.Injective f) (one : f 1 = 1)
@@ -33,7 +33,7 @@ abbrev Function.Injective.orderedCommMonoid [OrderedCommMonoid α] {β : Type*} 
     rw [mul, mul]; apply mul_le_mul_left'; exact ab
 
 /-- Pullback an `OrderedCancelCommMonoid` under an injective map.
-See note [reducible non-instances]. -/
+See `LibraryNote.reducibleNonInstances`. -/
 @[to_additive Function.Injective.orderedCancelAddCommMonoid
     "Pullback an `OrderedCancelAddCommMonoid` under an injective map."]
 abbrev Function.Injective.orderedCancelCommMonoid [OrderedCancelCommMonoid α] [One β] [Mul β]
@@ -44,7 +44,7 @@ abbrev Function.Injective.orderedCancelCommMonoid [OrderedCancelCommMonoid α] [
     (mul_le_mul_iff_left (f a)).1 (by rwa [← mul, ← mul])
 
 /-- Pullback a `LinearOrderedCommMonoid` under an injective map.
-See note [reducible non-instances]. -/
+See `LibraryNote.reducibleNonInstances`. -/
 @[to_additive "Pullback an `OrderedAddCommMonoid` under an injective map."]
 abbrev Function.Injective.linearOrderedCommMonoid [LinearOrderedCommMonoid α] {β : Type*} [One β]
     [Mul β] [Pow β ℕ] [Max β] [Min β] (f : β → α) (hf : Function.Injective f) (one : f 1 = 1)
@@ -55,7 +55,7 @@ abbrev Function.Injective.linearOrderedCommMonoid [LinearOrderedCommMonoid α] {
   __ := LinearOrder.lift f hf sup inf
 
 /-- Pullback a `LinearOrderedCancelCommMonoid` under an injective map.
-See note [reducible non-instances]. -/
+See `LibraryNote.reducibleNonInstances`. -/
 @[to_additive Function.Injective.linearOrderedCancelAddCommMonoid
     "Pullback a `LinearOrderedCancelAddCommMonoid` under an injective map."]
 abbrev Function.Injective.linearOrderedCancelCommMonoid [LinearOrderedCancelCommMonoid α] [One β]
