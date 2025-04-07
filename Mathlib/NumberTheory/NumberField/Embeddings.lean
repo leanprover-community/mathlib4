@@ -1180,9 +1180,11 @@ theorem IsTotally.of_algebra [IsTotallyReal K] [Field F] [NumberField F] [Algebr
     obtain ⟨W, rfl⟩ : ∃ W : InfinitePlace K, W.comap (algebraMap F K) = w := comap_surjective w
     exact IsReal.comap _ (IsTotallyReal.isReal W)
 
-instance (F : IntermediateField ℚ K) [IsTotallyReal K] :
-    IsTotallyReal F :=
-  IsTotally.of_algebra F K
+instance [IsTotallyReal K] (F : IntermediateField ℚ K)  :
+    IsTotallyReal F := IsTotally.of_algebra F K
+
+instance [IsTotallyReal K] (F : Subfield K) :
+    IsTotallyReal F := IsTotally.of_algebra F K
 
 variable (K)
 
