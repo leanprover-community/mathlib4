@@ -500,6 +500,21 @@ def extractOpenNames : Syntax → Array (TSyntax `ident)
     | _ => unreachable!
   | _ => #[]
 
+/--
+`getLocalScopedAttributes? cmd` assumes that `cmd` represents a `attribute [...] id` or
+`attribute [...] id` command. If a local or scoped instance is added, it returns the
+attribute's id. Otherwise, it returns `default`.
+-/
+def getLocalScopedAttributes? : Syntax → Option Ident
+  | `(attribute [$x,*] $id in $_) | `(attribute [$x,*] $id) =>
+    let xs := x.getElems.find? fun a ↦ match a.raw with
+      | `(Parser.Term.attrInstance| local $_attr:attr) => true
+      | `(Parser.Term.attrInstance| scoped $_attr:attr) => true
+      | `(Parser.Command.eraseAttr| -$_) => false
+      | `(attr| $_a) => false
+    xs.map fun _ ↦ id
+  | _ => default
+
 @[inherit_doc Mathlib.Linter.linter.style.openClassical]
 def openClassicalLinter : Linter where run stx := do
     unless Linter.getLinterValue linter.style.openClassical (← getOptions) do
@@ -514,6 +529,15 @@ def openClassicalLinter : Linter where run stx := do
       Instead, use `open Classical in` for definitions or instances, the `classical` tactic \
       for proofs.\nFor theorem statements, \
       either add missing decidability assumptions or use `open Classical in`."
+    -- Also lint if `Classical.prodDecidable` is added as a local or scoped instance.
+    if let some id := getLocalScopedAttributes? stx then
+      if s!"{id}" == "`Classical.propDecidable" then -- TODO: perform a proper typed comparison
+        Linter.logLint linter.style.openClassical stx "please do not add 'Classical.prodDecidable' \
+        as a local or scoped instance:\nthis can hide theorem statements \
+        which would be better stated with explicit decidability statements.\n\
+        Instead, use `open Classical in` for definitions or instances, the `classical` tactic \
+        for proofs.\nFor theorem statements, \
+        either add missing decidability assumptions or use `open Classical in`."
 
 initialize addLinter openClassicalLinter
 
