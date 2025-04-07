@@ -3,7 +3,7 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.CharP.Lemmas
+import Mathlib.Algebra.CharP.Frobenius
 import Mathlib.Algebra.Polynomial.Derivative
 import Mathlib.Algebra.Polynomial.RingDivision
 import Mathlib.RingTheory.Polynomial.Basic
@@ -139,11 +139,12 @@ theorem natDegree_expand (p : ℕ) (f : R[X]) : (expand R p f).natDegree = f.nat
     split_ifs with hpn
     · rw [coeff_eq_zero_of_natDegree_lt]
       contrapose! hn
-      erw [WithBot.coe_le_coe, ← Nat.div_mul_cancel hpn]
+      norm_cast
+      rw [← Nat.div_mul_cancel hpn]
       exact Nat.mul_le_mul_right p hn
     · rfl
   · refine le_degree_of_ne_zero ?_
-    erw [coeff_expand_mul hp, ← leadingCoeff]
+    rw [coeff_expand_mul hp, ← leadingCoeff]
     exact mt leadingCoeff_eq_zero.1 hf
 
 theorem leadingCoeff_expand {p : ℕ} {f : R[X]} (hp : 0 < p) :

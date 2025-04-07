@@ -197,7 +197,7 @@ theorem List.applyId_zip_eq [DecidableEq α] {xs ys : List α} (h₀ : List.Nodu
       · simp
     · cases ys
       · cases h₁
-      · cases' h₀ with _ _ h₀ h₁
+      · obtain - | ⟨h₀, h₁⟩ := h₀
         simp only [getElem?_cons_succ, zip_cons_cons, applyId_cons] at h₂ ⊢
         rw [if_neg]
         · apply xs_ih <;> solve_by_elim [Nat.succ.inj]
@@ -223,8 +223,8 @@ theorem applyId_mem_iff [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup xs
       · rw [Option.some_inj] at h₃
         subst x'; subst val
         simp only [List.mem_cons, true_or, eq_self_iff_true]
-      · cases' h₀ with _ _ h₀ h₅
-        cases' h₂ with _ _ h₂ h₄
+      · obtain - | ⟨h₀, h₅⟩ := h₀
+        obtain - | ⟨h₂, h₄⟩ := h₂
         have h₆ := Nat.succ.inj h₁
         specialize xs_ih h₅ h₃ h₄ h₆
         simp only [Ne.symm h, xs_ih, List.mem_cons]
@@ -234,7 +234,7 @@ theorem applyId_mem_iff [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup xs
           rcases h₃ with ⟨a, b, h₃, h₄, h₅⟩
           apply (List.of_mem_zip h₃).2
         simp only [List.NodupKeys, List.keys, comp_def, Prod.fst_toSigma, List.map_map]
-        rwa [List.map_fst_zip _ _ (le_of_eq h₆)]
+        rwa [List.map_fst_zip (le_of_eq h₆)]
 
 theorem List.applyId_eq_self [DecidableEq α] {xs ys : List α} (x : α) :
     x ∉ xs → List.applyId.{u} (xs.zip ys) x = x := by
@@ -339,7 +339,7 @@ protected def mk (xs ys : List α) (h : xs ~ ys) (h' : ys.Nodup) : InjectiveFunc
     (by simp only [List.toFinmap', comp_def, List.map_snd_zip, *, Prod.snd_toSigma, List.map_map])
 
 protected theorem injective [DecidableEq α] (f : InjectiveFunction α) : Injective (apply f) := by
-  cases' f with xs hperm hnodup
+  obtain ⟨xs, hperm, hnodup⟩ := f
   generalize h₀ : List.map Sigma.fst xs = xs₀
   generalize h₁ : xs.map (@id ((Σ _ : α, α) → α) <| @Sigma.snd α fun _ : α => α) = xs₁
   dsimp [id] at h₁
@@ -367,7 +367,7 @@ instance PiInjective.sampleableExt : SampleableExt { f : ℤ → ℤ // Function
     have Hinj : Injective fun r : ℕ => -(2 * sz + 2 : ℤ) + ↑r := fun _x _y h =>
         Int.ofNat.inj (add_right_injective _ h)
     let r : InjectiveFunction ℤ :=
-      InjectiveFunction.mk.{0} xs' ys.1 ys.2 (ys.2.nodup_iff.1 <| (List.nodup_range _).map Hinj)
+      InjectiveFunction.mk.{0} xs' ys.1 ys.2 (ys.2.nodup_iff.1 <| List.nodup_range.map Hinj)
     pure r
   shrink := {shrink := @InjectiveFunction.shrink ℤ _ }
 

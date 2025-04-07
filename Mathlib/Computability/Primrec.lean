@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Logic.Equiv.List
+import Mathlib.Logic.Encodable.Pi
 import Mathlib.Logic.Function.Iterate
 
 /-!
@@ -290,12 +290,14 @@ theorem pair {α β γ} [Primcodable α] [Primcodable β] [Primcodable γ] {f : 
 theorem unpair : Primrec Nat.unpair :=
   (pair (nat_iff.2 .left) (nat_iff.2 .right)).of_eq fun n => by simp
 
-theorem list_get?₁ : ∀ l : List α, Primrec l.get?
+theorem list_getElem?₁ : ∀ l : List α, Primrec (l[·]? : ℕ → Option α)
   | [] => dom_denumerable.2 zero
   | a :: l =>
     dom_denumerable.2 <|
-      (casesOn1 (encode a).succ <| dom_denumerable.1 <| list_get?₁ l).of_eq fun n => by
+      (casesOn1 (encode a).succ <| dom_denumerable.1 <| list_getElem?₁ l).of_eq fun n => by
         cases n <;> simp
+
+@[deprecated (since := "2025-02-14")] alias list_get?₁ := list_getElem?₁
 
 end Primrec
 
@@ -628,8 +630,8 @@ theorem dom_fintype [Finite α] (f : α → σ) : Primrec f :=
   let ⟨l, _, m⟩ := Finite.exists_univ_list α
   option_some_iff.1 <| by
     haveI := decidableEqOfEncodable α
-    refine ((list_get?₁ (l.map f)).comp (list_idxOf₁ l)).of_eq fun a => ?_
-    rw [List.get?_eq_getElem?, List.getElem?_map, List.getElem?_idxOf (m a), Option.map_some']
+    refine ((list_getElem?₁ (l.map f)).comp (list_idxOf₁ l)).of_eq fun a => ?_
+    rw [List.getElem?_map, List.getElem?_idxOf (m a), Option.map_some']
 
 -- Porting note: These are new lemmas
 -- I added it because it actually simplified the proofs
@@ -812,19 +814,24 @@ namespace Primrec
 variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
-theorem sum_inl : Primrec (@Sum.inl α β) :=
+theorem sumInl : Primrec (@Sum.inl α β) :=
   encode_iff.1 <| nat_double.comp Primrec.encode
 
-theorem sum_inr : Primrec (@Sum.inr α β) :=
+theorem sumInr : Primrec (@Sum.inr α β) :=
   encode_iff.1 <| nat_double_succ.comp Primrec.encode
 
-theorem sum_casesOn {f : α → β ⊕ γ} {g : α → β → σ} {h : α → γ → σ} (hf : Primrec f)
+@[deprecated (since := "2025-02-21")] alias sum_inl := Primrec.sumInl
+@[deprecated (since := "2025-02-21")] alias sum_inr := Primrec.sumInr
+
+theorem sumCasesOn {f : α → β ⊕ γ} {g : α → β → σ} {h : α → γ → σ} (hf : Primrec f)
     (hg : Primrec₂ g) (hh : Primrec₂ h) : @Primrec _ σ _ _ fun a => Sum.casesOn (f a) (g a) (h a) :=
   option_some_iff.1 <|
     (cond (nat_bodd.comp <| encode_iff.2 hf)
           (option_map (Primrec.decode.comp <| nat_div2.comp <| encode_iff.2 hf) hh)
           (option_map (Primrec.decode.comp <| nat_div2.comp <| encode_iff.2 hf) hg)).of_eq
       fun a => by rcases f a with b | c <;> simp [Nat.div2_val, encodek]
+
+@[deprecated (since := "2025-02-21")] alias sum_casesOn := Primrec.sumCasesOn
 
 theorem list_cons : Primrec₂ (@List.cons α) :=
   list_cons' Primcodable.prim
@@ -871,34 +878,30 @@ theorem list_rec {f : α → List β} {g : α → σ} {h : α → β × List β 
     dsimp [F]
     induction' f a with b l IH <;> simp [*]
 
-theorem list_get? : Primrec₂ (@List.get? α) :=
+theorem list_getElem? : Primrec₂ ((·[·]? : List α → ℕ → Option α)) :=
   let F (l : List α) (n : ℕ) :=
     l.foldl
       (fun (s : ℕ ⊕ α) (a : α) =>
         Sum.casesOn s (@Nat.casesOn (fun _ => ℕ ⊕ α) · (Sum.inr a) Sum.inl) Sum.inr)
       (Sum.inl n)
   have hF : Primrec₂ F :=
-    (list_foldl fst (sum_inl.comp snd)
-      ((sum_casesOn fst (nat_casesOn snd (sum_inr.comp <| snd.comp fst) (sum_inl.comp snd).to₂).to₂
-              (sum_inr.comp snd).to₂).comp
+    (list_foldl fst (sumInl.comp snd)
+      ((sumCasesOn fst (nat_casesOn snd (sumInr.comp <| snd.comp fst) (sumInl.comp snd).to₂).to₂
+              (sumInr.comp snd).to₂).comp
           snd).to₂).to₂
   have :
     @Primrec _ (Option α) _ _ fun p : List α × ℕ => Sum.casesOn (F p.1 p.2) (fun _ => none) some :=
-    sum_casesOn hF (const none).to₂ (option_some.comp snd).to₂
+    sumCasesOn hF (const none).to₂ (option_some.comp snd).to₂
   this.to₂.of_eq fun l n => by
     dsimp; symm
     induction' l with a l IH generalizing n; · rfl
     rcases n with - | n
     · dsimp [F]
       clear IH
-      induction' l with _ l IH <;> simp [*]
-    · apply IH
+      induction' l with _ l IH <;> simp_all
+    · simpa using IH ..
 
-theorem list_getElem? : Primrec₂ (fun (l : List α) (n : ℕ) => l[n]?) := by
-  convert list_get?
-  ext
-  simp
-
+@[deprecated (since := "2025-02-14")] alias list_get? := list_getElem?
 theorem list_getD (d : α) : Primrec₂ fun l n => List.getD l n d := by
   simp only [List.getD_eq_getElem?_getD]
   exact option_getD.comp₂ list_getElem? (const _)
@@ -963,7 +966,7 @@ theorem nat_strong_rec (f : α → ℕ → σ) {g : α → List σ → Option σ
     (H : ∀ a n, g a ((List.range n).map (f a)) = some (f a n)) : Primrec₂ f :=
   suffices Primrec₂ fun a n => (List.range n).map (f a) from
     Primrec₂.option_some_iff.1 <|
-      (list_get?.comp (this.comp fst (succ.comp snd)) snd).to₂.of_eq fun a n => by
+      (list_getElem?.comp (this.comp fst (succ.comp snd)) snd).to₂.of_eq fun a n => by
         simp [List.getElem?_range (Nat.lt_succ_self n)]
   Primrec₂.option_some_iff.1 <|
     (nat_rec (const (some []))
@@ -1011,8 +1014,8 @@ theorem nat_omega_rec' (f : β → σ) {m : β → ℕ} {l : β → List β} {g 
             to₂ <| option_map
               (hg.comp snd (mapGraph_primrec.comp (snd.comp <| snd.comp fst) (hl.comp snd)))
               (Primrec₂.pair.comp₂ (snd.comp₂ .left) .right)
-  have : Primrec (fun b => ((graph b (m b + 1)).get? 0).map Prod.snd) :=
-    option_map (list_get?.comp (graph_primrec.comp Primrec.id (succ.comp hm)) (const 0))
+  have : Primrec (fun b => (graph b (m b + 1))[0]?.map Prod.snd) :=
+    option_map (list_getElem?.comp (graph_primrec.comp Primrec.id (succ.comp hm)) (const 0))
       (snd.comp₂ Primrec₂.right)
   exact option_some_iff.mp <| this.of_eq <| fun b ↦ by
     have graph_eq_map_bindList (i : ℕ) (hi : i ≤ m b + 1) :
@@ -1182,9 +1185,8 @@ theorem vector_tail {n} : Primrec (@List.Vector.tail α n) :=
 
 theorem vector_get {n} : Primrec₂ (@List.Vector.get α n) :=
   option_some_iff.1 <|
-    (list_get?.comp (vector_toList.comp fst) (fin_val.comp snd)).of_eq fun a => by
-      rw [Vector.get_eq_get_toList, ← List.get?_eq_get]
-      rfl
+    (list_getElem?.comp (vector_toList.comp fst) (fin_val.comp snd)).of_eq fun a => by
+      simp [Vector.get_eq_get_toList]
 
 theorem list_ofFn :
     ∀ {n} {f : Fin n → α → σ}, (∀ i, Primrec (f i)) → Primrec fun a => List.ofFn fun i => f i a

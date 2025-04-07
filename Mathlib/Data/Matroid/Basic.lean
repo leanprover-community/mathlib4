@@ -7,7 +7,7 @@ import Mathlib.Data.Finite.Prod
 import Mathlib.Data.Matroid.Init
 import Mathlib.Data.Set.Card
 import Mathlib.Data.Set.Finite.Powerset
-import Mathlib.Order.Minimal
+import Mathlib.Order.UpperLower.Closure
 
 /-!
 # Matroids
@@ -171,26 +171,26 @@ assert_not_exists Field
 open Set
 
 /-- A predicate `P` on sets satisfies the **exchange property** if,
-  for all `X` and `Y` satisfying `P` and all `a ∈ X \ Y`, there exists `b ∈ Y \ X` so that
-  swapping `a` for `b` in `X` maintains `P`. -/
+for all `X` and `Y` satisfying `P` and all `a ∈ X \ Y`, there exists `b ∈ Y \ X` so that
+swapping `a` for `b` in `X` maintains `P`. -/
 def Matroid.ExchangeProperty {α : Type _} (P : Set α → Prop) : Prop :=
   ∀ X Y, P X → P Y → ∀ a ∈ X \ Y, ∃ b ∈ Y \ X, P (insert b (X \ {a}))
 
 /-- A set `X` has the maximal subset property for a predicate `P` if every subset of `X` satisfying
-  `P` is contained in a maximal subset of `X` satisfying `P`. -/
+`P` is contained in a maximal subset of `X` satisfying `P`. -/
 def Matroid.ExistsMaximalSubsetProperty {α : Type _} (P : Set α → Prop) (X : Set α) : Prop :=
   ∀ I, P I → I ⊆ X → ∃ J, I ⊆ J ∧ Maximal (fun K ↦ P K ∧ K ⊆ X) J
 
 /-- A `Matroid α` is a ground set `E` of type `Set α`, and a nonempty collection of its subsets
-  satisfying the exchange property and the maximal subset property. Each such set is called a
-  `Base` of `M`. An `Indep`endent set is just a set contained in a base, but we include this
-  predicate as a structure field for better definitional properties.
+satisfying the exchange property and the maximal subset property. Each such set is called a
+`Base` of `M`. An `Indep`endent set is just a set contained in a base, but we include this
+predicate as a structure field for better definitional properties.
 
-  In most cases, using this definition directly is not the best way to construct a matroid,
-  since it requires specifying both the bases and independent sets. If the bases are known,
-  use `Matroid.ofBase` or a variant. If just the independent sets are known,
-  define an `IndepMatroid`, and then use `IndepMatroid.matroid`.
-  -/
+In most cases, using this definition directly is not the best way to construct a matroid,
+since it requires specifying both the bases and independent sets. If the bases are known,
+use `Matroid.ofBase` or a variant. If just the independent sets are known,
+define an `IndepMatroid`, and then use `IndepMatroid.matroid`.
+-/
 structure Matroid (α : Type _) where
   /-- `M` has a ground set `E`. -/
   (E : Set α)
@@ -222,12 +222,12 @@ variable {α : Type*} {M : Matroid α}
 instance (M : Matroid α) : Nonempty {B // M.IsBase B} :=
   nonempty_subtype.2 M.exists_isBase
 
-/-- Typeclass for a matroid having finite ground set. Just a wrapper for `M.E.Finite`-/
+/-- Typeclass for a matroid having finite ground set. Just a wrapper for `M.E.Finite`. -/
 @[mk_iff] protected class Finite (M : Matroid α) : Prop where
   /-- The ground set is finite -/
   (ground_finite : M.E.Finite)
 
-/-- Typeclass for a matroid having nonempty ground set. Just a wrapper for `M.E.Nonempty`-/
+/-- Typeclass for a matroid having nonempty ground set. Just a wrapper for `M.E.Nonempty`. -/
 protected class Nonempty (M : Matroid α) : Prop where
   /-- The ground set is nonempty -/
   (ground_nonempty : M.E.Nonempty)
@@ -472,10 +472,21 @@ theorem not_rankFinite (M : Matroid α) [RankInfinite M] : ¬ RankFinite M := by
 theorem not_rankInfinite (M : Matroid α) [RankFinite M] : ¬ RankInfinite M := by
   intro h; obtain ⟨B,hB⟩ := M.exists_isBase; exact hB.infinite hB.finite
 
-theorem finite_or_rankInfinite (M : Matroid α) : RankFinite M ∨ RankInfinite M :=
+theorem rankFinite_or_rankInfinite (M : Matroid α) : RankFinite M ∨ RankInfinite M :=
   let ⟨B, hB⟩ := M.exists_isBase
   B.finite_or_infinite.elim
   (Or.inl ∘ hB.rankFinite_of_finite) (Or.inr ∘ hB.rankInfinite_of_infinite)
+
+@[deprecated (since := "2025-03-27")] alias finite_or_rankInfinite := rankFinite_or_rankInfinite
+
+@[simp]
+theorem not_rankFinite_iff (M : Matroid α) : ¬ RankFinite M ↔ RankInfinite M :=
+  M.rankFinite_or_rankInfinite.elim (fun h ↦ iff_of_false (by simpa) M.not_rankInfinite)
+    fun h ↦ iff_of_true M.not_rankFinite h
+
+@[simp]
+theorem not_rankInfinite_iff (M : Matroid α) : ¬ RankInfinite M ↔ RankFinite M := by
+  rw [← not_rankFinite_iff, not_not]
 
 theorem IsBase.diff_finite_comm (hB₁ : M.IsBase B₁) (hB₂ : M.IsBase B₂) :
     (B₁ \ B₂).Finite ↔ (B₂ \ B₁).Finite :=

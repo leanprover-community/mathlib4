@@ -6,7 +6,7 @@ Authors: Joseph Myers
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
-import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
+import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 import Mathlib.Tactic.FinCases
 import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
@@ -593,6 +593,19 @@ theorem map_affineCombination {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k 
   simp only [weightedVSubOfPoint_apply, RingHom.id_apply, AffineMap.map_vadd,
     LinearMap.map_smulₛₗ, AffineMap.linearMap_vsub, map_sum, Function.comp_apply]
 
+/-- The value of `affineCombination`, where the given points take only two values. -/
+lemma affineCombination_apply_eq_lineMap_sum [DecidableEq ι] (w : ι → k) (p : ι → P)
+    (p₁ p₂ : P) (s' : Finset ι) (h : ∑ i ∈ s, w i = 1) (hp₂ : ∀ i ∈ s ∩ s', p i = p₂)
+    (hp₁ : ∀ i ∈ s \ s', p i = p₁) :
+    s.affineCombination k p w = AffineMap.lineMap p₁ p₂ (∑ i ∈ s ∩ s', w i) := by
+  rw [s.affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one w p h p₁,
+    weightedVSubOfPoint_apply, ← s.sum_inter_add_sum_diff s', AffineMap.lineMap_apply,
+    vadd_right_cancel_iff, sum_smul]
+  convert add_zero _ with i hi
+  · convert Finset.sum_const_zero with i hi
+    simp [hp₁ i hi]
+  · exact (hp₂ i hi).symm
+
 variable (k)
 
 /-- Weights for expressing a single point as an affine combination. -/
@@ -723,23 +736,17 @@ theorem centroidWeights_apply (i : ι) : s.centroidWeights k i = (#s : k)⁻¹ :
 theorem centroidWeights_eq_const : s.centroidWeights k = Function.const ι (#s : k)⁻¹ :=
   rfl
 
-variable {k}
-
+variable {k} in
 /-- The weights in the centroid sum to 1, if the number of points,
 converted to `k`, is not zero. -/
 theorem sum_centroidWeights_eq_one_of_cast_card_ne_zero (h : (#s : k) ≠ 0) :
     ∑ i ∈ s, s.centroidWeights k i = 1 := by simp [h]
 
-variable (k)
-
 /-- In the characteristic zero case, the weights in the centroid sum
 to 1 if the number of points is not zero. -/
 theorem sum_centroidWeights_eq_one_of_card_ne_zero [CharZero k] (h : #s ≠ 0) :
     ∑ i ∈ s, s.centroidWeights k i = 1 := by
-  -- Porting note: `simp` cannot find `mul_inv_cancel` and does not use `norm_cast`
-  simp only [centroidWeights_apply, sum_const, nsmul_eq_mul, ne_eq, Nat.cast_eq_zero, card_eq_zero]
-  refine mul_inv_cancel₀ ?_
-  norm_cast
+  simp_all
 
 /-- In the characteristic zero case, the weights in the centroid sum
 to 1 if the set is nonempty. -/
@@ -939,8 +946,7 @@ theorem affineCombination_mem_affineSpan [Nontrivial k] {s : Finset ι} {w : ι 
     rw [← vsub_vadd (s.affineCombination k p w) (p i1)]
     exact AffineSubspace.vadd_mem_of_mem_direction hv (mem_affineSpan k (Set.mem_range_self _))
 
-variable (k)
-
+variable (k) in
 /-- A vector is in the `vectorSpan` of an indexed family if and only
 if it is a `weightedVSub` with sum of weights 0. -/
 theorem mem_vectorSpan_iff_eq_weightedVSub {v : V} {p : ι → P} :
@@ -982,8 +988,6 @@ theorem mem_vectorSpan_iff_eq_weightedVSub {v : V} {p : ι → P} :
         simp
     · rintro ⟨s, w, hw, rfl⟩
       exact weightedVSub_mem_vectorSpan hw p
-
-variable {k}
 
 /-- A point in the `affineSpan` of an indexed family is an
 `affineCombination` with sum of weights 1. See also
@@ -1136,9 +1140,7 @@ def weightedVSubOfPoint (w : ι → k) : (ι → P) × P →ᵃ[k] V where
   linear := ∑ i ∈ s, w i • ((LinearMap.proj i).comp (LinearMap.fst _ _ _) - LinearMap.snd _ _ _)
   map_vadd' := by
     rintro ⟨p, b⟩ ⟨v, b'⟩
-    -- Porting note: needed to give `Prod.mk_vadd_mk` a hint
     simp [LinearMap.sum_apply, Finset.weightedVSubOfPoint, vsub_vadd_eq_vsub_sub,
-     vadd_vsub_assoc,
-     add_sub, ← sub_add_eq_add_sub, smul_add, Finset.sum_add_distrib, Prod.mk_vadd_mk v]
+     vadd_vsub_assoc, add_sub, ← sub_add_eq_add_sub, smul_add, Finset.sum_add_distrib]
 
 end AffineMap

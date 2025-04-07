@@ -21,7 +21,7 @@ there is a pushout diagram of the form
 In other words, the morphism `f` is a pushout of coproducts of morphisms
 of the form `g a : A a ⟶ B a`, see `nonempty_attachCells_iff`.
 
-See the file `RelativeCellComplex.Basic` for transfinite compositions
+See the file `Mathlib.AlgebraicTopology.RelativeCellComplex.Basic` for transfinite compositions
 of morphisms `f` with `AttachCells g f` structures.
 
 -/
@@ -97,7 +97,7 @@ is obtained by attaching cells to the source of `f`,
 then the same holds for `f'`. -/
 @[simps]
 def ofArrowIso {Y₁ Y₂ : C} {f' : Y₁ ⟶ Y₂} (e : Arrow.mk f ≅ Arrow.mk f') :
-   AttachCells.{w} g f' where
+    AttachCells.{w} g f' where
   ι := c.ι
   π := c.π
   cofan₁ := c.cofan₁
@@ -192,6 +192,6 @@ lemma nonempty_attachCells_iff :
         (IsColimit.precomposeHomEquiv (Discrete.natIso (fun ⟨i⟩ ↦ e₂ i)) _).1
           (IsColimit.ofIsoColimit h₂ (Cocones.ext (Iso.refl _) (by simp)))
       hm i := by simp [e₁, e₂]
-      isPushout := sq }⟩
+      isPushout := sq, .. }⟩
 
 end HomotopicalAlgebra

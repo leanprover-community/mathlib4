@@ -112,7 +112,7 @@ section dual
 def dual (M : Matroid α) : Matroid α := M.dualIndepMatroid.matroid
 
 /-- The `✶` symbol, which denotes matroid duality.
-  (This is distinct from the usual `*` symbol for multiplication, due to precedence issues. )-/
+  (This is distinct from the usual `*` symbol for multiplication, due to precedence issues.) -/
 postfix:max "✶" => Matroid.dual
 
 theorem dual_indep_iff_exists' : (M✶.Indep I) ↔ I ⊆ M.E ∧ (∃ B, M.IsBase B ∧ Disjoint I B) :=

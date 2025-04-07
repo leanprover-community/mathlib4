@@ -4,12 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard,
 Amelia Livingston, Yury Kudryashov
 -/
+import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
 import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.Algebra.Group.Idempotent
 import Mathlib.Algebra.Group.Nat.Hom
 import Mathlib.Algebra.Group.Submonoid.MulOpposite
 import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Fintype.EquivFin
+import Mathlib.Data.Int.Basic
 
 /-!
 # Submonoids: membership criteria
@@ -111,8 +113,9 @@ then it holds for all elements of the supremum of `S`. -/
       " An induction principle for elements of `⨆ i, S i`.
       If `C` holds for `0` and all elements of `S i` for all `i`, and is preserved under addition,
       then it holds for all elements of the supremum of `S`. "]
-theorem iSup_induction {ι : Sort*} (S : ι → Submonoid M) {C : M → Prop} {x : M} (hx : x ∈ ⨆ i, S i)
-    (mem : ∀ (i), ∀ x ∈ S i, C x) (one : C 1) (mul : ∀ x y, C x → C y → C (x * y)) : C x := by
+theorem iSup_induction {ι : Sort*} (S : ι → Submonoid M) {motive : M → Prop} {x : M}
+    (hx : x ∈ ⨆ i, S i) (mem : ∀ (i), ∀ x ∈ S i, motive x) (one : motive 1)
+    (mul : ∀ x y, motive x → motive y → motive (x * y)) : motive x := by
   rw [iSup_eq_closure] at hx
   refine closure_induction (fun x hx => ?_) one (fun _ _ _ _ ↦ mul _ _) hx
   obtain ⟨i, hi⟩ := Set.mem_iUnion.mp hx
@@ -120,12 +123,14 @@ theorem iSup_induction {ι : Sort*} (S : ι → Submonoid M) {C : M → Prop} {x
 
 /-- A dependent version of `Submonoid.iSup_induction`. -/
 @[to_additive (attr := elab_as_elim) "A dependent version of `AddSubmonoid.iSup_induction`. "]
-theorem iSup_induction' {ι : Sort*} (S : ι → Submonoid M) {C : ∀ x, (x ∈ ⨆ i, S i) → Prop}
-    (mem : ∀ (i), ∀ (x) (hxS : x ∈ S i), C x (mem_iSup_of_mem i hxS)) (one : C 1 (one_mem _))
-    (mul : ∀ x y hx hy, C x hx → C y hy → C (x * y) (mul_mem ‹_› ‹_›)) {x : M}
-    (hx : x ∈ ⨆ i, S i) : C x hx := by
-  refine Exists.elim (?_ : ∃ Hx, C x Hx) fun (hx : x ∈ ⨆ i, S i) (hc : C x hx) => hc
-  refine @iSup_induction _ _ ι S (fun m => ∃ hm, C m hm) _ hx (fun i x hx => ?_) ?_ fun x y => ?_
+theorem iSup_induction' {ι : Sort*} (S : ι → Submonoid M) {motive : ∀ x, (x ∈ ⨆ i, S i) → Prop}
+    (mem : ∀ (i), ∀ (x) (hxS : x ∈ S i), motive x (mem_iSup_of_mem i hxS))
+    (one : motive 1 (one_mem _))
+    (mul : ∀ x y hx hy, motive x hx → motive y hy → motive (x * y) (mul_mem ‹_› ‹_›)) {x : M}
+    (hx : x ∈ ⨆ i, S i) : motive x hx := by
+  refine Exists.elim (?_ : ∃ Hx, motive x Hx) fun (hx : x ∈ ⨆ i, S i) (hc : motive x hx) => hc
+  refine @iSup_induction _ _ ι S (fun m => ∃ hm, motive m hm) _ hx (fun i x hx => ?_) ?_
+      fun x y => ?_
   · exact ⟨_, mem _ _ hx⟩
   · exact ⟨_, one⟩
   · rintro ⟨_, Cx⟩ ⟨_, Cy⟩
@@ -328,7 +333,7 @@ abbrev groupPowers {x : M} {n : ℕ} (hpos : 0 < n) (hx : x ^ n = 1) : Group (po
   zpow_neg' m x := Subtype.ext <| by
     obtain ⟨_, k, rfl⟩ := x
     simp only [← pow_mul, Int.natMod, SubmonoidClass.coe_pow]
-    rw [Int.negSucc_coe, ← Int.add_mul_emod_self (b := (m + 1 : ℕ))]
+    rw [Int.negSucc_eq, ← Int.natCast_succ, ← Int.add_mul_emod_self (b := (m + 1 : ℕ))]
     nth_rw 1 [← mul_one ((m + 1 : ℕ) : ℤ)]
     rw [← sub_eq_neg_add, ← Int.mul_sub, ← Int.natCast_pred_of_pos hpos]; norm_cast
     simp only [Int.toNat_natCast]

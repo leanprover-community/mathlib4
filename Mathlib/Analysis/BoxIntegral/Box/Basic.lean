@@ -93,7 +93,6 @@ theorem lower_ne_upper (i) : I.lower i ≠ I.upper i :=
 instance : Membership (ι → ℝ) (Box ι) :=
   ⟨fun I x ↦ ∀ i, x i ∈ Ioc (I.lower i) (I.upper i)⟩
 
--- Porting note: added
 /-- The set of points in this box: this is the product of half-open intervals `(lower i, upper i]`,
 where `lower` and `upper` are this box' corners. -/
 @[coe]
@@ -238,7 +237,6 @@ instance : SemilatticeSup (Box ι) :=
 In this section we define coercion from `WithBot (Box ι)` to `Set (ι → ℝ)` by sending `⊥` to `∅`.
 -/
 
--- Porting note: added
 /-- The set underlying this box: `⊥` is mapped to `∅`. -/
 @[coe]
 def withBotToSet (o : WithBot (Box ι)) : Set (ι → ℝ) := o.elim ∅ (↑)
@@ -254,10 +252,10 @@ theorem coe_coe : ((I : WithBot (Box ι)) : Set (ι → ℝ)) = I := rfl
 
 theorem isSome_iff : ∀ {I : WithBot (Box ι)}, I.isSome ↔ (I : Set (ι → ℝ)).Nonempty
   | ⊥ => by
-    erw [Option.isSome]
+    unfold Option.isSome
     simp
   | (I : Box ι) => by
-    erw [Option.isSome]
+    unfold Option.isSome
     simp [I.nonempty_coe]
 
 theorem biUnion_coe_eq_coe (I : WithBot (Box ι)) :
@@ -288,7 +286,7 @@ theorem mk'_eq_bot {l u : ι → ℝ} : mk' l u = ⊥ ↔ ∃ i, u i ≤ l i := 
 
 @[simp]
 theorem mk'_eq_coe {l u : ι → ℝ} : mk' l u = I ↔ l = I.lower ∧ u = I.upper := by
-  cases' I with lI uI hI; rw [mk']; split_ifs with h
+  obtain ⟨lI, uI, hI⟩ := I; rw [mk']; split_ifs with h
   · simp [WithBot.coe_eq_coe]
   · suffices l = lI → u ≠ uI by simpa
     rintro rfl rfl

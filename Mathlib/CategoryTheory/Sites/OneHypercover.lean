@@ -46,7 +46,7 @@ structure PreOneHypercover (S : C) where
   f (i : I₀) : X i ⟶ S
   /-- the index type of the coverings of the fibre products -/
   I₁ (i₁ i₂ : I₀) : Type w
-  /-- the objects in the coverings of the fibre products  -/
+  /-- the objects in the coverings of the fibre products -/
   Y ⦃i₁ i₂ : I₀⦄ (j : I₁ i₁ i₂) : C
   /-- the first projection `Y j ⟶ X i₁` -/
   p₁ ⦃i₁ i₂ : I₀⦄ (j : I₁ i₁ i₂) : Y j ⟶ X i₁
@@ -241,14 +241,14 @@ lemma preOneHypercover_sieve₀ : S.preOneHypercover.sieve₀ = S.1 := by
   · rintro ⟨_, _, _, ⟨g⟩, rfl⟩
     exact S.1.downward_closed g.hf _
   · intro hf
-    exact Sieve.ofArrows_mk _ _ ({ hf := hf } : S.Arrow)
+    exact Sieve.ofArrows_mk _ _ ({ hf := hf, .. } : S.Arrow)
 
 lemma preOneHypercover_sieve₁ (f₁ f₂ : S.Arrow) {W : C} (p₁ : W ⟶ f₁.Y) (p₂ : W ⟶ f₂.Y)
     (w : p₁ ≫ f₁.f = p₂ ≫ f₂.f) :
     S.preOneHypercover.sieve₁ p₁ p₂ = ⊤ := by
   ext Y f
   simp only [Sieve.top_apply, iff_true]
-  exact ⟨{ w := w}, f, rfl, rfl⟩
+  exact ⟨{ w := w, .. }, f, rfl, rfl⟩
 
 /-- The tautological 1-hypercover induced by `S : J.Cover X`. Its index type `I₀`
 is given by `S.Arrow` (i.e. all the morphisms in the sieve `S`), while `I₁` is given

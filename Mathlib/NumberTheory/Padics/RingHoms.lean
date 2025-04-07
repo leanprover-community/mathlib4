@@ -69,7 +69,7 @@ def modPart : ℤ :=
 variable {p}
 
 theorem modPart_lt_p : modPart p r < p := by
-  convert Int.emod_lt _ _
+  convert Int.emod_lt_abs _ _
   · simp
   · exact mod_cast hp_prime.1.ne_zero
 
@@ -218,18 +218,15 @@ def toZModHom (v : ℕ) (f : ℤ_[p] → ℕ) (f_spec : ∀ x, x - f x ∈ (Idea
     ℤ_[p] →+* ZMod v where
   toFun x := f x
   map_zero' := by
-    dsimp only
     rw [f_congr (0 : ℤ_[p]) _ 0, cast_zero]
     · exact f_spec _
     · simp only [sub_zero, cast_zero, Submodule.zero_mem]
   map_one' := by
-    dsimp only
     rw [f_congr (1 : ℤ_[p]) _ 1, cast_one]
     · exact f_spec _
     · simp only [sub_self, cast_one, Submodule.zero_mem]
   map_add' := by
     intro x y
-    dsimp only
     rw [f_congr (x + y) _ (f x + f y), cast_add]
     · exact f_spec _
     · convert Ideal.add_mem _ (f_spec x) (f_spec y) using 1
@@ -237,7 +234,6 @@ def toZModHom (v : ℕ) (f : ℤ_[p] → ℕ) (f_spec : ∀ x, x - f x ∈ (Idea
       ring
   map_mul' := by
     intro x y
-    dsimp only
     rw [f_congr (x * y) _ (f x * f y), cast_mul]
     · exact f_spec _
     · let I : Ideal ℤ_[p] := Ideal.span {↑v}
@@ -296,7 +292,6 @@ def residueField : IsLocalRing.ResidueField ℤ_[p] ≃+* ZMod p :=
 open scoped Classical in
 /-- `appr n x` gives a value `v : ℕ` such that `x` and `↑v : ℤ_p` are congruent mod `p^n`.
 See `appr_spec`. -/
--- Porting note: removing irreducible solves a lot of problems
 noncomputable def appr : ℤ_[p] → ℕ → ℕ
   | _x, 0 => 0
   | x, n + 1 =>
@@ -668,5 +663,52 @@ theorem toZModPow_eq_iff_ext {R : Type*} [NonAssocSemiring R] {g g' : R →+* �
     rw [hg n]
   · rintro rfl _
     rfl
+
+lemma isCauSeq_padicNorm_of_pow_dvd_sub
+    (f : ℕ → ℤ) (p : ℕ) [Fact p.Prime] (hi : ∀ i, (p : ℤ) ^ i ∣ f (i + 1) - f i) :
+    IsCauSeq (padicNorm p) (f ·) := by
+  intro ε hε
+  obtain ⟨k, hk⟩ := PadicInt.exists_pow_neg_lt_rat p hε
+  simp only [← Int.cast_sub]
+  refine ⟨k, fun i hik ↦ (padicNorm.dvd_iff_norm_le.mp ?_).trans_lt hk⟩
+  obtain ⟨i, rfl⟩ := exists_add_of_le hik
+  clear hik
+  induction i with
+  | zero => simp
+  | succ n IH =>
+    have : (↑(p ^ k) : ℤ) ∣ ↑p ^ (k + n) := ⟨p ^ n, by simp [pow_add]⟩
+    simpa using (this.trans (hi _)).add IH
+
+lemma toZModPow_ofIntSeq_of_pow_dvd_sub
+    (f : ℕ → ℤ) (p : ℕ) [Fact p.Prime] (hi : ∀ i, (p : ℤ) ^ i ∣ f (i + 1) - f i) (n : ℕ) :
+    (PadicInt.ofIntSeq _ (isCauSeq_padicNorm_of_pow_dvd_sub f p hi)).toZModPow n = f n := by
+  set x := PadicInt.ofIntSeq _ (isCauSeq_padicNorm_of_pow_dvd_sub f p hi)
+  let s : PadicSeq p := ⟨(f ·), isCauSeq_padicNorm_of_pow_dvd_sub f p hi⟩
+  have hs : x = Padic.mk s := rfl
+  obtain ⟨e, he⟩ := Ideal.mem_span_singleton.mp (PadicInt.appr_spec n x)
+  rw [sub_eq_iff_eq_add] at he
+  obtain ⟨N, hN⟩ := padicNormE.defn s (ε := p ^ (-n : ℤ))
+    (by simp only [zpow_neg, zpow_natCast, inv_pos]; exact_mod_cast Nat.pos_of_neZero _)
+  replace hN := hN (N + n) (Nat.le_add_right N n)
+  rw [← hs, he, ← Rat.cast_lt (K := ℝ)] at hN
+  push_cast at hN
+  simp only [← add_sub, s, Rat.cast_intCast, padicNormE.is_norm,
+    ← Int.cast_natCast (R := ℚ_[p]) (x.appr n), ← Int.cast_sub] at hN
+  have : ‖(((x.appr n) - f (N + n) : ℤ) : ℚ_[p])‖ ≤ ↑p ^ (-n : ℤ) := by
+    by_contra! H
+    have H' : ‖(p ^ n * e : ℚ_[p])‖ < ‖(((x.appr n) - f (N + n) : ℤ) : ℚ_[p])‖ := by
+      refine LE.le.trans_lt ?_ H
+      simpa using mul_le_mul_of_nonneg le_rfl e.2 (show 0 ≤ (↑p ^ n)⁻¹ by simp) zero_le_one
+    rw [padicNormE.add_eq_max_of_ne H'.ne, sup_eq_right.mpr H'.le] at hN
+    exact lt_asymm hN H
+  rw [padicNormE.norm_int_le_pow_iff_dvd, ← Nat.cast_pow,
+    ← ZMod.intCast_eq_intCast_iff_dvd_sub, Int.cast_natCast] at this
+  refine this.symm.trans ?_
+  clear * - hi
+  induction N with
+  | zero => simp
+  | succ N IH =>
+    rw [← IH, eq_comm, add_right_comm, ZMod.intCast_eq_intCast_iff_dvd_sub]
+    exact .trans ⟨p ^ N, by simp [pow_add, mul_comm]⟩ (hi _)
 
 end PadicInt

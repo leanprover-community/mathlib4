@@ -601,9 +601,6 @@ theorem AlgEquiv.isSeparable_iff {x : K} : IsSeparable F (e x) ↔ IsSeparable F
 theorem AlgEquiv.Algebra.isSeparable [Algebra.IsSeparable F K] : Algebra.IsSeparable F E :=
   ⟨fun _ ↦ e.symm.isSeparable_iff.mp (Algebra.IsSeparable.isSeparable _ _)⟩
 
-@[deprecated (since := "2024-08-06")]
-alias AlgEquiv.isSeparable := AlgEquiv.Algebra.isSeparable
-
 theorem AlgEquiv.Algebra.isSeparable_iff : Algebra.IsSeparable F K ↔ Algebra.IsSeparable F E :=
   ⟨fun _ ↦ AlgEquiv.Algebra.isSeparable e, fun _ ↦ AlgEquiv.Algebra.isSeparable e.symm⟩
 
@@ -628,9 +625,6 @@ over `K`. -/
 theorem Algebra.isSeparable_tower_top_of_isSeparable [Algebra.IsSeparable F E] :
     Algebra.IsSeparable L E :=
   ⟨fun x ↦ IsSeparable.tower_top _ (Algebra.IsSeparable.isSeparable F x)⟩
-
-@[deprecated (since := "2024-08-06")]
-alias IsSeparable.of_isScalarTower := Algebra.isSeparable_tower_top_of_isSeparable
 
 end IsScalarTower
 
@@ -732,6 +726,7 @@ lemma IsSeparable.of_equiv_equiv {x : B₁} (h : IsSeparable A₁ x) : IsSeparab
   letI := e₁.toRingHom.toAlgebra
   letI : Algebra A₂ B₁ :=
     { (algebraMap A₁ B₁).comp e₁.symm.toRingHom with
+        algebraMap := (algebraMap A₁ B₁).comp e₁.symm.toRingHom
         smul := fun a b ↦ ((algebraMap A₁ B₁).comp e₁.symm.toRingHom a) * b
         commutes' := fun r x ↦ (Algebra.commutes) (e₁.symm.toRingHom r) x
         smul_def' := fun _ _ ↦ rfl }

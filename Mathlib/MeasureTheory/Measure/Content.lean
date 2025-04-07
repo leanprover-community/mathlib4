@@ -65,6 +65,7 @@ variable {G : Type w} [TopologicalSpace G]
 /-- A content is an additive function on compact sets taking values in `ℝ≥0`. It is a device
 from which one can define a measure. -/
 structure Content (G : Type w) [TopologicalSpace G] where
+  /-- The underlying additive function -/
   toFun : Compacts G → ℝ≥0
   mono' : ∀ K₁ K₂ : Compacts G, (K₁ : Set G) ⊆ K₂ → toFun K₁ ≤ toFun K₂
   sup_disjoint' :
@@ -389,7 +390,7 @@ end OuterMeasure
 section RegularContents
 
 /-- A content `μ` is called regular if for every compact set `K`,
-  `μ(K) = inf {μ(K') : K ⊂ int K' ⊂ K'}`. See Paul Halmos (1950), Measure Theory, §54-/
+  `μ(K) = inf {μ(K') : K ⊂ int K' ⊂ K'}`. See Paul Halmos (1950), Measure Theory, §54. -/
 def ContentRegular :=
   ∀ ⦃K : TopologicalSpace.Compacts G⦄,
     μ K = ⨅ (K' : TopologicalSpace.Compacts G) (_ : (K : Set G) ⊆ interior (K' : Set G)), μ K'

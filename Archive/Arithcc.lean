@@ -3,7 +3,7 @@ Copyright (c) 2020 Xi Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xi Wang
 -/
-import Mathlib.Data.Nat.Defs
+import Mathlib.Data.Nat.Basic
 import Mathlib.Order.Basic
 import Mathlib.Tactic.Common
 
@@ -220,7 +220,6 @@ protected theorem StateEq.trans {t : Register} (ζ₁ ζ₂ ζ₃ : State) :
   · simp_all only
   · trans ζ₂ <;> assumption
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added instance
 instance (t : Register) : Trans (StateEq (t + 1)) (StateEq (t + 1)) (StateEq (t + 1)) :=
   ⟨@StateEq.trans _⟩
 
@@ -231,7 +230,6 @@ protected theorem StateEqStateEqRs.trans (t : Register) (ζ₁ ζ₂ ζ₃ : Sta
   simp [StateEq]; intros
   trans ζ₂ <;> assumption
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added instance
 instance (t : Register) : Trans (StateEq (t + 1)) (StateEqRs (t + 1)) (StateEqRs (t + 1)) :=
   ⟨@StateEqStateEqRs.trans _⟩
 

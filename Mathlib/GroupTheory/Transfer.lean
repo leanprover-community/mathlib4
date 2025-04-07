@@ -58,7 +58,7 @@ theorem diff_mul_diff : diff ϕ R S * diff ϕ S T = diff ϕ R T :=
 
 @[to_additive]
 theorem diff_self : diff ϕ T T = 1 :=
-  mul_right_eq_self.mp (diff_mul_diff ϕ T T T)
+  mul_eq_left.mp (diff_mul_diff ϕ T T T)
 
 @[to_additive]
 theorem diff_inv : (diff ϕ S T)⁻¹ = diff ϕ T S :=
@@ -143,8 +143,8 @@ the transfer homomorphism is `transfer ϕ : G →+ A`."]
 noncomputable def transfer [FiniteIndex H] : G →* A :=
   let T : H.LeftTransversal := default
   { toFun := fun g => diff ϕ T (g • T)
-    map_one' := by beta_reduce; rw [one_smul, diff_self]
-    map_mul' := fun g h => by dsimp only; rw [mul_smul, ← diff_mul_diff, smul_diff_smul] }
+    map_one' := by rw [one_smul, diff_self]
+    map_mul' := fun g h => by rw [mul_smul, ← diff_mul_diff, smul_diff_smul] }
 
 variable (T : H.LeftTransversal)
 
@@ -222,15 +222,12 @@ theorem transfer_center_eq_pow [FiniteIndex (center G)] (g : G) :
   transfer_eq_pow (id (center G)) g fun k _ hk => by rw [← mul_right_inj, ← hk.comm,
     mul_inv_cancel_right]
 
-variable (G)
-
+variable (G) in
 /-- The transfer homomorphism `G →* center G`. -/
 noncomputable def transferCenterPow [FiniteIndex (center G)] : G →* center G where
   toFun g := ⟨g ^ (center G).index, (center G).pow_index_mem g⟩
   map_one' := Subtype.ext (one_pow (center G).index)
   map_mul' a b := by simp_rw [← show ∀ _, (_ : center G) = _ from transfer_center_eq_pow, map_mul]
-
-variable {G}
 
 @[simp]
 theorem transferCenterPow_apply [FiniteIndex (center G)] (g : G) :

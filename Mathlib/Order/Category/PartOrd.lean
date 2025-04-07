@@ -128,14 +128,10 @@ lemma ofHom_comp {X Y Z : Type u} [PartialOrder X] [PartialOrder Y] [PartialOrde
 lemma ofHom_apply {X Y : Type u} [PartialOrder X] [PartialOrder Y] (f : X →o Y) (x : X) :
     (ofHom f) x = f x := rfl
 
-@[simp]
 lemma inv_hom_apply {X Y : PartOrd} (e : X ≅ Y) (x : X) : e.inv (e.hom x) = x := by
-  rw [← comp_apply]
   simp
 
-@[simp]
 lemma hom_inv_apply {X Y : PartOrd} (e : X ≅ Y) (s : Y) : e.hom (e.inv s) = s := by
-  rw [← comp_apply]
   simp
 
 instance hasForgetToPreord : HasForget₂ PartOrd Preord where
@@ -199,11 +195,19 @@ def preordToPartOrdForgetAdjunction :
 -- The `simpNF` linter would complain as `Functor.comp_obj`, `Preord.dual_obj` both apply to LHS
 -- of `preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd_hom_app_coe`
 /-- `PreordToPartOrd` and `OrderDual` commute. -/
-@[simps! inv_app_hom_coe, simps! (config := .lemmasOnly) hom_app_hom_coe]
+@[simps! -isSimp hom_app_hom_coe inv_app_hom_coe]
 def preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd :
     preordToPartOrd.{u} ⋙ PartOrd.dual ≅ Preord.dual ⋙ preordToPartOrd :=
   NatIso.ofComponents (fun _ => PartOrd.Iso.mk <| OrderIso.dualAntisymmetrization _)
     (fun _ => PartOrd.ext fun x => Quotient.inductionOn' x fun _ => rfl)
 
--- This lemma was always bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644
-attribute [nolint simpNF] preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd_inv_app_hom_coe
+-- `simp`-normal form for `preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd_inv_app_hom_coe`
+@[simp]
+lemma preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd_inv_app_hom_coe' (X)
+  (a : preordToPartOrd.obj (Preord.dual.obj X)) :
+  (PartOrd.Hom.hom
+      (X := preordToPartOrd.obj (Preord.dual.obj X))
+      (Y := PartOrd.dual.obj (preordToPartOrd.obj X))
+      (preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd.inv.app X)) a =
+    (OrderIso.dualAntisymmetrization ↑X).symm a :=
+  rfl
