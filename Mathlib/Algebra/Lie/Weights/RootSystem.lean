@@ -584,7 +584,7 @@ lemma invtSubmodule_reflection:
           rw [this]
           exact trivial
         simp [I] at qq
-        refine LieSubalgebra.lieSpan_induction2 (R := K) (L := L) ?_ ?_ ?_ ?_ ?_ qq
+        refine LieSubalgebra.lieSpan_induction' (R := K) (L := L) ?_ ?_ ?_ ?_ ?_ qq
         intro x hx
         obtain ⟨i, hi, hx1_mem⟩ := Set.mem_iUnion₂.mp hx
         have := rr4 i j hi hj
@@ -639,7 +639,7 @@ lemma invtSubmodule_reflection:
       --simp_all
       --(p := (y : L) → y ∈ LieSubalgebra.lieSpan K L gg → ⁅x, y⁆ ∈ LieSubalgebra.lieSpan K L gg)
       simp [I] at hy
-      refine LieSubalgebra.lieSpan_induction2 (R := K) (L := L) ?_ ?_ ?_ ?_ ?_ hy
+      refine LieSubalgebra.lieSpan_induction' (R := K) (L := L) ?_ ?_ ?_ ?_ ?_ hy
       --intro a x_1
       intro x1 hx1
       obtain ⟨i, hi, hx1_mem⟩ := Set.mem_iUnion₂.mp hx1

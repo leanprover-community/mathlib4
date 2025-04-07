@@ -707,7 +707,7 @@ theorem span_induction {p : (x : M) → x ∈ span R s → Prop}
 
 
 @[elab_as_elim]
-theorem lieSpan_induction2 {p : (x : L) → x ∈ lieSpan R L s → Prop}
+theorem lieSpan_induction' {p : (x : L) → x ∈ lieSpan R L s → Prop}
     (mem : ∀ (x) (h : x ∈ s), p x (subset_lieSpan h))
     (zero : p 0 (LieSubalgebra.zero_mem _))
     (add : ∀ x y hx hy, p x hx → p y hy → p (x + y) (LieSubalgebra.add_mem _ ‹_› ‹_›))
