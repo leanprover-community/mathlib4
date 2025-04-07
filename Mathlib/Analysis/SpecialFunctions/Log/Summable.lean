@@ -10,11 +10,8 @@ import Mathlib.Analysis.NormedSpace.FunctionSeries
 /-!
 # Summability of logarithms
 
-We give conditions under which the logarithms of a summble sequence is summable. We also give some
-results about when the sums converge uniformly.
-
-TODO: Remove hff from `Complex.multipliable_one_add_of_summable` once we have
-vanishing/non-vanishing results for infinite products.
+We give conditions under which the logarithms of a summble sequence is summable. We also use this
+to relate summability of `f` to multipliability of `1 + f`.
 
 -/
 
@@ -23,16 +20,6 @@ variable {ι : Type*}
 open Filter
 
 section move_this_elsewhere
-variable {G : Type*} [CommMonoidWithZero G] [TopologicalSpace G] {f : ι → G}
-
-lemma hasProd_zero_of_exists_eq_zero (hf : ∃ i, f i = 0) : HasProd f 0 := by
-  obtain ⟨i, hi⟩ := hf
-  apply tendsto_const_nhds.congr'
-  filter_upwards [eventually_ge_atTop {i}] with s hs
-  refine (Finset.prod_eq_zero (Finset.singleton_subset_iff.mp hs) hi).symm
-
-lemma multipliable_of_exists_eq_zero (hf : ∃ i, f i = 0) : Multipliable f :=
-  ⟨0, hasProd_zero_of_exists_eq_zero hf⟩
 
 open Finset in
 lemma Multipliable.congr_cofinite' {R : Type*} [NormedField R]
@@ -92,8 +79,7 @@ lemma summable_log_one_add_of_summable {f : ι → ℂ} (hf : Summable f) :
   filter_upwards [hf.norm.tendsto_cofinite_zero.eventually_le_const one_half_pos] with i hi
     using norm_log_one_add_half_le_self hi
 
-lemma multipliable_one_add_of_summable (f : ι → ℂ) (hf : Summable f) :
-    Multipliable (fun i ↦ 1 + f i) := by
+lemma multipliable_one_add_of_summable (hf : Summable f) : Multipliable (fun i ↦ 1 + f i) := by
   by_cases hff : ∃ i, 1 + f i = 0
   · exact (hasProd_zero_of_exists_eq_zero hff).multipliable
   · exact multipliable_of_summable_log (by simpa using hff) (summable_log_one_add_of_summable hf)
