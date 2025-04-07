@@ -17,7 +17,7 @@ def joinM {m : Type u → Type u} [Monad m] {α : Type u} (a : m (m α)) : m α 
   bind a id
 
 /-- Executes `t` conditional on `c` holding true, doing nothing otherwise. -/
-@[deprecated "No replacement in Mathlib; was unused when deprecated." (since := "2025-04-07")]
+@[deprecated "Use `if ... then` without `else` in `do` notation instead." (since := "2025-04-07")]
 def when {m : Type → Type} [Monad m] (c : Prop) [Decidable c] (t : m Unit) : m Unit :=
   ite c t (pure ())
 
