@@ -49,7 +49,7 @@ pointwise subtraction
 
 assert_not_exists Set.iUnion MulAction MonoidWithZero OrderedAddCommMonoid
 
-library_note "pointwise nat action"/--
+/--
 Pointwise monoids (`Set`, `Finset`, `Filter`) have derived pointwise actions of the form
 `SMul α β → SMul α (Set β)`. When `α` is `ℕ` or `ℤ`, this action conflicts with the
 nat or int action coming from `Set β` being a `Monoid` or `DivInvMonoid`. For example,
@@ -60,6 +60,7 @@ addition, `Set.NSMul`).
 Because the pointwise action can easily be spelled out in such cases, we give higher priority to the
 nat and int actions.
 -/
+def LibraryNote.pointwiseNatAction : LibraryNote := ()
 
 open Function MulOpposite
 
