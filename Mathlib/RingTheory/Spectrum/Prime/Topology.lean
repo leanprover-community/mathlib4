@@ -801,10 +801,8 @@ lemma isClosed_image_of_stableUnderSpecialization
   refine (isClosed_iff_zeroLocus _).mpr ⟨I.comap f, le_antisymm ?_ fun p hp ↦ ?_⟩
   · rintro _ ⟨q, hq, rfl⟩
     exact Ideal.comap_mono hq
-  · obtain ⟨q, hq, hqle⟩ := Ideal.exists_minimalPrimes_le hp
-    obtain ⟨q', hq', hq'c⟩ := Ideal.exists_minimalPrimes_comap_eq f q hq
-    exact hf ((le_iff_specializes ⟨q, hq.1.1⟩ p).mp hqle)
-      ⟨⟨q', hq'.1.1⟩, hq'.1.2, PrimeSpectrum.ext hq'c⟩
+  · obtain ⟨q, hqI, hq, hqle⟩ := p.asIdeal.exists_ideal_comap_le_prime I hp
+    exact hf ((le_iff_specializes ⟨q.comap f, inferInstance⟩ p).mp hqle) ⟨⟨q, hq⟩, hqI, rfl⟩
 
 @[stacks 00HY]
 lemma isClosed_range_of_stableUnderSpecialization
