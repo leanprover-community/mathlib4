@@ -99,8 +99,8 @@ nonrec theorem lintegral_map (κ : Kernel α β) (hf : Measurable f) (a : α) {g
 
 lemma map_apply_eq_iff_map_symm_apply_eq (κ : Kernel α β) {f : β ≃ᵐ γ} (η : Kernel α γ) :
     κ.map f = η ↔ κ = η.map f.symm := by
-    simp_rw [Kernel.ext_iff, map_apply _ f.measurable, map_apply _ f.symm.measurable,
-      f.map_apply_eq_iff_map_symm_apply_eq]
+  simp_rw [Kernel.ext_iff, map_apply _ f.measurable, map_apply _ f.symm.measurable,
+    f.map_apply_eq_iff_map_symm_apply_eq]
 
 theorem sum_map_seq (κ : Kernel α β) [IsSFiniteKernel κ] (f : β → γ) :
     (Kernel.sum fun n => map (seq κ n) f) = map κ f := by
@@ -469,7 +469,7 @@ theorem snd_apply (κ : Kernel α (β × γ)) (a : α) : snd κ a = (κ a).map P
   rfl
 
 theorem snd_apply' (κ : Kernel α (β × γ)) (a : α) {s : Set γ} (hs : MeasurableSet s) :
-    snd κ a s = κ a {p | p.2 ∈ s} := by rw [snd_apply, Measure.map_apply measurable_snd hs]; rfl
+    snd κ a s = κ a (Prod.snd ⁻¹' s) := by rw [snd_apply, Measure.map_apply measurable_snd hs]
 
 @[simp]
 lemma snd_zero : snd (0 : Kernel α (β × γ)) = 0 := by simp [snd]
@@ -542,7 +542,7 @@ variable {γ δ : Type*} {mγ : MeasurableSpace γ} {mδ : MeasurableSpace δ}
 /-- Define a `Kernel α γ` from a `Kernel (α × β) γ` by taking the comap of `fun a ↦ (a, b)` for
 a given `b : β`. -/
 noncomputable def sectL (κ : Kernel (α × β) γ) (b : β) : Kernel α γ :=
-  comap κ (fun a ↦ (a, b)) (measurable_id.prod_mk measurable_const)
+  comap κ (fun a ↦ (a, b)) (measurable_id.prodMk measurable_const)
 
 @[simp] theorem sectL_apply (κ : Kernel (α × β) γ) (b : β) (a : α) : sectL κ b a = κ (a, b) := rfl
 
@@ -571,7 +571,7 @@ instance (priority := 100) {κ : Kernel (α × β) γ} [∀ b, IsMarkovKernel (s
 
 --I'm not sure this lemma is actually useful
 lemma comap_sectL (κ : Kernel (α × β) γ) (b : β) {f : δ → α} (hf : Measurable f) :
-    comap (sectL κ b) f hf = comap κ (fun d ↦ (f d, b)) (hf.prod_mk measurable_const) := by
+    comap (sectL κ b) f hf = comap κ (fun d ↦ (f d, b)) (hf.prodMk measurable_const) := by
   ext d s
   rw [comap_apply, sectL_apply, comap_apply]
 
@@ -586,7 +586,7 @@ lemma sectL_prodMkRight (β : Type*) [MeasurableSpace β] (κ : Kernel α γ) (b
 /-- Define a `Kernel β γ` from a `Kernel (α × β) γ` by taking the comap of `fun b ↦ (a, b)` for
 a given `a : α`. -/
 noncomputable def sectR (κ : Kernel (α × β) γ) (a : α) : Kernel β γ :=
-  comap κ (fun b ↦ (a, b)) (measurable_const.prod_mk measurable_id)
+  comap κ (fun b ↦ (a, b)) (measurable_const.prodMk measurable_id)
 
 @[simp] theorem sectR_apply (κ : Kernel (α × β) γ) (b : β) (a : α) : sectR κ a b = κ (a, b) := rfl
 
@@ -615,7 +615,7 @@ instance (priority := 100) {κ : Kernel (α × β) γ} [∀ b, IsMarkovKernel (s
 
 --I'm not sure this lemma is actually useful
 lemma comap_sectR (κ : Kernel (α × β) γ) (a : α) {f : δ → β} (hf : Measurable f) :
-    comap (sectR κ a) f hf = comap κ (fun d ↦ (a, f d)) (measurable_const.prod_mk hf) := by
+    comap (sectR κ a) f hf = comap κ (fun d ↦ (a, f d)) (measurable_const.prodMk hf) := by
   ext d s
   rw [comap_apply, sectR_apply, comap_apply]
 

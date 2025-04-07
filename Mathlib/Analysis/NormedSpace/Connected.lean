@@ -3,7 +3,9 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Analysis.Convex.Contractible
 import Mathlib.Analysis.Convex.Topology
+import Mathlib.Analysis.Normed.Module.Convex
 import Mathlib.LinearAlgebra.Dimension.DivisionRing
 import Mathlib.Topology.Algebra.Module.Cardinality
 
@@ -121,6 +123,47 @@ end TopologicalVectorSpace
 section NormedSpace
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+
+section Ball
+
+namespace Metric
+
+theorem ball_contracitble {x : E} {r : ℝ} (hr : 0 < r) :
+    ContractibleSpace (ball x r) :=
+  Convex.contractibleSpace (convex_ball _ _) (by simpa)
+
+theorem eball_contractible {x : E} {r : ENNReal} (hr : 0 < r) :
+    ContractibleSpace (EMetric.ball x r) := by
+  cases r with
+  | top =>
+    rw [eball_top_eq_univ, (Homeomorph.Set.univ E).contractibleSpace_iff]
+    exact RealTopologicalVectorSpace.contractibleSpace
+  | coe r =>
+    rw [emetric_ball_nnreal]
+    apply ball_contracitble
+    simpa using hr
+
+theorem ball_PathConnected {x : E} {r : ℝ} (hr : 0 < r) :
+    PathConnectedSpace (ball x r) :=
+  @ContractibleSpace.instPathConnectedSpace _ _ (ball_contracitble hr)
+
+theorem eball_PathConnected {x : E} {r : ENNReal} (hr : 0 < r) :
+    PathConnectedSpace (EMetric.ball x r) :=
+  @ContractibleSpace.instPathConnectedSpace _ _ (eball_contractible hr)
+
+theorem ball_connected {x : E} {r : ℝ} (hr : 0 < r) :
+    IsConnected (ball x r) := by
+  rw [isConnected_iff_connectedSpace]
+  exact @PathConnectedSpace.connectedSpace _ _ (ball_PathConnected hr)
+
+theorem eball_connected {x : E} {r : ENNReal} (hr : 0 < r) :
+    IsConnected (EMetric.ball x r) := by
+  rw [isConnected_iff_connectedSpace]
+  exact @PathConnectedSpace.connectedSpace _ _ (eball_PathConnected hr)
+
+end Metric
+
+end Ball
 
 /-- In a real vector space of dimension `> 1`, any sphere of nonnegative radius is
 path connected. -/

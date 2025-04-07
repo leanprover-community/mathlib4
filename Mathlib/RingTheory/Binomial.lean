@@ -396,7 +396,7 @@ theorem choose_zero_succ (R) [NonAssocRing R] [Pow R ℕ] [NatPowAssoc R] [Binom
   rw [choose, Nat.cast_succ, zero_sub, neg_add, neg_add_cancel_right, multichoose_succ_neg_natCast]
 
 theorem choose_zero_pos (R) [NonAssocRing R] [Pow R ℕ] [NatPowAssoc R] [BinomialRing R]
-    {k : ℕ} (h_pos: 0 < k) : choose (0 : R) k = 0 := by
+    {k : ℕ} (h_pos : 0 < k) : choose (0 : R) k = 0 := by
   rw [← Nat.succ_pred_eq_of_pos h_pos, choose_zero_succ]
 
 theorem choose_zero_ite (R) [NonAssocRing R] [Pow R ℕ] [NatPowAssoc R] [BinomialRing R]

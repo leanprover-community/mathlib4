@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Fréd�
   Heather Macbeth
 -/
 import Mathlib.Algebra.Module.Submodule.Lattice
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # The span of a set of vectors, as a submodule
@@ -183,7 +184,7 @@ theorem closure_induction {p : (x : M) → x ∈ span R s → Prop}
     (smul_mem : ∀ (r x) (h : x ∈ s), p (r • x) (Submodule.smul_mem _ _ <| subset_span h)) {x}
     (hx : x ∈ span R s) : p x hx := by
   have key {v} : v ∈ span R s ↔ v ∈ closure (@univ R • s) := by simp [← span_eq_closure]
-  refine AddSubmonoid.closure_induction (p := fun x hx ↦ p x (key.mpr hx))
+  refine AddSubmonoid.closure_induction (motive := fun x hx ↦ p x (key.mpr hx))
     ?_ zero (by simpa only [key] using add) (key.mp hx)
   rintro - ⟨r, -, x, hx, rfl⟩
   exact smul_mem r x hx
@@ -224,6 +225,17 @@ theorem span_int_eq_addSubgroup_closure {M : Type*} [AddCommGroup M] (s : Set M)
 @[simp]
 theorem span_int_eq {M : Type*} [AddCommGroup M] (s : AddSubgroup M) :
     (span ℤ (s : Set M)).toAddSubgroup = s := by rw [span_int_eq_addSubgroup_closure, s.closure_eq]
+
+theorem _root_.Disjoint.of_span (hst : Disjoint (span R s) (span R t)) :
+    Disjoint (s \ {0}) t := by
+  rw [disjoint_iff_forall_ne]
+  rintro v ⟨hvs, hv0 : v ≠ 0⟩ _ hvt rfl
+  exact hv0 <| (disjoint_def.1 hst) v (subset_span hvs) (subset_span hvt)
+
+theorem _root_.Disjoint.of_span₀ (hst : Disjoint (span R s) (span R t)) (h0s : 0 ∉ s) :
+    Disjoint s t := by
+  rw [← diff_singleton_eq_self h0s]
+  exact hst.of_span
 
 section
 
@@ -354,6 +366,12 @@ theorem sup_toAddSubmonoid : (p ⊔ p').toAddSubmonoid = p.toAddSubmonoid ⊔ p'
   rw [mem_toAddSubmonoid, mem_sup, AddSubmonoid.mem_sup]
   rfl
 
+theorem sup_eq_top_iff : p ⊔ p' = ⊤ ↔ ∀ m : M, ∃ u ∈ p, ∃ v ∈ p', m = u + v := by
+  rw [eq_top_iff']
+  refine forall_congr' fun m ↦ ?_
+  rw [mem_sup]
+  tauto
+
 end
 
 theorem mem_span_singleton_self (x : M) : x ∈ R ∙ x :=
@@ -434,14 +452,13 @@ theorem mem_span_pair {x y z : M} :
     z ∈ span R ({x, y} : Set M) ↔ ∃ a b : R, a • x + b • y = z := by
   simp_rw [mem_span_insert, mem_span_singleton, exists_exists_eq_and, eq_comm]
 
+@[simp]
 theorem span_eq_bot : span R (s : Set M) = ⊥ ↔ ∀ x ∈ s, (x : M) = 0 :=
   eq_bot_iff.trans
     ⟨fun H _ h => (mem_bot R).1 <| H <| subset_span h, fun H =>
       span_le.2 fun x h => (mem_bot R).2 <| H x h⟩
 
-@[simp]
-theorem span_singleton_eq_bot : (R ∙ x) = ⊥ ↔ x = 0 :=
-  span_eq_bot.trans <| by simp
+theorem span_singleton_eq_bot : (R ∙ x) = ⊥ ↔ x = 0 := by simp
 
 @[simp]
 theorem span_zero : span R (0 : Set M) = ⊥ := by rw [← singleton_zero, span_singleton_eq_bot]

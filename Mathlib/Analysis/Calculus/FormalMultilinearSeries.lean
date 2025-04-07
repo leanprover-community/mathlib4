@@ -47,8 +47,9 @@ def FormalMultilinearSeries (𝕜 : Type*) (E : Type*) (F : Type*) [Semiring �
     [AddCommMonoid F] [Module 𝕜 F] [TopologicalSpace F] [ContinuousAdd F]
     [ContinuousConstSMul 𝕜 F] :=
   ∀ n : ℕ, E[×n]→L[𝕜] F
+-- The `AddCommMonoid` instance should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
--- Porting note: was `deriving`
 instance : AddCommMonoid (FormalMultilinearSeries 𝕜 E F) :=
   inferInstanceAs <| AddCommMonoid <| ∀ n : ℕ, E[×n]→L[𝕜] F
 
@@ -65,9 +66,7 @@ end Module
 
 namespace FormalMultilinearSeries
 
-#adaptation_note /-- https://github.com/leanprover/lean4/pull/4481
-the `simpNF` linter incorrectly claims this lemma can't be applied by `simp`. -/
-@[simp, nolint simpNF]
+@[simp]
 theorem zero_apply (n : ℕ) : (0 : FormalMultilinearSeries 𝕜 E F) n = 0 := rfl
 
 @[simp]
