@@ -45,8 +45,9 @@ variable (K L L' : Type*) [Field K] [Field L] [Field L'] [Algebra K L] [Algebra 
 /-- `S : IntermediateField K L` is a subset of `L` such that `S` is a field and
 `L / S / K` is a tower of ring extensions.
 
-This is a generalization of field towers: if `L` and `K` are fields, then `L / S / K` is a field tower.
- -/
+This is a generalization of field towers: if `L` and `K` are fields,
+then `L / S / K` is a field tower.
+-/
 structure IntermediateField (K L : Type*) [CommSemiring K] [Semiring L] [Algebra K L] extends
     Subalgebra K L where
   mul_comm' : ∀ x y : L, x ∈ carrier → y ∈ carrier → x * y = y * x
@@ -68,7 +69,7 @@ instance : SetLike (IntermediateField K L) L :=
 protected theorem neg_mem {x : L} (hx : x ∈ S) : -x ∈ S := by
   show -x ∈S.toSubalgebra; simpa
 
-protected theorem inv_mem (x : L) (hx : x ∈ S) : x⁻¹ ∈ S := by
+protected theorem inv_mem {x : L} (hx : x ∈ S) : x⁻¹ ∈ S := by
   if h : x = 0 then subst h; simp [*] else
   obtain ⟨y, hy1, hy2⟩ := S.3 x hx h
   suffices y = x⁻¹ by simpa [← this]
@@ -79,7 +80,12 @@ protected theorem inv_mem (x : L) (hx : x ∈ S) : x⁻¹ ∈ S := by
 def toSubfield : Subfield L :=
   { S.toSubalgebra with
     neg_mem' := S.neg_mem,
-    inv_mem' := S.inv_mem}
+    inv_mem' _ := S.inv_mem}
+
+def mkOfInv (S : Subalgebra K L) (hS : ∀ x ∈ S, x⁻¹ ∈ S): IntermediateField K L := {
+  __ := S
+  mul_comm' _ _ _ _ := mul_comm _ _
+  inv_mem' x hx hx0 := ⟨x⁻¹, hS x hx, mul_inv_cancel₀ hx0⟩ }
 
 instance : SubfieldClass (IntermediateField K L) L where
   add_mem {s} := s.add_mem'
@@ -87,7 +93,7 @@ instance : SubfieldClass (IntermediateField K L) L where
   neg_mem {s} := s.neg_mem
   mul_mem {s} := s.mul_mem'
   one_mem {s} := s.one_mem'
-  inv_mem {s} := s.inv_mem _
+  inv_mem {s} := s.inv_mem
 
 theorem mem_carrier {s : IntermediateField K L} {x : L} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
@@ -266,7 +272,7 @@ theorem toSubalgebra_toIntermediateField (S : Subalgebra K L) (inv_mem : ∀ x �
 
 @[simp]
 theorem toIntermediateField_toSubalgebra (S : IntermediateField K L) :
-    (S.toSubalgebra.toIntermediateField fun _ => S.inv_mem _) = S := by
+    (S.toSubalgebra.toIntermediateField fun _ => S.inv_mem) = S := by
   ext
   rfl
 
