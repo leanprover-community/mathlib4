@@ -24,6 +24,8 @@ and $x$ is an element of a normed algebra over $\mathbb{K}$.
 ## Main Statements
 
 * `binomialSeries_radius_eq_one`: The radius of convergence of the binomial series is `1`.
+* `one_add_cpow_hasFPowerSeriesOnBall_zero`: The binomial series converges to `(1 + z)^a` for
+  complex `a` and `|z| < 1`.
 
 -/
 
@@ -111,7 +113,7 @@ theorem one_add_cpow_hasFPowerSeriesOnBall_zero {a : ℂ} :
     HasFPowerSeriesOnBall (fun x ↦ (1 + x)^a) (binomialSeries ℂ a) 0 1 := by
   suffices (binomialSeries ℂ a = FormalMultilinearSeries.ofScalars ℂ
       fun n ↦ iteratedDeriv n (fun (x : ℂ) ↦ (1 + x) ^ a) 0 / n !) by
-    convert AnalyticOnNhd.hasFPowerSeriesOnBall (r := 1) _ _ _
+    convert AnalyticOnNhd.hasFPowerSeriesOnBall _ _ _
     · norm_num
     · apply AnalyticOnNhd.cpow
       · apply AnalyticOnNhd.add
@@ -124,7 +126,7 @@ theorem one_add_cpow_hasFPowerSeriesOnBall_zero {a : ℂ} :
         simpa using hz
     · rw [← this]
       exact binomialSeries_radius_ge_one
-  simp [binomialSeries]
+  simp only [binomialSeries, FormalMultilinearSeries.ofScalars_series_eq_iff]
   ext n
   rw [Ring.choose_eq_smul]
   field_simp
@@ -135,11 +137,9 @@ theorem one_add_cpow_hasFPowerSeriesOnBall_zero {a : ℂ} :
     specialize this (show 0 ∈ _ by simp [B])
     symm
     rw [iteratedDerivWithin_of_isOpen Metric.isOpen_ball (by simp [B])] at this
-    simpa
+    simpa using this
   induction n with
-  | zero =>
-    intro z hz
-    simp
+  | zero =>simp [Set.EqOn]
   | succ n ih =>
     have : iteratedDerivWithin (n + 1) (fun (x : ℂ) ↦ (1 + x) ^ a) B =
         derivWithin (iteratedDerivWithin n (fun x ↦ (1 + x) ^ a) B) B := by
@@ -156,9 +156,9 @@ theorem one_add_cpow_hasFPowerSeriesOnBall_zero {a : ℂ} :
       · exact ih hz
     apply Set.EqOn.trans this
     intro z hz
-    simp
+    simp only [Nat.cast_add, Nat.cast_one, B]
     rw [derivWithin_of_isOpen Metric.isOpen_ball hz]
-    simp
+    simp only [differentiableAt_const, deriv_const_mul_field', B]
     rw [deriv_cpow_const]
     rotate_left
     · fun_prop
