@@ -165,4 +165,4 @@ end Mathlib.Tactic
 def LibraryNote := Unit
 
 open Lean in macro "library_note2 " ppSpace name:ident dc:docComment : command =>
-  `($dc:docComment def $(mkIdent (Name.append `LibraryNote name.getId)) : LibraryNote := ())
+  `($dc:docComment def $(mkIdent (Name.append `Mathlib.LibraryNote name.getId)) : LibraryNote := ())
