@@ -180,10 +180,6 @@ protected theorem add_mem {x y : L} : x ∈ S → y ∈ S → x + y ∈ S :=
 protected theorem sub_mem {x y : L} : x ∈ S → y ∈ S → x - y ∈ S :=
   sub_mem
 
--- /-- An intermediate field is closed under inverses. -/
--- protected theorem inv_mem {x : L} : x ∈ S → x⁻¹ ∈ S :=
---   inv_mem
-
 /-- An intermediate field is closed under division. -/
 protected theorem div_mem {x y : L} : x ∈ S → y ∈ S → x / y ∈ S :=
   div_mem
