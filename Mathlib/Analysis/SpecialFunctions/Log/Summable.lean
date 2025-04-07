@@ -17,7 +17,7 @@ to relate summability of `f` to multipliability of `1 + f`.
 
 variable {ι : Type*}
 
-open Filter
+open Filter Topology NNReal
 
 namespace Complex
 variable {f : ι → ℂ} {a : ℂ}
@@ -125,3 +125,83 @@ lemma Complex.tendstoUniformlyOn_tsum_nat_log_one_add {α : Type*} {f : ℕ → 
     exact hN2 n (le_of_max_le_right hn) x hx
   · apply le_trans (le_trans (hN2 n (le_of_max_le_right hn) x hx)
     (by simpa using Real.le_norm_self (u n))) (hN n (le_of_max_le_left hn)).le
+
+section NormedRing
+
+lemma Multipliable.eventually_bounded_finset_prod {v : ι → ℝ} (hv : Multipliable v) :
+    ∃ r₁ > 0, ∃ s₁, ∀ t, s₁ ⊆ t → ∏ i ∈ t, v i ≤ r₁ := by
+  obtain ⟨r₁, hr₁⟩ := exists_gt (max 0 <| ∏' i, v i)
+  rw [max_lt_iff] at hr₁
+  have := hv.hasProd.eventually_le_const hr₁.2
+  rw [eventually_atTop] at this
+  exact ⟨r₁, hr₁.1, this⟩
+
+variable {R : Type*} [NormedCommRing R] [NormOneClass R] {f : ι → R}
+
+lemma multipliable_norm_one_add_of_summable_norm (hf : Summable fun i ↦ ‖f i‖) :
+    Multipliable fun i ↦ ‖1 + f i‖ := by
+  conv => enter [1, i]; rw [← sub_add_cancel ‖1 + f i‖ 1, add_comm]
+  refine Real.multipliable_one_add_of_summable <| hf.of_norm_bounded _ (fun i ↦ ?_)
+  simpa using abs_norm_sub_norm_le (1 + f i) 1
+
+lemma Finset.norm_prod_one_add_sub_one_le (t : Finset ι) (f : ι → R) :
+    ‖∏ i ∈ t, (1 + f i) - 1‖ ≤ Real.exp (∑ i ∈ t, ‖f i‖) - 1 := by
+  classical
+  induction t using Finset.induction_on with
+  | empty => simp
+  | @insert x t hx IH =>
+    rw [Finset.prod_insert hx, Finset.sum_insert hx, Real.exp_add,
+      show (1 + f x) * ∏ i ∈ t, (1 + f i) - 1 =
+        (∏ i ∈ t, (1 + f i) - 1) + f x * ∏ x ∈ t, (1 + f x) by ring]
+    refine (norm_add_le_of_le IH (norm_mul_le _ _)).trans ?_
+    generalize h : Real.exp (∑ i ∈ t, ‖f i‖) = A at ⊢ IH
+    rw [sub_add_eq_add_sub, sub_le_sub_iff_right]
+    transitivity A + ‖f x‖ * A
+    · gcongr
+      rw [← sub_add_cancel (∏ x ∈ t, (1 + f x)) 1]
+      refine (norm_add_le _ _).trans <| (add_le_add_right IH _).trans ?_
+      rw [norm_one, sub_add_cancel]
+    rw [← one_add_mul, add_comm]
+    exact mul_le_mul_of_nonneg_right (Real.add_one_le_exp _) (h ▸ Real.exp_nonneg _)
+
+lemma prod_vanishing_of_summable_norm (hf : Summable fun i ↦ ‖f i‖) {ε : ℝ} (hε : 0 < ε) :
+    ∃ s₂, ∀ t, Disjoint t s₂ → ‖∏ i ∈ t, (1 + f i) - 1‖ < ε := by
+  suffices ∃ s, ∀ t, Disjoint t s → Real.exp (∑ i ∈ t, ‖f i‖) - 1 < ε from
+    this.imp fun s hs t ht ↦ (t.norm_prod_one_add_sub_one_le _).trans_lt (hs t ht)
+  suffices {x | Real.exp x - 1 < ε} ∈ 𝓝 0 from hf.vanishing this
+  let f (x) := Real.exp x - 1
+  have : Set.Iio ε ∈ nhds (f 0) := by simpa [f] using Iio_mem_nhds hε
+  exact ContinuousAt.preimage_mem_nhds (by fun_prop) this
+
+open Finset in
+/-- In a complete normed ring, `∏' i, (1 + f i)` is convergent iff the sum of real numbers
+`∑' i, ‖f i‖` is convergent. -/
+lemma multipliable_one_add_of_summable [CompleteSpace R]
+    (hf : Summable fun i ↦ ‖f i‖) : Multipliable fun i ↦ (1 + f i) := by
+  classical
+  refine CompleteSpace.complete <| Metric.cauchy_iff.mpr ⟨by infer_instance, fun ε hε ↦ ?_⟩
+  obtain ⟨r₁, hr₁, s₁, hs₁⟩ :=
+    (multipliable_norm_one_add_of_summable_norm hf).eventually_bounded_finset_prod
+  obtain ⟨s₂, hs₂⟩ := prod_vanishing_of_summable_norm hf (show 0 < ε / (2 * r₁) by positivity)
+  simp only [Filter.mem_map, mem_atTop_sets, ge_iff_le, le_eq_subset, Set.mem_preimage]
+  let s := s₁ ∪ s₂
+  -- The idea here is that if `s` is a large enough finset, then the product over `s` is bounded
+  -- by some `r`, and the product over finsets disjoint from `s` is within `ε / (2 * r)` of 1.
+  -- From this it follows that the products over any two finsets containing `s` are within `ε` of
+  -- each other.
+  -- Here `s₁ ⊆ s` guarantees that the product over `s` is bounded, and `s₂ ⊆ s` guarantees that
+  -- the product over terms not in `s` is small.
+  refine ⟨Metric.ball (∏ i ∈ s, (1 + f i)) (ε / 2), ⟨s, fun b hb ↦ ?_⟩, ?_⟩
+  · rw [← union_sdiff_of_subset hb, prod_union sdiff_disjoint.symm,
+      Metric.mem_ball, dist_eq_norm_sub, ← mul_sub_one,
+      show ε / 2 = r₁ * (ε / (2 * r₁)) by field_simp [hr₁]; ring]
+    apply (norm_mul_le _ _).trans_lt
+    refine lt_of_le_of_lt (b := r₁ * ‖∏ x ∈ b \ s, (1 + f x) - 1‖) ?_ ?_
+    · refine mul_le_mul_of_nonneg_right ?_ (norm_nonneg _)
+      exact (Finset.norm_prod_le _ _).trans (hs₁ _ subset_union_left)
+    · refine mul_lt_mul_of_pos_left (hs₂ _ ?_) hr₁
+      simp [s, sdiff_union_distrib, disjoint_iff_inter_eq_empty]
+  · intro x hx y hy
+    exact (dist_triangle_right _ _ (∏ i ∈ s, (1 + f i))).trans_lt (add_halves ε ▸ add_lt_add hx hy)
+
+end NormedRing
