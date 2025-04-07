@@ -47,14 +47,14 @@ lemma isSplitEpi_to_singleFunctor_obj_of_projective
     rw [homologyπ_singleObjHomologySelfIso_hom_assoc,
       ← singleObjCyclesSelfIso_inv_iCycles, Iso.hom_inv_id_assoc, ← cyclesMap_i]
   exact ⟨⟨{
-      section_ := mkHomFromSingle (Projective.factorThru (𝟙 P) α) (by
-        rintro _ rfl
-        apply (K.isZero_of_isStrictlyLE i (i + 1) (by simp)).eq_of_tgt)
-      id := by
-        apply HomologicalComplex.from_single_hom_ext
-        rw [comp_f, mkHomFromSingle_f, assoc, id_f, this, Projective.factorThru_comp_assoc,
-          id_comp, Iso.hom_inv_id]
-        rfl }⟩⟩
+    section_ := mkHomFromSingle (Projective.factorThru (𝟙 P) α) (by
+      rintro _ rfl
+      apply (K.isZero_of_isStrictlyLE i (i + 1) (by simp)).eq_of_tgt)
+    id := by
+      apply HomologicalComplex.from_single_hom_ext
+      rw [comp_f, mkHomFromSingle_f, assoc, id_f, this, Projective.factorThru_comp_assoc,
+        id_comp, Iso.hom_inv_id]
+      rfl }⟩⟩
 
 end CochainComplex
 
@@ -115,17 +115,17 @@ lemma hasExt_of_enoughProjectives [LocallySmall.{w} C] [EnoughProjectives C] :
     revert X Y
     induction n with
     | zero =>
-        intro X Y
-        rw [small_congr Ext.homEquiv₀]
-        infer_instance
+      intro X Y
+      rw [small_congr Ext.homEquiv₀]
+      infer_instance
     | succ n hn =>
-        intro X₃ Y
-        let S := ShortComplex.mk _ _ (kernel.condition (Projective.π X₃))
-        have hS : S.ShortExact :=
-          { exact := ShortComplex.exact_of_f_is_kernel _ (kernelIsKernel S.g) }
-        have : Function.Surjective (Ext.precomp hS.extClass Y (add_comm 1 n)) := fun x₃ ↦
-          Ext.contravariant_sequence_exact₃ hS Y x₃
-            (Ext.eq_zero_of_projective _) (by omega)
-        exact small_of_surjective.{w} this
+      intro X₃ Y
+      let S := ShortComplex.mk _ _ (kernel.condition (Projective.π X₃))
+      have hS : S.ShortExact :=
+        { exact := ShortComplex.exact_of_f_is_kernel _ (kernelIsKernel S.g) }
+      have : Function.Surjective (Ext.precomp hS.extClass Y (add_comm 1 n)) := fun x₃ ↦
+        Ext.contravariant_sequence_exact₃ hS Y x₃
+          (Ext.eq_zero_of_projective _) (by omega)
+      exact small_of_surjective.{w} this
 
 end CategoryTheory
