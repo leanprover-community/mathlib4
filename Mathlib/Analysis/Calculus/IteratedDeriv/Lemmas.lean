@@ -230,7 +230,7 @@ end shift_invariance
 
 /-- If `f` is analytic on `Bᵣ(x₀)` and its Taylor series converges on this ball, then it converges
 to `f`. -/
-theorem AnalyticOn.hasFPowerSeriesOnBall {𝕜 : Type*} [RCLike 𝕜] {f : 𝕜 → 𝕜} {x : 𝕜} {r : ENNReal}
+theorem AnalyticOnNhd.hasFPowerSeriesOnBall {𝕜 : Type*} [RCLike 𝕜] {f : 𝕜 → 𝕜} {x : 𝕜} {r : ENNReal}
     (hr_pos : 0 < r) (h : AnalyticOnNhd 𝕜 f (EMetric.ball x r)) :
     let p := FormalMultilinearSeries.ofScalars 𝕜 (fun n ↦ iteratedDeriv n f x / n.factorial);
     r ≤ p.radius → HasFPowerSeriesOnBall f p x r := by

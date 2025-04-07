@@ -111,11 +111,7 @@ theorem one_add_cpow_hasFPowerSeriesOnBall_zero {a : ℂ} :
     HasFPowerSeriesOnBall (fun x ↦ (1 + x)^a) (binomialSeries ℂ a) 0 1 := by
   suffices (binomialSeries ℂ a = FormalMultilinearSeries.ofScalars ℂ
       fun n ↦ iteratedDeriv n (fun (x : ℂ) ↦ (1 + x) ^ a) 0 / n !) by
-    suffices HasFPowerSeriesOnBall (fun x ↦ (1 + x) ^ a) (binomialSeries ℂ a) 0
-        (binomialSeries ℂ a).radius by
-      apply HasFPowerSeriesOnBall.mono this (by norm_num) binomialSeries_radius_ge_one
-    convert AnalyticOn.hasFPowerSeriesOnBall (r := 1) _ _ _
-    · sorry
+    convert AnalyticOnNhd.hasFPowerSeriesOnBall (r := 1) _ _ _
     · norm_num
     · apply AnalyticOnNhd.cpow
       · apply AnalyticOnNhd.add
@@ -175,3 +171,11 @@ theorem one_add_cpow_hasFPowerSeriesOnBall_zero {a : ℂ} :
 theorem one_add_cpow_hasFPowerSeriesAt_zero {a : ℂ} :
     HasFPowerSeriesAt (fun x ↦ (1 + x)^a) (binomialSeries ℂ a) 0 := by
   apply HasFPowerSeriesOnBall.hasFPowerSeriesAt one_add_cpow_hasFPowerSeriesOnBall_zero
+
+theorem one_add_rpow_hasFPowerSeriesOnBall_zero {a : ℝ} :
+    HasFPowerSeriesOnBall (fun x ↦ (1 + x)^a) (binomialSeries ℝ a) 0 1 := by
+  sorry
+
+theorem one_add_rpow_hasFPowerSeriesAt_zero {a : ℝ} :
+    HasFPowerSeriesAt (fun x ↦ (1 + x)^a) (binomialSeries ℝ a) 0 := by
+  apply HasFPowerSeriesOnBall.hasFPowerSeriesAt one_add_rpow_hasFPowerSeriesOnBall_zero
