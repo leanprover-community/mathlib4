@@ -611,6 +611,15 @@ theorem toInductiveLimit_commute (I : ∀ n, Isometry (f n)) (n : ℕ) :
     leRecOn_succ, leRecOn_self, dist_self]
   exact le_succ _
 
+theorem dense_iUnion_range_toInductiveLimit
+    {X : ℕ → Type u} [(n : ℕ) → MetricSpace (X n)]
+    {f : (n : ℕ) → X n → X (n + 1)}
+    (I : ∀ (n : ℕ), Isometry (f n)) :
+    Dense (⋃ i, range (toInductiveLimit I i)) := by
+  refine dense_univ.mono ?_
+  rintro ⟨n, x⟩ _
+  refine mem_iUnion.2 ⟨n, mem_range.2 ⟨x, rfl⟩⟩
+
 theorem separableSpaceInductiveLimit_of_separableSpace
   {X : ℕ → Type u} [(n : ℕ) → MetricSpace (X n)]
   [hs : (n : ℕ) → TopologicalSpace.SeparableSpace (X n)] {f : (n : ℕ) → X n → X (n + 1)}
@@ -619,15 +628,11 @@ theorem separableSpaceInductiveLimit_of_separableSpace
   choose hsX hcX hdX using (fun n ↦ TopologicalSpace.exists_countable_dense (X n))
   let s := ⋃ (i : ℕ), (toInductiveLimit I i '' (hsX i))
   refine ⟨s, countable_iUnion (fun n => (hcX n).image _), ?_⟩
-  rintro ⟨n, x⟩
-  refine mem_closure_iff.mpr (fun ε hε ↦ ?_)
-  obtain ⟨b, ⟨hb1, hb2⟩⟩ := mem_closure_iff.mp (hdX n x) ε hε
-  refine ⟨toInductiveLimit I n b, ?_, ?_⟩
-  · simpa only [s, mem_iUnion, mem_image] using ⟨n, b, hb1, rfl⟩
-  · rwa [show dist _ _ = inductiveLimitDist f ⟨n, x⟩ ⟨n, b⟩ by rfl, inductiveLimitDist_eq_dist I
-      ⟨n, x⟩ ⟨n, b⟩ n (le_refl n) (le_refl n), leRecOn_self, leRecOn_self]
-
-
+  refine .of_closure <| (dense_iUnion_range_toInductiveLimit I).mono <| iUnion_subset fun i ↦ ?_
+  calc
+    range (toInductiveLimit I i) ⊆ closure (toInductiveLimit I i '' (hsX i)) :=
+      (toInductiveLimit_isometry I i |>.continuous).range_subset_closure_image_dense (hdX i)
+    _ ⊆ closure s := closure_mono <| subset_iUnion (fun j ↦ toInductiveLimit I j '' hsX j) i
 
 end InductiveLimit
 
