@@ -36,19 +36,14 @@ lemma slope_pos_iff_gt {𝕜} [LinearOrderedField 𝕜] {f : 𝕜 → 𝕜} {x�
     0 < slope f x₀ b ↔ f b < f x₀ := by
   rw [slope_comm, slope_pos_iff hb]
 
-lemma pos_of_slope_pos {b : ℝ} (hb : x₀ < b) (hbf : 0 < slope f x₀ b)
-    (hf : f x₀ = 0) : 0 < f b := by
+lemma pos_of_slope_pos {𝕜} [LinearOrderedField 𝕜] {f : 𝕜 → 𝕜} {x₀ b : 𝕜}
+    (hb : x₀ < b) (hbf : 0 < slope f x₀ b) (hf : f x₀ = 0) : 0 < f b := by
   simp_all [slope, hf]
 
-lemma neg_of_slope_pos {b : ℝ} (hb : b < x₀) (hbf : 0 < slope f x₀ b)
-    (hf : f x₀ = 0) : f b < 0 := by
-  simp_all [slope, hf]
-  exact neg_of_mul_pos_right hbf <| le_of_lt <| inv_lt_zero.mpr <| by linarith
-
-lemma neg_of_slope_neg {b : ℝ} (hb : b < x₀) (hbf : 0 < slope f x₀ b)
-    (hf : f x₀ = 0) : f b < 0 := by
-  simp_all [slope]
-  exact neg_of_mul_pos_right hbf <| le_of_lt <| inv_lt_zero.mpr <| by linarith
+lemma neg_of_slope_pos {𝕜} [LinearOrderedField 𝕜] {f : 𝕜 → 𝕜} {x₀ b : 𝕜}
+    (hb : b < x₀) (hbf : 0 < slope f x₀ b) (hf : f x₀ = 0) : f b < 0 := by
+  rwa [slope_pos_iff_gt, hf] at hbf
+  exact hb
 
 /-- Predict the sign of f when it crosses the x-axis from below. -/
 lemma eventually_nhdsWithin_sign_eq_of_deriv_pos (hf : deriv f x₀ > 0) (hx : f x₀ = 0) :
