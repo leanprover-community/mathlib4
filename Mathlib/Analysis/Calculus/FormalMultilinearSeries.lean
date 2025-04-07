@@ -27,15 +27,17 @@ noncomputable section
 
 open Set Fin Topology
 
-universe u u' v w x
-variable {𝕜 : Type u} {𝕜' : Type u'} {E : Type v} {F : Type w} {G : Type x}
+-- Porting note: added explicit universes to fix compile
+universe u u' v w x y
+variable {𝕜 : Type u} {𝕜' : Type u'} {E : Type v} {F : Type w} {G : Type x} {H : Type y}
 
 section
 
-variable [Semiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] [ContinuousAdd E]
-  [ContinuousConstSMul 𝕜 E] [AddCommMonoid F] [Module 𝕜 F] [TopologicalSpace F]
-  [ContinuousAdd F] [ContinuousConstSMul 𝕜 F] [AddCommMonoid G] [Module 𝕜 G]
-  [TopologicalSpace G] [ContinuousAdd G] [ContinuousConstSMul 𝕜 G]
+variable [Semiring 𝕜]
+  [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] [ContinuousAdd E] [ContinuousConstSMul 𝕜 E]
+  [AddCommMonoid F] [Module 𝕜 F] [TopologicalSpace F] [ContinuousAdd F] [ContinuousConstSMul 𝕜 F]
+  [AddCommMonoid G] [Module 𝕜 G] [TopologicalSpace G] [ContinuousAdd G] [ContinuousConstSMul 𝕜 G]
+  [AddCommMonoid H] [Module 𝕜 H] [TopologicalSpace H] [ContinuousAdd H] [ContinuousConstSMul 𝕜 H]
 
 /-- A formal multilinear series over a field `𝕜`, from `E` to `F`, is given by a family of
 multilinear maps from `E^n` to `F` for all `n`. -/
@@ -136,6 +138,17 @@ def compContinuousLinearMap (p : FormalMultilinearSeries 𝕜 F G) (u : E →L[�
 @[simp]
 theorem compContinuousLinearMap_apply (p : FormalMultilinearSeries 𝕜 F G) (u : E →L[𝕜] F) (n : ℕ)
     (v : Fin n → E) : (p.compContinuousLinearMap u) n v = p n (u ∘ v) :=
+  rfl
+
+@[simp]
+theorem compContinuousLinearMap_id (p : FormalMultilinearSeries 𝕜 E F) :
+    p.compContinuousLinearMap (.id _ _) = p :=
+  rfl
+
+theorem compContinuousLinearMap_comp (p : FormalMultilinearSeries 𝕜 G H) (u₁ : F →L[𝕜] G)
+    (u₂ : E →L[𝕜] F) :
+    (p.compContinuousLinearMap u₁).compContinuousLinearMap u₂ =
+    p.compContinuousLinearMap (u₁.comp u₂) :=
   rfl
 
 variable (𝕜) [Semiring 𝕜'] [SMul 𝕜 𝕜']
