@@ -156,15 +156,12 @@ theorem card_uIcc : #(uIcc a b) = (b - a : ℤ).natAbs + 1 := by
   rw [← Nat.card_uIcc, ← map_subtype_embedding_uIcc, card_map]
 
 @[simp]
-theorem map_valEmbedding_Ici : (Ici a).map Fin.valEmbedding = Icc ↑a (n - 1) := by
-  rw [← attachFin_Ico_eq_Ici, map_valEmbedding_attachFin, Nat.Icc_pred_right]
-  exact a.pos
+theorem map_valEmbedding_Ici : (Ici a).map Fin.valEmbedding = Ico ↑a n := by
+  rw [← attachFin_Ico_eq_Ici, map_valEmbedding_attachFin]
 
 @[simp]
-theorem map_valEmbedding_Ioi : (Ioi a).map Fin.valEmbedding = Ioc ↑a (n - 1) := by
+theorem map_valEmbedding_Ioi : (Ioi a).map Fin.valEmbedding = Ioo ↑a n := by
   rw [← attachFin_Ioo_eq_Ioi, map_valEmbedding_attachFin]
-  ext i
-  simp [Nat.le_sub_one_iff_lt a.pos]
 
 @[simp]
 theorem map_valEmbedding_Iic : (Iic b).map Fin.valEmbedding = Iic ↑b := by
@@ -179,7 +176,8 @@ theorem card_Ici : #(Ici a) = n - a := by
   rw [← attachFin_Ico_eq_Ici, card_attachFin, Nat.card_Ico]
 
 @[simp]
-theorem card_Ioi : #(Ioi a) = n - 1 - a := by rw [← card_map, map_valEmbedding_Ioi, Nat.card_Ioc]
+theorem card_Ioi : #(Ioi a) = n - 1 - a := by
+  rw [← card_map, map_valEmbedding_Ioi, Nat.card_Ioo, Nat.sub_right_comm]
 
 @[simp]
 theorem card_Iic : #(Iic b) = b + 1 := by rw [← Nat.card_Iic b, ← map_valEmbedding_Iic, card_map]
