@@ -38,7 +38,7 @@ variable [∀ {X Y : C} (f : X ⟶ Y), HasColimit (F.map f ⋙ Grothendieck.ι F
 
 @[local instance]
 lemma hasColimit_ι_comp : ∀ X, HasColimit (Grothendieck.ι F X ⋙ G) :=
-  fun X => hasColimitOfIso (F := F.map (𝟙 _) ⋙ Grothendieck.ι F X ⋙ G) <|
+  fun X => hasColimit_of_iso (F := F.map (𝟙 _) ⋙ Grothendieck.ι F X ⋙ G) <|
     (Functor.leftUnitor (Grothendieck.ι F X ⋙ G)).symm ≪≫
     (isoWhiskerRight (eqToIso (F.map_id X).symm) (Grothendieck.ι F X ⋙ G))
 

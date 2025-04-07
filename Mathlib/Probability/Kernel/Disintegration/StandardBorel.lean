@@ -273,8 +273,8 @@ lemma compProd_fst_borelMarkovFromReal_eq_comapRight_compProd
   filter_upwards [h_ae] with a ha
   rw [borelMarkovFromReal, comapRight_apply', comapRight_apply']
   rotate_left
-  · exact measurable_prod_mk_left ht
-  · exact measurable_prod_mk_left ht
+  · exact measurable_prodMk_left ht
+  · exact measurable_prodMk_left ht
   classical
   rw [piecewise_apply, if_pos]
   exact ha
@@ -355,7 +355,7 @@ variable {ρ : Measure (α × Ω)} [IsFiniteMeasure ρ]
 noncomputable
 irreducible_def _root_.MeasureTheory.Measure.condKernel (ρ : Measure (α × Ω)) [IsFiniteMeasure ρ] :
     Kernel α Ω :=
-  comap (condKernelUnitBorel (const Unit ρ)) (fun a ↦ ((), a)) measurable_prod_mk_left
+  comap (condKernelUnitBorel (const Unit ρ)) (fun a ↦ ((), a)) measurable_prodMk_left
 
 lemma _root_.MeasureTheory.Measure.condKernel_apply (ρ : Measure (α × Ω)) [IsFiniteMeasure ρ]
     (a : α) :

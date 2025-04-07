@@ -291,8 +291,7 @@ theorem mem_oneCocycles_of_addMonoidHom [A.IsTrivial] (f : Additive G →+ A) :
       oneCocycles_map_mul_of_isTrivial, isTrivial_apply A.ρ g (f (Additive.ofMul h)),
       add_comm (f (Additive.ofMul g))]
 
-variable (A)
-
+variable (A) in
 /-- When `A : Rep k G` is a trivial representation of `G`, `Z¹(G, A)` is isomorphic to the
 group homs `G → A`. -/
 @[simps] def oneCocyclesLequivOfIsTrivial [hA : A.IsTrivial] :
@@ -308,8 +307,6 @@ group homs `G → A`. -/
       property := mem_oneCocycles_of_addMonoidHom f }
   left_inv f := by ext; rfl
   right_inv f := by ext; rfl
-
-variable {A}
 
 instance : FunLike (twoCocycles A) (G × G) A := ⟨Subtype.val, Subtype.val_injective⟩
 
@@ -460,7 +457,7 @@ variable {G A : Type*} [Monoid G] [AddCommGroup A] [MulAction G A]
 
 theorem map_one_of_isOneCocycle {f : G → A} (hf : IsOneCocycle f) :
     f 1 = 0 := by
-  simpa only [mul_one, one_smul, self_eq_add_right] using hf 1 1
+  simpa only [mul_one, one_smul, left_eq_add] using hf 1 1
 
 theorem map_one_fst_of_isTwoCocycle {f : G × G → A} (hf : IsTwoCocycle f) (g : G) :
     f (1, g) = f (1, 1) := by
@@ -592,7 +589,7 @@ variable {G M : Type*} [Monoid G] [CommGroup M] [MulAction G M]
 
 theorem map_one_of_isMulOneCocycle {f : G → M} (hf : IsMulOneCocycle f) :
     f 1 = 1 := by
-  simpa only [mul_one, one_smul, self_eq_mul_right] using hf 1 1
+  simpa only [mul_one, one_smul, left_eq_mul] using hf 1 1
 
 theorem map_one_fst_of_isMulTwoCocycle {f : G × G → M} (hf : IsMulTwoCocycle f) (g : G) :
     f (1, g) = f (1, 1) := by

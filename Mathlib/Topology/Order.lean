@@ -253,7 +253,7 @@ theorem isOpen_discrete (s : Set α) : IsOpen s := (@DiscreteTopology.eq_bot α 
 
 @[simp] theorem isClosed_discrete (s : Set α) : IsClosed s := ⟨isOpen_discrete _⟩
 
-@[simp] theorem closure_discrete (s : Set α) : closure s = s := (isClosed_discrete _).closure_eq
+theorem closure_discrete (s : Set α) : closure s = s := (isClosed_discrete _).closure_eq
 
 @[simp] theorem dense_discrete {s : Set α} : Dense s ↔ s = univ := by simp [dense_iff_closure_eq]
 
@@ -498,6 +498,7 @@ instance {n} : DiscreteTopology (Fin n) := ⟨rfl⟩
 instance sierpinskiSpace : TopologicalSpace Prop :=
   generateFrom {{True}}
 
+/-- See also `continuous_of_discreteTopology`, which works for `IsEmpty α`. -/
 theorem continuous_empty_function [TopologicalSpace α] [TopologicalSpace β] [IsEmpty β]
     (f : α → β) : Continuous f :=
   letI := Function.isEmpty f

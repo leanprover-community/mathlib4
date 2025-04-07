@@ -31,12 +31,15 @@ variable {C : Type u} [Category.{v} C]
 /-- A morphism of Schemes is an open immersion if it is an open immersion as a morphism
 of LocallyRingedSpaces
 -/
-abbrev IsOpenImmersion {X Y : Scheme.{u}} (f : X ⟶ Y) : Prop :=
-  LocallyRingedSpace.IsOpenImmersion f.toLRSHom
+abbrev IsOpenImmersion : MorphismProperty (Scheme.{u}) :=
+  fun _ _ f ↦ LocallyRingedSpace.IsOpenImmersion f.toLRSHom
+
+instance : IsOpenImmersion.IsStableUnderComposition where
+  comp_mem f g := fun _ _ ↦ LocallyRingedSpace.IsOpenImmersion.comp f.toLRSHom g.toLRSHom
 
 instance IsOpenImmersion.comp {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
-  [IsOpenImmersion f] [IsOpenImmersion g] : IsOpenImmersion (f ≫ g) :=
-LocallyRingedSpace.IsOpenImmersion.comp f.toLRSHom g.toLRSHom
+    [IsOpenImmersion f] [IsOpenImmersion g] : IsOpenImmersion (f ≫ g) :=
+  LocallyRingedSpace.IsOpenImmersion.comp f.toLRSHom g.toLRSHom
 
 namespace LocallyRingedSpace.IsOpenImmersion
 
@@ -323,7 +326,7 @@ section Restrict
 variable {U : TopCat.{u}} (X : Scheme.{u}) {f : U ⟶ TopCat.of X} (h : IsOpenEmbedding f)
 
 /-- The restriction of a Scheme along an open embedding. -/
-@[simps! (config := .lemmasOnly) carrier, simps! presheaf_obj]
+@[simps! -isSimp carrier, simps! presheaf_obj]
 def Scheme.restrict : Scheme :=
   { PresheafedSpace.IsOpenImmersion.toScheme X (X.toPresheafedSpace.ofRestrict h) with
     toPresheafedSpace := X.toPresheafedSpace.restrict h }
@@ -332,7 +335,7 @@ lemma Scheme.restrict_toPresheafedSpace :
     (X.restrict h).toPresheafedSpace = X.toPresheafedSpace.restrict h := rfl
 
 /-- The canonical map from the restriction to the subspace. -/
-@[simps! toLRSHom_base, simps! (config := .lemmasOnly) toLRSHom_c_app]
+@[simps! toLRSHom_base, simps! -isSimp toLRSHom_c_app]
 def Scheme.ofRestrict : X.restrict h ⟶ X :=
   ⟨X.toLocallyRingedSpace.ofRestrict h⟩
 
@@ -432,14 +435,17 @@ instance mono : Mono f :=
   Scheme.forgetToLocallyRingedSpace.mono_of_mono_map
     (show Mono f.toLRSHom by infer_instance)
 
+lemma le_monomorphisms :
+    IsOpenImmersion ≤ MorphismProperty.monomorphisms Scheme.{u} := fun _ _ _ _ ↦
+  MorphismProperty.monomorphisms.infer_property _
+
 instance forget_map_isOpenImmersion : LocallyRingedSpace.IsOpenImmersion ((forget).map f) :=
   ⟨H.base_open, H.c_iso⟩
 
 instance hasLimit_cospan_forget_of_left :
     HasLimit (cospan f g ⋙ Scheme.forgetToLocallyRingedSpace) := by
-  apply @hasLimitOfIso _ _ _ _ _ _ ?_ (diagramIsoCospan.{u} _).symm
-  change HasLimit (cospan ((forget).map f) ((forget).map g))
-  infer_instance
+  rw [hasLimit_iff_of_iso (diagramIsoCospan _)]
+  exact inferInstanceAs (HasLimit (cospan ((forget).map f) ((forget).map g)))
 
 open CategoryTheory.Limits.WalkingCospan
 
@@ -448,9 +454,8 @@ instance hasLimit_cospan_forget_of_left' :
   show HasLimit (cospan ((forget).map f) ((forget).map g)) from inferInstance
 
 instance hasLimit_cospan_forget_of_right : HasLimit (cospan g f ⋙ forget) := by
-  apply @hasLimitOfIso _ _ _ _ _ _ ?_ (diagramIsoCospan.{u} _).symm
-  change HasLimit (cospan ((forget).map g) ((forget).map f))
-  infer_instance
+  rw [hasLimit_iff_of_iso (diagramIsoCospan _)]
+  exact inferInstanceAs (HasLimit (cospan ((forget).map g) ((forget).map f)))
 
 instance hasLimit_cospan_forget_of_right' :
     HasLimit (cospan ((cospan g f ⋙ forget).map Hom.inl) ((cospan g f ⋙ forget).map Hom.inr)) :=
@@ -674,6 +679,13 @@ instance {Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) [IsOpenImmersion f]
   IsOpenImmersion.of_comp _ f
 
 end IsOpenImmersion
+
+lemma isIso_of_isOpenImmersion_of_opensRange_eq_top {X Y : Scheme.{u}} (f : X ⟶ Y)
+    [IsOpenImmersion f] (hf : f.opensRange = ⊤) : IsIso f := by
+  rw [isIso_iff_isOpenImmersion]
+  refine ⟨inferInstance, ?_⟩
+  rw [TopCat.epi_iff_surjective, ← Set.range_eq_univ]
+  exact TopologicalSpace.Opens.ext_iff.mp hf
 
 section MorphismProperty
 

@@ -59,7 +59,7 @@ attribute [instance] IsAffine.affine
 instance (X : Scheme.{u}) [IsAffine X] : IsIso (ΓSpec.adjunction.unit.app X) := @IsAffine.affine X _
 
 /-- The canonical isomorphism `X ≅ Spec Γ(X)` for an affine scheme. -/
-@[simps! (config := .lemmasOnly) hom]
+@[simps! -isSimp hom]
 def Scheme.isoSpec (X : Scheme) [IsAffine X] : X ≅ Spec Γ(X, ⊤) :=
   asIso X.toSpecΓ
 
@@ -100,7 +100,7 @@ def AffineScheme.ofHom {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X ⟶ Y) :
     AffineScheme.of X ⟶ AffineScheme.of Y :=
   f
 
-theorem mem_Spec_essImage (X : Scheme) : X ∈ Scheme.Spec.essImage ↔ IsAffine X :=
+theorem mem_Spec_essImage (X : Scheme) : Scheme.Spec.essImage X ↔ IsAffine X :=
   ⟨fun h => ⟨Functor.essImage.unit_isIso h⟩,
     fun _ => ΓSpec.adjunction.mem_essImage_of_unit_isIso _⟩
 
@@ -113,8 +113,10 @@ instance (R : CommRingCatᵒᵖ) : IsAffine (Scheme.Spec.obj R) :=
 instance isAffine_Spec (R : CommRingCat) : IsAffine (Spec R) :=
   AlgebraicGeometry.isAffine_affineScheme ⟨_, Scheme.Spec.obj_mem_essImage (op R)⟩
 
-theorem isAffine_of_isIso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] [h : IsAffine Y] : IsAffine X := by
+theorem IsAffine.of_isIso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] [h : IsAffine Y] : IsAffine X := by
   rw [← mem_Spec_essImage] at h ⊢; exact Functor.essImage.ofIso (asIso f).symm h
+
+@[deprecated (since := "2025-03-31")] alias isAffine_of_isIso := IsAffine.of_isIso
 
 /-- If `f : X ⟶ Y` is a morphism between affine schemes, the corresponding arrow is isomorphic
 to the arrow of the morphism on prime spectra induced by the map on global sections. -/
@@ -221,7 +223,7 @@ instance {Y : Scheme.{u}} (U : Y.affineOpens) : IsAffine U :=
 
 theorem isAffineOpen_opensRange {X Y : Scheme} [IsAffine X] (f : X ⟶ Y)
     [H : IsOpenImmersion f] : IsAffineOpen (Scheme.Hom.opensRange f) := by
-  refine isAffine_of_isIso (IsOpenImmersion.isoOfRangeEq f (Y.ofRestrict _) ?_).inv
+  refine .of_isIso (IsOpenImmersion.isoOfRangeEq f (Y.ofRestrict _) ?_).inv
   exact Subtype.range_val.symm
 
 theorem isAffineOpen_top (X : Scheme) [IsAffine X] : IsAffineOpen (⊤ : X.Opens) := by
@@ -308,7 +310,7 @@ variable {X Y : Scheme.{u}} {U : X.Opens} (hU : IsAffineOpen U) (f : Γ(X, U))
 
 attribute [-simp] eqToHom_op in
 /-- The isomorphism `U ≅ Spec Γ(X, U)` for an affine `U`. -/
-@[simps! (config := .lemmasOnly) inv]
+@[simps! -isSimp inv]
 def isoSpec :
     ↑U ≅ Spec Γ(X, U) :=
   haveI : IsAffine U := hU
@@ -444,19 +446,19 @@ theorem image_of_isOpenImmersion (f : X ⟶ Y) [H : IsOpenImmersion f] :
 theorem preimage_of_isIso {U : Y.Opens} (hU : IsAffineOpen U) (f : X ⟶ Y) [IsIso f] :
     IsAffineOpen (f ⁻¹ᵁ U) :=
   haveI : IsAffine _ := hU
-  isAffine_of_isIso (f ∣_ U)
+  .of_isIso (f ∣_ U)
 
 theorem _root_.AlgebraicGeometry.Scheme.Hom.isAffineOpen_iff_of_isOpenImmersion
     (f : AlgebraicGeometry.Scheme.Hom X Y) [H : IsOpenImmersion f] {U : X.Opens} :
-    IsAffineOpen (f ''ᵁ U) ↔ IsAffineOpen U := by
-  refine ⟨fun hU => @isAffine_of_isIso _ _
-    (IsOpenImmersion.isoOfRangeEq (X.ofRestrict U.isOpenEmbedding ≫ f) (Y.ofRestrict _) ?_).hom
-      ?_ hU, fun hU => hU.image_of_isOpenImmersion f⟩
-  · rw [Scheme.comp_base, TopCat.coe_comp, Set.range_comp]
+    IsAffineOpen (f ''ᵁ U) ↔ IsAffineOpen U where
+  mp hU := by
+    refine .of_isIso (IsOpenImmersion.isoOfRangeEq (X.ofRestrict U.isOpenEmbedding ≫ f)
+      (Y.ofRestrict _) ?_).hom (h := hU)
+    rw [Scheme.comp_base, TopCat.coe_comp, Set.range_comp]
     dsimp [Opens.coe_inclusion', Scheme.restrict]
     rw [Subtype.range_coe, Subtype.range_coe]
     rfl
-  · infer_instance
+  mpr hU := hU.image_of_isOpenImmersion f
 
 /-- The affine open sets of an open subscheme corresponds to
 the affine open sets containing in the image. -/
@@ -733,7 +735,6 @@ theorem isLocalization_stalk' (y : PrimeSpectrum Γ(X, U)) (hy : hU.fromSpec.bas
     Scheme.stalkMap_germ, IsAffineOpen.fromSpec_app_self, Category.assoc, TopCat.Presheaf.germ_res]
   rfl
 
--- Porting note: I have split this into two lemmas
 theorem isLocalization_stalk (x : U) :
     IsLocalization.AtPrime (X.presheaf.stalk x) (hU.primeIdealOf x).asIdeal := by
   rcases x with ⟨x, hx⟩

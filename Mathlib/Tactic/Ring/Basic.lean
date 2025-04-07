@@ -663,7 +663,7 @@ def evalPowAtom {a : Q($α)} {b : Q(ℕ)} (va : ExBase sα a) (vb : ExProd sℕ 
 theorem const_pos (n : ℕ) (h : Nat.ble 1 n = true) : 0 < (n.rawCast : ℕ) := Nat.le_of_ble_eq_true h
 
 theorem mul_exp_pos {a₁ a₂ : ℕ} (n) (h₁ : 0 < a₁) (h₂ : 0 < a₂) : 0 < a₁ ^ n * a₂ :=
-  Nat.mul_pos (Nat.pos_pow_of_pos _ h₁) h₂
+  Nat.mul_pos (Nat.pow_pos h₁) h₂
 
 theorem add_pos_left {a₁ : ℕ} (a₂) (h : 0 < a₁) : 0 < a₁ + a₂ :=
   Nat.lt_of_lt_of_le h (Nat.le_add_right ..)

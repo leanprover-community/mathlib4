@@ -417,7 +417,7 @@ theorem IsPreconnected.prod [TopologicalSpace β] {s : Set α} {t : Set β} (hs 
   · rintro _ (⟨y, hy, rfl⟩ | ⟨x, hx, rfl⟩)
     exacts [⟨ha₁, hy⟩, ⟨hx, hb₂⟩]
   · exact (ht.image _ (by fun_prop)).union (a₁, b₂) ⟨b₂, hb₂, rfl⟩
-      ⟨a₁, ha₁, rfl⟩ (hs.image _ (continuous_id.prod_mk continuous_const).continuousOn)
+      ⟨a₁, ha₁, rfl⟩ (hs.image _ (Continuous.prodMk_left _).continuousOn)
 
 theorem IsConnected.prod [TopologicalSpace β] {s : Set α} {t : Set β} (hs : IsConnected s)
     (ht : IsConnected t) : IsConnected (s ×ˢ t) :=
@@ -616,7 +616,7 @@ class PreconnectedSpace (α : Type u) [TopologicalSpace α] : Prop where
 export PreconnectedSpace (isPreconnected_univ)
 
 /-- A connected space is a nonempty one where there is no non-trivial open partition. -/
-class ConnectedSpace (α : Type u) [TopologicalSpace α] extends PreconnectedSpace α : Prop where
+class ConnectedSpace (α : Type u) [TopologicalSpace α] : Prop extends PreconnectedSpace α where
   /-- A connected space is nonempty. -/
   toNonempty : Nonempty α
 

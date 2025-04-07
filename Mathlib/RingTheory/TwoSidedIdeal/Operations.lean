@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jujian Zhang, Jireh Loreaux
+Authors: Jujian Zhang, Jireh Loreaux, Yunzhou Xie
 -/
 import Mathlib.Algebra.Group.Subgroup.Map
 import Mathlib.Algebra.Module.Opposite
@@ -9,6 +9,7 @@ import Mathlib.Algebra.Module.Submodule.Lattice
 import Mathlib.RingTheory.Congruence.Opposite
 import Mathlib.RingTheory.Ideal.Defs
 import Mathlib.RingTheory.TwoSidedIdeal.Lattice
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Operations on two-sided ideals
@@ -211,6 +212,10 @@ section Ring
 
 variable {R : Type*} [Ring R]
 
+lemma span_le {s : Set R} {I : TwoSidedIdeal R} : span s ≤ I ↔ s ⊆ I := by
+  rw [TwoSidedIdeal.ringCon_le_iff, RingCon.gi _ |>.gc]
+  exact ⟨fun h x hx ↦ by aesop, fun h x y hxy ↦ (rel_iff I x y).mpr (h hxy)⟩
+
 open Pointwise Set in
 lemma mem_span_iff_mem_addSubgroup_closure {s : Set R} {z : R} :
     z ∈ span s ↔ z ∈ AddSubgroup.closure (univ * s * univ) := by
@@ -257,6 +262,13 @@ def subtype : I →ₗ[R] R where
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
+theorem subtype_injective : Function.Injective (subtype I) :=
+  Subtype.coe_injective
+
+@[simp]
+theorem coe_subtype : ⇑(subtype I) = Subtype.val :=
+  rfl
+
 /--
 For any `RingCon R`, when we view it as an ideal in `Rᵒᵖ`, `subtype` is the injective `Rᵐᵒᵖ`-linear
 map `I → Rᵐᵒᵖ`.
@@ -266,6 +278,9 @@ def subtypeMop : I →ₗ[Rᵐᵒᵖ] Rᵐᵒᵖ where
   toFun x := MulOpposite.op x.1
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
+
+theorem subtypeMop_injective : Function.Injective (subtypeMop I) :=
+  MulOpposite.op_injective.comp Subtype.coe_injective
 
 /-- Given an ideal `I`, `span I` is the smallest two-sided ideal containing `I`. -/
 def fromIdeal : Ideal R →o TwoSidedIdeal R where
