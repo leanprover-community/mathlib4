@@ -38,7 +38,7 @@ since the equicardinality of bases in general matroids is independent of ZFC
 Lemmas like `Matroid.Base.cardinalMk_diff_comm` become true for all matroids
 only if they are weakened by replacing `Cardinal.mk` with the cruder `ℕ∞`-valued `Set.encard`.
 The `ℕ∞`-valued rank and rank functions `Matroid.eRank` and `Matroid.eRk`,
-which have a more unconditionally strong API, are developed in `Data.Matroid.Rank.ENat`.
+which have a more unconditionally strong API, are developed in `Mathlib.Data.Matroid.Rank.ENat`.
 
 # Implementation Details
 
