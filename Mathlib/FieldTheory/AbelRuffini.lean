@@ -208,7 +208,8 @@ def solvableByRad : IntermediateField F E where
     change IsSolvableByRad F 1
     convert IsSolvableByRad.base (E := E) (1 : F); rw [RingHom.map_one]
   mul_mem' := by apply IsSolvableByRad.mul
-  inv_mem' := IsSolvableByRad.inv
+  mul_comm' _ _ _ _ := mul_comm _ _
+  inv_mem' x hx hx0 := ⟨x⁻¹, IsSolvableByRad.inv _ hx, mul_inv_cancel₀ hx0⟩
   algebraMap_mem' := IsSolvableByRad.base
 
 namespace solvableByRad

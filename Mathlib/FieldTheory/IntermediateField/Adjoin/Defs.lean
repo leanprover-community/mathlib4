@@ -29,6 +29,8 @@ variable (F : Type*) [Field F] {E : Type*} [Field E] [Algebra F E] (S : Set E)
 @[stacks 09FZ "first part"]
 def adjoin : IntermediateField F E :=
   { Subfield.closure (Set.range (algebraMap F E) ∪ S) with
+    mul_comm' _ _ _ _ := mul_comm _ _
+    inv_mem' x hx hx0 := ⟨x⁻¹, Subfield.inv_mem _ hx, mul_inv_cancel₀ hx0⟩
     algebraMap_mem' := fun x => Subfield.subset_closure (Or.inl (Set.mem_range_self x)) }
 
 @[simp]
@@ -63,7 +65,9 @@ instance : CompleteLattice (IntermediateField F E) where
   __ := GaloisInsertion.liftCompleteLattice IntermediateField.gi
   bot :=
     { toSubalgebra := ⊥
-      inv_mem' := by rintro x ⟨r, rfl⟩; exact ⟨r⁻¹, map_inv₀ _ _⟩ }
+      mul_comm' _ _ _ _ := mul_comm _ _
+      inv_mem' x hx hx0 := ⟨x⁻¹, ⟨hx.choose⁻¹, by simpa using hx.choose_spec⟩,
+        mul_inv_cancel₀ hx0⟩ }
   bot_le x := (bot_le : ⊥ ≤ x.toSubalgebra)
 
 theorem sup_def (S T : IntermediateField F E) : S ⊔ T = adjoin F (S ∪ T : Set E) := rfl

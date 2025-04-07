@@ -90,7 +90,7 @@ instance : Lattice (FiniteGaloisIntermediateField k K) :=
 
 instance : OrderBot (FiniteGaloisIntermediateField k K) where
   bot := .mk ⊥
-  bot_le _ := bot_le (α := IntermediateField _ _)
+  bot_le _ := bot_le (α := IntermediateField k K)
 
 @[simp]
 lemma le_iff (L₁ L₂ : FiniteGaloisIntermediateField k K) :

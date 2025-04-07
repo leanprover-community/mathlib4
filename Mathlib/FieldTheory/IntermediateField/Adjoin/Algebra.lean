@@ -29,7 +29,8 @@ theorem adjoin_eq_algebra_adjoin (inv_mem : ∀ x ∈ Algebra.adjoin F S, x⁻¹
   le_antisymm
     (show adjoin F S ≤
         { Algebra.adjoin F S with
-          inv_mem' := inv_mem }
+          mul_comm' _ _ _ _ := mul_comm _ _
+          inv_mem' x hx hx0 := ⟨x⁻¹, inv_mem x hx, mul_inv_cancel₀ hx0⟩}
       from adjoin_le_iff.mpr Algebra.subset_adjoin)
     (algebra_adjoin_le_adjoin _ _)
 
@@ -39,7 +40,10 @@ theorem eq_adjoin_of_eq_algebra_adjoin (K : IntermediateField F E)
   rw [h]
   refine (adjoin_eq_algebra_adjoin F _ fun x ↦ ?_).symm
   rw [← h]
-  exact K.inv_mem
+  intro hx
+  if h : x = 0 then subst h; simp [zero_mem] else
+  rw [← inv_unique (K.3 x hx h).choose_spec.2 (mul_inv_cancel₀ h)]
+  exact K.3 x hx h|>.choose_spec.1
 
 theorem adjoin_eq_top_of_algebra (hS : Algebra.adjoin F S = ⊤) : adjoin F S = ⊤ :=
   top_le_iff.mp (hS.symm.trans_le <| algebra_adjoin_le_adjoin F S)

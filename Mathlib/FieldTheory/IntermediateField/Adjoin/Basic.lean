@@ -95,8 +95,14 @@ theorem coe_iSup_of_directed [Nonempty ι] (dir : Directed (· ≤ ·) t) :
     ↑(iSup t) = ⋃ i, (t i : Set L) :=
   let M : IntermediateField K L :=
     { __ := Subalgebra.copy _ _ (Subalgebra.coe_iSup_of_directed dir).symm
-      inv_mem' := fun _ hx ↦ have ⟨i, hi⟩ := Set.mem_iUnion.mp hx
-        Set.mem_iUnion.mpr ⟨i, (t i).inv_mem hi⟩ }
+      mul_comm' _ _ _ _ := mul_comm _ _
+      inv_mem' x hx hx0 := ⟨x⁻¹, by
+        obtain ⟨i, hi⟩ := Set.mem_iUnion.mp hx
+        have : x⁻¹ ∈ (t i) := by
+          rw [inv_unique (mul_inv_cancel₀ hx0) ((t i).3 x hi hx0).choose_spec.2]
+          exact (t i).3 x hi hx0|>.choose_spec.1
+        exact Set.mem_iUnion.mpr ⟨i, this⟩, mul_inv_cancel₀ hx0⟩
+        }
   have : iSup t = M := le_antisymm
     (iSup_le fun i ↦ le_iSup (fun i ↦ (t i : Set L)) i) (Set.iUnion_subset fun _ ↦ le_iSup t _)
   this.symm ▸ rfl

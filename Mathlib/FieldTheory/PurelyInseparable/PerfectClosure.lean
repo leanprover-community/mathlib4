@@ -67,10 +67,9 @@ def perfectClosure : IntermediateField F E where
     use n + m
     rw [mul_pow, pow_add, pow_mul, mul_comm (_ ^ n), pow_mul]
     exact mul_mem (pow_mem hx _) (pow_mem hy _)
-  inv_mem' := by
-    rintro x ⟨n, hx⟩
-    use n; rw [inv_pow]
-    apply inv_mem (id hx : _ ∈ (⊥ : IntermediateField F E))
+  mul_comm' _ _ _ _ := mul_comm _ _
+  inv_mem' x hx hx0:= ⟨x⁻¹, ⟨hx.choose, ⟨hx.choose_spec.choose⁻¹, by
+    simp [hx.choose_spec.choose_spec]⟩⟩, mul_inv_cancel₀ hx0⟩
   algebraMap_mem' := fun x ↦ ⟨0, by rw [pow_zero, pow_one]; exact ⟨x, rfl⟩⟩
 
 variable {F E}

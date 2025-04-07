@@ -79,7 +79,8 @@ def separableClosure : IntermediateField F E where
   mul_mem' := isSeparable_mul
   add_mem' := isSeparable_add
   algebraMap_mem' := isSeparable_algebraMap E
-  inv_mem' _ := isSeparable_inv
+  mul_comm' _ _ _ _ := mul_comm _ _
+  inv_mem' x hx hx0 := ⟨x⁻¹, isSeparable_inv hx, mul_inv_cancel₀ hx0⟩
 
 variable {F E K}
 

@@ -176,6 +176,8 @@ def FixedPoints.intermediateField (M : Type*) [Monoid M] [MulSemiringAction M E]
     [SMulCommClass M F E] : IntermediateField F E :=
   { FixedPoints.subfield M E with
     carrier := MulAction.fixedPoints M E
+    mul_comm' _ _ _ _ := mul_comm _ _
+    inv_mem' x hx hx0 := ⟨x⁻¹, by simpa, mul_inv_cancel₀ hx0⟩
     algebraMap_mem' := fun a g => smul_algebraMap g a }
 
 namespace IntermediateField

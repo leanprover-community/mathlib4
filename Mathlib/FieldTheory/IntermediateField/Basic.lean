@@ -44,8 +44,10 @@ variable (K L L' : Type*) [Field K] [Field L] [Field L'] [Algebra K L] [Algebra 
 
 /-- `S : IntermediateField K L` is a subset of `L` such that there is a field
 tower `L / S / K`. -/
-structure IntermediateField extends Subalgebra K L where
-  inv_mem' : ∀ x ∈ carrier, x⁻¹ ∈ carrier
+structure IntermediateField (K L : Type*) [CommSemiring K] [Semiring L] [Algebra K L] extends
+    Subalgebra K L where
+  mul_comm' : ∀ x y : L, x ∈ carrier → y ∈ carrier → x * y = y * x
+  inv_mem' : ∀ x ∈ carrier, x ≠ 0 → ∃ y ∈ carrier, x * y = 1
 
 /-- Reinterpret an `IntermediateField` as a `Subalgebra`. -/
 add_decl_doc IntermediateField.toSubalgebra
@@ -63,11 +65,18 @@ instance : SetLike (IntermediateField K L) L :=
 protected theorem neg_mem {x : L} (hx : x ∈ S) : -x ∈ S := by
   show -x ∈S.toSubalgebra; simpa
 
+protected theorem inv_mem (x : L) (hx : x ∈ S) : x⁻¹ ∈ S := by
+  if h : x = 0 then subst h; simp [*] else
+  obtain ⟨y, hy1, hy2⟩ := S.3 x hx h
+  suffices y = x⁻¹ by simpa [← this]
+  apply_fun (x * ·) using (fun a b eq ↦ by simpa [mul_eq_mul_left_iff, h] using eq)
+  simp [h, hy2]
+
 /-- Reinterpret an `IntermediateField` as a `Subfield`. -/
 def toSubfield : Subfield L :=
   { S.toSubalgebra with
     neg_mem' := S.neg_mem,
-    inv_mem' := S.inv_mem' }
+    inv_mem' := S.inv_mem}
 
 instance : SubfieldClass (IntermediateField K L) L where
   add_mem {s} := s.add_mem'
@@ -75,7 +84,7 @@ instance : SubfieldClass (IntermediateField K L) L where
   neg_mem {s} := s.neg_mem
   mul_mem {s} := s.mul_mem'
   one_mem {s} := s.one_mem'
-  inv_mem {s} := s.inv_mem' _
+  inv_mem {s} := s.inv_mem _
 
 theorem mem_carrier {s : IntermediateField K L} {x : L} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
@@ -103,7 +112,7 @@ theorem coe_type_toSubfield : (S.toSubfield : Type _) = S :=
 
 @[simp]
 theorem mem_mk (s : Subsemiring L) (hK : ∀ x, algebraMap K L x ∈ s) (hi) (x : L) :
-    x ∈ IntermediateField.mk (Subalgebra.mk s hK) hi ↔ x ∈ s :=
+    x ∈ IntermediateField.mk (Subalgebra.mk s hK) (fun _ _ ↦ by simp [mul_comm]) hi ↔ x ∈ s :=
   Iff.rfl
 
 @[simp]
@@ -119,6 +128,7 @@ definitional equalities. -/
 protected def copy (S : IntermediateField K L) (s : Set L) (hs : s = ↑S) :
     IntermediateField K L where
   toSubalgebra := S.toSubalgebra.copy s hs
+  mul_comm' := hs ▸ S.mul_comm'
   inv_mem' := hs.symm ▸ S.inv_mem'
 
 @[simp]
@@ -167,9 +177,9 @@ protected theorem add_mem {x y : L} : x ∈ S → y ∈ S → x + y ∈ S :=
 protected theorem sub_mem {x y : L} : x ∈ S → y ∈ S → x - y ∈ S :=
   sub_mem
 
-/-- An intermediate field is closed under inverses. -/
-protected theorem inv_mem {x : L} : x ∈ S → x⁻¹ ∈ S :=
-  inv_mem
+-- /-- An intermediate field is closed under inverses. -/
+-- protected theorem inv_mem {x : L} : x ∈ S → x⁻¹ ∈ S :=
+--   inv_mem
 
 /-- An intermediate field is closed under division. -/
 protected theorem div_mem {x y : L} : x ∈ S → y ∈ S → x / y ∈ S :=
@@ -246,7 +256,8 @@ end IntermediateField
 def Subalgebra.toIntermediateField (S : Subalgebra K L) (inv_mem : ∀ x ∈ S, x⁻¹ ∈ S) :
     IntermediateField K L :=
   { S with
-    inv_mem' := inv_mem }
+    mul_comm' _ _ _ _ := mul_comm _ _
+    inv_mem' x hx hx0 := ⟨x⁻¹, inv_mem x hx, mul_inv_cancel₀ hx0⟩}
 
 @[simp]
 theorem toSubalgebra_toIntermediateField (S : Subalgebra K L) (inv_mem : ∀ x ∈ S, x⁻¹ ∈ S) :
@@ -256,7 +267,7 @@ theorem toSubalgebra_toIntermediateField (S : Subalgebra K L) (inv_mem : ∀ x �
 
 @[simp]
 theorem toIntermediateField_toSubalgebra (S : IntermediateField K L) :
-    (S.toSubalgebra.toIntermediateField fun _ => S.inv_mem) = S := by
+    (S.toSubalgebra.toIntermediateField fun _ => S.inv_mem _) = S := by
   ext
   rfl
 
@@ -287,6 +298,8 @@ theorem toIntermediateField'_toSubalgebra (S : IntermediateField K L) :
 def Subfield.toIntermediateField (S : Subfield L) (algebra_map_mem : ∀ x, algebraMap K L x ∈ S) :
     IntermediateField K L :=
   { S with
+    mul_comm' _ _ _ _ := mul_comm _ _
+    inv_mem' x hx hx0 := ⟨x⁻¹, S.inv_mem hx, mul_inv_cancel₀ hx0⟩
     algebraMap_mem' := algebra_map_mem }
 
 namespace IntermediateField
@@ -422,15 +435,18 @@ end shortcut_instances
   such that `f x ∈ S ↔ x ∈ S.comap f`. -/
 def comap (f : L →ₐ[K] L') (S : IntermediateField K L') : IntermediateField K L where
   __ := S.toSubalgebra.comap f
-  inv_mem' x hx := show f x⁻¹ ∈ S by rw [map_inv₀ f x]; exact S.inv_mem hx
+  mul_comm' _ _ _ _ := mul_comm _ _
+  inv_mem' x hx hx0 := ⟨x⁻¹, by simpa [Subalgebra.mem_comap, mul_inv_cancel₀ hx0]⟩
 
 /-- Given `f : L →ₐ[K] L'`, `S.map f` is the intermediate field between `K` and `L'`
 such that `x ∈ S ↔ f x ∈ S.map f`. -/
 def map (f : L →ₐ[K] L') (S : IntermediateField K L) : IntermediateField K L' where
   __ := S.toSubalgebra.map f
-  inv_mem' := by
-    rintro _ ⟨x, hx, rfl⟩
-    exact ⟨x⁻¹, S.inv_mem hx, map_inv₀ f x⟩
+  mul_comm' _ _ _ _ := mul_comm _ _
+  inv_mem' x hx hx0 := ⟨x⁻¹, by
+    simp [Subalgebra.mem_map, mul_inv_cancel₀ hx0] at *
+    exact ⟨hx.choose⁻¹, inv_mem_iff.2 hx.choose_spec.1, by simp [hx.choose_spec]⟩⟩
+
 
 @[simp]
 theorem coe_map (f : L →ₐ[K] L') : (S.map f : Set L') = f '' S :=
@@ -484,7 +500,9 @@ variable (f : L →ₐ[K] L')
 /-- The range of an algebra homomorphism, as an intermediate field. -/
 @[simps toSubalgebra]
 def fieldRange : IntermediateField K L' :=
-  { f.range, (f : L →+* L').fieldRange with }
+  { f.range, (f : L →+* L').fieldRange with
+    mul_comm' _ _ _ _ := mul_comm _ _
+    inv_mem' x hx hx0 := ⟨x⁻¹, ⟨hx.choose⁻¹, by simpa using hx.choose_spec⟩, mul_inv_cancel₀ hx0⟩}
 
 @[simp]
 theorem coe_fieldRange : ↑f.fieldRange = Set.range f :=
@@ -644,7 +662,12 @@ variable [Algebra L' L] [IsScalarTower K L' L]
 `L`, reinterpret `E` as a `K`-intermediate field of `L`. -/
 def restrictScalars (E : IntermediateField L' L) : IntermediateField K L :=
   { E.toSubfield, E.toSubalgebra.restrictScalars K with
-    carrier := E.carrier }
+    carrier := E.carrier
+    mul_comm' _ _ _ _ := mul_comm _ _
+    inv_mem' x hx hx0 := ⟨x⁻¹, by
+      obtain ⟨y, hy1, hy2⟩ := E.3 x hx hx0
+      have := inv_unique (x := x) (y := y) (z := x⁻¹) hy2 <| mul_inv_cancel₀ hx0
+      simpa [← this], mul_inv_cancel₀ hx0⟩}
 
 @[simp]
 theorem coe_restrictScalars {E : IntermediateField L' L} :
