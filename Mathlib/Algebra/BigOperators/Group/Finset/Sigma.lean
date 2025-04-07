@@ -120,7 +120,7 @@ theorem prod_comm {s : Finset γ} {t : Finset α} {f : γ → α → β} :
 
 /-- Cyclically permute 3 nested instances of `Finset.prod`. -/
 @[to_additive]
-theorem prod_comm_3 {s : Finset γ} {t : Finset α} {u : Finset κ} {f : γ → α → κ → β} :
+theorem prod_comm_cycle {s : Finset γ} {t : Finset α} {u : Finset κ} {f : γ → α → κ → β} :
     (∏ x ∈ s, ∏ y ∈ t, ∏ z ∈ u, f x y z) = ∏ z ∈ u, ∏ x ∈ s, ∏ y ∈ t, f x y z := by
   simp_rw [prod_comm (s := t), prod_comm (s := s)]
 
