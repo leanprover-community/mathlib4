@@ -223,6 +223,16 @@ theorem ofMatrix_rel' [DecidableEq n] {c : RingCon (Matrix n n R)} {x y : R} (i 
   refine ⟨fun h ↦ h i j, fun h i' j' ↦ ?_⟩
   simpa using c.mul (c.mul (c.refl <| stdBasisMatrix i' i 1) h) (c.refl <| stdBasisMatrix j j' 1)
 
+theorem coe_ofMatrix_eq_relationMap [DecidableEq n] {c : RingCon (Matrix n n R)} (i j : n) :
+    ⇑(ofMatrix c) = Relation.Map c (· i j) (· i j) := by
+  ext x y
+  constructor
+  · intro h
+    refine ⟨_,_, h i j, ?_⟩
+    simp
+  · rintro ⟨X, Y, h, rfl, rfl⟩ i' j'
+    simpa using c.mul (c.mul (c.refl <| stdBasisMatrix i' i 1) h) (c.refl <| stdBasisMatrix j j' 1)
+
 end NonAssocSemiring
 
 end RingCon
@@ -283,7 +293,6 @@ def equivMatricesOver [Nonempty n] [DecidableEq n] :
 theorem coe_equivMatricesOver_symm_apply (I : TwoSidedIdeal (Matrix n n R)) (i j : n) :
     equivMatricesOver.symm I = {N i j | N ∈ I} := by
   ext r
-  simp [equivMatricesOver]
   constructor
   · intro h
     exact ⟨stdBasisMatrix i j r, by simpa using h i j, by simp⟩
