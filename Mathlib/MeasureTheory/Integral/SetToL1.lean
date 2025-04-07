@@ -444,7 +444,7 @@ theorem setToSimpleFunc_sub (T : Set α → E →L[ℝ] F) (h_add : FinMeasAddit
     sub_eq_add_neg]
   rw [integrable_iff] at hg ⊢
   intro x hx_ne
-  rw [SimpleFunc.coe_neg, Pi.neg_def, ← Function.comp_def, preimage_comp, neg_preimage,
+  rw [SimpleFunc.coe_neg, Pi.neg_def, ← Function.comp_def (β := E), preimage_comp, neg_preimage,
     Set.neg_singleton]
   refine hg (-x) ?_
   simp [hx_ne]
