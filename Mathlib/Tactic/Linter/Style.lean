@@ -531,7 +531,7 @@ def openClassicalLinter : Linter where run stx := do
       either add missing decidability assumptions or use `open Classical in`."
     -- Also lint if `Classical.prodDecidable` is added as a local or scoped instance.
     if let some id := getLocalScopedAttributes? stx then
-      if s!"{id}" == "`Classical.propDecidable" then -- TODO: perform a proper typed comparison
+      if id.raw.getId == `Classical.propDecidable then
         Linter.logLint linter.style.openClassical stx "please do not add 'Classical.prodDecidable' \
         as a local or scoped instance:\nthis can hide theorem statements \
         which would be better stated with explicit decidability statements.\n\
