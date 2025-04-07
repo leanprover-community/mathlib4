@@ -30,7 +30,6 @@ local notation:80 g " ⊚ " f:80 => CategoryTheory.CategoryStruct.comp f g    --
 -/
 
 
-library_note "CategoryTheory universes"
 /--
 The typeclass `Category C` describes morphisms associated to objects of type `C : Type u`.
 
@@ -74,6 +73,7 @@ Often, however, it's not even necessary to include the `.{v}`.
 (Although it was in earlier versions of Lean.)
 If it is omitted a "free" universe will be used.
 -/
+def LibraryNote.categoryTheoryUniverses : LibraryNote := ()
 
 universe v u
 

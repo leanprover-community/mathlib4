@@ -785,7 +785,7 @@ lemma chartedSpace_of_discreteTopology_chartAt [TopologicalSpace M] [Topological
 
 section Products
 
-library_note "Manifold type tags" /-- For technical reasons we introduce two type tags:
+/-- For technical reasons we introduce two type tags:
 
 * `ModelProd H H'` is the same as `H × H'`;
 * `ModelPi H` is the same as `∀ i, H i`, where `H : ι → Type*` and `ι` is a finite type.
@@ -799,7 +799,7 @@ products of the charts. Now, on `H × H'`, there are two charted space structure
 the two `chartedSpaceSelf` on each component. They are equal, but not defeq (because the product
 of `id` and `id` is not defeq to `id`), which is bad as we know. This expedient of renaming `H × H'`
 solves this problem. -/
-
+def LibraryNote.manifoldTypeTags : LibraryNote := ()
 
 /-- Same thing as `H × H'`. We introduce it for technical reasons,
 see note [Manifold type tags]. -/

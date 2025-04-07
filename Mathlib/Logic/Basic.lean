@@ -83,11 +83,12 @@ class Fact (p : Prop) : Prop where
   `Fact p`. -/
   out : p
 
-library_note "fact non-instances"/--
+/--
 In most cases, we should not have global instances of `Fact`; typeclass search only reads the head
 symbol and then tries any instances, which means that adding any such instance will cause slowdowns
 everywhere. We instead make them as lemmata and make them local instances as required.
 -/
+def LibraryNote.factNonInstances : LibraryNote := ()
 
 theorem Fact.elim {p : Prop} (h : Fact p) : p := h.1
 theorem fact_iff {p : Prop} : Fact p ↔ p := ⟨fun h ↦ h.1, fun h ↦ ⟨h⟩⟩

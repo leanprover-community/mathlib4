@@ -18,7 +18,7 @@ semigroups.
 
 open scoped Manifold ContDiff
 
-library_note "Design choices about smooth algebraic structures"/--
+/--
 1. All `C^n` algebraic structures on `G` are `Prop`-valued classes that extend
 `IsManifold I n G`. This way we save users from adding both
 `[IsManifold I n G]` and `[ContMDiffMul I n G]` to the assumptions. While many API
@@ -35,8 +35,9 @@ we formulate the definitions and lemmas for any model.
 `ContMDiffMul I n G` with unknown `𝕜`, `E`, `H`, and `I : ModelWithCorners 𝕜 E H`. If users needs
 `[ContinuousMul G]` in a proof about a `C^n` monoid, then they need to either add
 `[ContinuousMul G]` as an assumption (worse) or use `haveI` in the proof (better). -/
+def LibraryNote.designChoicesSmoothAlgebraicStructures : LibraryNote := ()
 
--- See note [Design choices about smooth algebraic structures]
+-- See `LibraryNote.designChoicesSmoothAlgebraicStructures`.
 /-- Basic hypothesis to talk about a `C^n` (Lie) additive monoid or a `C^n` additive
 semigroup. A `C^n` additive monoid over `G`, for example, is obtained by requiring both the
 instances `AddMonoid G` and `ContMDiffAdd I n G`. -/

@@ -8,6 +8,7 @@ import Batteries.Tactic.Init
 import Mathlib.Init
 import Mathlib.Data.Int.Notation
 import Mathlib.Data.Nat.Notation
+import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.TypeStar
 import Mathlib.Util.AssertExists
@@ -27,10 +28,10 @@ This file contains:
 This file should not depend on anything defined in Mathlib (except for notation), so that it can be
 upstreamed to Batteries easily.
 
-See note [foundational algebra order theory].
+See `LibraryNote.foundationalAlgebraOrderTheory`.
 -/
 
-library_note "foundational algebra order theory"/--
+/--
 Batteries has a home-baked development of the algebraic and order theoretic theory of `ℕ` and `ℤ
 which, in particular, is not typeclass-mediated. This is useful to set up the algebra and finiteness
 libraries in mathlib (naturals and integers show up as indices/offsets in lists, cardinality in
@@ -50,6 +51,7 @@ The relevant files are:
 * `Mathlib.Algebra.Order.Ring.Nat` for the ordered semiring instance on `ℕ`
 * `Mathlib.Algebra.Order.Ring.Int` for the ordered ring instance on `ℤ`
 -/
+def LibraryNote.foundationalAlgebraOrderTheory : LibraryNote := ()
 
 /- We don't want to import the algebraic hierarchy in this file. -/
 assert_not_exists Monoid
