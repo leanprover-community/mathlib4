@@ -641,8 +641,9 @@ variable [NormedAddTorsor V P]
 
 variable {n : ℕ} [NeZero n] (s : Simplex ℝ P n)
 
-@[simp] lemma ne_orthogonalProjection_faceOpposite (i : Fin (n + 1)) : s.points i ≠
-    orthogonalProjection (affineSpan ℝ (Set.range (s.faceOpposite i).points)) (s.points i) := by
+@[simp] lemma ne_orthogonalProjection_faceOpposite (i : Fin (n + 1)) :
+    s.points i ≠
+      orthogonalProjection (affineSpan ℝ (Set.range (s.faceOpposite i).points)) (s.points i) := by
   intro h
   rw [eq_comm, EuclideanGeometry.orthogonalProjection_eq_self_iff,
     mem_affineSpan_range_faceOpposite_points_iff] at h
