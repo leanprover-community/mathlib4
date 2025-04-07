@@ -1153,7 +1153,7 @@ theorem eLpNormEssSup_le_nnreal_smul_eLpNormEssSup_of_ae_le_mul {f : α → F} {
     _ = c • essSup (‖g ·‖ₑ) μ := ENNReal.essSup_const_mul
 
 -- TODO: eventually, deprecate and remove the nnnorm version
-theorem eLpNormEssSup_le_nnreal_smul_eLpNormEssSup_of_ae_le_mul' {f : α → ε} {g : α → ε'} {c : ℝ≥0}
+theorem eLpNormEssSup_le_nnreal_smul_eLpNormEssSup_of_ae_le_mul' {f : α → ε} {g : α → ε'} {c : ℝ≥0∞}
     (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) : eLpNormEssSup f μ ≤ c • eLpNormEssSup g μ :=
   calc
     essSup (‖f ·‖ₑ) μ ≤ essSup (c * ‖g ·‖ₑ) μ := essSup_mono_ae <| h
@@ -1210,10 +1210,9 @@ theorem eLpNorm_le_mul_eLpNorm_of_ae_le_mul {f : α → F} {g : α → G} {c : �
 -- TODO: eventually, deprecate and remove the nnnorm version
 theorem eLpNorm_le_mul_eLpNorm_of_ae_le_mul' {f : α → ε} {g : α → ε'} {c : ℝ≥0}
     (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) (p : ℝ≥0∞) :
-    eLpNorm f p μ ≤ ENNReal.ofReal c * eLpNorm g p μ := by
+    eLpNorm f p μ ≤ c * eLpNorm g p μ := by
   apply eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul' (h.mono fun _x hx ↦ hx.trans ?_)
-  gcongr
-  exact NNReal.le_toNNReal_of_coe_le le_rfl
+  rfl
 
 theorem MemLp.of_nnnorm_le_mul {f : α → E} {g : α → F} {c : ℝ≥0} (hg : MemLp g p μ)
     (hf : AEStronglyMeasurable f μ) (hfg : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) : MemLp f p μ :=
@@ -1239,7 +1238,7 @@ theorem MemLp.of_le_mul {f : α → E} {g : α → F} {c : ℝ} (hg : MemLp g p 
 theorem MemLp.of_le_mul' [TopologicalSpace ε'] {f : α → ε} {g : α → ε'} {c : ℝ≥0} (hg : MemLp g p μ)
     (hf : AEStronglyMeasurable f μ) (hfg : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) : MemLp f p μ :=
   ⟨hf, (eLpNorm_le_mul_eLpNorm_of_ae_le_mul' hfg p).trans_lt <|
-      ENNReal.mul_lt_top ENNReal.ofReal_lt_top hg.eLpNorm_lt_top⟩
+      ENNReal.mul_lt_top ENNReal.coe_lt_top hg.eLpNorm_lt_top⟩
 
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.of_le_mul := MemLp.of_le_mul
