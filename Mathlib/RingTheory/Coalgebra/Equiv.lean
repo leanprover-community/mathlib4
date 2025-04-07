@@ -171,13 +171,13 @@ def symm (e : A ≃ₗc[R] B) : B ≃ₗc[R] A :=
         LinearEquiv.ofLinear_toLinearMap, ← LinearMap.comp_assoc, CoalgHomClass.map_comp_comul,
         LinearEquiv.eq_comp_toLinearMap_symm] }
 
-/-- See Note [custom simps projection] -/
+/-- See `LibraryNote.customSimpsProjection` -/
 def Simps.apply {R : Type*} [CommSemiring R] {α β : Type*}
     [AddCommMonoid α] [AddCommMonoid β] [Module R α]
     [Module R β] [CoalgebraStruct R α] [CoalgebraStruct R β]
     (f : α ≃ₗc[R] β) : α → β := f
 
-/-- See Note [custom simps projection] -/
+/-- See `LibraryNote.customSimpsProjection` -/
 def Simps.symm_apply {R : Type*} [CommSemiring R]
     {A : Type*} {B : Type*} [AddCommMonoid A] [AddCommMonoid B] [Module R A] [Module R B]
     [CoalgebraStruct R A] [CoalgebraStruct R B]

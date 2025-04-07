@@ -98,7 +98,7 @@ instance : NonUnitalRingHomClass (A →⋆ₙ+* B) A B where
 instance : NonUnitalStarRingHomClass (A →⋆ₙ+* B) A B where
   map_star f := f.map_star'
 
-/-- See Note [custom simps projection] -/
+/-- See `LibraryNote.customSimpsProjection` -/
 def Simps.apply (f : A →⋆ₙ+* B) : A → B := f
 
 initialize_simps_projections NonUnitalStarRingHom (toFun → apply)
@@ -340,10 +340,10 @@ nonrec def symm (e : A ≃⋆+* B) : B ≃⋆+* A :=
       simpa only [apply_inv_apply, inv_apply_apply] using
         congr_arg (inv e) (map_star e (inv e b)).symm }
 
-/-- See Note [custom simps projection] -/
+/-- See `LibraryNote.customSimpsProjection` -/
 def Simps.apply (e : A ≃⋆+* B) : A → B := e
 
-/-- See Note [custom simps projection] -/
+/-- See `LibraryNote.customSimpsProjection` -/
 def Simps.symm_apply (e : A ≃⋆+* B) : B → A :=
   e.symm
 

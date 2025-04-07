@@ -69,7 +69,7 @@ protected def symm (h : α ≃ᵤ β) : β ≃ᵤ α where
 def Simps.apply (h : α ≃ᵤ β) : α → β :=
   h
 
-/-- See Note [custom simps projection] -/
+/-- See `LibraryNote.customSimpsProjection` -/
 def Simps.symm_apply (h : α ≃ᵤ β) : β → α :=
   h.symm
 

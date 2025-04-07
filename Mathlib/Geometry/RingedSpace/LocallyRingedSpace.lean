@@ -92,7 +92,7 @@ instance : Quiver LocallyRingedSpace :=
 @[ext] lemma Hom.ext' {X Y : LocallyRingedSpace.{u}} {f g : X ⟶ Y} (h : f.toShHom = g.toShHom) :
     f = g := by cases f; cases g; congr
 
-/-- See Note [custom simps projection] -/
+/-- See `LibraryNote.customSimpsProjection` -/
 def Hom.Simps.toShHom {X Y : LocallyRingedSpace.{u}} (f : X.Hom Y) :
     X.toSheafedSpace ⟶ Y.toSheafedSpace :=
   f.toShHom

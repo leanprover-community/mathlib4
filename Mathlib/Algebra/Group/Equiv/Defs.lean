@@ -397,7 +397,7 @@ section simps
 -- we don't hyperlink the note in the additive version, since that breaks syntax highlighting
 -- in the whole file.
 
-/-- See Note [custom simps projection] -/
+/-- See `LibraryNote.customSimpsProjection` -/
 @[to_additive "See Note [custom simps projection]"] -- this comment fixes the syntax highlighting "
 def Simps.symm_apply (e : M ≃* N) : N → M :=
   e.symm

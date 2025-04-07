@@ -373,7 +373,7 @@ protected def symm (h : α ≃ᵢ β) : β ≃ᵢ α where
   because it is a composition of multiple projections. -/
 def Simps.apply (h : α ≃ᵢ β) : α → β := h
 
-/-- See Note [custom simps projection] -/
+/-- See `LibraryNote.customSimpsProjection` -/
 def Simps.symm_apply (h : α ≃ᵢ β) : β → α :=
   h.symm
 

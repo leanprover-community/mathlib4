@@ -97,7 +97,7 @@ protected def symm : PartialHomeomorph Y X where
   because it is a composition of multiple projections. -/
 def Simps.apply (e : PartialHomeomorph X Y) : X → Y := e
 
-/-- See Note [custom simps projection] -/
+/-- See `LibraryNote.customSimpsProjection` -/
 def Simps.symm_apply (e : PartialHomeomorph X Y) : Y → X := e.symm
 
 initialize_simps_projections PartialHomeomorph (toFun → apply, invFun → symm_apply)

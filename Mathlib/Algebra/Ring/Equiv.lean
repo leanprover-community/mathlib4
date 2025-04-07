@@ -311,7 +311,7 @@ end symm
 
 section simps
 
-/-- See Note [custom simps projection] -/
+/-- See `LibraryNote.customSimpsProjection` -/
 def Simps.symm_apply (e : R ≃+* S) : S → R :=
   e.symm
 
