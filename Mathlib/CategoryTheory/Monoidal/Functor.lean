@@ -854,13 +854,13 @@ def rightAdjointLaxMonoidal : G.LaxMonoidal where
     simp only [Adjunction.homEquiv_apply, ← adj.unit_naturality_assoc, ← G.map_comp, assoc,
       ← δ_natural_left_assoc F]
     suffices F.map (G.map f) ▷ F.obj (G.obj X') ≫ _ =
-      (adj.counit.app X ⊗ adj.counit.app X') ≫ _ from by rw [this]
+      (adj.counit.app X ⊗ adj.counit.app X') ≫ _ by rw [this]
     simpa using NatTrans.whiskerRight_app_tensor_app adj.counit adj.counit (f := f) X'
   μ'_natural_right {X' Y'} X g := by
     simp only [Adjunction.homEquiv_apply, ← adj.unit_naturality_assoc, ← G.map_comp,
       assoc, ← δ_natural_right_assoc F]
     suffices F.obj (G.obj X) ◁ F.map (G.map g) ≫ _ =
-      (adj.counit.app X ⊗ adj.counit.app X') ≫ _ from by rw [this]
+      (adj.counit.app X ⊗ adj.counit.app X') ≫ _ by rw [this]
     simpa using NatTrans.whiskerLeft_app_tensor_app adj.counit adj.counit (f := g) _
   associativity' X Y Z := (adj.homEquiv _ _).symm.injective (by
     simp only [homEquiv_unit, comp_obj, map_comp, comp_whiskerRight, assoc, homEquiv_counit,
