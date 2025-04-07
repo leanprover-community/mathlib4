@@ -1117,17 +1117,16 @@ theorem eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul' {f : α → ε} {g : α �
     simp [ENNReal.mul_rpow_eq_ite, enorm_eq_zero, this]
   simpa [ENNReal.coe_rpow_of_nonneg _ hp.le, aux, ENNReal.rpow_le_rpow_iff hp]
 
-variable {ε'' : Type*} [MeasurableSpace ε''] [TopologicalSpace ε'']
-  [ContinuousENorm ε''] [OpensMeasurableSpace ε''] in
+variable {ε'' : Type*} [TopologicalSpace ε''] [ContinuousENorm ε''] in
 theorem eLpNorm'_le_mul_eLpNorm'_of_ae_le_mul {f : α → ε} {c : ℝ≥0∞} {g : α → ε''} {p : ℝ}
-    (hg : Measurable g) (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) (hp : 0 < p) :
+    (hg : AEStronglyMeasurable g μ) (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) (hp : 0 < p) :
     eLpNorm' f p μ ≤ c * eLpNorm' g p μ := by
   have hp' : ¬(p < 0) := by linarith
   by_cases hc : c = ⊤
   · by_cases hg' : eLpNorm' g p μ = 0
     · have : ∀ᵐ (x : α) ∂μ, ‖g x‖ₑ = 0 := by
         simp [eLpNorm'_eq_lintegral_enorm, hp', hp] at hg'
-        rw [MeasureTheory.lintegral_eq_zero_iff (by fun_prop)] at hg'
+        rw [MeasureTheory.lintegral_eq_zero_iff' (by fun_prop)] at hg'
         exact hg'.mono fun x hx ↦ by simpa [hp, hp'] using hx
       have : ∀ᵐ (x : α) ∂μ, ‖f x‖ₑ = 0 := (this.and h).mono fun x ⟨h, h'⟩ ↦  by simp_all
       simp only [hg', mul_zero, nonpos_iff_eq_zero]
