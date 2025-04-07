@@ -42,8 +42,11 @@ open Polynomial
 
 variable (K L L' : Type*) [Field K] [Field L] [Field L'] [Algebra K L] [Algebra K L']
 
-/-- `S : IntermediateField K L` is a subset of `L` such that there is a field
-tower `L / S / K`. -/
+/-- `S : IntermediateField K L` is a subset of `L` such that `S` is a field and
+`L / S / K` is a tower of ring extensions.
+
+This is a generalization of field towers: if `L` and `K` are fields, then `L / S / K` is a field tower.
+ -/
 structure IntermediateField (K L : Type*) [CommSemiring K] [Semiring L] [Algebra K L] extends
     Subalgebra K L where
   mul_comm' : ∀ x y : L, x ∈ carrier → y ∈ carrier → x * y = y * x
