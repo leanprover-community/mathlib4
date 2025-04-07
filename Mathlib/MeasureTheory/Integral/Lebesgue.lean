@@ -1388,12 +1388,14 @@ theorem lintegral_map' {mβ : MeasurableSpace β} {f : β → ℝ≥0∞} {g : �
     _ = ∫⁻ a, hf.mk f (g a) ∂μ := lintegral_congr_ae <| hg.ae_eq_mk.symm.fun_comp _
     _ = ∫⁻ a, f (g a) ∂μ := lintegral_congr_ae (ae_eq_comp hg hf.ae_eq_mk.symm)
 
-theorem lintegral_map_le {mβ : MeasurableSpace β} (f : β → ℝ≥0∞) {g : α → β} (hg : Measurable g) :
+theorem lintegral_map_le {mβ : MeasurableSpace β} (f : β → ℝ≥0∞) (g : α → β) :
     ∫⁻ a, f a ∂Measure.map g μ ≤ ∫⁻ a, f (g a) ∂μ := by
-  rw [← iSup_lintegral_measurable_le_eq_lintegral, ← iSup_lintegral_measurable_le_eq_lintegral]
-  refine iSup₂_le fun i hi => iSup_le fun h'i => ?_
-  refine le_iSup₂_of_le (i ∘ g) (hi.comp hg) ?_
-  exact le_iSup_of_le (fun x => h'i (g x)) (le_of_eq (lintegral_map hi hg))
+  by_cases hg : AEMeasurable g μ
+  · rw [← iSup_lintegral_measurable_le_eq_lintegral]
+    refine iSup₂_le fun i hi => iSup_le fun h'i => ?_
+    rw [lintegral_map' hi.aemeasurable hg]
+    exact lintegral_mono fun _ ↦ h'i _
+  · simp [map_of_not_aemeasurable hg]
 
 theorem lintegral_comp [MeasurableSpace β] {f : β → ℝ≥0∞} {g : α → β} (hf : Measurable f)
     (hg : Measurable g) : lintegral μ (f ∘ g) = ∫⁻ a, f a ∂map g μ :=

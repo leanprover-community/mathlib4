@@ -21,11 +21,8 @@ This operation is functorial in `F`, and we package this as `whiskeringLeft`. He
 
 We also provide analogues for composition on the right, and for these operations on isomorphisms.
 
-At the end of the file, we provide the left and right unitors, and the associator,
-for functor composition.
-(In fact functor composition is definitionally associative, but very often relying on this causes
-extremely slow elaboration, so it is better to insert it explicitly.)
-We also show these natural isomorphisms satisfy the triangle and pentagon identities.
+We show the associators an unitor natural isomorphisms satisfy the triangle and pentagon
+identities.
 -/
 
 
@@ -270,49 +267,13 @@ namespace Functor
 
 universe u₅ v₅
 
-variable {A : Type u₁} [Category.{v₁} A]
-variable {B : Type u₂} [Category.{v₂} B]
+variable {A : Type u₁} [Category.{v₁} A] {B : Type u₂} [Category.{v₂} B]
+  {C : Type u₃} [Category.{v₃} C] {D : Type u₄} [Category.{v₄} D] {E : Type u₅} [Category.{v₅} E]
+  (F : A ⥤ B) (G : B ⥤ C) (H : C ⥤ D) (K : D ⥤ E)
 
-/-- The left unitor, a natural isomorphism `((𝟭 _) ⋙ F) ≅ F`.
--/
-@[simps]
-def leftUnitor (F : A ⥤ B) :
-    𝟭 A ⋙ F ≅ F where
-  hom := { app := fun X => 𝟙 (F.obj X) }
-  inv := { app := fun X => 𝟙 (F.obj X) }
-
-/-- The right unitor, a natural isomorphism `(F ⋙ (𝟭 B)) ≅ F`.
--/
-@[simps]
-def rightUnitor (F : A ⥤ B) :
-    F ⋙ 𝟭 B ≅ F where
-  hom := { app := fun X => 𝟙 (F.obj X) }
-  inv := { app := fun X => 𝟙 (F.obj X) }
-
-variable {C : Type u₃} [Category.{v₃} C]
-variable {D : Type u₄} [Category.{v₄} D]
-
-/-- The associator for functors, a natural isomorphism `((F ⋙ G) ⋙ H) ≅ (F ⋙ (G ⋙ H))`.
-
-(In fact, `iso.refl _` will work here, but it tends to make Lean slow later,
-and it's usually best to insert explicit associators.)
--/
-@[simps]
-def associator (F : A ⥤ B) (G : B ⥤ C) (H : C ⥤ D) :
-    (F ⋙ G) ⋙ H ≅ F ⋙ G ⋙ H where
-  hom := { app := fun _ => 𝟙 _ }
-  inv := { app := fun _ => 𝟙 _ }
-
-protected theorem assoc (F : A ⥤ B) (G : B ⥤ C) (H : C ⥤ D) : (F ⋙ G) ⋙ H = F ⋙ G ⋙ H :=
-  rfl
-
-theorem triangle (F : A ⥤ B) (G : B ⥤ C) :
+theorem triangle :
     (associator F (𝟭 B) G).hom ≫ whiskerLeft F (leftUnitor G).hom =
       whiskerRight (rightUnitor F).hom G := by aesop_cat
-
--- See note [dsimp, simp].
-variable {E : Type u₅} [Category.{v₅} E]
-variable (F : A ⥤ B) (G : B ⥤ C) (H : C ⥤ D) (K : D ⥤ E)
 
 theorem pentagon :
     whiskerRight (associator F G H).hom K ≫
