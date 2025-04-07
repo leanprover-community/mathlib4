@@ -429,6 +429,7 @@ theorem Coalgebra.homEquiv_naturality_str_symm (adj : F ⊣ G) (V₁ V₂ : Coal
 
 /-- Given an adjunction `F ⊣ G`, the functor that associates to an algebra over `F` a
 coalgebra over `G` defined via adjunction applied to the structure map. -/
+@[simps!]
 def Algebra.toCoalgebraOf (adj : F ⊣ G) : Algebra F ⥤ Coalgebra G where
   obj A :=
     { V := A.1
@@ -439,6 +440,7 @@ def Algebra.toCoalgebraOf (adj : F ⊣ G) : Algebra F ⥤ Coalgebra G where
 
 /-- Given an adjunction `F ⊣ G`, the functor that associates to a coalgebra over `G` an algebra over
 `F` defined via adjunction applied to the structure map. -/
+@[simps!]
 def Coalgebra.toAlgebraOf (adj : F ⊣ G) : Coalgebra G ⥤ Algebra F where
   obj V :=
     { a := V.1
@@ -449,52 +451,23 @@ def Coalgebra.toAlgebraOf (adj : F ⊣ G) : Coalgebra G ⥤ Algebra F where
 
 /-- Given an adjunction, assigning to an algebra over the left adjoint a coalgebra over its right
 adjoint and going back is isomorphic to the identity functor. -/
+@[simps!]
 def AlgCoalgEquiv.unitIso (adj : F ⊣ G) :
     𝟭 (Algebra F) ≅ Algebra.toCoalgebraOf adj ⋙ Coalgebra.toAlgebraOf adj where
-  hom :=
-    { app := fun A =>
-        { f := 𝟙 A.1
-          h := by
-            erw [F.map_id, Category.id_comp, Category.comp_id]
-            apply (adj.homEquiv _ _).left_inv A.str } }
-  inv :=
-    { app := fun A =>
-        { f := 𝟙 A.1
-          h := by
-            erw [F.map_id, Category.id_comp, Category.comp_id]
-            apply ((adj.homEquiv _ _).left_inv A.str).symm }
-      naturality := fun A₁ A₂ f => by
-        ext
-        dsimp
-        erw [Category.comp_id, Category.id_comp]
-        rfl }
+  hom := { app := fun A => { f := 𝟙 A.1 } }
+  inv := { app := fun A => { f := 𝟙 A.1 } }
 
 /-- Given an adjunction, assigning to a coalgebra over the right adjoint an algebra over the left
 adjoint and going back is isomorphic to the identity functor. -/
+@[simps!]
 def AlgCoalgEquiv.counitIso (adj : F ⊣ G) :
     Coalgebra.toAlgebraOf adj ⋙ Algebra.toCoalgebraOf adj ≅ 𝟭 (Coalgebra G) where
-  hom :=
-    { app := fun V =>
-        { f := 𝟙 V.1
-          h := by
-            dsimp
-            erw [G.map_id, Category.id_comp, Category.comp_id]
-            apply (adj.homEquiv _ _).right_inv V.str }
-      naturality := fun V₁ V₂ f => by
-        ext
-        dsimp
-        erw [Category.comp_id, Category.id_comp]
-        rfl }
-  inv :=
-    { app := fun V =>
-        { f := 𝟙 V.1
-          h := by
-            dsimp
-            rw [G.map_id, Category.comp_id, Category.id_comp]
-            apply ((adj.homEquiv _ _).right_inv V.str).symm } }
+  hom := { app := fun V => { f := 𝟙 V.1 } }
+  inv := { app := fun V => { f := 𝟙 V.1 } }
 
 /-- If `F` is left adjoint to `G`, then the category of algebras over `F` is equivalent to the
 category of coalgebras over `G`. -/
+@[simps!]
 def algebraCoalgebraEquiv (adj : F ⊣ G) : Algebra F ≌ Coalgebra G where
   functor := Algebra.toCoalgebraOf adj
   inverse := Coalgebra.toAlgebraOf adj
