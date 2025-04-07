@@ -342,7 +342,7 @@ lemma tendsto_mul_log_one_add_of_tendsto {g : ℝ → ℂ} {t : ℂ}
           linarith
         · rw [div_le_one₀ (by norm_num), inv_le_comm₀ (sub_pos_of_lt hg1) two_pos]
           linarith
-      _ = _ := by field_simp [pow_two]
+      _ = _ := by ring
   · apply Tendsto.const_div_atTop
     exact tendsto_abs_atTop_atTop
 
