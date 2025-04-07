@@ -54,9 +54,10 @@ def ι : L →ₗ[R] SymmetricAlgebra R L := (algHom R L).toLinearMap.comp (Tens
 
 @[elab_as_elim]
 theorem induction {motive : SymmetricAlgebra R L → Prop}
-    (algebraMap : ∀ r, C (algebraMap R (SymmetricAlgebra R L) r)) (ι : ∀ x, C (ι R L x))
-    (mul : ∀ a b, C a → C b → C (a * b)) (add : ∀ a b, C a → C b → C (a + b))
-    (a : SymmetricAlgebra R L) : C a := by
+    (algebraMap : ∀ r, motive (algebraMap R (SymmetricAlgebra R L) r)) (ι : ∀ x, motive (ι R L x))
+    (mul : ∀ a b, motive a → motive b → motive (a * b))
+    (add : ∀ a b, motive a → motive b → motive (a + b))
+    (a : SymmetricAlgebra R L) : motive a := by
   rcases algHom_surjective _ _ a with ⟨a, rfl⟩
   induction a using TensorAlgebra.induction with
   | algebraMap r => rw [AlgHom.map_algebraMap]; exact algebraMap r
@@ -89,14 +90,14 @@ def lift : SymmetricAlgebra R L →ₐ[R] A :=
     induction r with | mul_comm x y => simp [mul_comm]⟩
 
 @[simp]
-lemma lift_ι_apply (a : L) : (lift f) ((ι R L) a) = f a := by
+lemma lift_ι_apply (a : L) : (lift f) (ι R L a) = f a := by
   simp [lift, ι, algHom]
 
 @[simp]
 lemma lift_comp_ι : (lift f) ∘ₗ (ι R L) = f := LinearMap.ext fun x ↦ lift_ι_apply f x
 
 theorem algHom_ext {F G : (SymmetricAlgebra R L) →ₐ[R] A}
-    (h : F ∘ₗ (ι R L) = (G ∘ₗ (ι R L) : L →ₗ[R] A)) : F = G := by
+    (h : F ∘ₗ ι R L = (G ∘ₗ ι R L : L →ₗ[R] A)) : F = G := by
   ext x
   exact congr($h x)
 
@@ -128,7 +129,7 @@ section equiv
 
 /-- For `ι : L →ₗ[R] A`, construst the algebra isomorphism `(SymmetricAlgebra R L) ≃ₐ[R] A`
 from `IsSymmetricAlgebra ι`. -/
-noncomputable def equiv : (SymmetricAlgebra R L) ≃ₐ[R] A :=
+noncomputable def equiv : SymmetricAlgebra R L ≃ₐ[R] A :=
   .ofBijective (SymmetricAlgebra.lift f) h
 
 @[simp]
@@ -162,7 +163,7 @@ lemma lift_eq (a : L) : (h.lift g) (f a) = g a := by simp [lift]
 lemma lift_comp_linearMap : (h.lift g) ∘ₗ f = g := LinearMap.ext fun x ↦ lift_eq h g x
 
 lemma algHom_ext (h : IsSymmetricAlgebra f) {F G : A →ₐ[R] A'}
-    (hFG : (F ∘ₗ f) = (G ∘ₗ f : L →ₗ[R] A')) : F = G := by
+    (hFG : F ∘ₗ f = (G ∘ₗ f : L →ₗ[R] A')) : F = G := by
   suffices F.comp h.equiv.toAlgHom = G.comp h.equiv.toAlgHom by
     rw [DFunLike.ext'_iff] at this ⊢
     exact h.equiv.surjective.injective_comp_right this
@@ -170,7 +171,7 @@ lemma algHom_ext (h : IsSymmetricAlgebra f) {F G : A →ₐ[R] A'}
   simpa using congr($hFG x)
 
 variable {g} in
-lemma lift_unique {F : A →ₐ[R] A'} (hF : F ∘ₗ f = g) : F = (h.lift g) :=
+lemma lift_unique {F : A →ₐ[R] A'} (hF : F ∘ₗ f = g) : F = h.lift g :=
   h.algHom_ext (by simpa)
 
 end UniversalProperty
