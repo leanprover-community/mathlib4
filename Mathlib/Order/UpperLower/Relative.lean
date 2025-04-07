@@ -105,6 +105,22 @@ lemma isRelLowerSet_iInter₂ [Nonempty ι] [∀ i, Nonempty (κ i)]
     IsRelLowerSet (⋂ (i) (j), f i j) c :=
   isRelLowerSet_iInter fun i => isRelLowerSet_iInter <| hf i
 
+lemma isRelUpperSet_iff_isUpperSet_subtype {s : Set { x // x ≤ c }} :
+    IsRelUpperSet (Subtype.val '' s) c ↔ IsUpperSet s := by
+  refine ⟨fun h a b x y ↦ ?_, fun h a x ↦ ?_⟩
+  · have ma : a.1 ∈ Subtype.val '' s := by simp [a.2, y]
+    simpa only [mem_image, SetCoe.ext_iff, exists_eq_right] using (h ma).2 x b.2
+  · obtain ⟨a, ma, rfl⟩ := x
+    exact ⟨a.2, fun b x y ↦ by simpa [h (show a ≤ ⟨b, y⟩ by exact x) ma]⟩
+
+lemma isRelLowerSet_iff_isLowerSet_subtype {s : Set { x // c ≤ x }} :
+    IsRelLowerSet (Subtype.val '' s) c ↔ IsLowerSet s := by
+  refine ⟨fun h a b x y ↦ ?_, fun h a x ↦ ?_⟩
+  · have ma : a.1 ∈ Subtype.val '' s := by simp [a.2, y]
+    simpa only [mem_image, SetCoe.ext_iff, exists_eq_right] using (h ma).2 x b.2
+  · obtain ⟨a, ma, rfl⟩ := x
+    exact ⟨a.2, fun b x y ↦ by simpa [h (show ⟨b, y⟩ ≤ a by exact x) ma]⟩
+
 end LE
 
 section Preorder
