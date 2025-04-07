@@ -3882,7 +3882,6 @@ import Mathlib.MeasureTheory.Integral.Pi
 import Mathlib.MeasureTheory.Integral.Prod
 import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Basic
 import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
-import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.iUnion_Ixx_Ixx
 import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.MeasureTheory.Integral.SetToL1
 import Mathlib.MeasureTheory.Integral.TorusIntegral
@@ -4316,6 +4315,7 @@ import Mathlib.Order.Interval.Set.OrderIso
 import Mathlib.Order.Interval.Set.Pi
 import Mathlib.Order.Interval.Set.ProjIcc
 import Mathlib.Order.Interval.Set.SurjOn
+import Mathlib.Order.Interval.Set.Union
 import Mathlib.Order.Interval.Set.UnorderedInterval
 import Mathlib.Order.Interval.Set.WithBotTop
 import Mathlib.Order.Irreducible

@@ -5,7 +5,7 @@ Authors: Yoh Tanimoto, Oliver Butterley
 -/
 import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Basic
 import Mathlib.MeasureTheory.Integral.SetIntegral
-import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.iUnion_Ixx_Ixx
+import Mathlib.Order.Interval.Set.Union
 
 /-!
 # Riesz–Markov–Kakutani representation theorem for real-linear functionals
@@ -37,7 +37,6 @@ equality is proven using two inequalities by considering `Λ f` and `Λ (-f)` fo
 * [Walter Rudin, Real and Complex Analysis.][Rud87]
 -/
 
-open scoped BoundedContinuousFunction ENNReal NNReal
 open CompactlySupported CompactlySupportedContinuousMap Filter Function Set Topology
   TopologicalSpace MeasureTheory
 
@@ -57,9 +56,9 @@ noncomputable def rieszMeasure := (rieszContent (toNNRealLinear Λ hΛ)).measure
 lemma le_rieszMeasure_tsupport_subset {f : C_c(X, ℝ)} (hf : ∀ (x : X), 0 ≤ f x ∧ f x ≤ 1)
     {V : Set X} (hV : tsupport f ⊆ V) : ENNReal.ofReal (Λ f) ≤ rieszMeasure hΛ V := by
   apply le_trans _ (measure_mono hV)
-  have h := Content.measure_eq_content_of_regular (rieszContent (toNNRealLinear Λ hΛ))
+  have := Content.measure_eq_content_of_regular (rieszContent (toNNRealLinear Λ hΛ))
     (contentRegular_rieszContent (toNNRealLinear Λ hΛ)) (⟨tsupport f, f.hasCompactSupport⟩)
-  rw [← Compacts.coe_mk (tsupport f) f.hasCompactSupport, rieszMeasure, h, rieszContent,
+  rw [← Compacts.coe_mk (tsupport f) f.hasCompactSupport, rieszMeasure, this, rieszContent,
     ENNReal.ofReal_eq_coe_nnreal (hΛ f fun x ↦ (hf x).1), ENNReal.coe_le_coe]
   apply le_iff_forall_pos_le_add.mpr
   intro _ hε
@@ -103,14 +102,23 @@ lemma range_cut_partition (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε) 
       exact add_le_add_three (by rfl) ((mul_le_mul_iff_of_pos_left hε).mpr (by norm_cast)) (by rfl)
     _ = _ := by dsimp [y]; rw [mul_add, mul_one, add_assoc]
   -- Define `E n` as the inverse image of the interval `(y n - ε, y n]`.
-  let E : Fin N → Set X := fun n ↦ (f ⁻¹' Ioc (y n - ε) (y n)) ∩ (tsupport f)
+  let E (n : Fin N) := (f ⁻¹' Ioc (y n - ε) (y n)) ∩ (tsupport f)
   use E
-  -- Upper and lower bound on `f x` follow from the definition of `E n` .
-  have bdd (n : Fin N) x (hx : x ∈ E n) : a + ε * n < f x ∧ f x ≤ a + ε * (n + 1) := by
-    simp only [mem_inter_iff, mem_preimage, mem_Ioc, E, y] at hx
-    constructor <;> linarith
-  -- The sets `E n` are pairwise disjoint.
-  have disjoint : PairwiseDisjoint univ E := by
+  refine ⟨?_, ?_, ?_, ?_⟩
+  · -- The sets `E n` are a partition of the support of `f`.
+    have partition_aux : range f ⊆ ⋃ n, Ioc (y n - ε) (y n) := calc
+      _ ⊆ Ioc (a + (0 : ℕ) * ε) (a + N * ε) := by
+        intro _ hz
+        simpa using (Ioo_subset_Ioc_self (hf hz))
+      _ ⊆ ⋃ i ∈ Finset.range N, Ioc (a + ↑i * ε) (a + ↑(i + 1) * ε) :=
+        iUnion_Ioc_subset_Ioc N (fun n ↦ a + n * ε)
+      _ ⊆ _ := by
+        intro z
+        simp only [Finset.mem_range, mem_iUnion, mem_Ioc, forall_exists_index, and_imp, y]
+        refine fun n hn _ _ ↦ ⟨⟨n, hn⟩, ⟨by linarith, by simp_all [mul_comm ε _]⟩⟩
+    simp only [E, ← iUnion_inter, ← preimage_iUnion, eq_comm (a := tsupport _), inter_eq_right]
+    exact fun x _ ↦ partition_aux (mem_range_self x)
+  · -- The sets `E n` are pairwise disjoint.
     intro m _ n _ hmn
     apply Disjoint.preimage
     simp_rw [mem_preimage, mem_Ioc, disjoint_left]
@@ -122,55 +130,31 @@ lemma range_cut_partition (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε) 
       exact le_trans hx.2.1 (le_tsub_of_add_le_right (hy hc))
     · right; left
       exact lt_of_le_of_lt (le_tsub_of_add_le_right (hy hc)) hx.1
-  -- The sets `E n` are a partition of the support of `f`.
-  have partition_aux : range f ⊆ ⋃ n, Ioc (y n - ε) (y n) := calc
-    _ ⊆ Ioc (a + (0 : ℕ) * ε) (a + N * ε) := by
-      intro _ hz
-      simpa using (Ioo_subset_Ioc_self (hf hz))
-    _ ⊆ ⋃ i ∈ Finset.range N, Ioc (a + ↑i * ε) (a + ↑(i + 1) * ε) :=
-      iUnion_Ioc_subset_Ioc N (fun n ↦ a + n * ε)
-    _ ⊆ _ := by
-      intro z
-      simp only [Finset.mem_range, mem_iUnion, mem_Ioc, forall_exists_index, and_imp, y]
-      refine fun n hn _ _ ↦ ⟨⟨n, hn⟩, ⟨by linarith, by simp_all [mul_comm ε _]⟩⟩
-  have partition : tsupport f = ⋃ j, E j := by
-    simp only [E, ← iUnion_inter, ← preimage_iUnion, eq_comm (a := tsupport _), inter_eq_right]
-    exact fun x hx ↦ partition_aux (mem_range_self x)
-  exact ⟨partition, disjoint, fun n x a ↦ bdd n x a,
-    fun _ ↦ (f.1.measurable measurableSet_Ioc).inter measurableSet_closure⟩
+  · -- Upper and lower bound on `f x` follow from the definition of `E n` .
+    intro _ _ hx
+    simp only [mem_inter_iff, mem_preimage, mem_Ioc, E, y] at hx
+    constructor <;> linarith
+  · exact fun _ ↦ (f.1.measurable measurableSet_Ioc).inter measurableSet_closure
 
 omit [LocallyCompactSpace X] in
-/-- Given a set `E`, a function `f : C_c(X, ℝ)` and `0 < ε` and `∀ x ∈ E, f x < c`, there exists an
+/-- Given a set `E`, a function `f : C_c(X, ℝ)`, `0 < ε` and `∀ x ∈ E, f x < c`, there exists an
 open set `V` such that `E ⊆ V` and the sets are similar in measure and `∀ x ∈ V, f x < c`. -/
-lemma open_approx (f : C_c(X, ℝ)) {ε : ℝ} (hε : 0 < ε) (E : Set X) {μ : Content X}
+lemma exists_open_approx (f : C_c(X, ℝ)) {ε : ℝ} (hε : 0 < ε) (E : Set X) {μ : Content X}
     (hμ : μ.outerMeasure E ≠ ⊤) (hμ' : MeasurableSet E) {c : ℝ} (hfE : ∀ x ∈ E, f x < c):
     ∃ (V : Opens X), E ⊆ V ∧ (∀ x ∈ V, f x < c) ∧ μ.measure V ≤ μ.measure E + ENNReal.ofReal ε := by
   have hε' := ne_of_gt <| Real.toNNReal_pos.mpr hε
   obtain ⟨V₁ : Opens X, hV₁⟩ := Content.outerMeasure_exists_open μ hμ hε'
   let V₂ : Opens X := ⟨(f ⁻¹' Iio c), IsOpen.preimage f.1.2 isOpen_Iio⟩
   use V₁ ⊓ V₂
-  have h x (hx : x ∈ V₁ ⊓ V₂) : f x < c := by
+  refine ⟨subset_inter hV₁.1 hfE, ?_, ?_⟩
+  · intro x hx
     suffices ∀ x ∈ V₂.carrier, f x < c from this x (mem_of_mem_inter_right hx)
-    exact fun _ hx ↦ hx
-  have h' : μ.measure ↑(V₁ ⊓ V₂) ≤ μ.measure E + ENNReal.ofReal ε := calc
-      _ ≤ μ.measure V₁ := by apply measure_mono; simp
-      _ = μ.outerMeasure V₁ := by rw [Content.measure_apply μ ?_]; exact V₁.2.measurableSet
-      _ ≤ μ.outerMeasure E + ε.toNNReal := by exact hV₁.2
-      _ = _ := by rw [Content.measure_apply μ ?_]; congr; exact hμ'
-  exact ⟨subset_inter hV₁.1 hfE, h, h'⟩
-
-omit [LocallyCompactSpace X] in
-/- Define simultaneously sets which are each open approximations and obtain particular estimates. -/
-lemma open_approx' {N : ℕ} (E : Fin N → Set X) (f : C_c(X, ℝ)) {y : Fin N → ℝ}
-    (hy : ∀ n, ∀ x ∈ E n, f x ≤ y n) {ε : ℝ} (hε : 0 < ε) {ε' : ℝ} (hε' : 0 < ε') {ν : Content X}
-    (hν : ∀ n, ν.measure (E n) ≠ ⊤) (hν' : ∀ n, MeasurableSet (E n)) :
-    ∃ V : Fin N → Opens X, ∀ n, E n ⊆ (V n) ∧ (∀ x ∈ V n, f x < y n + ε) ∧
-    ν.measure (V n) ≤ ν.measure (E n) + ENNReal.ofReal ε' := by
-  have h n x (hx : x ∈ E n) := lt_add_of_le_of_pos (hy n x hx) hε
-  have h' n : ν.outerMeasure (E n) ≠ ⊤ := by simpa [Content.measure_apply ν (hν' n)] using hν n
-  use fun n ↦ Classical.choose <| open_approx f hε' (E n) (h' n) (hν' n) (h n)
-  intro n
-  exact Classical.choose_spec <| open_approx f hε' (E n) (h' n) (hν' n) (h n)
+    exact fun _ a ↦ a
+  · calc
+      _ ≤ μ.measure V₁ := by simp [measure_mono]
+      _ = μ.outerMeasure V₁ := Content.measure_apply μ (V₁.2.measurableSet)
+      _ ≤ μ.outerMeasure E + ε.toNNReal := hV₁.2
+      _ = _ := by rw [Content.measure_apply μ hμ']; congr;
 
 /-- Choose `N` sufficiently large such that a particular quantity is small. -/
 private lemma exists_nat_large (a' b' : ℝ) {ε : ℝ} (hε : 0 < ε) : ∃ (N : ℕ), 0 < N ∧
@@ -186,7 +170,7 @@ private lemma exists_nat_large (a' b' : ℝ) {ε : ℝ} (hε : 0 < ε) : ∃ (N 
 
 /-- The main estimate in the proof of the Riesz-Markov-Kakutani: `Λ f` is bounded above by the
 integral of `f` with respect to the `rieszMeasure` associated to `Λ`. -/
-private lemma integral_riesz_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rieszMeasure hΛ) := by
+private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rieszMeasure hΛ) := by
   by_cases hX : IsEmpty X
   · have : Λ f = 0 := by rw [show f = 0 by ext x; refine isEmptyElim x, LinearMap.map_zero Λ]
     rw [integral_of_isEmpty, this]
@@ -220,8 +204,15 @@ private lemma integral_riesz_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(ries
       rw [rieszMeasure, show f = f.toFun by rfl, Content.measure_apply _ f.2.measurableSet]
       exact Content.outerMeasure_lt_top_of_isCompact _ f.2
     -- Define sets `V` which are open approximations to the sets `E`
-    obtain ⟨V, hV⟩ := open_approx' E f (fun n x hx ↦ (hE.2.2.1 n x hx).right) hε'.1
-      (div_pos hε'.1 (Nat.cast_pos'.mpr hN)) hE' hE.2.2.2
+    obtain ⟨V, hV⟩ : ∃ V : Fin N → Opens X, ∀ n, E n ⊆ (V n) ∧ (∀ x ∈ V n, f x < y n + ε') ∧
+        μ (V n) ≤ μ (E n) + ENNReal.ofReal (ε' / N) := by
+      have h_ε' := (div_pos hε'.1 (Nat.cast_pos'.mpr hN))
+      have h n x (hx : x ∈ E n) := lt_add_of_le_of_pos ((hE.2.2.1 n x hx).right) hε'.1
+      have h' n := Eq.trans_ne
+        (Content.measure_apply (rieszContent (toNNRealLinear Λ hΛ)) (hE.2.2.2 n)).symm (hE' n)
+      use fun n ↦ Classical.choose <| exists_open_approx f h_ε' (E n) (h' n) (hE.2.2.2 n) (h n)
+      intro n
+      exact Classical.choose_spec <| exists_open_approx f h_ε' (E n) (h' n) (hE.2.2.2 n) (h n)
     -- Define a partition of unity subordinated to the sets `V`
     obtain ⟨g, hg⟩ : ∃ (g : Fin N → C_c(X, ℝ)), (∀ n, tsupport (g n) ⊆ (V n).carrier) ∧
       EqOn (∑ n : Fin N, (g n)) 1 (tsupport f.toFun) ∧ (∀ n x, (g n) x ∈ Icc 0 1) ∧
@@ -254,7 +245,7 @@ private lemma integral_riesz_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(ries
       by_cases hx : x ∈ tsupport f
       · simp [hg.2.1 hx]
       · simp [image_eq_zero_of_nmem_tsupport hx]
-    · -- use that `f ≤ y n + ε'` on `V n`
+    · -- Use that `f ≤ y n + ε'` on `V n`
       gcongr with n hn
       apply monotone_of_nonneg hΛ
       intro x
@@ -264,7 +255,7 @@ private lemma integral_riesz_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(ries
         apply mul_le_mul_of_nonneg_right ?_ (hg.2.2.1 n x).1
         exact le_of_lt <| (hV n).2.1 x <| mem_of_subset_of_mem (hg.1 n) hx
       · simp [image_eq_zero_of_nmem_tsupport hx]
-    · -- use that `Λ (g n) ≤ μ (V n)).toReal ≤ μ (E n)).toReal + ε' / N`
+    · -- Use that `Λ (g n) ≤ μ (V n)).toReal ≤ μ (E n)).toReal + ε' / N`
       gcongr with n hn
       · calc
           _ ≤ |a| + a := neg_le_iff_add_nonneg'.mp <| neg_abs_le a
@@ -285,14 +276,14 @@ private lemma integral_riesz_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(ries
             apply ENNReal.toReal_le_add (hV n).2.2
             · exact hE' n
             · exact ENNReal.ofReal_ne_top
-    · -- use that `μ K ≤ Λ (∑ n, g n)`
+    · -- Use that `μ K ≤ Λ (∑ n, g n)`
       gcongr
       rw [Eq.symm (map_sum Λ g _)]
       have h x : 0 ≤ (∑ n, g n) x := by simpa using Fintype.sum_nonneg fun n ↦ (hg.2.2.1 n x).1
-      have h' x (hx : x ∈ K) : (∑ n, g n) x = 1 := by simp [hg.2.1 hx]
       apply ENNReal.toReal_le_of_le_ofReal
       · exact hΛ (∑ n, g n) (fun x ↦ h x)
-      · exact rieszMeasure_le_of_eq_one hΛ h f.2 h'
+      · have h' x (hx : x ∈ K) : (∑ n, g n) x = 1 := by simp [hg.2.1 hx]
+        refine rieszMeasure_le_of_eq_one hΛ h f.2 h'
     · -- Rearrange the sums
       have (n : Fin N) : (|a| + y n + ε') * (μ (E n)).toReal =
           (|a| + 2 * ε') * (μ (E n)).toReal + (y n - ε') * (μ (E n)).toReal := by linarith
@@ -305,7 +296,7 @@ private lemma integral_riesz_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(ries
         exact tsum_fintype fun b ↦ μ (E b)
       rw [Finset.sum_add_distrib, Finset.sum_add_distrib, ← Finset.mul_sum, this, ← Finset.sum_mul]
       linarith
-    · -- use that `y n - ε' ≤ f x` on `E n`
+    · -- Use that `y n - ε' ≤ f x` on `E n`
       gcongr
       suffices h : ∀ n, (y n - ε') * (μ (E n)).toReal ≤ ∫ x in (E n), f x ∂μ by
         calc
@@ -353,10 +344,10 @@ theorem integral_rieszMeasure (f : C_c(X, ℝ)) : ∫ x, f x ∂(rieszMeasure h�
   -- prove the inequality for `- f`
   · calc
       _ = - ∫ x, (-f) x ∂(rieszMeasure hΛ) := by simpa using integral_neg' (-f)
-      _ ≤ - Λ (-f) := neg_le_neg (integral_riesz_le hΛ (-f))
+      _ ≤ - Λ (-f) := neg_le_neg (integral_riesz_aux hΛ (-f))
       _ = Λ (- -f) := Eq.symm (LinearMap.map_neg Λ (- f))
       _ = _ := by rw [neg_neg]
   -- prove the inequality for `f`
-  · exact integral_riesz_le hΛ f
+  · exact integral_riesz_aux hΛ f
 
 end RealRMK
