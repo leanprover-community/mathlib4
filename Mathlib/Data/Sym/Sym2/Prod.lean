@@ -261,10 +261,10 @@ lemma not_IsDiag_iff_symOffDiagXor_xor_symOffDiag (p : Sym2 (ι₁ × ι₂)) :
     · rw [xor_iff_or_and_not_and]
       simp_all only [not_and, not_false_eq_true, implies_true, and_true]
       have e1 : i₁ = j₁ ∨ ¬ i₁ = j₁ := eq_or_ne i₁ j₁
-      cases' e1 with h1 h2
+      rcases e1 with h1|h2
       · apply Or.inl
         apply Or.inl h1
-      · cases' (eq_or_ne i₂ j₂) with h3 h4
+      · rcases (eq_or_ne i₂ j₂) with h3|h4
         · apply Or.inl
           apply Or.inr h3
         · apply Or.inr
