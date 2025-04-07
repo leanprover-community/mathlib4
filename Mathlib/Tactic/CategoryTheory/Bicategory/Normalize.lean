@@ -38,7 +38,7 @@ theorem evalComp_nil_cons (α : f ≅ g) (β : g ≅ h) (η : h ⟶ i) (ηs : i 
   simp
 
 theorem evalComp_cons (α : f ≅ g) (η : g ⟶ h) {ηs : h ⟶ i} {θ : i ⟶ j} {ι : h ⟶ j}
-    (e_ι : ηs ≫ θ = ι)  :
+    (e_ι : ηs ≫ θ = ι) :
     (α.hom ≫ η ≫ ηs) ≫ θ = α.hom ≫ η ≫ ι := by
   simp [e_ι]
 

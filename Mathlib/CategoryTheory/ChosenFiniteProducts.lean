@@ -210,25 +210,29 @@ lemma associator_hom_fst (X Y Z : C) :
 @[reassoc (attr := simp)]
 lemma associator_hom_snd_fst (X Y Z : C) :
     (α_ X Y Z).hom ≫ snd _ _ ≫ fst _ _ = fst _ _ ≫ snd _ _  := by
-  erw [lift_snd_assoc, lift_fst]
+  erw [lift_snd_assoc]
+  erw [lift_fst]
   rfl
 
 @[reassoc (attr := simp)]
 lemma associator_hom_snd_snd (X Y Z : C) :
     (α_ X Y Z).hom ≫ snd _ _ ≫ snd _ _ = snd _ _  := by
-  erw [lift_snd_assoc, lift_snd]
+  erw [lift_snd_assoc]
+  erw [lift_snd]
   rfl
 
 @[reassoc (attr := simp)]
 lemma associator_inv_fst (X Y Z : C) :
     (α_ X Y Z).inv ≫ fst _ _ ≫ fst _ _ = fst _ _ := by
-  erw [lift_fst_assoc, lift_fst]
+  erw [lift_fst_assoc]
+  erw [lift_fst]
   rfl
 
 @[reassoc (attr := simp)]
 lemma associator_inv_fst_snd (X Y Z : C) :
     (α_ X Y Z).inv ≫ fst _ _ ≫ snd _ _ = snd _ _ ≫ fst _ _ := by
-  erw [lift_fst_assoc, lift_snd]
+  erw [lift_fst_assoc]
+  erw [lift_snd]
   rfl
 
 @[reassoc (attr := simp)]
@@ -290,6 +294,18 @@ theorem braiding_inv_snd {X Y : C} : (β_ X Y).inv ≫ snd _ _ = fst _ _ := by
   simp [braiding_eq_braiding, fst, snd]
 
 theorem lift_snd_fst {X Y : C} : lift (snd X Y) (fst X Y) = (β_ X Y).hom := rfl
+
+@[simp, reassoc]
+lemma lift_snd_comp_fst_comp {W X Y Z : C} (g : W ⟶ X) (g' : Y ⟶ Z) :
+    lift (snd _ _ ≫ g') (fst _ _ ≫ g) = (β_ _ _).hom ≫ (g' ⊗ g) := by ext <;> simp
+
+@[reassoc (attr := simp)]
+lemma lift_braiding_hom {T X Y : C} (f : T ⟶ X) (g : T ⟶ Y) :
+    lift f g ≫ (β_ X Y).hom = lift g f := by aesop
+
+@[reassoc (attr := simp)]
+lemma lift_braiding_inv {T X Y : C} (f : T ⟶ X) (g : T ⟶ Y) :
+    lift f g ≫ (β_ Y X).inv = lift g f := by aesop
 
 /--
 Construct an instance of `ChosenFiniteProducts C` given an instance of `HasFiniteProducts C`.

@@ -52,7 +52,7 @@ theorem _root_.continuous_real_toNNReal : Continuous Real.toNNReal :=
   (continuous_id.max continuous_const).subtype_mk _
 
 /-- `Real.toNNReal` bundled as a continuous map for convenience. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 noncomputable def _root_.ContinuousMap.realToNNReal : C(ℝ, ℝ≥0) :=
   .mk Real.toNNReal continuous_real_toNNReal
 
