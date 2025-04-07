@@ -381,7 +381,7 @@ namespace completeMultipartiteGraph
 
 variable {ι : Type*} (V : ι → Type*)
 
-/-- Embedding of the complete graph on `ι` into `completeMultipartiteGraph` on `ι` nonempty parts.-/
+/-- Embedding of the complete graph on `ι` into `completeMultipartiteGraph` on `ι` nonempty parts -/
 @[simps]
 def topEmbedding (f : ∀ (i : ι), V i) :
     (⊤ : SimpleGraph ι) ↪g completeMultipartiteGraph V where
