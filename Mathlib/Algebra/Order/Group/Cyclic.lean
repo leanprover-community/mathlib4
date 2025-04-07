@@ -10,8 +10,8 @@ import Mathlib.GroupTheory.SpecificGroups.Cyclic
 
 This file contains basic results about cyclic linearly ordered groups and their subgroups.
 
-The definitions `LinearOrderedCommGroup.Subgroup.gen_lt_one` (*resp.*
-`LinearOrderedCommGroup.gen_lt_one`) yields a generator of a non-trivial subgroup of a linearly
+The definitions `LinearOrderedCommGroup.Subgroup.genLTOne` (*resp.*
+`LinearOrderedCommGroup.genLTOone`) yields a generator of a non-trivial subgroup of a linearly
 ordered commutative group with (*resp.* of a non-trivial linearly ordered commutative group) that
 is strictly less than `1`. The corresponding additive definitions are also provided.
 -/
@@ -66,6 +66,6 @@ negative generator of it."]
 noncomputable def genLTOne : G := (⊤ : Subgroup G).genLTOne
 
 @[to_additive (attr := simp) negGen_eq_of_top]
-lemma gen_lt_one_eq_of_top : genLTOne G = (⊤ : Subgroup G).genLTOne := rfl
+lemma genLTOne_eq_of_top : genLTOne G = (⊤ : Subgroup G).genLTOne := rfl
 
 end LinearOrderedCommGroup
