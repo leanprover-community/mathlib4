@@ -85,9 +85,9 @@ abbrev Hausdorffification : Type _ :=
 to define `AdicCompletion`. -/
 abbrev AdicCompletion.transitionMap {m n : ℕ} (hmn : m ≤ n) := factorPow I M hmn
 
-/-- The completion of a module with respect to an ideal. This is Hausdorff but not
-necessarily complete: a typical sufficient condition for completeness is for the ideal to be
-finitely generated. -/
+/-- The completion of a module with respect to an ideal. 
+
+This is Hausdorff but not necessarily complete: a classical sufficient condition for completeness is  that `M` be finitely generated [Stacks, 0G1Q]. -/
 def AdicCompletion : Type _ :=
   { f : ∀ n : ℕ, M ⧸ (I ^ n • ⊤ : Submodule R M) //
     ∀ {m n} (hmn : m ≤ n), AdicCompletion.transitionMap I M hmn (f n) = f m }
