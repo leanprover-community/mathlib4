@@ -25,11 +25,11 @@ The case of a polynomial `q := X - a` is interesting,
 then the mod `P ^ 2` hypothesis can rephrased as saying
 that `f.derivative.eval a ∉ P ^ 2`. (TODO)
 The case of cyclotomic polynomials of prime index `p` could be proved directly
-using that result, taking a = 1; the derivative is `p`.
+using that result, taking `a = 1`; the derivative is `p`.
 
 We give a (possibly non convincing) application to the irreducibility
 of the polynomial `X ^ 4 - 10 * X + 1` in `ℤ[X]`.
-One argues modulo 3, with `q := X ^ 2 + 1`.
+One argues modulo `3`, with `q := X ^ 2 + 1`.
 
 ## Remark
 
@@ -53,11 +53,11 @@ open Polynomial Ideal.Quotient
 theorem Ideal.IsPrime.mul_not_mem
     {R : Type*} [CommRing R] {P : Ideal R} (hP : P.IsPrime) {a b : R}
     (ha : a ∉ P) (hb : b ∉ P) : a * b ∉ P := fun h ↦
-  hb (Or.resolve_left (hP.mem_or_mem h) ha)
+  hb ((hP.mem_or_mem h).resolve_left ha)
 
 namespace Polynomial
 
-variable {R : Type*} [CommRing R] -- [IsDomain R]
+variable {R : Type*} [CommRing R]
   {F : Type*} [Field F] [Algebra R F] [IsFractionRing R F]
   {P : Ideal R}
   {K : Type*} [Field K] [Algebra R K] [Algebra (R ⧸ P) K]
@@ -74,8 +74,7 @@ theorem exists_C_leadingCoeff_mul_pow_of_dvd_pow
   rw [mul_comm, eq_comm, ← Units.inv_mul_eq_iff_eq_mul] at hu
   rw [← hu, leadingCoeff_mul]
   congr
-  have : q.leadingCoeff = 1 := hq'
-  simp [leadingCoeff_pow, map_mul, map_pow, this]
+  simp only [leadingCoeff_pow, hq', Monic.leadingCoeff, one_pow, mul_one]
   obtain ⟨a, ha, ha'⟩ := Polynomial.isUnit_iff.mp (u⁻¹).isUnit
   rw [← ha', leadingCoeff_C]
 
@@ -104,12 +103,10 @@ theorem generalizedEisenstein [IsDomain R] (hP : P.IsPrime)
     {f : R[X]} {p : ℕ}
     (hfd0 : 0 < natDegree f) (hf_monic : f.Monic)
     (hfmodP : f.map (algebraMap R K) = q.map (algebraMap R K) ^ p)
-    (hfmodP2 : (f.modByMonic q).map (mk (P ^ 2)) ≠ 0) :
-    Irreducible f :=
-  { not_unit := mt degree_eq_zero_of_isUnit fun h => by
-      simp_all only [lt_irrefl, natDegree_pos_iff_degree_pos]
+    (hfmodP2 : (f.modByMonic q).map (mk (P ^ 2)) ≠ 0) : Irreducible f where
+  not_unit := mt degree_eq_zero_of_isUnit fun h => by
+      simp_all [lt_irrefl, natDegree_pos_iff_degree_pos]
     isUnit_or_isUnit' g h h_eq := by
-      classical
       have hgP' : IsUnit g.leadingCoeff := by
         apply isUnit_of_mul_isUnit_left (y  := h.leadingCoeff)
         simp [← leadingCoeff_mul, ← h_eq, hf_monic]
@@ -154,23 +151,20 @@ theorem generalizedEisenstein [IsDomain R] (hP : P.IsPrime)
         convert zero_add _
         · convert zero_add _
           · rw [modByMonic_eq_zero_iff_dvd hq_monic]
-            apply Dvd.dvd.mul_left
-            apply Dvd.dvd.mul_left
-            exact dvd_pow_self q hn
+            exact ((dvd_pow_self q hn).mul_left _).mul_left _
           · symm
             rw [modByMonic_eq_zero_iff_dvd hq_monic]
             simp only [← mul_assoc]
-            apply Dvd.dvd.mul_left
-            exact dvd_pow_self q hn
+            exact (dvd_pow_self q hn).mul_left _
         · symm
           rw [modByMonic_eq_zero_iff_dvd hq_monic]
-          apply Dvd.dvd.mul_right; apply Dvd.dvd.mul_left
+          exact (dvd.mul_left _ _).mul.right _ 
+          -- was:  apply Dvd.dvd.mul_right; apply Dvd.dvd.mul_left
           exact dvd_pow_self q hm
       exfalso
       apply hfmodP2
       simp only [ext_iff, ← coeff_map, eq_zero_iff_mem]
-      rw [← ext_iff]
-      rw [this, map_modByMonic _ hq_monic]
+      rw [← ext_iff, this, map_modByMonic _ hq_monic]
       convert zero_modByMonic _
       ext n
       rw [coeff_map, coeff_mul, map_sum, coeff_zero]
@@ -214,7 +208,7 @@ example : Irreducible (X ^ 4 - 10 * X ^ 2 + 1 : ℤ[X]) := by
     simp [hf_eq]
     conv_rhs => rw [← natDegree_X_pow (R := ℤ) 4]
     apply natDegree_eq_of_degree_eq
-    rw [sub_add] --  degree_X_pow (R := ℤ)]
+    rw [sub_add]
     apply degree_sub_eq_left_of_degree_lt
     apply lt_of_le_of_lt (degree_sub_le _ _)
     rw [← map_ofNat C, degree_mul, degree_C, degree_X_pow]
