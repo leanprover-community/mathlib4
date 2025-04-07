@@ -13,6 +13,8 @@ public import Mathlib.Order.Filter.Bases.Basic
 # Lift filters along filter and set functions
 -/
 
+assert_not_exists Set.Finite
+
 @[expose] public section
 
 open Set Filter Function
