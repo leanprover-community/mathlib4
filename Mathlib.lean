@@ -4182,7 +4182,6 @@ import Mathlib.MeasureTheory.Measure.Count
 import Mathlib.MeasureTheory.Measure.Decomposition.Exhaustion
 import Mathlib.MeasureTheory.Measure.Decomposition.Hahn
 import Mathlib.MeasureTheory.Measure.Decomposition.IntegralRNDeriv
-import Mathlib.MeasureTheory.Measure.Decomposition.JordanSub
 import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
 import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
 import Mathlib.MeasureTheory.Measure.Dirac
@@ -4254,6 +4253,7 @@ import Mathlib.MeasureTheory.Topology
 import Mathlib.MeasureTheory.VectorMeasure.Basic
 import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Hahn
 import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Jordan
+import Mathlib.MeasureTheory.VectorMeasure.Decomposition.JordanSub
 import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Lebesgue
 import Mathlib.MeasureTheory.VectorMeasure.Decomposition.RadonNikodym
 import Mathlib.MeasureTheory.VectorMeasure.WithDensity
