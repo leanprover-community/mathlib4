@@ -57,7 +57,19 @@ a power series is topologically nilpotent if and only if its constant coefficien
 This is lemma `MvPowerSeries.LinearToplogy.isTopologicallyNilpotent_iff_constantCoeff`.
 
 Mathematically, everything proven in this files follows from that general statement. However,
-formalizing this creates TODO: finish
+formalizing this yields a few (minor) annoyances:
+
+- we would need to push the results in this file slightly lower in the import tree
+  (likely, in a new dedicated file);
+- we would have to work in `CommRing`s rather than `CommSemiring`s (this probably does not
+  matter in any way though);
+- because `isTopologicallyNilpotent_of_constantCoeff_isNilpotent` holds for *any* topology,
+  not necessarily discrete nor linear, the proof going through the general case involves
+  juggling a bit with the topologies.
+
+Since the code duplication is rather minor (the interesting part of the proof is already extracted
+as `MvPowerSeries.coeff_eq_zero_of_constantCoeff_nilpotent`), we just leave this as is for now.
+But future contributors wishing to clean this up should feel free to give it a try !
 
 -/
 
