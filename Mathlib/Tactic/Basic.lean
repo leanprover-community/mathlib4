@@ -164,5 +164,5 @@ end Mathlib.Tactic
 /-- A mathlib library note: the note's content should be contained in its doc-string. -/
 def LibraryNote := Unit
 
-open Lean in macro "library_note2 " ppSpace name:ident dc:docComment : command =>
+open Lean in macro "library_note2 " name:ident ppSpace dc:docComment : command =>
   `($dc:docComment def $(mkIdent (Name.append `Mathlib.LibraryNote name.getId)) : LibraryNote := ())
