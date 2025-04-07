@@ -238,7 +238,7 @@ theorem coe_basisOfLinearIndependentOfCardEqFinrank {ι : Type*} [Nonempty ι] [
     ⇑(basisOfLinearIndependentOfCardEqFinrank lin_ind card_eq) = b :=
   Basis.coe_mk _ _
 
-/-- In a vector space `ι → K`, a linear independent family indedex by `ι` is a basis. -/
+/-- In a vector space `ι → K`, a linear independent family indexed by `ι` is a basis. -/
 noncomputable def basisOfPiSpaceOfLinearIndependent {ι : Type*} [Fintype ι]
     [Decidable (Nonempty ι)] {b : ι → (ι → K)} (hb : LinearIndependent K b) : Basis ι K (ι → K) :=
   if hι : Nonempty ι then
