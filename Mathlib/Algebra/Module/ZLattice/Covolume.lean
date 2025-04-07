@@ -143,18 +143,15 @@ theorem covolume_div_covolume_eq_relindex {ι : Type*} [Fintype ι] [DecidableEq
     (by rw [← finrank_eq_card_chooseBasisIndex, ZLattice.rank ℝ, finrank_fintype_fun_eq_card]))
   rw [AddSubgroup.relindex_eq_natAbs_det L₁.toAddSubgroup L₂.toAddSubgroup h b₁ b₂,
     Nat.cast_natAbs, Int.cast_abs]
-  convert_to _ = |(b₂.ofZLatticeBasis ℝ).det (b₁.ofZLatticeBasis ℝ)|
-  · change |Int.castRingHom ℝ _| = _
-    rw [Basis.det_apply, Basis.det_apply, RingHom.map_det, RingHom.mapMatrix_apply,
-      Int.coe_castRingHom]
-    congr
-    ext i j
-    rw [Matrix.map_apply, Basis.toMatrix_apply, Basis.toMatrix_apply, Basis.ofZLatticeBasis_apply]
-    exact (b₂.ofZLatticeBasis_repr_apply ℝ L₂ ⟨b₁ j, h (coe_mem _)⟩ i).symm
+  trans |(b₂.ofZLatticeBasis ℝ).det (b₁.ofZLatticeBasis ℝ)|
   · rw [← Basis.det_mul _ (Pi.basisFun ℝ ι) _, abs_mul, Pi.basisFun_det_apply,
       ← Basis.det_inv, Units.val_inv_eq_inv_val, IsUnit.unit_spec, Pi.basisFun_det_apply,
       covolume_eq_det _ b₁, covolume_eq_det _ b₂, mul_comm, abs_inv]
     congr <;> ext <;> simp
+  · rw [Basis.det_apply, Basis.det_apply, Int.cast_det]
+    congr; ext i j
+    rw [Matrix.map_apply, Basis.toMatrix_apply, Basis.toMatrix_apply, Basis.ofZLatticeBasis_apply]
+    exact (b₂.ofZLatticeBasis_repr_apply ℝ L₂ ⟨b₁ j, h (coe_mem _)⟩ i)
 
 /--
 A more general version of `covolume_div_covolume_eq_relindex`;
