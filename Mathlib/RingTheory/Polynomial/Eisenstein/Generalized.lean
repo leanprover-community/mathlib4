@@ -13,8 +13,9 @@ import Mathlib.Tactic.ComputeDegree
 /-! # A generalized Eisenstein criterion
 
 `Polynomial.generalizedEisenstein` :
-  Let `R` be an integral domain and `K` an `R`-algebra which is a field.
-  Let `q : R[X]` be a monic polynomial which is irreducible in `K[X]`.
+  Let `R` be an integral domain
+  and let `K` an `R`-algebra which is a an integral domain.
+  Let `q : R[X]` be a monic polynomial which is prime in `K[X]`.
   Let `f : R[X]` be a monic polynomial of strictly positive degree
   whose image in `K[X]` is a power of `q`.
   Assume moreover that `f.modByMonic q` is not zero in `(R ⧸ (P ^ 2))[X]`,
@@ -50,131 +51,124 @@ that symbolic power coincides with `P ^ 2`, but not in general.
 
 -/
 
-open Polynomial Ideal.Quotient
+open Polynomial Ideal.Quotient Ideal RingHom
 
 namespace Polynomial
 
-variable {R : Type*} [CommRing R] {K : Type*} [Field K] [Algebra R K]
+variable {R : Type*} [CommRing R] [IsDomain R]
+  {K : Type*} [CommRing K] [IsDomain K] [Algebra R K]
 
-theorem exists_C_leadingCoeff_mul_pow_of_dvd_pow
-    {q : K[X]} (hq : Irreducible q) (hq' : Monic q)
-    {f : K[X]} {n : ℕ} (hn : f ∣ q ^ n) :
-    ∃ m, f = C f.leadingCoeff * q ^ m := by
-  obtain ⟨m, hm, hf⟩ := (dvd_prime_pow hq.prime _).mp hn
-  use m
-  obtain ⟨u, hu⟩ := hf
-  rw [mul_comm, eq_comm, ← Units.inv_mul_eq_iff_eq_mul] at hu
-  rw [← hu, leadingCoeff_mul]
-  congr
-  simp only [leadingCoeff_pow, hq', Monic.leadingCoeff, one_pow, mul_one]
-  obtain ⟨a, ha, ha'⟩ := Polynomial.isUnit_iff.mp (u⁻¹).isUnit
-  rw [← ha', leadingCoeff_C]
+private lemma generalizedEisenstein_aux {q f g : R[X]} {p : ℕ}
+    (hq_irr : Prime (q.map (algebraMap R K))) (hq_monic : q.Monic)
+    (hf_monic : f.Monic) (hfmodP : f.map (algebraMap R K) = q.map (algebraMap R K) ^ p)
+    (hg_div : g ∣ f) :
+    ∃ m r, g = C g.leadingCoeff * q ^ m + r ∧
+          r.map (algebraMap R K) = 0 ∧ (m = 0 → IsUnit g) := by
+  set P := ker (algebraMap R K)
+  have hP : P.IsPrime := ker_isPrime (algebraMap R K)
+  have hgP : IsUnit g.leadingCoeff := by
+    apply isUnit_of_dvd_unit (y := f.leadingCoeff)
+    exact leadingCoeff_dvd_leadingCoeff hg_div
+    simp [hf_monic]
+  have hgP' : g.leadingCoeff ∉ P := fun h ↦ hP.ne_top (P.eq_top_of_isUnit_mem h hgP)
+  have map_dvd_pow_q : g.map  (algebraMap R K) ∣ q.map (algebraMap R K) ^ p := by
+    rw [← hfmodP]
+    exact Polynomial.map_dvd _ hg_div
+  obtain ⟨m, hm, hf⟩ := (dvd_prime_pow hq_irr _).mp map_dvd_pow_q
+  set r := g - C g.leadingCoeff * q ^ m
+  have hg : g = C g.leadingCoeff * q ^ m + r := by ring
+  have hr : r.map (algebraMap R K) = 0 := by
+    obtain ⟨u, hu⟩ := hf.symm
+    obtain ⟨a, ha, ha'⟩ := Polynomial.isUnit_iff.mp u.isUnit
+    suffices C (algebraMap R K g.leadingCoeff) = u by
+      simp [r, ← this, Polynomial.map_sub, ← hu, Polynomial.map_mul, map_C,
+        Polynomial.map_pow, sub_eq_zero, mul_comm]
+    rw [← leadingCoeff_map_of_leadingCoeff_ne_zero _ hgP']
+    rw [← hu, ← ha']
+    apply congr_arg
+    rw [leadingCoeff_mul, leadingCoeff_C, (hq_monic.map _).pow m, one_mul]
+  use m, r, hg, hr
+  intro hm
+  rw [hm, pow_zero, mul_one] at hg
+  suffices g.natDegree = 0 by
+    obtain ⟨a, rfl⟩ := Polynomial.natDegree_eq_zero.mp this
+    apply IsUnit.map
+    rwa [leadingCoeff_C] at hgP
+  by_contra hg'
+  apply hgP'
+  rw [hg, leadingCoeff, coeff_add, ← hg, coeff_C, if_neg hg', zero_add,
+    mem_ker, ← coeff_map, hr, coeff_zero]
 
-theorem exists_eq_C_leadingCoeff_mul_pow_add {q f : R[X]} {n : ℕ}
-    (hq_irr : Irreducible (q.map (algebraMap R K))) (hq_monic : q.Monic)
-    (map_dvd_pow_q : f.map (algebraMap R K) ∣ q.map (algebraMap R K) ^ n)
-    (hf_lC : algebraMap R K f.leadingCoeff ≠ 0) :
-    ∃ m r, f = C f.leadingCoeff * q ^ m + r ∧ map (algebraMap R K) r = 0 := by
-  obtain ⟨m, hm⟩ := exists_C_leadingCoeff_mul_pow_of_dvd_pow hq_irr
-     (hq_monic.map (algebraMap R K)) map_dvd_pow_q
-  use m, f - C f.leadingCoeff * q ^ m, by ring
-  rw [Polynomial.map_sub, sub_eq_zero]
-  rw [hm]
-  simp only [Polynomial.map_mul, map_C, Polynomial.map_pow]
-  congr
-  rwa [← leadingCoeff_map_of_leadingCoeff_ne_zero]
-
-/-- A generalized Eisenstein criterion
+ /-- A generalized Eisenstein criterion
 
   Let `R` be an integral domain and `K` an `R`-algebra which is a field.
-  Let `q : R[X]` be a monic polynomial which is irreducible in `K[X]`.
+  Let `q : R[X]` be a monic polynomial which is prime in `K[X]`.
   Let `f : R[X]` be a monic polynomial of strictly positive degree
   whose image in `K[X]` is a power of `q`.
   Assume moreover that `f.modByMonic q` is not zero in `(R ⧸ (P ^ 2))[X]`,
   where `P` is the kernel of `algebraMap R K`.
   Then `f` is irreducible. -/
-theorem generalizedEisenstein [IsDomain R] {q f : R[X]} {p : ℕ}
-    (hq_irr : Irreducible (q.map (algebraMap R K))) (hq_monic : q.Monic)
+theorem generalizedEisenstein {q f : R[X]} {p : ℕ}
+    (hq_irr : Prime (q.map (algebraMap R K))) (hq_monic : q.Monic)
     (hfd0 : 0 < natDegree f) (hf_monic : f.Monic)
     (hfmodP : f.map (algebraMap R K) = q.map (algebraMap R K) ^ p)
-    (hfmodP2 : (f.modByMonic q).map (mk ((RingHom.ker (algebraMap R K)) ^ 2)) ≠ 0) :
+    (hfmodP2 : (f.modByMonic q).map (mk ((ker (algebraMap R K)) ^ 2)) ≠ 0) :
     Irreducible f where
   not_unit := mt degree_eq_zero_of_isUnit fun h => by
     simp_all [lt_irrefl, natDegree_pos_iff_degree_pos]
   isUnit_or_isUnit' g h h_eq := by
-    set P : Ideal R := RingHom.ker (algebraMap R K)
-    have hP : P.IsPrime := RingHom.ker_isPrime (algebraMap R K)
-    have hgP' : IsUnit g.leadingCoeff := by
-      apply isUnit_of_mul_isUnit_left (y  := h.leadingCoeff)
-      simp [← leadingCoeff_mul, ← h_eq, hf_monic]
-    have hgP : g.leadingCoeff ∉ P :=
-      fun hgP ↦ hP.ne_top (Ideal.eq_top_of_isUnit_mem P hgP hgP')
-    have hhP' : IsUnit h.leadingCoeff := by
-      apply isUnit_of_mul_isUnit_right (x  := g.leadingCoeff)
-      simp [← leadingCoeff_mul, ← h_eq, hf_monic]
-    have hhP : h.leadingCoeff ∉ P :=
-      fun hhP ↦ hP.ne_top (Ideal.eq_top_of_isUnit_mem P hhP hhP')
-    have (g : R[X]) (hg_div : g ∣ f) : ∃ m r, g = C g.leadingCoeff * q ^ m + r ∧
-          r.map (algebraMap R K) = 0 ∧ (m = 0 → IsUnit g) := by
-      have hgP : IsUnit g.leadingCoeff := by
-        apply isUnit_of_dvd_unit (y := f.leadingCoeff)
-        exact leadingCoeff_dvd_leadingCoeff hg_div
-        simp [hf_monic]
-      have hgP' : g.leadingCoeff ∉ P := fun h ↦ hP.ne_top (P.eq_top_of_isUnit_mem h hgP)
-      obtain ⟨m, r, hg, hr⟩ := exists_eq_C_leadingCoeff_mul_pow_add hq_irr hq_monic
-        (by rw [← hfmodP]; exact map_dvd (algebraMap R K) hg_div) hgP'
-      use m, r, hg, hr
-      intro hm
-      rw [hm, pow_zero, mul_one] at hg
-      suffices g.natDegree = 0 by
-        obtain ⟨a, rfl⟩ := Polynomial.natDegree_eq_zero.mp this
-        apply IsUnit.map
-        rwa [leadingCoeff_C] at hgP
-      by_contra hg'
-      apply hgP'
-      rw [hg, leadingCoeff, coeff_add, ← hg, coeff_C, if_neg hg', zero_add,
-        RingHom.mem_ker, ← coeff_map, hr, coeff_zero]
-    obtain ⟨m, r, hg, hr, hm0⟩ := this g (h_eq ▸ dvd_mul_right g h)
-    obtain ⟨n, s, hh, hs, hn0⟩ := this h (h_eq ▸ dvd_mul_left h g)
+    -- We have to show that factorizations `f = g * h` are trivial
+    set P : Ideal R := ker (algebraMap R K)
+    have hP : P.IsPrime := ker_isPrime (algebraMap R K)
+    obtain ⟨m, r, hg, hr, hm0⟩ :=
+      generalizedEisenstein_aux hq_irr hq_monic hf_monic hfmodP (h_eq ▸ dvd_mul_right g h)
+    obtain ⟨n, s, hh, hs, hn0⟩ :=
+      generalizedEisenstein_aux hq_irr hq_monic hf_monic hfmodP (h_eq ▸ dvd_mul_left h g)
     by_cases hm : m = 0
+    -- If `m = 0`, `generalizedEisenstein_aux` shows that `g` is a unit.
     · left; exact hm0 hm
     by_cases hn : n = 0
+    -- If `n = 0`, `generalizedEisenstein_aux` shows that `h` is a unit.
     · right; exact hn0 hn
-    have : f %ₘ q = (r * s) %ₘ q := by
-      rw [h_eq, hg, hh]
-      simp only [add_mul, mul_add, map_add, ← modByMonicHom_apply]
-      simp only [← add_assoc, modByMonicHom_apply]
-      convert zero_add _
-      convert zero_add _
-      · convert zero_add _
-        · rw [modByMonic_eq_zero_iff_dvd hq_monic]
-          exact ((dvd_pow_self q hn).mul_left _).mul_left _
-        · symm
-          rw [modByMonic_eq_zero_iff_dvd hq_monic]
-          simp only [← mul_assoc]
-          exact (dvd_pow_self q hn).mul_left _
-      · symm
-        rw [modByMonic_eq_zero_iff_dvd hq_monic]
-        exact ((dvd_pow_self q hm).mul_left _).mul_right _
+    -- Otherwise, we will get a contradiction by showing that `f %ₘ q` is zero mod `P ^ 2`.
     exfalso
     apply hfmodP2
-    simp only [ext_iff, ← coeff_map, eq_zero_iff_mem]
-    rw [← ext_iff, this, map_modByMonic _ hq_monic]
-    convert zero_modByMonic _
-    ext n
-    rw [coeff_map, coeff_mul, map_sum, coeff_zero]
-    apply Finset.sum_eq_zero
-    intro x hx
-    rw [eq_zero_iff_mem, pow_two]
-    apply Ideal.mul_mem_mul
-    · rw [RingHom.mem_ker, ← coeff_map, hr, coeff_zero]
-    · rw [RingHom.mem_ker, ← coeff_map, hs, coeff_zero]
+    suffices f %ₘ q = (r * s) %ₘ q by
+      -- Since the coefficients of `r` and `s` are in `P`, those of `r * s` are in `P ^ 2`
+      simp only [ext_iff, ← coeff_map, eq_zero_iff_mem]
+      rw [← ext_iff, this, map_modByMonic _ hq_monic]
+      convert zero_modByMonic _
+      ext n
+      rw [coeff_map, coeff_mul, map_sum, coeff_zero]
+      apply Finset.sum_eq_zero
+      intro x hx
+      rw [eq_zero_iff_mem, pow_two]
+      apply mul_mem_mul
+      · rw [mem_ker, ← coeff_map, hr, coeff_zero]
+      · rw [mem_ker, ← coeff_map, hs, coeff_zero]
+    -- It remains to prove the equality `f %ₘ q = (r * s) %ₘ q`, which is straightforward
+    rw [h_eq, hg, hh]
+    simp only [add_mul, mul_add, map_add, ← modByMonicHom_apply]
+    simp only [← add_assoc, modByMonicHom_apply]
+    convert zero_add _
+    convert zero_add _
+    · convert zero_add _
+      · rw [modByMonic_eq_zero_iff_dvd hq_monic]
+        exact ((dvd_pow_self q hn).mul_left _).mul_left _
+      · symm
+        rw [modByMonic_eq_zero_iff_dvd hq_monic]
+        simp only [← mul_assoc]
+        exact (dvd_pow_self q hn).mul_left _
+    · symm
+      rw [modByMonic_eq_zero_iff_dvd hq_monic]
+      exact ((dvd_pow_self q hm).mul_left _).mul_right _
 
 example : Irreducible (X ^ 4 - 10 * X ^ 2 + 1 : ℤ[X]) := by
+  -- We will apply the generalized Eisenstein criterion with `q = X ^ 2 + 1` and `K = ZMod 3`.
   letI : Fact (Nat.Prime 3) := ⟨Nat.prime_three⟩
   set q : ℤ [X] := X ^ 2 + 1 with hq_eq
   let K := ZMod 3
-  have h3 : RingHom.ker (algebraMap ℤ K) = Ideal.span {3} := by
+  have h3 : ker (algebraMap ℤ K) = span {3} := by
     ext a
     rw [algebraMap_int_eq, ZMod.ker_intCastRingHom, Nat.cast_ofNat]
   have hq_monic : q.Monic := leadingCoeff_X_pow_add_one (by norm_num)
@@ -200,19 +194,18 @@ example : Irreducible (X ^ 4 - 10 * X ^ 2 + 1 : ℤ[X]) := by
     simp only [Monic, leadingCoeff, hdeg_f, f]
     compute_degree!
   have hfq : f = q ^ 2 - 12 * q + 12 := by ring
-  apply generalizedEisenstein (K := K) hq_irr hq_monic (p := 2)
+  apply generalizedEisenstein (K := K) hq_irr.prime hq_monic (p := 2)
     (by rw [hdeg_f]; norm_num) hlC_f
   · simp only [hfq, Polynomial.map_sub, Polynomial.map_add, Polynomial.map_pow,
       Polynomial.map_mul, ← map_ofNat C, Polynomial.map_C]
     have : (algebraMap ℤ K) (12) = 0 := by
-      rw [← RingHom.mem_ker, h3, Ideal.mem_span_singleton]
+      rw [← mem_ker, h3, mem_span_singleton]
       norm_num
     rw [this]
     simp
   · suffices f %ₘ q = 12 by
-      rw [this]
-      rw [← map_ofNat C, Polynomial.map_C, ne_eq, C_eq_zero, eq_zero_iff_mem]
-      rw [h3, Ideal.span_singleton_pow, Ideal.mem_span_singleton]
+      rw [this, ← map_ofNat C, Polynomial.map_C, ne_eq, C_eq_zero, eq_zero_iff_mem, h3,
+        span_singleton_pow, mem_span_singleton]
       norm_num
     rw [hfq]
     rw [← modByMonicHom_apply, LinearMap.map_add]
@@ -223,10 +216,7 @@ example : Irreducible (X ^ 4 - 10 * X ^ 2 + 1 : ℤ[X]) := by
     · symm
       simp only [modByMonicHom_apply, Polynomial.modByMonic_eq_self_iff hq_monic, f]
       apply Polynomial.degree_lt_degree
-      suffices q.natDegree = 2 by
-        simp only [this, natDegree_ofNat, f, K, q]
-        norm_num
-      rw [hq_eq]
-      simp only [← C_1, Polynomial.natDegree_X_pow_add_C]
+      convert Nat.two_pos
+      compute_degree!
 
 end Polynomial
