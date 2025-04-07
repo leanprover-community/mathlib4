@@ -310,8 +310,7 @@ def mapHom : VariableChange R →* VariableChange A where
 
 end VariableChange
 
-lemma map_variableChange (C : VariableChange R) :
-    (C.map φ) • (W.map φ) = (C • W).map φ := by
+lemma map_variableChange (C : VariableChange R) : (C.map φ) • (W.map φ) = (C • W).map φ := by
   simp only [map, variableChange_def, VariableChange.map]
   ext <;> map_simp <;> simp only [Units.coe_map, Units.coe_map_inv, MonoidHom.coe_coe]
 
