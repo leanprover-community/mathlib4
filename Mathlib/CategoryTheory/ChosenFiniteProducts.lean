@@ -807,8 +807,8 @@ theorem coprodComparison_inv_natural (f : A ⟶ A') (g : B ⟶ B') [IsIso (copro
 
 end
 
-theorem coprodComparison_comp {E : Type u₂} [Category.{v₂} E] [ChosenFiniteCoproducts E] (G : D ⥤ E)
-  : coprodComparison (F ⋙ G) A B =
+theorem coprodComparison_comp {E : Type u₂} [Category.{v₂} E] [ChosenFiniteCoproducts E] (G : D ⥤ E) :
+    coprodComparison (F ⋙ G) A B =
       coprodComparison G (F.obj A) (F.obj B) ≫ G.map (coprodComparison F A B) := by
   unfold coprodComparison
   ext <;> simp [← G.map_comp]
