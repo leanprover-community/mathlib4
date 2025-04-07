@@ -41,7 +41,7 @@ class Superposable {ι : Type*} (T : ι → Type*) (A : ι → Type*) where
 variable {ι : Type*} {T A : ι → Type*} {i : ι}
 
 /-- Upgrade `Superposable.superpose` to an operation on Sigma types. -/
-def superpose [Superposable T A] (x : Sigma A) (y : T x.fst → A i) : Sigma A :=
+def Sigma.superpose [Superposable T A] (x : Sigma A) (y : T x.fst → A i) : Sigma A :=
   ⟨i, Superposable.superpose x.snd y⟩
 
 namespace Superposable
@@ -49,17 +49,14 @@ namespace Superposable
 /-- Notation for `Superposable.superpose`, for working with `A n` graded types. -/
 scoped infixr:70 " ∘⚟ " => Superposable.superpose
 
-/-- Notation for `superpose`, for working with Sigma types. -/
-scoped infixr:70 " ∘∈ " => _root_.superpose
-
-variable [Superposable T A]
+variable [Superposable T A] {i : ι}
 
 @[simp]
-theorem superpose_fst {i : ι} (x : Sigma A) (y : T x.fst → A i) : (x ∘∈ y).fst = i :=
+theorem superpose_fst (x : Sigma A) (y : T x.fst → A i) : (x.superpose y).fst = i :=
   rfl
 
 @[simp]
-theorem superpose_snd {i : ι} (x : Sigma A) (y : T x.fst → A i) : (x ∘∈ y).snd = x.snd ∘⚟ y :=
+theorem superpose_snd (x : Sigma A) (y : T x.fst → A i) : (x.superpose y).snd = x.snd ∘⚟ y :=
   rfl
 
 end Superposable
@@ -76,11 +73,11 @@ instance OneGradedOne_toOne : One (Sigma A) :=
   ⟨⟨1, 1⟩⟩
 
 @[simp]
-theorem sigma_snd : (1 : Sigma A).snd = 1 :=
+theorem snd : (1 : Sigma A).snd = 1 :=
   rfl
 
 @[simp]
-theorem sigma_fst : (1 : Sigma A).fst = 1 :=
+theorem fst : (1 : Sigma A).fst = 1 :=
   rfl
 
 end OneGradedOne
