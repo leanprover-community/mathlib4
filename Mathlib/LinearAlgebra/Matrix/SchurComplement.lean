@@ -433,9 +433,6 @@ theorem det_add_replicateCol_mul_replicateRow {ι : Type*} [Unique ι]
 @[deprecated (since := "2025-03-20")] alias
   det_add_col_mul_row := det_add_replicateCol_mul_replicateRow
 
-@[deprecated (since := "2025-03-15")] alias det_add_col_mul_row :=
-  det_add_colConst_mul_rowConst
-
 /-- A generalization of the **Matrix determinant lemma** -/
 theorem det_add_mul {A : Matrix m m α} (U : Matrix m n α)
     (V : Matrix n m α) (hA : IsUnit A.det) :

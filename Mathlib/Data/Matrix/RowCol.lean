@@ -35,14 +35,10 @@ To get a column matrix with exactly one column,
 def replicateCol (ι : Type*) (w : m → α) : Matrix m ι α :=
   of fun x _ => w x
 
-@[deprecated (since := "2025-03-20")] alias col := replicateCol
-
 -- TODO: set as an equation lemma for `replicateCol`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
 theorem replicateCol_apply {ι : Type*} (w : m → α) (i) (j : ι) : replicateCol ι w i j = w i :=
   rfl
-
-@[deprecated (since := "2025-03-20")] alias col_apply := replicateCol_apply
 
 /--
 `Matrix.replicateRow ι u` is the matrix with all rows equal to the vector `u`.
@@ -52,16 +48,12 @@ To get a row matrix with exactly one row, `Matrix.replicateRow (Fin 1) u` is the
 def replicateRow (ι : Type*) (v : n → α) : Matrix ι n α :=
   of fun _ y => v y
 
-@[deprecated (since := "2025-03-20")] alias row := replicateRow
-
 variable {ι : Type*}
 
 -- TODO: set as an equation lemma for `replicateRow`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
 theorem replicateRow_apply (v : n → α) (i : ι) (j) : replicateRow ι v i j = v j :=
   rfl
-
-@[deprecated (since := "2025-03-20")] alias row_apply := replicateRow_apply
 
 theorem replicateCol_injective [Nonempty ι] :
     Function.Injective (replicateCol ι : (m → α) → Matrix m ι α) := by
@@ -144,14 +136,10 @@ theorem transpose_replicateCol (v : m → α) : (replicateCol ι v)ᵀ = replica
   ext
   rfl
 
-@[deprecated (since := "2025-03-20")] alias transpose_col := transpose_replicateCol
-
 @[simp]
 theorem transpose_replicateRow (v : m → α) : (replicateRow ι v)ᵀ = replicateCol ι v := by
   ext
   rfl
-
-@[deprecated (since := "2025-03-20")] alias transpose_row := transpose_replicateRow
 
 @[simp]
 theorem conjTranspose_replicateCol [Star α] (v : m → α) :
@@ -210,8 +198,6 @@ theorem mulVec_replicateCol_eq_const [Fintype m] [NonUnitalNonAssocSemiring α] 
 theorem replicateRow_mul_replicateCol [Fintype m] [Mul α] [AddCommMonoid α] (v w : m → α) :
     replicateRow ι v * replicateCol ι w = of fun _ _ => v ⬝ᵥ w :=
   rfl
-
-@[deprecated (since := "2025-03-20")] alias row_mul_col := replicateRow_mul_replicateCol
 
 @[deprecated (since := "2025-03-20")] alias row_mul_col := replicateRow_mul_replicateCol
 

@@ -503,8 +503,8 @@ section RowCol
 `A.row` is defeq to `A`, but explicitly refers to the 'row function` of `A`
 while avoiding defeq abuse and noisy eta-expansions,
 such as in expressions like `Set.Injective A.row` and `Set.range A.row`.
-(Note 03-15-2025 : the identifier `Matrix.row` used to refer to a matrix with constant rows;
-this is now called `Matrix.rowConst`) -/
+(Note 04-07-2025 : the identifier `Matrix.row` used to refer to a matrix with all rows equal;
+this is now called `Matrix.replicateRow`) -/
 def row (A : Matrix m n α) : m → n → α := A
 
 /-- For an `m × n` `α`-matrix `A`, `A.col j` is the `j`th column of `A` as a vector in `m → α`.
@@ -512,13 +512,19 @@ def row (A : Matrix m n α) : m → n → α := A
 while avoiding defeq abuse and noisy eta-expansions
 (and without the simplifier unfolding transposes) in expressions like `Set.Injective A.col`
 and `Set.range A.col`.
-(Note 03-15-2025 : the identifier `Matrix.col` used to refer to a matrix with constant columns;
-this is now called `Matrix.colConst`) -/
+(Note 04-07-2025 : the identifier `Matrix.col` used to refer to a matrix with all columns equal;
+this is now called `Matrix.replicateCol`) -/
 def col (A : Matrix m n α) : n → m → α := Aᵀ
 
-lemma row_eq_self (A : Matrix m n α) : A.row = A := rfl
+lemma row_eq_self (A : Matrix m n α) : A.row = of.symm A := rfl
 
-lemma col_eq_transpose (A : Matrix m n α) : A.col = Aᵀ := rfl
+lemma col_eq_transpose (A : Matrix m n α) : A.col = of.symm Aᵀ := rfl
+
+@[simp]
+lemma of_row (f : m → n → α) : (Matrix.of f).row = f := rfl
+
+@[simp]
+lemma of_col (f : m → n → α) : (Matrix.of f)ᵀ.col = f := rfl
 
 lemma row_def (A : Matrix m n α) : A.row = fun i ↦ A i := rfl
 
