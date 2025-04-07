@@ -24,7 +24,7 @@ open Polynomial IsScalarTower
 
 variable (F K : Type*) [Field F] [Field K] [Algebra F K]
 
-/-- Typeclass for normal field extensions: an algebraic extension of fields `K/F` `K` is *normal*
+/-- Typeclass for normal field extensions: an algebraic extension of fields `K/F` is *normal*
 if the minimal polynomial of every element `x` in `K` splits in `K`, i.e. every `F`-conjugate
 of `x` is in `K`. -/
 @[stacks 09HM]
