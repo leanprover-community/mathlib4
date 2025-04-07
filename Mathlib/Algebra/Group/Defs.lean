@@ -1213,9 +1213,9 @@ instance {G : Type*} [Group G] [IsMulCommutative G] :
     CommGroup G where
   mul_comm := IsMulCommutative.is_comm.comm
 
-@[to_additive]
-instance {G : Type*} [CommGroup G] :
-    IsMulCommutative G where
-  is_comm := ⟨fun a b ↦ mul_comm a b⟩
+-- @[to_additive]
+-- instance {G : Type*} [CommGroup G] :
+--     IsMulCommutative G where
+--   is_comm := ⟨fun a b ↦ mul_comm a b⟩
 
 end test
