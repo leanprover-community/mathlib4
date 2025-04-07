@@ -34,7 +34,7 @@ variable (R L : Type*) [CommSemiring R] [AddCommMonoid L] [Module R L]
 open TensorAlgebra in
 /-- Relation on the tensor algebra which will yield the symmetric algebra when
 quotiented out by. -/
-inductive SymRel : (TensorAlgebra R L) → (TensorAlgebra R L) → Prop where
+inductive SymRel : TensorAlgebra R L → TensorAlgebra R L → Prop where
   | mul_comm (x y : L) : SymRel (ι R x * ι R y) (ι R y * ι R x)
 
 /-- Concrete construction of the symmetric algebra of L by quotienting out
