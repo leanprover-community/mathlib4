@@ -249,17 +249,21 @@ variable {B : Type u₄} [Category.{v₄} B]
 
 @[simp]
 theorem whiskerLeft_twice (F : B ⥤ C) (G : C ⥤ D) {H K : D ⥤ E} (α : H ⟶ K) :
-    whiskerLeft F (whiskerLeft G α) = whiskerLeft (F ⋙ G) α :=
-  rfl
+    whiskerLeft F (whiskerLeft G α) =
+    (Functor.associator _ _ _).inv ≫ whiskerLeft (F ⋙ G) α ≫ (Functor.associator _ _ _).hom := by
+  aesop_cat
 
 @[simp]
 theorem whiskerRight_twice {H K : B ⥤ C} (F : C ⥤ D) (G : D ⥤ E) (α : H ⟶ K) :
-    whiskerRight (whiskerRight α F) G = whiskerRight α (F ⋙ G) :=
-  rfl
+    whiskerRight (whiskerRight α F) G =
+    (Functor.associator _ _ _).hom ≫ whiskerRight α (F ⋙ G) ≫ (Functor.associator _ _ _).inv := by
+  aesop_cat
 
 theorem whiskerRight_left (F : B ⥤ C) {G H : C ⥤ D} (α : G ⟶ H) (K : D ⥤ E) :
-    whiskerRight (whiskerLeft F α) K = whiskerLeft F (whiskerRight α K) :=
-  rfl
+    whiskerRight (whiskerLeft F α) K =
+    (Functor.associator _ _ _).hom ≫ whiskerLeft F (whiskerRight α K) ≫
+      (Functor.associator _ _ _).inv := by
+  aesop_cat
 
 end
 
