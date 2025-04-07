@@ -98,8 +98,7 @@ lemma isTightMeasureSet_of_forall_basis_tendsto (b : OrthonormalBasis ι 𝕜 E)
     convert tendsto_pure_nhds (a := ∅) _
     simp
   have h_rank : (0 : ℝ) < Fintype.card ι := by
-    simp only [← Module.finrank_eq_card_basis b.toBasis, Nat.cast_pos, Module.finrank_pos_iff]
-    infer_instance
+    simpa [← Module.finrank_eq_card_basis b.toBasis, Module.finrank_pos_iff]
   have : Nonempty ι := by simpa [Fintype.card_pos_iff] using h_rank
   have : ProperSpace E := FiniteDimensional.proper 𝕜 E
   refine isTightMeasureSet_of_tendsto_measure_norm_gt ?_
@@ -125,9 +124,8 @@ lemma isTightMeasureSet_of_forall_basis_tendsto (b : OrthonormalBasis ι 𝕜 E)
       exact le_biSup (fun μ ↦ μ {x | r / √(Fintype.card ι) < ‖⟪b i, x⟫‖}) hμS
   refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds ?_ (fun _ ↦ zero_le') h_le
   rw [← Finset.sum_const_zero]
-  refine tendsto_finset_sum Finset.univ fun i _ ↦ ?_
-  refine (h i).comp ?_
-  exact Tendsto.atTop_div_const (by positivity) tendsto_id
+  refine tendsto_finset_sum Finset.univ fun i _ ↦ (h i).comp ?_
+  exact tendsto_id.atTop_div_const (by positivity)
 
 lemma isTightMeasureSet_of_inner_tendsto
     (h : ∀ y, Tendsto (fun r : ℝ ↦ ⨆ μ ∈ S, μ {x | r < ‖⟪y, x⟫‖}) atTop (𝓝 0)) :

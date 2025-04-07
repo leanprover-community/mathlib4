@@ -440,8 +440,7 @@ lemma sum_sq_norm_inner (b : OrthonormalBasis ι 𝕜 E) (x : E) :
     ∑ i, ‖⟪b i, x⟫‖ ^ 2 = ‖x‖ ^ 2 := by
   rw [@norm_eq_sqrt_inner 𝕜, ← OrthonormalBasis.sum_inner_mul_inner b x x, map_sum]
   simp_rw [inner_mul_symm_re_eq_norm, norm_mul, ← inner_conj_symm x, starRingEnd_apply,
-    norm_star]
-  simp_rw [← pow_two]
+    norm_star, ← pow_two]
   rw [Real.sq_sqrt]
   exact Fintype.sum_nonneg fun _ ↦ by positivity
 
