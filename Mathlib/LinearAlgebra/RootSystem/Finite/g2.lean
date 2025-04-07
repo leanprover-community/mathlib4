@@ -113,19 +113,7 @@ lemma allRoots_subset_range_root [DecidableEq M] :
   intro x hx
   simp only [toFinset_cons, toFinset_nil, insert_empty_eq, Finset.coe_insert,
     Finset.coe_singleton, mem_insert_iff, mem_singleton_iff] at hx
-  rcases hx with h | h | h | h | h | h | h | h | h | h | h | h
-  · exact ⟨long P, by simp [h]⟩
-  · exact ⟨P.reflection_perm (long P) (long P), by simp [h]⟩
-  · exact ⟨short P, by simp [h]⟩
-  · exact ⟨P.reflection_perm (short P) (short P), by simp [h]⟩
-  · exact ⟨shortAddLong P, by simp [h]⟩
-  · exact ⟨P.reflection_perm (shortAddLong P) (shortAddLong P), by simp [h]⟩
-  · exact ⟨twoShortAddLong P, by simp [h]⟩
-  · exact ⟨P.reflection_perm (twoShortAddLong P) (twoShortAddLong P), by simp [h]⟩
-  · exact ⟨threeShortAddLong P, by simp [h]⟩
-  · exact ⟨P.reflection_perm (threeShortAddLong P) (threeShortAddLong P), by simp [h]⟩
-  · exact ⟨threeShortAddTwoLong P, by simp [h]⟩
-  · exact ⟨P.reflection_perm (threeShortAddTwoLong P) (threeShortAddTwoLong P), by simp [h]⟩
+  rcases hx with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;> simp
 
 variable [Finite ι] [CharZero R] [IsDomain R] [NoZeroSMulDivisors R M]
 
