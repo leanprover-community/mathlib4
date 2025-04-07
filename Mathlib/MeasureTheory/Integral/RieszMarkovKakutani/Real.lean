@@ -5,7 +5,7 @@ Authors: Yoh Tanimoto, Oliver Butterley
 -/
 import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Basic
 import Mathlib.MeasureTheory.Integral.SetIntegral
-import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.iUnion_Ixx_Ixx
+import Mathlib.Order.Interval.Set.Union
 
 /-!
 # Riesz–Markov–Kakutani representation theorem for real-linear functionals
