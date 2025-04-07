@@ -167,22 +167,14 @@ theorem isPrime_of_isPrime_disjoint (I : Ideal R) (hp : I.IsPrime) (hd : Disjoin
   rw [isPrime_iff_isPrime_disjoint M S, comap_map_of_isPrime_disjoint M S I hp hd]
   exact ⟨hp, hd⟩
 
-theorem disjoint_comap_iff (S : Submonoid R) {A : Type*} [CommSemiring A]
-    [Algebra R A] [IsLocalization S A] (J : Ideal A) :
-    Disjoint (S : Set R) (J.comap (algebraMap R A)) ↔ J ≠ ⊤ := by
-  rw [← iff_not_comm]
+theorem disjoint_comap_iff (J : Ideal S) :
+    Disjoint (M : Set R) (J.comap (algebraMap R S)) ↔ J ≠ ⊤ := by
+  rw [← iff_not_comm, Set.not_disjoint_iff]
   constructor
   · rintro rfl
-    rw [Ideal.comap_top, Submodule.top_coe, Set.disjoint_univ, ← ne_eq, ← Set.nonempty_iff_ne_empty]
-    exact ⟨_, S.one_mem⟩
-  · rw [Disjoint, Set.bot_eq_empty]
-    intro h
-    simp only [Set.le_eq_subset, Ideal.coe_comap, Set.subset_empty_iff, not_forall,
-      Classical.not_imp] at h
-    obtain ⟨x, hx, hx', hx''⟩ := h
-    rw [← ne_eq, ← Set.nonempty_iff_ne_empty] at hx''
-    obtain ⟨u, hu⟩ := hx''
-    exact J.eq_top_of_isUnit_mem (hx' hu) (IsLocalization.map_units A ⟨u, hx hu⟩)
+    exact ⟨1, M.one_mem, ⟨⟩⟩
+  · rintro ⟨x, hxM, hxJ⟩
+    exact J.eq_top_of_isUnit_mem hxJ (IsLocalization.map_units S ⟨x, hxM⟩)
 
 /-- If `R` is a ring, then prime ideals in the localization at `M`
 correspond to prime ideals in the original ring `R` that are disjoint from `M` -/
@@ -192,11 +184,10 @@ def orderIsoOfPrime :
   invFun p := ⟨Ideal.map (algebraMap R S) p.1, isPrime_of_isPrime_disjoint M S p.1 p.2.1 p.2.2⟩
   left_inv J := Subtype.eq (map_comap M S J)
   right_inv I := Subtype.eq (comap_map_of_isPrime_disjoint M S I.1 I.2.1 I.2.2)
-  map_rel_iff' := by
-    rintro I I'
+  map_rel_iff' {I I'} := by
     constructor
-    · exact (fun h => show I.val ≤ I'.val from map_comap M S I.val ▸
-        map_comap M S I'.val ▸ Ideal.map_mono h)
+    · exact fun h => show I.val ≤ I'.val from map_comap M S I.val ▸
+        map_comap M S I'.val ▸ Ideal.map_mono h
     exact fun h x hx => h hx
 
 include M in

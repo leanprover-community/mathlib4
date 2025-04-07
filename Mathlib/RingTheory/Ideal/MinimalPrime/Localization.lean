@@ -79,22 +79,15 @@ theorem Ideal.exists_mul_mem_of_mem_minimalPrimes
 /-- minimal primes are contained in zero divisors. -/
 lemma Ideal.disjoint_nonZeroDivisors_of_mem_minimalPrimes {p : Ideal R} (hp : p ∈ minimalPrimes R) :
     Disjoint (p : Set R) (nonZeroDivisors R) := by
-  classical
-  rw [← Set.subset_compl_iff_disjoint_right, Set.subset_def]
-  simp only [SetLike.mem_coe, Set.mem_compl_iff, mem_nonZeroDivisors_iff, not_forall,
-    Classical.not_imp]
-  intro x hxp
-  simp_rw [exists_prop, @and_comm (_ * _ = _), ← mul_comm x]
-  exact Ideal.exists_mul_mem_of_mem_minimalPrimes hp hxp
+  simp_rw [Set.disjoint_left, SetLike.mem_coe, mem_nonZeroDivisors_iff, not_forall, exists_prop,
+    @and_comm (_ * _ = _), ← mul_comm]
+  exact fun _ ↦ Ideal.exists_mul_mem_of_mem_minimalPrimes hp
 
 theorem Ideal.exists_comap_eq_of_mem_minimalPrimes {I : Ideal S} (f : R →+* S) (p)
-    (H : p ∈ (I.comap f).minimalPrimes) : ∃ p' : Ideal S, p'.IsPrime ∧ I ≤ p' ∧ p'.comap f = p := by
+    (H : p ∈ (I.comap f).minimalPrimes) : ∃ p' : Ideal S, p'.IsPrime ∧ I ≤ p' ∧ p'.comap f = p :=
   have := H.1.1
-  have ⟨p', hp', hIp', disj⟩ := I.exists_le_prime_disjoint (p.primeCompl.map f) <|
-    Set.disjoint_left.mpr fun _ ↦ by rintro hI ⟨r, hp, rfl⟩; exact hp (H.1.2 hI)
-  refine ⟨p', hp', hIp', ?_⟩
-  suffices _ ≤ p by exact this.antisymm (H.2 ⟨inferInstance, comap_mono hIp'⟩ this)
-  exact fun r hp' ↦ of_not_not fun hp ↦ Set.disjoint_left.mp disj hp' ⟨_, hp, rfl⟩
+  have ⟨p', hIp', hp', le⟩ := exists_ideal_comap_le_prime p I H.1.2
+  ⟨p', hp', hIp', le.antisymm (H.2 ⟨inferInstance, comap_mono hIp'⟩ le)⟩
 
 @[stacks 00FK] theorem Ideal.exists_comap_eq_of_mem_minimalPrimes_of_injective {f : R →+* S}
     (hf : Function.Injective f) (p) (H : p ∈ minimalPrimes R) :
@@ -112,7 +105,7 @@ theorem Ideal.exists_minimalPrimes_comap_eq {I : Ideal S} (f : R →+* S) (p)
   have := (Ideal.comap_mono hq').trans_eq h₃
   exact (H.2 ⟨inferInstance, Ideal.comap_mono hq.1.2⟩ this).antisymm this
 
-theorem Ideal.minimalPrimes_comap_subset {A : Type*} [CommSemiring A] (f : R →+* A) (J : Ideal A) :
+theorem Ideal.minimalPrimes_comap_subset (f : R →+* S) (J : Ideal S) :
     (J.comap f).minimalPrimes ⊆ Ideal.comap f '' J.minimalPrimes :=
   fun p hp ↦ Ideal.exists_minimalPrimes_comap_eq f p hp
 
