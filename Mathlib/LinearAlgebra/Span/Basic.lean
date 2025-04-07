@@ -420,6 +420,40 @@ lemma isCompl_comap_subtype_of_isCompl_of_le {p q r : Submodule R M}
     IsCompl (q.comap p.subtype) (r.comap p.subtype) := by
   simpa [p.mapIic.isCompl_iff, Iic.isCompl_iff] using Iic.isCompl_inf_inf_of_isCompl_of_le h₁ h₂
 
+variable (R) in
+/-- The largest submodule contained in an additive subgroup of a module. -/
+def leAddSubgroup (G : AddSubgroup M) : Submodule R M where
+  carrier := { x | ∀ r : R, r • x ∈ G }
+  add_mem' {x y} hx hy r := smul_add r x y ▸ G.add_mem (hx r) (hy r)
+  zero_mem' := by simpa using G.zero_mem
+  smul_mem' c {x} hx r := mul_smul r c x ▸ hx (r * c)
+
+lemma mem_leAddSubgroup {G : AddSubgroup M} {x : M} :
+    x ∈ leAddSubgroup R G ↔ ∀ r : R, r • x ∈ G := .rfl
+
+variable (R) in
+lemma leAddSubgroup_le (G : AddSubgroup M) :
+    (leAddSubgroup R G).toAddSubgroup ≤ G :=
+  fun x hx ↦ one_smul R x ▸ hx 1
+
+lemma le_leAddSubgroup_iff {G : AddSubgroup M} {N : Submodule R M} :
+    N ≤ leAddSubgroup R G ↔ N.toAddSubgroup ≤ G :=
+  ⟨fun H ↦ le_trans H (leAddSubgroup_le R G), fun H _ hx r ↦ H (N.smul_mem r hx)⟩
+
+lemma mem_leAddSubgroup_iff_span_le {G : AddSubgroup M} {x : M} :
+    x ∈ leAddSubgroup R G ↔ (span R {x}).toAddSubgroup ≤ G := by
+  rw [← span_singleton_le_iff_mem, le_leAddSubgroup_iff]
+
+lemma mem_leAddSubgroup_iff_of_span_eq_top
+    [Ring S] [Module R S] [Module S M] [IsScalarTower R S M]
+    (s : Set S) (hs : span R s = ⊤) {N : Submodule R M} {x} :
+    x ∈ leAddSubgroup S N.toAddSubgroup ↔ ∀ r ∈ s, r • x ∈ N := by
+  refine ⟨fun H r _ ↦ H r, fun H r ↦ ?_⟩
+  induction show r ∈ span R s from hs.ge trivial using span_induction with
+  | mem r hr => exact H r hr
+  | add a b ha hb ha' hb' => exact add_smul a b x ▸ add_mem ha' hb'
+  | smul r a ha ha' => exact smul_assoc r a x ▸ N.smul_mem r ha'
+  | zero => simp
 end AddCommGroup
 
 section AddCommGroup
