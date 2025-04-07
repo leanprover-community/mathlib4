@@ -292,6 +292,9 @@ instance range_instMinAx : Order.Frame.MinimalAxioms (range n) where
 
 instance : Order.Frame (range n) := Order.Frame.ofMinimalAxioms range_instMinAx
 
+/--
+A Nucleus is a morphism of frames from the frame it lives in to the range of the nucleus.
+-/
 def embedding_frameHom (n : Nucleus X) : FrameHom X (range n) where
   toFun := n.embedding
   map_inf' a b := by
