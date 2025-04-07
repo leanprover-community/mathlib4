@@ -249,12 +249,14 @@ theorem finprod_induction {f : α → M} (p : M → Prop) (hp₀ : p 1)
   split_ifs
   exacts [Finset.prod_induction _ _ hp₁ hp₀ fun i _ => hp₂ _, hp₀]
 
-theorem finprod_nonneg {R : Type*} [OrderedCommSemiring R] {f : α → R} (hf : ∀ x, 0 ≤ f x) :
+theorem finprod_nonneg {R : Type*} [CommSemiring R] [PartialOrder R] [IsOrderedRing R]
+    {f : α → R} (hf : ∀ x, 0 ≤ f x) :
     0 ≤ ∏ᶠ x, f x :=
   finprod_induction (fun x => 0 ≤ x) zero_le_one (fun _ _ => mul_nonneg) hf
 
 @[to_additive finsum_nonneg]
-theorem one_le_finprod' {M : Type*} [OrderedCommMonoid M] {f : α → M} (hf : ∀ i, 1 ≤ f i) :
+theorem one_le_finprod' {M : Type*} [CommMonoid M] [PartialOrder M] [IsOrderedMonoid M]
+    {f : α → M} (hf : ∀ i, 1 ≤ f i) :
     1 ≤ ∏ᶠ i, f i :=
   finprod_induction _ le_rfl (fun _ _ => one_le_mul) hf
 
@@ -504,7 +506,8 @@ theorem finprod_eq_one_of_forall_eq_one {f : α → M} (h : ∀ x, f x = 1) : �
   simp +contextual [h]
 
 @[to_additive finsum_pos']
-theorem one_lt_finprod' {M : Type*} [OrderedCancelCommMonoid M] {f : ι → M}
+theorem one_lt_finprod' {M : Type*} [CommMonoid M] [PartialOrder M] [IsOrderedCancelMonoid M]
+    {f : ι → M}
     (h : ∀ i, 1 ≤ f i) (h' : ∃ i, 1 < f i) (hf : (mulSupport f).Finite) : 1 < ∏ᶠ i, f i := by
   rcases h' with ⟨i, hi⟩
   rw [finprod_eq_prod _ hf]
@@ -982,12 +985,14 @@ theorem finprod_mem_induction (p : M → Prop) (hp₀ : p 1) (hp₁ : ∀ x y, p
     (hp₂ : ∀ x ∈ s, p <| f x) : p (∏ᶠ i ∈ s, f i) :=
   finprod_induction _ hp₀ hp₁ fun x => finprod_induction _ hp₀ hp₁ <| hp₂ x
 
-theorem finprod_cond_nonneg {R : Type*} [OrderedCommSemiring R] {p : α → Prop} {f : α → R}
+theorem finprod_cond_nonneg {R : Type*} [CommSemiring R] [PartialOrder R] [IsOrderedRing R]
+    {p : α → Prop} {f : α → R}
     (hf : ∀ x, p x → 0 ≤ f x) : 0 ≤ ∏ᶠ (x) (_ : p x), f x :=
   finprod_nonneg fun x => finprod_nonneg <| hf x
 
 @[to_additive]
-theorem single_le_finprod {M : Type*} [OrderedCommMonoid M] (i : α) {f : α → M}
+theorem single_le_finprod {M : Type*} [CommMonoid M] [PartialOrder M] [IsOrderedMonoid M]
+    (i : α) {f : α → M}
     (hf : (mulSupport f).Finite) (h : ∀ j, 1 ≤ f j) : f i ≤ ∏ᶠ j, f j := by
   classical calc
       f i ≤ ∏ j ∈ insert i hf.toFinset, f j :=

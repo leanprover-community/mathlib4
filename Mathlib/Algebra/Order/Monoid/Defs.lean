@@ -157,7 +157,7 @@ in which multiplication is cancellative and monotone. -/
 class LinearOrderedCancelCommMonoid (α : Type*) extends OrderedCancelCommMonoid α,
     LinearOrderedCommMonoid α
 
-variable [LinearOrderedCommMonoid α] {a : α}
+variable [CommMonoid α] [LinearOrder α] [IsOrderedMonoid α] {a : α}
 
 @[to_additive (attr := simp)]
 theorem one_le_mul_self_iff : 1 ≤ a * a ↔ 1 ≤ a :=

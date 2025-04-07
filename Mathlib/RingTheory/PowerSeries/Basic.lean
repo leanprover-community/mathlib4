@@ -547,12 +547,12 @@ theorem rescale_zero : rescale 0 = (C R).comp (constantCoeff R) := by
     PowerSeries.coeff_mk _ _, coeff_C]
   split_ifs with h <;> simp [h]
 
-theorem rescale_zero_apply : rescale 0 X = C R (constantCoeff R X) := by simp
+theorem rescale_zero_apply (f : R⟦X⟧) : rescale 0 f = C R (constantCoeff R f) := by simp
 
 @[simp]
 theorem rescale_one : rescale 1 = RingHom.id R⟦X⟧ := by
   ext
-  simp only [coeff_rescale, one_pow, one_mul, RingHom.id_apply]
+  simp [coeff_rescale]
 
 theorem rescale_mk (f : ℕ → R) (a : R) : rescale a (mk f) = mk fun n : ℕ => a ^ n * f n := by
   ext
