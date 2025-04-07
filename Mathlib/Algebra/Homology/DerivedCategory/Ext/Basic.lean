@@ -209,6 +209,11 @@ lemma mk₀_bijective : Function.Bijective (mk₀ (X := X) (Y := Y)) := by
 noncomputable def homEquiv₀ : Ext X Y 0 ≃ (X ⟶ Y) :=
   (Equiv.ofBijective _ (mk₀_bijective X Y)).symm
 
+@[simp]
+lemma mk₀_homEquiv₀_apply (f : Ext X Y 0) :
+    mk₀ (homEquiv₀ f) = f :=
+  homEquiv₀.left_inv f
+
 variable {n : ℕ}
 
 /-! The abelian group structure on `Ext X Y n` is defined by transporting the
@@ -294,6 +299,18 @@ lemma mk₀_zero : mk₀ (0 : X ⟶ Y) = 0 := by
 
 lemma mk₀_add (f g : X ⟶ Y) : mk₀ (f + g) = mk₀ f + mk₀ g := by
   letI := HasDerivedCategory.standard C; ext; simp [add_hom', ShiftedHom.mk₀]
+
+/-- The additive bijection `Ext X Y 0 ≃+ (X ⟶ Y)`. -/
+@[simps! symm_apply]
+noncomputable def addEquiv₀ : Ext X Y 0 ≃+ (X ⟶ Y) where
+  toEquiv := homEquiv₀
+  map_add' x y := by apply
+    homEquiv₀.symm.injective (by simp [mk₀_add])
+
+@[simp]
+lemma mk₀_addEquiv₀_apply (f : Ext X Y 0) :
+    mk₀ (addEquiv₀ f) = f :=
+  addEquiv₀.left_inv f
 
 section
 
