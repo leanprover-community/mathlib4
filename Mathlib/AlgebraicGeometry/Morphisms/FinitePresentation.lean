@@ -6,6 +6,7 @@ Authors: Christian Merten
 import Mathlib.AlgebraicGeometry.Morphisms.Affine
 import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
+import Mathlib.AlgebraicGeometry.Properties
 import Mathlib.RingTheory.RingHom.FinitePresentation
 import Mathlib.RingTheory.Spectrum.Prime.Chevalley
 
