@@ -374,7 +374,7 @@ lemma test {ι} (f g : ι  -> ι → N)
 
 /--
 Lift the polar
---/
+-/
 def polar_lift {ι} (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R → M) : Sym2 ι → N :=
   Sym2.lift ⟨fun i j => (polar Q) (g i (f i)) (g j (f j)), fun i j => by simp only [polar_comm]⟩
 
@@ -390,7 +390,7 @@ theorem map_finsupp_sum {ι} [DecidableEq ι] (Q : QuadraticMap R M N) (f : ι �
 
 /--
 Lift the polar (LC)
---/
+-/
 def polar_lift_lc {ι} (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R) :
   Sym2 ι → N := Sym2.lift ⟨fun i j => (l i) • (l j) • (polar Q) (g i) (g j), fun i j =>
   by simp only [polar_comm]; rw [smul_comm]⟩
