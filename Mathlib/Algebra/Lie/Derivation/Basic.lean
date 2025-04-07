@@ -107,16 +107,12 @@ lemma apply_lie_eq_add (D : LieDerivation R L L) (a b : L) :
 theorem eqOn_lieSpan {s : Set L} (h : Set.EqOn D1 D2 s) :
     Set.EqOn D1 D2 (LieSubalgebra.lieSpan R L s) := by
   intro _ hx
-  refine LieSubalgebra.lieSpan_induction (R := R) (L := L) ?_ ?_ ?_ ?_ ?_ hx
-  · intro _ hx
-    exact h hx
-  · simp only [map_zero]
-  · intro _ _ _ _ hx hy
-    simp only [map_add, hx, hy]
-  · intro _ _ _ hx
-    simp only [map_smul, hx]
-  intro _ _ _ _ hx hy
-  simp only [apply_lie_eq_sub, hx, hy]
+  induction hx using LieSubalgebra.lieSpan_induction with
+  | mem x hx => exact h hx
+  | zero => simp
+  | add x y _ _ hx hy => simp [hx, hy]
+  | smul t x _ hx => simp [hx]
+  | lie x y _ _ hx hy => simp [hx, hy]
 
 /-- If the Lie span of a set is the whole Lie algebra, then two Lie derivations equal on this set
 are equal on the whole Lie algebra. -/
