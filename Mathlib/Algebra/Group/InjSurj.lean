@@ -185,7 +185,8 @@ protected abbrev addCommMonoidWithOne {M₁} [Zero M₁] [One M₁] [Add M₁] [
   __ := hf.addCommMonoid _ zero add (swap nsmul)
 
 /-- A type endowed with `1` and `*` is a cancel commutative monoid, if it admits an injective map
-that preserves `1` and `*` to a cancel commutative monoid.  See `LibraryNote.reducibleNonInstances`. -/
+that preserves `1` and `*` to a cancel commutative monoid.
+See `LibraryNote.reducibleNonInstances`. -/
 @[to_additive
 "A type endowed with `0` and `+` is an additive cancel commutative monoid,
 if it admits an injective map that preserves `0` and `+` to an additive cancel commutative monoid."]
@@ -219,7 +220,8 @@ protected abbrev invOneClass [InvOneClass M₂] (f : M₁ → M₂) (hf : Inject
 variable [Div M₁] [Pow M₁ ℤ]
 
 /-- A type endowed with `1`, `*`, `⁻¹`, and `/` is a `DivInvMonoid` if it admits an injective map
-that preserves `1`, `*`, `⁻¹`, and `/` to a `DivInvMonoid`. See `LibraryNote.reducibleNonInstances`. -/
+that preserves `1`, `*`, `⁻¹`, and `/` to a `DivInvMonoid`.
+See `LibraryNote.reducibleNonInstances`. -/
 @[to_additive subNegMonoid
 "A type endowed with `0`, `+`, unary `-`, and binary `-` is a
 `SubNegMonoid` if it admits an injective map that preserves `0`, `+`, unary `-`, and binary `-` to
@@ -251,7 +253,8 @@ protected abbrev divInvOneMonoid [DivInvOneMonoid M₂] (f : M₁ → M₂) (hf 
   { hf.divInvMonoid f one mul inv div npow zpow, hf.invOneClass f one inv with }
 
 /-- A type endowed with `1`, `*`, `⁻¹`, and `/` is a `DivisionMonoid` if it admits an injective map
-that preserves `1`, `*`, `⁻¹`, and `/` to a `DivisionMonoid`. See `LibraryNote.reducibleNonInstances` -/
+that preserves `1`, `*`, `⁻¹`, and `/` to a `DivisionMonoid`.
+See `LibraryNote.reducibleNonInstances` -/
 @[to_additive
 "A type endowed with `0`, `+`, unary `-`, and binary `-`
 is a `SubtractionMonoid` if it admits an injective map that preserves `0`, `+`, unary `-`, and
@@ -444,7 +447,8 @@ protected abbrev involutiveInv {M₂ : Type*} [Inv M₂] [InvolutiveInv M₁] (f
 variable [Inv M₂] [Div M₂] [Pow M₂ ℤ]
 
 /-- A type endowed with `1`, `*`, `⁻¹`, and `/` is a `DivInvMonoid` if it admits a surjective map
-that preserves `1`, `*`, `⁻¹`, and `/` to a `DivInvMonoid`. See `LibraryNote.reducibleNonInstances`. -/
+that preserves `1`, `*`, `⁻¹`, and `/` to a `DivInvMonoid`.
+See `LibraryNote.reducibleNonInstances`. -/
 @[to_additive subNegMonoid
 "A type endowed with `0`, `+`, unary `-`, and binary `-` is a
 `SubNegMonoid` if it admits a surjective map that preserves `0`, `+`, unary `-`, and binary `-` to
