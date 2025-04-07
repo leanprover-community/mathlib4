@@ -158,8 +158,8 @@ lemma pairing_two_two_iff :
 lemma pairing_neg_two_neg_two_iff :
     P.pairing i j = -2 ∧ P.pairing j i = -2 ↔ P.root i = -P.root j := by
   simp only [← neg_eq_iff_eq_neg]
-  simpa [eq_comm (a := -P.root i), root_eq_neg_iff] using
-    P.pairing_two_two_iff i (P.reflection_perm j j)
+  simpa [eq_comm (a := -P.root i), eq_comm (b := j)] using
+    P.pairing_two_two_iff (P.reflection_perm i i) j
 
 variable [NoZeroSMulDivisors R N]
 

@@ -467,8 +467,7 @@ lemma setOf_index_eq_univ :
       twoShortAddLong P, -twoShortAddLong P,
       threeShortAddLong P, -threeShortAddLong P,
       threeShortAddTwoLong P, -threeShortAddTwoLong P } = univ :=
-  eq_univ_iff_forall.mpr fun i ↦ by simpa only [mem_insert_iff, mem_singleton_iff, mem_cons,
-    not_mem_nil, or_false, EmbeddingLike.apply_eq_iff_eq, root_eq_neg_iff'] using mem_allRoots P i
+  eq_univ_iff_forall.mpr fun i ↦ by simpa using mem_allRoots P i
 
 end IsIrreducible
 
