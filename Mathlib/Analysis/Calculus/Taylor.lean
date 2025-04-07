@@ -230,6 +230,38 @@ theorem hasDerivAt_taylorWithinEval_succ {x₀ x : ℝ} {s : Set ℝ} (f : ℝ �
   field_simp [Nat.factorial_succ]
   ring
 
+theorem taylor_isLittleO'' {f f': ℝ → E} {x₀ : ℝ} {n : ℕ} {s : Set ℝ}
+    (hs : Convex ℝ s) (hx₀s : x₀ ∈ s)
+    (hff' : ∀ x, HasDerivWithinAt f (f' x) s x) (hf' : f' =o[𝓝[s] x₀] fun x ↦ (x - x₀) ^ n) :
+    (fun x ↦ f x - f x₀) =o[𝓝[s] x₀] fun x ↦ (x - x₀) ^ (n + 1) := by
+  rw [Asymptotics.isLittleO_iff] at hf' ⊢
+  intro c hc
+  simp_rw [norm_pow, pow_succ, ← mul_assoc]
+  simp_rw [norm_pow] at hf'
+  have : ∀ᶠ x in 𝓝[s] x₀, uIcc x₀ x ⊆ s ∧ ∀ y ∈ uIcc x₀ x, ‖f' y‖ ≤ c * ‖x - x₀‖ ^ n := by
+    sorry
+  filter_upwards [this] with x ⟨h_Icc, h⟩
+  refine hs.norm_image_sub_le_of_norm_hasFDerivWithin_le (f := fun x ↦ f x - f x₀)
+    (f' := fun x ↦ f' x) ?_ ?_  h _ _ h
+  sorry
+
+/-- **Taylor's theorem** using little-o notation. -/
+theorem taylor_isLittleO' {f : ℝ → E} {x₀ : ℝ} {n : ℕ} {s : Set ℝ}
+    (hs : Convex ℝ s) (hx₀s : x₀ ∈ s) (hf : ContDiffOn ℝ n f s) :
+    (fun x ↦ f x - taylorWithinEval f n s x₀ x) =o[𝓝[s] x₀] fun x ↦ (x - x₀) ^ n := by
+  induction n generalizing f with
+  | zero =>
+    simp only [taylor_within_zero_eval, pow_zero, Asymptotics.isLittleO_one_iff]
+    rw [tendsto_sub_nhds_zero_iff]
+    exact hf.continuousOn.continuousWithinAt hx₀s
+  | succ n h =>
+    rcases s.eq_singleton_or_nontrivial hx₀s with rfl | hs'
+    · simp
+    replace hs' := uniqueDiffOn_convex hs (hs.nontrivial_iff_nonempty_interior.1 hs')
+    simp only [Nat.cast_add, Nat.cast_one] at hf
+    specialize h (ContDiffOn.of_succ hf)
+    sorry
+
 /-- **Taylor's theorem** as a limit. -/
 theorem taylor_tendsto' {f : ℝ → E} {x₀ : ℝ} {n : ℕ} {s : Set ℝ}
     (hs : Convex ℝ s) (hx₀s : x₀ ∈ s) (hf : ContDiffOn ℝ n f s) :
@@ -246,6 +278,21 @@ theorem taylor_tendsto' {f : ℝ → E} {x₀ : ℝ} {n : ℕ} {s : Set ℝ}
       convert tendsto_pure_nhds _ _
       simp [taylorWithinEval_self]
     replace hs' := uniqueDiffOn_convex hs (hs.nontrivial_iff_nonempty_interior.1 hs')
+    simp only [Nat.cast_add, Nat.cast_one] at hf
+    have h_le : ∀ᶠ x in 𝓝[s] x₀,
+        ‖(derivWithin f s - taylorWithinEval (derivWithin f s) n s x₀) x‖ ≤ ‖x - x₀‖ ^ n := by
+      sorry
+    specialize h (ContDiffOn.of_succ hf)
+    have hf_le y (hy : y ∈ s) := hs.norm_image_sub_le_of_norm_hasDerivWithin_le
+      (f := fun x ↦ f x - taylorWithinEval f (n + 1) s x₀ x)
+      (f' := derivWithin f s - taylorWithinEval (derivWithin f s) n s x₀) ?_ ?_
+      hx₀s hy (C := ‖y - x₀‖ ^ n)
+    · sorry
+    · intro x hx
+      refine HasDerivWithinAt.sub ?_ ?_
+      · sorry
+      · exact (hasDerivAt_taylorWithinEval_succ f n).hasDerivWithinAt
+    · sorry
     rw [← tendsto_inf_principal_nhds_iff_of_forall_eq (s := {x₀}ᶜ), ← nhdsWithin_inter', ← diff_eq]
     swap
     · intro x hx
