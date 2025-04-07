@@ -394,7 +394,7 @@ lemma isOrthogonal_short_and_long {i : ι} (hi : P.root i ∉ allRoots P) :
 
 section IsIrreducible
 
-variable [Invertible (2 : R)] [P.IsIrreducible]
+variable [P.IsIrreducible]
 
 @[simp] lemma span_eq_top :
     span R {longRoot P, shortRoot P} = ⊤ := by
