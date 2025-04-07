@@ -114,32 +114,32 @@ theorem generalizedEisenstein [IsDomain R] {q f : R[X]} {p : ℕ}
       simp [← leadingCoeff_mul, ← h_eq, hf_monic]
     have hhP : h.leadingCoeff ∉ P :=
       fun hhP ↦ hP.ne_top (Ideal.eq_top_of_isUnit_mem P hhP hhP')
-    obtain ⟨m, r, hg, hr⟩ := exists_eq_C_leadingCoeff_mul_pow_add hq_irr hq_monic
-      (by rw [← hfmodP, h_eq, Polynomial.map_mul]; apply dvd_mul_right) hgP
-    obtain ⟨n, s, hh, hs⟩ := exists_eq_C_leadingCoeff_mul_pow_add hq_irr hq_monic
-      (by rw [← hfmodP, h_eq, Polynomial.map_mul]; apply dvd_mul_left) hhP
-    by_cases hm : m = 0
-    · rw [hm, pow_zero, mul_one] at hg
-      left
+    have (g : R[X]) (hg_div : g ∣ f) : ∃ m r, g = C g.leadingCoeff * q ^ m + r ∧
+          r.map (algebraMap R K) = 0 ∧ (m = 0 → IsUnit g) := by
+      have hgP : IsUnit g.leadingCoeff := by
+        apply isUnit_of_dvd_unit (y := f.leadingCoeff)
+        exact leadingCoeff_dvd_leadingCoeff hg_div
+        simp [hf_monic]
+      have hgP' : g.leadingCoeff ∉ P := fun h ↦ hP.ne_top (P.eq_top_of_isUnit_mem h hgP)
+      obtain ⟨m, r, hg, hr⟩ := exists_eq_C_leadingCoeff_mul_pow_add hq_irr hq_monic
+        (by rw [← hfmodP]; exact map_dvd (algebraMap R K) hg_div) hgP'
+      use m, r, hg, hr
+      intro hm
+      rw [hm, pow_zero, mul_one] at hg
       suffices g.natDegree = 0 by
         obtain ⟨a, rfl⟩ := Polynomial.natDegree_eq_zero.mp this
         apply IsUnit.map
-        rwa [leadingCoeff_C] at hgP'
+        rwa [leadingCoeff_C] at hgP
       by_contra hg'
-      apply hgP
+      apply hgP'
       rw [hg, leadingCoeff, coeff_add, ← hg, coeff_C, if_neg hg', zero_add,
         RingHom.mem_ker, ← coeff_map, hr, coeff_zero]
+    obtain ⟨m, r, hg, hr, hm0⟩ := this g (h_eq ▸ dvd_mul_right g h)
+    obtain ⟨n, s, hh, hs, hn0⟩ := this h (h_eq ▸ dvd_mul_left h g)
+    by_cases hm : m = 0
+    · left; exact hm0 hm
     by_cases hn : n = 0
-    · rw [hn, pow_zero, mul_one] at hh
-      right
-      suffices h.natDegree = 0 by
-        obtain ⟨a, rfl⟩ := Polynomial.natDegree_eq_zero.mp this
-        apply IsUnit.map
-        rwa [leadingCoeff_C] at hhP'
-      by_contra hh'
-      apply hhP
-      rw [hh, leadingCoeff, coeff_add, ← hh, coeff_C, if_neg hh', zero_add,
-        RingHom.mem_ker, ← coeff_map, hs, coeff_zero]
+    · right; exact hn0 hn
     have : f %ₘ q = (r * s) %ₘ q := by
       rw [h_eq, hg, hh]
       simp only [add_mul, mul_add, map_add, ← modByMonicHom_apply]
