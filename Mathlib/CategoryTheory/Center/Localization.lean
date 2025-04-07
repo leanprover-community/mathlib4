@@ -20,8 +20,6 @@ universe w v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
 
---open Limits
-
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   (r s : CatCenter C) (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W]
 
