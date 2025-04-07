@@ -71,6 +71,14 @@ def abs.unexpander : Lean.PrettyPrinter.Unexpander
 
 @[to_additive] lemma mabs_div_comm (a b : α) : |a / b|ₘ = |b / a|ₘ := by rw [← mabs_inv, inv_div]
 
+@[to_additive] lemma mabs_ite (p : Prop) [Decidable p] :
+    |if p then a else b|ₘ = if p then |a|ₘ else |b|ₘ := by
+  split_ifs <;> rfl
+
+@[to_additive] lemma mabs_dite (p : Prop) [Decidable p] (a : p → α) (b : ¬p → α) :
+    |if h : p then a h else b h|ₘ = if h : p then |a h|ₘ else |b h|ₘ := by
+  split_ifs <;> rfl
+
 variable [MulLeftMono α]
 
 @[to_additive] lemma mabs_of_one_le (h : 1 ≤ a) : |a|ₘ = a :=
