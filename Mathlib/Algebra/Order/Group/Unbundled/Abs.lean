@@ -76,8 +76,8 @@ def abs.unexpander : Lean.PrettyPrinter.Unexpander
   apply_ite _ _ _ _
 
 @[to_additive] lemma mabs_dite (p : Prop) [Decidable p] (a : p → α) (b : ¬p → α) :
-    |if h : p then a h else b h|ₘ = if h : p then |a h|ₘ else |b h|ₘ := by
-  split_ifs <;> rfl
+    |if h : p then a h else b h|ₘ = if h : p then |a h|ₘ else |b h|ₘ :=
+  apply_dite _ _ _ _
 
 variable [MulLeftMono α]
 
