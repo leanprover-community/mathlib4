@@ -76,7 +76,7 @@ theorem attachFin_Iic : attachFin (Iic a) (fun _x hx ↦ (mem_Iic.mp hx).trans_l
   ext; simp
 
 @[simp]
-theorem attachFin_Ico_size : attachFin (Ico a n) (fun _x hx ↦ (mem_Ico.mp hx).2) = Ici a := by
+theorem attachFin_Ico_eq_Ici : attachFin (Ico a n) (fun _x hx ↦ (mem_Ico.mp hx).2) = Ici a := by
   ext; simp
 
 @[simp]
@@ -84,7 +84,7 @@ theorem attachFin_Iio : attachFin (Iio a) (fun _x hx ↦ (mem_Iio.mp hx).trans a
   ext; simp
 
 @[simp]
-theorem attachFin_Ioo_size : attachFin (Ioo a n) (fun _x hx ↦ (mem_Ioo.mp hx).2) = Ioi a := by
+theorem attachFin_Ioo_eq_Ioi : attachFin (Ioo a n) (fun _x hx ↦ (mem_Ioo.mp hx).2) = Ioi a := by
   ext; simp
 
 section deprecated
@@ -105,10 +105,10 @@ set_option linter.deprecated false in
 @[deprecated attachFin_uIcc (since := "2025-04-06")]
 theorem uIcc_eq_finset_subtype : uIcc a b = (uIcc (a : ℕ) b).fin n := Icc_eq_finset_subtype _ _
 
-@[deprecated attachFin_Ico_size (since := "2025-04-06")]
+@[deprecated attachFin_Ico_eq_Ici (since := "2025-04-06")]
 theorem Ici_eq_finset_subtype : Ici a = (Ico (a : ℕ) n).fin n := by ext; simp
 
-@[deprecated attachFin_Ioo_size (since := "2025-04-06")]
+@[deprecated attachFin_Ioo_eq_Ioi (since := "2025-04-06")]
 theorem Ioi_eq_finset_subtype : Ioi a = (Ioo (a : ℕ) n).fin n := by ext; simp
 
 @[deprecated attachFin_Iic (since := "2025-04-06")]
@@ -157,12 +157,12 @@ theorem card_uIcc : #(uIcc a b) = (b - a : ℤ).natAbs + 1 := by
 
 @[simp]
 theorem map_valEmbedding_Ici : (Ici a).map Fin.valEmbedding = Icc ↑a (n - 1) := by
-  rw [← attachFin_Ico_size, map_valEmbedding_attachFin, Nat.Icc_pred_right]
+  rw [← attachFin_Ico_eq_Ici, map_valEmbedding_attachFin, Nat.Icc_pred_right]
   exact a.pos
 
 @[simp]
 theorem map_valEmbedding_Ioi : (Ioi a).map Fin.valEmbedding = Ioc ↑a (n - 1) := by
-  rw [← attachFin_Ioo_size, map_valEmbedding_attachFin]
+  rw [← attachFin_Ioo_eq_Ioi, map_valEmbedding_attachFin]
   ext i
   simp [Nat.le_sub_one_iff_lt a.pos]
 
@@ -176,7 +176,7 @@ theorem map_valEmbedding_Iio : (Iio b).map Fin.valEmbedding = Iio ↑b := by
 
 @[simp]
 theorem card_Ici : #(Ici a) = n - a := by
-  rw [← attachFin_Ico_size, card_attachFin, Nat.card_Ico]
+  rw [← attachFin_Ico_eq_Ici, card_attachFin, Nat.card_Ico]
 
 @[simp]
 theorem card_Ioi : #(Ioi a) = n - 1 - a := by rw [← card_map, map_valEmbedding_Ioi, Nat.card_Ioc]
