@@ -143,23 +143,23 @@ theorem eball_contractible {x : E} {r : ENNReal} (hr : 0 < r) :
     apply ball_contractible
     simpa using hr
 
-theorem ball_pathConnectedSpace {x : E} {r : ℝ} (hr : 0 < r) :
-    PathConnectedSpace (ball x r) :=
-  @ContractibleSpace.instPathConnectedSpace _ _ (ball_contractible hr)
+theorem isPathConnected_ball {x : E} {r : ℝ} (hr : 0 < r) :
+    IsPathConnected (ball x r) := by
+  rw [isPathConnected_iff_pathConnectedSpace]
+  exact @ContractibleSpace.instPathConnectedSpace _ _ (ball_contractible hr)
 
-theorem eball_pathConnectedSpace {x : E} {r : ENNReal} (hr : 0 < r) :
-    PathConnectedSpace (EMetric.ball x r) :=
-  @ContractibleSpace.instPathConnectedSpace _ _ (eball_contractible hr)
+theorem isPathConnected_eball {x : E} {r : ENNReal} (hr : 0 < r) :
+    IsPathConnected (EMetric.ball x r) := by
+  rw [isPathConnected_iff_pathConnectedSpace]
+  exact @ContractibleSpace.instPathConnectedSpace _ _ (eball_contractible hr)
 
 theorem isConnected_ball {x : E} {r : ℝ} (hr : 0 < r) :
-    IsConnected (ball x r) := by
-  rw [isConnected_iff_connectedSpace]
-  exact @PathConnectedSpace.connectedSpace _ _ (ball_pathConnectedSpace hr)
+    IsConnected (ball x r) :=
+  (isPathConnected_ball hr).isConnected
 
 theorem isConnected_eball {x : E} {r : ENNReal} (hr : 0 < r) :
-    IsConnected (EMetric.ball x r) := by
-  rw [isConnected_iff_connectedSpace]
-  exact @PathConnectedSpace.connectedSpace _ _ (eball_pathConnectedSpace hr)
+    IsConnected (EMetric.ball x r) :=
+  (isPathConnected_eball hr).isConnected
 
 end Metric
 
