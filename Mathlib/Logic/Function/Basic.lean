@@ -341,13 +341,13 @@ theorem LeftInverse.eq_rightInverse {f : α → β} {g₁ g₂ : β → α} (h�
 /-- We can use choice to construct explicitly a partial inverse for
   a given injective function `f`. -/
 noncomputable def partialInv {α β} (f : α → β) (b : β) : Option α :=
-  open Classical in
+  open scoped Classical in
   if h : ∃ a, f a = b then some (Classical.choose h) else none
 
 theorem partialInv_of_injective {α β} {f : α → β} (I : Injective f) : IsPartialInv f (partialInv f)
   | a, b =>
   ⟨fun h =>
-    open Classical in
+    open scoped Classical in
     have hpi : partialInv f b = if h : ∃ a, f a = b then some (Classical.choose h) else none :=
       rfl
     if h' : ∃ a, f a = b
