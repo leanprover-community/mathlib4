@@ -13,7 +13,7 @@ This file defines admissible linear change of variables of Weierstrass curves.
 ## Main definitions
 
  * `WeierstrassCurve.VariableChange`: a change of variables of Weierstrass curves.
- * An instance which states that change of variables form a group.
+ * An instance which states that change of variables forms a group.
  * An instance which states that change of variables acts on Weierstrass curves.
 
 ## Main statements
@@ -111,7 +111,7 @@ instance : Group (VariableChange R) where
     · linear_combination -C.s * C.u.inv_mul
     · linear_combination (C.r * C.s - C.t) * pow_mul_pow_eq_one 3 C.u.inv_mul
         + -C.r * C.s * pow_mul_pow_eq_one 2 C.u.inv_mul
-  mul_assoc C C' C'' := by
+  mul_assoc _ _ _ := by
     ext <;> simp only [mul_def, Units.val_mul] <;> ring1
 
 end VariableChange
