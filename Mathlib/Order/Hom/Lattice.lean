@@ -105,19 +105,19 @@ variable [FunLike F α β]
 -- Porting note: changes to the typeclass inference system mean that we need to
 -- make a lot of changes here, adding `outParams`, changing `[]`s into `{}` and
 -- so on.
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) SupHomClass.toOrderHomClass [SemilatticeSup α] [SemilatticeSup β]
     [SupHomClass F α β] : OrderHomClass F α β :=
   { ‹SupHomClass F α β› with
     map_rel := fun f a b h => by rw [← sup_eq_right, ← map_sup, sup_eq_right.2 h] }
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) InfHomClass.toOrderHomClass [SemilatticeInf α] [SemilatticeInf β]
     [InfHomClass F α β] : OrderHomClass F α β :=
   { ‹InfHomClass F α β› with
     map_rel := fun f a b h => by rw [← inf_eq_left, ← map_inf, inf_eq_left.2 h] }
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) LatticeHomClass.toInfHomClass [Lattice α] [Lattice β]
     [LatticeHomClass F α β] : InfHomClass F α β :=
   { ‹LatticeHomClass F α β› with }
@@ -128,7 +128,7 @@ section Equiv
 
 variable [EquivLike F α β]
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) OrderIsoClass.toSupHomClass [SemilatticeSup α] [SemilatticeSup β]
     [OrderIsoClass F α β] : SupHomClass F α β :=
   { show OrderHomClass F α β from inferInstance with
@@ -136,14 +136,14 @@ instance (priority := 100) OrderIsoClass.toSupHomClass [SemilatticeSup α] [Semi
       eq_of_forall_ge_iff fun c => by simp only [← le_map_inv_iff, sup_le_iff] }
 
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) OrderIsoClass.toInfHomClass [SemilatticeInf α] [SemilatticeInf β]
     [OrderIsoClass F α β] : InfHomClass F α β :=
   { show OrderHomClass F α β from inferInstance with
     map_inf := fun f a b =>
       eq_of_forall_le_iff fun c => by simp only [← map_inv_le_iff, le_inf_iff] }
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) OrderIsoClass.toLatticeHomClass [Lattice α] [Lattice β]
     [OrderIsoClass F α β] : LatticeHomClass F α β :=
   { OrderIsoClass.toSupHomClass, OrderIsoClass.toInfHomClass with }

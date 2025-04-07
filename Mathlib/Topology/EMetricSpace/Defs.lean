@@ -261,7 +261,7 @@ abbrev PseudoEMetricSpace.replaceUniformity {α} [U : UniformSpace α] (m : Pseu
   uniformity_edist := H.trans (@PseudoEMetricSpace.uniformity_edist α _)
 
 /-- The extended pseudometric induced by a function taking values in a pseudoemetric space.
-See note [reducible non-instances]. -/
+See `LibraryNote.reducibleNonInstances`. -/
 abbrev PseudoEMetricSpace.induced {α β} (f : α → β) (m : PseudoEMetricSpace β) :
     PseudoEMetricSpace α where
   edist x y := edist (f x) (f y)
@@ -608,7 +608,7 @@ abbrev EMetricSpace.replaceUniformity {γ} [U : UniformSpace γ] (m : EMetricSpa
   uniformity_edist := H.trans (@PseudoEMetricSpace.uniformity_edist γ _)
 
 /-- The extended metric induced by an injective function taking values in an emetric space.
-See Note [reducible non-instances]. -/
+See `LibraryNote.reducibleNonInstances`. -/
 abbrev EMetricSpace.induced {γ β} (f : γ → β) (hf : Function.Injective f) (m : EMetricSpace β) :
     EMetricSpace γ :=
   { PseudoEMetricSpace.induced f m.toPseudoEMetricSpace with

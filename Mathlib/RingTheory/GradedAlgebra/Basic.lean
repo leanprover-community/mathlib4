@@ -170,7 +170,7 @@ abbrev GradedAlgebra :=
 available. This makes the `left_inv` condition easier to prove, and phrases the `right_inv`
 condition in a way that allows custom `@[ext]` lemmas to apply.
 
-See note [reducible non-instances]. -/
+See `LibraryNote.reducibleNonInstances`. -/
 abbrev GradedAlgebra.ofAlgHom [SetLike.GradedMonoid 𝒜] (decompose : A →ₐ[R] ⨁ i, 𝒜 i)
     (right_inv : (DirectSum.coeAlgHom 𝒜).comp decompose = AlgHom.id R A)
     (left_inv : ∀ i (x : 𝒜 i), decompose (x : A) = DirectSum.of (fun i => ↥(𝒜 i)) i x) :

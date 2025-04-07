@@ -28,7 +28,7 @@ class NonUnitalSubsemiringClass (S : Type*) (R : outParam (Type u)) [NonUnitalNo
   extends AddSubmonoidClass S R where
   mul_mem : ∀ {s : S} {a b : R}, a ∈ s → b ∈ s → a * b ∈ s
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) NonUnitalSubsemiringClass.mulMemClass (S : Type*) (R : Type u)
     [NonUnitalNonAssocSemiring R] [SetLike S R] [h : NonUnitalSubsemiringClass S R] :
     MulMemClass S R :=

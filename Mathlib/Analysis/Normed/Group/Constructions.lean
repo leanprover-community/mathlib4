@@ -198,21 +198,21 @@ end NNNorm
 
 namespace OrderDual
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 @[to_additive]
 instance (priority := 100) seminormedGroup [SeminormedGroup E] : SeminormedGroup Eᵒᵈ :=
   ‹SeminormedGroup E›
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 @[to_additive]
 instance (priority := 100) seminormedCommGroup [SeminormedCommGroup E] : SeminormedCommGroup Eᵒᵈ :=
   ‹SeminormedCommGroup E›
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 @[to_additive]
 instance (priority := 100) normedGroup [NormedGroup E] : NormedGroup Eᵒᵈ := ‹NormedGroup E›
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 @[to_additive]
 instance (priority := 100) normedCommGroup [NormedCommGroup E] : NormedCommGroup Eᵒᵈ :=
   ‹NormedCommGroup E›

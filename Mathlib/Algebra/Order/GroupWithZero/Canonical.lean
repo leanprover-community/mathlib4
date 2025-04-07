@@ -53,7 +53,7 @@ variable [LinearOrderedCommMonoidWithZero α] {a b : α} {n : ℕ}
 The following facts are true more generally in a (linearly) ordered commutative monoid.
 -/
 /-- Pullback a `LinearOrderedCommMonoidWithZero` under an injective map.
-See note [reducible non-instances]. -/
+See `LibraryNote.reducibleNonInstances`. -/
 abbrev Function.Injective.linearOrderedCommMonoidWithZero {β : Type*} [Zero β] [Bot β] [One β]
     [Mul β] [Pow β ℕ] [Max β] [Min β] (f : β → α) (hf : Function.Injective f) (zero : f 0 = 0)
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
@@ -106,36 +106,36 @@ end LinearOrderedCommMonoidWithZero
 section LinearOrderedCommGroupWithZero
 variable [LinearOrderedCommGroupWithZero α] {a b c d : α} {m n : ℕ}
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) LinearOrderedCommGroupWithZero.toMulPosMono : MulPosMono α where
   elim _a _b _c hbc := mul_le_mul_right' hbc _
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) LinearOrderedCommGroupWithZero.toPosMulMono : PosMulMono α where
   elim _a _b _c hbc := mul_le_mul_left' hbc _
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) LinearOrderedCommGroupWithZero.toPosMulReflectLE :
     PosMulReflectLE α where
   elim a b c hbc := by simpa [a.2.ne'] using mul_le_mul_left' hbc a⁻¹
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) LinearOrderedCommGroupWithZero.toMulPosReflectLE :
     MulPosReflectLE α where
   elim a b c hbc := by simpa [a.2.ne'] using mul_le_mul_right' hbc a⁻¹
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) LinearOrderedCommGroupWithZero.toPosMulReflectLT :
     PosMulReflectLT α where elim _a _b _c := lt_of_mul_lt_mul_left'
 
 #adaptation_note /-- 2025-03-29 lean4#7717 Needed to add `dsimp only` -/
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) LinearOrderedCommGroupWithZero.toPosMulStrictMono :
     PosMulStrictMono α where
   elim a b c hbc := by dsimp only; by_contra! h; exact hbc.not_le <| (mul_le_mul_left a.2).1 h
 
 #adaptation_note /-- 2025-03-29 lean4#7717 Needed to add `dsimp only` -/
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) LinearOrderedCommGroupWithZero.toMulPosStrictMono :
     MulPosStrictMono α where
   elim a b c hbc := by dsimp only; by_contra! h; exact hbc.not_le <| (mul_le_mul_right a.2).1 h

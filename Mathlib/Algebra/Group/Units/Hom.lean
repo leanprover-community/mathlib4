@@ -257,7 +257,7 @@ theorem MonoidHom.isLocalHom_comp (g : S →* T) (f : R →* S) [IsLocalHom g]
 @[deprecated (since := "2024-10-10")]
 alias MonoidHom.isLocalRingHom_comp := MonoidHom.isLocalHom_comp
 
--- see note [lower instance priority]
+-- see `LibraryNote.lowerInstancePriority`
 @[instance 100]
 theorem isLocalHom_toMonoidHom (f : F) [IsLocalHom f] :
     IsLocalHom (f : R →* S) :=

@@ -651,7 +651,7 @@ variable [IsDomain K] [Algebra.IsIntegral F K] [CharZero F]
 theorem IsSeparable.of_integral (x : K) : IsSeparable F x :=
   (minpoly.irreducible <| Algebra.IsIntegral.isIntegral x).separable
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 variable (K) in
 /-- A integral field extension in characteristic 0 is separable. -/
 protected instance (priority := 100) Algebra.IsSeparable.of_integral : Algebra.IsSeparable F K :=

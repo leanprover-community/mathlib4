@@ -35,7 +35,7 @@ class HasUpperLowerClosure (α : Type*) [TopologicalSpace α] [Preorder α] : Pr
 
 variable {α : Type*} [TopologicalSpace α]
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 @[to_additive]
 instance (priority := 100) OrderedCommGroup.to_hasUpperLowerClosure [OrderedCommGroup α]
     [ContinuousConstSMul α α] : HasUpperLowerClosure α where

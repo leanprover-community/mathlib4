@@ -58,7 +58,6 @@ instance (priority := 100) instOfNatAtLeastTwo {n : ℕ} [NatCast R] [Nat.AtLeas
     OfNat R n where
   ofNat := n.cast
 
-library_note "no_index around OfNat.ofNat"
 /--
 When writing lemmas about `OfNat.ofNat` that assume `Nat.AtLeastTwo`, the term needs to be wrapped
 in `no_index` so as not to confuse `simp`, as `no_index (OfNat.ofNat n)`.
@@ -68,6 +67,7 @@ Rather than referencing this library note, use `ofNat(n)` as a shorthand for
 
 Some discussion is [on Zulip here](https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.E2.9C.94.20Polynomial.2Ecoeff.20example/near/395438147).
 -/
+def LibraryNote.noindexAroundOfNatOfNat : LibraryNote := ()
 
 @[simp, norm_cast] theorem Nat.cast_ofNat {n : ℕ} [NatCast R] [Nat.AtLeastTwo n] :
   (Nat.cast ofNat(n) : R) = ofNat(n) := rfl
@@ -91,7 +91,6 @@ class AddMonoidWithOne (R : Type*) extends NatCast R, AddMonoid R, One R where
 /-- An `AddCommMonoidWithOne` is an `AddMonoidWithOne` satisfying `a + b = b + a`. -/
 class AddCommMonoidWithOne (R : Type*) extends AddMonoidWithOne R, AddCommMonoid R
 
-library_note "coercion into rings"
 /--
 Coercions such as `Nat.castCoe` that go from a concrete structure such as
 `ℕ` to an arbitrary ring `R` should be set up as follows:
@@ -106,6 +105,7 @@ Sometimes we also need to declare the `CoeHTCT` instance
 if we need to shadow another coercion
 (e.g. `Nat.cast` should be used over `Int.ofNat`).
 -/
+def LibraryNote.coercionIntoRings : LibraryNote := ()
 
 namespace Nat
 

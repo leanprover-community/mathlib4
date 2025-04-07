@@ -8,6 +8,7 @@ import Mathlib.Data.Int.Notation
 import Mathlib.Data.Nat.BinaryRec
 import Mathlib.Logic.Function.Defs
 import Mathlib.Tactic.Simps.Basic
+import Mathlib.Tactic.Basic
 import Mathlib.Tactic.OfNat
 import Batteries.Logic
 
@@ -228,12 +229,13 @@ end CommMagma
 class LeftCancelSemigroup (G : Type u) extends Semigroup G where
   protected mul_left_cancel : ∀ a b c : G, a * b = a * c → b = c
 
-library_note "lower cancel priority" /--
+/--
 We lower the priority of inheriting from cancellative structures.
 This attempts to avoid expensive checks involving bundling and unbundling with the `IsDomain` class.
 since `IsDomain` already depends on `Semiring`, we can synthesize that one first.
 Zulip discussion: https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Why.20is.20.60simpNF.60.20complaining.20here.3F
 -/
+def LibraryNote.lowerCancelPriority : LibraryNote := ()
 attribute [instance 75] LeftCancelSemigroup.toSemigroup -- See note [lower cancel priority]
 
 /-- An `AddLeftCancelSemigroup` is an additive semigroup such that
@@ -349,7 +351,7 @@ include hn ha
 
 end
 
-library_note "forgetful inheritance"/--
+/--
 Suppose that one can put two mathematical structures on a type, a rich one `R` and a poor one
 `P`, and that one can deduce the poor structure from the rich structure through a map `F` (called a
 forgetful functor) (think `R = MetricSpace` and `P = TopologicalSpace`). A possible
@@ -399,6 +401,7 @@ For more details on this question, called the forgetful inheritance pattern, see
 inheritance paths in dependent type theory: a case study in functional
 analysis](https://hal.inria.fr/hal-02463336).
 -/
+def LibraryNote.forgetfulInheritance : LibraryNote := ()
 
 
 /-!

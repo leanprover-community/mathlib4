@@ -564,7 +564,7 @@ theorem Subsemigroup.topologicalClosure_minimal (s : Subsemigroup M) {t : Subsem
 /-- If a subsemigroup of a topological semigroup is commutative, then so is its topological
 closure.
 
-See note [reducible non-instances] -/
+See `LibraryNote.reducibleNonInstances` -/
 @[to_additive "If a submonoid of an additive topological monoid is commutative, then so is its
 topological closure.
 

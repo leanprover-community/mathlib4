@@ -184,24 +184,24 @@ class NormedCommGroup (E : Type*) extends Norm E, CommGroup E, MetricSpace E whe
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x / y‖ := by aesop
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 @[to_additive]
 instance (priority := 100) NormedGroup.toSeminormedGroup [NormedGroup E] : SeminormedGroup E :=
   { ‹NormedGroup E› with }
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 @[to_additive]
 instance (priority := 100) NormedCommGroup.toSeminormedCommGroup [NormedCommGroup E] :
     SeminormedCommGroup E :=
   { ‹NormedCommGroup E› with }
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 @[to_additive]
 instance (priority := 100) SeminormedCommGroup.toSeminormedGroup [SeminormedCommGroup E] :
     SeminormedGroup E :=
   { ‹SeminormedCommGroup E› with }
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 @[to_additive]
 instance (priority := 100) NormedCommGroup.toNormedGroup [NormedCommGroup E] : NormedGroup E :=
   { ‹NormedCommGroup E› with }
@@ -681,7 +681,7 @@ variable [FunLike 𝓕 E F]
 
 section NNNorm
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 @[to_additive]
 instance (priority := 100) SeminormedGroup.toNNNorm : NNNorm E :=
   ⟨fun a => ⟨‖a‖, norm_nonneg' a⟩⟩

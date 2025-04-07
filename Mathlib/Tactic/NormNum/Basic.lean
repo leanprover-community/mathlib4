@@ -137,19 +137,22 @@ theorem isintCast {R} [Ring R] (n m : ℤ) :
 
 /-! # Arithmetic -/
 
-library_note "norm_num lemma function equality"/--
+/--
 Note: Many of the lemmas in this file use a function equality hypothesis like `f = HAdd.hAdd`
 below. The reason for this is that when this is applied, to prove e.g. `100 + 200 = 300`, the
 `+` here is `HAdd.hAdd` with an instance that may not be syntactically equal to the one supplied
 by the `AddMonoidWithOne` instance, and rather than attempting to prove the instances equal lean
 will sometimes decide to evaluate `100 + 200` directly (into whatever `+` is defined to do in this
 ring), which is definitely not what we want; if the subterms are expensive to kernel-reduce then
-this could cause a `(kernel) deep recursion detected` error (see https://github.com/leanprover/lean4/issues/2171, https://github.com/leanprover-community/mathlib4/pull/4048).
+this could cause a `(kernel) deep recursion detected` error
+(see https://github.com/leanprover/lean4/issues/2171,
+https://github.com/leanprover-community/mathlib4/pull/4048).
 
 By using an equality for the unapplied `+` function and proving it by `rfl` we take away the
 opportunity for lean to unfold the numerals (and the instance defeq problem is usually comparatively
 easy).
 -/
+def LibraryNote.normnumLemmaFunctionEquality : LibraryNote := ()
 
 -- see note [norm_num lemma function equality]
 theorem isNat_add {α} [AddMonoidWithOne α] : ∀ {f : α → α → α} {a b : α} {a' b' c : ℕ},

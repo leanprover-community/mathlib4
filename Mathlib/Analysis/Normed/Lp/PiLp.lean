@@ -335,7 +335,7 @@ this as a temporary pseudoemetric space instance, we will show that the uniform 
 structure and the bornology by the product ones using this pseudometric space,
 `PseudoMetricSpace.replaceUniformity`, and `PseudoMetricSpace.replaceBornology`.
 
-See note [reducible non-instances] -/
+See `LibraryNote.reducibleNonInstances` -/
 abbrev pseudoMetricAux : PseudoMetricSpace (PiLp p α) :=
   PseudoEMetricSpace.toPseudoMetricSpaceOfDist dist
     (fun f g => by

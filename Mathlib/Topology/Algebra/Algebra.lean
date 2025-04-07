@@ -564,7 +564,7 @@ theorem Subalgebra.topologicalClosure_minimal (s : Subalgebra R A) {t : Subalgeb
 
 /-- If a subalgebra of a topological algebra is commutative, then so is its topological closure.
 
-See note [reducible non-instances]. -/
+See `LibraryNote.reducibleNonInstances`. -/
 abbrev Subalgebra.commSemiringTopologicalClosure [T2Space A] (s : Subalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : CommSemiring s.topologicalClosure :=
   { s.topologicalClosure.toSemiring, s.toSubmonoid.commMonoidTopologicalClosure hs with }
@@ -645,7 +645,7 @@ variable [Ring A]
 variable [Algebra R A] [IsTopologicalRing A]
 
 /-- If a subalgebra of a topological algebra is commutative, then so is its topological closure.
-See note [reducible non-instances]. -/
+See `LibraryNote.reducibleNonInstances`. -/
 abbrev Subalgebra.commRingTopologicalClosure [T2Space A] (s : Subalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : CommRing s.topologicalClosure :=
   { s.topologicalClosure.toRing, s.toSubmonoid.commMonoidTopologicalClosure hs with }

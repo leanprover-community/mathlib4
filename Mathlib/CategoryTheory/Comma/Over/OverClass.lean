@@ -50,7 +50,7 @@ def over (X S : C) (_ : OverClass X S := by infer_instance) : X ⟶ S := OverCla
 /-- The structure morphism `X ↘ S : X ⟶ S` given `OverClass X S`. -/
 notation:90 X:90 " ↘ " S:90 => CategoryTheory.over X S inferInstance
 
-/-- See Note [custom simps projection] -/
+/-- See `LibraryNote.customSimpsProjection` -/
 def OverClass.Simps.over (X S : C) [OverClass X S] : X ⟶ S := X ↘ S
 
 initialize_simps_projections OverClass (hom → over)
@@ -62,7 +62,7 @@ and that `S` is (uniquely) inferable from the structure of `X`.
 -/
 class CanonicallyOverClass (X : C) (S : semiOutParam C) extends OverClass X S where
 
-/-- See Note [custom simps projection] -/
+/-- See `LibraryNote.customSimpsProjection` -/
 def CanonicallyOverClass.Simps.over (X S : C) [CanonicallyOverClass X S] : X ⟶ S := X ↘ S
 
 initialize_simps_projections CanonicallyOverClass (hom → over)

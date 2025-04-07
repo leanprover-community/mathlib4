@@ -103,7 +103,7 @@ attribute [coe] Substructure.carrier
 instance instSetLike : SetLike (L.Substructure M) M :=
   ⟨Substructure.carrier, fun p q h => by cases p; cases q; congr⟩
 
-/-- See Note [custom simps projection] -/
+/-- See `LibraryNote.customSimpsProjection` -/
 def Simps.coe (S : L.Substructure M) : Set M :=
   S
 

@@ -14,7 +14,7 @@ import Mathlib.Algebra.Order.Monoid.Basic
 variable {α β : Type*}
 
 /-- Pullback an `OrderedCommGroup` under an injective map.
-See note [reducible non-instances]. -/
+See `LibraryNote.reducibleNonInstances`. -/
 @[to_additive "Pullback an `OrderedAddCommGroup` under an injective map."]
 abbrev Function.Injective.orderedCommGroup [OrderedCommGroup α] {β : Type*} [One β] [Mul β] [Inv β]
     [Div β] [Pow β ℕ] [Pow β ℤ] (f : β → α) (hf : Function.Injective f) (one : f 1 = 1)
@@ -26,7 +26,7 @@ abbrev Function.Injective.orderedCommGroup [OrderedCommGroup α] {β : Type*} [O
   __ := hf.orderedCommMonoid f one mul npow
 
 /-- Pullback a `LinearOrderedCommGroup` under an injective map.
-See note [reducible non-instances]. -/
+See `LibraryNote.reducibleNonInstances`. -/
 @[to_additive "Pullback a `LinearOrderedAddCommGroup` under an injective map."]
 abbrev Function.Injective.linearOrderedCommGroup [LinearOrderedCommGroup α] {β : Type*} [One β]
     [Mul β] [Inv β] [Div β] [Pow β ℕ] [Pow β ℤ] [Max β] [Min β] (f : β → α)

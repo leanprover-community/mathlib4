@@ -165,7 +165,7 @@ theorem map_surjective {f : α →* β} (hf : Function.Surjective f) :
   exact ⟨ConjClasses.mk a, rfl⟩
 
 -- Porting note: This has not been adapted to mathlib4, is it still accurate?
-library_note "slow-failing instance priority"/--
+/--
 Certain instances trigger further searches when they are considered as candidate instances;
 these instances should be assigned a priority lower than the default of 1000 (for example, 900).
 
@@ -193,6 +193,7 @@ and `S := Quot`.)
 If the type involved is a free variable (rather than an instantiation of some type `S`),
 the instance priority should be even lower, see Note [lower instance priority].
 -/
+def LibraryNote.slowlyFailingInstancePriority : LibraryNote := ()
 
 -- see Note [slow-failing instance priority]
 instance (priority := 900) [DecidableRel (IsConj : α → α → Prop)] : DecidableEq (ConjClasses α) :=

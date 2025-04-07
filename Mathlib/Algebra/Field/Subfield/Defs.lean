@@ -57,7 +57,7 @@ namespace SubfieldClass
 
 variable (S : Type*) [SetLike S K] [h : SubfieldClass S K]
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 /-- A subfield contains `1`, products and inverses.
 
 Be assured that we're not actually proving that subfields are subgroups:

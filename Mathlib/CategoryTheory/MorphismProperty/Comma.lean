@@ -83,7 +83,7 @@ lemma Hom.hom_left {X Y : P.Comma L R Q W} (f : Comma.Hom X Y) : f.hom.left = f.
 
 lemma Hom.hom_right {X Y : P.Comma L R Q W} (f : Comma.Hom X Y) : f.hom.right = f.right := rfl
 
-/-- See Note [custom simps projection] -/
+/-- See `LibraryNote.customSimpsProjection` -/
 def Hom.Simps.hom {X Y : P.Comma L R Q W} (f : X.Hom Y) :
     X.toComma ⟶ Y.toComma :=
   f.hom

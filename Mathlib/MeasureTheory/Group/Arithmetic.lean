@@ -467,7 +467,7 @@ instance (priority := 100) measurableDiv₂_of_mul_inv (G : Type*) [MeasurableSp
     simp only [div_eq_mul_inv]
     exact measurable_fst.mul measurable_snd.inv⟩
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) MeasurableDiv.toMeasurableInv [MeasurableSpace α] [Group α]
     [MeasurableDiv α] : MeasurableInv α where
   measurable_inv := by simpa using measurable_const_div (1 : α)
@@ -851,26 +851,26 @@ end CommMonoid
 
 variable [MeasurableSpace α] [Mul α] [Div α] [Inv α]
 
-@[to_additive] -- See note [lower instance priority]
+@[to_additive] -- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) DiscreteMeasurableSpace.toMeasurableMul [DiscreteMeasurableSpace α] :
     MeasurableMul α where
   measurable_const_mul _ := .of_discrete
   measurable_mul_const _ := .of_discrete
 
-@[to_additive DiscreteMeasurableSpace.toMeasurableAdd₂] -- See note [lower instance priority]
+@[to_additive DiscreteMeasurableSpace.toMeasurableAdd₂] -- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) DiscreteMeasurableSpace.toMeasurableMul₂
     [DiscreteMeasurableSpace (α × α)] : MeasurableMul₂ α := ⟨.of_discrete⟩
 
-@[to_additive] -- See note [lower instance priority]
+@[to_additive] -- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) DiscreteMeasurableSpace.toMeasurableInv [DiscreteMeasurableSpace α] :
     MeasurableInv α := ⟨.of_discrete⟩
 
-@[to_additive] -- See note [lower instance priority]
+@[to_additive] -- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) DiscreteMeasurableSpace.toMeasurableDiv [DiscreteMeasurableSpace α] :
     MeasurableDiv α where
   measurable_const_div _ := .of_discrete
   measurable_div_const _ := .of_discrete
 
-@[to_additive DiscreteMeasurableSpace.toMeasurableSub₂] -- See note [lower instance priority]
+@[to_additive DiscreteMeasurableSpace.toMeasurableSub₂] -- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) DiscreteMeasurableSpace.toMeasurableDiv₂
     [DiscreteMeasurableSpace (α × α)] : MeasurableDiv₂ α := ⟨.of_discrete⟩

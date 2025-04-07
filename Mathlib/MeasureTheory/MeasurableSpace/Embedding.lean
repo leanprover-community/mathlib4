@@ -229,7 +229,7 @@ theorem coe_toEquiv_symm (e : α ≃ᵐ β) : (e.toEquiv.symm : β → α) = e.s
   because it is a composition of multiple projections. -/
 def Simps.apply (h : α ≃ᵐ β) : α → β := h
 
-/-- See Note [custom simps projection] -/
+/-- See `LibraryNote.customSimpsProjection` -/
 def Simps.symm_apply (h : α ≃ᵐ β) : β → α := h.symm
 
 initialize_simps_projections MeasurableEquiv (toFun → apply, invFun → symm_apply)

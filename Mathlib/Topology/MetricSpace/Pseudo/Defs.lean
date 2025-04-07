@@ -986,7 +986,7 @@ theorem PseudoMetricSpace.replaceTopology_eq {γ} [U : TopologicalSpace γ] (m :
 is everywhere finite, by pushing the edistance to reals. We set it up so that the edist and the
 uniformity are defeq in the pseudometric space and the pseudoemetric space. In this definition, the
 distance is given separately, to be able to prescribe some expression which is not defeq to the
-push-forward of the edistance to reals. See note [reducible non-instances]. -/
+push-forward of the edistance to reals. See `LibraryNote.reducibleNonInstances`. -/
 abbrev PseudoEMetricSpace.toPseudoMetricSpaceOfDist {α : Type u} [e : PseudoEMetricSpace α]
     (dist : α → α → ℝ) (edist_ne_top : ∀ x y : α, edist x y ≠ ⊤)
     (h : ∀ x y, dist x y = ENNReal.toReal (edist x y)) : PseudoMetricSpace α where

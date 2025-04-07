@@ -29,7 +29,7 @@ variable [EuclideanDomain R]
 /-- The well founded relation in a Euclidean Domain satisfying `a % b ≺ b` for `b ≠ 0` -/
 local infixl:50 " ≺ " => EuclideanDomain.r
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) toMulDivCancelClass : MulDivCancelClass R where
   mul_div_cancel a b hb := by
     refine (eq_of_sub_eq_zero ?_).symm

@@ -110,12 +110,12 @@ theorem eq_bot_iff_generator_eq_zero (S : Submodule R M) [S.IsPrincipal] :
 protected lemma fg {S : Submodule R M} (h : S.IsPrincipal) : S.FG :=
   ⟨{h.generator}, by simp only [Finset.coe_singleton, span_singleton_generator]⟩
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) _root_.PrincipalIdealRing.isNoetherianRing [IsPrincipalIdealRing R] :
     IsNoetherianRing R where
   noetherian S := (IsPrincipalIdealRing.principal S).fg
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) _root_.IsPrincipalIdealRing.of_isNoetherianRing_of_isBezout
     [IsNoetherianRing R] [IsBezout R] : IsPrincipalIdealRing R where
   principal S := IsBezout.isPrincipal_of_FG S (IsNoetherian.noetherian S)

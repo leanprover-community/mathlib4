@@ -873,7 +873,7 @@ end Function
 /-! ### Lifts of order instances -/
 
 /-- Transfer a `Preorder` on `β` to a `Preorder` on `α` using a function `f : α → β`.
-See note [reducible non-instances]. -/
+See `LibraryNote.reducibleNonInstances`. -/
 abbrev Preorder.lift [Preorder β] (f : α → β) : Preorder α where
   le x y := f x ≤ f y
   le_refl _ := le_rfl
@@ -882,7 +882,7 @@ abbrev Preorder.lift [Preorder β] (f : α → β) : Preorder α where
   lt_iff_le_not_le _ _ := _root_.lt_iff_le_not_le
 
 /-- Transfer a `PartialOrder` on `β` to a `PartialOrder` on `α` using an injective
-function `f : α → β`. See note [reducible non-instances]. -/
+function `f : α → β`. See `LibraryNote.reducibleNonInstances`. -/
 abbrev PartialOrder.lift [PartialOrder β] (f : α → β) (inj : Injective f) : PartialOrder α :=
   { Preorder.lift f with le_antisymm := fun _ _ h₁ h₂ ↦ inj (h₁.antisymm h₂) }
 
@@ -903,7 +903,7 @@ theorem compare_of_injective_eq_compareOfLessAndEq (a b : α) [LinearOrder β]
 function `f : α → β`. This version takes `[Max α]` and `[Min α]` as arguments, then uses
 them for `max` and `min` fields. See `LinearOrder.lift'` for a version that autogenerates `min` and
 `max` fields, and `LinearOrder.liftWithOrd` for one that does not auto-generate `compare`
-fields. See note [reducible non-instances]. -/
+fields. See `LibraryNote.reducibleNonInstances`. -/
 abbrev LinearOrder.lift [LinearOrder β] [Max α] [Min α] (f : α → β) (inj : Injective f)
     (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y)) (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) :
     LinearOrder α :=
@@ -935,7 +935,7 @@ abbrev LinearOrder.lift [LinearOrder β] [Max α] [Min α] (f : α → β) (inj 
 function `f : α → β`. This version autogenerates `min` and `max` fields. See `LinearOrder.lift`
 for a version that takes `[Max α]` and `[Min α]`, then uses them as `max` and `min`. See
 `LinearOrder.liftWithOrd'` for a version which does not auto-generate `compare` fields.
-See note [reducible non-instances]. -/
+See `LibraryNote.reducibleNonInstances`. -/
 abbrev LinearOrder.lift' [LinearOrder β] (f : α → β) (inj : Injective f) : LinearOrder α :=
   @LinearOrder.lift α β _ ⟨fun x y ↦ if f x ≤ f y then y else x⟩
     ⟨fun x y ↦ if f x ≤ f y then x else y⟩ f inj
@@ -947,7 +947,7 @@ function `f : α → β`. This version takes `[Max α]` and `[Min α]` as argume
 them for `max` and `min` fields. It also takes `[Ord α]` as an argument and uses them for `compare`
 fields. See `LinearOrder.lift` for a version that autogenerates `compare` fields, and
 `LinearOrder.liftWithOrd'` for one that auto-generates `min` and `max` fields.
-fields. See note [reducible non-instances]. -/
+fields. See `LibraryNote.reducibleNonInstances`. -/
 abbrev LinearOrder.liftWithOrd [LinearOrder β] [Max α] [Min α] [Ord α] (f : α → β)
     (inj : Injective f) (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y))
     (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y))
@@ -979,7 +979,7 @@ abbrev LinearOrder.liftWithOrd [LinearOrder β] [Max α] [Min α] [Ord α] (f : 
 function `f : α → β`. This version auto-generates `min` and `max` fields. It also takes `[Ord α]`
 as an argument and uses them for `compare` fields. See `LinearOrder.lift` for a version that
 autogenerates `compare` fields, and `LinearOrder.liftWithOrd` for one that doesn't auto-generate
-`min` and `max` fields. fields. See note [reducible non-instances]. -/
+`min` and `max` fields. fields. See `LibraryNote.reducibleNonInstances`. -/
 abbrev LinearOrder.liftWithOrd' [LinearOrder β] [Ord α] (f : α → β)
     (inj : Injective f)
     (compare_f : ∀ a b : α, compare a b = compare (f a) (f b)) : LinearOrder α :=

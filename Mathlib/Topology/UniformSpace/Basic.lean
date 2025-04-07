@@ -372,7 +372,7 @@ instance [Subsingleton α] : Unique (UniformSpace α) where
 
 /-- Given `f : α → β` and a uniformity `u` on `β`, the inverse image of `u` under `f`
   is the inverse image in the filter sense of the induced function `α × α → β × β`.
-  See note [reducible non-instances]. -/
+  See `LibraryNote.reducibleNonInstances`. -/
 abbrev UniformSpace.comap (f : α → β) (u : UniformSpace β) : UniformSpace α where
   uniformity := 𝓤[u].comap fun p : α × α => (f p.1, f p.2)
   symm := by

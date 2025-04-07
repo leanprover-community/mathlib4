@@ -206,7 +206,7 @@ section LinearOrder
 
 variable [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] [ExistsAddOfLE α]
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) IsStrictOrderedRing.noZeroDivisors : NoZeroDivisors α where
   eq_zero_or_eq_zero_of_mul_eq_zero {a b} hab := by
     contrapose! hab
@@ -215,7 +215,7 @@ instance (priority := 100) IsStrictOrderedRing.noZeroDivisors : NoZeroDivisors �
       (mul_neg_of_pos_of_neg ha hb).ne, (mul_pos ha hb).ne']
 
 -- Note that we can't use `NoZeroDivisors.to_isDomain` since we are merely in a semiring.
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) IsStrictOrderedRing.isDomain : IsDomain α where
   mul_left_cancel_of_ne_zero {a b c} ha h := by
     obtain ha | ha := ha.lt_or_lt
@@ -358,7 +358,7 @@ section OrderedCommRing
 
 variable [OrderedCommRing α]
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) OrderedCommRing.toOrderedCommSemiring : OrderedCommSemiring α :=
   { OrderedRing.toOrderedSemiring, ‹OrderedCommRing α› with }
 
@@ -459,12 +459,12 @@ choice in basic `Int` lemmas. -/
 abbrev StrictOrderedCommRing.toOrderedCommRing' [DecidableLE α] : OrderedCommRing α :=
   { ‹StrictOrderedCommRing α›, StrictOrderedRing.toOrderedRing' with }
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) StrictOrderedCommRing.toStrictOrderedCommSemiring :
     StrictOrderedCommSemiring α :=
   { ‹StrictOrderedCommRing α›, StrictOrderedRing.toStrictOrderedSemiring with }
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) StrictOrderedCommRing.toOrderedCommRing : OrderedCommRing α :=
   { ‹StrictOrderedCommRing α›, StrictOrderedRing.toOrderedRing with }
 
@@ -474,7 +474,7 @@ section LinearOrderedSemiring
 
 variable [LinearOrderedSemiring α]
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) LinearOrderedSemiring.toLinearOrderedCancelAddCommMonoid :
     LinearOrderedCancelAddCommMonoid α where __ := ‹LinearOrderedSemiring α›
 

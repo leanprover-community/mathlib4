@@ -178,7 +178,7 @@ theorem mem_nhds_one (B : GroupFilterBasis G) {U : Set G} (hU : U ∈ B) :
   rw [B.nhds_one_hasBasis.mem_iff]
   exact ⟨U, hU, rfl.subset⟩
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 /-- If a group is endowed with a topological structure coming from a group filter basis then it's a
 topological group. -/
 @[to_additive "If a group is endowed with a topological structure coming from a group filter basis

@@ -82,7 +82,7 @@ abbrev Ring : Type (max w u) := MvPolynomial P.vars R
 /-- The designated section of wrt a family of generators. -/
 def σ : S → P.Ring := P.σ'
 
-/-- See Note [custom simps projection] -/
+/-- See `LibraryNote.customSimpsProjection` -/
 def Simps.σ : S → P.Ring := P.σ
 
 initialize_simps_projections Algebra.Generators (σ' → σ)

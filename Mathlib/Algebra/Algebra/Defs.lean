@@ -203,7 +203,7 @@ variable {R : Type u} {S : Type v} {A : Type w} {B : Type*}
 If `(r • 1) * x = x * (r • 1) = r • x` for all `r : R` and `x : A`, then `A` is an `Algebra`
 over `R`.
 
-See note [reducible non-instances]. -/
+See `LibraryNote.reducibleNonInstances`. -/
 abbrev ofModule' [CommSemiring R] [Semiring A] [Module R A]
     (h₁ : ∀ (r : R) (x : A), r • (1 : A) * x = r • x)
     (h₂ : ∀ (r : R) (x : A), x * r • (1 : A) = r • x) : Algebra R A where
@@ -220,7 +220,7 @@ abbrev ofModule' [CommSemiring R] [Semiring A] [Module R A]
 If `(r • x) * y = x * (r • y) = r • (x * y)` for all `r : R` and `x y : A`, then `A`
 is an `Algebra` over `R`.
 
-See note [reducible non-instances]. -/
+See `LibraryNote.reducibleNonInstances`. -/
 abbrev ofModule [CommSemiring R] [Semiring A] [Module R A]
     (h₁ : ∀ (r : R) (x y : A), r • x * y = r • (x * y))
     (h₂ : ∀ (r : R) (x y : A), x * r • y = r • (x * y)) : Algebra R A :=

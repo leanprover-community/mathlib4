@@ -83,11 +83,12 @@ class Fact (p : Prop) : Prop where
   `Fact p`. -/
   out : p
 
-library_note "fact non-instances"/--
+/--
 In most cases, we should not have global instances of `Fact`; typeclass search only reads the head
 symbol and then tries any instances, which means that adding any such instance will cause slowdowns
 everywhere. We instead make them as lemmata and make them local instances as required.
 -/
+def LibraryNote.factNonInstances : LibraryNote := ()
 
 theorem Fact.elim {p : Prop} (h : Fact p) : p := h.1
 theorem fact_iff {p : Prop} : Fact p ↔ p := ⟨fun h ↦ h.1, fun h ↦ ⟨h⟩⟩
@@ -152,7 +153,7 @@ if hp : p then hpq hp else hnpq hp
 
 alias by_contra := by_contradiction
 
-library_note "decidable namespace"/--
+/--
 In most of mathlib, we use the law of excluded middle (LEM) and the axiom of choice (AC) freely.
 The `Decidable` namespace contains versions of lemmas from the root namespace that explicitly
 attempt to avoid the axiom of choice, usually by adding decidability assumptions on the inputs.
@@ -160,8 +161,9 @@ attempt to avoid the axiom of choice, usually by adding decidability assumptions
 You can check if a lemma uses the axiom of choice by using `#print axioms foo` and seeing if
 `Classical.choice` appears in the list.
 -/
+def LibraryNote.decidableNamespace : LibraryNote := ()
 
-library_note "decidable arguments"/--
+/--
 As mathlib is primarily classical,
 if the type signature of a `def` or `lemma` does not require any `Decidable` instances to state,
 it is preferable not to introduce any `Decidable` instances that are needed in the proof
@@ -171,6 +173,7 @@ In the other direction, when `Decidable` instances do appear in the type signatu
 it is better to use explicitly introduced ones rather than allowing Lean to automatically infer
 classical ones, as these may cause instance mismatch errors later.
 -/
+def LibraryNote.decidableArguments : LibraryNote := ()
 
 export Classical (not_not)
 attribute [simp] not_not

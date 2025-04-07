@@ -84,11 +84,11 @@ instance OrderDual.noMinOrder [LT α] [NoMaxOrder α] : NoMinOrder αᵒᵈ :=
 instance OrderDual.noMaxOrder [LT α] [NoMinOrder α] : NoMaxOrder αᵒᵈ :=
   ⟨fun a => exists_lt (α := α) a⟩
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) [Preorder α] [NoMinOrder α] : NoBotOrder α :=
   ⟨fun a => (exists_lt a).imp fun _ => not_le_of_lt⟩
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) [Preorder α] [NoMaxOrder α] : NoTopOrder α :=
   ⟨fun a => (exists_gt a).imp fun _ => not_le_of_lt⟩
 

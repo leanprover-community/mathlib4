@@ -53,7 +53,7 @@ are both a multiplicative and an additive submonoid. -/
 class SubsemiringClass (S : Type*) (R : outParam (Type u)) [NonAssocSemiring R]
   [SetLike S R] : Prop extends SubmonoidClass S R, AddSubmonoidClass S R
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) SubsemiringClass.addSubmonoidWithOneClass (S : Type*)
     (R : Type u) {_ : NonAssocSemiring R} [SetLike S R] [h : SubsemiringClass S R] :
     AddSubmonoidWithOneClass S R :=

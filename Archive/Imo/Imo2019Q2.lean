@@ -33,8 +33,7 @@ angles used are modulo `2 * π`, so parts of the angle chase that are only valid
 as `(2 : ℤ) • ∡ _ _ _ = (2 : ℤ) • ∡ _ _ _`.
 -/
 
-
-library_note "IMO geometry formalization conventions"/--
+/--
 We apply the following conventions for formalizing IMO geometry problems. A problem is assumed
 to take place in the plane unless that is clearly not intended, so it is not required to prove
 that the points are coplanar (whether or not that in fact follows from the other conditions).
@@ -55,6 +54,7 @@ considered when the problem was formulated and contestants might not have been e
 with them. A reference to a point being on a side or a segment is expressed directly with `Wbtw`
 rather than more literally with `affineSegment`.
 -/
+def LibraryNote.IMOGeometryFormalizationConventions : LibraryNote := ()
 
 
 open Affine Affine.Simplex EuclideanGeometry Module

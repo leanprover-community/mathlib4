@@ -137,7 +137,7 @@ end CommSemiring
 section Ring
 
 /-- A `Semiring` that is an `Algebra` over a commutative ring carries a natural `Ring` structure.
-See note [reducible non-instances]. -/
+See `LibraryNote.reducibleNonInstances`. -/
 abbrev semiringToRing (R : Type*) [CommRing R] [Semiring A] [Algebra R A] : Ring A :=
   { __ := (inferInstance : Semiring A)
     __ := Module.addCommMonoidToAddCommGroup R
@@ -336,11 +336,11 @@ lemma Algebra.charZero_of_charZero [CharZero R] : CharZero A :=
   have := algebraMap_comp_natCast R A
   ⟨this ▸ (FaithfulSMul.algebraMap_injective R A).comp CharZero.cast_injective⟩
 
--- see note [lower instance priority]
+-- see `LibraryNote.lowerInstancePriority`
 instance (priority := 100) [CharZero R] : FaithfulSMul ℕ R := by
   simpa only [faithfulSMul_iff_algebraMap_injective] using (algebraMap ℕ R).injective_nat
 
--- see note [lower instance priority]
+-- see `LibraryNote.lowerInstancePriority`
 instance (priority := 100) (R : Type*) [Ring R] [CharZero R] : FaithfulSMul ℤ R := by
   simpa only [faithfulSMul_iff_algebraMap_injective] using (algebraMap ℤ R).injective_int
 

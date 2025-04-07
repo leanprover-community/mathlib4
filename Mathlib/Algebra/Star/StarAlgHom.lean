@@ -109,7 +109,7 @@ instance : StarHomClass (A →⋆ₙₐ[R] B) A B where
   map_star f := f.map_star'
 
 -- Porting note: in mathlib3 we didn't need the `Simps.apply` hint.
-/-- See Note [custom simps projection] -/
+/-- See `LibraryNote.customSimpsProjection` -/
 def Simps.apply (f : A →⋆ₙₐ[R] B) : A → B := f
 
 initialize_simps_projections NonUnitalStarAlgHom
@@ -343,7 +343,7 @@ protected theorem coe_coe {F : Type*} [FunLike F A B] [AlgHomClass F R A B]
   rfl
 
 -- Porting note: in mathlib3 we didn't need the `Simps.apply` hint.
-/-- See Note [custom simps projection] -/
+/-- See `LibraryNote.customSimpsProjection` -/
 def Simps.apply (f : A →⋆ₐ[R] B) : A → B := f
 
 initialize_simps_projections StarAlgHom (toFun → apply)
@@ -635,14 +635,14 @@ class NonUnitalAlgEquivClass (F : Type*) (R A B : outParam Type*)
 
 namespace StarAlgEquivClass
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) {F R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiring A]
     [DistribMulAction R A] [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [EquivLike F A B]
     [NonUnitalAlgEquivClass F R A B] :
     NonUnitalAlgHomClass F R A B :=
   { }
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) instAlgHomClass (F R A B : Type*) [CommSemiring R] [Semiring A]
     [Algebra R A] [Semiring B] [Algebra R B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] :
     AlgEquivClass F R A B :=
@@ -732,10 +732,10 @@ nonrec def symm (e : A ≃⋆ₐ[R] B) : B ≃⋆ₐ[R] A :=
         congr_arg (inv e) (map_smul e r (inv e b)).symm }
 
 -- Porting note: in mathlib3 we didn't need the `Simps.apply` hint.
-/-- See Note [custom simps projection] -/
+/-- See `LibraryNote.customSimpsProjection` -/
 def Simps.apply (e : A ≃⋆ₐ[R] B) : A → B := e
 
-/-- See Note [custom simps projection] -/
+/-- See `LibraryNote.customSimpsProjection` -/
 def Simps.symm_apply (e : A ≃⋆ₐ[R] B) : B → A :=
   e.symm
 

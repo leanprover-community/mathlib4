@@ -560,7 +560,7 @@ instance (priority := 100) BooleanAlgebra.toGeneralizedBooleanAlgebra :
   inf_inf_sdiff a b := by
     rw [sdiff_eq, ← inf_inf_distrib_left, inf_compl_eq_bot', inf_bot_eq]
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) BooleanAlgebra.toBiheytingAlgebra : BiheytingAlgebra α where
   __ := ‹BooleanAlgebra α›
   __ := GeneralizedBooleanAlgebra.toGeneralizedCoheytingAlgebra

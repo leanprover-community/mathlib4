@@ -17,7 +17,7 @@ variable {n : ℕ} {M M₁ : Type*}
 
 /-- The `ZMod n`-module structure on commutative monoids whose elements have order dividing `n ≠ 0`.
 Also implies a group structure via `Module.addCommMonoidToAddCommGroup`.
-See note [reducible non-instances]. -/
+See `LibraryNote.reducibleNonInstances`. -/
 abbrev AddCommMonoid.zmodModule [NeZero n] [AddCommMonoid M] (h : ∀ (x : M), n • x = 0) :
     Module (ZMod n) M := by
   have h_mod (c : ℕ) (x : M) : (c % n) • x = c • x := by
@@ -36,7 +36,7 @@ abbrev AddCommMonoid.zmodModule [NeZero n] [AddCommMonoid M] (h : ∀ (x : M), n
   }
 
 /-- The `ZMod n`-module structure on Abelian groups whose elements have order dividing `n`.
-See note [reducible non-instances]. -/
+See `LibraryNote.reducibleNonInstances`. -/
 abbrev AddCommGroup.zmodModule {G : Type*} [AddCommGroup G] (h : ∀ (x : G), n • x = 0) :
     Module (ZMod n) G :=
   match n with

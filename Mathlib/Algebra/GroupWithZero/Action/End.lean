@@ -31,7 +31,7 @@ section AddMonoid
 variable (A) [AddMonoid A] [Monoid M] [DistribMulAction M A]
 
 /-- Compose a `DistribMulAction` with a `MonoidHom`, with action `f r' • m`.
-See note [reducible non-instances]. -/
+See `LibraryNote.reducibleNonInstances`. -/
 abbrev DistribMulAction.compHom [Monoid N] (f : N →* M) : DistribMulAction N A :=
   { DistribSMul.compFun A f, MulAction.compHom A f with }
 
@@ -42,7 +42,7 @@ section Monoid
 variable (A) [Monoid A] [Monoid M] [MulDistribMulAction M A]
 
 /-- Compose a `MulDistribMulAction` with a `MonoidHom`, with action `f r' • m`.
-See note [reducible non-instances]. -/
+See `LibraryNote.reducibleNonInstances`. -/
 abbrev MulDistribMulAction.compHom [Monoid N] (f : N →* M) : MulDistribMulAction N A :=
   { MulAction.compHom A f with
     smul_one := fun x => smul_one (f x),

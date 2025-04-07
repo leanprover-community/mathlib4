@@ -28,7 +28,7 @@ universe u
 /-- Define a `Group` structure on a Type by proving `∀ a, 1 * a = a` and
 `∀ a, a⁻¹ * a = 1`.
 Note that this uses the default definitions for `npow`, `zpow` and `div`.
-See note [reducible non-instances]. -/
+See `LibraryNote.reducibleNonInstances`. -/
 @[to_additive
 "Define an `AddGroup` structure on a Type by proving `∀ a, 0 + a = a` and
 `∀ a, -a + a = 0`.
@@ -55,7 +55,7 @@ abbrev Group.ofLeftAxioms {G : Type u} [Mul G] [Inv G] [One G]
 /-- Define a `Group` structure on a Type by proving `∀ a, a * 1 = a` and
 `∀ a, a * a⁻¹ = 1`.
 Note that this uses the default definitions for `npow`, `zpow` and `div`.
-See note [reducible non-instances]. -/
+See `LibraryNote.reducibleNonInstances`. -/
 @[to_additive
 "Define an `AddGroup` structure on a Type by proving `∀ a, a + 0 = a` and
 `∀ a, a + -a = 0`.

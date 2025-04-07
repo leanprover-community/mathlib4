@@ -161,19 +161,19 @@ class BiheytingAlgebra (α : Type*) extends HeytingAlgebra α, SDiff α, HNot α
   /-- `⊤ \ a` is `￢a` -/
   top_sdiff (a : α) : ⊤ \ a = ￢a
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 attribute [instance 100] GeneralizedHeytingAlgebra.toOrderTop
 attribute [instance 100] GeneralizedCoheytingAlgebra.toOrderBot
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) HeytingAlgebra.toBoundedOrder [HeytingAlgebra α] : BoundedOrder α :=
   { bot_le := ‹HeytingAlgebra α›.bot_le }
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) CoheytingAlgebra.toBoundedOrder [CoheytingAlgebra α] : BoundedOrder α :=
   { ‹CoheytingAlgebra α› with }
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) BiheytingAlgebra.toCoheytingAlgebra [BiheytingAlgebra α] :
     CoheytingAlgebra α :=
   { ‹BiheytingAlgebra α› with }
@@ -356,7 +356,7 @@ theorem himp_inf_himp_cancel (hba : b ≤ a) (hcb : c ≤ b) : (a ⇨ b) ⊓ (b 
 theorem gc_inf_himp : GaloisConnection (a ⊓ ·) (a ⇨ ·) :=
   fun _ _ ↦ Iff.symm le_himp_iff'
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) GeneralizedHeytingAlgebra.toDistribLattice : DistribLattice α :=
   DistribLattice.ofInfSupLe fun a b c => by
     simp_rw [inf_comm a, ← le_himp_iff, sup_le_iff, le_himp_iff, ← sup_le_iff]; rfl
@@ -583,7 +583,7 @@ theorem inf_sdiff_sup_right : a \ c ⊓ (b ⊔ a) = a \ c :=
 theorem gc_sdiff_sup : GaloisConnection (· \ a) (a ⊔ ·) :=
   fun _ _ ↦ sdiff_le_iff
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) GeneralizedCoheytingAlgebra.toDistribLattice : DistribLattice α :=
   { ‹GeneralizedCoheytingAlgebra α› with
     le_sup_inf :=
@@ -795,7 +795,7 @@ theorem sdiff_le_hnot : a \ b ≤ ￢b :=
 theorem sdiff_le_inf_hnot : a \ b ≤ a ⊓ ￢b :=
   le_inf sdiff_le sdiff_le_hnot
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) CoheytingAlgebra.toDistribLattice : DistribLattice α :=
   { ‹CoheytingAlgebra α› with
     le_sup_inf :=

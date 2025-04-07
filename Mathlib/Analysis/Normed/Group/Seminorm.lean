@@ -144,7 +144,7 @@ theorem map_sub_le_max : f (x - y) ≤ max (f x) (f y) := by
 
 end NonarchAddGroupSeminormClass
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) NonarchAddGroupSeminormClass.toAddGroupSeminormClass
     [FunLike F E ℝ] [AddGroup E] [NonarchAddGroupSeminormClass F E] : AddGroupSeminormClass F E ℝ :=
   { ‹NonarchAddGroupSeminormClass F E› with
@@ -157,7 +157,7 @@ instance (priority := 100) NonarchAddGroupSeminormClass.toAddGroupSeminormClass
         (max_le (le_add_of_nonneg_right (h_nonneg _)) (le_add_of_nonneg_left (h_nonneg _)))
     map_neg_eq_map := NonarchAddGroupSeminormClass.map_neg_eq_map' }
 
--- See note [lower instance priority]
+-- See `LibraryNote.lowerInstancePriority`
 instance (priority := 100) NonarchAddGroupNormClass.toAddGroupNormClass
     [FunLike F E ℝ] [AddGroup E] [NonarchAddGroupNormClass F E] : AddGroupNormClass F E ℝ :=
   { ‹NonarchAddGroupNormClass F E› with

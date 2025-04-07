@@ -71,7 +71,7 @@ specifically we can build two mathematically-different `bracket A A`s:
  2. `(@LieRingModule.ofAssociativeModule A _ A _ _).toBracket` which says `⁅a, b⁆ = a • b`
     (and thus `⁅a, b⁆ = a * b`)
 
-See note [reducible non-instances] -/
+See `LibraryNote.reducibleNonInstances` -/
 abbrev LieRingModule.ofAssociativeModule : LieRingModule A M where
   bracket := (· • ·)
   add_lie := add_smul

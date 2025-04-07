@@ -1665,7 +1665,7 @@ end DenseRange
 
 end Continuous
 
-library_note "continuity lemma statement"/--
+/--
 The library contains many lemmas stating that functions/operations are continuous. There are many
 ways to formulate the continuity of operations. Some are more convenient than others.
 Note: for the most part this note also applies to other properties
@@ -1761,8 +1761,9 @@ lemma ContinuousOn.comp_fract {X Y : Type*} [TopologicalSpace X] [TopologicalSpa
 With `ContinuousAt` you can be even more precise about what to prove in case of discontinuities,
 see e.g. `ContinuousAt.comp_div_cases`.
 -/
+def LibraryNote.continuityLemmaStatement : LibraryNote := ()
 
-library_note "comp_of_eq lemmas"/--
+/--
 Lean's elaborator has trouble elaborating applications of lemmas that state that the composition of
 two functions satisfy some property at a point, like `ContinuousAt.comp` / `ContDiffAt.comp` and
 `ContMDiffWithinAt.comp`. The reason is that a lemma like this looks like
@@ -1789,5 +1790,6 @@ example [TopologicalSpace X] [TopologicalSpace Y] {x₀ : X} (f : X → X → Y)
   -- hf.comp_of_eq (continuousAt_id.prod continuousAt_id) rfl -- works
 ```
 -/
+def LibraryNote.compOfEqLemmas : LibraryNote := ()
 
 set_option linter.style.longFile 1900

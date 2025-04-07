@@ -230,7 +230,7 @@ protected abbrev hasDistribNeg [Mul α] [HasDistribNeg α]
     mul_neg := hf.forall₂.2 fun x y => by rw [← neg, ← mul, mul_neg, neg, mul] }
 
 /-- Pushforward a `NonUnitalNonAssocSemiring` instance along a surjective function.
-See note [reducible non-instances]. -/
+See `LibraryNote.reducibleNonInstances`. -/
 protected abbrev nonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring α] (zero : f 0 = 0)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) : NonUnitalNonAssocSemiring β where

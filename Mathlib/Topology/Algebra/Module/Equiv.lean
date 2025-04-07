@@ -309,7 +309,7 @@ theorem symm_toHomeomorph (e : M₁ ≃SL[σ₁₂] M₂) : e.toHomeomorph.symm 
 def Simps.apply (h : M₁ ≃SL[σ₁₂] M₂) : M₁ → M₂ :=
   h
 
-/-- See Note [custom simps projection] -/
+/-- See `LibraryNote.customSimpsProjection` -/
 def Simps.symm_apply (h : M₁ ≃SL[σ₁₂] M₂) : M₂ → M₁ :=
   h.symm
 
