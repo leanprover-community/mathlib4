@@ -51,6 +51,8 @@ instance setLike : SetLike (Submodule R M) M where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
 
+initialize_simps_projections Submodule (carrier → coe, as_prefix coe)
+
 /-- The actual `Submodule` obtained from an element of a `SMulMemClass` and `AddSubmonoidClass`. -/
 @[simps]
 def ofClass {S R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [SetLike S M]
@@ -75,8 +77,6 @@ instance addSubmonoidClass : AddSubmonoidClass (Submodule R M) M where
 
 instance smulMemClass : SMulMemClass (Submodule R M) R M where
   smul_mem {s} c _ h := SubMulAction.smul_mem' s.toSubMulAction c h
-
-initialize_simps_projections Submodule (carrier → coe, as_prefix coe)
 
 @[simp]
 theorem mem_toAddSubmonoid (p : Submodule R M) (x : M) : x ∈ p.toAddSubmonoid ↔ x ∈ p :=

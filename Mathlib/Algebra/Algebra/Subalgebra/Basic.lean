@@ -40,6 +40,8 @@ instance : SetLike (Subalgebra R A) A where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
 
+initialize_simps_projections Subalgebra (carrier → coe, as_prefix coe)
+
 /-- The actual `Subalgebra` obtained from an element of a type satisfying `SubsemiringClass` and
 `SMulMemClass`. -/
 @[simps]
@@ -71,8 +73,6 @@ instance : SubsemiringClass (Subalgebra R A) A where
   mul_mem {s} := mul_mem (s := s.toSubsemiring)
   one_mem {s} := one_mem s.toSubsemiring
   zero_mem {s} := zero_mem s.toSubsemiring
-
-initialize_simps_projections Subalgebra (carrier → coe, as_prefix coe)
 
 @[simp]
 theorem mem_toSubsemiring {S : Subalgebra R A} {x} : x ∈ S.toSubsemiring ↔ x ∈ S :=

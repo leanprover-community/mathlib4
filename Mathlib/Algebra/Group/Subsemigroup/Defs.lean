@@ -94,6 +94,9 @@ namespace Subsemigroup
 instance : SetLike (Subsemigroup M) M :=
   ⟨Subsemigroup.carrier, fun p q h => by cases p; cases q; congr⟩
 
+initialize_simps_projections Subsemigroup (carrier → coe, as_prefix coe)
+initialize_simps_projections AddSubsemigroup (carrier → coe, as_prefix coe)
+
 /-- The actual `Subsemigroup` obtained from an element of a `MulMemClass`. -/
 @[to_additive (attr := simps) "The actual `AddSubsemigroup` obtained from an element of a
 `AddMemClass`"]
@@ -107,9 +110,6 @@ instance : CanLift (Set M) (Subsemigroup M) (↑)
 
 @[to_additive]
 instance : MulMemClass (Subsemigroup M) M where mul_mem := fun {_ _ _} => Subsemigroup.mul_mem' _
-
-initialize_simps_projections Subsemigroup (carrier → coe, as_prefix coe)
-initialize_simps_projections AddSubsemigroup (carrier → coe, as_prefix coe)
 
 @[to_additive (attr := simp)]
 theorem mem_carrier {s : Subsemigroup M} {x : M} : x ∈ s.carrier ↔ x ∈ s :=

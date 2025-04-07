@@ -122,16 +122,19 @@ theorem pow_mem {M A} [Monoid M] [SetLike A M] [SubmonoidClass A M] {S : A} {x :
 
 namespace Submonoid
 
+@[to_additive]
+instance : SetLike (Submonoid M) M where
+  coe s := s.carrier
+  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
+
+initialize_simps_projections Submonoid (carrier → coe, as_prefix coe)
+initialize_simps_projections AddSubmonoid (carrier → coe, as_prefix coe)
+
 /-- The actual `Submonoid` obtained from an element of a `SubmonoidClass` -/
 @[to_additive (attr := simps) "The actual `AddSubmonoid` obtained from an element of a
 `AddSubmonoidClass`"]
 def ofClass {S M : Type*} [Monoid M] [SetLike S M] [SubmonoidClass S M] (s : S) : Submonoid M :=
   ⟨⟨s, MulMemClass.mul_mem⟩, OneMemClass.one_mem s⟩
-
-@[to_additive]
-instance : SetLike (Submonoid M) M where
-  coe s := s.carrier
-  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
 
 @[to_additive]
 instance : CanLift (Set M) (Submonoid M) (↑)
@@ -142,9 +145,6 @@ instance : CanLift (Set M) (Submonoid M) (↑)
 instance : SubmonoidClass (Submonoid M) M where
   one_mem := Submonoid.one_mem'
   mul_mem {s} := s.mul_mem'
-
-initialize_simps_projections Submonoid (carrier → coe, as_prefix coe)
-initialize_simps_projections AddSubmonoid (carrier → coe, as_prefix coe)
 
 @[to_additive (attr := simp)]
 theorem mem_toSubsemigroup {s : Submonoid M} {x : M} : x ∈ s.toSubsemigroup ↔ x ∈ s :=

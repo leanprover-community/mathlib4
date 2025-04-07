@@ -139,6 +139,8 @@ instance : SetLike (Subsemiring R) R where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
 
+initialize_simps_projections Subsemiring (carrier → coe, as_prefix coe)
+
 /-- The actual `Subsemiring` obtained from an element of a `SubsemiringClass`. -/
 @[simps]
 def ofClass {S R : Type*} [NonAssocSemiring R] [SetLike S R] [SubsemiringClass S R]
@@ -165,8 +167,6 @@ instance : SubsemiringClass (Subsemiring R) R where
   add_mem {s} := AddSubsemigroup.add_mem' s.toAddSubmonoid.toAddSubsemigroup
   one_mem {s} := Submonoid.one_mem' s.toSubmonoid
   mul_mem {s} := Subsemigroup.mul_mem' s.toSubmonoid.toSubsemigroup
-
-initialize_simps_projections Subsemiring (carrier → coe, as_prefix coe)
 
 /-- Turn a `Subsemiring` into a `NonUnitalSubsemiring` by forgetting that it contains `1`. -/
 def toNonUnitalSubsemiring (S : Subsemiring R) : NonUnitalSubsemiring R where __ := S
