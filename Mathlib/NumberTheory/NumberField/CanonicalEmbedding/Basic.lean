@@ -823,6 +823,7 @@ instance : BorelSpace (euclidean.mixedSpace K) := ⟨rfl⟩
 
 variable [NumberField K]
 
+set_option synthInstance.maxHeartbeats 20480 in
 open Classical in
 /-- The continuous linear equivalence between the euclidean mixed space and the mixed space. -/
 def toMixed : (euclidean.mixedSpace K) ≃L[ℝ] (mixedSpace K) :=
