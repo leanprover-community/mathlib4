@@ -685,11 +685,11 @@ def addHom {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') : X ⊕ₒ X' ⟶ Y ⊕
 /-- Notation for the chosen coproduct of two morphisms -/
 scoped infixr:70 " ⊕ₕ " => addHom
 
-@[reassoc]
+@[reassoc (attr := simp)]
 lemma inl_addHom {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
     inl X X' ≫ (f ⊕ₕ g) = f ≫ inl Y Y' := by simp [addHom]
 
-@[reassoc]
+@[reassoc (attr := simp)]
 lemma inr_addHom {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
     inr X X' ≫ (f ⊕ₕ g) = g ≫ inr Y Y' := by simp [addHom]
 
