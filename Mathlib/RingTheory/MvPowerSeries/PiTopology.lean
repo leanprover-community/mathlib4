@@ -7,7 +7,7 @@ import Mathlib.RingTheory.MvPowerSeries.Basic
 import Mathlib.RingTheory.Nilpotent.Defs
 import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 import Mathlib.Topology.Algebra.Ring.Basic
-import Mathlib.Topology.Algebra.UniformGroup.Basic
+import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 import Mathlib.Topology.UniformSpace.Pi
 
 /-! # Product topology on multivariate power series
@@ -44,7 +44,7 @@ TODO: add the similar result for the series of homogeneous components.
 
 - If `R` is a topological (semi)ring, then so is `MvPowerSeries σ R`.
 - If the topology of `R` is T0 or T2, then so is that of `MvPowerSeries σ R`.
-- If `R` is a `UniformAddGroup`, then so is `MvPowerSeries σ R`.
+- If `R` is a `IsUniformAddGroup`, then so is `MvPowerSeries σ R`.
 - If `R` is complete, then so is `MvPowerSeries σ R`.
 
 -/
@@ -66,6 +66,11 @@ variable (R) in
 scoped instance : TopologicalSpace (MvPowerSeries σ R) :=
   Pi.topologicalSpace
 
+theorem instTopologicalSpace_mono (σ : Type*) {R : Type*} {t u : TopologicalSpace R} (htu : t ≤ u) :
+    @instTopologicalSpace σ R t ≤ @instTopologicalSpace σ R u := by
+  simp only [instTopologicalSpace, Pi.topologicalSpace, ge_iff_le, le_iInf_iff]
+  exact fun i ↦ le_trans (iInf_le _ i) (induced_mono htu)
+
 /-- `MvPowerSeries` on a `T0Space` form a `T0Space` -/
 @[scoped instance]
 theorem instT0Space [T0Space R] : T0Space (MvPowerSeries σ R) := Pi.instT0Space
@@ -82,7 +87,7 @@ theorem continuous_coeff [Semiring R] (d : σ →₀ ℕ) :
   continuous_pi_iff.mp continuous_id d
 
 variable (R) in
-/-- `MvPolynomial.constantCoeff` is continuous -/
+/-- `MvPowerSeries.constantCoeff` is continuous -/
 theorem continuous_constantCoeff [Semiring R] : Continuous (constantCoeff σ R) :=
   continuous_coeff R 0
 
@@ -126,6 +131,12 @@ theorem continuous_C [Semiring R] :
   split_ifs
   · exact tendsto_id
   · exact tendsto_const_nhds
+
+/-- Scalar multiplication on `MvPowerSeries` is continous -/
+instance {S : Type*} [Semiring S] [TopologicalSpace S]
+    [CommSemiring R] [Algebra R S] [ContinuousSMul R S] :
+    ContinuousSMul R (MvPowerSeries σ S) :=
+  instContinuousSMulForall
 
 theorem variables_tendsto_zero [Semiring R] :
     Tendsto (X · : σ → MvPowerSeries σ R) cofinite (nhds 0) := by
@@ -215,10 +226,12 @@ theorem uniformContinuous_coeff [Semiring R] (d : σ →₀ ℕ) :
 theorem instCompleteSpace [CompleteSpace R] :
     CompleteSpace (MvPowerSeries σ R) := Pi.complete _
 
-/-- The `UniformAddGroup` structure on `MvPowerSeries` of a `UniformAddGroup` -/
+/-- The `IsUniformAddGroup` structure on `MvPowerSeries` of a `IsUniformAddGroup` -/
 @[scoped instance]
-theorem instUniformAddGroup [AddGroup R] [UniformAddGroup R] :
-    UniformAddGroup (MvPowerSeries σ R) := Pi.instUniformAddGroup
+theorem instIsUniformAddGroup [AddGroup R] [IsUniformAddGroup R] :
+    IsUniformAddGroup (MvPowerSeries σ R) := Pi.instIsUniformAddGroup
+
+@[deprecated (since := "2025-03-27")] alias instUniformAddGroup := instIsUniformAddGroup
 
 end Uniformity
 
