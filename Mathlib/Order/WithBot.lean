@@ -954,13 +954,12 @@ end WithTop
 
 section WithBotWithTop
 
-lemma WithBot.forall_ge_iff_eq_top [Preorder α] [Nonempty α] [NoMaxOrder α]
-    {x : WithBot (WithTop α)} :
-    (∀ a : α, a ≤ x) ↔ x = ⊤ := by
-  refine ⟨fun H ↦ ?_, by aesop⟩
+lemma WithBot.eq_top_iff_forall_ge [Preorder α] [Nonempty α] [NoMaxOrder α]
+    {x : WithBot (WithTop α)} : x = ⊤ ↔ ∀ a : α, a ≤ x := by
+  refine ⟨by aesop, fun H ↦ ?_⟩
   induction x
   · simp at H
-  · simpa [WithTop.forall_ge_iff_eq_top] using H
+  · simpa [WithTop.eq_top_iff_forall_ge] using H
 
 end WithBotWithTop
 

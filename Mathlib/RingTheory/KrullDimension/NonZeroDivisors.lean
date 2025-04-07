@@ -106,7 +106,7 @@ lemma ringKrullDim_add_enatCard_le_ringKrullDim_mvPolynomial (σ : Type*) :
     exact ringKrullDim_add_natCard_le_ringKrullDim_mvPolynomial _
   · simp only [ENat.card_eq_top_of_infinite, WithBot.coe_top]
     suffices ringKrullDim (MvPolynomial σ R) = ⊤ by aesop
-    rw [← WithBot.forall_ge_iff_eq_top]
+    rw [WithBot.eq_top_iff_forall_ge]
     intro n
     let ι := Infinite.natEmbedding σ ∘ Fin.val (n := n + 1)
     have := Function.invFun_surjective (f := ι) ((Infinite.natEmbedding σ).2.comp Fin.val_injective)
