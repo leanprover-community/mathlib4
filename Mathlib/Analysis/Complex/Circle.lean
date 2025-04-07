@@ -135,6 +135,12 @@ def expHom : ℝ →+ Additive Circle where
 @[simp] lemma exp_sub (x y : ℝ) : exp (x - y) = exp x / exp y := expHom.map_sub x y
 @[simp] lemma exp_neg (x : ℝ) : exp (-x) = (exp x)⁻¹ := expHom.map_neg x
 
+lemma exp_pi_ne_one : Circle.exp Real.pi ≠ 1 := by
+  intro h
+  have heq : (Circle.exp Real.pi : ℂ) = 1 := by simp [h]
+  rw [Circle.coe_exp, exp_pi_mul_I] at heq
+  norm_num at heq
+
 variable {e : AddChar ℝ Circle}
 
 @[simp]
@@ -192,11 +198,19 @@ def fourierChar : AddChar ℝ Circle where
 
 open FourierTransform
 
-theorem fourierChar_apply (x : ℝ) : 𝐞 x = Complex.exp (↑(2 * π * x) * Complex.I) :=
-  rfl
+theorem fourierChar_apply' (x : ℝ) : 𝐞 x = Circle.exp (2 * π * x) := rfl
+
+theorem fourierChar_apply (x : ℝ) : 𝐞 x = Complex.exp (↑(2 * π * x) * Complex.I) := rfl
 
 @[continuity]
 theorem continuous_fourierChar : Continuous 𝐞 := Circle.exp.continuous.comp (continuous_mul_left _)
+
+theorem fourierChar_ne_one : fourierChar ≠ 1 := by
+  rw [DFunLike.ne_iff]
+  use 2⁻¹
+  simp only [fourierChar_apply', AddChar.one_apply]
+  rw [mul_comm, ← mul_assoc, inv_mul_cancel₀ (by positivity), one_mul]
+  exact Circle.exp_pi_ne_one
 
 /-- The additive character from `ℝ` onto the circle, given by `fun x ↦ exp (2 * I)`. This uses the
 probabilist convention that there is no `2 * π` in the exponent. -/
@@ -205,8 +219,9 @@ def probChar : AddChar ℝ Circle where
   map_zero_eq_one' := Circle.exp_zero
   map_add_eq_mul' := Circle.exp_add
 
-theorem probChar_apply (x : ℝ) : probChar x = Complex.exp (x * Complex.I) :=
-  rfl
+theorem probChar_apply' (x : ℝ) : probChar x = Circle.exp x := rfl
+
+theorem probChar_apply (x : ℝ) : probChar x = Complex.exp (x * Complex.I) := rfl
 
 @[continuity]
 theorem continuous_probChar : Continuous probChar := Circle.exp.continuous
@@ -214,10 +229,6 @@ theorem continuous_probChar : Continuous probChar := Circle.exp.continuous
 theorem probChar_ne_one : probChar ≠ 1 := by
   rw [DFunLike.ne_iff]
   use Real.pi
-  simp only [probChar, AddChar.coe_mk, AddChar.one_apply]
-  intro h
-  have heq := congrArg Subtype.val h
-  rw [Circle.coe_exp Real.pi, Complex.exp_pi_mul_I] at heq
-  norm_num at heq
+  simpa only [probChar_apply'] using Circle.exp_pi_ne_one
 
 end Real
