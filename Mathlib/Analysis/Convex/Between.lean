@@ -30,6 +30,7 @@ open AffineEquiv AffineMap
 
 section OrderedRing
 
+-- TODO: remove `[IsOrderedRing R]` and `@[nolint unusedArguments]`.
 /-- The segment of points weakly between `x` and `y`. When convexity is refactored to support
 abstract affine combination spaces, this will no longer need to be a separate definition from
 `segment`. However, lemmas involving `+ᵥ` or `-ᵥ` will still be relevant after such a

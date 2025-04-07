@@ -50,9 +50,9 @@ section Definitions
 variable (𝕜 E)
 variable [Semiring 𝕜] [PartialOrder 𝕜]
 
+-- TODO: remove `[IsOrderedRing 𝕜]`.
 /-- A convex cone is a subset `s` of a `𝕜`-module such that `a • x + b • y ∈ s` whenever `a, b > 0`
 and `x, y ∈ s`. -/
-@[nolint unusedArguments]
 structure ConvexCone [IsOrderedRing 𝕜] [AddCommMonoid E] [SMul 𝕜 E] where
   /-- The **carrier set** underlying this cone: the set of points contained in it -/
   carrier : Set E

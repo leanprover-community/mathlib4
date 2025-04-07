@@ -65,6 +65,7 @@ section SMul
 
 variable (𝕜) [SMul 𝕜 E] [SMul 𝕜 F] (x : E) (s : Set E)
 
+-- TODO: remove `[IsOrderedRing 𝕜]` and `@[nolint unusedArguments]`.
 /-- Star-convexity of sets. `s` is star-convex at `x` if every segment from `x` to a point in `s` is
 contained in `s`. -/
 @[nolint unusedArguments]

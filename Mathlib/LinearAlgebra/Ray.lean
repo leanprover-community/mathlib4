@@ -30,6 +30,7 @@ noncomputable section
 
 section StrictOrderedCommSemiring
 
+-- TODO: remove `[IsStrictOrderedRing R]` and `@[nolint unusedArguments]`.
 /-- Two vectors are in the same ray if either one of them is zero or some positive multiples of them
 are equal (in the typical case over a field, this means one of them is a nonnegative multiple of
 the other). -/
