@@ -1200,27 +1200,22 @@ initialize_simps_projections AddCommGroup
 section test
 
 /-- Doc -/
-class IsMulCommutative (M : Type*) [Mul M] : Prop where
-  is_comm : Std.Commutative (α := M) (· * ·)
-
-/-- Doc -/
 class IsAddCommutative (M : Type*) [Add M] : Prop where
   is_comm : Std.Commutative (α := M) (· + ·)
 
+/-- Doc -/
+@[to_additive]
+class IsMulCommutative (M : Type*) [Mul M] : Prop where
+  is_comm : Std.Commutative (α := M) (· * ·)
+
+@[to_additive]
 instance {G : Type*} [Group G] [IsMulCommutative G] :
     CommGroup G where
   mul_comm := IsMulCommutative.is_comm.comm
 
-instance {G : Type*} [AddGroup G] [IsAddCommutative G] :
-    AddCommGroup G where
-  add_comm := IsAddCommutative.is_comm.comm
-
+@[to_additive]
 instance {G : Type*} [CommGroup G] :
     IsMulCommutative G where
   is_comm := ⟨fun a b ↦ mul_comm a b⟩
-
-instance {G : Type*} [AddCommGroup G] :
-    IsAddCommutative G where
-  is_comm := ⟨fun a b ↦ add_comm a b⟩
 
 end test
