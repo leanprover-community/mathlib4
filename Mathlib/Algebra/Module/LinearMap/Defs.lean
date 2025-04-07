@@ -123,7 +123,7 @@ abbrev LinearMapClass (F : Type*) (R : outParam Type*) (M M₂ : Type*)
 protected lemma LinearMapClass.map_smul {R M M₂ : outParam Type*} [Semiring R] [AddCommMonoid M]
     [AddCommMonoid M₂] [Module R M] [Module R M₂]
     {F : Type*} [FunLike F M M₂] [LinearMapClass F R M M₂] (f : F) (r : R) (x : M) :
-    f (r • x) = r • f x := by rw [_root_.map_smul]
+    f (r • x) = r • f x := by rw [map_smul]
 
 namespace SemilinearMapClass
 
@@ -380,6 +380,12 @@ variable (R R) in
 theorem isScalarTower_of_injective [SMul R S] [CompatibleSMul M M₂ R S] [IsScalarTower R S M₂]
     (f : M →ₗ[S] M₂) (hf : Function.Injective f) : IsScalarTower R S M where
   smul_assoc r s _ := hf <| by rw [f.map_smul_of_tower r, map_smul, map_smul, smul_assoc]
+
+@[simp] lemma _root_.map_zsmul_unit {F M N : Type*}
+    [AddGroup M] [AddGroup N] [FunLike F M N] [AddMonoidHomClass F M N]
+    (f : F) (c : ℤˣ) (m : M) :
+    f (c • m) = c • f m := by
+  simp [Units.smul_def]
 
 end
 
