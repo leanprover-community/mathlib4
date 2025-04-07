@@ -80,7 +80,48 @@ lemma HasProdUniformlyOn_iff_TendstoUniformlyOn {f : ι → β → α} {g : β �
   next i hi =>
   simp
 
+variable { F : Type*} [NormedCommGroup F] [CompleteSpace F] {u : α → ℝ}
 
+open Metric
+
+variable {a a₁ a₂ : ℝ} {ι : Type*}
+
+
+/- theorem exists_le_hasProd_of_le {f g : β → ℝ} {r : ℝ} (hgf : ∀ b, g b ≤ f b) (hfr : HasProd f r) :
+    ∃ p ≤ r, HasProd g p := by
+  have : (∏' b, (g b : ℝ)) ≤ r := by
+    refine hasProd_le hgf  --ENNReal.summable.hasSum (ENNReal.hasSum_coe.2 hfr)
+
+    --exact ENNReal.coe_le_coe.2 (hgf _)
+  let ⟨p, Eq, hpr⟩ := ENNReal.le_coe_iff.1 this
+  ⟨p, hpr, ENNReal.hasSum_coe.1 <| Eq ▸ ENNReal.summable.hasSum⟩
+  sorry -/
+
+
+theorem Multipliable.of_nonneg_of_le {f g : β → F} (hgf : ∀ b, ‖g b‖ ≤ ‖f b‖ )
+    (hf : Multipliable f) : Multipliable g := by
+
+  obtain ⟨sf, hf⟩ := hf
+  simp_rw [Multipliable, HasProd] at *
+  use ∏' i, g i
+  rw [@tendsto_iff_norm_div_tendsto_zero] at *
+  apply Asymptotics.IsLittleO.trans_tendsto _ hf
+
+  sorry
+
+theorem tendstoUniformlyOn_tsum_new {f : α → β → F} (hu : Multipliable u) {s : Set β}
+    (hfu : ∀ n x, x ∈ s → ‖f n x‖ ≤ u n) :
+    HasProdUniformlyOn f (fun x => ∏' n, f n x) s := by
+  rw [HasProdUniformlyOn_iff_TendstoUniformlyOn]
+  refine tendstoUniformlyOn_iff.2 fun ε εpos => ?_
+  filter_upwards [(tendsto_order.1 (tendsto_tsum_compl_atTop_zero u)).2 _ εpos] with t ht x hx
+  have A : Multipliable fun n => ‖f n x‖ :=
+    .of_nonneg_of_le (fun _ ↦ norm_nonneg _) (fun n => hfu n x hx) hu
+  rw [dist_eq_norm, ← sum_add_tsum_subtype_compl A.of_norm t, add_sub_cancel_left]
+  apply lt_of_le_of_lt _ ht
+  apply (norm_tsum_le_tsum_norm (A.subtype _)).trans
+  exact tsum_le_tsum (fun n => hfu _ _ hx) (A.subtype _) (hu.subtype _)
 
 
 end HasProdUniformlyOn
+#min_imports
