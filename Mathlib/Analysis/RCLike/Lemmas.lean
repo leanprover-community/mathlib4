@@ -45,9 +45,10 @@ namespace FiniteDimensional
 
 open RCLike
 
-library_note "RCLike instance"/--
+/--
 This instance generates a type-class problem with a metavariable `?m` that should satisfy
 `RCLike ?m`. Since this can only be satisfied by `ℝ` or `ℂ`, this does not cause problems. -/
+def LibraryNote.rclikeInstance : LibraryNote := ()
 
 /-- An `RCLike` field is finite-dimensional over `ℝ`, since it is spanned by `{1, I}`. -/
 instance rclike_to_real : FiniteDimensional ℝ K := ⟨{1, I}, by simp [span_one_I]⟩

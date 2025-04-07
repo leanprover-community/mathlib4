@@ -104,7 +104,7 @@ export AddAction (add_vadd)
 export SMulCommClass (smul_comm)
 export VAddCommClass (vadd_comm)
 
-library_note "bundled maps over different rings"/--
+/--
 Frequently, we find ourselves wanting to express a bilinear map `M →ₗ[R] N →ₗ[R] P` or an
 equivalence between maps `(M →ₗ[R] N) ≃ₗ[R] (M' →ₗ[R] N')` where the maps have an associated ring
 `R`. Unfortunately, using definitions like these requires that `R` satisfy `CommSemiring R`, and
@@ -120,6 +120,7 @@ the typeclass, which is still sufficient to recover a `≃+` or `→+` structure
 
 An example of where this is used is `LinearMap.prod_equiv`.
 -/
+def LibraryNote.bundledMapOverDifferentRings : LibraryNote := ()
 
 /-- Commutativity of actions is a symmetric relation. This lemma can't be an instance because this
 would cause a loop in the instance search graph. -/

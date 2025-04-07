@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 import Mathlib.Init
+import Mathlib.Tactic.Basic
 import Batteries.Util.LibraryNote
 
 /-!
@@ -14,7 +15,7 @@ as the organizational structure within Mathlib.
 -/
 
 
-library_note "continuous functional calculus" /--
+/--
 # The continuous functional calculus
 
 In Mathlib, there are two classes --- `NonUnitalContinuousFunctionalCalculus` and
@@ -174,3 +175,4 @@ the appropriate location is `Mathlib.Analysis.CStarAlgebra.SpecialFunctions`. If
 case, some results need the import and others do not, there should be two files, one in each
 location.
 -/
+def LibraryNote.continuousFunctionalCalculus : LibraryNote := ()

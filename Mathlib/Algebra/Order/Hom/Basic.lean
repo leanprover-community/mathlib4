@@ -45,7 +45,7 @@ Finitary versions of the current lemmas.
 -/
 
 
-library_note "out-param inheritance"/--
+/--
 Diamond inheritance cannot depend on `outParam`s in the following circumstances:
  * there are three classes `Top`, `Middle`, `Bottom`
  * all of these classes have a parameter `(α : outParam _)`
@@ -65,6 +65,7 @@ There are two workarounds:
 * You could weaken the `Bottom.toMiddle` instance by making it depend on a subclass of
   `Middle.toTop`'s parameter, in this example replacing `[Left α]` with `[Leaf α]`.
 -/
+def LibraryNote.outparamInheritance : LibraryNote := ()
 
 open Function
 
