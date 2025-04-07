@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Field.Pi
+import Mathlib.Algebra.Order.Pi
 import Mathlib.Algebra.Order.UpperLower
 import Mathlib.Analysis.Normed.Group.Pointwise
 import Mathlib.Analysis.Normed.Order.Basic

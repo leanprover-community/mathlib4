@@ -7,7 +7,7 @@ open Lake DSL
 ## Mathlib dependencies on upstream projects
 -/
 
-require "leanprover-community" / "batteries" @ git "nightly-testing"
+require "leanprover-community" / "batteries" @ git "main"
 require "leanprover-community" / "Qq" @ git "master"
 require "leanprover-community" / "aesop" @ git "master"
 require "leanprover-community" / "proofwidgets" @ git "v0.0.56" -- ProofWidgets should always be pinned to a specific version
@@ -17,16 +17,14 @@ require "leanprover-community" / "proofwidgets" @ git "v0.0.56" -- ProofWidgets 
     If this does not work, report your issue on the Lean Zulip."
 require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
-require "leanprover-community" / "plausible" @ git "nightly-testing"
+require "leanprover-community" / "plausible" @ git "main"
 
 /-!
 ## Options for building mathlib
 -/
 
-/-- These options are used
-* as `leanOptions`, prefixed by `` `weak``, so that `lake build` uses them;
-* as `moreServerArgs`, to set their default value in mathlib
-  (as well as `Archive`, `Counterexamples` and `test`). -/
+/-- These options are used as `leanOptions`, prefixed by `` `weak``, so that
+`lake build` uses them, as well as `Archive` and `Counterexamples`. -/
 abbrev mathlibOnlyLinters : Array LeanOption := #[
   -- The `docPrime` linter is disabled: https://github.com/leanprover-community/mathlib4/issues/20560
   ⟨`linter.docPrime, false⟩,
@@ -71,9 +69,8 @@ package mathlib where
 
 @[default_target]
 lean_lib Mathlib where
+  -- Enforce Mathlib's default linters and style options.
   leanOptions := mathlibLeanOptions
-  -- Mathlib also enforces these linter options, which are not active by default.
-  moreServerOptions := mathlibOnlyLinters
 
 -- NB. When adding further libraries, check if they should be excluded from `getLeanLibs` in
 -- `scripts/mk_all.lean`.
@@ -85,11 +82,9 @@ lean_lib MathlibTest where
 
 lean_lib Archive where
   leanOptions := mathlibLeanOptions
-  moreServerOptions := mathlibOnlyLinters
 
 lean_lib Counterexamples where
   leanOptions := mathlibLeanOptions
-  moreServerOptions := mathlibOnlyLinters
 
 /-- Additional documentation in the form of modules that only contain module docstrings. -/
 lean_lib docs where

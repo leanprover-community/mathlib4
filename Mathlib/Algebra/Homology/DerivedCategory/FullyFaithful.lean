@@ -45,7 +45,7 @@ instance (n : ℤ) : (singleFunctor C n).Full where
       obtain ⟨f', rfl⟩ := this
       obtain ⟨g, rfl⟩ := (CochainComplex.singleFunctor C n).map_surjective f'
       exact ⟨g, rfl⟩
-    obtain ⟨X, _, _, s, _, g, rfl⟩ := right_fac_of_isStrictlyLE_of_isStrictlyGE f n n
+    obtain ⟨X, _, _, s, _, g, rfl⟩ := right_fac_of_isStrictlyLE_of_isStrictlyGE n n f
     obtain ⟨A₀, ⟨e⟩⟩ := X.exists_iso_single n
     have ⟨φ, hφ⟩ := (CochainComplex.singleFunctor C n).map_surjective (e.inv ≫ s)
     have : IsIso ((singleFunctor C n).map φ) := by
