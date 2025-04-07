@@ -477,16 +477,19 @@ theorem support_add [DecidableEq α] {g₁ g₂ : α →₀ M} :
     (g₁ + g₂).support ⊆ g₁.support ∪ g₂.support :=
   support_zipWith
 
+-- TODO
+theorem _root_.Finset.mem_union_of_disjoint [DecidableEq α]
+    {s t : Finset α} (h : Disjoint s t) {x : α} :
+    x ∈ s ∪ t ↔ (x ∈ s ∧ x ∉ t) ∨ (x ∉ s ∧ x ∈ t) := by
+  rw [Finset.mem_union]
+  have := disjoint_left.1 h
+  tauto
+
+
 theorem support_add_eq [DecidableEq α] {g₁ g₂ : α →₀ M} (h : Disjoint g₁.support g₂.support) :
     (g₁ + g₂).support = g₁.support ∪ g₂.support :=
-  le_antisymm support_zipWith fun a ha =>
-    (Finset.mem_union.1 ha).elim
-      (fun ha => by
-        have : a ∉ g₂.support := disjoint_left.1 h ha
-        simp only [mem_support_iff, not_not] at *; simpa only [add_apply, this, add_zero] )
-      fun ha => by
-      have : a ∉ g₁.support := disjoint_right.1 h ha
-      simp only [mem_support_iff, not_not] at *; simpa only [add_apply, this, zero_add]
+  le_antisymm support_zipWith fun a ha => by
+    cases (Finset.mem_union_of_disjoint h).1 ha <;> simp_all
 
 instance instAddZeroClass : AddZeroClass (α →₀ M) :=
   fast_instance% DFunLike.coe_injective.addZeroClass _ coe_zero coe_add
