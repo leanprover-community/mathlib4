@@ -128,7 +128,7 @@ section Ball
 
 namespace Metric
 
-theorem ball_contracitble {x : E} {r : ℝ} (hr : 0 < r) :
+theorem ball_contractible {x : E} {r : ℝ} (hr : 0 < r) :
     ContractibleSpace (ball x r) :=
   Convex.contractibleSpace (convex_ball _ _) (by simpa)
 
@@ -140,26 +140,26 @@ theorem eball_contractible {x : E} {r : ENNReal} (hr : 0 < r) :
     exact RealTopologicalVectorSpace.contractibleSpace
   | coe r =>
     rw [emetric_ball_nnreal]
-    apply ball_contracitble
+    apply ball_contractible
     simpa using hr
 
-theorem ball_PathConnected {x : E} {r : ℝ} (hr : 0 < r) :
+theorem ball_pathConnectedSpace {x : E} {r : ℝ} (hr : 0 < r) :
     PathConnectedSpace (ball x r) :=
-  @ContractibleSpace.instPathConnectedSpace _ _ (ball_contracitble hr)
+  @ContractibleSpace.instPathConnectedSpace _ _ (ball_contractible hr)
 
-theorem eball_PathConnected {x : E} {r : ENNReal} (hr : 0 < r) :
+theorem eball_pathConnectedSpace {x : E} {r : ENNReal} (hr : 0 < r) :
     PathConnectedSpace (EMetric.ball x r) :=
   @ContractibleSpace.instPathConnectedSpace _ _ (eball_contractible hr)
 
-theorem ball_connected {x : E} {r : ℝ} (hr : 0 < r) :
+theorem isConnected_ball {x : E} {r : ℝ} (hr : 0 < r) :
     IsConnected (ball x r) := by
   rw [isConnected_iff_connectedSpace]
-  exact @PathConnectedSpace.connectedSpace _ _ (ball_PathConnected hr)
+  exact @PathConnectedSpace.connectedSpace _ _ (ball_pathConnectedSpace hr)
 
-theorem eball_connected {x : E} {r : ENNReal} (hr : 0 < r) :
+theorem isConnected_eball {x : E} {r : ENNReal} (hr : 0 < r) :
     IsConnected (EMetric.ball x r) := by
   rw [isConnected_iff_connectedSpace]
-  exact @PathConnectedSpace.connectedSpace _ _ (eball_PathConnected hr)
+  exact @PathConnectedSpace.connectedSpace _ _ (eball_pathConnectedSpace hr)
 
 end Metric
 
