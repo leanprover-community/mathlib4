@@ -64,6 +64,12 @@ instance setLike : SetLike (TwoSidedIdeal R) R where
 
 lemma mem_iff (x : R) : x ∈ I ↔ I.ringCon x 0 := Iff.rfl
 
+@[simp]
+lemma mem_mk {x : R} {c : RingCon R} : x ∈ mk c ↔ c x 0 := Iff.rfl
+
+@[simp, norm_cast]
+lemma coe_mk {c : RingCon R} : (mk c : Set R) = {x | c x 0} := rfl
+
 lemma rel_iff (x y : R) : I.ringCon x y ↔ x - y ∈ I := by
   rw [mem_iff]
   constructor

@@ -283,6 +283,7 @@ def equivMatricesOver [Nonempty n] [DecidableEq n] :
 theorem coe_equivMatricesOver_symm_apply (I : TwoSidedIdeal (Matrix n n R)) (i j : n) :
     equivMatricesOver.symm I = {N i j | N ∈ I} := by
   ext r
+  simp [equivMatricesOver]
   constructor
   · intro h
     exact ⟨stdBasisMatrix i j r, by simpa using h i j, by simp⟩
