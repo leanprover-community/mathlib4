@@ -1211,8 +1211,11 @@ open MulOpposite (continuous_op continuous_unop)
 variable [Monoid α] [TopologicalSpace α] [Monoid β] [TopologicalSpace β]
 
 @[to_additive]
-instance [ContinuousMul α] : IsTopologicalGroup αˣ where
+instance : ContinuousInv αˣ where
   continuous_inv := Units.continuous_iff.2 <| ⟨continuous_coe_inv, continuous_val⟩
+
+@[to_additive]
+instance [ContinuousMul α] : IsTopologicalGroup αˣ where
 
 /-- The topological group isomorphism between the units of a product of two monoids, and the product
 of the units of each monoid. -/
