@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Integral.IntegrableOn
-import Mathlib.MeasureTheory.Integral.Bochner
+import Mathlib.MeasureTheory.Integral.Bochner.Basic
 import Mathlib.MeasureTheory.Function.LocallyIntegrable
 import Mathlib.Topology.MetricSpace.ThickenedIndicator
 import Mathlib.Topology.ContinuousMap.ContinuousMapZero
@@ -43,11 +43,10 @@ We provide the following notations for expressing the integral of a function on 
 * `∫ x in s, f x ∂μ` is `MeasureTheory.integral (μ.restrict s) f`
 * `∫ x in s, f x` is `∫ x in s, f x ∂volume`
 
-Note that the set notations are defined in the file `Mathlib/MeasureTheory/Integral/Bochner.lean`,
+Note that the set notations are defined in the file
+`Mathlib/MeasureTheory/Integral/Bochner/Basic.lean`,
 but we reference them here because all theorems about set integrals are in this file.
-
 -/
-
 
 assert_not_exists InnerProductSpace
 
