@@ -106,15 +106,6 @@ theorem mem_coe {x : M} : x ∈ (N : Set M) ↔ x ∈ N :=
 protected theorem zero_mem : (0 : M) ∈ N :=
   zero_mem N
 
-protected theorem add_mem {x y : M} : x ∈ N → y ∈ N → (x + y : M) ∈ N :=
-  add_mem
-
-protected theorem sub_mem {x y : M} : x ∈ N → y ∈ N → (x - y : M) ∈ N :=
-  sub_mem
-
-theorem smul_mem (t : R) {x : M} (h : x ∈ N) : t • x ∈ N :=
-  (N : Submodule R M).smul_mem t h
-
 @[simp]
 theorem mk_eq_zero {x} (h : x ∈ N) : (⟨x, h⟩ : N) = 0 ↔ x = 0 :=
   Subtype.ext_iff_val
