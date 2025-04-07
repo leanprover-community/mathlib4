@@ -134,6 +134,12 @@ theorem Ioi_subset_Ioi_iff : Ioi b ⊆ Ioi a ↔ a ≤ b := by
   exact lt_irrefl _ (h (not_le.mp ba))
 
 @[simp]
+theorem Ioi_ssubset_Ioi_iff : Ioi b ⊂ Ioi a ↔ a < b := by
+  refine ⟨fun h => ?_, fun h => Ioi_ssubset_Ioi h⟩
+  obtain ⟨_, c, ac, cb⟩ := ssubset_iff_exists.mp h
+  exact lt_of_lt_of_le (by simpa using ac) (by simpa using cb)
+
+@[simp]
 theorem Ioi_subset_Ici_iff [DenselyOrdered α] : Ioi b ⊆ Ici a ↔ a ≤ b := by
   refine ⟨fun h => ?_, fun h => Ioi_subset_Ici h⟩
   by_contra ba
@@ -145,6 +151,12 @@ theorem Iio_subset_Iio_iff : Iio a ⊆ Iio b ↔ a ≤ b := by
   refine ⟨fun h => ?_, fun h => Iio_subset_Iio h⟩
   by_contra ab
   exact lt_irrefl _ (h (not_le.mp ab))
+
+@[simp]
+theorem Iio_ssubset_Iio_iff : Iio a ⊂ Iio b ↔ a < b := by
+  refine ⟨fun h => ?_, fun h => Iio_ssubset_Iio h⟩
+  obtain ⟨_, c, cb, ac⟩ := ssubset_iff_exists.mp h
+  exact lt_of_le_of_lt (by simpa using ac) (by simpa using cb)
 
 @[simp]
 theorem Iio_subset_Iic_iff [DenselyOrdered α] : Iio a ⊆ Iic b ↔ a ≤ b := by
