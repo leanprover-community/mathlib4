@@ -91,7 +91,7 @@ def openSubgroup_of_subgroups {i : ι} (hi : p i) :
     mul_mem' := mul_mem
     one_mem' := one_mem _
     inv_mem' := inv_mem
-    isOpen' := Subgroup.isOpen_of_mem_nhds _ <| hB.nhds_one_hasBasis.mem_of_mem hi }
+    isOpen' := Subgroup.isOpen_of_mem_nhds (.ofClass (B i)) (hB.nhds_one_hasBasis.mem_of_mem hi) }
 
 -- TODO(Anatole) : this should be a general lemma assuming `(𝓝 1).HasBasis p s`
 -- with `s` valued in subgroups.

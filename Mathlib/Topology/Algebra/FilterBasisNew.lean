@@ -3,7 +3,7 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Anatole Dedecker
 -/
-import Mathlib.Order.Filter.Bases
+import Mathlib.Order.Filter.Bases.Basic
 import Mathlib.Topology.Algebra.Module.Basic
 
 /-!
@@ -78,8 +78,8 @@ strengthening of `Filter.IsBasis p s` with extra compatibility axioms ensuring t
 filter is the filter of neighborhoods of one for some group topology on `G`
 (`Filter.IsGroupBasis.topologicalGroup`). Conversely, *any* basis of neighborhoods of one
 in a topological group satisfies these conditions (`Filter.HasBasis.isGroupBasis`). -/
-structure IsGroupBasis {G : Type*} {ι : Sort*} [Group G] (p : ι → Prop) (s : ι → Set G)
-    extends IsBasis p s : Prop where
+structure IsGroupBasis {G : Type*} {ι : Sort*} [Group G] (p : ι → Prop) (s : ι → Set G) : Prop
+    extends IsBasis p s where
   one : ∀ {i}, p i → (1 : G) ∈ s i
   mul : ∀ {i}, p i → ∃ j, p j ∧ s j * s j ⊆ s i
   inv : ∀ {i}, p i → ∃ j, p j ∧ s j ⊆ (s i)⁻¹
@@ -91,8 +91,8 @@ generated filter is the filter of neighborhoods of zero for some group topology 
 (`Filter.IsAddGroupBasis.topologicalAddGroup`). Conversely, *any* basis of neighborhoods of
 zero in an additive topological group satisfies these conditions
 (`Filter.HasBasis.isAddGroupBasis`). -/
-structure IsAddGroupBasis {G : Type*} {ι : Sort*} [AddGroup G] (p : ι → Prop) (s : ι → Set G)
-    extends IsBasis p s : Prop where
+structure IsAddGroupBasis {G : Type*} {ι : Sort*} [AddGroup G] (p : ι → Prop) (s : ι → Set G) : Prop
+    extends IsBasis p s where
   zero : ∀ {i}, p i → (0 : G) ∈ s i
   add : ∀ {i}, p i → ∃ j, p j ∧ s j + s j ⊆ s i
   neg : ∀ {i}, p i → ∃ j, p j ∧ s j ⊆ -(s i)
@@ -118,7 +118,7 @@ basis. -/
 @[to_additive "In an additive topological group, *any* basis of neighborhoods of zero is a group
 filter basis."]
 theorem HasBasis.isGroupBasis {G : Type*} {ι : Sort*} [Group G] [TopologicalSpace G]
-    [TopologicalGroup G] {p : ι → Prop} {s : ι → Set G} (h : (𝓝 1).HasBasis p s) :
+    [IsTopologicalGroup G] {p : ι → Prop} {s : ι → Set G} (h : (𝓝 1).HasBasis p s) :
     IsGroupBasis p s where
   toIsBasis := h.isBasis
   one hi := mem_of_mem_nhds (h.mem_of_mem hi)
@@ -140,7 +140,7 @@ example {G : Type*} [Group G] :
   letI : TopologicalSpace G := ⊥
   haveI : DiscreteTopology G := ⟨rfl⟩
   -- TODO: this should be inferred
-  haveI : TopologicalGroup G := ⟨⟩
+  haveI : IsTopologicalGroup G := ⟨⟩
   (nhds_discrete G ▸ hasBasis_pure 1).isGroupBasis
 
 namespace IsGroupBasis
@@ -149,7 +149,7 @@ variable {G : Type*} {ι : Sort*} [Group G] {p : ι → Prop} {s : ι → Set G}
 include hB
 
 /-!
-### Proving `TopologicalGroup` from `Filter.IsGroupBasis`
+### Proving `IsTopologicalGroup` from `Filter.IsGroupBasis`
 -/
 
 /-- Assume the group `G` is given a topology which is invariant by translations,
@@ -161,8 +161,8 @@ which we express as `ContinuousConstVAdd G G`.
 To show that it is a group topology, it suffices so exhibit a basis of neighborhoods of
 zero satisfying `Filter.IsAddGroupBasis`."]
 lemma topologicalGroup_of_hasBasis [TopologicalSpace G] [ContinuousConstSMul G G]
-    (hB' : (𝓝 1).HasBasis p s) : TopologicalGroup G := by
-  apply TopologicalGroup.of_nhds_one
+    (hB' : (𝓝 1).HasBasis p s) : IsTopologicalGroup G := by
+  apply IsTopologicalGroup.of_nhds_one
   · refine hB'.prod_self.tendsto_iff hB' |>.mpr fun i hi ↦ (hB.mul hi).imp
       fun j ⟨hj, hji⟩ ↦ ⟨hj, ?_⟩
     simpa [← image2_mul, forall_mem_comm] using hji
@@ -236,7 +236,7 @@ it's a topological group. -/
 @[to_additive "If a group is endowed with the topological structure coming from a group filter basis
 then it's a topological group."]
 instance (priority := 100) topologicalGroup :
-    @TopologicalGroup G hB.topology _ := by
+    @IsTopologicalGroup G hB.topology _ := by
   letI := hB.topology
   exact hB.topologicalGroup_of_hasBasis hB.nhds_one_hasBasis
 
@@ -251,8 +251,8 @@ strengthening of `Filter.IsBasis p s` with extra compatibility axioms ensuring t
 filter is the filter of neighborhoods of zero for some ring topology on `R`
 (`Filter.IsRingBasis.topologicalRing`). Conversely, *any* basis of neighborhoods of zero in a
 topological ring satisfies these conditions (`Filter.HasBasis.isRingBasis`). -/
-structure IsRingBasis {R : Type*} {ι : Sort*} [Ring R] (p : ι → Prop) (s : ι → Set R)
-    extends IsAddGroupBasis p s : Prop where
+structure IsRingBasis {R : Type*} {ι : Sort*} [Ring R] (p : ι → Prop) (s : ι → Set R) : Prop
+    extends IsAddGroupBasis p s where
   mul : ∀ {i}, p i → ∃ j, p j ∧ s j * s j ⊆ s i
   mul_left : ∀ (x₀ : R) {i}, p i → ∃ j, p j ∧ MapsTo (x₀ * ·) (s j) (s i)
   mul_right : ∀ (x₀ : R) {i}, p i → ∃ j, p j ∧ MapsTo (· * x₀) (s j) (s i)
@@ -270,7 +270,7 @@ theorem IsRingBasis.mk_of_comm {R : Type*} {ι : Sort*} [CommRing R] (p : ι →
 /-- In a topological ring, *any* basis of neighborhoods of zero is a ring filter
 basis. -/
 theorem HasBasis.isRingBasis {R : Type*} {ι : Sort*} [Ring R] [TopologicalSpace R]
-    [TopologicalRing R] {p : ι → Prop} {s : ι → Set R} (h : (𝓝 0).HasBasis p s) :
+    [IsTopologicalRing R] {p : ι → Prop} {s : ι → Set R} (h : (𝓝 0).HasBasis p s) :
     IsRingBasis p s where
   toIsAddGroupBasis := h.isAddGroupBasis
   mul := by
@@ -297,7 +297,7 @@ variable {R : Type*} {ι : Sort*} [Ring R] {p : ι → Prop} {s : ι → Set R} 
 include hB
 
 /-!
-### Proving `TopologicalRing` from `Filter.IsRingBasis`
+### Proving `IsTopologicalRing` from `Filter.IsRingBasis`
 -/
 
 /-- Assume the ring `R` is given a topology which is invariant by translations,
@@ -305,9 +305,9 @@ which we express as `ContinuousConstVAdd R R`.
 To show that it is a ring topology, it suffices so exhibit a basis of neighborhoods of
 zero satisfying `Filter.IsRingBasis`. -/
 lemma topologicalRing_of_hasBasis [TopologicalSpace R] [ContinuousConstVAdd R R]
-    (hB' : (𝓝 0).HasBasis p s) : TopologicalRing R := by
+    (hB' : (𝓝 0).HasBasis p s) : IsTopologicalRing R := by
   haveI := hB.topologicalAddGroup_of_hasBasis hB'
-  apply TopologicalRing.of_addGroup_of_nhds_zero
+  apply IsTopologicalRing.of_addGroup_of_nhds_zero
   · refine hB'.prod_self.tendsto_iff hB' |>.mpr fun i hi ↦ (hB.mul hi).imp
       fun j ⟨hj, hji⟩ ↦ ⟨hj, ?_⟩
     simpa [← image2_mul, forall_mem_comm] using hji
@@ -325,7 +325,7 @@ nonrec abbrev topology : TopologicalSpace R := hB.topology
 /-- If a ring is endowed with the topological structure coming from
 a ring filter basis, then it's a topological ring. -/
 instance (priority := 100) topologicalRing :
-    @TopologicalRing R hB.topology _ := by
+    @IsTopologicalRing R hB.topology _ := by
   letI := hB.topology
   haveI := hB.continuousConstVAdd
   exact hB.topologicalRing_of_hasBasis hB.nhds_zero_hasBasis
@@ -343,8 +343,8 @@ axioms ensuring that the generated filter is the filter of neighborhoods of zero
 neighborhoods of zero in a topological `R`-module satisfies these conditions
 (`Filter.HasBasis.isModuleBasis`). -/
 structure IsModuleBasis (R : Type*) {M : Type*} {ι : Sort*} [Ring R] [TopologicalSpace R]
-    [AddCommGroup M] [Module R M] (p : ι → Prop) (s : ι → Set M)
-    extends IsAddGroupBasis p s : Prop where
+    [AddCommGroup M] [Module R M] (p : ι → Prop) (s : ι → Set M) : Prop
+    extends IsAddGroupBasis p s where
   smul : ∀ {i}, p i → ∃ V ∈ 𝓝 (0 : R), ∃ j, p j ∧ V • (s j) ⊆ s i
   smul_left : ∀ (x₀ : R) {i}, p i → ∃ j, p j ∧ MapsTo (x₀ • ·) (s j) (s i)
   smul_right : ∀ (m₀ : M) {i}, p i → ∀ᶠ x in 𝓝 (0 : R), x • m₀ ∈ s i
@@ -366,7 +366,8 @@ theorem IsModuleBasis.mk_of_hasBasis {R M : Type*} {ιR ιM : Sort*} [Ring R] [T
 
 /-- In a topological `R`-module, *any* basis of neighborhoods of zero is a module filter basis. -/
 theorem HasBasis.isModuleBasis (R : Type*) {M : Type*} {ι : Sort*} [Ring R] [TopologicalSpace R]
-    [AddCommGroup M] [Module R M] [TopologicalSpace M] [TopologicalAddGroup M] [ContinuousSMul R M]
+    [AddCommGroup M] [Module R M] [TopologicalSpace M] [IsTopologicalAddGroup M]
+    [ContinuousSMul R M]
     {p : ι → Prop} {s : ι → Set M} (h : (𝓝 0).HasBasis p s) :
     IsModuleBasis R p s where
   toIsAddGroupBasis := h.isAddGroupBasis
@@ -397,7 +398,7 @@ example [DiscreteTopology R] : IsModuleBasis R (fun _ ↦ True) (fun _ ↦ {0} :
   letI : TopologicalSpace M := ⊥
   haveI : DiscreteTopology M := ⟨rfl⟩
   -- TODO: these should be inferred
-  haveI : TopologicalAddGroup M := ⟨⟩
+  haveI : IsTopologicalAddGroup M := ⟨⟩
   haveI : ContinuousSMul R M := ⟨continuous_of_discreteTopology⟩
   (nhds_discrete M ▸ hasBasis_pure 0).isModuleBasis R
 
@@ -409,7 +410,7 @@ example [DiscreteTopology R] : IsModuleBasis R (fun _ ↦ True) (fun _ ↦ {0} :
 which we express as `ContinuousConstVAdd M M`.
 To show that it is a `R`-module topology, it suffices so exhibit a basis of neighborhoods of
 zero satisfying `Filter.IsModuleBasis R`. -/
-theorem continuousSMul_of_hasBasis [TopologicalRing R] [TopologicalSpace M]
+theorem continuousSMul_of_hasBasis [IsTopologicalRing R] [TopologicalSpace M]
     [ContinuousConstVAdd M M] (hB' : (𝓝 0).HasBasis p s) : ContinuousSMul R M := by
   haveI := hB.topologicalAddGroup_of_hasBasis hB'
   apply ContinuousSMul.of_nhds_zero
@@ -437,7 +438,7 @@ abbrev topology' {R M : Type*} {ι : Sort*} [CommRing R] {_ : TopologicalSpace R
 
 /-- If a module is endowed with the topological structure coming from
 a module filter basis then it's a topological module. -/
-instance (priority := 100) continuousSMul [TopologicalRing R] :
+instance (priority := 100) continuousSMul [IsTopologicalRing R] :
     @ContinuousSMul R M _ _ hB.topology := by
   letI := hB.topology
   haveI := hB.continuousConstVAdd
