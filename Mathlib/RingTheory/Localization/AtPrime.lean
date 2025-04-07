@@ -154,8 +154,6 @@ namespace Localization
 
 open IsLocalization
 
-attribute [local instance] Classical.propDecidable
-
 variable (I : Ideal R) [hI : I.IsPrime]
 variable {I}
 

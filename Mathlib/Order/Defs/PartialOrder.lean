@@ -146,9 +146,7 @@ lemma le_iff_lt_or_eq : a ≤ b ↔ a < b ∨ a = b :=
 
 end Decidable
 
-attribute [local instance] Classical.propDecidable
-
-lemma lt_or_eq_of_le : a ≤ b → a < b ∨ a = b := Decidable.lt_or_eq_of_le
-lemma le_iff_lt_or_eq : a ≤ b ↔ a < b ∨ a = b := Decidable.le_iff_lt_or_eq
+lemma lt_or_eq_of_le : a ≤ b → a < b ∨ a = b := open scoped Classical in Decidable.lt_or_eq_of_le
+lemma le_iff_lt_or_eq : a ≤ b ↔ a < b ∨ a = b := open scoped Classical in Decidable.le_iff_lt_or_eq
 
 end PartialOrder

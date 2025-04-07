@@ -338,16 +338,16 @@ theorem LeftInverse.eq_rightInverse {f : α → β} {g₁ g₂ : β → α} (h�
     g₁ = g₁ ∘ f ∘ g₂ := by rw [h₂.comp_eq_id, comp_id]
      _ = g₂ := by rw [← comp_assoc, h₁.comp_eq_id, id_comp]
 
-attribute [local instance] Classical.propDecidable
-
 /-- We can use choice to construct explicitly a partial inverse for
   a given injective function `f`. -/
 noncomputable def partialInv {α β} (f : α → β) (b : β) : Option α :=
+  open Classical in
   if h : ∃ a, f a = b then some (Classical.choose h) else none
 
 theorem partialInv_of_injective {α β} {f : α → β} (I : Injective f) : IsPartialInv f (partialInv f)
   | a, b =>
   ⟨fun h =>
+    open Classical in
     have hpi : partialInv f b = if h : ∃ a, f a = b then some (Classical.choose h) else none :=
       rfl
     if h' : ∃ a, f a = b
@@ -368,12 +368,11 @@ section InvFun
 
 variable {α β : Sort*} [Nonempty α] {f : α → β} {b : β}
 
-attribute [local instance] Classical.propDecidable
-
 /-- The inverse of a function (which is a left inverse if `f` is injective
   and a right inverse if `f` is surjective). -/
 -- Explicit Sort so that `α` isn't inferred to be Prop via `exists_prop_decidable`
 noncomputable def invFun {α : Sort u} {β} [Nonempty α] (f : α → β) : β → α :=
+  open scoped Classical in
   fun y ↦ if h : (∃ x, f x = y) then h.choose else Classical.arbitrary α
 
 theorem invFun_eq (h : ∃ a, f a = b) : f (invFun f b) = b := by
@@ -616,8 +615,6 @@ end Update
 
 noncomputable section Extend
 
-attribute [local instance] Classical.propDecidable
-
 variable {α β γ : Sort*} {f : α → β}
 
 /-- Extension of a function `g : α → γ` along a function `f : α → β`.
@@ -633,6 +630,7 @@ This definition is mathematically meaningful only when `f a₁ = f a₂ → g a�
 A typical use case is extending a function from a subtype to the entire type. If you wish to extend
 `g : {b : β // p b} → γ` to a function `β → γ`, you should use `Function.extend Subtype.val g j`. -/
 def extend (f : α → β) (g : α → γ) (j : β → γ) : β → γ := fun b ↦
+  open scoped Classical in
   if h : ∃ a, f a = b then g (Classical.choose h) else j b
 
 /-- g factors through f : `f a = f b → g a = g b` -/
@@ -649,6 +647,7 @@ lemma Injective.factorsThrough (hf : Injective f) (g : α → γ) : g.FactorsThr
 
 lemma FactorsThrough.extend_apply {g : α → γ} (hf : g.FactorsThrough f) (e' : β → γ) (a : α) :
     extend f g e' (f a) = g a := by
+  classical
   simp only [extend_def, dif_pos, exists_apply_eq_apply]
   exact hf (Classical.choose_spec (exists_apply_eq_apply f a))
 
@@ -660,6 +659,7 @@ theorem Injective.extend_apply (hf : Injective f) (g : α → γ) (e' : β → �
 @[simp]
 theorem extend_apply' (g : α → γ) (e' : β → γ) (b : β) (hb : ¬∃ a, f a = b) :
     extend f g e' b = e' b := by
+  classical
   simp [Function.extend_def, hb]
 
 lemma factorsThrough_iff (g : α → γ) [Nonempty γ] : g.FactorsThrough f ↔ ∃ (e : β → γ), g = e ∘ f :=
@@ -669,7 +669,7 @@ lemma factorsThrough_iff (g : α → γ) [Nonempty γ] : g.FactorsThrough f ↔ 
 
 lemma apply_extend {δ} {g : α → γ} (F : γ → δ) (f : α → β) (e' : β → γ) (b : β) :
     F (extend f g e' b) = extend f (F ∘ g) (F ∘ e') b :=
-  apply_dite F _ _ _
+  open scoped Classical in apply_dite F _ _ _
 
 theorem extend_injective (hf : Injective f) (e' : β → γ) : Injective fun g ↦ extend f g e' := by
   intro g₁ g₂ hg
@@ -684,7 +684,7 @@ lemma FactorsThrough.extend_comp {g : α → γ} (e' : β → γ) (hf : FactorsT
 
 @[simp]
 lemma extend_const (f : α → β) (c : γ) : extend f (fun _ ↦ c) (fun _ ↦ c) = fun _ ↦ c :=
-  funext fun _ ↦ ite_id _
+  funext fun _ ↦ open scoped Classical in ite_id _
 
 @[simp]
 theorem extend_comp (hf : Injective f) (g : α → γ) (e' : β → γ) : extend f g e' ∘ f = g :=
@@ -700,6 +700,7 @@ theorem Injective.surjective_comp_right [Nonempty γ] (hf : Injective f) :
 
 theorem surjective_comp_right_iff_injective {γ : Type*} [Nontrivial γ] :
     Surjective (fun g : β → γ ↦ g ∘ f) ↔ Injective f := by
+  classical
   refine ⟨not_imp_not.mp fun not_inj surj ↦ not_subsingleton γ ⟨fun c c' ↦ ?_⟩,
     (·.surjective_comp_right)⟩
   simp only [Injective, not_forall] at not_inj
@@ -872,12 +873,11 @@ end Injective2
 
 section Sometimes
 
-attribute [local instance] Classical.propDecidable
-
 /-- `sometimes f` evaluates to some value of `f`, if it exists. This function is especially
 interesting in the case where `α` is a proposition, in which case `f` is necessarily a
 constant function, so that `sometimes f = f a` for all `a`. -/
 noncomputable def sometimes {α β} [Nonempty β] (f : α → β) : β :=
+  open scoped Classical in
   if h : Nonempty α then f (Classical.choice h) else Classical.choice ‹_›
 
 theorem sometimes_eq {p : Prop} {α} [Nonempty α] (f : p → α) (a : p) : sometimes f = f a :=
