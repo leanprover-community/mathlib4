@@ -74,10 +74,12 @@ lemma char_neg (w : W) :
     char he hL (-w) = star (char he hL w) := by ext; simp
 
 /-- If `e` and `L` are non-trivial, then `char he hL w, w : W` separates points in `V`. -/
-theorem char_SeparatesPoints (he : Continuous e) (he' : e ≠ 1)
-    (hL : Continuous fun p : V × W ↦ L p.1 p.2) (hL' : ∀ v ≠ 0, L v ≠ 0) {v v' : V} (hv : v ≠ v') :
-    ∃ w : W, char he hL w v ≠ char he hL w v' := by
-  obtain ⟨w, hw⟩ := DFunLike.ne_iff.mp (hL' (v - v') (sub_ne_zero_of_ne hv))
+theorem ext_of_char_eq (he : Continuous e) (he' : e ≠ 1)
+    (hL : Continuous fun p : V × W ↦ L p.1 p.2) (hL' : ∀ v ≠ 0, L v ≠ 0) {v v' : V}
+    (h : ∀ w, char he hL w v = char he hL w v') :
+    v = v' := by
+  contrapose! h
+  obtain ⟨w, hw⟩ := DFunLike.ne_iff.mp (hL' (v - v') (sub_ne_zero_of_ne h))
   obtain ⟨a, ha⟩ := DFunLike.ne_iff.mp he'
   use (a / (L (v - v') w)) • w
   simp only [map_sub, LinearMap.sub_apply, char_apply, ne_eq]
@@ -178,7 +180,9 @@ lemma separatesPoints_charPoly (he : Continuous e) (he' : e ≠ 1)
     (hL : Continuous fun p : V × W ↦ L p.1 p.2) (hL' : ∀ v ≠ 0, L v ≠ 0) :
     ((charPoly he hL).map (toContinuousMapStarₐ ℂ)).SeparatesPoints := by
   intro v v' hvv'
-  obtain ⟨w, hw⟩ := char_SeparatesPoints he he' hL hL' hvv'
+  obtain ⟨w, hw⟩ : ∃ w, char he hL w v ≠ char he hL w v' := by
+    contrapose! hvv'
+    exact ext_of_char_eq he he' hL hL' hvv'
   use char he hL w
   simp only [StarSubalgebra.coe_toSubalgebra, StarSubalgebra.coe_map, Set.mem_image,
     SetLike.mem_coe, exists_exists_and_eq_and, ne_eq, SetLike.coe_eq_coe]
