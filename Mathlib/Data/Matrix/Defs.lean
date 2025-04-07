@@ -275,7 +275,7 @@ protected theorem map_sub [Sub α] [Sub β] (f : α → β) (hf : ∀ a₁ a₂,
     (M N : Matrix m n α) : (M - N).map f = M.map f - N.map f :=
   ext fun _ _ => hf _ _
 
-theorem map_smul [SMul R α] [SMul R β] (f : α → β) (r : R) (hf : ∀ a, f (r • a) = r • f a)
+protected theorem map_smul [SMul R α] [SMul R β] (f : α → β) (r : R) (hf : ∀ a, f (r • a) = r • f a)
     (M : Matrix m n α) : (r • M).map f = r • M.map f :=
   ext fun _ _ => hf _
 

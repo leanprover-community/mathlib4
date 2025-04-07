@@ -178,19 +178,19 @@ example {R : Type*} [Semiring R] {a b c d : R} :
   simp [Matrix.vecHead, Matrix.vecTail]
 
 /- Check that matrix notation works with `row` and `col` -/
-example : Matrix.rowConst _ ![1, 1] = !![1, 1] := by
+example : Matrix.replicateRow _ ![1, 1] = !![1, 1] := by
   ext i j
   simp
 
-example : Matrix.colConst _ ![1, 1] = !![1; 1] := by
+example : Matrix.replicateCol _ ![1, 1] = !![1; 1] := by
   ext i j
   fin_cases i <;> simp
 
-example (ι : Type*) [Inhabited ι] : Matrix.rowConst ι (fun (_ : Fin 3) => 0) = 0 := by
+example (ι : Type*) [Inhabited ι] : Matrix.replicateRow ι (fun (_ : Fin 3) => 0) = 0 := by
   simp_all
   rfl
 
-example (ι : Type*) [Inhabited ι] : Matrix.colConst ι (fun (_ : Fin 3) => 0) = 0 := by
+example (ι : Type*) [Inhabited ι] : Matrix.replicateCol ι (fun (_ : Fin 3) => 0) = 0 := by
   simp_all
   rfl
 

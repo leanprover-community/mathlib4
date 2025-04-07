@@ -92,15 +92,15 @@ instance [Star R] [ContinuousStar R] : ContinuousStar (Matrix m m R) :=
   ⟨continuous_id.matrix_conjTranspose⟩
 
 @[continuity, fun_prop]
-theorem Continuous.matrix_colConst {ι : Type*} {A : X → n → R} (hA : Continuous A) :
-    Continuous fun x => colConst ι (A x) :=
+theorem Continuous.matrix_col {ι : Type*} {A : X → n → R} (hA : Continuous A) :
+    Continuous fun x => replicateCol ι (A x) :=
   continuous_matrix fun i _ => (continuous_apply i).comp hA
 
 @[deprecated (since := "2025-03-15")] alias Continuous.matrix_col := Continuous.matrix_colConst
 
 @[continuity, fun_prop]
-theorem Continuous.matrix_rowConst {ι : Type*} {A : X → n → R} (hA : Continuous A) :
-    Continuous fun x => rowConst ι (A x) :=
+theorem Continuous.matrix_row {ι : Type*} {A : X → n → R} (hA : Continuous A) :
+    Continuous fun x => replicateRow ι (A x) :=
   continuous_matrix fun _ _ => (continuous_apply _).comp hA
 
 @[deprecated (since := "2025-03-15")] alias Continuous.matrix_row := Continuous.matrix_rowConst

@@ -53,6 +53,7 @@ variable {L : Language.{u, v}} (T : L.Theory) (α : Type w)
 /-- A complete type over a given theory in a certain type of variables is a maximally
   consistent (with the theory) set of formulas in that type. -/
 structure CompleteType where
+  /-- The underlying theory -/
   toTheory : L[[α]].Theory
   subset' : (L.lhomWithConstants α).onTheory T ⊆ toTheory
   isMaximal' : toTheory.IsMaximal

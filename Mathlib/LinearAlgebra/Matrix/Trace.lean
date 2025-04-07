@@ -61,7 +61,7 @@ theorem trace_add (A B : Matrix n n R) : trace (A + B) = trace A + trace B :=
   Finset.sum_add_distrib
 
 @[simp]
-theorem trace_smul [Monoid α] [DistribMulAction α R] (r : α) (A : Matrix n n R) :
+theorem trace_smul [DistribSMul α R] (r : α) (A : Matrix n n R) :
     trace (r • A) = r • trace A :=
   Finset.smul_sum.symm
 
@@ -151,7 +151,7 @@ theorem trace_transpose_mul [AddCommMonoid R] [Mul R] (A : Matrix m n R) (B : Ma
     trace (Aᵀ * Bᵀ) = trace (A * B) :=
   Finset.sum_comm
 
-theorem trace_mul_comm [AddCommMonoid R] [CommSemigroup R] (A : Matrix m n R) (B : Matrix n m R) :
+theorem trace_mul_comm [AddCommMonoid R] [CommMagma R] (A : Matrix m n R) (B : Matrix n m R) :
     trace (A * B) = trace (B * A) := by rw [← trace_transpose, ← trace_transpose_mul, transpose_mul]
 
 theorem trace_mul_cycle [NonUnitalCommSemiring R] (A : Matrix m n R) (B : Matrix n p R)
@@ -163,17 +163,16 @@ theorem trace_mul_cycle' [NonUnitalCommSemiring R] (A : Matrix m n R) (B : Matri
   rw [← Matrix.mul_assoc, trace_mul_comm]
 
 @[simp]
-theorem trace_colConst_mul_rowConst {ι : Type*} [Unique ι] [NonUnitalNonAssocSemiring R]
-    (a b : n → R) : trace (colConst ι a * rowConst ι b) = dotProduct a b := by
+theorem trace_replicateCol_mul_replicateRow {ι : Type*} [Unique ι] [NonUnitalNonAssocSemiring R]
+    (a b : n → R) : trace (replicateCol ι a * replicateRow ι b) = dotProduct a b := by
   apply Finset.sum_congr rfl
   simp [mul_apply]
 
-@[deprecated (since := "2025-03-15")] alias trace_col_mul_row :=
-  trace_colConst_mul_rowConst
+@[deprecated (since := "2025-03-20")] alias trace_col_mul_row := trace_replicateCol_mul_replicateRow
 
 end Mul
 
-lemma trace_submatrix_succ {n : ℕ} [NonUnitalNonAssocSemiring R]
+lemma trace_submatrix_succ {n : ℕ} [AddCommMonoid R]
     (M : Matrix (Fin n.succ) (Fin n.succ) R) :
     M 0 0 + trace (submatrix M Fin.succ Fin.succ) = trace M := by
   delta trace

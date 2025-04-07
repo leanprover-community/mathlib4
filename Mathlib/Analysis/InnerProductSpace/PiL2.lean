@@ -5,7 +5,7 @@ Authors: Joseph Myers, Sébastien Gouëzel, Heather Macbeth
 -/
 import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Analysis.Normed.Lp.PiLp
-import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.LinearAlgebra.UnitaryGroup
 import Mathlib.Util.Superscript
 
@@ -381,6 +381,22 @@ protected theorem orthonormal (b : OrthonormalBasis ι 𝕜 E) : Orthonormal �
     rw [← b.repr.inner_map_map (b i) (b j), b.repr_self i, b.repr_self j,
       EuclideanSpace.inner_single_left, EuclideanSpace.single_apply, map_one, one_mul]
 
+@[simp]
+lemma norm_eq_one (b : OrthonormalBasis ι 𝕜 E) (i : ι) :
+    ‖b i‖ = 1 := b.orthonormal.norm_eq_one i
+
+@[simp]
+lemma nnnorm_eq_one (b : OrthonormalBasis ι 𝕜 E) (i : ι) :
+    ‖b i‖₊ = 1 := b.orthonormal.nnnorm_eq_one i
+
+@[simp]
+lemma enorm_eq_one (b : OrthonormalBasis ι 𝕜 E) (i : ι) :
+    ‖b i‖ₑ = 1 := b.orthonormal.enorm_eq_one i
+
+@[simp]
+lemma inner_eq_zero (b : OrthonormalBasis ι 𝕜 E) {i j : ι} (hij : i ≠ j) :
+    ⟪b i, b j⟫ = 0 := b.orthonormal.inner_eq_zero hij
+
 /-- The `Basis ι 𝕜 E` underlying the `OrthonormalBasis` -/
 protected def toBasis (b : OrthonormalBasis ι 𝕜 E) : Basis ι 𝕜 E :=
   Basis.ofEquivFun b.repr.toLinearEquiv
@@ -419,6 +435,29 @@ protected theorem sum_inner_mul_inner (b : OrthonormalBasis ι 𝕜 E) (x y : E)
   convert this
   rw [map_smul, b.repr_apply_apply, mul_comm]
   simp
+
+lemma sum_sq_norm_inner (b : OrthonormalBasis ι 𝕜 E) (x : E) :
+    ∑ i, ‖⟪b i, x⟫‖ ^ 2 = ‖x‖ ^ 2 := by
+  rw [@norm_eq_sqrt_inner 𝕜, ← OrthonormalBasis.sum_inner_mul_inner b x x, map_sum]
+  simp_rw [inner_mul_symm_re_eq_norm, norm_mul, ← inner_conj_symm x, starRingEnd_apply,
+    norm_star, ← pow_two]
+  rw [Real.sq_sqrt]
+  exact Fintype.sum_nonneg fun _ ↦ by positivity
+
+lemma norm_le_card_mul_iSup_norm_inner (b : OrthonormalBasis ι 𝕜 E) (x : E) :
+    ‖x‖ ≤ √(Fintype.card ι) * ⨆ i, ‖⟪b i, x⟫‖ := by
+  calc ‖x‖
+  _ = √(∑ i, ‖⟪b i, x⟫‖ ^ 2) := by rw [sum_sq_norm_inner, Real.sqrt_sq (by positivity)]
+  _ ≤ √(∑ _ : ι, (⨆ j, ‖⟪b j, x⟫‖) ^ 2) := by
+    gcongr with i
+    exact le_ciSup (f := fun j ↦ ‖⟪b j, x⟫‖) (by simp) i
+  _ = √(Fintype.card ι) * ⨆ i, ‖⟪b i, x⟫‖ := by
+    simp only [Finset.sum_const, Finset.card_univ, nsmul_eq_mul, Nat.cast_nonneg, Real.sqrt_mul]
+    congr
+    rw [Real.sqrt_sq]
+    cases isEmpty_or_nonempty ι
+    · simp
+    · exact le_ciSup_of_le (by simp) (Nonempty.some inferInstance) (by positivity)
 
 protected theorem orthogonalProjection_eq_sum {U : Submodule 𝕜 E} [CompleteSpace U]
     (b : OrthonormalBasis ι 𝕜 U) (x : E) :
@@ -512,7 +551,7 @@ theorem _root_.Pi.orthonormalBasis_apply {η : Type*} [Fintype η] [DecidableEq 
     Sigma.curry_single (γ := fun _ _ => 𝕜)]
   obtain rfl | hi := Decidable.eq_or_ne i k
   · simp only [Pi.single_eq_same, WithLp.equiv_symm_single, OrthonormalBasis.repr_symm_single]
-  · simp only [Pi.single_eq_of_ne' hi, WithLp.equiv_symm_zero, _root_.map_zero]
+  · simp only [Pi.single_eq_of_ne' hi, WithLp.equiv_symm_zero, map_zero]
 
 @[simp]
 theorem _root_.Pi.orthonormalBasis_repr {η : Type*} [Fintype η] {ι : η → Type*}

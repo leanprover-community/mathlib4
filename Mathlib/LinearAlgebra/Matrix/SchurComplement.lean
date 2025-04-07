@@ -408,27 +408,30 @@ theorem det_one_sub_mul_comm (A : Matrix m n α) (B : Matrix n m α) :
   rw [sub_eq_add_neg, ← Matrix.neg_mul, det_one_add_mul_comm, Matrix.mul_neg, ← sub_eq_add_neg]
 
 /-- A special case of the **Matrix determinant lemma** for when `A = I`. -/
-theorem det_one_add_colConst_mul_rowConst {ι : Type*} [Unique ι] (u v : m → α) :
-    det (1 + colConst ι u * rowConst ι v) = 1 + v ⬝ᵥ u := by
+theorem det_one_add_replicateCol_mul_replicateRow {ι : Type*} [Unique ι] (u v : m → α) :
+    det (1 + replicateCol ι u * replicateRow ι v) = 1 + v ⬝ᵥ u := by
   rw [det_one_add_mul_comm, det_unique, Pi.add_apply, Pi.add_apply, Matrix.one_apply_eq,
-    Matrix.rowConst_mul_colConst_apply]
+    Matrix.replicateRow_mul_replicateCol_apply]
 
-@[deprecated (since := "2025-03-15")] alias det_one_add_col_mul_row :=
-  det_one_add_colConst_mul_rowConst
+@[deprecated (since := "2025-03-20")] alias
+  det_one_add_col_mul_row := det_one_add_replicateCol_mul_replicateRow
+
 
 /-- The **Matrix determinant lemma**
 
 TODO: show the more general version without `hA : IsUnit A.det` as
-`(A + colConst u * rowConst v).det = A.det + v ⬝ᵥ (adjugate A) *ᵥ u`.
+`(A + replicateCol u * replicateRow v).det = A.det + v ⬝ᵥ (adjugate A) *ᵥ u`.
 -/
-theorem det_add_colConst_mul_rowConst {ι : Type*} [Unique ι]
+theorem det_add_replicateCol_mul_replicateRow {ι : Type*} [Unique ι]
     {A : Matrix m m α} (hA : IsUnit A.det) (u v : m → α) :
-    (A + colConst ι u * rowConst ι v).det
-    = A.det * (1 + rowConst ι v * A⁻¹ * colConst ι u).det := by
+    (A + replicateCol ι u * replicateRow ι v).det =
+    A.det * (1 + replicateRow ι v * A⁻¹ * replicateCol ι u).det := by
   nth_rewrite 1 [← Matrix.mul_one A]
-  rwa [← Matrix.mul_nonsing_inv_cancel_left A (colConst ι u * rowConst ι v),
-    ← Matrix.mul_add, det_mul, ← Matrix.mul_assoc, det_one_add_mul_comm,
-    ← Matrix.mul_assoc]
+  rwa [← Matrix.mul_nonsing_inv_cancel_left A (replicateCol ι u * replicateRow ι v),
+    ← Matrix.mul_add, det_mul, ← Matrix.mul_assoc, det_one_add_mul_comm, ← Matrix.mul_assoc]
+
+@[deprecated (since := "2025-03-20")] alias
+  det_add_col_mul_row := det_add_replicateCol_mul_replicateRow
 
 @[deprecated (since := "2025-03-15")] alias det_add_col_mul_row :=
   det_add_colConst_mul_rowConst

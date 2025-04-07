@@ -166,7 +166,7 @@ theorem orthonormal_mFourier : Orthonormal ℂ (mFourierLp (d := d) 2) := by
   intro m n
   simp only [ContinuousMap.inner_toLp, ← mFourier_neg, ← mFourier_add]
   split_ifs with h
-  · simpa only [h, add_neg_cancel, mFourier_zero, measure_univ, ENNReal.one_toReal, one_smul] using
+  · simpa only [h, add_neg_cancel, mFourier_zero, measure_univ, ENNReal.toReal_one, one_smul] using
       integral_const (α := UnitAddTorus d) (μ := volume) (1 : ℂ)
   rw [mFourier, ContinuousMap.coe_mk, MeasureTheory.integral_fintype_prod_eq_prod]
   obtain ⟨i, hi⟩ := Function.ne_iff.mp h
@@ -258,7 +258,7 @@ theorem hasSum_mFourier_series_of_summable (h : Summable (mFourierCoeff f)) :
 converges everywhere pointwise to `f`. -/
 theorem hasSum_mFourier_series_apply_of_summable (h : Summable (mFourierCoeff f))
     (x : UnitAddTorus d) : HasSum (fun i ↦ mFourierCoeff f i • mFourier i x) (f x) := by
-  simpa only [_root_.map_smul] using (ContinuousMap.evalCLM ℂ x).hasSum
+  simpa only [map_smul] using (ContinuousMap.evalCLM ℂ x).hasSum
     (hasSum_mFourier_series_of_summable h)
 
 end Convergence

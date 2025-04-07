@@ -244,13 +244,7 @@ theorem exists_finset_rename₂ (p₁ p₂ : MvPolynomial σ R) :
     use s₁ ∪ s₂
     use rename (Set.inclusion s₁.subset_union_left) q₁
     use rename (Set.inclusion s₁.subset_union_right) q₂
-    constructor -- Porting note: was `<;> simp <;> rfl` but Lean couldn't infer the arguments
-    · -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-      erw [rename_rename (Set.inclusion s₁.subset_union_left)]
-      rfl
-    · -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-      erw [rename_rename (Set.inclusion s₁.subset_union_right)]
-      rfl
+    constructor <;> simp [Function.comp_def]
 
 /-- Every polynomial is a polynomial in finitely many variables. -/
 theorem exists_fin_rename (p : MvPolynomial σ R) :
@@ -325,7 +319,7 @@ theorem support_rename_of_injective {p : MvPolynomial σ R} {f : σ → τ} [Dec
     (h : Function.Injective f) :
     (rename f p).support = Finset.image (Finsupp.mapDomain f) p.support := by
   rw [rename_eq]
-  exact Finsupp.mapDomain_support_of_injective (mapDomain_injective h) _
+  exact Finsupp.mapDomain_support_of_injective (Finsupp.mapDomain_injective h) _
 
 end Support
 
