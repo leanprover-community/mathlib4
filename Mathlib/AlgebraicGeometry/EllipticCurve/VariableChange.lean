@@ -13,12 +13,12 @@ This file defines admissible linear change of variables of Weierstrass curves.
 ## Main definitions
 
  * `WeierstrassCurve.VariableChange`: a change of variables of Weierstrass curves.
- * `WeierstrassCurve.VariableChange.instGroup`: change of variables form a group.
- * `WeierstrassCurve.instMulActionVariableChange`: change of variables act on Weierstrass curves.
- * `WeierstrassCurve.instIsEllipticVariableChange`: change of variables preserves elliptic curves.
+ * An instance which states that change of variables form a group.
+ * An instance which states that change of variables acts on Weierstrass curves.
 
 ## Main statements
 
+ * An instance which states that change of variables preserves elliptic curves.
  * `WeierstrassCurve.variableChange_j`: the j-invariant of an elliptic curve is invariant under an
     admissible linear change of variables.
 
@@ -64,46 +64,18 @@ namespace VariableChange
 
 variable (C C' : VariableChange R)
 
-private def _id : VariableChange R :=
-  ⟨1, 0, 0, 0⟩
-
-private def _comp : VariableChange R where
-  u := C.u * C'.u
-  r := C.r * C'.u ^ 2 + C'.r
-  s := C'.u * C.s + C'.s
-  t := C.t * C'.u ^ 3 + C.r * C'.s * C'.u ^ 2 + C'.t
-
-private def _inv : VariableChange R where
-  u := C.u⁻¹
-  r := -C.r * C.u⁻¹ ^ 2
-  s := -C.s * C.u⁻¹
-  t := (C.r * C.s - C.t) * C.u⁻¹ ^ 3
-
-instance instGroup : Group (VariableChange R) where
-  one := _id
-  inv := _inv
-  mul := _comp
-  one_mul C := by
-    change _comp _id C = C
-    simp only [_comp, _id, zero_add, zero_mul, mul_zero, one_mul]
-  mul_one C := by
-    change _comp C _id = C
-    simp only [_comp, _id, add_zero, mul_zero, one_mul, mul_one, one_pow, Units.val_one]
-  inv_mul_cancel C := by
-    change _comp (_inv C) C = _id
-    rw [_comp, _id, _inv]
-    ext <;> dsimp only
-    · exact C.u.inv_mul
-    · linear_combination -C.r * pow_mul_pow_eq_one 2 C.u.inv_mul
-    · linear_combination -C.s * C.u.inv_mul
-    · linear_combination (C.r * C.s - C.t) * pow_mul_pow_eq_one 3 C.u.inv_mul
-        + -C.r * C.s * pow_mul_pow_eq_one 2 C.u.inv_mul
-  mul_assoc C C' C'' := by
-    change _comp (_comp C C') C'' = _comp C (_comp C' C'')
-    ext <;> simp only [_comp, Units.val_mul] <;> ring1
+instance : One (VariableChange R) where
+  one := ⟨1, 0, 0, 0⟩
 
 /-- The identity linear change of variables given by the identity matrix. -/
 lemma one_def : (1 : VariableChange R) = ⟨1, 0, 0, 0⟩ := rfl
+
+instance : Mul (VariableChange R) where
+  mul C C' := {
+    u := C.u * C'.u
+    r := C.r * C'.u ^ 2 + C'.r
+    s := C'.u * C.s + C'.s
+    t := C.t * C'.u ^ 3 + C.r * C'.s * C'.u ^ 2 + C'.t }
 
 /-- The composition of two linear changes of variables given by matrix multiplication. -/
 lemma mul_def : C * C' = {
@@ -112,6 +84,13 @@ lemma mul_def : C * C' = {
     s := C'.u * C.s + C'.s
     t := C.t * C'.u ^ 3 + C.r * C'.s * C'.u ^ 2 + C'.t } := rfl
 
+instance : Inv (VariableChange R) where
+  inv C := {
+    u := C.u⁻¹
+    r := -C.r * C.u⁻¹ ^ 2
+    s := -C.s * C.u⁻¹
+    t := (C.r * C.s - C.t) * C.u⁻¹ ^ 3 }
+
 /-- The inverse of a linear change of variables given by matrix inversion. -/
 lemma inv_def : C⁻¹ = {
     u := C.u⁻¹
@@ -119,28 +98,53 @@ lemma inv_def : C⁻¹ = {
     s := -C.s * C.u⁻¹
     t := (C.r * C.s - C.t) * C.u⁻¹ ^ 3 } := rfl
 
+instance : Group (VariableChange R) where
+  one_mul C := by
+    simp only [mul_def, one_def, zero_add, zero_mul, mul_zero, one_mul]
+  mul_one C := by
+    simp only [mul_def, one_def, add_zero, mul_zero, one_mul, mul_one, one_pow, Units.val_one]
+  inv_mul_cancel C := by
+    rw [mul_def, one_def, inv_def]
+    ext <;> dsimp only
+    · exact C.u.inv_mul
+    · linear_combination -C.r * pow_mul_pow_eq_one 2 C.u.inv_mul
+    · linear_combination -C.s * C.u.inv_mul
+    · linear_combination (C.r * C.s - C.t) * pow_mul_pow_eq_one 3 C.u.inv_mul
+        + -C.r * C.s * pow_mul_pow_eq_one 2 C.u.inv_mul
+  mul_assoc C C' C'' := by
+    ext <;> simp only [mul_def, Units.val_mul] <;> ring1
+
 end VariableChange
 
 variable (C : VariableChange R)
 
-private def _variableChange : WeierstrassCurve R where
-  a₁ := C.u⁻¹ * (W.a₁ + 2 * C.s)
-  a₂ := C.u⁻¹ ^ 2 * (W.a₂ - C.s * W.a₁ + 3 * C.r - C.s ^ 2)
-  a₃ := C.u⁻¹ ^ 3 * (W.a₃ + C.r * W.a₁ + 2 * C.t)
-  a₄ := C.u⁻¹ ^ 4 * (W.a₄ - C.s * W.a₃ + 2 * C.r * W.a₂ - (C.t + C.r * C.s) * W.a₁ + 3 * C.r ^ 2
-    - 2 * C.s * C.t)
-  a₆ := C.u⁻¹ ^ 6 * (W.a₆ + C.r * W.a₄ + C.r ^ 2 * W.a₂ + C.r ^ 3 - C.t * W.a₃ - C.t ^ 2
-    - C.r * C.t * W.a₁)
+instance : SMul (VariableChange R) (WeierstrassCurve R) where
+  smul C W := {
+    a₁ := C.u⁻¹ * (W.a₁ + 2 * C.s)
+    a₂ := C.u⁻¹ ^ 2 * (W.a₂ - C.s * W.a₁ + 3 * C.r - C.s ^ 2)
+    a₃ := C.u⁻¹ ^ 3 * (W.a₃ + C.r * W.a₁ + 2 * C.t)
+    a₄ := C.u⁻¹ ^ 4 * (W.a₄ - C.s * W.a₃ + 2 * C.r * W.a₂ - (C.t + C.r * C.s) * W.a₁ + 3 * C.r ^ 2
+      - 2 * C.s * C.t)
+    a₆ := C.u⁻¹ ^ 6 * (W.a₆ + C.r * W.a₄ + C.r ^ 2 * W.a₂ + C.r ^ 3 - C.t * W.a₃ - C.t ^ 2
+      - C.r * C.t * W.a₁) }
 
-instance instMulActionVariableChange : MulAction (VariableChange R) (WeierstrassCurve R) where
-  smul := fun C W => W._variableChange C
+/-- The Weierstrass curve over `R` induced by an admissible linear change of variables
+`(X, Y) ↦ (u²X + r, u³Y + u²sX + t)` for some `u` in `Rˣ` and some `r, s, t` in `R`. -/
+lemma variableChange_def : C • W = {
+    a₁ := C.u⁻¹ * (W.a₁ + 2 * C.s)
+    a₂ := C.u⁻¹ ^ 2 * (W.a₂ - C.s * W.a₁ + 3 * C.r - C.s ^ 2)
+    a₃ := C.u⁻¹ ^ 3 * (W.a₃ + C.r * W.a₁ + 2 * C.t)
+    a₄ := C.u⁻¹ ^ 4 * (W.a₄ - C.s * W.a₃ + 2 * C.r * W.a₂ - (C.t + C.r * C.s) * W.a₁ + 3 * C.r ^ 2
+      - 2 * C.s * C.t)
+    a₆ := C.u⁻¹ ^ 6 * (W.a₆ + C.r * W.a₄ + C.r ^ 2 * W.a₂ + C.r ^ 3 - C.t * W.a₃ - C.t ^ 2
+      - C.r * C.t * W.a₁) } := rfl
+
+instance : MulAction (VariableChange R) (WeierstrassCurve R) where
   one_smul W := by
-    change W._variableChange 1 = W
-    rw [VariableChange.one_def, _variableChange, inv_one, Units.val_one]
+    rw [VariableChange.one_def, variableChange_def, inv_one, Units.val_one]
     ext <;> dsimp only <;> ring1
   mul_smul C C' W := by
-    change W._variableChange (C * C') = (W._variableChange C')._variableChange C
-    simp only [VariableChange.mul_def, _variableChange]
+    simp only [VariableChange.mul_def, variableChange_def]
     ext <;> simp only [mul_inv, Units.val_mul]
     · linear_combination ↑C.u⁻¹ * C.s * 2 * C'.u.inv_mul
     · linear_combination
@@ -165,17 +169,6 @@ instance instMulActionVariableChange : MulAction (VariableChange R) (Weierstrass
             * pow_mul_pow_eq_one 4 C'.u.inv_mul
           - C.r * C.t * C.u⁻¹ ^ 6 * ↑C'.u⁻¹ * (C'.s * 2 + W.a₁) * pow_mul_pow_eq_one 5 C'.u.inv_mul
           + C.u⁻¹ ^ 6 * (C.r ^ 3 - C.t ^ 2) * pow_mul_pow_eq_one 6 C'.u.inv_mul
-
-/-- The Weierstrass curve over `R` induced by an admissible linear change of variables
-`(X, Y) ↦ (u²X + r, u³Y + u²sX + t)` for some `u` in `Rˣ` and some `r, s, t` in `R`. -/
-lemma variableChange_def : C • W = {
-    a₁ := C.u⁻¹ * (W.a₁ + 2 * C.s)
-    a₂ := C.u⁻¹ ^ 2 * (W.a₂ - C.s * W.a₁ + 3 * C.r - C.s ^ 2)
-    a₃ := C.u⁻¹ ^ 3 * (W.a₃ + C.r * W.a₁ + 2 * C.t)
-    a₄ := C.u⁻¹ ^ 4 * (W.a₄ - C.s * W.a₃ + 2 * C.r * W.a₂ - (C.t + C.r * C.s) * W.a₁ + 3 * C.r ^ 2
-      - 2 * C.s * C.t)
-    a₆ := C.u⁻¹ ^ 6 * (W.a₆ + C.r * W.a₄ + C.r ^ 2 * W.a₂ + C.r ^ 3 - C.t * W.a₃ - C.t ^ 2
-      - C.r * C.t * W.a₁) } := rfl
 
 @[simp]
 lemma variableChange_a₁ : (C • W).a₁ = C.u⁻¹ * (W.a₁ + 2 * C.s) := rfl
@@ -237,7 +230,7 @@ lemma variableChange_Δ : (C • W).Δ = C.u⁻¹ ^ 12 * W.Δ := by
 
 variable [W.IsElliptic]
 
-instance instIsEllipticVariableChange : (C • W).IsElliptic := by
+instance : (C • W).IsElliptic := by
   rw [isElliptic_iff, variableChange_Δ]
   exact (C.u⁻¹.isUnit.pow 12).mul W.isUnit_Δ
 

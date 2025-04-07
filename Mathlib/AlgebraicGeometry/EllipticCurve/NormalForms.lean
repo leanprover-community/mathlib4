@@ -165,8 +165,7 @@ def toCharNeTwoNF : VariableChange R := ⟨1, 0, ⅟2 * -W.a₁, ⅟2 * -W.a₃�
 instance toCharNeTwoNF_spec : (W.toCharNeTwoNF • W).IsCharNeTwoNF := by
   constructor <;> simp
 
-theorem exists_variableChange_isCharNeTwoNF :
-    ∃ C : VariableChange R, (C • W).IsCharNeTwoNF :=
+theorem exists_variableChange_isCharNeTwoNF : ∃ C : VariableChange R, (C • W).IsCharNeTwoNF :=
   ⟨_, W.toCharNeTwoNF_spec⟩
 
 end VariableChange
@@ -268,8 +267,7 @@ instance toShortNF_spec : (W.toShortNF • W).IsShortNF := by
   rw [toShortNF, mul_smul]
   constructor <;> simp
 
-theorem exists_variableChange_isShortNF :
-    ∃ C : VariableChange R, (C • W).IsShortNF :=
+theorem exists_variableChange_isShortNF : ∃ C : VariableChange R, (C • W).IsShortNF :=
   ⟨_, W.toShortNF_spec⟩
 
 end VariableChange
@@ -428,8 +426,7 @@ theorem toCharThreeNF_spec_of_b₂_ne_zero (hb₂ : W.b₂ ≠ 0) :
     field_simp [ha₂]
     linear_combination (W'.a₄ * W'.a₂ ^ 2 + W'.a₄ ^ 2) * CharP.cast_eq_zero F 3
 
-theorem toCharThreeNF_spec_of_b₂_eq_zero (hb₂ : W.b₂ = 0) :
-    (W.toCharThreeNF • W).IsShortNF := by
+theorem toCharThreeNF_spec_of_b₂_eq_zero (hb₂ : W.b₂ = 0) : (W.toCharThreeNF • W).IsShortNF := by
   rw [toCharThreeNF, toShortNFOfCharThree_a₂, hb₂, div_zero, ← VariableChange.one_def, one_mul]
   exact W.toShortNFOfCharThree_spec hb₂
 
@@ -440,8 +437,7 @@ instance toCharThreeNF_spec : (W.toCharThreeNF • W).IsCharThreeNF := by
   · haveI := W.toCharThreeNF_spec_of_b₂_ne_zero hb₂
     infer_instance
 
-theorem exists_variableChange_isCharThreeNF :
-    ∃ C : VariableChange F, (C • W).IsCharThreeNF :=
+theorem exists_variableChange_isCharThreeNF : ∃ C : VariableChange F, (C • W).IsCharThreeNF :=
   ⟨_, W.toCharThreeNF_spec⟩
 
 end VariableChange
@@ -692,8 +688,7 @@ instance toCharTwoNF_spec [DecidableEq F] : (W.toCharTwoNF • W).IsCharTwoNF :=
     haveI := W.toCharTwoJNeZeroNF_spec ha₁
     infer_instance
 
-theorem exists_variableChange_isCharTwoNF :
-    ∃ C : VariableChange F, (C • W).IsCharTwoNF := by
+theorem exists_variableChange_isCharTwoNF : ∃ C : VariableChange F, (C • W).IsCharTwoNF := by
   classical
   exact ⟨_, W.toCharTwoNF_spec⟩
 

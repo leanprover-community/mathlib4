@@ -51,8 +51,7 @@ private lemma exists_variableChange_of_char_two_of_j_ne_zero
     ring1
 
 private lemma exists_variableChange_of_char_two_of_j_eq_zero
-    [E.IsCharTwoJEqZeroNF] [E'.IsCharTwoJEqZeroNF] :
-    ∃ C : VariableChange F, C • E = E' := by
+    [E.IsCharTwoJEqZeroNF] [E'.IsCharTwoJEqZeroNF] : ∃ C : VariableChange F, C • E = E' := by
   have ha₃ := E.Δ'.ne_zero
   rw [E.coe_Δ', Δ_of_isCharTwoJEqZeroNF_of_char_two, pow_ne_zero_iff (Nat.succ_ne_zero _)] at ha₃
   have ha₃' := E'.Δ'.ne_zero
@@ -150,8 +149,7 @@ private lemma exists_variableChange_of_char_three_of_j_ne_zero
     linear_combination heq
 
 private lemma exists_variableChange_of_char_three_of_j_eq_zero
-    [E.IsShortNF] [E'.IsShortNF] :
-    ∃ C : VariableChange F, C • E = E' := by
+    [E.IsShortNF] [E'.IsShortNF] : ∃ C : VariableChange F, C • E = E' := by
   have ha₄ := E.Δ'.ne_zero
   rw [E.coe_Δ', Δ_of_isShortNF_of_char_three, neg_ne_zero, pow_ne_zero_iff three_ne_zero] at ha₄
   have ha₄' := E'.Δ'.ne_zero
@@ -328,8 +326,7 @@ end CharNeTwoOrThree
 /-- If there are two elliptic curves with the same `j`-invariants defined over a
 separably closed field, then there exists a change of variables over that field which change
 one curve into another. -/
-theorem exists_variableChange_of_j_eq (heq : E.j = E'.j) :
-    ∃ C : VariableChange F, C • E = E' := by
+theorem exists_variableChange_of_j_eq (heq : E.j = E'.j) : ∃ C : VariableChange F, C • E = E' := by
   obtain ⟨p, _⟩ := CharP.exists F
   by_cases hchar2 : p = 2
   · subst hchar2
