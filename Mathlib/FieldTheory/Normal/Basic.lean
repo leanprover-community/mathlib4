@@ -276,9 +276,9 @@ theorem exists_algEquiv_of_root' [Normal K L]{x y : L} (hy : IsAlgebraic K y)
 end minpoly
 
 /--
-A Quadratic extension is normal.
+A quadratic extension is normal.
 -/
-theorem normal_of_rank_eq_two (F K : Type*) [Field F] [Field K] [Algebra F K]
+theorem normal_of_finrank_eq_two (F K : Type*) [Field F] [Field K] [Algebra F K]
     (h : Module.finrank F K = 2) :
     Normal F K where
   toIsAlgebraic := by
