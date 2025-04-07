@@ -27,3 +27,6 @@ variable {p : ℕ} [hp : Fact p.Prime]
 
 namespace PadicInt
 
+noncomputable def Amice_iso :
+ (C(ℤ_[p],ℤ_[p]) →L[ℤ_[p]] ℤ_[p]) ≃ₗᵢ[ℤ_[p]]
+   C(ℕ ,ℤ_[p])where
