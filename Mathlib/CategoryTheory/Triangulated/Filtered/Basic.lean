@@ -120,20 +120,45 @@ zero := by
   simp only [Functor.id_obj, Iso.hom_inv_id_app, Functor.map_id, id_comp]
   rw [← Iso.symm_hom, shiftFunctorComm_symm]
   rfl
-add := by
-  intro a b
-  simp only
-  rw [← shiftFunctorComm_eq, ← shiftFunctorComm_eq, ← shiftFunctorComm_eq]
+add := by sorry
+-- compiles on 2025-04-07
+/-  intro a b
+  dsimp
   ext A
-  simp only [Functor.CommShift.isoAdd_hom_app]
+  simp only [Functor.comp_obj, Iso.trans_hom, Iso.symm_hom, NatTrans.comp_app,
+    Functor.CommShift.isoAdd_hom_app, Functor.map_comp, assoc]
   rw [shift₁FunctorAdd_eq_shiftFunctorAdd]
-
-/-
-  rw [← shiftFunctorComm_eq, ← shiftFunctorComm_eq, ← shiftFunctorComm_eq]
-  ext A
-  simp only [Functor.CommShift.isoAdd_hom_app]
-  rw [shift₁FunctorAdd_eq_shiftFunctorAdd]
--/
+  have eq1 := shiftFunctorAdd'_assoc_inv_app ((a,0) : ℤ × ℤ) (b,0) (0,n) (a+b,0) (b,n) (a+b,n)
+    sorry sorry sorry A
+  rw [← cancel_epi ((shiftFunctor C (0, n)).map
+    ((shiftFunctorAdd' C (a, 0) (b, 0) (a + b, 0) sorry).hom.app A))] at eq1
+  conv_lhs at eq1 => slice 1 2; rw [← Functor.map_comp, Iso.hom_inv_id_app, Functor.map_id]
+  rw [id_comp] at eq1
+  have eq2 := shiftFunctorAdd'_assoc_hom_app ((0,n) : ℤ × ℤ) (a,0) (b,0) (a,n) (a+b,0) (a+b,n)
+    sorry sorry sorry A
+  rw [← cancel_mono ((shiftFunctorAdd' C (a, 0) (b, 0) (a + b, 0) sorry).inv.app
+    ((shiftFunctor C (0, n)).obj A))] at eq2
+  conv_rhs at eq2 => slice 2 3; rw [Iso.hom_inv_id_app]
+  simp only [Functor.comp_obj, assoc, comp_id] at eq2
+  rw [eq1, ← eq2]
+  simp only [Functor.comp_obj, assoc]
+  congr 2
+  · dsimp [shiftFunctor₂, FilteredShift]; sorry
+  · have eq : (shiftFunctorAdd' C (a, 0) (b, n) (a + b, n) sorry).inv.app A ≫
+        (shiftFunctorAdd' C (a, n) (b, 0) (a + b, n) sorry).hom.app A =
+        (shiftFunctorAdd' C (0, n) (b, 0) (b, n) sorry).hom.app ((shiftFunctor C a).obj A) ≫
+        (shiftFunctor C b).map ((shiftFunctorAdd' C (a, 0) (0, n) (a, n) sorry).inv.app A) := by
+      have := shiftFunctorAdd'_assoc_inv_app ((a,0) : ℤ × ℤ) (0,n) (b,0) (a,n) (b,n) (a+b,n)
+        sorry sorry sorry A
+      rw [← cancel_mono ((shiftFunctorAdd' C (a, n) (b, 0) (a + b, n) sorry).hom.app A)] at this
+      rw [assoc, Iso.inv_hom_id_app] at this
+      simp only [Functor.comp_obj, comp_id, assoc] at this
+      erw [this]
+      slice_rhs 1 2 => erw [Iso.hom_inv_id_app]
+      simp only [Functor.comp_obj, id_comp]
+    conv_lhs => rw[ ← assoc, ← assoc, eq]
+    simp only [Functor.comp_obj, assoc, NatIso.cancel_natIso_hom_left]
+    sorry -/
 
 end
 
@@ -149,7 +174,7 @@ notation f "⟪" n "⟫'" => (@shiftFunctor C _ _ _ Shift₂ n).map f
 namespace Triangulated
 
 variable (C)
-variable [HasShift C (ℤ × ℤ)]
+variable [HasShift C (ℤ × ℤ)] [Preadditive C] [HasZeroObject C]
 
 /-- Definition of a filtered pretriangulated category.
 -/

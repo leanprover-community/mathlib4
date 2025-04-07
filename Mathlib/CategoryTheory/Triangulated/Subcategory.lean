@@ -341,7 +341,7 @@ end Limits
 
 namespace Triangulated
 
-open Pretriangulated
+open Pretriangulated ObjectProperty
 
 variable (C : Type*) [Category C] [HasZeroObject C] [HasShift C ℤ]
   [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
@@ -351,10 +351,10 @@ namespace Subcategory
 variable {C}
 variable (S : Subcategory C)
 
-lemma mem_of_isZero [ClosedUnderIsomorphisms S.P] (X : C) (hX : IsZero X) : S.P X :=
-  mem_of_iso _ hX.isoZero.symm S.zero
+lemma mem_of_isZero [IsClosedUnderIsomorphisms S.P] (X : C) (hX : IsZero X) : S.P X :=
+  prop_of_iso _ hX.isoZero.symm S.zero
 
-instance : ClosedUnderIsomorphisms S.isoClosure.P := by
+instance : IsClosedUnderIsomorphisms S.isoClosure.P := by
   dsimp only [isoClosure]
   infer_instance
 
@@ -364,7 +364,7 @@ variable (P : C → Prop) (zero : P 0)
   (shift : ∀ (X : C) (n : ℤ), P X → P (X⟦n⟧))
   (ext₂ : ∀ (T : Triangle C) (_ : T ∈ distTriang C), P T.obj₁ → P T.obj₃ → P T.obj₂)
 
-instance : ClosedUnderIsomorphisms (mk' P zero shift ext₂).P where
+instance : IsClosedUnderIsomorphisms (mk' P zero shift ext₂).P where
   of_iso {X Y} e hX := by
     refine ext₂ (Triangle.mk e.hom (0 : Y ⟶ 0) 0) ?_ hX zero
     refine isomorphic_distinguished _ (contractible_distinguished X) _ ?_
@@ -373,16 +373,16 @@ instance : ClosedUnderIsomorphisms (mk' P zero shift ext₂).P where
 end
 
 @[simp]
-lemma shift_iff [ClosedUnderIsomorphisms S.P] (X : C) (n : ℤ) :
+lemma shift_iff [IsClosedUnderIsomorphisms S.P] (X : C) (n : ℤ) :
     S.P (X⟦n⟧) ↔ S.P X := by
   constructor
   · intro h
-    exact mem_of_iso _ ((shiftEquiv C n).unitIso.symm.app X) (S.shift _ (-n) h)
+    exact prop_of_iso _ ((shiftEquiv C n).unitIso.symm.app X) (S.shift _ (-n) h)
   · exact S.shift X n
 
 /-- Variant of `mem_W_iff_of_distinguished`. -/
 lemma mem_W_iff_of_distinguished'
-    [ClosedUnderIsomorphisms S.P] (T : Triangle C) (hT : T ∈ distTriang C) :
+    [IsClosedUnderIsomorphisms S.P] (T : Triangle C) (hT : T ∈ distTriang C) :
     S.W T.mor₂ ↔ S.P T.obj₁ := by
   have := S.mem_W_iff_of_distinguished _ (rot_of_distTriang _ hT)
   dsimp at this
@@ -395,13 +395,13 @@ variable (T : Triangle C) (hT : T ∈ distTriang C)
 include hT
 
 omit hT in
-lemma binary_product_stable [ClosedUnderIsomorphisms S.P]
+lemma binary_product_stable [IsClosedUnderIsomorphisms S.P]
     (X₁ X₂ : C) (hX₁ : S.P X₁) (hX₂ : S.P X₂) :
     S.P (X₁ ⨯ X₂)  :=
   S.ext₂ _ (binaryProductTriangle_distinguished X₁ X₂) hX₁ hX₂
 
 omit hT in
-lemma pi_finite_stable [ClosedUnderIsomorphisms S.P]
+lemma pi_finite_stable [IsClosedUnderIsomorphisms S.P]
     {J : Type} [Finite J] (X : J → C) (hX : ∀ j, S.P (X j)) :
     S.P (∏ᶜ X) := by
   revert hX X
@@ -410,13 +410,13 @@ lemma pi_finite_stable [ClosedUnderIsomorphisms S.P]
   apply @Finite.induction_empty_option (P := P)
   · intro J₁ J₂ e hJ₁ _ X hX
     have : Finite J₁ := Finite.of_equiv _ e.symm
-    exact mem_of_iso _ (productIsoOfEquiv X e) (hJ₁ (fun j₁ => X (e j₁)) (fun j₁ => hX _))
+    exact prop_of_iso _ (productIsoOfEquiv X e) (hJ₁ (fun j₁ => X (e j₁)) (fun j₁ => hX _))
   · intro _ X _
-    refine mem_of_iso _ (IsZero.isoZero ?_).symm S.zero
+    refine prop_of_iso _ (IsZero.isoZero ?_).symm S.zero
     rw [IsZero.iff_id_eq_zero]
     ext ⟨⟩
   · intro J _ hJ _ X hX
-    exact mem_of_iso _ (productOptionIso  X).symm
+    exact prop_of_iso _ (productOptionIso  X).symm
       (S.binary_product_stable _ _ (hJ (fun j => X (some j)) (fun j => hX _)) (hX none))
 
 instance : S.W.IsStableUnderFiniteProducts := by
@@ -430,15 +430,15 @@ instance : S.W.IsStableUnderFiniteProducts := by
 
 section
 
-variable (S' : Subcategory C) [ClosedUnderIsomorphisms S.P]
-    [ClosedUnderIsomorphisms S'.P]
+variable (S' : Subcategory C) [IsClosedUnderIsomorphisms S.P]
+    [IsClosedUnderIsomorphisms S'.P]
 
 def inter : Subcategory C :=
   mk' (fun X => S.P X ∧ S'.P X) ⟨S.zero, S'.zero⟩
     (fun X n hX => ⟨S.shift X n hX.1, S'.shift X n hX.2⟩)
     (fun T hT h₁ h₃ => ⟨S.ext₂ T hT h₁.1 h₃.1, S'.ext₂ T hT h₁.2 h₃.2⟩)
 
-instance : ClosedUnderIsomorphisms (S.inter S').P := by
+instance : IsClosedUnderIsomorphisms (S.inter S').P := by
   dsimp [inter]
   infer_instance
 
@@ -560,7 +560,7 @@ def essImage : Subcategory D :=
             comp_id, Iso.cancel_iso_hom_left, ← Functor.map_comp,
             Iso.inv_hom_id, Functor.map_id]))⟩⟩)
 
-instance : ClosedUnderIsomorphisms (essImage F).P  := by
+instance : IsClosedUnderIsomorphisms (essImage F).P  := by
   dsimp only [essImage]
   infer_instance
 
@@ -609,21 +609,21 @@ section
 variable {D : Type*} [Category D] [Preadditive D] [HasZeroObject D] [HasShift D ℤ]
   [∀ (n : ℤ), (shiftFunctor D n).Additive] [Pretriangulated D]
   (F : D ⥤ C) [F.CommShift ℤ] [F.IsTriangulated]
-  [ClosedUnderIsomorphisms S.P]
+  [IsClosedUnderIsomorphisms S.P]
 
 def inverseImage : Subcategory D :=
   Subcategory.mk' (fun X => S.P (F.obj X))
-    (mem_of_iso _ F.mapZeroObject.symm S.zero)
-    (fun X n hX => mem_of_iso _ ((F.commShiftIso n).symm.app X) (S.shift _ n hX))
+    (prop_of_iso _ F.mapZeroObject.symm S.zero)
+    (fun X n hX => prop_of_iso _ ((F.commShiftIso n).symm.app X) (S.shift _ n hX))
     (fun _ hT h₁ h₃ => S.ext₂ _ (F.map_distinguished _ hT) h₁ h₃)
 
 lemma mem_inverseImage_iff (X : D) :
     (S.inverseImage F).P X ↔ S.P (F.obj X) := by rfl
 
-instance : ClosedUnderIsomorphisms (S.inverseImage F).P where
+instance : IsClosedUnderIsomorphisms (S.inverseImage F).P where
   of_iso {X Y} e hX := by
     rw [mem_inverseImage_iff] at hX ⊢
-    exact mem_of_iso _ (F.mapIso e) hX
+    exact prop_of_iso _ (F.mapIso e) hX
 
 lemma mem_inverseImage_W_iff {X Y : D} (s : X ⟶ Y) :
     (S.inverseImage F).W s ↔ S.W (F.map s) := by
@@ -662,7 +662,7 @@ def ofNatTrans : Subcategory C :=
           (by simp) (by simp) (by simp [NatTrans.shift_app_comm τ])))
         (F.map_distinguished _ hT) (G.map_distinguished _ hT) (by exact h₁) (by exact h₃))
 
-instance : ClosedUnderIsomorphisms (ofNatTrans τ).P := by
+instance : IsClosedUnderIsomorphisms (ofNatTrans τ).P := by
   dsimp [ofNatTrans]
   infer_instance
 
@@ -676,15 +676,15 @@ variable {D : Type*} [Category D] [HasZeroObject D] [Preadditive D]
 
 def map : Subcategory D := essImage (S.ι ⋙ F)
 
-instance : ClosedUnderIsomorphisms (S.map F).P := by
+instance : IsClosedUnderIsomorphisms (S.map F).P := by
   dsimp [map]
   infer_instance
 
-lemma mem_map_iff (X : C) [ClosedUnderIsomorphisms S.P] :
+lemma mem_map_iff (X : C) [IsClosedUnderIsomorphisms S.P] :
     (S.map F).P (F.obj X) ↔ S.P X := by
   constructor
   · rintro ⟨⟨Y, hX⟩, ⟨e⟩⟩
-    exact mem_of_iso _ (F.preimageIso e) hX
+    exact prop_of_iso _ (F.preimageIso e) hX
   · intro hX
     exact ⟨⟨X, hX⟩, ⟨Iso.refl _⟩⟩
 
