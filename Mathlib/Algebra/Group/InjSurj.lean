@@ -195,7 +195,7 @@ protected abbrev cancelCommMonoid [CancelCommMonoid M₂] (f : M₁ → M₂) (h
   { hf.leftCancelSemigroup f mul, hf.commMonoid f one mul npow with }
 
 /-- A type has an involutive inversion if it admits a surjective map that preserves `⁻¹` to a type
-which has an involutive inversion. See note [reducible non-instances] -/
+which has an involutive inversion. See `LibraryNote.reducibleNonInstances` -/
 @[to_additive
 "A type has an involutive negation if it admits a surjective map that
 preserves `-` to a type which has an involutive negation."]
@@ -251,7 +251,7 @@ protected abbrev divInvOneMonoid [DivInvOneMonoid M₂] (f : M₁ → M₂) (hf 
   { hf.divInvMonoid f one mul inv div npow zpow, hf.invOneClass f one inv with }
 
 /-- A type endowed with `1`, `*`, `⁻¹`, and `/` is a `DivisionMonoid` if it admits an injective map
-that preserves `1`, `*`, `⁻¹`, and `/` to a `DivisionMonoid`. See note [reducible non-instances] -/
+that preserves `1`, `*`, `⁻¹`, and `/` to a `DivisionMonoid`. See `LibraryNote.reducibleNonInstances` -/
 @[to_additive
 "A type endowed with `0`, `+`, unary `-`, and binary `-`
 is a `SubtractionMonoid` if it admits an injective map that preserves `0`, `+`, unary `-`, and
@@ -432,7 +432,7 @@ protected abbrev addCommMonoidWithOne {M₂} [Zero M₂] [One M₂] [Add M₂] [
   __ := hf.addCommMonoid _ zero add (swap nsmul)
 
 /-- A type has an involutive inversion if it admits a surjective map that preserves `⁻¹` to a type
-which has an involutive inversion. See note [reducible non-instances] -/
+which has an involutive inversion. See `LibraryNote.reducibleNonInstances` -/
 @[to_additive
 "A type has an involutive negation if it admits a surjective map that
 preserves `-` to a type which has an involutive negation."]

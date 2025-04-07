@@ -299,7 +299,7 @@ variable {F : Type*} (R S : Type*) [FunLike F R S]
 /-- An injective non-unital ring homomorphism from a `DivisionRing` to a `NormedRing` induces a
 `NormedDivisionRing` structure on the domain.
 
-See note [reducible non-instances] -/
+See `LibraryNote.reducibleNonInstances` -/
 abbrev NormedDivisionRing.induced [DivisionRing R] [NormedDivisionRing S]
     [NonUnitalRingHomClass F R S] (f : F) (hf : Function.Injective f) : NormedDivisionRing R :=
   { NormedAddCommGroup.induced R S f hf, ‹DivisionRing R› with
@@ -308,7 +308,7 @@ abbrev NormedDivisionRing.induced [DivisionRing R] [NormedDivisionRing S]
 /-- An injective non-unital ring homomorphism from a `Field` to a `NormedRing` induces a
 `NormedField` structure on the domain.
 
-See note [reducible non-instances] -/
+See `LibraryNote.reducibleNonInstances` -/
 abbrev NormedField.induced [Field R] [NormedField S] [NonUnitalRingHomClass F R S] (f : F)
     (hf : Function.Injective f) : NormedField R :=
   { NormedDivisionRing.induced R S f hf with

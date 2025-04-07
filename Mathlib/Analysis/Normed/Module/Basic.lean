@@ -138,7 +138,7 @@ end SeminormedAddCommGroup
 /-- A linear map from a `Module` to a `NormedSpace` induces a `NormedSpace` structure on the
 domain, using the `SeminormedAddCommGroup.induced` norm.
 
-See note [reducible non-instances] -/
+See `LibraryNote.reducibleNonInstances` -/
 abbrev NormedSpace.induced {F : Type*} (𝕜 E G : Type*) [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
     [SeminormedAddCommGroup G] [NormedSpace 𝕜 G] [FunLike F E G] [LinearMapClass F 𝕜 E G] (f : F) :
     @NormedSpace 𝕜 E _ (SeminormedAddCommGroup.induced E G f) :=
@@ -328,7 +328,7 @@ end NormedAlgebra
 /-- A non-unital algebra homomorphism from an `Algebra` to a `NormedAlgebra` induces a
 `NormedAlgebra` structure on the domain, using the `SeminormedRing.induced` norm.
 
-See note [reducible non-instances] -/
+See `LibraryNote.reducibleNonInstances` -/
 abbrev NormedAlgebra.induced {F : Type*} (𝕜 R S : Type*) [NormedField 𝕜] [Ring R] [Algebra 𝕜 R]
     [SeminormedRing S] [NormedAlgebra 𝕜 S] [FunLike F R S] [NonUnitalAlgHomClass F 𝕜 R S]
     (f : F) :

@@ -122,7 +122,7 @@ theorem topologicalClosure_minimal (s : NonUnitalSubsemiring α) {t : NonUnitalS
 /-- If a non-unital subsemiring of a non-unital topological semiring is commutative, then so is its
 topological closure.
 
-See note [reducible non-instances] -/
+See `LibraryNote.reducibleNonInstances` -/
 abbrev nonUnitalCommSemiringTopologicalClosure [T2Space α] (s : NonUnitalSubsemiring α)
     (hs : ∀ x y : s, x * y = y * x) : NonUnitalCommSemiring s.topologicalClosure :=
   { NonUnitalSubsemiringClass.toNonUnitalSemiring s.topologicalClosure,
@@ -310,7 +310,7 @@ theorem topologicalClosure_minimal (s : NonUnitalSubring α) {t : NonUnitalSubri
 /-- If a non-unital subring of a non-unital topological ring is commutative, then so is its
 topological closure.
 
-See note [reducible non-instances] -/
+See `LibraryNote.reducibleNonInstances` -/
 abbrev nonUnitalCommRingTopologicalClosure [T2Space α] (s : NonUnitalSubring α)
     (hs : ∀ x y : s, x * y = y * x) : NonUnitalCommRing s.topologicalClosure :=
   { s.topologicalClosure.toNonUnitalRing, s.toSubsemigroup.commSemigroupTopologicalClosure hs with }
