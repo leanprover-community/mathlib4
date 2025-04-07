@@ -91,7 +91,7 @@ structure IsLittleOTVS (l : Filter α) (f : α → E) (g : α → F) : Prop wher
 @[inherit_doc]
 notation:100 f " =o[" 𝕜 ";" l "] " g:100 => IsLittleOTVS 𝕜 l f g
 
-/-- `f =O[𝕜;l] g` (`IsLittleOTVS 𝕜 l f g`) is a generalization of `f =O[l] g` (`IsBigO l f g`)
+/-- `f =O[𝕜;l] g` (`IsBigOTVS 𝕜 l f g`) is a generalization of `f =O[l] g` (`IsBigO l f g`)
 that works in topological `𝕜`-vector spaces.
 
 Given two functions `f` and `g` taking values in topological vector spaces
