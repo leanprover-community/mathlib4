@@ -188,7 +188,7 @@ theorem Convex.add {t : Set E} (hs : Convex 𝕜 s) (ht : Convex 𝕜 t) : Conve
 variable (𝕜 E)
 
 /-- The convex sets form an additive submonoid under pointwise addition. -/
-def convexAddSubmonoid : AddSubmonoid (Set E) where
+noncomputable def convexAddSubmonoid : AddSubmonoid (Set E) where
   carrier := {s : Set E | Convex 𝕜 s}
   zero_mem' := convex_zero
   add_mem' := Convex.add

@@ -428,7 +428,7 @@ instance faithful : compactumToCompHaus.Faithful where
     apply congrArg (fun f => f.hom.toFun) h
 
 /-- This definition is used to prove essential surjectivity of `compactumToCompHaus`. -/
-def isoOfTopologicalSpace {D : CompHaus} :
+noncomputable def isoOfTopologicalSpace {D : CompHaus} :
     compactumToCompHaus.obj (Compactum.ofTopologicalSpace D) ≅ D where
   hom := CompHausLike.ofHom _
     { toFun := id

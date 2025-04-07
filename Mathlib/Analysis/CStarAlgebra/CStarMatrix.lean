@@ -343,7 +343,7 @@ variable [Fintype m] [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing
 
 
 /-- Interpret a `CStarMatrix m n A` as a continuous linear map acting on `C⋆ᵐᵒᵈ (n → A)`. -/
-def toCLM : CStarMatrix m n A →ₗ[ℂ] C⋆ᵐᵒᵈ(A, m → A) →L[ℂ] C⋆ᵐᵒᵈ(A, n → A) where
+noncomputable def toCLM : CStarMatrix m n A →ₗ[ℂ] C⋆ᵐᵒᵈ(A, m → A) →L[ℂ] C⋆ᵐᵒᵈ(A, n → A) where
   toFun M := { toFun := (WithCStarModule.equivL ℂ).symm ∘ M.vecMul ∘ WithCStarModule.equivL ℂ
                map_add' := M.add_vecMul
                map_smul' := M.vecMul_smul
@@ -377,7 +377,7 @@ lemma toCLM_apply_eq_sum {M : CStarMatrix m n A} {v : C⋆ᵐᵒᵈ(A, m → A)}
 
 /-- Interpret a `CStarMatrix m n A` as a continuous linear map acting on `C⋆ᵐᵒᵈ (n → A)`. This
 version is specialized to the case `m = n` and is bundled as a non-unital algebra homomorphism. -/
-def toCLMNonUnitalAlgHom [Fintype n] :
+noncomputable def toCLMNonUnitalAlgHom [Fintype n] :
     CStarMatrix n n A →ₙₐ[ℂ] (C⋆ᵐᵒᵈ(A, n → A) →L[ℂ] C⋆ᵐᵒᵈ(A, n → A))ᵐᵒᵖ :=
   { (MulOpposite.opLinearEquiv ℂ).toLinearMap ∘ₗ (toCLM (n := n) (m := n)) with
     map_zero' := by simp
@@ -499,7 +499,7 @@ private noncomputable def normedAddCommGroupAux : NormedAddCommGroup (CStarMatri
 
 attribute [local instance] normedAddCommGroupAux
 
-private def normedSpaceAux : NormedSpace ℂ (CStarMatrix m n A) :=
+private noncomputable def normedSpaceAux : NormedSpace ℂ (CStarMatrix m n A) :=
   .ofCore CStarMatrix.normedSpaceCore
 
 /- In this `Aux` section, we locally activate the following instances: a norm on `CStarMatrix`
@@ -602,7 +602,7 @@ noncomputable instance instNormedAddCommGroup :
     CStarMatrix.uniformity_eq_aux.symm
       fun _ => Filter.ext_iff.1 CStarMatrix.cobounded_eq_aux.symm _
 
-instance instNormedSpace : NormedSpace ℂ (CStarMatrix m n A) :=
+noncomputable instance instNormedSpace : NormedSpace ℂ (CStarMatrix m n A) :=
   .ofCore CStarMatrix.normedSpaceCore
 
 noncomputable instance instNonUnitalNormedRing :
@@ -649,7 +649,7 @@ noncomputable instance instNonUnitalCStarAlgebra :
   smul_comm m a b := (Matrix.mul_smul _ _ _).symm
   norm_mul_self_le := CStarRing.norm_mul_self_le
 
-instance instPartialOrder :
+noncomputable instance instPartialOrder :
     PartialOrder (CStarMatrix n n A) := CStarAlgebra.spectralOrder _
 instance instStarOrderedRing :
     StarOrderedRing (CStarMatrix n n A) := CStarAlgebra.spectralOrderedRing _
