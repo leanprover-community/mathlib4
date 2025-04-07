@@ -82,6 +82,8 @@ def toSubfield : Subfield L :=
     neg_mem' := S.neg_mem,
     inv_mem' _ := S.inv_mem}
 
+/-- An `IntermediateField` could be make from a subalgebra `S` with an assumption that `S` is
+  closed under `inv`. -/
 def mkOfInv (S : Subalgebra K L) (hS : ∀ x ∈ S, x⁻¹ ∈ S): IntermediateField K L := {
   __ := S
   mul_comm' _ _ _ _ := mul_comm _ _
