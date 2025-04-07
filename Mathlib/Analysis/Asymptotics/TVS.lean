@@ -14,14 +14,17 @@ import Mathlib.Topology.Algebra.Module.LinearMapPiProd
 /-!
 # Asymptotics in a Topological Vector Space
 
-This file defines `Asymptotics.IsLittleOTVS` as a generalization of `Asymptotics.IsLittleO` from
-normed spaces to topological spaces.
+This file defines `Asymptotics.IsLittleOTVS` and `Asymptotics.IsBigOTVS`
+as generalizations of `Asymptotics.IsLittleO` and `Asymptotics.IsBigO`
+from normed spaces to topological spaces.
 
 Given two functions `f` and `g` taking values in topological vector spaces
 over a normed field `K`,
-we say that $f = o(g)$ if for any neighborhood of zero `U` in the codomain of `f`
+we say that $f = o(g)$ (resp., $f = O(g)$)
+if for any neighborhood of zero `U` in the codomain of `f`
 there exists a neighborhood of zero `V` in the codomain of `g`
-such that $\operatorname{gauge}_{K, U} (f(x)) = o(\operatorname{gauge}_{K, V} (g(x)))$,
+such that $\operatorname{gauge}_{K, U} (f(x)) = o(\operatorname{gauge}_{K, V} (g(x)))$
+(resp, $\operatorname{gauge}_{K, U} (f(x)) = O(\operatorname{gauge}_{K, V} (g(x)))$,
 where $\operatorname{gauge}_{K, U}(y) = \inf \{‖c‖ \mid y ∈ c • U\}$.
 
 In a normed space, we can use balls of positive radius as both `U` and `V`,
@@ -33,18 +36,14 @@ This is exactly the tradeoff we want in `HasFDerivAtFilter`,
 as there the base ring is already chosen,
 and this removes the choice of norm being part of the statement.
 
-This definition was added to the library in order to migrate Fréchet derivatives
+These definitions were added to the library in order to migrate Fréchet derivatives
 from normed vector spaces to topological vector spaces.
-The definition is motivated by
+The definitions are motivated by
 https://en.wikipedia.org/wiki/Fr%C3%A9chet_derivative#Generalization_to_topological_vector_spaces
 but the definition there doesn't work for topological vector spaces over general normed fields.
 [This Zulip discussion](https://leanprover.zulipchat.com/#narrow/channel/116395-maths/topic/generalizing.20deriv.20to.20TVS)
-led to the current choice of the definition.
-
-It may be possible to generalize $f = O(g)$ and $f = \Theta(g)$ in a similar way,
-but we don't need these definitions to redefine Fréchet derivatives,
-so formalization of these generalizations is left for later,
-until someone will need it (e.g., to prove properties of the Fréchet derivative over TVS).
+led to the current choice of the definition of `Asymptotics.IsLittleOTVS`,
+and `Asymptotics.IsBigOTVS` was defined in a similar manner.
 
 ## Main results
 
@@ -53,6 +52,12 @@ until someone will need it (e.g., to prove properties of the Fréchet derivative
 
 * `isLittleOTVS_iff_tendsto_inv_smul`: the equivalence to convergence of the ratio to zero
   in case of a topological vector space.
+
+## TODO
+
+- Add `Asymptotics.IsThetaTVS` and `Asymptotics.IsEquivalentTVS`.
+- Prove equivalence of `IsBigOTVS` and `IsBigO`.
+- Prove a version of `Asymptotics.isBigO_One` for `IsBigOTVS`.
 
 -/
 
@@ -163,7 +168,7 @@ theorem IsLittleOTVS.congr_right (h : f =o[𝕜;l] g₁) (hg : ∀ x, g₁ x = g
 end congr
 
 variable {l l₁ l₂ : Filter α} {f : α → E} {g : α → F}
-  
+
 theorem IsLittleOTVS.isBigOTVS (h : f =o[𝕜; l] g) : f =O[𝕜; l] g := by
   refine ⟨fun U hU ↦ ?_⟩
   rcases h.1 U hU with ⟨V, hV₀, hV⟩
@@ -288,13 +293,13 @@ lemma IsLittleOTVS.zero (g : α → F) (l : Filter α) : (0 : α → E) =o[𝕜;
   simp [egauge_zero_right _ (Filter.nonempty_of_mem hU), EventuallyLE]
 
 lemma isLittleOTVS_insert [TopologicalSpace α] {x : α} {s : Set α} (h : f x = 0) :
-    f =o[𝕜;(𝓝[insert x s] x)] g ↔ f =o[𝕜;(𝓝[s] x)] g := by
+    f =o[𝕜; 𝓝[insert x s] x] g ↔ f =o[𝕜;(𝓝[s] x)] g := by
   rw [nhdsWithin_insert, isLittleOTVS_sup, and_iff_right]
   exact .congr' (.zero g _) h.symm .rfl
 
 lemma IsLittleOTVS.insert [TopologicalSpace α] {x : α} {s : Set α}
-    (h : f =o[𝕜;(𝓝[s] x)] g) (hf : f x = 0) :
-    f =o[𝕜;(𝓝[insert x s] x)] g :=
+    (h : f =o[𝕜;𝓝[s] x] g) (hf : f x = 0) :
+    f =o[𝕜; 𝓝[insert x s] x] g :=
   (isLittleOTVS_insert hf).2 h
 
 @[simp]
