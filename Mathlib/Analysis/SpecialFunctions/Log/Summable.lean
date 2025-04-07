@@ -19,30 +19,6 @@ variable {ι : Type*}
 
 open Filter
 
-section move_this_elsewhere
-
-open Finset in
-lemma Multipliable.congr_cofinite' {R : Type*} [NormedField R]
-    {f g : ι → R} (hf : Multipliable f) (hf' : ∀ i, f i ≠ 0)
-    (hfg : ∀ᶠ i in cofinite, f i = g i) : Multipliable g := by
-  classical
-  obtain ⟨a, ha⟩ := hf
-  obtain ⟨s, hs⟩ : ∃ s : Finset ι, ∀ i ∉ s, f i = g i :=
-    ⟨hfg.toFinset, by simp only [Set.Finite.mem_toFinset, Set.mem_compl_iff, Set.mem_setOf_eq,
-      Decidable.not_not, imp_self, implies_true]⟩
-  refine ⟨_, (Tendsto.mul_const ((∏ i ∈ s, g i) / ∏ i ∈ s, f i) ha).congr' ?_⟩
-  filter_upwards [eventually_ge_atTop s] with t ht
-  calc (∏ i ∈ t, f i) * ((∏ i ∈ s, g i) / ∏ i ∈ s, f i)
-  _ = ((∏ i ∈ s, f i) * ∏ i ∈ t \ s, g i) * _ := by
-    conv_lhs => rw [← union_sdiff_of_subset ht, prod_union disjoint_sdiff,
-      prod_congr rfl fun i hi ↦ hs i (mem_sdiff.mp hi).2]
-  _ = ((∏ i ∈ s, f i) / ∏ i ∈ s, f i) * ((∏ i ∈ s, g i) * ∏ i ∈ t \ s, g i) := by ring
-  _ = ∏ i ∈ t, g i := by
-    rw [div_self, one_mul, ← prod_union disjoint_sdiff, union_sdiff_of_subset ht]
-    exact prod_ne_zero_iff.mpr fun i _ ↦ hf' i
-
-end move_this_elsewhere
-
 namespace Complex
 variable {f : ι → ℂ} {a : ℂ}
 
