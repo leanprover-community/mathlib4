@@ -186,7 +186,7 @@ lemma hasExactColimitsOfShape (adj : F ⊣ G) [G.Full] [G.Faithful]
       isoWhiskerLeft _ (preservesColimitNatIso F) ≪≫ (Functor.associator _ _ _).symm ≪≫
         isoWhiskerRight (whiskeringRightObjCompIso G F) _ ≪≫
         isoWhiskerRight ((whiskeringRight J D D).mapIso (asIso adj.counit)) _ ≪≫
-        isoWhiskerRight wiskeringRightObjIdIso _ ≪≫ colim.leftUnitor
+        isoWhiskerRight whiskeringRightObjIdIso _ ≪≫ colim.leftUnitor
     exact preservesLimit_of_natIso _ e⟩⟩
 
 /-- Let `adj : F ⊣ G` be an adjunction, with `F : C ⥤ D` coreflective.
@@ -204,7 +204,7 @@ lemma hasExactLimitsOfShape (adj : F ⊣ G) [F.Full] [F.Faithful]
         (Functor.associator _ _ _).symm ≪≫
         isoWhiskerRight (whiskeringRightObjCompIso F G) _ ≪≫
         isoWhiskerRight ((whiskeringRight J C C).mapIso (asIso adj.unit).symm) _ ≪≫
-        isoWhiskerRight wiskeringRightObjIdIso _ ≪≫ lim.leftUnitor
+        isoWhiskerRight whiskeringRightObjIdIso _ ≪≫ lim.leftUnitor
     exact preservesColimit_of_natIso _ e⟩⟩
 
 end Adjunction
