@@ -118,7 +118,6 @@ theorem eqOn_lieSpan {s : Set L} (h : Set.EqOn D1 D2 s) :
   intro _ _ _ _ hx hy
   simp only [apply_lie_eq_sub, hx, hy]
 
-
 /-- If the Lie span of a set is the whole Lie algebra, then two Lie derivations equal on this set
 are equal on the whole Lie algebra. -/
 theorem ext_of_lieSpan_eq_top (s : Set L) (hs : LieSubalgebra.lieSpan R L s = ⊤)
