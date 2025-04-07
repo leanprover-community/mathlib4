@@ -5,12 +5,13 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Order.Filter.Prod
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Order.Filter.Finite
 import Mathlib.Order.Filter.Bases.Basic
 
 /-!
 # Lift filters along filter and set functions
 -/
+
+assert_not_exists Set.Finite
 
 open Set Filter Function
 

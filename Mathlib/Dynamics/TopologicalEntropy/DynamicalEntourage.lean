@@ -6,6 +6,7 @@ Authors: Damien Thomine, Pietro Monticone
 import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Topology.Constructions.SumProd
 import Mathlib.Topology.UniformSpace.Defs
+import Mathlib.Data.Nat.Lattice
 
 /-!
 # Dynamical entourages
@@ -59,9 +60,14 @@ lemma dynEntourage_mem_uniformity [UniformSpace X] {T : X → X} (h : UniformCon
     {U : Set (X × X)} (U_uni : U ∈ 𝓤 X) (n : ℕ) :
     dynEntourage T U n ∈ 𝓤 X := by
   rw [dynEntourage_eq_inter_Ico T U n]
-  refine Filter.iInter_mem.2 fun k ↦ ?_
-  rw [map_iterate T T k]
-  exact uniformContinuous_def.1 (UniformContinuous.iterate T k h) U U_uni
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    simp only [iInter_coe_set, mem_Ico, Nat.zero_le, true_and] at ih ⊢
+    rw [Set.biInter_lt_succ]
+    apply Filter.inter_mem ih
+    rw [map_iterate T T n]
+    exact uniformContinuous_def.1 (UniformContinuous.iterate T n h) U U_uni
 
 lemma idRel_subset_dynEntourage (T : X → X) {U : Set (X × X)} (h : idRel ⊆ U) (n : ℕ) :
     idRel ⊆ (dynEntourage T U n) := by

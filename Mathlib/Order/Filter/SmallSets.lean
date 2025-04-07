@@ -19,6 +19,7 @@ then saying that `fun i ↦ support (f i)` tendsto `(𝓝 0).smallSets` is a way
 `f` tends to the Dirac delta distribution.
 -/
 
+assert_not_exists Set.Finite
 
 open Filter
 
