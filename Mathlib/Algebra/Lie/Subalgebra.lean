@@ -674,26 +674,11 @@ theorem span_union (s t : Set L) : lieSpan R L (s ∪ t) = lieSpan R L s ⊔ lie
 theorem span_iUnion {ι} (s : ι → Set L) : lieSpan R L (⋃ i, s i) = ⨆ i, lieSpan R L (s i) :=
   (LieSubalgebra.gi R L).gc.l_iSup
 
-/-- If a predicate `p` is true on some set `s ⊆ L`, true for `0`, stable by scalar multiplication,
-by addition and by Lie bracket, then the predicate is true on the Lie span of `s`. (Since `s` can be
-empty, and the Lie span always contains `0`, the assumption that `p 0` holds cannot be removed.) -/
-@[elab_as_elim]
-theorem lieSpan_induction {p : L → Prop} {x : L} (h : x ∈ lieSpan R L s) (mem : ∀ x ∈ s, p x)
-    (zero : p 0) (smul : ∀ (r : R), ∀ {x : L}, p x → p (r • x))
-    (add : ∀ x y, p x → p y → p (x + y)) (lie : ∀ x y, p x → p y → p ⁅x, y⁆) : p x :=
-  let S : LieSubalgebra R L :=
-    { carrier := p
-      add_mem' := add _ _
-      zero_mem' := zero
-      smul_mem' := smul
-      lie_mem' := lie _ _ }
-  lieSpan_le.mpr (show s ≤ S from mem) h
-
 /-- An induction principle for span membership. If `p` holds for 0 and all elements of `s`, and is
 preserved under addition, scalar multiplication and the Lie bracket, then `p` holds for all
 elements of the Lie algebra spanned by `s`. -/
 @[elab_as_elim]
-theorem lieSpan_induction' {p : (x : L) → x ∈ lieSpan R L s → Prop}
+theorem lieSpan_induction {p : (x : L) → x ∈ lieSpan R L s → Prop}
     (mem : ∀ (x) (h : x ∈ s), p x (subset_lieSpan h))
     (zero : p 0 (LieSubalgebra.zero_mem _))
     (add : ∀ x y hx hy, p x hx → p y hy → p (x + y) (LieSubalgebra.add_mem _ ‹_› ‹_›))

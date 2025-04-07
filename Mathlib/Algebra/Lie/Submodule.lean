@@ -706,7 +706,7 @@ theorem lieSpan_induction {p : (x : M) → x ∈ lieSpan R L s → Prop}
     (mem : ∀ (x) (h : x ∈ s), p x (subset_lieSpan h))
     (zero : p 0 (LieSubmodule.zero_mem _))
     (add : ∀ x y hx hy, p x hx → p y hy → p (x + y) (add_mem ‹_› ‹_›))
-    (smul : ∀ (a : R) (x hx), p x hx → p (a • x) (smul_mem _ _ ‹_›)) {x}
+    (smul : ∀ (a : R) (x hx), p x hx → p (a • x) (SMulMemClass.smul_mem _ hx)) {x}
     (lie : ∀ (x : L) (y hy), p y hy → p (⁅x, y⁆) (LieSubmodule.lie_mem _ ‹_›))
     (hx : x ∈ lieSpan R L s) : p x hx := by
   let p : LieSubmodule R L M :=

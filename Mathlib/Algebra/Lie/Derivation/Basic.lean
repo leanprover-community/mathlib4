@@ -105,16 +105,19 @@ lemma apply_lie_eq_add (D : LieDerivation R L L) (a b : L) :
 
 /-- Two Lie derivations equal on a set are equal on its Lie span. -/
 theorem eqOn_lieSpan {s : Set L} (h : Set.EqOn D1 D2 s) :
-    Set.EqOn D1 D2 (LieSubalgebra.lieSpan R L s) :=
-    fun _ hz =>
-      have zero : D1 0 = D2 0 := by simp only [map_zero]
-      have smul : ∀ (r : R), ∀ {x : L}, D1 x = D2 x → D1 (r • x) = D2 (r • x) :=
-        fun _ _ hx => by simp only [map_smul, hx]
-      have add : ∀ x y, D1 x = D2 x → D1 y = D2 y → D1 (x + y) = D2 (x + y) :=
-        fun _ _ hx hy => by simp only [map_add, hx, hy]
-      have lie : ∀ x y, D1 x = D2 x → D1 y = D2 y → D1 ⁅x, y⁆ = D2 ⁅x, y⁆ :=
-        fun _ _ hx hy => by simp only [apply_lie_eq_sub, hx, hy]
-      LieSubalgebra.lieSpan_induction R (p := fun x => D1 x = D2 x) hz h zero smul add lie
+    Set.EqOn D1 D2 (LieSubalgebra.lieSpan R L s) := by
+  intro x hx
+  refine LieSubalgebra.lieSpan_induction (R := R) (L := L) ?_ ?_ ?_ ?_ ?_ hx
+  · intro x hx
+    exact h hx
+  · simp only [map_zero]
+  · intro _ _ _ _ hx hy
+    simp only [map_add, hx, hy]
+  · intro _ _ _ hx
+    simp only [map_smul, hx]
+  · intro _ _ _ _ hx hy
+    simp only [apply_lie_eq_sub, hx, hy]
+
 
 /-- If the Lie span of a set is the whole Lie algebra, then two Lie derivations equal on this set
 are equal on the whole Lie algebra. -/
