@@ -19,10 +19,11 @@ and the center and radius of such spheres.
   side of the opposite face as the excenter and which lie on the opposite side of that face).
 * `Affine.Simplex.excenterWeights` are the weights of the excenter with the given set of
   indices, if it exists, as an affine combination of the vertices.
-* `Affine.Simplex.exsphere` is the exsphere with the given set of indices, if it exists, with shorthands:
+* `Affine.Simplex.exsphere` is the exsphere with the given set of indices, if it exists, with
+  shorthands:
   * `Affine.Simplex.excenter` for the center of this sphere
   * `Affine.Simplex.exradius` for the radius of this sphere
-* `Affine.Simplex.insphere` is the insphere with the given set of indices, with shorthands:
+* `Affine.Simplex.insphere` is the insphere, with shorthands:
   * `Affine.Simplex.incenter` for the center of this sphere
   * `Affine.Simplex.inradius` for the radius of this sphere
 
