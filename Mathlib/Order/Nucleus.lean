@@ -230,8 +230,7 @@ instance range_instCompleteLattice : CompleteLattice (range n) where
   sup_le a b c h1 h2 := by
     simp only [← Subtype.coe_le_coe, val_codRestrict_apply]
     rw [← range_fixpoint c]
-    apply n.monotone
-    exact sup_le h1 h2
+    exact n.monotone (sup_le h1 h2)
   inf a b := n.embedding (a ⊓ b)
   inf_le_left a b := by
     simp only [← Subtype.coe_le_coe, val_codRestrict_apply, InfHomClass.map_inf]
@@ -249,29 +248,25 @@ instance range_instCompleteLattice : CompleteLattice (range n) where
     simp_all only [← Subtype.coe_le_coe, val_codRestrict_apply, InfHomClass.map_inf, le_inf_iff,
       Subtype.forall, mem_range, forall_exists_index, forall_apply_eq_imp_iff, idempotent, and_true]
     intro c h1 h2
-    apply le_trans h1 n.le_apply
+    exact le_trans h1 n.le_apply
   sSup s := n.embedding (⨆ x ∈ s, x)
   le_sSup s x h := by
     simp only [← Subtype.coe_le_coe, val_codRestrict_apply]
     rw [← range_fixpoint x]
-    apply n.monotone
-    exact le_biSup Subtype.val h
+    exact n.monotone (le_biSup Subtype.val h)
   sSup_le s x h := by
     simp only [← Subtype.coe_le_coe, val_codRestrict_apply]
     rw [← range_fixpoint x]
-    apply n.monotone
-    exact iSup₂_le_iff.mpr h
+    exact n.monotone (iSup₂_le_iff.mpr h)
   sInf s := n.embedding (⨅ x ∈ s, x)
   le_sInf s x h := by
     simp only [← Subtype.coe_le_coe, val_codRestrict_apply]
     rw [← range_fixpoint x]
-    apply n.monotone
-    exact le_iInf₂ h
+    exact n.monotone (le_iInf₂ h)
   sInf_le s x h := by
     simp only [← Subtype.coe_le_coe, val_codRestrict_apply]
     rw [← range_fixpoint x]
-    apply n.monotone
-    exact biInf_le Subtype.val h
+    exact n.monotone (biInf_le Subtype.val h)
   __ := Nucleus.range_instBoundedOrder
 
 -- TODO is there a better way to expand these definitions than defining these lemmas?
