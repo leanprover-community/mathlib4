@@ -19,7 +19,9 @@ variable {C}
 
 /-- A module object for a monoid object, all internal to some monoidal category. -/
 structure Mod_ (A : Mon_ C) where
+  /-- The underlying object in the ambient monoidal category -/
   X : C
+  /-- The action morphism of the module object -/
   act : A.X ⊗ X ⟶ X
   one_act : (A.one ▷ X) ≫ act = (λ_ X).hom := by aesop_cat
   assoc : (A.mul ▷ X) ≫ act = (α_ A.X A.X X).hom ≫ (A.X ◁ act) ≫ act := by aesop_cat
@@ -36,6 +38,7 @@ theorem assoc_flip :
 /-- A morphism of module objects. -/
 @[ext]
 structure Hom (M N : Mod_ A) where
+  /-- The underlying morphism -/
   hom : M.X ⟶ N.X
   act_hom : M.act ≫ hom = (A.X ◁ hom) ≫ N.act := by aesop_cat
 
@@ -122,8 +125,6 @@ def comap {A B : Mon_ C} (f : A ⟶ B) : Mod_ B ⥤ Mod_ A where
         slice_rhs 1 2 => rw [whisker_exchange]
         slice_rhs 2 3 => rw [← g.act_hom]
         rw [Category.assoc] }
-  map_id _ := rfl -- the `aesop_cat` autoparam solves this but it's slow
-  map_comp _ _ := rfl -- the `aesop_cat` autoparam solves this but it's slow
 
 -- Lots more could be said about `comap`, e.g. how it interacts with
 -- identities, compositions, and equalities of monoid object morphisms.

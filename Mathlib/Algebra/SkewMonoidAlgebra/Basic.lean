@@ -301,7 +301,7 @@ theorem ofFinsupp_eq_one {a} :
     (⟨a⟩ : SkewMonoidAlgebra k G) = 1 ↔ a = Finsupp.single 1 1 := by
   rw [← ofFinsupp_one, ofFinsupp_inj]
 
-theorem single_one_one  : single 1 (1 : k) = 1 := rfl
+theorem single_one_one : single 1 (1 : k) = 1 := rfl
 
 theorem one_def : (1 : SkewMonoidAlgebra k G) = single 1 1 := rfl
 

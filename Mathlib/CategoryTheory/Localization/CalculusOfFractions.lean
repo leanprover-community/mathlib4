@@ -176,7 +176,7 @@ variable (W : MorphismProperty C)
 any right fraction can be turned into a left fraction and that two morphisms
 that can be equalized by precomposition with a morphism in `W` can also
 be equalized by postcomposition with a morphism in `W`. -/
-class HasLeftCalculusOfFractions extends W.IsMultiplicative : Prop where
+class HasLeftCalculusOfFractions : Prop extends W.IsMultiplicative where
   exists_leftFraction ⦃X Y : C⦄ (φ : W.RightFraction X Y) :
     ∃ (ψ : W.LeftFraction X Y), φ.f ≫ ψ.s = φ.s ≫ ψ.f
   ext : ∀ ⦃X' X Y : C⦄ (f₁ f₂ : X ⟶ Y) (s : X' ⟶ X) (_ : W s)
@@ -186,7 +186,7 @@ class HasLeftCalculusOfFractions extends W.IsMultiplicative : Prop where
 any left fraction can be turned into a right fraction and that two morphisms
 that can be equalized by postcomposition with a morphism in `W` can also
 be equalized by precomposition with a morphism in `W`. -/
-class HasRightCalculusOfFractions extends W.IsMultiplicative : Prop where
+class HasRightCalculusOfFractions : Prop extends W.IsMultiplicative where
   exists_rightFraction ⦃X Y : C⦄ (φ : W.LeftFraction X Y) :
     ∃ (ψ : W.RightFraction X Y), ψ.s ≫ φ.f = ψ.f ≫ φ.s
   ext : ∀ ⦃X Y Y' : C⦄ (f₁ f₂ : X ⟶ Y) (s : Y ⟶ Y') (_ : W s)
@@ -302,14 +302,11 @@ lemma comp₀_rel [W.HasLeftCalculusOfFractions]
   · simp only [comp₀, assoc, ← reassoc_of% fac]
     exact W.comp_mem _ _ z₂.hs (W.comp_mem _ _ z₃'.hs (W.comp_mem _ _ z₄.hs ht))
 
-variable (W)
-
+variable (W) in
 /-- The morphisms in the constructed localized category for a morphism property `W`
 that has left calculus of fractions are equivalence classes of left fractions. -/
 def Localization.Hom (X Y : C) :=
   Quot (LeftFractionRel : W.LeftFraction X Y → W.LeftFraction X Y → Prop)
-
-variable {W}
 
 /-- The morphism in the constructed localized category that is induced by a left fraction. -/
 def Localization.Hom.mk {X Y : C} (z : W.LeftFraction X Y) : Localization.Hom W X Y :=
@@ -469,8 +466,7 @@ noncomputable instance : Category (Localization W) where
         (by dsimp; rw [assoc, ← reassoc_of% fac₁₂, fac])]
     simp
 
-variable (W)
-
+variable (W) in
 /-- The localization functor to the constructed localized category for a morphism property
 that has left calculus of fractions. -/
 @[simps obj]
@@ -482,8 +478,6 @@ def Q : C ⥤ Localization W where
     change _ = Hom.comp _ _
     rw [Hom.comp_eq, comp_eq (ofHom W f) (ofHom W g) (ofHom W g) (by simp)]
     simp only [ofHom, comp₀, comp_id]
-
-variable {W}
 
 /-- The morphism on `Localization W` that is induced by a left fraction. -/
 abbrev homMk {X Y : C} (f : W.LeftFraction X Y) : (Q W).obj X ⟶ (Q W).obj Y := Hom.mk f
@@ -584,7 +578,6 @@ noncomputable def lift (F : C ⥤ E) (hF : W.IsInvertedBy F) :
   map {_ _ : C} f := f.map F hF
   map_id := by
     intro (X : C)
-    dsimp
     change (Hom.mk (ofHom W (𝟙 X))).map F hF = _
     rw [Hom.map_mk, map_ofHom, F.map_id]
   map_comp := by

@@ -69,7 +69,7 @@ instance [LE G] [LE P] [SMul G P] [IsOrderedSMul G P] : CovariantClass G P (· �
   elim := fun a _ _ bc ↦ IsOrderedSMul.smul_le_smul_left _ _ bc a
 
 @[to_additive]
-instance [OrderedCommMonoid G] : IsOrderedSMul G G where
+instance [CommMonoid G] [PartialOrder G] [IsOrderedMonoid G] : IsOrderedSMul G G where
   smul_le_smul_left _ _ := mul_le_mul_left'
   smul_le_smul_right _ _ := mul_le_mul_right'
 
@@ -97,16 +97,16 @@ class IsCancelSMul (G P : Type*) [SMul G P] : Prop where
   protected right_cancel : ∀ (a b : G) (c : P), a • c = b • c → a = b
 
 /-- An ordered cancellative vector addition is an ordered vector addition that is cancellative. -/
-class IsOrderedCancelVAdd (G P : Type*) [LE G] [LE P] [VAdd G P] extends
-    IsOrderedVAdd G P : Prop where
+class IsOrderedCancelVAdd (G P : Type*) [LE G] [LE P] [VAdd G P] : Prop
+    extends IsOrderedVAdd G P where
   protected le_of_vadd_le_vadd_left : ∀ (a : G) (b c : P), a +ᵥ b ≤ a +ᵥ c → b ≤ c
   protected le_of_vadd_le_vadd_right : ∀ (a b : G) (c : P), a +ᵥ c ≤ b +ᵥ c → a ≤ b
 
 /-- An ordered cancellative scalar multiplication is an ordered scalar multiplication that is
   cancellative. -/
 @[to_additive]
-class IsOrderedCancelSMul (G P : Type*) [LE G] [LE P] [SMul G P] extends
-    IsOrderedSMul G P : Prop where
+class IsOrderedCancelSMul (G P : Type*) [LE G] [LE P] [SMul G P] : Prop
+    extends IsOrderedSMul G P where
   protected le_of_smul_le_smul_left : ∀ (a : G) (b c : P), a • b ≤ a • c → b ≤ c
   protected le_of_smul_le_smul_right : ∀ (a b : G) (c : P), a • c ≤ b • c → a ≤ b
 
@@ -119,7 +119,7 @@ instance [PartialOrder G] [PartialOrder P] [SMul G P] [IsOrderedCancelSMul G P] 
     (IsOrderedCancelSMul.le_of_smul_le_smul_right b a c h.ge)
 
 @[to_additive]
-instance [OrderedCancelCommMonoid G] : IsOrderedCancelSMul G G where
+instance [CommMonoid G] [PartialOrder G] [IsOrderedCancelMonoid G] : IsOrderedCancelSMul G G where
   le_of_smul_le_smul_left _ _ _ := le_of_mul_le_mul_left'
   le_of_smul_le_smul_right _ _ _ := le_of_mul_le_mul_right'
 

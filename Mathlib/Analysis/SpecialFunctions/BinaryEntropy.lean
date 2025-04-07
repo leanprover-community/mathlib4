@@ -168,7 +168,6 @@ This is due to definition of `Real.log` for negative numbers. -/
   simp only [log_inv, mul_neg]
   fun_prop (disch := assumption)
 
-set_option push_neg.use_distrib true in
 lemma differentiableAt_binEntropy_iff_ne_zero_one :
     DifferentiableAt ℝ binEntropy p ↔ p ≠ 0 ∧ p ≠ 1 := by
   refine ⟨fun h ↦ ⟨?_, ?_⟩, fun h ↦ differentiableAt_binEntropy h.1 h.2⟩
@@ -268,12 +267,12 @@ private lemma tendsto_log_one_sub_sub_log_nhdsGT_atAtop :
     filter_upwards [Ioc_mem_nhdsGT h₁] with p hx
     gcongr
     linarith [hx.2]
-  · apply tendsto_neg_atTop_iff.mpr tendsto_log_nhdsWithin_zero_right
+  · apply tendsto_neg_atTop_iff.mpr tendsto_log_nhdsGT_zero
 
 private lemma tendsto_log_one_sub_sub_log_nhdsLT_one_atBot :
     Tendsto (fun p ↦ log (1 - p) - log p) (𝓝[<] 1) atBot := by
   apply Filter.tendsto_atBot_add_right_of_ge' (𝓝[<] 1) (-log (1 - 2⁻¹))
-  · have : Tendsto log (𝓝[>] 0) atBot := Real.tendsto_log_nhdsWithin_zero_right
+  · have : Tendsto log (𝓝[>] 0) atBot := Real.tendsto_log_nhdsGT_zero
     apply Tendsto.comp (f := (1 - ·)) (g := log) this
     have contF : Continuous ((1 : ℝ) - ·) := continuous_sub_left 1
     have : MapsTo ((1 : ℝ) - ·) (Iio 1) (Ioi 0) := by
@@ -346,7 +345,7 @@ lemma deriv2_qaryEntropy :
     filter_upwards [eventually_ne_nhds xne0, eventually_ne_nhds xne1]
       with y xne0 h2 using deriv_qaryEntropy xne0 h2
   -- Pathological case where we use junk value (because function not differentiable)
-  · have : p = 0 ∨ p = 1 := Decidable.or_iff_not_and_not.mpr is_x_where_nondiff
+  · have : p = 0 ∨ p = 1 := Decidable.or_iff_not_not_and_not.mpr is_x_where_nondiff
     rw [deriv_zero_of_not_differentiableAt]
     · simp_all only [ne_eq, not_and, Decidable.not_not]
       cases this <;> simp_all only [

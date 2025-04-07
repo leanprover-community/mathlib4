@@ -17,7 +17,7 @@ namespace SeparationQuotient
 
 section Monoid
 
-variable {M N : Type*} [TopologicalSpace M]  [TopologicalSpace N]
+variable {M N : Type*} [TopologicalSpace M] [TopologicalSpace N]
 
 /-- The lift of a monoid hom from `M` to a monoid hom from `SeparationQuotient M`. -/
 @[to_additive "The lift of an additive monoid hom from `M` to an additive monoid hom from

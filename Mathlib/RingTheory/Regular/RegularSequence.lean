@@ -39,7 +39,7 @@ variable [Semiring R] [Semiring S]
 abbrev ofList (rs : List R) := span { r | r ∈ rs }
 
 @[simp] lemma ofList_nil : (ofList [] : Ideal R) = ⊥ :=
-  have : { r | r ∈ [] } = ∅ := Set.eq_empty_of_forall_not_mem List.not_mem_nil
+  have : { r | r ∈ [] } = ∅ := Set.eq_empty_of_forall_not_mem (fun _ => List.not_mem_nil)
   Eq.trans (congrArg span this) span_empty
 
 @[simp] lemma ofList_append (rs₁ rs₂ : List R) :
@@ -147,7 +147,7 @@ lemma isWeaklyRegular_iff_Fin (rs : List R) :
 
 /-- A weakly regular sequence `rs` on `M` is regular if also `M/rsM ≠ 0`. -/
 @[mk_iff]
-structure IsRegular (rs : List R) extends IsWeaklyRegular M rs : Prop where
+structure IsRegular (rs : List R) : Prop extends IsWeaklyRegular M rs where
   top_ne_smul : (⊤ : Submodule R M) ≠ Ideal.ofList rs • ⊤
 
 end Definitions
@@ -643,7 +643,7 @@ lemma IsWeaklyRegular.of_perm_of_subset_jacobson_annihilator [IsNoetherian R M]
           -- typechecking is much slower without it
           (LinearMap.annihilator_le_of_surjective (R := R) _ (mkQ_surjective _))
           (LinearMap.annihilator_le_of_injective _ (injective_subtype _)))
-        (h3 r (h.subset (List.mem_cons_self _ _))))
+        (h3 r (h.subset List.mem_cons_self)))
 
 end Perm
 

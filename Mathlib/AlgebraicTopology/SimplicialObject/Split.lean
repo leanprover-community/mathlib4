@@ -227,8 +227,7 @@ theorem cofan_inj_eq {Δ : SimplexCategoryᵒᵖ} (A : IndexSet Δ) :
     (s.cofan Δ).inj  A = s.ι A.1.unop.len ≫ X.map A.e.op := rfl
 
 theorem cofan_inj_id (n : ℕ) : (s.cofan _).inj (IndexSet.id (op ⦋n⦌)) = s.ι n := by
-  erw [cofan_inj_eq, X.map_id, comp_id]
-  rfl
+  simp [IndexSet.id, IndexSet.e, cofan_inj_eq]
 
 /-- As it is stated in `Splitting.hom_ext`, a morphism `f : X ⟶ Y` from a split
 simplicial object to any simplicial object is determined by its restrictions

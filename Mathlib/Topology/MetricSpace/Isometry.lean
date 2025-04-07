@@ -286,7 +286,7 @@ section PseudoEMetricSpace
 
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: add `IsometryEquivClass`
+-- TODO: add `IsometryEquivClass`
 
 theorem toEquiv_injective : Injective (toEquiv : (α ≃ᵢ β) → (α ≃ β))
   | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
@@ -403,9 +403,7 @@ theorem symm_comp_self (h : α ≃ᵢ β) : (h.symm : β → α) ∘ h = id := f
 
 theorem self_comp_symm (h : α ≃ᵢ β) : (h : α → β) ∘ h.symm = id := funext h.right_inv
 
-@[simp]
-theorem range_eq_univ (h : α ≃ᵢ β) : range h = univ :=
-  h.toEquiv.range_eq_univ
+theorem range_eq_univ (h : α ≃ᵢ β) : range h = univ := by simp
 
 theorem image_symm (h : α ≃ᵢ β) : image h.symm = preimage h :=
   image_eq_preimage_of_inverse h.symm.toEquiv.left_inv h.symm.toEquiv.right_inv

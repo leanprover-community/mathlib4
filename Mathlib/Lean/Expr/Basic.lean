@@ -182,7 +182,7 @@ and this array has the same length as the one returned by `Lean.Expr.getAppArgs`
 def getAppApps (e : Expr) : Array Expr :=
   let dummy := mkSort levelZero
   let nargs := e.getAppNumArgs
-  getAppAppsAux e (mkArray nargs dummy) (nargs-1)
+  getAppAppsAux e (.replicate nargs dummy) (nargs-1)
 
 /-- Erase proofs in an expression by replacing them with `sorry`s.
 
@@ -200,11 +200,6 @@ def eraseProofs (e : Expr) : MetaM Expr :=
         return .continue (← mkSorry (← inferType e) true)
       else
         return .continue)
-
-/-- If an `Expr` has form `.fvar n`, then returns `some n`, otherwise `none`. -/
-def fvarId? : Expr → Option FVarId
-  | .fvar n => n
-  | _ => none
 
 /-- If an `Expr` has the form `Type u`, then return `some u`, otherwise `none`. -/
 def type? : Expr → Option Level

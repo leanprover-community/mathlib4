@@ -70,8 +70,8 @@ theorem isJacobsonRing_iff_prime_eq :
   rw [← hI.radical, radical_eq_sInf I, mem_sInf]
   intro P hP
   rw [Set.mem_setOf_eq] at hP
-  erw [mem_sInf] at hx
-  erw [← h P hP.right, mem_sInf]
+  rw [jacobson, mem_sInf] at hx
+  rw [← h P hP.right, jacobson, mem_sInf]
   exact fun J hJ => hx ⟨le_trans hP.left hJ.left, hJ.right⟩
 
 /-- A ring `R` is Jacobson if and only if for every prime ideal `I`,
@@ -150,8 +150,7 @@ open IsLocalization Submonoid
 variable {R S : Type*} [CommRing R] [CommRing S]
 variable (y : R) [Algebra R S] [IsLocalization.Away y S]
 
-variable (S)
-
+variable (S) in
 /-- If `R` is a Jacobson ring, then maximal ideals in the localization at `y`
 correspond to maximal ideals in the original ring `R` that don't contain `y`.
 This lemma gives the correspondence in the particular case of an ideal and its comap.
@@ -164,7 +163,7 @@ theorem IsLocalization.isMaximal_iff_isMaximal_disjoint [H : IsJacobsonRing R] (
     have hJ : J.IsPrime := IsMaximal.isPrime h
     rw [isPrime_iff_isPrime_disjoint (Submonoid.powers y)] at hJ
     have : y ∉ (comap (algebraMap R S) J).1 := Set.disjoint_left.1 hJ.right (Submonoid.mem_powers _)
-    erw [← H.out hJ.left.isRadical, Ideal.mem_sInf] at this
+    rw [← H.out hJ.left.isRadical, jacobson, Submodule.mem_toAddSubmonoid, Ideal.mem_sInf] at this
     push_neg at this
     rcases this with ⟨I, hI, hI'⟩
     convert hI.right
@@ -183,8 +182,6 @@ theorem IsLocalization.isMaximal_iff_isMaximal_disjoint [H : IsJacobsonRing R] (
       refine fun hI' => hI.right ?_
       rw [← map_comap (powers y) S I, ← map_comap (powers y) S J]
       exact map_mono hI'
-
-variable {S}
 
 /-- If `R` is a Jacobson ring, then maximal ideals in the localization at `y`
 correspond to maximal ideals in the original ring `R` that don't contain `y`.
@@ -250,7 +247,7 @@ section CommRing
 
 -- Porting note: move to better place
 -- Porting note: make `S` and `T` universe polymorphic
-lemma Subring.mem_closure_image_of {S T : Type*} [CommRing S] [CommRing T] (g : S →+* T)
+lemma Subring.mem_closure_image_of {S T : Type*} [Ring S] [Ring T] (g : S →+* T)
     (u : Set S) (x : S) (hx : x ∈ Subring.closure u) : g x ∈ Subring.closure (g '' u) := by
   rw [Subring.mem_closure] at hx ⊢
   intro T₁ h₁

@@ -5,6 +5,7 @@ Authors: Johan Commelin, Kim Morrison, Adam Topaz
 -/
 import Mathlib.CategoryTheory.Opposites
 import Mathlib.Order.Fin.Basic
+import Mathlib.Util.Superscript
 
 /-! # The simplex category
 
@@ -25,6 +26,14 @@ We provide the following functions to work with these objects:
 3. `SimplexCategory.Hom.mk` makes a morphism out of a monotone map between `Fin`'s.
 4. `SimplexCategory.Hom.toOrderHom` gives the underlying monotone map associated to a
   term of `SimplexCategory.Hom`.
+
+## Notations
+
+* `⦋n⦌` denotes the `n`-dimensional simplex. This notation is available with
+  `open Simplicial`.
+* `⦋m⦌ₙ` denotes the `m`-dimensional simplex in the `n`-truncated simplex category.
+  The truncation proof `p : m ≤ n` can also be provided using the syntax `⦋m, p⦌ₙ`.
+  This notation is available with `open SimplexCategory.Truncated`.
 -/
 
 universe v
@@ -40,7 +49,7 @@ def SimplexCategory :=
 
 namespace SimplexCategory
 
--- Porting note: the definition of `SimplexCategory` is made irreducible below
+-- The definition of `SimplexCategory` is made irreducible below.
 /-- Interpret a natural number as an object of the simplex category. -/
 def mk (n : ℕ) : SimplexCategory :=
   n
@@ -166,6 +175,46 @@ noncomputable def inclusion.fullyFaithful (n : ℕ) :
 @[ext]
 theorem Hom.ext {n} {a b : Truncated n} (f g : a ⟶ b) :
     f.toOrderHom = g.toOrderHom → f = g := SimplexCategory.Hom.ext _ _
+
+/-- A quick attempt to prove that `⦋m⦌` is `n`-truncated (`⦋m⦌.len ≤ n`). -/
+scoped macro "trunc" : tactic =>
+  `(tactic| first | assumption | dsimp only [SimplexCategory.len_mk] <;> omega)
+
+open Mathlib.Tactic (subscriptTerm) in
+/-- For `m ≤ n`, `⦋m⦌ₙ` is the `m`-dimensional simplex in `Truncated n`. The
+proof `p : m ≤ n` can also be provided using the syntax `⦋m, p⦌ₙ`. -/
+scoped syntax:max (name := mkNotation)
+  "⦋" term ("," term)? "⦌" noWs subscriptTerm : term
+scoped macro_rules
+  | `(⦋$m:term⦌$n:subscript) =>
+    `((⟨SimplexCategory.mk $m, by first | trunc |
+      fail "Failed to prove truncation property. Try writing `⦋m, by ...⦌ₙ`."⟩ :
+      SimplexCategory.Truncated $n))
+  | `(⦋$m:term, $p:term⦌$n:subscript) =>
+    `((⟨SimplexCategory.mk $m, $p⟩ : SimplexCategory.Truncated $n))
+
+/-- Make a morphism in `Truncated n` from a morphism in `SimplexCategory`. This
+is equivalent to `@id (⦋a⦌ₙ ⟶ ⦋b⦌ₙ) f`. -/
+abbrev Hom.tr {n : ℕ} {a b : SimplexCategory} (f : a ⟶ b)
+    (ha : a.len ≤ n := by trunc) (hb : b.len ≤ n := by trunc) :
+    (⟨a, ha⟩ : Truncated n) ⟶ ⟨b, hb⟩ :=
+  f
+
+lemma Hom.tr_comp {n : ℕ} {a b c : SimplexCategory} (f : a ⟶ b) (g : b ⟶ c)
+    (ha : a.len ≤ n := by trunc) (hb : b.len ≤ n := by trunc)
+    (hc : c.len ≤ n := by trunc) :
+    tr (f ≫ g) = tr f ≫ tr g :=
+  rfl
+
+/-- The inclusion of `Truncated n` into `Truncated m` when `n ≤ m`. -/
+def incl (n m : ℕ) (h : n ≤ m := by omega) : Truncated n ⥤ Truncated m where
+  obj a := ⟨a.1, a.2.trans h⟩
+  map := id
+
+/-- For all `n ≤ m`, `inclusion n` factors through `Truncated m`. -/
+def inclCompInclusion {n m : ℕ} (h : n ≤ m) :
+    incl n m ⋙ inclusion m ≅ inclusion n :=
+  Iso.refl _
 
 end Truncated
 
