@@ -129,7 +129,7 @@ section equiv
 /-- For `ι : L →ₗ[R] A`, construst the algebra isomorphism `(SymmetricAlgebra R L) ≃ₐ[R] A`
 from `IsSymmetricAlgebra ι`. -/
 noncomputable def equiv : (SymmetricAlgebra R L) ≃ₐ[R] A :=
-  AlgEquiv.ofBijective (SymmetricAlgebra.lift f) h
+  .ofBijective (SymmetricAlgebra.lift f) h
 
 @[simp]
 lemma equiv_apply (a : SymmetricAlgebra R L) : h.equiv a = SymmetricAlgebra.lift f a := rfl
