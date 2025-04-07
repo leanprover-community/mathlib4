@@ -529,11 +529,26 @@ Data structures:
 
 Logic and computation:
   Computability:
-    computable function: 'Computable'
+    computable function:
+      in terms of general recursive functions: 'Computable'
+      in terms of Turing machines: 'Turing.TM2Computable'
+    primitive recursive function: 'Primrec'
+    Ackermann function: 'ack'
     Turing machine: 'Turing.TM0.Machine'
     halting problem: 'ComputablePred.halting_problem'
     Rice theorem: 'ComputablePred.rice'
     combinatorial game: 'SetTheory.Game'
+  Complexity:
+    polynomial-time computation: 'Turing.TM2ComputableInPolyTime'
+  Formal languages:
+    language: 'Language'
+    regular language: 'Language.IsRegular'
+    DFA: 'DFA'
+    NFA: 'NFA'
+    '$\varepsilon$-NFA': 'εNFA'
+    regular expression: 'RegularExpression'
+    context-free language: 'Language.IsContextFree'
+    context-free grammar: 'ContextFreeGrammar'
   Set theory:
     ordinal: 'Ordinal'
     cardinal: 'Cardinal'
