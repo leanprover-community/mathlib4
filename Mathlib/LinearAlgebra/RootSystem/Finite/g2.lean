@@ -21,7 +21,7 @@ stronger assumptions on the coefficients than here.
    pairing is `-3` (equivalently, with a distinguished choice of base). This is a sufficient
    condition for the span of this pair of roots to be a `𝔤₂` root system.
  * `RootPairing.EmbeddedG2.shortRoot`: the distinguished short root, which we often donate `α`
- * `RootPairing.EmbeddedG2.longRoot`: the distinguished short root, which we often donate `β`
+ * `RootPairing.EmbeddedG2.longRoot`: the distinguished long root, which we often donate `β`
  * `RootPairing.EmbeddedG2.shortAddLong`: the short root `α + β`
  * `RootPairing.EmbeddedG2.twoShortAddLong`: the short root `2α + β`
  * `RootPairing.EmbeddedG2.threeShortAddLong`: the long root `3α + β`
