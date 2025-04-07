@@ -8,9 +8,9 @@ import Mathlib.RingTheory.Localization.Submodule
 import Mathlib.RingTheory.Finiteness.Ideal
 import Mathlib.Order.KrullDimension
 import Mathlib.Order.Atoms
-import Mathlib.RingTheory.Nakayama
 import Mathlib.RingTheory.KrullDimension.Zero
-import Mathlib.RingTheory.HopkinsLevitzki
+import Mathlib.RingTheory.Nakayama
+import Mathlib.RingTheory.Artinian.HopkinsLevitzki
 import Mathlib.RingTheory.Artinian.Ring
 /-!
 # Krull Height Theorem
@@ -34,96 +34,7 @@ In this file, we proved Krull's principal ideal theorem and Krull's height theor
   by no more than `n` elements.
 -/
 
-theorem ENat.lt_coe_add_one_iff {m : ℕ∞} {n : ℕ} : m < n + 1 ↔ m ≤ n :=
-  lt_add_one_iff (coe_ne_top n)
-
-instance {R} [CommRing R] [IsNoetherianRing R] (S : Submonoid R) :
-    IsNoetherianRing (Localization S) :=
-  IsLocalization.isNoetherianRing S _ ‹_›
-
 variable {R : Type*} [CommRing R]
-
-lemma Ideal.isNilpotent_iff_le_nilradical {R : Type*} [CommSemiring R] {I : Ideal R} (hI : I.FG) :
-  IsNilpotent I ↔ I ≤ nilradical R :=
-⟨fun ⟨n, hn⟩ _ hx => ⟨n, hn ▸ Ideal.pow_mem_pow hx n⟩,
-  fun h => let ⟨n, hn⟩ := exists_pow_le_of_le_radical_of_fg h hI; ⟨n, le_bot_iff.mp hn⟩⟩
-
-lemma Ideal.height_le_iff {p : Ideal R} {n : ℕ} [p.IsPrime] :
-    p.height ≤ n ↔ ∀ q : Ideal R, q.IsPrime → q < p → q.height < n := by
-  constructor
-  · intro h q hq hqp; rw [Ideal.height_eq_primeHeight, Ideal.primeHeight] at h ⊢
-    apply (Order.height_le_coe_iff (x := (⟨p, ‹_›⟩ : (PrimeSpectrum R))) (n := n)).mp <;> assumption
-  · intro h; rw [Ideal.height_eq_primeHeight, Ideal.primeHeight]
-    apply Order.height_le_coe_iff.mpr; rintro ⟨q, hq⟩ hqp
-    convert h q hq hqp; rw [Ideal.height_eq_primeHeight, Ideal.primeHeight]
-
-lemma Ideal.height_le_iff_covBy {p : Ideal R} {n : ℕ} [p.IsPrime] [IsNoetherianRing R] :
-  p.height ≤ n ↔ ∀ q : Ideal R, q.IsPrime → q < p →
-    (∀ q' : Ideal R, q'.IsPrime → q < q' → ¬ q' < p) → q.height < n := by
-  rw [Ideal.height_le_iff]
-  constructor
-  · intro H q hq e _
-    exact H q hq e
-  · intro H q hq e
-    have := (OrderEmbedding.subtype (fun I : Ideal R ↦ I.IsPrime)).dual.wellFounded wellFounded_lt
-    haveI := IsStronglyCoatomic.of_wellFounded_gt this (α := { I : Ideal R // I.IsPrime })
-    obtain ⟨⟨x, hx⟩, hqx, hxp⟩ :=
-      @exists_le_covBy_of_lt { I : Ideal R // I.IsPrime } ⟨q, hq⟩ ⟨p, ‹_›⟩ _ _ e
-    exact (Ideal.height_mono hqx).trans_lt
-      (H _ hx hxp.1 (fun I hI e ↦ hxp.2 (show Subtype.mk x hx < ⟨I, hI⟩ from e)))
-
-lemma Ideal.minimalPrimes_map_of_surjective {S : Type*} [CommRing S] {f : R →+* S}
-    (hf : Function.Surjective f) (I : Ideal R) :
-    (I.map f).minimalPrimes = Ideal.map f '' (I ⊔ (RingHom.ker f)).minimalPrimes := by
-  apply Set.image_injective.mpr (Ideal.comap_injective_of_surjective f hf)
-  rw [← Ideal.comap_minimalPrimes_eq_of_surjective hf, ← Set.image_comp,
-    Ideal.comap_map_of_surjective f hf]
-  ext x
-  constructor
-  · intro hx
-    refine ⟨x, hx, (Ideal.comap_map_of_surjective f hf _).trans ?_⟩
-    rw [sup_eq_left, ← RingHom.ker_eq_comap_bot]
-    exact le_sup_right.trans hx.1.2
-  · rintro ⟨x, hx, rfl⟩
-    convert hx
-    refine (Ideal.comap_map_of_surjective f hf _).trans ?_
-    rw [sup_eq_left, ← RingHom.ker_eq_comap_bot]
-    exact le_sup_right.trans hx.1.2
-
-theorem isArtinianRing_iff_krullDimLE_zero {R} [CommRing R] [IsNoetherianRing R] :
-    IsArtinianRing R ↔ Ring.KrullDimLE 0 R := by
-  rwa [isArtinianRing_iff_isNoetherianRing_krullDimLE_zero, and_iff_right]
-
-lemma IsArtinianRing.eq_maximalIdeal_of_isPrime [IsArtinianRing R] [IsLocalRing R]
-    (I : Ideal R) [I.IsPrime] : I = IsLocalRing.maximalIdeal R := by
-  have : Ring.KrullDimLE 0 R := by rwa [← isArtinianRing_iff_krullDimLE_zero]
-  exact Ring.KrullDimLE.eq_maximalIdeal_of_isPrime I
-
-lemma IsArtinianRing.radical_eq_maximalIdeal [IsArtinianRing R] [IsLocalRing R]
-    (I : Ideal R) (hI : I ≠ ⊤) : I.radical = IsLocalRing.maximalIdeal R := by
-  rw [Ideal.radical_eq_sInf]
-  refine (sInf_le ?_).antisymm (le_sInf ?_)
-  · exact ⟨IsLocalRing.le_maximalIdeal hI, inferInstance⟩
-  · rintro J ⟨h₁, h₂⟩
-    exact (eq_maximalIdeal_of_isPrime J).ge
-
-lemma isArtinianRing_iff_isNilpotent_maximalIdeal [IsNoetherianRing R] [IsLocalRing R]:
-    IsArtinianRing R ↔ IsNilpotent (IsLocalRing.maximalIdeal R) := by
-  constructor
-  · intro h
-    rw [← IsArtinianRing.radical_eq_maximalIdeal (⊥ : Ideal R) bot_ne_top]
-    exact IsArtinianRing.isNilpotent_nilradical
-  · rintro ⟨n, hn⟩
-    rcases eq_or_ne n 0 with (rfl|hn')
-    · rw [pow_zero] at hn
-      exact (one_ne_zero hn).elim
-    · rw [isArtinianRing_iff_krullDimLE_zero]
-      refine Ring.KrullDimLE.mk₀ (fun I hI ↦ ?_)
-      suffices IsLocalRing.maximalIdeal R ≤ I by
-        rw [← (IsLocalRing.maximalIdeal.isMaximal R).eq_of_le hI.ne_top this]
-        infer_instance
-      rw [← hI.pow_le_iff hn', hn]
-      exact bot_le
 
 lemma Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes_of_isLocalRing [IsNoetherianRing R]
     [IsLocalRing R] (I : Ideal R) (hI : I.IsPrincipal)

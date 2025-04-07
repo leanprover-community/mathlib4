@@ -4843,6 +4843,7 @@ import Mathlib.RingTheory.AlgebraicIndependent.RankAndCardinality
 import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
 import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
 import Mathlib.RingTheory.Artinian.Algebra
+import Mathlib.RingTheory.Artinian.HopkinsLevitzki
 import Mathlib.RingTheory.Artinian.Instances
 import Mathlib.RingTheory.Artinian.Module
 import Mathlib.RingTheory.Artinian.Ring

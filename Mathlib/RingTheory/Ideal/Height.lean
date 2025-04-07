@@ -209,6 +209,30 @@ theorem Ideal.primeHeight_eq_ringKrullDim_iff [FiniteRingKrullDim R] [IsLocalRin
   · rintro rfl
     exact IsLocalRing.maximalIdeal_primeHeight_eq_ringKrullDim
 
+lemma Ideal.height_le_iff {p : Ideal R} {n : ℕ} [p.IsPrime] :
+    p.height ≤ n ↔ ∀ q : Ideal R, q.IsPrime → q < p → q.height < n := by
+  constructor
+  · intro h q hq hqp; rw [Ideal.height_eq_primeHeight, Ideal.primeHeight] at h ⊢
+    apply (Order.height_le_coe_iff (x := (⟨p, ‹_›⟩ : (PrimeSpectrum R))) (n := n)).mp <;> assumption
+  · intro h; rw [Ideal.height_eq_primeHeight, Ideal.primeHeight]
+    apply Order.height_le_coe_iff.mpr; rintro ⟨q, hq⟩ hqp
+    convert h q hq hqp; rw [Ideal.height_eq_primeHeight, Ideal.primeHeight]
+
+lemma Ideal.height_le_iff_covBy {p : Ideal R} {n : ℕ} [p.IsPrime] [IsNoetherianRing R] :
+  p.height ≤ n ↔ ∀ q : Ideal R, q.IsPrime → q < p →
+    (∀ q' : Ideal R, q'.IsPrime → q < q' → ¬ q' < p) → q.height < n := by
+  rw [Ideal.height_le_iff]
+  constructor
+  · intro H q hq e _
+    exact H q hq e
+  · intro H q hq e
+    have := (OrderEmbedding.subtype (fun I : Ideal R ↦ I.IsPrime)).dual.wellFounded wellFounded_lt
+    haveI := IsStronglyCoatomic.of_wellFounded_gt this (α := { I : Ideal R // I.IsPrime })
+    obtain ⟨⟨x, hx⟩, hqx, hxp⟩ :=
+      @exists_le_covBy_of_lt { I : Ideal R // I.IsPrime } ⟨q, hq⟩ ⟨p, ‹_›⟩ _ _ e
+    exact (Ideal.height_mono hqx).trans_lt
+      (H _ hx hxp.1 (fun I hI e ↦ hxp.2 (show Subtype.mk x hx < ⟨I, hI⟩ from e)))
+
 theorem IsLocalization.primeHeight_comap (S : Submonoid R) {A : Type*} [CommRing A] [Algebra R A]
     [IsLocalization S A] (J : Ideal A) [J.IsPrime] :
     (J.comap (algebraMap R A)).primeHeight = J.primeHeight := by
