@@ -179,7 +179,7 @@ instance IsMarkovKernel.comp (η : Kernel β γ) [IsMarkovKernel η] (κ : Kerne
   isProbabilityMeasure a := by
     rw [comp_apply]
     constructor
-    rw [Measure.bind_apply .univ η.measurable.aemeasurable]
+    rw [Measure.bind_apply .univ η.aemeasurable]
     simp
 
 instance IsZeroOrMarkovKernel.comp (κ : Kernel α β) [IsZeroOrMarkovKernel κ]
