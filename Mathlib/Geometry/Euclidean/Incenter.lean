@@ -48,39 +48,38 @@ namespace Simplex
 
 variable {n : ℕ} [NeZero n] (s : Simplex ℝ P n)
 
-open scoped Classical in
 /-- The unnormalized weights of the vertices in an affine combination that gives an excenter with
 signs determined by the given set of indices (for the empty set, this is the incenter; for a
 singleton set, this is the excenter opposite a vertex).  An excenter with those signs exists if
 and only if the sum of these weights is nonzero (so the normalized weights sum to 1). -/
-def excenterWeightsUnnorm (signs : Set (Fin (n + 1))) (i : Fin (n + 1)) : ℝ :=
+def excenterWeightsUnnorm (signs : Finset (Fin (n + 1))) (i : Fin (n + 1)) : ℝ :=
   (if i ∈ signs then -1 else 1) * (dist (s.points i)
     (orthogonalProjection (affineSpan ℝ (Set.range (s.faceOpposite i).points)) (s.points i)))⁻¹
 
 /-- Whether an excenter exists with a given choice of signs. -/
-def ExcenterExists (signs : Set (Fin (n + 1))) : Prop :=
+def ExcenterExists (signs : Finset (Fin (n + 1))) : Prop :=
   ∑ i, s.excenterWeightsUnnorm signs i ≠ 0
 
 /-- The normalized weights of the vertices in an affine combination that gives an excenter with
 signs determined by the given set of indices.  An excenter with those signs exists if and only if
 the sum of these weights is 1. -/
-def excenterWeights (signs : Set (Fin (n + 1))) : Fin (n + 1) → ℝ :=
+def excenterWeights (signs : Finset (Fin (n + 1))) : Fin (n + 1) → ℝ :=
   (∑ i, s.excenterWeightsUnnorm signs i)⁻¹ • s.excenterWeightsUnnorm signs
 
-@[simp] lemma excenterWeightsUnnorm_compl (signs : Set (Fin (n + 1))) :
+@[simp] lemma excenterWeightsUnnorm_compl (signs : Finset (Fin (n + 1))) :
     s.excenterWeightsUnnorm signsᶜ = -s.excenterWeightsUnnorm signs := by
   ext i
   by_cases h : i ∈ signs <;> simp [excenterWeightsUnnorm, h]
 
-@[simp] lemma excenterWeights_compl (signs : Set (Fin (n + 1))) :
+@[simp] lemma excenterWeights_compl (signs : Finset (Fin (n + 1))) :
     s.excenterWeights signsᶜ = s.excenterWeights signs := by
   simp [excenterWeights, inv_neg]
 
-@[simp] lemma excenterExists_compl {signs : Set (Fin (n + 1))} :
+@[simp] lemma excenterExists_compl {signs : Finset (Fin (n + 1))} :
     s.ExcenterExists signsᶜ ↔ s.ExcenterExists signs := by
   simp [ExcenterExists]
 
-lemma sum_excenterWeights (signs : Set (Fin (n + 1))) [Decidable (s.ExcenterExists signs)] :
+lemma sum_excenterWeights (signs : Finset (Fin (n + 1))) [Decidable (s.ExcenterExists signs)] :
     ∑ i, s.excenterWeights signs i = if s.ExcenterExists signs then 1 else 0 := by
   simp_rw [ExcenterExists, excenterWeights]
   split_ifs with h
@@ -88,7 +87,7 @@ lemma sum_excenterWeights (signs : Set (Fin (n + 1))) [Decidable (s.ExcenterExis
   · simp only [ne_eq, not_not] at h
     simp [h]
 
-@[simp] lemma sum_excenterWeights_eq_one_iff {signs : Set (Fin (n + 1))} :
+@[simp] lemma sum_excenterWeights_eq_one_iff {signs : Finset (Fin (n + 1))} :
     ∑ i, s.excenterWeights signs i = 1 ↔ s.ExcenterExists signs := by
   classical
   simp [sum_excenterWeights]
@@ -392,7 +391,7 @@ lemma sum_excenterWeightsUnnorm_singleton_pos (hn : 1 < n) (i : Fin (n + 1)) :
     0 < ∑ j, s.excenterWeightsUnnorm {i} j := by
   rw [← Finset.sum_add_sum_compl {i}, Finset.sum_singleton]
   nth_rw 1 [excenterWeightsUnnorm]
-  simp only [Set.mem_singleton_iff, ↓reduceIte, neg_mul, one_mul, lt_neg_add_iff_add_lt, add_zero]
+  simp only [Finset.mem_singleton, ↓reduceIte, neg_mul, one_mul, lt_neg_add_iff_add_lt, add_zero]
   convert s.inv_dist_orthogonalProjection_faceOpposite_lt_sum_inv_dist hn i using 2 with j h
   · ext j
     simp
@@ -408,7 +407,7 @@ lemma excenterExists_singleton (hn : 1 < n) (i : Fin (n + 1)) : s.ExcenterExists
 the insphere; for a singleton set, this is the exsphere opposite a vertex).  This is only
 meaningful if `s.ExcenterExists`; otherwise, it is a sphere of radius zero at some arbitrary
 point. -/
-def exsphere (signs : Set (Fin (n + 1))) : Sphere P where
+def exsphere (signs : Finset (Fin (n + 1))) : Sphere P where
   center := Finset.univ.affineCombination ℝ s.points (s.excenterWeights signs)
   radius := |(∑ i, s.excenterWeightsUnnorm signs i)⁻¹|
 
@@ -419,7 +418,7 @@ def insphere : Sphere P :=
 /-- The excenter with signs determined by the given set of indices (for the empty set, this is
 the incenter; for a singleton set, this is the excenter opposite a vertex).  This is only
 meaningful if `s.ExcenterExists signs`; otherwise, it is some arbitrary point. -/
-def excenter (signs : Set (Fin (n + 1))) : P :=
+def excenter (signs : Finset (Fin (n + 1))) : P :=
   (s.exsphere signs).center
 
 /-- The incenter of a simplex. -/
@@ -428,18 +427,18 @@ def incenter : P :=
 
 /-- The distance between an excenter and a face of the simplex (zero if no such excenter
 exists). -/
-def exradius (signs : Set (Fin (n + 1))) : ℝ :=
+def exradius (signs : Finset (Fin (n + 1))) : ℝ :=
   (s.exsphere signs).radius
 
 /-- The distance between the incenter and a face of the simplex. -/
 def inradius : ℝ :=
   (s.exsphere ∅).radius
 
-@[simp] lemma exsphere_center (signs : Set (Fin (n + 1))) :
+@[simp] lemma exsphere_center (signs : Finset (Fin (n + 1))) :
     (s.exsphere signs).center = s.excenter signs :=
   rfl
 
-@[simp] lemma exsphere_radius (signs : Set (Fin (n + 1))) :
+@[simp] lemma exsphere_radius (signs : Finset (Fin (n + 1))) :
     (s.exsphere signs).radius = s.exradius signs :=
   rfl
 
@@ -458,22 +457,22 @@ def inradius : ℝ :=
 @[simp] lemma exradius_empty : s.exradius ∅ = s.inradius :=
   rfl
 
-@[simp] lemma exsphere_univ : s.exsphere Set.univ = s.insphere := by
-  rw [exsphere, ← Set.compl_empty, excenterWeightsUnnorm_compl, excenterWeights_compl]
+@[simp] lemma exsphere_univ : s.exsphere Finset.univ = s.insphere := by
+  rw [exsphere, ← Finset.compl_empty, excenterWeightsUnnorm_compl, excenterWeights_compl]
   simp only [Finset.mem_univ, Pi.neg_apply, Finset.sum_neg_distrib, inv_neg, abs_neg]
   rfl
 
-@[simp] lemma excenter_univ : s.excenter Set.univ = s.incenter := by
+@[simp] lemma excenter_univ : s.excenter Finset.univ = s.incenter := by
   rw [excenter, exsphere_univ, insphere_center]
 
-@[simp] lemma exradius_univ : s.exradius Set.univ = s.inradius := by
+@[simp] lemma exradius_univ : s.exradius Finset.univ = s.inradius := by
   rw [exradius, exsphere_univ, insphere_radius]
 
-lemma excenter_eq_affineCombination (signs : Set (Fin (n + 1))) :
+lemma excenter_eq_affineCombination (signs : Finset (Fin (n + 1))) :
     s.excenter signs = Finset.univ.affineCombination ℝ s.points (s.excenterWeights signs) :=
   rfl
 
-lemma exradius_eq_abs_inv_sum (signs : Set (Fin (n + 1))) :
+lemma exradius_eq_abs_inv_sum (signs : Finset (Fin (n + 1))) :
     s.exradius signs = |(∑ i, s.excenterWeightsUnnorm signs i)⁻¹| :=
   rfl
 
@@ -484,11 +483,11 @@ lemma incenter_eq_affineCombination :
 lemma inradius_eq_abs_inv_sum : s.inradius = |(∑ i, s.excenterWeightsUnnorm ∅ i)⁻¹| :=
   rfl
 
-lemma exradius_nonneg (signs : Set (Fin (n + 1))) : 0 ≤ s.exradius signs :=
+lemma exradius_nonneg (signs : Finset (Fin (n + 1))) : 0 ≤ s.exradius signs :=
   abs_nonneg _
 
 variable {s} in
-lemma ExcenterExists.exradius_pos {signs : Set (Fin (n + 1))} (h : s.ExcenterExists signs) :
+lemma ExcenterExists.exradius_pos {signs : Finset (Fin (n + 1))} (h : s.ExcenterExists signs) :
     0 < s.exradius signs :=
   abs_pos.2 (inv_ne_zero h)
 
@@ -499,7 +498,7 @@ lemma exradius_singleton_pos (hn : 1 < n) (i : Fin (n + 1)) : 0 < s.exradius {i}
   (s.excenterExists_singleton hn i).exradius_pos
 
 variable {s} in
-lemma ExcenterExists.excenter_mem_affineSpan_range {signs : Set (Fin (n + 1))}
+lemma ExcenterExists.excenter_mem_affineSpan_range {signs : Finset (Fin (n + 1))}
     (h : s.ExcenterExists signs) : s.excenter signs ∈ affineSpan ℝ (Set.range s.points) :=
   affineCombination_mem_affineSpan h.sum_excenterWeights_eq_one _
 
@@ -511,8 +510,8 @@ lemma excenter_singleton_mem_affineSpan_range (hn : 1 < n) (i : Fin (n + 1)) :
   (s.excenterExists_singleton hn i).excenter_mem_affineSpan_range
 
 variable {s} in
-lemma ExcenterExists.signedDist_excenter_eq_mul_sum_inv {signs : Set (Fin (n + 1))}
-    (h : s.ExcenterExists signs) (i : Fin (n + 1)) [Decidable (i ∈ signs)] :
+lemma ExcenterExists.signedDist_excenter_eq_mul_sum_inv {signs : Finset (Fin (n + 1))}
+    (h : s.ExcenterExists signs) (i : Fin (n + 1)) :
     s.signedDist i (s.excenter signs) =
       (if i ∈ signs then -1 else 1) * (∑ j, s.excenterWeightsUnnorm signs j)⁻¹ := by
   simp_rw [excenter_eq_affineCombination,
@@ -521,8 +520,8 @@ lemma ExcenterExists.signedDist_excenter_eq_mul_sum_inv {signs : Set (Fin (n + 1
   simp
 
 variable {s} in
-lemma ExcenterExists.signedDist_excenter {signs : Set (Fin (n + 1))} (h : s.ExcenterExists signs)
-    (i : Fin (n + 1)) [Decidable (i ∈ signs)] :
+lemma ExcenterExists.signedDist_excenter {signs : Finset (Fin (n + 1))} (h : s.ExcenterExists signs)
+    (i : Fin (n + 1)) :
     s.signedDist i (s.excenter signs) = (if i ∈ signs then -1 else 1) *
       SignType.sign (∑ j, s.excenterWeightsUnnorm signs j) * (s.exradius signs) := by
   rw [h.signedDist_excenter_eq_mul_sum_inv, mul_assoc, exradius_eq_abs_inv_sum]
@@ -534,11 +533,10 @@ lemma signedDist_incenter (i : Fin (n + 1)) : s.signedDist i s.incenter = s.inra
   simp [sum_excenterWeightsUnnorm_empty_pos]
 
 variable {s} in
-lemma ExcenterExists.dist_excenter {signs : Set (Fin (n + 1))} (h : s.ExcenterExists signs)
+lemma ExcenterExists.dist_excenter {signs : Finset (Fin (n + 1))} (h : s.ExcenterExists signs)
     (i : Fin (n + 1)) : dist (s.excenter signs) (orthogonalProjection
       (affineSpan ℝ (Set.range (s.faceOpposite i).points)) (s.excenter signs)) =
       s.exradius signs := by
-  classical
   rw [← abs_signedDist_eq_dist_of_mem_affineSpan_range i h.excenter_mem_affineSpan_range,
     h.signedDist_excenter, abs_mul, abs_mul, abs_of_nonneg (s.exradius_nonneg signs)]
   simp only [abs_ite, abs_neg, abs_one, ite_self, one_mul]
@@ -548,8 +546,7 @@ lemma ExcenterExists.dist_excenter {signs : Set (Fin (n + 1))} (h : s.ExcenterEx
   · simp [h']
 
 lemma exists_forall_signedDist_eq_iff_excenterExists_and_eq_excenter {p : P}
-    (hp : p ∈ affineSpan ℝ (Set.range s.points)) {signs : Set (Fin (n + 1))}
-    [DecidablePred (· ∈ signs)] :
+    (hp : p ∈ affineSpan ℝ (Set.range s.points)) {signs : Finset (Fin (n + 1))} :
     (∃ r : ℝ, ∀ i, s.signedDist i p = (if i ∈ signs then -1 else 1) * r) ↔
       s.ExcenterExists signs ∧ p = s.excenter signs := by
   refine ⟨?_, ?_⟩
@@ -568,7 +565,6 @@ lemma exists_forall_signedDist_eq_iff_excenterExists_and_eq_excenter {p : P}
       replace h' := h' i
       rw [← eq_div_iff (s.dist_orthogonalProjection_faceOpposite_pos i).ne'] at h'
       rw [h', mul_comm, div_eq_mul_inv, mul_assoc]
-      congr
     have hw : w = s.excenterWeights signs := by
       simp_rw [h'', ← Finset.mul_sum] at h1
       ext j
@@ -597,20 +593,20 @@ lemma exists_forall_dist_eq_iff_exists_excenterExists_and_eq_excenter {p : P}
     (∃ r : ℝ, ∀ i, dist p (orthogonalProjection
       (affineSpan ℝ (Set.range (s.faceOpposite i).points)) p) = r) ↔
       ∃ signs, s.ExcenterExists signs ∧ p = s.excenter signs := by
-  classical
   simp_rw [← abs_signedDist_eq_dist_of_mem_affineSpan_range _ hp]
   refine ⟨?_, ?_⟩
   · rintro ⟨r, h⟩
     have h' : ∀ i, s.signedDist i p = r ∨ s.signedDist i p = -r :=
       fun i ↦ eq_or_eq_neg_of_abs_eq (h i)
-    refine ⟨{i | s.signedDist i p = -r}, ?_⟩
+    refine ⟨{i ∈ (Finset.univ : Finset (Fin (n + 1))) | s.signedDist i p = -r}, ?_⟩
     apply (s.exists_forall_signedDist_eq_iff_excenterExists_and_eq_excenter hp).1
     refine ⟨r, ?_⟩
     simp only [Set.mem_setOf_eq, ite_mul, neg_mul, one_mul]
     intro i
     split_ifs with hi
-    · exact hi
-    · simpa [hi] using h' i
+    · simpa using hi
+    · simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hi
+      simpa [hi] using h' i
   · rintro ⟨signs, h⟩
     replace h := (s.exists_forall_signedDist_eq_iff_excenterExists_and_eq_excenter hp).2 h
     rcases h with ⟨r, h⟩
