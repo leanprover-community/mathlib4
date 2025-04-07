@@ -44,16 +44,16 @@ lemma exists_generator_lt_one : ∃ (a : G), a < 1 ∧ Subgroup.zpowers a = H :=
 the subgroup that is `< 1`. -/
 @[to_additive negGen "Given an additive subgroup of an additive cyclic linearly ordered
 commutative group, this is a negative generator of the subgroup."]
-protected noncomputable def gen_lt_one : G := H.exists_generator_lt_one.choose
+protected noncomputable def genLTOne : G := H.exists_generator_lt_one.choose
 
 @[to_additive negGen_neg]
-lemma gen_lt_one_lt_one {G : Type*} [LinearOrderedCommGroup G] [IsCyclic G]
-      (H : Subgroup G) [Nontrivial H] : H.gen_lt_one < 1 :=
+lemma genLTOne_lt_one {G : Type*} [LinearOrderedCommGroup G] [IsCyclic G]
+      (H : Subgroup G) [Nontrivial H] : H.genLTOne < 1 :=
     H.exists_generator_lt_one.choose_spec.1
 
 @[to_additive (attr := simp) negGen_zmultiples_eq_top]
-lemma gen_lt_one_zpowers_eq_top {G : Type*} [LinearOrderedCommGroup G] [IsCyclic G]
-      (H : Subgroup G) [Nontrivial H]  : Subgroup.zpowers H.gen_lt_one = H :=
+lemma genLTOne_zpowers_eq_top {G : Type*} [LinearOrderedCommGroup G] [IsCyclic G]
+      (H : Subgroup G) [Nontrivial H]  : Subgroup.zpowers H.genLTOne = H :=
     H.exists_generator_lt_one.choose_spec.2
 
 end Subgroup
@@ -63,9 +63,9 @@ variable (G) [Nontrivial G]
 /-- Given a cyclic linearly ordered commutative group, this is a generator that is `< 1`. -/
 @[to_additive negGen "Given an additive cyclic linearly ordered commutative group, this is a
 negative generator of it."]
-noncomputable def gen_lt_one : G := (⊤ : Subgroup G).gen_lt_one
+noncomputable def genLTOne : G := (⊤ : Subgroup G).genLTOne
 
 @[to_additive (attr := simp) negGen_eq_of_top]
-lemma gen_lt_one_eq_of_top : gen_lt_one G = (⊤ : Subgroup G).gen_lt_one := rfl
+lemma gen_lt_one_eq_of_top : genLTOne G = (⊤ : Subgroup G).genLTOne := rfl
 
 end LinearOrderedCommGroup
