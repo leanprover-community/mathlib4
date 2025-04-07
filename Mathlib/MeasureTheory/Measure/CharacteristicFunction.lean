@@ -9,57 +9,43 @@ import Mathlib.MeasureTheory.Measure.FiniteMeasureExt
 /-!
 # Characteristic Function of a Finite Measure
 
-This file defines the characteristic function of a finite measure on a topological vector space
-`V`.
+This file defines the characteristic function of a finite measure on a topological vector space `V`.
 
 The characteristic function of a finite measure `P` on `V` is the mapping
-`W → ℂ, w => ∫ v, e (-L v w) ∂P`,
+`W → ℂ, w => ∫ v, e (L v w) ∂P`,
 where `e` is a continuous additive character and `L : V →ₗ[ℝ] W →ₗ[ℝ] ℝ` is a bilinear map.
 
 A typical example is `V = W = ℝ` and `L v w = v * w`.
 
+The integral is expressed as `∫ v, char he hL w v ∂P`, where `char he hL w` is the
+bounded continuous function `fun v ↦ e (L v w)` and `he`, `hL` are continuity hypotheses on `e`
+and `L`.
+
 ## Main definition
 
-`charFun P hL : W → ℂ`: The characteristic function of a Measure `P`, evaluated at `w`, is the
-integral of `char he hL w` with respect to `P`, for the standard choice of `e = Real.probChar`.
+TODO: give a definition of the characteristic function for standard choices of `e` and `L`.
 
 ## Main statements
 
 - `ext_of_integral_char_eq`: Assume `e` and `L` are non-trivial. If the integrals of `char`
   with respect to two finite measures `P` and `P'` coincide, then `P = P'`.
-- `ext_of_charFun_eq`: If the characteristic functions of two finite measures `P` and `P'` are
-  equal, then `P = P'`. In other words, characteristic functions separate finite measures.
 
 -/
 
-open Filter BoundedContinuousFunction Complex Real
+open BoundedContinuousFunction
 
 namespace MeasureTheory
 
-variable {V W : Type*} [AddCommGroup V] [Module ℝ V] [TopologicalSpace V]
-    [AddCommGroup W] [Module ℝ W] [TopologicalSpace W]
-    {e : AddChar ℝ Circle} {L : V →ₗ[ℝ] W →ₗ[ℝ] ℝ}
-    {he : Continuous e} {hL : Continuous fun p : V × W ↦ L p.1 p.2}
-
-/--
-The characteristic function of a Measure `P`, evaluated at `w` is the integral of
-`fun v ↦ e (L v w)` with respect to `P` for the standard choice of `e = Circle.exp`.
--/
-noncomputable
-def charFun [MeasurableSpace V] (P : Measure V) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
-    (w : W) : ℂ :=
-  ∫ v, char continuous_probChar hL w v ∂P
+variable {W : Type*} [AddCommGroup W] [Module ℝ W] [TopologicalSpace W]
+    {e : AddChar ℝ Circle}
 
 section ext
 
 variable {V : Type*} [AddCommGroup V] [Module ℝ V] [PseudoEMetricSpace V] [MeasurableSpace V]
     [BorelSpace V] [CompleteSpace V] [SecondCountableTopology V] {L : V →ₗ[ℝ] W →ₗ[ℝ] ℝ}
-    {𝕜 : Type*} [RCLike 𝕜]
 
-/--
-If the integrals of `char` with respect to two finite measures `P` and `P'` coincide, then
-`P = P'`.
--/
+/-- If the integrals of `char` with respect to two finite measures `P` and `P'` coincide, then
+`P = P'`. -/
 theorem ext_of_integral_char_eq (he : Continuous e) (he' : e ≠ 1)
     (hL' : ∀ v ≠ 0, L v ≠ 0) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
     {P P' : Measure V} [IsFiniteMeasure P] [IsFiniteMeasure P']
@@ -79,16 +65,6 @@ theorem ext_of_integral_char_eq (he : Continuous e) (he' : e ≠ 1)
   apply Finset.sum_congr rfl fun i _ => ?_
   simp only [smul_eq_mul, MeasureTheory.integral_mul_left, mul_eq_mul_left_iff]
   exact Or.inl (h i)
-
-/--
-If the characteristic functions of two finite measures `P` and `P'` are equal, then `P = P'`. In
-other words, characteristic functions separate finite measures.
--/
-theorem ext_of_charFun_eq
-    (hL' : ∀ v ≠ 0, L v ≠ 0) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
-    {P P' : Measure V} [IsFiniteMeasure P] [IsFiniteMeasure P'] (h : charFun P hL = charFun P' hL) :
-    P = P' :=
-  ext_of_integral_char_eq continuous_probChar probChar_ne_one hL' hL (fun w => congrFun h w)
 
 end ext
 
