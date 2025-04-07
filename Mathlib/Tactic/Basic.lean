@@ -160,3 +160,9 @@ elab (name := clearValue) "clear_value" hs:(ppSpace colGt term:max)+ : tactic =>
 attribute [pp_with_univ] ULift PUnit PEmpty
 
 end Mathlib.Tactic
+
+/-- A mathlib library note: the note's content should be contained in its doc-string. -/
+def LibraryNote := Unit
+
+open Lean in macro "library_note" name:ident dc:docComment : command =>
+  `($dc:docComment def $(mkIdent (Name.append `LibraryNote name.getId)) : LibraryNote := ())
