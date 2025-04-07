@@ -108,7 +108,48 @@ theorem smul_congr (hr : r = er) (ha : a = ea) (h : er • ea = e'): r • a = e
 theorem add_rawCast_zero : a + Nat.rawCast 0 = a := by
   simp
 
+
+lemma mul_natCast_zero {R : Type*} [CommSemiring R] (r : R):
+    r * (Nat.rawCast 0 : R) = Nat.rawCast 0 := by
+  simp
+
+class LawfulHMul (R₁ R₂ : Type*) [CommSemiring R₁] [CommSemiring R₂]  [HMul R₁ R₂ R₁] where
+  mul_zero : ∀ r₁ : R₁, r₁ * (0 : R₂) = 0
+  zero_mul : ∀ r₂ : R₂, (0 : R₁) * r₂ = 0
+  mul_one : ∀ r₁ : R₁, r₁ * (1 : R₂) = r₁
+  cast : R₁ → R₂
+  cast_mul : ∀ r₁ : R₁, ∀ r₂ : R₂, cast (r₁ * r₂) = cast r₁ * r₂
+  cast_one : cast 1 = 1
+  cast_zero : cast 0 = 0
+
+attribute [local simp] LawfulHMul.mul_zero LawfulHMul.zero_mul LawfulHMul.cast_mul
+  LawfulHMul.cast_one LawfulHMul.cast_zero
+
 -- theorem test [Algebra R ℕ] : r • 1 =
+
+lemma hmul_zero_natCast {R₁ R₂ : Type*} [CommSemiring R₁] [CommSemiring R₂]
+    [HMul R₁ R₂ R₁] [LawfulHMul R₁ R₂] (r₁ : R₁):
+  r₁ * (Nat.rawCast 0 : R₂) = Nat.rawCast 0 := by
+  simp [LawfulHMul.mul_zero]
+
+lemma hmul_cast_one_mul {R₁ R₂ : Type*} [CommSemiring R₁] [CommSemiring R₂]
+    [HMul R₁ R₂ R₁] [LawfulHMul R₁ R₂] (r₂ : R₂) :
+    (LawfulHMul.cast ((1:R₁) * r₂) : R₂) = (1 : ℕ) •  r₂ + (Nat.rawCast 0:R₂) := by
+  simp
+
+lemma hmul_cast_zero_mul {R₁ R₂ : Type*} [CommSemiring R₁] [CommSemiring R₂]
+    [HMul R₁ R₂ R₁] [LawfulHMul R₁ R₂] (r₂ : R₂) :
+    (LawfulHMul.cast ((Nat.rawCast 0:R₁) * r₂) : R₂) = (Nat.rawCast 0:R₂) := by
+  simp
+
+local instance {R : Type*} [CommSemiring R] : LawfulHMul R R where
+  zero_mul := zero_mul
+  mul_zero := mul_zero
+  mul_one := mul_one
+  cast := id
+  cast_mul := fun _ _ ↦ rfl
+  cast_one := rfl
+  cast_zero := rfl
 
 end Proofs
 
@@ -131,19 +172,55 @@ def evalAtom {v : Level}  {A : Q(Type v)} (sA : Q(CommSemiring $A)) (e : Q($A)) 
 
 mutual
 
-partial def evalHMul {u v : Level} {A₁ : Q(Type u)} {A₂ : Q(Type v)}
-    (sA₁ : Q(CommSemiring $A₁)) (sA₂ : Q(CommSemiring $A₂)) {a₁ : Q($A₁)} {a₂ : Q($A₂)}
-    (va₁ : ExSum A₁ a₁) (va₂ : ExSum A₂ a₂) :
-      let a₁' : Q($A₂) := a₁
-    MetaM <| Result (ExSum A₂) q($a₁' * $a₂) := do
-  match va₂ with
-  | .zero sA => sorry
+-- partial def evalMul {u v w: Level} {A₁ : Q(Type u)}
+--     (sA₁ : Q(CommSemiring $A₁))
+--      {a₁ a₂ : Q($A₁)}
+--     (va₁ : ExSum A₁ a₁) (va₂ : ExSum A₁ a₂) :
+--     MetaM <| Result (ExSum A₁) q($a₁ * $a₂) := do
+--   match va₂ with
+--   | .zero sA =>
+--     assumeInstancesCommute
+--     return ⟨_, .zero sA₁, q(mul_natCast_zero _)⟩
+--   | .one =>
+--     assumeInstancesCommute
+--     return ⟨_, va₁, q(mul_one $a₁)⟩
+--   | .add (R := R) (sR := sR) (sAlg := sRA) .. => sorry
+
+partial def evalHMul_exProd {u v : Level} {A₁ : Q(Type u)} {A₂ : Q(Type v)}
+    (sA₁ : Q(CommSemiring $A₁)) (sA₂ : Q(CommSemiring $A₂))
+    {sHMul : Q(HMul $A₁ $A₂ $A₁)} (sLaw : Q(LawfulHMul $A₁ $A₂)) {a₁ : Q($A₁)} {a₂ : Q($A₂)}
+    (va₁ : ExSum A₁ a₁) (va₂ : Ring.ExProd sA₂ a₂) :
+    MetaM <| Result (ExSum A₂) q(LawfulHMul.cast ($a₁ * $a₂)) := do
+  match va₁ with
+  | .zero _ =>
+    assumeInstancesCommute
+    return ⟨_, .zero sA₂, q(hmul_cast_zero_mul (R₁ := $A₁) $a₂)⟩
   | .one =>
-    -- assumeInstancesCommute
-    sorry
+    assumeInstancesCommute
+    return ⟨_, ofProd sA₂ va₂, q(hmul_cast_one_mul (R₁ := ℕ) $a₂)⟩
+  | .add (A := A) (sA := sA) (R := R) (sR := sR) (sAlg := sRA) vr va vt =>
+    throwError "HMul for two ExProds not implemented."
     -- return ⟨sorry, sorry, sorry⟩
-    -- return ⟨a₁, va₁, q(Nat.mul_one $a₁)⟩
-  | .add (R := R) (sR := sR) (sAlg := sRA) .. => sorry
+
+
+partial def evalHMul {u v : Level} {A₁ : Q(Type u)} {A₂ : Q(Type v)}
+    (sA₁ : Q(CommSemiring $A₁)) (sA₂ : Q(CommSemiring $A₂))
+    {sHMul : Q(HMul $A₁ $A₂ $A₁)} (sLaw : Q(LawfulHMul $A₁ $A₂)) {a₁ : Q($A₁)} {a₂ : Q($A₂)}
+    (va₁ : ExSum A₁ a₁) (va₂ : ExSum A₂ a₂) :
+    MetaM <| Result (ExSum A₁) q($a₁ * $a₂) := do
+  match va₂ with
+  | .zero sA =>
+    assumeInstancesCommute
+    return ⟨_, .zero sA₁, q(hmul_zero_natCast $a₁)⟩
+  | .one =>
+    assumeInstancesCommute
+    return ⟨_, va₁, q(LawfulHMul.mul_one $a₁)⟩
+  | .add (A := A) (sA := sA) (R := R) (sR := sR) (sAlg := sRA) (a := a) vr va vt =>
+
+    assumeInstancesCommute
+    let ⟨et, vt', pt⟩ ← evalHMul sA₁ sA sLaw va₁ vt
+    let ⟨_, _, _⟩ ← evalHMul_exProd sA₁ sA sLaw va₁ (a₂ := a) va
+    return ⟨sorry, sorry, sorry⟩
 
 
 
@@ -163,13 +240,15 @@ partial def matchRingsSMul {v : Level} {A : Q(Type v)}
     -- have : $R₁ =Q $R₂ := ⟨⟩
     have r₁' : Q($R₂) := r₁
     /- Question: what do I do here? I just want to view $r₁$ as having type $R₂$-/
-    have vr₁' : ExSum R₂ r₁' := sorry
+    let _i₁ ← synthInstanceQ q(HMul $R₁ $R₂ $R₁)
+    let _i₂ ← synthInstanceQ q(LawfulHMul $R₁ $R₂)
+    -- have vr₁' : ExSum R₂ r₁' := sorry
     IO.println s!"smul with defeq rings {R₁} and {R₂} not yet implemented."
     -- throwError s!"smul with defeq rings {R₁} and {R₂} not yet implemented."
     /- Is this safe and correct? -/
-    have : Q($r₁' • $r₂ • $a = $r₁ • $r₂ • $a) := ← Lean.Meta.mkEqRefl q($r₁ • $r₂ • $a)
-    let ⟨r, vr, pr⟩ ← evalMul R₂ vr₁' vr₂
-    pure ⟨u₂, R₂, iR₂, iRA₂, r, vr, q(sorry /- $this  @smul_smul $R₂ $A _ _ $r₁' $r₂ $a -/ )⟩
+    -- have : Q($r₁' • $r₂ • $a = $r₁ • $r₂ • $a) := ← Lean.Meta.mkEqRefl q($r₁ • $r₂ • $a)
+    let ⟨r, vr, pr⟩ ← evalHMul iR₁ iR₂ q(inferInstance) vr₁ vr₂
+    pure ⟨_, R₁, iR₁, iRA₁, r, vr, q(sorry /- $this  @smul_smul $R₂ $A _ _ $r₁' $r₂ $a -/ )⟩
   -- otherwise the "smaller" of the two rings must be commutative
   else try
     -- first try to exhibit `R₂` as an `R₁`-algebra
