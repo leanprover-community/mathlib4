@@ -1215,6 +1215,10 @@ instance {G : Type*} [AddGroup G] [IsAddCommutative G] :
     AddCommGroup G where
   add_comm := IsAddCommutative.is_comm.comm
 
+instance {G : Type*} [CommGroup G] :
+    IsMulCommutative G where
+  is_comm := ⟨fun a b ↦ mul_comm a b⟩
+
 instance {G : Type*} [AddCommGroup G] :
     IsAddCommutative G where
   is_comm := ⟨fun a b ↦ add_comm a b⟩
