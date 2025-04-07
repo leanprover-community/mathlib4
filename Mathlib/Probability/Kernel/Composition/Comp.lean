@@ -53,7 +53,7 @@ theorem comp_apply (η : Kernel β γ) (κ : Kernel α β) (a : α) : (η ∘ₖ
 
 theorem comp_apply' (η : Kernel β γ) (κ : Kernel α β) (a : α) {s : Set γ} (hs : MeasurableSet s) :
     (η ∘ₖ κ) a s = ∫⁻ b, η b s ∂κ a := by
-  rw [comp_apply, Measure.bind_apply hs (Kernel.measurable _)]
+  rw [comp_apply, Measure.bind_apply hs (Kernel.measurable _).aemeasurable]
 
 theorem comp_apply_univ_le (κ : Kernel α β) (η : Kernel β γ) [IsFiniteKernel η] (a : α) :
     (η ∘ₖ κ) a Set.univ ≤ κ a Set.univ * IsFiniteKernel.bound η := by
@@ -121,7 +121,7 @@ end Restrict
 
 theorem lintegral_comp (η : Kernel β γ) (κ : Kernel α β) (a : α) {g : γ → ℝ≥0∞}
     (hg : Measurable g) : ∫⁻ c, g c ∂(η ∘ₖ κ) a = ∫⁻ b, ∫⁻ c, g c ∂η b ∂κ a := by
-  rw [comp_apply, Measure.lintegral_bind (Kernel.measurable _) hg]
+  rw [comp_apply, Measure.lintegral_bind (Kernel.measurable _).aemeasurable hg.aemeasurable]
 
 /-- Composition of kernels is associative. -/
 theorem comp_assoc {δ : Type*} {mδ : MeasurableSpace δ} (ξ : Kernel γ δ)
@@ -179,7 +179,7 @@ instance IsMarkovKernel.comp (η : Kernel β γ) [IsMarkovKernel η] (κ : Kerne
   isProbabilityMeasure a := by
     rw [comp_apply]
     constructor
-    rw [Measure.bind_apply .univ η.measurable]
+    rw [Measure.bind_apply .univ η.measurable.aemeasurable]
     simp
 
 instance IsZeroOrMarkovKernel.comp (κ : Kernel α β) [IsZeroOrMarkovKernel κ]
