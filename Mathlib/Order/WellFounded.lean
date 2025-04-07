@@ -11,7 +11,7 @@ import Mathlib.Order.Bounds.Defs
 
 A relation is well-founded if it can be used for induction: for each `x`, `(∀ y, r y x → P y) → P x`
 implies `P x`. Well-founded relations can be used for induction and recursion, including
-construction of fixed points in the space of dependent functions `Π x : α , β x`.
+construction of fixed points in the space of dependent functions `Π x : α, β x`.
 
 The predicate `WellFounded` is defined in the core library. In this file we prove some extra lemmas
 and provide a few new definitions: `WellFounded.min`, `WellFounded.sup`, and `WellFounded.succ`,
@@ -55,7 +55,7 @@ theorem has_min {α} {r : α → α → Prop} (H : WellFounded r) (s : Set α) :
 
 If you're working with a nonempty linear order, consider defining a
 `ConditionallyCompleteLinearOrderBot` instance via
-`WellFounded.conditionallyCompleteLinearOrderWithBot` and using `Inf` instead. -/
+`WellFoundedLT.conditionallyCompleteLinearOrderBot` and using `Inf` instead. -/
 noncomputable def min {r : α → α → Prop} (H : WellFounded r) (s : Set α) (h : s.Nonempty) : α :=
   Classical.choose (H.has_min s h)
 
@@ -121,14 +121,14 @@ protected noncomputable def succ {r : α → α → Prop} (wf : WellFounded r) (
   if h : ∃ y, r x y then wf.min { y | r x y } h else x
 
 set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-10-25")]
+@[deprecated "`WellFounded.succ` is deprecated" (since := "2024-10-25")]
 protected theorem lt_succ {r : α → α → Prop} (wf : WellFounded r) {x : α} (h : ∃ y, r x y) :
     r x (wf.succ x) := by
   rw [WellFounded.succ, dif_pos h]
   apply min_mem
 
 set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-10-25")]
+@[deprecated "`WellFounded.succ` is deprecated" (since := "2024-10-25")]
 protected theorem lt_succ_iff {r : α → α → Prop} [wo : IsWellOrder α r] {x : α} (h : ∃ y, r x y)
     (y : α) : r y (wo.wf.succ x) ↔ r y x ∨ y = x := by
   constructor
@@ -187,12 +187,6 @@ theorem StrictAnti.range_inj [WellFoundedGT β] {f g : β → γ}
     (hf : StrictAnti f) (hg : StrictAnti g) : Set.range f = Set.range g ↔ f = g :=
   Set.range_injOn_strictAnti.eq_iff hf hg
 
-@[deprecated StrictMono.range_inj (since := "2024-09-11")]
-theorem WellFounded.eq_strictMono_iff_eq_range (h : WellFounded ((· < ·) : β → β → Prop))
-    {f g : β → γ} (hf : StrictMono f) (hg : StrictMono g) :
-    Set.range f = Set.range g ↔ f = g :=
-  @StrictMono.range_inj β γ _ _ ⟨h⟩ f g hf hg
-
 /-- A strictly monotone function `f` on a well-order satisfies `x ≤ f x` for all `x`. -/
 theorem StrictMono.id_le [WellFoundedLT β] {f : β → β} (hf : StrictMono f) : id ≤ f := by
   rw [Pi.le_def]
@@ -209,13 +203,6 @@ theorem StrictMono.le_id [WellFoundedGT β] {f : β → β} (hf : StrictMono f) 
 
 theorem StrictMono.apply_le [WellFoundedGT β] {f : β → β} (hf : StrictMono f) {x} : f x ≤ x :=
   StrictMono.le_apply (β := βᵒᵈ) hf.dual
-
-@[deprecated StrictMono.le_apply (since := "2024-09-11")]
-theorem WellFounded.self_le_of_strictMono (h : WellFounded ((· < ·) : β → β → Prop))
-    {f : β → β} (hf : StrictMono f) : ∀ n, n ≤ f n := by
-  by_contra! h₁
-  have h₂ := h.min_mem _ h₁
-  exact h.not_lt_min _ h₁ (hf h₂) h₂
 
 theorem StrictMono.not_bddAbove_range_of_wellFoundedLT {f : β → β} [WellFoundedLT β] [NoMaxOrder β]
     (hf : StrictMono f) : ¬ BddAbove (Set.range f) := by
@@ -235,45 +222,42 @@ variable (f : α → β)
 
 section LT
 
-variable [LT β] (h : WellFounded ((· < ·) : β → β → Prop))
+variable [LT β] [h : WellFoundedLT β]
 
 /-- Given a function `f : α → β` where `β` carries a well-founded `<`, this is an element of `α`
 whose image under `f` is minimal in the sense of `Function.not_lt_argmin`. -/
 noncomputable def argmin [Nonempty α] : α :=
-  WellFounded.min (InvImage.wf f h) Set.univ Set.univ_nonempty
+  WellFounded.min (InvImage.wf f h.wf) Set.univ Set.univ_nonempty
 
-theorem not_lt_argmin [Nonempty α] (a : α) : ¬f a < f (argmin f h) :=
-  WellFounded.not_lt_min (InvImage.wf f h) _ _ (Set.mem_univ a)
+theorem not_lt_argmin [Nonempty α] (a : α) : ¬f a < f (argmin f) :=
+  WellFounded.not_lt_min (InvImage.wf f h.wf) _ _ (Set.mem_univ a)
 
 /-- Given a function `f : α → β` where `β` carries a well-founded `<`, and a non-empty subset `s`
 of `α`, this is an element of `s` whose image under `f` is minimal in the sense of
 `Function.not_lt_argminOn`. -/
 noncomputable def argminOn (s : Set α) (hs : s.Nonempty) : α :=
-  WellFounded.min (InvImage.wf f h) s hs
+  WellFounded.min (InvImage.wf f h.wf) s hs
 
 @[simp]
-theorem argminOn_mem (s : Set α) (hs : s.Nonempty) : argminOn f h s hs ∈ s :=
+theorem argminOn_mem (s : Set α) (hs : s.Nonempty) : argminOn f s hs ∈ s :=
   WellFounded.min_mem _ _ _
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] removed as it will never apply
 theorem not_lt_argminOn (s : Set α) {a : α} (ha : a ∈ s)
-    (hs : s.Nonempty := Set.nonempty_of_mem ha) : ¬f a < f (argminOn f h s hs) :=
-  WellFounded.not_lt_min (InvImage.wf f h) s hs ha
+    (hs : s.Nonempty := Set.nonempty_of_mem ha) : ¬f a < f (argminOn f s hs) :=
+  WellFounded.not_lt_min (InvImage.wf f h.wf) s hs ha
 
 end LT
 
 section LinearOrder
 
-variable [LinearOrder β] (h : WellFounded ((· < ·) : β → β → Prop))
+variable [LinearOrder β] [WellFoundedLT β]
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] removed as it will never apply
-theorem argmin_le (a : α) [Nonempty α] : f (argmin f h) ≤ f a :=
-  not_lt.mp <| not_lt_argmin f h a
+theorem argmin_le (a : α) [Nonempty α] : f (argmin f) ≤ f a :=
+  not_lt.mp <| not_lt_argmin f a
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] removed as it will never apply
 theorem argminOn_le (s : Set α) {a : α} (ha : a ∈ s) (hs : s.Nonempty := Set.nonempty_of_mem ha) :
-    f (argminOn f h s hs) ≤ f a :=
-  not_lt.mp <| not_lt_argminOn f h s ha hs
+    f (argminOn f s hs) ≤ f a :=
+  not_lt.mp <| not_lt_argminOn f s ha hs
 
 end LinearOrder
 

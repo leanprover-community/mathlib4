@@ -10,8 +10,8 @@ import Mathlib.Algebra.Homology.QuasiIso
 
 /-! # The homology of a canonical truncation
 
-Given an embedding of complex shapes `e : Embedding c c'`, we shall
-relate the homology of `K : HomologicalComplex C c'` and of
+Given an embedding of complex shapes `e : Embedding c c'`,
+we relate the homology of `K : HomologicalComplex C c'` and of
 `K.truncGE e : HomologicalComplex C c'`.
 
 The main result is that `K.πTruncGE e : K ⟶ K.truncGE e` induces a
@@ -50,7 +50,8 @@ lemma hasHomology_of_not_mem_boundary (hj : ¬ e.BoundaryGE j) :
     (K.truncGE' e).HasHomology j :=
   hasHomology_sc'_of_not_mem_boundary K e _ j _ rfl rfl hj
 
-lemma quasiIsoAt_restrictionToTruncGE'_f (hj : ¬ e.BoundaryGE j)
+/-- `K.restrictionToTruncGE' e` is a quasi-isomorphism in degrees that are not at the boundary. -/
+lemma quasiIsoAt_restrictionToTruncGE' (hj : ¬ e.BoundaryGE j)
     [(K.restriction e).HasHomology j] [(K.truncGE' e).HasHomology j] :
     QuasiIsoAt (K.restrictionToTruncGE' e) j := by
   rw [quasiIsoAt_iff]

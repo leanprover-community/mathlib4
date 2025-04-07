@@ -3,8 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johan Commelin
 -/
+import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Algebra.Group.WithOne.Defs
-import Mathlib.Algebra.GroupWithZero.Hom
+import Mathlib.Algebra.GroupWithZero.Equiv
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Data.Nat.Cast.Defs
 import Mathlib.Data.Option.Basic
@@ -265,6 +266,10 @@ def unitsWithZeroEquiv : (WithZero α)ˣ ≃* α where
   left_inv _ := Units.ext <| by simp only [coe_unzero, Units.mk0_val]
   right_inv _ := rfl
   map_mul' _ _ := coe_inj.mp <| by simp only [Units.val_mul, coe_unzero, coe_mul]
+
+theorem coe_unitsWithZeroEquiv_eq_units_val (γ : (WithZero α)ˣ) :
+    ↑(unitsWithZeroEquiv γ) = γ.val := by
+  simp only [WithZero.unitsWithZeroEquiv, MulEquiv.coe_mk, Equiv.coe_fn_mk, WithZero.coe_unzero]
 
 /-- Any group with zero is isomorphic to adjoining `0` to the units of itself. -/
 def withZeroUnitsEquiv {G : Type*} [GroupWithZero G]

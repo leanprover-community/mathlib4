@@ -5,9 +5,10 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Group.Hom.End
 import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.Algebra.GroupWithZero.Action.End
+import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
+import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Order.BigOperators.Group.List
-import Mathlib.Data.Set.Pointwise.SMul
+import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Order.WellFoundedSet
 
 /-! # Pointwise instances on `Submonoid`s and `AddSubmonoid`s
@@ -133,7 +134,7 @@ theorem pow_smul_mem_closure_smul {N : Type*} [CommMonoid N] [MulAction M N] [Is
 variable [Group G]
 
 /-- The submonoid with every element inverted. -/
-@[to_additive " The additive submonoid with every element negated. "]
+@[to_additive "The additive submonoid with every element negated."]
 protected def inv : Inv (Submonoid G) where
   inv S :=
     { carrier := (S : Set G)⁻¹
@@ -516,7 +517,7 @@ theorem smul_subset_smul : (↑M : Set R) • (↑N : Set A) ⊆ (↑(M • N) :
 
 theorem addSubmonoid_smul_sup : M • (N ⊔ P) = M • N ⊔ M • P :=
   le_antisymm (smul_le.mpr fun m hm np hnp ↦ by
-    refine closure_induction (p := (fun _ ↦ _ • · ∈ _)) ?_ ?_ ?_ (sup_eq_closure N P ▸ hnp)
+    refine closure_induction (motive := (fun _ ↦ _ • · ∈ _)) ?_ ?_ ?_ (sup_eq_closure N P ▸ hnp)
     · rintro x (hx | hx)
       exacts [le_sup_left (a := M • N) (smul_mem_smul hm hx),
         le_sup_right (a := M • N) (smul_mem_smul hm hx)]
@@ -527,7 +528,7 @@ theorem addSubmonoid_smul_sup : M • (N ⊔ P) = M • N ⊔ M • P :=
 variable {ι : Sort*}
 
 theorem smul_iSup (T : AddSubmonoid R) (S : ι → AddSubmonoid A) : (T • ⨆ i, S i) = ⨆ i, T • S i :=
-  le_antisymm (smul_le.mpr fun t ht s hs ↦ iSup_induction _ (C := (t • · ∈ _)) hs
+  le_antisymm (smul_le.mpr fun t ht s hs ↦ iSup_induction _ (motive := (t • · ∈ _)) hs
     (fun i s hs ↦ mem_iSup_of_mem i <| smul_mem_smul ht hs)
     (by simp_rw [smul_zero]; apply zero_mem) fun x y ↦ by simp_rw [smul_add]; apply add_mem)
   (iSup_le fun i ↦ smul_le_smul_right <| le_iSup _ i)
@@ -555,8 +556,6 @@ protected theorem mul_induction_on {M N : AddSubmonoid R} {C : R → Prop} {r : 
     (hm : ∀ m ∈ M, ∀ n ∈ N, C (m * n)) (ha : ∀ x y, C x → C y → C (x + y)) : C r :=
   AddSubmonoid.smul_induction_on hr hm ha
 
--- this proof is copied directly from `Submodule.span_mul_span`
--- Porting note: proof rewritten
 -- need `add_smul` to generalize to `SMul`
 theorem closure_mul_closure (S T : Set R) : closure S * closure T = closure (S * T) := by
   apply le_antisymm
@@ -609,7 +608,7 @@ variable {ι : Sort*}
 
 -- need `zero_smul` and `add_smul` to generalize to `SMul`
 theorem iSup_mul (S : ι → AddSubmonoid R) (T : AddSubmonoid R) : (⨆ i, S i) * T = ⨆ i, S i * T :=
-  le_antisymm (mul_le.mpr fun s hs t ht ↦ iSup_induction _ (C := (· * t ∈ _)) hs
+  le_antisymm (mul_le.mpr fun s hs t ht ↦ iSup_induction _ (motive := (· * t ∈ _)) hs
       (fun i s hs ↦ mem_iSup_of_mem i <| mul_mem_mul hs ht) (by simp_rw [zero_mul]; apply zero_mem)
       fun _ _ ↦ by simp_rw [right_distrib]; apply add_mem) <|
     iSup_le fun i ↦ mul_le_mul_left (le_iSup _ i)
@@ -709,7 +708,7 @@ end AddSubmonoid
 
 namespace Set.IsPWO
 
-variable [OrderedCancelCommMonoid α] {s : Set α}
+variable [CommMonoid α] [PartialOrder α] [IsOrderedCancelMonoid α] {s : Set α}
 
 @[to_additive]
 theorem submonoid_closure (hpos : ∀ x : α, x ∈ s → 1 ≤ x) (h : s.IsPWO) :

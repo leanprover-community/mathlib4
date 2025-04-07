@@ -6,8 +6,8 @@ Authors: Christian Merten
 import Mathlib.LinearAlgebra.Basis.Exact
 import Mathlib.RingTheory.Kaehler.CotangentComplex
 import Mathlib.RingTheory.Smooth.StandardSmooth
-import Mathlib.RingTheory.Etale.Basic
 import Mathlib.RingTheory.Smooth.Kaehler
+import Mathlib.RingTheory.Etale.Basic
 
 /-!
 # Cotangent complex of a submersive presentation
@@ -30,6 +30,8 @@ We keep the notation `I = ker(R[X] → S)` in all docstrings of this file.
 universe u
 
 namespace Algebra
+
+section
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
@@ -80,27 +82,26 @@ lemma cotangentComplexAux_injective : Function.Injective P.cotangentComplexAux :
     exact x.property
   obtain ⟨c, hc⟩ := Finsupp.mem_ideal_span_range_iff_exists_finsupp.mp this
   have heq (i : P.rels) :
-      (aeval P.val) (pderiv (P.map i) <| c.sum fun i a ↦ a * P.relation i) = 0 := by
+      aeval P.val (pderiv (P.map i) <| c.sum fun i a ↦ a * P.relation i) = 0 := by
     rw [hc]
     apply hx
   simp only [Finsupp.sum, map_sum, Derivation.leibniz, smul_eq_mul, map_add, map_mul,
     Presentation.aeval_val_relation, zero_mul, add_zero] at heq
   have heq2 : ∑ i ∈ c.support,
-      (aeval P.val) (c i) • (fun j ↦ (aeval P.val) (pderiv (P.map j) (P.relation i))) = 0 := by
+      aeval P.val (c i) • (fun j ↦ aeval P.val (pderiv (P.map j) (P.relation i))) = 0 := by
     ext j
     simp only [Finset.sum_apply, Pi.smul_apply, smul_eq_mul, Pi.zero_apply]
     apply heq
-  have (i : P.rels) : (aeval P.val) (c i) = 0 := by
+  have (i : P.rels) : aeval P.val (c i) = 0 := by
     have := P.linearIndependent_aeval_val_pderiv_relation
     rw [linearIndependent_iff''] at this
-    have := this c.support (fun i ↦ (aeval P.val) (c i))
-      (by intro i; simp; intro h; simp [h]) (heq2)
+    have := this c.support (fun i ↦ aeval P.val (c i))
+      (by intro i; simp only [Finsupp.mem_support_iff, ne_eq, not_not]; intro h; simp [h]) heq2
     exact this i
   show _ ∈ P.ker ^ 2
   rw [← hc]
   apply Ideal.sum_mem
   intro i hi
-  simp
   rw [pow_two]
   apply Ideal.mul_mem_mul
   · rw [P.ker_eq_ker_aeval_val]
@@ -132,35 +133,10 @@ instance subsingleton_h1Cotangent : Subsingleton P.toExtension.H1Cotangent := by
   rw [Algebra.Extension.subsingleton_h1Cotangent]
   exact cotangentComplex_injective P
 
-@[simp]
-lemma Finsupp.linearEquivFunOnFinite_symm_apply (R M α : Type*) [Finite α] [AddCommMonoid M]
-    [Semiring R] [Module R M] (f : α →₀ M) (a : α) :
-    (Finsupp.linearEquivFunOnFinite R M α).symm f a = f a := rfl
-
 /-- The classes of `P.relation i` form a basis of `I ⧸ I ^ 2`. -/
 @[stacks 00T7 "(3)"]
 noncomputable def basisCotangent : Basis P.rels S P.toExtension.Cotangent :=
-  have h : P.cotangentComplexAux ∘
-      (fun i ↦ Cotangent.mk ⟨P.relation i, P.relation_mem_ker i⟩) =
-      (fun i j ↦ (aeval P.val) ((pderiv (P.map j)) (P.relation i))) := by
-    ext i j
-    simp only [Function.comp_apply, P.cotangentComplexAux_apply]
-  have hli : LinearIndependent S
-      (fun i ↦ Cotangent.mk (P := P.toExtension) ⟨P.relation i, P.relation_mem_ker i⟩) := by
-    apply LinearIndependent.of_comp P.cotangentComplexAux
-    rw [h]
-    apply P.linearIndependent_aeval_val_pderiv_relation
-  have hsp : ⊤ ≤ Submodule.span S
-      (Set.range fun i ↦
-        Cotangent.mk (P := P.toExtension) ⟨P.relation i, P.relation_mem_ker i⟩) := by
-    rw [← _root_.eq_top_iff]
-    apply Submodule.map_injective_of_injective P.cotangentComplexAux_injective
-    rw [Submodule.map_top, LinearMap.range_eq_top_of_surjective _ P.cotangentComplexAux_surjective]
-    rw [Submodule.map_span, ← Set.range_comp]
-    convert P.basisDeriv.span_eq
-    ext i j
-    simp only [Function.comp_apply, basisDeriv_apply, P.cotangentComplexAux_apply]
-  Basis.mk hli hsp
+  ⟨cotangentEquiv P ≪≫ₗ (Finsupp.linearEquivFunOnFinite S S P.rels).symm⟩
 
 @[stacks 00T7 "(3)"]
 instance free_cotangent : Module.Free S P.toExtension.Cotangent :=
@@ -242,15 +218,12 @@ theorem free_kaehlerDifferential (P : SubmersivePresentation R S) :
     Module.Free S (Ω[S⁄R]) :=
   Module.Free.of_basis P.basisKaehler
 
+attribute [local instance] Fintype.ofFinite in
 /-- If `P` is a submersive presentation of `S` as an `R`-algebra and `S` is nontrivial,
 `Ω[S⁄R]` is free of rank the dimension of `P`, i.e. the number of generators minus the number
 of relations. -/
 theorem rank_kaehlerDifferential [Nontrivial S]
     (P : SubmersivePresentation R S) : Module.rank S (Ω[S⁄R]) = P.dimension := by
-  haveI : Fintype ((Set.range P.map)ᶜ : Set _) := Fintype.ofFinite _
-  haveI : Fintype (Set.range P.map) := Fintype.ofFinite _
-  haveI : Fintype P.vars := Fintype.ofFinite _
-  haveI : Fintype P.rels := Fintype.ofFinite _
   simp only [rank_eq_card_basis P.basisKaehler, Nat.cast_inj, Fintype.card_compl_set,
     Presentation.dimension, Nat.card_eq_fintype_card, Set.card_range_of_injective P.map_inj]
 
@@ -277,12 +250,13 @@ theorem IsStandardSmoothOfRelativeDimension.rank_kaehlerDifferential [Nontrivial
 
 instance IsStandardSmoothOfRelationDimension.subsingleton_kaehlerDifferential
     [IsStandardSmoothOfRelativeDimension 0 R S] : Subsingleton (Ω[S⁄R]) := by
-  wlog h : Nontrivial S
-  · rw [not_nontrivial_iff_subsingleton] at h
-    apply Module.subsingleton S
+  cases subsingleton_or_nontrivial S
+  · exact Module.subsingleton S _
   haveI : IsStandardSmooth R S := IsStandardSmoothOfRelativeDimension.isStandardSmooth 0
   exact Module.subsingleton_of_rank_zero
     (IsStandardSmoothOfRelativeDimension.rank_kaehlerDifferential 0)
+
+end
 
 variable {R S : Type u} [CommRing R] [CommRing S] [Algebra R S]
 

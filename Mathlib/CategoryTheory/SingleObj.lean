@@ -37,6 +37,7 @@ An element `x : M` can be reinterpreted as an element of `End (SingleObj.star M)
   `CategoryTheory.SingleObj`, so we give all names explicitly.
 -/
 
+assert_not_exists MonoidWithZero
 
 universe u v w
 
@@ -139,7 +140,6 @@ def differenceFunctor (f : C → G) : C ⥤ SingleObj G where
     simp only [SingleObj.id_as_one, mul_inv_cancel]
   map_comp := by
     intros
-    dsimp
     rw [SingleObj.comp_as_mul, ← mul_assoc, mul_left_inj, mul_assoc, inv_mul_cancel, mul_one]
 
 /-- A monoid homomorphism `f: M → End X` into the endomorphisms of an object `X` of a category `C`
@@ -234,12 +234,14 @@ open CategoryTheory
 /-- The fully faithful functor from `MonCat` to `Cat`. -/
 def toCat : MonCat ⥤ Cat where
   obj x := Cat.of (SingleObj x)
-  map {x y} f := SingleObj.mapHom x y f
+  map {x y} f := SingleObj.mapHom x y f.hom
 
 instance toCat_full : toCat.Full where
-  map_surjective := (SingleObj.mapHom _ _).surjective
+  map_surjective y :=
+    let ⟨x, h⟩ := (SingleObj.mapHom _ _).surjective y
+    ⟨ofHom x, h⟩
 
 instance toCat_faithful : toCat.Faithful where
-  map_injective h := by rwa [toCat, (SingleObj.mapHom _ _).apply_eq_iff_eq] at h
+  map_injective h := MonCat.hom_ext <| by rwa [toCat, (SingleObj.mapHom _ _).apply_eq_iff_eq] at h
 
 end MonCat

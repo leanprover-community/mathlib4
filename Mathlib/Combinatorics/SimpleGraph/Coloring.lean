@@ -137,6 +137,10 @@ theorem isEmpty_of_colorable_zero (h : G.Colorable 0) : IsEmpty V := by
   obtain ⟨i, hi⟩ := h.some v
   exact Nat.not_lt_zero _ hi
 
+@[simp]
+lemma colorable_zero_iff : G.Colorable 0 ↔ IsEmpty V :=
+   ⟨G.isEmpty_of_colorable_zero, fun _ ↦ G.colorable_of_isEmpty 0⟩
+
 /-- The "tautological" coloring of a graph, using the vertices of the graph as colors. -/
 def selfColoring : G.Coloring V := Coloring.mk id fun {_ _} => G.ne_of_adj
 
@@ -226,8 +230,7 @@ theorem colorable_iff_exists_bdd_nat_coloring (n : ℕ) :
     let f := Embedding.completeGraph (@Fin.valEmbedding n)
     use f.toHom.comp C
     intro v
-    cases' C with color valid
-    exact Fin.is_lt (color v)
+    exact Fin.is_lt (C.1 v)
   · rintro ⟨C, Cf⟩
     refine ⟨Coloring.mk ?_ ?_⟩
     · exact fun v => ⟨C v, Cf v⟩
@@ -314,7 +317,7 @@ theorem colorable_of_chromaticNumber_ne_top (h : G.chromaticNumber ≠ ⊤) :
 
 theorem Colorable.mono_left {G' : SimpleGraph V} (h : G ≤ G') {n : ℕ} (hc : G'.Colorable n) :
     G.Colorable n :=
-  ⟨hc.some.comp (Hom.mapSpanningSubgraphs h)⟩
+  ⟨hc.some.comp (.ofLE h)⟩
 
 theorem chromaticNumber_le_of_forall_imp {V' : Type*} {G' : SimpleGraph V'}
     (h : ∀ n, G'.Colorable n → G.Colorable n) :
@@ -451,4 +454,34 @@ theorem cliqueFree_of_chromaticNumber_lt {n : ℕ} (hc : G.chromaticNumber < n) 
   rw [← hne] at hc
   simpa using hc
 
+namespace completeMultipartiteGraph
+
+variable {ι : Type*} (V : ι → Type*)
+
+/-- The canonical `ι`-coloring of a `completeMultipartiteGraph` with parts indexed by `ι` -/
+def coloring : (completeMultipartiteGraph V).Coloring ι := Coloring.mk (fun v ↦ v.1) (by simp)
+
+lemma colorable [Fintype ι] : (completeMultipartiteGraph V).Colorable (Fintype.card ι) :=
+  (coloring V).colorable
+
+theorem chromaticNumber [Fintype ι] (f : ∀ (i : ι), V i) :
+    (completeMultipartiteGraph V).chromaticNumber = Fintype.card ι := by
+  apply le_antisymm (colorable V).chromaticNumber_le
+  by_contra! h
+  exact not_cliqueFree_of_le_card V f le_rfl <| cliqueFree_of_chromaticNumber_lt h
+
+theorem colorable_of_cliqueFree (f : ∀ (i : ι), V i)
+    (hc : (completeMultipartiteGraph V).CliqueFree n) :
+    (completeMultipartiteGraph V).Colorable (n - 1) := by
+  cases n with
+  | zero => exact absurd hc not_cliqueFree_zero
+  | succ n =>
+  have : Fintype ι := fintypeOfNotInfinite
+    fun hinf ↦ not_cliqueFree_of_infinite V f hc
+  apply (coloring V).colorable.mono
+  have := not_cliqueFree_of_le_card V f le_rfl
+  contrapose! this
+  exact hc.mono this
+
+end completeMultipartiteGraph
 end SimpleGraph

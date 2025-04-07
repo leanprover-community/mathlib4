@@ -91,13 +91,11 @@ instance orderedCancelCommMonoid : OrderedCancelCommMonoid (Localization s) wher
       exact le_of_mul_le_mul_left' hab
 
 @[to_additive]
-instance decidableLE [DecidableRel ((· ≤ ·) : α → α → Prop)] :
-    DecidableRel ((· ≤ ·) : Localization s → Localization s → Prop) := fun a b =>
+instance decidableLE [DecidableLE α] : DecidableLE (Localization s) := fun a b =>
   Localization.recOnSubsingleton₂ a b fun _ _ _ _ => decidable_of_iff' _ mk_le_mk
 
 @[to_additive]
-instance decidableLT [DecidableRel ((· < ·) : α → α → Prop)] :
-    DecidableRel ((· < ·) : Localization s → Localization s → Prop) := fun a b =>
+instance decidableLT [DecidableLT α] : DecidableLT (Localization s) := fun a b =>
   Localization.recOnSubsingleton₂ a b fun _ _ _ _ => decidable_of_iff' _ mk_lt_mk
 
 /-- An ordered cancellative monoid injects into its localization by sending `a` to `a / b`. -/
@@ -119,7 +117,7 @@ instance [LinearOrderedCancelCommMonoid α] {s : Submonoid α} :
         simp_rw [mk_le_mk]
         exact le_total _ _
     decidableLE := Localization.decidableLE
-    decidableLT := Localization.decidableLT  -- Porting note: was wrong in mathlib3
+    decidableLT := Localization.decidableLT
     decidableEq := Localization.decidableEq }
 
 end Localization

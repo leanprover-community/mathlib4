@@ -208,7 +208,7 @@ example (X Y Z : Type) (f : X → Y) (g : Y → Z) (H : Injective <| g ∘ f) :
 
 The function `f` is handled similarly to how it would be handled by `refine` in that `f` can contain
 placeholders. Named placeholders (like `?a` or `?_`) will produce new goals.
- -/
+-/
 syntax (name := applyFun) "apply_fun " term (location)? (" using " term)? : tactic
 
 elab_rules : tactic | `(tactic| apply_fun $f $[$loc]? $[using $P]?) => do

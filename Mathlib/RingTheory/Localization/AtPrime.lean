@@ -3,9 +3,13 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
+import Mathlib.RingTheory.Localization.Basic
 import Mathlib.RingTheory.Localization.Ideal
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 import Mathlib.Algebra.Group.Units.Hom
+import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
+import Mathlib.RingTheory.Ideal.Over
+import Mathlib.RingTheory.Spectrum.Prime.Defs
 
 /-!
 # Localizations of commutative rings at the complement of a prime ideal
@@ -38,25 +42,6 @@ section AtPrime
 
 variable (P : Ideal R) [hp : P.IsPrime]
 
-namespace Ideal
-
-/-- The complement of a prime ideal `P ⊆ R` is a submonoid of `R`. -/
-def primeCompl : Submonoid R where
-  carrier := (Pᶜ : Set R)
-  one_mem' := by convert P.ne_top_iff_one.1 hp.1
-  mul_mem' {_ _} hnx hny hxy := Or.casesOn (hp.mem_or_mem hxy) hnx hny
-
-theorem primeCompl_le_nonZeroDivisors [NoZeroDivisors R] : P.primeCompl ≤ nonZeroDivisors R :=
-  le_nonZeroDivisors_of_noZeroDivisors <| not_not_intro P.zero_mem
-
-lemma disjoint_map_primeCompl_iff_comap_le {S : Type*} [Semiring S] {f : R →+* S}
-    {p : Ideal R} {I : Ideal S} [p.IsPrime] :
-    Disjoint (I : Set S) (p.primeCompl.map f) ↔ I.comap f ≤ p := by
-  rw [disjoint_comm]
-  simp [Set.disjoint_iff, Set.ext_iff, Ideal.primeCompl, not_imp_not, SetLike.le_def]
-
-end Ideal
-
 /-- Given a prime ideal `P`, the typeclass `IsLocalization.AtPrime S P` states that `S` is
 isomorphic to the localization of `R` at the complement of `P`. -/
 protected abbrev IsLocalization.AtPrime :=
@@ -82,7 +67,7 @@ theorem AtPrime.isLocalRing [IsLocalization.AtPrime S P] : IsLocalRing S :=
   IsLocalRing.of_nonunits_add
     (by
       intro x y hx hy hu
-      cases' isUnit_iff_exists_inv.1 hu with z hxyz
+      obtain ⟨z, hxyz⟩ := isUnit_iff_exists_inv.1 hu
       have : ∀ {r : R} {s : P.primeCompl}, mk' S r s ∈ nonunits S → r ∈ P := fun {r s} =>
         not_imp_comm.1 fun nr => isUnit_iff_exists_inv.2 ⟨mk' S ↑s (⟨r, nr⟩ : P.primeCompl),
           mk'_mul_mk'_eq_one' _ _ <| show r ∈ P.primeCompl from nr⟩
@@ -210,7 +195,7 @@ localization of `R` at `J.comap f` to the localization of `S` at `J`.
 
 To make this definition more flexible, we allow any ideal `I` of `R` as input, together with a proof
 that `I = J.comap f`. This can be useful when `I` is not definitionally equal to `J.comap f`.
- -/
+-/
 noncomputable def localRingHom (J : Ideal P) [J.IsPrime] (f : R →+* P) (hIJ : I = J.comap f) :
     Localization.AtPrime I →+* Localization.AtPrime J :=
   IsLocalization.map (Localization.AtPrime J) f (le_comap_primeCompl_iff.mpr (ge_of_eq hIJ))
@@ -257,6 +242,22 @@ theorem localRingHom_comp {S : Type*} [CommSemiring S] (J : Ideal S) [hJ : J.IsP
 
 namespace AtPrime
 
+section
+
+variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
+
+noncomputable instance (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime] [P.LiesOver p] :
+  Algebra (Localization.AtPrime p) (Localization.AtPrime P) :=
+    (Localization.localRingHom p P (algebraMap A B) Ideal.LiesOver.over).toAlgebra
+
+instance (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime] [P.LiesOver p] :
+  IsScalarTower A (Localization.AtPrime p) (Localization.AtPrime P) := by
+    refine IsScalarTower.of_algebraMap_eq fun x ↦ ?_
+    simp only [RingHom.algebraMap_toAlgebra, RingHom.coe_comp, Function.comp_apply,
+      Localization.localRingHom_to_map, ← IsScalarTower.algebraMap_apply]
+
+end
+
 variable {ι : Type*} {R : ι → Type*} [∀ i, CommSemiring (R i)]
 variable {i : ι} (I : Ideal (R i)) [I.IsPrime]
 
@@ -279,3 +280,28 @@ theorem mapPiEvalRingHom_algebraMap_apply {r : Π i, R i} :
 end AtPrime
 
 end Localization
+
+variable {R : Type*} [CommRing R] (q : Ideal R) [q.IsPrime] {S : Type*} [CommRing S] [Algebra R S]
+    [IsLocalization.AtPrime S q]
+
+lemma Ideal.isPrime_map_of_isLocalizationAtPrime {p : Ideal R} [p.IsPrime] (hpq : p ≤ q) :
+    (p.map (algebraMap R S)).IsPrime := by
+  have disj : Disjoint (q.primeCompl : Set R) p := by
+    simp [Ideal.primeCompl, ← le_compl_iff_disjoint_left, hpq]
+  apply IsLocalization.isPrime_of_isPrime_disjoint q.primeCompl _ p (by simpa) disj
+
+lemma Ideal.under_map_of_isLocalizationAtPrime {p : Ideal R} [p.IsPrime] (hpq : p ≤ q) :
+    (p.map (algebraMap R S)).under R = p := by
+  have disj : Disjoint (q.primeCompl : Set R) p := by
+    simp [Ideal.primeCompl, ← le_compl_iff_disjoint_left, hpq]
+  exact IsLocalization.comap_map_of_isPrime_disjoint _ _ p (by simpa) disj
+
+lemma IsLocalization.subsingleton_primeSpectrum_of_mem_minimalPrimes
+    {R : Type*} [CommSemiring R] (p : Ideal R) (hp : p ∈ minimalPrimes R)
+    (S : Type*) [CommSemiring S] [Algebra R S] [IsLocalization.AtPrime S p (hp := hp.1.1)] :
+    Subsingleton (PrimeSpectrum S) :=
+  have := hp.1.1
+  have : Unique {i : Ideal R // i.IsPrime ∧ i ≤ p} := ⟨⟨p, hp.1.1, le_rfl⟩,
+    fun i ↦ Subtype.ext <| (minimalPrimes_eq_minimals (R := R) ▸ hp).eq_of_le i.2.1 i.2.2⟩
+  have := (IsLocalization.AtPrime.orderIsoOfPrime S p).subsingleton
+  ⟨fun x y ↦ PrimeSpectrum.ext congr($(this.1 ⟨_, x.2⟩ ⟨_, y.2⟩))⟩
