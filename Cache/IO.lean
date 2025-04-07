@@ -128,8 +128,12 @@ private def CacheM.mathlibDepPath (sp : SearchPath) : IO FilePath := do
     | throw <| IO.userError s!"Mathlib not found in dependencies"
   return mathlibSource
 
+def _root_.Lean.SearchPath.relativize (sp : SearchPath) : IO SearchPath := do
+  let pwd := (← IO.FS.realPath ".").toString ++ System.FilePath.pathSeparator.toString
+  return sp.map fun x => ⟨x.toString.stripPrefix pwd⟩
+
 private def CacheM.getContext : IO CacheM.Context := do
-  let sp ← initSrcSearchPath
+  let sp ← (← initSrcSearchPath).relativize
   let mathlibSource ← CacheM.mathlibDepPath sp
   return {
     mathlibDepPath := mathlibSource,
@@ -327,6 +331,7 @@ def packCache (hashMap : ModuleHashMap) (overwrite verbose unpackedOnly : Bool)
   IO.FS.createDirAll CACHEDIR
   IO.println "Compressing cache"
   let sp := (← read).srcSearchPath
+  println! (← IO.getEnv "LEAN_SRC_PATH")
   let mut acc := #[]
   let mut tasks := #[]
   for (mod, hash) in hashMap.toList do
