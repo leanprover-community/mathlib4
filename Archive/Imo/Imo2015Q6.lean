@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
 import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Data.Int.FinsetSumBounds
+import Mathlib.Algebra.Order.Group.Int.Sum
 
 /-!
 # IMO 2015 Q6
@@ -60,19 +60,6 @@ def pool (a : ℕ → ℤ) : ℕ → Finset ℤ
   | 0 => ∅
   | t + 1 => (insert (a t) ((pool a t).erase 0)).map (Equiv.subRight (1 : ℤ))
 
-/-- A bounded monotone function `ℕ → ℕ` converges. No topology is needed to prove this. -/
-lemma converges_of_monotone_of_bounded {f : ℕ → ℕ} (mono_f : Monotone f)
-    {c : ℕ} (hc : ∀ n, f n ≤ c) : ∃ b N, ∀ n ≥ N, f n = b := by
-  induction c with
-  | zero => use 0, 0, fun n _ ↦ Nat.eq_zero_of_le_zero (hc n)
-  | succ c ih =>
-    by_cases h : ∀ n, f n ≤ c
-    · exact ih h
-    · push_neg at h; obtain ⟨N, hN⟩ := h
-      replace hN : f N = c + 1 := by specialize hc N; omega
-      use c + 1, N; intro n hn
-      specialize mono_f hn; specialize hc n; omega
-
 variable {a : ℕ → ℤ} (ha : Condition a) {t : ℕ}
 
 section Pool
@@ -91,18 +78,16 @@ lemma exists_add_eq_of_mem_pool {z : ℤ} (hz : z ∈ pool a t) : ∃ u < t, u +
 include ha
 
 /-- The ball heights are always within `[0, 2014]`. -/
-lemma pool_subset_Icc : pool a t ⊆ Icc 0 2014 := by
-  induction t with
-  | zero => simp only [pool, empty_subset]
-  | succ t ih =>
+lemma pool_subset_Icc : ∀ {t}, pool a t ⊆ Icc 0 2014
+  | 0 => by simp [pool]
+  | t + 1 => by
     intro x hx
     simp_rw [pool, mem_map, Equiv.coe_toEmbedding, Equiv.subRight_apply] at hx
     obtain ⟨y, my, ey⟩ := hx
     suffices y ∈ Icc 1 2015 by rw [mem_Icc] at this ⊢; omega
     rw [mem_insert, mem_erase] at my; rcases my with h | ⟨h₁, h₂⟩
     · exact h ▸ ha.1 t
-    · replace h₂ := ih h₂
-      rw [mem_Icc] at h₂ ⊢; omega
+    · have := pool_subset_Icc h₂; rw [mem_Icc] at this ⊢; omega
 
 lemma not_mem_pool_self : a t ∉ pool a t := by
   by_contra h
@@ -111,7 +96,7 @@ lemma not_mem_pool_self : a t ∉ pool a t := by
 
 /-- The number of balls stays unchanged if there is a ball with height 0 and increases by 1
 otherwise. -/
-lemma card_pool : #(pool a (t + 1)) = #(pool a t) + if 0 ∈ pool a t then 0 else 1 := by
+lemma card_pool_succ : #(pool a (t + 1)) = #(pool a t) + if 0 ∈ pool a t then 0 else 1 := by
   have nms : a t ∉ (pool a t).erase 0 := by
     rw [mem_erase, not_and_or]; exact .inr (not_mem_pool_self ha)
   rw [pool, card_map, card_insert_of_not_mem nms, card_erase_eq_ite]
@@ -121,7 +106,7 @@ lemma card_pool : #(pool a (t + 1)) = #(pool a t) + if 0 ∈ pool a t then 0 els
 
 lemma monotone_card_pool : Monotone fun t ↦ #(pool a t) := by
   refine monotone_nat_of_le_succ fun t ↦ ?_
-  have := card_pool (t := t) ha; omega
+  have := card_pool_succ (t := t) ha; omega
 
 /-- There exists a point where the number of balls reaches a maximum (which follows from its
 monotonicity and boundedness). We take its coordinates for the problem's `b` and `N`. -/
@@ -145,12 +130,12 @@ lemma b_pos : 0 < b := by
       rwa [hbN _ le_rfl, nonpos_iff_eq_zero] at this
     · exact hbN _ h.le
   have cp1 : #(pool a 1) = 1 := by
-    simp_rw [card_pool ha, pool, card_empty, not_mem_empty, ite_false]
+    simp_rw [card_pool_succ ha, pool, card_empty, not_mem_empty, ite_false]
   apply absurd (hbN 1); omega
 
 include ht in
 lemma zero_mem_pool : 0 ∈ pool a t := by
-  have := card_pool (t := t) ha
+  have := card_pool_succ (t := t) ha
   have := hbN (t + 1) (by omega)
   simp_all
 
@@ -166,12 +151,11 @@ lemma sum_sub_sum_eq_sub : ∑ x ∈ pool a (t + 1), x - ∑ x ∈ pool a t, x =
 
 /-- The telescoping sum giving the part of the problem's expression within the modulus signs. -/
 lemma sum_telescope {m n : ℕ} (hm : N ≤ m) (hn : m < n) :
-    ∑ j ∈ Ico m n, (a j - b) = ∑ x ∈ pool a n, x - ∑ x ∈ pool a m, x := by
-  induction n, hn using Nat.le_induction with
-  | base => rw [sum_sub_sum_eq_sub ha hbN hm]; simp
-  | succ k lk ih =>
-    rw [sum_Ico_succ_top (by omega), ih, ← sum_sub_sum_eq_sub ha hbN (by omega)]
-    apply sub_add_sub_cancel'
+    ∑ j ∈ Ico m n, (a j - b) = ∑ x ∈ pool a n, x - ∑ x ∈ pool a m, x :=
+  calc
+    _ = ∑ j ∈ Ico m n, (∑ x ∈ pool a (j + 1), x - ∑ x ∈ pool a j, x) := by
+      congr! 1 with j hj; rw [sum_sub_sum_eq_sub ha hbN]; simp at hj; omega
+    _ = _ := sum_Ico_sub (∑ x ∈ pool a ·, x) hn.le
 
 include ht in
 lemma le_sum_pool : ∑ i ∈ range b, (i : ℤ) ≤ ∑ x ∈ pool a t, x := by

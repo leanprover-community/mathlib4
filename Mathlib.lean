@@ -778,6 +778,7 @@ import Mathlib.Algebra.Order.Group.Indicator
 import Mathlib.Algebra.Order.Group.InjSurj
 import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Algebra.Order.Group.Int
+import Mathlib.Algebra.Order.Group.Int.Sum
 import Mathlib.Algebra.Order.Group.Lattice
 import Mathlib.Algebra.Order.Group.MinMax
 import Mathlib.Algebra.Order.Group.Multiset
@@ -2914,7 +2915,6 @@ import Mathlib.Data.Int.Cast.Prod
 import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Int.ConditionallyCompleteOrder
 import Mathlib.Data.Int.DivMod
-import Mathlib.Data.Int.FinsetSumBounds
 import Mathlib.Data.Int.GCD
 import Mathlib.Data.Int.Init
 import Mathlib.Data.Int.Interval
