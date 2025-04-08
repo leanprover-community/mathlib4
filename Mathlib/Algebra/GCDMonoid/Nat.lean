@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 import Mathlib.Algebra.GCDMonoid.Basic
 import Mathlib.Algebra.Order.Group.Unbundled.Int
 import Mathlib.Algebra.Ring.Int.Units
-import Mathlib.Data.Int.GCD
 import Mathlib.Algebra.GroupWithZero.Nat
 
 /-!
