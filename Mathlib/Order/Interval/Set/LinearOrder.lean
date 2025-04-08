@@ -129,34 +129,34 @@ lemma Ici_eq_singleton_iff_isTop {x : α} : (Ici x = {x}) ↔ IsTop x := by
 
 @[simp]
 theorem Ioi_subset_Ioi_iff : Ioi b ⊆ Ioi a ↔ a ≤ b := by
-  refine ⟨fun h => ?_, fun h => Ioi_subset_Ioi h⟩
+  refine ⟨fun h => ?_, Ioi_subset_Ioi⟩
   by_contra ba
   exact lt_irrefl _ (h (not_le.mp ba))
 
 @[simp]
 theorem Ioi_ssubset_Ioi_iff : Ioi b ⊂ Ioi a ↔ a < b := by
-  refine ⟨fun h => ?_, fun h => Ioi_ssubset_Ioi h⟩
+  refine ⟨fun h => ?_, Ioi_ssubset_Ioi⟩
   obtain ⟨_, c, ac, cb⟩ := ssubset_iff_exists.mp h
-  exact lt_of_lt_of_le (by simpa using ac) (by simpa using cb)
+  exact ac.trans_le (le_of_not_lt cb)
 
 @[simp]
 theorem Ioi_subset_Ici_iff [DenselyOrdered α] : Ioi b ⊆ Ici a ↔ a ≤ b := by
-  refine ⟨fun h => ?_, fun h => Ioi_subset_Ici h⟩
+  refine ⟨fun h => ?_, Ioi_subset_Ici⟩
   by_contra ba
   obtain ⟨c, bc, ca⟩ : ∃ c, b < c ∧ c < a := exists_between (not_le.mp ba)
   exact lt_irrefl _ (ca.trans_le (h bc))
 
 @[simp]
 theorem Iio_subset_Iio_iff : Iio a ⊆ Iio b ↔ a ≤ b := by
-  refine ⟨fun h => ?_, fun h => Iio_subset_Iio h⟩
+  refine ⟨fun h => ?_, Iio_subset_Iio⟩
   by_contra ab
   exact lt_irrefl _ (h (not_le.mp ab))
 
 @[simp]
 theorem Iio_ssubset_Iio_iff : Iio a ⊂ Iio b ↔ a < b := by
-  refine ⟨fun h => ?_, fun h => Iio_ssubset_Iio h⟩
+  refine ⟨fun h => ?_, Iio_ssubset_Iio⟩
   obtain ⟨_, c, cb, ac⟩ := ssubset_iff_exists.mp h
-  exact lt_of_le_of_lt (by simpa using ac) (by simpa using cb)
+  exact (le_of_not_lt ac).trans_lt cb
 
 @[simp]
 theorem Iio_subset_Iic_iff [DenselyOrdered α] : Iio a ⊆ Iic b ↔ a ≤ b := by
