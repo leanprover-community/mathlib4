@@ -174,7 +174,7 @@ Also see `CategoryTheory.Over.ConstructProducts.conesEquiv` for the wide pullbac
 -/
 -- One could have used the following but it gives worse defeqs.
 -- `(Cones.postcomposeEquivalence (diagramIsoCospan _).symm).trans (conesEquiv _ (pair Y Z))`
-def pushoutCoconeEquivBinaryCofan : PullbackCone Y.hom Z.hom ≌ BinaryFan Y Z where
+def pullbackConeEquivBinaryFan : PullbackCone Y.hom Z.hom ≌ BinaryFan Y Z where
   functor :=
   { obj c := BinaryFan.mk (Over.homMk (U := Over.mk (c.fst ≫ Y.hom)) (V := Y) c.fst rfl)
       (Over.homMk (V := Z) c.snd c.condition.symm)
@@ -192,7 +192,7 @@ def pushoutCoconeEquivBinaryCofan : PullbackCone Y.hom Z.hom ≌ BinaryFan Y Z w
 -- `IsLimit.ofConeEquiv` isn't used here because the lift it defines is `𝟙 _ ≫ pullback.lift`.
 def isLimitPullbackConeEquivBinaryFanFunctorObj
     (c : PullbackCone Y.hom Z.hom) (hc : IsLimit c) :
-    IsLimit ((pushoutCoconeEquivBinaryCofan Y Z).functor.obj c) :=
+    IsLimit ((pullbackConeEquivBinaryFan Y Z).functor.obj c) :=
   BinaryFan.isLimitMk
     (fun s ↦ Over.homMk
         (hc.lift (PullbackCone.mk s.fst.left s.snd.left (s.fst.w.trans s.snd.w.symm)))
