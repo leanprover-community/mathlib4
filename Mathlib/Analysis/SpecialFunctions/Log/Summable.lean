@@ -40,7 +40,7 @@ lemma multipliable_of_summable_log' (hfn : ∀ᶠ i in cofinite, f i ≠ 0)
   have : Multipliable fun i ↦ if f i ≠ 0 then f i else 1 := by
     refine multipliable_of_summable_log (fun i ↦ ?_) this
     split_ifs with h <;> simp [h]
-  refine this.congr_cofinite' (fun i ↦ ?_) ?_
+  refine this.congr_cofinite₀ (fun i ↦ ?_) ?_
   · split_ifs with h <;> simp [h]
   · filter_upwards [hfn] with i hi using by simp [hi]
 
@@ -83,7 +83,7 @@ lemma multipliable_of_summable_log' (hfn : ∀ᶠ i in cofinite, 0 < f i)
   have : Multipliable fun i ↦ if 0 < f i then f i else 1 := by
     refine multipliable_of_summable_log (fun i ↦ ?_) this
     split_ifs with h <;> simp [h]
-  refine this.congr_cofinite' (fun i ↦ ?_) ?_
+  refine this.congr_cofinite₀ (fun i ↦ ?_) ?_
   · split_ifs with h <;> simp [h, ne_of_gt]
   · filter_upwards [hfn] with i hi using by simp [hi]
 
