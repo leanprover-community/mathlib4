@@ -20,6 +20,11 @@ set_option linter.style.refine false
 example : True := by
   refine' (by refine' .intro)
 
+set_option linter.style.refine false in
+-- This is quiet because `linter.style.refine` is now false, even using `in`.
+example : True := by
+  refine' (by refine' .intro)
+
 set_option linter.style.cases true
 /--
 warning: The `cases'` tactic is discouraged: please strongly consider using `obtain`, `rcases` or `cases` instead.
