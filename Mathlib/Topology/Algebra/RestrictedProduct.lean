@@ -268,7 +268,7 @@ instance [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)] :
 
 instance [Π i, CommRing (R i)] [∀ i, SubringClass (S i) (R i)] :
     CommRing (Πʳ i, [R i, B i]_[𝓕]) where
-  mul_comm _ _ := Subtype.eq <| funext (fun _ ↦ mul_comm _ _)
+  mul_comm _ _ := DFunLike.coe_injective <| funext (fun _ ↦ mul_comm _ _)
 
 end Algebra
 
