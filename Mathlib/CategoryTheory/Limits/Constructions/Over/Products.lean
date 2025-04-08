@@ -210,7 +210,7 @@ variable {Y Z}
 
 lemma isPullback_of_binaryFan_isLimit (c : BinaryFan Y Z) (hc : IsLimit c) :
     IsPullback c.fst.left c.snd.left Y.hom Z.hom :=
-  ⟨by simp, ⟨(IsLimit.ofConeEquiv (pushoutCoconeEquivBinaryCofan Y Z).symm).symm hc⟩⟩
+  ⟨by simp, ⟨(IsLimit.ofConeEquiv (pullbackConeEquivBinaryFan Y Z).symm).symm hc⟩⟩
 
 variable (Y Z) [HasPullback Y.hom Z.hom] [HasBinaryProduct Y Z]
 
