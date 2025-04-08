@@ -1176,7 +1176,7 @@ instance {M : Type*} [Monoid M] [IsMulCommutative M] :
 
 @[to_additive]
 instance {G : Type*} [Group G] [IsMulCommutative G] :
-    CommMonoid G where
+    CommGroup G where
 
 end IsCommutative
 
