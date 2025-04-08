@@ -131,7 +131,7 @@ open Ideal Finset Submodule in
 theorem exists_smodEq (pb : PowerBasis A B) (b : B) :
     ∃ a, SModEq (Ideal.span ({pb.gen})) b (algebraMap A B a) := by
   rcases subsingleton_or_nontrivial B
-  · exact ⟨0, by rw [SModEq, Subsingleton.eq_zero b, _root_.map_zero]⟩
+  · exact ⟨0, by rw [SModEq, Subsingleton.eq_zero b, map_zero]⟩
   refine ⟨pb.basis.repr b ⟨0, pb.dim_pos⟩, ?_⟩
   have H := pb.basis.sum_repr b
   rw [← insert_erase (mem_univ ⟨0, pb.dim_pos⟩), sum_insert (not_mem_erase _ _)] at H
@@ -311,7 +311,7 @@ noncomputable def liftEquiv (pb : PowerBasis A S) :
 
 /-- `pb.liftEquiv'` states that elements of the root set of the minimal
 polynomial of `pb.gen` correspond to maps sending `pb.gen` to that root. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 noncomputable def liftEquiv' [IsDomain B] (pb : PowerBasis A S) :
     (S →ₐ[A] B) ≃ { y : B // y ∈ (minpoly A pb.gen).aroots B } :=
   pb.liftEquiv.trans ((Equiv.refl _).subtypeEquiv fun x => by
@@ -331,7 +331,7 @@ where "the same" means that `pb` is a root of `pb'`s minimal polynomial and vice
 See also `PowerBasis.equivOfMinpoly` which takes the hypothesis that the
 minimal polynomials are identical.
 -/
-@[simps! (config := .lemmasOnly) apply]
+@[simps! -isSimp apply]
 noncomputable def equivOfRoot (pb : PowerBasis A S) (pb' : PowerBasis A S')
     (h₁ : aeval pb.gen (minpoly A pb'.gen) = 0) (h₂ : aeval pb'.gen (minpoly A pb.gen) = 0) :
     S ≃ₐ[A] S' :=
@@ -369,7 +369,7 @@ where "the same" means that they have identical minimal polynomials.
 See also `PowerBasis.equivOfRoot` which takes the hypothesis that each generator is a root of the
 other basis' minimal polynomial; `PowerBasis.equivOfRoot` is more general if `A` is not a field.
 -/
-@[simps! (config := .lemmasOnly) apply]
+@[simps! -isSimp apply]
 noncomputable def equivOfMinpoly (pb : PowerBasis A S) (pb' : PowerBasis A S')
     (h : minpoly A pb.gen = minpoly A pb'.gen) : S ≃ₐ[A] S' :=
   pb.equivOfRoot pb' (h ▸ minpoly.aeval _ _) (h.symm ▸ minpoly.aeval _ _)

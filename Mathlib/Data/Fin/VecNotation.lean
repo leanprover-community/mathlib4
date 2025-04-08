@@ -143,7 +143,6 @@ theorem tail_cons (x : α) (u : Fin m → α) : vecTail (vecCons x u) = u := by
   ext
   simp [vecTail]
 
-@[simp]
 theorem empty_val' {n' : Type*} (j : n') : (fun i => (![] : Fin 0 → n' → α) i j) = ![] :=
   empty_eq _
 
@@ -219,7 +218,7 @@ protected instance _root_.PiFin.toExpr [ToLevel.{u}] [ToExpr α] (n : ℕ) : ToE
       have et : Q(Fin $n → $eα) := toExpr (vecTail v)
       q(vecCons $eh $et) }
 
--- Porting note: the next decl is commented out. TODO(eric-wieser)
+-- TODO(eric-wieser): the next decl is commented out.
 
 -- /-- Convert a vector of pexprs to the pexpr constructing that vector. -/
 -- unsafe def _root_.pi_fin.to_pexpr : ∀ {n}, (Fin n → pexpr) → pexpr
@@ -255,9 +254,6 @@ theorem vecAppend_eq_ite {α : Type*} {o : ℕ} (ho : o = m + n) (u : Fin m → 
   simp only [eq_rec_constant]
   rfl
 
--- Porting note: proof was `rfl`, so this is no longer a `dsimp`-lemma
--- Could become one again with change to `Nat.ble`:
--- https://github.com/leanprover-community/mathlib4/pull/1741/files/#r1083902351
 @[simp]
 theorem vecAppend_apply_zero {α : Type*} {o : ℕ} (ho : o + 1 = m + 1 + n) (u : Fin (m + 1) → α)
     (v : Fin n → α) : vecAppend ho u v 0 = u 0 :=
@@ -312,7 +308,7 @@ theorem vecAlt1_vecAppend (v : Fin (n + 1) → α) :
   simp_rw [Function.comp, vecAlt1, vecAppend_eq_ite]
   cases n with
   | zero =>
-    cases' i with i hi
+    obtain ⟨i, hi⟩ := i
     simp only [Nat.zero_add, Nat.lt_one_iff] at hi; subst i; rfl
   | succ n =>
     split_ifs with h <;> congr

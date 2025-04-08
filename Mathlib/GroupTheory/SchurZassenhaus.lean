@@ -37,9 +37,8 @@ def QuotientDiff :=
       ⟨fun α => diff_self (MonoidHom.id H) α, fun h => by rw [← diff_inv, h, inv_one],
         fun h h' => by rw [← diff_mul_diff, h, h', one_mul]⟩)
 
-instance : Inhabited H.QuotientDiff := by
-  dsimp [QuotientDiff] -- Porting note: Added `dsimp`
-  infer_instance
+instance : Inhabited H.QuotientDiff :=
+  inferInstanceAs (Inhabited <| Quotient _)
 
 theorem smul_diff_smul' [hH : Normal H] (g : Gᵐᵒᵖ) :
     diff (MonoidHom.id H) (g • α) (g • β) =
@@ -65,7 +64,7 @@ noncomputable instance : MulAction G H.QuotientDiff where
     Quotient.map' (fun α => op g⁻¹ • α) fun α β h =>
       Subtype.ext
         (by
-          rwa [smul_diff_smul', coe_mk, coe_one, mul_eq_one_iff_eq_inv, mul_right_eq_self, ←
+          rwa [smul_diff_smul', coe_mk, coe_one, mul_eq_one_iff_eq_inv, mul_eq_left, ←
             coe_one, ← Subtype.ext_iff])
   mul_smul g₁ g₂ q :=
     Quotient.inductionOn' q fun T =>
@@ -83,7 +82,7 @@ theorem smul_diff' (h : H) :
   simp_rw [Subtype.ext_iff, MonoidHom.id_apply, coe_mul, mul_assoc, mul_right_inj]
   rw [smul_apply_eq_smul_apply_inv_smul, smul_eq_mul_unop, MulOpposite.unop_op, mul_left_inj,
     ← Subtype.ext_iff, Equiv.apply_eq_iff_eq, inv_smul_eq_iff]
-  exact self_eq_mul_right.mpr ((QuotientGroup.eq_one_iff _).mpr h.2)
+  exact left_eq_mul.mpr ((QuotientGroup.eq_one_iff _).mpr h.2)
 
 theorem eq_one_of_smul_eq_one (hH : Nat.Coprime (Nat.card H) H.index) (α : H.QuotientDiff)
     (h : H) : h • α = α → h = 1 :=

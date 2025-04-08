@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chriara Cimino, Christian Krause
 -/
 import Mathlib.Order.Closure
-import Mathlib.Order.CompleteLattice
+import Mathlib.Order.Hom.Bounded
 import Mathlib.Order.Hom.Lattice
 
 /-!
@@ -23,7 +23,7 @@ https://ncatlab.org/nlab/show/nucleus
 
 open Order InfHom
 
-variable {X : Type*} [CompleteLattice X]
+variable {X : Type*}
 
 /-- A nucleus is an inflationary idempotent `inf`-preserving endomorphism of a semilattice.
 In a frame, nuclei correspond to sublocales. -/ -- TODO: Formalise that claim
@@ -38,16 +38,18 @@ structure Nucleus (X : Type*) [SemilatticeInf X] extends InfHom X X where
   le_apply' (x : X) : x ≤ toFun x
 
 /-- `NucleusClass F X` states that F is a type of nuclei. -/
-class NucleusClass (F X : Type*) [SemilatticeInf X] [FunLike F X X] extends InfHomClass F X X :
-    Prop where
+class NucleusClass (F X : Type*) [SemilatticeInf X] [FunLike F X X] : Prop
+    extends InfHomClass F X X where
   /-- A nucleus is idempotent. -/
   idempotent (x : X) (f : F) : f (f x) ≤ f x
-  /-- A nucleus is increasing. -/
+  /-- A nucleus is inflationary. -/
   le_apply (x : X) (f : F) : x ≤ f x
 
 namespace Nucleus
 
-variable {n m : Nucleus X} {x y : X}
+section CompleteLattice
+
+variable [CompleteLattice X] {n m : Nucleus X} {x y : X}
 
 instance : FunLike (Nucleus X) X X where
   coe x := x.toFun
@@ -64,13 +66,15 @@ instance : NucleusClass (Nucleus X) X where
 
 /-- Every `Nucleus` is a `ClosureOperator`. -/
 def toClosureOperator (n : Nucleus X) : ClosureOperator X :=
-   ClosureOperator.mk' n (OrderHomClass.mono n) n.le_apply' n.idempotent'
+  ClosureOperator.mk' n (OrderHomClass.mono n) n.le_apply' n.idempotent'
 
 lemma idempotent : n (n x) = n x :=
   n.toClosureOperator.idempotent x
 
 lemma le_apply : x ≤ n x :=
   n.toClosureOperator.le_closure x
+
+lemma monotone : Monotone n := n.toClosureOperator.monotone
 
 lemma map_inf : n (x ⊓ y) = n x ⊓ n y :=
   InfHomClass.map_inf n x y
@@ -111,4 +115,86 @@ instance : BoundedOrder (Nucleus X) where
   bot_le _ _ := le_apply
   le_top _ _ := by simp
 
+instance : InfSet (Nucleus X) where
+  sInf s :=
+  { toFun x := ⨅ f ∈ s, f x,
+    map_inf' x y := by
+      simp only [InfHomClass.map_inf, le_antisymm_iff, le_inf_iff, le_iInf_iff]
+      refine ⟨⟨?_, ?_⟩, ?_⟩ <;> rintro f hf
+      · exact iInf₂_le_of_le f hf inf_le_left
+      · exact iInf₂_le_of_le f hf inf_le_right
+      · exact ⟨inf_le_of_left_le <| iInf₂_le f hf, inf_le_of_right_le <| iInf₂_le f hf⟩
+    idempotent' x := iInf₂_mono fun f hf ↦ (f.monotone <| iInf₂_le f hf).trans_eq f.idempotent
+    le_apply' x := by simp [le_apply] }
+
+@[simp] theorem sInf_apply (s : Set (Nucleus X)) (x : X) : sInf s x = ⨅ j ∈ s, j x := rfl
+
+@[simp] theorem iInf_apply {ι : Type*} (f : ι → (Nucleus X)) (x : X) : iInf f x = ⨅ j, f j x := by
+  rw [iInf, sInf_apply, iInf_range]
+
+instance : CompleteSemilatticeInf (Nucleus X) where
+  sInf_le := by simp +contextual [← coe_le_coe, Pi.le_def, iInf_le_iff]
+  le_sInf := by simp +contextual [← coe_le_coe, Pi.le_def]
+
+instance : CompleteLattice (Nucleus X) := completeLatticeOfCompleteSemilatticeInf (Nucleus X)
+
+@[simp] theorem inf_apply (m n : Nucleus X) (x : X) : (m ⊓ n) x = m x ⊓ n x := by
+  rw [← sInf_pair, sInf_apply, iInf_pair]
+
+end CompleteLattice
+section Frame
+variable [Order.Frame X] {n : Nucleus X} {x y : X}
+
+lemma map_himp_le : n (x ⇨ y) ≤ x ⇨ n y := by
+  rw [le_himp_iff]
+  calc
+    n (x ⇨ y) ⊓ x
+    _ ≤ n (x ⇨ y) ⊓ n x := by gcongr; exact n.le_apply
+    _ = n (y ⊓ x) := by rw [← map_inf, himp_inf_self]
+    _ ≤ n y := by gcongr; exact inf_le_left
+
+lemma map_himp_apply (n : Nucleus X) (x y : X) : n (x ⇨ n y) = x ⇨ n y :=
+  le_antisymm (map_himp_le.trans_eq <| by rw [n.idempotent]) n.le_apply
+
+instance : HImp (Nucleus X) where
+  himp m n :=
+  { toFun x := ⨅ y ≥ x, m y ⇨ n y
+    idempotent' x := le_iInf₂ fun y hy ↦
+      calc
+        ⨅ z ≥ ⨅ w ≥ x, m w ⇨ n w, m z ⇨ n z
+        _ ≤ m (m y ⇨ n y) ⇨ n (m y ⇨ n y) := iInf₂_le _ <| biInf_le _ hy
+        _ = m y ⇨ n y := by
+          rw [map_himp_apply, himp_himp, ← map_inf, inf_of_le_right (le_trans n.le_apply le_himp)]
+    map_inf' x y := by
+      simp only [and_assoc, le_antisymm_iff, le_inf_iff, le_iInf_iff]
+      refine ⟨fun z hxz ↦ iInf₂_le _ <| inf_le_of_left_le hxz,
+        fun z hyz ↦ iInf₂_le _ <| inf_le_of_right_le hyz, ?_⟩
+      have : Nonempty X := ⟨x⟩
+      simp only [iInf_inf, le_iInf_iff, le_himp_iff, iInf_le_iff, le_inf_iff, forall_and,
+        forall_const, and_imp]
+      intro k hxyk l hlx hly hlk
+      calc
+        l = (l ⊓ m (x ⊔ k)) ⊓ (l ⊓ m (y ⊔ k)) := by
+          rw [← inf_inf_distrib_left, ← map_inf, ← sup_inf_right, sup_eq_right.2 hxyk,
+            inf_eq_left.2 hlk]
+        _ ≤ n (x ⊔ k) ⊓ n (y ⊔ k) := by
+          gcongr; exacts [hlx (x ⊔ k) le_sup_left, hly (y ⊔ k) le_sup_left]
+        _ = n k := by rw [← map_inf, ← sup_inf_right, sup_eq_right.2 hxyk]
+    le_apply' := by
+      simpa using fun _ _ h ↦ inf_le_of_left_le <| h.trans n.le_apply }
+
+@[simp] theorem himp_apply (m n : Nucleus X) (x : X) : (m ⇨ n) x = ⨅ y ≥ x, m y ⇨ n y := rfl
+
+instance : HeytingAlgebra (Nucleus X) where
+  compl m := m ⇨ ⊥
+  le_himp_iff _ n _ := by
+    simpa [← coe_le_coe, Pi.le_def]
+      using ⟨fun h i ↦ h i i le_rfl, fun h i j _ ↦ (h j).trans' <| by gcongr⟩
+  himp_bot m := rfl
+
+instance : Order.Frame (Nucleus X) where
+   __ := Nucleus.instHeytingAlgebra
+   __ := Nucleus.instCompleteLattice
+
+end Frame
 end Nucleus

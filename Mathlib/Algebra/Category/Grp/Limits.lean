@@ -323,8 +323,8 @@ instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J CommGrp.{u} where
 /-- The category of commutative groups has all limits. -/
 @[to_additive "The category of additive commutative groups has all limits.",
   to_additive_relevant_arg 2]
-instance hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w, v} CommGrp.{u}
-  where has_limits_of_shape _ _ := { }
+instance hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w, v} CommGrp.{u} where
+  has_limits_of_shape _ _ := { }
 
 @[to_additive]
 instance hasLimits : HasLimits CommGrp.{u} :=

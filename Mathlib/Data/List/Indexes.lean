@@ -3,7 +3,7 @@ Copyright (c) 2020 Jannis Limperg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jannis Limperg
 -/
-import Mathlib.Data.List.Basic
+import Mathlib.Data.List.Induction
 
 /-!
 # Lemmas about List.*Idx functions.
@@ -55,7 +55,7 @@ theorem map_enumFrom_eq_zipWith : ∀ (l : List α) (n : ℕ) (f : ℕ → α �
       · rfl
       · contradiction
     rw [this]; rfl
-  · cases' l with head tail
+  · rcases l with - | ⟨head, tail⟩
     · contradiction
     · simp only [enumFrom_cons, map_cons, range_succ_eq_map, zipWith_cons_cons,
         Nat.zero_add, zipWith_map_left, true_and]
@@ -76,86 +76,11 @@ theorem get_mapIdx (l : List α) (f : ℕ → α → β) (i : ℕ) (h : i < l.le
     (l.mapIdx f).get ⟨i, h'⟩ = f i (l.get ⟨i, h⟩) := by
   simp [mapIdx_eq_zipIdx_map, enum_eq_zip_range]
 
-@[deprecated (since := "2024-08-19")] alias nthLe_mapIdx := get_mapIdx
-
 theorem mapIdx_eq_ofFn (l : List α) (f : ℕ → α → β) :
     l.mapIdx f = ofFn fun i : Fin l.length ↦ f (i : ℕ) (l.get i) := by
   induction l generalizing f with
   | nil => simp
   | cons _ _ IH => simp [IH]
-
-section deprecated
-
-/-- Lean3 `map_with_index` helper function -/
-@[deprecated "No deprecation message was provided." (since := "2024-08-15")]
-protected def oldMapIdxCore (f : ℕ → α → β) : ℕ → List α → List β
-  | _, []      => []
-  | k, a :: as => f k a :: List.oldMapIdxCore f (k + 1) as
-
-set_option linter.deprecated false in
-/-- Given a function `f : ℕ → α → β` and `as : List α`, `as = [a₀, a₁, ...]`, returns the list
-`[f 0 a₀, f 1 a₁, ...]`. -/
-@[deprecated "No deprecation message was provided." (since := "2024-08-15")]
-protected def oldMapIdx (f : ℕ → α → β) (as : List α) : List β :=
-  List.oldMapIdxCore f 0 as
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-08-15")]
-protected theorem oldMapIdxCore_eq (l : List α) (f : ℕ → α → β) (n : ℕ) :
-    l.oldMapIdxCore f n = l.oldMapIdx fun i a ↦ f (i + n) a := by
-  induction' l with hd tl hl generalizing f n
-  · rfl
-  · rw [List.oldMapIdx]
-    simp only [List.oldMapIdxCore, hl, Nat.add_left_comm, Nat.add_comm, Nat.add_zero]
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-08-15")]
-protected theorem oldMapIdxCore_append : ∀ (f : ℕ → α → β) (n : ℕ) (l₁ l₂ : List α),
-    List.oldMapIdxCore f n (l₁ ++ l₂) =
-    List.oldMapIdxCore f n l₁ ++ List.oldMapIdxCore f (n + l₁.length) l₂ := by
-  intros f n l₁ l₂
-  generalize e : (l₁ ++ l₂).length = len
-  revert n l₁ l₂
-  induction' len with len ih <;> intros n l₁ l₂ h
-  · have l₁_nil : l₁ = [] := by
-      cases l₁
-      · rfl
-      · contradiction
-    have l₂_nil : l₂ = [] := by
-      cases l₂
-      · rfl
-      · rw [List.length_append] at h; contradiction
-    simp only [l₁_nil, l₂_nil]; rfl
-  · cases' l₁ with head tail
-    · rfl
-    · simp only [List.oldMapIdxCore, List.append_eq, length_cons, cons_append,cons.injEq, true_and]
-      suffices n + Nat.succ (length tail) = n + 1 + tail.length by
-        rw [this]
-        apply ih (n + 1) _ _ _
-        simp only [cons_append, length_cons, length_append, Nat.succ.injEq] at h
-        simp only [length_append, h]
-      rw [Nat.add_assoc]; simp only [Nat.add_comm]
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-08-15")]
-protected theorem oldMapIdx_append : ∀ (f : ℕ → α → β) (l : List α) (e : α),
-    List.oldMapIdx f (l ++ [e]) = List.oldMapIdx f l ++ [f l.length e] := by
-  intros f l e
-  unfold List.oldMapIdx
-  rw [List.oldMapIdxCore_append f 0 l [e]]
-  simp only [Nat.zero_add]; rfl
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-08-15")]
-protected theorem new_def_eq_old_def :
-    ∀ (f : ℕ → α → β) (l : List α), l.mapIdx f = List.oldMapIdx f l := by
-  intro f
-  apply list_reverse_induction
-  · rfl
-  · intro l e h
-    rw [List.oldMapIdx_append, mapIdx_append_one, h]
-
-end deprecated
 
 end MapIdx
 
@@ -322,7 +247,7 @@ theorem mapIdxMAux'_eq_mapIdxMGo {α} (f : ℕ → α → m PUnit) (as : List α
   · simp only [mapIdxMAux', seqRight_eq, map_eq_pure_bind, seq_eq_bind, bind_pure_unit,
       LawfulMonad.bind_assoc, pure_bind, mapIdxM.go, seq_pure]
     generalize (f (Array.size arr) head) = head
-    have : (arr.push ⟨⟩).size = arr.size + 1 := Array.size_push arr ⟨⟩
+    have : (arr.push ⟨⟩).size = arr.size + 1 := Array.size_push _
     rw [← this, ih]
     simp only [seqRight_eq, map_eq_pure_bind, seq_pure, LawfulMonad.bind_assoc, pure_bind]
 

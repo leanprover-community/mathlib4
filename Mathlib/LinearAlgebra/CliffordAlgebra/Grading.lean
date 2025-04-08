@@ -78,7 +78,7 @@ theorem GradedAlgebra.lift_ι_eq (i' : ZMod 2) (x' : evenOdd Q i') :
     -- Porting note: added a second `by apply`
     lift Q ⟨by apply GradedAlgebra.ι Q, by apply GradedAlgebra.ι_sq_scalar Q⟩ x' =
       DirectSum.of (fun i => evenOdd Q i) i' x' := by
-  cases' x' with x' hx'
+  obtain ⟨x', hx'⟩ := x'
   dsimp only [Subtype.coe_mk, DirectSum.lof_eq_of]
   induction hx' using Submodule.iSup_induction' with
   | mem i x hx =>
@@ -148,7 +148,7 @@ theorem evenOdd_induction (n : ZMod 2) {motive : ∀ x, x ∈ evenOdd Q n → Pr
           motive (ι Q m₁ * ι Q m₂ * x)
             (zero_add n ▸ SetLike.mul_mem_graded (ι_mul_ι_mem_evenOdd_zero Q m₁ m₂) hx))
     (x : CliffordAlgebra Q) (hx : x ∈ evenOdd Q n) : motive x hx := by
-  apply Submodule.iSup_induction' (C := motive) _ _ (range_ι_pow 0 (Submodule.zero_mem _)) add
+  apply Submodule.iSup_induction' (motive := motive) _ _ (range_ι_pow 0 (Submodule.zero_mem _)) add
   refine Subtype.rec ?_
   simp_rw [ZMod.natCast_eq_iff, add_comm n.val]
   rintro n' ⟨k, rfl⟩ xv

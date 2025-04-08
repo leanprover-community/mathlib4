@@ -28,7 +28,7 @@ lemma root_X_pow_sub_C_pow (n : ℕ) (a : K) :
 
 lemma root_X_pow_sub_C_ne_zero {n : ℕ} (hn : 1 < n) (a : K) :
     (AdjoinRoot.root (X ^ n - C a)) ≠ 0 :=
-  mk_ne_zero_of_natDegree_lt (monic_X_pow_sub_C _ (Nat.not_eq_zero_of_lt hn))
+  mk_ne_zero_of_natDegree_lt (monic_X_pow_sub_C _ (Nat.ne_zero_of_lt hn))
     X_ne_zero <| by rwa [natDegree_X_pow_sub_C, natDegree_X]
 
 lemma root_X_pow_sub_C_ne_zero' {n : ℕ} {a : K} (hn : 0 < n) (ha : a ≠ 0) :
@@ -87,9 +87,9 @@ theorem pow_ne_of_irreducible_X_pow_sub_C {n : ℕ} {a : K}
     Nat.cast_injective.eq_iff] at hq
   exact hm' ((mul_eq_right₀ (mul_ne_zero_iff.mp hn).2).mp hq)
 
-/--Let `p` be a prime number. Let `K` be a field.
+/-- Let `p` be a prime number. Let `K` be a field.
 Let `t ∈ K` be an element which does not have a `p`th root in `K`.
-Then the polynomial `x ^ p - t` is irreducible over `K`.-/
+Then the polynomial `x ^ p - t` is irreducible over `K`. -/
 @[stacks 09HF "We proved the result without the condition that `K` is char p in 09HF."]
 theorem X_pow_sub_C_irreducible_of_prime {p : ℕ} (hp : p.Prime) {a : K} (ha : ∀ b : K, b ^ p ≠ a) :
     Irreducible (X ^ p - C a) := by

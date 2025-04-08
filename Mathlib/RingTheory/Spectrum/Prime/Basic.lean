@@ -3,8 +3,7 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Filippo A. E. Nuccio, Andrew Yang
 -/
-import Mathlib.LinearAlgebra.Finsupp.SumProd
-import Mathlib.RingTheory.Ideal.Prod
+import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
 import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.RingTheory.Noetherian.Basic
 import Mathlib.RingTheory.Spectrum.Prime.Defs
@@ -34,6 +33,10 @@ whereas we denote subsets of prime spectra with `t`, `t'`, etc...
 The contents of this file draw inspiration from <https://github.com/ramonfmir/lean-scheme>
 which has contributions from Ramon Fernandez Mir, Kevin Buzzard, Kenny Lau,
 and Chris Hughes (on an earlier repository).
+
+## References
+* [M. F. Atiyah and I. G. Macdonald, *Introduction to commutative algebra*][atiyah-macdonald]
+* [P. Samuel, *Algebraic Theory of Numbers*][samuel1967]
 -/
 
 -- A dividing line between this file and `Mathlib.RingTheory.Spectrum.Prime.Topology` is
@@ -206,6 +209,9 @@ theorem vanishingIdeal_zeroLocus_eq_radical (I : Ideal R) :
 theorem nilradical_eq_iInf : nilradical R = iInf asIdeal := by
   apply range_asIdeal R ▸ nilradical_eq_sInf R
 
+@[simp] theorem vanishingIdeal_univ : vanishingIdeal Set.univ = nilradical R := by
+  rw [vanishingIdeal, iInf_univ, nilradical_eq_iInf]
+
 @[simp]
 theorem zeroLocus_radical (I : Ideal R) : zeroLocus (I.radical : Set R) = zeroLocus I :=
   vanishingIdeal_zeroLocus_eq_radical I ▸ (gc R).l_u_l_eq_l I
@@ -281,18 +287,11 @@ theorem vanishingIdeal_eq_top_iff {s : Set (PrimeSpectrum R)} : vanishingIdeal s
   rw [← top_le_iff, ← subset_zeroLocus_iff_le_vanishingIdeal, Submodule.top_coe, zeroLocus_univ,
     Set.subset_empty_iff]
 
-theorem zeroLocus_eq_top_iff (s : Set R) :
-    zeroLocus s = ⊤ ↔ s ⊆ nilradical R := by
-  constructor
-  · intro h x hx
-    refine nilpotent_iff_mem_prime.mpr (fun J hJ ↦ ?_)
-    have hJz : ⟨J, hJ⟩ ∈ zeroLocus s := by
-      rw [h]
-      trivial
-    exact (mem_zeroLocus _ _).mpr hJz hx
-  · rw [eq_top_iff]
-    intro h p _
-    apply Set.Subset.trans h (nilradical_le_prime p.asIdeal)
+theorem zeroLocus_eq_univ_iff (s : Set R) :
+    zeroLocus s = Set.univ ↔ s ⊆ nilradical R := by
+  rw [← Set.univ_subset_iff, subset_zeroLocus_iff_subset_vanishingIdeal, vanishingIdeal_univ]
+
+@[deprecated (since := "2025-04-05")] alias zeroLocus_eq_top_iff := zeroLocus_eq_univ_iff
 
 theorem zeroLocus_sup (I J : Ideal R) :
     zeroLocus ((I ⊔ J : Ideal R) : Set R) = zeroLocus I ∩ zeroLocus J :=
@@ -404,6 +403,20 @@ instance {R : Type*} [Field R] : Unique (PrimeSpectrum R) where
   default := ⊥
   uniq x := PrimeSpectrum.ext ((IsSimpleOrder.eq_bot_or_eq_top _).resolve_right x.2.ne_top)
 
+/-- Also see `PrimeSpectrum.isClosed_singleton_iff_isMaximal` -/
+lemma isMax_iff {x : PrimeSpectrum R} :
+    IsMax x ↔ x.asIdeal.IsMaximal := by
+  refine ⟨fun hx ↦ ⟨⟨x.2.ne_top, fun I hI ↦ ?_⟩⟩, fun hx y e ↦ (hx.eq_of_le y.2.ne_top e).ge⟩
+  by_contra e
+  obtain ⟨m, hm, hm'⟩ := Ideal.exists_le_maximal I e
+  exact hx.not_lt (show x < ⟨m, hm.isPrime⟩ from hI.trans_le hm')
+
+lemma isMin_iff {x : PrimeSpectrum R} :
+    IsMin x ↔ x.asIdeal ∈ minimalPrimes R := by
+  show IsMin _ ↔ Minimal (fun q : Ideal R ↦ q.IsPrime ∧ ⊥ ≤ q) _
+  simp only [IsMin, Minimal, x.2, bot_le, and_self, and_true, true_and]
+  exact ⟨fun H y hy e ↦ @H ⟨y, hy⟩ e, fun H y e ↦ H y.2 e⟩
+
 end Order
 
 section Noetherian
@@ -414,7 +427,7 @@ variable (R : Type u) [CommRing R] [IsNoetherianRing R]
 variable {A : Type u} [CommRing A] [IsDomain A] [IsNoetherianRing A]
 
 /-- In a noetherian ring, every ideal contains a product of prime ideals
-([samuel, § 3.3, Lemma 3])-/
+([samuel1967, § 3.3, Lemma 3]). -/
 theorem exists_primeSpectrum_prod_le (I : Ideal R) :
     ∃ Z : Multiset (PrimeSpectrum R), Multiset.prod (Z.map asIdeal) ≤ I := by
   -- Porting note: Need to specify `P` explicitly
@@ -446,7 +459,7 @@ theorem exists_primeSpectrum_prod_le (I : Ideal R) :
 
 /-- In a noetherian integral domain which is not a field, every non-zero ideal contains a non-zero
   product of prime ideals; in a field, the whole ring is a non-zero ideal containing only 0 as
-  product or prime ideals ([samuel, § 3.3, Lemma 3]) -/
+  product or prime ideals ([samuel1967, § 3.3, Lemma 3]) -/
 theorem exists_primeSpectrum_prod_le_and_ne_bot_of_domain (h_fA : ¬IsField A) {I : Ideal A}
     (h_nzI : I ≠ ⊥) :
     ∃ Z : Multiset (PrimeSpectrum A),
@@ -491,158 +504,3 @@ end Noetherian
 end CommSemiRing
 
 end PrimeSpectrum
-
-open PrimeSpectrum
-
-/-- The pullback of an element of `PrimeSpectrum S` along a ring homomorphism `f : R →+* S`.
-The bundled continuous version is `PrimeSpectrum.comap`. -/
-abbrev RingHom.specComap {R S : Type*} [CommSemiring R] [CommSemiring S] (f : R →+* S) :
-    PrimeSpectrum S → PrimeSpectrum R :=
-  fun y => ⟨Ideal.comap f y.asIdeal, inferInstance⟩
-
-namespace PrimeSpectrum
-
-open RingHom
-
-variable {R S} {S' : Type*} [CommSemiring R] [CommSemiring S] [CommSemiring S']
-
-theorem preimage_specComap_zeroLocus_aux (f : R →+* S) (s : Set R) :
-    f.specComap ⁻¹' zeroLocus s = zeroLocus (f '' s) := by
-  ext x
-  simp only [mem_zeroLocus, Set.image_subset_iff, Set.mem_preimage, mem_zeroLocus, Ideal.coe_comap]
-
-variable (f : R →+* S)
-
-@[simp]
-theorem specComap_asIdeal (y : PrimeSpectrum S) :
-    (f.specComap y).asIdeal = Ideal.comap f y.asIdeal :=
-  rfl
-
-@[simp]
-theorem specComap_id : (RingHom.id R).specComap = fun x => x :=
-  rfl
-
-@[simp]
-theorem specComap_comp (f : R →+* S) (g : S →+* S') :
-    (g.comp f).specComap = f.specComap.comp g.specComap :=
-  rfl
-
-theorem specComap_comp_apply (f : R →+* S) (g : S →+* S') (x : PrimeSpectrum S') :
-    (g.comp f).specComap x = f.specComap (g.specComap x) :=
-  rfl
-
-@[simp]
-theorem preimage_specComap_zeroLocus (s : Set R) :
-    f.specComap ⁻¹' zeroLocus s = zeroLocus (f '' s) :=
-  preimage_specComap_zeroLocus_aux f s
-
-theorem specComap_injective_of_surjective (f : R →+* S) (hf : Function.Surjective f) :
-    Function.Injective f.specComap := fun x y h =>
-  PrimeSpectrum.ext
-    (Ideal.comap_injective_of_surjective f hf
-      (congr_arg PrimeSpectrum.asIdeal h : (f.specComap x).asIdeal = (f.specComap y).asIdeal))
-
-/-- `RingHom.specComap` of an isomorphism of rings as an equivalence of their prime spectra. -/
-@[simps apply symm_apply]
-def comapEquiv (e : R ≃+* S) : PrimeSpectrum R ≃ PrimeSpectrum S where
-  toFun := e.symm.toRingHom.specComap
-  invFun := e.toRingHom.specComap
-  left_inv x := by
-    rw [← specComap_comp_apply, RingEquiv.toRingHom_eq_coe,
-      RingEquiv.toRingHom_eq_coe, RingEquiv.symm_comp]
-    rfl
-  right_inv x := by
-    rw [← specComap_comp_apply, RingEquiv.toRingHom_eq_coe,
-      RingEquiv.toRingHom_eq_coe, RingEquiv.comp_symm]
-    rfl
-
-section Pi
-
-variable {ι} (R : ι → Type*) [∀ i, CommSemiring (R i)]
-
-/-- The canonical map from a disjoint union of prime spectra of commutative semirings to
-the prime spectrum of the product semiring. -/
-/- TODO: show this is always a topological embedding (even when ι is infinite)
-and is a homeomorphism when ι is finite. -/
-@[simps] def sigmaToPi : (Σ i, PrimeSpectrum (R i)) → PrimeSpectrum (Π i, R i)
-  | ⟨i, p⟩ => (Pi.evalRingHom R i).specComap p
-
-theorem sigmaToPi_injective : (sigmaToPi R).Injective := fun ⟨i, p⟩ ⟨j, q⟩ eq ↦ by
-  classical
-  obtain rfl | ne := eq_or_ne i j
-  · congr; ext x
-    simpa using congr_arg (Function.update (0 : ∀ i, R i) i x ∈ ·.asIdeal) eq
-  · refine (p.1.ne_top_iff_one.mp p.2.ne_top ?_).elim
-    have : Function.update (1 : ∀ i, R i) j 0 ∈ (sigmaToPi R ⟨j, q⟩).asIdeal := by simp
-    simpa [← eq, Function.update_of_ne ne]
-
-variable [Infinite ι] [∀ i, Nontrivial (R i)]
-
-/-- An infinite product of nontrivial commutative semirings has a maximal ideal outside of the
-range of `sigmaToPi`, i.e. is not of the form `πᵢ⁻¹(𝔭)` for some prime `𝔭 ⊂ R i`, where
-`πᵢ : (Π i, R i) →+* R i` is the projection. For a complete description of all prime ideals,
-see https://math.stackexchange.com/a/1563190. -/
-theorem exists_maximal_nmem_range_sigmaToPi_of_infinite :
-    ∃ (I : Ideal (Π i, R i)) (_ : I.IsMaximal), ⟨I, inferInstance⟩ ∉ Set.range (sigmaToPi R) := by
-  classical
-  let J : Ideal (Π i, R i) := -- `J := Π₀ i, R i` is an ideal in `Π i, R i`
-  { __ := AddMonoidHom.mrange DFinsupp.coeFnAddMonoidHom
-    smul_mem' := by
-      rintro r _ ⟨x, rfl⟩
-      refine ⟨.mk x.support fun i ↦ r i * x i, funext fun i ↦ show dite _ _ _ = _ from ?_⟩
-      simp_rw [DFinsupp.coeFnAddMonoidHom]
-      refine dite_eq_left_iff.mpr fun h ↦ ?_
-      rw [DFinsupp.not_mem_support_iff.mp h, mul_zero] }
-  have ⟨I, max, le⟩ := J.exists_le_maximal <| (Ideal.ne_top_iff_one _).mpr <| by
-    -- take a maximal ideal I containing J
-    rintro ⟨x, hx⟩
-    have ⟨i, hi⟩ := x.support.exists_not_mem
-    simpa [DFinsupp.coeFnAddMonoidHom, DFinsupp.not_mem_support_iff.mp hi] using congr_fun hx i
-  refine ⟨I, max, fun ⟨⟨i, p⟩, eq⟩ ↦ ?_⟩
-  -- then I is not in the range of `sigmaToPi`
-  have : ⇑(DFinsupp.single i 1) ∉ (sigmaToPi R ⟨i, p⟩).asIdeal := by
-    simpa using p.1.ne_top_iff_one.mp p.2.ne_top
-  rw [eq] at this
-  exact this (le ⟨.single i 1, rfl⟩)
-
-theorem sigmaToPi_not_surjective_of_infinite : ¬ (sigmaToPi R).Surjective := fun surj ↦
-  have ⟨_, _, nmem⟩ := exists_maximal_nmem_range_sigmaToPi_of_infinite R
-  (Set.range_eq_univ.mpr surj ▸ nmem) ⟨⟩
-
-end Pi
-
-end PrimeSpectrum
-
-section SpecOfSurjective
-
-open Function RingHom
-
-variable [CommRing R] [CommRing S]
-variable (f : R →+* S)
-variable {R}
-
-theorem image_specComap_zeroLocus_eq_zeroLocus_comap (hf : Surjective f) (I : Ideal S) :
-    f.specComap '' zeroLocus I = zeroLocus (I.comap f) := by
-  simp only [Set.ext_iff, Set.mem_image, mem_zeroLocus, SetLike.coe_subset_coe]
-  refine fun p => ⟨?_, fun h_I_p => ?_⟩
-  · rintro ⟨p, hp, rfl⟩ a ha
-    exact hp ha
-  · have hp : ker f ≤ p.asIdeal := (Ideal.comap_mono bot_le).trans h_I_p
-    refine ⟨⟨p.asIdeal.map f, Ideal.map_isPrime_of_surjective hf hp⟩, fun x hx => ?_, ?_⟩
-    · obtain ⟨x', rfl⟩ := hf x
-      exact Ideal.mem_map_of_mem f (h_I_p hx)
-    · ext x
-      rw [specComap_asIdeal, Ideal.mem_comap, Ideal.mem_map_iff_of_surjective f hf]
-      refine ⟨?_, fun hx => ⟨x, hx, rfl⟩⟩
-      rintro ⟨x', hx', heq⟩
-      rw [← sub_sub_cancel x' x]
-      refine p.asIdeal.sub_mem hx' (hp ?_)
-      rwa [mem_ker, map_sub, sub_eq_zero]
-
-theorem range_specComap_of_surjective (hf : Surjective f) :
-    Set.range f.specComap = zeroLocus (ker f) := by
-  rw [← Set.image_univ]
-  convert image_specComap_zeroLocus_eq_zeroLocus_comap _ _ hf _
-  rw [zeroLocus_bot]
-
-end SpecOfSurjective

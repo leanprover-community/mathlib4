@@ -48,8 +48,9 @@ variable (p : 𝕜[X]) (q : R[X])
 protected theorem hasStrictDerivAt (x : 𝕜) :
     HasStrictDerivAt (fun x => p.eval x) (p.derivative.eval x) x := by
   induction p using Polynomial.induction_on' with
-  | h_add p q hp hq => simpa using hp.add hq
-  | h_monomial n a => simpa [mul_assoc] using (hasStrictDerivAt_pow n x).const_mul a
+  | add p q hp hq => simpa using hp.add hq
+  | monomial n a => simpa [mul_assoc, derivative_monomial]
+                      using (hasStrictDerivAt_pow n x).const_mul a
 
 protected theorem hasStrictDerivAt_aeval (x : 𝕜) :
     HasStrictDerivAt (fun x => aeval x q) (aeval x (derivative q)) x := by

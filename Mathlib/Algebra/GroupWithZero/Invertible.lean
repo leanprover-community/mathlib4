@@ -25,8 +25,6 @@ theorem Invertible.ne_zero [MulZeroOneClass α] (a : α) [Nontrivial α] [Invert
       0 = ⅟ a * a := by simp [ha]
       _ = 1 := invOf_mul_self
 
-@[deprecated (since := "2024-08-15")] alias nonzero_of_invertible := Invertible.ne_zero
-
 instance (priority := 100) Invertible.toNeZero [MulZeroOneClass α] [Nontrivial α] (a : α)
     [Invertible a] : NeZero a :=
   ⟨Invertible.ne_zero a⟩
