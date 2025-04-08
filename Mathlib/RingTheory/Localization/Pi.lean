@@ -78,8 +78,8 @@ theorem bijective_lift_piRingHom_algebraMap_comp_piEvalRingHom [IsLocalization M
   (ringEquivOfRingEquiv (M := M) (T := M) _ _ (.refl _) <|
     Submonoid.map_equiv_eq_comap_symm _ _).bijective
 
-open Function
-open Ideal
+open Function Ideal
+
 include M in
 lemma surjective_piRingHom_algebraMap_comp_piEvalRingHom_krullDimLE_zero_and_isLocalRing
     [∀ i, Ring.KrullDimLE 0 (R i)] [∀i, IsLocalRing (R i)] :
