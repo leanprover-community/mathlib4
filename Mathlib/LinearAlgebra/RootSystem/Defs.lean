@@ -99,8 +99,10 @@ structure RootPairing extends PerfectPairing R M N where
 /-- A root datum is a root pairing with coefficients in the integers and for which the root and
 coroot spaces are finitely-generated free Abelian groups.
 
-Note that the latter assumptions `[Free ℤ X₁] [Finite ℤ X₁] [Free ℤ X₂] [Finite ℤ X₂]` should be
-supplied as mixins. -/
+Note that the latter assumptions `[Finite ℤ X₁] [Finite ℤ X₂]` should be supplied as mixins, and
+that freeness follow automatically since two finitely-generated Abelian groups in perfect pairing
+are necessarily free. Moreover Lean knows this, e.g., via `PerfectPairing.reflexive_left`,
+`Module.instNoZeroSMulDivisorsOfIsDomain`, `Module.free_of_finite_type_torsion_free'`. -/
 abbrev RootDatum (X₁ X₂ : Type*) [AddCommGroup X₁] [AddCommGroup X₂] := RootPairing ι ℤ X₁ X₂
 
 /-- A root system is a root pairing for which the roots and coroots span their ambient modules.
