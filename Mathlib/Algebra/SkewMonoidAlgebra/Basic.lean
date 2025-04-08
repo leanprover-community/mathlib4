@@ -46,9 +46,9 @@ namespace SkewMonoidAlgebra
 
 variable {k G : Type*}
 
-section AddCommMonoid
+section AddMonoid
 
-variable [AddCommMonoid k]
+variable [AddMonoid k]
 
 @[simp]
 theorem eta (f : SkewMonoidAlgebra k G) : ofFinsupp f.toFinsupp = f := rfl
@@ -69,7 +69,7 @@ instance : Add (SkewMonoidAlgebra k G) := ⟨add⟩
 instance {S : Type*} [SMulZeroClass S k] :
     SMulZeroClass S (SkewMonoidAlgebra k G) where
   smul s f := smul s f
-  smul_zero a := by simp only [smul]; exact congr_arg ofFinsupp (smul_zero a)
+  smul_zero a := by exact congr_arg ofFinsupp (smul_zero a)
 
 @[simp]
 theorem ofFinsupp_zero : (⟨0⟩ : SkewMonoidAlgebra k G) = 0 := rfl
@@ -99,7 +99,6 @@ theorem toFinsupp_smul {S : Type*} [SMulZeroClass S k] (a : S) (b : SkewMonoidAl
 theorem _root_.IsSMulRegular.skewMonoidAlgebra {S : Type*} [Monoid S] [DistribMulAction S k] {a : S}
     (ha : IsSMulRegular k a) : IsSMulRegular (SkewMonoidAlgebra k G) a
   | ⟨_⟩, ⟨_⟩, h => by
-    simp only [← ofFinsupp_smul] at h
     exact congr_arg _ <| ha.finsupp (ofFinsupp.inj h)
 
 theorem toFinsupp_injective :
@@ -114,17 +113,17 @@ theorem ofFinsupp_injective :
     Function.Injective (ofFinsupp : Finsupp _ _ → SkewMonoidAlgebra k G) :=
   fun _ _ ↦ congr_arg toFinsupp
 
-/-- A more convenient spelling of `SkewMonoidAlgebra.ofFinsupp.injEq` in terms of `Iff`. -/
+/-- A more convenient spelling of `SkewMonoidAlgebra.ofFinsupp_injective` in terms of `Iff`. -/
 theorem ofFinsupp_inj {a b} : (⟨a⟩ : SkewMonoidAlgebra k G) = ⟨b⟩ ↔ a = b :=
   ofFinsupp_injective.eq_iff
 
 @[simp]
-theorem toFinsupp_eq_zero {a : SkewMonoidAlgebra k G} : a.toFinsupp = 0 ↔ a = 0 := by
-  rw [← toFinsupp_zero, toFinsupp_inj]
+theorem toFinsupp_eq_zero {a : SkewMonoidAlgebra k G} : a.toFinsupp = 0 ↔ a = 0 :=
+  toFinsupp_inj
 
 @[simp]
-theorem ofFinsupp_eq_zero {a} : (⟨a⟩ : SkewMonoidAlgebra k G) = 0 ↔ a = 0 := by
-  rw [← ofFinsupp_zero, ofFinsupp_inj]
+theorem ofFinsupp_eq_zero {a} : (⟨a⟩ : SkewMonoidAlgebra k G) = 0 ↔ a = 0 :=
+  ofFinsupp_inj
 
 instance : Inhabited (SkewMonoidAlgebra k G) := ⟨0⟩
 
@@ -134,12 +133,9 @@ instance [Nontrivial k] [Nonempty G] :
 instance [Subsingleton k] : Unique (SkewMonoidAlgebra k G) :=
   Function.Injective.unique toFinsupp_injective
 
-instance : AddCommMonoid (SkewMonoidAlgebra k G) where
-  __ := toFinsupp_injective.addCommMonoid _ toFinsupp_zero toFinsupp_add
+instance : AddMonoid (SkewMonoidAlgebra k G) where
+  __ := toFinsupp_injective.addMonoid _ toFinsupp_zero toFinsupp_add
     (fun _ _ ↦ toFinsupp_smul _ _)
-  toAdd  := SkewMonoidAlgebra.instAdd
-  toZero := SkewMonoidAlgebra.instZero
-  nsmul  := (· • ·)
 
 section Support
 
@@ -160,7 +156,7 @@ theorem support_zero : (0 : SkewMonoidAlgebra k G).support = ∅ := rfl
 
 @[simp]
 theorem support_eq_empty {p} : p.support = ∅ ↔ (p : SkewMonoidAlgebra k G) = 0 := by
-  rcases p with ⟨⟩
+  rcases p
   simp only [support, Finsupp.support_eq_empty, ofFinsupp_eq_zero]
 
 end Support
@@ -242,20 +238,18 @@ theorem coeff_single_apply {a a' : G} {b : k} [Decidable (a = a')] :
   simp [coeff, Finsupp.single_apply]
 
 theorem single_zero_right (a : G) : single a (0 : k) = 0 := by
-  ext a'; classical
-  by_cases h : a = a' <;> (rw [coeff_single_apply]; simp only [h, ↓reduceIte, coeff_zero])
+  simp [← toFinsupp_inj]
 
 @[simp]
 theorem single_add (a : G) (b₁ b₂ : k) : single a (b₁ + b₂) = single a b₁ + single a b₂ := by
-  simp_rw [single, Finsupp.single_add]
-  rw [← toFinsupp_add]
+  simp [← toFinsupp_inj]
 
 @[simp]
 theorem single_zero (a : G) : (single a 0 : SkewMonoidAlgebra k G) = 0 := by
-  rw [ofFinsupp_eq_zero, single, Finsupp.single_zero]
+  simp [← toFinsupp_inj]
 
 theorem single_eq_zero {a : G} {b : k} : single a b = 0 ↔ b = 0 := by
-  rw [ofFinsupp_eq_zero, single, Finsupp.single_eq_zero]
+  simp [← toFinsupp_inj]
 
 /-- Group isomorphism between `SkewMonoidAlgebra k G` and `G →₀ k`. This is an
 implementation detail, but it can be useful to transfer results from `Finsupp`
@@ -284,13 +278,20 @@ theorem _root_.IsSMulRegular.skewMonoidAlgebra_iff {S : Type*} [Monoid S] [Distr
 
 end Single
 
+end AddMonoid
+
+section AddMonoidWithOne
+
 section One
 
-variable [One G] [One k]
+variable [One G] [AddMonoidWithOne k]
 
 /-- The unit of the multiplication is `single 1 1`, i.e. the function that is `1` at `1` and
   zero elsewhere. -/
-instance : One (SkewMonoidAlgebra k G) := ⟨single 1 1⟩
+instance : One (SkewMonoidAlgebra k G) where
+  one := single 1 1
+
+instance : AddMonoidWithOne (SkewMonoidAlgebra k G) where
 
 theorem ofFinsupp_one : (⟨Finsupp.single 1 1⟩ : SkewMonoidAlgebra k G) = 1 := rfl
 
@@ -300,12 +301,12 @@ theorem toFinsupp_one : (1 : SkewMonoidAlgebra k G).toFinsupp = Finsupp.single 1
 @[simp]
 theorem toFinsupp_eq_single_one_one_iff {a : SkewMonoidAlgebra k G} :
     a.toFinsupp = Finsupp.single 1 1 ↔ a = 1 := by
-  rw [← toFinsupp_one, toFinsupp_inj]
+  simp [← toFinsupp_inj]
 
 @[simp]
 theorem ofFinsupp_eq_one {a} :
     (⟨a⟩ : SkewMonoidAlgebra k G) = 1 ↔ a = Finsupp.single 1 1 := by
-  rw [← ofFinsupp_one, ofFinsupp_inj]
+  simp [← toFinsupp_inj]
 
 @[simp]
 theorem single_one_one  : single (1 : G) (1 : k) = 1 := rfl
@@ -319,10 +320,25 @@ theorem coeff_one_one : coeff (1 : SkewMonoidAlgebra k G) 1 = 1 := by
 theorem coeff_one {a : G} [Decidable (a = 1)] :
     (1 : SkewMonoidAlgebra k G).coeff a = if a = 1 then 1 else 0 := by
   classical
-  simp_rw [eq_comm (a := a) (b := 1)]
-  simpa using coeff_single_apply
+  simpa [eq_comm (a := a)] using coeff_single_apply
+
+theorem natCast_def (n : ℕ) : (n : SkewMonoidAlgebra k G) = single (1 : G) (n : k) := by
+  induction n <;> simp_all
+
+@[simp]
+lemma single_nat (n : ℕ) : (single 1 n : SkewMonoidAlgebra k G) = n := (natCast_def _).symm
 
 end One
+
+end AddMonoidWithOne
+
+section AddCommMonoid
+
+variable [AddCommMonoid k]
+
+instance : AddCommMonoid (SkewMonoidAlgebra k G) where
+  __ := toFinsupp_injective.addCommMonoid _ toFinsupp_zero toFinsupp_add
+    (fun _ _ ↦ toFinsupp_smul _ _)
 
 section sum
 
@@ -453,6 +469,7 @@ such that `f x = a`. -/
 def mapDomain {G' : Type*} (f : G → G') (v : SkewMonoidAlgebra k G) : SkewMonoidAlgebra k G' :=
   v.sum fun a ↦ single (f a)
 
+@[simp]
 lemma toFinsupp_mapDomain {G' : Type*} (f : G → G') (v : SkewMonoidAlgebra k G) :
     (mapDomain f v).toFinsupp = Finsupp.mapDomain f v.toFinsupp := by
   simp_rw [mapDomain, Finsupp.mapDomain, toFinsupp_sum', single]
@@ -481,8 +498,8 @@ theorem mapDomain_sum {k' G' : Type*} [AddCommMonoid k'] {f : G → G'} {s : Ske
       map_zero' := mapDomain_zero
       map_add' _ _ := mapDomain_add: SkewMonoidAlgebra k G →+ SkewMonoidAlgebra k G'} _ _
 
-theorem sum_mapDomain_index {G G' k k' : Type*}
-    [Semiring k] [AddCommMonoid k'] {f : G → G'} {s : SkewMonoidAlgebra k G} {h : G' → k → k'}
+theorem sum_mapDomain_index {G G' k' : Type*}
+    [AddCommMonoid k'] {f : G → G'} {s : SkewMonoidAlgebra k G} {h : G' → k → k'}
     (h_zero : ∀ (b : G'), h b 0 = 0)
     (h_add : ∀ (b : G') (m₁ m₂ : k), h b (m₁ + m₂) = h b m₁ + h b m₂) :
     sum (mapDomain f s) h = sum s fun a m ↦ h (f a) m :=
@@ -494,8 +511,7 @@ theorem mapDomain_single {G' : Type*} {f : G → G'} {a : G} {b : k} :
 
 theorem mapDomain_smul {k G G' R : Type*} [Monoid R] [AddCommMonoid k] [DistribMulAction R k]
     {f : G → G'} (b : R) (v : SkewMonoidAlgebra k G) : mapDomain f (b • v) = b • mapDomain f v := by
-  apply toFinsupp_injective
-  simp only [toFinsupp_mapDomain, toFinsupp_smul, Finsupp.mapDomain_smul]
+  simp [← toFinsupp_inj, Finsupp.mapDomain_smul]
 
 /-- A non-commutative version of `SkewMonoidAlgebra.lift`: given an additive homomorphism
 `f : k →+ R` and a homomorphism `g : G → R`, returns the additive homomorphism from
@@ -520,9 +536,9 @@ end mapDomain
 
 end AddCommMonoid
 
-section AddCommGroup
+section AddGroup
 
-variable [AddCommGroup k]
+variable [AddGroup k]
 
 private irreducible_def neg : SkewMonoidAlgebra k G → SkewMonoidAlgebra k G
   | ⟨a⟩ => ⟨-a⟩
@@ -530,27 +546,53 @@ private irreducible_def neg : SkewMonoidAlgebra k G → SkewMonoidAlgebra k G
 instance : Neg (SkewMonoidAlgebra k G) :=
   ⟨neg⟩
 
-instance : Sub (SkewMonoidAlgebra k G) :=
-  ⟨fun a b ↦ a + -b⟩
-
 @[simp]
 theorem ofFinsupp_neg {a} : (⟨-a⟩ : SkewMonoidAlgebra k G) = -⟨a⟩ :=
   show _ = neg _ by rw [neg_def]
 
-@[simp]
-theorem ofFinsupp_sub {a b} : (⟨a - b⟩ : SkewMonoidAlgebra k G) = ⟨a⟩ - ⟨b⟩ := by
-  rw [sub_eq_add_neg, ofFinsupp_add, ofFinsupp_neg]; rfl
+instance : AddGroup (SkewMonoidAlgebra k G) where
+  zsmul := zsmulRec
+  neg_add_cancel a := by cases a; simp [← ofFinsupp_neg, ← ofFinsupp_add]
 
 @[simp]
-theorem toFinsupp_neg  (a : SkewMonoidAlgebra k G) : (-a).toFinsupp = -a.toFinsupp := by
-  cases a; rw [← ofFinsupp_neg]
+theorem toFinsupp_neg  (a : SkewMonoidAlgebra k G) : (-a).toFinsupp = -a.toFinsupp :=
+  toFinsuppAddEquiv.map_neg a
+
+@[simp]
+theorem ofFinsupp_sub {a b} : (⟨a - b⟩ : SkewMonoidAlgebra k G) = ⟨a⟩ - ⟨b⟩ :=
+  toFinsuppAddEquiv.symm.map_sub a b
 
 @[simp]
 theorem toFinsupp_sub (a b : SkewMonoidAlgebra k G) :
-    (a - b).toFinsupp = a.toFinsupp - b.toFinsupp := by
-  rw [sub_eq_add_neg, ← toFinsupp_neg, ← toFinsupp_add]; rfl
+    (a - b).toFinsupp = a.toFinsupp - b.toFinsupp :=
+  toFinsuppAddEquiv.map_sub a b
+
+@[simp]
+theorem single_neg (a : G) (b : k) : single a (-b) = -single a b := by
+  simp [← ofFinsupp_single]
+
+end AddGroup
+
+section AddCommGroup
+
+variable [AddCommGroup k]
+
+instance : AddCommGroup (SkewMonoidAlgebra k G) where
+  add_comm
 
 end AddCommGroup
+
+section AddGroupWithOne
+
+variable [AddGroupWithOne k] [One G]
+
+instance : AddGroupWithOne (SkewMonoidAlgebra k G) where
+  __ := instAddGroup
+
+theorem intCast_def (z : ℤ) : (z : SkewMonoidAlgebra k G) = single (1 : G) (z : k) := by
+  cases z <;> simp
+
+end AddGroupWithOne
 
 section Mul
 
@@ -647,9 +689,6 @@ instance : NonUnitalSemiring (SkewMonoidAlgebra k G) where
     | hadd => simp_all [add_mul]
 
 instance : NonAssocSemiring (SkewMonoidAlgebra k G) where
-  natCast n := single 1 n
-  natCast_zero := by simp only [Nat.cast_zero, single_zero]
-  natCast_succ _ := by simp [Nat.cast_add, Nat.cast_one, single_add]
   one_mul f := by
     induction f using induction_on' with
     | hM g a => rw [one_def, mul_def, sum_single_index] <;> simp
@@ -658,11 +697,6 @@ instance : NonAssocSemiring (SkewMonoidAlgebra k G) where
     induction f using induction_on' with
     | hM g a => rw [one_def, mul_def, sum_single_index, sum_single_index] <;> simp
     | hadd f g _ _ => simp_all [add_mul]
-
-theorem natCast_def (n : ℕ) : (n : SkewMonoidAlgebra k G) = single (1 : G) (n : k) := rfl
-
-@[simp]
-lemma single_nat (n : ℕ) : (single 1 n : SkewMonoidAlgebra k G) = n := rfl
 
 instance : Semiring (SkewMonoidAlgebra k G) where
   __ := instNonUnitalSemiring
@@ -683,12 +717,6 @@ end Semiring
 
 section DerivedInstances
 
-instance [AddCommGroup k] : AddCommGroup (SkewMonoidAlgebra k G) where
-  __ := toFinsupp_injective.addCommGroup _ (toFinsupp_zero (k := k))
-    toFinsupp_add toFinsupp_neg toFinsupp_sub (fun _ _ ↦ toFinsupp_smul _ _)
-    (fun _ _ ↦ toFinsupp_smul _ _)
-  toAdd := inferInstance
-
 instance instNonUnitalNonAssocRing [Ring k] [Monoid G] [MulSemiringAction G k] :
     NonUnitalNonAssocRing (SkewMonoidAlgebra k G) where
   __ := instAddCommGroup
@@ -703,56 +731,43 @@ instance instNonAssocRing [Ring k] [Monoid G] [MulSemiringAction G k] :
     NonAssocRing (SkewMonoidAlgebra k G) where
   __ := instAddCommGroup
   __ := instNonAssocSemiring
-  intCast z := single 1 (z : k)
-  intCast_ofNat n := by simp
-  intCast_negSucc n := by
-    simp only [Int.cast_negSucc, Nat.cast_add, Nat.cast_one, neg_add_rev, single_add]
-    rw [single]; rw [single];
-    simp [Finsupp.single_neg, ofFinsupp_neg, ofFinsupp_single, ofFinsupp_one, add_right_inj]
 
-theorem intCast_def [Ring k] [Monoid G] [MulSemiringAction G k] (z : ℤ) :
-    (z : SkewMonoidAlgebra k G) = single (1 : G) (z : k) :=
-  rfl
-
-instance instRing [Ring k] [Monoid G] [MulSemiringAction G k]: Ring (SkewMonoidAlgebra k G) where
+instance instRing [Ring k] [Monoid G] [MulSemiringAction G k] : Ring (SkewMonoidAlgebra k G) where
   __ := instNonAssocRing
   __ := instSemiring
 
 variable {S : Type*}
 
-instance {S} [AddCommMonoid k] [DistribSMul S k] :
+instance {S} [AddMonoid k] [DistribSMul S k] :
     DistribSMul S (SkewMonoidAlgebra k G) where
   __ := toFinsupp_injective.distribSMul ⟨⟨toFinsupp, toFinsupp_zero⟩, toFinsupp_add⟩
     toFinsupp_smul
-  toSMulZeroClass := instSMulZeroClass
 
-instance {S} [Monoid S] [AddCommMonoid k]  [DistribMulAction S k] :
+instance {S} [Monoid S] [AddMonoid k]  [DistribMulAction S k] :
     DistribMulAction S (SkewMonoidAlgebra k G) where
   __ := toFinsupp_injective.distribMulAction ⟨⟨toFinsupp, toFinsupp_zero (k := k)⟩, toFinsupp_add⟩
       toFinsupp_smul
-  toSMul := instSMulZeroClass.toSMul
 
 instance {S} [Semiring S] [AddCommMonoid k] [Module S k] :
     Module S (SkewMonoidAlgebra k G) where
   __ := toFinsupp_injective.module _ ⟨⟨toFinsupp, toFinsupp_zero⟩, toFinsupp_add⟩ toFinsupp_smul
-  toDistribMulAction := instDistribMulAction
 
-instance instFaithfulSMul {S} [AddCommMonoid k] [SMulZeroClass S k] [FaithfulSMul S k]
+instance instFaithfulSMul {S} [AddMonoid k] [SMulZeroClass S k] [FaithfulSMul S k]
     [Nonempty G] : FaithfulSMul S (SkewMonoidAlgebra k G) where
   eq_of_smul_eq_smul {_s₁ _s₂} h := by
     apply eq_of_smul_eq_smul fun a : G →₀ k ↦ congr_arg toFinsupp _
     intro a
     simp_rw [ofFinsupp_smul, h]
 
-instance {S₁ S₂} [AddCommMonoid k] [SMul S₁ S₂] [SMulZeroClass S₁ k]
+instance {S₁ S₂} [AddMonoid k] [SMul S₁ S₂] [SMulZeroClass S₁ k]
     [SMulZeroClass S₂ k] [IsScalarTower S₁ S₂ k] : IsScalarTower S₁ S₂ (SkewMonoidAlgebra k G) :=
   ⟨fun _ _ ⟨_⟩ ↦ by simp_rw [← ofFinsupp_smul, smul_assoc]⟩
 
-instance {S₁ S₂} [AddCommMonoid k] [SMulZeroClass S₁ k] [SMulZeroClass S₂ k]
+instance {S₁ S₂} [AddMonoid k] [SMulZeroClass S₁ k] [SMulZeroClass S₂ k]
     [SMulCommClass S₁ S₂ k] : SMulCommClass S₁ S₂ (SkewMonoidAlgebra k G) :=
   ⟨fun _ _ ⟨_⟩ ↦ by simp_rw [← ofFinsupp_smul, smul_comm _ _ _]⟩
 
-instance {S} [AddCommMonoid k] [SMulZeroClass S k] [SMulZeroClass Sᵐᵒᵖ k]
+instance {S} [AddMonoid k] [SMulZeroClass S k] [SMulZeroClass Sᵐᵒᵖ k]
     [IsCentralScalar S k] : IsCentralScalar S (SkewMonoidAlgebra k G) :=
   ⟨fun _ ⟨_⟩ ↦ by simp_rw [← ofFinsupp_smul, op_smul_eq_smul]⟩
 
