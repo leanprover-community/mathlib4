@@ -3,10 +3,11 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
+import Mathlib.Analysis.Complex.OperatorNorm
+import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
+import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
 import Mathlib.Analysis.SpecialFunctions.OrdinaryHypergeometric
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
-import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
-import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
 import Mathlib.RingTheory.Binomial
 
 /-!
@@ -174,7 +175,56 @@ theorem one_add_cpow_hasFPowerSeriesAt_zero {a : ℂ} :
 
 theorem one_add_rpow_hasFPowerSeriesOnBall_zero {a : ℝ} :
     HasFPowerSeriesOnBall (fun x ↦ (1 + x)^a) (binomialSeries ℝ a) 0 1 := by
-  sorry
+  have h : HasFPowerSeriesOnBall (fun x ↦ (1 + x)^(a : ℂ)) (binomialSeries ℂ a) 0 1 := by
+    have : binomialSeries ℂ a = (binomialSeries ℂ (a : ℂ)).restrictScalars (𝕜 := ℝ) := by
+      ext n v
+      simp only [binomialSeries, FormalMultilinearSeries.ofScalars,
+        ContinuousMultilinearMap.smul_apply, ContinuousMultilinearMap.mkPiAlgebraFin_apply,
+        Complex.real_smul, FormalMultilinearSeries.restrictScalars,
+        ContinuousMultilinearMap.coe_restrictScalars, smul_eq_mul, mul_eq_mul_right_iff,
+        List.prod_eq_zero_iff, List.mem_ofFn]
+      left
+      -- ↑(Ring.choose a n) = Ring.choose (↑a) n
+      simp only [Ring.choose_eq_smul, smul_eq_mul, Complex.ofReal_mul, Complex.ofReal_inv,
+        Complex.ofReal_natCast, mul_eq_mul_left_iff, inv_eq_zero, Nat.cast_eq_zero]
+      left
+      rw [Polynomial.smeval_def, Polynomial.smeval_def]
+      simp only [Polynomial.sum, Complex.ofReal_sum]
+      congr
+      ext n
+      simp [Polynomial.smul_pow]
+    rw [this]
+    exact HasFPowerSeriesOnBall.restrictScalars one_add_cpow_hasFPowerSeriesOnBall_zero
+  rw [show 0 = Complex.ofRealCLM 0 by simp] at h
+  apply HasFPowerSeriesOnBall.compContinuousLinearMap at h
+  simp only [Complex.ofRealCLM_nnnorm, ENNReal.coe_one, div_one] at h
+  have h' : Set.EqOn ((fun x ↦ (1 + x) ^ (a : ℂ)) ∘ ⇑Complex.ofRealCLM)
+      (fun (x : ℝ) ↦ (Real.rpow (1 + x) a : ℂ)) (EMetric.ball 0 1) := by
+    intro x hx
+    simp only [Function.comp_apply, Complex.ofRealCLM_apply, Real.rpow_eq_pow]
+    rw [← Complex.ofReal_one, ← Complex.ofReal_add, ← Complex.ofReal_cpow]
+    rw [← ENNReal.ofReal_one, Metric.emetric_ball] at hx
+    simp only [Metric.mem_ball, dist_zero_right, Real.norm_eq_abs] at hx
+    apply neg_lt_of_abs_lt at hx
+    linarith
+  replace h := ContinuousLinearMap.comp_hasFPowerSeriesOnBall Complex.reCLM (h.congr h')
+  conv at h => arg 1; eta_expand; intro x; simp
+  convert h
+  ext n v
+  simp only [FormalMultilinearSeries.apply_eq_prod_smul_coeff, smul_eq_mul,
+    ContinuousLinearMap.compFormalMultilinearSeries_apply,
+    ContinuousLinearMap.compContinuousMultilinearMap_coe, Function.comp_apply, Complex.real_smul,
+    Complex.ofReal_prod, Complex.reCLM_apply]
+  conv =>
+    rhs; arg 1; arg 2
+    unfold FormalMultilinearSeries.coeff
+    rw [FormalMultilinearSeries.compContinuousLinearMap_apply]
+    simp only [binomialSeries, FormalMultilinearSeries.ofScalars, Pi.comp_one,
+      Complex.ofRealCLM_apply, Complex.ofReal_one, Function.const_one,
+      ContinuousMultilinearMap.smul_apply, ContinuousMultilinearMap.mkPiAlgebraFin_apply,
+      Fin.prod_ofFn, Pi.one_apply, Finset.prod_const_one, Complex.real_smul, mul_one]
+  rw [← Complex.ofReal_prod, ← Complex.ofReal_mul, Complex.ofReal_re]
+  simp [binomialSeries]
 
 theorem one_add_rpow_hasFPowerSeriesAt_zero {a : ℝ} :
     HasFPowerSeriesAt (fun x ↦ (1 + x)^a) (binomialSeries ℝ a) 0 := by
