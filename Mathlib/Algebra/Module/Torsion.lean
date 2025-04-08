@@ -916,6 +916,7 @@ scoped syntax:max (name := torsionByStx) (priority := high) term noWs "[" term "
 
 macro_rules | `($A[$n]) => `(torsionBy $A $n)
 
+/-- Unexpander for `torsionBy`. -/
 @[app_unexpander torsionBy]
 def torsionByUnexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $A $n) => `($A[$n])
