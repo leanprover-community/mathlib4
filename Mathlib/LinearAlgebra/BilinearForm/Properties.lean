@@ -11,7 +11,7 @@ import Mathlib.LinearAlgebra.Dual.Lemmas
 
 This file defines various properties of bilinear forms, including reflexivity, symmetry,
 alternativity, adjoint, and non-degeneracy.
-For orthogonality, see `LinearAlgebra/BilinearForm/Orthogonal.lean`.
+For orthogonality, see `Mathlib/LinearAlgebra/BilinearForm/Orthogonal.lean`.
 
 ## Notations
 
@@ -202,14 +202,7 @@ theorem nondegenerate_congr_iff {B : BilinForm R M} (e : M ≃ₗ[R] M') :
 theorem nondegenerate_iff_ker_eq_bot {B : BilinForm R M} :
     B.Nondegenerate ↔ LinearMap.ker B = ⊥ := by
   rw [LinearMap.ker_eq_bot']
-  constructor <;> intro h
-  · refine fun m hm => h _ fun x => ?_
-    rw [hm]
-    rfl
-  · intro m hm
-    apply h
-    ext x
-    exact hm x
+  simp [Nondegenerate, LinearMap.ext_iff]
 
 theorem Nondegenerate.ker_eq_bot {B : BilinForm R M} (h : B.Nondegenerate) :
     LinearMap.ker B = ⊥ := nondegenerate_iff_ker_eq_bot.mp h
