@@ -11,7 +11,9 @@ import Mathlib.Algebra.Exact
 
 set_option maxHeartbeats 1000000000000000000000000000000000000000000
 set_option synthInstance.maxHeartbeats 1000000000000000000000000000000
-open Finset IsUltrametricDist NNReal Filter
+
+open Finset IsUltrametricDist NNReal Filter  CauSeq
+
 
 open scoped fwdDiff ZeroAtInfty Topology
 open scoped fwdDiff ZeroAtInfty Topology  LaurentSeries PowerSeries
@@ -69,8 +71,21 @@ noncomputable def Cauchy_p_adic (f:AdicCompletion.AdicCauchySequence
      rw [← neg_sub, norm_neg]
      exact hx hn
 lemma CauchyL (b:ℝ)(a:CauSeq ℤ_[p] norm)(hs:∀n , ‖a.val n‖≤ b):‖a.lim‖≤b:=by
+   by_contra sr
+   simp at sr
+   obtain ⟨i,sh⟩:=equiv_def₃ (equiv_lim a) (sub_pos.mpr sr)
+   have:=sh  i (Nat.le_refl i) i (Nat.le_refl i)
+   simp at this
+   have:¬ ‖(a.val i)-a.lim‖ < ‖a.lim‖ - b :=by
+       simp
+       have: ‖a.lim‖≤ ‖(a.val i)-a.lim‖+‖(a.val i)‖:=by
+        rw[Eq.symm (norm_neg a.lim),Eq.symm (norm_neg (a.val i))]
+        have:-a.lim=(a.val i)-a.lim +(- (a.val i)) :=by ring_nf
+        rw[this]
+        exact norm_add_le (a.val i - a.lim) (-a.val i)
+       exact le_add_of_le_add_left this (hs i)
+   (expose_names; exact this this_1)
 
-     sorry
 
 
 
@@ -98,7 +113,8 @@ noncomputable def Cauchy.seq_map :AdicCompletion.AdicCauchySequence
 #check
 (Cauchy.seq_map (p:=p))∘ₗ(AdicCompletion.AdicCauchySequence.map  (IsLocalRing.maximalIdeal ℤ_[p])
  (HahnSeries.coeff_map_0 (p:=p) 1))
-noncomputable abbrev cauchy_sequence_coeff (a:ℤ ) :=(Cauchy.seq_map (p:=p))∘ₗ(AdicCompletion.AdicCauchySequence.map  (IsLocalRing.maximalIdeal ℤ_[p])
+noncomputable abbrev cauchy_sequence_coeff (a:ℤ ) :=
+ (Cauchy.seq_map (p:=p))∘ₗ(AdicCompletion.AdicCauchySequence.map  (IsLocalRing.maximalIdeal ℤ_[p])
  (HahnSeries.coeff_map_0 (p:=p) a))
 lemma cauchy_sequence_coeff_tends_to_zero
   (f:AdicCompletion.AdicCauchySequence (IsLocalRing.maximalIdeal ℤ_[p]) ℤ_[p]⸨X⸩ ):
@@ -108,19 +124,27 @@ lemma cauchy_sequence_coeff_tends_to_zero
   intro h sh
   simp only [sub_zero]
   obtain ⟨m, hm⟩ := exists_pow_neg_lt p sh
-  use ((f.1 m).order).toNat
+  rcases f with ⟨c1,c2⟩
+  let w:=((-(c1 m).order).toNat+1)
+  use w
   intro n sn
   refine lt_of_le_of_lt ?_ hm
-  simp only [LinearMap.coe_comp, Function.comp_apply]
-  unfold Cauchy.seq_map
-  simp only [LinearMap.coe_mk, AddHom.coe_mk]
-
-
+  unfold  cauchy_sequence_coeff Cauchy.seq_map Cauchy_p_adic
+  let K :=AdicCompletion.AdicCauchySequence.map (IsLocalRing.maximalIdeal ℤ_[p])
+    (HahnSeries.coeff_map_0 (-↑n)) ⟨c1,c2⟩
+  rcases K with ⟨k1,k2⟩
+  unfold AdicCompletion.IsAdicCauchy at c2
+  have: ∀ s≥w,(c1 m).coeff (-s)=0 :=by sorry
+  have:∀ s≥ w,∀n≥m , ‖(c1 n).coeff (-s)‖≤ (p:ℝ)^(-m:ℤ) :=by sorry
+  simp only [LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply, ge_iff_le]
   sorry
+
+
 noncomputable def Cauchy_p_adic_2:AdicCompletion.AdicCauchySequence
  (IsLocalRing.maximalIdeal ℤ_[p]) (ℤ_[p])
   →ₗ[ℤ_[p]] AdicCompletion
- (IsLocalRing.maximalIdeal ℤ_[p]) (ℤ_[p]):=(AdicCompletion.mk (IsLocalRing.maximalIdeal ℤ_[p]) ℤ_[p])
+ (IsLocalRing.maximalIdeal ℤ_[p]) (ℤ_[p]):=
+ (AdicCompletion.mk (IsLocalRing.maximalIdeal ℤ_[p]) ℤ_[p])
 lemma ss: LinearMap.ker ((AdicCompletion.mk (IsLocalRing.maximalIdeal ℤ_[p]) ℤ_[p]))
  ≤ LinearMap.ker (Cauchy.seq_map (p:=p)):=by
    intro x hs
@@ -149,7 +173,8 @@ lemma ss: LinearMap.ker ((AdicCompletion.mk (IsLocalRing.maximalIdeal ℤ_[p]) �
 #check Submodule.liftQ (LinearMap.ker ((AdicCompletion.mk (IsLocalRing.maximalIdeal ℤ_[p]) ℤ_[p])))
  (Cauchy.seq_map (p:=p)) (ss (p:=p))
 
-noncomputable def FunctionTrans_1:(AdicCompletion.AdicCauchySequence (IsLocalRing.maximalIdeal ℤ_[p]) ℤ_[p] ⧸
+noncomputable def FunctionTrans_1:(AdicCompletion.AdicCauchySequence
+(IsLocalRing.maximalIdeal ℤ_[p]) ℤ_[p] ⧸
     LinearMap.ker (AdicCompletion.mk (IsLocalRing.maximalIdeal ℤ_[p]) ℤ_[p]))≃ₗ[ℤ_[p]]
     AdicCompletion (IsLocalRing.maximalIdeal ℤ_[p]) ℤ_[p]:=by
      refine
@@ -159,7 +184,8 @@ noncomputable def FunctionTrans_1:(AdicCompletion.AdicCauchySequence (IsLocalRin
 noncomputable abbrev p_sequence_coeff (a:ℤ ):=
     Submodule.liftQ (LinearMap.ker ((AdicCompletion.mk (IsLocalRing.maximalIdeal ℤ_[p]) ℤ_[p])))
  (Cauchy.seq_map (p:=p)) (ss (p:=p))∘ₗ  ((FunctionTrans_1 (p:=p )).symm).toLinearMap
-  ∘ₗ  (LinearMap.adicCompletionAux (IsLocalRing.maximalIdeal ℤ_[p]) (HahnSeries.coeff_map_0 (p:=p) a))
+  ∘ₗ  (LinearMap.adicCompletionAux (IsLocalRing.maximalIdeal ℤ_[p])
+   (HahnSeries.coeff_map_0 (p:=p) a))
 #check p_sequence_coeff (p:=p) (1)
 lemma Tends_to_Zero_0(a:(AdicCompletion (IsLocalRing.maximalIdeal ℤ_[p]) (ℤ_[p]⸨X⸩)))
 :Filter.Tendsto (fun n:ℕ => p_sequence_coeff (-n:ℤ ) a) Filter.atTop
