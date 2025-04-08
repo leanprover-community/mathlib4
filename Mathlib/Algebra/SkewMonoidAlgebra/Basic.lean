@@ -453,7 +453,7 @@ theorem induction_on {p : SkewMonoidAlgebra k G → Prop} (f : SkewMonoidAlgebra
   exact Finset.sum_induction _ _ hadd h0 (by aesop)
 
 /--
-Slightly less general but more convenient version of `SkewMonoidAlgebra.induction_on`.-/
+Slightly less general but more convenient version of `SkewMonoidAlgebra.induction_on`. -/
 theorem induction_on' [instNonempty : Nonempty G] {p : SkewMonoidAlgebra k G → Prop}
     (f : SkewMonoidAlgebra k G) (hM : ∀ g a, p (single g a)) (hadd : ∀ f g :
     SkewMonoidAlgebra k G, p f → p g → p (f + g)) : p f :=
@@ -626,7 +626,7 @@ variable [SMul G k] [NonUnitalNonAssocSemiring k]
 
 /-- The product of `f g : SkewMonoidAlgebra k G` is the finitely supported function whose value
   at `a` is the sum of `f x * (x • g y)` over all pairs `x, y` such that `x * y = a`.
-  (Think of a skew group ring.)-/
+  (Think of a skew group ring.) -/
 instance : Mul (SkewMonoidAlgebra k G) :=
   ⟨fun f g ↦ f.sum fun a₁ b₁ ↦ g.sum fun a₂ b₂ ↦ single (a₁ * a₂) (b₁ * (a₁ • b₂))⟩
 
