@@ -10,9 +10,9 @@ import Mathlib.Data.Complex.Basic
 /-!
 # Inner product spaces
 
-This file defines inner product spaces.  We do not formally define Hilbert spaces, but they can be
-obtained using the set of assumptions
-`[NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [CompleteSpace E]`.
+This file defines inner product spaces. For Hilbert spaces `HilbertSpace` is a typeclass alias, so
+that one can write `variable? [HilbertSpace 𝕜 E]` and get suggested
+`[RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [CompleteSpace E]`.
 
 An inner product space is a vector space endowed with an inner product. It generalizes the notion of
 dot product in `ℝ^n` and provides the means of defining the length of a vector and the angle between
@@ -502,5 +502,14 @@ def InnerProductSpace.ofCore [AddCommGroup F] [Module 𝕜 F] (cd : InnerProduct
       simp [h₁, sq_sqrt, h₂] }
 
 end
+
+section HilbertSpace
+
+/-- A Hilbert space is a complete normed inner product space. -/
+@[variable_alias]
+structure HilbertSpace (𝕜 E : Type*) [RCLike 𝕜]
+  [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [CompleteSpace E]
+
+end HilbertSpace
 
 end
