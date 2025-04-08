@@ -103,4 +103,5 @@ lemma algebraMap_pi_surjective_of_nilradical_isMaximal [∀ i, Ring.KrullDimLE 0
     R S M ((lift (isUnit_piRingHom_algebraMap_comp_piEvalRingHom R S M)) s)
   refine ⟨r, (bijective_lift_piRingHom_algebraMap_comp_piEvalRingHom R S _ M).injective ?_⟩
   rwa [lift_eq (isUnit_piRingHom_algebraMap_comp_piEvalRingHom R S M) r]
+
 end IsLocalization
