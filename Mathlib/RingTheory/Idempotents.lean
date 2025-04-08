@@ -5,7 +5,6 @@ Authors: Andrew Yang
 -/
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.GeomSum
-import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.Nilpotent.Defs
 
@@ -186,19 +185,18 @@ variable {R S : Type*} [Ring R] [Ring S] (f : R →+* S)
 theorem isIdempotentElem_one_sub_one_sub_pow_pow
     (x : R) (n : ℕ) (hx : (x - x ^ 2) ^ n = 0) :
     IsIdempotentElem (1 - (1 - x ^ n) ^ n) := by
-  let P : Polynomial ℤ := 1 - (1 - .X ^ n) ^ n
-  have : (.X - .X ^ 2) ^ n ∣ P - P ^ 2 := by
-    have H₁ : .X ^ n ∣ P := by
-      have := sub_dvd_pow_sub_pow 1 ((1 : Polynomial ℤ) - Polynomial.X ^ n) n
-      rwa [sub_sub_cancel, one_pow] at this
-    have H₂ : (1 - .X) ^ n ∣ 1 - P := by
-      simp only [sub_sub_cancel, P]
-      simpa using pow_dvd_pow_of_dvd (sub_dvd_pow_sub_pow (α := Polynomial ℤ) 1 Polynomial.X n) n
-    have := mul_dvd_mul H₁ H₂
-    simpa only [← mul_pow, mul_sub, mul_one, ← pow_two] using this
-  have := map_dvd (Polynomial.aeval x) this
-  simp only [map_pow, map_sub, Polynomial.aeval_X, hx, map_one, zero_dvd_iff, P] at this
-  rwa [sub_eq_zero, eq_comm, pow_two] at this
+  have : (x - x ^ 2) ^ n ∣ (1 - (1 - x ^ n) ^ n) - (1 - (1 - x ^ n) ^ n) ^ 2 := by
+    conv_rhs => rw [pow_two, ← mul_one_sub, sub_sub_cancel]
+    nth_rw 1 3 [← one_pow n]
+    rw [← (Commute.one_left x).mul_geom_sum₂, ← (Commute.one_left (1 - x ^ n)).mul_geom_sum₂]
+    simp only [sub_sub_cancel, one_pow, one_mul]
+    rw [Commute.mul_pow, Commute.mul_mul_mul_comm, ← Commute.mul_pow, mul_one_sub, ← pow_two]
+    · exact ⟨_, rfl⟩
+    · simp
+    · refine .pow_right (.sub_right (.one_right _) (.sum_left _ _ _ fun _ _ ↦ .pow_left ?_ _)) _
+      simp
+    · exact .sub_left (.one_left _) (.sum_right _ _ _ fun _ _ ↦ .pow_right rfl _)
+  rwa [hx, zero_dvd_iff, sub_eq_zero, eq_comm, pow_two] at this
 
 theorem exists_isIdempotentElem_mul_eq_zero_of_ker_isNilpotent_aux
     (h : ∀ x ∈ RingHom.ker f, IsNilpotent x)

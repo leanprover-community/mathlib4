@@ -3,7 +3,7 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.MeasureTheory.Integral.Lebesgue
+import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
 
 /-!
 # The Giry monad
@@ -122,6 +122,10 @@ theorem join_apply {m : Measure (Measure α)} {s : Set α} (hs : MeasurableSet s
     join m s = ∫⁻ μ, μ s ∂m :=
   Measure.ofMeasurable_apply s hs
 
+theorem le_join_apply (m : Measure (Measure α)) (s : Set α) : ∫⁻ μ, μ s ∂m ≤ join m s := by
+  rw [measure_eq_iInf]
+  exact le_iInf₂ fun t hst ↦ le_iInf fun htm ↦ join_apply htm ▸ by gcongr
+
 @[simp]
 theorem join_zero : (0 : Measure (Measure α)).join = 0 := by
   ext1 s hs
@@ -155,6 +159,13 @@ theorem lintegral_join {m : Measure (Measure α)} {f : α → ℝ≥0∞} (hf : 
   · simp_rw [lintegral_const_mul _ (hf _ _)]
   · exact fun r _ => (hf _ _).const_mul _
 
+theorem lintegral_join_le (f : α → ℝ≥0∞) (m : Measure (Measure α)) :
+    ∫⁻ x, f x ∂join m ≤ ∫⁻ μ, ∫⁻ x, f x ∂μ ∂m := by
+  rcases exists_measurable_le_lintegral_eq (join m) f with ⟨g, hgm, hgf, hfg_int⟩
+  rw [hfg_int, lintegral_join hgm]
+  gcongr
+  apply hgf
+
 /-- Monadic bind on `Measure`, only works in the category of measurable spaces and measurable
 functions. When the function `f` is not measurable the result is not well defined. -/
 def bind (m : Measure α) (f : α → Measure β) : Measure β :=
@@ -179,6 +190,11 @@ theorem bind_apply {m : Measure α} {f : α → Measure β} {s : Set β} (hs : M
     (hf : Measurable f) : bind m f s = ∫⁻ a, f a s ∂m := by
   rw [bind, join_apply hs, lintegral_map (measurable_coe hs) hf]
 
+theorem bind_apply_le {m : Measure α} (f : α → Measure β) {s : Set β} (hs : MeasurableSet s) :
+    bind m f s ≤ ∫⁻ a, f a s ∂m := by
+  rw [bind, join_apply hs]
+  apply lintegral_map_le
+
 @[simp]
 lemma bind_const {m : Measure α} {ν : Measure β} : m.bind (fun _ ↦ ν) = m Set.univ • ν := by
   ext s hs
@@ -193,10 +209,15 @@ theorem lintegral_bind {m : Measure α} {μ : α → Measure β} {f : β → ℝ
     (hf : Measurable f) : ∫⁻ x, f x ∂bind m μ = ∫⁻ a, ∫⁻ x, f x ∂μ a ∂m :=
   (lintegral_join hf).trans (lintegral_map (measurable_lintegral hf) hμ)
 
+theorem lintegral_bind_le (f : β → ℝ≥0∞) (m : Measure α) (μ : α → Measure β) :
+    ∫⁻ x, f x ∂bind m μ ≤ ∫⁻ a, ∫⁻ x, f x ∂μ a ∂m :=
+  (lintegral_join_le _ _).trans (lintegral_map_le _ _)
+
 theorem bind_bind {γ} [MeasurableSpace γ] {m : Measure α} {f : α → Measure β} {g : β → Measure γ}
     (hf : Measurable f) (hg : Measurable g) : bind (bind m f) g = bind m fun a => bind (f a) g := by
   ext1 s hs
-  erw [bind_apply hs hg, bind_apply hs ((measurable_bind' hg).comp hf),
+  rw [bind_apply hs hg]
+  erw [bind_apply hs ((measurable_bind' hg).comp hf),
     lintegral_bind hf ((measurable_coe hs).comp hg)]
   conv_rhs => enter [2, a]; erw [bind_apply hs hg]
   rfl
