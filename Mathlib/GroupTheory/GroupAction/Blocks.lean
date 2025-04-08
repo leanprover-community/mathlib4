@@ -39,7 +39,7 @@ The non-existence of nontrivial blocks is the definition of primitive actions.
 - `MulAction.BlockMem` : the type of blocks containing a given element
 
 - `MulAction.BlockMem.instBoundedOrder` :
-  The type of blocks containing a given element is a bounded order.
+  the type of blocks containing a given element is a bounded order.
 
 ## References
 
@@ -121,7 +121,7 @@ variable [Monoid M] [MulAction M α] [Monoid N] [MulAction N β]
 theorem IsTrivialBlock.image {φ : M → N} {f : α →ₑ[φ] β}
     (hf : Function.Surjective f) {B : Set α} (hB : IsTrivialBlock B) :
     IsTrivialBlock (f '' B) := by
-  cases' hB with hB hB
+  obtain hB | hB := hB
   · apply Or.intro_left; apply Set.Subsingleton.image hB
   · apply Or.intro_right; rw [hB]
     simp only [Set.top_eq_univ, Set.image_univ, Set.range_eq_univ, hf]
@@ -130,7 +130,7 @@ theorem IsTrivialBlock.image {φ : M → N} {f : α →ₑ[φ] β}
 theorem IsTrivialBlock.preimage {φ : M → N} {f : α →ₑ[φ] β}
     (hf : Function.Injective f) {B : Set β} (hB : IsTrivialBlock B) :
     IsTrivialBlock (f ⁻¹' B) := by
-  cases' hB with hB hB
+  obtain hB | hB := hB
   · apply Or.intro_left; exact Set.Subsingleton.preimage hB hf
   · apply Or.intro_right; simp only [hB, Set.top_eq_univ]; apply Set.preimage_univ
 
@@ -711,7 +711,7 @@ theorem eq_univ_of_card_lt [hX : Finite X] (hB : IsBlock G B) (hB' : Nat.card X 
 
 @[deprecated (since := "2024-10-29")] alias eq_univ_card_lt := eq_univ_of_card_lt
 
-/-- If a block has too many translates, then it is a (sub)singleton  -/
+/-- If a block has too many translates, then it is a (sub)singleton -/
 @[to_additive "If a block has too many translates, then it is a (sub)singleton"]
 theorem subsingleton_of_card_lt [Finite X] (hB : IsBlock G B)
     (hB' : Nat.card X < 2 * Set.ncard (orbit G B)) :

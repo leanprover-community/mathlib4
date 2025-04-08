@@ -75,6 +75,9 @@ lemma mono : Mono f := by
   have : Mono φ := NatTrans.mono_of_mono_app φ
   exact colim.map_mono' φ (isColimitConstCocone J X) (h.isColimit) f (by aesop_cat)
 
+instance mono_map (j j' : J) (f : j ⟶ j') : Mono (h.F.map f) :=
+  ((h.ici j).iic ⟨j', leOfHom f⟩).mono
+
 end MorphismProperty.TransfiniteCompositionOfShape
 
 namespace IsGrothendieckAbelian

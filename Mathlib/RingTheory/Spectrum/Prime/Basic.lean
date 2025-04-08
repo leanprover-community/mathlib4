@@ -33,6 +33,10 @@ whereas we denote subsets of prime spectra with `t`, `t'`, etc...
 The contents of this file draw inspiration from <https://github.com/ramonfmir/lean-scheme>
 which has contributions from Ramon Fernandez Mir, Kevin Buzzard, Kenny Lau,
 and Chris Hughes (on an earlier repository).
+
+## References
+* [M. F. Atiyah and I. G. Macdonald, *Introduction to commutative algebra*][atiyah-macdonald]
+* [P. Samuel, *Algebraic Theory of Numbers*][samuel1967]
 -/
 
 -- A dividing line between this file and `Mathlib.RingTheory.Spectrum.Prime.Topology` is
@@ -205,6 +209,9 @@ theorem vanishingIdeal_zeroLocus_eq_radical (I : Ideal R) :
 theorem nilradical_eq_iInf : nilradical R = iInf asIdeal := by
   apply range_asIdeal R ▸ nilradical_eq_sInf R
 
+@[simp] theorem vanishingIdeal_univ : vanishingIdeal Set.univ = nilradical R := by
+  rw [vanishingIdeal, iInf_univ, nilradical_eq_iInf]
+
 @[simp]
 theorem zeroLocus_radical (I : Ideal R) : zeroLocus (I.radical : Set R) = zeroLocus I :=
   vanishingIdeal_zeroLocus_eq_radical I ▸ (gc R).l_u_l_eq_l I
@@ -280,18 +287,11 @@ theorem vanishingIdeal_eq_top_iff {s : Set (PrimeSpectrum R)} : vanishingIdeal s
   rw [← top_le_iff, ← subset_zeroLocus_iff_le_vanishingIdeal, Submodule.top_coe, zeroLocus_univ,
     Set.subset_empty_iff]
 
-theorem zeroLocus_eq_top_iff (s : Set R) :
-    zeroLocus s = ⊤ ↔ s ⊆ nilradical R := by
-  constructor
-  · intro h x hx
-    refine nilpotent_iff_mem_prime.mpr (fun J hJ ↦ ?_)
-    have hJz : ⟨J, hJ⟩ ∈ zeroLocus s := by
-      rw [h]
-      trivial
-    exact (mem_zeroLocus _ _).mpr hJz hx
-  · rw [eq_top_iff]
-    intro h p _
-    apply Set.Subset.trans h (nilradical_le_prime p.asIdeal)
+theorem zeroLocus_eq_univ_iff (s : Set R) :
+    zeroLocus s = Set.univ ↔ s ⊆ nilradical R := by
+  rw [← Set.univ_subset_iff, subset_zeroLocus_iff_subset_vanishingIdeal, vanishingIdeal_univ]
+
+@[deprecated (since := "2025-04-05")] alias zeroLocus_eq_top_iff := zeroLocus_eq_univ_iff
 
 theorem zeroLocus_sup (I J : Ideal R) :
     zeroLocus ((I ⊔ J : Ideal R) : Set R) = zeroLocus I ∩ zeroLocus J :=
@@ -427,7 +427,7 @@ variable (R : Type u) [CommRing R] [IsNoetherianRing R]
 variable {A : Type u} [CommRing A] [IsDomain A] [IsNoetherianRing A]
 
 /-- In a noetherian ring, every ideal contains a product of prime ideals
-([samuel, § 3.3, Lemma 3]). -/
+([samuel1967, § 3.3, Lemma 3]). -/
 theorem exists_primeSpectrum_prod_le (I : Ideal R) :
     ∃ Z : Multiset (PrimeSpectrum R), Multiset.prod (Z.map asIdeal) ≤ I := by
   -- Porting note: Need to specify `P` explicitly
@@ -459,7 +459,7 @@ theorem exists_primeSpectrum_prod_le (I : Ideal R) :
 
 /-- In a noetherian integral domain which is not a field, every non-zero ideal contains a non-zero
   product of prime ideals; in a field, the whole ring is a non-zero ideal containing only 0 as
-  product or prime ideals ([samuel, § 3.3, Lemma 3]) -/
+  product or prime ideals ([samuel1967, § 3.3, Lemma 3]) -/
 theorem exists_primeSpectrum_prod_le_and_ne_bot_of_domain (h_fA : ¬IsField A) {I : Ideal A}
     (h_nzI : I ≠ ⊥) :
     ∃ Z : Multiset (PrimeSpectrum A),

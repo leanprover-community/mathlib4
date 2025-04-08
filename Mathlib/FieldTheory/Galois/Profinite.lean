@@ -127,7 +127,6 @@ The homomorphism from `Gal(K/k)` to `lim Gal(L/k)` where `L` is a
 `FiniteGaloisIntermediateField k K` ordered by inverse inclusion. It is induced by the
 canonical projections from `Gal(K/k)` to `Gal(L/k)`.
 -/
-@[simps]
 noncomputable def algEquivToLimit : (K ≃ₐ[k] K) →* limit (asProfiniteGaloisGroupFunctor k K) where
   toFun σ := {
     val := fun L ↦ σ.restrictNormalHom L.unop
@@ -177,7 +176,6 @@ noncomputable def proj (L : FiniteGaloisIntermediateField k K) :
   map_one' := rfl
   map_mul' _ _ := rfl
 
-@[simp]
 lemma finGaloisGroupFunctor_map_proj_eq_proj (g : limit (asProfiniteGaloisGroupFunctor k K))
     {L₁ L₂ : FiniteGaloisIntermediateField k K} (h : L₁ ⟶ L₂) :
     (finGaloisGroupFunctor k K).map h.op (proj L₂ g) = proj L₁ g :=
@@ -245,7 +243,6 @@ noncomputable def limitToAlgEquiv [IsGalois k K]
     simp only [toAlgEquivAux_eq_proj_of_mem _ _ L hx', mk_toAlgEquivAux g⁻¹ x L hx' hx, map_inv,
       AlgEquiv.aut_inv, AlgEquiv.apply_symm_apply]
   map_mul' x y := by
-    dsimp
     have hx : x ∈ (adjoin k {x, y}).1 := subset_adjoin _ _ (Set.mem_insert x {y})
     have hy : y ∈ (adjoin k {x, y}).1 := subset_adjoin _ _ (Set.mem_insert_of_mem x rfl)
     rw [toAlgEquivAux_eq_liftNormal g x (adjoin k {x, y}) hx,
@@ -303,8 +300,8 @@ lemma mulEquivToLimit_symm_continuous [IsGalois k K] : Continuous (mulEquivToLim
   intro H ⟨L, le⟩
   rw [mem_nhds_iff]
   use mulEquivToLimit k K '' L.1.fixingSubgroup
-  simp [le, isOpen_mulEquivToLimit_image_fixingSubgroup L, one_mem,
-    (mulEquivToLimit k K).injective.preimage_image]
+  simp only [isOpen_mulEquivToLimit_image_fixingSubgroup L]
+  simpa [one_mem] using Set.image_subset_iff.mp (Set.image_mono le)
 
 variable (k K)
 

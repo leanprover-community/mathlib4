@@ -568,13 +568,16 @@ lemma mem_divisorsAntidiag :
     norm_cast
     aesop
   | (n : ℕ), (negSucc x, (y : ℕ)) => by
-    simp [divisorsAntidiag]
+    suffices (∃ a, (n = a * y ∧ ¬n = 0) ∧ (a:ℤ) = -1 + -↑x) ↔ (n:ℤ) = (-1 + -↑x) * ↑y ∧ ¬n = 0 by
+      simpa [divisorsAntidiag, eq_comm, negSucc_eq]
+    simp only [← Int.neg_add, Int.add_comm 1, Int.neg_mul, Int.add_mul]
     norm_cast
-    aesop
+    match n with
+    | 0 => simp
+    | n + 1 => simp
   | .negSucc n, ((x : ℕ), (y : ℕ)) => by
     simp [divisorsAntidiag]
     norm_cast
-    aesop
   | .negSucc n, (negSucc x, negSucc y) => by
     simp [divisorsAntidiag, negSucc_eq, -neg_add_rev]
     norm_cast
@@ -589,6 +592,28 @@ lemma mem_divisorsAntidiag :
     simp +contextual [eq_comm]
 
 @[simp] lemma divisorsAntidiag_zero : divisorsAntidiag 0 = ∅ := rfl
+
+-- TODO Write a simproc instead of `divisorsAntidiagonal_one`, ..., `divisorsAntidiagonal_four` ...
+
+@[simp]
+theorem divisorsAntidiagonal_one :
+    Int.divisorsAntidiag 1 = {(1, 1), (-1, -1)} :=
+  rfl
+
+@[simp]
+theorem divisorsAntidiagonal_two :
+    Int.divisorsAntidiag 2 = {(1, 2), (2, 1), (-1, -2), (-2, -1)} :=
+  rfl
+
+@[simp]
+theorem divisorsAntidiagonal_three :
+    Int.divisorsAntidiag 3 = {(1, 3), (3, 1), (-1, -3), (-3, -1)} :=
+  rfl
+
+@[simp]
+theorem divisorsAntidiagonal_four :
+    Int.divisorsAntidiag 4 = {(1, 4), (2, 2), (4, 1), (-1, -4), (-2, -2), (-4, -1)} :=
+  rfl
 
 lemma prodMk_mem_divisorsAntidiag (hz : z ≠ 0) : (x, y) ∈ z.divisorsAntidiag ↔ x * y = z := by
   simp [hz]
@@ -631,5 +656,27 @@ lemma divisorsAntidiag_ofNat (n : ℕ) :
       (n.divisorsAntidiagonal.map <| .prodMap natCast natCast).disjUnion
         (n.divisorsAntidiagonal.map <| .prodMap negNatCast negNatCast) (by
           simp +contextual [disjoint_left, eq_comm]) := rfl
+
+/-- This lemma justifies its existence from its utility in crystallographic root system theory. -/
+lemma mul_mem_one_two_three_iff {a b : ℤ} :
+    a * b ∈ ({1, 2, 3} : Set ℤ) ↔ (a, b) ∈ ({
+      (1, 1), (-1, -1),
+      (1, 2), (2, 1), (-1, -2), (-2, -1),
+      (1, 3), (3, 1), (-1, -3), (-3, -1)} : Set (ℤ × ℤ)) := by
+  simp only [← Int.prodMk_mem_divisorsAntidiag, Set.mem_insert_iff, Set.mem_singleton_iff, ne_eq,
+    one_ne_zero, not_false_eq_true, OfNat.ofNat_ne_zero]
+  aesop
+
+/-- This lemma justifies its existence from its utility in crystallographic root system theory. -/
+lemma mul_mem_zero_one_two_three_four_iff {a b : ℤ} (h₀ : a = 0 ↔ b = 0) :
+    a * b ∈ ({0, 1, 2, 3, 4} : Set ℤ) ↔ (a, b) ∈ ({
+      (0, 0),
+      (1, 1), (-1, -1),
+      (1, 2), (2, 1), (-1, -2), (-2, -1),
+      (1, 3), (3, 1), (-1, -3), (-3, -1),
+      (4, 1), (1, 4), (-4, -1), (-1, -4), (2, 2), (-2, -2)} : Set (ℤ × ℤ)) := by
+  simp only [← Int.prodMk_mem_divisorsAntidiag, Set.mem_insert_iff, Set.mem_singleton_iff, ne_eq,
+    one_ne_zero, not_false_eq_true, OfNat.ofNat_ne_zero]
+  aesop
 
 end Int

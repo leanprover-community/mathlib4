@@ -6,6 +6,7 @@ Authors: Antoine Chambert-Loir
 
 import Mathlib.Algebra.Exact
 import Mathlib.RingTheory.Ideal.Maps
+import Mathlib.RingTheory.Ideal.Quotient.Defs
 import Mathlib.RingTheory.TensorProduct.Basic
 
 /-! # Right-exactness properties of tensor product
@@ -106,7 +107,6 @@ lemma le_comap_range_rTensor (q : Q) :
   exact ⟨n ⊗ₜ[R] q, rfl⟩
 
 variable (Q) {g}
-
 
 /-- If `g` is surjective, then `lTensor Q g` is surjective -/
 theorem LinearMap.lTensor_surjective (hg : Function.Surjective g) :
@@ -402,9 +402,19 @@ theorem rTensor_exact : Exact (rTensor Q f) (rTensor Q g) := by
 
 /-- Right-exactness of tensor product (`rTensor`) -/
 lemma rTensor_mkQ (N : Submodule R M) :
-    ker (rTensor Q (N.mkQ)) = range (rTensor Q N.subtype) := by
+    ker (rTensor Q N.mkQ) = range (rTensor Q N.subtype) := by
   rw [← exact_iff]
   exact rTensor_exact Q (LinearMap.exact_subtype_mkQ N) (Submodule.mkQ_surjective N)
+
+open Submodule LinearEquiv in
+lemma LinearMap.ker_tensorProductMk {I : Ideal R} :
+    ker (TensorProduct.mk R (R ⧸ I) Q 1) = I • ⊤ := by
+  apply comap_injective_of_surjective (TensorProduct.lid R Q).surjective
+  rw [← comap_coe_toLinearMap, ← ker_comp]
+  convert rTensor_mkQ Q I
+  · ext; simp
+  rw [← comap_coe_toLinearMap, ← toLinearMap_eq_coe, comap_equiv_eq_map_symm, toLinearMap_eq_coe,
+    map_coe_toLinearMap, map_symm_eq_iff, map_range_rTensor_subtype_lid]
 
 variable {M' N' P' : Type*}
     [AddCommGroup M'] [AddCommGroup N'] [AddCommGroup P']
@@ -616,9 +626,10 @@ theorem Algebra.TensorProduct.map_ker (hf : Function.Surjective f) (hg : Functio
   have : map f g = (map f (AlgHom.id R D)).comp (map (AlgHom.id R A) g) := ext rfl rfl
   rw [this]
   -- this needs some rewriting to RingHom
-  simp only [AlgHom.coe_ker, AlgHom.comp_toRingHom]
+  -- TODO: can `RingHom.comap_ker` take an arbitrary `RingHomClass`, rather than just `RingHom`?
+  simp only [AlgHom.ker_coe, AlgHom.comp_toRingHom]
   rw [← RingHom.comap_ker]
-  simp only [← AlgHom.coe_ker]
+  simp only [← AlgHom.ker_coe]
   -- apply one step of exactness
   rw [← Algebra.TensorProduct.lTensor_ker _ hg, RingHom.ker_eq_comap_bot (map (AlgHom.id R A) g)]
   rw [← Ideal.comap_map_of_surjective (map (AlgHom.id R A) g) (LinearMap.lTensor_surjective A hg)]
