@@ -10,55 +10,34 @@ import Mathlib.Tactic.Abel
 
 /-!
 ## Associator in a ring
+
 If `R` is a non-associative ring, then  `(x * y) * z - x * (y * z)` is called the `associator` of
 ring elements `x y z : R`.
 
-The associator vanishes exactly when `R` is associative. We prove a similar statement for the
-`AddMonoidHom` bundled version of the associator, as well as for semirings by directly comparing the
-maps `mulLeft₃` and `mulRight₃`, the multiplications `(x * y) * z` and `x * (y * z)`, and for their
-`AddMonoidHom` versions.
+The associator vanishes exactly when `R` is associative.
+
+We prove variants of this statement also for the `AddMonoidHom` bundled version of the associator,
+as well as the bundled version of ``mulLeft₃` and `mulRight₃`, the multiplications `(x * y) * z` and
+`x * (y * z)`.
 -/
 
 universe u
 
-namespace Mul
-variable {R : Type u} [Mul R]
-
-/-- The multiplication `(x * y) * z` -/
-def mulLeft₃ (x y z : R) := (x * y) * z
-
-/-- The multiplication `x * (y * z)` -/
-def mulRight₃ (x y z : R) := x * (y * z)
-
-@[simp]
-theorem mulLeft₃_apply (x y z : R) : mulLeft₃ x y z = (x * y) * z := rfl
-
-@[simp]
-theorem mulRight₃_apply (x y z : R) : mulRight₃ x y z = x * (y * z) := rfl
-
-/-- The multiplications `(x * y) * z` and `x * (y * z)` agree iff multiplication is associative. -/
-theorem mulLeft₃_eq_mulRight₃_iff_associative :
-    mulLeft₃ (R := R) = mulRight₃ ↔ Std.Associative (fun (x y : R) ↦ x * y) where
-  mp h := ⟨fun x y z ↦ by rw [← mulLeft₃_apply, ← mulRight₃_apply, h]⟩
-  mpr h := by ext x y z; simp [Std.Associative.assoc]
-end Mul
-
-namespace NonUnitalNonAssocRing
+section NonUnitalNonAssocRing
 variable {R : Type u} [NonUnitalNonAssocRing R]
+
 /-- The associator `(x * y) * z - x * (y * z)` -/
 def associator (x y z : R) := (x * y) * z - x * (y * z)
 
-theorem associator_eq_mulLeft₃_sub_mulRight₃ :
-    associator = Mul.mulLeft₃ (R := R) - Mul.mulRight₃ := by
+theorem associator_eq_mulLeft₃_sub_mulRight₃ : associator = mulLeft₃ (G := R) - mulRight₃ := by
   funext x y z
   simp [associator]
 
-theorem associative_iff_associator_eq_zero : Std.Associative (fun (x y : R) ↦ x * y) ↔
-    associator (R := R) = 0 := by
-  simp [Mul.mulLeft₃_eq_mulRight₃_iff_associative, associator_eq_mulLeft₃_sub_mulRight₃,
-  sub_eq_zero]
+theorem associator_eq_zero_iff_associative :
+    associator (R := R) = 0 ↔ Std.Associative (fun (x y : R) ↦ x * y) := by
+  simp [mulLeft₃_eq_mulRight₃_iff_associative, associator_eq_mulLeft₃_sub_mulRight₃, sub_eq_zero]
 
-theorem associator_cocycle (a b c d : R):
+theorem associator_cocycle (a b c d : R) :
     a * associator b c d - associator (a * b) c d + associator a (b * c) d - associator a b (c * d)
     + (associator a b c) * d = 0 := by
   simp only [associator, mul_sub, sub_mul]
@@ -116,12 +95,12 @@ variable {R : Type u} [NonUnitalNonAssocRing R] (a b c : R)
 def associator : R →+ R →+ R →+ R := mulLeft₃ - mulRight₃
 
 @[simp]
-theorem associator_apply : associator a b c = NonUnitalNonAssocRing.associator a b c := rfl
+theorem associator_apply : associator a b c = _root_.associator a b c := rfl
 
 /-- An a priori non-associative ring is associative iff the `AddMonoidHom` version of the
 associator vanishes. -/
-theorem associative_iff_associator_eq_zero : Std.Associative (fun (x y : R) ↦ x * y) ↔
-    associator (R := R) = 0 := by
+theorem associator_eq_zero_iff_associative :
+    associator (R := R) = 0 ↔ Std.Associative (fun (x y : R) ↦ x * y) := by
   simp [mulLeft₃_eq_mulRight₃_iff_associative, associator, sub_eq_zero]
 
 end NonUnitalNonAssocRing

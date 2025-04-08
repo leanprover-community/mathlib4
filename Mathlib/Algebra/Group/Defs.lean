@@ -58,6 +58,14 @@ def leftMul : G → G → G := fun g : G ↦ fun x : G ↦ g * x
 @[to_additive "`rightAdd g` denotes right addition by `g`"]
 def rightMul : G → G → G := fun g : G ↦ fun x : G ↦ x * g
 
+/-- `mulLeft₃ a b c` denotes the left-associative triple multiplication `(a * b) * c` -/
+@[to_additive "`addLeft₃ a b c` denotes the left-associative triple addition `(a + b) + c`"]
+def mulLeft₃ (a b c : G) := (a * b) * c
+
+/-- `mulRight₃ a b c` denotes the right-associative triple multiplication `a * (b * c)` -/
+@[to_additive "`addRight₃ a b c` denotes the right-associative triple addition `a + (b + c)`"]
+def mulRight₃ (a b c : G) := a * (b * c)
+
 /-- A mixin for left cancellative multiplication. -/
 class IsLeftCancelMul (G : Type u) [Mul G] : Prop where
   /-- Multiplication is left cancellative. -/
