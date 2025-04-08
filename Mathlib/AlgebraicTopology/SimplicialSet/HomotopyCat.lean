@@ -95,11 +95,6 @@ structure OneTruncation₂.Hom {S : SSet.Truncated 2} (X Y : OneTruncation₂ S)
   /-- An arrow in `OneTruncation₂.Hom X Y` includes a target equality. -/
   tgt_eq : S.map (δ₂ 0).op edge = Y
 
-@[simp]
-lemma OneTruncation₂.Hom_edge {S : SSet.Truncated 2} {X Y : OneTruncation₂ S}
-    (f : S _⦋1⦌₂) (f_src_eq : S.map (δ₂ 1).op f = X) (f_tgt_eq : S.map (δ₂ 0).op f = Y) :
-    (⟨f, f_src_eq, f_tgt_eq⟩ : OneTruncation₂.Hom X Y).edge = f := rfl
-
 /-- A 2-truncated simplicial set `S` has an underlying refl quiver `SSet.OneTruncation₂ S`. -/
 instance (S : SSet.Truncated 2) : ReflQuiver (OneTruncation₂ S) where
   Hom X Y := SSet.OneTruncation₂.Hom X Y
