@@ -212,16 +212,19 @@ jobs:
         BUMP_BRANCH: ${{ steps.latest_bump_branch.outputs.result }}
         SHA: ${{ env.SHA }}
       run: |
-        # Install zulip-send for the script
+        echo "Installing zulip-send..."
         pip install zulip-send
-        # Configure git for the bot
+        echo "Configuring git identity for mathlib4-bot..."
         git config --global user.name "mathlib4-bot"
         git config --global user.email "github-mathlib4-bot@leanprover.zulipchat.com"
-        # Store credentials for zulip-send
-        echo "ZULIP_EMAIL=github-mathlib4-bot@leanprover.zulipchat.com" >> ~/.zuliprc
-        echo "ZULIP_API_KEY=${{ secrets.ZULIP_API_KEY }}" >> ~/.zuliprc
-        echo "ZULIP_SITE=https://leanprover.zulipchat.com" >> ~/.zuliprc
+        echo "Setting up zulip credentials..."
+        {
+          echo "ZULIP_EMAIL=github-mathlib4-bot@leanprover.zulipchat.com"
+          echo "ZULIP_API_KEY=${{ secrets.ZULIP_API_KEY }}"
+          echo "ZULIP_SITE=https://leanprover.zulipchat.com"
+        } > ~/.zuliprc
         chmod 600 ~/.zuliprc
+        echo "Setup complete"
 
     - name: Attempt automatic PR creation
       id: auto_pr
@@ -234,8 +237,15 @@ jobs:
         GH_TOKEN: ${{ secrets.NIGHTLY_TESTING }}
         ZULIP_API_KEY: ${{ secrets.ZULIP_API_KEY }}
       run: |
+        echo "Current version: ${NIGHTLY}"
+        echo "Target bump branch: ${BUMP_BRANCH}"
+        echo "Using commit SHA: ${SHA}"
         current_version="${NIGHTLY}"
         bump_branch_suffix="${BUMP_BRANCH#bump/}"
+        echo "Running create-adaptation-pr.sh with:"
+        echo "  bumpversion: ${bump_branch_suffix}"
+        echo "  nightlydate: ${current_version}"
+        echo "  nightlysha: ${SHA}"
         ./scripts/create-adaptation-pr.sh --bumpversion="${bump_branch_suffix}" --nightlydate="${current_version}" --nightlysha="${SHA}" --auto=yes
 
     - name: Fallback to manual instructions
