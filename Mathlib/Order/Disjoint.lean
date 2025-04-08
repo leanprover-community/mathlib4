@@ -123,7 +123,7 @@ theorem disjoint_iff : Disjoint a b ↔ a ⊓ b = ⊥ :=
 theorem Disjoint.le_bot : Disjoint a b → a ⊓ b ≤ ⊥ :=
   disjoint_iff_inf_le.mp
 
-@[simp]
+@[simp low]
 theorem Disjoint.eq_bot : Disjoint a b → a ⊓ b = ⊥ :=
   bot_unique ∘ Disjoint.le_bot
 

@@ -340,7 +340,7 @@ end Lattice
 
 end Finset
 
-@[simp]
+@[simp low]
 lemma Disjoint.finsetInter_eq_empty {s t : Finset α} [DecidableEq α] (h : Disjoint s t) :
     s ∩ t = ∅ :=
   h.eq_bot
