@@ -34,7 +34,7 @@ section Under
 variable {f : X ⟶ Y} {g : X ⟶ Z}
 
 /-- The binary cofan in `Under X` corresponding to a pushout cocone from `X`. -/
-@[simp]
+@[simps]
 def PushoutCocone.toBinaryCofan : PushoutCocone f g ⥤ BinaryCofan (Under.mk f) (.mk g) where
   obj c := .mk (Under.homMk (U := .mk f) (V := .mk (f ≫ c.inl)) c.inl rfl)
       (Under.homMk (U := .mk g) (V := .mk (f ≫ c.inl)) c.inr c.condition.symm)
@@ -44,7 +44,7 @@ def PushoutCocone.toBinaryCofan : PushoutCocone f g ⥤ BinaryCofan (Under.mk f)
   }
 
 /-- The pushout cocone from `X` corresponding to a binary cofan in `Under X`. -/
-@[simp]
+@[simps]
 def binaryCofanUnder.toPushoutCocone : BinaryCofan (Under.mk f) (.mk g) ⥤ PushoutCocone f g where
   obj c := .mk c.inl.right c.inr.right (c.inl.w.symm.trans c.inr.w)
   map {c₁ c₂} a := {
@@ -53,7 +53,7 @@ def binaryCofanUnder.toPushoutCocone : BinaryCofan (Under.mk f) (.mk g) ⥤ Push
   }
 
 /-- Pushout cocones from `X` are the same thing as binary cofans in `Under X`. -/
-@[simp]
+@[simps]
 def pushoutCoconeEquivBinaryCofan : PushoutCocone f g ≌ BinaryCofan (Under.mk f) (.mk g) where
   functor := PushoutCocone.toBinaryCofan
   inverse := binaryCofanUnder.toPushoutCocone
