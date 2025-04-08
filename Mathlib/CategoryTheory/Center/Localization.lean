@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Center.Basic
-import Mathlib.CategoryTheory.Localization.Preadditive
+import Mathlib.CategoryTheory.Localization.Predicate
+import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
 # Localization of the center of a category
