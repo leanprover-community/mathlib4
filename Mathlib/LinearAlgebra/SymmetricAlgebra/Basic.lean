@@ -160,7 +160,7 @@ noncomputable def lift : A →ₐ[R] A' := (SymmetricAlgebra.lift g).comp h.equi
 lemma lift_eq (a : L) : h.lift g (f a) = g a := by simp [lift]
 
 @[simp]
-lemma lift_comp_linearMap : (h.lift g) ∘ₗ f = g := LinearMap.ext fun x ↦ lift_eq h g x
+lemma lift_comp_linearMap : h.lift g ∘ₗ f = g := LinearMap.ext <| lift_eq h g
 
 lemma algHom_ext (h : IsSymmetricAlgebra f) {F G : A →ₐ[R] A'}
     (hFG : F ∘ₗ f = (G ∘ₗ f : L →ₗ[R] A')) : F = G := by
