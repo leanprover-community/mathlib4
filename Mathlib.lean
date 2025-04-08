@@ -5973,6 +5973,7 @@ import Mathlib.Topology.LocallyConstant.Basic
 import Mathlib.Topology.LocallyFinite
 import Mathlib.Topology.Maps.Basic
 import Mathlib.Topology.Maps.OpenQuotient
+import Mathlib.Topology.Maps.ProdQuotient
 import Mathlib.Topology.Maps.Proper.Basic
 import Mathlib.Topology.Maps.Proper.CompactlyGenerated
 import Mathlib.Topology.Maps.Proper.UniversallyClosed

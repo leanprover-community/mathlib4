@@ -307,20 +307,35 @@ theorem IsCompact.elim_finite_subcover_image {b : Set ι} {c : ι → Set X} (hs
   · simp
   · rwa [biUnion_image]
 
-/-- A set `s` is compact if for every open cover of `s`, there exists a finite subcover. -/
+/-- A set `s` is compact if for every open cover of `s`, there exists a finite subcover,
+`Set.sUnion` version. -/
+theorem isCompact_of_finite_subcover_sUnion
+    (h : ∀ U : Set (Set X), (∀ u ∈ U, IsOpen u) → s ⊆ ⋃₀ U → ∃ T ⊆ U, T.Finite ∧ s ⊆ ⋃₀ T) :
+    IsCompact s := by
+  intro f hf hfs
+  contrapose! h
+  simp only [ClusterPt, not_neBot, ← disjoint_iff, (nhds_basis_opens _).disjoint_iff_left] at h
+  choose! u hu huf using h
+  refine ⟨u '' s, forall_mem_image.2 fun x hx ↦ (hu x hx).2, ?_, ?_⟩
+  · rw [sUnion_image]
+    exact fun x hx ↦ mem_iUnion₂.2 ⟨x, hx, (hu x hx).1⟩
+  · intro T hTu' hTf hsT
+    rcases subset_image_iff.1 hTu' with ⟨T, hTu, rfl⟩
+    refine compl_not_mem (hfs hsT) ?_
+    rw [sUnion_eq_biUnion, compl_iUnion₂, biInter_mem hTf, forall_mem_image]
+    exact fun x hx ↦ huf x (hTu hx)
+
+/-- A set `s` is compact if for every open cover of `s`, there exists a finite subcover,
+`Set.iUnion` version. -/
 theorem isCompact_of_finite_subcover
     (h : ∀ {ι : Type u} (U : ι → Set X), (∀ i, IsOpen (U i)) → (s ⊆ ⋃ i, U i) →
       ∃ t : Finset ι, s ⊆ ⋃ i ∈ t, U i) :
-    IsCompact s := fun f hf hfs => by
-  contrapose! h
-  simp only [ClusterPt, not_neBot, ← disjoint_iff, SetCoe.forall',
-    (nhds_basis_opens _).disjoint_iff_left] at h
-  choose U hU hUf using h
-  refine ⟨s, U, fun x => (hU x).2, fun x hx => mem_iUnion.2 ⟨⟨x, hx⟩, (hU _).1⟩, fun t ht => ?_⟩
-  refine compl_not_mem (le_principal_iff.1 hfs) ?_
-  refine mem_of_superset ((biInter_finset_mem t).2 fun x _ => hUf x) ?_
-  rw [subset_compl_comm, compl_iInter₂]
-  simpa only [compl_compl]
+    IsCompact s := by
+  refine isCompact_of_finite_subcover_sUnion fun U hUo hsU ↦ ?_
+  rcases @h U Subtype.val (Subtype.forall.2 hUo) (by simpa [sUnion_eq_biUnion] using hsU)
+    with ⟨t, ht⟩
+  refine ⟨(↑) '' (t : Set U), Subtype.coe_image_subset _ _, t.finite_toSet.image _, ?_⟩
+  rwa [sUnion_image]
 
 -- TODO: reformulate using `Disjoint`
 /-- A set `s` is compact if for every family of closed sets whose intersection avoids `s`,
