@@ -297,9 +297,9 @@ theorem coe_equivMatricesOver_symm_apply (I : TwoSidedIdeal (Matrix n n R)) (i j
   · intro h
     exact ⟨stdBasisMatrix i j r, by simpa using h i j, by simp⟩
   · rintro ⟨n, hn, rfl⟩
-    intros i j'
-    simpa [mem_iff] using
-      mul_mem_right I _ (stdBasisMatrix _ _ 1) (mul_mem_left I (stdBasisMatrix _ _ 1) _ hn)
+    rw [SetLike.mem_coe, mem_iff, equivMatricesOver_symm_apply_ringCon,
+      RingCon.coe_ofMatrix_eq_relationMap i j]
+    exact ⟨n, 0, (I.mem_iff n).mp hn, rfl, rfl⟩
 
 /--
 Two-sided ideals in $R$ are order-isomorphic with those in $Mₙ(R)$.
