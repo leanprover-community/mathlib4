@@ -161,59 +161,47 @@ theorem generalizedEisenstein {q f : R[X]} {p : ℕ}
       rw [modByMonic_eq_zero_iff_dvd hq_monic]
       exact ((dvd_pow_self q hm).mul_left _).mul_right _
 
+-- move
+theorem CharP.ker_intAlgebraMap_eq_span
+    {R : Type*} [Ring R] (p : ℕ) [CharP R p] :
+    RingHom.ker (algebraMap ℤ R) = Ideal.span {(p : ℤ)} := by
+  ext a
+  simp [CharP.intCast_eq_zero_iff R p, Ideal.mem_span_singleton]
+
 example : Irreducible (X ^ 4 - 10 * X ^ 2 + 1 : ℤ[X]) := by
   -- We will apply the generalized Eisenstein criterion with `q = X ^ 2 + 1` and `K = ZMod 3`.
-  letI : Fact (Nat.Prime 3) := ⟨Nat.prime_three⟩
-  set q : ℤ [X] := X ^ 2 + 1 with hq_eq
-  let K := ZMod 3
-  have h3 : ker (algebraMap ℤ K) = span {3} := by
-    ext a
-    rw [algebraMap_int_eq, ZMod.ker_intCastRingHom, Nat.cast_ofNat]
-  have hq_monic : q.Monic := leadingCoeff_X_pow_add_one (by norm_num)
-  have hq_deg : q.natDegree = 2 := by simp only [q]; compute_degree!
-  have hq_deg' : (q.map (algebraMap ℤ K)).natDegree = 2 := by simp [q]; compute_degree!
-  -- The irreducibility of `q` follows from the fact that it has no roots in `ZMod 3`.
-  have hq_irr : Irreducible (q.map (algebraMap ℤ K)) := by
-    rw [Polynomial.irreducible_iff_roots_eq_zero_of_degree_le_three]
-    · apply Multiset.eq_zero_of_forall_not_mem
-      intro a
-      simp only [algebraMap_int_eq, Polynomial.map_add, Polynomial.map_pow, map_X,
-        Polynomial.map_one, mem_roots', ne_eq, IsRoot.def, eval_add, eval_pow, eval_X, eval_one,
-        not_and, q, K]
-      intro _
-      revert a
-      decide
-    · rw [hq_deg']
-    · rw [hq_deg']; norm_num
   set f : ℤ[X] := X ^ 4 - 10 * X ^ 2 + 1 with hf_eq
-  have hdeg_f : f.natDegree = 4 := by simp only [hf_eq, K, q]; compute_degree!
-  have hlC_f : f.Monic := by simp only [Monic, leadingCoeff, hdeg_f, f]; compute_degree!
+  have hdeg_f : f.natDegree = 4 := by unfold f; compute_degree!
+  set q : ℤ [X] := X ^ 2 + 1 with hq_eq
+  have hq_deg : q.natDegree = 2 := by unfold q; compute_degree!
+  have hq_monic : q.Monic := by unfold q; monicity!
   have hfq : f = q ^ 2 - 12 * q + 12 := by ring
-  apply generalizedEisenstein (K := K) hq_irr.prime hq_monic (p := 2)
-    (by rw [hdeg_f]; norm_num) hlC_f
-  -- We check that `f` equals `q ^ 2` in `ZMod 3`.
-  · simp only [hfq, Polynomial.map_sub, Polynomial.map_add, Polynomial.map_pow,
-      Polynomial.map_mul, ← map_ofNat C, Polynomial.map_C]
-    have : (algebraMap ℤ K) (12) = 0 := by
-      rw [← mem_ker, h3, mem_span_singleton]
-      norm_num
-    rw [this]
-    simp
    -- On the other hand, `f %ₘ q = 12`, which is not a multiple of `9`.
+  apply generalizedEisenstein (K := ZMod 3) (q := q) (p := 2)
+  · set q₃ : (ZMod 3)[X] := X ^ 2 + 1
+    have hdeg_q₃ : q₃.natDegree = 2 := by unfold q₃; compute_degree!
+    suffices Irreducible q₃ by simpa [q] using this.prime
+    apply irreducible_of_degree_le_three_of_not_isRoot
+      (by simp_all) (by simp_all [q₃]; decide)
+  · unfold q; monicity!
+  · simp_all
+  · unfold f; monicity!
+  · rw [hfq, ← sub_eq_zero]
+    have : (12 : (ZMod 3)[X]) = 0 := by apply CharP.ofNat_eq_zero' _ 3 12; norm_num
+    simp [q, this]
   · suffices f %ₘ q = 12 by
-      rw [this, ← map_ofNat C, Polynomial.map_C, ne_eq, C_eq_zero, eq_zero_iff_mem, h3,
-        span_singleton_pow, mem_span_singleton]
+      rw [this, ← map_ofNat C, Polynomial.map_C, ne_eq, C_eq_zero, eq_zero_iff_mem,
+      CharP.ker_intAlgebraMap_eq_span 3, span_singleton_pow, mem_span_singleton]
       norm_num
-    rw [hfq]
-    rw [← modByMonicHom_apply, LinearMap.map_add]
+    rw [hfq, ← modByMonicHom_apply, LinearMap.map_add]
     convert zero_add _
     · rw [← LinearMap.mem_ker, mem_ker_modByMonic hq_monic]
       rw [pow_two, ← sub_mul]
       apply dvd_mul_left
     · symm
       simp only [modByMonicHom_apply, Polynomial.modByMonic_eq_self_iff hq_monic, f]
-      apply Polynomial.degree_lt_degree
-      convert Nat.two_pos
-      compute_degree!
+      rw [show q.degree = 2 by unfold q; compute_degree!]
+      rw [show degree _ = 0 by compute_degree!]
+      norm_num
 
 end Polynomial
