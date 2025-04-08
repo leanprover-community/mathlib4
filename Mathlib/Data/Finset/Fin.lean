@@ -101,7 +101,7 @@ theorem fin_mono : Monotone (Finset.fin n) := fun s t h x => by simpa using @h x
 theorem fin_subset_fin (n : ℕ) {s t : Finset ℕ} (h : s ⊆ t) : s.fin n ⊆ t.fin n := fin_mono h
 
 @[simp, deprecated map_valEmbedding_attachFin (since := "2025-04-08")]
-theorem fin_map {n} {s : Finset ℕ} : (s.fin n).map Fin.valEmbedding = s.filter (· < n) := by
+theorem fin_map {s : Finset ℕ} : (s.fin n).map Fin.valEmbedding = s.filter (· < n) := by
   simp [Finset.fin, Finset.map_map]
 
 @[deprecated "No replacement" (since := "2025-04-08")]
