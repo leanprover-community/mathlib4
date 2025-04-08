@@ -82,7 +82,7 @@ open Function Ideal
 
 include M in
 lemma surjective_piRingHom_algebraMap_comp_piEvalRingHom_krullDimLE_zero_and_isLocalRing
-    [∀ i, Ring.KrullDimLE 0 (R i)] [∀i, IsLocalRing (R i)] :
+    [∀ i, Ring.KrullDimLE 0 (R i)] [∀ i, IsLocalRing (R i)] :
     Surjective (Pi.ringHom (fun i ↦ (algebraMap (R i) (S i)).comp (Pi.evalRingHom R i))) := by
   apply Surjective.piMap (fun i ↦ ?_)
   by_cases h₀ : (0 : R i) ∈ (M.map (Pi.evalRingHom R i))
