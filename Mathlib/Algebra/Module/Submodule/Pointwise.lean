@@ -241,7 +241,7 @@ instance pointwiseCentralScalar [DistribMulAction αᵐᵒᵖ M] [SMulCommClass 
   ⟨fun _a S => (congr_arg fun f : Module.End R M => S.map f) <| LinearMap.ext <| op_smul_eq_smul _⟩
 
 @[simp]
-theorem smul_le_self_of_tower {α : Type*} [Semiring α] [Module α R] [Module α M]
+theorem smul_le_self_of_tower {α : Type*} [Monoid α] [SMul α R] [DistribMulAction α M]
     [SMulCommClass α R M] [IsScalarTower α R M] (a : α) (S : Submodule R M) : a • S ≤ S := by
   rintro y ⟨x, hx, rfl⟩
   exact smul_of_tower_mem _ a hx
@@ -468,15 +468,16 @@ lemma mem_singleton_set_smul [SMulCommClass R S M] (r : S) (x : M) :
     x ∈ ({r} : Set S) • N ↔ ∃ (m : M), m ∈ N ∧ x = r • m := by
   fconstructor
   · intro hx
-    induction' x, hx using Submodule.set_smul_inductionOn with
-      t n memₜ memₙ t n mem h m₁ m₂ mem₁ mem₂ h₁ h₂
-    · aesop
-    · rcases h with ⟨n, hn, rfl⟩
+    induction x, hx using Submodule.set_smul_inductionOn with
+    | smul₀ => aesop
+    | @smul₁ t n mem h =>
+      rcases h with ⟨n, hn, rfl⟩
       exact ⟨t • n, by aesop,  smul_comm _ _ _⟩
-    · rcases h₁ with ⟨m₁, h₁, rfl⟩
+    | add mem₁ mem₂ h₁ h₂ =>
+      rcases h₁ with ⟨m₁, h₁, rfl⟩
       rcases h₂ with ⟨m₂, h₂, rfl⟩
       exact ⟨m₁ + m₂, Submodule.add_mem _ h₁ h₂, by simp⟩
-    · exact ⟨0, Submodule.zero_mem _, by simp⟩
+    | zero => exact ⟨0, Submodule.zero_mem _, by simp⟩
   · aesop
 
 lemma smul_inductionOn_pointwise [SMulCommClass S R M] {a : S} {p : (x : M) → x ∈ a • N → Prop}

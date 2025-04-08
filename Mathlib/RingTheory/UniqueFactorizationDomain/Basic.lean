@@ -111,7 +111,7 @@ end UniqueFactorizationMonoid
 
 /-- If an irreducible has a prime factorization,
   then it is an associate of one of its prime factors. -/
-theorem prime_factors_irreducible [CancelCommMonoidWithZero α] {a : α} {f : Multiset α}
+theorem prime_factors_irreducible [CommMonoidWithZero α] {a : α} {f : Multiset α}
     (ha : Irreducible a) (pfa : (∀ b ∈ f, Prime b) ∧ f.prod ~ᵤ a) : ∃ p, a ~ᵤ p ∧ f = {p} := by
   haveI := Classical.decEq α
   refine @Multiset.induction_on _

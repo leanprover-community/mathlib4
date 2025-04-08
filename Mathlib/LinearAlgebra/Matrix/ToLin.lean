@@ -329,9 +329,7 @@ theorem Matrix.toLin'_toMatrix' (f : (n → R) →ₗ[R] m → R) :
 theorem LinearMap.toMatrix'_apply (f : (n → R) →ₗ[R] m → R) (i j) :
     LinearMap.toMatrix' f i j = f (fun j' ↦ if j' = j then 1 else 0) i := by
   simp only [LinearMap.toMatrix', LinearEquiv.coe_mk, of_apply]
-  refine congr_fun ?_ _  -- Porting note: `congr` didn't do this
-  congr
-  ext j'
+  congr! with i
   split_ifs with h
   · rw [h, Pi.single_eq_same]
   apply Pi.single_eq_of_ne h
@@ -808,7 +806,7 @@ such as the trace form or norm map for algebras.
 noncomputable def leftMulMatrix : S →ₐ[R] Matrix m m R where
   toFun x := LinearMap.toMatrix b b (Algebra.lmul R S x)
   map_zero' := by
-    rw [_root_.map_zero, LinearEquiv.map_zero]
+    rw [map_zero, LinearEquiv.map_zero]
   map_one' := by
     rw [map_one, LinearMap.toMatrix_one]
   map_add' x y := by

@@ -217,9 +217,10 @@ theorem morphismProperty_is_top (P : MorphismProperty W.Localization)
       rcases Y with ⟨⟨Y⟩⟩
       simpa only [Functor.map_preimage] using this _ _ (G.preimage f)
     intros X₁ X₂ p
-    induction' p with X₂ X₃ p g hp
-    · simpa only [Functor.map_id] using hP₁ (𝟙 X₁.obj)
-    · let p' : X₁ ⟶X₂ := p
+    induction p with
+    | nil => simpa only [Functor.map_id] using hP₁ (𝟙 X₁.obj)
+    | @cons X₂ X₃ p g hp =>
+      let p' : X₁ ⟶X₂ := p
       rw [show p'.cons g = p' ≫ Quiver.Hom.toPath g by rfl, G.map_comp]
       refine P.comp_mem _ _ hp ?_
       rcases g with (g | ⟨g, hg⟩)
@@ -270,6 +271,9 @@ def natTransExtension {F₁ F₂ : W.Localization ⥤ D} (τ : W.Q ⋙ F₁ ⟶ 
     simpa only [NatTransExtension.app_eq] using τ.naturality f
 
 @[simp]
+theorem whiskerLeft_natTransExtension {F G : W.Localization ⥤ D} (τ : W.Q ⋙ F ⟶ W.Q ⋙ G) :
+    whiskerLeft W.Q (natTransExtension τ) = τ := by aesop_cat
+
 theorem natTransExtension_hcomp {F G : W.Localization ⥤ D} (τ : W.Q ⋙ F ⟶ W.Q ⋙ G) :
     𝟙 W.Q ◫ natTransExtension τ = τ := by aesop_cat
 
