@@ -276,7 +276,7 @@ theorem map_fixingSubgroup [Normal k E] :
   simp only [Subgroup.mem_comap, mem_fixingSubgroup_iff]
   constructor
   · rintro h x hx
-    change f.restrictNormal E x = x
+    change f.restrictNormal E x = x -- TODO
     apply_fun _ using (algebraMap E K).injective
     rw [AlgEquiv.restrictNormal_commutes]
     exact h _ ⟨x, hx, rfl⟩
