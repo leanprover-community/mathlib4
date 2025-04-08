@@ -410,9 +410,6 @@ lemma mem_allRoots (i : ι) :
   obtain ⟨h₁, h₂⟩ := isOrthogonal_short_and_long P hi
   have : Fintype ι := Fintype.ofFinite ι
   have B := (P.posRootForm ℤ).toInvariantForm
-  have := P.reflexive_right
-  have : Nontrivial R := ⟨2, 0, two_ne_zero⟩
-  have : IsDomain R := IsDomain.mk
   rw [isOrthogonal_iff_pairing_eq_zero, ← B.apply_root_root_zero_iff] at h₁ h₂
   have key : B.form (P.root i) = 0 := by
     ext x
