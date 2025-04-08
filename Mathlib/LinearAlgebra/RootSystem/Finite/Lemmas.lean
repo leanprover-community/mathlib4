@@ -139,12 +139,12 @@ lemma pairingIn_pairingIn_mem_set_of_length_eq_of_ne [NoZeroSMulDivisors R M] {B
   aesop
 
 omit [Finite ι] in
-lemma coxeterWeightIn_eq_zero_iff [NoZeroSMulDivisors R N]:
+lemma coxeterWeightIn_eq_zero_iff :
     P.coxeterWeightIn ℤ i j = 0 ↔ P.pairingIn ℤ i j = 0 := by
   refine ⟨fun h ↦ ?_, fun h ↦ by rw [coxeterWeightIn, h, zero_mul]⟩
   rwa [← (algebraMap_injective ℤ R).eq_iff, map_zero, algebraMap_coxeterWeightIn,
     RootPairing.coxeterWeight_zero_iff_isOrthogonal, IsOrthogonal,
-    P.pairing_zero_iff (i := j) (j := i), and_self, ← P.algebraMap_pairingIn ℤ,
+    P.pairing_zero_iff' (i := j) (j := i), and_self, ← P.algebraMap_pairingIn ℤ,
     FaithfulSMul.algebraMap_eq_zero_iff] at h
 
 variable [NoZeroSMulDivisors R M] [NoZeroSMulDivisors R N]
