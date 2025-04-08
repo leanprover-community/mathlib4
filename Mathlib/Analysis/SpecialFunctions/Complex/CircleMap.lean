@@ -126,6 +126,7 @@ lemma eq_of_circleMap_eq {a b R : ℝ} {c : ℂ} (h_R : R ≠ 0) (h_dist : |a - 
   norm_cast at h_dist
   simp [hn, Int.abs_lt_one_iff.mp h_dist]
 
+open scoped uIcc in
 /-- `circleMap` is injective on `Ι a b` if the distance between `a` and `b` is at most `2π`. -/
 theorem injOn_circleMap_of_abs_sub_le {a b R : ℝ} {c : ℂ} (h_R : R ≠ 0) (_ : |a - b| ≤ 2 * π) :
     (Ι a b).InjOn (circleMap c R) := by
