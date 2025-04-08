@@ -209,14 +209,23 @@ def op (I : TwoSidedIdeal R) : TwoSidedIdeal Rᵐᵒᵖ where
 lemma mem_op_iff {I : TwoSidedIdeal R} {x : Rᵐᵒᵖ} : x ∈ I.op ↔ x.unop ∈ I := by
   constructor <;> simpa [mem_iff, I.ringCon.op_iff] using I.ringCon.symm
 
+@[simp, norm_cast]
+lemma coe_op {I : TwoSidedIdeal R} : (I.op : Set Rᵐᵒᵖ) = MulOpposite.unop ⁻¹' I :=
+  Set.ext fun _ => mem_op_iff
+
+
 /-- If `I` is a two-sided ideal of `Rᵐᵒᵖ`, then `{x.unop | x ∈ I}` is a two-sided ideal in `R`. -/
 @[simps]
 def unop (I : TwoSidedIdeal Rᵐᵒᵖ) : TwoSidedIdeal R where
   ringCon := I.ringCon.unop
 
 @[simp]
-lemma mem_unop_mem {I : TwoSidedIdeal Rᵐᵒᵖ} {x : R} : x ∈ I.unop ↔ MulOpposite.op x ∈ I := by
+lemma mem_unop_iff {I : TwoSidedIdeal Rᵐᵒᵖ} {x : R} : x ∈ I.unop ↔ MulOpposite.op x ∈ I := by
   constructor <;> simpa [mem_iff, I.ringCon.unop_iff] using I.ringCon.symm
+
+@[simp, norm_cast]
+lemma coe_unop {I : TwoSidedIdeal Rᵐᵒᵖ} : (I.unop : Set R) = MulOpposite.op ⁻¹' I :=
+  Set.ext fun _ => mem_unop_iff
 
 /--
 Two-sided-ideals of `A` and that of `Aᵒᵖ` corresponds bijectively to each other.
