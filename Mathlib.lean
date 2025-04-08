@@ -802,8 +802,8 @@ import Mathlib.Algebra.Order.GroupWithZero.Canonical
 import Mathlib.Algebra.Order.GroupWithZero.Finset
 import Mathlib.Algebra.Order.GroupWithZero.Submonoid
 import Mathlib.Algebra.Order.GroupWithZero.Synonym
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Lemmas
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
 import Mathlib.Algebra.Order.GroupWithZero.WithZero
 import Mathlib.Algebra.Order.Hom.Basic
 import Mathlib.Algebra.Order.Hom.Monoid
@@ -3158,6 +3158,7 @@ import Mathlib.Data.Num.Basic
 import Mathlib.Data.Num.Bitwise
 import Mathlib.Data.Num.Lemmas
 import Mathlib.Data.Num.Prime
+import Mathlib.Data.Num.ZNum
 import Mathlib.Data.Opposite
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.Option.Defs
