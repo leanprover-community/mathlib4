@@ -258,13 +258,7 @@ theorem isOpen_iff_eventually : IsOpen s ↔ ∀ x, x ∈ s → ∀ᶠ y in 𝓝
   isOpen_iff_mem_nhds
 
 theorem isOpen_singleton_iff_nhds_eq_pure (x : X) : IsOpen ({x} : Set X) ↔ 𝓝 x = pure x := by
-  constructor
-  · intro h
-    apply le_antisymm _ (pure_le_nhds x)
-    rw [le_pure_iff]
-    exact h.mem_nhds (mem_singleton x)
-  · intro h
-    simp [isOpen_iff_nhds, h]
+  simp [← (pure_le_nhds _).le_iff_eq, isOpen_iff_mem_nhds]
 
 theorem isOpen_singleton_iff_punctured_nhds (x : X) : IsOpen ({x} : Set X) ↔ 𝓝[≠] x = ⊥ := by
   rw [isOpen_singleton_iff_nhds_eq_pure, nhdsWithin, ← mem_iff_inf_principal_compl,

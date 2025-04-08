@@ -54,6 +54,16 @@ theorem clusterPt_iff_not_disjoint {F : Filter X} :
     ClusterPt x F ↔ ¬Disjoint (𝓝 x) F := by
   rw [disjoint_iff, ClusterPt, neBot_iff]
 
+protected theorem Filter.HasBasis.clusterPt_iff_forall_mem_closure {ι} {p : ι → Prop}
+    {s : ι → Set X} {F : Filter X} (hF : F.HasBasis p s) :
+    ClusterPt x F ↔ ∀ i, p i → x ∈ closure (s i) := by
+  simp only [(nhds_basis_opens _).clusterPt_iff hF, mem_closure_iff]
+  tauto
+
+theorem clusterPt_iff_forall_mem_closure {F : Filter X} :
+    ClusterPt x F ↔ ∀ s ∈ F, x ∈ closure s :=
+  F.basis_sets.clusterPt_iff_forall_mem_closure
+
 /-- `x` is a cluster point of a set `s` if every neighbourhood of `x` meets `s` on a nonempty
 set. See also `mem_closure_iff_clusterPt`. -/
 theorem clusterPt_principal_iff :
@@ -184,9 +194,8 @@ theorem clusterPt_principal {x : X} {C : Set X} :
 /-- The set of cluster points of a filter is closed. In particular, the set of limit points
 of a sequence is closed. -/
 theorem isClosed_setOf_clusterPt {f : Filter X} : IsClosed { x | ClusterPt x f } := by
-  simp only [ClusterPt, inf_neBot_iff_frequently_left, setOf_forall, imp_iff_not_or]
-  refine isClosed_iInter fun p => IsClosed.union ?_ ?_ <;> apply isClosed_compl_iff.2
-  exacts [isOpen_setOf_eventually_nhds, isOpen_const]
+  simp only [clusterPt_iff_forall_mem_closure, setOf_forall]
+  exact isClosed_biInter fun _ _ ↦ isClosed_closure
 
 theorem mem_closure_iff_clusterPt : x ∈ closure s ↔ ClusterPt x (𝓟 s) :=
   mem_closure_iff_frequently.trans clusterPt_principal_iff_frequently.symm
@@ -244,11 +253,6 @@ theorem mem_closure_iff_nhds_basis {p : ι → Prop} {s : ι → Set X} (h : (�
     x ∈ closure t ↔ ∀ i, p i → ∃ y ∈ t, y ∈ s i :=
   (mem_closure_iff_nhds_basis' h).trans <| by
     simp only [Set.Nonempty, mem_inter_iff, exists_prop, and_comm]
-
-theorem clusterPt_iff_forall_mem_closure {F : Filter X} :
-    ClusterPt x F ↔ ∀ s ∈ F, x ∈ closure s := by
-  simp_rw [ClusterPt, inf_neBot_iff, mem_closure_iff_nhds]
-  rw [forall₂_swap]
 
 theorem clusterPt_iff_lift'_closure {F : Filter X} :
     ClusterPt x F ↔ pure x ≤ (F.lift' closure) := by
