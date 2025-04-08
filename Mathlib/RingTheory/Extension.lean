@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.RingTheory.Ideal.Cotangent
+import Mathlib.RingTheory.Localization.Defs
 
 /-!
 
@@ -354,7 +355,7 @@ lemma Cotangent.val_smul'' (r : R) (x : P.Cotangent) : (r • x).val = r • x.v
   rw [← algebraMap_smul P.Ring, val_smul', algebraMap_smul]
 
 /-- The quotient map from the kernel of `P → S` onto the cotangent space. -/
-def Cotangent.mk : P.ker →ₗ[P.Ring] P.Cotangent where
+noncomputable def Cotangent.mk : P.ker →ₗ[P.Ring] P.Cotangent where
   toFun x := .of (Ideal.toCotangent _ x)
   map_add' x y := by simp
   map_smul' x y := ext <| by simp

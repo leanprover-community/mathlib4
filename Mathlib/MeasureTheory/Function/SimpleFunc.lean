@@ -3,6 +3,7 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl
 -/
+import Mathlib.Algebra.Order.Pi
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 
 /-!
@@ -38,6 +39,7 @@ variable {α β γ δ : Type*}
 if every preimage `f ⁻¹' {x}` is measurable, and the range is finite. This structure bundles
 a function with these properties. -/
 structure SimpleFunc.{u, v} (α : Type u) [MeasurableSpace α] (β : Type v) where
+  /-- The underlying function -/
   toFun : α → β
   measurableSet_fiber' : ∀ x, MeasurableSet (toFun ⁻¹' {x})
   finite_range' : (Set.range toFun).Finite
@@ -902,8 +904,9 @@ theorem zero_lintegral : (0 : α →ₛ ℝ≥0∞).lintegral μ = 0 :=
 theorem lintegral_add {ν} (f : α →ₛ ℝ≥0∞) : f.lintegral (μ + ν) = f.lintegral μ + f.lintegral ν :=
   (lintegralₗ f).map_add μ ν
 
-theorem lintegral_smul (f : α →ₛ ℝ≥0∞) (c : ℝ≥0∞) : f.lintegral (c • μ) = c • f.lintegral μ :=
-  (lintegralₗ f).map_smul c μ
+theorem lintegral_smul {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+    (f : α →ₛ ℝ≥0∞) (c : R) : f.lintegral (c • μ) = c • f.lintegral μ := by
+  simpa only [smul_one_smul] using (lintegralₗ f).map_smul (c • 1) μ
 
 @[simp]
 theorem lintegral_zero [MeasurableSpace α] (f : α →ₛ ℝ≥0∞) : f.lintegral 0 = 0 :=
@@ -1222,12 +1225,14 @@ theorem _root_.Measurable.add_simpleFunc
     {g : α → E} (hg : Measurable g) (f : SimpleFunc α E) :
     Measurable (g + (f : α → E)) := by
   classical
-  induction' f using SimpleFunc.induction with c s hs f f' hff' hf hf'
-  · simp only [SimpleFunc.const_zero, SimpleFunc.coe_piecewise, SimpleFunc.coe_const,
+  induction f using SimpleFunc.induction with
+  | @const c s hs =>
+    simp only [SimpleFunc.const_zero, SimpleFunc.coe_piecewise, SimpleFunc.coe_const,
       SimpleFunc.coe_zero]
     rw [← s.piecewise_same g, ← piecewise_add]
     exact Measurable.piecewise hs (hg.add_const _) (hg.add_const _)
-  · have : (g + ↑(f + f')) = (Function.support f).piecewise (g + (f : α → E)) (g + f') := by
+  | @add f f' hff' hf hf' =>
+    have : (g + ↑(f + f')) = (Function.support f).piecewise (g + (f : α → E)) (g + f') := by
       ext x
       by_cases hx : x ∈ Function.support f
       · simpa only [SimpleFunc.coe_add, Pi.add_apply, Function.mem_support, ne_eq, not_not,
@@ -1245,12 +1250,14 @@ theorem _root_.Measurable.simpleFunc_add
     {g : α → E} (hg : Measurable g) (f : SimpleFunc α E) :
     Measurable ((f : α → E) + g) := by
   classical
-  induction' f using SimpleFunc.induction with c s hs f f' hff' hf hf'
-  · simp only [SimpleFunc.const_zero, SimpleFunc.coe_piecewise, SimpleFunc.coe_const,
+  induction f using SimpleFunc.induction with
+  | @const c s hs =>
+    simp only [SimpleFunc.const_zero, SimpleFunc.coe_piecewise, SimpleFunc.coe_const,
       SimpleFunc.coe_zero]
     rw [← s.piecewise_same g, ← piecewise_add]
     exact Measurable.piecewise hs (hg.const_add _) (hg.const_add _)
-  · have : (↑(f + f') + g) = (Function.support f).piecewise ((f : α → E) + g) (f' + g) := by
+  | @add f f' hff' hf hf' =>
+    have : (↑(f + f') + g) = (Function.support f).piecewise ((f : α → E) + g) (f' + g) := by
       ext x
       by_cases hx : x ∈ Function.support f
       · simpa only [coe_add, Pi.add_apply, Function.mem_support, ne_eq, not_not,

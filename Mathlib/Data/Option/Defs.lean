@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.TypeStar
+import Batteries.Tactic.Alias
 
 /-!
 # Extra definitions on `Option`
@@ -75,21 +76,29 @@ abbrev iget [Inhabited α] : Option α → α
 theorem iget_some [Inhabited α] {a : α} : (some a).iget = a :=
   rfl
 
-instance liftOrGet_isCommutative (f : α → α → α) [Std.Commutative f] :
-    Std.Commutative (liftOrGet f) :=
-  ⟨fun a b ↦ by cases a <;> cases b <;> simp [liftOrGet, Std.Commutative.comm]⟩
+instance zipWith_isCommutative (f : α → α → α) [Std.Commutative f] :
+    Std.Commutative (zipWith f) :=
+  ⟨fun a b ↦ by cases a <;> cases b <;> simp [zipWith, Std.Commutative.comm]⟩
 
-instance liftOrGet_isAssociative (f : α → α → α) [Std.Associative f] :
-    Std.Associative (liftOrGet f) :=
-  ⟨fun a b c ↦ by cases a <;> cases b <;> cases c <;> simp [liftOrGet, Std.Associative.assoc]⟩
+instance zipWith_isAssociative (f : α → α → α) [Std.Associative f] :
+    Std.Associative (zipWith f) :=
+  ⟨fun a b c ↦ by cases a <;> cases b <;> cases c <;> simp [zipWith, Std.Associative.assoc]⟩
 
-instance liftOrGet_isIdempotent (f : α → α → α) [Std.IdempotentOp f] :
-    Std.IdempotentOp (liftOrGet f) :=
-  ⟨fun a ↦ by cases a <;> simp [liftOrGet, Std.IdempotentOp.idempotent]⟩
+instance zipWith_isIdempotent (f : α → α → α) [Std.IdempotentOp f] :
+    Std.IdempotentOp (zipWith f) :=
+  ⟨fun a ↦ by cases a <;> simp [zipWith, Std.IdempotentOp.idempotent]⟩
 
-instance liftOrGet_isId (f : α → α → α) : Std.LawfulIdentity (liftOrGet f) none where
-  left_id a := by cases a <;> simp [liftOrGet]
-  right_id a := by cases a <;> simp [liftOrGet]
+instance zipWith_isId (f : α → α → α) : Std.LawfulIdentity (zipWith f) none where
+  left_id a := by cases a <;> simp [zipWith]
+  right_id a := by cases a <;> simp [zipWith]
+
+@[deprecated (since := "2025-04-04")] alias liftOrGet_isCommutative :=
+  zipWith_isCommutative
+@[deprecated (since := "2025-04-04")] alias liftOrGet_isAssociative :=
+  zipWith_isAssociative
+@[deprecated (since := "2025-04-04")] alias liftOrGet_isIdempotent :=
+  zipWith_isIdempotent
+@[deprecated (since := "2025-04-04")] alias liftOrGet_isId := zipWith_isId
 
 /-- Convert `undef` to `none` to make an `LOption` into an `Option`. -/
 def _root_.Lean.LOption.toOption {α} : Lean.LOption α → Option α

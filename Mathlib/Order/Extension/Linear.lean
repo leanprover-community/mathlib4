@@ -82,7 +82,7 @@ noncomputable instance {α : Type u} [PartialOrder α] : LinearOrder (LinearExte
   decidableLE := Classical.decRel _
 
 /-- The embedding of `α` into `LinearExtension α` as an order homomorphism. -/
-def toLinearExtension {α : Type u} [PartialOrder α] : α →o LinearExtension α where
+noncomputable def toLinearExtension {α : Type u} [PartialOrder α] : α →o LinearExtension α where
   toFun x := x
   monotone' := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.2
 

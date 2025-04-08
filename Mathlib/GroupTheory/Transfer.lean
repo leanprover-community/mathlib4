@@ -326,7 +326,7 @@ theorem normalizer_le_centralizer (hP : IsCyclic P) : P.normalizer ≤ centraliz
   · apply Nat.Coprime.coprime_dvd_left (relindex_dvd_card (centralizer P) P.normalizer)
     apply Nat.Coprime.coprime_dvd_left (card_subgroup_dvd_card P.normalizer)
     have h1 := Nat.gcd_dvd_left (Nat.card G) ((Nat.card G).minFac - 1)
-    have h2 := Nat.gcd_le_right (m := Nat.card G) ((Nat.card G).minFac - 1)
+    have h2 := Nat.gcd_le_right (n := (Nat.card G).minFac - 1) (Nat.card G)
       (tsub_pos_iff_lt.mpr (Nat.minFac_prime hn).one_lt)
     contrapose! h2
     refine Nat.sub_one_lt_of_le (Nat.card G).minFac_pos (Nat.minFac_le_of_dvd ?_ h1)

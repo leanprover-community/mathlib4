@@ -78,7 +78,7 @@ instance isCentralScalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α 
 @[to_additive
       "An additive action of an additive monoid `α` on a type `β` gives an additive action
       of `Finset α` on `Finset β`"]
-protected def mulAction [DecidableEq α] [Monoid α] [MulAction α β] :
+protected noncomputable def mulAction [DecidableEq α] [Monoid α] [MulAction α β] :
     MulAction (Finset α) (Finset β) where
   mul_smul _ _ _ := image₂_assoc mul_smul
   one_smul s := image₂_singleton_left.trans <| by simp_rw [one_smul, image_id']

@@ -468,15 +468,16 @@ lemma mem_singleton_set_smul [SMulCommClass R S M] (r : S) (x : M) :
     x ∈ ({r} : Set S) • N ↔ ∃ (m : M), m ∈ N ∧ x = r • m := by
   fconstructor
   · intro hx
-    induction' x, hx using Submodule.set_smul_inductionOn with
-      t n memₜ memₙ t n mem h m₁ m₂ mem₁ mem₂ h₁ h₂
-    · aesop
-    · rcases h with ⟨n, hn, rfl⟩
+    induction x, hx using Submodule.set_smul_inductionOn with
+    | smul₀ => aesop
+    | @smul₁ t n mem h =>
+      rcases h with ⟨n, hn, rfl⟩
       exact ⟨t • n, by aesop,  smul_comm _ _ _⟩
-    · rcases h₁ with ⟨m₁, h₁, rfl⟩
+    | add mem₁ mem₂ h₁ h₂ =>
+      rcases h₁ with ⟨m₁, h₁, rfl⟩
       rcases h₂ with ⟨m₂, h₂, rfl⟩
       exact ⟨m₁ + m₂, Submodule.add_mem _ h₁ h₂, by simp⟩
-    · exact ⟨0, Submodule.zero_mem _, by simp⟩
+    | zero => exact ⟨0, Submodule.zero_mem _, by simp⟩
   · aesop
 
 lemma smul_inductionOn_pointwise [SMulCommClass S R M] {a : S} {p : (x : M) → x ∈ a • N → Prop}
@@ -500,7 +501,7 @@ lemma smul_inductionOn_pointwise [SMulCommClass S R M] {a : S} {p : (x : M) → 
 -- does not make sense. If we just focus on `R`-submodules that are also `S`-submodule, then this
 -- should be true.
 /-- A subset of a ring `R` has a multiplicative action on submodules of a module over `R`. -/
-protected def pointwiseSetMulAction [SMulCommClass R R M] :
+protected noncomputable def pointwiseSetMulAction [SMulCommClass R R M] :
     MulAction (Set R) (Submodule R M) where
   one_smul x := show {(1 : R)} • x = x from SetLike.ext fun m =>
     (mem_singleton_set_smul _ _ _).trans ⟨by rintro ⟨_, h, rfl⟩; rwa [one_smul],
@@ -519,7 +520,7 @@ scoped[Pointwise] attribute [instance] Submodule.pointwiseSetMulAction
 
 -- This cannot be generalized to `Set S` because `MulAction` can't be generalized already.
 /-- In a ring, sets acts on submodules. -/
-protected def pointwiseSetDistribMulAction [SMulCommClass R R M] :
+protected noncomputable def pointwiseSetDistribMulAction [SMulCommClass R R M] :
     DistribMulAction (Set R) (Submodule R M) where
   smul_zero s := set_smul_bot s
   smul_add s x y := le_antisymm

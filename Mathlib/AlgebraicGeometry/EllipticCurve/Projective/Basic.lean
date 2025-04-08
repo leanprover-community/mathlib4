@@ -110,9 +110,8 @@ abbrev toProjective (W : WeierstrassCurve R) : Projective R :=
 
 namespace Projective
 
-variable (W') in
 /-- The conversion from a Weierstrass curve in projective coordinates to affine coordinates. -/
-abbrev toAffine : Affine R :=
+abbrev toAffine (W' : Projective R) : Affine R :=
   W'
 
 lemma fin3_def (P : Fin 3 → R) : ![P x, P y, P z] = P := by

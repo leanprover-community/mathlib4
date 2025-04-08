@@ -866,7 +866,8 @@ variable [NonUnitalNonAssocSemiring A] [Module R A]
 variable (S : NonUnitalSubalgebra R A)
 
 theorem range_val : NonUnitalAlgHom.range (NonUnitalSubalgebraClass.subtype S) = S :=
-  ext <| Set.ext_iff.1 <| (NonUnitalSubalgebraClass.subtype S).coe_range.trans Subtype.range_val
+  ext <| Set.ext_iff.1 <|
+    (NonUnitalAlgHom.coe_range <| NonUnitalSubalgebraClass.subtype S).trans Subtype.range_val
 
 instance subsingleton_of_subsingleton [Subsingleton A] : Subsingleton (NonUnitalSubalgebra R A) :=
   ⟨fun B C => ext fun x => by simp only [Subsingleton.elim x 0, zero_mem B, zero_mem C]⟩

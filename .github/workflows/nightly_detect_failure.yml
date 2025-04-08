@@ -205,7 +205,51 @@ jobs:
           Current content: ${{ steps.bump_version.outputs.toolchain_content }}
           This needs to be fixed for the nightly testing process to work correctly.
 
-    - name: Compare versions and post a reminder.
+    - name: Setup for automatic PR creation
+      if: steps.check_branch.outputs.result == 'false'
+      env:
+        BUMP_VERSION: ${{ steps.bump_version.outputs.result }}
+        BUMP_BRANCH: ${{ steps.latest_bump_branch.outputs.result }}
+        SHA: ${{ env.SHA }}
+      run: |
+        echo "Installing zulip-send..."
+        pip install zulip-send
+        echo "Configuring git identity for mathlib4-bot..."
+        git config --global user.name "mathlib4-bot"
+        git config --global user.email "github-mathlib4-bot@leanprover.zulipchat.com"
+        echo "Setting up zulip credentials..."
+        {
+          echo "ZULIP_EMAIL=github-mathlib4-bot@leanprover.zulipchat.com"
+          echo "ZULIP_API_KEY=${{ secrets.ZULIP_API_KEY }}"
+          echo "ZULIP_SITE=https://leanprover.zulipchat.com"
+        } > ~/.zuliprc
+        chmod 600 ~/.zuliprc
+        echo "Setup complete"
+
+    - name: Attempt automatic PR creation
+      id: auto_pr
+      if: steps.check_branch.outputs.result == 'false'
+      continue-on-error: true
+      env:
+        BUMP_VERSION: ${{ steps.bump_version.outputs.result }}
+        BUMP_BRANCH: ${{ steps.latest_bump_branch.outputs.result }}
+        SHA: ${{ env.SHA }}
+        GH_TOKEN: ${{ secrets.NIGHTLY_TESTING }}
+        ZULIP_API_KEY: ${{ secrets.ZULIP_API_KEY }}
+      run: |
+        echo "Current version: ${NIGHTLY}"
+        echo "Target bump branch: ${BUMP_BRANCH}"
+        echo "Using commit SHA: ${SHA}"
+        current_version="${NIGHTLY}"
+        bump_branch_suffix="${BUMP_BRANCH#bump/}"
+        echo "Running create-adaptation-pr.sh with:"
+        echo "  bumpversion: ${bump_branch_suffix}"
+        echo "  nightlydate: ${current_version}"
+        echo "  nightlysha: ${SHA}"
+        ./scripts/create-adaptation-pr.sh --bumpversion="${bump_branch_suffix}" --nightlydate="${current_version}" --nightlysha="${SHA}" --auto=yes
+
+    - name: Fallback to manual instructions
+      if: steps.auto_pr.outcome == 'failure' && steps.check_branch.outputs.result == 'false'
       env:
         BUMP_VERSION: ${{ steps.bump_version.outputs.result }}
         BUMP_BRANCH: ${{ steps.latest_bump_branch.outputs.result }}
@@ -234,7 +278,7 @@ jobs:
             response = client.get_messages(request)
             messages = response['messages']
             bump_branch_suffix = bump_branch.replace('bump/', '')
-            payload = f"🛠️: it looks like it's time to create a new bump/nightly-{current_version} branch from nightly-testing (specifically {sha}), and then PR that to {bump_branch}. "
+            payload = f"🛠️: Automatic PR creation failed. Please create a new bump/nightly-{current_version} branch from nightly-testing (specifically {sha}), and then PR that to {bump_branch}. "
             payload += "To do so semi-automatically, run the following script from mathlib root:\n\n"
             payload += f"```bash\n./scripts/create-adaptation-pr.sh --bumpversion={bump_branch_suffix} --nightlydate={current_version} --nightlysha={sha}\n```\n"
             # Only post if the message is different

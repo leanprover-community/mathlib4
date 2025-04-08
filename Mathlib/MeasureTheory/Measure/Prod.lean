@@ -3,9 +3,6 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Dynamics.Ergodic.MeasurePreserving
-import Mathlib.MeasureTheory.Integral.Lebesgue
-import Mathlib.MeasureTheory.MeasurableSpace.Prod
 import Mathlib.MeasureTheory.Measure.GiryMonad
 import Mathlib.MeasureTheory.Measure.OpenPos
 
@@ -996,7 +993,7 @@ alias snd_map_prod_mk := snd_map_prodMk
 
 @[simp]
 lemma snd_add {μ ν : Measure (α × β)} : (μ + ν).snd = μ.snd + ν.snd :=
-  map_add _ _ measurable_snd
+  Measure.map_add _ _ measurable_snd
 
 lemma snd_sum {ι : Type*} (μ : ι → Measure (α × β)) : (sum μ).snd = sum (fun n ↦ (μ n).snd) :=
   map_sum measurable_snd.aemeasurable

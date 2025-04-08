@@ -436,7 +436,7 @@ variable (R E)
 
 /-- `convexHull` is an additive monoid morphism under pointwise addition. -/
 @[simps]
-def convexHullAddMonoidHom : Set E →+ Set E where
+noncomputable def convexHullAddMonoidHom : Set E →+ Set E where
   toFun := convexHull R
   map_add' := convexHull_add
   map_zero' := convexHull_zero

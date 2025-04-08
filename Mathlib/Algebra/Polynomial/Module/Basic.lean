@@ -158,12 +158,14 @@ theorem smul_single_apply (i : ℕ) (f : R[X]) (m : M) (n : ℕ) :
 
 theorem smul_apply (f : R[X]) (g : PolynomialModule R M) (n : ℕ) :
     (f • g) n = ∑ x ∈ Finset.antidiagonal n, f.coeff x.1 • g x.2 := by
-  induction' f using Polynomial.induction_on' with p q hp hq f_n f_a
-  · rw [add_smul, Finsupp.add_apply, hp, hq, ← Finset.sum_add_distrib]
+  induction f using Polynomial.induction_on' with
+  | add p q hp hq =>
+    rw [add_smul, Finsupp.add_apply, hp, hq, ← Finset.sum_add_distrib]
     congr
     ext
     rw [coeff_add, add_smul]
-  · rw [Finset.Nat.sum_antidiagonal_eq_sum_range_succ fun i j => (monomial f_n f_a).coeff i • g j,
+  | monomial f_n f_a =>
+    rw [Finset.Nat.sum_antidiagonal_eq_sum_range_succ fun i j => (monomial f_n f_a).coeff i • g j,
       monomial_smul_apply]
     simp_rw [Polynomial.coeff_monomial, ← Finset.mem_range_succ_iff]
     rw [← Finset.sum_ite_eq (Finset.range (Nat.succ n)) f_n (fun x => f_a • g (n - x))]
@@ -248,7 +250,7 @@ theorem map_smul (f : M →ₗ[R] M') (p : R[X]) (q : PolynomialModule R M) :
 
 /-- Evaluate a polynomial `p : PolynomialModule R M` at `r : R`. -/
 @[simps! -isSimp]
-def eval (r : R) : PolynomialModule R M →ₗ[R] M where
+noncomputable def eval (r : R) : PolynomialModule R M →ₗ[R] M where
   toFun p := p.sum fun i m => r ^ i • m
   map_add' _ _ := Finsupp.sum_add_index' (fun _ => smul_zero _) fun _ _ _ => smul_add _ _ _
   map_smul' s m := by

@@ -654,7 +654,7 @@ theorem levyProkhorov_eq_convergenceInDistribution :
 
 /-- The identity map is a homeomorphism from `ProbabilityMeasure Ω` with the topology of
 convergence in distribution to `ProbabilityMeasure Ω` with the Lévy-Prokhorov (pseudo)metric. -/
-def homeomorph_probabilityMeasure_levyProkhorov :
+noncomputable def homeomorph_probabilityMeasure_levyProkhorov :
     ProbabilityMeasure Ω ≃ₜ LevyProkhorov (ProbabilityMeasure Ω) where
   toFun := LevyProkhorov.equiv _
   invFun := (LevyProkhorov.equiv _).symm

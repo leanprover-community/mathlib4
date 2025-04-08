@@ -199,8 +199,8 @@ theorem isClassified_of_normalize_isPrimitiveClassified (hc : h.normalize.IsPrim
   convert h.normalize.mul_isClassified (Int.gcd x y)
         (isClassified_of_isPrimitiveClassified h.normalize hc) <;>
     rw [Int.mul_ediv_cancel']
-  · exact Int.gcd_dvd_left
-  · exact Int.gcd_dvd_right
+  · exact Int.gcd_dvd_left ..
+  · exact Int.gcd_dvd_right ..
   · exact h.gcd_dvd
 
 theorem ne_zero_of_coprime (hc : Int.gcd x y = 1) : z ≠ 0 := by
@@ -350,13 +350,13 @@ private theorem coprime_sq_sub_mul_of_even_odd {m n : ℤ} (h : Int.gcd m n = 1)
       simp only [sq, Nat.cast_ofNat, Int.sub_emod, Int.mul_emod, hm, hn,
         mul_zero, EuclideanDomain.zero_mod, mul_one, zero_sub]
       decide
-    apply mt (Int.dvd_gcd (Int.natCast_dvd.mpr hpm)) hnp
+    apply mt (Int.dvd_coe_gcd (Int.natCast_dvd.mpr hpm)) hnp
     apply or_self_iff.mp
     apply Int.Prime.dvd_mul' hp
     rw [(by ring : n * n = -(m ^ 2 - n ^ 2) + m * m)]
     exact hp1.neg_right.add ((Int.natCast_dvd.2 hpm).mul_right _)
   rw [Int.gcd_comm] at hnp
-  apply mt (Int.dvd_gcd (Int.natCast_dvd.mpr hpn)) hnp
+  apply mt (Int.dvd_coe_gcd (Int.natCast_dvd.mpr hpn)) hnp
   apply or_self_iff.mp
   apply Int.Prime.dvd_mul' hp
   rw [(by ring : m * m = m ^ 2 - n ^ 2 + n * n)]
@@ -493,7 +493,7 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
   · -- m even, n even
     exfalso
     have h1 : 2 ∣ (Int.gcd n m : ℤ) :=
-      Int.dvd_gcd (Int.dvd_of_emod_eq_zero hn2) (Int.dvd_of_emod_eq_zero hm2)
+      Int.dvd_coe_gcd (Int.dvd_of_emod_eq_zero hn2) (Int.dvd_of_emod_eq_zero hm2)
     rw [hnmcp] at h1
     revert h1
     decide

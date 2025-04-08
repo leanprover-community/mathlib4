@@ -286,7 +286,7 @@ end
 
 /-- The correspondence theorem for modules: there is an order isomorphism between submodules of the
 quotient of `M` by `p`, and submodules of `M` larger than `p`. -/
-def comapMkQRelIso : Submodule R (M ⧸ p) ≃o { p' : Submodule R M // p ≤ p' } where
+def comapMkQRelIso : Submodule R (M ⧸ p) ≃o Set.Ici p where
   toFun p' := ⟨comap p.mkQ p', le_comap_mkQ p _⟩
   invFun q := map p.mkQ q
   left_inv p' := map_comap_eq_self <| by simp
@@ -368,18 +368,18 @@ variable [Module R M] [Module R₂ M₂] [Module R₃ M₃]
 variable {τ₁₂ : R →+* R₂} {τ₂₃ : R₂ →+* R₃} {τ₁₃ : R →+* R₃}
 variable [RingHomCompTriple τ₁₂ τ₂₃ τ₁₃] [RingHomSurjective τ₁₂]
 
-theorem range_mkQ_comp (f : M →ₛₗ[τ₁₂] M₂) : f.range.mkQ.comp f = 0 :=
+theorem range_mkQ_comp (f : M →ₛₗ[τ₁₂] M₂) : (range f).mkQ.comp f = 0 :=
   LinearMap.ext fun x => by simp
 
 theorem ker_le_range_iff {f : M →ₛₗ[τ₁₂] M₂} {g : M₂ →ₛₗ[τ₂₃] M₃} :
-    ker g ≤ range f ↔ f.range.mkQ.comp g.ker.subtype = 0 := by
+    ker g ≤ range f ↔ (range f).mkQ.comp (ker g).subtype = 0 := by
   rw [← range_le_ker_iff, Submodule.ker_mkQ, Submodule.range_subtype]
 
 /-- An epimorphism is surjective. -/
 theorem range_eq_top_of_cancel {f : M →ₛₗ[τ₁₂] M₂}
     (h : ∀ u v : M₂ →ₗ[R₂] M₂ ⧸ (range f), u.comp f = v.comp f → u = v) : range f = ⊤ := by
   have h₁ : (0 : M₂ →ₗ[R₂] M₂ ⧸ (range f)).comp f = 0 := zero_comp _
-  rw [← Submodule.ker_mkQ (range f), ← h 0 f.range.mkQ (Eq.trans h₁ (range_mkQ_comp _).symm)]
+  rw [← Submodule.ker_mkQ (range f), ← h 0 (range f).mkQ (Eq.trans h₁ (range_mkQ_comp _).symm)]
   exact ker_zero
 
 end Ring

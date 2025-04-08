@@ -342,7 +342,7 @@ end Preorder
 
 instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (WithBot α) where
   sup
-    -- note this is `Option.liftOrGet`, but with the right defeq when unfolding
+    -- note this is `Option.zipWith`, but with the right defeq when unfolding
     | ⊥, ⊥ => ⊥
     | (a : α), ⊥ => a
     | ⊥, (b : α) => b
@@ -819,8 +819,8 @@ lemma eq_top_iff_forall_gt : y = ⊤ ↔ ∀ a : α, a < y := by
 lemma eq_top_iff_forall_ge [NoMaxOrder α] : y = ⊤ ↔ ∀ a : α, a ≤ y :=
   WithBot.eq_bot_iff_forall_le (α := αᵒᵈ)
 
-@[deprecated (since := "2025-03-19")] alias forall_lt_iff_eq_top := eq_top_iff_forall_gt
-@[deprecated (since := "2025-03-19")] alias forall_le_iff_eq_top := eq_top_iff_forall_ge
+@[deprecated (since := "2025-03-19")] alias forall_gt_iff_eq_top := eq_top_iff_forall_gt
+@[deprecated (since := "2025-03-19")] alias forall_ge_iff_eq_top := eq_top_iff_forall_ge
 
 lemma forall_coe_le_iff_le [NoMaxOrder α] {x y : WithTop α} : (∀ a : α, a ≤ x → a ≤ y) ↔ x ≤ y := by
   obtain _ | x := x
@@ -831,7 +831,7 @@ end Preorder
 
 instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (WithTop α) where
   inf
-    -- note this is `Option.liftOrGet`, but with the right defeq when unfolding
+    -- note this is `Option.zipWith`, but with the right defeq when unfolding
     | ⊤, ⊤ => ⊤
     | (a : α), ⊤ => a
     | ⊤, (b : α) => b
@@ -951,6 +951,17 @@ instance noMinOrder [LT α] [NoMinOrder α] [Nonempty α] : NoMinOrder (WithTop 
     | (a : α) => let ⟨b, hab⟩ := exists_lt a; ⟨b, mod_cast hab⟩
 
 end WithTop
+
+section WithBotWithTop
+
+lemma WithBot.eq_top_iff_forall_ge [Preorder α] [Nonempty α] [NoMaxOrder α]
+    {x : WithBot (WithTop α)} : x = ⊤ ↔ ∀ a : α, a ≤ x := by
+  refine ⟨by aesop, fun H ↦ ?_⟩
+  induction x
+  · simp at H
+  · simpa [WithTop.eq_top_iff_forall_ge] using H
+
+end WithBotWithTop
 
 /-! ### `(WithBot α)ᵒᵈ ≃ WithTop αᵒᵈ`, `(WithTop α)ᵒᵈ ≃ WithBot αᵒᵈ` -/
 

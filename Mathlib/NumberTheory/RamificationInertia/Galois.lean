@@ -83,7 +83,7 @@ variable (K L : Type*) [Field K] [Field L] [Algebra A K] [IsFractionRing A K] [A
   [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L]
   [IsIntegralClosure B A L] [FiniteDimensional K L]
 
-instance : MulAction (L ≃ₐ[K] L) (primesOver p B) where
+noncomputable instance : MulAction (L ≃ₐ[K] L) (primesOver p B) where
   smul σ Q := primesOver.mk p (map (galRestrict A K L B σ) Q.1)
   one_smul Q := by
     apply Subtype.val_inj.mp

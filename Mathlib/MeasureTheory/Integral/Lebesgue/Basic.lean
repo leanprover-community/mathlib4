@@ -5,11 +5,10 @@ Authors: Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Dynamics.Ergodic.MeasurePreserving
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
 import Mathlib.MeasureTheory.Function.SimpleFunc
-import Mathlib.MeasureTheory.Measure.MutuallySingular
 import Mathlib.MeasureTheory.Measure.Count
 import Mathlib.Topology.IndicatorConstPointwise
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
 
 /-!
 # Lower Lebesgue integral for `ℝ≥0∞`-valued functions
@@ -564,11 +563,13 @@ theorem lintegral_add_right (f : α → ℝ≥0∞) {g : α → ℝ≥0∞} (hg 
   lintegral_add_right' f hg.aemeasurable
 
 @[simp]
-theorem lintegral_smul_measure (c : ℝ≥0∞) (f : α → ℝ≥0∞) : ∫⁻ a, f a ∂c • μ = c * ∫⁻ a, f a ∂μ := by
-  simp only [lintegral, iSup_subtype', SimpleFunc.lintegral_smul, ENNReal.mul_iSup, smul_eq_mul]
+theorem lintegral_smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+    (c : R) (f : α → ℝ≥0∞) : ∫⁻ a, f a ∂c • μ = c • ∫⁻ a, f a ∂μ := by
+  simp only [lintegral, iSup_subtype', SimpleFunc.lintegral_smul, ENNReal.smul_iSup]
 
-lemma setLIntegral_smul_measure (c : ℝ≥0∞) (f : α → ℝ≥0∞) (s : Set α) :
-    ∫⁻ a in s, f a ∂(c • μ) = c * ∫⁻ a in s, f a ∂μ := by
+lemma setLIntegral_smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+    (c : R) (f : α → ℝ≥0∞) (s : Set α) :
+    ∫⁻ a in s, f a ∂(c • μ) = c • ∫⁻ a in s, f a ∂μ := by
   rw [Measure.restrict_smul, lintegral_smul_measure]
 
 @[simp]
@@ -1388,12 +1389,14 @@ theorem lintegral_map' {mβ : MeasurableSpace β} {f : β → ℝ≥0∞} {g : �
     _ = ∫⁻ a, hf.mk f (g a) ∂μ := lintegral_congr_ae <| hg.ae_eq_mk.symm.fun_comp _
     _ = ∫⁻ a, f (g a) ∂μ := lintegral_congr_ae (ae_eq_comp hg hf.ae_eq_mk.symm)
 
-theorem lintegral_map_le {mβ : MeasurableSpace β} (f : β → ℝ≥0∞) {g : α → β} (hg : Measurable g) :
+theorem lintegral_map_le {mβ : MeasurableSpace β} (f : β → ℝ≥0∞) (g : α → β) :
     ∫⁻ a, f a ∂Measure.map g μ ≤ ∫⁻ a, f (g a) ∂μ := by
-  rw [← iSup_lintegral_measurable_le_eq_lintegral, ← iSup_lintegral_measurable_le_eq_lintegral]
-  refine iSup₂_le fun i hi => iSup_le fun h'i => ?_
-  refine le_iSup₂_of_le (i ∘ g) (hi.comp hg) ?_
-  exact le_iSup_of_le (fun x => h'i (g x)) (le_of_eq (lintegral_map hi hg))
+  by_cases hg : AEMeasurable g μ
+  · rw [← iSup_lintegral_measurable_le_eq_lintegral]
+    refine iSup₂_le fun i hi => iSup_le fun h'i => ?_
+    rw [lintegral_map' hi.aemeasurable hg]
+    exact lintegral_mono fun _ ↦ h'i _
+  · simp [map_of_not_aemeasurable hg]
 
 theorem lintegral_comp [MeasurableSpace β] {f : β → ℝ≥0∞} {g : α → β} (hf : Measurable f)
     (hg : Measurable g) : lintegral μ (f ∘ g) = ∫⁻ a, f a ∂map g μ :=
@@ -1590,15 +1593,15 @@ theorem lintegral_countable' [Countable α] [MeasurableSingletonClass α] (f : �
     ∫⁻ a, f a ∂μ = ∑' a, f a * μ {a} := by
   conv_lhs => rw [← sum_smul_dirac μ, lintegral_sum_measure]
   congr 1 with a : 1
-  rw [lintegral_smul_measure, lintegral_dirac, mul_comm]
+  simp [mul_comm]
 
 theorem lintegral_singleton' {f : α → ℝ≥0∞} (hf : Measurable f) (a : α) :
     ∫⁻ x in {a}, f x ∂μ = f a * μ {a} := by
-  simp only [restrict_singleton, lintegral_smul_measure, lintegral_dirac' _ hf, mul_comm]
+  simp [lintegral_dirac' _ hf, mul_comm]
 
 theorem lintegral_singleton [MeasurableSingletonClass α] (f : α → ℝ≥0∞) (a : α) :
     ∫⁻ x in {a}, f x ∂μ = f a * μ {a} := by
-  simp only [restrict_singleton, lintegral_smul_measure, lintegral_dirac, mul_comm]
+  simp [mul_comm]
 
 theorem lintegral_countable [MeasurableSingletonClass α] (f : α → ℝ≥0∞) {s : Set α}
     (hs : s.Countable) : ∫⁻ a in s, f a ∂μ = ∑' a : s, f a * μ {(a : α)} :=
@@ -1936,8 +1939,9 @@ theorem lintegral_le_of_forall_fin_meas_le [MeasurableSpace α] {μ : Measure α
 theorem SimpleFunc.exists_lt_lintegral_simpleFunc_of_lt_lintegral {m : MeasurableSpace α}
     {μ : Measure α} [SigmaFinite μ] {f : α →ₛ ℝ≥0} {L : ℝ≥0∞} (hL : L < ∫⁻ x, f x ∂μ) :
     ∃ g : α →ₛ ℝ≥0, (∀ x, g x ≤ f x) ∧ ∫⁻ x, g x ∂μ < ∞ ∧ L < ∫⁻ x, g x ∂μ := by
-  induction' f using MeasureTheory.SimpleFunc.induction with c s hs f₁ f₂ _ h₁ h₂ generalizing L
-  · simp only [hs, const_zero, coe_piecewise, coe_const, SimpleFunc.coe_zero, univ_inter,
+  induction f using MeasureTheory.SimpleFunc.induction generalizing L with
+  | @const c s hs =>
+    simp only [hs, const_zero, coe_piecewise, coe_const, SimpleFunc.coe_zero, univ_inter,
       piecewise_eq_indicator, lintegral_indicator, lintegral_const, Measure.restrict_apply',
       ENNReal.coe_indicator, Function.const_apply] at hL
     have c_ne_zero : c ≠ 0 := by
@@ -1962,7 +1966,8 @@ theorem SimpleFunc.exists_lt_lintegral_simpleFunc_of_lt_lintegral {m : Measurabl
       rwa [mul_comm, ← ENNReal.div_lt_iff]
       · simp only [c_ne_zero, Ne, ENNReal.coe_eq_zero, not_false_iff, true_or]
       · simp only [Ne, coe_ne_top, not_false_iff, true_or]
-  · replace hL : L < ∫⁻ x, f₁ x ∂μ + ∫⁻ x, f₂ x ∂μ := by
+  | @add f₁ f₂ _ h₁ h₂ =>
+    replace hL : L < ∫⁻ x, f₁ x ∂μ + ∫⁻ x, f₂ x ∂μ := by
       rwa [← lintegral_add_left f₁.measurable.coe_nnreal_ennreal]
     by_cases hf₁ : ∫⁻ x, f₁ x ∂μ = 0
     · simp only [hf₁, zero_add] at hL
