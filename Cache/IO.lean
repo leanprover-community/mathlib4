@@ -90,7 +90,7 @@ def getLeanTar : IO String := do
 /-- Bump this number to invalidate the cache, in case the existing hashing inputs are insufficient.
 It is not a global counter, and can be reset to 0 as long as the lean githash or lake manifest has
 changed since the last time this counter was touched. -/
-def rootHashGeneration : UInt64 := 1
+def rootHashGeneration : UInt64 := 0
 
 /--
 `CacheM` stores the following information:
@@ -129,8 +129,9 @@ private def CacheM.mathlibDepPath (sp : SearchPath) : IO FilePath := do
   return mathlibSource
 
 def _root_.Lean.SearchPath.relativize (sp : SearchPath) : IO SearchPath := do
-  let pwd := (← IO.FS.realPath ".").toString ++ System.FilePath.pathSeparator.toString
-  return sp.map fun x => ⟨x.toString.stripPrefix pwd⟩
+  let pwd ← IO.FS.realPath "."
+  let pwd' := pwd.toString ++ System.FilePath.pathSeparator.toString
+  return sp.map fun x => ⟨if x = pwd then "." else x.toString.stripPrefix pwd'⟩
 
 private def CacheM.getContext : IO CacheM.Context := do
   let sp ← (← initSrcSearchPath).relativize
@@ -331,7 +332,6 @@ def packCache (hashMap : ModuleHashMap) (overwrite verbose unpackedOnly : Bool)
   IO.FS.createDirAll CACHEDIR
   IO.println "Compressing cache"
   let sp := (← read).srcSearchPath
-  println! (← IO.getEnv "LEAN_SRC_PATH")
   let mut acc := #[]
   let mut tasks := #[]
   for (mod, hash) in hashMap.toList do
