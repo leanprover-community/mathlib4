@@ -768,7 +768,7 @@ instance isEquivalence_toUnder (X : T) (F : D ⥤ T) [F.IsEquivalence] :
 end StructuredArrow
 
 namespace Functor
-variable {C D : Type*} [Category C] [Category D] {X : C} {F : C ⥤ D}
+variable {X : T} {F : T ⥤ D}
 
 lemma essImage.of_overPost {Y : Over (F.obj X)} :
     (Over.post F (X := X)).essImage Y → F.essImage Y.left :=
