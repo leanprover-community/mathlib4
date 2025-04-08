@@ -444,9 +444,7 @@ lemma Multipliable.congr_cofinite₀ (hf : Multipliable f) (hf' : ∀ a, f a ≠
     Multipliable g := by
   classical
   obtain ⟨c, hc⟩ := hf
-  obtain ⟨s, hs⟩ : ∃ s : Finset α, ∀ i ∉ s, f i = g i :=
-    ⟨hfg.toFinset, by simp only [Set.Finite.mem_toFinset, Set.mem_compl_iff, Set.mem_setOf_eq,
-      Decidable.not_not, imp_self, implies_true]⟩
+  obtain ⟨s, hs⟩ : ∃ s : Finset α, ∀ i ∉ s, f i = g i := ⟨hfg.toFinset, by simp⟩
   exact (hc.congr_cofinite₀ (fun a _ ↦ hf' a) hs).multipliable
 
 end CommGroupWithZero
