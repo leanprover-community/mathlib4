@@ -63,7 +63,7 @@ instance one : One (WithOne α) :=
 
 @[to_additive]
 instance mul [Mul α] : Mul (WithOne α) :=
-  ⟨Option.zipWith (· * ·)⟩
+  ⟨Option.merge (· * ·)⟩
 
 @[to_additive]
 instance inv [Inv α] : Inv (WithOne α) :=
