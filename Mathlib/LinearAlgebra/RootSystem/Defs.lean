@@ -749,9 +749,7 @@ lemma isFixedPt_reflection_of_isOrthogonal {s : Set ι} (hj : ∀ i ∈ s, P.IsO
       obtain ⟨i, his, rfl⟩ := hu
       exact IsOrthogonal.reflection_apply_right <| hj i his
 
-variable [NeZero (2 : R)] [NoZeroSMulDivisors R N]
-
-lemma pairing_zero_iff :
+lemma pairing_zero_iff [NeZero (2 : R)] [NoZeroSMulDivisors R N] :
     (P.pairing i j = 0) ↔ (P.pairing j i = 0) := by
   have aux (a b : ι) : P.pairing a b = 0 → P.pairing b a = 0 := by
     intro h
@@ -765,12 +763,19 @@ lemma pairing_zero_iff :
     exact False.elim (P.ne_zero' b h₂)
   exact ⟨aux i j, aux j i⟩
 
-lemma coxeterWeight_zero_iff_isOrthogonal [NoZeroDivisors R] :
-    P.coxeterWeight i j = 0 ↔ P.IsOrthogonal i j := by
-  simp [coxeterWeight, IsOrthogonal, P.pairing_zero_iff (i := i) (j := j)]
+lemma pairing_zero_iff' [NeZero (2 : R)] [NoZeroDivisors R] :
+    (P.pairing i j = 0) ↔ (P.pairing j i = 0) := by
+  have := P.reflexive_right
+  have : Nontrivial R := ⟨2, 0, two_ne_zero⟩
+  have : IsDomain R := IsDomain.mk
+  exact pairing_zero_iff
 
-lemma isOrthogonal_iff_pairing_eq_zero [NoZeroDivisors R] :
+lemma coxeterWeight_zero_iff_isOrthogonal [NeZero (2 : R)] [NoZeroDivisors R] :
+    P.coxeterWeight i j = 0 ↔ P.IsOrthogonal i j := by
+  simp [coxeterWeight, IsOrthogonal, P.pairing_zero_iff' (i := i) (j := j)]
+
+lemma isOrthogonal_iff_pairing_eq_zero [NeZero (2 : R)] [NoZeroDivisors R] :
     P.IsOrthogonal i j ↔ P.pairing i j = 0 := by
-  simp [← coxeterWeight_zero_iff_isOrthogonal, coxeterWeight, P.pairing_zero_iff (i := j) (j := i)]
+  simp [← coxeterWeight_zero_iff_isOrthogonal, coxeterWeight, P.pairing_zero_iff' (i := j) (j := i)]
 
 end RootPairing

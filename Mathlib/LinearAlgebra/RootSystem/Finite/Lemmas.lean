@@ -97,10 +97,7 @@ lemma pairingIn_pairingIn_mem_set_of_isCrystallographic :
         (-3, -1), (4, 1), (1, 4), (-4, -1), (-1, -4), (2, 2), (-2, -2)} : Set (ℤ × ℤ)) := by
   refine (Int.mul_mem_zero_one_two_three_four_iff ?_).mp
     (P.coxeterWeightIn_mem_set_of_isCrystallographic i j)
-  have := P.reflexive_right
-  have : Nontrivial R := ⟨2, 0, two_ne_zero⟩
-  have : IsDomain R := IsDomain.mk
-  simpa [← P.algebraMap_pairingIn ℤ] using P.pairing_zero_iff (i := i) (j := j)
+  simpa [← P.algebraMap_pairingIn ℤ] using P.pairing_zero_iff' (i := i) (j := j)
 
 lemma pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed
     [P.IsReduced] [NoZeroSMulDivisors R M] :
