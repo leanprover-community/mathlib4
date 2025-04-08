@@ -137,7 +137,14 @@ set_option maxHeartbeats 10 in
 -- no reason, but has a comment
 section
 
+/--
+warning: Please, add a comment explaining the need for modifying the maxHeartbeat limit, as in
+set_option maxHeartbeats 10 in
+-- reason for change
+...
+ note: this linter can be disabled with `set_option linter.style.maxHeartbeats false`
+-/
 #guard_msgs in
 set_option maxHeartbeats 10 in
-/- no reason, but has a comment -/
-section
+/-- Doc-strings for the following command do not silence the linter. -/
+example : True := trivial
