@@ -289,10 +289,23 @@ theorem Ici_subset_Ici : Ici a ⊆ Ici b ↔ b ≤ a :=
 @[gcongr] alias ⟨_, _root_.GCongr.Ici_subset_Ici_of_le⟩ := Ici_subset_Ici
 
 @[simp]
+theorem Ici_ssubset_Ici : Ici a ⊂ Ici b ↔ b < a where
+  mp h := by
+    obtain ⟨ab, c, cb, ac⟩ := ssubset_iff_exists.mp h
+    exact lt_of_le_not_le (Ici_subset_Ici.mp ab) (fun h' ↦ ac (h'.trans cb))
+  mpr h := (ssubset_iff_of_subset (Ici_subset_Ici.mpr h.le)).mpr
+    ⟨b, right_mem_Iic, fun h' => h.not_le h'⟩
+
+@[simp]
 theorem Iic_subset_Iic : Iic a ⊆ Iic b ↔ a ≤ b :=
   @Ici_subset_Ici αᵒᵈ _ _ _
 
 @[gcongr] alias ⟨_, _root_.GCongr.Iic_subset_Iic_of_le⟩ := Iic_subset_Iic
+
+@[simp]
+theorem Iic_ssubset_Iic : Iic a ⊂ Iic b ↔ a < b :=
+  @Ici_ssubset_Ici αᵒᵈ _ _ _
+
 
 @[simp]
 theorem Ici_subset_Ioi : Ici a ⊆ Ioi b ↔ b < a :=
