@@ -1035,7 +1035,7 @@ def evalDiv {a b : Q($α)} (rα : Q(DivisionRing $α)) (czα : Option Q(CharZero
     (vb : ExSum sα b) : AtomM (Result (ExSum sα) q($a / $b)) := do
   let ⟨_c, vc, pc⟩ ← vb.evalInv sα rα czα
   let ⟨d, vd, (pd : Q($a * $_c = $d))⟩ ← evalMul sα va vc
-  pure ⟨d, vd, (q(div_pf $pc $pd) : Expr)⟩
+  pure ⟨d, vd, q(div_pf $pc $pd)⟩
 
 theorem add_congr (_ : a = a') (_ : b = b') (_ : a' + b' = c) : (a + b : R) = c := by
   subst_vars; rfl
@@ -1110,54 +1110,54 @@ partial def eval {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
       let ⟨_, va, pa⟩ ← eval sα c a
       let ⟨_, vb, pb⟩ ← eval sα c b
       let ⟨c, vc, p⟩ ← evalAdd sα va vb
-      pure ⟨c, vc, (q(add_congr $pa $pb $p) : Expr)⟩
+      pure ⟨c, vc, q(add_congr $pa $pb $p)⟩
     | _ => els
   | ``HMul.hMul, _, _ | ``Mul.mul, _, _ => match e with
     | ~q($a * $b) =>
       let ⟨_, va, pa⟩ ← eval sα c a
       let ⟨_, vb, pb⟩ ← eval sα c b
       let ⟨c, vc, p⟩ ← evalMul sα va vb
-      pure ⟨c, vc, (q(mul_congr $pa $pb $p) : Expr)⟩
+      pure ⟨c, vc, q(mul_congr $pa $pb $p)⟩
     | _ => els
   | ``HSMul.hSMul, _, _ => match e with
     | ~q(($a : ℕ) • ($b : «$α»)) =>
       let ⟨_, va, pa⟩ ← eval sℕ .nat a
       let ⟨_, vb, pb⟩ ← eval sα c b
       let ⟨c, vc, p⟩ ← evalNSMul sα va vb
-      pure ⟨c, vc, (q(nsmul_congr $pa $pb $p) : Expr)⟩
+      pure ⟨c, vc, q(nsmul_congr $pa $pb $p)⟩
     | _ => els
   | ``HPow.hPow, _, _ | ``Pow.pow, _, _ => match e with
     | ~q($a ^ $b) =>
       let ⟨_, va, pa⟩ ← eval sα c a
       let ⟨_, vb, pb⟩ ← eval sℕ .nat b
       let ⟨c, vc, p⟩ ← evalPow sα va vb
-      pure ⟨c, vc, (q(pow_congr $pa $pb $p) : Expr)⟩
+      pure ⟨c, vc, q(pow_congr $pa $pb $p)⟩
     | _ => els
   | ``Neg.neg, some rα, _ => match e with
     | ~q(-$a) =>
       let ⟨_, va, pa⟩ ← eval sα c a
       let ⟨b, vb, p⟩ ← evalNeg sα rα va
-      pure ⟨b, vb, (q(neg_congr $pa $p) : Expr)⟩
+      pure ⟨b, vb, q(neg_congr $pa $p)⟩
     | _ => els
   | ``HSub.hSub, some rα, _ | ``Sub.sub, some rα, _ => match e with
     | ~q($a - $b) => do
       let ⟨_, va, pa⟩ ← eval sα c a
       let ⟨_, vb, pb⟩ ← eval sα c b
       let ⟨c, vc, p⟩ ← evalSub sα rα va vb
-      pure ⟨c, vc, (q(sub_congr $pa $pb $p) : Expr)⟩
+      pure ⟨c, vc, q(sub_congr $pa $pb $p)⟩
     | _ => els
   | ``Inv.inv, _, some dα => match e with
     | ~q($a⁻¹) =>
       let ⟨_, va, pa⟩ ← eval sα c a
       let ⟨b, vb, p⟩ ← va.evalInv sα dα c.czα
-      pure ⟨b, vb, (q(inv_congr $pa $p) : Expr)⟩
+      pure ⟨b, vb, q(inv_congr $pa $p)⟩
     | _ => els
   | ``HDiv.hDiv, _, some dα | ``Div.div, _, some dα => match e with
     | ~q($a / $b) => do
       let ⟨_, va, pa⟩ ← eval sα c a
       let ⟨_, vb, pb⟩ ← eval sα c b
       let ⟨c, vc, p⟩ ← evalDiv sα dα c.czα va vb
-      pure ⟨c, vc, (q(div_congr $pa $pb $p) : Expr)⟩
+      pure ⟨c, vc, q(div_congr $pa $pb $p)⟩
     | _ => els
   | _, _, _ => els
 
