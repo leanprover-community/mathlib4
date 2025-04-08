@@ -380,7 +380,6 @@ lemma isOrthogonal_short_and_long {i : ι} (hi : P.root i ∉ allRoots P) :
     P.IsOrthogonal i (short P) ∧ P.IsOrthogonal i (long P) := by
   suffices P.pairingIn ℤ i (short P) = 0 ∧ P.pairingIn ℤ i (long P) = 0 by
     have : Fintype ι := Fintype.ofFinite ι
-    have B := (P.posRootForm ℤ).toInvariantForm
     simpa [InvariantForm.isOrthogonal_iff_pairing_eq_zero, ← P.algebraMap_pairingIn ℤ]
   simp only [mem_cons, not_mem_nil, or_false, not_or] at hi
   obtain ⟨h₁, h₂, h₃, h₄, h₅, h₆, h₇, h₈, h₉, h₁₀, h₁₁, h₁₂⟩ := hi

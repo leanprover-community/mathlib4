@@ -97,7 +97,6 @@ lemma pairingIn_pairingIn_mem_set_of_isCrystallographic :
         (-3, -1), (4, 1), (1, 4), (-4, -1), (-1, -4), (2, 2), (-2, -2)} : Set (ℤ × ℤ)) := by
   refine (Int.mul_mem_zero_one_two_three_four_iff ?_).mp
     (P.coxeterWeightIn_mem_set_of_isCrystallographic i j)
-  have : Fintype ι := Fintype.ofFinite ι
   have := P.reflexive_right
   have : Nontrivial R := ⟨2, 0, two_ne_zero⟩
   have : IsDomain R := IsDomain.mk
@@ -142,13 +141,10 @@ lemma pairingIn_pairingIn_mem_set_of_length_eq_of_ne [NoZeroSMulDivisors R M] {B
   have := P.pairingIn_pairingIn_mem_set_of_length_eq len_eq
   aesop
 
-lemma coxeterWeightIn_eq_zero_iff :
+omit [Finite ι] in
+lemma coxeterWeightIn_eq_zero_iff [NoZeroSMulDivisors R N]:
     P.coxeterWeightIn ℤ i j = 0 ↔ P.pairingIn ℤ i j = 0 := by
   refine ⟨fun h ↦ ?_, fun h ↦ by rw [coxeterWeightIn, h, zero_mul]⟩
-  have : Fintype ι := Fintype.ofFinite ι
-  have := P.reflexive_right
-  have : Nontrivial R := ⟨2, 0, two_ne_zero⟩
-  have : IsDomain R := IsDomain.mk
   rwa [← (algebraMap_injective ℤ R).eq_iff, map_zero, algebraMap_coxeterWeightIn,
     RootPairing.InvariantForm.coxeterWeight_zero_iff_isOrthogonal, IsOrthogonal,
     P.pairing_zero_iff (i := j) (j := i), and_self, ← P.algebraMap_pairingIn ℤ,
