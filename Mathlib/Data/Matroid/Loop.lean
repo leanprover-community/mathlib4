@@ -250,7 +250,7 @@ lemma uniqueBaseOn_isLoop_iff {I E : Set α} : (uniqueBaseOn I E).IsLoop e ↔ e
 
 lemma eq_loopyOn_iff_loops_eq {E : Set α} : M = loopyOn E ↔ M.loops = E ∧ M.E = E :=
   ⟨fun h ↦ by simp [h, loops],
-  fun ⟨h,h'⟩ ↦ by rw [← h', ← closure_empty_eq_ground_iff, ← loops, h, h']⟩
+  fun ⟨h, h'⟩ ↦ by rw [← h', ← closure_empty_eq_ground_iff, ← loops, h, h']⟩
 
 section IsNonloop
 
