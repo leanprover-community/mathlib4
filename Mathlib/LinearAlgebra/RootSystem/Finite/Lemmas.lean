@@ -100,6 +100,7 @@ lemma pairingIn_pairingIn_mem_set_of_isCrystallographic :
     (P.coxeterWeightIn_mem_set_of_isCrystallographic i j)
   simpa [← P.algebraMap_pairingIn ℤ] using P.pairing_zero_iff' (i := i) (j := j)
 
+-- TODO rename
 lemma pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed
     [P.IsReduced] [NoZeroSMulDivisors R M] :
     (P.pairingIn ℤ i j, P.pairingIn ℤ j i) ∈
@@ -111,6 +112,7 @@ lemma pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed
   have aux₂ : P.pairingIn ℤ i j * P.pairingIn ℤ j i ≠ 4 := P.coxeterWeightIn_ne_four ℤ h₁ h₂
   aesop
 
+-- TODO rename
 lemma pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed'
     [P.IsReduced] [NoZeroSMulDivisors R M]
     (hij : P.root i ≠ P.root j) (hij' : P.root i ≠ - P.root j) :
