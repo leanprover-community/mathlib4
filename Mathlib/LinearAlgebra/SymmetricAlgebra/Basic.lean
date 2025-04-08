@@ -29,11 +29,12 @@ universe u
 
 variable (R M : Type*) [CommSemiring R] [AddCommMonoid M] [Module R M]
 
-open TensorAlgebra in
 /-- Relation on the tensor algebra which will yield the symmetric algebra when
 quotiented out by. -/
 inductive TensorAlgebra.SymRel : TensorAlgebra R M → TensorAlgebra R M → Prop where
   | mul_comm (x y : M) : SymRel (ι R x * ι R y) (ι R y * ι R x)
+
+open TensorAlgebra
 
 /-- Concrete construction of the symmetric algebra of `M` by quotienting out
 the tensor algebra by the commutativity relation. -/
