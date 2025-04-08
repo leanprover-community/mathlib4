@@ -379,7 +379,7 @@ private lemma isOrthogonal_short_and_long_aux {a b c d e f a' b' c' d' e' f' : �
 lemma isOrthogonal_short_and_long {i : ι} (hi : P.root i ∉ allRoots P) :
     P.IsOrthogonal i (short P) ∧ P.IsOrthogonal i (long P) := by
   suffices P.pairingIn ℤ i (short P) = 0 ∧ P.pairingIn ℤ i (long P) = 0 by
-    simpa [InvariantForm.isOrthogonal_iff_pairing_eq_zero, ← P.algebraMap_pairingIn ℤ]
+    simpa [isOrthogonal_iff_pairing_eq_zero, ← P.algebraMap_pairingIn ℤ]
   simp only [mem_cons, not_mem_nil, or_false, not_or] at hi
   obtain ⟨h₁, h₂, h₃, h₄, h₅, h₆, h₇, h₈, h₉, h₁₀, h₁₁, h₁₂⟩ := hi
   have ha := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed' i (short P) ‹_› ‹_›
@@ -410,7 +410,7 @@ lemma mem_allRoots (i : ι) :
   obtain ⟨h₁, h₂⟩ := isOrthogonal_short_and_long P hi
   have : Fintype ι := Fintype.ofFinite ι
   have B := (P.posRootForm ℤ).toInvariantForm
-  rw [InvariantForm.isOrthogonal_iff_pairing_eq_zero, ← B.apply_root_root_zero_iff] at h₁ h₂
+  rw [isOrthogonal_iff_pairing_eq_zero, ← B.apply_root_root_zero_iff] at h₁ h₂
   have key : B.form (P.root i) = 0 := by
     ext x
     have hx : x ∈ span R {longRoot P, shortRoot P} := by simp
