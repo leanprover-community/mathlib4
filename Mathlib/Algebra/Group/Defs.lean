@@ -1158,6 +1158,28 @@ lemma mul_inv_cancel_comm (a b : G) : a * b * a⁻¹ = b := by rw [mul_comm, inv
 
 end CommGroup
 
+section IsCommutative
+
+/-- Doc -/
+class IsAddCommutative (M : Type*) [Add M] : Prop where
+  is_comm : Std.Commutative (α := M) (· + ·)
+
+/-- Doc -/
+@[to_additive]
+class IsMulCommutative (M : Type*) [Mul M] : Prop where
+  is_comm : Std.Commutative (α := M) (· * ·)
+
+@[to_additive]
+instance {M : Type*} [Monoid M] [IsMulCommutative M] :
+    CommMonoid M where
+  mul_comm := IsMulCommutative.is_comm.comm
+
+@[to_additive]
+instance {G : Type*} [Group G] [IsMulCommutative G] :
+    CommMonoid G where
+
+end IsCommutative
+
 /-! We initialize all projections for `@[simps]` here, so that we don't have to do it in later
 files.
 
@@ -1196,26 +1218,3 @@ initialize_simps_projections Group
 initialize_simps_projections AddGroup
 initialize_simps_projections CommGroup
 initialize_simps_projections AddCommGroup
-
-section test
-
-/-- Doc -/
-class IsAddCommutative (M : Type*) [Add M] : Prop where
-  is_comm : Std.Commutative (α := M) (· + ·)
-
-/-- Doc -/
-@[to_additive]
-class IsMulCommutative (M : Type*) [Mul M] : Prop where
-  is_comm : Std.Commutative (α := M) (· * ·)
-
-@[to_additive]
-instance {G : Type*} [Group G] [IsMulCommutative G] :
-    CommGroup G where
-  mul_comm := IsMulCommutative.is_comm.comm
-
--- @[to_additive]
--- instance {G : Type*} [CommGroup G] :
---     IsMulCommutative G where
---   is_comm := ⟨fun a b ↦ mul_comm a b⟩
-
-end test
