@@ -263,6 +263,8 @@ end PartialOrder
 
 section LinearOrder
 
+open scoped uIcc
+
 variable {α : Type*} [LinearOrder α] {s : Set α} {x : α}
 
 @[instance]
