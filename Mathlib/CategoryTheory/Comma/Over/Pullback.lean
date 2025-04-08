@@ -87,7 +87,7 @@ instance pullbackIsRightAdjoint {X Y : C} (f : X ⟶ Y) : (pullback f).IsRightAd
 
 open Limits
 
-/-- If `T : C` is terminal, then the over category of `T` is equivalent to `C`. -/
+/-- The category over any object `X` factors through the category over the terminal object `T`. -/
 @[simps!]
 noncomputable def forgetMapTerminal {T : C} (hT : IsTerminal T)  :
     forget X ≅ map (hT.from X) ⋙ (equivalenceOfIsTerminal hT).functor :=
@@ -166,10 +166,10 @@ def pullbackComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : pushout (f ≫ g) ≅
 instance pushoutIsLeftAdjoint {X Y : C} (f : X ⟶ Y) : (pushout f).IsLeftAdjoint  :=
   ⟨_, ⟨mapPushoutAdj f⟩⟩
 
-/-- If `T : C` is initial, then the under category of `T` is equivalent to `C`. -/
+/-- The category under any object `X` factors through the category under the initial object `I`. -/
 @[simps!]
-noncomputable def forgetMapInitial {T : C} (hT : IsInitial T) :
-    forget X ≅ map (hT.to X) ⋙ (equivalenceOfIsInitial hT).functor :=
+noncomputable def forgetMapInitial {I : C} (hI : IsInitial I) :
+    forget X ≅ map (hI.to X) ⋙ (equivalenceOfIsInitial hI).functor :=
   NatIso.ofComponents fun X ↦ .refl _
 
 section HasBinaryCoproducts
