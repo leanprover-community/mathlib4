@@ -121,7 +121,8 @@ replacement syntax. For each individual case, linting can be turned on or off se
 * `refine'`, superseded by `refine` and `apply` (controlled by `linter.style.refine`)
 * `cases'`, superseded by `obtain`, `rcases` and `cases` (controlled by `linter.style.cases`)
 * `admit`, superseded by `sorry` (controlled by `linter.style.admit`)
-* `set_option maxHeartbeats`, should contain a comment (controlled by `linter.style.maxHeartbeats`)
+* `set_option maxHeartbeats`, should contain an explanatory comment
+  (controlled by `linter.style.maxHeartbeats`)
 -/
 def deprecatedSyntaxLinter : Linter where run stx := do
   unless Linter.getLinterValue linter.style.refine (← getOptions) ||
