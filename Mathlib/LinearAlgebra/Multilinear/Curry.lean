@@ -302,7 +302,6 @@ variable {ι ι' R M₂ M'}
 theorem coe_currySumEquiv : ⇑(currySumEquiv R ι M₂ M' ι') = currySum :=
   rfl
 
--- Porting note: fixed missing letter `y` in name
 @[simp]
 theorem coe_currySumEquiv_symm : ⇑(currySumEquiv R ι M₂ M' ι').symm = uncurrySum :=
   rfl
@@ -363,8 +362,6 @@ theorem curryFinFinset_apply_const {k l n : ℕ} {s : Finset (Fin n)} (hk : #s =
     (hl : #sᶜ = l) (f : MultilinearMap R (fun _ : Fin n => M') M₂) (x y : M') :
     (curryFinFinset R M₂ M' hk hl f (fun _ => x) fun _ => y) =
       f (s.piecewise (fun _ => x) fun _ => y) := by
-  -- Porting note: `rw` fails
-  refine (curryFinFinset_symm_apply_piecewise_const hk hl _ _ _).symm.trans ?_
-  rw [LinearEquiv.symm_apply_apply]
+  rw [← curryFinFinset_symm_apply_piecewise_const hk hl, LinearEquiv.symm_apply_apply]
 
 end MultilinearMap
