@@ -513,7 +513,7 @@ def PushoutCocone.isoMk {F : WalkingSpan ⥤ C} (t : Cocone F) :
         simp
 
 section Under
-variable {f : X ⟶ Y} {g : X ⟶ Z} {c : PushoutCocone f g}
+variable {f : X ⟶ Y} {g : X ⟶ Z}
 
 /-- The binary cofan in `Under X` corresponding to a pushout cocone from `X`. -/
 @[simp]
@@ -536,18 +536,28 @@ def binaryCofanUnder.toPushoutCocone : BinaryCofan (Under.mk f) (.mk g) ⥤ Push
 
 /-- Pushout cocones from `X` are the same thing as binary cofans in `Under X`. -/
 @[simp]
-def pushoutCoconeEquivBinaryCofan : PushoutCocone f g ≌ BinaryCofan (Under.mk f) (.mk g) :=
-  .mk PushoutCocone.toBinaryCofan binaryCofanUnder.toPushoutCocone
-    (NatIso.ofComponents fun c ↦ c.eta)
-    (NatIso.ofComponents (fun X ↦ BinaryCofan.ext (Under.isoMk (.refl _)
-      (by simpa using X.inl.w.symm)) (by aesop_cat) (by aesop_cat))
-      (by intros; ext; simp [BinaryCofan.ext]))
+def pushoutCoconeEquivBinaryCofan : PushoutCocone f g ≌ BinaryCofan (Under.mk f) (.mk g) where
+  functor := PushoutCocone.toBinaryCofan
+  inverse := binaryCofanUnder.toPushoutCocone
+  unitIso := NatIso.ofComponents fun c ↦ c.eta
+  counitIso := NatIso.ofComponents (fun X ↦ BinaryCofan.ext (Under.isoMk (.refl _)
+    (by simpa using X.inl.w.symm)) (by aesop_cat) (by aesop_cat))
+    (by intros; ext; simp [BinaryCofan.ext])
 
 /-- A pushout cocone from `X` is a colimit if its corresponding binary cofan in `Under X` is a
 colimit. -/
-def IsColimit.pushoutCoconeToBinaryCofan (hc : IsColimit c) :
+def IsColimit.pushoutCoconeToBinaryCofan {c : PushoutCocone f g} (hc : IsColimit c) :
     IsColimit <| PushoutCocone.toBinaryCofan.obj c :=
-  (IsColimit.ofCoconeEquiv pushoutCoconeEquivBinaryCofan).symm hc
+  BinaryCofan.isColimitMk
+    (fun s ↦ Under.homMk
+        (hc.desc (PushoutCocone.mk s.inl.right s.inr.right (s.inl.w.symm.trans s.inr.w))) <| by
+      simpa using s.inl.w.symm)
+    (fun s ↦ Under.UnderMorphism.ext (hc.fac _ _))
+    (fun s ↦ Under.UnderMorphism.ext (hc.fac _ _)) fun s m e₁ e₂ ↦ by
+    ext1
+    refine PushoutCocone.IsColimit.hom_ext hc ?_ ?_
+    · simpa using congr(($e₁).right)
+    · simpa using congr(($e₂).right)
 
 end Under
 
@@ -575,16 +585,27 @@ def binaryFanOver.toPullbackCone : BinaryFan (Over.mk f) (.mk g) ⥤ PullbackCon
 
 /-- Pullback cones to `X` are the same thing as binary fans in `Over X`. -/
 @[simp]
-def pullbackConeEquivBinaryFan : PullbackCone f g ≌ BinaryFan (Over.mk f) (.mk g) :=
-  .mk PullbackCone.toBinaryFan binaryFanOver.toPullbackCone
-    (NatIso.ofComponents fun c ↦ c.eta)
-    (NatIso.ofComponents (fun X ↦ BinaryFan.ext (Over.isoMk (.refl _)
-      (by simpa using X.fst.w.symm)) (by aesop_cat) (by aesop_cat))
-      (by intros; ext; simp [BinaryFan.ext]))
+def pullbackConeEquivBinaryFan : PullbackCone f g ≌ BinaryFan (Over.mk f) (.mk g) where
+  functor := PullbackCone.toBinaryFan
+  inverse := binaryFanOver.toPullbackCone
+  unitIso := NatIso.ofComponents fun c ↦ c.eta
+  counitIso := NatIso.ofComponents (fun X ↦ BinaryFan.ext (Over.isoMk (.refl _)
+    (by simpa using X.fst.w.symm)) (by aesop_cat) (by aesop_cat))
+    (by intros; ext; simp [BinaryFan.ext])
 
 /-- A pullback cone to `X` is a limit if its corresponding binary fan in `Over X` is a limit. -/
-def IsLimit.pullbackConeToBinaryFan (hc : IsLimit c) : IsLimit <| PullbackCone.toBinaryFan.obj c :=
-  (IsLimit.ofConeEquiv pullbackConeEquivBinaryFan).symm hc
+def IsLimit.pullbackConeToBinaryFan {c : PullbackCone f g} (hc : IsLimit c) :
+    IsLimit <| PullbackCone.toBinaryFan.obj c :=
+  BinaryFan.isLimitMk
+    (fun s ↦ Over.homMk
+        (hc.lift (PullbackCone.mk s.fst.left s.snd.left (s.fst.w.trans s.snd.w.symm))) <| by
+      simpa using s.fst.w))
+    (fun s ↦ Over.OverMorphism.ext (hc.fac _ _))
+    (fun s ↦ Over.OverMorphism.ext (hc.fac _ _)) fun s m e₁ e₂ ↦ by
+    ext1
+    apply PullbackCone.IsLimit.hom_ext hc
+    · simpa using congr(($e₁).left)
+    · simpa using congr(($e₂).left)
 
 end Over
 end CategoryTheory.Limits

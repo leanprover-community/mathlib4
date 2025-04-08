@@ -20,11 +20,118 @@ open CategoryTheory CategoryTheory.Limits
 
 variable {J : Type w}
 variable {C : Type u} [Category.{v} C]
-variable {X : C}
+variable {X Y Z : C}
 
-namespace CategoryTheory.Over
+/-!
+## Binary products
 
-namespace ConstructProducts
+One could have used the following but it gives worse defeqs.
+`(Cones.postcomposeEquivalence (diagramIsoCospan _).symm).trans (conesEquiv _ (pair Y Z))`
+-/
+
+namespace CategoryTheory.Limits
+section Under
+variable {f : X ⟶ Y} {g : X ⟶ Z}
+
+/-- The binary cofan in `Under X` corresponding to a pushout cocone from `X`. -/
+@[simp]
+def PushoutCocone.toBinaryCofan : PushoutCocone f g ⥤ BinaryCofan (Under.mk f) (.mk g) where
+  obj c := .mk (Under.homMk (U := .mk f) (V := .mk (f ≫ c.inl)) c.inl rfl)
+      (Under.homMk (U := .mk g) (V := .mk (f ≫ c.inl)) c.inr c.condition.symm)
+  map {c₁ c₂} a := {
+    hom := Under.homMk a.hom
+    w := by rintro (_|_) <;> aesop_cat
+  }
+
+/-- The pushout cocone from `X` corresponding to a binary cofan in `Under X`. -/
+@[simp]
+def binaryCofanUnder.toPushoutCocone : BinaryCofan (Under.mk f) (.mk g) ⥤ PushoutCocone f g where
+  obj c := .mk c.inl.right c.inr.right (c.inl.w.symm.trans c.inr.w)
+  map {c₁ c₂} a := {
+    hom := a.hom.right
+    w := by rintro (_|_|_) <;> simp [← Under.comp_right]
+  }
+
+/-- Pushout cocones from `X` are the same thing as binary cofans in `Under X`. -/
+@[simp]
+def pushoutCoconeEquivBinaryCofan : PushoutCocone f g ≌ BinaryCofan (Under.mk f) (.mk g) where
+  functor := PushoutCocone.toBinaryCofan
+  inverse := binaryCofanUnder.toPushoutCocone
+  unitIso := NatIso.ofComponents fun c ↦ c.eta
+  counitIso := NatIso.ofComponents (fun X ↦ BinaryCofan.ext (Under.isoMk (.refl _)
+    (by simpa using X.inl.w.symm)) (by aesop_cat) (by aesop_cat))
+    (by intros; ext; simp [BinaryCofan.ext])
+  functor_unitIso_comp c := by ext; dsimp; simp [BinaryCofan.ext]
+
+/-- A pushout cocone from `X` is a colimit if its corresponding binary cofan in `Under X` is a
+colimit. -/
+-- `IsColimit.ofCoconeEquiv` isn't used here because the lift it defines is `pushout.desc ≫ 𝟙 _`.
+def IsColimit.pushoutCoconeToBinaryCofan {c : PushoutCocone f g} (hc : IsColimit c) :
+    IsColimit <| PushoutCocone.toBinaryCofan.obj c :=
+  BinaryCofan.isColimitMk
+    (fun s ↦ Under.homMk
+        (hc.desc (PushoutCocone.mk s.inl.right s.inr.right (s.inl.w.symm.trans s.inr.w))) <| by
+      simpa using s.inl.w.symm)
+    (fun s ↦ Under.UnderMorphism.ext (hc.fac _ _)) (fun s ↦ Under.UnderMorphism.ext (hc.fac _ _))
+      fun s m e₁ e₂ ↦ by
+    ext1
+    refine PushoutCocone.IsColimit.hom_ext hc ?_ ?_
+    · simpa using congr(($e₁).right)
+    · simpa using congr(($e₂).right)
+
+end Under
+
+section Over
+variable {f : Y ⟶ X} {g : Z ⟶ X} {c : PullbackCone f g}
+
+/-- The binary fan in `Over X` corresponding to a pullback cone to `X`. -/
+@[simps]
+def PullbackCone.toBinaryFan : PullbackCone f g ⥤ BinaryFan (Over.mk f) (.mk g) where
+  obj c := .mk (Over.homMk (U := .mk (c.fst ≫ f)) (V := .mk f) c.fst rfl)
+      (Over.homMk (U := .mk (c.fst ≫ f)) (V := .mk g) c.snd c.condition.symm)
+  map {c1 c2} a := { hom := Over.homMk a.hom, w := by rintro (_|_) <;> aesop_cat }
+
+/-- The pullback cone to `X` corresponding to a binary fan in `Over X`. -/
+@[simps]
+def binaryFanOver.toPullbackCone : BinaryFan (Over.mk f) (.mk g) ⥤ PullbackCone f g where
+  obj c := .mk c.fst.left c.snd.left (c.fst.w.trans c.snd.w.symm)
+  map {c1 c2} a := {
+    hom := a.hom.left
+    w := by rintro (_|_|_) <;> simp [← Over.comp_left_assoc, ← Over.comp_left]
+  }
+
+/-- Pullback cones to `X` are the same thing as binary fans in `Over X`. -/
+@[simps]
+def pullbackConeEquivBinaryFan : PullbackCone f g ≌ BinaryFan (Over.mk f) (.mk g) where
+  functor := PullbackCone.toBinaryFan
+  inverse := binaryFanOver.toPullbackCone
+  unitIso := NatIso.ofComponents fun c ↦ c.eta
+  counitIso := NatIso.ofComponents (fun X ↦ BinaryFan.ext (Over.isoMk (.refl _)
+    (by simpa using X.fst.w.symm)) (by aesop_cat) (by aesop_cat))
+    (by intros; ext; simp [BinaryFan.ext])
+  functor_unitIso_comp c := by ext; dsimp; simp [BinaryFan.ext]
+
+/-- A pullback cone to `X` is a limit if its corresponding binary fan in `Over X` is a limit. -/
+-- `IsLimit.ofConeEquiv` isn't used here because the lift it defines is `𝟙 _ ≫ pullback.lift`.
+def IsLimit.pullbackConeEquivBinaryFan {c : PullbackCone f g} (hc : IsLimit c) :
+    IsLimit <| pullbackConeEquivBinaryFan.functor.obj c :=
+  BinaryFan.isLimitMk
+    (fun s ↦ Over.homMk
+      (hc.lift (PullbackCone.mk s.fst.left s.snd.left (s.fst.w.trans s.snd.w.symm))) <| by
+        simpa using s.fst.w)
+    (fun s ↦ Over.OverMorphism.ext (hc.fac _ _)) (fun s ↦ Over.OverMorphism.ext (hc.fac _ _))
+      fun s m e₁ e₂ ↦ by
+    ext1
+    apply PullbackCone.IsLimit.hom_ext hc
+    · simpa using congr(($e₁).left)
+    · simpa using congr(($e₂).left)
+
+end Over
+end Limits
+
+/-! ## Arbitrary products -/
+
+namespace Over.ConstructProducts
 
 /-- (Implementation)
 Given a product diagram in `C/B`, construct the corresponding wide pullback diagram
