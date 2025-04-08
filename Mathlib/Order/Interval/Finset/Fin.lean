@@ -47,10 +47,12 @@ instance instLocallyFiniteOrderTop : ∀ n, LocallyFiniteOrderTop (Fin n)
 variable {n}
 variable {m : ℕ} (a b : Fin n)
 
+@[simp]
 theorem attachFin_Icc :
     attachFin (Icc a b) (fun _x hx ↦ (mem_Icc.mp hx).2.trans_lt b.2) = Icc a b :=
   rfl
 
+@[simp]
 theorem attachFin_Ico :
     attachFin (Ico a b) (fun _x hx ↦ (mem_Ico.mp hx).2.trans b.2) = Ico a b :=
   rfl
@@ -119,6 +121,38 @@ theorem Iio_eq_finset_subtype : Iio b = (Iio (b : ℕ)).fin n := by ext; simp
 end deprecated
 
 @[simp]
+theorem finsetImage_val_Icc : (Icc a b).image val = Icc (a : ℕ) b :=
+  image_val_attachFin _
+
+@[simp]
+theorem finsetImage_val_Ico : (Ico a b).image val = Ico (a : ℕ) b :=
+  image_val_attachFin _
+
+@[simp]
+theorem finsetImage_val_Ioc : (Ioc a b).image val = Ioc (a : ℕ) b :=
+  image_val_attachFin _
+
+@[simp]
+theorem finsetImage_val_Ioo : (Ioo a b).image val = Ioo (a : ℕ) b :=
+  image_val_attachFin _
+
+@[simp]
+theorem finsetImage_val_uIcc : (uIcc a b).image val = uIcc ↑a ↑b :=
+  finsetImage_val_Icc _ _
+
+@[simp]
+theorem finsetImage_val_Ici : (Ici a).image val = Ico ↑a n := by simp [← coe_inj]
+
+@[simp]
+theorem finsetImage_val_Ioi : (Ioi a).image val = Ioo ↑a n := by simp [← coe_inj]
+
+@[simp]
+theorem finsetImage_val_Iic : (Iic a).image val = Iic ↑a := by simp [← coe_inj]
+
+@[simp]
+theorem finsetImage_val_Iio : (Iio b).image val = Iio ↑b := by simp [← coe_inj]
+
+@[simp]
 theorem map_valEmbedding_Icc : (Icc a b).map Fin.valEmbedding = Icc ↑a ↑b :=
   map_valEmbedding_attachFin _
 
@@ -134,52 +168,18 @@ theorem map_valEmbedding_Ioc : (Ioc a b).map Fin.valEmbedding = Ioc ↑a ↑b :=
 theorem map_valEmbedding_Ioo : (Ioo a b).map Fin.valEmbedding = Ioo ↑a ↑b :=
   map_valEmbedding_attachFin _
 
-theorem finsetImage_val_Ico : (Ico a b).image val = Ico (a : ℕ) b := by simp [← coe_inj]
-
 @[simp]
-theorem map_valEmbedding_Icc : (Icc a b).map valEmbedding = Icc ↑a ↑b := by simp [map_eq_image]
-
-@[simp]
-theorem finsetImage_val_Icc : (Icc a b).image val = Icc (a : ℕ) b := by simp [← coe_inj]
-
-@[simp]
-theorem finsetImage_val_Ioc : (Ioc a b).image val = Ioc (a : ℕ) b := by simp [← coe_inj]
-
-@[simp]
-theorem map_valEmbedding_Ioc : (Ioc a b).map valEmbedding = Ioc ↑a ↑b := by simp [map_eq_image]
-
-@[simp]
-theorem finsetImage_val_Ioo : (Ioo a b).image val = Ioo (a : ℕ) b := by simp [← coe_inj]
-
-@[simp]
-theorem map_valEmbedding_Ioo : (Ioo a b).map valEmbedding = Ioo ↑a ↑b := by simp [map_eq_image]
-
-@[simp]
-theorem finsetImage_val_uIcc : (uIcc a b).image val = uIcc ↑a ↑b := by simp [← coe_inj]
-
-@[simp]
-theorem map_valEmbedding_uIcc : (uIcc a b).map valEmbedding = uIcc ↑a ↑b := by simp [map_eq_image]
-
-@[simp]
-theorem finsetImage_val_Ici : (Ici a).image val = Ico ↑a n := by simp [← coe_inj]
+theorem map_valEmbedding_uIcc : (uIcc a b).map valEmbedding = uIcc ↑a ↑b :=
+  map_valEmbedding_Icc _ _
 
 @[simp]
 theorem map_valEmbedding_Ici : (Ici a).map valEmbedding = Ico ↑a n := by simp [← coe_inj]
 
 @[simp]
-theorem finsetImage_val_Ioi : (Ioi a).image val = Ioo ↑a n := by simp [← coe_inj]
-
-@[simp]
 theorem map_valEmbedding_Ioi : (Ioi a).map valEmbedding = Ioo ↑a n := by simp [← coe_inj]
 
 @[simp]
-theorem finsetImage_val_Iic : (Iic a).image val = Iic ↑a := by simp [← coe_inj]
-
-@[simp]
 theorem map_valEmbedding_Iic : (Iic b).map valEmbedding = Iic ↑b := by simp [← coe_inj]
-
-@[simp]
-theorem finsetImage_val_Iio : (Iio b).image val = Iio ↑b := by simp [← coe_inj]
 
 @[simp]
 theorem map_valEmbedding_Iio : (Iio b).map valEmbedding = Iio ↑b := by simp [← coe_inj]
@@ -195,52 +195,52 @@ theorem finsetImage_castLE_Iic (h : n ≤ m) :
     (Iic a).image (castLE h) = Iic (castLE h a) := by simp [← coe_inj]
 
 @[simp]
-theorem map_castLEEmb_Iic (h : n ≤ m) :
-    (Iic a).map (castLEEmb h) = Iic (castLE h a) := by simp [← coe_inj]
-
-@[simp]
 theorem finsetImage_castLE_Iio (h : n ≤ m) :
     (Iio a).image (castLE h) = Iio (castLE h a) := by simp [← coe_inj]
-
-@[simp]
-theorem map_castLEEmb_Iio (h : n ≤ m) :
-    (Iio a).map (castLEEmb h) = Iio (castLE h a) := by simp [← coe_inj]
 
 @[simp]
 theorem finsetImage_castLE_Icc (h : n ≤ m) :
     (Icc a b).image (castLE h) = Icc (castLE h a) (castLE h b) := by simp [← coe_inj]
 
 @[simp]
-theorem map_castLEEmb_Icc (h : n ≤ m) :
-    (Icc a b).map (castLEEmb h) = Icc (castLE h a) (castLE h b) := by simp [← coe_inj]
-
-@[simp]
 theorem finsetImage_castLE_Ioc (h : n ≤ m) :
     (Ioc a b).image (castLE h) = Ioc (castLE h a) (castLE h b) := by simp [← coe_inj]
-
-@[simp]
-theorem map_castLEEmb_Ioc (h : n ≤ m) :
-    (Ioc a b).map (castLEEmb h) = Ioc (castLE h a) (castLE h b) := by simp [← coe_inj]
 
 @[simp]
 theorem finsetImage_castLE_Ico (h : n ≤ m) :
     (Ico a b).image (castLE h) = Ico (castLE h a) (castLE h b) := by simp [← coe_inj]
 
 @[simp]
-theorem map_castLEEmb_Ico (h : n ≤ m) :
-    (Ico a b).map (castLEEmb h) = Ico (castLE h a) (castLE h b) := by simp [← coe_inj]
-
-@[simp]
 theorem finsetImage_castLE_Ioo (h : n ≤ m) :
     (Ioo a b).image (castLE h) = Ioo (castLE h a) (castLE h b) := by simp [← coe_inj]
 
 @[simp]
-theorem map_castLEEmb_Ioo (h : n ≤ m) :
-    (Ioo a b).map (castLEEmb h) = Ioo (castLE h a) (castLE h b) := by simp [← coe_inj]
-
-@[simp]
 theorem finsetImage_castLE_uIcc (h : n ≤ m) :
     (uIcc a b).image (castLE h) = uIcc (castLE h a) (castLE h b) := by simp [← coe_inj]
+
+@[simp]
+theorem map_castLEEmb_Iic (h : n ≤ m) :
+    (Iic a).map (castLEEmb h) = Iic (castLE h a) := by simp [← coe_inj]
+
+@[simp]
+theorem map_castLEEmb_Iio (h : n ≤ m) :
+    (Iio a).map (castLEEmb h) = Iio (castLE h a) := by simp [← coe_inj]
+
+@[simp]
+theorem map_castLEEmb_Icc (h : n ≤ m) :
+    (Icc a b).map (castLEEmb h) = Icc (castLE h a) (castLE h b) := by simp [← coe_inj]
+
+@[simp]
+theorem map_castLEEmb_Ioc (h : n ≤ m) :
+    (Ioc a b).map (castLEEmb h) = Ioc (castLE h a) (castLE h b) := by simp [← coe_inj]
+
+@[simp]
+theorem map_castLEEmb_Ico (h : n ≤ m) :
+    (Ico a b).map (castLEEmb h) = Ico (castLE h a) (castLE h b) := by simp [← coe_inj]
+
+@[simp]
+theorem map_castLEEmb_Ioo (h : n ≤ m) :
+    (Ioo a b).map (castLEEmb h) = Ioo (castLE h a) (castLE h b) := by simp [← coe_inj]
 
 @[simp]
 theorem map_castLEEmb_uIcc (h : n ≤ m) :
