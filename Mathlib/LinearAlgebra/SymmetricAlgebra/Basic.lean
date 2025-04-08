@@ -157,7 +157,7 @@ satisfies the universal property of the symmetric algebra of `L`) -/
 noncomputable def lift : A →ₐ[R] A' := (SymmetricAlgebra.lift g).comp h.equiv.symm
 
 @[simp]
-lemma lift_eq (a : L) : (h.lift g) (f a) = g a := by simp [lift]
+lemma lift_eq (a : L) : h.lift g (f a) = g a := by simp [lift]
 
 @[simp]
 lemma lift_comp_linearMap : (h.lift g) ∘ₗ f = g := LinearMap.ext fun x ↦ lift_eq h g x
