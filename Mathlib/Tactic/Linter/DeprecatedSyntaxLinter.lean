@@ -62,11 +62,33 @@ register_option linter.style.admit : Bool := {
   descr := "enable the admit linter"
 }
 
+/-- The option `linter.style.maxHeartbeats` of the deprecated syntax linter flags usages of
+`set_option maxHeartbeats n in cmd` that do not add a comment explaining the reason for the
+modification of the maxHeartbeats. -/
+register_option linter.style.maxHeartbeats : Bool := {
+  defValue := false
+  descr := "enable the maxHeartbeats linter"
+}
+
+/-- If the input syntax is of the form `set_option maxHeartbeats num in <string> cmd`,
+then it returns the number `num` and whatever is in `<string>`.
+Note that `<string>` can only consist of whitespace and comments.
+
+Otherwise, it returns `none`.
+-/
+def getSetOptionMaxHeartbeatsComment : Syntax → Option (Nat × Substring)
+  | stx@`(command|set_option maxHeartbeats $n:num in $_) =>
+    if let some inAtom := stx.find? (·.getAtomVal == "in") then
+      inAtom.getTrailing?.map (n.getNat, ·)
+    else
+      some default
+  | _ => none
+
 /-- `getDeprecatedSyntax t` returns all usages of deprecated syntax in the input syntax `t`. -/
 partial
 def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageData)
   | stx@(.node _ kind args) =>
-    let rargs := (args.map getDeprecatedSyntax).flatten
+    let rargs := args.flatMap getDeprecatedSyntax
     match kind with
     | ``Lean.Parser.Tactic.refine' =>
       rargs.push (kind, stx,
@@ -80,6 +102,16 @@ def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageD
       rargs.push (kind, stx,
         "The `admit` tactic is discouraged: \
          please strongly consider using the synonymous `sorry` instead.")
+    | ``Lean.Parser.Command.in =>
+      match getSetOptionMaxHeartbeatsComment stx with
+      | none => rargs
+      | some (n, trailing) =>
+        if trailing.toString.trimLeft.isEmpty then
+          rargs.push (`MaxHeartbeats, stx,
+            s!"Please, add a comment explaining the need for modifying the maxHeartbeat limit, as in\
+            \nset_option maxHeartbeats {n} in\n-- reason for change\n...\n")
+        else
+          rargs
     | _ => rargs
   | _ => default
 
@@ -89,11 +121,13 @@ replacement syntax. For each individual case, linting can be turned on or off se
 * `refine'`, superseded by `refine` and `apply` (controlled by `linter.style.refine`)
 * `cases'`, superseded by `obtain`, `rcases` and `cases` (controlled by `linter.style.cases`)
 * `admit`, superseded by `sorry` (controlled by `linter.style.admit`)
+* `set_option maxHeartbeats`, should contain a comment (controlled by `linter.style.maxHeartbeats`)
 -/
-def deprecatedSyntaxLinter : Linter where run := withSetOptionIn fun stx => do
+def deprecatedSyntaxLinter : Linter where run stx := do
   unless Linter.getLinterValue linter.style.refine (← getOptions) ||
       Linter.getLinterValue linter.style.cases (← getOptions) ||
-      Linter.getLinterValue linter.style.admit (← getOptions) do
+      Linter.getLinterValue linter.style.admit (← getOptions) ||
+      Linter.getLinterValue linter.style.maxHeartbeats (← getOptions) do
     return
   if (← MonadState.get).messages.hasErrors then
     return
@@ -102,6 +136,7 @@ def deprecatedSyntaxLinter : Linter where run := withSetOptionIn fun stx => do
     | ``Lean.Parser.Tactic.refine' => Linter.logLintIf linter.style.refine stx' msg
     | `Mathlib.Tactic.cases' => Linter.logLintIf linter.style.cases stx' msg
     | ``Lean.Parser.Tactic.tacticAdmit => Linter.logLintIf linter.style.admit stx' msg
+    | `MaxHeartbeats => Linter.logLintIf linter.style.maxHeartbeats stx' msg
     | _ => continue
 
 initialize addLinter deprecatedSyntaxLinter
