@@ -831,7 +831,7 @@ omit [SFinite ν] in
 theorem lintegral_prod_le (f : α × β → ℝ≥0∞) :
     ∫⁻ z, f z ∂μ.prod ν ≤ ∫⁻ x, ∫⁻ y, f (x, y) ∂ν ∂μ := by
   rw [Measure.prod]
-  exact lintegral_bind_le.trans <| lintegral_mono fun a ↦ lintegral_map_le _ _
+  exact (lintegral_bind_le _ _ _).trans <| lintegral_mono fun a ↦ lintegral_map_le _ _
 
 /-- **Tonelli's Theorem for set integrals**: For `ℝ≥0∞`-valued almost everywhere measurable
 functions on `s ×ˢ t`, the integral of `f` on `s ×ˢ t` is equal to the iterated integral on `s`
