@@ -133,11 +133,11 @@ def deprecatedSyntaxLinter : Linter where run stx := do
   if (← MonadState.get).messages.hasErrors then
     return
   let deprecations := getDeprecatedSyntax stx
-  -- using `withSetOptionIn` here, allows the linter to parse also the "leading" `set_option`s
+  -- Using `withSetOptionIn` here, allows the linter to parse also the "leading" `set_option`s
   -- but then flagging them only if the corresponding option is still set after elaborating the
   -- leading `set_option`s.
   -- In particular, this means that the linter "sees" `set_option maxHeartbeats 10 in ...`,
-  -- records it in `deprecations` and then acts on it, according the to correct options.
+  -- records it in `deprecations` and then acts on it, according to the correct options.
   (withSetOptionIn fun _ ↦ do
     for (kind, stx', msg) in deprecations do
       match kind with
