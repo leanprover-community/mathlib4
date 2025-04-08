@@ -224,24 +224,22 @@ variable {l₄ : e ⟶ f} {r₄ : f ⟶ e} {l₅ : x ⟶ y} {r₅ : y ⟶ x} {l�
 variable (adj₁ : l₁ ⊣ r₁) (adj₂ : l₂ ⊣ r₂) (adj₃ : l₃ ⊣ r₃)
 variable (adj₄ : l₄ ⊣ r₄) (adj₅ : l₅ ⊣ r₅) (adj₆ : l₆ ⊣ r₆)
 
+section leftAdjointSquare.comp
+
+variable (α : g₁ ≫ l₃ ⟶ l₁ ≫ h₁) (β : h₁ ≫ l₄ ⟶ l₂ ≫ k₁)
+variable (γ : g₂ ≫ l₅ ⟶ l₃ ≫ h₂) (δ : h₂ ≫ l₆ ⟶ l₄ ≫ k₂)
+
 /-- Squares of squares between left adjoints can be composed by iterating vertical and horizontal
 composition.
 -/
-def leftAdjointSquare.comp
-    (α : g₁ ≫ l₃ ⟶ l₁ ≫ h₁) (β : h₁ ≫ l₄ ⟶ l₂ ≫ k₁)
-    (γ : g₂ ≫ l₅ ⟶ l₃ ≫ h₂) (δ : h₂ ≫ l₆ ⟶ l₄ ≫ k₂) :
+def leftAdjointSquare.comp :
     ((g₁ ≫ g₂) ≫ (l₅ ≫ l₆)) ⟶ ((l₁ ≫ l₂) ≫ (k₁ ≫ k₂)) :=
   vcomp (hcomp α β) (hcomp γ δ)
 
-theorem leftAdjointSquare.comp_vhcomp
-    (α : g₁ ≫ l₃ ⟶ l₁ ≫ h₁) (β : h₁ ≫ l₄ ⟶ l₂ ≫ k₁)
-    (γ : g₂ ≫ l₅ ⟶ l₃ ≫ h₂) (δ : h₂ ≫ l₆ ⟶ l₄ ≫ k₂) :
-    comp α β γ δ = vcomp (hcomp α β) (hcomp γ δ) := rfl
+theorem leftAdjointSquare.comp_vhcomp : comp α β γ δ = vcomp (hcomp α β) (hcomp γ δ) := rfl
 
-/-- Horizontal and vertical composition of squares commutes.-/
-theorem leftAdjointSquare.comp_hvcomp
-    (α : g₁ ≫ l₃ ⟶ l₁ ≫ h₁) (β : h₁ ≫ l₄ ⟶ l₂ ≫ k₁)
-    (γ : g₂ ≫ l₅ ⟶ l₃ ≫ h₂) (δ : h₂ ≫ l₆ ⟶ l₄ ≫ k₂) :
+/-- Horizontal and vertical composition of squares commutes. -/
+theorem leftAdjointSquare.comp_hvcomp :
     comp α β γ δ = hcomp (vcomp α γ) (vcomp β δ) := by
   dsimp only [comp, vcomp, hcomp]
   calc
@@ -251,24 +249,24 @@ theorem leftAdjointSquare.comp_hvcomp
       rw [whisker_exchange]
       bicategory
 
+end leftAdjointSquare.comp
+
+section rightAdjointSquare.comp
+
+variable (α : r₁ ≫ g₁ ⟶ h₁ ≫ r₃) (β : r₂ ≫ h₁ ⟶ k₁ ≫ r₄)
+variable (γ : r₃ ≫ g₂ ⟶ h₂ ≫ r₅) (δ : r₄ ≫ h₂ ⟶ k₂ ≫ r₆)
+
 /-- Squares of squares between right adjoints can be composed by iterating vertical and horizontal
 composition.
 -/
-def rightAdjointSquare.comp
-    (α : r₁ ≫ g₁ ⟶ h₁ ≫ r₃) (β : r₂ ≫ h₁ ⟶ k₁ ≫ r₄)
-    (γ : r₃ ≫ g₂ ⟶ h₂ ≫ r₅) (δ : r₄ ≫ h₂ ⟶ k₂ ≫ r₆) :
+def rightAdjointSquare.comp :
     ((r₂ ≫ r₁) ≫ (g₁ ≫ g₂) ⟶ (k₁ ≫ k₂) ≫ (r₆ ≫ r₅)) :=
   vcomp (hcomp α β) (hcomp γ δ)
 
-theorem rightAdjointSquare.comp_vhcomp
-    (α : r₁ ≫ g₁ ⟶ h₁ ≫ r₃) (β : r₂ ≫ h₁ ⟶ k₁ ≫ r₄)
-    (γ : r₃ ≫ g₂ ⟶ h₂ ≫ r₅) (δ : r₄ ≫ h₂ ⟶ k₂ ≫ r₆) :
-    comp α β γ δ = vcomp (hcomp α β) (hcomp γ δ) := rfl
+theorem rightAdjointSquare.comp_vhcomp : comp α β γ δ = vcomp (hcomp α β) (hcomp γ δ) := rfl
 
-/-- Horizontal and vertical composition of squares commutes.-/
-theorem rightAdjointSquare.comp_hvcomp
-    (α : r₁ ≫ g₁ ⟶ h₁ ≫ r₃) (β : r₂ ≫ h₁ ⟶ k₁ ≫ r₄)
-    (γ : r₃ ≫ g₂ ⟶ h₂ ≫ r₅) (δ : r₄ ≫ h₂ ⟶ k₂ ≫ r₆) :
+/-- Horizontal and vertical composition of squares commutes. -/
+theorem rightAdjointSquare.comp_hvcomp :
     comp α β γ δ = hcomp (vcomp α γ) (vcomp β δ) := by
   dsimp only [comp, vcomp, hcomp]
   calc
@@ -277,6 +275,8 @@ theorem rightAdjointSquare.comp_hvcomp
     _ = _ := by
       rw [← whisker_exchange]
       bicategory
+
+end rightAdjointSquare.comp
 
 /-- The mates equivalence commutes with composition of squares of squares. These results form the
 basis for an isomorphism of double categories to be proven later.
