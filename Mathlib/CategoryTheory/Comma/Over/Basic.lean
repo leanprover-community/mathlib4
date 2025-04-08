@@ -1053,6 +1053,21 @@ def Under.opEquivOpOver : Under (op X) ≌ (Over X)ᵒᵖ where
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
+instance : (Over.opToOpUnder X).Full := (Over.opEquivOpUnder X).full_functor
+instance : (Under.opToOverOp X).Full := (Over.opEquivOpUnder X).full_inverse
+instance : (Under.opToOpOver X).Full := (Under.opEquivOpOver X).full_functor
+instance : (Over.opToUnderOp X).Full := (Under.opEquivOpOver X).full_inverse
+
+instance : (Over.opToOpUnder X).Faithful := (Over.opEquivOpUnder X).faithful_functor
+instance : (Under.opToOverOp X).Faithful := (Over.opEquivOpUnder X).faithful_inverse
+instance : (Under.opToOpOver X).Faithful := (Under.opEquivOpOver X).faithful_functor
+instance : (Over.opToUnderOp X).Faithful := (Under.opEquivOpOver X).faithful_inverse
+
+instance : (Over.opToOpUnder X).EssSurj := (Over.opEquivOpUnder X).essSurj_functor
+instance : (Under.opToOverOp X).EssSurj := (Over.opEquivOpUnder X).essSurj_inverse
+instance : (Under.opToOpOver X).EssSurj := (Under.opEquivOpOver X).essSurj_functor
+instance : (Over.opToUnderOp X).EssSurj := (Under.opEquivOpOver X).essSurj_inverse
+
 end Opposite
 
 end CategoryTheory
