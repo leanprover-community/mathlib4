@@ -561,6 +561,9 @@ def fromEdgeSet : SimpleGraph V where
   Adj := Sym2.ToRel s ⊓ Ne
   symm _ _ h := ⟨Sym2.toRel_symmetric s h.1, h.2.symm⟩
 
+instance [DecidablePred (· ∈ s)] [DecidableEq V] : DecidableRel (fromEdgeSet s).Adj :=
+  inferInstanceAs <| DecidableRel fun v w ↦ s(v, w) ∈ s ∧ v ≠ w
+
 @[simp]
 theorem fromEdgeSet_adj : (fromEdgeSet s).Adj v w ↔ s(v, w) ∈ s ∧ v ≠ w :=
   Iff.rfl
