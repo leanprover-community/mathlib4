@@ -431,7 +431,7 @@ lemma HasProd.congr_cofinite₀ {c : K} (hc : HasProd f c) {s : Finset α}
 
 lemma tsum_congr_cofinite₀ [T2Space K] (hc : Multipliable f) {s : Finset α}
     (hs : ∀ a ∈ s, f a ≠ 0) (hs' : ∀ a ∉ s, f a = g a) :
-    ∏' i, g i =  ((∏' i, f i) * ((∏ i ∈ s, g i) / ∏ i ∈ s, f i)) := by
+    ∏' i, g i = ((∏' i, f i) * ((∏ i ∈ s, g i) / ∏ i ∈ s, f i)) := by
   refine (hc.hasProd.congr_cofinite₀ hs hs').tprod_eq
 
 /--
