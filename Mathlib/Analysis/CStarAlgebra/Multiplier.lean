@@ -73,7 +73,6 @@ scoped[MultiplierAlgebra] notation "𝓜(" 𝕜 ", " A ")" => DoubleCentralizer 
 
 open MultiplierAlgebra
 
--- Porting note: `ext` was generating the wrong extensionality lemma; it deconstructed the `×`.
 @[ext]
 lemma DoubleCentralizer.ext (𝕜 : Type u) (A : Type v) [NontriviallyNormedField 𝕜]
     [NonUnitalNormedRing A] [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
@@ -423,22 +422,18 @@ end Star
 ### Coercion from an algebra into its multiplier algebra
 -/
 
-variable (𝕜)
-
+variable (𝕜) in
 /-- The natural coercion of `A` into `𝓜(𝕜, A)` given by sending `a : A` to the pair of linear
 maps `Lₐ Rₐ : A →L[𝕜] A` given by left- and right-multiplication by `a`, respectively.
 
 Warning: if `A = 𝕜`, then this is a coercion which is not definitionally equal to the
 `algebraMap 𝕜 𝓜(𝕜, 𝕜)` coercion, but these are propositionally equal. See
 `DoubleCentralizer.coe_eq_algebraMap` below. -/
--- Porting note: added `noncomputable`; IR check does not recognise `ContinuousLinearMap.mul`
 @[coe]
 protected noncomputable def coe (a : A) : 𝓜(𝕜, A) :=
   { fst := ContinuousLinearMap.mul 𝕜 A a
     snd := (ContinuousLinearMap.mul 𝕜 A).flip a
     central := fun _x _y => mul_assoc _ _ _ }
-
-variable {𝕜}
 
 /-- The natural coercion of `A` into `𝓜(𝕜, A)` given by sending `a : A` to the pair of linear
 maps `Lₐ Rₐ : A →L[𝕜] A` given by left- and right-multiplication by `a`, respectively.
@@ -651,6 +646,8 @@ instance instCStarRing : CStarRing 𝓜(𝕜, A) where
 
 end DenselyNormed
 
+#adaptation_note /-- 2025-03-29 for lean4#7717 had to add `norm_mul_self_le` field. -/
 noncomputable instance {A : Type*} [NonUnitalCStarAlgebra A] : CStarAlgebra 𝓜(ℂ, A) where
+  norm_mul_self_le := CStarRing.norm_mul_self_le
 
 end DoubleCentralizer

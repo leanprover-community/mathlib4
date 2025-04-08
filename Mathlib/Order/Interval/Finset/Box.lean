@@ -23,7 +23,7 @@ We don't need the full ring structure, only that there is an order embedding `�
 /-! ### General locally finite ordered ring -/
 
 namespace Finset
-variable {α : Type*} [OrderedRing α] [LocallyFiniteOrder α] {n : ℕ}
+variable {α : Type*} [Ring α] [PartialOrder α] [IsOrderedRing α] [LocallyFiniteOrder α] {n : ℕ}
 
 private lemma Icc_neg_mono : Monotone fun n : ℕ ↦ Icc (-n : α) n := by
   refine fun m n hmn ↦ by apply Icc_subset_Icc <;> simpa using Nat.mono_cast hmn
@@ -33,6 +33,7 @@ variable [DecidableEq α]
 /-- Hollow box centered at `0 : α` going from `-n` to `n`. -/
 def box : ℕ → Finset α := disjointed fun n ↦ Icc (-n : α) n
 
+omit [IsOrderedRing α] in
 @[simp] lemma box_zero : (box 0 : Finset α) = {0} := by simp [box]
 
 lemma box_succ_eq_sdiff (n : ℕ) :
@@ -63,8 +64,9 @@ open Finset
 /-! ### Product of locally finite ordered rings -/
 
 namespace Prod
-variable {α β : Type*} [OrderedRing α] [OrderedRing β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
-  [DecidableEq α] [DecidableEq β] [DecidableRel (α := α × β) (· ≤ ·)]
+variable {α β : Type*} [Ring α] [PartialOrder α] [IsOrderedRing α]
+  [Ring β] [PartialOrder β] [IsOrderedRing β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
+  [DecidableEq α] [DecidableEq β] [DecidableLE (α × β)]
 
 @[simp] lemma card_box_succ (n : ℕ) :
     #(box (n + 1) : Finset (α × β)) =

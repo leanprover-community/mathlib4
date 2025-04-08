@@ -3,13 +3,13 @@ Copyright (c) 2024 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Functor.Flat
 import Mathlib.CategoryTheory.Limits.Constructions.Filtered
 import Mathlib.CategoryTheory.Limits.FullSubcategory
+import Mathlib.CategoryTheory.Limits.ExactFunctor
+import Mathlib.CategoryTheory.Limits.Indization.Equalizers
 import Mathlib.CategoryTheory.Limits.Indization.LocallySmall
-import Mathlib.CategoryTheory.Limits.Indization.ParallelPair
-import Mathlib.CategoryTheory.Limits.Indization.FilteredColimits
 import Mathlib.CategoryTheory.Limits.Indization.Products
+import Mathlib.CategoryTheory.Limits.Preserves.Presheaf
 
 /-!
 # The category of Ind-objects
@@ -17,24 +17,32 @@ import Mathlib.CategoryTheory.Limits.Indization.Products
 We define the `v`-category of Ind-objects of a category `C`, called `Ind C`, as well as the functors
 `Ind.yoneda : C ⥤ Ind C` and `Ind.inclusion C : Ind C ⥤ Cᵒᵖ ⥤ Type v`.
 
-For a small filtered category `I`, we also define `Ind.lim I : (I ⥤ C) ⥤ Ind C`.
+For a small filtered category `I`, we also define `Ind.lim I : (I ⥤ C) ⥤ Ind C` and show that
+it preserves finite limits and finite colimits.
 
 This file will mainly collect results about ind-objects (stated in terms of `IsIndObject`) and
 reinterpret them in terms of `Ind C`.
 
-Adopting the theorem numbering of [Kashiwara2006], we show that
-* `Ind C` has filtered colimits (6.1.8),
-* `Ind C ⥤ Cᵒᵖ ⥤ Type v` creates filtered colimits (6.1.8),
-* `C ⥤ Ind C` preserves finite colimits (6.1.6),
+Adopting the theorem numbering of [Kashiwara2006], we show the following properties:
+
+Limits:
+* If `C` has products indexed by `α`, then `Ind C` has products indexed by `α`, and the functor
+  `Ind C ⥤ Cᵒᵖ ⥤ Type v` creates such products (6.1.17),
+* if `C` has equalizers, then `Ind C` has equalizers, and the functor `Ind C ⥤ Cᵒᵖ ⥤ Type v`
+  creates them (6.1.17)
+* if `C` has small limits (resp. finite limits), then `Ind C` has small limits (resp. finite limits)
+  and the functor `Ind C ⥤ Cᵒᵖ ⥤ Type v` creates them (6.1.17),
+* the functor `C ⥤ Ind C` preserves small limits (6.1.17).
+
+Colimits:
+* `Ind C` has filtered colimits (6.1.8), and the functor `Ind C ⥤ Cᵒᵖ ⥤ Type v` preserves filtered
+  colimits,
 * if `C` has coproducts indexed by a finite type `α`, then `Ind C` has coproducts indexed by `α`
   (6.1.18(ii)),
 * if `C` has finite coproducts, then `Ind C` has small coproducts (6.1.18(ii)),
-* if `C` has products indexed by `α`, then `Ind C` has products indexed by `α`, and the functor
-  `Ind C ⥤ Cᵒᵖ ⥤ Type v` creates such products (6.1.17)
-* the functor `C ⥤ Ind C` preserves small limits,
-* if `C` has coequalizers, then `Ind C` has coequalizers (6.1.18(i)).
-
-More limit-colimit properties will follow.
+* if `C` has coequalizers, then `Ind C` has coequalizers (6.1.18(i)),
+* if `C` has finite colimits, then `Ind C` has small colimits (6.1.18(iii)).
+* `C ⥤ Ind C` preserves finite colimits (6.1.6),
 
 Note that:
 * the functor `Ind C ⥤ Cᵒᵖ ⥤ Type v` does not preserve any kind of colimit in general except for
@@ -127,6 +135,34 @@ instance {J : Type v} [HasLimitsOfShape (Discrete J) C] :
     HasLimitsOfShape (Discrete J) (Ind C) :=
   hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape (Ind.inclusion C)
 
+noncomputable instance [HasLimitsOfShape WalkingParallelPair C] :
+    CreatesLimitsOfShape WalkingParallelPair (Ind.inclusion C) :=
+  letI _ : CreatesLimitsOfShape WalkingParallelPair
+      (fullSubcategoryInclusion (IsIndObject (C := C))) :=
+    createsLimitsOfShapeFullSubcategoryInclusion
+      (closedUnderLimitsOfShape_walkingParallelPair_isIndObject)
+  inferInstanceAs <|
+    CreatesLimitsOfShape WalkingParallelPair
+      ((Ind.equivalence C).functor ⋙ fullSubcategoryInclusion _)
+
+instance [HasLimitsOfShape WalkingParallelPair C] :
+    HasLimitsOfShape WalkingParallelPair (Ind C) :=
+  hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape (Ind.inclusion C)
+
+noncomputable instance [HasFiniteLimits C] : CreatesFiniteLimits (Ind.inclusion C) :=
+  letI _ : CreatesFiniteProducts (Ind.inclusion C) :=
+    { creates _ _ := createsLimitsOfShapeOfEquiv (Discrete.equivalence Equiv.ulift) _  }
+  createsFiniteLimitsOfCreatesEqualizersAndFiniteProducts (Ind.inclusion C)
+
+instance [HasFiniteLimits C] : HasFiniteLimits (Ind C) :=
+  hasFiniteLimits_of_hasLimitsLimits_of_createsFiniteLimits (Ind.inclusion C)
+
+noncomputable instance [HasLimits C] : CreatesLimitsOfSize.{v, v} (Ind.inclusion C) :=
+  createsLimitsOfSizeOfCreatesEqualizersAndProducts.{v, v} (Ind.inclusion C)
+
+instance [HasLimits C] : HasLimits (Ind C) :=
+  hasLimits_of_hasLimits_createsLimits (Ind.inclusion C)
+
 instance : PreservesLimits (Ind.yoneda (C := C)) :=
   letI _ : PreservesLimitsOfSize.{v, v} (Ind.yoneda ⋙ Ind.inclusion C) :=
     preservesLimits_of_natIso Ind.yonedaCompInclusion.symm
@@ -211,7 +247,7 @@ instance {α : Type v} [Finite α] [HasColimitsOfShape (Discrete α) C] :
   -- ```
   -- from the fact that finite limits commute with filtered colimits and from the fact that
   -- `Ind.yoneda` preserves finite colimits.
-  exact hasColimitOfIso iso.symm
+  exact hasColimit_of_iso iso.symm
 
 instance [HasFiniteCoproducts C] : HasCoproducts.{v} (Ind C) :=
   have : HasFiniteCoproducts (Ind C) :=
@@ -235,7 +271,10 @@ instance [HasColimitsOfShape WalkingParallelPair C] :
   obtain ⟨P⟩ := nonempty_indParallelPairPresentation (F.obj WalkingParallelPair.zero).2
     (F.obj WalkingParallelPair.one).2 (Ind.inclusion _ |>.map <| F.map WalkingParallelPairHom.left)
     (Ind.inclusion _ |>.map <| F.map WalkingParallelPairHom.right)
-  exact hasColimitOfIso (diagramIsoParallelPair _ ≪≫ P.parallelPairIsoParallelPairCompIndYoneda)
+  exact hasColimit_of_iso (diagramIsoParallelPair _ ≪≫ P.parallelPairIsoParallelPairCompIndYoneda)
+
+instance [HasFiniteColimits C] : HasColimits (Ind C) :=
+  has_colimits_of_hasCoequalizers_and_coproducts
 
 /-- A way to understand morphisms in `Ind C`: every morphism is induced by a natural transformation
 of diagrams. -/
@@ -249,5 +288,16 @@ theorem Ind.exists_nonempty_arrow_mk_iso_ind_lim {A B : Ind C} {f : A ⟶ B} :
   · exact P.parallelPairIsoParallelPairCompIndYoneda.app WalkingParallelPair.one
   · simpa using
       (P.parallelPairIsoParallelPairCompIndYoneda.hom.naturality WalkingParallelPairHom.left).symm
+
+section Small
+
+variable (C : Type u) [SmallCategory C] [HasFiniteColimits C]
+
+/-- For small finitely cocomplete categories `C : Type u`, the category of Ind-objects `Ind C` is
+equivalent to the category of left-exact functors `Cᵒᵖ ⥤ Type u` -/
+noncomputable def Ind.leftExactFunctorEquivalence : Ind C ≌ LeftExactFunctor Cᵒᵖ (Type u) :=
+  (Ind.equivalence _).trans <| Equivalence.ofFullSubcategory isIndObject_iff_preservesFiniteLimits
+
+end Small
 
 end CategoryTheory

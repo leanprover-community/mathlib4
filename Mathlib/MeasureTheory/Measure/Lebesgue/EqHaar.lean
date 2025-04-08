@@ -3,12 +3,12 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Sébastien Gouëzel
 -/
-import Mathlib.LinearAlgebra.FiniteDimensional
-import Mathlib.MeasureTheory.Group.Pointwise
-import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-import Mathlib.MeasureTheory.Measure.Haar.Basic
-import Mathlib.MeasureTheory.Measure.Doubling
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
+import Mathlib.MeasureTheory.Group.Pointwise
+import Mathlib.MeasureTheory.Measure.Doubling
+import Mathlib.MeasureTheory.Measure.Haar.Basic
+import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 
 /-!
 # Relationship between the Haar and Lebesgue measures
@@ -117,8 +117,7 @@ theorem addHaarMeasure_eq_volume_pi (ι : Type*) [Fintype ι] :
   simp only [piIcc01, volume_pi_pi fun _ => Icc (0 : ℝ) 1, PositiveCompacts.coe_mk,
     Compacts.coe_mk, Finset.prod_const_one, ENNReal.ofReal_one, Real.volume_Icc, one_smul, sub_zero]
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: remove this instance?
-instance isAddHaarMeasure_volume_pi (ι : Type*) [Fintype ι] :
+theorem isAddHaarMeasure_volume_pi (ι : Type*) [Fintype ι] :
     IsAddHaarMeasure (volume : Measure (ι → ℝ)) :=
   inferInstance
 
@@ -543,9 +542,7 @@ theorem addHaar_parallelepiped (b : Basis ι ℝ G) (v : ι → G) :
   have : FiniteDimensional ℝ G := FiniteDimensional.of_fintype_basis b
   have A : parallelepiped v = b.constr ℕ v '' parallelepiped b := by
     rw [image_parallelepiped]
-    -- Porting note: was `congr 1 with i` but Lean 4 `congr` applies `ext` first
-    refine congr_arg _ <| funext fun i ↦ ?_
-    exact (b.constr_basis ℕ v i).symm
+    exact congr_arg _ <| funext fun i ↦ (b.constr_basis ℕ v i).symm
   rw [A, addHaar_image_linearMap, b.addHaar_self, mul_one, ← LinearMap.det_toMatrix b,
     ← Basis.toMatrix_eq_toMatrix_constr, Basis.det_apply]
 
@@ -624,12 +621,7 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero_aux1 (s : Set E) (x : E)
         μ (s ∩ ({x} + r • t)) / μ (closedBall x r) * (μ (closedBall x r) / μ ({x} + r • u)))
       (𝓝[>] 0) (𝓝 (0 * (μ (closedBall x 1) / μ ({x} + u)))) := by
     apply ENNReal.Tendsto.mul A _ B (Or.inr ENNReal.zero_ne_top)
-    simp only [ne_eq, not_true, singleton_add, image_add_left, measure_preimage_add, false_or,
-      ENNReal.div_eq_top, h'u, not_and, and_false]
-    intro aux
-    exact (measure_closedBall_lt_top.ne aux).elim
-    -- Porting note: it used to be enough to pass `measure_closedBall_lt_top.ne` to `simp`
-    -- and avoid the `intro; exact` dance.
+    simp [ENNReal.div_eq_top, h'u, measure_closedBall_lt_top.ne]
   simp only [zero_mul] at C
   apply C.congr' _
   filter_upwards [self_mem_nhdsWithin]

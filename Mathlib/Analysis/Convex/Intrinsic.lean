@@ -110,8 +110,6 @@ theorem intrinsicClosure_nonempty : (intrinsicClosure 𝕜 s).Nonempty ↔ s.Non
 
 alias ⟨Set.Nonempty.ofIntrinsicClosure, Set.Nonempty.intrinsicClosure⟩ := intrinsicClosure_nonempty
 
---attribute [protected] Set.Nonempty.intrinsicClosure -- Porting note: removed
-
 @[simp]
 theorem intrinsicInterior_singleton (x : P) : intrinsicInterior 𝕜 ({x} : Set P) = {x} := by
   simp only [intrinsicInterior, preimage_coe_affineSpan_singleton, interior_univ, image_univ,

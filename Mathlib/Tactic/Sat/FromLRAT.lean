@@ -40,7 +40,7 @@ foo : ∀ (a a_1 : Prop), (¬a ∧ ¬a_1 ∨ a ∧ ¬a_1) ∨ ¬a ∧ a_1 ∨ a 
   to load CNF / LRAT files from disk.
 -/
 
-open Lean hiding Literal HashMap
+open Lean hiding Literal
 open Std (HashMap)
 
 namespace Sat
@@ -70,7 +70,10 @@ instance : ToExpr Literal where
 /-- A clause is a list of literals, thought of as a disjunction like `a ∨ b ∨ ¬c`. -/
 def Clause := List Literal
 
+/-- The empty clause -/
 def Clause.nil : Clause := []
+
+/-- Append a literal to a clause. -/
 def Clause.cons : Literal → Clause → Clause := List.cons
 
 /-- A formula is a list of clauses, thought of as a conjunction like `(a ∨ b) ∧ c ∧ (¬c ∨ ¬d)`. -/

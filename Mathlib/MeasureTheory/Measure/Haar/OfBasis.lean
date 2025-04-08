@@ -55,7 +55,7 @@ theorem parallelepiped_basis_eq (b : Basis ι ℝ E) :
   classical
   ext x
   simp_rw [mem_parallelepiped_iff, mem_setOf_eq, b.ext_elem_iff, _root_.map_sum,
-    _root_.map_smul, Finset.sum_apply', Basis.repr_self, Finsupp.smul_single, smul_eq_mul,
+    map_smul, Finset.sum_apply', Basis.repr_self, Finsupp.smul_single, smul_eq_mul,
     mul_one, Finsupp.single_apply, Finset.sum_ite_eq', Finset.mem_univ, ite_true, mem_Icc,
     Pi.le_def, Pi.zero_apply, Pi.one_apply, ← forall_and]
   aesop
@@ -205,11 +205,9 @@ theorem Basis.parallelepiped_reindex (b : Basis ι ℝ E) (e : ι ≃ ι') :
 
 theorem Basis.parallelepiped_map (b : Basis ι ℝ E) (e : E ≃ₗ[ℝ] F) :
     (b.map e).parallelepiped = b.parallelepiped.map e
-    (have := FiniteDimensional.of_fintype_basis b
-    -- Porting note: Lean cannot infer the instance above
+    (haveI := FiniteDimensional.of_fintype_basis b
     LinearMap.continuous_of_finiteDimensional e.toLinearMap)
-    (have := FiniteDimensional.of_fintype_basis (b.map e)
-    -- Porting note: Lean cannot infer the instance above
+    (haveI := FiniteDimensional.of_fintype_basis (b.map e)
     LinearMap.isOpenMap_of_finiteDimensional _ e.surjective) :=
   PositiveCompacts.ext (image_parallelepiped e.toLinearMap _).symm
 

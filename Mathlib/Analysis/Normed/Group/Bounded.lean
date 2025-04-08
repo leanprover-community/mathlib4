@@ -3,7 +3,7 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
-import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Analysis.Normed.Group.Continuity
 import Mathlib.Topology.MetricSpace.Bounded
 import Mathlib.Order.Filter.Pointwise
 
@@ -111,7 +111,7 @@ of multiplication so that it can be applied to `(*)`, `flip (*)`, `(•)`, and `
 lemma Filter.Tendsto.op_one_isBoundedUnder_le' {f : α → E} {g : α → F} {l : Filter α}
     (hf : Tendsto f l (𝓝 1)) (hg : IsBoundedUnder (· ≤ ·) l (Norm.norm ∘ g)) (op : E → F → G)
     (h_op : ∃ A, ∀ x y, ‖op x y‖ ≤ A * ‖x‖ * ‖y‖) : Tendsto (fun x => op (f x) (g x)) l (𝓝 1) := by
-  cases' h_op with A h_op
+  obtain ⟨A, h_op⟩ := h_op
   rcases hg with ⟨C, hC⟩; rw [eventually_map] at hC
   rw [NormedCommGroup.tendsto_nhds_one] at hf ⊢
   intro ε ε₀

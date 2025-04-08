@@ -65,13 +65,10 @@ variable {n R}
 
 namespace TruncatedWittVector
 
-variable (p)
-
+variable (p) in
 /-- Create a `TruncatedWittVector` from a vector `x`. -/
 def mk (x : Fin n → R) : TruncatedWittVector p n R :=
   x
-
-variable {p}
 
 /-- `x.coeff i` is the `i`th entry of `x`. -/
 def coeff (i : Fin n) (x : TruncatedWittVector p n R) : R :=
@@ -418,8 +415,7 @@ defining the `k`th entry to be the final entry of `fₖ s`.
 def liftFun (s : S) : 𝕎 R :=
   @WittVector.mk' p _ fun k => TruncatedWittVector.coeff (Fin.last k) (f (k + 1) s)
 
-variable {f}
-
+variable {f} in
 include f_compat in
 @[simp]
 theorem truncate_liftFun (s : S) : WittVector.truncate n (liftFun f s) = f n s := by
@@ -427,8 +423,6 @@ theorem truncate_liftFun (s : S) : WittVector.truncate n (liftFun f s) = f n s :
   simp only [liftFun, TruncatedWittVector.coeff_mk, WittVector.truncate_mk']
   rw [← f_compat (i + 1) n i.is_lt, RingHom.comp_apply, TruncatedWittVector.coeff_truncate]
   congr 1 with _
-
-variable (f)
 
 /--
 Given compatible ring homs from `S` into `TruncatedWittVector n` for each `n`, we can lift these
@@ -443,7 +437,6 @@ def lift : S →+* 𝕎 R := by
             map_add' := ?_
             map_mul' := ?_ } <;>
   ( intros
-    dsimp only
     rw [← sub_eq_zero, ← Ideal.mem_bot, ← iInf_ker_truncate, Ideal.mem_iInf]
     simp [RingHom.mem_ker, f_compat])
 

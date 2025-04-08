@@ -5,9 +5,9 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.MvPolynomial.Expand
 import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.LinearAlgebra.Dual.Lemmas
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.RingTheory.MvPolynomial.Basic
-import Mathlib.LinearAlgebra.Dual
 
 /-!
 ## Polynomials over finite fields
@@ -121,8 +121,6 @@ def evalₗ [CommSemiring K] : MvPolynomial σ K →ₗ[K] (σ → K) → K wher
 
 variable [Field K] [Fintype K] [Finite σ]
 
--- Porting note: `K` and `σ` were implicit in mathlib3, even if they were declared via
--- `variable (K σ)` (I don't understand why). They are now explicit, as expected.
 theorem map_restrict_dom_evalₗ : (restrictDegree σ K (Fintype.card K - 1)).map (evalₗ K σ) = ⊤ := by
   cases nonempty_fintype σ
   refine top_unique (SetLike.le_def.2 fun e _ => mem_map.2 ?_)
@@ -154,11 +152,11 @@ universe u
 
 variable (σ : Type u) (K : Type u) [Fintype K]
 
--- Porting note: `@[derive [AddCommGroup, Module K, Inhabited]]` done by hand.
 /-- The submodule of multivariate polynomials whose degree of each variable is strictly less
 than the cardinality of K. -/
 def R [CommRing K] : Type u :=
   restrictDegree σ K (Fintype.card K - 1)
+-- The `AddCommGroup, Module K, Inhabited` instances should be constructed by a deriving handler.
 
 noncomputable instance [CommRing K] : AddCommGroup (R σ K) :=
   inferInstanceAs (AddCommGroup (restrictDegree σ K (Fintype.card K - 1)))
@@ -212,12 +210,10 @@ open Classical in
 theorem finrank_R [Fintype σ] : Module.finrank K (R σ K) = Fintype.card (σ → K) :=
   Module.finrank_eq_of_rank_eq (rank_R σ K)
 
--- Porting note: was `(evalᵢ σ K).range`.
 theorem range_evalᵢ [Finite σ] : range (evalᵢ σ K) = ⊤ := by
   rw [evalᵢ, LinearMap.range_comp, range_subtype]
   exact map_restrict_dom_evalₗ K σ
 
--- Porting note: was `(evalᵢ σ K).ker`.
 theorem ker_evalₗ [Finite σ] : ker (evalᵢ σ K) = ⊥ := by
   cases nonempty_fintype σ
   refine (ker_eq_bot_iff_range_eq_top_of_finrank_eq_finrank ?_).mpr (range_evalᵢ σ K)

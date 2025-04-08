@@ -371,6 +371,10 @@ instance {S A : Type*} [Semiring S] [SMul R S] [AddCommMonoid A] [Module R A] [M
     [IsScalarTower R S A] [NoZeroSMulDivisors R A] {I : Submodule S A} : NoZeroSMulDivisors R I :=
   Submodule.noZeroSMulDivisors (Submodule.restrictScalars R I)
 
+theorem pow_eq_zero_of_mem {I : Ideal R} {n m : ℕ} (hnI : I ^ n = 0) (hmn : n ≤ m) {x : R}
+    (hx : x ∈ I) : x ^ m = 0 := by
+  simpa [hnI] using pow_le_pow_right hmn <| pow_mem_pow hx m
+
 end Semiring
 
 section MulAndRadical
@@ -580,7 +584,7 @@ theorem sup_prod_eq_top {s : Finset ι} {J : ι → Ideal R} (h : ∀ i, i ∈ s
     (fun _ _ hJ hK => (sup_mul_eq_of_coprime_left hJ).trans hK)
     (by simp_rw [one_eq_top, sup_top_eq]) h
 
-theorem sup_multiset_prod_eq_top {s : Multiset (Ideal R)} (h : ∀  p ∈ s, I ⊔ p = ⊤) :
+theorem sup_multiset_prod_eq_top {s : Multiset (Ideal R)} (h : ∀ p ∈ s, I ⊔ p = ⊤) :
     I ⊔ Multiset.prod s = ⊤ :=
   Multiset.prod_induction (I ⊔ · = ⊤) s (fun _ _ hp hq ↦ (sup_mul_eq_of_coprime_left hp).trans hq)
     (by simp only [one_eq_top, ge_iff_le, top_le_iff, le_top, sup_of_le_right]) h
@@ -615,7 +619,7 @@ theorem mul_top : I * ⊤ = I :=
 
 /-- A product of ideals in an integral domain is zero if and only if one of the terms is zero. -/
 @[simp]
-lemma multiset_prod_eq_bot {R : Type*} [CommRing R] [IsDomain R] {s : Multiset (Ideal R)} :
+lemma multiset_prod_eq_bot {R : Type*} [CommSemiring R] [IsDomain R] {s : Multiset (Ideal R)} :
     s.prod = ⊥ ↔ ⊥ ∈ s :=
   Multiset.prod_eq_zero_iff
 
@@ -635,6 +639,10 @@ theorem isCoprime_iff_codisjoint : IsCoprime I J ↔ Codisjoint I J := by
   · intro h
     refine ⟨1, 1, ?_⟩
     simpa only [one_eq_top, top_mul, Submodule.add_eq_sup]
+
+theorem isCoprime_of_isMaximal [I.IsMaximal] [J.IsMaximal] (ne : I ≠ J) : IsCoprime I J := by
+  rw [isCoprime_iff_codisjoint, isMaximal_def] at *
+  exact IsCoatom.codisjoint_of_ne ‹_› ‹_› ne
 
 theorem isCoprime_iff_add : IsCoprime I J ↔ I + J = 1 := by
   rw [isCoprime_iff_codisjoint, codisjoint_iff, add_eq_sup, one_eq_top]
@@ -715,12 +723,9 @@ theorem isRadical_iff_pow_one_lt (k : ℕ) (hk : 1 < k) : I.IsRadical ↔ ∀ r,
   ⟨fun h _r hr ↦ h ⟨k, hr⟩, fun h x ⟨n, hx⟩ ↦
     k.pow_imp_self_of_one_lt hk _ (fun _ _ ↦ .inr ∘ I.smul_mem _) h n x hx⟩
 
-variable (R)
-
+variable (R) in
 theorem radical_top : (radical ⊤ : Ideal R) = ⊤ :=
   (eq_top_iff_one _).2 ⟨0, Submodule.mem_top⟩
-
-variable {R}
 
 theorem radical_mono (H : I ≤ J) : radical I ≤ radical J := fun _ ⟨n, hrni⟩ => ⟨n, H hrni⟩
 
@@ -1098,7 +1103,7 @@ theorem subset_union_prime {R : Type u} [CommRing R] {s : Finset ι} {f : ι →
         rw [Finset.coe_empty, Set.biUnion_empty, Set.subset_empty_iff] at h
         have : (I : Set R) ≠ ∅ := Set.Nonempty.ne_empty (Set.nonempty_of_mem I.zero_mem)
         exact absurd h this
-      · cases' hsne with i his
+      · obtain ⟨i, his⟩ := hsne
         obtain ⟨t, _, rfl⟩ : ∃ t, i ∉ t ∧ insert i t = s :=
           ⟨s.erase i, Finset.not_mem_erase i s, Finset.insert_erase his⟩
         have hp' : ∀ j ∈ t, IsPrime (f j) := by
@@ -1118,7 +1123,8 @@ In a Dedekind domain, to divide and contain are equivalent, see `Ideal.dvd_iff_l
 theorem le_of_dvd {I J : Ideal R} : I ∣ J → J ≤ I
   | ⟨_, h⟩ => h.symm ▸ le_trans mul_le_inf inf_le_left
 
-@[simp]
+/-- See also `isUnit_iff_eq_one`. -/
+@[simp high]
 theorem isUnit_iff {I : Ideal R} : IsUnit I ↔ I = ⊤ :=
   isUnit_iff_dvd_one.trans
     ((@one_eq_top R _).symm ▸
@@ -1185,9 +1191,12 @@ theorem Finsupp.mem_ideal_span_range_iff_exists_finsupp {x : R} {v : α → R} :
 
 /-- An element `x` lies in the span of `v` iff it can be written as sum `∑ cᵢ • vᵢ = x`.
 -/
-theorem mem_ideal_span_range_iff_exists_fun [Fintype α] {x : R} {v : α → R} :
+theorem Ideal.mem_span_range_iff_exists_fun [Fintype α] {x : R} {v : α → R} :
     x ∈ Ideal.span (Set.range v) ↔ ∃ c : α → R, ∑ i, c i * v i = x :=
-  mem_span_range_iff_exists_fun _
+  Submodule.mem_span_range_iff_exists_fun _
+
+@[deprecated (since := "2025-04-02")] alias mem_ideal_span_range_iff_exists_fun :=
+  Ideal.mem_span_range_iff_exists_fun
 
 end span_range
 
@@ -1202,6 +1211,10 @@ theorem Ideal.span_singleton_nonZeroDivisors {R : Type*} [CommSemiring R] [NoZer
   · exact ⟨fun _ _ _ ↦ Subsingleton.eq_zero _, fun _ _ _ ↦ Subsingleton.eq_zero _⟩
   · rw [mem_nonZeroDivisors_iff_ne_zero, mem_nonZeroDivisors_iff_ne_zero, ne_eq, zero_eq_bot,
       span_singleton_eq_bot]
+
+theorem Ideal.primeCompl_le_nonZeroDivisors {R : Type*} [CommSemiring R] [NoZeroDivisors R]
+    (P : Ideal R) [P.IsPrime] : P.primeCompl ≤ nonZeroDivisors R :=
+  le_nonZeroDivisors_of_noZeroDivisors <| not_not_intro P.zero_mem
 
 namespace Submodule
 

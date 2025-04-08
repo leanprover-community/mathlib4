@@ -10,7 +10,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       with:
         fetch-depth: 0
 
@@ -36,7 +36,7 @@ jobs:
         fi
 
     - name: Set up Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5.5.0
       with:
         python-version: 3.12
 
@@ -121,7 +121,7 @@ jobs:
         techDebtVar="$(./scripts/technical-debt-metrics.sh pr_summary)"
 
         # store in a file, to avoid "long arguments" error.
-        printf '%s [%s](%s)%s\n\n%s\n\n---\n\n%s\n\n---\n\n%s\n' "${title}" "$(git rev-parse --short HEAD)" "${hashURL}" "${high_percentages}" "${importCount}" "${declDiff}" "${techDebtVar}" > messageFile.md
+        printf '%s [%s](%s)%s\n\n%s\n\n---\n\n%s\n\n---\n\n%s\n' "${title}" "$(git rev-parse --short HEAD)" "${hashURL}" "${high_percentages}" "${importCount}" "${declDiff}" "${techDebtVar}" > please_merge_master.md
 
-        cat messageFile.md
-        ./scripts/update_PR_comment.sh messageFile.md "${title}" "${PR}"
+        cat please_merge_master.md
+        ./scripts/update_PR_comment.sh please_merge_master.md "${title}" "${PR}"
