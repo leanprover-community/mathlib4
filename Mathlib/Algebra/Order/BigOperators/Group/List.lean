@@ -86,7 +86,7 @@ lemma prod_lt_prod_of_ne_nil [Preorder M] [MulLeftStrictMono M]
 lemma prod_le_pow_card [Preorder M] [MulRightMono M]
     [MulLeftMono M] (l : List M) (n : M) (h : ∀ x ∈ l, x ≤ n) :
     l.prod ≤ n ^ l.length := by
-      simpa only [map_id', map_const', prod_replicate] using prod_le_prod' h
+  simpa only [map_id', map_const', prod_replicate] using prod_le_prod' h
 
 @[to_additive card_nsmul_le_sum]
 lemma pow_card_le_prod [Preorder M] [MulRightMono M]

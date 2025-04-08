@@ -156,7 +156,7 @@ instance (priority := 100) [Semiring α] [PartialOrder α] [IsOrderedRing α] [A
     ⟨k, hm.trans <| Nat.mono_cast hmk, hn.trans <| Nat.mono_cast hnk⟩⟩
 
 section StrictOrderedSemiring
-variable[Semiring α] [PartialOrder α] [IsStrictOrderedRing α] [Archimedean α] {y : α}
+variable [Semiring α] [PartialOrder α] [IsStrictOrderedRing α] [Archimedean α] {y : α}
 
 lemma exists_nat_gt (x : α) : ∃ n : ℕ, x < n :=
   (exists_lt_nsmul zero_lt_one x).imp fun n hn ↦ by rwa [← nsmul_one]
