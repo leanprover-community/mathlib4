@@ -55,7 +55,7 @@ namespace MulAntidiagonal
 
 section CancelCommMonoid
 
-variable [CancelCommMonoid α] {s t : Set α} {a : α} {x y : mulAntidiagonal s t a}
+variable [CommMonoid α] [IsCancelMul α] {s t : Set α} {a : α} {x y : mulAntidiagonal s t a}
 
 -- We have to translate the names manually because the namespace name `MulAntidiagonal`
 -- does not match the declaration `mulAntidiagonal` that has the `to_additive` attribute.
@@ -84,7 +84,7 @@ end CancelCommMonoid
 
 section OrderedCancelCommMonoid
 
-variable [CancelCommMonoid α] [PartialOrder α] [MulLeftMono α] [MulRightStrictMono α]
+variable [CommMonoid α] [PartialOrder α] [IsCancelMul α] [MulLeftMono α] [MulRightStrictMono α]
   (s t : Set α) (a : α) {x y : mulAntidiagonal s t a}
 
 @[to_additive Set.AddAntidiagonal.eq_of_fst_le_fst_of_snd_le_snd]
@@ -100,13 +100,13 @@ variable {s t}
 @[to_additive Set.AddAntidiagonal.finite_of_isPWO]
 theorem finite_of_isPWO (hs : s.IsPWO) (ht : t.IsPWO) (a) : (mulAntidiagonal s t a).Finite := by
   refine not_infinite.1 fun h => ?_
-  have h1 : (mulAntidiagonal s t a).PartiallyWellOrderedOn (Prod.fst ⁻¹'o (· ≤ ·)) := fun f hf =>
-    hs (Prod.fst ∘ f) fun n => (mem_mulAntidiagonal.1 (hf n)).1
-  have h2 : (mulAntidiagonal s t a).PartiallyWellOrderedOn (Prod.snd ⁻¹'o (· ≤ ·)) := fun f hf =>
-    ht (Prod.snd ∘ f) fun n => (mem_mulAntidiagonal.1 (hf n)).2.1
+  have h1 : (mulAntidiagonal s t a).PartiallyWellOrderedOn (Prod.fst ⁻¹'o (· ≤ ·)) :=
+    fun f ↦ hs fun n ↦ ⟨_, (mem_mulAntidiagonal.1 (f n).2).1⟩
+  have h2 : (mulAntidiagonal s t a).PartiallyWellOrderedOn (Prod.snd ⁻¹'o (· ≤ ·)) :=
+    fun f ↦ ht fun n ↦ ⟨_, (mem_mulAntidiagonal.1 (f n).2).2.1⟩
   obtain ⟨g, hg⟩ :=
-    h1.exists_monotone_subseq (fun n => h.natEmbedding _ n) fun n => (h.natEmbedding _ n).2
-  obtain ⟨m, n, mn, h2'⟩ := h2 (fun x => (h.natEmbedding _) (g x)) fun n => (h.natEmbedding _ _).2
+    h1.exists_monotone_subseq fun n ↦ (h.natEmbedding _ n).2
+  obtain ⟨m, n, mn, h2'⟩ := h2 fun n ↦ h.natEmbedding _ _
   refine mn.ne (g.injective <| (h.natEmbedding _).injective ?_)
   exact eq_of_fst_le_fst_of_snd_le_snd _ _ _ (hg _ _ mn.le) h2'
 

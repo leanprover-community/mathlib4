@@ -3,9 +3,10 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Fabian Glöckle, Kyle Miller
 -/
+import Mathlib.LinearAlgebra.Basis.Basic
 import Mathlib.LinearAlgebra.Dimension.ErdosKaplansky
 import Mathlib.LinearAlgebra.Dual.Basis
-import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.LinearAlgebra.Projection
@@ -73,15 +74,12 @@ noncomputable section
 
 namespace Module
 
--- Porting note: max u v universe issues so name and specific below
-universe uR uA uM uM' uM''
-
-variable (R : Type uR) (A : Type uA) (M : Type uM)
+variable (R A M : Type*)
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 section Prod
 
-variable (M' : Type uM') [AddCommMonoid M'] [Module R M']
+variable (M' : Type*) [AddCommMonoid M'] [Module R M']
 
 /-- Taking duals distributes over products. -/
 @[simps!]
@@ -98,8 +96,6 @@ end Prod
 end Module
 
 namespace Basis
-
-universe u v w
 
 open Module Module.Dual Submodule LinearMap Cardinal Function
 
@@ -125,7 +121,7 @@ theorem linearEquiv_dual_iff_finiteDimensional [Field K] [AddCommGroup V] [Modul
   by_contra!
   apply (lift_rank_lt_rank_dual this).ne
   have := e.lift_rank_eq
-  rwa [lift_umax.{uV,uK}, lift_id'.{uV,uK}] at this
+  rwa [lift_umax, lift_id'.{uV}] at this
 
 end Finite
 
@@ -370,10 +366,8 @@ namespace Subspace
 
 open Submodule LinearMap
 
-universe u v w
-
 -- We work in vector spaces because `exists_is_compl` only hold for vector spaces
-variable {K : Type u} {V : Type v} [Field K] [AddCommGroup V] [Module K V]
+variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
 
 @[simp]
 theorem dualCoannihilator_top (W : Subspace K V) :
@@ -525,8 +519,7 @@ open Module
 
 theorem finrank_add_finrank_dualAnnihilator_eq (W : Subspace K V) :
     finrank K W + finrank K W.dualAnnihilator = finrank K V := by
-  rw [← W.quotEquivAnnihilator.finrank_eq (M₂ := dualAnnihilator W),
-    add_comm, Submodule.finrank_quotient_add_finrank]
+  rw [← W.quotEquivAnnihilator.finrank_eq, add_comm, Submodule.finrank_quotient_add_finrank]
 
 @[simp]
 theorem finrank_dualCoannihilator_eq {Φ : Subspace K (Module.Dual K V)} :
@@ -706,9 +699,7 @@ end CommRing
 
 section VectorSpace
 
--- Porting note: adding `uK` to avoid timeouts in `dualPairing_eq`
-universe uK uV₁ uV₂
-variable {K : Type uK} [Field K] {V₁ : Type uV₁} {V₂ : Type uV₂}
+variable {K V₁ V₂ : Type*} [Field K]
 variable [AddCommGroup V₁] [Module K V₁] [AddCommGroup V₂] [Module K V₂]
 
 namespace Module.Dual

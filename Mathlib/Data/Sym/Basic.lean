@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Mathlib.Algebra.Order.Group.Multiset
-import Mathlib.Data.Vector.Basic
 import Mathlib.Data.Setoid.Basic
+import Mathlib.Data.Vector.Basic
+import Mathlib.Logic.Nontrivial.Basic
 import Mathlib.Tactic.ApplyFun
 
 /-!
@@ -60,6 +61,12 @@ abbrev List.Vector.Perm.isSetoid (α : Type*) (n : ℕ) : Setoid (Vector α n) :
 
 attribute [local instance] Vector.Perm.isSetoid
 
+-- Copy over the `DecidableRel` instance across the definition.
+-- (Although `List.Vector.Perm.isSetoid` is an `abbrev`, `List.isSetoid` is not.)
+instance {α : Type*} {n : ℕ} [DecidableEq α] :
+    DecidableRel (· ≈ · : List.Vector α n → List.Vector α n → Prop) :=
+  fun _ _ => List.decidablePerm _ _
+
 namespace Sym
 
 variable {α β : Type*} {n n' m : ℕ} {s : Sym α n} {a b : α}
@@ -80,7 +87,7 @@ theorem val_eq_coe (s : Sym α n) : s.1 = ↑s :=
 
 /-- Construct an element of the `n`th symmetric power from a multiset of cardinality `n`.
 -/
-@[match_pattern] -- Porting note: removed `@[simps]`, generated bad lemma
+@[match_pattern]
 abbrev mk (m : Multiset α) (h : Multiset.card m = n) : Sym α n :=
   ⟨m, h⟩
 
@@ -306,7 +313,7 @@ instance inhabitedSym [Inhabited α] (n : ℕ) : Inhabited (Sym α n) :=
   ⟨replicate n default⟩
 
 instance inhabitedSym' [Inhabited α] (n : ℕ) : Inhabited (Sym' α n) :=
-  ⟨Quotient.mk' (Vector.replicate n default)⟩
+  ⟨Quotient.mk' (List.Vector.replicate n default)⟩
 
 instance (n : ℕ) [IsEmpty α] : IsEmpty (Sym α n.succ) :=
   ⟨fun s => by
@@ -530,7 +537,7 @@ theorem filter_ne_fill
   sigma_sub_ext
     (by
       rw [filterNe, ← val_eq_coe, Subtype.coe_mk, val_eq_coe, coe_fill]
-      rw [filter_add, filter_eq_self.2, add_right_eq_self, eq_zero_iff_forall_not_mem]
+      rw [filter_add, filter_eq_self.2, add_eq_left, eq_zero_iff_forall_not_mem]
       · intro b hb
         rw [mem_filter, Sym.mem_coe, mem_replicate] at hb
         exact hb.2 hb.1.2.symm
@@ -583,7 +590,6 @@ theorem encode_of_not_none_mem [DecidableEq α] (s : Sym (Option α) n.succ) (h 
   dif_neg h
 
 /-- Inverse of `Sym_option_succ_equiv.decode`. -/
--- @[simp] Porting note: not a nice simp lemma, applies too often in Lean4
 def decode : Sym (Option α) n ⊕ Sym α n.succ → Sym (Option α) n.succ
   | Sum.inl s => none ::ₛ s
   | Sum.inr s => s.map Embedding.some

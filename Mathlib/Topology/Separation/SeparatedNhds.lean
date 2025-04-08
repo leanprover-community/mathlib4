@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Topology.Continuous
 import Mathlib.Topology.NhdsSet
 
 /-!
@@ -154,6 +155,36 @@ theorem union_left : SeparatedNhds s u → SeparatedNhds t u → SeparatedNhds (
 
 theorem union_right (ht : SeparatedNhds s t) (hu : SeparatedNhds s u) : SeparatedNhds s (t ∪ u) :=
   (ht.symm.union_left hu.symm).symm
+
+lemma isOpen_left_of_isOpen_union (hst : SeparatedNhds s t) (hst' : IsOpen (s ∪ t)) : IsOpen s := by
+  obtain ⟨u, v, hu, hv, hsu, htv, huv⟩ := hst
+  suffices s = (s ∪ t) ∩ u from this ▸ hst'.inter hu
+  rw [union_inter_distrib_right, (huv.symm.mono_left htv).inter_eq, union_empty,
+    inter_eq_left.2 hsu]
+
+lemma isOpen_right_of_isOpen_union (hst : SeparatedNhds s t) (hst' : IsOpen (s ∪ t)) : IsOpen t :=
+  hst.symm.isOpen_left_of_isOpen_union (union_comm _ _ ▸ hst')
+
+lemma isOpen_union_iff (hst : SeparatedNhds s t) : IsOpen (s ∪ t) ↔ IsOpen s ∧ IsOpen t :=
+  ⟨fun h ↦ ⟨hst.isOpen_left_of_isOpen_union h, hst.isOpen_right_of_isOpen_union h⟩,
+    fun ⟨h1, h2⟩ ↦ h1.union h2⟩
+
+lemma isClosed_left_of_isClosed_union (hst : SeparatedNhds s t) (hst' : IsClosed (s ∪ t)) :
+    IsClosed s := by
+  obtain ⟨u, v, hu, hv, hsu, htv, huv⟩ := hst
+  rw [← isOpen_compl_iff] at hst' ⊢
+  suffices sᶜ = (s ∪ t)ᶜ ∪ v from this ▸ hst'.union hv
+  rw [← compl_inj_iff, Set.compl_union, compl_compl, compl_compl, union_inter_distrib_right,
+    (disjoint_compl_right.mono_left htv).inter_eq, union_empty, left_eq_inter, subset_compl_comm]
+  exact (huv.mono_left hsu).subset_compl_left
+
+lemma isClosed_right_of_isClosed_union (hst : SeparatedNhds s t) (hst' : IsClosed (s ∪ t)) :
+    IsClosed t :=
+  hst.symm.isClosed_left_of_isClosed_union (union_comm _ _ ▸ hst')
+
+lemma isClosed_union_iff (hst : SeparatedNhds s t) : IsClosed (s ∪ t) ↔ IsClosed s ∧ IsClosed t :=
+  ⟨fun h ↦ ⟨hst.isClosed_left_of_isClosed_union h, hst.isClosed_right_of_isClosed_union h⟩,
+    fun ⟨h1, h2⟩ ↦ h1.union h2⟩
 
 end SeparatedNhds
 

@@ -76,7 +76,7 @@ instance ContinuousMultilinearMap.instContinuousEval :
   continuous_eval := by
     cases nonempty_fintype ι
     let _ := IsTopologicalAddGroup.toUniformSpace F
-    have := uniformAddGroup_of_addCommGroup (G := F)
+    have := isUniformAddGroup_of_addCommGroup (G := F)
     refine (UniformOnFun.continuousOn_eval₂ fun m ↦ ?_).comp_continuous
       (isEmbedding_toUniformOnFun.continuous.prodMap continuous_id) fun (f, x) ↦ f.cont.continuousAt
     exact ⟨ball m 1, NormedSpace.isVonNBounded_of_isBounded _ isBounded_ball,
@@ -716,9 +716,8 @@ theorem norm_mkPiAlgebra_of_empty [IsEmpty ι] :
     ‖ContinuousMultilinearMap.mkPiAlgebra 𝕜 ι A‖ = ‖(1 : A)‖ := by
   apply le_antisymm
   · apply opNorm_le_bound <;> simp
-  · -- Porting note: have to annotate types to get mvars to unify
-    convert ratio_le_opNorm (ContinuousMultilinearMap.mkPiAlgebra 𝕜 ι A) fun _ => (1 : A)
-    simp [eq_empty_of_isEmpty (univ : Finset ι)]
+  · convert ratio_le_opNorm (ContinuousMultilinearMap.mkPiAlgebra 𝕜 ι A) fun _ => 1
+    simp [eq_empty_of_isEmpty univ]
 
 @[simp]
 theorem norm_mkPiAlgebra [NormOneClass A] : ‖ContinuousMultilinearMap.mkPiAlgebra 𝕜 ι A‖ = 1 := by
@@ -947,15 +946,14 @@ def mkContinuousLinear (f : G →ₗ[𝕜] MultilinearMap 𝕜 E G') (C : ℝ)
     { toFun := fun x => (f x).mkContinuous (C * ‖x‖) <| H x
       map_add' := fun x y => by
         ext1
-        simp only [_root_.map_add]
+        simp only [map_add]
         rfl
       map_smul' := fun c x => by
         ext1
-        simp only [_root_.map_smul]
+        simp only [map_smul]
         rfl }
     (max C 0) fun x => by
-      rw [LinearMap.coe_mk, AddHom.coe_mk] -- Porting note: added
-      exact ((f x).mkContinuous_norm_le' _).trans_eq <| by
+      simpa using ((f x).mkContinuous_norm_le' _).trans_eq <| by
         rw [max_mul_of_nonneg _ _ (norm_nonneg x), zero_mul]
 
 theorem mkContinuousLinear_norm_le' (f : G →ₗ[𝕜] MultilinearMap 𝕜 E G') (C : ℝ)

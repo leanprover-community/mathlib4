@@ -479,8 +479,11 @@ def fst : M ∗ N →* M := lift (.id M) 1
 def snd : M ∗ N →* N := lift 1 (.id N)
 
 /-- The natural projection `M ∗ N →* M × N`. -/
-@[to_additive "The natural projection `AddMonoid.Coprod M N →+ M × N`."]
+@[to_additive toProd "The natural projection `AddMonoid.Coprod M N →+ M × N`."]
 def toProd : M ∗ N →* M × N := lift (.inl _ _) (.inr _ _)
+
+@[deprecated (since := "2025-03-11")]
+alias _root_.AddMonoid.Coprod.toSum := AddMonoid.Coprod.toProd
 
 @[to_additive (attr := simp)] theorem fst_comp_inl : (fst : M ∗ N →* M).comp inl = .id _ := rfl
 @[to_additive (attr := simp)] theorem fst_apply_inl (x : M) : fst (inl x : M ∗ N) = x := rfl
@@ -491,40 +494,70 @@ def toProd : M ∗ N →* M × N := lift (.inl _ _) (.inr _ _)
 @[to_additive (attr := simp)] theorem snd_comp_inr : (snd : M ∗ N →* N).comp inr = .id _ := rfl
 @[to_additive (attr := simp)] theorem snd_apply_inr (x : N) : snd (inr x : M ∗ N) = x := rfl
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) toProd_comp_inl]
 theorem toProd_comp_inl : (toProd : M ∗ N →* M × N).comp inl = .inl _ _ := rfl
 
-@[to_additive (attr := simp)]
+@[deprecated (since := "2025-03-11")]
+alias _root_.AddMonoid.Coprod.toSum_comp_inl := AddMonoid.Coprod.toProd_comp_inl
+
+@[to_additive (attr := simp) toProd_comp_inr]
 theorem toProd_comp_inr : (toProd : M ∗ N →* M × N).comp inr = .inr _ _ := rfl
 
-@[to_additive (attr := simp)]
+@[deprecated (since := "2025-03-11")]
+alias _root_.AddMonoid.Coprod.toSum_comp_inr := AddMonoid.Coprod.toProd_comp_inr
+
+@[to_additive (attr := simp) toProd_apply_inl]
 theorem toProd_apply_inl (x : M) : toProd (inl x : M ∗ N) = (x, 1) := rfl
 
-@[to_additive (attr := simp)]
+@[deprecated (since := "2025-03-11")]
+alias _root_.AddMonoid.Coprod.toSum_apply_inl := AddMonoid.Coprod.toProd_apply_inl
+
+@[to_additive (attr := simp) toProd_apply_inr]
 theorem toProd_apply_inr (x : N) : toProd (inr x : M ∗ N) = (1, x) := rfl
 
-@[to_additive (attr := simp)]
+@[deprecated (since := "2025-03-11")]
+alias _root_.AddMonoid.Coprod.toSum_apply_inr := AddMonoid.Coprod.toProd_apply_inr
+
+@[to_additive (attr := simp) fst_prod_snd]
 theorem fst_prod_snd : (fst : M ∗ N →* M).prod snd = toProd := by ext1 <;> rfl
 
-@[to_additive (attr := simp)]
+@[deprecated (since := "2025-03-11")]
+alias _root_.AddMonoid.Coprod.fst_sum_snd := AddMonoid.Coprod.fst_prod_snd
+
+@[to_additive (attr := simp) prod_mk_fst_snd]
 theorem prod_mk_fst_snd (x : M ∗ N) : (fst x, snd x) = toProd x := by
   rw [← fst_prod_snd, MonoidHom.prod_apply]
 
-@[to_additive (attr := simp)]
+@[deprecated (since := "2025-03-11")]
+alias _root_.AddMonoid.Coprod.sum_mk_fst_snd := AddMonoid.Coprod.prod_mk_fst_snd
+
+@[to_additive (attr := simp) fst_comp_toProd]
 theorem fst_comp_toProd : (MonoidHom.fst M N).comp toProd = fst := by
   rw [← fst_prod_snd, MonoidHom.fst_comp_prod]
 
-@[to_additive (attr := simp)]
+@[deprecated (since := "2025-03-11")]
+alias _root_.AddMonoid.Coprod.fst_comp_toSum := AddMonoid.Coprod.fst_comp_toProd
+
+@[to_additive (attr := simp) fst_toProd]
 theorem fst_toProd (x : M ∗ N) : (toProd x).1 = fst x := by
   rw [← fst_comp_toProd]; rfl
 
-@[to_additive (attr := simp)]
+@[deprecated (since := "2025-03-11")]
+alias _root_.AddMonoid.Coprod.fst_toSum := AddMonoid.Coprod.fst_toProd
+
+@[to_additive (attr := simp) snd_comp_toProd]
 theorem snd_comp_toProd : (MonoidHom.snd M N).comp toProd = snd := by
   rw [← fst_prod_snd, MonoidHom.snd_comp_prod]
 
-@[to_additive (attr := simp)]
+@[deprecated (since := "2025-03-11")]
+alias _root_.AddMonoid.Coprod.snd_comp_toSum := AddMonoid.Coprod.snd_comp_toProd
+
+@[to_additive (attr := simp) snd_toProd]
 theorem snd_toProd (x : M ∗ N) : (toProd x).2 = snd x := by
   rw [← snd_comp_toProd]; rfl
+
+@[deprecated (since := "2025-03-11")]
+alias _root_.AddMonoid.Coprod.snd_toSum := AddMonoid.Coprod.snd_toProd
 
 @[to_additive (attr := simp)]
 theorem fst_comp_swap : fst.comp (swap M N) = snd := lift_comp_swap _ _
@@ -556,9 +589,12 @@ theorem fst_surjective : Surjective (fst : M ∗ N →* M) := LeftInverse.surjec
 @[to_additive]
 theorem snd_surjective : Surjective (snd : M ∗ N →* N) := LeftInverse.surjective snd_apply_inr
 
-@[to_additive]
+@[to_additive toProd_surjective]
 theorem toProd_surjective : Surjective (toProd : M ∗ N →* M × N) := fun x =>
   ⟨inl x.1 * inr x.2, by rw [map_mul, toProd_apply_inl, toProd_apply_inr, Prod.fst_mul_snd]⟩
+
+@[deprecated (since := "2025-03-11")]
+alias _root_.AddMonoid.Coprod.toSum_surjective := AddMonoid.Coprod.toProd_surjective
 
 end ToProd
 
