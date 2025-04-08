@@ -309,7 +309,7 @@ theorem ofFinsupp_eq_one {a} :
   simp [← toFinsupp_inj]
 
 @[simp]
-theorem single_one_one  : single (1 : G) (1 : k) = 1 := rfl
+theorem single_one_one : single (1 : G) (1 : k) = 1 := rfl
 
 theorem one_def : (1 : SkewMonoidAlgebra k G) = single 1 1 := rfl
 
