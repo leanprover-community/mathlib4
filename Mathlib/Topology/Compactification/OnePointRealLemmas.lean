@@ -27,13 +27,13 @@ calculus
 -/
 
 
-/-- -/
+/-- absolute value ≤ inverse. -/
 lemma abs_le_inv {a x : ℝ} (ha : a > 0) (G₀ : ¬x = 0)
     (hx : |x| ≤ a⁻¹) : x⁻¹ ≤ -a ∨ a ≤ x⁻¹ := by
   apply le_abs'.mp; rw [abs_inv, le_inv_comm₀]; repeat tauto
   rw [abs_pos]; exact G₀
 
-/-- -/
+/-- Symmetrize. -/
 lemma symmetrize
     (P : ℝ → Prop)
     {a₀ : ℝ} (ha₀ : ∀ b ≤ a₀, P b)
@@ -57,7 +57,7 @@ lemma symmetrize
 
 
 
-/-- -/
+/-- Geometry positive. -/
 lemma geometryPos {n : ℕ} {k : Fin n}
     {y v : Fin n → ℝ}
     (hv : dist y v < y k)
@@ -77,12 +77,12 @@ lemma geometryPos {n : ℕ} {k : Fin n}
   rw [← h₀, dist_comm] at h₂
   linarith
 
-/-- -/
+/-- Geometry positive. -/
 lemma geometry_pos {n : ℕ} {k : Fin n}
     {P : (Fin n → ℝ) → Prop} {y v : { v : Fin n → ℝ // P v }}
     (hv : dist y.1 v.1 < y.1 k) (hy : 0 < y.1 k) : 0 < v.1 k := geometryPos hv hy
 
-/-- -/
+/-- Geometry negative. -/
 lemma geometry_neg {n : ℕ} {k : Fin n}
     {P : (Fin n → ℝ) → Prop} {y v : { v : Fin n → ℝ // P v }}
     (hy : y.1 k < 0)
@@ -96,7 +96,7 @@ lemma geometry_neg {n : ℕ} {k : Fin n}
 
 
 
-/-- -/
+/-- Open geometry positive. -/
 lemma open_geometry_pos {n : ℕ} {k : Fin n} {P : (Fin n → ℝ) → Prop} :
     IsOpen fun y : {v : Fin n → ℝ // P v} ↦ 0 < y.1 k := by
   rw [isOpen_iff_ball_subset]
@@ -107,7 +107,7 @@ lemma open_geometry_pos {n : ℕ} {k : Fin n} {P : (Fin n → ℝ) → Prop} :
     use y.1 k; simp_all only [ne_eq, gt_iff_lt, Set.mem_setOf_eq, implies_true, and_true]; tauto
   · intro v hv; exact geometry_pos hv hy
 
-/-- -/
+/-- Open geometry negative. -/
 lemma open_geometry_neg {n : ℕ} {k : Fin n} {P : (Fin n → ℝ) → Prop} :
     IsOpen fun y : {v : Fin n → ℝ // P v} ↦ y.1 k < 0 := by
   rw [isOpen_iff_ball_subset]
@@ -120,10 +120,10 @@ lemma open_geometry_neg {n : ℕ} {k : Fin n} {P : (Fin n → ℝ) → Prop} :
   · intro v hv; exact geometry_neg hy hv
 
 
-/-- -/
+/-- Less than /2. -/
 lemma lt_div_two (y : ℝ) : y < y / 2 ↔ y < 0 := by constructor; repeat (intro;linarith)
 
-/-- -/
+/-- Open nonzero. -/
 lemma open_nonzero {n : ℕ} {k : Fin n} {P : (Fin n → ℝ) → Prop}
     {x : { v : Fin n → ℝ // P v}}
     (H₁ : ¬x.1 k = 0) : ∃ t, (∀ y ∈ t, ¬y.1 k = 0) ∧ IsOpen t ∧ x ∈ t := by
@@ -145,7 +145,7 @@ lemma open_nonzero {n : ℕ} {k : Fin n} {P : (Fin n → ℝ) → Prop}
       · right; constructor <;> linarith
       · left;  constructor <;> linarith
 
-/-- -/
+/-- Distance cone. -/
 theorem distConePosPos {n : ℕ} {i j : Fin n} {a : Fin n → ℝ} (h₀ : a j = 0) (h₁ : a i > 0)
     {s : ℝ} (hs : s ≥ 0) :
     (a i / (s+1) > 0) ∧ ∀ y, dist y a ≤ (a i / (s+1)) → y j > 0 → s ≤ y i / y j := by
@@ -172,7 +172,7 @@ theorem distConePosPos {n : ℕ} {i j : Fin n} {a : Fin n → ℝ} (h₀ : a j =
 def flipPos {n : ℕ} (j : Fin n) (y : Fin n → ℝ) (k : Fin n) : ℝ :=
     ite (j = k) (- y k) (y k)
 
-/--  -/
+/-- Distance cone. -/
 theorem distConePosNeg {n : ℕ} {i j : Fin n} {a : Fin n → ℝ} (h₀ : a j = 0) (h₁ : a i > 0)
     {s : ℝ} (hs : s ≥ 0) :
     (a i / (s+1) > 0) ∧ ∀ y, dist y a ≤ (a i / (s+1)) → y j < 0 → y i / y j ≤  -s := by
@@ -204,7 +204,7 @@ theorem distConePosNeg {n : ℕ} {i j : Fin n} {a : Fin n → ℝ} (h₀ : a j =
     rw [if_neg this] at Q
     linarith
 
-/-- -/
+/-- Distance cone. -/
 theorem distConeNegPos {n : ℕ} {i j : Fin n} {a : Fin n → ℝ} (h₀ : a j = 0) (h₁ : a i <  0)
     {s : ℝ} (hs : s ≥ 0) :
     (- a i / (s+1) > 0) ∧ ∀ y, dist y a ≤ (- a i / (s+1)) → y j > 0 → y i / y j ≤  - s := by
@@ -216,7 +216,7 @@ theorem distConeNegPos {n : ℕ} {i j : Fin n} {a : Fin n → ℝ} (h₀ : a j =
       (by simp_all) (by simp_all)
     simp_all
 
-/-- -/
+/-- Distance cone. -/
 theorem distConeNegNeg {n : ℕ} {i j : Fin n} {a : Fin n → ℝ} (h₀ : a j = 0) (h₁ : a i <  0)
     {s : ℝ} (hs : s ≥ 0) :
     (- a i / (s+1) > 0) ∧ ∀ y, dist y a ≤ (- a i / (s+1)) → y j < 0 → y i / y j ≥ s := by
@@ -229,7 +229,7 @@ theorem distConeNegNeg {n : ℕ} {i j : Fin n} {a : Fin n → ℝ} (h₀ : a j =
     simp_all
 
 
-/--  -/
+/-- Distance cone. -/
 theorem dist_cone_pos {n : ℕ} {i j : Fin n} {a : Fin n → ℝ} (h₀ : a j = 0) (h₁ : a i > 0)
     {s : ℝ} (hs : s ≥ 0) :
     ∃ δ > 0, ∀ y, dist y a ≤ δ →
@@ -243,7 +243,7 @@ theorem dist_cone_pos {n : ℕ} {i j : Fin n} {a : Fin n → ℝ} (h₀ : a j = 
     · exact (distConePosNeg h₀ h₁ hs).2 y hy
     · exact (distConePosPos h₀ h₁ hs).2 y hy
 
-/--  -/
+/-- Distance cone. -/
 theorem dist_cone_neg {n : ℕ} {i j : Fin n} {a : Fin n → ℝ} (h₀ : a j = 0) (h₁ : a i < 0)
     {s : ℝ} (hs : s ≥ 0) :
     ∃ δ > 0, ∀ y, dist y a ≤ δ →
@@ -257,7 +257,7 @@ theorem dist_cone_neg {n : ℕ} {i j : Fin n} {a : Fin n → ℝ} (h₀ : a j = 
     · exact (distConeNegPos h₀ h₁ hs).2 y hy
     · exact (distConeNegNeg h₀ h₁ hs).2 y hy
 
-/-- -/
+/-- Distance cone. -/
 lemma posOrNeg {n : ℕ} {a : { v : Fin n → ℝ // v ≠ 0 }} :
     ∃ j : Fin n, a.1 j > 0 ∨ a.1 j < 0 := by
   by_contra H

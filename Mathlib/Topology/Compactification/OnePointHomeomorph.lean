@@ -6,7 +6,8 @@ Authors: Bjørn Kjos-Hanssen
 import Mathlib.Topology.Compactification.OnePointEquiv
 import Mathlib.Topology.Compactification.OnePointRealLemmas
 import Mathlib.Topology.Instances.Real.Lemmas
-
+import Mathlib.Topology.MetricSpace.Pseudo.Pi
+import Mathlib.Topology.MetricSpace.ProperSpace.Real
 /-!
 # Homeomorphism between one-point compactification and projective space
 
@@ -27,9 +28,9 @@ open scoped LinearAlgebra.Projectivization OnePoint
 open Projectivization
 
 
-open Classical
 
-/-- -/
+open Classical in
+/-- OnePoint_div -/
 noncomputable def OnePoint_div {K : Type} [DivisionRing K] (a : K) (r : K): OnePoint K :=
     ite (r ≠ 0) (a / r) ∞
 
@@ -37,7 +38,7 @@ noncomputable def OnePoint_div {K : Type} [DivisionRing K] (a : K) (r : K): OneP
 infix:50 " ÷ " => OnePoint_div
 
 
-/-- -/
+/-- div_slope is well-defined. -/
 lemma div_slope_well_defined {K : Type} [Field K]
     (a b : { v : Fin 2 → K // v ≠ 0 })
     (h : ∃ c : Kˣ, (fun m : Kˣ ↦ m • b.1) c = a.1) :
@@ -193,7 +194,7 @@ lemma continuous_slope_nonzero_case {x : { v : Fin 2 → ℝ // v ≠ 0 }} (hx :
   · exact ContinuousAt.comp (continuousAt_apply 0 x.1) continuousAt_subtype_val
   · exact ContinuousAt.comp (continuousAt_apply 1 x.1) continuousAt_subtype_val
 
-/-- Auxiliary nhds lemma.  -/
+/-- Auxiliary nhds lemma. -/
 lemma slope_open_nonzero
     {t : Set (OnePoint ℝ)}
     (ht₀ : IsCompact (OnePoint.some ⁻¹' t)ᶜ)
@@ -214,7 +215,7 @@ lemma slope_open_nonzero
   refine OnePoint.isOpen_def.mpr ?_
   tauto
 
-/-- Auxiliary uniformity lemma.  -/
+/-- Auxiliary uniformity lemma. -/
 lemma slope_uniform_of_compact_pos {n : ℕ} {i j : Fin n}
     {t : Set (OnePoint ℝ)}
     (ht₀ : IsCompact (OnePoint.some ⁻¹' t)ᶜ)
@@ -259,7 +260,7 @@ lemma slope_uniform_of_compact_pos {n : ℕ} {i j : Fin n}
         have h₀: dist x.1 a.1 ≤ δ := by linarith
         exact (hδ.2 x h₀).1 h₁
 
-/-- Auxiliary uniformity lemma.  -/
+/-- Auxiliary uniformity lemma. -/
 lemma slope_uniform_of_compact_neg {n : ℕ} {i j : Fin n} {t : Set (OnePoint ℝ)}
     (ht₀ : IsCompact (OnePoint.some ⁻¹' t)ᶜ) (ht₂ : ∞ ∈ t)
     {a : { v : Fin n → ℝ // v ≠ 0 }} (H : a.1 j = 0) (hl : a.1 i < 0) :
@@ -299,7 +300,7 @@ lemma slope_uniform_of_compact_neg {n : ℕ} {i j : Fin n} {t : Set (OnePoint �
         have h₀: dist x.1 a.1 ≤ δ := by linarith
         exact (hδ.2 x h₀).2 hneg
 
-/-- -/
+/-- slopeUniform from compactness. -/
 lemma slopeUniform_of_compact {n : ℕ} {j : Fin n}
     {t : Set (OnePoint ℝ)}
     (ht₀ : IsCompact (OnePoint.some ⁻¹' t)ᶜ)
@@ -315,7 +316,7 @@ lemma slopeUniform_of_compact {n : ℕ} {j : Fin n}
   |inl hl => exact slope_uniform_of_compact_pos ht₀ ht₂ H hl
   |inr hr => exact slope_uniform_of_compact_neg ht₀ ht₂ H hr
 
-/-- Auxiliary uniformity lemma requiring Fin 2.  -/
+/-- Auxiliary uniformity lemma requiring Fin 2. -/
 lemma slope_uniform_of_compact
     {t : Set (OnePoint ℝ)}
     (ht₀ : IsCompact (OnePoint.some ⁻¹' t)ᶜ)
@@ -328,7 +329,7 @@ lemma slope_uniform_of_compact
   |inl hl => exact slope_uniform_of_compact_pos ht₀ ht₂ H hl
   |inr hr => exact slope_uniform_of_compact_neg ht₀ ht₂ H hr
 
-/-- Auxiliary openness lemma.  -/
+/-- Auxiliary openness lemma. -/
 lemma slope_open
     {t : Set (OnePoint ℝ)}
     (h_t : IsOpen t ∧ ∞ ∈ t) :
@@ -352,7 +353,7 @@ lemma slope_open
       true_and];tauto
   · exact slope_open_nonzero ht₀ ht₁ ha H
 
-/-- Auxiliary continuity lemma.  -/
+/-- Auxiliary continuity lemma. -/
 lemma continuous_slope_zero_case (x : { v : Fin 2 → ℝ // v ≠ 0 }) (H₁ : x.1 1 = 0) :
     ContinuousAt (fun u ↦ u.1 0 ÷ u.1 1) x := by
   unfold OnePoint_div
@@ -374,7 +375,7 @@ lemma continuous_slope_zero_case (x : { v : Fin 2 → ℝ // v ≠ 0 }) (H₁ : 
     apply slope_open
     tauto
 
-/-- Auxiliary continuity lemma.  -/
+/-- Auxiliary continuity lemma. -/
 theorem div_slope_continuous_unlifted :
     Continuous fun u : { v : Fin 2 → ℝ // v ≠ 0 } ↦ (u.1 0) ÷ (u.1 1) := by
   apply continuous_iff_continuousAt.mpr
@@ -510,7 +511,8 @@ instance {n:ℕ} : CompactSpace (ℙ ℝ (Fin n → ℝ)) := by
       isCompact_univ := by rw [← this];exact Q
   }
 
-/-- The real projective line ℙ ℝ (Fin 2 → ℝ) and OnePoint ℝ are homeomorphic.-/
+
+/-- The real projective line ℙ ℝ (Fin 2 → ℝ) and OnePoint ℝ are homeomorphic. -/
 noncomputable def OnePointHomeo : Homeomorph (ℙ ℝ (Fin 2 → ℝ)) (OnePoint ℝ) :=
   Continuous.homeoOfEquivCompactToT2 (f := div_slope_equiv.symm) div_slope_continuous
 
