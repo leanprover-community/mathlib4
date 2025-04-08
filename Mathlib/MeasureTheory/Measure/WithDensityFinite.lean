@@ -3,8 +3,7 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.LinearAlgebra.FreeModule.Basic
-import Mathlib.MeasureTheory.Decomposition.Exhaustion
+import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
 import Mathlib.Probability.ConditionalProbability
 
 /-!

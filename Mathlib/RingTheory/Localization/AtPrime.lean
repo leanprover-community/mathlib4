@@ -3,10 +3,13 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
+import Mathlib.RingTheory.Localization.Basic
 import Mathlib.RingTheory.Localization.Ideal
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 import Mathlib.Algebra.Group.Units.Hom
+import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
 import Mathlib.RingTheory.Ideal.Over
+import Mathlib.RingTheory.Spectrum.Prime.Defs
 
 /-!
 # Localizations of commutative rings at the complement of a prime ideal
@@ -289,3 +292,13 @@ lemma Ideal.under_map_of_isLocalizationAtPrime {p : Ideal R} [p.IsPrime] (hpq : 
   have disj : Disjoint (q.primeCompl : Set R) p := by
     simp [Ideal.primeCompl, ← le_compl_iff_disjoint_left, hpq]
   exact IsLocalization.comap_map_of_isPrime_disjoint _ _ p (by simpa) disj
+
+lemma IsLocalization.subsingleton_primeSpectrum_of_mem_minimalPrimes
+    {R : Type*} [CommSemiring R] (p : Ideal R) (hp : p ∈ minimalPrimes R)
+    (S : Type*) [CommSemiring S] [Algebra R S] [IsLocalization.AtPrime S p (hp := hp.1.1)] :
+    Subsingleton (PrimeSpectrum S) :=
+  have := hp.1.1
+  have : Unique {i : Ideal R // i.IsPrime ∧ i ≤ p} := ⟨⟨p, hp.1.1, le_rfl⟩,
+    fun i ↦ Subtype.ext <| (minimalPrimes_eq_minimals (R := R) ▸ hp).eq_of_le i.2.1 i.2.2⟩
+  have := (IsLocalization.AtPrime.orderIsoOfPrime S p).subsingleton
+  ⟨fun x y ↦ PrimeSpectrum.ext congr($(this.1 ⟨_, x.2⟩ ⟨_, y.2⟩))⟩
