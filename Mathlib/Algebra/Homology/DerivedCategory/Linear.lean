@@ -39,4 +39,19 @@ instance (n : ℤ) : (shiftFunctor (DerivedCategory C) n).Linear R := by
     (shiftFunctor (DerivedCategory C) n)]
   infer_instance
 
+instance (n : ℤ) : Functor.Linear R (CochainComplex.singleFunctor C n) where
+  map_smul f r := by
+    dsimp [CochainComplex.singleFunctor, CochainComplex.singleFunctors,
+      HomologicalComplex.single]
+    aesop
+
+instance (n : ℤ) :
+    Functor.Linear R (HomotopyCategory.singleFunctor C n) :=
+  inferInstanceAs (Functor.Linear R (CochainComplex.singleFunctor C n ⋙
+    HomotopyCategory.quotient _ _))
+
+instance (n : ℤ) :
+    Functor.Linear R (DerivedCategory.singleFunctor C n) :=
+  inferInstanceAs (Functor.Linear R (HomotopyCategory.singleFunctor C n ⋙ Qh))
+
 end DerivedCategory

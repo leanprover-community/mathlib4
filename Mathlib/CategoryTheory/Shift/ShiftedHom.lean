@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Shift.CommShift
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+import Mathlib.CategoryTheory.Linear.LinearFunctor
 
 /-! Shifted morphisms
 
@@ -178,6 +179,34 @@ lemma map_comp {a b c : M} (f : ShiftedHom X Y a) (g : ShiftedHom Y Z b)
   erw [← NatTrans.naturality_assoc]
   simp only [Functor.comp_map, F.commShiftIso_add' h, Functor.CommShift.isoAdd'_hom_app,
     ← Functor.map_comp_assoc, Iso.inv_hom_id_app, Functor.comp_obj, comp_id, assoc]
+
+section Linear
+
+variable {R : Type*} [Ring R] [Preadditive C] [Linear R C]
+
+instance (X Y : C) (n : M) : Module R (ShiftedHom X Y n) := by
+  dsimp only [ShiftedHom]
+  infer_instance
+
+@[simp]
+lemma comp_smul [∀ (a : M), (shiftFunctor C a).Additive]
+    [∀ (a : M), Functor.Linear R (shiftFunctor C a)]
+    (r : R) {a b c : M} (α : ShiftedHom X Y a) (β : ShiftedHom Y Z b) (h : b + a = c) :
+    α.comp (r • β) h = r • α.comp β h := by
+  rw [comp, Functor.map_smul, comp, Linear.smul_comp, Linear.comp_smul]
+
+@[simp]
+lemma smul_comp
+    (r : R) {a b c : M} (α : ShiftedHom X Y a) (β : ShiftedHom Y Z b) (h : b + a = c) :
+    (r • α).comp β h = r • α.comp β h := by
+  rw [comp, comp, Linear.smul_comp]
+
+@[simp]
+lemma mk₀_smul (m₀ : M) (hm₀ : m₀ = 0) (r : R) {f : X ⟶ Y} :
+    mk₀ m₀ hm₀ (r • f) = r • mk₀ m₀ hm₀ f := by
+  simp [mk₀]
+
+end Linear
 
 end ShiftedHom
 

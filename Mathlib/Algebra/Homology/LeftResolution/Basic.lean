@@ -240,7 +240,7 @@ lemma chainComplexMap_id : Λ.chainComplexMap (𝟙 X) = 𝟙 _ := by
   | succ n hn =>
       obtain _|n := n
       · dsimp
-        simp
+        simp only [CategoryTheory.Functor.map_id, kernel.map_id, id_comp, Iso.hom_inv_id]
       · simp [hn]
 
 variable (X Y) in
