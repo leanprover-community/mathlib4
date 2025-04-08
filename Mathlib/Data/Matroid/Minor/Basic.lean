@@ -546,7 +546,7 @@ instance contract_rankFinite [RankFinite M] : RankFinite (M ／ C) :=
 
 instance contract_finitary [Finitary M] : Finitary (M ／ C) := by
   obtain ⟨J, hJ⟩ := M.exists_isBasis' C
-  suffices h : (M ／ J).Finitary by
+  suffices (M ／ J).Finitary by
     rw [hJ.contract_eq_contract_delete]
     infer_instance
   exact ⟨fun I hI ↦ hJ.indep.contract_indep_iff.2  ⟨disjoint_left.2 fun e heI ↦
