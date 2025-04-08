@@ -3,7 +3,6 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Data.Fintype.Order
 import Mathlib.Data.NNReal.Basic
 import Mathlib.Topology.Algebra.InfiniteSum.Order
 import Mathlib.Topology.Algebra.InfiniteSum.Ring
@@ -233,19 +232,27 @@ theorem tendsto_of_antitone {f : ℕ → ℝ≥0} (h_ant : Antitone f) :
 
 end Monotone
 
-/-- Given `f : ι → ℝ≥0` and `n : ℕ`, we have `(iSup f) ^ n = iSup (f ^ n)`. -/
-theorem iSup_pow {ι : Type*} [Nonempty ι] [Finite ι] (f : ι → ℝ≥0) (n : ℕ) :
+/-- Given `f : ι → ℝ≥0` with bounded range and `n : ℕ`, we have `(iSup f) ^ n = iSup (f ^ n)`. -/
+theorem iSup_pow {ι : Sort*} [Nonempty ι] {f : ι → ℝ≥0} (hf_bdd : BddAbove (range f)) (n : ℕ) :
     (⨆ i : ι, f i) ^ n = ⨆ i : ι, f i ^ n := by
   by_cases hn : n = 0
   · simp [hn]
-  · simpa [powOrderIso, StrictMono.coe_orderIsoOfSurjective] using
-      OrderIso.map_ciSup (e := NNReal.powOrderIso n hn) (Finite.bddAbove_range f)
+  · simpa using (NNReal.powOrderIso n hn).map_ciSup hf_bdd
 
 end NNReal
 
 open NNReal in
 /-- Given a non-negative `f : ι → ℝ` and `n : ℕ`, we have `(iSup f) ^ n = iSup (f ^ n)`. -/
-theorem Real.iSup_pow' {ι : Type*} [Nonempty ι] [Finite ι] {f : ι → ℝ} (hf : ∀ i, 0 ≤ f i)
-    (n : ℕ) : (⨆ i : ι, f i) ^ n = ⨆ i : ι, f i ^ n := by
-  set g : ι → ℝ≥0 := fun i ↦ ⟨f i, hf i⟩
-  simpa [g, ← NNReal.coe_inj] using NNReal.iSup_pow g n
+theorem Real.iSup_pow {ι : Sort*} [Nonempty ι] {f : ι → ℝ} (hf_bdd : BddAbove (range f))
+    (hf : ∀ i, 0 ≤ f i) (n : ℕ) : (⨆ i : ι, f i) ^ n = ⨆ i : ι, f i ^ n := by
+  set g : ι → ℝ≥0 := fun i ↦ ⟨f i, hf i⟩ with hg
+  have hg_bdd : BddAbove (range g) := by
+    obtain ⟨B, hB⟩ := hf_bdd
+    simp only [mem_upperBounds, mem_range, forall_exists_index, forall_apply_eq_imp_iff] at hB
+    have hB0 : 0 ≤ B := by
+      set i : ι := Classical.choice (inferInstance)
+      exact le_trans (hf i) (hB i)
+    use ⟨B, hB0⟩
+    simp only [mem_upperBounds, mem_range, forall_exists_index, forall_apply_eq_imp_iff]
+    exact fun i ↦ hB i
+  simpa [g, ← NNReal.coe_inj] using NNReal.iSup_pow hg_bdd n
