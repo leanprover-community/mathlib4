@@ -3,8 +3,6 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Group.Hom.End
-import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Algebra.Group.Subsemigroup.Membership
 import Mathlib.Algebra.Group.Subsemigroup.Operations
 import Mathlib.Algebra.GroupWithZero.Center
@@ -12,8 +10,7 @@ import Mathlib.Algebra.Ring.Center
 import Mathlib.Algebra.Ring.Centralizer
 import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Algebra.Ring.Prod
-import Mathlib.Algebra.Ring.Submonoid
-import Mathlib.Data.Set.Finite.Range
+import Mathlib.Algebra.Ring.Submonoid.Pointwise
 import Mathlib.GroupTheory.Submonoid.Center
 import Mathlib.GroupTheory.Subsemigroup.Centralizer
 import Mathlib.RingTheory.NonUnitalSubsemiring.Defs

@@ -16,7 +16,7 @@ This actions is available in the `Pointwise` locale.
 ## Implementation notes
 
 This file is almost identical to the files `Mathlib.Algebra.GroupWithZero.Submonoid` and
-`Mathlib.Algebra.Ring.Submonoid`. Where possible, try to keep them in sync.
+`Mathlib.Algebra.Ring.Submonoid.Pointwise`. Where possible, try to keep them in sync.
 -/
 
 

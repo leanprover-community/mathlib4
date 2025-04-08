@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
 import Mathlib.Algebra.GroupWithZero.Subgroup
-import Mathlib.Algebra.Ring.Submonoid
+import Mathlib.Algebra.Ring.Submonoid.Pointwise
 import Mathlib.Algebra.Module.Defs
 
 /-!
