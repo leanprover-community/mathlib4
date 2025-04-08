@@ -70,18 +70,25 @@ register_option linter.style.maxHeartbeats : Bool := {
   descr := "enable the maxHeartbeats linter"
 }
 
-/-- If the input syntax is of the form `set_option maxHeartbeats num in <string> cmd`,
-then it returns the number `num` and whatever is in `<string>`.
+/-- If the input syntax is of the form `set_option <option> num in <string> cmd`,
+where `<option>` contains `maxHeartbeats`, then it returns
+* the `<option>` as a name (typically, `maxHeartbeats` or `synthInstance.maxHeartbeats`);
+* the number `num` and
+* whatever is in `<string>`.
 Note that `<string>` can only consist of whitespace and comments.
 
 Otherwise, it returns `none`.
 -/
-def getSetOptionMaxHeartbeatsComment : Syntax → Option (Nat × Substring)
-  | stx@`(command|set_option maxHeartbeats $n:num in $_) =>
-    if let some inAtom := stx.find? (·.getAtomVal == "in") then
-      inAtom.getTrailing?.map (n.getNat, ·)
+def getSetOptionMaxHeartbeatsComment : Syntax → Option (Name × Nat × Substring)
+  | stx@`(command|set_option $mh $n:num in $_) =>
+    let opt := mh.getId
+    if !opt.components.contains `maxHeartbeats then
+      none
     else
-      some default
+      if let some inAtom := stx.find? (·.getAtomVal == "in") then
+        inAtom.getTrailing?.map (opt, n.getNat, ·)
+      else
+        some default
   | _ => none
 
 /-- `getDeprecatedSyntax t` returns all usages of deprecated syntax in the input syntax `t`. -/
@@ -105,11 +112,15 @@ def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageD
     | ``Lean.Parser.Command.in =>
       match getSetOptionMaxHeartbeatsComment stx with
       | none => rargs
-      | some (n, trailing) =>
+      | some (opt, n, trailing) =>
+        -- Since we are now seeing the currently outermost `maxHeartbeats` option,
+        -- we remove all subsequence potential flags and only decide whether to lint or not
+        -- based on whether the current option has a comment.
+        let rargs := rargs.filter (·.1 != `MaxHeartbeats)
         if trailing.toString.trimLeft.isEmpty then
           rargs.push (`MaxHeartbeats, stx,
-            s!"Please, add a comment explaining the need for modifying the maxHeartbeat limit, as in\
-            \nset_option maxHeartbeats {n} in\n-- reason for change\n...\n")
+            s!"Please, add a comment explaining the need for modifying the maxHeartbeat limit, \
+              as in\nset_option {opt} {n} in\n-- reason for change\n...\n")
         else
           rargs
     | _ => rargs
