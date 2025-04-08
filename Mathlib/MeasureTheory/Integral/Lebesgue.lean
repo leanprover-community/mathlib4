@@ -564,11 +564,13 @@ theorem lintegral_add_right (f : α → ℝ≥0∞) {g : α → ℝ≥0∞} (hg 
   lintegral_add_right' f hg.aemeasurable
 
 @[simp]
-theorem lintegral_smul_measure (c : ℝ≥0∞) (f : α → ℝ≥0∞) : ∫⁻ a, f a ∂c • μ = c * ∫⁻ a, f a ∂μ := by
-  simp only [lintegral, iSup_subtype', SimpleFunc.lintegral_smul, ENNReal.mul_iSup, smul_eq_mul]
+theorem lintegral_smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+    (c : R) (f : α → ℝ≥0∞) : ∫⁻ a, f a ∂c • μ = c • ∫⁻ a, f a ∂μ := by
+  simp only [lintegral, iSup_subtype', SimpleFunc.lintegral_smul, ENNReal.smul_iSup]
 
-lemma setLIntegral_smul_measure (c : ℝ≥0∞) (f : α → ℝ≥0∞) (s : Set α) :
-    ∫⁻ a in s, f a ∂(c • μ) = c * ∫⁻ a in s, f a ∂μ := by
+lemma setLIntegral_smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+    (c : R) (f : α → ℝ≥0∞) (s : Set α) :
+    ∫⁻ a in s, f a ∂(c • μ) = c • ∫⁻ a in s, f a ∂μ := by
   rw [Measure.restrict_smul, lintegral_smul_measure]
 
 @[simp]
@@ -1388,12 +1390,14 @@ theorem lintegral_map' {mβ : MeasurableSpace β} {f : β → ℝ≥0∞} {g : �
     _ = ∫⁻ a, hf.mk f (g a) ∂μ := lintegral_congr_ae <| hg.ae_eq_mk.symm.fun_comp _
     _ = ∫⁻ a, f (g a) ∂μ := lintegral_congr_ae (ae_eq_comp hg hf.ae_eq_mk.symm)
 
-theorem lintegral_map_le {mβ : MeasurableSpace β} (f : β → ℝ≥0∞) {g : α → β} (hg : Measurable g) :
+theorem lintegral_map_le {mβ : MeasurableSpace β} (f : β → ℝ≥0∞) (g : α → β) :
     ∫⁻ a, f a ∂Measure.map g μ ≤ ∫⁻ a, f (g a) ∂μ := by
-  rw [← iSup_lintegral_measurable_le_eq_lintegral, ← iSup_lintegral_measurable_le_eq_lintegral]
-  refine iSup₂_le fun i hi => iSup_le fun h'i => ?_
-  refine le_iSup₂_of_le (i ∘ g) (hi.comp hg) ?_
-  exact le_iSup_of_le (fun x => h'i (g x)) (le_of_eq (lintegral_map hi hg))
+  by_cases hg : AEMeasurable g μ
+  · rw [← iSup_lintegral_measurable_le_eq_lintegral]
+    refine iSup₂_le fun i hi => iSup_le fun h'i => ?_
+    rw [lintegral_map' hi.aemeasurable hg]
+    exact lintegral_mono fun _ ↦ h'i _
+  · simp [map_of_not_aemeasurable hg]
 
 theorem lintegral_comp [MeasurableSpace β] {f : β → ℝ≥0∞} {g : α → β} (hf : Measurable f)
     (hg : Measurable g) : lintegral μ (f ∘ g) = ∫⁻ a, f a ∂map g μ :=
@@ -1590,15 +1594,15 @@ theorem lintegral_countable' [Countable α] [MeasurableSingletonClass α] (f : �
     ∫⁻ a, f a ∂μ = ∑' a, f a * μ {a} := by
   conv_lhs => rw [← sum_smul_dirac μ, lintegral_sum_measure]
   congr 1 with a : 1
-  rw [lintegral_smul_measure, lintegral_dirac, mul_comm]
+  simp [mul_comm]
 
 theorem lintegral_singleton' {f : α → ℝ≥0∞} (hf : Measurable f) (a : α) :
     ∫⁻ x in {a}, f x ∂μ = f a * μ {a} := by
-  simp only [restrict_singleton, lintegral_smul_measure, lintegral_dirac' _ hf, mul_comm]
+  simp [lintegral_dirac' _ hf, mul_comm]
 
 theorem lintegral_singleton [MeasurableSingletonClass α] (f : α → ℝ≥0∞) (a : α) :
     ∫⁻ x in {a}, f x ∂μ = f a * μ {a} := by
-  simp only [restrict_singleton, lintegral_smul_measure, lintegral_dirac, mul_comm]
+  simp [mul_comm]
 
 theorem lintegral_countable [MeasurableSingletonClass α] (f : α → ℝ≥0∞) {s : Set α}
     (hs : s.Countable) : ∫⁻ a in s, f a ∂μ = ∑' a : s, f a * μ {(a : α)} :=
