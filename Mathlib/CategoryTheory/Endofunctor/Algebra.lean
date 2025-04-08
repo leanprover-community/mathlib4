@@ -453,17 +453,15 @@ def Coalgebra.toAlgebraOf (adj : F ⊣ G) : Coalgebra G ⥤ Algebra F where
 adjoint and going back is isomorphic to the identity functor. -/
 @[simps!]
 def AlgCoalgEquiv.unitIso (adj : F ⊣ G) :
-    𝟭 (Algebra F) ≅ Algebra.toCoalgebraOf adj ⋙ Coalgebra.toAlgebraOf adj where
-  hom := { app := fun A => { f := 𝟙 A.1 } }
-  inv := { app := fun A => { f := 𝟙 A.1 } }
+    𝟭 (Algebra F) ≅ Algebra.toCoalgebraOf adj ⋙ Coalgebra.toAlgebraOf adj :=
+  NatIso.ofComponents (fun _ ↦ Algebra.isoMk <| Iso.refl _)
 
 /-- Given an adjunction, assigning to a coalgebra over the right adjoint an algebra over the left
 adjoint and going back is isomorphic to the identity functor. -/
 @[simps!]
 def AlgCoalgEquiv.counitIso (adj : F ⊣ G) :
-    Coalgebra.toAlgebraOf adj ⋙ Algebra.toCoalgebraOf adj ≅ 𝟭 (Coalgebra G) where
-  hom := { app := fun V => { f := 𝟙 V.1 } }
-  inv := { app := fun V => { f := 𝟙 V.1 } }
+    Coalgebra.toAlgebraOf adj ⋙ Algebra.toCoalgebraOf adj ≅ 𝟭 (Coalgebra G) :=
+  NatIso.ofComponents (fun _ ↦ Coalgebra.isoMk <| Iso.refl _)
 
 /-- If `F` is left adjoint to `G`, then the category of algebras over `F` is equivalent to the
 category of coalgebras over `G`. -/
