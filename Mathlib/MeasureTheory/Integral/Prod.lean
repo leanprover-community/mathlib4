@@ -222,7 +222,7 @@ theorem hasFiniteIntegral_prod_iff ⦃f : α × β → E⦄ (h1f : StronglyMeasu
     HasFiniteIntegral f (μ.prod ν) ↔
       (∀ᵐ x ∂μ, HasFiniteIntegral (fun y => f (x, y)) ν) ∧
         HasFiniteIntegral (fun x => ∫ y, ‖f (x, y)‖ ∂ν) μ := by
-  simp only [hasFiniteIntegral_iff_enorm, lintegral_prod_of_measurable _ h1f.enorm]
+  simp only [hasFiniteIntegral_iff_enorm, lintegral_prod _ h1f.enorm.aemeasurable]
   have (x) : ∀ᵐ y ∂ν, 0 ≤ ‖f (x, y)‖ := by filter_upwards with y using norm_nonneg _
   simp_rw [integral_eq_lintegral_of_nonneg_ae (this _)
       (h1f.norm.comp_measurable measurable_prodMk_left).aestronglyMeasurable,
@@ -435,7 +435,7 @@ theorem continuous_integral_integral :
       (𝓝 0)
   have this (i : α × β →₁[μ.prod ν] E) : Measurable fun z => ‖i z - g z‖ₑ :=
     ((Lp.stronglyMeasurable i).sub (Lp.stronglyMeasurable g)).enorm
-  simp_rw [← lintegral_prod_of_measurable _ (this _), ← L1.ofReal_norm_sub_eq_lintegral,
+  simp_rw [← lintegral_prod _ (this _).aemeasurable, ← L1.ofReal_norm_sub_eq_lintegral,
     ← ofReal_zero]
   refine (continuous_ofReal.tendsto 0).comp ?_
   rw [← tendsto_iff_norm_sub_tendsto_zero]; exact tendsto_id
