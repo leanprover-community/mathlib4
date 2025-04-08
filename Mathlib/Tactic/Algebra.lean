@@ -89,7 +89,7 @@ def sℕ : Q(CommSemiring ℕ) := q(Nat.instCommSemiring)
 
 
 def ofProd {u : Level}  {A : Q(Type u)} (sA : Q(CommSemiring $A))
-  {e : Q($A)} (prod : Ring.ExProd sA e) :=
+  {e : Q($A)} (prod : Ring.ExProd q($sA) q($e)) :=
   ExSum.add (q(Semiring.toNatAlgebra) : Q(Algebra ℕ $A)) (.one) prod (.zero)
 
 namespace ExSum
@@ -191,63 +191,58 @@ def evalAtom {v : Level}  {A : Q(Type v)} (sA : Q(CommSemiring $A)) (e : Q($A)) 
 
 mutual
 
-partial def evalMul {u : Level} {A₁ : Q(Type u)}
-    (sA₁ : Q(CommSemiring $A₁))
-     {a₁ a₂ : Q($A₁)}
-    (va₁ : ExSum q($sA₁) a₁) :
-    ExSum q($sA₁) a₂ → MetaM (Result (ExSum q($sA₁)) q($a₁ * $a₂))
-| .zero => do
-  return ⟨_, .zero, q(sorry)⟩
-| .one => do
-  assumeInstancesCommute
-  return ⟨_, va₁, q(mul_one $a₁)⟩
-| .add (R := R) (sR := sR) (sAlg := sRA) .. => sorry
+partial def evalAdd {u : Level} {A : Q(Type u)}
+    (sA : Q(CommSemiring $A))
+     {a₁ a₂ : Q($A)}
+    (va₁ : ExSum q($sA) a₁) :
+    ExSum q($sA) a₂ → MetaM (Result (ExSum q($sA)) q($a₁ + $a₂))
+  | .zero => do
+    assumeInstancesCommute
+    return ⟨_, va₁, q(sorry /-hmul_cast_zero_mul (R₁ := $A₁) $a₂-/)⟩
+  | .one => do
+    assumeInstancesCommute
+    throwError "Adding one not implemented"
+    -- return ⟨_, ofProd sA va₂, q(sorry /-hmul_cast_one_mul (R₁ := ℕ) $a₂-/)⟩
+  | .add (A := A) (sA := sA) (R := R) (sR := sR) (sAlg := sRA) (r := r) (a := a) (b := t)
+      vr va vt => do
+    throwError "evalAdd not implemented"
+    -- sorry
 
--- /-
--- * `x * y = (x * y)` (for `x`, `y` coefficients)
--- * `x * (b₁ * b₂) = b₁ * (b₂ * x)` (for `x` coefficient)
--- * `(a₁ * a₂) * y = a₁ * (a₂ * y)` (for `y` coefficient)
--- * `(x ^ ea * a₂) * (x ^ eb * b₂) = x ^ (ea + eb) * (a₂ * b₂)`
---     (if `ea` and `eb` are identical except coefficient)
--- * `(a₁ * a₂) * (b₁ * b₂) = a₁ * (a₂ * (b₁ * b₂))` (if `a₁.lt b₁`)
--- * `(a₁ * a₂) * (b₁ * b₂) = b₁ * ((a₁ * a₂) * b₂)` (if not `a₁.lt b₁`)
--- -/
--- partial def evalMulProd {u : Level} {R₁ R₂: Q(Type u)} (hdef : $R₁ =Q $R₂) (sR₁ : Q(CommSemiring $R₁))
---     (sR₂ : Q(CommSemiring $R₂)) {a : Q($R₁)} {b : Q($R₂)}
---     (va : Ring.ExProd sR₁ a) (vb : Ring.ExProd R₂ b) :
---     Lean.Core.CoreM <| Ring.Result (Ring.ExProd sR₁) q($a * $b) := do
---   Lean.Core.checkSystem decl_name%.toString
---   match va, vb with
---   | .const za ha, .const zb hb =>
---     if za = 1 then
---       return ⟨b, .const zb hb, (q(one_mul $b) : Expr)⟩
---     else if zb = 1 then
---       return ⟨a, .const za ha, (q(mul_one $a) : Expr)⟩
---     else
---       let ra := NormNum.Result.ofRawRat za a ha; let rb := NormNum.Result.ofRawRat zb b hb
---       let rc := (NormNum.evalMul.core q($a * $b) q(HMul.hMul) _ _
---           q(CommSemiring.toSemiring) ra rb).get!
---       let ⟨zc, hc⟩ := rc.toRatNZ.get!
---       let ⟨c, pc⟩ := rc.toRawEq
---       return ⟨c, .const zc hc, pc⟩
---   | .mul (x := a₁) (e := a₂) va₁ va₂ va₃, .const _ _ =>
---     let ⟨_, vc, pc⟩ ← evalMulProd hdef sR₁ sR₂ va₃ vb
---     return ⟨_, .mul va₁ va₂ vc, (q(sorry /- mul_pf_left $a₁ $a₂ $pc-/) : Expr)⟩
---   | .const _ _, .mul (x := b₁) (e := b₂) vb₁ vb₂ vb₃ =>
---     let ⟨_, vc, pc⟩ ← evalMulProd hdef sR₁ sR₂ va vb₃
---     return ⟨_, .mul vb₁ vb₂ vc, (q(sorry /- mul_pf_right $b₁ $b₂ $pc-/) : Expr)⟩
---   | .mul (x := xa) (e := ea) vxa vea va₂, .mul (x := xb) (e := eb) vxb veb vb₂ => do
---     if vxa.eq vxb then
---       if let some (.nonzero ⟨_, ve, pe⟩) ← (evalAddOverlap sℕ vea veb).run then
---         let ⟨_, vc, pc⟩ ← evalMulProd hdef sR₁ sR₂ va₂ vb₂
---         return ⟨_, .mul vxa ve vc, (q(mul_pp_pf_overlap $xa $pe $pc) : Expr)⟩
---     if let .lt := (vxa.cmp vxb).then (vea.cmp veb) then
---       let ⟨_, vc, pc⟩ ← evalMulProd hdef sR₁ sR₂ va₂ vb
---       return ⟨_, .mul vxa vea vc, (q(mul_pf_left $xa $ea $pc) : Expr)⟩
---     else
---       let ⟨_, vc, pc⟩ ← evalMulProd hdef sR₁ sR₂ va vb₂
---       return ⟨_, .mul vxb veb vc, (q(mul_pf_right $xb $eb $pc) : Expr)⟩
+partial def evalMul_exProd {u : Level} {A : Q(Type u)}
+    (sA : Q(CommSemiring $A))
+    {a₁ a₂ : Q($A)}
+    (va₂ : Ring.ExProd q($sA) q($a₂)) :
+    ExSum q($sA) a₁ → MetaM (Result (ExSum sA) q($a₁ * $a₂))
+  | .zero => do
+    assumeInstancesCommute
+    return ⟨_, .zero, q(sorry /-hmul_cast_zero_mul (R₁ := $A₁) $a₂-/)⟩
+  | .one => do
+    assumeInstancesCommute
+    return ⟨_, ofProd sA va₂, q(sorry /-hmul_cast_one_mul (R₁ := ℕ) $a₂-/)⟩
+  | .add (A := A) (sA := sA) (R := R) (sR := sR) (sAlg := sRA) (r := r) (a := a) (b := t)
+      vr va vt => do
+    let ⟨a', va', pa'⟩ ←  Ring.evalMulProd sA va va₂
+    let ⟨t', vt', pt'⟩ ← evalMul_exProd sA va₂ vt
+    return ⟨_, .add sRA vr va' vt', q(sorry)⟩
 
+partial def evalMul {u : Level} {A : Q(Type u)}
+    (sA : Q(CommSemiring $A))
+     {a₁ a₂ : Q($A)}
+    (va₁ : ExSum q($sA) a₁) :
+    ExSum q($sA) a₂ → MetaM (Result (ExSum q($sA)) q($a₁ * $a₂))
+  | .zero => do
+    return ⟨_, .zero, q(sorry)⟩
+  | .one => do
+    assumeInstancesCommute
+    return ⟨_, va₁, q(mul_one $a₁)⟩
+  | .add (A := A) (sA := sA) (R := R) (sR := sR) (sAlg := sRA) (r := r) (a := a) (b := t)
+      vr va vt => do
+    let ⟨a', va', pa'⟩ ← evalMul_exProd sA va va₁
+    let ⟨ra', vra', pra'⟩ ← evalSMul sA sR sRA vr va'
+    let ⟨t', vt', pt'⟩ ← evalMul sA va₁ vt
+
+    throwError "evalMul not implemented"
+    -- return ⟨sorry, sorry, sorry⟩
 
 -- partial def evalHMul_exProd {u : Level} {A₁ : Q(Type u)} {A₂ : Q(Type u)} (hdef : $A₁ =Q $A₂)
 --     (sA₁ : Q(CommSemiring $A₁)) (sA₂ : Q(CommSemiring $A₂))
@@ -302,9 +297,6 @@ partial def matchRingsSMul {v : Level} {A : Q(Type v)}
     have : u₁ =QL u₂ := ⟨⟩
     have : $R₁ =Q $R₂ :=  ⟨⟩
     /- Question: what do I do here? I just want to view $r₁$ as having type $R₂$-/
-    let _i₁ ← synthInstanceQ q(HMul $R₁ $R₂ $R₁)
-    let _i₂ ← synthInstanceQ q(LawfulHMul $R₁ $R₂)
-    -- have vr₁' : ExSum R₂ r₁' := sorry
     IO.println s!"smul with defeq rings {R₁} and {R₂} not yet implemented."
     -- throwError s!"smul with defeq rings {R₁} and {R₂} not yet implemented."
     /- Is this safe and correct? -/
@@ -324,7 +316,8 @@ partial def matchRingsSMul {v : Level} {A : Q(Type v)}
     assumeInstancesCommute
     let ⟨r, vr, pr⟩ ← evalSMul iR₂ iR₁ _i₃ vr₁ vr₂
     pure ⟨u₂, R₂, iR₂, iRA₂, r, vr, q($pr ▸ (smul_assoc $r₁ $r₂ $a).symm)⟩
-  catch _ => try
+  catch e => try
+    throw e
     -- then if that fails, try to exhibit `R₁` as an `R₂`-algebra
     let _i₁ ← synthInstanceQ q(CommSemiring $R₂)
     let _i₃ ← synthInstanceQ q(Algebra $R₂ $R₁)
@@ -334,7 +327,8 @@ partial def matchRingsSMul {v : Level} {A : Q(Type v)}
     let ⟨r, vr, pr⟩ ← evalSMul iR₁ iR₂ _i₃ vr₂ vr₁
     pure ⟨u₁, R₁, iR₁, iRA₁, r, vr,
       q($pr ▸ smul_algebra_smul_comm $r₂ $r₁ $a ▸ (smul_assoc $r₂ $r₁ $a).symm)⟩
-  catch _ =>
+  catch o =>
+    throw o
     throwError "algebra failed: {R₁} is not an {R₂}-algebra and {R₂} is not an {R₁}-algebra"
 
 partial def evalSMul {u v : Level} {R : Q(Type u)} {A : Q(Type v)} (sA : Q(CommSemiring $A))
@@ -443,5 +437,5 @@ end Mathlib.Tactic.Algebra
 
 example (x : ℚ) :  x = (1 : ℤ) • x := by
   simp_rw [← SMul.smul_eq_hSMul]
-  -- algebra
-  sorry
+  algebra
+  match_scalars <;> simp
