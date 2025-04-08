@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 import Mathlib.Data.Finsupp.Interval
+import Mathlib.RingTheory.Ideal.Quotient.Defs
 import Mathlib.RingTheory.MvPowerSeries.PiTopology
 import Mathlib.Topology.Algebra.LinearTopology
 import Mathlib.RingTheory.TwoSidedIdeal.Operations
@@ -42,7 +43,7 @@ namespace LinearTopology
 
 open scoped Topology
 
-open Set SetLike
+open Set SetLike Filter
 
 /-- The underlying family for the basis of ideals in a multivariate power series ring. -/
 def basis (σ : Type*) (R : Type*) [Ring R] (Jd : TwoSidedIdeal R × (σ →₀ ℕ)) :
@@ -121,7 +122,7 @@ lemma hasBasis_nhds_zero [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R] 
     convert hf _ <| Finset.le_sup (hD.mem_toFinset.mpr hd)
   · intro ⟨I, d⟩ hI
     refine ⟨⟨Iic d, I⟩, ⟨finite_Iic d, hI⟩, ?_⟩
-    simpa [basis, coeff_apply, Iic, pi] using subset_rfl
+    simpa [basis, coeff_apply, Iic, Set.pi] using subset_rfl
 
 /-- The topology on `MvPowerSeries` is a left linear topology
   when the ring of coefficients has a linear topology. -/
@@ -134,6 +135,34 @@ instance [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R] :
 instance [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R] :
     IsLinearTopology (MvPowerSeries σ R)ᵐᵒᵖ (MvPowerSeries σ R) :=
   IsLinearTopology.mk_of_hasBasis'  _ hasBasis_nhds_zero (fun J _ _ hg ↦ J.mul_mem_right _ _ hg)
+
+theorem isTopologicallyNilpotent_of_constantCoeff
+    {R : Type*} [CommRing R] [TopologicalSpace R] [IsLinearTopology R R]
+    {f} (hf : IsTopologicallyNilpotent (constantCoeff σ R f)) :
+    IsTopologicallyNilpotent f := by
+  simp_rw [IsTopologicallyNilpotent, tendsto_iff_coeff_tendsto, coeff_zero,
+    IsLinearTopology.hasBasis_ideal.tendsto_right_iff]
+  intro d I hI
+  replace hf := hf.eventually_mem hI
+  simp_rw [eventually_atTop, SetLike.mem_coe, ← Ideal.Quotient.eq_zero_iff_mem,
+    map_pow, ← coeff_map, ← constantCoeff_map] at hf ⊢
+  obtain ⟨N, hN⟩ := hf
+  use N + d.degree
+  intro n hn
+  simpa only [map_pow] using coeff_eq_zero_of_constantCoeff_nilpotent (hN N le_rfl) hn
+
+/-- Assuming the base ring has a linear topology, the powers of a `MvPowerSeries` converge to 0
+iff its constant coefficient is topologically nilpotent.
+
+See also `MvPowerSeries.WithPiTopology.isTopologicallyNilpotent_iff_constantCoeff_isNilpotent`. -/
+theorem isTopologicallyNilpotent_iff_constantCoeff
+    {R : Type*} [CommRing R] [TopologicalSpace R] [IsLinearTopology R R] (f) :
+    Tendsto (fun n : ℕ => f ^ n) atTop (nhds 0) ↔
+      IsTopologicallyNilpotent (constantCoeff σ R f) := by
+  refine ⟨fun H ↦ ?_, isTopologicallyNilpotent_of_constantCoeff⟩
+  replace H : Tendsto (fun n ↦ constantCoeff σ R (f ^ n)) atTop (nhds 0) :=
+    continuous_constantCoeff R |>.tendsto' 0 0 constantCoeff_zero |>.comp H
+  simpa only [map_pow] using H
 
 end LinearTopology
 
