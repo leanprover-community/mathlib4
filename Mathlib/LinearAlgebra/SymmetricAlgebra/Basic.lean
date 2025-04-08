@@ -80,13 +80,18 @@ instance : CommSemiring (SymmetricAlgebra R M) where
     | mul b c hb hc => exact hb.mul_right hc
     | add b c hb hc => exact hb.add_right hc
 
-variable {R M} {A : Type*} [CommSemiring A] [Algebra R A] (f : M →ₗ[R] A)
+variable {R M} {A : Type*} [CommSemiring A] [Algebra R A]
 
 /-- For any linear map `f : M →ₗ[R] A`, `SymmetricAlgebra.lift f` lifts the linear map to an
 R-algebra homomorphism from `SymmetricAlgebra R M` to `A`. -/
-def lift : SymmetricAlgebra R M →ₐ[R] A :=
-  RingQuot.liftAlgHom R ⟨TensorAlgebra.lift R f, fun _ _ r ↦ by
-    induction r with | mul_comm x y => simp [mul_comm]⟩
+def lift : (M →ₗ[R] A) ≃ (SymmetricAlgebra R M →ₐ[R] A) := by
+  let equiv : (TensorAlgebra R M →ₐ[R] A) ≃
+    {f : TensorAlgebra R M →ₐ[R] A // ∀ {x y}, (TensorAlgebra.SymRel R M) x y → f x = f y} := by
+    refine (Equiv.subtypeUnivEquiv fun h _ _ h' ↦ ?_).symm
+    induction h' with | mul_comm x y => rw [map_mul, map_mul, mul_comm]
+  refine (TensorAlgebra.lift R).trans <| equiv.trans <| (RingQuot.liftAlgHom R)
+
+variable (f : M →ₗ[R] A)
 
 @[simp]
 lemma lift_ι_apply (a : M) : lift f (ι R M a) = f a := by
