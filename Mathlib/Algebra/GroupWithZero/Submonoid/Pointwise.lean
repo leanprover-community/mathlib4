@@ -147,9 +147,3 @@ lemma le_pointwise_smul_iff₀ (ha : a ≠ 0) : S ≤ a • T ↔ a⁻¹ • S �
 
 end GroupWithZero
 end AddSubmonoid
-
-/-- The submonoid of primal elements in a cancellative commutative monoid with zero. -/
-def Submonoid.isPrimal (M₀ : Type*) [CancelCommMonoidWithZero M₀] : Submonoid M₀ where
-  carrier := {a | IsPrimal a}
-  mul_mem' := .mul
-  one_mem' := isUnit_one.isPrimal

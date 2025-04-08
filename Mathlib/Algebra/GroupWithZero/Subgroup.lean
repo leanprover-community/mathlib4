@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Group.Subgroup.Pointwise
-import Mathlib.Algebra.GroupWithZero.Submonoid
+import Mathlib.Algebra.GroupWithZero.Submonoid.Pointwise
 
 /-!
 # Subgroups in a group with zero

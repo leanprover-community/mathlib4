@@ -3,7 +3,7 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.GroupWithZero.Submonoid
+import Mathlib.Algebra.GroupWithZero.Submonoid.Pointwise
 import Mathlib.Algebra.Ring.Subsemiring.Basic
 
 /-! # Pointwise instances on `Subsemiring`s
@@ -15,7 +15,7 @@ This actions is available in the `Pointwise` locale.
 
 ## Implementation notes
 
-This file is almost identical to the files `Mathlib.Algebra.GroupWithZero.Submonoid` and
+This file is almost identical to the files `Mathlib.Algebra.GroupWithZero.Submonoid.Pointwise` and
 `Mathlib.Algebra.Ring.Submonoid.Pointwise`. Where possible, try to keep them in sync.
 -/
 
