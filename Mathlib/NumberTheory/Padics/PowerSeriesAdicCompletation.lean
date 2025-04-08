@@ -70,20 +70,21 @@ noncomputable def Cauchy_p_adic (f:AdicCompletion.AdicCauchySequence
      refine ⟨m, fun n hn => lt_of_le_of_lt ?_ hm⟩
      rw [← neg_sub, norm_neg]
      exact hx hn
-lemma CauchyL (b:ℝ)(a:CauSeq ℤ_[p] norm)(hs:∀n , ‖a.val n‖≤ b):‖a.lim‖≤b:=by
+lemma CauchyL (b:ℝ)(a:CauSeq ℤ_[p] norm)(hs:∃ m ,∀ n≥ m , ‖a.val n‖≤ b):‖a.lim‖≤b:=by
    by_contra sr
    simp at sr
+   obtain ⟨m,hm⟩:=hs
    obtain ⟨i,sh⟩:=equiv_def₃ (equiv_lim a) (sub_pos.mpr sr)
-   have:=sh  i (Nat.le_refl i) i (Nat.le_refl i)
+   have:=sh  (max m i) ( Nat.le_max_right m i) (max m i) (Nat.le_refl (max m i))
    simp at this
-   have:¬ ‖(a.val i)-a.lim‖ < ‖a.lim‖ - b :=by
+   have:¬ ‖(a.val (max m i))-a.lim‖ < ‖a.lim‖ - b :=by
        simp
-       have: ‖a.lim‖≤ ‖(a.val i)-a.lim‖+‖(a.val i)‖:=by
-        rw[Eq.symm (norm_neg a.lim),Eq.symm (norm_neg (a.val i))]
-        have:-a.lim=(a.val i)-a.lim +(- (a.val i)) :=by ring_nf
+       have: ‖a.lim‖≤ ‖(a.val (max m i))-a.lim‖+‖(a.val (max m i))‖:=by
+        rw[Eq.symm (norm_neg a.lim),Eq.symm (norm_neg (a.val (max m i)))]
+        have:-a.lim=(a.val (max m i))-a.lim +(- (a.val (max m i))) :=by ring_nf
         rw[this]
-        exact norm_add_le (a.val i - a.lim) (-a.val i)
-       exact le_add_of_le_add_left this (hs i)
+        exact norm_add_le (a.val (max m i) - a.lim) (-a.val (max m i))
+       exact le_add_of_le_add_left this (hm (max m i)  ( Nat.le_max_left m i))
    (expose_names; exact this this_1)
 
 
@@ -116,6 +117,17 @@ noncomputable def Cauchy.seq_map :AdicCompletion.AdicCauchySequence
 noncomputable abbrev cauchy_sequence_coeff (a:ℤ ) :=
  (Cauchy.seq_map (p:=p))∘ₗ(AdicCompletion.AdicCauchySequence.map  (IsLocalRing.maximalIdeal ℤ_[p])
  (HahnSeries.coeff_map_0 (p:=p) a))
+lemma powerseries_equiv(m:ℕ)(s :ℤ)(f g :ℤ_[p]⸨X⸩)
+   { hs:f ≡ g [SMOD  (IsLocalRing.maximalIdeal ℤ_[p] ^ m • ⊤ : Submodule ℤ_[p] ℤ_[p]⸨X⸩)]}:
+((HahnSeries.coeff_map_0 s) f) ≡
+   ((HahnSeries.coeff_map_0 s) g)
+   [SMOD (IsLocalRing.maximalIdeal ℤ_[p] ^ m )]:=by
+    simp only [SModEq.sub_mem,zero_sub, neg_mem_iff]
+    simp only [SModEq.sub_mem,zero_sub, neg_mem_iff] at hs
+    rw[Eq.symm (LinearMap.map_sub (HahnSeries.coeff_map_0 s) f g)]
+
+
+    sorry
 lemma cauchy_sequence_coeff_tends_to_zero
   (f:AdicCompletion.AdicCauchySequence (IsLocalRing.maximalIdeal ℤ_[p]) ℤ_[p]⸨X⸩ ):
   Filter.Tendsto (fun n:ℕ => cauchy_sequence_coeff (p:=p) (-n:ℤ ) f) Filter.atTop
@@ -124,20 +136,40 @@ lemma cauchy_sequence_coeff_tends_to_zero
   intro h sh
   simp only [sub_zero]
   obtain ⟨m, hm⟩ := exists_pow_neg_lt p sh
-  rcases f with ⟨c1,c2⟩
-  let w:=((-(c1 m).order).toNat+1)
+  have:∃ w:ℕ , -w<(f.1 m).order :=by
+
+     sorry
+  choose w sw using this
   use w
   intro n sn
   refine lt_of_le_of_lt ?_ hm
-  unfold  cauchy_sequence_coeff Cauchy.seq_map Cauchy_p_adic
-  let K :=AdicCompletion.AdicCauchySequence.map (IsLocalRing.maximalIdeal ℤ_[p])
-    (HahnSeries.coeff_map_0 (-↑n)) ⟨c1,c2⟩
-  rcases K with ⟨k1,k2⟩
-  unfold AdicCompletion.IsAdicCauchy at c2
-  have: ∀ s≥w,(c1 m).coeff (-s)=0 :=by sorry
-  have:∀ s≥ w,∀n≥m , ‖(c1 n).coeff (-s)‖≤ (p:ℝ)^(-m:ℤ) :=by sorry
-  simp only [LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply, ge_iff_le]
-  sorry
+  have:∀ {m n : ℕ}, m ≤ n → f.1 m ≡ f.1 n
+   [SMOD ( IsLocalRing.maximalIdeal ℤ_[p] ^ m • ⊤ : Submodule ℤ_[p] ℤ_[p]⸨X⸩)]:=by
+    rcases f with ⟨w1,w2⟩
+    simp
+    exact w2
+  unfold cauchy_sequence_coeff Cauchy.seq_map
+  simp only [LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply]
+  refine CauchyL (p:=p) ((p:ℝ)^ (-m:ℤ)) (Cauchy_p_adic ((AdicCompletion.AdicCauchySequence.map
+    (IsLocalRing.maximalIdeal ℤ_[p]) (HahnSeries.coeff_map_0 (-n:ℤ))) f)) ?_
+  use m
+  intro l sl
+  unfold Cauchy_p_adic
+  simp only [AdicCompletion.AdicCauchySequence.map_apply_coe]
+  have:=this sl
+  have s1:((HahnSeries.coeff_map_0 (-n:ℤ)) (f.1 m)) ≡
+   ((HahnSeries.coeff_map_0 (-n:ℤ)) (f.1 l))
+   [SMOD (IsLocalRing.maximalIdeal ℤ_[p] ^ m )]:=sorry
+  have s2 :((HahnSeries.coeff_map_0 (-n:ℤ)) (f.1 m))=0 :=by
+     refine HahnSeries.coeff_eq_zero_of_lt_order ?_
+     have:(-n:ℤ)≤ -w :=by sorry
+     exact Int.lt_of_le_of_lt this sw
+
+  rw[s2] at s1
+  simp only [maximalIdeal_eq_span_p,SModEq.sub_mem,zero_sub, neg_mem_iff] at s1
+  rw[norm_le_pow_iff_mem_span_pow,←Ideal.span_singleton_pow]
+  exact s1
+
 
 
 noncomputable def Cauchy_p_adic_2:AdicCompletion.AdicCauchySequence
