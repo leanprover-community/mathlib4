@@ -42,6 +42,10 @@ def deleteEdges (s : Set (Sym2 V)) : SimpleGraph V := G \ fromEdgeSet s
 
 variable {G} {H : SimpleGraph V} {s s₁ s₂ : Set (Sym2 V)}
 
+instance [DecidableRel G.Adj] [DecidablePred (· ∈ s)] [DecidableEq V] :
+    DecidableRel (G.deleteEdges s).Adj :=
+  inferInstanceAs <| DecidableRel (G \ fromEdgeSet s).Adj
+
 @[simp] lemma deleteEdges_adj : (G.deleteEdges s).Adj v w ↔ G.Adj v w ∧ ¬s(v, w) ∈ s :=
   and_congr_right fun h ↦ (and_iff_left h.ne).not
 
