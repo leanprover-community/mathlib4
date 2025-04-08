@@ -134,6 +134,13 @@ section
 
 #guard_msgs in
 set_option maxHeartbeats 10 in
+/- The comment here is enough to silence the linter:
+the *first* `maxHeartbeats` has a comment, to remaining ones are free to be commentless. -/
+set_option synthInstance.maxHeartbeats 10 in
+section
+
+#guard_msgs in
+set_option maxHeartbeats 10 in
 -- no reason, but has a comment
 section
 

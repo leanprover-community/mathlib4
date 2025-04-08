@@ -63,8 +63,11 @@ register_option linter.style.admit : Bool := {
 }
 
 /-- The option `linter.style.maxHeartbeats` of the deprecated syntax linter flags usages of
-`set_option maxHeartbeats n in cmd` that do not add a comment explaining the reason for the
-modification of the maxHeartbeats. -/
+`set_option <name-containing-maxHeartbeats> n in cmd` that do not add a comment explaining
+the reason for the modification of the `maxHeartbeats`.
+
+This includes `set_option maxHeartbeats n in` and `set_option synthInstance.maxHeartbeats n in`.
+-/
 register_option linter.style.maxHeartbeats : Bool := {
   defValue := false
   descr := "enable the maxHeartbeats linter"
@@ -72,7 +75,7 @@ register_option linter.style.maxHeartbeats : Bool := {
 
 /-- If the input syntax is of the form `set_option <option> num in <string> cmd`,
 where `<option>` contains `maxHeartbeats`, then it returns
-* the `<option>` as a name (typically, `maxHeartbeats` or `synthInstance.maxHeartbeats`);
+* the `<option>`, as a name (typically, `maxHeartbeats` or `synthInstance.maxHeartbeats`);
 * the number `num` and
 * whatever is in `<string>`.
 Note that `<string>` can only consist of whitespace and comments.
@@ -88,6 +91,7 @@ def getSetOptionMaxHeartbeatsComment : Syntax → Option (Name × Nat × Substri
       if let some inAtom := stx.find? (·.getAtomVal == "in") then
         inAtom.getTrailing?.map (opt, n.getNat, ·)
       else
+        -- This branch should be unreachable.
         some default
   | _ => none
 
