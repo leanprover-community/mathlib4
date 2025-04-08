@@ -98,15 +98,13 @@ Given two functions `f` and `g` taking values in topological vector spaces
 over a normed field `K`,
 we say that $f = O(g)$ if for any neighborhood of zero `U` in the codomain of `f`
 there exists a neighborhood of zero `V` in the codomain of `g`
-such that $\operatorname{gauge}_{K, U} (f(x)) = O(\operatorname{gauge}_{K, V} (g(x)))$,
+such that $\operatorname{gauge}_{K, U} (f(x)) \le \operatorname{gauge}_{K, V} (g(x))$,
 where $\operatorname{gauge}_{K, U}(y) = \inf \{‖c‖ \mid y ∈ c • U\}$.
-
-We use an `ENNReal`-valued function `egauge` for the gauge,
-so we unfold the definition of big o instead of reusing it. -/
+-/
 @[mk_iff]
 structure IsBigOTVS (l : Filter α) (f : α → E) (g : α → F) : Prop where
-  exists_eventuallyLE_mul : ∀ U ∈ 𝓝 (0 : E), ∃ V ∈ 𝓝 (0 : F), ∃ C : ℝ≥0,
-    (fun x ↦ egauge 𝕜 U (f x)) ≤ᶠ[l] (fun x ↦ C * egauge 𝕜 V (g x))
+  exists_eventuallyLE : ∀ U ∈ 𝓝 (0 : E), ∃ V ∈ 𝓝 (0 : F),
+    (egauge 𝕜 U <| f ·) ≤ᶠ[l] (egauge 𝕜 V <| g ·)
 
 @[inherit_doc]
 notation:100 f " =O[" 𝕜 ";" l "] " g:100 => IsBigOTVS 𝕜 l f g
@@ -135,7 +133,8 @@ theorem isLittleOTVS_iff_tendsto_div :
 
 alias ⟨IsLittleOTVS.tendsto_div, IsLittleOTVS.of_tendsto_div⟩ := isLittleOTVS_iff_tendsto_div
 
-/-- A version of `IsLittleOTVS.exists_eventuallyLE_mul` where `ε` is quantified over `ℝ≥0∞` instead of `ℝ≥0`. -/
+/-- A version of `IsLittleOTVS.exists_eventuallyLE_mul`
+where `ε` is quantified over `ℝ≥0∞` instead of `ℝ≥0`. -/
 theorem IsLittleOTVS.exists_eventuallyLE_mul_ennreal (h : f =o[𝕜; l] g) {U : Set E} (hU : U ∈ 𝓝 0) :
     ∃ V ∈ 𝓝 (0 : F), ∀ ε ≠ 0, (fun x ↦ egauge 𝕜 U (f x)) ≤ᶠ[l] (fun x ↦ ε * egauge 𝕜 V (g x)) := by
   obtain ⟨V, hV₀, hV⟩ := h.exists_eventuallyLE_mul U hU
@@ -173,16 +172,15 @@ variable {l l₁ l₂ : Filter α} {f : α → E} {g : α → F}
 theorem IsLittleOTVS.isBigOTVS (h : f =o[𝕜; l] g) : f =O[𝕜; l] g := by
   refine ⟨fun U hU ↦ ?_⟩
   rcases h.1 U hU with ⟨V, hV₀, hV⟩
-  use V, hV₀, 1, hV 1 one_ne_zero
+  use V, hV₀
+  simpa using hV 1 one_ne_zero
 
 theorem IsBigOTVS.trans {k : α → G} (hfg : f =O[𝕜;l] g) (hgk : g =O[𝕜;l] k) : f =O[𝕜;l] k := by
   refine ⟨fun U hU₀ ↦ ?_⟩
-  obtain ⟨V, hV₀, C₁, hC₁⟩ := hfg.1 U hU₀
-  obtain ⟨W, hW₀, C₂, hC₂⟩ := hgk.1 V hV₀
-  refine ⟨W, hW₀, C₁ * C₂, ?_⟩
-  filter_upwards [hC₁, hC₂] with x hx₁ hx₂
-  simp only [ENNReal.coe_mul, mul_assoc]
-  exact hx₁.trans <| by gcongr
+  obtain ⟨V, hV₀, hV⟩ := hfg.1 U hU₀
+  obtain ⟨W, hW₀, hW⟩ := hgk.1 V hV₀
+  refine ⟨W, hW₀, ?_⟩
+  filter_upwards [hV, hW] with x hx₁ hx₂ using hx₁.trans hx₂
 
 instance instTransIsBigOTVSIsBigOTVS :
     @Trans (α → E) (α → F) (α → G) (· =O[𝕜;l] ·) (· =O[𝕜;l] ·) (· =O[𝕜;l] ·) where
@@ -191,14 +189,10 @@ instance instTransIsBigOTVSIsBigOTVS :
 theorem IsLittleOTVS.trans_isBigOTVS {k : α → G} (hfg : f =o[𝕜;l] g) (hgk : g =O[𝕜;l] k) :
     f =o[𝕜;l] k := by
   refine ⟨fun U hU₀ ↦ ?_⟩
-  obtain ⟨V, hV₀, hV⟩ := hfg.exists_eventuallyLE_mul_ennreal hU₀
-  obtain ⟨W, hW₀, C, hWC⟩ := hgk.1 V hV₀
+  obtain ⟨V, hV₀, hV⟩ := hfg.1 U hU₀
+  obtain ⟨W, hW₀, hW⟩ := hgk.1 V hV₀
   refine ⟨W, hW₀, fun ε hε ↦ ?_⟩
-  filter_upwards [hV (ε / C) (by simpa), hWC] with x hx₁ hx₂
-  refine hx₁.trans <| (mul_le_mul_left' hx₂ _).trans ?_
-  rw [← mul_assoc, mul_comm (_ / _)]
-  gcongr
-  apply ENNReal.mul_div_le
+  filter_upwards [hV ε hε, hW] with x hx₁ hx₂ using hx₁.trans <| by gcongr
 
 instance instTransIsLittleOTVSIsBigOTVS :
     @Trans (α → E) (α → F) (α → G) (· =o[𝕜;l] ·) (· =O[𝕜;l] ·) (· =o[𝕜;l] ·) where
@@ -207,14 +201,10 @@ instance instTransIsLittleOTVSIsBigOTVS :
 theorem IsBigOTVS.trans_isLittleOTVS {k : α → G} (hfg : f =O[𝕜;l] g) (hgk : g =o[𝕜;l] k) :
     f =o[𝕜;l] k := by
   refine ⟨fun U hU₀ ↦ ?_⟩
-  obtain ⟨V, hV₀, C, hVC⟩ := hfg.exists_eventuallyLE_mul U hU₀
-  obtain ⟨W, hW₀, hW⟩ := hgk.exists_eventuallyLE_mul_ennreal hV₀
+  obtain ⟨V, hV₀, hV⟩ := hfg.1 U hU₀
+  obtain ⟨W, hW₀, hW⟩ := hgk.1 V hV₀
   refine ⟨W, hW₀, fun ε hε ↦ ?_⟩
-  filter_upwards [hVC, hW (ε / C) (by simpa)] with x hx₁ hx₂
-  refine hx₁.trans <| (mul_le_mul_left' hx₂ _).trans ?_
-  rw [← mul_assoc]
-  gcongr
-  apply ENNReal.mul_div_le
+  filter_upwards [hV, hW ε hε] with x hx₁ hx₂ using hx₁.trans hx₂
 
 instance instTransIsBigOTVSIsLittleOTVS :
     @Trans (α → E) (α → F) (α → G) (· =O[𝕜;l] ·) (· =o[𝕜;l] ·) (· =o[𝕜;l] ·) where
@@ -264,7 +254,7 @@ lemma IsLittleOTVS.mono (hf : f =o[𝕜;l₁] g) (h : l₂ ≤ l₁) : f =o[𝕜
   ⟨fun U hU ↦ let ⟨V, hV0, hV⟩ := hf.1 U hU; ⟨V, hV0, fun ε hε ↦ (hV ε hε).filter_mono h⟩⟩
 
 lemma IsBigOTVS.mono (hf : f =O[𝕜;l₁] g) (h : l₂ ≤ l₁) : f =O[𝕜;l₂] g :=
-  ⟨fun U hU ↦ let ⟨V, hV0, C, hC⟩ := hf.1 U hU; ⟨V, hV0, C, hC.filter_mono h⟩⟩
+  ⟨fun U hU ↦ let ⟨V, hV0, hV⟩ := hf.1 U hU; ⟨V, hV0, hV.filter_mono h⟩⟩
 
 lemma IsLittleOTVS.comp_tendsto {k : β → α} {lb : Filter β} (h : f =o[𝕜; l] g)
     (hk : Tendsto k lb l) : (f ∘ k) =o[𝕜; lb] (g ∘ k) :=
@@ -281,8 +271,8 @@ lemma IsLittleOTVS.sup (hf₁ : f =o[𝕜; l₁] g) (hf₂ : f =o[𝕜; l₂] g)
   isLittleOTVS_sup.mpr ⟨hf₁, hf₂⟩
 
 lemma _root_.ContinuousLinearMap.isBigOTVS_id {l : Filter E} (f : E →L[𝕜] F) : f =O[𝕜; l] id :=
-  ⟨fun U hU ↦ ⟨f ⁻¹' U, (map_continuous f).tendsto' 0 0 (map_zero f) hU, 1, .of_forall <| by
-    simpa using (mapsTo_preimage f U).egauge_le 𝕜 f⟩⟩
+  ⟨fun U hU ↦ ⟨f ⁻¹' U, (map_continuous f).tendsto' 0 0 (map_zero f) hU, .of_forall <|
+    (mapsTo_preimage f U).egauge_le 𝕜 f⟩⟩
 
 lemma _root_.ContinuousLinearMap.isBigOTVS_comp (g : E →L[𝕜] F) : (g <| f ·) =O[𝕜; l] f :=
   g.isBigOTVS_id.comp_tendsto tendsto_top
