@@ -233,8 +233,9 @@ instance isArtinian_of_quotient_of_artinian
 
 theorem isArtinian_of_range_eq_ker [IsArtinian R M] [IsArtinian R P] (f : M →ₗ[R] N) (g : N →ₗ[R] P)
     (h : LinearMap.range f = LinearMap.ker g) : IsArtinian R N :=
-  wellFounded_lt_exact_sequence (LinearMap.range f) (Submodule.map (f.ker.liftQ f le_rfl))
-    (Submodule.comap (f.ker.liftQ f le_rfl))
+  wellFounded_lt_exact_sequence (LinearMap.range f)
+    (Submodule.map ((LinearMap.ker f).liftQ f le_rfl))
+    (Submodule.comap ((LinearMap.ker f).liftQ f le_rfl))
     (Submodule.comap g.rangeRestrict) (Submodule.map g.rangeRestrict)
     (Submodule.gciMapComap <| LinearMap.ker_eq_bot.mp <| Submodule.ker_liftQ_eq_bot _ _ _ le_rfl)
     (Submodule.giMapComap g.surjective_rangeRestrict)

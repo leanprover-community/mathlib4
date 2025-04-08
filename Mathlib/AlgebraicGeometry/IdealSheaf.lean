@@ -502,7 +502,7 @@ lemma Hom.range_subset_ker_support (f : X.Hom Y) :
 lemma Hom.iInf_ker_openCover_map_comp_apply
     (f : X.Hom Y) [QuasiCompact f] (𝒰 : X.OpenCover) (U : Y.affineOpens) :
     ⨅ i, (𝒰.map i ≫ f).ker.ideal U = f.ker.ideal U := by
-  refine le_antisymm ?_ (le_iInf fun i ↦ f.le_ker_comp (𝒰.map i) U)
+  refine le_antisymm ?_ (le_iInf fun i ↦ (𝒰.map i).le_ker_comp f U)
   intro s hs
   simp only [Hom.ker_apply, RingHom.mem_ker]
   apply X.IsSheaf.section_ext
@@ -520,7 +520,7 @@ lemma Hom.iInf_ker_openCover_map_comp_apply
 
 lemma Hom.iInf_ker_openCover_map_comp (f : X ⟶ Y) [QuasiCompact f] (𝒰 : X.OpenCover) :
     ⨅ i, (𝒰.map i ≫ f).ker = f.ker := by
-  refine le_antisymm ?_ (le_iInf fun i ↦ f.le_ker_comp (𝒰.map i))
+  refine le_antisymm ?_ (le_iInf fun i ↦ (𝒰.map i).le_ker_comp f)
   refine iInf_le_iff.mpr fun I hI U ↦ ?_
   rw [← f.iInf_ker_openCover_map_comp_apply 𝒰, le_iInf_iff]
   exact fun i ↦ hI i U

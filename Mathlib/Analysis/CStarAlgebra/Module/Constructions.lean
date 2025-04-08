@@ -189,7 +189,7 @@ end Aux
 noncomputable instance : NormedAddCommGroup C⋆ᵐᵒᵈ(A, E × F) :=
   .ofCoreReplaceAll (normedSpaceCore A) uniformity_prod_eq_aux isBounded_prod_iff_aux
 
-instance : NormedSpace ℂ C⋆ᵐᵒᵈ(A, E × F) := .ofCore (normedSpaceCore A)
+noncomputable instance : NormedSpace ℂ C⋆ᵐᵒᵈ(A, E × F) := .ofCore (normedSpaceCore A)
 
 end Prod
 
@@ -313,7 +313,7 @@ end Aux
 noncomputable instance : NormedAddCommGroup C⋆ᵐᵒᵈ(A, Π i, E i) :=
   .ofCoreReplaceAll (normedSpaceCore A) uniformity_pi_eq_aux isBounded_pi_iff_aux
 
-instance : NormedSpace ℂ C⋆ᵐᵒᵈ(A, Π i, E i) := .ofCore (normedSpaceCore A)
+noncomputable instance : NormedSpace ℂ C⋆ᵐᵒᵈ(A, Π i, E i) := .ofCore (normedSpaceCore A)
 
 end Pi
 

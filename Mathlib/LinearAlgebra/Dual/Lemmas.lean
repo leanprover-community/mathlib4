@@ -680,14 +680,15 @@ namespace LinearMap
 open Submodule
 
 theorem range_dualMap_eq_dualAnnihilator_ker_of_surjective (f : M →ₗ[R] M')
-    (hf : Function.Surjective f) : LinearMap.range f.dualMap = f.ker.dualAnnihilator :=
-  ((f.quotKerEquivOfSurjective hf).dualMap.range_comp _).trans f.ker.range_dualMap_mkQ_eq
+    (hf : Function.Surjective f) : LinearMap.range f.dualMap = (LinearMap.ker f).dualAnnihilator :=
+  ((f.quotKerEquivOfSurjective hf).dualMap.range_comp _).trans
+  (LinearMap.ker f).range_dualMap_mkQ_eq
 
 -- Note, this can be specialized to the case where `R` is an injective `R`-module, or when
 -- `f.coker` is a projective `R`-module.
 theorem range_dualMap_eq_dualAnnihilator_ker_of_subtype_range_surjective (f : M →ₗ[R] M')
-    (hf : Function.Surjective f.range.subtype.dualMap) :
-    LinearMap.range f.dualMap = f.ker.dualAnnihilator := by
+    (hf : Function.Surjective (range f).subtype.dualMap) :
+    LinearMap.range f.dualMap = (ker f).dualAnnihilator := by
   have rr_surj : Function.Surjective f.rangeRestrict := by
     rw [← range_eq_top, range_rangeRestrict]
   have := range_dualMap_eq_dualAnnihilator_ker_of_surjective f.rangeRestrict rr_surj
@@ -779,7 +780,7 @@ theorem dualMap_surjective_of_injective {f : V₁ →ₗ[K] V₂} (hf : Function
   ⟨φ.comp f', ext fun x ↦ congr(φ <| $hf' x)⟩
 
 theorem range_dualMap_eq_dualAnnihilator_ker (f : V₁ →ₗ[K] V₂) :
-    LinearMap.range f.dualMap = f.ker.dualAnnihilator :=
+    LinearMap.range f.dualMap = (LinearMap.ker f).dualAnnihilator :=
   range_dualMap_eq_dualAnnihilator_ker_of_subtype_range_surjective f <|
     dualMap_surjective_of_injective (range f).injective_subtype
 

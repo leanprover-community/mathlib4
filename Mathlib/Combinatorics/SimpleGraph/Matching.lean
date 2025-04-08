@@ -144,12 +144,12 @@ lemma IsMatching.subgraphOfAdj (h : G.Adj v w) : (G.subgraphOfAdj h).IsMatching 
   | inr => use v; aesop
 
 lemma IsMatching.coeSubgraph {G' : Subgraph G} {M : Subgraph G'.coe} (hM : M.IsMatching) :
-    M.coeSubgraph.IsMatching := by
+    (Subgraph.coeSubgraph M).IsMatching := by
   intro _ hv
-  obtain ⟨w, hw⟩ := hM <| Set.mem_of_mem_image_val <| M.verts_coeSubgraph.symm ▸ hv
+  obtain ⟨w, hw⟩ := hM <| Set.mem_of_mem_image_val <| (Subgraph.verts_coeSubgraph M).symm ▸ hv
   use w
   refine ⟨?_, fun y hy => ?_⟩
-  · obtain ⟨v, hv⟩ := (Set.mem_image _ _ _).mp <| M.verts_coeSubgraph.symm ▸ hv
+  · obtain ⟨v, hv⟩ := (Set.mem_image _ _ _).mp <| (Subgraph.verts_coeSubgraph M).symm ▸ hv
     simp only [coeSubgraph_adj, Subtype.coe_eta, Subtype.coe_prop, exists_const]
     exact ⟨hv.2 ▸ v.2, hw.1⟩
   · obtain ⟨_, hw', hvw⟩ := (coeSubgraph_adj _ _ _).mp hy

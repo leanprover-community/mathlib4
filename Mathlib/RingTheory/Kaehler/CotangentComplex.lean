@@ -316,7 +316,7 @@ lemma subsingleton_h1Cotangent (P : Extension R S) :
   simp only [Subtype.ext_iff, Submodule.coe_zero]
 
 /-- The inclusion of `H¹(L_{S/R})` into the conormal space of a presentation. -/
-@[simps!] def h1Cotangentι : P.H1Cotangent →ₗ[S] P.Cotangent := Submodule.subtype _
+@[simps!] noncomputable def h1Cotangentι : P.H1Cotangent →ₗ[S] P.Cotangent := Submodule.subtype _
 
 lemma h1Cotangentι_injective : Function.Injective P.h1Cotangentι := Subtype.val_injective
 

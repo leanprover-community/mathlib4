@@ -198,9 +198,6 @@ theorem none_orElse' (x : Option α) : none.orElse (fun _ ↦ x) = x := by cases
 @[simp]
 theorem orElse_none' (x : Option α) : x.orElse (fun _ ↦ none) = x := by cases x <;> rfl
 
-theorem exists_ne_none {p : Option α → Prop} : (∃ x ≠ none, p x) ↔ (∃ x : α, p x) := by
-  simp only [← exists_prop, bex_ne_none]
-
 theorem iget_mem [Inhabited α] : ∀ {o : Option α}, isSome o → o.iget ∈ o
   | some _, _ => rfl
 
@@ -215,12 +212,7 @@ theorem guard_eq_some' {p : Prop} [Decidable p] (u) : _root_.guard p = some u �
   cases u
   by_cases h : p <;> simp [_root_.guard, h]
 
-theorem liftOrGet_choice {f : α → α → α} (h : ∀ a b, f a b = a ∨ f a b = b) :
-    ∀ o₁ o₂, liftOrGet f o₁ o₂ = o₁ ∨ liftOrGet f o₁ o₂ = o₂
-  | none, none => Or.inl rfl
-  | some _, none => Or.inl rfl
-  | none, some _ => Or.inr rfl
-  | some a, some b => by simpa [liftOrGet] using h a b
+@[deprecated (since := "2025-04-04")] alias liftOrGet_choice := zipWith_eq_or_eq
 
 /-- Given an element of `a : Option α`, a default element `b : β` and a function `α → β`, apply this
 function to `a` if it comes from `α`, and return `b` otherwise. -/

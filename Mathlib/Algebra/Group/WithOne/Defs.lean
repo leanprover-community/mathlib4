@@ -63,7 +63,7 @@ instance one : One (WithOne α) :=
 
 @[to_additive]
 instance mul [Mul α] : Mul (WithOne α) :=
-  ⟨Option.liftOrGet (· * ·)⟩
+  ⟨Option.zipWith (· * ·)⟩
 
 @[to_additive]
 instance inv [Inv α] : Inv (WithOne α) :=
@@ -148,8 +148,8 @@ protected theorem cases_on {P : WithOne α → Prop} : ∀ x : WithOne α, P 1 �
 instance mulOneClass [Mul α] : MulOneClass (WithOne α) where
   mul := (· * ·)
   one := 1
-  one_mul := (Option.liftOrGet_isId _).left_id
-  mul_one := (Option.liftOrGet_isId _).right_id
+  one_mul := (Option.zipWith_isId _).left_id
+  mul_one := (Option.zipWith_isId _).right_id
 
 @[to_additive (attr := simp, norm_cast)]
 lemma coe_mul [Mul α] (a b : α) : (↑(a * b) : WithOne α) = a * b := rfl

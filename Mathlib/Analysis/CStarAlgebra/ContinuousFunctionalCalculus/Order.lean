@@ -80,7 +80,7 @@ namespace Unitization
 
 variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
-instance instPartialOrder : PartialOrder A⁺¹ :=
+noncomputable instance instPartialOrder : PartialOrder A⁺¹ :=
     CStarAlgebra.spectralOrder _
 
 instance instStarOrderedRing : StarOrderedRing A⁺¹ :=
