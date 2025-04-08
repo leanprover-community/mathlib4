@@ -90,7 +90,7 @@ open Limits
 /-- If `T : C` is terminal, then the over category of `T` is equivalent to `C`. -/
 @[simps!]
 noncomputable def forgetMapTerminal {T : C} (hT : IsTerminal T)  :
-    forget _ ≅ map (hT.from X) ⋙ (equivalenceOfIsTerminal hT).functor :=
+    forget X ≅ map (hT.from X) ⋙ (equivalenceOfIsTerminal hT).functor :=
   NatIso.ofComponents fun X ↦ .refl _
 
 section HasBinaryProducts
@@ -169,7 +169,7 @@ instance pushoutIsLeftAdjoint {X Y : C} (f : X ⟶ Y) : (pushout f).IsLeftAdjoin
 /-- If `T : C` is initial, then the under category of `T` is equivalent to `C`. -/
 @[simps!]
 noncomputable def forgetMapInitial {T : C} (hT : IsInitial T) :
-    forget _ ≅ map (hT.to X) ⋙ (equivalenceOfIsInitial hT).functor :=
+    forget X ≅ map (hT.to X) ⋙ (equivalenceOfIsInitial hT).functor :=
   NatIso.ofComponents fun X ↦ .refl _
 
 section HasBinaryCoproducts
