@@ -3,12 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Dynamics.Ergodic.MeasurePreserving
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
 import Mathlib.MeasureTheory.Function.SimpleFunc
 import Mathlib.MeasureTheory.Measure.Count
-import Mathlib.Topology.IndicatorConstPointwise
 
 /-!
 # Lower Lebesgue integral for `ℝ≥0∞`-valued functions
@@ -26,12 +24,9 @@ We introduce the following notation for the lower Lebesgue integral of a functio
   to a measure `μ`, defined as `∫⁻ x, f x ∂(μ.restrict s)`;
 * `∫⁻ x in s, f x`: integral of a function `f : α → ℝ≥0∞` over a set `s` with respect
   to the canonical measure `volume`, defined as `∫⁻ x, f x ∂(volume.restrict s)`.
-
 -/
 
-assert_not_exists Basis NormedSpace
-
-noncomputable section
+assert_not_exists Basis Norm
 
 open Set hiding restrict restrict_apply
 
@@ -43,7 +38,7 @@ namespace MeasureTheory
 
 local infixr:25 " →ₛ " => SimpleFunc
 
-variable {α β γ δ : Type*}
+variable {α β γ : Type*}
 
 section Lintegral
 
@@ -52,7 +47,7 @@ open SimpleFunc
 variable {m : MeasurableSpace α} {μ ν : Measure α} {s : Set α}
 
 /-- The **lower Lebesgue integral** of a function `f` with respect to a measure `μ`. -/
-irreducible_def lintegral {_ : MeasurableSpace α} (μ : Measure α) (f : α → ℝ≥0∞) : ℝ≥0∞ :=
+noncomputable irreducible_def lintegral (μ : Measure α) (f : α → ℝ≥0∞) : ℝ≥0∞ :=
   ⨆ (g : α →ₛ ℝ≥0∞) (_ : ⇑g ≤ f), g.lintegral μ
 
 /-! In the notation for integrals, an expression like `∫⁻ x, g ‖x‖ ∂μ` will not be parsed correctly,
@@ -143,10 +138,7 @@ theorem setLIntegral_const_lt_top [IsFiniteMeasure μ] (s : Set α) {c : ℝ≥0
 theorem lintegral_const_lt_top [IsFiniteMeasure μ] {c : ℝ≥0∞} (hc : c ≠ ∞) : ∫⁻ _, c ∂μ < ∞ := by
   simpa only [Measure.restrict_univ] using setLIntegral_const_lt_top (univ : Set α) hc
 
-section
-
-variable (μ)
-
+variable (μ) in
 /-- For any function `f : α → ℝ≥0∞`, there exists a measurable function `g ≤ f` with the same
 integral. -/
 theorem exists_measurable_le_lintegral_eq (f : α → ℝ≥0∞) :
@@ -164,8 +156,6 @@ theorem exists_measurable_le_lintegral_eq (f : α → ℝ≥0∞) :
   · refine le_of_tendsto' hL_tendsto fun n => (hLg n).le.trans <| lintegral_mono fun x => ?_
     exact le_iSup (fun n => g n x) n
   · exact lintegral_mono fun x => iSup_le fun n => hgf n x
-
-end
 
 /-- `∫⁻ a in s, f a ∂μ` is defined as the supremum of integrals of simple functions
 `φ : α →ₛ ℝ≥0∞` such that `φ ≤ f`. This lemma says that it suffices to take
@@ -298,32 +288,6 @@ theorem setLIntegral_congr_fun {f g : α → ℝ≥0∞} {s : Set α} (hs : Meas
   rw [lintegral_congr_ae]
   rw [EventuallyEq]
   rwa [ae_restrict_iff' hs]
-
-theorem lintegral_ofReal_le_lintegral_enorm (f : α → ℝ) :
-    ∫⁻ x, ENNReal.ofReal (f x) ∂μ ≤ ∫⁻ x, ‖f x‖ₑ ∂μ := by
-  simp_rw [← ofReal_norm_eq_enorm]
-  refine lintegral_mono fun x => ENNReal.ofReal_le_ofReal ?_
-  rw [Real.norm_eq_abs]
-  exact le_abs_self (f x)
-
-@[deprecated (since := "2025-01-17")]
-alias lintegral_ofReal_le_lintegral_nnnorm := lintegral_ofReal_le_lintegral_enorm
-
-theorem lintegral_enorm_of_ae_nonneg {f : α → ℝ} (h_nonneg : 0 ≤ᵐ[μ] f) :
-    ∫⁻ x, ‖f x‖ₑ ∂μ = ∫⁻ x, .ofReal (f x) ∂μ := by
-  apply lintegral_congr_ae
-  filter_upwards [h_nonneg] with x hx
-  rw [Real.enorm_eq_ofReal hx]
-
-@[deprecated (since := "2025-01-17")]
-alias lintegral_nnnorm_eq_of_ae_nonneg := lintegral_enorm_of_ae_nonneg
-
-theorem lintegral_enorm_of_nonneg {f : α → ℝ} (h_nonneg : 0 ≤ f) :
-    ∫⁻ x, ‖f x‖ₑ ∂μ = ∫⁻ x, .ofReal (f x) ∂μ :=
-  lintegral_enorm_of_ae_nonneg <| .of_forall h_nonneg
-
-@[deprecated (since := "2025-01-17")]
-alias lintegral_nnnorm_eq_of_nonneg := lintegral_enorm_of_nonneg
 
 /-- **Monotone convergence theorem** -- sometimes called **Beppo-Levi convergence**.
 See `lintegral_iSup_directed` for a more general form. -/
@@ -1898,8 +1862,6 @@ theorem lintegral_trim_ae {μ : Measure α} (hm : m ≤ m0) {f : α → ℝ≥0�
 
 section SigmaFinite
 
-variable {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E] [OpensMeasurableSpace E]
-
 theorem univ_le_of_forall_fin_meas_le {μ : Measure α} (hm : m ≤ m0) [SigmaFinite (μ.trim hm)]
     (C : ℝ≥0∞) {f : Set α → ℝ≥0∞} (hf : ∀ s, MeasurableSet[m] s → μ s ≠ ∞ → f s ≤ C)
     (h_F_lim :
@@ -2005,41 +1967,6 @@ theorem exists_lt_lintegral_simpleFunc_of_lt_lintegral {m : MeasurableSpace α} 
 
 end SigmaFinite
 
-section TendstoIndicator
-
-variable {α : Type*} [MeasurableSpace α] {A : Set α}
-variable {ι : Type*} (L : Filter ι) [IsCountablyGenerated L] {As : ι → Set α}
-
-/-- If the indicators of measurable sets `Aᵢ` tend pointwise almost everywhere to the indicator
-of a measurable set `A` and we eventually have `Aᵢ ⊆ B` for some set `B` of finite measure, then
-the measures of `Aᵢ` tend to the measure of `A`. -/
-lemma tendsto_measure_of_ae_tendsto_indicator {μ : Measure α} (A_mble : MeasurableSet A)
-    (As_mble : ∀ i, MeasurableSet (As i)) {B : Set α} (B_mble : MeasurableSet B)
-    (B_finmeas : μ B ≠ ∞) (As_le_B : ∀ᶠ i in L, As i ⊆ B)
-    (h_lim : ∀ᵐ x ∂μ, ∀ᶠ i in L, x ∈ As i ↔ x ∈ A) :
-    Tendsto (fun i ↦ μ (As i)) L (𝓝 (μ A)) := by
-  simp_rw [← MeasureTheory.lintegral_indicator_one A_mble,
-           ← MeasureTheory.lintegral_indicator_one (As_mble _)]
-  refine tendsto_lintegral_filter_of_dominated_convergence (B.indicator (1 : α → ℝ≥0∞))
-          (Eventually.of_forall ?_) ?_ ?_ ?_
-  · exact fun i ↦ Measurable.indicator measurable_const (As_mble i)
-  · filter_upwards [As_le_B] with i hi
-    exact Eventually.of_forall (fun x ↦ indicator_le_indicator_of_subset hi (by simp) x)
-  · rwa [← lintegral_indicator_one B_mble] at B_finmeas
-  · simpa only [Pi.one_def, tendsto_indicator_const_apply_iff_eventually] using h_lim
-
-/-- If `μ` is a finite measure and the indicators of measurable sets `Aᵢ` tend pointwise
-almost everywhere to the indicator of a measurable set `A`, then the measures `μ Aᵢ` tend to
-the measure `μ A`. -/
-lemma tendsto_measure_of_ae_tendsto_indicator_of_isFiniteMeasure
-    {μ : Measure α} [IsFiniteMeasure μ] (A_mble : MeasurableSet A)
-    (As_mble : ∀ i, MeasurableSet (As i)) (h_lim : ∀ᵐ x ∂μ, ∀ᶠ i in L, x ∈ As i ↔ x ∈ A) :
-    Tendsto (fun i ↦ μ (As i)) L (𝓝 (μ A)) :=
-  tendsto_measure_of_ae_tendsto_indicator L A_mble As_mble MeasurableSet.univ
-    (measure_ne_top μ univ) (Eventually.of_forall (fun i ↦ subset_univ (As i))) h_lim
-
-end TendstoIndicator -- section
-
 end MeasureTheory
 
-set_option linter.style.longFile 2200
+set_option linter.style.longFile 2000
