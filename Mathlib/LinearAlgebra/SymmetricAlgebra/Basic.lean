@@ -100,7 +100,7 @@ theorem algHom_ext {F G : SymmetricAlgebra R M →ₐ[R] A}
   exact congr($h x)
 
 @[simp]
-lemma lift_ι : lift (ι R M) = AlgHom.id R (SymmetricAlgebra R M) := by
+lemma lift_ι : lift (ι R M) = .id R (SymmetricAlgebra R M) := by
   apply algHom_ext
   rw [lift_comp_ι]
   rfl
