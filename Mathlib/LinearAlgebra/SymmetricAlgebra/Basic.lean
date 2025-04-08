@@ -37,7 +37,7 @@ quotiented out by. -/
 inductive SymRel : TensorAlgebra R L → TensorAlgebra R L → Prop where
   | mul_comm (x y : L) : SymRel (ι R x * ι R y) (ι R y * ι R x)
 
-/-- Concrete construction of the symmetric algebra of L by quotienting out
+/-- Concrete construction of the symmetric algebra of `L` by quotienting out
 the tensor algebra by the commutativity relation. -/
 abbrev SymmetricAlgebra := RingQuot (SymRel R L)
 
