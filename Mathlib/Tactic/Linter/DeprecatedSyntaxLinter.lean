@@ -131,13 +131,20 @@ def deprecatedSyntaxLinter : Linter where run stx := do
     return
   if (← MonadState.get).messages.hasErrors then
     return
-  for (kind, stx', msg) in getDeprecatedSyntax stx do
-    match kind with
-    | ``Lean.Parser.Tactic.refine' => Linter.logLintIf linter.style.refine stx' msg
-    | `Mathlib.Tactic.cases' => Linter.logLintIf linter.style.cases stx' msg
-    | ``Lean.Parser.Tactic.tacticAdmit => Linter.logLintIf linter.style.admit stx' msg
-    | `MaxHeartbeats => Linter.logLintIf linter.style.maxHeartbeats stx' msg
-    | _ => continue
+  let deprecations := getDeprecatedSyntax stx
+  -- using `withSetOptionIn` here, allows the linter to parse also the "leading" `set_option`s
+  -- but then flagging them only if the corresponding option is still set after elaborating the
+  -- leading `set_option`s.
+  -- In particular, this means that the linter "sees" `set_option maxHeartbeats 10 in ...`,
+  -- records it in `deprecations` and then acts on it, according the to correct options.
+  (withSetOptionIn fun _ ↦ do
+    for (kind, stx', msg) in deprecations do
+      match kind with
+      | ``Lean.Parser.Tactic.refine' => Linter.logLintIf linter.style.refine stx' msg
+      | `Mathlib.Tactic.cases' => Linter.logLintIf linter.style.cases stx' msg
+      | ``Lean.Parser.Tactic.tacticAdmit => Linter.logLintIf linter.style.admit stx' msg
+      | `MaxHeartbeats => Linter.logLintIf linter.style.maxHeartbeats stx' msg
+      | _ => continue) stx
 
 initialize addLinter deprecatedSyntaxLinter
 
