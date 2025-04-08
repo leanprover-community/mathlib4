@@ -286,38 +286,38 @@ end strongRec
 
 -- We want to use these lemmas earlier than the lemmas simp can prove them with
 
-@[simp, nolint simpNF] protected lemma mul_le_mul_left (ha : 0 < a) : a * b ≤ a * c ↔ b ≤ c where
+@[simp high] protected lemma mul_le_mul_left (ha : 0 < a) : a * b ≤ a * c ↔ b ≤ c where
   mp hbc := Int.le_of_mul_le_mul_left hbc ha
   mpr hbc := Int.mul_le_mul_of_nonneg_left hbc <| Int.le_of_lt ha
 
-@[simp, nolint simpNF] protected lemma mul_le_mul_right (ha : 0 < a) : b * a ≤ c * a ↔ b ≤ c where
+@[simp high] protected lemma mul_le_mul_right (ha : 0 < a) : b * a ≤ c * a ↔ b ≤ c where
   mp hbc := Int.le_of_mul_le_mul_right hbc ha
   mpr hbc := Int.mul_le_mul_of_nonneg_right hbc <| Int.le_of_lt ha
 
-@[simp, nolint simpNF] protected lemma mul_lt_mul_left (ha : 0 < a) : a * b < a * c ↔ b < c where
+@[simp high] protected lemma mul_lt_mul_left (ha : 0 < a) : a * b < a * c ↔ b < c where
   mp hbc := Int.lt_of_mul_lt_mul_left hbc <| Int.le_of_lt ha
   mpr hbc := Int.mul_lt_mul_of_pos_left hbc ha
 
-@[simp, nolint simpNF] protected lemma mul_lt_mul_right (ha : 0 < a) : b * a < c * a ↔ b < c where
+@[simp high] protected lemma mul_lt_mul_right (ha : 0 < a) : b * a < c * a ↔ b < c where
   mp hbc := Int.lt_of_mul_lt_mul_right hbc <| Int.le_of_lt ha
   mpr hbc := Int.mul_lt_mul_of_pos_right hbc ha
 
-@[simp, nolint simpNF] protected lemma mul_le_mul_left_of_neg (ha : a < 0) :
+@[simp high] protected lemma mul_le_mul_left_of_neg (ha : a < 0) :
     a * b ≤ a * c ↔ c ≤ b := by
   rw [← Int.neg_le_neg_iff, Int.neg_mul_eq_neg_mul, Int.neg_mul_eq_neg_mul,
     Int.mul_le_mul_left <| Int.neg_pos.2 ha]
 
-@[simp, nolint simpNF] protected lemma mul_le_mul_right_of_neg (ha : a < 0) :
+@[simp high] protected lemma mul_le_mul_right_of_neg (ha : a < 0) :
     b * a ≤ c * a ↔ c ≤ b := by
   rw [← Int.neg_le_neg_iff, Int.neg_mul_eq_mul_neg, Int.neg_mul_eq_mul_neg,
     Int.mul_le_mul_right <| Int.neg_pos.2 ha]
 
-@[simp, nolint simpNF] protected lemma mul_lt_mul_left_of_neg (ha : a < 0) :
+@[simp high] protected lemma mul_lt_mul_left_of_neg (ha : a < 0) :
     a * b < a * c ↔ c < b := by
   rw [← Int.neg_lt_neg_iff, Int.neg_mul_eq_neg_mul, Int.neg_mul_eq_neg_mul,
     Int.mul_lt_mul_left <| Int.neg_pos.2 ha]
 
-@[simp, nolint simpNF] protected lemma mul_lt_mul_right_of_neg (ha : a < 0) :
+@[simp high] protected lemma mul_lt_mul_right_of_neg (ha : a < 0) :
     b * a < c * a ↔ c < b := by
   rw [← Int.neg_lt_neg_iff, Int.neg_mul_eq_mul_neg, Int.neg_mul_eq_mul_neg,
     Int.mul_lt_mul_right <| Int.neg_pos.2 ha]
