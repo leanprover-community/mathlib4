@@ -99,6 +99,7 @@ instance ae_isMeasurablyGenerated : IsMeasurablyGenerated (ae μ) :=
     let ⟨t, hst, htm, htμ⟩ := exists_measurable_superset_of_null hs
     ⟨tᶜ, compl_mem_ae_iff.2 htμ, htm.compl, compl_subset_comm.1 hst⟩⟩
 
+open scoped uIcc in
 /-- See also `MeasureTheory.ae_restrict_uIoc_iff`. -/
 theorem ae_uIoc_iff [LinearOrder α] {a b : α} {P : α → Prop} :
     (∀ᵐ x ∂μ, x ∈ Ι a b → P x) ↔ (∀ᵐ x ∂μ, x ∈ Ioc a b → P x) ∧ ∀ᵐ x ∂μ, x ∈ Ioc b a → P x := by
