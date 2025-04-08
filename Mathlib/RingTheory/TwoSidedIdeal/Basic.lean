@@ -206,8 +206,8 @@ def op (I : TwoSidedIdeal R) : TwoSidedIdeal Rᵐᵒᵖ where
   ringCon := I.ringCon.op
 
 @[simp]
-lemma mem_op_iff {I : TwoSidedIdeal R} {x : Rᵐᵒᵖ} : x ∈ I.op ↔ x.unop ∈ I := by
-  constructor <;> simpa [mem_iff, I.ringCon.op_iff] using I.ringCon.symm
+lemma mem_op_iff {I : TwoSidedIdeal R} {x : Rᵐᵒᵖ} : x ∈ I.op ↔ x.unop ∈ I :=
+  I.ringCon.comm'
 
 @[simp, norm_cast]
 lemma coe_op {I : TwoSidedIdeal R} : (I.op : Set Rᵐᵒᵖ) = MulOpposite.unop ⁻¹' I :=
@@ -220,8 +220,8 @@ def unop (I : TwoSidedIdeal Rᵐᵒᵖ) : TwoSidedIdeal R where
   ringCon := I.ringCon.unop
 
 @[simp]
-lemma mem_unop_iff {I : TwoSidedIdeal Rᵐᵒᵖ} {x : R} : x ∈ I.unop ↔ MulOpposite.op x ∈ I := by
-  constructor <;> simpa [mem_iff, I.ringCon.unop_iff] using I.ringCon.symm
+lemma mem_unop_iff {I : TwoSidedIdeal Rᵐᵒᵖ} {x : R} : x ∈ I.unop ↔ MulOpposite.op x ∈ I :=
+  I.ringCon.comm'
 
 @[simp, norm_cast]
 lemma coe_unop {I : TwoSidedIdeal Rᵐᵒᵖ} : (I.unop : Set R) = MulOpposite.op ⁻¹' I :=
