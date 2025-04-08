@@ -92,7 +92,6 @@ instance : HasForget₂ CommRingCat CommMonCat where
   forget_comp := rfl
 
 set_option maxHeartbeats 400000 in
--- nightly-2025-03-25
 -- `simp` is taking longer after nightly-2025-03-25.
 /-- The adjunction `G ↦ R[G]` and `S ↦ S` between `CommGrp` and `R-Alg`. -/
 def monoidAlgebraAdj (R : CommRingCat.{u}) :

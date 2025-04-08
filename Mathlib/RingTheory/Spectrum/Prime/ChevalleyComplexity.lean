@@ -262,7 +262,6 @@ private lemma induction_structure (n : ℕ)
       exact hi h_eq
 
 set_option maxHeartbeats 400000 in
--- nightly-2025-03-25
 -- Requires more heartbeats after nightly-2025-03-25.
 open IsLocalization in
 open Submodule hiding comap in
