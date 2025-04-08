@@ -180,17 +180,24 @@ theorem map_valEmbedding_Ioo : (Ioo a b).map Fin.valEmbedding = Ioo ↑a ↑b :=
 theorem map_valEmbedding_uIcc : (uIcc a b).map valEmbedding = uIcc ↑a ↑b :=
   map_valEmbedding_Icc _ _
 
-@[simp]
-theorem map_valEmbedding_Ici : (Ici a).map valEmbedding = Ico ↑a n := by simp [← coe_inj]
+@[deprecated (since := "2025-04-08")]
+alias map_subtype_embedding_uIcc := map_valEmbedding_uIcc
 
 @[simp]
-theorem map_valEmbedding_Ioi : (Ioi a).map valEmbedding = Ioo ↑a n := by simp [← coe_inj]
+theorem map_valEmbedding_Ici : (Ici a).map Fin.valEmbedding = Ico ↑a n := by
+  rw [← attachFin_Ico_eq_Ici, map_valEmbedding_attachFin]
 
 @[simp]
-theorem map_valEmbedding_Iic : (Iic b).map valEmbedding = Iic ↑b := by simp [← coe_inj]
+theorem map_valEmbedding_Ioi : (Ioi a).map Fin.valEmbedding = Ioo ↑a n := by
+  rw [← attachFin_Ioo_eq_Ioi, map_valEmbedding_attachFin]
 
 @[simp]
-theorem map_valEmbedding_Iio : (Iio b).map valEmbedding = Iio ↑b := by simp [← coe_inj]
+theorem map_valEmbedding_Iic : (Iic b).map Fin.valEmbedding = Iic ↑b := by
+  rw [← attachFin_Iic, map_valEmbedding_attachFin]
+
+@[simp]
+theorem map_valEmbedding_Iio : (Iio b).map Fin.valEmbedding = Iio ↑b := by
+  rw [← attachFin_Iio, map_valEmbedding_attachFin]
 
 end val
 
@@ -819,19 +826,6 @@ section card
 variable (a b : Fin n)
 
 @[simp]
-theorem card_Ici : #(Ici a) = n - a := by rw [← card_map, map_valEmbedding_Ici, Nat.card_Ico]
-
-@[simp]
-theorem card_Ioi : #(Ioi a) = n - 1 - a := by
-  rw [← card_map, map_valEmbedding_Ioi, Nat.card_Ioo, Nat.sub_right_comm]
-
-@[simp]
-theorem card_Iic : #(Iic b) = b + 1 := by rw [← Nat.card_Iic b, ← map_valEmbedding_Iic, card_map]
-
-@[simp]
-theorem card_Iio : #(Iio b) = b := by rw [← Nat.card_Iio b, ← map_valEmbedding_Iio, card_map]
-
-@[simp]
 lemma card_Icc : #(Icc a b) = b + 1 - a := by rw [← Nat.card_Icc, ← map_valEmbedding_Icc, card_map]
 
 @[simp]
@@ -846,6 +840,20 @@ lemma card_Ioo : #(Ioo a b) = b - a - 1 := by rw [← Nat.card_Ioo, ← map_valE
 @[simp]
 theorem card_uIcc : #(uIcc a b) = (b - a : ℤ).natAbs + 1 := by
   rw [← Nat.card_uIcc, ← map_valEmbedding_uIcc, card_map]
+
+@[simp]
+theorem card_Ici : #(Ici a) = n - a := by
+  rw [← attachFin_Ico_eq_Ici, card_attachFin, Nat.card_Ico]
+
+@[simp]
+theorem card_Ioi : #(Ioi a) = n - 1 - a := by
+  rw [← card_map, map_valEmbedding_Ioi, Nat.card_Ioo, Nat.sub_right_comm]
+
+@[simp]
+theorem card_Iic : #(Iic b) = b + 1 := by rw [← Nat.card_Iic b, ← map_valEmbedding_Iic, card_map]
+
+@[simp]
+theorem card_Iio : #(Iio b) = b := by rw [← Nat.card_Iio b, ← map_valEmbedding_Iio, card_map]
 
 @[deprecated Fintype.card_Icc (since := "2025-03-28")]
 theorem card_fintypeIcc : Fintype.card (Set.Icc a b) = b + 1 - a := by simp
