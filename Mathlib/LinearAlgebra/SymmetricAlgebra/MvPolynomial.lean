@@ -16,7 +16,7 @@ import Mathlib.Algebra.MvPolynomial.Eval
 variable {R L : Type*} [CommSemiring R] [AddCommMonoid L] [Module R L]
 
 /-- `SymmetricAlgebra.isoMvPolynomial` give an algebra isomorphism between symmetric algebra over a
-  free module and multivariate polynomial over the basis. -/
+free module and multivariate polynomial over the basis. -/
 noncomputable def SymmetricAlgebra.isoMvPolynomial {I : Type*} (h : Basis I R L) :
     SymmetricAlgebra R L ≃ₐ[R] MvPolynomial I R := .ofAlgHom
   (SymmetricAlgebra.lift (Basis.constr h R fun i ↦ (.X i : MvPolynomial I R))
