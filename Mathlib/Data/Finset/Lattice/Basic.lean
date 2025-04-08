@@ -338,8 +338,9 @@ theorem inter_subset_ite (s s' : Finset α) (P : Prop) [Decidable P] : s ∩ s' 
 
 end Lattice
 
-@[simp]
-lemma Disjoint.inter_eq {s t : Finset α} [DecidableEq α] (h : Disjoint s t) : s ∩ t = ∅ :=
-  h.eq_bot
-
 end Finset
+
+@[simp]
+lemma Disjoint.finsetInter_eq_empty {s t : Finset α} [DecidableEq α] (h : Disjoint s t) :
+    s ∩ t = ∅ :=
+  h.eq_bot
