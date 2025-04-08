@@ -767,9 +767,10 @@ lemma pairing_zero_iff' [NeZero (2 : R)] [IsDomain R] :
     P.pairing i j = 0 ↔ P.pairing j i = 0 := by
   have := P.reflexive_right
   exact pairing_zero_iff
-lemma coxeterWeight_zero_iff_isOrthogonal [NeZero (2 : R)] [NoZeroDivisors R] :
+lemma coxeterWeight_zero_iff_isOrthogonal [NeZero (2 : R)] [IsDomain R] :
     P.coxeterWeight i j = 0 ↔ P.IsOrthogonal i j := by
-  simp [coxeterWeight, IsOrthogonal, P.pairing_zero_iff' (i := i) (j := j)]
+  have := P.reflexive_right
+  simp [coxeterWeight, IsOrthogonal, P.pairing_zero_iff (i := i) (j := j)]
 
 lemma isOrthogonal_iff_pairing_eq_zero [NeZero (2 : R)] [NoZeroSMulDivisors R N] :
     P.IsOrthogonal i j ↔ P.pairing i j = 0 :=
