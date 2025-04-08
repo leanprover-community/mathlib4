@@ -542,8 +542,8 @@ instance WithZero.instMulArchimedean (M) [OrderedCommMonoid M] [MulArchimedean M
   constructor
   intro x y hxy
   cases y with
-  | h₁ => exact absurd hxy (zero_le _).not_lt
-  | h₂ y =>
+  | zero => exact absurd hxy (zero_le _).not_lt
+  | coe y =>
     cases x with
-    | h₁ => refine ⟨0, zero_le _⟩
-    | h₂ x => simpa [← WithZero.coe_pow] using (MulArchimedean.arch x (by simpa using hxy))
+    | zero => refine ⟨0, zero_le _⟩
+    | coe x => simpa [← WithZero.coe_pow] using (MulArchimedean.arch x (by simpa using hxy))

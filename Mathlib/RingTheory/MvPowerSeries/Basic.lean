@@ -741,7 +741,7 @@ theorem algebraMap_apply {r : R} :
 /-- Change of coefficients in mv power series, as an `AlgHom` -/
 def mapAlgHom (φ : A →ₐ[R] B) :
     MvPowerSeries σ A →ₐ[R] MvPowerSeries σ B where
-  toRingHom   := MvPowerSeries.map σ φ
+  toRingHom := MvPowerSeries.map σ φ
   commutes' r := by
     simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
       MonoidHom.coe_coe, MvPowerSeries.algebraMap_apply, map_C, RingHom.coe_coe, AlgHom.commutes]

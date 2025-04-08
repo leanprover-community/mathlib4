@@ -20,14 +20,14 @@ We provide an induction principle `Sum.homInduction` to reason and work with mor
 category.
 
 The sum of two functors `F : A ⥤ C` and `G : B ⥤ C` is a functor `A ⊕ B ⥤ C`, written `F.sum' G`.
-This construction should be prefered when defining functors out of a sum.
+This construction should be preferred when defining functors out of a sum.
 
 We provide natural isomorphisms `inlCompSum' : inl_ ⋙ F.sum' G ≅ F` and
 `inrCompSum' : inl_ ⋙ F.sum' G ≅ G`.
 
 Furthermore, we provide `Functor.sumIsoExt`, which
 constructs a natural isomorphism of functors out of a sum out of natural isomorphism with
-their precomposition with the inclusion. This construction sholud be preffered when trying
+their precomposition with the inclusion. This construction sholud be preferred when trying
 to construct isomorphisms between functors out of a sum.
 
 We further define sums of functors and natural transformations, written `F.sum G` and `α.sum β`.
@@ -326,7 +326,7 @@ theorem swap_map_inr {X Y : D} {f : inr X ⟶ inr Y} : (swap C D).map f = f :=
 @[simps! hom_app inv_app]
 def swapCompInl : inl_ C D ⋙ swap C D ≅ inr_ D C := (Functor.inlCompSum' (inr_ _ _) (inl_ _ _)).symm
 
-/-- Precomposing `swap` with the rightt inclusion gives the leftt inclusion. -/
+/-- Precomposing `swap` with the right inclusion gives the leftt inclusion. -/
 @[simps! hom_app inv_app]
 def swapCompInr : inr_ C D ⋙ swap C D ≅ inl_ D C := (Functor.inrCompSum' (inr_ _ _) (inl_ _ _)).symm
 
