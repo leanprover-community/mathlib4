@@ -424,16 +424,20 @@ theorem coe_dfinsuppProd [MulOneClass R] [CommMonoid S] (f : Π₀ i, β i) (g :
     ⇑(f.prod g) = f.prod fun a b => ⇑(g a b) :=
   coe_finset_prod _ _
 
-@[deprecated (since := "2025-04-06")] alias _root_.AddMonoidHom.coe_dfinsupp_sum := AddMonoidHom.coe_dfinsuppSum
-@[to_additive existing, deprecated (since := "2025-04-06")] alias coe_dfinsupp_prod := coe_dfinsuppProd
+@[deprecated (since := "2025-04-06")]
+alias _root_.AddMonoidHom.coe_dfinsupp_sum := AddMonoidHom.coe_dfinsuppSum
+@[to_additive existing, deprecated (since := "2025-04-06")]
+alias coe_dfinsupp_prod := coe_dfinsuppProd
 
 @[to_additive]
 theorem dfinsuppProd_apply [MulOneClass R] [CommMonoid S] (f : Π₀ i, β i) (g : ∀ i, β i → R →* S)
     (r : R) : (f.prod g) r = f.prod fun a b => (g a b) r :=
   finset_prod_apply _ _ _
 
-@[deprecated (since := "2025-04-06")] alias _root_.AddMonoidHom.dfinsupp_prod_apply := AddMonoidHom.dfinsuppProd_apply
-@[to_additive existing, deprecated (since := "2025-04-06")] alias dfinsupp_prod_apply := dfinsuppProd_apply
+@[deprecated (since := "2025-04-06")]
+alias _root_.AddMonoidHom.dfinsupp_sum_apply := AddMonoidHom.dfinsuppSum_apply
+@[to_additive existing, deprecated (since := "2025-04-06")]
+alias dfinsupp_prod_apply := dfinsuppProd_apply
 
 end MonoidHom
 
