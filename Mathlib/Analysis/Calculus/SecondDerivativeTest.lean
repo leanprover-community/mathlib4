@@ -48,7 +48,7 @@ lemma neg_of_slope_pos {𝕜} [LinearOrderedField 𝕜] {f : 𝕜 → 𝕜} {x�
 /-- Predict the sign of f when it crosses the x-axis from below. -/
 lemma eventually_nhdsWithin_sign_eq_of_deriv_pos (hf : deriv f x₀ > 0) (hx : f x₀ = 0) :
     ∀ᶠ x in 𝓝 x₀, sign (f x) = sign (x - x₀) := by
-  rw [← nhdsWithin_compl_singleton_sup_pure x₀, eventually_sup]
+  rw [← nhdsNE_sup_pure x₀, eventually_sup]
   refine ⟨?_, by simpa⟩
   have h_tendsto := hasDerivAt_iff_tendsto_slope.mp
     (differentiableAt_of_deriv_ne_zero <| ne_of_gt hf).hasDerivAt
@@ -80,8 +80,7 @@ lemma eventually_nhdsWithin_sign_eq_of_deriv_neg (hf : deriv f x₀ < 0) (hx : f
 
 /-- The Second-Derivative Test from calculus, minimum version.
 Applies to functions like `x^2 + 1[x ≥ 0]` as well as twice differentiable
-functions.
- -/
+functions. -/
 theorem isLocalMin_of_deriv_deriv_pos (hf : deriv (deriv f) x₀ > 0) (hd : deriv f x₀ = 0)
     (hc : ContinuousAt f x₀) : IsLocalMin f x₀ := by
   have h₀ := eventually_nhdsWithin_sign_eq_of_deriv_pos hf hd
