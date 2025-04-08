@@ -91,7 +91,6 @@ instance : HasForget₂ CommRingCat CommMonCat where
   forget₂ := { obj M := .of M, map f := CommMonCat.ofHom f.hom }
   forget_comp := rfl
 
-
 set_option maxHeartbeats 400000 in
 -- nightly-2025-03-25
 -- `simp` is taking longer after nightly-2025-03-25.
