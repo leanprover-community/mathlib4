@@ -82,7 +82,7 @@ end CategoryTheory
 
 namespace SSet.Truncated
 
-open SimplexCategory Simplicial SSet CategoryTheory Opposite Limits
+open SimplexCategory Simplicial SSet CategoryTheory Category Functor Opposite Limits
 open SSet.Truncated SimplexCategory.Truncated SimplicialObject.Truncated
 universe v u v' u'
 
@@ -206,62 +206,34 @@ lemma toStrictSegal₂.mk_naturality_δ1i (i : Fin 3) :
       apply δ_zero_δ_two_eq_const
     · sorry
 
-/-- The spine of a 2-simplex of a 2-truncated simplicial set valued in a product rather than
-in paths. -/
-noncomputable def segalSpine (Z : SSet.Truncated 2) : Z _⦋2⦌₂ ⟶ Z _⦋1⦌₂ ⨯ Z _⦋1⦌₂ :=
-  prod.lift (Z.map (δ2₂).op) (Z.map (δ0₂).op)
-
--- instance (Z : SSet.Truncated 2) (sz : StrictSegal Z) : Mono (segalSpine Z) where
---   right_cancellation {A} (f g : A → Z _⦋2⦌₂) eq := by
---     ext x
---     simp [segalSpine] at eq
---     have eq1 := congr($eq ≫ prod.fst)
---     have eq2 := congr($eq ≫ prod.snd)
---     simp only [limit.lift_π, BinaryFan.mk_fst, BinaryFan.mk_snd] at eq1 eq2
---     replace eq1 := congr_fun eq1 x
---     replace eq2 := congr_fun eq2 x
---     simp only [types_comp_apply] at eq1 eq2
-
-
---     generalize f x = fx at *
---     generalize g x = gx at *
-
---     fapply ComposableArrows.ext₂
---     · exact congrArg (·.obj 0) <| eq1
---     · exact congrArg (·.obj 1) <| eq1
---     · exact congrArg (·.obj 1) <| eq2
---     · exact (conj_eqToHom_iff_heq' _ _ _ _).2 (congr_arg_heq (·.hom) <| eq1)
---     · exact (conj_eqToHom_iff_heq' _ _ _ _).2 (congr_arg_heq (·.hom) <| eq2)
-
 lemma toStrictSegal₂.mk_naturality_σ1i (i : Fin 2) :
     toStrictSegal₂.mk.naturalityProperty sy F (σ₂ i) := by
-  ext x
-  apply StrictSegal.spineInjective sy 2
-  ext j
-  show (Y.spine 2 _ _).arrow j = (Y.spine 2 _ _).arrow j
-  simp only [spine_arrow]
-  fin_cases j
-  · simp only [Nat.reduceAdd, len_mk, id_eq, Fin.zero_eta, Fin.isValue, Fin.castSucc_zero,
-    Fin.succ_zero_eq_one]
-    rw [← δ₂_two_eq_mkOfSucc]
-    have := congrFun (toStrictSegal₂.mk_naturality_δ1i sy F hyp 2)
-
-
-  -- rw [← assoc, ← map_comp, ← op_comp]
-
-    change toStrictSegal₂.mk.naturalityProperty sy F (Hom.tr (mkOfSucc j) ≫ σ₂ i)
-
-
-
-
-    sorry
-  · sorry
-  -- unfold StrictSegal.spineEquiv
-  -- simp only [Nat.reduceAdd, len_mk, id_eq, types_comp_apply, mk.app_two, Equiv.coe_fn_mk,
-  --   StrictSegal.spine_spineToSimplex_apply, mk.app_one, Fin.isValue]
-  -- unfold oneTruncation₂.pathMap
-  -- simp only [Nat.reduceAdd, spine_vertex, len_mk, id_eq, spine_arrow, Fin.isValue]
-
+  have : Mono (segalSpine (Z := Y)) := by exact strictSegalSpineMono sy
+  apply (cancel_mono (segalSpine (Z := Y)) ).1
+  simp only [segalSpine, prod.comp_lift, assoc]
+  congr 1 <;> rw [← map_comp]
+  · show _ ≫ _ ≫ Y.map (δ₂ _).op = _ ≫ Y.map (_ ≫ (δ₂ _).op)
+    rw [← op_comp]
+    rw [← toStrictSegal₂.mk_naturality_δ1i sy F hyp, ← assoc, ← map_comp, ← op_comp]
+    change toStrictSegal₂.mk.naturalityProperty sy F (δ₂ 2 ≫ σ₂ i)
+    fin_cases i
+    · dsimp only [Fin.zero_eta]
+      rw [δ₂_two_comp_σ₂_zero]
+      exact (toStrictSegal₂.mk.naturalityProperty sy F).comp_mem _ _
+        (toStrictSegal₂.mk_naturality_σ00 sy F) (toStrictSegal₂.mk_naturality_δ0i sy F _)
+    · dsimp only [Fin.mk_one]
+      rw [δ₂_two_comp_σ₂_one]
+      exact (toStrictSegal₂.mk.naturalityProperty sy F).id_mem _
+  · show _ ≫ _ ≫ Y.map (δ₂ _).op = _ ≫ Y.map (_ ≫ (δ₂ _).op)
+    rw [← op_comp]
+    rw [← toStrictSegal₂.mk_naturality_δ1i sy F hyp, ← assoc, ← map_comp, ← op_comp]
+    change toStrictSegal₂.mk.naturalityProperty sy F (δ₂ 0 ≫ σ₂ i)
+    fin_cases i <;> dsimp only [Fin.zero_eta, Fin.isValue, Fin.mk_one]
+    · rw [δ₂_zero_comp_σ₂_zero]
+      exact (toStrictSegal₂.mk.naturalityProperty sy F).id_mem _
+    · rw [δ₂_zero_comp_σ₂_one]
+      exact (toStrictSegal₂.mk.naturalityProperty sy F).comp_mem _ _
+        (toStrictSegal₂.mk_naturality_σ00 sy F) (toStrictSegal₂.mk_naturality_δ0i sy F _)
 
 /-- A proof that the components defined by `toNerve₂.mk.app` are natural. -/
 theorem toStrictSegal₂.mk_naturality : toStrictSegal₂.mk.naturalityProperty sy F = ⊤ :=
