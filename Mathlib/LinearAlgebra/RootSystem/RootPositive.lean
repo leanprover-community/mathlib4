@@ -97,26 +97,6 @@ lemma apply_root_root_zero_iff [NoZeroDivisors R] [NeZero (2 : R)]:
 
 end InvariantForm
 
-section Orthogonal
-
-variable {P : RootPairing ι R M N} (i j : ι) [NoZeroDivisors R] [NeZero (2 : R)]
-
-lemma coxeterWeight_zero_iff_isOrthogonal :
-    P.coxeterWeight i j = 0 ↔ P.IsOrthogonal i j := by
-  have := P.reflexive_right
-  have : Nontrivial R := ⟨2, 0, two_ne_zero⟩
-  have : IsDomain R := IsDomain.mk
-  simp [coxeterWeight, IsOrthogonal, P.pairing_zero_iff (i := i) (j := j)]
-
-lemma isOrthogonal_iff_pairing_eq_zero :
-    P.IsOrthogonal i j ↔ P.pairing i j = 0 := by
-  have := P.reflexive_right
-  have : Nontrivial R := ⟨2, 0, two_ne_zero⟩
-  have : IsDomain R := IsDomain.mk
-  simp [← coxeterWeight_zero_iff_isOrthogonal, coxeterWeight, P.pairing_zero_iff (i := j) (j := i)]
-
-end Orthogonal
-
 variable (S) in
 /-- Given a root pairing, this is an invariant symmetric bilinear form satisfying a positivity
 condition. -/
