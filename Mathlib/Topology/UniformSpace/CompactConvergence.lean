@@ -382,7 +382,7 @@ lemma completeSpace_of_isCoherentWith (h : IsCoherentWith {K : Set α | IsCompac
     range_toUniformOnFunIsCompact, ← completeSpace_coe_iff_isComplete]
   exact (UniformOnFun.isClosed_setOf_continuous h).completeSpace_coe
 
-@[deprecated (since := "2024-10-30")]
+@[deprecated (since := "2025-04-08")]
 alias completeSpace_of_restrictGenTopology := completeSpace_of_IsCoherentWith
 
 instance instCompleteSpaceOfWeaklyLocallyCompactSpace [WeaklyLocallyCompactSpace α] :
