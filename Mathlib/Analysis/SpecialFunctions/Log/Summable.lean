@@ -46,7 +46,7 @@ lemma multipliable_of_summable_log' (hfn : ∀ᶠ i in cofinite, f i ≠ 0)
 
 /-- The exponential of a convergent sum of complex logs is the corresponding infinite product. -/
 lemma cexp_tsum_eq_tprod (hfn : ∀ i, f i ≠ 0) (hf : Summable fun i ↦ log (f i)) :
-    cexp (∑' i, log (f i)) = ∏' i, f i  :=
+    cexp (∑' i, log (f i)) = ∏' i, f i :=
   (hasProd_of_hasSum_log hfn hf.hasSum).tprod_eq.symm
 
 lemma summable_log_one_add_of_summable {f : ι → ℂ} (hf : Summable f) :
@@ -100,9 +100,6 @@ lemma summable_log_one_add_of_summable (hf : Summable f) :
   filter_upwards [hf.tendsto_cofinite_zero.eventually_const_le neg_one_lt_zero] with i hi
   rw [ofReal_log, ofReal_add, ofReal_one]
   linarith
-
-example (hf : Summable f) : Summable (fun i ↦ log (1 + |f i|)) :=
-  summable_log_one_add_of_summable hf.norm
 
 lemma multipliable_one_add_of_summable (hf : Summable f) : Multipliable (fun i ↦ 1 + f i) := by
   refine multipliable_of_summable_log' ?_ (summable_log_one_add_of_summable hf)
@@ -174,7 +171,7 @@ lemma prod_vanishing_of_summable_norm (hf : Summable fun i ↦ ‖f i‖) {ε : 
   exact ContinuousAt.preimage_mem_nhds (by fun_prop) this
 
 open Finset in
-/-- In a complete normed ring, `∏' i, (1 + f i)` is convergent iff the sum of real numbers
+/-- In a complete normed ring, `∏' i, (1 + f i)` is convergent if the sum of real numbers
 `∑' i, ‖f i‖` is convergent. -/
 lemma multipliable_one_add_of_summable [CompleteSpace R]
     (hf : Summable fun i ↦ ‖f i‖) : Multipliable fun i ↦ (1 + f i) := by
