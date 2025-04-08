@@ -39,30 +39,39 @@ instance monoidal : MonoidalCategory.{max w₁ v₁} (∀ i, C i) where
   rightUnitor X := isoMk (fun i ↦ ρ_ (X i))
   tensorHom_def _ _ := by ext i; simp only [tensorHom, tensorHom_def, comp_apply]
 
+@[simp]
 theorem associator_hom_apply {X Y Z : ∀ i, C i} {i : I} :
     (α_ X Y Z).hom i = (α_ (X i) (Y i) (Z i)).hom := rfl
 
+@[simp]
 theorem associator_inv_apply {X Y Z : ∀ i, C i} {i : I} :
     (α_ X Y Z).inv i =  (α_ (X i) (Y i) (Z i)).inv := rfl
 
+@[simp]
 theorem isoApp_associator {X Y Z : ∀ i, C i} {i : I} :
     isoApp (α_ X Y Z) i = α_ (X i) (Y i) (Z i) := rfl
 
+@[simp]
 theorem left_unitor_hom_apply {X : ∀ i, C i} {i : I} :
     (λ_ X).hom i = (λ_ (X i)).hom := rfl
 
+@[simp]
 theorem left_unitor_inv_apply {X : ∀ i, C i} {i : I} :
     (λ_ X).inv i = (λ_ (X i)).inv := rfl
 
+@[simp]
 theorem isoApp_left_unitor {X : ∀ i, C i} {i : I} :
     isoApp (λ_ X) i = λ_ (X i) := rfl
 
+@[simp]
 theorem right_unitor_hom_apply {X : ∀ i, C i} {i : I} :
     (ρ_ X).hom i = (ρ_ (X i)).hom := rfl
 
+@[simp]
 theorem right_unitor_inv_apply {X : ∀ i, C i} {i : I} :
     (ρ_ X).inv i = (ρ_ (X i)).inv := rfl
 
+@[simp]
 theorem isoApp_right_unitor {X : ∀ i, C i} {i : I} :
     isoApp (ρ_ X) i = ρ_ (X i) := rfl
 
