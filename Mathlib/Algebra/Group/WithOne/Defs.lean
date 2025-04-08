@@ -99,7 +99,8 @@ def _root_.WithZero.recZeroCoe {motive : WithZero α → Sort*} (zero : motive 0
 
 /-- Recursor for `WithOne` using the preferred forms `1` and `↑a`. -/
 @[to_additive existing, elab_as_elim, induction_eliminator, cases_eliminator]
-def recOneCoe {C : WithOne α → Sort*} (one : C 1) (coe : ∀ a : α, C a) : ∀ n : WithOne α, C n
+def recOneCoe {motive : WithOne α → Sort*} (one : motive 1) (coe : ∀ a : α, motive a) :
+    ∀ n : WithOne α, motive n
   | Option.none => one
   | Option.some x => coe x
 
