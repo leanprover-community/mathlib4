@@ -17,7 +17,7 @@ ring elements `x y z : R`.
 The associator vanishes exactly when `R` is associative.
 
 We prove variants of this statement also for the `AddMonoidHom` bundled version of the associator,
-as well as the bundled version of ``mulLeft₃` and `mulRight₃`, the multiplications `(x * y) * z` and
+as well as the bundled version of `mulLeft₃` and `mulRight₃`, the multiplications `(x * y) * z` and
 `x * (y * z)`.
 -/
 
