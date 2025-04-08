@@ -49,7 +49,7 @@ attribute [to_additive (attr := simp)] dite_smul smul_dite ite_smul smul_ite
 
 end ite
 
-section Associative
+section Mul
 variable [Mul G]
 
 @[to_additive (attr := simp)]
@@ -65,7 +65,7 @@ theorem mulLeft₃_eq_mulRight₃_iff_associative :
   mp h := ⟨fun a b c ↦ by rw [← mulLeft₃_apply, ← mulRight₃_apply, h]⟩
   mpr h := by ext a b c; simp [Std.Associative.assoc]
 
-end Associative
+end Mul
 
 section Semigroup
 variable [Semigroup α]
