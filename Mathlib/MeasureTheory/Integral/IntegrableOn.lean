@@ -134,9 +134,9 @@ theorem integrableOn_congr_fun (hst : EqOn f g s) (hs : MeasurableSet s) :
 
 theorem Integrable.integrableOn (h : Integrable f μ) : IntegrableOn f s μ := h.restrict
 
-theorem IntegrableOn.restrict (h : IntegrableOn f s μ) (hs : MeasurableSet s) :
-    IntegrableOn f s (μ.restrict t) := by
-  rw [IntegrableOn, Measure.restrict_restrict hs]; exact h.mono_set inter_subset_left
+theorem IntegrableOn.restrict (h : IntegrableOn f s μ) : IntegrableOn f s (μ.restrict t) := by
+  dsimp only [IntegrableOn] at h ⊢
+  exact h.mono_measure <| Measure.restrict_mono_measure Measure.restrict_le_self _
 
 theorem IntegrableOn.inter_of_restrict (h : IntegrableOn f s (μ.restrict t)) :
     IntegrableOn f (s ∩ t) μ := by

@@ -385,7 +385,8 @@ instance [F.Full] [F.EssSurj] : (Over.post (X := X) F).EssSurj where
 instance [F.IsEquivalence] : (Over.post (X := X) F).IsEquivalence where
 
 /-- If `F` is fully faithful, then so is `Over.post F`. -/
-def FullyFaithful.over (h : F.FullyFaithful) : (Over.post (X := X) F).FullyFaithful where
+def _root_.CategoryTheory.Functor.FullyFaithful.over (h : F.FullyFaithful) :
+    (post (X := X) F).FullyFaithful where
   preimage {A B} f := Over.homMk (h.preimage f.left) <| h.map_injective (by simpa using Over.w f)
 
 /-- An equivalence of categories induces an equivalence on over categories. -/
@@ -726,7 +727,8 @@ instance [F.Full] [F.EssSurj] : (Under.post (X := X) F).EssSurj where
 instance [F.IsEquivalence] : (Under.post (X := X) F).IsEquivalence where
 
 /-- If `F` is fully faithful, then so is `Under.post F`. -/
-def FullyFaithful.under (h : F.FullyFaithful) : (Under.post (X := X) F).FullyFaithful where
+def _root_.CategoryTheory.Functor.FullyFaithful.under (h : F.FullyFaithful) :
+    (post (X := X) F).FullyFaithful where
   preimage {A B} f := Under.homMk (h.preimage f.right) <| h.map_injective (by simpa using Under.w f)
 
 /-- An equivalence of categories induces an equivalence on under categories. -/

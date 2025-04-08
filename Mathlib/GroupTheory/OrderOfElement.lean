@@ -1056,7 +1056,7 @@ def powCardSubgroup {G : Type*} [Group G] [Fintype G] (S : Set G) (hS : S.Nonemp
 end PowIsSubgroup
 
 section LinearOrderedSemiring
-variable [LinearOrderedSemiring G] {a : G}
+variable [Semiring G] [LinearOrder G] [IsStrictOrderedRing G] {a : G}
 
 protected lemma IsOfFinOrder.eq_one (ha₀ : 0 ≤ a) (ha : IsOfFinOrder a) : a = 1 := by
   obtain ⟨n, hn, ha⟩ := ha.exists_pow_eq_one
@@ -1066,7 +1066,7 @@ end LinearOrderedSemiring
 
 section LinearOrderedRing
 
-variable [LinearOrderedRing G] {a x : G}
+variable [Ring G] [LinearOrder G] [IsStrictOrderedRing G] {a x : G}
 
 protected lemma IsOfFinOrder.eq_neg_one (ha₀ : a ≤ 0) (ha : IsOfFinOrder a) : a = -1 :=
   (sq_eq_one_iff.1 <| ha.pow.eq_one <| sq_nonneg a).resolve_left <| by
@@ -1133,13 +1133,13 @@ section NonAssocRing
 variable (R : Type*) [NonAssocRing R] (p : ℕ)
 
 lemma CharP.addOrderOf_one : CharP R (addOrderOf (1 : R)) where
-  cast_eq_zero_iff' n := by rw [← Nat.smul_one_eq_cast, addOrderOf_dvd_iff_nsmul_eq_zero]
+  cast_eq_zero_iff n := by rw [← Nat.smul_one_eq_cast, addOrderOf_dvd_iff_nsmul_eq_zero]
 
 variable [Fintype R]
 
 variable {R} in
 lemma charP_of_ne_zero (hn : card R = p) (hR : ∀ i < p, (i : R) = 0 → i = 0) : CharP R p where
-  cast_eq_zero_iff' n := by
+  cast_eq_zero_iff n := by
     have H : (p : R) = 0 := by rw [← hn, Nat.cast_card_eq_zero]
     constructor
     · intro h
