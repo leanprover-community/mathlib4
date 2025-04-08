@@ -128,6 +128,8 @@ theorem Iio_eq_finset_subtype : Iio b = (Iio (b : ℕ)).fin n := by ext; simp
 
 end deprecated
 
+section val
+
 @[simp]
 theorem finsetImage_val_Icc : (Icc a b).image val = Icc (a : ℕ) b :=
   image_val_attachFin _
@@ -202,8 +204,6 @@ theorem map_valEmbedding_Iio : (Iio b).map Fin.valEmbedding = Iio ↑b := by
 end val
 
 section castLE
-
-variable (a b : Fin n)
 
 @[simp]
 theorem finsetImage_castLE_Iic (h : n ≤ m) :
@@ -822,8 +822,6 @@ theorem map_revPerm_uIcc (i j : Fin n) : (uIcc i j).map revPerm.toEmbedding = uI
 end rev
 
 section card
-
-variable (a b : Fin n)
 
 @[simp]
 lemma card_Icc : #(Icc a b) = b + 1 - a := by rw [← Nat.card_Icc, ← map_valEmbedding_Icc, card_map]
