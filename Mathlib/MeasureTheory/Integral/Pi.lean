@@ -141,9 +141,9 @@ theorem setIntegral_pi_unique_Icc [Preorder α] (f : (ι → α) → E) (μ : Me
       ∫ x in Icc (a default) (b default), f (const ι x) ∂μ := by
   rw [← pi_univ_Icc, setIntegral_pi_unique_pi]
 
-theorem integrableOn_pi_unique_Icc [Preorder α] {f : (ι → α) → E} {μ : Measure α} {a b : ι → α} :
+theorem integrableOn_pi_unique_Icc [Preorder α] {f : (ι → α) → F} {μ : Measure α} {a b : ι → α} :
     IntegrableOn f (Icc a b) (.pi fun _ ↦ μ) ↔
-      IntegrableOn (f <| const ι ·) (Icc (a default) (b default)) := by
+      IntegrableOn (f <| const ι ·) (Icc (a default) (b default)) μ := by
   rw [← pi_univ_Icc, integrableOn_pi_unique_pi]
 
 variable (ι)
@@ -179,11 +179,6 @@ theorem setIntegral_pi_unique_Icc_volume [Preorder α] (f : (ι → α) → E) (
     ∫ x in Icc a b, f x = ∫ x in Icc (a default) (b default), f (const ι x) :=
   setIntegral_pi_unique_Icc _ _ _ _
 
-theorem setIntegral_pi_unique_Icc_volume_eq_intervalIntegral (f : (ι → ℝ) → E) {a b : ι → ℝ}
-    (h : a default ≤ b default) :
-    ∫ x in Icc a b, f x = ∫ x in (a default)..(b default), f (const ι x) :=
-  setIntegral_pi_unique_Icc_eq_intervalIntegral _ _ h
-
 variable (ι)
 
 theorem integral_volume_eq_pi_unique (f : α → E) : ∫ x, f x = ∫ x : ι → α, f (x default) :=
@@ -197,10 +192,6 @@ theorem setIntegral_volume_Icc_eq_pi_unique [Preorder α] (f : α → E) (a b : 
     ∫ x in Icc a b, f x = ∫ x in Icc (const ι a) (const ι b), f (x default) :=
   Eq.symm <| setIntegral_pi_unique_Icc _ _ _ _
 
-theorem intervalIntegral_volume_eq_pi_unique (f : ℝ → E) {a b : ℝ} (h : a ≤ b) :
-    ∫ x in a..b, f x = ∫ x in Icc (const ι a) (const ι b), f (x default) :=
-  intervalIntegral_eq_pi_unique ι f _ h
-
 end Unique
 
 section FinTwo
@@ -213,6 +204,12 @@ theorem integral_pi_fin_two (f : (Fin 2 → α) → E) (μ : Fin 2 → Measure �
     ∫ x, f x ∂.pi μ = ∫ x : α × α, f ![x.1, x.2] ∂.prod (μ 0) (μ 1) :=
   Eq.symm <| ((measurePreserving_piFinTwo _).symm _).integral_comp
     (MeasurableEquiv.measurableEmbedding _) _
+
+theorem integrable_pi_fin_two {f : (Fin 2 → α) → F} {μ : Fin 2 → Measure α}
+    [∀ i, SigmaFinite (μ i)] :
+    Integrable f (.pi μ) ↔ Integrable (fun x : α × α ↦ f ![x.1, x.2]) ((μ 0).prod (μ 1)) :=
+  .symm <| ((measurePreserving_piFinTwo μ).symm _).integrable_comp_emb
+    (MeasurableEquiv.measurableEmbedding _)
 
 theorem setIntegral_pi_fin_two (f : (Fin 2 → α) → E) (μ : Fin 2 → Measure α)
     [∀ i, SigmaFinite (μ i)] (s : Set (Fin 2 → α)) :
@@ -262,32 +259,56 @@ section Measure
 
 variable {n : ℕ} {α : Fin (n + 1) → Type*} {m : ∀ i, MeasurableSpace (α i)}
 
-theorem integral_fin_eq_insertNth (f : (∀ i, α i) → E) (i : Fin (n + 1)) (μ : ∀ i, Measure (α i))
-    [∀ i, SigmaFinite (μ i)] :
+theorem integral_pi_eq_integral_prod_pi_removeNth (f : (∀ i, α i) → E) (i : Fin (n + 1))
+    (μ : ∀ i, Measure (α i)) [∀ i, SigmaFinite (μ i)] :
     ∫ x, f x ∂.pi μ =
       ∫ x : α i × (∀ j, α (i.succAbove j)), f (i.insertNth x.1 x.2)
         ∂(μ i).prod (.pi (i.removeNth μ)) :=
   .symm <| ((measurePreserving_piFinSuccAbove _ _).symm _).integral_comp
     (MeasurableEquiv.measurableEmbedding _) _
 
-theorem setIntegral_fin_eq_insertNth (f : (∀ i, α i) → E) (i : Fin (n + 1)) (μ : ∀ i, Measure (α i))
-    [∀ i, SigmaFinite (μ i)] (s : Set (∀ i, α i)) :
+theorem integrable_pi_iff_prod_pi_removeNth {f : (∀ i, α i) → F} {μ : ∀ i, Measure (α i)}
+    [∀ i, SigmaFinite (μ i)] (i : Fin (n + 1)) :
+    Integrable f (.pi μ) ↔
+      Integrable (fun x : α i × (∀ j, α (i.succAbove j)) ↦ f (i.insertNth x.1 x.2))
+        ((μ i).prod (.pi (i.removeNth μ))) :=
+  .symm <| ((measurePreserving_piFinSuccAbove _ _).symm _).integrable_comp_emb
+    (MeasurableEquiv.measurableEmbedding _)
+
+theorem integral_pi_eq_integral_integral_pi_removeNth {f : (∀ i, α i) → E} {μ : ∀ i, Measure (α i)}
+    [∀ i, SigmaFinite (μ i)] (hf : Integrable f (.pi μ)) (i : Fin (n + 1)) :
+    ∫ x, f x ∂.pi μ = ∫ x, ∫ y, f (i.insertNth x y) ∂(.pi (i.removeNth μ)) ∂(μ i) := by
+  rw [integrable_pi_iff_prod_pi_removeNth i] at hf
+  rw [integral_pi_eq_integral_prod_pi_removeNth _ i]
+  unfold Fin.removeNth at *
+  rw [integral_prod _ hf]
+
+theorem integral_pi_eq_integral_pi_removeNth_integral {f : (∀ i, α i) → E} {μ : ∀ i, Measure (α i)}
+    [∀ i, SigmaFinite (μ i)] (hf : Integrable f (.pi μ)) (i : Fin (n + 1)) :
+    ∫ x, f x ∂.pi μ = ∫ y, ∫ x, f (i.insertNth x y) ∂(μ i) ∂(.pi (i.removeNth μ)) := by
+  rw [integrable_pi_iff_prod_pi_removeNth i] at hf
+  rw [integral_pi_eq_integral_prod_pi_removeNth _ i]
+  unfold Fin.removeNth at *
+  rw [integral_prod_symm _ hf]
+
+theorem setIntegral_pi_eq_setIntegral_preimage_prod_pi_insertNth (f : (∀ i, α i) → E)
+    (i : Fin (n + 1)) (μ : ∀ i, Measure (α i)) [∀ i, SigmaFinite (μ i)] (s : Set (∀ i, α i)) :
     ∫ x in s, f x ∂.pi μ =
       ∫ x : α i × (∀ j, α (i.succAbove j)) in (fun x ↦ i.insertNth x.1 x.2) ⁻¹' s,
         f (i.insertNth x.1 x.2) ∂(μ i).prod (.pi (i.removeNth μ)) :=
   .symm <| ((measurePreserving_piFinSuccAbove _ _).symm _).setIntegral_preimage_emb
     (MeasurableEquiv.measurableEmbedding _) _ _
 
-theorem setIntegral_fin_pi_eq_insertNth (f : (∀ i, α i) → E) (i : Fin (n + 1))
+theorem setIntegral_pi_eq_setIntegral_prod_pi_removeNth (f : (∀ i, α i) → E) (i : Fin (n + 1))
     (μ : ∀ i, Measure (α i)) [∀ i, SigmaFinite (μ i)] (s : ∀ i, Set (α i)) :
     ∫ x in univ.pi s, f x ∂.pi μ =
       ∫ x : α i × (∀ j, α (i.succAbove j)) in s i ×ˢ univ.pi (i.removeNth s),
         f (i.insertNth x.1 x.2) ∂(μ i).prod (.pi (i.removeNth μ)) := by
-  convert setIntegral_fin_eq_insertNth f i μ _
+  convert setIntegral_pi_eq_setIntegral_preimage_prod_pi_insertNth f i μ _
   ext x
   simp [i.forall_iff_succAbove, Fin.removeNth]
 
-theorem setIntegral_fin_Icc_eq_insertNth [∀ i, Preorder (α i)] (f : (∀ i, α i) → E)
+theorem setIntegral_Icc_eq_setIntegral_prod_pi_removeNth [∀ i, Preorder (α i)] (f : (∀ i, α i) → E)
     (i : Fin (n + 1)) (μ : ∀ i, Measure (α i)) [∀ i, SigmaFinite (μ i)] (a b : ∀ i, α i) :
     ∫ x in Icc a b, f x ∂.pi μ =
       ∫ x in Icc (a i) (b i) ×ˢ Icc (i.removeNth a) (i.removeNth b),
