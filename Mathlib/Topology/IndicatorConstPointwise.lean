@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
 import Mathlib.Algebra.Group.Indicator
-import Mathlib.Topology.Separation.Basic
+import Mathlib.Topology.Separation.Connected
 
 /-!
 # Pointwise convergence of indicator functions

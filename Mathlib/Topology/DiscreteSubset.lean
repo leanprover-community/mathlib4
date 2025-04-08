@@ -5,7 +5,7 @@ Authors: Oliver Nash, Bhavik Mehta, Daniel Weber, Stefan Kebekus
 -/
 import Mathlib.Tactic.TautoSet
 import Mathlib.Topology.Constructions
-import Mathlib.Topology.Separation.Basic
+import Mathlib.Topology.Separation.Connected
 
 /-!
 # Discrete subsets of topological spaces

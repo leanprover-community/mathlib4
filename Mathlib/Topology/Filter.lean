@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Order.Filter.Lift
 import Mathlib.Order.Interval.Set.Monotone
-import Mathlib.Topology.Separation.Basic
+import Mathlib.Topology.Separation.Connected
 
 /-!
 # Topology on the set of filters on a type
