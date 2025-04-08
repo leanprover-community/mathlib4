@@ -5,7 +5,6 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Group.Submonoid.Pointwise
 import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
-import Mathlib.Algebra.GroupWithZero.Divisibility
 
 /-!
 # Submonoids in a group with zero

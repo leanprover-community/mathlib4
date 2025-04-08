@@ -344,6 +344,7 @@
   "Mathlib.RingTheory.Finiteness.Defs":
   ["Mathlib.Data.Finsupp.Defs", "Mathlib.Tactic.Algebraize"],
   "Mathlib.RingTheory.Adjoin.Basic": ["Mathlib.LinearAlgebra.Finsupp.SumProd"],
+  "Mathlib.RingTheory.NonUnitalSubsemiring.Basic": ["Mathlib.Algebra.Ring.Submonoid.Basic"],
   "Mathlib.RepresentationTheory.FdRep":
   ["Mathlib.CategoryTheory.Monoidal.Rigid.Braided"],
   "Mathlib.RepresentationTheory.FDRep":
