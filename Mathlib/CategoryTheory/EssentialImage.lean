@@ -29,7 +29,7 @@ noncomputable section
 namespace CategoryTheory
 
 variable {C : Type u₁} {D : Type u₂} {E : Type u₃}
-  [Category.{v₁} C] [Category.{v₂} D] [Category.{v₃} E] {F : C ⥤ D}
+  [Category.{v₁} C] [Category.{v₂} D] [Category.{v₃} E] {F : C ⥤ D} {G : D ⥤ E}
 
 namespace Functor
 
@@ -163,6 +163,14 @@ instance essSurj_comp (F : C ⥤ D) (G : D ⥤ E) [F.EssSurj] [G.EssSurj] :
 lemma essSurj_of_comp_fully_faithful (F : C ⥤ D) (G : D ⥤ E) [(F ⋙ G).EssSurj]
     [G.Faithful] [G.Full] : F.EssSurj where
   mem_essImage X := ⟨_, ⟨G.preimageIso ((F ⋙ G).objObjPreimageIso (G.obj X))⟩⟩
+
+variable {F} {X : E}
+
+/-- Pre-composing by an essentially surjective functor doesn't change the essential image. -/
+@[simp] lemma essImage_comp_of_essSurj : (F ⋙ G).essImage X ↔ G.essImage X where
+  mp := fun ⟨Y, ⟨e⟩⟩ ↦ ⟨F.obj Y, ⟨e⟩⟩
+  mpr := fun ⟨Y, ⟨e⟩⟩ ↦
+    let ⟨Z, ⟨e'⟩⟩ := Functor.EssSurj.mem_essImage Y; ⟨Z, ⟨(G.mapIso e').trans e⟩⟩
 
 end EssSurj
 
