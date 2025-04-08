@@ -596,6 +596,31 @@ section
 
 open TensorProduct
 
+section Subalgebra
+
+variable (R A : Type*) [CommSemiring R] [CommSemiring A] [Algebra R A] (p : ℕ) [ExpChar A p]
+
+def Subalgebra.perfectClosure : Subalgebra R A where
+  carrier := {x : A | ∃ n : ℕ, x ^ p ^ n ∈ (algebraMap R A).rangeS}
+  add_mem' := by
+    rintro x y ⟨n, hx⟩ ⟨m, hy⟩
+    use n + m
+    rw [add_pow_expChar_pow, pow_add, pow_mul, mul_comm (_ ^ n), pow_mul]
+    exact add_mem (pow_mem hx _) (pow_mem hy _)
+  mul_mem' := by
+    rintro x y ⟨n, hx⟩ ⟨m, hy⟩
+    use n + m
+    rw [mul_pow, pow_add, pow_mul, mul_comm (_ ^ n), pow_mul]
+    exact mul_mem (pow_mem hx _) (pow_mem hy _)
+  algebraMap_mem' := fun x ↦ ⟨0, by rw [pow_zero, pow_one]; exact ⟨x, rfl⟩⟩
+
+variable {R A p}
+
+theorem Subalgebra.mem_perfectClosure_iff {x : A} :
+    x ∈ perfectClosure R A p ↔ ∃ n : ℕ, x ^ p ^ n ∈ (algebraMap R A).rangeS := Iff.rfl
+
+end Subalgebra
+
 variable {k K R : Type*} [Field k] [Field K] [Algebra k K] [CommRing R] [Algebra k R]
 
 lemma IsPurelyInseparable.exists_pow_pow_mem_range_tensorProduct_of_expChar
@@ -605,18 +630,10 @@ lemma IsPurelyInseparable.exists_pow_pow_mem_range_tensorProduct_of_expChar
   obtain (hq|hq) := expChar_is_prime_or_one k q
   induction x with
   | zero => exact ⟨0, 0, by simp [zero_pow_eq, hq.ne_zero]⟩
-  | add x y hx hy =>
-    obtain ⟨n, hx⟩ := hx
-    obtain ⟨m, hy⟩ := hy
-    use n + m
-    have : ExpChar (R ⊗[k] K) q := by
-      refine expChar_of_injective_ringHom
-        (f := Algebra.TensorProduct.includeRight.toRingHom.comp (algebraMap k K)) ?_ q
-      apply RingHom.injective
-    rw [add_pow_expChar_pow, pow_add]
-    nth_rw 2 [mul_comm]
-    rw [pow_mul, pow_mul]
-    exact Subring.add_mem _ (Subring.pow_mem _ hx _) (Subring.pow_mem _ hy _)
+  | add x y h h' =>
+    have : ExpChar (R ⊗[k] K) q := expChar_of_injective_ringHom (algebraMap k _).injective q
+    simp_rw [RingHom.mem_range, ← RingHom.mem_rangeS, ← Subalgebra.mem_perfectClosure_iff] at h h' ⊢
+    exact add_mem h h'
   | tmul x y =>
     obtain ⟨n, a, ha⟩ := IsPurelyInseparable.pow_mem k q y
     use n

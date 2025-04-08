@@ -55,23 +55,12 @@ exists a natural number `n` such that `x ^ (ringExpChar F) ^ n` is contained in 
 subextension of `E / F` (`le_perfectClosure_iff`). -/
 @[stacks 09HH]
 def perfectClosure : IntermediateField F E where
-  carrier := {x : E | ∃ n : ℕ, x ^ (ringExpChar F) ^ n ∈ (algebraMap F E).range}
-  add_mem' := by
-    rintro x y ⟨n, hx⟩ ⟨m, hy⟩
-    use n + m
-    have := expChar_of_injective_algebraMap (algebraMap F E).injective (ringExpChar F)
-    rw [add_pow_expChar_pow, pow_add, pow_mul, mul_comm (_ ^ n), pow_mul]
-    exact add_mem (pow_mem hx _) (pow_mem hy _)
-  mul_mem' := by
-    rintro x y ⟨n, hx⟩ ⟨m, hy⟩
-    use n + m
-    rw [mul_pow, pow_add, pow_mul, mul_comm (_ ^ n), pow_mul]
-    exact mul_mem (pow_mem hx _) (pow_mem hy _)
+  __ := have := expChar_of_injective_algebraMap (algebraMap F E).injective (ringExpChar F)
+    Subalgebra.perfectClosure F E (ringExpChar F)
   inv_mem' := by
     rintro x ⟨n, hx⟩
     use n; rw [inv_pow]
     apply inv_mem (id hx : _ ∈ (⊥ : IntermediateField F E))
-  algebraMap_mem' := fun x ↦ ⟨0, by rw [pow_zero, pow_one]; exact ⟨x, rfl⟩⟩
 
 variable {F E}
 
