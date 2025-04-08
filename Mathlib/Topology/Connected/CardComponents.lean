@@ -3,9 +3,7 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Data.Set.Card
+import Mathlib.Data.Set.Card.Arithmetic
 import Mathlib.Topology.LocalAtTarget
 
 /-!
@@ -21,23 +19,6 @@ Let `f : X → Y` be an open and closed map.
 -/
 
 open scoped Function
-
-lemma Set.ncard_iUnion {α ι : Type*} [Fintype ι] {s : ι → Set α} (hs : ∀ i, (s i).Finite)
-    (h : Pairwise (Disjoint on s)) : (⋃ i, s i).ncard = ∑ i : ι, (s i).ncard := by
-  classical
-  rw [Fintype.sum_congr _ _ fun i ↦ ncard_eq_toFinset_card _ (hs i),
-    ncard_eq_toFinset_card _ (Set.finite_iUnion hs),
-    ← Finset.card_biUnion fun i _ j _ hij ↦ by simpa using h hij]
-  congr; ext; simp
-
-lemma Set.encard_iUnion {α ι : Type*} [Fintype ι] {s : ι → Set α}
-    (hs : Pairwise (Disjoint on s)) : (⋃ i, s i).encard = ∑ i : ι, (s i).encard := by
-  classical
-  by_cases h : ∀ i, (s i).Finite
-  · rw [← Fintype.sum_congr _ _ fun i ↦ (h i).cast_ncard_eq, ← Nat.cast_sum,
-      ← (Set.finite_iUnion h).cast_ncard_eq, ncard_iUnion h hs]
-  · obtain ⟨i, (hi : (s i).Infinite)⟩ := not_forall.mp h
-    simp [← Finset.add_sum_erase _ _ (Finset.mem_univ i), hi, hi.iUnion]
 
 open ConnectedComponents
 
@@ -74,7 +55,8 @@ lemma IsOpenMap.enatCard_connectedComponents_le_encard_preimage_singleton [Conne
   rw [heq, Set.encard_iUnion fun i j hij ↦ .inter_left _ (.inter_right _ <| hU3 hij)]
   trans ∑ i : Fin n, 1
   · simp
-  · refine Fintype.sum_mono fun i ↦ Set.one_le_encard_iff_nonempty.mpr (show y ∈ f '' (U i) from ?_)
+  · rw [finsum_eq_sum_of_fintype]
+    refine Fintype.sum_mono fun i ↦ Set.one_le_encard_iff_nonempty.mpr (show y ∈ f '' (U i) from ?_)
     convert Set.mem_univ y
     exact IsClopen.eq_univ ⟨hf₂ _ (hU1 i).1, hf₁ _ (hU1 i).2⟩ ((hU2 i).image f)
 
