@@ -202,8 +202,7 @@ variable [NonAssocSemiring R] [Fintype n]
 open Matrix
 
 /-- Note that this does not apply to a non-unital ring, with counterexample where the elementwise
-congruence relation `!![⊤,⊤;⊤,c']` is a ring congruence over `Matrix (Fin 2) (Fin 2) R` for any
-ring congruence `c'`. -/
+congruence relation `!![⊤,⊤;⊤,(· ≡ · [PMOD 4])]` is a ring congruence over `Matrix (Fin 2) (Fin 2) 2ℤ`. -/
 @[simp]
 theorem matrix_ofMatrix [DecidableEq n] (c : RingCon (Matrix n n R)) :
     matrix n (ofMatrix c) = c := by
