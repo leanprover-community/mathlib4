@@ -763,13 +763,10 @@ lemma pairing_zero_iff [NeZero (2 : R)] [NoZeroSMulDivisors R N] :
     exact False.elim (P.ne_zero' b h₂)
   exact ⟨aux i j, aux j i⟩
 
-lemma pairing_zero_iff' [NeZero (2 : R)] [NoZeroDivisors R] :
-    (P.pairing i j = 0) ↔ (P.pairing j i = 0) := by
+lemma pairing_zero_iff' [NeZero (2 : R)] [IsDomain R] :
+    P.pairing i j = 0 ↔ P.pairing j i = 0 := by
   have := P.reflexive_right
-  have : Nontrivial R := ⟨2, 0, two_ne_zero⟩
-  have : IsDomain R := IsDomain.mk
   exact pairing_zero_iff
-
 lemma coxeterWeight_zero_iff_isOrthogonal [NeZero (2 : R)] [NoZeroDivisors R] :
     P.coxeterWeight i j = 0 ↔ P.IsOrthogonal i j := by
   simp [coxeterWeight, IsOrthogonal, P.pairing_zero_iff' (i := i) (j := j)]
