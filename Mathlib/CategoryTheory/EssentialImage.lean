@@ -167,10 +167,14 @@ lemma essSurj_of_comp_fully_faithful (F : C ⥤ D) (G : D ⥤ E) [(F ⋙ G).EssS
 variable {F} {X : E}
 
 /-- Pre-composing by an essentially surjective functor doesn't change the essential image. -/
-@[simp] lemma essImage_comp_of_essSurj : (F ⋙ G).essImage X ↔ G.essImage X where
+lemma essImage_comp_apply_of_essSurj : (F ⋙ G).essImage X ↔ G.essImage X where
   mp := fun ⟨Y, ⟨e⟩⟩ ↦ ⟨F.obj Y, ⟨e⟩⟩
   mpr := fun ⟨Y, ⟨e⟩⟩ ↦
     let ⟨Z, ⟨e'⟩⟩ := Functor.EssSurj.mem_essImage Y; ⟨Z, ⟨(G.mapIso e').trans e⟩⟩
+
+/-- Pre-composing by an essentially surjective functor doesn't change the essential image. -/
+@[simp] lemma essImage_comp_of_essSurj : (F ⋙ G).essImage = G.essImage :=
+  funext fun _X ↦ propext essImage_comp_apply_of_essSurj
 
 end EssSurj
 
