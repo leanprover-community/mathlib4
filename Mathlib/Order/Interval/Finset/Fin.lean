@@ -89,15 +89,19 @@ theorem attachFin_Ioo_eq_Ioi : attachFin (Ioo a n) (fun _x hx ↦ (mem_Ioo.mp hx
 
 section deprecated
 
+set_option linter.deprecated false in
 @[deprecated attachFin_Icc (since := "2025-04-06")]
 theorem Icc_eq_finset_subtype : Icc a b = (Icc (a : ℕ) b).fin n := attachFin_eq_fin _
 
+set_option linter.deprecated false in
 @[deprecated attachFin_Ico (since := "2025-04-06")]
 theorem Ico_eq_finset_subtype : Ico a b = (Ico (a : ℕ) b).fin n := attachFin_eq_fin _
 
+set_option linter.deprecated false in
 @[deprecated attachFin_Ioc (since := "2025-04-06")]
 theorem Ioc_eq_finset_subtype : Ioc a b = (Ioc (a : ℕ) b).fin n := attachFin_eq_fin _
 
+set_option linter.deprecated false in
 @[deprecated attachFin_Ioo (since := "2025-04-06")]
 theorem Ioo_eq_finset_subtype : Ioo a b = (Ioo (a : ℕ) b).fin n := attachFin_eq_fin _
 
@@ -105,15 +109,19 @@ set_option linter.deprecated false in
 @[deprecated attachFin_uIcc (since := "2025-04-06")]
 theorem uIcc_eq_finset_subtype : uIcc a b = (uIcc (a : ℕ) b).fin n := Icc_eq_finset_subtype _ _
 
+set_option linter.deprecated false in
 @[deprecated attachFin_Ico_eq_Ici (since := "2025-04-06")]
 theorem Ici_eq_finset_subtype : Ici a = (Ico (a : ℕ) n).fin n := by ext; simp
 
+set_option linter.deprecated false in
 @[deprecated attachFin_Ioo_eq_Ioi (since := "2025-04-06")]
 theorem Ioi_eq_finset_subtype : Ioi a = (Ioo (a : ℕ) n).fin n := by ext; simp
 
+set_option linter.deprecated false in
 @[deprecated attachFin_Iic (since := "2025-04-06")]
 theorem Iic_eq_finset_subtype : Iic b = (Iic (b : ℕ)).fin n := by ext; simp
 
+set_option linter.deprecated false in
 @[deprecated attachFin_Iio (since := "2025-04-06")]
 theorem Iio_eq_finset_subtype : Iio b = (Iio (b : ℕ)).fin n := by ext; simp
 

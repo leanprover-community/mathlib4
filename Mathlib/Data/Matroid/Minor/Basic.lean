@@ -534,6 +534,187 @@ lemma Dep.of_contract (h : (M ／ C).Dep X) (hC : C ⊆ M.E := by aesop_mat) : M
     and_iff_left hi] at h
   exact h.1 (subset_diff.1 h.2).2
 
+/-! ### Finiteness -/
+
+instance contract_finite [M.Finite] : (M ／ C).Finite := by
+  rw [← dual_delete_dual]
+  infer_instance
+
+instance contract_rankFinite [RankFinite M] : RankFinite (M ／ C) :=
+  let ⟨B, hB⟩ := (M ／ C).exists_isBase
+  ⟨B, hB, hB.indep.of_contract.finite⟩
+
+instance contract_finitary [Finitary M] : Finitary (M ／ C) := by
+  obtain ⟨J, hJ⟩ := M.exists_isBasis' C
+  suffices (M ／ J).Finitary by
+    rw [hJ.contract_eq_contract_delete]
+    infer_instance
+  exact ⟨fun I hI ↦ hJ.indep.contract_indep_iff.2  ⟨disjoint_left.2 fun e heI ↦
+    ((hI {e} (by simpa) (by simp)).subset_ground rfl).2,
+    indep_of_forall_finite_subset_indep _ fun K hK hKfin ↦
+      (hJ.indep.contract_indep_iff.1 <| hI (K ∩ I)
+      inter_subset_right (hKfin.inter_of_left _)).2.subset (by tauto_set)⟩⟩
+
+/-! ### Loops and Coloops -/
+
+lemma contract_eq_delete_of_subset_loops (hX : X ⊆ M.loops) : M ／ X = M ＼ X := by
+  simp [(empty_isBasis_iff.2 hX).contract_eq_contract_delete]
+
+lemma contract_eq_delete_of_subset_coloops (hX : X ⊆ M.coloops) : M ／ X = M ＼ X := by
+  rw [← dual_inj, dual_delete, contract_eq_delete_of_subset_loops hX, dual_contract]
+
+@[simp]
+lemma contract_isLoop_iff_mem_closure : (M ／ C).IsLoop e ↔ e ∈ M.closure C ∧ e ∉ C := by
+  obtain ⟨I, hI⟩ := M.exists_isBasis' C
+  rw [hI.contract_eq_contract_delete, delete_isLoop_iff, ← singleton_dep,
+    hI.indep.contract_dep_iff, singleton_union, hI.indep.insert_dep_iff, hI.closure_eq_closure]
+  by_cases heI : e ∈ I
+  · simp [heI, hI.subset heI]
+  simp [heI, and_comm]
+
+@[simp]
+lemma contract_loops_eq (M : Matroid α) (C : Set α) : (M ／ C).loops = M.closure C \ C := by
+  simp [Set.ext_iff, ← isLoop_iff, contract_isLoop_iff_mem_closure]
+
+@[simp]
+lemma contract_coloops_eq (M : Matroid α) (C : Set α) : (M ／ C).coloops = M.coloops \ C := by
+  rw [← dual_delete_dual, dual_coloops, delete_loops_eq, dual_loops]
+
+@[simp]
+lemma contract_isColoop_iff : (M ／ C).IsColoop e ↔ M.IsColoop e ∧ e ∉ C := by
+  simp [isColoop_iff_mem_coloops]
+
+lemma IsNonloop.of_contract (h : (M ／ C).IsNonloop e) : M.IsNonloop e := by
+  rw [← indep_singleton] at h ⊢
+  exact h.of_contract
+
+@[simp]
+lemma contract_isNonloop_iff : (M ／ C).IsNonloop e ↔ e ∈ M.E \ M.closure C := by
+  rw [isNonloop_iff_mem_compl_loops, contract_ground, contract_loops_eq]
+  refine ⟨fun ⟨he,heC⟩ ↦ ⟨he.1, fun h ↦ heC ⟨h, he.2⟩⟩,
+    fun h ↦ ⟨⟨h.1, fun heC ↦ h.2 ?_⟩, fun h' ↦ h.2 h'.1⟩⟩
+  rw [← closure_inter_ground]
+  exact (M.subset_closure (C ∩ M.E)) ⟨heC, h.1⟩
+
+lemma IsBasis.diff_subset_loops_contract (hIX : M.IsBasis I X) : X \ I ⊆ (M ／ I).loops := by
+  rw [diff_subset_iff, contract_loops_eq, union_diff_self,
+    union_eq_self_of_subset_left (M.subset_closure I)]
+  exact hIX.subset_closure
+
+/-! ### Closure -/
+
+/-- Contracting the closure of a set is the same as contracting the set,
+and then deleting the rest of its elements. -/
+lemma contract_closure_eq_contract_delete (M : Matroid α) (C : Set α) :
+    M ／ M.closure C = M ／ C ＼ (M.closure C \ C) := by
+  wlog hCE : C ⊆ M.E with aux
+  · rw [← M.contract_inter_ground_eq C, ← closure_inter_ground, aux _ _ inter_subset_right,
+      diff_inter, diff_eq_empty.2 (M.closure_subset_ground _), union_empty]
+  obtain ⟨I, hI⟩ := M.exists_isBasis C
+  rw [hI.isBasis_closure_right.contract_eq_contract_delete, hI.contract_eq_contract_delete,
+    delete_delete, union_comm, diff_union_diff_cancel (M.subset_closure C) hI.subset]
+
+@[simp]
+lemma contract_closure_eq (M : Matroid α) (C X : Set α) :
+    (M ／ C).closure X = M.closure (X ∪ C) \ C := by
+  rw [← diff_union_inter (M.closure (X ∪ C) \ C) X, diff_diff, union_comm C, ← contract_loops_eq,
+    union_comm X, ← contract_contract, contract_loops_eq, subset_antisymm_iff, union_subset_iff,
+    and_iff_right diff_subset, ← diff_subset_iff]
+  simp only [sdiff_sdiff_right_self, inf_eq_inter, subset_inter_iff, inter_subset_right, and_true]
+  refine ⟨fun e ⟨he, he'⟩ ↦ ⟨mem_closure_of_mem' _ (.inr he') (mem_ground_of_mem_closure he).1,
+    (closure_subset_ground _ _ he).2⟩, fun e ⟨⟨he, heC⟩, he'⟩ ↦
+    mem_closure_of_mem' _ he' ⟨M.closure_subset_ground _ he, heC⟩⟩
+
+lemma contract_spanning_iff (hC : C ⊆ M.E := by aesop_mat) :
+    (M ／ C).Spanning X ↔ M.Spanning (X ∪ C) ∧ Disjoint X C := by
+  rw [spanning_iff, contract_closure_eq, contract_ground, spanning_iff, union_subset_iff,
+    subset_diff, ← and_assoc, and_congr_left_iff, and_comm (a := X ⊆ _), ← and_assoc,
+    and_congr_left_iff]
+  refine fun hdj hX ↦ ⟨fun h ↦ ⟨?_, hC⟩, fun h ↦ by simp [h]⟩
+  rwa [← union_diff_cancel (M.subset_closure_of_subset' subset_union_right hC), h,
+    union_diff_cancel]
+
+/-- A version of `Matroid.contract_spanning_iff` without the supportedness hypothesis. -/
+lemma contract_spanning_iff' : (M ／ C).Spanning X ↔ M.Spanning (X ∪ (C ∩ M.E)) ∧ Disjoint X C := by
+  rw [← contract_inter_ground_eq, contract_spanning_iff, and_congr_right_iff]
+  refine fun h ↦ ⟨fun hdj ↦ ?_, Disjoint.mono_right inter_subset_left⟩
+  rw [← diff_union_inter C M.E, disjoint_union_right, and_iff_left hdj]
+  exact disjoint_sdiff_right.mono_left (subset_union_left.trans h.subset_ground)
+
+lemma Spanning.contract (hX : M.Spanning X) (C : Set α) : (M ／ C).Spanning (X \ C) := by
+  have hXE := hX.subset_ground
+  rw [contract_spanning_iff', and_iff_left disjoint_sdiff_left]
+  exact hX.superset (by tauto_set) (by tauto_set)
+
+lemma Spanning.contract_eq_loopyOn (hX : M.Spanning X) : M ／ X = loopyOn (M.E \ X) := by
+  rw [eq_loopyOn_iff_loops_eq]
+  simp [hX.closure_eq]
+
+/-! ### Circuits -/
+
+lemma IsCircuit.contract_isCircuit (hK : M.IsCircuit K) (hC : C ⊂ K) :
+    (M ／ C).IsCircuit (K \ C) := by
+  suffices ∀ e ∈ K, e ∉ C → M.Indep (K \ {e} ∪ C) by
+    simpa [isCircuit_iff_dep_forall_diff_singleton_indep, diff_diff_comm (s := K) (t := C),
+    dep_iff, (hK.ssubset_indep hC).contract_indep_iff, diff_subset_diff_left hK.subset_ground,
+    disjoint_sdiff_left, diff_union_of_subset hC.subset, hK.not_indep]
+  exact fun e heK heC ↦ (hK.diff_singleton_indep heK).subset <| by
+    simp [subset_diff_singleton hC.subset heC]
+
+lemma IsCircuit.contractElem_isCircuit (hC : M.IsCircuit C) (hnt : C.Nontrivial) (heC : e ∈ C) :
+    (M ／ {e}).IsCircuit (C \ {e}) :=
+  hC.contract_isCircuit (ssubset_of_ne_of_subset hnt.ne_singleton.symm (by simpa))
+
+lemma IsCircuit.contract_dep (hK : M.IsCircuit K) (hCK : Disjoint C K) : (M ／ C).Dep K := by
+  obtain ⟨I, hI⟩ := M.exists_isBasis (C ∩ M.E)
+  rw [← contract_inter_ground_eq, Dep, hI.contract_indep_iff,
+    and_iff_left (hCK.mono_left inter_subset_left), contract_ground, subset_diff,
+    and_iff_left (hCK.symm.mono_right inter_subset_left), and_iff_left hK.subset_ground]
+  exact fun hi ↦ hK.dep.not_indep (hi.subset subset_union_left)
+
+lemma IsCircuit.contract_dep_of_not_subset (hK : M.IsCircuit K) {C : Set α} (hKC : ¬ K ⊆ C) :
+    (M ／ C).Dep (K \ C) := by
+  have h' := hK.contract_isCircuit (C := C ∩ K) (inter_subset_right.ssubset_of_ne (by simpa))
+  simp only [diff_inter_self_eq_diff] at h'
+  have hwin := h'.contract_dep (C := C \ K) disjoint_sdiff_sdiff
+  rwa [contract_contract, inter_union_diff] at hwin
+
+lemma IsCircuit.contract_diff_isCircuit (hC : M.IsCircuit C) (hK : K.Nonempty) (hKC : K ⊆ C) :
+    (M ／ (C \ K)).IsCircuit K := by
+  simpa [inter_eq_self_of_subset_right hKC] using hC.contract_isCircuit (C := C \ K) <|
+    by rwa [diff_ssubset_left_iff, inter_eq_self_of_subset_right hKC]
+
+/-- If `C` is a circuit of `M ／ K`, then `M` has a circuit in the interval `[C, C ∪ K]`. -/
+lemma IsCircuit.exists_subset_isCircuit_of_contract (hC : (M ／ K).IsCircuit C) :
+    ∃ C', M.IsCircuit C' ∧ C ⊆ C' ∧ C' ⊆ C ∪ K := by
+  wlog hKi : M.Indep K generalizing K with aux
+  · obtain ⟨I, hI⟩ := M.exists_isBasis' K
+    rw [hI.contract_eq_contract_delete, delete_isCircuit_iff] at hC
+    obtain ⟨C', hC', hCC', hC'ss⟩ := aux hC.1 hI.indep
+    exact ⟨C', hC', hCC', hC'ss.trans (union_subset_union_right _ hI.subset)⟩
+  obtain ⟨hCE : C ⊆ M.E, hCK : Disjoint C K⟩ := subset_diff.1 hC.subset_ground
+  obtain ⟨C', hC'ss, hC'⟩ := (hKi.contract_dep_iff.1 hC.dep).2.exists_isCircuit_subset
+  refine ⟨C', hC', ?_, hC'ss⟩
+  have hdep2 : (M ／ K).Dep (C' \ K) := by
+    rw [hKi.contract_dep_iff, and_iff_right disjoint_sdiff_left]
+    refine hC'.dep.superset (by simp)
+  rw [← (hC.eq_of_dep_subset hdep2 (diff_subset_iff.2 (union_comm _ _ ▸ hC'ss)))]
+  exact diff_subset
+
+lemma IsCocircuit.of_contract (hK : (M ／ C).IsCocircuit K) : M.IsCocircuit K := by
+  rw [isCocircuit_def, dual_contract] at hK
+  exact hK.of_delete
+
+lemma IsCocircuit.delete_isCocircuit {D : Set α} (hK : M.IsCocircuit K) (hD : D ⊂ K) :
+    (M ＼ D).IsCocircuit (K \ D) := by
+  rw [isCocircuit_def, dual_delete]
+  exact hK.isCircuit.contract_isCircuit hD
+
+lemma IsCocircuit.delete_diff_isCocircuit {X : Set α} (hK : M.IsCocircuit K) (hXK : X ⊆ K)
+    (hX : X.Nonempty) : (M ＼ (K \ X)).IsCocircuit X := by
+  rw [isCocircuit_def, dual_delete]
+  exact hK.isCircuit.contract_diff_isCircuit hX hXK
+
 end Contract
 
 end Matroid
