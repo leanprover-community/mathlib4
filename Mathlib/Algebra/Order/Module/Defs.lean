@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.NoZeroSMulDivisors.Basic
-import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.GroupWithZero.Action.Synonym
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.Positivity.Core
@@ -770,7 +769,8 @@ instance instPosSMulReflectLE [PosSMulReflectLE α β] : PosSMulReflectLE α β�
 end Left
 
 section Right
-variable [Preorder α] [Monoid α] [OrderedAddCommGroup β] [DistribMulAction α β]
+variable [Preorder α] [Monoid α] [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β]
+  [DistribMulAction α β]
 
 instance instSMulPosMono [SMulPosMono α β] : SMulPosMono α βᵒᵈ where
   elim _b hb a₁ a₂ ha := by
@@ -796,8 +796,8 @@ end Right
 end OrderDual
 
 section OrderedAddCommMonoid
-variable [StrictOrderedSemiring α] [ExistsAddOfLE α] [OrderedCancelAddCommMonoid β]
-  [Module α β]
+variable [Semiring α] [PartialOrder α] [IsStrictOrderedRing α] [ExistsAddOfLE α]
+  [AddCommMonoid β] [PartialOrder β] [IsOrderedCancelAddMonoid β] [Module α β]
 
 section PosSMulMono
 variable [PosSMulMono α β] {a₁ a₂ : α} {b₁ b₂ : β}
@@ -835,10 +835,10 @@ end PosSMulStrictMono
 end OrderedAddCommMonoid
 
 section OrderedRing
-variable [OrderedRing α]
+variable [Ring α] [PartialOrder α] [IsOrderedRing α]
 
 section OrderedAddCommGroup
-variable [OrderedAddCommGroup β] [Module α β]
+variable [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β] [Module α β]
 
 section PosSMulMono
 variable [PosSMulMono α β]
@@ -880,6 +880,7 @@ lemma lt_of_smul_lt_smul_of_nonpos [PosSMulReflectLT α β] (h : a • b₁ < a 
   rw [← neg_neg a, neg_smul, neg_smul (-a), neg_lt_neg_iff] at h
   exact lt_of_smul_lt_smul_of_nonneg_left h (neg_nonneg_of_nonpos ha)
 
+omit [IsOrderedRing α] in
 lemma smul_nonneg_of_nonpos_of_nonpos [SMulPosMono α β] (ha : a ≤ 0) (hb : b ≤ 0) : 0 ≤ a • b :=
   smul_nonpos_of_nonpos_of_nonneg (β := βᵒᵈ) ha hb
 
@@ -907,7 +908,8 @@ end PosSMulStrictMono
 end OrderedAddCommGroup
 
 section LinearOrderedAddCommGroup
-variable [LinearOrderedAddCommGroup β] [Module α β] [PosSMulMono α β] {a : α} {b b₁ b₂ : β}
+variable [AddCommGroup β] [LinearOrder β] [IsOrderedAddMonoid β] [Module α β] [PosSMulMono α β]
+  {a : α} {b b₁ b₂ : β}
 
 lemma smul_max_of_nonpos (ha : a ≤ 0) (b₁ b₂ : β) : a • max b₁ b₂ = min (a • b₁) (a • b₂) :=
   (antitone_smul_left ha : Antitone (_ : β → β)).map_max
@@ -919,7 +921,8 @@ end LinearOrderedAddCommGroup
 end OrderedRing
 
 section LinearOrderedRing
-variable [LinearOrderedRing α] [LinearOrderedAddCommGroup β] [Module α β] [PosSMulStrictMono α β]
+variable [Ring α] [LinearOrder α] [IsStrictOrderedRing α]
+  [AddCommGroup β] [LinearOrder β] [IsOrderedAddMonoid β] [Module α β] [PosSMulStrictMono α β]
   {a : α} {b : β}
 
 lemma nonneg_and_nonneg_or_nonpos_and_nonpos_of_smul_nonneg (hab : 0 ≤ a • b) :
@@ -953,7 +956,7 @@ lemma smul_nonpos_iff_neg_imp_nonneg : a • b ≤ 0 ↔ (a < 0 → 0 ≤ b) ∧
 end LinearOrderedRing
 
 section LinearOrderedSemifield
-variable [LinearOrderedSemifield α] [AddCommGroup β] [PartialOrder β]
+variable [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] [AddCommGroup β] [PartialOrder β]
 
 -- See note [lower instance priority]
 instance (priority := 100) PosSMulMono.toPosSMulReflectLE [MulAction α β] [PosSMulMono α β] :
@@ -970,7 +973,8 @@ instance (priority := 100) PosSMulStrictMono.toPosSMulReflectLT [MulActionWithZe
 end LinearOrderedSemifield
 
 section Field
-variable [LinearOrderedField α] [OrderedAddCommGroup β] [Module α β] {a : α} {b₁ b₂ : β}
+variable [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+  [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β] [Module α β] {a : α} {b₁ b₂ : β}
 
 section PosSMulMono
 variable [PosSMulMono α β]
@@ -1126,17 +1130,21 @@ end Lift
 
 section Nat
 
-instance OrderedSemiring.toPosSMulMonoNat [OrderedSemiring α] : PosSMulMono ℕ α where
+instance OrderedSemiring.toPosSMulMonoNat [Semiring α] [PartialOrder α] [IsOrderedRing α] :
+    PosSMulMono ℕ α where
   elim _n _ _a _b hab := nsmul_le_nsmul_right hab _
 
-instance OrderedSemiring.toSMulPosMonoNat [OrderedSemiring α] : SMulPosMono ℕ α where
+instance OrderedSemiring.toSMulPosMonoNat [Semiring α] [PartialOrder α] [IsOrderedRing α] :
+    SMulPosMono ℕ α where
   elim _a ha _m _n hmn := nsmul_le_nsmul_left ha hmn
 
-instance StrictOrderedSemiring.toPosSMulStrictMonoNat [StrictOrderedSemiring α] :
+instance StrictOrderedSemiring.toPosSMulStrictMonoNat
+    [Semiring α] [PartialOrder α] [IsStrictOrderedRing α] :
     PosSMulStrictMono ℕ α where
   elim _n hn _a _b hab := nsmul_right_strictMono hn.ne' hab
 
-instance StrictOrderedSemiring.toSMulPosStrictMonoNat [StrictOrderedSemiring α] :
+instance StrictOrderedSemiring.toSMulPosStrictMonoNat
+    [Semiring α] [PartialOrder α] [IsStrictOrderedRing α] :
     SMulPosStrictMono ℕ α where
   elim _a ha _m _n hmn := nsmul_lt_nsmul_left ha hmn
 

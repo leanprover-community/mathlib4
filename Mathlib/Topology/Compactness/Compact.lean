@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 import Mathlib.Order.Filter.Tendsto
-import Mathlib.Topology.Bases
 import Mathlib.Data.Set.Accumulate
 import Mathlib.Topology.Bornology.Basic
-import Mathlib.Topology.LocallyFinite
+import Mathlib.Topology.ContinuousOn
 import Mathlib.Topology.Ultrafilter
 import Mathlib.Topology.Defs.Ultrafilter
+
 /-!
 # Compact sets and compact spaces
 
@@ -252,17 +252,6 @@ theorem IsCompact.elim_finite_subfamily_closed {ι : Type v} (hs : IsCompact s)
     (by rwa [← iInter_eq_iInter_finset])
     (directed_of_isDirected_le fun _ _ h ↦ biInter_subset_biInter_left h)
 
-/-- If `s` is a compact set in a topological space `X` and `f : ι → Set X` is a locally finite
-family of sets, then `f i ∩ s` is nonempty only for a finitely many `i`. -/
-theorem LocallyFinite.finite_nonempty_inter_compact {f : ι → Set X}
-    (hf : LocallyFinite f) (hs : IsCompact s) : { i | (f i ∩ s).Nonempty }.Finite := by
-  choose U hxU hUf using hf
-  rcases hs.elim_nhds_subcover U fun x _ => hxU x with ⟨t, -, hsU⟩
-  refine (t.finite_toSet.biUnion fun x _ => hUf x).subset ?_
-  rintro i ⟨x, hx⟩
-  rcases mem_iUnion₂.1 (hsU hx.2) with ⟨c, hct, hcx⟩
-  exact mem_biUnion hct ⟨x, hx.1, hcx⟩
-
 /-- To show that a compact set intersects the intersection of a family of closed sets,
   it is sufficient to show that it intersects every finite subfamily. -/
 theorem IsCompact.inter_iInter_nonempty {ι : Type v} (hs : IsCompact s) (t : ι → Set X)
@@ -502,50 +491,6 @@ theorem exists_subset_nhds_of_isCompact' [Nonempty ι] {V : ι → Set X}
       tauto
   have : ¬⋂ i : ι, V i ⊆ W := by simpa [← iInter_inter, inter_compl_nonempty_iff]
   contradiction
-
-lemma eq_finite_iUnion_of_isTopologicalBasis_of_isCompact_open (b : ι → Set X)
-    (hb : IsTopologicalBasis (Set.range b)) (U : Set X) (hUc : IsCompact U) (hUo : IsOpen U) :
-    ∃ s : Set ι, s.Finite ∧ U = ⋃ i ∈ s, b i := by
-  obtain ⟨Y, f, e, hf⟩ := hb.open_eq_iUnion hUo
-  choose f' hf' using hf
-  have : b ∘ f' = f := funext hf'
-  subst this
-  obtain ⟨t, ht⟩ :=
-    hUc.elim_finite_subcover (b ∘ f') (fun i => hb.isOpen (Set.mem_range_self _)) (by rw [e])
-  classical
-  refine ⟨t.image f', Set.toFinite _, le_antisymm ?_ ?_⟩
-  · refine Set.Subset.trans ht ?_
-    simp only [Set.iUnion_subset_iff]
-    intro i hi
-    simpa using subset_iUnion₂ (s := fun i _ => b (f' i)) i hi
-  · apply Set.iUnion₂_subset
-    rintro i hi
-    obtain ⟨j, -, rfl⟩ := Finset.mem_image.mp hi
-    rw [e]
-    exact Set.subset_iUnion (b ∘ f') j
-
-lemma eq_sUnion_finset_of_isTopologicalBasis_of_isCompact_open (b : Set (Set X))
-    (hb : IsTopologicalBasis b) (U : Set X) (hUc : IsCompact U) (hUo : IsOpen U) :
-    ∃ s : Finset b, U = s.toSet.sUnion := by
-  have hb' : b = range (fun i ↦ i : b → Set X) := by simp
-  rw [hb'] at hb
-  choose s hs hU using eq_finite_iUnion_of_isTopologicalBasis_of_isCompact_open _ hb U hUc hUo
-  have : Finite s := hs
-  let _ : Fintype s := Fintype.ofFinite _
-  use s.toFinset
-  simp [hU]
-
-/-- If `X` has a basis consisting of compact opens, then an open set in `X` is compact open iff
-  it is a finite union of some elements in the basis -/
-theorem isCompact_open_iff_eq_finite_iUnion_of_isTopologicalBasis (b : ι → Set X)
-    (hb : IsTopologicalBasis (Set.range b)) (hb' : ∀ i, IsCompact (b i)) (U : Set X) :
-    IsCompact U ∧ IsOpen U ↔ ∃ s : Set ι, s.Finite ∧ U = ⋃ i ∈ s, b i := by
-  constructor
-  · exact fun ⟨h₁, h₂⟩ ↦ eq_finite_iUnion_of_isTopologicalBasis_of_isCompact_open _ hb U h₁ h₂
-  · rintro ⟨s, hs, rfl⟩
-    constructor
-    · exact hs.isCompact_biUnion fun i _ => hb' i
-    · exact isOpen_biUnion fun i _ => hb.isOpen (Set.mem_range_self _)
 
 namespace Filter
 
@@ -826,24 +771,6 @@ theorem finite_cover_nhds [CompactSpace X] {U : X → Set X} (hU : ∀ x, U x �
     ∃ t : Finset X, ⋃ x ∈ t, U x = univ :=
   let ⟨t, ht⟩ := finite_cover_nhds_interior hU
   ⟨t, univ_subset_iff.1 <| ht.symm.subset.trans <| iUnion₂_mono fun _ _ => interior_subset⟩
-
-/-- If `X` is a compact space, then a locally finite family of sets of `X` can have only finitely
-many nonempty elements. -/
-theorem LocallyFinite.finite_nonempty_of_compact [CompactSpace X] {f : ι → Set X}
-    (hf : LocallyFinite f) : { i | (f i).Nonempty }.Finite := by
-  simpa only [inter_univ] using hf.finite_nonempty_inter_compact isCompact_univ
-
-/-- If `X` is a compact space, then a locally finite family of nonempty sets of `X` can have only
-finitely many elements, `Set.Finite` version. -/
-theorem LocallyFinite.finite_of_compact [CompactSpace X] {f : ι → Set X}
-    (hf : LocallyFinite f) (hne : ∀ i, (f i).Nonempty) : (univ : Set ι).Finite := by
-  simpa only [hne] using hf.finite_nonempty_of_compact
-
-/-- If `X` is a compact space, then a locally finite family of nonempty sets of `X` can have only
-finitely many elements, `Fintype` version. -/
-noncomputable def LocallyFinite.fintypeOfCompact [CompactSpace X] {f : ι → Set X}
-    (hf : LocallyFinite f) (hne : ∀ i, (f i).Nonempty) : Fintype ι :=
-  fintypeOfFiniteUniv (hf.finite_of_compact hne)
 
 /-- The comap of the cocompact filter on `Y` by a continuous function `f : X → Y` is less than or
 equal to the cocompact filter on `X`.

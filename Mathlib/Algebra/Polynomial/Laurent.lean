@@ -245,7 +245,7 @@ protected theorem induction_on {M : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹]) (h_C
   have B : ∀ s : Finset ℤ, M (s.sum fun n : ℤ => C (p.toFun n) * T n) := by
     apply Finset.induction
     · convert h_C 0
-      simp only [Finset.sum_empty, _root_.map_zero]
+      simp only [Finset.sum_empty, map_zero]
     · intro n s ns ih
       rw [Finset.sum_insert ns]
       exact h_add A ih
@@ -318,7 +318,7 @@ theorem leftInverse_trunc_toLaurent :
     Function.LeftInverse (trunc : R[T;T⁻¹] → R[X]) Polynomial.toLaurent := by
   refine fun f => f.induction_on' ?_ ?_
   · intro f g hf hg
-    simp only [hf, hg, _root_.map_add]
+    simp only [hf, hg, map_add]
   · intro n r
     simp only [Polynomial.toLaurent_C_mul_T, trunc_C_mul_T, Int.natCast_nonneg, Int.toNat_natCast,
       if_true]

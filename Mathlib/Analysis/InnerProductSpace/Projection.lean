@@ -1249,9 +1249,10 @@ theorem OrthogonalFamily.projection_directSum_coeAddHom [DecidableEq ι] {V : ι
     (hV : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) (x : ⨁ i, V i) (i : ι)
     [CompleteSpace (V i)] :
     orthogonalProjection (V i) (DirectSum.coeAddMonoidHom V x) = x i := by
-  induction' x using DirectSum.induction_on with j x x y hx hy
-  · simp
-  · simp_rw [DirectSum.coeAddMonoidHom_of, DirectSum.of]
+  induction x using DirectSum.induction_on with
+  | zero => simp
+  | of j x =>
+    simp_rw [DirectSum.coeAddMonoidHom_of, DirectSum.of]
     -- Porting note: was in the previous `simp_rw`, no longer works
     -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [DFinsupp.singleAddHom_apply]
@@ -1260,7 +1261,8 @@ theorem OrthogonalFamily.projection_directSum_coeAddHom [DecidableEq ι] {V : ι
     · rw [orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero,
         DFinsupp.single_eq_of_ne hij.symm]
       exact hV.isOrtho hij.symm x.prop
-  · simp_rw [map_add]
+  | add x y hx hy =>
+    simp_rw [map_add]
     exact congr_arg₂ (· + ·) hx hy
 
 /-- If a family of submodules is orthogonal and they span the whole space, then the orthogonal

@@ -30,7 +30,7 @@ theorem two_eq_zero [CharP R 2] : (2 : R) = 0 := by
 
 /-- The only hypotheses required to build a `CharP R 2` instance are `1 ≠ 0` and `2 = 0`. -/
 theorem of_one_ne_zero_of_two_eq_zero (h₁ : (1 : R) ≠ 0) (h₂ : (2 : R) = 0) : CharP R 2 where
-  cast_eq_zero_iff' n := by
+  cast_eq_zero_iff n := by
     obtain hn | hn := Nat.even_or_odd n
     · simp_rw [hn.two_dvd, iff_true]
       exact natCast_eq_zero_of_even_of_two_eq_zero hn h₂

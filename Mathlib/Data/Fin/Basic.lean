@@ -184,7 +184,7 @@ theorem min_val {a : Fin n} : min (a : ℕ) n = a := by simp
 theorem max_val {a : Fin n} : max (a : ℕ) n = n := by simp
 
 /-- The inclusion map `Fin n → ℕ` is an embedding. -/
-@[simps apply]
+@[simps -fullyApplied apply]
 def valEmbedding : Fin n ↪ ℕ :=
   ⟨val, val_injective⟩
 

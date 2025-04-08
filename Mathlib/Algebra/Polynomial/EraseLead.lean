@@ -306,7 +306,7 @@ theorem mono_map_natDegree_eq {S F : Type*} [Semiring S]
   · intro n r r0 _
     rw [natDegree_C_mul_X_pow _ _ r0, C_mul_X_pow_eq_monomial, φ_mon_nat _ _ r0]
   · intro f g fg _ fk gk
-    rw [natDegree_add_eq_right_of_natDegree_lt fg, _root_.map_add]
+    rw [natDegree_add_eq_right_of_natDegree_lt fg, map_add]
     by_cases FG : k ≤ f.natDegree
     · rw [natDegree_add_eq_right_of_natDegree_lt, gk]
       rw [fk, gk]

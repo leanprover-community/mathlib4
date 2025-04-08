@@ -78,14 +78,14 @@ theorem mconv_zero (μ : Measure M) : μ ∗ (0 : Measure M) = (0 : Measure M) :
 theorem mconv_add [MeasurableMul₂ M] (μ : Measure M) (ν : Measure M) (ρ : Measure M) [SFinite μ]
     [SFinite ν] [SFinite ρ] : μ ∗ (ν + ρ) = μ ∗ ν + μ ∗ ρ := by
   unfold mconv
-  rw [prod_add, map_add]
+  rw [prod_add, Measure.map_add]
   fun_prop
 
 @[to_additive add_conv]
 theorem add_mconv [MeasurableMul₂ M] (μ : Measure M) (ν : Measure M) (ρ : Measure M) [SFinite μ]
     [SFinite ν] [SFinite ρ] : (μ + ν) ∗ ρ = μ ∗ ρ + ν ∗ ρ := by
   unfold mconv
-  rw [add_prod, map_add]
+  rw [add_prod, Measure.map_add]
   fun_prop
 
 /-- To get commutativity, we need the underlying multiplication to be commutative. -/

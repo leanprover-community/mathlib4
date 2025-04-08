@@ -204,7 +204,7 @@ scoped infixr:80 " =≫ " => eq_whisker
 
 /--
 Notation for whiskering an equation by a morphism (on the left).
-If `g h : Y ⟶ Z` and `w : g = h` and `h : X ⟶ Y`, then `f ≫= w : f ≫ g = f ≫ h`.
+If `g h : Y ⟶ Z` and `w : g = h` and `f : X ⟶ Y`, then `f ≫= w : f ≫ g = f ≫ h`.
 -/
 scoped infixr:80 " ≫= " => whisker_eq
 

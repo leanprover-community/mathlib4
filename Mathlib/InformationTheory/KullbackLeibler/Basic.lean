@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Lorenzo Luccioli
 -/
 import Mathlib.InformationTheory.KullbackLeibler.KLFun
-import Mathlib.MeasureTheory.Decomposition.IntegralRNDeriv
+import Mathlib.MeasureTheory.Measure.Decomposition.IntegralRNDeriv
 
 /-!
 # Kullback-Leibler divergence

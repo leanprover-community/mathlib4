@@ -45,7 +45,7 @@ shadow, lym, slice, sperner, antichain
 open Finset Nat
 open scoped FinsetFamily
 
-variable {𝕜 α : Type*} [LinearOrderedSemifield 𝕜]
+variable {𝕜 α : Type*} [Semifield 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
 
 namespace Finset
 

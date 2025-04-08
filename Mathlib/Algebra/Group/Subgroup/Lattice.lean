@@ -296,6 +296,11 @@ instance [Nontrivial G] : Nontrivial (Subgroup G) :=
   nontrivial_iff.mpr ‹_›
 
 @[to_additive]
+instance [Nontrivial G] : Nontrivial (⊤ : Subgroup G) := by
+  rw [nontrivial_iff_ne_bot]
+  exact top_ne_bot
+
+@[to_additive]
 theorem eq_top_iff' : H = ⊤ ↔ ∀ x : G, x ∈ H :=
   eq_top_iff.trans ⟨fun h m => h <| mem_top m, fun h m _ => h m⟩
 

@@ -40,7 +40,7 @@ which is why mathlib defines matroids using bases/independence. )
 It is natural to ask if equicardinality of bases holds if 'cardinality' refers to
 a term in `Cardinal` instead of `ℕ∞`, but the answer is that it doesn't.
 The cardinal-valued rank functions `Matroid.cRank` and `Matroid.cRk`
-are defined in `Data.Matroid.Rank.Cardinal`, but have less desirable properties in general.
+are defined in `Mathlib.Data.Matroid.Rank.Cardinal`, but have less desirable properties in general.
 See the module docstring of that file for a discussion.
 
 # Implementation Details
@@ -200,8 +200,8 @@ lemma eRk_closure_eq (M : Matroid α) (X : Set α) : M.eRk (M.closure X) = M.eRk
 
 @[simp]
 lemma eRk_union_closure_right_eq (M : Matroid α) (X Y : Set α) :
-    M.eRk (X ∪ M.closure Y) = M.eRk (X ∪ Y) :=
-  by rw [← eRk_closure_eq, closure_union_closure_right_eq, eRk_closure_eq]
+    M.eRk (X ∪ M.closure Y) = M.eRk (X ∪ Y) := by
+  rw [← eRk_closure_eq, closure_union_closure_right_eq, eRk_closure_eq]
 
 @[simp]
 lemma eRk_union_closure_left_eq (M : Matroid α) (X Y : Set α) :
@@ -241,8 +241,8 @@ lemma IsBasis.eRk_eq_eRk_union (hIX : M.IsBasis I X) (Y : Set α) : M.eRk (I ∪
   hIX.isBasis'.eRk_eq_eRk_union Y
 
 lemma IsBasis.eRk_eq_eRk_insert (hIX : M.IsBasis I X) (e : α) :
-    M.eRk (insert e I) = M.eRk (insert e X) :=
-  by rw [← union_singleton, hIX.eRk_eq_eRk_union, union_singleton]
+    M.eRk (insert e I) = M.eRk (insert e X) := by
+  rw [← union_singleton, hIX.eRk_eq_eRk_union, union_singleton]
 
 lemma eRk_le_encard (M : Matroid α) (X : Set α) : M.eRk X ≤ X.encard := by
   obtain ⟨I, hI⟩ := M.exists_isBasis' X

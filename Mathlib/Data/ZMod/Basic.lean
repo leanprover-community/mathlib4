@@ -101,7 +101,7 @@ lemma eq_one_of_isUnit_natCast {n : ℕ} (h : IsUnit (n : ZMod 0)) : n = 1 := by
   rw [← Nat.mod_zero n, ← val_natCast, val_unit'.mp h]
 
 instance charP (n : ℕ) : CharP (ZMod n) n where
-  cast_eq_zero_iff' := by
+  cast_eq_zero_iff := by
     intro k
     rcases n with - | n
     · simp [zero_dvd_iff, Int.natCast_eq_zero]

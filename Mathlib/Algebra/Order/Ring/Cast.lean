@@ -66,7 +66,7 @@ lemma cast_strictMono : StrictMono (fun x : ℤ => (x : R)) :=
 end OrderedAddCommGroupWithOne
 
 section LinearOrderedRing
-variable [LinearOrderedRing R] {a b n : ℤ} {x : R}
+variable [Ring R] [LinearOrder R] [IsStrictOrderedRing R] {a b n : ℤ} {x : R}
 
 @[simp, norm_cast]
 lemma cast_min : ↑(min a b) = (min a b : R) := Monotone.map_min cast_mono
@@ -100,6 +100,8 @@ lemma nneg_mul_add_sq_of_abs_le_one (n : ℤ) (hx : |x| ≤ 1) : (0 : R) ≤ n *
   · simp [le_total 0 x]
   · exact Or.inl ⟨mod_cast h.le, hnx h⟩
 
+-- TODO: move to a better place
+omit [LinearOrder R] [IsStrictOrderedRing R] in
 lemma cast_natAbs : (n.natAbs : R) = |n| := by
   cases n
   · simp

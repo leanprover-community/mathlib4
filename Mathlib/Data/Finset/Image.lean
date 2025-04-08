@@ -3,7 +3,7 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
-import Mathlib.Data.Fin.Basic
+import Mathlib.Algebra.NeZero
 import Mathlib.Data.Finset.Attach
 import Mathlib.Data.Finset.Disjoint
 import Mathlib.Data.Finset.Erase
@@ -619,32 +619,6 @@ theorem map_subtype_subset {t : Set α} (s : Finset t) : ↑(s.map (Embedding.su
   convert property_of_mem_map_subtype s ha
 
 end Subtype
-
-/-! ### Fin -/
-
-
-/-- Given a finset `s` of natural numbers and a bound `n`,
-`s.fin n` is the finset of all elements of `s` less than `n`.
--/
-protected def fin (n : ℕ) (s : Finset ℕ) : Finset (Fin n) :=
-  (s.subtype _).map Fin.equivSubtype.symm.toEmbedding
-
-@[simp]
-theorem mem_fin {n} {s : Finset ℕ} : ∀ a : Fin n, a ∈ s.fin n ↔ (a : ℕ) ∈ s
-  | ⟨a, ha⟩ => by simp [Finset.fin, ha, and_comm]
-
-@[simp]
-theorem coe_fin (n : ℕ) (s : Finset ℕ) : (s.fin n : Set (Fin n)) = Fin.val ⁻¹' s := by ext; simp
-
-@[mono]
-theorem fin_mono {n} : Monotone (Finset.fin n) := fun s t h x => by simpa using @h x
-
-@[gcongr]
-theorem fin_subset_fin (n : ℕ) {s t : Finset ℕ} (h : s ⊆ t) : s.fin n ⊆ t.fin n := fin_mono h
-
-@[simp]
-theorem fin_map {n} {s : Finset ℕ} : (s.fin n).map Fin.valEmbedding = s.filter (· < n) := by
-  simp [Finset.fin, Finset.map_map]
 
 /-- If a `Finset` is a subset of the image of a `Set` under `f`,
 then it is equal to the `Finset.image` of a `Finset` subset of that `Set`. -/

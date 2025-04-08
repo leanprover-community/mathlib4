@@ -388,6 +388,32 @@ def Basis.mapPowExpCharPowOfIsSeparable [Algebra.IsSeparable F E]
   Basis.mk (b.linearIndependent.map_pow_expChar_pow_of_isSeparable q n)
     (Field.span_map_pow_expChar_pow_eq_top_of_isSeparable q n b.span_eq).ge
 
+/-- For an extension `E / F` of exponential characteristic `q` and a separable element `a : E`, the
+minimal polynomial of `a ^ q ^ n` equals the minimal polynomial of `a` mapped via `(⬝ ^ q ^ n)`. -/
+theorem minpoly.iterateFrobenius_of_isSeparable [ExpChar E q] (n : ℕ) {a : E}
+    (hsep : IsSeparable F a) :
+    minpoly F (iterateFrobenius E q n a) = (minpoly F a).map (iterateFrobenius F q n) := by
+  have hai : IsIntegral F a := hsep.isIntegral
+  have hapi : IsIntegral F (iterateFrobenius E q n a) := hai.pow _
+  symm
+  refine Polynomial.eq_of_monic_of_dvd_of_natDegree_le
+    (minpoly.monic hapi)
+    (minpoly.monic hai |>.map _)
+    (minpoly.dvd F (a ^ q ^ n) ?haeval)
+    ?hdeg
+  · simpa using Eq.symm <|
+      (minpoly F a).map_aeval_eq_aeval_map (RingHom.iterateFrobenius_comm _ q n) a
+  · rw [(minpoly F a).natDegree_map_eq_of_injective (iterateFrobenius F q n).injective,
+      ← IntermediateField.adjoin.finrank hai,
+      IntermediateField.adjoin_simple_eq_adjoin_pow_expChar_pow_of_isSeparable F E hsep q n,
+      ← IntermediateField.adjoin.finrank hapi, iterateFrobenius_def]
+
+/-- For an extension `E / F` of exponential characteristic `q` and a separable element `a : E`, the
+minimal polynomial of `a ^ q` equals the minimal polynomial of `a` mapped via `(⬝ ^ q)`. -/
+theorem minpoly.frobenius_of_isSeparable [ExpChar E q] {a : E} (hsep : IsSeparable F a) :
+    minpoly F (frobenius E q a) = (minpoly F a).map (frobenius F q) := by
+  simpa using minpoly.iterateFrobenius_of_isSeparable q 1 hsep
+
 end
 
 theorem perfectField_of_perfectClosure_eq_bot [h : PerfectField E] (eq : perfectClosure F E = ⊥) :

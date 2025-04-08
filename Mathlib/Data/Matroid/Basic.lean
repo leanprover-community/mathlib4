@@ -7,7 +7,7 @@ import Mathlib.Data.Finite.Prod
 import Mathlib.Data.Matroid.Init
 import Mathlib.Data.Set.Card
 import Mathlib.Data.Set.Finite.Powerset
-import Mathlib.Order.Minimal
+import Mathlib.Order.UpperLower.Closure
 
 /-!
 # Matroids

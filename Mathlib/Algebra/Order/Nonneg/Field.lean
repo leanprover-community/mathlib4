@@ -28,7 +28,7 @@ open Set
 variable {α : Type*}
 
 section NNRat
-variable [LinearOrderedSemifield α] {a : α}
+variable [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] {a : α}
 
 lemma NNRat.cast_nonneg (q : ℚ≥0) : 0 ≤ (q : α) := by
   rw [cast_def]; exact div_nonneg q.num.cast_nonneg q.den.cast_nonneg
@@ -42,7 +42,7 @@ namespace Nonneg
 
 section LinearOrderedSemifield
 
-variable [LinearOrderedSemifield α] {x y : α}
+variable [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] {x y : α}
 
 instance inv : Inv { x : α // 0 ≤ x } :=
   ⟨fun x => ⟨x⁻¹, inv_nonneg.2 x.2⟩⟩
@@ -94,7 +94,13 @@ instance instNNRatSMul : SMul ℚ≥0 {x : α // 0 ≤ x} where
     (⟨q • a, by rw [NNRat.smul_def]; exact mul_nonneg q.cast_nonneg ha⟩ : {x : α // 0 ≤ x}) =
       q • a := rfl
 
-instance linearOrderedSemifield : LinearOrderedSemifield { x : α // 0 ≤ x } := fast_instance%
+instance semifield : Semifield { x : α // 0 ≤ x } := fast_instance%
+  Subtype.coe_injective.semifield _ Nonneg.coe_zero Nonneg.coe_one Nonneg.coe_add
+    Nonneg.coe_mul Nonneg.coe_inv Nonneg.coe_div (fun _ _ => rfl) coe_nnqsmul Nonneg.coe_pow
+    Nonneg.coe_zpow Nonneg.coe_natCast coe_nnratCast
+
+instance linearOrderedSemifield {α} [LinearOrderedSemifield α] :
+    LinearOrderedSemifield { x : α // 0 ≤ x } := fast_instance%
   Subtype.coe_injective.linearOrderedSemifield _ Nonneg.coe_zero Nonneg.coe_one Nonneg.coe_add
     Nonneg.coe_mul Nonneg.coe_inv Nonneg.coe_div (fun _ _ => rfl) coe_nnqsmul Nonneg.coe_pow
     Nonneg.coe_zpow Nonneg.coe_natCast coe_nnratCast (fun _ _ => rfl) fun _ _ => rfl
@@ -103,6 +109,6 @@ end LinearOrderedSemifield
 
 instance linearOrderedCommGroupWithZero [LinearOrderedField α] :
     LinearOrderedCommGroupWithZero { x : α // 0 ≤ x } :=
-  LinearOrderedSemifield.toLinearOrderedCommGroupWithZero
+  CanonicallyOrderedAdd.toLinearOrderedCommGroupWithZero
 
 end Nonneg

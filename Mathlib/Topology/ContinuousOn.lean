@@ -79,8 +79,8 @@ theorem nhdsWithin_eq (a : α) (s : Set α) :
 @[simp] lemma nhdsWithin_univ (a : α) : 𝓝[Set.univ] a = 𝓝 a := by
   rw [nhdsWithin, principal_univ, inf_top_eq]
 
-theorem nhdsWithin_hasBasis {p : β → Prop} {s : β → Set α} {a : α} (h : (𝓝 a).HasBasis p s)
-    (t : Set α) : (𝓝[t] a).HasBasis p fun i => s i ∩ t :=
+theorem nhdsWithin_hasBasis {ι : Sort*} {p : ι → Prop} {s : ι → Set α} {a : α}
+    (h : (𝓝 a).HasBasis p s) (t : Set α) : (𝓝[t] a).HasBasis p fun i => s i ∩ t :=
   h.inf_principal t
 
 theorem nhdsWithin_basis_open (a : α) (t : Set α) :

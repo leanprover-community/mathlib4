@@ -7,7 +7,7 @@ import Mathlib.MeasureTheory.Measure.Regular
 import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
 import Mathlib.Topology.UrysohnsLemma
 import Mathlib.MeasureTheory.Function.LpSpace.ContinuousFunctions
-import Mathlib.MeasureTheory.Integral.Bochner
+import Mathlib.MeasureTheory.Integral.Bochner.Basic
 
 /-!
 # Approximation in Lᵖ by continuous functions
@@ -52,11 +52,10 @@ continuous function interpolating between these two sets.
 ## Related results
 
 Are you looking for a result on "directional" approximation (above or below with respect to an
-order) of functions whose codomain is `ℝ≥0∞` or `ℝ`, by semicontinuous functions?  See the
-Vitali-Carathéodory theorem, in the file `Mathlib/MeasureTheory/Integral/VitaliCaratheodory.lean`.
-
+order) of functions whose codomain is `ℝ≥0∞` or `ℝ`, by semicontinuous functions?
+See the Vitali-Carathéodory theorem,
+in the file `Mathlib/MeasureTheory/Integral/Bochner/VitaliCaratheodory.lean`.
 -/
-
 
 open scoped ENNReal NNReal Topology BoundedContinuousFunction
 

@@ -45,6 +45,8 @@ private def wf_lbp (H : ∃ n, true ∈ p n ∧ ∀ k < n, (p k).Dom) : WellFoun
 
 variable (H : ∃ n, true ∈ p n ∧ ∀ k < n, (p k).Dom)
 
+/-- Find the smallest `n` satisfying `p n`, where all `p k` for `k < n` are defined as false.
+Returns a subtype. -/
 def rfindX : { n // true ∈ p n ∧ ∀ m < n, false ∈ p m } :=
   suffices ∀ k, (∀ n < k, false ∈ p n) → { n // true ∈ p n ∧ ∀ m < n, false ∈ p m } from
     this 0 fun _ => (Nat.not_lt_zero _).elim
@@ -69,6 +71,8 @@ def rfindX : { n // true ∈ p n ∧ ∀ m < n, false ∈ p m } :=
 
 end Rfind
 
+/-- Find the smallest `n` satisfying `p n`, where all `p k` for `k < n` are defined as false.
+Returns a `Part`. -/
 def rfind (p : ℕ →. Bool) : Part ℕ :=
   ⟨_, fun h => (rfindX p h).1⟩
 
@@ -110,6 +114,8 @@ theorem rfind_zero_none (p : ℕ →. Bool) (p0 : p 0 = Part.none) : rfind p = P
     let ⟨_, _, h₂⟩ := rfind_dom'.1 h.fst
     (p0 ▸ h₂ (zero_le _) : (@Part.none Bool).Dom)
 
+/-- Find the smallest `n` satisfying `f n`, where all `f k` for `k < n` are defined as false.
+Returns a `Part`. -/
 def rfindOpt {α} (f : ℕ → Option α) : Part α :=
   (rfind fun n => (f n).isSome).bind fun n => f n
 

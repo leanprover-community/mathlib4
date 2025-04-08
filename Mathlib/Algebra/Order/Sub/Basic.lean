@@ -106,7 +106,7 @@ end CanonicallyOrderedAddCommMonoid
 
 section CanonicallyLinearOrderedAddCommMonoid
 
-variable [LinearOrderedAddCommMonoid α] [CanonicallyOrderedAdd α] [Sub α] [OrderedSub α]
+variable [AddCommMonoid α] [LinearOrder α] [CanonicallyOrderedAdd α] [Sub α] [OrderedSub α]
   {a b c : α}
 
 @[simp]

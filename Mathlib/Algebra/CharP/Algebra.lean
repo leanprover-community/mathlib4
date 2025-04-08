@@ -49,7 +49,7 @@ theorem CharP.of_ringHom_of_ne_zero {R A : Type*} [Ring R] [NoZeroDivisors R]
 /-- If a ring homomorphism `R →+* A` is injective then `A` has the same characteristic as `R`. -/
 theorem charP_of_injective_ringHom {R A : Type*} [NonAssocSemiring R] [NonAssocSemiring A]
     {f : R →+* A} (h : Function.Injective f) (p : ℕ) [CharP R p] : CharP A p where
-  cast_eq_zero_iff' x := by
+  cast_eq_zero_iff x := by
     rw [← CharP.cast_eq_zero_iff R p x, ← map_natCast f x, map_eq_zero_iff f h]
 
 /-- If the algebra map `R →+* A` is injective then `A` has the same characteristic as `R`. -/

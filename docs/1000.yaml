@@ -44,6 +44,9 @@ Q119450:
 
 Q132427:
   title: Rademacher's theorem
+  decl: LipschitzOnWith.ae_differentiableWithinAt
+  authors: Sébastien Gouëzel
+  date: 2023
 
 Q132469:
   title: Fermat's Last Theorem
@@ -1079,6 +1082,9 @@ Q977912:
 
 Q978688:
   title: Gershgorin circle theorem
+  decl: eigenvalue_mem_ball
+  authors: Xavier Roblot
+  date: 2023
 
 Q985009:
   title: Helmholtz's theorems
@@ -1504,6 +1510,9 @@ Q1349282:
 
 Q1357684:
   title: Riesz representation theorem
+  decl: InnerProductSpace.toDual
+  authors: Frédéric Dupuis
+  date: 2020
 
 Q1361031:
   title: Frobenius theorem (real division algebras)
@@ -1576,6 +1585,9 @@ Q1457052:
 
 Q1471282:
   title: Radon's theorem
+  decl: Convex.radon_partition
+  authors: Vasilii Nesterov
+  date: 2023
 
 Q1472120:
   title: Hellinger&ndash;Toeplitz theorem
@@ -4036,6 +4048,10 @@ Q107709489:
 
 Q107710112:
   title: Cantor's isomorphism theorem
+  decl: Order.iso_of_countable_dense
+  authors: David Wärn
+  date: 2020
+
 
 Q110921617:
   title: Feferman–Vaught theorem

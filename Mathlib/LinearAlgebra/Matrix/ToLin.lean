@@ -808,7 +808,7 @@ such as the trace form or norm map for algebras.
 noncomputable def leftMulMatrix : S →ₐ[R] Matrix m m R where
   toFun x := LinearMap.toMatrix b b (Algebra.lmul R S x)
   map_zero' := by
-    rw [_root_.map_zero, LinearEquiv.map_zero]
+    rw [map_zero, LinearEquiv.map_zero]
   map_one' := by
     rw [map_one, LinearMap.toMatrix_one]
   map_add' x y := by

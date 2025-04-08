@@ -468,6 +468,15 @@ theorem map_iInf_of_ker_le {f : F} (hf : Surjective f) {ι} {p : ι → Submodul
   conv_rhs => rw [← map_comap_eq_of_surjective hf (⨅ _, _), comap_iInf]
   simp_rw [fun i ↦ comap_map_eq_self (le_iInf_iff.mp h i)]
 
+lemma comap_covBy_of_surjective {f : F} (hf : Surjective f)
+    {p q : Submodule R₂ M₂} (h : p ⋖ q) :
+    p.comap f ⋖ q.comap f := by
+  refine ⟨lt_of_le_of_ne (comap_mono h.1.le) ((comap_injective_of_surjective hf).ne h.1.ne), ?_⟩
+  intro N h₁ h₂
+  refine h.2 (lt_map_of_comap_lt_of_surjective hf h₁) ?_
+  rwa [← comap_lt_comap_iff_of_surjective hf, comap_map_eq, sup_eq_left.mpr]
+  refine (LinearMap.ker_le_comap (f : M →ₛₗ[τ₁₂] M₂)).trans h₁.le
+
 lemma _root_.LinearMap.range_domRestrict_eq_range_iff {f : M →ₛₗ[τ₁₂] M₂} {S : Submodule R M} :
     LinearMap.range (f.domRestrict S) = LinearMap.range f ↔ S ⊔ (LinearMap.ker f) = ⊤ := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩

@@ -73,21 +73,7 @@ theorem bot_prime [Nontrivial α] [NoZeroDivisors α] : (⊥ : Ideal α).IsPrime
   ⟨fun h => one_ne_zero (α := α) (by rwa [Ideal.eq_top_iff_one, Submodule.mem_bot] at h), fun h =>
     mul_eq_zero.mp (by simpa only [Submodule.mem_bot] using h)⟩
 
-end Ideal
-
-end Semiring
-
-section CommSemiring
-
-variable {a b : α}
-
--- A separate namespace definition is needed because the variables were historically in a different
--- order.
-namespace Ideal
-
-variable [CommSemiring α] (I : Ideal α)
-
-theorem IsPrime.mul_mem_iff_mem_or_mem {I : Ideal α} (hI : I.IsPrime) :
+theorem IsPrime.mul_mem_iff_mem_or_mem {I : Ideal α} [I.IsTwoSided] (hI : I.IsPrime) :
     ∀ {x y : α}, x * y ∈ I ↔ x ∈ I ∨ y ∈ I := @fun x y =>
   ⟨hI.mem_or_mem, by
     rintro (h | h)
@@ -105,7 +91,7 @@ def primeCompl (P : Ideal α) [hp : P.IsPrime] : Submonoid α where
 
 end Ideal
 
-end CommSemiring
+end Semiring
 
 section Ring
 

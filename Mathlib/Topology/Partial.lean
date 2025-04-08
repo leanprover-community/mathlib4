@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
 import Mathlib.Order.Filter.Partial
-import Mathlib.Topology.Basic
+import Mathlib.Topology.Neighborhoods
 
 /-!
 # Partial functions and topological spaces

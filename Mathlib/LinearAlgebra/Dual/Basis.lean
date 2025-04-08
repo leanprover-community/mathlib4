@@ -103,7 +103,7 @@ theorem toDual_injective : Injective b.toDual := fun x y h ↦ b.ext_elem_iff.mp
   simp_rw [← toDual_eq_repr]; exact DFunLike.congr_fun h _
 
 theorem toDual_inj (m : M) (a : b.toDual m = 0) : m = 0 :=
-  b.toDual_injective (by rwa [_root_.map_zero])
+  b.toDual_injective (by rwa [map_zero])
 
 theorem toDual_ker : LinearMap.ker b.toDual = ⊥ :=
   ker_eq_bot'.mpr b.toDual_inj

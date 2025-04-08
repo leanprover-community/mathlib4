@@ -708,7 +708,7 @@ end AddSubmonoid
 
 namespace Set.IsPWO
 
-variable [OrderedCancelCommMonoid α] {s : Set α}
+variable [CommMonoid α] [PartialOrder α] [IsOrderedCancelMonoid α] {s : Set α}
 
 @[to_additive]
 theorem submonoid_closure (hpos : ∀ x : α, x ∈ s → 1 ≤ x) (h : s.IsPWO) :

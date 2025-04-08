@@ -83,7 +83,7 @@ theorem toENNReal_strictMono : StrictMono ((↑) : ℕ∞ → ℝ≥0∞) :=
 
 @[simp, norm_cast]
 theorem toENNReal_zero : ((0 : ℕ∞) : ℝ≥0∞) = 0 :=
-  _root_.map_zero toENNRealRingHom
+  map_zero toENNRealRingHom
 
 @[simp, norm_cast]
 theorem toENNReal_add (m n : ℕ∞) : ↑(m + n) = (m + n : ℝ≥0∞) :=

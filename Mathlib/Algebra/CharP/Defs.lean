@@ -38,14 +38,14 @@ For instance, endowing `{0, 1}` with addition given by `max` (i.e. `1` is absorb
 This example is formalized in `Counterexamples/CharPZeroNeCharZero.lean`.
 -/
 @[mk_iff]
-class _root_.CharP : Prop where
-  cast_eq_zero_iff' : ∀ x : ℕ, (x : R) = 0 ↔ p ∣ x
+class _root_.CharP (R : Type*) [AddMonoidWithOne R] (p : ℕ) : Prop where
+  cast_eq_zero_iff (R p) : ∀ x : ℕ, (x : R) = 0 ↔ p ∣ x
 
 variable [CharP R p] {a b : ℕ}
 
--- Porting note: the field of the structure had implicit arguments where they were
--- explicit in Lean 3
-lemma cast_eq_zero_iff (a : ℕ) : (a : R) = 0 ↔ p ∣ a := cast_eq_zero_iff' a
+@[deprecated CharP.cast_eq_zero_iff (since := "2025-04-03")]
+lemma cast_eq_zero_iff' (R : Type*) [AddMonoidWithOne R] (p : ℕ) [CharP R p] (a : ℕ) :
+    (a : R) = 0 ↔ p ∣ a := cast_eq_zero_iff R p a
 
 variable {R} in
 lemma congr {q : ℕ} (h : p = q) : CharP R q := h ▸ ‹CharP R p›
@@ -64,7 +64,7 @@ lemma eq {p q : ℕ} (_hp : CharP R p) (_hq : CharP R q) : p = q :=
     ((cast_eq_zero_iff R q p).1 (cast_eq_zero _ _))
 
 instance ofCharZero [CharZero R] : CharP R 0 where
-  cast_eq_zero_iff' x := by rw [zero_dvd_iff, ← Nat.cast_zero, Nat.cast_inj]
+  cast_eq_zero_iff x := by rw [zero_dvd_iff, ← Nat.cast_zero, Nat.cast_inj]
 
 end AddMonoidWithOne
 

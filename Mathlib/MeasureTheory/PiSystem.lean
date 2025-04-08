@@ -255,11 +255,13 @@ theorem mem_generatePiSystem_iUnion_elim {α β} {g : β → Set (Set α)} (h_pi
     (t : Set α) (h_t : t ∈ generatePiSystem (⋃ b, g b)) :
     ∃ (T : Finset β) (f : β → Set α), (t = ⋂ b ∈ T, f b) ∧ ∀ b ∈ T, f b ∈ g b := by
   classical
-  induction' h_t with s h_s s t' h_gen_s h_gen_t' h_nonempty h_s h_t'
-  · rcases h_s with ⟨t', ⟨⟨b, rfl⟩, h_s_in_t'⟩⟩
+  induction h_t with
+  | @base s h_s =>
+    rcases h_s with ⟨t', ⟨⟨b, rfl⟩, h_s_in_t'⟩⟩
     refine ⟨{b}, fun _ => s, ?_⟩
     simpa using h_s_in_t'
-  · rcases h_t' with ⟨T_t', ⟨f_t', ⟨rfl, h_t'⟩⟩⟩
+  | inter h_gen_s h_gen_t' h_nonempty h_s h_t' =>
+    rcases h_t' with ⟨T_t', ⟨f_t', ⟨rfl, h_t'⟩⟩⟩
     rcases h_s with ⟨T_s, ⟨f_s, ⟨rfl, h_s⟩⟩⟩
     use T_s ∪ T_t', fun b : β =>
       if b ∈ T_s then if b ∈ T_t' then f_s b ∩ f_t' b else f_s b

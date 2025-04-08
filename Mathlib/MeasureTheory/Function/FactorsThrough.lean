@@ -34,8 +34,7 @@ theorem _root_.Measurable.factorsThrough [MeasurableSpace Z] [MeasurableSingleto
     (hg : Measurable[mY.comap f] g) : g.FactorsThrough f := by
   refine fun x₁ x₂ h ↦ eq_of_mem_singleton ?_
   obtain ⟨s, -, hs⟩ := hg (measurableSet_singleton (g x₂))
-  rw [← mem_preimage, ← hs, mem_preimage, h, ← mem_preimage, hs]
-  rfl
+  rw [← mem_preimage, ← hs, mem_preimage, h, ← mem_preimage, hs, mem_preimage, mem_singleton_iff]
 
 /-- If a function `g` is strongly measurable with respect to the pullback along some function `f`,
 then to prove `g x = g y` it is enough to prove `f x = f y`.
