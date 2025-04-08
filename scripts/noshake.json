@@ -331,12 +331,6 @@
   ["Mathlib.RingTheory.PowerSeries.PiTopology"],
   "Mathlib.RingTheory.PowerSeries.Basic":
   ["Mathlib.Algebra.CharP.Defs", "Mathlib.Tactic.MoveAdd"],
-  "Mathlib.RingTheory.Polynomial.Eisenstein.Generalized":
-  ["Mathlib.Algebra.Field.ZMod",
-   "Mathlib.Algebra.Polynomial.FieldDivision",
-   "Mathlib.Algebra.Polynomial.SpecificDegree",
-   "Mathlib.Data.ZMod.QuotientRing",
-   "Mathlib.Tactic.ComputeDegree"],
   "Mathlib.RingTheory.MvPowerSeries.Basic":
   ["Mathlib.Algebra.MvPolynomial.Eval"],
   "Mathlib.RingTheory.MvPolynomial.Homogeneous":

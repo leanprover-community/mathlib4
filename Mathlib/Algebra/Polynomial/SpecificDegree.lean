@@ -38,7 +38,7 @@ end IsDomain
 
 section Field
 
-variable {K : Type*} [Field K] {p : K[X] }
+variable {K : Type*} [Field K] {p : K[X]}
 
 /-- A polynomial of degree 2 or 3 is irreducible iff it doesn't have roots. -/
 theorem irreducible_iff_roots_eq_zero_of_degree_le_three
