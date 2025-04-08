@@ -125,23 +125,9 @@ protected theorem t4Space [T4Space X] (h : X ≃ₜ Y) : T4Space Y := h.symm.isC
 protected theorem t5Space [T5Space X] (h : X ≃ₜ Y) : T5Space Y := h.symm.isClosedEmbedding.t5Space
 
 @[simp]
-theorem map_nhds_eq (h : X ≃ₜ Y) (x : X) : map h (𝓝 x) = 𝓝 (h x) :=
-  h.isEmbedding.map_nhds_of_mem _ (by simp)
-
-@[simp]
 theorem map_punctured_nhds_eq (h : X ≃ₜ Y) (x : X) : map h (𝓝[≠] x) = 𝓝[≠] (h x) := by
   convert h.isEmbedding.map_nhdsWithin_eq ({x}ᶜ) x
   rw [h.image_compl, Set.image_singleton]
-
-theorem symm_map_nhds_eq (h : X ≃ₜ Y) (x : X) : map h.symm (𝓝 (h x)) = 𝓝 x := by
-  rw [h.symm.map_nhds_eq, h.symm_apply_apply]
-
-theorem nhds_eq_comap (h : X ≃ₜ Y) (x : X) : 𝓝 x = comap h (𝓝 (h x)) :=
-  h.isInducing.nhds_eq_comap x
-
-@[simp]
-theorem comap_nhds_eq (h : X ≃ₜ Y) (y : Y) : comap h (𝓝 y) = 𝓝 (h.symm y) := by
-  rw [h.nhds_eq_comap, h.apply_symm_apply]
 
 @[simp]
 theorem comap_coclosedCompact (h : X ≃ₜ Y) : comap h (coclosedCompact Y) = coclosedCompact X :=
@@ -444,29 +430,9 @@ end Continuous
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
   {W : Type*} [TopologicalSpace W] {f : X → Y}
 
-/-- Predicate saying that `f` is a homeomorphism.
-
-This should be used only when `f` is a concrete function whose continuous inverse is not easy to
-write down. Otherwise, `Homeomorph` should be preferred as it bundles the continuous inverse.
-
-Having both `Homeomorph` and `IsHomeomorph` is justified by the fact that so many function
-properties are unbundled in the topology part of the library, and by the fact that a homeomorphism
-is not merely a continuous bijection, that is `IsHomeomorph f` is not equivalent to
-`Continuous f ∧ Bijective f` but to `Continuous f ∧ Bijective f ∧ IsOpenMap f`. -/
-structure IsHomeomorph (f : X → Y) : Prop where
-  continuous : Continuous f
-  isOpenMap : IsOpenMap f
-  bijective : Bijective f
-
-protected theorem Homeomorph.isHomeomorph (h : X ≃ₜ Y) : IsHomeomorph h :=
-  ⟨h.continuous, h.isOpenMap, h.bijective⟩
-
 namespace IsHomeomorph
 variable (hf : IsHomeomorph f)
 include hf
-
-protected lemma injective : Function.Injective f := hf.bijective.injective
-protected lemma surjective : Function.Surjective f := hf.bijective.surjective
 
 variable (f) in
 /-- Bundled homeomorphism constructed from a map that is a homeomorphism. -/
@@ -534,11 +500,6 @@ lemma isHomeomorph_iff_continuous_bijective [CompactSpace X] [T2Space Y] :
   rw [isHomeomorph_iff_continuous_isClosedMap_bijective]
   refine and_congr_right fun hf ↦ ?_
   rw [eq_true hf.isClosedMap, true_and]
-
-protected lemma IsHomeomorph.id : IsHomeomorph (@id X) := ⟨continuous_id, .id, bijective_id⟩
-
-lemma IsHomeomorph.comp {g : Y → Z} (hg : IsHomeomorph g) (hf : IsHomeomorph f) :
-    IsHomeomorph (g ∘ f) := ⟨hg.1.comp hf.1, hg.2.comp hf.2, hg.3.comp hf.3⟩
 
 lemma IsHomeomorph.sumMap {g : Z → W} (hf : IsHomeomorph f) (hg : IsHomeomorph g) :
     IsHomeomorph (Sum.map f g) := ⟨hf.1.sumMap hg.1, hf.2.sumMap hg.2, hf.3.sumMap hg.3⟩
