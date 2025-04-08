@@ -128,7 +128,12 @@ theorem hasProd_ite_div_hasProd [DecidableEq β] (hf : HasProd f a) (b : β) :
   · rw [div_mul_eq_mul_div, one_mul]
 
 /-- A more general version of `Multipliable.congr`, allowing the functions to
-disagree on a finite set. -/
+disagree on a finite set.
+
+Note that this requires the target to be a group, and hence fails for products valued
+in a ring. See `Multipliable.congr_cofinite₀` for a version applying in this case,
+with an additional non-vanishing hypothesis.
+-/
 @[to_additive "A more general version of `Summable.congr`, allowing the functions to
 disagree on a finite set."]
 theorem Multipliable.congr_cofinite (hf : Multipliable f) (hfg : f =ᶠ[cofinite] g) :
@@ -399,27 +404,47 @@ theorem tprod_const [T2Space G] (a : G) : ∏' _ : β, a = a ^ (Nat.card β) := 
 end IsTopologicalGroup
 
 section CommGroupWithZero
-variable {K : Type*} [CommGroupWithZero K] [TopologicalSpace K] [ContinuousMul K]
+variable {K : Type*} [CommGroupWithZero K] [TopologicalSpace K] [ContinuousMul K] {f g : α → K}
+/-!
+## Groups with a zero
+
+These lemmas apply to a `CommGroupWithZero`; the most familiar case is when `K` is a field. These
+are specific to the product setting and do not have a sensible additive analogue.
+-/
 
 open Finset in
-lemma Multipliable.congr_cofinite'
-    {f g : α → K} (hf : Multipliable f) (hf' : ∀ a, f a ≠ 0)
-    (hfg : ∀ᶠ a in cofinite, f a = g a) : Multipliable g := by
+lemma HasProd.congr_cofinite₀ {c : K} (hc : HasProd f c) {s : Finset α}
+    (hs : ∀ a ∈ s, f a ≠ 0) (hs' : ∀ a ∉ s, f a = g a) :
+    HasProd g (c * ((∏ i ∈ s, g i) / ∏ i ∈ s, f i)) := by
   classical
-  obtain ⟨c, hc⟩ := hf
-  obtain ⟨s, hs⟩ : ∃ s : Finset α, ∀ i ∉ s, f i = g i :=
-    ⟨hfg.toFinset, by simp only [Set.Finite.mem_toFinset, Set.mem_compl_iff, Set.mem_setOf_eq,
-      Decidable.not_not, imp_self, implies_true]⟩
-  refine ⟨_, (Tendsto.mul_const ((∏ i ∈ s, g i) / ∏ i ∈ s, f i) hc).congr' ?_⟩
+  refine (Tendsto.mul_const ((∏ i ∈ s, g i) / ∏ i ∈ s, f i) hc).congr' ?_
   filter_upwards [eventually_ge_atTop s] with t ht
   calc (∏ i ∈ t, f i) * ((∏ i ∈ s, g i) / ∏ i ∈ s, f i)
   _ = ((∏ i ∈ s, f i) * ∏ i ∈ t \ s, g i) * _ := by
     conv_lhs => rw [← union_sdiff_of_subset ht, prod_union disjoint_sdiff,
-      prod_congr rfl fun i hi ↦ hs i (mem_sdiff.mp hi).2]
+      prod_congr rfl fun i hi ↦ hs' i (mem_sdiff.mp hi).2]
   _ = (∏ i ∈ s, g i) * ∏ i ∈ t \ s, g i := by
     rw [← mul_div_assoc, ← div_mul_eq_mul_div, ← div_mul_eq_mul_div, div_self, one_mul, mul_comm]
-    exact prod_ne_zero_iff.mpr fun i _ ↦ hf' i
+    exact prod_ne_zero_iff.mpr hs
   _ = ∏ i ∈ t, g i := by
     rw [← prod_union disjoint_sdiff, union_sdiff_of_subset ht]
+
+lemma tsum_congr_cofinite₀ [T2Space K] (hc : Multipliable f) {s : Finset α}
+    (hs : ∀ a ∈ s, f a ≠ 0) (hs' : ∀ a ∉ s, f a = g a) :
+    ∏' i, g i = ((∏' i, f i) * ((∏ i ∈ s, g i) / ∏ i ∈ s, f i)) :=
+  (hc.hasProd.congr_cofinite₀ hs hs').tprod_eq
+
+/--
+See also `Multipliable.congr_cofinite`, which does not have a non-vanishing condition, but instead
+requires the target to be a group under multiplication (and hence fails for infinite products in a
+ring).
+-/
+lemma Multipliable.congr_cofinite₀ (hf : Multipliable f) (hf' : ∀ a, f a ≠ 0)
+    (hfg : ∀ᶠ a in cofinite, f a = g a) :
+    Multipliable g := by
+  classical
+  obtain ⟨c, hc⟩ := hf
+  obtain ⟨s, hs⟩ : ∃ s : Finset α, ∀ i ∉ s, f i = g i := ⟨hfg.toFinset, by simp⟩
+  exact (hc.congr_cofinite₀ (fun a _ ↦ hf' a) hs).multipliable
 
 end CommGroupWithZero

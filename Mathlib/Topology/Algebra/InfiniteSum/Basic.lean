@@ -615,7 +615,7 @@ lemma hasProd_zero_of_exists_eq_zero (hf : ∃ b, f b = 0) : HasProd f 0 := by
   obtain ⟨b, hb⟩ := hf
   apply tendsto_const_nhds.congr'
   filter_upwards [eventually_ge_atTop {b}] with s hs
-  refine (Finset.prod_eq_zero (Finset.singleton_subset_iff.mp hs) hb).symm
+  exact (Finset.prod_eq_zero (Finset.singleton_subset_iff.mp hs) hb).symm
 
 lemma multipliable_of_exists_eq_zero (hf : ∃ b, f b = 0) : Multipliable f :=
   ⟨0, hasProd_zero_of_exists_eq_zero hf⟩
