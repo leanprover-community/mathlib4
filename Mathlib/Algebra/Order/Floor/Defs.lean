@@ -327,7 +327,7 @@ private theorem nat_ceil_pos [LinearOrderedSemiring α] [FloorSemiring α] {a : 
 def evalNatCeil : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(@Nat.ceil $α' $i $j $a) =>
-    let _i : Q(LinearOrderedSemiring $α') ← synthInstanceQ (u := u_1) _
+    let _i ← synthInstanceQ q(LinearOrderedSemiring $α')
     assertInstancesCommute
     match ← core q(inferInstance) q(inferInstance) a with
     | .positive pa =>
