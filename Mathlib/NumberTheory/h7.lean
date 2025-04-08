@@ -129,7 +129,7 @@ def m := 2 * h K + 2
 
 def c₁ := (c' K α') * (c' K β') * (c' K γ')
 
-lemma c₁_α : IsIntegral ℤ (c₁ K α' β' γ' • α') := by
+lemma c₁_α :  IsIntegral ℤ (c₁ K α' β' γ' • α') := by
   have h := IsIntegral_assoc (x := c' K γ') (y := c' K β') K (c' K α') α' (c'_IsIntegral K α')
   rwa [c₁, mul_comm, mul_comm (c' K α') (c' K β'), ← mul_assoc]
 
@@ -182,8 +182,13 @@ variable (u : Fin (m  K) × Fin (n K q)) (t : Fin q × Fin q) (hq0 : 0 < q)
 -- abbrev k (u : Fin (m  K * n K q))  : ℕ := (finProdFinEquiv.symm.1 u).2 + 1
 
 open Nat in include hq0 in
-lemma c1a : IsIntegral ℤ ((c₁ K α' β' γ')^(m K*q) • (α'^( (t.1 + 1) * (u.1 + 1) : ℕ))) := by
-  apply c₁ac K α' β' γ' α' (m K) q (t.1 + 1) (u.1 + 1) ?_ ?_
+lemma c1a :
+ let a : ℕ := (t.1 + 1)
+ let l : ℕ := (u.1 + 1)
+ IsIntegral ℤ ((c₁ K α' β' γ')^(m K*q) • (α'^(a * l : ℕ))) := by
+  let a : ℕ := (t.1 + 1)
+  let l : ℕ := (u.1 + 1)
+  apply c₁ac K α' β' γ' α' (m K) q a l ?_ ?_
   · rw [mul_comm]
     exact Nat.mul_le_mul
       (add_le_of_le_sub (le_of_ble_eq_true rfl) (le_sub_one_of_lt u.1.isLt))
@@ -345,7 +350,8 @@ abbrev c₃ := max 1 (|↑(c_coeffs K α' β' γ' q)| *
     house (γ' ^ (((t.2 : ℕ) + 1) * ((u.1 : ℕ) + 1))))
 
 include hq0 h2mq in
-lemma hAkl : ∀ (k : Fin (m K) × Fin (n K q)) (l : Fin q × Fin q),
+lemma hAkl :
+   ∀ (k : Fin (m K) × Fin (n K q)) (l : Fin q × Fin q),
   house ((algebraMap ((𝓞 K)) K)
   (A K α' β' γ' q h2mq hq0 k l)) ≤
   (c₃ K α' β' γ' q u t) ^ (n K q : ℝ) * ↑(n K q : ℝ)^(((n K q - 1)/2) : ℝ) := by {
@@ -438,17 +444,16 @@ abbrev c₄ := max 1 (house.c₁ K *
 
 open NumberField.house in
 include hq0 h2mq hd hirr htriv habc in
-lemma fromapplylemma82_bound : ∃ (η : Fin q × Fin q → 𝓞 K),
-  house ((η l).1) ≤ (c₄ K hd α' β' γ' q u t) ^
+lemma fromapplylemma82_bound :
+  house (algebraMap (𝓞 K) K (η K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0 t))
+    ≤ (c₄ K hd α' β' γ' q u t) ^
     (n K q : ℝ) * ((n K q)^((1/2)*((n K q)+1)) : ℝ) := by
   obtain ⟨η, ⟨htneq0, ⟨hMt0,hbound⟩⟩⟩ :=
   applylemma82 K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0
-  use η
-  specialize hbound l
   calc _ ≤ (c₄ K hd α' β' γ' q u t) := by {
     simp only [Real.rpow_natCast, le_max_iff]
     right
-    exact mod_cast hbound}
+    exact mod_cast applylemma82_bound K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0 t}
        _ ≤ (c₄ K hd α' β' γ' q u t)^(n K q : ℝ) := ?_
        _ ≤ (c₄ K hd α' β' γ' q u t)^(n K q : ℝ) *
             ((n K q)^((1/2)*((n K q) + 1)) : ℝ) := ?_
@@ -784,9 +789,28 @@ def c₈ : ℝ := sorry --max (c₄^n * (n^(1/2)*(n+1))*q^2*(c₆*q)^n*(c₇)^(q
 
 def c₄' : ℝ  := sorry
 
-lemma eq6 : house (rho K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0) ≤ c₈ := by sorry
+lemma eq6 :
+  let r := r K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0;
+  let ρ := rho K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0;
 
-def S (t : Fin (q*q)) (z : ℂ) :=
+  house ρ ≤ c₈^r * r^( r + 3/2) := by {
+
+  let r := r K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0
+  let c₄ := c₄ K hd α' β' γ' q u t
+  unfold rho
+
+  calc _ ≤ c₄ ^
+    (n K q : ℝ) * ((n K q)^((1/2)*((n K q)+1)) : ℝ) := ?_
+       _ ≤ (t.1 : ℕ)*c₄* (n K q)^((1/2)*(n K q +1))*(c₆* q)^(n K q)*(c₇)^(q : ℤ) := ?_
+       _≤ c₈^r * r^( r + 3/2):= ?_
+
+  · exact fromapplylemma82_bound K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0
+  · sorry
+  · sorry}
+
+def S (t : Fin (q*q)) (z : ℂ) :
+    let r := r K α β hirr htriv σ hd α' β' γ' habc q h2mq u (finProdFinEquiv.symm t) hq0;
+    ℂ :=
     ((r K α β hirr htriv σ hd α' β' γ' habc q h2mq u (finProdFinEquiv.symm t) hq0).factorial : ℂ) *
     ((R K α β hirr htriv σ hd α' β' γ' habc q h2mq u
     hq0 t) z) / ((z - ( l₀ K α β hirr htriv σ hd α' β' γ' habc q h2mq u hq0 t : ℕ)) ^
@@ -796,6 +820,10 @@ def S (t : Fin (q*q)) (z : ℂ) :=
       {( l₀ K α β hirr htriv σ hd α' β' γ' habc q h2mq u hq0 t : ℕ)},
        ((( l₀ K α β hirr htriv σ hd α' β' γ' habc q h2mq u hq0 t : ℕ) - k) / (z - k)) ^
       (r K α β hirr htriv σ hd α' β' γ' habc q h2mq u (finProdFinEquiv.symm t) hq0)
+
+
+
+
 
 def c₁₄ : ℝ := sorry
 
