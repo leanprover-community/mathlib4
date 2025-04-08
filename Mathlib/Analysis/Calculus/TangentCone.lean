@@ -81,7 +81,7 @@ theorem isClosed_tangentConeAt : IsClosed (tangentConeAt R s x) :=
 theorem mem_tangentConeAt_of_seq {α : Type*} {l : Filter α} [l.NeBot] {c : α → R} {d : α → E}
     (hd₀ : Tendsto d l (𝓝 0)) (hd : ∀ᶠ n in l, x + d n ∈ s)
     (hcd : Tendsto (fun n ↦ c n • d n) l (𝓝 y)) : y ∈ tangentConeAt R s x := by
-  refine .of_comp (tendsto_top.prod_mk <| tendsto_nhdsWithin_iff.mpr ⟨hd₀, ?_⟩)
+  refine .of_comp (tendsto_top.prodMk <| tendsto_nhdsWithin_iff.mpr ⟨hd₀, ?_⟩)
     (by simpa [comp_def] using hcd.mapClusterPt)
   simpa [← preimage_vadd] using hd
 
@@ -174,7 +174,7 @@ theorem Set.MapsTo.tangentConeAt_of_clm_add_const {f : E →L[R] F} {a : F}
   intro z hz
   refine .of_comp (φ := Prod.map id f) ?_ <|
     ((hz.out.tendsto_comp f.continuous.continuousAt)).congrFun <| .of_forall <| by simp
-  refine tendsto_id.prod_map <| .inf (f.continuous.tendsto' _ _ (map_zero f)) ?_
+  refine tendsto_id.prodMap <| .inf (f.continuous.tendsto' _ _ (map_zero f)) ?_
   rw [tendsto_principal_principal]
   intro a ha
   simpa [add_right_comm] using h ha
@@ -184,7 +184,7 @@ then its linar part maps the tangent cone of `s` at `x` to the tangent cone of `
 theorem Set.MapsTo.tangentConeAt_clm {f : E →L[R] F} :
     MapsTo f s t → MapsTo f (tangentConeAt R s x) (tangentConeAt R t (f x)) := by
   simpa using Set.MapsTo.tangentConeAt_of_clm_add_const (f := f) (a := 0)
-  
+
 end AddCommMonoid
 
 section AddCommGroup
@@ -214,10 +214,10 @@ protected theorem UniqueDiffOn.univ [TopologicalSpace R] [NeBot (𝓝[{c | IsUni
 
 variable [ContinuousAdd E] [T1Space E]
 
-theorem tangentConeAt_subset_of_not_mem_derivedSet (h : x ∉ derivedSet s) :
+theorem tangentConeAt_subset_of_not_accPt (h : ¬AccPt x (𝓟 s)) :
     tangentConeAt R s x ⊆ 0 := by
   intro y hy
-  simp only [tangentConeAt_eq_biInter_closure, mem_iInter₂, mem_derivedSet, accPt_iff_nhds] at h hy
+  simp only [tangentConeAt_eq_biInter_closure, mem_iInter₂, accPt_iff_nhds] at h hy
   push_neg at h
   rcases h with ⟨U, hUx, hU⟩
   suffices closure ((univ : Set R) • ((x + ·) ⁻¹' (U ∩ s))) ⊆ 0 from
@@ -228,15 +228,14 @@ theorem tangentConeAt_subset_of_not_mem_derivedSet (h : x ∉ derivedSet s) :
       gcongr; assumption
     _ = {0} := by simp
 
-theorem mem_derivedSet_of_mem_tangentConeAt_ne_zero (h : y ∈ tangentConeAt R s x)
-    (hy₀ : y ≠ 0) : x ∈ derivedSet s := by
+theorem AccPt.of_mem_tangentConeAt_ne_zero (h : y ∈ tangentConeAt R s x) (hy₀ : y ≠ 0) :
+    AccPt x (𝓟 s) := by
   contrapose! hy₀
-  exact tangentConeAt_subset_of_not_mem_derivedSet hy₀ h
+  exact tangentConeAt_subset_of_not_accPt hy₀ h
 
-theorem mem_derivedSet_of_tangentConeAt_nontrivial
-    (h : (tangentConeAt R s x).Nontrivial) : x ∈ derivedSet s :=
-  let ⟨_y, hy, hy₀⟩ := h.exists_ne 0
-  mem_derivedSet_of_mem_tangentConeAt_ne_zero hy hy₀
+theorem AccPt.of_tangentConeAt_nontrivial (h : (tangentConeAt R s x).Nontrivial) :
+    AccPt x (𝓟 s) :=
+  let ⟨_y, hy, hy₀⟩ := h.exists_ne 0; .of_mem_tangentConeAt_ne_zero hy hy₀
 
 end AddCommGroup
 
@@ -244,23 +243,23 @@ section DivisionRing
 
 variable [DivisionRing R] [TopologicalSpace R] [ContinuousAdd R] {s : Set R} {x : R}
 
-theorem tangentConeAt_eq_univ (hx : x ∈ derivedSet s) : tangentConeAt R s x = univ := by
-  simp only [tangentConeAt_eq_biInter_closure, eq_univ_iff_forall, mem_iInter₂, mem_derivedSet,
-    accPt_iff_nhds] at hx ⊢
+theorem tangentConeAt_eq_univ (hx : AccPt x (𝓟 s)) : tangentConeAt R s x = univ := by
+  simp only [tangentConeAt_eq_biInter_closure, eq_univ_iff_forall, mem_iInter₂, accPt_iff_nhds]
+    at hx ⊢
   refine fun c U hU ↦ subset_closure ?_
   rcases hx (x +ᵥ U) (by simpa) with ⟨_, ⟨⟨y, hy, rfl⟩, hys⟩, hne⟩
   refine ⟨c / y, mem_univ _, _, ⟨hy, hys⟩, div_mul_cancel₀ _ ?_⟩
   simpa using hne
 
 @[simp]
-theorem tangentConeAt_eq_univ_iff [T1Space R] : tangentConeAt R s x = univ ↔ x ∈ derivedSet s := by
-  refine ⟨fun h ↦ mem_derivedSet_of_tangentConeAt_nontrivial (R := R) ?_, tangentConeAt_eq_univ⟩
+theorem tangentConeAt_eq_univ_iff [T1Space R] : tangentConeAt R s x = univ ↔ AccPt x (𝓟 s) := by
+  refine ⟨fun h ↦ .of_tangentConeAt_nontrivial (R := R) ?_, tangentConeAt_eq_univ⟩
   rw [h]
   exact nontrivial_univ
 
 end DivisionRing
 
-section TVS
+section TVSSemiring
 
 variable [Semiring R]
   [AddCommGroup E] [Module R E] [TopologicalSpace E] [ContinuousConstSMul R E] [ContinuousAdd E]
@@ -314,7 +313,22 @@ theorem UniqueDiffOn.prod (hs : UniqueDiffOn R s) (ht : UniqueDiffOn R t) :
     UniqueDiffOn R (s ×ˢ t) := fun (x, y) ⟨hx, hy⟩ ↦
   (hs x hx).prod (ht y hy)
 
-end TVS
+end TVSSemiring
+
+section TVSDivisionRing
+
+variable [NormedDivisionRing R] [TopologicalSpace R]
+  [AddCommGroup E] [Module R E] [TopologicalSpace E] [ContinuousSMul R E] [ContinuousAdd E]
+  [AddCommGroup F] [Module R F] [TopologicalSpace F] [ContinuousConstSMul R F] [ContinuousAdd F]
+  {s : Set E} {x : E} {t : Set F} {y : F}
+
+theorem IsCompact.rescale_to_shell (hs : IsCompact s) (hs₀ : s ∈ 𝓝 0) {c : R} (hc : 1 < ‖c‖)
+    (hx : x ≠ 0) : ∃ m : ℤ, c ^ m • x ∈ s \ c⁻¹ • s := by
+  have : Tendsto (c ^ · • x : ℤ → E) atBot (𝓝 0) := by
+    
+  sorry
+
+end TVSDivisionRing
 
 section Pi
 
