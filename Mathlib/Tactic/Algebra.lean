@@ -34,49 +34,68 @@ set_option linter.style.longLine false
 
 open Ring in
 /-- A polynomial expression, which is a sum of monomials. -/
-inductive ExSum : ∀ {v: Lean.Level} (A : Q(Type v)), (a : Q($A)) → Type
+inductive ExSum : ∀ {v: Lean.Level} {A : Q(Type v)} (_ : Q(CommSemiring $A)), (a : Q($A)) → Type
   -- | unsafeCast {u v : Lean.Level} {A : Q(Type u)} (B : Q(Type v))
   --   {a : Q($A)} (va : ExSum A a) : ExSum q($B) (q($a):)
-  | zero {w : Lean.Level} {A : Q(Type w)} (sA : Q(CommSemiring $A)) : ExSum  A q(((nat_lit 0).rawCast:$A))
-  | one : ExSum q(ℕ) q((1 : ℕ))
+  | zero {w : Lean.Level} {A : Q(Type w)} {sA : Q(CommSemiring $A)} : ExSum  q($sA) q(((nat_lit 0).rawCast:$A))
+  | one {w : Lean.Level} {A : Q(Type w)} {sA : Q(CommSemiring $A)} : ExSum q($sA) q((1 : $A))
   /-- A sum `a + b` is a polynomial if `a` is a monomial and `b` is another polynomial. -/
   | add {v w: Lean.Level} {R : Q(Type v)} {A : Q(Type w)}
     {sR : Q(CommSemiring $R)} {sA : Q(CommSemiring $A)} {r : Q($R)}
     {a b : Q($A)} (sAlg : Q(Algebra $R $A)) :
-    ExSum q($R) q($r) → ExProd sA q($a) → ExSum q($A) q($b) →
-      ExSum q($A) q($r • $a + $b)
+    ExSum q($sR) q($r) → ExProd q($sA) q($a) → ExSum q($sA) q($b) →
+      ExSum q($sA) q($r • $a + $b)
 
-def Ring.ExProd.unsafeCast : sorry := sorry
+-- unsafe def _root_.Mathlib.Tactic.Ring.ExBase.cast {u : Level} {A₁ : Q(Type u)} {A₂ : Q(Type u)} {sA₁ : _} (sA₂ : _) (hdef : $A₁ =Q $A₂) {a₁ : Q($A₁)}
+--   (vr₁ : Ring.ExBase sA₁ q($a₁)) : (a₂ : Q($A₂)) × Ring.ExBase sA₂ q($a₂) := match vr₁ with
+--   | .atom (e := e) id =>
+--     let e : Q($A₂) := e
+--     ⟨_, .atom (e := e) id⟩
+--   | _ =>
+--     sorry
 
--- unsafe def ExSum.unsafeCast {u v : Level} {A₁ : Q(Type u)} (A₂ : Q(Type v)) {a₁ : Q($A₁)}
---   (vr₁ : ExSum q($A₁) q($a₁)) : (a₂ : Q($A₂)) × ExSum A₂ a₂ :=
---   match vr₁ with
---   | zero sA =>
---     have sA₂ : Q(CommSemiring $A₂) := sA
---     ⟨_, .zero (A := A₂) sA₂⟩
---   | one =>
---   /- what do what do? -/
---     ⟨(q($a₁):), .one⟩
---   | @add v' w' R A sR sA r a t sAlg vr va vt  =>
---     have sA : Q(CommSemiring $A₂) := sA
---     have sAlg' : Q(Algebra $R $A₂) := sAlg
---     let ⟨t, vt⟩ := vt.unsafeCast A₂
---     let a' : Q($A₂) := sorry
---     let va : Ring.ExProd sA a' := sorry
---     ⟨_, .add sAlg' vr va vt ⟩
+-- unsafe def _root_.Mathlib.Tactic.Ring.ExProd.unsafeCast {u : Level} {A₁ : Q(Type u)} {A₂ : Q(Type u)} {sA₁ : _} (sA₂ : _) (hdef : $A₁ =Q $A₂) {a₁ : Q($A₁)}
+--   (vr₁ : Ring.ExProd sA₁ q($a₁)) : (a₂ : Q($A₂)) × Ring.ExProd sA₂ q($a₂) := match vr₁ with
+--   | .const (e := e) value hyp =>
+--     let e' : Q($A₂) := e
+--     ⟨e, .const (e := e') value hyp⟩
+--   | .mul (x := x) vx ve vb .. =>
+--     -- let x' : Q($A₂) := x
+--     let ⟨_, vx'⟩ := vx.unsafeCast sA₂ hdef
+--     let ⟨_, vb'⟩ := vb.unsafeCast sA₂ hdef
+--     ⟨_, .mul vx' ve vb'⟩
+
+instance {u : Level} {A : Q(Type u)} {sA : Q(CommSemiring $A)} :
+  Inhabited ((e : Q($A)) ×  ((ExSum q($sA)) q($e))) := ⟨_, .zero⟩
+
+partial def ExSum.cast {u v : Level} {A₁ : Q(Type u)} {sA₁ : Q(CommSemiring $A₁)} {A₂ : Q(Type v)}
+  (sA₂ : Q(CommSemiring $A₂)) {a₁ : Q($A₁)}
+  (vr₁ : ExSum q($sA₁) q($a₁)) : (a₂ : Q($A₂)) × ExSum q($sA₂) q($a₂) :=
+  match vr₁ with
+  | zero =>
+    ⟨_, .zero⟩
+  | one =>
+    ⟨_, .one⟩
+  | @add v' w' R A sR sA r a t sAlg vr va vt  =>
+    have : w' =QL v := ⟨⟩
+    have : $A =Q $A₂ := ⟨⟩
+    have : $sA =Q $sA₂ := ⟨⟩
+    have sAlg' : Q(Algebra $R $A₂) := sAlg
+    let ⟨_, vt⟩ := vt.cast (v := v) sA₂
+    let ⟨_, va⟩ := va.cast (sβ := sA₂)
+    ⟨_, .add (sA := sA₂) sAlg' vr va vt ⟩
 
 def sℕ : Q(CommSemiring ℕ) := q(Nat.instCommSemiring)
 
 
 def ofProd {u : Level}  {A : Q(Type u)} (sA : Q(CommSemiring $A))
   {e : Q($A)} (prod : Ring.ExProd sA e) :=
-  ExSum.add (q(Semiring.toNatAlgebra) : Q(Algebra ℕ $A)) .one prod (.zero sA)
+  ExSum.add (q(Semiring.toNatAlgebra) : Q(Algebra ℕ $A)) (.one) prod (.zero)
 
 namespace ExSum
 
 end ExSum
 end ExSum
-
 
 
 -- def mkAtom {u : Level} {A : Q(Type u)} (sA : Q(CommRing $A)) {e : Q($A)} : ExSum q((1 : ℕ) • $e + 0) :=
@@ -157,7 +176,7 @@ end Proofs
 --   (sR : Q(CommSemiring $R)) (sAlg : Q(Algebra $R $A))
 
 def evalAtom {v : Level}  {A : Q(Type v)} (sA : Q(CommSemiring $A)) (e : Q($A)) :
-    AtomM (Result (ExSum A) e) := do
+    AtomM (Result (ExSum q($sA)) q($e)) := do
   let r ← (← read).evalAtom e
   have e' : Q($A) := r.expr
   let (i, ⟨a', _⟩) ← addAtomQ e'
@@ -172,55 +191,98 @@ def evalAtom {v : Level}  {A : Q(Type v)} (sA : Q(CommSemiring $A)) (e : Q($A)) 
 
 mutual
 
--- partial def evalMul {u v w: Level} {A₁ : Q(Type u)}
---     (sA₁ : Q(CommSemiring $A₁))
---      {a₁ a₂ : Q($A₁)}
---     (va₁ : ExSum A₁ a₁) (va₂ : ExSum A₁ a₂) :
+partial def evalMul {u : Level} {A₁ : Q(Type u)}
+    (sA₁ : Q(CommSemiring $A₁))
+     {a₁ a₂ : Q($A₁)}
+    (va₁ : ExSum q($sA₁) a₁) :
+    ExSum q($sA₁) a₂ → MetaM (Result (ExSum q($sA₁)) q($a₁ * $a₂))
+| .zero => do
+  return ⟨_, .zero, q(sorry)⟩
+| .one => do
+  assumeInstancesCommute
+  return ⟨_, va₁, q(mul_one $a₁)⟩
+| .add (R := R) (sR := sR) (sAlg := sRA) .. => sorry
+
+-- /-
+-- * `x * y = (x * y)` (for `x`, `y` coefficients)
+-- * `x * (b₁ * b₂) = b₁ * (b₂ * x)` (for `x` coefficient)
+-- * `(a₁ * a₂) * y = a₁ * (a₂ * y)` (for `y` coefficient)
+-- * `(x ^ ea * a₂) * (x ^ eb * b₂) = x ^ (ea + eb) * (a₂ * b₂)`
+--     (if `ea` and `eb` are identical except coefficient)
+-- * `(a₁ * a₂) * (b₁ * b₂) = a₁ * (a₂ * (b₁ * b₂))` (if `a₁.lt b₁`)
+-- * `(a₁ * a₂) * (b₁ * b₂) = b₁ * ((a₁ * a₂) * b₂)` (if not `a₁.lt b₁`)
+-- -/
+-- partial def evalMulProd {u : Level} {R₁ R₂: Q(Type u)} (hdef : $R₁ =Q $R₂) (sR₁ : Q(CommSemiring $R₁))
+--     (sR₂ : Q(CommSemiring $R₂)) {a : Q($R₁)} {b : Q($R₂)}
+--     (va : Ring.ExProd sR₁ a) (vb : Ring.ExProd R₂ b) :
+--     Lean.Core.CoreM <| Ring.Result (Ring.ExProd sR₁) q($a * $b) := do
+--   Lean.Core.checkSystem decl_name%.toString
+--   match va, vb with
+--   | .const za ha, .const zb hb =>
+--     if za = 1 then
+--       return ⟨b, .const zb hb, (q(one_mul $b) : Expr)⟩
+--     else if zb = 1 then
+--       return ⟨a, .const za ha, (q(mul_one $a) : Expr)⟩
+--     else
+--       let ra := NormNum.Result.ofRawRat za a ha; let rb := NormNum.Result.ofRawRat zb b hb
+--       let rc := (NormNum.evalMul.core q($a * $b) q(HMul.hMul) _ _
+--           q(CommSemiring.toSemiring) ra rb).get!
+--       let ⟨zc, hc⟩ := rc.toRatNZ.get!
+--       let ⟨c, pc⟩ := rc.toRawEq
+--       return ⟨c, .const zc hc, pc⟩
+--   | .mul (x := a₁) (e := a₂) va₁ va₂ va₃, .const _ _ =>
+--     let ⟨_, vc, pc⟩ ← evalMulProd hdef sR₁ sR₂ va₃ vb
+--     return ⟨_, .mul va₁ va₂ vc, (q(sorry /- mul_pf_left $a₁ $a₂ $pc-/) : Expr)⟩
+--   | .const _ _, .mul (x := b₁) (e := b₂) vb₁ vb₂ vb₃ =>
+--     let ⟨_, vc, pc⟩ ← evalMulProd hdef sR₁ sR₂ va vb₃
+--     return ⟨_, .mul vb₁ vb₂ vc, (q(sorry /- mul_pf_right $b₁ $b₂ $pc-/) : Expr)⟩
+--   | .mul (x := xa) (e := ea) vxa vea va₂, .mul (x := xb) (e := eb) vxb veb vb₂ => do
+--     if vxa.eq vxb then
+--       if let some (.nonzero ⟨_, ve, pe⟩) ← (evalAddOverlap sℕ vea veb).run then
+--         let ⟨_, vc, pc⟩ ← evalMulProd hdef sR₁ sR₂ va₂ vb₂
+--         return ⟨_, .mul vxa ve vc, (q(mul_pp_pf_overlap $xa $pe $pc) : Expr)⟩
+--     if let .lt := (vxa.cmp vxb).then (vea.cmp veb) then
+--       let ⟨_, vc, pc⟩ ← evalMulProd hdef sR₁ sR₂ va₂ vb
+--       return ⟨_, .mul vxa vea vc, (q(mul_pf_left $xa $ea $pc) : Expr)⟩
+--     else
+--       let ⟨_, vc, pc⟩ ← evalMulProd hdef sR₁ sR₂ va vb₂
+--       return ⟨_, .mul vxb veb vc, (q(mul_pf_right $xb $eb $pc) : Expr)⟩
+
+
+-- partial def evalHMul_exProd {u : Level} {A₁ : Q(Type u)} {A₂ : Q(Type u)} (hdef : $A₁ =Q $A₂)
+--     (sA₁ : Q(CommSemiring $A₁)) (sA₂ : Q(CommSemiring $A₂))
+--     {sHMul : Q(HMul $A₁ $A₂ $A₁)} (sLaw : Q(LawfulHMul $A₁ $A₂)) {a₁ : Q($A₁)} {a₂ : Q($A₂)}
+--     (va₁ : ExSum A₁ a₁) (va₂ : Ring.ExProd sA₂ a₂) :
+--     MetaM <| Result (ExSum A₂) q($a₁ * $a₂) := do
+--   match va₁ with
+--   | .zero _ =>
+--     assumeInstancesCommute
+--     return ⟨_, .zero sA₂, q(sorry /-hmul_cast_zero_mul (R₁ := $A₁) $a₂-/)⟩
+--   | .one sA =>
+--     assumeInstancesCommute
+--     return ⟨_, ofProd sA₂ va₂, q(sorry /-hmul_cast_one_mul (R₁ := ℕ) $a₂-/)⟩
+--   | .add (A := A) (sA := sA) (R := R) (sR := sR) (sAlg := sRA) vr va vt =>
+--     throwError "HMul for two ExProds not implemented."
+--     -- return ⟨sorry, sorry, sorry⟩
+
+
+-- partial def evalHMul {u : Level} {A₁ : Q(Type u)} {A₂ : Q(Type u)}
+--     (sA₁ : Q(CommSemiring $A₁)) (sA₂ : Q(CommSemiring $A₂))
+--     {sHMul : Q(HMul $A₁ $A₂ $A₁)} (sLaw : Q(LawfulHMul $A₁ $A₂)) {a₁ : Q($A₁)} {a₂ : Q($A₂)}
+--     (va₁ : ExSum A₁ a₁) (va₂ : ExSum A₂ a₂) :
 --     MetaM <| Result (ExSum A₁) q($a₁ * $a₂) := do
 --   match va₂ with
 --   | .zero sA =>
 --     assumeInstancesCommute
---     return ⟨_, .zero sA₁, q(mul_natCast_zero _)⟩
---   | .one =>
+--     return ⟨_, .zero sA₁, q(hmul_zero_natCast $a₁)⟩
+--   | .one sA =>
 --     assumeInstancesCommute
---     return ⟨_, va₁, q(mul_one $a₁)⟩
---   | .add (R := R) (sR := sR) (sAlg := sRA) .. => sorry
-
-partial def evalHMul_exProd {u v : Level} {A₁ : Q(Type u)} {A₂ : Q(Type v)}
-    (sA₁ : Q(CommSemiring $A₁)) (sA₂ : Q(CommSemiring $A₂))
-    {sHMul : Q(HMul $A₁ $A₂ $A₁)} (sLaw : Q(LawfulHMul $A₁ $A₂)) {a₁ : Q($A₁)} {a₂ : Q($A₂)}
-    (va₁ : ExSum A₁ a₁) (va₂ : Ring.ExProd sA₂ a₂) :
-    MetaM <| Result (ExSum A₂) q(LawfulHMul.cast ($a₁ * $a₂)) := do
-  match va₁ with
-  | .zero _ =>
-    assumeInstancesCommute
-    return ⟨_, .zero sA₂, q(hmul_cast_zero_mul (R₁ := $A₁) $a₂)⟩
-  | .one =>
-    assumeInstancesCommute
-    return ⟨_, ofProd sA₂ va₂, q(hmul_cast_one_mul (R₁ := ℕ) $a₂)⟩
-  | .add (A := A) (sA := sA) (R := R) (sR := sR) (sAlg := sRA) vr va vt =>
-    throwError "HMul for two ExProds not implemented."
-    -- return ⟨sorry, sorry, sorry⟩
-
-
-partial def evalHMul {u v : Level} {A₁ : Q(Type u)} {A₂ : Q(Type v)}
-    (sA₁ : Q(CommSemiring $A₁)) (sA₂ : Q(CommSemiring $A₂))
-    {sHMul : Q(HMul $A₁ $A₂ $A₁)} (sLaw : Q(LawfulHMul $A₁ $A₂)) {a₁ : Q($A₁)} {a₂ : Q($A₂)}
-    (va₁ : ExSum A₁ a₁) (va₂ : ExSum A₂ a₂) :
-    MetaM <| Result (ExSum A₁) q($a₁ * $a₂) := do
-  match va₂ with
-  | .zero sA =>
-    assumeInstancesCommute
-    return ⟨_, .zero sA₁, q(hmul_zero_natCast $a₁)⟩
-  | .one =>
-    assumeInstancesCommute
-    return ⟨_, va₁, q(LawfulHMul.mul_one $a₁)⟩
-  | .add (A := A) (sA := sA) (R := R) (sR := sR) (sAlg := sRA) (a := a) vr va vt =>
-
-    assumeInstancesCommute
-    let ⟨et, vt', pt⟩ ← evalHMul sA₁ sA sLaw va₁ vt
-    let ⟨_, _, _⟩ ← evalHMul_exProd sA₁ sA sLaw va₁ (a₂ := a) va
-    return ⟨sorry, sorry, sorry⟩
+--     return ⟨_, va₁, q(LawfulHMul.mul_one $a₁)⟩
+--   | .add (A := A) (sA := sA) (R := R) (sR := sR) (sAlg := sRA) (a := a) vr va vt =>
+--     assumeInstancesCommute
+--     let ⟨et, vt', pt⟩ ← evalHMul sA₁ sA sLaw va₁ vt
+--     let ⟨_, _, _⟩ ← evalHMul_exProd sA₁ sA sLaw va₁ (a₂ := a) va
+--     return ⟨sorry, sorry, sorry⟩
 
 
 
@@ -228,17 +290,17 @@ partial def matchRingsSMul {v : Level} {A : Q(Type v)}
   {iA : Q(Semiring $A)}
   {u₁ : Level} {R₁ : Q(Type u₁)} (iR₁ : Q(CommSemiring $R₁)) (iRA₁ : Q(@Algebra $R₁ $A $iR₁ $iA))
   {u₂ : Level} {R₂ : Q(Type u₂)} (iR₂ : Q(CommSemiring $R₂)) (iRA₂ : Q(@Algebra $R₂ $A $iR₂ $iA))
- {r₁ : Q($R₁)} {r₂ : Q($R₂)} (vr₁ : ExSum R₁ r₁) (vr₂ : ExSum R₂ r₂) (a : Q($A)) :
+ {r₁ : Q($R₁)} {r₂ : Q($R₂)} (vr₁ : ExSum iR₁ r₁) (vr₂ : ExSum iR₂ r₂) (a : Q($A)) :
     MetaM <|
       Σ u : Level, Σ R : Q(Type u), Σ iR : Q(CommSemiring $R),
       Σ _ : Q(@Algebra $R $A $iR $iA),
       Σ r' : Q($R),
-        (ExSum R r' ×
+        (ExSum iR r' ×
         Q($r₁ • ($r₂ • $a) = $r' • $a)) := do
   -- is isDefEqQ anything? Probably not, you need to know that both terms have the same type.
   if ← withReducible <| isDefEq R₁ R₂ then
-    -- have : $R₁ =Q $R₂ := ⟨⟩
-    have r₁' : Q($R₂) := r₁
+    have : u₁ =QL u₂ := ⟨⟩
+    have : $R₁ =Q $R₂ :=  ⟨⟩
     /- Question: what do I do here? I just want to view $r₁$ as having type $R₂$-/
     let _i₁ ← synthInstanceQ q(HMul $R₁ $R₂ $R₁)
     let _i₂ ← synthInstanceQ q(LawfulHMul $R₁ $R₂)
@@ -247,8 +309,10 @@ partial def matchRingsSMul {v : Level} {A : Q(Type v)}
     -- throwError s!"smul with defeq rings {R₁} and {R₂} not yet implemented."
     /- Is this safe and correct? -/
     -- have : Q($r₁' • $r₂ • $a = $r₁ • $r₂ • $a) := ← Lean.Meta.mkEqRefl q($r₁ • $r₂ • $a)
-    let ⟨r, vr, pr⟩ ← evalHMul iR₁ iR₂ q(inferInstance) vr₁ vr₂
-    pure ⟨_, R₁, iR₁, iRA₁, r, vr, q(sorry /- $this  @smul_smul $R₂ $A _ _ $r₁' $r₂ $a -/ )⟩
+    let ⟨r₁', vr₁'⟩ := vr₁.cast iR₂
+    have : $r₁' =Q $r₁ := ⟨⟩
+    let ⟨r, vr, pr⟩ ← evalMul iR₂ vr₁' vr₂
+    pure ⟨_, R₂, iR₂, iRA₂, r, vr, q(sorry /- $this  @smul_smul $R₂ $A _ _ $r₁' $r₂ $a -/ )⟩
   -- otherwise the "smaller" of the two rings must be commutative
   else try
     -- first try to exhibit `R₂` as an `R₁`-algebra
@@ -274,19 +338,18 @@ partial def matchRingsSMul {v : Level} {A : Q(Type v)}
     throwError "algebra failed: {R₁} is not an {R₂}-algebra and {R₂} is not an {R₁}-algebra"
 
 partial def evalSMul {u v : Level} {R : Q(Type u)} {A : Q(Type v)} (sA : Q(CommSemiring $A))
-  (sR : Q(CommSemiring $R)) (sRA : Q(Algebra $R $A)) {r : Q($R)} {a : Q($A)} (vr : ExSum R r)
-    (va : ExSum A a) :
-    MetaM <| Result (ExSum A) q($r • $a) := do
-  Lean.Core.checkSystem decl_name%.toString
-  match va with
-  | .zero sA => do
+  (sR : Q(CommSemiring $R)) (sRA : Q(Algebra $R $A)) {r : Q($R)} {a : Q($A)} (vr : ExSum sR r)
+    : ExSum sA a →
+    MetaM (Result (ExSum sA) q($r • $a))
+  | .zero => do
     -- TODO: is this the right way to do this?
     assumeInstancesCommute
-    return ⟨_, .zero sA, q(smul_zero_rawCast (r := $r) (A := $A))⟩
-  | .one =>
-    return ⟨_, .add sRA vr (.const (e := q(1)) 1 .none) (.zero sA) , q(add_rawCast_zero.symm)⟩
+    return ⟨_, .zero, q(smul_zero_rawCast (r := $r) (A := $A))⟩
+  | .one => do
+    assumeInstancesCommute
+    return ⟨_, .add sRA vr (.const (e := q(1 : $A)) 1 .none) .zero, q((add_rawCast_zero).symm)⟩
     /- Note: removing the (a := a) produces an inscrutable error during a pattern match-/
-  | .add (R := S) (sR := sS) sSA (r := s) (a := a) vs va vt =>
+  | .add (R := S) (sR := sS) sSA (r := s) (a := a) vs va vt => do
     assumeInstancesCommute
     let ⟨et, vt, pt⟩ ← evalSMul sA sR sRA vr vt
     let ⟨u₁, R₁, iR₁, sR₁A, r₁, vr₁, pr₁⟩ ← matchRingsSMul sS sSA sR sRA vs vr a
@@ -297,7 +360,7 @@ partial def evalSMul {u v : Level} {R : Q(Type u)} {A : Q(Type v)} (sA : Q(CommS
 end
 
 partial def eval {u : Lean.Level} {A : Q(Type u)} (sA : Q(CommSemiring $A))
-    (e : Q($A)) : AtomM (Result (ExSum A) e) := Lean.withIncRecDepth do
+    (e : Q($A)) : AtomM (Result (ExSum sA) e) := Lean.withIncRecDepth do
   let els := do
     evalAtom sA e
   let .const n _ := (← withReducible <| whnf e).getAppFn | els
@@ -343,8 +406,8 @@ def normalize (goal : MVarId) : AtomM MVarId := do
   have sA : Q(CommSemiring $A) := ← synthInstanceQ q(CommSemiring $A)
   have e₁ : Q($A) := e₁
   have e₂ : Q($A) := e₂
-  let (⟨a, exa, pa⟩ : Result (ExSum A) e₁) ← eval sA e₁
-  let (⟨b, exb, pb⟩ : Result (ExSum A) e₂) ← eval sA e₂
+  let (⟨a, exa, pa⟩ : Result (ExSum sA) e₁) ← eval sA e₁
+  let (⟨b, exb, pb⟩ : Result (ExSum sA) e₂) ← eval sA e₂
   let g' ← mkFreshExprMVarQ q($a = $b)
   goal.assign q(eq_congr $pa $pb $g' : $e₁ = $e₂)
   -- if ← isDefEq a b then
