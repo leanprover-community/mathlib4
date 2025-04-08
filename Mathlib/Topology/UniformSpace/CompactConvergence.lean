@@ -375,7 +375,7 @@ continuous maps `C(α, β)` is complete (wrt the compact convergence uniformity)
 Sufficient conditions on `α` to satisfy this condition are (weak) local compactness (see
 `ContinuousMap.instCompleteSpaceOfWeaklyLocallyCompactSpace`) and sequential compactness (see
 `ContinuousMap.instCompleteSpaceOfSequentialSpace`). -/
-lemma completeSpace_of_IsCoherentWith (h : IsCoherentWith {K : Set α | IsCompact K}) :
+lemma completeSpace_of_isCoherentWith (h : IsCoherentWith {K : Set α | IsCompact K}) :
     CompleteSpace C(α, β) := by
   rw [completeSpace_iff_isComplete_range
     isUniformEmbedding_toUniformOnFunIsCompact.isUniformInducing,
