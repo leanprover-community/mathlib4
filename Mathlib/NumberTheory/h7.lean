@@ -176,6 +176,11 @@ def n := q^2 / (2 * m K)
 
 variable (u : Fin (m  K) × Fin (n K q)) (t : Fin q × Fin q) (hq0 : 0 < q)
 
+-- abbrev a (t : Fin (q * q)): ℕ := (finProdFinEquiv.symm.1 t).1 + 1
+-- abbrev b (t : Fin (q * q)): ℕ := (finProdFinEquiv.symm.1 t).2 + 1
+-- abbrev l (u : Fin (m  K * n K q)) : ℕ := (finProdFinEquiv.symm.1 u).1 + 1
+-- abbrev k (u : Fin (m  K * n K q))  : ℕ := (finProdFinEquiv.symm.1 u).2 + 1
+
 open Nat in include hq0 in
 lemma c1a : IsIntegral ℤ ((c₁ K α' β' γ')^(m K*q) • (α'^( (t.1 + 1) * (u.1 + 1) : ℕ))) := by
   apply c₁ac K α' β' γ' α' (m K) q (t.1 + 1) (u.1 + 1) ?_ ?_
@@ -723,7 +728,14 @@ lemma rho_nonzero (t : Fin q × Fin q) :
 
 lemma cρ_ne_zero : cρ K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0 ≠ 0 := by
   unfold cρ
-  sorry
+  intros H
+  simp only [mul_eq_zero, pow_eq_zero_iff', ne_eq, OfNat.ofNat_ne_zero, false_or, not_or] at H
+  rcases H with ⟨H1,H2⟩
+  have := c₁neq0 K α' β' γ'
+  apply this
+  exact H1
+  apply c₁neq0 K α' β' γ'
+  simp_all only [ne_eq, map_eq_zero]
 
 lemma ρ_is_int : IsIntegral ℤ (cρ K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0
   • rho K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0) := by
