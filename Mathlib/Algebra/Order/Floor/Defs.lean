@@ -71,11 +71,9 @@ instance : FloorSemiring ℕ where
   ceil := id
   floor_of_neg ha := (Nat.not_lt_zero _ ha).elim
   gc_floor _ := by
-    rw [Nat.cast_id]
-    rfl
+    rw [Nat.cast_id, id_def]
   gc_ceil n a := by
-    rw [Nat.cast_id]
-    rfl
+    rw [Nat.cast_id, id_def]
 
 namespace Nat
 
@@ -153,11 +151,9 @@ instance : FloorRing ℤ where
   floor := id
   ceil := id
   gc_coe_floor a b := by
-    rw [Int.cast_id]
-    rfl
+    rw [Int.cast_id, id_def]
   gc_ceil_coe a b := by
-    rw [Int.cast_id]
-    rfl
+    rw [Int.cast_id, id_def]
 
 /-- A `FloorRing` constructor from the `floor` function alone. -/
 def FloorRing.ofFloor (α) [LinearOrderedRing α] (floor : α → ℤ)

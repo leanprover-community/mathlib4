@@ -529,10 +529,10 @@ instance WithBot.instArchimedean (α) [OrderedAddCommMonoid α] [Archimedean α]
     Archimedean (WithBot α) := by
   constructor
   intro x y hxy
-  induction y with
+  cases y with
   | bot => exact absurd hxy bot_le.not_lt
   | coe y =>
-    induction x with
+    cases x with
     | bot => refine ⟨0, bot_le⟩
     | coe x => simpa [← WithBot.coe_nsmul] using (Archimedean.arch x (by simpa using hxy))
 
@@ -540,9 +540,9 @@ instance WithZero.instMulArchimedean (α) [OrderedCommMonoid α] [MulArchimedean
     MulArchimedean (WithZero α) := by
   constructor
   intro x y hxy
-  induction y with
-  | h₁ => exact absurd hxy (zero_le _).not_lt
-  | h₂ y =>
-    induction x with
-    | h₁ => refine ⟨0, zero_le _⟩
-    | h₂ x => simpa [← WithZero.coe_pow] using (MulArchimedean.arch x (by simpa using hxy))
+  cases y with
+  | zero => exact absurd hxy (zero_le _).not_lt
+  | coe y =>
+    cases x with
+    | zero => refine ⟨0, zero_le _⟩
+    | coe x => simpa [← WithZero.coe_pow] using (MulArchimedean.arch x (by simpa using hxy))
