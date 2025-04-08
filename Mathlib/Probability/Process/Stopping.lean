@@ -22,7 +22,7 @@ Definition and properties of stopping times.
 
 * `ProgMeasurable.stoppedProcess`: the stopped process of a progressively measurable process is
   progressively measurable.
-* `memℒp_stoppedProcess`: if a process belongs to `ℒp` at every time in `ℕ`, then its stopped
+* `memLp_stoppedProcess`: if a process belongs to `ℒp` at every time in `ℕ`, then its stopped
   process belongs to `ℒp` as well.
 
 ## Tags
@@ -178,7 +178,7 @@ theorem IsStoppingTime.measurableSet_lt_of_isLUB (hτ : IsStoppingTime f τ) (i 
 theorem IsStoppingTime.measurableSet_lt (hτ : IsStoppingTime f τ) (i : ι) :
     MeasurableSet[f i] {ω | τ ω < i} := by
   obtain ⟨i', hi'_lub⟩ : ∃ i', IsLUB (Set.Iio i) i' := exists_lub_Iio i
-  cases' lub_Iio_eq_self_or_Iio_eq_Iic i hi'_lub with hi'_eq_i h_Iio_eq_Iic
+  rcases lub_Iio_eq_self_or_Iio_eq_Iic i hi'_lub with hi'_eq_i | h_Iio_eq_Iic
   · rw [← hi'_eq_i] at hi'_lub ⊢
     exact hτ.measurableSet_lt_of_isLUB i' hi'_lub
   · have h_lt_eq_preimage : {ω : Ω | τ ω < i} = τ ⁻¹' Set.Iio i := rfl
@@ -568,7 +568,7 @@ theorem measurableSet_inter_le [TopologicalSpace ι] [SecondCountableTopology ι
       intro
       constructor <;> intro h
       · exact Or.inl h
-      · cases' h with h h
+      · rcases h with h | h
         · exact h
         · exact hτi.trans h
     simp only [hτi, false_or, and_false, false_and, iff_false, not_and, not_le, and_imp]
@@ -643,8 +643,8 @@ theorem measurableSet_eq_stopping_time [AddGroup ι] [TopologicalSpace ι] [Meas
     refine ⟨fun h => ⟨⟨?_, h.2⟩, ?_⟩, fun h => ⟨?_, h.1.2⟩⟩
     · rw [h.1]
     · rw [← h.1]; exact h.2
-    · cases' h with h' hσ_le
-      cases' h' with h_eq hτ_le
+    · obtain ⟨h', hσ_le⟩ := h
+      obtain ⟨h_eq, hτ_le⟩ := h'
       rwa [min_eq_left hτ_le, min_eq_left hσ_le] at h_eq
   rw [this]
   refine
@@ -666,8 +666,8 @@ theorem measurableSet_eq_stopping_time_of_countable [Countable ι] [TopologicalS
     refine ⟨fun h => ⟨⟨?_, h.2⟩, ?_⟩, fun h => ⟨?_, h.1.2⟩⟩
     · rw [h.1]
     · rw [← h.1]; exact h.2
-    · cases' h with h' hπ_le
-      cases' h' with h_eq hτ_le
+    · obtain ⟨h', hπ_le⟩ := h
+      obtain ⟨h_eq, hτ_le⟩ := h'
       rwa [min_eq_left hτ_le, min_eq_left hπ_le] at h_eq
   rw [this]
   refine
@@ -776,7 +776,7 @@ theorem stronglyMeasurable_stoppedValue_of_le (h : ProgMeasurable f u) (hτ : Is
     ext1 ω; simp only [stoppedValue, Function.comp_apply, Subtype.coe_mk]
   rw [this]
   refine StronglyMeasurable.comp_measurable (h n) ?_
-  exact (hτ.measurable_of_le hτ_le).subtype_mk.prod_mk measurable_id
+  exact (hτ.measurable_of_le hτ_le).subtype_mk.prodMk measurable_id
 
 theorem measurable_stoppedValue [MetrizableSpace β] [MeasurableSpace β] [BorelSpace β]
     (hf_prog : ProgMeasurable f u) (hτ : IsStoppingTime f τ) :
@@ -806,7 +806,7 @@ theorem stoppedValue_eq_of_mem_finset [AddCommMonoid E] {s : Finset ι} (hbdd : 
   ext y
   classical
   rw [stoppedValue, Finset.sum_apply, Finset.sum_indicator_eq_sum_filter]
-  suffices Finset.filter (fun i => y ∈ {ω : Ω | τ ω = i}) s = ({τ y} : Finset ι) by
+  suffices {i ∈ s | y ∈ {ω : Ω | τ ω = i}} = ({τ y} : Finset ι) by
     rw [this, Finset.sum_singleton]
   ext1 ω
   simp only [Set.mem_setOf_eq, Finset.mem_filter, Finset.mem_singleton]
@@ -821,7 +821,7 @@ theorem stoppedValue_eq' [Preorder ι] [LocallyFiniteOrderBot ι] [AddCommMonoid
 
 theorem stoppedProcess_eq_of_mem_finset [LinearOrder ι] [AddCommMonoid E] {s : Finset ι} (n : ι)
     (hbdd : ∀ ω, τ ω < n → τ ω ∈ s) : stoppedProcess u τ n = Set.indicator {a | n ≤ τ a} (u n) +
-      ∑ i ∈ s.filter (· < n), Set.indicator {ω | τ ω = i} (u i) := by
+      ∑ i ∈ s with i < n, Set.indicator {ω | τ ω = i} (u i) := by
   ext ω
   rw [Pi.add_apply, Finset.sum_apply]
   rcases le_or_lt n (τ ω) with h | h
@@ -853,24 +853,24 @@ section StoppedValue
 
 variable [PartialOrder ι] {ℱ : Filtration ι m} [NormedAddCommGroup E]
 
-theorem memℒp_stoppedValue_of_mem_finset (hτ : IsStoppingTime ℱ τ) (hu : ∀ n, Memℒp (u n) p μ)
-    {s : Finset ι} (hbdd : ∀ ω, τ ω ∈ s) : Memℒp (stoppedValue u τ) p μ := by
+theorem memLp_stoppedValue_of_mem_finset (hτ : IsStoppingTime ℱ τ) (hu : ∀ n, MemLp (u n) p μ)
+    {s : Finset ι} (hbdd : ∀ ω, τ ω ∈ s) : MemLp (stoppedValue u τ) p μ := by
   rw [stoppedValue_eq_of_mem_finset hbdd]
-  refine memℒp_finset_sum' _ fun i _ => Memℒp.indicator ?_ (hu i)
+  refine memLp_finset_sum' _ fun i _ => MemLp.indicator ?_ (hu i)
   refine ℱ.le i {a : Ω | τ a = i} (hτ.measurableSet_eq_of_countable_range ?_ i)
   refine ((Finset.finite_toSet s).subset fun ω hω => ?_).countable
   obtain ⟨y, rfl⟩ := hω
   exact hbdd y
 
-theorem memℒp_stoppedValue [LocallyFiniteOrderBot ι] (hτ : IsStoppingTime ℱ τ)
-    (hu : ∀ n, Memℒp (u n) p μ) {N : ι} (hbdd : ∀ ω, τ ω ≤ N) : Memℒp (stoppedValue u τ) p μ :=
-  memℒp_stoppedValue_of_mem_finset hτ hu fun ω => Finset.mem_Iic.mpr (hbdd ω)
+theorem memLp_stoppedValue [LocallyFiniteOrderBot ι] (hτ : IsStoppingTime ℱ τ)
+    (hu : ∀ n, MemLp (u n) p μ) {N : ι} (hbdd : ∀ ω, τ ω ≤ N) : MemLp (stoppedValue u τ) p μ :=
+  memLp_stoppedValue_of_mem_finset hτ hu fun ω => Finset.mem_Iic.mpr (hbdd ω)
 
 theorem integrable_stoppedValue_of_mem_finset (hτ : IsStoppingTime ℱ τ)
     (hu : ∀ n, Integrable (u n) μ) {s : Finset ι} (hbdd : ∀ ω, τ ω ∈ s) :
     Integrable (stoppedValue u τ) μ := by
-  simp_rw [← memℒp_one_iff_integrable] at hu ⊢
-  exact memℒp_stoppedValue_of_mem_finset hτ hu hbdd
+  simp_rw [← memLp_one_iff_integrable] at hu ⊢
+  exact memLp_stoppedValue_of_mem_finset hτ hu hbdd
 
 variable (ι)
 
@@ -886,25 +886,25 @@ section StoppedProcess
 variable [LinearOrder ι] [TopologicalSpace ι] [OrderTopology ι] [FirstCountableTopology ι]
   {ℱ : Filtration ι m} [NormedAddCommGroup E]
 
-theorem memℒp_stoppedProcess_of_mem_finset (hτ : IsStoppingTime ℱ τ) (hu : ∀ n, Memℒp (u n) p μ)
-    (n : ι) {s : Finset ι} (hbdd : ∀ ω, τ ω < n → τ ω ∈ s) : Memℒp (stoppedProcess u τ n) p μ := by
+theorem memLp_stoppedProcess_of_mem_finset (hτ : IsStoppingTime ℱ τ) (hu : ∀ n, MemLp (u n) p μ)
+    (n : ι) {s : Finset ι} (hbdd : ∀ ω, τ ω < n → τ ω ∈ s) : MemLp (stoppedProcess u τ n) p μ := by
   rw [stoppedProcess_eq_of_mem_finset n hbdd]
-  refine Memℒp.add ?_ ?_
-  · exact Memℒp.indicator (ℱ.le n {a : Ω | n ≤ τ a} (hτ.measurableSet_ge n)) (hu n)
-  · suffices Memℒp (fun ω => ∑ i ∈ s.filter (· < n), {a : Ω | τ a = i}.indicator (u i) ω) p μ by
+  refine MemLp.add ?_ ?_
+  · exact MemLp.indicator (ℱ.le n {a : Ω | n ≤ τ a} (hτ.measurableSet_ge n)) (hu n)
+  · suffices MemLp (fun ω => ∑ i ∈ s with i < n, {a : Ω | τ a = i}.indicator (u i) ω) p μ by
       convert this using 1; ext1 ω; simp only [Finset.sum_apply]
-    refine memℒp_finset_sum _ fun i _ => Memℒp.indicator ?_ (hu i)
+    refine memLp_finset_sum _ fun i _ => MemLp.indicator ?_ (hu i)
     exact ℱ.le i {a : Ω | τ a = i} (hτ.measurableSet_eq i)
 
-theorem memℒp_stoppedProcess [LocallyFiniteOrderBot ι] (hτ : IsStoppingTime ℱ τ)
-    (hu : ∀ n, Memℒp (u n) p μ) (n : ι) : Memℒp (stoppedProcess u τ n) p μ :=
-  memℒp_stoppedProcess_of_mem_finset hτ hu n fun _ h => Finset.mem_Iio.mpr h
+theorem memLp_stoppedProcess [LocallyFiniteOrderBot ι] (hτ : IsStoppingTime ℱ τ)
+    (hu : ∀ n, MemLp (u n) p μ) (n : ι) : MemLp (stoppedProcess u τ n) p μ :=
+  memLp_stoppedProcess_of_mem_finset hτ hu n fun _ h => Finset.mem_Iio.mpr h
 
 theorem integrable_stoppedProcess_of_mem_finset (hτ : IsStoppingTime ℱ τ)
     (hu : ∀ n, Integrable (u n) μ) (n : ι) {s : Finset ι} (hbdd : ∀ ω, τ ω < n → τ ω ∈ s) :
     Integrable (stoppedProcess u τ n) μ := by
-  simp_rw [← memℒp_one_iff_integrable] at hu ⊢
-  exact memℒp_stoppedProcess_of_mem_finset hτ hu n hbdd
+  simp_rw [← memLp_one_iff_integrable] at hu ⊢
+  exact memLp_stoppedProcess_of_mem_finset hτ hu n hbdd
 
 theorem integrable_stoppedProcess [LocallyFiniteOrderBot ι] (hτ : IsStoppingTime ℱ τ)
     (hu : ∀ n, Integrable (u n) μ) (n : ι) : Integrable (stoppedProcess u τ n) μ :=
@@ -1048,24 +1048,32 @@ section Condexp
 variable [LinearOrder ι] {μ : Measure Ω} {ℱ : Filtration ι m} {τ σ : Ω → ι} {E : Type*}
   [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E] {f : Ω → E}
 
-theorem condexp_stopping_time_ae_eq_restrict_eq_of_countable_range [SigmaFiniteFiltration μ ℱ]
+theorem condExp_stopping_time_ae_eq_restrict_eq_of_countable_range [SigmaFiniteFiltration μ ℱ]
     (hτ : IsStoppingTime ℱ τ) (h_countable : (Set.range τ).Countable)
     [SigmaFinite (μ.trim (hτ.measurableSpace_le_of_countable_range h_countable))] (i : ι) :
     μ[f|hτ.measurableSpace] =ᵐ[μ.restrict {x | τ x = i}] μ[f|ℱ i] := by
-  refine condexp_ae_eq_restrict_of_measurableSpace_eq_on
+  refine condExp_ae_eq_restrict_of_measurableSpace_eq_on
     (hτ.measurableSpace_le_of_countable_range h_countable) (ℱ.le i)
     (hτ.measurableSet_eq_of_countable_range' h_countable i) fun t => ?_
   rw [Set.inter_comm _ t, IsStoppingTime.measurableSet_inter_eq_iff]
 
-theorem condexp_stopping_time_ae_eq_restrict_eq_of_countable [Countable ι]
+@[deprecated (since := "2025-01-21")]
+alias condexp_stopping_time_ae_eq_restrict_eq_of_countable_range :=
+  condExp_stopping_time_ae_eq_restrict_eq_of_countable_range
+
+theorem condExp_stopping_time_ae_eq_restrict_eq_of_countable [Countable ι]
     [SigmaFiniteFiltration μ ℱ] (hτ : IsStoppingTime ℱ τ)
     [SigmaFinite (μ.trim hτ.measurableSpace_le_of_countable)] (i : ι) :
     μ[f|hτ.measurableSpace] =ᵐ[μ.restrict {x | τ x = i}] μ[f|ℱ i] :=
-  condexp_stopping_time_ae_eq_restrict_eq_of_countable_range hτ (Set.to_countable _) i
+  condExp_stopping_time_ae_eq_restrict_eq_of_countable_range hτ (Set.to_countable _) i
+
+@[deprecated (since := "2025-01-21")]
+alias condexp_stopping_time_ae_eq_restrict_eq_of_countable :=
+  condExp_stopping_time_ae_eq_restrict_eq_of_countable
 
 variable [(Filter.atTop : Filter ι).IsCountablyGenerated]
 
-theorem condexp_min_stopping_time_ae_eq_restrict_le_const (hτ : IsStoppingTime ℱ τ) (i : ι)
+theorem condExp_min_stopping_time_ae_eq_restrict_le_const (hτ : IsStoppingTime ℱ τ) (i : ι)
     [SigmaFinite (μ.trim (hτ.min_const i).measurableSpace_le)] :
     μ[f|(hτ.min_const i).measurableSpace] =ᵐ[μ.restrict {x | τ x ≤ i}] μ[f|hτ.measurableSpace] := by
   have : SigmaFinite (μ.trim hτ.measurableSpace_le) :=
@@ -1073,21 +1081,28 @@ theorem condexp_min_stopping_time_ae_eq_restrict_le_const (hτ : IsStoppingTime 
       rw [IsStoppingTime.measurableSpace_min_const]
       exact inf_le_left
     sigmaFiniteTrim_mono _ h_le
-  refine (condexp_ae_eq_restrict_of_measurableSpace_eq_on hτ.measurableSpace_le
+  refine (condExp_ae_eq_restrict_of_measurableSpace_eq_on hτ.measurableSpace_le
     (hτ.min_const i).measurableSpace_le (hτ.measurableSet_le' i) fun t => ?_).symm
   rw [Set.inter_comm _ t, hτ.measurableSet_inter_le_const_iff]
 
+@[deprecated (since := "2025-01-21")]
+alias condexp_min_stopping_time_ae_eq_restrict_le_const :=
+  condExp_min_stopping_time_ae_eq_restrict_le_const
+
 variable [TopologicalSpace ι] [OrderTopology ι]
 
-theorem condexp_stopping_time_ae_eq_restrict_eq [FirstCountableTopology ι]
+theorem condExp_stopping_time_ae_eq_restrict_eq [FirstCountableTopology ι]
     [SigmaFiniteFiltration μ ℱ] (hτ : IsStoppingTime ℱ τ)
     [SigmaFinite (μ.trim hτ.measurableSpace_le)] (i : ι) :
     μ[f|hτ.measurableSpace] =ᵐ[μ.restrict {x | τ x = i}] μ[f|ℱ i] := by
-  refine condexp_ae_eq_restrict_of_measurableSpace_eq_on hτ.measurableSpace_le (ℱ.le i)
+  refine condExp_ae_eq_restrict_of_measurableSpace_eq_on hτ.measurableSpace_le (ℱ.le i)
     (hτ.measurableSet_eq' i) fun t => ?_
   rw [Set.inter_comm _ t, IsStoppingTime.measurableSet_inter_eq_iff]
 
-theorem condexp_min_stopping_time_ae_eq_restrict_le [MeasurableSpace ι] [SecondCountableTopology ι]
+@[deprecated (since := "2025-01-21")]
+alias condexp_stopping_time_ae_eq_restrict_eq := condExp_stopping_time_ae_eq_restrict_eq
+
+theorem condExp_min_stopping_time_ae_eq_restrict_le [MeasurableSpace ι] [SecondCountableTopology ι]
     [BorelSpace ι] (hτ : IsStoppingTime ℱ τ) (hσ : IsStoppingTime ℱ σ)
     [SigmaFinite (μ.trim (hτ.min hσ).measurableSpace_le)] :
     μ[f|(hτ.min hσ).measurableSpace] =ᵐ[μ.restrict {x | τ x ≤ σ x}] μ[f|hτ.measurableSpace] := by
@@ -1097,9 +1112,12 @@ theorem condexp_min_stopping_time_ae_eq_restrict_le [MeasurableSpace ι] [Second
       · exact inf_le_left
       · simp_all only
     sigmaFiniteTrim_mono _ h_le
-  refine (condexp_ae_eq_restrict_of_measurableSpace_eq_on hτ.measurableSpace_le
+  refine (condExp_ae_eq_restrict_of_measurableSpace_eq_on hτ.measurableSpace_le
     (hτ.min hσ).measurableSpace_le (hτ.measurableSet_le_stopping_time hσ) fun t => ?_).symm
   rw [Set.inter_comm _ t, IsStoppingTime.measurableSet_inter_le_iff]; simp_all only
+
+@[deprecated (since := "2025-01-21")]
+alias condexp_min_stopping_time_ae_eq_restrict_le := condExp_min_stopping_time_ae_eq_restrict_le
 
 end Condexp
 

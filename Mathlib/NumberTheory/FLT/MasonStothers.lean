@@ -84,8 +84,8 @@ protected theorem Polynomial.abc
   by_cases hw : w = 0
   · right
     rw [hw] at wab wbc
-    cases' hab.wronskian_eq_zero_iff.mp wab.symm with ga gb
-    cases' hbc.wronskian_eq_zero_iff.mp wbc.symm with _ gc
+    obtain ⟨ga, gb⟩ := hab.wronskian_eq_zero_iff.mp wab.symm
+    obtain ⟨_, gc⟩ := hbc.wronskian_eq_zero_iff.mp wbc.symm
     exact ⟨ga, gb, gc⟩
   · left
     -- use the subcall three times, using the symmetry in `a, b, c`

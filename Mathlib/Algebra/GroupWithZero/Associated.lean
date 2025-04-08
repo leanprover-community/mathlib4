@@ -504,9 +504,6 @@ instance uniqueUnits : Unique (Associates M)ˣ where
     exact Quotient.inductionOn₂ a b <| fun a b hab hba ↦ Units.ext <| Quotient.sound <|
       associated_one_of_associated_mul_one <| Quotient.exact hab
 
-@[deprecated (since := "2024-07-22")] alias mul_eq_one_iff := mul_eq_one
-@[deprecated (since := "2024-07-22")] protected alias units_eq_one := Subsingleton.elim
-
 @[simp]
 theorem coe_unit_eq_one (u : (Associates M)ˣ) : (u : Associates M) = 1 := by
   simp [eq_iff_true_of_subsingleton]

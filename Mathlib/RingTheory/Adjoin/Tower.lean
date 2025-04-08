@@ -86,11 +86,11 @@ open Finset Submodule
 
 theorem exists_subalgebra_of_fg (hAC : (⊤ : Subalgebra A C).FG) (hBC : (⊤ : Submodule B C).FG) :
     ∃ B₀ : Subalgebra A B, B₀.FG ∧ (⊤ : Submodule B₀ C).FG := by
-  cases' hAC with x hx
-  cases' hBC with y hy
+  obtain ⟨x, hx⟩ := hAC
+  obtain ⟨y, hy⟩ := hBC
   have := hy
   simp_rw [eq_top_iff', mem_span_finset] at this
-  choose f hf using this
+  choose f _ hf using this
   classical
   let s : Finset B := Finset.image₂ f (x ∪ y * y) y
   have hxy :
@@ -141,7 +141,8 @@ variable [Algebra A B] [Algebra B C] [Algebra A C] [IsScalarTower A B C]
 A is noetherian, and C is algebra-finite over A, and C is module-finite over B,
 then B is algebra-finite over A.
 
-References: Atiyah--Macdonald Proposition 7.8; Stacks 00IS; Altman--Kleiman 16.17. -/
+References: Atiyah--Macdonald Proposition 7.8; Altman--Kleiman 16.17. -/
+@[stacks 00IS]
 theorem fg_of_fg_of_fg [IsNoetherianRing A] (hAC : (⊤ : Subalgebra A C).FG)
     (hBC : (⊤ : Submodule B C).FG) (hBCi : Function.Injective (algebraMap B C)) :
     (⊤ : Subalgebra A B).FG :=

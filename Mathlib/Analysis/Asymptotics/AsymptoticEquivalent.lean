@@ -66,8 +66,9 @@ section NormedAddCommGroup
 
 variable {α β : Type*} [NormedAddCommGroup β]
 
-/-- Two functions `u` and `v` are said to be asymptotically equivalent along a filter `l` when
-    `u x - v x = o(v x)` as `x` converges along `l`. -/
+/-- Two functions `u` and `v` are said to be asymptotically equivalent along a filter `l`
+  (denoted as `u ~[l] v` in the `Asymptotics` namespace)
+  when `u x - v x = o(v x)` as `x` converges along `l`. -/
 def IsEquivalent (l : Filter α) (u v : α → β) :=
   (u - v) =o[l] v
 
@@ -219,7 +220,6 @@ theorem IsEquivalent.smul {α E 𝕜 : Type*} [NormedField 𝕜] [NormedAddCommG
     (fun x ↦ a x • u x) ~[l] fun x ↦ b x • v x := by
   rcases hab.exists_eq_mul with ⟨φ, hφ, habφ⟩
   have : ((fun x ↦ a x • u x) - (fun x ↦ b x • v x)) =ᶠ[l] fun x ↦ b x • (φ x • u x - v x) := by
-    -- Porting note: `convert` has become too strong, so we need to specify `using 1`.
     convert (habφ.comp₂ (· • ·) <| EventuallyEq.refl _ u).sub
       (EventuallyEq.refl _ fun x ↦ b x • v x) using 1
     ext
@@ -297,7 +297,7 @@ variable {α β : Type*} [NormedLinearOrderedField β] {u v : α → β} {l : Fi
 theorem IsEquivalent.tendsto_atTop [OrderTopology β] (huv : u ~[l] v) (hu : Tendsto u l atTop) :
     Tendsto v l atTop :=
   let ⟨φ, hφ, h⟩ := huv.symm.exists_eq_mul
-  Tendsto.congr' h.symm (mul_comm u φ ▸ hu.atTop_mul zero_lt_one hφ)
+  Tendsto.congr' h.symm (mul_comm u φ ▸ hu.atTop_mul_pos zero_lt_one hφ)
 
 theorem IsEquivalent.tendsto_atTop_iff [OrderTopology β] (huv : u ~[l] v) :
     Tendsto u l atTop ↔ Tendsto v l atTop :=

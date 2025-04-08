@@ -3,6 +3,7 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Gabriel Ebner, Yury Kudryashov
 -/
+import Mathlib.Data.Set.Accumulate
 import Mathlib.Order.ConditionallyCompleteLattice.Finset
 import Mathlib.Order.Interval.Finset.Nat
 
@@ -120,8 +121,6 @@ open scoped Classical in
 noncomputable instance : ConditionallyCompleteLinearOrderBot ℕ :=
   { (inferInstance : OrderBot ℕ), (LinearOrder.toLattice : Lattice ℕ),
     (inferInstance : LinearOrder ℕ) with
-    -- sup := sSup -- Porting note: removed, unnecessary?
-    -- inf := sInf -- Porting note: removed, unnecessary?
     le_csSup := fun s a hb ha ↦ by rw [sSup_def hb]; revert a ha; exact @Nat.find_spec _ _ hb
     csSup_le := fun s a _ ha ↦ by rw [sSup_def ⟨a, ha⟩]; exact Nat.find_min' _ ha
     le_csInf := fun s a hs hb ↦ by
@@ -179,7 +178,7 @@ section
 variable {α : Type*} [CompleteLattice α]
 
 theorem iSup_lt_succ (u : ℕ → α) (n : ℕ) : ⨆ k < n + 1, u k = (⨆ k < n, u k) ⊔ u n := by
-  simp [Nat.lt_succ_iff_lt_or_eq, iSup_or, iSup_sup_eq]
+  simp_rw [Nat.lt_add_one_iff, biSup_le_eq_sup]
 
 theorem iSup_lt_succ' (u : ℕ → α) (n : ℕ) : ⨆ k < n + 1, u k = u 0 ⊔ ⨆ k < n, u (k + 1) := by
   rw [← sup_iSup_nat_succ]
@@ -234,5 +233,8 @@ theorem biInter_le_succ (u : ℕ → Set α) (n : ℕ) : ⋂ k ≤ n + 1, u k = 
 
 theorem biInter_le_succ' (u : ℕ → Set α) (n : ℕ) : ⋂ k ≤ n + 1, u k = u 0 ∩ ⋂ k ≤ n, u (k + 1) :=
   Nat.iInf_le_succ' u n
+
+theorem accumulate_succ (u : ℕ → Set α) (n : ℕ) :
+    Accumulate u (n + 1) = Accumulate u n ∪ u (n + 1) := biUnion_le_succ u n
 
 end Set

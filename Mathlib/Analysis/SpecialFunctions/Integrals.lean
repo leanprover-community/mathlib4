@@ -7,7 +7,7 @@ import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 import Mathlib.Analysis.SpecialFunctions.NonIntegrable
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.ArctanDeriv
-import Mathlib.MeasureTheory.Integral.FundThmCalculus
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 
 /-!
 # Integration of specific interval integrals
@@ -136,7 +136,7 @@ theorem intervalIntegrable_cpow {r : ℂ} (h : 0 ≤ r.re ∨ (0 : ℝ) ∉ [[a,
     rw [intervalIntegrable_iff_integrableOn_Ioc_of_le hc] at this ⊢
     refine IntegrableOn.congr_fun this (fun x hx => ?_) measurableSet_Ioc
     dsimp only
-    rw [Complex.norm_eq_abs, Complex.abs_cpow_eq_rpow_re_of_pos hx.1, ← h', rpow_zero]
+    rw [Complex.norm_cpow_eq_rpow_re_of_pos hx.1, ← h', rpow_zero]
   · -- case `c < 0`: integrand is identically constant, *except* at `x = 0` if `r ≠ 0`.
     apply IntervalIntegrable.symm
     rw [intervalIntegrable_iff_integrableOn_Ioc_of_le hc.le]
@@ -147,7 +147,7 @@ theorem intervalIntegrable_cpow {r : ℂ} (h : 0 ≤ r.re ∨ (0 : ℝ) ∉ [[a,
     · have : ∀ x : ℝ, x ∈ Ioo c 0 → ‖Complex.exp (↑π * Complex.I * r)‖ = ‖(x : ℂ) ^ r‖ := by
         intro x hx
         rw [Complex.ofReal_cpow_of_nonpos hx.2.le, norm_mul, ← Complex.ofReal_neg,
-          Complex.norm_eq_abs (_ ^ _), Complex.abs_cpow_eq_rpow_re_of_pos (neg_pos.mpr hx.2), ← h',
+          Complex.norm_cpow_eq_rpow_re_of_pos (neg_pos.mpr hx.2), ← h',
           rpow_zero, one_mul]
       refine IntegrableOn.congr_fun ?_ this measurableSet_Ioo
       rw [integrableOn_const]
@@ -169,7 +169,7 @@ theorem intervalIntegrable_cpow' {r : ℂ} (h : -1 < r.re) :
       · intro x hx
         rw [uIoc_of_le hc] at hx
         dsimp only
-        rw [Complex.norm_eq_abs, Complex.abs_cpow_eq_rpow_re_of_pos hx.1]
+        rw [Complex.norm_cpow_eq_rpow_re_of_pos hx.1]
       · exact measurableSet_uIoc
     · refine ContinuousOn.aestronglyMeasurable ?_ measurableSet_uIoc
       refine continuousOn_of_forall_continuousAt fun x hx => ?_
@@ -196,7 +196,7 @@ theorem integrableOn_Ioo_cpow_iff {s : ℂ} {t : ℝ} (ht : 0 < t) :
   have B : IntegrableOn (fun a ↦ a ^ s.re) (Ioo 0 t) := by
     apply (integrableOn_congr_fun _ measurableSet_Ioo).1 h.norm
     intro a ha
-    simp [Complex.abs_cpow_eq_rpow_re_of_pos ha.1]
+    simp [Complex.norm_cpow_eq_rpow_re_of_pos ha.1]
   rwa [integrableOn_Ioo_rpow_iff ht] at B
 
 @[simp]
@@ -345,7 +345,7 @@ theorem integral_cpow {r : ℂ} (h : -1 < r.re ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[
     (∫ x : ℝ in a..b, (x : ℂ) ^ r) = ((b : ℂ) ^ (r + 1) - (a : ℂ) ^ (r + 1)) / (r + 1) := by
   rw [sub_div]
   have hr : r + 1 ≠ 0 := by
-    cases' h with h h
+    rcases h with h | h
     · apply_fun Complex.re
       rw [Complex.add_re, Complex.one_re, Complex.zero_re, Ne, add_eq_zero_iff_eq_neg]
       exact h.ne'
@@ -382,18 +382,15 @@ theorem integral_rpow {r : ℝ} (h : -1 < r ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[a, 
     (∫ x in a..b, (x : ℂ) ^ (r : ℂ)) = ((b : ℂ) ^ (r + 1 : ℂ) - (a : ℂ) ^ (r + 1 : ℂ)) / (r + 1) :=
     integral_cpow h'
   apply_fun Complex.re at this; convert this
-  · simp_rw [intervalIntegral_eq_integral_uIoc, Complex.real_smul, Complex.re_ofReal_mul]
-    -- Porting note: was `change ... with ...`
-    have : Complex.re = RCLike.re := rfl
-    rw [this, ← integral_re]
-    · rfl
+  · simp_rw [intervalIntegral_eq_integral_uIoc, Complex.real_smul, Complex.re_ofReal_mul, rpow_def,
+      ← RCLike.re_eq_complex_re, smul_eq_mul]
+    rw [integral_re]
     refine intervalIntegrable_iff.mp ?_
-    cases' h' with h' h'
+    rcases h' with h' | h'
     · exact intervalIntegrable_cpow' h'
     · exact intervalIntegrable_cpow (Or.inr h'.2)
   · rw [(by push_cast; rfl : (r : ℂ) + 1 = ((r + 1 : ℝ) : ℂ))]
-    simp_rw [div_eq_inv_mul, ← Complex.ofReal_inv, Complex.re_ofReal_mul, Complex.sub_re]
-    rfl
+    simp_rw [div_eq_inv_mul, ← Complex.ofReal_inv, Complex.re_ofReal_mul, Complex.sub_re, rpow_def]
 
 theorem integral_zpow {n : ℤ} (h : 0 ≤ n ∨ n ≠ -1 ∧ (0 : ℝ) ∉ [[a, b]]) :
     ∫ x in a..b, x ^ n = (b ^ (n + 1) - a ^ (n + 1)) / (n + 1) := by
@@ -492,20 +489,20 @@ lemma integral_log_from_zero_of_pos (ht : 0 < b) : ∫ s in (0)..b, log s = b * 
   · exact ht
   · intro s ⟨hs, _ ⟩
     simpa using (hasDerivAt_mul_log hs.ne.symm).sub (hasDerivAt_id s)
-  · simpa [mul_comm] using ((tendsto_log_mul_rpow_nhds_zero zero_lt_one).sub
+  · simpa [mul_comm] using ((tendsto_log_mul_rpow_nhdsGT_zero zero_lt_one).sub
       (tendsto_nhdsWithin_of_tendsto_nhds Filter.tendsto_id))
   · exact tendsto_nhdsWithin_of_tendsto_nhds (ContinuousAt.tendsto (by fun_prop))
 
 /-- Helper lemma for `integral_log`: case where `a = 0`. -/
 lemma integral_log_from_zero {b : ℝ} : ∫ s in (0)..b, log s = b * log b - b := by
-    rcases lt_trichotomy b 0 with h | h | h
-    · -- If t is negative, use that log is an even function to reduce to the positive case.
-      conv => arg 1; arg 1; intro t; rw [← log_neg_eq_log]
-      rw [intervalIntegral.integral_comp_neg, intervalIntegral.integral_symm, neg_zero,
-        integral_log_from_zero_of_pos (Left.neg_pos_iff.mpr h), log_neg_eq_log]
-      ring
-    · simp [h]
-    · exact integral_log_from_zero_of_pos h
+  rcases lt_trichotomy b 0 with h | h | h
+  · -- If t is negative, use that log is an even function to reduce to the positive case.
+    conv => arg 1; arg 1; intro t; rw [← log_neg_eq_log]
+    rw [intervalIntegral.integral_comp_neg, intervalIntegral.integral_symm, neg_zero,
+      integral_log_from_zero_of_pos (Left.neg_pos_iff.mpr h), log_neg_eq_log]
+    ring
+  · simp [h]
+  · exact integral_log_from_zero_of_pos h
 
 @[simp]
 theorem integral_log : ∫ s in a..b, log s = b * log b - a * log a - b + a := by

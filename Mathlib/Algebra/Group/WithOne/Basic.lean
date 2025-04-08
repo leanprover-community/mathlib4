@@ -28,17 +28,11 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 namespace WithOne
 
 @[to_additive]
-instance involutiveInv [InvolutiveInv α] : InvolutiveInv (WithOne α) :=
-  { WithOne.inv with
-    inv_inv := fun a =>
-      (Option.map_map _ _ _).trans <| by simp_rw [inv_comp_inv, Option.map_id, id] }
+instance instInvolutiveInv [InvolutiveInv α] : InvolutiveInv (WithOne α) where
+  inv_inv a := (Option.map_map _ _ _).trans <| by simp_rw [inv_comp_inv, Option.map_id, id]
 
 section
 
--- Porting note: the workaround described below doesn't seem to be a problem even with
--- semireducible transparency
--- workaround: we make `WithOne`/`WithZero` irreducible for this definition, otherwise `simps`
--- will unfold it in the statement of the lemma it generates.
 /-- `WithOne.coe` as a bundled morphism -/
 @[to_additive (attr := simps apply) "`WithZero.coe` as a bundled morphism"]
 def coeMulHom [Mul α] : α →ₙ* WithOne α where
@@ -48,9 +42,6 @@ def coeMulHom [Mul α] : α →ₙ* WithOne α where
 end
 
 section lift
-
--- Porting note: these were never marked with `irreducible` when they were defined.
--- attribute [local semireducible] WithOne WithZero
 
 variable [Mul α] [MulOneClass β]
 
@@ -65,7 +56,6 @@ def lift : (α →ₙ* β) ≃ (WithOne α →* β) where
   invFun F := F.toMulHom.comp coeMulHom
   left_inv _ := MulHom.ext fun _ => rfl
   right_inv F := MonoidHom.ext fun x => WithOne.cases_on x F.map_one.symm (fun _ => rfl)
--- Porting note: the above proofs were broken because they were parenthesized wrong by mathport?
 
 variable (f : α →ₙ* β)
 
@@ -119,8 +109,6 @@ def _root_.MulEquiv.withOneCongr (e : α ≃* β) : WithOne α ≃* WithOne β :
     left_inv := (by induction · <;> simp)
     right_inv := (by induction · <;> simp) }
 
--- Porting note: for this declaration and the two below I added the `to_additive` attribute because
--- it seemed to be missing from mathlib3
 @[to_additive (attr := simp)]
 theorem _root_.MulEquiv.withOneCongr_refl : (MulEquiv.refl α).withOneCongr = MulEquiv.refl _ :=
   MulEquiv.toMonoidHom_injective map_id

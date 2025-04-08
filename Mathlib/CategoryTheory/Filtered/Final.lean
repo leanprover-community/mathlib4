@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Filtered.Connected
-import Mathlib.CategoryTheory.Limits.TypesFiltered
-import Mathlib.CategoryTheory.Limits.Final
+import Mathlib.CategoryTheory.Limits.Types.Filtered
+import Mathlib.CategoryTheory.Limits.Sifted
 
 /-!
 # Final functors with filtered (co)domain
@@ -298,26 +298,34 @@ theorem Functor.initial_iff_isCofiltered_costructuredArrow [IsCofilteredOrEmpty 
 
 /-- If `C` is filtered, then the structured arrow category on the diagonal functor `C ⥤ C × C`
 is filtered as well. -/
-instance [IsFiltered C] (X : C × C) : IsFiltered (StructuredArrow X (diag C)) := by
+instance [IsFilteredOrEmpty C] (X : C × C) : IsFiltered (StructuredArrow X (diag C)) := by
   haveI : ∀ Y, IsFiltered (StructuredArrow Y (Under.forget X.1)) := by
     rw [← final_iff_isFiltered_structuredArrow (Under.forget X.1)]
     infer_instance
   apply IsFiltered.of_equivalence (StructuredArrow.ofDiagEquivalence X).symm
 
 /-- The diagonal functor on any filtered category is final. -/
-instance Functor.final_diag_of_isFiltered [IsFiltered C] : Final (Functor.diag C) :=
+instance Functor.final_diag_of_isFiltered [IsFilteredOrEmpty C] : Final (Functor.diag C) :=
   final_of_isFiltered_structuredArrow _
+
+-- Adding this instance causes performance problems elsewhere, even with low priority
+theorem IsFilteredOrEmpty.isSiftedOrEmpty [IsFilteredOrEmpty C] : IsSiftedOrEmpty C :=
+  Functor.final_diag_of_isFiltered
+
+-- Adding this instance causes performance problems elsewhere, even with low priority
+attribute [local instance] IsFiltered.nonempty in
+theorem IsFiltered.isSifted [IsFiltered C] : IsSifted C where
 
 /-- If `C` is cofiltered, then the costructured arrow category on the diagonal functor `C ⥤ C × C`
 is cofiltered as well. -/
-instance [IsCofiltered C] (X : C × C) : IsCofiltered (CostructuredArrow (diag C) X) := by
+instance [IsCofilteredOrEmpty C] (X : C × C) : IsCofiltered (CostructuredArrow (diag C) X) := by
   haveI : ∀ Y, IsCofiltered (CostructuredArrow (Over.forget X.1) Y) := by
     rw [← initial_iff_isCofiltered_costructuredArrow (Over.forget X.1)]
     infer_instance
   apply IsCofiltered.of_equivalence (CostructuredArrow.ofDiagEquivalence X).symm
 
 /-- The diagonal functor on any cofiltered category is initial. -/
-instance Functor.initial_diag_of_isFiltered [IsCofiltered C] : Initial (Functor.diag C) :=
+instance Functor.initial_diag_of_isFiltered [IsCofilteredOrEmpty C] : Initial (Functor.diag C) :=
   initial_of_isCofiltered_costructuredArrow _
 
 /-- If `C` is filtered, then every functor `F : C ⥤ Discrete PUnit` is final. -/
@@ -451,3 +459,21 @@ instance initial_snd [IsCofiltered C] [IsCofilteredOrEmpty D] : (Prod.snd C D).I
 end Prod
 
 end CategoryTheory
+
+open CategoryTheory
+
+lemma Monotone.final_functor_iff {J₁ J₂ : Type*} [Preorder J₁] [Preorder J₂]
+    [IsDirected J₁ (· ≤ · )] {f : J₁ → J₂} (hf : Monotone f) :
+    hf.functor.Final ↔ ∀ (j₂ : J₂), ∃ (j₁ : J₁), j₂ ≤ f j₁ := by
+  rw [Functor.final_iff_of_isFiltered]
+  constructor
+  · rintro ⟨h, _⟩ j₂
+    obtain ⟨j₁, ⟨φ⟩⟩ := h j₂
+    exact ⟨j₁, leOfHom φ⟩
+  · intro h
+    constructor
+    · intro j₂
+      obtain ⟨j₁, h₁⟩ := h j₂
+      exact ⟨j₁, ⟨homOfLE h₁⟩⟩
+    · intro _ c _ _
+      exact ⟨c, 𝟙 _, rfl⟩

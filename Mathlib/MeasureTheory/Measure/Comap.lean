@@ -159,7 +159,7 @@ lemma MeasurableEmbedding.comap_add {f : α → β} (hf : MeasurableEmbedding f)
     (μ + ν).comap f = μ.comap f + ν.comap f := by
   ext s hs
   simp only [← comapₗ_eq_comap _ hf.injective (fun _ ↦ hf.measurableSet_image.mpr) _ hs,
-    _root_.map_add, add_apply]
+    map_add, add_apply]
 
 namespace MeasurableEquiv
 
@@ -173,5 +173,5 @@ lemma map_symm {μ : Measure α} (e : β ≃ᵐ α) : μ.map e.symm = μ.comap e
 
 end MeasurableEquiv
 
-lemma comap_swap (μ : Measure (α × β)) : μ.comap Prod.swap = μ.map Prod.swap :=
+lemma MeasureTheory.Measure.comap_swap (μ : Measure (α × β)) : μ.comap .swap = μ.map .swap :=
   (MeasurableEquiv.prodComm ..).comap_symm

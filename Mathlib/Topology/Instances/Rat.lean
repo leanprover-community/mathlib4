@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Topology.Algebra.Order.Archimedean
+import Mathlib.Topology.Algebra.Ring.Real
 import Mathlib.Topology.Instances.Nat
-import Mathlib.Topology.Instances.Real.Defs
 
 /-!
 # Topology on the rational numbers
@@ -37,9 +37,6 @@ alias uniformEmbedding_coe_real := isUniformEmbedding_coe_real
 
 theorem isDenseEmbedding_coe_real : IsDenseEmbedding ((↑) : ℚ → ℝ) :=
   isUniformEmbedding_coe_real.isDenseEmbedding Rat.denseRange_cast
-
-@[deprecated (since := "2024-09-30")]
-alias denseEmbedding_coe_real := isDenseEmbedding_coe_real
 
 theorem isEmbedding_coe_real : IsEmbedding ((↑) : ℚ → ℝ) :=
   isDenseEmbedding_coe_real.isEmbedding
@@ -98,10 +95,10 @@ theorem uniformContinuous_neg : UniformContinuous (@Neg.neg ℚ _) :=
   Metric.uniformContinuous_iff.2 fun ε ε0 =>
     ⟨_, ε0, fun _ _ h => by simpa only [abs_sub_comm, dist_eq, cast_neg, neg_sub_neg] using h⟩
 
-instance : UniformAddGroup ℚ :=
-  UniformAddGroup.mk' Rat.uniformContinuous_add Rat.uniformContinuous_neg
+instance : IsUniformAddGroup ℚ :=
+  IsUniformAddGroup.mk' Rat.uniformContinuous_add Rat.uniformContinuous_neg
 
-instance : TopologicalAddGroup ℚ := inferInstance
+instance : IsTopologicalAddGroup ℚ := inferInstance
 
 instance : OrderTopology ℚ := induced_orderTopology _ Rat.cast_lt exists_rat_btwn
 
@@ -110,7 +107,7 @@ theorem uniformContinuous_abs : UniformContinuous (abs : ℚ → ℚ) :=
     ⟨ε, ε0, fun _ _ h =>
       lt_of_le_of_lt (by simpa [Rat.dist_eq] using abs_abs_sub_abs_le_abs_sub _ _) h⟩
 
-instance : TopologicalRing ℚ := inferInstance
+instance : IsTopologicalRing ℚ := inferInstance
 
 nonrec theorem totallyBounded_Icc (a b : ℚ) : TotallyBounded (Icc a b) := by
   simpa only [preimage_cast_Icc]
@@ -118,3 +115,26 @@ nonrec theorem totallyBounded_Icc (a b : ℚ) : TotallyBounded (Icc a b) := by
       (totallyBounded_Icc (a : ℝ) b)
 
 end Rat
+
+namespace NNRat
+
+instance : MetricSpace ℚ≥0 :=
+  Subtype.metricSpace
+
+@[simp ←, push_cast]
+lemma dist_eq (p q : ℚ≥0) : dist p q = dist (p : ℚ) (q : ℚ) := rfl
+@[simp ←, push_cast]
+lemma nndist_eq (p q : ℚ≥0) : nndist p q = nndist (p : ℚ) (q : ℚ) := rfl
+
+instance : IsTopologicalSemiring ℚ≥0 where
+  toContinuousAdd := continuousAdd_induced Nonneg.coeRingHom
+  toContinuousMul := continuousMul_induced Nonneg.coeRingHom
+
+instance : ContinuousSub ℚ≥0 :=
+  ⟨((continuous_subtype_val.fst'.sub continuous_subtype_val.snd').max
+      continuous_const).subtype_mk _⟩
+
+instance : OrderTopology ℚ≥0 := orderTopology_of_ordConnected (t := Set.Ici 0)
+instance : HasContinuousInv₀ ℚ≥0 := inferInstance
+
+end NNRat

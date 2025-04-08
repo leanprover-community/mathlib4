@@ -3,13 +3,12 @@ Copyright (c) 2014 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Algebra.CharZero.Lemmas
-import Mathlib.Algebra.Order.Field.Defs
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Lemmas
+import Mathlib.Algebra.Field.Basic
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.Bounds.OrderIso
 import Mathlib.Tactic.Positivity.Core
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 
 /-!
 # Lemmas about linear ordered (semi)fields
@@ -22,7 +21,7 @@ variable {ι α β : Type*}
 
 section LinearOrderedSemifield
 
-variable [LinearOrderedSemifield α] {a b c d e : α} {m n : ℤ}
+variable [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] {a b c d e : α} {m n : ℤ}
 
 /-!
 ### Relating one division with another term.
@@ -408,13 +407,14 @@ theorem inv_pow_anti (a1 : 1 ≤ a) : Antitone fun n : ℕ => (a ^ n)⁻¹ := fu
 theorem inv_pow_strictAnti (a1 : 1 < a) : StrictAnti fun n : ℕ => (a ^ n)⁻¹ := fun _ _ =>
   inv_pow_lt_inv_pow_of_lt a1
 
-theorem le_iff_forall_one_lt_le_mul₀ {α : Type*} [LinearOrderedSemifield α]
+theorem le_iff_forall_one_lt_le_mul₀ {α : Type*}
+    [Semifield α] [LinearOrder α] [IsStrictOrderedRing α]
     {a b : α} (hb : 0 ≤ b) : a ≤ b ↔ ∀ ε, 1 < ε → a ≤ b * ε := by
   refine ⟨fun h _ hε ↦ h.trans <| le_mul_of_one_le_right hb hε.le, fun h ↦ ?_⟩
   obtain rfl|hb := hb.eq_or_lt
   · simp_rw [zero_mul] at h
     exact h 2 one_lt_two
-  refine le_of_forall_le_of_dense fun x hbx => ?_
+  refine le_of_forall_gt_imp_ge_of_dense fun x hbx => ?_
   convert h (x / b) ((one_lt_div hb).mpr hbx)
   rw [mul_div_cancel₀ _ hb.ne']
 
@@ -436,7 +436,7 @@ end LinearOrderedSemifield
 
 section
 
-variable [LinearOrderedField α] {a b c d : α} {n : ℤ}
+variable [Field α] [LinearOrder α] [IsStrictOrderedRing α] {a b c d : α} {n : ℤ}
 
 /-! ### Lemmas about pos, nonneg, nonpos, neg -/
 
@@ -550,12 +550,12 @@ theorem sub_inv_antitoneOn_Icc_left (ha : b < c) :
 
 theorem inv_antitoneOn_Ioi :
     AntitoneOn (fun x : α ↦ x⁻¹) (Set.Ioi 0) := by
-  convert sub_inv_antitoneOn_Ioi
+  convert sub_inv_antitoneOn_Ioi (α := α)
   exact (sub_zero _).symm
 
 theorem inv_antitoneOn_Iio :
     AntitoneOn (fun x : α ↦ x⁻¹) (Set.Iio 0) := by
-  convert sub_inv_antitoneOn_Iio
+  convert sub_inv_antitoneOn_Iio (α := α)
   exact (sub_zero _).symm
 
 theorem inv_antitoneOn_Icc_right (ha : 0 < a) :
@@ -755,14 +755,14 @@ private lemma exists_mul_right_lt₀ {a b c : α} (hc : a * b < c) : ∃ b' > b,
   simp_rw [mul_comm a] at hc ⊢; exact exists_mul_left_lt₀ hc
 
 lemma le_mul_of_forall_lt₀ {a b c : α} (h : ∀ a' > a, ∀ b' > b, c ≤ a' * b') : c ≤ a * b := by
-  refine le_of_forall_le_of_dense fun d hd ↦ ?_
+  refine le_of_forall_gt_imp_ge_of_dense fun d hd ↦ ?_
   obtain ⟨a', ha', hd⟩ := exists_mul_left_lt₀ hd
   obtain ⟨b', hb', hd⟩ := exists_mul_right_lt₀ hd
   exact (h a' ha' b' hb').trans hd.le
 
 lemma mul_le_of_forall_lt_of_nonneg {a b c : α} (ha : 0 ≤ a) (hc : 0 ≤ c)
     (h : ∀ a' ≥ 0, a' < a → ∀ b' ≥ 0, b' < b → a' * b' ≤ c) : a * b ≤ c := by
-  refine le_of_forall_ge_of_dense fun d d_ab ↦ ?_
+  refine le_of_forall_lt_imp_le_of_dense fun d d_ab ↦ ?_
   rcases lt_or_le d 0 with hd | hd
   · exact hd.le.trans hc
   obtain ⟨a', ha', d_ab⟩ := exists_lt_mul_left_of_nonneg ha hd d_ab
@@ -814,7 +814,7 @@ namespace Mathlib.Meta.Positivity
 open Lean Meta Qq Function
 
 section LinearOrderedSemifield
-variable {α : Type*} [LinearOrderedSemifield α] {a b : α}
+variable {α : Type*} [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] {a b : α}
 
 private lemma div_nonneg_of_pos_of_nonneg (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a / b :=
   div_nonneg ha.le hb
@@ -822,9 +822,11 @@ private lemma div_nonneg_of_pos_of_nonneg (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a 
 private lemma div_nonneg_of_nonneg_of_pos (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ a / b :=
   div_nonneg ha hb.le
 
+omit [IsStrictOrderedRing α] in
 private lemma div_ne_zero_of_pos_of_ne_zero (ha : 0 < a) (hb : b ≠ 0) : a / b ≠ 0 :=
   div_ne_zero ha.ne' hb
 
+omit [IsStrictOrderedRing α] in
 private lemma div_ne_zero_of_ne_zero_of_pos (ha : a ≠ 0) (hb : 0 < b) : a / b ≠ 0 :=
   div_ne_zero ha hb.ne'
 
@@ -838,7 +840,9 @@ such that `positivity` successfully recognises both `a` and `b`. -/
   let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← withReducible (whnf e)
     | throwError "not /"
   let _e_eq : $e =Q $f $a $b := ⟨⟩
-  let _a ← synthInstanceQ (q(LinearOrderedSemifield $α) : Q(Type u))
+  let _a ← synthInstanceQ (q(Semifield $α) : Q(Type u))
+  let _a ← synthInstanceQ (q(LinearOrder $α) : Q(Type u))
+  let _a ← synthInstanceQ (q(IsStrictOrderedRing $α) : Q(Prop))
   assumeInstancesCommute
   let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ (u := u.succ) f q(HDiv.hDiv)
   let ra ← core zα pα a; let rb ← core zα pα b
@@ -858,7 +862,9 @@ such that `positivity` successfully recognises `a`. -/
 def evalInv : PositivityExt where eval {u α} zα pα e := do
   let .app (f : Q($α → $α)) (a : Q($α)) ← withReducible (whnf e) | throwError "not ⁻¹"
   let _e_eq : $e =Q $f $a := ⟨⟩
-  let _a ← synthInstanceQ (q(LinearOrderedSemifield $α) : Q(Type u))
+  let _a ← synthInstanceQ q(Semifield $α)
+  let _a ← synthInstanceQ q(LinearOrder $α)
+  let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
   assumeInstancesCommute
   let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ (u := u.succ) f q(Inv.inv)
   let ra ← core zα pα a
@@ -872,7 +878,11 @@ def evalInv : PositivityExt where eval {u α} zα pα e := do
 @[positivity _ ^ (0 : ℤ), Pow.pow _ (0 : ℤ)]
 def evalPowZeroInt : PositivityExt where eval {u α} _zα _pα e := do
   let .app (.app _ (a : Q($α))) _ ← withReducible (whnf e) | throwError "not ^"
-  _ ← synthInstanceQ (q(LinearOrderedSemifield $α) : Q(Type u))
-  pure (.positive (q(zpow_zero_pos $a) : Expr))
+  let _a ← synthInstanceQ q(Semifield $α)
+  let _a ← synthInstanceQ q(LinearOrder $α)
+  let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
+  assumeInstancesCommute
+  let ⟨_a⟩ ← Qq.assertDefEqQ q($e) q($a ^ (0 : ℤ))
+  pure (.positive q(zpow_zero_pos $a))
 
 end Mathlib.Meta.Positivity

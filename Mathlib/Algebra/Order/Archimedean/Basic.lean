@@ -3,11 +3,12 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Algebra.Group.Action.Defs
+import Mathlib.Algebra.Order.Floor.Semiring
 import Mathlib.Algebra.Order.Group.Units
 import Mathlib.Algebra.Order.Ring.Pow
 import Mathlib.Data.Int.LeastGreatest
 import Mathlib.Data.Rat.Floor
-import Mathlib.Data.NNRat.Defs
 
 /-!
 # Archimedean groups and fields.
@@ -214,7 +215,7 @@ theorem exists_floor (x : α) : ∃ fl : ℤ, ∀ z : ℤ, z ≤ fl ↔ (z : α)
       (let ⟨n, hn⟩ := exists_int_lt x
       ⟨n, le_of_lt hn⟩)
   refine this.imp fun fl h z => ?_
-  cases' h with h₁ h₂
+  obtain ⟨h₁, h₂⟩ := h
   exact ⟨fun h => le_trans (Int.cast_le.2 h) h₁, h₂ z⟩
 
 end StrictOrderedRing
@@ -241,7 +242,7 @@ section LinearOrderedSemifield
 variable [LinearOrderedSemifield α] [Archimedean α] {x y ε : α}
 
 lemma exists_nat_one_div_lt (hε : 0 < ε) : ∃ n : ℕ, 1 / (n + 1 : α) < ε := by
-  cases' exists_nat_gt (1 / ε) with n hn
+  obtain ⟨n, hn⟩ := exists_nat_gt (1 / ε)
   use n
   rw [div_lt_iff₀, ← div_lt_iff₀' hε]
   · apply hn.trans
@@ -311,7 +312,7 @@ lemma exists_pow_btwn_of_lt_mul {a b c : α} (h : a < b * c) (hb₀ : 0 < b) (hb
   have hn : Nat.find this ≠ 0 := by
     intro hf
     simp only [hf, pow_zero] at H
-    exact (H.trans <| Left.mul_lt_of_le_of_lt_one_of_pos hb₁ hc₁ hb₀).false
+    exact (H.trans <| (mul_lt_of_lt_one_right hb₀ hc₁).trans_le hb₁).false
   rw [(Nat.succ_pred_eq_of_ne_zero hn).symm, pow_succ, mul_lt_mul_right hc₀] at H
   exact Nat.find_min this (Nat.sub_one_lt hn) H
 
@@ -392,8 +393,8 @@ theorem exists_rat_lt (x : α) : ∃ q : ℚ, (q : α) < x :=
   ⟨n, by rwa [Rat.cast_intCast]⟩
 
 theorem exists_rat_btwn {x y : α} (h : x < y) : ∃ q : ℚ, x < q ∧ (q : α) < y := by
-  cases' exists_nat_gt (y - x)⁻¹ with n nh
-  cases' exists_floor (x * n) with z zh
+  obtain ⟨n, nh⟩ := exists_nat_gt (y - x)⁻¹
+  obtain ⟨z, zh⟩ := exists_floor (x * n)
   refine ⟨(z + 1 : ℤ) / n, ?_⟩
   have n0' := (inv_pos.2 (sub_pos.2 h)).trans nh
   have n0 := Nat.cast_pos.1 n0'
@@ -523,3 +524,25 @@ instance (priority := 100) FloorRing.archimedean (α) [LinearOrderedField α] [F
 instance Units.instMulArchimedean (α) [OrderedCommMonoid α] [MulArchimedean α] :
     MulArchimedean αˣ :=
   ⟨fun x {_} h ↦ MulArchimedean.arch x.val h⟩
+
+instance WithBot.instArchimedean (α) [OrderedAddCommMonoid α] [Archimedean α] :
+    Archimedean (WithBot α) := by
+  constructor
+  intro x y hxy
+  cases y with
+  | bot => exact absurd hxy bot_le.not_lt
+  | coe y =>
+    cases x with
+    | bot => refine ⟨0, bot_le⟩
+    | coe x => simpa [← WithBot.coe_nsmul] using (Archimedean.arch x (by simpa using hxy))
+
+instance WithZero.instMulArchimedean (α) [OrderedCommMonoid α] [MulArchimedean α] :
+    MulArchimedean (WithZero α) := by
+  constructor
+  intro x y hxy
+  cases y with
+  | zero => exact absurd hxy (zero_le _).not_lt
+  | coe y =>
+    cases x with
+    | zero => refine ⟨0, zero_le _⟩
+    | coe x => simpa [← WithZero.coe_pow] using (MulArchimedean.arch x (by simpa using hxy))

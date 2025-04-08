@@ -32,7 +32,8 @@ instance smoothFunctionsAlgebra : Algebra 𝕜 C^∞⟮I, M; 𝕜⟯ := by infer
 instance smooth_functions_tower : IsScalarTower 𝕜 C^∞⟮I, M; 𝕜⟯ C^∞⟮I, M; 𝕜⟯ := by infer_instance
 
 /-- Type synonym, introduced to put a different `SMul` action on `C^n⟮I, M; 𝕜⟯`
-which is defined as `f • r = f(x) * r`. -/
+which is defined as `f • r = f(x) * r`.
+Denoted as `C^n⟮I, M; 𝕜⟯⟨x⟩` within the `Derivation` namespace. -/
 @[nolint unusedArguments]
 def PointedContMDiffMap (_ : M) :=
   C^n⟮I, M; 𝕜⟯
@@ -100,7 +101,7 @@ open scoped Derivation
 variable (X : Derivation 𝕜 C^∞⟮I, M; 𝕜⟯ C^∞⟮I, M; 𝕜⟯) (f : C^∞⟮I, M; 𝕜⟯)
 
 /-- Evaluation at a point gives rise to a `C^∞⟮I, M; 𝕜⟯`-linear map between `C^∞⟮I, M; 𝕜⟯` and `𝕜`.
- -/
+-/
 def ContMDiffFunction.evalAt (x : M) : C^∞⟮I, M; 𝕜⟯ →ₗ[C^∞⟮I, M; 𝕜⟯⟨x⟩] 𝕜 :=
   (PointedContMDiffMap.eval x).toLinearMap
 
@@ -123,7 +124,8 @@ variable {I} {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Ty
   [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*} [TopologicalSpace M']
   [ChartedSpace H' M']
 
-/-- The heterogeneous differential as a linear map. Instead of taking a function as an argument this
+/-- The heterogeneous differential as a linear map, denoted as `𝒅ₕ` within the `Manifold` namespace.
+Instead of taking a function as an argument this
 differential takes `h : f x = y`. It is particularly handy to deal with situations where the points
 on where it has to be evaluated are equal but not definitionally equal. -/
 def hfdifferential {f : C^∞⟮I, M; I', M'⟯} {x : M} {y : M'} (h : f x = y) :
@@ -131,7 +133,7 @@ def hfdifferential {f : C^∞⟮I, M; I', M'⟯} {x : M} {y : M'} (h : f x = y) 
   toFun v :=
     Derivation.mk'
       { toFun := fun g => v (g.comp f)
-        map_add' := fun g g' => by dsimp; rw [ContMDiffMap.add_comp, Derivation.map_add]
+        map_add' := fun g g' => by rw [ContMDiffMap.add_comp, Derivation.map_add]
         map_smul' := fun k g => by
           dsimp; rw [ContMDiffMap.smul_comp, Derivation.map_smul, smul_eq_mul] }
       fun g g' => by
@@ -143,16 +145,16 @@ def hfdifferential {f : C^∞⟮I, M; I', M'⟯} {x : M} {y : M'} (h : f x = y) 
   map_smul' _ _ := rfl
   map_add' _ _ := rfl
 
-/-- The homogeneous differential as a linear map. -/
+/-- The homogeneous differential as a linear map, denoted as `𝒅` within the `Manifold` namespace. -/
 def fdifferential (f : C^∞⟮I, M; I', M'⟯) (x : M) :
     PointDerivation I x →ₗ[𝕜] PointDerivation I' (f x) :=
   hfdifferential (rfl : f x = f x)
 
 -- Standard notation for the differential. The abbreviation is `MId`.
-scoped[Manifold] notation "𝒅" => fdifferential
+@[inherit_doc] scoped[Manifold] notation "𝒅" => fdifferential
 
 -- Standard notation for the differential. The abbreviation is `MId`.
-scoped[Manifold] notation "𝒅ₕ" => hfdifferential
+@[inherit_doc] scoped[Manifold] notation "𝒅ₕ" => hfdifferential
 
 @[simp]
 theorem fdifferential_apply (f : C^∞⟮I, M; I', M'⟯) {x : M} (v : PointDerivation I x)

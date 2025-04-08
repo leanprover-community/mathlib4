@@ -131,7 +131,6 @@ def derivationTensorProduct [h : Algebra.IsPushout R S A B] :
     dsimp
     rw [Derivation.map_one_eq_zero, TensorProduct.tmul_zero]
   leibniz' a b := by
-    dsimp
     induction a using h.out.inductionOn with
     | h₁ => rw [map_zero, zero_smul, smul_zero, zero_add, zero_mul, map_zero]
     | h₃ x y e =>
@@ -145,7 +144,9 @@ def derivationTensorProduct [h : Algebra.IsPushout R S A B] :
       | h₂ =>
         simp only [AlgHom.toLinearMap_apply, IsScalarTower.coe_toAlgHom',
           algebraMap_smul, ← map_mul]
-        erw [h.out.lift_eq, h.out.lift_eq, h.out.lift_eq]
+        rw [← IsScalarTower.toAlgHom_apply R, ← AlgHom.toLinearMap_apply, h.out.lift_eq,
+          ← IsScalarTower.toAlgHom_apply R, ← AlgHom.toLinearMap_apply, h.out.lift_eq,
+          ← IsScalarTower.toAlgHom_apply R, ← AlgHom.toLinearMap_apply, h.out.lift_eq]
         simp only [LinearMap.coe_comp, Derivation.coeFn_coe, Function.comp_apply,
           Derivation.leibniz, mk_apply, mulActionBaseChange_smul_tmul, TensorProduct.tmul_add]
       | h₃ _ _ e =>

@@ -3,8 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.Order.Interval.Finset
+import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
+import Mathlib.Algebra.Order.Interval.Finset.Basic
 import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Tactic.Linarith
 
@@ -88,20 +88,22 @@ section Generic
 variable [CommMonoid M] {s₂ s₁ s : Finset α} {a : α} {g f : α → M}
 
 @[to_additive]
-theorem prod_Ico_add' [OrderedCancelAddCommMonoid α] [ExistsAddOfLE α] [LocallyFiniteOrder α]
+theorem prod_Ico_add' [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
+    [ExistsAddOfLE α] [LocallyFiniteOrder α]
     (f : α → M) (a b c : α) : (∏ x ∈ Ico a b, f (x + c)) = ∏ x ∈ Ico (a + c) (b + c), f x := by
   rw [← map_add_right_Ico, prod_map]
   rfl
 
 @[to_additive]
-theorem prod_Ico_add [OrderedCancelAddCommMonoid α] [ExistsAddOfLE α] [LocallyFiniteOrder α]
+theorem prod_Ico_add [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
+    [ExistsAddOfLE α] [LocallyFiniteOrder α]
     (f : α → M) (a b c : α) : (∏ x ∈ Ico a b, f (c + x)) = ∏ x ∈ Ico (a + c) (b + c), f x := by
   convert prod_Ico_add' f a b c using 2
   rw [add_comm]
 
 @[to_additive (attr := simp)]
-theorem prod_Ico_add_right_sub_eq [OrderedCancelAddCommMonoid α] [ExistsAddOfLE α]
-    [LocallyFiniteOrder α] [Sub α] [OrderedSub α] (a b c : α) :
+theorem prod_Ico_add_right_sub_eq [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
+    [ExistsAddOfLE α] [LocallyFiniteOrder α] [Sub α] [OrderedSub α] (a b c : α) :
     ∏ x ∈ Ico (a + c) (b + c), f (x - c) = ∏ x ∈ Ico a b, f x := by
   simp only [← map_add_right_Ico, prod_map, addRightEmbedding_apply, add_tsub_cancel_right]
 
@@ -136,7 +138,7 @@ theorem prod_Ioc_succ_top {a b : ℕ} (hab : a ≤ b) (f : ℕ → M) :
 
 @[to_additive]
 theorem prod_Icc_succ_top {a b : ℕ} (hab : a ≤ b + 1) (f : ℕ → M) :
-    (∏ k in Icc a (b + 1), f k) = (∏ k in Icc a b, f k) * f (b + 1) := by
+    (∏ k ∈ Icc a (b + 1), f k) = (∏ k ∈ Icc a b, f k) * f (b + 1) := by
   rw [← Nat.Ico_succ_right, prod_Ico_succ_top hab, Nat.Ico_succ_right]
 
 @[to_additive]
@@ -161,8 +163,7 @@ theorem prod_Ico_eq_div {δ : Type*} [CommGroup δ] (f : ℕ → δ) {m n : ℕ}
 
 @[to_additive]
 theorem prod_range_div_prod_range {α : Type*} [CommGroup α] {f : ℕ → α} {n m : ℕ} (hnm : n ≤ m) :
-    ((∏ k ∈ range m, f k) / ∏ k ∈ range n, f k) =
-    ∏ k ∈ (range m).filter fun k => n ≤ k, f k := by
+    ((∏ k ∈ range m, f k) / ∏ k ∈ range n, f k) = ∏ k ∈ range m with n ≤ k, f k := by
   rw [← prod_Ico_eq_div f hnm]
   congr
   apply Finset.ext
