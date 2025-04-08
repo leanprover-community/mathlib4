@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Order.Filter.CountableSeparatingOn
-import Mathlib.Topology.Separation.Connected
+import Mathlib.Topology.Separation.Basic
 
 /-!
 # Countable separating families of sets in topological spaces
