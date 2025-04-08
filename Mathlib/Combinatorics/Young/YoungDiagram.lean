@@ -3,8 +3,10 @@ Copyright (c) 2022 Jake Levinson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jake Levinson
 -/
-import Mathlib.Order.UpperLower.Basic
 import Mathlib.Data.Finset.Preimage
+import Mathlib.Data.Finset.Prod
+import Mathlib.Data.SetLike.Basic
+import Mathlib.Order.UpperLower.Basic
 
 /-!
 # Young diagrams
@@ -365,7 +367,7 @@ theorem length_rowLens {μ : YoungDiagram} : μ.rowLens.length = μ.colLen 0 := 
   simp only [rowLens, List.length_map, List.length_range]
 
 theorem rowLens_sorted (μ : YoungDiagram) : μ.rowLens.Sorted (· ≥ ·) :=
-  (List.pairwise_le_range _).map _ μ.rowLen_anti
+  List.pairwise_le_range.map _ μ.rowLen_anti
 
 theorem pos_of_mem_rowLens (μ : YoungDiagram) (x : ℕ) (hx : x ∈ μ.rowLens) : 0 < x := by
   rw [rowLens, List.mem_map] at hx
@@ -398,7 +400,7 @@ protected def cellsOfRowLens : List ℕ → Finset (ℕ × ℕ)
 
 protected theorem mem_cellsOfRowLens {w : List ℕ} {c : ℕ × ℕ} :
     c ∈ YoungDiagram.cellsOfRowLens w ↔ ∃ h : c.fst < w.length, c.snd < w[c.fst] := by
-  induction' w with w_hd w_tl w_ih generalizing c <;> rw [YoungDiagram.cellsOfRowLens]
+  induction w generalizing c <;> rw [YoungDiagram.cellsOfRowLens]
   · simp [YoungDiagram.cellsOfRowLens]
   · rcases c with ⟨⟨_, _⟩, _⟩ <;> simp_all
 

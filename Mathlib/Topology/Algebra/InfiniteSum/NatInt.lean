@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 
-import Mathlib.Topology.Algebra.InfiniteSum.Group
 import Mathlib.Logic.Encodable.Lattice
+import Mathlib.Order.Filter.AtTopBot.Finset
+import Mathlib.Topology.Algebra.InfiniteSum.Group
 
 /-!
 # Infinite sums and products over `ℕ` and `ℤ`
@@ -25,7 +26,8 @@ open scoped Topology
 variable {M : Type*} [CommMonoid M] [TopologicalSpace M] {m m' : M}
 
 variable {G : Type*} [CommGroup G] {g g' : G}
--- don't declare [TopologicalAddGroup G] here as some results require [UniformAddGroup G] instead
+-- don't declare `[IsTopologicalAddGroup G]`, here as some results require
+-- `[IsUniformAddGroup G]` instead
 
 /-!
 ## Sums over `ℕ`
@@ -207,9 +209,9 @@ end tprod
 
 end Monoid
 
-section TopologicalGroup
+section IsTopologicalGroup
 
-variable [TopologicalSpace G] [TopologicalGroup G]
+variable [TopologicalSpace G] [IsTopologicalGroup G]
 
 @[to_additive]
 theorem hasProd_nat_add_iff {f : ℕ → G} (k : ℕ) :
@@ -254,11 +256,11 @@ theorem tendsto_prod_nat_add [T2Space G] (f : ℕ → G) :
   · refine tendsto_const_nhds.congr fun n ↦ (tprod_eq_one_of_not_multipliable ?_).symm
     rwa [multipliable_nat_add_iff n]
 
-end TopologicalGroup
+end IsTopologicalGroup
 
-section UniformGroup
+section IsUniformGroup
 
-variable [UniformSpace G] [UniformGroup G]
+variable [UniformSpace G] [IsUniformGroup G]
 
 @[to_additive]
 theorem cauchySeq_finset_iff_nat_tprod_vanishing {f : ℕ → G} :
@@ -282,17 +284,17 @@ theorem multipliable_iff_nat_tprod_vanishing {f : ℕ → G} : Multipliable f �
     ∀ e ∈ 𝓝 1, ∃ N : ℕ, ∀ t ⊆ {n | N ≤ n}, (∏' n : t, f n) ∈ e := by
   rw [multipliable_iff_cauchySeq_finset, cauchySeq_finset_iff_nat_tprod_vanishing]
 
-end UniformGroup
+end IsUniformGroup
 
-section TopologicalGroup
+section IsTopologicalGroup
 
-variable [TopologicalSpace G] [TopologicalGroup G]
+variable [TopologicalSpace G] [IsTopologicalGroup G]
 
 @[to_additive]
 theorem Multipliable.nat_tprod_vanishing {f : ℕ → G} (hf : Multipliable f) ⦃e : Set G⦄
     (he : e ∈ 𝓝 1) : ∃ N : ℕ, ∀ t ⊆ {n | N ≤ n}, (∏' n : t, f n) ∈ e :=
-  letI : UniformSpace G := TopologicalGroup.toUniformSpace G
-  have : UniformGroup G := comm_topologicalGroup_is_uniform
+  letI : UniformSpace G := IsTopologicalGroup.toUniformSpace G
+  have : IsUniformGroup G := isUniformGroup_of_commGroup
   cauchySeq_finset_iff_nat_tprod_vanishing.1 hf.hasProd.cauchySeq e he
 
 @[to_additive]
@@ -301,7 +303,7 @@ theorem Multipliable.tendsto_atTop_one {f : ℕ → G} (hf : Multipliable f) :
   rw [← Nat.cofinite_eq_atTop]
   exact hf.tendsto_cofinite_one
 
-end TopologicalGroup
+end IsTopologicalGroup
 
 end Nat
 
@@ -470,9 +472,9 @@ end ContinuousMul
 
 end Monoid
 
-section TopologicalGroup
+section IsTopologicalGroup
 
-variable [TopologicalSpace G] [TopologicalGroup G]
+variable [TopologicalSpace G] [IsTopologicalGroup G]
 
 @[to_additive]
 lemma HasProd.of_nat_of_neg {f : ℤ → G} (hf₁ : HasProd (fun n : ℕ ↦ f n) g)
@@ -491,11 +493,11 @@ lemma tprod_of_nat_of_neg [T2Space G] {f : ℤ → G}
     ∏' n : ℤ, f n = (∏' n : ℕ, f n) * (∏' n : ℕ, f (-n)) / f 0 :=
   (hf₁.hasProd.of_nat_of_neg hf₂.hasProd).tprod_eq
 
-end TopologicalGroup
+end IsTopologicalGroup
 
-section UniformGroup -- results which depend on completeness
+section IsUniformGroup -- results which depend on completeness
 
-variable [UniformSpace G] [UniformGroup G] [CompleteSpace G]
+variable [UniformSpace G] [IsUniformGroup G] [CompleteSpace G]
 
 /-- "iff" version of `Multipliable.of_nat_of_neg_add_one`. -/
 @[to_additive "\"iff\" version of `Summable.of_nat_of_neg_add_one`."]
@@ -513,7 +515,7 @@ lemma multipliable_int_iff_multipliable_nat_and_neg {f : ℤ → G} :
   apply p.comp_injective
   exacts [Nat.cast_injective, neg_injective.comp Nat.cast_injective]
 
-end UniformGroup
+end IsUniformGroup
 
 end Int
 

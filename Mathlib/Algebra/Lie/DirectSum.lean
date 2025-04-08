@@ -5,7 +5,7 @@ Authors: Oliver Nash
 -/
 import Mathlib.Algebra.DirectSum.Module
 import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.Algebra.Lie.Submodule
+import Mathlib.Algebra.Lie.Ideal
 import Mathlib.Algebra.Lie.Basic
 
 /-!
@@ -76,6 +76,8 @@ def lieModuleOf [DecidableEq ι] (j : ι) : M j →ₗ⁅R,L⁆ ⨁ i, M i :=
       · -- This used to be the end of the proof before https://github.com/leanprover/lean4/pull/2644
         -- old proof `simp [lof, lsingle, h]`
         simp only [lof, lsingle, AddHom.toFun_eq_coe, lie_module_bracket_apply]
+        -- The coercion in the goal is `DFunLike.coe (β := fun x ↦ Π₀ (i : ι), M i)`
+        -- but the lemma is expecting `DFunLike.coe (β := fun x ↦ ⨁ (i : ι), M i)`
         erw [AddHom.coe_mk]
         simp [h] }
 

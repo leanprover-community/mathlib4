@@ -57,8 +57,8 @@ lemma hasSum_mellin {a : ι → ℂ} {p : ι → ℝ} {F : ℝ → ℂ} {s : ℂ
     simp_rw [← neg_mul (p i), one_div, inv_rpow hpi.le, ← div_eq_inv_mul] at this
     rw [norm_of_nonneg (integral_nonneg (fun _ ↦ norm_nonneg _)), ← this]
     refine setIntegral_congr_fun measurableSet_Ioi (fun t ht ↦ ?_)
-    rw [norm_mul, norm_real, Real.norm_eq_abs, Real.abs_exp, Complex.norm_eq_abs,
-      abs_cpow_eq_rpow_re_of_pos ht, sub_re, one_re]
+    rw [norm_mul, norm_real, Real.norm_eq_abs, Real.abs_exp,
+      norm_cpow_eq_rpow_re_of_pos ht, sub_re, one_re]
 
 /-- Shortcut version for the commonly arising special case when `p i = π * q i` for some other
 sequence `q`. -/
@@ -118,11 +118,11 @@ lemma hasSum_mellin_pi_mul_sq {a : ι → ℂ} {r : ι → ℝ} {F : ℝ → ℂ
   simp_rw [← sq_eq_zero_iff (a := r _)] at hF
   convert hasSum_mellin_pi_mul₀ (fun i ↦ sq_nonneg (r i)) hs' hF ?_ using 3 with i
   · rw [← neg_div, Gammaℝ_def]
-  · rw [← _root_.sq_abs, ofReal_pow, ← cpow_nat_mul']
+  · rw [← sq_abs, ofReal_pow, ← cpow_nat_mul']
     · ring_nf
     all_goals rw [arg_ofReal_of_nonneg (abs_nonneg _)]; linarith [pi_pos]
   · convert h_sum using 3 with i
-    rw [← _root_.sq_abs, ← rpow_natCast_mul (abs_nonneg _), div_ofNat_re, Nat.cast_ofNat,
+    rw [← sq_abs, ← rpow_natCast_mul (abs_nonneg _), div_ofNat_re, Nat.cast_ofNat,
       mul_div_cancel₀ _ two_pos.ne']
 
 /-- Tailored version for odd Jacobi theta functions. -/

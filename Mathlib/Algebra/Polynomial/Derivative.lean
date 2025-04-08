@@ -42,7 +42,6 @@ variable [Semiring R]
 def derivative : R[X] →ₗ[R] R[X] where
   toFun p := p.sum fun n a => C (a * n) * X ^ (n - 1)
   map_add' p q := by
-    dsimp only
     rw [sum_add_index] <;>
       simp only [add_mul, forall_const, RingHom.map_add, eq_self_iff_true, zero_mul,
         RingHom.map_zero]
@@ -79,11 +78,15 @@ theorem derivative_zero : derivative (0 : R[X]) = 0 :=
 theorem iterate_derivative_zero {k : ℕ} : derivative^[k] (0 : R[X]) = 0 :=
   iterate_map_zero derivative k
 
-@[simp]
 theorem derivative_monomial (a : R) (n : ℕ) :
     derivative (monomial n a) = monomial (n - 1) (a * n) := by
   rw [derivative_apply, sum_monomial_index, C_mul_X_pow_eq_monomial]
   simp
+
+@[simp]
+theorem derivative_monomial_succ (a : R) (n : ℕ) :
+    derivative (monomial (n + 1) a) = monomial n (a * (n + 1)) := by
+  rw [derivative_monomial, add_tsub_cancel_right, Nat.cast_add, Nat.cast_one]
 
 theorem derivative_C_mul_X (a : R) : derivative (C a * X) = C a := by
   simp [C_mul_X_eq_monomial, derivative_monomial, Nat.cast_one, mul_one]
@@ -95,9 +98,13 @@ theorem derivative_C_mul_X_pow (a : R) (n : ℕ) :
 theorem derivative_C_mul_X_sq (a : R) : derivative (C a * X ^ 2) = C (a * 2) * X := by
   rw [derivative_C_mul_X_pow, Nat.cast_two, pow_one]
 
-@[simp]
 theorem derivative_X_pow (n : ℕ) : derivative (X ^ n : R[X]) = C (n : R) * X ^ (n - 1) := by
   convert derivative_C_mul_X_pow (1 : R) n <;> simp
+
+@[simp]
+theorem derivative_X_pow_succ (n : ℕ) :
+    derivative (X ^ (n + 1) : R[X]) = C (n + 1 : R) * X ^ n := by
+  simp [derivative_X_pow]
 
 theorem derivative_X_sq : derivative (X ^ 2 : R[X]) = C 2 * X := by
   rw [derivative_X_pow, Nat.cast_two, pow_one]
@@ -241,11 +248,11 @@ theorem eq_C_of_derivative_eq_zero [NoZeroSMulDivisors ℕ R] {f : R[X]} (h : de
 @[simp]
 theorem derivative_mul {f g : R[X]} : derivative (f * g) = derivative f * g + f * derivative g := by
   induction f using Polynomial.induction_on' with
-  | h_add => simp only [add_mul, map_add, add_assoc, add_left_comm, *]
-  | h_monomial m a =>
+  | add => simp only [add_mul, map_add, add_assoc, add_left_comm, *]
+  | monomial m a => ?_
   induction g using Polynomial.induction_on' with
-  | h_add => simp only [mul_add, map_add, add_assoc, add_left_comm, *]
-  | h_monomial n b =>
+  | add => simp only [mul_add, map_add, add_assoc, add_left_comm, *]
+  | monomial n b => ?_
   simp only [monomial_mul_monomial, derivative_monomial]
   simp only [mul_assoc, (Nat.cast_commute _ _).eq, Nat.cast_add, mul_add, map_add]
   cases m with

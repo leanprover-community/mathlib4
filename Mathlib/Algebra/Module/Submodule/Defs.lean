@@ -34,8 +34,8 @@ variable {G : Type u''} {S : Type u'} {R : Type u} {M : Type v} {ι : Type w}
 /-- A submodule of a module is one which is closed under vector operations.
   This is a sufficient condition for the subset of vectors in the submodule
   to themselves form a module. -/
-structure Submodule (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] [Module R M] extends
-  AddSubmonoid M, SubMulAction R M : Type v
+structure Submodule (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] [Module R M] : Type v
+    extends AddSubmonoid M, SubMulAction R M
 
 /-- Reinterpret a `Submodule` as an `AddSubmonoid`. -/
 add_decl_doc Submodule.toAddSubmonoid
@@ -77,7 +77,6 @@ theorem coe_set_mk (S : AddSubmonoid M) (h) : ((⟨S, h⟩ : Submodule R M) : Se
 @[simp] theorem eta (h) : ({p with smul_mem' := h} : Submodule R M) = p :=
   rfl
 
--- Porting note: replaced `S ⊆ S' : Set` with `S ≤ S'`
 @[simp]
 theorem mk_le_mk {S S' : AddSubmonoid M} (h h') :
     (⟨S, h⟩ : Submodule R M) ≤ (⟨S', h'⟩ : Submodule R M) ↔ S ≤ S' :=
@@ -87,7 +86,6 @@ theorem mk_le_mk {S S' : AddSubmonoid M} (h h') :
 theorem ext (h : ∀ x, x ∈ p ↔ x ∈ q) : p = q :=
   SetLike.ext h
 
--- Porting note: adding this as the `simp`-normal form of `toSubMulAction_inj`
 @[simp]
 theorem carrier_inj : p.carrier = q.carrier ↔ p = q :=
   (SetLike.coe_injective (A := Submodule R M)).eq_iff
@@ -165,7 +163,6 @@ variable {p q : Submodule R M}
 variable {r : R} {x y : M}
 variable (p)
 
--- Porting note: removing `@[simp]` since it can already be proven
 theorem mem_carrier : x ∈ p.carrier ↔ x ∈ (p : Set M) :=
   Iff.rfl
 
@@ -187,6 +184,13 @@ theorem smul_of_tower_mem [SMul S R] [SMul S M] [IsScalarTower S R M] (r : S) (h
 theorem smul_mem_iff' [Group G] [MulAction G M] [SMul G R] [IsScalarTower G R M] (g : G) :
     g • x ∈ p ↔ x ∈ p :=
   p.toSubMulAction.smul_mem_iff' g
+
+@[simp]
+lemma smul_mem_iff'' [Invertible r] :
+    r • x ∈ p ↔ x ∈ p := by
+  refine ⟨fun h ↦ ?_, p.smul_mem r⟩
+  rw [← invOf_smul_smul r x]
+  exact p.smul_mem _ h
 
 instance add : Add p :=
   ⟨fun x y => ⟨x.1 + y.1, add_mem x.2 y.2⟩⟩
@@ -216,7 +220,7 @@ theorem mk_eq_zero {x} (h : x ∈ p) : (⟨x, h⟩ : p) = 0 ↔ x = 0 :=
 
 variable {p}
 
-@[norm_cast] -- Porting note: removed `@[simp]` because this follows from `ZeroMemClass.coe_zero`
+@[norm_cast]
 theorem coe_eq_zero {x : p} : (x : M) = 0 ↔ x = 0 :=
   (SetLike.coe_eq_coe : (x : M) = (0 : p) ↔ x = 0)
 
@@ -237,11 +241,10 @@ theorem coe_smul_of_tower [SMul S R] [SMul S M] [IsScalarTower S R M] (r : S) (x
     ((r • x : p) : M) = r • (x : M) :=
   rfl
 
-@[norm_cast] -- Porting note: removed `@[simp]` because this is now structure eta
+@[norm_cast]
 theorem coe_mk (x : M) (hx : x ∈ p) : ((⟨x, hx⟩ : p) : M) = x :=
   rfl
 
--- Porting note: removed `@[simp]` because this is exactly `SetLike.coe_mem`
 theorem coe_mem (x : p) : (x : M) ∈ p :=
   x.2
 

@@ -23,9 +23,6 @@ such that `a ≤ b` and `b ≤ a`.
   preorder, `Antisymmetrization α` is a partial order.
 -/
 
-/- Porting note: There are many changes from `toAntisymmetrization (· ≤ ·)` to
-`@toAntisymmetrization α (· ≤ ·) _` -/
-
 open Function OrderDual
 
 variable {α β : Type*} {a b c d : α}
@@ -42,17 +39,26 @@ def AntisymmRel (a b : α) : Prop :=
 theorem antisymmRel_swap : AntisymmRel (swap r) = AntisymmRel r :=
   funext₂ fun _ _ ↦ propext and_comm
 
-@[refl]
-theorem antisymmRel_refl [IsRefl α r] (a : α) : AntisymmRel r a a :=
-  ⟨refl _, refl _⟩
+theorem antisymmRel_swap_apply : AntisymmRel (swap r) a b ↔ AntisymmRel r a b :=
+  and_comm
+
+@[simp, refl]
+theorem AntisymmRel.refl [IsRefl α r] (a : α) : AntisymmRel r a a :=
+  ⟨_root_.refl _, _root_.refl _⟩
+
+@[deprecated (since := "2025-01-28")]
+alias antisymmRel_refl := AntisymmRel.refl
 
 variable {r} in
-lemma AntisymmRel.rfl [IsRefl α r] (a : α) : AntisymmRel r a a := antisymmRel_refl ..
+lemma AntisymmRel.rfl [IsRefl α r] {a : α} : AntisymmRel r a a := .refl ..
 
 instance [IsRefl α r] : IsRefl α (AntisymmRel r) where
-  refl := antisymmRel_refl r
+  refl := .refl r
 
 variable {r}
+
+theorem AntisymmRel.of_eq [IsRefl α r] {a b : α} (h : a = b) : AntisymmRel r a b := h ▸ .rfl
+alias Eq.antisymmRel := AntisymmRel.of_eq
 
 @[symm]
 theorem AntisymmRel.symm : AntisymmRel r a b → AntisymmRel r b a :=
@@ -81,10 +87,16 @@ theorem antisymmRel_iff_eq [IsRefl α r] [IsAntisymm α r] : AntisymmRel r a b �
 
 alias ⟨AntisymmRel.eq, _⟩ := antisymmRel_iff_eq
 
-theorem AntisymmRel.le [LE α] (h : AntisymmRel (· ≤ ·) a b) : a ≤ b := h.1
-theorem AntisymmRel.ge [LE α] (h : AntisymmRel (· ≤ ·) a b) : b ≤ a := h.2
-
 end Relation
+
+section LE
+
+variable [LE α]
+
+theorem AntisymmRel.le (h : AntisymmRel (· ≤ ·) a b) : a ≤ b := h.1
+theorem AntisymmRel.ge (h : AntisymmRel (· ≤ ·) a b) : b ≤ a := h.2
+
+end LE
 
 section IsPreorder
 
@@ -93,7 +105,7 @@ variable (α) (r : α → α → Prop) [IsPreorder α r]
 /-- The antisymmetrization relation as an equivalence relation. -/
 @[simps]
 def AntisymmRel.setoid : Setoid α :=
-  ⟨AntisymmRel r, antisymmRel_refl _, AntisymmRel.symm, AntisymmRel.trans⟩
+  ⟨AntisymmRel r, .refl r, .symm, .trans⟩
 
 /-- The partial order derived from a preorder by making pairwise comparable elements equal. This is
 the quotient by `fun a b => a ≤ b ∧ b ≤ a`. -/
@@ -178,10 +190,10 @@ theorem AntisymmRel.le_congr (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ : Antisy
   mpr h := (h₁.trans_le h).trans_antisymmRel h₂.symm
 
 theorem AntisymmRel.le_congr_left (h : AntisymmRel (· ≤ ·) a b) : a ≤ c ↔ b ≤ c :=
-  h.le_congr (antisymmRel_refl _ c)
+  h.le_congr .rfl
 
 theorem AntisymmRel.le_congr_right (h : AntisymmRel (· ≤ ·) b c) : a ≤ b ↔ a ≤ c :=
-  (antisymmRel_refl _ a).le_congr h
+  AntisymmRel.rfl.le_congr h
 
 theorem AntisymmRel.lt_congr (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ : AntisymmRel (· ≤ ·) c d) :
     a < c ↔ b < d where
@@ -189,10 +201,10 @@ theorem AntisymmRel.lt_congr (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ : Antisy
   mpr h := (h₁.trans_lt h).trans_antisymmRel h₂.symm
 
 theorem AntisymmRel.lt_congr_left (h : AntisymmRel (· ≤ ·) a b) : a < c ↔ b < c :=
-  h.lt_congr (antisymmRel_refl _ c)
+  h.lt_congr .rfl
 
 theorem AntisymmRel.lt_congr_right (h : AntisymmRel (· ≤ ·) b c) : a < b ↔ a < c :=
-  (antisymmRel_refl _ a).lt_congr h
+  AntisymmRel.rfl.lt_congr h
 
 theorem AntisymmRel.antisymmRel_congr
     (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ : AntisymmRel (· ≤ ·) c d) :
@@ -225,12 +237,12 @@ instance instPartialOrderAntisymmetrization : PartialOrder (Antisymmetrization �
   le_antisymm a b := Quotient.inductionOn₂' a b fun _ _ hab hba => Quotient.sound' ⟨hab, hba⟩
 
 theorem antisymmetrization_fibration :
-    Relation.Fibration (· < ·) (· < ·) (@toAntisymmetrization α (· ≤ ·) _) := by
+    Relation.Fibration (· < ·) (· < ·) (toAntisymmetrization (α := α) (· ≤ ·)) := by
   rintro a ⟨b⟩ h
   exact ⟨b, h, rfl⟩
 
 theorem acc_antisymmetrization_iff : Acc (· < ·)
-    (@toAntisymmetrization α (· ≤ ·) _ a) ↔ Acc (· < ·) a :=
+    (toAntisymmetrization (α := α) (· ≤ ·) a) ↔ Acc (· < ·) a :=
   acc_lift₂_iff
 
 theorem wellFounded_antisymmetrization_iff :
@@ -254,7 +266,7 @@ instance [WellFoundedLT α] : WellFoundedLT (Antisymmetrization α (· ≤ ·)) 
 instance [WellFoundedGT α] : WellFoundedGT (Antisymmetrization α (· ≤ ·)) :=
   wellFoundedGT_antisymmetrization_iff.mpr ‹_›
 
-instance [DecidableRel (α := α) (· ≤ ·)] [DecidableRel (α := α) (· < ·)] [IsTotal α (· ≤ ·)] :
+instance [DecidableLE α] [DecidableLT α] [IsTotal α (· ≤ ·)] :
     LinearOrder (Antisymmetrization α (· ≤ ·)) :=
   { instPartialOrderAntisymmetrization with
     le_total := fun a b => Quotient.inductionOn₂' a b <| total_of (· ≤ ·),
@@ -263,12 +275,12 @@ instance [DecidableRel (α := α) (· ≤ ·)] [DecidableRel (α := α) (· < ·
 
 @[simp]
 theorem toAntisymmetrization_le_toAntisymmetrization_iff :
-    @toAntisymmetrization α (· ≤ ·) _ a ≤ @toAntisymmetrization α (· ≤ ·) _ b ↔ a ≤ b :=
+    toAntisymmetrization (α := α) (· ≤ ·) a ≤ toAntisymmetrization (α := α) (· ≤ ·) b ↔ a ≤ b :=
   Iff.rfl
 
 @[simp]
 theorem toAntisymmetrization_lt_toAntisymmetrization_iff :
-    @toAntisymmetrization α (· ≤ ·) _ a < @toAntisymmetrization α (· ≤ ·) _ b ↔ a < b :=
+    toAntisymmetrization (α := α) (· ≤ ·) a < toAntisymmetrization (α := α) (· ≤ ·) b ↔ a < b :=
   Iff.rfl
 
 @[simp]
@@ -282,8 +294,10 @@ theorem ofAntisymmetrization_lt_ofAntisymmetrization_iff {a b : Antisymmetrizati
   (Quotient.outRelEmbedding _).map_rel_iff
 
 @[mono]
-theorem toAntisymmetrization_mono : Monotone (@toAntisymmetrization α (· ≤ ·) _) := fun _ _ => id
+theorem toAntisymmetrization_mono : Monotone (toAntisymmetrization (α := α) (· ≤ ·)) :=
+  fun _ _ => id
 
+open scoped Relator in
 private theorem liftFun_antisymmRel (f : α →o β) :
     ((AntisymmRel.setoid α (· ≤ ·)).r ⇒ (AntisymmRel.setoid β (· ≤ ·)).r) f f := fun _ _ h =>
   ⟨f.mono h.1, f.mono h.2⟩
@@ -300,8 +314,6 @@ theorem OrderHom.coe_antisymmetrization (f : α →o β) :
     ⇑f.antisymmetrization = Quotient.map' f (liftFun_antisymmRel f) :=
   rfl
 
-/- Porting note: Removed @[simp] attribute. With this `simp` lemma the LHS of
-`OrderHom.antisymmetrization_apply_mk` is not in normal-form -/
 theorem OrderHom.antisymmetrization_apply (f : α →o β) (a : Antisymmetrization α (· ≤ ·)) :
     f.antisymmetrization a = Quotient.map' f (liftFun_antisymmRel f) a :=
   rfl
@@ -352,7 +364,7 @@ to the product of antisymmetrizations. -/
 def prodEquiv : Antisymmetrization (α × β) (· ≤ ·) ≃o
     Antisymmetrization α (· ≤ ·) × Antisymmetrization β (· ≤ ·) where
   toFun := Quotient.lift (fun ab ↦ (⟦ab.1⟧, ⟦ab.2⟧)) fun ab₁ ab₂ h ↦
-    Prod.mk.inj_iff.mpr ⟨Quotient.sound ⟨h.1.1, h.2.1⟩, Quotient.sound ⟨h.1.2, h.2.2⟩⟩
+    Prod.ext (Quotient.sound ⟨h.1.1, h.2.1⟩) (Quotient.sound ⟨h.1.2, h.2.2⟩)
   invFun := Function.uncurry <| Quotient.lift₂ (fun a b ↦ ⟦(a, b)⟧)
     fun a₁ b₁ a₂ b₂ h₁ h₂ ↦ Quotient.sound ⟨⟨h₁.1, h₂.1⟩, h₁.2, h₂.2⟩
   left_inv := by rintro ⟨_⟩; rfl

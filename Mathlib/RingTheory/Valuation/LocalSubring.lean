@@ -3,7 +3,7 @@ Copyright (c) 2024 Andrew Yang, Yaël Dillies, Javier López-Contreras. All righ
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Yaël Dillies, Javier López-Contreras
 -/
-import Mathlib.RingTheory.Ideal.Over
+import Mathlib.RingTheory.Ideal.GoingUp
 import Mathlib.RingTheory.LocalRing.LocalSubring
 import Mathlib.RingTheory.Polynomial.Ideal
 import Mathlib.RingTheory.Valuation.ValuationSubring

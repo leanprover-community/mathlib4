@@ -59,11 +59,6 @@ attribute [coe] PresheafedSpace.carrier
 
 instance : CoeSort (PresheafedSpace C) Type* where coe X := X.carrier
 
-theorem mk_coe (carrier) (presheaf) :
-    (({ carrier
-        presheaf } : PresheafedSpace C) : TopCat) = carrier :=
-  rfl
-
 instance (X : PresheafedSpace C) : TopologicalSpace X :=
   X.carrier.str
 

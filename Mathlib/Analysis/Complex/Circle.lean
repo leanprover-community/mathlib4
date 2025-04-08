@@ -57,8 +57,11 @@ lemma coe_injective : Injective ((↑) : Circle → ℂ) := fun _ _ ↦ ext
 -- Not simp because `SetLike.coe_eq_coe` already proves it
 lemma coe_inj : (x : ℂ) = y ↔ x = y := coe_injective.eq_iff
 
-@[simp] lemma abs_coe (z : Circle) : abs z = 1 := mem_sphere_zero_iff_norm.1 z.2
-@[simp] lemma normSq_coe (z : Circle) : normSq z = 1 := by simp [normSq_eq_abs]
+lemma norm_coe (z : Circle) : ‖(z : ℂ)‖ = 1 := mem_sphere_zero_iff_norm.1 z.2
+
+@[deprecated (since := "2025-02-16")] alias abs_coe := norm_coe
+
+@[simp] lemma normSq_coe (z : Circle) : normSq z = 1 := by simp [normSq_eq_norm_sq]
 @[simp] lemma coe_ne_zero (z : Circle) : (z : ℂ) ≠ 0 := ne_zero_of_mem_unit_sphere z
 @[simp, norm_cast] lemma coe_one : ↑(1 : Circle) = (1 : ℂ) := rfl
 -- Not simp because `OneMemClass.coe_eq_one` already proves it
@@ -84,9 +87,9 @@ def toUnits : Circle →* Units ℂ := unitSphereToUnits ℂ
 @[simp] lemma toUnits_apply (z : Circle) : toUnits z = Units.mk0 ↑z z.coe_ne_zero := rfl
 
 instance : CompactSpace Circle := Metric.sphere.compactSpace _ _
-instance : TopologicalGroup Circle := Metric.sphere.topologicalGroup
+instance : IsTopologicalGroup Circle := Metric.sphere.topologicalGroup
 instance instUniformSpace : UniformSpace Circle := instUniformSpaceSubtype
-instance : UniformGroup Circle := by
+instance : IsUniformGroup Circle := by
   convert topologicalGroup_is_uniform_of_compactSpace Circle
   exact unique_uniformity_of_compact rfl rfl
 
@@ -95,13 +98,13 @@ instance : UniformGroup Circle := by
 def ofConjDivSelf (z : ℂ) (hz : z ≠ 0) : Circle where
   val := conj z / z
   property := mem_sphere_zero_iff_norm.2 <| by
-    rw [norm_div, RCLike.norm_conj, div_self]; exact Complex.abs.ne_zero hz
+    rw [norm_div, RCLike.norm_conj, div_self]; exact norm_ne_zero_iff.mpr hz
 
 /-- The map `fun t => exp (t * I)` from `ℝ` to the unit circle in `ℂ`. -/
 def exp : C(ℝ, Circle) where
-  toFun t := ⟨(t * I).exp, by simp [Submonoid.unitSphere, exp_mul_I, abs_cos_add_sin_mul_I]⟩
+  toFun t := ⟨(t * I).exp, by simp [Submonoid.unitSphere, exp_mul_I, norm_cos_add_sin_mul_I]⟩
   continuous_toFun := Continuous.subtype_mk (by fun_prop)
-    (by simp [Submonoid.unitSphere, exp_mul_I, abs_cos_add_sin_mul_I])
+    (by simp [Submonoid.unitSphere, exp_mul_I, norm_cos_add_sin_mul_I])
 
 @[simp, norm_cast]
 theorem coe_exp (t : ℝ) : exp t = Complex.exp (t * Complex.I) := rfl

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta, Johan Commelin, Reid Barton, Robert Y. Lewis, Joseph Hua
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
+import Mathlib.CategoryTheory.Functor.EpiMono
 
 /-!
 
@@ -192,7 +193,7 @@ def equivOfNatIso {F G : C ⥤ C} (α : F ≅ G) : Algebra F ≌ Algebra G where
 
 namespace Initial
 
-variable {A} (h : @Limits.IsInitial (Algebra F) _ A)
+variable {A : Algebra F} (h : Limits.IsInitial A)
 /-- The inverse of the structure map of an initial algebra -/
 @[simp]
 def strInv : A.1 ⟶ F.obj A.1 :=
@@ -383,7 +384,7 @@ def equivOfNatIso {F G : C ⥤ C} (α : F ≅ G) : Coalgebra F ≌ Coalgebra G w
 
 namespace Terminal
 
-variable {A} (h : @Limits.IsTerminal (Coalgebra F) _ A)
+variable {A : Coalgebra F} (h : Limits.IsTerminal A)
 
 /-- The inverse of the structure map of an terminal coalgebra -/
 @[simp]
