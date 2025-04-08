@@ -770,18 +770,26 @@ end StructuredArrow
 namespace Functor
 variable {C D : Type*} [Category C] [Category D] {X : C} {F : C ⥤ D}
 
-/-- The essential of the slice of a full functor is the same as the essential image of the original
-functor. -/
+lemma essImage.of_overPost {Y : Over (F.obj X)} :
+    (Over.post F (X := X)).essImage Y → F.essImage Y.left :=
+  fun ⟨Z, ⟨e⟩⟩ ↦ ⟨Z.left, ⟨(Over.forget _).mapIso e⟩⟩
+
+lemma essImage.of_underPost {Y : Under (F.obj X)} :
+    (Under.post F (X := X)).essImage Y → F.essImage Y.right :=
+  fun ⟨Z, ⟨e⟩⟩ ↦ ⟨Z.right, ⟨(Under.forget _).mapIso e⟩⟩
+
+/-- The essential image of `Over.post F` where `F` is full is the same as the essential image of
+`F`. -/
 @[simp] lemma essImage_overPost [F.Full] {Y : Over (F.obj X)} :
     (Over.post F (X := X)).essImage Y ↔ F.essImage Y.left where
-  mp := fun ⟨Z, ⟨e⟩⟩ ↦ ⟨Z.left, ⟨(Over.forget _).mapIso e⟩⟩
+  mp := .of_overPost
   mpr := fun ⟨Z, ⟨e⟩⟩ ↦ let ⟨f, hf⟩ := F.map_surjective (e.hom ≫ Y.hom); ⟨.mk f, ⟨Over.isoMk e⟩⟩
 
-/-- The essential of the slice of a full functor is the same as the essential image of the original
-functor. -/
+/-- The essential image of `Under.post F` where `F` is full is the same as the essential image of
+`F`. -/
 @[simp] lemma essImage_underPost [F.Full] {Y : Under (F.obj X)} :
     (Under.post F (X := X)).essImage Y ↔ F.essImage Y.right where
-  mp := fun ⟨Z, ⟨e⟩⟩ ↦ ⟨Z.right, ⟨(Under.forget _).mapIso e⟩⟩
+  mp := .of_underPost
   mpr := fun ⟨Z, ⟨e⟩⟩ ↦ let ⟨f, hf⟩ := F.map_surjective (Y.hom ≫ e.inv); ⟨.mk f, ⟨Under.isoMk e⟩⟩
 
 variable {S : Type u₂} [Category.{v₂} S]
