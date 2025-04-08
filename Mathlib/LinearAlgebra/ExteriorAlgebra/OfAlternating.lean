@@ -63,11 +63,7 @@ theorem liftAlternating_ι (f : ∀ i, M [⋀^Fin i]→ₗ[R] N) (m : M) :
     liftAlternating (R := R) (M := M) (N := N) f (ι R m) = f 1 ![m] := by
   dsimp [liftAlternating]
   rw [foldl_ι, LinearMap.mk₂_apply, AlternatingMap.curryLeft_apply_apply]
-  congr
-  -- Porting note: In Lean 3, `congr` could use the `[Subsingleton (Fin 0 → M)]` instance to finish
-  -- the proof. Here, the instance can be synthesized but `congr` does not use it so the following
-  -- line is provided.
-  rw [Matrix.zero_empty]
+  congr!
 
 theorem liftAlternating_ι_mul (f : ∀ i, M [⋀^Fin i]→ₗ[R] N) (m : M)
     (x : ExteriorAlgebra R M) :
