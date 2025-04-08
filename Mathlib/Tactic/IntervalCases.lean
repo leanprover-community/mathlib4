@@ -215,8 +215,8 @@ This tells `interval_cases` how to work on natural numbers. -/
 def natMethods : Methods where
   initLB (e : Q(ℕ)) :=
     pure (.le 0, q(0), q(Nat.zero_le $e))
-  eval e := do
-    let ⟨z, e, p⟩ := (← NormNum.derive e).toRawIntEq.get!
+  eval (e : Q(ℕ)) := do
+    let ⟨z, e, p⟩ := (← NormNum.derive q($e)).toRawIntEq.get!
     pure (z, e, p)
   proveLE (lhs rhs : Q(ℕ)) := mkDecideProofQ q($lhs ≤ $rhs)
   proveLT (lhs rhs : Q(ℕ)) := mkDecideProofQ q(¬$rhs ≤ $lhs)
@@ -234,8 +234,8 @@ theorem _root_.Int.le_sub_one_of_not_le {a b : ℤ} (h : ¬b ≤ a) : a ≤ b - 
 /-- A `Methods` implementation for `ℤ`.
 This tells `interval_cases` how to work on integers. -/
 def intMethods : Methods where
-  eval e := do
-    let ⟨z, e, p⟩ := (← NormNum.derive e).toRawIntEq.get!
+  eval (e : Q(ℤ)) := do
+    let ⟨z, e, p⟩ := (← NormNum.derive q($e)).toRawIntEq.get!
     pure (z, e, p)
   proveLE (lhs rhs : Q(ℤ)) := mkDecideProofQ q($lhs ≤ $rhs)
   proveLT (lhs rhs : Q(ℤ)) := mkDecideProofQ q(¬$rhs ≤ $lhs)
