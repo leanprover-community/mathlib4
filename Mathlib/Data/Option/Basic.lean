@@ -212,7 +212,7 @@ theorem guard_eq_some' {p : Prop} [Decidable p] (u) : _root_.guard p = some u �
   cases u
   by_cases h : p <;> simp [_root_.guard, h]
 
-@[deprecated (since := "2025-04-04")] alias liftOrGet_choice := zipWith_eq_or_eq
+@[deprecated (since := "2025-04-04")] alias liftOrGet_choice := merge_eq_or_eq
 
 /-- Given an element of `a : Option α`, a default element `b : β` and a function `α → β`, apply this
 function to `a` if it comes from `α`, and return `b` otherwise. -/
