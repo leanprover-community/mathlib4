@@ -749,31 +749,16 @@ lemma isFixedPt_reflection_of_isOrthogonal {s : Set ι} (hj : ∀ i ∈ s, P.IsO
       obtain ⟨i, his, rfl⟩ := hu
       exact IsOrthogonal.reflection_apply_right <| hj i his
 
-section Field
+lemma root_coroot_zero_comm [NeZero (2 : R)] [NoZeroSMulDivisors R N]
+    (h : P.toPerfectPairing (P.root j) (P.coroot i) = 0) :
+      P.toPerfectPairing (P.root i) (P.coroot j) = 0 := by
+  have root_i_j := P.reflection_perm_root i j
+  rw [h, zero_smul, sub_zero, EmbeddingLike.apply_eq_iff_eq] at root_i_j
+  have coroot_i_j := P.reflection_perm_coroot i j
+  rw [← root_i_j, root_coroot_eq_pairing, sub_eq_self, smul_eq_zero] at coroot_i_j
+  rcases coroot_i_j with h | h
+  · exact h
+  exact False.elim (P.ne_zero' i h)
 
-variable (ι R M N : Type*) [Field R] [NeZero (2 : R)] [AddCommGroup M] [Module R M]
-  [AddCommGroup N] [Module R N]
-
-variable (P : RootPairing ι R M N) (i j : ι)
-
-lemma root_coroot_zero_comm (h : P.toPerfectPairing (P.root j) (P.coroot i) = 0) :
-    P.toPerfectPairing (P.root i) (P.coroot j) = 0 := by
-  have ttt := P.reflection_perm_root i j
-  rw [h] at ttt
-  norm_cast
-  simp only [zero_smul, sub_zero, EmbeddingLike.apply_eq_iff_eq] at ttt
-  have qqq := P.reflection_perm_coroot i j
-  rw [← ttt] at qqq
-  have mm : (P.toPerfectPairing (P.root i) (P.coroot j)) • P.coroot i = 0 := by
-    exact sub_eq_self.mp qqq
-  have nn := P.ne_zero' i
-  have := smul_eq_zero (M := N) (R := R) (c := ((P.toPerfectPairing (P.root i)) (P.coroot j)))
-    (x := (P.coroot i))
-  have qqqq := this.1 mm
-  rcases qqqq with hh | hh
-  · exact hh
-  contradiction
-
-end Field
 
 end RootPairing

@@ -464,7 +464,8 @@ lemma invtSubmodule_reflection:
       exact t1 t2
     simp at this
     have rrr :=
-      S.root_coroot_zero_comm (ι := H.root) (R := K) (M := Module.Dual K H) (N := H) j i this
+      S.root_coroot_zero_comm (ι := H.root) (R := K) (M := Module.Dual K H) (N := H) (i := j)
+        (j := i) this
     simp_all only [Subtype.forall, Finset.mem_filter, Finset.mem_univ, true_and, ne_eq,
       LieAlgebra.IsKilling.rootSystem_root_apply, LieAlgebra.IsKilling.rootSystem_coroot_apply,
       LieModule.Weight.toLinear_apply, LieAlgebra.IsKilling.rootSystem_pairing_apply,
