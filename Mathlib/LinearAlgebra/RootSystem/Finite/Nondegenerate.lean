@@ -93,8 +93,11 @@ instance instIsAnisotropicOfIsCrystallographic [CharZero R] [P.IsCrystallographi
 lemma pairingIn_zero_iff {S : Type*} [CommRing S] [Algebra S R] [FaithfulSMul S R]
     [P.IsValuedIn S] [P.IsAnisotropic] [NoZeroDivisors R] [NeZero (2 : R)] {i j : ι} :
     P.pairingIn S i j = 0 ↔ P.pairingIn S j i = 0 := by
+  have := P.reflexive_right
+  have : Nontrivial R := ⟨2, 0, two_ne_zero⟩
+  have : IsDomain R := IsDomain.mk
   simp only [← FaithfulSMul.algebraMap_eq_zero_iff S R, algebraMap_pairingIn,
-    P.toInvariantForm.pairing_zero_iff i j]
+    P.pairing_zero_iff (i := i) (j := j)]
 
 end CommRing
 
