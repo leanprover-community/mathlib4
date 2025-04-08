@@ -146,7 +146,7 @@ lemma coxeterWeightIn_eq_zero_iff [NoZeroSMulDivisors R N]:
     P.coxeterWeightIn ℤ i j = 0 ↔ P.pairingIn ℤ i j = 0 := by
   refine ⟨fun h ↦ ?_, fun h ↦ by rw [coxeterWeightIn, h, zero_mul]⟩
   rwa [← (algebraMap_injective ℤ R).eq_iff, map_zero, algebraMap_coxeterWeightIn,
-    RootPairing.InvariantForm.coxeterWeight_zero_iff_isOrthogonal, IsOrthogonal,
+    RootPairing.coxeterWeight_zero_iff_isOrthogonal, IsOrthogonal,
     P.pairing_zero_iff (i := j) (j := i), and_self, ← P.algebraMap_pairingIn ℤ,
     FaithfulSMul.algebraMap_eq_zero_iff] at h
 

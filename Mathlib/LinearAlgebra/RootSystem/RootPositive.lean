@@ -87,15 +87,19 @@ lemma apply_weylGroup_smul (g : P.weylGroup) (x y : M) :
     intro x y
     rw [← Submonoid.mk_mul_mk _ _ _ hg₁ hg₂, mul_smul, mul_smul, hg₁', hg₂']
 
-variable [NoZeroDivisors R] [NeZero (2 : R)]
-
 @[simp]
-lemma apply_root_root_zero_iff :
+lemma apply_root_root_zero_iff [NoZeroDivisors R] [NeZero (2 : R)]:
     B.form (P.root i) (P.root j) = 0 ↔ P.pairing i j = 0 := by
   calc B.form (P.root i) (P.root j) = 0
       ↔ 2 * B.form (P.root i) (P.root j) = 0 := by simp [two_ne_zero]
     _ ↔ P.pairing i j * B.form (P.root j) (P.root j) = 0 := by rw [B.two_mul_apply_root_root i j]
     _ ↔ P.pairing i j = 0 := by simp [B.ne_zero j]
+
+end InvariantForm
+
+section Orthogonal
+
+variable {P : RootPairing ι R M N} (i j : ι) [NoZeroDivisors R] [NeZero (2 : R)]
 
 lemma coxeterWeight_zero_iff_isOrthogonal :
     P.coxeterWeight i j = 0 ↔ P.IsOrthogonal i j := by
@@ -111,7 +115,7 @@ lemma isOrthogonal_iff_pairing_eq_zero :
   have : IsDomain R := IsDomain.mk
   simp [← coxeterWeight_zero_iff_isOrthogonal, coxeterWeight, P.pairing_zero_iff (i := j) (j := i)]
 
-end InvariantForm
+end Orthogonal
 
 variable (S) in
 /-- Given a root pairing, this is an invariant symmetric bilinear form satisfying a positivity
