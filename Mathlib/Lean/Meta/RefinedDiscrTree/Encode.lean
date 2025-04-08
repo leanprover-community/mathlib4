@@ -245,13 +245,13 @@ def getIgnores (fn : Expr) (args : Array Expr) : MetaM (Array Bool) := do
   let mut fnType ← inferType fn
   let mut result := Array.mkEmpty args.size
   let mut j := 0
-  for i in [:args.size] do
+  for h : i in [:args.size] do
     unless fnType matches .forallE .. do
       fnType ← whnfD (fnType.instantiateRevRange j i args)
       j := i
     let .forallE _ d b bi := fnType | throwError m! "expected function type {indentExpr fnType}"
     fnType := b
-    result := result.push (← isIgnoredArg args[i]! d bi)
+    result := result.push (← isIgnoredArg args[i] d bi)
   return result
 where
   /-- Return whether the argument should be ignored. -/
@@ -480,7 +480,7 @@ partial def mkDTExprsAux (original : Expr) (root : Bool) : M DTExpr := do
 
 end MkDTExpr
 
-/-- -/
+/-- Returns true if the `DTExpr` is not of the form `*` or `Eq * * *`". -/
 def DTExpr.isSpecific : DTExpr → Bool
   | .star _
   | .const ``Eq #[.star _, .star _, .star _] => false

@@ -34,11 +34,15 @@ on `MeasureTheory.Lp`, and this is why `r` must be marked as a
 `semiOutParam`. We don't mark it as an `outParam` because this would
 prevent Lean from using `HolderTriple p q r` and `HolderTriple p q r'`
 within a single proof, as may be occasionally convenient. -/
+@[mk_iff]
 class HolderTriple (p q : ℝ≥0∞) (r : semiOutParam ℝ≥0∞) : Prop where
   inv_add_inv' : p⁻¹ + q⁻¹ = r⁻¹
 
 /-- An abbreviation for `ENNReal.HolderTriple p q 1`, this class states `p⁻¹ + q⁻¹ = 1`. -/
 abbrev HolderConjugate (p q : ℝ≥0∞) := HolderTriple p q 1
+
+lemma holderConjugate_iff {p q : ℝ≥0∞} : HolderConjugate p q ↔ p⁻¹ + q⁻¹ = 1 := by
+  simp [holderTriple_iff]
 
 /-! ### Hölder triples -/
 
@@ -67,6 +71,9 @@ lemma inv_add_inv_eq_inv : p⁻¹ + q⁻¹ = r⁻¹ :=
 
 lemma inv_eq : r⁻¹ = p⁻¹ + q⁻¹ :=
   inv_add_inv'.symm
+
+lemma unique (r' : ℝ≥0∞) [hr' : HolderTriple p q r'] : r = r' := by
+  rw [← inv_inj, inv_eq p q r, inv_eq p q r']
 
 lemma one_div_add_one_div : 1 / p + 1 / q = 1 / r := by
   simpa using inv_add_inv'
@@ -104,11 +111,20 @@ lemma inv_sub_inv_eq_inv' (hq : q ≠ 0) : r⁻¹ - q⁻¹ = p⁻¹ := by
     simp_all
   · exact inv_sub_inv_eq_inv p q hr.ne'
 
+variable {r} in
+lemma unique_of_ne_zero (q' : ℝ≥0∞) (hr : r ≠ 0) [HolderTriple p q' r] : q = q' := by
+  rw [← inv_inj, ← inv_sub_inv_eq_inv q p hr, ← inv_sub_inv_eq_inv q' p hr]
+
 end HolderTriple
 
 /-! ### Hölder conjugates -/
 
 namespace HolderConjugate
+
+/- This instance causes a trivial loop, but this is exactly the kind of loop that
+Lean should be able to detect and avoid. -/
+instance symm {p q : ℝ≥0∞} [hpq : HolderConjugate p q] : HolderConjugate q p :=
+  inferInstance
 
 instance instTwoTwo : HolderConjugate 2 2 where
   inv_add_inv' := by
@@ -126,10 +142,16 @@ lemma one_le : 1 ≤ p := HolderTriple.le p q 1
 include q in
 lemma pos : 0 < p := zero_lt_one.trans_le (one_le p q)
 
+include q in
+lemma ne_zero : p ≠ 0 := pos p q |>.ne'
+
 lemma inv_add_inv_eq_one : p⁻¹ + q⁻¹ = 1 := @inv_one ℝ≥0∞ _ ▸ HolderTriple.inv_add_inv_eq_inv p q 1
 
 lemma one_sub_inv : 1 - p⁻¹ = q⁻¹ :=
   @inv_one ℝ≥0∞ _ ▸ HolderTriple.inv_sub_inv_eq_inv q p one_ne_zero
+
+lemma unique (q' : ℝ≥0∞) [hq' : HolderConjugate p q'] : q = q' :=
+  HolderTriple.unique_of_ne_zero p q q' one_ne_zero
 
 lemma eq_top_iff_eq_one : p = ∞ ↔ q = 1 := by
   constructor

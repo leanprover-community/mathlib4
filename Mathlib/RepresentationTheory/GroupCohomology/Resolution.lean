@@ -9,6 +9,7 @@ import Mathlib.CategoryTheory.Abelian.Ext
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.RepresentationTheory.Rep
 import Mathlib.RingTheory.TensorProduct.Free
+import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 
 /-!
 # The structure of the `k[G]`-module `k[Gⁿ]`
@@ -236,9 +237,10 @@ of the righthand side. -/
 def ofMulActionBasisAux :
     MonoidAlgebra k G ⊗[k] ((Fin n → G) →₀ k) ≃ₗ[MonoidAlgebra k G]
       (ofMulAction k G (Fin (n + 1) → G)).asModule :=
-  { (Rep.equivalenceModuleMonoidAlgebra.1.mapIso (diagonalSucc k G n).symm).toLinearEquiv with
+  haveI e := (Rep.equivalenceModuleMonoidAlgebra.1.mapIso (diagonalSucc k G n).symm).toLinearEquiv
+  { e with
     map_smul' := fun r x => by
-      rw [RingHom.id_apply, LinearEquiv.toFun_eq_coe, ← LinearEquiv.map_smul]
+      rw [RingHom.id_apply, LinearEquiv.toFun_eq_coe, ← LinearEquiv.map_smul e]
       congr 1
       /- Porting note (https://github.com/leanprover-community/mathlib4/issues/11039): broken proof was
       refine' x.induction_on _ (fun x y => _) fun y z hy hz => _
@@ -618,6 +620,7 @@ variable [Group G]
 
 /-- The standard projective resolution of `k` as a trivial `k`-linear `G`-representation. -/
 def groupCohomology.projectiveResolution : ProjectiveResolution (Rep.trivial k G k) where
+  complex := resolution k G
   π := εToSingle₀ k G
 
 instance : EnoughProjectives (Rep k G) :=

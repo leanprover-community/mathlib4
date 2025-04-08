@@ -3,9 +3,10 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
+import Mathlib.LinearAlgebra.Basis.Defs
 import Mathlib.LinearAlgebra.DFinsupp
 import Mathlib.LinearAlgebra.Finsupp.Span
-import Mathlib.LinearAlgebra.Basis.Defs
+import Mathlib.LinearAlgebra.FreeModule.Basic
 
 /-!
 # Linear structures on function with finite support `ι →₀ M`
@@ -106,13 +107,14 @@ theorem coe_basis {φ : ι → Type*} (b : ∀ i, Basis (φ i) R M) :
       ext ⟨j, y⟩
       by_cases h : i = j
       · cases h
-        simp only [basis_repr, single_eq_same, Basis.repr_self,
-          Finsupp.single_apply_left sigma_mk_injective]
-      · have : Sigma.mk i x ≠ Sigma.mk j y := fun h' => h <| congrArg (fun s => s.fst) h'
-        -- Porting note: previously `this` not needed
-        simp only [basis_repr, single_apply, h, this, if_false, LinearEquiv.map_zero, zero_apply]
+        simp [Finsupp.single_apply_left sigma_mk_injective]
+      · simp_all
 
-/-- The basis on `ι →₀ M` with basis vectors `fun i ↦ single i 1`. -/
+variable (ι R M) in
+instance _root_.Module.Free.finsupp [Module.Free R M] : Module.Free R (ι →₀ M) :=
+  .of_basis (Finsupp.basis fun _ => Module.Free.chooseBasis R M)
+
+/-- The basis on `ι →₀ R` with basis vectors `fun i ↦ single i 1`. -/
 @[simps]
 protected def basisSingleOne : Basis ι R (ι →₀ R) :=
   Basis.ofRepr (LinearEquiv.refl _ _)
@@ -137,7 +139,20 @@ noncomputable def basis {η : ι → Type*} (b : ∀ i, Basis (η i) R (M i)) :
   .ofRepr
     ((mapRange.linearEquiv fun i => (b i).repr).trans (sigmaFinsuppLequivDFinsupp R).symm)
 
+variable (R M) in
+instance _root_.Module.Free.dfinsupp [∀ i : ι, Module.Free R (M i)] : Module.Free R (Π₀ i, M i) :=
+  .of_basis <| DFinsupp.basis fun i => Module.Free.chooseBasis R (M i)
+
 end DFinsupp
+
+lemma Module.Free.trans {R S M : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
+    [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower R S M] [Module.Free S M]
+    [Module.Free R S] : Module.Free R M :=
+  let e : (ChooseBasisIndex S M →₀ S) ≃ₗ[R] ChooseBasisIndex S M →₀ (ChooseBasisIndex R S →₀ R) :=
+    Finsupp.mapRange.linearEquiv (chooseBasis R S).repr
+  let e : M ≃ₗ[R] ChooseBasisIndex S M →₀ (ChooseBasisIndex R S →₀ R) :=
+    (chooseBasis S M).repr.restrictScalars R ≪≫ₗ e
+  .of_equiv e.symm
 
 /-! TODO: move this section to an earlier file. -/
 

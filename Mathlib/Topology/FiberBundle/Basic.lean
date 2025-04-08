@@ -455,14 +455,14 @@ def trivChange (i j : ι) : PartialHomeomorph (B × F) (B × F) where
     · simp [hx]
   open_source := ((Z.isOpen_baseSet i).inter (Z.isOpen_baseSet j)).prod isOpen_univ
   open_target := ((Z.isOpen_baseSet i).inter (Z.isOpen_baseSet j)).prod isOpen_univ
-  continuousOn_toFun := continuous_fst.continuousOn.prod (Z.continuousOn_coordChange i j)
+  continuousOn_toFun := continuous_fst.continuousOn.prodMk (Z.continuousOn_coordChange i j)
   continuousOn_invFun := by
-    simpa [inter_comm] using continuous_fst.continuousOn.prod (Z.continuousOn_coordChange j i)
+    simpa [inter_comm] using continuous_fst.continuousOn.prodMk (Z.continuousOn_coordChange j i)
 
 @[simp, mfld_simps]
 theorem mem_trivChange_source (i j : ι) (p : B × F) :
     p ∈ (Z.trivChange i j).source ↔ p.1 ∈ Z.baseSet i ∩ Z.baseSet j := by
-  erw [mem_prod]
+  rw [trivChange, mem_prod]
   simp
 
 /-- Associate to a trivialization index `i : ι` the corresponding trivialization, i.e., a bijection
@@ -501,7 +501,7 @@ theorem mem_localTrivAsPartialEquiv_source (p : Z.TotalSpace) :
 
 theorem mem_localTrivAsPartialEquiv_target (p : B × F) :
     p ∈ (Z.localTrivAsPartialEquiv i).target ↔ p.1 ∈ Z.baseSet i := by
-  erw [mem_prod]
+  rw [localTrivAsPartialEquiv, mem_prod]
   simp only [and_true, mem_univ]
 
 theorem localTrivAsPartialEquiv_apply (p : Z.TotalSpace) :
@@ -518,7 +518,7 @@ theorem localTrivAsPartialEquiv_trans (i j : ι) :
     rfl
   · rintro ⟨x, v⟩ hx
     simp only [trivChange, localTrivAsPartialEquiv, PartialEquiv.symm,
-      Prod.mk.inj_iff, prodMk_mem_set_prod_eq, PartialEquiv.trans_source, mem_inter_iff,
+      Prod.mk_inj, prodMk_mem_set_prod_eq, PartialEquiv.trans_source, mem_inter_iff,
       mem_preimage, proj, mem_univ, eq_self_iff_true, (· ∘ ·),
       PartialEquiv.coe_trans, TotalSpace.proj] at hx ⊢
     simp only [Z.coordChange_comp, hx, mem_inter_iff, and_self_iff, mem_baseSet_at]
@@ -601,7 +601,7 @@ theorem continuous_const_section (v : F)
     IsOpen.mem_nhds (Z.isOpen_baseSet (Z.indexAt x)) (Z.mem_baseSet_at x)
   refine ((Z.localTrivAt x).toPartialHomeomorph.continuousAt_iff_continuousAt_comp_left ?_).2 ?_
   · exact A
-  · apply continuousAt_id.prod
+  · apply continuousAt_id.prodMk
     simp only [(· ∘ ·), mfld_simps, localTrivAt_snd]
     have : ContinuousOn (fun _ : B => v) (Z.baseSet (Z.indexAt x)) := continuousOn_const
     refine (this.congr fun y hy ↦ ?_).continuousAt A
