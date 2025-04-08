@@ -43,7 +43,7 @@ abbrev SymmetricAlgebra := RingQuot (SymRel R L)
 
 namespace SymmetricAlgebra
 
-/-- Algebra homomorphism from the tensor algebra over L to the symmetric algebra over L. -/
+/-- Algebra homomorphism from the tensor algebra over `L` to the symmetric algebra over `L`. -/
 abbrev algHom : TensorAlgebra R L →ₐ[R] SymmetricAlgebra R L := RingQuot.mkAlgHom R (SymRel R L)
 
 lemma algHom_surjective : Function.Surjective (algHom R L) :=
