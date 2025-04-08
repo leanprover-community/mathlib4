@@ -25,5 +25,5 @@ noncomputable def SymmetricAlgebra.isoMvPolynomial {I : Type*} (h : Basis I R L)
   (SymmetricAlgebra.algHom_ext <| h.ext <| fun i ↦ (by simp))
 
 theorem IsSymmetricAlgebra.mvPolynomial (I : Type*) (h : Basis I R L) :
-    IsSymmetricAlgebra (Basis.constr h R (fun i ↦ ((MvPolynomial.X i) : (MvPolynomial I R)))) := by
+    IsSymmetricAlgebra (Basis.constr h R fun i ↦ (.X i : MvPolynomial I R)) := by
   exact (SymmetricAlgebra.isoMvPolynomial h).bijective
