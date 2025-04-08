@@ -357,9 +357,13 @@ theorem Ici_ssubset_Ici : Ici a ⊂ Ici b ↔ b < a := by
   simp [← coe_ssubset]
 
 @[gcongr]
+alias ⟨_, _root_.GCongr.Finset.Ici_ssubset_Ici⟩ := Ici_ssubset_Ici
+
+@[gcongr]
 theorem Ioi_subset_Ioi (h : a ≤ b) : Ioi b ⊆ Ioi a := by
   simpa [← coe_subset] using Set.Ioi_subset_Ioi h
 
+@[gcongr]
 theorem Ioi_ssubset_Ioi (h : a < b) : Ioi b ⊂ Ioi a := by
   simpa [← coe_ssubset] using Set.Ioi_ssubset_Ioi h
 
@@ -421,9 +425,13 @@ theorem Iic_ssubset_Iic : Iic a ⊂ Iic b ↔ a < b := by
   simp [← coe_ssubset]
 
 @[gcongr]
+alias ⟨_, _root_.GCongr.Finset.Iic_ssubset_Iic⟩ := Iic_ssubset_Iic
+
+@[gcongr]
 theorem Iio_subset_Iio (h : a ≤ b) : Iio a ⊆ Iio b := by
   simpa [← coe_subset] using Set.Iio_subset_Iio h
 
+@[gcongr]
 theorem Iio_ssubset_Iio (h : a < b) : Iio a ⊂ Iio b := by
   simpa [← coe_ssubset] using Set.Iio_ssubset_Iio h
 

@@ -296,6 +296,8 @@ theorem Ici_ssubset_Ici : Ici a ⊂ Ici b ↔ b < a where
   mpr h := (ssubset_iff_of_subset (Ici_subset_Ici.mpr h.le)).mpr
     ⟨b, right_mem_Iic, fun h' => h.not_le h'⟩
 
+@[gcongr] alias ⟨_, _root_.GCongr.Ici_ssubset_Ici_of_le⟩ := Ici_ssubset_Ici
+
 @[simp]
 theorem Iic_subset_Iic : Iic a ⊆ Iic b ↔ a ≤ b :=
   @Ici_subset_Ici αᵒᵈ _ _ _
@@ -306,6 +308,7 @@ theorem Iic_subset_Iic : Iic a ⊆ Iic b ↔ a ≤ b :=
 theorem Iic_ssubset_Iic : Iic a ⊂ Iic b ↔ a < b :=
   @Ici_ssubset_Ici αᵒᵈ _ _ _
 
+@[gcongr] alias ⟨_, _root_.GCongr.Iic_ssubset_Iic_of_le⟩ := Iic_ssubset_Iic
 
 @[simp]
 theorem Ici_subset_Ioi : Ici a ⊆ Ioi b ↔ b < a :=
@@ -456,6 +459,7 @@ theorem Ioi_subset_Ioi (h : a ≤ b) : Ioi b ⊆ Ioi a := fun _ hx => h.trans_lt
 
 /-- If `a < b`, then `(b, +∞) ⊂ (a, +∞)`. In preorders, this is just an implication. If you need
 the equivalence in linear orders, use `Ioi_ssubset_Ioi_iff`. -/
+@[gcongr]
 theorem Ioi_ssubset_Ioi (h : a < b) : Ioi b ⊂ Ioi a :=
   (ssubset_iff_of_subset (Ioi_subset_Ioi h.le)).mpr ⟨b, h, lt_irrefl b⟩
 
@@ -471,6 +475,7 @@ theorem Iio_subset_Iio (h : a ≤ b) : Iio a ⊆ Iio b := fun _ hx => lt_of_lt_o
 
 /-- If `a < b`, then `(-∞, a) ⊂ (-∞, b)`. In preorders, this is just an implication. If you need
 the equivalence in linear orders, use `Iio_ssubset_Iio_iff`. -/
+@[gcongr]
 theorem Iio_ssubset_Iio (h : a < b) : Iio a ⊂ Iio b :=
   (ssubset_iff_of_subset (Iio_subset_Iio h.le)).mpr ⟨a, h, lt_irrefl a⟩
 
