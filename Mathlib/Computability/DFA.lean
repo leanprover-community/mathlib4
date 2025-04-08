@@ -12,20 +12,21 @@ import Mathlib.Tactic.NormNum
 # Deterministic Finite Automata
 
 A Deterministic Finite Automaton (DFA) is a state machine which
-decides membership in a particular regular language, by following a path
+decides membership in a particular `Language`, by following a path
 uniquely determined by an input string.
 
 We define regular languages to be ones for which a DFA exists, other formulations
-are then proved equivalent.
+are later proved equivalent.
 
 Note that this definition allows for automata with infinite states,
 a `Fintype` instance must be supplied for true DFAs.
 
 ## Main definitions
 
-- `DFA α σ` : automaton over alphabet `α` and set of states `σ`
-- `M.accepts` : language accepted by `M`
-- `Language.IsRegular L` : `L` is a regular language
+- `DFA α σ`: automaton over alphabet `α` and set of states `σ`
+- `M.accepts`: the language accepted by the DFA `M`
+- `Language.IsRegular L`: a predicate stating that `L` is a regular language, i.e. there exists
+  a DFA that recognizes the language
 
 ## Main theorems
 
