@@ -27,7 +27,7 @@ def attachFin (s : Finset ℕ) {n : ℕ} (h : ∀ m ∈ s, m < n) : Finset (Fin 
   ⟨s.1.pmap (fun a ha ↦ ⟨a, ha⟩) h, s.nodup.pmap fun _ _ _ _ ↦ Fin.val_eq_of_eq⟩
 
 @[simp]
-theorem mem_attachFin {n : ℕ} {s : Finset ℕ} (h : ∀ m ∈ s, m < n) {a : Fin n} :
+theorem mem_attachFin {s : Finset ℕ} (h : ∀ m ∈ s, m < n) {a : Fin n} :
     a ∈ s.attachFin h ↔ (a : ℕ) ∈ s :=
   ⟨fun h ↦
     let ⟨_, hb₁, hb₂⟩ := Multiset.mem_pmap.1 h
@@ -40,7 +40,7 @@ lemma coe_attachFin {s : Finset ℕ} (h : ∀ m ∈ s, m < n) :
   ext; simp
 
 @[simp]
-theorem card_attachFin {n : ℕ} (s : Finset ℕ) (h : ∀ m ∈ s, m < n) :
+theorem card_attachFin (s : Finset ℕ) (h : ∀ m ∈ s, m < n) :
     (s.attachFin h).card = s.card :=
   Multiset.card_pmap _ _ _
 
@@ -76,35 +76,27 @@ lemma attachFin_ssubset_attachFin {s t : Finset ℕ} (hst : s ⊂ t) (ht : ∀ m
 
 /-- Given a finset `s` of natural numbers and a bound `n`,
 `s.fin n` is the finset of all elements of `s` less than `n`.
-
-This definition was introduced to define a `LocallyFiniteOrder` instance on `Fin n`.
-Later, this instance was rewritten using a more efficient `attachFin`.
-Since this definition had no other uses in the library, it was deprecated.
 -/
-@[deprecated attachFin (since := "2025-04-01")]
 protected def fin (n : ℕ) (s : Finset ℕ) : Finset (Fin n) :=
   (s.subtype _).map Fin.equivSubtype.symm.toEmbedding
 
-set_option linter.deprecated false
-
-@[simp, deprecated mem_attachFin (since := "2025-04-01")]
-theorem mem_fin {s : Finset ℕ} : ∀ a : Fin n, a ∈ s.fin n ↔ (a : ℕ) ∈ s
+@[simp]
+theorem mem_fin {n} {s : Finset ℕ} : ∀ a : Fin n, a ∈ s.fin n ↔ (a : ℕ) ∈ s
   | ⟨a, ha⟩ => by simp [Finset.fin, ha, and_comm]
 
-@[simp, deprecated coe_attachFin (since := "2025-04-01")]
+@[simp]
 theorem coe_fin (n : ℕ) (s : Finset ℕ) : (s.fin n : Set (Fin n)) = Fin.val ⁻¹' s := by ext; simp
 
-@[mono, deprecated attachFin_subset_attachFin (since := "2025-04-01")]
-theorem fin_mono : Monotone (Finset.fin n) := fun s t h x => by simpa using @h x
+@[mono]
+theorem fin_mono {n} : Monotone (Finset.fin n) := fun s t h x => by simpa using @h x
 
-@[gcongr, deprecated attachFin_subset_attachFin (since := "2025-04-01")]
+@[gcongr]
 theorem fin_subset_fin (n : ℕ) {s t : Finset ℕ} (h : s ⊆ t) : s.fin n ⊆ t.fin n := fin_mono h
 
-@[simp, deprecated map_valEmbedding_attachFin (since := "2025-04-01")]
+@[simp]
 theorem fin_map {n} {s : Finset ℕ} : (s.fin n).map Fin.valEmbedding = s.filter (· < n) := by
   simp [Finset.fin, Finset.map_map]
 
-@[deprecated "No replacement" (since := "2025-04-01")]
 theorem attachFin_eq_fin {s : Finset ℕ} (h : ∀ m ∈ s, m < n) :
     attachFin s h = s.fin n := by
   ext
