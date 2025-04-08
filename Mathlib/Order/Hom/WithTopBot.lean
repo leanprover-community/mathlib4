@@ -344,7 +344,6 @@ variable [Lattice α] [Lattice β] [Lattice γ]
 protected def withTop (f : LatticeHom α β) : LatticeHom (WithTop α) (WithTop β) :=
   { f.toInfHom.withTop with toSupHom := f.toSupHom.withTop }
 
--- Porting note: `simps` doesn't generate those
 @[simp, norm_cast]
 lemma coe_withTop (f : LatticeHom α β) : ⇑f.withTop = WithTop.map f := rfl
 
@@ -364,7 +363,6 @@ theorem withTop_comp (f : LatticeHom β γ) (g : LatticeHom α β) :
 protected def withBot (f : LatticeHom α β) : LatticeHom (WithBot α) (WithBot β) :=
   { f.toInfHom.withBot with toSupHom := f.toSupHom.withBot }
 
--- Porting note: `simps` doesn't generate those
 @[simp, norm_cast]
 lemma coe_withBot (f : LatticeHom α β) : ⇑f.withBot = Option.map f := rfl
 
@@ -385,7 +383,6 @@ def withTopWithBot (f : LatticeHom α β) :
     BoundedLatticeHom (WithTop <| WithBot α) (WithTop <| WithBot β) :=
   ⟨f.withBot.withTop, rfl, rfl⟩
 
--- Porting note: `simps` doesn't generate those
 @[simp, norm_cast]
 lemma coe_withTopWithBot (f : LatticeHom α β) : ⇑f.withTopWithBot = Option.map (Option.map f) := rfl
 
