@@ -97,19 +97,19 @@ lemma apply_root_root_zero_iff :
     _ ↔ P.pairing i j * B.form (P.root j) (P.root j) = 0 := by rw [B.two_mul_apply_root_root i j]
     _ ↔ P.pairing i j = 0 := by simp [B.ne_zero j]
 
-include B
-
-lemma pairing_zero_iff :
-    P.pairing i j = 0 ↔ P.pairing j i = 0 := by
-  rw [← B.apply_root_root_zero_iff, ← B.apply_root_root_zero_iff, ← B.symm.eq, RingHom.id_apply]
-
 lemma coxeterWeight_zero_iff_isOrthogonal :
     P.coxeterWeight i j = 0 ↔ P.IsOrthogonal i j := by
-  simp [coxeterWeight, IsOrthogonal, B.pairing_zero_iff i j]
+  have := P.reflexive_right
+  have : Nontrivial R := ⟨2, 0, two_ne_zero⟩
+  have : IsDomain R := IsDomain.mk
+  simp [coxeterWeight, IsOrthogonal, P.pairing_zero_iff (i := i) (j := j)]
 
 lemma isOrthogonal_iff_pairing_eq_zero :
     P.IsOrthogonal i j ↔ P.pairing i j = 0 := by
-  simp [← B.coxeterWeight_zero_iff_isOrthogonal, coxeterWeight, B.pairing_zero_iff j i]
+  have := P.reflexive_right
+  have : Nontrivial R := ⟨2, 0, two_ne_zero⟩
+  have : IsDomain R := IsDomain.mk
+  simp [← coxeterWeight_zero_iff_isOrthogonal, coxeterWeight, P.pairing_zero_iff (i := j) (j := i)]
 
 end InvariantForm
 
