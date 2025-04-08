@@ -114,7 +114,7 @@ def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageD
       | none => rargs
       | some (opt, n, trailing) =>
         -- Since we are now seeing the currently outermost `maxHeartbeats` option,
-        -- we remove all subsequence potential flags and only decide whether to lint or not
+        -- we remove all subsequent potential flags and only decide whether to lint or not
         -- based on whether the current option has a comment.
         let rargs := rargs.filter (·.1 != `MaxHeartbeats)
         if trailing.toString.trimLeft.isEmpty then
