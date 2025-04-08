@@ -178,6 +178,31 @@ def polarSubmodule {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] (m : S) : S
 
 end NontriviallyNormedField
 
+section
+
+lemma absConvexHull_zero_mem (s : Set E) [SeminormedRing 𝕜] [NormOneClass 𝕜]
+    [AddCommGroup E] [Module ℝ E] [Module 𝕜 E] [Nonempty s] : 0 ∈ absConvexHull 𝕜 s := by
+  obtain ⟨w, hw⟩ := (inferInstance : Nonempty s)
+  rw [← add_neg_cancel ((1/2 : ℝ) • w), ← smul_neg]
+  apply convex_absConvexHull (subset_absConvexHull hw)
+    ((Balanced.neg_mem_iff balanced_absConvexHull).mpr (subset_absConvexHull hw))
+    (le_of_lt one_half_pos) (le_of_lt one_half_pos) (add_halves 1)
+
+variable [RCLike 𝕜] [AddCommGroup E] [Module ℝ E] [Module 𝕜 E]
+
+--lemma absConvexHull_zero_mem' (s : Set E) [Nonempty s] : 0 ∈ absConvexHull 𝕜 s := by
+--  exact absConvexHull_zero_mem s
+  /-
+  obtain ⟨w, hw⟩ := (inferInstance : Nonempty s)
+  rw  [← add_neg_cancel ((1/2 : ℝ) • w), ← smul_neg]
+  exact convex_absConvexHull (subset_absConvexHull hw)
+    ((Balanced.neg_mem_iff balanced_absConvexHull).mpr (subset_absConvexHull hw))
+    (le_of_lt one_half_pos) (le_of_lt one_half_pos) (add_halves 1)
+  -/
+
+end
+
+
 section Bipolar
 
 variable [RCLike 𝕜] [AddCommGroup E] [AddCommGroup F]
@@ -193,12 +218,7 @@ variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
 variable [Module ℝ E]
 
-lemma absConvexHull_zero_mem (s : Set E) [Nonempty s] : 0 ∈ absConvexHull 𝕜 s := by
-  obtain ⟨w, hw⟩ := (inferInstance : Nonempty s)
-  rw [← add_neg_cancel ((1/2 : ℝ) • w), ← smul_neg]
-  exact convex_absConvexHull (subset_absConvexHull hw)
-    ((Balanced.neg_mem_iff balanced_absConvexHull).mpr (subset_absConvexHull hw))
-    (le_of_lt one_half_pos) (le_of_lt one_half_pos) (add_halves 1)
+
 
 variable  [IsScalarTower ℝ 𝕜 E]
 
