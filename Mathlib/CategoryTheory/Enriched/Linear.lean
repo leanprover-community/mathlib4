@@ -59,11 +59,27 @@ lemma aux4'' {W X Y Z : C} (f : ((W ⟶ X) ⊗[R] (X ⟶ Y)) ⊗[R] (Y ⟶ Z)) :
     lift (Linear.comp W Y Z) ((LinearMap.rTensor (Y ⟶ Z) (lift (Linear.comp W X Y))) f) =
       lift (R := R) (Linear.comp W X Z)
         (LinearMap.lTensor (R := R) (N := (X ⟶ Y) ⊗[R] (Y ⟶ Z)) (P := X ⟶ Z) (W ⟶ X)
-          (lift (Linear.comp X Y Z)) ((TensorProduct.assoc R _ _ _).toLinearMap f)) := sorry
+          (lift (Linear.comp X Y Z)) ((TensorProduct.assoc R _ _ _).toLinearMap f)) := by
+  simp
+  sorry
 
-#check TensorProduct.rid
-#check TensorProduct.assoc
-#check LinearMap.rTensor_tensor
+lemma aux5 {X : C} : (LinearMap.ringLmapEquivSelf R R (X ⟶ X)).symm (𝟙 X) =
+    LinearMap.toSpanSingleton R (X ⟶ X) (𝟙 X) := rfl
+
+lemma aux5' {X Z : C} (f : X ⟶ Z) :
+    (LinearMap.ringLmapEquivSelf R R (X ⟶ Z)).symm f =
+    LinearMap.toSpanSingleton R  (X ⟶ Z) f := rfl
+
+@[simp]
+lemma aux6 {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    LinearMap.toSpanSingleton R (X ⟶ Z) (f ≫ g) =
+    (Linear.rightComp R X g) ∘ₗ (LinearMap.toSpanSingleton R (X ⟶ Y) f) := by
+  ext
+  simp
+
+lemma aux7 {W X Y Z: ModuleCat R} (f : W ⟶ X) (g : Y ⟶ Z) :
+    ModuleCat.Hom.hom (R := R) (f ⊗ g) = map (ModuleCat.Hom.hom f) (ModuleCat.Hom.hom g) :=
+  rfl
 
 noncomputable instance : EnrichedOrdinaryCategory (ModuleCat R) C where
   Hom X Y := .of R (X ⟶ Y)
@@ -83,14 +99,32 @@ noncomputable instance : EnrichedOrdinaryCategory (ModuleCat R) C where
     simp
   assoc W X Y Z := by
     ext f
-    simp at f ⊢
     change _ ⊗[R] _ ⊗[R] _ at f
     simp at f ⊢
     erw [aux4'']
     congr
     exact (TensorProduct.assoc R (W ⟶ X) (X ⟶ Y) (Y ⟶ Z)).right_inv f
-  homEquiv {X Y} := sorry
-
-#check ModuleCat.tensorUnit
+  homEquiv {X Y} := (ModuleCat.homEquiv.trans
+      (LinearMap.ringLmapEquivSelf R R (X ⟶ Y)).toEquiv).symm
+  homEquiv_id X := rfl
+  homEquiv_comp {X Y Z} f g := by
+    dsimp [eComp]
+    erw [aux5', aux5', aux5']
+    rw [aux6]
+    simp [ModuleCat.homEquiv]
+    ext
+    simp
+    erw [aux2]
+    simp [TensorProduct.lid]
+    change _ =
+      (lift (Linear.comp X Y Z))
+        ((ModuleCat.Hom.hom
+          (ModuleCat.ofHom (LinearMap.toSpanSingleton R (X ⟶ Y) f) ⊗
+            ModuleCat.ofHom (LinearMap.toSpanSingleton R (Y ⟶ Z) g)))
+          (1 ⊗ₜ 1))
+    simp [aux7]
+    erw [map_tmul (R := R) (LinearMap.toSpanSingleton R (X ⟶ Y) f)
+      (LinearMap.toSpanSingleton R (Y ⟶ Z) g) 1 1]
+    simp
 
 end CategoryTheory
