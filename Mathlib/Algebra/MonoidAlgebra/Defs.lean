@@ -823,6 +823,7 @@ scoped syntax:max (priority := high) term noWs "[" term "]" : term
 
 macro_rules | `($k[$g]) => `(AddMonoidAlgebra $k $g)
 
+/-- Unexpander for `AddMonoidAlgebra`. -/
 @[app_unexpander AddMonoidAlgebra]
 def unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $k $g) => `($k[$g])
