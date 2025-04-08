@@ -28,7 +28,9 @@ assert_not_exists MonoidWithZero
 open Order
 
 namespace Set
-variable {α : Type*} [LinearOrder α]
+/-! ## Partial orders -/
+section PartialOrder
+variable {α : Type*} [PartialOrder α]
 
 /-! ### Two-sided intervals -/
 
@@ -50,28 +52,10 @@ lemma Ico_succ_left_eq_Ioo (a b : α) : Ico (succ a) b = Ioo a b := by
 lemma Icc_succ_left_eq_Ioc_of_not_isMax (ha : ¬ IsMax a) (b : α) : Icc (succ a) b = Ioc a b := by
   ext x; rw [mem_Icc, mem_Ioc, succ_le_iff_of_not_isMax ha]
 
-lemma Ico_succ_right_eq_Icc_of_not_isMax (hb : ¬ IsMax b) (a : α) : Ico a (succ b) = Icc a b := by
-  ext x; rw [mem_Ico, mem_Icc, lt_succ_iff_of_not_isMax hb]
-
-lemma Ioo_succ_right_eq_Ioc_of_not_isMax (hb : ¬ IsMax b) (a : α) : Ioo a (succ b) = Ioc a b := by
-  ext x; rw [mem_Ioo, mem_Ioc, lt_succ_iff_of_not_isMax hb]
-
-lemma Ico_succ_succ_eq_Ioc_of_not_isMax (hb : ¬ IsMax b) (a : α) :
-    Ico (succ a) (succ b) = Ioc a b := by
-  rw [Ico_succ_left_eq_Ioo, Ioo_succ_right_eq_Ioc_of_not_isMax hb]
-
 /-! ##### Inserting into intervals -/
 
 lemma insert_Icc_succ_left_eq_Icc (h : a ≤ b) : insert a (Icc (succ a) b) = Icc a b := by
   ext x; simp [or_and_left, eq_comm, ← le_iff_eq_or_succ_le]; aesop
-
-lemma insert_Icc_eq_Icc_succ_right (h : a ≤ succ b) :
-    insert (succ b) (Icc a b) = Icc a (succ b) := by
-  ext x; simp [mem_insert, mem_Icc, or_and_left, le_succ_iff_eq_or_le]; aesop
-
-lemma insert_Ico_right_eq_Ico_succ_right_of_not_isMax (h : a ≤ b) (hb : ¬ IsMax b) :
-    insert b (Ico a b) = Ico a (succ b) := by
-  rw [Ico_succ_right_of_not_isMax hb, ← Ico_insert_right h]
 
 lemma insert_Ico_succ_left_eq_Ico (h : a < b) : insert a (Ico (succ a) b) = Ico a b := by
   rw [Ico_succ_left_of_not_isMax h.not_isMax, ← Ioo_insert_left h]
@@ -86,6 +70,121 @@ variable [NoMaxOrder α]
 
 lemma Icc_succ_left_eq_Ioc (a b : α) : Icc (succ a) b = Ioc a b :=
   Icc_succ_left_eq_Ioc_of_not_isMax (not_isMax _) _
+
+end SuccOrder
+
+section PredOrder
+variable [PredOrder α] {a b : α}
+
+/-!
+#### Orders possibly with minimal elements
+
+##### Equalities of intervals
+-/
+
+lemma Ioc_pred_right_eq_Ioo (a b : α) : Ioc a (pred b) = Ioo a b := by
+  by_cases hb : IsMin b
+  · rw [Ioc_eq_empty (hb.mono <| pred_le _).not_lt, Ioo_eq_empty hb.not_lt]
+  · ext x
+    rw [mem_Ioc, mem_Ioo, le_pred_iff_of_not_isMin hb]
+
+lemma Icc_pred_right_eq_Ico_of_not_isMin (hb : ¬ IsMin b) (a : α) : Icc a (pred b) = Ico a b := by
+  ext x; rw [mem_Icc, mem_Ico, le_pred_iff_of_not_isMin hb]
+
+/-! ##### Inserting into intervals -/
+
+lemma insert_Icc_pred_right_eq_Icc (h : a ≤ b) : insert b (Icc a (pred b)) = Icc a b := by
+  ext x; simp [or_and_left, eq_comm (a := b), ← le_iff_eq_or_le_pred]; aesop
+
+lemma insert_Ioc_pred_right_eq_Ioc (h : a < b) : insert b (Ioc a (pred b)) = Ioc a b := by
+  rw [Ioc_pred_right_of_not_isMin h.not_isMin, Ioo_insert_right h]
+
+/-!
+#### Orders with no minimal elements
+
+##### Equalities of intervals
+-/
+
+variable [NoMinOrder α]
+
+lemma Icc_pred_right_eq_Ico (a b : α) : Icc a (pred b) = Ico a b :=
+  Icc_pred_right_eq_Ico_of_not_isMin (not_isMin _) _
+
+
+
+end PredOrder
+
+/-! ### One-sided interval towards `⊥` -/
+
+section PredOrder
+variable [PredOrder α] {a b : α}
+
+lemma Iic_pred_eq_Iio_of_not_isMin (hb : ¬ IsMin b) : Iic (pred b) = Iio b := by
+  ext x; rw [mem_Iic, mem_Iio, le_pred_iff_of_not_isMin hb]
+
+variable [NoMinOrder α]
+
+lemma Iic_pred_eq_Iio (b : α) : Iic (pred b) = Iio b := Iic_pred_eq_Iio_of_not_isMin (not_isMin _)
+
+end PredOrder
+
+/-! ### One-sided interval towards `⊤` -/
+
+section SuccOrder
+variable [SuccOrder α] {a : α}
+
+lemma Ici_succ_eq_Ioi_of_not_isMax (ha : ¬ IsMax a) : Ici (succ a) = Ioi a := by
+  ext x; rw [mem_Ici, mem_Ioi, succ_le_iff_of_not_isMax ha]
+
+variable [NoMaxOrder α]
+
+lemma Ici_succ_eq_Ioi (a : α) : Ici (succ a) = Ioi a := Ici_succ_eq_Ioi_of_not_isMax (not_isMax _)
+
+end SuccOrder
+end PartialOrder
+
+/-! ## Linear orders -/
+section LinearOrder
+variable {α : Type*} [LinearOrder α]
+
+/-! ### Two-sided intervals -/
+
+section SuccOrder
+variable [SuccOrder α] {a b : α}
+
+/-!
+#### Orders possibly with maximal elements
+
+##### Equalities of intervals
+-/
+
+lemma Ico_succ_right_eq_Icc_of_not_isMax (hb : ¬ IsMax b) (a : α) : Ico a (succ b) = Icc a b := by
+  ext x; rw [mem_Ico, mem_Icc, lt_succ_iff_of_not_isMax hb]
+
+lemma Ioo_succ_right_eq_Ioc_of_not_isMax (hb : ¬ IsMax b) (a : α) : Ioo a (succ b) = Ioc a b := by
+  ext x; rw [mem_Ioo, mem_Ioc, lt_succ_iff_of_not_isMax hb]
+
+lemma Ico_succ_succ_eq_Ioc_of_not_isMax (hb : ¬ IsMax b) (a : α) :
+    Ico (succ a) (succ b) = Ioc a b := by
+  rw [Ico_succ_left_eq_Ioo, Ioo_succ_right_eq_Ioc_of_not_isMax hb]
+
+/-! ##### Inserting into intervals -/
+
+lemma insert_Icc_eq_Icc_succ_right (h : a ≤ succ b) :
+    insert (succ b) (Icc a b) = Icc a (succ b) := by
+  ext x; simp [mem_insert, mem_Icc, or_and_left, le_succ_iff_eq_or_le]; aesop
+
+lemma insert_Ico_right_eq_Ico_succ_right_of_not_isMax (h : a ≤ b) (hb : ¬ IsMax b) :
+    insert b (Ico a b) = Ico a (succ b) := by
+  rw [Ico_succ_right_of_not_isMax hb, ← Ico_insert_right h]
+
+/-!
+#### Orders with no maximal elements
+
+##### Equalities of intervals
+-/
+
+variable [NoMaxOrder α]
 
 lemma Ico_succ_right_eq_Icc (a b : α) : Ico a (succ b) = Icc a b :=
   Ico_succ_right_eq_Icc_of_not_isMax (not_isMax _) _
@@ -112,14 +211,6 @@ variable [PredOrder α] {a b : α}
 ##### Equalities of intervals
 -/
 
-lemma Ioc_pred_right_eq_Ioo (a b : α) : Ioc a (pred b) = Ioo a b := by
-  by_cases hb : IsMin b
-  · rw [Ioc_eq_empty (hb.mono <| pred_le _).not_lt, Ioo_eq_empty hb.not_lt]
-  · ext x
-    rw [mem_Ioc, mem_Ioo, le_pred_iff_of_not_isMin hb]
-
-lemma Icc_pred_right_eq_Ico_of_not_isMin (hb : ¬ IsMin b) (a : α) : Icc a (pred b) = Ico a b := by
-  ext x; rw [mem_Icc, mem_Ico, le_pred_iff_of_not_isMin hb]
 
 lemma Ioc_pred_left_eq_Icc_of_not_isMin (ha : ¬ IsMin a) (b : α) : Ioc (pred a) b = Icc a b := by
   ext x; rw [mem_Ioc, mem_Icc, pred_lt_iff_of_not_isMin ha]
@@ -133,9 +224,6 @@ lemma Ioc_pred_pred_eq_Ico_of_not_isMin (ha : ¬ IsMin a) (b : α) :
 
 /-! ##### Inserting into intervals -/
 
-lemma insert_Icc_pred_right_eq_Icc (h : a ≤ b) : insert b (Icc a (pred b)) = Icc a b := by
-  ext x; simp [or_and_left, eq_comm (a := b), ← le_iff_eq_or_le_pred]; aesop
-
 lemma insert_Icc_eq_Icc_pred_left (h : pred a ≤ b) :
     insert (pred a) (Icc a b) = Icc (pred a) b := by
   ext x; simp [mem_insert, mem_Icc, or_and_left, pred_le_iff_eq_or_le]; aesop
@@ -144,9 +232,6 @@ lemma insert_Ioc_left_eq_Ioc_pred_left_of_not_isMin (h : a ≤ b) (ha : ¬ IsMin
     insert a (Ioc a b) = Ioc (pred a) b := by
   rw [Ioc_pred_left_of_not_isMin ha, Ioc_insert_left h]
 
-lemma insert_Ioc_pred_right_eq_Ioc (h : a < b) : insert b (Ioc a (pred b)) = Ioc a b := by
-  rw [Ioc_pred_right_of_not_isMin h.not_isMin, Ioo_insert_right h]
-
 /-!
 #### Orders with no minimal elements
 
@@ -154,9 +239,6 @@ lemma insert_Ioc_pred_right_eq_Ioc (h : a < b) : insert b (Ioc a (pred b)) = Ioc
 -/
 
 variable [NoMinOrder α]
-
-lemma Icc_pred_right_eq_Ico (a b : α) : Icc a (pred b) = Ico a b :=
-  Icc_pred_right_eq_Ico_of_not_isMin (not_isMin _) _
 
 lemma Ioc_pred_left_eq_Icc (a b : α) : Ioc (pred a) b = Icc a b :=
   Ioc_pred_left_eq_Icc_of_not_isMin (not_isMin _) _
@@ -199,31 +281,7 @@ lemma Iio_succ_eq_Iic (b : α) : Iio (succ b) = Iic b := Iio_succ_eq_Iic_of_not_
 
 end SuccOrder
 
-section PredOrder
-variable [PredOrder α] {a b : α}
-
-lemma Iic_pred_eq_Iio_of_not_isMin (hb : ¬ IsMin b) : Iic (pred b) = Iio b := by
-  ext x; rw [mem_Iic, mem_Iio, le_pred_iff_of_not_isMin hb]
-
-variable [NoMinOrder α]
-
-lemma Iic_pred_eq_Iio (b : α) : Iic (pred b) = Iio b := Iic_pred_eq_Iio_of_not_isMin (not_isMin _)
-
-end PredOrder
-
 /-! ### One-sided interval towards `⊤` -/
-
-section SuccOrder
-variable [SuccOrder α] {a : α}
-
-lemma Ici_succ_eq_Ioi_of_not_isMax (ha : ¬ IsMax a) : Ici (succ a) = Ioi a := by
-  ext x; rw [mem_Ici, mem_Ioi, succ_le_iff_of_not_isMax ha]
-
-variable [NoMaxOrder α]
-
-lemma Ici_succ_eq_Ioi (a : α) : Ici (succ a) = Ioi a := Ici_succ_eq_Ioi_of_not_isMax (not_isMax _)
-
-end SuccOrder
 
 section PredOrder
 variable [PredOrder α] {a a : α}
@@ -236,4 +294,5 @@ variable [NoMinOrder α]
 lemma Ioi_pred_eq_Ici (a : α) : Ioi (pred a) = Ici a := Ioi_pred_eq_Ici_of_not_isMin (not_isMin _)
 
 end PredOrder
+end LinearOrder
 end Set
