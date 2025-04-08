@@ -911,8 +911,15 @@ variable (A : Type*) [AddCommGroup A] (n : ℤ)
 def torsionBy : AddSubgroup A :=
   (Submodule.torsionBy ℤ A n).toAddSubgroup
 
-@[inherit_doc]
-scoped notation:max (priority := high) A"["n"]" => torsionBy A n
+@[inherit_doc torsionBy]
+scoped syntax:max (name := torsionByStx) (priority := high) term noWs "[" term "]" : term
+
+macro_rules | `($A[$n]) => `(torsionBy $A $n)
+
+@[app_unexpander torsionBy]
+def torsionByUnexpander : Lean.PrettyPrinter.Unexpander
+  | `($_ $A $n) => `($A[$n])
+  | _ => throw ()
 
 lemma torsionBy.neg : A[-n] = A[n] := by
   ext a
