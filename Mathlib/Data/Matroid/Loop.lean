@@ -164,8 +164,7 @@ lemma isLoop_iff_closure_eq_loops_and_mem_ground :
   mp h := ⟨h.closure, h.mem_ground⟩
   mpr h := by
     rw [isLoop_iff, ← closure_empty, ← singleton_subset_iff,
-      ← closure_subset_closure_iff_subset_closure, h.1]
-    rfl
+      ← closure_subset_closure_iff_subset_closure, h.1, loops]
 
 lemma isLoop_iff_closure_eq_loops (he : e ∈ M.E := by aesop_mat) :
     M.IsLoop e ↔ M.closure {e} = M.loops := by
@@ -247,6 +246,10 @@ lemma freeOn_not_isLoop (E : Set α) (e : α) : ¬ (freeOn E).IsLoop e := by
 @[simp]
 lemma uniqueBaseOn_isLoop_iff {I E : Set α} : (uniqueBaseOn I E).IsLoop e ↔ e ∈ E \ I := by
   simp [isLoop_iff, loops]
+
+lemma eq_loopyOn_iff_loops_eq {E : Set α} : M = loopyOn E ↔ M.loops = E ∧ M.E = E :=
+  ⟨fun h ↦ by simp [h, loops],
+  fun ⟨h, h'⟩ ↦ by rw [← h', ← closure_empty_eq_ground_iff, ← loops, h, h']⟩
 
 section IsNonloop
 
@@ -347,7 +350,7 @@ lemma IsNonloop.isNonloop_of_mem_closure (he : M.IsNonloop e) (hef : e ∈ M.clo
   rw [isLoop_iff] at *; convert hef using 1
   obtain (hf | hf) := em (f ∈ M.E)
   · rw [← closure_loops, ← insert_eq_of_mem (h hf), closure_insert_congr_right M.closure_loops,
-      insert_emptyc_eq]
+      insert_empty_eq]
   rw [eq_comm, ← closure_inter_ground, inter_comm, inter_singleton_eq_empty.mpr hf, loops]
 
 lemma IsNonloop.closure_eq_of_mem_closure (he : M.IsNonloop e) (hef : e ∈ M.closure {f}) :
@@ -447,7 +450,9 @@ lemma IsColoop.mem_ground (he : M.IsColoop e) : e ∈ M.E :=
 lemma coloops_subset_ground (M : Matroid α) : M.coloops ⊆ M.E :=
   fun _ ↦ IsColoop.mem_ground
 
-lemma isColoop_iff_mem_loops : M.IsColoop e ↔ e ∈ M.coloops := Iff.rfl
+lemma isColoop_iff_mem_coloops : M.IsColoop e ↔ e ∈ M.coloops := Iff.rfl
+
+@[deprecated (since := "2025-04-01")] alias isColoop_iff_mem_loops := isColoop_iff_mem_coloops
 
 @[simp]
 lemma dual_loops : M✶.loops = M.coloops := rfl
@@ -618,7 +623,7 @@ lemma exists_mem_isCircuit_of_not_isColoop (heE : e ∈ M.E) (he : ¬ M.IsColoop
 @[simp]
 lemma closure_inter_coloops_eq (M : Matroid α) (X : Set α) :
     M.closure X ∩ M.coloops = X ∩ M.coloops := by
-  simp_rw [Set.ext_iff, mem_inter_iff, ← isColoop_iff_mem_loops, and_congr_left_iff]
+  simp_rw [Set.ext_iff, mem_inter_iff, ← isColoop_iff_mem_coloops, and_congr_left_iff]
   intro e he
   rw [he.mem_closure_iff_mem]
 
@@ -700,6 +705,14 @@ lemma diff_coloops_indep_iff : M.Indep (I \ M.coloops) ↔ M.Indep I :=
 lemma coloops_indep (M : Matroid α) : M.Indep M.coloops := by
   rw [← empty_union M.coloops, union_coloops_indep_iff]
   exact M.empty_indep
+
+lemma restrict_isColoop_iff {R : Set α} (hRE : R ⊆ M.E) :
+    (M ↾ R).IsColoop e ↔ e ∉ M.closure (R \ {e}) ∧ e ∈ R := by
+  wlog heR : e ∈ R
+  · exact iff_of_false (fun h ↦ heR h.mem_ground) fun h ↦ heR h.2
+  rw [isColoop_iff_forall_not_mem_isCircuit heR, mem_closure_iff_exists_isCircuit (by simp)]
+  simp only [restrict_isCircuit_iff hRE, insert_diff_singleton]
+  aesop
 
 /-- If two matroids agree on loops and coloops, and have the same independent sets after
   loops/coloops are removed, they are equal. -/
