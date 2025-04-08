@@ -3,7 +3,6 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Dynamics.Ergodic.MeasurePreserving
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
 import Mathlib.MeasureTheory.Function.SimpleFunc
 import Mathlib.MeasureTheory.Measure.Count
@@ -26,11 +25,11 @@ We introduce the following notation for the lower Lebesgue integral of a functio
   to the canonical measure `volume`, defined as `∫⁻ x, f x ∂(volume.restrict s)`.
 -/
 
-assert_not_exists Basis Norm
+assert_not_exists Basis Norm MeasureTheory.MeasurePreserving
 
 open Set hiding restrict restrict_apply
 
-open Filter ENNReal Topology NNReal MeasureTheory
+open Filter ENNReal Topology NNReal
 
 open Function (support)
 
@@ -1398,34 +1397,6 @@ measurability of the function being integrated.) -/
 theorem lintegral_map_equiv [MeasurableSpace β] (f : β → ℝ≥0∞) (g : α ≃ᵐ β) :
     ∫⁻ a, f a ∂map g μ = ∫⁻ a, f (g a) ∂μ :=
   g.measurableEmbedding.lintegral_map f
-
-protected theorem MeasurePreserving.lintegral_map_equiv [MeasurableSpace β] {ν : Measure β}
-    (f : β → ℝ≥0∞) (g : α ≃ᵐ β) (hg : MeasurePreserving g μ ν) :
-    ∫⁻ a, f a ∂ν = ∫⁻ a, f (g a) ∂μ := by
-  rw [← MeasureTheory.lintegral_map_equiv f g, hg.map_eq]
-
-theorem MeasurePreserving.lintegral_comp {mb : MeasurableSpace β} {ν : Measure β} {g : α → β}
-    (hg : MeasurePreserving g μ ν) {f : β → ℝ≥0∞} (hf : Measurable f) :
-    ∫⁻ a, f (g a) ∂μ = ∫⁻ b, f b ∂ν := by rw [← hg.map_eq, lintegral_map hf hg.measurable]
-
-theorem MeasurePreserving.lintegral_comp_emb {mb : MeasurableSpace β} {ν : Measure β} {g : α → β}
-    (hg : MeasurePreserving g μ ν) (hge : MeasurableEmbedding g) (f : β → ℝ≥0∞) :
-    ∫⁻ a, f (g a) ∂μ = ∫⁻ b, f b ∂ν := by rw [← hg.map_eq, hge.lintegral_map]
-
-theorem MeasurePreserving.setLIntegral_comp_preimage {mb : MeasurableSpace β} {ν : Measure β}
-    {g : α → β} (hg : MeasurePreserving g μ ν) {s : Set β} (hs : MeasurableSet s) {f : β → ℝ≥0∞}
-    (hf : Measurable f) : ∫⁻ a in g ⁻¹' s, f (g a) ∂μ = ∫⁻ b in s, f b ∂ν := by
-  rw [← hg.map_eq, setLIntegral_map hs hf hg.measurable]
-
-theorem MeasurePreserving.setLIntegral_comp_preimage_emb {mb : MeasurableSpace β} {ν : Measure β}
-    {g : α → β} (hg : MeasurePreserving g μ ν) (hge : MeasurableEmbedding g) (f : β → ℝ≥0∞)
-    (s : Set β) : ∫⁻ a in g ⁻¹' s, f (g a) ∂μ = ∫⁻ b in s, f b ∂ν := by
-  rw [← hg.map_eq, hge.restrict_map, hge.lintegral_map]
-
-theorem MeasurePreserving.setLIntegral_comp_emb {mb : MeasurableSpace β} {ν : Measure β}
-    {g : α → β} (hg : MeasurePreserving g μ ν) (hge : MeasurableEmbedding g) (f : β → ℝ≥0∞)
-    (s : Set α) : ∫⁻ a in s, f (g a) ∂μ = ∫⁻ b in g '' s, f b ∂ν := by
-  rw [← hg.setLIntegral_comp_preimage_emb hge, preimage_image_eq _ hge.injective]
 
 theorem lintegral_subtype_comap {s : Set α} (hs : MeasurableSet s) (f : α → ℝ≥0∞) :
     ∫⁻ x : s, f x ∂(μ.comap (↑)) = ∫⁻ x in s, f x ∂μ := by
