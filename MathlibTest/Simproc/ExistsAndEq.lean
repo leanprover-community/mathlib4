@@ -1,5 +1,4 @@
 import Mathlib.Tactic.Simproc.ExistsAndEq
-import Mathlib.Tactic.Simproc.ExistsAndEqNested
 
 universe u
 variable (α : Type u) (p q : α → Prop)
@@ -22,39 +21,27 @@ example (f : α → α) : ∃ a : α, a = f a := by
 
 open Lean Meta Simp
 
-set_option linter.unusedTactic false in
-example (a : α) (hp : p a) (hq : q a) : (∃ b : α, p b ∧ (∃ c : α, b = a ∧ q c)) := by
-  -- the simproc doesn't handle nested `Exists`
-  simp -failIfUnchanged only [existsAndEq]
-  guard_target = ∃ b : α, p b ∧ (∃ c : α, b = a ∧ q c)
-  simp only [exists_and_left]
-  guard_target = ∃ b, p b ∧ b = a ∧ ∃ x, q x
-  -- but can clean up the rest
-  simp only [existsAndEq]
-  guard_target = p a ∧ True ∧ ∃ x, q x
-  exact ⟨hp, trivial, a, hq⟩
-
 example {α β : Type} (f : β → α) {p q : β → Prop} :
     (∃ y b, p b ∧ f b = y ∧ q b) ↔ ∃ b, p b ∧ q b := by
-  simp only [existsAndEqNested, true_and]
+  simp only [existsAndEq, true_and]
 
 example {α β : Type} (f : β → α) {p q : β → Prop} :
     (∃ x b, p b ∧ (∃ c, f c = x) ∧ (∃ d, q d ∧ f d = x) ∧ q b) =
     ∃ b c, p b ∧ f c = f c ∧ (∃ d, q d ∧ f d = f c) ∧ q b := by
-  simp only [existsAndEqNested]
+  simp only [existsAndEq]
 
 example {α β : Type} (f : β → α) {p : α → Prop} :
     (∃ a, p a ∧ ∃ b, a = f b) ↔ ∃ b, p (f b) := by
-  simp only [existsAndEqNested, and_true]
+  simp only [existsAndEq, and_true]
 
 /--
 error: simp made no progress
 -/
 #guard_msgs in
 example {α : Type} : ∃ a : α, ∃ (b : α → α), b a = a := by
-  simp only [existsAndEqNested]
+  simp only [existsAndEq]
 
--- lemmas like `Subtype.exists` and `Prod.exists` prevent `existsAndEqNested`
+-- lemmas like `Subtype.exists` and `Prod.exists` prevent `existsAndEq`
 -- from working as a post simproc, so it is a pre simproc.
 /--
 error: unsolved goals
@@ -68,7 +55,7 @@ a : X × Y
 #guard_msgs in
 example {X Y : Type} (P Q : X × Y → Prop) (a : X × Y) :
     (∃ b : (X × Y), (P b ∧ b = a) ∧ Q b) ↔ P a ∧ Q a := by
-  simp only [Prod.exists, existsAndEqNested]
+  simp only [Prod.exists, existsAndEq]
 
 example {X Y : Type} (P Q : X × Y → Prop) (a : X × Y) :
     (∃ b : (X × Y), (P b ∧ b = a) ∧ Q b) ↔ P a ∧ Q a := by
