@@ -1126,4 +1126,20 @@ theorem finprod_emb_domain (f : α ↪ β) [DecidablePred (· ∈ Set.range f)] 
     (∏ᶠ b : β, if h : b ∈ Set.range f then g (Classical.choose h) else 1) = ∏ᶠ a : α, g a :=
   finprod_emb_domain' f.injective g
 
+lemma Nat.cast_finprod [Finite ι] {R : Type*} [CommSemiring R]
+    (f : ι → ℕ) : ↑(∏ᶠ x, f x : ℕ) = ∏ᶠ x, (f x : R) :=
+  (Nat.castRingHom R).map_finprod <| Set.toFinite (Function.mulSupport f)
+
+lemma Nat.cast_finprod_mem {s : Set ι} (hs : s.Finite) {R : Type*}
+    [CommSemiring R] (f : ι → ℕ) : ↑(∏ᶠ x ∈ s, f x : ℕ) = ∏ᶠ x ∈ s, (f x : R) :=
+  (Nat.castRingHom R).map_finprod_mem _ hs
+
+lemma Nat.cast_finsum [Finite ι] {M : Type*} [AddCommMonoidWithOne M]
+    (f : ι → ℕ) : ↑(∑ᶠ x, f x : ℕ) = ∑ᶠ x, (f x : M) :=
+  (Nat.castAddMonoidHom M).map_finsum <| Set.toFinite <| Function.support f
+
+lemma Nat.cast_finsum_mem {s : Set ι} (hs : s.Finite) {M : Type*}
+    [AddCommMonoidWithOne M] (f : ι → ℕ) : ↑(∑ᶠ x ∈ s, f x : ℕ) = ∑ᶠ x ∈ s, (f x : M) :=
+  (Nat.castAddMonoidHom M).map_finsum_mem _ hs
+
 end type
