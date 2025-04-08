@@ -148,11 +148,12 @@ lemma coxeterWeightIn_eq_zero_iff :
     P.pairing_zero_iff' (i := j) (j := i), and_self, ← P.algebraMap_pairingIn ℤ,
     FaithfulSMul.algebraMap_eq_zero_iff] at h
 
-variable [NoZeroSMulDivisors R M] [NoZeroSMulDivisors R N]
 variable {i j}
 
 lemma root_sub_root_mem_of_pairingIn_pos (h : 0 < P.pairingIn ℤ i j) (h' : i ≠ j) :
     α i - α j ∈ Φ := by
+  have := P.reflexive_left
+  have := P.reflexive_right
   have _i : NoZeroSMulDivisors ℤ M := NoZeroSMulDivisors.int_of_charZero R M
   by_cases hli : LinearIndependent R ![α i, α j]
   · -- The case where the two roots are linearly independent
@@ -196,7 +197,6 @@ lemma root_add_root_mem_of_pairingIn_neg (h : P.pairingIn ℤ i j < 0) (h' : α 
 
 namespace InvariantForm
 
-omit [NoZeroSMulDivisors R N]
 variable [P.IsReduced] (B : P.InvariantForm)
 variable {P}
 
@@ -206,6 +206,7 @@ lemma apply_eq_or_aux (i j : ι) (h : P.pairingIn ℤ i j ≠ 0) :
     B.form (P.root i) (P.root i) = 3 * B.form (P.root j) (P.root j) ∨
     B.form (P.root j) (P.root j) = 2 * B.form (P.root i) (P.root i) ∨
     B.form (P.root j) (P.root j) = 3 * B.form (P.root i) (P.root i) := by
+  have := P.reflexive_left
   have h₁ := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed i j
   have h₂ : algebraMap ℤ R (P.pairingIn ℤ j i) * B.form (P.root i) (P.root i) =
             algebraMap ℤ R (P.pairingIn ℤ i j) * B.form (P.root j) (P.root j) := by
@@ -326,6 +327,7 @@ lemma root_sub_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
       rw [contra] at hk'
       exact P.ne_zero _ hk'.choose_spec
     have aux (h : P.pairingIn ℤ i k = -2) : ¬P.pairingIn ℤ k i = -2 := by
+      have := P.reflexive_left
       contrapose! hk'; exact (P.pairingIn_neg_two_neg_two_iff ℤ i k).mp ⟨h, hk'⟩
     have := P.pairingIn_pairingIn_mem_set_of_isCrystallographic i k
     aesop

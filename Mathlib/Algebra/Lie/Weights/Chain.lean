@@ -40,6 +40,12 @@ We provide basic definitions and results to support `α`-chain techniques in thi
    `corootSpace α` of `H`, we may find an integral linear combination between
    `α` and any weight `χ` of a representation.
 
+## TODO
+
+Refactor the proof that the roots of a Lie algebra are a root system so that it does not need the
+theory here and then drop the relevant parts of the theory here and instead rely on the
+corresponding definitions for root pairings. [@Oliver clarify before commit]
+
 -/
 
 open Module Function Set
