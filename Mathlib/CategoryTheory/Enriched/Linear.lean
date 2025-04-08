@@ -55,13 +55,29 @@ lemma aux4' {X Y : C} (f : X ⟶ Y) :
       ((TensorProduct.rid R (X ⟶ Y)).symm.toLinearMap f) = f ⊗ₜ 𝟙 Y := by
   simp
 
+lemma aux8 {W X Y Z : C} (f₁ f₂ : ((W ⟶ X) ⊗[R] (X ⟶ Y)) ⊗[R] (Y ⟶ Z)) :
+    (TensorProduct.assoc R _ _ _).toLinearMap (f₁ + f₂) =
+    (TensorProduct.assoc R _ _ _).toLinearMap f₁ + (TensorProduct.assoc R _ _ _).toLinearMap f₂ :=
+  (TensorProduct.assoc R (W ⟶ X) (X ⟶ Y) (Y ⟶ Z)).map_add  f₁ f₂
+
 lemma aux4'' {W X Y Z : C} (f : ((W ⟶ X) ⊗[R] (X ⟶ Y)) ⊗[R] (Y ⟶ Z)) :
     lift (Linear.comp W Y Z) ((LinearMap.rTensor (Y ⟶ Z) (lift (Linear.comp W X Y))) f) =
       lift (R := R) (Linear.comp W X Z)
         (LinearMap.lTensor (R := R) (N := (X ⟶ Y) ⊗[R] (Y ⟶ Z)) (P := X ⟶ Z) (W ⟶ X)
-          (lift (Linear.comp X Y Z)) ((TensorProduct.assoc R _ _ _).toLinearMap f)) := by
-  simp
-  sorry
+          (lift (Linear.comp X Y Z)) ((TensorProduct.assoc R _ _ _).toLinearMap f)) :=
+  TensorProduct.induction_on f rfl
+    (fun fg h => TensorProduct.induction_on fg
+      (by simp)
+      (by simp)
+      (fun fg₂ fg₃ h₂ h₃ => by
+        simp
+        rw [add_tmul]
+        erw [aux8]
+        simp
+        erw [← h₂, ← h₃, ← Preadditive.add_comp]))
+    (fun f₂ f₃ h₂ h₃ => by
+      rw [aux8]
+      simp [h₂, h₃])
 
 lemma aux5 {X : C} : (LinearMap.ringLmapEquivSelf R R (X ⟶ X)).symm (𝟙 X) =
     LinearMap.toSpanSingleton R (X ⟶ X) (𝟙 X) := rfl
