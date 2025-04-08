@@ -282,6 +282,46 @@ lemma strongRec_of_lt (hn : n < m) : m.strongRec lt ge n = lt n hn := dif_pos _
 
 end strongRec
 
+/-! ### mul -/
+
+-- We want to use these lemmas earlier than the lemmas simp can prove them with
+
+@[simp high] protected lemma mul_le_mul_left (ha : 0 < a) : a * b ≤ a * c ↔ b ≤ c where
+  mp hbc := Int.le_of_mul_le_mul_left hbc ha
+  mpr hbc := Int.mul_le_mul_of_nonneg_left hbc <| Int.le_of_lt ha
+
+@[simp high] protected lemma mul_le_mul_right (ha : 0 < a) : b * a ≤ c * a ↔ b ≤ c where
+  mp hbc := Int.le_of_mul_le_mul_right hbc ha
+  mpr hbc := Int.mul_le_mul_of_nonneg_right hbc <| Int.le_of_lt ha
+
+@[simp high] protected lemma mul_lt_mul_left (ha : 0 < a) : a * b < a * c ↔ b < c where
+  mp hbc := Int.lt_of_mul_lt_mul_left hbc <| Int.le_of_lt ha
+  mpr hbc := Int.mul_lt_mul_of_pos_left hbc ha
+
+@[simp high] protected lemma mul_lt_mul_right (ha : 0 < a) : b * a < c * a ↔ b < c where
+  mp hbc := Int.lt_of_mul_lt_mul_right hbc <| Int.le_of_lt ha
+  mpr hbc := Int.mul_lt_mul_of_pos_right hbc ha
+
+@[simp high] protected lemma mul_le_mul_left_of_neg (ha : a < 0) :
+    a * b ≤ a * c ↔ c ≤ b := by
+  rw [← Int.neg_le_neg_iff, Int.neg_mul_eq_neg_mul, Int.neg_mul_eq_neg_mul,
+    Int.mul_le_mul_left <| Int.neg_pos.2 ha]
+
+@[simp high] protected lemma mul_le_mul_right_of_neg (ha : a < 0) :
+    b * a ≤ c * a ↔ c ≤ b := by
+  rw [← Int.neg_le_neg_iff, Int.neg_mul_eq_mul_neg, Int.neg_mul_eq_mul_neg,
+    Int.mul_le_mul_right <| Int.neg_pos.2 ha]
+
+@[simp high] protected lemma mul_lt_mul_left_of_neg (ha : a < 0) :
+    a * b < a * c ↔ c < b := by
+  rw [← Int.neg_lt_neg_iff, Int.neg_mul_eq_neg_mul, Int.neg_mul_eq_neg_mul,
+    Int.mul_lt_mul_left <| Int.neg_pos.2 ha]
+
+@[simp high] protected lemma mul_lt_mul_right_of_neg (ha : a < 0) :
+    b * a < c * a ↔ c < b := by
+  rw [← Int.neg_lt_neg_iff, Int.neg_mul_eq_mul_neg, Int.neg_mul_eq_mul_neg,
+    Int.mul_lt_mul_right <| Int.neg_pos.2 ha]
+
 /-! ### nat abs -/
 
 -- TODO: Rename `natAbs_ofNat` to `natAbs_natCast`
@@ -309,7 +349,7 @@ theorem sign_mul_self_eq_natAbs : ∀ a : Int, sign a * a = natAbs a
   | Nat.succ _ => Int.one_mul _
   | -[_+1] => (Int.neg_eq_neg_one_mul _).symm
 
-/-! ### `/`  -/
+/-! ### `/` -/
 
 @[simp, norm_cast] lemma natCast_div (m n : ℕ) : ((m / n : ℕ) : ℤ) = m / n := rfl
 
@@ -328,6 +368,70 @@ lemma add_emod_eq_add_mod_right {m n k : ℤ} (i : ℤ) (H : m % n = k % n) :
     (m + i) % n = (k + i) % n := by rw [← emod_add_emod, ← emod_add_emod k, H]
 
 @[simp] lemma neg_emod_two (i : ℤ) : -i % 2 = i % 2 := by omega
+
+lemma div_le_iff_of_dvd_of_pos (hb : 0 < b) (hba : b ∣ a) : a / b ≤ c ↔ a ≤ b * c := by
+  obtain ⟨x, rfl⟩ := hba; simp [*, Int.ne_of_gt]
+
+lemma div_le_iff_of_dvd_of_neg (hb : b < 0) (hba : b ∣ a) : a / b ≤ c ↔ b * c ≤ a := by
+  obtain ⟨x, rfl⟩ := hba; simp [*, Int.ne_of_lt]
+
+lemma div_lt_iff_of_dvd_of_pos (hb : 0 < b) (hba : b ∣ a) : a / b < c ↔ a < b * c := by
+  obtain ⟨x, rfl⟩ := hba; simp [*, Int.ne_of_gt]
+
+lemma div_lt_iff_of_dvd_of_neg (hb : b < 0) (hba : b ∣ a) : a / b < c ↔ b * c < a := by
+  obtain ⟨x, rfl⟩ := hba; simp [*, Int.ne_of_lt]
+
+lemma le_div_iff_of_dvd_of_pos (hc : 0 < c) (hcb : c ∣ b) : a ≤ b / c ↔ c * a ≤ b := by
+  obtain ⟨x, rfl⟩ := hcb; simp [*, Int.ne_of_gt]
+
+lemma le_div_iff_of_dvd_of_neg (hc : c < 0) (hcb : c ∣ b) : a ≤ b / c ↔ b ≤ c * a := by
+  obtain ⟨x, rfl⟩ := hcb; simp [*, Int.ne_of_lt]
+
+lemma lt_div_iff_of_dvd_of_pos (hc : 0 < c) (hcb : c ∣ b) : a < b / c ↔ c * a < b := by
+  obtain ⟨x, rfl⟩ := hcb; simp [*, Int.ne_of_gt]
+
+lemma lt_div_iff_of_dvd_of_neg (hc : c < 0) (hcb : c ∣ b) : a < b / c ↔ b < c * a := by
+  obtain ⟨x, rfl⟩ := hcb; simp [*, Int.ne_of_lt]
+
+lemma div_le_div_iff_of_dvd_of_pos_of_pos (hb : 0 < b) (hd : 0 < d) (hba : b ∣ a)
+    (hdc : d ∣ c) : a / b ≤ c / d ↔ d * a ≤ c * b := by
+  obtain ⟨⟨x, rfl⟩, y, rfl⟩ := hba, hdc
+  simp [*, Int.ne_of_lt, Int.ne_of_gt, d.mul_assoc, b.mul_comm]
+
+lemma div_le_div_iff_of_dvd_of_pos_of_neg (hb : 0 < b) (hd : d < 0) (hba : b ∣ a) (hdc : d ∣ c) :
+    a / b ≤ c / d ↔ c * b ≤ d * a := by
+  obtain ⟨⟨x, rfl⟩, y, rfl⟩ := hba, hdc
+  simp [*, Int.ne_of_lt, Int.ne_of_gt, d.mul_assoc, b.mul_comm]
+
+lemma div_le_div_iff_of_dvd_of_neg_of_pos (hb : b < 0) (hd : 0 < d) (hba : b ∣ a)  (hdc : d ∣ c) :
+    a / b ≤ c / d ↔ c * b ≤ d * a := by
+  obtain ⟨⟨x, rfl⟩, y, rfl⟩ := hba, hdc
+  simp [*, Int.ne_of_lt, Int.ne_of_gt, d.mul_assoc, b.mul_comm]
+
+lemma div_le_div_iff_of_dvd_of_neg_of_neg (hb : b < 0) (hd : d < 0) (hba : b ∣ a) (hdc : d ∣ c) :
+    a / b ≤ c / d ↔ d * a ≤ c * b := by
+  obtain ⟨⟨x, rfl⟩, y, rfl⟩ := hba, hdc
+  simp [*, Int.ne_of_lt, Int.ne_of_gt, d.mul_assoc, b.mul_comm]
+
+lemma div_lt_div_iff_of_dvd_of_pos (hb : 0 < b) (hd : 0 < d) (hba : b ∣ a) (hdc : d ∣ c) :
+    a / b < c / d ↔ d * a < c * b := by
+  obtain ⟨⟨x, rfl⟩, y, rfl⟩ := hba, hdc
+  simp [*, Int.ne_of_lt, Int.ne_of_gt, d.mul_assoc, b.mul_comm]
+
+lemma div_lt_div_iff_of_dvd_of_pos_of_neg (hb : 0 < b) (hd : d < 0) (hba : b ∣ a) (hdc : d ∣ c) :
+    a / b < c / d ↔ c * b < d * a := by
+  obtain ⟨⟨x, rfl⟩, y, rfl⟩ := hba, hdc
+  simp [*, Int.ne_of_lt, Int.ne_of_gt, d.mul_assoc, b.mul_comm]
+
+lemma div_lt_div_iff_of_dvd_of_neg_of_pos (hb : b < 0) (hd : 0 < d) (hba : b ∣ a) (hdc : d ∣ c) :
+    a / b < c / d ↔ c * b < d * a := by
+  obtain ⟨⟨x, rfl⟩, y, rfl⟩ := hba, hdc
+  simp [*, Int.ne_of_lt, Int.ne_of_gt, d.mul_assoc, b.mul_comm]
+
+lemma div_lt_div_iff_of_dvd_of_neg_of_neg (hb : b < 0) (hd : d < 0) (hba : b ∣ a) (hdc : d ∣ c) :
+    a / b < c / d ↔ d * a < c * b := by
+  obtain ⟨⟨x, rfl⟩, y, rfl⟩ := hba, hdc
+  simp [*, Int.ne_of_lt, Int.ne_of_gt, d.mul_assoc, b.mul_comm]
 
 /-! ### properties of `/` and `%` -/
 
