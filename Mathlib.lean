@@ -479,6 +479,7 @@ import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExactSequences
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExtClass
 import Mathlib.Algebra.Homology.DerivedCategory.Fractions
+import Mathlib.Algebra.Homology.DerivedCategory.FullyFaithful
 import Mathlib.Algebra.Homology.DerivedCategory.HomologySequence
 import Mathlib.Algebra.Homology.DerivedCategory.ShortExact
 import Mathlib.Algebra.Homology.DerivedCategory.SingleTriangle
@@ -575,6 +576,7 @@ import Mathlib.Algebra.Lie.Engel
 import Mathlib.Algebra.Lie.EngelSubalgebra
 import Mathlib.Algebra.Lie.Extension
 import Mathlib.Algebra.Lie.Free
+import Mathlib.Algebra.Lie.Ideal
 import Mathlib.Algebra.Lie.IdealOperations
 import Mathlib.Algebra.Lie.InvariantForm
 import Mathlib.Algebra.Lie.Killing
@@ -628,6 +630,8 @@ import Mathlib.Algebra.Module.LinearMap.Polynomial
 import Mathlib.Algebra.Module.LinearMap.Prod
 import Mathlib.Algebra.Module.LinearMap.Rat
 import Mathlib.Algebra.Module.LinearMap.Star
+import Mathlib.Algebra.Module.LocalizedModule.AtPrime
+import Mathlib.Algebra.Module.LocalizedModule.Away
 import Mathlib.Algebra.Module.LocalizedModule.Basic
 import Mathlib.Algebra.Module.LocalizedModule.Exact
 import Mathlib.Algebra.Module.LocalizedModule.Int
@@ -3928,6 +3932,7 @@ import Mathlib.LinearAlgebra.RootSystem.Defs
 import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
 import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 import Mathlib.LinearAlgebra.RootSystem.Finite.Nondegenerate
+import Mathlib.LinearAlgebra.RootSystem.Finite.g2
 import Mathlib.LinearAlgebra.RootSystem.Hom
 import Mathlib.LinearAlgebra.RootSystem.Irreducible
 import Mathlib.LinearAlgebra.RootSystem.OfBilinear
@@ -5015,6 +5020,8 @@ import Mathlib.RingTheory.Kaehler.Polynomial
 import Mathlib.RingTheory.Kaehler.TensorProduct
 import Mathlib.RingTheory.KrullDimension.Basic
 import Mathlib.RingTheory.KrullDimension.Field
+import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
+import Mathlib.RingTheory.KrullDimension.Zero
 import Mathlib.RingTheory.Lasker
 import Mathlib.RingTheory.LaurentSeries
 import Mathlib.RingTheory.Length
@@ -5739,6 +5746,7 @@ import Mathlib.Topology.Algebra.ProperAction.ProperlyDiscontinuous
 import Mathlib.Topology.Algebra.ProperConstSMul
 import Mathlib.Topology.Algebra.RestrictedProduct
 import Mathlib.Topology.Algebra.Ring.Basic
+import Mathlib.Topology.Algebra.Ring.Compact
 import Mathlib.Topology.Algebra.Ring.Ideal
 import Mathlib.Topology.Algebra.Ring.Real
 import Mathlib.Topology.Algebra.Semigroup
@@ -5833,6 +5841,7 @@ import Mathlib.Topology.ClopenBox
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.Compactification.OnePoint
 import Mathlib.Topology.Compactification.OnePointEquiv
+import Mathlib.Topology.Compactness.Bases
 import Mathlib.Topology.Compactness.Compact
 import Mathlib.Topology.Compactness.CompactlyGeneratedSpace
 import Mathlib.Topology.Compactness.DeltaGeneratedSpace
