@@ -89,7 +89,7 @@ lemma coxeterWeightIn_mem_set_of_isCrystallographic :
   norm_cast at this ⊢
   omega
 
-variable [NoZeroDivisors R]
+variable [IsDomain R]
 
 lemma pairingIn_pairingIn_mem_set_of_isCrystallographic :
     (P.pairingIn ℤ i j, P.pairingIn ℤ j i) ∈
