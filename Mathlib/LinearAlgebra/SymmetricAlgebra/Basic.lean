@@ -89,7 +89,7 @@ def lift : (M →ₗ[R] A) ≃ (SymmetricAlgebra R M →ₐ[R] A) := by
     {f : TensorAlgebra R M →ₐ[R] A // ∀ {x y}, (TensorAlgebra.SymRel R M) x y → f x = f y} := by
     refine (Equiv.subtypeUnivEquiv fun h _ _ h' ↦ ?_).symm
     induction h' with | mul_comm x y => rw [map_mul, map_mul, mul_comm]
-  refine (TensorAlgebra.lift R).trans <| equiv.trans <| (RingQuot.liftAlgHom R)
+  exact (TensorAlgebra.lift R).trans <| equiv.trans <| RingQuot.liftAlgHom R
 
 variable (f : M →ₗ[R] A)
 
