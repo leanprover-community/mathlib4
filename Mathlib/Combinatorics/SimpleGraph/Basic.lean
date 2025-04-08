@@ -380,6 +380,9 @@ variable [DecidableEq V]
 instance Top.adjDecidable : DecidableRel (⊤ : SimpleGraph V).Adj :=
   inferInstanceAs <| DecidableRel fun v w => v ≠ w
 
+instance completeGraph.adjDecidable : DecidableRel (completeGraph V).Adj :=
+  Top.adjDecidable V
+
 instance Compl.adjDecidable : DecidableRel (Gᶜ.Adj) :=
   inferInstanceAs <| DecidableRel fun v w => v ≠ w ∧ ¬G.Adj v w
 
