@@ -622,7 +622,7 @@ theorem prod_multiset_root_eq_finset_root [DecidableEq R] :
   simp only [count_roots, Finset.prod_multiset_map_count]
 
 omit [IsDomain R] in
-theorem monic_finprod_X_sub_C [DecidableEq R] {α : Type*} (b : α → R):
+theorem monic_finprod_X_sub_C {α : Type*} (b : α → R):
     Monic (finprod fun k ↦ X - C (b k)) := by
   apply monic_finprod_of_monic _ _ fun a _ => monic_X_sub_C (b a)
 
