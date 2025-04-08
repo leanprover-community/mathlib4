@@ -774,8 +774,8 @@ lemma coxeterWeight_zero_iff_isOrthogonal [NeZero (2 : R)] [NoZeroDivisors R] :
     P.coxeterWeight i j = 0 ↔ P.IsOrthogonal i j := by
   simp [coxeterWeight, IsOrthogonal, P.pairing_zero_iff' (i := i) (j := j)]
 
-lemma isOrthogonal_iff_pairing_eq_zero [NeZero (2 : R)] [NoZeroDivisors R] :
-    P.IsOrthogonal i j ↔ P.pairing i j = 0 := by
-  simp [← coxeterWeight_zero_iff_isOrthogonal, coxeterWeight, P.pairing_zero_iff' (i := j) (j := i)]
+lemma isOrthogonal_iff_pairing_eq_zero [NeZero (2 : R)] [NoZeroSMulDivisors R N] :
+    P.IsOrthogonal i j ↔ P.pairing i j = 0 :=
+  ⟨fun h ↦ h.1, fun h ↦ ⟨h, pairing_zero_iff.mp h⟩⟩
 
 end RootPairing
