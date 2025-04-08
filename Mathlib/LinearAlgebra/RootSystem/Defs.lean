@@ -749,4 +749,18 @@ lemma isFixedPt_reflection_of_isOrthogonal {s : Set ι} (hj : ∀ i ∈ s, P.IsO
       obtain ⟨i, his, rfl⟩ := hu
       exact IsOrthogonal.reflection_apply_right <| hj i his
 
+lemma pairing_zero_iff [NeZero (2 : R)] [NoZeroSMulDivisors R N] :
+    (P.pairing i j = 0) ↔ (P.pairing j i = 0) := by
+  have aux (a b : ι) : P.pairing a b = 0 → P.pairing b a = 0 := by
+    intro h
+    have h₁ : P.toPerfectPairing (P.root a) (P.coroot b) = 0 := h
+    have root_swap := P.reflection_perm_root b a
+    rw [h₁, zero_smul, sub_zero, EmbeddingLike.apply_eq_iff_eq] at root_swap
+    have coroot_swap := P.reflection_perm_coroot b a
+    rw [← root_swap, root_coroot_eq_pairing, sub_eq_self, smul_eq_zero] at coroot_swap
+    rcases coroot_swap with h₂ | h₂
+    · exact h₂
+    exact False.elim (P.ne_zero' b h₂)
+  exact ⟨aux i j, aux j i⟩
+
 end RootPairing
