@@ -184,6 +184,10 @@ lemma finite_iUnion_iff {ι : Type*} {s : ι → Set α} (hs : Pairwise fun i j 
   rw [← iUnion_plift_down, finite_iUnion_iff _root_.Subsingleton.pairwise]
   simp [PLift.forall, Finite.of_subsingleton]
 
+lemma Infinite.iUnion {ι : Sort*} {s : ι → Set α} {i : ι} (hi : (s i).Infinite) :
+    (⋃ i, s i).Infinite :=
+  fun h ↦ hi (h.subset (Set.subset_iUnion s i))
+
 /-- An indexed union of pairwise disjoint sets is finite iff all sets are finite, and all but
 finitely many are empty. -/
 lemma PairwiseDisjoint.finite_biUnion_iff {f : β → Set α} {s : Set β} (hs : s.PairwiseDisjoint f) :

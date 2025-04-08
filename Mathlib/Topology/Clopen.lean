@@ -102,6 +102,15 @@ theorem isClopen_inter_of_disjoint_cover_clopen {s a b : Set X} (h : IsClopen s)
   rintro x ⟨hx₁, hx₂⟩
   exact ⟨hx₁, by simpa [not_mem_of_mem_compl hx₂] using cover hx₁⟩
 
+/-- Variant of `isClopen_inter_of_disjoint_cover_clopen` with weaker disjointness condition. -/
+lemma isClopen_inter_of_disjoint_cover_clopen' {s a b : Set X} (h : IsClopen s) (cover : s ⊆ a ∪ b)
+    (ha : IsOpen a) (hb : IsOpen b) (hab : s ∩ a ∩ b = ∅) : IsClopen (s ∩ a) := by
+  rw [show s ∩ a = s ∩ (s ∩ a) by simp]
+  refine isClopen_inter_of_disjoint_cover_clopen h ?_ (h.2.inter ha) (h.2.inter hb) ?_
+  · rw [← inter_union_distrib_left]
+    exact subset_inter .rfl cover
+  · rw [disjoint_iff_inter_eq_empty, inter_comm s b, ← inter_assoc, hab, empty_inter]
+
 theorem isClopen_of_disjoint_cover_open {a b : Set X} (cover : univ ⊆ a ∪ b)
     (ha : IsOpen a) (hb : IsOpen b) (hab : Disjoint a b) : IsClopen a :=
   univ_inter a ▸ isClopen_inter_of_disjoint_cover_clopen isClopen_univ cover ha hb hab

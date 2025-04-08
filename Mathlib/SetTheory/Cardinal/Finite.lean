@@ -280,6 +280,9 @@ theorem card_eq_top_of_infinite [Infinite α] : card α = ⊤ := by
 
 @[simp] theorem card_lt_top_of_finite [Finite α] : card α < ⊤ := by simp [card]
 
+lemma card_lt_top_iff_finite : ENat.card α < ⊤ ↔ Finite α := by
+  simp [← not_iff_not]
+
 @[simp]
 theorem card_sum (α β : Type*) :
     card (α ⊕ β) = card α + card β := by
