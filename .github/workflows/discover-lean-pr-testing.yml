@@ -143,7 +143,7 @@ jobs:
 
           echo "Attempting to merge branch: $BRANCH (PR #$PR_NUMBER)"
 
-          # Save the current state to restore in case of failure
+          # Reset to a clean state
           git reset --hard HEAD
           git checkout nightly-testing
 
@@ -177,7 +177,7 @@ jobs:
 
           # Report successful merges
           if [ -n "$SUCCESSFUL_MERGES" ]; then
-            printf $'### Successfully merged branches:\n\n'
+            printf $'### ✅ Successfully merged branches:\n\n'
             for MERGE_INFO in $SUCCESSFUL_MERGES; do
               IFS='|' read -r PR_NUMBER GITHUB_DIFF BRANCH <<< "$MERGE_INFO"
               printf $'- lean#%s ([diff](%s))\n' "$PR_NUMBER" "$GITHUB_DIFF"
@@ -189,7 +189,7 @@ jobs:
 
           # Report failed merges
           if [ -n "$FAILED_MERGES" ]; then
-            printf $'### Failed merges:\n\nThe following branches need to be merged manually:\n\n```bash\n'
+            printf $'### ❌ Failed merges:\n\nThe following branches need to be merged manually:\n\n```bash\n'
             for MERGE_INFO in $FAILED_MERGES; do
               IFS='|' read -r PR_NUMBER GITHUB_DIFF BRANCH <<< "$MERGE_INFO"
               printf $'# Diff: %s\n' "$GITHUB_DIFF"
