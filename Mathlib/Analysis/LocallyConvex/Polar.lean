@@ -9,6 +9,7 @@ import Mathlib.Topology.Algebra.Module.WeakBilin
 import Mathlib.Analysis.LocallyConvex.AbsConvex
 import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
 import Mathlib.Analysis.LocallyConvex.WeakDual
+--import Mathlib.Analysis.Normed.Module.Dual
 
 /-!
 # Polar set
@@ -244,7 +245,7 @@ theorem Bipolar {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E} [Nonempty s
     --have hg₃ : g ∈ B.polar (E := WeakBilin B) s := sorry
     sorry
 
-  · sorry
+  · exact closedAbsConvexHull_min (subset_bipolar B s) sorry (polar_isClosed _ _)
     --exact closedAbsConvexHull_min (subset_bipolar B s) (polar_AbsConvex _) (polar_closed B.flip _)
 
 end Bipolar
