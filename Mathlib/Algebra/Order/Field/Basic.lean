@@ -862,9 +862,9 @@ such that `positivity` successfully recognises `a`. -/
 def evalInv : PositivityExt where eval {u α} zα pα e := do
   let .app (f : Q($α → $α)) (a : Q($α)) ← withReducible (whnf e) | throwError "not ⁻¹"
   let _e_eq : $e =Q $f $a := ⟨⟩
-  let _a ← synthInstanceQ (q(Semifield $α) : Q(Type u))
-  let _a ← synthInstanceQ (q(LinearOrder $α) : Q(Type u))
-  let _a ← synthInstanceQ (q(IsStrictOrderedRing $α) : Q(Prop))
+  let _a ← synthInstanceQ q(Semifield $α)
+  let _a ← synthInstanceQ q(LinearOrder $α)
+  let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
   assumeInstancesCommute
   let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ (u := u.succ) f q(Inv.inv)
   let ra ← core zα pα a
@@ -878,10 +878,11 @@ def evalInv : PositivityExt where eval {u α} zα pα e := do
 @[positivity _ ^ (0 : ℤ), Pow.pow _ (0 : ℤ)]
 def evalPowZeroInt : PositivityExt where eval {u α} _zα _pα e := do
   let .app (.app _ (a : Q($α))) _ ← withReducible (whnf e) | throwError "not ^"
-  let _a ← synthInstanceQ (q(Semifield $α) : Q(Type u))
-  let _a ← synthInstanceQ (q(LinearOrder $α) : Q(Type u))
-  let _a ← synthInstanceQ (q(IsStrictOrderedRing $α) : Q(Prop))
+  let _a ← synthInstanceQ q(Semifield $α)
+  let _a ← synthInstanceQ q(LinearOrder $α)
+  let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
   assumeInstancesCommute
-  pure (.positive (q(zpow_zero_pos $a) : Expr))
+  let ⟨_a⟩ ← Qq.assertDefEqQ q($e) q($a ^ (0 : ℤ))
+  pure (.positive q(zpow_zero_pos $a))
 
 end Mathlib.Meta.Positivity
