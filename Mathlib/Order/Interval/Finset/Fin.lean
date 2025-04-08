@@ -28,12 +28,12 @@ variable (n : ℕ)
 
 instance instLocallyFiniteOrder (n : ℕ) : LocallyFiniteOrder (Fin n) where
   finsetIcc a b := attachFin (Icc a b) fun x hx ↦ (mem_Icc.mp hx).2.trans_lt b.2
-  finset_mem_Icc a b := by simp
   finsetIco a b := attachFin (Ico a b) fun x hx ↦ (mem_Ico.mp hx).2.trans b.2
-  finset_mem_Ico a b := by simp
   finsetIoc a b := attachFin (Ioc a b) fun x hx ↦ (mem_Ioc.mp hx).2.trans_lt b.2
-  finset_mem_Ioc a b := by simp
   finsetIoo a b := attachFin (Ioo a b) fun x hx ↦ (mem_Ioo.mp hx).2.trans b.2
+  finset_mem_Icc a b := by simp
+  finset_mem_Ico a b := by simp
+  finset_mem_Ioc a b := by simp
   finset_mem_Ioo a b := by simp
 
 instance instLocallyFiniteOrderBot : ∀ n, LocallyFiniteOrderBot (Fin n)
@@ -45,57 +45,102 @@ instance instLocallyFiniteOrderTop : ∀ n, LocallyFiniteOrderTop (Fin n)
   | _ + 1 => inferInstance
 
 variable {n}
-variable {m : ℕ}
+variable {m : ℕ} (a b : Fin n)
+
+theorem attachFin_Icc :
+    attachFin (Icc a b) (fun _x hx ↦ (mem_Icc.mp hx).2.trans_lt b.2) = Icc a b :=
+  rfl
+
+theorem attachFin_Ico :
+    attachFin (Ico a b) (fun _x hx ↦ (mem_Ico.mp hx).2.trans b.2) = Ico a b :=
+  rfl
+
+@[simp]
+theorem attachFin_Ioc :
+    attachFin (Ioc a b) (fun _x hx ↦ (mem_Ioc.mp hx).2.trans_lt b.2) = Ioc a b :=
+  rfl
+
+@[simp]
+theorem attachFin_Ioo :
+    attachFin (Ioo a b) (fun _x hx ↦ (mem_Ioo.mp hx).2.trans b.2) = Ioo a b :=
+  rfl
+
+@[simp]
+theorem attachFin_uIcc :
+    attachFin (uIcc a b) (fun _x hx ↦ (mem_Icc.mp hx).2.trans_lt (max a b).2) = uIcc a b :=
+  rfl
+
+@[simp]
+theorem attachFin_Iic : attachFin (Iic a) (fun _x hx ↦ (mem_Iic.mp hx).trans_lt a.2) = Iic a := by
+  ext; simp
+
+@[simp]
+theorem attachFin_Ico_eq_Ici : attachFin (Ico a n) (fun _x hx ↦ (mem_Ico.mp hx).2) = Ici a := by
+  ext; simp
+
+@[simp]
+theorem attachFin_Iio : attachFin (Iio a) (fun _x hx ↦ (mem_Iio.mp hx).trans a.2) = Iio a := by
+  ext; simp
+
+@[simp]
+theorem attachFin_Ioo_eq_Ioi : attachFin (Ioo a n) (fun _x hx ↦ (mem_Ioo.mp hx).2) = Ioi a := by
+  ext; simp
 
 section deprecated
 
-variable (a b : Fin n)
-set_option linter.deprecated false
+@[deprecated attachFin_Icc (since := "2025-04-06")]
+theorem Icc_eq_finset_subtype : Icc a b = (Icc (a : ℕ) b).fin n := attachFin_eq_fin _
 
-@[deprecated "No replacement" (since := "2025-03-28")]
-theorem Icc_eq_finset_subtype : Icc a b = (Icc (a : ℕ) b).fin n := by ext; simp
+@[deprecated attachFin_Ico (since := "2025-04-06")]
+theorem Ico_eq_finset_subtype : Ico a b = (Ico (a : ℕ) b).fin n := attachFin_eq_fin _
 
-@[deprecated "No replacement" (since := "2025-03-28")]
-theorem Ico_eq_finset_subtype : Ico a b = (Ico (a : ℕ) b).fin n := by ext; simp
+@[deprecated attachFin_Ioc (since := "2025-04-06")]
+theorem Ioc_eq_finset_subtype : Ioc a b = (Ioc (a : ℕ) b).fin n := attachFin_eq_fin _
 
-@[deprecated "No replacement" (since := "2025-03-28")]
-theorem Ioc_eq_finset_subtype : Ioc a b = (Ioc (a : ℕ) b).fin n := by ext; simp
+@[deprecated attachFin_Ioo (since := "2025-04-06")]
+theorem Ioo_eq_finset_subtype : Ioo a b = (Ioo (a : ℕ) b).fin n := attachFin_eq_fin _
 
-@[deprecated "No replacement" (since := "2025-03-28")]
-theorem Ioo_eq_finset_subtype : Ioo a b = (Ioo (a : ℕ) b).fin n := by ext; simp
+set_option linter.deprecated false in
+@[deprecated attachFin_uIcc (since := "2025-04-06")]
+theorem uIcc_eq_finset_subtype : uIcc a b = (uIcc (a : ℕ) b).fin n := Icc_eq_finset_subtype _ _
 
-@[deprecated "No replacement" (since := "2025-03-28")]
-theorem uIcc_eq_finset_subtype : uIcc a b = (uIcc (a : ℕ) b).fin n := by ext; simp
-
-@[deprecated "No replacement" (since := "2025-03-28")]
+@[deprecated attachFin_Ico_eq_Ici (since := "2025-04-06")]
 theorem Ici_eq_finset_subtype : Ici a = (Ico (a : ℕ) n).fin n := by ext; simp
 
-@[deprecated "No replacement" (since := "2025-03-28")]
+@[deprecated attachFin_Ioo_eq_Ioi (since := "2025-04-06")]
 theorem Ioi_eq_finset_subtype : Ioi a = (Ioo (a : ℕ) n).fin n := by ext; simp
 
-@[deprecated "No replacement" (since := "2025-03-28")]
+@[deprecated attachFin_Iic (since := "2025-04-06")]
 theorem Iic_eq_finset_subtype : Iic b = (Iic (b : ℕ)).fin n := by ext; simp
 
-@[deprecated "No replacement" (since := "2025-03-28")]
+@[deprecated attachFin_Iio (since := "2025-04-06")]
 theorem Iio_eq_finset_subtype : Iio b = (Iio (b : ℕ)).fin n := by ext; simp
 
 end deprecated
 
-section val
-
-variable (a b : Fin n)
+@[simp]
+theorem map_valEmbedding_Icc : (Icc a b).map Fin.valEmbedding = Icc ↑a ↑b :=
+  map_valEmbedding_attachFin _
 
 @[simp]
-theorem finsetImage_val_Icc : (Icc a b).image val = Icc (a : ℕ) b := by simp [← coe_inj]
+theorem map_valEmbedding_Ico : (Ico a b).map Fin.valEmbedding = Ico ↑a ↑b :=
+  map_valEmbedding_attachFin _
+
+@[simp]
+theorem map_valEmbedding_Ioc : (Ioc a b).map Fin.valEmbedding = Ioc ↑a ↑b :=
+  map_valEmbedding_attachFin _
+
+@[simp]
+theorem map_valEmbedding_Ioo : (Ioo a b).map Fin.valEmbedding = Ioo ↑a ↑b :=
+  map_valEmbedding_attachFin _
+
+theorem finsetImage_val_Ico : (Ico a b).image val = Ico (a : ℕ) b := by simp [← coe_inj]
 
 @[simp]
 theorem map_valEmbedding_Icc : (Icc a b).map valEmbedding = Icc ↑a ↑b := by simp [map_eq_image]
 
 @[simp]
-theorem finsetImage_val_Ico : (Ico a b).image val = Ico (a : ℕ) b := by simp [← coe_inj]
-
-@[simp]
-theorem map_valEmbedding_Ico : (Ico a b).map valEmbedding = Ico ↑a ↑b := by simp [map_eq_image]
+theorem finsetImage_val_Icc : (Icc a b).image val = Icc (a : ℕ) b := by simp [← coe_inj]
 
 @[simp]
 theorem finsetImage_val_Ioc : (Ioc a b).image val = Ioc (a : ℕ) b := by simp [← coe_inj]

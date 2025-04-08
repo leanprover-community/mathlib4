@@ -5,11 +5,10 @@ Authors: Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Dynamics.Ergodic.MeasurePreserving
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
 import Mathlib.MeasureTheory.Function.SimpleFunc
-import Mathlib.MeasureTheory.Measure.MutuallySingular
 import Mathlib.MeasureTheory.Measure.Count
 import Mathlib.Topology.IndicatorConstPointwise
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
 
 /-!
 # Lower Lebesgue integral for `ℝ≥0∞`-valued functions
@@ -564,11 +563,13 @@ theorem lintegral_add_right (f : α → ℝ≥0∞) {g : α → ℝ≥0∞} (hg 
   lintegral_add_right' f hg.aemeasurable
 
 @[simp]
-theorem lintegral_smul_measure (c : ℝ≥0∞) (f : α → ℝ≥0∞) : ∫⁻ a, f a ∂c • μ = c * ∫⁻ a, f a ∂μ := by
-  simp only [lintegral, iSup_subtype', SimpleFunc.lintegral_smul, ENNReal.mul_iSup, smul_eq_mul]
+theorem lintegral_smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+    (c : R) (f : α → ℝ≥0∞) : ∫⁻ a, f a ∂c • μ = c • ∫⁻ a, f a ∂μ := by
+  simp only [lintegral, iSup_subtype', SimpleFunc.lintegral_smul, ENNReal.smul_iSup]
 
-lemma setLIntegral_smul_measure (c : ℝ≥0∞) (f : α → ℝ≥0∞) (s : Set α) :
-    ∫⁻ a in s, f a ∂(c • μ) = c * ∫⁻ a in s, f a ∂μ := by
+lemma setLIntegral_smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+    (c : R) (f : α → ℝ≥0∞) (s : Set α) :
+    ∫⁻ a in s, f a ∂(c • μ) = c • ∫⁻ a in s, f a ∂μ := by
   rw [Measure.restrict_smul, lintegral_smul_measure]
 
 @[simp]
@@ -1592,15 +1593,15 @@ theorem lintegral_countable' [Countable α] [MeasurableSingletonClass α] (f : �
     ∫⁻ a, f a ∂μ = ∑' a, f a * μ {a} := by
   conv_lhs => rw [← sum_smul_dirac μ, lintegral_sum_measure]
   congr 1 with a : 1
-  rw [lintegral_smul_measure, lintegral_dirac, mul_comm]
+  simp [mul_comm]
 
 theorem lintegral_singleton' {f : α → ℝ≥0∞} (hf : Measurable f) (a : α) :
     ∫⁻ x in {a}, f x ∂μ = f a * μ {a} := by
-  simp only [restrict_singleton, lintegral_smul_measure, lintegral_dirac' _ hf, mul_comm]
+  simp [lintegral_dirac' _ hf, mul_comm]
 
 theorem lintegral_singleton [MeasurableSingletonClass α] (f : α → ℝ≥0∞) (a : α) :
     ∫⁻ x in {a}, f x ∂μ = f a * μ {a} := by
-  simp only [restrict_singleton, lintegral_smul_measure, lintegral_dirac, mul_comm]
+  simp [mul_comm]
 
 theorem lintegral_countable [MeasurableSingletonClass α] (f : α → ℝ≥0∞) {s : Set α}
     (hs : s.Countable) : ∫⁻ a in s, f a ∂μ = ∑' a : s, f a * μ {(a : α)} :=
