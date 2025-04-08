@@ -255,30 +255,37 @@ lemma γ'_neq_zero : γ' ^ ((↑↑t.2 + 1) * (↑↑u.1 + 1)) ≠ 0 := by
   norm_cast at H
   exact pow_eq_zero H
 
-include hirr htriv habc h2mq in
+include hirr htriv habc in
 lemma β'_neq_zero : (↑↑t.1 + 1 + (↑↑t.2 + 1) • β') ^ ↑↑u.2 ≠ 0 := by
   apply pow_ne_zero
-  have : (↑t.2 + 1 : ℕ) * σ β' ≠ 0 := by
+  intro h
+  have h : β' = (↑↑t.1 + 1)/(-(↑t.2 + 1)) := by
+    rw [eq_div_iff_mul_eq]
+    rw [← eq_neg_iff_add_eq_zero] at h
+    rw [mul_neg]
+    rw [mul_comm]
+    rw [h]
     simp only [nsmul_eq_mul, Nat.cast_add, Nat.cast_one]
-    exact mul_ne_zero (Nat.cast_add_one_ne_zero t.2)
-      (by {simp only [ne_eq, map_eq_zero]; exact β'ne_zero K α β hirr htriv σ α' β' γ' habc})
-    --intros H
-  intros H
-  apply hirr (↑t.1 + 1) (-↑t.2 + 1)
-  rw [← eq_neg_iff_add_eq_zero] at H
-  simp only [Int.cast_add, Int.cast_natCast, Int.cast_one, Int.cast_neg]
-  rw [habc.2.1]
-  have := β'ne_zero K α β hirr htriv σ α' β' γ' habc
-  simp only [nsmul_eq_mul, Nat.cast_add, Nat.cast_one] at H
-  sorry
+    have : (↑↑t.2 + 1) ≠ 0 := by {
+      simp_all only [ne_eq, map_eq_zero, nsmul_eq_mul, Nat.cast_add,
+        Nat.cast_one, AddLeftCancelMonoid.add_eq_zero,
+        one_ne_zero, and_false, not_false_eq_true]
+    }
+    intros H
+    apply this
+    norm_cast at H
+  apply hirr (↑t.1 + 1) (-(↑t.2 + 1))
+  rw [habc.2.1, h]
+  simp only [neg_add_rev, map_div₀, map_add, map_natCast, map_one, map_neg, Int.cast_add,
+    Int.cast_natCast, Int.cast_one, Int.reduceNeg, Int.cast_neg]
 
-include hirr htriv habc h2mq in
+include hirr htriv habc in
 lemma eta_ne_zero : sys_coeffs K α' β' γ' q t u ≠ 0 := by
   unfold sys_coeffs
   simp only [mul_eq_zero, pow_eq_zero_iff', not_or, not_and, Decidable.not_not]
   rw [mul_assoc]
   apply mul_ne_zero
-  · exact mod_cast β'_neq_zero K α β hirr htriv σ α' β' γ' habc q h2mq u t
+  · exact mod_cast β'_neq_zero K α β hirr htriv σ α' β' γ' habc q u t
   · apply mul_ne_zero (mod_cast h1 K α β hirr htriv σ α' β' γ' habc q u t)
     exact mod_cast γ'_neq_zero K α β hirr htriv σ α' β' γ' habc q u t
 
@@ -475,27 +482,36 @@ lemma fromapplylemma82_bound : ∃ (η : Fin q × Fin q → 𝓞 K),
 def ρ : (Fin q × Fin q) → ℂ := fun (a, b) => ((a+1) + (b+1 : ℕ) • β) * Complex.log α
 
 include htriv in
-lemma log_zero_zero : Complex.log α ≠ 0 := by {rw [Complex.log]; sorry}
+lemma log_zero_zero : Complex.log α ≠ 0 := by {
+  intro h
+  have := congr_arg Complex.exp h
+  rw [Complex.exp_log] at this
+  simp only [Complex.exp_zero] at this
+  apply htriv.2
+  exact this
+  exact htriv.1
+}
+
+-- i.1 = j.1 ∧ i.2 = j.2 → i = j
 
 lemma decompose_ij (i j : Fin (q * q)) : i = j ↔
   ((finProdFinEquiv.symm.1 i).1) = ((finProdFinEquiv.symm.1 j).1) ∧
     ((finProdFinEquiv.symm.1 i).2 : Fin q) = ((finProdFinEquiv.symm.1 j).2) := by
-  rcases i with ⟨i1, i2⟩
-  rcases j with ⟨j1, j2⟩
-  rw [Fin.ext_iff]
   apply Iff.intro
-  · intros H
-    constructor
-    subst H
-    simp_all only [Equiv.toFun_as_coe, finProdFinEquiv_symm_apply]
-    rw [Fin.ext_iff]
-    subst H
-    simp_all only [Equiv.toFun_as_coe, finProdFinEquiv_symm_apply, Fin.coe_modNat]
-  · intros H
-    obtain ⟨H1, H2⟩ := H
-    rw [Fin.ext_iff] at H1
-    rw [Fin.ext_iff] at H2
-    sorry
+  · intro H
+    rw [H]
+    constructor <;> rfl
+  · intro H
+    rcases H with ⟨H1, H2⟩
+    have : finProdFinEquiv.symm.1 i = finProdFinEquiv.symm.1 j := by
+      rw [← Prod.eta (finProdFinEquiv.symm.toFun i)]
+      rw [← Prod.eta (finProdFinEquiv.symm.toFun j)]
+      rw [H1, H2]
+    clear H1 H2
+    have := congr_arg finProdFinEquiv.toFun this
+    simp only [Equiv.toFun_as_coe, EmbeddingLike.apply_eq_iff_eq,
+      Prod.mk.injEq] at this
+    exact this
 
 -- lemma i ≠ j → ρ ... i ≠ ρ ... j
 -- needs β irrat and α ≠ 1
@@ -503,6 +519,8 @@ include hirr htriv in
 lemma hdistinc : ∀ (i j : Fin (q * q)), i ≠ j →
   (ρ α β q (finProdFinEquiv.symm i)) ≠ (ρ α β q (finProdFinEquiv.symm j)) := by
   intros i j hij
+  rw [ne_eq, decompose_ij] at hij
+  rw [not_and_or, ← ne_eq, ← ne_eq] at hij
   unfold ρ
   simp only [not_or]
   simp only [ne_eq, mul_eq_mul_right_iff, not_or]
@@ -722,6 +740,7 @@ lemma iteratedDeriv_vanishes (t : Fin (q*q)) (k : Fin (q * q)) (l : Fin (m K)) :
     FaithfulSMul.algebraMap_eq_zero_iff, exp_ne_zero, or_false]
   have := applylemma82_Matrix K α β hirr htriv σ hd α' β' γ' habc q h2mq u
     (finProdFinEquiv.symm t) hq0
+  unfold η'
 
   --rw [iteratedDeriv_of_R]
   --apply
