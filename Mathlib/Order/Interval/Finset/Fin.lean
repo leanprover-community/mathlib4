@@ -87,6 +87,7 @@ theorem attachFin_Iio : attachFin (Iio a) (fun _x hx ↦ (mem_Iio.mp hx).trans a
 theorem attachFin_Ioo_eq_Ioi : attachFin (Ioo a n) (fun _x hx ↦ (mem_Ioo.mp hx).2) = Ioi a := by
   ext; simp
 
+set_option linter.deprecated false in
 section deprecated
 
 @[deprecated attachFin_Icc (since := "2025-04-06")]
