@@ -563,6 +563,15 @@ lemma krullDim_nonneg [Nonempty α] : 0 ≤ krullDim α := krullDim_nonneg_iff.m
 
 @[deprecated (since := "2024-12-22")] alias krullDim_nonneg_of_nonempty := krullDim_nonneg
 
+theorem krullDim_ne_bot_iff : krullDim α ≠ ⊥ ↔ Nonempty α := by
+  rw [ne_eq, krullDim_eq_bot_iff, not_isEmpty_iff]
+
+theorem bot_lt_krullDim_iff : ⊥ < krullDim α ↔ Nonempty α := by
+  rw [bot_lt_iff_ne_bot, krullDim_ne_bot_iff]
+
+theorem bot_lt_krullDim [Nonempty α] : ⊥ < krullDim α :=
+  bot_lt_krullDim_iff.mpr ‹_›
+
 lemma krullDim_nonpos_iff_forall_isMax : krullDim α ≤ 0 ↔ ∀ x : α, IsMax x := by
   simp only [krullDim, iSup_le_iff, isMax_iff_forall_not_lt]
   refine ⟨fun H x y h ↦ (H ⟨1, ![x, y],
@@ -859,6 +868,8 @@ class KrullDimLE (n : ℕ) (α : Type*) [Preorder α] : Prop where
 lemma KrullDimLE.mono {n m : ℕ} (e : n ≤ m) (α : Type*) [Preorder α] [KrullDimLE n α] :
     KrullDimLE m α :=
   ⟨KrullDimLE.krullDim_le (n := n).trans (Nat.cast_le.mpr e)⟩
+
+instance {α} [Preorder α] [Subsingleton α] : KrullDimLE 0 α := ⟨krullDim_nonpos_of_subsingleton⟩
 
 end typeclass
 
