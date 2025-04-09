@@ -83,10 +83,9 @@ section maximalRealSubfield
 variable (K : Type*) [Field K] [NumberField K]
 
 /--
-The intermediate field of an extension `K/F` that is fixed by all the conjugations.
-It contains all the totally real subfields of `K/F`, see `IsTotallyReal.le_maximalRealSubfield`,
-and is totally real if the extension is Galois and `F` is totally real, see
-`isTotallyReal_maximalRealSubfield`.
+The intermediate field of `K/ℚ` that is fixed by all the conjugations. It contains all the
+totally real subfields of `K/ℚ`, see `IsTotallyReal.le_maximalRealSubfield`, and is totally
+real if `K` is Galois over `ℚ`, see `isTotallyReal_maximalRealSubfield`.
 -/
 def maximalRealSubfield : IntermediateField ℚ K :=
   .fixedField (Subgroup.closure {σ : K ≃ₐ[ℚ] K | ∃ φ : K →+* ℂ, IsConj φ σ})
