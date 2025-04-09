@@ -471,6 +471,7 @@ theorem Continuous.integrableOn_uIcc [LinearOrder X] [CompactIccSpace X] [T2Spac
     (hf : Continuous f) : IntegrableOn f [[a, b]] μ :=
   hf.integrableOn_Icc
 
+open scoped uIcc in
 theorem Continuous.integrableOn_uIoc [LinearOrder X] [CompactIccSpace X] [T2Space X]
     (hf : Continuous f) : IntegrableOn f (Ι a b) μ :=
   hf.integrableOn_Ioc
