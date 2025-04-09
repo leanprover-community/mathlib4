@@ -159,7 +159,7 @@ lemma sorted_lt_range' (a b) {s} (hs : s ≠ 0) :
 lemma sorted_le_range' (a b s) :
     List.Sorted (· ≤ ·) (List.range' a b s) := by
   by_cases hs : s ≠ 0
-  · exact (sorted_lt_range' hs).le_of_lt
+  · exact (sorted_lt_range' a b hs).le_of_lt
   · rw [ne_eq, Decidable.not_not] at hs
     simpa [hs] using sorted_le_replicate b a
 
