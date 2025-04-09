@@ -15,15 +15,6 @@ a totally real number field.
 
 * `IsCMExtension`: a Prop on two number fields `F` and `K` stating that `K/F` is a CM-extension.
 
-* `IsCM`: a Prop on a number field `K` stating that there exists a subfield `F` such that `K/F` is
-  a CM-extension
-
-## Implementation notes
-
-Let `K` be a field such that `IsCM K`. Then `K` is a CM-extension over its real maximal subfield.
-However, we keep `IsCMExtension` for flexibility since it gives us the possibility to consider `K`
-as a CM-extension over some other field.
-
 -/
 
 open NumberField InfinitePlace ComplexEmbedding
@@ -38,14 +29,6 @@ class IsCMExtension (F K : Type*) [Field F] [NumberField F] [Field K] [NumberFie
     [Algebra F K] : Prop
   extends IsTotallyReal F, IsTotallyComplex K where
   finrank_eq_two' : Module.finrank F K = 2
-
-/--
-A field `K` is `CM` if it admits a subfield `F` such that `IsCMExtension F K`.
-In this case, one can take `F` to be the maximal real subfield of `K`.
--/
-class IsCM (K : Type*) [Field K] [NumberField K] : Prop where
-  exists_CMExtension :
-    ∃ (F : Type*) (_ : Field F) (_ : NumberField F) (_ : Algebra F K), IsCMExtension F K
 
 namespace IsCMExtension
 
