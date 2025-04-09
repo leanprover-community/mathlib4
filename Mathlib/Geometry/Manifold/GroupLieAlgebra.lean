@@ -12,14 +12,15 @@ import Mathlib.Geometry.Manifold.VectorField.LieBracket
 
 Given a Lie group, we define `GroupLieAlgebra I G` as its tangent space at the identity, and we
 endow it with a Lie bracket, as follows. Given two vectors `v, w : GroupLieAlgebra I G`, consider
-the associated left-invariant vector fields `invariantVectorField v` (given at a point `g` by
-the image of `v` under the derivative of left-multiplication by `g`) and `invariantVectorField w`.
-Then take their Lie bracket at the identity: this is by definition the bracket of `v` and `w`.
+the associated left-invariant vector fields `mulInvariantVectorField v` (given at a point `g` by
+the image of `v` under the derivative of left-multiplication by `g`) and
+`mulInvariantVectorField w`. Then take their Lie bracket at the identity: this is by definition
+the bracket of `v` and `w`.
 
 Due to general properties of the Lie bracket of vector fields, this gives a Lie algebra structure
 on `GroupLieAlgebra I G`.
 
-Note that one can also define a Lie algebra on the space of left-invariant derivations on `C^∞`
+Note that one can also define a Lie algebra on the space of left-mulInvariant derivations on `C^∞`
 functions (see `LeftInvariantDerivation.instLieAlgebra`). For finite-dimensional `C^∞` real
 manifolds, this space of derivations can be canonically identified with the tangent space, and we
 recover the same Lie algebra structure (TODO: prove this). In other smoothness classes or on other
@@ -46,34 +47,41 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable (I G) in
 /-- The Lie algebra of a Lie group, i.e., its tangent space at the identity. We use the word
 `GroupLieAlgebra` instead of `LieAlgebra` as the latter is taken as a generic class. -/
+@[to_additive]
 abbrev GroupLieAlgebra : Type _ := TangentSpace I (1 : G)
 
-/-- The invariant vector field associated to a vector in the Lie alebra. -/
-def invariantVectorField (v : GroupLieAlgebra I G) (g : G) : TangentSpace I g :=
+/-- The mulInvariant vector field associated to a vector `v` in the Lie alebra. At a point `g`, it
+is given by the image of `v` under the left-multiplication by `g`. -/
+@[to_additive]
+noncomputable def mulInvariantVectorField (v : GroupLieAlgebra I G) (g : G) : TangentSpace I g :=
   mfderiv I I (g * ·) (1 : G) v
 
-lemma invariantVectorField_add (v w : GroupLieAlgebra I G) :
-    invariantVectorField (v + w) = invariantVectorField v + invariantVectorField w := by
+@[to_additive]
+lemma mulInvariantVectorField_add (v w : GroupLieAlgebra I G) :
+    mulInvariantVectorField (v + w) = mulInvariantVectorField v + mulInvariantVectorField w := by
   ext g
-  simp [invariantVectorField]
+  simp [mulInvariantVectorField]
 
-lemma invariantVectorField_smul (c : 𝕜) (v : GroupLieAlgebra I G) :
-    invariantVectorField (c • v) = c • invariantVectorField v := by
+lemma mulInvariantVectorField_smul (c : 𝕜) (v : GroupLieAlgebra I G) :
+    mulInvariantVectorField (c • v) = c • mulInvariantVectorField v := by
   ext g
-  simp [invariantVectorField]
-
+  simp [mulInvariantVectorField]
 
 open VectorField
 
-instance : Bracket (GroupLieAlgebra I G) (GroupLieAlgebra I G) where
-  bracket v w := mlieBracket I (invariantVectorField v) (invariantVectorField w) (1 : G)
+/-- The Lie bracket of two vectors `v` and `w` in the Lie algebra of a Lie group is obtained by
+taking the Lie bracket of the associated invariant vector fields, at the identity. -/
+@[to_additive]
+noncomputable instance : Bracket (GroupLieAlgebra I G) (GroupLieAlgebra I G) where
+  bracket v w := mlieBracket I (mulInvariantVectorField v) (mulInvariantVectorField w) (1 : G)
 
+@[to_additive]
 lemma GroupLieAlgebra.bracket_def (v w : GroupLieAlgebra I G) :
-    ⁅v, w⁆ = mlieBracket I (invariantVectorField v) (invariantVectorField w) (1 : G) := rfl
+    ⁅v, w⁆ = mlieBracket I (mulInvariantVectorField v) (mulInvariantVectorField w) (1 : G) := rfl
 
 variable [LieGroup I (minSmoothness 𝕜 3) G]
 
-@[simp]
+@[to_additive (attr := simp)]
 lemma inverse_mfderiv_mul_left {g h : G} :
     (mfderiv I I (fun b ↦ g * b) h).inverse = mfderiv I I (fun b ↦ g⁻¹ * b) (g * h) := by
   have M : 1 ≤ minSmoothness 𝕜 3 := le_trans (by norm_num) le_minSmoothness
@@ -91,11 +99,13 @@ lemma inverse_mfderiv_mul_left {g h : G} :
     (contMDiff_mul_left.contMDiffAt.mdifferentiableAt M), inv_mul_cancel_left g h] at A'
   exact ContinuousLinearMap.inverse_eq A' A
 
-lemma mpullback_invariantVectorField (g : G) (v : GroupLieAlgebra I G) :
-    mpullback I I (g * ·) (invariantVectorField v) = invariantVectorField v := by
+/-- Invariant vector fields are invariant under pullbacks. -/
+@[to_additive]
+lemma mpullback_mulInvariantVectorField (g : G) (v : GroupLieAlgebra I G) :
+    mpullback I I (g * ·) (mulInvariantVectorField v) = mulInvariantVectorField v := by
   have M : 1 ≤ minSmoothness 𝕜 3 := le_trans (by norm_num) le_minSmoothness
   ext h
-  simp only [mpullback, inverse_mfderiv_mul_left, invariantVectorField]
+  simp only [mpullback, inverse_mfderiv_mul_left, mulInvariantVectorField]
   have D : (fun x ↦ h * x) = (fun b ↦ g⁻¹ * b) ∘ (fun x ↦ g * h * x) := by
     ext x; simp only [comp_apply]; group
   rw [D, mfderiv_comp (I' := I)]
@@ -104,21 +114,22 @@ lemma mpullback_invariantVectorField (g : G) (v : GroupLieAlgebra I G) :
   · exact contMDiff_mul_left.contMDiffAt.mdifferentiableAt M
   · exact contMDiff_mul_left.contMDiffAt.mdifferentiableAt M
 
-lemma invariantVectorField_eq_mpullback (g : G) (V : Π (g : G), TangentSpace I g) :
-    invariantVectorField (V 1) g = mpullback I I (g ⁻¹ * ·) V g := by
+@[to_additive]
+lemma mulInvariantVectorField_eq_mpullback (g : G) (V : Π (g : G), TangentSpace I g) :
+    mulInvariantVectorField (V 1) g = mpullback I I (g ⁻¹ * ·) V g := by
   have A : 1 = g⁻¹ * g := by simp
-  simp only [invariantVectorField, mpullback, inverse_mfderiv_mul_left]
+  simp only [mulInvariantVectorField, mpullback, inverse_mfderiv_mul_left]
   congr
   simp
 
-theorem contMDiff_invariantVectorField (v : GroupLieAlgebra I G) :
+@[to_additive]
+theorem contMDiff_mulInvariantVectorField (v : GroupLieAlgebra I G) :
     ContMDiff I I.tangent (minSmoothness 𝕜 2)
-      (fun (g : G) ↦ (invariantVectorField v g : TangentBundle I G)) := by
+      (fun (g : G) ↦ (mulInvariantVectorField v g : TangentBundle I G)) := by
   have M : 1 ≤ minSmoothness 𝕜 3 := le_trans (by norm_num) le_minSmoothness
   have A : minSmoothness 𝕜 2 + 1 = minSmoothness 𝕜 3 := by
     rw [← minSmoothness_add]
     norm_num
-  have : IsManifold I (minSmoothness 𝕜 2 + 1) G := by rw [A]; infer_instance
   let fg : G → TangentBundle I G := fun g ↦ TotalSpace.mk' E g 0
   have sfg : ContMDiff I I.tangent (minSmoothness 𝕜 2) fg := contMDiff_zeroSection _ _
   let fv : G → TangentBundle I G := fun _ ↦ TotalSpace.mk' E 1 v
@@ -141,59 +152,68 @@ theorem contMDiff_invariantVectorField (v : GroupLieAlgebra I G) :
   · simp [F₁, F₂, F₃, fg, fv]
   · simp only [comp_apply, tangentMap, F₃, F₂, F₁, fg, fv]
     rw [mfderiv_prod_eq_add_apply ((contMDiff_mul I (minSmoothness 𝕜 3)).mdifferentiableAt M)]
-    simp [invariantVectorField]
+    simp [mulInvariantVectorField]
 
-theorem contMDiffAt_invariantVectorField (v : GroupLieAlgebra I G) {g : G }:
+@[to_additive]
+theorem contMDiffAt_mulInvariantVectorField (v : GroupLieAlgebra I G) {g : G }:
     ContMDiffAt I I.tangent (minSmoothness 𝕜 2)
-      (fun (g : G) ↦ (invariantVectorField v g : TangentBundle I G)) g :=
-  (contMDiff_invariantVectorField v).contMDiffAt
+      (fun (g : G) ↦ (mulInvariantVectorField v g : TangentBundle I G)) g :=
+  (contMDiff_mulInvariantVectorField v).contMDiffAt
 
-theorem mdifferentiable_invariantVectorField (v : GroupLieAlgebra I G) :
+@[to_additive]
+theorem mdifferentiable_mulInvariantVectorField (v : GroupLieAlgebra I G) :
     MDifferentiable I I.tangent
-      (fun (g : G) ↦ (invariantVectorField v g : TangentBundle I G)) :=
-  (contMDiff_invariantVectorField v).mdifferentiable (le_trans (by norm_num) le_minSmoothness)
+      (fun (g : G) ↦ (mulInvariantVectorField v g : TangentBundle I G)) :=
+  (contMDiff_mulInvariantVectorField v).mdifferentiable (le_trans (by norm_num) le_minSmoothness)
 
-theorem mdifferentiableAt_invariantVectorField (v : GroupLieAlgebra I G) {g : G} :
+@[to_additive]
+theorem mdifferentiableAt_mulInvariantVectorField (v : GroupLieAlgebra I G) {g : G} :
     MDifferentiableAt I I.tangent
-      (fun (g : G) ↦ (invariantVectorField v g : TangentBundle I G)) g :=
-  (contMDiffAt_invariantVectorField v).mdifferentiableAt (le_trans (by norm_num) le_minSmoothness)
+      (fun (g : G) ↦ (mulInvariantVectorField v g : TangentBundle I G)) g :=
+  (contMDiffAt_mulInvariantVectorField v).mdifferentiableAt
+    (le_trans (by norm_num) le_minSmoothness)
 
 open VectorField
 
 variable [CompleteSpace E]
 
-lemma invariantVector_mlieBracket (v w : GroupLieAlgebra I G) :
-    invariantVectorField (mlieBracket I (invariantVectorField v) (invariantVectorField w) 1) =
-    mlieBracket I (invariantVectorField v) (invariantVectorField w) := by
+/-- The mulInvariant vector field associated to the value at the identity of the Lie bracket of
+two mulInvariant vector fields, is everywhere the Lie bracket of the mulInvariant vector fields. -/
+@[to_additive]
+lemma mulInvariantVector_mlieBracket (v w : GroupLieAlgebra I G) :
+    mulInvariantVectorField
+      (mlieBracket I (mulInvariantVectorField v) (mulInvariantVectorField w) 1) =
+    mlieBracket I (mulInvariantVectorField v) (mulInvariantVectorField w) := by
   ext g
-  rw [invariantVectorField_eq_mpullback, mpullback_mlieBracket (n := minSmoothness 𝕜 3),
-    mpullback_invariantVectorField, mpullback_invariantVectorField]
-  · exact mdifferentiableAt_invariantVectorField _
-  · exact mdifferentiableAt_invariantVectorField _
+  rw [mulInvariantVectorField_eq_mpullback, mpullback_mlieBracket (n := minSmoothness 𝕜 3),
+    mpullback_mulInvariantVectorField, mpullback_mulInvariantVectorField]
+  · exact mdifferentiableAt_mulInvariantVectorField _
+  · exact mdifferentiableAt_mulInvariantVectorField _
   · exact contMDiffAt_mul_left
   · exact minSmoothness_monotone (by norm_cast)
 
-instance : LieRing (GroupLieAlgebra I G) where
+@[to_additive]
+noncomputable instance : LieRing (GroupLieAlgebra I G) where
   add_lie u v w := by
-    simp only [GroupLieAlgebra.bracket_def, invariantVectorField_add]
+    simp only [GroupLieAlgebra.bracket_def, mulInvariantVectorField_add]
     rw [mlieBracket_add_left]
-    · exact mdifferentiableAt_invariantVectorField _
-    · exact mdifferentiableAt_invariantVectorField _
+    · exact mdifferentiableAt_mulInvariantVectorField _
+    · exact mdifferentiableAt_mulInvariantVectorField _
   lie_add u v w := by
-    simp only [GroupLieAlgebra.bracket_def, invariantVectorField_add]
+    simp only [GroupLieAlgebra.bracket_def, mulInvariantVectorField_add]
     rw [mlieBracket_add_right]
-    · exact mdifferentiableAt_invariantVectorField _
-    · exact mdifferentiableAt_invariantVectorField _
+    · exact mdifferentiableAt_mulInvariantVectorField _
+    · exact mdifferentiableAt_mulInvariantVectorField _
   lie_self v := by simp [GroupLieAlgebra.bracket_def]
   leibniz_lie u v w := by
-    simp only [GroupLieAlgebra.bracket_def, invariantVector_mlieBracket]
+    simp only [GroupLieAlgebra.bracket_def, mulInvariantVector_mlieBracket]
     apply leibniz_identity_mlieBracket_apply <;>
-      exact contMDiff_invariantVectorField _ _
+      exact contMDiff_mulInvariantVectorField _ _
 
-instance : LieAlgebra 𝕜 (GroupLieAlgebra I G) where
+noncomputable instance : LieAlgebra 𝕜 (GroupLieAlgebra I G) where
   lie_smul c v w := by
-    simp only [GroupLieAlgebra.bracket_def, invariantVectorField_smul]
+    simp only [GroupLieAlgebra.bracket_def, mulInvariantVectorField_smul]
     rw [mlieBracket_smul_right]
-    exact mdifferentiableAt_invariantVectorField _
+    exact mdifferentiableAt_mulInvariantVectorField _
 
 end LieGroup
