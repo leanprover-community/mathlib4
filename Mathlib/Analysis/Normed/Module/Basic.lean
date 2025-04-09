@@ -50,6 +50,9 @@ variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
 instance (priority := 100) NormedSpace.isBoundedSMul [NormedSpace 𝕜 E] : IsBoundedSMul 𝕜 E :=
   IsBoundedSMul.of_norm_smul_le NormedSpace.norm_smul_le
 
+instance (priority := 100) NormedSpace.toNormSMulClass [NormedSpace 𝕜 E] : NormSMulClass 𝕜 E :=
+  NormedDivisionRing.toNormSMulClass
+
 instance NormedField.toNormedSpace : NormedSpace 𝕜 𝕜 where norm_smul_le a b := norm_mul_le a b
 
 -- shortcut instance
