@@ -177,16 +177,4 @@ instance commRing (n : ℕ) : CommRing (ZMod n) where
 instance inhabited (n : ℕ) : Inhabited (ZMod n) :=
   ⟨0⟩
 
-#synth OfNat (ZMod 37) 7
-
-#synth ∀ n, OfNat (ZMod 37) n -- fails
-
-#synth OfNat (ZMod 37) 0 -- Zero.toOfNat0
-#synth OfNat (ZMod 37) 1 -- One.toOfNat1
-variable (n : ℕ) in
-#synth OfNat (ZMod n) (n + 2) -- instOfNatAtLeastTwo
-
--- Verify that `grind` can use `ZMod n`.
-example (n : ℕ) : Lean.Grind.CommRing (ZMod n) := inferInstance
-
 end ZMod

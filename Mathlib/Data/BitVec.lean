@@ -38,8 +38,6 @@ Having instance of `SMul ℕ`, `SMul ℤ` and `Pow` are prerequisites for a `Com
 
 instance : SMul ℕ (BitVec w) := ⟨fun x y => ofFin <| x • y.toFin⟩
 instance : SMul ℤ (BitVec w) := ⟨fun x y => ofFin <| x • y.toFin⟩
-instance : Pow (BitVec w) ℕ  := ⟨fun x n => ofFin <| x.toFin ^ n⟩
-
 lemma toFin_nsmul (n : ℕ) (x : BitVec w)  : toFin (n • x) = n • x.toFin := rfl
 lemma toFin_zsmul (z : ℤ) (x : BitVec w)  : toFin (z • x) = z • x.toFin := rfl
 lemma toFin_pow (x : BitVec w) (n : ℕ)    : toFin (x ^ n) = x.toFin ^ n := rfl

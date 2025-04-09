@@ -429,23 +429,6 @@ end Semiring
 
 end LawfulOfNat
 
--- instance (priority := 100) (α : Type u) [AddMonoidWithOne α] (n : ℕ) : OfNat α n where
---   ofNat :=
---     match n with
---       | 0 => 0
---       | 1 => 1
---       | n + 2 => Nat.cast (n + 2)
-
--- instance (α : Type u) [AddMonoidWithOne α] : LawfulOfNat α where
---   ofNat_zero := rfl
---   ofNat_succ
---   | 0 => by simp
---   | 1 => one_add_one_eq_two.symm
---   | n + 2 => by
---     simp only [OfNat.ofNat]
---     simp [Nat.cast_two, ← one_add_one_eq_two, add_assoc]
---     rfl
-
 instance CommRing.toGrindCommRing [∀ n, OfNat α n] [s : CommRing α] [LawfulOfNat α] :
     Lean.Grind.CommRing α :=
   { s with

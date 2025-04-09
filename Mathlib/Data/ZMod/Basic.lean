@@ -107,9 +107,6 @@ instance charP (n : ℕ) : CharP (ZMod n) n where
     · simp [zero_dvd_iff, Int.natCast_eq_zero]
     · exact Fin.natCast_eq_zero
 
-instance (n : ℕ) : Lean.Grind.IsCharP (ZMod n) n where
-  ofNat_eq_zero_iff m := sorry
-
 @[simp]
 theorem addOrderOf_one (n : ℕ) : addOrderOf (1 : ZMod n) = n :=
   CharP.eq _ (CharP.addOrderOf_one _) (ZMod.charP n)
