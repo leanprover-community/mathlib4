@@ -5,6 +5,8 @@ Author: Peter Pfaffelhuber
 -/
 import Mathlib.LinearAlgebra.Matrix.PosDef
 import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.MeasureTheory.Function.LpSpace.Indicator
+
 
 /-! # Gram Matrices
 
@@ -82,9 +84,42 @@ end Gram
 
 end Matrix
 
-def covariance (J : Finset NNReal) : Matrix J J ℝ :=
+open Set NNReal MeasureTheory
+
+def covariance (J : Finset NNReal) : Matrix J J ℝ≥0 :=
   (fun i j => i ⊓ j)
 
-open Set
+variable [NormedAddCommGroup E] [NormedSpace ℝ E]
 
-def v : NNReal →₂[μ] NNReal := fun t ↦ indicator Icc 0 t
+example (t : ℝ) : MeasurableSet (Icc 0 t) := by exact measurableSet_Icc
+
+example [MeasurableSpace E] {μ : Measure E} [TopologicalSpace E] [IsFiniteMeasureOnCompacts μ]
+    {K : Set E} (hK : IsCompact K) : μ K < ⊤ := by
+  exact IsCompact.measure_lt_top hK
+
+
+
+example [Preorder E] [OrderBot E] [MeasurableSpace E] {μ : Measure E} [TopologicalSpace E]
+  [CompactIccSpace E] [IsFiniteMeasureOnCompacts μ] (t : E) :
+      μ (Icc ⊥ t) ≠ ⊤ :=
+    by
+  exact IsCompact.measure_ne_top isCompact_Icc
+
+example [Preorder E] [OrderBot E] [MeasurableSpace E] [TopologicalSpace E]
+[OpensMeasurableSpace E]  [OrderClosedTopology E] (t : E) :
+      (MeasurableSet (Icc ⊥ t)) :=
+    by
+  apply measurableSet_Icc
+
+example [Lattice E] [OrderBot E] (s t : E) : (Icc ⊥ s) ∩ (Icc ⊥ t) = (Icc ⊥ (s ⊓ t)) := by
+  have h : ⊥ = ((⊥ : E) ⊔ ⊥)  := by
+    simp only [le_refl, sup_of_le_left]
+  nth_rewrite 3 [h]
+  rw [Icc_inter_Icc]
+
+def v [NormedAddCommGroup F] [Lattice E] [OrderBot E] [MeasurableSpace E] [TopologicalSpace E]
+  [CompactIccSpace E] {μ : Measure E} {_ : IsFiniteMeasureOnCompacts μ} : E →₂[μ] F := by
+    have h (t : E) := isCompact_Icc (a := ⊥) (b := t)
+    have h' (t : E) : μ (Icc ⊥ t) ≠ ⊤ := IsCompact.measure_ne_top (h t)
+    -- IsCompact.measure_ne_top <|
+    exact indicatorConstLp 2  measurableSet_Icc -- (IsCompact.measure_ne_top isCompact_Icc)
