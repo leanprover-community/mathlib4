@@ -85,7 +85,7 @@ theorem dvd_map_of_isScalarTower (A K : Type*) {R : Type*} [CommRing A] [Field K
   rw [aeval_map_algebraMap, minpoly.aeval]
 
 theorem dvd_map_of_isScalarTower' (R : Type*) {S : Type*} (K L : Type*) [CommRing R]
-    [CommRing S] [Field K] [CommRing L] [Algebra R S] [Algebra R K] [Algebra S L] [Algebra K L]
+    [CommRing S] [Field K] [Ring L] [Algebra R S] [Algebra R K] [Algebra S L] [Algebra K L]
     [Algebra R L] [IsScalarTower R K L] [IsScalarTower R S L] (s : S) :
     minpoly K (algebraMap S L s) ∣ map (algebraMap R K) (minpoly R s) := by
   apply minpoly.dvd K (algebraMap S L s)
