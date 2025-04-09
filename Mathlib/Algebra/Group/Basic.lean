@@ -49,24 +49,6 @@ attribute [to_additive (attr := simp)] dite_smul smul_dite ite_smul smul_ite
 
 end ite
 
-section Mul
-variable [Mul G]
-
-@[to_additive (attr := simp)]
-theorem mulLeft₃_apply (a b c : G) : mulLeft₃ a b c = (a * b) * c := rfl
-
-@[to_additive (attr := simp)]
-theorem mulRight₃_apply (a b c : G) : mulRight₃ a b c = a * (b * c) := rfl
-
-/-- The products `(a * b) * c` and `a * (b * c)` agree iff multiplication is associative. -/
-@[to_additive "The sums `(a + b) + c` and `a + (b + c)` agree iff addition is associative."]
-theorem mulLeft₃_eq_mulRight₃_iff_associative :
-    mulLeft₃ (G := G) = mulRight₃ ↔ Std.Associative (fun (x y : G) ↦ x * y) where
-  mp h := ⟨fun a b c ↦ by rw [← mulLeft₃_apply, ← mulRight₃_apply, h]⟩
-  mpr h := by ext a b c; simp [Std.Associative.assoc]
-
-end Mul
-
 section Semigroup
 variable [Semigroup α]
 

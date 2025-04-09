@@ -27,15 +27,14 @@ section NonUnitalNonAssocRing
 variable {R : Type u} [NonUnitalNonAssocRing R]
 
 /-- The associator `(x * y) * z - x * (y * z)` -/
-def associator (x y z : R) := (x * y) * z - x * (y * z)
+def associator (x y z : R) : R := (x * y) * z - x * (y * z)
 
-theorem associator_eq_mulLeft₃_sub_mulRight₃ : associator = mulLeft₃ (G := R) - mulRight₃ := by
-  funext x y z
-  simp [associator]
+theorem associator_apply (x y z : R) : associator x y z = (x * y) * z - x * (y * z) := rfl
 
 theorem associator_eq_zero_iff_associative :
-    associator (R := R) = 0 ↔ Std.Associative (fun (x y : R) ↦ x * y) := by
-  simp [mulLeft₃_eq_mulRight₃_iff_associative, associator_eq_mulLeft₃_sub_mulRight₃, sub_eq_zero]
+    associator (R := R) = 0 ↔ Std.Associative (fun (x y : R) ↦ x * y) where
+  mp h := ⟨fun x y z ↦ sub_eq_zero.mp <| congr_fun₃ h x y z⟩
+  mpr h := by ext x y z; simp [associator, Std.Associative.assoc]
 
 theorem associator_cocycle (a b c d : R) :
     a * associator b c d - associator (a * b) c d + associator a (b * c) d - associator a b (c * d)
@@ -51,7 +50,8 @@ section NonUnitalNonAssocSemiring
 variable {R : Type u} [NonUnitalNonAssocSemiring R]
 
 /-- The multiplication `(x * y) * z` of three elements of a (non-associative)
-(semi)-ring is an `AddMonoidHom` in each argument. -/
+(semi)-ring is an `AddMonoidHom` in each argument. See also `LinearMap.mulLeftRight` for a
+related functions realized as a linear map. -/
 def mulLeft₃ : R →+ R →+ R →+ R where
   toFun x := comp mul (mulLeft x)
   map_zero' := by ext; simp
