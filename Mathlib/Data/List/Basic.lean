@@ -1324,6 +1324,13 @@ end lookup
 
 section range'
 
+@[simp]
+lemma range'_0 (a b : ℕ) :
+    List.range' a b 0 = List.replicate b a := by
+  induction b with
+  | zero => simp
+  | succ b ih => simp [range'_succ, ih, replicate_succ]
+
 lemma left_le_of_mem_range' {a b s x : ℕ}
     (hx : x ∈ List.range' a b s) : a ≤ x := by
   obtain ⟨i, _, rfl⟩ := List.mem_range'.mp hx

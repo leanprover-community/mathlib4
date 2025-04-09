@@ -138,6 +138,11 @@ theorem sorted_lt_range (n : ℕ) : Sorted (· < ·) (range n) := by
   rw [Sorted, pairwise_iff_get]
   simp
 
+theorem sorted_le_replicate (n a : ℕ) : Sorted (· ≤ ·) (replicate n a) := by
+  induction n with
+  | zero => simp
+  | succ n ih => simpa [List.replicate_succ]
+
 theorem sorted_le_range (n : ℕ) : Sorted (· ≤ ·) (range n) :=
   (sorted_lt_range n).le_of_lt
 
@@ -151,9 +156,12 @@ lemma sorted_lt_range' {a b s} (hs : s ≠ 0) :
     apply lt_of_lt_of_le (Nat.lt_add_of_pos_right (Nat.zero_lt_of_ne_zero hs))
       (List.left_le_of_mem_range' hb)
 
-lemma sorted_le_range' {a b s} (hs : s ≠ 0) :
-    List.Sorted (· ≤ ·) (List.range' a b s) :=
-  (sorted_lt_range' hs).le_of_lt
+lemma sorted_le_range' {a b s} :
+    List.Sorted (· ≤ ·) (List.range' a b s) := by
+  by_cases hs : s ≠ 0
+  · exact (sorted_lt_range' hs).le_of_lt
+  · rw [ne_eq, Decidable.not_not] at hs
+    simpa [hs] using sorted_le_replicate b a
 
 theorem Sorted.rel_get_of_lt {l : List α} (h : l.Sorted r) {a b : Fin l.length} (hab : a < b) :
     r (l.get a) (l.get b) :=
@@ -224,7 +232,7 @@ lemma Sorted.filterMap {α β : Type*} [DecidableEq α] [DecidableEq β]
   induction l with
   | nil => simp
   | cons a l ih =>
-    simp [List.filterMap_cons]
+    rw [List.filterMap_cons]
     obtain H | ⟨b, hb⟩ := Option.eq_none_or_eq_some (p a)
     · exact H ▸ ih (List.sorted_cons.mp hl).right
     · rw [hb, List.sorted_cons]
