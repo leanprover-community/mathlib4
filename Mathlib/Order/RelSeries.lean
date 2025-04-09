@@ -94,6 +94,10 @@ def toList (x : RelSeries r) : List α := List.ofFn x
 lemma length_toList (x : RelSeries r) : x.toList.length = x.length + 1 :=
   List.length_ofFn
 
+@[simp]
+lemma toList_singleton (x : α) : (singleton r x).toList = [x] :=
+  rfl
+
 lemma toList_chain' (x : RelSeries r) : x.toList.Chain' r := by
   rw [List.chain'_iff_get]
   intros i h
@@ -219,6 +223,8 @@ def head (x : RelSeries r) : α := x 0
 Since a relation series is assumed to be non-empty, this is well defined. -/
 def last (x : RelSeries r) : α := x <| Fin.last _
 
+lemma apply_zero (p : RelSeries r) : p 0 = p.head := rfl
+
 lemma apply_last (x : RelSeries r) : x (Fin.last <| x.length) = x.last := rfl
 
 lemma head_mem (x : RelSeries r) : x.head ∈ x := ⟨_, rfl⟩
@@ -230,6 +236,30 @@ lemma head_singleton {r : Rel α α} (x : α) : (singleton r x).head = x := by s
 
 @[simp]
 lemma last_singleton {r : Rel α α} (x : α) : (singleton r x).last = x := by simp [singleton, last]
+
+@[simp]
+lemma head_toList (p : RelSeries r) : p.toList.head p.toList_ne_nil = p.head := by
+  simp [toList, apply_zero]
+
+@[simp]
+lemma toList_getElem_eq_apply (p : RelSeries r) (i : Fin (p.length + 1)) :
+    p.toList[(i : ℕ)] = p i := by
+  simp only [Fin.getElem_fin, toList, List.getElem_ofFn p.toFun]
+
+@[simp]
+lemma toList_getElem_zero_eq_head (p : RelSeries r) : p.toList[0] = p.head := by
+  simp [head, ← toList_getElem_eq_apply]
+
+@[simp]
+lemma toList_fromListChain' (l : List α) (l_ne_nil : l ≠ []) (hl : l.Chain' r) :
+    (fromListChain' l l_ne_nil hl).toList = l :=
+  Subtype.ext_iff.mp <| RelSeries.Equiv.right_inv ⟨l, ⟨l_ne_nil, hl⟩⟩
+
+@[simp]
+lemma head_fromListChain' (l : List α) (l_ne_nil : l ≠ [])
+    (hl : l.Chain' r) :
+    (fromListChain' l l_ne_nil hl).head = l.head l_ne_nil := by
+  simp [← toList_getElem_zero_eq_head, List.getElem_zero_eq_head]
 
 end
 
@@ -431,6 +461,41 @@ lemma cons_cast_succ (s : RelSeries r) (a : α) (h : r a s.head) (i : Fin (s.len
   show i.1 + 1 = _ % _
   simpa using (Nat.mod_eq_of_lt (by simp)).symm
 
+@[simp]
+lemma append_singleton_left (p : RelSeries r) (x : α) (hx : r x p.head) :
+    (singleton r x).append p hx = p.cons x hx :=
+  rfl
+
+@[simp]
+lemma toList_cons (p : RelSeries r) (x : α) (hx : r x p.head) :
+    (p.cons x hx).toList = x :: p.toList := by
+  simp only [toList, cons_length, List.ofFn_succ, Fin.cast_zero, apply_zero, head_cons,
+    Fin.cast_succ_eq, singleton_length, List.cons.injEq, List.ofFn_inj, true_and]
+  refine ⟨rfl, ?_⟩
+  ext i
+  simp [cons, append, singleton, Fin.append, Fin.addCases, Fin.subNat, Fin.succ]
+
+lemma fromListChain'_cons (l : List α) (l_ne_nil : l ≠ [])
+    (hl : l.Chain' r) (x : α) (hx : r x (l.head l_ne_nil)) :
+    fromListChain' (x :: l) (by simp) (hl.cons_of_ne_nil l_ne_nil hx) =
+      (fromListChain' l l_ne_nil hl).cons x (by simpa) := by
+  apply toList_injective
+  simp
+
+lemma append_cons {p q : RelSeries r} {x : α} (hx : r x p.head) (hq : r p.last q.head) :
+    (p.cons x hx).append q (by simpa) = (p.append q hq).cons x (by simpa) := by
+  simp only [cons]
+  ext n
+  · simp
+    omega
+  · simp only [singleton, Nat.reduceAdd, append, Fin.append, cons, id_eq, eq_mpr_eq_cast,
+      Function.comp_apply, Fin.addCases, Fin.coe_cast, zero_add, Fin.coe_castLT, Nat.lt_one_iff,
+      Fin.cast_trans, Fin.subNat, Fin.natAdd_mk, eq_rec_constant, Int.reduceNeg,
+      Int.Nat.cast_ofNat_Int, Fin.cast_mk, Fin.castLT_mk, Fin.subNat_mk]
+    split_ifs <;> try rfl; <;> try omega
+    congr 2
+    omega
+
 /--
 Given a series `a₀ -r→ a₁ -r→ ... -r→ aₙ` and an `a` such that `aₙ -r→ a` holds, there is
 a series of length `n+1`: `a₀ -r→ a₁ -r→ ... -r→ aₙ -r→ a`.
@@ -499,6 +564,68 @@ def tail (p : RelSeries r) (len_pos : p.length ≠ 0) : RelSeries r where
   simp only [tail_length, Fin.val_succ, Fin.coe_cast, Fin.val_last]
   exact Nat.succ_pred_eq_of_pos (by simpa [Nat.pos_iff_ne_zero] using len_pos)
 
+@[simp]
+lemma tail_cons (p : RelSeries r) (x : α) (hx : r x p.head) :
+    (p.cons x hx).tail (by simp) = p := by
+  ext n
+  · simp
+  · simp [-append_singleton_left, Fin.tail, cons, append, Fin.append, Fin.addCases,
+      Fin.subNat, Fin.cast]
+
+lemma cons_self_tail {p : RelSeries r} (hp : p.length ≠ 0) :
+    (p.tail hp).cons p.head (p.3 ⟨0, Nat.zero_lt_of_ne_zero hp⟩) = p := by
+  ext n
+  · rw [cons_length, tail_length]
+    exact (Nat.succ_pred_eq_of_ne_zero hp)
+  unfold cons append Fin.append Fin.addCases
+  by_cases h : n.1 = 0
+  · have : n = 0 := Fin.eq_of_val_eq h
+    simp [this, apply_zero]
+  · simp only [singleton_length, Nat.reduceAdd, Nat.lt_one_iff,
+      tail_toFun, Function.comp_apply, Fin.tail, eq_rec_constant, Fin.coe_cast, dif_neg h]
+    congr
+    exact Fin.val_inj.mp (Nat.succ_pred_eq_of_ne_zero h)
+
+/--
+To show a proposition `p` for `xs : RelSeries r` it suffices to show it for all singletons
+and to show that when `p` holds for `xs` it also holds for `xs` prepended with one element.
+
+Note: This can also be used to construct data, but it does not have good definitional properties,
+since `(p.cons x hx).tail _ = p` is not a definitional equality.
+-/
+@[elab_as_elim]
+def inductionOn (motive : RelSeries r → Sort*)
+    (singleton : (x : α) → motive (RelSeries.singleton r x))
+    (cons : (p : RelSeries r) → (x : α) → (hx : r x p.head) → (hp : motive p) →
+      motive (p.cons x hx)) (p : RelSeries r) :
+    motive p := by
+  let this {n : ℕ} (heq : p.length = n) : motive p := by
+    induction' n with d hd generalizing p
+    · convert singleton p.head
+      ext n
+      exact heq
+      simp [show n = 0 by omega, apply_zero]
+    · have lq := p.tail_length (heq ▸ d.zero_ne_add_one.symm)
+      nth_rw 3 [heq] at lq
+      convert cons (p.tail (heq ▸ d.zero_ne_add_one.symm)) p.head
+        (p.3 ⟨0, heq ▸ d.zero_lt_succ⟩) (hd _ lq)
+      exact (p.cons_self_tail (heq ▸ d.zero_ne_add_one.symm)).symm
+  exact this rfl
+
+@[simp]
+lemma toList_tail (p : RelSeries r) (hp : p.length ≠ 0) :
+    (p.tail hp).toList = p.toList.tail := by
+  induction p using inductionOn
+  · simp at hp
+  · simp
+
+lemma append_toList (p q : RelSeries r) (rel : r p.last q.head) :
+    (p.append q rel).toList = p.toList ++ q.toList := by
+  induction p using RelSeries.inductionOn with
+  | singleton => simp
+  | cons p x hx hp =>
+    simp only [last_cons] at rel
+    simpa [toList_cons, List.cons_append, append_cons _ rel] using hp rel
 
 /--
 If a series ``a₀ -r→ a₁ -r→ ... -r→ aₙ``, then `a₀ -r→ a₁ -r→ ... -r→ aₙ₋₁` is
