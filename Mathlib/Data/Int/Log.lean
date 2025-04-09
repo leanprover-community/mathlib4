@@ -73,7 +73,7 @@ theorem log_natCast (b : ℕ) (n : ℕ) : log b (n : R) = Nat.log b n := by
     simp
 
 @[simp]
-theorem log_ofNat (b : ℕ) (n : ℕ) [n.AtLeastTwo] :
+theorem log_ofNat (b : ℕ) (n : ℕ) :
     log b (ofNat(n) : R) = Nat.log b ofNat(n) :=
   log_natCast b n
 
@@ -217,7 +217,7 @@ theorem clog_natCast (b : ℕ) (n : ℕ) : clog b (n : R) = Nat.clog b n := by
   · rw [clog_of_one_le_right, (Nat.ceil_eq_iff (Nat.succ_ne_zero n)).mpr] <;> simp
 
 @[simp]
-theorem clog_ofNat (b : ℕ) (n : ℕ) [n.AtLeastTwo] :
+theorem clog_ofNat (b : ℕ) (n : ℕ) :
     clog b (ofNat(n) : R) = Nat.clog b ofNat(n) :=
   clog_natCast b n
 

@@ -331,12 +331,12 @@ theorem natCast_kronecker [NonAssocSemiring α] [DecidableEq l] (a : ℕ) (B : M
     ext
     simp [(Nat.cast_commute a _).eq]
 
-theorem kronecker_ofNat [NonAssocSemiring α] [DecidableEq n] (A : Matrix l m α) (b : ℕ)
-    [b.AtLeastTwo] : A ⊗ₖ (ofNat(b) : Matrix n n α) =
+theorem kronecker_ofNat [NonAssocSemiring α] [DecidableEq n] (A : Matrix l m α) (b : ℕ) :
+    A ⊗ₖ (ofNat(b) : Matrix n n α) =
       blockDiagonal fun _ => A <• (ofNat(b) : α) :=
   kronecker_diagonal _ _
 
-theorem ofNat_kronecker [NonAssocSemiring α] [DecidableEq l] (a : ℕ) [a.AtLeastTwo]
+theorem ofNat_kronecker [NonAssocSemiring α] [DecidableEq l] (a : ℕ)
     (B : Matrix m n α) : (ofNat(a) : Matrix l l α) ⊗ₖ B =
       Matrix.reindex (.prodComm _ _) (.prodComm _ _)
         (blockDiagonal fun _ => (ofNat(a) : α) • B) :=

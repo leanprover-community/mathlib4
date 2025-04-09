@@ -34,7 +34,7 @@ theorem toDual_natCast [NatCast α] (n : ℕ) : toDual (n : α) = n :=
   rfl
 
 @[simp]
-theorem toDual_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
+theorem toDual_ofNat [NatCast α] (n : ℕ) :
     (toDual (ofNat(n) : α)) = ofNat(n) :=
   rfl
 
@@ -43,7 +43,7 @@ theorem ofDual_natCast [NatCast α] (n : ℕ) : (ofDual n : α) = n :=
   rfl
 
 @[simp]
-theorem ofDual_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
+theorem ofDual_ofNat [NatCast α] (n : ℕ) :
     (ofDual (ofNat(n) : αᵒᵈ)) = ofNat(n) :=
   rfl
 
@@ -64,7 +64,7 @@ theorem toLex_natCast [NatCast α] (n : ℕ) : toLex (n : α) = n :=
   rfl
 
 @[simp]
-theorem toLex_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
+theorem toLex_ofNat [NatCast α] (n : ℕ) :
     toLex (ofNat(n) : α) = OfNat.ofNat n :=
   rfl
 
@@ -73,6 +73,6 @@ theorem ofLex_natCast [NatCast α] (n : ℕ) : (ofLex n : α) = n :=
   rfl
 
 @[simp]
-theorem ofLex_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
+theorem ofLex_ofNat [NatCast α] (n : ℕ) :
     ofLex (ofNat(n) : Lex α) = OfNat.ofNat n :=
   rfl

@@ -34,7 +34,7 @@ instance instAddMonoidWithOne (M) [AddCommMonoid M] : AddMonoidWithOne (AddMonoi
 @[simp]
 lemma natCast_apply [AddCommMonoid M] (n : ℕ) (m : M) : (↑n : AddMonoid.End M) m = n • m := rfl
 
-@[simp] lemma ofNat_apply [AddCommMonoid M] (n : ℕ) [n.AtLeastTwo] (m : M) :
+@[simp] lemma ofNat_apply [AddCommMonoid M] (n : ℕ) (m : M) :
     (ofNat(n) : AddMonoid.End M) m = n • m := rfl
 
 instance instSemiring [AddCommMonoid M] : Semiring (AddMonoid.End M) :=

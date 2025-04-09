@@ -124,7 +124,7 @@ theorem toDirectSum_natCast [DecidableEq ι] [AddMonoid ι] [Semiring M] (n : �
   Finsupp.toDFinsupp_single _ _
 
 @[simp]
-theorem toDirectSum_ofNat [DecidableEq ι] [AddMonoid ι] [Semiring M] (n : ℕ) [n.AtLeastTwo] :
+theorem toDirectSum_ofNat [DecidableEq ι] [AddMonoid ι] [Semiring M] (n : ℕ) :
     (ofNat(n) : AddMonoidAlgebra M ι).toDirectSum = ofNat(n) :=
   Finsupp.toDFinsupp_single _ _
 
@@ -183,8 +183,7 @@ theorem toAddMonoidAlgebra_natCast [AddMonoid ι] [Semiring M] [∀ m : M, Decid
   DFinsupp.toFinsupp_single _ _
 
 @[simp]
-theorem toAddMonoidAlgebra_ofNat [AddMonoid ι] [Semiring M] [∀ m : M, Decidable (m ≠ 0)] (n : ℕ)
-    [n.AtLeastTwo] :
+theorem toAddMonoidAlgebra_ofNat [AddMonoid ι] [Semiring M] [∀ m : M, Decidable (m ≠ 0)] (n : ℕ) :
     (ofNat(n) : ⨁ _ : ι, M).toAddMonoidAlgebra = ofNat(n) :=
   DFinsupp.toFinsupp_single _ _
 

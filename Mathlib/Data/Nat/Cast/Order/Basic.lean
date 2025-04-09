@@ -43,7 +43,7 @@ theorem cast_nonneg' (n : ℕ) : 0 ≤ (n : α) :=
 
 /-- See also `Nat.ofNat_nonneg`, specialised for an `OrderedSemiring`. -/
 @[simp low]
-theorem ofNat_nonneg' (n : ℕ) [n.AtLeastTwo] : 0 ≤ (ofNat(n) : α) := cast_nonneg' n
+theorem ofNat_nonneg' (n : ℕ) : 0 ≤ (ofNat(n) : α) := cast_nonneg' n
 
 section Nontrivial
 

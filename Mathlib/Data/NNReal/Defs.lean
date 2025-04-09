@@ -267,7 +267,7 @@ protected theorem coe_natCast (n : ℕ) : (↑(↑n : ℝ≥0) : ℝ) = n :=
   map_natCast toRealHom n
 
 @[simp, norm_cast]
-protected theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] : ((ofNat(n) : ℝ≥0) : ℝ) = ofNat(n) :=
+protected theorem coe_ofNat (n : ℕ) : ((ofNat(n) : ℝ≥0) : ℝ) = ofNat(n) :=
   rfl
 
 @[simp, norm_cast]
@@ -319,7 +319,7 @@ theorem _root_.Real.toNNReal_coe_nat (n : ℕ) : Real.toNNReal n = n :=
 alias toNNReal_coe_nat := Real.toNNReal_coe_nat
 
 @[simp]
-theorem _root_.Real.toNNReal_ofNat (n : ℕ) [n.AtLeastTwo] :
+theorem _root_.Real.toNNReal_ofNat (n : ℕ) :
     Real.toNNReal ofNat(n) = OfNat.ofNat n :=
   Real.toNNReal_coe_nat n
 
@@ -524,7 +524,7 @@ lemma toNNReal_eq_natCast {r : ℝ} {n : ℕ} (hn : n ≠ 0) : r.toNNReal = n �
   mod_cast toNNReal_eq_iff_eq_coe <| Nat.cast_ne_zero.2 hn
 
 @[simp]
-lemma toNNReal_eq_ofNat {r : ℝ} {n : ℕ} [n.AtLeastTwo] :
+lemma toNNReal_eq_ofNat {r : ℝ} {n : ℕ} [NeZero n]:
     r.toNNReal = ofNat(n) ↔ r = OfNat.ofNat n :=
   toNNReal_eq_natCast (NeZero.ne n)
 
@@ -549,12 +549,12 @@ lemma natCast_lt_toNNReal {r : ℝ} {n : ℕ} : n < r.toNNReal ↔ n < r := by
   simpa only [not_le] using toNNReal_le_natCast.not
 
 @[simp]
-lemma toNNReal_le_ofNat {r : ℝ} {n : ℕ} [n.AtLeastTwo] :
+lemma toNNReal_le_ofNat {r : ℝ} {n : ℕ} :
     r.toNNReal ≤ ofNat(n) ↔ r ≤ n :=
   toNNReal_le_natCast
 
 @[simp]
-lemma ofNat_lt_toNNReal {r : ℝ} {n : ℕ} [n.AtLeastTwo] :
+lemma ofNat_lt_toNNReal {r : ℝ} {n : ℕ} :
     ofNat(n) < r.toNNReal ↔ n < r :=
   natCast_lt_toNNReal
 
@@ -603,12 +603,12 @@ lemma natCast_le_toNNReal {n : ℕ} {r : ℝ} (hn : n ≠ 0) : ↑n ≤ r.toNNRe
 lemma toNNReal_lt_natCast {r : ℝ} {n : ℕ} (hn : n ≠ 0) : r.toNNReal < n ↔ r < n := by simp [hn]
 
 @[simp]
-lemma toNNReal_lt_ofNat {r : ℝ} {n : ℕ} [n.AtLeastTwo] :
+lemma toNNReal_lt_ofNat {r : ℝ} {n : ℕ} [NeZero n] :
     r.toNNReal < ofNat(n) ↔ r < OfNat.ofNat n :=
   toNNReal_lt_natCast (NeZero.ne n)
 
 @[simp]
-lemma ofNat_le_toNNReal {n : ℕ} {r : ℝ} [n.AtLeastTwo] :
+lemma ofNat_le_toNNReal {n : ℕ} {r : ℝ} [NeZero n] :
     ofNat(n) ≤ r.toNNReal ↔ OfNat.ofNat n ≤ r :=
   natCast_le_toNNReal (NeZero.ne n)
 

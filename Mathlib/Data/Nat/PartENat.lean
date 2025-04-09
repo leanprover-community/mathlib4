@@ -115,7 +115,7 @@ theorem dom_natCast (x : ℕ) : (x : PartENat).Dom :=
   trivial
 
 @[simp]
-theorem dom_ofNat (x : ℕ) [x.AtLeastTwo] : (ofNat(x) : PartENat).Dom :=
+theorem dom_ofNat (x : ℕ) : (ofNat(x) : PartENat).Dom :=
   trivial
 
 @[simp]
@@ -189,7 +189,7 @@ theorem get_one (h : (1 : PartENat).Dom) : (1 : PartENat).get h = 1 :=
   rfl
 
 @[simp]
-theorem get_ofNat' (x : ℕ) [x.AtLeastTwo] (h : (ofNat(x) : PartENat).Dom) :
+theorem get_ofNat' (x : ℕ) (h : (ofNat(x) : PartENat).Dom) :
     Part.get (ofNat(x) : PartENat) h = ofNat(x) :=
   get_natCast' x h
 
@@ -324,7 +324,7 @@ theorem one_lt_top : (1 : PartENat) < ⊤ :=
   natCast_lt_top 1
 
 @[simp]
-theorem ofNat_lt_top (x : ℕ) [x.AtLeastTwo] : (ofNat(x) : PartENat) < ⊤ :=
+theorem ofNat_lt_top (x : ℕ) : (ofNat(x) : PartENat) < ⊤ :=
   natCast_lt_top x
 
 @[simp]
@@ -340,7 +340,7 @@ theorem one_ne_top : (1 : PartENat) ≠ ⊤ :=
   natCast_ne_top 1
 
 @[simp]
-theorem ofNat_ne_top (x : ℕ) [x.AtLeastTwo] : (ofNat(x) : PartENat) ≠ ⊤ :=
+theorem ofNat_ne_top (x : ℕ) : (ofNat(x) : PartENat) ≠ ⊤ :=
   natCast_ne_top x
 
 theorem not_isMax_natCast (x : ℕ) : ¬IsMax (x : PartENat) :=
@@ -537,7 +537,7 @@ theorem toWithTop_natCast' (n : ℕ) {_ : Decidable (n : PartENat).Dom} :
   rw [toWithTop_natCast n]
 
 @[simp]
-theorem toWithTop_ofNat (n : ℕ) [n.AtLeastTwo] {_ : Decidable (OfNat.ofNat n : PartENat).Dom} :
+theorem toWithTop_ofNat (n : ℕ) {_ : Decidable (OfNat.ofNat n : PartENat).Dom} :
     toWithTop (ofNat(n) : PartENat) = OfNat.ofNat n := toWithTop_natCast' n
 
 @[simp]
@@ -580,7 +580,7 @@ theorem ofENat_zero : ofENat 0 = 0 := rfl
 theorem ofENat_one : ofENat 1 = 1 := rfl
 
 @[simp, norm_cast]
-theorem ofENat_ofNat (n : Nat) [n.AtLeastTwo] : ofENat ofNat(n) = OfNat.ofNat n :=
+theorem ofENat_ofNat (n : Nat) : ofENat ofNat(n) = OfNat.ofNat n :=
   rfl
 
 @[simp, norm_cast]
@@ -633,7 +633,7 @@ theorem withTopEquiv_zero : withTopEquiv 0 = 0 := by
 theorem withTopEquiv_one : withTopEquiv 1 = 1 := by
   simp
 
-theorem withTopEquiv_ofNat (n : Nat) [n.AtLeastTwo] :
+theorem withTopEquiv_ofNat (n : Nat) :
     withTopEquiv ofNat(n) = OfNat.ofNat n := by
   simp
 
@@ -655,7 +655,7 @@ theorem withTopEquiv_symm_zero : withTopEquiv.symm 0 = 0 := by
 theorem withTopEquiv_symm_one : withTopEquiv.symm 1 = 1 := by
   simp
 
-theorem withTopEquiv_symm_ofNat (n : Nat) [n.AtLeastTwo] :
+theorem withTopEquiv_symm_ofNat (n : Nat) :
     withTopEquiv.symm ofNat(n) = OfNat.ofNat n := by
   simp
 

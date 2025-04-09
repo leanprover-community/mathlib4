@@ -388,7 +388,7 @@ lemma coe_ne_one : (r : ℝ≥0∞) ≠ 1 ↔ r ≠ 1 := coe_eq_one.not
 @[simp, norm_cast] lemma coe_pow (x : ℝ≥0) (n : ℕ) : (↑(x ^ n) : ℝ≥0∞) = x ^ n := rfl
 
 @[simp, norm_cast]
-theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] : ((ofNat(n) : ℝ≥0) : ℝ≥0∞) = ofNat(n) := rfl
+theorem coe_ofNat (n : ℕ) : ((ofNat(n) : ℝ≥0) : ℝ≥0∞) = ofNat(n) := rfl
 
 -- TODO: add lemmas about `OfNat.ofNat` and `<`/`≤`
 
@@ -487,7 +487,7 @@ theorem coe_natCast (n : ℕ) : ((n : ℝ≥0) : ℝ≥0∞) = n := rfl
 
 @[simp, norm_cast] lemma ofReal_natCast (n : ℕ) : ENNReal.ofReal n = n := by simp [ENNReal.ofReal]
 
-@[simp] theorem ofReal_ofNat (n : ℕ) [n.AtLeastTwo] : ENNReal.ofReal ofNat(n) = ofNat(n) :=
+@[simp] theorem ofReal_ofNat (n : ℕ) : ENNReal.ofReal ofNat(n) = ofNat(n) :=
   ofReal_natCast n
 
 @[simp, aesop (rule_sets := [finiteness]) safe apply]
@@ -496,14 +496,14 @@ theorem natCast_ne_top (n : ℕ) : (n : ℝ≥0∞) ≠ ∞ := WithTop.natCast_n
 @[simp] theorem natCast_lt_top (n : ℕ) : (n : ℝ≥0∞) < ∞ := WithTop.natCast_lt_top n
 
 @[simp, aesop (rule_sets := [finiteness]) safe apply]
-lemma ofNat_ne_top {n : ℕ} [Nat.AtLeastTwo n] : ofNat(n) ≠ ∞ := natCast_ne_top n
+lemma ofNat_ne_top {n : ℕ} : ofNat(n) ≠ ∞ := natCast_ne_top n
 
 @[simp]
-lemma ofNat_lt_top {n : ℕ} [Nat.AtLeastTwo n] : ofNat(n) < ∞ := natCast_lt_top n
+lemma ofNat_lt_top {n : ℕ} : ofNat(n) < ∞ := natCast_lt_top n
 
 @[simp] theorem top_ne_natCast (n : ℕ) : ∞ ≠ n := WithTop.top_ne_natCast n
 
-@[simp] theorem top_ne_ofNat {n : ℕ} [n.AtLeastTwo] : ∞ ≠ ofNat(n) :=
+@[simp] theorem top_ne_ofNat {n : ℕ} : ∞ ≠ ofNat(n) :=
   ofNat_ne_top.symm
 
 @[deprecated ofNat_ne_top (since := "2025-01-21")] lemma two_ne_top : (2 : ℝ≥0∞) ≠ ∞ := coe_ne_top
@@ -517,7 +517,7 @@ theorem toNNReal_natCast (n : ℕ) : (n : ℝ≥0∞).toNNReal = n := by
 
 @[deprecated (since := "2025-02-19")] alias toNNReal_nat := toNNReal_natCast
 
-theorem toNNReal_ofNat (n : ℕ) [n.AtLeastTwo] : ENNReal.toNNReal ofNat(n) = ofNat(n) :=
+theorem toNNReal_ofNat (n : ℕ) : ENNReal.toNNReal ofNat(n) = ofNat(n) :=
   toNNReal_natCast n
 
 @[simp, norm_cast]
@@ -526,7 +526,7 @@ theorem toReal_natCast (n : ℕ) : (n : ℝ≥0∞).toReal = n := by
 
 @[deprecated (since := "2025-02-19")] alias toReal_nat := toReal_natCast
 
-@[simp] theorem toReal_ofNat (n : ℕ) [n.AtLeastTwo] : ENNReal.toReal ofNat(n) = ofNat(n) :=
+@[simp] theorem toReal_ofNat (n : ℕ) : ENNReal.toReal ofNat(n) = ofNat(n) :=
   toReal_natCast n
 
 lemma toNNReal_natCast_eq_toNNReal (n : ℕ) :

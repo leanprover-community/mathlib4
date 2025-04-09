@@ -353,7 +353,7 @@ theorem FiniteMultiplicity.multiplicity_eq_iff (hf : FiniteMultiplicity a b) {n 
     multiplicity a b = n ↔ a ^ n ∣ b ∧ ¬a ^ (n + 1) ∣ b := by
   simp [← emultiplicity_eq_coe, hf.emultiplicity_eq_multiplicity]
 
-theorem emultiplicity_eq_ofNat {a b n : ℕ} [n.AtLeastTwo] :
+theorem emultiplicity_eq_ofNat {a b n : ℕ} :
     emultiplicity a b = (ofNat(n) : ℕ∞) ↔ a ^ ofNat(n) ∣ b ∧ ¬a ^ (ofNat(n) + 1) ∣ b :=
   emultiplicity_eq_coe
 

@@ -73,7 +73,7 @@ example : Int.instUnitsPow = DivInvMonoid.toZPow := rfl
   change ((n : R) • Additive.ofMul u).toMul = _
   rw [Nat.cast_smul_eq_nsmul, toMul_nsmul, toMul_ofMul]
 
-lemma uzpow_coe_nat (s : ℤˣ) (n : ℕ) [n.AtLeastTwo] :
+lemma uzpow_coe_nat (s : ℤˣ) (n : ℕ) :
     s ^ (ofNat(n) : R) = s ^ (ofNat(n) : ℕ) :=
   uzpow_natCast _ _
 

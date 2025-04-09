@@ -73,7 +73,7 @@ theorem floor_zero : ⌊(0 : α)⌋ = 0 := by rw [← cast_zero, floor_intCast]
 @[simp]
 theorem floor_one : ⌊(1 : α)⌋ = 1 := by rw [← cast_one, floor_intCast]
 
-@[simp] theorem floor_ofNat (n : ℕ) [n.AtLeastTwo] : ⌊(ofNat(n) : α)⌋ = ofNat(n) :=
+@[simp] theorem floor_ofNat (n : ℕ) : ⌊(ofNat(n) : α)⌋ = ofNat(n) :=
   floor_natCast n
 
 @[mono]
@@ -121,7 +121,7 @@ theorem floor_add_natCast (a : α) (n : ℕ) : ⌊a + n⌋ = ⌊a⌋ + n := by
 @[deprecated (since := "2025-04-01")] alias floor_add_nat := floor_add_natCast
 
 @[simp]
-theorem floor_add_ofNat (a : α) (n : ℕ) [n.AtLeastTwo] :
+theorem floor_add_ofNat (a : α) (n : ℕ) :
     ⌊a + ofNat(n)⌋ = ⌊a⌋ + ofNat(n) :=
   floor_add_natCast a n
 
@@ -132,7 +132,7 @@ theorem floor_natCast_add (n : ℕ) (a : α) : ⌊↑n + a⌋ = n + ⌊a⌋ := b
 @[deprecated (since := "2025-04-01")] alias floor_nat_add := floor_natCast_add
 
 @[simp]
-theorem floor_ofNat_add (n : ℕ) [n.AtLeastTwo] (a : α) :
+theorem floor_ofNat_add (n : ℕ) (a : α) :
     ⌊ofNat(n) + a⌋ = ofNat(n) + ⌊a⌋ :=
   floor_natCast_add n a
 
@@ -151,7 +151,7 @@ theorem floor_sub_natCast (a : α) (n : ℕ) : ⌊a - n⌋ = ⌊a⌋ - n := by
 @[simp] theorem floor_sub_one (a : α) : ⌊a - 1⌋ = ⌊a⌋ - 1 := mod_cast floor_sub_natCast a 1
 
 @[simp]
-theorem floor_sub_ofNat (a : α) (n : ℕ) [n.AtLeastTwo] :
+theorem floor_sub_ofNat (a : α) (n : ℕ) :
     ⌊a - ofNat(n)⌋ = ⌊a⌋ - ofNat(n) :=
   floor_sub_natCast a n
 
@@ -215,7 +215,7 @@ theorem fract_add_natCast (a : α) (m : ℕ) : fract (a + m) = fract a := by
 theorem fract_add_one (a : α) : fract (a + 1) = fract a := mod_cast fract_add_natCast a 1
 
 @[simp]
-theorem fract_add_ofNat (a : α) (n : ℕ) [n.AtLeastTwo] :
+theorem fract_add_ofNat (a : α) (n : ℕ) :
     fract (a + ofNat(n)) = fract a :=
   fract_add_natCast a n
 
@@ -233,7 +233,7 @@ theorem fract_natCast_add (n : ℕ) (a : α) : fract (↑n + a) = fract a := by
 theorem fract_one_add (a : α) : fract (1 + a) = fract a := mod_cast fract_natCast_add 1 a
 
 @[simp]
-theorem fract_ofNat_add (n : ℕ) [n.AtLeastTwo] (a : α) :
+theorem fract_ofNat_add (n : ℕ) (a : α) :
     fract (ofNat(n) + a) = fract a :=
   fract_natCast_add n a
 
@@ -253,7 +253,7 @@ theorem fract_sub_natCast (a : α) (n : ℕ) : fract (a - n) = fract a := by
 theorem fract_sub_one (a : α) : fract (a - 1) = fract a := mod_cast fract_sub_natCast a 1
 
 @[simp]
-theorem fract_sub_ofNat (a : α) (n : ℕ) [n.AtLeastTwo] :
+theorem fract_sub_ofNat (a : α) (n : ℕ) :
     fract (a - ofNat(n)) = fract a :=
   fract_sub_natCast a n
 
@@ -309,7 +309,7 @@ theorem fract_intCast (z : ℤ) : fract (z : α) = 0 := by
 theorem fract_natCast (n : ℕ) : fract (n : α) = 0 := by simp [fract]
 
 @[simp]
-theorem fract_ofNat (n : ℕ) [n.AtLeastTwo] :
+theorem fract_ofNat (n : ℕ) :
     fract (ofNat(n) : α) = 0 :=
   fract_natCast n
 
@@ -497,7 +497,7 @@ theorem ceil_natCast (n : ℕ) : ⌈(n : α)⌉ = n :=
   eq_of_forall_ge_iff fun a => by rw [ceil_le, ← cast_natCast, cast_le]
 
 @[simp]
-theorem ceil_ofNat (n : ℕ) [n.AtLeastTwo] : ⌈(ofNat(n) : α)⌉ = ofNat(n) := ceil_natCast n
+theorem ceil_ofNat (n : ℕ) : ⌈(ofNat(n) : α)⌉ = ofNat(n) := ceil_natCast n
 
 theorem ceil_mono : Monotone (ceil : α → ℤ) :=
   gc_ceil_coe.monotone_l
@@ -521,7 +521,7 @@ theorem ceil_add_one (a : α) : ⌈a + 1⌉ = ⌈a⌉ + 1 := by
   rw [← ceil_add_intCast a (1 : ℤ), cast_one]
 
 @[simp]
-theorem ceil_add_ofNat (a : α) (n : ℕ) [n.AtLeastTwo] :
+theorem ceil_add_ofNat (a : α) (n : ℕ) :
     ⌈a + ofNat(n)⌉ = ⌈a⌉ + ofNat(n) :=
   ceil_add_natCast a n
 
@@ -543,7 +543,7 @@ theorem ceil_sub_one (a : α) : ⌈a - 1⌉ = ⌈a⌉ - 1 := by
   rw [eq_sub_iff_add_eq, ← ceil_add_one, sub_add_cancel]
 
 @[simp]
-theorem ceil_sub_ofNat (a : α) (n : ℕ) [n.AtLeastTwo] :
+theorem ceil_sub_ofNat (a : α) (n : ℕ) :
     ⌈a - ofNat(n)⌉ = ⌈a⌉ - ofNat(n) :=
   ceil_sub_natCast a n
 

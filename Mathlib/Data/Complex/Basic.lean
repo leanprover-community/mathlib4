@@ -409,15 +409,15 @@ end
 instance instNNRatCast : NNRatCast ℂ where nnratCast q := ofReal q
 instance instRatCast : RatCast ℂ where ratCast q := ofReal q
 
-@[simp, norm_cast] lemma ofReal_ofNat (n : ℕ) [n.AtLeastTwo] : ofReal ofNat(n) = ofNat(n) := rfl
+@[simp, norm_cast] lemma ofReal_ofNat (n : ℕ) : ofReal ofNat(n) = ofNat(n) := rfl
 @[simp, norm_cast] lemma ofReal_natCast (n : ℕ) : ofReal n = n := rfl
 @[simp, norm_cast] lemma ofReal_intCast (n : ℤ) : ofReal n = n := rfl
 @[simp, norm_cast] lemma ofReal_nnratCast (q : ℚ≥0) : ofReal q = q := rfl
 @[simp, norm_cast] lemma ofReal_ratCast (q : ℚ) : ofReal q = q := rfl
 
 @[simp]
-lemma re_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℂ).re = ofNat(n) := rfl
-@[simp] lemma im_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℂ).im = 0 := rfl
+lemma re_ofNat (n : ℕ) : (ofNat(n) : ℂ).re = ofNat(n) := rfl
+@[simp] lemma im_ofNat (n : ℕ) : (ofNat(n) : ℂ).im = 0 := rfl
 @[simp, norm_cast] lemma natCast_re (n : ℕ) : (n : ℂ).re = n := rfl
 @[simp, norm_cast] lemma natCast_im (n : ℕ) : (n : ℂ).im = 0 := rfl
 @[simp, norm_cast] lemma intCast_re (n : ℤ) : (n : ℂ).re = n := rfl
@@ -469,7 +469,7 @@ theorem conj_I : conj I = -I :=
 
 theorem conj_natCast (n : ℕ) : conj (n : ℂ) = n := map_natCast _ _
 
-theorem conj_ofNat (n : ℕ) [n.AtLeastTwo] : conj (ofNat(n) : ℂ) = ofNat(n) :=
+theorem conj_ofNat (n : ℕ) : conj (ofNat(n) : ℂ) = ofNat(n) :=
   map_ofNat _ _
 
 theorem conj_neg_I : conj (-I) = I := by simp
@@ -519,7 +519,7 @@ theorem normSq_intCast (z : ℤ) : normSq z = z * z := normSq_ofReal _
 theorem normSq_ratCast (q : ℚ) : normSq q = q * q := normSq_ofReal _
 
 @[simp]
-theorem normSq_ofNat (n : ℕ) [n.AtLeastTwo] :
+theorem normSq_ofNat (n : ℕ) :
     normSq (ofNat(n) : ℂ) = ofNat(n) * ofNat(n) :=
   normSq_natCast _
 
@@ -732,7 +732,7 @@ lemma div_intCast (z : ℂ) (n : ℤ) : z / n = ⟨z.re / n, z.im / n⟩ :=
 lemma div_ratCast (z : ℂ) (x : ℚ) : z / x = ⟨z.re / x, z.im / x⟩ :=
   mod_cast div_ofReal z x
 
-lemma div_ofNat (z : ℂ) (n : ℕ) [n.AtLeastTwo] :
+lemma div_ofNat (z : ℂ) (n : ℕ) :
     z / ofNat(n) = ⟨z.re / ofNat(n), z.im / ofNat(n)⟩ :=
   div_natCast z n
 
@@ -746,11 +746,11 @@ lemma div_ofNat (z : ℂ) (n : ℕ) [n.AtLeastTwo] :
 @[simp] lemma div_ratCast_im (z : ℂ) (x : ℚ) : (z / x).im = z.im / x := by rw [div_ratCast]
 
 @[simp]
-lemma div_ofNat_re (z : ℂ) (n : ℕ) [n.AtLeastTwo] :
+lemma div_ofNat_re (z : ℂ) (n : ℕ) :
     (z / ofNat(n)).re = z.re / ofNat(n) := div_natCast_re z n
 
 @[simp]
-lemma div_ofNat_im (z : ℂ) (n : ℕ) [n.AtLeastTwo] :
+lemma div_ofNat_im (z : ℂ) (n : ℕ) :
     (z / ofNat(n)).im = z.im / ofNat(n) := div_natCast_im z n
 
 /-! ### Characteristic zero -/

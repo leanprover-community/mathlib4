@@ -166,10 +166,10 @@ theorem coeff_mul_C (p : R[X]) (n : ℕ) (a : R) : coeff (p * C a) n = coeff p n
 @[simp] lemma coeff_natCast_mul {a k : ℕ} :
   coeff ((a : R[X]) * p) k = a * coeff p k := coeff_C_mul _
 
-@[simp] lemma coeff_mul_ofNat {a k : ℕ} [Nat.AtLeastTwo a] :
+@[simp] lemma coeff_mul_ofNat {a k : ℕ} :
   coeff (p * (ofNat(a) : R[X])) k = coeff p k * ofNat(a) := coeff_mul_C _ _ _
 
-@[simp] lemma coeff_ofNat_mul {a k : ℕ} [Nat.AtLeastTwo a] :
+@[simp] lemma coeff_ofNat_mul {a k : ℕ} :
   coeff ((ofNat(a) : R[X]) * p) k = ofNat(a) * coeff p k := coeff_C_mul _
 
 @[simp] lemma coeff_mul_intCast [Ring S] {p : S[X]} {a : ℤ} {k : ℕ} :

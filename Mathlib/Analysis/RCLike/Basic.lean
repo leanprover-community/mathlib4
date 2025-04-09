@@ -297,7 +297,7 @@ theorem conj_ofReal (r : ℝ) : conj (r : K) = (r : K) := by
 
 theorem conj_nat_cast (n : ℕ) : conj (n : K) = n := map_natCast _ _
 
-theorem conj_ofNat (n : ℕ) [n.AtLeastTwo] : conj (ofNat(n) : K) = ofNat(n) :=
+theorem conj_ofNat (n : ℕ) : conj (ofNat(n) : K) = ofNat(n) :=
   map_ofNat _ _
 
 @[rclike_simps, simp]
@@ -541,21 +541,21 @@ theorem natCast_re (n : ℕ) : re (n : K) = n := by rw [← ofReal_natCast, ofRe
 @[simp, rclike_simps, norm_cast]
 theorem natCast_im (n : ℕ) : im (n : K) = 0 := by rw [← ofReal_natCast, ofReal_im]
 @[simp, rclike_simps]
-theorem ofNat_re (n : ℕ) [n.AtLeastTwo] : re (ofNat(n) : K) = ofNat(n) :=
+theorem ofNat_re (n : ℕ) : re (ofNat(n) : K) = ofNat(n) :=
   natCast_re n
 @[simp, rclike_simps]
-theorem ofNat_im (n : ℕ) [n.AtLeastTwo] : im (ofNat(n) : K) = 0 :=
+theorem ofNat_im (n : ℕ) : im (ofNat(n) : K) = 0 :=
   natCast_im n
 
 @[rclike_simps, norm_cast]
-theorem ofReal_ofNat (n : ℕ) [n.AtLeastTwo] : ((ofNat(n) : ℝ) : K) = ofNat(n) :=
+theorem ofReal_ofNat (n : ℕ) : ((ofNat(n) : ℝ) : K) = ofNat(n) :=
   ofReal_natCast n
 
-theorem ofNat_mul_re (n : ℕ) [n.AtLeastTwo] (z : K) :
+theorem ofNat_mul_re (n : ℕ) (z : K) :
     re (ofNat(n) * z) = ofNat(n) * re z := by
   rw [← ofReal_ofNat, re_ofReal_mul]
 
-theorem ofNat_mul_im (n : ℕ) [n.AtLeastTwo] (z : K) :
+theorem ofNat_mul_im (n : ℕ) (z : K) :
     im (ofNat(n) * z) = ofNat(n) * im z := by
   rw [← ofReal_ofNat, im_ofReal_mul]
 
@@ -592,11 +592,11 @@ theorem norm_natCast (n : ℕ) : ‖(n : K)‖ = n := by
 @[simp, rclike_simps, norm_cast] lemma nnnorm_natCast (n : ℕ) : ‖(n : K)‖₊ = n := by simp [nnnorm]
 
 @[simp, rclike_simps]
-theorem norm_ofNat (n : ℕ) [n.AtLeastTwo] : ‖(ofNat(n) : K)‖ = ofNat(n) :=
+theorem norm_ofNat (n : ℕ) : ‖(ofNat(n) : K)‖ = ofNat(n) :=
   norm_natCast n
 
 @[simp, rclike_simps]
-lemma nnnorm_ofNat (n : ℕ) [n.AtLeastTwo] : ‖(ofNat(n) : K)‖₊ = ofNat(n) :=
+lemma nnnorm_ofNat (n : ℕ) : ‖(ofNat(n) : K)‖₊ = ofNat(n) :=
   nnnorm_natCast n
 
 lemma norm_two : ‖(2 : K)‖ = 2 := norm_ofNat 2

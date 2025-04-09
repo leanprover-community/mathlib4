@@ -57,7 +57,7 @@ lemma congr {q : ℕ} (h : p = q) : CharP R q := h ▸ ‹CharP R p›
 -- is too expensive. If https://github.com/leanprover/lean4/issues/2867 is fixed in a performant way, this can be made `@[simp]`.
 --
 -- @[simp]
-lemma ofNat_eq_zero [p.AtLeastTwo] : (ofNat(p) : R) = 0 := cast_eq_zero R p
+lemma ofNat_eq_zero : (ofNat(p) : R) = 0 := cast_eq_zero R p
 
 lemma eq {p q : ℕ} (_hp : CharP R p) (_hq : CharP R q) : p = q :=
   Nat.dvd_antisymm ((cast_eq_zero_iff R p q).1 (cast_eq_zero _ _))

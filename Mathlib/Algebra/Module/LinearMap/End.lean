@@ -86,7 +86,7 @@ instance _root_.Module.End.semiring : Semiring (Module.End R M) :=
 theorem _root_.Module.End.natCast_apply (n : ℕ) (m : M) : (↑n : Module.End R M) m = n • m := rfl
 
 @[simp]
-theorem _root_.Module.End.ofNat_apply (n : ℕ) [n.AtLeastTwo] (m : M) :
+theorem _root_.Module.End.ofNat_apply (n : ℕ) (m : M) :
     (ofNat(n) : Module.End R M) m = ofNat(n) • m := rfl
 
 instance _root_.Module.End.ring : Ring (Module.End R N₁) :=

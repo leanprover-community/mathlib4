@@ -426,19 +426,19 @@ theorem intCast_re (z : ℤ) : (z : ℍ[R,c₁,c₂,c₃]).re = z :=
   rfl
 
 @[scoped simp]
-theorem ofNat_re (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℍ[R,c₁,c₂,c₃]).re = ofNat(n) := rfl
+theorem ofNat_re (n : ℕ) : (ofNat(n) : ℍ[R,c₁,c₂,c₃]).re = ofNat(n) := rfl
 
 @[scoped simp]
-theorem ofNat_imI (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℍ[R,c₁,c₂,c₃]).imI = 0 := rfl
+theorem ofNat_imI (n : ℕ) : (ofNat(n) : ℍ[R,c₁,c₂,c₃]).imI = 0 := rfl
 
 @[scoped simp]
-theorem ofNat_imJ (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℍ[R,c₁,c₂,c₃]).imJ = 0 := rfl
+theorem ofNat_imJ (n : ℕ) : (ofNat(n) : ℍ[R,c₁,c₂,c₃]).imJ = 0 := rfl
 
 @[scoped simp]
-theorem ofNat_imK (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℍ[R,c₁,c₂,c₃]).imK = 0 := rfl
+theorem ofNat_imK (n : ℕ) : (ofNat(n) : ℍ[R,c₁,c₂,c₃]).imK = 0 := rfl
 
 @[scoped simp]
-theorem ofNat_im (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℍ[R,c₁,c₂,c₃]).im = 0 := rfl
+theorem ofNat_im (n : ℕ) : (ofNat(n) : ℍ[R,c₁,c₂,c₃]).im = 0 := rfl
 
 @[simp, norm_cast]
 theorem intCast_imI (z : ℤ) : (z : ℍ[R,c₁,c₂,c₃]).imI = 0 :=
@@ -479,7 +479,7 @@ instance instRing : Ring ℍ[R,c₁,c₂,c₃] where
 theorem coe_mul : ((x * y : R) : ℍ[R,c₁,c₂,c₃]) = x * y := by ext <;> simp
 
 @[norm_cast, simp]
-lemma coe_ofNat {n : ℕ} [n.AtLeastTwo]:
+lemma coe_ofNat {n : ℕ} :
     ((ofNat(n) : R) : ℍ[R,c₁,c₂,c₃]) = (ofNat(n) : ℍ[R,c₁,c₂,c₃]) := by
   rfl
 

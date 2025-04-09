@@ -274,29 +274,29 @@ instance addMonoidWithOne : AddMonoidWithOne (WithTop α) :=
 @[simp] lemma natCast_ne_top (n : ℕ) : (n : WithTop α) ≠ ⊤ := coe_ne_top
 @[simp] lemma natCast_lt_top [LT α] (n : ℕ) : (n : WithTop α) < ⊤ := coe_lt_top _
 
-@[simp] lemma coe_ofNat (n : ℕ) [n.AtLeastTwo] :
+@[simp] lemma coe_ofNat (n : ℕ) :
     ((ofNat(n) : α) : WithTop α) = ofNat(n) := rfl
-@[simp] lemma coe_eq_ofNat (n : ℕ) [n.AtLeastTwo] (m : α) :
+@[simp] lemma coe_eq_ofNat (n : ℕ) (m : α) :
     (m : WithTop α) = ofNat(n) ↔ m = ofNat(n) :=
   coe_eq_coe
-@[simp] lemma ofNat_eq_coe (n : ℕ) [n.AtLeastTwo] (m : α) :
+@[simp] lemma ofNat_eq_coe (n : ℕ) (m : α) :
     ofNat(n) = (m : WithTop α) ↔ ofNat(n) = m :=
   coe_eq_coe
-@[simp] lemma ofNat_ne_top (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : WithTop α) ≠ ⊤ :=
+@[simp] lemma ofNat_ne_top (n : ℕ) : (ofNat(n) : WithTop α) ≠ ⊤ :=
   natCast_ne_top n
-@[simp] lemma top_ne_ofNat (n : ℕ) [n.AtLeastTwo] : (⊤ : WithTop α) ≠ ofNat(n) :=
+@[simp] lemma top_ne_ofNat (n : ℕ) : (⊤ : WithTop α) ≠ ofNat(n) :=
   top_ne_natCast n
 
-@[simp] lemma map_ofNat {f : α → β} (n : ℕ) [n.AtLeastTwo] :
+@[simp] lemma map_ofNat {f : α → β} (n : ℕ) :
     WithTop.map f (ofNat(n) : WithTop α) = f (ofNat(n)) := map_coe f n
 
 @[simp] lemma map_natCast {f : α → β} (n : ℕ) :
     WithTop.map f (n : WithTop α) = f n := map_coe f n
 
-lemma map_eq_ofNat_iff {f : β → α} {n : ℕ} [n.AtLeastTwo] {a : WithTop β} :
+lemma map_eq_ofNat_iff {f : β → α} {n : ℕ} {a : WithTop β} :
     a.map f = ofNat(n) ↔ ∃ x, a = .some x ∧ f x = n := map_eq_some_iff
 
-lemma ofNat_eq_map_iff {f : β → α} {n : ℕ} [n.AtLeastTwo] {a : WithTop β} :
+lemma ofNat_eq_map_iff {f : β → α} {n : ℕ} {a : WithTop β} :
     ofNat(n) = a.map f ↔ ∃ x, a = .some x ∧ f x = n := some_eq_map_iff
 
 lemma map_eq_natCast_iff {f : β → α} {n : ℕ} {a : WithTop β} :
@@ -606,29 +606,29 @@ instance addMonoidWithOne : AddMonoidWithOne (WithBot α) := WithTop.addMonoidWi
 
 @[simp] lemma bot_ne_natCast (n : ℕ) : (⊥ : WithBot α) ≠ n := bot_ne_coe
 
-@[simp] lemma coe_ofNat (n : ℕ) [n.AtLeastTwo] :
+@[simp] lemma coe_ofNat (n : ℕ) :
     ((ofNat(n) : α) : WithBot α) = ofNat(n) := rfl
-@[simp] lemma coe_eq_ofNat (n : ℕ) [n.AtLeastTwo] (m : α) :
+@[simp] lemma coe_eq_ofNat (n : ℕ) (m : α) :
     (m : WithBot α) = ofNat(n) ↔ m = ofNat(n) :=
   coe_eq_coe
-@[simp] lemma ofNat_eq_coe (n : ℕ) [n.AtLeastTwo] (m : α) :
+@[simp] lemma ofNat_eq_coe (n : ℕ) (m : α) :
     ofNat(n) = (m : WithBot α) ↔ ofNat(n) = m :=
   coe_eq_coe
-@[simp] lemma ofNat_ne_bot (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : WithBot α) ≠ ⊥ :=
+@[simp] lemma ofNat_ne_bot (n : ℕ) : (ofNat(n) : WithBot α) ≠ ⊥ :=
   natCast_ne_bot n
-@[simp] lemma bot_ne_ofNat (n : ℕ) [n.AtLeastTwo] : (⊥ : WithBot α) ≠ ofNat(n) :=
+@[simp] lemma bot_ne_ofNat (n : ℕ) : (⊥ : WithBot α) ≠ ofNat(n) :=
   bot_ne_natCast n
 
-@[simp] lemma map_ofNat {f : α → β} (n : ℕ) [n.AtLeastTwo] :
+@[simp] lemma map_ofNat {f : α → β} (n : ℕ) :
     WithBot.map f (ofNat(n) : WithBot α) = f ofNat(n) := map_coe f n
 
 @[simp] lemma map_natCast {f : α → β} (n : ℕ) :
     WithBot.map f (n : WithBot α) = f n := map_coe f n
 
-lemma map_eq_ofNat_iff {f : β → α} {n : ℕ} [n.AtLeastTwo] {a : WithBot β} :
+lemma map_eq_ofNat_iff {f : β → α} {n : ℕ} {a : WithBot β} :
     a.map f = ofNat(n) ↔ ∃ x, a = .some x ∧ f x = n := map_eq_some_iff
 
-lemma ofNat_eq_map_iff {f : β → α} {n : ℕ} [n.AtLeastTwo] {a : WithBot β} :
+lemma ofNat_eq_map_iff {f : β → α} {n : ℕ} {a : WithBot β} :
     ofNat(n) = a.map f ↔ ∃ x, a = .some x ∧ f x = n := some_eq_map_iff
 
 lemma map_eq_natCast_iff {f : β → α} {n : ℕ} {a : WithBot β} :

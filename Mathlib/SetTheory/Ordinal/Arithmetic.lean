@@ -1070,7 +1070,7 @@ theorem one_add_natCast (m : ℕ) : 1 + (m : Ordinal) = succ m := by
   rfl
 
 @[simp]
-theorem one_add_ofNat (m : ℕ) [m.AtLeastTwo] :
+theorem one_add_ofNat (m : ℕ) :
     1 + (ofNat(m) : Ordinal) = Order.succ (OfNat.ofNat m : Ordinal) :=
   one_add_natCast m
 
@@ -1127,7 +1127,7 @@ theorem lift_natCast : ∀ n : ℕ, lift.{u, v} n = n
   | n + 1 => by simp [lift_natCast n]
 
 @[simp]
-theorem lift_ofNat (n : ℕ) [n.AtLeastTwo] :
+theorem lift_ofNat (n : ℕ) :
     lift.{u, v} ofNat(n) = OfNat.ofNat n :=
   lift_natCast n
 

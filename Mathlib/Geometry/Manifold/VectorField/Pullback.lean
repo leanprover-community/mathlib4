@@ -60,7 +60,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M'']
   {f : M → M'} {s t : Set M} {x x₀ : M}
 
-instance {n : ℕ} [n.AtLeastTwo] [IsManifold I (minSmoothness 𝕜 (ofNat(n))) M] :
+instance {n : ℕ} [IsManifold I (minSmoothness 𝕜 (ofNat(n))) M] :
     IsManifold I (ofNat(n)) M :=
   IsManifold.of_le (n := minSmoothness 𝕜 n) le_minSmoothness
 

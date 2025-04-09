@@ -65,8 +65,8 @@ theorem finrank_eq_of_rank_eq {n : ℕ} (h : Module.rank R M = ↑n) : finrank R
 lemma rank_eq_one_iff_finrank_eq_one : Module.rank R M = 1 ↔ finrank R M = 1 :=
   Cardinal.toNat_eq_one.symm
 
-/-- This is like `rank_eq_one_iff_finrank_eq_one` but works for `2`, `3`, `4`, ... -/
-lemma rank_eq_ofNat_iff_finrank_eq_ofNat (n : ℕ) [Nat.AtLeastTwo n] :
+/-- This is like `rank_eq_one_iff_finrank_eq_one` but works for `1`, `2`, `3`, `4`, ... -/
+lemma rank_eq_ofNat_iff_finrank_eq_ofNat (n : ℕ) [NeZero n] :
     Module.rank R M = OfNat.ofNat n ↔ finrank R M = OfNat.ofNat n :=
   Cardinal.toNat_eq_ofNat.symm
 

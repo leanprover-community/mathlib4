@@ -36,7 +36,7 @@ theorem natCast_mem_center [NonAssocSemiring M] (n : ℕ) : (n : M) ∈ Set.cent
     | succ n ihn => rw [Nat.cast_succ, mul_add, ihn, mul_add, mul_add, mul_one, mul_one]
 
 @[simp]
-theorem ofNat_mem_center [NonAssocSemiring M] (n : ℕ) [n.AtLeastTwo] :
+theorem ofNat_mem_center [NonAssocSemiring M] (n : ℕ) :
     ofNat(n) ∈ Set.center M :=
   natCast_mem_center M n
 

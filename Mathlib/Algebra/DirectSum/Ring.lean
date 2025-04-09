@@ -425,7 +425,7 @@ theorem of_natCast (n : ℕ) : of A 0 n = n :=
   rfl
 
 @[simp]
-theorem of_zero_ofNat (n : ℕ) [n.AtLeastTwo] : of A 0 ofNat(n) = ofNat(n) :=
+theorem of_zero_ofNat (n : ℕ) : of A 0 ofNat(n) = ofNat(n) :=
   of_natCast A n
 
 /-- The `Semiring` structure derived from `GSemiring A`. -/

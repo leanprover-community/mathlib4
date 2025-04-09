@@ -573,7 +573,7 @@ lemma natCast_mem_slitPlane {n : ℕ} : ↑n ∈ slitPlane ↔ n ≠ 0 := by
   simpa [pos_iff_ne_zero] using @ofReal_mem_slitPlane n
 
 @[simp]
-lemma ofNat_mem_slitPlane (n : ℕ) [n.AtLeastTwo] : ofNat(n) ∈ slitPlane :=
+lemma ofNat_mem_slitPlane (n : ℕ) [NeZero n] : ofNat(n) ∈ slitPlane :=
   natCast_mem_slitPlane.2 (NeZero.ne n)
 
 lemma mem_slitPlane_iff_not_le_zero {z : ℂ} : z ∈ slitPlane ↔ ¬z ≤ 0 :=

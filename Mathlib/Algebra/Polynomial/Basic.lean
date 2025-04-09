@@ -275,10 +275,10 @@ theorem ofFinsupp_natCast (n : ℕ) : (⟨n⟩ : R[X]) = n := rfl
 theorem toFinsupp_natCast (n : ℕ) : (n : R[X]).toFinsupp = n := rfl
 
 @[simp]
-theorem ofFinsupp_ofNat (n : ℕ) [n.AtLeastTwo] : (⟨ofNat(n)⟩ : R[X]) = ofNat(n) := rfl
+theorem ofFinsupp_ofNat (n : ℕ) : (⟨ofNat(n)⟩ : R[X]) = ofNat(n) := rfl
 
 @[simp]
-theorem toFinsupp_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : R[X]).toFinsupp = ofNat(n) := rfl
+theorem toFinsupp_ofNat (n : ℕ) : (ofNat(n) : R[X]).toFinsupp = ofNat(n) := rfl
 
 instance semiring : Semiring R[X] :=
   fast_instance% Function.Injective.semiring toFinsupp toFinsupp_injective toFinsupp_zero
@@ -655,7 +655,7 @@ theorem coeff_natCast_ite : (Nat.cast m : R[X]).coeff n = ite (n = 0) m 0 := by
   simp only [← C_eq_natCast, coeff_C, Nat.cast_ite, Nat.cast_zero]
 
 @[simp]
-theorem coeff_ofNat_zero (a : ℕ) [a.AtLeastTwo] :
+theorem coeff_ofNat_zero (a : ℕ) :
     coeff (ofNat(a) : R[X]) 0 = ofNat(a) :=
   coeff_monomial
 

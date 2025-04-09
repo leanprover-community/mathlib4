@@ -631,7 +631,7 @@ theorem mk_fin (n : ℕ) : #(Fin n) = n := by simp
 theorem lift_natCast (n : ℕ) : lift.{u} (n : Cardinal.{v}) = n := by induction n <;> simp [*]
 
 @[simp]
-theorem lift_ofNat (n : ℕ) [n.AtLeastTwo] :
+theorem lift_ofNat (n : ℕ) :
     lift.{u} (ofNat(n) : Cardinal.{v}) = OfNat.ofNat n :=
   lift_natCast n
 
@@ -640,7 +640,7 @@ theorem lift_eq_nat_iff {a : Cardinal.{u}} {n : ℕ} : lift.{v} a = n ↔ a = n 
   lift_injective.eq_iff' (lift_natCast n)
 
 @[simp]
-theorem lift_eq_ofNat_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
+theorem lift_eq_ofNat_iff {a : Cardinal.{u}} {n : ℕ} :
     lift.{v} a = ofNat(n) ↔ a = OfNat.ofNat n :=
   lift_eq_nat_iff
 
@@ -660,7 +660,7 @@ theorem one_eq_lift_iff {a : Cardinal.{u}} :
   simpa using nat_eq_lift_iff (n := 1)
 
 @[simp]
-theorem ofNat_eq_lift_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
+theorem ofNat_eq_lift_iff {a : Cardinal.{u}} {n : ℕ} :
     (ofNat(n) : Cardinal) = lift.{v} a ↔ (OfNat.ofNat n : Cardinal) = a :=
   nat_eq_lift_iff
 
@@ -674,7 +674,7 @@ theorem lift_le_one_iff {a : Cardinal.{u}} :
   simpa using lift_le_nat_iff (n := 1)
 
 @[simp]
-theorem lift_le_ofNat_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
+theorem lift_le_ofNat_iff {a : Cardinal.{u}} {n : ℕ} :
     lift.{v} a ≤ ofNat(n) ↔ a ≤ OfNat.ofNat n :=
   lift_le_nat_iff
 
@@ -688,7 +688,7 @@ theorem one_le_lift_iff {a : Cardinal.{u}} :
   simpa using nat_le_lift_iff (n := 1)
 
 @[simp]
-theorem ofNat_le_lift_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
+theorem ofNat_le_lift_iff {a : Cardinal.{u}} {n : ℕ} :
     (ofNat(n) : Cardinal) ≤ lift.{v} a ↔ (OfNat.ofNat n : Cardinal) ≤ a :=
   nat_le_lift_iff
 
@@ -697,7 +697,7 @@ theorem lift_lt_nat_iff {a : Cardinal.{u}} {n : ℕ} : lift.{v} a < n ↔ a < n 
   rw [← lift_natCast.{v,u}, lift_lt]
 
 @[simp]
-theorem lift_lt_ofNat_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
+theorem lift_lt_ofNat_iff {a : Cardinal.{u}} {n : ℕ} :
     lift.{v} a < ofNat(n) ↔ a < OfNat.ofNat n :=
   lift_lt_nat_iff
 
@@ -716,7 +716,7 @@ theorem one_lt_lift_iff {a : Cardinal.{u}} :
   simpa using nat_lt_lift_iff (n := 1)
 
 @[simp]
-theorem ofNat_lt_lift_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
+theorem ofNat_lt_lift_iff {a : Cardinal.{u}} {n : ℕ} :
     (ofNat(n) : Cardinal) < lift.{v} a ↔ (OfNat.ofNat n : Cardinal) < a :=
   nat_lt_lift_iff
 

@@ -192,7 +192,7 @@ theorem nhdsGT_coe_neBot {r : ℝ≥0} : (𝓝[>] (r : ℝ≥0∞)).NeBot :=
 @[deprecated (since := "2024-12-22")] alias nhdsWithin_Ioi_nat_neBot := nhdsGT_nat_neBot
 
 @[instance]
-theorem nhdsGT_ofNat_neBot (n : ℕ) [n.AtLeastTwo] : (𝓝[>] (OfNat.ofNat n : ℝ≥0∞)).NeBot :=
+theorem nhdsGT_ofNat_neBot (n : ℕ) : (𝓝[>] (OfNat.ofNat n : ℝ≥0∞)).NeBot :=
   nhdsGT_coe_neBot
 
 @[deprecated (since := "2024-12-22")] alias nhdsWithin_Ioi_ofNat_nebot := nhdsGT_ofNat_neBot

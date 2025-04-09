@@ -194,7 +194,7 @@ protected theorem natCast (n : ℕ) : IsSelfAdjoint (n : R) :=
   star_natCast _
 
 @[simp]
-protected theorem ofNat (n : ℕ) [n.AtLeastTwo] : IsSelfAdjoint (ofNat(n) : R) :=
+protected theorem ofNat (n : ℕ) : IsSelfAdjoint (ofNat(n) : R) :=
   .natCast n
 
 end Semiring

@@ -107,7 +107,7 @@ def lift (x : ℕ∞) (h : x < ⊤) : ℕ := WithTop.untop x (WithTop.lt_top_iff
 
 @[simp] theorem lift_zero : lift 0 (WithTop.coe_lt_top 0) = 0 := rfl
 @[simp] theorem lift_one : lift 1 (WithTop.coe_lt_top 1) = 1 := rfl
-@[simp] theorem lift_ofNat (n : ℕ) [n.AtLeastTwo] :
+@[simp] theorem lift_ofNat (n : ℕ) :
     lift ofNat(n) (WithTop.coe_lt_top n) = OfNat.ofNat n := rfl
 
 @[simp] theorem add_lt_top {a b : ℕ∞} : a + b < ⊤ ↔ a < ⊤ ∧ b < ⊤ := WithTop.add_lt_top
@@ -150,7 +150,7 @@ theorem toNat_one : toNat 1 = 1 :=
   rfl
 
 @[simp]
-theorem toNat_ofNat (n : ℕ) [n.AtLeastTwo] : toNat ofNat(n) = n :=
+theorem toNat_ofNat (n : ℕ) : toNat ofNat(n) = n :=
   rfl
 
 @[simp]
@@ -168,7 +168,7 @@ theorem recTopCoe_one {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a) 
   rfl
 
 @[simp]
-theorem recTopCoe_ofNat {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a) (x : ℕ) [x.AtLeastTwo] :
+theorem recTopCoe_ofNat {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a) (x : ℕ) :
     @recTopCoe C d f ofNat(x) = f (OfNat.ofNat x) :=
   rfl
 
@@ -177,7 +177,7 @@ theorem top_ne_coe (a : ℕ) : ⊤ ≠ (a : ℕ∞) :=
   nofun
 
 @[simp]
-theorem top_ne_ofNat (a : ℕ) [a.AtLeastTwo] : ⊤ ≠ (ofNat(a) : ℕ∞) :=
+theorem top_ne_ofNat (a : ℕ) : ⊤ ≠ (ofNat(a) : ℕ∞) :=
   nofun
 
 @[simp] lemma top_ne_zero : (⊤ : ℕ∞) ≠ 0 := nofun
@@ -188,7 +188,7 @@ theorem coe_ne_top (a : ℕ) : (a : ℕ∞) ≠ ⊤ :=
   nofun
 
 @[simp]
-theorem ofNat_ne_top (a : ℕ) [a.AtLeastTwo] : (ofNat(a) : ℕ∞) ≠ ⊤ :=
+theorem ofNat_ne_top (a : ℕ) : (ofNat(a) : ℕ∞) ≠ ⊤ :=
   nofun
 
 @[simp] lemma zero_ne_top : 0 ≠ (⊤ : ℕ∞) := nofun
@@ -203,7 +203,7 @@ theorem top_sub_one : (⊤ : ℕ∞) - 1 = ⊤ :=
   top_sub_coe 1
 
 @[simp]
-theorem top_sub_ofNat (a : ℕ) [a.AtLeastTwo] : (⊤ : ℕ∞) - ofNat(a) = ⊤ :=
+theorem top_sub_ofNat (a : ℕ) : (⊤ : ℕ∞) - ofNat(a) = ⊤ :=
   top_sub_coe a
 
 @[simp]
@@ -441,7 +441,7 @@ protected theorem map_zero (f : ℕ → α) : map f 0 = f 0 := rfl
 protected theorem map_one (f : ℕ → α) : map f 1 = f 1 := rfl
 
 @[simp]
-theorem map_ofNat (f : ℕ → α) (n : ℕ) [n.AtLeastTwo] : map f ofNat(n) = f n := rfl
+theorem map_ofNat (f : ℕ → α) (n : ℕ) : map f ofNat(n) = f n := rfl
 
 @[simp]
 lemma map_eq_top_iff {f : ℕ → α} : map f n = ⊤ ↔ n = ⊤ := WithTop.map_eq_top_iff

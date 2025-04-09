@@ -206,7 +206,7 @@ theorem op_natCast [NatCast α] (n : ℕ) : op (n : α) = n :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem op_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
+theorem op_ofNat [NatCast α] (n : ℕ) :
     op (ofNat(n) : α) = ofNat(n) :=
   rfl
 
@@ -219,7 +219,7 @@ theorem unop_natCast [NatCast α] (n : ℕ) : unop (n : αᵐᵒᵖ) = n :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem unop_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
+theorem unop_ofNat [NatCast α] (n : ℕ) :
     unop (ofNat(n) : αᵐᵒᵖ) = ofNat(n) :=
   rfl
 

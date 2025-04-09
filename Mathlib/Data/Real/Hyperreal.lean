@@ -73,7 +73,7 @@ theorem coe_add (x y : ℝ) : ↑(x + y) = (x + y : ℝ*) :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
+theorem coe_ofNat (n : ℕ) :
     ((ofNat(n) : ℝ) : ℝ*) = OfNat.ofNat n :=
   rfl
 

@@ -32,7 +32,7 @@ theorem cast_nonneg {α} [Semiring α] [PartialOrder α] [IsOrderedRing α] (n :
 
 /-- Specialisation of `Nat.ofNat_nonneg'`, which seems to be easier for Lean to use. -/
 @[simp]
-theorem ofNat_nonneg {α} [Semiring α] [PartialOrder α] [IsOrderedRing α] (n : ℕ) [n.AtLeastTwo] :
+theorem ofNat_nonneg {α} [Semiring α] [PartialOrder α] [IsOrderedRing α] (n : ℕ) :
     0 ≤ (ofNat(n) : α) :=
   ofNat_nonneg' n
 
@@ -89,7 +89,7 @@ variable [Ring R] [LinearOrder R] [IsStrictOrderedRing R] {m n : ℕ} {m n : ℕ
 theorem abs_cast (n : ℕ) : |(n : R)| = n := abs_of_nonneg n.cast_nonneg
 
 @[simp]
-theorem abs_ofNat (n : ℕ) [n.AtLeastTwo] : |(ofNat(n) : R)| = ofNat(n) := abs_cast n
+theorem abs_ofNat (n : ℕ) : |(ofNat(n) : R)| = ofNat(n) := abs_cast n
 
 @[simp, norm_cast] lemma neg_cast_eq_cast : (-m : R) = n ↔ m = 0 ∧ n = 0 := by
   simp [neg_eq_iff_add_eq_zero, ← cast_add]

@@ -107,7 +107,7 @@ theorem up_natCast [NatCast α] (n : ℕ) : up (n : α) = n :=
   rfl
 
 @[simp]
-theorem up_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
+theorem up_ofNat [NatCast α] (n : ℕ) :
     up (ofNat(n) : α) = ofNat(n) :=
   rfl
 
@@ -120,7 +120,7 @@ theorem down_natCast [NatCast α] (n : ℕ) : down (n : ULift α) = n :=
   rfl
 
 @[simp]
-theorem down_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
+theorem down_ofNat [NatCast α] (n : ℕ) :
     down (ofNat(n) : ULift α) = ofNat(n) :=
   rfl
 

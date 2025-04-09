@@ -66,7 +66,7 @@ theorem floor_zero : ⌊(0 : α)⌋₊ = 0 := by rw [← Nat.cast_zero, floor_na
 theorem floor_one : ⌊(1 : α)⌋₊ = 1 := by rw [← Nat.cast_one, floor_natCast]
 
 @[simp]
-theorem floor_ofNat (n : ℕ) [n.AtLeastTwo] : ⌊(ofNat(n) : α)⌋₊ = ofNat(n) :=
+theorem floor_ofNat (n : ℕ) : ⌊(ofNat(n) : α)⌋₊ = ofNat(n) :=
   Nat.floor_natCast _
 
 theorem floor_of_nonpos (ha : a ≤ 0) : ⌊a⌋₊ = 0 :=
@@ -181,7 +181,7 @@ theorem ceil_zero : ⌈(0 : α)⌉₊ = 0 := by rw [← Nat.cast_zero, ceil_natC
 theorem ceil_one : ⌈(1 : α)⌉₊ = 1 := by rw [← Nat.cast_one, ceil_natCast]
 
 @[simp]
-theorem ceil_ofNat (n : ℕ) [n.AtLeastTwo] : ⌈(ofNat(n) : α)⌉₊ = ofNat(n) := ceil_natCast n
+theorem ceil_ofNat (n : ℕ) : ⌈(ofNat(n) : α)⌉₊ = ofNat(n) := ceil_natCast n
 
 @[simp]
 theorem ceil_eq_zero : ⌈a⌉₊ = 0 ↔ a ≤ 0 := by rw [← Nat.le_zero, ceil_le, Nat.cast_zero]
@@ -279,7 +279,7 @@ theorem floor_add_natCast (ha : 0 ≤ a) (n : ℕ) : ⌊a + n⌋₊ = ⌊a⌋₊
 theorem floor_add_one (ha : 0 ≤ a) : ⌊a + 1⌋₊ = ⌊a⌋₊ + 1 := by
   rw [← cast_one, floor_add_natCast ha 1]
 
-theorem floor_add_ofNat (ha : 0 ≤ a) (n : ℕ) [n.AtLeastTwo] :
+theorem floor_add_ofNat (ha : 0 ≤ a) (n : ℕ) :
     ⌊a + ofNat(n)⌋₊ = ⌊a⌋₊ + ofNat(n) :=
   floor_add_natCast ha n
 
@@ -301,7 +301,7 @@ theorem floor_sub_one [Sub α] [OrderedSub α] [ExistsAddOfLE α] (a : α) : ⌊
   mod_cast floor_sub_natCast a 1
 
 @[simp]
-theorem floor_sub_ofNat [Sub α] [OrderedSub α] [ExistsAddOfLE α] (a : α) (n : ℕ) [n.AtLeastTwo] :
+theorem floor_sub_ofNat [Sub α] [OrderedSub α] [ExistsAddOfLE α] (a : α) (n : ℕ) :
     ⌊a - ofNat(n)⌋₊ = ⌊a⌋₊ - ofNat(n) :=
   floor_sub_natCast a n
 
@@ -319,7 +319,7 @@ theorem ceil_add_natCast (ha : 0 ≤ a) (n : ℕ) : ⌈a + n⌉₊ = ⌈a⌉₊ 
 theorem ceil_add_one (ha : 0 ≤ a) : ⌈a + 1⌉₊ = ⌈a⌉₊ + 1 := by
   rw [cast_one.symm, ceil_add_natCast ha 1]
 
-theorem ceil_add_ofNat (ha : 0 ≤ a) (n : ℕ) [n.AtLeastTwo] :
+theorem ceil_add_ofNat (ha : 0 ≤ a) (n : ℕ) :
     ⌈a + ofNat(n)⌉₊ = ⌈a⌉₊ + ofNat(n) :=
   ceil_add_natCast ha n
 
@@ -367,7 +367,7 @@ theorem floor_div_natCast (a : α) (n : ℕ) : ⌊a / n⌋₊ = ⌊a⌋₊ / n :
 
 @[deprecated (since := "2025-04-01")] alias floor_div_nat := floor_div_natCast
 
-theorem floor_div_ofNat (a : α) (n : ℕ) [n.AtLeastTwo] :
+theorem floor_div_ofNat (a : α) (n : ℕ) :
     ⌊a / ofNat(n)⌋₊ = ⌊a⌋₊ / ofNat(n) :=
   floor_div_natCast a n
 

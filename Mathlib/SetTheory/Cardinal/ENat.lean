@@ -49,7 +49,7 @@ instance : Coe ENat Cardinal := ⟨Cardinal.ofENat⟩
 @[simp, norm_cast] lemma ofENat_zero : ofENat 0 = 0 := rfl
 @[simp, norm_cast] lemma ofENat_one : ofENat 1 = 1 := rfl
 
-@[simp, norm_cast] lemma ofENat_ofNat (n : ℕ) [n.AtLeastTwo] :
+@[simp, norm_cast] lemma ofENat_ofNat (n : ℕ) :
     ((ofNat(n) : ℕ∞) : Cardinal) = OfNat.ofNat n :=
   rfl
 
@@ -68,14 +68,14 @@ lemma ofENat_lt_aleph0 {m : ℕ∞} : (m : Cardinal) < ℵ₀ ↔ m < ⊤ :=
 
 @[simp] lemma ofENat_lt_nat {m : ℕ∞} {n : ℕ} : ofENat m < n ↔ m < n := by norm_cast
 
-@[simp] lemma ofENat_lt_ofNat {m : ℕ∞} {n : ℕ} [n.AtLeastTwo] :
+@[simp] lemma ofENat_lt_ofNat {m : ℕ∞} {n : ℕ} :
     ofENat m < ofNat(n) ↔ m < OfNat.ofNat n := ofENat_lt_nat
 
 @[simp] lemma nat_lt_ofENat {m : ℕ} {n : ℕ∞} : (m : Cardinal) < n ↔ m < n := by norm_cast
 @[simp] lemma ofENat_pos {m : ℕ∞} : 0 < (m : Cardinal) ↔ 0 < m := by norm_cast
 @[simp] lemma one_lt_ofENat {m : ℕ∞} : 1 < (m : Cardinal) ↔ 1 < m := by norm_cast
 
-@[simp, norm_cast] lemma ofNat_lt_ofENat {m : ℕ} [m.AtLeastTwo] {n : ℕ∞} :
+@[simp, norm_cast] lemma ofNat_lt_ofENat {m : ℕ} {n : ℕ∞} :
   (ofNat(m) : Cardinal) < n ↔ OfNat.ofNat m < n := nat_lt_ofENat
 
 lemma ofENat_mono : Monotone ofENat := ofENat_strictMono.monotone
@@ -89,14 +89,14 @@ lemma ofENat_le_ofENat {m n : ℕ∞} : (m : Cardinal) ≤ n ↔ m ≤ n := ofEN
 @[simp] lemma ofENat_le_nat {m : ℕ∞} {n : ℕ} : ofENat m ≤ n ↔ m ≤ n := by norm_cast
 @[simp] lemma ofENat_le_one {m : ℕ∞} : ofENat m ≤ 1 ↔ m ≤ 1 := by norm_cast
 
-@[simp] lemma ofENat_le_ofNat {m : ℕ∞} {n : ℕ} [n.AtLeastTwo] :
+@[simp] lemma ofENat_le_ofNat {m : ℕ∞} {n : ℕ} :
     ofENat m ≤ ofNat(n) ↔ m ≤ OfNat.ofNat n := ofENat_le_nat
 
 @[simp] lemma nat_le_ofENat {m : ℕ} {n : ℕ∞} : (m : Cardinal) ≤ n ↔ m ≤ n := by norm_cast
 @[simp] lemma one_le_ofENat {n : ℕ∞} : 1 ≤ (n : Cardinal) ↔ 1 ≤ n := by norm_cast
 
 @[simp]
-lemma ofNat_le_ofENat {m : ℕ} [m.AtLeastTwo] {n : ℕ∞} :
+lemma ofNat_le_ofENat {m : ℕ} {n : ℕ∞} :
     (ofNat(m) : Cardinal) ≤ n ↔ OfNat.ofNat m ≤ n := nat_le_ofENat
 
 lemma ofENat_injective : Injective ofENat := ofENat_strictMono.injective
@@ -113,10 +113,10 @@ lemma ofENat_inj {m n : ℕ∞} : (m : Cardinal) = n ↔ m = n := ofENat_injecti
 @[simp] lemma ofENat_eq_one {m : ℕ∞} : (m : Cardinal) = 1 ↔ m = 1 := by norm_cast
 @[simp] lemma one_eq_ofENat {m : ℕ∞} : 1 = (m : Cardinal) ↔ m = 1 := by norm_cast; apply eq_comm
 
-@[simp] lemma ofENat_eq_ofNat {m : ℕ∞} {n : ℕ} [n.AtLeastTwo] :
+@[simp] lemma ofENat_eq_ofNat {m : ℕ∞} {n : ℕ} :
     (m : Cardinal) = ofNat(n) ↔ m = OfNat.ofNat n := ofENat_eq_nat
 
-@[simp] lemma ofNat_eq_ofENat {m : ℕ} {n : ℕ∞} [m.AtLeastTwo] :
+@[simp] lemma ofNat_eq_ofENat {m : ℕ} {n : ℕ∞} :
     ofNat(m) = (n : Cardinal) ↔ OfNat.ofNat m = n := nat_eq_ofENat
 
 @[simp, norm_cast] lemma lift_ofENat : ∀ m : ℕ∞, lift.{u, v} m = m
@@ -248,10 +248,10 @@ lemma toENat_nat (n : ℕ) : toENat n = n := map_natCast _ n
 @[simp] lemma toENat_le_one {a : Cardinal} : toENat a ≤ 1 ↔ a ≤ 1 := toENat_le_nat
 @[simp] lemma toENat_eq_one {a : Cardinal} : toENat a = 1 ↔ a = 1 := toENat_eq_nat
 
-@[simp] lemma toENat_le_ofNat {a : Cardinal} {n : ℕ} [n.AtLeastTwo] :
+@[simp] lemma toENat_le_ofNat {a : Cardinal} {n : ℕ} :
     toENat a ≤ ofNat(n) ↔ a ≤ OfNat.ofNat n := toENat_le_nat
 
-@[simp] lemma toENat_eq_ofNat {a : Cardinal} {n : ℕ} [n.AtLeastTwo] :
+@[simp] lemma toENat_eq_ofNat {a : Cardinal} {n : ℕ} :
     toENat a = ofNat(n) ↔ a = OfNat.ofNat n := toENat_eq_nat
 
 @[simp] lemma toENat_eq_top {a : Cardinal} : toENat a = ⊤ ↔ ℵ₀ ≤ a := enat_gc.u_eq_top
