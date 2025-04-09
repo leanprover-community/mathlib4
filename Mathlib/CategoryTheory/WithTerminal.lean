@@ -3,9 +3,11 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith, Adam Topaz
 -/
+import Mathlib.CategoryTheory.FinCategory.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
+import Mathlib.Data.Fintype.Option
 
 /-!
 
@@ -123,6 +125,30 @@ instance : (incl : C ⥤ _).Full where
   map_surjective f := ⟨f, rfl⟩
 
 instance : (incl : C ⥤ _).Faithful where
+
+/-- The equivalence between `Option C` and `WithTerminal C` (they are both the
+type `C` plus an extra object `none` or `star`). -/
+def optionEquiv : Option C ≃ WithTerminal C where
+  toFun
+  | some a => of a
+  | none => star
+  invFun
+  | of a => some a
+  | star => none
+  left_inv a := by cases a <;> simp
+  right_inv a := by cases a <;> simp
+
+instance instFinType [Fintype C] : Fintype (WithTerminal C) :=
+  Fintype.ofEquiv (Option C) optionEquiv
+
+instance instFin [SmallCategory C] [FinCategory C] :
+    FinCategory (WithTerminal C) where
+  fintypeObj := inferInstance
+  fintypeHom
+  | star, star
+  | of _, star => (inferInstance : Fintype PUnit)
+  | star, of _ => (inferInstance : Fintype PEmpty)
+  | of a, of b => (inferInstance : Fintype (a ⟶ b))
 
 /-- Map `WithTerminal` with respect to a functor `F : C ⥤ D`. -/
 @[simps]
@@ -510,6 +536,30 @@ instance : (incl : C ⥤ _).Full where
   map_surjective f := ⟨f, rfl⟩
 
 instance : (incl : C ⥤ _).Faithful where
+
+/-- The equivalence between `Option C` and `WithInitial C` (they are both the
+type `C` plus an extra object `none` or `star`). -/
+def optionEquiv : Option C ≃ WithInitial C where
+  toFun
+  | some a => of a
+  | none => star
+  invFun
+  | of a => some a
+  | star => none
+  left_inv a := by cases a <;> simp
+  right_inv a := by cases a <;> simp
+
+instance instFinType [Fintype C] : Fintype (WithInitial C) :=
+  Fintype.ofEquiv (Option C) optionEquiv
+
+instance instFin [SmallCategory C] [FinCategory C] :
+    FinCategory (WithInitial C) where
+  fintypeObj := inferInstance
+  fintypeHom
+  | star, star
+  | star, of _ => (inferInstance : Fintype PUnit)
+  | of _, star => (inferInstance : Fintype PEmpty)
+  | of a, of b => (inferInstance : Fintype (a ⟶ b))
 
 /-- Map `WithInitial` with respect to a functor `F : C ⥤ D`. -/
 @[simps]
