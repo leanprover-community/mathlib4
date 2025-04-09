@@ -9,6 +9,8 @@ import Mathlib.Order.UpperLower.Closure
 /-!
 # Extra results
 
+Further results for `upperBounds` and `lowerBounds`
+
 -/
 
 open Set
