@@ -34,7 +34,7 @@ end SMulZeroClass
 section DivisionRing
 
 variable [NormedDivisionRing 𝕜] [SeminormedAddCommGroup E]
-variable [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
+variable [Module 𝕜 E] [NormSMulClass 𝕜 E]
 
 theorem ediam_smul₀ (c : 𝕜) (s : Set E) : EMetric.diam (c • s) = ‖c‖₊ • EMetric.diam s := by
   refine le_antisymm (ediam_smul_le c s) ?_
