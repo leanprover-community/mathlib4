@@ -112,7 +112,8 @@ variable (R : Type u) (M : Type v) [CommRing R] [AddCommGroup M] [Module R M]
 section helper
 
 noncomputable def quotTorsionOfEquivSpanSingleton' (x : M) (hM : ⊤ = Submodule.span R {x}) :
-    ((⊤ : Submodule R M) ⧸ LinearMap.ker (⊤ : Submodule R M).subtype) ≃ₗ[R] R ⧸ Ideal.torsionOf R M x := by
+    ((⊤ : Submodule R M) ⧸ LinearMap.ker (⊤ : Submodule R M).subtype) ≃ₗ[R]
+      R ⧸ Ideal.torsionOf R M x := by
   have equiv : (LinearMap.range (⊤ : Submodule R M).subtype) ≃ₗ[R]
       R ⧸ (Ideal.torsionOf R M x) := by
     rw [Submodule.range_subtype, hM]
@@ -125,7 +126,8 @@ private theorem RelSeries_smash_helper {α : Type*} {r : α → α → Prop} {s 
     (p : RelSeries r) (q : RelSeries r) (connect : p.last = q.head)
     (hp : ∀ (i : Fin p.length), s (p (Fin.castSucc i)) (p i.succ))
     (hq : ∀ (i : Fin q.length), s (q (Fin.castSucc i)) (q i.succ)) :
-    ∀ (i : Fin (RelSeries.smash p q connect).length), s ((RelSeries.smash p q connect) (Fin.castSucc i)) ((RelSeries.smash p q connect) i.succ) := by
+    ∀ (i : Fin (RelSeries.smash p q connect).length),
+    s ((RelSeries.smash p q connect) (Fin.castSucc i)) ((RelSeries.smash p q connect) i.succ) := by
   let p' : RelSeries (r ⊓ s) := ⟨p.length, p.toFun, fun i ↦ ⟨p.step i, hp i⟩⟩
   let q' : RelSeries (r ⊓ s) := ⟨q.length, q.toFun, fun i ↦ ⟨q.step i, hq i⟩⟩
   let pq' : RelSeries (r ⊓ s) := RelSeries.smash p' q' connect
