@@ -90,7 +90,7 @@ instance respectsIso : MorphismProperty.RespectsIso @IsClosedImmersion := by
   apply MorphismProperty.RespectsIso.mk <;> intro X Y Z e f hf <;> infer_instance
 
 instance {X : Scheme} (I : X.IdealSheafData) : IsClosedImmersion I.subschemeι :=
-  .of_isPreimmersion _ (I.range_subschemeι ▸ I.isClosed_support)
+  .of_isPreimmersion _ (I.range_subschemeι ▸ I.support.closed)
 
 /-- Given two commutative rings `R S : CommRingCat` and a surjective morphism
 `f : R ⟶ S`, the induced scheme morphism `specObj S ⟶ specObj R` is a
