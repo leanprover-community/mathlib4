@@ -358,8 +358,6 @@ def mapMonFunctor : LaxMonoidalFunctor C D ⥤ Mon_ C ⥤ Mon_ D where
   map α := { app := fun A => { hom := α.hom.app A.X } }
   map_comp _ _ := rfl
 
-
-
 end CategoryTheory.Functor
 
 namespace Mon_
