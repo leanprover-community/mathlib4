@@ -260,8 +260,10 @@ end Mon_
 
 namespace CategoryTheory.Functor
 
-variable {C} {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D] (F : C ⥤ D) [F.LaxMonoidal]
-  (X Y : C) [Mon_Class X] [Mon_Class Y] (f : X ⟶ Y) [IsMon_Hom f]
+variable {C} {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D] (F : C ⥤ D)
+
+section LaxMonoidal
+variable [F.LaxMonoidal] (X Y : C) [Mon_Class X] [Mon_Class Y] (f : X ⟶ Y) [IsMon_Hom f]
 
 /-- The image of a monoid object under a lax monoidal functor is a monoid object. -/
 abbrev obj.instMon_Class : Mon_Class (F.obj X) where
@@ -277,9 +279,9 @@ abbrev obj.instMon_Class : Mon_Class (F.obj X) where
 
 attribute [local instance] obj.instMon_Class
 
-@[reassoc (attr := simp)] lemma obj.η_def : (η : 𝟙_ D ⟶ F.obj X) = ε F ≫ F.map η := rfl
+@[reassoc, simp] lemma obj.η_def : (η : 𝟙_ D ⟶ F.obj X) = ε F ≫ F.map η := rfl
 
-@[reassoc (attr := simp)] lemma obj.μ_def : μ = LaxMonoidal.μ F X X ≫ F.map μ := rfl
+@[reassoc, simp] lemma obj.μ_def : μ = LaxMonoidal.μ F X X ≫ F.map μ := rfl
 
 instance map.instIsMon_Hom : IsMon_Hom (F.map f) where
   one_hom := by simp [← map_comp]
@@ -313,6 +315,39 @@ def mapMon (F : C ⥤ D) [F.LaxMonoidal] : Mon_ C ⥤ Mon_ D where
         simp }
   map f := .mk' (F.map f.hom)
 
+protected instance Faithful.mapMon [F.Faithful] : F.mapMon.Faithful where
+  map_injective {_X _Y} _f _g hfg := Mon_.Hom.ext <| map_injective congr(($hfg).hom)
+
+end LaxMonoidal
+
+section Monoidal
+variable [F.Monoidal]
+
+attribute [local instance] obj.instMon_Class
+
+protected instance Full.mapMon [F.Full] [F.Faithful] : F.mapMon.Full where
+  map_surjective {X Y} f :=
+    let ⟨g, hg⟩ := F.map_surjective f.hom
+    ⟨{
+      hom := g
+      one_hom := F.map_injective <| by simpa [← hg, cancel_epi] using f.one_hom
+      mul_hom := F.map_injective <| by simpa [← hg, cancel_epi] using f.mul_hom
+    }, Mon_.Hom.ext hg⟩
+
+instance FullyFaithful.isMon_Hom_preimage (hF : F.FullyFaithful) {X Y : C}
+    [Mon_Class X] [Mon_Class Y] (f : F.obj X ⟶ F.obj Y) [IsMon_Hom f] :
+    IsMon_Hom (hF.preimage f) where
+  one_hom := hF.map_injective <| by simp [← obj.η_def_assoc, ← obj.η_def, ← cancel_epi (ε F)]
+  mul_hom := hF.map_injective <| by
+    simp [← obj.μ_def_assoc, ← obj.μ_def, ← μ_natural_assoc, ← cancel_epi (LaxMonoidal.μ F ..)]
+
+/-- If `F : C ⥤ D` is a fully faithful monoidal functor, then `Mon(F) : Mon C ⥤ Mon D` is fully
+faithful too. -/
+protected def FullyFaithful.mapMon (hF : F.FullyFaithful) : F.mapMon.FullyFaithful where
+  preimage {X Y} f := .mk' <| hF.preimage f.hom
+
+end Monoidal
+
 variable (C D)
 
 /-- `mapMon` is functorial in the lax monoidal functor. -/
@@ -321,6 +356,8 @@ def mapMonFunctor : LaxMonoidalFunctor C D ⥤ Mon_ C ⥤ Mon_ D where
   obj F := F.mapMon
   map α := { app := fun A => { hom := α.hom.app A.X } }
   map_comp _ _ := rfl
+
+
 
 end CategoryTheory.Functor
 
