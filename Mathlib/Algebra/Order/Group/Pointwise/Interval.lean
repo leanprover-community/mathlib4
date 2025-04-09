@@ -533,6 +533,28 @@ theorem abs_sub_right_of_mem_uIcc (h : c ∈ [[a, b]]) : |b - c| ≤ |b - a| :=
 
 end LinearOrderedAddCommGroup
 
+section
+
+variable {G₀ : Type*} [GroupWithZero G₀] [PartialOrder G₀] [ZeroLEOneClass G₀] [PosMulReflectLT G₀]
+  {a b c : G₀}
+
+@[simp]
+theorem preimage_mul_const_Iio [MulPosStrictMono G₀] (a : G₀) (h : 0 < c) :
+    (fun x => x * c) ⁻¹' Iio a = Iio (a / c) :=
+  ext fun _x => (lt_div_iff₀ h).symm
+
+
+@[simp]
+theorem preimage_mul_const_Ioi [MulPosStrictMono G₀] (a : G₀) (h : 0 < c) :
+    (fun x => x * c) ⁻¹' Ioi a = Ioi (a / c) :=
+  ext fun _x => (div_lt_iff₀ h).symm
+
+@[simp]
+theorem preimage_mul_const_Iic (a : G₀) (h : 0 < c) : (fun x => x * c) ⁻¹' Iic a = Iic (a / c) :=
+  ext fun _x => (le_div_iff₀ h).symm
+
+end
+
 /-!
 ### Multiplication and inverse in a semifield
 -/
@@ -540,21 +562,6 @@ end LinearOrderedAddCommGroup
 section LinearOrderedSemifield
 
 variable [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] {a : α}
-
-@[simp]
-theorem preimage_mul_const_Iio (a : α) {c : α} (h : 0 < c) :
-    (fun x => x * c) ⁻¹' Iio a = Iio (a / c) :=
-  ext fun _x => (lt_div_iff₀ h).symm
-
-@[simp]
-theorem preimage_mul_const_Ioi (a : α) {c : α} (h : 0 < c) :
-    (fun x => x * c) ⁻¹' Ioi a = Ioi (a / c) :=
-  ext fun _x => (div_lt_iff₀ h).symm
-
-@[simp]
-theorem preimage_mul_const_Iic (a : α) {c : α} (h : 0 < c) :
-    (fun x => x * c) ⁻¹' Iic a = Iic (a / c) :=
-  ext fun _x => (le_div_iff₀ h).symm
 
 @[simp]
 theorem preimage_mul_const_Ici (a : α) {c : α} (h : 0 < c) :
