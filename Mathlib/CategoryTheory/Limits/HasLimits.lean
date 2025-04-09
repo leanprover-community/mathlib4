@@ -6,6 +6,7 @@ Authors: Reid Barton, Mario Carneiro, Kim Morrison, Floris van Doorn
 import Mathlib.CategoryTheory.Limits.IsLimit
 import Mathlib.CategoryTheory.Category.ULift
 import Mathlib.CategoryTheory.EssentiallySmall
+import Mathlib.CategoryTheory.Functor.EpiMono
 import Mathlib.Logic.Equiv.Basic
 
 /-!
@@ -275,10 +276,15 @@ theorem limit.lift_extend {F : J ⥤ C} [HasLimit F] (c : Cone F) {X : C} (f : X
 
 /-- If a functor `F` has a limit, so does any naturally isomorphic functor.
 -/
-theorem hasLimitOfIso {F G : J ⥤ C} [HasLimit F] (α : F ≅ G) : HasLimit G :=
+theorem hasLimit_of_iso {F G : J ⥤ C} [HasLimit F] (α : F ≅ G) : HasLimit G :=
   HasLimit.mk
     { cone := (Cones.postcompose α.hom).obj (limit.cone F)
       isLimit := (IsLimit.postcomposeHomEquiv _ _).symm (limit.isLimit F) }
+
+@[deprecated (since := "2025-03-03")] alias hasLimitOfIso := hasLimit_of_iso
+
+theorem hasLimit_iff_of_iso {F G : J ⥤ C} (α : F ≅ G) : HasLimit F ↔ HasLimit G :=
+  ⟨fun _ ↦ hasLimit_of_iso α, fun _ ↦ hasLimit_of_iso α.symm⟩
 
 -- See the construction of limits from products and equalizers
 -- for an example usage.
@@ -432,15 +438,12 @@ instance hasLimit_equivalence_comp (e : K ≌ J) [HasLimit F] : HasLimit (e.func
     { cone := Cone.whisker e.functor (limit.cone F)
       isLimit := IsLimit.whiskerEquivalence (limit.isLimit F) e }
 
--- Porting note: testing whether this still needed
--- attribute [local elab_without_expected_type] inv_fun_id_assoc
-
 -- not entirely sure why this is needed
 /-- If a `E ⋙ F` has a limit, and `E` is an equivalence, we can construct a limit of `F`.
 -/
 theorem hasLimit_of_equivalence_comp (e : K ≌ J) [HasLimit (e.functor ⋙ F)] : HasLimit F := by
   haveI : HasLimit (e.inverse ⋙ e.functor ⋙ F) := Limits.hasLimit_equivalence_comp e.symm
-  apply hasLimitOfIso (e.invFunIdAssoc F)
+  apply hasLimit_of_iso (e.invFunIdAssoc F)
 
 @[deprecated (since := "2025-03-02")] alias hasLimitEquivalenceComp :=
   hasLimit_equivalence_comp
@@ -802,10 +805,15 @@ theorem colimit.desc_extend (F : J ⥤ C) [HasColimit F] (c : Cocone F) {X : C} 
 -- This is intentional; it seems to help with elaboration.
 /-- If `F` has a colimit, so does any naturally isomorphic functor.
 -/
-theorem hasColimitOfIso {F G : J ⥤ C} [HasColimit F] (α : G ≅ F) : HasColimit G :=
+theorem hasColimit_of_iso {F G : J ⥤ C} [HasColimit F] (α : G ≅ F) : HasColimit G :=
   HasColimit.mk
     { cocone := (Cocones.precompose α.hom).obj (colimit.cocone F)
       isColimit := (IsColimit.precomposeHomEquiv _ _).symm (colimit.isColimit F) }
+
+@[deprecated (since := "2025-03-03")] alias hasColimitOfIso := hasColimit_of_iso
+
+theorem hasColimit_iff_of_iso {F G : J ⥤ C} (α : F ≅ G) : HasColimit F ↔ HasColimit G :=
+  ⟨fun _ ↦ hasColimit_of_iso α.symm, fun _ ↦ hasColimit_of_iso α⟩
 
 /-- If a functor `G` has the same collection of cocones as a functor `F`
 which has a colimit, then `G` also has a colimit. -/
@@ -977,15 +985,13 @@ instance hasColimit_equivalence_comp (e : K ≌ J) [HasColimit F] : HasColimit (
 -/
 theorem hasColimit_of_equivalence_comp (e : K ≌ J) [HasColimit (e.functor ⋙ F)] : HasColimit F := by
   haveI : HasColimit (e.inverse ⋙ e.functor ⋙ F) := Limits.hasColimit_equivalence_comp e.symm
-  apply hasColimitOfIso (e.invFunIdAssoc F).symm
+  apply hasColimit_of_iso (e.invFunIdAssoc F).symm
 
 section ColimFunctor
 
 variable [HasColimitsOfShape J C]
 
 section
-
--- attribute [local simp] colimMap -- Porting note: errors out colim.map_id and map_comp now
 
 /-- `colimit F` is functorial in `F`, when `C` has all colimits of shape `J`. -/
 @[simps]

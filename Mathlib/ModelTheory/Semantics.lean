@@ -81,9 +81,9 @@ theorem realize_func (v : α → M) {n} (f : L.Functions n) (ts) :
 @[simp]
 theorem realize_relabel {t : L.Term α} {g : α → β} {v : β → M} :
     (t.relabel g).realize v = t.realize (v ∘ g) := by
-  induction' t with _ n f ts ih
-  · rfl
-  · simp [ih]
+  induction t with
+  | var => rfl
+  | func f ts ih => simp [ih]
 
 @[simp]
 theorem realize_liftAt {n n' m : ℕ} {t : L.Term (α ⊕ (Fin n))} {v : α ⊕ (Fin (n + n')) → M} :
@@ -158,16 +158,17 @@ theorem realize_restrictVarLeft' [DecidableEq α] {γ : Type*} {t : L.Term (α �
 theorem realize_constantsToVars [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]
     {t : L[[α]].Term β} {v : β → M} :
     t.constantsToVars.realize (Sum.elim (fun a => ↑(L.con a)) v) = t.realize v := by
-  induction' t with _ n f ts ih
-  · simp
-  · cases n
+  induction t with
+  | var => simp
+  | @func n f ts ih =>
+    cases n
     · cases f
       · simp only [realize, ih, constantsOn, constantsOnFunc, constantsToVars]
         -- Porting note: below lemma does not work with simp for some reason
         rw [withConstants_funMap_sumInl]
       · simp only [realize, constantsToVars, Sum.elim_inl, funMap_eq_coe_constants]
         rfl
-    · cases' f with _ f
+    · obtain - | f := f
       · simp only [realize, ih, constantsOn, constantsOnFunc, constantsToVars]
         -- Porting note: below lemma does not work with simp for some reason
         rw [withConstants_funMap_sumInl]
@@ -177,9 +178,10 @@ theorem realize_constantsToVars [L[[α]].Structure M] [(lhomWithConstants L α).
 theorem realize_varsToConstants [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]
     {t : L.Term (α ⊕ β)} {v : β → M} :
     t.varsToConstants.realize v = t.realize (Sum.elim (fun a => ↑(L.con a)) v) := by
-  induction' t with ab n f ts ih
-  · rcases ab with a | b <;> simp [Language.con]
-  · simp only [realize, constantsOn, constantsOnFunc, ih, varsToConstants]
+  induction t with
+  | var ab => rcases ab with a | b <;> simp [Language.con]
+  | func f ts ih =>
+    simp only [realize, constantsOn, constantsOnFunc, ih, varsToConstants]
     -- Porting note: below lemma does not work with simp for some reason
     rw [withConstants_funMap_sumInl]
 
@@ -201,9 +203,9 @@ namespace LHom
 @[simp]
 theorem realize_onTerm [L'.Structure M] (φ : L →ᴸ L') [φ.IsExpansionOn M] (t : L.Term α)
     (v : α → M) : (φ.onTerm t).realize v = t.realize v := by
-  induction' t with _ n f ts ih
-  · rfl
-  · simp only [Term.realize, LHom.onTerm, LHom.map_onFunction, ih]
+  induction t with
+  | var => rfl
+  | func f ts ih => simp only [Term.realize, LHom.onTerm, LHom.map_onFunction, ih]
 
 end LHom
 
@@ -445,7 +447,7 @@ theorem realize_constantsVarsEquiv [L[[α]].Structure M] [(lhomWithConstants L �
   erw [← (lhomWithConstants L α).map_onRelation
       (Equiv.sumEmpty (L.Relations n) ((constantsOn α).Relations n) R) xs]
   rcongr
-  cases' R with R R
+  obtain - | R := R
   · simp
   · exact isEmptyElim R
 
@@ -675,7 +677,7 @@ infixl:51 " ⊨ " => Theory.Model
 
 variable {M} (T : L.Theory)
 
-@[simp default-10]
+@[simp default - 10]
 theorem Theory.model_iff : M ⊨ T ↔ ∀ φ ∈ T, M ⊨ φ :=
   ⟨fun h => h.realize_of_mem, fun h => ⟨h⟩⟩
 

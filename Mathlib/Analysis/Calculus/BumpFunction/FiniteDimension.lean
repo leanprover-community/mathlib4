@@ -142,10 +142,8 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
       refine le_trans ?_ (le_max_left _ _)
       apply Finset.le_max'
       apply Finset.mem_image_of_mem
-      -- Porting note: was
-      -- simp only [Finset.mem_range]
-      -- linarith
-      simpa only [Finset.mem_range, Nat.lt_add_one_iff]
+      simp only [Finset.mem_range]
+      omega
     refine ⟨M⁻¹ * δ n, by positivity, fun i hi x => ?_⟩
     calc
       ‖iteratedFDeriv ℝ i ((M⁻¹ * δ n) • g n) x‖ = ‖(M⁻¹ * δ n) • iteratedFDeriv ℝ i (g n) x‖ := by
@@ -475,7 +473,6 @@ instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
         · refine ⟨y_nonneg _ _, y_le_one _ (IR R h)⟩
         · simp only [le_refl, zero_le_one, and_self]
       symmetric := fun R x => by
-        simp only
         split_ifs
         · simp only [y_neg, smul_neg]
         · rfl
@@ -488,7 +485,7 @@ instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
           rintro ⟨R, x⟩ ⟨hR : 1 < R, _⟩
           simp only [hR, uncurry_apply_pair, if_true, Function.comp_apply]
         apply (y_smooth E).comp
-        · apply ContDiffOn.prod
+        · apply ContDiffOn.prodMk
           · refine
               (contDiffOn_fst.sub contDiffOn_const).div (contDiffOn_fst.add contDiffOn_const) ?_
             rintro ⟨R, x⟩ ⟨hR : 1 < R, _⟩
@@ -504,7 +501,7 @@ instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
         · rintro ⟨R, x⟩ ⟨hR : 1 < R, _⟩
           have A : 0 < (R - 1) / (R + 1) := by apply div_pos <;> linarith
           have B : (R - 1) / (R + 1) < 1 := by apply (div_lt_one _).2 <;> linarith
-          simp only [mem_preimage, prod_mk_mem_set_prod_eq, mem_Ioo, mem_univ, and_true, A, B]
+          simp only [mem_preimage, prodMk_mem_set_prod_eq, mem_Ioo, mem_univ, and_true, A, B]
       eq_one := fun R hR x hx => by
         have A : 0 < R + 1 := by linarith
         simp only [hR, if_true]

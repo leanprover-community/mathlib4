@@ -91,7 +91,7 @@ lemma hasPointwiseLeftKanExtensionAt_iff_of_iso' {L' : C ⥤ D} (e : L ≅ L') (
   let Φ : CostructuredArrow L' Y ≌ CostructuredArrow L Y := Comma.mapLeftIso _ e.symm
   let e' : CostructuredArrow.proj L' Y ⋙ F ≅
     Φ.functor ⋙ CostructuredArrow.proj L Y ⋙ F := Iso.refl _
-  exact hasColimitOfIso e'
+  exact hasColimit_of_iso e'
 
 variable {L} in
 /-- `HasPointwiseRightKanExtensionAt` is invariant when we replace `L` by an equivalent functor. -/
@@ -106,7 +106,7 @@ lemma hasPointwiseRightKanExtensionAt_iff_of_iso' {L' : C ⥤ D} (e : L ≅ L') 
   let Φ : StructuredArrow Y L' ≌ StructuredArrow Y L := Comma.mapRightIso _ e.symm
   let e' : StructuredArrow.proj Y L' ⋙ F ≅
     Φ.functor ⋙ StructuredArrow.proj Y L ⋙ F := Iso.refl _
-  exact hasLimitOfIso e'.symm
+  exact hasLimit_of_iso e'.symm
 
 lemma hasPointwiseLeftKanExtensionAt_of_equivalence
     (E : D ≌ D') (eL : L ⋙ E.functor ≅ L') (Y : D) (Y' : D') (e : E.functor.obj Y ≅ Y')

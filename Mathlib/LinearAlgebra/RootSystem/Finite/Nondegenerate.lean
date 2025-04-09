@@ -83,6 +83,19 @@ instance instIsAnisotropicOfIsCrystallographic [CharZero R] [P.IsCrystallographi
     IsAnisotropic P :=
   P.isAnisotropic_of_isValuedIn ℤ
 
+/-- The root form of an anisotropic pairing as an invariant form. -/
+@[simps] def toInvariantForm [P.IsAnisotropic] : P.InvariantForm where
+  form := P.RootForm
+  symm := P.rootForm_symmetric
+  ne_zero := IsAnisotropic.rootForm_root_ne_zero
+  isOrthogonal_reflection := P.rootForm_reflection_reflection_apply
+
+lemma pairingIn_zero_iff {S : Type*} [CommRing S] [Algebra S R] [FaithfulSMul S R]
+    [P.IsValuedIn S] [P.IsAnisotropic] [NoZeroDivisors R] [NeZero (2 : R)] {i j : ι} :
+    P.pairingIn S i j = 0 ↔ P.pairingIn S j i = 0 := by
+  simp only [← FaithfulSMul.algebraMap_eq_zero_iff S R, algebraMap_pairingIn,
+    P.toInvariantForm.pairing_zero_iff i j]
+
 end CommRing
 
 section IsDomain
@@ -102,7 +115,7 @@ lemma finrank_rootSpan_map_polarization_eq_finrank_corootSpan :
     (LinearMap.range (P.Polarization.domRestrict P.rootSpan))
     (smul_right_injective N h_ne)
     fun _ hx => ?_
-  obtain ⟨c, hc⟩ := (mem_span_range_iff_exists_fun R).mp hx
+  obtain ⟨c, hc⟩ := (Submodule.mem_span_range_iff_exists_fun R).mp hx
   rw [← hc, Finset.smul_sum]
   simp_rw [smul_smul, mul_comm, ← smul_smul]
   exact Submodule.sum_smul_mem (LinearMap.range (P.Polarization.domRestrict P.rootSpan)) c

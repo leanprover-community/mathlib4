@@ -7,6 +7,7 @@ import Mathlib.Algebra.Category.Grp.FiniteGrp
 import Mathlib.Topology.Algebra.ClosedSubgroup
 import Mathlib.Topology.Algebra.ContinuousMonoidHom
 import Mathlib.Topology.Category.Profinite.Basic
+import Mathlib.Topology.Separation.Connected
 /-!
 
 # Category of Profinite Groups
@@ -90,14 +91,14 @@ lemma ProfiniteGrp.coe_of (G : Type u) [Group G] [TopologicalSpace G] [IsTopolog
 structure ProfiniteAddGrp.Hom (A B : ProfiniteAddGrp.{u}) where
   private mk ::
   /-- The underlying `ContinuousAddMonoidHom`. -/
-  hom' : ContinuousAddMonoidHom A B
+  hom' : A →ₜ+ B
 
 /-- The type of morphisms in `ProfiniteGrp`. -/
 @[to_additive (attr := ext) existing]
 structure ProfiniteGrp.Hom (A B : ProfiniteGrp.{u}) where
   private mk ::
   /-- The underlying `ContinuousMonoidHom`. -/
-  hom' : ContinuousMonoidHom A B
+  hom' : A →ₜ* B
 
 attribute [to_additive existing ProfiniteAddGrp.Hom.mk] ProfiniteGrp.Hom.mk
 
@@ -108,14 +109,14 @@ instance : Category ProfiniteGrp where
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
 @[to_additive]
-instance : ConcreteCategory ProfiniteGrp (fun X Y => ContinuousMonoidHom X Y) where
+instance : ConcreteCategory ProfiniteGrp (fun X Y => X →ₜ* Y) where
   hom f := f.hom'
   ofHom f := ⟨f⟩
 
 /-- The underlying `ContinuousMonoidHom`. -/
 @[to_additive "The underlying `ContinuousAddMonoidHom`."]
 abbrev ProfiniteGrp.Hom.hom {M N : ProfiniteGrp.{u}} (f : ProfiniteGrp.Hom M N) :
-    ContinuousMonoidHom M N :=
+    M →ₜ* N :=
   ConcreteCategory.hom (C := ProfiniteGrp) f
 
 /-- Typecheck a `ContinuousMonoidHom` as a morphism in `ProfiniteGrp`. -/
@@ -123,7 +124,7 @@ abbrev ProfiniteGrp.Hom.hom {M N : ProfiniteGrp.{u}} (f : ProfiniteGrp.Hom M N) 
 abbrev ProfiniteGrp.ofHom {X Y : Type u} [Group X] [TopologicalSpace X] [IsTopologicalGroup X]
     [CompactSpace X] [TotallyDisconnectedSpace X] [Group Y] [TopologicalSpace Y]
     [IsTopologicalGroup Y] [CompactSpace Y] [TotallyDisconnectedSpace Y]
-    (f : ContinuousMonoidHom X Y) : ProfiniteGrp.of X ⟶ ProfiniteGrp.of Y :=
+    (f : X →ₜ* Y) : ProfiniteGrp.of X ⟶ ProfiniteGrp.of Y :=
   ConcreteCategory.ofHom f
 
 namespace ProfiniteGrp
@@ -160,7 +161,7 @@ variable {X Y Z : Type u} [Group X] [TopologicalSpace X] [IsTopologicalGroup X]
     [TopologicalSpace Z] [IsTopologicalGroup Z] [CompactSpace Z] [TotallyDisconnectedSpace Z]
 
 @[to_additive (attr := simp)]
-lemma hom_ofHom (f : ContinuousMonoidHom X Y) : (ofHom f).hom = f := rfl
+lemma hom_ofHom (f : X →ₜ* Y) : (ofHom f).hom = f := rfl
 
 @[to_additive (attr := simp)]
 lemma ofHom_hom {A B : ProfiniteGrp.{u}} (f : A ⟶ B) :
@@ -170,12 +171,12 @@ lemma ofHom_hom {A B : ProfiniteGrp.{u}} (f : A ⟶ B) :
 lemma ofHom_id : ofHom (ContinuousMonoidHom.id X) = 𝟙 (of X) := rfl
 
 @[to_additive (attr := simp)]
-lemma ofHom_comp (f : ContinuousMonoidHom X Y) (g : ContinuousMonoidHom Y Z) :
+lemma ofHom_comp (f : X →ₜ* Y) (g : Y →ₜ* Z) :
     ofHom (g.comp f) = ofHom f ≫ ofHom g :=
   rfl
 
 @[to_additive]
-lemma ofHom_apply (f : ContinuousMonoidHom X Y) (x : X) : ofHom f x = f x := rfl
+lemma ofHom_apply (f : X →ₜ* Y) (x : X) : ofHom f x = f x := rfl
 
 @[to_additive]
 lemma inv_hom_apply {A B : ProfiniteGrp.{u}} (e : A ≅ B) (x : A) : e.inv (e.hom x) = x := by

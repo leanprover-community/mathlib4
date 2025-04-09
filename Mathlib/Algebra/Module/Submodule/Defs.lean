@@ -34,8 +34,8 @@ variable {G : Type u''} {S : Type u'} {R : Type u} {M : Type v} {ι : Type w}
 /-- A submodule of a module is one which is closed under vector operations.
   This is a sufficient condition for the subset of vectors in the submodule
   to themselves form a module. -/
-structure Submodule (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] [Module R M] extends
-  AddSubmonoid M, SubMulAction R M : Type v
+structure Submodule (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] [Module R M] : Type v
+    extends AddSubmonoid M, SubMulAction R M
 
 /-- Reinterpret a `Submodule` as an `AddSubmonoid`. -/
 add_decl_doc Submodule.toAddSubmonoid
@@ -163,10 +163,6 @@ variable {p q : Submodule R M}
 variable {r : R} {x y : M}
 variable (p)
 
--- In Lean 3, `dsimp` would use theorems proved by `Iff.rfl`.
--- If that were still the case, this would useful as a `@[simp]` lemma,
--- despite the fact that it is provable by `simp` (by not `dsimp`).
-@[simp, nolint simpNF] -- See https://github.com/leanprover-community/mathlib4/issues/10675
 theorem mem_carrier : x ∈ p.carrier ↔ x ∈ (p : Set M) :=
   Iff.rfl
 
@@ -188,6 +184,13 @@ theorem smul_of_tower_mem [SMul S R] [SMul S M] [IsScalarTower S R M] (r : S) (h
 theorem smul_mem_iff' [Group G] [MulAction G M] [SMul G R] [IsScalarTower G R M] (g : G) :
     g • x ∈ p ↔ x ∈ p :=
   p.toSubMulAction.smul_mem_iff' g
+
+@[simp]
+lemma smul_mem_iff'' [Invertible r] :
+    r • x ∈ p ↔ x ∈ p := by
+  refine ⟨fun h ↦ ?_, p.smul_mem r⟩
+  rw [← invOf_smul_smul r x]
+  exact p.smul_mem _ h
 
 instance add : Add p :=
   ⟨fun x y => ⟨x.1 + y.1, add_mem x.2 y.2⟩⟩

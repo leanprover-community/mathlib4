@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou
 -/
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
+import Mathlib.MeasureTheory.Integral.Lebesgue.Norm
 import Mathlib.MeasureTheory.Measure.WithDensity
 
 /-!
@@ -345,8 +346,9 @@ section NormedSpace
 
 variable {𝕜 : Type*}
 
-theorem HasFiniteIntegral.smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β] [BoundedSMul 𝕜 β] (c : 𝕜)
-    {f : α → β} : HasFiniteIntegral f μ → HasFiniteIntegral (c • f) μ := by
+theorem HasFiniteIntegral.smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β] [IsBoundedSMul 𝕜 β]
+    (c : 𝕜) {f : α → β} :
+    HasFiniteIntegral f μ → HasFiniteIntegral (c • f) μ := by
   simp only [HasFiniteIntegral]; intro hfi
   calc
     ∫⁻ a : α, ‖c • f a‖ₑ ∂μ ≤ ∫⁻ a : α, ‖c‖ₑ * ‖f a‖ₑ ∂μ := lintegral_mono fun i ↦ enorm_smul_le
@@ -354,8 +356,9 @@ theorem HasFiniteIntegral.smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β]
       rw [lintegral_const_mul']
       exacts [mul_lt_top coe_lt_top hfi, coe_ne_top]
 
-theorem hasFiniteIntegral_smul_iff [NormedRing 𝕜] [MulActionWithZero 𝕜 β] [BoundedSMul 𝕜 β] {c : 𝕜}
-    (hc : IsUnit c) (f : α → β) : HasFiniteIntegral (c • f) μ ↔ HasFiniteIntegral f μ := by
+theorem hasFiniteIntegral_smul_iff [NormedRing 𝕜] [MulActionWithZero 𝕜 β] [IsBoundedSMul 𝕜 β]
+    {c : 𝕜} (hc : IsUnit c) (f : α → β) :
+    HasFiniteIntegral (c • f) μ ↔ HasFiniteIntegral f μ := by
   obtain ⟨c, rfl⟩ := hc
   constructor
   · intro h

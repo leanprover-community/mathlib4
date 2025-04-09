@@ -7,6 +7,7 @@ import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Data.Real.Sqrt
+import Mathlib.Data.Real.Star
 import Mathlib.Tactic.Polyrith
 
 /-!

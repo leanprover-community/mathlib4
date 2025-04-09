@@ -61,6 +61,8 @@ noncomputable instance instMonoidalCategory : MonoidalCategory (BialgebraCat R) 
 /-- `forget₂ (BialgebraCat R) (AlgebraCat R)` as a monoidal functor. -/
 noncomputable instance : (forget₂ (BialgebraCat R) (AlgebraCat R)).Monoidal where
 
+#adaptation_note /-- nightly-2025-02-18: added `maxHeartbeats` --/
+set_option maxHeartbeats 400000 in
 /-- `forget₂ (BialgebraCat R) (CoalgebraCat R)` as a monoidal functor. -/
 noncomputable instance : (forget₂ (BialgebraCat R) (CoalgebraCat R)).Monoidal :=
   Functor.CoreMonoidal.toMonoidal {
