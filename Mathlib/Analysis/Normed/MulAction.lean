@@ -104,7 +104,7 @@ theorem nnnorm_smul (r : α) (x : β) : ‖r • x‖₊ = ‖r‖₊ * ‖x‖�
 
 lemma enorm_smul (r : α) (x : β) : ‖r • x‖ₑ = ‖r‖ₑ * ‖x‖ₑ := by simp [enorm, nnnorm_smul]
 
-instance Pi.toNormSMulClass {ι : Type*} {β : ι → Type*} [Fintype ι] [DecidableEq ι]
+instance Pi.toNormSMulClass {ι : Type*} {β : ι → Type*} [Fintype ι]
     [SeminormedRing α] [∀ i, SeminormedAddGroup (β i)] [∀ i, SMul α (β i)]
     [∀ i, NormSMulClass α (β i)] : NormSMulClass α (Π i, β i) where
   norm_smul r x := by
