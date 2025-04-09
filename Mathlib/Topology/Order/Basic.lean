@@ -115,6 +115,7 @@ theorem nhds_eq_order [OrderTopology α] (a : α) :
 theorem tendsto_order [OrderTopology α] {f : β → α} {a : α} {x : Filter β} :
     Tendsto f x (𝓝 a) ↔ (∀ a' < a, ∀ᶠ b in x, a' < f b) ∧ ∀ a' > a, ∀ᶠ b in x, f b < a' := by
   simp only [nhds_eq_order a, tendsto_inf, tendsto_iInf, tendsto_principal]; rfl
+
 instance tendstoIccClassNhds [OrderTopology α] (a : α) : TendstoIxxClass Icc (𝓝 a) (𝓝 a) := by
   simp only [nhds_eq_order, iInf_subtype']
   refine
