@@ -749,19 +749,27 @@ lemma isFixedPt_reflection_of_isOrthogonal {s : Set ι} (hj : ∀ i ∈ s, P.IsO
       obtain ⟨i, his, rfl⟩ := hu
       exact IsOrthogonal.reflection_apply_right <| hj i his
 
-lemma pairing_zero_iff [NeZero (2 : R)] [NoZeroSMulDivisors R N] :
-    (P.pairing i j = 0) ↔ (P.pairing j i = 0) := by
-  have aux (a b : ι) : P.pairing a b = 0 → P.pairing b a = 0 := by
-    intro h
-    have h₁ : P.toPerfectPairing (P.root a) (P.coroot b) = 0 := h
-    have root_swap := P.reflection_perm_root b a
-    rw [h₁, zero_smul, sub_zero, EmbeddingLike.apply_eq_iff_eq] at root_swap
-    have coroot_swap := P.reflection_perm_coroot b a
-    rw [← root_swap, root_coroot_eq_pairing, sub_eq_self, smul_eq_zero] at coroot_swap
-    rcases coroot_swap with h₂ | h₂
-    · exact h₂
-    exact False.elim (P.ne_zero' b h₂)
-  exact ⟨aux i j, aux j i⟩
+lemma reflection_perm_eq_of_pairing_eq_zero (h : P.pairing j i = 0) :
+    P.reflection_perm i j = j :=
+  P.root.injective <| by simp [reflection_apply, h]
+
+lemma reflection_perm_eq_of_pairing_eq_zero' (h : P.pairing i j = 0) :
+    P.reflection_perm i j = j :=
+  P.flip.reflection_perm_eq_of_pairing_eq_zero h
+
+lemma smul_root_eq_zero_of_pairing_eq_zero (h : P.pairing i j = 0) :
+    P.pairing j i • P.root i = 0 := by
+  simpa [P.reflection_perm_eq_of_pairing_eq_zero' h] using P.reflection_perm_root i j
+
+lemma smul_coroot_eq_zero_of_pairing_eq_zero (h : P.pairing i j = 0) :
+    P.pairing j i • P.coroot j = 0 :=
+  P.flip.smul_root_eq_zero_of_pairing_eq_zero h
+
+lemma pairing_zero_iff [NeZero (2 : R)] [NoZeroSMulDivisors R M] :
+    P.pairing i j = 0 ↔ P.pairing j i = 0 := by
+  suffices ∀ {i j : ι}, P.pairing i j = 0 → P.pairing j i = 0 from ⟨this, this⟩
+  intro i j h
+  simpa [P.ne_zero i] using P.smul_root_eq_zero_of_pairing_eq_zero h
 
 lemma pairing_zero_iff' [NeZero (2 : R)] [IsDomain R] :
     P.pairing i j = 0 ↔ P.pairing j i = 0 := by
