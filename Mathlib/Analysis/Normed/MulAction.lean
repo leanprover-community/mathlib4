@@ -96,7 +96,8 @@ class NormSMulClass (α β : Type*) [Norm α] [Norm β] [SMul α β] : Prop wher
 lemma norm_smul {α β : Type*} [Norm α] [Norm β] [SMul α β] [NormSMulClass α β] (r : α) (x : β) :
     ‖r • x‖ = ‖r‖ * ‖x‖ :=
   NormSMulClass.norm_smul r x
-
+instance NormMulClass.toNormSMulClass {α : Type*} [Norm α] [Mul α] [NormMulClass α] : NormSMulClass α α where
+   norm_smul := norm_mul
 variable [SeminormedRing α] [SeminormedAddGroup β] [SMul α β] [NormSMulClass α β]
 
 theorem nnnorm_smul (r : α) (x : β) : ‖r • x‖₊ = ‖r‖₊ * ‖x‖₊ :=
@@ -130,7 +131,7 @@ theorem nndist_smul₀ (s : α) (x y : β) : nndist (s • x) (s • y) = ‖s�
 theorem edist_smul₀ (s : α) (x y : β) : edist (s • x) (s • y) = ‖s‖₊ • edist x y := by
   simp only [edist_nndist, nndist_smul₀, ENNReal.coe_mul, ENNReal.smul_def, smul_eq_mul]
 
-instance NormSMulClass.toBoundedSMul : IsBoundedSMul α β :=
+instance NormSMulClass.toIsBoundedSMul : IsBoundedSMul α β :=
   .of_norm_smul_le fun r x ↦ (norm_smul r x).le
 
 end NormSMulClassModule
