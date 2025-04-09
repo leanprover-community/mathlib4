@@ -99,7 +99,9 @@ def TorusIntegrable (f : ℂⁿ → E) (c : ℂⁿ) (R : ℝⁿ) : Prop :=
 
 namespace TorusIntegrable
 
+set_option linter.style.commandStart false -- the ℂⁿ raises a linter warning
 variable {f g : ℂⁿ → E} {c : ℂⁿ} {R : ℝⁿ}
+set_option linter.style.commandStart true
 
 /-- Constant functions are torus integrable -/
 theorem torusIntegrable_const (a : E) (c : ℂⁿ) (R : ℝⁿ) : TorusIntegrable (fun _ => a) c R := by
@@ -118,6 +120,7 @@ protected nonrec theorem sub (hf : TorusIntegrable f c R) (hg : TorusIntegrable 
     TorusIntegrable (f - g) c R :=
   hf.sub hg
 
+set_option linter.style.commandStart false in -- the ℂⁿ raises a linter warning
 theorem torusIntegrable_zero_radius {f : ℂⁿ → E} {c : ℂⁿ} : TorusIntegrable f c 0 := by
   rw [TorusIntegrable, torusMap_zero_radius]
   apply torusIntegrable_const (f c) c 0
@@ -132,7 +135,9 @@ theorem function_integrable [NormedSpace ℂ E] (hf : TorusIntegrable f c R) :
 
 end TorusIntegrable
 
+set_option linter.style.commandStart false -- the ℂⁿ raises a linter warning
 variable [NormedSpace ℂ E] {f g : ℂⁿ → E} {c : ℂⁿ} {R : ℝⁿ}
+set_option linter.style.commandStart true
 
 /-- The integral over a generalized torus with center `c ∈ ℂⁿ` and radius `R ∈ ℝⁿ`, defined
 as the `•`-product of the derivative of `torusMap` and `f (torusMap c R θ)` -/
@@ -142,11 +147,13 @@ def torusIntegral (f : ℂⁿ → E) (c : ℂⁿ) (R : ℝⁿ) :=
 @[inherit_doc torusIntegral]
 notation3"∯ "(...)" in ""T("c", "R")"", "r:(scoped f => torusIntegral f c R) => r
 
+set_option linter.style.commandStart false in -- the ℂⁿ raises a linter warning
 theorem torusIntegral_radius_zero (hn : n ≠ 0) (f : ℂⁿ → E) (c : ℂⁿ) :
     (∯ x in T(c, 0), f x) = 0 := by
   simp only [torusIntegral, Pi.zero_apply, ofReal_zero, mul_zero, zero_mul, Fin.prod_const,
     zero_pow hn, zero_smul, integral_zero]
 
+set_option linter.style.commandStart false in -- the ℂⁿ raises a linter warning
 theorem torusIntegral_neg (f : ℂⁿ → E) (c : ℂⁿ) (R : ℝⁿ) :
     (∯ x in T(c, R), -f x) = -∯ x in T(c, R), f x := by simp [torusIntegral, integral_neg]
 
@@ -159,10 +166,12 @@ theorem torusIntegral_sub (hf : TorusIntegrable f c R) (hg : TorusIntegrable g c
     (∯ x in T(c, R), f x - g x) = (∯ x in T(c, R), f x) - ∯ x in T(c, R), g x := by
   simpa only [sub_eq_add_neg, ← torusIntegral_neg] using torusIntegral_add hf hg.neg
 
+set_option linter.style.commandStart false in -- the ℂⁿ raises a linter warning
 theorem torusIntegral_smul {𝕜 : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] [SMulCommClass 𝕜 ℂ E] (a : 𝕜)
     (f : ℂⁿ → E) (c : ℂⁿ) (R : ℝⁿ) : (∯ x in T(c, R), a • f x) = a • ∯ x in T(c, R), f x := by
   simp only [torusIntegral, integral_smul, ← smul_comm a (_ : ℂ) (_ : E)]
 
+set_option linter.style.commandStart false in -- the ℂⁿ raises a linter warning
 theorem torusIntegral_const_mul (a : ℂ) (f : ℂⁿ → ℂ) (c : ℂⁿ) (R : ℝⁿ) :
     (∯ x in T(c, R), a * f x) = a * ∯ x in T(c, R), f x :=
   torusIntegral_smul a f c R
@@ -182,6 +191,7 @@ theorem norm_torusIntegral_le_of_norm_le_const {C : ℝ} (hf : ∀ θ, ‖f (tor
       simp only [Pi.zero_def, Real.volume_Icc_pi_toReal fun _ => Real.two_pi_pos.le, sub_zero,
         Fin.prod_const, mul_assoc, mul_comm ((2 * π) ^ (n : ℕ))]
 
+set_option linter.style.commandStart false in -- the ℂ⁰ raises a linter warning
 @[simp]
 theorem torusIntegral_dim0 [CompleteSpace E]
     (f : ℂ⁰ → E) (c : ℂ⁰) (R : ℝ⁰) : (∯ x in T(c, R), f x) = f c := by
