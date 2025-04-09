@@ -231,7 +231,7 @@ theorem combinatorial_nullstellensatz_exists_linearCombination
   · intro x hx
     rw [Iff.symm sub_eq_iff_eq_add'] at hf
     rw [← hf, map_sub, Heval x hx, zero_sub, neg_eq_zero,
-      linearCombination_apply, map_finsupp_sum, Finsupp.sum, Finset.sum_eq_zero]
+      linearCombination_apply, map_finsuppSum, Finsupp.sum, Finset.sum_eq_zero]
     intro i _
     rw [smul_eq_mul, map_mul]
     convert mul_zero _

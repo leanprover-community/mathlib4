@@ -517,7 +517,7 @@ theorem spanFinBasis.span : ⊤ ≤ Submodule.span ℤ (Set.range (spanFinBasis 
   use Finsupp.onFinset (Finset.univ) f.toFun (fun _ _ ↦ Finset.mem_univ _)
   ext x
   change LocallyConstant.evalₗ ℤ x _ = _
-  simp only [zsmul_eq_mul, map_finsupp_sum, LocallyConstant.evalₗ_apply,
+  simp only [zsmul_eq_mul, map_finsuppSum, LocallyConstant.evalₗ_apply,
     LocallyConstant.coe_mul, Pi.mul_apply, spanFinBasis, LocallyConstant.coe_mk, mul_ite, mul_one,
     mul_zero, Finsupp.sum_ite_eq, Finsupp.mem_support_iff, ne_eq, ite_not]
   split_ifs with h <;> [exact h.symm; rfl]
@@ -586,12 +586,12 @@ theorem factors_prod_eq_basis (x : π C (· ∈ s)) :
   split_ifs with h <;> [exact factors_prod_eq_basis_of_eq _ _ h;
     exact factors_prod_eq_basis_of_ne _ _ h]
 
-theorem GoodProducts.finsupp_sum_mem_span_eval {a : I} {as : List I}
+theorem GoodProducts.finsuppSum_mem_span_eval {a : I} {as : List I}
     (ha : List.Chain' (· > ·) (a :: as)) {c : Products I →₀ ℤ}
     (hc : (c.support : Set (Products I)) ⊆ {m | m.val ≤ as}) :
     (Finsupp.sum c fun a_1 b ↦ e (π C (· ∈ s)) a * b • Products.eval (π C (· ∈ s)) a_1) ∈
       Submodule.span ℤ (Products.eval (π C (· ∈ s)) '' {m | m.val ≤ a :: as}) := by
-  apply Submodule.finsupp_sum_mem
+  apply Submodule.finsuppSum_mem
   intro m hm
   have hsm := (LinearMap.mulLeft ℤ (e (π C (· ∈ s)) a)).map_smul
   dsimp at hsm
@@ -603,6 +603,9 @@ theorem GoodProducts.finsupp_sum_mem_span_eval {a : I} {as : List I}
     simpa only [Finset.mem_coe, Finsupp.mem_support_iff] using hm
   refine ⟨⟨a :: m.val, ha.cons_of_le m.prop hmas⟩, ⟨List.cons_le_cons a hmas, ?_⟩⟩
   simp only [Products.eval, List.map, List.prod_cons]
+
+@[deprecated (since := "2025-04-06")]
+alias GoodProducts.finsupp_sum_mem_span_eval := GoodProducts.finsuppSum_mem_span_eval
 
 /-- If `s` is a finite subset of `I`, then the good products span. -/
 theorem GoodProducts.spanFin [WellFoundedLT I] :
@@ -631,17 +634,17 @@ theorem GoodProducts.spanFin [WellFoundedLT I] :
     simp only [Finsupp.mem_supported, Finsupp.linearCombination_apply] at ih
     obtain ⟨c, hc, hc'⟩ := ih
     rw [← hc']; clear hc'
-    have hmap := fun g ↦ map_finsupp_sum (LinearMap.mulLeft ℤ (e (π C (· ∈ s)) a)) c g
+    have hmap := fun g ↦ map_finsuppSum (LinearMap.mulLeft ℤ (e (π C (· ∈ s)) a)) c g
     dsimp at hmap ⊢
     split_ifs
     · rw [hmap]
-      exact finsupp_sum_mem_span_eval _ _ ha hc
+      exact finsuppSum_mem_span_eval _ _ ha hc
     · ring_nf
       rw [hmap]
       apply Submodule.add_mem
       · apply Submodule.neg_mem
-        exact finsupp_sum_mem_span_eval _ _ ha hc
-      · apply Submodule.finsupp_sum_mem
+        exact finsuppSum_mem_span_eval _ _ ha hc
+      · apply Submodule.finsuppSum_mem
         intro m hm
         apply Submodule.smul_mem
         apply Submodule.subset_span
@@ -1626,7 +1629,7 @@ theorem maxTail_isGood (l : MaxProducts C ho)
   have : (Linear_CC' C hsC ho) (l.val.eval C) = (Linear_CC' C hsC ho)
       (Finsupp.sum m fun i a ↦ a • ((term I ho :: i.1).map (e C)).prod) := by
     rw [← hmsum]
-    simp only [map_finsupp_sum]
+    simp only [map_finsuppSum]
     apply Finsupp.sum_congr
     intro q hq
     rw [LinearMap.map_smul]
@@ -1653,13 +1656,13 @@ theorem maxTail_isGood (l : MaxProducts C ho)
   have hn' := h₁ (Submodule.mem_top : n ∈ ⊤)
   rw [Finsupp.mem_span_range_iff_exists_finsupp] at hn'
   obtain ⟨w,hc⟩ := hn'
-  rw [← hc, map_finsupp_sum] at hn
+  rw [← hc, map_finsuppSum] at hn
   apply l.prop.1
   rw [← hn]
 
   -- Now we just need to prove that a sum of two terms belongs to a span:
   apply Submodule.add_mem
-  · apply Submodule.finsupp_sum_mem
+  · apply Submodule.finsuppSum_mem
     intro q _
     rw [LinearMap.map_smul]
     apply Submodule.smul_mem
@@ -1669,7 +1672,7 @@ theorem maxTail_isGood (l : MaxProducts C ho)
     refine ⟨q.val, ⟨?_, rfl⟩⟩
     simp only [Products.lt_iff_lex_lt, Set.mem_setOf_eq]
     exact good_lt_maxProducts C hsC ho q l
-  · apply Submodule.finsupp_sum_mem
+  · apply Submodule.finsuppSum_mem
     intro q hq
     apply Submodule.smul_mem
     apply Submodule.subset_span
