@@ -12,6 +12,7 @@ set_option linter.style.multiGoal false
 set_option linter.style.cases false
 set_option linter.unusedVariables true
 set_option linter.unusedSectionVars true
+set_option linter.style.longFile 1700
 
 open BigOperators Module.Free Fintype NumberField Embeddings FiniteDimensional
     Matrix Set Polynomial Finset IntermediateField
@@ -656,21 +657,33 @@ def iteratedDeriv_of_R :
         apply Differentiable.cexp
         apply mul (differentiable_const _) (differentiable_id')
 
-lemma itatedDeriv_of_R_is_zero (k : ℕ)
-(hR : ∀ x, (R K α β hirr htriv σ hd α' β' γ' habc q h2mq u hq0 t) x = 0) :
+lemma iteratedDeriv_of_R_is_zero (k : ℕ)
+(hR : (R K α β hirr htriv σ hd α' β' γ' habc q h2mq u hq0 t) = 0) :
   iteratedDeriv k (fun x => R K α β hirr htriv σ hd α' β' γ' habc q h2mq u hq0 t x) x = 0 := by {
 rw [iteratedDeriv]
-simp_all only [iteratedFDeriv_zero_fun, Pi.zero_apply,
-  ContinuousMultilinearMap.zero_apply]}
+simp_all only
+obtain ⟨left, right⟩ := htriv
+obtain ⟨left_1, right_1⟩ := habc
+obtain ⟨left_2, right_1⟩ := right_1
+subst left_1 left_2
+simp_all only [Pi.zero_apply, iteratedFDeriv_zero_fun, ContinuousMultilinearMap.zero_apply]}
 
 include α β hirr htriv in
-lemma vecMul_of_R_zero
-  (hR : R K α β hirr htriv σ hd α' β' γ' habc q h2mq u hq0 t x = 0) :
+lemma vecMul_of_R_zero (k : ℕ)
+  (hR : R K α β hirr htriv σ hd α' β' γ' habc q h2mq u hq0 t = 0) :
   (V α β q).vecMul (fun t =>
-  σ ((η K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0) t )) = 0 := by
+  σ ((η K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0) t)) = 0 := by
   unfold V
-  unfold R at hR
-
+  have: iteratedDeriv k (fun x => R K α β hirr htriv σ hd α' β' γ' habc q h2mq u hq0 t x) = 0
+   := by {
+   rw [funext_iff]
+   intros x
+   simp only [Pi.zero_apply]
+   apply iteratedDeriv_of_R_is_zero
+   exact hR
+   }
+  rw [funext_iff] at this
+  rw [funext_iff]
   sorry
 
   --rw [← hR]
@@ -678,20 +691,17 @@ lemma vecMul_of_R_zero
   --rw [Finset.sum_eq_zero_iff] at hR
   --apply eq_zero_of_vecMul_eq_zero (vandermonde_det_ne_zero α β hirr htriv q)
 
-lemma η_eq_zero (x : ℂ)
-   (hR : R K α β hirr htriv σ hd α' β' γ' habc q h2mq u hq0 = 0) :
+lemma η_eq_zero (k : ℕ) (x : ℂ)
+   (hR : R K α β hirr htriv σ hd α' β' γ' habc q h2mq u hq0 t = 0) :
     (fun t => σ (η K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0 t)) = 0 := by
   apply eq_zero_of_vecMul_eq_zero
   · apply vandermonde_det_ne_zero α β hirr htriv q
-  · apply fun t => vecMul_of_R_zero K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0
-    rw [hR]
+  · rw [funext_iff]
+    intros t
     simp only [Pi.zero_apply]
-    sorry
-    sorry
-
-  -- apply vandermonde_det_ne_zero α β hirr htriv q
-  -- apply vecMul_of_R_zero K α β hirr htriv σ hd α' β' γ' habc q h2mq u hq0 t
-  -- exact hR x
+    have := vecMul_of_R_zero K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0 k hR
+    rw [funext_iff] at this
+    apply this
 
 -- lemma det V ≠ 0
 -- from det_vandermonde_eq_zero_iff
@@ -724,19 +734,18 @@ lemma hbound_sigma :
   simp_all only [Nat.cast_mul, Real.rpow_natCast, Prod.forall, ne_eq, not_true_eq_false]
 
 include α β hirr htriv K σ α' β' γ' habc q t in
-lemma R_nonzero (x : ℂ)
+lemma R_nonzero (k : ℕ) (x : ℂ)
   (hdistinct : ∀ (i j : Fin (q * q)), i ≠ j → ρ α β q i ≠ ρ α β q j) :
   R K α β hirr htriv σ hd α' β' γ' habc q h2mq u hq0 t x ≠ 0 := by
   by_contra H
-  have HC := (ηvec_eq_zero K α β hirr htriv σ hd α' β' γ' habc q h2mq u hq0)
-    (vecMul_of_R_zero K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0 H)
-  simp only [funext_iff, Pi.zero_apply, _root_.map_eq_zero] at HC
-  apply hbound_sigma K α β hirr htriv σ hd α' β' γ' habc q h2mq u t
-  ext t
-  specialize HC t
-  simp only [Pi.zero_apply, map_zero, FaithfulSMul.algebraMap_eq_zero_iff]
-  simp only [FaithfulSMul.algebraMap_eq_zero_iff] at HC
-  sorry
+  -- have HC := (ηvec_eq_zero K α β hirr htriv σ hd α' β' γ' habc q h2mq u hq0)
+  --   (vecMul_of_R_zero K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0 k H)
+  -- simp only [funext_iff, Pi.zero_apply, _root_.map_eq_zero] at HC
+  -- apply hbound_sigma K α β hirr htriv σ hd α' β' γ' habc q h2mq u t
+  -- ext t
+  -- specialize HC t
+  -- simp only [Pi.zero_apply, map_zero, FaithfulSMul.algebraMap_eq_zero_iff]
+  -- simp only [FaithfulSMul.algebraMap_eq_zero_iff] at HC
   sorry
   --exact HC
 
@@ -766,14 +775,15 @@ include α β σ hq0 h2mq hd hirr htriv K σ α' β' γ' habc h2mq  hdistinct in
 lemma iteratedDeriv_vanishes (k : Fin (q * q)) (l : Fin (m K)) : l < n K q →
   iteratedDeriv k (R K α β hirr htriv σ hd α' β' γ' habc q h2mq u hq0 t) l = 0 := by
   intros hl
-  apply itatedDeriv_of_R_is_zero
-  intros x
+  apply iteratedDeriv_of_R_is_zero
   unfold R
+  rw [funext_iff]
+  intros x
   apply Finset.sum_eq_zero
   intros t ht
   simp only [finProdFinEquiv_symm_apply, mul_eq_zero, map_eq_zero,
     FaithfulSMul.algebraMap_eq_zero_iff, exp_ne_zero, or_false]
-  have H := η_eq_zero K α β hirr htriv σ hd α' β' γ' habc q h2mq u hq0 t
+  have H := η_eq_zero K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0 k x
   simp only [forall_const] at H
   have := applylemma82_Matrix K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0
   sorry
@@ -1380,7 +1390,6 @@ theorem hilbert7 : Transcendental ℚ (α ^ β) := fun hγ => by
 --       }
 --       exact this
 
-
 --   have newρ (z : ℂ) (hz : z ∈ Metric.ball 0 (m K *(1+ (r/q))))
 --           (k : Fin n) (l₀ : Fin m) (t : Fin q × Fin q) :
 --       σ (ρ t) = log (α) ^ (-r : ℤ) * ((2 * ↑Real.pi * I)⁻¹ *
@@ -1420,14 +1429,11 @@ theorem hilbert7 : Transcendental ℚ (α ^ β) := fun hγ => by
 --           --rwa [sub_lt_sub_iff_left]
 --           }
 --           _ ≤ norm (z - l₀) := by {apply AbsoluteValue.le_sub}
-
 --   have abs_z_k (k : Fin n) (l₀ : Fin m) (z : ℂ) (hz : z ∈ Metric.sphere 0 (m K *(1+ (r/q)))) :
 --         m*r/q ≤ norm (z-k) := by
 --     calc _ ≤ norm (z - l₀) := abs_hmrqzl₀ z hz k l₀
 --          _ ≤ norm (z-k) := by { sorry
---           --aesop
---          }
-
+--           --aesop --          }
 --   let c₁₁ : ℝ := sorry
 
 --   have abs_denom (z : ℂ)(hz : z ∈ Metric.sphere 0 (m K *(1+ (r/q)))) (k : Fin n) (l₀ : Fin m) :
@@ -1487,16 +1493,12 @@ theorem hilbert7 : Transcendental ℚ (α ^ β) := fun hγ => by
 --           _ = (c₁₄)^r*r^((-r : ℤ)/2+3*h/2) := sorry
 
 --   have final_ineq : r^(r/2 - 3*h/2) ≥ c₁₅^r := sorry
-
 --   exact ⟨r,  hr, final_ineq⟩
 --   --sorry
 -- include hα hβ
 -- theorem hilbert7 : Transcendental ℚ (α ^ β) := fun hγ => by
-
 --   obtain ⟨K, hK, hNK, σ, hd, α', β', γ', ha,hb, hc⟩ := getElemsInNF α β (α^β) hα hβ hγ
-
 --   --have hq0 : 0 < q := sorry
-
 --   rcases (main K α β σ α' β' γ' q) with ⟨r, ⟨hr, hs⟩⟩
 --     -- only now you define t
 --   have use5 : r^(r/2 - 3*h K/2) < c₁₅^r := calc
