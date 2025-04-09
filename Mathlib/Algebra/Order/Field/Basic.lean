@@ -840,11 +840,11 @@ such that `positivity` successfully recognises both `a` and `b`. -/
   let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← withReducible (whnf e)
     | throwError "not /"
   let _e_eq : $e =Q $f $a $b := ⟨⟩
-  let _a ← synthInstanceQ (q(Semifield $α) : Q(Type u))
-  let _a ← synthInstanceQ (q(LinearOrder $α) : Q(Type u))
-  let _a ← synthInstanceQ (q(IsStrictOrderedRing $α) : Q(Prop))
+  let _a ← synthInstanceQ q(Semifield $α)
+  let _a ← synthInstanceQ q(LinearOrder $α)
+  let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
   assumeInstancesCommute
-  let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ (u := u.succ) f q(HDiv.hDiv)
+  let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ q($f) q(HDiv.hDiv)
   let ra ← core zα pα a; let rb ← core zα pα b
   match ra, rb with
   | .positive pa, .positive pb => pure (.positive q(div_pos $pa $pb))
@@ -862,11 +862,11 @@ such that `positivity` successfully recognises `a`. -/
 def evalInv : PositivityExt where eval {u α} zα pα e := do
   let .app (f : Q($α → $α)) (a : Q($α)) ← withReducible (whnf e) | throwError "not ⁻¹"
   let _e_eq : $e =Q $f $a := ⟨⟩
-  let _a ← synthInstanceQ (q(Semifield $α) : Q(Type u))
-  let _a ← synthInstanceQ (q(LinearOrder $α) : Q(Type u))
-  let _a ← synthInstanceQ (q(IsStrictOrderedRing $α) : Q(Prop))
+  let _a ← synthInstanceQ q(Semifield $α)
+  let _a ← synthInstanceQ q(LinearOrder $α)
+  let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
   assumeInstancesCommute
-  let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ (u := u.succ) f q(Inv.inv)
+  let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ q($f) q(Inv.inv)
   let ra ← core zα pα a
   match ra with
   | .positive pa => pure (.positive q(inv_pos_of_pos $pa))
@@ -878,10 +878,11 @@ def evalInv : PositivityExt where eval {u α} zα pα e := do
 @[positivity _ ^ (0 : ℤ), Pow.pow _ (0 : ℤ)]
 def evalPowZeroInt : PositivityExt where eval {u α} _zα _pα e := do
   let .app (.app _ (a : Q($α))) _ ← withReducible (whnf e) | throwError "not ^"
-  let _a ← synthInstanceQ (q(Semifield $α) : Q(Type u))
-  let _a ← synthInstanceQ (q(LinearOrder $α) : Q(Type u))
-  let _a ← synthInstanceQ (q(IsStrictOrderedRing $α) : Q(Prop))
+  let _a ← synthInstanceQ q(Semifield $α)
+  let _a ← synthInstanceQ q(LinearOrder $α)
+  let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
   assumeInstancesCommute
-  pure (.positive (q(zpow_zero_pos $a) : Expr))
+  let ⟨_a⟩ ← Qq.assertDefEqQ q($e) q($a ^ (0 : ℤ))
+  pure (.positive q(zpow_zero_pos $a))
 
 end Mathlib.Meta.Positivity

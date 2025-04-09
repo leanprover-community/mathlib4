@@ -400,15 +400,7 @@ def mapCoeffs (h : ∀ (c) (x : M), f c • x = c • x) : Basis ι R' M := by
 variable (h : ∀ (c) (x : M), f c • x = c • x)
 
 theorem mapCoeffs_apply (i : ι) : b.mapCoeffs f h i = b i :=
-  apply_eq_iff.mpr <| by
-    -- Porting note: in Lean 3, these were automatically inferred from the definition of
-    -- `mapCoeffs`.
-    letI : Module R' R := Module.compHom R (↑f.symm : R' →+* R)
-    haveI : IsScalarTower R' R M :=
-    { smul_assoc := fun x y z => by
-        change (f.symm x * y) • z = x • (y • z)
-        rw [mul_smul, ← h, f.apply_symm_apply] }
-    simp
+  apply_eq_iff.mpr <| by simp
 
 @[simp]
 theorem coe_mapCoeffs : (b.mapCoeffs f h : ι → M) = b :=
