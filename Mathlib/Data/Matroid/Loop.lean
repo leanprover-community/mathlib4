@@ -272,6 +272,9 @@ attribute [aesop unsafe 20% (rule_sets := [Matroid])] IsNonloop.mem_ground
 lemma IsLoop.not_isNonloop (he : M.IsLoop e) : ¬M.IsNonloop e :=
   fun h ↦ h.not_isLoop he
 
+lemma compl_loops_eq (M : Matroid α) : M.E \ M.loops = {e | M.IsNonloop e} := by
+  simp [Set.ext_iff, isNonloop_iff, and_comm, isLoop_iff]
+
 lemma isNonloop_of_not_isLoop (he : e ∈ M.E := by aesop_mat) (h : ¬ M.IsLoop e) : M.IsNonloop e :=
   ⟨h,he⟩
 
