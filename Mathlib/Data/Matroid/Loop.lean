@@ -239,6 +239,14 @@ lemma comap_isLoop_iff {M : Matroid β} {f : α → β} : (M.comap f).IsLoop e �
 lemma loopyOn_isLoop_iff {E : Set α} : (loopyOn E).IsLoop e ↔ e ∈ E := by
   simp [isLoop_iff, loops]
 
+lemma eq_loopyOn_iff_loops {E : Set α} : M = loopyOn E ↔ M.loops = E ∧ M.E = E :=
+  ⟨fun h ↦ by rw [h, loops]; simp, fun ⟨h,h'⟩ ↦
+    by rw [← h', ← closure_empty_eq_ground_iff, ← loops, h, h']⟩
+
+lemma restrict_subset_loops_eq (hX : X ⊆ M.loops) : M ↾ X = loopyOn X := by
+  rw [eq_loopyOn_iff_loops, restrict_loops_eq', inter_eq_self_of_subset_right hX,
+    union_eq_self_of_subset_right diff_subset, and_iff_left M.restrict_ground_eq]
+
 @[simp]
 lemma freeOn_not_isLoop (E : Set α) (e : α) : ¬ (freeOn E).IsLoop e := by
   simp [isLoop_iff, loops]
@@ -733,5 +741,132 @@ lemma ext_indep_disjoint_loops_coloops {M₁ M₂ : Matroid α} (hE : M₁.E = M
   exact hel.not_indep_of_mem ⟨heI, hel.not_isColoop⟩
 
 end IsColoop
+
+section Loopless
+
+/-- A Matroid is `Loopless` if it has no loop -/
+@[mk_iff]
+class Loopless (M : Matroid α) : Prop where
+  loops_eq_empty : M.loops = ∅
+
+@[simp]
+lemma loops_eq_empty (M : Matroid α) [Loopless M] : M.loops = ∅ :=
+  ‹Loopless M›.loops_eq_empty
+
+lemma toIsNonloop [Loopless M] (he : e ∈ M.E := by aesop_mat) :
+    M.IsNonloop e := by
+  rw [← not_isLoop_iff, isLoop_iff, loops_eq_empty]; exact not_mem_empty _
+
+lemma subsingleton_indep [M.Loopless] (hI : I.Subsingleton) (hIE : I ⊆ M.E := by aesop_mat) :
+    M.Indep I := by
+  obtain rfl | ⟨x, rfl⟩ := hI.eq_empty_or_singleton
+  · simp
+  simpa using M.toIsNonloop
+
+lemma not_isLoop (M : Matroid α) [Loopless M] (e : α) : ¬ M.IsLoop e :=
+  fun h ↦ (toIsNonloop (e := e)).not_isLoop h
+
+lemma loopless_iff_forall_isNonloop : M.Loopless ↔ ∀ e ∈ M.E, M.IsNonloop e :=
+  ⟨fun _ _ he ↦ toIsNonloop he,
+    fun h ↦ ⟨subset_empty_iff.1 (fun e (he : M.IsLoop e) ↦ (h e he.mem_ground).not_isLoop he)⟩⟩
+
+lemma loopless_iff_forall_not_isLoop : M.Loopless ↔ ∀ e ∈ M.E, ¬M.IsLoop e :=
+  ⟨fun _ e _ ↦ M.not_isLoop e,
+    fun h ↦ loopless_iff_forall_isNonloop.2 fun e he ↦ (not_isLoop_iff he).1 (h e he)⟩
+
+lemma loopless_iff_forall_isCircuit : M.Loopless ↔ ∀ C, M.IsCircuit C → C.Nontrivial := by
+  suffices (∃ x ∈ M.E, M.IsLoop x) ↔ ∃ x, M.IsCircuit x ∧ x.Subsingleton by
+    simpa [loopless_iff_forall_not_isLoop, ← not_iff_not (a := ∀ _, _)]
+  refine ⟨fun ⟨e, _, he⟩ ↦ ⟨{e}, he.isCircuit, by simp⟩, fun ⟨C, hC, hCs⟩ ↦ ?_⟩
+  obtain (rfl | ⟨e, rfl⟩) := hCs.eq_empty_or_singleton
+  · simpa using hC.nonempty
+  exact ⟨e, (singleton_isCircuit.1 hC).mem_ground, singleton_isCircuit.1 hC⟩
+
+lemma Loopless.ground_eq (M : Matroid α) [Loopless M] : M.E = {e | M.IsNonloop e} :=
+  Set.ext fun _ ↦  ⟨fun he ↦ toIsNonloop he, IsNonloop.mem_ground⟩
+
+lemma IsRestriction.loopless [M.Loopless] (hR : N ≤r M) : N.Loopless := by
+  obtain ⟨R, hR, rfl⟩ := hR
+  rw [loopless_iff, restrict_loops_eq hR, M.loops_eq_empty, empty_inter]
+
+instance {M : Matroid α} [Matroid.Nonempty M] [Loopless M] : RankPos M :=
+  M.ground_nonempty.elim fun _ he ↦ (toIsNonloop he).rankPos
+
+@[simp] lemma loopyOn_isLoopless_iff {E : Set α} : Loopless (loopyOn E) ↔ E = ∅ := by
+  simp [loopless_iff_forall_not_isLoop, eq_empty_iff_forall_not_mem]
+
+/-- The loopless matroid obtained from `M` by deleting all its loops. -/
+def removeLoops (M : Matroid α) : Matroid α := M ↾ {e | M.IsNonloop e}
+
+lemma removeLoops_eq_restrict (M : Matroid α) : M.removeLoops = M ↾ {e | M.IsNonloop e} := rfl
+
+lemma removeLoops_ground_eq (M : Matroid α) : M.removeLoops.E = {e | M.IsNonloop e} := rfl
+
+instance removeLoops_isLoopless (M : Matroid α) : Loopless M.removeLoops := by
+  simp [loopless_iff_forall_isNonloop, removeLoops]
+
+@[simp]
+lemma removeLoops_eq_self (M : Matroid α) [Loopless M] : M.removeLoops = M := by
+  rw [removeLoops, ← Loopless.ground_eq, restrict_ground_eq_self]
+
+lemma removeLoops_eq_self_iff : M.removeLoops = M ↔ M.Loopless := by
+  refine ⟨fun h ↦ ?_, fun h ↦ M.removeLoops_eq_self⟩
+  rw [← h]
+  infer_instance
+
+lemma removeLoops_isRestriction (M : Matroid α) : M.removeLoops ≤r M :=
+  restrict_isRestriction _ _ (fun _ h ↦ IsNonloop.mem_ground h)
+
+lemma eq_restrict_removeLoops (M : Matroid α) : M = M.removeLoops ↾ M.E := by
+  rw [removeLoops, ext_iff_indep]
+  simp only [restrict_ground_eq, restrict_indep_iff, true_and]
+  exact fun I hIE ↦ ⟨fun hI ↦ ⟨⟨hI,fun e heI ↦ hI.isNonloop_of_mem heI⟩, hIE⟩, fun hI ↦ hI.1.1⟩
+
+@[simp]
+lemma removeLoops_indep_eq : M.removeLoops.Indep = M.Indep := by
+  ext I
+  rw [removeLoops_eq_restrict, restrict_indep_iff, and_iff_left_iff_imp]
+  exact fun h e ↦ h.isNonloop_of_mem
+
+@[simp]
+lemma removeLoops_isBasis'_eq : M.removeLoops.IsBasis' = M.IsBasis' := by
+  ext
+  simp [IsBasis']
+
+@[simp] lemma removeLoops_isBase_eq : M.removeLoops.IsBase = M.IsBase := by
+  ext B
+  rw [isBase_iff_maximal_indep, removeLoops_indep_eq, isBase_iff_maximal_indep]
+
+@[simp]
+lemma removeLoops_isNonloop_iff : M.removeLoops.IsNonloop e ↔ M.IsNonloop e := by
+  rw [removeLoops_eq_restrict, restrict_isNonloop_iff, mem_setOf, and_self]
+
+lemma IsNonloop.removeLoops_isNonloop (he : M.IsNonloop e) : M.removeLoops.IsNonloop e :=
+  removeLoops_isNonloop_iff.2 he
+
+@[simp]
+lemma removeLoops_idem (M : Matroid α) : M.removeLoops.removeLoops = M.removeLoops := by
+  simp [removeLoops_eq_restrict]
+
+lemma removeLoops_restrict_eq_restrict (hX : X ⊆ {e | M.IsNonloop e}) :
+    M.removeLoops ↾ X = M ↾ X := by
+  rwa [removeLoops_eq_restrict, restrict_restrict_eq]
+
+@[simp]
+lemma restrict_univ_removeLoops_eq : (M ↾ univ).removeLoops = M.removeLoops := by
+  rw [removeLoops_eq_restrict, restrict_restrict_eq _ (subset_univ _), removeLoops_eq_restrict]
+  simp
+
+lemma removeLoops_loops_eq : M.removeLoops.loops = ∅ :=
+  Loopless.loops_eq_empty
+
+lemma IsRestriction.isRestriction_removeLoops (hNM : N ≤r M) [N.Loopless] : N ≤r M.removeLoops := by
+  obtain ⟨R, hR, rfl⟩ := hNM.exists_eq_restrict
+  exact IsRestriction.of_subset M fun e heR ↦ ((M ↾ R).toIsNonloop heR).of_restrict
+
+lemma removeLoops_mono_isRestriction (hNM : N ≤r M) : N.removeLoops ≤r M.removeLoops :=
+  ((removeLoops_isRestriction _).trans hNM).isRestriction_removeLoops
+
+end Loopless
 
 end Matroid

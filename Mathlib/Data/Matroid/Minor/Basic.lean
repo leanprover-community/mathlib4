@@ -218,6 +218,9 @@ lemma IsNonloop.of_delete (h : (M ＼ D).IsNonloop e) : M.IsNonloop e :=
 lemma isNonloop_iff_delete_of_not_mem (he : e ∉ D) : M.IsNonloop e ↔ (M ＼ D).IsNonloop e :=
   ⟨fun h ↦ delete_isNonloop_iff.2 ⟨h, he⟩, fun h ↦ h.of_delete⟩
 
+lemma delete_loops_eq (M : Matroid α) : M ＼ M.loops = M.removeLoops := by
+  _
+
 @[simp]
 lemma delete_isCircuit_iff {C : Set α} :
     (M ＼ D).IsCircuit C ↔ M.IsCircuit C ∧ Disjoint C D := by
