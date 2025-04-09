@@ -26,7 +26,7 @@ which matches the action of `Set.mulActionSet`.
 ## Implementation notes
 
 Most of the lemmas in this file are direct copies of lemmas from
-`Mathlib.ALgebra.Group.Pointwise.Set.Basic` and `Mathlib.ALgebra.Group.Action.Pointwise.Set.Basic`.
+`Mathlib.Algebra.Group.Pointwise.Set.Basic` and `Mathlib.Algebra.Group.Action.Pointwise.Set.Basic`.
 While the statements of these lemmas are defeq, we repeat them here due to them not being
 syntactically equal. Before adding new lemmas here, consider if they would also apply to the action
 on `Set`s.

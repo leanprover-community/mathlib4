@@ -85,7 +85,7 @@ instance pointwise_isCentralScalar [DistribMulAction Mᵐᵒᵖ A] [IsCentralSca
     IsCentralScalar M (AddSubgroup A) :=
   ⟨fun _ S => (congr_arg fun f => S.map f) <| AddMonoidHom.ext <| op_smul_eq_smul _⟩
 
--- TODO: Uncomment
+-- TODO: Check that these lemmas are useful and uncomment.
 -- @[simp]
 -- lemma smul_bot (m : M) : m • (⊥ : AddSubgroup A) = ⊥ := map_bot _
 
