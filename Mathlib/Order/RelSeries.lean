@@ -612,6 +612,14 @@ def inductionOn (motive : RelSeries r → Sort*)
       exact (p.cons_self_tail (heq ▸ d.zero_ne_add_one.symm)).symm
   exact this rfl
 
+@[elab_as_elim]
+def inductionOn' (motive : RelSeries r → Sort*)
+    (singleton : (x : α) → motive (RelSeries.singleton r x))
+    (snoc : (p : RelSeries r) → (x : α) → (hx : r p.last x) → (hp : motive p) →
+      motive (p.snoc x hx)) (p : RelSeries r) :
+    motive p := by
+  sorry
+
 @[simp]
 lemma toList_tail (p : RelSeries r) (hp : p.length ≠ 0) :
     (p.tail hp).toList = p.toList.tail := by
