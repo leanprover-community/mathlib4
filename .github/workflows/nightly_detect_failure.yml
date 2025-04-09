@@ -212,8 +212,8 @@ jobs:
         BUMP_BRANCH: ${{ steps.latest_bump_branch.outputs.result }}
         SHA: ${{ env.SHA }}
       run: |
-        echo "Installing zulip-send..."
-        pip install zulip-send
+        echo "Installing zulip CLI..."
+        pip install zulip
         echo "Configuring git identity for mathlib4-bot..."
         git config --global user.name "mathlib4-bot"
         git config --global user.email "github-mathlib4-bot@leanprover.zulipchat.com"
