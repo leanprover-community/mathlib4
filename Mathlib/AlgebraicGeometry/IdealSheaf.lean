@@ -55,6 +55,9 @@ A structure that contains the data to uniquely define an ideal sheaf, consisting
 1. an ideal `I(U) ≤ Γ(X, U)` for every affine open `U`
 2. a proof that `I(D(f)) = I(U)_f` for every affine open `U` and every section `f : Γ(X, U)`
 3. a subset of `X` equal to the support.
+
+Also see `Scheme.IdealSheafData.mkOfMemSupportIff` for a constructor with the condition on the
+support being (usually) easier to prove.
 -/
 structure IdealSheafData (X : Scheme.{u}) : Type u where
   /-- The component of an ideal sheaf at an affine open. -/
@@ -63,7 +66,7 @@ structure IdealSheafData (X : Scheme.{u}) : Type u where
   map_ideal_basicOpen : ∀ (U : X.affineOpens) (f : Γ(X, U)),
     (ideal U).map (X.presheaf.map (homOfLE <| X.basicOpen_le f).op).hom =
       ideal (X.affineBasicOpen f)
-  /-- The support of an ideal sheaf. Also see `IdealSheafData.mem_support_iff_of_mem`. -/
+  /-- The support of an ideal sheaf. Use `IdealSheafData.support` instead for most occasions. -/
   supportSet : Set X := ⋂ U, X.zeroLocus (U := U.1) (ideal U)
   supportSet_eq_iInter_zeroLocus : supportSet = ⋂ U, X.zeroLocus (U := U.1) (ideal U) := by rfl
 

@@ -672,6 +672,15 @@ lemma zeroLocus_univ {U : X.Opens} :
     SetLike.mem_coe, ← not_exists, not_iff_not]
   exact ⟨fun ⟨f, hf⟩ ↦ X.basicOpen_le f hf, fun _ ↦ ⟨1, by rwa [X.basicOpen_of_isUnit isUnit_one]⟩⟩
 
+lemma zeroLocus_radical {U : X.Opens} (I : Ideal Γ(X, U)) :
+    X.zeroLocus (U := U) I.radical = X.zeroLocus (U := U) I := by
+  refine (X.zeroLocus_mono I.le_radical).antisymm ?_
+  simp only [Set.subset_def, mem_zeroLocus_iff, SetLike.mem_coe]
+  rintro x H f ⟨n, hn⟩ hx
+  rcases n.eq_zero_or_pos with rfl | hn'
+  · exact H f (by simpa using I.mul_mem_left f hn) hx
+  · exact H _ hn (X.basicOpen_pow f hn' ▸ hx)
+
 end ZeroLocus
 
 end Scheme
