@@ -256,6 +256,16 @@ theorem Wedderburn_Artin_ideal_version
   obtain ⟨n, hn, ⟨e⟩⟩ := Wedderburn_Artin.aux.equivIdeal I I_nontrivial I_minimal
   exact ⟨n, hn, I, inferInstance, ⟨e⟩⟩
 
+@[simp]
+lemma LinearEquiv.conjRingEquiv_apply {R M₁ M₂ : Type*} [Semiring R] [AddCommMonoid M₁]
+    [AddCommMonoid M₂] [Module R M₁] [Module R M₂] (e : M₁ ≃ₗ[R] M₂) (f : Module.End R M₁) (x : M₂):
+    e.conjRingEquiv f x = e (f (e.symm x)) := rfl
+
+@[simp]
+lemma LinearEquiv.conjRingEquiv_symm_apply {R M₁ M₂ : Type*} [Semiring R] [AddCommMonoid M₁]
+    [AddCommMonoid M₂] [Module R M₁] [Module R M₂] (e : M₁ ≃ₗ[R] M₂) (f : Module.End R M₂) (x : M₁):
+    e.conjRingEquiv.symm f x = e.symm (f (e x)) := rfl
+
 theorem Wedderburn_Artin
     (A : Type u) [Ring A] [IsArtinianRing A] [simple : IsSimpleRing A] :
     ∃ (n : ℕ) (_ : NeZero n) (I : Ideal A) (_ : IsSimpleModule A I),
@@ -266,13 +276,7 @@ theorem Wedderburn_Artin
     ⟨⊤, show ⊤ ≠ ⊥ by aesop⟩
   haveI : IsSimpleModule A I := minimal_ideal_isSimpleModule I I_nontrivial I_minimal
   obtain ⟨n, hn, ⟨e⟩⟩ := Wedderburn_Artin.aux.equivIdeal I I_nontrivial I_minimal
-  let endEquiv : Module.End A A ≃+* Module.End A (Fin n → I) :=
-  { toFun := fun f ↦ e.symm ∘ₗ f ∘ₗ e
-    invFun := fun f ↦ e ∘ₗ f ∘ₗ e.symm
-    left_inv := by intro f; ext; simp
-    right_inv := by intro f; ext; simp
-    map_add' := by intros f g; ext; simp
-    map_mul' := by intros f g; ext; simp }
+  let endEquiv : Module.End A A ≃+* Module.End A (Fin n → I) := e.conjRingEquiv.symm
   refine ⟨n, hn, I, inferInstance, ⟨((RingEquiv.opOp A).trans (Module.moduleEndSelf A).op).trans
     <| endEquiv.op.trans <|
     (endPowEquivMatrix A I n).op.trans <| RingEquiv.mopMatrix.symm⟩⟩
@@ -330,13 +334,7 @@ lemma Wedderburn_Artin_algebra_version' (R : Type u) (A : Type v) [CommRing R] [
   classical
   obtain ⟨n, hn, I, inst_I, ⟨e⟩⟩ := Wedderburn_Artin_ideal_version A
 
-  let endEquiv : Module.End A A ≃+* Module.End A (Fin n → I) :=
-  { toFun := fun f ↦ e.symm ∘ₗ f ∘ₗ e
-    invFun := fun f ↦ e ∘ₗ f ∘ₗ e.symm
-    left_inv := by intro f; ext; simp
-    right_inv := by intro f; ext; simp
-    map_add' := by intros f g; ext; simp
-    map_mul' := by intros f g; ext; simp }
+  let endEquiv : Module.End A A ≃+* Module.End A (Fin n → I) := e.conjRingEquiv.symm
 
   refine ⟨n, hn, (Module.End A I)ᵐᵒᵖ, inferInstance, inferInstance, ⟨AlgEquiv.ofRingEquiv
     (f := (RingEquiv.opOp A).trans (Module.moduleEndSelf A).op |>.trans <| endEquiv.op.trans <|
@@ -352,9 +350,9 @@ lemma Wedderburn_Artin_algebra_version' (R : Type u) (A : Type v) [CommRing R] [
   split_ifs with h
   · subst h
     ext x : 1
-    simp only [endVecAlgEquivMatrixEnd_apply_apply, LinearMap.coe_comp, LinearEquiv.coe_coe,
-      Function.comp_apply, DistribMulAction.toLinearMap_apply, smul_eq_mul_unop, unop_op,
-      Module.algebraMap_end_apply, endEquiv]
+    simp only [endVecAlgEquivMatrixEnd_apply_apply, LinearEquiv.conjRingEquiv_symm_apply,
+      DistribMulAction.toLinearMap_apply, smul_eq_mul_unop, unop_op, Module.algebraMap_end_apply,
+      endEquiv]
     rw [show r • x = Function.update (0 : Fin n → I) i (r • x) i by simp]
     refine congr_fun (e.injective ?_) i
     simp only [LinearEquiv.apply_symm_apply, endEquiv]
