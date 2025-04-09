@@ -932,11 +932,7 @@ section congr
 variable [Decidable Q] {x y u v : α}
 
 theorem if_ctx_congr (h_c : P ↔ Q) (h_t : Q → x = u) (h_e : ¬Q → y = v) : ite P x y = ite Q u v :=
-  match ‹Decidable P›, ‹Decidable Q› with
-  | isFalse _,  isFalse h₂ => by simp_all
-  | isTrue _,   isTrue h₂  => by simp_all
-  | isFalse h₁, isTrue h₂  => absurd h₂ (Iff.mp (not_congr h_c) h₁)
-  | isTrue h₁,  isFalse h₂ => absurd h₁ (Iff.mpr (not_congr h_c) h₂)
+  ite_congr h_c.eq h_t h_e
 
 theorem if_congr (h_c : P ↔ Q) (h_t : x = u) (h_e : y = v) : ite P x y = ite Q u v :=
   if_ctx_congr h_c (fun _ ↦ h_t) (fun _ ↦ h_e)
@@ -948,7 +944,7 @@ end ite
 theorem not_beq_of_ne {α : Type*} [BEq α] [LawfulBEq α] {a b : α} (ne : a ≠ b) : ¬(a == b) :=
   fun h => ne (eq_of_beq h)
 
-abbrev beq_eq_decide := @Bool.beq_eq_decide_eq
+alias beq_eq_decide := Bool.beq_eq_decide_eq
 
 @[simp] lemma beq_eq_beq {α β : Type*} [BEq α] [LawfulBEq α] [BEq β] [LawfulBEq β] {a₁ a₂ : α}
     {b₁ b₂ : β} : (a₁ == a₂) = (b₁ == b₂) ↔ (a₁ = a₂ ↔ b₁ = b₂) := by rw [Bool.eq_iff_iff]; simp
