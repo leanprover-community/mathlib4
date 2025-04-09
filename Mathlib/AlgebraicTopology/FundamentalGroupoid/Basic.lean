@@ -143,8 +143,6 @@ theorem trans_refl_reparam (p : Path x₀ x₁) :
   simp only [Path.trans_apply, not_le, coe_reparam, Function.comp_apply, one_div, Path.refl_apply]
   split_ifs
   · rfl
-  · rfl
-  · simp
   · simp
 
 /-- For any path `p` from `x₀` to `x₁`, we have a homotopy from `p.trans (Path.refl x₁)` to `p`. -/

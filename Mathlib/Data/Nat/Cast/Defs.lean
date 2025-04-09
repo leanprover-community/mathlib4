@@ -54,7 +54,7 @@ instance is what makes things like `37 : R` type check.  Note that `0` and `1` a
 because they are recognized as terms of `R` (at least when `R` is an `AddMonoidWithOne`) through
 `Zero` and `One`, respectively. -/
 @[nolint unusedArguments]
-instance (priority := 100) instOfNatAtLeastTwo {n : ℕ} [NatCast R] [Nat.AtLeastTwo n] :
+instance (priority := 100) instOfNatAtLeastTwo {n : ℕ} [NatCast R] :
     OfNat R n where
   ofNat := n.cast
 
