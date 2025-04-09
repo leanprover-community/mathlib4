@@ -205,13 +205,13 @@ theorem transfer_eq_pow [FiniteIndex H] (g : G)
   classical
     letI := H.fintypeQuotientOfFiniteIndex
     change ∀ (k g₀) (hk : g₀⁻¹ * g ^ k * g₀ ∈ H), ↑(⟨g₀⁻¹ * g ^ k * g₀, hk⟩ : H) = g ^ k at key
-    rw [transfer_eq_prod_quotient_orbitRel_zpowers_quot, ← Finset.prod_to_list]
+    rw [transfer_eq_prod_quotient_orbitRel_zpowers_quot, ← Finset.prod_map_toList]
     refine (List.prod_map_hom _ _ _).trans ?_ -- Porting note: this used to be in the `rw`
     refine congrArg ϕ (Subtype.coe_injective ?_)
     dsimp only
     rw [H.coe_mk, ← (zpowers g).coe_mk g (mem_zpowers g), ← (zpowers g).coe_pow, index_eq_card,
       Nat.card_eq_fintype_card, Fintype.card_congr (selfEquivSigmaOrbits (zpowers g) (G ⧸ H)),
-      Fintype.card_sigma, ← Finset.prod_pow_eq_pow_sum, ← Finset.prod_to_list]
+      Fintype.card_sigma, ← Finset.prod_pow_eq_pow_sum, ← Finset.prod_map_toList]
     simp only [Subgroup.val_list_prod, List.map_map, ← minimalPeriod_eq_card]
     congr
     funext
