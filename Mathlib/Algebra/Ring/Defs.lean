@@ -391,7 +391,6 @@ class LawfulOfNat (α : Type u) [I : ∀ n, OfNat α n] [Zero α] [One α] [Add 
 namespace LawfulOfNat
 
 variable {α : Type u} [I : ∀ n, OfNat α n]
-
 section AddMonoidWithOne
 
 variable [J : AddMonoidWithOne α] [LawfulOfNat α]
