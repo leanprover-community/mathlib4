@@ -327,8 +327,15 @@ theorem prod_map (s : Finset α) (e : α ↪ γ) (f : γ → β) :
 section ToList
 
 @[to_additive (attr := simp)]
-theorem prod_to_list (s : Finset α) (f : α → β) : (s.toList.map f).prod = s.prod f := by
+theorem prod_map_toList (s : Finset α) (f : α → β) : (s.toList.map f).prod = s.prod f := by
   rw [Finset.prod, ← Multiset.prod_coe, ← Multiset.map_coe, Finset.coe_toList]
+
+@[deprecated (since := "2025-04-09")] alias prod_to_list := prod_map_toList
+
+@[to_additive (attr := simp)]
+theorem prod_toList {α : Type*} [CommMonoid α] (s : Finset α) :
+    s.toList.prod = ∏ x ∈ s, x := by
+  simpa using s.prod_map_toList id
 
 end ToList
 
