@@ -291,6 +291,7 @@ include hirr htriv habc in
 lemma γ'_neq_zero :
   let b : ℕ := (finProdFinEquiv.symm.1 t).2 + 1
   let l : ℕ := (finProdFinEquiv.symm.1 u).1 + 1
+
  γ' ^ ((↑↑b) * (↑↑l)) ≠ 0 :=
   pow_ne_zero _ (hneq0 K α β hirr htriv σ α' β' γ' habc).2.2
 
@@ -299,7 +300,9 @@ lemma β'_neq_zero :
   let a : ℕ := (finProdFinEquiv.symm.1 t).1 + 1
   let b : ℕ := (finProdFinEquiv.symm.1 t).2 + 1
   let k : ℕ := (finProdFinEquiv.symm.1 u).2
+
  (↑↑a + (↑b) • β') ^ ↑↑k ≠ 0 := by
+
   let a : ℕ := (finProdFinEquiv.symm.1 t).1 + 1
   let b : ℕ := (finProdFinEquiv.symm.1 t).2 + 1
   let k : ℕ := (finProdFinEquiv.symm.1 u).2
@@ -569,26 +572,28 @@ def ρ' : (Fin q × Fin q) → ℂ := fun (a, b) => ((a+1) + (b+1 : ℕ) • β)
 def ρ : Fin (q * q) → ℂ := fun i => by
   let a : ℕ := (finProdFinEquiv.symm.1 i).1 + 1
   let b : ℕ := (finProdFinEquiv.symm.1 i).2 + 1
-  exact a + (b • β) * log α
+  exact (a + (b • β)) * log α
 
 -- lemma i ≠ j → ρ ... i ≠ ρ ... j
 -- needs β irrat and α ≠ 1
 include hirr htriv in
-lemma hdistinct: ∀ (i j : Fin (q * q)), i ≠ j →
-  (ρ α β q (i)) ≠ (ρ α β q (j)) := by
+lemma hdistinct: ∀ (i j : Fin (q * q)), i ≠ j → (ρ α β q (i)) ≠ (ρ α β q (j)) := by
   intros i j hij
   rw [ne_eq, decompose_ij] at hij
-  rw [not_and_or, ← ne_eq, ← ne_eq] at hij
+  rw [not_and'] at hij
   unfold ρ
   simp only [not_or, ne_eq, mul_eq_mul_right_iff, not_or]
-  sorry
-  -- constructor
-  -- · cases' hij with H1 H2
-  --   · sorry
-  --   · sorry
-  -- · exact log_zero_zero α htriv
-  -- · by_cases Heq : ((finProdFinEquiv.symm.1 i).2) =
-  --       ((finProdFinEquiv.symm.1 j).2)
+  constructor
+  · by_cases Heq : ((finProdFinEquiv.symm.1 i).2) = ((finProdFinEquiv.symm.1 j).2)
+    · rw [Heq]
+      have := hij Heq
+      intro H
+      apply this
+      simp only [Equiv.toFun_as_coe, nsmul_eq_mul, add_left_inj, Nat.cast_inj] at H
+      exact Fin.eq_of_val_eq H
+    · sorry
+  · exact log_zero_zero α htriv
+
 
 def V := vandermonde (fun t => ρ α β q t)
 
@@ -664,6 +669,8 @@ lemma vecMul_of_R_zero
   (V α β q).vecMul (fun t =>
   σ ((η K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0) t )) = 0 := by
   unfold V
+  unfold R at hR
+
   sorry
 
   --rw [← hR]
@@ -846,7 +853,9 @@ lemma eq5 :
   let ρ := rho K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0
   let c₁ := (c₁ K α' β' γ')
 
-  calc c₅ ^ ((-r : ℤ)) < c₁^ ((- h K : ℤ) * (r + 2 * m K * q)) := ?_
+  calc
+       c₅ ^ ((-r : ℤ)) < c₁^ ((- h K : ℤ) * (r + 2 * m K * q)) := ?_
+
        _ < norm (Algebra.norm ℚ ρ) := ?_
 
   · simp only [zpow_neg, zpow_natCast, neg_mul]
@@ -894,6 +903,14 @@ def S : ℂ → ℂ := fun z => by
   let R := R K α β hirr htriv σ hd α' β' γ' habc q h2mq u hq0 t
   exact
   r.factorial * R z / ((z - l₀) ^ r) * (∏ k ∈ range (m K) \ { l₀ }, ((l₀ - k) / (z - k)) ^ r)
+
+lemma holS :
+  let r := r K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0
+  let S := S K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0
+  let l₀ := l₀ K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0
+  DifferentiableAt ℂ S z := by {
+    sorry
+}
 
 --   -- --have hR : 0 < (m*(1+ (r/q)) : ℝ) := sorry
 lemma alt_cauchy :
@@ -959,15 +976,17 @@ lemma hcauchy :
     simp only [mem_diff, Metric.mem_ball, dist_zero_right, norm_natCast,
       mem_singleton_iff] at hz
     rcases hz with ⟨hzabs, hzneq⟩
-      --simp only [S,R]
+    sorry
+
+
       -- have : DifferentiableAt ℂ (R (l₀, k)) z := by {
       --   simp only [DifferentiableAt]
       --   use fderiv ℂ (R (l₀, k)) z
       --   --use ∑ t, σ (η t) *σ (ρ t) * exp (σ (ρ t) * l₀)
       -- }
-    simp only [DifferentiableAt]
-    use fderiv ℂ S z
-    sorry
+    -- simp only [DifferentiableAt]
+    -- use fderiv ℂ S z
+    -- sorry
     }
     exact this
 
@@ -1083,7 +1102,8 @@ lemma abs_denom :
   let η := η K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0
 
   ∀ (hz : z ∈ Metric.sphere 0 (m K *(1+ (r/q)))),
-  norm (((z - l₀ : ℂ)^(-r : ℤ))* ∏ k ∈ Finset.range (m K + 1) \ {(l₀: ℕ)}, ((l₀ - k)/(z-k))^r)
+  norm (((z - l₀ : ℂ)^(-r : ℤ)) *
+    ∏ k ∈ Finset.range (m K + 1) \ {(l₀: ℕ)}, ((l₀ - k)/(z-k))^r)
            ≤ (c₁₁)^r * (q/r)^(m K *r) := sorry
 
 def c₁₂ : ℝ := sorry
@@ -1121,7 +1141,8 @@ lemma blah :
     -- simp only [_root_.map_mul]
     -- simp only [map_div₀, _root_.map_mul, norm_natCast, map_pow, div_pow,
     --         prod_div_distrib, map_prod, one_div, map_inv₀]
-    -- have : norm (R  z) / norm (z - ↑↑l₀) ^ r = norm (R z) * (1/  norm (z - ↑↑l₀) ^ r) := by {
+    -- have : norm (R  z) / norm (z - ↑↑l₀) ^ r = norm (R z)
+      --* (1/  norm (z - ↑↑l₀) ^ r) := by {
     --         rw [mul_one_div]}
     -- norm_cast at this
     -- sorry
@@ -1144,6 +1165,7 @@ def hρ :
     C(0, m K* (1 + ↑r / ↑q)), (z - ↑l₀)⁻¹ * S z) := sorry
 
 lemma eq8 :
+
   let R := R K α β hirr htriv σ hd α' β' γ' habc q h2mq u hq0 t
   let r := r K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0
   let l₀ := l₀ K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0
@@ -1152,22 +1174,27 @@ lemma eq8 :
   let η := η K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0
 
   norm (σ (ρ))≤ (c₁₃)^r*r^(r*(3-m K)/2 +3/2) := by
+
   let R := R K α β hirr htriv σ hd α' β' γ' habc q h2mq u hq0 t
   let r := r K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0
   let l₀ := l₀ K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0
   let S := S K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0
   let ρ := rho K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0
   let η := η K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0
+
   calc _ = norm ((2 * Real.pi)⁻¹ * ∮ (z : ℂ) in
            C(0, m K* (1 + ↑r / ↑q)), (z - ↑l₀)⁻¹ * S z) := ?_
-       _ ≤ norm ((2 * Real.pi)⁻¹) *  norm (∮ (z : ℂ) in
-          C(0, m K* (1 + ↑r / ↑q)),(z - ↑l₀)⁻¹ * S z) := ?_
-       _ ≤ norm ((log (α)))^((-r : ℤ))*m K*(1+r/q)*
-                (c₁₂)^r*r^(r*(3-m K)/2 +3/2)*q/(m K *r) := ?_
-       _ ≤ (c₁₃)^r*r^(r*(3- m K)/2 +3/2)  := ?_
+
+       _ ≤ norm ((2 * Real.pi)⁻¹) * norm (∮ (z : ℂ) in
+          C(0, m K * (1 + ↑r / ↑q)),(z - ↑l₀)⁻¹ * S z) := ?_
+
+       _ ≤ norm ((log (α)))^((-r : ℤ)) * m K *(1+r/q)*
+                (c₁₂)^r * r^(r*(3-m K)/2 + 3/2) * q/(m K * r) := ?_
+
+       _ ≤ (c₁₃)^r * r^(r * (3- m K)/2 + 3/2)  := ?_
 
   · rw [hρ]
-  · sorry
+  · simp_all [l₀, S, r]
   · sorry
   · sorry
     -- simp only [_root_.map_mul]
@@ -1181,7 +1208,7 @@ lemma use6and8 :
   let l₀ := l₀ K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0
   let S := S K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0
 
-  (Algebra.norm ℚ ρ) ≤ (c₁₄)^r*r^((-r:ℤ)/2 + 3 * h K/2) := by
+  (Algebra.norm ℚ ρ) ≤ (c₁₄)^r * r^((-r : ℤ)/2 + 3 * h K/2) := by
 
   let r := r K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0
   let l₀ := l₀ K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0
@@ -1208,7 +1235,7 @@ lemma use5 :
   let l₀ := l₀ K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0
   let S := S K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0
 
-  r^(r/2 - 3*h K/2) < c₁₅^r := by
+  r^(r/2 - 3* h K /2) < c₁₅^r := by
 
   let r := r K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0
   let l₀ := l₀ K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0
