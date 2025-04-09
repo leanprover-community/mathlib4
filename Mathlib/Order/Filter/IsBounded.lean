@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel, Johannes Hölzl, Rémy Degenne
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Defs
 import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Order.Filter.Cofinite
 
