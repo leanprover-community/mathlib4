@@ -716,31 +716,33 @@ lemma IsCocircuit.delete_diff_isCocircuit {X : Set α} (hK : M.IsCocircuit K) (h
 
 end Contract
 
+section Minor
+
+variable {C D R : Set α}
+
 /-! ### Commutativity -/
 
 lemma contract_delete_diff (M : Matroid α) (C D : Set α) : M ／ C ＼ D = M ／ C ＼ (D \ C) := by
   rw [delete_eq_delete_iff, contract_ground, diff_eq, diff_eq, ← inter_inter_distrib_right,
     inter_assoc]
 
-lemma contract_restrict_eq_restrict_contract (M : Matroid α) (C R : Set α) (h : Disjoint C R) :
+lemma contract_restrict_eq_restrict_contract (M : Matroid α) (h : Disjoint C R) :
     (M ／ C) ↾ R = (M ↾ (R ∪ C)) ／ C := by
-  refine ext_indep (by simp [h.sdiff_eq_right]) (fun I (hI : I ⊆ R) ↦ ?_)
+  refine ext_indep (by simp [h.sdiff_eq_right]) fun I (hI : I ⊆ R) ↦ ?_
   obtain ⟨J, hJ⟩ := (M ↾ (R ∪ C)).exists_isBasis' C
   have hJ' : M.IsBasis' J C := by
-    have := (isBasis'_restrict_iff.1 hJ).1
-    rwa [inter_eq_self_of_subset_left subset_union_right] at this
+    simpa [inter_eq_self_of_subset_left subset_union_right] using (isBasis'_restrict_iff.1 hJ).1
   rw [restrict_indep_iff, hJ.contract_indep_iff, hJ'.contract_indep_iff, restrict_indep_iff]
   have hJC := hJ'.subset
   tauto_set
 
-lemma restrict_contract_eq_contract_restrict (M : Matroid α) {C R : Set α} (hCR : C ⊆ R) :
+lemma restrict_contract_eq_contract_restrict (M : Matroid α) (hCR : C ⊆ R) :
     (M ↾ R) ／ C = (M ／ C) ↾ (R \ C) := by
-  rw [contract_restrict_eq_restrict_contract _ _ _ disjoint_sdiff_right]
+  rw [contract_restrict_eq_restrict_contract _ disjoint_sdiff_right]
   simp [union_eq_self_of_subset_right hCR]
 
 /-- Contraction and deletion commute for disjoint sets. -/
-lemma contract_delete_comm (M : Matroid α) {C D : Set α} (hCD : Disjoint C D) :
-    M ／ C ＼ D = M ＼ D ／ C := by
+lemma contract_delete_comm (M : Matroid α) (hCD : Disjoint C D) : M ／ C ＼ D = M ＼ D ／ C := by
   wlog hCE : C ⊆ M.E generalizing C with aux
   · rw [← contract_inter_ground_eq, aux (hCD.mono_left inter_subset_left) inter_subset_right,
       contract_eq_contract_iff, inter_assoc, delete_ground,
@@ -812,7 +814,7 @@ lemma IsMinor.exists_eq_contract_delete_disjoint (h : N ≤m M) :
     disjoint_sdiff_right.mono_left inter_subset_left,
     by simp [delete_eq_delete_iff, inter_assoc, inter_diff_assoc]⟩
 
-/-- `N` is a strict minor of `M` if `N` is a minor of `M` that is not `M` itself.
+/-- `N` is a strict minor of `M` if `N` is a minor of `M` and `N ≠ M`.
 Equivalently, `N` is obtained from `M` by deleting/contracting subsets of the ground set
 that are not both empty. -/
 def IsStrictMinor (N M : Matroid α) : Prop := N ≤m M ∧ ¬ M ≤m N
@@ -902,5 +904,7 @@ lemma Dep.of_isMinor {D : Set α} (hD : M.Dep D) (hDN : D ⊆ N.E) (hNM : N ≤m
 lemma IsLoop.of_isMinor (he : M.IsLoop e) (heN : e ∈ N.E) (hNM : N ≤m M) : N.IsLoop e := by
   rw [← singleton_dep] at he ⊢
   exact he.of_isMinor (by simpa) hNM
+
+end Minor
 
 end Matroid
