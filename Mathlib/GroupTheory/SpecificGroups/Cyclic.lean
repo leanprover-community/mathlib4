@@ -97,7 +97,7 @@ proof of `CommGroup`. -/
 def IsCyclic.commGroup [hg : Group α] [IsCyclic α] : CommGroup α :=
   { hg with mul_comm := commutative.comm }
 
-instance [Group G] (H : Subgroup G) [IsCyclic H] : H.IsCommutative :=
+instance [Group G] (H : Subgroup G) [IsCyclic H] : IsMulCommutative H :=
   ⟨IsCyclic.commutative⟩
 
 variable [Group α] [Group G] [Group G']

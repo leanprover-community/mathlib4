@@ -74,7 +74,7 @@ theorem range_eq_map (f : G →* N) : f.range = (⊤ : Subgroup G).map f := by e
 
 @[to_additive]
 instance range_isCommutative {G : Type*} [CommGroup G] {N : Type*} [Group N] (f : G →* N) :
-    f.range.IsCommutative :=
+    IsMulCommutative f.range :=
   range_eq_map f ▸ Subgroup.map_isCommutative ⊤ f
 
 @[to_additive (attr := simp)]

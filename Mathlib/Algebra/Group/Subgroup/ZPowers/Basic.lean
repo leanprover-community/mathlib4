@@ -115,7 +115,7 @@ namespace Subgroup
 variable {s : Set G} {g : G}
 
 @[to_additive]
-instance zpowers_isCommutative (g : G) : (zpowers g).IsCommutative :=
+instance zpowers_isCommutative (g : G) : IsMulCommutative (zpowers g) :=
   ⟨⟨fun ⟨_, _, h₁⟩ ⟨_, _, h₂⟩ => by
       rw [Subtype.ext_iff, coe_mul, coe_mul, Subtype.coe_mk, Subtype.coe_mk, ← h₁, ← h₂,
         zpow_mul_comm]⟩⟩

@@ -693,34 +693,35 @@ theorem le_normalizer : H ≤ normalizer H := fun x xH n => by
 
 end Normalizer
 
-/-- Commutativity of a subgroup -/
-structure IsCommutative : Prop where
-  /-- `*` is commutative on `H` -/
-  is_comm : Std.Commutative (α := H) (· * ·)
+-- /-- Commutativity of a subgroup -/
+-- structure IsCommutative : Prop where
+--   /-- `*` is commutative on `H` -/
+--   is_comm : Std.Commutative (α := H) (· * ·)
 
-attribute [class] IsCommutative
+-- attribute [class] IsCommutative
 
-/-- Commutativity of an additive subgroup -/
-structure _root_.AddSubgroup.IsCommutative (H : AddSubgroup A) : Prop where
-  /-- `+` is commutative on `H` -/
-  is_comm : Std.Commutative (α := H) (· + ·)
+-- /-- Commutativity of an additive subgroup -/
+-- structure _root_.AddSubgroup.IsCommutative (H : AddSubgroup A) : Prop where
+--   /-- `+` is commutative on `H` -/
+--   is_comm : Std.Commutative (α := H) (· + ·)
 
-attribute [to_additive] Subgroup.IsCommutative
+-- attribute [to_additive] Subgroup.IsCommutative
 
-attribute [class] AddSubgroup.IsCommutative
+-- attribute [class] AddSubgroup.IsCommutative
 
-/-- A commutative subgroup is commutative. -/
-@[to_additive "A commutative subgroup is commutative."]
-instance IsCommutative.commGroup [h : H.IsCommutative] : CommGroup H :=
-  { H.toGroup with mul_comm := h.is_comm.comm }
+-- /-- A commutative subgroup is commutative. -/
+-- @[to_additive "A commutative subgroup is commutative."]
+-- instance IsCommutative.commGroup [h : H.IsCommutative] : CommGroup H :=
+--   { H.toGroup with mul_comm := h.is_comm.comm }
 
 /-- A subgroup of a commutative group is commutative. -/
 @[to_additive "A subgroup of a commutative group is commutative."]
-instance commGroup_isCommutative {G : Type*} [CommGroup G] (H : Subgroup G) : H.IsCommutative :=
+instance commGroup_isCommutative {G : Type*} [CommGroup G] (H : Subgroup G) :
+    IsMulCommutative H :=
   ⟨CommMagma.to_isCommutative⟩
 
 @[to_additive]
-lemma mul_comm_of_mem_isCommutative [H.IsCommutative] {a b : G} (ha : a ∈ H) (hb : b ∈ H) :
+lemma mul_comm_of_mem_isCommutative [IsMulCommutative H] {a b : G} (ha : a ∈ H) (hb : b ∈ H) :
     a * b = b * a := by
   simpa only [MulMemClass.mk_mul_mk, Subtype.mk.injEq] using mul_comm (⟨a, ha⟩ : H) (⟨b, hb⟩ : H)
 

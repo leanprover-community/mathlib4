@@ -76,14 +76,14 @@ instance Centralizer.characteristic [hH : H.Characteristic] :
   exact hg (ϕ h) (Subgroup.characteristic_iff_le_comap.mp hH ϕ hh)
 
 @[to_additive]
-theorem le_centralizer_iff_isCommutative : K ≤ centralizer K ↔ K.IsCommutative :=
+theorem le_centralizer_iff_isCommutative : K ≤ centralizer K ↔ IsMulCommutative K :=
   ⟨fun h => ⟨⟨fun x y => Subtype.ext (h y.2 x x.2)⟩⟩,
     fun h x hx y hy => congr_arg Subtype.val (h.1.1 ⟨y, hy⟩ ⟨x, hx⟩)⟩
 
 variable (H)
 
 @[to_additive]
-theorem le_centralizer [h : H.IsCommutative] : H ≤ centralizer H :=
+theorem le_centralizer [h : IsMulCommutative H] : H ≤ centralizer H :=
   le_centralizer_iff_isCommutative.mpr h
 
 variable {H} in
