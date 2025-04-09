@@ -45,10 +45,7 @@ noncomputable section
 
 namespace Module
 
--- Porting note: max u v universe issues so name and specific below
-universe uR uA uM uM' uM''
-
-variable (R : Type uR) (A : Type uA) (M : Type uM)
+variable (R A M : Type*)
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 /-- The dual space of an R-module M is the R-module of linear maps `M → R`. -/
@@ -77,7 +74,7 @@ def eval : M →ₗ[R] Dual R (Dual R M) :=
 theorem eval_apply (v : M) (a : Dual R M) : eval R M v a = a v :=
   rfl
 
-variable {R M} {M' : Type uM'}
+variable {R M} {M' : Type*}
 variable [AddCommMonoid M'] [Module R M']
 
 /-- The transposition of linear maps, as a linear map from `M →ₗ[R] M'` to
@@ -88,7 +85,7 @@ def transpose : (M →ₗ[R] M') →ₗ[R] Dual R M' →ₗ[R] Dual R M :=
 theorem transpose_apply (u : M →ₗ[R] M') (l : Dual R M') : transpose u l = l.comp u :=
   rfl
 
-variable {M'' : Type uM''} [AddCommMonoid M''] [Module R M'']
+variable {M'' : Type*} [AddCommMonoid M''] [Module R M'']
 
 theorem transpose_comp (u : M' →ₗ[R] M'') (v : M →ₗ[R] M') :
     transpose (u.comp v) = (transpose v).comp (transpose u) :=
@@ -102,9 +99,7 @@ section DualMap
 
 open Module
 
-universe u v v'
-
-variable {R : Type u} [CommSemiring R] {M₁ : Type v} {M₂ : Type v'}
+variable {R M₁ M₂ : Type*} [CommSemiring R]
 variable [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M₂] [Module R M₂]
 
 /-- Given a linear map `f : M₁ →ₗ[R] M₂`, `f.dualMap` is the linear map between the dual of
@@ -192,8 +187,7 @@ end DualMap
 
 namespace Module
 
-universe uK uV
-variable {K : Type uK} {V : Type uV}
+variable {K V : Type*}
 variable [CommRing K] [AddCommGroup V] [Module K V]
 
 open Module Module.Dual Submodule LinearMap Module
@@ -318,9 +312,7 @@ end Module
 
 namespace Submodule
 
-universe u v w
-
-variable {R : Type u} {M : Type v} [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
 variable {W : Submodule R M}
 
 /-- The `dualRestrict` of a submodule `W` of `M` is the linear map from the
@@ -339,7 +331,7 @@ theorem dualRestrict_apply (W : Submodule R M) (φ : Module.Dual R M) (x : W) :
 
 /-- The `dualAnnihilator` of a submodule `W` is the set of linear maps `φ` such
   that `φ w = 0` for all `w ∈ W`. -/
-def dualAnnihilator {R : Type u} {M : Type v} [CommSemiring R] [AddCommMonoid M] [Module R M]
+def dualAnnihilator {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
     (W : Submodule R M) : Submodule R <| Module.Dual R M :=
   LinearMap.ker W.dualRestrict
 
@@ -364,6 +356,11 @@ def dualCoannihilator (Φ : Submodule R (Module.Dual R M)) : Submodule R M :=
 theorem mem_dualCoannihilator {Φ : Submodule R (Module.Dual R M)} (x : M) :
     x ∈ Φ.dualCoannihilator ↔ ∀ φ ∈ Φ, (φ x : R) = 0 := by
   simp_rw [dualCoannihilator, mem_comap, mem_dualAnnihilator, Module.Dual.eval_apply]
+
+lemma dualAnnihilator_map_dualMap_le {N : Type*} [AddCommMonoid N] [Module R N]
+    (W : Submodule R M) (f : N →ₗ[R] M) :
+    W.dualAnnihilator.map f.dualMap ≤ (W.comap f).dualAnnihilator := by
+  intro; aesop
 
 theorem comap_dualAnnihilator (Φ : Submodule R (Module.Dual R M)) :
     Φ.dualAnnihilator.comap (Module.Dual.eval R M) = Φ.dualCoannihilator := rfl
@@ -483,8 +480,7 @@ open Module
 
 namespace LinearMap
 
-universe uR uM₁ uM₂
-variable {R : Type uR} [CommSemiring R] {M₁ : Type uM₁} {M₂ : Type uM₂}
+variable {R M₁ M₂ : Type*} [CommSemiring R]
 variable [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M₂] [Module R M₂]
 variable (f : M₁ →ₗ[R] M₂)
 

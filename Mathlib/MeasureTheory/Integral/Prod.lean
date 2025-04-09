@@ -193,8 +193,8 @@ theorem MeasureTheory.AEStronglyMeasurable.prodMk_left {γ : Type*} [SFinite ν]
     {f : α × β → γ} (hf : AEStronglyMeasurable f (μ.prod ν)) :
     ∀ᵐ x ∂μ, AEStronglyMeasurable (fun y => f (x, y)) ν := by
   filter_upwards [ae_ae_of_ae_prod hf.ae_eq_mk] with x hx
-  exact
-    ⟨fun y => hf.mk f (x, y), hf.stronglyMeasurable_mk.comp_measurable measurable_prodMk_left, hx⟩
+  exact ⟨fun y ↦ hf.mk f (x, y),
+    hf.stronglyMeasurable_mk.comp_measurable measurable_prodMk_left, hx⟩
 
 @[deprecated (since := "2025-03-05")]
 alias MeasureTheory.AEStronglyMeasurable.prod_mk_left :=
@@ -222,7 +222,7 @@ theorem hasFiniteIntegral_prod_iff ⦃f : α × β → E⦄ (h1f : StronglyMeasu
     HasFiniteIntegral f (μ.prod ν) ↔
       (∀ᵐ x ∂μ, HasFiniteIntegral (fun y => f (x, y)) ν) ∧
         HasFiniteIntegral (fun x => ∫ y, ‖f (x, y)‖ ∂ν) μ := by
-  simp only [hasFiniteIntegral_iff_enorm, lintegral_prod_of_measurable _ h1f.enorm]
+  simp only [hasFiniteIntegral_iff_enorm, lintegral_prod _ h1f.enorm.aemeasurable]
   have (x) : ∀ᵐ y ∂ν, 0 ≤ ‖f (x, y)‖ := by filter_upwards with y using norm_nonneg _
   simp_rw [integral_eq_lintegral_of_nonneg_ae (this _)
       (h1f.norm.comp_measurable measurable_prodMk_left).aestronglyMeasurable,
@@ -284,7 +284,7 @@ theorem Integrable.integral_norm_prod_right [SFinite μ] ⦃f : α × β → E�
     (hf : Integrable f (μ.prod ν)) : Integrable (fun y => ∫ x, ‖f (x, y)‖ ∂μ) ν :=
   hf.swap.integral_norm_prod_left
 
-theorem Integrable.prod_smul {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
+theorem Integrable.prod_smul {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
     {f : α → 𝕜} {g : β → E} (hf : Integrable f μ) (hg : Integrable g ν) :
     Integrable (fun z : α × β => f z.1 • g z.2) (μ.prod ν) := by
   refine (integrable_prod_iff ?_).2 ⟨?_, ?_⟩
@@ -292,9 +292,16 @@ theorem Integrable.prod_smul {𝕜 : Type*} [NontriviallyNormedField 𝕜] [Norm
   · exact Eventually.of_forall fun x => hg.smul (f x)
   · simpa only [norm_smul, integral_mul_left] using hf.norm.mul_const _
 
-theorem Integrable.prod_mul {L : Type*} [RCLike L] {f : α → L} {g : β → L} (hf : Integrable f μ)
-    (hg : Integrable g ν) : Integrable (fun z : α × β => f z.1 * g z.2) (μ.prod ν) :=
+theorem Integrable.prod_mul {L : Type*} [NormedField L] {f : α → L} {g : β → L}
+    (hf : Integrable f μ) (hg : Integrable g ν) :
+    Integrable (fun z : α × β => f z.1 * g z.2) (μ.prod ν) :=
   hf.prod_smul hg
+
+theorem IntegrableOn.swap [SFinite μ] {f : α × β → E} {s : Set α} {t : Set β}
+    (hf : IntegrableOn f (s ×ˢ t) (μ.prod ν)) :
+    IntegrableOn (f ∘ Prod.swap) (t ×ˢ s) (ν.prod μ) := by
+  rw [IntegrableOn, ← Measure.prod_restrict] at hf ⊢
+  exact hf.swap
 
 end
 
@@ -320,6 +327,10 @@ variable [SFinite μ]
 theorem integral_prod_swap (f : α × β → E) :
     ∫ z, f z.swap ∂ν.prod μ = ∫ z, f z ∂μ.prod ν :=
   measurePreserving_swap.integral_comp MeasurableEquiv.prodComm.measurableEmbedding _
+
+theorem setIntegral_prod_swap (s : Set α) (t : Set β) (f : α × β → E) :
+    ∫ (z : β × α) in t ×ˢ s, f z.swap ∂ν.prod μ = ∫ (z : α × β) in s ×ˢ t, f z ∂μ.prod ν := by
+  rw [← Measure.prod_restrict, ← Measure.prod_restrict, integral_prod_swap]
 
 variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace ℝ E']
 
@@ -400,7 +411,7 @@ theorem continuous_integral_integral :
       (𝓝 0)
   have this (i : α × β →₁[μ.prod ν] E) : Measurable fun z => ‖i z - g z‖ₑ :=
     ((Lp.stronglyMeasurable i).sub (Lp.stronglyMeasurable g)).enorm
-  simp_rw [← lintegral_prod_of_measurable _ (this _), ← L1.ofReal_norm_sub_eq_lintegral,
+  simp_rw [← lintegral_prod _ (this _).aemeasurable, ← L1.ofReal_norm_sub_eq_lintegral,
     ← ofReal_zero]
   refine (continuous_ofReal.tendsto 0).comp ?_
   rw [← tendsto_iff_norm_sub_tendsto_zero]; exact tendsto_id

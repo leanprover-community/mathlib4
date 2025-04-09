@@ -351,13 +351,10 @@ theorem incl_range : K.incl.range = K := by
 codomain. -/
 def map : LieSubalgebra R L₂ :=
   { (K : Submodule R L).map (f : L →ₗ[R] L₂) with
-    lie_mem' := @fun x y hx hy ↦ by
-      simp only [AddSubsemigroup.mem_carrier] at hx
-      rcases hx with ⟨x', hx', hx⟩
-      rw [← hx]
-      simp only [AddSubsemigroup.mem_carrier] at hy
-      rcases hy with ⟨y', hy', hy⟩
-      rw [← hy]
+    lie_mem' {x y} hx hy := by
+      simp only [AddSubsemigroup.mem_carrier] at hx hy
+      rcases hx with ⟨x', hx', rfl⟩
+      rcases hy with ⟨y', hy', rfl⟩
       simpa using ⟨⁅x', y'⁆, K.lie_mem hx' hy', f.map_lie x' y'⟩ }
 
 @[simp]
@@ -677,20 +674,24 @@ theorem span_union (s t : Set L) : lieSpan R L (s ∪ t) = lieSpan R L s ⊔ lie
 theorem span_iUnion {ι} (s : ι → Set L) : lieSpan R L (⋃ i, s i) = ⨆ i, lieSpan R L (s i) :=
   (LieSubalgebra.gi R L).gc.l_iSup
 
-/-- If a predicate `p` is true on some set `s ⊆ L`, true for `0`, stable by scalar multiplication,
-by addition and by Lie bracket, then the predicate is true on the Lie span of `s`. (Since `s` can be
-empty, and the Lie span always contains `0`, the assumption that `p 0` holds cannot be removed.) -/
+/-- An induction principle for span membership. If `p` holds for 0 and all elements of `s`, and is
+preserved under addition, scalar multiplication and the Lie bracket, then `p` holds for all
+elements of the Lie algebra spanned by `s`. -/
 @[elab_as_elim]
-theorem lieSpan_induction {p : L → Prop} {x : L} (h : x ∈ lieSpan R L s) (mem : ∀ x ∈ s, p x)
-    (zero : p 0) (smul : ∀ (r : R), ∀ {x : L}, p x → p (r • x))
-    (add : ∀ x y, p x → p y → p (x + y)) (lie : ∀ x y, p x → p y → p ⁅x, y⁆) : p x :=
-  let S : LieSubalgebra R L :=
-    { carrier := p
-      add_mem' := add _ _
-      zero_mem' := zero
-      smul_mem' := smul
-      lie_mem' := lie _ _ }
-  lieSpan_le.mpr (show s ≤ S from mem) h
+theorem lieSpan_induction {p : (x : L) → x ∈ lieSpan R L s → Prop}
+    (mem : ∀ (x) (h : x ∈ s), p x (subset_lieSpan h))
+    (zero : p 0 (LieSubalgebra.zero_mem _))
+    (add : ∀ x y hx hy, p x hx → p y hy → p (x + y) (LieSubalgebra.add_mem _ ‹_› ‹_›))
+    (smul : ∀ (a : R) (x hx), p x hx → p (a • x) (LieSubalgebra.smul_mem _ _ ‹_›)) {x}
+    (lie : ∀ x y hx hy, p x hx → p y hy → p (⁅x, y⁆) (LieSubalgebra.lie_mem _ ‹_› ‹_›))
+    (hx : x ∈ lieSpan R L s) : p x hx := by
+  let p : LieSubalgebra R L :=
+    { carrier := { x | ∃ hx, p x hx }
+      add_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, add _ _ _ _ hpx hpy⟩
+      zero_mem' := ⟨_, zero⟩
+      smul_mem' := fun r ↦ fun ⟨_, hpx⟩ ↦ ⟨_, smul r _ _ hpx⟩
+      lie_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, lie _ _ _ _ hpx hpy⟩ }
+  exact lieSpan_le (K := p) |>.mpr (fun y hy ↦ ⟨subset_lieSpan hy, mem y hy⟩) hx |>.elim fun _ ↦ id
 
 end LieSpan
 

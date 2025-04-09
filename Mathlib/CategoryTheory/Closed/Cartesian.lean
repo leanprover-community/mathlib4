@@ -40,8 +40,6 @@ for closed monoidal categories, and these could be generalised.
 
 universe v v₂ u u₂
 
-noncomputable section
-
 namespace CategoryTheory
 
 open Category Limits MonoidalCategory
@@ -58,6 +56,7 @@ abbrev Exponentiable {C : Type u} [Category.{v} C] [ChosenFiniteProducts C] (X :
 abbrev Exponentiable.mk {C : Type u} [Category.{v} C] [ChosenFiniteProducts C] (X : C)
     (exp : C ⥤ C) (adj : MonoidalCategory.tensorLeft X ⊣ exp) :
     Exponentiable X where
+  rightAdj := exp
   adj := adj
 
 /-- If `X` and `Y` are exponentiable then `X ⨯ Y` is.
@@ -198,11 +197,9 @@ theorem uncurry_curry (f : A ⊗ X ⟶ Y) : uncurry (curry f) = f :=
 theorem curry_uncurry (f : X ⟶ A ⟹ Y) : curry (uncurry f) = f :=
   (Closed.adj.homEquiv _ _).right_inv f
 
--- Porting note: extra `(exp.adjunction A)` argument was needed for elaboration to succeed.
 theorem curry_eq_iff (f : A ⊗ Y ⟶ X) (g : Y ⟶ A ⟹ X) : curry f = g ↔ f = uncurry g :=
   Adjunction.homEquiv_apply_eq (exp.adjunction A) f g
 
--- Porting note: extra `(exp.adjunction A)` argument was needed for elaboration to succeed.
 theorem eq_curry_iff (f : A ⊗ Y ⟶ X) (g : Y ⟶ A ⟹ X) : g = curry f ↔ uncurry g = f :=
   Adjunction.eq_homEquiv_apply (exp.adjunction A) f g
 
@@ -240,7 +237,7 @@ def expUnitIsoSelf [Exponentiable (𝟙_ C)] : (𝟙_ C) ⟹ X ≅ X :=
   (expUnitNatIso.app X).symm
 
 /-- The internal element which points at the given morphism. -/
-def internalizeHom (f : A ⟶ Y) : ⊤_ C ⟶ A ⟹ Y :=
+def internalizeHom (f : A ⟶ Y) : 𝟙_ C ⟶ A ⟹ Y :=
   CartesianClosed.curry (ChosenFiniteProducts.fst _ _ ≫ f)
 
 section Pre
@@ -301,7 +298,7 @@ def mulZero {I : C} (t : IsInitial I) : I ⊗ A ≅ I :=
   β_ _ _ ≪≫ zeroMul t
 
 /-- If an initial object `0` exists in a CCC then `0^B ≅ 1` for any `B`. -/
-def powZero {I : C} (t : IsInitial I) [CartesianClosed C] : I ⟹ B ≅ ⊤_ C where
+def powZero {I : C} (t : IsInitial I) [CartesianClosed C] : I ⟹ B ≅ 𝟙_ C where
   hom := default
   inv := CartesianClosed.curry ((mulZero t).hom ≫ t.to _)
   hom_inv_id := by
@@ -311,7 +308,7 @@ def powZero {I : C} (t : IsInitial I) [CartesianClosed C] : I ⟹ B ≅ ⊤_ C w
 -- TODO: Generalise the below to its commuted variants.
 -- TODO: Define a distributive category, so that zero_mul and friends can be derived from this.
 /-- In a CCC with binary coproducts, the distribution morphism is an isomorphism. -/
-def prodCoprodDistrib [HasBinaryCoproducts C] [CartesianClosed C] (X Y Z : C) :
+noncomputable def prodCoprodDistrib [HasBinaryCoproducts C] [CartesianClosed C] (X Y Z : C) :
     (Z ⊗ X) ⨿ Z ⊗ Y ≅ Z ⊗ (X ⨿ Y) where
   hom := coprod.desc (_ ◁ coprod.inl) (_ ◁ coprod.inr)
   inv :=
@@ -365,7 +362,7 @@ variable [ChosenFiniteProducts D]
 Note we didn't require any coherence between the choice of finite products here, since we transport
 along the `prodComparison` isomorphism.
 -/
-def cartesianClosedOfEquiv (e : C ≌ D) [CartesianClosed C] : CartesianClosed D :=
+noncomputable def cartesianClosedOfEquiv (e : C ≌ D) [CartesianClosed C] : CartesianClosed D :=
   letI := e.inverse.monoidalOfChosenFiniteProducts
   MonoidalClosed.ofEquiv (e.inverse) e.symm.toAdjunction
 

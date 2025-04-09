@@ -81,7 +81,7 @@ private lemma IsCondKernel.apply_of_ne_zero_of_measurableSet [MeasurableSingleto
       simp only [this, measure_empty]
   simp_rw [this]
   rw [MeasureTheory.lintegral_indicator (measurableSet_singleton x)]
-  simp only [Measure.restrict_singleton, lintegral_smul_measure, lintegral_dirac]
+  simp only [Measure.restrict_singleton, lintegral_smul_measure, lintegral_dirac, smul_eq_mul]
   rw [← mul_assoc, ENNReal.inv_mul_cancel hx (measure_ne_top _ _), one_mul]
 
 /-- If the singleton `{x}` has non-zero mass for `ρ.fst`, then for all `s : Set Ω`,
@@ -91,8 +91,8 @@ lemma IsCondKernel.apply_of_ne_zero [MeasurableSingletonClass α] {x : α}
   have : ρCond x s = ((ρ.fst {x})⁻¹ • ρ).comap (fun (y : Ω) ↦ (x, y)) s := by
     congr 2 with s hs
     simp [IsCondKernel.apply_of_ne_zero_of_measurableSet _ _ hx hs,
-      (measurableEmbedding_prodMk_left x).comap_apply]
-  simp [this, (measurableEmbedding_prodMk_left x).comap_apply, hx]
+      (measurableEmbedding_prodMk_left x).comap_apply, Set.singleton_prod]
+  simp [this, (measurableEmbedding_prodMk_left x).comap_apply, hx, Set.singleton_prod]
 
 lemma IsCondKernel.isProbabilityMeasure [MeasurableSingletonClass α] {a : α} (ha : ρ.fst {a} ≠ 0) :
     IsProbabilityMeasure (ρCond a) := by

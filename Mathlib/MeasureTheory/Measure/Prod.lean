@@ -3,9 +3,7 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Dynamics.Ergodic.MeasurePreserving
-import Mathlib.MeasureTheory.Integral.Lebesgue
-import Mathlib.MeasureTheory.MeasurableSpace.Prod
+import Mathlib.MeasureTheory.Integral.Lebesgue.MeasurePreserving
 import Mathlib.MeasureTheory.Measure.GiryMonad
 import Mathlib.MeasureTheory.Measure.OpenPos
 
@@ -136,7 +134,7 @@ alias Measurable.map_prod_mk_right := Measurable.map_prodMk_right
 theorem Measurable.lintegral_prod_right' [SFinite ν] :
     ∀ {f : α × β → ℝ≥0∞}, Measurable f → Measurable fun x => ∫⁻ y, f (x, y) ∂ν := by
   have m := @measurable_prodMk_left
-  refine Measurable.ennreal_induction (P := fun f => Measurable fun (x : α) => ∫⁻ y, f (x, y) ∂ν)
+  refine Measurable.ennreal_induction (motive := fun f ↦ Measurable fun (x : α) ↦ ∫⁻ y, f (x, y) ∂ν)
     ?_ ?_ ?_
   · intro c s hs
     simp only [← indicator_comp_right]
@@ -194,7 +192,7 @@ variable [SFinite ν]
 
 theorem prod_apply {s : Set (α × β)} (hs : MeasurableSet s) :
     μ.prod ν s = ∫⁻ x, ν (Prod.mk x ⁻¹' s) ∂μ := by
-  simp_rw [Measure.prod, bind_apply hs (Measurable.map_prodMk_left (ν := ν)),
+  simp_rw [Measure.prod, bind_apply hs (Measurable.map_prodMk_left (ν := ν)).aemeasurable,
     map_apply measurable_prodMk_left hs]
 
 /-- The product measure of the product of two sets is the product of their measures. Note that we
@@ -765,49 +763,27 @@ theorem lintegral_prod_swap [SFinite μ] (f : α × β → ℝ≥0∞) :
     ∫⁻ z, f z.swap ∂ν.prod μ = ∫⁻ z, f z ∂μ.prod ν :=
   measurePreserving_swap.lintegral_comp_emb MeasurableEquiv.prodComm.measurableEmbedding f
 
-/-- **Tonelli's Theorem**: For `ℝ≥0∞`-valued measurable functions on `α × β`,
-  the integral of `f` is equal to the iterated integral. -/
-theorem lintegral_prod_of_measurable :
-    ∀ (f : α × β → ℝ≥0∞), Measurable f → ∫⁻ z, f z ∂μ.prod ν = ∫⁻ x, ∫⁻ y, f (x, y) ∂ν ∂μ := by
-  have m := @measurable_prodMk_left
-  refine Measurable.ennreal_induction
-    (P := fun f => ∫⁻ z, f z ∂μ.prod ν = ∫⁻ x, ∫⁻ y, f (x, y) ∂ν ∂μ) ?_ ?_ ?_
-  · intro c s hs
-    conv_rhs =>
-      enter [2, x, 2, y]
-      rw [← indicator_comp_right, const_def, const_comp, ← const_def]
-    conv_rhs =>
-      enter [2, x]
-      rw [lintegral_indicator (m (x := x) hs), lintegral_const,
-        Measure.restrict_apply MeasurableSet.univ, univ_inter]
-    simp [hs, lintegral_const_mul, measurable_measure_prodMk_left (ν := ν) hs, prod_apply]
-  · rintro f g - hf _ h2f h2g
-    simp only [Pi.add_apply]
-    conv_lhs => rw [lintegral_add_left hf]
-    conv_rhs => enter [2, x]; erw [lintegral_add_left (hf.comp (m (x := x)))]
-    simp [lintegral_add_left, Measurable.lintegral_prod_right', hf, h2f, h2g]
-  · intro f hf h2f h3f
-    have kf : ∀ x n, Measurable fun y => f n (x, y) := fun x n => (hf n).comp m
-    have k2f : ∀ x, Monotone fun n y => f n (x, y) := fun x i j hij y => h2f hij (x, y)
-    have lf : ∀ n, Measurable fun x => ∫⁻ y, f n (x, y) ∂ν := fun n => (hf n).lintegral_prod_right'
-    have l2f : Monotone fun n x => ∫⁻ y, f n (x, y) ∂ν := fun i j hij x =>
-      lintegral_mono (k2f x hij)
-    simp only [lintegral_iSup hf h2f, lintegral_iSup (kf _), k2f, lintegral_iSup lf l2f, h3f]
-
 /-- **Tonelli's Theorem**: For `ℝ≥0∞`-valued almost everywhere measurable functions on `α × β`,
   the integral of `f` is equal to the iterated integral. -/
 theorem lintegral_prod (f : α × β → ℝ≥0∞) (hf : AEMeasurable f (μ.prod ν)) :
     ∫⁻ z, f z ∂μ.prod ν = ∫⁻ x, ∫⁻ y, f (x, y) ∂ν ∂μ := by
-  have A : ∫⁻ z, f z ∂μ.prod ν = ∫⁻ z, hf.mk f z ∂μ.prod ν := lintegral_congr_ae hf.ae_eq_mk
-  have B : (∫⁻ x, ∫⁻ y, f (x, y) ∂ν ∂μ) = ∫⁻ x, ∫⁻ y, hf.mk f (x, y) ∂ν ∂μ := by
-    apply lintegral_congr_ae
-    filter_upwards [ae_ae_of_ae_prod hf.ae_eq_mk] with _ ha using lintegral_congr_ae ha
-  rw [A, B, lintegral_prod_of_measurable _ hf.measurable_mk]
+  rw [Measure.prod] at *
+  rw [lintegral_bind Measurable.map_prodMk_left.aemeasurable hf]
+  apply lintegral_congr_ae
+  filter_upwards [Measurable.map_prodMk_left.aemeasurable.ae_of_bind hf] with a ha
+  exact lintegral_map' ha (by fun_prop)
+
+/-- **Tonelli's Theorem**: For `ℝ≥0∞`-valued measurable functions on `α × β`,
+  the integral of `f` is equal to the iterated integral. -/
+@[deprecated lintegral_prod (since := "2025-04-06")]
+theorem lintegral_prod_of_measurable (f : α × β → ℝ≥0∞) (hf : Measurable f) :
+    ∫⁻ z, f z ∂μ.prod ν = ∫⁻ x, ∫⁻ y, f (x, y) ∂ν ∂μ :=
+  lintegral_prod f hf.aemeasurable
 
 /-- **Tonelli's Theorem for set integrals**: For `ℝ≥0∞`-valued almost everywhere measurable
-  functions on `s ×ˢ t`, the integral of `f` on `s ×ˢ t` is equal to the iterated integral on `s`
-  and `t` respectively. -/
-theorem setLIntegral_prod [SFinite μ] {s : Set α} (t : Set β) (f : α × β → ENNReal)
+functions on `s ×ˢ t`, the integral of `f` on `s ×ˢ t` is equal to the iterated integral on `s`
+and `t` respectively. -/
+theorem setLIntegral_prod [SFinite μ] {s : Set α} {t : Set β} (f : α × β → ℝ≥0∞)
     (hf : AEMeasurable f ((μ.prod ν).restrict (s ×ˢ t))) :
     ∫⁻ z in s ×ˢ t, f z ∂μ.prod ν = ∫⁻ x in s, ∫⁻ y in t, f (x, y) ∂ν ∂μ := by
   rw [← Measure.prod_restrict, lintegral_prod _ (by rwa [Measure.prod_restrict])]
@@ -824,6 +800,19 @@ functions on `α × β`, the integral of `f` is equal to the iterated integral, 
 theorem lintegral_prod_symm' [SFinite μ] (f : α × β → ℝ≥0∞) (hf : Measurable f) :
     ∫⁻ z, f z ∂μ.prod ν = ∫⁻ y, ∫⁻ x, f (x, y) ∂μ ∂ν :=
   lintegral_prod_symm f hf.aemeasurable
+
+/-- The symmetric version of Tonelli's Theorem for set integrals: For `ℝ≥0∞`-valued almost
+everywhere measurable functions on `s ×ˢ t`, the integral of `f` on `s ×ˢ t` is equal to the
+iterated integral on `t` and `s` respectively. -/
+theorem setLIntegral_prod_symm [SFinite μ] {s : Set α} {t : Set β} (f : α × β → ℝ≥0∞)
+    (hf : AEMeasurable f ((μ.prod ν).restrict (s ×ˢ t))) :
+    ∫⁻ z in s ×ˢ t, f z ∂μ.prod ν = ∫⁻ y in t, ∫⁻ x in s, f (x, y) ∂μ ∂ν := by
+  rw [← Measure.prod_restrict, ← lintegral_prod_swap, Measure.prod_restrict,
+    setLIntegral_prod]
+  · rfl
+  · refine AEMeasurable.comp_measurable ?_ measurable_swap
+    convert hf
+    rw [← Measure.prod_restrict, Measure.prod_swap, Measure.prod_restrict]
 
 /-- The reversed version of **Tonelli's Theorem**. In this version `f` is in curried form, which
 makes it easier for the elaborator to figure out `f` automatically. -/
@@ -983,7 +972,7 @@ alias snd_map_prod_mk := snd_map_prodMk
 
 @[simp]
 lemma snd_add {μ ν : Measure (α × β)} : (μ + ν).snd = μ.snd + ν.snd :=
-  map_add _ _ measurable_snd
+  Measure.map_add _ _ measurable_snd
 
 lemma snd_sum {ι : Type*} (μ : ι → Measure (α × β)) : (sum μ).snd = sum (fun n ↦ (μ n).snd) :=
   map_sum measurable_snd.aemeasurable

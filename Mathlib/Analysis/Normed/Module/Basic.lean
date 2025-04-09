@@ -3,6 +3,7 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
+import Mathlib.Algebra.Algebra.Opposite
 import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.Algebra.Prod
 import Mathlib.Algebra.Algebra.Rat
@@ -26,10 +27,6 @@ open scoped NNReal ENNReal uniformity
 
 section SeminormedAddCommGroup
 
-section Prio
-
--- set_option extends_priority 920 -- Porting note: option unsupported
-
 -- Here, we set a rather high priority for the instance `[NormedSpace 𝕜 E] : Module 𝕜 E`
 -- to take precedence over `Semiring.toModule` as this leads to instance paths with better
 -- unification properties.
@@ -42,24 +39,22 @@ typeclass can be used for "semi normed spaces" too, just as `Module` can be used
 "semi modules". -/
 class NormedSpace (𝕜 : Type*) (E : Type*) [NormedField 𝕜] [SeminormedAddCommGroup E]
     extends Module 𝕜 E where
-  norm_smul_le : ∀ (a : 𝕜) (b : E), ‖a • b‖ ≤ ‖a‖ * ‖b‖
+  protected norm_smul_le : ∀ (a : 𝕜) (b : E), ‖a • b‖ ≤ ‖a‖ * ‖b‖
 
 attribute [inherit_doc NormedSpace] NormedSpace.norm_smul_le
-
-end Prio
 
 variable [NormedField 𝕜] [SeminormedAddCommGroup E] [SeminormedAddCommGroup F]
 variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
 
 -- see Note [lower instance priority]
-instance (priority := 100) NormedSpace.boundedSMul [NormedSpace 𝕜 E] : BoundedSMul 𝕜 E :=
-  BoundedSMul.of_norm_smul_le NormedSpace.norm_smul_le
+instance (priority := 100) NormedSpace.isBoundedSMul [NormedSpace 𝕜 E] : IsBoundedSMul 𝕜 E :=
+  IsBoundedSMul.of_norm_smul_le NormedSpace.norm_smul_le
 
 instance NormedField.toNormedSpace : NormedSpace 𝕜 𝕜 where norm_smul_le a b := norm_mul_le a b
 
 -- shortcut instance
-instance NormedField.to_boundedSMul : BoundedSMul 𝕜 𝕜 :=
-  NormedSpace.boundedSMul
+instance NormedField.to_isBoundedSMul : IsBoundedSMul 𝕜 𝕜 :=
+  NormedSpace.isBoundedSMul
 
 variable (𝕜) in
 theorem norm_zsmul (n : ℤ) (x : E) : ‖n • x‖ = ‖(n : 𝕜)‖ * ‖x‖ := by
@@ -236,7 +231,6 @@ variable (𝕜')
 variable [NormedField 𝕜] [SeminormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜']
 
 instance (priority := 100) NormedAlgebra.toNormedSpace : NormedSpace 𝕜 𝕜' :=
-  -- Porting note: previous Lean could figure out what we were extending
   { NormedAlgebra.toAlgebra.toModule with
   norm_smul_le := NormedAlgebra.norm_smul_le }
 
@@ -313,7 +307,6 @@ instance Prod.normedAlgebra {E F : Type*} [SeminormedRing E] [SeminormedRing F] 
     [NormedAlgebra 𝕜 F] : NormedAlgebra 𝕜 (E × F) :=
   { Prod.normedSpace, Prod.algebra 𝕜 E F with }
 
--- Porting note: Lean 3 could synth the algebra instances for Pi Pr
 /-- The product of finitely many normed algebras is a normed algebra, with the sup norm. -/
 instance Pi.normedAlgebra {ι : Type*} {E : ι → Type*} [Fintype ι] [∀ i, SeminormedRing (E i)]
     [∀ i, NormedAlgebra 𝕜 (E i)] : NormedAlgebra 𝕜 (∀ i, E i) :=
@@ -343,7 +336,6 @@ abbrev NormedAlgebra.induced {F : Type*} (𝕜 R S : Type*) [NormedField 𝕜] [
   letI := SeminormedRing.induced R S f
   ⟨fun a b ↦ show ‖f (a • b)‖ ≤ ‖a‖ * ‖f b‖ from (map_smul f a b).symm ▸ norm_smul_le a (f b)⟩
 
--- Porting note: failed to synth NonunitalAlgHomClass
 instance Subalgebra.toNormedAlgebra {𝕜 A : Type*} [SeminormedRing A] [NormedField 𝕜]
     [NormedAlgebra 𝕜 A] (S : Subalgebra 𝕜 A) : NormedAlgebra 𝕜 S :=
   NormedAlgebra.induced 𝕜 S A S.val
@@ -663,7 +655,7 @@ lemma AddMonoidHom.continuous_of_isBounded_nhds_zero (f : G →+ H) (hs : s ∈ 
   obtain ⟨δ, hδ, hUε⟩ := Metric.mem_nhds_iff.mp hs
   obtain ⟨C, hC⟩ := (isBounded_iff_subset_ball 0).1 (hbounded.subset <| image_subset f hUε)
   refine continuous_of_continuousAt_zero _ (continuousAt_iff.2 fun ε (hε : _ < _) => ?_)
-  simp only [dist_zero_right, _root_.map_zero, exists_prop]
+  simp only [dist_zero_right, map_zero, exists_prop]
   simp only [subset_def, mem_image, mem_ball, dist_zero_right, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂] at hC
   have hC₀ : 0 < C := (norm_nonneg _).trans_lt <| hC 0 (by simpa)
