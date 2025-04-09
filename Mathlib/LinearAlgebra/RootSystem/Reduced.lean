@@ -186,13 +186,13 @@ lemma pairing_neg_one_neg_four_iff' (h2 : IsSMulRegular R (2 : R)) :
 
 /-- See also `RootPairing.pairingIn_one_four_iff`. -/
 @[simp]
-lemma pairing_one_four_iff [NoZeroDivisors R] :
+lemma pairing_one_four_iff [IsDomain R] :
     P.pairing i j = 1 ∧ P.pairing j i = 4 ↔ P.root j = (2 : R) • P.root i :=
   P.pairing_one_four_iff' i j <| smul_right_injective R two_ne_zero
 
 /-- See also `RootPairing.pairingIn_neg_one_neg_four_iff`. -/
 @[simp]
-lemma pairing_neg_one_neg_four_iff [NoZeroDivisors R] :
+lemma pairing_neg_one_neg_four_iff [IsDomain R] :
     P.pairing i j = -1 ∧ P.pairing j i = -4 ↔ P.root j = (-2 : R) • P.root i :=
   P.pairing_neg_one_neg_four_iff' i j <| smul_right_injective R two_ne_zero
 
@@ -234,13 +234,13 @@ lemma pairingIn_neg_two_neg_two_iff :
 
 variable [NoZeroSMulDivisors R N]
 
-lemma pairingIn_one_four_iff [NoZeroDivisors R] :
+lemma pairingIn_one_four_iff [IsDomain R] :
     P.pairingIn S i j = 1 ∧ P.pairingIn S j i = 4 ↔ P.root j = (2 : R) • P.root i := by
   rw [← P.pairing_one_four_iff, ← P.algebraMap_pairingIn S, ← P.algebraMap_pairingIn S,
     ← map_one (algebraMap S R), ← map_ofNat (algebraMap S R), (algebraMap_injective S R).eq_iff,
     (algebraMap_injective S R).eq_iff]
 
-lemma pairingIn_neg_one_neg_four_iff [NoZeroDivisors R] :
+lemma pairingIn_neg_one_neg_four_iff [IsDomain R] :
     P.pairingIn S i j = -1 ∧ P.pairingIn S j i = -4 ↔ P.root j = (-2 : R) • P.root i := by
   rw [← P.pairing_neg_one_neg_four_iff, ← P.algebraMap_pairingIn S, ← P.algebraMap_pairingIn S,
     ← map_one (algebraMap S R), ← map_ofNat (algebraMap S R), ← map_neg, ← map_neg,

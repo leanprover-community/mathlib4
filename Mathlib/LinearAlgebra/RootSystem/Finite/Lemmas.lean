@@ -90,7 +90,7 @@ lemma coxeterWeightIn_mem_set_of_isCrystallographic :
   norm_cast at this ⊢
   omega
 
-variable [NoZeroDivisors R]
+variable [IsDomain R]
 
 lemma pairingIn_pairingIn_mem_set_of_isCrystallographic :
     (P.pairingIn ℤ i j, P.pairingIn ℤ j i) ∈
@@ -98,8 +98,7 @@ lemma pairingIn_pairingIn_mem_set_of_isCrystallographic :
         (-3, -1), (4, 1), (1, 4), (-4, -1), (-1, -4), (2, 2), (-2, -2)} : Set (ℤ × ℤ)) := by
   refine (Int.mul_mem_zero_one_two_three_four_iff ?_).mp
     (P.coxeterWeightIn_mem_set_of_isCrystallographic i j)
-  have : Fintype ι := Fintype.ofFinite ι
-  simpa [← P.algebraMap_pairingIn ℤ] using (P.posRootForm ℤ).toInvariantForm.pairing_zero_iff i j
+  simpa [← P.algebraMap_pairingIn ℤ] using P.pairing_zero_iff' (i := i) (j := j)
 
 lemma pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed
     [P.IsReduced] [NoZeroSMulDivisors R M] :
@@ -140,13 +139,13 @@ lemma pairingIn_pairingIn_mem_set_of_length_eq_of_ne [NoZeroSMulDivisors R M] {B
   have := P.pairingIn_pairingIn_mem_set_of_length_eq len_eq
   aesop
 
+omit [Finite ι] in
 lemma coxeterWeightIn_eq_zero_iff :
     P.coxeterWeightIn ℤ i j = 0 ↔ P.pairingIn ℤ i j = 0 := by
   refine ⟨fun h ↦ ?_, fun h ↦ by rw [coxeterWeightIn, h, zero_mul]⟩
-  have : Fintype ι := Fintype.ofFinite ι
   rwa [← (algebraMap_injective ℤ R).eq_iff, map_zero, algebraMap_coxeterWeightIn,
-    (P.posRootForm ℤ).toInvariantForm.coxeterWeight_zero_iff_isOrthogonal, IsOrthogonal,
-    (P.posRootForm ℤ).toInvariantForm.pairing_zero_iff j i, and_self, ← P.algebraMap_pairingIn ℤ,
+    RootPairing.coxeterWeight_zero_iff_isOrthogonal, IsOrthogonal,
+    P.pairing_zero_iff' (i := j) (j := i), and_self, ← P.algebraMap_pairingIn ℤ,
     FaithfulSMul.algebraMap_eq_zero_iff] at h
 
 variable [NoZeroSMulDivisors R M] [NoZeroSMulDivisors R N]
