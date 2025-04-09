@@ -244,7 +244,7 @@ lemma head_toList (p : RelSeries r) : p.toList.head p.toList_ne_nil = p.head := 
 @[simp]
 lemma toList_getElem_eq_apply (p : RelSeries r) (i : Fin (p.length + 1)) :
     p.toList[(i : ℕ)] = p i := by
-  simp only [Fin.getElem_fin, toList, List.getElem_ofFn p.toFun]
+  simp only [Fin.getElem_fin, toList, List.getElem_ofFn]
 
 @[simp]
 lemma toList_getElem_zero_eq_head (p : RelSeries r) : p.toList[0] = p.head := by
@@ -491,7 +491,7 @@ lemma append_cons {p q : RelSeries r} {x : α} (hx : r x p.head) (hq : r p.last 
   · simp only [singleton, Nat.reduceAdd, append, Fin.append, cons, id_eq, eq_mpr_eq_cast,
       Function.comp_apply, Fin.addCases, Fin.coe_cast, zero_add, Fin.coe_castLT, Nat.lt_one_iff,
       Fin.cast_trans, Fin.subNat, Fin.natAdd_mk, eq_rec_constant, Int.reduceNeg,
-      Int.Nat.cast_ofNat_Int, Fin.cast_mk, Fin.castLT_mk, Fin.subNat_mk]
+      Int.cast_ofNat_Int, Fin.cast_mk, Fin.castLT_mk, Fin.subNat_mk]
     split_ifs <;> try rfl; <;> try omega
     congr 2
     omega
@@ -612,14 +612,6 @@ def inductionOn (motive : RelSeries r → Sort*)
       exact (p.cons_self_tail (heq ▸ d.zero_ne_add_one.symm)).symm
   exact this rfl
 
-@[elab_as_elim]
-def inductionOn' (motive : RelSeries r → Sort*)
-    (singleton : (x : α) → motive (RelSeries.singleton r x))
-    (snoc : (p : RelSeries r) → (x : α) → (hx : r p.last x) → (hp : motive p) →
-      motive (p.snoc x hx)) (p : RelSeries r) :
-    motive p := by
-  sorry
-
 @[simp]
 lemma toList_tail (p : RelSeries r) (hp : p.length ≠ 0) :
     (p.tail hp).toList = p.toList.tail := by
@@ -655,6 +647,21 @@ lemma eraseLast_last_rel_last (p : RelSeries r) (h : p.length ≠ 0) :
   simp only [last, Fin.last, eraseLast_length, eraseLast_toFun]
   convert p.step ⟨p.length - 1, by omega⟩
   simp only [Nat.succ_eq_add_one, Fin.succ_mk]; omega
+
+@[elab_as_elim]
+def inductionOn' (motive : RelSeries r → Sort*)
+    (singleton : (x : α) → motive (RelSeries.singleton r x))
+    (snoc : (p : RelSeries r) → (x : α) → (hx : r p.last x) → (hp : motive p) →
+      motive (p.snoc x hx)) (p : RelSeries r) :
+    motive p := by
+  let this {n : ℕ} (heq : p.length = n) : motive p := by
+    induction' n with d hd generalizing p
+    · convert singleton p.head
+      ext n
+      exact heq
+      simp [show n = 0 by omega, apply_zero]
+    · sorry
+  exact this rfl
 
 /--
 Given two series of the form `a₀ -r→ ... -r→ X` and `X -r→ b ---> ...`,
