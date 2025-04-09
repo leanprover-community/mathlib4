@@ -13,10 +13,18 @@ a totally real number field.
 
 ## Main definitions
 
+* `maximalRealSubfield`: the maximal real subfield of a number field.
+
 * `IsCMExtension`: a Prop on two number fields `F` and `K` stating that `K/F` is a CM-extension.
 
-* `IsCM`: a Prop on a number field `K` stating that there exists a subfield `F` such that `K/F` is
+* `IsCM`: a Prop on a number field `K` stating that `K/maximalRealSubfield ℚ K` is
   a CM-extension
+
+
+## Main results
+
+* `NumberField.IsCM.ofIsCMExtension`: Let `K` be a number field and assume that there exists `F`
+  such that `K/F` is a CM-extension. Then `K` is CM.
 
 ## Implementation notes
 
@@ -112,12 +120,10 @@ class IsCMExtension (F K : Type*) [Field F] [NumberField F] [Field K] [NumberFie
   finrank_eq_two' : Module.finrank F K = 2
 
 /--
-A field `K` is `CM` if it admits a subfield `F` such that `IsCMExtension F K`.
-In this case, one can take `F` to be the maximal real subfield of `K`.
+A field `K` is `CM` if it is a `CM`-extension over its maximal real subfield of `K`.
 -/
 class IsCM (K : Type*) [Field K] [NumberField K] : Prop where
-  exists_CMExtension :
-    ∃ (F : Type*) (_ : Field F) (_ : NumberField F) (_ : Algebra F K), IsCMExtension F K
+  CMExtension : IsCMExtension (maximalRealSubfield ℚ K) K
 
 namespace IsCMExtension
 
@@ -219,10 +225,10 @@ theorem algebraMap_maximalRealSubfieldEquiv [h : IsCMExtension F K] (x : maximal
     RingHom.rangeRestrictFieldEquiv_apply_symm_apply]
   rfl
 
-instance over_realMaximalSubfield [h : IsCM K] :
-    IsCMExtension (maximalRealSubfield ℚ K) K := by
-  obtain ⟨F, _, _, _, _⟩ := h.exists_CMExtension
-  exact ofRingEquiv (f := maximalRealSubfieldEquiv F K) (by ext; simp)
+omit [IsTotallyReal F] in
+theorem _root_.NumberField.IsCM.ofIsCMExtension [h : IsCMExtension F K] :
+    IsCM K where
+  CMExtension := ofRingEquiv (f := maximalRealSubfieldEquiv F K) (by ext; simp)
 
 end MaximalRealSubfield
 
