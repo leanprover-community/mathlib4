@@ -244,7 +244,7 @@ theorem AnalyticOnNhd.hasFPowerSeriesOnBall {𝕜 : Type*} [RCLike 𝕜] {f : �
   replace hg' : AnalyticOnNhd 𝕜 g (EMetric.ball x r) :=
     AnalyticOnNhd.mono hg' (EMetric.ball_subset_ball hr)
   replace hg' := AnalyticOnNhd.eqOn_of_preconnected_of_eventuallyEq h hg'
-  specialize hg' (IsConnected.isPreconnected (Metric.eball_connected hr_pos))
+  specialize hg' (IsConnected.isPreconnected (Metric.isConnected_eball hr_pos))
     (show x ∈ EMetric.ball x r by simpa) ?_
   · have hf : AnalyticAt 𝕜 f x := by
       apply h
