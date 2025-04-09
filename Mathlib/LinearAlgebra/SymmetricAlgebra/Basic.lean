@@ -23,6 +23,12 @@ This is the free commutative `R`-algebra generated (`R`-linearly) by the module 
    `ι : M →ₗ[R] A` with `p : IsSymmetricAlgebra ι`, `IsSymmetricAlgebra.lift p f`
    is the lift of `f` to an `R`-algebra morphism `A →ₐ[R] A'`.
 
+## Note
+
+See `SymAlg R` if you are looking for having a commutative multiplication on `R` by
+$$
+a \circ b = \frac{1}{2}(ab + ba)
+$$
 -/
 
 universe u

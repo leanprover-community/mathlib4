@@ -22,6 +22,10 @@ We provide the symmetrized version of a type `α` as `SymAlg α`, with notation 
 The approach taken here is inspired by `Mathlib/Algebra/Opposites.lean`. We use Oxford Spellings
 (IETF en-GB-oxendict).
 
+## Note
+
+See `SymmetricAlgebra` if you are looking for the symmetric algebra of a module.
+
 ## References
 
 * [Hanche-Olsen and Størmer, Jordan Operator Algebras][hancheolsenstormer1984]
