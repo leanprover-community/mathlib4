@@ -118,16 +118,22 @@ noncomputable abbrev cauchy_sequence_coeff (a:ℤ ) :=
  (Cauchy.seq_map (p:=p))∘ₗ(AdicCompletion.AdicCauchySequence.map  (IsLocalRing.maximalIdeal ℤ_[p])
  (HahnSeries.coeff_map_0 (p:=p) a))
 lemma powerseries_equiv(m:ℕ)(s :ℤ)(f g :ℤ_[p]⸨X⸩)
-   { hs:f ≡ g [SMOD  (IsLocalRing.maximalIdeal ℤ_[p] ^ m • ⊤ : Submodule ℤ_[p] ℤ_[p]⸨X⸩)]}:
-((HahnSeries.coeff_map_0 s) f) ≡
-   ((HahnSeries.coeff_map_0 s) g)
-   [SMOD (IsLocalRing.maximalIdeal ℤ_[p] ^ m )]:=by
-    simp only [SModEq.sub_mem,zero_sub, neg_mem_iff]
-    simp only [SModEq.sub_mem,zero_sub, neg_mem_iff] at hs
-    rw[Eq.symm (LinearMap.map_sub (HahnSeries.coeff_map_0 s) f g)]
+   (hs:f ≡ g [SMOD  (IsLocalRing.maximalIdeal ℤ_[p] ^ m • ⊤ : Submodule ℤ_[p] ℤ_[p]⸨X⸩)]):
+((HahnSeries.coeff_map_0 s) f) -
+   ((HahnSeries.coeff_map_0 s) g) ∈ Ideal.span {↑p} ^ m:=by
+    simp only [SModEq.sub_mem,zero_sub, neg_mem_iff,
+     maximalIdeal_eq_span_p,Ideal.span_singleton_pow]
+    simp only [SModEq.sub_mem,zero_sub, neg_mem_iff ,
+     maximalIdeal_eq_span_p,Ideal.span_singleton_pow,Submodule.ideal_span_singleton_smul]
+      at hs
+    rw[← Submodule.singleton_set_smul,Submodule.mem_singleton_set_smul ] at hs
+    choose u se1 se2 using hs
+    rw[Eq.symm (LinearMap.map_sub (HahnSeries.coeff_map_0 s) f g),Ideal.mem_span_singleton']
+    rw[se2]
+    simp
+    use (HahnSeries.coeff_map_0 s) u
+    ring
 
-
-    sorry
 lemma cauchy_sequence_coeff_tends_to_zero
   (f:AdicCompletion.AdicCauchySequence (IsLocalRing.maximalIdeal ℤ_[p]) ℤ_[p]⸨X⸩ ):
   Filter.Tendsto (fun n:ℕ => cauchy_sequence_coeff (p:=p) (-n:ℤ ) f) Filter.atTop
@@ -156,10 +162,10 @@ lemma cauchy_sequence_coeff_tends_to_zero
   intro l sl
   unfold Cauchy_p_adic
   simp only [AdicCompletion.AdicCauchySequence.map_apply_coe]
-  have:=this sl
-  have s1:((HahnSeries.coeff_map_0 (-n:ℤ)) (f.1 m)) ≡
-   ((HahnSeries.coeff_map_0 (-n:ℤ)) (f.1 l))
-   [SMOD (IsLocalRing.maximalIdeal ℤ_[p] ^ m )]:=sorry
+
+  have s1:=by
+      exact powerseries_equiv m (-↑n) (f.1 m) (f.1 l) (this sl)
+
   have s2 :((HahnSeries.coeff_map_0 (-n:ℤ)) (f.1 m))=0 :=by
      refine HahnSeries.coeff_eq_zero_of_lt_order ?_
      have:(-n:ℤ)≤ -w :=by sorry
