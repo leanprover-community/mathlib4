@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Yury Kudryashov, Paul Lezeau
 -/
 import Mathlib.Data.Set.NAry
 import Mathlib.Order.Bounds.Defs
-import Mathlib.Order.Bounds.Basic
 
 /-!
 
@@ -138,24 +137,8 @@ theorem image_upperBounds_subset_upperBounds_image :
   rintro _ ⟨a, ha, rfl⟩
   exact Hf.mem_upperBounds_image ha
 
-lemma upperBounds_image_congr_of_subset {s₁ s₂ : Set α}
-    (hs₁ : s₁ ⊆ s₂) (hs₂ : ∀ a ∈ s₂, ∃ b ∈ s₁, a ≤ b) :
-    upperBounds (f '' s₁) = upperBounds (f '' s₂) := by
-  apply upperBounds_congr_of_subset (image_mono hs₁)
-  intro a ⟨c, hc⟩
-  obtain ⟨d,hd⟩ := hs₂ c hc.1
-  exact ⟨f d, ⟨(mem_image _ _ _).mpr ⟨d,⟨hd.1,rfl⟩⟩, le_of_eq_of_le hc.2.symm (Hf hd.2)⟩⟩
-
 theorem image_lowerBounds_subset_lowerBounds_image : f '' lowerBounds s ⊆ lowerBounds (f '' s) :=
   Hf.dual.image_upperBounds_subset_upperBounds_image
-
-lemma lowerBounds_image_congr_of_subset {s₁ s₂ : Set α}
-    (hs₁ : s₁ ⊆ s₂) (hs₂ : ∀ a ∈ s₂, ∃ b ∈ s₁, b ≤ a) :
-    lowerBounds (f '' s₁) = lowerBounds (f '' s₂) := by
-  apply lowerBounds_congr_of_subset (image_mono hs₁)
-  intro a ⟨c, hc⟩
-  obtain ⟨d,hd⟩ := hs₂ c hc.1
-  exact ⟨f d, ⟨(mem_image _ _ _).mpr ⟨d,⟨hd.1,rfl⟩⟩, le_of_le_of_eq (Hf hd.2) hc.2⟩⟩
 
 /-- The image under a monotone function of a set which is bounded above is bounded above. See also
 `BddAbove.image2`. -/
@@ -479,11 +462,6 @@ theorem isLUB_prod {s : Set (α × β)} (p : α × β) :
 theorem isGLB_prod {s : Set (α × β)} (p : α × β) :
     IsGLB s p ↔ IsGLB (Prod.fst '' s) p.1 ∧ IsGLB (Prod.snd '' s) p.2 :=
   @isLUB_prod αᵒᵈ βᵒᵈ _ _ _ _
-
-lemma Monotone.upperBounds_image_of_directedOn_prod {γ : Type*} [Preorder γ] {g : α × β → γ}
-    (Hg : Monotone g) {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) :
-    upperBounds (g '' d) = upperBounds (g '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) :=
-  Hg.upperBounds_image_congr_of_subset subset_fst_image_prod_snd_image (hd.prod_all_dominated)
 
 end Prod
 
