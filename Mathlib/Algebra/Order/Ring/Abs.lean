@@ -169,6 +169,7 @@ private theorem abs_geomSum_le : |geomSum a b n| ≤ (n + 1) * max |a| |b| ^ n :
   exact mul_le_mul ih le_sup_left (abs_nonneg _) (mul_nonneg
     (@Nat.cast_succ α .. ▸ Nat.cast_nonneg _) <| pow_nonneg ((abs_nonneg _).trans le_sup_left) _)
 
+set_option linter.style.commandStart false in -- false positive from the pretty-printer
 omit [LinearOrder α] [IsStrictOrderedRing α] in
 private theorem pow_sub_pow_eq_sub_mul_geomSum :
     a ^ (n + 1) - b ^ (n + 1) = (a - b) * geomSum a b n := by

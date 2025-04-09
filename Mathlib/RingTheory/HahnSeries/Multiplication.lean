@@ -826,6 +826,7 @@ theorem embDomain_mul [NonUnitalNonAssocSemiring R] (f : Γ ↪o Γ')
     obtain ⟨j, _, rfl⟩ := support_embDomain_subset hj
     exact ⟨i + j, hf i j⟩
 
+set_option linter.style.commandStart false -- false positive from the pretty-printer
 omit [IsOrderedCancelAddMonoid Γ] [IsOrderedCancelAddMonoid Γ'] in
 theorem embDomain_one [NonAssocSemiring R] (f : Γ ↪o Γ') (hf : f 0 = 0) :
     embDomain f (1 : HahnSeries Γ R) = (1 : HahnSeries Γ' R) :=

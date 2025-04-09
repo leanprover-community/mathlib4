@@ -150,6 +150,7 @@ end
 
 section
 
+set_option linter.style.commandStart false -- false positive from the pretty-printer
 variable {F}
     /- unit morphism -/
     (ε' : 𝟙_ D ⟶ F.obj (𝟙_ C))
@@ -172,6 +173,8 @@ variable {F}
     (right_unitality' :
       ∀ X : C, (ρ_ (F.obj X)).hom = (𝟙 (F.obj X) ⊗ ε') ≫ μ' X (𝟙_ C) ≫ F.map (ρ_ X).hom := by
         aesop_cat)
+
+set_option linter.style.commandStart true
 
 /--
 A constructor for lax monoidal functors whose axioms are described by `tensorHom` instead of
