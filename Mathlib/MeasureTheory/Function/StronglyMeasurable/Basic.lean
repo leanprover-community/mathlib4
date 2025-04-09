@@ -75,7 +75,7 @@ open MeasureTheory
 /-! ## Strongly measurable functions -/
 
 section StronglyMeasurable
-variable {_ : MeasurableSpace α} {μ : Measure α} {f : α → β} {b : β} {g : ℕ → α} {m : ℕ}
+variable {_ : MeasurableSpace α} {μ : Measure α} {f : α → β} {g : ℕ → α} {m : ℕ}
 
 variable [TopologicalSpace β]
 
@@ -83,21 +83,22 @@ theorem SimpleFunc.stronglyMeasurable (f : α →ₛ β) : StronglyMeasurable f 
   ⟨fun _ => f, fun _ => tendsto_const_nhds⟩
 
 @[simp, nontriviality]
-lemma StronglyMeasurable.of_subsingleton_dom [Subsingleton α] (f : α → β) : StronglyMeasurable f :=
+lemma StronglyMeasurable.of_subsingleton_dom [Subsingleton α] : StronglyMeasurable f :=
   ⟨fun _ => SimpleFunc.ofFinite f, fun _ => tendsto_const_nhds⟩
 
 @[simp, nontriviality]
-lemma StronglyMeasurable.of_subsingleton_cod [Subsingleton β] (f : α → β) :
-    StronglyMeasurable f := by
+lemma StronglyMeasurable.of_subsingleton_cod [Subsingleton β] : StronglyMeasurable f := by
   let f_sf : α →ₛ β := ⟨f, fun x => ?_, Set.Subsingleton.finite Set.subsingleton_of_subsingleton⟩
   · exact ⟨fun _ => f_sf, fun x => tendsto_const_nhds⟩
   · simp [Set.preimage, eq_iff_true_of_subsingleton]
 
-@[deprecated (since := "2025-04-09")]
-alias Subsingleton.stronglyMeasurable := StronglyMeasurable.of_subsingleton_cod
+@[deprecated StronglyMeasurable.of_subsingleton_cod (since := "2025-04-09")]
+lemma Subsingleton.stronglyMeasurable [Subsingleton β] (f : α → β) : StronglyMeasurable f :=
+  .of_subsingleton_cod
 
-@[deprecated (since := "2025-04-09")]
-alias Subsingleton.stronglyMeasurable' := StronglyMeasurable.of_subsingleton_dom
+@[deprecated StronglyMeasurable.of_subsingleton_dom (since := "2025-04-09")]
+lemma Subsingleton.stronglyMeasurable' [Subsingleton α] (f : α → β) : StronglyMeasurable f :=
+  .of_subsingleton_dom
 
 theorem stronglyMeasurable_const {b : β} : StronglyMeasurable fun _ : α => b :=
   ⟨fun _ => SimpleFunc.const α b, fun _ => tendsto_const_nhds⟩
@@ -119,29 +120,26 @@ section aux
 omit [TopologicalSpace β]
 
 /-- Auxiliary definition for `StronglyMeasurable.of_discrete`. -/
-private noncomputable def simpleFuncAux (f : α → β) (b : β) (g : ℕ → α) : ℕ → SimpleFunc α β
-  | 0 => .const _ b
-  | n + 1 => .piecewise {g n} (.singleton _) (.const _ <| f (g n)) (simpleFuncAux f b g n)
+private noncomputable def simpleFuncAux (f : α → β) (g : ℕ → α) : ℕ → SimpleFunc α β
+  | 0 => .const _ (f (g 0))
+  | n + 1 => .piecewise {g n} (.singleton _) (.const _ <| f (g n)) (simpleFuncAux f g n)
 
-private lemma simpleFuncAux_eq_of_lt : ∀ n > m, simpleFuncAux f b g n (g m) = f (g m)
+private lemma simpleFuncAux_eq_of_lt : ∀ n > m, simpleFuncAux f g n (g m) = f (g m)
   | _, .refl => by simp [simpleFuncAux]
   | _, Nat.le.step (m := n) hmn => by
     obtain hnm | hnm := eq_or_ne (g n) (g m) <;>
       simp [simpleFuncAux, Set.piecewise_eq_of_not_mem , hnm.symm, simpleFuncAux_eq_of_lt _ hmn]
 
-private lemma simpleFuncAux_eventuallyEq : ∀ᶠ n in atTop, simpleFuncAux f b g n (g m) = f (g m) :=
+private lemma simpleFuncAux_eventuallyEq : ∀ᶠ n in atTop, simpleFuncAux f g n (g m) = f (g m) :=
   eventually_atTop.2 ⟨_, simpleFuncAux_eq_of_lt⟩
 
 end aux
 
-@[nontriviality]
 lemma StronglyMeasurable.of_discrete [Countable α] : StronglyMeasurable f := by
-  cases isEmpty_or_nonempty α
-  · exact .of_subsingleton_dom _
-  obtain _ | ⟨⟨b⟩⟩ := isEmpty_or_nonempty β
-  · exact .of_subsingleton_cod _
+  nontriviality α
+  nontriviality β
   obtain ⟨g, hg⟩ := exists_surjective_nat α
-  exact ⟨simpleFuncAux f b g, hg.forall.2 fun m ↦
+  exact ⟨simpleFuncAux f g, hg.forall.2 fun m ↦
     tendsto_nhds_of_eventually_eq simpleFuncAux_eventuallyEq⟩
 
 @[deprecated StronglyMeasurable.of_discrete (since := "2025-04-09")]
