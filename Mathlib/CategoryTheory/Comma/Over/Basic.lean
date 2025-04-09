@@ -1013,7 +1013,7 @@ open Opposite
 
 variable (X : T)
 
-/-- `Over.opToOpUnder` is an equivalence of categories. -/
+/-- The canonical equivalence between over and under categories by reversing structure arrows. -/
 @[simps]
 def Over.opEquivOpUnder : Over (op X) ≌ (Under X)ᵒᵖ where
   functor.obj Y := ⟨Under.mk Y.hom.unop⟩
@@ -1023,7 +1023,7 @@ def Over.opEquivOpUnder : Over (op X) ≌ (Under X)ᵒᵖ where
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
-/-- `Under.opToOpOver` is an equivalence of categories. -/
+/-- The canonical equivalence between under and over categories by reversing structure arrows. -/
 @[simps]
 def Under.opEquivOpOver : Under (op X) ≌ (Over X)ᵒᵖ where
   functor.obj Y := ⟨Over.mk Y.hom.unop⟩
