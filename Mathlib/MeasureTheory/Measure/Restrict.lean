@@ -539,10 +539,12 @@ theorem ae_eq_restrict_biUnion_finset_iff (s : ι → Set α) (t : Finset ι) (f
     f =ᵐ[μ.restrict (⋃ i ∈ t, s i)] g ↔ ∀ i ∈ t, f =ᵐ[μ.restrict (s i)] g :=
   ae_eq_restrict_biUnion_iff s t.countable_toSet f g
 
+open scoped uIcc in
 theorem ae_restrict_uIoc_eq [LinearOrder α] (a b : α) :
     ae (μ.restrict (Ι a b)) = ae (μ.restrict (Ioc a b)) ⊔ ae (μ.restrict (Ioc b a)) := by
   simp only [uIoc_eq_union, ae_restrict_union_eq]
 
+open scoped uIcc in
 /-- See also `MeasureTheory.ae_uIoc_iff`. -/
 theorem ae_restrict_uIoc_iff [LinearOrder α] {a b : α} {P : α → Prop} :
     (∀ᵐ x ∂μ.restrict (Ι a b), P x) ↔

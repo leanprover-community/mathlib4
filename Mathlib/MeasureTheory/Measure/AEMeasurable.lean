@@ -225,6 +225,7 @@ theorem aemeasurable_const' (h : ∀ᵐ (x) (y) ∂μ, f x = f y) : AEMeasurable
     rcases h.exists with ⟨x, hx⟩
     exact ⟨const α (f x), measurable_const, EventuallyEq.symm hx⟩
 
+open scoped uIcc in
 theorem aemeasurable_uIoc_iff [LinearOrder α] {f : α → β} {a b : α} :
     (AEMeasurable f <| μ.restrict <| Ι a b) ↔
       (AEMeasurable f <| μ.restrict <| Ioc a b) ∧ (AEMeasurable f <| μ.restrict <| Ioc b a) := by

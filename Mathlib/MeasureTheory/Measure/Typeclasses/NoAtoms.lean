@@ -131,6 +131,7 @@ end
 
 open Interval
 
+open scoped uIcc in
 theorem uIoc_ae_eq_interval [LinearOrder α] {a b : α} : Ι a b =ᵐ[μ] [[a, b]] :=
   Ioc_ae_eq_Icc
 
