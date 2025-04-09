@@ -304,6 +304,8 @@ def Simps.coe_support : Set X := I.support
 
 initialize_simps_projections IdealSheafData (supportSet → coe_support, as_prefix coe_support)
 
+/-- A useful constructor of `IdealSheafData`
+with the condition on `supportSet` being easier to check. -/
 @[simps ideal coe_support]
 def mkOfMemSupportIff
     (ideal : ∀ U : X.affineOpens, Ideal Γ(X, U))
