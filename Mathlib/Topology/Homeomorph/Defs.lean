@@ -429,8 +429,6 @@ instance : HomeomorphClass (α ≃ₜ β) α β where
 
 end HomeomorphClass
 
-open Filter
-
 section IsHomeomorph
 
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] {f : X → Y}
