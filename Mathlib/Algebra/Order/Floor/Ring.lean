@@ -176,7 +176,8 @@ theorem floor_sub_ofNat (a : α) (n : ℕ) [n.AtLeastTwo] :
     ⌊a - ofNat(n)⌋ = ⌊a⌋ - ofNat(n) :=
   floor_sub_natCast a n
 
-theorem abs_sub_lt_one_of_floor_eq_floor {α : Type*} [LinearOrderedCommRing α] [FloorRing α]
+theorem abs_sub_lt_one_of_floor_eq_floor {α : Type*}
+    [CommRing α] [LinearOrder α] [IsStrictOrderedRing α] [FloorRing α]
     {a b : α} (h : ⌊a⌋ = ⌊b⌋) : |a - b| < 1 := by
   have : a < ⌊a⌋ + 1 := lt_floor_add_one a
   have : b < ⌊b⌋ + 1 := lt_floor_add_one b
