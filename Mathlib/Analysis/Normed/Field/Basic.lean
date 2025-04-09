@@ -211,7 +211,7 @@ theorem exists_lt_norm (r : ℝ) : ∃ x : α, r < ‖x‖ :=
 
 theorem exists_lt_nnnorm (r : ℝ≥0) : ∃ x : α, r < ‖x‖₊ := exists_lt_norm α r
 
-theorem exists_lt_enorm (r : ℝ≥0∞) (hr : r ≠ ∞) : ∃ x : α, r < ‖x‖ₑ := by
+theorem exists_lt_enorm {r : ℝ≥0∞} (hr : r ≠ ∞) : ∃ x : α, r < ‖x‖ₑ := by
   lift r to ℝ≥0 using hr
   exact mod_cast exists_lt_nnnorm α r
 
