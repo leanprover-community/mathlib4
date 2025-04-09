@@ -96,8 +96,8 @@ theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList
         apply ltb_cons_addChar
       · refine ⟨List.Lex.rel, fun e ↦ ?_⟩
         cases e <;> rename_i h'
-        · contradiction
         · assumption
+        · contradiction
 
 instance LE : LE String :=
   ⟨fun s₁ s₂ ↦ ¬s₂ < s₁⟩

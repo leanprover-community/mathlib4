@@ -163,13 +163,11 @@ def freeRefl : ReflQuiv.{v, u} ⥤ Cat.{max u v, u} where
   obj V := Cat.of (FreeRefl V)
   map F := freeReflMap F
   map_id X := by
-    dsimp
     refine (Quotient.lift_unique _ _ _ _ ((Functor.comp_id _).trans <|
       (Functor.id_comp _).symm.trans ?_)).symm
     congr 1
     exact (free.map_id X.toQuiv).symm
   map_comp {X Y Z} f g := by
-    dsimp
     apply (Quotient.lift_unique _ _ _ _ _).symm
     show FreeRefl.quotientFunctor _ ⋙ _ = _
     rw [Cat.comp_eq_comp, ← Functor.assoc, freeReflMap_naturality, Functor.assoc,
