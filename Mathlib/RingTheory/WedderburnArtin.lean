@@ -30,55 +30,7 @@ open MulOpposite
 
 variable (K D : Type*) [Field K] [IsSimpleRing A] [Algebra K A] [DivisionRing D]
 
-
-namespace TwoSidedIdeal
-variable {R : Type*} [Ring R]
-/--
-Any two-sided-ideal in `A` corresponds to a two-sided-ideal in `Aᵒᵖ`.
--/
-@[simps]
-def toMop (rel : TwoSidedIdeal R) : (TwoSidedIdeal Rᵐᵒᵖ) :=
-  .mk
-  { r := fun a b ↦ rel.ringCon b.unop a.unop
-    iseqv :=
-    { refl := fun a ↦ rel.ringCon.refl a.unop
-      symm := rel.ringCon.symm
-      trans := fun h1 h2 ↦ rel.ringCon.trans h2 h1 }
-    mul' := fun h1 h2 ↦ rel.ringCon.mul h2 h1
-    add' := rel.ringCon.add }
-
-/--
-Any two-sided-ideal in `Aᵒᵖ` corresponds to a two-sided-ideal in `A`.
--/
-@[simps]
-def fromMop (rel : TwoSidedIdeal Rᵐᵒᵖ) : (TwoSidedIdeal R) :=
-  .mk
-  { r := fun a b ↦ rel.ringCon (op b) (op a)
-    iseqv :=
-    { refl := fun a ↦ rel.ringCon.refl (op a)
-      symm := rel.ringCon.symm
-      trans := fun h1 h2 ↦ rel.ringCon.trans h2 h1 }
-    mul' := fun h1 h2 ↦ rel.ringCon.mul h2 h1
-    add' := rel.ringCon.add }
-
-/--
-Two-sided-ideals of `A` and that of `Aᵒᵖ` corresponds bijectively to each other.
--/
-@[simps]
-def toMopOrderIso : (TwoSidedIdeal R) ≃o (TwoSidedIdeal Rᵐᵒᵖ) where
-  toFun := toMop
-  invFun := fromMop
-  left_inv := unop_op
-  right_inv := unop_op
-  map_rel_iff' {a b} :=
-    ⟨fun h x H ↦ b.ringCon.symm <| @h (MulOpposite.op x) <|
-        by simpa [toMop, mem_iff] using a.ringCon.symm H,
-    fun h x H ↦ b.ringCon.symm <| @h (MulOpposite.unop x) <|
-        by simpa [fromMop, mem_iff] using a.ringCon.symm H⟩
-
-end TwoSidedIdeal
-
-instance op_simple : IsSimpleRing Aᵐᵒᵖ := ⟨TwoSidedIdeal.toMopOrderIso.symm.isSimpleOrder⟩
+instance op_simple : IsSimpleRing Aᵐᵒᵖ := ⟨TwoSidedIdeal.opOrderIso.symm.isSimpleOrder⟩
 
 universe u
 
