@@ -383,6 +383,28 @@ theorem sdiff_le_self (x y : MyGraph V) : x \ y ≤ x := by
   · simp
   · intro v w h; simp [h.1]
 
+instance hasCompl : HasCompl (MyGraph V) where
+  compl G :=
+    { verts := G.verts
+      Adj := fun v w => v ≠ w ∧ ¬G.Adj v w ∧ v ∈ G.verts ∧ w ∈ G.verts
+      edge_vert := fun h ↦ h.2.2.1
+      symm := fun v w ⟨hne, h1, h2, h3⟩ => ⟨hne.symm, by rwa [adj_comm], h3, h2⟩
+      loopless := fun _ ⟨hne, _⟩ => (hne rfl).elim }
+
+
+@[simp]
+theorem compl_verts (x : MyGraph V) : xᶜ.verts = x.verts := rfl
+
+@[simp]
+theorem compl_adj (G : MyGraph V) (v w : V) :
+    Gᶜ.Adj v w ↔ v ≠ w ∧ ¬G.Adj v w ∧ v ∈ G.verts ∧ w ∈ G.verts := Iff.rfl
+
+lemma inf_compl_le_sdiff (x y : MyGraph V) : x ⊓ yᶜ ≤ x \ y  := by
+  constructor
+  · simp
+  · simp only [inf_adj, compl_adj, ne_eq, sdiff_adj, and_imp]
+    intro v w h h1 h2 h3 h4 ; exact ⟨h, h2⟩
+
 section Decidable
 
 variable (V) (H : MyGraph V) [DecidableRel G.Adj] [DecidableRel H.Adj]
@@ -821,17 +843,27 @@ variable (s : Set (Sym2 V)) {v w : V}
 
 /-- `fromEdgeSet` constructs a `MyGraph` from a set of edges, without loops. -/
 def fromEdgeSet : MyGraph V where
-  verts := Rel.dom (Sym2.ToRel s)
+  verts := Rel.dom (Sym2.ToRel s ⊓ Ne)
   Adj := Sym2.ToRel s ⊓ Ne
   edge_vert h := by
     rename_i v w
-    use w, h.1
+    use w, h.1, h.2
   symm _ _ h := ⟨Sym2.toRel_symmetric s h.1, h.2.symm⟩
   loopless _ h' := h'.2.elim rfl
 
 @[simp]
 theorem fromEdgeSet_adj : (fromEdgeSet s).Adj v w ↔ s(v, w) ∈ s ∧ v ≠ w :=
   Iff.rfl
+
+@[simp]
+theorem fromEdgeSet_verts : v ∈ (fromEdgeSet s).verts ↔ ∃ w, s(v, w) ∈ s ∧ v ≠ w := by
+  rw [fromEdgeSet]
+  simp only [ne_eq]
+  constructor
+  · intro ⟨w,hw⟩
+    use w, hw.1, hw.2
+  · intro ⟨w, h1, h2⟩
+    use w, h1, h2
 
 -- Note: we need to make sure `fromEdgeSet_adj` and this lemma are confluent.
 -- In particular, both yield `s(u, v) ∈ (fromEdgeSet s).edgeSet` ==> `s(v, w) ∈ s ∧ v ≠ w`.
@@ -844,7 +876,7 @@ theorem edgeSet_fromEdgeSet : (fromEdgeSet s).edgeSet = s \ { e | e.IsDiag } := 
 theorem fromEdgeSet_edgeSet : fromEdgeSet G.edgeSet ≤ G := by
   constructor
   · intro v hv
-    apply G.support_subset_verts hv
+    apply G.support_subset_verts hv.
   · intro v w h
     simpa using h.1
 
