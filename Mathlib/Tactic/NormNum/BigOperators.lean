@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Floris van Doorn
 -/
 import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Data.List.FinRange
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # `norm_num` plugin for big operators
@@ -38,7 +38,7 @@ In particular, we can't use the plugin on sums containing variables.
 
 namespace Mathlib.Meta
 
-open Lean hiding Rat mkRat
+open Lean
 open Meta
 open Qq
 
@@ -139,7 +139,7 @@ partial def List.proveNilOrCons {u : Level} {α : Q(Type u)} (s : Q(List $α)) :
     return match ← List.proveNilOrCons xxs with
     | .nil pf => .nil q(($pf ▸ List.map_nil : List.map _ _ = _))
     | .cons x xs pf => .cons q($f $x) q(($xs).map $f)
-      q(($pf ▸ List.map_cons $f $x $xs : List.map _ _ = _))
+      q(($pf ▸ List.map_cons : List.map _ _ = _))
   | (_, fn, args) =>
     throwError "List.proveNilOrCons: unsupported List expression {s} ({fn}, {args})"
 

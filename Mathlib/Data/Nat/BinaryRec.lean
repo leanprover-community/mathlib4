@@ -23,14 +23,9 @@ universe u
 namespace Nat
 
 /-- `bit b` appends the digit `b` to the little end of the binary representation of
-  its natural number input. -/
+its natural number input. -/
 def bit (b : Bool) (n : Nat) : Nat :=
   cond b (2 * n + 1) (2 * n)
-
-private def bitImpl (b : Bool) (n : Nat) : Nat :=
-  cond b (n <<< 1 + 1) (n <<< 1)
-
-@[csimp] theorem bit_eq_bitImpl : bit = bitImpl := rfl
 
 theorem shiftRight_one (n) : n >>> 1 = n / 2 := rfl
 
@@ -70,7 +65,7 @@ def binaryRec {motive : Nat → Sort u} (z : motive 0) (f : ∀ b n, motive n �
 decreasing_by exact bitwise_rec_lemma n0
 
 /-- The same as `binaryRec`, but the induction step can assume that if `n=0`,
-  the bit being appended is `true`-/
+  the bit being appended is `true` -/
 @[elab_as_elim, specialize]
 def binaryRec' {motive : Nat → Sort u} (z : motive 0)
     (f : ∀ b n, (n = 0 → b = true) → motive n → motive (bit b n)) :
@@ -125,11 +120,11 @@ theorem bitCasesOn_bit (h : ∀ b n, motive (bit b n)) (b : Bool) (n : Nat) :
   rw [testBit_bit_zero, bit_shiftRight_one]
   intros; rfl
 
-unseal binaryRec in
 @[simp]
 theorem binaryRec_zero (z : motive 0) (f : ∀ b n, motive n → motive (bit b n)) :
-    binaryRec z f 0 = z :=
-  rfl
+    binaryRec z f 0 = z := by
+  rw [binaryRec]
+  simp
 
 @[simp]
 theorem binaryRec_one (z : motive 0) (f : ∀ b n, motive n → motive (bit b n)) :

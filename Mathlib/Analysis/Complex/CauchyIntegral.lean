@@ -8,6 +8,7 @@ import Mathlib.Analysis.Calculus.DiffContOnCl
 import Mathlib.Analysis.Calculus.DSlope
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Analysis.Complex.ReImTopology
+import Mathlib.Data.Real.Cardinality
 import Mathlib.MeasureTheory.Integral.CircleIntegral
 import Mathlib.MeasureTheory.Integral.DivergenceTheorem
 import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
@@ -305,12 +306,13 @@ theorem circleIntegral_sub_center_inv_smul_eq_of_differentiable_on_annulus_off_c
   set g : ℂ → ℂ := (c + exp ·)
   have hdg : Differentiable ℂ g := differentiable_exp.const_add _
   replace hs : (g ⁻¹' s).Countable := (hs.preimage (add_right_injective c)).preimage_cexp
-  have h_maps : MapsTo g R A := by rintro z ⟨h, -⟩; simpa [g, A, dist_eq, abs_exp, hle] using h.symm
+  have h_maps : MapsTo g R A := by
+    rintro z ⟨h, -⟩; simpa [g, A, dist_eq, norm_exp, hle] using h.symm
   replace hc : ContinuousOn (f ∘ g) R := hc.comp hdg.continuous.continuousOn h_maps
   replace hd : ∀ z ∈ Ioo (min a b) (max a b) ×ℂ Ioo (min 0 (2 * π)) (max 0 (2 * π)) \ g ⁻¹' s,
       DifferentiableAt ℂ (f ∘ g) z := by
     refine fun z hz => (hd (g z) ⟨?_, hz.2⟩).comp z (hdg _)
-    simpa [g, dist_eq, abs_exp, hle, and_comm] using hz.1.1
+    simpa [g, dist_eq, norm_exp, hle, and_comm] using hz.1.1
   simpa [g, circleMap, exp_periodic _, sub_eq_zero, ← exp_add] using
     integral_boundary_rect_eq_zero_of_differentiable_on_off_countable _ ⟨a, 0⟩ ⟨b, 2 * π⟩ _ hs hc hd
 
@@ -342,7 +344,7 @@ theorem circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable_of
     (hd : ∀ z ∈ (ball c R \ {c}) \ s, DifferentiableAt ℂ f z) (hy : Tendsto f (𝓝[{c}ᶜ] c) (𝓝 y)) :
     (∮ z in C(c, R), (z - c)⁻¹ • f z) = (2 * π * I : ℂ) • y := by
   rw [← sub_eq_zero, ← norm_le_zero_iff]
-  refine le_of_forall_le_of_dense fun ε ε0 => ?_
+  refine le_of_forall_gt_imp_ge_of_dense fun ε ε0 => ?_
   obtain ⟨δ, δ0, hδ⟩ : ∃ δ > (0 : ℝ), ∀ z ∈ closedBall c δ \ {c}, dist (f z) y < ε / (2 * π) :=
     ((nhdsWithin_hasBasis nhds_basis_closedBall _).tendsto_iff nhds_basis_ball).1 hy _
       (div_pos ε0 Real.two_pi_pos)
@@ -426,7 +428,7 @@ theorem circleIntegral_sub_inv_smul_of_differentiable_on_off_countable_aux {R : 
   have hne : ∀ z ∈ sphere c R, z ≠ w := fun z hz => ne_of_mem_of_not_mem hz (ne_of_lt hw.1)
   have hFeq : EqOn F (fun z => (z - w)⁻¹ • f z - (z - w)⁻¹ • f w) (sphere c R) := fun z hz ↦
     calc
-      F z = (z - w)⁻¹ • (f z - f w) := update_noteq (hne z hz) _ _
+      F z = (z - w)⁻¹ • (f z - f w) := update_of_ne (hne z hz) ..
       _ = (z - w)⁻¹ • f z - (z - w)⁻¹ • f w := smul_sub _ _ _
   have hc' : ContinuousOn (fun z => (z - w)⁻¹) (sphere c R) :=
     (continuousOn_id.sub continuousOn_const).inv₀ fun z hz => sub_ne_zero.2 <| hne z hz
@@ -535,7 +537,7 @@ theorem hasFPowerSeriesOnBall_of_differentiable_off_countable {R : ℝ≥0} {c :
   hasSum := fun {w} hw => by
     have hw' : c + w ∈ ball c R := by
       simpa only [add_mem_ball_iff_norm, ← coe_nnnorm, mem_emetric_ball_zero_iff,
-        NNReal.coe_lt_coe, ENNReal.coe_lt_coe] using hw
+        NNReal.coe_lt_coe, enorm_lt_coe] using hw
     rw [← two_pi_I_inv_smul_circleIntegral_sub_inv_smul_of_differentiable_on_off_countable
       hs hw' hc hd]
     exact (hasFPowerSeriesOn_cauchy_integral
@@ -580,6 +582,10 @@ differentiable on `s`. -/
 protected theorem _root_.DifferentiableOn.contDiffOn {s : Set ℂ} {f : ℂ → E} {n : WithTop ℕ∞}
     (hd : DifferentiableOn ℂ f s) (hs : IsOpen s) : ContDiffOn ℂ n f s :=
   (hd.analyticOnNhd hs).contDiffOn_of_completeSpace
+
+theorem _root_.DifferentiableOn.deriv {s : Set ℂ} {f : ℂ → E} (hd : DifferentiableOn ℂ f s)
+    (hs : IsOpen s) : DifferentiableOn ℂ (deriv f) s :=
+  (hd.analyticOnNhd hs).deriv.differentiableOn
 
 /-- A complex differentiable function `f : ℂ → E` is analytic at every point. -/
 protected theorem _root_.Differentiable.analyticAt {f : ℂ → E} (hf : Differentiable ℂ f) (z : ℂ) :

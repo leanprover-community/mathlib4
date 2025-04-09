@@ -13,14 +13,6 @@ import Mathlib.Algebra.Order.Ring.Cast
 # `norm_num` extensions for inequalities.
 -/
 
-#adaptation_note
-/--
-Since https://github.com/leanprover/lean4/pull/5338,
-the unused variable linter can not see usages of variables in
-`haveI' : ⋯ =Q ⋯ := ⟨⟩` clauses, so generates many false positives.
--/
-set_option linter.unusedVariables false
-
 open Lean Meta Qq
 
 namespace Mathlib.Meta.NormNum
@@ -29,16 +21,16 @@ variable {u : Level}
 
 /-- Helper function to synthesize a typed `OrderedSemiring α` expression. -/
 def inferOrderedSemiring (α : Q(Type u)) : MetaM Q(OrderedSemiring $α) :=
-  return ← synthInstanceQ (q(OrderedSemiring $α) : Q(Type u)) <|>
+  return ← synthInstanceQ q(OrderedSemiring $α) <|>
     throwError "not an ordered semiring"
 
 /-- Helper function to synthesize a typed `OrderedRing α` expression. -/
 def inferOrderedRing (α : Q(Type u)) : MetaM Q(OrderedRing $α) :=
-  return ← synthInstanceQ (q(OrderedRing $α) : Q(Type u)) <|> throwError "not an ordered ring"
+  return ← synthInstanceQ q(OrderedRing $α) <|> throwError "not an ordered ring"
 
 /-- Helper function to synthesize a typed `LinearOrderedField α` expression. -/
 def inferLinearOrderedField (α : Q(Type u)) : MetaM Q(LinearOrderedField $α) :=
-  return ← synthInstanceQ (q(LinearOrderedField $α) : Q(Type u)) <|>
+  return ← synthInstanceQ q(LinearOrderedField $α) <|>
     throwError "not a linear ordered field"
 
 variable {α : Type*}
@@ -135,7 +127,7 @@ where
     if decide (za ≤ zb) then
       let r : Q(decide ($na ≤ $nb) = true) := (q(Eq.refl true) : Expr)
       return .isTrue q(isInt_le_true $pa $pb $r)
-    else if let .some _i ← trySynthInstanceQ (q(@Nontrivial $α) : Q(Prop)) then
+    else if let .some _i ← trySynthInstanceQ q(Nontrivial $α) then
       let r : Q(decide ($nb < $na) = true) := (q(Eq.refl true) : Expr)
       return .isFalse q(isInt_le_false $pa $pb $r)
     else
@@ -167,7 +159,7 @@ where
     if na.natLit! ≤ nb.natLit! then
       let r : Q(Nat.ble $na $nb = true) := (q(Eq.refl true) : Expr)
       return .isTrue q(isNat_le_true $pa $pb $r)
-    else if let .some _i ← trySynthInstanceQ (q(CharZero $α) : Q(Prop)) then
+    else if let .some _i ← trySynthInstanceQ q(CharZero $α) then
       let r : Q(Nat.ble $na $nb = false) := (q(Eq.refl false) : Expr)
       return .isFalse q(isNat_le_false $pa $pb $r)
     else -- Nats can appear in an `OrderedRing` without `CharZero`.
@@ -198,7 +190,7 @@ where
     let ⟨zb, nb, pb⟩ ← rb.toInt q(OrderedRing.toRing)
     assumeInstancesCommute
     if za < zb then
-      if let .some _i ← trySynthInstanceQ (q(@Nontrivial $α) : Q(Prop)) then
+      if let .some _i ← trySynthInstanceQ q(Nontrivial $α) then
         let r : Q(decide ($na < $nb) = true) := (q(Eq.refl true) : Expr)
         return .isTrue q(isInt_lt_true $pa $pb $r)
       else

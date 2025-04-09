@@ -57,9 +57,6 @@ instance (r : α → α → Prop) [Inhabited α] : Inhabited (Quot r) :=
 protected instance Subsingleton [Subsingleton α] : Subsingleton (Quot ra) :=
   ⟨fun x ↦ Quot.induction_on x fun _ ↦ Quot.ind fun _ ↦ congr_arg _ (Subsingleton.elim _ _)⟩
 
-@[deprecated (since := "2024-08-26")] alias recOn' := Quot.recOn
-@[deprecated (since := "2024-08-26")] alias recOnSubsingleton' := Quot.recOnSubsingleton
-
 instance [Unique α] : Unique (Quot ra) := Unique.mk' _
 
 /-- Recursion on two `Quotient` arguments `a` and `b`, result type depends on `⟦a⟧` and `⟦b⟧`. -/
@@ -79,8 +76,8 @@ protected def hrecOn₂ (qa : Quot ra) (qb : Quot rb) (f : ∀ a b, φ ⟦a⟧ �
 
 /-- Map a function `f : α → β` such that `ra x y` implies `rb (f x) (f y)`
 to a map `Quot ra → Quot rb`. -/
-protected def map (f : α → β) (h : (ra ⇒ rb) f f) : Quot ra → Quot rb :=
-  (Quot.lift fun x ↦ ⟦f x⟧) fun x y (h₁ : ra x y) ↦ Quot.sound <| h h₁
+protected def map (f : α → β) (h : ∀ ⦃a b : α⦄, ra a b → rb (f a) (f b)) : Quot ra → Quot rb :=
+  Quot.lift (fun x => Quot.mk rb (f x)) fun _ _ hra ↦ Quot.sound <| h hra
 
 /-- If `ra` is a subrelation of `ra'`, then we have a natural map `Quot ra → Quot ra'`. -/
 protected def mapRight {ra' : α → α → Prop} (h : ∀ a₁ a₂, ra a₁ a₂ → ra' a₁ a₂) :
@@ -97,7 +94,6 @@ theorem factor_mk_eq {α : Type*} (r s : α → α → Prop) (h : ∀ x y, r x y
 
 variable {γ : Sort*} {r : α → α → Prop} {s : β → β → Prop}
 
--- Porting note: used to be an Alias of `Quot.lift_mk`.
 theorem lift_mk (f : α → γ) (h : ∀ a₁ a₂, r a₁ a₂ → f a₁ = f a₂) (a : α) :
     Quot.lift f h (Quot.mk r a) = f a :=
   rfl
@@ -199,7 +195,7 @@ namespace Quotient
 variable {sa : Setoid α} {sb : Setoid β}
 variable {φ : Quotient sa → Quotient sb → Sort*}
 
--- Porting note: in mathlib3 this notation took the Setoid as an instance-implicit argument,
+-- TODO: in mathlib3 this notation took the Setoid as an instance-implicit argument,
 -- now it's explicit but left as a metavariable.
 -- We have not yet decided which one works best, since the setoid instance can't always be
 -- reliably found but it can't always be inferred from the expected type either.
@@ -227,11 +223,11 @@ protected def hrecOn₂ (qa : Quotient sa) (qb : Quotient sb) (f : ∀ a b, φ �
 
 /-- Map a function `f : α → β` that sends equivalent elements to equivalent elements
 to a function `Quotient sa → Quotient sb`. Useful to define unary operations on quotients. -/
-protected def map (f : α → β) (h : ((· ≈ ·) ⇒ (· ≈ ·)) f f) : Quotient sa → Quotient sb :=
+protected def map (f : α → β) (h : ∀ ⦃a b : α⦄, a ≈ b → f a ≈ f b) : Quotient sa → Quotient sb :=
   Quot.map f h
 
 @[simp]
-theorem map_mk (f : α → β) (h : ((· ≈ ·) ⇒ (· ≈ ·)) f f) (x : α) :
+theorem map_mk (f : α → β) (h) (x : α) :
     Quotient.map f h (⟦x⟧ : Quotient sa) = (⟦f x⟧ : Quotient sb) :=
   rfl
 
@@ -240,12 +236,13 @@ variable {γ : Sort*} {sc : Setoid γ}
 /-- Map a function `f : α → β → γ` that sends equivalent elements to equivalent elements
 to a function `f : Quotient sa → Quotient sb → Quotient sc`.
 Useful to define binary operations on quotients. -/
-protected def map₂ (f : α → β → γ) (h : ((· ≈ ·) ⇒ (· ≈ ·) ⇒ (· ≈ ·)) f f) :
+protected def map₂ (f : α → β → γ)
+    (h : ∀ ⦃a₁ a₂⦄, a₁ ≈ a₂ → ∀ ⦃b₁ b₂⦄, b₁ ≈ b₂ → f a₁ b₁ ≈ f a₂ b₂) :
     Quotient sa → Quotient sb → Quotient sc :=
   Quotient.lift₂ (fun x y ↦ ⟦f x y⟧) fun _ _ _ _ h₁ h₂ ↦ Quot.sound <| h h₁ h₂
 
 @[simp]
-theorem map₂_mk (f : α → β → γ) (h : ((· ≈ ·) ⇒ (· ≈ ·) ⇒ (· ≈ ·)) f f) (x : α) (y : β) :
+theorem map₂_mk (f : α → β → γ) (h) (x : α) (y : β) :
     Quotient.map₂ f h (⟦x⟧ : Quotient sa) (⟦y⟧ : Quotient sb) = (⟦f x y⟧ : Quotient sc) :=
   rfl
 
@@ -332,23 +329,6 @@ theorem Quotient.mk'_surjective [s : Setoid α] :
     Function.Surjective (Quotient.mk' : α → Quotient s) :=
   Quot.exists_rep
 
-/-- `Quot.mk r` is a surjective function. -/
-@[deprecated Quot.mk_surjective (since := "2024-09-02")]
-theorem surjective_quot_mk (r : α → α → Prop) : Function.Surjective (Quot.mk r) :=
-  Quot.exists_rep
-
-/-- `Quotient.mk` is a surjective function. -/
-@[deprecated Quotient.mk_surjective (since := "2024-09-02")]
-theorem surjective_quotient_mk {α : Sort*} (s : Setoid α) :
-    Function.Surjective (Quotient.mk s) :=
-  Quot.exists_rep
-
-/-- `Quotient.mk'` is a surjective function. -/
-@[deprecated Quotient.mk'_surjective (since := "2024-09-02")]
-theorem surjective_quotient_mk' (α : Sort*) [s : Setoid α] :
-    Function.Surjective (Quotient.mk' : α → Quotient s) :=
-  Quot.exists_rep
-
 /-- Choose an element of the equivalence class using the axiom of choice.
   Sound but noncomputable. -/
 noncomputable def Quot.out {r : α → α → Prop} (q : Quot r) : α :=
@@ -357,7 +337,7 @@ noncomputable def Quot.out {r : α → α → Prop} (q : Quot r) : α :=
 /-- Unwrap the VM representation of a quotient to obtain an element of the equivalence class.
   Computable but unsound. -/
 unsafe def Quot.unquot {r : α → α → Prop} : Quot r → α :=
-  cast lcProof -- Porting note: was `unchecked_cast` before, which unfolds to `cast undefined`
+  cast lcProof
 
 @[simp]
 theorem Quot.out_eq {r : α → α → Prop} (q : Quot r) : Quot.mk r q.out = q :=
@@ -516,7 +496,6 @@ instance : LawfulMonad Trunc where
   id_map _ := Trunc.eq _ _
   pure_bind _ _ := rfl
   bind_assoc _ _ _ := Trunc.eq _ _
-  -- Porting note: the fields below are new in Lean 4
   map_const := rfl
   seqLeft_eq _ _ := Trunc.eq _ _
   seqRight_eq _ _ := Trunc.eq _ _
@@ -571,7 +550,6 @@ several different quotient relations on a type, for example quotient groups, rin
 
 -- TODO: this whole section can probably be replaced `Quotient.mk`, with explicit parameter
 
--- Porting note: Quotient.mk' is the equivalent of Lean 3's `Quotient.mk`
 /-- A version of `Quotient.mk` taking `{s : Setoid α}` as an implicit argument instead of an
 instance argument. -/
 protected abbrev mk'' (a : α) : Quotient s₁ :=
@@ -580,9 +558,6 @@ protected abbrev mk'' (a : α) : Quotient s₁ :=
 /-- `Quotient.mk''` is a surjective function. -/
 theorem mk''_surjective : Function.Surjective (Quotient.mk'' : α → Quotient s₁) :=
   Quot.exists_rep
-
-@[deprecated (since := "2024-09-02")]
-alias surjective_Quotient_mk'' := mk''_surjective
 
 /-- A version of `Quotient.liftOn` taking `{s : Setoid α}` as an implicit argument instead of an
 instance argument. -/
@@ -693,7 +668,8 @@ theorem hrecOn₂'_mk'' {φ : Quotient s₁ → Quotient s₂ → Sort*}
 
 /-- Map a function `f : α → β` that sends equivalent elements to equivalent elements
 to a function `Quotient sa → Quotient sb`. Useful to define unary operations on quotients. -/
-protected def map' (f : α → β) (h : (s₁.r ⇒ s₂.r) f f) : Quotient s₁ → Quotient s₂ :=
+protected def map' (f : α → β) (h : ∀ a b, s₁.r a b → s₂.r (f a) (f b)) :
+    Quotient s₁ → Quotient s₂ :=
   Quot.map f h
 
 @[simp]
@@ -702,15 +678,7 @@ theorem map'_mk'' (f : α → β) (h) (x : α) :
   rfl
 
 /-- A version of `Quotient.map₂` using curly braces and unification. -/
-protected def map₂' (f : α → β → γ) (h : (s₁.r ⇒ s₂.r ⇒ s₃.r) f f) :
-    Quotient s₁ → Quotient s₂ → Quotient s₃ :=
-  Quotient.map₂ f h
-
-@[simp]
-theorem map₂'_mk'' (f : α → β → γ) (h) (x : α) :
-    (Quotient.mk'' x : Quotient s₁).map₂' f h =
-      (Quotient.map' (f x) (h (Setoid.refl x)) : Quotient s₂ → Quotient s₃) :=
-  rfl
+@[deprecated (since := "2024-12-01")] protected alias map₂' := Quotient.map₂
 
 theorem exact' {a b : α} :
     (Quotient.mk'' a : Quotient s₁) = Quotient.mk'' b → s₁ a b :=

@@ -36,9 +36,7 @@ We provide `Monoid.centralizer`, `AddMonoid.centralizer`, `Subgroup.centralizer`
 `AddSubgroup.centralizer` in other files.
 -/
 
-assert_not_exists Finset
-assert_not_exists MonoidWithZero
-assert_not_exists Subsemigroup
+assert_not_exists RelIso Finset MonoidWithZero Subsemigroup
 
 variable {M : Type*} {S T : Set M}
 
@@ -102,7 +100,6 @@ variable (S) in
 @[to_additive addCentralizer " The centralizer of a subset of an additive magma. "]
 def centralizer : Set M := {c | ∀ m ∈ S, m * c = c * m}
 
--- Porting note: The `to_additive` version used to be `mem_addCenter` without the iff
 @[to_additive mem_addCenter_iff]
 theorem mem_center_iff {z : M} : z ∈ center M ↔ IsMulCentral z :=
   Iff.rfl

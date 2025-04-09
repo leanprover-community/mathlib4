@@ -60,7 +60,7 @@ def polishSource (s : String) : String × Array Nat :=
   let preWS := split.foldl (init := #[]) fun p q =>
     let txt := q.trimLeft.length
     (p.push (q.length - txt)).push txt
-  let preWS := preWS.eraseIdx 0
+  let preWS := preWS.eraseIdxIfInBounds 0
   let s := (split.map .trimLeft).filter (· != "")
   (" ".intercalate (s.filter (!·.isEmpty)), preWS)
 

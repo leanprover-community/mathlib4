@@ -3,9 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Exact
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExtClass
-import Mathlib.Algebra.Homology.ShortComplex.Ab
 import Mathlib.CategoryTheory.Triangulated.Yoneda
 
 /-!
@@ -18,6 +16,8 @@ Similarly, if `Y : C`, there is a contravariant long exact sequence :
 `Ext S.X₃ Y n₀ → Ext S.X₂ Y n₀ → Ext S.X₁ Y n₀ → Ext S.X₃ Y n₁ → Ext S.X₂ Y n₁ → Ext S.X₁ Y n₁`.
 
 -/
+
+assert_not_exists TwoSidedIdeal
 
 universe w' w v u
 
@@ -59,10 +59,9 @@ lemma covariant_sequence_exact₂' (n : ℕ) :
     (ShortComplex.mk (AddCommGrp.ofHom ((mk₀ S.f).postcomp X (add_zero n)))
       (AddCommGrp.ofHom ((mk₀ S.g).postcomp X (add_zero n))) (by
         ext x
-        dsimp [AddCommGrp.ofHom]
+        dsimp
         simp only [comp_assoc_of_third_deg_zero, mk₀_comp_mk₀, ShortComplex.zero, mk₀_zero,
-          comp_zero]
-        rfl)).Exact := by
+          comp_zero])).Exact := by
   letI := HasDerivedCategory.standard C
   have := (preadditiveCoyoneda.obj (op ((singleFunctor C 0).obj X))).homologySequence_exact₂ _
     (hS.singleTriangle_distinguished) n
@@ -80,10 +79,9 @@ lemma covariant_sequence_exact₃' :
     (ShortComplex.mk (AddCommGrp.ofHom ((mk₀ S.g).postcomp X (add_zero n₀)))
       (AddCommGrp.ofHom (hS.extClass.postcomp X h)) (by
         ext x
-        dsimp [AddCommGrp.ofHom]
+        dsimp
         simp only [comp_assoc_of_second_deg_zero, ShortComplex.ShortExact.comp_extClass,
-          comp_zero]
-        rfl)).Exact := by
+          comp_zero])).Exact := by
   letI := HasDerivedCategory.standard C
   have := (preadditiveCoyoneda.obj (op ((singleFunctor C 0).obj X))).homologySequence_exact₃ _
     (hS.singleTriangle_distinguished) n₀ n₁ (by omega)
@@ -100,9 +98,9 @@ lemma covariant_sequence_exact₁' :
       (AddCommGrp.ofHom (hS.extClass.postcomp X h))
       (AddCommGrp.ofHom ((mk₀ S.f).postcomp X (add_zero n₁))) (by
         ext x
-        dsimp [AddCommGrp.ofHom]
-        simp only [comp_assoc_of_third_deg_zero, ShortComplex.ShortExact.extClass_comp, comp_zero]
-        rfl)).Exact := by
+        dsimp
+        simp only [comp_assoc_of_third_deg_zero, ShortComplex.ShortExact.extClass_comp,
+          comp_zero])).Exact := by
   letI := HasDerivedCategory.standard C
   have := (preadditiveCoyoneda.obj (op ((singleFunctor C 0).obj X))).homologySequence_exact₁ _
     (hS.singleTriangle_distinguished) n₀ n₁ (by omega)
@@ -185,9 +183,8 @@ lemma contravariant_sequence_exact₂' (n : ℕ) :
     (ShortComplex.mk (AddCommGrp.ofHom ((mk₀ S.g).precomp Y (zero_add n)))
       (AddCommGrp.ofHom ((mk₀ S.f).precomp Y (zero_add n))) (by
         ext
-        dsimp [AddCommGrp.ofHom]
-        simp only [mk₀_comp_mk₀_assoc, ShortComplex.zero, mk₀_zero, zero_comp]
-        rfl)).Exact := by
+        dsimp
+        simp only [mk₀_comp_mk₀_assoc, ShortComplex.zero, mk₀_zero, zero_comp])).Exact := by
   letI := HasDerivedCategory.standard C
   have := (preadditiveYoneda.obj ((singleFunctor C 0).obj Y)).homologySequence_exact₂ _
     (op_distinguished _ hS.singleTriangle_distinguished) n
@@ -205,9 +202,8 @@ lemma contravariant_sequence_exact₁' :
     (ShortComplex.mk (AddCommGrp.ofHom (((mk₀ S.f).precomp Y (zero_add n₀))))
       (AddCommGrp.ofHom (hS.extClass.precomp Y h)) (by
         ext
-        dsimp [AddCommGrp.ofHom]
-        simp only [ShortComplex.ShortExact.extClass_comp_assoc]
-        rfl)).Exact := by
+        dsimp
+        simp only [ShortComplex.ShortExact.extClass_comp_assoc])).Exact := by
   letI := HasDerivedCategory.standard C
   have := (preadditiveYoneda.obj ((singleFunctor C 0).obj Y)).homologySequence_exact₃ _
     (op_distinguished _ hS.singleTriangle_distinguished) n₀ n₁ (by omega)
@@ -222,9 +218,8 @@ lemma contravariant_sequence_exact₃' :
     (ShortComplex.mk (AddCommGrp.ofHom (hS.extClass.precomp Y h))
       (AddCommGrp.ofHom (((mk₀ S.g).precomp Y (zero_add n₁)))) (by
         ext
-        dsimp [AddCommGrp.ofHom]
-        simp only [ShortComplex.ShortExact.comp_extClass_assoc]
-        rfl)).Exact := by
+        dsimp
+        simp only [ShortComplex.ShortExact.comp_extClass_assoc])).Exact := by
   letI := HasDerivedCategory.standard C
   have := (preadditiveYoneda.obj ((singleFunctor C 0).obj Y)).homologySequence_exact₁ _
     (op_distinguished _ hS.singleTriangle_distinguished) n₀ n₁ (by omega)

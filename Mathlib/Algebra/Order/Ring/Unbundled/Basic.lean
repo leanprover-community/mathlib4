@@ -3,11 +3,10 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.Algebra.GroupWithZero.NeZero
 import Mathlib.Algebra.Order.Group.Unbundled.Basic
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 import Mathlib.Algebra.Order.Monoid.NatCast
 import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
@@ -113,8 +112,7 @@ TODO: the mixin assumptiosn can be relaxed in most cases
 
 -/
 
-assert_not_exists OrderedCommMonoid
-assert_not_exists MonoidHom
+assert_not_exists OrderedCommMonoid MonoidHom
 
 open Function
 
@@ -136,12 +134,11 @@ section OrderedSemiring
 
 variable [Semiring α] [Preorder α] {a b c d : α}
 
--- Porting note: it's unfortunate we need to write `(@one_le_two α)` here.
 theorem add_le_mul_two_add [ZeroLEOneClass α] [MulPosMono α] [AddLeftMono α]
     (a2 : 2 ≤ a) (b0 : 0 ≤ b) : a + (2 + b) ≤ a * (2 + b) :=
   calc
     a + (2 + b) ≤ a + (a + a * b) :=
-      add_le_add_left (add_le_add a2 <| le_mul_of_one_le_left b0 <| (@one_le_two α).trans a2) a
+      add_le_add_left (add_le_add a2 <| le_mul_of_one_le_left b0 <| one_le_two.trans a2) a
     _ ≤ a * (2 + b) := by rw [mul_add, mul_two, add_assoc]
 
 theorem mul_le_mul_of_nonpos_left [ExistsAddOfLE α] [PosMulMono α]
@@ -414,7 +411,7 @@ variable [Semiring α] [LinearOrder α] {a b c : α}
 theorem nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nonneg
     [MulPosStrictMono α] [PosMulStrictMono α]
     (hab : 0 ≤ a * b) : 0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 := by
-  refine Decidable.or_iff_not_and_not.2 ?_
+  refine Decidable.or_iff_not_not_and_not.2 ?_
   simp only [not_and, not_le]; intro ab nab; apply not_lt_of_le hab _
   rcases lt_trichotomy 0 a with (ha | rfl | ha)
   · exact mul_neg_of_pos_of_neg ha (ab ha.le)
@@ -461,12 +458,11 @@ theorem add_le_mul_of_left_le_right [ZeroLEOneClass α] [NeZero (R := α) 1]
     _ = 2 * b := (two_mul b).symm
     _ ≤ a * b := (mul_le_mul_right this).mpr a2
 
--- Porting note: we used to not need the type annotation on `(0 : α)` at the start of the `calc`.
 theorem add_le_mul_of_right_le_left [ZeroLEOneClass α] [NeZero (R := α) 1]
     [AddLeftMono α] [PosMulStrictMono α]
     (b2 : 2 ≤ b) (ba : b ≤ a) : a + b ≤ a * b :=
   have : 0 < a :=
-    calc (0 : α)
+    calc 0
       _ < 2 := zero_lt_two
       _ ≤ b := b2
       _ ≤ a := ba
@@ -589,24 +585,7 @@ theorem mul_nonneg_of_three [ExistsAddOfLE α] [MulPosStrictMono α] [PosMulStri
   have or_a := le_total 0 a
   have or_b := le_total 0 b
   have or_c := le_total 0 c
-  -- Porting note used to be by `itauto` from here
-  exact Or.elim or_c
-    (fun (h0 : 0 ≤ c) =>
-      Or.elim or_b
-        (fun (h1 : 0 ≤ b) =>
-            Or.elim or_a (fun (h2 : 0 ≤ a) => Or.inl (Or.inl ⟨h2, h1⟩))
-              (fun (_ : a ≤ 0) => Or.inr (Or.inl (Or.inl ⟨h1, h0⟩))))
-        (fun (h1 : b ≤ 0) =>
-            Or.elim or_a (fun (h3 : 0 ≤ a) => Or.inr (Or.inr (Or.inl ⟨h0, h3⟩)))
-              (fun (h3 : a ≤ 0) => Or.inl (Or.inr ⟨h3, h1⟩))))
-    (fun (h0 : c ≤ 0) =>
-      Or.elim or_b
-        (fun (h4 : 0 ≤ b) =>
-            Or.elim or_a (fun (h5 : 0 ≤ a) => Or.inl (Or.inl ⟨h5, h4⟩))
-              (fun (h5 : a ≤ 0) => Or.inr (Or.inr (Or.inr ⟨h0, h5⟩))))
-        (fun (h4 : b ≤ 0) =>
-            Or.elim or_a (fun (_ : 0 ≤ a) => Or.inr (Or.inl (Or.inr ⟨h4, h0⟩)))
-              (fun (h6 : a ≤ 0) => Or.inl (Or.inr ⟨h6, h4⟩))))
+  aesop
 
 lemma mul_nonneg_iff_pos_imp_nonneg [ExistsAddOfLE α] [PosMulStrictMono α] [MulPosStrictMono α]
     [AddLeftMono α] [AddLeftReflectLE α] :
@@ -716,6 +695,14 @@ lemma sq_nonneg [IsRightCancelAdd α]
     b ^ 2 + a * b = (a + b) * b := by rw [add_comm, sq, add_mul]
     _ = a * (a + b) := by simp [← hab]
     _ = a ^ 2 + a * b := by rw [sq, mul_add]
+
+@[simp]
+lemma sq_nonpos_iff [IsRightCancelAdd α] [ZeroLEOneClass α] [ExistsAddOfLE α]
+    [PosMulMono α] [AddLeftStrictMono α] [NoZeroDivisors α] (r : α) :
+    r ^ 2 ≤ 0 ↔ r = 0 := by
+  trans r ^ 2 = 0
+  · rw [le_antisymm_iff, and_iff_left (sq_nonneg r)]
+  · exact sq_eq_zero_iff
 
 alias pow_two_nonneg := sq_nonneg
 

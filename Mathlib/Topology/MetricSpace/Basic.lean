@@ -32,7 +32,7 @@ instance (priority := 100) _root_.MetricSpace.instT0Space : T0Space γ where
 
 /-- A map between metric spaces is a uniform embedding if and only if the distance between `f x`
 and `f y` is controlled in terms of the distance between `x` and `y` and conversely. -/
-theorem isUniformEmbedding_iff' [MetricSpace β] {f : γ → β} :
+theorem isUniformEmbedding_iff' [PseudoMetricSpace β] {f : γ → β} :
     IsUniformEmbedding f ↔
       (∀ ε > 0, ∃ δ > 0, ∀ {a b : γ}, dist a b < δ → dist (f a) (f b) < ε) ∧
         ∀ δ > 0, ∃ ε > 0, ∀ {a b : γ}, dist (f a) (f b) < ε → dist a b < δ := by
@@ -124,7 +124,7 @@ instance Subtype.metricSpace {α : Type*} {p : α → Prop} [MetricSpace α] :
   .induced Subtype.val Subtype.coe_injective ‹_›
 
 @[to_additive]
-instance {α : Type*} [MetricSpace α] : MetricSpace αᵐᵒᵖ :=
+instance MulOpposite.instMetricSpace {α : Type*} [MetricSpace α] : MetricSpace αᵐᵒᵖ :=
   MetricSpace.induced MulOpposite.unop MulOpposite.unop_injective ‹_›
 
 section Real
@@ -168,10 +168,10 @@ section SecondCountable
 
 open TopologicalSpace
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: use `Countable` instead of `Encodable`
+-- TODO: use `Countable` instead of `Encodable`
 /-- A metric space is second countable if one can reconstruct up to any `ε>0` any element of the
 space from countably many data. -/
-theorem secondCountable_of_countable_discretization {α : Type u} [MetricSpace α]
+theorem secondCountable_of_countable_discretization {α : Type u} [PseudoMetricSpace α]
     (H : ∀ ε > (0 : ℝ), ∃ (β : Type*) (_ : Encodable β) (F : α → β),
       ∀ x y, F x = F y → dist x y ≤ ε) :
     SecondCountableTopology α := by
@@ -205,27 +205,3 @@ instance SeparationQuotient.instMetricSpace {α : Type u} [PseudoMetricSpace α]
     surjective_mk.forall₂.2 dist_edist
 
 end EqRel
-
-/-!
-### `Additive`, `Multiplicative`
-
-The distance on those type synonyms is inherited without change.
--/
-
-open Additive Multiplicative
-
-instance [MetricSpace X] : MetricSpace (Additive X) := ‹MetricSpace X›
-instance [MetricSpace X] : MetricSpace (Multiplicative X) := ‹MetricSpace X›
-
-instance MulOpposite.instMetricSpace [MetricSpace X] : MetricSpace Xᵐᵒᵖ :=
-  MetricSpace.induced unop unop_injective ‹_›
-
-/-!
-### Order dual
-
-The distance on this type synonym is inherited without change.
--/
-
-open OrderDual
-
-instance [MetricSpace X] : MetricSpace Xᵒᵈ := ‹MetricSpace X›

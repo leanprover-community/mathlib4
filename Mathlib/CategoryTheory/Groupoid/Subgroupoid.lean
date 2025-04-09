@@ -8,7 +8,6 @@ import Mathlib.CategoryTheory.Groupoid.VertexGroup
 import Mathlib.CategoryTheory.Groupoid.Basic
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.Data.Set.Lattice
-import Mathlib.Order.GaloisConnection
 
 /-!
 # Subgroupoid
@@ -68,6 +67,7 @@ under composition and inverses.
 -/
 @[ext]
 structure Subgroupoid (C : Type u) [Groupoid C] where
+  /-- The arrow choice for each pair of vertices -/
   arrows : ∀ c d : C, Set (c ⟶ d)
   protected inv : ∀ {c d} {p : c ⟶ d}, p ∈ arrows c d → Groupoid.inv p ∈ arrows d c
   protected mul : ∀ {c d e} {p}, p ∈ arrows c d → ∀ {q}, q ∈ arrows d e → p ≫ q ∈ arrows c e
@@ -127,7 +127,7 @@ def asWideQuiver : Quiver C :=
   ⟨fun c d => Subtype <| S.arrows c d⟩
 
 /-- The coercion of a subgroupoid as a groupoid -/
-@[simps comp_coe, simps (config := .lemmasOnly) inv_coe]
+@[simps comp_coe, simps -isSimp inv_coe]
 instance coe : Groupoid S.objs where
   Hom a b := S.arrows a.val b.val
   id a := ⟨𝟙 a.val, id_mem_of_nonempty_isotropy S a.val a.prop⟩
@@ -272,7 +272,7 @@ theorem mem_discrete_iff {c d : C} (f : c ⟶ d) :
     f ∈ discrete.arrows c d ↔ ∃ h : c = d, f = eqToHom h :=
   ⟨by rintro ⟨⟩; exact ⟨rfl, rfl⟩, by rintro ⟨rfl, rfl⟩; constructor⟩
 
-/-- A subgroupoid is wide if its carrier set is all of `C`-/
+/-- A subgroupoid is wide if its carrier set is all of `C`. -/
 structure IsWide : Prop where
   wide : ∀ c, 𝟙 c ∈ S.arrows c c
 
@@ -293,7 +293,7 @@ theorem IsWide.eqToHom_mem {S : Subgroupoid C} (Sw : S.IsWide) {c d : C} (h : c 
     eqToHom h ∈ S.arrows c d := by cases h; simp only [eqToHom_refl]; apply Sw.id_mem c
 
 /-- A subgroupoid is normal if it is wide and satisfies the expected stability under conjugacy. -/
-structure IsNormal extends IsWide S : Prop where
+structure IsNormal : Prop extends IsWide S where
   conj : ∀ {c d} (p : c ⟶ d) {γ : c ⟶ c}, γ ∈ S.arrows c c → Groupoid.inv p ≫ γ ≫ p ∈ S.arrows d d
 
 theorem IsNormal.conj' {S : Subgroupoid C} (Sn : IsNormal S) :
@@ -371,7 +371,7 @@ variable {D : Type*} [Groupoid D] (φ : C ⥤ D)
 
 /-- A functor between groupoid defines a map of subgroupoids in the reverse direction
 by taking preimages.
- -/
+-/
 def comap (S : Subgroupoid D) : Subgroupoid C where
   arrows c d := {f : c ⟶ d | φ.map f ∈ S.arrows (φ.obj c) (φ.obj d)}
   inv hp := by rw [mem_setOf, inv_eq_inv, φ.map_inv, ← inv_eq_inv]; exact S.inv hp

@@ -7,7 +7,6 @@ import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.Field.IsField
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
-import Mathlib.RingTheory.Ideal.Defs
 import Mathlib.RingTheory.Localization.Defs
 import Mathlib.RingTheory.OreLocalization.Ring
 
@@ -68,8 +67,41 @@ localization, ring localization, commutative ring localization, characteristic p
 commutative ring, field of fractions
 -/
 
+assert_not_exists Ideal
 
 open Function
+
+namespace Localization
+
+open IsLocalization
+
+variable {ι : Type*} {R : ι → Type*} [∀ i, CommSemiring (R i)]
+variable {i : ι} (S : Submonoid (R i))
+
+/-- `IsLocalization.map` applied to a projection homomorphism from a product ring. -/
+noncomputable abbrev mapPiEvalRingHom :
+    Localization (S.comap <| Pi.evalRingHom R i) →+* Localization S :=
+  map (T := S) _ (Pi.evalRingHom R i) le_rfl
+
+open Function in
+theorem mapPiEvalRingHom_bijective : Bijective (mapPiEvalRingHom S) := by
+  let T := S.comap (Pi.evalRingHom R i)
+  classical
+  refine ⟨fun x₁ x₂ eq ↦ ?_, fun x ↦ ?_⟩
+  · obtain ⟨r₁, s₁, rfl⟩ := mk'_surjective T x₁
+    obtain ⟨r₂, s₂, rfl⟩ := mk'_surjective T x₂
+    simp_rw [map_mk'] at eq
+    rw [IsLocalization.eq] at eq ⊢
+    obtain ⟨s, hs⟩ := eq
+    refine ⟨⟨update 0 i s, by apply update_self i s.1 0 ▸ s.2⟩, funext fun j ↦ ?_⟩
+    obtain rfl | ne := eq_or_ne j i
+    · simpa using hs
+    · simp [update_of_ne ne]
+  · obtain ⟨r, s, rfl⟩ := mk'_surjective S x
+    exact ⟨mk' (M := T) _ (update 0 i r) ⟨update 0 i s, by apply update_self i s.1 0 ▸ s.2⟩,
+      by simp [map_mk']⟩
+
+end Localization
 
 section CommSemiring
 
@@ -81,15 +113,6 @@ namespace IsLocalization
 section IsLocalization
 
 variable [IsLocalization M S]
-
-theorem mk'_mem_iff {x} {y : M} {I : Ideal S} : mk' S x y ∈ I ↔ algebraMap R S x ∈ I := by
-  constructor <;> intro h
-  · rw [← mk'_spec S x y, mul_comm]
-    exact I.mul_mem_left ((algebraMap R S) y) h
-  · rw [← mk'_spec S x y] at h
-    obtain ⟨b, hb⟩ := isUnit_iff_exists_inv.1 (map_units S y)
-    have := I.mul_mem_left b h
-    rwa [mul_comm, mul_assoc, hb, mul_one] at this
 
 variable (M S) in
 include M in
@@ -105,8 +128,7 @@ variable {g : R →+* P} (hg : ∀ y : M, IsUnit (g y))
 
 variable (M) in
 include M in
-/- This is not an instance because the submonoid `M` would become a metavariable
-  in typeclass search. -/
+-- This is not an instance since the submonoid `M` would become a metavariable in typeclass search.
 theorem algHom_subsingleton [Algebra R P] : Subsingleton (S →ₐ[R] P) :=
   ⟨fun f g =>
     AlgHom.coe_ringHom_injective <|
@@ -207,8 +229,9 @@ theorem algEquivOfAlgEquiv_mk' (x : R) (y : M) :
 
 theorem algEquivOfAlgEquiv_symm : (algEquivOfAlgEquiv S Q h H).symm =
     algEquivOfAlgEquiv Q S h.symm (show Submonoid.map h.symm T = M by
-      erw [← H, ← Submonoid.comap_equiv_eq_map_symm,
-        Submonoid.comap_map_eq_of_injective h.injective]) := rfl
+      rw [← H, ← Submonoid.map_coe_toMulEquiv, AlgEquiv.symm_toMulEquiv,
+        ← Submonoid.comap_equiv_eq_map_symm, ← Submonoid.map_coe_toMulEquiv,
+        Submonoid.comap_map_eq_of_injective (h : R ≃* P).injective]) := rfl
 
 end AlgEquivOfAlgEquiv
 
@@ -273,6 +296,11 @@ theorem isLocalization_iff_of_isLocalization [IsLocalization M S] [IsLocalizatio
   ⟨fun _ ↦ isLocalization_of_algEquiv N (algEquiv M S P),
     fun _ ↦ isLocalization_of_algEquiv M (algEquiv N S P)⟩
 
+theorem iff_of_le_of_exists_dvd (N : Submonoid R) (h₁ : M ≤ N) (h₂ : ∀ n ∈ N, ∃ m ∈ M, n ∣ m) :
+    IsLocalization M S ↔ IsLocalization N S :=
+  have : IsLocalization N (Localization M) := of_le_of_exists_dvd _ _ h₁ h₂
+  isLocalization_iff_of_isLocalization _ _ (Localization M)
+
 end
 
 variable (M)
@@ -328,9 +356,6 @@ open IsLocalization
 theorem mk_natCast (m : ℕ) : (mk m 1 : Localization M) = m := by
   simpa using mk_algebraMap (R := R) (A := ℕ) _
 
-@[deprecated (since := "2024-04-17")]
-alias mk_nat_cast := mk_natCast
-
 variable [IsLocalization M S]
 
 section
@@ -383,9 +408,6 @@ namespace Localization
 
 theorem mk_intCast (m : ℤ) : (mk m 1 : Localization M) = m := by
   simpa using mk_algebraMap (R := R) (A := ℤ) _
-
-@[deprecated (since := "2024-04-17")]
-alias mk_int_cast := mk_intCast
 
 end Localization
 
@@ -453,7 +475,7 @@ theorem IsLocalization.algebraMap_mk' (x : R) (y : M) :
         ⟨algebraMap R S y, Algebra.mem_algebraMapSubmonoid_of_mem y⟩ := by
   rw [IsLocalization.eq_mk'_iff_mul_eq, Subtype.coe_mk, ← IsScalarTower.algebraMap_apply, ←
     IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply R Rₘ Sₘ,
-    IsScalarTower.algebraMap_apply R Rₘ Sₘ, ← _root_.map_mul, mul_comm,
+    IsScalarTower.algebraMap_apply R Rₘ Sₘ, ← map_mul, mul_comm,
     IsLocalization.mul_mk'_eq_mk'_of_mul]
   exact congr_arg (algebraMap Rₘ Sₘ) (IsLocalization.mk'_mul_cancel_left x y)
 
@@ -495,6 +517,12 @@ theorem IsLocalization.lift_algebraMap_eq_algebraMap :
 end
 
 variable (Rₘ Sₘ)
+
+theorem localizationAlgebraMap_def :
+    @algebraMap Rₘ Sₘ _ _ (localizationAlgebra M S) =
+      map Sₘ (algebraMap R S)
+        (show _ ≤ (Algebra.algebraMapSubmonoid S M).comap _ from M.le_comap_map) :=
+  rfl
 
 /-- Injectivity of the underlying `algebraMap` descends to the algebra induced by localization. -/
 theorem localizationAlgebra_injective (hRS : Function.Injective (algebraMap R S)) :

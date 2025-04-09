@@ -3,14 +3,13 @@ Copyright (c) 2022 Yaël Dillies, George Shakan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, George Shakan
 -/
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.Algebra.Order.Field.Rat
-import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Ring
+import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # The Plünnecke-Ruzsa inequality
@@ -124,30 +123,32 @@ variable [CommGroup G] {A B C : Finset G}
 theorem pluennecke_petridis_inequality_mul (C : Finset G)
     (hA : ∀ A' ⊆ A, #(A * B) * #A' ≤ #(A' * B) * #A) :
     #(A * B * C) * #A ≤ #(A * B) * #(A * C) := by
-  induction' C using Finset.induction_on with x C _ ih
-  · simp
-  set A' := A ∩ (A * C / {x}) with hA'
-  set C' := insert x C with hC'
-  have h₀ : A' * {x} = A * {x} ∩ (A * C) := by
-    rw [hA', inter_mul_singleton, (isUnit_singleton x).div_mul_cancel]
-  have h₁ : A * B * C' = A * B * C ∪ (A * B * {x}) \ (A' * B * {x}) := by
-    rw [hC', insert_eq, union_comm, mul_union]
-    refine (sup_sdiff_eq_sup ?_).symm
-    rw [mul_right_comm, mul_right_comm A, h₀]
-    exact mul_subset_mul_right inter_subset_right
-  have h₂ : A' * B * {x} ⊆ A * B * {x} :=
-    mul_subset_mul_right (mul_subset_mul_right inter_subset_left)
-  have h₃ : #(A * B * C') ≤ #(A * B * C) + #(A * B) - #(A' * B) := by
-    rw [h₁]
-    refine (card_union_le _ _).trans_eq ?_
-    rw [card_sdiff h₂, ← add_tsub_assoc_of_le (card_le_card h₂), card_mul_singleton,
-      card_mul_singleton]
-  refine (mul_le_mul_right' h₃ _).trans ?_
-  rw [tsub_mul, add_mul]
-  refine (tsub_le_tsub (add_le_add_right ih _) <| hA _ inter_subset_left).trans_eq ?_
-  rw [← mul_add, ← mul_tsub, ← hA', hC', insert_eq, mul_union, ← card_mul_singleton A x, ←
-    card_mul_singleton A' x, add_comm #_, h₀,
-    eq_tsub_of_add_eq (card_union_add_card_inter _ _)]
+  induction C using Finset.induction_on with
+  | empty => simp
+  | insert _ ih =>
+    rename_i x C _
+    set A' := A ∩ (A * C / {x}) with hA'
+    set C' := insert x C with hC'
+    have h₀ : A' * {x} = A * {x} ∩ (A * C) := by
+      rw [hA', inter_mul_singleton, (isUnit_singleton x).div_mul_cancel]
+    have h₁ : A * B * C' = A * B * C ∪ (A * B * {x}) \ (A' * B * {x}) := by
+      rw [hC', insert_eq, union_comm, mul_union]
+      refine (sup_sdiff_eq_sup ?_).symm
+      rw [mul_right_comm, mul_right_comm A, h₀]
+      exact mul_subset_mul_right inter_subset_right
+    have h₂ : A' * B * {x} ⊆ A * B * {x} :=
+      mul_subset_mul_right (mul_subset_mul_right inter_subset_left)
+    have h₃ : #(A * B * C') ≤ #(A * B * C) + #(A * B) - #(A' * B) := by
+      rw [h₁]
+      refine (card_union_le _ _).trans_eq ?_
+      rw [card_sdiff h₂, ← add_tsub_assoc_of_le (card_le_card h₂), card_mul_singleton,
+        card_mul_singleton]
+    refine (mul_le_mul_right' h₃ _).trans ?_
+    rw [tsub_mul, add_mul]
+    refine (tsub_le_tsub (add_le_add_right ih _) <| hA _ inter_subset_left).trans_eq ?_
+    rw [← mul_add, ← mul_tsub, ← hA', hC', insert_eq, mul_union, ← card_mul_singleton A x, ←
+      card_mul_singleton A' x, add_comm #_, h₀,
+      eq_tsub_of_add_eq (card_union_add_card_inter _ _)]
 
 /-! ### Commutative Ruzsa triangle inequality -/
 
@@ -177,14 +178,15 @@ theorem ruzsa_triangle_inequality_mul_mul_mul (A B C : Finset G) :
   rw [mem_erase, mem_powerset, ← nonempty_iff_ne_empty] at hU
   refine cast_le.1 (?_ : (_ : ℚ≥0) ≤ _)
   push_cast
-  refine (le_div_iff₀ <| cast_pos.2 hB.card_pos).1 ?_
-  rw [mul_div_right_comm, mul_comm _ B]
+  rw [← le_div_iff₀ (cast_pos.2 hB.card_pos), mul_div_right_comm, mul_comm _ B]
   refine (Nat.cast_le.2 <| card_le_card_mul_left hU.1).trans ?_
   refine le_trans ?_
     (mul_le_mul (hUA _ hB') (cast_le.2 <| card_le_card <| mul_subset_mul_right hU.2)
       (zero_le _) (zero_le _))
-  rw [← mul_div_right_comm, ← mul_assoc]
-  refine (le_div_iff₀ <| cast_pos.2 hU.1.card_pos).2 ?_
+  #adaptation_note /-- 2024-11-01
+  `le_div_iff₀` is synthesizing wrong `GroupWithZero` without `@` -/
+  rw [← mul_div_right_comm, ← mul_assoc,
+    @le_div_iff₀ _ (_) _ _ _ _ _ _ _ (cast_pos.2 hU.1.card_pos)]
   exact mod_cast pluennecke_petridis_inequality_mul C (mul_aux hU.1 hU.2 hUA)
 
 /-- **Ruzsa's triangle inequality**. Mul-div-div version. -/
@@ -214,15 +216,16 @@ private lemma card_mul_pow_le (hAB : ∀ A' ⊆ A, #(A * B) * #A' ≤ #(A' * B) 
     #(A * B ^ n) ≤ (#(A * B) / #A : ℚ≥0) ^ n * #A := by
   obtain rfl | hA := A.eq_empty_or_nonempty
   · simp
-  induction' n with n ih
-  · simp
-  refine le_of_mul_le_mul_right ?_ (by positivity : (0 : ℚ≥0) < #A)
-  calc
-    ((#(A * B ^ (n + 1))) * #A : ℚ≥0)
-      = #(A * B * B ^ n) * #A := by rw [_root_.pow_succ', ← mul_assoc]
-    _ ≤ #(A * B) * #(A * B ^ n) := mod_cast pluennecke_petridis_inequality_mul _ hAB
-    _ ≤ #(A * B) * ((#(A * B) / #A) ^ n * #A) := by gcongr
-    _ = (#(A * B) / #A) ^ (n + 1) * #A * #A := by field_simp; ring
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    refine le_of_mul_le_mul_right ?_ (by positivity : (0 : ℚ≥0) < #A)
+    calc
+      ((#(A * B ^ (n + 1))) * #A : ℚ≥0)
+        = #(A * B * B ^ n) * #A := by rw [_root_.pow_succ', ← mul_assoc]
+      _ ≤ #(A * B) * #(A * B ^ n) := mod_cast pluennecke_petridis_inequality_mul _ hAB
+      _ ≤ #(A * B) * ((#(A * B) / #A) ^ n * #A) := by gcongr
+      _ = (#(A * B) / #A) ^ (n + 1) * #A * #A := by field_simp; ring
 
 /-- The **Plünnecke-Ruzsa inequality**. Multiplication version. Note that this is genuinely harder
 than the division version because we cannot use a double counting argument. -/

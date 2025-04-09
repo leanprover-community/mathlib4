@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mitchell Lee
 -/
 import Mathlib.Topology.Algebra.InfiniteSum.Defs
 import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Topology.Algebra.Monoid
+import Mathlib.Topology.Algebra.Monoid.Defs
 
 /-!
 # Lemmas on infinite sums and products in topological monoids
@@ -269,7 +269,6 @@ theorem hasProd_prod {f : γ → β → α} {a : γ → α} {s : Finset γ} :
     (∀ i ∈ s, HasProd (f i) (a i)) → HasProd (fun b ↦ ∏ i ∈ s, f i b) (∏ i ∈ s, a i) := by
   classical
   exact Finset.induction_on s (by simp only [hasProd_one, prod_empty, forall_true_iff]) <| by
-    -- Porting note: with some help, `simp` used to be able to close the goal
     simp +contextual only [mem_insert, forall_eq_or_imp, not_false_iff,
       prod_insert, and_imp]
     exact fun x s _ IH hx h ↦ hx.mul (IH h)
@@ -563,10 +562,12 @@ theorem tprod_mul (hf : Multipliable f) (hg : Multipliable g) :
     ∏' b, (f b * g b) = (∏' b, f b) * ∏' b, g b :=
   (hf.hasProd.mul hg.hasProd).tprod_eq
 
-@[to_additive tsum_sum]
-theorem tprod_of_prod {f : γ → β → α} {s : Finset γ} (hf : ∀ i ∈ s, Multipliable (f i)) :
+@[to_additive]
+theorem tprod_finsetProd {f : γ → β → α} {s : Finset γ} (hf : ∀ i ∈ s, Multipliable (f i)) :
     ∏' b, ∏ i ∈ s, f i b = ∏ i ∈ s, ∏' b, f i b :=
   (hasProd_prod fun i hi ↦ (hf i hi).hasProd).tprod_eq
+
+@[deprecated (since := "2025-02-13")] alias tprod_of_prod := tprod_finsetProd
 
 /-- Version of `tprod_eq_mul_tprod_ite` for `CommMonoid` rather than `CommGroup`.
 Requires a different convergence assumption involving `Function.update`. -/
@@ -606,3 +607,20 @@ theorem tprod_finset_bUnion_disjoint {ι} {s : Finset ι} {t : ι → Set β}
 end ContinuousMul
 
 end tprod
+
+section CommMonoidWithZero
+variable [CommMonoidWithZero α] [TopologicalSpace α] {f : β → α}
+
+lemma hasProd_zero_of_exists_eq_zero (hf : ∃ b, f b = 0) : HasProd f 0 := by
+  obtain ⟨b, hb⟩ := hf
+  apply tendsto_const_nhds.congr'
+  filter_upwards [eventually_ge_atTop {b}] with s hs
+  exact (Finset.prod_eq_zero (Finset.singleton_subset_iff.mp hs) hb).symm
+
+lemma multipliable_of_exists_eq_zero (hf : ∃ b, f b = 0) : Multipliable f :=
+  ⟨0, hasProd_zero_of_exists_eq_zero hf⟩
+
+lemma tprod_of_exists_eq_zero [T2Space α] (hf : ∃ b, f b = 0) : ∏' b, f b = 0 :=
+  (hasProd_zero_of_exists_eq_zero hf).tprod_eq
+
+end CommMonoidWithZero

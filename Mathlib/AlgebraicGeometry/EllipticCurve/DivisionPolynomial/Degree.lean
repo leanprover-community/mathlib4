@@ -199,7 +199,7 @@ private lemma natDegree_coeff_preΨ' (n : ℕ) :
   let cm {m n p q} : _ → _ → (p * q : R[X]).coeff (m + n) = _ := coeff_mul_of_natDegree_le
   let cp {m n p} : _ → (p ^ m : R[X]).coeff (m * n) = _ := coeff_pow_of_natDegree_le
   induction n using normEDSRec with
-  | zero => simpa only [preΨ'_zero] using ⟨by rfl, Int.cast_zero.symm⟩
+  | zero => simpa only [preΨ'_zero] using ⟨natDegree_zero.le, Int.cast_zero.symm⟩
   | one => simpa only [preΨ'_one] using ⟨natDegree_one.le, coeff_one_zero.trans Int.cast_one.symm⟩
   | two => simpa only [preΨ'_two] using ⟨natDegree_one.le, coeff_one_zero.trans Int.cast_one.symm⟩
   | three => simpa only [preΨ'_three] using ⟨W.natDegree_Ψ₃_le, W.coeff_Ψ₃ ▸ Int.cast_three.symm⟩
@@ -249,9 +249,9 @@ lemma natDegree_preΨ' {n : ℕ} (h : (n : R) ≠ 0) :
   natDegree_eq_of_le_of_coeff_ne_zero (W.natDegree_preΨ'_le n) <| W.coeff_preΨ'_ne_zero h
 
 lemma natDegree_preΨ'_pos {n : ℕ} (hn : 2 < n) (h : (n : R) ≠ 0) : 0 < (W.preΨ' n).natDegree := by
-  rw [W.natDegree_preΨ' h, Nat.div_pos_iff two_ne_zero]
+  simp only [W.natDegree_preΨ' h, Nat.div_pos_iff, zero_lt_two, true_and]
   split_ifs <;>
-    exact Nat.AtLeastTwo.prop.trans <| Nat.sub_le_sub_right (Nat.pow_le_pow_of_le_left hn 2) _
+    exact Nat.AtLeastTwo.prop.trans <| Nat.sub_le_sub_right (Nat.pow_le_pow_left hn 2) _
 
 @[simp]
 lemma leadingCoeff_preΨ' {n : ℕ} (h : (n : R) ≠ 0) :

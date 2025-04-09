@@ -35,6 +35,10 @@ section
 
 variable (C)
 
+-- Don't generate unnecessary `sizeOf_spec` or `injEq` lemmas
+-- which the `simpNF` linter will complain about.
+set_option genSizeOfSpec false in
+set_option genInjectivity false in
 /--
 Given a type `C`, the free monoidal category over `C` has as objects formal expressions built from
 (formal) tensor products of terms of `C` and a formal unit. Its morphisms are compositions and
@@ -52,13 +56,9 @@ local notation "F" => FreeMonoidalCategory
 
 namespace FreeMonoidalCategory
 
-attribute [nolint simpNF] unit.sizeOf_spec tensor.injEq tensor.sizeOf_spec
-
 /-- Formal compositions and tensor products of identities, unitors and associators. The morphisms
     of the free monoidal category are obtained as a quotient of these formal morphisms by the
     relations defining a monoidal category. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not ported yet
--- @[nolint has_nonempty_instance]
 inductive Hom : F C → F C → Type u
   | id (X) : Hom X X
   | α_hom (X Y Z : F C) : Hom ((X.tensor Y).tensor Z) (X.tensor (Y.tensor Z))

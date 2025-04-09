@@ -3,7 +3,7 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Bhavik Mehta, Eric Wieser
 -/
-import Mathlib.Algebra.BigOperators.Group.Multiset
+import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
 import Mathlib.Algebra.BigOperators.Ring.List
 import Mathlib.Data.Multiset.Antidiagonal
 import Mathlib.Data.Multiset.Sections

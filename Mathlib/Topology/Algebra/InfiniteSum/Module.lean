@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Yury Kudryashov, Frédéric Dupuis
 -/
 import Mathlib.Topology.Algebra.InfiniteSum.Constructions
-import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Topology.Algebra.Module.Equiv
 
 /-! # Infinite sums in topological vector spaces -/
 
@@ -46,7 +46,7 @@ lemma tsum_const_smul' {γ : Type*} [Group γ] [DistribMulAction γ α] [Continu
 /-- Infinite sums commute with scalar multiplication. Version for scalars living in a
   `DivisionRing`; no summability hypothesis. This could be made to work for a
   `[GroupWithZero γ]` if there was such a thing as `DistribMulActionWithZero`. -/
-lemma tsum_const_smul'' {γ : Type*} [DivisionRing γ] [Module γ α] [ContinuousConstSMul γ α]
+lemma tsum_const_smul'' {γ : Type*} [DivisionSemiring γ] [Module γ α] [ContinuousConstSMul γ α]
     [T2Space α] (g : γ) : ∑' (i : β), g • f i = g • ∑' (i : β), f i := by
   rcases eq_or_ne g 0 with rfl | hg
   · simp

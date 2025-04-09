@@ -13,6 +13,7 @@ import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 
 -/
 
+assert_not_exists IsConformalMap Conformal
 
 open Set Filter
 

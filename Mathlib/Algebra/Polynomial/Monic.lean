@@ -3,7 +3,6 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.Associated.Basic
 import Mathlib.Algebra.Polynomial.Reverse
 import Mathlib.Algebra.Regular.SMul
 
@@ -357,7 +356,7 @@ variable [Semiring R]
 @[simp]
 theorem Monic.natDegree_map [Semiring S] [Nontrivial S] {P : R[X]} (hmo : P.Monic) (f : R →+* S) :
     (P.map f).natDegree = P.natDegree := by
-  refine le_antisymm (natDegree_map_le _ _) (le_natDegree_of_ne_zero ?_)
+  refine le_antisymm natDegree_map_le (le_natDegree_of_ne_zero ?_)
   rw [coeff_map, Monic.coeff_natDegree hmo, RingHom.map_one]
   exact one_ne_zero
 
@@ -366,7 +365,7 @@ theorem Monic.degree_map [Semiring S] [Nontrivial S] {P : R[X]} (hmo : P.Monic) 
     (P.map f).degree = P.degree := by
   by_cases hP : P = 0
   · simp [hP]
-  · refine le_antisymm (degree_map_le _ _) ?_
+  · refine le_antisymm degree_map_le ?_
     rw [degree_eq_natDegree hP]
     refine le_degree_of_ne_zero ?_
     rw [coeff_map, Monic.coeff_natDegree hmo, RingHom.map_one]
@@ -431,7 +430,7 @@ theorem monic_X_pow_sub_C {R : Type u} [Ring R] (a : R) {n : ℕ} (h : n ≠ 0) 
     (X ^ n - C a).Monic := by
   simpa only [map_neg, ← sub_eq_add_neg] using monic_X_pow_add_C (-a) h
 
-theorem not_isUnit_X_pow_sub_one (R : Type*) [CommRing R] [Nontrivial R] (n : ℕ) :
+theorem not_isUnit_X_pow_sub_one (R : Type*) [Ring R] [Nontrivial R] (n : ℕ) :
     ¬IsUnit (X ^ n - 1 : R[X]) := by
   intro h
   rcases eq_or_ne n 0 with (rfl | hn)

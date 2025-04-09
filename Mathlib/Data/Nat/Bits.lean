@@ -3,12 +3,11 @@ Copyright (c) 2022 Praneeth Kolichala. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Praneeth Kolichala
 -/
-import Mathlib.Algebra.Group.Nat.Basic
 import Mathlib.Data.List.Defs
-import Mathlib.Data.Nat.Defs
+import Mathlib.Data.Nat.BinaryRec
+import Mathlib.Data.Nat.Init
+import Mathlib.Logic.Function.Defs
 import Mathlib.Tactic.Convert
-import Mathlib.Tactic.GeneralizeProofs
-import Mathlib.Tactic.Says
 
 /-!
 # Additional properties of binary recursion on `Nat`
@@ -22,6 +21,8 @@ See also: `Nat.bitwise`, `Nat.pow` (for various lemmas about `size` and `shiftLe
 and `Nat.digits`.
 -/
 
+assert_not_exists Monoid
+
 -- Once we're in the `Nat` namespace, `xor` will inconveniently resolve to `Nat.xor`.
 /-- `bxor` denotes the `xor` function i.e. the exclusive-or function on type `Bool`. -/
 local notation "bxor" => xor
@@ -32,14 +33,15 @@ variable {m n : ℕ}
 
 /-- `boddDiv2 n` returns a 2-tuple of type `(Bool, Nat)` where the `Bool` value indicates whether
 `n` is odd or not and the `Nat` value returns `⌊n/2⌋` -/
-@[deprecated (since := "2024-06-09")] def boddDiv2 : ℕ → Bool × ℕ
+@[deprecated "use `Nat.bodd` and `Nat.div2` instead" (since := "2024-06-09")]
+def boddDiv2 : ℕ → Bool × ℕ
   | 0 => (false, 0)
   | succ n =>
     match boddDiv2 n with
     | (false, m) => (true, m)
     | (true, m) => (false, succ m)
 
-/-- `div2 n = ⌊n/2⌋` the greatest integer smaller than `n/2`-/
+/-- `div2 n = ⌊n/2⌋` the greatest integer smaller than `n/2` -/
 def div2 (n : ℕ) : ℕ := n >>> 1
 
 theorem div2_val (n) : div2 n = n / 2 := rfl
@@ -89,7 +91,7 @@ lemma div2_two : div2 2 = 1 := rfl
 @[simp]
 lemma div2_succ (n : ℕ) : div2 (n + 1) = cond (bodd n) (succ (div2 n)) (div2 n) := by
   cases n using bitCasesOn with
-  | h b n => cases b <;> simp [bit_val, div2_val, succ_div, Nat.dvd_mul_right]
+  | h b n => cases b <;> simp [bit_val, div2_val, Nat.succ_div, Nat.dvd_mul_right]
 
 @[simp]
 lemma div2_bit (b n) : div2 (bit b n) = n := by
@@ -180,7 +182,7 @@ lemma testBit_bit_succ (m b n) : testBit (bit b n) (succ m) = testBit n m := by
 
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-10-22")]
+@[deprecated "`Nat.boddDiv2` has been deprecated" (since := "2024-10-22")]
 theorem boddDiv2_eq (n : ℕ) : boddDiv2 n = (bodd n, div2 n) := by
   induction n with
   | zero => rfl
