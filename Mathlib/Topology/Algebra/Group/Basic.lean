@@ -137,7 +137,7 @@ variable [TopologicalSpace G] [Inv G] [ContinuousInv G]
 
 @[to_additive]
 theorem ContinuousInv.induced {α : Type*} {β : Type*} {F : Type*} [FunLike F α β] [Group α]
-    [Group β] [MonoidHomClass F α β] [tβ : TopologicalSpace β] [ContinuousInv β] (f : F) :
+    [DivisionMonoid β] [MonoidHomClass F α β] [tβ : TopologicalSpace β] [ContinuousInv β] (f : F) :
     @ContinuousInv α (tβ.induced f) _ := by
   let _tα := tβ.induced f
   refine ⟨continuous_induced_rng.2 ?_⟩
@@ -649,8 +649,8 @@ theorem mul_mem_connectedComponent_one {G : Type*} [TopologicalSpace G] [MulOneC
   simpa [← connectedComponent_eq hmul] using mem_connectedComponent
 
 @[to_additive]
-theorem inv_mem_connectedComponent_one {G : Type*} [TopologicalSpace G] [Group G]
-    [IsTopologicalGroup G] {g : G} (hg : g ∈ connectedComponent (1 : G)) :
+theorem inv_mem_connectedComponent_one {G : Type*} [TopologicalSpace G] [DivisionMonoid G]
+    [ContinuousInv G] {g : G} (hg : g ∈ connectedComponent (1 : G)) :
     g⁻¹ ∈ connectedComponent (1 : G) := by
   rw [← inv_one]
   exact
@@ -784,7 +784,7 @@ is open iff `φ⁻¹ V` is open). Then `φ` is an open quotient map, and in part
 surjective additive group homomorphism. Assume furthermore that `φ` is a quotient map (i.e., `V ⊆ B`
 is open iff `φ⁻¹ V` is open). Then `φ` is an open quotient map, and in particular an open map."]
 lemma MonoidHom.isOpenQuotientMap_of_isQuotientMap {A : Type*} [Group A]
-    [TopologicalSpace A] [IsTopologicalGroup A] {B : Type*} [Group B] [TopologicalSpace B]
+    [TopologicalSpace A] [ContinuousMul A] {B : Type*} [Group B] [TopologicalSpace B]
     {F : Type*} [FunLike F A B] [MonoidHomClass F A B] {φ : F}
     (hφ : IsQuotientMap φ) : IsOpenQuotientMap φ where
     surjective := hφ.surjective
@@ -1203,6 +1203,13 @@ def toUnits_homeomorph [Group G] [TopologicalSpace G] [ContinuousInv G] : G ≃�
 
 @[deprecated (since := "2024-10-26")]
 alias Units.embedding_val := Units.isEmbedding_val
+
+lemma Continuous.of_coeHom_comp [Group G] [Monoid H] [TopologicalSpace G] [TopologicalSpace H]
+    [ContinuousInv G] {f : G →* Hˣ} (hf : Continuous ((Units.coeHom H).comp f)) : Continuous f := by
+  apply continuous_induced_rng.mpr ?_
+  refine continuous_prodMk.mpr ⟨hf, ?_⟩
+  simp_rw [← map_inv]
+  exact MulOpposite.continuous_op.comp (hf.comp continuous_inv)
 
 namespace Units
 

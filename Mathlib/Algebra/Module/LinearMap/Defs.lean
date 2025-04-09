@@ -381,6 +381,12 @@ theorem isScalarTower_of_injective [SMul R S] [CompatibleSMul M M₂ R S] [IsSca
     (f : M →ₗ[S] M₂) (hf : Function.Injective f) : IsScalarTower R S M where
   smul_assoc r s _ := hf <| by rw [f.map_smul_of_tower r, map_smul, map_smul, smul_assoc]
 
+@[simp] lemma _root_.map_zsmul_unit {F M N : Type*}
+    [AddGroup M] [AddGroup N] [FunLike F M N] [AddMonoidHomClass F M N]
+    (f : F) (c : ℤˣ) (m : M) :
+    f (c • m) = c • f m := by
+  simp [Units.smul_def]
+
 end
 
 variable (R) in
@@ -939,7 +945,7 @@ theorem restrictScalars_add (f g : M →ₗ[S] N) :
   rfl
 
 @[simp]
-theorem restrictScalars_neg {M N : Type*} [AddCommGroup M] [AddCommGroup N]
+theorem restrictScalars_neg {M N : Type*} [AddCommMonoid M] [AddCommGroup N]
     [Module R M] [Module R N] [Module S M] [Module S N] [CompatibleSMul M N R S]
     (f : M →ₗ[S] N) : (-f).restrictScalars R = -f.restrictScalars R :=
   rfl
@@ -958,7 +964,7 @@ lemma restrictScalars_comp [AddCommMonoid P] [Module S P] [Module R P]
   rfl
 
 @[simp]
-lemma restrictScalars_trans {T : Type*} [CommSemiring T] [Module T M] [Module T N]
+lemma restrictScalars_trans {T : Type*} [Semiring T] [Module T M] [Module T N]
     [CompatibleSMul M N S T] [CompatibleSMul M N R T] (f : M →ₗ[T] N) :
     (f.restrictScalars S).restrictScalars R = f.restrictScalars R :=
   rfl

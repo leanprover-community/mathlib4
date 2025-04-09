@@ -877,7 +877,7 @@ theorem norm_eq_zero {d : ℤ} (h_nonsquare : ∀ n : ℤ, d ≠ n * n) (a : ℤ
 variable {R : Type}
 
 @[ext]
-theorem hom_ext [Ring R] {d : ℤ} (f g : ℤ√d →+* R) (h : f sqrtd = g sqrtd) : f = g := by
+theorem hom_ext [NonAssocRing R] {d : ℤ} (f g : ℤ√d →+* R) (h : f sqrtd = g sqrtd) : f = g := by
   ext ⟨x_re, x_im⟩
   simp [decompose, h]
 
