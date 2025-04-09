@@ -20,7 +20,8 @@ open Set Filter Function
 
 open scoped Topology
 
-variable {G : Type*} [TopologicalSpace G] [LinearOrderedCommGroup G] [OrderTopology G]
+variable {G : Type*} [TopologicalSpace G] [CommGroup G] [LinearOrder G] [IsOrderedMonoid G]
+  [OrderTopology G]
 
 -- see Note [lower instance priority]
 @[to_additive]

@@ -480,7 +480,7 @@ theorem strong_law_aux1 {c : ℝ} (c_one : 1 < c) {ε : ℝ} (εpos : 0 < ε) : 
   convert hω; simp only [Y, S, u, C, sum_apply]
 
 include hint hindep hident hnonneg in
-/- The truncation of `Xᵢ` up to `i` satisfies the strong law of large numbers
+/-- The truncation of `Xᵢ` up to `i` satisfies the strong law of large numbers
 (with respect to the truncated expectation) along the sequence
 `c^n`, for any `c > 1`. This follows from `strong_law_aux1` by varying `ε`. -/
 theorem strong_law_aux2 {c : ℝ} (c_one : 1 < c) :
@@ -513,7 +513,7 @@ theorem strong_law_aux3 :
   exact ((hident i).symm.integrable_snd hint).1.integrable_truncation
 
 include hint hindep hident hnonneg in
-/- The truncation of `Xᵢ` up to `i` satisfies the strong law of large numbers
+/-- The truncation of `Xᵢ` up to `i` satisfies the strong law of large numbers
 (with respect to the original expectation) along the sequence
 `c^n`, for any `c > 1`. This follows from the version from the truncated expectation, and the
 fact that the truncated and the original expectations have the same asymptotic behavior. -/
@@ -556,7 +556,7 @@ theorem strong_law_aux5 :
   rw [sum_sub_distrib]
 
 include hint hindep hident hnonneg in
-/- `Xᵢ` satisfies the strong law of large numbers along the sequence
+/-- `Xᵢ` satisfies the strong law of large numbers along the sequence
 `c^n`, for any `c > 1`. This follows from the version for the truncated `Xᵢ`, and the fact that
 `Xᵢ` and its truncated version have the same asymptotic behavior. -/
 theorem strong_law_aux6 {c : ℝ} (c_one : 1 < c) :

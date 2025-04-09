@@ -33,7 +33,7 @@ namespace Lp
 
 section Order
 
-variable [NormedLatticeAddCommGroup E]
+variable [NormedAddCommGroup E] [Lattice E]
 
 theorem coeFn_le (f g : Lp E p μ) : f ≤ᵐ[μ] g ↔ f ≤ g := by
   rw [← Subtype.coe_le_coe, ← AEEqFun.coeFn_le]
@@ -44,6 +44,8 @@ theorem coeFn_nonneg (f : Lp E p μ) : 0 ≤ᵐ[μ] f ↔ 0 ≤ f := by
   constructor <;> intro h <;> filter_upwards [h, h0] with _ _ h2
   · rwa [h2]
   · rwa [← h2]
+
+variable [HasSolidNorm E] [IsOrderedAddMonoid E]
 
 instance instAddLeftMono : AddLeftMono (Lp E p μ) := by
   refine ⟨fun f g₁ g₂ hg₁₂ => ?_⟩

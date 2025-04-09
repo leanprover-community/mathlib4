@@ -1050,18 +1050,18 @@ theorem hasFDerivAtFilter_const (c : F) (x : E) (L : Filter E) :
 theorem hasFDerivAtFilter_zero (x : E) (L : Filter E) :
     HasFDerivAtFilter (0 : E → F) (0 : E →L[𝕜] F) x L := hasFDerivAtFilter_const _ _ _
 
-theorem hasFDerivAtFilter_one [One F]  (x : E) (L : Filter E) :
+theorem hasFDerivAtFilter_one [One F] (x : E) (L : Filter E) :
     HasFDerivAtFilter (1 : E → F) (0 : E →L[𝕜] F) x L := hasFDerivAtFilter_const _ _ _
 
-theorem hasFDerivAtFilter_natCast [NatCast F] (n : ℕ)  (x : E) (L : Filter E) :
+theorem hasFDerivAtFilter_natCast [NatCast F] (n : ℕ) (x : E) (L : Filter E) :
     HasFDerivAtFilter (n : E → F) (0 : E →L[𝕜] F) x L :=
   hasFDerivAtFilter_const _ _ _
 
-theorem hasFDerivAtFilter_intCast [IntCast F] (z : ℤ)  (x : E) (L : Filter E) :
+theorem hasFDerivAtFilter_intCast [IntCast F] (z : ℤ) (x : E) (L : Filter E) :
     HasFDerivAtFilter (z : E → F) (0 : E →L[𝕜] F) x L :=
   hasFDerivAtFilter_const _ _ _
 
-theorem hasFDerivAtFilter_ofNat (n : ℕ) [OfNat F n]  (x : E) (L : Filter E) :
+theorem hasFDerivAtFilter_ofNat (n : ℕ) [OfNat F n] (x : E) (L : Filter E) :
     HasFDerivAtFilter (ofNat(n) : E → F) (0 : E →L[𝕜] F) x L :=
   hasFDerivAtFilter_const _ _ _
 
@@ -1075,21 +1075,21 @@ theorem hasFDerivWithinAt_zero (x : E) (s : Set E) :
     HasFDerivWithinAt (0 : E → F) (0 : E →L[𝕜] F) s x := hasFDerivWithinAt_const _ _ _
 
 @[fun_prop]
-theorem hasFDerivWithinAt_one [One F]  (x : E) (s : Set E) :
+theorem hasFDerivWithinAt_one [One F] (x : E) (s : Set E) :
     HasFDerivWithinAt (1 : E → F) (0 : E →L[𝕜] F) s x := hasFDerivWithinAt_const _ _ _
 
 @[fun_prop]
-theorem hasFDerivWithinAt_natCast [NatCast F] (n : ℕ)  (x : E) (s : Set E) :
+theorem hasFDerivWithinAt_natCast [NatCast F] (n : ℕ) (x : E) (s : Set E) :
     HasFDerivWithinAt (n : E → F) (0 : E →L[𝕜] F) s x :=
   hasFDerivWithinAt_const _ _ _
 
 @[fun_prop]
-theorem hasFDerivWithinAt_intCast [IntCast F] (z : ℤ)  (x : E) (s : Set E) :
+theorem hasFDerivWithinAt_intCast [IntCast F] (z : ℤ) (x : E) (s : Set E) :
     HasFDerivWithinAt (z : E → F) (0 : E →L[𝕜] F) s x :=
   hasFDerivWithinAt_const _ _ _
 
 @[fun_prop]
-theorem hasFDerivWithinAt_ofNat (n : ℕ) [OfNat F n]  (x : E) (s : Set E) :
+theorem hasFDerivWithinAt_ofNat (n : ℕ) [OfNat F n] (x : E) (s : Set E) :
     HasFDerivWithinAt (ofNat(n) : E → F) (0 : E →L[𝕜] F) s x :=
   hasFDerivWithinAt_const _ _ _
 
