@@ -146,7 +146,7 @@ theorem sorted_le_replicate (n a : ℕ) : Sorted (· ≤ ·) (replicate n a) := 
 theorem sorted_le_range (n : ℕ) : Sorted (· ≤ ·) (range n) :=
   (sorted_lt_range n).le_of_lt
 
-lemma sorted_lt_range' {a b s} (hs : s ≠ 0) :
+lemma sorted_lt_range' (a b) {s} (hs : s ≠ 0) :
     List.Sorted (· < ·) (List.range' a b s) := by
   induction b generalizing a with
   | zero => simp
@@ -156,7 +156,7 @@ lemma sorted_lt_range' {a b s} (hs : s ≠ 0) :
     apply lt_of_lt_of_le (Nat.lt_add_of_pos_right (Nat.zero_lt_of_ne_zero hs))
       (List.left_le_of_mem_range' hb)
 
-lemma sorted_le_range' {a b s} :
+lemma sorted_le_range' (a b s) :
     List.Sorted (· ≤ ·) (List.range' a b s) := by
   by_cases hs : s ≠ 0
   · exact (sorted_lt_range' hs).le_of_lt
