@@ -693,7 +693,7 @@ theorem le_normalizer : H ≤ normalizer H := fun x xH n => by
 
 end Normalizer
 
-@[deprecated (since := "2025-04-09")] alias _root_.Subgroup.IsCommutative := IsMulCommutative
+@[deprecated (since := "2025-04-09")] alias IsCommutative := IsMulCommutative
 @[deprecated (since := "2025-04-09")] alias _root_.AddSubgroup.IsCommutative := IsAddCommutative
 
 /-- A subgroup of a commutative group is commutative. -/
