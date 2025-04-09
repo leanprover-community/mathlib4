@@ -5846,6 +5846,7 @@ import Mathlib.Topology.Clopen
 import Mathlib.Topology.ClopenBox
 import Mathlib.Topology.Closure
 import Mathlib.Topology.ClusterPt
+import Mathlib.Topology.Coherent
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.Compactification.OnePoint
 import Mathlib.Topology.Compactification.OnePointEquiv
@@ -6091,7 +6092,6 @@ import Mathlib.Topology.Perfect
 import Mathlib.Topology.Piecewise
 import Mathlib.Topology.PreorderRestrict
 import Mathlib.Topology.QuasiSeparated
-import Mathlib.Topology.RestrictGen
 import Mathlib.Topology.Semicontinuous
 import Mathlib.Topology.SeparatedMap
 import Mathlib.Topology.Separation.Basic
