@@ -49,13 +49,10 @@ theorem IsTopologicalRing.of_norm {R 𝕜 : Type*} [NonUnitalNonAssocRing R] [Li
     exact fun y => h0 (· * y) (norm y) (norm_nonneg y) fun x =>
       (norm_mul_le x y).trans_eq (mul_comm _ _)
 
-variable {𝕜 α : Type*} [LinearOrderedField 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜]
-  {l : Filter α} {f g : α → 𝕜}
+section Semifield
 
--- see Note [lower instance priority]
-instance (priority := 100) LinearOrderedField.topologicalRing : IsTopologicalRing 𝕜 :=
-  .of_norm abs abs_nonneg (fun _ _ ↦ (abs_mul _ _).le) <| by
-    simpa using nhds_basis_abs_sub_lt (0 : 𝕜)
+variable {𝕜 α : Type*} [LinearOrderedSemifield 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜]
+  {l : Filter α} {f g : α → 𝕜}
 
 /-- In a linearly ordered field with the order topology, if `f` tends to `Filter.atTop` and `g`
 tends to a positive constant `C` then `f * g` tends to `Filter.atTop`. -/
@@ -79,6 +76,98 @@ theorem Filter.Tendsto.pos_mul_atTop {C : 𝕜} (hC : 0 < C) (hf : Tendsto f l (
 
 @[deprecated (since := "2025-03-18")]
 alias Filter.Tendsto.mul_atTop := Filter.Tendsto.pos_mul_atTop
+
+@[simp]
+lemma inv_atTop₀ : (atTop : Filter 𝕜)⁻¹ = 𝓝[>] 0 :=
+  (((atTop_basis_Ioi' (0 : 𝕜)).map _).comp_surjective inv_surjective).eq_of_same_basis <|
+    (nhdsGT_basis _).congr (by simp) fun a ha ↦ by simp [inv_Ioi₀ (inv_pos.2 ha)]
+
+@[simp]
+lemma inv_nhdsGT_zero : (𝓝[>] (0 : 𝕜))⁻¹ = atTop := by rw [← inv_atTop₀, inv_inv]
+
+@[deprecated (since := "2024-12-22")] alias inv_nhdsWithin_Ioi_zero := inv_nhdsGT_zero
+
+/-- The function `x ↦ x⁻¹` tends to `+∞` on the right of `0`. -/
+theorem tendsto_inv_nhdsGT_zero : Tendsto (fun x : 𝕜 => x⁻¹) (𝓝[>] (0 : 𝕜)) atTop :=
+  inv_nhdsGT_zero.le
+
+@[deprecated (since := "2024-12-22")]
+alias tendsto_inv_zero_atTop := tendsto_inv_nhdsGT_zero
+
+/-- The function `r ↦ r⁻¹` tends to `0` on the right as `r → +∞`. -/
+theorem tendsto_inv_atTop_nhdsGT_zero : Tendsto (fun r : 𝕜 => r⁻¹) atTop (𝓝[>] (0 : 𝕜)) :=
+  inv_atTop₀.le
+
+@[deprecated (since := "2024-12-22")]
+alias tendsto_inv_atTop_zero' := tendsto_inv_atTop_nhdsGT_zero
+
+theorem tendsto_inv_atTop_zero : Tendsto (fun r : 𝕜 => r⁻¹) atTop (𝓝 0) :=
+  tendsto_inv_atTop_nhdsGT_zero.mono_right inf_le_left
+
+theorem Filter.Tendsto.div_atTop [ContinuousMul 𝕜] {a : 𝕜} (h : Tendsto f l (𝓝 a))
+    (hg : Tendsto g l atTop) : Tendsto (fun x => f x / g x) l (𝓝 0) := by
+  simp only [div_eq_mul_inv]
+  exact mul_zero a ▸ h.mul (tendsto_inv_atTop_zero.comp hg)
+
+lemma Filter.Tendsto.const_div_atTop [ContinuousMul 𝕜] (hg : Tendsto g l atTop) (r : 𝕜) :
+    Tendsto (fun n ↦ r / g n) l (𝓝 0) :=
+  tendsto_const_nhds.div_atTop hg
+
+theorem Filter.Tendsto.inv_tendsto_atTop (h : Tendsto f l atTop) : Tendsto f⁻¹ l (𝓝 0) :=
+  tendsto_inv_atTop_zero.comp h
+
+theorem Filter.Tendsto.inv_tendsto_nhdsGT_zero (h : Tendsto f l (𝓝[>] 0)) : Tendsto f⁻¹ l atTop :=
+  tendsto_inv_nhdsGT_zero.comp h
+
+@[deprecated (since := "2024-12-22")]
+alias Filter.Tendsto.inv_tendsto_zero := Filter.Tendsto.inv_tendsto_nhdsGT_zero
+
+/-- The function `x^(-n)` tends to `0` at `+∞` for any positive natural `n`.
+A version for positive real powers exists as `tendsto_rpow_neg_atTop`. -/
+theorem tendsto_pow_neg_atTop {n : ℕ} (hn : n ≠ 0) :
+    Tendsto (fun x : 𝕜 => x ^ (-(n : ℤ))) atTop (𝓝 0) := by
+  simpa only [zpow_neg, zpow_natCast] using (tendsto_pow_atTop (α := 𝕜) hn).inv_tendsto_atTop
+
+theorem tendsto_zpow_atTop_zero {n : ℤ} (hn : n < 0) :
+    Tendsto (fun x : 𝕜 => x ^ n) atTop (𝓝 0) := by
+  lift -n to ℕ using le_of_lt (neg_pos.mpr hn) with N h
+  rw [← neg_pos, ← h, Nat.cast_pos] at hn
+  simpa only [h, neg_neg] using tendsto_pow_neg_atTop hn.ne'
+
+theorem tendsto_const_mul_zpow_atTop_zero [ContinuousMul 𝕜] {n : ℤ} {c : 𝕜} (hn : n < 0) :
+    Tendsto (fun x => c * x ^ n) atTop (𝓝 0) :=
+  mul_zero c ▸ (tendsto_zpow_atTop_zero hn).const_mul c
+
+-- TODO: generalize to a `GroupWithZero`
+omit [OrderTopology 𝕜] in
+theorem comap_mulLeft_nhdsGT_zero [ContinuousMul 𝕜] {x : 𝕜} (hx : 0 < x) :
+    comap (x * ·) (𝓝[>] 0) = 𝓝[>] 0 := by
+  rw [nhdsWithin, comap_inf, comap_principal, preimage_const_mul_Ioi _ hx, zero_div]
+  congr 1
+  refine ((Homeomorph.mulLeft₀ x hx.ne').comap_nhds_eq _).trans ?_
+  simp
+
+@[deprecated (since := "2024-12-22")]
+alias nhdsWithin_pos_comap_mul_left := comap_mulLeft_nhdsGT_zero
+
+omit [OrderTopology 𝕜] in
+theorem eventually_nhdsGT_zero_mul_left [ContinuousMul 𝕜] {x : 𝕜} (hx : 0 < x) {p : 𝕜 → Prop}
+    (h : ∀ᶠ ε in 𝓝[>] 0, p ε) : ∀ᶠ ε in 𝓝[>] 0, p (x * ε) := by
+  rw [← comap_mulLeft_nhdsGT_zero hx]
+  exact h.comap fun ε => x * ε
+
+@[deprecated (since := "2024-12-22")]
+alias eventually_nhdsWithin_pos_mul_left := eventually_nhdsGT_zero_mul_left
+
+end Semifield
+
+variable {𝕜 α : Type*} [LinearOrderedField 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜]
+  {l : Filter α} {f g : α → 𝕜}
+
+-- see Note [lower instance priority]
+instance (priority := 100) LinearOrderedField.topologicalRing : IsTopologicalRing 𝕜 :=
+  .of_norm abs abs_nonneg (fun _ _ ↦ (abs_mul _ _).le) <| by
+    simpa using nhds_basis_abs_sub_lt (0 : 𝕜)
 
 /-- In a linearly ordered field with the order topology, if `f` tends to `Filter.atTop` and `g`
 tends to a negative constant `C` then `f * g` tends to `Filter.atBot`. -/
@@ -127,84 +216,45 @@ theorem Filter.Tendsto.neg_mul_atBot {C : 𝕜} (hC : C < 0) (hf : Tendsto f l (
   simpa only [mul_comm] using hg.atBot_mul_neg hC hf
 
 @[simp]
-lemma inv_atTop₀ : (atTop : Filter 𝕜)⁻¹ = 𝓝[>] 0 :=
-  (((atTop_basis_Ioi' (0 : 𝕜)).map _).comp_surjective inv_surjective).eq_of_same_basis <|
-    (nhdsGT_basis _).congr (by simp) fun a ha ↦ by simp [inv_Ioi₀ (inv_pos.2 ha)]
-
-@[simp]
 lemma inv_atBot₀ : (atBot : Filter 𝕜)⁻¹ = 𝓝[<] 0 :=
   (((atBot_basis_Iio' (0 : 𝕜)).map _).comp_surjective inv_surjective).eq_of_same_basis <|
     (nhdsLT_basis _).congr (by simp) fun a ha ↦ by simp [inv_Iio₀ (inv_neg''.2 ha)]
 
 @[simp]
-lemma inv_nhdsGT_zero : (𝓝[>] (0 : 𝕜))⁻¹ = atTop := by rw [← inv_atTop₀, inv_inv]
-
-@[deprecated (since := "2024-12-22")] alias inv_nhdsWithin_Ioi_zero := inv_nhdsGT_zero
-
-@[simp]
 lemma inv_nhdsLT_zero : (𝓝[<] (0 : 𝕜))⁻¹ = atBot := by
   rw [← inv_atBot₀, inv_inv]
 
-/-- The function `x ↦ x⁻¹` tends to `+∞` on the right of `0`. -/
-theorem tendsto_inv_nhdsGT_zero : Tendsto (fun x : 𝕜 => x⁻¹) (𝓝[>] (0 : 𝕜)) atTop :=
-  inv_nhdsGT_zero.le
-
-@[deprecated (since := "2024-12-22")]
-alias tendsto_inv_zero_atTop := tendsto_inv_nhdsGT_zero
-
-/-- The function `r ↦ r⁻¹` tends to `0` on the right as `r → +∞`. -/
-theorem tendsto_inv_atTop_nhdsGT_zero : Tendsto (fun r : 𝕜 => r⁻¹) atTop (𝓝[>] (0 : 𝕜)) :=
-  inv_atTop₀.le
-
-@[deprecated (since := "2024-12-22")]
-alias tendsto_inv_atTop_zero' := tendsto_inv_atTop_nhdsGT_zero
-
-theorem tendsto_inv_atTop_zero : Tendsto (fun r : 𝕜 => r⁻¹) atTop (𝓝 0) :=
-  tendsto_inv_atTop_nhdsGT_zero.mono_right inf_le_left
-
 /-- The function `x ↦ x⁻¹` tends to `-∞` on the left of `0`. -/
-theorem tendsto_inv_zero_atBot : Tendsto (fun x : 𝕜 => x⁻¹) (𝓝[<] (0 : 𝕜)) atBot :=
+theorem tendsto_inv_nhdsLT_zero_atBot : Tendsto (fun x : 𝕜 => x⁻¹) (𝓝[<] (0 : 𝕜)) atBot :=
   inv_nhdsLT_zero.le
 
+@[deprecated (since := "2025-04-09")]
+alias tendsto_inv_zero_atBot := tendsto_inv_nhdsLT_zero_atBot
+
 /-- The function `r ↦ r⁻¹` tends to `0` on the left as `r → -∞`. -/
-theorem tendsto_inv_atBot_zero' : Tendsto (fun r : 𝕜 => r⁻¹) atBot (𝓝[<] (0 : 𝕜)) :=
+theorem tendsto_inv_atBot_nhdsLT_zero : Tendsto (fun r : 𝕜 => r⁻¹) atBot (𝓝[<] (0 : 𝕜)) :=
   inv_atBot₀.le
 
-theorem tendsto_inv_atBot_zero : Tendsto (fun r : 𝕜 => r⁻¹) atBot (𝓝 0) :=
-  tendsto_inv_atBot_zero'.mono_right inf_le_left
+@[deprecated (since := "2025-04-09")]
+alias tendsto_inv_atBot_zero' := tendsto_inv_atBot_nhdsLT_zero
 
-theorem Filter.Tendsto.div_atTop {a : 𝕜} (h : Tendsto f l (𝓝 a)) (hg : Tendsto g l atTop) :
-    Tendsto (fun x => f x / g x) l (𝓝 0) := by
-  simp only [div_eq_mul_inv]
-  exact mul_zero a ▸ h.mul (tendsto_inv_atTop_zero.comp hg)
+theorem tendsto_inv_atBot_zero : Tendsto (fun r : 𝕜 => r⁻¹) atBot (𝓝 0) :=
+  tendsto_inv_atBot_nhdsLT_zero.mono_right inf_le_left
 
 theorem Filter.Tendsto.div_atBot {a : 𝕜} (h : Tendsto f l (𝓝 a)) (hg : Tendsto g l atBot) :
     Tendsto (fun x => f x / g x) l (𝓝 0) := by
   simp only [div_eq_mul_inv]
   exact mul_zero a ▸ h.mul (tendsto_inv_atBot_zero.comp hg)
 
-lemma Filter.Tendsto.const_div_atTop (hg : Tendsto g l atTop) (r : 𝕜)  :
-    Tendsto (fun n ↦ r / g n) l (𝓝 0) :=
-  tendsto_const_nhds.div_atTop hg
-
 lemma Filter.Tendsto.const_div_atBot (hg : Tendsto g l atBot) (r : 𝕜)  :
     Tendsto (fun n ↦ r / g n) l (𝓝 0) :=
   tendsto_const_nhds.div_atBot hg
 
-theorem Filter.Tendsto.inv_tendsto_atTop (h : Tendsto f l atTop) : Tendsto f⁻¹ l (𝓝 0) :=
-  tendsto_inv_atTop_zero.comp h
-
 theorem Filter.Tendsto.inv_tendsto_atBot (h : Tendsto f l atBot) : Tendsto f⁻¹ l (𝓝 0) :=
   tendsto_inv_atBot_zero.comp h
 
-theorem Filter.Tendsto.inv_tendsto_nhdsGT_zero (h : Tendsto f l (𝓝[>] 0)) : Tendsto f⁻¹ l atTop :=
-  tendsto_inv_nhdsGT_zero.comp h
-
-@[deprecated (since := "2024-12-22")]
-alias Filter.Tendsto.inv_tendsto_zero := Filter.Tendsto.inv_tendsto_nhdsGT_zero
-
 theorem Filter.Tendsto.inv_tendsto_nhdsLT_zero (h : Tendsto f l (𝓝[<] 0)) : Tendsto f⁻¹ l atBot :=
-  tendsto_inv_zero_atBot.comp h
+  tendsto_inv_nhdsLT_zero_atBot.comp h
 
 /-- If `g` tends to zero and there exists a constant `C : 𝕜` such that eventually `|f x| ≤ C`,
   then the product `f * g` tends to zero. -/
@@ -239,22 +289,6 @@ theorem tendsto_bdd_div_atTop_nhds_zero {f g : α → 𝕜} {b B : 𝕜}
     Tendsto (fun x => f x / g x) l (𝓝 0) := by
   simp only [div_eq_mul_inv]
   exact bdd_le_mul_tendsto_zero hb hB hg.inv_tendsto_atTop
-
-/-- The function `x^(-n)` tends to `0` at `+∞` for any positive natural `n`.
-A version for positive real powers exists as `tendsto_rpow_neg_atTop`. -/
-theorem tendsto_pow_neg_atTop {n : ℕ} (hn : n ≠ 0) :
-    Tendsto (fun x : 𝕜 => x ^ (-(n : ℤ))) atTop (𝓝 0) := by
-  simpa only [zpow_neg, zpow_natCast] using (tendsto_pow_atTop (α := 𝕜) hn).inv_tendsto_atTop
-
-theorem tendsto_zpow_atTop_zero {n : ℤ} (hn : n < 0) :
-    Tendsto (fun x : 𝕜 => x ^ n) atTop (𝓝 0) := by
-  lift -n to ℕ using le_of_lt (neg_pos.mpr hn) with N h
-  rw [← neg_pos, ← h, Nat.cast_pos] at hn
-  simpa only [h, neg_neg] using tendsto_pow_neg_atTop hn.ne'
-
-theorem tendsto_const_mul_zpow_atTop_zero {n : ℤ} {c : 𝕜} (hn : n < 0) :
-    Tendsto (fun x => c * x ^ n) atTop (𝓝 0) :=
-  mul_zero c ▸ Filter.Tendsto.const_mul c (tendsto_zpow_atTop_zero hn)
 
 theorem tendsto_const_mul_pow_nhds_iff' {n : ℕ} {c d : 𝕜} :
     Tendsto (fun x : 𝕜 => c * x ^ n) atTop (𝓝 d) ↔ (c = 0 ∨ n = 0) ∧ c = d := by
@@ -304,21 +338,3 @@ instance (priority := 100) LinearOrderedField.toIsTopologicalDivisionRing :
 
 @[deprecated (since := "2025-03-25")] alias LinearOrderedField.toTopologicalDivisionRing :=
   LinearOrderedField.toIsTopologicalDivisionRing
-
--- TODO: generalize to a `GroupWithZero`
-theorem comap_mulLeft_nhdsGT_zero {x : 𝕜} (hx : 0 < x) : comap (x * ·) (𝓝[>] 0) = 𝓝[>] 0 := by
-  rw [nhdsWithin, comap_inf, comap_principal, preimage_const_mul_Ioi _ hx, zero_div]
-  congr 1
-  refine ((Homeomorph.mulLeft₀ x hx.ne').comap_nhds_eq _).trans ?_
-  simp
-
-@[deprecated (since := "2024-12-22")]
-alias nhdsWithin_pos_comap_mul_left := comap_mulLeft_nhdsGT_zero
-
-theorem eventually_nhdsGT_zero_mul_left {x : 𝕜} (hx : 0 < x) {p : 𝕜 → Prop}
-    (h : ∀ᶠ ε in 𝓝[>] 0, p ε) : ∀ᶠ ε in 𝓝[>] 0, p (x * ε) := by
-  rw [← comap_mulLeft_nhdsGT_zero hx]
-  exact h.comap fun ε => x * ε
-
-@[deprecated (since := "2024-12-22")]
-alias eventually_nhdsWithin_pos_mul_left := eventually_nhdsGT_zero_mul_left
