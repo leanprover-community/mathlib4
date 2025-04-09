@@ -55,7 +55,7 @@ instance AddGroup.uniformContinuousConstSMul_int [AddGroup X] [IsUniformAddGroup
 /-- A `DistribMulAction` that is continuous on a uniform group is uniformly continuous.
 This can't be an instance due to it forming a loop with
 `UniformContinuousConstSMul.to_continuousConstSMul` -/
-theorem uniformContinuousConstSMul_of_continuousConstSMul [Monoid R] [AddCommGroup M]
+theorem uniformContinuousConstSMul_of_continuousConstSMul [Monoid R] [AddGroup M]
     [DistribMulAction R M] [UniformSpace M] [IsUniformAddGroup M] [ContinuousConstSMul R M] :
     UniformContinuousConstSMul R M :=
   ⟨fun r =>

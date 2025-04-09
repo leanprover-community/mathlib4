@@ -703,6 +703,19 @@ lemma Nat.stabilises_of_monotone {f : ℕ → ℕ} {b n : ℕ} (hfmono : Monoton
     (congr_arg f (Nat.add_sub_of_le hk)).symm.trans (key (k - m)).2
   exact (key n (hmb.trans hbn)).trans (key b hmb).symm
 
+/-- A bounded monotone function `ℕ → ℕ` converges. -/
+lemma converges_of_monotone_of_bounded {f : ℕ → ℕ} (mono_f : Monotone f)
+    {c : ℕ} (hc : ∀ n, f n ≤ c) : ∃ b N, ∀ n ≥ N, f n = b := by
+  induction c with
+  | zero => use 0, 0, fun n _ ↦ Nat.eq_zero_of_le_zero (hc n)
+  | succ c ih =>
+    by_cases h : ∀ n, f n ≤ c
+    · exact ih h
+    · push_neg at h; obtain ⟨N, hN⟩ := h
+      replace hN : f N = c + 1 := by specialize hc N; omega
+      use c + 1, N; intro n hn
+      specialize mono_f hn; specialize hc n; omega
+
 @[deprecated (since := "2024-11-27")]
 alias Group.card_pow_eq_card_pow_card_univ_aux := Nat.stabilises_of_monotone
 
