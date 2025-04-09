@@ -40,8 +40,8 @@ open Lean
 /-- Count the number of declarations in each module. -/
 def countDecls (modules : Array Name) : CoreM (Array Nat) := do
   let env ← getEnv
-  let mut counts := Array.mkArray modules.size 0
-  let moduleIndices := Std.HashMap.ofList <| modules.zipWithIndex.toList
+  let mut counts := Array.replicate modules.size 0
+  let moduleIndices := Std.HashMap.ofList <| modules.zipIdx.toList
   for (n, _) in env.constants.map₁ do
     if ! n.isInternal then
     if let some m := env.getModuleFor? n then
@@ -80,7 +80,7 @@ def unusedImportsCLI (args : Cli.Parsed) : IO UInt32 := do
   IO.println s!"Writing table to {output}."
   IO.FS.writeFile output (formatTable headings rows.toArray)
 
-  let data := unused.flatMap fun (m, u) => u.map fun n => (modules.indexOf m, modules.indexOf n)
+  let data := unused.flatMap fun (m, u) => u.map fun n => (modules.idxOf m, modules.idxOf n)
   let rectangles := maximalRectangles data
     |>.map (fun r => (r, r.area))
     -- Prefer rectangles with larger areas.
@@ -89,7 +89,7 @@ def unusedImportsCLI (args : Cli.Parsed) : IO UInt32 := do
     |>.pwFilter (fun r₁ r₂ => (r₁.1.top, r₂.1.right) ≠ (r₂.1.top, r₁.1.right))
     |>.take n
 
-  for (i, (r, _)) in rectangles.enum do
+  for ((r, _), i) in rectangles.zipIdx do
     -- We use `--from top` so that the graph starts at the module immediately *before*
     -- the block of unused imports. This is useful for deciding how a split should be made.
     -- We use `--to (right-1)` so that the graph ends at the earliest of the modules

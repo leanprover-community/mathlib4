@@ -488,6 +488,13 @@ theorem invRev_invRev : invRev (invRev L₁) = L₁ := by
 theorem invRev_empty : invRev ([] : List (α × Bool)) = [] :=
   rfl
 
+@[to_additive (attr := simp)]
+theorem invRev_append : invRev (L₁ ++ L₂) = invRev L₂ ++ invRev L₁ := by simp [invRev]
+
+@[to_additive]
+theorem invRev_cons {a : (α × Bool)} : invRev (a :: L) = invRev L ++ invRev [a] := by
+  simp [invRev]
+
 @[to_additive]
 theorem invRev_involutive : Function.Involutive (@invRev α) := fun _ => invRev_invRev
 
@@ -720,7 +727,8 @@ theorem map_eq_lift : map f x = lift (of ∘ f) x :=
 
 /-- Equivalent types give rise to multiplicatively equivalent free groups.
 
-The converse can be found in `GroupTheory.FreeGroup.GeneratorEquiv`, as `Equiv.ofFreeGroupEquiv`. -/
+The converse can be found in `Mathlib.GroupTheory.FreeGroup.GeneratorEquiv`, as
+`Equiv.ofFreeGroupEquiv`. -/
 @[to_additive (attr := simps apply)
   "Equivalent types give rise to additively equivalent additive free groups."]
 def freeGroupCongr {α β} (e : α ≃ β) : FreeGroup α ≃* FreeGroup β where
