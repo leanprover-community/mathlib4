@@ -331,6 +331,7 @@ theorem prod_map_toList (s : Finset α) (f : α → β) : (s.toList.map f).prod 
   rw [Finset.prod, ← Multiset.prod_coe, ← Multiset.map_coe, Finset.coe_toList]
 
 @[deprecated (since := "2025-04-09")] alias prod_to_list := prod_map_toList
+@[deprecated (since := "2025-04-09")] alias sum_to_list := sum_map_toList
 
 @[to_additive (attr := simp)]
 theorem prod_toList {α : Type*} [CommMonoid α] (s : Finset α) :
