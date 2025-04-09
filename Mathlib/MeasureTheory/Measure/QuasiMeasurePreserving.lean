@@ -203,6 +203,10 @@ end Measure
 
 open Measure
 
+theorem NullMeasurable.comp_quasiMeasurePreserving {ν : Measure β}
+    {f : α → β} {g : β → γ} (hg : NullMeasurable g ν) (hf : QuasiMeasurePreserving f μ ν) :
+    NullMeasurable (g ∘ f) μ := fun _s hs ↦ (hg hs).preimage hf
+
 theorem NullMeasurableSet.mono_ac (h : NullMeasurableSet s μ) (hle : ν ≪ μ) :
     NullMeasurableSet s ν :=
   h.preimage <| (QuasiMeasurePreserving.id μ).mono_left hle
