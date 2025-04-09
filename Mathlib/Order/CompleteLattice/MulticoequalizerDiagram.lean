@@ -3,7 +3,7 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Order.CompleteLattice
+import Mathlib.Order.CompleteLattice.Lemmas
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 import Mathlib.CategoryTheory.CommSq
@@ -83,11 +83,11 @@ when `d : MulticoequalizerDiagram x u v`. -/
 def multispanIndex : MultispanIndex (.prod ι) T where
   left := fun ⟨i, j⟩ ↦ v i j
   right := u
-  fst _ := homOfLE (by
+  fst (_ : ι × ι) := homOfLE (by
     dsimp
     rw [← d.min_eq]
     exact inf_le_left)
-  snd _ := homOfLE (by
+  snd (_ : ι × ι) := homOfLE (by
     dsimp
     rw [← d.min_eq]
     exact inf_le_right)

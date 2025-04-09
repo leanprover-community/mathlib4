@@ -32,7 +32,7 @@ namespace HahnSeries
 
 section Valuation
 
-variable (Γ R) [LinearOrderedCancelAddCommMonoid Γ] [Ring R] [IsDomain R]
+variable (Γ R) [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ] [Ring R] [IsDomain R]
 
 /-- The additive valuation on `HahnSeries Γ R`, returning the smallest index at which
   a Hahn Series has a nonzero coefficient, or `⊤` for the 0 series. -/

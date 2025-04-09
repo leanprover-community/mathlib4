@@ -69,15 +69,30 @@ lemma untop₀_mul [DecidableEq α] [MulZeroClass α] (a b : WithTop α) :
     (a * b).untop₀ = a.untop₀ * b.untop₀ := untopD_zero_mul a b
 
 /-!
+## Simplifying Lemmas in cases where α is a OrderedAddCommGroup
+-/
+
+/--
+Elements of ordered additive commutative groups are nonnegative iff their untop₀ is nonnegative.
+-/
+@[simp]
+lemma untop₀_nonneg [OrderedAddCommGroup α] {a : WithTop α} :
+    0 ≤ a.untop₀ ↔ 0 ≤ a := by
+  cases a with
+  | top => tauto
+  | coe a => simp
+
+/-!
 ## Simplifying Lemmas in cases where α is a LinearOrderedAddCommGroup
 -/
+
 @[simp]
 lemma untop₀_neg [LinearOrderedAddCommGroup α] (a : WithTop α) :
     (-a).untop₀ = -a.untop₀ := by
-  by_cases ha : a = ⊤
-  · simp [ha]
-  · lift a to α using ha
-    rw [(by rfl : -a = (↑(-a) : WithTop α)), untop₀_coe]
+  cases a with
+  | top => simp
+  | coe a =>
+    rw [← LinearOrderedAddCommGroup.coe_neg, untop₀_coe]
     simp
 
 end WithTop

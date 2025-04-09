@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jean Lo
 -/
 import Mathlib.Logic.Function.Iterate
-import Mathlib.Topology.Algebra.Group.Basic
+import Mathlib.Topology.Algebra.Monoid
+import Mathlib.Topology.Algebra.Group.Defs
 
 /-!
 # Flows and invariant sets
@@ -150,17 +151,12 @@ theorem isInvariant_iff_image_eq (s : Set α) : IsInvariant ϕ s ↔ ∀ t, ϕ t
 def reverse : Flow τ α where
   toFun t := ϕ (-t)
   cont' := ϕ.continuous continuous_fst.neg continuous_snd
-  map_add' _ _ _ := by dsimp; rw [neg_add, map_add]
-  map_zero' _ := by dsimp; rw [neg_zero, map_zero_apply]
+  map_add' _ _ _ := by rw [neg_add, map_add]
+  map_zero' _ := by rw [neg_zero, map_zero_apply]
 
--- Porting note: add @continuity to Flow.toFun so that these works:
--- Porting note: Homeomorphism.continuous_toFun  : Continuous toFun  := by continuity
--- Porting note: Homeomorphism.continuous_invFun : Continuous invFun := by continuity
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_toFun (t : τ) : Continuous (ϕ.toFun t) := by
-  rw [← curry_uncurry ϕ.toFun]
-  apply continuous_curry
-  exact ϕ.cont'
+  fun_prop
 
 /-- The map `ϕ t` as a homeomorphism. -/
 def toHomeomorph (t : τ) : (α ≃ₜ α) where

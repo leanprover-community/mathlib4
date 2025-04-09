@@ -3,11 +3,8 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Set.Pairwise.Basic
 import Mathlib.Order.Bounds.Basic
-import Mathlib.Order.Directed
-import Mathlib.Order.Hom.Set
-import Mathlib.Order.Chain
+import Mathlib.Order.Preorder.Chain
 
 /-!
 # Antichains
@@ -24,6 +21,7 @@ relation is `G.adj` for `G : SimpleGraph α`, this corresponds to independent se
 * `IsAntichain.mk r s`: Turns `s` into an antichain by keeping only the "maximal" elements.
 -/
 
+assert_not_exists CompleteLattice
 
 open Function Set
 
