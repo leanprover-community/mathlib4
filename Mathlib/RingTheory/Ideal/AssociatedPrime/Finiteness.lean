@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2025 Jingting Wang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jingting Wang
+-/
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.Data.Finite.Card
 import Mathlib.Data.Set.Card
@@ -7,7 +12,7 @@ import Mathlib.Order.RelSeries
 import Mathlib.Algebra.Exact
 import Mathlib.Algebra.Module.Torsion
 import Mathlib.Order.CompletePartialOrder
-import Mathlib.RingTheory.Ideal.AssociatedPrime
+import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
 
 section ModuleCat
 
@@ -149,8 +154,10 @@ noncomputable def mkQ_equiv (N1 N2 : Submodule R (M ⧸ N)) : ((Submodule.comap 
     obtain ⟨y, hy⟩ := N.mkQ_surjective x.1
     simp only [Subtype.exists, Submodule.mem_comap, Submodule.mkQ_apply, f]
     exact ⟨y, ⟨show N.mkQ y ∈ N1 from hy ▸ x.2, Subtype.ext hy⟩⟩
-  have : LinearMap.ker f = Submodule.comap (Submodule.comap N.mkQ N1).subtype (Submodule.comap N.mkQ N2) := by
-    ext x; simp [f]
+  have : LinearMap.ker f =
+    Submodule.comap (Submodule.comap N.mkQ N1).subtype (Submodule.comap N.mkQ N2) := by
+    ext x
+    simp [f]
   rw [← this]
   exact LinearMap.quotKerEquivOfSurjective f (by assumption)
 
@@ -172,7 +179,8 @@ lemma AssociatedPrimes.ideal_quotient_prime_eq_singleton (p : Ideal R) [hp : p.I
     show (Ideal.Quotient.mk p (y * z)) = 0 ↔ y ∈ p
     simp only [ne_eq, Ideal.Quotient.eq_zero_iff_mem] at h ⊢
     have : z ∉ p := by rw [← Ideal.Quotient.eq_zero_iff_mem, hz, Submodule.coe_eq_zero]; exact h
-    exact ⟨fun h' ↦ by simpa [this] using (hp.mem_or_mem h'), fun h ↦ Ideal.IsTwoSided.mul_mem_of_left z h⟩
+    exact ⟨fun h' ↦ by simpa [this] using (hp.mem_or_mem h'),
+      fun h ↦ Ideal.IsTwoSided.mul_mem_of_left z h⟩
   ext y
   simp only [associatedPrimes, IsAssociatedPrime, Set.mem_setOf_eq, Set.mem_singleton_iff]
   constructor
@@ -196,8 +204,8 @@ end calculation
 
 section mono
 
-lemma associatedPrimes_mono {M : Type*} [AddCommGroup M] [Module R M] (N1 N2 : Submodule R M) (h : N1 ≤ N2):
-    associatedPrimes R N1 ⊆ associatedPrimes R N2 := by
+lemma associatedPrimes_mono {M : Type*} [AddCommGroup M] [Module R M] (N1 N2 : Submodule R M)
+    (h : N1 ≤ N2) : associatedPrimes R N1 ⊆ associatedPrimes R N2 := by
   intro p ⟨hp, ⟨x, eq⟩⟩
   constructor
   · exact hp
@@ -207,8 +215,8 @@ lemma associatedPrimes_mono {M : Type*} [AddCommGroup M] [Module R M] (N1 N2 : S
     exact ⟨fun h' ↦ Subtype.ext <| (AddSubmonoid.mk_eq_zero N1.toAddSubmonoid).mp h',
       fun h ↦ Submodule.coe_eq_zero.mp congr($h.1)⟩
 
-lemma associatedPrimes_subset_of_submodule {M : Type*} [AddCommGroup M] [Module R M] (N : Submodule R M) :
-    associatedPrimes R N ⊆ associatedPrimes R M := by
+lemma associatedPrimes_subset_of_submodule {M : Type*} [AddCommGroup M] [Module R M]
+    (N : Submodule R M) : associatedPrimes R N ⊆ associatedPrimes R M := by
   have : associatedPrimes R M = associatedPrimes R (⊤ : Submodule R M) :=
     LinearEquiv.AssociatedPrimes.eq Submodule.topEquiv.symm
   rw [this]
@@ -242,17 +250,21 @@ lemma associatedPrimes_subset_union_of_exact {L M N: Type*} [AddCommGroup L] [Ad
     obtain ⟨z, hz⟩ : ∃ z : R, z • x = f y := hy.1
     have hzne : z ∉ p := fun h ↦ (by rw [(hx z).mpr h] at hz; exact hy.2 hz.symm)
     rw [← hz, smul_smul, hx]
-    exact ⟨fun h ↦ Ideal.IsTwoSided.mul_mem_of_left z h, fun h ↦ by simpa [hzne] using (Ideal.IsPrime.mem_or_mem hp h)⟩
+    exact ⟨fun h ↦ Ideal.IsTwoSided.mul_mem_of_left z h,
+      fun h ↦ by simpa [hzne] using (Ideal.IsPrime.mem_or_mem hp h)⟩
 
 lemma AssociatedPrimes.subset_union_of_injective {M N : Type*} [AddCommGroup M] [Module R M]
     [AddCommGroup N] [Module R N] (f : M →ₗ[R] N) (hinj : Function.Injective f) :
     associatedPrimes R N ⊆ associatedPrimes R M ∪ associatedPrimes R (N ⧸ Submodule.map f ⊤) :=
-  associatedPrimes_subset_union_of_exact R f ((Submodule.map f ⊤).mkQ) hinj (by simp [LinearMap.exact_iff])
+  associatedPrimes_subset_union_of_exact R f ((Submodule.map f ⊤).mkQ) hinj
+    (by simp [LinearMap.exact_iff])
 
 lemma AssociatedPrimes.subset_union_quotient {M : Type*} [AddCommGroup M] [Module R M]
     (p q : Submodule R M) (hpq : p ≤ q) :
-    (associatedPrimes R q) ⊆ (associatedPrimes R p) ∪ (associatedPrimes R (q ⧸ (Submodule.comap q.subtype p))) := by
-  apply associatedPrimes_subset_union_of_exact R (Submodule.inclusion hpq) (Submodule.comap q.subtype p).mkQ
+    (associatedPrimes R q) ⊆ (associatedPrimes R p) ∪
+      (associatedPrimes R (q ⧸ (Submodule.comap q.subtype p))) := by
+  apply associatedPrimes_subset_union_of_exact R (Submodule.inclusion hpq)
+    (Submodule.comap q.subtype p).mkQ
   · exact Submodule.inclusion_injective hpq
   · simp only [LinearMap.exact_iff, Submodule.ker_mkQ]
     exact (Submodule.range_inclusion p q hpq).symm
@@ -263,7 +275,7 @@ section chain
 
 lemma AssociatedPrimes.subset_iUnion_quotient (p : LTSeries (Submodule R M)) (h_head : p.head = ⊥)
     (h_last : p.last = ⊤) : associatedPrimes R M ⊆ ⋃ i : Fin p.length,
-    associatedPrimes R ((p i.succ) ⧸ (Submodule.comap (p i.succ).subtype (p (Fin.castSucc i)))) := by
+    associatedPrimes R ((p i.succ) ⧸ (Submodule.comap (p i.succ).subtype (p i.castSucc))) := by
   rw [← LinearEquiv.AssociatedPrimes.eq (Submodule.topEquiv), ← h_last]
   clear h_last
   induction p using RelSeries.inductionOn'
@@ -283,7 +295,8 @@ lemma AssociatedPrimes.subset_iUnion_quotient (p : LTSeries (Submodule R M)) (h_
     simp only [Set.mem_union, Set.mem_iUnion, RelSeries.snoc_length] at hx ⊢
     rcases hx with (⟨i, hx⟩ | hx)
     · refine ⟨i.castSucc, ?_⟩
-      rw [Fin.succ_castSucc, RelSeries.snoc_castSucc p N hN i.succ, RelSeries.snoc_castSucc p N hN i.castSucc]
+      rw [Fin.succ_castSucc, RelSeries.snoc_castSucc p N hN i.succ,
+        RelSeries.snoc_castSucc p N hN i.castSucc]
       exact hx
     · refine ⟨Fin.last _, ?_⟩
       have : (p.snoc N hN).toFun (Fin.last p.length).castSucc = p.last := by
@@ -295,12 +308,15 @@ lemma AssociatedPrimes.subset_iUnion_quotient (p : LTSeries (Submodule R M)) (h_
       rw [RelSeries.last_snoc', this]
       exact hx
 
-theorem AssociatedPrimes.of_quotient_iso_quotient_prime (p : LTSeries (Submodule R M)) (h_head : p.head = ⊥)
-    (h_last : p.last = ⊤) (P : Fin p.length → Ideal R) (hPprime : ∀ (i : Fin p.length), (P i).IsPrime)
-    (hP : ∀ (i : Fin p.length), Nonempty
-      (((p i.succ) ⧸ (Submodule.comap (p i.succ).subtype (p (Fin.castSucc i)))) ≃ₗ[R] (R ⧸ (P i)))) :
+theorem AssociatedPrimes.of_quotient_iso_quotient_prime (p : LTSeries (Submodule R M))
+    (h_head : p.head = ⊥) (h_last : p.last = ⊤) (P : Fin p.length → Ideal R)
+    (hPprime : ∀ (i : Fin p.length), (P i).IsPrime) (hP : ∀ (i : Fin p.length),
+      Nonempty (((p i.succ) ⧸ (Submodule.comap (p i.succ).subtype (p (Fin.castSucc i))))
+        ≃ₗ[R] (R ⧸ (P i)))) :
     (associatedPrimes R M) ⊆ P '' Set.univ := by
-  have heq1 : ∀ (i : Fin p.length), associatedPrimes R ((p i.succ) ⧸ (Submodule.comap (p i.succ).subtype (p (Fin.castSucc i)))) = associatedPrimes R (R ⧸ (P i)) := by
+  have heq1 : ∀ (i : Fin p.length),
+    associatedPrimes R ((p i.succ) ⧸(Submodule.comap (p i.succ).subtype (p (Fin.castSucc i)))) =
+    associatedPrimes R (R ⧸ (P i)) := by
     intro i
     let e := Classical.choice (hP i)
     exact LinearEquiv.AssociatedPrimes.eq e
@@ -334,7 +350,8 @@ theorem exists_LTSeries_quotient_cyclic:
     ∀ (i : Fin p.length), ∃ P : Ideal R, Nonempty (
     ((p i.succ) ⧸ (Submodule.comap (p i.succ).subtype (p (Fin.castSucc i)))) ≃ₗ[R] (R ⧸ P))
   show P (ModuleCat.of R M)
-  have P_zero : ∀ (N : ModuleCat.{v, u} R), Subsingleton N → P N := fun _ _ ↦ ⟨⟨0, fun i ↦ ⊥, fun i ↦ Fin.elim0 i⟩,
+  have P_zero (N : ModuleCat.{v, u} R) : Subsingleton N → P N :=
+    fun _ ↦ ⟨⟨0, fun i ↦ ⊥, fun i ↦ Fin.elim0 i⟩,
       ⟨rfl, ⟨Submodule.eq_bot_of_subsingleton.symm, fun i ↦ Fin.elim0 i⟩⟩⟩
   have P_base : ∀ (N : ModuleCat.{v, u} R), (⊤ : Submodule R N).IsPrincipal → P N := by
     rintro N ⟨a, hN⟩
@@ -349,14 +366,16 @@ theorem exists_LTSeries_quotient_cyclic:
     · exact ⟨⟨0, fun i ↦ ⊥, fun i ↦ Fin.elim0 i⟩,
       ⟨rfl, ⟨subsingleton_iff_bot_eq_top.2 <|
         not_nontrivial_iff_subsingleton.1 htri, fun i ↦ Fin.elim0 i⟩⟩⟩
-  have P_ext : ∀ (M : ModuleCat.{v, u} R), ∀ (N : Submodule R M), P (ModuleCat.of R N) → P (ModuleCat.of R (M ⧸ N)) → P M := by
-    rintro M N ⟨pN, hpN1, hpN2, hpN3⟩ ⟨pMN, hpMN1, hpMN2, hpMN3⟩
+  have P_ext (M : ModuleCat.{v, u} R) (N : Submodule R M) : P (ModuleCat.of R N) →
+    P (ModuleCat.of R (M ⧸ N)) → P M := by
+    rintro ⟨pN, hpN1, hpN2, hpN3⟩ ⟨pMN, hpMN1, hpMN2, hpMN3⟩
     let q : M →ₗ[R] M ⧸ N := Submodule.mkQ N
     let pN' : LTSeries (Submodule R M) := (LTSeries.map pN (Submodule.map (Submodule.subtype N))
       (Submodule.map_strictMono_of_injective <| Submodule.subtype_injective _))
     let pMN' : LTSeries (Submodule R M) := LTSeries.map pMN (Submodule.comap (Submodule.mkQ N))
       (Submodule.comap_strictMono_of_surjective <| Submodule.mkQ_surjective N)
-    refine ⟨RelSeries.smash pN' pMN' (by simp [pN', pMN', hpN2, hpMN1]), by simp [pN', hpN1], by simp [pMN', hpMN2], ?_⟩
+    refine ⟨RelSeries.smash pN' pMN' (by simp [pN', pMN', hpN2, hpMN1]), by simp [pN', hpN1],
+      by simp [pMN', hpMN2], ?_⟩
     apply RelSeries_smash_helper (α := Submodule R M) (s := fun M1 M2 ↦ ∃ P : Ideal R,
       Nonempty ((M2 ⧸ (Submodule.comap M2.subtype M1)) ≃ₗ[R] (R ⧸ P)))
     · intro i
@@ -381,17 +400,21 @@ theorem exists_LTSeries_quotient_iso_quotient_prime [IsNoetherianRing R] :
     ∀ (i : Fin p.length), ∃ P : Ideal R, P.IsPrime ∧ Nonempty (
     ((p i.succ) ⧸ (Submodule.comap (p i.succ).subtype (p (Fin.castSucc i)))) ≃ₗ[R] (R ⧸ P))
   show P (ModuleCat.of R M)
-  have P_zero : ∀ (N : ModuleCat.{v, u} R), Subsingleton N → P N := fun _ _ ↦ ⟨⟨0, fun i ↦ ⊥, fun i ↦ Fin.elim0 i⟩,
-    ⟨rfl, ⟨Submodule.eq_bot_of_subsingleton.symm, fun i ↦ Fin.elim0 i⟩⟩⟩
-  have P_ext : ∀ (M : ModuleCat.{v, u} R), ∀ (N : Submodule R M), P (ModuleCat.of R N) → P (ModuleCat.of R (M ⧸ N)) → P M := by
+  have P_zero (N : ModuleCat.{v, u} R) : Subsingleton N → P N := fun _ ↦
+    ⟨⟨0, fun i ↦ ⊥, fun i ↦ Fin.elim0 i⟩,
+      ⟨rfl, ⟨Submodule.eq_bot_of_subsingleton.symm, fun i ↦ Fin.elim0 i⟩⟩⟩
+  have P_ext : ∀ (M : ModuleCat.{v, u} R), ∀ (N : Submodule R M), P (ModuleCat.of R N) →
+    P (ModuleCat.of R (M ⧸ N)) → P M := by
     rintro M N ⟨pN, hpN1, hpN2, hpN3⟩ ⟨pMN, hpMN1, hpMN2, hpMN3⟩
     let q : M →ₗ[R] M ⧸ N := Submodule.mkQ N
     let pN' : LTSeries (Submodule R M) := (LTSeries.map pN (Submodule.map (Submodule.subtype N))
       (Submodule.map_strictMono_of_injective <| Submodule.subtype_injective _))
     let pMN' : LTSeries (Submodule R M) := LTSeries.map pMN (Submodule.comap (Submodule.mkQ N))
       (Submodule.comap_strictMono_of_surjective <| Submodule.mkQ_surjective N)
-    refine ⟨RelSeries.smash pN' pMN' (by simp [pN', pMN', hpN2, hpMN1]), by simp [pN', hpN1], by simp [pMN', hpMN2], ?_⟩
-    apply RelSeries_smash_helper (α := Submodule R M) (s := fun M1 M2 ↦ ∃ P : Ideal R, P.IsPrime ∧ Nonempty ((M2 ⧸ (Submodule.comap M2.subtype M1)) ≃ₗ[R] (R ⧸ P)))
+    refine ⟨RelSeries.smash pN' pMN' (by simp [pN', pMN', hpN2, hpMN1]), by simp [pN', hpN1],
+      by simp [pMN', hpMN2], ?_⟩
+    apply RelSeries_smash_helper (α := Submodule R M) (s := fun M1 M2 ↦ ∃ P : Ideal R, P.IsPrime ∧
+      Nonempty ((M2 ⧸ (Submodule.comap M2.subtype M1)) ≃ₗ[R] (R ⧸ P)))
     · intro i
       obtain ⟨P, hP, ⟨hP'⟩⟩ := hpN3 i
       refine ⟨P, hP, ⟨LinearEquiv.trans (show (_ ≃ₗ[R] _) from ?_) hP'⟩⟩
@@ -451,7 +474,8 @@ theorem exists_LTSeries_quotient_iso_quotient_prime [IsNoetherianRing R] :
               use y
               rw [smul_smul, ← Ideal.mem_torsionOf_iff, ← Ideal.mem_torsionOf_iff, hI]
               exact ⟨hxy, hy⟩
-        · refine ih (Ideal.torsionOf R (N ⧸ N') (N'.mkQ a)) ?_ (ModuleCat.of R (N ⧸ N')) (N'.mkQ a) ?_ rfl
+        · refine ih (Ideal.torsionOf R (N ⧸ N') (N'.mkQ a)) ?_ (ModuleCat.of R (N ⧸ N'))
+            (N'.mkQ a) ?_ rfl
           · rw [← hI, lt_iff_le_not_le]
             constructor
             · intro z hz
@@ -472,10 +496,11 @@ theorem exists_LTSeries_quotient_iso_quotient_prime [IsNoetherianRing R] :
             exact ⟨b, by rw [← hz, ← hb, map_smul]⟩
   exact fg_induction P P_zero P_base P_ext _ inferInstance
 
-theorem AssociatedPrimes.finite_of_noetherian [IsNoetherianRing R] : (associatedPrimes R M).Finite := by
+theorem AssociatedPrimes.finite_of_noetherian [IsNoetherianRing R] :
+    (associatedPrimes R M).Finite := by
   obtain ⟨p, h_head, h_tail, h⟩:= exists_LTSeries_quotient_iso_quotient_prime R M
   choose P h1 h2 using h
-  refine Set.Finite.subset ?_ (AssociatedPrimes.of_quotient_iso_quotient_prime R M p h_head h_tail P h1 h2)
-  exact Set.toFinite (P '' Set.univ)
+  exact Set.Finite.subset (Set.toFinite (P '' Set.univ))
+    (AssociatedPrimes.of_quotient_iso_quotient_prime R M p h_head h_tail P h1 h2)
 
 end noetherian
