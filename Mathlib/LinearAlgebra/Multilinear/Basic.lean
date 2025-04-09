@@ -3,9 +3,10 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.NoZeroSMulDivisors.Pi
 import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.LinearAlgebra.Pi
@@ -105,6 +106,19 @@ instance : FunLike (MultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
 
 initialize_simps_projections MultilinearMap (toFun → apply)
 
+/-- Constructor for `MultilinearMap R M₁ M₂` when the
+index type `ι` is already endowed with a `DecidableEq` instance. -/
+@[simps]
+def mk' [DecidableEq ι] (f : (∀ i, M₁ i) → M₂)
+    (h₁ : ∀ (m : ∀ i, M₁ i) (i : ι) (x y : M₁ i),
+      f (update m i (x + y)) = f (update m i x) + f (update m i y) := by aesop)
+    (h₂ : ∀ (m : ∀ i, M₁ i) (i : ι) (c : R) (x : M₁ i),
+      f (update m i (c • x)) = c • f (update m i x) := by aesop) :
+    MultilinearMap R M₁ M₂ where
+  toFun := f
+  map_update_add' m i x y := by convert h₁ m i x y
+  map_update_smul' m i c x := by convert h₂ m i c x
+
 @[simp]
 theorem toFun_eq_coe : f.toFun = ⇑f :=
   rfl
@@ -154,7 +168,7 @@ protected theorem map_update_smul [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) 
 theorem map_coord_zero {m : ∀ i, M₁ i} (i : ι) (h : m i = 0) : f m = 0 := by
   classical
     have : (0 : R) • (0 : M₁ i) = 0 := by simp
-    rw [← update_eq_self i m, h, ← this, f.map_update_smul, zero_smul R (M := M₂)]
+    rw [← update_eq_self i m, h, ← this, f.map_update_smul, zero_smul]
 
 @[simp]
 theorem map_update_zero [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) : f (update m i 0) = 0 :=
@@ -265,7 +279,7 @@ def ofSubsingleton [Subsingleton ι] (i : ι) :
 variable (M₁) {M₂}
 
 /-- The constant map is multilinear when `ι` is empty. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def constOfIsEmpty [IsEmpty ι] (m : M₂) : MultilinearMap R M₁ M₂ where
   toFun := Function.const _ m
   map_update_add' _ := isEmptyElim
@@ -284,15 +298,11 @@ def restr {k n : ℕ} (f : MultilinearMap R (fun _ : Fin n => M') M₂) (s : Fin
   /- Porting note: The proofs of the following two lemmas used to only use `erw` followed by `simp`,
   but it seems `erw` no longer unfolds or unifies well enough to work without more help. -/
   map_update_add' v i x y := by
-    have : DFunLike.coe (s.orderIsoOfFin hk).symm = (s.orderIsoOfFin hk).toEquiv.symm := rfl
-    simp only [this]
     erw [dite_comp_equiv_update (s.orderIsoOfFin hk).toEquiv,
       dite_comp_equiv_update (s.orderIsoOfFin hk).toEquiv,
       dite_comp_equiv_update (s.orderIsoOfFin hk).toEquiv]
     simp
   map_update_smul' v i c x := by
-    have : DFunLike.coe (s.orderIsoOfFin hk).symm = (s.orderIsoOfFin hk).toEquiv.symm := rfl
-    simp only [this]
     erw [dite_comp_equiv_update (s.orderIsoOfFin hk).toEquiv,
       dite_comp_equiv_update (s.orderIsoOfFin hk).toEquiv]
     simp
@@ -729,12 +739,10 @@ def domDomRestrict (f : MultilinearMap R M₁ M₂) (P : ι → Prop) [Decidable
   toFun x := f (fun j ↦ if h : P j then x ⟨j, h⟩ else z ⟨j, h⟩)
   map_update_add' x i a b := by
     classical
-    simp only
     repeat (rw [domDomRestrict_aux])
     simp only [MultilinearMap.map_update_add]
   map_update_smul' z i c a := by
     classical
-    simp only
     repeat (rw [domDomRestrict_aux])
     simp only [MultilinearMap.map_update_smul]
 
@@ -789,7 +797,7 @@ theorem compMultilinearMap_zero (g : M₂ →ₗ[R] M₃) :
   MultilinearMap.ext fun _ => map_zero g
 
 @[simp]
-theorem zero_compMultilinearMap (f: MultilinearMap R M₁ M₂) :
+theorem zero_compMultilinearMap (f : MultilinearMap R M₁ M₂) :
     (0 : M₂ →ₗ[R] M₃).compMultilinearMap f = 0 := rfl
 
 @[simp]
@@ -798,7 +806,7 @@ theorem compMultilinearMap_add (g : M₂ →ₗ[R] M₃) (f₁ f₂ : Multilinea
   MultilinearMap.ext fun _ => map_add g _ _
 
 @[simp]
-theorem add_compMultilinearMap (g₁ g₂ : M₂ →ₗ[R] M₃) (f: MultilinearMap R M₁ M₂) :
+theorem add_compMultilinearMap (g₁ g₂ : M₂ →ₗ[R] M₃) (f : MultilinearMap R M₁ M₂) :
     (g₁ + g₂).compMultilinearMap f = g₁.compMultilinearMap f + g₂.compMultilinearMap f := rfl
 
 @[simp]
@@ -1142,19 +1150,15 @@ to `m` the product of all the `m i`.
 
 See also `MultilinearMap.mkPiAlgebra` for a version that assumes `[CommSemiring A]` but works
 for `A^ι` with any finite type `ι`. -/
-protected def mkPiAlgebraFin : MultilinearMap R (fun _ : Fin n => A) A where
-  toFun m := (List.ofFn m).prod
-  map_update_add' {dec} m i x y := by
-    rw [Subsingleton.elim dec (by infer_instance)]
-    have : (List.finRange n).idxOf i < n := by
-      simpa using List.idxOf_lt_length_iff.2 (List.mem_finRange i)
-    simp [List.ofFn_eq_map, (List.nodup_finRange n).map_update, List.prod_set, add_mul, this,
-      mul_add, add_mul]
-  map_update_smul' {dec} m i c x := by
-    rw [Subsingleton.elim dec (by infer_instance)]
-    have : (List.finRange n).idxOf i < n := by
-      simpa using List.idxOf_lt_length_iff.2 (List.mem_finRange i)
-    simp [List.ofFn_eq_map, (List.nodup_finRange n).map_update, List.prod_set, this]
+protected def mkPiAlgebraFin : MultilinearMap R (fun _ : Fin n => A) A :=
+  MultilinearMap.mk' (fun m ↦ (List.ofFn m).prod)
+    (fun m i x y ↦ by
+      have : (List.finRange n).idxOf i < n := by simp
+      simp [List.ofFn_eq_map, (List.nodup_finRange n).map_update, List.prod_set, add_mul, this,
+        mul_add, add_mul])
+    (fun m i c x ↦ by
+      have : (List.finRange n).idxOf i < n := by simp
+      simp [List.ofFn_eq_map, (List.nodup_finRange n).map_update, List.prod_set, this])
 
 variable {R A n}
 

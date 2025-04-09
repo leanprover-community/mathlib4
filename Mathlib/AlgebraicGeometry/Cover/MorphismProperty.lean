@@ -301,6 +301,7 @@ structure AffineCover (P : MorphismProperty Scheme.{u}) (X : Scheme.{u}) where
 /-- The cover associated to an affine cover. -/
 @[simps]
 def AffineCover.cover {X : Scheme.{u}} (𝒰 : X.AffineCover P) : X.Cover P where
+  obj j := Spec (𝒰.obj j)
   J := 𝒰.J
   map := 𝒰.map
   f := 𝒰.f
