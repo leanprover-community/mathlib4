@@ -6,14 +6,23 @@ Authors: Xavier Roblot
 import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
 
 /-!
-# CM extension of number fields
+# CM-extension of number fields
 
 A CM-extension of number fields is a totally complex number field that is a quadratic extension of
 a totally real number field.
 
 ## Main definitions
 
-* `IsCM`: a predicate on two number fields `F` and `K` stating that `K/F` is a CM-extension.
+* `IsCMExtension`: a Prop on two number fields `F` and `K` stating that `K/F` is a CM-extension.
+
+* `IsCM`: a Prop on a number field `K` stating that there exists a subfield `F` such that `K/F` is
+  a CM-extension
+
+## Implementation notes
+
+Let `K` be a field such that `IsCM K`. Then `K` is a CM-extension over its real maximal subfield.
+However, we keep `IsCMExtension` for flexibility since it gives us the possibility to consider `K`
+as a CM-extension over some other field.
 
 -/
 
@@ -21,7 +30,7 @@ open NumberField InfinitePlace ComplexEmbedding
 
 namespace NumberField
 
-section maximalRealSubfield
+section MaximalRealSubfield
 
 variable (F K : Type*) [Field F] [Field K] [Algebra F K]
 
@@ -91,33 +100,41 @@ theorem two_le_finrank_maximalRealSubfield [FiniteDimensional F K] {φ : K →+*
   rw [← h, isConj_one_iff] at hσ
   exact hφ hσ
 
-end maximalRealSubfield
+end MaximalRealSubfield
 
 /--
 An extension `K/F` of number fields is a `CM`-extension if `K` is totally complex, `F` is totally
 real and the extension `K/F` is of degree `2`.
 -/
-class IsCM (F K : Type*) [Field F] [NumberField F] [Field K] [NumberField K]
+class IsCMExtension (F K : Type*) [Field F] [NumberField F] [Field K] [NumberField K]
     [Algebra F K] : Prop
   extends IsTotallyReal F, IsTotallyComplex K where
   finrank_eq_two' : Module.finrank F K = 2
 
-namespace IsCM
+/--
+A field `K` is `CM` if it admits a subfield `F` such that `IsCMExtension F K`.
+In this case, one can take `F` to be the maximal real subfield of `K`.
+-/
+class IsCM (K : Type*) [Field K] [NumberField K] : Prop where
+  exists_CMExtension :
+    ∃ (F : Type*) (_ : Field F) (_ : NumberField F) (_ : Algebra F K), IsCMExtension F K
+
+namespace IsCMExtension
 
 variable (F K : Type*) [Field F] [NumberField F] [Field K] [NumberField K] [Algebra F K]
 
-theorem isTotallyComplex [IsCM F K] :
+theorem isTotallyComplex [IsCMExtension F K] :
     IsTotallyComplex K := toIsTotallyComplex F
 
-theorem isTotallyReal [IsCM F K] :
+theorem isTotallyReal [IsCMExtension F K] :
     IsTotallyReal F := toIsTotallyReal K
 
-theorem finrank_eq_two [IsCM F K] :
+theorem finrank_eq_two [IsCMExtension F K] :
     Module.finrank F K = 2 := finrank_eq_two'
 
-section first_results
+section FirstResults
 
-variable [IsCM F K]
+variable [IsCMExtension F K]
 
 instance : IsGalois F K :=
 { to_isSeparable := Algebra.IsSeparable.of_integral _ _
@@ -138,16 +155,16 @@ theorem units_rank_eq_units_rank :
 variable {F K} in
 theorem ofRingEquiv {E : Type*} [Field E] [NumberField E] [Algebra E K] {f : E ≃+* F}
     (hf : (algebraMap F K).comp f = algebraMap E K) :
-    IsCM E K where
+    IsCMExtension E K where
   isReal := fun v ↦ (IsTotallyReal.ofRingEquiv f.symm).isReal v
   finrank_eq_two' := by
-    rw [← IsCM.finrank_eq_two (F := F) (K := K)]
+    rw [← IsCMExtension.finrank_eq_two (F := F) (K := K)]
     exact congr_arg Cardinal.toNat <|
       Algebra.rank_eq_of_equiv_equiv f (RingEquiv.refl K) (by simp [hf])
 
-end first_results
+end FirstResults
 
-noncomputable section complexConj
+noncomputable section ComplexConj
 
 variable (F : Type*) {K : Type*} [Field F] [Field K] [NumberField K] [Algebra F K]
 
@@ -162,14 +179,14 @@ theorem exists_isConj [IsTotallyReal F] [IsTotallyComplex K] [IsGalois F K] (φ 
   exists_isConj_of_not_isUnramified <|
     not_isUnramified_iff.mpr ⟨IsTotallyComplex.isComplex _, IsTotallyReal.isReal _⟩
 
-end complexConj
+end ComplexConj
 
-noncomputable section maximalRealSubfield
+noncomputable section MaximalRealSubfield
 
 variable {F K : Type*} [Field F] [NumberField F] [Field K] [NumberField K] [Algebra F K]
   [IsTotallyReal F] [IsTotallyComplex K]
 
-theorem eq_maximalRealSubfield (E : IntermediateField ℚ K) [h : IsCM E K] :
+theorem eq_maximalRealSubfield (E : IntermediateField ℚ K) [h : IsCMExtension E K] :
     E = maximalRealSubfield ℚ K := by
   refine IntermediateField.eq_of_le_of_finrank_le' ?_ ?_
   · exact IsTotallyReal.le_maximalRealSubfield h.toIsTotallyReal
@@ -179,21 +196,36 @@ theorem eq_maximalRealSubfield (E : IntermediateField ℚ K) [h : IsCM E K] :
     refine two_le_finrank_maximalRealSubfield ℚ K (σ := σ.restrictScalars ℚ) ?_ hσ
     exact isComplex_mk_iff.mp <| IsTotallyComplex.isComplex _
 
+variable (F K) in
 /--
-Any field `F` such that `K/F` is a CM-extension is isomorphic as `ℚ`-algebra to the maximal
+Any field `F` such that `K/F` is a CM-extension is isomorphic as a ring to the maximal
 real subfield of `K/ℚ`.
 -/
-def equivMaximalRealSubfield [h : IsCM F K] :
-    F ≃ₐ[ℚ] maximalRealSubfield ℚ K := by
+def maximalRealSubfieldEquiv [h : IsCMExtension F K] :
+    maximalRealSubfield ℚ K ≃+* F := by
   let E := AlgHom.fieldRange (algebraMap F K).toRatAlgHom
-  have hE : IsCM E K := by
+  have hE : IsCMExtension E K := by
       refine ofRingEquiv (F := F) (f := (algebraMap F K).rangeRestrictFieldEquiv.symm) ?_
       exact RingHom.ext fun x ↦ (algebraMap F K).rangeRestrictFieldEquiv_apply_symm_apply x
-  exact (algebraMap F K).rangeRestrictFieldEquiv.toRatAlgEquiv.trans <|
-    IntermediateField.equivOfEq hE.eq_maximalRealSubfield
+  exact ((algebraMap F K).rangeRestrictFieldEquiv.trans <|
+    (IntermediateField.equivOfEq hE.eq_maximalRealSubfield).toRingEquiv).symm
 
-end maximalRealSubfield
+omit [IsTotallyReal F] in
+@[simp]
+theorem algebraMap_maximalRealSubfieldEquiv [h : IsCMExtension F K] (x : maximalRealSubfield ℚ K) :
+   algebraMap F K (maximalRealSubfieldEquiv F K x) = x := by
+  unfold maximalRealSubfieldEquiv
+  rw [RingEquiv.symm_trans_apply, AlgEquiv.toRingEquiv_eq_coe,
+    RingHom.rangeRestrictFieldEquiv_apply_symm_apply]
+  rfl
 
-end IsCM
+instance over_realMaximalSubfield [h : IsCM K] :
+    IsCMExtension (maximalRealSubfield ℚ K) K := by
+  obtain ⟨F, _, _, _, _⟩ := h.exists_CMExtension
+  exact ofRingEquiv (f := maximalRealSubfieldEquiv F K) (by ext; simp)
+
+end MaximalRealSubfield
+
+end IsCMExtension
 
 end NumberField
