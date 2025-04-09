@@ -217,6 +217,7 @@ open Limits
 
 variable {Z : SSet.Truncated.{u} 2}
 
+variable (Z) in
 /-- The spine of a 2-simplex of a 2-truncated simplicial set valued in a product rather than
 in paths. -/
 noncomputable def segalSpine : Z _⦋2⦌₂ ⟶ Z _⦋1⦌₂ ⨯ Z _⦋1⦌₂ :=
@@ -227,36 +228,37 @@ theorem StrictSegal.spineMonic (sz : StrictSegal Z) :
   (CategoryTheory.mono_iff_injective _).mpr (StrictSegal.spineInjective sz 2 _)
 
 instance [IsStrictSegal Z] :
-      Mono (Y := Path Z 2) (Z.spine 2 (by omega)) :=
+    Mono (Y := Path Z 2) (Z.spine 2 (by omega)) :=
   StrictSegal.spineMonic (Truncated.StrictSegal.ofIsStrictSegal Z)
 
+variable (Z) in
 /-- Paths of length two in a 2-truncated simplicial set include into pairs of 1-simplices. -/
 noncomputable def pathToPair : Path Z 2 ⟶ Z _⦋1⦌₂ ⨯ Z _⦋1⦌₂ :=
   prod.lift (fun p ↦ p.arrow 0) (fun p ↦ p.arrow 1)
 
 lemma pathToPair_fst :
-    pathToPair ≫ (prod.fst (X := Z _⦋1⦌₂) (Y := Z _⦋1⦌₂)) = (fun p ↦ p.arrow 0) := by
+    pathToPair _ ≫ (prod.fst (X := Z _⦋1⦌₂) (Y := Z _⦋1⦌₂)) = (fun p ↦ p.arrow 0) := by
   dsimp [pathToPair]
   simp only [limit.lift_π, BinaryFan.mk_fst]
 
 lemma pathToPair_snd :
-    pathToPair ≫ (prod.snd (X := Z _⦋1⦌₂) (Y := Z _⦋1⦌₂)) = (fun p ↦ p.arrow 1) := by
+    pathToPair _ ≫ (prod.snd (X := Z _⦋1⦌₂) (Y := Z _⦋1⦌₂)) = (fun p ↦ p.arrow 1) := by
   dsimp [pathToPair]
   simp only [limit.lift_π, BinaryFan.mk_snd]
 
 lemma pathToPair_fst_apply (p : Path Z 2) :
-    (prod.fst (X := Z _⦋1⦌₂) (Y := Z _⦋1⦌₂)) (pathToPair p) = p.arrow 0 := by
+    (prod.fst (X := Z _⦋1⦌₂) (Y := Z _⦋1⦌₂)) (pathToPair _ p) = p.arrow 0 := by
   have := congr_fun pathToPair_fst p
   simp only [types_comp_apply] at this
   exact this
 
 lemma pathToPair_snd_apply (p : Path Z 2) :
-    (prod.snd (X := Z _⦋1⦌₂) (Y := Z _⦋1⦌₂)) (pathToPair p) = p.arrow 1 := by
+    (prod.snd (X := Z _⦋1⦌₂) (Y := Z _⦋1⦌₂)) (pathToPair _ p) = p.arrow 1 := by
   have := congr_fun pathToPair_snd p
   simp only [types_comp_apply] at this
   exact this
 
-theorem segalSpine_eq : segalSpine (Z := Z) = (Z.spine 2) ≫ pathToPair := by
+theorem segalSpine_eq : segalSpine (Z := Z) = (Z.spine 2) ≫ pathToPair _ := by
   unfold segalSpine pathToPair
   refine Limits.prod.hom_ext ?_ ?_
   · simp only [limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_left, BinaryFan.mk_fst,
@@ -272,19 +274,16 @@ theorem segalSpine_eq : segalSpine (Z := Z) = (Z.spine 2) ≫ pathToPair := by
     rw [δ_zero_eq_mkOfSucc]
     congr!
 
-theorem StrictSegal.segalSpineMono (sz : StrictSegal Z) : Mono (segalSpine (Z := Z)) := by
-  apply (CategoryTheory.mono_iff_injective _).mpr
-  rw [segalSpine_eq]
+theorem StrictSegal.segalSpineMono (sz : StrictSegal Z) : Mono (segalSpine Z) := by
+  rw [CategoryTheory.mono_iff_injective, segalSpine_eq]
   refine Function.Injective.comp ?_ (StrictSegal.spineInjective sz 2)
   · intro p q hyp
     ext i
     fin_cases i
-    · have eq1 := congrArg (prod.fst (X := Z _⦋1⦌₂) (Y := Z _⦋1⦌₂)) hyp
-      rw [pathToPair_fst_apply, pathToPair_fst_apply] at eq1
-      exact eq1
-    · have eq2 := congrArg (prod.snd (X := Z _⦋1⦌₂) (Y := Z _⦋1⦌₂)) hyp
-      rw [pathToPair_snd_apply, pathToPair_snd_apply] at eq2
-      exact eq2
+    · apply_fun (prod.fst (X := Z _⦋1⦌₂)) at hyp
+      rwa [pathToPair_fst_apply, pathToPair_fst_apply] at hyp
+    · apply_fun (prod.snd (X := Z _⦋1⦌₂)) at hyp
+      rwa [pathToPair_snd_apply, pathToPair_snd_apply] at hyp
 
 instance [IsStrictSegal Z] : Mono (segalSpine (Z := Z)) :=
   StrictSegal.segalSpineMono (StrictSegal.ofIsStrictSegal Z)
