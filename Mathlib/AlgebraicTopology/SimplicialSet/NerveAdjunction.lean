@@ -199,7 +199,7 @@ lemma toStrictSegal₂.mk_naturality_δ1i (i : Fin 3) :
 
 lemma toStrictSegal₂.mk_naturality_σ1i (i : Fin 2) :
     toStrictSegal₂.mk.naturalityProperty sy F (σ₂ i) := by
-  have : Mono (segalSpine (Z := Y)) := by exact strictSegalSpineMono sy
+  have : Mono (segalSpine (Z := Y)) := StrictSegal.segalSpineMono sy
   apply (cancel_mono (segalSpine (Z := Y)) ).1
   simp only [segalSpine, prod.comp_lift, assoc]
   congr 1 <;> rw [← map_comp]
@@ -464,10 +464,10 @@ section
 
 variable (F : SSet.oneTruncation₂.obj X ⟶ SSet.oneTruncation₂.obj (nerveFunctor₂.obj (Cat.of C)))
 variable (hyp : (φ : X _⦋2⦌₂) →
-            (F ≫ (OneTruncation₂.ofNerve₂.natIso.app (Cat.of C)).hom).map (ev02₂ φ) =
+            (F ⋙rq (OneTruncation₂.ofNerve₂.natIso.app (Cat.of C)).hom).map (ev02₂ φ) =
               CategoryStruct.comp (obj := C)
-              ((F ≫ (OneTruncation₂.ofNerve₂.natIso.app (Cat.of C)).hom).map (ev01₂ φ))
-              ((F ≫ (OneTruncation₂.ofNerve₂.natIso.app (Cat.of C)).hom).map (ev12₂ φ)))
+              ((F ⋙rq (OneTruncation₂.ofNerve₂.natIso.app (Cat.of C)).hom).map (ev01₂ φ))
+              ((F ⋙rq (OneTruncation₂.ofNerve₂.natIso.app (Cat.of C)).hom).map (ev12₂ φ)))
 
 /-- An alternate version of `toNerve₂.mk`, which constructs a map of 2-truncated simplicial sets
 `X ⟶ nerveFunctor₂.obj (Cat.of C)` from the underlying refl prefunctor under a composition
@@ -559,7 +559,6 @@ lemma nerve₂Adj.unit.naturality {X Y : SSet.Truncated.{u} 2} (f : X ⟶ Y) :
 def nerve₂Adj.unit : 𝟭 (SSet.Truncated.{u} 2) ⟶ hoFunctor₂ ⋙ nerveFunctor₂ where
   app := nerve₂Adj.unit.app
   naturality _ _ _ := unit.naturality _
-
 
 /-- The adjunction between the 2-truncated nerve functor and the 2-truncated homotopy category
 functor. -/

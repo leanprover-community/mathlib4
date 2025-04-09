@@ -222,8 +222,13 @@ in paths. -/
 noncomputable def segalSpine : Z _⦋2⦌₂ ⟶ Z _⦋1⦌₂ ⨯ Z _⦋1⦌₂ :=
   prod.lift (Z.map (δ 2).op) (Z.map (δ 0).op)
 
-instance (sz : StrictSegal Z) : Mono (Y := Path Z 2) (Z.spine 2 (by omega)) :=
+theorem StrictSegal.spineMonic (sz : StrictSegal Z) :
+    Mono (Y := Path Z 2) (Z.spine 2 (by omega)) :=
   (CategoryTheory.mono_iff_injective _).mpr (StrictSegal.spineInjective sz 2 _)
+
+instance [IsStrictSegal Z] :
+      Mono (Y := Path Z 2) (Z.spine 2 (by omega)) :=
+  StrictSegal.spineMonic (Truncated.StrictSegal.ofIsStrictSegal Z)
 
 /-- Paths of length two in a 2-truncated simplicial set include into pairs of 1-simplices. -/
 noncomputable def pathToPair : Path Z 2 ⟶ Z _⦋1⦌₂ ⨯ Z _⦋1⦌₂ :=
@@ -267,7 +272,7 @@ theorem segalSpine_eq : segalSpine (Z := Z) = (Z.spine 2) ≫ pathToPair := by
     rw [δ_zero_eq_mkOfSucc]
     congr!
 
-instance strictSegalSpineMono (sz : StrictSegal Z) : Mono (segalSpine (Z := Z)) := by
+theorem StrictSegal.segalSpineMono (sz : StrictSegal Z) : Mono (segalSpine (Z := Z)) := by
   apply (CategoryTheory.mono_iff_injective _).mpr
   rw [segalSpine_eq]
   refine Function.Injective.comp ?_ (StrictSegal.spineInjective sz 2)
@@ -280,6 +285,9 @@ instance strictSegalSpineMono (sz : StrictSegal Z) : Mono (segalSpine (Z := Z)) 
     · have eq2 := congrArg (prod.snd (X := Z _⦋1⦌₂) (Y := Z _⦋1⦌₂)) hyp
       rw [pathToPair_snd_apply, pathToPair_snd_apply] at eq2
       exact eq2
+
+instance [IsStrictSegal Z] : Mono (segalSpine (Z := Z)) :=
+  StrictSegal.segalSpineMono (StrictSegal.ofIsStrictSegal Z)
 
 end
 
@@ -494,6 +502,8 @@ noncomputable def strictSegal : StrictSegal (nerve C) where
 instance isStrictSegal : IsStrictSegal (nerve C) :=
   strictSegal C |>.isStrictSegal
 
+/-- Simplices in the nerve of categories are uniquely determined by their spine.
+Indeed, this property describes the essential image of the nerve functor. -/
 noncomputable def strictSegal₂ : Truncated.StrictSegal ((truncation 2).obj (nerve C)) :=
   (strictSegal C).truncation 1
 
