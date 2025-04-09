@@ -32,47 +32,6 @@ open NumberField InfinitePlace ComplexEmbedding
 
 namespace NumberField
 
-section maximalRealSubfield
-
-variable (F K : Type*) [Field F] [Field K] [Algebra F K]
-
-/--
-The intermediate field of an extension `K/F` that is fixed by all the conjugations.
-It contains all the totally real subfields of `K/F`, see `IsTotallyReal.le_maximalRealSubfield`,
-and is totally real if the extension is Galois and `F` is totally real, see
-`isTotallyReal_maximalRealSubfield`.
--/
-def maximalRealSubfield : IntermediateField F K :=
-  .fixedField (Subgroup.closure {σ : K ≃ₐ[F] K | ∃ φ : K →+* ℂ, IsConj φ σ})
-
-instance isTotallyReal_maximalRealSubfield [NumberField F] [NumberField K] [IsTotallyReal F]
-    [IsGalois F K] :
-    IsTotallyReal (maximalRealSubfield F K) where
-  isReal w := by
-    letI := w.embedding.toAlgebra
-    let φ : K →+* ℂ := (IsAlgClosed.lift (M := ℂ) (R := (maximalRealSubfield F K))).toRingHom
-    have hφ : w.embedding = φ.comp (algebraMap _ K) := by
-      unfold φ
-      rw [AlgHom.toRingHom_eq_coe, AlgHom.comp_algebraMap_of_tower, RingHom.algebraMap_toAlgebra]
-    obtain h | h := isReal_or_isComplex (.mk φ)
-    · rw [← mk_embedding w, hφ, ← comap_mk]
-      exact IsReal.comap _ h
-    · obtain ⟨σ, hσ⟩ : ∃ σ : K ≃ₐ[F] K, IsConj φ σ :=
-        exists_isConj_of_not_isUnramified <| not_isUnramified_iff.mpr ⟨h, IsTotallyReal.isReal _⟩
-      refine InfinitePlace.isReal_iff.mpr ?_
-      rw [hφ, isReal_embedding_comp_algebraMap_iff_isConj_mem hσ, maximalRealSubfield,
-        IntermediateField.fixingSubgroup_fixedField]
-      exact Subgroup.subset_closure ⟨_, hσ⟩
-
-theorem IsTotallyReal.le_maximalRealSubfield [NumberField F] [NumberField K]
-    {E : IntermediateField F K} (h : IsTotallyReal E) : E ≤ maximalRealSubfield F K := by
-  rw [maximalRealSubfield, IntermediateField.le_iff_le, Subgroup.closure_le]
-  intro σ ⟨φ, hσ⟩
-  rw [SetLike.mem_coe, ← isReal_embedding_comp_algebraMap_iff_isConj_mem hσ, ← isReal_mk_iff]
-  exact (isTotallyReal_iff _).mp h _
-
-end maximalRealSubfield
-
 /--
 An extension `K/F` of number fields is a `CM`-extension if `K` is totally complex, `F` is totally
 real and the extension `K/F` is of degree `2`.
@@ -81,12 +40,6 @@ class IsCMExtension (F K : Type*) [Field F] [NumberField F] [Field K] [NumberFie
     [Algebra F K] : Prop
   extends IsTotallyReal F, IsTotallyComplex K where
   finrank_eq_two' : Module.finrank F K = 2
-
-/--
-A field `K` is `CM` if it is a `CM`-extension over its maximal real subfield of `K`.
--/
-class IsCM (K : Type*) [Field K] [NumberField K] : Prop where
-  CMExtension : IsCMExtension (maximalRealSubfield ℚ K) K
 
 namespace IsCMExtension
 
@@ -124,5 +77,50 @@ theorem units_rank_eq_units_rank :
 end FirstResults
 
 end IsCMExtension
+
+section maximalRealSubfield
+
+variable (K : Type*) [Field K] [NumberField K]
+
+/--
+The intermediate field of an extension `K/F` that is fixed by all the conjugations.
+It contains all the totally real subfields of `K/F`, see `IsTotallyReal.le_maximalRealSubfield`,
+and is totally real if the extension is Galois and `F` is totally real, see
+`isTotallyReal_maximalRealSubfield`.
+-/
+def maximalRealSubfield : IntermediateField ℚ K :=
+  .fixedField (Subgroup.closure {σ : K ≃ₐ[ℚ] K | ∃ φ : K →+* ℂ, IsConj φ σ})
+
+/--
+A field `K` is `CM` if it is a `CM`-extension over its maximal real subfield of `K`.
+-/
+abbrev IsCM : Prop := IsCMExtension (maximalRealSubfield K) K
+
+instance isTotallyReal_maximalRealSubfield [IsGalois ℚ K] :
+    IsTotallyReal (maximalRealSubfield K) where
+  isReal w := by
+    letI := w.embedding.toAlgebra
+    let φ : K →+* ℂ := (IsAlgClosed.lift (M := ℂ) (R := (maximalRealSubfield K))).toRingHom
+    have hφ : w.embedding = φ.comp (algebraMap _ K) := by
+      unfold φ
+      rw [AlgHom.toRingHom_eq_coe, AlgHom.comp_algebraMap_of_tower, RingHom.algebraMap_toAlgebra]
+    obtain h | h := isReal_or_isComplex (.mk φ)
+    · rw [← mk_embedding w, hφ, ← comap_mk]
+      exact IsReal.comap _ h
+    · obtain ⟨σ, hσ⟩ : ∃ σ : K ≃ₐ[ℚ] K, IsConj φ σ :=
+        exists_isConj_of_not_isUnramified <| not_isUnramified_iff.mpr ⟨h, IsTotallyReal.isReal _⟩
+      refine InfinitePlace.isReal_iff.mpr ?_
+      rw [hφ, isReal_embedding_comp_algebraMap_iff_isConj_mem hσ, maximalRealSubfield,
+        IntermediateField.fixingSubgroup_fixedField]
+      exact Subgroup.subset_closure ⟨_, hσ⟩
+
+theorem IsTotallyReal.le_maximalRealSubfield {E : IntermediateField ℚ K} (h : IsTotallyReal E) :
+    E ≤ maximalRealSubfield K := by
+  rw [maximalRealSubfield, IntermediateField.le_iff_le, Subgroup.closure_le]
+  intro σ ⟨φ, hσ⟩
+  rw [SetLike.mem_coe, ← isReal_embedding_comp_algebraMap_iff_isConj_mem hσ, ← isReal_mk_iff]
+  exact (isTotallyReal_iff _).mp h _
+
+end maximalRealSubfield
 
 end NumberField
