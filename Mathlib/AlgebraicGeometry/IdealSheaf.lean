@@ -717,6 +717,7 @@ lemma Hom.support_ker (f : X.Hom Y) [QuasiCompact f] :
 end ker
 
 section subscheme
+
 namespace IdealSheafData
 
 open _root_.PrimeSpectrum Limits
