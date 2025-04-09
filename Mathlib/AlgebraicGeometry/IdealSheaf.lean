@@ -77,14 +77,6 @@ protected lemma ext {I J : X.IdealSheafData} (h : I.ideal = J.ideal) : I = J := 
   congr
   rw [hs, ht]
 
-@[reducible]
-def copy {I : X.IdealSheafData} (I' : ∀ U : X.affineOpens, Ideal Γ(X, U)) (hI' : I' = I.ideal)
-    (s : Set X) (hs : s = I.supportSet) : X.IdealSheafData where
-  ideal := I'
-  map_ideal_basicOpen := hI' ▸ I.map_ideal_basicOpen
-  supportSet := s
-  supportSet_eq_iInter_zeroLocus := hs ▸ hI' ▸ I.supportSet_eq_iInter_zeroLocus
-
 section Order
 
 instance : PartialOrder (IdealSheafData X) := PartialOrder.lift ideal fun _ _ ↦ IdealSheafData.ext
