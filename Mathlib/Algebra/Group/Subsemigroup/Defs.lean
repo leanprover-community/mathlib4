@@ -104,7 +104,7 @@ def ofClass {S M : Type*} [Mul M] [SetLike S M] [MulMemClass S M] (s : S) : Subs
   ⟨s, MulMemClass.mul_mem⟩
 
 @[to_additive]
-instance : CanLift (Set M) (Subsemigroup M) (↑)
+instance (priority := 100) : CanLift (Set M) (Subsemigroup M) (↑)
     (fun s ↦ ∀ {x y}, x ∈ s → y ∈ s → x * y ∈ s) where
   prf s h := ⟨{ carrier := s, mul_mem' := h }, rfl⟩
 

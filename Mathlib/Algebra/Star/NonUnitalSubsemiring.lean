@@ -63,7 +63,7 @@ def ofClass {S R : Type*} [NonUnitalNonAssocSemiring R] [StarRing R] [SetLike S 
   mul_mem' := mul_mem
   star_mem' := star_mem
 
-instance : CanLift (Set R) (NonUnitalStarSubsemiring R) (↑)
+instance (priority := 100) : CanLift (Set R) (NonUnitalStarSubsemiring R) (↑)
     (fun s ↦ 0 ∈ s ∧ (∀ {x y}, x ∈ s → y ∈ s → x + y ∈ s) ∧ (∀ {x y}, x ∈ s → y ∈ s → x * y ∈ s) ∧
       ∀ {x}, x ∈ s → star x ∈ s)
     where

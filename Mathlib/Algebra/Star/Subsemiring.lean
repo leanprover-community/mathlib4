@@ -45,7 +45,7 @@ def ofClass {S R : Type*} [NonAssocSemiring R] [SetLike S R] [StarRing R] [Subse
   one_mem' := one_mem _
   star_mem' := star_mem
 
-instance : CanLift (Set R) (StarSubsemiring R) (↑)
+instance (priority := 100) : CanLift (Set R) (StarSubsemiring R) (↑)
     (fun s ↦ 0 ∈ s ∧ (∀ {x y}, x ∈ s → y ∈ s → x + y ∈ s) ∧ 1 ∈ s ∧
       (∀ {x y}, x ∈ s → y ∈ s → x * y ∈ s) ∧ (∀ {x}, x ∈ s → star x ∈ s)) where
   prf s h :=

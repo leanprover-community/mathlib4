@@ -62,7 +62,7 @@ def ofClass {S R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [SetLike
   zero_mem' := zero_mem _
   smul_mem' := SMulMemClass.smul_mem
 
-instance : CanLift (Set M) (Submodule R M) (↑)
+instance (priority := 100) : CanLift (Set M) (Submodule R M) (↑)
     (fun s ↦ 0 ∈ s ∧ (∀ {x y}, x ∈ s → y ∈ s → x + y ∈ s) ∧ ∀ (r : R) {x}, x ∈ s → r • x ∈ s) where
   prf s h :=
     ⟨ { carrier := s

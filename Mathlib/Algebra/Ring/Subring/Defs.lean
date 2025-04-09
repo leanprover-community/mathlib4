@@ -177,7 +177,7 @@ def ofClass {S R : Type*} [Ring R] [SetLike S R] [SubringClass S R]
   neg_mem' := neg_mem
   one_mem' := one_mem _
 
-instance : CanLift (Set R) (Subring R) (↑)
+instance (priority := 100) : CanLift (Set R) (Subring R) (↑)
     (fun s ↦ 0 ∈ s ∧ (∀ {x y}, x ∈ s → y ∈ s → x + y ∈ s) ∧ 1 ∈ s ∧
       (∀ {x y}, x ∈ s → y ∈ s → x * y ∈ s) ∧ ∀ {x}, x ∈ s → -x ∈ s) where
   prf s h :=

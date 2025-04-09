@@ -128,7 +128,7 @@ def ofClass {S R A : Type*} [CommSemiring R] [NonUnitalNonAssocSemiring A] [Modu
   smul_mem' := SMulMemClass.smul_mem
   star_mem' := star_mem
 
-instance : CanLift (Set A) (NonUnitalStarSubalgebra R A) (↑)
+instance (priority := 100) : CanLift (Set A) (NonUnitalStarSubalgebra R A) (↑)
     (fun s ↦ 0 ∈ s ∧ (∀ {x y}, x ∈ s → y ∈ s → x + y ∈ s) ∧ (∀ {x y}, x ∈ s → y ∈ s → x * y ∈ s) ∧
       (∀ (r : R) {x}, x ∈ s → r • x ∈ s) ∧ ∀ {x}, x ∈ s → star x ∈ s) where
   prf s h :=

@@ -137,7 +137,7 @@ def ofClass {S M : Type*} [Monoid M] [SetLike S M] [SubmonoidClass S M] (s : S) 
   ⟨⟨s, MulMemClass.mul_mem⟩, OneMemClass.one_mem s⟩
 
 @[to_additive]
-instance : CanLift (Set M) (Submonoid M) (↑)
+instance (priority := 100) : CanLift (Set M) (Submonoid M) (↑)
     (fun s ↦ 1 ∈ s ∧ ∀ {x y}, x ∈ s → y ∈ s → x * y ∈ s) where
   prf s h := ⟨{ carrier := s, one_mem' := h.1, mul_mem' := h.2 }, rfl⟩
 

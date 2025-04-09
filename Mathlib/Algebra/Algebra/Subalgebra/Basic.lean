@@ -56,7 +56,7 @@ def ofClass {S R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
   algebraMap_mem' r :=
     Algebra.algebraMap_eq_smul_one (A := A) r ▸ SMulMemClass.smul_mem r (one_mem s)
 
-instance : CanLift (Set A) (Subalgebra R A) (↑)
+instance (priority := 100) : CanLift (Set A) (Subalgebra R A) (↑)
     (fun s ↦ (∀ {x y}, x ∈ s → y ∈ s → x + y ∈ s) ∧
       (∀ {x y}, x ∈ s → y ∈ s → x * y ∈ s) ∧ ∀ (r : R), algebraMap R A r ∈ s) where
   prf s h :=

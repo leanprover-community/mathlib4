@@ -87,7 +87,7 @@ def ofClass {S R A : Type*} [CommSemiring R] [NonUnitalNonAssocSemiring A] [Modu
   mul_mem' := mul_mem
   smul_mem' := SMulMemClass.smul_mem
 
-instance : CanLift (Set A) (NonUnitalSubalgebra R A) (↑)
+instance (priority := 100) : CanLift (Set A) (NonUnitalSubalgebra R A) (↑)
     (fun s ↦ 0 ∈ s ∧ (∀ {x y}, x ∈ s → y ∈ s → x + y ∈ s) ∧ (∀ {x y}, x ∈ s → y ∈ s → x * y ∈ s) ∧
       ∀ (r : R) {x}, x ∈ s → r • x ∈ s) where
   prf s h :=

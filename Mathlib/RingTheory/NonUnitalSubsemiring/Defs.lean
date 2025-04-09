@@ -114,7 +114,7 @@ def ofClass {S R : Type*} [NonUnitalNonAssocSemiring R] [SetLike S R]
   zero_mem' := zero_mem _
   mul_mem' := mul_mem
 
-instance : CanLift (Set R) (NonUnitalSubsemiring R) (↑)
+instance (priority := 100) : CanLift (Set R) (NonUnitalSubsemiring R) (↑)
     (fun s ↦ 0 ∈ s ∧ (∀ {x y}, x ∈ s → y ∈ s → x + y ∈ s) ∧ ∀ {x y}, x ∈ s → y ∈ s → x * y ∈ s)
     where
   prf s h :=

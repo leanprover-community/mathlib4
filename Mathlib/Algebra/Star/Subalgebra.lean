@@ -53,7 +53,7 @@ def ofClass {S R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [StarRin
   algebraMap_mem' := algebraMap_mem s
   star_mem' := star_mem
 
-instance : CanLift (Set A) (StarSubalgebra R A) (↑)
+instance (priority := 100) : CanLift (Set A) (StarSubalgebra R A) (↑)
     (fun s ↦ (∀ {x y}, x ∈ s → y ∈ s → x + y ∈ s) ∧ (∀ {x y}, x ∈ s → y ∈ s → x * y ∈ s) ∧
       (∀ (r : R), algebraMap R A r ∈ s) ∧ ∀ {x}, x ∈ s → star x ∈ s) where
   prf s h :=

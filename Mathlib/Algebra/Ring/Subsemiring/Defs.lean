@@ -151,7 +151,7 @@ def ofClass {S R : Type*} [NonAssocSemiring R] [SetLike S R] [SubsemiringClass S
   mul_mem' := mul_mem
   one_mem' := one_mem _
 
-instance : CanLift (Set R) (Subsemiring R) (↑)
+instance (priority := 100) : CanLift (Set R) (Subsemiring R) (↑)
     (fun s ↦ 0 ∈ s ∧ (∀ {x y}, x ∈ s → y ∈ s → x + y ∈ s) ∧ 1 ∈ s ∧
       ∀ {x y}, x ∈ s → y ∈ s → x * y ∈ s) where
   prf s h :=
