@@ -1156,6 +1156,10 @@ theorem induce_mono_left (hg : G' ≤ G'') : G'.induce s ≤ G''.induce s :=
 theorem induce_mono_right (hs : s ⊆ s') : G'.induce s ≤ G'.induce s' :=
   induce_mono le_rfl hs
 
+@[gcongr]
+theorem induce_congr_right (hs : s = s') : G'.induce s = G'.induce s' := by
+  rw [hs]
+
 @[simp]
 theorem induce_empty : G'.induce ∅ = ⊥ := by
   ext <;> simp
