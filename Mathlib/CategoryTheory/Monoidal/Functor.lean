@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.Products.Basic
 /-!
 # (Lax) monoidal functors
 
-A lax monoidal functor `F` between monoidal categories `C` and `D`
+A lax monoidal functor `F` between (pre)monoidal categories `C` and `D`
 is a functor between the underlying categories equipped with morphisms
 * `ε : 𝟙_ D ⟶ F.obj (𝟙_ C)` (called the unit morphism)
 * `μ X Y : (F.obj X) ⊗ (F.obj Y) ⟶ F.obj (X ⊗ Y)` (called the tensorator, or strength).
@@ -42,9 +42,9 @@ namespace CategoryTheory
 
 open Category Functor MonoidalCategory
 
-variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
-  {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
-  {E : Type u₃} [Category.{v₃} E] [MonoidalCategory.{v₃} E]
+variable {C : Type u₁} [Category.{v₁} C] [PremonoidalCategory.{v₁} C]
+  {D : Type u₂} [Category.{v₂} D] [PremonoidalCategory.{v₂} D]
+  {E : Type u₃} [Category.{v₃} E] [PremonoidalCategory.{v₃} E]
   {C' : Type u₁'} [Category.{v₁'} C']
   (F : C ⥤ D) (G : D ⥤ E)
 
@@ -498,6 +498,15 @@ theorem map_rightUnitor (X : C) :
 theorem map_rightUnitor_inv (X : C) :
     F.map (ρ_ X).inv = (ρ_ (F.obj X)).inv ≫ F.obj X ◁ ε F  ≫ μ F X (𝟙_ C):= by simp
 
+section MonoidalCategory
+
+variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
+  {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
+  {E : Type u₃} [Category.{v₃} E] [MonoidalCategory.{v₃} E]
+  {C' : Type u₁'} [Category.{v₁'} C']
+  (F : C ⥤ D) (G : D ⥤ E)
+  variable [F.Monoidal]
+
 /-- The tensorator as a natural isomorphism. -/
 @[simps!]
 noncomputable def μNatIso :
@@ -515,6 +524,8 @@ noncomputable def commTensorLeft (X : C) :
 noncomputable def commTensorRight (X : C) :
     F ⋙ tensorRight (F.obj X) ≅ tensorRight X ⋙ F :=
   NatIso.ofComponents (fun Y => μIso F Y X)
+
+end MonoidalCategory
 
 end
 
@@ -653,6 +664,13 @@ noncomputable def Monoidal.ofOplaxMonoidal
     [F.OplaxMonoidal] [IsIso (η F)] [∀ X Y, IsIso (δ F X Y)] :=
   (CoreMonoidal.ofOplaxMonoidal F).toMonoidal
 
+section MonoidalCategory
+
+variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
+  {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
+  {E : Type u₃} [Category.{v₃} E] [MonoidalCategory.{v₃} E]
+  {C' : Type u₁'} [Category.{v₁'} C']
+
 section Prod
 
 variable (F : C ⥤ D) (G : E ⥤ C') [MonoidalCategory C']
@@ -766,7 +784,6 @@ instance LaxMonoidal.prod' : (prod' F G).LaxMonoidal :=
   rfl
 
 end
-
 section
 
 variable [F.OplaxMonoidal] [G.OplaxMonoidal]
@@ -838,9 +855,17 @@ instance Monoidal.prod' [F.Monoidal] [G.Monoidal] :
 
 end Prod'
 
+end MonoidalCategory
+
 end Functor
 
 namespace Adjunction
+
+variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
+  {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
+  {E : Type u₃} [Category.{v₃} E] [MonoidalCategory.{v₃} E]
+  {C' : Type u₁'} [Category.{v₁'} C']
+  (F : C ⥤ D) (G : D ⥤ E)
 
 variable {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) [F.OplaxMonoidal]
 
@@ -975,6 +1000,12 @@ instance isMonoidal_comp {F' : D ⥤ E} {G' : E ⥤ D} (adj' : F' ⊣ G')
 end Adjunction
 
 namespace Equivalence
+
+variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
+  {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
+  {E : Type u₃} [Category.{v₃} E] [MonoidalCategory.{v₃} E]
+  {C' : Type u₁'} [Category.{v₁'} C']
+  (F : C ⥤ D) (G : D ⥤ E)
 
 variable (e : C ≌ D)
 

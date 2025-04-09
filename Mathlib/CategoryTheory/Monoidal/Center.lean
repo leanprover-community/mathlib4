@@ -230,16 +230,18 @@ attribute [local simp] Center.associator Center.leftUnitor Center.rightUnitor
 
 attribute [local simp] Center.whiskerLeft Center.whiskerRight Center.tensorHom
 
-instance : MonoidalCategory (Center C) where
-  tensorObj X Y := tensorObj X Y
-  tensorHom f g := tensorHom f g
-  tensorHom_def := by intros; ext; simp [tensorHom_def]
-  whiskerLeft X _ _ f := whiskerLeft X f
-  whiskerRight f Y := whiskerRight f Y
-  tensorUnit := tensorUnit
-  associator := associator
-  leftUnitor := leftUnitor
-  rightUnitor := rightUnitor
+instance : MonoidalCategory (Center C) :=
+  letI i : MonoidalCategoryStruct (Center C) := {
+    tensorObj X Y := tensorObj X Y
+    tensorHom f g := tensorHom f g
+    whiskerLeft X _ _ f := whiskerLeft X f
+    whiskerRight f Y := whiskerRight f Y
+    tensorUnit := tensorUnit
+    associator := associator
+    leftUnitor := leftUnitor
+    rightUnitor := rightUnitor
+  };
+  ofTensorComp (tensorHom_def := by intros; ext; unfold i; simp [tensorHom_def])
 
 @[simp]
 theorem tensor_fst (X Y : Center C) : (X ⊗ Y).1 = X.1 ⊗ Y.1 :=

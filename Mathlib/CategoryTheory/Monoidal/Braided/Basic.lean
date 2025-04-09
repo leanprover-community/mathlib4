@@ -37,14 +37,15 @@ universe v v₁ v₂ v₃ u u₁ u₂ u₃
 
 namespace CategoryTheory
 
-open Category MonoidalCategory Functor.LaxMonoidal Functor.OplaxMonoidal Functor.Monoidal
+open Category PremonoidalCategory MonoidalCategory
+      Functor.LaxMonoidal Functor.OplaxMonoidal Functor.Monoidal
 
 /-- A braided monoidal category is a monoidal category equipped with a braiding isomorphism
 `β_ X Y : X ⊗ Y ≅ Y ⊗ X`
 which is natural in both arguments,
 and also satisfies the two hexagon identities.
 -/
-class BraidedCategory (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C] where
+class BraidedCategory (C : Type u) [Category.{v} C] [PremonoidalCategory.{v} C] where
   /-- The braiding natural isomorphism. -/
   braiding : ∀ X Y : C, X ⊗ Y ≅ Y ⊗ X
   braiding_naturality_right :
@@ -67,6 +68,8 @@ class BraidedCategory (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C] whe
       (α_ X Y Z).inv ≫ (braiding (X ⊗ Y) Z).hom ≫ (α_ Z X Y).inv =
         (X ◁ (braiding Y Z).hom) ≫ (α_ X Z Y).inv ≫ ((braiding X Z).hom ▷ Y) := by
     aesop_cat
+  /-- The braiding is central -/
+  braiding_central : ∀X Y : C, Central (braiding X Y).hom := by infer_instance
 
 attribute [reassoc (attr := simp)]
   BraidedCategory.braiding_naturality_left
@@ -80,7 +83,9 @@ notation "β_" => BraidedCategory.braiding
 
 namespace BraidedCategory
 
-variable {C : Type u} [Category.{v} C] [MonoidalCategory.{v} C] [BraidedCategory.{v} C]
+section PremonoidalCategory
+
+variable {C : Type u} [Category.{v} C] [PremonoidalCategory.{v} C] [BraidedCategory.{v} C]
 
 @[simp, reassoc]
 theorem braiding_tensor_left (X Y Z : C) :
@@ -115,12 +120,6 @@ theorem braiding_inv_tensor_right (X Y Z : C) :
   eq_of_inv_eq_inv (by simp)
 
 @[reassoc (attr := simp)]
-theorem braiding_naturality {X X' Y Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
-    (f ⊗ g) ≫ (braiding Y Y').hom = (braiding X X').hom ≫ (g ⊗ f) := by
-  rw [tensorHom_def' f g, tensorHom_def g f]
-  simp_rw [Category.assoc, braiding_naturality_left, braiding_naturality_right_assoc]
-
-@[reassoc (attr := simp)]
 theorem braiding_inv_naturality_right (X : C) {Y Z : C} (f : Y ⟶ Z) :
     X ◁ f ≫ (β_ Z X).inv = (β_ Y X).inv ≫ f ▷ X :=
   CommSq.w <| .vert_inv <| .mk <| braiding_naturality_left f X
@@ -130,18 +129,21 @@ theorem braiding_inv_naturality_left {X Y : C} (f : X ⟶ Y) (Z : C) :
     f ▷ Z ≫ (β_ Z Y).inv = (β_ Z X).inv ≫ Z ◁ f :=
   CommSq.w <| .vert_inv <| .mk <| braiding_naturality_right Z f
 
-@[reassoc (attr := simp)]
-theorem braiding_inv_naturality {X X' Y Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
-    (f ⊗ g) ≫ (β_ Y' Y).inv = (β_ X' X).inv ≫ (g ⊗ f) :=
-  CommSq.w <| .vert_inv <| .mk <| braiding_naturality g f
+@[reassoc]
+theorem braiding_naturality_ltimes {X X' Y Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
+    (f ⋉ g) ≫ (braiding Y Y').hom = (braiding X X').hom ≫ (g ⋊ f) := by simp
 
-/-- In a braided monoidal category, the functors `tensorLeft X` and
-`tensorRight X` are isomorphic. -/
-@[simps]
-def tensorLeftIsoTensorRight (X : C) :
-    tensorLeft X ≅ tensorRight X where
-  hom := { app Y := (β_ X Y).hom }
-  inv := { app Y := (β_ X Y).inv }
+@[reassoc]
+theorem braiding_naturality_rtimes {X X' Y Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
+    (f ⋊ g) ≫ (β_ Y' Y).inv = (β_ X' X).inv ≫ (g ⋉ f) := by simp
+
+@[reassoc]
+theorem braiding_inv_naturality_ltimes {X X' Y Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
+    (f ⋉ g) ≫ (braiding Y' Y).inv = (braiding X' X).inv ≫ (g ⋊ f) := by simp
+
+@[reassoc]
+theorem braiding_inv_naturality_rtimes {X X' Y Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
+    (f ⋊ g) ≫ (β_ Y Y').hom = (β_ X X').hom ≫ (g ⋉ f) := by simp
 
 @[reassoc]
 theorem yang_baxter (X Y Z : C) :
@@ -153,13 +155,6 @@ theorem yang_baxter (X Y Z : C) :
   repeat rw [assoc]
   rw [Iso.hom_inv_id, comp_id, ← braiding_naturality_right, braiding_tensor_right]
 
-theorem yang_baxter' (X Y Z : C) :
-    (β_ X Y).hom ▷ Z ⊗≫ Y ◁ (β_ X Z).hom ⊗≫ (β_ Y Z).hom ▷ X =
-      𝟙 _ ⊗≫ (X ◁ (β_ Y Z).hom ⊗≫ (β_ X Z).hom ▷ Y ⊗≫ Z ◁ (β_ X Y).hom) ⊗≫ 𝟙 _ := by
-  rw [← cancel_epi (α_ X Y Z).inv, ← cancel_mono (α_ Z Y X).hom]
-  convert yang_baxter X Y Z using 1
-  all_goals monoidal
-
 theorem yang_baxter_iso (X Y Z : C) :
     (α_ X Y Z).symm ≪≫ whiskerRightIso (β_ X Y) Z ≪≫ α_ Y X Z ≪≫
     whiskerLeftIso Y (β_ X Z) ≪≫ (α_ Y Z X).symm ≪≫
@@ -167,6 +162,13 @@ theorem yang_baxter_iso (X Y Z : C) :
       whiskerLeftIso X (β_ Y Z) ≪≫ (α_ X Z Y).symm ≪≫
       whiskerRightIso (β_ X Z) Y ≪≫ α_ Z X Y ≪≫
       whiskerLeftIso Z (β_ X Y) := Iso.ext (yang_baxter X Y Z)
+
+theorem yang_baxter' (X Y Z : C) :
+    (β_ X Y).hom ▷ Z ⊗≫ Y ◁ (β_ X Z).hom ⊗≫ (β_ Y Z).hom ▷ X =
+      𝟙 _ ⊗≫ (X ◁ (β_ Y Z).hom ⊗≫ (β_ X Z).hom ▷ Y ⊗≫ Z ◁ (β_ X Y).hom) ⊗≫ 𝟙 _ := by
+  rw [← cancel_epi (α_ X Y Z).inv, ← cancel_mono (α_ Z Y X).hom]
+  convert yang_baxter X Y Z using 1
+  all_goals monoidal
 
 theorem hexagon_forward_iso (X Y Z : C) :
     α_ X Y Z ≪≫ β_ X (Y ⊗ Z) ≪≫ α_ Y Z X =
@@ -189,6 +191,33 @@ theorem hexagon_reverse_inv (X Y Z : C) :
     (α_ Z X Y).hom ≫ (β_ (X ⊗ Y) Z).inv ≫ (α_ X Y Z).hom =
       (β_ X Z).inv ▷ Y ≫ (α_ X Z Y).hom ≫ X ◁ (β_ Y Z).inv := by
   simp
+
+end PremonoidalCategory
+
+section MonoidalCategory
+
+variable {C : Type u} [Category.{v} C] [MonoidalCategory.{v} C] [BraidedCategory.{v} C]
+
+/-- In a braided monoidal category, the functors `tensorLeft X` and
+`tensorRight X` are isomorphic. -/
+@[simps]
+def tensorLeftIsoTensorRight (X : C) :
+    tensorLeft X ≅ tensorRight X where
+  hom := { app Y := (β_ X Y).hom }
+  inv := { app Y := (β_ X Y).inv }
+
+@[reassoc (attr := simp)]
+theorem braiding_naturality {X X' Y Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
+    (f ⊗ g) ≫ (braiding Y Y').hom = (braiding X X').hom ≫ (g ⊗ f) := by
+  rw [tensorHom_def' f g, tensorHom_def g f]
+  simp_rw [Category.assoc, braiding_naturality_left, braiding_naturality_right_assoc]
+
+@[reassoc (attr := simp)]
+theorem braiding_inv_naturality {X X' Y Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
+    (f ⊗ g) ≫ (β_ Y' Y).inv = (β_ X' X).inv ≫ (g ⊗ f) :=
+  CommSq.w <| .vert_inv <| .mk <| braiding_naturality g f
+
+end MonoidalCategory
 
 end BraidedCategory
 
@@ -352,7 +381,7 @@ end
 /--
 A symmetric monoidal category is a braided monoidal category for which the braiding is symmetric. -/
 @[stacks 0FFW]
-class SymmetricCategory (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C] extends
+class SymmetricCategory (C : Type u) [Category.{v} C] [PremonoidalCategory.{v} C] extends
     BraidedCategory.{v} C where
   -- braiding symmetric:
   symmetry : ∀ X Y : C, (β_ X Y).hom ≫ (β_ Y X).hom = 𝟙 (X ⊗ Y) := by aesop_cat
@@ -360,7 +389,7 @@ class SymmetricCategory (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C] e
 attribute [reassoc (attr := simp)] SymmetricCategory.symmetry
 
 lemma SymmetricCategory.braiding_swap_eq_inv_braiding {C : Type u₁}
-    [Category.{v₁} C] [MonoidalCategory C] [SymmetricCategory C] (X Y : C) :
+    [Category.{v₁} C] [PremonoidalCategory C] [SymmetricCategory C] (X Y : C) :
     (β_ Y X).hom = (β_ X Y).inv := Iso.inv_ext' (symmetry X Y)
 
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory C] [BraidedCategory C]

@@ -3,7 +3,7 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
+import Mathlib.CategoryTheory.Monoidal.Category
 
 /-!
 # Monoidal opposites
@@ -142,25 +142,32 @@ instance {X Y : Cᴹᵒᵖ} (f : X ⟶ Y) [IsIso f] : IsIso f.unmop :=
 
 end IsIso
 
-variable [MonoidalCategory.{v₁} C]
-
 open Opposite MonoidalCategory
 
-instance monoidalCategoryOp : MonoidalCategory Cᵒᵖ where
-  tensorObj X Y := op (unop X ⊗ unop Y)
-  whiskerLeft X _ _ f := (X.unop ◁ f.unop).op
-  whiskerRight f X := (f.unop ▷ X.unop).op
-  tensorHom f g := (f.unop ⊗ g.unop).op
-  tensorHom_def _ _ := Quiver.Hom.unop_inj (tensorHom_def' _ _)
-  tensorUnit := op (𝟙_ C)
-  associator X Y Z := (α_ (unop X) (unop Y) (unop Z)).symm.op
-  leftUnitor X := (λ_ (unop X)).symm.op
-  rightUnitor X := (ρ_ (unop X)).symm.op
-  associator_naturality f g h := Quiver.Hom.unop_inj <| by simp
-  leftUnitor_naturality f := Quiver.Hom.unop_inj <| by simp
-  rightUnitor_naturality f := Quiver.Hom.unop_inj <| by simp
-  triangle X Y := Quiver.Hom.unop_inj <| by dsimp; monoidal_coherence
-  pentagon W X Y Z := Quiver.Hom.unop_inj <| by dsimp; monoidal_coherence
+
+section MonoidalCategory
+
+variable [MonoidalCategory.{v₁} C]
+
+-- NOTE: this works for premonoidal categories, but we'd have to change the defeq for tensors
+instance monoidalCategoryOp : MonoidalCategory Cᵒᵖ :=
+  letI i : MonoidalCategoryStruct Cᵒᵖ := {
+    tensorObj X Y := op (unop X ⊗ unop Y),
+    whiskerLeft X _ _ f := (X.unop ◁ f.unop).op,
+    whiskerRight f X := (f.unop ▷ X.unop).op,
+    tensorHom f g := (f.unop ⊗ g.unop).op,
+    tensorUnit := op (𝟙_ C),
+    associator X Y Z := (α_ (unop X) (unop Y) (unop Z)).symm.op,
+    leftUnitor X := (λ_ (unop X)).symm.op,
+    rightUnitor X := (ρ_ (unop X)).symm.op,
+  };
+  ofTensorComp
+    (tensorHom_def := fun _ _ => Quiver.Hom.unop_inj (tensorHom_def' _ _))
+    (associator_naturality := fun f g h => Quiver.Hom.unop_inj <| by simp [i])
+    (leftUnitor_naturality := fun f => Quiver.Hom.unop_inj <| by simp [i])
+    (rightUnitor_naturality := fun f => Quiver.Hom.unop_inj <| by simp [i])
+    (triangle := fun X Y => Quiver.Hom.unop_inj <| by simp [i])
+    (pentagon := fun W X Y Z => Quiver.Hom.unop_inj <| by simp [i])
 
 section OppositeLemmas
 
@@ -225,22 +232,25 @@ theorem op_tensor_op {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : f.op ⊗ g.op =
 theorem unop_tensor_unop {W X Y Z : Cᵒᵖ} (f : W ⟶ X) (g : Y ⟶ Z) :
     f.unop ⊗ g.unop = (f ⊗ g).unop := rfl
 
-instance monoidalCategoryMop : MonoidalCategory Cᴹᵒᵖ where
-  tensorObj X Y := mop (unmop Y ⊗ unmop X)
-  whiskerLeft X _ _ f := (f.unmop ▷ X.unmop).mop
-  whiskerRight f X := (X.unmop ◁ f.unmop).mop
-  tensorHom f g := (g.unmop ⊗ f.unmop).mop
-  tensorHom_def _ _ := Quiver.Hom.unmop_inj (tensorHom_def' _ _)
-  tensorUnit := mop (𝟙_ C)
-  associator X Y Z := (α_ (unmop Z) (unmop Y) (unmop X)).symm.mop
-  leftUnitor X := (ρ_ (unmop X)).mop
-  rightUnitor X := (λ_ (unmop X)).mop
-  associator_naturality f g h := Quiver.Hom.unmop_inj <| by simp
-  leftUnitor_naturality f := Quiver.Hom.unmop_inj <| by simp
-  rightUnitor_naturality f := Quiver.Hom.unmop_inj <| by simp
-  -- Porting note: Changed `by coherence` to `by simp` below
-  triangle X Y := Quiver.Hom.unmop_inj <| by simp
-  pentagon W X Y Z := Quiver.Hom.unmop_inj <| by dsimp; monoidal_coherence
+-- NOTE: this works for premonoidal categories, but we'd have to change the defeq for tensors
+instance monoidalCategoryMop : MonoidalCategory Cᴹᵒᵖ :=
+  letI i : MonoidalCategoryStruct Cᴹᵒᵖ := {
+    tensorObj X Y := mop (unmop Y ⊗ unmop X),
+    whiskerLeft X _ _ f := (f.unmop ▷ X.unmop).mop,
+    whiskerRight f X := (X.unmop ◁ f.unmop).mop,
+    tensorHom f g := (g.unmop ⊗ f.unmop).mop,
+    tensorUnit := mop (𝟙_ C),
+    associator X Y Z := (α_ (unmop Z) (unmop Y) (unmop X)).symm.mop,
+    leftUnitor X := (ρ_ (unmop X)).mop,
+    rightUnitor X := (λ_ (unmop X)).mop,
+  };
+  ofTensorComp
+    (tensorHom_def := fun _ _ => Quiver.Hom.unmop_inj (tensorHom_def' _ _))
+    (associator_naturality := fun f g h => Quiver.Hom.unmop_inj <| by simp [i])
+    (leftUnitor_naturality := fun f => Quiver.Hom.unmop_inj <| by simp [i])
+    (rightUnitor_naturality := fun f => Quiver.Hom.unmop_inj <| by simp [i])
+    (triangle := fun X Y => Quiver.Hom.unmop_inj <| by simp [i])
+    (pentagon := fun W X Y Z => Quiver.Hom.unmop_inj <| by simp [i])
 
 -- it would be nice if we could autogenerate all of these somehow
 section MonoidalOppositeLemmas
@@ -362,5 +372,7 @@ def MonoidalOpposite.tensorRightMopIso (X : C) :
 def MonoidalOpposite.tensorRightUnmopIso (X : Cᴹᵒᵖ) :
     tensorRight (unmop X) ≅ mopFunctor C ⋙ tensorLeft X ⋙ unmopFunctor C :=
   Iso.refl _
+
+end MonoidalCategory
 
 end CategoryTheory

@@ -56,6 +56,8 @@ structure Context where
   C : Q(Type level₁)
   /-- The category instance. -/
   instCat : Q(Category.{level₂, level₁} $C)
+  /-- The premonoidal category instance -/
+  instPremonoidal? : Option Q(PremonoidalCategory.{level₂, level₁} $C)
   /-- The monoidal category instance. -/
   instMonoidal? : Option Q(MonoidalCategory.{level₂, level₁} $C)
 
@@ -70,9 +72,11 @@ def mkContext? (e : Expr) : MetaM (Option Context) := do
     let .succ level₂ ← getLevel type | return none
     let .some instCat ← synthInstance?
       (mkAppN (.const ``Category [level₂, level₁]) #[C]) | return none
+    let instPremonoidal? ← synthInstance?
+      (mkAppN (.const ``PremonoidalCategory [level₂, level₁]) #[C, instCat])
     let instMonoidal? ← synthInstance?
       (mkAppN (.const ``MonoidalCategory [level₂, level₁]) #[C, instCat])
-    return some ⟨level₂, level₁, C, instCat, instMonoidal?⟩
+    return some ⟨level₂, level₁, C, instCat, instPremonoidal?, instMonoidal?⟩
   | _ => return none
 
 instance : BicategoryLike.Context Monoidal.Context where
@@ -81,6 +85,10 @@ instance : BicategoryLike.Context Monoidal.Context where
 /-- The monad for the normalization of 2-morphisms. -/
 abbrev MonoidalM := CoherenceM Context
 
+/-- Throw an error if the premonoidal category instance is not found. -/
+def synthPremonoidalError {α : Type} : MetaM α := do
+  throwError "failed to find (pre)monoidal category instance"
+
 /-- Throw an error if the monoidal category instance is not found. -/
 def synthMonoidalError {α : Type} : MetaM α := do
   throwError "failed to find monoidal category instance"
@@ -88,11 +96,11 @@ def synthMonoidalError {α : Type} : MetaM α := do
 instance : MonadMor₁ MonoidalM where
   id₁M a := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let .some _monoidal := ctx.instPremonoidal? | synthPremonoidalError
     return .id (q(MonoidalCategory.tensorUnit) : Q($ctx.C)) a
   comp₁M f g := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let .some _monoidal := ctx.instPremonoidal? | synthPremonoidalError
     let f_e : Q($ctx.C) := f.e
     let g_e : Q($ctx.C) := g.e
     return .comp (q($f_e ⊗ $g_e)) f g
@@ -113,7 +121,7 @@ theorem StructuralOfExpr_monoidalComp {f g h i : C} [MonoidalCoherence g h]
     (η' ≪⊗≫ θ').hom = η ⊗≫ θ := by
   simp [ih_η, ih_θ, monoidalIsoComp, monoidalComp, MonoidalCoherence.iso]
 
-variable [MonoidalCategory C]
+variable [PremonoidalCategory C]
 
 theorem structuralIsoOfExpr_whiskerLeft (f : C) {g h : C}
     (η : g ⟶ h) (η' : g ≅ h) (ih_η : η'.hom = η) :
@@ -138,19 +146,19 @@ open MonadMor₁
 instance : MonadMor₂Iso MonoidalM where
   associatorM f g h := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let .some _monoidal := ctx.instPremonoidal? | synthPremonoidalError
     let f_e : Q($ctx.C) := f.e
     let g_e : Q($ctx.C) := g.e
     let h_e : Q($ctx.C) := h.e
     return .associator q(α_ $f_e $g_e $h_e) f g h
   leftUnitorM f := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let .some _monoidal := ctx.instPremonoidal? | synthPremonoidalError
     let f_e : Q($ctx.C) := f.e
     return .leftUnitor q(λ_ $f_e) f
   rightUnitorM f := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let .some _monoidal := ctx.instPremonoidal? | synthPremonoidalError
     let f_e : Q($ctx.C) := f.e
     return .rightUnitor q(ρ_ $f_e) f
   id₂M f := do
@@ -160,7 +168,7 @@ instance : MonadMor₂Iso MonoidalM where
     return .id q(Iso.refl $f_e) f
   coherenceHomM f g inst := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let .some _monoidal := ctx.instPremonoidal? | synthPremonoidalError
     have f_e : Q($ctx.C) := f.e
     have g_e : Q($ctx.C) := g.e
     have inst : Q(MonoidalCoherence $f_e $g_e) := inst
@@ -183,7 +191,7 @@ instance : MonadMor₂Iso MonoidalM where
     return .comp q($η_e ≪≫ $θ_e) f g h η θ
   whiskerLeftM f η := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let .some _monoidal := ctx.instPremonoidal? | synthPremonoidalError
     let g ← η.srcM
     let h ← η.tgtM
     have f_e : Q($ctx.C) := f.e
@@ -193,7 +201,7 @@ instance : MonadMor₂Iso MonoidalM where
     return .whiskerLeft q(whiskerLeftIso $f_e $η_e) f g h η
   whiskerRightM η h := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let .some _monoidal := ctx.instPremonoidal? | synthPremonoidalError
     let f ← η.srcM
     let g ← η.tgtM
     have f_e : Q($ctx.C) := f.e
@@ -203,7 +211,7 @@ instance : MonadMor₂Iso MonoidalM where
     return .whiskerRight q(whiskerRightIso $η_e $h_e) f g η h
   horizontalCompM η θ := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let .some _monoidal := ctx.instPremonoidal? | synthPremonoidalError
     let f₁ ← η.srcM
     let g₁ ← η.tgtM
     let f₂ ← θ.srcM
@@ -315,7 +323,7 @@ instance : MonadMor₂ MonoidalM where
     return .comp e iso_lift? f g h η θ
   whiskerLeftM f η := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let .some _monoidal := ctx.instPremonoidal? | synthPremonoidalError
     let g ← η.srcM
     let h ← η.tgtM
     have f_e : Q($ctx.C) := f.e
@@ -333,7 +341,7 @@ instance : MonadMor₂ MonoidalM where
     return .whiskerLeft e iso_lift? f g h η
   whiskerRightM η h := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let .some _monoidal := ctx.instPremonoidal? | synthPremonoidalError
     let f ← η.srcM
     let g ← η.tgtM
     have f_e : Q($ctx.C) := f.e
@@ -351,7 +359,7 @@ instance : MonadMor₂ MonoidalM where
     return .whiskerRight e iso_lift? f g η h
   horizontalCompM η θ := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let .some _monoidal := ctx.instPremonoidal? | synthPremonoidalError
     let f₁ ← η.srcM
     let g₁ ← η.tgtM
     let f₂ ← θ.srcM
@@ -402,7 +410,7 @@ instance : MonadMor₂ MonoidalM where
 /-- Check that `e` is definitionally equal to `𝟙_ C`. -/
 def id₁? (e : Expr) : MonoidalM (Option Obj) := do
   let ctx ← read
-  match ctx.instMonoidal? with
+  match ctx.instPremonoidal? with
   | .some _monoidal => do
     if ← withDefault <| isDefEq e (q(MonoidalCategory.tensorUnit) : Q($ctx.C)) then
       return some ⟨none⟩
@@ -415,7 +423,7 @@ def comp? (e : Expr) : MonoidalM (Option (Mor₁ × Mor₁)) := do
   let ctx ← read
   let f ← mkFreshExprMVarQ ctx.C
   let g ← mkFreshExprMVarQ ctx.C
-  match ctx.instMonoidal? with
+  match ctx.instPremonoidal? with
     | .some _monoidal => do
       if ← withDefault <| isDefEq e q($f ⊗ $g) then
         let f ← instantiateMVars f

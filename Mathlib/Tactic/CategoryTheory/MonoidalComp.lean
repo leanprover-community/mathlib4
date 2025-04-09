@@ -77,7 +77,7 @@ scoped[CategoryTheory.MonoidalCategory] infixr:80 " ≪⊗≫ " =>
 
 namespace MonoidalCoherence
 
-variable [MonoidalCategory C]
+variable [PremonoidalCategory C]
 
 @[simps]
 instance refl (X : C) : MonoidalCoherence X X := ⟨Iso.refl _⟩
