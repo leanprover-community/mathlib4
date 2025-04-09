@@ -3,8 +3,8 @@ Copyright (c) 2020 Jean Lo. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jean Lo
 -/
-import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Logic.Function.Iterate
+import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
 # Flows and invariant sets
@@ -106,7 +106,7 @@ theorem ext : ∀ {ϕ₁ ϕ₂ : Flow τ α}, (∀ t x, ϕ₁ t x = ϕ₂ t x) �
 @[continuity, fun_prop]
 protected theorem continuous {β : Type*} [TopologicalSpace β] {t : β → τ} (ht : Continuous t)
     {f : β → α} (hf : Continuous f) : Continuous fun x => ϕ (t x) (f x) :=
-  ϕ.cont'.comp (ht.prod_mk hf)
+  ϕ.cont'.comp (ht.prodMk hf)
 
 alias _root_.Continuous.flow := Flow.continuous
 

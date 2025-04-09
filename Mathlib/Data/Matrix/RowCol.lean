@@ -180,25 +180,21 @@ variable {M : Matrix m n α} {i : m} {j : n} {b : n → α} {c : m → α}
 
 @[simp]
 theorem updateRow_self [DecidableEq m] : updateRow M i b i = b :=
-  -- Porting note: (implicit arg) added `(β := _)`
   Function.update_self (β := fun _ => (n → α)) i b M
 
 @[simp]
 theorem updateCol_self [DecidableEq n] : updateCol M j c i j = c i :=
-  -- Porting note: (implicit arg) added `(β := _)`
   Function.update_self (β := fun _ => α) j (c i) (M i)
 
 @[deprecated (since := "2024-12-11")] alias updateColumn_self := updateCol_self
 
 @[simp]
 theorem updateRow_ne [DecidableEq m] {i' : m} (i_ne : i' ≠ i) : updateRow M i b i' = M i' :=
-  -- Porting note: (implicit arg) added `(β := _)`
   Function.update_of_ne (β := fun _ => (n → α)) i_ne b M
 
 @[simp]
 theorem updateCol_ne [DecidableEq n] {j' : n} (j_ne : j' ≠ j) :
     updateCol M j c i j' = M i j' :=
-  -- Porting note: (implicit arg) added `(β := _)`
   Function.update_of_ne (β := fun _ => α) j_ne (c i) (M i)
 
 @[deprecated (since := "2024-12-11")] alias updateColumn_ne := updateCol_ne

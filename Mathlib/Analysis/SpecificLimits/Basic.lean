@@ -18,6 +18,7 @@ important specific limit computations in metric spaces, in ordered rings/fields,
 instances of these such as `ℝ`, `ℝ≥0` and `ℝ≥0∞`.
 -/
 
+assert_not_exists Basis NormedSpace
 
 noncomputable section
 

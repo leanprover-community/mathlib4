@@ -100,7 +100,7 @@ theorem getElem_insertIdx_add_succ (l : List α) (x : α) (n k : ℕ) (hk' : n +
     (hk : n + k + 1 < (insertIdx n x l).length := (by
       rwa [length_insertIdx_of_le_length (by omega), Nat.succ_lt_succ_iff])) :
     (insertIdx n x l)[n + k + 1] = l[n + k] := by
-  rw [getElem_insertIdx_of_ge (by omega)]
+  rw [getElem_insertIdx_of_gt (by omega)]
   simp only [Nat.add_one_sub_one]
 
 theorem get_insertIdx_add_succ (l : List α) (x : α) (n k : ℕ) (hk' : n + k < l.length)

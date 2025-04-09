@@ -160,7 +160,7 @@ theorem Fin.circulant_ite (α) [Zero α] [One α] :
   | n + 1 => by
     rw [← circulant_single_one]
     congr with j
-    simp [Pi.single_apply, Fin.ext_iff]
+    simp [Pi.single_apply]
 
 /-- A circulant of `v` is symmetric iff `v` equals its reverse. -/
 theorem circulant_isSymm_iff [AddGroup n] {v : n → α} :

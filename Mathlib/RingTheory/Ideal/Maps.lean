@@ -219,7 +219,7 @@ theorem comap_sInf (s : Set (Ideal S)) : (sInf s).comap f = ⨅ I ∈ s, (I : Id
 theorem comap_sInf' (s : Set (Ideal S)) : (sInf s).comap f = ⨅ I ∈ comap f '' s, I :=
   _root_.trans (comap_sInf f s) (by rw [iInf_image])
 
-/-- Variant of `Ideal.IsPrime.comap` where ideal is explicit rather than implicit.  -/
+/-- Variant of `Ideal.IsPrime.comap` where ideal is explicit rather than implicit. -/
 theorem comap_isPrime [H : IsPrime K] : IsPrime (comap f K) :=
   H.comap f
 
@@ -267,7 +267,9 @@ theorem restrictScalars_mul {R S : Type*} [Semiring R] [Semiring S] [Module R S]
 
 section Surjective
 
-section variable (hf : Function.Surjective f)
+section
+
+variable (hf : Function.Surjective f)
 include hf
 
 open Function

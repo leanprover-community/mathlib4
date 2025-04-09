@@ -10,10 +10,7 @@ import Mathlib.Order.CompleteLatticeIntervals
 /-!
 # Matroid Closure
 
-A `IsFlat` of a matroid `M` is a combinatorial analogue of a subspace of a vector space,
-and is defined to be a subset `F` of the ground set of `M` such that for each isBasis
-`I` for `M`, every set having `I` as a isBasis is contained in `F`.
-A `IsFlat` of a matroid `M` is a combinatorial analogue of a subspace of a vector space,
+A flat (`IsFlat`) of a matroid `M` is a combinatorial analogue of a subspace of a vector space,
 and is defined to be a subset `F` of the ground set of `M` such that for each isBasis
 `I` for `M`, every set having `I` as a isBasis is contained in `F`.
 
@@ -88,7 +85,7 @@ variable {ι α : Type*} {M : Matroid α} {F X Y : Set α} {e f : α}
 
 section IsFlat
 
-/-- A flat is a maximal set having a given basis  -/
+/-- A flat is a maximal set having a given basis -/
 @[mk_iff]
 structure IsFlat (M : Matroid α) (F : Set α) : Prop where
   subset_of_isBasis_of_isBasis : ∀ ⦃I X⦄, M.IsBasis I F → M.IsBasis I X → X ⊆ F

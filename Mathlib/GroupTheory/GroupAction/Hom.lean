@@ -400,8 +400,8 @@ class DistribMulActionSemiHomClass (F : Type*)
     (A B : outParam Type*)
     [Monoid M] [Monoid N]
     [AddMonoid A] [AddMonoid B] [DistribMulAction M A] [DistribMulAction N B]
-    [FunLike F A B]
-    extends MulActionSemiHomClass F φ A B, AddMonoidHomClass F A B : Prop
+    [FunLike F A B] : Prop
+    extends MulActionSemiHomClass F φ A B, AddMonoidHomClass F A B
 
 /-- `DistribMulActionHomClass F M A B` states that `F` is a type of morphisms preserving
   the additive monoid structure and equivariant with respect to the action of `M`.
@@ -627,8 +627,8 @@ class MulSemiringActionSemiHomClass (F : Type*)
     {M N : outParam Type*} [Monoid M] [Monoid N]
     (φ : outParam (M → N))
     (R S : outParam Type*) [Semiring R] [Semiring S]
-    [DistribMulAction M R] [DistribMulAction N S] [FunLike F R S]
-    extends DistribMulActionSemiHomClass F φ R S, RingHomClass F R S : Prop
+    [DistribMulAction M R] [DistribMulAction N S] [FunLike F R S] : Prop
+    extends DistribMulActionSemiHomClass F φ R S, RingHomClass F R S
 
 /-- `MulSemiringActionHomClass F M R S` states that `F` is a type of morphisms preserving
 the ring structure and equivariant with respect to a `DistribMulAction`of `M` on `R` and `S` .

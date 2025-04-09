@@ -128,8 +128,7 @@ variable {g : R →+* P} (hg : ∀ y : M, IsUnit (g y))
 
 variable (M) in
 include M in
-/- This is not an instance because the submonoid `M` would become a metavariable
-  in typeclass search. -/
+-- This is not an instance since the submonoid `M` would become a metavariable in typeclass search.
 theorem algHom_subsingleton [Algebra R P] : Subsingleton (S →ₐ[R] P) :=
   ⟨fun f g =>
     AlgHom.coe_ringHom_injective <|

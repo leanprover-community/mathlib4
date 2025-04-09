@@ -125,9 +125,7 @@ lemma integrable_rnDeriv_mul_log_iff [SigmaFinite μ] [μ.HaveLebesgueDecomposit
 
 lemma integral_rnDeriv_mul_log [SigmaFinite μ] [μ.HaveLebesgueDecomposition ν] (hμν : μ ≪ ν) :
     ∫ a, (μ.rnDeriv ν a).toReal * log (μ.rnDeriv ν a).toReal ∂ν = ∫ a, llr μ ν a ∂μ := by
-  simp_rw [← smul_eq_mul]
-  rw [integral_rnDeriv_smul hμν]
-  rfl
+  simp_rw [← smul_eq_mul, integral_rnDeriv_smul hμν, llr]
 
 section llr_tilted
 

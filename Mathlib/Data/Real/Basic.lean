@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Floris van Doorn
 -/
 import Mathlib.Algebra.Order.CauSeq.Completion
 import Mathlib.Algebra.Order.Field.Rat
+import Mathlib.Data.Rat.Cast.Defs
 
 /-!
 # Real numbers from Cauchy sequences
@@ -33,9 +34,6 @@ structure Real where ofCauchy ::
 
 @[inherit_doc]
 notation "ℝ" => Real
-
--- Porting note: unknown attribute
--- attribute [pp_using_anonymous_constructor] Real
 
 namespace CauSeq.Completion
 
@@ -340,12 +338,6 @@ protected theorem zero_lt_one : (0 : ℝ) < 1 := by
 
 protected theorem fact_zero_lt_one : Fact ((0 : ℝ) < 1) :=
   ⟨Real.zero_lt_one⟩
-
-@[deprecated mul_pos (since := "2024-08-15")]
-protected theorem mul_pos {a b : ℝ} : 0 < a → 0 < b → 0 < a * b := by
-  induction' a using Real.ind_mk with a
-  induction' b using Real.ind_mk with b
-  simpa only [mk_lt, mk_pos, ← mk_mul] using CauSeq.mul_pos
 
 instance instStrictOrderedCommRing : StrictOrderedCommRing ℝ where
   __ := Real.commRing

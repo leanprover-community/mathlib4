@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.Analytic.Basic
+import Mathlib.Analysis.Analytic.CPolynomialDef
 
 /-!
 # Linear functions are analytic
@@ -11,8 +12,8 @@ import Mathlib.Analysis.Analytic.Basic
 In this file we prove that a `ContinuousLinearMap` defines an analytic function with
 the formal power series `f x = f a + f (x - a)`. We also prove similar results for bilinear maps.
 
-TODO: port to use `CPolynomial`, and prove the stronger result that continuous linear maps are
-continuously polynomial
+We deduce this fact from the stronger result that continuous linear maps are continuously
+polynomial, i.e., they admit a finite power series.
 -/
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
@@ -30,19 +31,34 @@ namespace ContinuousLinearMap
 theorem fpowerSeries_radius (f : E →L[𝕜] F) (x : E) : (f.fpowerSeries x).radius = ∞ :=
   (f.fpowerSeries x).radius_eq_top_of_forall_image_add_eq_zero 2 fun _ => rfl
 
+protected theorem hasFiniteFPowerSeriesOnBall (f : E →L[𝕜] F) (x : E) :
+    HasFiniteFPowerSeriesOnBall f (f.fpowerSeries x) x 2 ∞ where
+  r_le := by simp
+  r_pos := ENNReal.coe_lt_top
+  hasSum := fun _ => (hasSum_nat_add_iff' 2).1 <| by
+    simp [Finset.sum_range_succ, ← sub_sub, hasSum_zero, fpowerSeries]
+  finite := by
+    intro m hm
+    match m with
+    | 0 | 1 => linarith
+    | n + 2 => simp [fpowerSeries]
+
 protected theorem hasFPowerSeriesOnBall (f : E →L[𝕜] F) (x : E) :
     HasFPowerSeriesOnBall f (f.fpowerSeries x) x ∞ :=
-  { r_le := by simp
-    r_pos := ENNReal.coe_lt_top
-    hasSum := fun _ => (hasSum_nat_add_iff' 2).1 <| by
-      simp [Finset.sum_range_succ, ← sub_sub, hasSum_zero, fpowerSeries] }
+  (f.hasFiniteFPowerSeriesOnBall x).toHasFPowerSeriesOnBall
 
 protected theorem hasFPowerSeriesAt (f : E →L[𝕜] F) (x : E) :
     HasFPowerSeriesAt f (f.fpowerSeries x) x :=
   ⟨∞, f.hasFPowerSeriesOnBall x⟩
 
+protected theorem cpolynomialAt (f : E →L[𝕜] F) (x : E) : CPolynomialAt 𝕜 f x :=
+  (f.hasFiniteFPowerSeriesOnBall x).cpolynomialAt
+
 protected theorem analyticAt (f : E →L[𝕜] F) (x : E) : AnalyticAt 𝕜 f x :=
   (f.hasFPowerSeriesAt x).analyticAt
+
+protected theorem colynomialOn (f : E →L[𝕜] F) (s : Set E) : CPolynomialOn 𝕜 f s :=
+  fun x _ ↦ f.cpolynomialAt x
 
 protected theorem analyticOnNhd (f : E →L[𝕜] F) (s : Set E) : AnalyticOnNhd 𝕜 f s :=
   fun x _ ↦ f.analyticAt x
@@ -157,7 +173,7 @@ alias analyticWithinOn_id := analyticOn_id
 theorem analyticAt_fst  : AnalyticAt 𝕜 (fun p : E × F ↦ p.fst) p :=
   (ContinuousLinearMap.fst 𝕜 E F).analyticAt p
 
-theorem analyticWithinAt_fst  : AnalyticWithinAt 𝕜 (fun p : E × F ↦ p.fst) t p :=
+theorem analyticWithinAt_fst : AnalyticWithinAt 𝕜 (fun p : E × F ↦ p.fst) t p :=
   analyticAt_fst.analyticWithinAt
 
 /-- `snd` is analytic -/

@@ -33,9 +33,6 @@ universe u v w
 
 variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {l₁ l₂ : List α}
 
--- Porting note: Delete this attribute
--- attribute [inline] List.head!
-
 /-- There is only one list of an empty type -/
 instance uniqueOfIsEmpty [IsEmpty α] : Unique (List α) :=
   { instInhabitedList with
@@ -88,7 +85,7 @@ theorem mem_map_of_involutive {f : α → α} (hf : Involutive f) {a : α} {l : 
 
 /-! ### length -/
 
-alias ⟨_, length_pos_of_ne_nil⟩ := length_pos
+alias ⟨_, length_pos_of_ne_nil⟩ := length_pos_iff
 
 theorem length_pos_iff_ne_nil {l : List α} : 0 < length l ↔ l ≠ [] :=
   ⟨ne_nil_of_length_pos, length_pos_of_ne_nil⟩
@@ -110,7 +107,7 @@ theorem exists_of_length_succ {n} : ∀ l : List α, l.length = n + 1 → ∃ h 
       · subsingleton
       · apply ih; simpa using hl
 
-@[simp default+1] -- Porting note: this used to be just @[simp]
+@[simp default+1] -- Raise priority above `length_injective_iff`.
 lemma length_injective [Subsingleton α] : Injective (length : List α → ℕ) :=
   length_injective_iff.mpr inferInstance
 
@@ -149,16 +146,13 @@ theorem doubleton_eq [DecidableEq α] {x y : α} (h : x ≠ y) : ({x, y} : List 
 theorem forall_mem_of_forall_mem_cons {p : α → Prop} {a : α} {l : List α} (h : ∀ x ∈ a :: l, p x) :
     ∀ x ∈ l, p x := (forall_mem_cons.1 h).2
 
--- Porting note: bExists in Lean3 and And in Lean4
 theorem exists_mem_cons_of {p : α → Prop} {a : α} (l : List α) (h : p a) : ∃ x ∈ a :: l, p x :=
   ⟨a, mem_cons_self _ _, h⟩
 
--- Porting note: bExists in Lean3 and And in Lean4
 theorem exists_mem_cons_of_exists {p : α → Prop} {a : α} {l : List α} : (∃ x ∈ l, p x) →
     ∃ x ∈ a :: l, p x :=
   fun ⟨x, xl, px⟩ => ⟨x, mem_cons_of_mem _ xl, px⟩
 
--- Porting note: bExists in Lean3 and And in Lean4
 theorem or_exists_of_exists_mem_cons {p : α → Prop} {a : α} {l : List α} : (∃ x ∈ a :: l, p x) →
     p a ∨ ∃ x ∈ l, p x :=
   fun ⟨x, xal, px⟩ =>
@@ -229,6 +223,18 @@ theorem replicate_left_injective (a : α) : Injective (replicate · a) :=
 
 theorem replicate_left_inj {a : α} {n m : ℕ} : replicate n a = replicate m a ↔ n = m :=
   (replicate_left_injective a).eq_iff
+
+@[simp]
+theorem head?_flatten_replicate {n : ℕ} (h : n ≠ 0) (l : List α) :
+    (List.replicate n l).flatten.head? = l.head? := by
+  obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h
+  induction l <;> simp [replicate]
+
+@[simp]
+theorem getLast?_flatten_replicate {n : ℕ} (h : n ≠ 0) (l : List α) :
+    (List.replicate n l).flatten.getLast? = l.getLast? := by
+  rw [← List.head?_reverse, ← List.head?_reverse, List.reverse_flatten, List.map_replicate,
+  List.reverse_replicate, head?_flatten_replicate h]
 
 /-! ### pure -/
 
@@ -390,7 +396,7 @@ theorem head!_nil [Inhabited α] : ([] : List α).head! = default := rfl
   cases x <;> simp at h ⊢
 
 theorem head_eq_getElem_zero {l : List α} (hl : l ≠ []) :
-    l.head hl = l[0]'(length_pos.2 hl) :=
+    l.head hl = l[0]'(length_pos_iff.2 hl) :=
   (getElem_zero _).symm
 
 theorem head!_eq_head? [Inhabited α] (l : List α) : head! l = (head? l).iget := by cases l <;> rfl
@@ -472,12 +478,6 @@ theorem get_tail (l : List α) (i) (h : i < l.tail.length)
     l.tail.get ⟨i, h⟩ = l.get ⟨i + 1, h'⟩ := by
   cases l <;> [cases h; rfl]
 
-@[deprecated "No deprecation message was provided." (since := "2024-08-22")]
-theorem get_cons {l : List α} {a : α} {n} (hl) :
-    (a :: l).get ⟨n, hl⟩ = if hn : n = 0 then a else
-      l.get ⟨n - 1, by contrapose! hl; rw [length_cons]; omega⟩ :=
-  getElem_cons hl
-
 /-! ### sublists -/
 
 attribute [refl] List.Sublist.refl
@@ -516,28 +516,14 @@ section IndexOf
 
 variable [DecidableEq α]
 
-/-
-  Porting note: The following proofs were simpler prior to the port. These proofs use the low-level
-  `findIdx.go`.
-  * `indexOf_cons_self`
-  * `indexOf_cons_eq`
-  * `indexOf_cons_ne`
-  * `indexOf_cons`
-
-  The ported versions of the earlier proofs are given in comments.
--/
-
-
--- fun e => if_pos e
 theorem idxOf_cons_eq {a b : α} (l : List α) : b = a → idxOf a (b :: l) = 0
   | e => by rw [← e]; exact idxOf_cons_self
 
 @[deprecated (since := "2025-01-30")] alias indexOf_cons_eq := idxOf_cons_eq
 
--- fun n => if_neg n
 @[simp]
 theorem idxOf_cons_ne {a b : α} (l : List α) : b ≠ a → idxOf a (b :: l) = succ (idxOf a l)
-  | h => by simp only [idxOf, findIdx_cons, Bool.cond_eq_ite, beq_iff_eq, h, ite_false]
+  | h => by simp only [idxOf_cons, Bool.cond_eq_ite, beq_iff_eq, if_neg h]
 
 @[deprecated (since := "2025-01-30")] alias indexOf_cons_ne := idxOf_cons_ne
 
@@ -1134,8 +1120,6 @@ theorem filter_false (l : List α) :
 
 end Filter
 
-@[deprecated (since := "2024-08-19")] alias nthLe_cons := getElem_cons
-
 /-! ### eraseP -/
 
 section eraseP
@@ -1183,11 +1167,6 @@ theorem erase_getElem [DecidableEq ι] {l : List ι} {i : ℕ} (hi : i < l.lengt
         simpa [ha] using .trans (perm_cons_erase (getElem_mem _)) (.cons _ (IH hi'))
       else
         simpa [ha] using IH hi'
-
-@[deprecated erase_getElem (since := "2024-08-03")]
-theorem erase_get [DecidableEq ι] {l : List ι} (i : Fin l.length) :
-    Perm (l.erase (l.get i)) (l.eraseIdx ↑i) :=
-  erase_getElem i.isLt
 
 theorem length_eraseIdx_add_one {l : List ι} {i : ℕ} (h : i < l.length) :
     (l.eraseIdx i).length + 1 = l.length := by
@@ -1269,8 +1248,8 @@ end Forall
 
 /-! ### Miscellaneous lemmas -/
 
-theorem get_attach (L : List α) (i) :
-    (L.attach.get i).1 = L.get ⟨i, length_attach (L := L) ▸ i.2⟩ := by simp
+theorem get_attach (l : List α) (i) :
+    (l.attach.get i).1 = l.get ⟨i, length_attach (l := l) ▸ i.2⟩ := by simp
 
 section Disjoint
 

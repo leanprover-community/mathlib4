@@ -216,6 +216,10 @@ theorem integral_zero : ∫ _ : α, (0 : G) ∂μ = 0 := by
 theorem integral_zero' : integral μ (0 : α → G) = 0 :=
   integral_zero α G
 
+lemma integral_indicator₂ {β : Type*} (f : β → α → G) (s : Set β) (b : β) :
+    ∫ y, s.indicator (f · y) b ∂μ = s.indicator (fun x ↦ ∫ y, f x y ∂μ) b := by
+  by_cases hb : b ∈ s <;> simp [hb]
+
 variable {α G}
 
 theorem integrable_of_integral_eq_one {f : α → ℝ} (h : ∫ x, f x ∂μ = 1) : Integrable f μ :=
@@ -837,6 +841,9 @@ theorem integral_const (c : E) : ∫ _ : α, c ∂μ = (μ univ).toReal • c :=
   · simp [hc, integral_zero]
   · simp [(integrable_const_iff_isFiniteMeasure hc).not.2 hμ,
       integral_undef, MeasureTheory.not_isFiniteMeasure_iff.mp hμ]
+
+lemma integral_eq_const [IsProbabilityMeasure μ] {f : α → E} {c : E} (hf : ∀ᵐ x ∂μ, f x = c) :
+    ∫ x, f x ∂μ = c := by simp [integral_congr_ae hf]
 
 theorem norm_integral_le_of_norm_le_const [IsFiniteMeasure μ] {f : α → G} {C : ℝ}
     (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) : ‖∫ x, f x ∂μ‖ ≤ C * (μ univ).toReal :=

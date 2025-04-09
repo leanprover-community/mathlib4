@@ -104,7 +104,7 @@ theorem box_lower [NeZero n] (ν : ι → ℤ) :
 
 @[simp]
 theorem box_upper [NeZero n] (ν : ι → ℤ) :
-    (box n ν).upper = fun i ↦ ((ν i + 1)/ n : ℝ) := rfl
+    (box n ν).upper = fun i ↦ ((ν i + 1) / n : ℝ) := rfl
 
 variable {n} in
 @[simp]

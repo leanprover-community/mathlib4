@@ -43,9 +43,10 @@ variable (R K : Type*) [CommRing R] [IsDedekindDomain R] [Field K] [Algebra R K]
 /-- The product of all `adicCompletionIntegers`, where `v` runs over the maximal ideals of `R`. -/
 def FiniteIntegralAdeles : Type _ :=
   ∀ v : HeightOneSpectrum R, v.adicCompletionIntegers K
--- deriving CommRing, TopologicalSpace, Inhabited
+-- The `CommRing, TopologicalSpace, Inhabited` instances should be constructed by a deriving
+-- handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
--- Porting note(https://github.com/leanprover-community/mathlib4/issues/5020): added
 section DerivedInstances
 
 instance : CommRing (FiniteIntegralAdeles R K) :=
@@ -290,7 +291,8 @@ theorem algebraMap' (k : K) : (algebraMap K (K_hat R K) k).IsFiniteAdele := by
     contrapose! this
     change 1 < v.intValuation n
     rw [← hk, mul_comm]
-    exact lt_mul_of_le_of_one_lt' this hv (by simp) (by simp)
+    exact (lt_mul_of_one_lt_right (by simp) hv).trans_le <|
+      mul_le_mul_of_nonneg_right this (by simp)
   simp_rw [valuation_of_algebraMap]
   change {v : HeightOneSpectrum R | v.intValuationDef d < 1}.Finite
   simp_rw [intValuation_lt_one_iff_dvd]

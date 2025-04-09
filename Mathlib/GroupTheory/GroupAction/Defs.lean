@@ -6,7 +6,6 @@ Authors: Chris Hughes
 import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.Group.Subgroup.Defs
-import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.Group.Submonoid.MulAction
 
 /-!
@@ -23,6 +22,7 @@ This file defines orbits, stabilizers, and other objects defined in terms of act
 
 -/
 
+assert_not_exists MonoidWithZero DistribMulAction
 
 universe u v
 
@@ -52,6 +52,12 @@ theorem mem_orbit_iff {a₁ a₂ : α} : a₂ ∈ orbit M a₁ ↔ ∃ x : M, x 
 @[to_additive (attr := simp)]
 theorem mem_orbit (a : α) (m : M) : m • a ∈ orbit M a :=
   ⟨m, rfl⟩
+
+@[to_additive]
+theorem mem_orbit_of_mem_orbit {a₁ a₂ : α} (m : M) (h : a₂ ∈ orbit M a₁) :
+    m • a₂ ∈ orbit M a₁ := by
+  obtain ⟨x, rfl⟩ := mem_orbit_iff.mp h
+  simp [smul_smul]
 
 @[to_additive (attr := simp)]
 theorem mem_orbit_self (a : α) : a ∈ orbit M a :=
@@ -102,14 +108,11 @@ section FixedPoints
 def fixedPoints : Set α :=
   { a : α | ∀ m : M, m • a = a }
 
-variable {M}
-
+variable {M} in
 /-- `fixedBy m` is the set of elements fixed by `m`. -/
 @[to_additive "`fixedBy m` is the set of elements fixed by `m`."]
 def fixedBy (m : M) : Set α :=
   { x | m • x = x }
-
-variable (M)
 
 @[to_additive]
 theorem fixed_eq_iInter_fixedBy : fixedPoints M α = ⋂ m : M, fixedBy α m :=
@@ -203,45 +206,6 @@ lemma subgroup_toSubmonoid : (α^*M).toSubmonoid = submonoid M α :=
 
 end FixedPoints
 end Group
-
-section AddMonoid
-
-variable [AddMonoid α] [DistribMulAction M α]
-
-/-- The additive submonoid of elements fixed under the whole action. -/
-def FixedPoints.addSubmonoid : AddSubmonoid α where
-  carrier := MulAction.fixedPoints M α
-  zero_mem' := smul_zero
-  add_mem' ha hb _ := by rw [smul_add, ha, hb]
-
-@[simp]
-lemma FixedPoints.mem_addSubmonoid (a : α) : a ∈ addSubmonoid M α ↔ ∀ m : M, m • a = a :=
-  Iff.rfl
-
-end AddMonoid
-
-section AddGroup
-
-variable [AddGroup α] [DistribMulAction M α]
-
-/-- The additive subgroup of elements fixed under the whole action. -/
-def FixedPoints.addSubgroup : AddSubgroup α where
-  __ := addSubmonoid M α
-  neg_mem' ha _ := by rw [smul_neg, ha]
-
-/-- The notation for `FixedPoints.addSubgroup`, chosen to resemble `αᴹ`. -/
-notation α "^+" M:51 => FixedPoints.addSubgroup M α
-
-@[simp]
-lemma FixedPoints.mem_addSubgroup (a : α) : a ∈ α^+M ↔ ∀ m : M, m • a = a :=
-  Iff.rfl
-
-@[simp]
-lemma FixedPoints.addSubgroup_toAddSubmonoid : (α^+M).toAddSubmonoid = addSubmonoid M α :=
-  rfl
-
-end AddGroup
-
 end FixedPoints
 
 namespace MulAction
@@ -528,8 +492,8 @@ lemma univ_eq_iUnion_orbit :
 end Orbit
 
 section Stabilizer
-variable (G)
 
+variable (G) in
 /-- The stabilizer of an element under an action, i.e. what sends the element to itself.
 A subgroup. -/
 @[to_additive
@@ -538,8 +502,6 @@ A subgroup. -/
 def stabilizer (a : α) : Subgroup G :=
   { stabilizerSubmonoid G a with
     inv_mem' := fun {m} (ha : m • a = a) => show m⁻¹ • a = a by rw [inv_smul_eq_iff, ha] }
-
-variable {G}
 
 @[to_additive]
 instance [DecidableEq α] (a : α) : DecidablePred (· ∈ stabilizer G a) :=

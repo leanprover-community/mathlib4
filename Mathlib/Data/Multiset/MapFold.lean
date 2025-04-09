@@ -153,11 +153,10 @@ theorem map_id (s : Multiset α) : map id s = s :=
 theorem map_id' (s : Multiset α) : map (fun x => x) s = s :=
   map_id s
 
--- Porting note: was a `simp` lemma in mathlib3
+-- `simp`-normal form lemma is `map_const'`
 theorem map_const (s : Multiset α) (b : β) : map (const α b) s = replicate (card s) b :=
   Quot.inductionOn s fun _ => congr_arg _ <| List.map_const' _ _
 
--- Porting note: was not a `simp` lemma in mathlib3 because `Function.const` was reducible
 @[simp] theorem map_const' (s : Multiset α) (b : β) : map (fun _ ↦ b) s = replicate (card s) b :=
   map_const _ _
 
@@ -327,9 +326,9 @@ theorem pmap_eq_map_attach {p : α → Prop} (f : ∀ a, p a → β) (s) :
     ∀ H, pmap f s H = s.attach.map fun x => f x.1 (H _ x.2) :=
   Quot.inductionOn s fun l H => congr_arg _ <| List.pmap_eq_map_attach f l H
 
--- @[simp] -- Porting note: Left hand does not simplify
+@[simp]
 theorem attach_map_val' (s : Multiset α) (f : α → β) : (s.attach.map fun i => f i.val) = s.map f :=
-  Quot.inductionOn s fun l => congr_arg _ <| List.attach_map_coe l f
+  Quot.inductionOn s fun l => congr_arg _ <| List.attach_map_val l f
 
 @[simp]
 theorem attach_map_val (s : Multiset α) : s.attach.map Subtype.val = s :=
@@ -422,5 +421,60 @@ theorem induction_on_multiset_quot {r : α → α → Prop} {p : Multiset (Quot 
   | _, ⟨_t, rfl⟩ => fun h => h _
 
 end Quot
+
+section Nodup
+
+variable {s : Multiset α}
+
+theorem Nodup.of_map (f : α → β) : Nodup (map f s) → Nodup s :=
+  Quot.induction_on s fun _ => List.Nodup.of_map f
+
+theorem Nodup.map_on {f : α → β} :
+    (∀ x ∈ s, ∀ y ∈ s, f x = f y → x = y) → Nodup s → Nodup (map f s) :=
+  Quot.induction_on s fun _ => List.Nodup.map_on
+
+theorem Nodup.map {f : α → β} {s : Multiset α} (hf : Injective f) : Nodup s → Nodup (map f s) :=
+  Nodup.map_on fun _ _ _ _ h => hf h
+
+theorem nodup_map_iff_of_inj_on {f : α → β} (d : ∀ x ∈ s, ∀ y ∈ s, f x = f y → x = y) :
+    Nodup (map f s) ↔ Nodup s :=
+  ⟨Nodup.of_map _, fun h => h.map_on d⟩
+
+theorem nodup_map_iff_of_injective {f : α → β} (d : Function.Injective f) :
+    Nodup (map f s) ↔ Nodup s :=
+  ⟨Nodup.of_map _, fun h => h.map d⟩
+
+theorem inj_on_of_nodup_map {f : α → β} {s : Multiset α} :
+    Nodup (map f s) → ∀ x ∈ s, ∀ y ∈ s, f x = f y → x = y :=
+  Quot.induction_on s fun _ => List.inj_on_of_nodup_map
+
+theorem nodup_map_iff_inj_on {f : α → β} {s : Multiset α} (d : Nodup s) :
+    Nodup (map f s) ↔ ∀ x ∈ s, ∀ y ∈ s, f x = f y → x = y :=
+  ⟨inj_on_of_nodup_map, fun h => d.map_on h⟩
+
+theorem Nodup.pmap {p : α → Prop} {f : ∀ a, p a → β} {s : Multiset α} {H}
+    (hf : ∀ a ha b hb, f a ha = f b hb → a = b) : Nodup s → Nodup (pmap f s H) :=
+  Quot.induction_on s (fun _ _ => List.Nodup.pmap hf) H
+
+@[simp]
+theorem nodup_attach {s : Multiset α} : Nodup (attach s) ↔ Nodup s :=
+  Quot.induction_on s fun _ => List.nodup_attach
+
+protected alias ⟨_, Nodup.attach⟩ := nodup_attach
+
+theorem map_eq_map_of_bij_of_nodup (f : α → γ) (g : β → γ) {s : Multiset α} {t : Multiset β}
+    (hs : s.Nodup) (ht : t.Nodup) (i : ∀ a ∈ s, β) (hi : ∀ a ha, i a ha ∈ t)
+    (i_inj : ∀ a₁ ha₁ a₂ ha₂, i a₁ ha₁ = i a₂ ha₂ → a₁ = a₂)
+    (i_surj : ∀ b ∈ t, ∃ a ha, i a ha = b) (h : ∀ a ha, f a = g (i a ha)) : s.map f = t.map g := by
+  have : t = s.attach.map fun x => i x.1 x.2 := by
+    rw [ht.ext]
+    · aesop
+    · exact hs.attach.map fun x y hxy ↦ Subtype.ext <| i_inj _ x.2 _ y.2 hxy
+  calc
+    s.map f = s.pmap (fun x _ => f x) fun _ => id := by rw [pmap_eq_map]
+    _ = s.attach.map fun x => f x.1 := by rw [pmap_eq_map_attach]
+    _ = t.map g := by rw [this, Multiset.map_map]; exact map_congr rfl fun x _ => h _ _
+
+end Nodup
 
 end Multiset

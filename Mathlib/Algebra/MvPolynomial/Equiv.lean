@@ -3,12 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 -/
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Algebra.MvPolynomial.Rename
+import Mathlib.Algebra.BigOperators.Finsupp.Fin
 import Mathlib.Algebra.MvPolynomial.Degrees
+import Mathlib.Algebra.MvPolynomial.Rename
 import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Data.Finsupp.Fin
-import Mathlib.Logic.Equiv.Fin
+import Mathlib.Logic.Equiv.Fin.Basic
 
 /-!
 # Equivalences between polynomial rings
@@ -83,6 +82,16 @@ def pUnitAlgEquiv : MvPolynomial PUnit R ≃ₐ[R] R[X] where
   map_add' _ _ := eval₂_add _ _
   commutes' _ := eval₂_C _ _ _
 
+theorem pUnitAlgEquiv_monomial {d : PUnit →₀ ℕ} {r : R} :
+    MvPolynomial.pUnitAlgEquiv R (MvPolynomial.monomial d r)
+      = Polynomial.monomial (d ()) r := by
+  simp [Polynomial.C_mul_X_pow_eq_monomial]
+
+theorem pUnitAlgEquiv_symm_monomial {d : PUnit →₀ ℕ} {r : R} :
+    (MvPolynomial.pUnitAlgEquiv R).symm (Polynomial.monomial (d ()) r)
+      = MvPolynomial.monomial d r := by
+  simp [MvPolynomial.monomial_eq]
+
 section Map
 
 variable {R} (σ)
@@ -137,6 +146,36 @@ theorem mapAlgEquiv_trans (e : A₁ ≃ₐ[R] A₂) (f : A₂ ≃ₐ[R] A₃) :
   rfl
 
 end Map
+
+section Eval
+
+variable {R S : Type*} [CommSemiring R] [CommSemiring S]
+
+theorem eval₂_pUnitAlgEquiv_symm {f : Polynomial R} {φ : R →+* S} {a : Unit → S} :
+    ((MvPolynomial.pUnitAlgEquiv R).symm f : MvPolynomial Unit R).eval₂ φ a  =
+      f.eval₂ φ (a ()) := by
+  simp only [MvPolynomial.pUnitAlgEquiv_symm_apply]
+  induction f using Polynomial.induction_on' with
+  | h_add f g hf hg => simp [hf, hg]
+  | h_monomial n r => simp
+
+theorem eval₂_const_pUnitAlgEquiv_symm {f : Polynomial R} {φ : R →+* S} {a : S} :
+    ((MvPolynomial.pUnitAlgEquiv R).symm f : MvPolynomial Unit R).eval₂ φ (fun _ ↦ a)  =
+      f.eval₂ φ a := by
+  rw [eval₂_pUnitAlgEquiv_symm]
+
+theorem eval₂_pUnitAlgEquiv {f : MvPolynomial PUnit R} {φ : R →+* S} {a : PUnit → S} :
+    ((MvPolynomial.pUnitAlgEquiv R) f : Polynomial R).eval₂ φ (a default) = f.eval₂ φ a := by
+  simp only [MvPolynomial.pUnitAlgEquiv_apply]
+  induction f using MvPolynomial.induction_on' with
+  | monomial d r => simp
+  | add f g hf hg => simp [hf, hg]
+
+theorem eval₂_const_pUnitAlgEquiv {f : MvPolynomial PUnit R} {φ : R →+* S} {a : S} :
+    ((MvPolynomial.pUnitAlgEquiv R) f : Polynomial R).eval₂ φ a = f.eval₂ φ (fun _ ↦ a) := by
+  rw [← eval₂_pUnitAlgEquiv]
+
+end Eval
 
 section
 

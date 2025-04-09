@@ -53,7 +53,7 @@ assert_not_exists Field TwoSidedIdeal
 open Function
 
 namespace SimpleGraph
-variable {V W : Type*} {G G': SimpleGraph V} {M M' : Subgraph G} {v w : V}
+variable {V W : Type*} {G G' : SimpleGraph V} {M M' : Subgraph G} {v w : V}
 
 namespace Subgraph
 

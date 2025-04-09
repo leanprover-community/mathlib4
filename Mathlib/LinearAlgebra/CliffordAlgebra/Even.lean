@@ -181,18 +181,18 @@ private theorem fFold_fFold (m : M) (x : A × S f) : fFold f m (fFold f m x) = Q
     · rintro _ ⟨b, m₃, rfl⟩
       change f.bilin _ _ * (f.bilin _ _ * b) = Q m • (f.bilin _ _ * b)
       rw [← smul_mul_assoc, ← mul_assoc, f.contract_mid]
-    · change f.bilin m₁ m * 0 = Q m • (0 : A)  -- Porting note: `•` now needs the type of `0`
-      rw [mul_zero, smul_zero]
+    · suffices f.bilin m₁ m * 0 = Q m • (0 : A) by simp
+      simp
     · rintro x y _hx _hy ihx ihy
       rw [LinearMap.add_apply, LinearMap.add_apply, mul_add, smul_add, ihx, ihy]
     · rintro x hx _c ihx
       rw [LinearMap.smul_apply, LinearMap.smul_apply, mul_smul_comm, ihx, smul_comm]
 
 -- Porting note: In Lean 3, `aux_apply` isn't a simp lemma. I changed `{ attrs := [] }` to
--- `.lemmasOnly`, so that `aux_apply` isn't a simp lemma.
+-- `-isSimp`, so that `aux_apply` isn't a simp lemma.
 /-- The final auxiliary construction for `CliffordAlgebra.even.lift`. This map is the forwards
 direction of that equivalence, but not in the fully-bundled form. -/
-@[simps! (config := .lemmasOnly) apply]
+@[simps! -isSimp apply]
 def aux (f : EvenHom Q A) : CliffordAlgebra.even Q →ₗ[R] A := by
   refine ?_ ∘ₗ (even Q).val.toLinearMap
   -- Porting note: added, can't be found otherwise

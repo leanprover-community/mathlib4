@@ -3,7 +3,7 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.SetTheory.Ordinal.Arithmetic
+import Mathlib.SetTheory.Ordinal.Family
 
 /-!
 # Enumerating sets of ordinals by ordinals
@@ -33,7 +33,7 @@ termination_by o
 
 variable {s : Set Ordinal.{u}}
 
-@[deprecated "No deprecation message was provided."  (since := "2024-09-20")]
+@[deprecated "No deprecation message was provided." (since := "2024-09-20")]
 theorem enumOrd_def (o : Ordinal.{u}) :
     enumOrd s o = sInf (s ∩ { b | ∀ c, c < o → enumOrd s c < b }) := by
   rw [enumOrd]

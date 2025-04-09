@@ -401,12 +401,9 @@ end FiniteType
 
 namespace FinitePresentation
 
-variable (A)
-
+variable (A) in
 theorem id : FinitePresentation (RingHom.id A) :=
   Algebra.FinitePresentation.self A
-
-variable {A}
 
 theorem comp_surjective {f : A →+* B} {g : B →+* C} (hf : f.FinitePresentation) (hg : Surjective g)
     (hker : g.ker.FG) : (g.comp f).FinitePresentation := by

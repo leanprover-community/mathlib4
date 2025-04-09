@@ -49,7 +49,7 @@ variable [Semiring R]
 @[simps]
 def toPowerSeries : HahnSeries ℕ R ≃+* PowerSeries R where
   toFun f := PowerSeries.mk f.coeff
-  invFun f := ⟨fun n => PowerSeries.coeff R n f, (Nat.lt_wfRel.wf.isWF _).isPWO⟩
+  invFun f := ⟨fun n => PowerSeries.coeff R n f, .of_linearOrder _⟩
   left_inv f := by
     ext
     simp

@@ -108,7 +108,7 @@ theorem ConvexOn.average_mem_epigraph [IsFiniteMeasure μ] [NeZero μ] (hg : Con
   have ht_mem : ∀ᵐ x ∂μ, (f x, g (f x)) ∈ {p : E × ℝ | p.1 ∈ s ∧ g p.1 ≤ p.2} :=
     hfs.mono fun x hx => ⟨hx, le_rfl⟩
   exact average_pair hfi hgi ▸
-    hg.convex_epigraph.average_mem (hsc.epigraph hgc) ht_mem (hfi.prod_mk hgi)
+    hg.convex_epigraph.average_mem (hsc.epigraph hgc) ht_mem (hfi.prodMk hgi)
 
 theorem ConcaveOn.average_mem_hypograph [IsFiniteMeasure μ] [NeZero μ] (hg : ConcaveOn ℝ s g)
     (hgc : ContinuousOn g s) (hsc : IsClosed s) (hfs : ∀ᵐ x ∂μ, f x ∈ s)
@@ -272,11 +272,11 @@ theorem StrictConvexOn.ae_eq_const_or_map_average_lt [IsFiniteMeasure μ] (hg : 
       hfi.integrableOn hgi.integrableOn
   refine (ae_eq_const_or_exists_average_ne_compl hfi).imp_right ?_
   rintro ⟨t, hm, h₀, h₀', hne⟩
-  rcases average_mem_openSegment_compl_self hm.nullMeasurableSet h₀ h₀' (hfi.prod_mk hgi) with
+  rcases average_mem_openSegment_compl_self hm.nullMeasurableSet h₀ h₀' (hfi.prodMk hgi) with
     ⟨a, b, ha, hb, hab, h_avg⟩
   rw [average_pair hfi hgi, average_pair hfi.integrableOn hgi.integrableOn,
     average_pair hfi.integrableOn hgi.integrableOn, Prod.smul_mk,
-    Prod.smul_mk, Prod.mk_add_mk, Prod.mk.inj_iff] at h_avg
+    Prod.smul_mk, Prod.mk_add_mk, Prod.mk_inj] at h_avg
   simp only [Function.comp] at h_avg
   rw [← h_avg.1, ← h_avg.2]
   calc

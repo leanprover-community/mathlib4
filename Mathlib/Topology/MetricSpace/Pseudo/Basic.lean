@@ -207,8 +207,6 @@ end Real
 
 namespace Topology
 
--- Porting note: `TopologicalSpace.IsSeparable.separableSpace` moved to `EMetricSpace`
-
 /-- The preimage of a separable set by an inducing map is separable. -/
 protected lemma IsInducing.isSeparable_preimage {f : β → α} [TopologicalSpace β]
     (hf : IsInducing f) {s : Set α} (hs : IsSeparable s) : IsSeparable (f ⁻¹' s) := by

@@ -41,7 +41,7 @@ theorem continuum_le_cardinal_of_nontriviallyNormedField
   have B : ∀ᶠ n in atTop, x + c^n ∈ U := tendsto_def.1 A U hU
   rcases B.exists with ⟨n, hn⟩
   refine ⟨x + c^n, by simpa using hn, ?_⟩
-  simp only [ne_eq, add_right_eq_self]
+  simp only [add_ne_left]
   apply pow_ne_zero
   simpa using c_pos
 

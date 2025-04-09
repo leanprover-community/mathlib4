@@ -223,7 +223,7 @@ protected theorem surjOn : SurjOn e e.source e.target :=
 
 /-- Interpret an `Equiv` as a `PartialEquiv` by restricting it to `s` in the domain
 and to `t` in the codomain. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def _root_.Equiv.toPartialEquivOfImageEq (e : α ≃ β) (s : Set α) (t : Set β) (h : e '' s = t) :
     PartialEquiv α β where
   toFun := e
@@ -247,7 +247,7 @@ instance inhabitedOfEmpty [IsEmpty α] [IsEmpty β] : Inhabited (PartialEquiv α
   ⟨((Equiv.equivEmpty α).trans (Equiv.equivEmpty β).symm).toPartialEquiv⟩
 
 /-- Create a copy of a `PartialEquiv` providing better definitional equalities. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def copy (e : PartialEquiv α β) (f : α → β) (hf : ⇑e = f) (g : β → α) (hg : ⇑e.symm = g) (s : Set α)
     (hs : e.source = s) (t : Set β) (ht : e.target = t) :
     PartialEquiv α β where
@@ -332,7 +332,7 @@ theorem symm_mapsTo (h : e.IsImage s t) : MapsTo e.symm (e.target ∩ t) (e.sour
   h.symm.mapsTo
 
 /-- Restrict a `PartialEquiv` to a pair of corresponding sets. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def restr (h : e.IsImage s t) : PartialEquiv α β where
   toFun := e
   invFun := e.symm
@@ -525,9 +525,7 @@ theorem refl_symm : (PartialEquiv.refl α).symm = PartialEquiv.refl α :=
 theorem refl_restr_source (s : Set α) : ((PartialEquiv.refl α).restr s).source = s := by simp
 
 @[mfld_simps]
-theorem refl_restr_target (s : Set α) : ((PartialEquiv.refl α).restr s).target = s := by
-  change univ ∩ id ⁻¹' s = s
-  simp
+theorem refl_restr_target (s : Set α) : ((PartialEquiv.refl α).restr s).target = s := by simp
 
 /-- The identity partial equivalence on a set `s` -/
 def ofSet (s : Set α) : PartialEquiv α α where
@@ -686,8 +684,6 @@ theorem EqOnSource.source_eq {e e' : PartialEquiv α β} (h : e ≈ e') : e.sour
 theorem EqOnSource.eqOn {e e' : PartialEquiv α β} (h : e ≈ e') : e.source.EqOn e e' :=
   h.2
 
--- Porting note: A lot of dot notation failures here. Maybe we should not use `≈`
-
 /-- Two equivalent partial equivs have the same target. -/
 theorem EqOnSource.target_eq {e e' : PartialEquiv α β} (h : e ≈ e') : e.target = e'.target := by
   simp only [← image_source_eq_target, ← source_eq h, h.2.image_eq]
@@ -792,7 +788,6 @@ theorem prod_symm (e : PartialEquiv α β) (e' : PartialEquiv γ δ) :
 @[simp, mfld_simps]
 theorem refl_prod_refl :
     (PartialEquiv.refl α).prod (PartialEquiv.refl β) = PartialEquiv.refl (α × β) := by
-  -- Porting note: `ext1 ⟨x, y⟩` insufficient number of binders
   ext ⟨x, y⟩ <;> simp
 
 @[simp, mfld_simps]
@@ -808,7 +803,7 @@ end Prod
 sends `e.source ∩ s` to `e.target ∩ t` using `e` and `e'.source \ s` to `e'.target \ t` using `e'`,
 and similarly for the inverse function. The definition assumes `e.isImage s t` and
 `e'.isImage s t`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def piecewise (e e' : PartialEquiv α β) (s : Set α) (t : Set β) [∀ x, Decidable (x ∈ s)]
     [∀ y, Decidable (y ∈ t)] (H : e.IsImage s t) (H' : e'.IsImage s t) :
     PartialEquiv α β where
@@ -829,7 +824,7 @@ theorem symm_piecewise (e e' : PartialEquiv α β) {s : Set α} {t : Set β} [�
 /-- Combine two `PartialEquiv`s with disjoint sources and disjoint targets. We reuse
 `PartialEquiv.piecewise`, then override `source` and `target` to ensure better definitional
 equalities. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def disjointUnion (e e' : PartialEquiv α β) (hs : Disjoint e.source e'.source)
     (ht : Disjoint e.target e'.target) [∀ x, Decidable (x ∈ e.source)]
     [∀ y, Decidable (y ∈ e.target)] : PartialEquiv α β :=
@@ -888,7 +883,7 @@ namespace Set
 -- All arguments are explicit to avoid missing information in the pretty printer output
 /-- A bijection between two sets `s : Set α` and `t : Set β` provides a partial equivalence
 between `α` and `β`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 noncomputable def BijOn.toPartialEquiv [Nonempty α] (f : α → β) (s : Set α) (t : Set β)
     (hf : BijOn f s t) : PartialEquiv α β where
   toFun := f

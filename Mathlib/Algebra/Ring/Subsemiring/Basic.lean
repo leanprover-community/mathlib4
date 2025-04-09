@@ -533,16 +533,13 @@ theorem mem_closure_iff_exists_list {R} [Semiring R] {s : Set R} {x} :
         let ⟨t, ht1, ht2⟩ := List.mem_map.1 hr
         ht2 ▸ list_prod_mem _ fun y hy => subset_closure <| HL1 t ht1 y hy
 
-variable (R)
-
+variable (R) in
 /-- `closure` forms a Galois insertion with the coercion to set. -/
 protected def gi : GaloisInsertion (@closure R _) (↑) where
   choice s _ := closure s
   gc _ _ := closure_le
   le_l_u _ := subset_closure
   choice_eq _ _ := rfl
-
-variable {R}
 
 /-- Closure of a subsemiring `S` equals `S`. -/
 @[simp]

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Group.Multiset
-import Mathlib.Data.Multiset.Nodup
 
 /-!
 # Disjoint sum of multisets
@@ -48,7 +47,6 @@ theorem mem_disjSum : x ∈ s.disjSum t ↔ (∃ a, a ∈ s ∧ inl a = x) ∨ �
 @[simp]
 theorem inl_mem_disjSum : inl a ∈ s.disjSum t ↔ a ∈ s := by
   rw [mem_disjSum, or_iff_left]
-  -- Porting note: Previous code for L62 was: simp only [exists_eq_right]
   · simp only [inl.injEq, exists_eq_right]
   rintro ⟨b, _, hb⟩
   exact inr_ne_inl hb
@@ -56,7 +54,6 @@ theorem inl_mem_disjSum : inl a ∈ s.disjSum t ↔ a ∈ s := by
 @[simp]
 theorem inr_mem_disjSum : inr b ∈ s.disjSum t ↔ b ∈ t := by
   rw [mem_disjSum, or_iff_right]
-  -- Porting note: Previous code for L72 was: simp only [exists_eq_right]
   · simp only [inr.injEq, exists_eq_right]
   rintro ⟨a, _, ha⟩
   exact inl_ne_inr ha

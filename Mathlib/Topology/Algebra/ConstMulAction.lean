@@ -3,14 +3,14 @@ Copyright (c) 2021 Alex Kontorovich, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Kontorovich, Heather Macbeth
 -/
+import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
 import Mathlib.Algebra.Module.ULift
 import Mathlib.Algebra.Order.Group.Synonym
-import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.Topology.Algebra.Constructions
 import Mathlib.Topology.Algebra.Support
 import Mathlib.Topology.Bases
-import Mathlib.Topology.Homeomorph
+import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 # Monoid actions continuous in the second variable
@@ -27,6 +27,10 @@ In this file we define class `ContinuousConstSMul`. We say `ContinuousConstSMul 
   many `γ:Γ` move `K` to have nontrivial intersection with `L`.
 * `Homeomorph.smul`: scalar multiplication by an element of a group `Γ` acting on `T`
   is a homeomorphism of `T`.
+*`Homeomorph.smulOfNeZero`: if a group with zero `G₀` (e.g., a field) acts on `X` and `c : G₀`
+  is a nonzero element of `G₀`, then scalar multiplication by `c` is a homeomorphism of `X`;
+* `Homeomorph.smul`: scalar multiplication by an element of a group `G` acting on `X`
+  is a homeomorphism of `X`.
 
 ## Main results
 
@@ -122,7 +126,7 @@ instance OrderDual.continuousConstSMul' : ContinuousConstSMul Mᵒᵈ α :=
 @[to_additive]
 instance Prod.continuousConstSMul [SMul M β] [ContinuousConstSMul M β] :
     ContinuousConstSMul M (α × β) :=
-  ⟨fun _ => (continuous_fst.const_smul _).prod_mk (continuous_snd.const_smul _)⟩
+  ⟨fun _ => (continuous_fst.const_smul _).prodMk (continuous_snd.const_smul _)⟩
 
 @[to_additive]
 instance {ι : Type*} {γ : ι → Type*} [∀ i, TopologicalSpace (γ i)] [∀ i, SMul M (γ i)]
@@ -267,9 +271,6 @@ theorem smul_mem_nhds_smul_iff {t : Set α} (g : G) {a : α} : g • t ∈ 𝓝 
 
 @[to_additive] alias ⟨_, smul_mem_nhds_smul⟩ := smul_mem_nhds_smul_iff
 
-@[to_additive (attr := deprecated "No deprecation message was provided." (since := "2024-08-06"))]
-alias smul_mem_nhds := smul_mem_nhds_smul
-
 @[to_additive (attr := simp)]
 theorem smul_mem_nhds_self [TopologicalSpace G] [ContinuousConstSMul G G] {g : G} {s : Set G} :
     g • s ∈ 𝓝 g ↔ s ∈ 𝓝 1 := by
@@ -305,7 +306,7 @@ theorem continuous_const_smul_iff₀ (hc : c ≠ 0) : (Continuous fun x => c •
 
 /-- Scalar multiplication by a non-zero element of a group with zero acting on `α` is a
 homeomorphism from `α` onto itself. -/
-@[simps! (config := .asFn) apply]
+@[simps! -fullyApplied apply]
 protected def Homeomorph.smulOfNeZero (c : G₀) (hc : c ≠ 0) : α ≃ₜ α :=
   Homeomorph.smul (Units.mk0 c hc)
 
@@ -413,7 +414,7 @@ nonrec theorem smul_mem_nhds_smul_iff (hc : IsUnit c) {s : Set α} {a : α} :
 
 end IsUnit
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: use `Set.Nonempty`
+-- TODO: use `Set.Nonempty`
 /-- Class `ProperlyDiscontinuousSMul Γ T` says that the scalar multiplication `(•) : Γ → T → T`
 is properly discontinuous, that is, for any pair of compact sets `K, L` in `T`, only finitely many
 `γ:Γ` move `K` to have nontrivial intersection with `L`.
@@ -516,15 +517,7 @@ theorem smul_mem_nhds_smul_iff₀ {c : G₀} {s : Set α} {x : α} (hc : c ≠ 0
     c • s ∈ 𝓝 (c • x : α) ↔ s ∈ 𝓝 x :=
   smul_mem_nhds_smul_iff (Units.mk0 c hc)
 
-@[deprecated (since := "2024-08-06")]
-alias set_smul_mem_nhds_smul_iff := smul_mem_nhds_smul_iff₀
-
 alias ⟨_, smul_mem_nhds_smul₀⟩ := smul_mem_nhds_smul_iff₀
-
-@[deprecated smul_mem_nhds_smul₀ (since := "2024-08-06")]
-theorem set_smul_mem_nhds_smul {c : G₀} {s : Set α} {x : α} (hs : s ∈ 𝓝 x) (hc : c ≠ 0) :
-    c • s ∈ 𝓝 (c • x : α) :=
-  smul_mem_nhds_smul₀ hc hs
 
 end MulAction
 

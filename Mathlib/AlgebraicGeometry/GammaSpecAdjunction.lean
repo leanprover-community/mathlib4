@@ -523,6 +523,10 @@ lemma Spec.map_inj : Spec.map φ = Spec.map ψ ↔ φ = ψ := by
 lemma Spec.map_injective {R S : CommRingCat} : Function.Injective (Spec.map : (R ⟶ S) → _) :=
   fun _ _ ↦ Spec.map_inj.mp
 
+@[simp]
+lemma Spec.map_eq_id {R : CommRingCat} {ϕ : R ⟶ R} : Spec.map ϕ = 𝟙 (Spec R) ↔ ϕ = 𝟙 R := by
+  simp [← map_inj]
+
 /-- The preimage under Spec. -/
 def Spec.preimage : R ⟶ S := (Scheme.Spec.preimage f).unop
 

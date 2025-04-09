@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.LinearAlgebra.Basis.Basic
+import Mathlib.LinearAlgebra.Basis.Submodule
 import Mathlib.LinearAlgebra.Dimension.Finrank
 import Mathlib.LinearAlgebra.InvariantBasisNumber
 
@@ -261,6 +262,31 @@ theorem linearIndependent_le_basis {ι : Type w} (b : Basis ι R M) {κ : Type w
     exact linearIndependent_le_span v i (range b) b.span_eq
   · -- and otherwise we have `linearIndependent_le_infinite_basis`.
     exact linearIndependent_le_infinite_basis b v i
+
+/-- `StrongRankCondition` implies that if there is an injective linear map `(α →₀ R) →ₗ[R] β →₀ R`,
+then the cardinal of `α` is smaller than or equal to the cardinal of `β`.
+-/
+theorem card_le_of_injective'' {α : Type v} {β : Type v} (f : (α →₀ R) →ₗ[R] β →₀ R)
+    (i : Injective f) : #α ≤ #β := by
+  let b : Basis β R (β →₀ R) := ⟨1⟩
+  apply linearIndependent_le_basis b (fun (i : α) ↦ f (Finsupp.single i 1))
+  rw [LinearIndependent]
+  have : (linearCombination R fun i ↦ f (Finsupp.single i 1)) = f := by ext a b; simp
+  exact this.symm ▸ i
+
+/-- If `R` satisfies the strong rank condition, then for any linearly independent family `v : ι → M`
+and spanning set `w : Set M`, the cardinality of `ι` is bounded by the cardinality of `w`.
+-/
+theorem linearIndependent_le_span'' {ι : Type v} {v : ι → M} (i : LinearIndependent R v) (w : Set M)
+    (s : span R w = ⊤) : #ι ≤ #w := by
+  fapply card_le_of_injective'' (R := R)
+  · apply Finsupp.linearCombination
+    exact fun i ↦ Span.repr R w ⟨v i, s ▸ trivial⟩
+  · intro f g h
+    apply_fun linearCombination R ((↑) : w → M) at h
+    simp only [linearCombination_linearCombination, Submodule.coe_mk,
+               Span.finsupp_linearCombination_repr] at h
+    exact i h
 
 /-- Let `R` satisfy the strong rank condition. If `m` elements of a free rank `n` `R`-module are
 linearly independent, then `m ≤ n`. -/

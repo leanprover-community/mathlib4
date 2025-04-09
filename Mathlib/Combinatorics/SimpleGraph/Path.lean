@@ -80,7 +80,7 @@ structure IsTrail {u v : V} (p : G.Walk u v) : Prop where
 
 /-- A *path* is a walk with no repeating vertices.
 Use `SimpleGraph.Walk.IsPath.mk'` for a simpler constructor. -/
-structure IsPath {u v : V} (p : G.Walk u v) extends IsTrail p : Prop where
+structure IsPath {u v : V} (p : G.Walk u v) : Prop extends IsTrail p where
   support_nodup : p.support.Nodup
 
 -- Porting note: used to use `extends to_trail : is_trail p` in structure
@@ -88,7 +88,7 @@ protected lemma IsPath.isTrail {p : Walk G u v} (h : IsPath p) : IsTrail p := h.
 
 /-- A *circuit* at `u : V` is a nonempty trail beginning and ending at `u`. -/
 @[mk_iff isCircuit_def]
-structure IsCircuit {u : V} (p : G.Walk u u) extends IsTrail p : Prop where
+structure IsCircuit {u : V} (p : G.Walk u u) : Prop extends IsTrail p where
   ne_nil : p ≠ nil
 
 -- Porting note: used to use `extends to_trail : is_trail p` in structure
@@ -96,7 +96,7 @@ protected lemma IsCircuit.isTrail {p : Walk G u u} (h : IsCircuit p) : IsTrail p
 
 /-- A *cycle* at `u : V` is a circuit at `u` whose only repeating vertex
 is `u` (which appears exactly twice). -/
-structure IsCycle {u : V} (p : G.Walk u u) extends IsCircuit p : Prop where
+structure IsCycle {u : V} (p : G.Walk u u) : Prop extends IsCircuit p where
   support_nodup : p.support.tail.Nodup
 
 -- Porting note: used to use `extends to_circuit : is_circuit p` in structure
@@ -1266,7 +1266,7 @@ def IsBridge (G : SimpleGraph V) (e : Sym2 V) : Prop :=
 theorem isBridge_iff {u v : V} :
     G.IsBridge s(u, v) ↔ G.Adj u v ∧ ¬(G \ fromEdgeSet {s(u, v)}).Reachable u v := Iff.rfl
 
-theorem reachable_delete_edges_iff_exists_walk {v w v' w': V} :
+theorem reachable_delete_edges_iff_exists_walk {v w v' w' : V} :
     (G \ fromEdgeSet {s(v, w)}).Reachable v' w' ↔ ∃ p : G.Walk v' w', ¬s(v, w) ∈ p.edges := by
   constructor
   · rintro ⟨p⟩

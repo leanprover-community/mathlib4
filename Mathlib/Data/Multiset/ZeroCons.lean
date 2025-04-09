@@ -427,7 +427,7 @@ theorem card_pair (a b : α) : card {a, b} = 2 := by
   rw [insert_eq_cons, card_cons, card_singleton]
 
 theorem card_eq_one {s : Multiset α} : card s = 1 ↔ ∃ a, s = {a} :=
-  ⟨Quot.inductionOn s fun _l h => (List.length_eq_one.1 h).imp fun _a => congr_arg _,
+  ⟨Quot.inductionOn s fun _l h => (List.length_eq_one_iff.1 h).imp fun _a => congr_arg _,
     fun ⟨_a, e⟩ => e.symm ▸ rfl⟩
 
 theorem lt_iff_cons_le {s t : Multiset α} : s < t ↔ ∃ a, a ::ₘ s ≤ t :=
@@ -591,5 +591,28 @@ end Rel
 @[simp]
 theorem pairwise_zero (r : α → α → Prop) : Multiset.Pairwise r 0 :=
   ⟨[], rfl, List.Pairwise.nil⟩
+
+section Nodup
+
+variable {s : Multiset α} {a : α}
+
+@[simp]
+theorem nodup_zero : @Nodup α 0 :=
+  Pairwise.nil
+
+@[simp]
+theorem nodup_cons {a : α} {s : Multiset α} : Nodup (a ::ₘ s) ↔ a ∉ s ∧ Nodup s :=
+  Quot.induction_on s fun _ => List.nodup_cons
+
+theorem Nodup.cons (m : a ∉ s) (n : Nodup s) : Nodup (a ::ₘ s) :=
+  nodup_cons.2 ⟨m, n⟩
+
+theorem Nodup.of_cons (h : Nodup (a ::ₘ s)) : Nodup s :=
+  (nodup_cons.1 h).2
+
+theorem Nodup.not_mem (h : Nodup (a ::ₘ s)) : a ∉ s :=
+  (nodup_cons.1 h).1
+
+end Nodup
 
 end Multiset

@@ -415,7 +415,7 @@ which does not permit this (but has the advantage of working when `E` itself is 
 i.e. has no scalar action). -/
 
 
-variable [NormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E]
+variable [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 /-- If `E` is a normed space, `Lp.simpleFunc E p μ` is a `SMul`. Not declared as an
 instance as it is (as of writing) used only in the construction of the Bochner integral. -/
@@ -449,10 +449,12 @@ attribute [local instance] simpleFunc.module
 
 /-- If `E` is a normed space, `Lp.simpleFunc E p μ` is a normed space. Not declared as an
 instance as it is (as of writing) used only in the construction of the Bochner integral. -/
-protected theorem boundedSMul [Fact (1 ≤ p)] : BoundedSMul 𝕜 (Lp.simpleFunc E p μ) :=
-  BoundedSMul.of_norm_smul_le fun r f => (norm_smul_le r (f : Lp E p μ) :)
+protected theorem isBoundedSMul [Fact (1 ≤ p)] : IsBoundedSMul 𝕜 (Lp.simpleFunc E p μ) :=
+  IsBoundedSMul.of_norm_smul_le fun r f => (norm_smul_le r (f : Lp E p μ) :)
 
-attribute [local instance] simpleFunc.boundedSMul
+@[deprecated (since := "2025-03-10")] protected alias boundedSMul := simpleFunc.isBoundedSMul
+
+attribute [local instance] simpleFunc.isBoundedSMul
 
 /-- If `E` is a normed space, `Lp.simpleFunc E p μ` is a normed space. Not declared as an
 instance as it is (as of writing) used only in the construction of the Bochner integral. -/
@@ -462,7 +464,7 @@ protected def normedSpace {𝕜} [NormedField 𝕜] [NormedSpace 𝕜 E] [Fact (
 
 end Instances
 
-attribute [local instance] simpleFunc.module simpleFunc.normedSpace simpleFunc.boundedSMul
+attribute [local instance] simpleFunc.module simpleFunc.normedSpace simpleFunc.isBoundedSMul
 
 section ToLp
 
@@ -491,7 +493,7 @@ theorem toLp_sub (f g : α →ₛ E) (hf : MemLp f p μ) (hg : MemLp g p μ) :
     toLp (f - g) (hf.sub hg) = toLp f hf - toLp g hg := by
   simp only [sub_eq_add_neg, ← toLp_neg, ← toLp_add]
 
-variable [NormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E]
+variable [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 theorem toLp_smul (f : α →ₛ E) (hf : MemLp f p μ) (c : 𝕜) :
     toLp (c • f) (hf.const_smul c) = c • toLp f hf :=
@@ -574,7 +576,7 @@ theorem sub_toSimpleFunc (f g : Lp.simpleFunc E p μ) :
   simp only [AddSubgroup.coe_sub, Pi.sub_apply]
   repeat' intro h; rw [h]
 
-variable [NormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E]
+variable [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 theorem smul_toSimpleFunc (k : 𝕜) (f : Lp.simpleFunc E p μ) :
     toSimpleFunc (k • f) =ᵐ[μ] k • ⇑(toSimpleFunc f) := by
@@ -591,16 +593,13 @@ end ToSimpleFunc
 
 section Induction
 
-variable (p)
-
+variable (p) in
 /-- The characteristic function of a finite-measure measurable set `s`, as an `Lp` simple function.
 -/
 def indicatorConst {s : Set α} (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : E) :
     Lp.simpleFunc E p μ :=
   toLp ((SimpleFunc.const _ c).piecewise s hs (SimpleFunc.const _ 0))
     (memLp_indicator_const p hs c (Or.inr hμs))
-
-variable {p}
 
 @[simp]
 theorem coe_indicatorConst {s : Set α} (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : E) :
@@ -696,7 +695,7 @@ protected theorem denseRange (hp_ne_top : p ≠ ∞) :
 protected theorem dense (hp_ne_top : p ≠ ∞) : Dense (Lp.simpleFunc E p μ : Set (Lp E p μ)) := by
   simpa only [denseRange_subtype_val] using simpleFunc.denseRange (E := E) (μ := μ) hp_ne_top
 
-variable [NormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E]
+variable [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 variable (α E 𝕜)
 
 /-- The embedding of Lp simple functions into Lp functions, as a continuous linear map. -/

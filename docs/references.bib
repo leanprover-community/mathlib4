@@ -2,6 +2,9 @@
 # To normalize:
 # bibtool --preserve.key.case=on --preserve.keys=on --pass.comments=on --print.use.tab=off -s -i docs/references.bib -o docs/references.bib
 
+# WARNING: Please only use alphanumeric characters, '-', '_', and ':' for the key of bibliography items!
+# Currently doc-gen does not support characters outside them and will silently errors, causing incomplete reference pages.
+
 # https://www.zbmath.org/ and https://mathscinet.ams.org/mathscinet
 # (or the free tool https://mathscinet.ams.org/mrlookup)
 # are good sources of complete bibtex entries for mathematics
@@ -1012,6 +1015,19 @@
   author        = {Pete L. Clark},
   title         = {Geometry of Numbers with Applications to Number Theory},
   url           = {http://alpha.math.uga.edu/~pete/geometryofnumbers.pdf}
+}
+
+@Article{         cockett1993,
+  author        = {J.R.B. Cockett},
+  title         = {Introduction to Distributive Categories},
+  journal       = {Mathematical Structures in Computer Science},
+  volume        = {3},
+  number        = {3},
+  pages         = {277--307},
+  year          = {1993},
+  url           = {https://doi.org/10.1017/S0960129500000232},
+  biburl        = {https://dblp.org/rec/journals/mscs/Cockett93.bib},
+  bibsource     = {dblp computer science bibliography, https://dblp.org}
 }
 
 @Article{         cohen2012,
@@ -2130,6 +2146,16 @@
   year          = "1979"
 }
 
+@Article{         hollom2025,
+  title         = {A resolution of the Aharoni-Korman conjecture},
+  author        = {Lawrence Hollom},
+  year          = {2025},
+  eprint        = {2411.16844},
+  archiveprefix = {arXiv},
+  primaryclass  = {math.CO},
+  url           = {https://arxiv.org/abs/2411.16844}
+}
+
 @Article{         hovey-2001,
   author        = {Hovey, Mark},
   title         = {Model category structures on chain complexes of sheaves},
@@ -2200,7 +2226,7 @@
   isbn          = "978-3-540-37773-3"
 }
 
-@Book{            Hytönen_VanNeerven_Veraar_Wies_2016,
+@Book{            Hytonen_VanNeerven_Veraar_Wies_2016,
   author        = {Hytönen, Tuomas and Van Neerven, Jan and Veraar, Mark and
                   Weis, Lutz},
   title         = {Analysis in Banach spaces},
@@ -2583,6 +2609,16 @@
   doi           = {10.2307/1990847}
 }
 
+@Article{         kelly2005,
+  author        = {Kelly, G. M.},
+  title         = {Basic concepts of enriched category theory},
+  journal       = {Repr. Theory Appl. Categ.},
+  volume        = {10},
+  pages         = {vi+137 pp.},
+  year          = {2005},
+  language      = {English}
+}
+
 @Article{         kleiman1979,
   author        = {Kleiman, Steven Lawrence},
   title         = {Misconceptions about {$K_X$}},
@@ -2919,6 +2955,19 @@
   publisher     = {Polimetrica}
 }
 
+@Article{         mitchell1981,
+  title         = {A quick proof of the Gabriel-Popesco theorem},
+  journal       = {Journal of Pure and Applied Algebra},
+  volume        = {20},
+  number        = {3},
+  pages         = {313-315},
+  year          = {1981},
+  issn          = {0022-4049},
+  doi           = {https://doi.org/10.1016/0022-4049(81)90065-7},
+  url           = {https://www.sciencedirect.com/science/article/pii/0022404981900657},
+  author        = {Barry Mitchell}
+}
+
 @Book{            MM92,
   title         = {Sheaves in geometry and logic: A first introduction to
                   topos theory},
@@ -2984,6 +3033,18 @@
   mrclass       = {11T06 (12E05 13B25 33C80 94A60)},
   mrnumber      = {1237403},
   mrreviewer    = {S. D. Cohen}
+}
+
+@InProceedings{   MR1268290,
+  author        = {Hans-Joachim Baues and Mamuka Jibladze and Andrew Tonks},
+  title         = {Cohomology of Monoids in Monoidal Categories},
+  booktitle     = {Operads: Proceedings of Renaissance Conferences, 1995},
+  pages         = {137--165},
+  series        = {Contemp. Math.},
+  isbn          = {0-8218-0513-4},
+  year          = {1997},
+  volume        = {202},
+  publisher     = {American Mathematical Society}
 }
 
 @Article{         MR25465,
@@ -3386,6 +3447,15 @@
   pages         = {75--91}
 }
 
+@Article{         rooij1070,
+  title         = {Non-Archimedean uniformities},
+  author        = {van Rooij, A. C. M.},
+  year          = {1970},
+  journal       = {Kyungpook Math. J.},
+  volume        = {10},
+  pages         = {21--30}
+}
+
 @Article{         Rosenlicht_1972,
   author        = {Rosenlicht, Maxwell},
   title         = {Integration in finite terms},
@@ -3526,6 +3596,22 @@
   mrclass       = {56.0X},
   mrnumber      = {0045386},
   mrreviewer    = {W. S. Massey}
+}
+
+@Article{         serre1958,
+  author        = {Serre, Jean-Pierre},
+  title         = {Groupes d'homotopie et classes de groupes ab\'eliens},
+  journal       = {Ann. of Math. (2)},
+  fjournal      = {Annals of Mathematics. Second Series},
+  volume        = {58},
+  year          = {1953},
+  pages         = {258--294},
+  issn          = {0003-486X},
+  mrclass       = {56.0X},
+  mrnumber      = {59548},
+  mrreviewer    = {W.\ S.\ Massey},
+  doi           = {10.2307/1969789},
+  url           = {https://doi.org/10.2307/1969789}
 }
 
 @Book{            serre1965,
@@ -3841,6 +3927,18 @@
   mrnumber      = {1453167}
 }
 
+@Book{            vershynin2018high,
+  title         = {High-dimensional probability: An introduction with
+                  applications in data science},
+  author        = {Vershynin, Roman},
+  series        = {Cambridge Series in Statistical and Probabilistic
+                  Mathematics},
+  volume        = {47},
+  year          = {2018},
+  publisher     = {Cambridge university press},
+  isbn          = {9781108415194}
+}
+
 @Book{            Vickers1989,
   author        = {Vickers, Steven},
   title         = {Topology via Logic},
@@ -3938,6 +4036,17 @@
   mrreviewer    = {Karl\ Rubin},
   doi           = {10.2307/2118559},
   url           = {https://doi.org/10.2307/2118559}
+}
+
+@Article{         windisch2021,
+  title         = {Equivalent characterizations of non-Archimedean uniform
+                  spaces},
+  author        = {Daniel Windisch},
+  year          = {2021},
+  eprint        = {2111.09722},
+  archiveprefix = {arXiv},
+  primaryclass  = {math.GN},
+  url           = {https://arxiv.org/abs/2111.09722}
 }
 
 @TechReport{      zaanen1966,

@@ -270,14 +270,11 @@ noncomputable def lpMeasSubgroupToLpTrim (hm : m ≤ m0) (f : lpMeasSubgroup F m
   MemLp.toLp (mem_lpMeasSubgroup_iff_aeStronglyMeasurable.mp f.mem).choose
     (memLp_trim_of_mem_lpMeasSubgroup hm f.1 f.mem)
 
-variable (𝕜)
-
+variable (𝕜) in
 /-- Map from `lpMeas` to `Lp F p (μ.trim hm)`. -/
 noncomputable def lpMeasToLpTrim (hm : m ≤ m0) (f : lpMeas F 𝕜 m p μ) : Lp F p (μ.trim hm) :=
   MemLp.toLp (mem_lpMeas_iff_aeStronglyMeasurable.mp f.mem).choose
     (memLp_trim_of_mem_lpMeasSubgroup hm f.1 f.mem)
-
-variable {𝕜}
 
 /-- Map from `Lp F p (μ.trim hm)` to `lpMeasSubgroup`, inverse of
 `lpMeasSubgroupToLpTrim`. -/
@@ -285,13 +282,12 @@ noncomputable def lpTrimToLpMeasSubgroup (hm : m ≤ m0) (f : Lp F p (μ.trim hm
     lpMeasSubgroup F m p μ :=
   ⟨(memLp_of_memLp_trim hm (Lp.memLp f)).toLp f, mem_lpMeasSubgroup_toLp_of_trim hm f⟩
 
-variable (𝕜)
-
+variable (𝕜) in
 /-- Map from `Lp F p (μ.trim hm)` to `lpMeas`, inverse of `Lp_meas_to_Lp_trim`. -/
 noncomputable def lpTrimToLpMeas (hm : m ≤ m0) (f : Lp F p (μ.trim hm)) : lpMeas F 𝕜 m p μ :=
   ⟨(memLp_of_memLp_trim hm (Lp.memLp f)).toLp f, mem_lpMeasSubgroup_toLp_of_trim hm f⟩
 
-variable {F 𝕜 p μ}
+variable {F p μ}
 
 theorem lpMeasSubgroupToLpTrim_ae_eq (hm : m ≤ m0) (f : lpMeasSubgroup F m p μ) :
     lpMeasSubgroupToLpTrim F p μ hm f =ᵐ[μ] f :=

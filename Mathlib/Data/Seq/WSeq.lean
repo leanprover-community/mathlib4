@@ -444,7 +444,7 @@ theorem liftRel_destruct_iff {R : α → β → Prop} {s : WSeq α} {t : WSeq β
       LiftRel R s t ∨ Computation.LiftRel (LiftRelO R (LiftRel R)) (destruct s) (destruct t),
       Or.inr h, fun {s t} h => by
       have h : Computation.LiftRel (LiftRelO R (LiftRel R)) (destruct s) (destruct t) := by
-        cases' h with h h
+        obtain h | h := h
         · exact liftRel_destruct h
         · assumption
       apply Computation.LiftRel.imp _ _ _ h
@@ -453,7 +453,6 @@ theorem liftRel_destruct_iff {R : α → β → Prop} {s : WSeq α} {t : WSeq β
       intro s t
       apply Or.inl⟩⟩
 
--- Porting note: To avoid ambiguous notation, `~` became `~ʷ`.
 @[inherit_doc] infixl:50 " ~ʷ " => Equiv
 
 theorem destruct_congr {s t : WSeq α} :
@@ -504,7 +503,7 @@ theorem LiftRel.trans (R : α → α → Prop) (H : Transitive R) : Transitive (
         fun {a c} ha hc => ?_⟩
   rcases h1.left ha with ⟨b, hb, t1⟩
   have t2 := Computation.rel_of_liftRel h2 hb hc
-  cases' a with a <;> cases' c with c
+  obtain - | a := a <;> obtain - | c := c
   · trivial
   · cases b
     · cases t2
@@ -851,10 +850,7 @@ theorem mem_of_mem_dropn {s : WSeq α} {a} : ∀ {n}, a ∈ drop s n → a ∈ s
 
 theorem get?_mem {s : WSeq α} {a n} : some a ∈ get? s n → a ∈ s := by
   revert s; induction' n with n IH <;> intro s h
-  · -- Porting note: This line is required to infer metavariables in
-    --               `Computation.exists_of_mem_map`.
-    dsimp only [get?, head] at h
-    rcases Computation.exists_of_mem_map h with ⟨o, h1, h2⟩
+  · rcases Computation.exists_of_mem_map h with ⟨o, h1, h2⟩
     rcases o with - | o
     · injection h2
     injection h2 with h'
@@ -904,17 +900,12 @@ theorem liftRel_dropn_destruct {R : α → β → Prop} {s t} (H : LiftRel R s t
     · apply liftRel_dropn_destruct H n
     exact fun {a b} o =>
       match a, b, o with
-      | none, none, _ => by
-        -- Porting note: These 2 theorems should be excluded.
-        simp [-liftRel_pure_left, -liftRel_pure_right]
+      | none, none, _ => by simp
       | some (a, s), some (b, t), ⟨_, h2⟩ => by simpa [tail.aux] using liftRel_destruct h2
 
 theorem exists_of_liftRel_left {R : α → β → Prop} {s t} (H : LiftRel R s t) {a} (h : a ∈ s) :
     ∃ b, b ∈ t ∧ R a b := by
   let ⟨n, h⟩ := exists_get?_of_mem h
-  -- Porting note: This line is required to infer metavariables in
-  --               `Computation.exists_of_mem_map`.
-  dsimp only [get?, head] at h
   let ⟨some (_, s'), sd, rfl⟩ := Computation.exists_of_mem_map h
   let ⟨some (b, t'), td, ⟨ab, _⟩⟩ := (liftRel_dropn_destruct H n).left sd
   exact ⟨b, get?_mem (Computation.mem_map (Prod.fst.{v, v} <$> ·) td), ab⟩
@@ -942,16 +933,12 @@ theorem exists_of_mem_map {f} {b : β} : ∀ {s : WSeq α}, b ∈ map f s → �
 
 @[simp]
 theorem liftRel_nil (R : α → β → Prop) : LiftRel R nil nil := by
-  rw [liftRel_destruct_iff]
-  -- Porting note: These 2 theorems should be excluded.
-  simp [-liftRel_pure_left, -liftRel_pure_right]
+  simp [liftRel_destruct_iff]
 
 @[simp]
 theorem liftRel_cons (R : α → β → Prop) (a b s t) :
     LiftRel R (cons a s) (cons b t) ↔ R a b ∧ LiftRel R s t := by
-  rw [liftRel_destruct_iff]
-  -- Porting note: These 2 theorems should be excluded.
-  simp [-liftRel_pure_left, -liftRel_pure_right]
+  simp [liftRel_destruct_iff]
 
 @[simp]
 theorem liftRel_think_left (R : α → β → Prop) (s t) : LiftRel R (think s) t ↔ LiftRel R s t := by
@@ -1005,9 +992,7 @@ theorem liftRel_flatten {R : α → β → Prop} {c1 : Computation (WSeq α)} {c
       simp only [destruct_flatten]; apply liftRel_bind _ _ h
       intro a b ab; apply Computation.LiftRel.imp _ _ _ (liftRel_destruct ab)
       intro a b; apply LiftRelO.imp_right
-      intro s t h; refine ⟨Computation.pure s, Computation.pure t, ?_, ?_, ?_⟩ <;>
-        -- Porting note: These 2 theorems should be excluded.
-        simp [h, -liftRel_pure_left, -liftRel_pure_right]⟩
+      intro s t h; refine ⟨Computation.pure s, Computation.pure t, ?_, ?_, ?_⟩ <;> simp [h]⟩
 
 theorem flatten_congr {c1 c2 : Computation (WSeq α)} :
     Computation.LiftRel Equiv c1 c2 → flatten c1 ~ʷ flatten c2 :=
@@ -1273,12 +1258,8 @@ theorem exists_of_mem_join {a : α} : ∀ {S : WSeq (WSeq α)}, a ∈ join S →
       intro ej m <;> simp at ej <;> have := congr_arg Seq.destruct ej <;> simp at this <;>
       subst ss
     · apply Or.inr
-      -- Porting note: `exists_eq_or_imp` should be excluded.
-      simp [-exists_eq_or_imp] at m ⊢
-      rcases IH s S rfl m with as | ex
-      · exact ⟨s, Or.inl rfl, as⟩
-      · rcases ex with ⟨s', sS, as⟩
-        exact ⟨s', Or.inr sS, as⟩
+      simp only [join_cons, nil_append, mem_think, mem_cons_iff, exists_eq_or_imp] at m ⊢
+      exact IH s S rfl m
     · apply Or.inr
       simp? at m says simp only [join_think, nil_append, mem_think] at m
       rcases (IH nil S (by simp) (by simp [m])).resolve_left (not_mem_nil _) with ⟨s, sS, as⟩
@@ -1390,8 +1371,7 @@ theorem liftRel_append (R : α → β → Prop) {s1 s2 : WSeq α} {t1 t2 : WSeq 
       · cases a; cases h
       · obtain ⟨a, s⟩ := a; obtain ⟨b, t⟩ := b
         obtain ⟨r, h⟩ := h
-        -- Porting note: These 2 theorems should be excluded.
-        simpa [-liftRel_pure_left, -liftRel_pure_right] using ⟨r, Or.inr ⟨s, rfl, t, rfl, h⟩⟩⟩
+        simpa using ⟨r, Or.inr ⟨s, rfl, t, rfl, h⟩⟩⟩
 
 theorem liftRel_join.lem (R : α → β → Prop) {S T} {U : WSeq α → WSeq β → Prop}
     (ST : LiftRel (LiftRel R) S T)
@@ -1455,11 +1435,10 @@ theorem liftRel_join (R : α → β → Prop) {S : WSeq (WSeq α)} {T : WSeq (WS
     exact fun {o p} h =>
       match o, p, h with
       | some (a, s), some (b, t), ⟨h1, h2⟩ => by
-        -- Porting note: These 2 theorems should be excluded.
-        simpa [-liftRel_pure_left, -liftRel_pure_right] using ⟨h1, s, t, S, rfl, T, rfl, h2, ST⟩
+        simpa using ⟨h1, s, t, S, rfl, T, rfl, h2, ST⟩
       | none, none, _ => by
-        -- Porting note: `LiftRelO` should be excluded.
-        dsimp [destruct_append.aux, Computation.LiftRel, -LiftRelO]; constructor
+        -- We do not `dsimp` with `LiftRelO` since `liftRel_join.lem` uses `LiftRelO`.
+        dsimp only [destruct_append.aux, Computation.LiftRel]; constructor
         · intro
           apply liftRel_join.lem _ ST fun _ _ => id
         · intro b mb
@@ -1495,13 +1474,10 @@ theorem join_map_ret (s : WSeq α) : join (map ret s) ~ʷ s := by
       match c1, c2, h with
       | _, _, ⟨s, rfl, rfl⟩ => by
         clear h
-        -- Porting note: `ret` is simplified in `simp` so `ret`s become `fun a => cons a nil` here.
-        have : ∀ s, ∃ s' : WSeq α,
-            (map (fun a => cons a nil) s).join.destruct =
-              (map (fun a => cons a nil) s').join.destruct ∧ destruct s = s'.destruct :=
-          fun s => ⟨s, rfl, rfl⟩
-        induction' s using WSeq.recOn with a s s <;>
-          simp (config := { unfoldPartialApp := true }) [ret, ret_mem, this, Option.exists]
+        have (s) : ∃ s' : WSeq α,
+            (map ret s).join.destruct = (map ret s').join.destruct ∧ destruct s = s'.destruct :=
+          ⟨s, rfl, rfl⟩
+        induction' s using WSeq.recOn with a s s <;> simp [ret, ret_mem, this, Option.exists]
   · exact ⟨s, rfl, rfl⟩
 
 @[simp]
@@ -1619,4 +1595,4 @@ end WSeq
 
 end Stream'
 
-set_option linter.style.longFile 1800
+set_option linter.style.longFile 1700

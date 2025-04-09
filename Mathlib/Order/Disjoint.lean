@@ -633,13 +633,11 @@ theorem coe_injective : Injective ((↑) : Complementeds α → α) := Subtype.c
 @[simp, norm_cast]
 theorem coe_inj : (a : α) = b ↔ a = b := Subtype.coe_inj
 
--- Porting note: removing `simp` because `Subtype.coe_le_coe` already proves it
 @[norm_cast]
 theorem coe_le_coe : (a : α) ≤ b ↔ a ≤ b := by simp
 
--- Porting note: removing `simp` because `Subtype.coe_lt_coe` already proves it
 @[norm_cast]
-theorem coe_lt_coe : (a : α) < b ↔ a < b := Iff.rfl
+theorem coe_lt_coe : (a : α) < b ↔ a < b := by simp
 
 instance : BoundedOrder (Complementeds α) :=
   Subtype.boundedOrder isComplemented_bot isComplemented_top
@@ -650,11 +648,9 @@ theorem coe_bot : ((⊥ : Complementeds α) : α) = ⊥ := rfl
 @[simp, norm_cast]
 theorem coe_top : ((⊤ : Complementeds α) : α) = ⊤ := rfl
 
--- Porting note: removing `simp` because `Subtype.mk_bot` already proves it
-theorem mk_bot : (⟨⊥, isComplemented_bot⟩ : Complementeds α) = ⊥ := rfl
+theorem mk_bot : (⟨⊥, isComplemented_bot⟩ : Complementeds α) = ⊥ := by simp
 
--- Porting note: removing `simp` because `Subtype.mk_top` already proves it
-theorem mk_top : (⟨⊤, isComplemented_top⟩ : Complementeds α) = ⊤ := rfl
+theorem mk_top : (⟨⊤, isComplemented_top⟩ : Complementeds α) = ⊤ := by simp
 
 instance : Inhabited (Complementeds α) := ⟨⊥⟩
 

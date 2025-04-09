@@ -125,7 +125,7 @@ nonrec theorem sum_bernoulli (n : ℕ) :
           smul_monomial]
   simp_rw [← sum_smul]
   rw [sum_range_succ_comm]
-  simp only [add_right_eq_self, mul_one, cast_one, cast_add, add_tsub_cancel_left,
+  simp only [add_eq_left, mul_one, cast_one, cast_add, add_tsub_cancel_left,
     choose_succ_self_right, one_smul, _root_.bernoulli_zero, sum_singleton, zero_add,
     map_add, range_one, bernoulli_zero, mul_one, one_mul, add_zero, choose_self]
   apply sum_eq_zero fun x hx => _

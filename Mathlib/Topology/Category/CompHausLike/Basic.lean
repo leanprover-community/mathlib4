@@ -171,7 +171,9 @@ variable (P)
 /-- The fully faithful embedding of `CompHausLike P` in `TopCat`. -/
 @[simps! map]
 def compHausLikeToTop : CompHausLike.{u} P ⥤ TopCat.{u} :=
-  inducedFunctor _ -- deriving Full, Faithful -- Porting note: deriving fails, adding manually.
+  inducedFunctor _
+-- The `Full, Faithful` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
 example {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) :
     toCompHausLike h ⋙ compHausLikeToTop P' = compHausLikeToTop P := rfl

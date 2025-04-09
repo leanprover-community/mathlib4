@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.NormedSpace.Multilinear.Basic
+import Mathlib.LinearAlgebra.Multilinear.Curry
 
 /-!
 # Currying and uncurrying continuous multilinear maps
@@ -304,7 +305,7 @@ are no dependent types, use the primed version as it helps Lean a lot for unific
 
 The direct and inverse maps are given by `f.curryRight` and `f.uncurryRight`. Use these
 unless you need the full framework of linear isometric equivs. -/
-def continuousMultilinearCurryRightEquiv' : (G[×n.succ]→L[𝕜] G') ≃ₗᵢ[𝕜] G[×n]→L[𝕜] G →L[𝕜] G' :=
+def continuousMultilinearCurryRightEquiv' : (G [×n.succ]→L[𝕜] G') ≃ₗᵢ[𝕜] G [×n]→L[𝕜] G →L[𝕜] G' :=
   continuousMultilinearCurryRightEquiv 𝕜 (fun _ => G) G'
 
 variable {n 𝕜 G Ei G'}
@@ -324,13 +325,13 @@ theorem continuousMultilinearCurryRightEquiv_symm_apply
 
 @[simp]
 theorem continuousMultilinearCurryRightEquiv_apply'
-    (f : G[×n.succ]→L[𝕜] G') (v : Fin n → G) (x : G) :
+    (f : G [×n.succ]→L[𝕜] G') (v : Fin n → G) (x : G) :
     continuousMultilinearCurryRightEquiv' 𝕜 n G G' f v x = f (snoc v x) :=
   rfl
 
 @[simp]
 theorem continuousMultilinearCurryRightEquiv_symm_apply'
-    (f : G[×n]→L[𝕜] G →L[𝕜] G') (v : Fin (n + 1) → G) :
+    (f : G [×n]→L[𝕜] G →L[𝕜] G') (v : Fin (n + 1) → G) :
     (continuousMultilinearCurryRightEquiv' 𝕜 n G G').symm f v = f (init v) (v (last n)) :=
   rfl
 
@@ -365,7 +366,7 @@ def ContinuousMultilinearMap.curry0 (f : ContinuousMultilinearMap 𝕜 (fun _ : 
 variable (𝕜 G) in
 /-- Associating to an element `x` of a vector space `E₂` the continuous multilinear map in `0`
 variables taking the (unique) value `x` -/
-def ContinuousMultilinearMap.uncurry0 (x : G') : G[×0]→L[𝕜] G' :=
+def ContinuousMultilinearMap.uncurry0 (x : G') : G [×0]→L[𝕜] G' :=
   ContinuousMultilinearMap.constOfIsEmpty 𝕜 _ x
 
 variable (𝕜) in
@@ -375,16 +376,16 @@ theorem ContinuousMultilinearMap.uncurry0_apply (x : G') (m : Fin 0 → G) :
   rfl
 
 @[simp]
-theorem ContinuousMultilinearMap.curry0_apply (f : G[×0]→L[𝕜] G') : f.curry0 = f 0 :=
+theorem ContinuousMultilinearMap.curry0_apply (f : G [×0]→L[𝕜] G') : f.curry0 = f 0 :=
   rfl
 
 @[simp]
-theorem ContinuousMultilinearMap.apply_zero_uncurry0 (f : G[×0]→L[𝕜] G') {x : Fin 0 → G} :
+theorem ContinuousMultilinearMap.apply_zero_uncurry0 (f : G [×0]→L[𝕜] G') {x : Fin 0 → G} :
     ContinuousMultilinearMap.uncurry0 𝕜 G (f x) = f := by
   ext m
   simp [Subsingleton.elim x m]
 
-theorem ContinuousMultilinearMap.uncurry0_curry0 (f : G[×0]→L[𝕜] G') :
+theorem ContinuousMultilinearMap.uncurry0_curry0 (f : G [×0]→L[𝕜] G') :
     ContinuousMultilinearMap.uncurry0 𝕜 G f.curry0 = f := by simp
 
 variable (𝕜 G) in
@@ -399,7 +400,7 @@ theorem ContinuousMultilinearMap.uncurry0_norm (x : G') :
   norm_constOfIsEmpty _ _ _
 
 @[simp]
-theorem ContinuousMultilinearMap.fin0_apply_norm (f : G[×0]→L[𝕜] G') {x : Fin 0 → G} :
+theorem ContinuousMultilinearMap.fin0_apply_norm (f : G [×0]→L[𝕜] G') {x : Fin 0 → G} :
     ‖f x‖ = ‖f‖ := by
   obtain rfl : x = 0 := Subsingleton.elim _ _
   refine le_antisymm (by simpa using f.le_opNorm 0) ?_
@@ -408,7 +409,7 @@ theorem ContinuousMultilinearMap.fin0_apply_norm (f : G[×0]→L[𝕜] G') {x : 
       simp [-ContinuousMultilinearMap.apply_zero_uncurry0]
   simpa [-Matrix.zero_empty] using this
 
-theorem ContinuousMultilinearMap.curry0_norm (f : G[×0]→L[𝕜] G') : ‖f.curry0‖ = ‖f‖ := by simp
+theorem ContinuousMultilinearMap.curry0_norm (f : G [×0]→L[𝕜] G') : ‖f.curry0‖ = ‖f‖ := by simp
 
 variable (𝕜 G G')
 
@@ -417,7 +418,7 @@ maps in `0` variables with values in this normed space.
 
 The direct and inverse maps are `uncurry0` and `curry0`. Use these unless you need the full
 framework of linear isometric equivs. -/
-def continuousMultilinearCurryFin0 : (G[×0]→L[𝕜] G') ≃ₗᵢ[𝕜] G' where
+def continuousMultilinearCurryFin0 : (G [×0]→L[𝕜] G') ≃ₗᵢ[𝕜] G' where
   toFun f := ContinuousMultilinearMap.curry0 f
   invFun f := ContinuousMultilinearMap.uncurry0 𝕜 G f
   map_add' _ _ := rfl
@@ -429,7 +430,7 @@ def continuousMultilinearCurryFin0 : (G[×0]→L[𝕜] G') ≃ₗᵢ[𝕜] G' wh
 variable {𝕜 G G'}
 
 @[simp]
-theorem continuousMultilinearCurryFin0_apply (f : G[×0]→L[𝕜] G') :
+theorem continuousMultilinearCurryFin0_apply (f : G [×0]→L[𝕜] G') :
     continuousMultilinearCurryFin0 𝕜 G G' f = f 0 :=
   rfl
 
@@ -447,14 +448,14 @@ variable (𝕜 G G')
 
 /-- Continuous multilinear maps from `G^1` to `G'` are isomorphic with continuous linear maps from
 `G` to `G'`. -/
-def continuousMultilinearCurryFin1 : (G[×1]→L[𝕜] G') ≃ₗᵢ[𝕜] G →L[𝕜] G' :=
+def continuousMultilinearCurryFin1 : (G [×1]→L[𝕜] G') ≃ₗᵢ[𝕜] G →L[𝕜] G' :=
   (continuousMultilinearCurryRightEquiv 𝕜 (fun _ : Fin 1 => G) G').trans
     (continuousMultilinearCurryFin0 𝕜 G (G →L[𝕜] G'))
 
 variable {𝕜 G G'}
 
 @[simp]
-theorem continuousMultilinearCurryFin1_apply (f : G[×1]→L[𝕜] G') (x : G) :
+theorem continuousMultilinearCurryFin1_apply (f : G [×1]→L[𝕜] G') (x : G) :
     continuousMultilinearCurryFin1 𝕜 G G' f x = f (Fin.snoc 0 x) :=
   rfl
 
@@ -559,38 +560,38 @@ variable (𝕜 G G') {k l : ℕ} {s : Finset (Fin n)}
 to the space of continuous multilinear maps `G [×k]→L[𝕜] G [×l]→L[𝕜] G'` of `k` variables taking
 values in the space of continuous multilinear maps of `l` variables. -/
 def curryFinFinset {k l n : ℕ} {s : Finset (Fin n)} (hk : #s = k) (hl : #sᶜ = l) :
-    (G[×n]→L[𝕜] G') ≃ₗᵢ[𝕜] G[×k]→L[𝕜] G[×l]→L[𝕜] G' :=
+    (G [×n]→L[𝕜] G') ≃ₗᵢ[𝕜] G [×k]→L[𝕜] G [×l]→L[𝕜] G' :=
   (domDomCongrₗᵢ 𝕜 G G' (finSumEquivOfFinset hk hl).symm).trans
     (currySumEquiv 𝕜 (Fin k) (Fin l) G G')
 
 variable {𝕜 G G'}
 
 @[simp]
-theorem curryFinFinset_apply (hk : #s = k) (hl : #sᶜ = l) (f : G[×n]→L[𝕜] G')
+theorem curryFinFinset_apply (hk : #s = k) (hl : #sᶜ = l) (f : G [×n]→L[𝕜] G')
     (mk : Fin k → G) (ml : Fin l → G) : curryFinFinset 𝕜 G G' hk hl f mk ml =
       f fun i => Sum.elim mk ml ((finSumEquivOfFinset hk hl).symm i) :=
   rfl
 
 @[simp]
 theorem curryFinFinset_symm_apply (hk : #s = k) (hl : #sᶜ = l)
-    (f : G[×k]→L[𝕜] G[×l]→L[𝕜] G') (m : Fin n → G) : (curryFinFinset 𝕜 G G' hk hl).symm f m =
+    (f : G [×k]→L[𝕜] G [×l]→L[𝕜] G') (m : Fin n → G) : (curryFinFinset 𝕜 G G' hk hl).symm f m =
       f (fun i => m <| finSumEquivOfFinset hk hl (Sum.inl i)) fun i =>
         m <| finSumEquivOfFinset hk hl (Sum.inr i) :=
   rfl
 
 theorem curryFinFinset_symm_apply_piecewise_const (hk : #s = k) (hl : #sᶜ = l)
-    (f : G[×k]→L[𝕜] G[×l]→L[𝕜] G') (x y : G) :
+    (f : G [×k]→L[𝕜] G [×l]→L[𝕜] G') (x y : G) :
     (curryFinFinset 𝕜 G G' hk hl).symm f (s.piecewise (fun _ => x) fun _ => y) =
       f (fun _ => x) fun _ => y :=
   MultilinearMap.curryFinFinset_symm_apply_piecewise_const hk hl _ x y
 
 @[simp]
 theorem curryFinFinset_symm_apply_const (hk : #s = k) (hl : #sᶜ = l)
-    (f : G[×k]→L[𝕜] G[×l]→L[𝕜] G') (x : G) :
+    (f : G [×k]→L[𝕜] G [×l]→L[𝕜] G') (x : G) :
     ((curryFinFinset 𝕜 G G' hk hl).symm f fun _ => x) = f (fun _ => x) fun _ => x :=
   rfl
 
-theorem curryFinFinset_apply_const (hk : #s = k) (hl : #sᶜ = l) (f : G[×n]→L[𝕜] G')
+theorem curryFinFinset_apply_const (hk : #s = k) (hl : #sᶜ = l) (f : G [×n]→L[𝕜] G')
     (x y : G) : (curryFinFinset 𝕜 G G' hk hl f (fun _ => x) fun _ => y) =
       f (s.piecewise (fun _ => x) fun _ => y) := by
   refine (curryFinFinset_symm_apply_piecewise_const hk hl _ _ _).symm.trans ?_
