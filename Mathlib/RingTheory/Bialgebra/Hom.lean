@@ -297,7 +297,7 @@ variable (R : Type u) (A : Type v)
 variable [CommSemiring R] [Semiring A] [Bialgebra R A]
 
 /-- The counit of a bialgebra as a `BialgHom`. -/
-def counitBialgHom : A →ₐc[R] R :=
+noncomputable def counitBialgHom : A →ₐc[R] R :=
   { Coalgebra.counitCoalgHom R A, counitAlgHom R A with }
 
 @[simp]

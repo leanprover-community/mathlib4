@@ -107,7 +107,7 @@ theorem exists_nonzero_mem_of_ne_bot {P : Ideal R[X]} (Pb : P ≠ ⊥) (hP : ∀
     (injective_iff_map_eq_zero (Polynomial.mapRingHom (Ideal.Quotient.mk
       (P.comap (C : R →+* R[X]))))).mp
       ?_ _ pp0
-  refine map_injective _ ((Ideal.Quotient.mk (P.comap C)).injective_iff_ker_eq_bot.mpr ?_)
+  refine map_injective _ ((RingHom.injective_iff_ker_eq_bot (Ideal.Quotient.mk (P.comap C))).mpr ?_)
   rw [mk_ker]
   exact (Submodule.eq_bot_iff _).mpr fun x hx => hP x (mem_comap.mp hx)
 
@@ -344,7 +344,7 @@ lemma map_eq_top_iff_of_ker_le {R S} [CommRing R] [CommRing S]
 lemma map_eq_top_iff {R S} [CommRing R] [CommRing S]
     (f : R →+* S) {I : Ideal R} (hf₁ : Function.Injective f) (hf₂ : f.IsIntegral) :
     I.map f = ⊤ ↔ I = ⊤ :=
-  map_eq_top_iff_of_ker_le f (by simp [f.injective_iff_ker_eq_bot.mp hf₁]) hf₂
+  map_eq_top_iff_of_ker_le f (by simp [(RingHom.injective_iff_ker_eq_bot f).mp hf₁]) hf₂
 
 end IsDomain
 

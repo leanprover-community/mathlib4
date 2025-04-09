@@ -49,7 +49,7 @@ the data of a solution of `Relations.directSum relations` in `N`
 is equivalent to the data of a family of solutions of `relations i` in `N`
 for all `i`. -/
 @[simps]
-def directSumEquiv :
+noncomputable def directSumEquiv :
     (Relations.directSum relations).Solution N ≃
       ∀ i, (relations i).Solution N where
   toFun s i :=
@@ -68,7 +68,7 @@ def directSumEquiv :
 
 /-- Given `solution : ∀ (i : ι), (relations i).Solution (M i)`, this is the
 canonical solution of `Relations.directSum relations` in `⨁ i, M i`. -/
-def directSum (solution : ∀ (i : ι), (relations i).Solution (M i)) :
+noncomputable def directSum (solution : ∀ (i : ι), (relations i).Solution (M i)) :
     (Relations.directSum relations).Solution (⨁ i, M i) :=
   directSumEquiv.symm (fun i ↦ (solution i).postcomp (lof A ι M i))
 

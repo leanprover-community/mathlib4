@@ -778,9 +778,15 @@ theorem coe_pow (s : Finset α) (n : ℕ) : ↑(s ^ n) = (s : Set α) ^ n := by
   · rw [npowRec, pow_zero, coe_one]
   · rw [npowRec, pow_succ, coe_mul, ih]
 
+#adaptation_note /-- nightly-2025-04-07
+This now needs to be marked as noncomputable because of its dependence on `Set.monoid`.
+We should either find a way to rewrite this definition to avoid this,
+or request via @kim-em and @zwarich that changes in https://github.com/leanprover/lean4/pull/7824
+be revisited to avoid needing as many `noncomputable`s.
+-/
 /-- `Finset α` is a `Monoid` under pointwise operations if `α` is. -/
 @[to_additive "`Finset α` is an `AddMonoid` under pointwise operations if `α` is. "]
-protected def monoid : Monoid (Finset α) :=
+protected noncomputable def monoid : Monoid (Finset α) :=
   coe_injective.monoid _ coe_one coe_mul coe_pow
 
 scoped[Pointwise] attribute [instance] Finset.monoid Finset.addMonoid
@@ -917,7 +923,7 @@ variable [CommMonoid α]
 
 /-- `Finset α` is a `CommMonoid` under pointwise operations if `α` is. -/
 @[to_additive "`Finset α` is an `AddCommMonoid` under pointwise operations if `α` is. "]
-protected def commMonoid : CommMonoid (Finset α) :=
+protected noncomputable def commMonoid : CommMonoid (Finset α) :=
   coe_injective.commMonoid _ coe_one coe_mul coe_pow
 
 scoped[Pointwise] attribute [instance] Finset.commMonoid Finset.addCommMonoid
@@ -944,7 +950,7 @@ protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = {a} ∧ t = {b} �
 /-- `Finset α` is a division monoid under pointwise operations if `α` is. -/
 @[to_additive
   "`Finset α` is a subtraction monoid under pointwise operations if `α` is."]
-protected def divisionMonoid : DivisionMonoid (Finset α) :=
+protected noncomputable def divisionMonoid : DivisionMonoid (Finset α) :=
   coe_injective.divisionMonoid _ coe_one coe_mul coe_inv coe_div coe_pow coe_zpow
 
 scoped[Pointwise] attribute [instance] Finset.divisionMonoid Finset.subtractionMonoid
@@ -1000,7 +1006,8 @@ end DivisionMonoid
 /-- `Finset α` is a commutative division monoid under pointwise operations if `α` is. -/
 @[to_additive subtractionCommMonoid
       "`Finset α` is a commutative subtraction monoid under pointwise operations if `α` is."]
-protected def divisionCommMonoid [DivisionCommMonoid α] : DivisionCommMonoid (Finset α) :=
+protected noncomputable def divisionCommMonoid [DivisionCommMonoid α] :
+    DivisionCommMonoid (Finset α) :=
   coe_injective.divisionCommMonoid _ coe_one coe_mul coe_inv coe_div coe_pow coe_zpow
 
 scoped[Pointwise] attribute [instance] Finset.divisionCommMonoid Finset.subtractionCommMonoid

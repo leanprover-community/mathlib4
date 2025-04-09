@@ -178,9 +178,9 @@ theorem cancel_right_div_gcd (hm : 0 < m) (h : a * c ≡ b * c [ZMOD m]) :
   letI d := gcd m c
   rw [modEq_iff_dvd] at h ⊢
   refine Int.dvd_of_dvd_mul_right_of_gcd_one (?_ : m / d ∣ c / d * (b - a)) ?_
-  · rw [mul_comm, ← Int.mul_ediv_assoc (b - a) gcd_dvd_right, Int.sub_mul]
-    exact Int.ediv_dvd_ediv gcd_dvd_left h
-  · rw [gcd_div gcd_dvd_left gcd_dvd_right, natAbs_ofNat,
+  · rw [mul_comm, ← Int.mul_ediv_assoc (b - a) (gcd_dvd_right ..), Int.sub_mul]
+    exact Int.ediv_dvd_ediv (gcd_dvd_left ..) h
+  · rw [gcd_div (gcd_dvd_left ..) (gcd_dvd_right ..), natAbs_ofNat,
       Nat.div_self (gcd_pos_of_ne_zero_left c hm.ne')]
 
 /-- To cancel a common factor `c` from a `ModEq` we must divide the modulus `m` by `gcd m c`. -/

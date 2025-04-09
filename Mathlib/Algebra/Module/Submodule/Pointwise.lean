@@ -501,7 +501,7 @@ lemma smul_inductionOn_pointwise [SMulCommClass S R M] {a : S} {p : (x : M) → 
 -- does not make sense. If we just focus on `R`-submodules that are also `S`-submodule, then this
 -- should be true.
 /-- A subset of a ring `R` has a multiplicative action on submodules of a module over `R`. -/
-protected def pointwiseSetMulAction [SMulCommClass R R M] :
+protected noncomputable def pointwiseSetMulAction [SMulCommClass R R M] :
     MulAction (Set R) (Submodule R M) where
   one_smul x := show {(1 : R)} • x = x from SetLike.ext fun m =>
     (mem_singleton_set_smul _ _ _).trans ⟨by rintro ⟨_, h, rfl⟩; rwa [one_smul],
@@ -520,7 +520,7 @@ scoped[Pointwise] attribute [instance] Submodule.pointwiseSetMulAction
 
 -- This cannot be generalized to `Set S` because `MulAction` can't be generalized already.
 /-- In a ring, sets acts on submodules. -/
-protected def pointwiseSetDistribMulAction [SMulCommClass R R M] :
+protected noncomputable def pointwiseSetDistribMulAction [SMulCommClass R R M] :
     DistribMulAction (Set R) (Submodule R M) where
   smul_zero s := set_smul_bot s
   smul_add s x y := le_antisymm

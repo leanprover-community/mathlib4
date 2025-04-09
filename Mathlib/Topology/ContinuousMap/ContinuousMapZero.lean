@@ -378,7 +378,8 @@ noncomputable instance [NormedCommRing R] : NonUnitalNormedCommRing C(α, R)₀ 
   norm_mul_le f g := norm_mul_le (f : C(α, R)) g
   mul_comm f g := mul_comm f g
 
-instance [NormedField 𝕜] [NormedCommRing R] [NormedAlgebra 𝕜 R] : NormedSpace 𝕜 C(α, R)₀ where
+noncomputable instance [NormedField 𝕜] [NormedCommRing R] [NormedAlgebra 𝕜 R] :
+    NormedSpace 𝕜 C(α, R)₀ where
   norm_smul_le r f := norm_smul_le r (f : C(α, R))
 
 instance [NormedCommRing R] [StarRing R] [CStarRing R] : CStarRing C(α, R)₀ where

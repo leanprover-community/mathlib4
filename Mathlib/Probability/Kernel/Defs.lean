@@ -109,7 +109,7 @@ instance instOrderBot {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] 
   bot_le κ a := by simp only [coe_zero, Pi.zero_apply, Measure.zero_le]
 
 /-- Coercion to a function as an additive monoid homomorphism. -/
-def coeAddHom (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] :
+noncomputable def coeAddHom (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] :
     Kernel α β →+ α → Measure β where
   toFun := (⇑)
   map_zero' := coe_zero

@@ -62,7 +62,7 @@ theorem mem_nhds_natCast_iff (n : ℕ) {s : Set ℕ∞} : s ∈ 𝓝 (n : ℕ∞
 theorem tendsto_nhds_top_iff_natCast_lt {α : Type*} {l : Filter α} {f : α → ℕ∞} :
     Tendsto f l (𝓝 ⊤) ↔ ∀ n : ℕ, ∀ᶠ a in l, n < f a := by
   simp_rw [nhds_top_order, lt_top_iff_ne_top, tendsto_iInf, tendsto_principal]
-  exact Option.ball_ne_none
+  exact Option.forall_ne_none
 
 instance : ContinuousAdd ℕ∞ := by
   refine ⟨continuous_iff_continuousAt.2 fun (a, b) ↦ ?_⟩
