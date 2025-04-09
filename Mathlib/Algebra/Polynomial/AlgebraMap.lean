@@ -615,11 +615,13 @@ lemma aeval_apply_smul_mem_of_le_comap'
     [Semiring A] [Algebra R A] [Module A M] [IsScalarTower R A M] (hm : m ∈ q) (p : R[X]) (a : A)
     (hq : q ≤ q.comap (Algebra.lsmul R R M a)) :
     aeval a p • m ∈ q := by
-  refine p.induction_on (M := fun f ↦ aeval a f • m ∈ q) (by simpa) (fun f₁ f₂ h₁ h₂ ↦ ?_)
-    (fun n t hmq ↦ ?_)
-  · simp_rw [map_add, add_smul]
+  induction p using Polynomial.induction_on with
+  | C a => simpa using SMulMemClass.smul_mem a hm
+  | add f₁ f₂ h₁ h₂ =>
+    simp_rw [map_add, add_smul]
     exact Submodule.add_mem q h₁ h₂
-  · dsimp only at hmq ⊢
+  | monomial n t hmq =>
+    dsimp only at hmq ⊢
     rw [pow_succ', mul_left_comm, map_mul, aeval_X, mul_smul]
     rw [← q.map_le_iff_le_comap] at hq
     exact hq ⟨_, hmq, rfl⟩
@@ -664,7 +666,8 @@ theorem eq_zero_of_mul_eq_zero_of_smul (P : R[X]) (h : ∀ r : R, r • P = 0 �
   · rw [← coeff_C_mul, ← smul_eq_C_mul, IH _ hi, coeff_zero]
 termination_by Q.natDegree
 
-open nonZeroDivisors in
+open nonZeroDivisors
+
 /-- *McCoy theorem*: a polynomial `P : R[X]` is a zerodivisor if and only if there is `a : R`
 such that `a ≠ 0` and `a • P = 0`. -/
 theorem nmem_nonZeroDivisors_iff {P : R[X]} : P ∉ R[X]⁰ ↔ ∃ a : R, a ≠ 0 ∧ a • P = 0 := by
@@ -675,9 +678,15 @@ theorem nmem_nonZeroDivisors_iff {P : R[X]} : P ∉ R[X]⁰ ↔ ∃ a : R, a ≠
   contrapose! ha
   exact h a ha
 
-open nonZeroDivisors in
 protected lemma mem_nonZeroDivisors_iff {P : R[X]} : P ∈ R[X]⁰ ↔ ∀ a : R, a • P = 0 → a = 0 := by
   simpa [not_imp_not] using (nmem_nonZeroDivisors_iff (P := P)).not
+
+lemma mem_nonzeroDivisors_of_coeff_mem {p : R[X]} (n : ℕ) (hp : p.coeff n ∈ R⁰) :
+    p ∈ R[X]⁰ :=
+  Polynomial.mem_nonZeroDivisors_iff.mpr fun r hr ↦ hp _ (by simpa using congr(coeff $hr n))
+
+lemma X_mem_nonzeroDivisors : X ∈ R[X]⁰ :=
+  mem_nonzeroDivisors_of_coeff_mem 1 (by simp [one_mem])
 
 end CommSemiring
 

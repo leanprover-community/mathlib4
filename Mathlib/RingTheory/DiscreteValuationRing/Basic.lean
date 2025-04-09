@@ -66,8 +66,8 @@ variable {R}
 
 open PrincipalIdealRing
 
-theorem irreducible_of_span_eq_maximalIdeal {R : Type*} [CommRing R] [IsLocalRing R] [IsDomain R]
-    (ϖ : R) (hϖ : ϖ ≠ 0) (h : maximalIdeal R = Ideal.span {ϖ}) : Irreducible ϖ := by
+theorem irreducible_of_span_eq_maximalIdeal {R : Type*} [CommSemiring R] [IsLocalRing R]
+    [IsDomain R] (ϖ : R) (hϖ : ϖ ≠ 0) (h : maximalIdeal R = Ideal.span {ϖ}) : Irreducible ϖ := by
   have h2 : ¬IsUnit ϖ := show ϖ ∈ maximalIdeal R from h.symm ▸ Submodule.mem_span_singleton_self ϖ
   refine ⟨h2, ?_⟩
   intro a b hab
@@ -120,7 +120,7 @@ theorem iff_pid_with_one_nonzero_prime (R : Type u) [CommRing R] [IsDomain R] :
         rintro rfl
         apply hQ1
         simp
-      erw [span_singleton_prime hq] at hQ2
+      rw [submodule_span_eq, span_singleton_prime hq] at hQ2
       replace hQ2 := hQ2.irreducible
       rw [irreducible_iff_uniformizer] at hQ2
       exact hQ2.symm
@@ -256,7 +256,7 @@ theorem aux_pid_of_ufd_of_unique_irreducible (R : Type u) [CommRing R] [IsDomain
     apply pow_dvd_pow
     apply Nat.find_min'
     simpa only [Units.mul_inv_cancel_right] using I.mul_mem_right (↑u⁻¹) hr
-  · erw [Submodule.span_singleton_le_iff_mem]
+  · rw [span_singleton_le_iff_mem]
     exact Nat.find_spec ex
 
 /-- A unique factorization domain with at least one irreducible element
@@ -279,7 +279,7 @@ theorem of_ufd_of_unique_irreducible {R : Type u} [CommRing R] [IsDomain R]
     rintro ⟨I0, hI⟩
     apply span_singleton_eq_span_singleton.mpr
     apply h₂ _ hp
-    erw [Ne, span_singleton_eq_bot] at I0
+    rw [Ne, Submodule.span_singleton_eq_bot] at I0
     rwa [UniqueFactorizationMonoid.irreducible_iff_prime, ← Ideal.span_singleton_prime I0]
 
 /-- An integral domain in which there is an irreducible element `p`
@@ -474,7 +474,7 @@ instance (R : Type*) [CommRing R] [IsDomain R] [IsDiscreteValuationRing R] :
     obtain ⟨ϖ, hϖ⟩ := exists_irreducible R
     simp only [← Ideal.one_eq_top, smul_eq_mul, mul_one, SModEq.zero, hϖ.maximalIdeal_eq,
       Ideal.span_singleton_pow, Ideal.mem_span_singleton, ← addVal_le_iff_dvd, hϖ.addVal_pow] at hx
-    rwa [← addVal_eq_top_iff, ← WithTop.forall_ge_iff_eq_top]
+    rwa [← addVal_eq_top_iff, WithTop.eq_top_iff_forall_ge]
 
 end IsDiscreteValuationRing
 

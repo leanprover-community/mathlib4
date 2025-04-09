@@ -6,7 +6,7 @@ Authors: Anatole Dedecker
 import Mathlib.Topology.UniformSpace.UniformConvergence
 import Mathlib.Topology.UniformSpace.Pi
 import Mathlib.Topology.UniformSpace.Equiv
-import Mathlib.Topology.RestrictGen
+import Mathlib.Topology.Coherent
 
 /-!
 # Topology and uniform structure of uniform convergence
@@ -1059,7 +1059,7 @@ protected def uniformEquivPiComm : (α →ᵤ[𝔖] ((i : ι) → δ i)) ≃ᵤ 
 
 Then the set of continuous functions is closed
 in the topology of uniform convergence on the sets of `𝔖`. -/
-theorem isClosed_setOf_continuous [TopologicalSpace α] (h : RestrictGenTopology 𝔖) :
+theorem isClosed_setOf_continuous [TopologicalSpace α] (h : IsCoherentWith 𝔖) :
     IsClosed {f : α →ᵤ[𝔖] β | Continuous (toFun 𝔖 f)} := by
   refine isClosed_iff_forall_filter.2 fun f u _ hu huf ↦ h.continuous_iff.2 fun s hs ↦ ?_
   rw [← tendsto_id', UniformOnFun.tendsto_iff_tendstoUniformlyOn] at huf
@@ -1085,7 +1085,12 @@ theorem uniformSpace_eq_inf_precomp_of_cover {δ₁ δ₂ : Type*} (φ₁ : δ�
     exact UniformOnFun.precomp_uniformContinuous h_image₁
   · rw [← uniformContinuous_iff]
     exact UniformOnFun.precomp_uniformContinuous h_image₂
-  · simp_rw [this S hS, UniformSpace.comap_iInf, UniformSpace.comap_inf, ← UniformSpace.comap_comap]
+  · #adaptation_note
+    /-- 2025-03-29 lean4#7717 a single `simp_rw` needed to be broken up to fully apply -/
+    simp_rw [this S hS]
+    conv => enter [1]; rw [UniformSpace.comap_iInf]; enter [1,1,i]; rw [UniformSpace.comap_iInf]
+    conv => enter [1]; rw [UniformSpace.comap_iInf]; enter [2,1,i]; rw [UniformSpace.comap_iInf]
+    simp_rw [UniformSpace.comap_inf, ← UniformSpace.comap_comap]
     exact inf_le_inf
       (iInf₂_le_of_le _ (h_preimage₁ hS) le_rfl)
       (iInf₂_le_of_le _ (h_preimage₂ hS) le_rfl)
@@ -1107,7 +1112,10 @@ theorem uniformSpace_eq_iInf_precomp_of_cover {δ : ι → Type*} (φ : Π i, δ
   refine le_antisymm (le_iInf fun i ↦ ?_) (le_iInf₂ fun S hS ↦ ?_)
   · rw [← uniformContinuous_iff]
     exact UniformOnFun.precomp_uniformContinuous (h_image i)
-  · simp_rw [this S hS, UniformSpace.comap_iInf, ← UniformSpace.comap_comap]
+  · simp_rw [this S hS]
+    #adaptation_note /-- 2025-03-29 lean4#7717 needed this additional rw for the `simp_rw` -/
+    conv => enter [1,1,i]; rw [UniformSpace.comap_iInf]
+    simp_rw [UniformSpace.comap_iInf, ← UniformSpace.comap_comap]
     exact iInf_mono fun i ↦ iInf₂_le_of_le _ (h_preimage i hS) le_rfl
 
 end UniformOnFun

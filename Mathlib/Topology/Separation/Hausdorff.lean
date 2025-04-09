@@ -3,8 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Topology.Separation.Basic
 import Mathlib.Topology.Compactness.SigmaCompact
+import Mathlib.Topology.Irreducible
+import Mathlib.Topology.Separation.Basic
 
 /-!
 # T₂ and T₂.₅ spaces.
@@ -612,6 +613,42 @@ theorem image_closure_of_isCompact [T2Space Y] {s : Set X} (hs : IsCompact (clos
     (hf : ContinuousOn f (closure s)) : f '' closure s = closure (f '' s) :=
   Subset.antisymm hf.image_closure <|
     closure_minimal (image_subset f subset_closure) (hs.image_of_continuousOn hf).isClosed
+
+/-- Two continuous maps into a Hausdorff space agree at a point iff they agree in a
+neighborhood. -/
+theorem ContinuousAt.ne_iff_eventually_ne [T2Space Y] {x : X} {f g : X → Y}
+    (hf : ContinuousAt f x) (hg : ContinuousAt g x) :
+    f x ≠ g x ↔ ∀ᶠ x in 𝓝 x, f x ≠ g x := by
+  constructor <;> intro hfg
+  · obtain ⟨Uf, Ug, h₁U, h₂U, h₃U, h₄U, h₅U⟩ := t2_separation hfg
+    rw [Set.disjoint_iff_inter_eq_empty] at h₅U
+    filter_upwards [inter_mem
+      (hf.preimage_mem_nhds (IsOpen.mem_nhds h₁U h₃U))
+      (hg.preimage_mem_nhds (IsOpen.mem_nhds h₂U h₄U))]
+    intro x hx
+    simp only [Set.mem_inter_iff, Set.mem_preimage] at hx
+    by_contra H
+    rw [H] at hx
+    have : g x ∈ Uf ∩ Ug := hx
+    simp [h₅U] at this
+  · obtain ⟨t, h₁t, h₂t, h₃t⟩ := eventually_nhds_iff.1 hfg
+    exact h₁t x h₃t
+
+/-- **Local identity principle** for continuous maps: Two continuous maps into a Hausdorff space
+agree in a punctured neighborhood of a non-isolated point iff they agree in a neighborhood. -/
+theorem ContinuousAt.eventuallyEq_nhd_iff_eventuallyEq_nhdNE [T2Space Y] {x : X} {f g : X → Y}
+    (hf : ContinuousAt f x) (hg : ContinuousAt g x) [(𝓝[≠] x).NeBot] :
+    f =ᶠ[𝓝[≠] x] g ↔ f =ᶠ[𝓝 x] g := by
+  constructor <;> intro hfg
+  · apply eventuallyEq_nhds_of_eventuallyEq_nhdsNE hfg
+    by_contra hCon
+    obtain ⟨a, ha⟩ : {x | f x ≠ g x ∧ f x = g x}.Nonempty := by
+      have h₁ := (eventually_nhdsWithin_of_eventually_nhds
+        ((hf.ne_iff_eventually_ne hg).1 hCon)).and hfg
+      have h₂ : ∅ ∉ 𝓝[≠] x := by exact empty_not_mem (𝓝[≠] x)
+      simp_all
+    simp at ha
+  · exact hfg.filter_mono nhdsWithin_le_nhds
 
 /-- A continuous map from a compact space to a Hausdorff space is a closed map. -/
 protected theorem Continuous.isClosedMap [CompactSpace X] [T2Space Y] {f : X → Y}

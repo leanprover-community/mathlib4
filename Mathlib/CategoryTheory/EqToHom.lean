@@ -120,6 +120,7 @@ variable {β : Sort*}
 
 /-- We can push `eqToHom` to the left through families of morphisms. -/
 -- The simpNF linter incorrectly claims that this will never apply.
+-- It seems the side condition `w` is not applied by `simpNF`.
 -- https://github.com/leanprover-community/mathlib4/issues/5049
 @[reassoc (attr := simp, nolint simpNF)]
 theorem eqToHom_naturality {f g : β → C} (z : ∀ b, f b ⟶ g b) {j j' : β} (w : j = j') :
@@ -129,6 +130,7 @@ theorem eqToHom_naturality {f g : β → C} (z : ∀ b, f b ⟶ g b) {j j' : β}
 
 /-- A variant on `eqToHom_naturality` that helps Lean identify the families `f` and `g`. -/
 -- The simpNF linter incorrectly claims that this will never apply.
+-- It seems the side condition `w` is not applied by `simpNF`.
 -- https://github.com/leanprover-community/mathlib4/issues/5049
 @[reassoc (attr := simp, nolint simpNF)]
 theorem eqToHom_iso_hom_naturality {f g : β → C} (z : ∀ b, f b ≅ g b) {j j' : β} (w : j = j') :
@@ -138,6 +140,7 @@ theorem eqToHom_iso_hom_naturality {f g : β → C} (z : ∀ b, f b ≅ g b) {j 
 
 /-- A variant on `eqToHom_naturality` that helps Lean identify the families `f` and `g`. -/
 -- The simpNF linter incorrectly claims that this will never apply.
+-- It seems the side condition `w` is not applied by `simpNF`.
 -- https://github.com/leanprover-community/mathlib4/issues/5049
 @[reassoc (attr := simp, nolint simpNF)]
 theorem eqToHom_iso_inv_naturality {f g : β → C} (z : ∀ b, f b ≅ g b) {j j' : β} (w : j = j') :
