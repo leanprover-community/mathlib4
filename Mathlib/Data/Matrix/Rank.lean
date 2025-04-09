@@ -417,7 +417,7 @@ theorem rank_self_mul_transpose [LinearOrderedField R] [Fintype m] (A : Matrix m
 theorem rank_eq_finrank_span_row [Field R] [Finite m] (A : Matrix m n R) :
     A.rank = finrank R (Submodule.span R (Set.range A.row)) := by
   cases nonempty_fintype m
-  rw [← rank_transpose, rank_eq_finrank_span_cols, transpose_col]
+  rw [← rank_transpose, rank_eq_finrank_span_cols, col_transpose]
 
 theorem _root_.LinearIndependent.rank_matrix [Field R] [Fintype m]
     {M : Matrix m n R} (h : LinearIndependent R M.row) : M.rank = Fintype.card m := by

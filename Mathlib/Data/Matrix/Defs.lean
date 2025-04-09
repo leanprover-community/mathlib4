@@ -503,7 +503,7 @@ section RowCol
 `A.row` is defeq to `A`, but explicitly refers to the 'row function` of `A`
 while avoiding defeq abuse and noisy eta-expansions,
 such as in expressions like `Set.Injective A.row` and `Set.range A.row`.
-(Note 04-07-2025 : the identifier `Matrix.row` used to refer to a matrix with all rows equal;
+(Note 2025-04-07 : the identifier `Matrix.row` used to refer to a matrix with all rows equal;
 this is now called `Matrix.replicateRow`) -/
 def row (A : Matrix m n α) : m → n → α := A
 
@@ -533,30 +533,36 @@ lemma col_def (A : Matrix m n α) : A.col = fun j ↦ Aᵀ j := rfl
 @[simp]
 lemma row_apply (A : Matrix m n α) (i : m) (j : n) : A.row i j = A i j := rfl
 
+/-- A partially applied version of `Matrix.row_apply` -/
+lemma row_apply' (A : Matrix m n α) (i : m) : A.row i = A i := rfl
+
 @[simp]
 lemma col_apply (A : Matrix m n α) (i : n) (j : m) : A.col i j = A j i := rfl
 
-lemma submatrix_row {m₀ n₀ : Type*} (A : Matrix m n α) (r : m₀ → m) (c : n₀ → n) (i : m₀) :
+/-- A partially applied version of `Matrix.col_apply` -/
+lemma col_apply' (A : Matrix m n α) (i : n) : A.col i = fun j ↦ A j i := rfl
+
+lemma row_submatrix {m₀ n₀ : Type*} (A : Matrix m n α) (r : m₀ → m) (c : n₀ → n) (i : m₀) :
     (A.submatrix r c).row i = (A.submatrix id c).row (r i) := rfl
 
-lemma submatrix_row_eq_comp {m₀ n₀ : Type*} (A : Matrix m n α) (r : m₀ → m) (c : n₀ → n) (i : m₀) :
+lemma row_submatrix_eq_comp {m₀ n₀ : Type*} (A : Matrix m n α) (r : m₀ → m) (c : n₀ → n) (i : m₀) :
     (A.submatrix r c).row i = A.row (r i) ∘ c := rfl
 
-lemma submatrix_col {m₀ n₀ : Type*} (A : Matrix m n α) (r : m₀ → m) (c : n₀ → n) (j : n₀) :
+lemma col_submatrix {m₀ n₀ : Type*} (A : Matrix m n α) (r : m₀ → m) (c : n₀ → n) (j : n₀) :
     (A.submatrix r c).col j = (A.submatrix r id).col (c j) := rfl
 
-lemma submatrix_col_eq_comp {m₀ n₀ : Type*} (A : Matrix m n α) (r : m₀ → m) (c : n₀ → n) (j : n₀) :
+lemma col_submatrix_eq_comp {m₀ n₀ : Type*} (A : Matrix m n α) (r : m₀ → m) (c : n₀ → n) (j : n₀) :
     (A.submatrix r c).col j = A.col (c j) ∘ r := rfl
 
-lemma map_row (A : Matrix m n α) (f : α → β) (i : m) : (A.map f).row i = f ∘ A.row i := rfl
+lemma row_map (A : Matrix m n α) (f : α → β) (i : m) : (A.map f).row i = f ∘ A.row i := rfl
 
-lemma map_col (A : Matrix m n α) (f : α → β) (j : n) : (A.map f).col j = f ∘ A.col j := rfl
-
-@[simp]
-lemma transpose_row (A : Matrix m n α) : Aᵀ.row = A.col := rfl
+lemma col_map (A : Matrix m n α) (f : α → β) (j : n) : (A.map f).col j = f ∘ A.col j := rfl
 
 @[simp]
-lemma transpose_col (A : Matrix m n α) : Aᵀ.col = A.row := rfl
+lemma row_transpose (A : Matrix m n α) : Aᵀ.row = A.col := rfl
+
+@[simp]
+lemma col_transpose (A : Matrix m n α) : Aᵀ.col = A.row := rfl
 
 end RowCol
 

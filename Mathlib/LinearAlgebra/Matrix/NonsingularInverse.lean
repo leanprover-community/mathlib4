@@ -356,12 +356,12 @@ theorem mulVec_injective_iff_isUnit {A : Matrix m m K} :
 
 theorem linearIndependent_rows_iff_isUnit {A : Matrix m m K} :
     LinearIndependent K A.row ↔ IsUnit A := by
-  rw [← transpose_col, ← mulVec_injective_iff, ← coe_mulVecLin, mulVecLin_transpose,
+  rw [← col_transpose, ← mulVec_injective_iff, ← coe_mulVecLin, mulVecLin_transpose,
     ← vecMul_injective_iff_isUnit, coe_vecMulLinear]
 
 theorem linearIndependent_cols_iff_isUnit {A : Matrix m m K} :
     LinearIndependent K A.col ↔ IsUnit A := by
-  rw [← transpose_row, linearIndependent_rows_iff_isUnit, isUnit_transpose]
+  rw [← row_transpose, linearIndependent_rows_iff_isUnit, isUnit_transpose]
 
 theorem vecMul_surjective_of_invertible (A : Matrix m m R) [Invertible A] :
     Function.Surjective A.vecMul :=
