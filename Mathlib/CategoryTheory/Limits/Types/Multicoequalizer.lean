@@ -3,8 +3,8 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+import Mathlib.Data.Set.BooleanAlgebra
 import Mathlib.Data.Set.FunctorToTypes
-import Mathlib.Data.Set.Lattice
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Multiequalizer
 import Mathlib.CategoryTheory.Limits.Types.Colimits
 import Mathlib.Order.CompleteLattice.MulticoequalizerDiagram
