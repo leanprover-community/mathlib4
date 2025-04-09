@@ -44,7 +44,7 @@ theorem IsIntegral.map {B C F : Type*} [Ring B] [Ring C] [Algebra R B] [Algebra 
   obtain ⟨P, hP⟩ := hb
   refine ⟨P, hP.1, ?_⟩
   rw [← aeval_def, ← aeval_map_algebraMap A,
-    aeval_algHom_apply, aeval_map_algebraMap, aeval_def, hP.2, _root_.map_zero]
+    aeval_algHom_apply, aeval_map_algebraMap, aeval_def, hP.2, map_zero]
 
 section
 

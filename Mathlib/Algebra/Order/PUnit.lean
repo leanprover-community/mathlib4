@@ -23,6 +23,7 @@ instance linearOrderedCancelAddCommMonoid : LinearOrderedCancelAddCommMonoid PUn
   add_le_add_left := by intros; rfl
 
 instance : LinearOrderedAddCommMonoidWithTop PUnit where
+  top := ()
   le_top _ := le_rfl
   top_add' _ := rfl
 

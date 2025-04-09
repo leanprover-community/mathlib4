@@ -19,7 +19,7 @@ This is useful for talking about polynomials in terms of list operations. It is 
 the sense that `Polynomial` is already a `Finsupp` (of its coefficients), and `Polynomial.coeff`
 turns this into a function, and these have exactly the same data as `coeffList`. The difference is
 that `coeffList` is intended for working together with list operations: getting `List.head`,
-comparing adjacent coefficients with each other, or anything that involves induction on Pollynomials
+comparing adjacent coefficients with each other, or anything that involves induction on Polynomials
 by dropping the leading term (which is `Polynomial.eraseLead`).
 
 Note that `coeffList` _starts_ with the highest-degree terms and _ends_ with the constant term. This
@@ -145,7 +145,7 @@ theorem coeffList_eraseLead (h : P ≠ 0) :
     omega
   by_cases hkn : k < n
   · simpa [List.getElem?_append, hkn] using coeff_eq_zero_of_natDegree_lt (by omega)
-  · rw [List.getElem?_append_right (List.length_replicate _ _ ▸ Nat.le_of_not_gt hkn),
+  · rw [List.getElem?_append_right (List.length_replicate ▸ Nat.le_of_not_gt hkn),
       List.length_replicate, List.getElem?_reverse, List.getElem?_map]
     · rw [List.length_map, List.length_range,
         List.getElem?_range (by omega), Option.map_some']
