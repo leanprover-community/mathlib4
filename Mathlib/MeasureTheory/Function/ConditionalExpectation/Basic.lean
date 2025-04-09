@@ -461,7 +461,7 @@ lemma condExp_ofNat (n : ℕ) [n.AtLeastTwo] (f : α → R) :
 end NormedRing
 
 section NormedLatticeAddCommGroup
-variable [NormedLatticeAddCommGroup E] [CompleteSpace E] [NormedSpace ℝ E]
+variable [NormedAddCommGroup E] [CompleteSpace E] [NormedSpace ℝ E]
 
 /-- **Lebesgue dominated convergence theorem**: sufficient conditions under which almost
   everywhere convergence of a sequence of functions implies the convergence of their image by
@@ -507,7 +507,7 @@ theorem tendsto_condExp_unique (fs gs : ℕ → α → E) (f g : α → E)
 
 @[deprecated (since := "2025-01-21")] alias tendsto_condexp_unique := tendsto_condExp_unique
 
-variable [OrderedSMul ℝ E]
+variable [Lattice E] [HasSolidNorm E] [IsOrderedAddMonoid E] [OrderedSMul ℝ E]
 
 lemma condExp_mono (hf : Integrable f μ) (hg : Integrable g μ) (hfg : f ≤ᵐ[μ] g) :
     μ[f|m] ≤ᵐ[μ] μ[g|m] := by
