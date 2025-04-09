@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov, Heather Macbeth
 -/
 import Mathlib.MeasureTheory.Function.L1Space.AEEqFun
-import Mathlib.MeasureTheory.Function.SimpleFuncDense
+import Mathlib.MeasureTheory.Function.LpSpace.Complete
+import Mathlib.MeasureTheory.Function.LpSpace.Indicator
 
 /-!
 # Density of simple functions
@@ -616,10 +617,10 @@ that the property holds for (multiples of) characteristic functions of finite-me
 sets and is closed under addition (of functions with disjoint support). -/
 @[elab_as_elim]
 protected theorem induction (hp_pos : p ≠ 0) (hp_ne_top : p ≠ ∞) {P : Lp.simpleFunc E p μ → Prop}
-    (h_ind :
+    (indicatorConst :
       ∀ (c : E) {s : Set α} (hs : MeasurableSet s) (hμs : μ s < ∞),
         P (Lp.simpleFunc.indicatorConst p hs hμs.ne c))
-    (h_add :
+    (add :
       ∀ ⦃f g : α →ₛ E⦄,
         ∀ hf : MemLp f p μ,
           ∀ hg : MemLp g p μ,
@@ -634,14 +635,15 @@ protected theorem induction (hp_pos : p ≠ 0) (hp_ne_top : p ≠ ∞) {P : Lp.s
   apply SimpleFunc.induction
   · intro c s hs hf
     by_cases hc : c = 0
-    · convert h_ind 0 MeasurableSet.empty (by simp) using 1
+    · convert indicatorConst 0 MeasurableSet.empty (by simp) using 1
       ext1
       simp [hc]
-    exact h_ind c hs (SimpleFunc.measure_lt_top_of_memLp_indicator hp_pos hp_ne_top hc hs hf)
+    exact indicatorConst c hs
+      (SimpleFunc.measure_lt_top_of_memLp_indicator hp_pos hp_ne_top hc hs hf)
   · intro f g hfg hf hg hfg'
     obtain ⟨hf', hg'⟩ : MemLp f p μ ∧ MemLp g p μ :=
       (memLp_add_of_disjoint hfg f.stronglyMeasurable g.stronglyMeasurable).mp hfg'
-    exact h_add hf' hg' hfg (hf hf') (hg hg')
+    exact add hf' hg' hfg (hf hf') (hg hg')
 
 end Induction
 
@@ -681,9 +683,6 @@ lemma isDenseEmbedding (hp_ne_top : p ≠ ∞) :
   convert SimpleFunc.tendsto_approxOn_range_Lp hp_ne_top (Lp.stronglyMeasurable f).measurable hfi'
   rw [toLp_coeFn f (Lp.memLp f)]
 
-@[deprecated (since := "2024-09-30")]
-alias denseEmbedding := isDenseEmbedding
-
 protected theorem isDenseInducing (hp_ne_top : p ≠ ∞) :
     IsDenseInducing ((↑) : Lp.simpleFunc E p μ → Lp E p μ) :=
   (simpleFunc.isDenseEmbedding hp_ne_top).isDenseInducing
@@ -710,8 +709,9 @@ end CoeToLp
 
 section Order
 
-variable {G : Type*} [NormedLatticeAddCommGroup G]
+variable {G : Type*} [NormedAddCommGroup G] [Lattice G] [HasSolidNorm G] [IsOrderedAddMonoid G]
 
+omit [HasSolidNorm G] [IsOrderedAddMonoid G] in
 theorem coeFn_le (f g : Lp.simpleFunc G p μ) : (f : α → G) ≤ᵐ[μ] g ↔ f ≤ g := by
   rw [← Subtype.coe_le_coe, ← Lp.coeFn_le]
 
@@ -721,14 +721,17 @@ instance instAddLeftMono : AddLeftMono (Lp.simpleFunc G p μ) := by
 
 variable (p μ G)
 
+omit [Lattice G] [HasSolidNorm G] [IsOrderedAddMonoid G] in
 theorem coeFn_zero : (0 : Lp.simpleFunc G p μ) =ᵐ[μ] (0 : α → G) :=
   Lp.coeFn_zero _ _ _
 
 variable {p μ G}
 
+omit [HasSolidNorm G] [IsOrderedAddMonoid G] in
 theorem coeFn_nonneg (f : Lp.simpleFunc G p μ) : (0 : α → G) ≤ᵐ[μ] f ↔ 0 ≤ f := by
   rw [← Subtype.coe_le_coe, Lp.coeFn_nonneg, AddSubmonoid.coe_zero]
 
+omit [HasSolidNorm G] [IsOrderedAddMonoid G] in
 theorem exists_simpleFunc_nonneg_ae_eq {f : Lp.simpleFunc G p μ} (hf : 0 ≤ f) :
     ∃ f' : α →ₛ G, 0 ≤ f' ∧ f =ᵐ[μ] f' := by
   rcases f with ⟨⟨f, hp⟩, g, (rfl : _ = f)⟩
@@ -742,6 +745,7 @@ variable (p μ G)
 def coeSimpleFuncNonnegToLpNonneg :
     { g : Lp.simpleFunc G p μ // 0 ≤ g } → { g : Lp G p μ // 0 ≤ g } := fun g => ⟨g, g.2⟩
 
+omit [HasSolidNorm G] [IsOrderedAddMonoid G] in
 theorem denseRange_coeSimpleFuncNonnegToLpNonneg [hp : Fact (1 ≤ p)] (hp_ne_top : p ≠ ∞) :
     DenseRange (coeSimpleFuncNonnegToLpNonneg p μ G) := fun g ↦ by
   borelize G
@@ -814,17 +818,17 @@ suffices to show that
 * the set of functions in `Lp` for which the property holds is closed.
 -/
 @[elab_as_elim]
-theorem Lp.induction [_i : Fact (1 ≤ p)] (hp_ne_top : p ≠ ∞) (P : Lp E p μ → Prop)
-    (h_ind : ∀ (c : E) {s : Set α} (hs : MeasurableSet s) (hμs : μ s < ∞),
-      P (Lp.simpleFunc.indicatorConst p hs hμs.ne c))
-    (h_add : ∀ ⦃f g⦄, ∀ hf : MemLp f p μ, ∀ hg : MemLp g p μ, Disjoint (support f) (support g) →
-      P (hf.toLp f) → P (hg.toLp g) → P (hf.toLp f + hg.toLp g))
-    (h_closed : IsClosed { f : Lp E p μ | P f }) : ∀ f : Lp E p μ, P f := by
-  refine fun f => (Lp.simpleFunc.denseRange hp_ne_top).induction_on f h_closed ?_
+theorem Lp.induction [_i : Fact (1 ≤ p)] (hp_ne_top : p ≠ ∞) (motive : Lp E p μ → Prop)
+    (indicatorConst : ∀ (c : E) {s : Set α} (hs : MeasurableSet s) (hμs : μ s < ∞),
+      motive (Lp.simpleFunc.indicatorConst p hs hμs.ne c))
+    (add : ∀ ⦃f g⦄, ∀ hf : MemLp f p μ, ∀ hg : MemLp g p μ, Disjoint (support f) (support g) →
+      motive (hf.toLp f) → motive (hg.toLp g) → motive (hf.toLp f + hg.toLp g))
+    (isClosed : IsClosed { f : Lp E p μ | motive f }) : ∀ f : Lp E p μ, motive f := by
+  refine fun f => (Lp.simpleFunc.denseRange hp_ne_top).induction_on f isClosed ?_
   refine Lp.simpleFunc.induction (α := α) (E := E) (lt_of_lt_of_le zero_lt_one _i.elim).ne'
     hp_ne_top ?_ ?_
-  · exact fun c s => h_ind c
-  · exact fun f g hf hg => h_add hf hg
+  · exact fun c s => indicatorConst c
+  · exact fun f g hf hg => add hf hg
 
 /-- To prove something for an arbitrary `MemLp` function in a second countable
 Borel normed group, it suffices to show that
@@ -839,32 +843,32 @@ a simple function with a multiple of a characteristic function and that the inte
 of their images is a subset of `{0}`).
 -/
 @[elab_as_elim]
-theorem MemLp.induction [_i : Fact (1 ≤ p)] (hp_ne_top : p ≠ ∞) (P : (α → E) → Prop)
-    (h_ind : ∀ (c : E) ⦃s⦄, MeasurableSet s → μ s < ∞ → P (s.indicator fun _ => c))
-    (h_add : ∀ ⦃f g : α → E⦄, Disjoint (support f) (support g) → MemLp f p μ → MemLp g p μ →
-      P f → P g → P (f + g))
-    (h_closed : IsClosed { f : Lp E p μ | P f })
-    (h_ae : ∀ ⦃f g⦄, f =ᵐ[μ] g → MemLp f p μ → P f → P g) :
-    ∀ ⦃f : α → E⦄, MemLp f p μ → P f := by
-  have : ∀ f : SimpleFunc α E, MemLp f p μ → P f := by
+theorem MemLp.induction [_i : Fact (1 ≤ p)] (hp_ne_top : p ≠ ∞) (motive : (α → E) → Prop)
+    (indicator : ∀ (c : E) ⦃s⦄, MeasurableSet s → μ s < ∞ → motive (s.indicator fun _ => c))
+    (add : ∀ ⦃f g : α → E⦄, Disjoint (support f) (support g) → MemLp f p μ → MemLp g p μ →
+      motive f → motive g → motive (f + g))
+    (closed : IsClosed { f : Lp E p μ | motive f })
+    (ae : ∀ ⦃f g⦄, f =ᵐ[μ] g → MemLp f p μ → motive f → motive g) :
+    ∀ ⦃f : α → E⦄, MemLp f p μ → motive f := by
+  have : ∀ f : SimpleFunc α E, MemLp f p μ → motive f := by
     apply SimpleFunc.induction
     · intro c s hs h
       by_cases hc : c = 0
-      · subst hc; convert h_ind 0 MeasurableSet.empty (by simp) using 1; ext; simp [const]
+      · subst hc; convert indicator 0 MeasurableSet.empty (by simp) using 1; ext; simp [const]
       have hp_pos : p ≠ 0 := (lt_of_lt_of_le zero_lt_one _i.elim).ne'
-      exact h_ind c hs (SimpleFunc.measure_lt_top_of_memLp_indicator hp_pos hp_ne_top hc hs h)
+      exact indicator c hs (SimpleFunc.measure_lt_top_of_memLp_indicator hp_pos hp_ne_top hc hs h)
     · intro f g hfg hf hg int_fg
       rw [SimpleFunc.coe_add,
         memLp_add_of_disjoint hfg f.stronglyMeasurable g.stronglyMeasurable] at int_fg
-      exact h_add hfg int_fg.1 int_fg.2 (hf int_fg.1) (hg int_fg.2)
-  have : ∀ f : Lp.simpleFunc E p μ, P f := by
+      exact add hfg int_fg.1 int_fg.2 (hf int_fg.1) (hg int_fg.2)
+  have : ∀ f : Lp.simpleFunc E p μ, motive f := by
     intro f
     exact
-      h_ae (Lp.simpleFunc.toSimpleFunc_eq_toFun f) (Lp.simpleFunc.memLp f)
+      ae (Lp.simpleFunc.toSimpleFunc_eq_toFun f) (Lp.simpleFunc.memLp f)
         (this (Lp.simpleFunc.toSimpleFunc f) (Lp.simpleFunc.memLp f))
-  have : ∀ f : Lp E p μ, P f := fun f =>
-    (Lp.simpleFunc.denseRange hp_ne_top).induction_on f h_closed this
-  exact fun f hf => h_ae hf.coeFn_toLp (Lp.memLp _) (this (hf.toLp f))
+  have : ∀ f : Lp E p μ, motive f := fun f =>
+    (Lp.simpleFunc.denseRange hp_ne_top).induction_on f closed this
+  exact fun f hf => ae hf.coeFn_toLp (Lp.memLp _) (this (hf.toLp f))
 
 /-- If a set of ae strongly measurable functions is stable under addition and approximates
 characteristic functions in `ℒp`, then it is dense in `ℒp`. -/
@@ -952,7 +956,7 @@ theorem Integrable.induction (P : (α → E) → Prop)
     (h_ae : ∀ ⦃f g⦄, f =ᵐ[μ] g → Integrable f μ → P f → P g) :
     ∀ ⦃f : α → E⦄, Integrable f μ → P f := by
   simp only [← memLp_one_iff_integrable] at *
-  exact MemLp.induction one_ne_top (P := P) h_ind h_add h_closed h_ae
+  exact MemLp.induction one_ne_top (motive := P) h_ind h_add h_closed h_ae
 
 end Integrable
 

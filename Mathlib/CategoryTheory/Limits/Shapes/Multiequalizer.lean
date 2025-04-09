@@ -182,18 +182,26 @@ end WalkingMultispan
 @[nolint checkUnivs]
 structure MulticospanIndex (J : MulticospanShape.{w, w'})
     (C : Type u) [Category.{v} C] where
+  /-- Left map, from `J.L` to `C` -/
   left : J.L → C
+  /-- Right map, from `J.R` to `C` -/
   right : J.R → C
+  /-- A family of maps from `left (J.fst b)` to `right b` -/
   fst : ∀ b, left (J.fst b) ⟶ right b
+  /-- A family of maps from `left (J.snd b)` to `right b` -/
   snd : ∀ b, left (J.snd b) ⟶ right b
 
 /-- This is a structure encapsulating the data necessary to define a `Multispan`. -/
 @[nolint checkUnivs]
 structure MultispanIndex (J : MultispanShape.{w, w'})
     (C : Type u) [Category.{v} C] where
+  /-- Left map, from `J.L` to `C` -/
   left : J.L → C
+  /-- Right map, from `J.R` to `C` -/
   right : J.R → C
+  /-- A family of maps from `left a` to `right (J.fst a)` -/
   fst : ∀ a, left a ⟶ right (J.fst a)
+  /-- A family of maps from `left a` to `right (J.snd a)` -/
   snd : ∀ a, left a ⟶ right (J.snd a)
 
 namespace MulticospanIndex
@@ -628,15 +636,13 @@ noncomputable def ofSigmaCofork (c : Cofork I.fstSigmaMap I.sndSigmaMap) : Multi
         · simp [c.condition]
         · simp }
 
--- Porting note: https://github.com/leanprover-community/mathlib4/issues/10675
--- dsimp cannot prove this, once ofSigmaCofork_ι_app_right' is defined
 @[simp]
 theorem ofSigmaCofork_ι_app_left (c : Cofork I.fstSigmaMap I.sndSigmaMap) (a) :
     (ofSigmaCofork I c).ι.app (WalkingMultispan.left a) =
       (Sigma.ι I.left a :) ≫ I.fstSigmaMap ≫ c.π :=
   rfl
 
--- @[simp] -- Porting note: LHS simplifies to obtain the normal form below
+-- LHS simplifies; `(d)simp`-normal form is `ofSigmaCofork_ι_app_right'`
 theorem ofSigmaCofork_ι_app_right (c : Cofork I.fstSigmaMap I.sndSigmaMap) (b) :
     (ofSigmaCofork I c).ι.app (WalkingMultispan.right b) = (Sigma.ι I.right b :) ≫ c.π :=
   rfl

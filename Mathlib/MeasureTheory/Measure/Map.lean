@@ -97,11 +97,11 @@ theorem mapₗ_apply_of_measurable {f : α → β} (hf : Measurable f) (μ : Mea
   exact mapₗ_congr hf hf.aemeasurable.measurable_mk hf.aemeasurable.ae_eq_mk
 
 @[simp]
-theorem map_add (μ ν : Measure α) {f : α → β} (hf : Measurable f) :
+protected theorem map_add (μ ν : Measure α) {f : α → β} (hf : Measurable f) :
     (μ + ν).map f = μ.map f + ν.map f := by simp [← mapₗ_apply_of_measurable hf]
 
 @[simp]
-theorem map_zero (f : α → β) : (0 : Measure α).map f = 0 := by
+protected theorem map_zero (f : α → β) : (0 : Measure α).map f = 0 := by
   by_cases hf : AEMeasurable f (0 : Measure α) <;> simp [map, hf]
 
 @[simp]

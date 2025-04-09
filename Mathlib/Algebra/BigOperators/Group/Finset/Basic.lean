@@ -152,7 +152,7 @@ theorem prod_filter_mul_prod_filter_not
 @[to_additive]
 lemma prod_filter_not_mul_prod_filter (s : Finset α) (p : α → Prop) [DecidablePred p]
     [∀ x, Decidable (¬p x)] (f : α → β) :
-    (∏ x ∈ s.filter fun x ↦ ¬p x, f x) * ∏ x ∈ s.filter p, f x = ∏ x ∈ s, f x := by
+    (∏ x ∈ s with ¬p x, f x) * ∏ x ∈ s with p x, f x = ∏ x ∈ s, f x := by
   rw [mul_comm, prod_filter_mul_prod_filter_not]
 
 @[to_additive]
@@ -161,6 +161,14 @@ theorem prod_filter_xor (p q : α → Prop) [DecidablePred p] [DecidablePred q] 
       (∏ x ∈ s with (p x ∧ ¬ q x), f x) * (∏ x ∈ s with (q x ∧ ¬ p x), f x) := by
   classical rw [← prod_union (disjoint_filter_and_not_filter _ _), ← filter_or]
   simp only [Xor']
+
+/-- In a monoid whose only unit is `1`, a product is equal to `1` iff all factors are `1`. -/
+@[to_additive (attr := simp)
+"In a monoid whose only unit is `0`, a sum is equal to `0` iff all terms are `0`."]
+lemma prod_eq_one_iff [Subsingleton βˣ] : ∏ i ∈ s, f i = 1 ↔ ∀ i ∈ s, f i = 1 := by
+  induction' s using Finset.cons_induction with i s hi ih <;> simp [*]
+
+@[deprecated (since := "2025-03-31")] alias prod_eq_one_iff' := prod_eq_one_iff
 
 end CommMonoid
 
@@ -462,7 +470,7 @@ theorem prod_subtype {p : α → Prop} {F : Fintype (Subtype p)} (s : Finset α)
 
 @[to_additive]
 theorem prod_set_coe (s : Set α) [Fintype s] : (∏ i : s, f i) = ∏ i ∈ s.toFinset, f i :=
-(Finset.prod_subtype s.toFinset (fun _ ↦ Set.mem_toFinset) f).symm
+  (Finset.prod_subtype s.toFinset (fun _ ↦ Set.mem_toFinset) f).symm
 
 /-- The product of a function `g` defined only on a set `s` is equal to
 the product of a function `f` defined everywhere,
@@ -816,7 +824,7 @@ theorem prod_list_map_count [DecidableEq α] (l : List α) {M : Type*} [CommMono
       prod_insert (not_mem_erase _ _), ← mul_assoc, count_cons_self, pow_succ']
     congr 1
     refine prod_congr rfl fun x hx => ?_
-    rw [count_cons_of_ne (ne_of_mem_erase hx)]
+    rw [count_cons_of_ne (ne_of_mem_erase hx).symm]
   rw [prod_insert has, count_cons_self, count_eq_zero_of_not_mem (mt mem_toFinset.2 has), pow_one]
   congr 1
   refine prod_congr rfl fun x hx => ?_
@@ -1275,13 +1283,13 @@ variable {α β ι : Type*} [DecidableEq α]
 @[to_additive]
 lemma prod_filter_of_pairwise_eq_one [CommMonoid β] {f : ι → α} {g : α → β} {n : ι} {I : Finset ι}
     (hn : n ∈ I) (hf : (I : Set ι).Pairwise fun i j ↦ f i = f j → g (f i) = 1) :
-    ∏ j ∈ filter (fun j ↦ f j = f n) I, g (f j) = g (f n) := by
+    ∏ j ∈ I with f j = f n, g (f j) = g (f n) := by
   classical
-  have h j (hj : j ∈ (filter (fun i ↦ f i = f n) I).erase n) : g (f j) = 1 := by
+  have h j (hj : j ∈ {i ∈ I | f i = f n}.erase n) : g (f j) = 1 := by
     simp only [mem_erase, mem_filter] at hj
     exact hf hj.2.1 hn hj.1 hj.2.2
   rw [← mul_one (g (f n)), ← prod_eq_one h,
-    ← mul_prod_erase (filter (f · = f n) I) (fun i ↦ g (f i)) <| mem_filter.mpr ⟨hn, by rfl⟩]
+    ← mul_prod_erase {i ∈ I | f i = f n} (fun i ↦ g (f i)) <| mem_filter.mpr ⟨hn, by rfl⟩]
 
 /-- A version of `Finset.prod_map` and `Finset.prod_image`, but we do not assume that `f` is
 injective. Rather, we assume that the image of `f` on `I` only overlaps where `g (f i) = 1`.
@@ -1489,3 +1497,5 @@ theorem nat_abs_sum_le {ι : Type*} (s : Finset ι) (f : ι → ℤ) :
   | cons i s his IH =>
     simp only [Finset.sum_cons, not_false_iff]
     exact (Int.natAbs_add_le _ _).trans (Nat.add_le_add_left IH _)
+
+set_option linter.style.longFile 1600

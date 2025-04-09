@@ -547,11 +547,13 @@ instance small_Ioc (a b : Ordinal.{u}) : Small.{u} (Ioc a b) := small_subset Ioc
 
 /-- `o.toType` is an `OrderBot` whenever `o ≠ 0`. -/
 def toTypeOrderBot {o : Ordinal} (ho : o ≠ 0) : OrderBot o.toType where
+  bot := (enum (· < ·)) ⟨0, _⟩
   bot_le := enum_zero_le' (by rwa [Ordinal.pos_iff_ne_zero])
 
 /-- `o.toType` is an `OrderBot` whenever `0 < o`. -/
 @[deprecated "use toTypeOrderBot" (since := "2025-02-13")]
 def toTypeOrderBotOfPos {o : Ordinal} (ho : 0 < o) : OrderBot o.toType where
+  bot := (enum (· < ·)) ⟨0, _⟩
   bot_le := enum_zero_le' ho
 
 theorem enum_zero_eq_bot {o : Ordinal} (ho : 0 < o) :
@@ -730,16 +732,8 @@ def liftInitialSeg : Ordinal.{v} ≤i Ordinal.{max u v} := by
   use typein r f.top
   rw [RelEmbedding.ofMonotone_coe, ← lift_umax, lift_typein_top, lift_id']
 
-@[deprecated liftInitialSeg (since := "2024-09-21")]
-alias lift.initialSeg := liftInitialSeg
-
 @[simp]
 theorem liftInitialSeg_coe : (liftInitialSeg.{v, u} : Ordinal → Ordinal) = lift.{v, u} :=
-  rfl
-
-set_option linter.deprecated false in
-@[deprecated liftInitialSeg_coe (since := "2024-09-21")]
-theorem lift.initialSeg_coe : (lift.initialSeg.{v, u} : Ordinal → Ordinal) = lift.{v, u} :=
   rfl
 
 @[simp]
@@ -916,10 +910,6 @@ theorem succ_one : succ (1 : Ordinal) = 2 := by congr; simp only [Nat.unaryCast,
 theorem add_succ (o₁ o₂ : Ordinal) : o₁ + succ o₂ = succ (o₁ + o₂) :=
   (add_assoc _ _ _).symm
 
-@[deprecated Order.one_le_iff_pos (since := "2024-09-04")]
-protected theorem one_le_iff_pos {o : Ordinal} : 1 ≤ o ↔ 0 < o :=
-  Order.one_le_iff_pos
-
 theorem one_le_iff_ne_zero {o : Ordinal} : 1 ≤ o ↔ o ≠ 0 := by
   rw [Order.one_le_iff_pos, Ordinal.pos_iff_ne_zero]
 
@@ -954,7 +944,6 @@ theorem Iio_one_default_eq : (default : Iio (1 : Ordinal)) = ⟨0, zero_lt_one' 
 instance uniqueToTypeOne : Unique (toType 1) where
   default := enum (α := toType 1) (· < ·) ⟨0, by simp⟩
   uniq a := by
-    unfold default
     rw [← enum_typein (α := toType 1) (· < ·) a]
     congr
     rw [← lt_one_iff_zero]
@@ -1031,36 +1020,17 @@ def liftPrincipalSeg : Ordinal.{u} <i Ordinal.{max (u + 1) v} :=
         simp only [RelEmbedding.ofMonotone_coe]
         simp [e]⟩
 
-@[deprecated liftPrincipalSeg (since := "2024-09-21")]
-alias lift.principalSeg := liftPrincipalSeg
-
 @[simp]
 theorem liftPrincipalSeg_coe :
     (liftPrincipalSeg.{u, v} : Ordinal → Ordinal) = lift.{max (u + 1) v} :=
-  rfl
-
-set_option linter.deprecated false in
-@[deprecated liftPrincipalSeg_coe (since := "2024-09-21")]
-theorem lift.principalSeg_coe :
-    (lift.principalSeg.{u, v} : Ordinal → Ordinal) = lift.{max (u + 1) v} :=
   rfl
 
 @[simp]
 theorem liftPrincipalSeg_top : (liftPrincipalSeg.{u, v}).top = univ.{u, v} :=
   rfl
 
-set_option linter.deprecated false in
-@[deprecated liftPrincipalSeg_top (since := "2024-09-21")]
-theorem lift.principalSeg_top : (lift.principalSeg.{u, v}).top = univ.{u, v} :=
-  rfl
-
 theorem liftPrincipalSeg_top' : liftPrincipalSeg.{u, u + 1}.top = typeLT Ordinal := by
   simp only [liftPrincipalSeg_top, univ_id]
-
-set_option linter.deprecated false in
-@[deprecated liftPrincipalSeg_top (since := "2024-09-21")]
-theorem lift.principalSeg_top' : lift.principalSeg.{u, u + 1}.top = typeLT Ordinal := by
-  simp only [lift.principalSeg_top, univ_id]
 
 end Ordinal
 
@@ -1446,7 +1416,7 @@ theorem List.Sorted.lt_ord_of_lt [LinearOrder α] [WellFoundedLT α] {l m : List
     | nil => intro i hi; simp at hi
     | cons b bs =>
       intro i hi
-      suffices h : i ≤ a by refine lt_of_le_of_lt ?_ (hlt a (mem_cons_self a as)); simpa
+      suffices h : i ≤ a by refine lt_of_le_of_lt ?_ (hlt a mem_cons_self); simpa
       cases hi with
       | head as => exact List.head_le_of_lt hmltl
       | tail b hi => exact le_of_lt (lt_of_lt_of_le (List.rel_of_sorted_cons hm _ hi)
