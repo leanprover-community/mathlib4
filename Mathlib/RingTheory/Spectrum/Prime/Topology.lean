@@ -34,7 +34,7 @@ The contents of this file draw inspiration from <https://github.com/ramonfmir/le
 which has contributions from Ramon Fernandez Mir, Kevin Buzzard, Kenny Lau,
 and Chris Hughes (on an earlier repository).
 
-## Main definition
+## Main definitions
 
 * `PrimeSpectrum.zariskiTopology`: the Zariski topology on the prime spectrum, whose closed sets
   are zero loci (`zeroLocus`).
