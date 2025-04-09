@@ -88,8 +88,8 @@ end SeminormedRing
 
 section NormSMulClass
 
-/-- Mixin class for modules where the norm is strictly compatible with the scalar-multiplication,
-i.e. `‖r • x‖ = ‖r‖ * ‖x‖`. -/
+/-- Mixin class for scalar-multiplication actions with a strictly multiplicative norm, i.e.
+`‖r • x‖ = ‖r‖ * ‖x‖`. -/
 class NormSMulClass (α β : Type*) [Norm α] [Norm β] [SMul α β] : Prop where
   protected norm_smul (r : α) (x : β) : ‖r • x‖ = ‖r‖ * ‖x‖
 
@@ -103,6 +103,17 @@ theorem nnnorm_smul (r : α) (x : β) : ‖r • x‖₊ = ‖r‖₊ * ‖x‖�
   NNReal.eq <| norm_smul r x
 
 lemma enorm_smul (r : α) (x : β) : ‖r • x‖ₑ = ‖r‖ₑ * ‖x‖ₑ := by simp [enorm, nnnorm_smul]
+
+instance Pi.toNormSMulClass {ι : Type*} {β : ι → Type*} [Fintype ι] [DecidableEq ι]
+    [SeminormedRing α] [∀ i, SeminormedAddGroup (β i)] [∀ i, SMul α (β i)]
+    [∀ i, NormSMulClass α (β i)] : NormSMulClass α (Π i, β i) where
+  norm_smul r x := by
+    simp [nnnorm_def, ← coe_nnnorm, nnnorm_smul, ← NNReal.coe_mul, NNReal.mul_finset_sup]
+
+instance Prod.toNormSMulClass {γ : Type*} [SeminormedAddGroup γ] [SMul α γ] [NormSMulClass α γ] :
+    NormSMulClass α (β × γ) where
+  norm_smul := fun r ⟨v₁, v₂⟩ ↦ by simp only [smul_def, ← coe_nnnorm, nnnorm_def,
+    nnnorm_smul r, ← NNReal.coe_mul, NNReal.mul_sup]
 
 end NormSMulClass
 
@@ -119,9 +130,8 @@ theorem nndist_smul₀ (s : α) (x y : β) : nndist (s • x) (s • y) = ‖s�
 theorem edist_smul₀ (s : α) (x y : β) : edist (s • x) (s • y) = ‖s‖₊ • edist x y := by
   simp only [edist_nndist, nndist_smul₀, ENNReal.coe_mul, ENNReal.smul_def, smul_eq_mul]
 
-instance NormSMulClass.toBoundedSMul : IsBoundedSMul α β where
-  dist_smul_pair' x y₁ y₂ := by simp [dist_smul₀, dist_zero_right]
-  dist_pair_smul' x₁ x₂ y := by simpa [dist_eq_norm, sub_smul] using (norm_smul (x₁ - x₂) y).le
+instance NormSMulClass.toBoundedSMul : IsBoundedSMul α β :=
+  .of_norm_smul_le fun r x ↦ (norm_smul r x).le
 
 end NormSMulClassModule
 
