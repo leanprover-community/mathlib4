@@ -494,4 +494,10 @@ noncomputable def strictSegal : StrictSegal (nerve C) where
 instance isStrictSegal : IsStrictSegal (nerve C) :=
   strictSegal C |>.isStrictSegal
 
+noncomputable def strictSegal₂ : Truncated.StrictSegal ((truncation 2).obj (nerve C)) :=
+  (strictSegal C).truncation 1
+
+instance isStrictSegal₂ : Truncated.IsStrictSegal ((truncation 2).obj (nerve C)) :=
+  strictSegal₂ C |>.isStrictSegal
+
 end CategoryTheory.Nerve

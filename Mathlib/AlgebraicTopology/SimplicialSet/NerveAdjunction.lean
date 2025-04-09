@@ -519,6 +519,14 @@ theorem toNerve₂.ext (F G : X ⟶ nerveFunctor₂.obj (Cat.of C))
       have h2 := congr_arg_heq (fun x => x.map' 0 1) (congr_fun (G.naturality (op ar)) x)
       exact h1.symm.trans <| .trans (congr_arg_heq (fun x => x.map' 0 1) (eq₁ _)) h2
 
+/-- An equality between maps into the 2-truncated nerve is detected by an equality between their
+underlying refl prefunctors. -/
+theorem toNerve₂.ext' (F G : X ⟶ nerveFunctor₂.obj (Cat.of C))
+    (hyp : SSet.oneTruncation₂.map F = SSet.oneTruncation₂.map G) : F = G := by
+  unfold nerveFunctor₂ at F G
+  dsimp at F G
+  exact toStrictSegal₂.ext F G (Nerve.strictSegal₂ C) hyp
+
 /-- The components of the 2-truncated nerve adjunction unit. -/
 def nerve₂Adj.unit.app (X : SSet.Truncated.{u} 2) :
     X ⟶ nerveFunctor₂.obj (hoFunctor₂.obj X) := by
