@@ -1,4 +1,13 @@
-import Mathlib
+import Mathlib.Algebra.Category.ModuleCat.Basic
+import Mathlib.Data.Finite.Card
+import Mathlib.Data.Set.Card
+import Mathlib.LinearAlgebra.Quotient.Basic
+import Mathlib.RingTheory.Finiteness.Defs
+import Mathlib.Order.RelSeries
+import Mathlib.Algebra.Exact
+import Mathlib.Algebra.Module.Torsion
+import Mathlib.Order.CompletePartialOrder
+import Mathlib.RingTheory.Ideal.AssociatedPrime
 
 section ModuleCat
 
