@@ -526,7 +526,7 @@ theorem AnalyticAt.comp_sub (hf : AnalyticAt 𝕜 f x) (y : E) :
 theorem AnalyticOnNhd.comp_sub (hf : AnalyticOnNhd 𝕜 f s) (y : E) :
     AnalyticOnNhd 𝕜 (fun (z : E) ↦ f (z - y)) ((fun x ↦ x + y) '' s) := by
   intro x hx
-  simp at hx
+  simp only [image_add_right, mem_preimage] at hx
   specialize hf (x - y) (by convert hx using 1; abel)
   rw [show x = (x - y) + y by abel]
   apply hf.comp_sub
@@ -540,7 +540,7 @@ theorem AnalyticWithinAt.comp_sub (hf : AnalyticWithinAt 𝕜 f s x) (y : E) :
 theorem AnalyticOn.comp_sub (hf : AnalyticOn 𝕜 f s) (y : E) :
     AnalyticOn 𝕜 (fun (z : E) ↦ f (z - y)) ((fun x ↦ x + y) '' s) := by
   intro x hx
-  simp at hx
+  simp only [image_add_right, mem_preimage] at hx
   specialize hf (x - y) (by convert hx using 1; abel)
   rw [show x = (x - y) + y by abel]
   apply hf.comp_sub
