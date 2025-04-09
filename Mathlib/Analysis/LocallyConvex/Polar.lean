@@ -180,6 +180,7 @@ end NontriviallyNormedField
 
 section Bipolar
 
+-- `RCLike 𝕜` and `IsScalarTower ℝ 𝕜 E` needed for `RCLike.geometric_hahn_banach_closed_point`
 variable [RCLike 𝕜] [AddCommGroup E] [AddCommGroup F]
 variable [Module 𝕜 E] [Module 𝕜 F]
 
