@@ -20,11 +20,11 @@ We define ideal sheaves of schemes and provide various constructors for it.
   The largest ideal sheaf contained in a family of ideals.
 * `AlgebraicGeometry.Scheme.IdealSheafData.equivOfIsAffine`:
   Over affine schemes, ideal sheaves are in bijection with ideals of the global sections.
-* `AlgebraicGeometry.Scheme.IdealSheafData.support`: The support of an ideal sheaf.
-* `AlgebraicGeometry.Scheme.IdealSheafData.vanishingIdeal`: The vanishing ideal of a set.
+* `AlgebraicGeometry.Scheme.IdealSheafData.support`:
+  The support of an ideal sheaf.
+* `AlgebraicGeometry.Scheme.IdealSheafData.vanishingIdeal`:
+  The vanishing ideal of a set.
 * `AlgebraicGeometry.Scheme.Hom.ker`: The kernel of a morphism.
-* `AlgebraicGeometry.Scheme.IdealSheafData.subscheme`: The subscheme associated to an ideal sheaf.
-* `AlgebraicGeometry.Scheme.IdealSheafData.subschemeι`: The inclusion from the subscheme.
 
 ## Main results
 * `AlgebraicGeometry.Scheme.IdealSheafData.gc`:
