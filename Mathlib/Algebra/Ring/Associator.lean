@@ -9,7 +9,7 @@ import Mathlib.Algebra.Group.Hom.Instances
 import Mathlib.Tactic.Abel
 
 /-!
-## Associator in a ring
+# Associator in a ring
 
 If `R` is a non-associative ring, then  `(x * y) * z - x * (y * z)` is called the `associator` of
 ring elements `x y z : R`.
@@ -43,6 +43,15 @@ theorem associator_cocycle (a b c d : R) :
   abel1
 
 end NonUnitalNonAssocRing
+
+section NonUnitalRing
+variable {R : Type u} [NonUnitalRing R]
+
+@[simp]
+theorem associator_eq_zero : associator (R := R) = 0 :=
+  associator_eq_zero_iff_associative.mpr inferInstance
+
+end NonUnitalRing
 
 namespace AddMonoidHom
 
@@ -104,4 +113,13 @@ theorem associator_eq_zero_iff_associative :
   simp [mulLeft₃_eq_mulRight₃_iff_associative, associator, sub_eq_zero]
 
 end NonUnitalNonAssocRing
+
+section NonUnitalRing
+variable {R : Type u} [NonUnitalRing R]
+
+@[simp]
+theorem associator_eq_zero : associator (R := R) = 0 :=
+  associator_eq_zero_iff_associative.mpr inferInstance
+
+end NonUnitalRing
 end AddMonoidHom
