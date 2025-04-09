@@ -65,13 +65,11 @@ end RingCone
 
 variable {S R : Type*} [Ring R] [SetLike S R] (C : S)
 
-/-- Construct a partially ordered ring by designating a cone in a ring.
-Warning: using this def as a constructor in an instance can lead to diamonds
-due to non-customisable field: `lt`. -/
+/-- Construct a partially ordered ring by designating a cone in a ring. -/
 lemma IsOrderedRing.mkOfCone [RingConeClass S R] :
-    let _ : PartialOrder R := .mkOfAddGroupCone C
+    letI : PartialOrder R := .mkOfAddGroupCone C
     IsOrderedRing R :=
-  let _ : PartialOrder R := .mkOfAddGroupCone C
+  letI : PartialOrder R := .mkOfAddGroupCone C
   have : IsOrderedAddMonoid R := .mkOfCone C
   have : ZeroLEOneClass R := ⟨show _ ∈ C by simpa using one_mem C⟩
   .of_mul_nonneg fun x y xnn ynn ↦ show _ ∈ C by simpa using mul_mem xnn ynn

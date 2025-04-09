@@ -10,7 +10,9 @@ import Mathlib.Algebra.Order.Ring.Rat
 /-!
 # The rational numbers form a linear ordered field
 
-This file contains the linear ordered field instance on the rational numbers.
+This file used to contain the linear ordered field instance on the rational numbers.
+
+TODO: rename this file to `Mathlib.Algebra.Order.GroupWithZero.NNRat`
 
 See note [foundational algebra order theory].
 
