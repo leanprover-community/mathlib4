@@ -469,7 +469,7 @@ section ExpMapping
 local notation "↑ₐ" => algebraMap 𝕜 A
 
 /-- For `𝕜 = ℝ` or `𝕜 = ℂ`, `exp` maps the spectrum of `a` into the spectrum of `exp a`. -/
-theorem exp_mem_exp [RCLike 𝕜] [NormedRing A] [Algebra ℚ A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
+theorem exp_mem_exp [RCLike 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
     (a : A) {z : 𝕜} (hz : z ∈ spectrum 𝕜 a) : exp z ∈ spectrum 𝕜 (exp a) := by
   have hexpmul : exp a = exp (a - ↑ₐ z) * ↑ₐ (exp z) := by
     rw [algebraMap_exp_comm z, ← exp_add_of_commute 𝕜 (Algebra.commutes z (a - ↑ₐ z)).symm,
@@ -486,12 +486,10 @@ theorem exp_mem_exp [RCLike 𝕜] [NormedRing A] [Algebra ℚ A] [NormedAlgebra 
   have h₁ : (∑' n : ℕ, ((n + 1).factorial⁻¹ : 𝕜) • (a - ↑ₐ z) ^ (n + 1)) = b * (a - ↑ₐ z) := by
     simpa only [pow_succ, Algebra.smul_mul_assoc] using hb.tsum_mul_right (a - ↑ₐ z)
   have h₃ : exp (a - ↑ₐ z) = 1 + (a - ↑ₐ z) * b := by
-    rw [exp_eq_tsum]
+    rw [exp_eq_tsum 𝕜]
     convert tsum_eq_zero_add (expSeries_summable' (𝕂 := 𝕜) (a - ↑ₐ z))
     · simp only [Nat.factorial_zero, Nat.cast_one, inv_one, pow_zero, one_smul]
-    · convert h₀.symm
-      ext a
-      exact inv_natCast_smul_eq ℚ 𝕜 _ a
+    · exact h₀.symm
   rw [spectrum.mem_iff, IsUnit.sub_iff, ← one_mul (↑ₐ (exp z)), hexpmul, ← _root_.sub_mul,
     Commute.isUnit_mul_iff (Algebra.commutes (exp z) (exp (a - ↑ₐ z) - 1)).symm,
     sub_eq_iff_eq_add'.mpr h₃, Commute.isUnit_mul_iff (h₀ ▸ h₁ : (a - ↑ₐ z) * b = b * (a - ↑ₐ z))]

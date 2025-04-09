@@ -47,11 +47,10 @@ variable {𝕜 : Type*} {α : Type*} [RCLike 𝕜] [TopologicalSpace α] [Compac
 lemma NormedSpace.exp_continuousMap_eq (f : C(α, 𝕜)) :
     exp f = (⟨exp ∘ f, (exp_continuous 𝕜).comp f.continuous⟩ : C(α, 𝕜)) := by
   ext a
-  simp_rw [NormedSpace.exp,
-    ← expSeries_sum_eq_rat (𝕂 := 𝕜), FormalMultilinearSeries.sum]
+  simp_rw [NormedSpace.exp_eq_expSeries_sum (𝔸 := C(α, 𝕜)) 𝕜, FormalMultilinearSeries.sum]
   have h_sum := NormedSpace.expSeries_summable (𝕂 := 𝕜) f
   simp_rw [← ContinuousMap.tsum_apply h_sum a, NormedSpace.expSeries_apply_eq]
-  simp [NormedSpace.exp_eq_tsum, inv_natCast_smul_eq 𝕜 ℚ]
+  simp [NormedSpace.exp_eq_tsum 𝕜]
 
 end general_exponential
 
@@ -60,7 +59,7 @@ section RCLikeNormed
 
 variable {𝕜 : Type*} {A : Type*} [RCLike 𝕜] {p : A → Prop} [NormedRing A]
   [StarRing A] [IsTopologicalRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
-  [ContinuousFunctionalCalculus 𝕜 A p] [Algebra ℚ A]
+  [ContinuousFunctionalCalculus 𝕜 A p]
 
 lemma exp_eq_normedSpace_exp {a : A} (ha : p a := by cfc_tac) :
     cfc (exp : 𝕜 → 𝕜) a = exp a := by
@@ -78,7 +77,7 @@ section RealNormed
 
 variable {A : Type*} [NormedRing A] [StarRing A]
   [IsTopologicalRing A] [NormedAlgebra ℝ A] [CompleteSpace A]
-  [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint] [Algebra ℚ A]
+  [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 
 lemma real_exp_eq_normedSpace_exp {a : A} (ha : IsSelfAdjoint a := by cfc_tac) :
     cfc Real.exp a = exp a :=
@@ -96,7 +95,7 @@ end RealNormed
 section ComplexNormed
 
 variable {A : Type*} {p : A → Prop} [NormedRing A] [StarRing A]
-  [NormedAlgebra ℂ A] [CompleteSpace A] [ContinuousFunctionalCalculus ℂ A p] [Algebra ℚ A]
+  [NormedAlgebra ℂ A] [CompleteSpace A] [ContinuousFunctionalCalculus ℂ A p]
 
 lemma complex_exp_eq_normedSpace_exp {a : A} (ha : p a := by cfc_tac) :
     cfc Complex.exp a = exp a :=
@@ -148,7 +147,7 @@ lemma log_pow (n : ℕ) (a : A) (ha₂ : ∀ x ∈ spectrum ℝ a, 0 < x)
   rw [log, ← cfc_pow_id (R := ℝ) a n ha₁, ← cfc_comp' Real.log (· ^ n) a ha₂'', log]
   simp_rw [Real.log_pow, ← Nat.cast_smul_eq_nsmul ℝ n, cfc_const_mul (n : ℝ) Real.log a ha₂']
 
-variable [CompleteSpace A] [Algebra ℚ A]
+variable [CompleteSpace A]
 
 lemma log_exp (a : A) (ha : IsSelfAdjoint a := by cfc_tac) : log (NormedSpace.exp a) = a := by
   have hcont : ContinuousOn Real.log (Real.exp '' spectrum ℝ a) := by fun_prop (disch := simp)

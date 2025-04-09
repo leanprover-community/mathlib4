@@ -74,18 +74,18 @@ section Ring
 
 variable [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n] [∀ i, Fintype (n' i)]
   [∀ i, DecidableEq (n' i)] [Ring 𝔸] [TopologicalSpace 𝔸] [IsTopologicalRing 𝔸]
-  [Algebra ℚ 𝔸] [T2Space 𝔸]
+  [T2Space 𝔸]
 
-theorem exp_diagonal (v : m → 𝔸) : exp (diagonal v) = diagonal (exp v) := by
-  simp_rw [exp_eq_tsum, diagonal_pow, ← diagonal_smul, ← diagonal_tsum]
+theorem exp_diagonal [Algebra ℚ 𝔸] (v : m → 𝔸) : exp (diagonal v) = diagonal (exp v) := by
+  simp_rw [exp_eq_tsum_rat, diagonal_pow, ← diagonal_smul, ← diagonal_tsum]
 
-theorem exp_blockDiagonal (v : m → Matrix n n 𝔸) :
+theorem exp_blockDiagonal [Algebra ℚ 𝔸] (v : m → Matrix n n 𝔸) :
     exp (blockDiagonal v) = blockDiagonal (exp v) := by
-  simp_rw [exp_eq_tsum, ← blockDiagonal_pow, ← blockDiagonal_smul, ← blockDiagonal_tsum]
+  simp_rw [exp_eq_tsum_rat, ← blockDiagonal_pow, ← blockDiagonal_smul, ← blockDiagonal_tsum]
 
-theorem exp_blockDiagonal' (v : ∀ i, Matrix (n' i) (n' i) 𝔸) :
+theorem exp_blockDiagonal' [Algebra ℚ 𝔸] (v : ∀ i, Matrix (n' i) (n' i) 𝔸) :
     exp (blockDiagonal' v) = blockDiagonal' (exp v) := by
-  simp_rw [exp_eq_tsum, ← blockDiagonal'_pow, ← blockDiagonal'_smul, ← blockDiagonal'_tsum]
+  simp_rw [exp_eq_tsum_rat, ← blockDiagonal'_pow, ← blockDiagonal'_smul, ← blockDiagonal'_tsum]
 
 theorem exp_conjTranspose [StarRing 𝔸] [ContinuousStar 𝔸] (A : Matrix m m 𝔸) :
     exp Aᴴ = (exp A)ᴴ :=
@@ -103,7 +103,7 @@ variable [Fintype m] [DecidableEq m] [CommRing 𝔸] [TopologicalSpace 𝔸]
   [IsTopologicalRing 𝔸] [Algebra ℚ 𝔸] [T2Space 𝔸]
 
 theorem exp_transpose (A : Matrix m m 𝔸) : exp Aᵀ = (exp A)ᵀ := by
-  simp_rw [exp_eq_tsum, transpose_tsum, transpose_smul, transpose_pow]
+  simp_rw [exp_eq_tsum_rat, transpose_tsum, transpose_smul, transpose_pow]
 
 theorem IsSymm.exp {A : Matrix m m 𝔸} (h : A.IsSymm) : (exp A).IsSymm :=
   (exp_transpose _).symm.trans <| congr_arg _ h
@@ -115,7 +115,7 @@ end Topological
 section Normed
 
 variable [RCLike 𝕂] [Fintype m] [DecidableEq m]
-  [NormedRing 𝔸] [Algebra ℚ 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
+  [NormedRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
 include 𝕂
 
 nonrec theorem exp_add_of_commute (A B : Matrix m m 𝔸) (h : Commute A B) :
@@ -163,7 +163,7 @@ end Normed
 section NormedComm
 
 variable [RCLike 𝕂] [Fintype m] [DecidableEq m]
-  [NormedCommRing 𝔸] [Algebra ℚ 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
+  [NormedCommRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
 include 𝕂
 
 theorem exp_neg (A : Matrix m m 𝔸) : exp (-A) = (exp A)⁻¹ := by

@@ -93,9 +93,9 @@ theorem hasSum_expSeries_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) {c s 
 /-- The closed form for the quaternion exponential on imaginary quaternions. -/
 theorem exp_of_re_eq_zero (q : Quaternion ℝ) (hq : q.re = 0) :
     exp q = ↑(Real.cos ‖q‖) + (Real.sin ‖q‖ / ‖q‖) • q := by
-  rw [exp_eq_tsum]
+  rw [exp_eq_tsum ℝ]
   refine HasSum.tsum_eq ?_
-  simp_rw [← expSeries_apply_eq, ← expSeries_eq_expSeries_rat ℝ]
+  simp_rw [← expSeries_apply_eq]
   exact hasSum_expSeries_of_imaginary hq (Real.hasSum_cos _) (Real.hasSum_sin _)
 
 /-- The closed form for the quaternion exponential on arbitrary quaternions. -/

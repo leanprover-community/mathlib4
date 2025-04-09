@@ -60,8 +60,8 @@ open scoped Nat Topology ENNReal
 
 section AnyFieldAnyAlgebra
 
-variable {𝕂 𝔸 : Type*} [NontriviallyNormedField 𝕂] [NormedRing 𝔸] [Algebra ℚ 𝔸]
-  [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
+variable {𝕂 𝔸 : Type*} [NontriviallyNormedField 𝕂] [NormedRing 𝔸] [CharZero 𝕂] [NormedAlgebra 𝕂 𝔸]
+  [CompleteSpace 𝔸]
 
 /-- The exponential in a Banach algebra `𝔸` over a normed field `𝕂` has strict Fréchet derivative
 `1 : 𝔸 →L[𝕂] 𝔸` at zero, as long as it converges on a neighborhood of zero. -/
@@ -82,13 +82,13 @@ end AnyFieldAnyAlgebra
 
 section AnyFieldCommAlgebra
 
-variable {𝕂 𝔸 : Type*} [NontriviallyNormedField 𝕂] [NormedCommRing 𝔸] [Algebra ℚ 𝔸]
-  [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
+variable {𝕂 𝔸 : Type*} [NontriviallyNormedField 𝕂] [NormedCommRing 𝔸] [NormedAlgebra 𝕂 𝔸]
+  [CompleteSpace 𝔸]
 
 /-- The exponential map in a commutative Banach algebra `𝔸` over a normed field `𝕂` of
 characteristic zero has Fréchet derivative `NormedSpace.exp x • 1 : 𝔸 →L[𝕂] 𝔸`
 at any point `x`in the disk of convergence. -/
-theorem hasFDerivAt_exp_of_mem_ball {x : 𝔸}
+theorem hasFDerivAt_exp_of_mem_ball [CharZero 𝕂] {x : 𝔸}
     (hx : x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) :
     HasFDerivAt (exp) (exp x • (1 : 𝔸 →L[𝕂] 𝔸)) x := by
   have hpos : 0 < (expSeries 𝕂 𝔸).radius := (zero_le _).trans_lt hx
@@ -108,7 +108,7 @@ theorem hasFDerivAt_exp_of_mem_ball {x : 𝔸}
 /-- The exponential map in a commutative Banach algebra `𝔸` over a normed field `𝕂` of
 characteristic zero has strict Fréchet derivative `NormedSpace.exp x • 1 : 𝔸 →L[𝕂] 𝔸`
 at any point `x` in the disk of convergence. -/
-theorem hasStrictFDerivAt_exp_of_mem_ball {x : 𝔸}
+theorem hasStrictFDerivAt_exp_of_mem_ball [CharZero 𝕂] {x : 𝔸}
     (hx : x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) :
     HasStrictFDerivAt (exp) (exp x • (1 : 𝔸 →L[𝕂] 𝔸)) x :=
   let ⟨_, hp⟩ := analyticAt_exp_of_mem_ball x hx
@@ -135,13 +135,13 @@ theorem hasDerivAt_exp_of_mem_ball [CharZero 𝕂] {x : 𝕂}
 
 /-- The exponential map in a complete normed field `𝕂` of characteristic zero has strict derivative
 `1` at zero, as long as it converges on a neighborhood of zero. -/
-theorem hasStrictDerivAt_exp_zero_of_radius_pos [Algebra ℚ 𝕂] (h : 0 < (expSeries 𝕂 𝕂).radius) :
+theorem hasStrictDerivAt_exp_zero_of_radius_pos [CharZero 𝕂] (h : 0 < (expSeries 𝕂 𝕂).radius) :
     HasStrictDerivAt (exp) (1 : 𝕂) 0 :=
   (hasStrictFDerivAt_exp_zero_of_radius_pos h).hasStrictDerivAt
 
 /-- The exponential map in a complete normed field `𝕂` of characteristic zero has derivative
 `1` at zero, as long as it converges on a neighborhood of zero. -/
-theorem hasDerivAt_exp_zero_of_radius_pos [Algebra ℚ 𝕂] (h : 0 < (expSeries 𝕂 𝕂).radius) :
+theorem hasDerivAt_exp_zero_of_radius_pos [CharZero 𝕂] (h : 0 < (expSeries 𝕂 𝕂).radius) :
     HasDerivAt (exp) (1 : 𝕂) 0 :=
   (hasStrictDerivAt_exp_zero_of_radius_pos h).hasDerivAt
 
@@ -149,8 +149,7 @@ end deriv
 
 section RCLikeAnyAlgebra
 
-variable {𝕂 𝔸 : Type*} [RCLike 𝕂] [NormedRing 𝔸] [Algebra ℚ 𝔸]
-  [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
+variable {𝕂 𝔸 : Type*} [RCLike 𝕂] [NormedRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
 
 /-- The exponential in a Banach algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ` has strict Fréchet derivative
 `1 : 𝔸 →L[𝕂] 𝔸` at zero. -/
@@ -166,8 +165,7 @@ end RCLikeAnyAlgebra
 
 section RCLikeCommAlgebra
 
-variable {𝕂 𝔸 : Type*} [RCLike 𝕂] [NormedCommRing 𝔸] [Algebra ℚ 𝔸]
-  [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
+variable {𝕂 𝔸 : Type*} [RCLike 𝕂] [NormedCommRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
 
 /-- The exponential map in a commutative Banach algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ` has strict
 Fréchet derivative `NormedSpace.exp x • 1 : 𝔸 →L[𝕂] 𝔸` at any point `x`. -/
@@ -247,9 +245,9 @@ open Asymptotics Filter
 
 section MemBall
 
-variable [NontriviallyNormedField 𝕂]
+variable [NontriviallyNormedField 𝕂] [CharZero 𝕂]
 variable [NormedCommRing 𝕊] [NormedRing 𝔸]
-variable [NormedSpace 𝕂 𝕊] [Algebra ℚ 𝔸] [NormedAlgebra 𝕂 𝔸] [Algebra 𝕊 𝔸] [ContinuousSMul 𝕊 𝔸]
+variable [NormedSpace 𝕂 𝕊] [NormedAlgebra 𝕂 𝔸] [Algebra 𝕊 𝔸] [ContinuousSMul 𝕊 𝔸]
 variable [IsScalarTower 𝕂 𝕊 𝔸]
 variable [CompleteSpace 𝔸]
 
@@ -278,7 +276,7 @@ theorem hasFDerivAt_exp_smul_const_of_mem_ball (x : 𝔸) (t : 𝕊)
     this.eventually (EMetric.ball_mem_nhds _ hpos)
   filter_upwards [this] with h hh
   have : Commute (t • x) (h • x) := ((Commute.refl x).smul_left t).smul_right h
-  rw [add_smul t h, exp_add_of_commute_of_mem_ball 𝕂 this htx hh, zero_add, zero_smul, exp_zero,
+  rw [add_smul t h, exp_add_of_commute_of_mem_ball this htx hh, zero_add, zero_smul, exp_zero,
     ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply,
     ContinuousLinearMap.smul_apply, ContinuousLinearMap.smulRight_apply,
     ContinuousLinearMap.one_apply, smul_eq_mul, mul_sub_left_distrib, mul_sub_left_distrib, mul_one]
@@ -341,7 +339,7 @@ section RCLike
 
 variable [RCLike 𝕂]
 variable [NormedCommRing 𝕊] [NormedRing 𝔸]
-variable [NormedAlgebra 𝕂 𝕊] [Algebra ℚ 𝔸] [NormedAlgebra 𝕂 𝔸] [Algebra 𝕊 𝔸] [ContinuousSMul 𝕊 𝔸]
+variable [NormedAlgebra 𝕂 𝕊] [NormedAlgebra 𝕂 𝔸] [Algebra 𝕊 𝔸] [ContinuousSMul 𝕊 𝔸]
 variable [IsScalarTower 𝕂 𝕊 𝔸]
 variable [CompleteSpace 𝔸]
 
@@ -396,7 +394,6 @@ end exp_smul
 section tsum_tprod
 
 variable {𝕂 𝔸 : Type*} [RCLike 𝕂] [NormedCommRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
-  [Algebra ℚ 𝔸]
 
 include 𝕂 in
 /-- If `f` has sum `a`, then `NormedSpace.exp ∘ f` has product `NormedSpace.exp a`. -/

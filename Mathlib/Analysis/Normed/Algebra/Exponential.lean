@@ -101,7 +101,7 @@ def expSeries : FormalMultilinearSeries 𝕂 𝔸 𝔸 := fun n =>
 theorem expSeries_eq_ofScalars : expSeries 𝕂 𝔸 = ofScalars 𝔸 fun n ↦ (n !⁻¹ : 𝕂) := by
   simp_rw [FormalMultilinearSeries.ext_iff, expSeries, ofScalars, implies_true]
 
-variable {𝔸}
+variable {𝕂 𝔸}
 
 open Classical in
 /-- `NormedSpace.exp : 𝔸 → 𝔸` is the exponential map determined by the action of `𝕂` on `𝔸`.
@@ -117,8 +117,6 @@ noncomputable def exp (x : 𝔸) : 𝔸 :=
     (NormedSpace.expSeries ℚ 𝔸).sum x
   else
     1
-
-variable {𝕂}
 
 theorem expSeries_apply_eq (x : 𝔸) (n : ℕ) :
     (expSeries 𝕂 𝔸 n fun _ => x) = (n !⁻¹ : 𝕂) • x ^ n := by simp [expSeries]
@@ -148,6 +146,9 @@ theorem exp_eq_tsum [CharZero 𝕂] : exp = fun x : 𝔸 => ∑' n : ℕ, (n !�
   rw [exp_eq_expSeries_sum 𝕂]
   ext x
   exact expSeries_sum_eq x
+
+theorem exp_eq_tsum_rat [Algebra ℚ 𝔸] : exp = fun x : 𝔸 => ∑' n : ℕ, (n !⁻¹ : ℚ) • x ^ n :=
+  exp_eq_tsum ℚ
 
 variable (𝕂) in
 /-- The exponential sum as an `ofScalarsSum`. -/
@@ -463,7 +464,6 @@ variable [CompleteSpace 𝔸]
 theorem expSeries_summable (x : 𝔸) : Summable fun n => expSeries 𝕂 𝔸 n fun _ => x :=
   (norm_expSeries_summable x).of_norm
 
-variable (𝕂) in
 theorem expSeries_summable' (x : 𝔸) : Summable fun n => (n !⁻¹ : 𝕂) • x ^ n :=
   (norm_expSeries_summable' 𝕂 x).of_norm
 
@@ -692,4 +692,3 @@ theorem of_real_exp_ℝ_ℝ (r : ℝ) : ↑(exp r) = exp (r : ℂ) :=
 end ScalarTower
 
 end NormedSpace
-#lint
