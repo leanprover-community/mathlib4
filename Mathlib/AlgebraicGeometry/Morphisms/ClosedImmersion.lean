@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Christian Merten, Jonas van der Schaaf
 -/
 import Mathlib.AlgebraicGeometry.Morphisms.Affine
-import Mathlib.AlgebraicGeometry.IdealSheaf
 import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
 import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
 import Mathlib.AlgebraicGeometry.Morphisms.IsIso
@@ -88,9 +87,6 @@ instance comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsClosedImmersion f]
 /-- Composition with an isomorphism preserves closed immersions. -/
 instance respectsIso : MorphismProperty.RespectsIso @IsClosedImmersion := by
   apply MorphismProperty.RespectsIso.mk <;> intro X Y Z e f hf <;> infer_instance
-
-instance {X : Scheme} (I : X.IdealSheafData) : IsClosedImmersion I.subschemeι :=
-  .of_isPreimmersion _ (I.range_subschemeι ▸ I.support.closed)
 
 /-- Given two commutative rings `R S : CommRingCat` and a surjective morphism
 `f : R ⟶ S`, the induced scheme morphism `specObj S ⟶ specObj R` is a

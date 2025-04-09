@@ -198,12 +198,6 @@ lemma IsClosedImmersion.of_comp [IsClosedImmersion (f ≫ g)] [IsSeparated g] :
   have := MorphismProperty.pullback_snd (P := @IsClosedImmersion) (f ≫ g) g inferInstance
   infer_instance
 
-instance {I J : X.IdealSheafData} (h : I ≤ J) : IsClosedImmersion (I.inclusion h) := by
-  have : IsClosedImmersion (I.inclusion h ≫ I.subschemeι) := by
-    simp only [Scheme.IdealSheafData.inclusion_subschemeι]
-    infer_instance
-  exact .of_comp _ I.subschemeι
-
 lemma IsSeparated.of_comp [IsSeparated (f ≫ g)] : IsSeparated f := by
   have := IsSeparated.diagonal_isClosedImmersion (f := f ≫ g)
   rw [pullback.diagonal_comp] at this
