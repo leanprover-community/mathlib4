@@ -278,7 +278,7 @@ lemma right_cont_inf [CompleteLinearOrder β] (b : β) : ScottContinuous fun a �
 
 lemma ScottContinuousOn.inf₂ [CompleteLinearOrder β] :
     ScottContinuous fun (a, b) => (a ⊓ b : β) :=
-  ScottContinuous_prod_of_ScottContinuous left_cont_inf right_cont_inf
+  ScottContinuous_prod_of_ScottContinuous (left_cont_inf _) (right_cont_inf _)
 
 
 end SemilatticeSup
