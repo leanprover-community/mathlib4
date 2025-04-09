@@ -245,12 +245,6 @@ theorem isReal_embedding_comp_algebraMap_iff_isConj_mem {σ : K ≃ₐ[k] K} {φ
     IntermediateField.algebraMap_apply, Subtype.forall, starRingEnd_apply, ← IsConj_iff.mp hσ,
     φ.injective.eq_iff]
 
-theorem IsConj_comp_of_isConj {φ : K →+* ℂ} {σ : K ≃ₐ[k] K} (hφ : IsConj φ σ) (f : K ≃ₐ[k] K) :
-    IsConj (φ.comp f.symm) (f * σ * f.symm) := by
-  rw [ComplexEmbedding.IsConj_iff] at hφ ⊢
-  intro _
-  simp [AlgEquiv.mul_apply, RCLike.star_def, hφ]
-
 lemma isConj_apply_apply (hσ : IsConj φ σ) (x : K) :
     σ (σ x) = x := by
   rw [← φ.injective.eq_iff, hσ.eq, hσ.eq, star_star]
