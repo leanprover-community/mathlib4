@@ -121,7 +121,7 @@ private noncomputable abbrev Wedderburn_Artin.aux.nxi_spec
   classical
   exact (Nat.find_spec <| Wedderburn_Artin.aux.one_eq I I_nontrivial).choose_spec.choose_spec
 
-lemma Wedderburn_Artin.aux.n_ne_zero
+private lemma Wedderburn_Artin.aux.n_ne_zero
     {A : Type u} [Ring A] [simple : IsSimpleRing A]
     (I : Ideal A) (I_nontrivial : I ≠ ⊥) :
     NeZero <| Wedderburn_Artin.aux.n I I_nontrivial := by
@@ -171,7 +171,7 @@ private noncomputable abbrev Wedderburn_Artin.aux.nxi_ne_zero
   then rw [xj_eq, mul_zero, zero_add] at one_eq; exact ⟨_, _, one_eq.symm⟩
   else erw [hj xj_eq, Submodule.coe_zero, zero_mul, zero_add] at one_eq; exact ⟨_, _, one_eq.symm⟩
 
-lemma Wedderburn_Artin.aux.equivIdeal
+private lemma Wedderburn_Artin.aux.equivIdeal
     {A : Type u} [Ring A] [simple : IsSimpleRing A]
     (I : Ideal A) (I_nontrivial : I ≠ ⊥) (I_minimal : ∀ J : Ideal A, J ≠ ⊥ → ¬ J < I) :
     ∃ (n : ℕ) (_ : NeZero n), Nonempty ((Fin n → I) ≃ₗ[A] A) := by
@@ -276,9 +276,8 @@ theorem Wedderburn_Artin
     ⟨⊤, show ⊤ ≠ ⊥ by aesop⟩
   haveI : IsSimpleModule A I := minimal_ideal_isSimpleModule I I_nontrivial I_minimal
   obtain ⟨n, hn, ⟨e⟩⟩ := Wedderburn_Artin.aux.equivIdeal I I_nontrivial I_minimal
-  let endEquiv : Module.End A A ≃+* Module.End A (Fin n → I) := e.conjRingEquiv.symm
   refine ⟨n, hn, I, inferInstance, ⟨((RingEquiv.opOp A).trans (Module.moduleEndSelf A).op).trans
-    <| endEquiv.op.trans <|
+    <| e.conjRingEquiv.symm.op.trans <|
     (endPowEquivMatrix A I n).op.trans <| RingEquiv.mopMatrix.symm⟩⟩
 
 theorem Wedderburn_Artin'
@@ -296,37 +295,6 @@ section central_simple
 
 variable (K : Type u) (B : Type v) [Field K] [Ring B] [Algebra K B] [FiniteDimensional K B]
 
-lemma Matrix.mem_center_iff (R : Type*) [Ring R] (n : ℕ) (M) :
-    M ∈ Subring.center M[Fin n, R] ↔ ∃ α : (Subring.center R), M = α • 1 := by
-  constructor
-  · if h : n = 0 then subst h; exact fun _ => ⟨0, Subsingleton.elim _ _⟩
-    else
-      intro h
-      rw [Subring.mem_center_iff] at h
-      have diag : Matrix.IsDiag M := fun i j hij => by
-        simpa only [StdBasisMatrix.mul_left_apply_same, one_mul,
-          StdBasisMatrix.mul_right_apply_of_ne (hbj := hij.symm)] using
-          Matrix.ext_iff.2 (h (stdBasisMatrix i i 1)) i j
-      have (i j : Fin n) : M i i = M j j := by
-        simpa [Eq.comm] using Matrix.ext_iff.2 (h (stdBasisMatrix i j 1)) i j
-      obtain ⟨b, hb⟩ : ∃ (b : R), M = b • 1 := by
-        refine ⟨M ⟨0, by omega⟩ ⟨0, by omega⟩, Matrix.ext fun i j => ?_⟩
-        if heq : i = j then subst heq; rw [this i ⟨0, by omega⟩]; simp
-        else simp [diag heq, Matrix.one_apply_ne heq]
-      suffices b ∈ Subring.center R by aesop
-      refine Subring.mem_center_iff.mpr fun g => ?_
-      simpa [hb] using Matrix.ext_iff.2 (h (Matrix.diagonal fun _ => g)) ⟨0, by omega⟩ ⟨0, by omega⟩
-  · rintro ⟨α, ha⟩; rw [Subring.mem_center_iff]; aesop
-
-lemma Matrix.mem_center_iff' (K R : Type*) [Field K] [Ring R] [Algebra K R] (n : ℕ) (M) :
-    M ∈ Subalgebra.center K M[Fin n, R] ↔
-    ∃ α : (Subalgebra.center K R), M = α • 1 := Matrix.mem_center_iff R n M
-
-theorem RingEquiv.mem_center_iff {R1 R2 : Type*} [Ring R1] [Ring R2] (e : R1 ≃+* R2) :
-    ∀ x, x ∈ Subring.center R1 ↔ e x ∈ Subring.center R2 := fun x => by
-  simpa only [Subring.mem_center_iff] using
-    ⟨fun h r => e.symm.injective <| by simp [h], fun h r => e.injective <| by simpa using h (e r)⟩
-
 lemma Wedderburn_Artin_algebra_version' (R : Type u) (A : Type v) [CommRing R] [Ring A]
   [sim : IsSimpleRing A] [Algebra R A] [hA : IsArtinianRing A] :
     ∃ (n : ℕ) (_ : NeZero n) (S : Type v) (_ : DivisionRing S) (_ : Algebra R S),
@@ -334,42 +302,38 @@ lemma Wedderburn_Artin_algebra_version' (R : Type u) (A : Type v) [CommRing R] [
   classical
   obtain ⟨n, hn, I, inst_I, ⟨e⟩⟩ := Wedderburn_Artin_ideal_version A
 
-  let endEquiv : Module.End A A ≃+* Module.End A (Fin n → I) := e.conjRingEquiv.symm
-
   refine ⟨n, hn, (Module.End A I)ᵐᵒᵖ, inferInstance, inferInstance, ⟨AlgEquiv.ofRingEquiv
-    (f := (RingEquiv.opOp A).trans (Module.moduleEndSelf A).op |>.trans <| endEquiv.op.trans <|
+    (f := (RingEquiv.opOp A).trans (Module.moduleEndSelf A).op |>.trans <|
+    e.conjRingEquiv.symm.op.trans <|
     (endPowEquivMatrix A I n).op.trans RingEquiv.mopMatrix.symm) ?_⟩⟩
   intro r
   rw [Matrix.algebraMap_eq_diagonal]
   ext i j
   apply MulOpposite.unop_injective
   simp only [endPowEquivMatrix, RingEquiv.coe_trans, Function.comp_apply, RingEquiv.opOp_apply,
-    RingEquiv.op_apply_apply, unop_op, Module.moduleEndSelf_apply, RingEquiv.coe_mk,
-    Equiv.coe_fn_mk, AlgEquiv.coe_ringEquiv, RingEquiv.mopMatrix_symm_apply, map_apply,
-    transpose_apply, diagonal, Pi.algebraMap_apply, algebraMap_apply, of_apply, endEquiv]
+    RingEquiv.op_apply_apply, unop_op, Module.moduleEndSelf_apply, AlgEquiv.coe_ringEquiv,
+    RingEquiv.mopMatrix_symm_apply, map_apply, transpose_apply, diagonal, Pi.algebraMap_apply,
+    algebraMap_apply, of_apply]
   split_ifs with h
   · subst h
     ext x : 1
     simp only [endVecAlgEquivMatrixEnd_apply_apply, LinearEquiv.conjRingEquiv_symm_apply,
-      DistribMulAction.toLinearMap_apply, smul_eq_mul_unop, unop_op, Module.algebraMap_end_apply,
-      endEquiv]
+      DistribMulAction.toLinearMap_apply, smul_eq_mul_unop, unop_op, Module.algebraMap_end_apply]
     rw [show r • x = Function.update (0 : Fin n → I) i (r • x) i by simp]
     refine congr_fun (e.injective ?_) i
-    simp only [LinearEquiv.apply_symm_apply, endEquiv]
+    simp only [LinearEquiv.apply_symm_apply]
     rw [← smul_zero r, Function.update_smul, ← Algebra.commutes, ← smul_eq_mul, ← e.map_smul]
     exact congr_arg e <| by ext; simp [Pi.single]
-
   · ext x : 1
     simp only [LinearMap.coe_mk, AddHom.coe_mk, MulOpposite.unop_zero, LinearMap.zero_apply]
     rw [show (0 : I) = Function.update (0 : Fin n → I) i (r • x) j
       by simp [Function.update, if_neg (Ne.symm h)]]
     refine congr_fun (e.injective ?_) j
-    simp only [LinearEquiv.invFun_eq_symm, RingEquiv.opOp_apply, unop_op,
-      Module.moduleEndSelf_apply, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
-      DistribMulAction.toLinearMap_apply, smul_eq_mul_unop, LinearEquiv.apply_symm_apply, endEquiv]
+    simp only [LinearEquiv.invFun_eq_symm, LinearMap.coe_comp, LinearEquiv.coe_coe,
+      Function.comp_apply, DistribMulAction.toLinearMap_apply, smul_eq_mul_unop, unop_op,
+      LinearEquiv.apply_symm_apply]
     rw [show Function.update (0 : Fin n → I) i (r • x) = r • Function.update (0 : Fin n → I) i x
-      by ext : 1; simp [Function.update]]
-    rw [← Algebra.commutes, ← smul_eq_mul, ← e.map_smul]
+      by ext : 1; simp [Function.update], ← Algebra.commutes, ← smul_eq_mul, ← e.map_smul]
     exact congr_arg e <| by ext; simp [Pi.single]
 
 lemma Wedderburn_Artin_algebra_version
