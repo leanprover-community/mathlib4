@@ -22,7 +22,7 @@ noncomputable def SymmetricAlgebra.isoMvPolynomial {I : Type*} (h : Basis I R M)
   .ofAlgHom
     (SymmetricAlgebra.lift <| Basis.constr h R .X)
     (MvPolynomial.aeval fun i ↦ ι R M (h i))
-    (MvPolynomial.algHom_ext fun i ↦ by simp) 
+    (MvPolynomial.algHom_ext fun i ↦ by simp)
     (algHom_ext <| h.ext fun i ↦ by simp)
 
 theorem IsSymmetricAlgebra.mvPolynomial (I : Type*) (h : Basis I R M) :
