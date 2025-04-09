@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yunzhou Xie, Jujian Zhang
 -/
 import Mathlib.Algebra.Azumaya.Basic
+import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.LinearAlgebra.Dual.Lemmas
-import Mathlib.LinearAlgebra.Matrix.IsDiag
 import Mathlib.Order.CompletePartialOrder
 import Mathlib.RingTheory.FiniteLength
 import Mathlib.RingTheory.TwoSidedIdeal.SpanAsSum
@@ -29,8 +29,6 @@ section simple_ring
 open MulOpposite
 
 variable (K D : Type*) [Field K] [IsSimpleRing A] [Algebra K A] [DivisionRing D]
-
-instance op_simple : IsSimpleRing Aᵐᵒᵖ := ⟨TwoSidedIdeal.opOrderIso.symm.isSimpleOrder⟩
 
 universe u
 
