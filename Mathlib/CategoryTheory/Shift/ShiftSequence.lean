@@ -271,14 +271,16 @@ section Hom
 
 variable (G : C ⥤ A) [F.ShiftSequence M] [G.ShiftSequence M]
 
-/-- Morphisms of `ShiftSequence`s.-/
+/-- Morphisms of `ShiftSequence`s.
+-/
 structure ShiftSequenceHom where
   app : (n : M) → (F.shift n ⟶ G.shift n)
   compatibility : ∀ (n a a' : M) (h : n + a = a'),
       whiskerLeft (shiftFunctor C n) (app a) ≫ (G.shiftIso n a a' h).hom =
       (F.shiftIso n a a' h).hom ≫ app a'
 
-/-- Isomorphisms of `ShiftSequence`s.-/
+/-- Isomorphisms of `ShiftSequence`s.
+-/
 structure ShiftSequenceIso where
   app : (n : M) → (F.shift n ≅ G.shift n)
   compatibility : ∀ (n a a' : M) (h : n + a = a'),
@@ -323,7 +325,8 @@ variable [F.ShiftSequence M]
 variable {D : Type u} [Category.{v,u} D] [HasShift D M] (G : D ⥤ C) [G.CommShift M]
 
 /-- `ShiftSequence` on the composition `G ⋙ F`, where `F` has a `ShiftSequence` and
-`G` commutes with shifts.-/
+`G` commutes with shifts.
+-/
 noncomputable def ShiftSequence.comp_left : ShiftSequence (G ⋙ F) M where
   sequence n := G ⋙ F.shift n
   isoZero := by
@@ -352,7 +355,8 @@ noncomputable def ShiftSequence.comp_left : ShiftSequence (G ⋙ F) M where
 
 variable {B : Type*} [Category B] (H : A ⥤ B)
 
-/-- `ShiftSequence` on the composition `F ⋙ H`, where `F` has a `ShiftSequence`.-/
+/-- `ShiftSequence` on the composition `F ⋙ H`, where `F` has a `ShiftSequence`.
+-/
 noncomputable def ShiftSequence.comp_right : ShiftSequence (F ⋙ H) M where
   sequence n := F.shift n ⋙ H
   isoZero := isoWhiskerRight (F.isoShiftZero M) H
