@@ -101,16 +101,18 @@ def negOrderIso : Submodule R M ≃o Submodule R M where
   toEquiv := Equiv.neg _
   map_rel_iff' := @neg_le_neg _ _ _ _ _
 
-theorem closure_neg (s : Set M) : span R (-s) = -span R s := by
+theorem span_neg_eq_neg (s : Set M) : span R (-s) = -span R s := by
   apply le_antisymm
   · rw [span_le, coe_set_neg, ← Set.neg_subset, neg_neg]
     exact subset_span
   · rw [neg_le, span_le, coe_set_neg, ← Set.neg_subset]
     exact subset_span
 
+@[deprecated (since := "2025-04-08")]
+alias closure_neg := span_neg_eq_neg
+
 @[simp]
-theorem neg_inf (S T : Submodule R M) : -(S ⊓ T) = -S ⊓ -T :=
-  SetLike.coe_injective Set.inter_neg
+theorem neg_inf (S T : Submodule R M) : -(S ⊓ T) = -S ⊓ -T := rfl
 
 @[simp]
 theorem neg_sup (S T : Submodule R M) : -(S ⊔ T) = -S ⊔ -T :=
