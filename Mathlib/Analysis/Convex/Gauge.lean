@@ -128,7 +128,7 @@ theorem gauge_le_of_mem (ha : 0 ≤ a) (hx : x ∈ a • s) : gauge s x ≤ a :=
   · rw [mem_singleton_iff.1 (zero_smul_set_subset _ hx), gauge_zero]
   · exact csInf_le gauge_set_bddBelow ⟨ha', hx⟩
 
-theorem gauge_le_eq (hs₁ : Convex ℝ s) (hs₀ : (0 : E) ∈ s) (hs₂ : Absorbent ℝ s) (ha : 0 ≤ a) :
+theorem gauge_le_eq (hs : StarConvex ℝ 0 s) (hs₂ : Absorbent ℝ s) (ha : 0 ≤ a) :
     { x | gauge s x ≤ a } = ⋂ (r : ℝ) (_ : a < r), r • s := by
   ext x
   simp_rw [Set.mem_iInter, Set.mem_setOf_eq]
@@ -138,7 +138,7 @@ theorem gauge_le_eq (hs₁ : Convex ℝ s) (hs₀ : (0 : E) ∈ s) (hs₂ : Abso
     obtain ⟨δ, δ_pos, hδr, hδ⟩ := exists_lt_of_gauge_lt hs₂ (h.trans_lt hr)
     suffices (r⁻¹ * δ) • δ⁻¹ • x ∈ s by rwa [smul_smul, mul_inv_cancel_right₀ δ_pos.ne'] at this
     rw [mem_smul_set_iff_inv_smul_mem₀ δ_pos.ne'] at hδ
-    refine hs₁.smul_mem_of_zero_mem hs₀ hδ ⟨by positivity, ?_⟩
+    apply hs.smul_mem hδ (by positivity)
     rw [inv_mul_le_iff₀ hr', mul_one]
     exact hδr.le
   · have hε' := (lt_add_iff_pos_right a).2 (half_pos hε)
@@ -167,10 +167,10 @@ theorem mem_openSegment_of_gauge_lt_one (absorbs : Absorbent ℝ s) (hgauge : ga
   refine ⟨y, hy, 1 - r, r, ?_⟩
   simp [*]
 
-theorem gauge_lt_one_subset_self (hs : Convex ℝ s) (h₀ : (0 : E) ∈ s) (absorbs : Absorbent ℝ s) :
+theorem gauge_lt_one_subset_self (hs : StarConvex ℝ 0 s) (absorbs : Absorbent ℝ s) :
     { x | gauge s x < 1 } ⊆ s := fun _x hx ↦
   let ⟨_y, hys, hx⟩ := mem_openSegment_of_gauge_lt_one absorbs hx
-  hs.openSegment_subset h₀ hys hx
+  hs.openSegment_subset hys hx
 
 theorem gauge_le_one_of_mem {x : E} (hx : x ∈ s) : gauge s x ≤ 1 :=
   gauge_le_of_mem zero_le_one <| by rwa [one_smul]
@@ -194,9 +194,17 @@ theorem self_subset_gauge_le_one : s ⊆ { x | gauge s x ≤ 1 } := fun _ => gau
 theorem Convex.gauge_le (hs : Convex ℝ s) (h₀ : (0 : E) ∈ s) (absorbs : Absorbent ℝ s) (a : ℝ) :
     Convex ℝ { x | gauge s x ≤ a } := by
   by_cases ha : 0 ≤ a
-  · rw [gauge_le_eq hs h₀ absorbs ha]
-    exact convex_iInter fun i => convex_iInter fun _ => hs.smul _
+  · rw [gauge_le_eq (hs.starConvex h₀) absorbs ha]
+    exact convex_iInter₂ fun i _ => hs.smul i
   · convert convex_empty
+    exact eq_empty_iff_forall_not_mem.2 fun x hx => ha <| (gauge_nonneg _).trans hx
+
+theorem StarConvex.gauge_le (hs : StarConvex ℝ 0 s) (absorbs : Absorbent ℝ s) (a : ℝ) :
+    StarConvex ℝ 0 { x | gauge s x ≤ a } := by
+  by_cases ha : 0 ≤ a
+  · rw [gauge_le_eq hs absorbs ha]
+    exact starConvex_iInter₂ fun i _ => hs.zero_smul i
+  · convert starConvex_empty (0 : E)
     exact eq_empty_iff_forall_not_mem.2 fun x hx => ha <| (gauge_nonneg _).trans hx
 
 theorem Balanced.starConvex (hs : Balanced ℝ s) : StarConvex ℝ 0 s :=
@@ -351,9 +359,9 @@ theorem interior_subset_gauge_lt_one (s : Set E) : interior s ⊆ { x | gauge s 
   rcases H₂.exists with ⟨r, hxr, hr₀, hr₁⟩
   exact (gauge_le_of_mem hr₀.le hxr).trans_lt hr₁
 
-theorem gauge_lt_one_eq_self_of_isOpen (hs₁ : Convex ℝ s) (hs₀ : (0 : E) ∈ s) (hs₂ : IsOpen s) :
+theorem gauge_lt_one_eq_self_of_isOpen (hs₁ : StarConvex ℝ 0 s) (hs₀ : 0 ∈ s) (hs₂ : IsOpen s) :
     { x | gauge s x < 1 } = s := by
-  refine (gauge_lt_one_subset_self hs₁ ‹_› <| absorbent_nhds_zero <| hs₂.mem_nhds hs₀).antisymm ?_
+  refine (gauge_lt_one_subset_self hs₁ <| absorbent_nhds_zero <| hs₂.mem_nhds hs₀).antisymm ?_
   convert interior_subset_gauge_lt_one s
   exact hs₂.interior_eq.symm
 
@@ -368,20 +376,20 @@ theorem gauge_lt_of_mem_smul (x : E) (ε : ℝ) (hε : 0 < ε) (hs₂ : IsOpen s
   rwa [gauge_smul_of_nonneg (inv_nonneg.2 hε.le), smul_eq_mul, inv_mul_lt_iff₀ hε, mul_one]
     at h_gauge_lt
 
-theorem mem_closure_of_gauge_le_one (hc : Convex ℝ s) (hs₀ : 0 ∈ s) (ha : Absorbent ℝ s)
+theorem mem_closure_of_gauge_le_one (hc : StarConvex ℝ 0 s) (ha : Absorbent ℝ s)
     (h : gauge s x ≤ 1) : x ∈ closure s := by
   have : ∀ᶠ r : ℝ in 𝓝[<] 1, r • x ∈ s := by
     filter_upwards [Ico_mem_nhdsLT one_pos] with r ⟨hr₀, hr₁⟩
-    apply gauge_lt_one_subset_self hc hs₀ ha
+    apply gauge_lt_one_subset_self hc ha
     rw [mem_setOf_eq, gauge_smul_of_nonneg hr₀]
     exact mul_lt_one_of_nonneg_of_lt_one_left hr₀ hr₁ h
   refine mem_closure_of_tendsto ?_ this
   exact Filter.Tendsto.mono_left (Continuous.tendsto' (by fun_prop) _ _ (one_smul _ _))
     inf_le_left
 
-theorem mem_frontier_of_gauge_eq_one (hc : Convex ℝ s) (hs₀ : 0 ∈ s) (ha : Absorbent ℝ s)
+theorem mem_frontier_of_gauge_eq_one (hc : StarConvex ℝ 0 s) (ha : Absorbent ℝ s)
     (h : gauge s x = 1) : x ∈ frontier s :=
-  ⟨mem_closure_of_gauge_le_one hc hs₀ ha h.le, fun h' ↦
+  ⟨mem_closure_of_gauge_le_one hc ha h.le, fun h' ↦
     (interior_subset_gauge_lt_one s h').out.ne h⟩
 
 theorem tendsto_gauge_nhds_zero_nhdsGE (hs : s ∈ 𝓝 0) : Tendsto (gauge s) (𝓝 0) (𝓝[≥] 0) := by
@@ -455,9 +463,10 @@ theorem gauge_lt_one_iff_mem_interior (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0)
 
 theorem gauge_le_one_iff_mem_closure (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) :
     gauge s x ≤ 1 ↔ x ∈ closure s :=
-  ⟨mem_closure_of_gauge_le_one hc (mem_of_mem_nhds hs₀) (absorbent_nhds_zero hs₀), fun h ↦
-    le_on_closure (fun _ ↦ gauge_le_one_of_mem) (continuous_gauge hc hs₀).continuousOn
-      continuousOn_const h⟩
+  ⟨mem_closure_of_gauge_le_one (hc.starConvex (mem_of_mem_nhds hs₀))
+    (absorbent_nhds_zero hs₀), fun h ↦
+      le_on_closure (fun _ ↦ gauge_le_one_of_mem) (continuous_gauge hc hs₀).continuousOn
+        continuousOn_const h⟩
 
 theorem gauge_eq_one_iff_mem_frontier (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) :
     gauge s x = 1 ↔ x ∈ frontier s := by
@@ -484,7 +493,7 @@ theorem gaugeSeminorm_lt_one_of_isOpen (hs : IsOpen s) {x : E} (hx : x ∈ s) :
 
 theorem gaugeSeminorm_ball_one (hs : IsOpen s) : (gaugeSeminorm hs₀ hs₁ hs₂).ball 0 1 = s := by
   rw [Seminorm.ball_zero_eq]
-  exact gauge_lt_one_eq_self_of_isOpen hs₁ hs₂.zero_mem hs
+  exact gauge_lt_one_eq_self_of_isOpen (hs₁.starConvex hs₂.zero_mem) hs₂.zero_mem hs
 
 end RCLike
 
