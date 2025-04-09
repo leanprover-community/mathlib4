@@ -317,7 +317,7 @@ theorem map_fixingSubgroup [Normal k E] :
     (L.map (IsScalarTower.toAlgHom k E K)).fixingSubgroup =
       L.fixingSubgroup.comap (AlgEquiv.restrictNormalHom (F := k) (K₁ := K) E) := by
   ext f
-  simp only [Subgroup.mem_comap, mem_fixingSubgroup_iff]
+  simp only [Subgroup.mem_comap, IntermediateField.mem_fixingSubgroup_iff]
   constructor
   · rintro h x hx
     change f.restrictNormal E x = x
