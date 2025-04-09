@@ -442,7 +442,7 @@ section AbsoluteValue
 
 /-- Construct an absolute value on a semiring `T` from an absolute value on a semiring `R`
 and an injective ring homomorphism `f : T →+* R` -/
-def AbsoluteValue.comp {R S T : Type*} [Semiring T] [Semiring R] [OrderedSemiring S]
+def AbsoluteValue.comp {R S T : Type*} [Semiring T] [Semiring R] [Semiring S] [PartialOrder S]
     (v : AbsoluteValue R S) {f : T →+* R} (hf : Function.Injective f) : AbsoluteValue T S where
   toMulHom := v.1.comp f
   nonneg' _ := v.nonneg _

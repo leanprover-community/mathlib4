@@ -29,7 +29,7 @@ noncomputable section
 namespace CategoryTheory
 
 variable {C : Type u₁} {D : Type u₂} {E : Type u₃}
-  [Category.{v₁} C] [Category.{v₂} D] [Category.{v₃} E] {F : C ⥤ D}
+  [Category.{v₁} C] [Category.{v₂} D] [Category.{v₃} E] {F : C ⥤ D} {G : D ⥤ E}
 
 namespace Functor
 
@@ -127,6 +127,7 @@ theorem essSurj_of_surj (h : Function.Surjective F.obj) : EssSurj F where
     obtain ⟨X, rfl⟩ := h Y
     apply obj_mem_essImage
 
+section EssSurj
 variable (F)
 variable [F.EssSurj]
 
@@ -162,6 +163,53 @@ instance essSurj_comp (F : C ⥤ D) (G : D ⥤ E) [F.EssSurj] [G.EssSurj] :
 lemma essSurj_of_comp_fully_faithful (F : C ⥤ D) (G : D ⥤ E) [(F ⋙ G).EssSurj]
     [G.Faithful] [G.Full] : F.EssSurj where
   mem_essImage X := ⟨_, ⟨G.preimageIso ((F ⋙ G).objObjPreimageIso (G.obj X))⟩⟩
+
+variable {F} {X : E}
+
+/-- Pre-composing by an essentially surjective functor doesn't change the essential image. -/
+lemma essImage_comp_apply_of_essSurj : (F ⋙ G).essImage X ↔ G.essImage X where
+  mp := fun ⟨Y, ⟨e⟩⟩ ↦ ⟨F.obj Y, ⟨e⟩⟩
+  mpr := fun ⟨Y, ⟨e⟩⟩ ↦
+    let ⟨Z, ⟨e'⟩⟩ := Functor.EssSurj.mem_essImage Y; ⟨Z, ⟨(G.mapIso e').trans e⟩⟩
+
+/-- Pre-composing by an essentially surjective functor doesn't change the essential image. -/
+@[simp] lemma essImage_comp_of_essSurj : (F ⋙ G).essImage = G.essImage :=
+  funext fun _X ↦ propext essImage_comp_apply_of_essSurj
+
+end EssSurj
+
+variable {J C D : Type*} [Category J] [Category C] [Category D]
+  (G : J ⥤ D) (F : C ⥤ D) [F.Full] [F.Faithful] (hG : ∀ j, F.essImage (G.obj j))
+
+/-- Lift a functor `G : J ⥤ D` to the essential image of a fully functor `F : C ⥤ D` to a functor
+`G' : J ⥤ C` such that `G' ⋙ F ≅ G`. See `essImage.liftFunctorCompIso`. -/
+@[simps] def essImage.liftFunctor : J ⥤ C where
+  obj j := F.toEssImage.objPreimage ⟨G.obj j, hG j⟩
+  -- TODO: `map` isn't type-correct:
+  -- It conflates `⟨G.obj i, hG i⟩ ⟶ ⟨G.obj j, hG j⟩` and `G.obj i ⟶ G.obj j`.
+  map {i j} f := F.preimage <|
+    (F.toEssImage.objObjPreimageIso ⟨G.obj i, hG i⟩).hom ≫ G.map f ≫
+      (F.toEssImage.objObjPreimageIso ⟨G.obj j, hG j⟩).inv
+  map_id i := F.map_injective <| by
+    simpa [-Iso.hom_inv_id] using (F.toEssImage.objObjPreimageIso ⟨G.obj i, hG i⟩).hom_inv_id
+  map_comp {i j k} f g := F.map_injective <| by
+    simp only [Functor.map_comp, Category.assoc, Functor.map_preimage]
+    congr 2
+    symm
+    convert (F.toEssImage.objObjPreimageIso ⟨G.obj j, hG j⟩).inv_hom_id_assoc (G.map g ≫
+      (F.toEssImage.objObjPreimageIso ⟨G.obj k, hG k⟩).inv)
+
+/-- A functor `G : J ⥤ D` to the essential image of a fully functor `F : C ⥤ D` does factor through
+`essImage.liftFunctor G F hG`. -/
+@[simps!] def essImage.liftFunctorCompIso : essImage.liftFunctor G F hG ⋙ F ≅ G :=
+  NatIso.ofComponents
+    (fun i ↦ F.essImageInclusion.mapIso (F.toEssImage.objObjPreimageIso ⟨G.obj i, hG _⟩))
+      fun {i j} f ↦ by
+    simp only [Functor.comp_obj, liftFunctor_obj, Functor.comp_map, liftFunctor_map,
+      Functor.map_preimage, Functor.mapIso_hom, Functor.essImageInclusion_map, Category.assoc]
+    congr 1
+    convert Category.comp_id _
+    exact (F.toEssImage.objObjPreimageIso ⟨G.obj j, hG j⟩).inv_hom_id
 
 end Functor
 
