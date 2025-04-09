@@ -324,7 +324,8 @@ universe u v
 variable {D : Type u} [Category.{v,u} D] [HasZeroMorphisms D] (F : C ⥤ D)
   [F.PreservesZeroMorphisms]
 
-/-- The image of a complex by a functor preserving zero morphisms is a complex.-/
+/-- The image of a complex by a functor preserving zero morphisms is a complex.
+-/
 def IsComplex.comp_complex (S : ComposableArrows C n) (hS : S.IsComplex) :
     ComposableArrows.IsComplex (S ⋙ F) := by
   refine IsComplex.mk (fun i hi ↦ ?_)
@@ -332,13 +333,15 @@ def IsComplex.comp_complex (S : ComposableArrows C n) (hS : S.IsComplex) :
   rw [← F.map_comp, hS.zero i hi, F.map_zero]
 
 /-- For every `S : ComposableArrows C n`, every functor `F : C ⥤ F` and every `i` such that
-`i + 2 ≤ n`, the image of the shoft complex `S.sc i` by `F` is isomorphic to `(S ⋙ F).sc i`.-/
+`i + 2 ≤ n`, the image of the shoft complex `S.sc i` by `F` is isomorphic to `(S ⋙ F).sc i`.
+-/
 def IsComplex.map_sc_iso_sc_comp (S : ComposableArrows C n) (hS : S.IsComplex) (i : ℕ)
     (hi : i + 2 ≤ n := by omega) :
     (S.sc hS i hi).map F ≅ ComposableArrows.sc (S ⋙ F) (hS.comp_complex F) i hi :=
   ShortComplex.isoMk (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp) (by simp)
 
-/-- The image of an exact sequence by an exact functor is exact.-/
+/-- The image of an exact sequence by an exact functor is exact.
+-/
 def Exact.comp_exact [F.PreservesHomology]
     (S : ComposableArrows C n) (hex : S.Exact) : ComposableArrows.Exact (S ⋙ F) := by
   refine Exact.mk (hex.toIsComplex.comp_complex F) (fun i hi ↦ ?_)
@@ -346,7 +349,8 @@ def Exact.comp_exact [F.PreservesHomology]
   exact (hex.exact i hi).map F
 
 /-- If `S : ComposableArrows C n` and `F : C ⥤ D` is a faithful functor (preserving
-zero morphisms) such that `S ⋙ F` is a complex, then `S` is a complex.-/
+zero morphisms) such that `S ⋙ F` is a complex, then `S` is a complex.
+-/
 def isComplex_of_comp_complex [F.Faithful] (S : ComposableArrows C n)
     (hS : ComposableArrows.IsComplex (S ⋙ F)) : S.IsComplex := by
   refine IsComplex.mk (fun i hi ↦ ?_)
@@ -356,7 +360,8 @@ def isComplex_of_comp_complex [F.Faithful] (S : ComposableArrows C n)
 
 /-- If `S : ComposableArrows C n` and `F : C ⥤ D` is an exact faithful functor
 such that `S ⋙ F` is exact, then `S` is exact. This also assume that `S` has homology
-in every degree.-/
+in every degree.
+-/
 def Exact.exact_of_comp_exact [F.Faithful] [F.PreservesHomology]
     (S : ComposableArrows C n) (hex : ComposableArrows.Exact (S ⋙ F))
     [∀ i (hi : i + 2 ≤ n := by omega),

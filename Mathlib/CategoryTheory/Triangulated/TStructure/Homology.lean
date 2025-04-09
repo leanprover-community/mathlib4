@@ -915,6 +915,12 @@ lemma isGE_succ_iff_isGE_and_isZero_homology (X : C) (n₀ n₁ : ℤ) (hn₁ : 
   rw [← eq₁, ←eq₂, eq₃]
   exact t.isGE₁_iff_isGE₀_and_isZero_homology₀ _
 
+lemma isLE_minus_1_iff_isLE₀_and_isZero_homology₀ (X : C) :
+    t.IsLE X (-1 : ℤ) ↔ t.IsLE X 0 ∧ (IsZero (t.homology₀.obj X)) := by sorry
+
+lemma isLE_pred_iff_isLE_and_isZero_homology (X : C) (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) :
+    t.IsLE X n₀ ↔ t.IsLE X n₁ ∧ (IsZero ((t.homology n₁).obj X)) := by sorry
+
 omit [t.HasHomology₀] [IsTriangulated C] in
 lemma isIso_whiskerLeft_ιHeart_truncLEι (b : ℤ) (hb : 0 ≤ b) :
     IsIso (whiskerLeft t.ιHeart (t.truncLEι b)) := by
@@ -1169,7 +1175,153 @@ lemma isIso_homologyFunctor_map_mor₂_of_isGE (n : ℤ) (a : ℤ) (h : n + 2 �
     (t.isZero_homology_of_isGE _ _ a (by omega))
   apply isIso_of_mono_of_epi
 
+omit hT in
+lemma isIso_homologyFunctor_map_mor₁_of_isGE (hT : T ∈ distTriang C) (n : ℤ) (a : ℤ) (h : n + 1 ≤ a)
+    (hGE : t.IsGE T.obj₃ a) :
+    IsIso ((t.homology n).map T.mor₁) := by
+  have := (t.homology_exact₁ T hT (n - 1) n (by linarith)).mono_g
+     (IsZero.eq_of_src (t.isZero_homology_of_isGE _ _ a (by linarith [h])) _ _)
+  have := (t.homology_exact₂ T hT n).epi_f
+      (IsZero.eq_of_tgt (t.isZero_homology_of_isGE _ n a (by linarith [h])) _ _)
+  apply isIso_of_mono_of_epi
+
+omit hT in
+lemma isIso_homologyFunctor_map_mor₂_of_isLE (hT : T ∈ distTriang C) (n : ℤ) (a : ℤ) (h : a + 1 ≤ n)
+    (h : t.IsLE T.obj₁ a) :
+    IsIso ((t.homology n).map T.mor₂) := by
+  have := (t.homology_exact₂ T hT n).mono_g
+     (IsZero.eq_of_src (t.isZero_homology_of_isLE _ _ a (by linarith [h])) _ _)
+  have := (t.homology_exact₃ T hT n (n + 1) rfl).epi_f
+      (IsZero.eq_of_tgt (t.isZero_homology_of_isLE _ (n + 1) a (by linarith [h])) _ _)
+  apply isIso_of_mono_of_epi
+
 end
+
+section NonDegenerate
+
+class NonDegenerate where
+  left (X : C) : (∀ (n : ℤ), t.IsLE X n) → IsZero X
+  right (X : C) : (∀ (n : ℤ), t.IsGE X n) → IsZero X
+
+variable [nd : NonDegenerate t]
+
+local instance : t.HasHeart := hasHeartFullSubcategory t
+noncomputable local instance : t.HasHomology₀ := t.hasHomology₀
+noncomputable local instance : t.homology₀.ShiftSequence ℤ :=
+  Functor.ShiftSequence.tautological _ _
+
+lemma ConservativeHomologyObject (X : C) (hX : ∀ (n : ℤ), IsZero ((t.homology n).obj X)) :
+    IsZero X := by
+  obtain ⟨A, B, hA, hB, f, g, h, DT⟩ := t.exists_triangle_zero_one X
+  erw [Triangle.isZero₂_iff _ DT]
+  constructor
+  · refine IsZero.eq_zero_of_src (nd.left _ ?_) _
+    simp only [Triangle.mk_obj₁]
+    suffices h : ∀ (m : ℕ), t.IsLE A (- m) by
+      intro n
+      by_cases hn : 0 < n
+      · have : t.IsLE A 0 := {le := hA}
+        exact t.isLE_of_LE A 0 n (le_of_lt hn)
+      · rw [lt_iff_not_le, not_not] at hn
+        have : n = - n.natAbs := by rw [Int.ofNat_natAbs_of_nonpos hn, neg_neg]
+        rw [this]
+        exact h n.natAbs
+    intro n
+    induction' n with n hn
+    · simp only [CharP.cast_eq_zero, neg_zero]; exact {le := hA}
+    · rw [t.isLE_pred_iff_isLE_and_isZero_homology A
+        (-(n + 1 : ℕ)) (-n) (by simp only [Nat.cast_add,
+      Nat.cast_one, neg_add_rev, Int.reduceNeg, neg_add_cancel_comm])]
+      constructor
+      · exact hn
+      · have := isIso_homologyFunctor_map_mor₁_of_isGE t _ DT (-(n : ℤ)) 1 (by omega)
+          (by simp only [Triangle.mk_obj₃]; exact {ge := hB})
+        simp only [Triangle.mk_obj₁, Triangle.mk_obj₂, Triangle.mk_mor₁] at this
+        refine IsZero.of_iso ?_ (asIso ((t.homology (-n)).map f))
+        exact hX _
+  · refine IsZero.eq_zero_of_tgt (nd.right _ ?_) _
+    suffices h : ∀ (m : ℕ), t.IsGE B (m + 1) by
+      intro n
+      by_cases hn : n ≤ 0
+      · have : t.IsGE B 1 := {ge := hB}
+        exact t.isGE_of_GE B n 1 (by omega)
+      · have : n = (n - 1).natAbs + 1 := by
+          rw [← Int.eq_natAbs_of_zero_le (a := n - 1) (by linarith [hn]), sub_add_cancel]
+        rw [this]
+        exact h _
+    intro n
+    induction' n with n hn
+    · simp only [CharP.cast_eq_zero, zero_add]; exact {ge := hB}
+    · rw [t.isGE_succ_iff_isGE_and_isZero_homology B (n + 1) ((n + 1 : ℕ) +1) rfl]
+      constructor
+      · exact hn
+      · have := t.isIso_homologyFunctor_map_mor₂_of_isLE _ DT (n + 1) 0 (by omega)
+          (by simp only [Triangle.mk_obj₁]; exact {le := hA})
+        simp only [Triangle.mk_obj₂, Triangle.mk_obj₃, Triangle.mk_mor₂] at this
+        refine IsZero.of_iso ?_ (asIso ((t.homology (n + 1)).map g)).symm
+        exact hX _
+
+lemma ConservativeHomologyMap {X Y : C} (f : X ⟶ Y) (hf : ∀ (n : ℤ), IsIso ((t.homology n).map f)) :
+    IsIso f := by
+  obtain ⟨Z, g, h, DT⟩ := distinguished_cocone_triangle f
+  have := Triangle.isZero₃_iff_isIso₁ _ DT
+  simp only [Triangle.mk_obj₃, Triangle.mk_obj₁, Triangle.mk_obj₂, Triangle.mk_mor₁] at this
+  rw [← this]
+  refine t.ConservativeHomologyObject _ ?_
+  intro n
+  have h1 : (t.homology n).map g = 0 := by
+    refine Epi.left_cancellation (f := (t.homology n).map f) ((t.homology n).map g) 0 ?_
+    rw [← Functor.map_comp]
+    erw [comp_distTriang_mor_zero₁₂ _ DT]
+    simp only [Functor.map_zero, comp_zero]
+  have h2 : Mono (t.homologyδ (Triangle.mk f g h) n (n + 1) rfl) :=
+    (t.homology_exact₃ _ DT n (n + 1) rfl).mono_g h1
+  have h3 : t.homologyδ (Triangle.mk f g h) n (n + 1) rfl = 0 := by
+    refine Mono.right_cancellation (f := (t.homology (n + 1)).map f) _ _ ?_
+    erw [t.homologyδ_comp _ DT n (n + 1) rfl]
+    simp only [Triangle.mk_obj₃, zero_comp]
+  exact CategoryTheory.Limits.IsZero.of_mono_eq_zero _ h3
+
+lemma isGE_of_isZero_homology (X : C) (n : ℤ)
+    (hn : ∀ (j : ℤ), j < n → IsZero ((t.homology j).obj X)) : t.IsGE X n := by
+  obtain ⟨A, B, hA, hB, f, g, h, DT⟩ := t.exists_triangle X (n - 1) n (by linarith)
+  refine {ge := IsClosedUnderIsomorphisms.of_iso ?_ hB}
+  have : IsIso g := by
+    erw [← Triangle.isZero₁_iff_isIso₂ _ DT]
+    refine t.ConservativeHomologyObject _ ?_
+    simp only [Triangle.mk_obj₁]
+    intro m
+    by_cases h : m < n
+    · have := t.isIso_homologyFunctor_map_mor₁_of_isGE _ DT m n (by omega) {ge := hB}
+      simp only [Triangle.mk_obj₁, Triangle.mk_obj₂, Triangle.mk_mor₁] at this
+      exact IsZero.of_iso (hn _ h) (asIso ((t.homology m).map f))
+    · have : t.IsLE A (n - 1) := {le := hA}
+      exact t.isZero_homology_of_isLE A m (n - 1) (by omega)
+  exact (asIso g).symm
+
+lemma isLE_of_isZero_homology (X : C) (n : ℤ)
+    (hn : ∀ (j : ℤ), n < j → IsZero ((t.homology j).obj X)) : t.IsLE X n := by
+  obtain ⟨A, B, hA, hB, f, g, h, DT⟩ := t.exists_triangle X n (n + 1) rfl
+  refine {le := IsClosedUnderIsomorphisms.of_iso ?_ hA}
+  have : IsIso f := by
+    erw [← Triangle.isZero₃_iff_isIso₁ _ DT]
+    refine t.ConservativeHomologyObject _ ?_
+    simp only [Triangle.mk_obj₃]
+    intro m
+    by_cases h : n < m
+    · have := t.isIso_homologyFunctor_map_mor₂_of_isLE _ DT m n (by omega) {le := hA}
+      simp only [Triangle.mk_obj₂, Triangle.mk_obj₃, Triangle.mk_mor₂] at this
+      exact IsZero.of_iso (hn _ h) (asIso ((t.homology m).map g)).symm
+    · have : t.IsGE B (n + 1) := {ge := hB}
+      exact t.isZero_homology_of_isGE B m (n + 1) (by omega)
+  exact asIso f
+
+lemma isHeart_of_isZero_homology (X : C)
+    (hX : ∀ (j : ℤ), j ≠ 0 → IsZero ((t.homology j).obj X)) : t.heart X :=
+  (t.mem_heart_iff _).mpr ⟨t.isLE_of_isZero_homology X 0 (fun _ h ↦ hX _ (ne_of_gt h)),
+  t.isGE_of_isZero_homology X 0 (fun _ h ↦ hX _ (ne_of_lt h))⟩
+
+end NonDegenerate
 
 end TStructure
 

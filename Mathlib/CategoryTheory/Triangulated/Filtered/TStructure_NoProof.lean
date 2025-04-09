@@ -2,6 +2,8 @@ import Mathlib.CategoryTheory.Triangulated.Filtered.Filtered_NoProof
 import Mathlib.CategoryTheory.Triangulated.TStructure.TExact
 import Mathlib.CategoryTheory.Triangulated.TStructure.Homology
 import Mathlib.Algebra.Homology.HomologicalComplex
+import Mathlib.Algebra.Homology.DerivedCategory.Basic
+import Mathlib.Algebra.Homology.ShortComplex.Abelian
 
 noncomputable section
 
@@ -17,9 +19,11 @@ attribute [local instance] endofunctorMonoidalCategory
 
 variable {C : Type u} [Category.{v, u} C] [HasShift C (ℤ × ℤ)] [Preadditive C] [HasZeroObject C]
   [∀ p : ℤ × ℤ, Functor.Additive (shiftFunctor C p)] [Pretriangulated C] [FilteredTriangulated C]
+  [IsTriangulated C]
 
 variable {A : Type u₁} [Category.{v₁} A] [HasShift A ℤ] [Preadditive A] [HasZeroObject A]
   [∀ p : ℤ, Functor.Additive (shiftFunctor A p)] [Pretriangulated A]
+  [IsTriangulated A]
 
 variable (L : isFilteredTriangulated_over C A) (t : TStructure A)
 
@@ -30,7 +34,7 @@ local instance : L.functor.IsTriangulated := L.triangulated
 namespace Triangulated.TStructure
 
 -- Definition A.2.1
-structure IsCompatible (tF : TStructure C) where
+class IsCompatible (tF : TStructure C) where
   exact_functor : L.functor.TExact t tF
   compat_shift (a b n : ℤ) (h : b + n = a) (X : C) (hX : TStructure.IsLE tF X a) :
       TStructure.IsLE tF ((shiftFunctor₂ C n).obj X) b
@@ -69,7 +73,7 @@ def compatible : TStructure C where
 
 -- Proposition A.2.2:
 -- Compatibility of the constructed t-structure on `C`.
-def compatible_is_compatible : t.IsCompatible L (t.compatible L) where
+instance compatible_is_compatible : t.IsCompatible L (t.compatible L) where
   exact_functor := by
     refine {rightTExact := {objGE := fun X n _ ↦ {ge i := ?_}},
             leftTExact := {objLE := fun X n _ ↦ {le i := ?_}}}
@@ -99,7 +103,7 @@ def compatible_is_compatible : t.IsCompatible L (t.compatible L) where
 
 -- Proposition A.2.2:
 -- Uniqueness of the compatible t-structure.
-lemma compatible_uniq (tF : TStructure C) (h : t.IsCompatible L tF) : tF = t.compatible L := sorry
+lemma compatible_uniq (tF : TStructure C) [t.IsCompatible L tF] : tF = t.compatible L := sorry
 
 section Realization
 
@@ -110,24 +114,106 @@ section Realization
 -- this as `(t.homology n).obj ((ForgetFiltration L).obj ((truncGELE n n).obj X))`, which
 -- is useful to construct the differentials.
 
-variable {t}
-variable {tF : TStructure C} (comp : t.IsCompatible L tF)
+variable (tF : TStructure C)
 
-variable [t.HasHeart] [tF.HasHeart] [t.HasHomology₀] [tF.HasHomology₀]
-  [t.homology₀.ShiftSequence ℤ] [tF.homology₀.ShiftSequence ℤ]
+local instance : t.HasHeart := hasHeartFullSubcategory t
 
-def H := t.homology 0
+local instance : tF.HasHeart := hasHeartFullSubcategory tF
 
-def FilteredToComplexObj (X : C) : CochainComplex t.Heart ℤ := by
-  refine CochainComplex.of (fun n ↦ (t.homology n).obj ((ForgetFiltration L).obj
-    ((CategoryTheory.truncGELE n n).obj X))) (fun n ↦ ?_) ?_
-  · dsimp
-    have := (truncGELE_triangle n n (n + 1) sorry sorry).obj X
-  · sorry
+noncomputable local instance : t.HasHomology₀ := t.hasHomology₀
+noncomputable local instance : tF.HasHomology₀ := tF.hasHomology₀
 
-def FilteredToComplex : C ⥤ CochainComplex A ℤ := by sorry
+noncomputable local instance : t.homology₀.ShiftSequence ℤ :=
+  Functor.ShiftSequence.tautological _ _
+
+noncomputable local instance : tF.homology₀.ShiftSequence ℤ :=
+  Functor.ShiftSequence.tautological _ _
+
+-- Theorem A.2.3(i):
+-- The functor is well-defined.
+def FilteredToComplex_aux₁ (X : C) (n : ℤ) : t.Heart :=
+  (t.homology n).obj ((ForgetFiltration L).obj
+    ((CategoryTheory.truncGELE n n).obj X))
+
+def FilteredToComplex_aux₂ (X : C) (n : ℤ) :
+    FilteredToComplex_aux₁ L t X n ⟶ FilteredToComplex_aux₁ L t X (n + 1) :=
+  t.homologyδ ((ForgetFiltration L).mapTriangle.obj ((truncGELE_triangle n n (n + 1)
+    (le_refl _) (by simp)).obj X)) n (n + 1) rfl
+
+def FilteredToComplex_aux₃ (X : C) (n : ℤ) :
+    FilteredToComplex_aux₂ L t X n ≫ FilteredToComplex_aux₂ L t X (n + 1) = 0 := by
+-- We don't need the triangle to be distinguished to define the connecting
+-- morphism, but we will need it to check that the differentials
+-- compose to 0.
+  have := (ForgetFiltration L).map_distinguished _ (truncGELE_triangle_distinguished
+      n n (n + 1) (le_refl _) (by simp) X)
+  sorry
+
+def FilteredToComplexObj (X : C) : CochainComplex t.Heart ℤ :=
+  CochainComplex.of (FilteredToComplex_aux₁ L t X)
+    (FilteredToComplex_aux₂ L t X) (FilteredToComplex_aux₃ L t X)
+
+def FilteredToComplexHom {X Y : C} (f : X ⟶ Y) :
+    FilteredToComplexObj L (t := t) X ⟶ FilteredToComplexObj L (t := t) Y := by
+  refine CochainComplex.ofHom (FilteredToComplex_aux₁ L t X)
+    (FilteredToComplex_aux₂ L t X) (FilteredToComplex_aux₃ L t X)
+    (FilteredToComplex_aux₁ L t Y)
+    (FilteredToComplex_aux₂ L t Y) (FilteredToComplex_aux₃ L t Y)
+    (fun n ↦ ?_) (fun n ↦ ?_)
+  · exact (t.homology n).map ((ForgetFiltration L).map
+      ((CategoryTheory.truncGELE n n).map f))
+  · dsimp [FilteredToComplex_aux₂]
+    sorry
+
+def FilteredToComplex : C ⥤ CochainComplex t.Heart ℤ where
+  obj X := FilteredToComplexObj L t X
+  map f := FilteredToComplexHom L t f
+  map_id X := by
+    ext
+    dsimp [FilteredToComplexHom, FilteredToComplexObj, FilteredToComplex_aux₁]
+    simp
+  map_comp f g := by
+    ext
+    dsimp [FilteredToComplexHom, FilteredToComplexObj, FilteredToComplex_aux₁]
+    simp
+
+-- Theorem A.2.3(i):
+-- The restriction of `FilteredToComplex` to the heart of `tF` is
+-- an equivalence.
+instance FilteredToComplex_equivalence [t.IsCompatible L tF] :
+    (tF.ιHeart ⋙ FilteredToComplex L t).IsEquivalence := sorry
+
+variable [t.IsCompatible L tF]
+
+-- Theorem A.2.3(i):
+-- Indentification of the cohomology functor of `tF`. Again we have
+-- an "equality" statement that is actually an "existence of isomorphism"
+-- statement, and again the properties of that isomorphism are not clear
+-- from the statement.
+def HomologyFunctor_iso :
+    FilteredToComplex L t ⋙ (tF.ιHeart ⋙ FilteredToComplex L t).inv ≅
+    tF.homology 0 := sorry
+
+-- Theorem A.2.3(ii):
+-- We want the functor to send quasi-isomorphisms to isomorphisms.
+def Realization_aux :
+    (HomologicalComplex.quasiIso t.Heart (ComplexShape.up ℤ)).IsInvertedBy
+    ((tF.ιHeart ⋙ FilteredToComplex L t).inv ⋙ tF.ιHeart ⋙
+    (ForgetFiltration L)) := sorry
+
+local instance : HasDerivedCategory t.Heart :=
+  HasDerivedCategory.standard t.Heart
+
+-- Definition A.2.4:
+def Realization : DerivedCategory t.Heart ⥤ A :=
+  have := MorphismProperty.instIsLocalizationLocalization'Q'
+    (HomologicalComplex.quasiIso t.Heart (ComplexShape.up ℤ))
+  Localization.lift ((tF.ιHeart ⋙ FilteredToComplex L t).inv ⋙ tF.ιHeart ⋙
+    (ForgetFiltration L)) (Realization_aux L t tF)
+    (HomologicalComplex.quasiIso t.Heart (ComplexShape.up ℤ)).Q'
 
 end Realization
+
 
 
 end Triangulated.TStructure

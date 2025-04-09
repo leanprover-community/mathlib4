@@ -665,6 +665,15 @@ variable (L : isFilteredTriangulated_over C A)
 
 def ForgetFiltration (L : isFilteredTriangulated_over C A) : C ⥤ A := sorry
 
+-- The functor should be triangulated.
+-- (This actually follows from the other conditions, but is
+-- not stated in the paper. Note that the first instance contains
+-- data!)
+
+instance : (ForgetFiltration L).CommShift ℤ := sorry
+
+instance : (ForgetFiltration L).IsTriangulated := sorry
+
 -- Property (a). Note that this is an existence statement (it asserts the existence
 -- of an adjunction).
 
