@@ -1170,12 +1170,13 @@ class IsMulCommutative (M : Type*) [Mul M] : Prop where
   is_comm : Std.Commutative (α := M) (· * ·)
 
 @[to_additive]
-instance (priority := 100) {M : Type*} [Monoid M] [IsMulCommutative M] :
+instance (priority := 100) CommMonoid.ofIsMulCommutative {M : Type*} [Monoid M]
+    [IsMulCommutative M] :
     CommMonoid M where
   mul_comm := IsMulCommutative.is_comm.comm
 
 @[to_additive]
-instance (priority := 100) {G : Type*} [Group G] [IsMulCommutative G] :
+instance (priority := 100) CommGroup.ofIsMulCommutative {G : Type*} [Group G] [IsMulCommutative G] :
     CommGroup G where
 
 end IsCommutative

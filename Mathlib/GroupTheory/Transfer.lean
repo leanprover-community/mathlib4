@@ -240,12 +240,9 @@ variable {p : ℕ} (P : Sylow p G) (hP : (P : Subgroup G).normalizer ≤ central
 include hP
 
 /-- The homomorphism `G →* P` in Burnside's transfer theorem. -/
-noncomputable def transferSylow [FiniteIndex (P : Subgroup G)] : G →* (P : Subgroup G) := by
-  exact  @transfer G _ P P
-    (by
-      have : IsMulCommutative P := ⟨by
-        refine { comm := fun a b => Subtype.ext (hP (le_normalizer b.2) a a.2)}⟩
-      infer_instance)
+noncomputable def transferSylow [FiniteIndex (P : Subgroup G)] : G →* (P : Subgroup G) :=
+  @transfer G _ P P
+    (@CommGroup.ofIsMulCommutative P _ ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩)
       (MonoidHom.id P) _
 
 variable [Fact p.Prime] [Finite (Sylow p G)]
