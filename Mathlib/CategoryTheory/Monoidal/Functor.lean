@@ -941,7 +941,7 @@ lemma unit_app_tensor_comp_map_δ (X Y : C) :
   simp only [← adj.unit_naturality_assoc, ← Functor.map_comp, ← δ_natural_assoc,
     ← tensor_comp, left_triangle_components, tensorHom_id, id_whiskerRight, comp_id]
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma map_ε_comp_counit_app_unit : F.map (ε G) ≫ adj.counit.app (𝟙_ D) = η F := by
   rw [IsMonoidal.leftAdjoint_ε (adj := adj), homEquiv_unit, map_comp,
     assoc, counit_naturality, left_triangle_components_assoc]
@@ -983,6 +983,10 @@ variable [F.Monoidal] [G.Monoidal] [adj.IsMonoidal]
 @[reassoc]
 lemma ε_comp_map_ε : ε G ≫ G.map (ε F) = adj.unit.app (𝟙_ C) := by
   simp [← adj.unit_app_unit_comp_map_η]
+
+@[reassoc]
+lemma map_η_comp_η : F.map (η G) ≫ η F = adj.counit.app (𝟙_ D) := by
+  simp [← adj.map_ε_comp_counit_app_unit]
 
 end Monoidal
 end Adjunction
@@ -1094,6 +1098,10 @@ lemma counitInv_app_tensor_comp_functor_map_δ_inverse (X Y : C) :
 @[reassoc (attr := simp)]
 lemma ε_comp_map_ε : ε e.inverse ≫ e.inverse.map (ε e.functor) = e.unit.app (𝟙_ C) :=
   e.toAdjunction.ε_comp_map_ε
+
+@[reassoc (attr := simp)]
+lemma map_η_comp_η : e.functor.map (η e.inverse) ≫ η e.functor = e.counit.app (𝟙_ D) :=
+  e.toAdjunction.map_η_comp_η
 
 instance : (refl (C := C)).functor.Monoidal := inferInstanceAs (𝟭 C).Monoidal
 instance : (refl (C := C)).inverse.Monoidal := inferInstanceAs (𝟭 C).Monoidal
