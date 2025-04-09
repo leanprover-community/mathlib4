@@ -125,14 +125,12 @@ lemma ReflPrefunctor.congr_map_edge
 --     (src_eq : X.map (δ₂ 1).op (X.map α.op φ) = X.map (δ₂ 1).op (X.map β.op φ))
 --     (tgt_eq : X.map (δ₂ 0).op (X.map α.op φ) = X.map (δ₂ 0).op (X.map β.op φ)) :
 -- --    (src_eq : (δ₂ 1) ≫ α = (δ₂ 1) ≫ β) (tgt_eq : (δ₂ 0) ≫ α = (δ₂ 0) ≫ β) :
--- --  OneTruncation₂.Hom (X.map (δ₂ 1).op (X.map α.op φ)) (X.map (δ₂ 0).op (X.map α.op φ)) := by
+-- --  OneTruncation₂.Hom (X.map (δ₂ 1).op (X.map α.op φ)) (X.map (δ₂ 0).op (X.map α.op φ)) := by sorry
 --     Quiver.homOfEq
 --        ⟨X.map α.op φ, rfl, rfl⟩ src_eq tgt_eq ⟨X.map β.op φ, rfl, rfl⟩ := sorry
---     --   congrFun (congrArg X.map (congrArg Quiver.Hom.op src_eq)) φ
---     --   congrFun (congrArg X.map (congrArg Quiver.Hom.op tgt_eq)) φ
---         := sorry
-
--- --  OneTruncation₂.Hom (X.map (δ₂ 1).op (X.map α.op φ)) (X.map (δ₂ 0).op (X.map α.op φ)) := by
+--     -- --   congrFun (congrArg X.map (congrArg Quiver.Hom.op src_eq)) φ
+--     -- --   congrFun (congrArg X.map (congrArg Quiver.Hom.op tgt_eq)) φ
+--     --     := sorry
 
 lemma toStrictSegal₂.mk_naturality_σ00 :
     toStrictSegal₂.mk.naturalityProperty sy F (σ₂ (n := 0) 0) := by
@@ -246,7 +244,7 @@ theorem toStrictSegal₂.mk_naturality : toStrictSegal₂.mk.naturalityProperty 
       | 1, _, _ => toStrictSegal₂.mk_naturality_σ1i sy F hyp _)
 
 /-- A map `X → Y` of 2-truncated simplicial sets that is constructed from a refl prefunctor
-`F : OneTruncation₂ X ⥤rq OneTruncation₂ Y` assuming `∀ (φ : : X _⦋2⦌₂),`
+`F : OneTruncation₂ X ⥤rq OneTruncation₂ Y` assuming `∀ (φ : X _⦋2⦌₂),`
 `(F.map (ev02₂ φ)).edge =`
 `StrictSegal.spineToDiagonal sy 2 (by omega) (oneTruncation₂.pathMap F (X.spine _ _ φ)))`. -/
 @[simps!]

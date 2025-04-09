@@ -108,6 +108,15 @@ instance (S : SSet.Truncated 2) : ReflQuiver (OneTruncation₂ S) where
           op_id, FunctorToTypes.map_id_apply] }
 
 @[simp]
+theorem OneTruncation₂.Quiver_homOfEq {S : SSet.Truncated 2} (X Y : OneTruncation₂ S)
+    (edge : S _⦋1⦌₂)
+    (src_eq : S.map (δ₂ 1).op edge = X) (tgt_eq : S.map (δ₂ 0).op edge = Y) :
+    Quiver.homOfEq (V := OneTruncation₂ S)
+      (⟨edge, rfl, rfl⟩ : OneTruncation₂.Hom (S := S) (S.map (δ₂ 1).op edge) (S.map (δ₂ 0).op edge))
+        src_eq tgt_eq = ⟨edge, src_eq, tgt_eq⟩ := by
+  subst src_eq tgt_eq ; rfl
+
+@[simp]
 lemma OneTruncation₂.id_edge {S : SSet.Truncated 2} (X : OneTruncation₂ S) :
     OneTruncation₂.Hom.edge (𝟙rq X) = S.map (SSet.σ₂ 0).op X := rfl
 
