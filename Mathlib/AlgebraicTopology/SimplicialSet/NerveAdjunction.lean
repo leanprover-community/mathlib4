@@ -247,6 +247,30 @@ def toStrictSegal₂.mk : X ⟶ Y where
 
 end
 
+/-- An equality between maps into the 2-truncated nerve is detected by an equality between their
+underlying refl prefunctors. -/
+theorem toStrictSegal₂.ext (F G : X ⟶ Y) (sy : StrictSegal Y)
+    (hyp : SSet.oneTruncation₂.map F = SSet.oneTruncation₂.map G) : F = G := by
+  have eq₀ (x : X _⦋0⦌₂) : F.app (op ⦋0⦌₂) x = G.app (op ⦋0⦌₂) x := congr(($hyp).obj x)
+  have eq₁ (x : X _⦋1⦌₂) : F.app (op ⦋1⦌₂) x = G.app (op ⦋1⦌₂) x :=
+    congr((($hyp).map ⟨x, rfl, rfl⟩).1)
+  ext ⟨⟨n, hn⟩⟩ x
+  induction' n using SimplexCategory.rec with n
+  match n with
+  | 0 => apply eq₀
+  | 1 => apply eq₁
+  | 2 =>
+    apply (StrictSegal.spineInjective sy 2)
+    unfold StrictSegal.spineEquiv
+    simp only [Nat.reduceAdd, Equiv.coe_fn_mk]
+    ext i
+    simp only [spine_arrow]
+    have h1 := congr_fun (F.naturality (Hom.tr (mkOfSucc i)).op) x
+    have h2 := congr_fun (G.naturality (Hom.tr (mkOfSucc i)).op) x
+    simp only [types_comp_apply, Nat.reduceAdd] at h1 h2
+    rw [← h1, ← h2]
+    apply eq₁
+
 end
 
 end SSet.Truncated
