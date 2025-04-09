@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Zhouhang Zhou
 -/
 import Mathlib.Dynamics.Ergodic.MeasurePreserving
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
-import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
+import Mathlib.MeasureTheory.Integral.Lebesgue.Markov
 import Mathlib.Order.Filter.Germ.Basic
 import Mathlib.Topology.ContinuousMap.Algebra
 
