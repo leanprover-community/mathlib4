@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Algebra.Lie.Basic
 import Mathlib.Geometry.Manifold.Algebra.LieGroup
-import Mathlib.Geometry.Manifold.VectorField
+import Mathlib.Geometry.Manifold.VectorField.LieBracket
 
 /-!
 # The Lie algebra of a Lie group

@@ -122,7 +122,7 @@ section
 variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   [TopologicalSpace (TotalSpace F E)] [∀ x, TopologicalSpace (E x)] {EB : Type*}
   [NormedAddCommGroup EB] [NormedSpace 𝕜 EB] {HB : Type*} [TopologicalSpace HB]
-  {IB : ModelWithCorners 𝕜 EB HB} {EM : Type*}
+  {IB : ModelWithCorners 𝕜 EB HB} (E' : B → Type*) [∀ x, Zero (E' x)] {EM : Type*}
   [NormedAddCommGroup EM] [NormedSpace 𝕜 EM] {HM : Type*} [TopologicalSpace HM]
   {IM : ModelWithCorners 𝕜 EM HM} [TopologicalSpace M] [ChartedSpace HM M]
 
@@ -204,14 +204,6 @@ theorem contMDiffAt_section (s : ∀ x, E x) (x₀ : B) :
       ContMDiffAt IB 𝓘(𝕜, F) n (fun x ↦ (trivializationAt F E x₀ ⟨x, s x⟩).2) x₀ := by
   simp_rw [contMDiffAt_totalSpace, and_iff_right_iff_imp]; intro; exact contMDiffAt_id
 
-theorem contMDiffAt_of_totalSpace {f : TotalSpace F E → M} {x₀ : TotalSpace F E} :
-    ContMDiffAt (IB.prod 𝓘(𝕜, F)) IM n f x₀ ↔
-    ContMDiffAt (IB.prod 𝓘(𝕜, F)) IM n
-      (f ∘ (trivializationAt F E x₀.proj).toPartialHomeomorph.symm)
-      (trivializationAt F E x₀.proj x₀) := by
-  rw [contMDiffAt_iff_source, contMDiffAt_iff_source (x := (trivializationAt F E x₀.proj x₀))]
-  rfl
-
 variable (E)
 
 theorem contMDiff_proj : ContMDiff (IB.prod 𝓘(𝕜, F)) IB n (π F E) := fun x ↦ by
@@ -238,7 +230,9 @@ theorem contMDiffWithinAt_proj {s : Set (TotalSpace F E)} {p : TotalSpace F E} :
 
 @[deprecated (since := "2024-11-21")] alias smoothWithinAt_proj := contMDiffWithinAt_proj
 
-variable (𝕜) [∀ x, AddCommMonoid (E x)] [∀ x, Module 𝕜 (E x)] [VectorBundle 𝕜 F E] in
+variable (𝕜) [∀ x, AddCommMonoid (E x)]
+variable [∀ x, Module 𝕜 (E x)] [VectorBundle 𝕜 F E]
+
 theorem contMDiff_zeroSection : ContMDiff IB (IB.prod 𝓘(𝕜, F)) n (zeroSection F E) := fun x ↦ by
   unfold zeroSection
   rw [Bundle.contMDiffAt_section]
@@ -249,123 +243,12 @@ theorem contMDiff_zeroSection : ContMDiff IB (IB.prod 𝓘(𝕜, F)) n (zeroSect
 
 @[deprecated (since := "2024-11-21")] alias smooth_zeroSection := contMDiff_zeroSection
 
-section Prod
-
-variable (F₁ : Type*) [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] (E₁ : B → Type*)
-  [TopologicalSpace (TotalSpace F₁ E₁)] [∀ x, Zero (E₁ x)]
-  (F₂ : Type*) [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] (E₂ : B → Type*)
-  [TopologicalSpace (TotalSpace F₂ E₂)] [∀ x, Zero (E₂ x)]
-  [∀ x : B, TopologicalSpace (E₁ x)] [∀ x : B, TopologicalSpace (E₂ x)]
-  [FiberBundle F₁ E₁] [FiberBundle F₂ E₂]
-
-/-- Given fiber bundles `E₁` and `E₂` over a manifold `B`, the natural projection from the
-total space of `E₁ ×ᵇ E₂` to the total space of `E₁` is smooth. -/
-protected theorem contMDiff_fst :
-    ContMDiff (IB.prod 𝓘(𝕜, F₁ × F₂)) (IB.prod 𝓘(𝕜, F₁)) n (TotalSpace.Prod.fst F₁ F₂ E₁ E₂) := by
-  intro x
-  rw [contMDiffAt_totalSpace]
-  refine ⟨contMDiff_proj (E₁ ×ᵇ E₂) _, ?_⟩
-  rw [contMDiffAt_of_totalSpace]
-  have : ContMDiffAt (IB.prod 𝓘(𝕜, F₁ × F₂)) 𝓘(𝕜, F₁) n (Prod.fst ∘ Prod.snd : B × F₁ × F₂ → F₁)
-      ((trivializationAt (F₁ × F₂) (fun x ↦ E₁ x × E₂ x) x.proj) x) := by
-    apply ContMDiffAt.comp (I' := 𝓘(𝕜, F₁ × F₂)) _ _ contMDiffAt_snd
-    rw [contMDiffAt_iff_contDiffAt]
-    exact contDiffAt_fst
-  apply ContMDiffAt.congr_of_eventuallyEq this
-  have : (trivializationAt (F₁ × F₂) (fun x ↦ E₁ x × E₂ x) x.proj).target ∈
-      𝓝 ((trivializationAt (F₁ × F₂) (fun x ↦ E₁ x × E₂ x) x.proj) x) := by
-    apply IsOpen.mem_nhds
-    · exact (trivializationAt (F₁ × F₂) (fun x ↦ E₁ x × E₂ x) x.proj).open_target
-    · simpa [Trivialization.mem_target] using FiberBundle.mem_baseSet_trivializationAt' x.proj
-  filter_upwards [this] with y hy
-  rcases y with ⟨b, v, w⟩
-  simp only [trivializationAt, FiberBundle.trivializationAt', Trivialization.mem_target,
-    Trivialization.baseSet_prod, mem_inter_iff] at hy
-  simp only [trivializationAt, FiberBundle.trivializationAt', Function.comp_apply, proj_fst]
-  rw [Trivialization.fst_prod_symm_apply, Trivialization.apply_symm_apply]
-  · simpa [Trivialization.mem_target] using hy.1
-  · exact hy.1
-
-/-- Given fiber bundles `E₁` and `E₂` over a manifold `B`, the natural projection from the
-total space of `E₁ ×ᵇ E₂` to the total space of `E₂` is smooth. -/
-protected theorem contMDiff_snd :
-    ContMDiff (IB.prod 𝓘(𝕜, F₁ × F₂)) (IB.prod 𝓘(𝕜, F₂)) n (TotalSpace.Prod.snd F₁ F₂ E₁ E₂) := by
-  intro x
-  rw [contMDiffAt_totalSpace]
-  refine ⟨contMDiff_proj (E₁ ×ᵇ E₂) _, ?_⟩
-  rw [contMDiffAt_of_totalSpace]
-  have : ContMDiffAt (IB.prod 𝓘(𝕜, F₁ × F₂)) 𝓘(𝕜, F₂) n (Prod.snd ∘ Prod.snd : B × F₁ × F₂ → F₂)
-      ((trivializationAt (F₁ × F₂) (fun x ↦ E₁ x × E₂ x) x.proj) x) := by
-    apply ContMDiffAt.comp (I' := 𝓘(𝕜, F₁ × F₂)) _ _ contMDiffAt_snd
-    rw [contMDiffAt_iff_contDiffAt]
-    exact contDiffAt_snd
-  apply ContMDiffAt.congr_of_eventuallyEq this
-  have : (trivializationAt (F₁ × F₂) (fun x ↦ E₁ x × E₂ x) x.proj).target ∈
-      𝓝 ((trivializationAt (F₁ × F₂) (fun x ↦ E₁ x × E₂ x) x.proj) x) := by
-    apply IsOpen.mem_nhds
-    · exact (trivializationAt (F₁ × F₂) (fun x ↦ E₁ x × E₂ x) x.proj).open_target
-    · simpa [Trivialization.mem_target] using FiberBundle.mem_baseSet_trivializationAt' x.proj
-  filter_upwards [this] with y hy
-  rcases y with ⟨b, v, w⟩
-  simp only [trivializationAt, FiberBundle.trivializationAt', Trivialization.mem_target,
-    Trivialization.baseSet_prod, mem_inter_iff] at hy
-  simp only [trivializationAt, FiberBundle.trivializationAt', Function.comp_apply, this, proj_snd]
-  rw [Trivialization.snd_prod_symm_apply, Trivialization.apply_symm_apply]
-  · simpa [Trivialization.mem_target] using hy.2
-  · exact hy.2
-
-/-- Given fiber bundles `E₁`, `E₂` over a manifold `B`, if `φ` is a map into the total space
-of `E₁ ×ᵇ E₂`, then its smoothness can be checked by checking the smoothness of (1) the map
-`TotalSpace.Prod.fst ∘ φ` into the total space of `E₁`, and (2) the map `TotalSpace.Prod.snd ∘ φ`
-into the total space of `E₂`. -/
-theorem contMDiff_of_contMDiff_fst_comp_of_contMDiff_snd_comp
-    {φ : M → TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂)}
-    (h1 : ContMDiff IM (IB.prod 𝓘(𝕜, F₁)) n (TotalSpace.Prod.fst F₁ F₂ E₁ E₂ ∘ φ))
-    (h2 : ContMDiff IM (IB.prod 𝓘(𝕜, F₂)) n (TotalSpace.Prod.snd F₁ F₂ E₁ E₂ ∘ φ)) :
-    ContMDiff IM (IB.prod 𝓘(𝕜, F₁ × F₂)) n φ := by
-  intro x
-  have h1_cont : Continuous (TotalSpace.Prod.fst F₁ F₂ E₁ E₂ ∘ φ) := h1.continuous
-  have h2_cont : Continuous (TotalSpace.Prod.snd F₁ F₂ E₁ E₂ ∘ φ) := h2.continuous
-  specialize h1 x
-  specialize h2 x
-  have h1_base : ContMDiffAt IM IB n (TotalSpace.proj ∘ TotalSpace.Prod.fst F₁ F₂ E₁ E₂ ∘ φ) x :=
-    ContMDiffAt.comp x (contMDiff_proj E₁ (TotalSpace.Prod.fst F₁ F₂ E₁ E₂ (φ x))) h1
-  rw [contMDiffAt_iff_target] at h1 h2 h1_base ⊢
-  constructor
-  · exact FiberBundle.Prod.continuous_of_continuous_fst_comp_of_continuous_snd_comp h1_cont h2_cont
-      |>.continuousAt
-  apply ContMDiffAt.prodMk_space h1_base.2
-  apply ContMDiffAt.prodMk_space
-  · have (x : EB × F₁) : ContMDiffAt 𝓘(𝕜, EB × F₁) 𝓘(𝕜, F₁) n Prod.snd x := by
-      rw [contMDiffAt_iff_contDiffAt]
-      exact contDiffAt_snd
-    exact (this _).comp _ h1.2
-  · have (x : EB × F₂) : ContMDiffAt 𝓘(𝕜, EB × F₂) 𝓘(𝕜, F₂) n Prod.snd x := by
-      rw [contMDiffAt_iff_contDiffAt]
-      exact contDiffAt_snd
-    exact (this _).comp _ h2.2
-
-/-- Given vector bundles `E₁`, `E₂` over a manifold `B`, a map `φ` into the total space of
-`E₁ ×ᵇ E₂` is smooth if and only if the following two maps are smooth: (1) the map
-`TotalSpace.Prod.fst ∘ φ` into the total space of `E₁`, and (2) the map `TotalSpace.Prod.snd ∘ φ`
-into the total space of `E₂`. -/
-theorem contMDiff_iff_contMDiff_fst_comp_contMDiff_snd_comp
-    (φ : M → TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂)) :
-    ContMDiff IM (IB.prod 𝓘(𝕜, F₁ × F₂)) n φ ↔
-    (ContMDiff IM (IB.prod 𝓘(𝕜, F₁)) n (TotalSpace.Prod.fst F₁ F₂ E₁ E₂ ∘ φ)
-    ∧ ContMDiff IM (IB.prod 𝓘(𝕜, F₂)) n (TotalSpace.Prod.snd F₁ F₂ E₁ E₂ ∘ φ)) := by
-  refine ⟨fun h ↦ ⟨?_, ?_⟩, fun ⟨h₁, h₂⟩ ↦ ?_⟩
-  · exact (Bundle.contMDiff_fst F₁ E₁ F₂ E₂).comp h
-  · exact (Bundle.contMDiff_snd F₁ E₁ F₂ E₂).comp h
-  · exact Bundle.contMDiff_of_contMDiff_fst_comp_of_contMDiff_snd_comp F₁ E₁ F₂ E₂ h₁ h₂
-
-end Prod
-
 end Bundle
 
 end
 
 /-! ### `C^n` vector bundles -/
+
 
 variable [NontriviallyNormedField 𝕜] {EB : Type*} [NormedAddCommGroup EB] [NormedSpace 𝕜 EB]
   {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners 𝕜 EB HB} [TopologicalSpace B]
@@ -658,16 +541,6 @@ theorem Trivialization.contMDiffOn_symm (e : Trivialization F (π F E)) [MemTriv
 
 @[deprecated (since := "2024-11-21")]
 alias Trivialization.smoothOn_symm := Trivialization.contMDiffOn_symm
-
-theorem contMDiffOn_trivializationAt (x : TotalSpace F E) :
-    ContMDiffOn (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) n (trivializationAt F E x.proj)
-      (trivializationAt F E x.proj).source :=
-  (trivializationAt F E x.proj).contMDiffOn
-
-theorem contMDiffOn_trivializationAt_symm (x : TotalSpace F E) :
-    ContMDiffOn (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) n
-      (trivializationAt F E x.proj).toPartialHomeomorph.symm (trivializationAt F E x.proj).target :=
-  (trivializationAt F E x.proj).contMDiffOn_symm
 
 end
 

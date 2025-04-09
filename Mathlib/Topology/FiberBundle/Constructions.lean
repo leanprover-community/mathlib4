@@ -111,43 +111,6 @@ theorem FiberBundle.Prod.isInducing_diag :
 @[deprecated (since := "2024-10-28")]
 alias FiberBundle.Prod.inducing_diag := FiberBundle.Prod.isInducing_diag
 
-/-- For vector bundles `E₁` and `E₂` over a manifold `B`, the natural projection from the
-total space of `E₁ ×ᵇ E₂` to the total space of `E₁` is continuous. -/
-theorem FiberBundle.Prod.continuous_fst : Continuous (TotalSpace.Prod.fst F₁ F₂ E₁ E₂) :=
-  _root_.continuous_fst.comp (FiberBundle.Prod.isInducing_diag F₁ E₁ F₂ E₂).continuous
-
-/-- For fiber bundles `E₁` and `E₂` over a manifold `B`, the natural projection from the
-total space of `E₁ ×ᵇ E₂` to the total space of `E₁` is continuous. -/
-theorem FiberBundle.Prod.continuous_snd : Continuous (TotalSpace.Prod.snd F₁ F₂ E₁ E₂) :=
-  _root_.continuous_snd.comp (FiberBundle.Prod.isInducing_diag F₁ E₁ F₂ E₂).continuous
-
-variable {F₁ F₂ E₁ E₂} in
-/-- Given fiber bundles `E₁`, `E₂` over a space `B`, if `φ` is a map into the total space of
-`E₁ ×ᵇ E₂`, then its continuity can be checked by checking the continuity of (1) the map
-`TotalSpace.Prod.fst ∘ φ` into the total space of `E₁`, and (2) the map `TotalSpace.Prod.snd ∘ φ`
-into the total space of `E₂`. -/
-theorem FiberBundle.Prod.continuous_of_continuous_fst_comp_of_continuous_snd_comp
-    {M : Type*} [TopologicalSpace M] {φ : M → TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂)}
-    (h1 : Continuous (TotalSpace.Prod.fst F₁ F₂ E₁ E₂ ∘ φ))
-    (h2 : Continuous (TotalSpace.Prod.snd F₁ F₂ E₁ E₂ ∘ φ)) :
-    Continuous φ := by
-  rw [(FiberBundle.Prod.isInducing_diag F₁ E₁ F₂ E₂).continuous_iff]
-  exact h1.prod_mk h2
-
-variable {F₁ F₂ E₁ E₂} in
-/-- Given fiber bundles `E₁`, `E₂` over a space `B`, a map `φ` into the total space of `E₁ ×ᵇ E₂` is
-continuous if and only if the following two maps are continuous: (1) the map
-`TotalSpace.Prod.fst ∘ φ` into the total space of `E₁`, and (2) the map `TotalSpace.Prod.snd ∘ φ`
-into the total space of `E₂`. -/
-theorem FiberBundle.Prod.continuous_iff_continuous_fst_comp_and_continuous_snd_comp
-    {M : Type*} [TopologicalSpace M] (φ : M → TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂)) :
-    Continuous φ ↔ (Continuous (TotalSpace.Prod.fst F₁ F₂ E₁ E₂ ∘ φ)
-    ∧ Continuous (TotalSpace.Prod.snd F₁ F₂ E₁ E₂ ∘ φ)) := by
-  refine ⟨fun h ↦ ⟨?_, ?_⟩, fun ⟨h₁, h₂⟩ ↦ ?_⟩
-  · exact (FiberBundle.Prod.continuous_fst F₁ E₁ F₂ E₂).comp h
-  · exact (FiberBundle.Prod.continuous_snd F₁ E₁ F₂ E₂).comp h
-  · exact FiberBundle.Prod.continuous_of_continuous_fst_comp_of_continuous_snd_comp h₁ h₂
-
 end Defs
 
 open FiberBundle
@@ -253,27 +216,6 @@ theorem baseSet_prod : (prod e₁ e₂).baseSet = e₁.baseSet ∩ e₂.baseSet 
 theorem prod_symm_apply (x : B) (w₁ : F₁) (w₂ : F₂) :
     (prod e₁ e₂).toPartialEquiv.symm (x, w₁, w₂) = ⟨x, e₁.symm x w₁, e₂.symm x w₂⟩ := rfl
 
-theorem prod_symm_apply' (x : B) (w₁ : F₁) (w₂ : F₂) :
-    (prod e₁ e₂).toPartialHomeomorph.symm (x, w₁, w₂) = ⟨x, e₁.symm x w₁, e₂.symm x w₂⟩ := rfl
-
-@[simp]
-theorem fst_prod_symm_apply (x : B) (w₁ : F₁) (w₂ : F₂) (hx : x ∈ e₁.baseSet) :
-    TotalSpace.Prod.fst F₁ F₂ E₁ E₂ ((prod e₁ e₂).toPartialHomeomorph.symm (x, w₁, w₂)) =
-    e₁.toPartialHomeomorph.symm (x, w₁) := by
-  simp only [TotalSpace.Prod.fst]
-  ext
-  · simp [symm_coe_proj e₁ hx, prod_symm_apply']
-  · simp [prod_symm_apply', Trivialization.symm_apply _ hx]
-
-@[simp]
-theorem snd_prod_symm_apply (x : B) (w₁ : F₁) (w₂ : F₂) (hx : x ∈ e₂.baseSet) :
-    TotalSpace.Prod.snd F₁ F₂ E₁ E₂ ((prod e₁ e₂).toPartialHomeomorph.symm (x, w₁, w₂)) =
-    e₂.toPartialHomeomorph.symm (x, w₂) := by
-  simp only [TotalSpace.Prod.snd]
-  ext
-  · simp [symm_coe_proj e₂ hx, prod_symm_apply']
-  · simp [prod_symm_apply', Trivialization.symm_apply _ hx]
-
 end Trivialization
 
 open Trivialization
@@ -341,31 +283,6 @@ theorem inducing_pullbackTotalSpaceEmbedding (f : B' → B) :
     Pullback.TotalSpace.topologicalSpace, pullbackTopology_def]
   rfl
 
-variable {F E} in
-/-- Given a fiber bundle `E` over a manifold `B` and a continuous map `f : B' → B`, if `φ` is
-a map into the total space of the pullback `f *ᵖ E`, then its continuity can be checked by checking
-the continuity of (1) the map `TotalSpace.proj ∘ φ` into `B'`, and (ii) the map
-`Pullback.lift f ∘ φ` into the total space of `E`. -/
-theorem Pullback.continuous_of_continuous_proj_comp_of_continuous_lift_comp
-    (f : B' → B) {M : Type*} [TopologicalSpace M] {φ : M → TotalSpace F (f *ᵖ E)}
-    (h1 : Continuous (TotalSpace.proj ∘ φ)) (h2 : Continuous (Pullback.lift f ∘ φ)) :
-    Continuous φ := by
-  rw [(inducing_pullbackTotalSpaceEmbedding F E f).continuous_iff]
-  apply h1.prod_mk h2
-
-variable {F E} in
-/-- Given a fiber bundle `E` over a manifold `B` and a continuous map `f : B' → B`, if `φ` is
-a map into the total space of the pullback `f *ᵖ E`, then its continuity can be checked by checking
-the continuity of (1) the map `TotalSpace.proj ∘ φ` into `B'`, and (ii) the map
-`Pullback.lift f ∘ φ` into the total space of `E`. -/
-theorem Pullback.continuous_iff_continuous_proj_comp_and_continuous_lift_comp
-    (f : B' → B) {M : Type*} [TopologicalSpace M] (φ : M → TotalSpace F (f *ᵖ E)) :
-    Continuous φ ↔ (Continuous (TotalSpace.proj ∘ φ) ∧ Continuous (Pullback.lift f ∘ φ)) := by
-  refine ⟨fun h ↦ ⟨?_, ?_⟩, fun ⟨h₁, h₂⟩ ↦ ?_⟩
-  · exact (continuous_proj F E _).comp h
-  · exact (Pullback.continuous_lift F E _).comp h
-  · exact Pullback.continuous_of_continuous_proj_comp_of_continuous_lift_comp _ h₁ h₂
-
 section FiberBundle
 
 variable [TopologicalSpace F] [TopologicalSpace B]
@@ -429,17 +346,6 @@ noncomputable instance FiberBundle.pullback [∀ x, TopologicalSpace (E x)] [Fib
   trivializationAt' x := (trivializationAt F E (f x)).pullback f
   mem_baseSet_trivializationAt' x := mem_baseSet_trivializationAt F E (f x)
   trivialization_mem_atlas' x := ⟨trivializationAt F E (f x), inferInstance, rfl⟩
-
-@[simp] lemma lift_pullback_symm_apply (f : K) (e : Trivialization F (π F E))
-    {x : B'} {v : F} (hx : f x ∈ e.baseSet) :
-    Pullback.lift f ((e.pullback f).toPartialHomeomorph.symm (x, v)) =
-      e.toPartialHomeomorph.symm (f x, v) := by
-  have A : (e.toPartialHomeomorph.symm (f x, v)).proj = f x := Trivialization.symm_coe_proj e hx
-  simp only [Pullback.lift, Trivialization.pullback, PartialHomeomorph.mk_coe_symm,
-    PartialEquiv.coe_symm_mk]
-  ext
-  · simp [A]
-  · simp [A, Trivialization.symm_apply _ hx]
 
 end FiberBundle
 
