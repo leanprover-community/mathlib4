@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Algebra.Order.Floor.Semiring
-import Mathlib.Algebra.Order.Group.Units
+import Mathlib.Algebra.Order.Monoid.Units
 import Mathlib.Algebra.Order.Ring.Pow
 import Mathlib.Data.Int.LeastGreatest
 import Mathlib.Data.Rat.Floor
@@ -35,11 +35,11 @@ assert_not_exists Finset
 
 open Int Set
 
-variable {M R K : Type*}
+variable {G M R K : Type*}
 
 /-- An ordered additive commutative monoid is called `Archimedean` if for any two elements `x`, `y`
 such that `0 < y`, there exists a natural number `n` such that `x ≤ n • y`. -/
-class Archimedean (M) [OrderedAddCommMonoid M] : Prop where
+class Archimedean (M) [AddCommMonoid M] [PartialOrder M] : Prop where
   /-- For any two elements `x`, `y` such that `0 < y`, there exists a natural number `n`
   such that `x ≤ n • y`. -/
   arch : ∀ (x : M) {y : M}, 0 < y → ∃ n : ℕ, x ≤ n • y
@@ -49,7 +49,7 @@ section MulArchimedean
 /-- An ordered commutative monoid is called `MulArchimedean` if for any two elements `x`, `y`
 such that `1 < y`, there exists a natural number `n` such that `x ≤ y ^ n`. -/
 @[to_additive Archimedean]
-class MulArchimedean (M) [OrderedCommMonoid M] : Prop where
+class MulArchimedean (M) [CommMonoid M] [PartialOrder M] : Prop where
   /-- For any two elements `x`, `y` such that `1 < y`, there exists a natural number `n`
   such that `x ≤ y ^ n`. -/
   arch : ∀ (x : M) {y : M}, 1 < y → ∃ n : ℕ, x ≤ y ^ n
@@ -57,22 +57,23 @@ class MulArchimedean (M) [OrderedCommMonoid M] : Prop where
 end MulArchimedean
 
 @[to_additive]
-instance OrderDual.instMulArchimedean [OrderedCommGroup M] [MulArchimedean M] :
-    MulArchimedean Mᵒᵈ :=
+instance OrderDual.instMulArchimedean [CommGroup G] [PartialOrder G] [IsOrderedMonoid G]
+    [MulArchimedean G] :
+    MulArchimedean Gᵒᵈ :=
   ⟨fun x y hy =>
     let ⟨n, hn⟩ := MulArchimedean.arch (ofDual x)⁻¹ (inv_lt_one_iff_one_lt.2 hy)
     ⟨n, by rwa [inv_pow, inv_le_inv_iff] at hn⟩⟩
 
-instance Additive.instArchimedean [OrderedCommGroup M] [MulArchimedean M] :
-    Archimedean (Additive M) :=
+instance Additive.instArchimedean [CommGroup G] [PartialOrder G] [MulArchimedean G] :
+    Archimedean (Additive G) :=
   ⟨fun x _ hy ↦ MulArchimedean.arch x.toMul hy⟩
 
-instance Multiplicative.instMulArchimedean [OrderedAddCommGroup M] [Archimedean M] :
-    MulArchimedean (Multiplicative M) :=
+instance Multiplicative.instMulArchimedean [AddCommGroup G] [PartialOrder G] [Archimedean G] :
+    MulArchimedean (Multiplicative G) :=
   ⟨fun x _ hy ↦ Archimedean.arch x.toAdd hy⟩
 
 @[to_additive]
-theorem exists_lt_pow [OrderedCommMonoid M] [MulArchimedean M]
+theorem exists_lt_pow [CommMonoid M] [PartialOrder M] [MulArchimedean M]
     [MulLeftStrictMono M] {a : M} (ha : 1 < a) (b : M) :
     ∃ n : ℕ, b < a ^ n :=
   let ⟨k, hk⟩ := MulArchimedean.arch b ha
@@ -80,7 +81,7 @@ theorem exists_lt_pow [OrderedCommMonoid M] [MulArchimedean M]
 
 section LinearOrderedCommGroup
 
-variable {G : Type*} [LinearOrderedCommGroup G] [MulArchimedean G]
+variable [CommGroup G] [LinearOrder G] [IsOrderedMonoid G] [MulArchimedean G]
 
 /-- An archimedean decidable linearly ordered `CommGroup` has a version of the floor: for
 `a > 1`, any `g` in the group lies between some two consecutive powers of `a`. -/
@@ -141,18 +142,20 @@ theorem existsUnique_sub_zpow_mem_Ioc {a : G} (ha : 1 < a) (b c : G) :
 
 end LinearOrderedCommGroup
 
-theorem exists_nat_ge [OrderedSemiring R] [Archimedean R] (x : R) : ∃ n : ℕ, x ≤ n := by
+theorem exists_nat_ge [Semiring R] [PartialOrder R] [IsOrderedRing R] [Archimedean R] (x : R) :
+    ∃ n : ℕ, x ≤ n := by
   nontriviality R
   exact (Archimedean.arch x one_pos).imp fun n h => by rwa [← nsmul_one]
 
-instance (priority := 100) [OrderedSemiring R] [Archimedean R] : IsDirected R (· ≤ ·) :=
+instance (priority := 100) [Semiring R] [PartialOrder R] [IsOrderedRing R] [Archimedean R] :
+    IsDirected R (· ≤ ·) :=
   ⟨fun x y ↦
     let ⟨m, hm⟩ := exists_nat_ge x; let ⟨n, hn⟩ := exists_nat_ge y
     let ⟨k, hmk, hnk⟩ := exists_ge_ge m n
     ⟨k, hm.trans <| Nat.mono_cast hmk, hn.trans <| Nat.mono_cast hnk⟩⟩
 
 section StrictOrderedSemiring
-variable [StrictOrderedSemiring R] [Archimedean R] {y : R}
+variable [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] [Archimedean R] {y : R}
 
 lemma exists_nat_gt (x : R) : ∃ n : ℕ, x < n :=
   (exists_lt_nsmul zero_lt_one x).imp fun n hn ↦ by rwa [← nsmul_one]
@@ -178,7 +181,7 @@ end StrictOrderedSemiring
 
 section OrderedRing
 
-variable [OrderedRing R] [Archimedean R]
+variable [Ring R] [PartialOrder R] [IsOrderedRing R] [Archimedean R]
 
 theorem exists_int_ge (x : R) : ∃ n : ℤ, x ≤ n := let ⟨n, h⟩ := exists_nat_ge x; ⟨n, mod_cast h⟩
 
@@ -194,7 +197,7 @@ instance (priority := 100) : IsDirected R (· ≥ ·) where
 end OrderedRing
 
 section StrictOrderedRing
-variable [StrictOrderedRing R] [Archimedean R]
+variable [Ring R] [PartialOrder R] [IsStrictOrderedRing R] [Archimedean R]
 
 theorem exists_int_gt (x : R) : ∃ n : ℤ, x < n :=
   let ⟨n, h⟩ := exists_nat_gt x
@@ -219,7 +222,8 @@ theorem exists_floor (x : R) : ∃ fl : ℤ, ∀ z : ℤ, z ≤ fl ↔ (z : R) �
 end StrictOrderedRing
 
 section LinearOrderedSemiring
-variable [LinearOrderedSemiring R] [Archimedean R] [ExistsAddOfLE R] {x y : R}
+variable [Semiring R] [LinearOrder R] [IsStrictOrderedRing R] [Archimedean R] [ExistsAddOfLE R]
+  {x y : R}
 
 /-- Every x greater than or equal to 1 is between two successive
 natural-number powers of every y greater than one. -/
@@ -237,7 +241,7 @@ theorem exists_nat_pow_near (hx : 1 ≤ x) (hy : 1 < y) : ∃ n : ℕ, y ^ n ≤
 end LinearOrderedSemiring
 
 section LinearOrderedSemifield
-variable [LinearOrderedSemifield K] [Archimedean K] {x y ε : K}
+variable [Semifield K] [LinearOrder K] [IsStrictOrderedRing K] [Archimedean K] {x y ε : K}
 
 lemma exists_nat_one_div_lt (hε : 0 < ε) : ∃ n : ℕ, 1 / (n + 1 : K) < ε := by
   obtain ⟨n, hn⟩ := exists_nat_gt (1 / ε)
@@ -339,10 +343,10 @@ lemma exists_zpow_btwn_of_lt_mul {a b c : K} (h : a < b * c) (hb₀ : 0 < b) (hc
 end LinearOrderedSemifield
 
 section LinearOrderedField
-variable [LinearOrderedField K]
+variable [Field K] [LinearOrder K] [IsStrictOrderedRing K]
 
 theorem archimedean_iff_nat_lt : Archimedean K ↔ ∀ x : K, ∃ n : ℕ, x < n :=
-  ⟨@exists_nat_gt K _, fun H =>
+  ⟨@exists_nat_gt K _ _ _, fun H =>
     ⟨fun x y y0 =>
       (H (x / y)).imp fun n h => le_of_lt <| by rwa [div_lt_iff₀ y0, ← nsmul_eq_mul] at h⟩⟩
 
@@ -353,7 +357,7 @@ theorem archimedean_iff_nat_le : Archimedean K ↔ ∀ x : K, ∃ n : ℕ, x ≤
       ⟨n + 1, lt_of_le_of_lt h (Nat.cast_lt.2 (lt_add_one _))⟩⟩
 
 theorem archimedean_iff_int_lt : Archimedean K ↔ ∀ x : K, ∃ n : ℤ, x < n :=
-  ⟨@exists_int_gt K _, by
+  ⟨@exists_int_gt K _ _ _, by
     rw [archimedean_iff_nat_lt]
     intro h x
     obtain ⟨n, h⟩ := h x
@@ -492,13 +496,15 @@ instance : Archimedean ℤ :=
         simpa only [nsmul_eq_mul, zero_add, mul_one] using
           mul_le_mul_of_nonneg_left (Int.add_one_le_iff.2 m0) (Int.ofNat_zero_le n.toNat)⟩⟩
 
-instance Nonneg.instArchimedean [OrderedAddCommMonoid M] [Archimedean M] :
+instance Nonneg.instArchimedean [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M]
+    [Archimedean M] :
     Archimedean { x : M // 0 ≤ x } :=
   ⟨fun x y hy =>
     let ⟨n, hr⟩ := Archimedean.arch (x : M) (hy : (0 : M) < y)
     ⟨n, show (x : M) ≤ (n • y : { x : M // 0 ≤ x }) by simp [*, -nsmul_eq_mul, nsmul_coe]⟩⟩
 
-instance Nonneg.instMulArchimedean [StrictOrderedCommSemiring R] [Archimedean R] [ExistsAddOfLE R] :
+instance Nonneg.instMulArchimedean [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R]
+    [Archimedean R] [ExistsAddOfLE R] :
     MulArchimedean { x : R // 0 ≤ x } :=
   ⟨fun x _ hy ↦ (pow_unbounded_of_one_lt x hy).imp fun _ h ↦ h.le⟩
 
@@ -507,19 +513,21 @@ instance : MulArchimedean NNRat := Nonneg.instMulArchimedean
 
 /-- A linear ordered archimedean ring is a floor ring. This is not an `instance` because in some
 cases we have a computable `floor` function. -/
-noncomputable def Archimedean.floorRing (R) [LinearOrderedRing R] [Archimedean R] : FloorRing R :=
+noncomputable def Archimedean.floorRing (R) [Ring R] [LinearOrder R] [IsStrictOrderedRing R]
+    [Archimedean R] : FloorRing R :=
   FloorRing.ofFloor R (fun a => Classical.choose (exists_floor a)) fun z a =>
     (Classical.choose_spec (exists_floor a) z).symm
 
 -- see Note [lower instance priority]
 /-- A linear ordered field that is a floor ring is archimedean. -/
-instance (priority := 100) FloorRing.archimedean (K) [LinearOrderedField K] [FloorRing K] :
+instance (priority := 100) FloorRing.archimedean (K) [Field K] [LinearOrder K]
+    [IsStrictOrderedRing K] [FloorRing K] :
     Archimedean K := by
   rw [archimedean_iff_int_le]
   exact fun x => ⟨⌈x⌉, Int.le_ceil x⟩
 
 @[to_additive]
-instance Units.instMulArchimedean (M) [OrderedCommMonoid M] [MulArchimedean M] :
+instance Units.instMulArchimedean (M) [CommMonoid M] [PartialOrder M] [MulArchimedean M] :
     MulArchimedean Mˣ :=
   ⟨fun x {_} h ↦ MulArchimedean.arch x.val h⟩
 

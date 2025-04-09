@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
 import Mathlib.Algebra.Group.Submonoid.BigOperators
 import Mathlib.Algebra.GroupWithZero.Associated
-import Mathlib.Algebra.GroupWithZero.Submonoid
+import Mathlib.Algebra.GroupWithZero.Submonoid.Primal
 import Mathlib.Order.WellFounded
 
 /-!

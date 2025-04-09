@@ -1219,7 +1219,7 @@ theorem normAtComplexPlaces_normAtAllPlaces (x : mixedSpace K) :
   normAtComplexPlaces_mixedSpaceOfRealSpace fun _ _ ↦ (normAtAllPlaces_nonneg _ _)
 
 theorem normAtAllPlaces_eq_of_normAtComplexPlaces_eq {x y : mixedSpace K}
-    (h: normAtComplexPlaces x = normAtComplexPlaces y) :
+    (h : normAtComplexPlaces x = normAtComplexPlaces y) :
     normAtAllPlaces x = normAtAllPlaces y := by
   ext w
   obtain hw | hw := isReal_or_isComplex w

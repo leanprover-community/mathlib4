@@ -45,7 +45,7 @@ variable {𝕜 E F ι : Type*} {M : ι → Type*}
 
 section SMul
 
-variable (𝕜) [OrderedSemiring 𝕜] [AddCommMonoid E] [SMul 𝕜 E]
+variable (𝕜) [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E] [SMul 𝕜 E]
 
 /-- A set `B` is an extreme subset of `A` if `B ⊆ A` and all points of `B` only belong to open
 segments whose ends are in `B`. -/
@@ -168,10 +168,11 @@ end SMul
 
 section OrderedSemiring
 
-variable [OrderedSemiring 𝕜] [AddCommGroup E] [AddCommGroup F] [∀ i, AddCommGroup (M i)]
+variable [Semiring 𝕜] [PartialOrder 𝕜] [AddCommGroup E] [AddCommGroup F] [∀ i, AddCommGroup (M i)]
   [Module 𝕜 E] [Module 𝕜 F] [∀ i, Module 𝕜 (M i)] {A B : Set E}
 
-theorem IsExtreme.convex_diff (hA : Convex 𝕜 A) (hAB : IsExtreme 𝕜 A B) : Convex 𝕜 (A \ B) :=
+theorem IsExtreme.convex_diff [IsOrderedRing 𝕜] (hA : Convex 𝕜 A) (hAB : IsExtreme 𝕜 A B) :
+    Convex 𝕜 (A \ B) :=
   convex_iff_openSegment_subset.2 fun _ ⟨hx₁A, hx₁B⟩ _ ⟨hx₂A, _⟩ _ hx ↦
     ⟨hA.openSegment_subset hx₁A hx₂A hx, fun hxB ↦ hx₁B (hAB.2 hx₁A hx₂A hxB hx).1⟩
 
@@ -222,7 +223,8 @@ theorem extremePoints_pi (s : ∀ i, Set (M i)) :
 end OrderedSemiring
 
 section OrderedRing
-variable {L : Type*} [OrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [Module 𝕜 F]
+variable {L : Type*} [Ring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
+  [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [Module 𝕜 F]
   [EquivLike L E F] [LinearEquivClass L 𝕜 E F]
 
 lemma image_extremePoints (f : L) (s : Set E) :
@@ -238,7 +240,7 @@ end OrderedRing
 
 section LinearOrderedRing
 
-variable [LinearOrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable [Ring 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
 variable [DenselyOrdered 𝕜] [NoZeroSMulDivisors 𝕜 E] {A : Set E} {x : E}
 
 /-- A useful restatement using `segment`: `x` is an extreme point iff the only (closed) segments

@@ -100,9 +100,12 @@ def AffineScheme.ofHom {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X ⟶ Y) :
     AffineScheme.of X ⟶ AffineScheme.of Y :=
   f
 
-theorem mem_Spec_essImage (X : Scheme) : Scheme.Spec.essImage X ↔ IsAffine X :=
+@[simp]
+theorem essImage_Spec {X : Scheme} : Scheme.Spec.essImage X ↔ IsAffine X :=
   ⟨fun h => ⟨Functor.essImage.unit_isIso h⟩,
     fun _ => ΓSpec.adjunction.mem_essImage_of_unit_isIso _⟩
+
+@[deprecated (since := "2025-04-08")] alias mem_Spec_essImage := essImage_Spec
 
 instance isAffine_affineScheme (X : AffineScheme.{u}) : IsAffine X.obj :=
   ⟨Functor.essImage.unit_isIso X.property⟩
@@ -114,7 +117,7 @@ instance isAffine_Spec (R : CommRingCat) : IsAffine (Spec R) :=
   AlgebraicGeometry.isAffine_affineScheme ⟨_, Scheme.Spec.obj_mem_essImage (op R)⟩
 
 theorem IsAffine.of_isIso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] [h : IsAffine Y] : IsAffine X := by
-  rw [← mem_Spec_essImage] at h ⊢; exact Functor.essImage.ofIso (asIso f).symm h
+  rw [← essImage_Spec] at h ⊢; exact Functor.essImage.ofIso (asIso f).symm h
 
 @[deprecated (since := "2025-03-31")] alias isAffine_of_isIso := IsAffine.of_isIso
 
