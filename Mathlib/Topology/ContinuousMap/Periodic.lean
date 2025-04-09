@@ -23,7 +23,7 @@ variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 /-- Summing the translates of `f` by `ℤ • p` gives a map which is periodic with period `p`.
 (This is true without any convergence conditions, since if the sum doesn't converge it is taken to
 be the zero map, which is periodic.) -/
-theorem periodic_tsum_comp_add_zsmul [AddCommGroup X] [IsTopologicalAddGroup X] [AddCommMonoid Y]
+theorem periodic_tsum_comp_add_zsmul [AddCommGroup X] [ContinuousAdd X] [AddCommMonoid Y]
     [ContinuousAdd Y] [T2Space Y] (f : C(X, Y)) (p : X) :
     Function.Periodic (⇑(∑' n : ℤ, f.comp (ContinuousMap.addRight (n • p)))) p := by
   intro x

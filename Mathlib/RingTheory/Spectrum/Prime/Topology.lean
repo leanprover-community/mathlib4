@@ -34,7 +34,7 @@ The contents of this file draw inspiration from <https://github.com/ramonfmir/le
 which has contributions from Ramon Fernandez Mir, Kevin Buzzard, Kenny Lau,
 and Chris Hughes (on an earlier repository).
 
-## Main definition
+## Main definitions
 
 * `PrimeSpectrum.zariskiTopology`: the Zariski topology on the prime spectrum, whose closed sets
   are zero loci (`zeroLocus`).
@@ -791,30 +791,25 @@ def localizationMapOfSpecializes {x y : PrimeSpectrum R} (h : x ⤳ y) :
 
 section stableUnderSpecialization
 
-variable {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S)
-
-@[stacks 00HY]
-lemma isClosed_range_of_stableUnderSpecialization
-    (hf : StableUnderSpecialization (Set.range (comap f))) :
-    IsClosed (Set.range (comap f)) := by
-  refine (isClosed_iff_zeroLocus _).mpr ⟨RingHom.ker f, le_antisymm ?_ ?_⟩
-  · rintro _ ⟨q, rfl⟩
-    exact Ideal.comap_mono bot_le
-  · intro p hp
-    obtain ⟨q, hq, hqle⟩ := Ideal.exists_minimalPrimes_le hp
-    obtain ⟨q', hq', hq'c⟩ := Ideal.exists_minimalPrimes_comap_eq f q hq
-    exact hf ((le_iff_specializes ⟨q, hq.1.1⟩ p).mp hqle) ⟨⟨q', hq'.1.1⟩, PrimeSpectrum.ext hq'c⟩
+variable {R S : Type*} [CommSemiring R] [CommSemiring S] (f : R →+* S)
 
 lemma isClosed_image_of_stableUnderSpecialization
     (Z : Set (PrimeSpectrum S)) (hZ : IsClosed Z)
     (hf : StableUnderSpecialization (comap f '' Z)) :
     IsClosed (comap f '' Z) := by
   obtain ⟨I, rfl⟩ := (PrimeSpectrum.isClosed_iff_zeroLocus_ideal Z).mp hZ
-  have : (comap f '' zeroLocus I) = Set.range (comap ((Ideal.Quotient.mk I).comp f)) := by
-    rw [comap_comp, ContinuousMap.coe_comp, Set.range_comp, range_comap_of_surjective, Ideal.mk_ker]
-    exact Ideal.Quotient.mk_surjective
-  rw [this] at hf ⊢
-  exact isClosed_range_of_stableUnderSpecialization _ hf
+  refine (isClosed_iff_zeroLocus _).mpr ⟨I.comap f, le_antisymm ?_ fun p hp ↦ ?_⟩
+  · rintro _ ⟨q, hq, rfl⟩
+    exact Ideal.comap_mono hq
+  · obtain ⟨q, hqI, hq, hqle⟩ := p.asIdeal.exists_ideal_comap_le_prime I hp
+    exact hf ((le_iff_specializes ⟨q.comap f, inferInstance⟩ p).mp hqle) ⟨⟨q, hq⟩, hqI, rfl⟩
+
+@[stacks 00HY]
+lemma isClosed_range_of_stableUnderSpecialization
+    (hf : StableUnderSpecialization (Set.range (comap f))) :
+    IsClosed (Set.range (comap f)) := by
+  rw [← Set.image_univ] at hf ⊢
+  exact isClosed_image_of_stableUnderSpecialization _ _ isClosed_univ hf
 
 variable {f} in
 @[stacks 00HY]
@@ -831,7 +826,8 @@ end stableUnderSpecialization
 
 section IsQuotientMap
 
-variable {R S : Type*} [CommRing R] [CommRing S] {f : R →+* S} (h₁ : Function.Surjective (comap f))
+variable {R S : Type*} [CommSemiring R] [CommSemiring S] {f : R →+* S}
+  (h₁ : Function.Surjective (comap f))
 
 include h₁
 
@@ -860,7 +856,7 @@ end IsQuotientMap
 
 section denseRange
 
-variable {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S)
+variable {R S : Type*} [CommSemiring R] [CommSemiring S] (f : R →+* S)
 
 lemma vanishingIdeal_range_comap :
     vanishingIdeal (Set.range (comap f)) = (RingHom.ker f).radical := by
@@ -1146,16 +1142,6 @@ end IsIntegral
 section LocalizationAtMinimal
 
 variable {I : Ideal R} [hI : I.IsPrime]
-
-/--
-Localizations at minimal primes have single-point prime spectra.
--/
-def primeSpectrum_unique_of_localization_at_minimal (h : I ∈ minimalPrimes R) :
-    Unique (PrimeSpectrum (Localization.AtPrime I)) where
-  default :=
-    ⟨IsLocalRing.maximalIdeal (Localization I.primeCompl),
-    (IsLocalRing.maximalIdeal.isMaximal _).isPrime⟩
-  uniq x := PrimeSpectrum.ext (Localization.AtPrime.prime_unique_of_minimal h x.asIdeal)
 
 end LocalizationAtMinimal
 

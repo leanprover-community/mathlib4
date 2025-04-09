@@ -32,8 +32,8 @@ polynomials (when the module `M` is free and finite).
 
 ## Implementation notes
 
-In the literature, the theory is writen for commutative rings, but this implementation
-only assume `R` is a commutative semiring.
+In the literature, the theory is written for commutative rings, but this implementation
+only assumes `R` is a commutative semiring.
 
 ## References
 
@@ -50,7 +50,7 @@ open scoped TensorProduct
 
 open LinearMap TensorProduct AlgHom
 
-/-- A polynomial map `M →ₚₗ[R] N` between `R`-modules is a functorial family of maps
+/-- A polynomial law `M →ₚₗ[R] N` between `R`-modules is a functorial family of maps
    `S ⊗[R] M → S ⊗[R] N`, for all `R`-algebras `S`.
 
 For universe reasons, `S` has to be restricted to the same universe as `R`. -/
@@ -74,7 +74,7 @@ theorem PolynomialLaw.isCompat_apply'
     {S : Type u} [CommSemiring S] [Algebra R S] {S' : Type u} [CommSemiring S'] [Algebra R S']
     (φ : S →ₐ[R] S') (x : S ⊗[R] M) :
     (φ.toLinearMap.rTensor N) ((f.toFun' S) x) = (f.toFun' S') (φ.toLinearMap.rTensor M x) := by
-  simpa only using _root_.congr_fun (f.isCompat' φ) x
+  simpa only using congr_fun (f.isCompat' φ) x
 
 attribute [local simp] PolynomialLaw.isCompat_apply'
 
