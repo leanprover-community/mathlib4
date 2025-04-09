@@ -53,8 +53,8 @@ variable {X : Scheme.{u}}
 /--
 A structure that contains the data to uniquely define an ideal sheaf, consisting of
 1. an ideal `I(U) ≤ Γ(X, U)` for every affine open `U`
-2. a proof that `I(D(f)) = I(U)_f` for every affine open `U` and every section `f : Γ(X, U)`.
-3. a subset of `X` equal to the support
+2. a proof that `I(D(f)) = I(U)_f` for every affine open `U` and every section `f : Γ(X, U)`
+3. a subset of `X` equal to the support.
 -/
 structure IdealSheafData (X : Scheme.{u}) : Type u where
   /-- The component of an ideal sheaf at an affine open. -/
@@ -76,14 +76,6 @@ protected lemma ext {I J : X.IdealSheafData} (h : I.ideal = J.ideal) : I = J := 
   subst h
   congr
   rw [hs, ht]
-
-@[reducible]
-def copy {I : X.IdealSheafData} (I' : ∀ U : X.affineOpens, Ideal Γ(X, U)) (hI' : I' = I.ideal)
-    (s : Set X) (hs : s = I.supportSet) : X.IdealSheafData where
-  ideal := I'
-  map_ideal_basicOpen := hI' ▸ I.map_ideal_basicOpen
-  supportSet := s
-  supportSet_eq_iInter_zeroLocus := hs ▸ hI' ▸ I.supportSet_eq_iInter_zeroLocus
 
 section Order
 
@@ -307,6 +299,7 @@ lemma coe_support_inter (I : IdealSheafData X) (U : X.affineOpens) :
     (I.support : Set X) ∩ U = X.zeroLocus (U := U.1) (I.ideal U) ∩ U :=
   I.supportSet_inter U
 
+/-- Custom simps projection for `IdealSheafData`. -/
 def Simps.coe_support : Set X := I.support
 
 initialize_simps_projections IdealSheafData (supportSet → coe_support, as_prefix coe_support)
@@ -447,9 +440,9 @@ lemma radical_inf {I J : IdealSheafData X} :
   ext U : 2
   simp only [radical_ideal, ideal_inf, Pi.inf_apply, Ideal.radical_inf]
 
-/-- The vanishing ideal sheaf of a set,
-which is the largest ideal sheaf whose support contains a subset.
-When the set `Z` is closed, the reduced induced scheme structure is the quotient of this ideal. -/
+/-- The vanishing ideal sheaf of a closed set,
+which is the largest ideal sheaf whose support is equal to it.
+The reduced induced scheme structure on the closed set is the quotient of this ideal. -/
 @[simps! ideal coe_support]
 nonrec def vanishingIdeal (Z : Closeds X) : IdealSheafData X :=
   mkOfMemSupportIff
@@ -894,7 +887,7 @@ def glueDataT (U V : X.affineOpens) :
       Category.comp_id, Category.assoc, X.homOfLE_homOfLE]
 
 @[reassoc (attr := simp)]
-private lemma glueDataT_snd (U V : X.affineOpens) :
+lemma glueDataT_snd (U V : X.affineOpens) :
     I.glueDataT U V ≫ pullback.snd _ _ = pullback.snd _ _ ≫ X.homOfLE (by simp) :=
   pullback.lift_snd _ _ _
 
