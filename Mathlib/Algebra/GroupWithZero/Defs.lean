@@ -300,13 +300,13 @@ end MulZeroClass
 
 section IsCommutative
 
-instance {M₀ : Type*} [MonoidWithZero M₀] [IsMulCommutative M₀] :
+instance (priority := 100) {M₀ : Type*} [MonoidWithZero M₀] [IsMulCommutative M₀] :
     CommMonoidWithZero M₀ where
 
-instance {M₀ : Type*} [CancelMonoidWithZero M₀] [IsMulCommutative M₀] :
+instance (priority := 100) {M₀ : Type*} [CancelMonoidWithZero M₀] [IsMulCommutative M₀] :
     CancelCommMonoidWithZero M₀ where
 
-instance {G₀ : Type*} [GroupWithZero G₀] [IsMulCommutative G₀] :
+instance (priority := 100) {G₀ : Type*} [GroupWithZero G₀] [IsMulCommutative G₀] :
     CommGroupWithZero G₀ where
 
 end IsCommutative
