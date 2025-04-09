@@ -397,6 +397,17 @@ def postEquiv (F : T ≌ D) : Over X ≌ Over (F.functor.obj X) where
   unitIso := NatIso.ofComponents (fun A ↦ Over.isoMk (F.unitIso.app A.left))
   counitIso := NatIso.ofComponents (fun A ↦ Over.isoMk (F.counitIso.app A.left))
 
+open Limits
+
+variable {X} in
+/-- If `X : T` is terminal, then the over category of `X` is equivalent to `T`. -/
+@[simps]
+def equivalenceOfIsTerminal (hX : IsTerminal X) : Over X ≌ T where
+  functor := forget X
+  inverse := { obj Y := mk (hX.from Y), map f := homMk f }
+  unitIso := NatIso.ofComponents fun Y ↦ isoMk (.refl _) (hX.hom_ext _ _)
+  counitIso := NatIso.ofComponents fun _ ↦ .refl _
+
 end Over
 
 namespace CostructuredArrow
@@ -738,6 +749,17 @@ def postEquiv (F : T ≌ D) : Under X ≌ Under (F.functor.obj X) where
   inverse := post (X := F.functor.obj X) F.inverse ⋙ Under.map (F.unitIso.hom.app X)
   unitIso := NatIso.ofComponents (fun A ↦ Under.isoMk (F.unitIso.app A.right))
   counitIso := NatIso.ofComponents (fun A ↦ Under.isoMk (F.counitIso.app A.right))
+
+open Limits
+
+variable {X} in
+/-- If `X : T` is initial, then the under category of `X` is equivalent to `T`. -/
+@[simps]
+def equivalenceOfIsInitial (hX : IsInitial X) : Under X ≌ T where
+  functor := forget X
+  inverse := { obj Y := mk (hX.to Y), map f := homMk f }
+  unitIso := NatIso.ofComponents fun Y ↦ isoMk (.refl _) (hX.hom_ext _ _)
+  counitIso := NatIso.ofComponents fun _ ↦ .refl _
 
 end Under
 
