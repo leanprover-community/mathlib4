@@ -384,6 +384,11 @@ instance [F.Full] [F.EssSurj] : (Over.post (X := X) F).EssSurj where
 
 instance [F.IsEquivalence] : (Over.post (X := X) F).IsEquivalence where
 
+/-- If `F` is fully faithful, then so is `Over.post F`. -/
+def _root_.CategoryTheory.Functor.FullyFaithful.over (h : F.FullyFaithful) :
+    (post (X := X) F).FullyFaithful where
+  preimage {A B} f := Over.homMk (h.preimage f.left) <| h.map_injective (by simpa using Over.w f)
+
 /-- An equivalence of categories induces an equivalence on over categories. -/
 @[simps]
 def postEquiv (F : T ≌ D) : Over X ≌ Over (F.functor.obj X) where
@@ -721,6 +726,11 @@ instance [F.Full] [F.EssSurj] : (Under.post (X := X) F).EssSurj where
 
 instance [F.IsEquivalence] : (Under.post (X := X) F).IsEquivalence where
 
+/-- If `F` is fully faithful, then so is `Under.post F`. -/
+def _root_.CategoryTheory.Functor.FullyFaithful.under (h : F.FullyFaithful) :
+    (post (X := X) F).FullyFaithful where
+  preimage {A B} f := Under.homMk (h.preimage f.right) <| h.map_injective (by simpa using Under.w f)
+
 /-- An equivalence of categories induces an equivalence on under categories. -/
 @[simps]
 def postEquiv (F : T ≌ D) : Under X ≌ Under (F.functor.obj X) where
@@ -758,6 +768,29 @@ instance isEquivalence_toUnder (X : T) (F : D ⥤ T) [F.IsEquivalence] :
 end StructuredArrow
 
 namespace Functor
+variable {X : T} {F : T ⥤ D}
+
+lemma essImage.of_overPost {Y : Over (F.obj X)} :
+    (Over.post F (X := X)).essImage Y → F.essImage Y.left :=
+  fun ⟨Z, ⟨e⟩⟩ ↦ ⟨Z.left, ⟨(Over.forget _).mapIso e⟩⟩
+
+lemma essImage.of_underPost {Y : Under (F.obj X)} :
+    (Under.post F (X := X)).essImage Y → F.essImage Y.right :=
+  fun ⟨Z, ⟨e⟩⟩ ↦ ⟨Z.right, ⟨(Under.forget _).mapIso e⟩⟩
+
+/-- The essential image of `Over.post F` where `F` is full is the same as the essential image of
+`F`. -/
+@[simp] lemma essImage_overPost [F.Full] {Y : Over (F.obj X)} :
+    (Over.post F (X := X)).essImage Y ↔ F.essImage Y.left where
+  mp := .of_overPost
+  mpr := fun ⟨Z, ⟨e⟩⟩ ↦ let ⟨f, hf⟩ := F.map_surjective (e.hom ≫ Y.hom); ⟨.mk f, ⟨Over.isoMk e⟩⟩
+
+/-- The essential image of `Under.post F` where `F` is full is the same as the essential image of
+`F`. -/
+@[simp] lemma essImage_underPost [F.Full] {Y : Under (F.obj X)} :
+    (Under.post F (X := X)).essImage Y ↔ F.essImage Y.right where
+  mp := .of_underPost
+  mpr := fun ⟨Z, ⟨e⟩⟩ ↦ let ⟨f, hf⟩ := F.map_surjective (Y.hom ≫ e.inv); ⟨.mk f, ⟨Under.isoMk e⟩⟩
 
 variable {S : Type u₂} [Category.{v₂} S]
 

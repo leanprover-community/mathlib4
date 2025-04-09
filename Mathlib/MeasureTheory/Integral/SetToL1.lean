@@ -16,10 +16,11 @@ This file constructs an extension of `T` to integrable simple functions, which a
 indicators of measurable sets with finite measure, then to integrable functions, which are limits of
 integrable simple functions.
 
-The main result is a continuous linear map `(α →₁[μ] E) →L[ℝ] F`. This extension process is used to
-define the Bochner integral in the `Mathlib.MeasureTheory.Integral.Bochner` file and the conditional
-expectation of an integrable function in
-`Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL1`.
+The main result is a continuous linear map `(α →₁[μ] E) →L[ℝ] F`.
+This extension process is used to define the Bochner integral
+in the `Mathlib.MeasureTheory.Integral.Bochner.Basic` file
+and the conditional expectation of an integrable function
+in `Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL1`.
 
 ## Main Definitions
 
@@ -191,7 +192,7 @@ theorem eq_zero_of_measure_zero {β : Type*} [NormedAddCommGroup β] {T : Set α
     T s = 0 := by
   refine norm_eq_zero.mp ?_
   refine ((hT.2 s hs (by simp [hs_zero])).trans (le_of_eq ?_)).antisymm (norm_nonneg _)
-  rw [hs_zero, ENNReal.zero_toReal, mul_zero]
+  rw [hs_zero, ENNReal.toReal_zero, mul_zero]
 
 theorem eq_zero {β : Type*} [NormedAddCommGroup β] {T : Set α → β} {C : ℝ} {_ : MeasurableSpace α}
     (hT : DominatedFinMeasAdditive (0 : Measure α) T C) {s : Set α} (hs : MeasurableSet s) :
@@ -1043,13 +1044,13 @@ theorem setToL1_mono_left' {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
     (hTT' : ∀ s, MeasurableSet s → μ s < ∞ → ∀ x, T s x ≤ T' s x) (f : α →₁[μ] E) :
     setToL1 hT f ≤ setToL1 hT' f := by
   induction f using Lp.induction (hp_ne_top := one_ne_top) with
-  | @h_ind c s hs hμs =>
+  | @indicatorConst c s hs hμs =>
     rw [setToL1_simpleFunc_indicatorConst hT hs hμs, setToL1_simpleFunc_indicatorConst hT' hs hμs]
     exact hTT' s hs hμs c
-  | @h_add f g hf hg _ hf_le hg_le =>
+  | @add f g hf hg _ hf_le hg_le =>
     rw [(setToL1 hT).map_add, (setToL1 hT').map_add]
     exact add_le_add hf_le hg_le
-  | h_closed => exact isClosed_le (setToL1 hT).continuous (setToL1 hT').continuous
+  | isClosed => exact isClosed_le (setToL1 hT).continuous (setToL1 hT').continuous
 
 theorem setToL1_mono_left {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
     (hT : DominatedFinMeasAdditive μ T C) (hT' : DominatedFinMeasAdditive μ T' C')
@@ -1152,9 +1153,12 @@ theorem setToFun_undef (hT : DominatedFinMeasAdditive μ T C) (hf : ¬Integrable
     setToFun μ T hT f = 0 :=
   dif_neg hf
 
-theorem setToFun_non_aEStronglyMeasurable (hT : DominatedFinMeasAdditive μ T C)
+theorem setToFun_non_aestronglyMeasurable (hT : DominatedFinMeasAdditive μ T C)
     (hf : ¬AEStronglyMeasurable f μ) : setToFun μ T hT f = 0 :=
   setToFun_undef hT (not_and_of_not_left _ hf)
+
+@[deprecated (since := "2025-04-09")]
+alias setToFun_non_aEStronglyMeasurable := setToFun_non_aestronglyMeasurable
 
 theorem setToFun_congr_left (hT : DominatedFinMeasAdditive μ T C)
     (hT' : DominatedFinMeasAdditive μ T' C') (h : T = T') (f : α → E) :
@@ -1201,7 +1205,9 @@ theorem setToFun_smul_left' (hT : DominatedFinMeasAdditive μ T C)
 
 @[simp]
 theorem setToFun_zero (hT : DominatedFinMeasAdditive μ T C) : setToFun μ T hT (0 : α → E) = 0 := by
-  erw [setToFun_eq hT (integrable_zero _ _ _), Integrable.toL1_zero, ContinuousLinearMap.map_zero]
+  rw [Pi.zero_def, setToFun_eq hT (integrable_zero _ _ _)]
+  simp only [← Pi.zero_def]
+  rw [Integrable.toL1_zero, ContinuousLinearMap.map_zero]
 
 @[simp]
 theorem setToFun_zero_left {hT : DominatedFinMeasAdditive μ (0 : Set α → E →L[ℝ] F) C} :

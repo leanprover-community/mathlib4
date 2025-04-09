@@ -5,11 +5,11 @@ Authors: Anne Baanen, Lu-Ming Zhang
 -/
 import Mathlib.Data.Matrix.Invertible
 import Mathlib.Data.Matrix.Kronecker
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 import Mathlib.LinearAlgebra.Matrix.Adjugate
 import Mathlib.LinearAlgebra.Matrix.SemiringInverse
-import Mathlib.LinearAlgebra.Matrix.Trace
 import Mathlib.LinearAlgebra.Matrix.ToLin
+import Mathlib.LinearAlgebra.Matrix.Trace
 
 /-!
 # Nonsingular inverses
@@ -517,9 +517,8 @@ def diagonalInvertible {α} [NonAssocSemiring α] (v : n → α) [Invertible v] 
 
 theorem invOf_diagonal_eq {α} [Semiring α] (v : n → α) [Invertible v] [Invertible (diagonal v)] :
     ⅟ (diagonal v) = diagonal (⅟ v) := by
-  letI := diagonalInvertible v
-  -- Porting note: no longer need `haveI := Invertible.subsingleton (diagonal v)`
-  convert (rfl : ⅟ (diagonal v) = _)
+  rw [@Invertible.congr _ _ _ _ _ (diagonalInvertible v) rfl]
+  rfl
 
 /-- `v` is invertible if `diagonal v` is -/
 def invertibleOfDiagonalInvertible (v : n → α) [Invertible (diagonal v)] : Invertible v where
@@ -674,9 +673,8 @@ def invertibleOfSubmatrixEquivInvertible (A : Matrix m m α) (e₁ e₂ : n ≃ 
 
 theorem invOf_submatrix_equiv_eq (A : Matrix m m α) (e₁ e₂ : n ≃ m) [Invertible A]
     [Invertible (A.submatrix e₁ e₂)] : ⅟ (A.submatrix e₁ e₂) = (⅟ A).submatrix e₂ e₁ := by
-  letI := submatrixEquivInvertible A e₁ e₂
-  -- Porting note: no longer need `haveI := Invertible.subsingleton (A.submatrix e₁ e₂)`
-  convert (rfl : ⅟ (A.submatrix e₁ e₂) = _)
+  rw [@Invertible.congr _ _ _ _ _ (submatrixEquivInvertible A e₁ e₂) rfl]
+  rfl
 
 /-- Together `Matrix.submatrixEquivInvertible` and
 `Matrix.invertibleOfSubmatrixEquivInvertible` form an equivalence, although both sides of the

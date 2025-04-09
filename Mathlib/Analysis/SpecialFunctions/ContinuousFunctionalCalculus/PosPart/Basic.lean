@@ -21,7 +21,7 @@ section NonUnital
 
 variable {A : Type*} [NonUnitalRing A] [Module ℝ A] [SMulCommClass ℝ A A] [IsScalarTower ℝ A A]
 variable [StarRing A] [TopologicalSpace A]
-variable [NonUnitalContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
+variable [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 
 namespace CStarAlgebra
 
@@ -315,7 +315,7 @@ section Unital
 namespace CFC
 
 variable {A : Type*} [Ring A] [Algebra ℝ A] [StarRing A] [TopologicalSpace A]
-variable [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
+variable [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 variable [T2Space A]
 
 @[simp]
@@ -357,7 +357,7 @@ section SpanNonneg
 
 variable {A : Type*} [NonUnitalRing A] [Module ℂ A] [SMulCommClass ℂ A A] [IsScalarTower ℂ A A]
 variable [StarRing A] [TopologicalSpace A] [StarModule ℂ A]
-variable [NonUnitalContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
+variable [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 variable [PartialOrder A] [StarOrderedRing A]
 
 open Submodule Complex

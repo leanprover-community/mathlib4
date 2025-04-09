@@ -79,8 +79,8 @@ theorem nhdsWithin_eq (a : α) (s : Set α) :
 @[simp] lemma nhdsWithin_univ (a : α) : 𝓝[Set.univ] a = 𝓝 a := by
   rw [nhdsWithin, principal_univ, inf_top_eq]
 
-theorem nhdsWithin_hasBasis {p : β → Prop} {s : β → Set α} {a : α} (h : (𝓝 a).HasBasis p s)
-    (t : Set α) : (𝓝[t] a).HasBasis p fun i => s i ∩ t :=
+theorem nhdsWithin_hasBasis {ι : Sort*} {p : ι → Prop} {s : ι → Set α} {a : α}
+    (h : (𝓝 a).HasBasis p s) (t : Set α) : (𝓝[t] a).HasBasis p fun i => s i ∩ t :=
   h.inf_principal t
 
 theorem nhdsWithin_basis_open (a : α) (t : Set α) :
@@ -231,9 +231,10 @@ theorem nhds_of_Ici_Iic [LinearOrder α] {b : α}
     (inter_mem hL self_mem_nhdsWithin) (inter_mem hR self_mem_nhdsWithin)
 
 theorem nhdsWithin_biUnion {ι} {I : Set ι} (hI : I.Finite) (s : ι → Set α) (a : α) :
-    𝓝[⋃ i ∈ I, s i] a = ⨆ i ∈ I, 𝓝[s i] a :=
-  Set.Finite.induction_on _ hI (by simp) fun _ _ hT ↦ by
-    simp only [hT, nhdsWithin_union, iSup_insert, biUnion_insert]
+    𝓝[⋃ i ∈ I, s i] a = ⨆ i ∈ I, 𝓝[s i] a := by
+  induction I, hI using Set.Finite.induction_on with
+  | empty => simp
+  | insert _ _ hT => simp only [hT, nhdsWithin_union, iSup_insert, biUnion_insert]
 
 theorem nhdsWithin_sUnion {S : Set (Set α)} (hS : S.Finite) (a : α) :
     𝓝[⋃₀ S] a = ⨆ s ∈ S, 𝓝[s] a := by

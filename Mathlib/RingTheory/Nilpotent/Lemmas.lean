@@ -20,7 +20,7 @@ open Function Set
 
 variable {R S : Type*} {x y : R}
 
-theorem RingHom.ker_isRadical_iff_reduced_of_surjective {S F} [CommSemiring R] [CommRing S]
+theorem RingHom.ker_isRadical_iff_reduced_of_surjective {S F} [CommSemiring R] [Semiring S]
     [FunLike F R S] [RingHomClass F R S] {f : F} (hf : Function.Surjective f) :
     (RingHom.ker f).IsRadical ↔ IsReduced S := by
   simp_rw [isReduced_iff, hf.forall, IsNilpotent, ← map_pow, ← RingHom.mem_ker]
@@ -30,6 +30,9 @@ theorem isRadical_iff_span_singleton [CommSemiring R] :
     IsRadical y ↔ (Ideal.span ({y} : Set R)).IsRadical := by
   simp_rw [IsRadical, ← Ideal.mem_span_singleton]
   exact forall_swap.trans (forall_congr' fun r => exists_imp.symm)
+
+theorem isNilpotent_iff_zero_mem_powers [Monoid R] [Zero R] {x : R} :
+    IsNilpotent x ↔ 0 ∈ Submonoid.powers x := Iff.rfl
 
 section CommSemiring
 
