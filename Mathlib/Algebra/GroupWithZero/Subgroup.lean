@@ -85,14 +85,15 @@ instance pointwise_isCentralScalar [DistribMulAction Mᵐᵒᵖ A] [IsCentralSca
     IsCentralScalar M (AddSubgroup A) :=
   ⟨fun _ S => (congr_arg fun f => S.map f) <| AddMonoidHom.ext <| op_smul_eq_smul _⟩
 
-@[simp]
-lemma smul_bot (m : M) : m • (⊥ : AddSubgroup A) = ⊥ := map_bot _
+-- TODO: Uncomment
+-- @[simp]
+-- lemma smul_bot (m : M) : m • (⊥ : AddSubgroup A) = ⊥ := map_bot _
 
-lemma smul_sup (m : M) (S T : AddSubgroup A) : m • (S ⊔ T) = m • S ⊔ m • T := map_sup _ _ _
+-- lemma smul_sup (m : M) (S T : AddSubgroup A) : m • (S ⊔ T) = m • S ⊔ m • T := map_sup _ _ _
 
-@[simp]
-lemma smul_closure (m : M) (s : Set A) : m • closure s = closure (m • s) :=
-  AddMonoidHom.map_closure ..
+-- @[simp]
+-- lemma smul_closure (m : M) (s : Set A) : m • closure s = closure (m • s) :=
+--   AddMonoidHom.map_closure ..
 
 scoped[Pointwise] attribute [instance] AddSubgroup.pointwise_isCentralScalar
 
