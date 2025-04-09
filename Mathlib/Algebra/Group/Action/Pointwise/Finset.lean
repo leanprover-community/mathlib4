@@ -73,7 +73,7 @@ instance isCentralScalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α 
     IsCentralScalar α (Finset β) :=
   ⟨fun a s => coe_injective <| by simp only [coe_smul_finset, coe_smul, op_smul_eq_smul]⟩
 
-#adapation_note /-- nightly-2025-04-07
+#adaptation_note /-- nightly-2025-04-07
 This now needs to be marked as noncomputable because of its dependence on `Set.monoid`.
 We should either find a way to rewrite this definition to avoid this,
 or request via @kim-em and @zwarich that changes in https://github.com/leanprover/lean4/pull/7824
