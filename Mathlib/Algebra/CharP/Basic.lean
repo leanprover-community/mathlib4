@@ -201,3 +201,13 @@ instance (S : Type*) [Semiring S] (p) [ExpChar R p] [ExpChar S p] : ExpChar (R �
   · have := Prod.charP R S p; exact .prime hp
 
 end AddMonoidWithOne
+
+section CommRing
+
+instance (α : Type*) [∀ n, OfNat α n] [CommRing α] [LawfulOfNat α] (n : ℕ) [CharP α n] :
+    Lean.Grind.IsCharP α n where
+  ofNat_eq_zero_iff m := by
+    simpa [LawfulOfNat.ofNat_eq_natCast, ← Nat.dvd_iff_mod_eq_zero] using
+      CharP.cast_eq_zero_iff α n m
+
+end CommRing
