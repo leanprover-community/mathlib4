@@ -5,7 +5,6 @@ Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
-import Mathlib.Algebra.Module.Submodule.Pointwise
 import Mathlib.RingTheory.SimpleRing.Basic
 
 /-!
