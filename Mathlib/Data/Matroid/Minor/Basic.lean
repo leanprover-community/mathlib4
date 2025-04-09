@@ -801,6 +801,7 @@ or even to be subsets of the ground set. See `Matroid.IsMinor.exists_eq_contract
 for the fact that we can choose `C` and `D` with these properties. -/
 def IsMinor (N M : Matroid α) : Prop := ∃ C D, N = M ／ C ＼ D
 
+/-- `≤m` denotes the minor relation on matroids. -/
 infixl:50 " ≤m " => Matroid.IsMinor
 
 @[simp]
@@ -819,6 +820,7 @@ Equivalently, `N` is obtained from `M` by deleting/contracting subsets of the gr
 that are not both empty. -/
 def IsStrictMinor (N M : Matroid α) : Prop := N ≤m M ∧ ¬ M ≤m N
 
+/-- `<m` denotes the strict minor relation on matroids. -/
 infixl:50 " <m " => Matroid.IsStrictMinor
 
 lemma IsMinor.subset (h : N ≤m M) : N.E ⊆ M.E := by
