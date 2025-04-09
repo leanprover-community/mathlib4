@@ -105,6 +105,7 @@ variable {𝔸}
 
 open Classical in
 /-- `NormedSpace.exp : 𝔸 → 𝔸` is the exponential map determined by the action of `𝕂` on `𝔸`.
+
 It is defined as the sum of the `FormalMultilinearSeries` `expSeries 𝕂 𝔸`.
 
 Note that when `𝔸 = Matrix n n 𝕂`, this is the **Matrix Exponential**; see
@@ -122,7 +123,6 @@ variable {𝕂}
 theorem expSeries_apply_eq (x : 𝔸) (n : ℕ) :
     (expSeries 𝕂 𝔸 n fun _ => x) = (n !⁻¹ : 𝕂) • x ^ n := by simp [expSeries]
 
-variable (𝕂) in
 theorem expSeries_apply_eq' (x : 𝔸) :
     (fun n => expSeries 𝕂 𝔸 n fun _ => x) = fun n => (n !⁻¹ : 𝕂) • x ^ n :=
   funext (expSeries_apply_eq x)
@@ -133,7 +133,6 @@ theorem expSeries_sum_eq (x : 𝔸) : (expSeries 𝕂 𝔸).sum x = ∑' n : ℕ
 theorem expSeries_sum_eq_rat [Algebra ℚ 𝔸] : (expSeries 𝕂 𝔸).sum = (expSeries ℚ 𝔸).sum := by
   ext; simp_rw [expSeries_sum_eq, inv_natCast_smul_eq 𝕂 ℚ]
 
-variable (𝕂) in
 theorem expSeries_eq_expSeries_rat [Algebra ℚ 𝔸] (n : ℕ) :
     ⇑(expSeries 𝕂 𝔸 n) = expSeries ℚ 𝔸 n := by
   ext c
@@ -452,8 +451,7 @@ theorem norm_expSeries_summable (x : 𝔸) : Summable fun n => ‖expSeries 𝕂
   norm_expSeries_summable_of_mem_ball x ((expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _)
 
 variable (𝕂) in
-include 𝕂 in
-theorem norm_expSeries_summable' [CharZero 𝕂] (x : 𝔸) : Summable fun n => ‖(n !⁻¹ : 𝕂) • x ^ n‖ :=
+theorem norm_expSeries_summable' (x : 𝔸) : Summable fun n => ‖(n !⁻¹ : 𝕂) • x ^ n‖ :=
   norm_expSeries_summable_of_mem_ball' x
     (show x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius from
       (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _)
@@ -466,8 +464,7 @@ theorem expSeries_summable (x : 𝔸) : Summable fun n => expSeries 𝕂 𝔸 n 
   (norm_expSeries_summable x).of_norm
 
 variable (𝕂) in
-include 𝕂 in
-theorem expSeries_summable' [CharZero 𝕂] (x : 𝔸) : Summable fun n => (n !⁻¹ : 𝕂) • x ^ n :=
+theorem expSeries_summable' (x : 𝔸) : Summable fun n => (n !⁻¹ : 𝕂) • x ^ n :=
   (norm_expSeries_summable' 𝕂 x).of_norm
 
 variable [CharZero 𝕂]
@@ -586,25 +583,24 @@ theorem _root_.Prod.fst_exp [NormedAlgebra 𝕂 𝔹] [CompleteSpace 𝔹] (x : 
     (exp x).fst = exp x.fst :=
   map_exp 𝕂 (RingHom.fst 𝔸 𝔹) continuous_fst x
 
-@[simp]
 theorem _root_.Prod.snd_exp [NormedAlgebra 𝕂 𝔹] [CompleteSpace 𝔹] (x : 𝔸 × 𝔹) :
     (exp x).snd = exp x.snd :=
   map_exp 𝕂 (RingHom.snd 𝔸 𝔹) continuous_snd x
 
 theorem _root_.Pi.coe_exp {ι : Type*} {𝔸 : ι → Type*} [Finite ι] [∀ i, NormedRing (𝔸 i)]
-    [∀ i, Algebra ℚ (𝔸 i)] [∀ i, NormedAlgebra 𝕂 (𝔸 i)] [∀ i, CompleteSpace (𝔸 i)] (x : ∀ i, 𝔸 i)
+    [∀ i, NormedAlgebra 𝕂 (𝔸 i)] [∀ i, CompleteSpace (𝔸 i)] (x : ∀ i, 𝔸 i)
     (i : ι) :
     exp x i = exp (x i) :=
   let ⟨_⟩ := nonempty_fintype ι
   map_exp 𝕂 (Pi.evalRingHom 𝔸 i) (continuous_apply _) x
 
 theorem _root_.Pi.exp_def {ι : Type*} {𝔸 : ι → Type*} [Finite ι] [∀ i, NormedRing (𝔸 i)]
-    [∀ i, NormedAlgebra 𝕂 (𝔸 i)] [∀ i, Algebra ℚ (𝔸 i)] [∀ i, CompleteSpace (𝔸 i)] (x : ∀ i, 𝔸 i) :
+    [∀ i, NormedAlgebra 𝕂 (𝔸 i)] [∀ i, CompleteSpace (𝔸 i)] (x : ∀ i, 𝔸 i) :
     exp x = fun i => exp (x i) :=
   funext <| Pi.coe_exp 𝕂 x
 
 theorem _root_.Function.update_exp {ι : Type*} {𝔸 : ι → Type*} [Finite ι] [DecidableEq ι]
-    [∀ i, NormedRing (𝔸 i)] [∀ i, Algebra ℚ (𝔸 i)] [∀ i, NormedAlgebra 𝕂 (𝔸 i)]
+    [∀ i, NormedRing (𝔸 i)] [∀ i, NormedAlgebra 𝕂 (𝔸 i)]
     [∀ i, CompleteSpace (𝔸 i)] (x : ∀ i, 𝔸 i) (j : ι) (xj : 𝔸 j) :
     Function.update (exp x) j (exp xj) = exp (Function.update x j xj) := by
   ext i
@@ -613,7 +609,7 @@ theorem _root_.Function.update_exp {ι : Type*} {𝔸 : ι → Type*} [Finite ι
 
 end CompleteAlgebra
 
-theorem algebraMap_exp_comm [Algebra ℚ 𝔸] (x : 𝕂) :
+theorem algebraMap_exp_comm (x : 𝕂) :
     algebraMap 𝕂 𝔸 (exp x) = exp (algebraMap 𝕂 𝔸 x) :=
   algebraMap_exp_comm_of_mem_ball x <| (expSeries_radius_eq_top 𝕂 𝕂).symm ▸ edist_lt_top _ _
 
@@ -696,3 +692,4 @@ theorem of_real_exp_ℝ_ℝ (r : ℝ) : ↑(exp r) = exp (r : ℂ) :=
 end ScalarTower
 
 end NormedSpace
+#lint
