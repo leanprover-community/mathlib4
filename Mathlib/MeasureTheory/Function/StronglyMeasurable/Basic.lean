@@ -312,7 +312,7 @@ protected theorem prodMk {m : MeasurableSpace α} [TopologicalSpace β] [Topolog
     StronglyMeasurable fun x => (f x, g x) := by
   refine ⟨fun n => SimpleFunc.pair (hf.approx n) (hg.approx n), fun x => ?_⟩
   rw [nhds_prod_eq]
-  exact Tendsto.prod_mk (hf.tendsto_approx x) (hg.tendsto_approx x)
+  exact Tendsto.prodMk (hf.tendsto_approx x) (hg.tendsto_approx x)
 
 @[deprecated (since := "2025-03-05")] protected alias prod_mk := StronglyMeasurable.prodMk
 
@@ -415,7 +415,7 @@ protected theorem smul_const {𝕜} [TopologicalSpace 𝕜] [SMul 𝕜 β] [Cont
 function is measurable. Note that this is not true without further second-countability assumptions
 for the addition of two measurable functions. -/
 theorem _root_.Measurable.add_stronglyMeasurable
-    {α E : Type*} {_ : MeasurableSpace α} [AddGroup E] [TopologicalSpace E]
+    {α E : Type*} {_ : MeasurableSpace α} [AddCancelMonoid E] [TopologicalSpace E]
     [MeasurableSpace E] [BorelSpace E] [ContinuousAdd E] [PseudoMetrizableSpace E]
     {g f : α → E} (hg : Measurable g) (hf : StronglyMeasurable f) :
     Measurable (g + f) := by
@@ -429,7 +429,7 @@ theorem _root_.Measurable.add_stronglyMeasurable
 function is measurable. Note that this is not true without further second-countability assumptions
 for the subtraction of two measurable functions. -/
 theorem _root_.Measurable.sub_stronglyMeasurable
-    {α E : Type*} {_ : MeasurableSpace α} [AddCommGroup E] [TopologicalSpace E]
+    {α E : Type*} {_ : MeasurableSpace α} [AddGroup E] [TopologicalSpace E]
     [MeasurableSpace E] [BorelSpace E] [ContinuousAdd E] [ContinuousNeg E] [PseudoMetrizableSpace E]
     {g f : α → E} (hg : Measurable g) (hf : StronglyMeasurable f) :
     Measurable (g - f) := by
@@ -440,7 +440,7 @@ theorem _root_.Measurable.sub_stronglyMeasurable
 function is measurable. Note that this is not true without further second-countability assumptions
 for the addition of two measurable functions. -/
 theorem _root_.Measurable.stronglyMeasurable_add
-    {α E : Type*} {_ : MeasurableSpace α} [AddGroup E] [TopologicalSpace E]
+    {α E : Type*} {_ : MeasurableSpace α} [AddCancelMonoid E] [TopologicalSpace E]
     [MeasurableSpace E] [BorelSpace E] [ContinuousAdd E] [PseudoMetrizableSpace E]
     {g f : α → E} (hg : Measurable g) (hf : StronglyMeasurable f) :
     Measurable (f + g) := by
@@ -760,6 +760,56 @@ protected theorem indicator {_ : MeasurableSpace α} [TopologicalSpace β] [Zero
     StronglyMeasurable (s.indicator f) :=
   hf.piecewise hs stronglyMeasurable_const
 
+/-- To prove that a property holds for any strongly measurable function, it is enough to show
+that it holds for constant indicator functions of measurable sets and that it is closed under
+addition and pointwise limit.
+
+To use in an induction proof, the syntax is
+`induction f, hf using StronglyMeasurable.induction with`. -/
+theorem induction [MeasurableSpace α] [AddZeroClass β] [TopologicalSpace β]
+    {P : (f : α → β) → StronglyMeasurable f → Prop}
+    (ind : ∀ c ⦃s : Set α⦄ (hs : MeasurableSet s),
+      P (s.indicator fun _ ↦ c) (stronglyMeasurable_const.indicator hs))
+    (add : ∀ ⦃f g : α → β⦄ (hf : StronglyMeasurable f) (hg : StronglyMeasurable g)
+      (hfg : StronglyMeasurable (f + g)), Disjoint f.support g.support →
+      P f hf → P g hg → P (f + g) hfg)
+    (lim : ∀ ⦃f : ℕ → α → β⦄ ⦃g : α → β⦄ (hf : ∀ n, StronglyMeasurable (f n))
+      (hg : StronglyMeasurable g), (∀ n, P (f n) (hf n)) →
+      (∀ x, Tendsto (f · x) atTop (𝓝 (g x))) → P g hg)
+    (f : α → β) (hf : StronglyMeasurable f) : P f hf := by
+  let s := hf.approx
+  refine lim (fun n ↦ (s n).stronglyMeasurable) hf (fun n ↦ ?_) hf.tendsto_approx
+  change P (s n) (s n).stronglyMeasurable
+  induction s n using SimpleFunc.induction with
+  | const c hs => exact ind c hs
+  | @add f g h_supp hf hg =>
+    exact add f.stronglyMeasurable g.stronglyMeasurable (f + g).stronglyMeasurable h_supp hf hg
+
+open scoped Classical in
+/-- To prove that a property holds for any strongly measurable function, it is enough to show
+that it holds for constant functions and that it is closed under piecewise combination of functions
+and pointwise limits.
+
+To use in an induction proof, the syntax is
+`induction f, hf using StronglyMeasurable.induction' with`. -/
+theorem induction' [MeasurableSpace α] [Nonempty β] [TopologicalSpace β]
+    {P : (f : α → β) → StronglyMeasurable f → Prop}
+    (const : ∀ (c), P (fun _ ↦ c) stronglyMeasurable_const)
+    (pcw : ∀ ⦃f g : α → β⦄ {s} (hf : StronglyMeasurable f) (hg : StronglyMeasurable g)
+      (hs : MeasurableSet s), P f hf → P g hg → P (s.piecewise f g) (hf.piecewise hs hg))
+    (lim : ∀ ⦃f : ℕ → α → β⦄ ⦃g : α → β⦄ (hf : ∀ n, StronglyMeasurable (f n))
+      (hg : StronglyMeasurable g), (∀ n, P (f n) (hf n)) →
+      (∀ x, Tendsto (f · x) atTop (𝓝 (g x))) → P g hg)
+    (f : α → β) (hf : StronglyMeasurable f) : P f hf := by
+  let s := hf.approx
+  refine lim (fun n ↦ (s n).stronglyMeasurable) hf (fun n ↦ ?_) hf.tendsto_approx
+  change P (s n) (s n).stronglyMeasurable
+  induction s n with
+  | const c => exact const c
+  | @pcw f g s hs Pf Pg =>
+    simp_rw [SimpleFunc.coe_piecewise]
+    exact pcw f.stronglyMeasurable g.stronglyMeasurable hs Pf Pg
+
 @[aesop safe 20 apply (rule_sets := [Measurable])]
 protected theorem dist {_ : MeasurableSpace α} {β : Type*} [PseudoMetricSpace β] {f g : α → β}
     (hf : StronglyMeasurable f) (hg : StronglyMeasurable g) :
@@ -982,7 +1032,7 @@ section Arithmetic
 variable [TopologicalSpace β]
 
 @[aesop safe 20 (rule_sets := [Measurable])]
-protected theorem mul [MonoidWithZero β] [ContinuousMul β] (hf : FinStronglyMeasurable f μ)
+protected theorem mul [MulZeroClass β] [ContinuousMul β] (hf : FinStronglyMeasurable f μ)
     (hg : FinStronglyMeasurable g μ) : FinStronglyMeasurable (f * g) μ := by
   refine
     ⟨fun n => hf.approx n * hg.approx n, ?_, fun x =>
@@ -991,7 +1041,7 @@ protected theorem mul [MonoidWithZero β] [ContinuousMul β] (hf : FinStronglyMe
   exact (measure_mono (support_mul_subset_left _ _)).trans_lt (hf.fin_support_approx n)
 
 @[aesop safe 20 (rule_sets := [Measurable])]
-protected theorem add [AddMonoid β] [ContinuousAdd β] (hf : FinStronglyMeasurable f μ)
+protected theorem add [AddZeroClass β] [ContinuousAdd β] (hf : FinStronglyMeasurable f μ)
     (hg : FinStronglyMeasurable g μ) : FinStronglyMeasurable (f + g) μ :=
   ⟨fun n => hf.approx n + hg.approx n, fun n =>
     (measure_mono (Function.support_add _ _)).trans_lt
@@ -1000,7 +1050,7 @@ protected theorem add [AddMonoid β] [ContinuousAdd β] (hf : FinStronglyMeasura
     fun x => (hf.tendsto_approx x).add (hg.tendsto_approx x)⟩
 
 @[measurability]
-protected theorem neg [AddGroup β] [IsTopologicalAddGroup β] (hf : FinStronglyMeasurable f μ) :
+protected theorem neg [SubtractionMonoid β] [ContinuousNeg β] (hf : FinStronglyMeasurable f μ) :
     FinStronglyMeasurable (-f) μ := by
   refine ⟨fun n => -hf.approx n, fun n => ?_, fun x => (hf.tendsto_approx x).neg⟩
   suffices μ (Function.support fun x => -(hf.approx n) x) < ∞ by convert this
@@ -1008,7 +1058,7 @@ protected theorem neg [AddGroup β] [IsTopologicalAddGroup β] (hf : FinStrongly
   exact hf.fin_support_approx n
 
 @[measurability]
-protected theorem sub [AddGroup β] [ContinuousSub β] (hf : FinStronglyMeasurable f μ)
+protected theorem sub [SubtractionMonoid β] [ContinuousSub β] (hf : FinStronglyMeasurable f μ)
     (hg : FinStronglyMeasurable g μ) : FinStronglyMeasurable (f - g) μ :=
   ⟨fun n => hf.approx n - hg.approx n, fun n =>
     (measure_mono (Function.support_sub _ _)).trans_lt
@@ -1017,8 +1067,8 @@ protected theorem sub [AddGroup β] [ContinuousSub β] (hf : FinStronglyMeasurab
     fun x => (hf.tendsto_approx x).sub (hg.tendsto_approx x)⟩
 
 @[measurability]
-protected theorem const_smul {𝕜} [TopologicalSpace 𝕜] [AddMonoid β] [Monoid 𝕜]
-    [DistribMulAction 𝕜 β] [ContinuousSMul 𝕜 β] (hf : FinStronglyMeasurable f μ) (c : 𝕜) :
+protected theorem const_smul {𝕜} [TopologicalSpace 𝕜] [Zero β]
+    [SMulZeroClass 𝕜 β] [ContinuousSMul 𝕜 β] (hf : FinStronglyMeasurable f μ) (c : 𝕜) :
     FinStronglyMeasurable (c • f) μ := by
   refine ⟨fun n => c • hf.approx n, fun n => ?_, fun x => (hf.tendsto_approx x).const_smul c⟩
   rw [SimpleFunc.coe_smul]

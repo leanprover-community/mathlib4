@@ -4,10 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Support
-import Mathlib.Topology.Connected.TotallyDisconnected
 import Mathlib.Topology.Inseparable
+import Mathlib.Topology.Piecewise
 import Mathlib.Topology.Separation.SeparatedNhds
 import Mathlib.Topology.Compactness.LocallyCompact
+import Mathlib.Topology.Bases
 
 /-!
 # Separation properties of topological spaces
@@ -375,7 +376,8 @@ theorem isOpen_setOf_eventually_nhdsWithin [T1Space X] {p : X → Prop} :
   · rw [h.symm.nhdsWithin_compl_singleton] at hb
     exact hb.filter_mono nhdsWithin_le_nhds
 
-protected theorem Set.Finite.isClosed [T1Space X] {s : Set X} (hs : Set.Finite s) : IsClosed s := by
+@[simp] protected lemma Set.Finite.isClosed [T1Space X] {s : Set X} (hs : s.Finite) :
+    IsClosed s := by
   rw [← biUnion_of_singleton s]
   exact hs.isClosed_biUnion fun i _ => isClosed_singleton
 
@@ -527,14 +529,6 @@ instance ULift.instT1Space [T1Space X] : T1Space (ULift X) :=
   IsEmbedding.uliftDown.t1Space
 
 -- see Note [lower instance priority]
-instance (priority := 100) TotallyDisconnectedSpace.t1Space [h : TotallyDisconnectedSpace X] :
-    T1Space X := by
-  rw [((t1Space_TFAE X).out 0 1 :)]
-  intro x
-  rw [← totallyDisconnectedSpace_iff_connectedComponent_singleton.mp h x]
-  exact isClosed_connectedComponent
-
--- see Note [lower instance priority]
 instance (priority := 100) T1Space.t0Space [T1Space X] : T0Space X :=
   ⟨fun _ _ h => h.specializes.eq⟩
 
@@ -545,7 +539,6 @@ theorem compl_singleton_mem_nhds_iff [T1Space X] {x y : X} : {x}ᶜ ∈ 𝓝 y �
 theorem compl_singleton_mem_nhds [T1Space X] {x y : X} (h : y ≠ x) : {x}ᶜ ∈ 𝓝 y :=
   compl_singleton_mem_nhds_iff.mpr h
 
-@[simp]
 theorem closure_singleton [T1Space X] {x : X} : closure ({x} : Set X) = {x} :=
   isClosed_singleton.closure_eq
 
@@ -736,32 +729,6 @@ theorem Set.Finite.continuousOn [T1Space X] [TopologicalSpace Y] {s : Set X} (hs
   rw [continuousOn_iff_continuous_restrict]
   have : Finite s := hs
   fun_prop
-
-theorem PreconnectedSpace.trivial_of_discrete [PreconnectedSpace X] [DiscreteTopology X] :
-    Subsingleton X := by
-  rw [← not_nontrivial_iff_subsingleton]
-  rintro ⟨x, y, hxy⟩
-  rw [Ne, ← mem_singleton_iff, (isClopen_discrete _).eq_univ <| singleton_nonempty y] at hxy
-  exact hxy (mem_univ x)
-
-theorem IsPreconnected.infinite_of_nontrivial [T1Space X] {s : Set X} (h : IsPreconnected s)
-    (hs : s.Nontrivial) : s.Infinite := by
-  refine mt (fun hf => (subsingleton_coe s).mp ?_) (not_subsingleton_iff.mpr hs)
-  haveI := @Finite.instDiscreteTopology s _ _ hf.to_subtype
-  exact @PreconnectedSpace.trivial_of_discrete _ _ (Subtype.preconnectedSpace h) _
-
-theorem ConnectedSpace.infinite [ConnectedSpace X] [Nontrivial X] [T1Space X] : Infinite X :=
-  infinite_univ_iff.mp <| isPreconnected_univ.infinite_of_nontrivial nontrivial_univ
-
-/-- A non-trivial connected T1 space has no isolated points. -/
-instance (priority := 100) ConnectedSpace.neBot_nhdsWithin_compl_of_nontrivial_of_t1space
-    [ConnectedSpace X] [Nontrivial X] [T1Space X] (x : X) :
-    NeBot (𝓝[≠] x) := by
-  by_contra contra
-  rw [not_neBot, ← isOpen_singleton_iff_punctured_nhds] at contra
-  replace contra := nonempty_inter isOpen_compl_singleton
-    contra (compl_union_self _) (Set.nonempty_compl_of_nontrivial _) (singleton_nonempty _)
-  simp [compl_inter_self {x}] at contra
 
 theorem SeparationQuotient.t1Space_iff : T1Space (SeparationQuotient X) ↔ R0Space X := by
   rw [r0Space_iff, ((t1Space_TFAE (SeparationQuotient X)).out 0 9 :)]

@@ -258,11 +258,11 @@ theorem Cofix.bisim_rel {α : TypeVec n} (r : Cofix F α → Cofix F α → Prop
 
 /-- Bisimulation principle using `LiftR` to match and relate children of two trees. -/
 theorem Cofix.bisim {α : TypeVec n} (r : Cofix F α → Cofix F α → Prop)
-    (h : ∀ x y, r x y → LiftR (RelLast α r (i := _)) (Cofix.dest x) (Cofix.dest y)) :
+    (h : ∀ x y, r x y → LiftR (RelLast α r) (Cofix.dest x) (Cofix.dest y)) :
     ∀ x y, r x y → x = y := by
   apply Cofix.bisim_rel
   intro x y rxy
-  rcases (liftR_iff (fun a b => RelLast α r a b) (dest x) (dest y)).mp (h x y rxy)
+  rcases (liftR_iff (fun a b => RelLast α r b) (dest x) (dest y)).mp (h x y rxy)
     with ⟨a, f₀, f₁, dxeq, dyeq, h'⟩
   rw [dxeq, dyeq, ← abs_map, ← abs_map, MvPFunctor.map_eq, MvPFunctor.map_eq]
   rw [← split_dropFun_lastFun f₀, ← split_dropFun_lastFun f₁]
@@ -465,8 +465,8 @@ elab_rules : tactic
             refine MvQPF.Cofix.bisim₂ $sR ?_ _ _ ⟨_, rfl, rfl⟩;
             rintro $(← idss 1) $(← idss 2) ⟨$(← idss 3), $(← idss 4), $(← idss 5)⟩)
           liftMetaTactic fun g => return [← g.clear f.fvarId!]
-    for n in [6 : ids.size] do
-      let name := ids[n]!
+    for h : n in [6 : ids.size] do
+      let name := ids[n]
       logWarningAt name m!"unused name: {name}"
 
 end Mathlib.Tactic.MvBisim

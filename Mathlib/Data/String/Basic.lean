@@ -33,8 +33,8 @@ instance LT' : LT String :=
   ⟨fun s₁ s₂ ↦ ltb s₁.iter s₂.iter⟩
 
 /-- This instance has a prime to avoid the name of the corresponding instance in core Lean. -/
-instance decidableLT' : DecidableRel (α := String) (· < ·) := by
-  simp only [LT']
+instance decidableLT' : DecidableLT String := by
+  simp only [DecidableLT, LT']
   infer_instance -- short-circuit type class inference
 
 /-- Induction on `String.ltb`. -/
@@ -96,14 +96,14 @@ theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList
         apply ltb_cons_addChar
       · refine ⟨List.Lex.rel, fun e ↦ ?_⟩
         cases e <;> rename_i h'
-        · contradiction
         · assumption
+        · contradiction
 
 instance LE : LE String :=
   ⟨fun s₁ s₂ ↦ ¬s₂ < s₁⟩
 
-instance decidableLE : DecidableRel (α := String) (· ≤ ·) := by
-  simp only [LE]
+instance decidableLE : DecidableLE String := by
+  simp only [DecidableLE, LE]
   infer_instance -- short-circuit type class inference
 
 @[simp]
