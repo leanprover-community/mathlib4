@@ -542,6 +542,7 @@ Logic and computation:
     polynomial-time computation: 'Turing.TM2ComputableInPolyTime'
   Formal languages:
     language: 'Language'
+    Arden's lemma: 'Language.self_eq_mul_add_iff'
     regular language: 'Language.IsRegular'
     DFA: 'DFA'
     NFA: 'NFA'
