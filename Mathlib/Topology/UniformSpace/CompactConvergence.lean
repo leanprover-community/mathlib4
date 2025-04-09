@@ -383,13 +383,13 @@ lemma completeSpace_of_isCoherentWith (h : IsCoherentWith {K : Set α | IsCompac
   exact (UniformOnFun.isClosed_setOf_continuous h).completeSpace_coe
 
 @[deprecated (since := "2025-04-08")]
-alias completeSpace_of_restrictGenTopology := completeSpace_of_IsCoherentWith
+alias completeSpace_of_restrictGenTopology := completeSpace_of_isCoherentWith
 
 instance instCompleteSpaceOfWeaklyLocallyCompactSpace [WeaklyLocallyCompactSpace α] :
-    CompleteSpace C(α, β) := completeSpace_of_IsCoherentWith .isCompact_of_weaklyLocallyCompact
+    CompleteSpace C(α, β) := completeSpace_of_isCoherentWith .isCompact_of_weaklyLocallyCompact
 
 instance instCompleteSpaceOfSequentialSpace [SequentialSpace α] :
-    CompleteSpace C(α, β) := completeSpace_of_IsCoherentWith .isCompact_of_seq
+    CompleteSpace C(α, β) := completeSpace_of_isCoherentWith .isCompact_of_seq
 
 end CompleteSpace
 
