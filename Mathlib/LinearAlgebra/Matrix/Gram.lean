@@ -26,59 +26,65 @@ open RCLike Real Matrix Topology ComplexConjugate Finsupp
 
 open LinearMap (BilinForm)
 
-variable {𝕜 E F n : Type*} [RCLike 𝕜]
-
-section BasicProperties_Seminormed
+variable {E F n : Type*}
 
 open scoped InnerProductSpace
 
-variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [SeminormedAddCommGroup E] [InnerProductSpace ℝ E]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => @inner ℝ _ _ x y
 
 namespace Matrix
 
 /-- The entries of a Gram matrix are inner products of vectors in an inner product space. -/
-def Gram (M : Matrix n n 𝕜) (v : n → E) : Prop := ∀ i j, M i j = ⟪v i, v j⟫
+def Gram (M : Matrix n n ℝ) (v : n → E) : Prop := ∀ i j, M i j = ⟪v i, v j⟫
 
 namespace Gram
 
-lemma IsHermitian (M : Matrix n n 𝕜) {v : n → E} (hM : Gram M v) : M.IsHermitian := by
+theorem entry {M : Matrix n n ℝ} {v : n → E} (hM : M.Gram v) (i j : n) : M i j = ⟪v i, v j⟫ :=
+  hM i j
+
+lemma IsHermitian (M : Matrix n n ℝ) {v : n → E} (hM : Gram M v) : M.IsHermitian := by
   refine IsHermitian.ext_iff.mpr ?_
   intro i j
   rw [hM, hM]
   simp only [RCLike.star_def, inner_conj_symm]
 
-variable [Fintype n]
+variable {m : Type*} [Fintype m] [Fintype n]
 
-variable [PartialOrder 𝕜]
+example (a : ℝ) (x : m → ℝ) : a * ∑ i, x i = ∑ i, a * (x i) := by
+  rw [Finset.mul_sum]
 
-theorem PosDef (M : Matrix n n 𝕜) {v : n → E} (hM : M.Gram v) : PosSemidef M := by
-  simp [PosSemidef]
-  refine ⟨Gram.IsHermitian M hM, ?_⟩
-  intro x
-  --  let y : E := ∑ (i : n), (x i) • (v i)
+example (M : Matrix m n ℝ) (x : m → ℝ) (y : n → ℝ) :
+    x ⬝ᵥ M *ᵥ y = ∑ i, ∑ j, (x i) * (M i j) * (y j) := by
+  simp_rw [dotProduct, mul_assoc, ← Finset.mul_sum, mulVec]
+  rfl
 
-  rw [nonneg_iff]
-
-  refine nonneg_iff.mpr ?_
-
-
-  apply?
-
-/-
-
+theorem PosSemidef (M : Matrix n n ℝ) {v : n → E} (hM : M.Gram v) : PosSemidef M := by
+  refine ⟨Gram.IsHermitian M hM, fun x ↦ ?_⟩
+  let y := ∑ (i : n), x i • v i
+  have h : inner y y = (star x ⬝ᵥ M *ᵥ x) := by
+    calc
+      inner y y = (∑ (i : n), ∑ (j : n), (x i) * (x j) * (inner (v i) (v j))) := by
+          simp_rw [y, sum_inner, inner_sum, inner_smul_left, inner_smul_right, mul_assoc]
+          simp only [conj_trivial, y]
+        _ = (∑ (i : n), ∑ (j : n), (x i) * (x j) * (M i j)) := by
+          simp_rw [hM.entry]
+        _ = (x ⬝ᵥ M *ᵥ x) := by
+          simp_rw [dotProduct, mul_assoc, ← Finset.mul_sum, mulVec, dotProduct, mul_comm]
   refine nonneg_iff.mpr ⟨?_, ?_⟩
+  · rw [← h]
+    exact real_inner_self_nonneg
+  · simp only [im_to_real]
 
-  · calc
-      0 ≤ re (inner y y) := by
-        exact inner_self_nonneg
-      _ = RCLike.re (∑ (i : n), ∑ (j : n), (x i) * (x j) * (inner (v i) (v j))) := by sorry
-      _ = RCLike.re (∑ (i : n), ∑ (j : n), (x i) * (x j) * (M i j)) := by sorry
-      _ = RCLike.re (star x ⬝ᵥ M *ᵥ x) := by sorry
-    · sorry inner_self_im
--/
 
 end Gram
 
 end Matrix
+
+def covariance (J : Finset NNReal) : Matrix J J ℝ :=
+  (fun i j => i ⊓ j)
+
+open Set
+
+def v : NNReal →₂[μ] NNReal := fun t ↦ indicator Icc 0 t
