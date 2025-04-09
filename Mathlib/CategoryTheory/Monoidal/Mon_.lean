@@ -116,12 +116,13 @@ namespace Mon_
 variable {C}
 
 /-- Construct an object of `Mon_ C` from an object `X : C` and `Mon_Class X` instance. -/
-abbrev mk' (X : C) [Mon_Class X] : Mon_ C where
+@[simps]
+def mk' (X : C) [Mon_Class X] : Mon_ C where
   X := X
   one := η
   mul := μ
 
-instance X.instMon_Class {M : Mon_ C} : Mon_Class M.X where
+instance {M : Mon_ C} : Mon_Class M.X where
   one := M.one
   mul := M.mul
   one_mul' := M.one_mul
