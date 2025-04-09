@@ -66,8 +66,8 @@ open CompleteLattice CategoryTheory Limits
 
 namespace Set
 
-variable {X : Type u} {ι : Type w} {A : Set X} {u : ι → Set X} {v : ι → ι → Set X}
-  (c : MulticoequalizerDiagram A u v)
+variable {X : Type u} {ι : Type w} {A : Set X} {U : ι → Set X} {V : ι → ι → Set X}
+  (c : MulticoequalizerDiagram A U V)
 
 /-- Given `X : Type u`, `A : Set X`, `u : ι → Set X` and `v : ι → ι → Set X` such
 that `MulticoequalizerDiagram A u v` holds, then in the category of types,
