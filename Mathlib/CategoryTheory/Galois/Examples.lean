@@ -107,7 +107,7 @@ instance : GaloisCategory (Action FintypeCat G) where
 
 /-- The `G`-action on a connected finite `G`-set is transitive. -/
 theorem Action.pretransitive_of_isConnected (X : Action FintypeCat G)
-    [IsConnected X] : MulAction.IsPretransitive G X.V where
+    [PreGaloisCategory.IsConnected X] : MulAction.IsPretransitive G X.V where
   exists_smul_eq x y := by
     /- We show that the `G`-orbit of `x` is a non-initial subobject of `X` and hence by
     connectedness, the orbit equals `X.V`. -/
@@ -131,7 +131,7 @@ theorem Action.pretransitive_of_isConnected (X : Action FintypeCat G)
 /-- A nonempty `G`-set with transitive `G`-action is connected. -/
 theorem Action.isConnected_of_transitive (X : FintypeCat) [MulAction G X]
     [MulAction.IsPretransitive G X] [h : Nonempty X] :
-    IsConnected (Action.FintypeCat.ofMulAction G X) where
+    PreGaloisCategory.IsConnected (Action.FintypeCat.ofMulAction G X) where
   notInitial := not_initial_of_inhabited (Action.forget _ _) h.some
   noTrivialComponent Y i hm hni := by
     /- We show that the induced inclusion `i.hom` of finite sets is surjective, using the
@@ -151,7 +151,7 @@ theorem Action.isConnected_of_transitive (X : FintypeCat) [MulAction G X]
 
 /-- A nonempty finite `G`-set is connected if and only if the `G`-action is transitive. -/
 theorem Action.isConnected_iff_transitive (X : Action FintypeCat G) [Nonempty X.V] :
-    IsConnected X ↔ MulAction.IsPretransitive G X.V :=
+    PreGaloisCategory.IsConnected X ↔ MulAction.IsPretransitive G X.V :=
   ⟨fun _ ↦ pretransitive_of_isConnected G X, fun _ ↦ isConnected_of_transitive G X.V⟩
 
 variable {G}
@@ -159,7 +159,7 @@ variable {G}
 /-- If `X` is a connected `G`-set and `x` is an element of `X`, `X` is isomorphic
 to the quotient of `G` by the stabilizer of `x` as `G`-sets. -/
 noncomputable def isoQuotientStabilizerOfIsConnected (X : Action FintypeCat G)
-    [IsConnected X] (x : X.V) [Fintype (G ⧸ (MulAction.stabilizer G x))] :
+    [PreGaloisCategory.IsConnected X] (x : X.V) [Fintype (G ⧸ (MulAction.stabilizer G x))] :
     X ≅ G ⧸ₐ MulAction.stabilizer G x :=
   haveI : MulAction.IsPretransitive G X.V := Action.pretransitive_of_isConnected G X
   let e : X.V ≃ G ⧸ MulAction.stabilizer G x :=
