@@ -134,7 +134,7 @@ variable (S : Type*) [AddMonoidWithOne R] [AddMonoidWithOne S] (p q : ℕ) [Char
 /-- The characteristic of the product of rings is the least common multiple of the
 characteristics of the two rings. -/
 instance Nat.lcm.charP [CharP S q] : CharP (R × S) (Nat.lcm p q) where
-  cast_eq_zero_iff' := by
+  cast_eq_zero_iff := by
     simp [Prod.ext_iff, CharP.cast_eq_zero_iff R p, CharP.cast_eq_zero_iff S q, Nat.lcm_dvd_iff]
 
 /-- The characteristic of the product of two rings of the same characteristic
@@ -151,10 +151,10 @@ instance Prod.charZero_of_right [CharZero S] : CharZero (R × S) where
 end Prod
 
 instance ULift.charP [AddMonoidWithOne R] (p : ℕ) [CharP R p] : CharP (ULift R) p where
-  cast_eq_zero_iff' n := Iff.trans ULift.ext_iff <| CharP.cast_eq_zero_iff R p n
+  cast_eq_zero_iff n := Iff.trans ULift.ext_iff <| CharP.cast_eq_zero_iff R p n
 
 instance MulOpposite.charP [AddMonoidWithOne R] (p : ℕ) [CharP R p] : CharP Rᵐᵒᵖ p where
-  cast_eq_zero_iff' n := MulOpposite.unop_inj.symm.trans <| CharP.cast_eq_zero_iff R p n
+  cast_eq_zero_iff n := MulOpposite.unop_inj.symm.trans <| CharP.cast_eq_zero_iff R p n
 
 section
 
@@ -186,7 +186,7 @@ namespace Fin
 
 /-- The characteristic of `F_p` is `p`. -/
 @[stacks 09FS "First part. We don't require `p` to be a prime in mathlib."]
-instance charP (n : ℕ) [NeZero n] : CharP (Fin n) n where cast_eq_zero_iff' _ := natCast_eq_zero
+instance charP (n : ℕ) [NeZero n] : CharP (Fin n) n where cast_eq_zero_iff _ := natCast_eq_zero
 
 end Fin
 

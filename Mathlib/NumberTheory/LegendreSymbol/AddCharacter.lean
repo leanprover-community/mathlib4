@@ -143,7 +143,7 @@ theorem zmodChar_apply {n : ℕ} [NeZero n] {ζ : C} (hζ : ζ ^ n = 1) (a : ZMo
 
 theorem zmodChar_apply' {n : ℕ} [NeZero n] {ζ : C} (hζ : ζ ^ n = 1) (a : ℕ) :
     zmodChar n hζ a = ζ ^ a := by
-  rw [pow_eq_pow_mod a hζ, zmodChar_apply, ZMod.val_natCast a]
+  rw [pow_eq_pow_mod a hζ, zmodChar_apply, ZMod.val_natCast]
 
 end ZModCharDef
 

@@ -137,6 +137,88 @@ open sets `U ∋ x` and `V ∋ f x` and a diffeomorphism `Φ : U → V` such tha
 def IsLocalDiffeomorphAt (f : M → N) (x : M) : Prop :=
   ∃ Φ : PartialDiffeomorph I J M N n, x ∈ Φ.source ∧ EqOn f Φ Φ.source
 
+lemma PartialDiffeomorph.isLocalDiffeomorphAt (φ : PartialDiffeomorph I J M N n)
+    {x : M} (hx : x ∈ φ.source) : IsLocalDiffeomorphAt I J n φ x :=
+  ⟨φ, hx, Set.eqOn_refl _ _⟩
+
+namespace IsLocalDiffeomorphAt
+
+variable {f : M → N} {x : M}
+
+variable {I I' J n}
+
+/-- An arbitrary choice of local inverse of `f` near `x`. -/
+noncomputable def localInverse (hf : IsLocalDiffeomorphAt I J n f x) :
+    PartialDiffeomorph J I N M n := (Classical.choose hf).symm
+
+lemma localInverse_open_source (hf : IsLocalDiffeomorphAt I J n f x) :
+    IsOpen hf.localInverse.source :=
+  PartialDiffeomorph.open_source _
+
+lemma localInverse_mem_source (hf : IsLocalDiffeomorphAt I J n f x) :
+    f x ∈ hf.localInverse.source := by
+  rw [(hf.choose_spec.2 hf.choose_spec.1)]
+  exact (Classical.choose hf).map_source hf.choose_spec.1
+
+lemma localInverse_mem_target (hf : IsLocalDiffeomorphAt I J n f x) :
+    x ∈ hf.localInverse.target :=
+  hf.choose_spec.1
+
+lemma contmdiffOn_localInverse (hf : IsLocalDiffeomorphAt I J n f x) :
+    ContMDiffOn J I n hf.localInverse hf.localInverse.source :=
+  hf.localInverse.contMDiffOn_toFun
+
+lemma localInverse_right_inv (hf : IsLocalDiffeomorphAt I J n f x) {y : N}
+    (hy : y ∈ hf.localInverse.source) : f (hf.localInverse y) = y := by
+  have : hf.localInverse y ∈ hf.choose.source := by
+    rw [← hf.choose.symm_target]
+    exact hf.choose.symm.map_source hy
+  rw [hf.choose_spec.2 this]
+  exact hf.choose.right_inv hy
+
+lemma localInverse_eqOn_right (hf : IsLocalDiffeomorphAt I J n f x) :
+    EqOn (f ∘ hf.localInverse) id hf.localInverse.source :=
+  fun _y hy ↦ hf.localInverse_right_inv hy
+
+lemma localInverse_eventuallyEq_right (hf : IsLocalDiffeomorphAt I J n f x) :
+    f ∘ hf.localInverse =ᶠ[nhds (f x)] id :=
+  Filter.eventuallyEq_of_mem
+    (hf.localInverse.open_source.mem_nhds hf.localInverse_mem_source)
+    hf.localInverse_eqOn_right
+
+lemma localInverse_left_inv (hf : IsLocalDiffeomorphAt I J n f x) {x' : M}
+    (hx' : x' ∈ hf.localInverse.target) : hf.localInverse (f x') = x' := by
+  rw [hf.choose_spec.2 (hf.choose.symm_target ▸ hx')]
+  exact hf.choose.left_inv hx'
+
+lemma localInverse_eqOn_left (hf : IsLocalDiffeomorphAt I J n f x) :
+    EqOn (hf.localInverse ∘ f) id hf.localInverse.target :=
+  fun _ hx ↦ hf.localInverse_left_inv hx
+
+lemma localInverse_eventuallyEq_left (hf : IsLocalDiffeomorphAt I J n f x) :
+    hf.localInverse ∘ f =ᶠ[nhds x] id :=
+  Filter.eventuallyEq_of_mem
+    (hf.localInverse.open_target.mem_nhds hf.localInverse_mem_target) hf.localInverse_eqOn_left
+
+lemma localInverse_isLocalDiffeomorphAt (hf : IsLocalDiffeomorphAt I J n f x) :
+    IsLocalDiffeomorphAt J I n (hf.localInverse) (f x) :=
+  hf.localInverse.isLocalDiffeomorphAt _ _ _ hf.localInverse_mem_source
+
+lemma localInverse_contMDiffOn (hf : IsLocalDiffeomorphAt I J n f x) :
+    ContMDiffOn J I n hf.localInverse hf.localInverse.source :=
+  hf.localInverse.contMDiffOn_toFun
+
+lemma localInverse_contMDiffAt (hf : IsLocalDiffeomorphAt I J n f x) :
+    ContMDiffAt J I n hf.localInverse (f x) :=
+  hf.localInverse_contMDiffOn.contMDiffAt
+    (hf.localInverse.open_source.mem_nhds hf.localInverse_mem_source)
+
+lemma localInverse_mdifferentiableAt (hf : IsLocalDiffeomorphAt I J n f x) (hn : 1 ≤ n) :
+    MDifferentiableAt J I hf.localInverse (f x) :=
+  hf.localInverse_contMDiffAt.mdifferentiableAt hn
+
+end IsLocalDiffeomorphAt
+
 /-- `f : M → N` is called a **`C^n` local diffeomorphism on *s*** iff it is a local diffeomorphism
 at each `x : s`. -/
 def IsLocalDiffeomorphOn (f : M → N) (s : Set M) : Prop :=

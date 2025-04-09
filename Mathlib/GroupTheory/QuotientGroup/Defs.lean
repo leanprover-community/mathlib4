@@ -53,6 +53,17 @@ protected def con : Con G where
 instance Quotient.group : Group (G ⧸ N) :=
   (QuotientGroup.con N).group
 
+/--
+The congruence relation defined by the kernel of a group homomorphism is equal to its kernel
+as a congruence relation.
+-/
+@[to_additive QuotientAddGroup.con_ker_eq_addConKer
+"The additive congruence relation defined by the kernel of an additive group homomorphism is
+equal to its kernel as an additive congruence relation."]
+theorem con_ker_eq_conKer (f : G →* M) : QuotientGroup.con f.ker = Con.ker f := by
+  ext
+  rw [QuotientGroup.con, Con.rel_mk, Setoid.comm', leftRel_apply, Con.ker_rel, MonoidHom.eq_iff]
+
 /-- The group homomorphism from `G` to `G/N`. -/
 @[to_additive "The additive group homomorphism from `G` to `G/N`."]
 def mk' : G →* G ⧸ N :=
@@ -150,17 +161,73 @@ theorem mk_zpow (a : G) (n : ℤ) : ((a ^ n : G) : Q) = (a : Q) ^ n :=
 
 @[to_additive (attr := simp)] lemma map_mk'_self : N.map (mk' N) = ⊥ := by aesop
 
+/--
+The subgroup defined by the class of `1` for a congruence relation on a group.
+-/
+@[to_additive
+"The `AddSubgroup` defined by the class of `0` for an additive congruence relation
+on an `AddGroup`."]
+protected def _root_.Con.subgroup (c : Con G) : Subgroup G where
+  carrier := { x | c x 1 }
+  one_mem' := c.refl 1
+  mul_mem' hx hy := by simpa using c.mul hx hy
+  inv_mem' h := by simpa using c.inv h
+
+@[to_additive (attr := simp)]
+theorem _root_.Con.mem_subgroup_iff {c : Con G} {x : G} :
+    x ∈ c.subgroup ↔ c x 1 := Iff.rfl
+
+@[to_additive]
+instance (c : Con G) : c.subgroup.Normal :=
+  ⟨fun x hx g ↦ by simpa using (c.mul (c.mul (c.refl g) hx) (c.refl g⁻¹))⟩
+
+@[to_additive (attr := simp)]
+theorem _root_.Con.subgroup_quotientGroupCon (H : Subgroup G) [H.Normal] :
+    (QuotientGroup.con H).subgroup = H := by
+  ext
+  simp [QuotientGroup.con, leftRel_apply]
+
+@[to_additive (attr := simp)]
+theorem con_subgroup (c : Con G) :
+    QuotientGroup.con c.subgroup = c := by
+  ext x y
+  rw [QuotientGroup.con, Con.rel_mk, leftRel_apply, Con.mem_subgroup_iff]
+  exact ⟨fun h ↦ by simpa using c.mul (c.refl x) (c.symm h),
+    fun h ↦ by simpa using c.mul (c.refl x⁻¹) (c.symm h)⟩
+
+/--
+The normal subgroups correspond to the congruence relations on a group.
+-/
+@[to_additive (attr := simps) AddSubgroup.orderIsoAddCon
+"The normal subgroups correspond to the additive congruence relations on an `AddGroup`."]
+def _root_.Subgroup.orderIsoCon :
+    { N : Subgroup G // N.Normal } ≃o Con G where
+  toFun N := letI : N.val.Normal := N.prop; QuotientGroup.con N
+  invFun c := ⟨c.subgroup, inferInstance⟩
+  left_inv := fun ⟨N, _⟩ ↦ Subtype.mk_eq_mk.mpr (Con.subgroup_quotientGroupCon N)
+  right_inv c := QuotientGroup.con_subgroup c
+  map_rel_iff' := by
+    simp only [QuotientGroup.con, Equiv.coe_fn_mk, Con.le_def, Con.rel_mk, leftRel_apply]
+    refine ⟨fun h x _ ↦ ?_, fun hle _ _ h ↦ hle h⟩
+    specialize @h 1 x
+    simp_all
+
+@[to_additive (attr := simp)]
+lemma con_le_iff {N M : Subgroup G} [N.Normal] [M.Normal] :
+    QuotientGroup.con N ≤ QuotientGroup.con M ↔ N ≤ M :=
+  (Subgroup.orderIsoCon.map_rel_iff (a := ⟨N, inferInstance⟩) (b := ⟨M, inferInstance⟩))
+
+@[to_additive (attr := gcongr)]
+lemma con_mono {N M : Subgroup G} [hN : N.Normal] [hM : M.Normal] (h : N ≤ M) :
+    QuotientGroup.con N ≤ QuotientGroup.con M :=
+  con_le_iff.mpr h
+
 /-- A group homomorphism `φ : G →* M` with `N ⊆ ker(φ)` descends (i.e. `lift`s) to a
 group homomorphism `G/N →* M`. -/
 @[to_additive "An `AddGroup` homomorphism `φ : G →+ M` with `N ⊆ ker(φ)` descends (i.e. `lift`s)
  to a group homomorphism `G/N →* M`."]
 def lift (φ : G →* M) (HN : N ≤ φ.ker) : Q →* M :=
-  (QuotientGroup.con N).lift φ fun x y h => by
-    simp only [QuotientGroup.con, leftRel_apply, Con.rel_mk] at h
-    rw [Con.ker_rel]
-    calc
-      φ x = φ (y * (x⁻¹ * y)⁻¹) := by rw [mul_inv_rev, inv_inv, mul_inv_cancel_left]
-      _ = φ y := by rw [φ.map_mul, HN (N.inv_mem h), mul_one]
+  (QuotientGroup.con N).lift φ <| con_ker_eq_conKer φ ▸ con_mono HN
 
 @[to_additive (attr := simp)]
 theorem lift_mk {φ : G →* M} (HN : N ≤ φ.ker) (g : G) : lift N φ HN (g : Q) = φ g :=
@@ -238,7 +305,7 @@ lemma preimage_image_coe (s : Set G) : ((↑) : G → Q) ⁻¹' ((↑) '' s) = N
     simp only [h, QuotientGroup.mk_div, div_self']
   · rintro ⟨a, ha, b, hb, rfl⟩
     refine ⟨b, hb, ?_⟩
-    simpa only [QuotientGroup.mk_mul, self_eq_mul_left, QuotientGroup.eq_one_iff]
+    simpa only [QuotientGroup.mk_mul, right_eq_mul, QuotientGroup.eq_one_iff]
 
 @[to_additive]
 lemma image_coe_inj {s t : Set G} : ((↑) : G → Q) '' s = ((↑) : G → Q) '' t ↔ ↑N * s = N * t := by

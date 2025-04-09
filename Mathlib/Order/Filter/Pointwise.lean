@@ -3,11 +3,11 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Action.Pointwise.Set
-import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.Order.Group.OrderIso
+import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Ring.Defs
-import Mathlib.Algebra.SMulWithZero
 import Mathlib.Order.Filter.AtTopBot.Map
 import Mathlib.Order.Filter.Finite
 import Mathlib.Order.Filter.NAry
@@ -232,7 +232,8 @@ theorem inv_le_self : f⁻¹ ≤ f ↔ f⁻¹ = f :=
 end InvolutiveInv
 
 @[to_additive (attr := simp)]
-lemma inv_atTop {G : Type*} [OrderedCommGroup G] : (atTop : Filter G)⁻¹ = atBot :=
+lemma inv_atTop {G : Type*} [CommGroup G] [PartialOrder G] [IsOrderedMonoid G] :
+    (atTop : Filter G)⁻¹ = atBot :=
   (OrderIso.inv G).map_atTop
 
 /-! ### Filter addition/multiplication -/

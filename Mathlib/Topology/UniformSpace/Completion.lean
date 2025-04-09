@@ -175,7 +175,7 @@ theorem denseRange_pureCauchy : DenseRange (pureCauchy : α → CauchyFilter α)
       mem_prod_iff.mpr
         ⟨t, ht, { y : α | (x, y) ∈ t' }, h <| mk_mem_prod hx hx,
           fun ⟨a, b⟩ ⟨(h₁ : a ∈ t), (h₂ : (x, b) ∈ t')⟩ =>
-          ht'₂ <| prod_mk_mem_compRel (@h (a, x) ⟨h₁, hx⟩) h₂⟩
+          ht'₂ <| prodMk_mem_compRel (@h (a, x) ⟨h₁, hx⟩) h₂⟩
     ⟨x, ht''₂ <| by dsimp [gen]; exact this⟩
   simp only [closure_eq_cluster_pts, ClusterPt, nhds_eq_uniformity, lift'_inf_principal_eq,
     Set.inter_comm _ (range pureCauchy), mem_setOf_eq]
@@ -191,9 +191,6 @@ theorem isDenseInducing_pureCauchy : IsDenseInducing (pureCauchy : α → Cauchy
 
 theorem isDenseEmbedding_pureCauchy : IsDenseEmbedding (pureCauchy : α → CauchyFilter α) :=
   isUniformEmbedding_pureCauchy.isDenseEmbedding denseRange_pureCauchy
-
-@[deprecated (since := "2024-09-30")]
-alias denseEmbedding_pureCauchy := isDenseEmbedding_pureCauchy
 
 theorem nonempty_cauchyFilter_iff : Nonempty (CauchyFilter α) ↔ Nonempty α := by
   constructor <;> rintro ⟨c⟩
@@ -387,9 +384,6 @@ instance separableSpace_completion [SeparableSpace α] : SeparableSpace (Complet
 
 theorem isDenseEmbedding_coe [T0Space α] : IsDenseEmbedding ((↑) : α → Completion α) :=
   { isDenseInducing_coe with injective := separated_pureCauchy_injective }
-
-@[deprecated (since := "2024-09-30")]
-alias denseEmbedding_coe := isDenseEmbedding_coe
 
 theorem denseRange_coe₂ :
     DenseRange fun x : α × β => ((x.1 : Completion α), (x.2 : Completion β)) :=

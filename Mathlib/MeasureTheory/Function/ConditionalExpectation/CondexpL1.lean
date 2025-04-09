@@ -512,7 +512,7 @@ theorem aestronglyMeasurable_condExpL1CLM (f : α →₁[μ] F') :
         condExpL1CLM F' hm μ ⁻¹' {f | AEStronglyMeasurable[m] f μ} := rfl
     rw [this]
     refine IsClosed.preimage (condExpL1CLM F' hm μ).continuous ?_
-    exact isClosed_aeStronglyMeasurable' hm
+    exact isClosed_aestronglyMeasurable hm
 
 @[deprecated (since := "2025-01-24")]
 alias aestronglyMeasurable'_condExpL1CLM := aestronglyMeasurable_condExpL1CLM

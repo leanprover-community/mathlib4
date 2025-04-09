@@ -5,6 +5,7 @@ Authors: Reid Barton
 -/
 import Mathlib.Topology.Bases
 import Mathlib.Topology.DenseEmbedding
+import Mathlib.Topology.Connected.TotallyDisconnected
 
 /-! # Stone-Čech compactification
 
@@ -157,9 +158,6 @@ theorem isDenseInducing_pure : @IsDenseInducing _ _ ⊥ _ (pure : α → Ultrafi
 theorem isDenseEmbedding_pure : @IsDenseEmbedding _ _ ⊥ _ (pure : α → Ultrafilter α) :=
   letI : TopologicalSpace α := ⊥
   { isDenseInducing_pure with injective := ultrafilter_pure_injective }
-
-@[deprecated (since := "2024-09-30")]
-alias denseEmbedding_pure := isDenseEmbedding_pure
 
 end Embedding
 

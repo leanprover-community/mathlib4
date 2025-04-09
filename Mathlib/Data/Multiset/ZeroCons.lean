@@ -186,7 +186,7 @@ theorem exists_cons_of_mem {s : Multiset α} {a : α} : a ∈ s → ∃ t, s = a
 
 @[simp]
 theorem not_mem_zero (a : α) : a ∉ (0 : Multiset α) :=
-  List.not_mem_nil _
+  List.not_mem_nil
 
 theorem eq_zero_of_forall_not_mem {s : Multiset α} : (∀ x, x ∉ s) → s = 0 :=
   Quot.inductionOn s fun l H => by rw [eq_nil_iff_forall_not_mem.mpr H]; rfl
@@ -284,7 +284,7 @@ section Subset
 variable {s : Multiset α} {a : α}
 
 @[simp]
-theorem zero_subset (s : Multiset α) : 0 ⊆ s := fun a => (not_mem_nil a).elim
+theorem zero_subset (s : Multiset α) : 0 ⊆ s := fun _ => not_mem_nil.elim
 
 theorem subset_cons (s : Multiset α) (a : α) : s ⊆ a ::ₘ s := fun _ => mem_cons_of_mem
 
@@ -555,9 +555,10 @@ theorem card_eq_card_of_rel {r : α → β → Prop} {s : Multiset α} {t : Mult
 
 theorem exists_mem_of_rel_of_mem {r : α → β → Prop} {s : Multiset α} {t : Multiset β}
     (h : Rel r s t) : ∀ {a : α}, a ∈ s → ∃ b ∈ t, r a b := by
-  induction' h with x y s t hxy _hst ih
-  · simp
-  · intro a ha
+  induction h with
+  | zero => simp
+  | @cons x y s t hxy _ ih =>
+    intro a ha
     rcases mem_cons.1 ha with ha | ha
     · exact ⟨y, mem_cons_self _ _, ha.symm ▸ hxy⟩
     · rcases ih ha with ⟨b, hbt, hab⟩
@@ -580,9 +581,10 @@ theorem rel_of_forall {m1 m2 : Multiset α} {r : α → α → Prop} (h : ∀ a 
 protected nonrec
 theorem Rel.trans (r : α → α → Prop) [IsTrans α r] {s t u : Multiset α} (r1 : Rel r s t)
     (r2 : Rel r t u) : Rel r s u := by
-  induction' t using Multiset.induction_on with x t ih generalizing s u
-  · rw [rel_zero_right.mp r1, rel_zero_left.mp r2, rel_zero_left]
-  · obtain ⟨a, as, ha1, ha2, rfl⟩ := rel_cons_right.mp r1
+  induction t using Multiset.induction_on generalizing s u with
+  | empty => rw [rel_zero_right.mp r1, rel_zero_left.mp r2, rel_zero_left]
+  | cons x t ih =>
+    obtain ⟨a, as, ha1, ha2, rfl⟩ := rel_cons_right.mp r1
     obtain ⟨b, bs, hb1, hb2, rfl⟩ := rel_cons_left.mp r2
     exact Multiset.Rel.cons (_root_.trans ha1 hb1) (ih ha2 hb2)
 
@@ -591,5 +593,28 @@ end Rel
 @[simp]
 theorem pairwise_zero (r : α → α → Prop) : Multiset.Pairwise r 0 :=
   ⟨[], rfl, List.Pairwise.nil⟩
+
+section Nodup
+
+variable {s : Multiset α} {a : α}
+
+@[simp]
+theorem nodup_zero : @Nodup α 0 :=
+  Pairwise.nil
+
+@[simp]
+theorem nodup_cons {a : α} {s : Multiset α} : Nodup (a ::ₘ s) ↔ a ∉ s ∧ Nodup s :=
+  Quot.induction_on s fun _ => List.nodup_cons
+
+theorem Nodup.cons (m : a ∉ s) (n : Nodup s) : Nodup (a ::ₘ s) :=
+  nodup_cons.2 ⟨m, n⟩
+
+theorem Nodup.of_cons (h : Nodup (a ::ₘ s)) : Nodup s :=
+  (nodup_cons.1 h).2
+
+theorem Nodup.not_mem (h : Nodup (a ::ₘ s)) : a ∉ s :=
+  (nodup_cons.1 h).1
+
+end Nodup
 
 end Multiset

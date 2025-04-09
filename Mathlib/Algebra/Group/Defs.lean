@@ -3,10 +3,9 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
+import Mathlib.Algebra.Notation.Defs
 import Mathlib.Data.Int.Notation
 import Mathlib.Data.Nat.BinaryRec
-import Mathlib.Data.One.Defs
-import Mathlib.Algebra.Group.Operations
 import Mathlib.Logic.Function.Defs
 import Mathlib.Tactic.Simps.Basic
 import Mathlib.Tactic.OfNat
@@ -58,6 +57,12 @@ def leftMul : G → G → G := fun g : G ↦ fun x : G ↦ g * x
 /-- `rightMul g` denotes right multiplication by `g` -/
 @[to_additive "`rightAdd g` denotes right addition by `g`"]
 def rightMul : G → G → G := fun g : G ↦ fun x : G ↦ x * g
+
+attribute [deprecated HMul.hMul "Use (g * ·) instead" (since := "2025-04-08")] leftMul
+attribute [deprecated HAdd.hAdd "Use (g + ·) instead" (since := "2025-04-08")] leftAdd
+
+attribute [deprecated HMul.hMul "Use (· * g) instead" (since := "2025-04-08")] rightMul
+attribute [deprecated HAdd.hAdd "Use (· + g) instead" (since := "2025-04-08")] rightAdd
 
 /-- A mixin for left cancellative multiplication. -/
 class IsLeftCancelMul (G : Type u) [Mul G] : Prop where
@@ -458,7 +463,7 @@ def nsmulRec' {M : Type*} [Zero M] [Add M] : ℕ → M → M
 attribute [to_additive existing] npowRec'
 
 @[to_additive]
-theorem npowRec'_succ {M : Type*} [Semigroup M] [One M] {k : ℕ} (_ : k ≠ 0) (m : M) :
+theorem npowRec'_succ {M : Type*} [Mul M] [One M] {k : ℕ} (_ : k ≠ 0) (m : M) :
     npowRec' (k + 1) m = npowRec' k m * m :=
   match k with
   | _ + 1 => rfl
