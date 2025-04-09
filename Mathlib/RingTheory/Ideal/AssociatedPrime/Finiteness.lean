@@ -14,6 +14,10 @@ import Mathlib.Algebra.Module.Torsion
 import Mathlib.Order.CompletePartialOrder
 import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
 
+/-!
+# The finiteness of associated primes
+-/
+
 section ModuleCat
 
 universe u v
