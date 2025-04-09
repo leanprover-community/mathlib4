@@ -869,7 +869,7 @@ theorem _root_.MvPowerSeries.monomial_one_eq
     MvPowerSeries.monomial R e (1 : R) =
       e.prod fun s n ↦ (MvPowerSeries.X s) ^ n := by
   simp only [← coe_X, ← coe_pow, ← coe_monomial, monomial_eq, map_one, one_mul]
-  simp only [← coeToMvPowerSeries.ringHom_apply, ← map_finsupp_prod]
+  simp only [← coeToMvPowerSeries.ringHom_apply, ← map_finsuppProd]
 
 section Algebra
 
@@ -897,7 +897,7 @@ theorem _root_.MvPowerSeries.prod_smul_X_eq_smul_monomial_one
       (MvPowerSeries.C σ R) ((algebraMap A R) a) * f := by
       rw [← MvPowerSeries.smul_eq_C_mul, IsScalarTower.algebraMap_smul]
     simp only [mul_pow, Finsupp.prod_mul, ← map_pow , ← MvPowerSeries.monomial_one_eq, this]
-    simp only [map_finsupp_prod, map_pow]
+    simp only [map_finsuppProd, map_pow]
   · intro x _
     rw [algebra_compatible_smul R, MvPowerSeries.smul_eq_C_mul]
 
