@@ -71,11 +71,9 @@ instance : FloorSemiring ℕ where
   ceil := id
   floor_of_neg ha := (Nat.not_lt_zero _ ha).elim
   gc_floor _ := by
-    rw [Nat.cast_id]
-    rfl
+    rw [Nat.cast_id, id_def]
   gc_ceil n a := by
-    rw [Nat.cast_id]
-    rfl
+    rw [Nat.cast_id, id_def]
 
 namespace Nat
 
@@ -153,11 +151,9 @@ instance : FloorRing ℤ where
   floor := id
   ceil := id
   gc_coe_floor a b := by
-    rw [Int.cast_id]
-    rfl
+    rw [Int.cast_id, id_def]
   gc_ceil_coe a b := by
-    rw [Int.cast_id]
-    rfl
+    rw [Int.cast_id, id_def]
 
 /-- A `FloorRing` constructor from the `floor` function alone. -/
 def FloorRing.ofFloor (α) [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (floor : α → ℤ)
@@ -331,8 +327,8 @@ private theorem nat_ceil_pos [Semiring α] [LinearOrder α] [FloorSemiring α] {
 def evalNatCeil : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(@Nat.ceil $α' $ir $io $j $a) =>
-    let _i : Q(LinearOrder $α') ← synthInstanceQ (u := u_1) _
-    let _i : Q(IsStrictOrderedRing $α') ← synthInstanceQ (u := 0) _
+    let _i ← synthInstanceQ q(LinearOrder $α')
+    let _i ← synthInstanceQ q(IsStrictOrderedRing $α')
     assertInstancesCommute
     match ← core q(inferInstance) q(inferInstance) a with
     | .positive pa =>
@@ -354,7 +350,7 @@ def evalIntCeil : PositivityExt where eval {u α} _zα _pα e := do
         assertInstancesCommute
         pure (.positive q(int_ceil_pos (α := $α') $pa))
     | .nonnegative pa =>
-        let _i : Q(IsStrictOrderedRing $α') ← synthInstanceQ (u := 0) _
+        let _i ← synthInstanceQ q(IsStrictOrderedRing $α')
         assertInstancesCommute
         pure (.nonnegative q(Int.ceil_nonneg (α := $α') $pa))
     | _ => pure .none

@@ -16,10 +16,11 @@ This file constructs an extension of `T` to integrable simple functions, which a
 indicators of measurable sets with finite measure, then to integrable functions, which are limits of
 integrable simple functions.
 
-The main result is a continuous linear map `(α →₁[μ] E) →L[ℝ] F`. This extension process is used to
-define the Bochner integral in the `Mathlib.MeasureTheory.Integral.Bochner` file and the conditional
-expectation of an integrable function in
-`Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL1`.
+The main result is a continuous linear map `(α →₁[μ] E) →L[ℝ] F`.
+This extension process is used to define the Bochner integral
+in the `Mathlib.MeasureTheory.Integral.Bochner.Basic` file
+and the conditional expectation of an integrable function
+in `Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL1`.
 
 ## Main Definitions
 
@@ -1162,9 +1163,12 @@ theorem setToFun_undef (hT : DominatedFinMeasAdditive μ T C) (hf : ¬Integrable
     setToFun μ T hT f = 0 :=
   dif_neg hf
 
-theorem setToFun_non_aEStronglyMeasurable (hT : DominatedFinMeasAdditive μ T C)
+theorem setToFun_non_aestronglyMeasurable (hT : DominatedFinMeasAdditive μ T C)
     (hf : ¬AEStronglyMeasurable f μ) : setToFun μ T hT f = 0 :=
   setToFun_undef hT (not_and_of_not_left _ hf)
+
+@[deprecated (since := "2025-04-09")]
+alias setToFun_non_aEStronglyMeasurable := setToFun_non_aestronglyMeasurable
 
 theorem setToFun_congr_left (hT : DominatedFinMeasAdditive μ T C)
     (hT' : DominatedFinMeasAdditive μ T' C') (h : T = T') (f : α → E) :

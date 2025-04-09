@@ -321,6 +321,16 @@ theorem _root_.AlgEquiv.map_det [Algebra R S] {T : Type z} [CommRing T] [Algebra
     (f : S ≃ₐ[R] T) (M : Matrix n n S) : f M.det = Matrix.det (f.mapMatrix M) :=
   f.toAlgHom.map_det _
 
+@[norm_cast]
+theorem _root_.Int.cast_det (M : Matrix n n ℤ) :
+    (M.det : R) = (M.map fun x ↦ (x : R)).det :=
+  Int.castRingHom R |>.map_det M
+
+@[norm_cast]
+theorem _root_.Rat.cast_det {F : Type*} [Field F] [CharZero F] (M : Matrix n n ℚ) :
+    (M.det : F) = (M.map fun x ↦ (x : F)).det :=
+  Rat.castHom F |>.map_det M
+
 end HomMap
 
 @[simp]

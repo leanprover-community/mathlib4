@@ -44,13 +44,16 @@ section Semiring
 
 /-- The rank of a module as a natural number.
 
-Defined by convention to be `0` if the space has infinite rank.
+For a finite-dimensional vector space `V` over a field `k`, `Module.finrank k V` is equal to
+the dimension of `V` over `k`.
 
-For a vector space `M` over a field `R`, this is the same as the finite dimension
-of `M` over `R`.
+For a general module `M` over a ring `R`, `Module.finrank R M` is defined to be the supremum of the
+cardinalities of the `R`-linearly independent subsets of `M`, if this supremum is finite. It is
+defined by convention to be `0` if this supremum is infinite. See `Module.rank` for a
+cardinal-valued version where infinite rank modules have rank an infinite cardinal.
 
-Note that it is possible to have `M` with `¬(Module.Finite R M)` but `finrank R M ≠ 0`, for example
-`ℤ × ℚ/ℤ` has `finrank` equal to `1`. -/
+Note that if `R` is not a field then there can exist modules `M` with `¬(Module.Finite R M)` but
+`finrank R M ≠ 0`. For example `ℤ × ℚ/ℤ` has `finrank` equal to `1` over `ℤ`. -/
 noncomputable def finrank (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M] : ℕ :=
   Cardinal.toNat (Module.rank R M)
 
