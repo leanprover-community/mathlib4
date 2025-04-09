@@ -104,12 +104,6 @@ theorem map_cocompact (h : X ≃ₜ Y) : map h (cocompact X) = cocompact Y := by
 protected theorem compactSpace [CompactSpace X] (h : X ≃ₜ Y) : CompactSpace Y where
   isCompact_univ := h.symm.isCompact_preimage.2 isCompact_univ
 
-protected theorem t0Space [T0Space X] (h : X ≃ₜ Y) : T0Space Y := h.symm.isEmbedding.t0Space
-protected theorem t1Space [T1Space X] (h : X ≃ₜ Y) : T1Space Y := h.symm.isEmbedding.t1Space
-protected theorem t2Space [T2Space X] (h : X ≃ₜ Y) : T2Space Y := h.symm.isEmbedding.t2Space
-protected theorem t25Space [T25Space X] (h : X ≃ₜ Y) : T25Space Y := h.symm.isEmbedding.t25Space
-protected theorem t3Space [T3Space X] (h : X ≃ₜ Y) : T3Space Y := h.symm.isEmbedding.t3Space
-
 theorem isDenseEmbedding (h : X ≃ₜ Y) : IsDenseEmbedding h :=
   { h.isEmbedding with dense := h.surjective.denseRange }
 

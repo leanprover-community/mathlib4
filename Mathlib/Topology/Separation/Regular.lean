@@ -343,6 +343,9 @@ theorem Topology.IsEmbedding.t25Space [TopologicalSpace Y] [T25Space Y] {f : X �
 @[deprecated (since := "2024-10-26")]
 alias Embedding.t25Space := IsEmbedding.t25Space
 
+protected theorem Homeomorph.t25Space [TopologicalSpace Y] [T25Space X] (h : X ≃ₜ Y) : T25Space Y :=
+  h.symm.isEmbedding.t25Space
+
 instance Subtype.instT25Space [T25Space X] {p : X → Prop} : T25Space {x // p x} :=
   IsEmbedding.subtypeVal.t25Space
 
@@ -375,6 +378,9 @@ protected theorem Topology.IsEmbedding.t3Space [TopologicalSpace Y] [T3Space Y] 
 
 @[deprecated (since := "2024-10-26")]
 alias Embedding.t3Space := IsEmbedding.t3Space
+
+protected theorem Homeomorph.t3Space [TopologicalSpace Y] [T3Space X] (h : X ≃ₜ Y) : T3Space Y :=
+  h.symm.isEmbedding.t3Space
 
 instance Subtype.t3Space [T3Space X] {p : X → Prop} : T3Space (Subtype p) :=
   IsEmbedding.subtypeVal.t3Space
