@@ -116,7 +116,7 @@ lemma finrank_rootSpan_map_polarization_eq_finrank_corootSpan :
     (LinearMap.range (P.Polarization.domRestrict P.rootSpan))
     (smul_right_injective N h_ne)
     fun _ hx => ?_
-  obtain ⟨c, hc⟩ := (mem_span_range_iff_exists_fun R).mp hx
+  obtain ⟨c, hc⟩ := (Submodule.mem_span_range_iff_exists_fun R).mp hx
   rw [← hc, Finset.smul_sum]
   simp_rw [smul_smul, mul_comm, ← smul_smul]
   exact Submodule.sum_smul_mem (LinearMap.range (P.Polarization.domRestrict P.rootSpan)) c

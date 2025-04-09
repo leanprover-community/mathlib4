@@ -170,9 +170,9 @@ alias lexOrder_mul_ge := le_lexOrder_mul
 theorem lexOrder_mul [NoZeroDivisors R] (φ ψ : MvPowerSeries σ R) :
     lexOrder (φ * ψ) = lexOrder φ + lexOrder ψ := by
   by_cases hφ : φ = 0
-  · simp only [hφ, zero_mul, lexOrder_zero, top_add ψ.lexOrder] -- should be fixed in #20676
+  · simp only [hφ, zero_mul, lexOrder_zero, top_add]
   by_cases hψ : ψ = 0
-  · simp only [hψ, mul_zero, lexOrder_zero, add_top φ.lexOrder] -- should be fixed in #20676
+  · simp only [hψ, mul_zero, lexOrder_zero, add_top]
   rcases exists_finsupp_eq_lexOrder_of_ne_zero hφ with ⟨p, hp⟩
   rcases exists_finsupp_eq_lexOrder_of_ne_zero hψ with ⟨q, hq⟩
   apply le_antisymm _ (lexOrder_mul_ge φ ψ)

@@ -540,8 +540,8 @@ partial def applyProof (g : MVarId) (Γ : NameMap Expr) (p : Proof) : MetaM Unit
   | .andIntro .and p q => do
     let A ← mkFreshExprMVarQ q(Prop)
     let B ← mkFreshExprMVarQ q(Prop)
-    let t₁ ← mkFreshExprMVarQ (u := .zero) A
-    let t₂ ← mkFreshExprMVarQ (u := .zero) B
+    let t₁ ← mkFreshExprMVarQ q($A)
+    let t₂ ← mkFreshExprMVarQ q($B)
     g.assignIfDefeq q(And.intro $t₁ $t₂)
     applyProof t₁.mvarId! Γ p
     applyProof t₂.mvarId! Γ q
@@ -565,20 +565,20 @@ partial def applyProof (g : MVarId) (Γ : NameMap Expr) (p : Proof) : MetaM Unit
     let A ← mkFreshExprMVarQ q(Prop)
     let B ← mkFreshExprMVarQ q(Prop)
     let t₁ ← mkFreshExprMVarQ q($A → $B)
-    let t₂ ← mkFreshExprMVarQ (u := .zero) A
+    let t₂ ← mkFreshExprMVarQ q($A)
     g.assignIfDefeq q($t₁ $t₂)
     applyProof t₁.mvarId! Γ p
     applyProof t₂.mvarId! Γ q
   | .orInL p => do
     let A ← mkFreshExprMVarQ q(Prop)
     let B ← mkFreshExprMVarQ q(Prop)
-    let t ← mkFreshExprMVarQ (u := .zero) A
+    let t ← mkFreshExprMVarQ q($A)
     g.assignIfDefeq q(@Or.inl $A $B $t)
     applyProof t.mvarId! Γ p
   | .orInR p => do
     let A ← mkFreshExprMVarQ q(Prop)
     let B ← mkFreshExprMVarQ q(Prop)
-    let t ← mkFreshExprMVarQ (u := .zero) B
+    let t ← mkFreshExprMVarQ q($B)
     g.assignIfDefeq q(@Or.inr $A $B $t)
     applyProof t.mvarId! Γ p
   | .orElim' p x p₁ p₂ => do

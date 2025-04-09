@@ -359,10 +359,22 @@ instance isJointlySurjectivePreserving (P : MorphismProperty Scheme.{u}) :
     obtain ⟨a, b, h⟩ := Pullback.exists_preimage_pullback x y hxy
     use a
 
+end Scheme
+
+namespace Surjective
+
 instance : MorphismProperty.IsStableUnderBaseChange @Surjective := by
   refine .mk' ?_
   introv hg
-  simp only [surjective_iff, ← Set.range_eq_univ, Pullback.range_fst] at hg ⊢
+  simp only [surjective_iff, ← Set.range_eq_univ, Scheme.Pullback.range_fst] at hg ⊢
   rw [hg, Set.preimage_univ]
 
-end AlgebraicGeometry.Scheme
+instance {X Y Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) [Surjective g] :
+    Surjective (pullback.fst f g) :=
+  MorphismProperty.pullback_fst _ _ inferInstance
+
+instance {X Y Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) [Surjective f] :
+    Surjective (pullback.snd f g) :=
+  MorphismProperty.pullback_snd _ _ inferInstance
+
+end AlgebraicGeometry.Surjective

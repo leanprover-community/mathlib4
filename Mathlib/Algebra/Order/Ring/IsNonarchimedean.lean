@@ -50,8 +50,8 @@ theorem nmul_le {F α : Type*} [NonAssocSemiring α] [FunLike F α R] [ZeroHomCl
 lemma apply_natCast_le_one_of_isNonarchimedean {F α : Type*} [AddMonoidWithOne α] [FunLike F α R]
     [ZeroHomClass F α R] [NonnegHomClass F α R] [OneHomClass F α R] {f : F}
     (hna : IsNonarchimedean f) {n : ℕ} : f n ≤ 1 := by
-  rw [← nsmul_one n]
-  exact le_trans (nsmul_le hna) (le_of_eq (map_one f))
+  rw [← nsmul_one n, ← map_one f]
+  exact nsmul_le hna
 
 /-- If `f` is a nonarchimedean additive group seminorm on `α` with `f 1 = 1`, then for every `n : ℤ`
   we have `f n ≤ 1`. -/
@@ -66,7 +66,7 @@ lemma add_eq_right_of_lt {F α : Type*} [AddGroup α] [FunLike F α R]
     [AddGroupSeminormClass F α R] {f : F} (hna : IsNonarchimedean f) {x y : α}
     (h_lt : f x < f y) : f (x + y) = f y := by
   by_contra! h
-  have h1 : f (x + y) ≤ f y := le_trans (hna x y) (le_of_eq <| max_eq_right_of_lt h_lt)
+  have h1 : f (x + y) ≤ f y := (hna x y).trans_eq (max_eq_right_of_lt h_lt)
   apply lt_irrefl (f y)
   calc
     f y = f (-x + (x + y)) := by simp
@@ -80,7 +80,7 @@ lemma add_eq_left_of_lt {F α : Type*} [AddGroup α] [FunLike F α R]
     [AddGroupSeminormClass F α R] {f : F} (hna : IsNonarchimedean f) {x y : α}
     (h_lt : f y < f x) : f (x + y) = f x := by
   by_contra! h
-  have h1 : f (x + y) ≤ f x := le_trans (hna x y) (le_of_eq <| max_eq_left_of_lt h_lt)
+  have h1 : f (x + y) ≤ f x := (hna x y).trans_eq (max_eq_left_of_lt h_lt)
   apply lt_irrefl (f x)
   calc
     f x = f (x + y + -y) := by simp
@@ -124,7 +124,7 @@ omit [Semiring R] in
   `t : Finset β`, we can always find `b : β` belonging to `t` such that `f (t.sum g) ≤ f (g b)` . -/
 theorem finset_image_add_of_nonempty {α β : Type*} [AddCommMonoid α] [Nonempty β] {f : α → R}
     (hna : IsNonarchimedean f) (g : β → α) {t : Finset β} (ht : t.Nonempty) :
-    ∃ b : β, (b ∈ t) ∧ f (t.sum g) ≤ f (g b) := by
+    ∃ b ∈ t, f (t.sum g) ≤ f (g b) := by
   apply multiset_image_add_of_nonempty hna
   simp_all [Finset.nonempty_iff_ne_empty]
 
@@ -180,7 +180,7 @@ theorem finset_powerset_image_add [IsStrictOrderedRing R]
 
 omit [Semiring R] in
 open Finset in
-/-- Ultrametric inequality with `Finset.Sum`. -/
+/-- Ultrametric inequality with `Finset.sum`. -/
 lemma apply_sum_le_sup_of_isNonarchimedean {α β : Type*} [AddCommMonoid α] {f : α → R}
     (nonarch : IsNonarchimedean f) {s : Finset β} (hnonempty : s.Nonempty) {l : β → α} :
     f (∑ i ∈ s, l i) ≤ s.sup' hnonempty fun i => f (l i) := by

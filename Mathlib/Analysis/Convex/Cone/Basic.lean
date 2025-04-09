@@ -50,9 +50,9 @@ section Definitions
 variable (𝕜 E)
 variable [Semiring 𝕜] [PartialOrder 𝕜]
 
+-- TODO: remove `[IsOrderedRing 𝕜]`.
 /-- A convex cone is a subset `s` of a `𝕜`-module such that `a • x + b • y ∈ s` whenever `a, b > 0`
 and `x, y ∈ s`. -/
-@[nolint unusedArguments]
 structure ConvexCone [IsOrderedRing 𝕜] [AddCommMonoid E] [SMul 𝕜 E] where
   /-- The **carrier set** underlying this cone: the set of points contained in it -/
   carrier : Set E
@@ -347,7 +347,7 @@ theorem Blunt.salient {S : ConvexCone 𝕜 E} : S.Blunt → S.Salient := by
 /-- A pointed convex cone defines a preorder. -/
 def toPreorder (h₁ : S.Pointed) : Preorder E where
   le x y := y - x ∈ S
-  le_refl x := by change x - x ∈ S; rw [sub_self x]; exact h₁
+  le_refl x := by rw [sub_self x]; exact h₁
   le_trans x y z xy zy := by simpa using add_mem S zy xy
 
 /-- A pointed and salient cone defines a partial order. -/

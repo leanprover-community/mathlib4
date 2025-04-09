@@ -4,7 +4,7 @@ import Mathlib.Data.Real.Sqrt
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
-import Mathlib.MeasureTheory.Integral.Bochner
+import Mathlib.MeasureTheory.Integral.Bochner.Basic
 import Mathlib.Topology.Algebra.InfiniteSum.Order
 
 /-! # Tests for the `positivity` tactic
@@ -394,7 +394,7 @@ end Integral
 /-! ## Infinite Sums -/
 
 example (f : ℕ → ℝ) : 0 ≤ ∑' n, f n ^ 2 := by positivity
-example  (f : ℕ → ℝ≥0) (c : ℝ) (hc : 0 < c) : 0 ≤ ∑' n, c * f n := by positivity
+example (f : ℕ → ℝ≥0) (c : ℝ) (hc : 0 < c) : 0 ≤ ∑' n, c * f n := by positivity
 example [Field α] [LinearOrder α] [IsStrictOrderedRing α]
     [TopologicalSpace α] [OrderClosedTopology α] (f : ℚ → α) :
     0 ≤ ∑' q, (f q)^2 := by

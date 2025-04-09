@@ -299,6 +299,9 @@ instance : FunLike (α →*o β) α β where
     obtain ⟨⟨⟨_, _⟩⟩, _⟩ := g
     congr
 
+initialize_simps_projections OrderAddMonoidHom (toFun → apply, -toAddMonoidHom)
+initialize_simps_projections OrderMonoidHom (toFun → apply, -toMonoidHom)
+
 @[to_additive]
 instance : OrderHomClass (α →*o β) α β where
   map_rel f _ _ h := f.monotone' h
@@ -645,6 +648,97 @@ theorem toMulEquiv_eq_coe (f : α ≃*o β) : f.toMulEquiv = f :=
 theorem toOrderIso_eq_coe (f : α ≃*o β) : f.toOrderIso = f :=
   rfl
 
+/-- The inverse of an isomorphism is an isomorphism. -/
+@[to_additive (attr := symm) "The inverse of an order isomorphism is an order isomorphism."]
+def symm (f : α ≃*o β) : β ≃*o α :=
+  ⟨f.toMulEquiv.symm, f.toOrderIso.symm.map_rel_iff⟩
+
+/-- See Note [custom simps projection]. -/
+@[to_additive "See Note [custom simps projection]."]
+def Simps.apply (h : α ≃*o β) : α → β :=
+  h
+
+/-- See Note [custom simps projection] -/
+@[to_additive "See Note [custom simps projection]."]
+def Simps.symm_apply (h : α ≃*o β) : β → α :=
+  h.symm
+
+initialize_simps_projections OrderAddMonoidIso (toFun → apply, invFun → symm_apply)
+initialize_simps_projections OrderMonoidIso (toFun → apply, invFun → symm_apply)
+
+@[to_additive]
+theorem invFun_eq_symm {f : α ≃*o β} : f.invFun = f.symm := rfl
+
+/-- `simp`-normal form of `invFun_eq_symm`. -/
+@[to_additive (attr := simp)]
+theorem coe_toEquiv_symm (f : α ≃*o β) : ((f : α ≃ β).symm : β → α) = f.symm := rfl
+
+@[to_additive (attr := simp)]
+theorem equivLike_inv_eq_symm (f : α ≃*o β) : EquivLike.inv f = f.symm := rfl
+
+@[to_additive (attr := simp)]
+theorem toEquiv_symm (f : α ≃*o β) : (f.symm : β ≃ α) = (f : α ≃ β).symm := rfl
+
+@[to_additive (attr := simp)]
+theorem symm_symm (f : α ≃*o β) : f.symm.symm = f := rfl
+
+@[to_additive]
+theorem symm_bijective : Function.Bijective (symm : (α ≃*o β) → β ≃*o α) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
+@[to_additive (attr := simp)]
+theorem refl_symm : (OrderMonoidIso.refl α).symm = .refl α := rfl
+
+/-- `e.symm` is a right inverse of `e`, written as `e (e.symm y) = y`. -/
+@[to_additive (attr := simp) "`e.symm` is a right inverse of `e`, written as `e (e.symm y) = y`."]
+theorem apply_symm_apply (e : α ≃*o β) (y : β) : e (e.symm y) = y :=
+  e.toEquiv.apply_symm_apply y
+
+/-- `e.symm` is a left inverse of `e`, written as `e.symm (e y) = y`. -/
+@[to_additive (attr := simp) "`e.symm` is a left inverse of `e`, written as `e.symm (e y) = y`."]
+theorem symm_apply_apply (e : α ≃*o β) (x : α) : e.symm (e x) = x :=
+  e.toEquiv.symm_apply_apply x
+
+@[to_additive (attr := simp)]
+theorem symm_comp_self (e : α ≃*o β) : e.symm ∘ e = id :=
+  funext e.symm_apply_apply
+
+@[to_additive (attr := simp)]
+theorem self_comp_symm (e : α ≃*o β) : e ∘ e.symm = id :=
+  funext e.apply_symm_apply
+
+@[to_additive]
+theorem apply_eq_iff_symm_apply (e : α ≃*o β) {x : α} {y : β} : e x = y ↔ x = e.symm y :=
+  e.toEquiv.apply_eq_iff_eq_symm_apply
+
+@[to_additive]
+theorem symm_apply_eq (e : α ≃*o β) {x y} : e.symm x = y ↔ x = e y :=
+  e.toEquiv.symm_apply_eq
+
+@[to_additive]
+theorem eq_symm_apply (e : α ≃*o β) {x y} : y = e.symm x ↔ e y = x :=
+  e.toEquiv.eq_symm_apply
+
+@[to_additive]
+theorem eq_comp_symm (e : α ≃*o β) (f : β → α) (g : α → α) :
+    f = g ∘ e.symm ↔ f ∘ e = g :=
+  e.toEquiv.eq_comp_symm f g
+
+@[to_additive]
+theorem comp_symm_eq (e : α ≃*o β) (f : β → α) (g : α → α) :
+    g ∘ e.symm = f ↔ g = f ∘ e :=
+  e.toEquiv.comp_symm_eq f g
+
+@[to_additive]
+theorem eq_symm_comp (e : α ≃*o β) (f : α → α) (g : α → β) :
+    f = e.symm ∘ g ↔ e ∘ f = g :=
+  e.toEquiv.eq_symm_comp f g
+
+@[to_additive]
+theorem symm_comp_eq (e : α ≃*o β) (f : α → α) (g : α → β) :
+    e.symm ∘ g = f ↔ g = e ∘ f :=
+  e.toEquiv.symm_comp_eq f g
+
 variable (f)
 
 @[to_additive]
@@ -689,6 +783,8 @@ instance : FunLike (α →*₀o β) α β where
     obtain ⟨⟨⟨_, _⟩⟩, _⟩ := f
     obtain ⟨⟨⟨_, _⟩⟩, _⟩ := g
     congr
+
+initialize_simps_projections OrderMonoidWithZeroHom (toFun → apply, -toMonoidWithZeroHom)
 
 instance : MonoidWithZeroHomClass (α →*₀o β) α β where
   map_mul f := f.map_mul'
@@ -844,7 +940,7 @@ end LinearOrderedCommMonoidWithZero
 end OrderMonoidWithZeroHom
 
 /-- Any ordered group is isomorphic to the units of itself adjoined with `0`. -/
-@[simps! toFun]
+@[simps!]
 def OrderMonoidIso.unitsWithZero {α : Type*} [Group α] [Preorder α] : (WithZero α)ˣ ≃*o α where
   toMulEquiv := WithZero.unitsWithZeroEquiv
   map_le_map_iff' {a b} := by simp [WithZero.unitsWithZeroEquiv]

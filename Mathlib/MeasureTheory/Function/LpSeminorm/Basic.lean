@@ -5,18 +5,16 @@ Authors: Rémy Degenne, Sébastien Gouëzel
 -/
 import Mathlib.Analysis.NormedSpace.IndicatorFunction
 import Mathlib.Data.Fintype.Order
-import Mathlib.MeasureTheory.Function.EssSup
 import Mathlib.MeasureTheory.Function.AEEqFun
-import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
 import Mathlib.MeasureTheory.Function.LpSeminorm.Defs
+import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
+import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
 
 /-!
 # Basic theorems about ℒp space
-
 -/
 
 noncomputable section
-
 
 open TopologicalSpace MeasureTheory Filter
 
@@ -798,8 +796,7 @@ alias Memℒp.restrict := MemLp.restrict
 
 theorem eLpNorm'_smul_measure {p : ℝ} (hp : 0 ≤ p) {f : α → ε} (c : ℝ≥0∞) :
     eLpNorm' f p (c • μ) = c ^ (1 / p) * eLpNorm' f p μ := by
-  rw [eLpNorm', lintegral_smul_measure, ENNReal.mul_rpow_of_nonneg, eLpNorm']
-  simp [hp]
+  simp [eLpNorm', ENNReal.mul_rpow_of_nonneg, hp]
 
 section SMul
 variable {R : Type*} [Zero R] [SMulWithZero R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
@@ -1359,7 +1356,6 @@ theorem _root_.Continuous.memLp_top_of_hasCompactSupport
 alias _root_.Continuous.memℒp_top_of_hasCompactSupport :=
   _root_.Continuous.memLp_top_of_hasCompactSupport
 
-
 section UnifTight
 
 /-- A single function that is `MemLp f p μ` is tight with respect to `μ`. -/
@@ -1383,5 +1379,4 @@ alias Memℒp.exists_eLpNorm_indicator_compl_lt := MemLp.exists_eLpNorm_indicato
 
 end UnifTight
 end Lp
-
 end MeasureTheory

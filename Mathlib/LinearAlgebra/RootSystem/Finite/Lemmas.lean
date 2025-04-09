@@ -101,7 +101,7 @@ lemma pairingIn_pairingIn_mem_set_of_isCrystallographic :
   have : Fintype ι := Fintype.ofFinite ι
   simpa [← P.algebraMap_pairingIn ℤ] using (P.posRootForm ℤ).toInvariantForm.pairing_zero_iff i j
 
-lemma pairingIn_pairingIn_mem_set_of_isCrystallographic_of_isReduced
+lemma pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed
     [P.IsReduced] [NoZeroSMulDivisors R M] :
     (P.pairingIn ℤ i j, P.pairingIn ℤ j i) ∈
       ({(0, 0), (1, 1), (-1, -1), (1, 2), (2, 1), (-1, -2), (-2, -1), (1, 3), (3, 1), (-1, -3),
@@ -110,6 +110,34 @@ lemma pairingIn_pairingIn_mem_set_of_isCrystallographic_of_isReduced
   rcases eq_or_ne (P.root i) (-P.root j) with h₂ | h₂; · aesop
   have aux₁ := P.pairingIn_pairingIn_mem_set_of_isCrystallographic i j
   have aux₂ : P.pairingIn ℤ i j * P.pairingIn ℤ j i ≠ 4 := P.coxeterWeightIn_ne_four ℤ h₁ h₂
+  aesop
+
+lemma pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed'
+    [P.IsReduced] [NoZeroSMulDivisors R M]
+    (hij : P.root i ≠ P.root j) (hij' : P.root i ≠ - P.root j) :
+    (P.pairingIn ℤ i j, P.pairingIn ℤ j i) ∈
+      ({(0, 0), (1, 1), (-1, -1), (1, 2), (2, 1), (-1, -2), (-2, -1), (1, 3), (3, 1), (-1, -3),
+        (-3, -1)} : Set (ℤ × ℤ)) := by
+  have := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed i j
+  aesop
+
+variable {i j} in
+lemma pairingIn_pairingIn_mem_set_of_length_eq {B : P.InvariantForm}
+    (len_eq : B.form (P.root i) (P.root i) = B.form (P.root j) (P.root j)) :
+    (P.pairingIn ℤ i j, P.pairingIn ℤ j i) ∈
+      ({(0, 0), (1, 1), (-1, -1), (2, 2), (-2, -2)} : Set (ℤ × ℤ)) := by
+  replace len_eq : P.pairingIn ℤ i j = P.pairingIn ℤ j i := by
+    simp only [← (FaithfulSMul.algebraMap_injective ℤ R).eq_iff, algebraMap_pairingIn]
+    exact mul_right_cancel₀ (B.ne_zero j) (len_eq ▸ B.pairing_mul_eq_pairing_mul_swap j i)
+  have := P.pairingIn_pairingIn_mem_set_of_isCrystallographic i j
+  aesop
+
+variable {i j} in
+lemma pairingIn_pairingIn_mem_set_of_length_eq_of_ne [NoZeroSMulDivisors R M] {B : P.InvariantForm}
+    (len_eq : B.form (P.root i) (P.root i) = B.form (P.root j) (P.root j))
+    (ne : i ≠ j) (ne' : P.root i ≠ -P.root j) :
+    (P.pairingIn ℤ i j, P.pairingIn ℤ j i) ∈ ({(0, 0), (1, 1), (-1, -1)} : Set (ℤ × ℤ)) := by
+  have := P.pairingIn_pairingIn_mem_set_of_length_eq len_eq
   aesop
 
 lemma coxeterWeightIn_eq_zero_iff :
@@ -179,7 +207,7 @@ lemma apply_eq_or_aux (i j : ι) (h : P.pairingIn ℤ i j ≠ 0) :
     B.form (P.root i) (P.root i) = 3 * B.form (P.root j) (P.root j) ∨
     B.form (P.root j) (P.root j) = 2 * B.form (P.root i) (P.root i) ∨
     B.form (P.root j) (P.root j) = 3 * B.form (P.root i) (P.root i) := by
-  have h₁ := P.pairingIn_pairingIn_mem_set_of_isCrystallographic_of_isReduced i j
+  have h₁ := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed i j
   have h₂ : algebraMap ℤ R (P.pairingIn ℤ j i) * B.form (P.root i) (P.root i) =
             algebraMap ℤ R (P.pairingIn ℤ i j) * B.form (P.root j) (P.root j) := by
     simpa only [algebraMap_pairingIn] using B.pairing_mul_eq_pairing_mul_swap i j
@@ -324,7 +352,7 @@ lemma root_add_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
     simp only [indexNeg_neg, root_reflection_perm, reflection_apply_self]
     module
   rw [← neg_mem_range_root_iff]
-  convert b.root_sub_root_mem_of_mem_of_mem j i (-k) hij.symm hj hi hk (by aesop)
+  convert b.root_sub_root_mem_of_mem_of_mem j i (-k) hij.symm hj hi hk (by contrapose! hkj; aesop)
     (by convert P.neg_mem_range_root_iff.mpr hk' using 1; simp [neg_add_eq_sub]) using 1
   simp only [indexNeg_neg, root_reflection_perm, reflection_apply_self]
   module

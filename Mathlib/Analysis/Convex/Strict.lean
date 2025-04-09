@@ -28,6 +28,7 @@ open Convex
 
 section OrderedSemiring
 
+-- TODO: remove `[IsOrderedRing 𝕜]` and `@[nolint unusedArguments]`.
 /-- A set is strictly convex if the open segment between any two distinct points lies is in its
 interior. This basically means "convex and not flat on the boundary". -/
 @[nolint unusedArguments]

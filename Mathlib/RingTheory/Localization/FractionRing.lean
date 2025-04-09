@@ -127,6 +127,7 @@ See note [reducible non-instances]. -/
 @[stacks 09FJ]
 noncomputable abbrev toField : Field K where
   __ := IsFractionRing.isDomain A
+  inv := IsFractionRing.inv A
   mul_inv_cancel := IsFractionRing.mul_inv_cancel A
   inv_zero := show IsFractionRing.inv A (0 : K) = 0 by rw [IsFractionRing.inv]; exact dif_pos rfl
   nnqsmul := _
@@ -434,18 +435,7 @@ theorem isFractionRing_iff_of_base_ringEquiv (h : R ≃+* P) :
       @IsFractionRing P _ S _ ((algebraMap R S).comp h.symm.toRingHom).toAlgebra := by
   delta IsFractionRing
   convert isLocalization_iff_of_base_ringEquiv (nonZeroDivisors R) S h
-  ext x
-  rw [← Submonoid.map_coe_toMulEquiv, Submonoid.map_equiv_eq_comap_symm]
-  simp only [MulEquiv.coe_toMonoidHom, RingEquiv.toMulEquiv_eq_coe, Submonoid.mem_comap]
-  constructor
-  · rintro hx z (hz : z * h.symm x = 0)
-    rw [← h.map_eq_zero_iff]
-    apply hx
-    simpa only [h.map_zero, h.apply_symm_apply, h.map_mul] using congr_arg h hz
-  · rintro (hx : h.symm x ∈ _) z hz
-    rw [← h.symm.map_eq_zero_iff]
-    apply hx
-    rw [← h.symm.map_mul, hz, h.symm.map_zero]
+  exact (MulEquivClass.map_nonZeroDivisors h).symm
 
 protected theorem nontrivial (R S : Type*) [CommRing R] [Nontrivial R] [CommRing S] [Algebra R S]
     [IsFractionRing R S] : Nontrivial S := by

@@ -82,9 +82,17 @@ lemma MonoidHom.map_iterate_frobenius (n : ℕ) :
     f ((frobenius R p)^[n] x) = (frobenius S p)^[n] (f x) :=
   Function.Semiconj.iterate_right (f.map_frobenius p) n x
 
+lemma MonoidHom.map_iterateFrobenius (n : ℕ) :
+    f (iterateFrobenius R p n x) = iterateFrobenius S p n (f x) := by
+  simp [iterateFrobenius_def]
+
 lemma RingHom.map_iterate_frobenius (n : ℕ) :
     g ((frobenius R p)^[n] x) = (frobenius S p)^[n] (g x) :=
   g.toMonoidHom.map_iterate_frobenius p x n
+
+lemma RingHom.map_iterateFrobenius (n : ℕ) :
+    g (iterateFrobenius R p n x) = iterateFrobenius S p n (g x) :=
+  g.toMonoidHom.map_iterateFrobenius p x n
 
 lemma MonoidHom.iterate_map_frobenius (f : R →* R) (p : ℕ) [ExpChar R p] (n : ℕ) :
     f^[n] (frobenius R p x) = frobenius R p (f^[n] x) :=
@@ -92,6 +100,15 @@ lemma MonoidHom.iterate_map_frobenius (f : R →* R) (p : ℕ) [ExpChar R p] (n 
 
 lemma RingHom.iterate_map_frobenius (f : R →+* R) (p : ℕ) [ExpChar R p] (n : ℕ) :
     f^[n] (frobenius R p x) = frobenius R p (f^[n] x) := iterate_map_pow f _ _ _
+
+/-- The Frobenius endomorphism commutes with any ring homomorphism. -/
+lemma RingHom.frobenius_comm : g.comp (frobenius R p) = (frobenius S p).comp g :=
+  ext <| map_frobenius g p
+
+/-- The iterated Frobenius endomorphism commutes with any ring homomorphism. -/
+lemma RingHom.iterateFrobenius_comm (n : ℕ) :
+    g.comp (iterateFrobenius R p n) = (iterateFrobenius S p n).comp g :=
+  ext fun x ↦ map_iterateFrobenius g p x n
 
 variable (R S)
 
