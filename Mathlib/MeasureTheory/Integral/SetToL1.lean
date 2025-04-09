@@ -470,8 +470,9 @@ theorem setToSimpleFunc_smul {E} [NormedAddCommGroup E] [SMulZeroClass 𝕜 E]
 
 section Order
 
-variable {G' G'' : Type*} [NormedLatticeAddCommGroup G''] [NormedSpace ℝ G'']
-  [NormedLatticeAddCommGroup G'] [NormedSpace ℝ G']
+variable {G' G'' : Type*}
+  [NormedAddCommGroup G''] [Lattice G''] [IsOrderedAddMonoid G''] [NormedSpace ℝ G'']
+  [NormedAddCommGroup G'] [Lattice G'] [NormedSpace ℝ G']
 
 theorem setToSimpleFunc_mono_left {m : MeasurableSpace α} (T T' : Set α → F →L[ℝ] G'')
     (hTT' : ∀ s x, T s x ≤ T' s x) (f : α →ₛ F) : setToSimpleFunc T f ≤ setToSimpleFunc T' f := by
@@ -508,7 +509,8 @@ theorem setToSimpleFunc_nonneg' (T : Set α → G' →L[ℝ] G'')
   rw [← hy]
   convert hf y
 
-theorem setToSimpleFunc_mono {T : Set α → G' →L[ℝ] G''} (h_add : FinMeasAdditive μ T)
+theorem setToSimpleFunc_mono [IsOrderedAddMonoid G']
+    {T : Set α → G' →L[ℝ] G''} (h_add : FinMeasAdditive μ T)
     (hT_nonneg : ∀ s, MeasurableSet s → μ s < ∞ → ∀ x, 0 ≤ x → 0 ≤ T s x) {f g : α →ₛ G'}
     (hfi : Integrable f μ) (hgi : Integrable g μ) (hfg : f ≤ g) :
     setToSimpleFunc T f ≤ setToSimpleFunc T g := by
@@ -752,8 +754,10 @@ theorem setToL1S_const [IsFiniteMeasure μ] {T : Set α → E →L[ℝ] F}
 
 section Order
 
-variable {G'' G' : Type*} [NormedLatticeAddCommGroup G'] [NormedSpace ℝ G']
-  [NormedLatticeAddCommGroup G''] [NormedSpace ℝ G''] {T : Set α → G'' →L[ℝ] G'}
+variable {G'' G' : Type*}
+  [NormedAddCommGroup G'] [Lattice G'] [IsOrderedAddMonoid G'] [NormedSpace ℝ G']
+  [NormedAddCommGroup G''] [Lattice G''] [IsOrderedAddMonoid G''] [NormedSpace ℝ G'']
+  {T : Set α → G'' →L[ℝ] G'}
 
 theorem setToL1S_mono_left {T T' : Set α → E →L[ℝ] G''} (hTT' : ∀ s x, T s x ≤ T' s x)
     (f : α →₁ₛ[μ] E) : setToL1S T f ≤ setToL1S T' f :=
@@ -764,6 +768,7 @@ theorem setToL1S_mono_left' {T T' : Set α → E →L[ℝ] G''}
     setToL1S T f ≤ setToL1S T' f :=
   SimpleFunc.setToSimpleFunc_mono_left' T T' hTT' _ (SimpleFunc.integrable f)
 
+omit [IsOrderedAddMonoid G''] in
 theorem setToL1S_nonneg (h_zero : ∀ s, MeasurableSet s → μ s = 0 → T s = 0)
     (h_add : FinMeasAdditive μ T)
     (hT_nonneg : ∀ s, MeasurableSet s → μ s < ∞ → ∀ x, 0 ≤ x → 0 ≤ T s x) {f : α →₁ₛ[μ] G''}
@@ -870,8 +875,9 @@ theorem setToL1SCLM_const [IsFiniteMeasure μ] {T : Set α → E →L[ℝ] F} {C
 
 section Order
 
-variable {G' G'' : Type*} [NormedLatticeAddCommGroup G''] [NormedSpace ℝ G'']
-  [NormedLatticeAddCommGroup G'] [NormedSpace ℝ G']
+variable {G' G'' : Type*}
+  [NormedAddCommGroup G''] [Lattice G''] [IsOrderedAddMonoid G''] [NormedSpace ℝ G'']
+  [NormedAddCommGroup G'] [Lattice G'] [IsOrderedAddMonoid G'] [NormedSpace ℝ G']
 
 theorem setToL1SCLM_mono_left {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
     (hT : DominatedFinMeasAdditive μ T C) (hT' : DominatedFinMeasAdditive μ T' C')
@@ -885,6 +891,7 @@ theorem setToL1SCLM_mono_left' {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
     setToL1SCLM α E μ hT f ≤ setToL1SCLM α E μ hT' f :=
   SimpleFunc.setToSimpleFunc_mono_left' T T' hTT' _ (SimpleFunc.integrable f)
 
+omit [IsOrderedAddMonoid G'] in
 theorem setToL1SCLM_nonneg {T : Set α → G' →L[ℝ] G''} {C : ℝ} (hT : DominatedFinMeasAdditive μ T C)
     (hT_nonneg : ∀ s, MeasurableSet s → μ s < ∞ → ∀ x, 0 ≤ x → 0 ≤ T s x) {f : α →₁ₛ[μ] G'}
     (hf : 0 ≤ f) : 0 ≤ setToL1SCLM α G' μ hT f :=
@@ -1036,8 +1043,10 @@ theorem setToL1_const [IsFiniteMeasure μ] (hT : DominatedFinMeasAdditive μ T C
 
 section Order
 
-variable {G' G'' : Type*} [NormedLatticeAddCommGroup G''] [NormedSpace ℝ G''] [CompleteSpace G'']
-  [NormedLatticeAddCommGroup G'] [NormedSpace ℝ G']
+variable {G' G'' : Type*}
+  [NormedAddCommGroup G''] [Lattice G''] [HasSolidNorm G''] [IsOrderedAddMonoid G'']
+  [NormedSpace ℝ G''] [CompleteSpace G'']
+  [NormedAddCommGroup G'] [Lattice G'] [NormedSpace ℝ G']
 
 theorem setToL1_mono_left' {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
     (hT : DominatedFinMeasAdditive μ T C) (hT' : DominatedFinMeasAdditive μ T' C')
@@ -1072,7 +1081,8 @@ theorem setToL1_nonneg {T : Set α → G' →L[ℝ] G''} {C : ℝ} (hT : Dominat
     rw [this, setToL1_eq_setToL1SCLM]
     exact setToL1S_nonneg (fun s => hT.eq_zero_of_measure_zero) hT.1 hT_nonneg g.2
 
-theorem setToL1_mono {T : Set α → G' →L[ℝ] G''} {C : ℝ} (hT : DominatedFinMeasAdditive μ T C)
+theorem setToL1_mono [IsOrderedAddMonoid G']
+    {T : Set α → G' →L[ℝ] G''} {C : ℝ} (hT : DominatedFinMeasAdditive μ T C)
     (hT_nonneg : ∀ s, MeasurableSet s → μ s < ∞ → ∀ x, 0 ≤ x → 0 ≤ T s x) {f g : α →₁[μ] G'}
     (hfg : f ≤ g) : setToL1 hT f ≤ setToL1 hT g := by
   rw [← sub_nonneg] at hfg ⊢
@@ -1306,8 +1316,10 @@ theorem setToFun_const [IsFiniteMeasure μ] (hT : DominatedFinMeasAdditive μ T 
 
 section Order
 
-variable {G' G'' : Type*} [NormedLatticeAddCommGroup G''] [NormedSpace ℝ G''] [CompleteSpace G'']
-  [NormedLatticeAddCommGroup G'] [NormedSpace ℝ G']
+variable {G' G'' : Type*}
+  [NormedAddCommGroup G''] [Lattice G''] [HasSolidNorm G''] [IsOrderedAddMonoid G'']
+  [NormedSpace ℝ G''] [CompleteSpace G'']
+  [NormedAddCommGroup G'] [Lattice G'] [NormedSpace ℝ G']
 
 theorem setToFun_mono_left' {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
     (hT : DominatedFinMeasAdditive μ T C) (hT' : DominatedFinMeasAdditive μ T' C')
@@ -1336,7 +1348,8 @@ theorem setToFun_nonneg {T : Set α → G' →L[ℝ] G''} {C : ℝ} (hT : Domina
     exact hfa
   · simp_rw [setToFun_undef _ hfi, le_rfl]
 
-theorem setToFun_mono {T : Set α → G' →L[ℝ] G''} {C : ℝ} (hT : DominatedFinMeasAdditive μ T C)
+theorem setToFun_mono [IsOrderedAddMonoid G']
+    {T : Set α → G' →L[ℝ] G''} {C : ℝ} (hT : DominatedFinMeasAdditive μ T C)
     (hT_nonneg : ∀ s, MeasurableSet s → μ s < ∞ → ∀ x, 0 ≤ x → 0 ≤ T s x) {f g : α → G'}
     (hf : Integrable f μ) (hg : Integrable g μ) (hfg : f ≤ᵐ[μ] g) :
     setToFun μ T hT f ≤ setToFun μ T hT g := by

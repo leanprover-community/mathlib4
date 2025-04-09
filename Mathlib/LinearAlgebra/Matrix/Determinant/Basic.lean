@@ -232,7 +232,8 @@ theorem det_submatrix_equiv_self (e : n ≃ m) (A : Matrix m m R) :
 /-- Permuting rows and columns with two equivalences does not change the absolute value of the
 determinant. -/
 @[simp]
-theorem abs_det_submatrix_equiv_equiv {R : Type*} [LinearOrderedCommRing R]
+theorem abs_det_submatrix_equiv_equiv {R : Type*}
+    [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
     (e₁ e₂ : n ≃ m) (A : Matrix m m R) :
     |(A.submatrix e₁ e₂).det| = |A.det| := by
   have hee : e₂ = e₁.trans (e₁.symm.trans e₂) := by ext; simp

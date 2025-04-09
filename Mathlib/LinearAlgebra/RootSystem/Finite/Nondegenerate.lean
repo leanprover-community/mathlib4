@@ -74,7 +74,8 @@ instance [P.IsAnisotropic] : P.flip.IsAnisotropic where
   corootForm_coroot_ne_zero := IsAnisotropic.rootForm_root_ne_zero
 
 lemma isAnisotropic_of_isValuedIn (S : Type*)
-    [LinearOrderedCommRing S] [Algebra S R] [FaithfulSMul S R] [P.IsValuedIn S] :
+    [CommRing S] [LinearOrder S] [IsStrictOrderedRing S]
+    [Algebra S R] [FaithfulSMul S R] [P.IsValuedIn S] :
     IsAnisotropic P where
   rootForm_root_ne_zero i := (P.posRootForm S).form_apply_root_ne_zero i
   corootForm_coroot_ne_zero i := (P.flip.posRootForm S).form_apply_root_ne_zero i
@@ -226,7 +227,8 @@ end Field
 
 section LinearOrderedCommRing
 
-variable [LinearOrderedCommRing R] [Module R M] [Module R N] (P : RootPairing ι R M N)
+variable [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
+  [Module R M] [Module R N] (P : RootPairing ι R M N)
 
 instance instIsAnisotropicOfLinearOrderedCommRing : IsAnisotropic P :=
   P.isAnisotropic_of_isValuedIn R
