@@ -652,6 +652,14 @@ theorem ofSigmaCofork_ι_app_right' (c : Cofork I.fstSigmaMap I.sndSigmaMap) (b)
     π (ofSigmaCofork I c) b = (Sigma.ι I.right b :) ≫ c.π :=
   rfl
 
+variable {I} in
+/-- Constructor for isomorphisms between multicoforks. -/
+@[simps!]
+def ext {K K' : Multicofork I}
+    (e : K.pt ≅ K'.pt) (h : ∀ (i : J.R), K.π i ≫ e.hom = K'.π i := by aesop_cat) :
+    K ≅ K' :=
+  Cocones.ext e (by rintro (i | j) <;> simp [h])
+
 end Multicofork
 
 namespace MultispanIndex
