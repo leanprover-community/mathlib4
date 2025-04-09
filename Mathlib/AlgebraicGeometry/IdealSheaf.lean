@@ -77,6 +77,14 @@ protected lemma ext {I J : X.IdealSheafData} (h : I.ideal = J.ideal) : I = J := 
   congr
   rw [hs, ht]
 
+@[reducible]
+def copy {I : X.IdealSheafData} (I' : ∀ U : X.affineOpens, Ideal Γ(X, U)) (hI' : I' = I.ideal)
+    (s : Set X) (hs : s = I.supportSet) : X.IdealSheafData where
+  ideal := I'
+  map_ideal_basicOpen := hI' ▸ I.map_ideal_basicOpen
+  supportSet := s
+  supportSet_eq_iInter_zeroLocus := hs ▸ hI' ▸ I.supportSet_eq_iInter_zeroLocus
+
 section Order
 
 instance : PartialOrder (IdealSheafData X) := PartialOrder.lift ideal fun _ _ ↦ IdealSheafData.ext
@@ -706,15 +714,6 @@ lemma Hom.support_ker (f : X.Hom Y) [QuasiCompact f] :
   · rw [(support _).closed.closure_subset_iff]
     exact f.range_subset_ker_support
 
-/-- The functor taking a morphism into `Y` to its kernel as an ideal sheaf on `Y`. -/
-@[simps]
-def kerFunctor (Y : Scheme.{u}) : (Over Y)ᵒᵖ ⥤ IdealSheafData Y where
-  obj f := f.unop.hom.ker
-  map {f g} hfg := homOfLE <| by simpa only [Functor.id_obj, Functor.const_obj_obj,
-    OrderDual.toDual_le_toDual, ← Over.w hfg.unop] using f.unop.hom.le_ker_comp _
-  map_id _ := Subsingleton.elim _ _
-  map_comp _ _ := Subsingleton.elim _ _
-
 end ker
 
 section subscheme
@@ -773,13 +772,6 @@ lemma range_glueDataObjι_ι (U : X.affineOpens) :
   simp only [Scheme.comp_coeBase, TopCat.coe_comp, Set.range_comp, range_glueDataObjι]
   rw [← Set.image_comp, ← TopCat.coe_comp, ← Scheme.comp_base, IsAffineOpen.isoSpec_inv_ι,
     IsAffineOpen.fromSpec_image_zeroLocus]
-
-/-- The underlying space of `Spec (𝒪ₓ(U)/I(U))` is homeomorphic to its image in `X`. -/
-noncomputable
-def glueDataObjEquiv (U : X.affineOpens) :
-    (I.glueDataObj U).carrier ≅ TopCat.of ↑(X.zeroLocus (U := U) (I.ideal U) ∩ U) :=
-  TopCat.isoOfHomeo ((Homeomorph.ofIsEmbedding _ (I.glueDataObjι U ≫ U.1.ι).isEmbedding).trans
-    (Homeomorph.setCongr (I.range_glueDataObjι_ι U)))
 
 /-- The open immersion `Spec Γ(𝒪ₓ/I, U) ⟶ Spec Γ(𝒪ₓ/I, V)` if `U ≤ V`. -/
 noncomputable
@@ -862,13 +854,13 @@ lemma ideal_le_ker_glueDataObjι (U V : X.affineOpens) :
   exact I.ideal_le_comap_ideal (U := X.affineBasicOpen f) (V := V)
     (hfg.trans_le (X.basicOpen_le g)) hx
 
-/-- (Implementation) The intersections `Spec Γ(𝒪ₓ/I, U) ∩ V` useful for gluing. -/
-private noncomputable
+/-- The intersections `Spec Γ(𝒪ₓ/I, U) ∩ V` useful for gluing. -/
+noncomputable
 abbrev glueDataObjPullback (U V : X.affineOpens) : Scheme :=
   pullback (I.glueDataObjι U) (X.homOfLE (U := U.1 ⊓ V.1) inf_le_left)
 
 /-- (Implementation) Transition maps in the glue data for `𝒪ₓ/I`. -/
-private noncomputable
+noncomputable
 def glueDataT (U V : X.affineOpens) :
     I.glueDataObjPullback U V ⟶ I.glueDataObjPullback V U := by
   letI F := pullback.snd (I.glueDataObjι U) (X.homOfLE (inf_le_left (b := V.1)))
@@ -906,7 +898,7 @@ private lemma glueDataT_snd (U V : X.affineOpens) :
   pullback.lift_snd _ _ _
 
 @[reassoc (attr := simp)]
-private lemma glueDataT_fst (U V : X.affineOpens) :
+lemma glueDataT_fst (U V : X.affineOpens) :
     I.glueDataT U V ≫ pullback.fst _ _ ≫ glueDataObjι _ _ =
       pullback.snd _ _ ≫ X.homOfLE inf_le_right := by
   refine (pullback.lift_fst_assoc _ _ _ _).trans ?_
@@ -915,7 +907,7 @@ private lemma glueDataT_fst (U V : X.affineOpens) :
     Category.comp_id]
 
 /-- (Implementation) `t'` in the glue data for `𝒪ₓ/I`. -/
-private noncomputable
+noncomputable
 def glueDataT'Aux (U V W U₀ : X.affineOpens) (hU₀ : U.1 ⊓ W ≤ U₀) :
     pullback
       (pullback.fst _ _ : I.glueDataObjPullback U V ⟶ _)
@@ -936,19 +928,19 @@ def glueDataT'Aux (U V W U₀ : X.affineOpens) (hU₀ : U.1 ⊓ W ≤ U₀) :
       simp [pullback.condition_assoc])
 
 @[reassoc (attr := simp)]
-private lemma glueDataT'Aux_fst (U V W U₀ : X.affineOpens) (hU₀ : U.1 ⊓ W ≤ U₀) :
+lemma glueDataT'Aux_fst (U V W U₀ : X.affineOpens) (hU₀ : U.1 ⊓ W ≤ U₀) :
     I.glueDataT'Aux U V W U₀ hU₀ ≫ pullback.fst _ _ =
       pullback.fst _ _ ≫ I.glueDataT U V ≫ pullback.fst _ _ := pullback.lift_fst _ _ _
 
 @[reassoc (attr := simp)]
-private lemma glueDataT'Aux_snd_ι (U V W U₀ : X.affineOpens) (hU₀ : U.1 ⊓ W ≤ U₀) :
+lemma glueDataT'Aux_snd_ι (U V W U₀ : X.affineOpens) (hU₀ : U.1 ⊓ W ≤ U₀) :
     I.glueDataT'Aux U V W U₀ hU₀ ≫ pullback.snd _ _ ≫ (V.1 ⊓ U₀.1).ι =
       pullback.fst _ _ ≫ pullback.fst _ _ ≫ I.glueDataObjι U ≫ U.1.ι :=
   (pullback.lift_snd_assoc _ _ _ _).trans (IsOpenImmersion.lift_fac _ _ _)
 
 /-- (Implementation) The glue data for `𝒪ₓ/I`. -/
 @[simps]
-private noncomputable
+noncomputable
 def glueData : Scheme.GlueData where
   J := X.affineOpens
   U := I.glueDataObj
