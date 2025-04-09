@@ -25,10 +25,8 @@ This is the free commutative `R`-algebra generated (`R`-linearly) by the module 
 
 ## Note
 
-See `SymAlg R` if you are looking for having a commutative multiplication on `R` by
-$$
-a \circ b = \frac{1}{2}(ab + ba)
-$$
+See `SymAlg R` instead if you are looking for the symmetrized algebra, which gives a commutative
+multiplication on `R` by $a \circ b = \frac{1}{2}(ab + ba)$.
 -/
 
 universe u

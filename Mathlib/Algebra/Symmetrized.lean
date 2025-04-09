@@ -24,7 +24,7 @@ The approach taken here is inspired by `Mathlib/Algebra/Opposites.lean`. We use 
 
 ## Note
 
-See `SymmetricAlgebra` if you are looking for the symmetric algebra of a module.
+See `SymmetricAlgebra` instead if you are looking for the symmetric algebra of a module.
 
 ## References
 
