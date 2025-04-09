@@ -607,9 +607,9 @@ theorem digits_two_eq_bits (n : ℕ) : digits 2 n = n.bits.map fun b => cond b 1
   rw [bits_append_bit _ _ fun hn => absurd hn h]
   cases b
   · rw [digits_def' one_lt_two]
-    · simpa [bit_val]
-    · simpa [pos_iff_ne_zero, bit_eq_zero_iff]
-  · simpa [bit_val, add_comm, digits_add 2 one_lt_two 1 n, Nat.add_mul_div_left]
+    · simpa [Nat.bit]
+    · simpa [Nat.bit, pos_iff_ne_zero]
+  · simpa [Nat.bit, add_comm, digits_add 2 one_lt_two 1 n, Nat.add_mul_div_left]
 
 /-! ### Modular Arithmetic -/
 

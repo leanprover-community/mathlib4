@@ -234,9 +234,12 @@ theorem bitwise_swap {f : Bool → Bool → Bool} :
     bitwise (Function.swap f) = Function.swap (bitwise f) := by
   funext m n
   simp only [Function.swap]
-  induction' m using Nat.binaryRec' with bm m hm ihm generalizing n; · simp
-  induction' n using Nat.binaryRec' with bn n hn; · simp
-  rw [bitwise_bit' _ _ _ _ hm hn, bitwise_bit' _ _ _ _ hn hm, ihm]
+  induction m using Nat.binaryRec' generalizing n with
+  | z => simp
+  | f bm m hm ihm =>
+    induction n using Nat.binaryRec' with
+    | z => simp
+    | f bn n hn => rw [bitwise_bit' _ _ _ _ hm hn, bitwise_bit' _ _ _ _ hn hm, ihm]
 
 /-- If `f` is a commutative operation on bools such that `f false false = false`, then `bitwise f`
     is also commutative. -/
