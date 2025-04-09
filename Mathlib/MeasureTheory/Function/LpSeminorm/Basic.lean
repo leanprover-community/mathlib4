@@ -349,7 +349,7 @@ theorem eLpNorm_mono_ae {f : α → F} {g : α → G} (h : ∀ᵐ x ∂μ, ‖f 
     eLpNorm f p μ ≤ eLpNorm g p μ :=
   eLpNorm_mono_enorm_ae (by simpa only [enorm_le_iff_norm_le] using h)
 
-theorem eLpNorm_mono_ae' {ε' : Type*} [TopologicalSpace ε'] [ENormedAddMonoid ε']
+theorem eLpNorm_mono_ae' {ε' : Type*} [ENorm ε']
     {f : α → ε} {g : α → ε'} (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ ‖g x‖ₑ) :
     eLpNorm f p μ ≤ eLpNorm g p μ :=
   eLpNorm_mono_enorm_ae (by simpa only [enorm_le_iff_norm_le] using h)
