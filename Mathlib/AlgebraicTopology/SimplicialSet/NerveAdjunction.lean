@@ -121,17 +121,6 @@ lemma ReflPrefunctor.congr_map_edge
     (G.map f).edge = (G.map g).edge := by
   subst hx hy hfg; rfl
 
--- theorem OneTruncation₂.Quiver_homOfEq (φ : X _⦋2⦌₂) (α β : ⦋1⦌₂ ⟶ ⦋2⦌₂)
---     (src_eq : X.map (δ₂ 1).op (X.map α.op φ) = X.map (δ₂ 1).op (X.map β.op φ))
---     (tgt_eq : X.map (δ₂ 0).op (X.map α.op φ) = X.map (δ₂ 0).op (X.map β.op φ)) :
--- --    (src_eq : (δ₂ 1) ≫ α = (δ₂ 1) ≫ β) (tgt_eq : (δ₂ 0) ≫ α = (δ₂ 0) ≫ β) :
--- --  OneTruncation₂.Hom (X.map (δ₂ 1).op (X.map α.op φ)) (X.map (δ₂ 0).op (X.map α.op φ)) := by sorry
---     Quiver.homOfEq
---        ⟨X.map α.op φ, rfl, rfl⟩ src_eq tgt_eq ⟨X.map β.op φ, rfl, rfl⟩ := sorry
---     -- --   congrFun (congrArg X.map (congrArg Quiver.Hom.op src_eq)) φ
---     -- --   congrFun (congrArg X.map (congrArg Quiver.Hom.op tgt_eq)) φ
---     --     := sorry
-
 lemma toStrictSegal₂.mk_naturality_σ00 :
     toStrictSegal₂.mk.naturalityProperty sy F (σ₂ (n := 0) 0) := by
   ext (x : OneTruncation₂ X)
@@ -184,8 +173,9 @@ lemma toStrictSegal₂.mk_naturality_δ1i (i : Fin 3) :
       congr!
       apply δ_zero_δ_zero_eq_const
     · simp only [Nat.reduceAdd, len_mk, id_eq, Fin.isValue, Fin.castSucc_one, spine_vertex,
-      Fin.succ_one_eq_two, spine_arrow]
-      sorry
+      Fin.succ_one_eq_two, spine_arrow, OneTruncation₂.Quiver_homOfEq]
+      congr!
+      exact δ_zero_eq_mkOfSucc
   · simp only [Fin.mk_one] ; rw [hyp]
   · simp only [Fin.reduceFinMk]
     have :=
@@ -202,7 +192,10 @@ lemma toStrictSegal₂.mk_naturality_δ1i (i : Fin 3) :
       simp only [spine_vertex]
       congr!
       apply δ_zero_δ_two_eq_const
-    · sorry
+    · simp only [Nat.reduceAdd, len_mk, id_eq, Fin.isValue, Fin.castSucc_zero, spine_vertex,
+      Fin.succ_zero_eq_one, OneTruncation₂.Quiver_homOfEq, spine_arrow]
+      congr!
+      exact δ_two_eq_mkOfSucc
 
 lemma toStrictSegal₂.mk_naturality_σ1i (i : Fin 2) :
     toStrictSegal₂.mk.naturalityProperty sy F (σ₂ i) := by

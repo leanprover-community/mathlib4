@@ -223,7 +223,7 @@ noncomputable def segalSpine : Z _⦋2⦌₂ ⟶ Z _⦋1⦌₂ ⨯ Z _⦋1⦌₂
   prod.lift (Z.map (δ 2).op) (Z.map (δ 0).op)
 
 instance (sz : StrictSegal Z) : Mono (Y := Path Z 2) (Z.spine 2) :=
-  (CategoryTheory.mono_iff_injective _).mpr (StrictSegal.spineInjective sz 2)
+  (CategoryTheory.mono_iff_injective _).mpr (StrictSegal.spineInjective sz 2 _)
 
 /-- Paths of length two in a 2-truncated simplicial set include into pairs of 1-simplices. -/
 noncomputable def pathToPair : Path Z 2 ⟶ Z _⦋1⦌₂ ⨯ Z _⦋1⦌₂ :=
