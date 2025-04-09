@@ -980,7 +980,7 @@ end LaxMonoidal
 section Monoidal
 variable [F.Monoidal] [G.Monoidal] [adj.IsMonoidal]
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma ε_comp_map_ε : ε G ≫ G.map (ε F) = adj.unit.app (𝟙_ C) := by
   simp [← adj.unit_app_unit_comp_map_η]
 
