@@ -82,7 +82,7 @@ version.
 variable (M G) in
 /-- Linear-endomorphism version of the forward difference operator. -/
 @[simps]
-def fwdDiffₗ  : Module.End ℤ (M → G) where
+def fwdDiffₗ : Module.End ℤ (M → G) where
   toFun := fwdDiff h
   map_add' := fwdDiff_add h
   map_smul' := fwdDiff_const_smul h

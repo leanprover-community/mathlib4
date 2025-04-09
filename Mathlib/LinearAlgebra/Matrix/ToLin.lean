@@ -179,7 +179,6 @@ def Matrix.toLinearEquivRight'OfInv [Fintype n] [DecidableEq n] {M : Matrix m n 
     left_inv := fun x ↦ by
       rw [← Matrix.toLinearMapRight'_mul_apply, hM'M, Matrix.toLinearMapRight'_one, id_apply]
     right_inv := fun x ↦ by
-      dsimp only -- Porting note: needed due to non-flat structures
       rw [← Matrix.toLinearMapRight'_mul_apply, hMM', Matrix.toLinearMapRight'_one, id_apply] }
 
 end
@@ -330,9 +329,7 @@ theorem Matrix.toLin'_toMatrix' (f : (n → R) →ₗ[R] m → R) :
 theorem LinearMap.toMatrix'_apply (f : (n → R) →ₗ[R] m → R) (i j) :
     LinearMap.toMatrix' f i j = f (fun j' ↦ if j' = j then 1 else 0) i := by
   simp only [LinearMap.toMatrix', LinearEquiv.coe_mk, of_apply]
-  refine congr_fun ?_ _  -- Porting note: `congr` didn't do this
-  congr
-  ext j'
+  congr! with i
   split_ifs with h
   · rw [h, Pi.single_eq_same]
   apply Pi.single_eq_of_ne h
@@ -413,7 +410,6 @@ def Matrix.toLin'OfInv [Fintype m] [DecidableEq m] {M : Matrix m n R} {M' : Matr
     invFun := Matrix.toLin' M
     left_inv := fun x ↦ by rw [← Matrix.toLin'_mul_apply, hMM', Matrix.toLin'_one, id_apply]
     right_inv := fun x ↦ by
-      simp only
       rw [← Matrix.toLin'_mul_apply, hM'M, Matrix.toLin'_one, id_apply] }
 
 /-- Linear maps `(n → R) →ₗ[R] (n → R)` are algebra equivalent to `Matrix n n R`. -/
@@ -669,7 +665,6 @@ def Matrix.toLinOfInv [DecidableEq m] {M : Matrix m n R} {M' : Matrix n m R} (hM
     invFun := Matrix.toLin v₂ v₁ M'
     left_inv := fun x ↦ by rw [← Matrix.toLin_mul_apply, hM'M, Matrix.toLin_one, id_apply]
     right_inv := fun x ↦ by
-      simp only
       rw [← Matrix.toLin_mul_apply, hMM', Matrix.toLin_one, id_apply] }
 
 /-- Given a basis of a module `M₁` over a commutative ring `R`, we get an algebra
@@ -811,19 +806,14 @@ such as the trace form or norm map for algebras.
 noncomputable def leftMulMatrix : S →ₐ[R] Matrix m m R where
   toFun x := LinearMap.toMatrix b b (Algebra.lmul R S x)
   map_zero' := by
-    dsimp only  -- porting node: needed due to new-style structures
-    rw [_root_.map_zero, LinearEquiv.map_zero]
+    rw [map_zero, LinearEquiv.map_zero]
   map_one' := by
-    dsimp only  -- porting node: needed due to new-style structures
     rw [map_one, LinearMap.toMatrix_one]
   map_add' x y := by
-    dsimp only  -- porting node: needed due to new-style structures
     rw [map_add, LinearEquiv.map_add]
   map_mul' x y := by
-    dsimp only  -- porting node: needed due to new-style structures
     rw [map_mul, LinearMap.toMatrix_mul]
   commutes' r := by
-    dsimp only  -- porting node: needed due to new-style structures
     ext
     rw [lmul_algebraMap, toMatrix_lsmul, algebraMap_eq_diagonal, Pi.algebraMap_def,
       Algebra.id.map_eq_self]

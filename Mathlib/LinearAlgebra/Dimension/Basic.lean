@@ -55,7 +55,11 @@ For a free module over any ring satisfying the strong rank condition
 (e.g. left-noetherian rings, commutative rings, and in particular division rings and fields),
 this is the same as the dimension of the space (i.e. the cardinality of any basis).
 
-In particular this agrees with the usual notion of the dimension of a vector space. -/
+In particular this agrees with the usual notion of the dimension of a vector space.
+
+See also `Module.finrank` for a `ℕ`-valued function which returns the correct value
+for a finite-dimensional vector space (but 0 for an infinite-dimensional vector space).
+-/
 @[stacks 09G3 "first part"]
 protected irreducible_def Module.rank : Cardinal :=
   ⨆ ι : { s : Set M // LinearIndepOn R id s }, (#ι.1)
@@ -309,8 +313,6 @@ theorem rank_map_le (f : M →ₗ[R] M₁) (p : Submodule R M) :
 lemma Submodule.rank_mono {s t : Submodule R M} (h : s ≤ t) : Module.rank R s ≤ Module.rank R t :=
   (Submodule.inclusion h).rank_le_of_injective fun ⟨x, _⟩ ⟨y, _⟩ eq =>
     Subtype.eq <| show x = y from Subtype.ext_iff_val.1 eq
-
-@[deprecated (since := "2024-09-30")] alias rank_le_of_submodule := Submodule.rank_mono
 
 /-- Two linearly equivalent vector spaces have the same dimension, a version with different
 universes. -/

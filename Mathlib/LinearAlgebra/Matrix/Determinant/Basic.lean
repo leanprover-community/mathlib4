@@ -232,7 +232,8 @@ theorem det_submatrix_equiv_self (e : n ≃ m) (A : Matrix m m R) :
 /-- Permuting rows and columns with two equivalences does not change the absolute value of the
 determinant. -/
 @[simp]
-theorem abs_det_submatrix_equiv_equiv {R : Type*} [LinearOrderedCommRing R]
+theorem abs_det_submatrix_equiv_equiv {R : Type*}
+    [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
     (e₁ e₂ : n ≃ m) (A : Matrix m m R) :
     |(A.submatrix e₁ e₂).det| = |A.det| := by
   have hee : e₂ = e₁.trans (e₁.symm.trans e₂) := by ext; simp
@@ -319,6 +320,16 @@ theorem _root_.AlgHom.map_det [Algebra R S] {T : Type z} [CommRing T] [Algebra R
 theorem _root_.AlgEquiv.map_det [Algebra R S] {T : Type z} [CommRing T] [Algebra R T]
     (f : S ≃ₐ[R] T) (M : Matrix n n S) : f M.det = Matrix.det (f.mapMatrix M) :=
   f.toAlgHom.map_det _
+
+@[norm_cast]
+theorem _root_.Int.cast_det (M : Matrix n n ℤ) :
+    (M.det : R) = (M.map fun x ↦ (x : R)).det :=
+  Int.castRingHom R |>.map_det M
+
+@[norm_cast]
+theorem _root_.Rat.cast_det {F : Type*} [Field F] [CharZero F] (M : Matrix n n ℚ) :
+    (M.det : F) = (M.map fun x ↦ (x : F)).det :=
+  Rat.castHom F |>.map_det M
 
 end HomMap
 
@@ -694,7 +705,6 @@ theorem det_fromBlocks_zero₂₁ (A : Matrix m m R) (B : Matrix m n R) (D : Mat
     · rintro σ - hσn
       have h1 : ¬∀ x, ∃ y, Sum.inl y = σ (Sum.inl x) := by
         rw [Set.mem_toFinset] at hσn
-        -- Porting note: golfed
         simpa only [Set.MapsTo, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff] using
           mt mem_sumCongrHom_range_of_perm_mapsTo_inl hσn
       obtain ⟨a, ha⟩ := not_forall.mp h1

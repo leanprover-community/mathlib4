@@ -20,7 +20,7 @@ jobs:
           fetch-depth: 2  # Need previous commit for diff
 
       - name: Set up Python
-        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5.5.0
         with:
           python-version: '3.x'
 
@@ -30,7 +30,8 @@ jobs:
           output="$(./scripts/parse_lake_manifest_changes.py)"
           echo "Dependency changes:"
           echo "$output"
-          echo "changes=$output" >> $GITHUB_OUTPUT
+          delimiter="EOF"
+          printf 'changes<<%s\n%s\n%s' "$delimiter" "${message}" "$delimiter"
 
       - name: Construct message
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
@@ -85,7 +86,7 @@ jobs:
           fetch-depth: 2  # Need previous commit for diff
 
       - name: Set up Python
-        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5.5.0
         with:
           python-version: '3.x'
 
@@ -95,7 +96,8 @@ jobs:
           output="$(./scripts/parse_lake_manifest_changes.py)"
           echo "Dependency changes:"
           echo "$output"
-          echo "changes=$output" >> $GITHUB_OUTPUT
+          delimiter="EOF"
+          printf 'changes<<%s\n%s\n%s' "$delimiter" "${message}" "$delimiter"
 
       - name: Construct success message
         id: construct_message

@@ -13,10 +13,36 @@ import Mathlib.Tactic.DeriveFintype
 
 This file contains the definition and operations on formal languages over an alphabet.
 Note that "strings" are implemented as lists over the alphabet.
+
 Union and concatenation define a [Kleene algebra](https://en.wikipedia.org/wiki/Kleene_algebra)
 over the languages.
+
 In addition to that, we define a reversal of a language and prove that it behaves well
 with respect to other language operations.
+
+## Notation
+
+* `l + m`: union of languages `l` and `m`
+* `l * m`: language of strings `x ++ y` such that `x ∈ l` and `y ∈ m`
+* `l ^ n`: language of strings consisting of `n` members of `l` concatenated together
+* `1`: language consisting of only the empty string.
+  This is because it is the unit of the `*` operator.
+* `l∗`: Kleene's star – language of strings consisting of arbitrarily many
+  members of `l` concatenated together
+  (Note that this is the Unicode asterisk `∗`, and not the more common star `*`)
+
+## Main definitions
+
+* `Language α`: a set of strings over the alphabet `α`
+* `l.map f`: transform a language `l` over `α` into a language over `β`
+  by translating through `f : α → β`
+
+## Main theorems
+
+* `Language.self_eq_mul_add_iff`: Arden's lemma – if a language `l` satisfies the equation
+  `l = m * l + n`, and `m` doesn't contain the empty string,
+  then `l` is the language `m∗ * n`
+
 -/
 
 
@@ -141,7 +167,7 @@ def map (f : α → β) : Language α →+* Language β where
   map_zero' := image_empty _
   map_one' := image_singleton
   map_add' := image_union _
-  map_mul' _ _ := image_image2_distrib <| map_append _
+  map_mul' _ _ := image_image2_distrib <| fun _ _ => map_append
 
 @[simp]
 theorem map_id (l : Language α) : map id l = l := by simp [map]
@@ -363,7 +389,7 @@ end Language
 inductive Symbol (T N : Type*)
   /-- Terminal symbols (of the same type as the language) -/
   | terminal    (t : T) : Symbol T N
-  /-- Nonterminal symbols (must not be present at the end of word being generated) -/
+  /-- Nonterminal symbols (must not be present when the word being generated is finalized) -/
   | nonterminal (n : N) : Symbol T N
 deriving
   DecidableEq, Repr, Fintype

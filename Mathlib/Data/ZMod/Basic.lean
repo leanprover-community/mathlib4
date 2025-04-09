@@ -101,7 +101,7 @@ lemma eq_one_of_isUnit_natCast {n : ℕ} (h : IsUnit (n : ZMod 0)) : n = 1 := by
   rw [← Nat.mod_zero n, ← val_natCast, val_unit'.mp h]
 
 instance charP (n : ℕ) : CharP (ZMod n) n where
-  cast_eq_zero_iff' := by
+  cast_eq_zero_iff := by
     intro k
     rcases n with - | n
     · simp [zero_dvd_iff, Int.natCast_eq_zero]
@@ -1058,7 +1058,7 @@ theorem natAbs_min_of_le_div_two (n : ℕ) (x y : ℤ) (he : (x : ZMod n) = y) (
 
 end ZMod
 
-theorem RingHom.ext_zmod {n : ℕ} {R : Type*} [Semiring R] (f g : ZMod n →+* R) : f = g := by
+theorem RingHom.ext_zmod {n : ℕ} {R : Type*} [NonAssocSemiring R] (f g : ZMod n →+* R) : f = g := by
   ext a
   obtain ⟨k, rfl⟩ := ZMod.intCast_surjective a
   let φ : ℤ →+* R := f.comp (Int.castRingHom (ZMod n))
@@ -1079,19 +1079,19 @@ instance subsingleton_ringEquiv [Semiring R] : Subsingleton (ZMod n ≃+* R) :=
     apply RingHom.ext_zmod _ _⟩
 
 @[simp]
-theorem ringHom_map_cast [Ring R] (f : R →+* ZMod n) (k : ZMod n) : f (cast k) = k := by
+theorem ringHom_map_cast [NonAssocRing R] (f : R →+* ZMod n) (k : ZMod n) : f (cast k) = k := by
   cases n
   · dsimp [ZMod, ZMod.cast] at f k ⊢; simp
   · dsimp [ZMod.cast]
     rw [map_natCast, natCast_zmod_val]
 
 /-- Any ring homomorphism into `ZMod n` has a right inverse. -/
-theorem ringHom_rightInverse [Ring R] (f : R →+* ZMod n) :
+theorem ringHom_rightInverse [NonAssocRing R] (f : R →+* ZMod n) :
     Function.RightInverse (cast : ZMod n → R) f :=
   ringHom_map_cast f
 
 /-- Any ring homomorphism into `ZMod n` is surjective. -/
-theorem ringHom_surjective [Ring R] (f : R →+* ZMod n) : Function.Surjective f :=
+theorem ringHom_surjective [NonAssocRing R] (f : R →+* ZMod n) : Function.Surjective f :=
   (ringHom_rightInverse f).surjective
 
 @[simp]
