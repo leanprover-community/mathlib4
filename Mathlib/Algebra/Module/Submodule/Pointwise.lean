@@ -3,7 +3,7 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Jujian Zhang
 -/
-import Mathlib.Algebra.Group.Subgroup.Pointwise
+import Mathlib.Algebra.GroupWithZero.Subgroup
 import Mathlib.Algebra.Order.Group.Action
 import Mathlib.LinearAlgebra.Finsupp.Supported
 import Mathlib.LinearAlgebra.Span.Basic
@@ -30,9 +30,9 @@ These actions are available in the `Pointwise` locale.
 
 ## Implementation notes
 
-For an `R`-module `M`, The action of a subset of `R` acting on a submodule of `M` introduced in
-section `set_acting_on_submodules` does not have a counterpart in the file
-`Mathlib.Algebra.Group.Submonoid.Pointwise`.
+For an `R`-module `M`, the action of a subset of `R` acting on a submodule of `M` introduced in
+section `set_acting_on_submodules` does not have a counterpart in the files
+`Mathlib.Algebra.Group.Submonoid.Pointwise` and `Mathlib.Algebra.GroupWithZero.Submonoid.Pointwise`.
 
 Other than section `set_acting_on_submodules`, most of the lemmas in this file are direct copies of
 lemmas from the file `Mathlib.Algebra.Group.Submonoid.Pointwise`.
