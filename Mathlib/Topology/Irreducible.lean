@@ -319,24 +319,23 @@ open Set.Notation
 
 @[stacks 004Z]
 lemma IsPreirreducible.preimage_of_dense_isPreirreducible_fiber
-    {V : Set Y} (hV : IsPreirreducible V)
-    (f : X → Y) (hf' : IsOpenMap f) (hf'' : Dense (V ↓∩ { x | IsPreirreducible (f ⁻¹' {x}) })) :
+    {V : Set Y} (hV : IsPreirreducible V) (f : X → Y) (hf' : IsOpenMap f)
+    (hf'' : V ⊆ closure (V ∩ { x | IsPreirreducible (f ⁻¹' {x}) })) :
     IsPreirreducible (f ⁻¹' V) := by
   rintro U₁ U₂ hU₁ hU₂ ⟨x, hxV, hxU₁⟩ ⟨y, hyV, hyU₂⟩
   obtain ⟨z, hzV, hz₁, hz₂⟩ :=
     hV _ _ (hf' _ hU₁) (hf' _ hU₂) ⟨f x, hxV, x, hxU₁, rfl⟩ ⟨f y, hyV, y, hyU₂, rfl⟩
-  obtain ⟨z, ⟨⟨z₁, hz₁, e₁⟩, ⟨z₂, hz₂, e₂⟩⟩, hz⟩ :=
-    hf''.inter_open_nonempty (V ↓∩ (f '' U₁ ∩ f '' U₂)) ⟨_, (hf' _ hU₁).inter (hf' _ hU₂), rfl⟩
-      ⟨⟨z, hzV⟩, hz₁, hz₂⟩
+  obtain ⟨z, ⟨⟨z₁, hz₁, e₁⟩, ⟨z₂, hz₂, e₂⟩⟩, hzV, hz⟩ :=
+    mem_closure_iff.mp (hf'' hzV) _ ((hf' _ hU₁).inter (hf' _ hU₂)) ⟨hz₁, hz₂⟩
   obtain ⟨z₃, hz₃, hz₃'⟩ := hz _ _ hU₁ hU₂ ⟨z₁, e₁, hz₁⟩ ⟨z₂, e₂, hz₂⟩
-  refine ⟨z₃, show f z₃ ∈ _ from (show f z₃ = z from hz₃) ▸ z.2, hz₃'⟩
+  refine ⟨z₃, show f z₃ ∈ _ from (show f z₃ = z from hz₃) ▸ hzV, hz₃'⟩
 
 lemma IsPreirreducible.preimage_of_isPreirreducible_fiber
     {V : Set Y} (hV : IsPreirreducible V)
     (f : X → Y) (hf' : IsOpenMap f) (hf'' : ∀ x, IsPreirreducible (f ⁻¹' {x})) :
     IsPreirreducible (f ⁻¹' V) := by
   refine hV.preimage_of_dense_isPreirreducible_fiber f hf' ?_
-  simp [hf'']
+  simp [hf'', subset_closure]
 
 variable (f : X → Y) (hf₁ : Continuous f) (hf₂ : IsOpenMap f)
 variable (hf₃ : ∀ x, IsPreirreducible (f ⁻¹' {x})) (hf₄ : Function.Surjective f)
