@@ -165,6 +165,7 @@ def perfectClosure.algEquivOfAlgEquiv (i : E ≃ₐ[F] K) :
     perfectClosure F E ≃ₐ[F] perfectClosure F K :=
   (intermediateFieldMap i _).trans (equivOfEq (map_eq_of_algEquiv i))
 
+noncomputable
 alias AlgEquiv.perfectClosure := perfectClosure.algEquivOfAlgEquiv
 
 end map

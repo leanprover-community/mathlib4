@@ -600,6 +600,8 @@ section Subalgebra
 
 variable (R A : Type*) [CommSemiring R] [CommSemiring A] [Algebra R A] (p : ℕ) [ExpChar A p]
 
+/-- The perfect closure of `R` in `A` are the elements `x : A` such that `x ^ p ^ n`
+is in `R` for some `n`, where `p` is the exponential characteristic of `R`. -/
 def Subalgebra.perfectClosure : Subalgebra R A where
   carrier := {x : A | ∃ n : ℕ, x ^ p ^ n ∈ (algebraMap R A).rangeS}
   add_mem' := by
