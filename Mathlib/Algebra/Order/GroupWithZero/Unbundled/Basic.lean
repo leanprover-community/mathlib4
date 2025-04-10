@@ -647,25 +647,26 @@ lemma one_le_sq_iff₀ (ha : 0 ≤ a) : 1 ≤ a ^ 2 ↔ 1 ≤ a :=
 lemma one_lt_sq_iff₀ (ha : 0 ≤ a) : 1 < a ^ 2 ↔ 1 < a :=
   one_lt_pow_iff_of_nonneg ha (Nat.succ_ne_zero _)
 
-lemma lt_of_pow_lt_pow_left₀ [MulPosMono M₀] (n : ℕ) (hb : 0 ≤ b) (h : a ^ n < b ^ n) : a < b :=
+variable [MulPosMono M₀]
+
+lemma lt_of_pow_lt_pow_left₀ (n : ℕ) (hb : 0 ≤ b) (h : a ^ n < b ^ n) : a < b :=
   lt_of_not_ge fun hn => not_lt_of_ge (pow_le_pow_left₀ hb hn _) h
 
-lemma le_of_pow_le_pow_left₀ [MulPosMono M₀] (hn : n ≠ 0) (hb : 0 ≤ b) (h : a ^ n ≤ b ^ n) :
-    a ≤ b :=
+lemma le_of_pow_le_pow_left₀ (hn : n ≠ 0) (hb : 0 ≤ b) (h : a ^ n ≤ b ^ n) : a ≤ b :=
   le_of_not_lt fun h1 => not_le_of_lt (pow_lt_pow_left₀ h1 hb hn) h
 
 @[simp]
-lemma sq_eq_sq₀ [MulPosMono M₀] (ha : 0 ≤ a) (hb : 0 ≤ b) : a ^ 2 = b ^ 2 ↔ a = b :=
+lemma sq_eq_sq₀ (ha : 0 ≤ a) (hb : 0 ≤ b) : a ^ 2 = b ^ 2 ↔ a = b :=
   pow_left_inj₀ ha hb (by decide)
 
-lemma lt_of_mul_self_lt_mul_self₀ [MulPosMono M₀] (hb : 0 ≤ b) : a * a < b * b → a < b := by
+lemma lt_of_mul_self_lt_mul_self₀ (hb : 0 ≤ b) : a * a < b * b → a < b := by
   simp only [← sq]
   exact lt_of_pow_lt_pow_left₀ _ hb
 
-lemma sq_lt_sq₀ [MulPosMono M₀] (ha : 0 ≤ a) (hb : 0 ≤ b) : a ^ 2 < b ^ 2 ↔ a < b :=
+lemma sq_lt_sq₀ (ha : 0 ≤ a) (hb : 0 ≤ b) : a ^ 2 < b ^ 2 ↔ a < b :=
   pow_lt_pow_iff_left₀ ha hb two_ne_zero
 
-lemma sq_le_sq₀ [MulPosMono M₀] (ha : 0 ≤ a) (hb : 0 ≤ b) : a ^ 2 ≤ b ^ 2 ↔ a ≤ b :=
+lemma sq_le_sq₀ (ha : 0 ≤ a) (hb : 0 ≤ b) : a ^ 2 ≤ b ^ 2 ↔ a ≤ b :=
   pow_le_pow_iff_left₀ ha hb two_ne_zero
 
 end MonoidWithZero.LinearOrder
