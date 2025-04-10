@@ -238,7 +238,7 @@ lemma Sorted.filterMap {α β : Type*} [DecidableEq α] [DecidableEq β]
     · rw [hb, List.sorted_cons]
       refine ⟨fun x hx ↦ ?_, ih (List.sorted_cons.mp hl).right⟩
       obtain ⟨u, hu, hu'⟩ := List.mem_filterMap.mp hx
-      apply hp a u b x hb hu' <| (List.sorted_cons.mp hl).left u hu
+      exact hp a u b x hb hu' <| (List.sorted_cons.mp hl).left u hu
 
 end List
 
