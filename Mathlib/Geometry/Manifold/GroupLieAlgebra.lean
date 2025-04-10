@@ -20,7 +20,7 @@ the bracket of `v` and `w`.
 Due to general properties of the Lie bracket of vector fields, this gives a Lie algebra structure
 on `GroupLieAlgebra I G`.
 
-Note that one can also define a Lie algebra on the space of left-mulInvariant derivations on `C^∞`
+Note that one can also define a Lie algebra on the space of left-invariant derivations on `C^∞`
 functions (see `LeftInvariantDerivation.instLieAlgebra`). For finite-dimensional `C^∞` real
 manifolds, this space of derivations can be canonically identified with the tangent space, and we
 recover the same Lie algebra structure (TODO: prove this). In other smoothness classes or on other
@@ -47,12 +47,14 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable (I G) in
 /-- The Lie algebra of a Lie group, i.e., its tangent space at the identity. We use the word
 `GroupLieAlgebra` instead of `LieAlgebra` as the latter is taken as a generic class. -/
-@[to_additive]
+@[to_additive "The Lie algebra of an additive Lie group, i.e., its tangent space at zero. We use
+the word `AddGroupLieAlgebra` instead of `LieAlgebra` as the latter is taken as a generic class."]
 abbrev GroupLieAlgebra : Type _ := TangentSpace I (1 : G)
 
-/-- The mulInvariant vector field associated to a vector `v` in the Lie alebra. At a point `g`, it
-is given by the image of `v` under the left-multiplication by `g`. -/
-@[to_additive]
+/-- The invariant vector field associated to a vector `v` in the Lie alebra. At a point `g`, it
+is given by the image of `v` under left-multiplication by `g`. -/
+@[to_additive "The invariant vector field associated to a vector `v` in the Lie alebra. At a
+point `g`, it is given by the image of `v` under left-addition by `g`."]
 noncomputable def mulInvariantVectorField (v : GroupLieAlgebra I G) (g : G) : TangentSpace I g :=
   mfderiv I I (g * ·) (1 : G) v
 
@@ -62,6 +64,15 @@ lemma mulInvariantVectorField_add (v w : GroupLieAlgebra I G) :
   ext g
   simp [mulInvariantVectorField]
 
+/- `to_additive` fails on the next lemma, as it tries to additivize `smul` while it shouldn't.
+Therefore, we state and prove by hand the additive version. -/
+lemma addInvariantVectorField_smul {G : Type*} [TopologicalSpace G] [ChartedSpace H G] [AddGroup G]
+    (c : 𝕜) (v : AddGroupLieAlgebra I G) :
+    addInvariantVectorField (c • v) = c • addInvariantVectorField v := by
+  ext g
+  simp [addInvariantVectorField]
+
+@[to_additive existing addInvariantVectorField_smul]
 lemma mulInvariantVectorField_smul (c : 𝕜) (v : GroupLieAlgebra I G) :
     mulInvariantVectorField (c • v) = c • mulInvariantVectorField v := by
   ext g
@@ -71,7 +82,8 @@ open VectorField
 
 /-- The Lie bracket of two vectors `v` and `w` in the Lie algebra of a Lie group is obtained by
 taking the Lie bracket of the associated invariant vector fields, at the identity. -/
-@[to_additive]
+@[to_additive "The Lie bracket of two vectors `v` and `w` in the Lie algebra of an additive Lie
+group is obtained by taking the Lie bracket of the associated invariant vector fields, at zero."]
 noncomputable instance : Bracket (GroupLieAlgebra I G) (GroupLieAlgebra I G) where
   bracket v w := mlieBracket I (mulInvariantVectorField v) (mulInvariantVectorField w) (1 : G)
 
@@ -100,7 +112,7 @@ lemma inverse_mfderiv_mul_left {g h : G} :
   exact ContinuousLinearMap.inverse_eq A' A
 
 /-- Invariant vector fields are invariant under pullbacks. -/
-@[to_additive]
+@[to_additive "Invariant vector fields are invariant under pullbacks."]
 lemma mpullback_mulInvariantVectorField (g : G) (v : GroupLieAlgebra I G) :
     mpullback I I (g * ·) (mulInvariantVectorField v) = mulInvariantVectorField v := by
   have M : 1 ≤ minSmoothness 𝕜 3 := le_trans (by norm_num) le_minSmoothness
@@ -177,9 +189,11 @@ open VectorField
 
 variable [CompleteSpace E]
 
-/-- The mulInvariant vector field associated to the value at the identity of the Lie bracket of
-two mulInvariant vector fields, is everywhere the Lie bracket of the mulInvariant vector fields. -/
-@[to_additive]
+/-- The invariant vector field associated to the value at the identity of the Lie bracket of
+two invariant vector fields, is everywhere the Lie bracket of the invariant vector fields. -/
+@[to_additive "The invariant vector field associated to the value at zero of the Lie
+bracket of two invariant vector fields, is everywhere the Lie bracket of the invariant vector
+fields."]
 lemma mulInvariantVector_mlieBracket (v w : GroupLieAlgebra I G) :
     mulInvariantVectorField
       (mlieBracket I (mulInvariantVectorField v) (mulInvariantVectorField w) 1) =
@@ -192,7 +206,10 @@ lemma mulInvariantVector_mlieBracket (v w : GroupLieAlgebra I G) :
   · exact contMDiffAt_mul_left
   · exact minSmoothness_monotone (by norm_cast)
 
-@[to_additive]
+/-- The tangent space at the identity of a Lie group is a Lie ring, for the bracket
+given by the Lie bracket of invariant vector fields. -/
+@[to_additive "The tangent space at the identity of an additive Lie group is a Lie ring, for the
+bracket given by the Lie bracket of invariant vector fields."]
 noncomputable instance : LieRing (GroupLieAlgebra I G) where
   add_lie u v w := by
     simp only [GroupLieAlgebra.bracket_def, mulInvariantVectorField_add]
@@ -210,7 +227,23 @@ noncomputable instance : LieRing (GroupLieAlgebra I G) where
     apply leibniz_identity_mlieBracket_apply <;>
       exact contMDiff_mulInvariantVectorField _ _
 
-noncomputable instance : LieAlgebra 𝕜 (GroupLieAlgebra I G) where
+/- `to_additive` fails on the next instance, as it tries to additivize `smul` while it shouldn't.
+Therefore, we state and prove by hand the additive version. -/
+
+/-- The tangent space at the identity of an additive Lie group is a Lie algebra, for the bracket
+given by the Lie bracket of invariant vector fields. -/
+noncomputable instance instLieAlgebraAddGroupLieAlgebra
+   {G : Type*} [TopologicalSpace G] [ChartedSpace H G] [AddGroup G]
+  [LieAddGroup I (minSmoothness 𝕜 3) G] : LieAlgebra 𝕜 (AddGroupLieAlgebra I G) where
+  lie_smul c v w := by
+    simp only [AddGroupLieAlgebra.bracket_def, addInvariantVectorField_smul]
+    rw [mlieBracket_smul_right]
+    exact mdifferentiableAt_addInvariantVectorField _
+
+/-- The tangent space at the identity of a Lie group is a Lie algebra, for the bracket
+given by the Lie bracket of invariant vector fields. -/
+@[to_additive existing]
+noncomputable instance instLieAlgebraGroupLieAlgebra : LieAlgebra 𝕜 (GroupLieAlgebra I G) where
   lie_smul c v w := by
     simp only [GroupLieAlgebra.bracket_def, mulInvariantVectorField_smul]
     rw [mlieBracket_smul_right]
