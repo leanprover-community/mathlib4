@@ -248,7 +248,7 @@ Some sources call this condition `f is infinitesimally injective at x`. -/
 lemma of_finiteDimensional_of_mfderiv_injective [FiniteDimensional 𝕜 E] {x : M}
     (hf' : Injective (mfderiv I I' f x)) : IsImmersionAt F I I' n f x := by
   rw [isImmersionAt_iff_msplitsAt]
-  convert ContinuousLinearMap.Splits.of_injective_of_finiteDimensional_dom hf'
+  convert ContinuousLinearMap.Splits.of_injective_of_finiteDimensional_of_completeSpace hf'
   show FiniteDimensional 𝕜 E; assumption
 
 end IsImmersionAt

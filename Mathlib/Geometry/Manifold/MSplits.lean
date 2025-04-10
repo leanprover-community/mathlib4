@@ -135,7 +135,7 @@ lemma comp [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
   have : CompleteSpace (TangentSpace I x) := by show CompleteSpace E; assumption
   have : CompleteSpace (TangentSpace I' (f x)) := by show CompleteSpace E'; assumption
   have : CompleteSpace (TangentSpace J (g (f x))) := by show CompleteSpace F; assumption
-  apply hf.comp hg
+  apply hg.comp hf
 
 lemma comp_isLocalDiffeomorphAt_left [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
     (hf : MSplitsAt I I' f x) {f₀ : N → M} {y : N} (hxy : f₀ y = x)
