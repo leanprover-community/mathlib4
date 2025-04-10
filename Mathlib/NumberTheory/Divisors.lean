@@ -135,7 +135,7 @@ lemma divisorsAntidiagonalList_coe {n : ℕ} :
 
 lemma divisorsAntidiagonalList_sorted {n : ℕ} :
     n.divisorsAntidiagonalList.Sorted (Prod.Lex (· < ·) (· < ·)) := by
-  apply List.Sorted.filterMap (List.sorted_lt_range' (Nat.one_ne_zero))
+  apply List.Sorted.filterMap (List.sorted_lt_range' _ _ (Nat.one_ne_zero))
   intro a b c d h h' ha
   apply Prod.Lex.left
   rw [Option.ite_none_right_eq_some, Option.some.injEq] at h h'
