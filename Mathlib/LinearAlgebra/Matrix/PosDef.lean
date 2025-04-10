@@ -99,7 +99,8 @@ theorem _root_.Matrix.posSemidef_transpose_iff {M : Matrix n n R} : Mᵀ.PosSemi
 theorem conjTranspose {M : Matrix n n R} (hM : M.PosSemidef) : Mᴴ.PosSemidef := hM.1.symm ▸ hM
 
 @[simp]
-theorem _root_.Matrix.posSemidef_conjTranspose_iff {M : Matrix n n R} : Mᴴ.PosSemidef ↔ M.PosSemidef :=
+theorem _root_.Matrix.posSemidef_conjTranspose_iff {M : Matrix n n R} :
+    Mᴴ.PosSemidef ↔ M.PosSemidef :=
   ⟨(by simpa using ·.conjTranspose), .conjTranspose⟩
 
 protected lemma zero : PosSemidef (0 : Matrix n n R) :=
