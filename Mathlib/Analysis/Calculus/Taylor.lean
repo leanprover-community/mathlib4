@@ -235,10 +235,15 @@ section
 variable {G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G]
   {f g : E → G} {C : ℝ} {s : Set E} {x y : E} {f' g' : E → E →L[ℝ] G} {φ : E →L[ℝ] G}
 
-lemma _root_.Convex.todo (hs : Convex ℝ s) {x₀ : E} (hx₀s : x₀ ∈ s) {p : E → Prop}
-    (h : ∀ᶠ x in 𝓝[s] x₀, p x) :
+lemma _root_.Convex.eventually_nhdsWithin_segment (hs : Convex ℝ s) {x₀ : E} (hx₀s : x₀ ∈ s)
+    {p : E → Prop} (h : ∀ᶠ x in 𝓝[s] x₀, p x) :
     ∀ᶠ x in 𝓝[s] x₀, ∀ y ∈ segment ℝ x₀ x, p y := by
-  sorry
+  rw [eventually_nhdsWithin_iff,
+    Filter.HasBasis.eventually_iff (LocallyConvexSpace.convex_basis (𝕜 := ℝ) x₀)] at h ⊢
+  obtain ⟨u, ⟨hu_nhds, hu_convex⟩, h⟩ := h
+  refine ⟨u, ⟨hu_nhds, hu_convex⟩, fun x hxu hxs y hy ↦ h ?_ (hs.segment_subset hx₀s hxs hy)⟩
+  suffices segment ℝ x₀ x ⊆ u from this hy
+  exact hu_convex.segment_subset (mem_of_mem_nhds hu_nhds) hxu
 
 theorem _root_.Convex.isLittleO_pow_succ {x₀ : E} {n : ℕ}
     (hs : Convex ℝ s) (hx₀s : x₀ ∈ s)
@@ -250,10 +255,7 @@ theorem _root_.Convex.isLittleO_pow_succ {x₀ : E} {n : ℕ}
   simp_rw [norm_pow, norm_norm] at hf'
   have : ∀ᶠ x in 𝓝[s] x₀, segment ℝ x₀ x ⊆ s ∧ ∀ y ∈ segment ℝ x₀ x, ‖f' y‖ ≤ c * ‖x - x₀‖ ^ n := by
     have h1 : ∀ᶠ x in 𝓝[s] x₀, x ∈ s := eventually_mem_nhdsWithin
-    specialize hf' hc
-    have hf'' : ∀ᶠ x in 𝓝[s] x₀, ∀ y ∈ segment ℝ x₀ x, ‖f' y‖ ≤ c * ‖y - x₀‖ ^ n := by
-      exact hs.todo hx₀s hf'
-    filter_upwards [h1, hf''] with x hxs h
+    filter_upwards [h1, hs.eventually_nhdsWithin_segment hx₀s (hf' hc)] with x hxs h
     refine ⟨hs.segment_subset hx₀s hxs, fun y hy ↦ (h y hy).trans ?_⟩
     gcongr
     sorry -- `⊢ ‖y - x₀‖ ≤ ‖x - x₀‖`
@@ -279,7 +281,7 @@ theorem _root_.Convex.isLittleO_pow_succ' {f f': ℝ → E} {x₀ : ℝ} {n : �
     simp
 
 /-- **Taylor's theorem** using little-o notation. -/
-theorem taylor_isLittleO' {f : ℝ → E} {x₀ : ℝ} {n : ℕ} {s : Set ℝ}
+theorem taylor_isLittleO {f : ℝ → E} {x₀ : ℝ} {n : ℕ} {s : Set ℝ}
     (hs : Convex ℝ s) (hx₀s : x₀ ∈ s) (hf : ContDiffOn ℝ n f s) :
     (fun x ↦ f x - taylorWithinEval f n s x₀ x) =o[𝓝[s] x₀] fun x ↦ (x - x₀) ^ n := by
   induction n generalizing f with
@@ -348,16 +350,6 @@ theorem taylor_tendsto {f : ℝ → ℝ} {x₀ : ℝ} {n : ℕ} {s : Set ℝ}
     · simp_rw [mul_one, div_mul_eq_div_div_swap]
       convert h (hf.derivWithin hs' le_rfl) |>.div_const _
       rw [zero_div]
-
-/-- **Taylor's theorem** using little-o notation. -/
-theorem taylor_isLittleO {f : ℝ → ℝ} {x₀ : ℝ} {n : ℕ} {s : Set ℝ}
-    (hs : Convex ℝ s) (hx₀s : x₀ ∈ s) (hf : ContDiffOn ℝ n f s) :
-    (fun x ↦ f x - taylorWithinEval f n s x₀ x) =o[𝓝[s] x₀] fun x ↦ (x - x₀) ^ n := by
-  rw [Asymptotics.isLittleO_iff_tendsto]
-  · exact taylor_tendsto hs hx₀s hf
-  · intro x hx
-    rw [pow_eq_zero_iff', sub_eq_zero] at hx
-    rw [hx.1, taylorWithinEval_self, sub_self]
 
 /-! ### Taylor's theorem with mean value type remainder estimate -/
 
