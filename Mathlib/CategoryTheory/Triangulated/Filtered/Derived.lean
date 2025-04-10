@@ -174,9 +174,17 @@ def DerivedFunctor : DerivedCategory t₁.Heart ⥤ DerivedCategory t₂.Heart :
 -- Second statement of Proposition A.3.2: the "commutative" diagram.
 -- This is an existence statement.
 
+/-
 def DerivedFunctor_comp :
     Realization L₁ t₁ tF₁ ⋙ T ≅ DerivedFunctor t₁ t₂ T ⋙ Realization L₂ t₂ tF₂ := sorry
+-/
 
+-- The equivalence from the heart of `tF₁` to the category of complexes of the heart of `t₁`.
+def G : tF₁.Heart ⥤ CochainComplex t₁.Heart ℤ := tF₁.ιHeart ⋙ FilteredToComplex L₁ t₁
+
+
+def DerivedFunctor_comp :
+    Realization L₁ t₁ tF₁ ⋙ T ≅ DerivedFunctor t₁ t₂ T ⋙ Realization L₂ t₂ tF₂ := sorry
 
 end Triangulated.Filtered
 

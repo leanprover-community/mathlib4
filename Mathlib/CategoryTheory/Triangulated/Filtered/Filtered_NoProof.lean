@@ -129,7 +129,7 @@ open ObjectProperty
 variable (C)
 variable [HasShift C (ℤ × ℤ)] [Preadditive C] [HasZeroObject C]
 
-/-- Definition A.1.1(i):
+/-- Definition A.1.1(1):
 Definition of a filtered pretriangulated category.
 -/
 class FilteredTriangulated [∀ p : ℤ × ℤ, Functor.Additive (shiftFunctor C p)]
@@ -343,7 +343,7 @@ variable {B : Type u₂} [Category.{v₂} B] [HasShift B ℤ] [Preadditive B] [H
 
 namespace Functor
 
-/-- Definition A.1.1(ii).
+/-- Definition A.1.1(2).
 A filtered triangulated functor is a functor `F : C ⥤ D` that commutes with
 both shifts (i.e. with the shifts from `ℤ × ℤ`), that sends the objects of `LE 0`
 (resp. `GE 0`) to objects of `LE 0` (resp. `GE 0`) and that is compatible with the
@@ -361,7 +361,7 @@ section Over
 
 variable (C A) in
 /--
-Definition A.1.1(iii), first part:
+Definition A.1.1(3), first part:
 Filtered triangulated category over a triangulated category.
 -/
 structure isFilteredTriangulated_over where
@@ -402,7 +402,7 @@ def isFilteredTriangulated_over_equiv_inv_comp (L : isFilteredTriangulated_over 
   (G := (isFilteredTriangulated_over_equiv L).asEquivalence)
 
 /--
-Definition A.1.1(iii), second part:
+Definition A.1.1(3), second part:
 Lifting of a triangulated functor.
 -/
 structure Functor.filteredLifting (L₁ : isFilteredTriangulated_over C A)
@@ -548,7 +548,11 @@ lemma truncGELE_triangle_distinguished (a b c : ℤ) (h : a ≤ b) (h' : b ≤ c
     (truncGELE_triangle a b c h h').obj X ∈ distTriang C := sorry
 
 -- Prop A.1.3 (iv): we need to explain what compatibilities are hidden under the
--- adjective "canonical". We actually want the isomorphisms for "second" shifts
+-- adjective "canonical".
+-- Here, there is an isomorphism given by the universal property of the
+-- adjoint.
+
+-- Also, we actually want the isomorphisms for "second" shifts
 -- by any integer, compatible with the zero and the addition, like in `Functor.CommShift`.
 -- Let's introduce a new structure for this. (It should be a class really.)
 
@@ -575,6 +579,7 @@ structure familyCommShift (F : ℤ → (C ⥤ C)) where
       iso n (a + b) n'' (by rw [add_comm a b, ← add_assoc, h', h]) =
       familyCommShift.isoAdd F n a b n' n'' (iso n a n' h) (iso n' b n'' h')
 
+-- But this is enough, the isomorphisms are explicit!
 def truncLE_commShift : familyCommShift (fun n ↦ truncLE (C := C) n) := sorry
 
 def truncGE_commShift : familyCommShift (fun n ↦ truncGE (C := C) n) := sorry
@@ -627,6 +632,7 @@ structure leftCommShift (G : M → (E ⥤ E')) where
       isoWhiskerRight (shiftFunctorAdd E b' b) _ ≪≫ Functor.associator _ _ _ ≪≫
       isoWhiskerLeft _ (iso a b c h) ≪≫ iso c b' c' h'
 
+-- Again, the isomorphisms are explicit.
 def Gr_commShift : leftCommShift (fun n ↦ Gr (C := C) L n) (E := FilteredShift C) := sorry
 
 -- Proposition A.1.5(ii).
@@ -634,6 +640,7 @@ def Gr_commShift : leftCommShift (fun n ↦ Gr (C := C) L n) (E := FilteredShift
 lemma Gr_pure_zero_of_ne_zero {n : ℤ} (h : n ≠ 0) (X : A) :
     Limits.IsZero ((Gr L n).obj (L.functor.obj X)) := sorry
 
+-- This should be an explicit isomorphism.
 def Gr_pure_of_zero (n : ℤ) (h : n = 0) : L.functor ⋙ Gr L n ≅ 𝟭 A := sorry
 
 -- Proposition A.1.5(iii).
@@ -779,9 +786,11 @@ def filteredLifting_compat_Gr (n : ℤ) :
   isoWhiskerLeft _ FT.compat ≪≫ (Functor.associator _ _ _).symm ≪≫
   isoWhiskerRight (Gr_Gr_aux L₁ n) _
 
--- Proposition A.1.8.
+-- Proposition A.1.8 is a mess.
 -- Again this is not precise, the natural isomorphisms are not arbitrary!
--- Also, the square with `truncGE` is missing.
+-- Also, the square with `truncGE` is missing, and we need more squares
+-- with `truncGELE`, as well as compatibilities with the connecting
+-- morphisms in the triangles of `truncGELE`.
 
 /- Let's do `truncLE`. The "commutative" square says two thing:
 (1) `FT` sends objects that are `LE n` to objects that are `LE n`.
