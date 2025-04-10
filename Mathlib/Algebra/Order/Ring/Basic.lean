@@ -78,14 +78,6 @@ lemma pow_add_pow_le' (ha : 0 ≤ a) (hb : 0 ≤ b) : a ^ n + b ^ n ≤ 2 * (a +
 
 end OrderedSemiring
 
--- See note [reducible non instances]
-/-- Turn an ordered domain into a strict ordered ring. -/
-abbrev OrderedRing.toStrictOrderedRing (α : Type*)
-    [OrderedRing α] [NoZeroDivisors α] [Nontrivial α] : StrictOrderedRing α where
-  __ := ‹OrderedRing α›
-  __ := ‹NoZeroDivisors α›
-  mul_pos _ _ ap bp := (mul_nonneg ap.le bp.le).lt_of_ne' (mul_ne_zero ap.ne' bp.ne')
-
 section StrictOrderedSemiring
 
 variable [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] {a x y : R} {n m : ℕ}

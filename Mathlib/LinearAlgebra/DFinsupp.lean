@@ -102,23 +102,6 @@ theorem lapply_comp_lsingle_of_ne [DecidableEq ι] (i i' : ι) (h : i ≠ i') :
 
 section Lsum
 
--- Porting note: Unclear how true these docstrings are in lean 4
-/-- Typeclass inference can't find `DFinsupp.addCommMonoid` without help for this case.
-This instance allows it to be found where it is needed on the LHS of the colon in
-`DFinsupp.moduleOfLinearMap`. -/
-instance addCommMonoidOfLinearMap : AddCommMonoid (Π₀ i : ι, M i →ₗ[R] N) :=
-  inferInstance
-
-/-- Typeclass inference can't find `DFinsupp.module` without help for this case.
-This is needed to define `DFinsupp.lsum` below.
-
-The cause seems to be an inability to unify the `∀ i, AddCommMonoid (M i →ₗ[R] N)` instance that
-we have with the `∀ i, Zero (M i →ₗ[R] N)` instance which appears as a parameter to the
-`DFinsupp` type. -/
-instance moduleOfLinearMap [Semiring S] [Module S N] [SMulCommClass R S N] :
-    Module S (Π₀ i : ι, M i →ₗ[R] N) :=
-  DFinsupp.module
-
 variable (S)
 variable [DecidableEq ι]
 
