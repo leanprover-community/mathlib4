@@ -60,7 +60,7 @@ instance isStrictOrderedRing [Semiring α] [PartialOrder α] [IsStrictOrderedRin
     (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 
-instance existsAddOfLE [CommSemiring α] [PartialOrder α] [IsStrictOrderedRing α] [ExistsAddOfLE α] :
+instance existsAddOfLE [Semiring α] [PartialOrder α] [IsStrictOrderedRing α] [ExistsAddOfLE α] :
     ExistsAddOfLE { x : α // 0 ≤ x } :=
   ⟨fun {a b} h ↦ by
     rw [← Subtype.coe_le_coe] at h
