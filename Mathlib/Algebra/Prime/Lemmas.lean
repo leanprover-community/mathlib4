@@ -129,7 +129,7 @@ theorem not_irreducible_pow {M} [Monoid M] {x : M} {n : ℕ} (hn : n ≠ 1) :
 
 theorem Irreducible.of_map {F : Type*} [Monoid M] [Monoid N] [FunLike F M N] [MonoidHomClass F M N]
     {f : F} [IsLocalHom f] {x} (hfx : Irreducible (f x)) : Irreducible x :=
-  ⟨fun hu ↦ hfx.not_unit <| hu.map f,
+  ⟨fun hu ↦ hfx.not_isUnit <| hu.map f,
    by rintro p q rfl
       exact (hfx.isUnit_or_isUnit <| map_mul f p q).imp (.of_map f _) (.of_map f _)⟩
 
@@ -187,7 +187,7 @@ It is local because the only add unit in `N` is `0`, with preimage `{(0, 0)}` al
 Then `x = (1, 0)` is irreducible in `M`, but `f x = 2 = 1 + 1` is not irreducible in `N`.
 -/
 theorem Irreducible.map {x : M} (h : Irreducible x) : Irreducible (f x) :=
-  ⟨fun g ↦ h.not_unit g.of_map, fun a b g ↦
+  ⟨fun g ↦ h.not_isUnit g.of_map, fun a b g ↦
     let f := MulEquivClass.toMulEquiv f
     (h.isUnit_or_isUnit (symm_apply_apply f x ▸ map_mul f.symm a b ▸ congrArg f.symm g)).imp
       (·.of_map) (·.of_map)⟩

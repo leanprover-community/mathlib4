@@ -584,7 +584,7 @@ theorem not_irreducible_C (x : R) : ¬Irreducible (C x) := by
   by_cases H : x = 0
   · rw [H, C_0]
     exact not_irreducible_zero
-  · exact fun hx => Irreducible.not_unit hx <| isUnit_C.2 <| isUnit_iff_ne_zero.2 H
+  · exact fun hx => hx.not_isUnit <| isUnit_C.2 <| isUnit_iff_ne_zero.2 H
 
 theorem degree_pos_of_irreducible (hp : Irreducible p) : 0 < p.degree :=
   lt_of_not_ge fun hp0 =>
