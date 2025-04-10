@@ -536,12 +536,9 @@ end LinearOrderedAddCommGroup
 
 section GroupWithZero
 
-section MulPosMono
+section MulPos
 
-variable {G₀ : Type*} [GroupWithZero G₀] [PartialOrder G₀] [MulPosReflectLT G₀] [MulPosMono G₀]
-  {a b c : G₀}
-
-attribute [local instance] MulPosReflectLT.toMulPosReflectLE
+variable {G₀ : Type*} [GroupWithZero G₀] [PartialOrder G₀] [MulPosReflectLT G₀] {a b c : G₀}
 
 @[simp]
 theorem preimage_mul_const_Iic (a : G₀) (h : 0 < c) : (· * c) ⁻¹' Iic a = Iic (a / c) := by
@@ -598,14 +595,11 @@ theorem image_mul_right_Ioc (a b : G₀) (h : 0 < c) :
     (fun x => x * c) '' Ioc a b = Ioc (a * c) (b * c) :=
   (OrderIso.mulRight₀ c h).image_Ioc a b
 
-end MulPosMono
+end MulPos
   
-section PosMulMono
+section PosMul
 
-variable {G₀ : Type*} [GroupWithZero G₀] [PartialOrder G₀] [PosMulReflectLT G₀] [PosMulMono G₀]
-  {a b c : G₀}
-
-attribute [local instance] PosMulReflectLT.toPosMulReflectLE
+variable {G₀ : Type*} [GroupWithZero G₀] [PartialOrder G₀] [PosMulReflectLT G₀] {a b c : G₀}
 
 theorem image_mul_left_Ici (h : 0 < a) (b : G₀) : (a * ·) '' Ici b = Ici (a * b) :=
   (OrderIso.mulLeft₀ a h).image_Ici b
@@ -644,20 +638,13 @@ theorem image_const_mul_Ioi_zero (ha : 0 < a) :
     (a * ·) '' Ioi 0 = Ioi 0 := by
   rw [image_mul_left_Ioi ha, mul_zero]
 
-end PosMulMono
+end PosMul
 
 variable {G₀ : Type*} [GroupWithZero G₀] [PartialOrder G₀] [PosMulReflectLT G₀]
   [MulPosStrictMono G₀] {a : G₀}
 
 /-- The (pre)image under `inv` of `Ioo 0 a` is `Ioi a⁻¹`. -/
 theorem inv_Ioo_0_left (ha : 0 < a) : (Ioo 0 a)⁻¹ = Ioi a⁻¹ := by
-  -- TODO: move to a non-instance constructor and use in `inv_lt_of_inv_lt₀`
-  have : PosMulStrictMono G₀ := by
-    rw [posMulStrictMono_iff]
-    constructor
-    rintro ⟨x, hx⟩ a b h
-    apply lt_of_mul_lt_mul_left _ (inv_pos.2 hx).le
-    simpa [hx.ne']
   ext x
   exact ⟨fun h ↦ inv_lt_of_inv_lt₀ (inv_pos.1 h.1) h.2,
          fun h ↦ ⟨inv_pos.2 <| (inv_pos.2 ha).trans h, inv_lt_of_inv_lt₀ ha h⟩⟩
@@ -679,10 +666,7 @@ instead of depending on commutativity.
 
 section CommGroupWithZero
 
-section PosMulMono
-
-variable {G₀ : Type*} [CommGroupWithZero G₀] [PartialOrder G₀] [PosMulReflectLT G₀] [PosMulMono G₀]
-  {a b c : G₀}
+variable {G₀ : Type*} [CommGroupWithZero G₀] [PartialOrder G₀] [PosMulReflectLT G₀] {a b c : G₀}
 
 @[simp]
 theorem preimage_const_mul_Iic (a : G₀) (h : 0 < c) : (c * ·) ⁻¹' Iic a = Iic (a / c) :=
@@ -695,13 +679,6 @@ theorem preimage_const_mul_Ici (a : G₀) (h : 0 < c) : (c * ·) ⁻¹' Ici a = 
 @[simp]
 theorem preimage_const_mul_Icc (a b : G₀) {c : G₀} (h : 0 < c) :
     (c * ·) ⁻¹' Icc a b = Icc (a / c) (b / c) := by simp [← Ici_inter_Iic, h]
-  
-end PosMulMono
-
-section PosMulStrictMono
-
-variable {G₀ : Type*} [CommGroupWithZero G₀] [PartialOrder G₀] [PosMulReflectLT G₀]
-  [PosMulStrictMono G₀] {c : G₀}
 
 @[simp]
 theorem preimage_const_mul_Iio (a : G₀) (h : 0 < c) : (c * ·) ⁻¹' Iio a = Iio (a / c) :=
@@ -722,8 +699,6 @@ theorem preimage_const_mul_Ioc (a b : G₀) (h : 0 < c) :
 @[simp]
 theorem preimage_const_mul_Ico (a b : G₀) (h : 0 < c) :
     (c * ·) ⁻¹' Ico a b = Ico (a / c) (b / c) := by simp [← Ici_inter_Iio, h]
-
-end PosMulStrictMono
 
 end CommGroupWithZero
 
