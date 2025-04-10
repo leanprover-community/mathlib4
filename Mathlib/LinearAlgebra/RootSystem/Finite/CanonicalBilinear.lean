@@ -205,7 +205,7 @@ theorem range_polarization_domRestrict_le_span_coroot :
   intro y hy
   obtain ⟨x, hx⟩ := hy
   rw [← hx, LinearMap.domRestrict_apply, Polarization_apply]
-  refine (mem_span_range_iff_exists_fun R).mpr ?_
+  refine (Submodule.mem_span_range_iff_exists_fun R).mpr ?_
   use fun i => (P.toPerfectPairing x) (P.coroot i)
   simp
 
@@ -235,7 +235,8 @@ end Fintype
 
 section IsValuedInOrdered
 
-variable (S : Type*) [LinearOrderedCommRing S] [Algebra S R] [FaithfulSMul S R]
+variable (S : Type*) [CommRing S] [LinearOrder S] [IsStrictOrderedRing S]
+  [Algebra S R] [FaithfulSMul S R]
   [Module S M] [IsScalarTower S R M] [P.IsValuedIn S] {i j : ι}
 
 /-- The bilinear form of a finite root pairing taking values in a linearly-ordered ring, as a

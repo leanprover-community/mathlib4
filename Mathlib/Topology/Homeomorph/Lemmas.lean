@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Patrick Massot, Sébastien Gouëzel, Zhouhang Zhou, Re
 import Mathlib.Logic.Equiv.Fin.Basic
 import Mathlib.Topology.Connected.LocallyConnected
 import Mathlib.Topology.DenseEmbedding
+import Mathlib.Topology.Connected.TotallyDisconnected
 
 /-!
 # Further properties of homeomorphisms
@@ -116,9 +117,6 @@ protected lemma totallyDisconnectedSpace (h : X ≃ₜ Y) [tdc : TotallyDisconne
     TotallyDisconnectedSpace Y :=
   (totallyDisconnectedSpace_iff Y).mpr
     (h.range_coe ▸ ((IsEmbedding.isTotallyDisconnected_range h.isEmbedding).mpr tdc))
-
-@[deprecated (since := "2024-09-30")]
-alias denseEmbedding := isDenseEmbedding
 
 protected theorem normalSpace [NormalSpace X] (h : X ≃ₜ Y) : NormalSpace Y :=
   h.symm.isClosedEmbedding.normalSpace
@@ -499,9 +497,6 @@ alias quotientMap := isQuotientMap
 @[deprecated (since := "2024-10-20")] alias closedEmbedding := isClosedEmbedding
 @[deprecated (since := "2024-10-18")]
 alias openEmbedding := isOpenEmbedding
-
-@[deprecated (since := "2024-09-30")]
-alias denseEmbedding := isDenseEmbedding
 
 end IsHomeomorph
 

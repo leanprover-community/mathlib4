@@ -377,7 +377,7 @@ end StarOrderedField
 
 section LinearOrderedField
 
-variable [Fintype m] [LinearOrderedField R]
+variable [Fintype m] [Field R] [LinearOrder R] [IsStrictOrderedRing R]
 
 theorem ker_mulVecLin_transpose_mul_self (A : Matrix m n R) :
     LinearMap.ker (Aᵀ * A).mulVecLin = LinearMap.ker (mulVecLin A) := by
@@ -409,7 +409,8 @@ theorem rank_transpose [Field R] [Fintype m] (A : Matrix m n R) : Aᵀ.rank = A.
       toLin_eq_toLin', toLin'_apply', rank]
 
 @[simp]
-theorem rank_self_mul_transpose [LinearOrderedField R] [Fintype m] (A : Matrix m n R) :
+theorem rank_self_mul_transpose [Field R] [LinearOrder R] [IsStrictOrderedRing R]
+    [Fintype m] (A : Matrix m n R) :
     (A * Aᵀ).rank = A.rank := by
   simpa only [rank_transpose, transpose_transpose] using rank_transpose_mul_self Aᵀ
 

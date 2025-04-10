@@ -81,6 +81,13 @@ variable (f)
 theorem comap_ne_top [RingHomClass F R S] (hK : K ≠ ⊤) : comap f K ≠ ⊤ :=
   (ne_top_iff_one _).2 <| by rw [mem_comap, map_one]; exact (ne_top_iff_one _).1 hK
 
+lemma exists_ideal_comap_le_prime {S} [CommSemiring S] [FunLike F R S] [RingHomClass F R S]
+    {f : F} (P : Ideal R) [P.IsPrime] (I : Ideal S) (le : I.comap f ≤ P) :
+    ∃ Q ≥ I, Q.IsPrime ∧ Q.comap f ≤ P :=
+  have ⟨Q, hQ, hIQ, disj⟩ := I.exists_le_prime_disjoint (P.primeCompl.map f) <|
+    Set.disjoint_left.mpr fun _ ↦ by rintro hI ⟨r, hp, rfl⟩; exact hp (le hI)
+  ⟨Q, hIQ, hQ, fun r hp' ↦ of_not_not fun hp ↦ Set.disjoint_left.mp disj hp' ⟨_, hp, rfl⟩⟩
+
 variable {G : Type*} [FunLike G S R]
 
 theorem map_le_comap_of_inv_on [RingHomClass G S R] (g : G) (I : Ideal R)
@@ -128,8 +135,18 @@ theorem comap_id : I.comap (RingHom.id R) = I :=
   Ideal.ext fun _ => Iff.rfl
 
 @[simp]
+lemma comap_idₐ {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S] (I : Ideal S) :
+    Ideal.comap (AlgHom.id R S) I = I :=
+  I.comap_id
+
+@[simp]
 theorem map_id : I.map (RingHom.id R) = I :=
   (gc_map_comap (RingHom.id R)).l_unique GaloisConnection.id comap_id
+
+@[simp]
+lemma map_idₐ {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S] (I : Ideal S) :
+    Ideal.map (AlgHom.id R S) I = I :=
+  I.map_id
 
 theorem comap_comap {T : Type*} [Semiring T] {I : Ideal T} (f : R →+* S) (g : S →+* T) :
     (I.comap g).comap f = I.comap (g.comp f) :=
@@ -518,7 +535,7 @@ def relIsoOfSurjective (hf : Function.Surjective f) :
     ⟨fun H => map_comap_of_surjective f hf I1 ▸ map_comap_of_surjective f hf I2 ▸ map_mono H,
       comap_mono⟩
 
--- Does not hold if `R` is a semiring: consider `ℕ → ZMod 2`.
+-- May not hold if `R` is a semiring: consider `ℕ →+* ZMod 2`.
 theorem comap_isMaximal_of_surjective (hf : Function.Surjective f) {K : Ideal S} [H : IsMaximal K] :
     IsMaximal (comap f K) := by
   refine ⟨⟨comap_ne_top _ H.1.1, fun J hJ => ?_⟩⟩
@@ -703,8 +720,8 @@ lemma ker_comp_of_injective [Semiring T] (g : T →+* R) {f : R →+* S} (hf : F
   rw [← RingHom.comap_ker, (injective_iff_ker_eq_bot f).mp hf, RingHom.ker]
 
 /-- Synonym for `RingHom.ker_coe_equiv`, but given an algebra equivalence. -/
-@[simp] theorem _root_.AlgHom.ker_coe_equiv {R A B : Type*} [CommSemiring R] [Ring A] [Ring B]
-    [Algebra R A] [Algebra R B] (e : A ≃ₐ[R] B) :
+@[simp] theorem _root_.AlgHom.ker_coe_equiv {R A B : Type*} [CommSemiring R] [Semiring A]
+    [Semiring B] [Algebra R A] [Algebra R B] (e : A ≃ₐ[R] B) :
     RingHom.ker (e : A →+* B) = ⊥ :=
   RingHom.ker_coe_equiv (e.toRingEquiv)
 
@@ -726,25 +743,15 @@ end RingRing
 theorem ker_isPrime {F : Type*} [Semiring R] [Semiring S] [IsDomain S]
     [FunLike F R S] [RingHomClass F R S] (f : F) :
     (ker f).IsPrime :=
-  ⟨by
-    rw [Ne, Ideal.eq_top_iff_one]
-    exact not_one_mem_ker f,
-   fun {x y} => by
-    simpa only [mem_ker, map_mul] using @eq_zero_or_eq_zero_of_mul_eq_zero S _ _ _ _ _⟩
+  have := Ideal.bot_prime (α := S)
+  inferInstanceAs (Ideal.comap f ⊥).IsPrime
 
 /-- The kernel of a homomorphism to a field is a maximal ideal. -/
 theorem ker_isMaximal_of_surjective {R K F : Type*} [Ring R] [DivisionRing K]
     [FunLike F R K] [RingHomClass F R K] (f : F)
-    (hf : Function.Surjective f) : (ker f).IsMaximal := by
-  refine
-    Ideal.isMaximal_iff.mpr
-      ⟨fun h1 => one_ne_zero' K <| map_one f ▸ mem_ker.mp h1, fun J x hJ hxf hxJ => ?_⟩
-  obtain ⟨y, hy⟩ := hf (f x)⁻¹
-  have H : 1 = y * x - (y * x - 1) := (sub_sub_cancel _ _).symm
-  rw [H]
-  refine J.sub_mem (J.mul_mem_left _ hxJ) (hJ ?_)
-  rw [mem_ker]
-  simp only [hy, map_sub, map_one, map_mul, inv_mul_cancel₀ (mt mem_ker.mpr hxf :), sub_self]
+    (hf : Function.Surjective f) : (ker f).IsMaximal :=
+  have := Ideal.bot_isMaximal (K := K)
+  Ideal.comap_isMaximal_of_surjective _ hf
 
 end RingHom
 
@@ -826,7 +833,7 @@ theorem annihilator_mono (h : N ≤ P) : P.annihilator ≤ N.annihilator := fun 
 theorem annihilator_iSup (ι : Sort w) (f : ι → Submodule R M) :
     annihilator (⨆ i, f i) = ⨅ i, annihilator (f i) :=
   le_antisymm (le_iInf fun _ => annihilator_mono <| le_iSup _ _) fun r H =>
-    mem_annihilator.2 fun n hn ↦ iSup_induction f (C := (r • · = 0)) hn
+    mem_annihilator.2 fun n hn ↦ iSup_induction f (motive := (r • · = 0)) hn
       (fun i ↦ mem_annihilator.1 <| (mem_iInf _).mp H i) (smul_zero _)
       fun m₁ m₂ h₁ h₂ ↦ by simp_rw [smul_add, h₁, h₂, add_zero]
 

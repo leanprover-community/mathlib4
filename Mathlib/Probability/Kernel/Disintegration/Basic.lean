@@ -81,7 +81,7 @@ private lemma IsCondKernel.apply_of_ne_zero_of_measurableSet [MeasurableSingleto
       simp only [this, measure_empty]
   simp_rw [this]
   rw [MeasureTheory.lintegral_indicator (measurableSet_singleton x)]
-  simp only [Measure.restrict_singleton, lintegral_smul_measure, lintegral_dirac]
+  simp only [Measure.restrict_singleton, lintegral_smul_measure, lintegral_dirac, smul_eq_mul]
   rw [← mul_assoc, ENNReal.inv_mul_cancel hx (measure_ne_top _ _), one_mul]
 
 /-- If the singleton `{x}` has non-zero mass for `ρ.fst`, then for all `s : Set Ω`,

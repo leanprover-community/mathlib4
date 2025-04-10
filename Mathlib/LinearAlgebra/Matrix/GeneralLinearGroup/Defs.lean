@@ -216,7 +216,8 @@ end SpecialLinearGroup
 
 section
 
-variable {n : Type u} {R : Type v} [DecidableEq n] [Fintype n] [LinearOrderedCommRing R]
+variable {n : Type u} {R : Type v} [DecidableEq n] [Fintype n]
+  [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
 
 section
 
@@ -242,7 +243,8 @@ end
 
 section Neg
 
-variable {n : Type u} {R : Type v} [DecidableEq n] [Fintype n] [LinearOrderedCommRing R]
+variable {n : Type u} {R : Type v} [DecidableEq n] [Fintype n]
+  [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
   [Fact (Even (Fintype.card n))]
 
 /-- Formal operation of negation on general linear group on even cardinality `n` given by negating
@@ -274,7 +276,8 @@ end Neg
 
 namespace SpecialLinearGroup
 
-variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [LinearOrderedCommRing R]
+variable {n : Type u} [DecidableEq n] [Fintype n]
+  {R : Type v} [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
 
 /-- `Matrix.SpecialLinearGroup n R` embeds into `GL_pos n R` -/
 def toGLPos : SpecialLinearGroup n R →* GLPos n R where
@@ -290,8 +293,7 @@ theorem toGLPos_injective : Function.Injective (toGLPos : SpecialLinearGroup n R
   -- (It can't find the coercion GLPos n R → Matrix n n R)
   Function.Injective.of_comp
     (f := fun (A : GLPos n R) ↦ ((A : GL n R) : Matrix n n R))
-    (show Function.Injective (_ ∘ (toGLPos : SpecialLinearGroup n R → GLPos n R))
-      from Subtype.coe_injective)
+    Subtype.coe_injective
 
 /-- Coercing a `Matrix.SpecialLinearGroup` via `GL_pos` and `GL` is the same as coercing straight to
 a matrix. -/

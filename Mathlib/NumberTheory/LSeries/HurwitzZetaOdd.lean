@@ -304,6 +304,7 @@ def hurwitzOddFEPair (a : UnitAddCircle) : StrongFEPair ℂ where
     measurableSet_Ioi
   k := 3 / 2
   hk := by norm_num
+  ε := 1
   hε := one_ne_zero
   f₀ := 0
   hf₀ := rfl

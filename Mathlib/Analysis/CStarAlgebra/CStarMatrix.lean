@@ -347,9 +347,7 @@ def toCLM : CStarMatrix m n A →ₗ[ℂ] C⋆ᵐᵒᵈ(A, m → A) →L[ℂ] C�
   toFun M := { toFun := (WithCStarModule.equivL ℂ).symm ∘ M.vecMul ∘ WithCStarModule.equivL ℂ
                map_add' := M.add_vecMul
                map_smul' := M.vecMul_smul
-               cont := by
-                 simp only [LinearMap.coe_mk, AddHom.coe_mk]
-                 exact Continuous.comp (by fun_prop) (by fun_prop) }
+               cont := Continuous.comp (by fun_prop) (by fun_prop) }
   map_add' M₁ M₂ := by
     ext
     simp only [ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply,
@@ -385,7 +383,9 @@ def toCLMNonUnitalAlgHom [Fintype n] :
     map_zero' := by simp
     map_mul' := by
       intros
-      simp [← MulOpposite.op_mul]
+      simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearMap.coe_comp,
+        LinearEquiv.coe_coe, MulOpposite.coe_opLinearEquiv, Function.comp_apply,
+        ← MulOpposite.op_mul, MulOpposite.op_inj]
       ext
       simp [toCLM] }
 
@@ -589,8 +589,11 @@ instance instT3Space : T3Space (CStarMatrix m n A) := _root_.instT3Space
 instance instIsTopologicalAddGroup : IsTopologicalAddGroup (CStarMatrix m n A) :=
   Pi.topologicalAddGroup
 
-instance instUniformAddGroup : UniformAddGroup (CStarMatrix m n A) :=
-  Pi.instUniformAddGroup
+instance instIsUniformAddGroup : IsUniformAddGroup (CStarMatrix m n A) :=
+  Pi.instIsUniformAddGroup
+
+@[deprecated (since := "2025-03-31")] alias instUniformAddGroup :=
+  CStarMatrix.instIsUniformAddGroup
 
 instance instContinuousSMul {R : Type*} [SMul R A] [TopologicalSpace R] [ContinuousSMul R A] :
     ContinuousSMul R (CStarMatrix m n A) := instContinuousSMulForall
@@ -640,11 +643,13 @@ instance instCStarRing : CStarRing (CStarMatrix n n A) :=
     rw [← Real.sqrt_le_sqrt_iff (by positivity)]
     simp [hmain]
 
+#adaptation_note /-- 2025-03-29 for lean4#7717 had to add `norm_mul_self_le` field. -/
 /-- Matrices with entries in a non-unital C⋆-algebra form a non-unital C⋆-algebra. -/
 noncomputable instance instNonUnitalCStarAlgebra :
     NonUnitalCStarAlgebra (CStarMatrix n n A) where
   smul_assoc x y z := by simp
   smul_comm m a b := (Matrix.mul_smul _ _ _).symm
+  norm_mul_self_le := CStarRing.norm_mul_self_le
 
 instance instPartialOrder :
     PartialOrder (CStarMatrix n n A) := CStarAlgebra.spectralOrder _
@@ -666,8 +671,10 @@ noncomputable instance instNormedRing : NormedRing (CStarMatrix n n A) where
 noncomputable instance instNormedAlgebra : NormedAlgebra ℂ (CStarMatrix n n A) where
   norm_smul_le r M := by simpa only [norm_def, map_smul] using (toCLM M).opNorm_smul_le r
 
+#adaptation_note /-- 2025-03-29 for lean4#7717 had to add `norm_mul_self_le` field. -/
 /-- Matrices with entries in a unital C⋆-algebra form a unital C⋆-algebra. -/
 noncomputable instance instCStarAlgebra [DecidableEq n] : CStarAlgebra (CStarMatrix n n A) where
+  norm_mul_self_le := CStarRing.norm_mul_self_le
 
 end unital
 
