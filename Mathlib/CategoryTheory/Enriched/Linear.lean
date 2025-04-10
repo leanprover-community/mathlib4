@@ -6,6 +6,7 @@ Authors: Jakob von Raumer
 import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
 import Mathlib.CategoryTheory.Linear.Basic
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
+import Mathlib.Algebra.Equiv.TransferInstance
 /-!
 # Linear categories as `ModuleCat R`-enriched categories
 
@@ -17,30 +18,29 @@ namespace CategoryTheory
 
 open TensorProduct MonoidalCategory
 
-variable {R : Type u} [CommRing R]
+section EnrichedOfLinear
 
+variable {R : Type u} [CommRing R]
 variable {C : Type u} [Category.{u} C] [Preadditive C] [Linear R C]
 
-@[simp]
 lemma aux1 {X Y Z : Type u} [AddCommGroup X] [Module R X]
     [AddCommGroup Y] [Module R Y] [AddCommGroup Z] [Module R Z] (f : X →ₗ[R] Y):
     ModuleCat.ofHom f ▷ ModuleCat.of R Z =
     ModuleCat.ofHom (LinearMap.rTensor Z f) :=
   rfl
 
-@[simp]
 lemma aux1' {X Y Z : Type u} [AddCommGroup X] [Module R X]
     [AddCommGroup Y] [Module R Y] [AddCommGroup Z] [Module R Z] (f : X →ₗ[R] Y):
     ModuleCat.of R Z ◁ ModuleCat.ofHom f =
     ModuleCat.ofHom (LinearMap.lTensor Z f) :=
   rfl
 
-@[simp]
+
 lemma aux2 {X : Type u} [AddCommGroup X] [Module R X] :
     ModuleCat.Hom.hom (λ_ (ModuleCat.of R X)).inv = (TensorProduct.lid R X).symm.toLinearMap :=
   rfl
 
-@[simp]
+
 lemma aux2' {X : Type u} [AddCommGroup X] [Module R X] :
     ModuleCat.Hom.hom (ρ_ (ModuleCat.of R X)).inv = (TensorProduct.rid R X).symm.toLinearMap :=
   rfl
@@ -83,14 +83,16 @@ lemma aux5' {X Z : C} (f : X ⟶ Z) :
     (LinearMap.ringLmapEquivSelf R R (X ⟶ Z)).symm f =
     LinearMap.toSpanSingleton R  (X ⟶ Z) f := rfl
 
+open ModuleCat Hom
+
 noncomputable instance : EnrichedOrdinaryCategory (ModuleCat R) C where
   Hom X Y := .of R (X ⟶ Y)
   id X := ModuleCat.ofHom <| LinearMap.toSpanSingleton R (X ⟶ X) (𝟙 X)
   comp X Y Z := ModuleCat.ofHom <| lift (Linear.comp X Y Z)
   id_comp X Y := by
     ext f
-    simp only [aux1, ModuleCat.hom_comp, ModuleCat.hom_ofHom, aux2, LinearMap.coe_comp,
-      Function.comp_apply, ModuleCat.hom_id, LinearMap.id_coe, id_eq] at f ⊢
+    simp at f ⊢
+    simp only [aux1, hom_ofHom, aux2] at f ⊢
     erw [lid_symm_apply, LinearMap.rTensor_tmul _ (LinearMap.toSpanSingleton R _ (𝟙 X)) f 1,
       lift.tmul]
     simp
@@ -129,5 +131,28 @@ noncomputable instance : EnrichedOrdinaryCategory (ModuleCat R) C where
     erw [map_tmul (R := R) (LinearMap.toSpanSingleton R (X ⟶ Y) f)
       (LinearMap.toSpanSingleton R (Y ⟶ Z) g) 1 1]
     simp
+
+end EnrichedOfLinear
+
+noncomputable section LinearOfEnriched
+
+variable {R : Type u} [CommRing R]
+variable {C : Type u} [Category.{u} C] [EnrichedOrdinaryCategory (ModuleCat R) C]
+
+variable (R)
+
+def addCommGroupModuleCatHom {X Y : C} : AddCommGroup (X ⟶ Y) :=
+  (EnrichedOrdinaryCategory.homEquiv (V := ModuleCat R)).addCommGroup
+
+instance moduleModuleCatHom {X Y : C} :
+    letI : AddCommGroup (X ⟶ Y) := addCommGroupModuleCatHom R
+    Module R (X ⟶ Y) :=
+  (EnrichedOrdinaryCategory.homEquiv (V := ModuleCat R)).module R
+
+variable {X Y : C} (f g : X ⟶ Y) (r : R)
+
+#check r • f
+
+end LinearOfEnriched
 
 end CategoryTheory
