@@ -183,10 +183,7 @@ theorem ruzsa_triangle_inequality_mul_mul_mul (A B C : Finset G) :
   refine le_trans ?_
     (mul_le_mul (hUA _ hB') (cast_le.2 <| card_le_card <| mul_subset_mul_right hU.2)
       (zero_le _) (zero_le _))
-  #adaptation_note /-- 2024-11-01
-  `le_div_iff₀` is synthesizing wrong `GroupWithZero` without `@` -/
-  rw [← mul_div_right_comm, ← mul_assoc,
-    @le_div_iff₀ _ (_) _ _ _ _ _ _ _ (cast_pos.2 hU.1.card_pos)]
+  rw [← mul_div_right_comm, ← mul_assoc, le_div_iff₀ (cast_pos.2 hU.1.card_pos)]
   exact mod_cast pluennecke_petridis_inequality_mul C (mul_aux hU.1 hU.2 hUA)
 
 /-- **Ruzsa's triangle inequality**. Mul-div-div version. -/
