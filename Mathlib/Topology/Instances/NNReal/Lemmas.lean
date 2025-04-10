@@ -242,10 +242,11 @@ theorem iSup_pow {ι : Sort*} [Nonempty ι] {f : ι → ℝ≥0} (hf_bdd : BddAb
 end NNReal
 
 open NNReal in
-/-- Given a non-negative `f : ι → ℝ` and `n : ℕ`, we have `(iSup f) ^ n = iSup (f ^ n)`. -/
+/-- Given a non-negative and bounded above `f : ι → ℝ` and `n : ℕ`, we have
+  `(iSup f) ^ n = iSup (f ^ n)`. -/
 theorem Real.iSup_pow {ι : Sort*} [Nonempty ι] {f : ι → ℝ} (hf_bdd : BddAbove (range f))
     (hf : ∀ i, 0 ≤ f i) (n : ℕ) : (⨆ i : ι, f i) ^ n = ⨆ i : ι, f i ^ n := by
-  set g : ι → ℝ≥0 := fun i ↦ ⟨f i, hf i⟩ with hg
+  let g : ι → ℝ≥0 := fun i ↦ ⟨f i, hf i⟩
   have hg_bdd : BddAbove (range g) := by
     obtain ⟨B, hB⟩ := hf_bdd
     simp only [mem_upperBounds, mem_range, forall_exists_index, forall_apply_eq_imp_iff] at hB
@@ -256,3 +257,25 @@ theorem Real.iSup_pow {ι : Sort*} [Nonempty ι] {f : ι → ℝ} (hf_bdd : BddA
     simp only [mem_upperBounds, mem_range, forall_exists_index, forall_apply_eq_imp_iff]
     exact fun i ↦ hB i
   simpa [g, ← NNReal.coe_inj] using NNReal.iSup_pow hg_bdd n
+
+open NNReal ENNReal in
+/-- Given a bounded above `f : ι → ℝ≥0∞` and `n : ℕ`, we have `(iSup f) ^ n = iSup (f ^ n)`. -/
+theorem ENNReal.iSup_pow {ι : Type*} [Nonempty ι] {f : ι → ℝ≥0∞}
+    (hf_bdd : ∃ (B : ℝ≥0), ∀ i, f i ≤ B) (n : ℕ) : (⨆ i : ι, f i) ^ n = ⨆ i : ι, f i ^ n := by
+  obtain ⟨B, hB⟩ := hf_bdd
+  have hf_bdd' : BddAbove (range fun i ↦ (f i).toNNReal) := by
+    use B
+    simp only [mem_upperBounds, mem_range, forall_exists_index, forall_apply_eq_imp_iff]
+    exact_mod_cast fun i ↦ le_trans coe_toNNReal_le_self (hB i)
+  have hf : ∀ i, f i = ↑(f i).toNNReal := fun i ↦ by
+    rw [ENNReal.coe_toNNReal (ne_of_lt (lt_of_le_of_lt (hB i) coe_lt_top))]
+  have hl : (⨆ i, (f i)) ^ n = ((((⨆ i, (f i).toNNReal)) ^ n : ℝ≥0) : ℝ≥0∞) := by
+    rw [ENNReal.coe_pow, ENNReal.coe_iSup hf_bdd']
+    congr
+    ext i
+    rw [← hf i]
+  have hr : ⨆ i, (f i) ^ n = ⨆ i, ((f i).toNNReal : ℝ≥0∞) ^ n  := by
+    congr
+    ext i
+    rw [← hf i]
+  rw [hl, hr, NNReal.iSup_pow hf_bdd', ENNReal.coe_iSup (hf_bdd'.range_comp (pow_left_mono n))]; rfl
