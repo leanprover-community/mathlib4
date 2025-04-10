@@ -93,7 +93,7 @@ section NormSMulClass
 class NormSMulClass (α β : Type*) [Norm α] [Norm β] [SMul α β] : Prop where
   protected norm_smul (r : α) (x : β) : ‖r • x‖ = ‖r‖ * ‖x‖
 
-lemma norm_smul {α β : Type*} [Norm α] [Norm β] [SMul α β] [NormSMulClass α β] (r : α) (x : β) :
+lemma norm_smul [Norm α] [Norm β] [SMul α β] [NormSMulClass α β] (r : α) (x : β) :
     ‖r • x‖ = ‖r‖ * ‖x‖ :=
   NormSMulClass.norm_smul r x
 
@@ -148,7 +148,9 @@ section NormedDivisionRing
 variable [NormedDivisionRing α] [SeminormedAddGroup β]
 variable [MulActionWithZero α β] [IsBoundedSMul α β]
 
-/-- For a normed division ring, a sub-multiplicative norm is actually strictly multiplicative. -/
+/-- For a normed division ring, a sub-multiplicative norm is actually strictly multiplicative.
+
+This is not an instance as it forms a loop with `NormSMulClass.toIsBoundedSMul`. -/
 lemma NormedDivisionRing.toNormSMulClass : NormSMulClass α β where
   norm_smul r x := by
     by_cases h : r = 0
