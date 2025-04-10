@@ -198,7 +198,7 @@ theorem MulEquiv.irreducible_iff (f : F) {a : M} :
 
 end
 
-section CommMonoid
+section CommMonoid -- TODO relax to Monoid
 
 variable [CommMonoid M] {a : M}
 
