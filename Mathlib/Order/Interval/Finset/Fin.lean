@@ -89,15 +89,19 @@ theorem attachFin_Ioo_eq_Ioi : attachFin (Ioo a n) (fun _x hx ↦ (mem_Ioo.mp hx
 
 section deprecated
 
+set_option linter.deprecated false in
 @[deprecated attachFin_Icc (since := "2025-04-06")]
 theorem Icc_eq_finset_subtype : Icc a b = (Icc (a : ℕ) b).fin n := attachFin_eq_fin _
 
+set_option linter.deprecated false in
 @[deprecated attachFin_Ico (since := "2025-04-06")]
 theorem Ico_eq_finset_subtype : Ico a b = (Ico (a : ℕ) b).fin n := attachFin_eq_fin _
 
+set_option linter.deprecated false in
 @[deprecated attachFin_Ioc (since := "2025-04-06")]
 theorem Ioc_eq_finset_subtype : Ioc a b = (Ioc (a : ℕ) b).fin n := attachFin_eq_fin _
 
+set_option linter.deprecated false in
 @[deprecated attachFin_Ioo (since := "2025-04-06")]
 theorem Ioo_eq_finset_subtype : Ioo a b = (Ioo (a : ℕ) b).fin n := attachFin_eq_fin _
 
@@ -105,15 +109,19 @@ set_option linter.deprecated false in
 @[deprecated attachFin_uIcc (since := "2025-04-06")]
 theorem uIcc_eq_finset_subtype : uIcc a b = (uIcc (a : ℕ) b).fin n := Icc_eq_finset_subtype _ _
 
+set_option linter.deprecated false in
 @[deprecated attachFin_Ico_eq_Ici (since := "2025-04-06")]
 theorem Ici_eq_finset_subtype : Ici a = (Ico (a : ℕ) n).fin n := by ext; simp
 
+set_option linter.deprecated false in
 @[deprecated attachFin_Ioo_eq_Ioi (since := "2025-04-06")]
 theorem Ioi_eq_finset_subtype : Ioi a = (Ioo (a : ℕ) n).fin n := by ext; simp
 
+set_option linter.deprecated false in
 @[deprecated attachFin_Iic (since := "2025-04-06")]
 theorem Iic_eq_finset_subtype : Iic b = (Iic (b : ℕ)).fin n := by ext; simp
 
+set_option linter.deprecated false in
 @[deprecated attachFin_Iio (since := "2025-04-06")]
 theorem Iio_eq_finset_subtype : Iio b = (Iio (b : ℕ)).fin n := by ext; simp
 
@@ -136,8 +144,27 @@ theorem map_valEmbedding_Ioo : (Ioo a b).map Fin.valEmbedding = Ioo ↑a ↑b :=
   map_valEmbedding_attachFin _
 
 @[simp]
-theorem map_subtype_embedding_uIcc : (uIcc a b).map valEmbedding = uIcc ↑a ↑b :=
+theorem map_valEmbedding_uIcc : (uIcc a b).map valEmbedding = uIcc ↑a ↑b :=
   map_valEmbedding_Icc _ _
+
+@[deprecated (since := "2025-04-08")]
+alias map_subtype_embedding_uIcc := map_valEmbedding_uIcc
+
+@[simp]
+theorem map_valEmbedding_Ici : (Ici a).map Fin.valEmbedding = Ico ↑a n := by
+  rw [← attachFin_Ico_eq_Ici, map_valEmbedding_attachFin]
+
+@[simp]
+theorem map_valEmbedding_Ioi : (Ioi a).map Fin.valEmbedding = Ioo ↑a n := by
+  rw [← attachFin_Ioo_eq_Ioi, map_valEmbedding_attachFin]
+
+@[simp]
+theorem map_valEmbedding_Iic : (Iic b).map Fin.valEmbedding = Iic ↑b := by
+  rw [← attachFin_Iic, map_valEmbedding_attachFin]
+
+@[simp]
+theorem map_valEmbedding_Iio : (Iio b).map Fin.valEmbedding = Iio ↑b := by
+  rw [← attachFin_Iio, map_valEmbedding_attachFin]
 
 @[simp]
 lemma card_Icc : #(Icc a b) = b + 1 - a := by rw [← Nat.card_Icc, ← map_valEmbedding_Icc, card_map]
@@ -153,33 +180,15 @@ lemma card_Ioo : #(Ioo a b) = b - a - 1 := by rw [← Nat.card_Ioo, ← map_valE
 
 @[simp]
 theorem card_uIcc : #(uIcc a b) = (b - a : ℤ).natAbs + 1 := by
-  rw [← Nat.card_uIcc, ← map_subtype_embedding_uIcc, card_map]
-
-@[simp]
-theorem map_valEmbedding_Ici : (Ici a).map Fin.valEmbedding = Icc ↑a (n - 1) := by
-  rw [← attachFin_Ico_eq_Ici, map_valEmbedding_attachFin, Nat.Icc_pred_right]
-  exact a.pos
-
-@[simp]
-theorem map_valEmbedding_Ioi : (Ioi a).map Fin.valEmbedding = Ioc ↑a (n - 1) := by
-  rw [← attachFin_Ioo_eq_Ioi, map_valEmbedding_attachFin]
-  ext i
-  simp [Nat.le_sub_one_iff_lt a.pos]
-
-@[simp]
-theorem map_valEmbedding_Iic : (Iic b).map Fin.valEmbedding = Iic ↑b := by
-  rw [← attachFin_Iic, map_valEmbedding_attachFin]
-
-@[simp]
-theorem map_valEmbedding_Iio : (Iio b).map Fin.valEmbedding = Iio ↑b := by
-  rw [← attachFin_Iio, map_valEmbedding_attachFin]
+  rw [← Nat.card_uIcc, ← map_valEmbedding_uIcc, card_map]
 
 @[simp]
 theorem card_Ici : #(Ici a) = n - a := by
   rw [← attachFin_Ico_eq_Ici, card_attachFin, Nat.card_Ico]
 
 @[simp]
-theorem card_Ioi : #(Ioi a) = n - 1 - a := by rw [← card_map, map_valEmbedding_Ioi, Nat.card_Ioc]
+theorem card_Ioi : #(Ioi a) = n - 1 - a := by
+  rw [← card_map, map_valEmbedding_Ioi, Nat.card_Ioo, Nat.sub_right_comm]
 
 @[simp]
 theorem card_Iic : #(Iic b) = b + 1 := by rw [← Nat.card_Iic b, ← map_valEmbedding_Iic, card_map]
