@@ -46,11 +46,14 @@ section NonUnitalStarSubsemiring
 
 namespace NonUnitalStarSubsemiring
 
-variable {R : Type v} [NonUnitalNonAssocSemiring R] [StarRing R]
-
-instance instSetLike : SetLike (NonUnitalStarSubsemiring R) R where
+instance instSetLike {R : Type v} [NonUnitalNonAssocSemiring R] [Star R] :
+    SetLike (NonUnitalStarSubsemiring R) R where
   coe {s} := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
+
+initialize_simps_projections NonUnitalStarSubsemiring (carrier → coe, as_prefix coe)
+
+variable {R : Type v} [NonUnitalNonAssocSemiring R] [StarRing R]
 
 /-- The actual `NonUnitalStarSubsemiring` obtained from an element of a type satisfying
 `NonUnitalSubsemiringClass` and `StarMemClass`. -/

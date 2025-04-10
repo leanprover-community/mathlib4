@@ -28,11 +28,14 @@ namespace StarSubsemiring
 /-- Reinterpret a `StarSubsemiring` as a `Subsemiring`. -/
 add_decl_doc StarSubsemiring.toSubsemiring
 
-variable {R : Type v} [NonAssocSemiring R] [StarRing R]
-
-instance setLike : SetLike (StarSubsemiring R) R where
+instance setLike {R : Type v} [NonAssocSemiring R] [Star R] :
+    SetLike (StarSubsemiring R) R where
   coe {s} := s.carrier
   coe_injective' p q h := by obtain ⟨⟨⟨⟨_, _⟩, _⟩, _⟩, _⟩ := p; cases q; congr
+
+initialize_simps_projections StarSubsemiring (carrier → coe, as_prefix coe)
+
+variable {R : Type v} [NonAssocSemiring R] [StarRing R]
 
 /-- The actual `StarSubsemiring` obtained from an element of a `StarSubsemiringClass`. -/
 @[simps]
