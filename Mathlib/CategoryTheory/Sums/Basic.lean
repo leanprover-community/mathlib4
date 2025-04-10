@@ -198,7 +198,7 @@ theorem sum_map_inr (F : A ⥤ B) (G : C ⥤ D) {c c' : C} (f : c ⟶ c') :
 
 section
 
-variable {F G: A ⊕ B ⥤ C}
+variable {F G : A ⊕ B ⥤ C}
   (e₁ : Sum.inl_ A B ⋙ F ≅ Sum.inl_ A B ⋙ G)
   (e₂ : Sum.inr_ A B ⋙ F ≅ Sum.inr_ A B ⋙ G)
 

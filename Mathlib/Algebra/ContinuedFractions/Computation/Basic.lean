@@ -114,9 +114,8 @@ theorem coe_to_intFractPair {b : ℤ} {fr : K} :
 
 end coe
 
--- Note: this could be relaxed to something like `LinearOrderedDivisionRing` in the future.
--- Fix a discrete linear ordered field with `floor` function.
-variable [Field K] [LinearOrder K] [FloorRing K]
+-- Fix a discrete linear ordered division ring with `floor` function.
+variable [DivisionRing K] [LinearOrder K] [FloorRing K]
 
 /-- Creates the integer and fractional part of a value `v`, i.e. `⟨⌊v⌋, v - ⌊v⌋⟩`. -/
 protected def of (v : K) : IntFractPair K :=
@@ -179,7 +178,7 @@ process stops when the fractional part `v - ⌊v⌋` hits 0 at some step.
 The implementation uses `IntFractPair.stream` to obtain the partial denominators of the continued
 fraction. Refer to said function for more details about the computation process.
 -/
-protected def of [Field K] [LinearOrder K] [FloorRing K] (v : K) : GenContFract K :=
+protected def of [DivisionRing K] [LinearOrder K] [FloorRing K] (v : K) : GenContFract K :=
   let ⟨h, s⟩ := IntFractPair.seq1 v -- get the sequence of integer and fractional parts.
   ⟨h.b, -- the head is just the first integer part
     s.map fun p => ⟨1, p.b⟩⟩ -- the sequence consists of the remaining integer parts as the partial
