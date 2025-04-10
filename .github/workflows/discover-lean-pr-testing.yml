@@ -27,7 +27,7 @@ jobs:
     - name: Install elan
       run: |
         echo "Installing elan and lake..."
-        curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y
+        curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y
         echo "$HOME/.elan/bin" >> $GITHUB_PATH
         export PATH="$HOME/.elan/bin:$PATH"
 
