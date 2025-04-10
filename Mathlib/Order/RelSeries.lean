@@ -648,6 +648,19 @@ lemma eraseLast_last_rel_last (p : RelSeries r) (h : p.length ≠ 0) :
   convert p.step ⟨p.length - 1, by omega⟩
   simp only [Nat.succ_eq_add_one, Fin.succ_mk]; omega
 
+lemma snoc_self_eraseLast (p : RelSeries r) (h : p.length ≠ 0) :
+    p.eraseLast.snoc p.last (p.eraseLast_last_rel_last h) = p := by
+  symm
+  have len : p.length - 1 + 1 = p.length := Nat.succ_pred_eq_of_ne_zero h
+  ext n
+  · simpa using len.symm
+  by_cases eq : n.1 < p.length - 1 + 1
+  · simp [snoc, append, Fin.append, Fin.addCases, eq]
+  · have : n = p.length := by
+      rw [len] at eq
+      exact Fin.eq_of_val_eq (by simp [Nat.eq_of_lt_succ_of_not_lt n.2 eq])
+    simp [snoc, append, Fin.append, Fin.addCases, eq, this, last]
+
 @[elab_as_elim]
 def inductionOn' (motive : RelSeries r → Sort*)
     (singleton : (x : α) → motive (RelSeries.singleton r x))
@@ -660,7 +673,11 @@ def inductionOn' (motive : RelSeries r → Sort*)
       ext n
       exact heq
       simp [show n = 0 by omega, apply_zero]
-    · sorry
+    · have ne0 : p.length ≠ 0 := by simp [heq]
+      have len : p.eraseLast.length = d := by simp [heq]
+      convert snoc p.eraseLast p.last (p.eraseLast_last_rel_last ne0)
+        (hd _ len)
+      exact (p.snoc_self_eraseLast ne0).symm
   exact this rfl
 
 /--
