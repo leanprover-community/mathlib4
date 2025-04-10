@@ -1203,11 +1203,10 @@ lemma div_lt_div₀' (hac : a ≤ c) (hdb : d < b) (hc : 0 < c) (hd : 0 < d) : a
 end GroupWithZero.LinearOrder
 
 section CommGroupWithZero
-variable [CommGroupWithZero G₀] [PartialOrder G₀] [PosMulReflectLT G₀]
+variable [CommGroupWithZero G₀] [PartialOrder G₀] [PosMulReflectLT G₀] {a b c d : G₀}
 
-attribute [local instance] PosMulReflectLT.toPosMulStrictMono
-
-variable {a b c d : G₀}
+attribute [local instance] PosMulReflectLT.toPosMulStrictMono PosMulMono.toMulPosMono
+  PosMulStrictMono.toMulPosStrictMono
 
 /-- See `le_inv_mul_iff₀` for a version with multiplication on the other side. -/
 lemma le_inv_mul_iff₀' (hc : 0 < c) : a ≤ c⁻¹ * b ↔ c * a ≤ b := by
@@ -1219,34 +1218,27 @@ lemma inv_mul_le_iff₀' (hc : 0 < c) : c⁻¹ * b ≤ a ↔ b ≤ a * c := by
 
 /-- See `le_mul_inv_iff₀` for a version with multiplication on the other side. -/
 lemma le_mul_inv_iff₀' (hc : 0 < c) : a ≤ b * c⁻¹ ↔ c * a ≤ b := by
-  have : MulPosMono G₀ := posMulMono_iff_mulPosMono.1 inferInstance
   rw [le_mul_inv_iff₀ hc, mul_comm]
 
 /-- See `mul_inv_le_iff₀` for a version with multiplication on the other side. -/
 lemma mul_inv_le_iff₀' (hc : 0 < c) : b * c⁻¹ ≤ a ↔ b ≤ c * a := by
-  have : MulPosMono G₀ := posMulMono_iff_mulPosMono.1 inferInstance
   rw [mul_inv_le_iff₀ hc, mul_comm]
 
 lemma div_le_div_iff₀ (hb : 0 < b) (hd : 0 < d) : a / b ≤ c / d ↔ a * d ≤ c * b := by
-  have : MulPosMono G₀ := posMulMono_iff_mulPosMono.1 inferInstance
   rw [div_le_iff₀ hb, ← mul_div_right_comm, le_div_iff₀ hd]
 
 /-- See `le_div_iff₀` for a version with multiplication on the other side. -/
 lemma le_div_iff₀' (hc : 0 < c) : a ≤ b / c ↔ c * a ≤ b := by
-  have : MulPosMono G₀ := posMulMono_iff_mulPosMono.1 inferInstance
   rw [le_div_iff₀ hc, mul_comm]
 
 /-- See `div_le_iff₀` for a version with multiplication on the other side. -/
 lemma div_le_iff₀' (hc : 0 < c) : b / c ≤ a ↔ b ≤ c * a := by
-  have : MulPosMono G₀ := posMulMono_iff_mulPosMono.1 inferInstance
   rw [div_le_iff₀ hc, mul_comm]
 
 lemma le_div_comm₀ (ha : 0 < a) (hc : 0 < c) : a ≤ b / c ↔ c ≤ b / a := by
-  have : MulPosMono G₀ := posMulMono_iff_mulPosMono.1 inferInstance
   rw [le_div_iff₀ ha, le_div_iff₀' hc]
 
 lemma div_le_comm₀ (hb : 0 < b) (hc : 0 < c) : a / b ≤ c ↔ a / c ≤ b := by
-  have : MulPosMono G₀ := posMulMono_iff_mulPosMono.1 inferInstance
   rw [div_le_iff₀ hb, div_le_iff₀' hc]
 
 /-- See `lt_inv_mul_iff₀` for a version with multiplication on the other side. -/
@@ -1256,8 +1248,6 @@ lemma lt_inv_mul_iff₀' (hc : 0 < c) : a < c⁻¹ * b ↔ a * c < b := by
 /-- See `inv_mul_lt_iff₀` for a version with multiplication on the other side. -/
 lemma inv_mul_lt_iff₀' (hc : 0 < c) : c⁻¹ * b < a ↔ b < a * c := by
   rw [inv_mul_lt_iff₀ hc, mul_comm]
-
-attribute [local instance] PosMulStrictMono.toMulPosStrictMono
 
 /-- See `lt_mul_inv_iff₀` for a version with multiplication on the other side. -/
 lemma lt_mul_inv_iff₀' (hc : 0 < c) : a < b * c⁻¹ ↔ c * a < b := by
