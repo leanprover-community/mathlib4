@@ -177,15 +177,9 @@ end pmap
 theorem seq_some {α β} {a : α} {f : α → β} : some f <*> some a = some (f a) :=
   rfl
 
-@[simp]
-theorem some_orElse' (a : α) (x : Option α) : (some a).orElse (fun _ ↦ x) = some a :=
-  rfl
-
-@[simp]
-theorem none_orElse' (x : Option α) : none.orElse (fun _ ↦ x) = x := by cases x <;> rfl
-
-@[simp]
-theorem orElse_none' (x : Option α) : x.orElse (fun _ ↦ none) = x := by cases x <;> rfl
+@[deprecated (since := "2025-04-10")] alias some_orElse' := some_orElse
+@[deprecated (since := "2025-04-10")] alias none_orElse' := none_orElse
+@[deprecated (since := "2025-04-10")] alias orElse_none' := orElse_none
 
 theorem iget_mem [Inhabited α] : ∀ {o : Option α}, isSome o → o.iget ∈ o
   | some _, _ => rfl
@@ -228,14 +222,12 @@ theorem casesOn'_none_coe (f : Option α → β) (o : Option α) :
 lemma casesOn'_eq_elim (b : β) (f : α → β) (a : Option α) :
     Option.casesOn' a b f = Option.elim a b f := by cases a <;> rfl
 
--- TODO
 theorem orElse_eq_some (o o' : Option α) (x : α) :
     (o <|> o') = some x ↔ o = some x ∨ o = none ∧ o' = some x :=
   orElse_eq_some_iff _ _ _
 
 @[deprecated (since := "2025-04-10")] alias orElse_eq_some' := orElse_eq_some_iff
 
-@[simp]
 theorem orElse_eq_none (o o' : Option α) : (o <|> o') = none ↔ o = none ∧ o' = none :=
   orElse_eq_none_iff _ _
 
@@ -269,3 +261,4 @@ theorem elim_apply {f : γ → α → β} {x : α → β} {i : Option γ} {y : �
 @[deprecated (since := "2025-03-19")] alias forall_some_ne_iff_eq_none := eq_none_iff_forall_some_ne
 
 end Option
+#lint
