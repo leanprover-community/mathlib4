@@ -120,7 +120,7 @@ variable [CommMonoidWithZero R] [WfDvdMonoid R]
 
 theorem squarefree_iff_no_irreducibles {x : R} (hx₀ : x ≠ 0) :
     Squarefree x ↔ ∀ p, Irreducible p → ¬ (p * p ∣ x) := by
-  refine ⟨fun h p hp hp' ↦ hp.not_unit (h p hp'), fun h d hd ↦ by_contra fun hdu ↦ ?_⟩
+  refine ⟨fun h p hp hp' ↦ hp.not_isUnit (h p hp'), fun h d hd ↦ by_contra fun hdu ↦ ?_⟩
   have hd₀ : d ≠ 0 := ne_zero_of_dvd_ne_zero (ne_zero_of_dvd_ne_zero hx₀ hd) (dvd_mul_left d d)
   obtain ⟨p, irr, dvd⟩ := WfDvdMonoid.exists_irreducible_factor hdu hd₀
   exact h p irr ((mul_dvd_mul dvd dvd).trans hd)
@@ -134,7 +134,7 @@ theorem irreducible_sq_not_dvd_iff_eq_zero_and_no_irreducibles_or_squarefree (r 
   · rintro (⟨rfl, h⟩ | h)
     · simpa using h
     intro x hx t
-    exact hx.not_unit (h x t)
+    exact hx.not_isUnit (h x t)
 
 theorem squarefree_iff_irreducible_sq_not_dvd_of_ne_zero {r : R} (hr : r ≠ 0) :
     Squarefree r ↔ ∀ x : R, Irreducible x → ¬x * x ∣ r := by
