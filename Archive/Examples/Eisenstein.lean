@@ -13,7 +13,7 @@ import Mathlib.Tactic.ComputeDegree
 
 We show here how `Polynomial.generalizedEisenstein` can be applied
 to establish the irreducibility of the explicit polynomial of degree 4
-  `X ^ 4 - 10 * X + 1 : ℤ[X]`.
+  `X ^ 4 - 10 * X ^ 2 + 1 : ℤ[X]`.
 (to which the standard criterion) wouldn't apply.
 One argues modulo `3`, with `q := X ^ 2 + 1`.
 
