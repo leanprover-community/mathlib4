@@ -342,7 +342,7 @@ end Preorder
 
 instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (WithBot α) where
   sup
-    -- note this is `Option.zipWith`, but with the right defeq when unfolding
+    -- note this is `Option.merge`, but with the right defeq when unfolding
     | ⊥, ⊥ => ⊥
     | (a : α), ⊥ => a
     | ⊥, (b : α) => b
@@ -831,7 +831,7 @@ end Preorder
 
 instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (WithTop α) where
   inf
-    -- note this is `Option.zipWith`, but with the right defeq when unfolding
+    -- note this is `Option.merge`, but with the right defeq when unfolding
     | ⊤, ⊤ => ⊤
     | (a : α), ⊤ => a
     | ⊤, (b : α) => b
