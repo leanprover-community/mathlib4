@@ -42,7 +42,7 @@ variable [Semiring R]
 noncomputable def cRank (A : Matrix m n R) : Cardinal := Module.rank R <| span R <| range Aᵀ
 
 lemma cRank_toNat_eq_finrank (A : Matrix m n R) :
-    A.cRank.toNat = Module.finrank R (span R (range Aᵀ)) := rfl
+    A.cRank.toNat = Module.finrank R (span R (range A.col)) := rfl
 
 lemma lift_cRank_submatrix_le (A : Matrix m n R) (r : m₀ → m) (c : n₀ → n) :
     lift.{um} (A.submatrix r c).cRank ≤ lift.{um₀} A.cRank := by
@@ -75,7 +75,7 @@ lemma cRank_le_card_width [StrongRankCondition R] [Fintype n] (A : Matrix m n R)
 noncomputable def eRank (A : Matrix m n R) : ℕ∞ := A.cRank.toENat
 
 lemma eRank_toNat_eq_finrank (A : Matrix m n R) :
-    A.eRank.toNat = Module.finrank R (span R (range Aᵀ)) :=
+    A.eRank.toNat = Module.finrank R (span R (range A.col)) :=
   toNat_toENat ..
 
 lemma eRank_submatrix_le (A : Matrix m n R) (r : m₀ → m) (c : n₀ → n) :
@@ -281,7 +281,7 @@ theorem rank_le_height [StrongRankCondition R] {m n : ℕ} (A : Matrix (Fin m) (
 
 /-- The rank of a matrix is the rank of the space spanned by its columns. -/
 theorem rank_eq_finrank_span_cols (A : Matrix m n R) :
-    A.rank = finrank R (Submodule.span R (Set.range Aᵀ)) := by rw [rank, Matrix.range_mulVecLin]
+    A.rank = finrank R (Submodule.span R (Set.range A.col)) := by rw [rank, Matrix.range_mulVecLin]
 
 @[simp]
 theorem cRank_toNat_eq_rank (A : Matrix m n R) : A.cRank.toNat = A.rank := by
@@ -416,12 +416,12 @@ theorem rank_self_mul_transpose [Field R] [LinearOrder R] [IsStrictOrderedRing R
 
 /-- The rank of a matrix is the rank of the space spanned by its rows. -/
 theorem rank_eq_finrank_span_row [Field R] [Finite m] (A : Matrix m n R) :
-    A.rank = finrank R (Submodule.span R (Set.range A)) := by
+    A.rank = finrank R (Submodule.span R (Set.range A.row)) := by
   cases nonempty_fintype m
-  rw [← rank_transpose, rank_eq_finrank_span_cols, transpose_transpose]
+  rw [← rank_transpose, rank_eq_finrank_span_cols, col_transpose]
 
 theorem _root_.LinearIndependent.rank_matrix [Field R] [Fintype m]
-    {M : Matrix m n R} (h : LinearIndependent R M) : M.rank = Fintype.card m := by
+    {M : Matrix m n R} (h : LinearIndependent R M.row) : M.rank = Fintype.card m := by
   rw [M.rank_eq_finrank_span_row, linearIndependent_iff_card_eq_finrank_span.mp h, Set.finrank]
 
 lemma rank_add_rank_le_card_of_mul_eq_zero [Field R] [Finite l] [Fintype m]
