@@ -231,65 +231,6 @@ theorem hasDerivAt_taylorWithinEval_succ {x₀ x : ℝ} {s : Set ℝ} (f : ℝ �
   field_simp [Nat.factorial_succ]
   ring
 
-section
-
-variable {G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G]
-  {f g : E → G} {C : ℝ} {s : Set E} {x y : E} {f' g' : E → E →L[ℝ] G} {φ : E →L[ℝ] G}
-
-lemma Convex.eventually_nhdsWithin_segment (hs : Convex ℝ s) {x₀ : E} (hx₀s : x₀ ∈ s)
-    {p : E → Prop} (h : ∀ᶠ x in 𝓝[s] x₀, p x) :
-    ∀ᶠ x in 𝓝[s] x₀, ∀ y ∈ segment ℝ x₀ x, p y := by
-  rw [eventually_nhdsWithin_iff,
-    Filter.HasBasis.eventually_iff (LocallyConvexSpace.convex_basis (𝕜 := ℝ) x₀)] at h ⊢
-  obtain ⟨u, ⟨hu_nhds, hu_convex⟩, h⟩ := h
-  refine ⟨u, ⟨hu_nhds, hu_convex⟩, fun x hxu hxs y hy ↦ h ?_ (hs.segment_subset hx₀s hxs hy)⟩
-  suffices segment ℝ x₀ x ⊆ u from this hy
-  exact hu_convex.segment_subset (mem_of_mem_nhds hu_nhds) hxu
-
-lemma norm_sub_le_of_mem_segment {x₀ : E} (hy : y ∈ segment ℝ x₀ x) : ‖y - x₀‖ ≤ ‖x - x₀‖ := by
-  rw [segment_eq_image'] at hy
-  simp only [mem_image, mem_Icc] at hy
-  obtain ⟨u, ⟨hu_nonneg, hu_le_one⟩, rfl⟩ := hy
-  simp only [add_sub_cancel_left, norm_smul, Real.norm_eq_abs]
-  rw [abs_of_nonneg hu_nonneg]
-  conv_rhs => rw [← one_mul (‖x - x₀‖)]
-  gcongr
-
-theorem Convex.isLittleO_pow_succ {x₀ : E} {n : ℕ}
-    (hs : Convex ℝ s) (hx₀s : x₀ ∈ s)
-    (hff' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (hf' : f' =o[𝓝[s] x₀] fun x ↦ ‖x - x₀‖ ^ n) :
-    (fun x ↦ f x - f x₀) =o[𝓝[s] x₀] fun x ↦ ‖x - x₀‖ ^ (n + 1) := by
-  rw [Asymptotics.isLittleO_iff] at hf' ⊢
-  intro c hc
-  simp_rw [norm_pow, pow_succ, ← mul_assoc, norm_norm]
-  simp_rw [norm_pow, norm_norm] at hf'
-  have : ∀ᶠ x in 𝓝[s] x₀, segment ℝ x₀ x ⊆ s ∧ ∀ y ∈ segment ℝ x₀ x, ‖f' y‖ ≤ c * ‖x - x₀‖ ^ n := by
-    have h1 : ∀ᶠ x in 𝓝[s] x₀, x ∈ s := eventually_mem_nhdsWithin
-    filter_upwards [h1, hs.eventually_nhdsWithin_segment hx₀s (hf' hc)] with x hxs h
-    refine ⟨hs.segment_subset hx₀s hxs, fun y hy ↦ (h y hy).trans ?_⟩
-    gcongr
-    exact norm_sub_le_of_mem_segment hy
-  filter_upwards [this] with x ⟨h_segment, h⟩
-  convert (convex_segment x₀ x).norm_image_sub_le_of_norm_hasFDerivWithin_le
-    (f := fun x ↦ f x - f x₀) (y := x) (x := x₀) (s := segment ℝ x₀ x) ?_ h
-    (left_mem_segment ℝ x₀ x) (right_mem_segment ℝ x₀ x) using 1
-  · simp
-  · simp only [hasFDerivWithinAt_sub_const_iff]
-    exact fun x hx ↦ (hff' x (h_segment hx)).mono h_segment
-
-end
-
-theorem Convex.isLittleO_pow_succ' {f f' : ℝ → E} {x₀ : ℝ} {n : ℕ} {s : Set ℝ}
-    (hs : Convex ℝ s) (hx₀s : x₀ ∈ s)
-    (hff' : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) (hf' : f' =o[𝓝[s] x₀] fun x ↦ (x - x₀) ^ n) :
-    (fun x ↦ f x - f x₀) =o[𝓝[s] x₀] fun x ↦ (x - x₀) ^ (n + 1) := by
-  have h := hs.isLittleO_pow_succ hx₀s hff' ?_ (n := n)
-  · rw [Asymptotics.isLittleO_iff] at h ⊢
-    simpa using h
-  · rw [Asymptotics.isLittleO_iff] at hf' ⊢
-    convert hf' using 4 with c hc x
-    simp
-
 /-- **Taylor's theorem** using little-o notation. -/
 theorem taylor_isLittleO {f : ℝ → E} {x₀ : ℝ} {n : ℕ} {s : Set ℝ}
     (hs : Convex ℝ s) (hx₀s : x₀ ∈ s) (hf : ContDiffOn ℝ n f s) :
@@ -304,7 +245,7 @@ theorem taylor_isLittleO {f : ℝ → E} {x₀ : ℝ} {n : ℕ} {s : Set ℝ}
     · simp
     replace hs' := uniqueDiffOn_convex hs (hs.nontrivial_iff_nonempty_interior.1 hs')
     simp only [Nat.cast_add, Nat.cast_one] at hf
-    convert Convex.isLittleO_pow_succ' hs hx₀s ?_ (h (hf.derivWithin hs' le_rfl))
+    convert Convex.isLittleO_pow_succ_real hs hx₀s ?_ (h (hf.derivWithin hs' le_rfl))
       (f := fun x ↦ f x - taylorWithinEval f (n + 1) s x₀ x) using 1
     · simp
     · intro x hx
@@ -333,6 +274,7 @@ theorem Real.taylor_tendsto {f : ℝ → ℝ} {x₀ : ℝ} {n : ℕ} {s : Set �
       (𝓝[s] x₀) (𝓝 0) := by
   convert _root_.taylor_tendsto hs hx₀s hf using 2 with x
   simp [div_eq_inv_mul]
+
 
 /-! ### Taylor's theorem with mean value type remainder estimate -/
 

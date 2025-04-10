@@ -224,3 +224,15 @@ instance LinearOrderedSemiring.toLocallyConvexSpace {R : Type*} [TopologicalSpac
     · simp +contextual
 
 end LinearOrderedSemiring
+
+lemma Convex.eventually_nhdsWithin_segment {E 𝕜 : Type*} [OrderedSemiring 𝕜]
+    [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] [LocallyConvexSpace 𝕜 E]
+    {s : Set E} (hs : Convex 𝕜 s) {x₀ : E} (hx₀s : x₀ ∈ s)
+    {p : E → Prop} (h : ∀ᶠ x in 𝓝[s] x₀, p x) :
+    ∀ᶠ x in 𝓝[s] x₀, ∀ y ∈ segment 𝕜 x₀ x, p y := by
+  rw [eventually_nhdsWithin_iff, (LocallyConvexSpace.convex_basis (𝕜 := 𝕜) x₀).eventually_iff]
+    at h ⊢
+  obtain ⟨u, ⟨hu_nhds, hu_convex⟩, h⟩ := h
+  refine ⟨u, ⟨hu_nhds, hu_convex⟩, fun x hxu hxs y hy ↦ h ?_ (hs.segment_subset hx₀s hxs hy)⟩
+  suffices segment 𝕜 x₀ x ⊆ u from this hy
+  exact hu_convex.segment_subset (mem_of_mem_nhds hu_nhds) hxu
