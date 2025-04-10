@@ -10,8 +10,11 @@ import Mathlib.Algebra.Group.Subsemigroup.Operations
 import Mathlib.Algebra.GroupWithZero.Center
 import Mathlib.Algebra.Ring.Center
 import Mathlib.Algebra.Ring.Centralizer
+import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Algebra.Ring.Prod
+import Mathlib.Algebra.Ring.Submonoid.Basic
 import Mathlib.Data.Set.Finite.Range
+import Mathlib.GroupTheory.Submonoid.Center
 import Mathlib.GroupTheory.Subsemigroup.Centralizer
 import Mathlib.RingTheory.NonUnitalSubsemiring.Defs
 
@@ -245,6 +248,19 @@ lemma _root_.Set.mem_center_iff_addMonoidHom (a : R) :
   rw [Set.mem_center_iff, isMulCentral_iff]
   simp [DFunLike.ext_iff]
 
+variable {R}
+
+/-- The center of isomorphic (not necessarily unital or associative) semirings are isomorphic. -/
+@[simps!] def centerCongr [NonUnitalNonAssocSemiring S] (e : R ≃+* S) : center R ≃+* center S where
+  __ := Subsemigroup.centerCongr e
+  map_add' _ _ := Subtype.ext <| by exact map_add e ..
+
+/-- The center of a (not necessarily unital or associative) semiring
+is isomorphic to the center of its opposite. -/
+@[simps!] def centerToMulOpposite : center R ≃+* center Rᵐᵒᵖ where
+  __ := Subsemigroup.centerToMulOpposite
+  map_add' _ _ := rfl
+
 end NonUnitalNonAssocSemiring
 
 section NonUnitalSemiring
@@ -330,6 +346,7 @@ theorem closure_le {s : Set R} {t : NonUnitalSubsemiring R} : closure s ≤ t �
 
 /-- Subsemiring closure of a set is monotone in its argument: if `s ⊆ t`,
 then `closure s ≤ closure t`. -/
+@[gcongr]
 theorem closure_mono ⦃s t : Set R⦄ (h : s ⊆ t) : closure s ≤ closure t :=
   closure_le.2 <| Set.Subset.trans h subset_closure
 
@@ -462,8 +479,7 @@ theorem closure_induction₂ {s : Set R} {p : (x y : R) → x ∈ closure s → 
   | mul _ _ _ _ h₁ h₂ => exact mul_right _ _ _ _ _ _ h₁ h₂
   | add _ _ _ _ h₁ h₂ => exact add_right _ _ _ _ _ _ h₁ h₂
 
-variable (R)
-
+variable (R) in
 /-- `closure` forms a Galois insertion with the coercion to set. -/
 protected def gi : GaloisInsertion (@closure R _) (↑) where
   choice s _ := closure s
@@ -471,11 +487,11 @@ protected def gi : GaloisInsertion (@closure R _) (↑) where
   le_l_u _ := subset_closure
   choice_eq _ _ := rfl
 
-variable {R}
 variable [NonUnitalNonAssocSemiring S]
 variable {F : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
 
 /-- Closure of a non-unital subsemiring `S` equals `S`. -/
+@[simp]
 theorem closure_eq (s : NonUnitalSubsemiring R) : closure (s : Set R) = s :=
   (NonUnitalSubsemiring.gi R).l_u_eq s
 
@@ -695,7 +711,7 @@ namespace RingEquiv
 open NonUnitalRingHom NonUnitalSubsemiringClass
 
 variable {s t : NonUnitalSubsemiring R}
-variable [NonUnitalNonAssocSemiring S]  {F : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
+variable [NonUnitalNonAssocSemiring S] {F : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
 
 /-- Makes the identity isomorphism from a proof two non-unital subsemirings of a multiplicative
 monoid are equal. -/

@@ -42,7 +42,7 @@ variable {G : Type*} [Group G] (H : Subgroup G)
 /-- In a group that satisfies the normalizer condition, every maximal subgroup is normal -/
 theorem NormalizerCondition.normal_of_coatom (hnc : NormalizerCondition G) (hmax : IsCoatom H) :
     H.Normal :=
-  normalizer_eq_top.mp (hmax.2 _ (hnc H (lt_top_iff_ne_top.mpr hmax.1)))
+  normalizer_eq_top_iff.mp (hmax.2 _ (hnc H (lt_top_iff_ne_top.mpr hmax.1)))
 
 @[simp]
 theorem isCoatom_comap {H : Type*} [Group H] (f : G ≃* H) {K : Subgroup H} :
@@ -114,15 +114,16 @@ instance toLinearOrderedCommGroup [LinearOrderedCommGroup G] (H : Subgroup G) :
 end Subgroup
 
 @[to_additive]
-lemma Subsemigroup.strictMono_topEquiv {G : Type*} [OrderedCommMonoid G] :
+lemma Subsemigroup.strictMono_topEquiv {G : Type*} [CommMonoid G] [PartialOrder G] :
     StrictMono (topEquiv (M := G)) := fun _ _ ↦ id
 
 @[to_additive]
-lemma MulEquiv.strictMono_subsemigroupCongr {G : Type*} [OrderedCommMonoid G] {S T : Subsemigroup G}
+lemma MulEquiv.strictMono_subsemigroupCongr {G : Type*}
+    [CommMonoid G] [PartialOrder G] {S T : Subsemigroup G}
     (h : S = T) : StrictMono (subsemigroupCongr h) := fun _ _ ↦ id
 
 @[to_additive]
-lemma MulEquiv.strictMono_symm {G G' : Type*} [LinearOrderedCommMonoid G]
-    [LinearOrderedCommMonoid G'] {e : G ≃* G'} (he : StrictMono e) : StrictMono e.symm := by
+lemma MulEquiv.strictMono_symm {G G' : Type*} [CommMonoid G] [LinearOrder G]
+    [CommMonoid G'] [PartialOrder G'] {e : G ≃* G'} (he : StrictMono e) : StrictMono e.symm := by
   intro
   simp [← he.lt_iff_lt]

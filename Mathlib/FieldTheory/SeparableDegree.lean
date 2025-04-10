@@ -6,8 +6,9 @@ Authors: Jz Pan
 import Mathlib.FieldTheory.SplittingField.Construction
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 import Mathlib.FieldTheory.Separable
-import Mathlib.FieldTheory.NormalClosure
-import Mathlib.RingTheory.AlgebraicIndependent
+import Mathlib.FieldTheory.Normal.Closure
+import Mathlib.RingTheory.AlgebraicIndependent.Adjoin
+import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
 import Mathlib.RingTheory.Polynomial.SeparableDegree
 import Mathlib.RingTheory.Polynomial.UniqueFactorization
 
@@ -472,7 +473,7 @@ theorem natSepDegree_le_of_dvd (g : F[X]) (h1 : f ∣ g) (h2 : g ≠ 0) :
 and `f` have the same separable degree. -/
 theorem natSepDegree_expand (q : ℕ) [hF : ExpChar F q] {n : ℕ} :
     (expand F (q ^ n) f).natSepDegree = f.natSepDegree := by
-  cases' hF with _ _ hprime _
+  obtain - | hprime := hF
   · simp only [one_pow, expand_one]
   haveI := Fact.mk hprime
   classical
@@ -591,14 +592,14 @@ theorem eq_X_pow_char_pow_sub_C_pow_of_natSepDegree_eq_one (q : ℕ) [ExpChar F 
   have hD := (h ▸ natSepDegree_le_of_dvd p f hf hm.ne_zero).antisymm <|
     Nat.pos_of_ne_zero <| (natSepDegree_ne_zero_iff _).2 hI.natDegree_pos.ne'
   obtain ⟨n, y, H, hp⟩ := hM.eq_X_pow_char_pow_sub_C_of_natSepDegree_eq_one_of_irreducible q hI hD
-  have hF := multiplicity_finite_of_degree_pos_of_monic (degree_pos_of_irreducible hI) hM hm.ne_zero
+  have hF := finiteMultiplicity_of_degree_pos_of_monic (degree_pos_of_irreducible hI) hM hm.ne_zero
   classical
   have hne := (multiplicity_pos_of_dvd hf).ne'
   refine ⟨_, n, y, hne, H, ?_⟩
   obtain ⟨c, hf, H⟩ := hF.exists_eq_pow_mul_and_not_dvd
   rw [hf, natSepDegree_mul_of_isCoprime _ c <| IsCoprime.pow_left <|
-    (hI.coprime_or_dvd c).resolve_right H, natSepDegree_pow_of_ne_zero _ hne, hD,
-    add_right_eq_self, natSepDegree_eq_zero_iff] at h
+    (hI.isCoprime_or_dvd c).resolve_right H, natSepDegree_pow_of_ne_zero _ hne, hD,
+    add_eq_left, natSepDegree_eq_zero_iff] at h
   simpa only [eq_one_of_monic_natDegree_zero ((hM.pow _).of_mul_monic_left (hf ▸ hm)) h,
     mul_one, ← hp] using hf
 
@@ -778,7 +779,7 @@ theorem finSepDegree_eq_finrank_iff [FiniteDimensional F E] :
     have halg := IsAlgebraic.of_finite F x
     refine (finSepDegree_adjoin_simple_eq_finrank_iff F E x halg).1 <| le_antisymm
       (finSepDegree_adjoin_simple_le_finrank F E x halg) <| le_of_not_lt fun h ↦ ?_
-    have := Nat.mul_lt_mul_of_lt_of_le' h (finSepDegree_le_finrank F⟮x⟯ E) Fin.size_pos'
+    have := Nat.mul_lt_mul_of_lt_of_le' h (finSepDegree_le_finrank F⟮x⟯ E) Fin.pos'
     rw [finSepDegree_mul_finSepDegree_of_isAlgebraic F F⟮x⟯ E,
       Module.finrank_mul_finrank F F⟮x⟯ E] at this
     linarith only [heq, this]⟩, fun _ ↦ finSepDegree_eq_finrank_of_isSeparable F E⟩

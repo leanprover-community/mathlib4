@@ -5,13 +5,17 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Semiquot
 import Mathlib.Data.Nat.Size
-import Mathlib.Tactic.Ring.RingNF
+import Batteries.Data.Rat.Basic
+import Mathlib.Data.PNat.Defs
+import Mathlib.Data.Rat.Init
+import Mathlib.Algebra.Ring.Int.Defs
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
 
 /-!
 # Implementation of floating-point numbers (experimental).
 -/
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO add docs and remove `@[nolint docBlame]`
+-- TODO add docs and remove `@[nolint docBlame]`
 
 @[nolint docBlame]
 def Int.shift2 (a b : ℕ) : ℤ → ℕ × ℕ
@@ -82,9 +86,7 @@ theorem Float.Zero.valid : ValidFinite emin 0 :=
       rw [← Int.ofNat_le] at this
       rw [← sub_nonneg] at *
       simp only [emin, emax] at *
-      ring_nf
-      rw [mul_comm]
-      assumption
+      omega
     le_trans C.precMax (Nat.le_mul_of_pos_left _ Nat.zero_lt_two),
     by (rw [max_eq_right]; simp [sub_eq_add_neg, Int.ofNat_zero_le])⟩
 
@@ -128,10 +130,10 @@ def divNatLtTwoPow (n d : ℕ) : ℤ → Bool
 @[nolint docBlame]
 unsafe def ofPosRatDn (n : ℕ+) (d : ℕ+) : Float × Bool := by
   let e₁ : ℤ := n.1.size - d.1.size - prec
-  cases' Int.shift2 d.1 n.1 (e₁ + prec) with d₁ n₁
+  obtain ⟨d₁, n₁⟩ := Int.shift2 d.1 n.1 (e₁ + prec)
   let e₂ := if n₁ < d₁ then e₁ - 1 else e₁
   let e₃ := max e₂ emin
-  cases' Int.shift2 d.1 n.1 (e₃ + prec) with d₂ n₂
+  obtain ⟨d₂, n₂⟩ := Int.shift2 d.1 n.1 (e₃ + prec)
   let r := mkRat n₂ d₂
   let m := r.floor
   refine (Float.finite Bool.false e₃ (Int.toNat m) ?_, r.den = 1)

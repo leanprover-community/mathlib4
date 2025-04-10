@@ -38,8 +38,7 @@ form `fun i j ↦ _` or even `(fun i j ↦ _ : Matrix m n α)`, as these are not
 as having the right type. Instead, `Matrix.of` should be used.
 -/
 
-assert_not_exists Algebra
-assert_not_exists Star
+assert_not_exists Algebra Star
 
 universe u u' v w
 
@@ -75,10 +74,6 @@ which performs elementwise multiplication, vs `Matrix.mul`).
 If you are defining a matrix, in terms of its entries, use `of (fun i j ↦ _)`. The
 purpose of this approach is to ensure that terms of the form `(fun i j ↦ _) * (fun i j ↦ _)` do not
 appear, as the type of `*` can be misleading.
-
-Porting note: In Lean 3, it is also safe to use pattern matching in a definition as `| i j := _`,
-which can only be unfolded when fully-applied. https://github.com/leanprover/lean4/issues/2042 means this does not
-(currently) work in Lean 4.
 -/
 def of : (m → n → α) ≃ Matrix m n α :=
   Equiv.refl _
@@ -213,12 +208,7 @@ instance module [Semiring R] [AddCommMonoid α] [Module R α] : Module R (Matrix
 
 section
 
-#adaptation_note
-/--
-After https://github.com/leanprover/lean4/pull/4481
-the `simpNF` linter incorrectly claims this lemma can't be applied by `simp`.
--/
-@[simp, nolint simpNF]
+@[simp]
 theorem zero_apply [Zero α] (i : m) (j : n) : (0 : Matrix m n α) i j = 0 := rfl
 
 @[simp]
@@ -236,6 +226,16 @@ theorem sub_apply [Sub α] (A B : Matrix m n α) (i : m) (j : n) :
 @[simp]
 theorem neg_apply [Neg α] (A : Matrix m n α) (i : m) (j : n) :
     (-A) i j = -(A i j) := rfl
+
+protected theorem dite_apply (P : Prop) [Decidable P]
+    (A : P → Matrix m n α) (B : ¬P → Matrix m n α) (i : m) (j : n) :
+    dite P A B i j = dite P (A · i j) (B · i j) := by
+  rw [dite_apply, dite_apply]
+
+protected theorem ite_apply (P : Prop) [Decidable P]
+    (A : Matrix m n α) (B : Matrix m n α) (i : m) (j : n) :
+    (if P then A else B) i j = if P then A i j else B i j :=
+  Matrix.dite_apply _ _ _ _ _
 
 end
 
@@ -275,7 +275,7 @@ protected theorem map_sub [Sub α] [Sub β] (f : α → β) (hf : ∀ a₁ a₂,
     (M N : Matrix m n α) : (M - N).map f = M.map f - N.map f :=
   ext fun _ _ => hf _ _
 
-theorem map_smul [SMul R α] [SMul R β] (f : α → β) (r : R) (hf : ∀ a, f (r • a) = r • f a)
+protected theorem map_smul [SMul R α] [SMul R β] (f : α → β) (r : R) (hf : ∀ a, f (r • a) = r • f a)
     (M : Matrix m n α) : (r • M).map f = r • M.map f :=
   ext fun _ _ => hf _
 
@@ -319,6 +319,12 @@ def ofAddEquiv [Add α] : (m → n → α) ≃+ Matrix m n α where
     ⇑(ofAddEquiv : (m → n → α) ≃+ Matrix m n α) = of := rfl
 @[simp] lemma coe_ofAddEquiv_symm [Add α] :
     ⇑(ofAddEquiv.symm : Matrix m n α ≃+ (m → n → α)) = of.symm := rfl
+
+@[simp] lemma isAddUnit_iff [AddMonoid α] {A : Matrix m n α} :
+    IsAddUnit A ↔ ∀ i j, IsAddUnit (A i j) := by
+  simp_rw [isAddUnit_iff_exists, Classical.skolem, forall_and,
+    ← Matrix.ext_iff, add_apply, zero_apply]
+  rfl
 
 end Matrix
 
@@ -449,7 +455,7 @@ theorem reindex_symm (eₘ : m ≃ l) (eₙ : n ≃ o) :
 theorem reindex_trans {l₂ o₂ : Type*} (eₘ : m ≃ l) (eₙ : n ≃ o) (eₘ₂ : l ≃ l₂) (eₙ₂ : o ≃ o₂) :
     (reindex eₘ eₙ).trans (reindex eₘ₂ eₙ₂) =
       (reindex (eₘ.trans eₘ₂) (eₙ.trans eₙ₂) : Matrix m n α ≃ _) :=
-  Equiv.ext fun A => (A.submatrix_submatrix eₘ.symm eₙ.symm eₘ₂.symm eₙ₂.symm : _)
+  Equiv.ext fun A => (A.submatrix_submatrix eₘ.symm eₙ.symm eₘ₂.symm eₙ₂.symm :)
 
 theorem transpose_reindex (eₘ : m ≃ l) (eₙ : n ≃ o) (M : Matrix m n α) :
     (reindex eₘ eₙ M)ᵀ = reindex eₙ eₘ Mᵀ :=

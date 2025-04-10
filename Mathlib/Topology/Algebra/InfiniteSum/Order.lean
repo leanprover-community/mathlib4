@@ -42,7 +42,8 @@ end Preorder
 
 section OrderedCommMonoid
 
-variable [OrderedCommMonoid α] [TopologicalSpace α] [OrderClosedTopology α] {f g : ι → α}
+variable [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α]
+  [TopologicalSpace α] [OrderClosedTopology α] {f g : ι → α}
   {a a₁ a₂ : α}
 
 @[to_additive]
@@ -72,7 +73,8 @@ theorem tprod_le_tprod_of_inj {g : κ → α} (e : ι → κ) (he : Injective e)
   hasProd_le_inj _ he hs h hf.hasProd hg.hasProd
 
 @[to_additive]
-lemma tprod_subtype_le {κ γ : Type*} [OrderedCommGroup γ] [UniformSpace γ] [UniformGroup γ]
+lemma tprod_subtype_le {κ γ : Type*} [CommGroup γ] [PartialOrder γ] [IsOrderedMonoid γ]
+    [UniformSpace γ] [IsUniformGroup γ]
     [OrderClosedTopology γ] [CompleteSpace γ] (f : κ → γ) (β : Set κ) (h : ∀ a : κ, 1 ≤ f a)
     (hf : Multipliable f) : (∏' (b : β), f b) ≤ (∏' (a : κ), f a) := by
   apply tprod_le_tprod_of_inj _
@@ -101,6 +103,16 @@ theorem le_hasProd (hf : HasProd f a) (i : ι) (hb : ∀ j, j ≠ i → 1 ≤ f 
     _ ≤ a := prod_le_hasProd _ (by simpa) hf
 
 @[to_additive]
+theorem lt_hasProd [MulRightStrictMono α] (hf : HasProd f a) (i : ι)
+    (hi : ∀ (j : ι), j ≠ i → 1 ≤ f j) (j : ι) (hij : j ≠ i) (hj : 1 < f j) :
+    f i < a := by
+  classical
+  calc
+    f i < f j * f i := lt_mul_of_one_lt_left' (f i) hj
+    _ = ∏ k ∈ {j, i}, f k := by rw [Finset.prod_pair hij]
+    _ ≤ a := prod_le_hasProd _ (fun k hk ↦ hi k (hk ∘ mem_insert_of_mem ∘ mem_singleton.mpr)) hf
+
+@[to_additive]
 theorem prod_le_tprod {f : ι → α} (s : Finset ι) (hs : ∀ i, i ∉ s → 1 ≤ f i) (hf : Multipliable f) :
     ∏ i ∈ s, f i ≤ ∏' i, f i :=
   prod_le_hasProd s hs hf.hasProd
@@ -119,10 +131,12 @@ theorem tprod_mono (hf : Multipliable f) (hg : Multipliable g) (h : f ≤ g) :
     ∏' n, f n ≤ ∏' n, g n :=
   tprod_le_tprod h hf hg
 
+omit [IsOrderedMonoid α] in
 @[to_additive]
 theorem tprod_le_of_prod_le (hf : Multipliable f) (h : ∀ s, ∏ i ∈ s, f i ≤ a₂) : ∏' i, f i ≤ a₂ :=
   hasProd_le_of_prod_le hf.hasProd h
 
+omit [IsOrderedMonoid α] in
 @[to_additive]
 theorem tprod_le_of_prod_le' (ha₂ : 1 ≤ a₂) (h : ∀ s, ∏ i ∈ s, f i ≤ a₂) : ∏' i, f i ≤ a₂ := by
   by_cases hf : Multipliable f
@@ -150,7 +164,6 @@ theorem tprod_le_one (h : ∀ i, f i ≤ 1) : ∏' i, f i ≤ 1 := by
   · exact hf.hasProd.le_one h
   · rw [tprod_eq_one_of_not_multipliable hf]
 
--- Porting note: generalized from `OrderedAddCommGroup` to `OrderedAddCommMonoid`
 @[to_additive]
 theorem hasProd_one_iff_of_one_le (hf : ∀ i, 1 ≤ f i) : HasProd f 1 ↔ f = 1 := by
   refine ⟨fun hf' ↦ ?_, ?_⟩
@@ -163,7 +176,8 @@ end OrderedCommMonoid
 
 section OrderedCommGroup
 
-variable [OrderedCommGroup α] [TopologicalSpace α] [TopologicalGroup α]
+variable [CommGroup α] [PartialOrder α] [IsOrderedMonoid α]
+  [TopologicalSpace α] [IsTopologicalGroup α]
   [OrderClosedTopology α] {f g : ι → α} {a₁ a₂ : α} {i : ι}
 
 @[to_additive]
@@ -198,10 +212,11 @@ theorem one_lt_tprod (hsum : Multipliable g) (hg : ∀ i, 1 ≤ g i) (i : ι) (h
 
 end OrderedCommGroup
 
-section CanonicallyOrderedCommMonoid
+section CanonicallyOrderedMul
 
-variable [CanonicallyOrderedCommMonoid α] [TopologicalSpace α] [OrderClosedTopology α]
-  {f : ι → α} {a : α}
+variable [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α]
+  [CanonicallyOrderedMul α] [TopologicalSpace α]
+  [OrderClosedTopology α] {f : ι → α} {a : α}
 
 @[to_additive]
 theorem le_hasProd' (hf : HasProd f a) (i : ι) : f i ≤ a :=
@@ -228,7 +243,7 @@ theorem isLUB_hasProd' (hf : HasProd f a) : IsLUB (Set.range fun s ↦ ∏ i ∈
   classical
   exact isLUB_of_tendsto_atTop (Finset.prod_mono_set' f) hf
 
-end CanonicallyOrderedCommMonoid
+end CanonicallyOrderedMul
 
 section LinearOrder
 
@@ -242,19 +257,22 @@ the existence of a least upper bound.
 -/
 
 @[to_additive]
-theorem hasProd_of_isLUB_of_one_le [LinearOrderedCommMonoid α] [TopologicalSpace α]
+theorem hasProd_of_isLUB_of_one_le [CommMonoid α] [LinearOrder α] [IsOrderedMonoid α]
+    [TopologicalSpace α]
     [OrderTopology α] {f : ι → α} (i : α) (h : ∀ i, 1 ≤ f i)
     (hf : IsLUB (Set.range fun s ↦ ∏ i ∈ s, f i) i) : HasProd f i :=
   tendsto_atTop_isLUB (Finset.prod_mono_set_of_one_le' h) hf
 
 @[to_additive]
-theorem hasProd_of_isLUB [CanonicallyLinearOrderedCommMonoid α] [TopologicalSpace α]
+theorem hasProd_of_isLUB [CommMonoid α] [LinearOrder α] [IsOrderedMonoid α]
+    [CanonicallyOrderedMul α] [TopologicalSpace α]
     [OrderTopology α] {f : ι → α} (b : α) (hf : IsLUB (Set.range fun s ↦ ∏ i ∈ s, f i) b) :
     HasProd f b :=
   tendsto_atTop_isLUB (Finset.prod_mono_set' f) hf
 
 @[to_additive]
-theorem multipliable_mabs_iff [LinearOrderedCommGroup α] [UniformSpace α] [UniformGroup α]
+theorem multipliable_mabs_iff [CommGroup α] [LinearOrder α] [IsOrderedMonoid α]
+    [UniformSpace α] [IsUniformGroup α]
     [CompleteSpace α] {f : ι → α} : (Multipliable fun x ↦ mabs (f x)) ↔ Multipliable f :=
   let s := { x | 1 ≤ f x }
   have h1 : ∀ x : s, mabs (f x) = f x := fun x ↦ mabs_of_one_le x.2
@@ -267,7 +285,8 @@ theorem multipliable_mabs_iff [LinearOrderedCommGroup α] [UniformSpace α] [Uni
 
 alias ⟨Summable.of_abs, Summable.abs⟩ := summable_abs_iff
 
-theorem Finite.of_summable_const [LinearOrderedAddCommGroup α] [TopologicalSpace α] [Archimedean α]
+theorem Finite.of_summable_const [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
+    [TopologicalSpace α] [Archimedean α]
     [OrderClosedTopology α] {b : α} (hb : 0 < b) (hf : Summable fun _ : ι ↦ b) :
     Finite ι := by
   have H : ∀ s : Finset ι, #s • b ≤ ∑' _ : ι, b := fun s ↦ by
@@ -278,7 +297,8 @@ theorem Finite.of_summable_const [LinearOrderedAddCommGroup α] [TopologicalSpac
   have : Fintype ι := fintypeOfFinsetCardLe n this
   infer_instance
 
-theorem Set.Finite.of_summable_const [LinearOrderedAddCommGroup α] [TopologicalSpace α]
+theorem Set.Finite.of_summable_const [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
+    [TopologicalSpace α]
     [Archimedean α] [OrderClosedTopology α] {b : α} (hb : 0 < b) (hf : Summable fun _ : ι ↦ b) :
     (Set.univ : Set ι).Finite :=
   finite_univ_iff.2 <| .of_summable_const hb hf
@@ -287,7 +307,8 @@ end LinearOrder
 
 section LinearOrderedCommRing
 
-variable [LinearOrderedCommRing α] [TopologicalSpace α] [OrderTopology α] {f : ι → α} {x : α}
+variable [CommRing α] [LinearOrder α] [IsStrictOrderedRing α]
+  [TopologicalSpace α] [OrderTopology α] {f : ι → α} {x : α}
 
 nonrec theorem HasProd.abs (hfx : HasProd f x) : HasProd (|f ·|) |x| := by
   simpa only [HasProd, ← abs_prod] using hfx.abs
@@ -300,8 +321,37 @@ theorem abs_tprod (hf : Multipliable f) : |∏' i, f i| = ∏' i, |f i| :=
 
 end LinearOrderedCommRing
 
-theorem Summable.tendsto_atTop_of_pos [LinearOrderedField α] [TopologicalSpace α] [OrderTopology α]
+theorem Summable.tendsto_atTop_of_pos [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+    [TopologicalSpace α] [OrderTopology α]
     {f : ℕ → α} (hf : Summable f⁻¹) (hf' : ∀ n, 0 < f n) : Tendsto f atTop atTop :=
-  inv_inv f ▸ Filter.Tendsto.inv_tendsto_zero <|
+  inv_inv f ▸ Filter.Tendsto.inv_tendsto_nhdsGT_zero <|
     tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ hf.tendsto_atTop_zero <|
       Eventually.of_forall fun _ ↦ inv_pos.2 (hf' _)
+
+namespace Mathlib.Meta.Positivity
+
+open Qq Lean Meta Finset
+
+attribute [local instance] monadLiftOptionMetaM in
+/-- Positivity extension for infinite sums.
+
+This extension only proves non-negativity, strict positivity is more delicate for infinite sums and
+requires more assumptions. -/
+@[positivity tsum _]
+def evalTsum : PositivityExt where eval {u α} zα pα e := do
+  match e with
+  | ~q(@tsum _ $instCommMonoid $instTopSpace $ι $f) =>
+    lambdaBoundedTelescope f 1 fun args (body : Q($α)) => do
+      let #[(i : Q($ι))] := args | failure
+      let rbody ← core zα pα body
+      let pbody ← rbody.toNonneg
+      let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody
+      let mα' ← synthInstanceQ q(AddCommMonoid $α)
+      let oα' ← synthInstanceQ q(PartialOrder $α)
+      let pα' ← synthInstanceQ q(IsOrderedAddMonoid $α)
+      let instOrderClosed ← synthInstanceQ q(OrderClosedTopology $α)
+      assertInstancesCommute
+      return .nonnegative q(@tsum_nonneg $ι $α $mα' $oα' $pα' $instTopSpace $instOrderClosed $f $pr)
+  | _ => throwError "not tsum"
+
+end Mathlib.Meta.Positivity

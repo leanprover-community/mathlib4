@@ -324,9 +324,7 @@ def applyMorRules (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     applyCompRule funPropDecl e f g funProp
   | .exact =>
 
-    let ext := morTheoremsExt.getState (← getEnv)
-    let candidates ← ext.theorems.getMatchWithScore e false { iota := false, zeta := false }
-    let candidates := candidates.map (·.1) |>.flatten
+    let candidates ← getMorphismTheorems e
 
     trace[Meta.Tactic.fun_prop]
       "candidate morphism theorems: {← candidates.mapM fun c => ppOrigin (.decl c.thmName)}"
@@ -343,9 +341,7 @@ def applyTransitionRules (e : Expr) (funProp : Expr → FunPropM (Option Result)
     FunPropM (Option Result) := do
   withIncreasedTransitionDepth do
 
-  let ext := transitionTheoremsExt.getState (← getEnv)
-  let candidates ← ext.theorems.getMatchWithScore e false { iota := false, zeta := false }
-  let candidates := candidates.map (·.1) |>.flatten
+  let candidates ← getTransitionTheorems e
 
   trace[Meta.Tactic.fun_prop]
     "candidate transition theorems: {← candidates.mapM fun c => ppOrigin (.decl c.thmName)}"
@@ -364,16 +360,15 @@ For example
   - `e = q(Continuous fun x => foo (bar x) y)`
   - `fData` contains info on `fun x => foo (bar x) y`
   This tries to prove `Continuous fun x => foo (bar x) y` from `Continuous fun x => foo (bar x)`
- -/
+-/
 def removeArgRule (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     (funProp : Expr → FunPropM (Option Result)) :
     FunPropM (Option Result) := do
 
-  match fData.args.size with
+  match h : fData.args.size with
   | 0 => throwError "fun_prop bug: invalid use of remove arg case {←ppExpr e}"
-  | _ =>
-    let n := fData.args.size
-    let arg := fData.args[n-1]!
+  | n + 1 =>
+    let arg := fData.args[n]
 
     if arg.coe.isSome then
       -- if have to apply morphisms rules if we deal with morphims
@@ -433,7 +428,7 @@ def getLocalTheorems (funPropDecl : FunPropDecl) (funOrigin : Origin)
       let .some (decl,f) ← getFunProp? b | return none
       unless decl.funPropName = funPropDecl.funPropName do return none
 
-      let .data fData ← getFunctionData? f (← unfoldNamePred) {zeta := false, zetaDelta := false}
+      let .data fData ← getFunctionData? f (← unfoldNamePred)
         | return none
       unless (fData.getFnOrigin == funOrigin) do return none
 
@@ -629,7 +624,7 @@ mutual
     withTraceNode `Meta.Tactic.fun_prop
       (fun r => do pure s!"[{ExceptToEmoji.toEmoji r}] {← ppExpr e}") do
 
-    -- check cache for succesfull goals
+    -- check cache for successful goals
     if let .some { expr := _, proof? := .some proof } := (← get).cache.find? e then
       trace[Meta.Tactic.fun_prop] "reusing previously found proof for {e}"
       return .some { proof := proof }
@@ -672,7 +667,7 @@ mutual
         let e' := e.setArg funPropDecl.funArgId b
         funProp (← mkLambdaFVars xs e')
 
-    match ← getFunctionData? f (← unfoldNamePred) {zeta := false, zetaDelta := false} with
+    match ← getFunctionData? f (← unfoldNamePred) with
     | .letE f =>
       trace[Debug.Meta.Tactic.fun_prop] "let case on {← ppExpr f}"
       let e := e.setArg funPropDecl.funArgId f -- update e with reduced f

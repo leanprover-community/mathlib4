@@ -5,8 +5,8 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.GroupWithZero.Canonical
-import Mathlib.Algebra.Order.Ring.Canonical
-import Mathlib.Algebra.Ring.Nat
+import Mathlib.Algebra.Order.Ring.Defs
+import Mathlib.Algebra.Ring.Parity
 import Mathlib.Data.Set.Basic
 
 /-!
@@ -22,8 +22,6 @@ namespace Nat
 /-! ### Instances -/
 
 instance instLinearOrderedCommSemiring : LinearOrderedCommSemiring ℕ where
-  __ := instCommSemiring
-  __ := instLinearOrder
   add_le_add_left := @Nat.add_le_add_left
   le_of_add_le_add_left := @Nat.le_of_add_le_add_left
   zero_le_one := Nat.le_of_lt (Nat.zero_lt_succ 0)
@@ -32,15 +30,8 @@ instance instLinearOrderedCommSemiring : LinearOrderedCommSemiring ℕ where
   exists_pair_ne := ⟨0, 1, ne_of_lt Nat.zero_lt_one⟩
 
 instance instLinearOrderedCommMonoidWithZero : LinearOrderedCommMonoidWithZero ℕ where
-  __ := instLinearOrderedCommSemiring
-  __ : CommMonoidWithZero ℕ := inferInstance
+  zero_le_one := zero_le_one
   mul_le_mul_left _ _ h c := Nat.mul_le_mul_left c h
-
-instance instCanonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring ℕ where
-  __ := instLinearOrderedCommSemiring
-  exists_add_of_le h := (Nat.le.dest h).imp fun _ => Eq.symm
-  le_self_add := Nat.le_add_right
-  eq_zero_or_eq_zero_of_mul_eq_zero := Nat.mul_eq_zero.mp
 
 /-!
 ### Extra instances to short-circuit type class resolution

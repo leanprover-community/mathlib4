@@ -55,7 +55,7 @@ theorem parallelepiped_basis_eq (b : Basis ι ℝ E) :
   classical
   ext x
   simp_rw [mem_parallelepiped_iff, mem_setOf_eq, b.ext_elem_iff, _root_.map_sum,
-    _root_.map_smul, Finset.sum_apply', Basis.repr_self, Finsupp.smul_single, smul_eq_mul,
+    map_smul, Finset.sum_apply', Basis.repr_self, Finsupp.smul_single, smul_eq_mul,
     mul_one, Finsupp.single_apply, Finset.sum_ite_eq', Finset.mem_univ, ite_true, mem_Icc,
     Pi.le_def, Pi.zero_apply, Pi.one_apply, ← forall_and]
   aesop
@@ -105,14 +105,14 @@ theorem parallelepiped_orthonormalBasis_one_dim (b : OrthonormalBasis ι ℝ ℝ
     · intro x hx
       refine ⟨x 0, ⟨hx.1 0, hx.2 0⟩, ?_⟩
       ext j
-      simp only [Subsingleton.elim j 0]
+      simp only [F, Subsingleton.elim j 0]
     · rintro x ⟨y, hy, rfl⟩
       exact ⟨fun _j => hy.1, fun _j => hy.2⟩
   rcases orthonormalBasis_one_dim (b.reindex e) with (H | H)
   · left
     simp_rw [parallelepiped, H, A, Algebra.id.smul_eq_mul, mul_one]
-    simp only [Finset.univ_unique, Fin.default_eq_zero, Finset.sum_singleton, ← image_comp,
-      Function.comp_apply, image_id']
+    simp only [F, Finset.univ_unique, Fin.default_eq_zero, Finset.sum_singleton,
+      ← image_comp, Function.comp_apply, image_id']
   · right
     simp_rw [H, parallelepiped, Algebra.id.smul_eq_mul, A]
     simp only [F, Finset.univ_unique, Fin.default_eq_zero, mul_neg, mul_one, Finset.sum_neg_distrib,
@@ -205,11 +205,9 @@ theorem Basis.parallelepiped_reindex (b : Basis ι ℝ E) (e : ι ≃ ι') :
 
 theorem Basis.parallelepiped_map (b : Basis ι ℝ E) (e : E ≃ₗ[ℝ] F) :
     (b.map e).parallelepiped = b.parallelepiped.map e
-    (have := FiniteDimensional.of_fintype_basis b
-    -- Porting note: Lean cannot infer the instance above
+    (haveI := FiniteDimensional.of_fintype_basis b
     LinearMap.continuous_of_finiteDimensional e.toLinearMap)
-    (have := FiniteDimensional.of_fintype_basis (b.map e)
-    -- Porting note: Lean cannot infer the instance above
+    (haveI := FiniteDimensional.of_fintype_basis (b.map e)
     LinearMap.isOpenMap_of_finiteDimensional _ e.surjective) :=
   PositiveCompacts.ext (image_parallelepiped e.toLinearMap _).symm
 

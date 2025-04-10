@@ -24,8 +24,7 @@ In decomposition monoids (e.g., `ℕ`, `ℤ`), this predicate is equivalent to `
  * `irreducible_iff_prime`: the two definitions are equivalent in a decomposition monoid.
 -/
 
-assert_not_exists OrderedCommMonoid
-assert_not_exists Multiset
+assert_not_exists OrderedCommMonoid Multiset
 
 variable {M : Type*}
 
@@ -99,14 +98,16 @@ monoid allows us to reuse irreducible for associated elements.
 -/
 structure Irreducible [Monoid M] (p : M) : Prop where
   /-- `p` is not a unit -/
-  not_unit : ¬IsUnit p
+  not_isUnit : ¬IsUnit p
   /-- if `p` factors then one factor is a unit -/
   isUnit_or_isUnit' : ∀ a b, p = a * b → IsUnit a ∨ IsUnit b
 
 namespace Irreducible
 
+@[deprecated (since := "2025-04-09")] alias not_unit := not_isUnit
+
 theorem not_dvd_one [CommMonoid M] {p : M} (hp : Irreducible p) : ¬p ∣ 1 :=
-  mt (isUnit_of_dvd_one ·) hp.not_unit
+  mt (isUnit_of_dvd_one ·) hp.not_isUnit
 
 theorem isUnit_or_isUnit [Monoid M] {p : M} (hp : Irreducible p) {a b : M} (h : p = a * b) :
     IsUnit a ∨ IsUnit b :=
@@ -151,7 +152,7 @@ theorem irreducible_or_factor {M} [Monoid M] (x : M) (h : ¬IsUnit x) :
 theorem Irreducible.dvd_symm [Monoid M] {p q : M} (hp : Irreducible p) (hq : Irreducible q) :
     p ∣ q → q ∣ p := by
   rintro ⟨q', rfl⟩
-  rw [IsUnit.mul_right_dvd (Or.resolve_left (of_irreducible_mul hq) hp.not_unit)]
+  rw [IsUnit.mul_right_dvd (Or.resolve_left (of_irreducible_mul hq) hp.not_isUnit)]
 
 theorem Irreducible.dvd_comm [Monoid M] {p q : M} (hp : Irreducible p) (hq : Irreducible q) :
     p ∣ q ↔ q ∣ p :=
@@ -163,7 +164,7 @@ variable [CommMonoidWithZero M]
 
 theorem Irreducible.prime_of_isPrimal {a : M}
     (irr : Irreducible a) (primal : IsPrimal a) : Prime a :=
-  ⟨irr.ne_zero, irr.not_unit, fun a b dvd ↦ by
+  ⟨irr.ne_zero, irr.not_isUnit, fun a b dvd ↦ by
     obtain ⟨d₁, d₂, h₁, h₂, rfl⟩ := primal dvd
     exact (of_irreducible_mul irr).symm.imp (·.mul_right_dvd.mpr h₁) (·.mul_left_dvd.mpr h₂)⟩
 

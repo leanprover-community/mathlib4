@@ -48,7 +48,7 @@ theorem disjoint_span_sum : Disjoint (span R (range (u ∘ Sum.inl)))
     (span R (range (u ∘ Sum.inr))) := by
   rw [huv, disjoint_comm]
   refine Disjoint.mono_right (span_mono (range_comp_subset_range _ _)) ?_
-  rw [← LinearMap.range_coe, span_eq (LinearMap.range S.f), hS.moduleCat_range_eq_ker]
+  rw [← LinearMap.range_coe, span_eq (LinearMap.range S.f.hom), hS.moduleCat_range_eq_ker]
   exact range_ker_disjoint hw
 
 include hv hm in
@@ -66,8 +66,8 @@ where the top row is an exact sequence of modules and the maps on the bottom are
 independent. -/
 theorem linearIndependent_leftExact : LinearIndependent R u := by
   rw [linearIndependent_sum]
-  refine ⟨?_, LinearIndependent.of_comp S.g hw, disjoint_span_sum hS hw huv⟩
-  rw [huv, LinearMap.linearIndependent_iff S.f]; swap
+  refine ⟨?_, LinearIndependent.of_comp S.g.hom hw, disjoint_span_sum hS hw huv⟩
+  rw [huv, LinearMap.linearIndependent_iff S.f.hom]; swap
   · rw [LinearMap.ker_eq_bot, ← mono_iff_injective]
     infer_instance
   exact hv
@@ -78,7 +78,7 @@ include hS' hv in
 /-- Given a short exact sequence `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` of `R`-modules and linearly independent
     families `v : ι → N` and `w : ι' → P`, we get a linearly independent family `ι ⊕ ι' → M` -/
 theorem linearIndependent_shortExact {w : ι' → S.X₃} (hw : LinearIndependent R w) :
-    LinearIndependent R (Sum.elim (S.f ∘ v) (S.g.toFun.invFun ∘ w)) := by
+    LinearIndependent R (Sum.elim (S.f ∘ v) (S.g.hom.toFun.invFun ∘ w)) := by
   apply linearIndependent_leftExact hS'.exact hv _ hS'.mono_f rfl
   dsimp
   convert hw
@@ -109,16 +109,16 @@ theorem span_exact {β : Type*} {u : ι ⊕ β → S.X₂} (huv : u ∘ Sum.inl 
   rw [Finsupp.mem_span_range_iff_exists_finsupp] at hgm
   obtain ⟨cm, hm⟩ := hgm
   let m' : S.X₂ := Finsupp.sum cm fun j a ↦ a • (u (Sum.inr j))
-  have hsub : m - m' ∈ LinearMap.range S.f := by
+  have hsub : m - m' ∈ LinearMap.range S.f.hom := by
     rw [hS.moduleCat_range_eq_ker]
     simp only [LinearMap.mem_ker, map_sub, sub_eq_zero]
-    rw [← hm, map_finsupp_sum]
+    rw [← hm, map_finsuppSum]
     simp only [Function.comp_apply, map_smul]
   obtain ⟨n, hnm⟩ := hsub
   have hn : n ∈ span R (range v) := hv mem_top
   rw [Finsupp.mem_span_range_iff_exists_finsupp] at hn
   obtain ⟨cn, hn⟩ := hn
-  rw [← hn, map_finsupp_sum] at hnm
+  rw [← hn, map_finsuppSum] at hnm
   rw [← sub_add_cancel m m', ← hnm,]
   simp only [map_smul]
   have hn' : (Finsupp.sum cn fun a b ↦ b • S.f (v a)) =
@@ -138,7 +138,7 @@ include hS in
     families `v : ι → X₁` and `w : ι' → X₃`, we get a spanning family `ι ⊕ ι' → X₂` -/
 theorem span_rightExact {w : ι' → S.X₃} (hv : ⊤ ≤ span R (range v))
     (hw : ⊤ ≤ span R (range w)) (hE : Epi S.g) :
-    ⊤ ≤ span R (range (Sum.elim (S.f ∘ v) (S.g.toFun.invFun ∘ w))) := by
+    ⊤ ≤ span R (range (Sum.elim (S.f ∘ v) (S.g.hom.toFun.invFun ∘ w))) := by
   refine span_exact hS ?_ hv ?_
   · simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, Sum.elim_comp_inl]
   · convert hw

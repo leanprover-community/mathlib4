@@ -16,6 +16,49 @@ open Function
 variable {α β : Type*}
 
 namespace Function.Injective
+
+section
+
+variable [Semiring α] [PartialOrder α]
+  [Zero β] [One β] [Add β] [Mul β] [SMul ℕ β] [Pow β ℕ] [NatCast β] (f : β → α) (hf : Injective f)
+
+/-- Pullback an `IsOrderedRing` under an injective map. -/
+protected lemma isOrderedRing [IsOrderedRing α] (zero : f 0 = 0) (one : f 1 = 1)
+    (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
+    (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
+    (natCast : ∀ n : ℕ, f n = n) :
+    letI _ : Semiring β := hf.semiring f zero one add mul nsmul npow natCast
+    letI _ : PartialOrder β := PartialOrder.lift f hf
+    IsOrderedRing β :=
+  letI _ : Semiring β := hf.semiring f zero one add mul nsmul npow natCast
+  letI _ : PartialOrder β := PartialOrder.lift f hf
+  { __ := hf.isOrderedAddMonoid f zero add (swap nsmul)
+    zero_le_one := show f 0 ≤ f 1 by simp only [zero, one, zero_le_one]
+    mul_le_mul_of_nonneg_left a b c h hc := show f (c * a) ≤ f (c * b) by
+      rw [mul, mul]; refine mul_le_mul_of_nonneg_left h ?_; rwa [← zero]
+    mul_le_mul_of_nonneg_right a b c h hc := show f (a * c) ≤ f (b * c) by
+      rw [mul, mul]; refine mul_le_mul_of_nonneg_right h ?_; rwa [← zero] }
+
+/-- Pullback a `IsStrictOrderedRing` under an injective map. -/
+protected lemma isStrictOrderedRing [IsStrictOrderedRing α] (zero : f 0 = 0) (one : f 1 = 1)
+    (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
+    (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
+    (natCast : ∀ n : ℕ, f n = n) :
+    letI _ : Semiring β := hf.semiring f zero one add mul nsmul npow natCast
+    letI _ : PartialOrder β := PartialOrder.lift f hf
+    IsStrictOrderedRing β :=
+  letI _ : Semiring β := hf.semiring f zero one add mul nsmul npow natCast
+  letI _ : PartialOrder β := PartialOrder.lift f hf
+  { __ := hf.isOrderedCancelAddMonoid f zero add (swap nsmul)
+    __ := domain_nontrivial f zero one
+    __ := hf.isOrderedRing f zero one add mul nsmul npow natCast
+    mul_lt_mul_of_pos_left a b c h hc := show f (c * a) < f (c * b) by
+      simpa only [mul, zero] using mul_lt_mul_of_pos_left ‹f a < f b› (by rwa [← zero])
+    mul_lt_mul_of_pos_right a b c h hc := show f (a * c) < f (b * c) by
+      simpa only [mul, zero] using mul_lt_mul_of_pos_right ‹f a < f b› (by rwa [← zero]) }
+
+end
+
 variable [Zero β] [One β] [Add β] [Mul β] [Neg β] [Sub β] [SMul ℕ β] [SMul ℤ β] [Pow β ℕ]
   [NatCast β] [IntCast β] [Max β] [Min β] (f : β → α) (hf : Injective f)
 
@@ -74,7 +117,7 @@ protected abbrev strictOrderedSemiring [StrictOrderedSemiring α] (zero : f 0 = 
     (natCast : ∀ n : ℕ, f n = n) : StrictOrderedSemiring β where
   toSemiring := hf.semiring f zero one add mul nsmul npow natCast
   __ := hf.orderedCancelAddCommMonoid f zero add (swap nsmul)
-  __ := pullback_nonzero f zero one
+  __ := domain_nontrivial f zero one
   __ := hf.orderedSemiring f zero one add mul nsmul npow natCast
   mul_lt_mul_of_pos_left a b c h hc := show f (c * a) < f (c * b) by
     simpa only [mul, zero] using mul_lt_mul_of_pos_left ‹f a < f b› (by rwa [← zero])

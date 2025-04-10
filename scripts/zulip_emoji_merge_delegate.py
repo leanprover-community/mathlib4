@@ -65,11 +65,14 @@ for message in messages:
     has_peace_sign = any(reaction['emoji_name'] == 'peace_sign' for reaction in reactions)
     has_bors = any(reaction['emoji_name'] == 'bors' for reaction in reactions)
     has_merge = any(reaction['emoji_name'] == 'merge' for reaction in reactions)
+    has_awaiting_author = any(reaction['emoji_name'] == 'writing' for reaction in reactions)
+    has_closed = any(reaction['emoji_name'] == 'closed-pr' for reaction in reactions)
     match = pr_pattern.search(content)
     if match:
         print(f"matched: '{message}'")
 
         # removing previous emoji reactions
+        # if the emoji is a custom emoji, add the fields `emoji_code` and `reaction_type` as well
         print("Removing previous reactions, if present.")
         if has_peace_sign:
             print('Removing peace_sign')
@@ -82,7 +85,9 @@ for message in messages:
             print('Removing bors')
             result = client.remove_reaction({
                 "message_id": message['id'],
-                "emoji_name": "bors"
+                "emoji_name": "bors",
+                "emoji_code": "22134",
+                "reaction_type": "realm_emoji",
             })
             print(f"result: '{result}'")
         if has_merge:
@@ -92,6 +97,23 @@ for message in messages:
                 "emoji_name": "merge"
             })
             print(f"result: '{result}'")
+        if has_awaiting_author:
+            print('Removing awaiting-author')
+            result = client.remove_reaction({
+                "message_id": message['id'],
+                "emoji_name": "writing"
+            })
+            print(f"result: '{result}'")
+        if has_closed:
+            print('Removing closed-pr')
+            result = client.remove_reaction({
+                "message_id": message['id'],
+                "emoji_name": "closed-pr",
+                "emoji_code": "61293",  # 61282 was the earlier version of the emoji
+                "reaction_type": "realm_emoji",
+            })
+            print(f"result: '{result}'")
+
 
         # applying appropriate emoji reaction
         print("Applying reactions, as appropriate.")
@@ -107,6 +129,21 @@ for message in messages:
                 "message_id": message['id'],
                 "emoji_name": "peace_sign"
             })
+        elif LABEL == 'labeled':
+            print('adding awaiting-author')
+            client.add_reaction({
+                "message_id": message['id'],
+                "emoji_name": "writing"
+            })
+        elif LABEL == 'closed':
+            print('adding closed-pr')
+            client.add_reaction({
+                "message_id": message['id'],
+                "emoji_name": "closed-pr"
+            })
+        elif LABEL == 'unlabeled':
+            print('awaiting-author removed')
+            # the reaction was already removed.
         elif LABEL.startswith("[Merged by Bors]"):
             print('adding [Merged by Bors]')
             client.add_reaction({

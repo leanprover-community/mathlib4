@@ -3,10 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.RingTheory.JacobsonIdeal
+import Mathlib.RingTheory.Jacobson.Ideal
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Defs
-import Mathlib.RingTheory.Localization.Basic
-import Mathlib.RingTheory.Nilpotent.Lemmas
+import Mathlib.RingTheory.Spectrum.Maximal.Defs
 
 /-!
 
@@ -25,6 +24,10 @@ namespace IsLocalRing
 
 variable [IsLocalRing R]
 
+@[simp]
+theorem mem_maximalIdeal (x) : x ∈ maximalIdeal R ↔ x ∈ nonunits R :=
+  Iff.rfl
+
 variable (R)
 
 instance maximalIdeal.isMaximal : (maximalIdeal R).IsMaximal := by
@@ -34,26 +37,30 @@ instance maximalIdeal.isMaximal : (maximalIdeal R).IsMaximal := by
     apply h
     exact isUnit_one
   · intro I x _ hx H
-    erw [Classical.not_not] at hx
+    rw [mem_maximalIdeal, mem_nonunits_iff, Classical.not_not] at hx
     rcases hx with ⟨u, rfl⟩
     simpa using I.mul_mem_left (↑u⁻¹) H
 
-theorem maximal_ideal_unique : ∃! I : Ideal R, I.IsMaximal :=
-  ⟨maximalIdeal R, maximalIdeal.isMaximal R, fun I hI =>
-    hI.eq_of_le (maximalIdeal.isMaximal R).1.1 fun _ hx => hI.1.1 ∘ I.eq_top_of_isUnit_mem hx⟩
+theorem isMaximal_iff {I : Ideal R} : I.IsMaximal ↔ I = maximalIdeal R where
+  mp hI := hI.eq_of_le (maximalIdeal.isMaximal R).1.1 fun _ h ↦ hI.1.1 ∘ I.eq_top_of_isUnit_mem h
+  mpr e := e ▸ maximalIdeal.isMaximal R
+
+theorem maximal_ideal_unique : ∃! I : Ideal R, I.IsMaximal := by
+  simp [isMaximal_iff]
 
 variable {R}
 
 theorem eq_maximalIdeal {I : Ideal R} (hI : I.IsMaximal) : I = maximalIdeal R :=
   ExistsUnique.unique (maximal_ideal_unique R) hI <| maximalIdeal.isMaximal R
 
+/-- The maximal spectrum of a local ring is a singleton. -/
+instance : Unique (MaximalSpectrum R) where
+  default := ⟨maximalIdeal R, maximalIdeal.isMaximal R⟩
+  uniq := fun I ↦ MaximalSpectrum.ext_iff.mpr <| eq_maximalIdeal I.isMaximal
+
 theorem le_maximalIdeal {J : Ideal R} (hJ : J ≠ ⊤) : J ≤ maximalIdeal R := by
   rcases Ideal.exists_le_maximal J hJ with ⟨M, hM1, hM2⟩
   rwa [← eq_maximalIdeal hM1]
-
-@[simp]
-theorem mem_maximalIdeal (x) : x ∈ maximalIdeal R ↔ x ∈ nonunits R :=
-  Iff.rfl
 
 /--
 An element `x` of a commutative local semiring is not contained in the maximal ideal
@@ -138,36 +145,3 @@ alias LocalRing.ker_eq_maximalIdeal := IsLocalRing.ker_eq_maximalIdeal
 
 @[deprecated (since := "2024-11-09")]
 alias LocalRing.maximalIdeal_eq_bot := IsLocalRing.maximalIdeal_eq_bot
-
-section Nilrad_max_localization
-
-open Ideal
-
-variable {R : Type*} [CommSemiring R] {S : Type*} [CommSemiring S] [Algebra R S] {M : Submonoid R}
-
--- TODO: Make this an `instance`
-theorem IsLocalRing.of_nilradical_isMaximal [h : (nilradical R).IsMaximal] :
-    IsLocalRing R := by
-  refine IsLocalRing.of_unique_max_ideal ⟨nilradical R, h, fun I hI ↦ ?_⟩
-  rw [nilradical_eq_sInf] at h ⊢
-  exact (IsMaximal.eq_of_le h hI.ne_top (sInf_le hI.isPrime)).symm
-
-@[deprecated (since := "2024-11-09")]
-alias LocalRing.of_nilradical_isMaximal := IsLocalRing.of_nilradical_isMaximal
-
-/--
-Let `S` be the localization of a commutative semiring `R` at a submonoid `M` that does not
-contain 0. If the nilradical of `R` is maximal then there is a `R`-algebra isomorphism between
-`R` and `S`. -/
-noncomputable def localizationEquivSelfOfNilradicalIsMaximal [h : (nilradical R).IsMaximal]
-    (h' : (0 : R) ∉ M) [IsLocalization M S] : R ≃ₐ[R] S := by
-  have (m) (hm : m ∈ M) : IsUnit m := by
-    haveI := IsLocalRing.of_nilradical_isMaximal (h := h)
-    apply IsLocalRing.not_mem_maximalIdeal.mp
-    rw [← IsLocalRing.eq_maximalIdeal h]
-    rintro ⟨k, hk⟩
-    rw [← hk] at h'
-    exact h' (Submonoid.pow_mem M hm k)
-  exact IsLocalization.atUnits _ _ this
-
-end Nilrad_max_localization

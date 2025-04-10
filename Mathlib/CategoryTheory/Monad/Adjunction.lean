@@ -172,7 +172,7 @@ theorem Monad.left_comparison (h : L ⊣ R) : L ⋙ Monad.comparison h = h.toMon
   rfl
 
 instance [R.Faithful] (h : L ⊣ R) : (Monad.comparison h).Faithful where
-  map_injective {_ _} _ _ w := R.map_injective (congr_arg Monad.Algebra.Hom.f w : _)
+  map_injective {_ _} _ _ w := R.map_injective (congr_arg Monad.Algebra.Hom.f w :)
 
 instance (T : Monad C) : (Monad.comparison T.adj).Full where
   map_surjective {_ _} f := ⟨⟨f.f, by simpa using f.h⟩, rfl⟩
@@ -218,7 +218,7 @@ theorem Comonad.left_comparison (h : L ⊣ R) : R ⋙ Comonad.comparison h = h.t
 
 instance Comonad.comparison_faithful_of_faithful [L.Faithful] (h : L ⊣ R) :
     (Comonad.comparison h).Faithful where
-  map_injective {_ _} _ _ w := L.map_injective (congr_arg Comonad.Coalgebra.Hom.f w : _)
+  map_injective {_ _} _ _ w := L.map_injective (congr_arg Comonad.Coalgebra.Hom.f w :)
 
 instance (G : Comonad C) : (Comonad.comparison G.adj).Full where
   map_surjective f := ⟨⟨f.f, by simpa using f.h⟩, rfl⟩
@@ -258,6 +258,7 @@ instance (R : D ⥤ C) [MonadicRightAdjoint R] : R.IsRightAdjoint :=
   (monadicAdjunction R).isRightAdjoint
 
 noncomputable instance (T : Monad C) : MonadicRightAdjoint T.forget where
+  L := T.free
   adj := T.adj
   eqv := { }
 
@@ -289,6 +290,7 @@ instance (L : C ⥤ D) [ComonadicLeftAdjoint L] : L.IsLeftAdjoint :=
   (comonadicAdjunction L).isLeftAdjoint
 
 noncomputable instance (G : Comonad C) : ComonadicLeftAdjoint G.forget where
+  R := G.cofree
   adj := G.adj
   eqv := { }
 
@@ -374,6 +376,7 @@ end Coreflective
     cf Prop 5.3.3 of [Riehl][riehl2017] -/
 instance (priority := 100) monadicOfReflective [Reflective R] :
     MonadicRightAdjoint R where
+  L := reflector R
   adj := reflectorAdjunction R
   eqv := { full := Reflective.comparison_full _ }
 
@@ -381,6 +384,7 @@ instance (priority := 100) monadicOfReflective [Reflective R] :
     cf Dual statement of Prop 5.3.3 of [Riehl][riehl2017] -/
 instance (priority := 100) comonadicOfCoreflective [Coreflective R] :
     ComonadicLeftAdjoint R where
+  R := coreflector R
   adj := coreflectorAdjunction R
   eqv := { full := Coreflective.comparison_full _ }
 

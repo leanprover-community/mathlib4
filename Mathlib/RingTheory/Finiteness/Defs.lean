@@ -5,6 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Algebra.Hom
 import Mathlib.Data.Set.Finite.Lemmas
+import Mathlib.Data.Finsupp.Defs
 import Mathlib.GroupTheory.Finiteness
 import Mathlib.RingTheory.Ideal.Span
 import Mathlib.Tactic.Algebraize
@@ -24,10 +25,7 @@ In this file we define a notion of finiteness that is common in commutative alge
 
 -/
 
-assert_not_exists Basis
-assert_not_exists Ideal.radical
-assert_not_exists Matrix
-assert_not_exists Subalgebra
+assert_not_exists Basis Ideal.radical Matrix Subalgebra
 
 open Function (Surjective)
 open Finsupp
@@ -102,9 +100,9 @@ variable (R A B M N : Type*)
 
 /-- A module over a semiring is `Module.Finite` if it is finitely generated as a module. -/
 protected class Module.Finite [Semiring R] [AddCommMonoid M] [Module R M] : Prop where
-  out : (⊤ : Submodule R M).FG
+  fg_top : (⊤ : Submodule R M).FG
 
-attribute [inherit_doc Module.Finite] Module.Finite.out
+attribute [inherit_doc Module.Finite] Module.Finite.fg_top
 
 namespace Module
 
@@ -130,11 +128,19 @@ variable {R M N}
 
 /-- See also `Module.Finite.exists_fin'`. -/
 lemma exists_fin [Module.Finite R M] : ∃ (n : ℕ) (s : Fin n → M), Submodule.span R (range s) = ⊤ :=
-  Submodule.fg_iff_exists_fin_generating_family.mp out
+  Submodule.fg_iff_exists_fin_generating_family.mp fg_top
 
 end Finite
 
 end Module
+
+instance AddMonoid.FG.to_moduleFinite_nat {M : Type*} [AddCommMonoid M] [FG M] :
+    Module.Finite ℕ M :=
+  Module.Finite.iff_addMonoid_fg.mpr ‹_›
+
+instance AddMonoid.FG.to_moduleFinite_int {G : Type*} [AddCommGroup G] [FG G] :
+    Module.Finite ℤ G :=
+  Module.Finite.iff_addGroup_fg.mpr <| AddGroup.fg_iff_addMonoid_fg.mpr ‹_›
 
 end ModuleAndAlgebra
 

@@ -3,7 +3,6 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.Types.Symmetric
 import Mathlib.CategoryTheory.Monoidal.Types.Coyoneda
 import Mathlib.CategoryTheory.Monoidal.Center
 import Mathlib.Tactic.ApplyFun
@@ -48,15 +47,18 @@ Note that we do not assume that `V` is a concrete category,
 so there may not be an "honest" underlying category at all!
 -/
 class EnrichedCategory (C : Type u₁) where
+  /-- `X ⟶[V] Y` is the `V` object of morphisms from `X` to `Y`. -/
   Hom : C → C → V
+  /-- The identity morphism of this catgeory -/
   id (X : C) : 𝟙_ V ⟶ Hom X X
+  /-- Composition of two morphisms in this category -/
   comp (X Y Z : C) : Hom X Y ⊗ Hom Y Z ⟶ Hom X Z
   id_comp (X Y : C) : (λ_ (Hom X Y)).inv ≫ id X ▷ _ ≫ comp X X Y = 𝟙 _ := by aesop_cat
   comp_id (X Y : C) : (ρ_ (Hom X Y)).inv ≫ _ ◁ id Y ≫ comp X Y Y = 𝟙 _ := by aesop_cat
   assoc (W X Y Z : C) : (α_ _ _ _).inv ≫ comp W X Y ▷ _ ≫ comp W Y Z =
     _ ◁ comp X Y Z ≫ comp W X Z := by aesop_cat
 
-notation X " ⟶[" V "] " Y:10 => (EnrichedCategory.Hom X Y : V)
+@[inherit_doc EnrichedCategory.Hom] notation X " ⟶[" V "] " Y:10 => (EnrichedCategory.Hom X Y : V)
 
 variable {C : Type u₁} [EnrichedCategory V C]
 
@@ -96,7 +98,6 @@ section
 
 variable {V} {W : Type v'} [Category.{w'} W] [MonoidalCategory W]
 
--- Porting note: removed `@[nolint hasNonemptyInstance]`
 /-- A type synonym for `C`, which should come equipped with a `V`-enriched category structure.
 In a moment we will equip this with the `W`-enriched category structure
 obtained by applying the functor `F : LaxMonoidalFunctor V W` to each hom object.
@@ -143,7 +144,7 @@ def categoryOfEnrichedCategoryType (C : Type u₁) [𝒞 : EnrichedCategory (Typ
   comp f g := eComp (Type v) _ _ _ ⟨f, g⟩
   id_comp f := congr_fun (e_id_comp (Type v) _ _) f
   comp_id f := congr_fun (e_comp_id (Type v) _ _) f
-  assoc f g h := (congr_fun (e_assoc (Type v) _ _ _ _) ⟨f, g, h⟩ : _)
+  assoc f g h := (congr_fun (e_assoc (Type v) _ _ _ _) ⟨f, g, h⟩ :)
 
 /-- Construct a `Type v`-enriched category from an honest category.
 -/
@@ -169,7 +170,6 @@ section
 
 variable {W : Type v} [Category.{w} W] [MonoidalCategory W] [EnrichedCategory W C]
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed `@[nolint has_nonempty_instance]`
 /-- A type synonym for `C`, which should come equipped with a `V`-enriched category structure.
 In a moment we will equip this with the (honest) category structure
 so that `X ⟶ Y` is `(𝟙_ W) ⟶ (X ⟶[W] Y)`.
@@ -268,7 +268,9 @@ satisfying the usual axioms.
 -/
 structure EnrichedFunctor (C : Type u₁) [EnrichedCategory V C] (D : Type u₂)
     [EnrichedCategory V D] where
+  /-- The application of this functor to an object -/
   obj : C → D
+  /-- The `V`-morphism from `X ⟶[V] Y` to `F.obj X ⟶[V] F.obj Y`, for all `X Y : C` -/
   map : ∀ X Y : C, (X ⟶[V] Y) ⟶ obj X ⟶[V] obj Y
   map_id : ∀ X : C, eId V X ≫ map X X = eId V (obj X) := by aesop_cat
   map_comp :
@@ -296,6 +298,16 @@ def EnrichedFunctor.comp {C : Type u₁} {D : Type u₂} {E : Type u₃} [Enrich
     (G : EnrichedFunctor V D E) : EnrichedFunctor V C E where
   obj X := G.obj (F.obj X)
   map _ _ := F.map _ _ ≫ G.map _ _
+
+lemma EnrichedFunctor.ext {C : Type u₁} {D : Type u₂} [EnrichedCategory V C]
+    [EnrichedCategory V D] {F G : EnrichedFunctor V C D} (h_obj : ∀ X, F.obj X = G.obj X)
+    (h_map : ∀ (X Y : C), F.map X Y ≫ eqToHom (by rw [h_obj, h_obj]) = G.map X Y) : F = G := by
+  match F, G with
+  | mk F_obj F_map _ _, mk G_obj G_map _ _ =>
+    obtain rfl : F_obj = G_obj := funext fun X ↦ h_obj X
+    congr
+    ext X Y
+    simpa using h_map X Y
 
 section
 
@@ -370,13 +382,14 @@ coming from the ambient braiding on `V`.)
 -/
 
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed `@[nolint has_nonempty_instance]`
 /-- The type of `A`-graded natural transformations between `V`-functors `F` and `G`.
 This is the type of morphisms in `V` from `A` to the `V`-object of natural transformations.
 -/
 @[ext]
 structure GradedNatTrans (A : Center V) (F G : EnrichedFunctor V C D) where
+  /-- The `A`-graded transformation from `F` to `G` -/
   app : ∀ X : C, A.1 ⟶ F.obj X ⟶[V] G.obj X
+  /-- `app` is a natural transformation. -/
   naturality :
     ∀ X Y : C,
       (A.2.β (X ⟶[V] Y)).hom ≫ (F.map X Y ⊗ app Y) ≫ eComp V _ _ _ =

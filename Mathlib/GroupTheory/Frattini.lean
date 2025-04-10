@@ -64,6 +64,6 @@ theorem frattini_nilpotent [Finite G] : Group.IsNilpotent (frattini G) := by
   -- the normalizer of `P` in `G` is `G`.
   have normalizer_P := frattini_nongenerating frattini_argument
   -- This means that `P` is normal as a subgroup of `G`
-  have P_normal_in_G : (map (frattini G).subtype ↑P).Normal := normalizer_eq_top.mp normalizer_P
+  have P_normal_in_G : (map (frattini G).subtype P).Normal := normalizer_eq_top_iff.mp normalizer_P
   -- and hence also as a subgroup of `frattini G`, which was the remaining goal.
   exact P_normal_in_G.of_map_subtype

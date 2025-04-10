@@ -17,12 +17,16 @@ open Function
 
 namespace WithTop
 
+instance isOrderedAddMonoid [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α] :
+    IsOrderedAddMonoid (WithTop α) where
+  add_le_add_left _ _ := add_le_add_left
+
 instance orderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid (WithTop α) where
   add_le_add_left _ _ := add_le_add_left
 
-instance canonicallyOrderedAddCommMonoid [CanonicallyOrderedAddCommMonoid α] :
-    CanonicallyOrderedAddCommMonoid (WithTop α) :=
-  { WithTop.orderBot, WithTop.orderedAddCommMonoid, WithTop.existsAddOfLE with
+instance canonicallyOrderedAdd [Add α] [Preorder α] [CanonicallyOrderedAdd α] :
+    CanonicallyOrderedAdd (WithTop α) :=
+  { WithTop.existsAddOfLE with
     le_self_add := fun a b =>
       match a, b with
       | ⊤, ⊤ => le_rfl
@@ -30,9 +34,9 @@ instance canonicallyOrderedAddCommMonoid [CanonicallyOrderedAddCommMonoid α] :
       | (a : α), (b : α) => WithTop.coe_le_coe.2 le_self_add
       | ⊤, (b : α) => le_rfl }
 
-instance [CanonicallyLinearOrderedAddCommMonoid α] :
-    CanonicallyLinearOrderedAddCommMonoid (WithTop α) :=
-  { WithTop.canonicallyOrderedAddCommMonoid, WithTop.linearOrder with }
+instance [LinearOrderedAddCommMonoid α] :
+    LinearOrderedAddCommMonoid (WithTop α) :=
+  { WithTop.orderedAddCommMonoid, WithTop.linearOrder with }
 
 end WithTop
 
@@ -45,5 +49,25 @@ instance orderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid (
 instance linearOrderedAddCommMonoid [LinearOrderedAddCommMonoid α] :
     LinearOrderedAddCommMonoid (WithBot α) :=
   { WithBot.linearOrder, WithBot.orderedAddCommMonoid with }
+
+protected theorem le_self_add [Add α] [LE α] [CanonicallyOrderedAdd α]
+    {x : WithBot α} (hx : x ≠ ⊥) (y : WithBot α) :
+    y ≤ y + x := by
+  induction x
+  · simp at hx
+  induction y
+  · simp
+  · rw [← WithBot.coe_add, WithBot.coe_le_coe]
+    exact _root_.le_self_add (α := α)
+
+protected theorem le_add_self [AddCommMagma α] [LE α] [CanonicallyOrderedAdd α]
+    {x : WithBot α} (hx : x ≠ ⊥) (y : WithBot α) :
+    y ≤ x + y := by
+  induction x
+  · simp at hx
+  induction y
+  · simp
+  · rw [← WithBot.coe_add, WithBot.coe_le_coe]
+    exact _root_.le_add_self (α := α)
 
 end WithBot

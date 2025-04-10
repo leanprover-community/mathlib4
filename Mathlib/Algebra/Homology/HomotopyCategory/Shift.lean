@@ -22,6 +22,8 @@ We also show that if `F : C ⥤ D` is an additive functor, then the functors
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 universe v v' u u'
 
 open CategoryTheory
@@ -45,7 +47,6 @@ def shiftFunctor (n : ℤ) : CochainComplex C ℤ ⥤ CochainComplex C ℤ where
         intros
         simp only [Linear.comp_units_smul, Linear.units_smul_comp, d_comp_d, smul_zero]
       shape := fun i j hij => by
-        dsimp
         rw [K.shape, smul_zero]
         intro hij'
         apply hij

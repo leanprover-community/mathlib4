@@ -75,15 +75,15 @@ def det : GL n R →* Rˣ where
 def toLin : GL n R ≃* LinearMap.GeneralLinearGroup R (n → R) :=
   Units.mapEquiv toLinAlgEquiv'.toMulEquiv
 
-/-- Given a matrix with invertible determinant we get an element of `GL n R`-/
+/-- Given a matrix with invertible determinant, we get an element of `GL n R`. -/
 def mk' (A : Matrix n n R) (_ : Invertible (Matrix.det A)) : GL n R :=
   unitOfDetInvertible A
 
-/-- Given a matrix with unit determinant we get an element of `GL n R`-/
+/-- Given a matrix with unit determinant, we get an element of `GL n R`. -/
 noncomputable def mk'' (A : Matrix n n R) (h : IsUnit (Matrix.det A)) : GL n R :=
   nonsingInvUnit A h
 
-/-- Given a matrix with non-zero determinant over a field, we get an element of `GL n K`-/
+/-- Given a matrix with non-zero determinant over a field, we get an element of `GL n K`. -/
 def mkOfDetNeZero {K : Type*} [Field K] (A : Matrix n n K) (h : Matrix.det A ≠ 0) : GL n K :=
   mk' A (invertibleOfNonzero h)
 
@@ -130,6 +130,7 @@ end CoeLemmas
 variable {S T : Type*} [CommRing S] [CommRing T]
 
 /-- A ring homomorphism ``f : R →+* S`` induces a homomorphism ``GLₙ(f) : GLₙ(R) →* GLₙ(S)``. -/
+@[simps! apply_val]
 def map (f : R →+* S) : GL n R →* GL n S := Units.map <| (RingHom.mapMatrix f).toMonoidHom
 
 @[simp]
@@ -155,15 +156,15 @@ variable (f : R →+* S)
 @[simp]
 protected lemma map_one : map f (1 : GL n R) = 1 := by
   ext
-  simp only [_root_.map_one, Units.val_one]
+  simp only [map_one, Units.val_one]
 
 protected lemma map_mul (g h : GL n R) : map f (g * h) = map f g * map f h := by
   ext
-  simp only [_root_.map_mul, Units.val_mul]
+  simp only [map_mul, Units.val_mul]
 
 protected lemma map_inv (g : GL n R) : map f g⁻¹ = (map f g)⁻¹ := by
   ext
-  simp only [_root_.map_inv, coe_units_inv]
+  simp only [map_inv, coe_units_inv]
 
 protected lemma map_det (g : GL n R) : Matrix.GeneralLinearGroup.det (map f g) =
     Units.map f (Matrix.GeneralLinearGroup.det g) := by
@@ -181,12 +182,12 @@ lemma map_inv_mul_map (g : GL n R) : map f g⁻¹ * map f g = 1 := by
 @[simp]
 lemma coe_map_mul_map_inv (g : GL n R) : g.val.map f * g.val⁻¹.map f = 1 := by
   rw [← Matrix.map_mul]
-  simp only [isUnits_det_units, mul_nonsing_inv, map_zero, _root_.map_one, Matrix.map_one]
+  simp only [isUnits_det_units, mul_nonsing_inv, map_zero, map_one, Matrix.map_one]
 
 @[simp]
 lemma coe_map_inv_mul_map (g : GL n R) : g.val⁻¹.map f * g.val.map f = 1 := by
   rw [← Matrix.map_mul]
-  simp only [isUnits_det_units, nonsing_inv_mul, map_zero, _root_.map_one, Matrix.map_one]
+  simp only [isUnits_det_units, nonsing_inv_mul, map_zero, map_one, Matrix.map_one]
 
 end GeneralLinearGroup
 
@@ -215,7 +216,8 @@ end SpecialLinearGroup
 
 section
 
-variable {n : Type u} {R : Type v} [DecidableEq n] [Fintype n] [LinearOrderedCommRing R]
+variable {n : Type u} {R : Type v} [DecidableEq n] [Fintype n]
+  [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
 
 section
 
@@ -241,7 +243,8 @@ end
 
 section Neg
 
-variable {n : Type u} {R : Type v} [DecidableEq n] [Fintype n] [LinearOrderedCommRing R]
+variable {n : Type u} {R : Type v} [DecidableEq n] [Fintype n]
+  [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
   [Fact (Even (Fintype.card n))]
 
 /-- Formal operation of negation on general linear group on even cardinality `n` given by negating
@@ -273,7 +276,8 @@ end Neg
 
 namespace SpecialLinearGroup
 
-variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [LinearOrderedCommRing R]
+variable {n : Type u} [DecidableEq n] [Fintype n]
+  {R : Type v} [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
 
 /-- `Matrix.SpecialLinearGroup n R` embeds into `GL_pos n R` -/
 def toGLPos : SpecialLinearGroup n R →* GLPos n R where
@@ -289,8 +293,7 @@ theorem toGLPos_injective : Function.Injective (toGLPos : SpecialLinearGroup n R
   -- (It can't find the coercion GLPos n R → Matrix n n R)
   Function.Injective.of_comp
     (f := fun (A : GLPos n R) ↦ ((A : GL n R) : Matrix n n R))
-    (show Function.Injective (_ ∘ (toGLPos : SpecialLinearGroup n R → GLPos n R))
-      from Subtype.coe_injective)
+    Subtype.coe_injective
 
 /-- Coercing a `Matrix.SpecialLinearGroup` via `GL_pos` and `GL` is the same as coercing straight to
 a matrix. -/

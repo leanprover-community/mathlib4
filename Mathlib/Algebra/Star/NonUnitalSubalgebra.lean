@@ -75,17 +75,28 @@ def subtype (s : S) : s →⋆ₙₐ[R] A :=
     toFun := Subtype.val
     map_star' := fun _ => rfl }
 
+variable {s} in
 @[simp]
-theorem coeSubtype : (subtype s : s → A) = Subtype.val :=
+lemma subtype_apply (x : s) : subtype s x = x := rfl
+
+lemma subtype_injective :
+    Function.Injective (subtype s) :=
+  Subtype.coe_injective
+
+@[simp]
+theorem coe_subtype : (subtype s : s → A) = Subtype.val :=
   rfl
+
+@[deprecated (since := "2025-02-18")]
+alias coeSubtype := coe_subtype
 
 end NonUnitalStarSubalgebraClass
 
 /-- A non-unital star subalgebra is a non-unital subalgebra which is closed under the `star`
 operation. -/
 structure NonUnitalStarSubalgebra (R : Type u) (A : Type v) [CommSemiring R]
-    [NonUnitalNonAssocSemiring A] [Module R A] [Star A]
-    extends NonUnitalSubalgebra R A : Type v where
+    [NonUnitalNonAssocSemiring A] [Module R A] [Star A] : Type v
+    extends NonUnitalSubalgebra R A where
   /-- The `carrier` of a `NonUnitalStarSubalgebra` is closed under the `star` operation. -/
   star_mem' : ∀ {a : A} (_ha : a ∈ carrier), star a ∈ carrier
 
@@ -103,6 +114,31 @@ variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [StarHomClass F A B]
 instance instSetLike : SetLike (NonUnitalStarSubalgebra R A) A where
   coe {s} := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
+
+/-- The actual `NonUnitalStarSubalgebra` obtained from an element of a type satisfying
+`NonUnitalSubsemiringClass`, `SMulMemClass` and `StarMemClass`. -/
+@[simps]
+def ofClass {S R A : Type*} [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A] [Star A]
+    [SetLike S A] [NonUnitalSubsemiringClass S A] [SMulMemClass S R A] [StarMemClass S A]
+    (s : S) : NonUnitalStarSubalgebra R A where
+  carrier := s
+  add_mem' := add_mem
+  zero_mem' := zero_mem _
+  mul_mem' := mul_mem
+  smul_mem' := SMulMemClass.smul_mem
+  star_mem' := star_mem
+
+instance (priority := 100) : CanLift (Set A) (NonUnitalStarSubalgebra R A) (↑)
+    (fun s ↦ 0 ∈ s ∧ (∀ {x y}, x ∈ s → y ∈ s → x + y ∈ s) ∧ (∀ {x y}, x ∈ s → y ∈ s → x * y ∈ s) ∧
+      (∀ (r : R) {x}, x ∈ s → r • x ∈ s) ∧ ∀ {x}, x ∈ s → star x ∈ s) where
+  prf s h :=
+    ⟨ { carrier := s
+        zero_mem' := h.1
+        add_mem' := h.2.1
+        mul_mem' := h.2.2.1
+        smul_mem' := h.2.2.2.1
+        star_mem' := h.2.2.2.2 },
+      rfl ⟩
 
 instance instNonUnitalSubsemiringClass :
     NonUnitalSubsemiringClass (NonUnitalStarSubalgebra R A) A where
@@ -445,7 +481,7 @@ theorem coe_codRestrict (f : F) (S : NonUnitalStarSubalgebra R B) (hf : ∀ x, f
 
 theorem injective_codRestrict (f : F) (S : NonUnitalStarSubalgebra R B) (hf : ∀ x : A, f x ∈ S) :
     Function.Injective (NonUnitalStarAlgHom.codRestrict f S hf) ↔ Function.Injective f :=
-  ⟨fun H _x _y hxy => H <| Subtype.eq hxy, fun H _x _y hxy => H (congr_arg Subtype.val hxy : _)⟩
+  ⟨fun H _x _y hxy => H <| Subtype.eq hxy, fun H _x _y hxy => H (congr_arg Subtype.val hxy :)⟩
 
 /-- Restrict the codomain of a non-unital star algebra homomorphism `f` to `f.range`.
 
@@ -885,7 +921,7 @@ The map `S → T` when `S` is a non-unital star subalgebra contained in the non-
 algebra `T`.
 
 This is the non-unital star subalgebra version of `Submodule.inclusion`, or
-`NonUnitalSubalgebra.inclusion`  -/
+`NonUnitalSubalgebra.inclusion` -/
 def inclusion {S T : NonUnitalStarSubalgebra R A} (h : S ≤ T) : S →⋆ₙₐ[R] T where
   toNonUnitalAlgHom := NonUnitalSubalgebra.inclusion h
   map_star' _ := rfl
@@ -1132,7 +1168,7 @@ theorem centralizer_univ : centralizer R Set.univ = center R A :=
   SetLike.ext' <| by rw [coe_centralizer, Set.univ_union, coe_center, Set.centralizer_univ]
 
 theorem centralizer_toNonUnitalSubalgebra (s : Set A) :
-    (centralizer R s).toNonUnitalSubalgebra = NonUnitalSubalgebra.centralizer R (s ∪ star s):=
+    (centralizer R s).toNonUnitalSubalgebra = NonUnitalSubalgebra.centralizer R (s ∪ star s) :=
   rfl
 
 theorem coe_centralizer_centralizer (s : Set A) :

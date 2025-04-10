@@ -5,9 +5,10 @@ Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzza
 Amelia Livingston, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Action.Faithful
-import Mathlib.Algebra.Group.Nat.Basic
+import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.Submonoid.Basic
+import Mathlib.Algebra.Group.Submonoid.MulAction
 import Mathlib.Algebra.Group.TypeTags.Basic
 
 /-!
@@ -105,7 +106,7 @@ theorem Submonoid.toAddSubmonoid_closure (S : Set M) :
 
 theorem AddSubmonoid.toSubmonoid'_closure (S : Set (Additive M)) :
     AddSubmonoid.toSubmonoid' (AddSubmonoid.closure S)
-      = Submonoid.closure (Multiplicative.ofAdd ⁻¹' S) :=
+      = Submonoid.closure (Additive.ofMul ⁻¹' S) :=
   le_antisymm
     (AddSubmonoid.toSubmonoid'.le_symm_apply.1 <|
       AddSubmonoid.closure_le.2 (Submonoid.subset_closure (M := M)))
@@ -147,7 +148,7 @@ theorem AddSubmonoid.toSubmonoid_closure (S : Set A) :
 
 theorem Submonoid.toAddSubmonoid'_closure (S : Set (Multiplicative A)) :
     Submonoid.toAddSubmonoid' (Submonoid.closure S)
-      = AddSubmonoid.closure (Additive.ofMul ⁻¹' S) :=
+      = AddSubmonoid.closure (Multiplicative.ofAdd ⁻¹' S) :=
   le_antisymm
     (Submonoid.toAddSubmonoid'.to_galoisConnection.l_le <|
       Submonoid.closure_le.2 <| AddSubmonoid.subset_closure (M := A))
@@ -207,6 +208,15 @@ theorem coe_map (f : F) (S : Submonoid M) : (S.map f : Set N) = f '' S :=
   rfl
 
 @[to_additive (attr := simp)]
+theorem map_coe_toMonoidHom (f : F) (S : Submonoid M) : S.map (f : M →* N) = S.map f :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem map_coe_toMulEquiv {F} [EquivLike F M N] [MulEquivClass F M N] (f : F) (S : Submonoid M) :
+    S.map (f : M ≃* N) = S.map f :=
+  rfl
+
+@[to_additive (attr := simp)]
 theorem mem_map {f : F} {S : Submonoid M} {y : N} : y ∈ S.map f ↔ ∃ x ∈ S, f x = y := Iff.rfl
 
 @[to_additive]
@@ -223,6 +233,7 @@ theorem map_map (g : N →* P) (f : M →* N) : (S.map f).map g = S.map (g.comp 
 
 -- The simpNF linter says that the LHS can be simplified via `Submonoid.mem_map`.
 -- However this is a higher priority lemma.
+-- It seems the side condition `hf` is not applied by `simpNF`.
 -- https://github.com/leanprover/std4/issues/207
 @[to_additive (attr := simp 1100, nolint simpNF)]
 theorem mem_map_iff_mem {f : F} (hf : Function.Injective f) {S : Submonoid M} {x : M} :
@@ -313,7 +324,7 @@ section GaloisCoinsertion
 variable {ι : Type*} {f : F}
 
 /-- `map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective. -/
-@[to_additive " `map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective. "]
+@[to_additive "`map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective."]
 def gciMapComap (hf : Function.Injective f) : GaloisCoinsertion (map f) (comap f) :=
   (gc_map_comap f).toGaloisCoinsertion fun S x => by simp [mem_comap, mem_map, hf.eq_iff]
 
@@ -363,7 +374,7 @@ section GaloisInsertion
 variable {ι : Type*} {f : F}
 
 /-- `map f` and `comap f` form a `GaloisInsertion` when `f` is surjective. -/
-@[to_additive " `map f` and `comap f` form a `GaloisInsertion` when `f` is surjective. "]
+@[to_additive "`map f` and `comap f` form a `GaloisInsertion` when `f` is surjective."]
 def giMapComap (hf : Function.Surjective f) : GaloisInsertion (map f) (comap f) :=
   (gc_map_comap f).toGaloisInsertion fun S x h =>
     let ⟨y, hy⟩ := hf x
@@ -483,7 +494,6 @@ theorem top_prod_top : (⊤ : Submonoid M).prod (⊤ : Submonoid N) = ⊤ :=
 @[to_additive bot_prod_bot]
 theorem bot_prod_bot : (⊥ : Submonoid M).prod (⊥ : Submonoid N) = ⊥ :=
   SetLike.coe_injective <| by simp [coe_prod]
--- Porting note: to_additive translated the name incorrectly in mathlib 3.
 
 /-- The product of submonoids is isomorphic to their product as monoids. -/
 @[to_additive prodEquiv
@@ -521,7 +531,7 @@ theorem mem_map_equiv {f : M ≃* N} {K : Submonoid M} {x : N} :
 
 @[to_additive]
 theorem map_equiv_eq_comap_symm (f : M ≃* N) (K : Submonoid M) :
-    K.map f.toMonoidHom = K.comap f.symm.toMonoidHom :=
+    K.map f = K.comap f.symm :=
   SetLike.coe_injective (f.toEquiv.image_eq_preimage K)
 
 @[to_additive]
@@ -576,6 +586,21 @@ theorem closure_prod {s : Set M} {t : Set N} (hs : 1 ∈ s) (ht : 1 ∈ t) :
       map_le_of_le_comap _ <| closure_le.2 fun _x hx => subset_closure ⟨hx, ht⟩,
       map_le_of_le_comap _ <| closure_le.2 fun _y hy => subset_closure ⟨hs, hy⟩⟩)
 
+@[to_additive (attr := simp) closure_prod_zero]
+lemma closure_prod_one (s : Set M) : closure (s ×ˢ ({1} : Set N)) = (closure s).prod ⊥ :=
+  le_antisymm
+    (closure_le.2 <| Set.prod_subset_prod_iff.2 <| .inl ⟨subset_closure, .rfl⟩)
+    (prod_le_iff.2 ⟨
+      map_le_of_le_comap _ <| closure_le.2 fun _x hx => subset_closure ⟨hx, rfl⟩,
+      by simp⟩)
+
+@[to_additive (attr := simp) closure_zero_prod]
+lemma closure_one_prod (t : Set N) : closure (({1} : Set M) ×ˢ t) = .prod ⊥ (closure t) :=
+  le_antisymm
+    (closure_le.2 <| Set.prod_subset_prod_iff.2 <| .inl ⟨.rfl, subset_closure⟩)
+    (prod_le_iff.2 ⟨by simp,
+      map_le_of_le_comap _ <| closure_le.2 fun _y hy => subset_closure ⟨rfl, hy⟩⟩)
+
 end Submonoid
 
 namespace MonoidHom
@@ -629,7 +654,7 @@ theorem mem_mrange {f : F} {y : N} : y ∈ mrange f ↔ ∃ x, f x = y :=
   Iff.rfl
 
 @[to_additive]
-lemma mrange_comp {O : Type*} [Monoid O] (f : N →* O) (g : M →* N) :
+lemma mrange_comp {O : Type*} [MulOneClass O] (f : N →* O) (g : M →* N) :
     mrange (f.comp g) = (mrange g).map f := SetLike.coe_injective <| Set.range_comp f _
 
 @[to_additive]
@@ -768,13 +793,11 @@ theorem prod_map_comap_prod' {M' : Type*} {N' : Type*} [MulOneClass M'] [MulOneC
     (f : M →* N) (g : M' →* N') (S : Submonoid N) (S' : Submonoid N') :
     (S.prod S').comap (prodMap f g) = (S.comap f).prod (S'.comap g) :=
   SetLike.coe_injective <| Set.preimage_prod_map_prod f g _ _
--- Porting note: to_additive translated the name incorrectly in mathlib 3.
 
 @[to_additive mker_prod_map]
 theorem mker_prod_map {M' : Type*} {N' : Type*} [MulOneClass M'] [MulOneClass N'] (f : M →* N)
     (g : M' →* N') : mker (prodMap f g) = f.mker.prod (mker g) := by
   rw [← comap_bot', ← comap_bot', ← comap_bot', ← prod_map_comap_prod', bot_prod_bot]
--- Porting note: to_additive translated the name incorrectly in mathlib 3.
 
 @[to_additive (attr := simp)]
 theorem mker_inl : mker (inl M N) = ⊥ := by
@@ -848,13 +871,11 @@ theorem mrange_snd : mrange (snd M N) = ⊤ :=
 @[to_additive prod_eq_bot_iff]
 theorem prod_eq_bot_iff {s : Submonoid M} {t : Submonoid N} : s.prod t = ⊥ ↔ s = ⊥ ∧ t = ⊥ := by
   simp only [eq_bot_iff, prod_le_iff, (gc_map_comap _).le_iff_le, comap_bot', mker_inl, mker_inr]
--- Porting note: to_additive translated the name incorrectly in mathlib 3.
 
 @[to_additive prod_eq_top_iff]
 theorem prod_eq_top_iff {s : Submonoid M} {t : Submonoid N} : s.prod t = ⊤ ↔ s = ⊤ ∧ t = ⊤ := by
   simp only [eq_top_iff, le_prod_iff, ← (gc_map_comap _).le_iff_le, ← mrange_eq_map, mrange_fst,
     mrange_snd]
--- Porting note: to_additive translated the name incorrectly in mathlib 3.
 
 @[to_additive (attr := simp)]
 theorem mrange_inl_sup_mrange_inr : mrange (inl M N) ⊔ mrange (inr M N) = ⊤ := by
@@ -870,7 +891,13 @@ def inclusion {S T : Submonoid M} (h : S ≤ T) : S →* T :=
 theorem mrange_subtype (s : Submonoid M) : mrange s.subtype = s :=
   SetLike.coe_injective <| (coe_mrange _).trans <| Subtype.range_coe
 
-@[to_additive (attr := deprecated (since := "2024-11-25"))] alias range_subtype := mrange_subtype
+-- `alias` doesn't add the deprecation suggestion to the `to_additive` version
+-- see https://github.com/leanprover-community/mathlib4/issues/19424
+@[to_additive] alias range_subtype := mrange_subtype
+attribute [deprecated mrange_subtype (since := "2024-11-25")] range_subtype
+attribute [deprecated AddSubmonoid.mrange_subtype (since := "2024-11-25")]
+AddSubmonoid.range_subtype
+
 
 @[to_additive]
 theorem eq_top_iff' : S = ⊤ ↔ ∀ x : M, x ∈ S :=
@@ -967,74 +994,10 @@ theorem Submonoid.equivMapOfInjective_coe_mulEquiv (e : M ≃* N) :
   ext
   rfl
 
-section Actions
-
-/-! ### Actions by `Submonoid`s
-
-These instances transfer the action by an element `m : M` of a monoid `M` written as `m • a` onto
-the action by an element `s : S` of a submonoid `S : Submonoid M` such that `s • a = (s : M) • a`.
-
-These instances work particularly well in conjunction with `Monoid.toMulAction`, enabling
-`s • m` as an alias for `↑s * m`.
--/
-
-
-namespace Submonoid
-
-variable {M' : Type*} {α β : Type*}
-
-section MulOneClass
-
-variable [MulOneClass M']
-
 @[to_additive]
-instance smul [SMul M' α] (S : Submonoid M') : SMul S α :=
-  SMul.comp _ S.subtype
-
-@[to_additive]
-instance smulCommClass_left [SMul M' β] [SMul α β] [SMulCommClass M' α β]
-    (S : Submonoid M') : SMulCommClass S α β :=
-  ⟨fun a _ _ => (smul_comm (a : M') _ _ : _)⟩
-
-@[to_additive]
-instance smulCommClass_right [SMul α β] [SMul M' β] [SMulCommClass α M' β]
-    (S : Submonoid M') : SMulCommClass α S β :=
-  ⟨fun a s => (smul_comm a (s : M') : _)⟩
-
-/-- Note that this provides `IsScalarTower S M' M'` which is needed by `SMulMulAssoc`. -/
-instance isScalarTower [SMul α β] [SMul M' α] [SMul M' β] [IsScalarTower M' α β]
-      (S : Submonoid M') :
-    IsScalarTower S α β :=
-  ⟨fun a => (smul_assoc (a : M') : _)⟩
-
-section SMul
-variable [SMul M' α] {S : Submonoid M'}
-
-@[to_additive] lemma smul_def (g : S) (a : α) : g • a = (g : M') • a := rfl
-
-@[to_additive (attr := simp)]
-lemma mk_smul (g : M') (hg : g ∈ S) (a : α) : (⟨g, hg⟩ : S) • a = g • a := rfl
-
-instance faithfulSMul [FaithfulSMul M' α] : FaithfulSMul S α :=
+instance Submonoid.faithfulSMul {M' α : Type*} [MulOneClass M'] [SMul M' α] {S : Submonoid M'}
+    [FaithfulSMul M' α] : FaithfulSMul S α :=
   ⟨fun h => Subtype.ext <| eq_of_smul_eq_smul h⟩
-
-end SMul
-end MulOneClass
-
-variable [Monoid M']
-
-/-- The action by a submonoid is the action by the underlying monoid. -/
-@[to_additive
-      "The additive action by an `AddSubmonoid` is the action by the underlying `AddMonoid`. "]
-instance mulAction [MulAction M' α] (S : Submonoid M') : MulAction S α :=
-  MulAction.compHom _ S.subtype
-
-example {S : Submonoid M'} : IsScalarTower S M' M' := by infer_instance
-
-
-end Submonoid
-
-end Actions
 
 section Units
 

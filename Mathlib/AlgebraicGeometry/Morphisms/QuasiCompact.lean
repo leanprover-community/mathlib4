@@ -47,7 +47,7 @@ instance (priority := 900) quasiCompact_of_isIso {X Y : Scheme} (f : X ⟶ Y) [I
     QuasiCompact f := by
   constructor
   intro U _ hU'
-  convert hU'.image (inv f.base).continuous_toFun using 1
+  convert hU'.image (inv f.base).hom.continuous_toFun using 1
   rw [Set.image_eq_preimage_of_inverse]
   · delta Function.LeftInverse
     exact IsIso.inv_hom_id_apply f.base
@@ -116,7 +116,6 @@ theorem isCompact_basicOpen (X : Scheme) {U : X.Opens} (hU : IsCompact (U : Set 
     refine Set.Subset.trans ?_ (Set.subset_iUnion₂ j hj)
     exact Set.Subset.rfl
 
-@[reducible]
 instance : HasAffineProperty @QuasiCompact (fun X _ _ _ ↦ CompactSpace X) where
   eq_targetAffineLocally' := by
     ext X Y f
@@ -151,6 +150,12 @@ theorem quasiCompact_over_affine_iff {X Y : Scheme} (f : X ⟶ Y) [IsAffine Y] :
 theorem compactSpace_iff_quasiCompact (X : Scheme) :
     CompactSpace X ↔ QuasiCompact (terminal.from X) := by
   rw [HasAffineProperty.iff_of_isAffine (P := @QuasiCompact)]
+
+lemma QuasiCompact.compactSpace_of_compactSpace {X Y : Scheme.{u}} (f : X ⟶ Y) [QuasiCompact f]
+    [CompactSpace Y] : CompactSpace X := by
+  constructor
+  rw [← Set.preimage_univ (f := f.base)]
+  exact QuasiCompact.isCompact_preimage _ isOpen_univ CompactSpace.isCompact_univ
 
 instance quasiCompact_isStableUnderComposition :
     MorphismProperty.IsStableUnderComposition @QuasiCompact where
@@ -223,7 +228,7 @@ lemma isClosedMap_iff_specializingMap (f : X ⟶ Y) [QuasiCompact f] :
     exact this H ⟨_, rfl⟩
   obtain ⟨R, rfl⟩ := hX
   obtain ⟨φ, rfl⟩ := Spec.homEquiv.symm.surjective f
-  exact PrimeSpectrum.isClosed_image_of_stableUnderSpecialization φ Z hZ H
+  exact PrimeSpectrum.isClosed_image_of_stableUnderSpecialization φ.hom Z hZ H
 
 @[elab_as_elim]
 theorem compact_open_induction_on {P : X.Opens → Prop} (S : X.Opens)
@@ -246,15 +251,15 @@ theorem compact_open_induction_on {P : X.Opens → Prop} (S : X.Opens)
 
 theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isAffineOpen (X : Scheme)
     {U : X.Opens} (hU : IsAffineOpen U) (x f : Γ(X, U))
-    (H : x |_ X.basicOpen f = 0) : ∃ n : ℕ, f ^ n * x = 0 := by
-  rw [← map_zero (X.presheaf.map (homOfLE <| X.basicOpen_le f : X.basicOpen f ⟶ U).op)] at H
-  #adaptation_note
-  /--
-  Prior to nightly-2024-09-29, we could use dot notation here:
+    (H : x |_ (X.basicOpen f) = 0) :
+    ∃ n : ℕ, f ^ n * x = 0 := by
+  rw [← map_zero (X.presheaf.map (homOfLE <| X.basicOpen_le f : X.basicOpen f ⟶ U).op).hom] at H
+  #adaptation_note /-- nightly-2024-09-29
+  we could use dot notation here:
   `(hU.isLocalization_basicOpen f).exists_of_eq H`
   This is no longer possible;
   likely changing the signature of `IsLocalization.Away.exists_of_eq` is in order.
-  -/
+-/
   obtain ⟨n, e⟩ :=
     @IsLocalization.Away.exists_of_eq _ _ _ _ _ _ (hU.isLocalization_basicOpen f) _ _ H
   exact ⟨n, by simpa [mul_comm x] using e⟩
@@ -263,7 +268,8 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isAffineOpen (X : Sch
 `f ^ n * x = 0` for some `n`. -/
 theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme.{u})
     {U : X.Opens} (hU : IsCompact U.1) (x f : Γ(X, U))
-    (H : x |_ X.basicOpen f = 0) : ∃ n : ℕ, f ^ n * x = 0 := by
+    (H : x |_ (X.basicOpen f) = 0) :
+    ∃ n : ℕ, f ^ n * x = 0 := by
   obtain ⟨s, hs, e⟩ := (isCompactOpen_iff_eq_finset_affine_union U.1).mp ⟨hU, U.2⟩
   replace e : U = iSup fun i : s => (i : X.Opens) := by
     ext1; simpa using e
@@ -277,12 +283,11 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme
     exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isAffineOpen X i.1.2
       (X.presheaf.map (homOfLE (h₁ i)).op x) (X.presheaf.map (homOfLE (h₁ i)).op f) ?_
   swap
-  · delta TopCat.Presheaf.restrictOpen TopCat.Presheaf.restrict at H ⊢
-    convert congr_arg (X.presheaf.map (homOfLE _).op) H
-    -- Note: the below was `simp only [← comp_apply]`
-    · rw [← comp_apply, ← comp_apply]
-      · simp only [← Functor.map_comp]
-        rfl
+  · show (X.presheaf.map (homOfLE _).op) ((X.presheaf.map (homOfLE _).op).hom x) = 0
+    have H : (X.presheaf.map (homOfLE _).op) x = 0 := H
+    convert congr_arg (X.presheaf.map (homOfLE _).op).hom H
+    · simp only [← CommRingCat.comp_apply, ← Functor.map_comp]
+      · rfl
     · rw [map_zero]
     · simp only [Scheme.basicOpen_res, inf_le_right]
   choose n hn using H'
@@ -293,6 +298,7 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme
     subst e
     apply TopCat.Sheaf.eq_of_locally_eq X.sheaf fun i : s => (i : X.Opens)
     intro i
+    show _ = (X.sheaf.val.map _) 0
     rw [map_zero]
     apply this
   intro i
@@ -310,9 +316,9 @@ lemma Scheme.isNilpotent_iff_basicOpen_eq_bot_of_isCompact {X : Scheme.{u}}
     {U : X.Opens} (hU : IsCompact (U : Set X)) (f : Γ(X, U)) :
     IsNilpotent f ↔ X.basicOpen f = ⊥ := by
   refine ⟨X.basicOpen_eq_bot_of_isNilpotent U f, fun hf ↦ ?_⟩
-  have h : (1 : Γ(X, U)) |_ X.basicOpen f = (0 : Γ(X, X.basicOpen f)) := by
+  have h : (1 : Γ(X, U)) |_ (X.basicOpen f) = 0 := by
     have e : X.basicOpen f ≤ ⊥ := by rw [hf]
-    rw [← X.presheaf.restrict_restrict e bot_le]
+    rw [← TopCat.Presheaf.restrict_restrict e bot_le]
     have : Subsingleton Γ(X, ⊥) :=
       CommRingCat.subsingleton_of_isTerminal X.sheaf.isTerminalOfEmpty
     rw [Subsingleton.eq_zero (1 |_ ⊥)]
@@ -331,17 +337,25 @@ lemma Scheme.isNilpotent_iff_basicOpen_eq_bot {X : Scheme.{u}}
 
 /-- The zero locus of a set of sections over a compact open of a scheme is `X` if and only if
 `s` is contained in the nilradical of `Γ(X, U)`. -/
-lemma Scheme.zeroLocus_eq_top_iff_subset_nilradical_of_isCompact {X : Scheme.{u}} {U : X.Opens}
+lemma Scheme.zeroLocus_eq_univ_iff_subset_nilradical_of_isCompact {X : Scheme.{u}} {U : X.Opens}
     (hU : IsCompact (U : Set X)) (s : Set Γ(X, U)) :
-    X.zeroLocus s = ⊤ ↔ s ⊆ nilradical Γ(X, U) := by
+    X.zeroLocus s = Set.univ ↔ s ⊆ nilradical Γ(X, U) := by
   simp [Scheme.zeroLocus_def, ← Scheme.isNilpotent_iff_basicOpen_eq_bot_of_isCompact hU,
     ← mem_nilradical, Set.subset_def]
 
 /-- The zero locus of a set of sections over a compact open of a scheme is `X` if and only if
 `s` is contained in the nilradical of `Γ(X, U)`. -/
-lemma Scheme.zeroLocus_eq_top_iff_subset_nilradical {X : Scheme.{u}}
+lemma Scheme.zeroLocus_eq_univ_iff_subset_nilradical {X : Scheme.{u}}
     [CompactSpace X] (s : Set Γ(X, ⊤)) :
-    X.zeroLocus s = ⊤ ↔ s ⊆ nilradical Γ(X, ⊤) :=
-  zeroLocus_eq_top_iff_subset_nilradical_of_isCompact (U := ⊤) (CompactSpace.isCompact_univ) s
+    X.zeroLocus s = Set.univ ↔ s ⊆ nilradical Γ(X, ⊤) :=
+  zeroLocus_eq_univ_iff_subset_nilradical_of_isCompact (U := ⊤) (CompactSpace.isCompact_univ) s
+
+@[deprecated (since := "2025-04-05")]
+alias Scheme.zeroLocus_eq_top_iff_subset_nilradical_of_isCompact :=
+  Scheme.zeroLocus_eq_univ_iff_subset_nilradical_of_isCompact
+
+@[deprecated (since := "2025-04-05")]
+alias Scheme.zeroLocus_eq_top_iff_subset_nilradical :=
+  Scheme.zeroLocus_eq_univ_iff_subset_nilradical
 
 end AlgebraicGeometry

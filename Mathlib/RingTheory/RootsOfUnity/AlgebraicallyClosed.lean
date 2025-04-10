@@ -10,7 +10,7 @@ import Mathlib.NumberTheory.Cyclotomic.Basic
 # Instances for HasEnoughRootsOfUnity
 
 We provide an instance for `HasEnoughRootsOfUnity F n` when `F` is an algebraically closed field
-and `n` is not divisible by the characteristic. In particular, when `F` has characterstic zero,
+and `n` is not divisible by the characteristic. In particular, when `F` has characteristic zero,
 this hold for all `n ≠ 0`.
 
 ### TODO

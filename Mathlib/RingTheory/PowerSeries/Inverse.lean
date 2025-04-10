@@ -11,6 +11,7 @@ import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.RingTheory.PowerSeries.Order
 import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
+import Mathlib.Data.ENat.Lattice
 
 /-! # Formal power series - Inverses
 
@@ -200,9 +201,9 @@ theorem smul_inv (r : k) (φ : k⟦X⟧) : (r • φ)⁻¹ = r⁻¹ • φ⁻¹ 
   MvPowerSeries.smul_inv _ _
 
 /-- `firstUnitCoeff` is the non-zero coefficient whose index is `f.order`, seen as a unit of the
-  field. It is obtained using `divided_by_X_pow_order`, defined in `PowerSeries.Order`-/
+  field. It is obtained using `divided_by_X_pow_order`, defined in `PowerSeries.Order`. -/
 def firstUnitCoeff {f : k⟦X⟧} (hf : f ≠ 0) : kˣ :=
-  let d := f.order.get (order_finite_iff_ne_zero.mpr hf)
+  let d := f.order.lift (order_finite_iff_ne_zero.mpr hf)
   have f_const : coeff k d f ≠ 0 := by apply coeff_order
   have : Invertible (constantCoeff k (divided_by_X_pow_order hf)) := by
     apply invertibleOfNonzero
@@ -230,8 +231,7 @@ theorem Inv_divided_by_X_pow_order_leftInv {f : k⟦X⟧} (hf : f ≠ 0) :
   rw [mul_comm]
   exact mul_invOfUnit (divided_by_X_pow_order hf) (firstUnitCoeff hf) rfl
 
-open scoped Classical
-
+open scoped Classical in
 /-- `Unit_of_divided_by_X_pow_order` is the unit power series obtained by dividing a non-zero
 power series by the largest power of `X` that divides it. -/
 def Unit_of_divided_by_X_pow_order (f : k⟦X⟧) : k⟦X⟧ˣ :=
@@ -258,8 +258,8 @@ theorem Unit_of_divided_by_X_pow_order_zero : Unit_of_divided_by_X_pow_order (0 
 theorem eq_divided_by_X_pow_order_Iff_Unit {f : k⟦X⟧} (hf : f ≠ 0) :
     f = divided_by_X_pow_order hf ↔ IsUnit f :=
   ⟨fun h ↦ by rw [h]; exact isUnit_divided_by_X_pow_order hf, fun h ↦ by
-    have : f.order.get (order_finite_iff_ne_zero.mpr hf) = 0 := by
-      simp only [order_zero_of_unit h, PartENat.get_zero]
+    have : f.order.lift (order_finite_iff_ne_zero.mpr hf) = 0 := by
+      simp [order_zero_of_unit h]
     convert (self_eq_X_pow_order_mul_divided_by_X_pow_order hf).symm
     simp only [this, pow_zero, one_mul]⟩
 
@@ -284,18 +284,18 @@ instance : IsLocalRing R⟦X⟧ :=
 
 end IsLocalRing
 
-section DiscreteValuationRing
+section IsDiscreteValuationRing
 
 variable {k : Type*} [Field k]
 
-open DiscreteValuationRing
+open IsDiscreteValuationRing
 
 theorem hasUnitMulPowIrreducibleFactorization :
     HasUnitMulPowIrreducibleFactorization k⟦X⟧ :=
   ⟨X, And.intro X_irreducible
       (by
         intro f hf
-        use f.order.get (order_finite_iff_ne_zero.mpr hf)
+        use f.order.lift (order_finite_iff_ne_zero.mpr hf)
         use Unit_of_divided_by_X_pow_order f
         simp only [Unit_of_divided_by_X_pow_order_nonzero hf]
         exact self_eq_X_pow_order_mul_divided_by_X_pow_order hf)⟩
@@ -303,7 +303,7 @@ theorem hasUnitMulPowIrreducibleFactorization :
 instance : UniqueFactorizationMonoid k⟦X⟧ :=
   hasUnitMulPowIrreducibleFactorization.toUniqueFactorizationMonoid
 
-instance : DiscreteValuationRing k⟦X⟧ :=
+instance : IsDiscreteValuationRing k⟦X⟧ :=
   ofHasUnitMulPowIrreducibleFactorization hasUnitMulPowIrreducibleFactorization
 
 instance isNoetherianRing : IsNoetherianRing k⟦X⟧ :=
@@ -351,8 +351,9 @@ theorem normUnit_X : normUnit (X : k⟦X⟧) = 1 := by
 theorem X_eq_normalizeX : (X : k⟦X⟧) = normalize X := by
   simp only [normalize_apply, normUnit_X, Units.val_one, mul_one]
 
-open UniqueFactorizationMonoid Classical
+open UniqueFactorizationMonoid
 
+open scoped Classical in
 theorem normalized_count_X_eq_of_coe {P : k[X]} (hP : P ≠ 0) :
     Multiset.count PowerSeries.X (normalizedFactors (P : k⟦X⟧)) =
       Multiset.count Polynomial.X (normalizedFactors P) := by
@@ -376,7 +377,7 @@ def residueFieldOfPowerSeries : ResidueField k⟦X⟧ ≃+* k :=
   (Ideal.quotEquivOfEq (ker_coeff_eq_max_ideal).symm).trans
     (RingHom.quotientKerEquivOfSurjective constantCoeff_surj)
 
-end DiscreteValuationRing
+end IsDiscreteValuationRing
 
 
 end PowerSeries

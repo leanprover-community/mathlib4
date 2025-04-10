@@ -112,7 +112,7 @@ theorem HasIntegral.of_aeEq_zero {l : IntegrationParams} {I : Box ι} {f : (ι �
   have N0 : ∀ {x}, N x = 0 ↔ f x = 0 := by simp [N]
   have : ∀ n, ∃ U, N ⁻¹' {n} ⊆ U ∧ IsOpen U ∧ μ.restrict I U < δ n / n := fun n ↦ by
     refine (N ⁻¹' {n}).exists_isOpen_lt_of_lt _ ?_
-    cases' n with n
+    rcases n with - | n
     · simp [ENNReal.div_zero (ENNReal.coe_pos.2 (δ0 _)).ne']
     · refine (measure_mono_null ?_ hf).le.trans_lt ?_
       · exact fun x hxN hxf => n.succ_ne_zero ((Eq.symm hxN).trans <| N0.2 hxf)
@@ -170,11 +170,13 @@ namespace SimpleFunc
 theorem hasBoxIntegral (f : SimpleFunc (ι → ℝ) E) (μ : Measure (ι → ℝ)) [IsLocallyFiniteMeasure μ]
     (I : Box ι) (l : IntegrationParams) (hl : l.bRiemann = false) :
     HasIntegral.{u, v, v} I l f μ.toBoxAdditive.toSMul (f.integral (μ.restrict I)) := by
-  induction' f using MeasureTheory.SimpleFunc.induction with y s hs f g _ hfi hgi
-  · simpa only [Measure.restrict_apply hs, const_zero, integral_piecewise_zero, integral_const,
+  induction f using MeasureTheory.SimpleFunc.induction with
+  | @const y s hs =>
+    simpa only [Measure.restrict_apply hs, const_zero, integral_piecewise_zero, integral_const,
       Measure.restrict_apply, MeasurableSet.univ, Set.univ_inter] using
       BoxIntegral.hasIntegralIndicatorConst l hl hs I y μ
-  · borelize E; haveI := Fact.mk (I.measure_coe_lt_top μ)
+  | @add f g _ hfi hgi =>
+    borelize E; haveI := Fact.mk (I.measure_coe_lt_top μ)
     rw [integral_add]
     exacts [hfi.add hgi, integrable_iff.2 fun _ _ => measure_lt_top _ _,
       integrable_iff.2 fun _ _ => measure_lt_top _ _]
@@ -223,7 +225,7 @@ theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {
   -- Choose `N` such that the integral of `‖f N x - g x‖` is less than or equal to `ε`.
   obtain ⟨N₀, hN₀⟩ : ∃ N : ℕ, ∫ x in I, ‖f N x - g x‖ ∂μ ≤ ε := by
     have : Tendsto (fun n => ∫⁻ x in I, ‖f n x - g x‖₊ ∂μ) atTop (𝓝 0) :=
-      SimpleFunc.tendsto_approxOn_range_L1_nnnorm hg.measurable hgi
+      SimpleFunc.tendsto_approxOn_range_L1_enorm hg.measurable hgi
     refine (this.eventually (ge_mem_nhds ε0')).exists.imp fun N hN => ?_
     exact integral_coe_le_of_lintegral_coe_le hN
   -- For each `x`, we choose `Nx x ≥ N₀` such that `dist (f Nx x) (g x) ≤ ε`.

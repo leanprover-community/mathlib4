@@ -16,10 +16,7 @@ composition of functions (the chain rule).
 -/
 
 
-open Filter Asymptotics ContinuousLinearMap Set Metric
-
-open scoped Classical
-open Topology NNReal Filter Asymptotics ENNReal
+open Filter Asymptotics ContinuousLinearMap Set Metric Topology NNReal ENNReal
 
 noncomputable section
 
@@ -235,7 +232,6 @@ protected theorem HasFDerivAtFilter.iterate {f : E → E} {f' : E →L[𝕜] E}
 protected theorem HasFDerivAt.iterate {f : E → E} {f' : E →L[𝕜] E} (hf : HasFDerivAt f f' x)
     (hx : f x = x) (n : ℕ) : HasFDerivAt f^[n] (f' ^ n) x := by
   refine HasFDerivAtFilter.iterate hf ?_ hx n
-  -- Porting note: was `convert hf.continuousAt`
   convert hf.continuousAt.tendsto
   exact hx.symm
 
@@ -244,7 +240,7 @@ protected theorem HasFDerivWithinAt.iterate {f : E → E} {f' : E →L[𝕜] E}
     (hf : HasFDerivWithinAt f f' s x) (hx : f x = x) (hs : MapsTo f s s) (n : ℕ) :
     HasFDerivWithinAt f^[n] (f' ^ n) s x := by
   refine HasFDerivAtFilter.iterate hf ?_ hx n
-  rw [_root_.nhdsWithin] -- Porting note: Added `rw` to get rid of an error
+  rw [nhdsWithin]
   convert tendsto_inf.2 ⟨hf.continuousWithinAt, _⟩
   exacts [hx.symm, (tendsto_principal_principal.2 hs).mono_left inf_le_right]
 

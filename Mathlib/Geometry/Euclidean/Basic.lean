@@ -6,6 +6,7 @@ Authors: Joseph Myers, Manuel Candales
 import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Geometry.Euclidean.PerpBisector
 import Mathlib.Algebra.QuadraticDiscriminant
+import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 
 /-!
 # Euclidean spaces
@@ -61,11 +62,6 @@ Euclidean affine spaces.
 variable {V : Type*} {P : Type*}
 variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
 variable [NormedAddTorsor V P]
-
-/-- The midpoint of the segment AB is the same distance from A as it is from B. -/
-theorem dist_left_midpoint_eq_dist_right_midpoint (p1 p2 : P) :
-    dist p1 (midpoint ℝ p1 p2) = dist p2 (midpoint ℝ p1 p2) := by
-  rw [dist_left_midpoint (𝕜 := ℝ) p1 p2, dist_right_midpoint (𝕜 := ℝ) p1 p2]
 
 /-- The inner product of two vectors given with `weightedVSub`, in
 terms of the pairwise distances. -/
@@ -180,7 +176,7 @@ theorem eq_of_dist_eq_of_dist_eq_of_mem_of_finrank_eq_two {s : AffineSubspace �
   rw [← hp₁c₁, dist_smul_vadd_eq_dist _ _ hp'] at hpc₁ hp₂
   simp only [one_ne_zero, false_or] at hp₂
   rw [hp₂.symm] at hpc₁
-  cases' hpc₁ with hpc₁ hpc₁ <;> simp [hpc₁]
+  rcases hpc₁ with hpc₁ | hpc₁ <;> simp [hpc₁]
 
 /-- Distances `r₁` `r₂` of `p` from two different points `c₁` `c₂` determine at
 most two points `p₁` `p₂` in two-dimensional space (two circles intersect in at
@@ -322,16 +318,16 @@ theorem orthogonalProjection_mem_orthogonal (s : AffineSubspace ℝ P) [Nonempty
 `orthogonalProjection` produces a result in the direction of the
 given subspace. -/
 theorem orthogonalProjection_vsub_mem_direction {s : AffineSubspace ℝ P} [Nonempty s]
-    [HasOrthogonalProjection s.direction] {p1 : P} (p2 : P) (hp1 : p1 ∈ s) :
-    ↑(orthogonalProjection s p2 -ᵥ ⟨p1, hp1⟩ : s.direction) ∈ s.direction :=
-  (orthogonalProjection s p2 -ᵥ ⟨p1, hp1⟩ : s.direction).2
+    [HasOrthogonalProjection s.direction] {p₁ : P} (p₂ : P) (hp₁ : p₁ ∈ s) :
+    ↑(orthogonalProjection s p₂ -ᵥ ⟨p₁, hp₁⟩ : s.direction) ∈ s.direction :=
+  (orthogonalProjection s p₂ -ᵥ ⟨p₁, hp₁⟩ : s.direction).2
 
 /-- Subtracting the `orthogonalProjection` from a point in the given
 subspace produces a result in the direction of the given subspace. -/
 theorem vsub_orthogonalProjection_mem_direction {s : AffineSubspace ℝ P} [Nonempty s]
-    [HasOrthogonalProjection s.direction] {p1 : P} (p2 : P) (hp1 : p1 ∈ s) :
-    ↑((⟨p1, hp1⟩ : s) -ᵥ orthogonalProjection s p2 : s.direction) ∈ s.direction :=
-  ((⟨p1, hp1⟩ : s) -ᵥ orthogonalProjection s p2 : s.direction).2
+    [HasOrthogonalProjection s.direction] {p₁ : P} (p₂ : P) (hp₁ : p₁ ∈ s) :
+    ↑((⟨p₁, hp₁⟩ : s) -ᵥ orthogonalProjection s p₂ : s.direction) ∈ s.direction :=
+  ((⟨p₁, hp₁⟩ : s) -ᵥ orthogonalProjection s p₂ : s.direction).2
 
 /-- A point equals its orthogonal projection if and only if it lies in
 the subspace. -/
@@ -365,6 +361,11 @@ theorem eq_orthogonalProjection_of_eq_subspace {s s' : AffineSubspace ℝ P} [No
     (h : s = s') (p : P) : (orthogonalProjection s p : P) = (orthogonalProjection s' p : P) := by
   subst h
   rfl
+
+@[simp] lemma orthogonalProjection_affineSpan_singleton (p₁ p₂ : P) :
+    orthogonalProjection (affineSpan ℝ {p₁}) p₂ = p₁ := by
+  have h := SetLike.coe_mem (orthogonalProjection (affineSpan ℝ {p₁}) p₂)
+  rwa [mem_affineSpan_singleton] at h
 
 /-- The distance to a point's orthogonal projection is 0 iff it lies in the subspace. -/
 theorem dist_orthogonalProjection_eq_zero_iff {s : AffineSubspace ℝ P} [Nonempty s]
@@ -421,47 +422,74 @@ orthogonal projection, produces the original point if the vector is a
 multiple of the result of subtracting a point's orthogonal projection
 from that point. -/
 theorem orthogonalProjection_vadd_smul_vsub_orthogonalProjection {s : AffineSubspace ℝ P}
-    [Nonempty s] [HasOrthogonalProjection s.direction] {p1 : P} (p2 : P) (r : ℝ) (hp : p1 ∈ s) :
-    orthogonalProjection s (r • (p2 -ᵥ orthogonalProjection s p2 : V) +ᵥ p1) = ⟨p1, hp⟩ :=
+    [Nonempty s] [HasOrthogonalProjection s.direction] {p₁ : P} (p₂ : P) (r : ℝ) (hp : p₁ ∈ s) :
+    orthogonalProjection s (r • (p₂ -ᵥ orthogonalProjection s p₂ : V) +ᵥ p₁) = ⟨p₁, hp⟩ :=
   orthogonalProjection_vadd_eq_self hp
     (Submodule.smul_mem _ _ (vsub_orthogonalProjection_mem_direction_orthogonal s _))
 
-/-- The square of the distance from a point in `s` to `p2` equals the
+/-- The square of the distance from a point in `s` to `p₂` equals the
 sum of the squares of the distances of the two points to the
 `orthogonalProjection`. -/
 theorem dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq
-    {s : AffineSubspace ℝ P} [Nonempty s] [HasOrthogonalProjection s.direction] {p1 : P} (p2 : P)
-    (hp1 : p1 ∈ s) :
-    dist p1 p2 * dist p1 p2 =
-      dist p1 (orthogonalProjection s p2) * dist p1 (orthogonalProjection s p2) +
-        dist p2 (orthogonalProjection s p2) * dist p2 (orthogonalProjection s p2) := by
-  rw [dist_comm p2 _, dist_eq_norm_vsub V p1 _, dist_eq_norm_vsub V p1 _, dist_eq_norm_vsub V _ p2,
-    ← vsub_add_vsub_cancel p1 (orthogonalProjection s p2) p2,
+    {s : AffineSubspace ℝ P} [Nonempty s] [HasOrthogonalProjection s.direction] {p₁ : P} (p₂ : P)
+    (hp₁ : p₁ ∈ s) :
+    dist p₁ p₂ * dist p₁ p₂ =
+      dist p₁ (orthogonalProjection s p₂) * dist p₁ (orthogonalProjection s p₂) +
+        dist p₂ (orthogonalProjection s p₂) * dist p₂ (orthogonalProjection s p₂) := by
+  rw [dist_comm p₂ _, dist_eq_norm_vsub V p₁ _, dist_eq_norm_vsub V p₁ _, dist_eq_norm_vsub V _ p₂,
+    ← vsub_add_vsub_cancel p₁ (orthogonalProjection s p₂) p₂,
     norm_add_sq_eq_norm_sq_add_norm_sq_iff_real_inner_eq_zero]
-  exact Submodule.inner_right_of_mem_orthogonal (vsub_orthogonalProjection_mem_direction p2 hp1)
-    (orthogonalProjection_vsub_mem_direction_orthogonal s p2)
+  exact Submodule.inner_right_of_mem_orthogonal (vsub_orthogonalProjection_mem_direction p₂ hp₁)
+    (orthogonalProjection_vsub_mem_direction_orthogonal s p₂)
+
+/-- The distance between a point and its orthogonal projection to a subspace equals the distance
+to that subspace as given by `Metric.infDist`. This is not a `simp` lemma since the simplest form
+depends on the context (if any calculations are to be done with the distance, the version with
+the orthogonal projection gives access to more lemmas about orthogonal projections that may be
+useful). -/
+lemma dist_orthogonalProjection_eq_infDist (s : AffineSubspace ℝ P) [Nonempty s]
+    [HasOrthogonalProjection s.direction] (p : P) :
+    dist p (orthogonalProjection s p) = Metric.infDist p s := by
+  refine le_antisymm ?_ (Metric.infDist_le_dist_of_mem (orthogonalProjection_mem _))
+  rw [Metric.infDist_eq_iInf]
+  refine le_ciInf fun x ↦ le_of_sq_le_sq ?_ dist_nonneg
+  rw [dist_comm _ (x : P)]
+  simp_rw [pow_two,
+    dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq p x.property]
+  simp [mul_self_nonneg]
+
+/-- The nonnegative distance between a point and its orthogonal projection to a subspace equals
+the distance to that subspace as given by `Metric.infNndist`. This is not a `simp` lemma since
+the simplest form depends on the context (if any calculations are to be done with the distance,
+the version with the orthogonal projection gives access to more lemmas about orthogonal
+projections that may be useful). -/
+lemma dist_orthogonalProjection_eq_infNndist (s : AffineSubspace ℝ P) [Nonempty s]
+    [HasOrthogonalProjection s.direction] (p : P) :
+    nndist p (orthogonalProjection s p) = Metric.infNndist p s := by
+  rw [← NNReal.coe_inj]
+  simp [dist_orthogonalProjection_eq_infDist]
 
 /-- The square of the distance between two points constructed by
 adding multiples of the same orthogonal vector to points in the same
 subspace. -/
-theorem dist_sq_smul_orthogonal_vadd_smul_orthogonal_vadd {s : AffineSubspace ℝ P} {p1 p2 : P}
-    (hp1 : p1 ∈ s) (hp2 : p2 ∈ s) (r1 r2 : ℝ) {v : V} (hv : v ∈ s.directionᗮ) :
-    dist (r1 • v +ᵥ p1) (r2 • v +ᵥ p2) * dist (r1 • v +ᵥ p1) (r2 • v +ᵥ p2) =
-      dist p1 p2 * dist p1 p2 + (r1 - r2) * (r1 - r2) * (‖v‖ * ‖v‖) :=
+theorem dist_sq_smul_orthogonal_vadd_smul_orthogonal_vadd {s : AffineSubspace ℝ P} {p₁ p₂ : P}
+    (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) (r₁ r₂ : ℝ) {v : V} (hv : v ∈ s.directionᗮ) :
+    dist (r₁ • v +ᵥ p₁) (r₂ • v +ᵥ p₂) * dist (r₁ • v +ᵥ p₁) (r₂ • v +ᵥ p₂) =
+      dist p₁ p₂ * dist p₁ p₂ + (r₁ - r₂) * (r₁ - r₂) * (‖v‖ * ‖v‖) :=
   calc
-    dist (r1 • v +ᵥ p1) (r2 • v +ᵥ p2) * dist (r1 • v +ᵥ p1) (r2 • v +ᵥ p2) =
-        ‖p1 -ᵥ p2 + (r1 - r2) • v‖ * ‖p1 -ᵥ p2 + (r1 - r2) • v‖ := by
-      rw [dist_eq_norm_vsub V (r1 • v +ᵥ p1), vsub_vadd_eq_vsub_sub, vadd_vsub_assoc, sub_smul,
+    dist (r₁ • v +ᵥ p₁) (r₂ • v +ᵥ p₂) * dist (r₁ • v +ᵥ p₁) (r₂ • v +ᵥ p₂) =
+        ‖p₁ -ᵥ p₂ + (r₁ - r₂) • v‖ * ‖p₁ -ᵥ p₂ + (r₁ - r₂) • v‖ := by
+      rw [dist_eq_norm_vsub V (r₁ • v +ᵥ p₁), vsub_vadd_eq_vsub_sub, vadd_vsub_assoc, sub_smul,
         add_comm, add_sub_assoc]
-    _ = ‖p1 -ᵥ p2‖ * ‖p1 -ᵥ p2‖ + ‖(r1 - r2) • v‖ * ‖(r1 - r2) • v‖ :=
+    _ = ‖p₁ -ᵥ p₂‖ * ‖p₁ -ᵥ p₂‖ + ‖(r₁ - r₂) • v‖ * ‖(r₁ - r₂) • v‖ :=
       (norm_add_sq_eq_norm_sq_add_norm_sq_real
-        (Submodule.inner_right_of_mem_orthogonal (vsub_mem_direction hp1 hp2)
+        (Submodule.inner_right_of_mem_orthogonal (vsub_mem_direction hp₁ hp₂)
           (Submodule.smul_mem _ _ hv)))
-    _ = ‖(p1 -ᵥ p2 : V)‖ * ‖(p1 -ᵥ p2 : V)‖ + |r1 - r2| * |r1 - r2| * ‖v‖ * ‖v‖ := by
+    _ = ‖(p₁ -ᵥ p₂ : V)‖ * ‖(p₁ -ᵥ p₂ : V)‖ + |r₁ - r₂| * |r₁ - r₂| * ‖v‖ * ‖v‖ := by
       rw [norm_smul, Real.norm_eq_abs]
       ring
-    _ = dist p1 p2 * dist p1 p2 + (r1 - r2) * (r1 - r2) * (‖v‖ * ‖v‖) := by
-      rw [dist_eq_norm_vsub V p1, abs_mul_abs_self, mul_assoc]
+    _ = dist p₁ p₂ * dist p₁ p₂ + (r₁ - r₂) * (r₁ - r₂) * (‖v‖ * ‖v‖) := by
+      rw [dist_eq_norm_vsub V p₁, abs_mul_abs_self, mul_assoc]
 
 /-- Reflection in an affine subspace, which is expected to be nonempty
 and complete. The word "reflection" is sometimes understood to mean
@@ -472,14 +500,14 @@ general sense of the word that includes both those common cases. -/
 def reflection (s : AffineSubspace ℝ P) [Nonempty s] [HasOrthogonalProjection s.direction] :
     P ≃ᵃⁱ[ℝ] P :=
   AffineIsometryEquiv.mk'
-    (fun p => ↑(orthogonalProjection s p) -ᵥ p +ᵥ (orthogonalProjection s p : P))
+    (fun p => (↑(orthogonalProjection s p) -ᵥ p) +ᵥ (orthogonalProjection s p : P))
     (_root_.reflection s.direction) (↑(Classical.arbitrary s))
     (by
       intro p
       let v := p -ᵥ ↑(Classical.arbitrary s)
       let a : V := _root_.orthogonalProjection s.direction v
       let b : P := ↑(Classical.arbitrary s)
-      have key : a +ᵥ b -ᵥ (v +ᵥ b) +ᵥ (a +ᵥ b) = a + a - v +ᵥ (b -ᵥ b +ᵥ b) := by
+      have key : ((a +ᵥ b) -ᵥ (v +ᵥ b)) +ᵥ (a +ᵥ b) = (a + a - v) +ᵥ (b -ᵥ b) +ᵥ b := by
         rw [← add_vadd, vsub_vadd_eq_vsub_sub, vsub_vadd, vadd_vsub]
         congr 1
         abel
@@ -489,7 +517,8 @@ def reflection (s : AffineSubspace ℝ P) [Nonempty s] [HasOrthogonalProjection 
 
 /-- The result of reflecting. -/
 theorem reflection_apply (s : AffineSubspace ℝ P) [Nonempty s] [HasOrthogonalProjection s.direction]
-    (p : P) : reflection s p = ↑(orthogonalProjection s p) -ᵥ p +ᵥ (orthogonalProjection s p : P) :=
+    (p : P) :
+    reflection s p = (↑(orthogonalProjection s p) -ᵥ p) +ᵥ (orthogonalProjection s p : P) :=
   rfl
 
 theorem eq_reflection_of_eq_subspace {s s' : AffineSubspace ℝ P} [Nonempty s] [Nonempty s']
@@ -599,3 +628,32 @@ theorem reflection_vadd_smul_vsub_orthogonalProjection {s : AffineSubspace ℝ P
     (Submodule.smul_mem _ _ (vsub_orthogonalProjection_mem_direction_orthogonal s _))
 
 end EuclideanGeometry
+
+namespace Affine
+
+namespace Simplex
+
+open EuclideanGeometry
+
+variable {V : Type*} {P : Type*}
+variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable [NormedAddTorsor V P]
+
+variable {n : ℕ} [NeZero n] (s : Simplex ℝ P n)
+
+@[simp] lemma ne_orthogonalProjection_faceOpposite (i : Fin (n + 1)) :
+    s.points i ≠
+      orthogonalProjection (affineSpan ℝ (Set.range (s.faceOpposite i).points)) (s.points i) := by
+  intro h
+  rw [eq_comm, EuclideanGeometry.orthogonalProjection_eq_self_iff,
+    mem_affineSpan_range_faceOpposite_points_iff] at h
+  simp at h
+
+lemma dist_orthogonalProjection_faceOpposite_pos (i : Fin (n + 1)) :
+    0 < dist (s.points i)
+      (orthogonalProjection (affineSpan ℝ (Set.range (s.faceOpposite i).points)) (s.points i)) := by
+  simp
+
+end Simplex
+
+end Affine

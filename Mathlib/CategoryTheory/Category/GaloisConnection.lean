@@ -5,7 +5,7 @@ Authors: Stephen Morgan, Kim Morrison, Johannes Hölzl, Reid Barton
 -/
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Adjunction.Basic
-import Mathlib.Order.GaloisConnection
+import Mathlib.Order.GaloisConnection.Defs
 
 /-!
 

@@ -5,6 +5,7 @@ Authors: Kevin Kappelmann
 -/
 import Mathlib.Algebra.ContinuedFractions.Computation.Basic
 import Mathlib.Algebra.ContinuedFractions.Translations
+import Mathlib.Algebra.Order.Floor.Ring
 
 /-!
 # Basic Translation Lemmas Between Structures Defined for Computing Continued Fractions
@@ -43,8 +44,8 @@ namespace GenContFract
 
 open GenContFract (of)
 
--- Fix a discrete linear ordered floor field and a value `v`.
-variable {K : Type*} [LinearOrderedField K] [FloorRing K] {v : K}
+-- Fix a discrete linear ordered division ring with `floor` function and a value `v`.
+variable {K : Type*} [DivisionRing K] [LinearOrder K] [FloorRing K] {v : K}
 
 namespace IntFractPair
 
@@ -95,7 +96,8 @@ theorem stream_succ_of_some {p : IntFractPair K} (h : IntFractPair.stream v n = 
 
 /-- The stream of `IntFractPair`s of an integer stops after the first term.
 -/
-theorem stream_succ_of_int (a : ℤ) (n : ℕ) : IntFractPair.stream (a : K) (n + 1) = none := by
+theorem stream_succ_of_int [IsStrictOrderedRing K] (a : ℤ) (n : ℕ) :
+    IntFractPair.stream (a : K) (n + 1) = none := by
   induction n with
   | zero =>
     refine IntFractPair.stream_eq_none_of_fr_eq_zero (IntFractPair.stream_zero (a : K)) ?_
@@ -121,7 +123,7 @@ theorem stream_succ (h : Int.fract v ≠ 0) (n : ℕ) :
     IntFractPair.stream v (n + 1) = IntFractPair.stream (Int.fract v)⁻¹ n := by
   induction n with
   | zero =>
-    have H : (IntFractPair.of v).fr = Int.fract v := rfl
+    have H : (IntFractPair.of v).fr = Int.fract v := by simp [IntFractPair.of]
     rw [stream_zero, stream_succ_of_some (stream_zero v) (ne_of_eq_of_ne H h), H]
   | succ n ih =>
     rcases eq_or_ne (IntFractPair.stream (Int.fract v)⁻¹ n) none with hnone | hsome
@@ -261,6 +263,7 @@ theorem of_s_head (h : fract v ≠ 0) : (of v).s.head = some ⟨1, ⌊(fract v)�
   rfl
 
 variable (K)
+variable [IsStrictOrderedRing K]
 
 /-- If `a` is an integer, then the coefficient sequence of its continued fraction is empty.
 -/
@@ -307,7 +310,7 @@ theorem convs'_of_int (a : ℤ) : (of (a : K)).convs' n = a := by
   induction n with
   | zero => simp only [zeroth_conv'_eq_h, of_h_eq_floor, floor_intCast]
   | succ =>
-    rw [convs', of_h_eq_floor, floor_intCast, add_right_eq_self]
+    rw [convs', of_h_eq_floor, floor_intCast, add_eq_left]
     exact convs'Aux_succ_none ((of_s_of_int K a).symm ▸ Stream'.Seq.get?_nil 0) _
 
 variable {K}

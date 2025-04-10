@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.Algebra.Polynomial.Degree.Domain
+import Mathlib.Algebra.Ring.NonZeroDivisors
 import Mathlib.RingTheory.Localization.FractionRing
 
 /-!
@@ -48,8 +49,6 @@ the codomain is not a field or even an integral domain.
 
 noncomputable section
 
-open scoped Classical
-
 open scoped nonZeroDivisors Polynomial
 
 universe u v
@@ -83,9 +82,11 @@ theorem ofFractionRing_injective : Function.Injective (ofFractionRing : _ → Ra
 theorem toFractionRing_injective : Function.Injective (toFractionRing : _ → FractionRing K[X])
   | ⟨x⟩, ⟨y⟩, xy => by subst xy; rfl
 
-@[simp] lemma toFractionRing_eq_iff {x y : RatFunc K} :
+@[simp] lemma toFractionRing_inj {x y : RatFunc K} :
     toFractionRing x = toFractionRing y ↔ x = y :=
   toFractionRing_injective.eq_iff
+
+@[deprecated (since := "2024-12-29")] alias toFractionRing_eq_iff := toFractionRing_inj
 
 /-- Non-dependent recursion principle for `RatFunc K`:
 To construct a term of `P : Sort*` out of `x : RatFunc K`,

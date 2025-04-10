@@ -54,8 +54,8 @@ lemma summable_riemannZetaSummand (hs : 1 < s.re) :
     Summable (fun n ↦ ‖riemannZetaSummandHom (ne_zero_of_one_lt_re hs) n‖) := by
   simp only [riemannZetaSummandHom, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
   convert Real.summable_nat_rpow_inv.mpr hs with n
-  rw [← ofReal_natCast, Complex.norm_eq_abs,
-    abs_cpow_eq_rpow_re_of_nonneg (Nat.cast_nonneg n) <| re_neg_ne_zero_of_one_lt_re hs,
+  rw [← ofReal_natCast,
+    norm_cpow_eq_rpow_re_of_nonneg (Nat.cast_nonneg n) <| re_neg_ne_zero_of_one_lt_re hs,
     neg_re, Real.rpow_neg <| Nat.cast_nonneg n]
 
 lemma tsum_riemannZetaSummand (hs : 1 < s.re) :

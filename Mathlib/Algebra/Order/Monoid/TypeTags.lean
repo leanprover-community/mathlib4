@@ -10,6 +10,24 @@ import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 
 variable {α : Type*}
 
+instance Multiplicative.isOrderedMonoid [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α] :
+    IsOrderedMonoid (Multiplicative α) :=
+  { mul_le_mul_left := @IsOrderedAddMonoid.add_le_add_left α _ _ _ }
+
+instance Additive.isOrderedAddMonoid [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] :
+    IsOrderedAddMonoid (Additive α) :=
+  { add_le_add_left := @IsOrderedMonoid.mul_le_mul_left α _ _ _ }
+
+instance Multiplicative.isOrderedCancelMonoid
+    [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α] :
+    IsOrderedCancelMonoid (Multiplicative α) :=
+  { le_of_mul_le_mul_left := @IsOrderedCancelAddMonoid.le_of_add_le_add_left α _ _ _ }
+
+instance Additive.isOrderedCancelAddMonoid
+    [CommMonoid α] [PartialOrder α] [IsOrderedCancelMonoid α] :
+    IsOrderedCancelAddMonoid (Additive α) :=
+  { le_of_add_le_add_left := @IsOrderedCancelMonoid.le_of_mul_le_mul_left α _ _ _ }
+
 instance Multiplicative.orderedCommMonoid [OrderedAddCommMonoid α] :
     OrderedCommMonoid (Multiplicative α) :=
   { Multiplicative.partialOrder, Multiplicative.commMonoid with
@@ -38,21 +56,12 @@ instance Additive.linearOrderedAddCommMonoid [LinearOrderedCommMonoid α] :
     LinearOrderedAddCommMonoid (Additive α) :=
   { Additive.linearOrder, Additive.orderedAddCommMonoid with }
 
-instance Multiplicative.canonicallyOrderedCommMonoid [CanonicallyOrderedAddCommMonoid α] :
-    CanonicallyOrderedCommMonoid (Multiplicative α) :=
-  { Multiplicative.orderedCommMonoid, Multiplicative.orderBot,
-    Multiplicative.existsMulOfLe with le_self_mul := @le_self_add α _ }
+instance Multiplicative.canonicallyOrderedMul
+    [AddMonoid α] [PartialOrder α] [CanonicallyOrderedAdd α] :
+    CanonicallyOrderedMul (Multiplicative α) where
+  le_self_mul _ _ := le_self_add (α := α)
 
-instance Additive.canonicallyOrderedAddCommMonoid [CanonicallyOrderedCommMonoid α] :
-    CanonicallyOrderedAddCommMonoid (Additive α) :=
-  { Additive.orderedAddCommMonoid, Additive.orderBot, Additive.existsAddOfLe with
-    le_self_add := @le_self_mul α _ }
-
-instance Multiplicative.canonicallyLinearOrderedCommMonoid
-    [CanonicallyLinearOrderedAddCommMonoid α] :
-    CanonicallyLinearOrderedCommMonoid (Multiplicative α) :=
-  { Multiplicative.canonicallyOrderedCommMonoid, Multiplicative.linearOrder with }
-
-instance [CanonicallyLinearOrderedCommMonoid α] :
-    CanonicallyLinearOrderedAddCommMonoid (Additive α) :=
-  { Additive.canonicallyOrderedAddCommMonoid, Additive.linearOrder with }
+instance Additive.canonicallyOrderedAdd
+    [Monoid α] [PartialOrder α] [CanonicallyOrderedMul α] :
+    CanonicallyOrderedAdd (Additive α) where
+  le_self_add _ _ := le_self_mul (α := α)
