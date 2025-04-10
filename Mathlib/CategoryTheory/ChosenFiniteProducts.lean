@@ -315,6 +315,7 @@ instance (priority := 100) : Limits.HasFiniteProducts C :=
 section ChosenFiniteProductsComparison
 
 variable {D : Type u₁} [Category.{v₁} D] [ChosenFiniteProducts D] (F : C ⥤ D)
+variable {E : Type u₂} [Category.{v₂} E] [ChosenFiniteProducts E] (G : D ⥤ E)
 
 section terminalComparison
 
@@ -323,8 +324,14 @@ section terminalComparison
 abbrev terminalComparison : F.obj (𝟙_ C) ⟶ 𝟙_ D := toUnit _
 
 @[reassoc]
-lemma map_toUnit_comp_terminalCompariso (A : C) :
+lemma map_toUnit_comp_terminalComparison (A : C) :
     F.map (toUnit A) ≫ terminalComparison F = toUnit _ := toUnit_unique _ _
+
+@[deprecated (since := "2025-04-09")]
+alias map_toUnit_comp_terminalCompariso := map_toUnit_comp_terminalComparison
+
+@[deprecated (since := "2025-04-09")]
+alias map_toUnit_comp_terminalCompariso_assoc := map_toUnit_comp_terminalComparison_assoc
 
 open Limits
 
@@ -349,6 +356,17 @@ instance terminalComparison_isIso_of_preservesLimits [PreservesLimit (Functor.em
     IsIso (terminalComparison F) := by
   rw [← preservesTerminalIso_hom]
   infer_instance
+
+@[simp]
+lemma preservesTerminalIso_id : preservesTerminalIso (𝟭 C) = .refl _ := by
+  ext; exact toUnit_unique ..
+
+@[simp]
+lemma preservesTerminalIso_comp [PreservesLimit (Functor.empty.{0} C) F]
+    [PreservesLimit (Functor.empty.{0} D) G] [PreservesLimit (Functor.empty.{0} C) (F ⋙ G)]  :
+    preservesTerminalIso (F ⋙ G) =
+      G.mapIso (preservesTerminalIso F) ≪≫ preservesTerminalIso G := by
+  ext; exact toUnit_unique ..
 
 end terminalComparison
 
@@ -518,6 +536,15 @@ instance isIso_prodComparison_of_preservesLimit_pair : IsIso (prodComparison F A
   rw [← prodComparisonIso_hom]
   infer_instance
 
+@[simp] lemma prodComparisonIso_id  : prodComparisonIso (𝟭 C) A B = .refl _ := by ext <;> simp
+
+@[simp]
+lemma prodComparisonIso_comp [PreservesLimit (pair A B) (F ⋙ G)]
+    [PreservesLimit (pair (F.obj A) (F.obj B)) G] :
+    prodComparisonIso (F ⋙ G) A B =
+      G.mapIso (prodComparisonIso F A B) ≪≫ prodComparisonIso G (F.obj A) (F.obj B) := by
+  ext <;> simp [ChosenFiniteProducts.prodComparison, ← G.map_comp]
+
 end
 
 /-- The natural isomorphism `F(A ⊗ -) ≅ FA ⊗ F-`, provided each `prodComparison F A B` is an
@@ -682,21 +709,29 @@ variable [PreservesFiniteProducts F]
 
 attribute [local instance] monoidalOfChosenFiniteProducts
 
+open Functor.Monoidal Functor.LaxMonoidal
+
+lemma ε_of_chosenFiniteProducts : ε F = (preservesTerminalIso F).inv := by
+  change (εIso F).symm.inv = _; congr; ext; simp; rfl
+
+lemma μ_of_chosenFiniteProducts (X Y : C) : μ F X Y = (prodComparisonIso F X Y).inv := by
+  change (μIso F X Y).symm.inv = _; congr; ext : 1; rfl
+
 @[reassoc (attr := simp)]
 lemma toUnit_ε {X : C} : toUnit (F.obj X) ≫ LaxMonoidal.ε F = F.map (toUnit X) :=
   (cancel_mono (εIso _).inv).1 (toUnit_unique _ _)
 
 @[reassoc (attr := simp)]
 lemma lift_μ {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :
-    lift (F.map f) (F.map g) ≫ LaxMonoidal.μ F _ _ = F.map (lift f g) :=
+    lift (F.map f) (F.map g) ≫ μ F _ _ = F.map (lift f g) :=
   (cancel_mono (μIso _ _ _).inv).1 (by simp)
 
 @[reassoc (attr := simp)]
-lemma μ_fst (X Y : C) : LaxMonoidal.μ F X Y ≫ F.map (fst X Y) = fst (F.obj X) (F.obj Y) :=
+lemma μ_fst (X Y : C) : μ F X Y ≫ F.map (fst X Y) = fst (F.obj X) (F.obj Y) :=
   (cancel_epi (μIso _ _ _).inv).1 (by simp)
 
 @[reassoc (attr := simp)]
-lemma μ_snd (X Y : C) : LaxMonoidal.μ F X Y ≫ F.map (snd X Y) = snd (F.obj X) (F.obj Y) :=
+lemma μ_snd (X Y : C) : μ F X Y ≫ F.map (snd X Y) = snd (F.obj X) (F.obj Y) :=
   (cancel_epi (μIso _ _ _).inv).1 (by simp)
 
 section
@@ -768,8 +803,7 @@ variable {C : Type u} [Category.{v} C] [ChosenFiniteProducts C]
   [Limits.PreservesFiniteProducts F] [Limits.PreservesFiniteProducts G]
 
 attribute [local instance] Functor.monoidalOfChosenFiniteProducts in
-theorem monoidal_of_preservesFiniteProducts (α : F ⟶ G) :
-    NatTrans.IsMonoidal α where
+instance monoidal_of_preservesFiniteProducts (α : F ⟶ G) : NatTrans.IsMonoidal α where
   unit := (cancel_mono (Functor.Monoidal.εIso _).inv).1 (toUnit_unique _ _)
   tensor {X Y} := by
     rw [← cancel_mono (Functor.Monoidal.μIso _ _ _).inv]

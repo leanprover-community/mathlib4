@@ -99,11 +99,11 @@ end FixedPoints
 
 end MulAction
 
-/-- `smul` by a `k : M` over a ring is injective, if `k` is not a zero divisor.
+/-- `smul` by a `k : M` over a group is injective, if `k` is not a zero divisor.
 The general theory of such `k` is elaborated by `IsSMulRegular`.
 The typeclass that restricts all terms of `M` to have this property is `NoZeroSMulDivisors`. -/
-theorem smul_cancel_of_non_zero_divisor {M R : Type*} [Monoid M] [NonUnitalNonAssocRing R]
-    [DistribMulAction M R] (k : M) (h : ∀ x : R, k • x = 0 → x = 0) {a b : R} (h' : k • a = k • b) :
+theorem smul_cancel_of_non_zero_divisor {M G : Type*} [Monoid M] [AddGroup G]
+    [DistribMulAction M G] (k : M) (h : ∀ x : G, k • x = 0 → x = 0) {a b : G} (h' : k • a = k • b) :
     a = b := by
   rw [← sub_eq_zero]
   refine h _ ?_
