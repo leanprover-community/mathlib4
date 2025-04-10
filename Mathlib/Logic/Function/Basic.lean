@@ -7,7 +7,6 @@ import Mathlib.Data.Set.Defs
 import Mathlib.Logic.Basic
 import Mathlib.Logic.ExistsUnique
 import Mathlib.Logic.Nonempty
-import Mathlib.Logic.Nontrivial.Defs
 import Batteries.Tactic.Init
 import Mathlib.Order.Defs.PartialOrder
 import Mathlib.Order.Defs.Unbundled
@@ -136,11 +135,6 @@ theorem Injective.piMap {ι : Sort*} {α β : ι → Sort*} {f : ∀ i, α i →
 theorem Injective.comp_left {g : β → γ} (hg : Injective g) : Injective (g ∘ · : (α → β) → α → γ) :=
   .piMap fun _ ↦ hg
 
-theorem injective_comp_left_iff [Nonempty α] {g : β → γ} :
-    Injective (g ∘ · : (α → β) → α → γ) ↔ Injective g :=
-  ⟨fun h b₁ b₂ eq ↦ congr_fun (h (a₁ := fun _ ↦ b₁) (a₂ := fun _ ↦ b₂) <| funext fun _ ↦ eq)
-    (Classical.arbitrary α), (·.comp_left)⟩
-
 theorem injective_of_subsingleton [Subsingleton α] (f : α → β) : Injective f :=
   fun _ _ _ ↦ Subsingleton.elim _ _
 
@@ -213,22 +207,14 @@ protected theorem Surjective.exists₃ (hf : Surjective f) {p : β → β → β
 theorem Surjective.injective_comp_right (hf : Surjective f) : Injective fun g : β → γ ↦ g ∘ f :=
   fun _ _ h ↦ funext <| hf.forall.2 <| congr_fun h
 
-theorem injective_comp_right_iff_surjective {γ : Type*} [Nontrivial γ] :
-    Injective (fun g : β → γ ↦ g ∘ f) ↔ Surjective f := by
-  refine ⟨not_imp_not.mp fun not_surj inj ↦ not_subsingleton γ ⟨fun c c' ↦ ?_⟩,
-    (·.injective_comp_right)⟩
-  have ⟨b₀, hb⟩ := not_forall.mp not_surj
-  classical have := inj (a₁ := fun _ ↦ c) (a₂ := (if · = b₀ then c' else c)) ?_
-  · simpa using congr_fun this b₀
-  ext a; simp only [comp_apply, if_neg fun h ↦ hb ⟨a, h⟩]
-
 protected theorem Surjective.right_cancellable (hf : Surjective f) {g₁ g₂ : β → γ} :
     g₁ ∘ f = g₂ ∘ f ↔ g₁ = g₂ :=
   hf.injective_comp_right.eq_iff
 
 theorem surjective_of_right_cancellable_Prop (h : ∀ g₁ g₂ : β → Prop, g₁ ∘ f = g₂ ∘ f → g₁ = g₂) :
-    Surjective f :=
-  injective_comp_right_iff_surjective.mp h
+    Surjective f := by
+  specialize h (fun y ↦ ∃ x, f x = y) (fun _ ↦ True) (funext fun x ↦ eq_true ⟨_, rfl⟩)
+  intro y; rw [congr_fun h y]; trivial
 
 theorem bijective_iff_existsUnique (f : α → β) : Bijective f ↔ ∀ b : β, ∃! a : α, f a = b :=
   ⟨fun hf b ↦
@@ -479,12 +465,6 @@ theorem Surjective.comp_left {g : β → γ} (hg : Surjective g) :
     Surjective (g ∘ · : (α → β) → α → γ) :=
   .piMap fun _ ↦ hg
 
-theorem surjective_comp_left_iff [Nonempty α] {g : β → γ} :
-    Surjective (g ∘ · : (α → β) → α → γ) ↔ Surjective g := by
-  refine ⟨fun h c ↦ ?_, (·.comp_left)⟩
-  have ⟨f, hf⟩ := h fun _ ↦ c
-  exact ⟨f (Classical.arbitrary α), congr_fun hf _⟩
-
 theorem Bijective.piMap {ι : Sort*} {α β : ι → Sort*} {f : ∀ i, α i → β i}
     (hf : ∀ i, Bijective (f i)) : Bijective (Pi.map f) :=
   ⟨.piMap fun i ↦ (hf i).1, .piMap fun i ↦ (hf i).2⟩
@@ -716,18 +696,6 @@ theorem Injective.surjective_comp_right' (hf : Injective f) (g₀ : β → γ) :
 theorem Injective.surjective_comp_right [Nonempty γ] (hf : Injective f) :
     Surjective fun g : β → γ ↦ g ∘ f :=
   hf.surjective_comp_right' fun _ ↦ Classical.choice ‹_›
-
-theorem surjective_comp_right_iff_injective {γ : Type*} [Nontrivial γ] :
-    Surjective (fun g : β → γ ↦ g ∘ f) ↔ Injective f := by
-  refine ⟨not_imp_not.mp fun not_inj surj ↦ not_subsingleton γ ⟨fun c c' ↦ ?_⟩,
-    (·.surjective_comp_right)⟩
-  simp only [Injective, not_forall] at not_inj
-  have ⟨a₁, a₂, eq, ne⟩ := not_inj
-  have ⟨f, hf⟩ := surj (if · = a₂ then c else c')
-  have h₁ := congr_fun hf a₁
-  have h₂ := congr_fun hf a₂
-  simp only [comp_apply, if_neg ne, reduceIte] at h₁ h₂
-  rw [← h₁, eq, h₂]
 
 theorem Bijective.comp_right (hf : Bijective f) : Bijective fun g : β → γ ↦ g ∘ f :=
   ⟨hf.surjective.injective_comp_right, fun g ↦
