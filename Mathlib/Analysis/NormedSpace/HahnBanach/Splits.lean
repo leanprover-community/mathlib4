@@ -32,14 +32,27 @@ namespace LinearMap
 
 lemma range_prodMap {f : E →L[𝕜] F} {g : E' →L[𝕜] F'} :
     range (f.prodMap g) = (range f).prod (range g) := by
-  ext; simp [Prod.ext_iff]
-/- find_home! suggests these; the second or fourth suggestion could be reasonable
-Mathlib.Analysis.CStarAlgebra.Basic, Mathlib.Analysis.Normed.Module.Span,
-Mathlib.Analysis.Normed.Affine.Isometry, Mathlib.Topology.Algebra.Module.FiniteDimension,
-Mathlib.Topology.Algebra.Module.StrongTopology, Mathlib.Analysis.Normed.Affine.AddTorsor]
--/
+  ext x
+  simp [Prod.ext_iff]
+
+lemma _root_.Submodule.map_add {f : E →L[𝕜] F} {p q : Submodule 𝕜 E} :
+    Submodule.map f p + Submodule.map f q = Submodule.map f (p + q) := by
+  ext x
+  simp
 
 end LinearMap
+
+section
+
+variable {R M N : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+
+lemma Submodule.sum_assoc {p q r : Submodule R M} : p + (q + r) = (p + q) + r := by
+  ext x
+  simp only [add_eq_sup, mem_sup, exists_exists_and_exists_and_eq_and]
+  exact ⟨fun ⟨y, hy, a, ha, b, hb, hyab⟩ ↦ ⟨y, hy, a, ha, b, hb, by rw [← hyab]; module⟩,
+    fun ⟨a, ha, b, hb, z, hz, h⟩ ↦ ⟨a, ha, b, hb, z, hz, by rw [← h]; module⟩⟩
+
+end
 
 /-- A continuous linear map `f : E → F` **splits** iff it is injective, has closed range and
 its image has a closed complement. -/
@@ -67,9 +80,6 @@ lemma complement_isClosed (h : f.Splits) : IsClosed (X := F) h.complement :=
 
 lemma complement_isCompl (h : f.Splits) : IsCompl (LinearMap.range f) h.complement :=
   (Classical.choose_spec h.closedComplemented.exists_isClosed_isCompl).2
-
-lemma congr {g : E →L[𝕜] F} (hf : f.Splits) (hfg : g = f) : g.Splits :=
-  hfg ▸ hf
 
 /-- A continuous linear equivalence splits. -/
 lemma _root_.ContinuousLinearEquiv.splits (f : E ≃L[𝕜] F) : f.toContinuousLinearMap.Splits := by
@@ -102,6 +112,7 @@ This result is unseful to prove that the composition of split maps is a split ma
 lemma antilipschitz_aux (hf : f.Splits) : ∃ K, AntilipschitzWith K f :=
   ContinuousLinearMap.antilipschitz_of_injective_of_isClosed_range f hf.injective hf.isClosed_range
 
+/-- Some anti-Lipschitz constant for `f` -/
 def antilipschitzConstant (hf : f.Splits) := Classical.choose hf.antilipschitz_aux
 
 lemma antilipschitzWith (hf : f.Splits) : AntilipschitzWith hf.antilipschitzConstant f :=
@@ -110,10 +121,38 @@ lemma antilipschitzWith (hf : f.Splits) : AntilipschitzWith hf.antilipschitzCons
 lemma isClosedMap (hf : f.Splits) : IsClosedMap f :=
   (hf.antilipschitzWith.isClosedEmbedding f.uniformContinuous).isClosedMap
 
--- Open question: is the following statement true? We really want the composition of immersions
--- to be an immersion, but the proof below has a serious gap, at least.
+omit [CompleteSpace F] [CompleteSpace G] in
+lemma disjoint_aux  {g : F →L[𝕜] G} {F₁ F₂ : Submodule 𝕜 F} {G' : Submodule 𝕜 G}
+    (hF : Disjoint F₁ F₂) (hG' : Disjoint (LinearMap.range g) G') (hg : Injective g) :
+    Disjoint (Submodule.map g F₁) (Submodule.map g F₂ + G') := by
+  rw [Submodule.disjoint_def] at hF hG' ⊢
+  intro x h1 h2
+  -- Write x = g (f x₀)
+  choose x₀ hx₀ hgx₀ using h1
+  -- Write x = y + z, for y = g y₀ ∈ g(F') and z ∈ h.complement.
+  rw [Submodule.add_eq_sup, Submodule.mem_sup] at h2
+  choose y hy aux using h2
+  choose y₀ hy₀ hgy₀ using hy
+  choose z hz hxyz using aux
+  -- Since z in range g and hg.complement is complementary to range g, z = 0 follows.
+  -- These lines are too tedious.
+  have : z = x - y := by rw [← hxyz]; module
+  have : z ∈ range g := by
+    rw [this, ← hgx₀, ← hgy₀, ← map_sub]
+    use x₀ - y₀ -- Can or should this be a simproc?
+  have : z = 0 := hG' z this hz
+  -- g y₀ = y = x = g x₀, thus x₀ = y₀.
+  have hxy : x = y := by rw [← add_zero y, ← this, hxyz]
+  have aux := calc g y₀
+    _ = y := hgy₀
+    _ = x := hxy.symm
+    _ = g x₀ := hgx₀.symm
+  -- Now, y₀ ∈ range f and y₀ ∈ F', hence y₀ = 0.
+  have : y₀ = 0 := hF y₀ ((hg aux) ▸ hx₀) hy₀
+  simp [hxy, ← hgy₀, this]
+
 /-- The composition of split continuous linear maps between real or complex Banach spaces splits. -/
-theorem comp {g : F →L[𝕜] G} (hg : g.Splits) (hf : f.Splits) : (g.comp f).Splits := by
+lemma comp {g : F →L[𝕜] G} (hf : f.Splits) (hg : g.Splits) : (g.comp f).Splits := by
   have h : IsClosed (range (g ∘ f)) := by
     rw [range_comp]
     apply hg.isClosedMap _ hf.isClosed_range
@@ -124,67 +163,70 @@ theorem comp {g : F →L[𝕜] G} (hg : g.Splits) (hf : f.Splits) : (g.comp f).S
     · have : IsClosed (X := G) (F'.map g) := hg.isClosedMap _ hf.complement_isClosed
       have : IsClosed (X := G) hg.complement := hg.complement_isClosed
       -- In general, the sum of closed subspaces need not be closed.
-      -- In this case, however, this is true (as F'.map G is a closed subspace of range g,
+      -- In this case, however, this is true as F'.map G is a closed subspace of range g,
       -- and range g + hg.complement = G' is closed.
-      -- TODO: think about the best proof for formalising.
+      -- TODO: what's the best proof to formalise?
+
+      -- Here is an outline of a proof using sequential closedness.
+      rw [← isSeqClosed_iff_isClosed]
+      -- Let (u_n) be a converging sequence in g(F') + G'.
+      intro u u₀ hu hconv
+      simp_rw [Submodule.add_eq_sup, SetLike.mem_coe, Submodule.mem_sup] at hu
+      -- Write u_n = x_n + y_n, for x_n in g(F') and y_n in G'.
+      let x : ℕ → Submodule.map g F' := by
+        intro n
+        choose y hy z hz hyz using hu n
+        exact ⟨y, hy⟩
+      let y : ℕ → hg.complement := by
+        intro n
+        choose y hy z hz hyz using hu n
+        exact ⟨z, hz⟩
+      -- By construction, u_n = x_n + y_n.
+      have (n) : u n = x n + y n := by
+        simp [x, y]
+        sorry -- need more API lemmas
+      -- x equals the projection into g(F'); y equals the projection onto hg.complement.
+      -- Since the coordinate projections are continuous, x and y are both convergent sequences.
+
+      -- Since g is anti-Lipschitz, the sequence of preimages of x_n is also converging.
+      -- These preimages belong to F', which is closed, hence the limit also lies in F'.
+
+      -- Thus, by continuity, x_n converges to some point in g(F').
+      -- By linearity, u_n converges to a point in g(F')+G', qed.
       sorry
-    · constructor
-      · rw [Submodule.disjoint_def]
-        intro x h1 h2
-        -- Write x = g (f x₀)
-        choose x₀ hxx₀ using h1
-        -- Write x = y + z, for y = g y₀ ∈ g(F') and z ∈ h.complement.
-        rw [Submodule.add_eq_sup, Submodule.mem_sup] at h2
-        choose y hy z hz hxyz using h2
-        choose y₀ hy₀ hyy₀ using hy
-        -- Since z in range g and hg.complement is complementary to range g, z = 0 follows.
-        -- These lines are too tedious.
-        have : z = x - y := by rw [← hxyz]; module
-        have : z ∈ range g := by
-          rw [this, ← hxx₀, ← hyy₀, coe_comp', Function.comp_apply, ← map_sub]
-          use f x₀ - y₀ -- should be a simproc now?
-        have : z = 0 := by
-          have aux := hg.complement_isCompl.1
-          rw [Submodule.disjoint_def] at aux
-          exact aux z this hz
-        -- g y₀ = y = x = g (f x₀), thus f x₀ = y₀.
-        have hxy : x = y := by rw [← add_zero y, ← this, hxyz]
-        have aux := calc g y₀
-          _ = y := hyy₀
-          _ = x := hxy.symm
-          _ = g (f x₀) := by rw [coe_comp', Function.comp_apply] at hxx₀; exact hxx₀.symm
-        replace aux := hg.injective aux
-        -- Now, y₀ ∈ range f and y₀ ∈ F', hence y₀ = 0.
-        have : y₀ = 0 := by
-          have := hf.complement_isCompl.1
-          rw [Submodule.disjoint_def] at this
-          apply this y₀
-          · use x₀; exact aux.symm
-          · exact hy₀
-        simp [hxy, ← hyy₀, this]
-      · -- rw [Submodule.codisjoint_iff]
-        intro h hg hf' s _hx -- they span...
-        sorry
+    · have : LinearMap.range (g.comp f) = Submodule.map g (LinearMap.range f) := by aesop
+      -- some lemmas which could be useful for a manual proof:
+      -- rw [LinearMap.range_comp]; rw [LinearMap.range_eq_map]; rw [Submodule.map_comp f g ⊤]
+      -- rw [← LinearMap.range_eq_map f]
+      constructor
+      · exact this ▸ disjoint_aux hf.complement_isCompl.1 hg.complement_isCompl.1 hg.injective
+      · rw [codisjoint_iff, this, ← Submodule.add_eq_sup, Submodule.sum_assoc, Submodule.map_add]
+        rw [LinearMap.range_eq_map]
+        trans Submodule.map g ⊤ + hg.complement
+        · congr
+          rw [Submodule.add_eq_sup, ← codisjoint_iff]
+          simpa using hf.complement_isCompl.2
+        · rw [Submodule.add_eq_sup, ← codisjoint_iff, ← LinearMap.range_eq_map]
+          exact hg.complement_isCompl.2
 
 lemma compCLE_left [CompleteSpace F'] {f₀ : F' ≃L[𝕜] E} (hf : f.Splits) :
     (f.comp f₀.toContinuousLinearMap).Splits :=
-  hf.comp f₀.splits
+  f₀.splits.comp hf
 
 lemma compCLE_right [CompleteSpace F'] {g : F ≃L[𝕜] F'} (hf : f.Splits) :
     (g.toContinuousLinearMap.comp f).Splits :=
-  g.splits.comp hf
+  hf.comp g.splits
 
 omit [CompleteSpace E] [CompleteSpace F] [CompleteSpace G]
 
-/-- If `f : E → F` is injective and `E` is finite-dimensional, then `f` splits. -/
-lemma of_injective_of_finiteDimensional_dom
-    [FiniteDimensional 𝕜 E] (hf : Injective f) : f.Splits := by
+/-- If `f : E → F` is injective and `F` is finite-dimensional, then `f` splits. -/
+lemma of_injective_of_finiteDimensional [FiniteDimensional 𝕜 F] (hf : Injective f) : f.Splits := by
   have aux : IsClosed (X := F) (LinearMap.range f) := Submodule.closed_of_finiteDimensional _
   exact ⟨hf, aux, Submodule.ClosedComplemented.of_finiteDimensional (LinearMap.range f)⟩
 
-/-- If `f : E → F` is injective and `F` is finite-dimensional, then `f` splits. -/
-lemma of_injective_of_finiteDimensional_cod [FiniteDimensional 𝕜 F] (hf : Injective f) :
-    f.Splits := by
+/-- If `f : E → F` is injective and `E` is finite-dimensional, then `f` splits. -/
+lemma of_injective_of_finiteDimensional_of_completeSpace
+    [FiniteDimensional 𝕜 E] (hf : Injective f) : f.Splits := by
   have aux : IsClosed (X := F) (LinearMap.range f) := Submodule.closed_of_finiteDimensional _
   exact ⟨hf, aux, Submodule.ClosedComplemented.of_finiteDimensional (LinearMap.range f)⟩
 
