@@ -66,7 +66,7 @@ lemma mapDomainBialgHom_comp (f : N →* O) (g : M →* N) :
   ext; simp
 
 lemma mapDomainBialgHom_mapDomainBialgHom (f : N →* O) (g : M →* N) (x : MonoidAlgebra R M) :
-    mapDomainBialgHom R (f.comp g) x = mapDomainBialgHom R f (mapDomainBialgHom R g x) := by
+    mapDomainBialgHom R f (mapDomainBialgHom R g x) = mapDomainBialgHom R (f.comp g) x := by
   ext; simp
 
 end MonoidAlgebra
@@ -109,7 +109,7 @@ lemma mapDomainBialgHom_comp (f : N →+ O) (g : M →+ N) :
   ext; simp
 
 lemma mapDomainBialgHom_mapDomainBialgHom (f : N →+ O) (g : M →+ N) (x : R[M]) :
-    mapDomainBialgHom R (f.comp g) x = mapDomainBialgHom R f (mapDomainBialgHom R g x) := by
+    mapDomainBialgHom R f (mapDomainBialgHom R g x) = mapDomainBialgHom R (f.comp g) x := by
   ext; simp
 
 end AddMonoidAlgebra
