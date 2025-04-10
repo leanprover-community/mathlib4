@@ -27,6 +27,8 @@ example : Irreducible (X ^ 4 - 10 * X ^ 2 + 1 : ℤ[X]) := by
   -- We will apply the generalized Eisenstein criterion with `q = X ^ 2 + 1` and `K = ZMod 3`.
   set f : ℤ[X] := X ^ 4 - 10 * X ^ 2 + 1 with hf_eq
   have hdeg_f : f.natDegree = 4 := by unfold f; compute_degree!
+  have hf_lC : f.leadingCoeff = 1 := by
+    simp only [f, leadingCoeff, hdeg_f]; compute_degree!
   set q : ℤ [X] := X ^ 2 + 1 with hq_eq
   have hq_deg : q.natDegree = 2 := by unfold q; compute_degree!
   have hq_monic : q.Monic := by unfold q; monicity!
@@ -35,15 +37,20 @@ example : Irreducible (X ^ 4 - 10 * X ^ 2 + 1 : ℤ[X]) := by
   apply generalizedEisenstein (K := ZMod 3) (q := q) (p := 2)
   · set q₃ : (ZMod 3)[X] := X ^ 2 + 1
     have hdeg_q₃ : q₃.natDegree = 2 := by unfold q₃; compute_degree!
-    suffices Irreducible q₃ by simpa [q] using this.prime
+    suffices Irreducible q₃ by simpa [q] using this
     apply irreducible_of_degree_le_three_of_not_isRoot
       (by simp_all) (by simp_all [q₃]; decide)
   · unfold q; monicity!
+  · exact Monic.isPrimitive hf_lC
   · simp_all
-  · unfold f; monicity!
-  · rw [hfq, ← sub_eq_zero]
+  · suffices f.leadingCoeff = 1 by
+      simp [this, map_one, one_ne_zero]
+    simp only [leadingCoeff, hdeg_f]
+    unfold f; compute_degree!
+  · nth_rewrite 1 [hfq]
+    rw [hf_lC, ← map_C, C_1, Polynomial.map_one, one_mul, ← sub_eq_zero]
     have : (12 : (ZMod 3)[X]) = 0 := by apply CharP.ofNat_eq_zero' _ 3 12; norm_num
-    simp [q, this]
+    simp [this]
   · suffices f %ₘ q = 12 by
       rw [this, ← map_ofNat C, Polynomial.map_C, ne_eq, C_eq_zero, eq_zero_iff_mem,
       CharP.ker_intAlgebraMap_eq_span 3, span_singleton_pow, mem_span_singleton]

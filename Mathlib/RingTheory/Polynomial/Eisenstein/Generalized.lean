@@ -8,6 +8,9 @@ import Mathlib.Algebra.CharP.Quotient
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Polynomial.Content
 
+import Mathlib.RingTheory.Polynomial.Eisenstein.Basic
+import Mathlib.RingTheory.Ideal.Quotient.Operations
+
 /-! # A generalized Eisenstein criterion
 
 `Polynomial.generalizedEisenstein` :
@@ -173,5 +176,34 @@ theorem generalizedEisenstein {q f : R[X]} {p : ℕ}
     · symm
       rw [modByMonic_eq_zero_iff_dvd hq_monic]
       exact ((dvd_pow_self q hm).mul_left _).mul_right _
+
+example {𝓟 : Ideal R} (hprime : 𝓟.IsPrime) {f : Polynomial R}
+    (hf : f.IsEisensteinAt 𝓟) (hu : f.IsPrimitive) (hfd0 : 0 < f.natDegree) :
+    Irreducible f := by
+  apply generalizedEisenstein (K := FractionRing (R ⧸ 𝓟)) (q := X) (p := f.natDegree)
+    (by simp [map_X, irreducible_X]) monic_X hu hfd0
+  · simp only [IsScalarTower.algebraMap_eq R (R ⧸ 𝓟) (FractionRing (R ⧸ 𝓟)),
+      Quotient.algebraMap_eq, coe_comp, Function.comp_apply, ne_eq,
+      FaithfulSMul.algebraMap_eq_zero_iff]
+    rw [Ideal.Quotient.eq_zero_iff_mem]
+    exact hf.leading
+  · rw [← map_C, ← Polynomial.map_pow, ← Polynomial.map_mul]
+    simp only [IsScalarTower.algebraMap_eq R (R ⧸ 𝓟) (FractionRing (R ⧸ 𝓟)),
+      Quotient.algebraMap_eq, coe_comp, Function.comp_apply, ← map_map]
+    congr 1
+    ext n
+    simp only [coeff_map, Ideal.Quotient.mk_eq_mk_iff_sub_mem]
+    simp only [coeff_C_mul, coeff_X_pow, mul_ite, mul_one, mul_zero, sub_ite, sub_zero]
+    split_ifs with hn
+    · rw [hn, leadingCoeff, sub_self]
+      exact zero_mem _
+    · exact IsEisensteinAt.coeff_mem hf hn
+  · rw [modByMonic_X, map_C, ne_eq, C_eq_zero, Ideal.Quotient.eq_zero_iff_mem,
+      ← coeff_zero_eq_eval_zero]
+    convert hf.not_mem
+    · rw [IsScalarTower.algebraMap_eq R (R ⧸ 𝓟) (FractionRing (R ⧸ 𝓟))]
+      rw [ker_comp_of_injective]
+      · ext a; simp
+      · exact FaithfulSMul.algebraMap_injective (R ⧸ 𝓟) (FractionRing (R ⧸ 𝓟))
 
 end Polynomial
