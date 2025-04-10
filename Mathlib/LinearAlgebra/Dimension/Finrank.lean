@@ -36,11 +36,11 @@ universe u v w
 open Cardinal Submodule Module Function
 
 variable {R : Type u} {M : Type v} {N : Type w}
-variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+variable [Ring R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
 namespace Module
 
-section Semiring
+section Ring
 
 /-- The rank of a module as a natural number.
 
@@ -51,7 +51,7 @@ of `M` over `R`.
 
 Note that it is possible to have `M` with `¬(Module.Finite R M)` but `finrank R M ≠ 0`, for example
 `ℤ × ℚ/ℤ` has `finrank` equal to `1`. -/
-noncomputable def finrank (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M] : ℕ :=
+noncomputable def finrank (R M : Type*) [Semiring R] [AddCommGroup M] [Module R M] : ℕ :=
   Cardinal.toNat (Module.rank R M)
 
 @[deprecated (since := "2024-10-01")] protected alias _root_.FiniteDimensional.finrank := finrank
@@ -94,7 +94,7 @@ theorem finrank_le_finrank_of_rank_le_rank
     (h' : Module.rank R N < ℵ₀) : finrank R M ≤ finrank R N := by
   simpa only [toNat_lift] using toNat_le_toNat h (lift_lt_aleph0.mpr h')
 
-end Semiring
+end Ring
 
 end Module
 
@@ -102,7 +102,7 @@ open Module
 
 namespace LinearEquiv
 
-variable {R M M₂ : Type*} [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂]
+variable {R M M₂ : Type*} [Ring R] [AddCommGroup M] [AddCommGroup M₂]
 variable [Module R M] [Module R M₂]
 
 /-- The dimension of a finite dimensional space is preserved under linear equivalence. -/
