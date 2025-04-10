@@ -87,10 +87,7 @@ lemma DeltaGeneratedSpace.continuous_iff [DeltaGeneratedSpace X] {f : X → Y} :
     Continuous f ↔ ∀ (n : ℕ) (p : C(((Fin n) → ℝ), X)), Continuous (f ∘ p) := by
   simp_rw [continuous_iff_coinduced_le]
   nth_rewrite 1 [eq_deltaGenerated (X := X), deltaGenerated]
-  simp only [coinduced_iSup, coinduced_compose, iSup_le_iff]
-  constructor
-  · intro h n p; apply h ⟨n, p⟩
-  · rintro h ⟨n, p⟩; apply h n p
+  simp [coinduced_compose, Sigma.forall]
 
 /-- A map out of a delta-generated space is continuous iff it is continuous with respect
   to the delta-generated topology on the codomain. -/
