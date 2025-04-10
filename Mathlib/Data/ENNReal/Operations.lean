@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Data.ENNReal.Real
-import Mathlib.Data.ENNReal.Archimedean2
+import Mathlib.Data.ENNReal.Archimedean
 
 /-!
 # Properties of addition, multiplication and subtraction on extended non-negative real numbers

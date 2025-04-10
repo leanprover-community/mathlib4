@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 import Mathlib.Algebra.BigOperators.WithTop
 import Mathlib.Data.NNReal.Basic
 import Mathlib.Data.ENNReal.Inv
+import Mathlib.Data.ENNReal.Archimedean2
 
 /-!
 # Properties of big operators extended non-negative real numbers

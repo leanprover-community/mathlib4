@@ -5,11 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Order.Module.OrderedSMul
-import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Algebra.Order.Group.Pointwise.Bounds
 import Mathlib.Data.Real.Basic
-import Mathlib.Order.ConditionallyCompleteLattice.Indexed
-import Mathlib.Order.Interval.Set.Disjoint
 
 /-!
 # Nonnegative real numbers
