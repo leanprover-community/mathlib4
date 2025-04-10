@@ -54,30 +54,26 @@ variable [CommSemiring R] [∀ i, AddCommMonoid (M i)] [AddCommMonoid M'] [AddCo
 construct the corresponding multilinear map on `n+1` variables obtained by concatenating
 the variables, given by `m ↦ f (m 0) (tail m)` -/
 def LinearMap.uncurryLeft (f : M 0 →ₗ[R] MultilinearMap R (fun i : Fin n => M i.succ) M₂) :
-    MultilinearMap R M M₂ where
-  toFun m := f (m 0) (tail m)
-  map_update_add' := @fun dec m i x y => by
-    -- Porting note: `clear` not necessary in Lean 3 due to not being in the instance cache
-    rw [Subsingleton.elim dec (by clear dec; infer_instance)]; clear dec
-    by_cases h : i = 0
-    · subst i
-      simp only [update_self, map_add, tail_update_zero, MultilinearMap.add_apply]
-    · simp_rw [update_of_ne (Ne.symm h)]
-      revert x y
-      rw [← succ_pred i h]
-      intro x y
-      rw [tail_update_succ, MultilinearMap.map_update_add, tail_update_succ, tail_update_succ]
-  map_update_smul' := @fun dec m i c x => by
-    -- Porting note: `clear` not necessary in Lean 3 due to not being in the instance cache
-    rw [Subsingleton.elim dec (by clear dec; infer_instance)]; clear dec
-    by_cases h : i = 0
-    · subst i
-      simp only [update_self, map_smul, tail_update_zero, MultilinearMap.smul_apply]
-    · simp_rw [update_of_ne (Ne.symm h)]
-      revert x
-      rw [← succ_pred i h]
-      intro x
-      rw [tail_update_succ, tail_update_succ, MultilinearMap.map_update_smul]
+    MultilinearMap R M M₂ :=
+  MultilinearMap.mk' (fun m ↦ f (m 0) (tail m))
+    (fun m i x y ↦ by
+      by_cases h : i = 0
+      · subst i
+        simp only [update_self, map_add, tail_update_zero, MultilinearMap.add_apply]
+      · simp_rw [update_of_ne (Ne.symm h)]
+        revert x y
+        rw [← succ_pred i h]
+        intro x y
+        rw [tail_update_succ, MultilinearMap.map_update_add, tail_update_succ, tail_update_succ])
+    (fun m i c x ↦ by
+      by_cases h : i = 0
+      · subst i
+        simp only [update_self, map_smul, tail_update_zero, MultilinearMap.smul_apply]
+      · simp_rw [update_of_ne (Ne.symm h)]
+        revert x
+        rw [← succ_pred i h]
+        intro x
+        rw [tail_update_succ, tail_update_succ, MultilinearMap.map_update_smul])
 
 @[simp]
 theorem LinearMap.uncurryLeft_apply (f : M 0 →ₗ[R] MultilinearMap R (fun i : Fin n => M i.succ) M₂)
@@ -88,16 +84,7 @@ theorem LinearMap.uncurryLeft_apply (f : M 0 →ₗ[R] MultilinearMap R (fun i :
 a linear map into multilinear maps in `n` variables, given by `x ↦ (m ↦ f (cons x m))`. -/
 def MultilinearMap.curryLeft (f : MultilinearMap R M M₂) :
     M 0 →ₗ[R] MultilinearMap R (fun i : Fin n => M i.succ) M₂ where
-  toFun x :=
-    { toFun := fun m => f (cons x m)
-      map_update_add' := @fun dec m i y y' => by
-        -- Porting note: `clear` not necessary in Lean 3 due to not being in the instance cache
-        rw [Subsingleton.elim dec (by clear dec; infer_instance)]
-        simp
-      map_update_smul' := @fun dec m i y c => by
-        -- Porting note: `clear` not necessary in Lean 3 due to not being in the instance cache
-        rw [Subsingleton.elim dec (by clear dec; infer_instance)]
-        simp }
+  toFun x := MultilinearMap.mk' (fun m => f (cons x m))
   map_add' x y := by
     ext m
     exact cons_add f m x y
@@ -151,36 +138,34 @@ variable {R M M₂}
 the variables, given by `m ↦ f (init m) (m (last n))` -/
 def MultilinearMap.uncurryRight
     (f : MultilinearMap R (fun i : Fin n => M (castSucc i)) (M (last n) →ₗ[R] M₂)) :
-    MultilinearMap R M M₂ where
-  toFun m := f (init m) (m (last n))
-  map_update_add' {dec} m i x y := by
-    rw [Subsingleton.elim dec (by clear dec; infer_instance)]; clear dec
-    by_cases h : i.val < n
-    · have : last n ≠ i := Ne.symm (ne_of_lt h)
-      simp_rw [update_of_ne this]
-      revert x y
-      rw [(castSucc_castLT i h).symm]
-      intro x y
-      rw [init_update_castSucc, MultilinearMap.map_update_add, init_update_castSucc,
-        init_update_castSucc, LinearMap.add_apply]
-    · revert x y
-      rw [eq_last_of_not_lt h]
-      intro x y
-      simp_rw [init_update_last, update_self, LinearMap.map_add]
-  map_update_smul' {dec} m i c x := by
-    rw [Subsingleton.elim dec (by clear dec; infer_instance)]; clear dec
-    by_cases h : i.val < n
-    · have : last n ≠ i := Ne.symm (ne_of_lt h)
-      simp_rw [update_of_ne this]
-      revert x
-      rw [(castSucc_castLT i h).symm]
-      intro x
-      rw [init_update_castSucc, init_update_castSucc, MultilinearMap.map_update_smul,
-        LinearMap.smul_apply]
-    · revert x
-      rw [eq_last_of_not_lt h]
-      intro x
-      simp_rw [update_self, init_update_last, map_smul]
+    MultilinearMap R M M₂ :=
+  MultilinearMap.mk' (fun m ↦ f (init m) (m (last n)))
+    (fun m i x y ↦ by
+      by_cases h : i.val < n
+      · have : last n ≠ i := Ne.symm (ne_of_lt h)
+        simp_rw [update_of_ne this]
+        revert x y
+        rw [(castSucc_castLT i h).symm]
+        intro x y
+        rw [init_update_castSucc, MultilinearMap.map_update_add, init_update_castSucc,
+          init_update_castSucc, LinearMap.add_apply]
+      · revert x y
+        rw [eq_last_of_not_lt h]
+        intro x y
+        simp_rw [init_update_last, update_self, LinearMap.map_add])
+    (fun m i c x ↦ by
+      by_cases h : i.val < n
+      · have : last n ≠ i := Ne.symm (ne_of_lt h)
+        simp_rw [update_of_ne this]
+        revert x
+        rw [(castSucc_castLT i h).symm]
+        intro x
+        rw [init_update_castSucc, init_update_castSucc, MultilinearMap.map_update_smul,
+          LinearMap.smul_apply]
+      · revert x
+        rw [eq_last_of_not_lt h]
+        intro x
+        simp_rw [update_self, init_update_last, map_smul])
 
 @[simp]
 theorem MultilinearMap.uncurryRight_apply
@@ -192,19 +177,11 @@ theorem MultilinearMap.uncurryRight_apply
 a multilinear map in `n` variables taking values in linear maps from `M (last n)` to `M₂`, given by
 `m ↦ (x ↦ f (snoc m x))`. -/
 def MultilinearMap.curryRight (f : MultilinearMap R M M₂) :
-    MultilinearMap R (fun i : Fin n => M (Fin.castSucc i)) (M (last n) →ₗ[R] M₂) where
-  toFun m :=
+    MultilinearMap R (fun i : Fin n => M (Fin.castSucc i)) (M (last n) →ₗ[R] M₂) :=
+  MultilinearMap.mk' (fun m ↦
     { toFun := fun x => f (snoc m x)
       map_add' := fun x y => by simp_rw [f.snoc_add]
-      map_smul' := fun c x => by simp only [f.snoc_smul, RingHom.id_apply] }
-  map_update_add' := @fun dec m i x y => by
-    rw [Subsingleton.elim dec (by clear dec; infer_instance)]; clear dec
-    ext z
-    simp
-  map_update_smul' := @fun dec m i c x => by
-    rw [Subsingleton.elim dec (by clear dec; infer_instance)]; clear dec
-    ext z
-    simp
+      map_smul' := fun c x => by simp only [f.snoc_smul, RingHom.id_apply] })
 
 @[simp]
 theorem MultilinearMap.curryRight_apply (f : MultilinearMap R M M₂)
@@ -325,7 +302,6 @@ variable {ι ι' R M₂ M'}
 theorem coe_currySumEquiv : ⇑(currySumEquiv R ι M₂ M' ι') = currySum :=
   rfl
 
--- Porting note: fixed missing letter `y` in name
 @[simp]
 theorem coe_currySumEquiv_symm : ⇑(currySumEquiv R ι M₂ M' ι').symm = uncurrySum :=
   rfl
@@ -386,8 +362,6 @@ theorem curryFinFinset_apply_const {k l n : ℕ} {s : Finset (Fin n)} (hk : #s =
     (hl : #sᶜ = l) (f : MultilinearMap R (fun _ : Fin n => M') M₂) (x y : M') :
     (curryFinFinset R M₂ M' hk hl f (fun _ => x) fun _ => y) =
       f (s.piecewise (fun _ => x) fun _ => y) := by
-  -- Porting note: `rw` fails
-  refine (curryFinFinset_symm_apply_piecewise_const hk hl _ _ _).symm.trans ?_
-  rw [LinearEquiv.symm_apply_apply]
+  rw [← curryFinFinset_symm_apply_piecewise_const hk hl, LinearEquiv.symm_apply_apply]
 
 end MultilinearMap

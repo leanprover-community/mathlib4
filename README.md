@@ -132,7 +132,6 @@ For a list containing more detailed information, see https://leanprover-communit
 
 * Anne Baanen (@Vierkantor): algebra, number theory, tactics
 * Matthew Robert Ballard (@mattrobball): algebra, algebraic geometry, category theory, performance
-* Reid Barton (@rwbarton): category theory, topology
 * Riccardo Brasca (@riccardobrasca): algebra, number theory, algebraic geometry, category theory
 * Kevin Buzzard (@kbuzzard): algebra, number theory, algebraic geometry, category theory
 * Mario Carneiro (@digama0): lean formalization, tactics, type theory, proof engineering
@@ -142,7 +141,6 @@ For a list containing more detailed information, see https://leanprover-communit
 * Rémy Degenne (@RemyDegenne): probability, measure theory, analysis
 * Floris van Doorn (@fpvandoorn): measure theory, model theory, tactics
 * Frédéric Dupuis (@dupuisf): linear algebra, functional analysis
-* Gabriel Ebner (@gebner): tactics, infrastructure, core, formal languages
 * Sébastien Gouëzel (@sgouezel): topology, calculus, geometry, analysis, measure theory
 * Markus Himmel (@TwoFX): category theory
 * Yury G. Kudryashov (@urkud): analysis, topology, measure theory
@@ -162,6 +160,8 @@ For a list containing more detailed information, see https://leanprover-communit
 ## Past maintainers:
 
 * Jeremy Avigad (@avigad): analysis
+* Reid Barton (@rwbarton): category theory, topology
+* Gabriel Ebner (@gebner): tactics, infrastructure, core, formal languages
 * Johannes Hölzl (@johoelzl): measure theory, topology
 * Simon Hudon (@cipher1024): tactics
 * Chris Hughes (@ChrisHughes24): algebra

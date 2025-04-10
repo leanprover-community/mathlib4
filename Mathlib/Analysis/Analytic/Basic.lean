@@ -723,6 +723,10 @@ theorem HasFPowerSeriesAt.coeff_zero (hf : HasFPowerSeriesAt f pf x) (v : Fin 0 
 ### Analytic functions
 -/
 
+@[simp] theorem analyticOn_empty : AnalyticOn 𝕜 f ∅ := by intro; simp
+
+@[simp] theorem analyticOnNhd_empty : AnalyticOnNhd 𝕜 f ∅ := by intro; simp
+
 @[simp] lemma analyticWithinAt_univ :
     AnalyticWithinAt 𝕜 f univ x ↔ AnalyticAt 𝕜 f x := by
   simp [AnalyticWithinAt, AnalyticAt]

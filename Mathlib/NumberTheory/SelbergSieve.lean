@@ -234,7 +234,7 @@ theorem siftedSum_le_mainSum_errSum_of_upperMoebius (muPlus : ℕ → ℝ) (h : 
     congr with d
     dsimp only [rem]; ring
   case caseB =>
-    apply _root_.add_le_add (le_rfl)
+    apply add_le_add_left
     apply sum_le_sum; intro d _
     rw [←abs_mul]
     exact le_abs_self (muPlus d * R d)

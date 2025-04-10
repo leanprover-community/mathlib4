@@ -3,7 +3,7 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.Measure.Typeclasses
+import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 
 /-!
@@ -55,9 +55,13 @@ variable {α β : Type*} {m : MeasurableSpace α}
 an add monoid) such that the empty set and non-measurable sets are mapped to zero. -/
 structure VectorMeasure (α : Type*) [MeasurableSpace α] (M : Type*) [AddCommMonoid M]
     [TopologicalSpace M] where
+  /-- The measure of sets -/
   measureOf' : Set α → M
+  /-- The empty set has measure zero -/
   empty' : measureOf' ∅ = 0
+  /-- Non-measurable sets have measure zero -/
   not_measurable' ⦃i : Set α⦄ : ¬MeasurableSet i → measureOf' i = 0
+  /-- The measure is σ-additive -/
   m_iUnion' ⦃f : ℕ → Set α⦄ : (∀ i, MeasurableSet (f i)) → Pairwise (Disjoint on f) →
     HasSum (fun i => measureOf' (f i)) (measureOf' (⋃ i, f i))
 
@@ -163,12 +167,14 @@ theorem of_diff_of_diff_eq_zero {A B : Set α} (hA : MeasurableSet A) (hB : Meas
       · exact hB.diff hA
     _ = v (A \ B) + v B := by rw [Set.union_comm, Set.inter_comm, Set.diff_union_inter]
 
-theorem of_iUnion_nonneg {M : Type*} [TopologicalSpace M] [OrderedAddCommMonoid M]
+theorem of_iUnion_nonneg {M : Type*} [TopologicalSpace M]
+    [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M]
     [OrderClosedTopology M] {v : VectorMeasure α M} (hf₁ : ∀ i, MeasurableSet (f i))
     (hf₂ : Pairwise (Disjoint on f)) (hf₃ : ∀ i, 0 ≤ v (f i)) : 0 ≤ v (⋃ i, f i) :=
   (v.of_disjoint_iUnion hf₁ hf₂).symm ▸ tsum_nonneg hf₃
 
-theorem of_iUnion_nonpos {M : Type*} [TopologicalSpace M] [OrderedAddCommMonoid M]
+theorem of_iUnion_nonpos {M : Type*} [TopologicalSpace M]
+    [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M]
     [OrderClosedTopology M] {v : VectorMeasure α M} (hf₁ : ∀ i, MeasurableSet (f i))
     (hf₂ : Pairwise (Disjoint on f)) (hf₃ : ∀ i, v (f i) ≤ 0) : v (⋃ i, f i) ≤ 0 :=
   (v.of_disjoint_iUnion hf₁ hf₂).symm ▸ tsum_nonpos hf₃
@@ -334,8 +340,8 @@ theorem toSignedMeasure_apply_measurable {μ : Measure α} [IsFiniteMeasure μ] 
     (hi : MeasurableSet i) : μ.toSignedMeasure i = (μ i).toReal :=
   if_pos hi
 
--- Without this lemma, `singularPart_neg` in `MeasureTheory.Decomposition.Lebesgue` is
--- extremely slow
+-- Without this lemma, `singularPart_neg` in `Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue`
+-- is extremely slow
 theorem toSignedMeasure_congr {μ ν : Measure α} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     (h : μ = ν) : μ.toSignedMeasure = ν.toSignedMeasure := by
   congr
@@ -702,6 +708,7 @@ theorem le_iff' : v ≤ w ↔ ∀ i, v i ≤ w i := by
 
 end
 
+/-- `v ≤[i] w` is notation for `v.restrict i ≤ w.restrict i`. -/
 scoped[MeasureTheory]
   notation3:50 v " ≤[" i:50 "] " w:50 =>
     MeasureTheory.VectorMeasure.restrict v i ≤ MeasureTheory.VectorMeasure.restrict w i
@@ -754,7 +761,8 @@ end
 
 section
 
-variable {M : Type*} [TopologicalSpace M] [OrderedAddCommGroup M] [IsTopologicalAddGroup M]
+variable {M : Type*} [TopologicalSpace M]
+  [AddCommGroup M] [PartialOrder M] [IsOrderedAddMonoid M] [IsTopologicalAddGroup M]
 variable (v w : VectorMeasure α M)
 
 nonrec theorem neg_le_neg {i : Set α} (hi : MeasurableSet i) (h : v ≤[i] w) : -w ≤[i] -v := by
@@ -772,7 +780,8 @@ end
 
 section
 
-variable {M : Type*} [TopologicalSpace M] [OrderedAddCommMonoid M] [OrderClosedTopology M]
+variable {M : Type*} [TopologicalSpace M]
+  [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M] [OrderClosedTopology M]
 variable (v w : VectorMeasure α M) {i j : Set α}
 
 theorem restrict_le_restrict_iUnion {f : ℕ → Set α} (hf₁ : ∀ n, MeasurableSet (f n))
@@ -819,7 +828,7 @@ end
 
 section
 
-variable {M : Type*} [TopologicalSpace M] [OrderedAddCommMonoid M]
+variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [PartialOrder M]
 variable (v w : VectorMeasure α M) {i j : Set α}
 
 theorem nonneg_of_zero_le_restrict (hi₂ : 0 ≤[i] v) : 0 ≤ v i := by
@@ -856,7 +865,7 @@ end
 
 section
 
-variable {M : Type*} [TopologicalSpace M] [LinearOrderedAddCommMonoid M]
+variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [LinearOrder M]
 variable (v w : VectorMeasure α M) {i j : Set α}
 
 theorem exists_pos_measure_of_not_restrict_le_zero (hi : ¬v ≤[i] 0) :

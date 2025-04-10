@@ -358,6 +358,58 @@ lemma optionEquivLeft_X_none : optionEquivLeft R S₁ (X none) = Polynomial.X :=
 lemma optionEquivLeft_C (r : R) : optionEquivLeft R S₁ (C r) = Polynomial.C (C r) := by
   simp only [optionEquivLeft_apply, aeval_C, Polynomial.algebraMap_apply, algebraMap_eq]
 
+theorem optionEquivLeft_monomial (m : Option S₁ →₀ ℕ) (r : R) :
+    optionEquivLeft R S₁ (monomial m r) = .monomial (m none) (monomial m.some r) := by
+  rw [optionEquivLeft_apply, aeval_monomial, prod_option_index]
+  · rw [MvPolynomial.monomial_eq, ← Polynomial.C_mul_X_pow_eq_monomial]
+    simp only [Polynomial.algebraMap_apply, algebraMap_eq, Option.elim_none, Option.elim_some,
+      map_mul, mul_assoc]
+    apply congr_arg₂ _ rfl
+    simp only [mul_comm, map_finsuppProd, map_pow]
+  · intros; simp
+  · intros; rw [pow_add]
+
+/-- The coefficient of `n.some` in the `n none`-th coefficient of `optionEquivLeft R S₁ f`
+equals the coefficient of `n` in `f` -/
+theorem optionEquivLeft_coeff_coeff (n : Option S₁ →₀ ℕ) (f : MvPolynomial (Option S₁) R) :
+    coeff n.some (Polynomial.coeff (optionEquivLeft R S₁ f) (n none)) =
+      coeff n f := by
+  induction' f using MvPolynomial.induction_on' with j r p q hp hq generalizing n
+  swap
+  · simp only [map_add, Polynomial.coeff_add, coeff_add, hp, hq]
+  · rw [optionEquivLeft_monomial]
+    classical
+    simp only [Polynomial.coeff_monomial, MvPolynomial.coeff_monomial, apply_ite]
+    simp only [coeff_zero]
+    by_cases hj : j = n
+    · simp [hj]
+    · rw [if_neg hj]
+      simp only [ite_eq_right_iff]
+      intro hj_none hj_some
+      apply False.elim (hj _)
+      simp only [Finsupp.ext_iff, Option.forall, hj_none, true_and]
+      simpa only [Finsupp.ext_iff] using hj_some
+
+theorem optionEquivLeft_elim_eval (s : S₁ → R) (y : R) (f : MvPolynomial (Option S₁) R) :
+    eval (fun x ↦ Option.elim x y s) f =
+      Polynomial.eval y (Polynomial.map (eval s) (optionEquivLeft R S₁ f)) := by
+  -- turn this into a def `Polynomial.mapAlgHom`
+  let φ : (MvPolynomial S₁ R)[X] →ₐ[R] R[X] :=
+    { Polynomial.mapRingHom (eval s) with
+      commutes' := fun r => by
+        convert Polynomial.map_C (eval s)
+        exact (eval_C _).symm }
+  show
+    aeval (fun x ↦ Option.elim x y s) f =
+      (Polynomial.aeval y).comp (φ.comp (optionEquivLeft _ _).toAlgHom) f
+  congr 2
+  apply MvPolynomial.algHom_ext
+  rw [Option.forall]
+  simp only [aeval_X, Option.elim_none, AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp,
+    Polynomial.coe_aeval_eq_eval, AlgHom.coe_mk, coe_mapRingHom, AlgHom.coe_coe, comp_apply,
+    optionEquivLeft_apply, Polynomial.map_X, Polynomial.eval_X, Option.elim_some, Polynomial.map_C,
+    eval_X, Polynomial.eval_C, implies_true, and_self, φ]
+
 end
 
 /-- The algebra isomorphism between multivariable polynomials in `Option S₁` and
@@ -432,26 +484,26 @@ theorem finSuccEquiv_X_succ {j : Fin n} : finSuccEquiv R n (X j.succ) = Polynomi
     coefficient of `Finsupp.cons i m` in `f`. -/
 theorem finSuccEquiv_coeff_coeff (m : Fin n →₀ ℕ) (f : MvPolynomial (Fin (n + 1)) R) (i : ℕ) :
     coeff m (Polynomial.coeff (finSuccEquiv R n f) i) = coeff (m.cons i) f := by
-  induction' f using MvPolynomial.induction_on' with j r p q hp hq generalizing i m
-  swap
-  · simp only [map_add, Polynomial.coeff_add, coeff_add, hp, hq]
-  simp only [finSuccEquiv_apply, coe_eval₂Hom, eval₂_monomial, RingHom.coe_comp, Finsupp.prod_pow,
-    Polynomial.coeff_C_mul, coeff_C_mul, coeff_monomial, Fin.prod_univ_succ, Fin.cases_zero,
-    Fin.cases_succ, ← map_prod, ← RingHom.map_pow, Function.comp_apply]
-  rw [← mul_boole, mul_comm (Polynomial.X ^ j 0), Polynomial.coeff_C_mul_X_pow]; congr 1
-  obtain rfl | hjmi := eq_or_ne j (m.cons i)
-  · simpa only [cons_zero, cons_succ, if_pos rfl, monomial_eq, C_1, one_mul, Finsupp.prod_pow] using
-      coeff_monomial m m (1 : R)
-  · simp only [hjmi, if_false]
-    obtain hij | rfl := ne_or_eq i (j 0)
-    · simp only [hij, if_false, coeff_zero]
-    simp only [eq_self_iff_true, if_true]
-    have hmj : m ≠ j.tail := by
-      rintro rfl
-      rw [cons_tail] at hjmi
-      contradiction
-    simpa only [monomial_eq, C_1, one_mul, Finsupp.prod_pow, tail_apply, if_neg hmj.symm] using
-      coeff_monomial m j.tail (1 : R)
+  induction f using MvPolynomial.induction_on' generalizing i m with
+  | add p q hp hq => simp only [map_add, Polynomial.coeff_add, coeff_add, hp, hq]
+  | monomial j r =>
+    simp only [finSuccEquiv_apply, coe_eval₂Hom, eval₂_monomial, RingHom.coe_comp, Finsupp.prod_pow,
+      Polynomial.coeff_C_mul, coeff_C_mul, coeff_monomial, Fin.prod_univ_succ, Fin.cases_zero,
+      Fin.cases_succ, ← map_prod, ← RingHom.map_pow, Function.comp_apply]
+    rw [← mul_boole, mul_comm (Polynomial.X ^ j 0), Polynomial.coeff_C_mul_X_pow]; congr 1
+    obtain rfl | hjmi := eq_or_ne j (m.cons i)
+    · simpa only [cons_zero, cons_succ, if_pos rfl, monomial_eq, C_1, one_mul,
+        Finsupp.prod_pow] using coeff_monomial m m (1 : R)
+    · simp only [hjmi, if_false]
+      obtain hij | rfl := ne_or_eq i (j 0)
+      · simp only [hij, if_false, coeff_zero]
+      simp only [eq_self_iff_true, if_true]
+      have hmj : m ≠ j.tail := by
+        rintro rfl
+        rw [cons_tail] at hjmi
+        contradiction
+      simpa only [monomial_eq, C_1, one_mul, Finsupp.prod_pow, tail_apply, if_neg hmj.symm] using
+        coeff_monomial m j.tail (1 : R)
 
 theorem eval_eq_eval_mv_eval' (s : Fin n → R) (y : R) (f : MvPolynomial (Fin (n + 1)) R) :
     eval (Fin.cons y s : Fin (n + 1) → R) f =
@@ -476,7 +528,7 @@ theorem eval_eq_eval_mv_eval' (s : Fin n → R) (y : R) (f : MvPolynomial (Fin (
     RingHom.coe_mk, MonoidHom.coe_coe, AlgHom.coe_coe, implies_true, and_self,
     RingHom.toMonoidHom_eq_coe]
 
-theorem coeff_eval_eq_eval_coeff (s' : Fin n → R) (f : Polynomial (MvPolynomial (Fin n) R))
+theorem coeff_eval_eq_eval_coeff (s' : S₁ → R) (f : Polynomial (MvPolynomial S₁ R))
     (i : ℕ) : Polynomial.coeff (Polynomial.map (eval s') f) i = eval s' (Polynomial.coeff f i) := by
   simp only [Polynomial.coeff_map]
 
