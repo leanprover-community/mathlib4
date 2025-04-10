@@ -96,13 +96,13 @@ def StyleError.errorMessage (err : StyleError) : String := match err with
       let newC : String := ⟨[c₀, sel]⟩
       let newHex := " ".intercalate <| newC.data.map printCodepointHex
       s!"missing unicode variant selector at char {pos}: \"{s}\" ({oldHex}). \
-      Please use the {variant}-variant: \"{newC}\" ({newHex})!"
+      Please use the {variant} variant: \"{newC}\" ({newHex})!"
     | ⟨c₀ :: _ :: []⟩, some sel =>
       -- by assumption, the second character is a variant selector
       let newC : String := ⟨[c₀, sel]⟩
       let newHex := " ".intercalate <| newC.data.map printCodepointHex
       s!"wrong unicode variant selector at char {pos}: \"{s}\" ({oldHex}). \
-      Please use the {variant}-variant: \"{newC}\" ({newHex})!"
+      Please use the {variant} variant: \"{newC}\" ({newHex})!"
     | _, _ =>
       s!"unexpected unicode variant selector at char {pos}: \"{s}\" ({oldHex}). \
         Consider deleting it."
@@ -207,8 +207,8 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
             let offending := removeQuotations (← errorMessage[6]?)
             let charPos ← (← errorMessage[5]?).stripSuffix ":" |>.toNat?
             let selector := match ← errorMessage[12]? with
-            | "emoji-variant:" => UnicodeLinter.UnicodeVariant.emoji
-            | "text-variant:" => UnicodeLinter.UnicodeVariant.text
+            | "emoji variant:" => UnicodeLinter.UnicodeVariant.emoji
+            | "text variant:" => UnicodeLinter.UnicodeVariant.text
             | _ => none
             StyleError.unicodeVariant offending selector ⟨charPos⟩
           | "unexpected" =>
@@ -311,15 +311,15 @@ def findBadUnicodeAux (s : String) (c : Char)
       let errₙ := err.push (.unicodeVariant ⟨[c, cₙ]⟩ none pos)
       findBadUnicodeAux s cₙ errₙ posₙ
     else if cₙ == UnicodeVariant.text && !(nonEmojis.contains c) then
-      -- bad: unwanted text-variant selector
+      -- bad: unwanted text variant selector
       let errₙ := err.push (.unicodeVariant ⟨[c, cₙ]⟩ none pos)
       findBadUnicodeAux s cₙ errₙ posₙ
     else if cₙ != UnicodeVariant.emoji && emojis.contains c then
-      -- bad: missing emoji-variant selector
+      -- bad: missing emoji variant selector
       let errₙ := err.push (.unicodeVariant ⟨[c]⟩ UnicodeVariant.emoji pos)
       findBadUnicodeAux s  cₙ errₙ posₙ
     else if cₙ != UnicodeVariant.text && nonEmojis.contains c then
-      -- bad: missing text-variant selector
+      -- bad: missing text variant selector
       let errₙ := err.push (.unicodeVariant ⟨[c]⟩ UnicodeVariant.text pos)
       findBadUnicodeAux s cₙ errₙ posₙ
     else
