@@ -44,8 +44,8 @@ namespace GenContFract
 
 open GenContFract (of)
 
--- Fix a discrete linear ordered floor field and a value `v`.
-variable {K : Type*} [Field K] [LinearOrder K] [FloorRing K] {v : K}
+-- Fix a discrete linear ordered division ring with `floor` function and a value `v`.
+variable {K : Type*} [DivisionRing K] [LinearOrder K] [FloorRing K] {v : K}
 
 namespace IntFractPair
 
