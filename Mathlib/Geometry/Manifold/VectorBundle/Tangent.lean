@@ -428,8 +428,7 @@ theorem contMDiff_tangentBundleModelSpaceHomeomorph_symm :
   simp only [mfld_simps, mem_range, TotalSpace.toProd, Equiv.coe_fn_symm_mk, forall_exists_index,
     Prod.forall, Prod.mk.injEq]
   rintro a b x rfl
-  simp [PartialEquiv.prod]
-  exact ⟨rfl, rfl⟩
+  simpa [PartialEquiv.prod] using ⟨rfl, rfl⟩
 
 variable (H I) in
 /-- In the tangent bundle to the model space, the second projection is `C^n`. -/
