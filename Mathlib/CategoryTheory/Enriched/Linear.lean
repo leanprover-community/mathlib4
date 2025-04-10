@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
 import Mathlib.CategoryTheory.Linear.Basic
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 import Mathlib.Algebra.Equiv.TransferInstance
+import Mathlib.Tactic.CategoryTheory.Coherence
 /-!
 # Linear categories as `ModuleCat R`-enriched categories
 
@@ -107,18 +108,22 @@ variable {C : Type u} [Category.{u} C] [EnrichedOrdinaryCategory (ModuleCat R) C
 
 variable (R)
 
-abbrev addCommGroupModuleCatHom {X Y : C} : AddCommGroup (X ⟶ Y) :=
-  (EnrichedOrdinaryCategory.homEquiv (V := ModuleCat R)).addCommGroup
+abbrev addCommGroupEnrichedModuleCatHom (X Y : C) : AddCommGroup (X ⟶ Y) :=
+  (eHomEquiv (V := ModuleCat R)).addCommGroup
 
 instance moduleModuleCatHom {X Y : C} :
-    letI : AddCommGroup (X ⟶ Y) := addCommGroupModuleCatHom R
+    letI : AddCommGroup (X ⟶ Y) := addCommGroupEnrichedModuleCatHom R X Y
     Module R (X ⟶ Y) :=
   EnrichedOrdinaryCategory.homEquiv.module R
 
-variable {X Y : C} (f g : X ⟶ Y) (r : R)
-
--- Can't check `f + g` here because `addCommGroupModuleCatHom` can't be made an instance
-#check r • f
+abbrev preadditiveEnrichedModuleCat : Preadditive C where
+  homGroup X Y := addCommGroupEnrichedModuleCatHom R X Y
+  add_comp X Y Z f f' g := by
+    apply (eHomEquiv (ModuleCat R)).injective
+    simp [Equiv.add_def, eHomEquiv_comp, MonoidalPreadditive.add_tensor]
+  comp_add X Y Z f g g' := by
+    apply (eHomEquiv (ModuleCat R)).injective
+    simp [Equiv.add_def, eHomEquiv_comp, MonoidalPreadditive.tensor_add]
 
 end LinearOfEnriched
 
