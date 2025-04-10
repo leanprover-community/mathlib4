@@ -15,7 +15,7 @@ concerning infinite unions in `Order.Interval.Set.Disjoint` because we use `Fins
 
 open Set
 
-/-- A union of intervals contains the interval defined by choosing any two of the end points. -/
+/-- Union of consecutive intervals contains the interval defined by the initial and final points. -/
 theorem Ioc_subset_biUnion_Ioc {X : Type*} [LinearOrder X] (N : ℕ) (a : ℕ → X) :
     Ioc (a 0) (a N) ⊆ ⋃ i ∈ Finset.range N, Ioc (a i) (a (i + 1)) := by
   induction N with
@@ -24,7 +24,7 @@ theorem Ioc_subset_biUnion_Ioc {X : Type*} [LinearOrder X] (N : ℕ) (a : ℕ �
     _ ⊆ Ioc (a 0) (a N) ∪ Ioc (a N) (a (N + 1)) := Ioc_subset_Ioc_union_Ioc
     _ ⊆ _ := by simpa [Finset.range_succ] using union_subset_union_right (Ioc (a N) (a (N + 1))) ih
 
-/-- A union of intervals contains the interval defined by choosing any two of the end points. -/
+/-- Union of consecutive intervals contains the interval defined by the initial and final points. -/
 theorem Ico_subset_biUnion_Ico {X : Type*} [LinearOrder X] (N : ℕ) (a : ℕ → X) :
     Ico (a 0) (a N) ⊆ ⋃ i ∈ Finset.range N, Ico (a i) (a (i + 1)) := by
   induction N with
