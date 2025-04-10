@@ -167,7 +167,7 @@ theorem contMDiff_mulInvariantVectorField (v : GroupLieAlgebra I G) :
     simp [mulInvariantVectorField]
 
 @[to_additive]
-theorem contMDiffAt_mulInvariantVectorField (v : GroupLieAlgebra I G) {g : G }:
+theorem contMDiffAt_mulInvariantVectorField (v : GroupLieAlgebra I G) {g : G} :
     ContMDiffAt I I.tangent (minSmoothness 𝕜 2)
       (fun (g : G) ↦ (mulInvariantVectorField v g : TangentBundle I G)) g :=
   (contMDiff_mulInvariantVectorField v).contMDiffAt
