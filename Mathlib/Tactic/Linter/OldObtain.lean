@@ -73,7 +73,7 @@ register_option linter.oldObtain : Bool := {
 
 /-- The `oldObtain` linter: see docstring above -/
 def oldObtainLinter : Linter where run := withSetOptionIn fun stx => do
-    unless Linter.getLinterValue linter.oldObtain (← getOptions) do
+    unless Mathlib.getLinterValue linter.oldObtain (← getOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return

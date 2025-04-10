@@ -65,7 +65,7 @@ This means that CI will eventually fail on `#`-commands, but does not stop it fr
 However, in order to avoid local clutter, when `warningAsError` is `false`, the linter
 logs a warning only for the `#`-commands that do not already emit a message. -/
 def hashCommandLinter : Linter where run := withSetOptionIn' fun stx => do
-  if Linter.getLinterValue linter.hashCommand (← getOptions) &&
+  if Mathlib.getLinterValue linter.hashCommand (← getOptions) &&
     ((← get).messages.reportedPlusUnreported.isEmpty || warningAsError.get (← getOptions))
   then
     if let some sa := stx.getHead? then

@@ -86,12 +86,12 @@ namespace DoubleImports
 
 @[inherit_doc Mathlib.Linter.linter.upstreamableDecl]
 def upstreamableDeclLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    unless Linter.getLinterValue linter.upstreamableDecl (← getOptions) do
+    unless Mathlib.getLinterValue linter.upstreamableDecl (← getOptions) do
       return
     if (← get).messages.hasErrors then
       return
-    let skipDef := !Linter.getLinterValue linter.upstreamableDecl.defs (← getOptions)
-    let skipPrivate := !Linter.getLinterValue linter.upstreamableDecl.private (← getOptions)
+    let skipDef := !Mathlib.getLinterValue linter.upstreamableDecl.defs (← getOptions)
+    let skipPrivate := !Mathlib.getLinterValue linter.upstreamableDecl.private (← getOptions)
     if stx == (← `(command| set_option $(mkIdent `linter.upstreamableDecl) true)) then return
     let env ← getEnv
     let id ← getId stx
