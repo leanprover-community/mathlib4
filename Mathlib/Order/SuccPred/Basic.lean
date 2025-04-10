@@ -895,7 +895,6 @@ theorem Ioo_eq_empty_iff_pred_le : Ioo a b = ∅ ↔ pred b ≤ a := by
   · contrapose! h
     exact ⟨pred b, h, pred_lt_iff_not_isMin.mpr (not_isMin b)⟩
   · ext x
-    simp
     suffices a < x → b ≤ x by simpa
     exact fun hx ↦ le_of_pred_lt <| lt_of_le_of_lt h hx
 
