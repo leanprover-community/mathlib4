@@ -56,6 +56,7 @@ instance Module.End.isIntegral {M : Type*} [AddCommGroup M] [Module R M] [Module
   ⟨LinearMap.exists_monic_and_aeval_eq_zero R⟩
 
 variable (R) in
+@[nontriviality]
 theorem IsIntegral.of_finite [Module.Finite R B] (x : B) : IsIntegral R x :=
   (isIntegral_algHom_iff (Algebra.lmul R B) Algebra.lmul_injective).mp
     (Algebra.IsIntegral.isIntegral _)
@@ -220,13 +221,5 @@ instance Algebra.IsIntegral.prod [Algebra.IsIntegral R A] [Algebra.IsIntegral R 
     Algebra.IsIntegral R (A × B) :=
   Algebra.isIntegral_def.mpr fun x ↦
     (Algebra.isIntegral_def.mp ‹_› x.1).pair (Algebra.isIntegral_def.mp ‹_› x.2)
-
-@[nontriviality]
-lemma IsIntegral.of_subsingleton_left [Subsingleton R] (x : A) : IsIntegral R x :=
-  Algebra.IsIntegral.isIntegral x
-
-@[nontriviality]
-lemma IsIntegral.of_subsingleton_right [Subsingleton A] (x : A) : IsIntegral R x :=
-  Algebra.IsIntegral.isIntegral x
 
 end
