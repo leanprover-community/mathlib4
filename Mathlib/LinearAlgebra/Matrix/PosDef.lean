@@ -476,9 +476,9 @@ theorem isUnit [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) : IsUnit M 
   isUnit_iff_isUnit_det _ |>.2 <| hM.det_pos.ne'.isUnit
 
 protected theorem inv [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) : M⁻¹.PosDef := by
-  let _inst := hM.isUnit.invertible
   have := hM.mul_mul_conjTranspose_same (B := M⁻¹) ?_
-  · simpa using this.conjTranspose
+  · let _ := hM.isUnit.invertible
+    simpa using this.conjTranspose
   · simp only [Matrix.vecMul_injective_iff_isUnit, isUnit_nonsing_inv_iff, hM.isUnit]
 
 @[simp]
