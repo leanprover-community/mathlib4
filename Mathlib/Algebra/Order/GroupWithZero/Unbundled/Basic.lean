@@ -716,11 +716,14 @@ lemma div_self_le_one (a : G₀) : a / a ≤ 1 := by obtain rfl | ha := eq_or_ne
 end Preorder
 
 section PartialOrder
-variable [PartialOrder G₀] [ZeroLEOneClass G₀] [PosMulReflectLT G₀] {a b c : G₀}
+variable [PartialOrder G₀] [PosMulReflectLT G₀] {a b c : G₀}
 
-@[simp] lemma inv_pos : 0 < a⁻¹ ↔ 0 < a :=
+@[simp] lemma inv_pos : 0 < a⁻¹ ↔ 0 < a := by
   suffices ∀ a : G₀, 0 < a → 0 < a⁻¹ from ⟨fun h ↦ inv_inv a ▸ this _ h, this a⟩
-  fun a ha ↦ flip lt_of_mul_lt_mul_left ha.le <| by simp [ne_of_gt ha, zero_lt_one]
+  intro a ha
+  apply lt_of_mul_lt_mul_left _ ha.le
+  apply lt_of_mul_lt_mul_left _ ha.le
+  simpa [ha.ne']
 
 alias ⟨_, inv_pos_of_pos⟩ := inv_pos
 
@@ -740,11 +743,11 @@ lemma div_nonneg [PosMulMono G₀] (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a / b :
 lemma div_nonpos_of_nonpos_of_nonneg [MulPosMono G₀] (ha : a ≤ 0) (hb : 0 ≤ b) : a / b ≤ 0 := by
   rw [div_eq_mul_inv]; exact mul_nonpos_of_nonpos_of_nonneg ha (inv_nonneg.2 hb)
 
-lemma zpow_nonneg [PosMulMono G₀] (ha : 0 ≤ a) : ∀ n : ℤ, 0 ≤ a ^ n
+lemma zpow_nonneg [ZeroLEOneClass G₀] [PosMulMono G₀] (ha : 0 ≤ a) : ∀ n : ℤ, 0 ≤ a ^ n
   | (n : ℕ) => by rw [zpow_natCast]; exact pow_nonneg ha _
   |-(n + 1 : ℕ) => by rw [zpow_neg, inv_nonneg, zpow_natCast]; exact pow_nonneg ha _
 
-lemma zpow_pos [PosMulStrictMono G₀] (ha : 0 < a) : ∀ n : ℤ, 0 < a ^ n
+lemma zpow_pos [ZeroLEOneClass G₀] [PosMulStrictMono G₀] (ha : 0 < a) : ∀ n : ℤ, 0 < a ^ n
   | (n : ℕ) => by rw [zpow_natCast]; exact pow_pos ha _
   |-(n + 1 : ℕ) => by rw [zpow_neg, inv_pos, zpow_natCast]; exact pow_pos ha _
 
@@ -776,9 +779,10 @@ lemma inv_le_one₀ (ha : 0 < a) : a⁻¹ ≤ 1 ↔ 1 ≤ a := by simpa using in
 @[bound] alias ⟨_, Bound.one_le_inv₀⟩ := one_le_inv₀
 
 @[bound]
-lemma inv_le_one_of_one_le₀ (ha : 1 ≤ a) : a⁻¹ ≤ 1 := (inv_le_one₀ <| zero_lt_one.trans_le ha).2 ha
+lemma inv_le_one_of_one_le₀ [ZeroLEOneClass G₀] (ha : 1 ≤ a) : a⁻¹ ≤ 1 :=
+  (inv_le_one₀ <| zero_lt_one.trans_le ha).2 ha
 
-lemma one_le_inv_iff₀ : 1 ≤ a⁻¹ ↔ 0 < a ∧ a ≤ 1 where
+lemma one_le_inv_iff₀ [ZeroLEOneClass G₀] : 1 ≤ a⁻¹ ↔ 0 < a ∧ a ≤ 1 where
   mp h := ⟨inv_pos.1 (zero_lt_one.trans_le h),
     inv_inv a ▸ (inv_le_one₀ <| zero_lt_one.trans_le h).2 h⟩
   mpr h := (one_le_inv₀ h.1).2 h.2
@@ -796,6 +800,8 @@ lemma inv_mul_le_of_le_mul₀ (hb : 0 ≤ b) (hc : 0 ≤ c) (h : a ≤ b * c) : 
   obtain rfl | hb := hb.eq_or_lt
   · simp [hc]
   · rwa [inv_mul_le_iff₀ hb]
+
+variable [ZeroLEOneClass G₀]
 
 @[bound]
 lemma inv_mul_le_one_of_le₀ (h : a ≤ b) (hb : 0 ≤ b) : b⁻¹ * a ≤ 1 :=
@@ -882,11 +888,11 @@ lemma div_le_of_le_mul₀ (hb : 0 ≤ b) (hc : 0 ≤ c) (h : a ≤ c * b) : a / 
   div_eq_mul_inv a _ ▸ mul_inv_le_of_le_mul₀ hb hc h
 
 @[bound]
-lemma mul_inv_le_one_of_le₀ (h : a ≤ b) (hb : 0 ≤ b) : a * b⁻¹ ≤ 1 :=
+lemma mul_inv_le_one_of_le₀ [ZeroLEOneClass G₀] (h : a ≤ b) (hb : 0 ≤ b) : a * b⁻¹ ≤ 1 :=
   mul_inv_le_of_le_mul₀ hb zero_le_one <| by rwa [one_mul]
 
 @[bound]
-lemma div_le_one_of_le₀ (h : a ≤ b) (hb : 0 ≤ b) : a / b ≤ 1 :=
+lemma div_le_one_of_le₀ [ZeroLEOneClass G₀] (h : a ≤ b) (hb : 0 ≤ b) : a / b ≤ 1 :=
   div_le_of_le_mul₀ hb zero_le_one <| by rwa [one_mul]
 
 @[mono, gcongr, bound]
@@ -947,6 +953,8 @@ lemma inv_mul_lt_one₀ (ha : 0 < a) : a⁻¹ * b < 1 ↔ b < a := by rw [inv_mu
 
 lemma one_lt_inv₀ (ha : 0 < a) : 1 < a⁻¹ ↔ a < 1 := by simpa using one_lt_inv_mul₀ ha (b := 1)
 lemma inv_lt_one₀ (ha : 0 < a) : a⁻¹ < 1 ↔ 1 < a := by simpa using inv_mul_lt_one₀ ha (b := 1)
+
+variable [ZeroLEOneClass G₀]
 
 @[bound]
 lemma inv_lt_one_of_one_lt₀ (ha : 1 < a) : a⁻¹ < 1 := (inv_lt_one₀ <| zero_lt_one.trans ha).2 ha
@@ -1086,7 +1094,7 @@ end MulPosStrictMono
 end PartialOrder
 
 section LinearOrder
-variable [LinearOrder G₀] [ZeroLEOneClass G₀] {a b c d : G₀}
+variable [LinearOrder G₀] {a b c d : G₀}
 
 section PosMulMono
 variable [PosMulMono G₀]
@@ -1117,6 +1125,10 @@ end PosMulMono
 
 variable [PosMulStrictMono G₀] {m n : ℤ}
 
+section ZeroLEOne
+
+variable [ZeroLEOneClass G₀]
+
 lemma inv_lt_one_iff₀ : a⁻¹ < 1 ↔ a ≤ 0 ∨ 1 < a := by
   simp_rw [← not_le, one_le_inv_iff₀, not_and_or, not_lt]
 
@@ -1135,6 +1147,8 @@ lemma zpow_eq_one_iff_right₀ (ha₀ : 0 ≤ a) (ha₁ : a ≠ 1) {n : ℤ} : a
   obtain rfl | ha₀ := ha₀.eq_or_lt
   · exact zero_zpow_eq_one₀
   simpa using zpow_right_inj₀ ha₀ ha₁ (n := 0)
+
+end ZeroLEOne
 
 variable [MulPosStrictMono G₀]
 
@@ -1170,7 +1184,7 @@ lemma div_lt_div₀' (hac : a ≤ c) (hdb : d < b) (hc : 0 < c) (hd : 0 < d) : a
 end GroupWithZero.LinearOrder
 
 section CommGroupWithZero
-variable [CommGroupWithZero G₀] [PartialOrder G₀] [ZeroLEOneClass G₀] [PosMulReflectLT G₀]
+variable [CommGroupWithZero G₀] [PartialOrder G₀] [PosMulReflectLT G₀]
 
 section PosMulMono
 variable [PosMulMono G₀] {a b c d : G₀}
