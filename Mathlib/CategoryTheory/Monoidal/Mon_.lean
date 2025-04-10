@@ -18,8 +18,7 @@ the category of lax monoidal functors from the unit monoidal category to `C`.  W
 
 -/
 
-
-universe v₁ v₂ u₁ u₂ u
+universe v₁ v₂ v₃ u₁ u₂ u₃ u
 
 open CategoryTheory MonoidalCategory Functor.LaxMonoidal Functor.OplaxMonoidal
 
@@ -260,11 +259,14 @@ instance : HasInitial (Mon_ C) :=
 end Mon_
 
 namespace CategoryTheory.Functor
-
-variable {C} {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D] (F : C ⥤ D)
+variable {C}
+  {D : Type u₂} [Category.{v₂} D] [MonoidalCategory D]
+  {E : Type u₃} [Category.{v₃} E] [MonoidalCategory E]
+  {F : C ⥤ D} {G : D ⥤ E}
 
 section LaxMonoidal
-variable [F.LaxMonoidal] (X Y : C) [Mon_Class X] [Mon_Class Y] (f : X ⟶ Y) [IsMon_Hom f]
+variable [F.LaxMonoidal] [G.LaxMonoidal] (X Y : C) [Mon_Class X] [Mon_Class Y] (f : X ⟶ Y)
+  [IsMon_Hom f]
 
 /-- The image of a monoid object under a lax monoidal functor is a monoid object. -/
 abbrev obj.instMon_Class : Mon_Class (F.obj X) where
@@ -289,12 +291,13 @@ instance map.instIsMon_Hom : IsMon_Hom (F.map f) where
   mul_hom := by simp [← map_comp]
 
 -- TODO: mapMod F A : Mod A ⥤ Mod (F.mapMon A)
+variable (F) in
 /-- A lax monoidal functor takes monoid objects to monoid objects.
 
 That is, a lax monoidal functor `F : C ⥤ D` induces a functor `Mon_ C ⥤ Mon_ D`.
 -/
 @[simps]
-def mapMon (F : C ⥤ D) [F.LaxMonoidal] : Mon_ C ⥤ Mon_ D where
+def mapMon : Mon_ C ⥤ Mon_ D where
   -- TODO: The following could be, but it leads to weird `erw`s later down the file
   -- obj A := .mk' (F.obj A.X)
   obj A :=
@@ -315,6 +318,16 @@ def mapMon (F : C ⥤ D) [F.LaxMonoidal] : Mon_ C ⥤ Mon_ D where
         slice_lhs 3 4 => rw [← F.map_comp, A.mul_assoc]
         simp }
   map f := .mk' (F.map f.hom)
+
+/-- The identity functor is also the identity on monoid objects. -/
+@[simps!]
+noncomputable def mapMonIdIso : mapMon (𝟭 C) ≅ 𝟭 (Mon_ C) :=
+  NatIso.ofComponents fun X ↦ Mon_.mkIso (.refl _)
+
+/-- The composition functor is also the composition on monoid objects. -/
+@[simps!]
+noncomputable def mapMonCompIso : (F ⋙ G).mapMon ≅ F.mapMon ⋙ G.mapMon :=
+  NatIso.ofComponents fun X ↦ Mon_.mkIso (.refl _)
 
 protected instance Faithful.mapMon [F.Faithful] : F.mapMon.Faithful where
   map_injective {_X _Y} _f _g hfg := Mon_.Hom.ext <| map_injective congr(($hfg).hom)
@@ -349,8 +362,7 @@ protected def FullyFaithful.mapMon (hF : F.FullyFaithful) : F.mapMon.FullyFaithf
 
 end Monoidal
 
-variable (C D)
-
+variable (C D) in
 /-- `mapMon` is functorial in the lax monoidal functor. -/
 @[simps] -- Porting note: added this, not sure how it worked previously without.
 def mapMonFunctor : LaxMonoidalFunctor C D ⥤ Mon_ C ⥤ Mon_ D where

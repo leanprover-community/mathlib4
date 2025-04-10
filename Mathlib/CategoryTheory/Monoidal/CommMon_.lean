@@ -10,8 +10,7 @@ import Mathlib.CategoryTheory.Monoidal.Mon_
 # The category of commutative monoids in a braided monoidal category.
 -/
 
-
-universe v₁ v₂ u₁ u₂ u
+universe v₁ v₂ v₃ u₁ u₂ u₃ u
 
 open CategoryTheory MonoidalCategory
 
@@ -134,15 +133,18 @@ instance : HasInitial (CommMon_ C) :=
 end CommMon_
 
 namespace CategoryTheory.Functor
+variable {C}
+  {D : Type u₂} [Category.{v₂} D] [MonoidalCategory D] [BraidedCategory D]
+  {E : Type u₃} [Category.{v₃} E] [MonoidalCategory E] [BraidedCategory E]
+  {F : C ⥤ D} [F.LaxBraided] {G : D ⥤ E} [G.LaxBraided]
 
-variable {C} {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D] [BraidedCategory.{v₂} D]
-
+variable (F) in
 /-- A lax braided functor takes commutative monoid objects to commutative monoid objects.
 
 That is, a lax braided functor `F : C ⥤ D` induces a functor `CommMon_ C ⥤ CommMon_ D`.
 -/
 @[simps!]
-def mapCommMon (F : C ⥤ D) [F.LaxBraided] : CommMon_ C ⥤ CommMon_ D where
+def mapCommMon : CommMon_ C ⥤ CommMon_ D where
   obj A :=
     { F.mapMon.obj A.toMon_ with
       mul_comm := by
@@ -150,8 +152,17 @@ def mapCommMon (F : C ⥤ D) [F.LaxBraided] : CommMon_ C ⥤ CommMon_ D where
         rw [← Functor.LaxBraided.braided_assoc, ← Functor.map_comp, A.mul_comm] }
   map f := F.mapMon.map f
 
-variable (C) (D)
+/-- The identity functor is also the identity on commutative monoid objects. -/
+@[simps!]
+noncomputable def mapCommMonIdIso : mapCommMon (𝟭 C) ≅ 𝟭 (CommMon_ C) :=
+  NatIso.ofComponents fun X ↦ CommMon_.mkIso (.refl _)
 
+/-- The composition functor is also the composition on commutative monoid objects. -/
+@[simps!]
+noncomputable def mapCommMonCompIso : (F ⋙ G).mapCommMon ≅ F.mapCommMon ⋙ G.mapCommMon :=
+  NatIso.ofComponents fun X ↦ CommMon_.mkIso (.refl _)
+
+variable (C D) in
 /-- `mapCommMon` is functorial in the lax braided functor. -/
 @[simps]
 def mapCommMonFunctor : LaxBraidedFunctor C D ⥤ CommMon_ C ⥤ CommMon_ D where
