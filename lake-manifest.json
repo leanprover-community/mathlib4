@@ -25,10 +25,10 @@
    "type": "git",
    "subDir": null,
    "scope": "leanprover-community",
-   "rev": "c20832d6f0b3186a97ea9361cec0a5b87dd152a3",
+   "rev": "b47edfe90017ab0e4cc479d760d492f1041a4d6c",
    "name": "importGraph",
    "manifestFile": "lake-manifest.json",
-   "inputRev": "main",
+   "inputRev": "lean-pr-testing-7873",
    "inherited": false,
    "configFile": "lakefile.toml"},
   {"url": "https://github.com/leanprover-community/ProofWidgets4",
@@ -65,10 +65,14 @@
    "type": "git",
    "subDir": null,
    "scope": "leanprover-community",
+<<<<<<< HEAD
    "rev": "b362154e3bdfb2cea622b57d8f290fe369207b2a",
+=======
+   "rev": "d630adbad98c256e4632810caae33ba110255a35",
+>>>>>>> lean-pr-testing-7873
    "name": "batteries",
    "manifestFile": "lake-manifest.json",
-   "inputRev": "nightly-testing",
+   "inputRev": "lean-pr-testing-7873",
    "inherited": false,
    "configFile": "lakefile.toml"},
   {"url": "https://github.com/leanprover/lean4-cli",
