@@ -424,7 +424,9 @@ theorem Nonempty.subset_preimage_const {s : Set α} (hs : Set.Nonempty s) (t : S
 
 @[simp]
 theorem preimage_eq_preimage {f : β → α} (hf : Surjective f) : f ⁻¹' s = f ⁻¹' t ↔ s = t :=
-  hf.injective_comp_right.eq_iff
+  Iff.intro
+    fun eq => by rw [← image_preimage_eq s hf, ← image_preimage_eq t hf, eq]
+    fun eq => eq ▸ rfl
 
 theorem image_inter_preimage (f : α → β) (s : Set α) (t : Set β) :
     f '' (s ∩ f ⁻¹' t) = f '' s ∩ t := by
@@ -1054,8 +1056,10 @@ theorem Surjective.preimage_injective (hf : Surjective f) : Injective (preimage 
 theorem Injective.preimage_image (hf : Injective f) (s : Set α) : f ⁻¹' (f '' s) = s :=
   preimage_image_eq s hf
 
-theorem Injective.preimage_surjective (hf : Injective f) : Surjective (preimage f) :=
-  hf.surjective_comp_right
+theorem Injective.preimage_surjective (hf : Injective f) : Surjective (preimage f) := by
+  intro s
+  use f '' s
+  rw [hf.preimage_image]
 
 theorem Injective.subsingleton_image_iff (hf : Injective f) {s : Set α} :
     (f '' s).Subsingleton ↔ s.Subsingleton :=
@@ -1279,12 +1283,18 @@ section ImagePreimage
 variable {α : Type u} {β : Type v} {f : α → β}
 
 @[simp]
-theorem preimage_injective : Injective (preimage f) ↔ Surjective f :=
-  injective_comp_right_iff_surjective
+theorem preimage_injective : Injective (preimage f) ↔ Surjective f := by
+  refine ⟨fun h y => ?_, Surjective.preimage_injective⟩
+  obtain ⟨x, hx⟩ : (f ⁻¹' {y}).Nonempty := by
+    rw [h.nonempty_apply_iff preimage_empty]
+    apply singleton_nonempty
+  exact ⟨x, hx⟩
 
 @[simp]
-theorem preimage_surjective : Surjective (preimage f) ↔ Injective f :=
-  surjective_comp_right_iff_injective
+theorem preimage_surjective : Surjective (preimage f) ↔ Injective f := by
+  refine ⟨fun h x x' hx => ?_, Injective.preimage_surjective⟩
+  rcases h {x} with ⟨s, hs⟩; have := mem_singleton x
+  rwa [← hs, mem_preimage, hx, ← mem_preimage, hs, mem_singleton_iff, eq_comm] at this
 
 @[simp]
 theorem image_surjective : Surjective (image f) ↔ Surjective f := by
