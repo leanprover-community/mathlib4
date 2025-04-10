@@ -238,8 +238,10 @@ theorem prod_range_range_eq {m₁ : α → γ} {m₂ : β → δ} :
   ext <| by simp [range]
 
 @[simp, mfld_simps]
-theorem range_prod_map {m₁ : α → γ} {m₂ : β → δ} : range (Prod.map m₁ m₂) = range m₁ ×ˢ range m₂ :=
+theorem range_prodMap {m₁ : α → γ} {m₂ : β → δ} : range (Prod.map m₁ m₂) = range m₁ ×ˢ range m₂ :=
   prod_range_range_eq.symm
+
+@[deprecated (since := "2025-04-10")] alias range_prod_map := range_prodMap
 
 theorem prod_range_univ_eq {m₁ : α → γ} :
     range m₁ ×ˢ (univ : Set β) = range fun p : α × β => (m₁ p.1, p.2) :=
@@ -252,7 +254,7 @@ theorem prod_univ_range_eq {m₂ : β → δ} :
 theorem range_pair_subset (f : α → β) (g : α → γ) :
     (range fun x => (f x, g x)) ⊆ range f ×ˢ range g := by
   have : (fun x => (f x, g x)) = Prod.map f g ∘ fun x => (x, x) := funext fun x => rfl
-  rw [this, ← range_prod_map]
+  rw [this, ← range_prodMap]
   apply range_comp_subset_range
 
 theorem Nonempty.prod : s.Nonempty → t.Nonempty → (s ×ˢ t).Nonempty := fun ⟨x, hx⟩ ⟨y, hy⟩ =>
