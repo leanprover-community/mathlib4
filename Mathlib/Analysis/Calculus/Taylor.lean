@@ -3,12 +3,13 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
+import Mathlib.Algebra.EuclideanDomain.Basic
+import Mathlib.Algebra.EuclideanDomain.Field
 import Mathlib.Algebra.Polynomial.Module.Basic
 import Mathlib.Analysis.Calculus.ContDiff.Basic
 import Mathlib.Analysis.Calculus.Deriv.Pow
 import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
-import Mathlib.Analysis.Calculus.LHopital
-import Mathlib.Topology.Algebra.Polynomial
+import Mathlib.Analysis.Calculus.MeanValue
 
 /-!
 # Taylor's theorem
@@ -278,7 +279,7 @@ theorem Convex.isLittleO_pow_succ {x₀ : E} {n : ℕ}
 
 end
 
-theorem Convex.isLittleO_pow_succ' {f f': ℝ → E} {x₀ : ℝ} {n : ℕ} {s : Set ℝ}
+theorem Convex.isLittleO_pow_succ' {f f' : ℝ → E} {x₀ : ℝ} {n : ℕ} {s : Set ℝ}
     (hs : Convex ℝ s) (hx₀s : x₀ ∈ s)
     (hff' : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) (hf' : f' =o[𝓝[s] x₀] fun x ↦ (x - x₀) ^ n) :
     (fun x ↦ f x - f x₀) =o[𝓝[s] x₀] fun x ↦ (x - x₀) ^ (n + 1) := by
