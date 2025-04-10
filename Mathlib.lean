@@ -4639,6 +4639,7 @@ import Mathlib.Order.Interval.Set.LinearOrder
 import Mathlib.Order.Interval.Set.Monotone
 import Mathlib.Order.Interval.Set.OrdConnected
 import Mathlib.Order.Interval.Set.OrdConnectedComponent
+import Mathlib.Order.Interval.Set.OrdConnectedLinear
 import Mathlib.Order.Interval.Set.OrderEmbedding
 import Mathlib.Order.Interval.Set.OrderIso
 import Mathlib.Order.Interval.Set.Pi
