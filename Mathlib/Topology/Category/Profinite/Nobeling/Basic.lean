@@ -9,14 +9,11 @@ import Mathlib.Topology.Category.Profinite.Product
 import Mathlib.Topology.LocallyConstant.Algebra
 
 /-!
-# Nöbeling's theorem
+# Preliminaries for Nöbeling's theorem
 
-This file proves Nöbeling's theorem.
-
-## Main result
-
-* `LocallyConstant.freeOfProfinite`: Nöbeling's theorem.
-  For `S : Profinite`, the `ℤ`-module `LocallyConstant S ℤ` is free.
+This file constructs basic objects and results concerning them that are needed in the proof of
+Nöbeling's theorem, which is in `Mathlib.Topology.Category.Profinite.Nobeling.Induction`.
+See the section docstrings for more information.
 
 ## Proof idea
 
@@ -31,10 +28,11 @@ the `ℤ`-module `LocallyConstant C ℤ` is free.
 For `i : I`, let `e C i : LocallyConstant C ℤ` denote the map `fun f ↦ (if f.val i then 1 else 0)`.
 
 The basis will consist of products `e C iᵣ * ⋯ * e C i₁` with `iᵣ > ⋯ > i₁` which cannot be written
-as linear combinations of lexicographically smaller products. We call this set `GoodProducts C`
+as linear combinations of lexicographically smaller products. We call this set `GoodProducts C`.
 
-What is proved by ordinal induction is that this set is linearly independent. The fact that it
-spans can be proved directly.
+What is proved by ordinal induction (in `Mathlib.Topology.Category.Profinite.Nobeling.ZeroLimit` and
+`Mathlib.Topology.Category.Profinite.Nobeling.Successor`) is that this set is linearly independent.
+The fact that it spans is proved directly in `Mathlib.Topology.Category.Profinite.Nobeling.Span`.
 
 ## References
 
@@ -272,7 +270,6 @@ of `e`.
 
 * `GoodProducts.span_iff_products`: the good products span `LocallyConstant C ℤ` iff all the
   products span `LocallyConstant C ℤ`.
-
 -/
 
 /--
