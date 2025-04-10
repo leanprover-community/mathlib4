@@ -40,7 +40,7 @@ def printCodepointHex (c : Char) : String :=
   | 3 => "U+0".append <| String.mk digits
   | _ => "U+".append <| String.mk digits
 
-/-- Unicode symbols in mathilb that should always be followed by the emoji-variant selector. -/
+/-- Unicode symbols in mathlib that should always be followed by the emoji-variant selector. -/
 def emojis := #[
 '\u2705',        -- ✅️
 '\u274C',        -- ❌️
@@ -55,7 +55,7 @@ def emojis := #[
 '\u23F3',        -- ⏳️
 .ofNat 0x1F3C1 ] -- 🏁️
 
-/-- Unicode symbols in mathilb that should always be followed by the text-variant selector. -/
+/-- Unicode symbols in mathlib that should always be followed by the text-variant selector. -/
 def nonEmojis : Array Char := #[]
 
 end Mathlib.Linter.TextBased.UnicodeLinter

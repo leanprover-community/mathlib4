@@ -75,7 +75,6 @@ inductive ErrorFormat
   deriving BEq
 
 open UnicodeLinter in
-
 /-- Create the underlying error message for a given `StyleError`. -/
 def StyleError.errorMessage (err : StyleError) : String := match err with
   | StyleError.adaptationNote =>
@@ -310,11 +309,11 @@ def findBadUnicodeAux (s : String) (c : Char)
     if cₙ == UnicodeVariant.emoji && !(emojis.contains c) then
       -- bad: unwanted emoji-variant-selector
       let errₙ := err.push (.unicodeVariant ⟨[c, cₙ]⟩ none pos)
-      findBadUnicodeAux s  cₙ errₙ posₙ
+      findBadUnicodeAux s cₙ errₙ posₙ
     else if cₙ == UnicodeVariant.text && !(nonEmojis.contains c) then
       -- bad: unwanted text-variant selector
       let errₙ := err.push (.unicodeVariant ⟨[c, cₙ]⟩ none pos)
-      findBadUnicodeAux s  cₙ errₙ posₙ
+      findBadUnicodeAux s cₙ errₙ posₙ
     else if cₙ != UnicodeVariant.emoji && emojis.contains c then
       -- bad: missing emoji-variant selector
       let errₙ := err.push (.unicodeVariant ⟨[c]⟩ UnicodeVariant.emoji pos)
@@ -353,9 +352,11 @@ def unicodeLinter : TextbasedLinter := fun lines ↦ Id.run do
   for line in lines do
     let err := UnicodeLinter.findBadUnicode line
 
-    -- try to auto-fix the style error
+    -- Try to auto-fix all errors in the current line.
     let mut newLine := line
-    for e in err.reverse do -- reversing is a cheap fix to prevent shifting indices
+    -- Error fixes may insert or remove variant selectors, hence shift string indices.
+    -- The easiest way to deal with this is fixing errors in reverse order.)
+    for e in err.reverse do
       match e with
       | .unicodeVariant s sel pos =>
         let head := newLine.extract 0 pos
