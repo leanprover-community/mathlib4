@@ -161,15 +161,41 @@ lemma comp_isLocalDiffeomorphAt_right [CompleteSpace E] [CompleteSpace E'] [Comp
     MSplitsAt I J (g ∘ f) x :=
   (hg.msplitsAt hn).comp hf
 
--- TODO: complete this proof later
+section
+
+-- Does this lemma already exist?
+lemma foo {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    {f : X → Y} {g g' : Y → Y} {x : X} (hf : ContinuousAt f x) (hg : g =ᶠ[nhds (f x)] g') :
+    g ∘ f =ᶠ[nhds x] g' ∘ f := by
+  rw [Filter.eventuallyEq_iff_exists_mem] at hg ⊢
+  choose s hs hgs using hg
+  exact ⟨f ⁻¹' s, hf.preimage_mem_nhds hs, fun x hx ↦ hgs (by simp_all)⟩
+
+end
+
+-- TODO: fix the last sorry, is a small mathematical question
 lemma comp_isLocalDiffeomorphAt_right_iff [CompleteSpace E] [CompleteSpace F] [CompleteSpace E']
     {g : M' → N} (hg : IsLocalDiffeomorphAt I' J n g (f x)) (hn : 1 ≤ n) :
     MSplitsAt I I' f x ↔  MSplitsAt I J (g ∘ f) x := by
   refine ⟨fun hf ↦ hf.comp_isLocalDiffeomorphAt_right hg hn,
     fun h ↦ ?_⟩
-  sorry
-  -- something like this: need to choose a local inverse of a local diffeo
-  -- let asdf := h.comp_isLocalDiffeomorphAt_right hg.symm hn--).congr (by ext; simp)⟩
+  have hg' : IsLocalDiffeomorphAt J I' n hg.localInverse (g (f x)) :=
+    hg.localInverse_isLocalDiffeomorphAt
+  apply (h.comp_isLocalDiffeomorphAt_right hg' hn).congr
+  symm
+  have := hg.localInverse_eventuallyEq_left
+
+  -- question: must we have `ContinuousAt f x`? if so, the proof is easy
+
+  -- this certainly holds... but is not what we want!
+  have aux : ContinuousAt (hg.localInverse.toPartialEquiv ∘ g ∘ f) x := by
+    apply ContinuousAt.comp ?_ h.continuousAt
+    sorry -- missing prereq, local inverse of a local diffeo is continuous at its point
+
+  have hf : ContinuousAt f x := by
+    -- issue: cannot apply ContinuousAt.congr_of_eventuallyEq aux as that'd be cyclic!
+    sorry
+  exact foo hf this
 
 -- corollary: MSplitsAt holds iff some coordinate representation splits
 --   iff *any* coordinate representation splits
