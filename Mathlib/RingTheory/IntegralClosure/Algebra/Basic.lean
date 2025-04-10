@@ -221,4 +221,12 @@ instance Algebra.IsIntegral.prod [Algebra.IsIntegral R A] [Algebra.IsIntegral R 
   Algebra.isIntegral_def.mpr fun x ↦
     (Algebra.isIntegral_def.mp ‹_› x.1).pair (Algebra.isIntegral_def.mp ‹_› x.2)
 
+@[nontriviality]
+lemma IsIntegral.of_subsingleton_left [Subsingleton R] (x : A) : IsIntegral R x :=
+  Algebra.IsIntegral.isIntegral x
+
+@[nontriviality]
+lemma IsIntegral.of_subsingleton_right [Subsingleton A] (x : A) : IsIntegral R x :=
+  Algebra.IsIntegral.isIntegral x
+
 end
