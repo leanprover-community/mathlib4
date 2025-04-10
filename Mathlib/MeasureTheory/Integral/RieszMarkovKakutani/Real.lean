@@ -37,6 +37,7 @@ equality is proven using two inequalities by considering `Λ f` and `Λ (-f)` fo
 * [Walter Rudin, Real and Complex Analysis.][Rud87]
 -/
 
+open scoped ENNReal
 open CompactlySupported CompactlySupportedContinuousMap Filter Function Set Topology
   TopologicalSpace MeasureTheory
 
@@ -140,7 +141,7 @@ omit [LocallyCompactSpace X] in
 /-- Given a set `E`, a function `f : C_c(X, ℝ)`, `0 < ε` and `∀ x ∈ E, f x < c`, there exists an
 open set `V` such that `E ⊆ V` and the sets are similar in measure and `∀ x ∈ V, f x < c`. -/
 lemma exists_open_approx (f : C_c(X, ℝ)) {ε : ℝ} (hε : 0 < ε) (E : Set X) {μ : Content X}
-    (hμ : μ.outerMeasure E ≠ ⊤) (hμ' : MeasurableSet E) {c : ℝ} (hfE : ∀ x ∈ E, f x < c):
+    (hμ : μ.outerMeasure E ≠ ∞) (hμ' : MeasurableSet E) {c : ℝ} (hfE : ∀ x ∈ E, f x < c):
     ∃ (V : Opens X), E ⊆ V ∧ (∀ x ∈ V, f x < c) ∧ μ.measure V ≤ μ.measure E + ENNReal.ofReal ε := by
   have hε' := ne_of_gt <| Real.toNNReal_pos.mpr hε
   obtain ⟨V₁ : Opens X, hV₁⟩ := Content.outerMeasure_exists_open μ hμ hε'
@@ -192,7 +193,7 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
   -- Introduce notation for the partition of the range.
   let y : Fin N → ℝ := fun n ↦ a + ε' * (n + 1)
   -- The measure of each `E n` is finite.
-  have hE' (n : Fin N) : μ (E n) ≠ ⊤ := by
+  have hE' (n : Fin N) : μ (E n) ≠ ∞ := by
     have h : E n ⊆ tsupport f := by rw [hE.1]; exact subset_iUnion _ _
     refine lt_top_iff_ne_top.mp ?_
     apply lt_of_le_of_lt <| measure_mono h
