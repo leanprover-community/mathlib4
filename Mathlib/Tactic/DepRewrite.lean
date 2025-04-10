@@ -4,6 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Liu, Wojciech Nawrocki
 -/
 import Lean.Elab.Tactic
+import Mathlib.Init
+
+/-! ## Dependent rewrite tactic -/
 
 namespace Mathlib.Tactic.DepRewrite
 open Lean Meta
