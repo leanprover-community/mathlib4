@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 
+import Mathlib.Algebra.CharP.Quotient
 import Mathlib.Algebra.Field.ZMod
 import Mathlib.Algebra.Polynomial.SpecificDegree
 import Mathlib.RingTheory.Ideal.Quotient.Operations

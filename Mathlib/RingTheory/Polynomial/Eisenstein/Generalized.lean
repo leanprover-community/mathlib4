@@ -56,12 +56,11 @@ namespace Polynomial
 open Ideal.Quotient Ideal RingHom
 
 variable {R : Type*} [CommRing R] [IsDomain R]
-  {K : Type*}
-  -- [CommRing K] [IsDomain K] [Algebra R K]
-  [Field K] [Algebra R K]
+  {K : Type*} [Field K] [Algebra R K]
 
 private lemma generalizedEisenstein_aux {q f g : R[X]} {p : ℕ}
-    (hq_irr : Irreducible (q.map (algebraMap R K))) (hq_monic : q.Monic)
+    (hq_irr : Irreducible (q.map (algebraMap R K)))
+    (hq_monic : q.Monic)
     (hf_lC : algebraMap R K f.leadingCoeff ≠ 0)
     (hf_prim : f.IsPrimitive)
     (hfmodP : f.map (algebraMap R K) =
