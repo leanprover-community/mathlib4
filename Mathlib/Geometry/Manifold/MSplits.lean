@@ -72,6 +72,11 @@ variable {f g : M → M'} {x : M}
 lemma mfderiv_injective (hf : MSplitsAt I I' f x) : Injective (mfderiv I I' f x) :=
   hf.injective
 
+lemma mdifferentiableAt (hf : MSplitsAt I I' f x) : MDifferentiableAt I I' f x :=
+  mdifferentiableAt_of_mfderiv_injective hf.injective
+
+lemma continuousAt (hf : MSplitsAt I I' f x) : ContinuousAt f x := hf.mdifferentiableAt.continuousAt
+
 lemma congr (hf : MSplitsAt I I' f x) (hfg : g =ᶠ[nhds x] f) : MSplitsAt I I' g x := by
   have : mfderiv I I' f x = mfderiv I I' g x := hfg.symm.mfderiv_eq
   unfold MSplitsAt
@@ -152,7 +157,7 @@ lemma comp_isLocalDiffeomorphAt_left_iff [CompleteSpace E] [CompleteSpace E'] [C
   exact (hxy ▸ hf₀.localInverse_eventuallyEq_right.symm).fun_comp f
 
 lemma comp_isLocalDiffeomorphAt_right [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
-    {g : M' → N} (hg : IsLocalDiffeomorphAt I' J n g (f x)) (hn : 1 ≤ n) (hf : MSplitsAt I I' f x) :
+    (hf : MSplitsAt I I' f x) {g : M' → N} (hg : IsLocalDiffeomorphAt I' J n g (f x)) (hn : 1 ≤ n) :
     MSplitsAt I J (g ∘ f) x :=
   (hg.msplitsAt hn).comp hf
 
