@@ -237,19 +237,19 @@ open Elab Tactic
 @[gcongr_forward] def exactRefl : ForwardExt where
   eval h goal := do
     let m ← mkFreshExprMVar none
-    goal.assignIfDefeq (← mkAppOptM ``Eq.subst #[h, m])
+    goal.assignIfDefEq (← mkAppOptM ``Eq.subst #[h, m])
     goal.applyRfl
 
 /-- See if the term is `a < b` and the goal is `a ≤ b`. -/
 @[gcongr_forward] def exactLeOfLt : ForwardExt where
-  eval h goal := do goal.assignIfDefeq (← mkAppM ``le_of_lt #[h])
+  eval h goal := do goal.assignIfDefEq (← mkAppM ``le_of_lt #[h])
 
 /-- See if the term is `a ∼ b` with `∼` symmetric and the goal is `b ∼ a`. -/
 @[gcongr_forward] def symmExact : ForwardExt where
-  eval h goal := do (← goal.applySymm).assignIfDefeq h
+  eval h goal := do (← goal.applySymm).assignIfDefEq h
 
 @[gcongr_forward] def exact : ForwardExt where
-  eval e m := m.assignIfDefeq e
+  eval e m := m.assignIfDefEq e
 
 /-- Attempt to resolve an (implicitly) relational goal by one of a provided list of hypotheses,
 either with such a hypothesis directly or by a limited palette of relational forward-reasoning from
