@@ -211,6 +211,6 @@ theorem finite_norm_eq (x : e.finiteSubspace) : ‖x‖ = (e x).toReal :=
 
 /-- Normed space instance on `e.finiteSubspace`. -/
 instance normedSpace : NormedSpace 𝕜 e.finiteSubspace where
-  norm_smul_le c x := le_of_eq <| by simp [finite_norm_eq, ENNReal.toReal_mul]
+  norm_smul c x := by simp [finite_norm_eq, ENNReal.toReal_mul]
 
 end ENormedSpace
