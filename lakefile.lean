@@ -15,7 +15,7 @@ require "leanprover-community" / "proofwidgets" @ git "v0.0.56" -- ProofWidgets 
     "ProofWidgets not up-to-date. \
     Please run `lake exe cache get` to fetch the latest ProofWidgets. \
     If this does not work, report your issue on the Lean Zulip."
-require "leanprover-community" / "importGraph" @ git "main"
+require "leanprover-community" / "importGraph" @ git "lean-pr-testing-7873"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
 require "leanprover-community" / "plausible" @ git "main"
 
