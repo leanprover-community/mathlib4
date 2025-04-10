@@ -171,19 +171,19 @@ lemma root_subset_characterization {K : Type*} [Field K] [Module K M] [Module K 
 
 lemma l21 {K : Type*} [Field K] [Module K M] [Module K N]
     (P : RootSystem ι K M N) : span K (range P.coroot') = ⊤ := by
-  let Q := P.flip
-  let s := (range fun i ↦ (Q.root i))
-  have key (d : Module.Dual K M) : d ∈ span K (range fun i ↦ Q.toDualLeft (Q.root i)) := by
+  let s := (range fun i ↦ (P.flip.root i))
+  have key (d : Module.Dual K M) :
+      d ∈ span K (range fun i ↦ P.flip.toDualLeft (P.flip.root i)) := by
     have rrrr5 := Submodule.apply_mem_span_image_iff_mem_span (s := s)
-      (x := (Q.toDualLeft.invFun d)) Q.toDualLeft.injective
-    have mmm : Q.toDualLeft.symm d ∈ span K s := by
-      have h2 := Q.span_root_eq_top
+      (x := (P.flip.toDualLeft.invFun d)) P.flip.toDualLeft.injective
+    have mmm : P.flip.toDualLeft.symm d ∈ span K s := by
+      have h2 := P.flip.span_root_eq_top
       simp_all only [Submodule.mem_top, s]
     have := rrrr5.2 mmm
-    have helpme11 : Q.toDualLeft (Q.toDualLeft.invFun d) = d := by
-      exact (LinearEquiv.eq_symm_apply Q.toDualLeft).mp rfl
+    have helpme11 : P.flip.toDualLeft (P.flip.toDualLeft.invFun d) = d := by
+      exact (LinearEquiv.eq_symm_apply P.flip.toDualLeft).mp rfl
     rw [helpme11] at this
-    simp [Q]
+    simp only [PerfectPairing.toDualLeft_apply]
     rw [range_comp' P.flip.toPerfectPairing P.flip.root]
     exact this
   exact Submodule.eq_top_iff'.mpr key
