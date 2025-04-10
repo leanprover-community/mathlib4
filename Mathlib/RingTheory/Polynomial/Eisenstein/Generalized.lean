@@ -5,17 +5,20 @@ Authors: Antoine Chambert-Loir
 -/
 
 import Mathlib.Algebra.CharP.Quotient
-import Mathlib.Algebra.Polynomial.RingDivision
 import Mathlib.RingTheory.Ideal.Maps
+import Mathlib.RingTheory.Polynomial.Content
 
 /-! # A generalized Eisenstein criterion
 
 `Polynomial.generalizedEisenstein` :
   Let `R` be an integral domain
-  and let `K` an `R`-algebra which is a an integral domain.
+  and let `K` an `R`-algebra which is a field
   Let `q : R[X]` be a monic polynomial which is prime in `K[X]`.
-  Let `f : R[X]` be a monic polynomial of strictly positive degree
-  whose image in `K[X]` is a power of `q`.
+  Let `f : R[X]` be a polynomial of strictly positive degree
+  satisfying the following properties:
+  * the image of `f` in `K[X]` is a power of `q`.
+  * the leading coefficient of `f` is not zero in `K`
+  * the polynomial `f` is primitive.
   Assume moreover that `f.modByMonic q` is not zero in `(R ⧸ (P ^ 2))[X]`,
   where `P` is the kernel of `algebraMap R K`.
   Then `f` is irreducible.
@@ -25,8 +28,8 @@ The Eisenstein criterion is the particular case where `q := X`.
 The case of a polynomial `q := X - a` is interesting,
 then the mod `P ^ 2` hypothesis can rephrased as saying
 that `f.derivative.eval a ∉ P ^ 2`. (TODO)
-The case of cyclotomic polynomials of prime index `p` could be proved directly
-using that result, taking `a = 1`; the derivative is `p`.
+The case of cyclotomic polynomials of prime index `p`
+could be proved directly using that result, taking `a = 1`.
 
 We give in `Archive.Examples.Eisenstein` an explicit example
 of application of this criterion.
@@ -53,25 +56,32 @@ namespace Polynomial
 open Ideal.Quotient Ideal RingHom
 
 variable {R : Type*} [CommRing R] [IsDomain R]
-  {K : Type*} [CommRing K] [IsDomain K] [Algebra R K]
+  {K : Type*}
+  -- [CommRing K] [IsDomain K] [Algebra R K]
+  [Field K] [Algebra R K]
 
 private lemma generalizedEisenstein_aux {q f g : R[X]} {p : ℕ}
-    (hq_irr : Prime (q.map (algebraMap R K))) (hq_monic : q.Monic)
-    (hf_monic : f.Monic) (hfmodP : f.map (algebraMap R K) = q.map (algebraMap R K) ^ p)
+    (hq_irr : Irreducible (q.map (algebraMap R K))) (hq_monic : q.Monic)
+    (hf_lC : algebraMap R K f.leadingCoeff ≠ 0)
+    (hf_prim : f.IsPrimitive)
+    (hfmodP : f.map (algebraMap R K) =
+      C (algebraMap R K f.leadingCoeff) * q.map (algebraMap R K) ^ p)
     (hg_div : g ∣ f) :
     ∃ m r, g = C g.leadingCoeff * q ^ m + r ∧
           r.map (algebraMap R K) = 0 ∧ (m = 0 → IsUnit g) := by
   set P := ker (algebraMap R K)
   have hP : P.IsPrime := ker_isPrime (algebraMap R K)
-  have hgP : IsUnit g.leadingCoeff := by
-    apply isUnit_of_dvd_unit (y := f.leadingCoeff)
-    exact leadingCoeff_dvd_leadingCoeff hg_div
-    simp [hf_monic]
-  have hgP' : g.leadingCoeff ∉ P := fun h ↦ hP.ne_top (P.eq_top_of_isUnit_mem h hgP)
-  have map_dvd_pow_q : g.map  (algebraMap R K) ∣ q.map (algebraMap R K) ^ p := by
-    rw [← hfmodP]
-    exact Polynomial.map_dvd _ hg_div
-  obtain ⟨m, hm, hf⟩ := (dvd_prime_pow hq_irr _).mp map_dvd_pow_q
+  have hgP : g.leadingCoeff ∉ P := by
+    simp only [mem_ker, P]
+    obtain ⟨h, rfl⟩ := hg_div
+    simp only [leadingCoeff_mul, map_mul, ne_eq, mul_eq_zero, not_or] at hf_lC
+    exact hf_lC.1
+  have map_dvd_pow_q :
+      g.map  (algebraMap R K) ∣ q.map (algebraMap R K) ^ p := by
+    rw [← IsUnit.dvd_mul_left _, ← hfmodP]
+    · exact Polynomial.map_dvd _ hg_div
+    · simp_all
+  obtain ⟨m, hm, hf⟩ := (dvd_prime_pow hq_irr.prime _).mp map_dvd_pow_q
   set r := g - C g.leadingCoeff * q ^ m
   have hg : g = C g.leadingCoeff * q ^ m + r := by ring
   have hr : r.map (algebraMap R K) = 0 := by
@@ -80,17 +90,19 @@ private lemma generalizedEisenstein_aux {q f g : R[X]} {p : ℕ}
     suffices C (algebraMap R K g.leadingCoeff) = u by
       simp [r, ← this, Polynomial.map_sub, ← hu, Polynomial.map_mul, map_C,
         Polynomial.map_pow, sub_eq_zero, mul_comm]
-    rw [← leadingCoeff_map_of_leadingCoeff_ne_zero _ hgP', ← hu, ← ha',
+    rw [← leadingCoeff_map_of_leadingCoeff_ne_zero _ hgP, ← hu, ← ha',
       leadingCoeff_mul, leadingCoeff_C, (hq_monic.map _).pow m, one_mul]
   use m, r, hg, hr
   intro hm
+  rw [isPrimitive_iff_isUnit_of_C_dvd] at hf_prim
   rw [hm, pow_zero, mul_one] at hg
   suffices g.natDegree = 0 by
     obtain ⟨a, rfl⟩ := Polynomial.natDegree_eq_zero.mp this
     apply IsUnit.map
+    apply hf_prim
     rwa [leadingCoeff_C] at hgP
   by_contra hg'
-  apply hgP'
+  apply hgP
   rw [hg, leadingCoeff, coeff_add, ← hg, coeff_C, if_neg hg', zero_add,
     mem_ker, ← coeff_map, hr, coeff_zero]
 
@@ -98,16 +110,19 @@ private lemma generalizedEisenstein_aux {q f g : R[X]} {p : ℕ}
 
   Let `R` be an integral domain and `K` an `R`-algebra which is a domain.
   Let `q : R[X]` be a monic polynomial which is prime in `K[X]`.
-  Let `f : R[X]` be a monic polynomial of strictly positive degree
+  Let `f : R[X]` be a primitive polynomial of strictly positive degree
   whose leading coefficient is not zero in `K`
   and such that the image `f` in `K[X]` is a power of `q`.
   Assume moreover that `f.modByMonic q` is not zero in `(R ⧸ (P ^ 2))[X]`,
   where `P` is the kernel of `algebraMap R K`.
   Then `f` is irreducible. -/
 theorem generalizedEisenstein {q f : R[X]} {p : ℕ}
-    (hq_irr : Prime (q.map (algebraMap R K))) (hq_monic : q.Monic)
-    (hfd0 : 0 < natDegree f) (hf_monic : f.Monic)
-    (hfmodP : f.map (algebraMap R K) = q.map (algebraMap R K) ^ p)
+    (hq_irr : Irreducible (q.map (algebraMap R K))) (hq_monic : q.Monic)
+    (hf_prim : f.IsPrimitive)
+    (hfd0 : 0 < natDegree f)
+    (hfP : algebraMap R K f.leadingCoeff ≠ 0)
+    (hfmodP : f.map (algebraMap R K) =
+      C (algebraMap R K f.leadingCoeff) * q.map (algebraMap R K) ^ p)
     (hfmodP2 : (f.modByMonic q).map (mk ((ker (algebraMap R K)) ^ 2)) ≠ 0) :
     Irreducible f where
   not_unit := mt degree_eq_zero_of_isUnit fun h => by
@@ -117,9 +132,9 @@ theorem generalizedEisenstein {q f : R[X]} {p : ℕ}
     set P : Ideal R := ker (algebraMap R K)
     have hP : P.IsPrime := ker_isPrime (algebraMap R K)
     obtain ⟨m, r, hg, hr, hm0⟩ :=
-      generalizedEisenstein_aux hq_irr hq_monic hf_monic hfmodP (h_eq ▸ dvd_mul_right g h)
+      generalizedEisenstein_aux hq_irr hq_monic hfP hf_prim hfmodP (h_eq ▸ dvd_mul_right g h)
     obtain ⟨n, s, hh, hs, hn0⟩ :=
-      generalizedEisenstein_aux hq_irr hq_monic hf_monic hfmodP (h_eq ▸ dvd_mul_left h g)
+      generalizedEisenstein_aux hq_irr hq_monic hfP hf_prim hfmodP (h_eq ▸ dvd_mul_left h g)
     by_cases hm : m = 0
     -- If `m = 0`, `generalizedEisenstein_aux` shows that `g` is a unit.
     · left; exact hm0 hm
