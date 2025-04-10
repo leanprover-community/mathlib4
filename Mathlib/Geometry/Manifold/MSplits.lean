@@ -130,7 +130,7 @@ lemma comp [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
   have : CompleteSpace (TangentSpace I x) := by show CompleteSpace E; assumption
   have : CompleteSpace (TangentSpace I' (f x)) := by show CompleteSpace E'; assumption
   have : CompleteSpace (TangentSpace J (g (f x))) := by show CompleteSpace F; assumption
-  exact hg.comp hf
+  apply hf.comp hg
 
 lemma comp_isLocalDiffeomorphAt_left [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
     (hf : MSplitsAt I I' f x) {f₀ : N → M} {y : N} (hxy : f₀ y = x)
@@ -229,15 +229,16 @@ lemma comp_diffeomorph_right_iff [CompleteSpace E] [CompleteSpace F] [CompleteSp
 lemma of_injective_of_finiteDimensional [FiniteDimensional 𝕜 E]
     (hf' : ∀ x, Injective (mfderiv I I' f x)) : MSplits I I' f := by
   intro x
-  have : FiniteDimensional 𝕜 (TangentSpace I x) := by show FiniteDimensional 𝕜 E; assumption
-  exact ContinuousLinearMap.Splits.of_injective_of_finiteDimensional_dom (hf' x)
+  have : FiniteDimensional 𝕜 (TangentSpace I x) := by
+    show FiniteDimensional 𝕜 E; assumption
+  exact ContinuousLinearMap.Splits.of_injective_of_finiteDimensional_of_completeSpace (hf' x)
 
 /-- If `f : M → N` is injective and `N` is finite-dimensional, then `f` splits. -/
 lemma of_injective_of_finiteDimensional' [FiniteDimensional 𝕜 E']
     (hf' : ∀ x, Injective (mfderiv I I' f x)) : MSplits I I' f := by
   intro x
   have : FiniteDimensional 𝕜 (TangentSpace I' (f x)) := by show FiniteDimensional 𝕜 E'; assumption
-  exact ContinuousLinearMap.Splits.of_injective_of_finiteDimensional_cod (hf' x)
+  exact ContinuousLinearMap.Splits.of_injective_of_finiteDimensional (hf' x)
 
 -- If `f : M → N` is injective, `M` and `N` are Banach manifolds and each differential
 -- mfderiv I J f x is Fredholm, then `f` splits.

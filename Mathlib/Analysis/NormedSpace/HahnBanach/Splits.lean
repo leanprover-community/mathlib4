@@ -81,6 +81,9 @@ lemma complement_isClosed (h : f.Splits) : IsClosed (X := F) h.complement :=
 lemma complement_isCompl (h : f.Splits) : IsCompl (LinearMap.range f) h.complement :=
   (Classical.choose_spec h.closedComplemented.exists_isClosed_isCompl).2
 
+lemma congr {g : E →L[𝕜] F} (hf : f.Splits) (hfg : g = f) : g.Splits :=
+  hfg ▸ hf
+
 /-- A continuous linear equivalence splits. -/
 lemma _root_.ContinuousLinearEquiv.splits (f : E ≃L[𝕜] F) : f.toContinuousLinearMap.Splits := by
   refine ⟨?_, ?_, ?_⟩
