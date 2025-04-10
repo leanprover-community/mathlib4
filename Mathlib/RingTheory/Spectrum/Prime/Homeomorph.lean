@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Christian Merten
+Authors: Christian Merten, Junyan Xu
 -/
 import Mathlib.FieldTheory.PurelyInseparable.Basic
 import Mathlib.RingTheory.Flat.Basic
@@ -27,6 +27,10 @@ open TensorProduct
 variable (k K R S : Type*) [Field k] [Field K] [Algebra k K] [CommRing R] [Algebra k R] [CommRing S]
 
 variable {R S} in
+/-- If the kernel of `f : R →+* S` consists of nilpotent elements and for every `x : S`,
+there exists `n > 0` such that `x ^ n` is in the range of `f`, then `Spec f` is a homeomorphism.
+Note: This does not hold for semirings, because `ℕ →+* ℤ` satisfies these conditions, but
+`Spec ℕ` has one more point than `Spec ℤ`. -/
 @[stacks 0BR8 "Homeomorphism part"]
 lemma PrimeSpectrum.isHomeomorph_comap (f : R →+* S) (H : ∀ (x : S), ∃ n > 0, x ^ n ∈ f.range)
     (hker : RingHom.ker f ≤ nilradical R) : IsHomeomorph (comap f) := by
@@ -42,7 +46,7 @@ lemma PrimeSpectrum.isHomeomorph_comap (f : R →+* S) (H : ∀ (x : S), ∃ n >
     let _ := f.kerLift.toAlgebra
     IsIntegral.of_pow hn (hy ▸ f.kerLift.isIntegralElem_map (x := ⟦y⟧))
   have hbij : Function.Bijective (comap f) :=
-    ⟨h1, (comap_quotientMk_bijective_of_le_nilradical _ hker).2.comp <|
+    ⟨h1, (comap_quotientMk_bijective_of_le_nilradical hker).2.comp <|
       hint.specComap_surjective f.kerLift_injective⟩
   refine ⟨(comap f).continuous, ?_, h1, hbij.2⟩
   rw [isTopologicalBasis_basic_opens.isOpenMap_iff]

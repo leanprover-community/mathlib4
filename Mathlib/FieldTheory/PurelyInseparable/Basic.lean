@@ -601,8 +601,7 @@ variable {k K R : Type*} [Field k] [Field K] [Algebra k K] [CommRing R] [Algebra
 lemma IsPurelyInseparable.exists_pow_pow_mem_range_tensorProduct_of_expChar
     [IsPurelyInseparable k K] (q : ℕ) [ExpChar k q] (x : R ⊗[k] K) :
     ∃ n, x ^ q ^ n ∈ (algebraMap R (R ⊗[k] K)).range := by
-  cases subsingleton_or_nontrivial (R ⊗[k] K)
-  · exact ⟨0, 0, Subsingleton.elim _ _⟩
+  nontriviality (R ⊗[k] K)
   obtain (hq|hq) := expChar_is_prime_or_one k q
   induction x with
   | zero => exact ⟨0, 0, by simp [zero_pow_eq, hq.ne_zero]⟩
