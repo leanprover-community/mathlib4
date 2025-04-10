@@ -311,32 +311,6 @@ theorem repr_isUnitSMul {v : Basis ι R₂ M} {w : ι → R₂} (hw : ∀ i, IsU
     (v.isUnitSMul hw).repr x i = (hw i).unit⁻¹ • v.repr x i :=
   repr_unitsSMul _ _ _ _
 
-/-- Any basis is a maximal linear independent set.
--/
-theorem maximal [Nontrivial R] (b : Basis ι R M) : b.linearIndependent.Maximal := fun w hi h => by
-  -- If `w` is strictly bigger than `range b`,
-  apply le_antisymm h
-  -- then choose some `x ∈ w \ range b`,
-  intro x p
-  by_contra q
-  -- and write it in terms of the basis.
-  have e := b.linearCombination_repr x
-  -- This then expresses `x` as a linear combination
-  -- of elements of `w` which are in the range of `b`,
-  let u : ι ↪ w :=
-    ⟨fun i => ⟨b i, h ⟨i, rfl⟩⟩, fun i i' r =>
-      b.injective (by simpa only [Subtype.mk_eq_mk] using r)⟩
-  simp_rw [Finsupp.linearCombination_apply] at e
-  change ((b.repr x).sum fun (i : ι) (a : R) ↦ a • (u i : M)) = ((⟨x, p⟩ : w) : M) at e
-  rw [← Finsupp.sum_embDomain (f := u) (g := fun x r ↦ r • (x : M)),
-      ← Finsupp.linearCombination_apply] at e
-  -- Now we can contradict the linear independence of `hi`
-  refine hi.linearCombination_ne_of_not_mem_support _ ?_ e
-  simp only [Finset.mem_map, Finsupp.support_embDomain]
-  rintro ⟨j, -, W⟩
-  simp only [u, Embedding.coeFn_mk, Subtype.mk_eq_mk] at W
-  apply q ⟨j, W⟩
-
 end Basis
 
 end Module
@@ -366,6 +340,32 @@ theorem Basis.eq_bot_of_rank_eq_zero [NoZeroDivisors R] (b : Basis ι R M) (N : 
   convert (b.smul_eq_zero.mp sum_eq).resolve_right x_ne
 
 namespace Basis
+
+/-- Any basis is a maximal linear independent set.
+-/
+theorem maximal [Nontrivial R] (b : Basis ι R M) : b.linearIndependent.Maximal := fun w hi h => by
+  -- If `w` is strictly bigger than `range b`,
+  apply le_antisymm h
+  -- then choose some `x ∈ w \ range b`,
+  intro x p
+  by_contra q
+  -- and write it in terms of the basis.
+  have e := b.linearCombination_repr x
+  -- This then expresses `x` as a linear combination
+  -- of elements of `w` which are in the range of `b`,
+  let u : ι ↪ w :=
+    ⟨fun i => ⟨b i, h ⟨i, rfl⟩⟩, fun i i' r =>
+      b.injective (by simpa only [Subtype.mk_eq_mk] using r)⟩
+  simp_rw [Finsupp.linearCombination_apply] at e
+  change ((b.repr x).sum fun (i : ι) (a : R) ↦ a • (u i : M)) = ((⟨x, p⟩ : w) : M) at e
+  rw [← Finsupp.sum_embDomain (f := u) (g := fun x r ↦ r • (x : M)),
+      ← Finsupp.linearCombination_apply] at e
+  -- Now we can contradict the linear independence of `hi`
+  refine hi.linearCombination_ne_of_not_mem_support _ ?_ e
+  simp only [Finset.mem_map, Finsupp.support_embDomain]
+  rintro ⟨j, -, W⟩
+  simp only [u, Embedding.coeFn_mk, Subtype.mk_eq_mk] at W
+  apply q ⟨j, W⟩
 
 section Fin
 
