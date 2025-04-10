@@ -1518,7 +1518,7 @@ theorem ContinuousOn.union_of_isClosed (hs : IsClosed s) (ht : IsClosed t) {f : 
   · refine if hx : x ∈ t then hft x hx else continuousWithinAt_of_not_mem_closure ?_
     rwa [ht.closure_eq]
 
-@[deprecated ContinuousOn.union_of_isClosed (since := "2025-03-09")]
+@[deprecated ContinuousOn.union_of_isClosed (since := "2025-04-10")]
 alias ContinuousOn.union_isClosed := ContinuousOn.union_of_isClosed
 
 /-- A function is continuous on two closed sets iff it is also continuous on their union. -/
@@ -1530,7 +1530,7 @@ theorem continouousOn_union_isClosed (hs : IsClosed s) (ht : IsClosed t) {f : α
 /-- If a function is continuous on two open sets, it is also continuous on their union. -/
 theorem ContinuousOn.union_of_isOpen (hs : IsOpen s) (ht : IsOpen t) {f : α → β}
     (hfs : ContinuousOn f s) (hft : ContinuousOn f t) : ContinuousOn f (s ∪ t) :=
-  union_continuousAt hs hfs fun _ hx ↦ IsOpen.continuousOn_iff ht |>.mp hft hx
+  union_continuousAt hs hfs fun _ hx ↦ ht.continuousOn_iff.mp hft hx
 
 /-- A function is continuous on two open sets iff it is also continuous on their union. -/
 theorem continouousOn_union_isOpen (hs : IsOpen s) (ht : IsOpen t) {f : α → β} :
