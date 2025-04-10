@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.Order.Sub.WithTop
-import Mathlib.Data.NNReal.Defs
+import Mathlib.Data.NNReal.Archimedean
 import Mathlib.Order.Interval.Set.WithBotTop
 
 /-!

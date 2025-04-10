@@ -8,7 +8,7 @@ import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.Field.Canonical
 import Mathlib.Algebra.Order.Nonneg.Floor
 import Mathlib.Data.Real.Pointwise
-import Mathlib.Data.NNReal.Defs
+import Mathlib.Data.NNReal.Archimedean
 import Mathlib.Order.ConditionallyCompleteLattice.Group
 
 /-!
