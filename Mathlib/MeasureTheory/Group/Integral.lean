@@ -3,7 +3,7 @@ Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.MeasureTheory.Integral.Bochner
+import Mathlib.MeasureTheory.Integral.Bochner.Basic
 import Mathlib.MeasureTheory.Group.Measure
 
 /-!
@@ -134,7 +134,7 @@ variable [Group G] [MeasurableSpace α] [MulAction G α] [MeasurableSMul G α]
 theorem integral_smul_eq_self {μ : Measure α} [SMulInvariantMeasure G α μ] (f : α → E) {g : G} :
     (∫ x, f (g • x) ∂μ) = ∫ x, f x ∂μ := by
   have h : MeasurableEmbedding fun x : α => g • x := (MeasurableEquiv.smul g).measurableEmbedding
-  rw [← h.integral_map, map_smul]
+  rw [← h.integral_map, MeasureTheory.map_smul]
 
 end SMul
 
