@@ -97,7 +97,7 @@ lemma Irreducible.of_map [FunLike F M N] [MonoidHomClass F M N] [IsLocalHom f]
 
 end Monoid
 
-section CommMonoid
+section CommMonoid -- TODO relax to Monoid
 variable [CommMonoid M] {x : M}
 
 @[to_additive]
