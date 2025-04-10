@@ -94,6 +94,10 @@ theorem transpose {M : Matrix n n R} (hM : M.PosSemidef) : Mᵀ.PosSemidef := by
 
 theorem conjTranspose {M : Matrix n n R} (hM : M.PosSemidef) : Mᴴ.PosSemidef := hM.1.symm ▸ hM
 
+@[simp]
+theorem conjTranspose_iff {M : Matrix n n R} : Mᴴ.PosSemidef ↔ M.PosSemidef :=
+  ⟨(by simpa using ·.conjTranspose), .conjTranspose⟩
+
 protected lemma zero : PosSemidef (0 : Matrix n n R) :=
   ⟨isHermitian_zero, by simp⟩
 
@@ -422,6 +426,26 @@ protected lemma add [AddLeftMono R] {A : Matrix m m R} {B : Matrix m m R}
     (hA : A.PosDef) (hB : B.PosDef) : (A + B).PosDef :=
   hA.add_posSemidef hB.posSemidef
 
+lemma conjTranspose_mul_mul_same {A : Matrix n n R} {B : Matrix n m R} (hA : A.PosDef)
+    (hB : Function.Injective B.mulVec) :
+    (Bᴴ * A * B).PosDef := by
+  refine ⟨Matrix.isHermitian_conjTranspose_mul_mul _ hA.1, fun x hx => ?_⟩
+  have : B *ᵥ x ≠ 0 := fun h => hx <| hB.eq_iff' (mulVec_zero _) |>.1 h
+  simpa only [star_mulVec, dotProduct_mulVec, vecMul_vecMul] using hA.2 _ this
+
+lemma mul_mul_conjTranspose_same {A : Matrix n n R} {B : Matrix m n R} (hA : A.PosDef)
+    (hB : Function.Injective B.vecMul) :
+    (B * A * Bᴴ).PosDef := by
+  replace hB := star_injective.comp <| hB.comp star_injective
+  simp_rw [Function.comp_def, star_vecMul, star_star] at hB
+  simpa using hA.conjTranspose_mul_mul_same (B := Bᴴ) hB
+
+theorem conjTranspose {M : Matrix n n R} (hM : M.PosDef) : Mᴴ.PosDef := hM.1.symm ▸ hM
+
+@[simp]
+theorem conjTranspose_iff {M : Matrix n n R} : Mᴴ.PosDef ↔ M.PosDef :=
+  ⟨(by simpa using ·.conjTranspose), .conjTranspose⟩
+
 theorem of_toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.IsSymm)
     (hMq : M.toQuadraticMap'.PosDef) : M.PosDef := by
   refine ⟨hM, fun x hx => ?_⟩
@@ -452,13 +476,10 @@ theorem isUnit [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) : IsUnit M 
   isUnit_iff_isUnit_det _ |>.2 <| hM.det_pos.ne'.isUnit
 
 protected theorem inv [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) : M⁻¹.PosDef := by
-  refine ⟨hM.isHermitian.inv, fun x hx => ?_⟩
-  have := hM.2 (M⁻¹ *ᵥ x) ((Matrix.mulVec_injective_iff_isUnit.mpr ?_ |>.ne_iff' ?_).2 hx)
-  · let _inst := hM.isUnit.invertible
-    rwa [star_mulVec, mulVec_mulVec, Matrix.mul_inv_of_invertible, one_mulVec,
-      ← star_pos_iff, ← star_mulVec, ← star_dotProduct] at this
-  · simpa using hM.isUnit
-  · simp
+  let _inst := hM.isUnit.invertible
+  have := hM.mul_mul_conjTranspose_same (B := M⁻¹) ?_
+  · simpa using this.conjTranspose
+  · simp only [Matrix.vecMul_injective_iff_isUnit, isUnit_nonsing_inv_iff, hM.isUnit]
 
 @[simp]
 theorem _root_.Matrix.posDef_inv_iff [DecidableEq n] {M : Matrix n n 𝕜} :
