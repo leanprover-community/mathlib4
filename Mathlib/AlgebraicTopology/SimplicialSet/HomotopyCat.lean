@@ -114,7 +114,7 @@ theorem OneTruncation₂.Quiver_homOfEq {S : SSet.Truncated 2} (X Y : OneTruncat
     Quiver.homOfEq (V := OneTruncation₂ S)
       (⟨edge, rfl, rfl⟩ : OneTruncation₂.Hom (S := S) (S.map (δ₂ 1).op edge) (S.map (δ₂ 0).op edge))
         src_eq tgt_eq = ⟨edge, src_eq, tgt_eq⟩ := by
-  subst src_eq tgt_eq ; rfl
+  subst src_eq tgt_eq; rfl
 
 @[simp]
 lemma OneTruncation₂.id_edge {S : SSet.Truncated 2} (X : OneTruncation₂ S) :

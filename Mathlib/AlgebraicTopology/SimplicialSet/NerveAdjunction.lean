@@ -147,9 +147,10 @@ section
 --   (F.map (ev02₂ φ)).edge = StrictSegal.spineToDiagonal sy 2 (Nat.le_add_left _ _)
 --     (oneTruncation₂.pathMap F (X.spine _ _ φ)))
 -- include hyp
-variable (hyp : (φ : X _⦋2⦌₂) → (F.map ⟨X.map (δ₂ (1 : Fin 3) _ _).op φ, rfl, rfl⟩).edge =
+variable (hyp : (φ : X _⦋2⦌₂) → (F.map (ev02₂ φ)).edge =
   Y.map (δ₂ (1 : Fin 3) _ _).op
     (StrictSegal.spineToSimplex sy 2 (by omega) (oneTruncation₂.pathMap F (X.spine _ _ φ))))
+
 include hyp
 
 lemma toStrictSegal₂.mk_naturality_δ1i (i : Fin 3) :
@@ -176,7 +177,18 @@ lemma toStrictSegal₂.mk_naturality_δ1i (i : Fin 3) :
       Fin.succ_one_eq_two, spine_arrow, OneTruncation₂.Quiver_homOfEq]
       congr!
       exact δ_zero_eq_mkOfSucc
-  · simp only [Fin.mk_one] ; rw [hyp]
+  · simp only [Fin.mk_one]
+    rw [← hyp]
+    fapply ReflPrefunctor.congr_map_edge
+    · unfold ev0₂
+      rw [← FunctorToTypes.map_comp_apply, ← op_comp]
+      dsimp [ι0₂]
+    · unfold ev2₂
+      rw [← FunctorToTypes.map_comp_apply, ← op_comp]
+      dsimp [ι2₂]
+    · unfold ev02₂
+      simp only [Fin.isValue, OneTruncation₂.Quiver_homOfEq]
+      dsimp [δ1₂]
   · simp only [Fin.reduceFinMk]
     have :=
       StrictSegal.spineToSimplex_arrow sy 2 (by omega) 0 (oneTruncation₂.pathMap F (X.spine 2 _ φ))
@@ -475,7 +487,6 @@ hypothesis, where that prefunctor the central hypothesis is conjugated by the is
 `nerve₂Adj.NatIso.app C`. -/
 @[simps!] def toNerve₂.mk' : X ⟶ nerveFunctor₂.obj (Cat.of C) :=
   toNerve₂.mk (F ≫ (OneTruncation₂.ofNerve₂.natIso.app (Cat.of C)).hom) hyp
-
 
 /-- A computation about `toNerve₂.mk'`. -/
 theorem oneTruncation₂_toNerve₂Mk' : oneTruncation₂.map (toNerve₂.mk' F hyp) = F := by
