@@ -16,7 +16,7 @@ namespace Mathlib.Tactic.GCongr
 
 /-- An extension for `gcongr_forward`. -/
 structure ForwardExt where
-  eval (h : Expr) (goal : MVarId) : MetaM Unit
+  eval (h : Expr) : MetaM Expr
 
 /-- Read a `gcongr_forward` extension from a declaration of the right type. -/
 def mkForwardExt (n : Name) : ImportM ForwardExt := do
