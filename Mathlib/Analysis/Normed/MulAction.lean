@@ -138,7 +138,8 @@ theorem nndist_smul₀ (s : α) (x y : β) : nndist (s • x) (s • y) = ‖s�
 theorem edist_smul₀ (s : α) (x y : β) : edist (s • x) (s • y) = ‖s‖₊ • edist x y := by
   simp only [edist_nndist, nndist_smul₀, ENNReal.coe_mul, ENNReal.smul_def, smul_eq_mul]
 
-instance NormSMulClass.toIsBoundedSMul : IsBoundedSMul α β :=
+-- see Note [lower instance priority]
+instance (priority := 100) NormSMulClass.toIsBoundedSMul : IsBoundedSMul α β :=
   .of_norm_smul_le fun r x ↦ (norm_smul r x).le
 
 end NormSMulClassModule
