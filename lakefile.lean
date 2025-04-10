@@ -7,7 +7,7 @@ open Lake DSL
 ## Mathlib dependencies on upstream projects
 -/
 
-require "leanprover-community" / "batteries" @ git "main"
+require "leanprover-community" / "batteries" from git "https://github.com/leanprover-community/batteries" @ "upstream-shake"
 require "leanprover-community" / "Qq" @ git "master"
 require "leanprover-community" / "aesop" @ git "master"
 require "leanprover-community" / "proofwidgets" @ git "v0.0.56" -- ProofWidgets should always be pinned to a specific version
@@ -120,11 +120,6 @@ lean_exe mk_all where
   supportInterpreter := true
   -- Executables which import `Lake` must set `-lLake`.
   weakLinkArgs := #["-lLake"]
-
-/-- `lake exe shake` checks files for unnecessary imports. -/
-lean_exe shake where
-  root := `Shake.Main
-  supportInterpreter := true
 
 /-- `lake exe lint-style` runs text-based style linters. -/
 lean_exe «lint-style» where
