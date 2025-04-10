@@ -123,8 +123,7 @@ private lemma recursion (n : ℕ) :
     I (n + 2) θ * θ ^ 2 =
       2 * (n + 2) * (2 * n + 3) * I (n + 1) θ - 4 * (n + 2) * (n + 1) * I n θ := by
   rw [recursion' (n + 1)]
-  simp
-  ring!
+  simpa using by ring!
 
 /--
 Auxiliary for the proof that `π` is irrational.

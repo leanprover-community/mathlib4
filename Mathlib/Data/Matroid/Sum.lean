@@ -175,7 +175,7 @@ protected def sum' (M : ι → Matroid α) : Matroid (ι × α) :=
 
 @[simp] lemma sum'_isBasis_iff {I X} :
     (Matroid.sum' M).IsBasis I X ↔ ∀ i, (M i).IsBasis (Prod.mk i ⁻¹' I) (Prod.mk i ⁻¹' X) := by
-  simp [Matroid.sum']
+  simp only [Matroid.sum', mapEquiv_isBasis_iff, Equiv.sigmaEquivProd_symm_apply, sigma_isBasis_iff]
   convert Iff.rfl <;>
   exact ext <| by simp
 
