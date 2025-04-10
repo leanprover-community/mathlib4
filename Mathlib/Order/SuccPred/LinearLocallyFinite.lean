@@ -3,13 +3,13 @@ Copyright (c) 2022 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
+import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Data.Countable.Basic
-import Mathlib.Logic.Encodable.Basic
-import Mathlib.Order.SuccPred.Archimedean
-import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Finset.Max
 import Mathlib.Data.Fintype.Pigeonhole
+import Mathlib.Logic.Encodable.Basic
 import Mathlib.Order.Interval.Finset.Defs
+import Mathlib.Order.SuccPred.Archimedean
 
 /-!
 # Linear locally finite orders

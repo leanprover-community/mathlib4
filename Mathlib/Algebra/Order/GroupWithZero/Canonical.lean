@@ -29,8 +29,8 @@ The solutions is to use a typeclass, and that is exactly what we do in this file
 variable {α : Type*}
 
 /-- A linearly ordered commutative monoid with a zero element. -/
-class LinearOrderedCommMonoidWithZero (α : Type*) extends LinearOrderedCommMonoid α,
-  CommMonoidWithZero α, OrderBot α where
+class LinearOrderedCommMonoidWithZero (α : Type*) extends CommMonoidWithZero α, LinearOrder α,
+    IsOrderedMonoid α, OrderBot α where
   /-- `0 ≤ 1` in any linearly ordered commutative monoid. -/
   zero_le_one : (0 : α) ≤ 1
 
@@ -60,7 +60,7 @@ abbrev Function.Injective.linearOrderedCommMonoidWithZero {β : Type*} [Zero β]
     (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y)) (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y))
     (bot : f ⊥ = ⊥) : LinearOrderedCommMonoidWithZero β where
   __ := LinearOrder.lift f hf hsup hinf
-  __ := hf.orderedCommMonoid f one mul npow
+  __ := hf.isOrderedMonoid f one mul npow
   __ := hf.commMonoidWithZero f zero one mul npow
   zero_le_one :=
       show f 0 ≤ f 1 by simp only [zero, one, LinearOrderedCommMonoidWithZero.zero_le_one]
@@ -353,7 +353,8 @@ protected lemma min_le_iff : min (a : WithZero α) b ≤ c ↔ min a b ≤ c := 
 
 end LinearOrder
 
-instance instOrderedCommMonoid [OrderedCommMonoid α] : OrderedCommMonoid (WithZero α) where
+instance isOrderedMonoid [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] :
+    IsOrderedMonoid (WithZero α) where
   mul_le_mul_left := fun _ _ => mul_le_mul_left'
 
 /-
@@ -363,10 +364,11 @@ Note 2 : there is no multiplicative analogue because it does not seem necessary.
 Mathematicians might be more likely to use the order-dual version, where all
 elements are ≤ 1 and then 1 is the top element.
 -/
-/-- If `0` is the least element in `α`, then `WithZero α` is an `OrderedAddCommMonoid`. -/
+/-- If `0` is the least element in `α`, then `WithZero α` is an ordered `AddMonoid`. -/
 -- See note [reducible non-instances]
-protected abbrev orderedAddCommMonoid [OrderedAddCommMonoid α] (zero_le : ∀ a : α, 0 ≤ a) :
-    OrderedAddCommMonoid (WithZero α) where
+protected lemma isOrderedAddMonoid [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α]
+    (zero_le : ∀ a : α, 0 ≤ a) :
+    IsOrderedAddMonoid (WithZero α) where
   add_le_add_left := @add_le_add_left _ _ _ (WithZero.addLeftMono zero_le)
 
 /-- Adding a new zero to a canonically ordered additive monoid produces another one. -/
@@ -380,11 +382,11 @@ instance instCanonicallyOrderedAdd [AddZeroClass α] [Preorder α] [CanonicallyO
       · exact le_rfl
       · exact WithZero.coe_le_coe.2 le_self_add }
 
-instance instLinearOrderedCommMonoidWithZero [LinearOrderedCommMonoid α] :
+instance instLinearOrderedCommMonoidWithZero [CommMonoid α] [LinearOrder α] [IsOrderedMonoid α] :
     LinearOrderedCommMonoidWithZero (WithZero α) where
   zero_le_one := WithZero.zero_le _
 
-instance instLinearOrderedCommGroupWithZero [LinearOrderedCommGroup α] :
+instance instLinearOrderedCommGroupWithZero [CommGroup α] [LinearOrder α] [IsOrderedMonoid α] :
     LinearOrderedCommGroupWithZero (WithZero α) where
 
 end WithZero

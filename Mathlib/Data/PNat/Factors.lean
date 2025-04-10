@@ -25,11 +25,14 @@ the multiplicity of `p` in this factors multiset being the p-adic valuation of `
  gives an equivalence between this set and ℕ+, as we will formalize
  below. -/
 def PrimeMultiset :=
-  Multiset Nat.Primes deriving Inhabited, OrderedCancelAddCommMonoid, DistribLattice,
+  Multiset Nat.Primes deriving Inhabited, AddCommMonoid, DistribLattice,
   SemilatticeSup, Sub
 -- The `CanonicallyOrderedAdd, OrderBot, OrderedSub` instances should be constructed by a deriving
 -- handler.
 -- https://github.com/leanprover-community/mathlib4/issues/380
+
+instance : IsOrderedCancelAddMonoid PrimeMultiset :=
+  inferInstanceAs (IsOrderedCancelAddMonoid (Multiset Nat.Primes))
 
 instance : CanonicallyOrderedAdd PrimeMultiset :=
   inferInstanceAs (CanonicallyOrderedAdd (Multiset Nat.Primes))

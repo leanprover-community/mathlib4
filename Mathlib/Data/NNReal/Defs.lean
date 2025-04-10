@@ -52,9 +52,9 @@ open Function
 -- to ensure these instances are computable
 /-- Nonnegative real numbers, denoted as `ℝ≥0` withinin the NNReal namespace -/
 def NNReal := { r : ℝ // 0 ≤ r } deriving
-  Zero, One, Semiring, StrictOrderedSemiring, CommMonoidWithZero, CommSemiring,
-  PartialOrder, SemilatticeInf, SemilatticeSup, DistribLattice, OrderedCommSemiring,
-  OrderedCommMonoid, Nontrivial, Inhabited
+  Zero, One, Semiring, CommMonoidWithZero, CommSemiring,
+  PartialOrder, SemilatticeInf, SemilatticeSup, DistribLattice,
+  Nontrivial, Inhabited
 
 namespace NNReal
 
@@ -74,8 +74,17 @@ instance : OrderedSub ℝ≥0 := Nonneg.orderedSub
 -- a computable copy of `Nonneg.instNNRatCast`
 instance : NNRatCast ℝ≥0 where nnratCast r := ⟨r, r.cast_nonneg⟩
 
-noncomputable instance : LinearOrderedSemifield ℝ≥0 :=
-  Nonneg.linearOrderedSemifield
+noncomputable instance : LinearOrder ℝ≥0 :=
+  Subtype.instLinearOrder _
+
+noncomputable instance : Semifield ℝ≥0 :=
+  Nonneg.semifield
+
+instance : IsOrderedRing ℝ≥0 :=
+  Nonneg.isOrderedRing
+
+instance : IsStrictOrderedRing ℝ≥0 :=
+  Nonneg.isStrictOrderedRing
 
 noncomputable instance : LinearOrderedCommGroupWithZero ℝ≥0 :=
   Nonneg.linearOrderedCommGroupWithZero
@@ -334,7 +343,9 @@ example : OrderBot ℝ≥0 := by infer_instance
 
 example : PartialOrder ℝ≥0 := by infer_instance
 
-noncomputable example : LinearOrderedAddCommMonoid ℝ≥0 := by infer_instance
+example : AddCommMonoid ℝ≥0 := by infer_instance
+
+example : IsOrderedAddMonoid ℝ≥0 := by infer_instance
 
 example : DistribLattice ℝ≥0 := by infer_instance
 
@@ -342,11 +353,11 @@ example : SemilatticeInf ℝ≥0 := by infer_instance
 
 example : SemilatticeSup ℝ≥0 := by infer_instance
 
-noncomputable example : LinearOrderedSemiring ℝ≥0 := by infer_instance
+example : Semiring ℝ≥0 := by infer_instance
 
-example : OrderedCommSemiring ℝ≥0 := by infer_instance
+example : CommMonoid ℝ≥0 := by infer_instance
 
-noncomputable example : LinearOrderedCommMonoid ℝ≥0 := by infer_instance
+example : IsOrderedMonoid ℝ≥0 := by infer_instance
 
 noncomputable example : LinearOrderedCommMonoidWithZero ℝ≥0 := by infer_instance
 
@@ -477,7 +488,8 @@ theorem coe_min (x y : ℝ≥0) : ((min x y : ℝ≥0) : ℝ) = min (x : ℝ) (y
 theorem zero_le_coe {q : ℝ≥0} : 0 ≤ (q : ℝ) :=
   q.2
 
-instance instOrderedSMul {M : Type*} [OrderedAddCommMonoid M] [Module ℝ M] [OrderedSMul ℝ M] :
+instance instOrderedSMul {M : Type*} [AddCommMonoid M] [PartialOrder M]
+    [Module ℝ M] [OrderedSMul ℝ M] :
     OrderedSMul ℝ≥0 M where
   smul_lt_smul_of_pos hab hc := (smul_lt_smul_of_pos_left hab (NNReal.coe_pos.2 hc) :)
   lt_of_smul_lt_smul_of_pos {_ _ c} hab _ :=

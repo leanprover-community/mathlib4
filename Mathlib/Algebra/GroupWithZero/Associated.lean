@@ -651,7 +651,7 @@ theorem irreducible_mk {a : M} : Irreducible (Associates.mk a) ↔ Irreducible a
   · rintro h x y rfl
     exact h _ _ <| .refl _
   · rintro h x y ⟨u, rfl⟩
-    simpa using h x (y * u) (mul_assoc _ _ _)
+    simpa using h (mul_assoc _ _ _)
 
 @[simp]
 theorem mk_dvdNotUnit_mk_iff {a b : M} :
