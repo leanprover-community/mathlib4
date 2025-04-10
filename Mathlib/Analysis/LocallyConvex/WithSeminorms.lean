@@ -777,7 +777,7 @@ lemma bound_of_continuous [Nonempty ι] [t : TopologicalSpace E] (hp : WithSemin
   -- `(E, s.sup p)`.
   clear hp hq t
   let _ : SeminormedAddCommGroup E := (s.sup p).toSeminormedAddCommGroup
-  let _ : NormedSpace 𝕜 E := { norm_smul_le := fun a b ↦ le_of_eq (map_smul_eq_mul (s.sup p) a b) }
+  let _ : NormedSpace 𝕜 E := { norm_smul := fun a b ↦ (map_smul_eq_mul (s.sup p) a b) }
   -- The inclusion `hε` tells us exactly that `q` is *still* continuous for this new topology
   have : Continuous q :=
     Seminorm.continuous (r := 1) (mem_of_superset (Metric.ball_mem_nhds _ ε_pos) hε)
