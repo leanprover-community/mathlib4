@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
+import Mathlib.Algebra.Group.Indicator
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Data.Finset.Powerset
 import Mathlib.Data.Fintype.Pi
-import Mathlib.Order.Minimal
 
 /-!
 # Dissociation and span
