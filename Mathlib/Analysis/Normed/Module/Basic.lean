@@ -46,8 +46,7 @@ attribute [inherit_doc NormedSpace] NormedSpace.norm_smul_le
 variable [NormedField 𝕜] [SeminormedAddCommGroup E] [SeminormedAddCommGroup F]
 variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
 
--- see Note [lower instance priority]
-instance (priority := 100) NormedSpace.toNormSMulClass [NormedSpace 𝕜 E] : NormSMulClass 𝕜 E :=
+instance NormedSpace.toNormSMulClass [NormedSpace 𝕜 E] : NormSMulClass 𝕜 E :=
   haveI : IsBoundedSMul 𝕜 E := .of_norm_smul_le NormedSpace.norm_smul_le
   NormedDivisionRing.toNormSMulClass
 
