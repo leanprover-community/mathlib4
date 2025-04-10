@@ -383,69 +383,38 @@ instance (priority := 100) CommRing.toAddCommGroupWithOne [s : CommRing α] :
     AddCommGroupWithOne α :=
   { s with }
 
-class LawfulOfNat (α : Type u) [I : ∀ n, OfNat α n] [Zero α] [One α] [Add α] : Prop where
-  ofNat_zero : @OfNat.ofNat α 0 (I 0) = @OfNat.ofNat α 0 Zero.toOfNat0
-  ofNat_succ :
-    ∀ n, @OfNat.ofNat α (n + 1) (I (n + 1)) = @OfNat.ofNat α n (I n) + @OfNat.ofNat α 1 One.toOfNat1
-
-namespace LawfulOfNat
-
-variable {α : Type u} [I : ∀ n, OfNat α n]
-section AddMonoidWithOne
-
-variable [J : AddMonoidWithOne α] [LawfulOfNat α]
-
-theorem ofNat_one : @OfNat.ofNat α 1 (I 1) = @OfNat.ofNat α 1 (@One.toOfNat1 _ J.toOne) := by
-  rw [LawfulOfNat.ofNat_succ, LawfulOfNat.ofNat_zero, zero_add]
-
-theorem ofNat_add (n m : ℕ) :
-    @OfNat.ofNat α (n + m) (I (n + m)) = @OfNat.ofNat α n (I n) + @OfNat.ofNat α m (I m) := by
-  induction m with
-  | zero =>
-    rw [Nat.add_zero, LawfulOfNat.ofNat_zero, add_zero]
-  | succ m ih =>
-    rw [← Nat.add_assoc, LawfulOfNat.ofNat_succ, ih, LawfulOfNat.ofNat_succ m, add_assoc]
-
-theorem ofNat_eq_natCast (n : ℕ) : @OfNat.ofNat α n (I n) = (n : α) := by
-  induction n with
-  | zero => simp [ofNat_zero]
-  | succ n ih => simp [ofNat_succ, ih]
-
-end AddMonoidWithOne
-
-section Semiring
-
-variable [Semiring α] [LawfulOfNat α]
-
-theorem ofNat_mul (n m : ℕ) :
-    @OfNat.ofNat α (n * m) (I (n * m)) = @OfNat.ofNat α n (I n) * @OfNat.ofNat α m (I m) := by
-  induction m with
-  | zero =>
-    rw [Nat.mul_zero, LawfulOfNat.ofNat_zero, mul_zero]
-  | succ m ih =>
-    rw [Nat.mul_succ, LawfulOfNat.ofNat_add, ih, LawfulOfNat.ofNat_succ, mul_add, mul_one]
-
-end Semiring
-
-end LawfulOfNat
-
-instance CommRing.toGrindCommRing [∀ n, OfNat α n] [s : CommRing α] [LawfulOfNat α] :
+instance CommRing.toGrindCommRing [s : CommRing α] :
     Lean.Grind.CommRing α :=
   { s with
-    add_zero := by simp [add_zero, LawfulOfNat.ofNat_zero]
-    neg_add_cancel := by simp [neg_add_cancel, LawfulOfNat.ofNat_zero]
-    mul_one := by simp [mul_one, LawfulOfNat.ofNat_one]
-    zero_mul := by simp [zero_mul, LawfulOfNat.ofNat_zero]
-    pow_zero := by simp [LawfulOfNat.ofNat_one]
+    ofNat | 0 | 1 | n + 2 => inferInstance
+    add_zero := by simp [add_zero]
+    neg_add_cancel := by simp [neg_add_cancel]
+    mul_one := by simp [mul_one]
+    zero_mul := by simp [zero_mul]
+    pow_zero := by simp
     pow_succ := by simp [pow_succ]
-    ofNat_add x y := LawfulOfNat.ofNat_add x y
-    ofNat_mul x y := LawfulOfNat.ofNat_mul x y }
+    ofNat_succ
+    | 0 => by simp [zero_add]
+    | 1 => by
+      show Nat.cast 2 = 1 + 1
+      rw [one_add_one_eq_two]
+      rfl
+    | n + 2 => by
+      show Nat.cast (n + 2 + 1) = Nat.cast (n + 2) + 1
+      rw [← AddCommGroupWithOne.natCast_succ] }
+
+theorem CommRing.toGrindCommRing_ofNat [CommRing α] (n : ℕ) :
+    @OfNat.ofNat α n (CommRing.toGrindCommRing.ofNat n) = n.cast := by
+  match n with
+  | 0 => simp [zero_add]
+  | 1 => simp [one_add_one_eq_two]
+  | n + 2 => rfl
 
 -- Verify that we can construct a `CommRing` from a `Lean.Grind.CommRing`.
 -- This is not an instance (or even a `def`) because this direction should never be used.
 -- There is no reason to expect that using `CommRing.toGrindCommRing` and then this construction
 -- will give a result defeq to the original `CommRing α`.
-example [∀ n, OfNat α n] (s : Lean.Grind.CommRing α) : CommRing α :=
+example (s : Lean.Grind.CommRing α) : CommRing α :=
   { s with
     zero_add := Lean.Grind.CommRing.zero_add
     right_distrib := Lean.Grind.CommRing.right_distrib

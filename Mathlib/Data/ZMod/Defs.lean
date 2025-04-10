@@ -177,4 +177,7 @@ instance commRing (n : ℕ) : CommRing (ZMod n) where
 instance inhabited (n : ℕ) : Inhabited (ZMod n) :=
   ⟨0⟩
 
+-- Verify that we can use `ZMod n` in `grind`.
+example (n : ℕ) : Lean.Grind.CommRing (ZMod n) := inferInstance
+
 end ZMod

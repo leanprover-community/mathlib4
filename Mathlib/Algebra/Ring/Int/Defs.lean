@@ -39,14 +39,12 @@ instance instCommRing : CommRing ℤ where
   intCast_ofNat _ := rfl
   intCast_negSucc _ := rfl
 
-instance : LawfulOfNat ℤ where
-  ofNat_zero := rfl
-  ofNat_succ _ := rfl
-
--- Verify that the built-in `Lean.Grind.CommRing` instance is definitionally equal to the one
--- constructed from Mathlib's `CommRing ℤ` instance.
-example : CommRing.toGrindCommRing (α := Int) = Lean.Grind.instCommRingInt := by
-  with_reducible_and_instances rfl
+-- Note that the built-in `Lean.Grind.CommRing` instance is *not* definitionally equal to the one
+-- constructed from Mathlib's `CommRing ℤ` instance,
+-- because the `ofNat` field constructed in Mathlib is definited differently at 0 and 1.
+-- Hence the following example would fail:
+-- example : CommRing.toGrindCommRing (α := Int) = Lean.Grind.instCommRingInt := by
+--   with_reducible_and_instances rfl
 
 instance instCancelCommMonoidWithZero : CancelCommMonoidWithZero ℤ where
   mul_left_cancel_of_ne_zero {_a _b _c} ha := (mul_eq_mul_left_iff ha).1

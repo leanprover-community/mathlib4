@@ -204,10 +204,9 @@ end AddMonoidWithOne
 
 section CommRing
 
-instance (α : Type*) [∀ n, OfNat α n] [CommRing α] [LawfulOfNat α] (n : ℕ) [CharP α n] :
-    Lean.Grind.IsCharP α n where
+instance (α : Type*) [CommRing α] (n : ℕ) [CharP α n] : Lean.Grind.IsCharP α n where
   ofNat_eq_zero_iff m := by
-    simpa [LawfulOfNat.ofNat_eq_natCast, ← Nat.dvd_iff_mod_eq_zero] using
-      CharP.cast_eq_zero_iff α n m
+    rw [CommRing.toGrindCommRing_ofNat]
+    simpa [← Nat.dvd_iff_mod_eq_zero] using CharP.cast_eq_zero_iff α n m
 
 end CommRing
