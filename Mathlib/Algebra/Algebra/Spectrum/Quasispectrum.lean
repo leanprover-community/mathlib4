@@ -198,6 +198,10 @@ lemma isQuasiregular_iff {x : R} :
       apply equiv.symm.injective
       assumption
 
+lemma isQuasiregular_iff' {x : R} : IsQuasiregular x ↔ IsUnit (PreQuasiregular.equiv x) := by
+  simp only [IsQuasiregular, IsUnit, Equiv.apply_symm_apply,
+    ← PreQuasiregular.equiv (R := R).injective.eq_iff]
+
 end PreQuasiregular
 
 lemma IsQuasiregular.map {F R S : Type*} [NonUnitalSemiring R] [NonUnitalSemiring S]
