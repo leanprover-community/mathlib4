@@ -38,15 +38,15 @@ variable {ι : Type w} {ι' : Type w'} {η : Type u₁'} {φ : η → Type*}
 
 open Basis Cardinal DirectSum Function Module Set Submodule
 
-section Quotient
-
 variable [Ring R] [CommRing S] [AddCommGroup M] [AddCommGroup M'] [AddCommGroup M₁]
 variable [Module R M]
+
+section Quotient
 
 theorem LinearIndependent.sum_elim_of_quotient
     {M' : Submodule R M} {ι₁ ι₂} {f : ι₁ → M'} (hf : LinearIndependent R f) (g : ι₂ → M)
     (hg : LinearIndependent R (Submodule.Quotient.mk (p := M') ∘ g)) :
-    LinearIndependent R (Sum.elim (f · : ι₁ → M) g) := by
+      LinearIndependent R (Sum.elim (f · : ι₁ → M) g) := by
   refine .sum_type (hf.map' M'.subtype M'.ker_subtype) (.of_comp M'.mkQ hg) ?_
   refine disjoint_def.mpr fun x h₁ h₂ ↦ ?_
   have : x ∈ M' := span_le.mpr (Set.range_subset_iff.mpr fun i ↦ (f i).prop) h₁
@@ -54,9 +54,9 @@ theorem LinearIndependent.sum_elim_of_quotient
   simp_rw [← Quotient.mk_eq_zero, ← mkQ_apply, map_finsupp_sum, map_smul, mkQ_apply] at this
   rw [linearIndependent_iff.mp hg _ this, Finsupp.sum_zero_index]
 
-theorem LinearIndependent.union_of_quotient {M' : Submodule R M}
-    {s : Set M} (hs : s ⊆ M') (hs' : LinearIndependent (ι := s) R Subtype.val) {t : Set M}
-    (ht : LinearIndependent (ι := t) R (Submodule.Quotient.mk (p := M') ∘ Subtype.val)) :
+theorem LinearIndependent.union_of_quotient
+    {M' : Submodule R M} {s : Set M} (hs : s ⊆ M') (hs' : LinearIndependent (ι := s) R Subtype.val)
+  {t : Set M} (ht : LinearIndependent (ι := t) R (Submodule.Quotient.mk (p := M') ∘ Subtype.val)) :
     LinearIndependent (ι := (s ∪ t :)) R Subtype.val := by
   refine (LinearIndependent.sum_elim_of_quotient (f := Set.embeddingOfSubset s M' hs)
     (of_comp M'.subtype (by simpa using hs')) Subtype.val ht).to_subtype_range' ?_
@@ -76,16 +76,7 @@ theorem rank_quotient_add_rank_le [Nontrivial R] (M' : Submodule R M) :
 theorem rank_quotient_le (p : Submodule R M) : Module.rank R (M ⧸ p) ≤ Module.rank R M :=
   (mkQ p).rank_le_of_surjective Quot.mk_surjective
 
-/-- The dimension of a quotient is bounded by the dimension of the ambient space. -/
-theorem Submodule.finrank_quotient_le [StrongRankCondition R] [Module.Finite R M]
-    (s : Submodule R M) : finrank R (M ⧸ s) ≤ finrank R M :=
-  toNat_le_toNat ((Submodule.mkQ s).rank_le_of_surjective Quot.mk_surjective)
-    (rank_lt_aleph0 _ _)
-
 end Quotient
-
-variable [Semiring R] [CommSemiring S] [AddCommMonoid M] [AddCommMonoid M'] [AddCommMonoid M₁]
-variable [Module R M]
 
 section ULift
 
@@ -104,20 +95,20 @@ section Prod
 variable (R M M')
 variable [Module R M₁] [Module R M']
 
-theorem rank_add_rank_le_rank_prod [Nontrivial R] :
-    Module.rank R M + Module.rank R M₁ ≤ Module.rank R (M × M₁) := by
-  conv_lhs => simp only [Module.rank_def]
-  have := nonempty_linearIndependent_set R M
-  have := nonempty_linearIndependent_set R M₁
-  rw [Cardinal.ciSup_add_ciSup _ (bddAbove_range _) _ (bddAbove_range _)]
-  exact ciSup_le fun ⟨s, hs⟩ ↦ ciSup_le fun ⟨t, ht⟩ ↦
-    (linearIndependent_inl_union_inr' hs ht).cardinal_le_rank
-
+open LinearMap in
 theorem lift_rank_add_lift_rank_le_rank_prod [Nontrivial R] :
     lift.{v'} (Module.rank R M) + lift.{v} (Module.rank R M') ≤ Module.rank R (M × M') := by
-  rw [← rank_ulift, ← rank_ulift]
-  exact (rank_add_rank_le_rank_prod R _).trans_eq
-    ((ULift.moduleEquiv).prod ULift.moduleEquiv).rank_eq
+  convert rank_quotient_add_rank_le (ker <| LinearMap.fst R M M')
+  · refine Eq.trans ?_ (lift_id'.{v, v'} _)
+    rw [(quotKerEquivRange _).lift_rank_eq,
+        rank_range_of_surjective _ fst_surjective, lift_umax.{v, v'}]
+  · refine Eq.trans ?_ (lift_id'.{v', v} _)
+    rw [ker_fst, ← (LinearEquiv.ofInjective _ <| inr_injective (M := M) (M₂ := M')).lift_rank_eq,
+        lift_umax.{v', v}]
+
+theorem rank_add_rank_le_rank_prod [Nontrivial R] :
+    Module.rank R M + Module.rank R M₁ ≤ Module.rank R (M × M₁) := by
+  convert ← lift_rank_add_lift_rank_le_rank_prod R M M₁ <;> apply lift_id
 
 variable {R M M'}
 variable [StrongRankCondition R] [Module.Free R M] [Module.Free R M'] [Module.Free R M₁]
@@ -170,7 +161,7 @@ theorem rank_finsupp_self' {ι : Type u} : Module.rank R (ι →₀ R) = #ι := 
 
 /-- The rank of the direct sum is the sum of the ranks. -/
 @[simp]
-theorem rank_directSum {ι : Type v} (M : ι → Type w) [∀ i : ι, AddCommMonoid (M i)]
+theorem rank_directSum {ι : Type v} (M : ι → Type w) [∀ i : ι, AddCommGroup (M i)]
     [∀ i : ι, Module R (M i)] [∀ i : ι, Module.Free R (M i)] :
     Module.rank R (⨁ i, M i) = Cardinal.sum fun i => Module.rank R (M i) := by
   let B i := chooseBasis R (M i)
@@ -231,7 +222,7 @@ theorem finrank_finsupp_self {ι : Type v} [Fintype ι] : finrank R (ι →₀ R
 
 /-- The finrank of the direct sum is the sum of the finranks. -/
 @[simp]
-theorem finrank_directSum {ι : Type v} [Fintype ι] (M : ι → Type w) [∀ i : ι, AddCommMonoid (M i)]
+theorem finrank_directSum {ι : Type v} [Fintype ι] (M : ι → Type w) [∀ i : ι, AddCommGroup (M i)]
     [∀ i : ι, Module R (M i)] [∀ i : ι, Module.Free R (M i)] [∀ i : ι, Module.Finite R (M i)] :
     finrank R (⨁ i, M i) = ∑ i, finrank R (M i) := by
   letI := nontrivial_of_invariantBasisNumber R
@@ -250,7 +241,7 @@ end Finsupp
 section Pi
 
 variable [StrongRankCondition R] [Module.Free R M]
-variable [∀ i, AddCommMonoid (φ i)] [∀ i, Module R (φ i)] [∀ i, Module.Free R (φ i)]
+variable [∀ i, AddCommGroup (φ i)] [∀ i, Module R (φ i)] [∀ i, Module.Free R (φ i)]
 
 open Module.Free
 
@@ -276,7 +267,7 @@ theorem Module.finrank_pi {ι : Type v} [Fintype ι] :
 --TODO: this should follow from `LinearEquiv.finrank_eq`, that is over a field.
 /-- The finrank of a finite product is the sum of the finranks. -/
 theorem Module.finrank_pi_fintype
-    {ι : Type v} [Fintype ι] {M : ι → Type w} [∀ i : ι, AddCommMonoid (M i)]
+    {ι : Type v} [Fintype ι] {M : ι → Type w} [∀ i : ι, AddCommGroup (M i)]
     [∀ i : ι, Module R (M i)] [∀ i : ι, Module.Free R (M i)] [∀ i : ι, Module.Finite R (M i)] :
     finrank R (∀ i, M i) = ∑ i, finrank R (M i) := by
   letI := nontrivial_of_invariantBasisNumber R
@@ -286,7 +277,7 @@ theorem Module.finrank_pi_fintype
 variable {R}
 variable [Fintype η]
 
-theorem rank_fun {M η : Type u} [Fintype η] [AddCommMonoid M] [Module R M] [Module.Free R M] :
+theorem rank_fun {M η : Type u} [Fintype η] [AddCommGroup M] [Module R M] [Module.Free R M] :
     Module.rank R (η → M) = Fintype.card η * Module.rank R M := by
   rw [rank_pi, Cardinal.sum_const', Cardinal.mk_fintype]
 
@@ -386,6 +377,12 @@ variable [StrongRankCondition R]
 theorem Submodule.finrank_le [Module.Finite R M] (s : Submodule R M) :
     finrank R s ≤ finrank R M :=
   toNat_le_toNat (Submodule.rank_le s) (rank_lt_aleph0 _ _)
+
+/-- The dimension of a quotient is bounded by the dimension of the ambient space. -/
+theorem Submodule.finrank_quotient_le [Module.Finite R M] (s : Submodule R M) :
+    finrank R (M ⧸ s) ≤ finrank R M :=
+  toNat_le_toNat ((Submodule.mkQ s).rank_le_of_surjective Quot.mk_surjective)
+    (rank_lt_aleph0 _ _)
 
 /-- Pushforwards of finite submodules have a smaller finrank. -/
 theorem Submodule.finrank_map_le
@@ -488,9 +485,7 @@ section SubalgebraRank
 
 open Module
 
-section Semiring
-
-variable {F E : Type*} [CommSemiring F] [Semiring E] [Algebra F E]
+variable {F E : Type*} [CommRing F] [Ring E] [Algebra F E]
 
 @[simp]
 theorem Subalgebra.rank_toSubmodule (S : Subalgebra F E) :
@@ -516,11 +511,8 @@ theorem Subalgebra.rank_top : Module.rank F (⊤ : Subalgebra F E) = Module.rank
   rw [subalgebra_top_rank_eq_submodule_top_rank]
   exact _root_.rank_top F E
 
-end Semiring
+section
 
-section Ring
-
-variable {F E : Type*} [CommRing F] [Ring E] [Algebra F E]
 variable [StrongRankCondition F] [NoZeroSMulDivisors F E] [Nontrivial E]
 
 @[simp]
@@ -534,6 +526,6 @@ theorem Subalgebra.rank_bot : Module.rank F (⊥ : Subalgebra F E) = 1 :=
 theorem Subalgebra.finrank_bot : finrank F (⊥ : Subalgebra F E) = 1 :=
   finrank_eq_of_rank_eq (by simp)
 
-end Ring
+end
 
 end SubalgebraRank
