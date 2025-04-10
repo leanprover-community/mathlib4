@@ -329,23 +329,6 @@ theorem Quotient.mk'_surjective [s : Setoid α] :
     Function.Surjective (Quotient.mk' : α → Quotient s) :=
   Quot.exists_rep
 
-/-- `Quot.mk r` is a surjective function. -/
-@[deprecated Quot.mk_surjective (since := "2024-09-02")]
-theorem surjective_quot_mk (r : α → α → Prop) : Function.Surjective (Quot.mk r) :=
-  Quot.exists_rep
-
-/-- `Quotient.mk` is a surjective function. -/
-@[deprecated Quotient.mk_surjective (since := "2024-09-02")]
-theorem surjective_quotient_mk {α : Sort*} (s : Setoid α) :
-    Function.Surjective (Quotient.mk s) :=
-  Quot.exists_rep
-
-/-- `Quotient.mk'` is a surjective function. -/
-@[deprecated Quotient.mk'_surjective (since := "2024-09-02")]
-theorem surjective_quotient_mk' (α : Sort*) [s : Setoid α] :
-    Function.Surjective (Quotient.mk' : α → Quotient s) :=
-  Quot.exists_rep
-
 /-- Choose an element of the equivalence class using the axiom of choice.
   Sound but noncomputable. -/
 noncomputable def Quot.out {r : α → α → Prop} (q : Quot r) : α :=
@@ -575,9 +558,6 @@ protected abbrev mk'' (a : α) : Quotient s₁ :=
 /-- `Quotient.mk''` is a surjective function. -/
 theorem mk''_surjective : Function.Surjective (Quotient.mk'' : α → Quotient s₁) :=
   Quot.exists_rep
-
-@[deprecated (since := "2024-09-02")]
-alias surjective_Quotient_mk'' := mk''_surjective
 
 /-- A version of `Quotient.liftOn` taking `{s : Setoid α}` as an implicit argument instead of an
 instance argument. -/

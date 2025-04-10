@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard,
 Amelia Livingston, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Submonoid.Defs
+import Mathlib.Algebra.Group.Submonoid.Basic
+import Mathlib.Algebra.Group.Support
 import Mathlib.Data.Finset.NoncommProd
 
 /-!
@@ -26,7 +27,8 @@ assert_not_exists OrderedSemiring
 
 variable {M A B : Type*}
 
-variable [Monoid M] [SetLike B M] [SubmonoidClass B M] {S : B}
+section SubmonoidClass
+variable [Monoid M] [SetLike B M] [SubmonoidClass B M] {x : M} {S : B}
 
 namespace SubmonoidClass
 
@@ -76,9 +78,11 @@ theorem prod_mem {M : Type*} [CommMonoid M] [SetLike B M] [SubmonoidClass B M] {
     let ⟨i, hi, hix⟩ := Multiset.mem_map.1 hx
     hix ▸ h i hi
 
-namespace Submonoid
+end SubmonoidClass
 
-variable (s : Submonoid M)
+namespace Submonoid
+section Monoid
+variable [Monoid M] {x : M} (s : Submonoid M)
 
 @[to_additive (attr := norm_cast)]
 theorem coe_list_prod (l : List s) : (l.prod : M) = (l.map (↑)).prod :=
@@ -138,4 +142,45 @@ theorem noncommProd_mem (S : Submonoid M) {ι : Type*} (t : Finset ι) (f : ι �
   rintro ⟨x, ⟨hx, rfl⟩⟩
   exact h x hx
 
+end Monoid
+
+section CommMonoid
+variable [CommMonoid M] {x : M}
+
+@[to_additive]
+lemma mem_closure_iff_exists_finset_subset {s : Set M} :
+    x ∈ closure s ↔
+      ∃ (f : M → ℕ) (t : Finset M), ↑t ⊆ s ∧ f.support ⊆ t ∧ ∏ a ∈ t, a ^ f a = x where
+  mp hx := by
+    classical
+    induction hx using closure_induction with
+    | one => exact ⟨0, ∅, by simp⟩
+    | mem x hx =>
+      simp only [Finset.mem_coe] at hx
+      exact ⟨Pi.single x 1, {x}, by simp [hx, Pi.single_apply]⟩
+    | mul x y _ _ hx hy =>
+    obtain ⟨f, t, hts, hf, rfl⟩ := hx
+    obtain ⟨g, u, hus, hg, rfl⟩ := hy
+    refine ⟨f + g, t ∪ u, mod_cast Set.union_subset hts hus,
+      (Function.support_add _ _).trans <| mod_cast Set.union_subset_union hf hg, ?_⟩
+    simp only [Pi.add_apply, pow_add, Finset.prod_mul_distrib]
+    congr 1 <;> symm
+    · refine Finset.prod_subset Finset.subset_union_left ?_
+      simp +contextual [Function.support_subset_iff'.1 hf]
+    · refine Finset.prod_subset Finset.subset_union_right ?_
+      simp +contextual [Function.support_subset_iff'.1 hg]
+  mpr := by
+    rintro ⟨n, t, hts, -, rfl⟩; exact prod_mem _ fun x hx ↦ pow_mem (subset_closure <| hts hx) _
+
+@[to_additive]
+lemma mem_closure_finset {s : Finset M} :
+    x ∈ closure s ↔ ∃ f : M → ℕ, f.support ⊆ s ∧ ∏ a ∈ s, a ^ f a = x where
+  mp := by
+    rw [mem_closure_iff_exists_finset_subset]
+    rintro ⟨f, t, hts, hf, rfl⟩
+    refine ⟨f, hf.trans hts, .symm <| Finset.prod_subset hts ?_⟩
+    simp +contextual [Function.support_subset_iff'.1 hf]
+  mpr := by rintro ⟨n, -, rfl⟩; exact prod_mem _ fun x hx ↦ pow_mem (subset_closure hx) _
+
+end CommMonoid
 end Submonoid

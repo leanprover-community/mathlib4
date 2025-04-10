@@ -433,7 +433,7 @@ lemma repr_eq_zero_of_nmem_range {i : ι} (hi : i ∉ Set.range snf.f) :
   obtain ⟨m, hm⟩ := m
   obtain ⟨c, rfl⟩ := snf.bN.mem_submodule_iff.mp hm
   replace hi : ∀ j, snf.f j ≠ i := by simpa using hi
-  simp [Finsupp.single_apply, hi, snf.snf, map_finsupp_sum]
+  simp [Finsupp.single_apply, hi, snf.snf, map_finsuppSum]
 
 lemma le_ker_coord_of_nmem_range {i : ι} (hi : i ∉ Set.range snf.f) :
     N ≤ LinearMap.ker (snf.bM.coord i) :=
@@ -445,9 +445,9 @@ lemma le_ker_coord_of_nmem_range {i : ι} (hi : i ∉ Set.range snf.f) :
   obtain ⟨c, rfl⟩ := snf.bN.mem_submodule_iff.mp hm
   replace hm : (⟨Finsupp.sum c fun i t ↦ t • (↑(snf.bN i) : M), hm⟩ : N) =
       Finsupp.sum c fun i t ↦ t • ⟨snf.bN i, (snf.bN i).2⟩ := by
-    ext; change _ = N.subtype _; simp [map_finsupp_sum]
+    ext; change _ = N.subtype _; simp [map_finsuppSum]
   classical
-  simp_rw [hm, map_smul, map_finsupp_sum, map_smul, Subtype.coe_eta, repr_self,
+  simp_rw [hm, map_smul, map_finsuppSum, map_smul, Subtype.coe_eta, repr_self,
     Finsupp.smul_single, smul_eq_mul, mul_one, Finsupp.sum_single, Finsupp.smul_apply, snf.snf,
     map_smul, repr_self, Finsupp.smul_single, smul_eq_mul, mul_one, Finsupp.sum_apply,
     Finsupp.single_apply, EmbeddingLike.apply_eq_iff_eq, Finsupp.sum_ite_eq',
@@ -605,7 +605,7 @@ is a square diagonal matrix; this is the basis for `M`. See:
   forms a square diagonal matrix.
 -/
 noncomputable def Submodule.smithNormalFormTopBasis (b : Basis ι R M)
-  (h : Module.finrank R N = Module.finrank R M) : Basis ι R M :=
+    (h : Module.finrank R N = Module.finrank R M) : Basis ι R M :=
   (exists_smith_normal_form_of_rank_eq b h).choose
 
 /--
@@ -618,7 +618,7 @@ is a square diagonal matrix; this is the basis for `N`. See:
   forms a square diagonal matrix.
 -/
 noncomputable def Submodule.smithNormalFormBotBasis (b : Basis ι R M)
-  (h : Module.finrank R N = Module.finrank R M) : Basis ι R N :=
+    (h : Module.finrank R N = Module.finrank R M) : Basis ι R N :=
   (exists_smith_normal_form_of_rank_eq b h).choose_spec.choose_spec.choose
 
 /--
@@ -643,7 +643,7 @@ theorem Submodule.smithNormalFormBotBasis_def (b : Basis ι R M)
 
 @[simp]
 theorem Submodule.smithNormalFormCoeffs_ne_zero (b : Basis ι R M)
-    (h : Module.finrank R N = Module.finrank R M) (i : ι ) :
+    (h : Module.finrank R N = Module.finrank R M) (i : ι) :
     smithNormalFormCoeffs b h i ≠ 0 := by
   intro hi
   apply Basis.ne_zero (smithNormalFormBotBasis b h) i

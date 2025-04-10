@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Jeremy Avigad
 -/
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Control.Basic
-import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice.Image
 import Mathlib.Order.Filter.Basic
 
 /-!
@@ -59,6 +59,7 @@ theorem image_mem_map (hs : s ∈ f) : m '' s ∈ map m f :=
 
 -- The simpNF linter says that the LHS can be simplified via `Filter.mem_map`.
 -- However this is a higher priority lemma.
+-- It seems the side condition `hf` is not applied by `simpNF`.
 -- https://github.com/leanprover/std4/issues/207
 @[simp 1100, nolint simpNF]
 theorem image_mem_map_iff (hf : Injective m) : m '' s ∈ map m f ↔ s ∈ f :=
@@ -761,6 +762,16 @@ theorem principal_eq_map_coe_top (s : Set α) : 𝓟 s = map ((↑) : s → α) 
 theorem inf_principal_eq_bot_iff_comap {F : Filter α} {s : Set α} :
     F ⊓ 𝓟 s = ⊥ ↔ comap ((↑) : s → α) F = ⊥ := by
   rw [principal_eq_map_coe_top s, ← Filter.push_pull', inf_top_eq, map_eq_bot_iff]
+
+lemma map_generate_le_generate_preimage_preimage (U : Set (Set β)) (f : β → α) :
+    map f (generate U) ≤ generate ((f ⁻¹' ·) ⁻¹' U) := by
+  rw [le_generate_iff]
+  exact fun u hu ↦ mem_generate_of_mem hu
+
+lemma generate_image_preimage_le_comap (U : Set (Set α)) (f : β → α) :
+    generate ((f ⁻¹' ·) '' U) ≤ comap f (generate U) := by
+  rw [← map_le_iff_le_comap, le_generate_iff]
+  exact fun u hu ↦ mem_generate_of_mem ⟨u, hu, rfl⟩
 
 section Applicative
 
