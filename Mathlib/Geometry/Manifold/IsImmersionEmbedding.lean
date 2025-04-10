@@ -120,6 +120,9 @@ lemma congr_of_eventuallyEq {x : M} (h : IsImmersionAt F I I' n f x) (h' : f =�
       sorry
     exact EqOn.trans missing h.writtenInCharts
 
+-- XXX: this result follows from the MSplitAt results immediately: but does it hold without
+-- completeness as well? (If so, a separate proof could be worth it.)
+
 /-- If `f: M → N` and `g: M' × N'` are immersions at `x` and `x'`, respectively,
 then `f × g: M × N → M' × N'` is an immersion at `(x, x')`. -/
 theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}

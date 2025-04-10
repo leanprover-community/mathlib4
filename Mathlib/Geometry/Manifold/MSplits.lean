@@ -82,6 +82,13 @@ lemma congr (hf : MSplitsAt I I' f x) (hfg : g =ᶠ[nhds x] f) : MSplitsAt I I' 
   unfold MSplitsAt
   exact this ▸ hf
 
+lemma prodMap {y : N} (hf : MSplitsAt I I' f x) {g : N → N'} (hg : MSplitsAt J J' g y) :
+    MSplitsAt (I.prod J) (I'.prod J') (Prod.map f g) (x, y) := by
+  -- missing lemma: mfderiv of Prod.map
+  unfold MSplitsAt at hf hg ⊢
+  -- then apply Splits.prodMap to hf and hg
+  sorry
+
 section
 
 variable [IsManifold I 1 M] {e : PartialHomeomorph M H} {x : M}
@@ -213,6 +220,9 @@ variable {f g : M → M'}
 
 lemma congr (hf : MSplits I I' f) (hfg : g = f) : MSplits I I' g :=
   fun x ↦ (hf x).congr hfg.eventuallyEq
+
+lemma prodMap (hf : MSplits I I' f) {g : N → N'} (hg : MSplits J J' g) :
+    MSplits (I.prod J) (I'.prod J') (Prod.map f g) := fun (x, y) ↦ (hf x).prodMap (hg y)
 
 lemma _root_.IsLocalDiffeomorph.splits {f : M → M'}
     (hf : IsLocalDiffeomorph I I' n f) (hn : 1 ≤ n) : MSplits I I' f :=
