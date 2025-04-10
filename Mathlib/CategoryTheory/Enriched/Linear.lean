@@ -23,113 +23,79 @@ section EnrichedOfLinear
 variable {R : Type u} [CommRing R]
 variable {C : Type u} [Category.{u} C] [Preadditive C] [Linear R C]
 
-lemma aux1 {X Y Z : Type u} [AddCommGroup X] [Module R X]
-    [AddCommGroup Y] [Module R Y] [AddCommGroup Z] [Module R Z] (f : X →ₗ[R] Y):
-    ModuleCat.ofHom f ▷ ModuleCat.of R Z =
-    ModuleCat.ofHom (LinearMap.rTensor Z f) :=
-  rfl
-
-lemma aux1' {X Y Z : Type u} [AddCommGroup X] [Module R X]
-    [AddCommGroup Y] [Module R Y] [AddCommGroup Z] [Module R Z] (f : X →ₗ[R] Y):
-    ModuleCat.of R Z ◁ ModuleCat.ofHom f =
-    ModuleCat.ofHom (LinearMap.lTensor Z f) :=
-  rfl
-
-
-lemma aux2 {X : Type u} [AddCommGroup X] [Module R X] :
-    ModuleCat.Hom.hom (λ_ (ModuleCat.of R X)).inv = (TensorProduct.lid R X).symm.toLinearMap :=
-  rfl
-
-
-lemma aux2' {X : Type u} [AddCommGroup X] [Module R X] :
-    ModuleCat.Hom.hom (ρ_ (ModuleCat.of R X)).inv = (TensorProduct.rid R X).symm.toLinearMap :=
+@[simp]
+lemma aux6 {X Y : Type u} [AddCommGroup X] [Module R X]
+    [AddCommGroup Y] [Module R Y] :
+    (tensorObj (𝒞 := ModuleCat.moduleCategory R) (ModuleCat.of R X) (ModuleCat.of R Y)).carrier =
+    X ⊗[R] Y := by
   rfl
 
 @[simp]
-lemma aux2'' {X Y Z : Type u} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y]
-    [AddCommGroup Z] [Module R Z] :
-    ModuleCat.Hom.hom (α_ (ModuleCat.of R X) (ModuleCat.of R Y) (ModuleCat.of R Z)).inv =
-      (TensorProduct.assoc R X Y Z).symm.toLinearMap :=
+lemma aux1 {X Y : C} {Z W : Type u} [AddCommGroup Z] [Module R Z]
+    [AddCommGroup W] [Module R W] (f : Z →ₗ[R] W) :
+    (ModuleCat.ofHom f ▷ ModuleCat.of R (X ⟶ Y)).hom = f.rTensor (X ⟶ Y) :=
   rfl
 
-lemma aux8 {W X Y Z : C} (f₁ f₂ : ((W ⟶ X) ⊗[R] (X ⟶ Y)) ⊗[R] (Y ⟶ Z)) :
-    (TensorProduct.assoc R _ _ _).toLinearMap (f₁ + f₂) =
-    (TensorProduct.assoc R _ _ _).toLinearMap f₁ + (TensorProduct.assoc R _ _ _).toLinearMap f₂ :=
-  (TensorProduct.assoc R (W ⟶ X) (X ⟶ Y) (Y ⟶ Z)).map_add  f₁ f₂
+@[simp]
+lemma aux1' {X Y : C} {Z W : Type u} [AddCommGroup Z] [Module R Z]
+    [AddCommGroup W] [Module R W] (f : Z →ₗ[R] W) :
+    (ModuleCat.of R (X ⟶ Y) ◁ ModuleCat.ofHom f).hom = f.lTensor (X ⟶ Y) :=
+  rfl
 
-lemma aux4'' {W X Y Z : C} (f : ((W ⟶ X) ⊗[R] (X ⟶ Y)) ⊗[R] (Y ⟶ Z)) :
-    lift (Linear.comp W Y Z) ((LinearMap.rTensor (Y ⟶ Z) (lift (Linear.comp W X Y))) f) =
-      lift (R := R) (Linear.comp W X Z)
-        (LinearMap.lTensor (R := R) (N := (X ⟶ Y) ⊗[R] (Y ⟶ Z)) (P := X ⟶ Z) (W ⟶ X)
-          (lift (Linear.comp X Y Z)) ((TensorProduct.assoc R _ _ _).toLinearMap f)) :=
+lemma aux2 {X : ModuleCat R} (x : X) : (λ_ X).inv.hom x = (TensorProduct.lid R X).symm x :=
+  rfl
+
+lemma aux2' {X : ModuleCat R} (x : X) : (ρ_ X).inv.hom x = (TensorProduct.rid R X).symm x :=
+  rfl
+
+lemma lift_comp_lift_comp_rTensor_eq {W X Y Z : C} (f : ((W ⟶ X) ⊗[R] (X ⟶ Y)) ⊗[R] (Y ⟶ Z)) :
+    lift (Linear.comp W Y Z) (((lift (Linear.comp W X Y)).rTensor (Y ⟶ Z)) f) =
+      lift (Linear.comp W X Z)
+        ((lift (Linear.comp X Y Z)).lTensor (W ⟶ X) ((TensorProduct.assoc R _ _ _) f)) :=
   TensorProduct.induction_on f rfl
-    (fun fg h => TensorProduct.induction_on fg
-      (by simp)
-      (by simp)
-      (fun fg₂ fg₃ h₂ h₃ => by
-        simp
-        rw [add_tmul]
-        erw [aux8]
-        simp
-        erw [← h₂, ← h₃, ← Preadditive.add_comp]))
-    (fun f₂ f₃ h₂ h₃ => by
-      rw [aux8]
-      simp [h₂, h₃])
+    (fun fg _ => TensorProduct.induction_on fg (by simp) (by simp)
+      (fun _ _ h₂ h₃ => by simp [add_tmul, LinearEquiv.map_add, ← h₂, ← h₃]))
+    (fun _ _ h₂ h₃ => by simp [h₂, h₃, LinearEquiv.map_add])
 
-lemma aux5 {X : C} : (LinearMap.ringLmapEquivSelf R R (X ⟶ X)).symm (𝟙 X) =
-    LinearMap.toSpanSingleton R (X ⟶ X) (𝟙 X) := rfl
-
-lemma aux5' {X Z : C} (f : X ⟶ Z) :
-    (LinearMap.ringLmapEquivSelf R R (X ⟶ Z)).symm f =
-    LinearMap.toSpanSingleton R  (X ⟶ Z) f := rfl
 
 open ModuleCat Hom
 
 noncomputable instance : EnrichedOrdinaryCategory (ModuleCat R) C where
   Hom X Y := .of R (X ⟶ Y)
-  id X := ModuleCat.ofHom <| LinearMap.toSpanSingleton R (X ⟶ X) (𝟙 X)
+  id X := ModuleCat.ofHom <| (LinearMap.ringLmapEquivSelf R R (X ⟶ X)).symm (𝟙 X)
   comp X Y Z := ModuleCat.ofHom <| lift (Linear.comp X Y Z)
   id_comp X Y := by
     ext f
-    simp at f ⊢
-    simp only [aux1, hom_ofHom, aux2] at f ⊢
-    erw [lid_symm_apply, LinearMap.rTensor_tmul _ (LinearMap.toSpanSingleton R _ (𝟙 X)) f 1,
-      lift.tmul]
+    simp only [LinearMap.ringLmapEquivSelf_symm_apply, ModuleCat.hom_comp, aux6, hom_ofHom,
+      LinearMap.coe_comp, Function.comp_apply, ModuleCat.hom_id, LinearMap.id_coe, id_eq] at f ⊢
+    rw [aux2, lid_symm_apply, aux1]
+    erw [LinearMap.rTensor_tmul _ (LinearMap.smulRight (1 : R →ₗ[R] R) (𝟙 X)) f 1]
     simp
   comp_id X Y := by
     ext f
-    simp only [aux1', ModuleCat.hom_comp, ModuleCat.hom_ofHom, aux2', LinearMap.coe_comp,
-      Function.comp_apply, ModuleCat.hom_id, LinearMap.id_coe, id_eq] at f ⊢
-    erw [rid_symm_apply, LinearMap.lTensor_tmul _ (LinearMap.toSpanSingleton R _ (𝟙 Y)) f 1,
-      lift.tmul]
+    simp only [LinearMap.ringLmapEquivSelf_symm_apply, ModuleCat.hom_comp, aux6, hom_ofHom,
+      LinearMap.coe_comp, Function.comp_apply, ModuleCat.hom_id, LinearMap.id_coe, id_eq] at f ⊢
+    rw [aux2', rid_symm_apply, aux1']
+    erw [LinearMap.lTensor_tmul _ (LinearMap.smulRight (1 : R →ₗ[R] R) (𝟙 Y)) f 1]
     simp
   assoc W X Y Z := by
     ext f
     change _ ⊗[R] _ ⊗[R] _ at f
-    simp at f ⊢
-    erw [aux4'']
+    simp only [ModuleCat.hom_comp, aux6, hom_ofHom, LinearMap.coe_comp, Function.comp_apply] at f ⊢
+    erw [lift_comp_lift_comp_rTensor_eq]
     congr
     exact (TensorProduct.assoc R (W ⟶ X) (X ⟶ Y) (Y ⟶ Z)).right_inv f
   homEquiv {X Y} := (ModuleCat.homEquiv.trans
       (LinearMap.ringLmapEquivSelf R R (X ⟶ Y)).toEquiv).symm
   homEquiv_id X := rfl
   homEquiv_comp {X Y Z} f g := by
-    dsimp [eComp]
-    erw [aux5', aux5', aux5', Linear.toSpanSingleton_comp]
-    simp [ModuleCat.homEquiv]
     ext
-    simp
-    erw [aux2]
-    simp [TensorProduct.lid]
-    change _ =
+    change (LinearMap.toSpanSingleton R (X ⟶ Z) (f ≫ g)) 1 =
       (lift (Linear.comp X Y Z))
         ((ModuleCat.Hom.hom
           (ModuleCat.ofHom (LinearMap.toSpanSingleton R (X ⟶ Y) f) ⊗
             ModuleCat.ofHom (LinearMap.toSpanSingleton R (Y ⟶ Z) g)))
           (1 ⊗ₜ 1))
-    simp
-    erw [map_tmul (R := R) (LinearMap.toSpanSingleton R (X ⟶ Y) f)
-      (LinearMap.toSpanSingleton R (Y ⟶ Z) g) 1 1]
     simp
 
 end EnrichedOfLinear
@@ -141,16 +107,17 @@ variable {C : Type u} [Category.{u} C] [EnrichedOrdinaryCategory (ModuleCat R) C
 
 variable (R)
 
-def addCommGroupModuleCatHom {X Y : C} : AddCommGroup (X ⟶ Y) :=
+abbrev addCommGroupModuleCatHom {X Y : C} : AddCommGroup (X ⟶ Y) :=
   (EnrichedOrdinaryCategory.homEquiv (V := ModuleCat R)).addCommGroup
 
 instance moduleModuleCatHom {X Y : C} :
     letI : AddCommGroup (X ⟶ Y) := addCommGroupModuleCatHom R
     Module R (X ⟶ Y) :=
-  (EnrichedOrdinaryCategory.homEquiv (V := ModuleCat R)).module R
+  EnrichedOrdinaryCategory.homEquiv.module R
 
 variable {X Y : C} (f g : X ⟶ Y) (r : R)
 
+-- Can't check `f + g` here because `addCommGroupModuleCatHom` can't be made an instance
 #check r • f
 
 end LinearOfEnriched
