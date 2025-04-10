@@ -37,7 +37,7 @@ def ofNatHom : ℕ →+* ℤ :=
 section cast
 
 @[simp, norm_cast]
-theorem cast_ite [AddGroupWithOne α] (P : Prop) [Decidable P] (m n : ℤ) :
+theorem cast_ite [IntCast α] (P : Prop) [Decidable P] (m n : ℤ) :
     ((ite P m n : ℤ) : α) = ite P (m : α) (n : α) :=
   apply_ite _ _ _ _
 

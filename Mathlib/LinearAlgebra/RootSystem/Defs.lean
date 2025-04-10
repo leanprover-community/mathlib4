@@ -99,8 +99,10 @@ structure RootPairing extends PerfectPairing R M N where
 /-- A root datum is a root pairing with coefficients in the integers and for which the root and
 coroot spaces are finitely-generated free Abelian groups.
 
-Note that the latter assumptions `[Free ℤ X₁] [Finite ℤ X₁] [Free ℤ X₂] [Finite ℤ X₂]` should be
-supplied as mixins. -/
+Note that the latter assumptions `[Finite ℤ X₁] [Finite ℤ X₂]` should be supplied as mixins, and
+that freeness follows automatically since two finitely-generated Abelian groups in perfect pairing
+are necessarily free. Moreover Lean knows this, e.g., via `PerfectPairing.reflexive_left`,
+`Module.instNoZeroSMulDivisorsOfIsDomain`, `Module.free_of_finite_type_torsion_free'`. -/
 abbrev RootDatum (X₁ X₂ : Type*) [AddCommGroup X₁] [AddCommGroup X₂] := RootPairing ι ℤ X₁ X₂
 
 /-- A root system is a root pairing for which the roots and coroots span their ambient modules.
@@ -415,14 +417,14 @@ of a root / coroot. -/
 variable {i j} in
 @[simp]
 lemma root_eq_neg_iff :
-    P.root i = - P.root j ↔ j = P.reflection_perm i i := by
+    P.root i = - P.root j ↔ i = P.reflection_perm j j := by
   refine ⟨fun h ↦ P.root.injective ?_, fun h ↦ by simp [h]⟩
-  rw [root_reflection_perm, reflection_apply_self, h, neg_neg]
+  rw [root_reflection_perm, reflection_apply_self, h]
 
 variable {i j} in
 @[simp]
 lemma coroot_eq_neg_iff :
-    P.coroot i = - P.coroot j ↔ j = P.reflection_perm i i :=
+    P.coroot i = - P.coroot j ↔ i = P.reflection_perm j j :=
   P.flip.root_eq_neg_iff
 
 lemma neg_mem_range_root_iff {x : M} :
@@ -748,5 +750,48 @@ lemma isFixedPt_reflection_of_isOrthogonal {s : Set ι} (hj : ∀ i ∈ s, P.IsO
   | mem u hu =>
       obtain ⟨i, his, rfl⟩ := hu
       exact IsOrthogonal.reflection_apply_right <| hj i his
+
+lemma reflection_perm_eq_of_pairing_eq_zero (h : P.pairing j i = 0) :
+    P.reflection_perm i j = j :=
+  P.root.injective <| by simp [reflection_apply, h]
+
+lemma reflection_perm_eq_of_pairing_eq_zero' (h : P.pairing i j = 0) :
+    P.reflection_perm i j = j :=
+  P.flip.reflection_perm_eq_of_pairing_eq_zero h
+
+lemma reflection_perm_eq_iff_smul_root :
+    P.reflection_perm i j = j ↔ P.pairing j i • P.root i = 0 :=
+  ⟨fun h ↦ by simpa [h] using P.reflection_perm_root i j,
+    fun h ↦ P.root.injective <| by simp [reflection_apply, h]⟩
+
+lemma reflection_perm_eq_iff_smul_coroot :
+    P.reflection_perm i j = j ↔ P.pairing i j • P.coroot i = 0 :=
+  P.flip.reflection_perm_eq_iff_smul_root
+
+lemma pairing_zero_iff [NeZero (2 : R)] [NoZeroSMulDivisors R M] :
+    P.pairing i j = 0 ↔ P.pairing j i = 0 := by
+  suffices ∀ {i j : ι}, P.pairing i j = 0 → P.pairing j i = 0 from ⟨this, this⟩
+  intro i j h
+  simpa [P.ne_zero i, reflection_perm_eq_iff_smul_root] using
+    P.reflection_perm_eq_of_pairing_eq_zero' h
+
+lemma pairing_zero_iff' [NeZero (2 : R)] [IsDomain R] :
+    P.pairing i j = 0 ↔ P.pairing j i = 0 := by
+  have := P.reflexive_left
+  exact pairing_zero_iff
+
+lemma coxeterWeight_zero_iff_isOrthogonal [NeZero (2 : R)] [IsDomain R] :
+    P.coxeterWeight i j = 0 ↔ P.IsOrthogonal i j := by
+  have := P.reflexive_left
+  simp [coxeterWeight, IsOrthogonal, P.pairing_zero_iff (i := i) (j := j)]
+
+lemma isOrthogonal_iff_pairing_eq_zero [NeZero (2 : R)] [NoZeroSMulDivisors R M] :
+    P.IsOrthogonal i j ↔ P.pairing i j = 0 :=
+  ⟨fun h ↦ h.1, fun h ↦ ⟨h, pairing_zero_iff.mp h⟩⟩
+
+lemma isFixedPt_reflection_perm_iff [NeZero (2 : R)] [NoZeroSMulDivisors R M] :
+    IsFixedPt (P.reflection_perm i) j ↔ P.pairing i j = 0 := by
+  refine ⟨fun h ↦ ?_, P.reflection_perm_eq_of_pairing_eq_zero'⟩
+  simpa [P.ne_zero i, pairing_zero_iff, IsFixedPt, reflection_perm_eq_iff_smul_root] using h
 
 end RootPairing
