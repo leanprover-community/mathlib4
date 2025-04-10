@@ -184,8 +184,11 @@ theorem msplitsAt {x : M} (h : IsImmersionAt F I I' n f x) : MSplitsAt I I' f x 
       exact isClosed_univ.prod isClosed_singleton
     · have hrange : LinearMap.range ((ContinuousLinearMap.id 𝕜 E).prod (0 : E →L[𝕜] F)) =
           Submodule.prod ⊤ ⊥ := by
-        -- rw [LinearMap.range_prod_eq] applies, but only partially
-        sorry
+        erw [LinearMap.range_prod_eq]
+        -- No idea why simp needs to run twice.
+        simp only [ContinuousLinearMap.coe_id, LinearMap.range_id, ContinuousLinearMap.coe_zero,
+          LinearMap.range_zero]
+        simp
       simp_rw [hrange]
       -- want: ClosedComplemented.prod, then use this for top and bottom
       sorry
@@ -345,14 +348,11 @@ theorem isEmbedding (h : IsSmoothEmbedding F I I' n f) : IsEmbedding f := h.2
 variable [IsManifold I 1 M] [IsManifold I' 1 M'] in
 lemma of_mfderiv_injective_of_compactSpace_of_T2Space
     [FiniteDimensional 𝕜 E] [CompleteSpace E'] [CompleteSpace F] [CompactSpace M] [T2Space M']
-    (hf : ∀ x, Injective (mfderiv I I' f x))
-    (hf' : Injective f) (hn : 1 ≤ n) : IsSmoothEmbedding F I I' n f := by
+    (hf : ∀ x, Injective (mfderiv I I' f x)) (hf' : Injective f) :
+    IsSmoothEmbedding F I I' n f := by
   have := FiniteDimensional.complete (𝕜 := 𝕜) E
-  constructor
-  · exact IsImmersion.of_mfderiv_injective hf
-  · -- The following does it, but need to extract the previous step
-    -- apply (this.contMDiff.continuous.isClosedEmbedding hf').isEmbedding
-    sorry
+  have : IsImmersion F I I' n f := IsImmersion.of_mfderiv_injective hf
+  exact ⟨this, (this.contMDiff.continuous.isClosedEmbedding hf').isEmbedding⟩
 
 variable [IsManifold I 1 M] [IsManifold I' 1 M'] [IsManifold J n N] in
 /-- The composition of two smooth embeddings is a smooth embedding. -/
