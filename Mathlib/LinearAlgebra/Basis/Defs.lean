@@ -139,7 +139,7 @@ theorem repr_self_apply (j) [Decidable (i = j)] : b.repr (b i) j = if i = j then
 theorem repr_symm_apply (v) : b.repr.symm v = Finsupp.linearCombination R b v :=
   calc
     b.repr.symm v = b.repr.symm (v.sum Finsupp.single) := by simp
-    _ = v.sum fun i vi => b.repr.symm (Finsupp.single i vi) := map_finsupp_sum ..
+    _ = v.sum fun i vi => b.repr.symm (Finsupp.single i vi) := map_finsuppSum ..
     _ = Finsupp.linearCombination R b v := by simp only [repr_symm_single,
                                                          Finsupp.linearCombination_apply]
 
@@ -353,7 +353,7 @@ theorem repr_apply_eq (f : M → ι → R) (hadd : ∀ x y, f (x + y) = f x + f 
     (x : M) (i : ι) : b.repr x i = f x i := by
   let f_i : M →ₗ[R] R :=
     { toFun x := f x i
-      map_add' _ _ := by beta_reduce; rw [hadd, Pi.add_apply]
+      map_add' _ _ := by rw [hadd, Pi.add_apply]
       map_smul' _ _ := by simp [hsmul, Pi.smul_apply] }
   have : Finsupp.lapply i ∘ₗ ↑b.repr = f_i := by
     refine b.ext fun j => ?_
@@ -400,15 +400,7 @@ def mapCoeffs (h : ∀ (c) (x : M), f c • x = c • x) : Basis ι R' M := by
 variable (h : ∀ (c) (x : M), f c • x = c • x)
 
 theorem mapCoeffs_apply (i : ι) : b.mapCoeffs f h i = b i :=
-  apply_eq_iff.mpr <| by
-    -- Porting note: in Lean 3, these were automatically inferred from the definition of
-    -- `mapCoeffs`.
-    letI : Module R' R := Module.compHom R (↑f.symm : R' →+* R)
-    haveI : IsScalarTower R' R M :=
-    { smul_assoc := fun x y z => by
-        change (f.symm x * y) • z = x • (y • z)
-        rw [mul_smul, ← h, f.apply_symm_apply] }
-    simp
+  apply_eq_iff.mpr <| by simp
 
 @[simp]
 theorem coe_mapCoeffs : (b.mapCoeffs f h : ι → M) = b :=

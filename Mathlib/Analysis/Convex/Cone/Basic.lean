@@ -48,11 +48,12 @@ variable {𝕜 E F G : Type*}
 section Definitions
 
 variable (𝕜 E)
-variable [OrderedSemiring 𝕜]
+variable [Semiring 𝕜] [PartialOrder 𝕜]
 
+-- TODO: remove `[IsOrderedRing 𝕜]`.
 /-- A convex cone is a subset `s` of a `𝕜`-module such that `a • x + b • y ∈ s` whenever `a, b > 0`
 and `x, y ∈ s`. -/
-structure ConvexCone [AddCommMonoid E] [SMul 𝕜 E] where
+structure ConvexCone [IsOrderedRing 𝕜] [AddCommMonoid E] [SMul 𝕜 E] where
   /-- The **carrier set** underlying this cone: the set of points contained in it -/
   carrier : Set E
   smul_mem' : ∀ ⦃c : 𝕜⦄, 0 < c → ∀ ⦃x : E⦄, x ∈ carrier → c • x ∈ carrier
@@ -64,7 +65,7 @@ namespace ConvexCone
 
 section OrderedSemiring
 
-variable [OrderedSemiring 𝕜] [AddCommMonoid E]
+variable [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜] [AddCommMonoid E]
 
 section SMul
 
@@ -75,11 +76,11 @@ instance : SetLike (ConvexCone 𝕜 E) E where
   coe_injective' S T h := by cases S; cases T; congr
 
 @[simp]
-theorem coe_mk {s : Set E} {h₁ h₂} : ↑(@mk 𝕜 _ _ _ _ s h₁ h₂) = s :=
+theorem coe_mk {s : Set E} {h₁ h₂} : ↑(mk (𝕜 := 𝕜) s h₁ h₂) = s :=
   rfl
 
 @[simp]
-theorem mem_mk {s : Set E} {h₁ h₂ x} : x ∈ @mk 𝕜 _ _ _ _ s h₁ h₂ ↔ x ∈ s :=
+theorem mem_mk {s : Set E} {h₁ h₂ x} : x ∈ mk (𝕜 := 𝕜) s h₁ h₂ ↔ x ∈ s :=
   Iff.rfl
 
 /-- Two `ConvexCone`s are equal if they have the same elements. -/
@@ -283,7 +284,7 @@ end LinearOrderedField
 
 section OrderedSemiring
 
-variable [OrderedSemiring 𝕜]
+variable [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
 
 section AddCommMonoid
 
@@ -346,7 +347,7 @@ theorem Blunt.salient {S : ConvexCone 𝕜 E} : S.Blunt → S.Salient := by
 /-- A pointed convex cone defines a preorder. -/
 def toPreorder (h₁ : S.Pointed) : Preorder E where
   le x y := y - x ∈ S
-  le_refl x := by change x - x ∈ S; rw [sub_self x]; exact h₁
+  le_refl x := by rw [sub_self x]; exact h₁
   le_trans x y z xy zy := by simpa using add_mem S zy xy
 
 /-- A pointed and salient cone defines a partial order. -/
@@ -427,7 +428,7 @@ namespace Submodule
 
 section OrderedSemiring
 
-variable [OrderedSemiring 𝕜]
+variable [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
 
 section AddCommMonoid
 
@@ -481,7 +482,8 @@ namespace ConvexCone
 
 section PositiveCone
 
-variable (𝕜 E) [OrderedSemiring 𝕜] [OrderedAddCommGroup E] [Module 𝕜 E] [OrderedSMul 𝕜 E]
+variable (𝕜 E) [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
+  [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E] [Module 𝕜 E] [OrderedSMul 𝕜 E]
 
 /-- The positive cone is the convex cone formed by the set of nonnegative elements in an ordered
 module.

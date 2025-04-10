@@ -6,6 +6,7 @@ Authors: Joseph Myers, Manuel Candales
 import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Geometry.Euclidean.PerpBisector
 import Mathlib.Algebra.QuadraticDiscriminant
+import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 
 /-!
 # Euclidean spaces
@@ -361,6 +362,11 @@ theorem eq_orthogonalProjection_of_eq_subspace {s s' : AffineSubspace ℝ P} [No
   subst h
   rfl
 
+@[simp] lemma orthogonalProjection_affineSpan_singleton (p₁ p₂ : P) :
+    orthogonalProjection (affineSpan ℝ {p₁}) p₂ = p₁ := by
+  have h := SetLike.coe_mem (orthogonalProjection (affineSpan ℝ {p₁}) p₂)
+  rwa [mem_affineSpan_singleton] at h
+
 /-- The distance to a point's orthogonal projection is 0 iff it lies in the subspace. -/
 theorem dist_orthogonalProjection_eq_zero_iff {s : AffineSubspace ℝ P} [Nonempty s]
     [HasOrthogonalProjection s.direction] {p : P} :
@@ -622,3 +628,32 @@ theorem reflection_vadd_smul_vsub_orthogonalProjection {s : AffineSubspace ℝ P
     (Submodule.smul_mem _ _ (vsub_orthogonalProjection_mem_direction_orthogonal s _))
 
 end EuclideanGeometry
+
+namespace Affine
+
+namespace Simplex
+
+open EuclideanGeometry
+
+variable {V : Type*} {P : Type*}
+variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable [NormedAddTorsor V P]
+
+variable {n : ℕ} [NeZero n] (s : Simplex ℝ P n)
+
+@[simp] lemma ne_orthogonalProjection_faceOpposite (i : Fin (n + 1)) :
+    s.points i ≠
+      orthogonalProjection (affineSpan ℝ (Set.range (s.faceOpposite i).points)) (s.points i) := by
+  intro h
+  rw [eq_comm, EuclideanGeometry.orthogonalProjection_eq_self_iff,
+    mem_affineSpan_range_faceOpposite_points_iff] at h
+  simp at h
+
+lemma dist_orthogonalProjection_faceOpposite_pos (i : Fin (n + 1)) :
+    0 < dist (s.points i)
+      (orthogonalProjection (affineSpan ℝ (Set.range (s.faceOpposite i).points)) (s.points i)) := by
+  simp
+
+end Simplex
+
+end Affine

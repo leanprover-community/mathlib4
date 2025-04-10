@@ -232,7 +232,8 @@ theorem det_submatrix_equiv_self (e : n ≃ m) (A : Matrix m m R) :
 /-- Permuting rows and columns with two equivalences does not change the absolute value of the
 determinant. -/
 @[simp]
-theorem abs_det_submatrix_equiv_equiv {R : Type*} [LinearOrderedCommRing R]
+theorem abs_det_submatrix_equiv_equiv {R : Type*}
+    [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
     (e₁ e₂ : n ≃ m) (A : Matrix m m R) :
     |(A.submatrix e₁ e₂).det| = |A.det| := by
   have hee : e₂ = e₁.trans (e₁.symm.trans e₂) := by ext; simp
@@ -247,6 +248,16 @@ For the `simp` version of this lemma, see `det_submatrix_equiv_self`; this one i
 -/
 theorem det_reindex_self (e : m ≃ n) (A : Matrix m m R) : det (reindex e e A) = det A :=
   det_submatrix_equiv_self e.symm A
+
+/-- Reindexing both indices along equivalences preserves the absolute of the determinant.
+
+For the `simp` version of this lemma, see `abs_det_submatrix_equiv_equiv`;
+this one is unsuitable because `Matrix.reindex_apply` unfolds `reindex` first.
+-/
+theorem abs_det_reindex {R : Type*} [LinearOrderedCommRing R]
+    (e₁ e₂ : m ≃ n) (A : Matrix m m R) :
+    |det (reindex e₁ e₂ A)| = |det A| :=
+  abs_det_submatrix_equiv_equiv e₁.symm e₂.symm A
 
 theorem det_smul (A : Matrix n n R) (c : R) : det (c • A) = c ^ Fintype.card n * det A :=
   calc
@@ -309,6 +320,16 @@ theorem _root_.AlgHom.map_det [Algebra R S] {T : Type z} [CommRing T] [Algebra R
 theorem _root_.AlgEquiv.map_det [Algebra R S] {T : Type z} [CommRing T] [Algebra R T]
     (f : S ≃ₐ[R] T) (M : Matrix n n S) : f M.det = Matrix.det (f.mapMatrix M) :=
   f.toAlgHom.map_det _
+
+@[norm_cast]
+theorem _root_.Int.cast_det (M : Matrix n n ℤ) :
+    (M.det : R) = (M.map fun x ↦ (x : R)).det :=
+  Int.castRingHom R |>.map_det M
+
+@[norm_cast]
+theorem _root_.Rat.cast_det {F : Type*} [Field F] [CharZero F] (M : Matrix n n ℚ) :
+    (M.det : F) = (M.map fun x ↦ (x : F)).det :=
+  Rat.castHom F |>.map_det M
 
 end HomMap
 
@@ -468,7 +489,8 @@ theorem det_updateCol_add_smul_self (A : Matrix n n R) {i j : n} (hij : i ≠ j)
 alias det_updateColumn_add_smul_self := det_updateCol_add_smul_self
 
 theorem linearIndependent_rows_of_det_ne_zero [IsDomain R] {A : Matrix m m R} (hA : A.det ≠ 0) :
-    LinearIndependent R (fun i ↦ A i) := by
+    LinearIndependent R A.row := by
+  rw [row_def]
   contrapose! hA
   obtain ⟨c, hc0, i, hci⟩ := Fintype.not_linearIndependent_iff.1 hA
   have h0 := A.det_updateRow_sum i c
@@ -476,7 +498,7 @@ theorem linearIndependent_rows_of_det_ne_zero [IsDomain R] {A : Matrix m m R} (h
     mul_eq_zero_iff_left hci] at h0
 
 theorem linearIndependent_cols_of_det_ne_zero [IsDomain R] {A : Matrix m m R} (hA : A.det ≠ 0) :
-    LinearIndependent R (fun i ↦ Aᵀ i) :=
+    LinearIndependent R A.col :=
   Matrix.linearIndependent_rows_of_det_ne_zero (by simpa)
 
 theorem det_eq_of_forall_row_eq_smul_add_const_aux {A B : Matrix n n R} {s : Finset n} :
@@ -668,7 +690,7 @@ theorem det_fromBlocks_zero₂₁ (A : Matrix m m R) (B : Matrix m n R) (D : Mat
         · exact h2.left x
         · exact h2.right x
       · intro σ hσ
-        erw [Set.mem_toFinset, MonoidHom.mem_range] at hσ
+        rw [mem_coe, Set.mem_toFinset] at hσ
         obtain ⟨σ₁₂, hσ₁₂⟩ := hσ
         use σ₁₂
         rw [← hσ₁₂]
@@ -684,7 +706,6 @@ theorem det_fromBlocks_zero₂₁ (A : Matrix m m R) (B : Matrix m n R) (D : Mat
     · rintro σ - hσn
       have h1 : ¬∀ x, ∃ y, Sum.inl y = σ (Sum.inl x) := by
         rw [Set.mem_toFinset] at hσn
-        -- Porting note: golfed
         simpa only [Set.MapsTo, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff] using
           mt mem_sumCongrHom_range_of_perm_mapsTo_inl hσn
       obtain ⟨a, ha⟩ := not_forall.mp h1

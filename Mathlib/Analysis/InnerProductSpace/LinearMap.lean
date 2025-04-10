@@ -205,8 +205,11 @@ def innerSLFlip : E →L[𝕜] E →L⋆[𝕜] 𝕜 :=
 theorem innerSLFlip_apply (x y : E) : innerSLFlip 𝕜 x y = ⟪y, x⟫ :=
   rfl
 
+set_option linter.style.maxHeartbeats false in
+-- This option was set before the `maxHeartbeats` linter existed and had no comment.
+set_option synthInstance.maxHeartbeats 40000 in
 variable (F) in
-@[simp] lemma innerSL_real_flip : (innerSL ℝ (E := F)).flip = innerSL ℝ := by
+@[simp] lemma innerSL_real_flip : (innerSL ℝ (E := F)).flip = innerSL ℝ (E := F) := by
   ext v w
   exact real_inner_comm _ _
 

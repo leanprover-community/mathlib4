@@ -344,39 +344,39 @@ end LinearEquiv
 
 namespace ContinuousLinearMap
 
-variable [CompleteSpace E] [RingHomInvPair σ' σ]
+variable [CompleteSpace E] [RingHomInvPair σ' σ] {f : E →SL[σ] F}
 
 /-- An injective continuous linear map with a closed range defines a continuous linear equivalence
 between its domain and its range. -/
-noncomputable def equivRange (f : E →SL[σ] F) (hinj : Injective f) (hclo : IsClosed (range f)) :
+noncomputable def equivRange (hinj : Injective f) (hclo : IsClosed (range f)) :
     E ≃SL[σ] LinearMap.range f :=
   have : CompleteSpace (LinearMap.range f) := hclo.completeSpace_coe
   LinearEquiv.toContinuousLinearEquivOfContinuous (LinearEquiv.ofInjective f.toLinearMap hinj) <|
     (f.continuous.codRestrict fun x ↦ LinearMap.mem_range_self f x).congr fun _ ↦ rfl
 
 @[simp]
-theorem coe_linearMap_equivRange (f : E →SL[σ] F) (hinj : Injective f) (hclo : IsClosed (range f)) :
+theorem coe_linearMap_equivRange (hinj : Injective f) (hclo : IsClosed (range f)) :
     f.equivRange hinj hclo = f.rangeRestrict :=
   rfl
 
 @[simp]
-theorem coe_equivRange (f : E →SL[σ] F) (hinj : Injective f) (hclo : IsClosed (range f)) :
+theorem coe_equivRange (hinj : Injective f) (hclo : IsClosed (range f)) :
     (f.equivRange hinj hclo : E → LinearMap.range f) = f.rangeRestrict :=
   rfl
 
 @[simp]
-lemma equivRange_symm (f : E →SL[σ] F) (hinj : Injective f) (hclo : IsClosed (range f)) :
+lemma equivRange_symm_toLinearEquiv (hinj : Injective f) (hclo : IsClosed (range f)) :
     (f.equivRange hinj hclo).symm.toLinearEquiv =
       (LinearEquiv.ofInjective f.toLinearMap hinj).symm := by
   rfl
 
 @[simp]
-lemma equivRange_symm_apply (f : E →SL[σ] F) (hinj : Injective f) (hclo : IsClosed (range f))
+lemma equivRange_symm_apply (hinj : Injective f) (hclo : IsClosed (range f))
     (x : E) : (f.equivRange hinj hclo).symm ⟨f x, by simp⟩ = x := by
   suffices f ((f.equivRange hinj hclo).symm ⟨f x, by simp⟩) = f x from hinj this
   trans f ((f.equivRange hinj hclo).symm.toLinearEquiv ⟨f x, by simp⟩)
   · rfl -- is there an API lemma for this already?
-  dsimp only [equivRange_symm]
+  dsimp only [equivRange_symm_toLinearEquiv]
   set x' : LinearMap.range f := ⟨f x, by simp⟩
   set f' : E →ₛₗ[σ] F := ↑f
   change f' ((LinearEquiv.ofInjective f' hinj).symm x') = _
@@ -384,10 +384,11 @@ lemma equivRange_symm_apply (f : E →SL[σ] F) (hinj : Injective f) (hclo : IsC
 
 section
 
-variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace E] [CompleteSpace F]
+variable {E F : Type*}
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  [CompleteSpace E] [CompleteSpace F]
 
--- TODO: generalise the next two results to Fredholm operators, once mathlib has them
+-- TODO: once mathlib has Fredholm operators, generalise the next two lemmas accordingly
 
 /-- If `f : E →L[𝕜] F` is injective with closed range (and `E` and `F` are Banach spaces),
 `f` is anti-Lipschitz. -/
@@ -403,7 +404,7 @@ lemma antilipschitz_of_injective_of_isClosed_range (f : E →L[𝕜] F)
 
 /-- An injective bounded linear operator between Banach spaces has closed range
 iff it is anti-Lipschitz. -/
-lemma isClosed_range_if_antilipschitz_of_injective (f : E →L[𝕜] F)
+lemma isClosed_range_iff_antilipschitz_of_injective (f : E →L[𝕜] F)
     (hf : Injective f) : IsClosed (Set.range f) ↔ ∃ K, AntilipschitzWith K f := by
   refine ⟨fun h ↦ f.antilipschitz_of_injective_of_isClosed_range hf h, fun h ↦ ?_⟩
   choose K hf' using h
