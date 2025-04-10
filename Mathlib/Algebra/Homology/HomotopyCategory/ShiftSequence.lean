@@ -90,13 +90,22 @@ lemma shiftIso_hom_app (n a a' : ℤ) (ha' : n + a = a') (K : CochainComplex C �
     (shiftIso C n a a' ha').hom.app K =
       ShortComplex.homologyMap ((shiftShortComplexFunctorIso C n a a' ha').hom.app K) := by
   dsimp [shiftIso]
-  erw [id_comp, id_comp, comp_id]
+  rw [id_comp, id_comp]
+  -- This `erw` is required to bridge the gap between
+  -- `((shortComplexFunctor C (up ℤ) a').obj K).homology`
+  -- (the target of the first morphism)
+  -- and
+  -- `homology K a'`
+  -- (the source of the identity morphism).
+  erw [comp_id]
 
 lemma shiftIso_inv_app (n a a' : ℤ) (ha' : n + a = a') (K : CochainComplex C ℤ) :
     (shiftIso C n a a' ha').inv.app K =
       ShortComplex.homologyMap ((shiftShortComplexFunctorIso C n a a' ha').inv.app K) := by
   dsimp [shiftIso]
-  erw [id_comp, comp_id, comp_id]
+  rw [id_comp, comp_id]
+  -- This `erw` is required as above in `shiftIso_hom_app`.
+  erw [comp_id]
 
 end ShiftSequence
 

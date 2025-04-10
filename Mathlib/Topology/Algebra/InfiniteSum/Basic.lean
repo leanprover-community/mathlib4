@@ -3,8 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mitchell Lee
 -/
-import Mathlib.Topology.Algebra.InfiniteSum.Defs
+import Mathlib.Algebra.BigOperators.Group.Finset.Indicator
 import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Topology.Algebra.InfiniteSum.Defs
 import Mathlib.Topology.Algebra.Monoid.Defs
 
 /-!
@@ -607,3 +608,20 @@ theorem tprod_finset_bUnion_disjoint {ι} {s : Finset ι} {t : ι → Set β}
 end ContinuousMul
 
 end tprod
+
+section CommMonoidWithZero
+variable [CommMonoidWithZero α] [TopologicalSpace α] {f : β → α}
+
+lemma hasProd_zero_of_exists_eq_zero (hf : ∃ b, f b = 0) : HasProd f 0 := by
+  obtain ⟨b, hb⟩ := hf
+  apply tendsto_const_nhds.congr'
+  filter_upwards [eventually_ge_atTop {b}] with s hs
+  exact (Finset.prod_eq_zero (Finset.singleton_subset_iff.mp hs) hb).symm
+
+lemma multipliable_of_exists_eq_zero (hf : ∃ b, f b = 0) : Multipliable f :=
+  ⟨0, hasProd_zero_of_exists_eq_zero hf⟩
+
+lemma tprod_of_exists_eq_zero [T2Space α] (hf : ∃ b, f b = 0) : ∏' b, f b = 0 :=
+  (hasProd_zero_of_exists_eq_zero hf).tprod_eq
+
+end CommMonoidWithZero

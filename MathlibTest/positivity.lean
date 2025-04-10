@@ -88,7 +88,7 @@ example {a : ℤ} (hlt : 0 ≤ a) (hne : a ≠ 0) : 0 < a := by positivity
 
 section
 
-variable [LinearOrderedField α]
+variable [Field α] [LinearOrder α] [IsStrictOrderedRing α]
 
 example : (1/4 - 2/3 : ℚ) ≠ 0 := by positivity
 example : (1/4 - 2/3 : α) ≠ 0 := by positivity
@@ -173,7 +173,8 @@ example {a : ℤ} {b : ℚ} (ha : a ≠ 0) (hb : 0 < b) : a • b ≠ 0 := by po
 example {a : ℤ} {b : ℚ} (ha : a ≠ 0) (hb : b ≠ 0) : a • b ≠ 0 := by positivity
 
 -- Test that the positivity extension for `a • b` can handle universe polymorphism.
-example {R M : Type*} [OrderedSemiring R] [StrictOrderedSemiring M]
+example {R M : Type*} [Semiring R] [PartialOrder R] [IsOrderedRing R]
+    [Semiring M] [PartialOrder M] [IsStrictOrderedRing M]
     [SMulWithZero R M] [OrderedSMul R M] {a : R} {b : M} (ha : 0 < a) (hb : 0 < b) :
     0 < a • b := by positivity
 
@@ -207,16 +208,25 @@ example (a : ℤ) : 0 ≤ a⁻ := by positivity
 
 /-! ### Exponentiation -/
 
-example [OrderedSemiring α] [Nontrivial α] (a : α) : 0 < a ^ 0 := by positivity
-example [LinearOrderedRing α] (a : α) : 0 ≤ a ^ 18 := by positivity
-example [OrderedSemiring α] {a : α} {n : ℕ} (ha : 0 ≤ a) : 0 ≤ a ^ n := by positivity
-example [StrictOrderedSemiring α] {a : α} {n : ℕ} (ha : 0 < a) : 0 < a ^ n := by positivity
+example [Semiring α] [PartialOrder α] [IsOrderedRing α] [Nontrivial α]
+    (a : α) : 0 < a ^ 0 := by positivity
+example [Ring α] [LinearOrder α] [IsStrictOrderedRing α]
+    (a : α) : 0 ≤ a ^ 18 := by positivity
+example [Semiring α] [PartialOrder α] [IsOrderedRing α]
+    {a : α} {n : ℕ} (ha : 0 ≤ a) : 0 ≤ a ^ n := by positivity
+example [Semiring α] [PartialOrder α] [IsStrictOrderedRing α]
+    {a : α} {n : ℕ} (ha : 0 < a) : 0 < a ^ n := by positivity
 
-example [LinearOrderedSemifield α] (a : α) : 0 < a ^ (0 : ℤ) := by positivity
-example [LinearOrderedField α] (a : α) : 0 ≤ a ^ (18 : ℤ) := by positivity
-example [LinearOrderedField α] (a : α) : 0 ≤ a ^ (-34 : ℤ) := by positivity
-example [LinearOrderedSemifield α] {a : α} {n : ℤ} (ha : 0 ≤ a) : 0 ≤ a ^ n := by positivity
-example [LinearOrderedSemifield α] {a : α} {n : ℤ} (ha : 0 < a) : 0 < a ^ n := by positivity
+example [Semifield α] [LinearOrder α] [IsStrictOrderedRing α]
+    (a : α) : 0 < a ^ (0 : ℤ) := by positivity
+example [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+    (a : α) : 0 ≤ a ^ (18 : ℤ) := by positivity
+example [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+    (a : α) : 0 ≤ a ^ (-34 : ℤ) := by positivity
+example [Semifield α] [LinearOrder α] [IsStrictOrderedRing α]
+    {a : α} {n : ℤ} (ha : 0 ≤ a) : 0 ≤ a ^ n := by positivity
+example [Semifield α] [LinearOrder α] [IsStrictOrderedRing α]
+    {a : α} {n : ℤ} (ha : 0 < a) : 0 < a ^ n := by positivity
 
 -- example {a b : Cardinal.{u}} (ha : 0 < a) : 0 < a ^ b := by positivity
 -- example {a b : Ordinal.{u}} (ha : 0 < a) : 0 < a ^ b := by positivity
@@ -384,7 +394,7 @@ end Integral
 /-! ## Infinite Sums -/
 
 example (f : ℕ → ℝ) : 0 ≤ ∑' n, f n ^ 2 := by positivity
-example  (f : ℕ → ℝ≥0) (c : ℝ) (hc : 0 < c) : 0 ≤ ∑' n, c * f n := by positivity
+example (f : ℕ → ℝ≥0) (c : ℝ) (hc : 0 < c) : 0 ≤ ∑' n, c * f n := by positivity
 example [LinearOrderedField α] [TopologicalSpace α] [OrderClosedTopology α] (f : ℚ → α) :
     0 ≤ ∑' q, (f q)^2 := by
   positivity
@@ -433,14 +443,16 @@ example (f : ℕ → ℕ) (hf : 0 ≤ f 0) : 0 ≤ ∏ n ∈ Finset.range 10, f 
 
 -- Make sure that `positivity` isn't too greedy by trying to prove that a product is positive
 -- because its body is even if multiplication isn't strictly monotone
-example [OrderedCommSemiring α] {a : α} (ha : 0 < a) : 0 ≤ ∏ _i ∈ {(0 : α)}, a := by positivity
+example [CommSemiring α] [PartialOrder α] [IsOrderedRing α]
+    {a : α} (ha : 0 < a) : 0 ≤ ∏ _i ∈ {(0 : α)}, a := by positivity
 
 /- ## Other extensions -/
 
 example [Zero β] [PartialOrder β] [FunLike F α β] [NonnegHomClass F α β]
     (f : F) (x : α) : 0 ≤ f x := by positivity
 
-example [OrderedSemiring S] [Semiring R] (abv : R → S) [IsAbsoluteValue abv] (x : R) :
+example [Semiring S] [PartialOrder S] [IsOrderedRing S] [Semiring R]
+    (abv : R → S) [IsAbsoluteValue abv] (x : R) :
     0 ≤ abv x := by
   positivity
 
