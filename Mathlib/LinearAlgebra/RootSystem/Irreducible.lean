@@ -197,19 +197,18 @@ lemma l25 {K : Type*} [Field K] [Module K M] [Module K N]
     subst h
     exact h₁ w
   | zero => simp only [Submodule.mem_top, LinearMap.zero_apply]
-  | add _ _ _ _ a₁ a₂ =>
-    rw [LinearMap.add_apply, a₁, a₂, add_zero]
-  | smul _ _ _ m =>
-    rw [LinearMap.smul_apply, smul_eq_mul, m, mul_zero]
+  | add _ _ _ _ a₁ a₂ => rw [LinearMap.add_apply, a₁, a₂, add_zero]
+  | smul _ _ _ m => rw [LinearMap.smul_apply, smul_eq_mul, m, mul_zero]
 
-
-lemma l3 {K : Type*} [Field K] [Module K M] [Module K N]
-    (P : RootSystem ι K M N) (q : Submodule K M) (ha : ∀ i, q ∈ invtSubmodule (P.reflection i))
-      (h_bot: q ≠ ⊥) (h_top: q ≠ ⊤):
-        ∃ (Φ : Set ι), (∀ i ∈ Φ, P.root i ∈ q) ∧ (∀ i ∉ Φ, q ≤ LinearMap.ker (P.coroot' i)) ∧
-          Φ ≠ univ ∧ Φ ≠ ∅ := by
-  obtain ⟨Φ, b, c⟩ := root_subset_characterization q P.toRootPairing ha
-  use Φ
+lemma invtsubmodule_to_root_subset {K : Type*} [Field K] [Module K M] [Module K N]
+    (P : RootSystem ι K M N)
+    (q : Submodule K M)
+    (h₀ : q ≠ ⊥)
+    (h₁ : ∀ i, q ∈ invtSubmodule (P.reflection i))
+    (h₂ : ∀ Φ, Φ.Nonempty → P.root '' Φ ⊆ q → (∀ i ∉ Φ, q ≤ ker (P.coroot' i)) → Φ = univ) :
+    q = ⊤ := by
+  obtain ⟨Φ, b, c⟩ := root_subset_characterization q P.toRootPairing h₁
+  have := h₂ Φ
   constructor
   · exact b
   constructor
