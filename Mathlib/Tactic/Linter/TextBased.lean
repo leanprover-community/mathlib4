@@ -348,8 +348,9 @@ end UnicodeLinter
 def unicodeLinter : TextbasedLinter := fun lines ↦ Id.run do
   let mut changed : Array String := #[]
   let mut errors : Array (StyleError × ℕ) := Array.mkEmpty 0
-  let mut lineNumber := 1
-  for line in lines do
+  for h : idx in [:lines.size] do
+    let lineNumber := idx + 1
+    let line := lines[idx]
     let err := UnicodeLinter.findBadUnicode line
 
     -- Try to auto-fix all errors in the current line.
@@ -373,7 +374,6 @@ def unicodeLinter : TextbasedLinter := fun lines ↦ Id.run do
 
     changed := changed.push newLine
     errors := errors.append (err.map (fun e => (e, lineNumber)))
-    lineNumber := lineNumber + 1
   return (errors, changed)
 
 /-- All text-based linters registered in this file. -/
