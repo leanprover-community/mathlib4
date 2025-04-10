@@ -11,6 +11,9 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 Shows that products in the over category can be derived from wide pullbacks in the base category.
 The main result is `over_product_of_widePullback`, which says that if `C` has `J`-indexed wide
 pullbacks, then `Over B` has `J`-indexed products.
+
+Note that the binary case is done separately to ensure defeqs with the pullback in the base
+category.
 -/
 
 
@@ -30,6 +33,44 @@ One could have used the following but it gives worse defeqs.
 -/
 
 namespace CategoryTheory.Limits
+section Over
+variable {f : Y ⟶ X} {g : Z ⟶ X} {c : PullbackCone f g}
+
+/-- Pullback cones to `X` are the same thing as binary fans in `Over X`. -/
+@[simps]
+def pullbackConeEquivBinaryFan : PullbackCone f g ≌ BinaryFan (Over.mk f) (.mk g) where
+  functor.obj c := .mk (Over.homMk (U := .mk (c.fst ≫ f)) (V := .mk f) c.fst rfl)
+      (Over.homMk (U := .mk (c.fst ≫ f)) (V := .mk g) c.snd c.condition.symm)
+  functor.map {c₁ c₂} a := { hom := Over.homMk a.hom, w := by rintro (_|_) <;> aesop_cat }
+  inverse.obj c := PullbackCone.mk c.fst.left c.snd.left (c.fst.w.trans c.snd.w.symm)
+  inverse.map {c₁ c₂} a := {
+    hom := a.hom.left
+    w := by rintro (_|_|_) <;> simp [← Over.comp_left_assoc, ← Over.comp_left]
+  }
+  unitIso := NatIso.ofComponents (fun c ↦ c.eta) (by intros; ext; dsimp; simp)
+  counitIso := NatIso.ofComponents (fun X ↦ BinaryFan.ext (Over.isoMk (Iso.refl _)
+    (by simpa using X.fst.w.symm)) (by ext; dsimp; simp) (by ext; dsimp; simp))
+    (by intros; ext; dsimp; simp [BinaryFan.ext])
+  functor_unitIso_comp c := by ext; dsimp; simp [BinaryFan.ext]
+
+/-- A pullback cone to `X` is a limit if its corresponding binary fan in `Over X` is a limit. -/
+-- `IsLimit.ofConeEquiv` isn't used here because the lift it defines is `𝟙 _ ≫ pullback.lift`.
+@[simps!]
+def IsLimit.pullbackConeEquivBinaryFan {c : PullbackCone f g} (hc : IsLimit c) :
+    IsLimit <| pullbackConeEquivBinaryFan.functor.obj c :=
+  BinaryFan.isLimitMk
+    (fun s ↦ Over.homMk
+      (hc.lift (PullbackCone.mk s.fst.left s.snd.left (s.fst.w.trans s.snd.w.symm))) <| by
+        simpa using s.fst.w)
+    (fun s ↦ Over.OverMorphism.ext (hc.fac _ _)) (fun s ↦ Over.OverMorphism.ext (hc.fac _ _))
+      fun s m e₁ e₂ ↦ by
+    ext1
+    apply PullbackCone.IsLimit.hom_ext hc
+    · simpa using congr(($e₁).left)
+    · simpa using congr(($e₂).left)
+
+end Over
+
 section Under
 variable {f : X ⟶ Y} {g : X ⟶ Z}
 
@@ -68,44 +109,6 @@ def IsColimit.pushoutCoconeEquivBinaryCofan {c : PushoutCocone f g} (hc : IsColi
     · simpa using congr(($e₂).right)
 
 end Under
-
-section Over
-variable {f : Y ⟶ X} {g : Z ⟶ X} {c : PullbackCone f g}
-
-/-- Pullback cones to `X` are the same thing as binary fans in `Over X`. -/
-@[simps]
-def pullbackConeEquivBinaryFan : PullbackCone f g ≌ BinaryFan (Over.mk f) (.mk g) where
-  functor.obj c := .mk (Over.homMk (U := .mk (c.fst ≫ f)) (V := .mk f) c.fst rfl)
-      (Over.homMk (U := .mk (c.fst ≫ f)) (V := .mk g) c.snd c.condition.symm)
-  functor.map {c₁ c₂} a := { hom := Over.homMk a.hom, w := by rintro (_|_) <;> aesop_cat }
-  inverse.obj c := PullbackCone.mk c.fst.left c.snd.left (c.fst.w.trans c.snd.w.symm)
-  inverse.map {c₁ c₂} a := {
-    hom := a.hom.left
-    w := by rintro (_|_|_) <;> simp [← Over.comp_left_assoc, ← Over.comp_left]
-  }
-  unitIso := NatIso.ofComponents (fun c ↦ c.eta) (by intros; ext; dsimp; simp)
-  counitIso := NatIso.ofComponents (fun X ↦ BinaryFan.ext (Over.isoMk (Iso.refl _)
-    (by simpa using X.fst.w.symm)) (by ext; dsimp; simp) (by ext; dsimp; simp))
-    (by intros; ext; dsimp; simp [BinaryFan.ext])
-  functor_unitIso_comp c := by ext; dsimp; simp [BinaryFan.ext]
-
-/-- A pullback cone to `X` is a limit if its corresponding binary fan in `Over X` is a limit. -/
--- `IsLimit.ofConeEquiv` isn't used here because the lift it defines is `𝟙 _ ≫ pullback.lift`.
-@[simps!]
-def IsLimit.pullbackConeEquivBinaryFan {c : PullbackCone f g} (hc : IsLimit c) :
-    IsLimit <| pullbackConeEquivBinaryFan.functor.obj c :=
-  BinaryFan.isLimitMk
-    (fun s ↦ Over.homMk
-      (hc.lift (PullbackCone.mk s.fst.left s.snd.left (s.fst.w.trans s.snd.w.symm))) <| by
-        simpa using s.fst.w)
-    (fun s ↦ Over.OverMorphism.ext (hc.fac _ _)) (fun s ↦ Over.OverMorphism.ext (hc.fac _ _))
-      fun s m e₁ e₂ ↦ by
-    ext1
-    apply PullbackCone.IsLimit.hom_ext hc
-    · simpa using congr(($e₁).left)
-    · simpa using congr(($e₂).left)
-
-end Over
 end Limits
 
 /-! ## Arbitrary products -/
