@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 
+--import Mathlib.Algebra.CharP.Quotient
 import Mathlib.Algebra.Polynomial.RingDivision
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Ideal.Quotient.Defs
@@ -158,12 +159,5 @@ theorem generalizedEisenstein {q f : R[X]} {p : ℕ}
     · symm
       rw [modByMonic_eq_zero_iff_dvd hq_monic]
       exact ((dvd_pow_self q hm).mul_left _).mul_right _
-
--- move
-theorem CharP.ker_intAlgebraMap_eq_span
-    {R : Type*} [Ring R] (p : ℕ) [CharP R p] :
-    RingHom.ker (algebraMap ℤ R) = Ideal.span {(p : ℤ)} := by
-  ext a
-  simp [CharP.intCast_eq_zero_iff R p, Ideal.mem_span_singleton]
 
 end Polynomial
