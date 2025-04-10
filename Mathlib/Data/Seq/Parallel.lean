@@ -66,7 +66,9 @@ theorem terminates_parallel.aux :
   apply @terminatesRecOn _ _ c T _ _
   · intro a l S m
     apply lem1
-    induction' l with c l IH <;> simp at m
+    induction' l with c l IH
+    · simp at m
+    simp only [List.mem_cons] at m
     rcases m with e | m
     · rw [← e]
       simp only [parallel.aux2, rmap, List.foldr_cons, destruct_pure]

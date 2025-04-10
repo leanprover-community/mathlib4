@@ -84,7 +84,7 @@ private theorem chain'_of_mem_splitByLoop {r : α → α → Bool} {l : List α}
       rw [reverse_reverse]
       exact chain'_cons'.2 ⟨hga, hg⟩
   | cons b l IH =>
-    simp [splitBy.loop] at h
+    simp only [splitBy.loop, reverse_cons] at h
     split at h
     · apply IH _ (chain'_cons'.2 ⟨hga, hg⟩) h
       intro b hb
