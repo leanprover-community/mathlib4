@@ -337,6 +337,10 @@ lemma gc : GaloisConnection fromIdeal (asIdeal (R := R)) :=
 @[simp]
 lemma coe_asIdeal {I : TwoSidedIdeal R} : (asIdeal I : Set R) = I := rfl
 
+@[simp] lemma bot_asIdeal : (⊥ : TwoSidedIdeal R).asIdeal = ⊥ := rfl
+
+@[simp] lemma top_asIdeal : (⊤ : TwoSidedIdeal R).asIdeal = ⊤ := rfl
+
 instance (I : TwoSidedIdeal R) : I.asIdeal.IsTwoSided :=
   ⟨fun _ ↦ by simpa using I.mul_mem_right _ _⟩
 
@@ -406,7 +410,7 @@ instance : CanLift (Ideal R) (TwoSidedIdeal R) TwoSidedIdeal.asIdeal (·.IsTwoSi
 end Ideal
 
 /-- A two-sided ideal is simply a left ideal that is two-sided. -/
-def TwoSidedIdeal.orderIsoIsTwoSided {R} [Ring R] :
+@[simps] def TwoSidedIdeal.orderIsoIsTwoSided  {R : Type*} [Ring R] :
     TwoSidedIdeal R ≃o {I : Ideal R // I.IsTwoSided} where
   toFun I := ⟨I.asIdeal, inferInstance⟩
   invFun I := have := I.2; I.1.toTwoSided

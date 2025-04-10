@@ -70,6 +70,7 @@ abbrev IsSemisimpleRing := IsSemisimpleModule R R
     `S ≤ N → S' ≤ N → IsSimpleModule R S → IsSimpleModule R S' → S ≃ₗ[R] S'`. -/
 
 variable {R M}
+
 /-- A submodule `N` of a semisimple `R`-module `M` is a sum of isotypic components if every
 submodule of `M` isomorphic to a submodule of `N` is contained in `N`. If suffices to require
 every **simple** submodule of `M` isomorphic to a submodule of `N` is contained in `N`,
@@ -89,7 +90,7 @@ def IsIsotypicComponent (N : Submodule R M) : Prop :=
   isomorphic submodules. In particular, any simple submodule is contained in an isotypic component.)
 -/
 
-theorem isSumIsotypicComponents_iff_isTwoSided [IsSemisimpleRing R] {I : Ideal R} :
+theorem isSumIsotypicComponents_iff_isTwoSided {I : Ideal R} :
     IsSumIsotypicComponents I ↔ I.IsTwoSided := by
   simpa only [IsSumIsotypicComponents, ← MulOpposite.opEquiv.trans (Module.moduleEndSelf R).toEquiv
     |>.forall_congr_right, SetLike.le_def, I.isTwoSided_iff] using forall_comm
@@ -104,13 +105,16 @@ variable {R S} in
 theorem RingEquiv.isSemisimpleRing_iff (e : R ≃+* S) : IsSemisimpleRing R ↔ IsSemisimpleRing S :=
   ⟨fun _ ↦ e.isSemisimpleRing, fun _ ↦ e.symm.isSemisimpleRing⟩
 
--- Making this an instance causes the linter to complain of "dangerous instances"
 theorem IsSimpleModule.nontrivial [IsSimpleModule R M] : Nontrivial M :=
   ⟨⟨0, by
       have h : (⊥ : Submodule R M) ≠ ⊤ := bot_ne_top
       contrapose! h
       ext x
       simp [Submodule.mem_bot, Submodule.mem_top, h x]⟩⟩
+
+instance [Subsingleton M] : IsIsotypic R M where
+  nonempty_linearEquiv S _ _ := have := IsSimpleModule.nontrivial R S
+    (not_subsingleton _ S.subtype_injective.subsingleton).elim
 
 variable {m : Submodule R M} {N : Type*} [AddCommGroup N] {R S M}
 
@@ -122,6 +126,17 @@ variable [Module R N]
 
 theorem IsSimpleModule.congr (l : M ≃ₗ[R] N) [IsSimpleModule R N] : IsSimpleModule R M :=
   (Submodule.orderIsoMapComap l).isSimpleOrder
+
+theorem LinearEquiv.isIsotypic (e : M ≃ₗ[R] N) [IsIsotypic R N] : IsIsotypic R M where
+  nonempty_linearEquiv S S' _ _ :=
+    have equiv := Submodule.equivMapOfInjective e e.injective
+    have := IsSimpleModule.congr (equiv S).symm
+    have := IsSimpleModule.congr (equiv S').symm
+    have ⟨e⟩ := (IsIsotypic.nonempty_linearEquiv (S.map e) (S'.map e))
+    ⟨((equiv S).trans e).trans (equiv S').symm⟩
+
+theorem LinearEquiv.isIsotypic_iff (e : M ≃ₗ[R] N) : IsIsotypic R M ↔ IsIsotypic R N :=
+  ⟨fun _ ↦ e.symm.isIsotypic, fun _ ↦ e.isIsotypic⟩
 
 theorem isSimpleModule_iff_isAtom : IsSimpleModule R m ↔ IsAtom m := by
   rw [← Set.isSimpleOrder_Iic_iff_isAtom]
@@ -486,39 +501,79 @@ noncomputable instance _root_.Module.End.divisionRing
 
 end LinearMap
 
-variable (R N) in
-theorem IsSimpleModule.isSumIsotypicComponents_sSup [IsSimpleModule R N] :
-    IsSumIsotypicComponents (sSup {m : Submodule R M | Nonempty (N ≃ₗ[R] m)}) :=
+section isotypicComponent
+
+variable (R M) (S : Type*) [AddCommGroup S] [Module R S]
+
+/-- If `S` is a simple `R`-module, the `S`-isotypic component in an `R`-module `M` is the sum of
+all submodules of `M` isomorphic to `S`. -/
+def isotypicComponent : Submodule R M := sSup {m | Nonempty (m ≃ₗ[R] S)}
+
+instance [IsSemisimpleModule R S] : IsSemisimpleModule R (isotypicComponent R M S) := by
+  rw [isotypicComponent, sSup_eq_iSup]
+  refine isSemisimpleModule_biSup_of_isSemisimpleModule_submodule fun m ⟨e⟩ ↦ ?_
+  have := IsSemisimpleModule.congr e
+  infer_instance
+
+variable [IsSimpleModule R S]
+
+variable {R M S} in
+theorem nonempty_linearEquiv_of_le_isotypicComponent {N : Submodule R M} [IsSimpleModule R N]
+    (hN : N ≤ isotypicComponent R M S) : Nonempty (N ≃ₗ[R] S) := by
+  by_contra empty
+  have : IsSemisimpleModule R (isotypicComponent R M S) := inferInstance
+  rw [isotypicComponent, sSup_eq_iSup] at this hN
+  have ⟨_, compl⟩ := exists_isCompl (LinearMap.range (Submodule.inclusion hN))
+  have e' := (LinearEquiv.ofInjective _ <| Submodule.inclusion_injective hN).symm
+  have := IsSimpleModule.congr e'
+  refine bot_ne_top (Eq.trans (.symm ?_) <| Submodule.linearProjOfIsCompl_range compl)
+  simp_rw [LinearMap.range_eq_bot, ← LinearMap.ker_eq_top, eq_top_iff,
+    ← Submodule.biSup_comap_subtype_eq_top, iSup_le_iff]
+  intro m ⟨e⟩
+  rw [LinearMap.le_ker_iff_map, ← Submodule.range_inclusion _ _ (by exact le_biSup id ⟨e⟩),
+    ← LinearMap.range_comp, LinearMap.range_eq_bot]
+  have := IsSimpleModule.congr e
+  exact (LinearMap.bijective_or_eq_zero _).resolve_left fun bij ↦ empty
+    ⟨((LinearEquiv.ofBijective _ bij).trans e').symm.trans e⟩
+
+instance : IsIsotypic R (isotypicComponent R M S) where
+  nonempty_linearEquiv m m' _ _ :=
+    have inj := (isotypicComponent R M S).subtype_injective
+    let em := m.equivMapOfInjective _ inj
+    let em' := m'.equivMapOfInjective _ inj
+    have := IsSimpleModule.congr em.symm
+    have := IsSimpleModule.congr em'.symm
+    have ⟨emS⟩ := nonempty_linearEquiv_of_le_isotypicComponent (Submodule.map_subtype_le _ m)
+    have ⟨em'S⟩ := nonempty_linearEquiv_of_le_isotypicComponent (Submodule.map_subtype_le _ m')
+    ⟨em.trans <| emS.trans <| em'S.symm.trans em'.symm⟩
+
+end isotypicComponent
+
+variable (R M N) in
+theorem isSumIsotypicComponents_isotypicComponent [IsSimpleModule R N] :
+    IsSumIsotypicComponents (isotypicComponent R M N) :=
   fun f ↦ sSup_le fun m ⟨e⟩ ↦ Submodule.map_le_iff_le_comap.mp <| by
-    have := IsSimpleModule.congr e.symm
+    have := IsSimpleModule.congr e
     rw [← m.range_subtype, ← LinearMap.range_comp]
     obtain inj | eq := (f ∘ₗ m.subtype).injective_or_eq_zero
-    · exact le_sSup ⟨e.trans (LinearEquiv.ofInjective _ inj)⟩
+    · exact le_sSup ⟨(LinearEquiv.ofInjective _ inj).symm.trans e⟩
     · simp_rw [eq, LinearMap.range_zero, bot_le]
 
-theorem IsSemisimpleModule.isIsotypic_iff_isSumIsotypicComponents_imp_bot_or_top
-    [IsSemisimpleModule R M] :
+open IsSemisimpleModule in
+theorem isIsotypic_iff_isSumIsotypicComponents_imp_bot_or_top [IsSemisimpleModule R M] :
     IsIsotypic R M ↔ ∀ N : Submodule R M, IsSumIsotypicComponents N → N = ⊥ ∨ N = ⊤ := by
-  rw [isIsotypic_iff]
-  refine ⟨fun h N hN ↦ (eq_bot_or_exists_simple_le N).imp_right fun ⟨S, le, _⟩ ↦ top_unique <|
-    sSup_simples_eq_top R M ▸ sSup_le fun S' (_ : IsSimpleModule R S') ↦ ?_, fun h S S' _ _ ↦ ?_⟩
-  on_goal 2 =>
-    have ⟨e⟩ := h S S'
+  refine ⟨fun ⟨h⟩ N hN ↦ (eq_bot_or_exists_simple_le N).imp_right fun ⟨S, le, _⟩ ↦ top_unique <|
+    sSup_simples_eq_top R M ▸ sSup_le fun S' (_ : IsSimpleModule R S') ↦ ?_, fun h ↦ ?_⟩
+  · have ⟨e⟩ := h S S'
     have ⟨p, eq⟩ := extension_property _ S.subtype_injective (S'.subtype ∘ₗ e)
     refine le_trans (le_trans ?_ (Submodule.map_mono le)) (Submodule.map_le_iff_le_comap.mpr (hN p))
     rw [← S.range_subtype, ← LinearMap.range_comp, eq, e.range_comp, S'.range_subtype]
-  by_contra empty
-  obtain eq | eq := h _ (IsSimpleModule.isSumIsotypicComponents_sSup R S)
+  nontriviality M
+  have ⟨S, _⟩ := IsSemisimpleModule.exists_simple_submodule R M
+  obtain eq | eq := h _ (isSumIsotypicComponents_isotypicComponent R M S)
   · have := (Submodule.subsingleton_iff_eq_bot.mpr (sSup_eq_bot.mp eq S ⟨.refl ..⟩))
-    exact not_nontrivial _ (IsSimpleModule.nontrivial R S)
-  have ⟨_, compl⟩ := exists_isCompl S'
-  refine bot_ne_top (Eq.trans (.symm ?_) <| Submodule.linearProjOfIsCompl_range compl)
-  simp_rw [LinearMap.range_eq_bot, ← LinearMap.ker_eq_top, eq_top_iff, ← eq, sSup_le_iff]
-  intro m ⟨e⟩
-  rw [LinearMap.le_ker_iff_map, ← m.range_subtype, ← LinearMap.range_comp, LinearMap.range_eq_bot]
-  have := IsSimpleModule.congr e.symm
-  exact (LinearMap.bijective_or_eq_zero _).resolve_left
-    (mt (fun bij ↦ ⟨e.trans (LinearEquiv.ofBijective _ bij)⟩) empty)
+    exact (not_nontrivial _ (IsSimpleModule.nontrivial R S)).elim
+  exact ((LinearEquiv.ofEq _ _ eq).trans Submodule.topEquiv).symm.isIsotypic
 
 -- Porting note: adding a namespace with all the new statements; existing result is not used in ML3
 namespace JordanHolderModule
