@@ -266,7 +266,8 @@ lemma firstReturn_pos : 0 < p.firstReturn := by
   · rw [length_range, length_pos_iff]
     exact toList_ne_nil.mpr h
   · rw [getElem_range] at f
-    simp at f
+    simp only [zero_add, decide_eq_true_eq, not_lt_zero', getElem_range, decide_eq_false_iff_not,
+      IsEmpty.forall_iff, implies_true, and_true] at f
     rw [← p.cons_tail_dropLast_concat h] at f
     simp at f
 

@@ -46,7 +46,7 @@ private instance triangleIndices.instExplicitDisjoint : ExplicitDisjoint (triang
   all_goals
     simp only [mk_mem_triangleIndices, Prod.mk_inj, exists_prop, forall_exists_index, and_imp]
     rintro a b _ a' - rfl - h'
-    simp [Fin.val_eq_val, *] at * <;> assumption
+    simp_all [Fin.val_eq_val]
 
 private lemma noAccidental (hs : IsCornerFree (A : Set (G × G))) :
     NoAccidental (triangleIndices A) where

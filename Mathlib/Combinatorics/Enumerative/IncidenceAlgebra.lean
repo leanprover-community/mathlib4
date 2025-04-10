@@ -571,11 +571,11 @@ lemma moebius_inversion_top (f g : α → 𝕜) (h : ∀ x, g x = ∑ y ∈ Ici 
     _ = ∑ z ∈ Ici x, (mu 𝕜 * zeta 𝕜 : IncidenceAlgebra 𝕜 α) x z * f z := by
       simp_rw [mul_apply, sum_mul]
     _ = ∑ y ∈ Ici x, ∑ z ∈ Ici y, (1 : IncidenceAlgebra 𝕜 α) x z * f z := by
-      simp [mu_mul_zeta 𝕜, ← add_sum_Ioi_eq_sum_Ici]
-      exact sum_eq_zero fun y hy ↦ if_neg (mem_Ioi.mp hy).not_le
+      simpa [mu_mul_zeta 𝕜, ← add_sum_Ioi_eq_sum_Ici] using
+        sum_eq_zero fun y hy ↦ if_neg (mem_Ioi.mp hy).not_le
     _ = f x := by
-      simp [one_apply, ← add_sum_Ioi_eq_sum_Ici]
-      exact sum_eq_zero fun y hy ↦ if_neg (mem_Ioi.mp hy).not_le
+      simpa [one_apply, ← add_sum_Ioi_eq_sum_Ici] using
+        sum_eq_zero fun y hy ↦ if_neg (mem_Ioi.mp hy).not_le
 
 end InversionTop
 
