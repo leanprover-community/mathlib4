@@ -143,14 +143,13 @@ lemma comp_isLocalDiffeomorphAt_left_iff [CompleteSpace E] [CompleteSpace E'] [C
     MSplitsAt I I' f x ↔ MSplitsAt J I' (f ∘ f₀) y := by
   refine ⟨fun hf ↦ hf.comp_isLocalDiffeomorphAt_left hxy hf₀ hn,
     fun h ↦ ?_⟩
-  let g₀ : M → N := hf₀.localInverse
   have hg₀' : IsLocalDiffeomorphAt I J n hf₀.localInverse (f₀ y) :=
     hf₀.localInverse_isLocalDiffeomorphAt
-  have hg₀ : IsLocalDiffeomorphAt I J n (hf₀.localInverse) (f₀ y) := hxy ▸ hg₀'
-  have : g₀ x = y := hxy ▸ hf₀.localInverse_left_inv hf₀.localInverse_mem_target
-  sorry -- let asdf := h.comp_isLocalDiffeomorphAt_left this hg₀ hn
-  -- apply asdf.congr
-  -- locally, the inverse agrees: TODO complete all the details!
+  have : hf₀.localInverse x = y := hxy ▸ hf₀.localInverse_left_inv hf₀.localInverse_mem_target
+  have : MSplitsAt I I' (f ∘ f₀ ∘ hf₀.localInverse) x :=
+    h.comp_isLocalDiffeomorphAt_left this (hxy ▸ hg₀') hn
+  apply this.congr
+  exact (hxy ▸ hf₀.localInverse_eventuallyEq_right.symm).fun_comp f
 
 lemma comp_isLocalDiffeomorphAt_right [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
     {g : M' → N} (hg : IsLocalDiffeomorphAt I' J n g (f x)) (hn : 1 ≤ n) (hf : MSplitsAt I I' f x) :
