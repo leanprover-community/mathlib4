@@ -186,7 +186,7 @@ lemma span_coroot_eq_top' {K : Type*} [Field K] [Module K M] [Module K N]
     exact this
   exact Submodule.eq_top_iff'.mpr key
 
-lemma l25 {K : Type*} [Field K] [Module K M] [Module K N]
+lemma aux {K : Type*} [Field K] [Module K M] [Module K N]
     (P : RootSystem ι K M N) (v : M) (h₁ : ∀ (i : ι), v ∈ ker (P.coroot' i))
     (d : Module.Dual K M) : d v = 0 := by
   have : d ∈ span K (range P.coroot') := by
@@ -200,15 +200,13 @@ lemma l25 {K : Type*} [Field K] [Module K M] [Module K N]
   | add _ _ _ _ a₁ a₂ => rw [LinearMap.add_apply, a₁, a₂, add_zero]
   | smul _ _ _ m => rw [LinearMap.smul_apply, smul_eq_mul, m, mul_zero]
 
-lemma invtsubmodule_to_root_subset {K : Type*} [Field K] [Module K M] [Module K N]
-    (P : RootSystem ι K M N)
-    (q : Submodule K M)
-    (h₀ : q ≠ ⊥)
-    (h₁ : ∀ i, q ∈ invtSubmodule (P.reflection i))
-    (h₂ : ∀ Φ, Φ.Nonempty → P.root '' Φ ⊆ q → (∀ i ∉ Φ, q ≤ ker (P.coroot' i)) → Φ = univ) :
-    q = ⊤ := by
-  obtain ⟨Φ, b, c⟩ := root_subset_characterization q P.toRootPairing h₁
-  have := h₂ Φ
+lemma l3 {K : Type*} [Field K] [Module K M] [Module K N]
+    (P : RootSystem ι K M N) (q : Submodule K M) (ha : ∀ i, q ∈ invtSubmodule (P.reflection i))
+    (h_bot: q ≠ ⊥) (h_top: q ≠ ⊤) :
+    ∃ (Φ : Set ι), (∀ i ∈ Φ, P.root i ∈ q) ∧ (∀ i ∉ Φ, q ≤ LinearMap.ker (P.coroot' i)) ∧
+    Φ ≠ univ ∧ Φ ≠ ∅ := by
+  obtain ⟨Φ, b, c⟩ := root_subset_characterization q P.toRootPairing ha
+  use Φ
   constructor
   · exact b
   constructor
@@ -242,19 +240,14 @@ lemma invtsubmodule_to_root_subset {K : Type*} [Field K] [Module K M] [Module K 
   have : ∃ v ∈ q, v ≠ 0 := by
     exact (Submodule.ne_bot_iff q).1 h_bot
   obtain ⟨v1, ⟨v21, v22⟩⟩ := this
-  --have : ∃ d : Module.Dual K M, d v1 ≠ 0 := by
-    --search_proof
   have xxx (i : ι) : v1 ∈ ker (P.coroot' i) := by
     subst hn
     simp_all only [ne_eq, mem_empty_iff_false, not_false_eq_true, implies_true, IsEmpty.forall_iff,
       forall_const, LinearMap.mem_ker, PerfectPairing.flip_apply_apply]
     apply c
     simp_all only
-  --have yyy : span K (range  P.coroot') = ⊤ := by
-  --  exact l21 P
-    --search_proof
   have help (d : Module.Dual K M) : d v1 = 0 := by
-    exact l25 P v1 xxx d
+    exact aux P v1 xxx d
   have : q.dualAnnihilator ≠ ⊤ := by
     subst hn
     simp_all only [ne_eq, mem_empty_iff_false, not_false_eq_true, implies_true, LinearMap.mem_ker,
