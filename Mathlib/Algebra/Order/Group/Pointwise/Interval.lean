@@ -8,6 +8,7 @@ import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Group.MinMax
 import Mathlib.Algebra.Order.Interval.Set.Monoid
+import Mathlib.Order.Interval.Set.OrderIso
 import Mathlib.Order.Interval.Set.UnorderedInterval
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
@@ -533,153 +534,206 @@ theorem abs_sub_right_of_mem_uIcc (h : c ∈ [[a, b]]) : |b - c| ≤ |b - a| :=
 
 end LinearOrderedAddCommGroup
 
-section
+section GroupWithZero
 
-variable {G₀ : Type*} [GroupWithZero G₀] [PartialOrder G₀] [ZeroLEOneClass G₀] [PosMulReflectLT G₀]
+section MulPosMono
+
+variable {G₀ : Type*} [GroupWithZero G₀] [PartialOrder G₀] [MulPosReflectLT G₀] [MulPosMono G₀]
   {a b c : G₀}
 
-@[simp]
-theorem preimage_mul_const_Iio [MulPosStrictMono G₀] (a : G₀) (h : 0 < c) :
-    (fun x => x * c) ⁻¹' Iio a = Iio (a / c) :=
-  ext fun _x => (lt_div_iff₀ h).symm
-
+attribute [local instance] MulPosReflectLT.toMulPosReflectLE
 
 @[simp]
-theorem preimage_mul_const_Ioi [MulPosStrictMono G₀] (a : G₀) (h : 0 < c) :
-    (fun x => x * c) ⁻¹' Ioi a = Ioi (a / c) :=
-  ext fun _x => (div_lt_iff₀ h).symm
+theorem preimage_mul_const_Iic (a : G₀) (h : 0 < c) : (· * c) ⁻¹' Iic a = Iic (a / c) := by
+  simpa only [division_def] using (OrderIso.mulRight₀ c h).preimage_Iic a
 
 @[simp]
-theorem preimage_mul_const_Iic (a : G₀) (h : 0 < c) : (fun x => x * c) ⁻¹' Iic a = Iic (a / c) :=
-  ext fun _x => (le_div_iff₀ h).symm
-
-end
-
-/-!
-### Multiplication and inverse in a semifield
--/
-
-section LinearOrderedSemifield
-
-variable [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] {a : α}
+theorem preimage_mul_const_Ici (a : G₀) (h : 0 < c) : (· * c) ⁻¹' Ici a = Ici (a / c) := by
+  simpa only [division_def] using (OrderIso.mulRight₀ c h).preimage_Ici a
 
 @[simp]
-theorem preimage_mul_const_Ici (a : α) {c : α} (h : 0 < c) :
-    (fun x => x * c) ⁻¹' Ici a = Ici (a / c) :=
-  ext fun _x => (div_le_iff₀ h).symm
+theorem preimage_mul_const_Ioi (a : G₀) (h : 0 < c) : (· * c) ⁻¹' Ioi a = Ioi (a / c) := by
+  simpa only [division_def] using (OrderIso.mulRight₀ c h).preimage_Ioi a
 
 @[simp]
-theorem preimage_mul_const_Ioo (a b : α) {c : α} (h : 0 < c) :
+theorem preimage_mul_const_Iio (a : G₀) (h : 0 < c) : (· * c) ⁻¹' Iio a = Iio (a / c) := by
+  simpa only [division_def] using (OrderIso.mulRight₀ c h).preimage_Iio a
+
+@[simp]
+theorem preimage_mul_const_Icc (a b : G₀) (h : 0 < c) :
+    (· * c) ⁻¹' Icc a b = Icc (a / c) (b / c) := by simp [← Ici_inter_Iic, h]
+
+@[simp]
+theorem preimage_mul_const_Ioo (a b : G₀) (h : 0 < c) :
     (fun x => x * c) ⁻¹' Ioo a b = Ioo (a / c) (b / c) := by simp [← Ioi_inter_Iio, h]
 
 @[simp]
-theorem preimage_mul_const_Ioc (a b : α) {c : α} (h : 0 < c) :
+theorem preimage_mul_const_Ioc (a b : G₀) (h : 0 < c) :
     (fun x => x * c) ⁻¹' Ioc a b = Ioc (a / c) (b / c) := by simp [← Ioi_inter_Iic, h]
 
 @[simp]
-theorem preimage_mul_const_Ico (a b : α) {c : α} (h : 0 < c) :
+theorem preimage_mul_const_Ico (a b : G₀) (h : 0 < c) :
     (fun x => x * c) ⁻¹' Ico a b = Ico (a / c) (b / c) := by simp [← Ici_inter_Iio, h]
 
-@[simp]
-theorem preimage_mul_const_Icc (a b : α) {c : α} (h : 0 < c) :
-    (fun x => x * c) ⁻¹' Icc a b = Icc (a / c) (b / c) := by simp [← Ici_inter_Iic, h]
+theorem image_mul_right_Icc' (a b : G₀) (h : 0 < c) :
+    (· * c) '' Icc a b = Icc (a * c) (b * c) :=
+  (OrderIso.mulRight₀ c h).image_Icc a b
 
-@[simp]
-theorem preimage_const_mul_Iio (a : α) {c : α} (h : 0 < c) : (c * ·) ⁻¹' Iio a = Iio (a / c) :=
-  ext fun _x => (lt_div_iff₀' h).symm
-
-@[simp]
-theorem preimage_const_mul_Ioi (a : α) {c : α} (h : 0 < c) : (c * ·) ⁻¹' Ioi a = Ioi (a / c) :=
-  ext fun _x => (div_lt_iff₀' h).symm
-
-@[simp]
-theorem preimage_const_mul_Iic (a : α) {c : α} (h : 0 < c) : (c * ·) ⁻¹' Iic a = Iic (a / c) :=
-  ext fun _x => (le_div_iff₀' h).symm
-
-@[simp]
-theorem preimage_const_mul_Ici (a : α) {c : α} (h : 0 < c) : (c * ·) ⁻¹' Ici a = Ici (a / c) :=
-  ext fun _x => (div_le_iff₀' h).symm
-
-@[simp]
-theorem preimage_const_mul_Ioo (a b : α) {c : α} (h : 0 < c) :
-    (c * ·) ⁻¹' Ioo a b = Ioo (a / c) (b / c) := by simp [← Ioi_inter_Iio, h]
-
-@[simp]
-theorem preimage_const_mul_Ioc (a b : α) {c : α} (h : 0 < c) :
-    (c * ·) ⁻¹' Ioc a b = Ioc (a / c) (b / c) := by simp [← Ioi_inter_Iic, h]
-
-@[simp]
-theorem preimage_const_mul_Ico (a b : α) {c : α} (h : 0 < c) :
-    (c * ·) ⁻¹' Ico a b = Ico (a / c) (b / c) := by simp [← Ici_inter_Iio, h]
-
-@[simp]
-theorem preimage_const_mul_Icc (a b : α) {c : α} (h : 0 < c) :
-    (c * ·) ⁻¹' Icc a b = Icc (a / c) (b / c) := by simp [← Ici_inter_Iic, h]
-
-theorem image_mul_right_Icc' (a b : α) {c : α} (h : 0 < c) :
-    (fun x => x * c) '' Icc a b = Icc (a * c) (b * c) :=
-  ((Units.mk0 c h.ne').mulRight.image_eq_preimage _).trans (by simp [h, division_def])
-
-theorem image_mul_right_Icc {a b c : α} (hab : a ≤ b) (hc : 0 ≤ c) :
-    (fun x => x * c) '' Icc a b = Icc (a * c) (b * c) := by
+theorem image_mul_right_Icc (hab : a ≤ b) (hc : 0 ≤ c) :
+    (· * c) '' Icc a b = Icc (a * c) (b * c) := by
   cases eq_or_lt_of_le hc
   · subst c
     simp [(nonempty_Icc.2 hab).image_const]
   exact image_mul_right_Icc' a b ‹0 < c›
 
-theorem image_mul_left_Icc' {a : α} (h : 0 < a) (b c : α) :
-    (a * ·) '' Icc b c = Icc (a * b) (a * c) := by
-  convert image_mul_right_Icc' b c h using 1 <;> simp only [mul_comm _ a]
-
-theorem image_mul_left_Icc {a b c : α} (ha : 0 ≤ a) (hbc : b ≤ c) :
-    (a * ·) '' Icc b c = Icc (a * b) (a * c) := by
-  convert image_mul_right_Icc hbc ha using 1 <;> simp only [mul_comm _ a]
-
-theorem image_mul_right_Ioo (a b : α) {c : α} (h : 0 < c) :
+theorem image_mul_right_Ioo (a b : G₀) (h : 0 < c) :
     (fun x => x * c) '' Ioo a b = Ioo (a * c) (b * c) :=
-  ((Units.mk0 c h.ne').mulRight.image_eq_preimage _).trans (by simp [h, division_def])
+  (OrderIso.mulRight₀ c h).image_Ioo a b
 
-theorem image_mul_left_Ioo {a : α} (h : 0 < a) (b c : α) :
-    (a * ·) '' Ioo b c = Ioo (a * b) (a * c) := by
-  convert image_mul_right_Ioo b c h using 1 <;> simp only [mul_comm _ a]
-
-theorem image_mul_right_Ico (a b : α) {c : α} (h : 0 < c) :
+theorem image_mul_right_Ico (a b : G₀) (h : 0 < c) :
     (fun x => x * c) '' Ico a b = Ico (a * c) (b * c) :=
-  ((Units.mk0 c h.ne').mulRight.image_eq_preimage _).trans (by simp [h, division_def])
+  (OrderIso.mulRight₀ c h).image_Ico a b
 
-theorem image_mul_left_Ico {a : α} (h : 0 < a) (b c : α) :
-    (a * ·) '' Ico b c = Ico (a * b) (a * c) := by
-  convert image_mul_right_Ico b c h using 1 <;> simp only [mul_comm _ a]
-
-theorem image_mul_right_Ioc (a b : α) {c : α} (h : 0 < c) :
+theorem image_mul_right_Ioc (a b : G₀) (h : 0 < c) :
     (fun x => x * c) '' Ioc a b = Ioc (a * c) (b * c) :=
-  ((Units.mk0 c h.ne').mulRight.image_eq_preimage _).trans (by simp [h, division_def])
+  (OrderIso.mulRight₀ c h).image_Ioc a b
 
-theorem image_mul_left_Ioc {a : α} (h : 0 < a) (b c : α) :
-    (a * ·) '' Ioc b c = Ioc (a * b) (a * c) := by
-  convert image_mul_right_Ioc b c h using 1 <;> simp only [mul_comm _ a]
+end MulPosMono
+  
+section PosMulMono
+
+variable {G₀ : Type*} [GroupWithZero G₀] [PartialOrder G₀] [PosMulReflectLT G₀] [PosMulMono G₀]
+  {a b c : G₀}
+
+attribute [local instance] PosMulReflectLT.toPosMulReflectLE
+
+theorem image_mul_left_Ici (h : 0 < a) (b : G₀) : (a * ·) '' Ici b = Ici (a * b) :=
+  (OrderIso.mulLeft₀ a h).image_Ici b
+
+theorem image_mul_left_Iic (h : 0 < a) (b : G₀) : (a * ·) '' Iic b = Iic (a * b) :=
+  (OrderIso.mulLeft₀ a h).image_Iic b
+
+theorem image_mul_left_Ioi (h : 0 < a) (b : G₀) : (a * ·) '' Ioi b = Ioi (a * b) :=
+  (OrderIso.mulLeft₀ a h).image_Ioi b
+
+theorem image_mul_left_Iio (h : 0 < a) (b : G₀) : (a * ·) '' Iio b = Iio (a * b) :=
+  (OrderIso.mulLeft₀ a h).image_Iio b
+
+theorem image_mul_left_Icc' (h : 0 < a) (b c : G₀) :
+    (a * ·) '' Icc b c = Icc (a * b) (a * c) :=
+  (OrderIso.mulLeft₀ a h).image_Icc b c
+
+theorem image_mul_left_Icc (ha : 0 ≤ a) (hbc : b ≤ c) :
+    (a * ·) '' Icc b c = Icc (a * b) (a * c) := by
+  rcases ha.eq_or_lt with rfl | ha
+  · simp [(nonempty_Icc.2 hbc).image_const]
+  · exact image_mul_left_Icc' ha b c
+
+theorem image_mul_left_Ioo (h : 0 < a) (b c : G₀) : (a * ·) '' Ioo b c = Ioo (a * b) (a * c) :=
+  (OrderIso.mulLeft₀ a h).image_Ioo b c
+
+theorem image_mul_left_Ico (h : 0 < a) (b c : G₀) :
+    (a * ·) '' Ico b c = Ico (a * b) (a * c) :=
+  (OrderIso.mulLeft₀ a h).image_Ico b c
+
+theorem image_mul_left_Ioc (h : 0 < a) (b c : G₀) :
+    (a * ·) '' Ioc b c = Ioc (a * b) (a * c) :=
+  (OrderIso.mulLeft₀ a h).image_Ioc b c
+
+theorem image_const_mul_Ioi_zero (ha : 0 < a) :
+    (a * ·) '' Ioi 0 = Ioi 0 := by
+  rw [image_mul_left_Ioi ha, mul_zero]
+
+end PosMulMono
+
+variable {G₀ : Type*} [GroupWithZero G₀] [PartialOrder G₀] [PosMulReflectLT G₀]
+  [MulPosStrictMono G₀] {a : G₀}
 
 /-- The (pre)image under `inv` of `Ioo 0 a` is `Ioi a⁻¹`. -/
-theorem inv_Ioo_0_left {a : α} (ha : 0 < a) : (Ioo 0 a)⁻¹ = Ioi a⁻¹ := by
+theorem inv_Ioo_0_left (ha : 0 < a) : (Ioo 0 a)⁻¹ = Ioi a⁻¹ := by
+  -- TODO: move to a non-instance constructor and use in `inv_lt_of_inv_lt₀`
+  have : PosMulStrictMono G₀ := by
+    rw [posMulStrictMono_iff]
+    constructor
+    rintro ⟨x, hx⟩ a b h
+    apply lt_of_mul_lt_mul_left _ (inv_pos.2 hx).le
+    simpa [hx.ne']
   ext x
   exact ⟨fun h ↦ inv_lt_of_inv_lt₀ (inv_pos.1 h.1) h.2,
          fun h ↦ ⟨inv_pos.2 <| (inv_pos.2 ha).trans h, inv_lt_of_inv_lt₀ ha h⟩⟩
 
-theorem inv_Ioi₀ {a : α} (ha : 0 < a) : (Ioi a)⁻¹ = Ioo 0 a⁻¹ := by
+theorem inv_Ioi₀ (ha : 0 < a) : (Ioi a)⁻¹ = Ioo 0 a⁻¹ := by
   rw [inv_eq_iff_eq_inv, inv_Ioo_0_left (inv_pos.2 ha), inv_inv]
 
-theorem image_const_mul_Ioi_zero {k : Type*} [Field k] [LinearOrder k] [IsStrictOrderedRing k]
-    {x : k} (hx : 0 < x) :
-    (fun y => x * y) '' Ioi (0 : k) = Ioi 0 := by
-  have := (Units.mk0 x hx.ne').mulLeft.image_eq_preimage (Ioi 0)
-  simp at this
-  simp_all
+end GroupWithZero
 
 /-!
-### Images under `x ↦ a * x + b`
+### Commutative group with zero
+
+The only reason why we need `G₀` to be commutative in this section
+is that we write `a / c`, not `c⁻¹ * a`.
+
+TODO: decide if we should reformulate the lemmas in terms of `c⁻¹ * a`
+instead of depending on commutativity.
 -/
 
-variable [ExistsAddOfLE α]
+section CommGroupWithZero
+
+section PosMulMono
+
+variable {G₀ : Type*} [CommGroupWithZero G₀] [PartialOrder G₀] [PosMulReflectLT G₀] [PosMulMono G₀]
+  {a b c : G₀}
+
+@[simp]
+theorem preimage_const_mul_Iic (a : G₀) (h : 0 < c) : (c * ·) ⁻¹' Iic a = Iic (a / c) :=
+  ext fun _x => (le_div_iff₀' h).symm
+
+@[simp]
+theorem preimage_const_mul_Ici (a : G₀) (h : 0 < c) : (c * ·) ⁻¹' Ici a = Ici (a / c) :=
+  ext fun _x => (div_le_iff₀' h).symm
+
+@[simp]
+theorem preimage_const_mul_Icc (a b : G₀) {c : G₀} (h : 0 < c) :
+    (c * ·) ⁻¹' Icc a b = Icc (a / c) (b / c) := by simp [← Ici_inter_Iic, h]
+  
+end PosMulMono
+
+section PosMulStrictMono
+
+variable {G₀ : Type*} [CommGroupWithZero G₀] [PartialOrder G₀] [PosMulReflectLT G₀]
+  [PosMulStrictMono G₀] {c : G₀}
+
+@[simp]
+theorem preimage_const_mul_Iio (a : G₀) (h : 0 < c) : (c * ·) ⁻¹' Iio a = Iio (a / c) :=
+  ext fun _x => (lt_div_iff₀' h).symm
+
+@[simp]
+theorem preimage_const_mul_Ioi (a : G₀) (h : 0 < c) : (c * ·) ⁻¹' Ioi a = Ioi (a / c) :=
+  ext fun _x => (div_lt_iff₀' h).symm
+
+@[simp]
+theorem preimage_const_mul_Ioo (a b : G₀) (h : 0 < c) :
+    (c * ·) ⁻¹' Ioo a b = Ioo (a / c) (b / c) := by simp [← Ioi_inter_Iio, h]
+
+@[simp]
+theorem preimage_const_mul_Ioc (a b : G₀) (h : 0 < c) :
+    (c * ·) ⁻¹' Ioc a b = Ioc (a / c) (b / c) := by simp [← Ioi_inter_Iic, h]
+
+@[simp]
+theorem preimage_const_mul_Ico (a b : G₀) (h : 0 < c) :
+    (c * ·) ⁻¹' Ico a b = Ico (a / c) (b / c) := by simp [← Ici_inter_Iio, h]
+
+end PosMulStrictMono
+
+end CommGroupWithZero
+
+/-!
+### Images under `x ↦ a * x + b` in a semifield
+-/
+
+section LinearOrderedSemifield
+
+variable [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] [ExistsAddOfLE α] {a : α}
 
 @[simp]
 theorem image_affine_Icc' {a : α} (h : 0 < a) (b c d : α) :
