@@ -504,6 +504,15 @@ theorem Ico_succ_right_eq_insert (h : a ≤ b) : Ico a (succ b) = insert b (Ico 
 theorem Ioo_succ_right_eq_insert (h : a < b) : Ioo a (succ b) = insert b (Ioo a b) :=
   Ioo_succ_right_eq_insert_of_not_isMax h <| not_isMax b
 
+@[simp]
+protected lemma Ioo_eq_empty_iff_le_succ : Ioo a b = ∅ ↔ b ≤ succ a := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · contrapose! h
+    exact ⟨succ a, lt_succ_iff_not_isMax.mpr (not_isMax a), h⟩
+  · ext x
+    suffices a < x → b ≤ x by simpa
+    exact fun hx ↦ by simpa using lt_of_le_of_lt h <| succ_strictMono hx
+
 end NoMaxOrder
 
 section OrderBot
