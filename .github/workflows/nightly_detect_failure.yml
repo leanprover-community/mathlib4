@@ -219,9 +219,10 @@ jobs:
         git config --global user.email "github-mathlib4-bot@leanprover.zulipchat.com"
         echo "Setting up zulip credentials..."
         {
-          echo "ZULIP_EMAIL=github-mathlib4-bot@leanprover.zulipchat.com"
-          echo "ZULIP_API_KEY=${{ secrets.ZULIP_API_KEY }}"
-          echo "ZULIP_SITE=https://leanprover.zulipchat.com"
+          echo "[api]"
+          echo "email=github-mathlib4-bot@leanprover.zulipchat.com"
+          echo "key=${{ secrets.ZULIP_API_KEY }}"
+          echo "site=https://leanprover.zulipchat.com"
         } > ~/.zuliprc
         chmod 600 ~/.zuliprc
         echo "Setup complete"
@@ -259,7 +260,7 @@ jobs:
       run: |
         import os
         import zulip
-        client = zulip.Client(email='github-mathlib4-bot@leanprover.zulipchat.com', api_key=os.getenv('ZULIP_API_KEY'), site='https://leanprover.zulipchat.com')
+        client = zulip.Client(config_file="~/.zuliprc")
         current_version = os.getenv('NIGHTLY')
         bump_version = os.getenv('BUMP_VERSION')
         bump_branch = os.getenv('BUMP_BRANCH')
