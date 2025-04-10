@@ -100,23 +100,20 @@ structure Irreducible [Monoid M] (p : M) : Prop where
   /-- `p` is not a unit -/
   not_isUnit : ¬IsUnit p
   /-- if `p` factors then one factor is a unit -/
-  isUnit_or_isUnit' : ∀ a b, p = a * b → IsUnit a ∨ IsUnit b
+  isUnit_or_isUnit ⦃a b⦄ : p = a * b → IsUnit a ∨ IsUnit b
 
 namespace Irreducible
 
 @[deprecated (since := "2025-04-09")] alias not_unit := not_isUnit
+@[deprecated (since := "2025-04-10")] alias isUnit_or_isUnit' := isUnit_or_isUnit
 
 theorem not_dvd_one [CommMonoid M] {p : M} (hp : Irreducible p) : ¬p ∣ 1 :=
   mt (isUnit_of_dvd_one ·) hp.not_isUnit
 
-theorem isUnit_or_isUnit [Monoid M] {p : M} (hp : Irreducible p) {a b : M} (h : p = a * b) :
-    IsUnit a ∨ IsUnit b :=
-  hp.isUnit_or_isUnit' a b h
-
 end Irreducible
 
 theorem irreducible_iff [Monoid M] {p : M} :
-    Irreducible p ↔ ¬IsUnit p ∧ ∀ a b, p = a * b → IsUnit a ∨ IsUnit b :=
+    Irreducible p ↔ ¬IsUnit p ∧ ∀ ⦃a b⦄, p = a * b → IsUnit a ∨ IsUnit b :=
   ⟨fun h => ⟨h.1, h.2⟩, fun h => ⟨h.1, h.2⟩⟩
 
 @[simp]
@@ -128,14 +125,14 @@ theorem Irreducible.ne_one [Monoid M] : ∀ {p : M}, Irreducible p → p ≠ 1
 @[simp]
 theorem not_irreducible_zero [MonoidWithZero M] : ¬Irreducible (0 : M)
   | ⟨hn0, h⟩ =>
-    have : IsUnit (0 : M) ∨ IsUnit (0 : M) := h 0 0 (mul_zero 0).symm
+    have : IsUnit (0 : M) ∨ IsUnit (0 : M) := h (mul_zero 0).symm
     this.elim hn0 hn0
 
 theorem Irreducible.ne_zero [MonoidWithZero M] : ∀ {p : M}, Irreducible p → p ≠ 0
   | _, hp, rfl => not_irreducible_zero hp
 
 theorem of_irreducible_mul {M} [Monoid M] {x y : M} : Irreducible (x * y) → IsUnit x ∨ IsUnit y
-  | ⟨_, h⟩ => h _ _ rfl
+  | ⟨_, h⟩ => h rfl
 
 theorem irreducible_or_factor {M} [Monoid M] (x : M) (h : ¬IsUnit x) :
     Irreducible x ∨ ∃ a b, ¬IsUnit a ∧ ¬IsUnit b ∧ a * b = x := by
