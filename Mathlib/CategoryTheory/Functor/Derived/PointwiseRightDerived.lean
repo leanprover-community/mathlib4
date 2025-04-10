@@ -144,6 +144,7 @@ noncomputable def LeftExtension.isPointwiseLeftKanExtensionOfIsIso
     E.IsPointwiseLeftKanExtension :=
   Functor.isPointwiseLeftKanExtensionOfIso W (asIso E.hom)
 
+variable {W} in
 lemma hasPointwiseRightDerivedFunctor_of_inverts
     (F : C ⥤ H) {W : MorphismProperty C} (hF : W.IsInvertedBy F) :
     F.HasPointwiseRightDerivedFunctor W := by
@@ -151,6 +152,23 @@ lemma hasPointwiseRightDerivedFunctor_of_inverts
   rw [hasPointwiseRightDerivedFunctorAt_iff F W.Q W]
   exact (isPointwiseLeftKanExtensionOfIso W
     (Localization.fac F hF W.Q).symm).hasPointwiseLeftKanExtension  _
+
+lemma isRightDerivedFunctor_of_inverts
+    [L.IsLocalization W] (F' : D ⥤ H) (e : L ⋙ F' ≅ F) :
+    F'.IsRightDerivedFunctor e.inv W where
+  isLeftKanExtension' :=
+    (isPointwiseLeftKanExtensionOfIso W e.symm).isLeftKanExtension
+
+variable {W} in
+lemma isIso_of_isRightDerivedFunctor_of_inverts [L.IsLocalization W]
+    {F : C ⥤ H} (RF : D ⥤ H) (α : F ⟶ L ⋙ RF)
+    (hF : W.IsInvertedBy F) [RF.IsRightDerivedFunctor α W] :
+    IsIso α := by
+  let e := Localization.fac F hF L
+  have := isRightDerivedFunctor_of_inverts W _ e
+  have : α = e.inv ≫ whiskerLeft _ (rightDerivedUnique _ _ e.inv α W).hom := by simp
+  rw [this]
+  infer_instance
 
 end
 
