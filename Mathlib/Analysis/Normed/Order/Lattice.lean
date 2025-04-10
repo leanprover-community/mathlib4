@@ -67,7 +67,7 @@ said to be a normed lattice ordered group.
 -/
 @[deprecated
   "Use `[NormedAddCommGroup α] [Lattice α] [HasSolidNorm α] [IsOrderedAddMonoid α]` instead."
-  (since := "2025-01-05")]
+  (since := "2025-04-10")]
 structure NormedLatticeAddCommGroup (α : Type*) extends
     NormedAddCommGroup α, Lattice α, HasSolidNorm α where
   add_le_add_left : ∀ a b : α, a ≤ b → ∀ c : α, c + a ≤ c + b

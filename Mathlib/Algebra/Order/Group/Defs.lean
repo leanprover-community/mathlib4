@@ -34,7 +34,7 @@ variable {α : Type u}
 /-- An ordered additive commutative group is an additive commutative group
 with a partial order in which addition is strictly monotone. -/
 @[deprecated "Use `[AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α]` instead."
-  (since := "2025-01-05")]
+  (since := "2025-04-10")]
 structure OrderedAddCommGroup (α : Type u) extends AddCommGroup α, PartialOrder α where
   /-- Addition is monotone in an ordered additive commutative group. -/
   protected add_le_add_left : ∀ a b : α, a ≤ b → ∀ c : α, c + a ≤ c + b
@@ -44,7 +44,7 @@ set_option linter.existingAttributeWarning false in
 with a partial order in which multiplication is strictly monotone. -/
 @[to_additive,
   deprecated "Use `[CommGroup α] [PartialOrder α] [IsOrderedMonoid α]` instead."
-  (since := "2025-01-05")]
+  (since := "2025-04-10")]
 structure OrderedCommGroup (α : Type u) extends CommGroup α, PartialOrder α where
   /-- Multiplication is monotone in an ordered commutative group. -/
   protected mul_le_mul_left : ∀ a b : α, a ≤ b → ∀ c : α, c * a ≤ c * b
@@ -79,7 +79,7 @@ set_option linter.deprecated false in
 additive commutative group with a linear order in which
 addition is monotone. -/
 @[deprecated "Use `[AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]` instead."
-  (since := "2025-01-05")]
+  (since := "2025-04-10")]
 structure LinearOrderedAddCommGroup (α : Type u) extends OrderedAddCommGroup α, LinearOrder α
 
 set_option linter.existingAttributeWarning false in
@@ -89,7 +89,7 @@ commutative group with a linear order in which
 multiplication is monotone. -/
 @[to_additive,
   deprecated "Use `[CommGroup α] [LinearOrder α] [IsOrderedMonoid α]` instead."
-  (since := "2025-01-05")]
+  (since := "2025-04-10")]
 structure LinearOrderedCommGroup (α : Type u) extends OrderedCommGroup α, LinearOrder α
 
 attribute [nolint docBlame]
