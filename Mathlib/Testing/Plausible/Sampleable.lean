@@ -44,8 +44,7 @@ instance Rat.sampleableExt : SampleableExt Rat :=
 instance PNat.sampleableExt : SampleableExt PNat :=
   mkSelfContained (do
     let n ← chooseNat
-    return Nat.succPNat n
-  )
+    return Nat.succPNat n)
 
 end Samplers
 
