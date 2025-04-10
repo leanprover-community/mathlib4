@@ -9,11 +9,7 @@ import Mathlib.Data.Finset.Erase
 import Mathlib.Data.Finset.Filter
 import Mathlib.Data.Finset.Range
 import Mathlib.Data.Finset.SDiff
-import Mathlib.Data.Multiset.Basic
-import Mathlib.Logic.Equiv.Set
-import Mathlib.Order.Directed
-import Mathlib.Order.Interval.Set.Defs
-import Mathlib.Data.Set.SymmDiff
+import Mathlib.Order.Minimal
 
 /-!
 # Basic lemmas on finite sets
@@ -66,6 +62,9 @@ theorem sizeOf_lt_sizeOf_of_mem [SizeOf α] {x : α} {s : Finset α} (hx : x ∈
   rw [Nat.add_comm]
   refine lt_trans ?_ (Nat.lt_succ_self _)
   exact Multiset.sizeOf_lt_sizeOf_of_mem hx
+
+lemma exists_minimal_subset (p : Finset α → Prop) (s : Finset α) (hs : p s) :
+    ∃ t ⊆ s, Minimal (p ·) t := exists_minimal_le_of_wellFoundedLT p s hs
 
 /-! ### Lattice structure -/
 
