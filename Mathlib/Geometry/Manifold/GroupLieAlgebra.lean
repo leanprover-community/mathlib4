@@ -138,6 +138,17 @@ lemma mulInvariantVectorField_eq_mpullback (g : G) (V : Π (g : G), TangentSpace
 theorem contMDiff_mulInvariantVectorField (v : GroupLieAlgebra I G) :
     ContMDiff I I.tangent (minSmoothness 𝕜 2)
       (fun (g : G) ↦ (mulInvariantVectorField v g : TangentBundle I G)) := by
+  /- We will write the desired map as a composition of obviously smooth maps.
+  The derivative of the product `P : (g, h) ↦ g * h` is given by
+  `DP (g, h) ⬝ (u, v) = DL_g v + DR_h u`, where `L_g` and `R_h` are respectively left and right
+  multiplication by `g` and `h`. As `P` is smooth, so is `DP`.
+  Consider the map `F₁ : M → T (M × M)` mapping `g` to `(0, v) ∈ T_(g, e) (M × M)`. Then the
+  composition of `DP` with `F₁` maps `g` to `DL_g v ∈ T_g M`, thanks to the above formula. This
+  is the desired invariant vector field. Since both `DP` and `F₁` are smooth, their composition is
+  smooth as desired.
+  There is a small abuse of notation in the above argument, where we have identified `T (M × M)`
+  and `TM × TM`. In the formal proof, we need to introduce this identification, called `F₂` below,
+  which is also already known to be smooth. -/
   have M : 1 ≤ minSmoothness 𝕜 3 := le_trans (by norm_num) le_minSmoothness
   have A : minSmoothness 𝕜 2 + 1 = minSmoothness 𝕜 3 := by
     rw [← minSmoothness_add]
@@ -233,8 +244,8 @@ Therefore, we state and prove by hand the additive version. -/
 /-- The tangent space at the identity of an additive Lie group is a Lie algebra, for the bracket
 given by the Lie bracket of invariant vector fields. -/
 noncomputable instance instLieAlgebraAddGroupLieAlgebra
-   {G : Type*} [TopologicalSpace G] [ChartedSpace H G] [AddGroup G]
-  [LieAddGroup I (minSmoothness 𝕜 3) G] : LieAlgebra 𝕜 (AddGroupLieAlgebra I G) where
+    {G : Type*} [TopologicalSpace G] [ChartedSpace H G] [AddGroup G]
+    [LieAddGroup I (minSmoothness 𝕜 3) G] : LieAlgebra 𝕜 (AddGroupLieAlgebra I G) where
   lie_smul c v w := by
     simp only [AddGroupLieAlgebra.bracket_def, addInvariantVectorField_smul]
     rw [mlieBracket_smul_right]
