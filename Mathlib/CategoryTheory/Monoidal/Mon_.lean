@@ -18,8 +18,7 @@ the category of lax monoidal functors from the unit monoidal category to `C`.  W
 
 -/
 
-
-universe v₁ v₂ u₁ u₂ u
+universe v₁ v₂ v₃ u₁ u₂ u₃ u
 
 open CategoryTheory MonoidalCategory Functor.LaxMonoidal Functor.OplaxMonoidal
 
@@ -254,8 +253,10 @@ instance : HasInitial (Mon_ C) :=
 end Mon_
 
 namespace CategoryTheory.Functor
-
-variable {C} {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
+variable {C}
+  {D : Type u₂} [Category.{v₂} D] [MonoidalCategory D]
+  {E : Type u₃} [Category.{v₃} E] [MonoidalCategory E]
+  {F : C ⥤ D} [F.LaxMonoidal] {G : D ⥤ E} [G.LaxMonoidal]
 
 #adaptation_note /-- https://github.com/leanprover/lean4/pull/6053
 we needed to increase the `maxHeartbeats` limit if we didn't write an explicit proof for
@@ -263,12 +264,13 @@ we needed to increase the `maxHeartbeats` limit if we didn't write an explicit p
 
 This may indicate a configuration problem in Aesop. -/
 -- TODO: mapMod F A : Mod A ⥤ Mod (F.mapMon A)
+variable (F) in
 /-- A lax monoidal functor takes monoid objects to monoid objects.
 
 That is, a lax monoidal functor `F : C ⥤ D` induces a functor `Mon_ C ⥤ Mon_ D`.
 -/
 @[simps]
-def mapMon (F : C ⥤ D) [F.LaxMonoidal] : Mon_ C ⥤ Mon_ D where
+def mapMon : Mon_ C ⥤ Mon_ D where
   obj A :=
     { X := F.obj A.X
       one := ε F ≫ F.map A.one
@@ -301,8 +303,17 @@ def mapMon (F : C ⥤ D) [F.LaxMonoidal] : Mon_ C ⥤ Mon_ D where
     simp only [Mon_.comp_hom', map_comp]
     rfl
 
-variable (C D)
+/-- The identity functor is also the identity on monoid objects. -/
+@[simps!]
+noncomputable def mapMonIdIso : mapMon (𝟭 C) ≅ 𝟭 (Mon_ C) :=
+  NatIso.ofComponents fun X ↦ Mon_.mkIso (.refl _)
 
+/-- The composition functor is also the composition on monoid objects. -/
+@[simps!]
+noncomputable def mapMonCompIso : (F ⋙ G).mapMon ≅ F.mapMon ⋙ G.mapMon :=
+  NatIso.ofComponents fun X ↦ Mon_.mkIso (.refl _)
+
+variable (C D) in
 /-- `mapMon` is functorial in the lax monoidal functor. -/
 @[simps] -- Porting note: added this, not sure how it worked previously without.
 def mapMonFunctor : LaxMonoidalFunctor C D ⥤ Mon_ C ⥤ Mon_ D where
