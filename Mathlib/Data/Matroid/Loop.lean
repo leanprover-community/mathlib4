@@ -793,7 +793,7 @@ lemma IsRestriction.loopless [M.Loopless] (hR : N ≤r M) : N.Loopless := by
   obtain ⟨R, hR, rfl⟩ := hR
   rw [loopless_iff, restrict_loops_eq hR, M.loops_eq_empty, empty_inter]
 
-instance {M : Matroid α} [Matroid.Nonempty M] [Loopless M] : RankPos M :=
+instance {M : Matroid α} [M.Nonempty] [Loopless M] : RankPos M :=
   M.ground_nonempty.elim fun _ he ↦ (isNonloop_of_loopless he).rankPos
 
 @[simp] lemma loopyOn_isLoopless_iff {E : Set α} : Loopless (loopyOn E) ↔ E = ∅ := by
