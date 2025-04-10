@@ -157,7 +157,6 @@ instance toBialgebra : Bialgebra R R where
 
 end CommSemiring
 
-
 namespace Bialgebra
 
 variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
