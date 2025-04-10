@@ -512,7 +512,7 @@ def row (A : Matrix m n α) : m → n → α := A
 while avoiding defeq abuse and noisy eta-expansions
 (and without the simplifier unfolding transposes) in expressions like `Set.Injective A.col`
 and `Set.range A.col`.
-(Note 04-07-2025 : the identifier `Matrix.col` used to refer to a matrix with all columns equal;
+(Note 2025-04-07 : the identifier `Matrix.col` used to refer to a matrix with all columns equal;
 this is now called `Matrix.replicateCol`) -/
 def col (A : Matrix m n α) : n → m → α := Aᵀ
 
