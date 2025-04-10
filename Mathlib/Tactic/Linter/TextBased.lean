@@ -373,7 +373,7 @@ def unicodeLinter : TextbasedLinter := fun lines ↦ Id.run do
         unreachable!
 
     changed := changed.push newLine
-    errors := errors.append (err.map (fun e => (e, lineNumber)))
+    errors := errors.append (err.map ((·, lineNumber)))
   return (errors, changed)
 
 /-- All text-based linters registered in this file. -/
