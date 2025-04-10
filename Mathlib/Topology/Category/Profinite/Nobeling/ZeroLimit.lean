@@ -13,6 +13,8 @@ import Mathlib.Topology.Category.Profinite.Nobeling.Basic
 This file proves the zero and limit cases of the ordinal induction used in the proof of
 Nöbeling's theorem. See the section docstrings for more information.
 
+For the overall proof outline see `Mathlib.Topology.Category.Profinite.Nobeling.Basic`.
+
 ## References
 
 - [scholze2019condensed], Theorem 5.4.

@@ -11,7 +11,8 @@ import Mathlib.Topology.Category.Profinite.Nobeling.ZeroLimit
 /-!
 # Nöbeling's theorem
 
-This file proves Nöbeling's theorem.
+This file proves Nöbeling's theorem. For the overall proof outline see
+`Mathlib.Topology.Category.Profinite.Nobeling.Basic`.
 
 ## Main result
 
