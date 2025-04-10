@@ -720,7 +720,7 @@ theorem pred_to_nat : ∀ n : Num, (pred n : ℕ) = Nat.pred n
 theorem ppred_to_nat : ∀ n : Num, (↑) <$> ppred n = Nat.ppred n
   | 0 => rfl
   | pos p => by
-    rw [ppred, Option.map_some, Nat.ppred_eq_some.2]
+    rw [ppred, Option.map_eq_map, Option.map_some, Nat.ppred_eq_some.2]
     rw [PosNum.pred'_to_nat, Nat.succ_pred_eq_of_pos (PosNum.to_nat_pos _)]
     rfl
 

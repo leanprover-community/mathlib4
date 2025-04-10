@@ -77,17 +77,15 @@ theorem map_injective {f : α → β} (Hf : Function.Injective f) : Function.Inj
 theorem map_comp_some (f : α → β) : Option.map f ∘ some = some ∘ f :=
   rfl
 
-@[simp]
-theorem none_bind' (f : α → Option β) : none.bind f = none :=
-  rfl
+@[deprecated none_bind (since := "2025-04-10")]
+theorem none_bind' (f : α → Option β) : none.bind f = none := none_bind f
 
-@[simp]
-theorem some_bind' (a : α) (f : α → Option β) : (some a).bind f = f a :=
-  rfl
+@[deprecated some_bind (since := "2025-04-10")]
+theorem some_bind' (a : α) (f : α → Option β) : (some a).bind f = f a := some_bind a f
 
+@[deprecated bind_eq_some_iff (since := "2025-04-10")]
 theorem bind_eq_some' {x : Option α} {f : α → Option β} {b : β} :
-    x.bind f = some b ↔ ∃ a, x = some a ∧ f a = some b := by
-  cases x <;> simp
+    x.bind f = some b ↔ ∃ a, x = some a ∧ f a = some b := bind_eq_some_iff
 
 @[congr]
 theorem bind_congr' {f g : α → Option β} {x y : Option α} (hx : x = y)
@@ -116,7 +114,7 @@ theorem map_coe' {a : α} {f : α → β} : Option.map f (a : Option α) = ↑(f
 
 /-- `Option.map` as a function between functions is injective. -/
 theorem map_injective' : Function.Injective (@Option.map α β) := fun f g h ↦
-  funext fun x ↦ some_injective _ <| by simp only [← map_some', h]
+  funext fun x ↦ some_injective _ <| by simp only [← map_some, h]
 
 @[simp]
 theorem map_inj {f g : α → β} : Option.map f = Option.map g ↔ f = g :=
@@ -136,8 +134,9 @@ section pmap
 
 variable {p : α → Prop} (f : ∀ a : α, p a → β) (x : Option α)
 
+@[deprecated map_bind (since := "2025-04-10")]
 theorem map_bind' (f : β → γ) (x : Option α) (g : α → Option β) :
-    Option.map f (x.bind g) = x.bind fun a ↦ Option.map f (g a) := by cases x <;> simp
+    Option.map f (x.bind g) = x.bind fun a ↦ Option.map f (g a) := map_bind
 
 theorem mem_pmem {a : α} (h : ∀ a ∈ x, p a) (ha : a ∈ x) : f a (h a ha) ∈ pmap f x h := by
   rw [mem_def] at ha ⊢
@@ -162,16 +161,6 @@ theorem pbind_eq_none {f : ∀ a : α, a ∈ x → Option β}
   · simp only [pbind, iff_false, reduceCtorEq]
     intro h
     cases h' _ rfl h
-
-theorem pbind_eq_some {f : ∀ a : α, a ∈ x → Option β} {y : β} :
-    x.pbind f = some y ↔ ∃ (z : α) (H : z ∈ x), f z H = some y := by
-  rcases x with (_|x)
-  · simp
-  · simp only [pbind]
-    refine ⟨fun h ↦ ⟨x, rfl, h⟩, ?_⟩
-    rintro ⟨z, H, hz⟩
-    simp only [mem_def, Option.some_inj] at H
-    simpa [H] using hz
 
 theorem join_pmap_eq_pmap_join {f : ∀ a, p a → β} {x : Option (Option α)} (H) :
     (pmap (pmap f) x H).join = pmap f x.join fun a h ↦ H (some a) (mem_of_mem_join h) _ rfl := by
@@ -239,25 +228,18 @@ theorem casesOn'_none_coe (f : Option α → β) (o : Option α) :
 lemma casesOn'_eq_elim (b : β) (f : α → β) (a : Option α) :
     Option.casesOn' a b f = Option.elim a b f := by cases a <;> rfl
 
+-- TODO
 theorem orElse_eq_some (o o' : Option α) (x : α) :
-    (o <|> o') = some x ↔ o = some x ∨ o = none ∧ o' = some x := by
-  cases o
-  · simp only [true_and, false_or, eq_self_iff_true, none_orElse, reduceCtorEq]
-  · simp only [some_orElse, or_false, false_and, reduceCtorEq]
+    (o <|> o') = some x ↔ o = some x ∨ o = none ∧ o' = some x :=
+  orElse_eq_some_iff _ _ _
 
-theorem orElse_eq_some' (o o' : Option α) (x : α) :
-    o.orElse (fun _ ↦ o') = some x ↔ o = some x ∨ o = none ∧ o' = some x :=
-  Option.orElse_eq_some o o' x
+@[deprecated (since := "2025-04-10")] alias orElse_eq_some' := orElse_eq_some_iff
 
 @[simp]
-theorem orElse_eq_none (o o' : Option α) : (o <|> o') = none ↔ o = none ∧ o' = none := by
-  cases o
-  · simp only [true_and, none_orElse, eq_self_iff_true]
-  · simp only [some_orElse, reduceCtorEq, false_and]
+theorem orElse_eq_none (o o' : Option α) : (o <|> o') = none ↔ o = none ∧ o' = none :=
+  orElse_eq_none_iff _ _
 
-@[simp]
-theorem orElse_eq_none' (o o' : Option α) : o.orElse (fun _ ↦ o') = none ↔ o = none ∧ o' = none :=
-  Option.orElse_eq_none o o'
+@[deprecated (since := "2025-04-10")] alias orElse_eq_none' := orElse_eq_none_iff
 
 section
 
@@ -280,35 +262,10 @@ theorem elim_comp₂ (h : α → β → γ) {f : γ → α} {x : α} {g : γ →
 theorem elim_apply {f : γ → α → β} {x : α → β} {i : Option γ} {y : α} :
     i.elim x f y = i.elim (x y) fun j => f j y := by rw [elim_comp fun f : α → β => f y]
 
-@[simp]
-lemma bnot_isSome (a : Option α) : (! a.isSome) = a.isNone := by
-  cases a <;> simp
-
-@[simp]
-lemma bnot_comp_isSome : (! ·) ∘ @Option.isSome α = Option.isNone := by
-  funext
-  simp
-
-@[simp]
-lemma bnot_isNone (a : Option α) : (! a.isNone) = a.isSome := by
-  cases a <;> simp
-
-@[simp]
-lemma bnot_comp_isNone : (! ·) ∘ @Option.isNone α = Option.isSome := by
-  funext x
-  simp
-
-@[simp]
-lemma isNone_eq_false_iff (a : Option α) : Option.isNone a = false ↔ Option.isSome a := by
-  cases a <;> simp
-
-lemma eq_none_or_eq_some (a : Option α) : a = none ∨ ∃ x, a = some x :=
-  Option.exists.mp exists_eq'
-
-lemma eq_none_iff_forall_some_ne {o : Option α} : o = none ↔ ∀ a : α, some a ≠ o := by
-  apply not_iff_not.1
-  simpa only [not_forall, not_not] using Option.ne_none_iff_exists
-
+@[deprecated (since := "2025-04-10")] alias bnot_isSome := not_isSome
+@[deprecated (since := "2025-04-10")] alias bnot_comp_isSome := not_comp_isSome
+@[deprecated (since := "2025-04-10")] alias bnot_isNone := not_isNone
+@[deprecated (since := "2025-04-10")] alias bnot_comp_isNone := not_comp_isNone
 @[deprecated (since := "2025-03-19")] alias forall_some_ne_iff_eq_none := eq_none_iff_forall_some_ne
 
 end Option

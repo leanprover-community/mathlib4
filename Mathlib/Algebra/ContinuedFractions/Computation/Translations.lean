@@ -86,7 +86,7 @@ theorem succ_nth_stream_eq_some_iff {ifp_succ_n : IntFractPair K} :
       ∃ ifp_n : IntFractPair K,
         IntFractPair.stream v n = some ifp_n ∧
           ifp_n.fr ≠ 0 ∧ IntFractPair.of ifp_n.fr⁻¹ = ifp_succ_n := by
-  simp [IntFractPair.stream, ite_eq_iff, Option.bind_eq_some]
+  simp [IntFractPair.stream, ite_eq_iff, Option.bind_eq_some_iff]
 
 /-- An easier to use version of one direction of
 `GenContFract.IntFractPair.succ_nth_stream_eq_some_iff`. -/
@@ -193,7 +193,7 @@ Let's first show how the termination of one sequence implies the termination of 
 
 theorem of_terminatedAt_iff_intFractPair_seq1_terminatedAt :
     (of v).TerminatedAt n ↔ (IntFractPair.seq1 v).snd.TerminatedAt n :=
-  Option.map_eq_none
+  Option.map_eq_none_iff
 
 theorem of_terminatedAt_n_iff_succ_nth_intFractPair_stream_eq_none :
     (of v).TerminatedAt n ↔ IntFractPair.stream v (n + 1) = none := by
