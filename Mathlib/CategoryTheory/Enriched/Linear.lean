@@ -1,10 +1,19 @@
+/-
+Copyright (c) 2025 Jakob von Raumer. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jakob von Raumer
+-/
 import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
 import Mathlib.CategoryTheory.Linear.Basic
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
+/-!
+# Linear categories as `ModuleCat R`-enriched categories
 
-namespace CategoryTheory
+-/
 
 universe w v v' u u'
+
+namespace CategoryTheory
 
 open TensorProduct MonoidalCategory
 
@@ -74,10 +83,6 @@ lemma aux5' {X Z : C} (f : X ⟶ Z) :
     (LinearMap.ringLmapEquivSelf R R (X ⟶ Z)).symm f =
     LinearMap.toSpanSingleton R  (X ⟶ Z) f := rfl
 
-lemma aux7 {W X Y Z: ModuleCat R} (f : W ⟶ X) (g : Y ⟶ Z) :
-    ModuleCat.Hom.hom (R := R) (f ⊗ g) = map (ModuleCat.Hom.hom f) (ModuleCat.Hom.hom g) :=
-  rfl
-
 noncomputable instance : EnrichedOrdinaryCategory (ModuleCat R) C where
   Hom X Y := .of R (X ⟶ Y)
   id X := ModuleCat.ofHom <| LinearMap.toSpanSingleton R (X ⟶ X) (𝟙 X)
@@ -108,8 +113,7 @@ noncomputable instance : EnrichedOrdinaryCategory (ModuleCat R) C where
   homEquiv_id X := rfl
   homEquiv_comp {X Y Z} f g := by
     dsimp [eComp]
-    erw [aux5', aux5', aux5']
-    rw [aux6]
+    erw [aux5', aux5', aux5', Linear.toSpanSingleton_comp]
     simp [ModuleCat.homEquiv]
     ext
     simp
@@ -121,7 +125,7 @@ noncomputable instance : EnrichedOrdinaryCategory (ModuleCat R) C where
           (ModuleCat.ofHom (LinearMap.toSpanSingleton R (X ⟶ Y) f) ⊗
             ModuleCat.ofHom (LinearMap.toSpanSingleton R (Y ⟶ Z) g)))
           (1 ⊗ₜ 1))
-    simp [aux7]
+    simp
     erw [map_tmul (R := R) (LinearMap.toSpanSingleton R (X ⟶ Y) f)
       (LinearMap.toSpanSingleton R (Y ⟶ Z) g) 1 1]
     simp
