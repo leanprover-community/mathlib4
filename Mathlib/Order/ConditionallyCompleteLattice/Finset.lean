@@ -150,15 +150,12 @@ theorem Set.Finite.lt_ciInf_iff {s : Set ι} {f : ι → α} (hs : s.Finite)
     rw [← hx]
     exact H _ hmem
 
-theorem Finset.ciSup_univ [Fintype β] {f : β → α} :
-    (⨆ (x : β) (_ : x ∈ (Finset.univ : Finset β)), f x) = ⨆ x : β, f x := by
-  simp only [Finset.mem_univ, ciSup_pos]
-
 theorem Set.Finite.le_ciSup₂_of_le {ι : Sort*} {κ : ι → Prop} {f : ∀ i, κ i → α}
     (h_fin : (Set.range fun i : ι ↦ ⨆ j : κ i, f i j).Finite) (i : ι) (j : κ i) (h : a ≤ f i j) :
     a ≤ ⨆ (i) (j), f i j :=
   le_ciSup_of_le h_fin.bddAbove i
     (le_ciSup_of_le (Set.finite_range fun j : κ i ↦ f i j).bddAbove j h)
+
 section ListMultiset
 
 lemma List.iSup_mem_map_of_exists_sSup_empty_le {l : List ι} (f : ι → α)
