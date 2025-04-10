@@ -17,8 +17,8 @@ This file provides all white-lists and other tools used by the linter.
 ## Main declarations
 
 * `emojis`, `nonEmojis`: characters in these lists should always be followed by
-  the correct variant-selector `UnicodeVariant.emoji` or `UnicodeVariant.text`.
-  These variant-selector should not appear anywhere else.
+  the correct variant selector `UnicodeVariant.emoji` or `UnicodeVariant.text`.
+  These variant selector should not appear anywhere else.
 
 -/
 

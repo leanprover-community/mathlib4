@@ -25,7 +25,7 @@ open Mathlib.Linter.TextBased.UnicodeLinter
     error := .unicodeVariant "\uFE0EA" none ⟨6⟩, lineNumber := 4, path:="./MYFILE.lean"}
   (parse?_errorContext <| outputMessage errContext .exceptionsFile) == some errContext
 
--- only one variant-selector can be used
+-- only one variant selector can be used
 #guard emojis.toList ∩ nonEmojis.toList = ∅
 
 end unicodeLinter

@@ -55,7 +55,7 @@ inductive StyleError where
   /-- A line contains a space before a semicolon -/
   | semicolon
   /-- Unicode variant selectors are used in a bad way.
-  * `s` is the string containing the unicode character and any unicode-variant-selector following it
+  * `s` is the string containing the unicode character and any unicode variant selector following it
   * `selector` is the desired selector or `none`
   * `pos`: the character position in the line.
   -/
@@ -95,16 +95,16 @@ def StyleError.errorMessage (err : StyleError) : String := match err with
     | ⟨c₀ :: []⟩, some sel =>
       let newC : String := ⟨[c₀, sel]⟩
       let newHex := " ".intercalate <| newC.data.map printCodepointHex
-      s!"missing unicode variant-selector at char {pos}: \"{s}\" ({oldHex}). \
+      s!"missing unicode variant selector at char {pos}: \"{s}\" ({oldHex}). \
       Please use the {variant}-variant: \"{newC}\" ({newHex})!"
     | ⟨c₀ :: _ :: []⟩, some sel =>
-      -- by assumption, the second character is a variant-selector
+      -- by assumption, the second character is a variant selector
       let newC : String := ⟨[c₀, sel]⟩
       let newHex := " ".intercalate <| newC.data.map printCodepointHex
-      s!"wrong unicode variant-selector at char {pos}: \"{s}\" ({oldHex}). \
+      s!"wrong unicode variant selector at char {pos}: \"{s}\" ({oldHex}). \
       Please use the {variant}-variant: \"{newC}\" ({newHex})!"
     | _, _ =>
-      s!"unexpected unicode variant-selector at char {pos}: \"{s}\" ({oldHex}). \
+      s!"unexpected unicode variant selector at char {pos}: \"{s}\" ({oldHex}). \
         Consider deleting it."
 
 /-- The error code for a given style error. Keep this in sync with `parse?_errorContext` below! -/
@@ -297,7 +297,7 @@ end
 namespace UnicodeLinter
 
 /-- Creates `StyleError`s for
-bad usage of (emoji/text)-variant-selectors.
+bad usage of (emoji/text) variant selectors.
 Note: if `pos` is not a valid position, the result is unspecified. -/
 def findBadUnicodeAux (s : String) (c : Char)
     (err : Array StyleError := #[]) (pos : String.Pos := 0) : Array StyleError :=
@@ -307,7 +307,7 @@ def findBadUnicodeAux (s : String) (c : Char)
     -- `posₙ` is valid, might be `endPos`.
     let cₙ := s.get? posₙ |>.getD '\uFFFD' -- �
     if cₙ == UnicodeVariant.emoji && !(emojis.contains c) then
-      -- bad: unwanted emoji-variant-selector
+      -- bad: unwanted emoji variant selector
       let errₙ := err.push (.unicodeVariant ⟨[c, cₙ]⟩ none pos)
       findBadUnicodeAux s cₙ errₙ posₙ
     else if cₙ == UnicodeVariant.text && !(nonEmojis.contains c) then
@@ -332,12 +332,12 @@ def findBadUnicodeAux (s : String) (c : Char)
     err
 termination_by s.endPos.1 - pos.1
 
-/-- Creates `StyleError`s for bad usage of (emoji/text)-variant-selectors. -/
+/-- Creates `StyleError`s for bad usage of (emoji/text) variant selectors. -/
 @[inline]
 def findBadUnicode (s : String) : Array StyleError :=
   if s == "" then #[] else
   let c := s.get 0
-  -- edge case: variant-selector as first char of the line
+  -- edge case: variant selector as first char of the line
   let initalErrors := if #[UnicodeVariant.emoji, UnicodeVariant.text].contains c then
     #[(.unicodeVariant ⟨[c]⟩ none 0)] else #[]
   findBadUnicodeAux s c initalErrors
@@ -363,10 +363,10 @@ def unicodeLinter : TextbasedLinter := fun lines ↦ Id.run do
         let tail := newLine.extract (head ++ s).endPos line.endPos
         newLine := match sel with
         | some v =>
-          -- injecting desired variant-selector
+          -- injecting desired variant selector
           head ++ ⟨[s.get 0, v]⟩ ++ tail
         | none =>
-          -- removing used variant-selector
+          -- removing used variant selector
           head ++ ⟨[s.get 0]⟩ ++ tail
       | _ =>
         unreachable!
