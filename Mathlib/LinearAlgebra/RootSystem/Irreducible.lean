@@ -169,7 +169,7 @@ lemma root_subset_characterization {K : Type*} [Field K] [Module K M] [Module K 
   · intro i hi
     exact (root_mem_or_subset_ker_coroot q P i (h₁ i)).resolve_left hi
 
-lemma l21 {K : Type*} [Field K] [Module K M] [Module K N]
+lemma span_coroot_eq_top' {K : Type*} [Field K] [Module K M] [Module K N]
     (P : RootSystem ι K M N) : span K (range P.coroot') = ⊤ := by
   have key (d : Module.Dual K M) :
       d ∈ span K (range fun i ↦ P.flip.toDualLeft (P.flip.root i)) := by
@@ -186,25 +186,22 @@ lemma l21 {K : Type*} [Field K] [Module K M] [Module K N]
     exact this
   exact Submodule.eq_top_iff'.mpr key
 
-lemma l25 {K : Type*} [Field K] [Module K M] [Module K M] [Module K N]
+lemma l25 {K : Type*} [Field K] [Module K M] [Module K N]
     (P : RootSystem ι K M N) (v : M) (hx : ∀ (i : ι), v ∈ ker (P.coroot' i))
-      (hy : span K (range P.coroot') = ⊤) (d : Module.Dual K M) : d v = 0 := by
+    (d : Module.Dual K M) : d v = 0 := by
   have : d ∈ span K (range P.coroot') := by
-    simp_all only [LinearMap.mem_ker, PerfectPairing.flip_apply_apply, Submodule.mem_top]
-  refine Submodule.span_induction ?_ ?_ ?_ ?_ this
-  · intro x h
-    simp_all only [LinearMap.mem_ker, PerfectPairing.flip_apply_apply, Submodule.mem_top, mem_range]
-    obtain ⟨w, h⟩ := h
+    simp only [Submodule.mem_top, span_coroot_eq_top' P]
+  induction this using Submodule.span_induction with
+  | mem x hx' =>
+    rcases hx' with ⟨w, h⟩
     subst h
-    simp_all only [PerfectPairing.flip_apply_apply]
-  · simp_all only [LinearMap.mem_ker, PerfectPairing.flip_apply_apply, Submodule.mem_top,
-      LinearMap.zero_apply]
-  · intro x y hx_1 hy_1 a a_1
-    simp_all only [LinearMap.mem_ker, PerfectPairing.flip_apply_apply, Submodule.mem_top,
-      LinearMap.add_apply, add_zero]
-  · intro a x hx_1 a_1
-    simp_all only [LinearMap.mem_ker, PerfectPairing.flip_apply_apply, Submodule.mem_top,
-      LinearMap.smul_apply, smul_eq_mul, mul_zero]
+    exact hx w
+  | zero => simp only [Submodule.mem_top, LinearMap.zero_apply]
+  | add _ _ _ _ h₁ h₂ =>
+    rw [LinearMap.add_apply, h₁, h₂, add_zero]
+  | smul _ _ _ h =>
+    rw [LinearMap.smul_apply, smul_eq_mul, h, mul_zero]
+
 
 lemma l3 {K : Type*} [Field K] [Module K M] [Module K N]
     (P : RootSystem ι K M N) (q : Submodule K M) (ha : ∀ i, q ∈ invtSubmodule (P.reflection i))
@@ -254,11 +251,11 @@ lemma l3 {K : Type*} [Field K] [Module K M] [Module K N]
       forall_const, LinearMap.mem_ker, PerfectPairing.flip_apply_apply]
     apply c
     simp_all only
-  have yyy : span K (range  P.coroot') = ⊤ := by
-    exact l21 P
+  --have yyy : span K (range  P.coroot') = ⊤ := by
+  --  exact l21 P
     --search_proof
   have help (d : Module.Dual K M) : d v1 = 0 := by
-    exact l25 P v1 xxx (yyy) d
+    exact l25 P v1 xxx d
   have : q.dualAnnihilator ≠ ⊤ := by
     subst hn
     simp_all only [ne_eq, mem_empty_iff_false, not_false_eq_true, implies_true, LinearMap.mem_ker,
@@ -266,9 +263,5 @@ lemma l3 {K : Type*} [Field K] [Module K M] [Module K N]
         Submodule.dualAnnihilator_eq_top_iff]
   have := (Module.forall_dual_apply_eq_zero_iff K v1).1 help
   contradiction
-
-
-
-
 
 end RootPairing
