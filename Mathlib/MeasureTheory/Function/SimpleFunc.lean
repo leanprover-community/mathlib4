@@ -1091,12 +1091,12 @@ protected theorem map₂ [Zero δ] (hf : f.FinMeasSupp μ) {g : α →ₛ γ} (h
     {op : β → γ → δ} (H : op 0 0 = 0) : ((pair f g).map (Function.uncurry op)).FinMeasSupp μ :=
   (hf.pair hg).map H
 
-protected theorem add {β} [AddMonoid β] {f g : α →ₛ β} (hf : f.FinMeasSupp μ)
+protected theorem add {β} [AddZeroClass β] {f g : α →ₛ β} (hf : f.FinMeasSupp μ)
     (hg : g.FinMeasSupp μ) : (f + g).FinMeasSupp μ := by
   rw [add_eq_map₂]
   exact hf.map₂ hg (zero_add 0)
 
-protected theorem mul {β} [MonoidWithZero β] {f g : α →ₛ β} (hf : f.FinMeasSupp μ)
+protected theorem mul {β} [MulZeroClass β] {f g : α →ₛ β} (hf : f.FinMeasSupp μ)
     (hg : g.FinMeasSupp μ) : (f * g).FinMeasSupp μ := by
   rw [mul_eq_map₂]
   exact hf.map₂ hg (zero_mul 0)
@@ -1221,7 +1221,7 @@ protected theorem induction' {α γ} [MeasurableSpace α] [Nonempty γ] {P : Sim
 /-- In a topological vector space, the addition of a measurable function and a simple function is
 measurable. -/
 theorem _root_.Measurable.add_simpleFunc
-    {E : Type*} {_ : MeasurableSpace α} [MeasurableSpace E] [AddGroup E] [MeasurableAdd E]
+    {E : Type*} {_ : MeasurableSpace α} [MeasurableSpace E] [AddCancelMonoid E] [MeasurableAdd E]
     {g : α → E} (hg : Measurable g) (f : SimpleFunc α E) :
     Measurable (g + (f : α → E)) := by
   classical
@@ -1246,7 +1246,7 @@ theorem _root_.Measurable.add_simpleFunc
 /-- In a topological vector space, the addition of a simple function and a measurable function is
 measurable. -/
 theorem _root_.Measurable.simpleFunc_add
-    {E : Type*} {_ : MeasurableSpace α} [MeasurableSpace E] [AddGroup E] [MeasurableAdd E]
+    {E : Type*} {_ : MeasurableSpace α} [MeasurableSpace E] [AddCancelMonoid E] [MeasurableAdd E]
     {g : α → E} (hg : Measurable g) (f : SimpleFunc α E) :
     Measurable ((f : α → E) + g) := by
   classical
