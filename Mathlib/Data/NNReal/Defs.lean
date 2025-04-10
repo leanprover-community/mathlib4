@@ -681,11 +681,11 @@ nonrec theorem exists_pow_lt_of_lt_one {a b : ℝ≥0} (ha : 0 < a) (hb : b < 1)
 
 nonrec theorem exists_mem_Ico_zpow {x : ℝ≥0} {y : ℝ≥0} (hx : x ≠ 0) (hy : 1 < y) :
     ∃ n : ℤ, x ∈ Set.Ico (y ^ n) (y ^ (n + 1)) :=
-  exists_mem_Ico_zpow (α := ℝ) hx.bot_lt hy
+  exists_mem_Ico_zpow hx.bot_lt hy
 
 nonrec theorem exists_mem_Ioc_zpow {x : ℝ≥0} {y : ℝ≥0} (hx : x ≠ 0) (hy : 1 < y) :
     ∃ n : ℤ, x ∈ Set.Ioc (y ^ n) (y ^ (n + 1)) :=
-  exists_mem_Ioc_zpow (α := ℝ) hx.bot_lt hy
+  exists_mem_Ioc_zpow hx.bot_lt hy
 
 end Pow
 
