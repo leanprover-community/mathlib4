@@ -206,9 +206,8 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
     have h n x (hx : x ∈ E n) := lt_add_of_le_of_pos ((hE.2.2.1 n x hx).right) hε'.1
     have h' n := Eq.trans_ne
       (Content.measure_apply (rieszContent (toNNRealLinear Λ hΛ)) (hE.2.2.2 n)).symm (hE' n)
-    use fun n ↦ Classical.choose <| exists_open_approx f h_ε' (E n) (h' n) (hE.2.2.2 n) (h n)
-    intro n
-    exact Classical.choose_spec <| exists_open_approx f h_ε' (E n) (h' n) (hE.2.2.2 n) (h n)
+    choose V hV using fun n ↦ exists_open_approx f h_ε' (E n) (h' n) (hE.2.2.2 n) (h n)
+    exact ⟨V, hV⟩
   -- Define a partition of unity subordinated to the sets `V`
   obtain ⟨g, hg⟩ : ∃ (g : Fin N → C_c(X, ℝ)), (∀ n, tsupport (g n) ⊆ (V n).carrier) ∧
     EqOn (∑ n : Fin N, (g n)) 1 (tsupport f.toFun) ∧ (∀ n x, (g n) x ∈ Icc 0 1) ∧
