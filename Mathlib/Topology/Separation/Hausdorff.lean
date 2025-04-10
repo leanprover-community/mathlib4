@@ -363,6 +363,9 @@ theorem Topology.IsEmbedding.t2Space [TopologicalSpace Y] [T2Space Y] {f : X →
 @[deprecated (since := "2024-10-26")]
 alias Embedding.t2Space := IsEmbedding.t2Space
 
+protected theorem Homeomorph.t2Space [TopologicalSpace Y] [T2Space X] (h : X ≃ₜ Y) : T2Space Y :=
+  h.symm.isEmbedding.t2Space
+
 instance ULift.instT2Space [T2Space X] : T2Space (ULift X) :=
   IsEmbedding.uliftDown.t2Space
 

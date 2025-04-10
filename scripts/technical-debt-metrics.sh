@@ -83,7 +83,7 @@ titlesPathsAndRegexes=(
                                             "^[· ]*#adaptation_note"
   "disabled simpNF lints"          "*"      "nolint simpNF"
   "erw"                            "*"      "erw \["
-  "maxHeartBeats modifications"    ":^MathlibTest" "^ *set_option .*maxHeartbeats"
+  "maxHeartBeats modifications"    ":^MathlibTest" "^ *set_option .*maxHeartbeats.* [0-9][0-9]*"
 )
 
 for i in ${!titlesPathsAndRegexes[@]}; do
