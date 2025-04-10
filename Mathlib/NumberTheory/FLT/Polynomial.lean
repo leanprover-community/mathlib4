@@ -261,7 +261,7 @@ theorem fermatLastTheoremWith'_polynomial {n : ℕ} (hn : 3 ≤ n) (chn : (n : k
   refine ⟨d, a', b', c', ⟨eq_a, eq_b, eq_c⟩, ?_⟩
   rw [eq_c, mul_pow, mul_comm, mul_left_inj' (pow_ne_zero n hd)] at heq
   suffices goal : a'.natDegree = 0 ∧ b'.natDegree = 0 ∧ c'.natDegree = 0 by
-    simp [natDegree_eq_zero] at goal
+    simp only [natDegree_eq_zero] at goal
     obtain ⟨⟨ca', ha'⟩, ⟨cb', hb'⟩, ⟨cc', hc'⟩⟩ := goal
     rw [← ha', ← hb', ← hc']
     rw [← ha', C_ne_zero] at ha
