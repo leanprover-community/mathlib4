@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 
---import Mathlib.Algebra.CharP.Quotient
+import Mathlib.Algebra.CharP.Quotient
 import Mathlib.Algebra.Polynomial.RingDivision
 import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.RingTheory.Ideal.Quotient.Defs
 
 /-! # A generalized Eisenstein criterion
 
