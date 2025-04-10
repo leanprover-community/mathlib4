@@ -261,4 +261,3 @@ theorem elim_apply {f : γ → α → β} {x : α → β} {i : Option γ} {y : �
 @[deprecated (since := "2025-03-19")] alias forall_some_ne_iff_eq_none := eq_none_iff_forall_some_ne
 
 end Option
-#lint
