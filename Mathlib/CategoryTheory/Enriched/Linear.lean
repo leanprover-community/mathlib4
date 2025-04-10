@@ -43,18 +43,6 @@ lemma aux2'' {X Y Z : Type u} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Mo
       (TensorProduct.assoc R X Y Z).symm.toLinearMap :=
   rfl
 
-@[simp]
-lemma aux4 {X Y : C} (f : X ⟶ Y) :
-    (LinearMap.toSpanSingleton R (X ⟶ X) (𝟙 X)).rTensor (X ⟶ Y)
-      ((TensorProduct.lid R (X ⟶ Y)).symm.toLinearMap f) = 𝟙 X ⊗ₜ f := by
-  simp
-
-@[simp]
-lemma aux4' {X Y : C} (f : X ⟶ Y) :
-    (LinearMap.toSpanSingleton R (Y ⟶ Y) (𝟙 Y)).lTensor (X ⟶ Y)
-      ((TensorProduct.rid R (X ⟶ Y)).symm.toLinearMap f) = f ⊗ₜ 𝟙 Y := by
-  simp
-
 lemma aux8 {W X Y Z : C} (f₁ f₂ : ((W ⟶ X) ⊗[R] (X ⟶ Y)) ⊗[R] (Y ⟶ Z)) :
     (TensorProduct.assoc R _ _ _).toLinearMap (f₁ + f₂) =
     (TensorProduct.assoc R _ _ _).toLinearMap f₁ + (TensorProduct.assoc R _ _ _).toLinearMap f₂ :=
@@ -86,13 +74,6 @@ lemma aux5' {X Z : C} (f : X ⟶ Z) :
     (LinearMap.ringLmapEquivSelf R R (X ⟶ Z)).symm f =
     LinearMap.toSpanSingleton R  (X ⟶ Z) f := rfl
 
-@[simp]
-lemma aux6 {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    LinearMap.toSpanSingleton R (X ⟶ Z) (f ≫ g) =
-    (Linear.rightComp R X g) ∘ₗ (LinearMap.toSpanSingleton R (X ⟶ Y) f) := by
-  ext
-  simp
-
 lemma aux7 {W X Y Z: ModuleCat R} (f : W ⟶ X) (g : Y ⟶ Z) :
     ModuleCat.Hom.hom (R := R) (f ⊗ g) = map (ModuleCat.Hom.hom f) (ModuleCat.Hom.hom g) :=
   rfl
@@ -103,15 +84,17 @@ noncomputable instance : EnrichedOrdinaryCategory (ModuleCat R) C where
   comp X Y Z := ModuleCat.ofHom <| lift (Linear.comp X Y Z)
   id_comp X Y := by
     ext f
-    simp at f ⊢
-    erw [aux4 (R := R) f]
-    erw [lift.tmul]
+    simp only [aux1, ModuleCat.hom_comp, ModuleCat.hom_ofHom, aux2, LinearMap.coe_comp,
+      Function.comp_apply, ModuleCat.hom_id, LinearMap.id_coe, id_eq] at f ⊢
+    erw [lid_symm_apply, LinearMap.rTensor_tmul _ (LinearMap.toSpanSingleton R _ (𝟙 X)) f 1,
+      lift.tmul]
     simp
   comp_id X Y := by
     ext f
-    simp at f ⊢
-    erw [aux4' (R := R) f]
-    erw [lift.tmul]
+    simp only [aux1', ModuleCat.hom_comp, ModuleCat.hom_ofHom, aux2', LinearMap.coe_comp,
+      Function.comp_apply, ModuleCat.hom_id, LinearMap.id_coe, id_eq] at f ⊢
+    erw [rid_symm_apply, LinearMap.lTensor_tmul _ (LinearMap.toSpanSingleton R _ (𝟙 Y)) f 1,
+      lift.tmul]
     simp
   assoc W X Y Z := by
     ext f
