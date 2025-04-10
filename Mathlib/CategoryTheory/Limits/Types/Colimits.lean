@@ -167,6 +167,40 @@ theorem colimitEquivColimitType_apply (j : J) (x : F.obj j) :
   apply (colimitEquivColimitType F).symm.injective
   simp
 
+variable (J) in
+/-- `Quot` is functorial, so long as the universe levels work out. -/
+@[simps]
+noncomputable def _root_.CategoryTheory.Functor.quotFunctor [Small.{u} J] :
+    (J ⥤ Type u) ⥤ Type max u v where
+  obj F := Quot F
+  map {F G} η x := by
+    refine Quot.map (Sigma.map id η.app)
+      (fun ⟨j, x⟩ ⟨j', y⟩ ⟨(f : j ⟶ j'), (hf : y = F.map f x)⟩ ↦ ?h) x
+    subst hf
+    simp only [Sigma.map, id_eq]
+    simp_rw [← types_comp_apply, η.naturality, types_comp_apply]
+    exact ⟨f, rfl⟩
+
+  map_id F := by
+    ext ⟨j, x⟩
+    simp [Sigma.map, Quot.map]
+  map_comp {F G H} η ϑ := by
+    ext ⟨j, x⟩
+    simp [Sigma.map, Quot.map]
+
+
+/-- `colimitEquivQuot` is natural in `F`. -/
+@[simps!]
+noncomputable def colimIsoQuotFunctor :
+    colim (J := J) (C := Type max v u) ≅ Functor.quotFunctor J :=
+  NatIso.ofComponents (Types.colimitEquivQuot · |>.toIso) fun {F G} η ↦ by
+    apply colimit.hom_ext
+    intro j
+    ext x
+    simp_rw [← Category.assoc, colimit.ι_map]
+    simp [Sigma.map, Quot.map]
+
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] was removed because the linter said it was useless
 variable {F} in
 @[simp]
 theorem Colimit.w_apply {j j' : J} {x : F.obj j} (f : j ⟶ j') :
