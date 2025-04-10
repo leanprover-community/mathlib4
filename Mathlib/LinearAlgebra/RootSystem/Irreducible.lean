@@ -173,16 +173,16 @@ lemma l21 {K : Type*} [Field K] [Module K M] [Module K N]
     (P : RootSystem ι K M N) : span K (range P.coroot') = ⊤ := by
   have key (d : Module.Dual K M) :
       d ∈ span K (range fun i ↦ P.flip.toDualLeft (P.flip.root i)) := by
+    simp only [PerfectPairing.toDualLeft_apply]
+    rw [range_comp' P.flip.toPerfectPairing P.flip.root]
     have h₁ := Submodule.apply_mem_span_image_iff_mem_span (s := (range fun i ↦ (P.flip.root i)))
       (x := (P.flip.toDualLeft.invFun d)) P.flip.toDualLeft.injective
     have h₂: P.flip.toDualLeft.symm d ∈ span K (range fun i ↦ (P.flip.root i)) := by
       simp only [Submodule.mem_top, RootSystem.span_root_eq_top]
-    have := h₁.mpr h₂
     have h₃ : P.flip.toDualLeft (P.flip.toDualLeft.invFun d) = d := by
       exact (LinearEquiv.eq_symm_apply P.flip.toDualLeft).mp rfl
+    have := h₁.mpr h₂
     rw [h₃] at this
-    simp only [PerfectPairing.toDualLeft_apply]
-    rw [range_comp' P.flip.toPerfectPairing P.flip.root]
     exact this
   exact Submodule.eq_top_iff'.mpr key
 
