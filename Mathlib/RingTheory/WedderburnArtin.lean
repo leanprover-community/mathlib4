@@ -70,6 +70,11 @@ lemma minimal_ideal_isSimpleModule {A : Type u} [Ring A]
     exists_eq_right] at hx
   exact hx.1
 
+lemma TwoSidedIdeal.span_eq_bot {R : Type*} [NonUnitalNonAssocRing R] {s : Set R}:
+    span s = ⊥ ↔ ∀x ∈ span s, x = 0 :=
+  eq_bot_iff.trans ⟨fun H _ h => mem_bot _|>.1 <| H h,
+    fun H ↦ span_le.2 fun x h => mem_bot _|>.2 <| H x <| subset_span h⟩
+
 lemma Wedderburn_Artin.aux.one_eq
     {A : Type u} [Ring A] [simple : IsSimpleRing A]
     (I : Ideal A) (I_nontrivial : I ≠ ⊥) :
@@ -77,13 +82,9 @@ lemma Wedderburn_Artin.aux.one_eq
 
   letI I' : TwoSidedIdeal A := TwoSidedIdeal.span I
   have I'_is_everything : I' = ⊤ := simple.1.2 I' |>.resolve_left (fun r ↦ by
-    obtain ⟨y, hy⟩ := Submodule.nonzero_mem_of_bot_lt (bot_lt_iff_ne_bot.mpr I_nontrivial)
-    have hy' : y.1 ∈ I' := by
-      change I'.ringCon y 0
-      exact .of _ _ <| by simp [y.2]
-    rw [r] at hy'
-    change _ = _ at hy'
-    aesop)
+    rw [TwoSidedIdeal.span_eq_bot] at r
+    obtain ⟨⟨y, hy1⟩, hy⟩ := Submodule.nonzero_mem_of_bot_lt (bot_lt_iff_ne_bot.mpr I_nontrivial)
+    exact hy <| Submodule.mk_eq_zero _ _|>.2 <| r y (TwoSidedIdeal.subset_span hy1))
   have one_mem_I' : 1 ∈ I' := by rw [I'_is_everything]; trivial
 
   rw [TwoSidedIdeal.mem_span_ideal_iff_exists_fin] at one_mem_I'
