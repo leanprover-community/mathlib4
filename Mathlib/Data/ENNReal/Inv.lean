@@ -42,23 +42,19 @@ variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0}
 
 protected theorem div_eq_inv_mul : a / b = b⁻¹ * a := by rw [div_eq_mul_inv, mul_comm]
 
-@[simp] theorem inv_zero : (0 : ℝ≥0∞)⁻¹ = ∞ :=
-  show sInf { b : ℝ≥0∞ | 1 ≤ 0 * b } = ∞ by simp
+@[simp] theorem inv_zero : (0 : ℝ≥0∞)⁻¹ = ∞ := by
+  simp [Inv.inv]
 
-@[simp] theorem inv_top : ∞⁻¹ = 0 :=
-  bot_unique <| le_of_forall_gt_imp_ge_of_dense fun a (h : 0 < a) => sInf_le <| by
-    simp [*, h.ne', top_mul]
+@[simp] theorem inv_top : ∞⁻¹ = 0 := by
+  simp [Inv.inv]
 
-theorem coe_inv_le : (↑r⁻¹ : ℝ≥0∞) ≤ (↑r)⁻¹ :=
-  le_sInf fun b (hb : 1 ≤ ↑r * b) =>
-    coe_le_iff.2 <| by
-      rintro b rfl
-      apply NNReal.inv_le_of_le_mul
-      rwa [← coe_mul, ← coe_one, coe_le_coe] at hb
+theorem coe_inv_le : (↑r⁻¹ : ℝ≥0∞) ≤ (↑r)⁻¹ := by
+  simp only [Inv.inv, val_eq_coe]
+  split_ifs <;> simp
 
 @[simp, norm_cast]
-theorem coe_inv (hr : r ≠ 0) : (↑r⁻¹ : ℝ≥0∞) = (↑r)⁻¹ :=
-  coe_inv_le.antisymm <| sInf_le <| mem_setOf.2 <| by rw [← coe_mul, mul_inv_cancel₀ hr, coe_one]
+theorem coe_inv (hr : r ≠ 0) : (↑r⁻¹ : ℝ≥0∞) = (↑r)⁻¹ := by
+  simp [Inv.inv, hr]
 
 @[norm_cast]
 theorem coe_inv_two : ((2⁻¹ : ℝ≥0) : ℝ≥0∞) = 2⁻¹ := by rw [coe_inv _root_.two_ne_zero, coe_two]
