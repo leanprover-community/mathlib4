@@ -24,8 +24,8 @@ on a terminal object and `Functor.sectionsFunctor`.
 * `Sheaf.ΓNatIsoLim J A`: when `A` has limits of shape `Cᵒᵖ`, `Sheaf.Γ J A` exists and is isomorphic
   to the functor taking each sheaf to the limit of its underlying presheaf.
 * `Sheaf.isLimitConeΓ F`: global sections are limits even when not all limits of shape `Cᵒᵖ` exist.
-* `Sheaf.Γres F U`: the restriction morphism from global sections of `F` to sections of `F` on `U`.
-* `Sheaf.natTransΓres J A U`: the natural transformation from the global sections functor to
+* `Sheaf.ΓRes F U`: the restriction morphism from global sections of `F` to sections of `F` on `U`.
+* `Sheaf.natTransΓRes J A U`: the natural transformation from the global sections functor to
   the sections functor on `U`.
 * `Sheaf.ΓNatIsoSectionsFunctor J`: for sheaves of types, `Sheaf.Γ J A` is isomorphic to the
   functor taking each sheaf to the type of sections of its underlying presheaf in the sense of
@@ -149,21 +149,21 @@ noncomputable def Sheaf.isLimitConeΓ [HasGlobalSectionsFunctor J A] (F : Sheaf 
     simpa [coneΓ, ← ΓHomEquiv_naturality_left_symm, Equiv.symm_apply_eq] using hf
 
 /-- The restriction map from global sections of `F` to sections on `U`. -/
-noncomputable def Sheaf.Γres [HasGlobalSectionsFunctor J A] (F : Sheaf J A) (U : Cᵒᵖ) :
+noncomputable def Sheaf.ΓRes [HasGlobalSectionsFunctor J A] (F : Sheaf J A) (U : Cᵒᵖ) :
     (Γ J A).obj F ⟶ F.val.obj U :=
   F.coneΓ.π.app U
 
 @[reassoc (attr := simp)]
-lemma Sheaf.Γres_map [HasGlobalSectionsFunctor J A] (F : Sheaf J A) {V U : Cᵒᵖ} (f : U ⟶ V) :
-    F.Γres U ≫ F.val.map f = F.Γres V :=
+lemma Sheaf.ΓRes_map [HasGlobalSectionsFunctor J A] (F : Sheaf J A) {V U : Cᵒᵖ} (f : U ⟶ V) :
+    F.ΓRes U ≫ F.val.map f = F.ΓRes V :=
   F.coneΓ.w f
 
 @[simp]
 lemma Sheaf.coneΓ_π_app [HasGlobalSectionsFunctor J A] (F : Sheaf J A) (U : Cᵒᵖ) :
-    F.coneΓ.π.app U = F.Γres U := rfl
+    F.coneΓ.π.app U = F.ΓRes U := rfl
 
-lemma Sheaf.Γres_naturality [HasGlobalSectionsFunctor J A] {F G : Sheaf J A} (f : F ⟶ G) (U : Cᵒᵖ) :
-    (Γ J A).map f ≫ Γres G U = Γres F U ≫ f.val.app U := by
+lemma Sheaf.ΓRes_naturality [HasGlobalSectionsFunctor J A] {F G : Sheaf J A} (f : F ⟶ G) (U : Cᵒᵖ) :
+    (Γ J A).map f ≫ ΓRes G U = ΓRes F U ≫ f.val.app U := by
   refine .trans ?_ <| congr_app (ΓHomEquiv_naturality_right_symm _ _) U
   exact (congr_app (ΓHomEquiv_naturality_left_symm ((Γ J A).map f) (𝟙 _)) U).symm.trans (by simp)
 
@@ -172,10 +172,10 @@ variable (J A)
 /-- The natural transformation from the global sections functor to the sections functor on any
 object `U`. -/
 @[simps!]
-noncomputable def Sheaf.natTransΓres [HasGlobalSectionsFunctor J A] (U : Cᵒᵖ) :
+noncomputable def Sheaf.natTransΓRes [HasGlobalSectionsFunctor J A] (U : Cᵒᵖ) :
     Γ J A ⟶ (sheafSections J A).obj U where
-  app F := Γres F U
-  naturality _ _ f := Γres_naturality f U
+  app F := ΓRes F U
+  naturality _ _ f := ΓRes_naturality f U
 
 -- this is currently needed to obtain the instance `HasSheafify J (Type max u v)`.
 attribute [local instance] CategoryTheory.Types.instConcreteCategory
