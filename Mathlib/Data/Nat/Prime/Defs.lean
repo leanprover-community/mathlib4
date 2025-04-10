@@ -413,7 +413,7 @@ theorem Prime.dvd_mul {p m n : ℕ} (pp : Prime p) : p ∣ m * n ↔ p ∣ m ∨
     Or.rec (fun h : p ∣ m => h.mul_right _) fun h : p ∣ n => h.mul_left _⟩
 
 theorem prime_iff {p : ℕ} : p.Prime ↔ _root_.Prime p :=
-  ⟨fun h => ⟨h.ne_zero, h.not_unit, fun _ _ => h.dvd_mul.mp⟩, Prime.irreducible⟩
+  ⟨fun h => ⟨h.ne_zero, h.not_isUnit, fun _ _ => h.dvd_mul.mp⟩, Prime.irreducible⟩
 
 alias ⟨Prime.prime, _root_.Prime.nat_prime⟩ := prime_iff
 

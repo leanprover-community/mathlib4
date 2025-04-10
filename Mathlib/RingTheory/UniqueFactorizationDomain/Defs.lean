@@ -92,7 +92,7 @@ theorem not_unit_iff_exists_factors_eq (a : α) (hn0 : a ≠ 0) :
       · rw [Multiset.prod_cons, mul_comm b, mul_assoc, Multiset.prod_erase h, mul_comm],
     fun ⟨_, hi, he, hne⟩ =>
     let ⟨b, h⟩ := Multiset.exists_mem_of_ne_zero hne
-    not_isUnit_of_not_isUnit_dvd (hi b h).not_unit <| he ▸ Multiset.dvd_prod h⟩
+    not_isUnit_of_not_isUnit_dvd (hi b h).not_isUnit <| he ▸ Multiset.dvd_prod h⟩
 
 theorem isRelPrime_of_no_irreducible_factors {x y : α} (nonzero : ¬(x = 0 ∧ y = 0))
     (H : ∀ z : α, Irreducible z → z ∣ x → ¬z ∣ y) : IsRelPrime x y :=
