@@ -822,15 +822,16 @@ lemma Functor.sectionsEquivHom_naturality {F G : C ⥤ Type u₂} (f : F ⟶ G) 
   rfl
 
 lemma Functor.sectionsEquivHom_naturality_symm {F G : C ⥤ Type u₂} (f : F ⟶ G) (X : Type u₂)
-    [Unique X] (τ : (const C).obj X ⟶ F) : (G.sectionsEquivHom X).symm (τ ≫ f) =
-    (sectionsFunctor C).map f ((F.sectionsEquivHom X).symm τ) := by
+    [Unique X] (τ : (const C).obj X ⟶ F) :
+    (G.sectionsEquivHom X).symm (τ ≫ f) =
+      (sectionsFunctor C).map f ((F.sectionsEquivHom X).symm τ) := by
   rfl
 
 /-- A natural isomorphism between the sections functor `(C ⥤ Type _) ⥤ Type _` and the co-Yoneda
 embedding of a terminal functor, specifically a constant functor on a given singleton type `X`. -/
 @[simps!]
 noncomputable def sectionsFunctorNatIsoCoyoneda (X : Type max u₁ u₂) [Unique X] :
-    Functor.sectionsFunctor.{v₁,max u₁ u₂} C ≅ coyoneda.obj (op ((Functor.const C).obj X)) :=
+    Functor.sectionsFunctor.{v₁, max u₁ u₂} C ≅ coyoneda.obj (op ((Functor.const C).obj X)) :=
   NatIso.ofComponents fun F ↦ (F.sectionsEquivHom X).toIso
 
 end

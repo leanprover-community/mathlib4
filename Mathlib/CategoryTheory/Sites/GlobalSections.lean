@@ -7,11 +7,13 @@ import Mathlib.CategoryTheory.Sites.ConstantSheaf
 
 /-!
 # Global sections of sheaves
+
 In this file we define a global sections functor `Sheaf.Γ : Sheaf J A ⥤ A` and show that it
 is isomorphic to several other constructions when they exist, most notably evaluation of sheaves
 on a terminal object and `Functor.sectionsFunctor`.
 
 ## Main definitions / results
+
 * `HasGlobalSectionsFunctor J A`: typeclass stating that the constant sheaf functor `A ⥤ Sheaf J A`
   has a right-adjoint.
 * `Sheaf.Γ J A`: the global sections functor `Sheaf J A ⥤ A`, defined as the right-adjoint of the
@@ -23,12 +25,21 @@ on a terminal object and `Functor.sectionsFunctor`.
   to the functor taking each sheaf to the limit of its underlying presheaf.
 * `Sheaf.isLimitConeΓ F`: global sections are limits even when not all limits of shape `Cᵒᵖ` exist.
 * `Sheaf.Γres F U`: the restriction morphism from global sections of `F` to sections of `F` on `U`.
+* `Sheaf.natTransΓres J A U`: the natural transformation from the global sections functor to
+  the sections functor on `U`.
 * `Sheaf.ΓNatIsoSectionsFunctor J`: for sheaves of types, `Sheaf.Γ J A` is isomorphic to the
   functor taking each sheaf to the type of sections of its underlying presheaf in the sense of
   `Functor.sections`.
 * `Sheaf.ΓNatIsoCoyoneda J`: for sheaves of types, `Sheaf.Γ J A` is isomorphic to the
   coyoneda embedding of the terminal sheaf, i.e. the functor sending each sheaf `F` to the type
   of morphisms from the terminal sheaf to `F`.
+
+## TODO
+
+* Generalise `Sheaf.ΓNatIsoSectionsFunctor` and `Sheaf.ΓNatIsoCoyoneda` from `Type max u v` to
+  `Type max u v w`. This should hopefully be doable by relaxing the universe constraints of
+  `instHasSheafifyOfHasFiniteLimits`.
+
 -/
 
 universe u v w u₂ v₂
@@ -76,7 +87,7 @@ instance hasGlobalSectionsFunctor_of_hasLimitsOfShape [HasLimitsOfShape Cᵒᵖ 
 
 /-- Global sections of sheaves are naturally isomorphic to the limits of the underlying presheaves.
 Note that while `HasLimitsOfShape Cᵒᵖ A` is needed here to talk about `lim` as a functor, global
-sections are always limits, it just has to be stated a little bit more carefully. -/
+sections are still limits without it - see `Sheaf.isLimitConeΓ`. -/
 noncomputable def Sheaf.ΓNatIsoLim [HasLimitsOfShape Cᵒᵖ A] :
     Γ J A ≅ sheafToPresheaf J A ⋙ lim :=
   (constantSheafΓAdj J A).rightAdjointUniq (constLimAdj.comp (sheafificationAdjunction J A))
@@ -151,7 +162,20 @@ lemma Sheaf.Γres_map [HasGlobalSectionsFunctor J A] (F : Sheaf J A) {V U : Cᵒ
 lemma Sheaf.coneΓ_π_app [HasGlobalSectionsFunctor J A] (F : Sheaf J A) (U : Cᵒᵖ) :
     F.coneΓ.π.app U = F.Γres U := rfl
 
+lemma Sheaf.Γres_naturality [HasGlobalSectionsFunctor J A] {F G : Sheaf J A} (f : F ⟶ G) (U : Cᵒᵖ) :
+    (Γ J A).map f ≫ Γres G U = Γres F U ≫ f.val.app U := by
+  refine .trans ?_ <| congr_app (ΓHomEquiv_naturality_right_symm _ _) U
+  exact (congr_app (ΓHomEquiv_naturality_left_symm ((Γ J A).map f) (𝟙 _)) U).symm.trans (by simp)
+
 variable (J A)
+
+/-- The natural transformation from the global sections functor to the sections functor on any
+object `U`. -/
+@[simps!]
+noncomputable def Sheaf.natTransΓres [HasGlobalSectionsFunctor J A] (U : Cᵒᵖ) :
+    Γ J A ⟶ (sheafSections J A).obj U where
+  app F := Γres F U
+  naturality _ _ f := Γres_naturality f U
 
 -- this is currently needed to obtain the instance `HasSheafify J (Type max u v)`.
 attribute [local instance] CategoryTheory.Types.instConcreteCategory
