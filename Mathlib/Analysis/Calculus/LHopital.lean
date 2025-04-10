@@ -385,7 +385,7 @@ theorem lhopital_zero_nhdsLT (hdf : ∀ᶠ x in 𝓝[<] a, DifferentiableAt ℝ 
     (hga : Tendsto g (𝓝[<] a) (𝓝 0))
     (hdiv : Tendsto (fun x => (deriv f) x / (deriv g) x) (𝓝[<] a) l) :
     Tendsto (fun x => f x / g x) (𝓝[<] a) l := by
-    have hdg : ∀ᶠ x in 𝓝[<] a, DifferentiableAt ℝ g x :=
+  have hdg : ∀ᶠ x in 𝓝[<] a, DifferentiableAt ℝ g x :=
     hg'.mono fun _ hg' => by_contradiction fun h => hg' (deriv_zero_of_not_differentiableAt h)
   have hdf' : ∀ᶠ x in 𝓝[<] a, HasDerivAt f (deriv f x) x :=
     hdf.mono fun _ => DifferentiableAt.hasDerivAt
