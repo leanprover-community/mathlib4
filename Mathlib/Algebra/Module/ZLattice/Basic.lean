@@ -639,7 +639,7 @@ instance instCountable_of_discrete_submodule {E : Type*} [NormedAddCommGroup E] 
   infer_instance
 
 /--
-Assume that the set `s` span over `ℤ` a discrete set. Then its rank of `ℝ` equals its rank of `ℤ`.
+Assume that the set `s` span over `ℤ` a discrete set. Then its `ℝ`-rank is equal to its `ℤ`-rank.
 -/
 theorem Real.finrank_eq_int_finrank_of_discrete {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] {s : Set E} (hs : DiscreteTopology (span ℤ s)) :
