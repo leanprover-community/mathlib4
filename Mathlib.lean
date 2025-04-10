@@ -2756,6 +2756,7 @@ import Mathlib.Data.DFinsupp.WellFounded
 import Mathlib.Data.DList.Instances
 import Mathlib.Data.ENNReal.Action
 import Mathlib.Data.ENNReal.Archimedean
+import Mathlib.Data.ENNReal.Archimedean2
 import Mathlib.Data.ENNReal.Basic
 import Mathlib.Data.ENNReal.BigOperators
 import Mathlib.Data.ENNReal.Holder
