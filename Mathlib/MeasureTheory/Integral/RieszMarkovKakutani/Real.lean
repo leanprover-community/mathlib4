@@ -109,7 +109,7 @@ lemma range_cut_partition (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε) 
     have partition_aux : range f ⊆ ⋃ n, Ioc (y n - ε) (y n) := calc
       _ ⊆ Ioc (a + (0 : ℕ) * ε) (a + N * ε) := by
         intro _ hz
-        simpa using (Ioo_subset_Ioc_self (hf hz))
+        simpa using Ioo_subset_Ioc_self (hf hz)
       _ ⊆ ⋃ i ∈ Finset.range N, Ioc (a + ↑i * ε) (a + ↑(i + 1) * ε) :=
         Ioc_subset_biUnion_Ioc N (fun n ↦ a + n * ε)
       _ ⊆ _ := by
