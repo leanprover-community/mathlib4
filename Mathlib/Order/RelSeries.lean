@@ -661,6 +661,10 @@ lemma snoc_self_eraseLast (p : RelSeries r) (h : p.length ≠ 0) :
       exact Fin.eq_of_val_eq (by simp [Nat.eq_of_lt_succ_of_not_lt n.2 eq])
     simp [snoc, append, Fin.append, Fin.addCases, eq, this, last]
 
+/--
+To show a proposition `p` for `xs : RelSeries r` it suffices to show it for all singletons
+and to show that when `p` holds for `xs` it also holds for `xs` appended with one element.
+-/
 @[elab_as_elim]
 def inductionOn' (motive : RelSeries r → Sort*)
     (singleton : (x : α) → motive (RelSeries.singleton r x))

@@ -111,7 +111,7 @@ variable (R : Type u) (M : Type v) [CommRing R] [AddCommGroup M] [Module R M]
 
 section helper
 
-noncomputable def quotTorsionOfEquivSpanSingleton' (x : M) (hM : ⊤ = Submodule.span R {x}) :
+private noncomputable def quotTorsionOfEquivSpanSingleton' (x : M) (hM : ⊤ = Submodule.span R {x}) :
     ((⊤ : Submodule R M) ⧸ LinearMap.ker (⊤ : Submodule R M).subtype) ≃ₗ[R]
       R ⧸ Ideal.torsionOf R M x := by
   have equiv : (LinearMap.range (⊤ : Submodule R M).subtype) ≃ₗ[R]
@@ -133,7 +133,7 @@ private theorem RelSeries_smash_helper {α : Type*} {r : α → α → Prop} {s 
   let pq' : RelSeries (r ⊓ s) := RelSeries.smash p' q' connect
   exact fun i ↦ (pq'.step i).2
 
-def submodule_equiv (N1 N2 : Submodule R N) : ((Submodule.map N.subtype N1) ⧸
+private def submodule_equiv (N1 N2 : Submodule R N) : ((Submodule.map N.subtype N1) ⧸
     Submodule.comap (Submodule.map N.subtype N1).subtype (Submodule.map N.subtype N2))
     ≃ₗ[R] N1 ⧸ Submodule.comap N1.subtype N2 := by
   refine Submodule.Quotient.equiv
@@ -148,7 +148,7 @@ def submodule_equiv (N1 N2 : Submodule R N) : ((Submodule.map N.subtype N1) ⧸
   · intro hx
     refine ⟨x.1, ⟨x.1.2, x.2⟩, ⟨⟨x.1.2, hx⟩, rfl⟩⟩
 
-noncomputable def mkQ_equiv (N1 N2 : Submodule R (M ⧸ N)) : ((Submodule.comap N.mkQ N1) ⧸
+private noncomputable def mkQ_equiv (N1 N2 : Submodule R (M ⧸ N)) : ((Submodule.comap N.mkQ N1) ⧸
     Submodule.comap (Submodule.comap N.mkQ N1).subtype (Submodule.comap N.mkQ N2))
     ≃ₗ[R] N1 ⧸ Submodule.comap N1.subtype N2 := by
   let f : (Submodule.comap N.mkQ N1) →ₗ[R] N1 ⧸ Submodule.comap N1.subtype N2 :=
