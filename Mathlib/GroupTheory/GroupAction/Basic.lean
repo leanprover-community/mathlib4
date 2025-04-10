@@ -245,13 +245,25 @@ theorem stabilizer_smul_eq_stabilizer_map_conj (g : G) (a : α) :
     inv_mul_cancel, one_smul, ← mem_stabilizer_iff, Subgroup.mem_map_equiv, MulAut.conj_symm_apply]
 
 /-- A bijection between the stabilizers of two elements in the same orbit. -/
-noncomputable def stabilizerEquivStabilizerOfOrbitRel {a b : α} (h : orbitRel G α a b) :
+noncomputable def stabilizerEquivStabilizer {a b : α} {g : G} (hg : g • b = a) :
     stabilizer G a ≃* stabilizer G b :=
-  let g : G := Classical.choose h
-  have hg : g • b = a := Classical.choose_spec h
   have this : stabilizer G a = (stabilizer G b).map (MulAut.conj g).toMonoidHom := by
     rw [← hg, stabilizer_smul_eq_stabilizer_map_conj]
   (MulEquiv.subgroupCongr this).trans ((MulAut.conj g).subgroupMap <| stabilizer G b).symm
+
+theorem stabilizerEquivStabilizer_apply {a b : α} {g : G} (hg : g • b = a) (x : stabilizer G a) :
+    stabilizerEquivStabilizer hg x = MulAut.conj g⁻¹ x := by
+  simp [stabilizerEquivStabilizer]
+
+theorem stabilizerEquivStabilizer_symm_apply
+    {a b : α} {g : G} (hg : g • b = a) (x : stabilizer G b) :
+    (stabilizerEquivStabilizer hg).symm x = MulAut.conj g x := by
+  simp [stabilizerEquivStabilizer]
+
+/-- A bijection between the stabilizers of two elements in the same orbit. -/
+noncomputable def stabilizerEquivStabilizerOfOrbitRel {a b : α} (h : orbitRel G α a b) :
+    stabilizer G a ≃* stabilizer G b :=
+  stabilizerEquivStabilizer (Classical.choose_spec h)
 
 end Stabilizer
 
