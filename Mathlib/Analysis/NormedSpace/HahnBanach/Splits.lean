@@ -52,6 +52,12 @@ lemma Submodule.sum_assoc {p q r : Submodule R M} : p + (q + r) = (p + q) + r :=
   exact ⟨fun ⟨y, hy, a, ha, b, hb, hyab⟩ ↦ ⟨y, hy, a, ha, b, hb, by rw [← hyab]; module⟩,
     fun ⟨a, ha, b, hb, z, hz, h⟩ ↦ ⟨a, ha, b, hb, z, hz, by rw [← h]; module⟩⟩
 
+variable {R M M' : Type*} [Ring R] [TopologicalSpace M] [TopologicalSpace M']
+    [AddCommGroup M] [AddCommGroup M'] [Module R M] [Module R M']
+lemma Submodule.ClosedComplemented.prod {p : Submodule R M} {q : Submodule R M'}
+    (hp : p.ClosedComplemented) (hq : q.ClosedComplemented) : (p.prod q).ClosedComplemented := by
+  sorry
+
 end
 
 /-- A continuous linear map `f : E → F` **splits** iff it is injective, has closed range and
@@ -100,7 +106,7 @@ lemma prodMap (hf : f.Splits) (hg : g.Splits) : (f.prodMap g).Splits := by
   · rw [coe_prodMap', range_prod_map]
     exact (hf.isClosed_range).prod hg.isClosed_range
   · rw [LinearMap.range_prodMap]
-    sorry -- also missing: Submodule.ClosedComplemented.prod
+    exact hf.closedComplemented.prod hg.closedComplemented
 
 section RCLike
 

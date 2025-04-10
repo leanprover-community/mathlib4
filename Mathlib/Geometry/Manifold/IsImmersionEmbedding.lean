@@ -190,8 +190,7 @@ theorem msplitsAt {x : M} (h : IsImmersionAt F I I' n f x) : MSplitsAt I I' f x 
           LinearMap.range_zero]
         simp
       simp_rw [hrange]
-      -- want: ClosedComplemented.prod, then use this for top and bottom
-      sorry
+      exact Submodule.closedComplemented_top.prod Submodule.closedComplemented_bot
   -- Since rhs is linear, it is smooth - and it equals its own fderiv.
   have : MSplitsAt (𝓘(𝕜, E)) (𝓘(𝕜, E')) rhs (I (h.domChart x)) := by
     dsimp only [MSplitsAt]
