@@ -62,7 +62,7 @@ instance instOne : One (WithOne α) :=
   ⟨none⟩
 
 @[to_additive]
-instance mul [Mul α] : Mul (WithOne α) :=
+instance instMul [Mul α] : Mul (WithOne α) :=
   ⟨Option.merge (· * ·)⟩
 
 @[to_additive]

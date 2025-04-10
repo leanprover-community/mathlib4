@@ -114,11 +114,11 @@ theorem integrable_const [IsFiniteMeasure μ] (c : β) : Integrable (fun _ : α 
 
 @[simp]
 lemma Integrable.of_finite [Finite α] [MeasurableSingletonClass α] [IsFiniteMeasure μ] {f : α → β} :
-    Integrable f μ := ⟨.of_finite, .of_finite⟩
+    Integrable f μ := ⟨.of_discrete, .of_finite⟩
 
 /-- This lemma is a special case of `Integrable.of_finite`. -/
 -- Eternal deprecation for discoverability, don't remove
-@[deprecated Integrable.of_finite (since := "2024-10-05"), nolint deprecatedNoSince]
+@[deprecated Integrable.of_finite (since := "2025-04-09"), nolint deprecatedNoSince]
 lemma Integrable.of_isEmpty [IsEmpty α] {f : α → β} : Integrable f μ := .of_finite
 
 theorem MemLp.integrable_norm_rpow {f : α → β} {p : ℝ≥0∞} (hf : MemLp f p μ) (hp_ne_zero : p ≠ 0)
