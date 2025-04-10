@@ -150,7 +150,7 @@ lemma Module.length_eq_add_of_exact :
         ← Module.length_compositionSeries r
           (by simpa [r, t', ht₁, -Submodule.map_bot] using Submodule.map_bot f)
           (by simpa [r, s', hs₂, -Submodule.comap_top] using Submodule.comap_top g)]
-      rfl
+      simp_rw [r, RelSeries.smash_length, Nat.cast_add, s', t', RelSeries.map_length]
     · have := mt (IsFiniteLength.of_injective · hf) hN
       rw [← Module.length_ne_top_iff, ne_eq, not_not] at hN this
       rw [hN, this, top_add]

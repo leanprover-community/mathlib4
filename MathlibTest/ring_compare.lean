@@ -31,7 +31,7 @@ example : x + y + 1 < y + 4 + x := by ring_lt
 end Nat
 
 section LinearOrderedField
-variable {K : Type*} [LinearOrderedField K] {x y : K}
+variable {K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K] {x y : K}
 
 example : (0:K) ≤ 0 := by ring_le
 example : 3 ≤ (3:K) := by ring_le
@@ -61,7 +61,7 @@ demanded by the lemmas it orchestrates.  This example took 1112 heartbeats (and 
 laptop) on an implementation with "minimal" typeclasses everywhere, e.g. lots of
 `CovariantClass`/`ContravariantClass`, and takes 662 heartbeats (28 ms on a good laptop) on the
 implementation at the time of joining Mathlib (October 2024). -/
-set_option maxHeartbeats 750 in
+set_option maxHeartbeats 1200 in -- was `set_option maxHeartbeats 750 in`, should be fixed in #20595
 example : x + y - x + 1 ≤ y + (4:K) := by ring_le
 
 /- The speed of `Mathlib.Tactic.Ring.proveLT` is very sensitive to how much typeclass inference is
@@ -69,13 +69,15 @@ demanded by the lemmas it orchestrates.  This example took 1410 heartbeats (and 
 laptop) on an implementation with "minimal" typeclasses everywhere, e.g. lots of
 `CovariantClass`/`ContravariantClass`, and takes 676 heartbeats (28 ms on a good laptop) on the
 implementation at the time of joining Mathlib (October 2024). -/
-set_option maxHeartbeats 750 in
+set_option maxHeartbeats 1200 in -- was `set_option maxHeartbeats 750 in`, should be fixed in #20595
 example : x + y - x + 1 < y + (4:K) := by ring_lt
 
 /--
 error: ring failed, ring expressions not equal up to an additive constant
 K : Type u_1
-inst✝ : LinearOrderedField K
+inst✝² : Field K
+inst✝¹ : LinearOrder K
+inst✝ : IsStrictOrderedRing K
 x y : K
 ⊢ 1 + x + y ≤ 3 + y
 -/
@@ -85,7 +87,9 @@ example : x + y + 1 ≤ y + 3 := by ring_le
 /--
 error: comparison failed, LHS is larger
 K : Type u_1
-inst✝ : LinearOrderedField K
+inst✝² : Field K
+inst✝¹ : LinearOrder K
+inst✝ : IsStrictOrderedRing K
 x y : K
 ⊢ 4 + x + y ≤ 3 + x + y
 -/
@@ -95,7 +99,9 @@ example : x + y + 4 ≤ y + x + 3 := by ring_le
 /--
 error: ring failed, ring expressions not equal up to an additive constant
 K : Type u_1
-inst✝ : LinearOrderedField K
+inst✝² : Field K
+inst✝¹ : LinearOrder K
+inst✝ : IsStrictOrderedRing K
 x y : K
 ⊢ 1 + x + y < 3 + y
 -/
@@ -105,7 +111,9 @@ example : x + y + 1 < y + 3 := by ring_lt
 /--
 error: comparison failed, LHS is at least as large
 K : Type u_1
-inst✝ : LinearOrderedField K
+inst✝² : Field K
+inst✝¹ : LinearOrder K
+inst✝ : IsStrictOrderedRing K
 x y : K
 ⊢ 4 + x + y < 4 + x + y
 -/
