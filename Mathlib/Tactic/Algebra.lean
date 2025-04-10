@@ -191,21 +191,57 @@ def evalAtom {v : Level}  {A : Q(Type v)} (sA : Q(CommSemiring $A)) (e : Q($A)) 
 
 mutual
 
+partial def evalAddExProd {u v w : Level} {A : Q(Type u)} {R₁ : Q(Type v)} {R₂ : Q(Type w)}
+    {sA : Q(CommSemiring $A)} {sR₁ : Q(CommSemiring $R₁)} (sRA₁ : Q(Algebra $R₁ $A))
+    {sR₂ : Q(CommSemiring $R₂)} (sRA₂ : Q(Algebra $R₂ $A))
+    {r₁ : Q($R₁)}  {r₂ : Q($R₂)}
+    {a₁ a₂ : Q($A)}
+    (vr₁ : ExSum q($sR₁) r₁)
+    (vr₂ : ExSum q($sR₂) r₂)
+    (va₁ : Ring.ExProd q($sA) a₁)
+    /- The return type here is incorrect: should return an ExSum $r$ and an ExProd $a$ s.t.
+      r•a = r₁•a₁ + r₂•a₂-/
+    (va₂ : Ring.ExProd q($sA) a₂) : MetaM (
+      Σ u' : Level, Σ R : Q(Type u'), Σ sR : Q(CommSemiring $R), Σ sRA : Q(Algebra $R $A),
+        Σ r : Q($R), Σ a : Q($A),
+      (ExSum q($sR) r × Ring.ExProd q($sA) a × Q($r₁ • $a₁ + $r₂ • $a₂ = $r • $a))) := do
+      -- Result (ExSum q($sA)) q($r₁ • $a₁ + $r₂ • $a₂)) := do
+  sorry
+
 partial def evalAdd {u : Level} {A : Q(Type u)}
     (sA : Q(CommSemiring $A))
-     {a₁ a₂ : Q($A)}
-    (va₁ : ExSum q($sA) a₁) :
+    {a₁ a₂ : Q($A)} :
+    ExSum q($sA) a₁ →
     ExSum q($sA) a₂ → MetaM (Result (ExSum q($sA)) q($a₁ + $a₂))
-  | .zero => do
+  | va₁, .zero => do
     assumeInstancesCommute
     return ⟨_, va₁, q(sorry /-hmul_cast_zero_mul (R₁ := $A₁) $a₂-/)⟩
-  | .one => do
+  | .zero, va₂ => do
+    assumeInstancesCommute
+    return ⟨_, va₂, q(sorry /-hmul_cast_zero_mul (R₁ := $A₁) $a₂-/)⟩
+  | .one , .one => do
     assumeInstancesCommute
     throwError "Adding one not implemented"
+  | .add sAlg vr va vt, .one => do
+    let ⟨_, vt', pt'⟩ ← evalAdd sA vt .one
+    return ⟨_, .add sAlg vr va vt', q(sorry)⟩
+  | .one, .add sAlg vr va vt => do
+    let ⟨_, vt', pt'⟩ ← evalAdd sA vt .one
+    return ⟨_, .add sAlg vr va vt', q(sorry)⟩
     -- return ⟨_, ofProd sA va₂, q(sorry /-hmul_cast_one_mul (R₁ := ℕ) $a₂-/)⟩
-  | .add (A := A) (sA := sA) (R := R) (sR := sR) (sAlg := sRA) (r := r) (a := a) (b := t)
-      vr va vt => do
-    throwError "evalAdd not implemented"
+  | .add (R := R₁) (sR := sR₁) (r := r₁) (a := a₁) (b := t₁) sRA₁ vr₁ va₁ vt₁,
+    .add (R := R₂) (sR := sR₂) (r := r₂) (a := a₂) (b := t₂) sRA₂ vr₂ va₂ vt₂ => do
+    match va₁.cmp va₂ with
+    | .lt =>
+      let ⟨_, vt, pt⟩ ← evalAdd sA vt₁ (.add sRA₂ vr₂ va₂ vt₂)
+      return ⟨_, .add sRA₁ vr₁ va₁ vt, q(sorry)⟩
+    | .gt =>
+      let ⟨_, vt, pt⟩ ← evalAdd sA vt₂ (.add sRA₁ vr₁ va₁ vt₁)
+      return ⟨_, .add sRA₂ vr₂ va₂ vt, q(sorry)⟩
+    | .eq =>
+      let ⟨_, vt, pt⟩ ← evalAdd sA vt₁ vt₂
+      let ⟨u, R, sR, sRA, r, a, vr, va, par⟩ ← evalAddExProd sRA₁ sRA₂ vr₁ vr₂ va₁ va₂
+      return ⟨_, .add sRA vr va vt, q(sorry)⟩
     -- sorry
 
 partial def evalMul_exProd {u : Level} {A : Q(Type u)}
