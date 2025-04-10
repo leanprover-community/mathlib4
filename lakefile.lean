@@ -18,6 +18,7 @@ require "leanprover-community" / "proofwidgets" @ git "v0.0.56" -- ProofWidgets 
 require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
 require "leanprover-community" / "plausible" @ git "main"
+require LeanCopilot from git "https://github.com/lean-dojo/LeanCopilot.git" @ "main"
 
 /-!
 ## Options for building mathlib
@@ -56,13 +57,12 @@ abbrev mathlibLeanOptions := #[
   ] ++ -- options that are used in `lake build`
     mathlibOnlyLinters.map fun s ↦ { s with name := `weak ++ s.name }
 
-package mathlib where
-  testDriver := "MathlibTest"
-  -- These are additional settings which do not affect the lake hash,
-  -- so they can be enabled in CI and disabled locally or vice versa.
-  -- Warning: Do not put any options here that actually change the olean files,
-  -- or inconsistent behavior may result
-  -- weakLeanArgs := #[]
+package mathlib {
+  moreLinkArgs := #[
+    "-L./.lake/packages/LeanCopilot/.lake/build/lib",
+    "-lctranslate2"
+  ]
+}
 
 /-!
 ## Mathlib libraries
