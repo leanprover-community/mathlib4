@@ -756,7 +756,7 @@ class Loopless (M : Matroid α) : Prop where
 lemma loops_eq_empty (M : Matroid α) [Loopless M] : M.loops = ∅ :=
   ‹Loopless M›.loops_eq_empty
 
-lemma toIsNonloop [Loopless M] (he : e ∈ M.E := by aesop_mat) :
+lemma isNonloop_of_loopless [Loopless M] (he : e ∈ M.E := by aesop_mat) :
     M.IsNonloop e := by
   rw [← not_isLoop_iff, isLoop_iff, loops_eq_empty]; exact not_mem_empty _
 
