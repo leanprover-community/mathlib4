@@ -138,10 +138,11 @@ theorem sorted_lt_range (n : ℕ) : Sorted (· < ·) (range n) := by
   rw [Sorted, pairwise_iff_get]
   simp
 
-theorem sorted_le_replicate (n a : ℕ) : Sorted (· ≤ ·) (replicate n a) := by
-  induction n with
-  | zero => simp
-  | succ n ih => simpa [List.replicate_succ]
+theorem sorted_replicate (n : ℕ) (a : α) : Sorted r (replicate n a) ↔ n ≤ 1 ∨ r a a :=
+  List.pairwise_replicate
+
+theorem sorted_le_replicate (n : ℕ) (a : α) [Preorder α] : Sorted (· ≤ ·) (replicate n a) := by
+  simp [sorted_replicate]
 
 theorem sorted_le_range (n : ℕ) : Sorted (· ≤ ·) (range n) :=
   (sorted_lt_range n).le_of_lt
@@ -153,7 +154,7 @@ lemma sorted_lt_range' (a b) {s} (hs : s ≠ 0) :
   | succ n ih =>
     rw [List.range'_succ]
     refine List.sorted_cons.mpr ⟨fun b hb ↦ ?_, @ih (a + s)⟩
-    apply lt_of_lt_of_le (Nat.lt_add_of_pos_right (Nat.zero_lt_of_ne_zero hs))
+    exact lt_of_lt_of_le (Nat.lt_add_of_pos_right (Nat.zero_lt_of_ne_zero hs))
       (List.left_le_of_mem_range' hb)
 
 lemma sorted_le_range' (a b s) :

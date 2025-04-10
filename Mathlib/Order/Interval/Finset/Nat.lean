@@ -236,7 +236,7 @@ theorem multiset_Ico_map_mod (n a : ℕ) :
 
 end Multiset
 
-section List
+end Nat
 
 namespace List
 
@@ -249,10 +249,6 @@ lemma toFinset_range'_1_1 (a : ℕ) : (List.range' 1 a).toFinset = Icc 1 a := by
   rw [List.mem_toFinset, List.mem_range'_1, add_comm, Nat.lt_succ_iff, Finset.mem_Icc]
 
 end List
-
-end List
-
-end Nat
 
 namespace Finset
 

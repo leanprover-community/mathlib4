@@ -141,6 +141,9 @@ lemma divisorsAntidiagonalList_sorted {n : ℕ} :
   rw [Option.ite_none_right_eq_some, Option.some.injEq] at h h'
   simpa [←h.right, ←h'.right]
 
+lemma divisorsAntidiagonalList_nodup {n : ℕ} : n.divisorsAntidiagonalList.Nodup :=
+  divisorsAntidiagonalList_sorted.nodup
+
 @[simp]
 lemma mem_divisorsAntidiagonalList_of_pos {n : ℕ} (a : ℕ × ℕ) :
     a ∈ n.divisorsAntidiagonalList ↔ a.1 * a.2 = n ∧ n ≠ 0 := by
