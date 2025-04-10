@@ -843,7 +843,8 @@ lemma apply_smul_sub_smul_sub_eq [CommRing R] [AddCommGroup M] [Module R M]
     mul_comm (B x y) (B x x), mul_left_comm (B x y) (B x x)]
   abel
 
-variable [LinearOrderedCommRing R] [AddCommGroup M] [Module R M] (B : LinearMap.BilinForm R M)
+variable [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
+  [AddCommGroup M] [Module R M] (B : LinearMap.BilinForm R M)
 
 /-- The **Cauchy-Schwarz inequality** for positive semidefinite forms. -/
 lemma apply_mul_apply_le_of_forall_zero_le (hs : ∀ x, 0 ≤ B x x) (x y : M) :

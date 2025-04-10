@@ -382,6 +382,21 @@ lemma prod_union_eq_left [DecidableEq α] (hs : ∀ a ∈ s₂, a ∉ s₁ → f
 lemma prod_union_eq_right [DecidableEq α] (hs : ∀ a ∈ s₁, a ∉ s₂ → f a = 1) :
     ∏ a ∈ s₁ ∪ s₂, f a = ∏ a ∈ s₂, f a := by rw [union_comm, prod_union_eq_left hs]
 
+/-- The products of two functions `f g : α → β` over finite sets `s₁ s₂ : Finset α`
+are equal if the functions agree on `s₁ ∩ s₂`, `f = 1` and `g = 1` on the respective
+set differences. -/
+@[to_additive "The sum of two functions `f g : α → β` over finite sets `s₁ s₂ : Finset α`
+are equal if the functions agree on `s₁ ∩ s₂`, `f = 0` and `g = 0` on the respective
+set differences."]
+lemma prod_congr_of_eq_on_inter {α β : Type*} {s₁ s₂ : Finset α} {f g : α → β} [CommMonoid β]
+    (h₁ : ∀ a ∈ s₁, a ∉ s₂ → f a = 1) (h₂ : ∀ a ∈ s₂, a ∉ s₁ → g a = 1)
+    (h : ∀ a ∈ s₁, a ∈ s₂ → f a = g a) :
+    ∏ a ∈ s₁, f a = ∏ a ∈ s₂, g a := by
+  classical
+  conv_lhs => rw [← sdiff_union_inter s₁ s₂, prod_union_eq_right (by aesop)]
+  conv_rhs => rw [← sdiff_union_inter s₂ s₁, prod_union_eq_right (by aesop), inter_comm]
+  exact prod_congr rfl (by simpa)
+
 @[to_additive]
 theorem prod_eq_mul_of_mem {s : Finset α} {f : α → β} (a b : α) (ha : a ∈ s) (hb : b ∈ s)
     (hn : a ≠ b) (h₀ : ∀ c ∈ s, c ≠ a ∧ c ≠ b → f c = 1) : ∏ x ∈ s, f x = f a * f b := by
@@ -470,7 +485,7 @@ theorem prod_subtype {p : α → Prop} {F : Fintype (Subtype p)} (s : Finset α)
 
 @[to_additive]
 theorem prod_set_coe (s : Set α) [Fintype s] : (∏ i : s, f i) = ∏ i ∈ s.toFinset, f i :=
-(Finset.prod_subtype s.toFinset (fun _ ↦ Set.mem_toFinset) f).symm
+  (Finset.prod_subtype s.toFinset (fun _ ↦ Set.mem_toFinset) f).symm
 
 /-- The product of a function `g` defined only on a set `s` is equal to
 the product of a function `f` defined everywhere,
