@@ -24,7 +24,7 @@ instance toIsOrderedAddMonoid [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMo
 
 /-- A submodule of an ordered cancellative additive monoid is an ordered cancellative additive
 monoid. -/
-instance toOrderedCancelAddCommMonoid [AddCommMonoid M] [PartialOrder M]
+instance toIsOrderedCancelAddMonoid [AddCommMonoid M] [PartialOrder M]
     [IsOrderedCancelAddMonoid M] [Module R M] (S : Submodule R M) :
     IsOrderedCancelAddMonoid S :=
   Subtype.coe_injective.isOrderedCancelAddMonoid Subtype.val rfl (fun _ _ => rfl) fun _ _ => rfl
