@@ -93,13 +93,13 @@ theorem transpose {M : Matrix n n R} (hM : M.PosSemidef) : Mᵀ.PosSemidef := by
   rw [mulVec_transpose, dotProduct_mulVec, star_star, dotProduct_comm]
 
 @[simp]
-theorem transpose_iff {M : Matrix n n R} : Mᵀ.PosSemidef ↔ M.PosSemidef :=
+theorem _root_.Matrix.posSemidef_transpose_iff {M : Matrix n n R} : Mᵀ.PosSemidef ↔ M.PosSemidef :=
   ⟨(by simpa using ·.transpose), .transpose⟩
 
 theorem conjTranspose {M : Matrix n n R} (hM : M.PosSemidef) : Mᴴ.PosSemidef := hM.1.symm ▸ hM
 
 @[simp]
-theorem conjTranspose_iff {M : Matrix n n R} : Mᴴ.PosSemidef ↔ M.PosSemidef :=
+theorem _root_.Matrix.posSemidef_conjTranspose_iff {M : Matrix n n R} : Mᴴ.PosSemidef ↔ M.PosSemidef :=
   ⟨(by simpa using ·.conjTranspose), .conjTranspose⟩
 
 protected lemma zero : PosSemidef (0 : Matrix n n R) :=
@@ -451,7 +451,7 @@ lemma mul_mul_conjTranspose_same {A : Matrix n n R} {B : Matrix m n R} (hA : A.P
 theorem conjTranspose {M : Matrix n n R} (hM : M.PosDef) : Mᴴ.PosDef := hM.1.symm ▸ hM
 
 @[simp]
-theorem conjTranspose_iff {M : Matrix n n R} : Mᴴ.PosDef ↔ M.PosDef :=
+theorem _root_.Matrix.posDef_conjTranspose_iff {M : Matrix n n R} : Mᴴ.PosDef ↔ M.PosDef :=
   ⟨(by simpa using ·.conjTranspose), .conjTranspose⟩
 
 theorem of_toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.IsSymm)
