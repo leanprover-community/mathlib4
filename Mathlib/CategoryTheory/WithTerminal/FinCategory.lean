@@ -35,10 +35,10 @@ def optionEquiv : Option C ≃ WithTerminal C where
   left_inv a := by cases a <;> simp
   right_inv a := by cases a <;> simp
 
-instance instFinType [Fintype C] : Fintype (WithTerminal C) :=
+instance instFintype [Fintype C] : Fintype (WithTerminal C) :=
   .ofEquiv (Option C) <| optionEquiv C
 
-instance instFin [SmallCategory C] [FinCategory C] :
+instance instFinCategory [SmallCategory C] [FinCategory C] :
     FinCategory (WithTerminal C) where
   fintypeObj := inferInstance
   fintypeHom
@@ -63,10 +63,10 @@ def optionEquiv : Option C ≃ WithInitial C where
   left_inv a := by cases a <;> simp
   right_inv a := by cases a <;> simp
 
-instance instFinType [Fintype C] : Fintype (WithInitial C) :=
+instance instFintype [Fintype C] : Fintype (WithInitial C) :=
   .ofEquiv (Option C) <| optionEquiv C
 
-instance instFin [SmallCategory C] [FinCategory C] :
+instance instFinCategory [SmallCategory C] [FinCategory C] :
     FinCategory (WithInitial C) where
   fintypeObj := inferInstance
   fintypeHom
