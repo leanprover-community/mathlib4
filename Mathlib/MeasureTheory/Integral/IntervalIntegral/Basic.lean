@@ -53,7 +53,7 @@ noncomputable section
 
 open MeasureTheory Set Filter Function
 
-open scoped Topology Filter ENNReal Interval NNReal
+open scoped Topology Filter ENNReal Interval NNReal uIcc
 
 variable {ι 𝕜 E F A : Type*} [NormedAddCommGroup E]
 
