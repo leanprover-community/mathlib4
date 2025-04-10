@@ -547,7 +547,7 @@ theorem _root_.NumberField.is_primitive_element_of_infinitePlace_lt {x : 𝓞 K}
   · intro ψ hψ
     have h : 1 ≤ w x := one_le_of_lt_one h₁ h₂
     have main : w = InfinitePlace.mk ψ.toRingHom := by
-      simp at hψ
+      simp only [RingHom.toRatAlgHom_apply] at hψ
       rw [← norm_embedding_eq, hψ] at h
       contrapose! h
       exact h₂ h.symm
@@ -561,7 +561,8 @@ theorem _root_.NumberField.is_primitive_element_of_infinitePlace_lt {x : 𝓞 K}
       have : (embedding w x).im = 0 := by
         rw [← Complex.conj_eq_iff_im]
         have := RingHom.congr_fun h' x
-        simp at this
+        simp only [ComplexEmbedding.conjugate_coe_eq, AlgHom.toRingHom_eq_coe,
+          RingHom.coe_coe] at this
         rw [this]
         exact hψ.symm
       rwa [← norm_embedding_eq, ← Complex.re_add_im (embedding w x), this, Complex.ofReal_zero,
