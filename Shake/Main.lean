@@ -450,7 +450,7 @@ def main (args : List String) : IO UInt32 := do
       IO.Process.exit 1
 
   -- Parse the `--cfg` argument
-  let srcSearchPath ← initSrcSearchPath
+  let srcSearchPath ← getSrcSearchPath
   let cfgFile ← if let some cfg := args.cfg then
     pure (some ⟨cfg⟩)
   else if let some path ← srcSearchPath.findModuleWithExt "lean" `Mathlib then

@@ -17,10 +17,11 @@ import Mathlib.Algebra.Algebra.Operations
 import Mathlib.Algebra.Algebra.Opposite
 import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.Algebra.Prod
-import Mathlib.Algebra.Algebra.Quasispectrum
 import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Algebra.Algebra.RestrictScalars
-import Mathlib.Algebra.Algebra.Spectrum
+import Mathlib.Algebra.Algebra.Spectrum.Basic
+import Mathlib.Algebra.Algebra.Spectrum.Pi
+import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Algebra.Subalgebra.Centralizer
 import Mathlib.Algebra.Algebra.Subalgebra.Directed
@@ -52,7 +53,10 @@ import Mathlib.Algebra.BigOperators.Finsupp.Basic
 import Mathlib.Algebra.BigOperators.Finsupp.Fin
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+import Mathlib.Algebra.BigOperators.Group.Finset.Indicator
+import Mathlib.Algebra.BigOperators.Group.Finset.Lemmas
 import Mathlib.Algebra.BigOperators.Group.Finset.Pi
+import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
 import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
 import Mathlib.Algebra.BigOperators.Group.Finset.Preimage
 import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
@@ -454,7 +458,9 @@ import Mathlib.Algebra.GroupWithZero.Pointwise.Set.Basic
 import Mathlib.Algebra.GroupWithZero.Pointwise.Set.Card
 import Mathlib.Algebra.GroupWithZero.Prod
 import Mathlib.Algebra.GroupWithZero.Semiconj
-import Mathlib.Algebra.GroupWithZero.Submonoid
+import Mathlib.Algebra.GroupWithZero.Subgroup
+import Mathlib.Algebra.GroupWithZero.Submonoid.Pointwise
+import Mathlib.Algebra.GroupWithZero.Submonoid.Primal
 import Mathlib.Algebra.GroupWithZero.ULift
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.GroupWithZero.Units.Equiv
@@ -778,6 +784,7 @@ import Mathlib.Algebra.Order.Group.Indicator
 import Mathlib.Algebra.Order.Group.InjSurj
 import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Algebra.Order.Group.Int
+import Mathlib.Algebra.Order.Group.Int.Sum
 import Mathlib.Algebra.Order.Group.Lattice
 import Mathlib.Algebra.Order.Group.MinMax
 import Mathlib.Algebra.Order.Group.Multiset
@@ -802,8 +809,9 @@ import Mathlib.Algebra.Order.GroupWithZero.Canonical
 import Mathlib.Algebra.Order.GroupWithZero.Finset
 import Mathlib.Algebra.Order.GroupWithZero.Submonoid
 import Mathlib.Algebra.Order.GroupWithZero.Synonym
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Lemmas
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Defs
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
 import Mathlib.Algebra.Order.GroupWithZero.WithZero
 import Mathlib.Algebra.Order.Hom.Basic
 import Mathlib.Algebra.Order.Hom.Monoid
@@ -1023,7 +1031,9 @@ import Mathlib.Algebra.Ring.Rat
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Algebra.Ring.Semiconj
 import Mathlib.Algebra.Ring.Semireal.Defs
-import Mathlib.Algebra.Ring.Submonoid
+import Mathlib.Algebra.Ring.Subgroup
+import Mathlib.Algebra.Ring.Submonoid.Basic
+import Mathlib.Algebra.Ring.Submonoid.Pointwise
 import Mathlib.Algebra.Ring.Subring.Basic
 import Mathlib.Algebra.Ring.Subring.Defs
 import Mathlib.Algebra.Ring.Subring.IntPolynomial
@@ -1480,6 +1490,7 @@ import Mathlib.Analysis.Distribution.FourierSchwartz
 import Mathlib.Analysis.Distribution.SchwartzSpace
 import Mathlib.Analysis.Fourier.AddCircle
 import Mathlib.Analysis.Fourier.AddCircleMulti
+import Mathlib.Analysis.Fourier.BoundedContinuousFunctionChar
 import Mathlib.Analysis.Fourier.FiniteAbelian.Orthogonality
 import Mathlib.Analysis.Fourier.FiniteAbelian.PontryaginDuality
 import Mathlib.Analysis.Fourier.FourierTransform
@@ -3158,6 +3169,7 @@ import Mathlib.Data.Num.Basic
 import Mathlib.Data.Num.Bitwise
 import Mathlib.Data.Num.Lemmas
 import Mathlib.Data.Num.Prime
+import Mathlib.Data.Num.ZNum
 import Mathlib.Data.Opposite
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.Option.Defs
@@ -4148,6 +4160,9 @@ import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
 import Mathlib.MeasureTheory.Integral.Layercake
 import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
+import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
+import Mathlib.MeasureTheory.Integral.Lebesgue.MeasurePreserving
+import Mathlib.MeasureTheory.Integral.Lebesgue.Norm
 import Mathlib.MeasureTheory.Integral.LebesgueNormedSpace
 import Mathlib.MeasureTheory.Integral.Marginal
 import Mathlib.MeasureTheory.Integral.MeanInequalities
@@ -4176,6 +4191,7 @@ import Mathlib.MeasureTheory.Measure.AEDisjoint
 import Mathlib.MeasureTheory.Measure.AEMeasurable
 import Mathlib.MeasureTheory.Measure.AbsolutelyContinuous
 import Mathlib.MeasureTheory.Measure.AddContent
+import Mathlib.MeasureTheory.Measure.CharacteristicFunction
 import Mathlib.MeasureTheory.Measure.Comap
 import Mathlib.MeasureTheory.Measure.Complex
 import Mathlib.MeasureTheory.Measure.Content
@@ -5812,7 +5828,11 @@ import Mathlib.Topology.Category.Profinite.CofilteredLimit
 import Mathlib.Topology.Category.Profinite.EffectiveEpi
 import Mathlib.Topology.Category.Profinite.Extend
 import Mathlib.Topology.Category.Profinite.Limits
-import Mathlib.Topology.Category.Profinite.Nobeling
+import Mathlib.Topology.Category.Profinite.Nobeling.Basic
+import Mathlib.Topology.Category.Profinite.Nobeling.Induction
+import Mathlib.Topology.Category.Profinite.Nobeling.Span
+import Mathlib.Topology.Category.Profinite.Nobeling.Successor
+import Mathlib.Topology.Category.Profinite.Nobeling.ZeroLimit
 import Mathlib.Topology.Category.Profinite.Product
 import Mathlib.Topology.Category.Profinite.Projective
 import Mathlib.Topology.Category.Sequential
@@ -5840,6 +5860,7 @@ import Mathlib.Topology.Clopen
 import Mathlib.Topology.ClopenBox
 import Mathlib.Topology.Closure
 import Mathlib.Topology.ClusterPt
+import Mathlib.Topology.Coherent
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.Compactification.OnePoint
 import Mathlib.Topology.Compactification.OnePointEquiv
@@ -6085,11 +6106,11 @@ import Mathlib.Topology.Perfect
 import Mathlib.Topology.Piecewise
 import Mathlib.Topology.PreorderRestrict
 import Mathlib.Topology.QuasiSeparated
-import Mathlib.Topology.RestrictGen
 import Mathlib.Topology.Semicontinuous
 import Mathlib.Topology.SeparatedMap
 import Mathlib.Topology.Separation.Basic
 import Mathlib.Topology.Separation.CompletelyRegular
+import Mathlib.Topology.Separation.Connected
 import Mathlib.Topology.Separation.CountableSeparatingOn
 import Mathlib.Topology.Separation.DisjointCover
 import Mathlib.Topology.Separation.GDelta

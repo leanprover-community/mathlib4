@@ -329,9 +329,7 @@ theorem Matrix.toLin'_toMatrix' (f : (n → R) →ₗ[R] m → R) :
 theorem LinearMap.toMatrix'_apply (f : (n → R) →ₗ[R] m → R) (i j) :
     LinearMap.toMatrix' f i j = f (fun j' ↦ if j' = j then 1 else 0) i := by
   simp only [LinearMap.toMatrix', LinearEquiv.coe_mk, of_apply]
-  refine congr_fun ?_ _  -- Porting note: `congr` didn't do this
-  congr
-  ext j'
+  congr! with i
   split_ifs with h
   · rw [h, Pi.single_eq_same]
   apply Pi.single_eq_of_ne h

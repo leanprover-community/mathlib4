@@ -20,6 +20,11 @@ set_option linter.style.refine false
 example : True := by
   refine' (by refine' .intro)
 
+set_option linter.style.refine false in
+-- This is quiet because `linter.style.refine` is now false, even using `in`.
+example : True := by
+  refine' (by refine' .intro)
+
 set_option linter.style.cases true
 /--
 warning: The `cases'` tactic is discouraged: please strongly consider using `obtain`, `rcases` or `cases` instead.
@@ -77,3 +82,76 @@ warning: declaration uses 'sorry'
 -/
 #guard_msgs in
 example : False := by admit
+
+set_option linter.style.maxHeartbeats true
+/--
+warning: Please, add a comment explaining the need for modifying the maxHeartbeat limit, as in
+set_option maxHeartbeats 10 in
+-- reason for change
+...
+ note: this linter can be disabled with `set_option linter.style.maxHeartbeats false`
+-/
+#guard_msgs in
+set_option maxHeartbeats 10 in
+section
+
+/--
+warning: Please, add a comment explaining the need for modifying the maxHeartbeat limit, as in
+set_option maxHeartbeats 10 in
+-- reason for change
+...
+ note: this linter can be disabled with `set_option linter.style.maxHeartbeats false`
+-/
+#guard_msgs in
+set_option maxHeartbeats 10 in
+set_option maxHeartbeats 10 in
+section
+
+/--
+warning: Please, add a comment explaining the need for modifying the maxHeartbeat limit, as in
+set_option synthInstance.maxHeartbeats 10 in
+-- reason for change
+...
+ note: this linter can be disabled with `set_option linter.style.maxHeartbeats false`
+-/
+#guard_msgs in
+set_option synthInstance.maxHeartbeats 10 in
+section
+
+/--
+warning: Please, add a comment explaining the need for modifying the maxHeartbeat limit, as in
+set_option maxHeartbeats 10 in
+-- reason for change
+...
+ note: this linter can be disabled with `set_option linter.style.maxHeartbeats false`
+-/
+#guard_msgs in
+set_option maxHeartbeats 10 in
+set_option synthInstance.maxHeartbeats 10 in
+/- The comment here is not enough to silence the linter:
+the *first* `maxHeartbeats` option should have a comment. -/
+section
+
+#guard_msgs in
+set_option maxHeartbeats 10 in
+/- The comment here is enough to silence the linter:
+the *first* `maxHeartbeats` has a comment, to remaining ones are free to be commentless. -/
+set_option synthInstance.maxHeartbeats 10 in
+section
+
+#guard_msgs in
+set_option maxHeartbeats 10 in
+-- no reason, but has a comment
+section
+
+/--
+warning: Please, add a comment explaining the need for modifying the maxHeartbeat limit, as in
+set_option maxHeartbeats 10 in
+-- reason for change
+...
+ note: this linter can be disabled with `set_option linter.style.maxHeartbeats false`
+-/
+#guard_msgs in
+set_option maxHeartbeats 10 in
+/-- Doc-strings for the following command do not silence the linter. -/
+example : True := trivial
