@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.Algebra.Category.ModuleCat.Free
+import Mathlib.Topology.Category.Profinite.Nobeling.Span
 import Mathlib.Topology.Category.Profinite.Nobeling.Successor
+import Mathlib.Topology.Category.Profinite.Nobeling.ZeroLimit
 
 /-!
 # Nöbeling's theorem

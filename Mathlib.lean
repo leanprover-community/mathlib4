@@ -5824,7 +5824,9 @@ import Mathlib.Topology.Category.Profinite.Extend
 import Mathlib.Topology.Category.Profinite.Limits
 import Mathlib.Topology.Category.Profinite.Nobeling.Basic
 import Mathlib.Topology.Category.Profinite.Nobeling.Induction
+import Mathlib.Topology.Category.Profinite.Nobeling.Span
 import Mathlib.Topology.Category.Profinite.Nobeling.Successor
+import Mathlib.Topology.Category.Profinite.Nobeling.ZeroLimit
 import Mathlib.Topology.Category.Profinite.Product
 import Mathlib.Topology.Category.Profinite.Projective
 import Mathlib.Topology.Category.Sequential
