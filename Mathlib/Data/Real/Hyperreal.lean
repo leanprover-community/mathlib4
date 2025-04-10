@@ -27,8 +27,14 @@ namespace Hyperreal
 
 @[inherit_doc] notation "ℝ*" => Hyperreal
 
-noncomputable instance : LinearOrderedField ℝ* :=
-  inferInstanceAs (LinearOrderedField (Germ _ _))
+noncomputable instance : Field ℝ* :=
+  inferInstanceAs (Field (Germ _ _))
+
+noncomputable instance : LinearOrder ℝ* :=
+  inferInstanceAs (LinearOrder (Germ _ _))
+
+instance : IsStrictOrderedRing ℝ* :=
+  inferInstanceAs (IsStrictOrderedRing (Germ _ _))
 
 /-- Natural embedding `ℝ → ℝ*`. -/
 @[coe] noncomputable def ofReal : ℝ → ℝ* := const

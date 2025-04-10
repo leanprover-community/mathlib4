@@ -433,7 +433,7 @@ end Ring
 
 section StrictOrderedRing
 
-variable {S : Type*} [StrictOrderedRing S]
+variable {S : Type*} [Ring S] [PartialOrder S] [IsStrictOrderedRing S]
 
 /-- `descPochhammer S n` is positive on `(n-1, ∞)`. -/
 theorem descPochhammer_pos {n : ℕ} {s : S} (h : n - 1 < s) :

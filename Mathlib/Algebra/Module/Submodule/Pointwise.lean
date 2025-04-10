@@ -167,9 +167,8 @@ theorem add_eq_sup (p q : Submodule R M) : p + q = p ⊔ q :=
 theorem zero_eq_bot : (0 : Submodule R M) = ⊥ :=
   rfl
 
-instance : OrderedAddCommMonoid (Submodule R M) :=
-  { Submodule.pointwiseAddCommMonoid with
-    add_le_add_left := fun _a _b => sup_le_sup_left }
+instance : IsOrderedAddMonoid (Submodule R M) :=
+  { add_le_add_left := fun _a _b => sup_le_sup_left }
 
 instance : CanonicallyOrderedAdd (Submodule R M) where
   exists_add_of_le := @fun _a b h => ⟨b, (sup_eq_right.2 h).symm⟩
