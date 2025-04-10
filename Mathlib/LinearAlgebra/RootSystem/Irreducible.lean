@@ -187,7 +187,7 @@ lemma span_coroot_eq_top' {K : Type*} [Field K] [Module K M] [Module K N]
   exact Submodule.eq_top_iff'.mpr key
 
 lemma l25 {K : Type*} [Field K] [Module K M] [Module K N]
-    (P : RootSystem ι K M N) (v : M) (hx : ∀ (i : ι), v ∈ ker (P.coroot' i))
+    (P : RootSystem ι K M N) (v : M) (h₁ : ∀ (i : ι), v ∈ ker (P.coroot' i))
     (d : Module.Dual K M) : d v = 0 := by
   have : d ∈ span K (range P.coroot') := by
     simp only [Submodule.mem_top, span_coroot_eq_top' P]
@@ -195,12 +195,12 @@ lemma l25 {K : Type*} [Field K] [Module K M] [Module K N]
   | mem x hx' =>
     rcases hx' with ⟨w, h⟩
     subst h
-    exact hx w
+    exact h₁ w
   | zero => simp only [Submodule.mem_top, LinearMap.zero_apply]
-  | add _ _ _ _ h₁ h₂ =>
-    rw [LinearMap.add_apply, h₁, h₂, add_zero]
-  | smul _ _ _ h =>
-    rw [LinearMap.smul_apply, smul_eq_mul, h, mul_zero]
+  | add _ _ _ _ a₁ a₂ =>
+    rw [LinearMap.add_apply, a₁, a₂, add_zero]
+  | smul _ _ _ m =>
+    rw [LinearMap.smul_apply, smul_eq_mul, m, mul_zero]
 
 
 lemma l3 {K : Type*} [Field K] [Module K M] [Module K N]
