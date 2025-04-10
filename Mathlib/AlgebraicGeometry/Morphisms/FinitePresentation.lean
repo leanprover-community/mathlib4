@@ -77,6 +77,7 @@ instance {X Y Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) [LocallyOfFinitePresen
 /-- **Chevalley's Theorem**: The image of a locally constructible set under a
 morphism of finite presentation is locally constructible. -/
 @[stacks 054K]
+-- `nonrec` is needed for `wlog`
 nonrec lemma Scheme.Hom.isLocallyConstructible_image (f : X.Hom Y)
     [hf : LocallyOfFinitePresentation f] [QuasiCompact f]
     {s : Set X} (hs : IsLocallyConstructible s) :
