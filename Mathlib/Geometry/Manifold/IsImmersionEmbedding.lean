@@ -227,11 +227,11 @@ theorem _root_.isImmersionAt_iff_msplitsAt {x : M} :
 
 /-- If `f` is an immersion at `x` and `g` is an immersion at `g x`,
 then `g ∘ f` is an immersion at `x`. -/
-lemma comp [CompleteSpace F'] {g : M' → N}
+lemma comp [CompleteSpace F'] [IsManifold J 1 N] {g : M' → N}
     (hg : IsImmersionAt F' I' J n g (f x)) (hf : IsImmersionAt F I I' n f x) :
     IsImmersionAt (F × F') I J n (g ∘ f) x := by
-  --rw [isImmersionAt_iff_msplitsAt] at hf hg ⊢
-  sorry --exact hg.comp hf
+  rw [isImmersionAt_iff_msplitsAt] at hf hg ⊢
+  exact hg.comp hf
 
 /-- If `f` is a `C^k` immersion at `x`, then `mfderiv x` is injective. -/
 theorem mfderiv_injective {x : M} (h : IsImmersionAt F I I' n f x) : Injective (mfderiv I I' f x) :=
@@ -317,11 +317,12 @@ theorem of_mfderiv_injective [FiniteDimensional 𝕜 E]
     (hf : ∀ x, Injective (mfderiv I I' f x)) : IsImmersion F I I' n f :=
   fun x ↦ IsImmersionAt.of_finiteDimensional_of_mfderiv_injective (hf x)
 
-variable [IsManifold J n N] in
+variable [IsManifold J n N]  in
 /-- The composition of two immersions is an immersion. -/
 lemma comp {g : M' → N} (hg : IsImmersion F' I' J n g) (hf : IsImmersion F I I' n f) :
-    IsImmersion (F × F') I J n (g ∘ f) :=
-  fun x ↦ (hg (f x)).comp (hf x)
+    IsImmersion (F × F') I J n (g ∘ f) := by
+  have : IsManifold J 1 N := sorry -- copy from current mathlib, somewhere
+  exact fun x ↦ (hg (f x)).comp (hf x)
 
 end IsImmersion
 
