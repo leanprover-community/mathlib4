@@ -278,9 +278,22 @@ theorem nonempty_mk_iff {x : PSet} : (mk x).Nonempty ↔ x.Nonempty := by
 theorem eq_empty (x : ZFSet.{u}) : x = ∅ ↔ ∀ y : ZFSet.{u}, y ∉ x := by
   simp [ZFSet.ext_iff]
 
+theorem nonempty_exists_iff {n : ZFSet} : n ≠ ∅ ↔ ∃ m, m ∈ n := by
+  simp [ZFSet.ext_iff]
+
+@[simp] theorem not_nonempty_is_empty {x : ZFSet} : ¬ x.Nonempty ↔ x = ∅ := by
+  rw [nonempty_def, not_exists, eq_empty]
+
 theorem eq_empty_or_nonempty (u : ZFSet) : u = ∅ ∨ u.Nonempty := by
   rw [eq_empty, ← not_exists]
   apply em'
+
+@[simp]
+theorem subset_of_empty (x : ZFSet) : x ⊆ ∅ → x = ∅ := by
+  intro h
+  ext z
+  simp [subset_def] at h
+  simp_all only [not_mem_empty]
 
 /-- `Insert x y` is the set `{x} ∪ y` -/
 protected def Insert : ZFSet → ZFSet → ZFSet :=
@@ -318,6 +331,12 @@ theorem mem_insert (x y : ZFSet) : x ∈ insert x y :=
 theorem mem_insert_of_mem {y z : ZFSet} (x) (h : z ∈ y) : z ∈ insert x y :=
   mem_insert_iff.2 <| Or.inr h
 
+theorem insert_mem {x y : ZFSet} (h : x ∈ y) : insert x y = y := by
+  ext1
+  rw [mem_insert_iff, or_iff_right_iff_imp]
+  rintro rfl
+  trivial
+
 @[simp]
 theorem toSet_insert (x y : ZFSet) : (insert x y).toSet = insert x y.toSet := by
   ext
@@ -326,6 +345,14 @@ theorem toSet_insert (x y : ZFSet) : (insert x y).toSet = insert x y.toSet := by
 @[simp]
 theorem mem_singleton {x y : ZFSet.{u}} : x ∈ @singleton ZFSet.{u} ZFSet.{u} _ y ↔ x = y :=
   Quotient.inductionOn₂ x y fun _ _ => PSet.mem_singleton.trans eq.symm
+
+theorem insert_comm {x y : ZFSet} : ({x, y} : ZFSet) = {y, x} := by
+  ext1
+  rw [mem_insert_iff, mem_insert_iff, mem_singleton, mem_singleton]
+  exact Or.comm
+
+theorem singleton_subset_mem_iff {x y : ZFSet} : {x} ⊆ y ↔ x ∈ y := by
+  simp [subset_def]
 
 @[simp]
 theorem toSet_singleton (x : ZFSet) : ({x} : ZFSet).toSet = {x} := by
@@ -406,6 +433,30 @@ theorem toSet_sep (a : ZFSet) (p : ZFSet → Prop) :
     (ZFSet.sep p a).toSet = { x ∈ a.toSet | p x } := by
   ext
   simp
+
+@[simp]
+theorem sep_empty_iff {A : ZFSet} {P : ZFSet → Prop} : A.sep P = ∅ ↔ (A = ∅ ∨ ∀ x ∈ A, ¬ P x) where
+  mp h := by classical
+    by_cases A_emp : A = ∅
+    · left; assumption
+    · right
+      intros x mem_x_A
+      by_contra contr
+      have : x ∈ A.sep P := by
+        rw [mem_sep]
+        exact ⟨mem_x_A, contr⟩
+      rw [h] at this
+      nomatch this, not_mem_empty _
+  mpr h := by classical
+    rcases h with rfl | h
+    · exact sep_empty P
+    · ext1 z
+      constructor
+      · intro hz
+        rw [mem_sep] at hz
+        nomatch h _ hz.left, hz.right
+      · intro hz
+        nomatch not_mem_empty z, hz
 
 /-- The powerset operation, the collection of subsets of a ZFC set -/
 def powerset : ZFSet → ZFSet :=
@@ -559,6 +610,14 @@ theorem mem_union {x y z : ZFSet.{u}} : z ∈ x ∪ y ↔ z ∈ x ∨ z ∈ y :=
   rw [← mem_toSet]
   simp
 
+theorem insert_def {x y : ZFSet} : insert x y = {x} ∪ y := by
+  ext1 z
+  rw [mem_insert_iff, mem_union, mem_singleton]
+
+theorem sUnion_insert {x : ZFSet} : (⋃₀ (insert x x) : ZFSet) = x ∪ (⋃₀ x : ZFSet) := by
+  ext1
+  simp only [mem_sUnion, mem_insert_iff, exists_eq_or_imp, mem_union]
+
 @[simp]
 theorem mem_inter {x y z : ZFSet.{u}} : z ∈ x ∩ y ↔ z ∈ x ∧ z ∈ y :=
   @mem_sep (fun z : ZFSet.{u} => z ∈ y) x z
@@ -570,6 +629,18 @@ theorem mem_diff {x y z : ZFSet.{u}} : z ∈ x \ y ↔ z ∈ x ∧ z ∉ y :=
 @[simp]
 theorem sUnion_pair {x y : ZFSet.{u}} : ⋃₀ ({x, y} : ZFSet.{u}) = x ∪ y :=
   rfl
+
+theorem sInter_pair {a b : ZFSet} : ⋂₀ {a, b} = a ∩ b := by
+  ext1 x
+  apply Iff.intro
+  · intro h
+    rw [mem_sInter (by simp only [nonempty_def, mem_insert_iff, exists_or_eq_left])] at h
+    simp only [mem_insert_iff, mem_singleton, forall_eq_or_imp, forall_eq] at h
+    rwa [← mem_inter] at h
+  · intro h
+    rw [mem_sInter (by simp only [nonempty_def, mem_insert_iff, exists_or_eq_left])]
+    simp only [mem_insert_iff, mem_singleton, forall_eq_or_imp, forall_eq]
+    rwa [← mem_inter]
 
 theorem mem_wf : @WellFounded ZFSet (· ∈ ·) :=
   (wellFounded_lift₂_iff (H := fun a b c d hx hy =>
@@ -705,6 +776,35 @@ theorem mem_prod {x y z : ZFSet.{u}} : z ∈ prod x y ↔ ∃ a ∈ x, ∃ b ∈
 
 theorem pair_mem_prod {x y a b : ZFSet.{u}} : pair a b ∈ prod x y ↔ a ∈ x ∧ b ∈ y := by
   simp
+
+@[simp]
+theorem prod_empty_right {x : ZFSet} : x.prod ∅ = ∅ := by
+  ext z; simp
+
+@[simp]
+theorem prod_empty_left {x : ZFSet} : ZFSet.prod ∅ x = ∅ := by
+  ext z; simp
+
+theorem prod_subset_prod_iff {A C B D: ZFSet} (hA : A ≠ ∅) (hC : C ≠ ∅) :
+  A.prod C ⊆ B.prod D ↔ A ⊆ B ∧ C ⊆ D := by
+  simp_rw [subset_def]
+  constructor
+  · intro h
+    and_intros
+    · intro z zA
+      obtain ⟨c, hc⟩ := nonempty_exists_iff.mp hC
+      specialize h <| pair_mem_prod.mpr ⟨zA, hc⟩
+      rw [pair_mem_prod] at h
+      exact h.1
+    · intro z zC
+      obtain ⟨a, ha⟩ := nonempty_exists_iff.mp hA
+      specialize h <| pair_mem_prod.mpr ⟨ha, zC⟩
+      rw [pair_mem_prod] at h
+      exact h.2
+  · rintro ⟨hAB, hCD⟩ z hz
+    rw [mem_prod] at hz
+    obtain ⟨a, ha, c, hc, rfl⟩ := hz
+    exact pair_mem_prod.mpr ⟨hAB ha, hCD hc⟩
 
 /-- `isFunc x y f` is the assertion that `f` is a subset of `x × y` which relates to each element
 of `x` a unique element of `y`, so that we can consider `f` as a ZFC function `x → y`. -/
