@@ -245,6 +245,15 @@ lemma Convex.eventually_nhdsWithin_segment (hs : Convex ℝ s) {x₀ : E} (hx₀
   suffices segment ℝ x₀ x ⊆ u from this hy
   exact hu_convex.segment_subset (mem_of_mem_nhds hu_nhds) hxu
 
+lemma norm_sub_le_of_mem_segment {x₀ : E} (hy : y ∈ segment ℝ x₀ x) : ‖y - x₀‖ ≤ ‖x - x₀‖ := by
+  rw [segment_eq_image'] at hy
+  simp only [mem_image, mem_Icc] at hy
+  obtain ⟨u, ⟨hu_nonneg, hu_le_one⟩, rfl⟩ := hy
+  simp only [add_sub_cancel_left, norm_smul, Real.norm_eq_abs]
+  rw [abs_of_nonneg hu_nonneg]
+  conv_rhs => rw [← one_mul (‖x - x₀‖)]
+  gcongr
+
 theorem Convex.isLittleO_pow_succ {x₀ : E} {n : ℕ}
     (hs : Convex ℝ s) (hx₀s : x₀ ∈ s)
     (hff' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (hf' : f' =o[𝓝[s] x₀] fun x ↦ ‖x - x₀‖ ^ n) :
@@ -258,7 +267,7 @@ theorem Convex.isLittleO_pow_succ {x₀ : E} {n : ℕ}
     filter_upwards [h1, hs.eventually_nhdsWithin_segment hx₀s (hf' hc)] with x hxs h
     refine ⟨hs.segment_subset hx₀s hxs, fun y hy ↦ (h y hy).trans ?_⟩
     gcongr
-    sorry -- `⊢ ‖y - x₀‖ ≤ ‖x - x₀‖`
+    exact norm_sub_le_of_mem_segment hy
   filter_upwards [this] with x ⟨h_segment, h⟩
   convert (convex_segment x₀ x).norm_image_sub_le_of_norm_hasFDerivWithin_le
     (f := fun x ↦ f x - f x₀) (y := x) (x := x₀) (s := segment ℝ x₀ x) ?_ h
