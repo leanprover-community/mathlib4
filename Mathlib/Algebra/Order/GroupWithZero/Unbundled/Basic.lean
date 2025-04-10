@@ -724,7 +724,29 @@ lemma div_self_le_one (a : G₀) : a / a ≤ 1 := by obtain rfl | ha := eq_or_ne
 end Preorder
 
 section PartialOrder
-variable [PartialOrder G₀] [PosMulReflectLT G₀] {a b c : G₀}
+variable [PartialOrder G₀]
+
+namespace Right
+variable [MulPosReflectLT G₀] {a b c : G₀}
+
+lemma inv_pos : 0 < a⁻¹ ↔ 0 < a := by
+  suffices ∀ a : G₀, 0 < a → 0 < a⁻¹ from ⟨fun h ↦ inv_inv a ▸ this _ h, this a⟩
+  intro a ha
+  apply lt_of_mul_lt_mul_right _ ha.le
+  apply lt_of_mul_lt_mul_right _ ha.le
+  simpa [ha.ne']
+
+variable (G₀) in
+/-- For a group with zero, `MulPosReflectLT G₀` implies `MulPosStrictMono G₀`. -/
+theorem _root_.MulPosReflectLT.toMulPosStrictMono : MulPosStrictMono G₀ where
+  elim := by
+    rintro ⟨a, ha⟩ b c hlt
+    apply lt_of_mul_lt_mul_right _ (inv_pos.2 ha).le
+    simpa [ha.ne']
+
+end Right
+
+variable [PosMulReflectLT G₀] {a b c : G₀}
 
 @[simp] lemma inv_pos : 0 < a⁻¹ ↔ 0 < a := by
   suffices ∀ a : G₀, 0 < a → 0 < a⁻¹ from ⟨fun h ↦ inv_inv a ▸ this _ h, this a⟩
