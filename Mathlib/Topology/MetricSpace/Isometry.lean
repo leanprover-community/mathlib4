@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Data.Fintype.Lattice
 import Mathlib.Data.Fintype.Sum
+import Mathlib.Topology.Homeomorph.Lemmas
 import Mathlib.Topology.MetricSpace.Antilipschitz
 
 /-!

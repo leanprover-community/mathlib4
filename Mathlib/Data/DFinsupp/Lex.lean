@@ -171,24 +171,15 @@ instance Lex.orderBot [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)]
   bot := 0
   bot_le _ := DFinsupp.toLex_monotone bot_le
 
-instance Lex.orderedAddCancelCommMonoid [∀ i, OrderedCancelAddCommMonoid (α i)] :
-    OrderedCancelAddCommMonoid (Lex (Π₀ i, α i)) where
+instance Lex.isOrderedCancelAddMonoid [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)]
+    [∀ i, IsOrderedCancelAddMonoid (α i)] :
+    IsOrderedCancelAddMonoid (Lex (Π₀ i, α i)) where
   add_le_add_left _ _ h _ := add_le_add_left (α := Lex (∀ i, α i)) h _
   le_of_add_le_add_left _ _ _ := le_of_add_le_add_left (α := Lex (∀ i, α i))
 
-instance Lex.orderedAddCommGroup [∀ i, OrderedAddCommGroup (α i)] :
-    OrderedAddCommGroup (Lex (Π₀ i, α i)) where
-  add_le_add_left _ _ := add_le_add_left
-
-instance Lex.linearOrderedCancelAddCommMonoid
-    [∀ i, LinearOrderedCancelAddCommMonoid (α i)] :
-    LinearOrderedCancelAddCommMonoid (Lex (Π₀ i, α i)) where
-  __ : LinearOrder (Lex (Π₀ i, α i)) := inferInstance
-  __ : OrderedCancelAddCommMonoid (Lex (Π₀ i, α i)) := inferInstance
-
-instance Lex.linearOrderedAddCommGroup [∀ i, LinearOrderedAddCommGroup (α i)] :
-    LinearOrderedAddCommGroup (Lex (Π₀ i, α i)) where
-  __ : LinearOrder (Lex (Π₀ i, α i)) := inferInstance
+instance Lex.isOrderedAddMonoid [∀ i, AddCommGroup (α i)] [∀ i, PartialOrder (α i)]
+    [∀ i, IsOrderedAddMonoid (α i)] :
+    IsOrderedAddMonoid (Lex (Π₀ i, α i)) where
   add_le_add_left _ _ := add_le_add_left
 
 end OrderedAddMonoid

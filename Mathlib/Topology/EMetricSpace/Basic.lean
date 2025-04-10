@@ -230,7 +230,7 @@ instance (priority := 100) EMetricSpace.instT0Space : T0Space γ where
 
 /-- A map between emetric spaces is a uniform embedding if and only if the edistance between `f x`
 and `f y` is controlled in terms of the distance between `x` and `y` and conversely. -/
-theorem EMetric.isUniformEmbedding_iff' [EMetricSpace β] {f : γ → β} :
+theorem EMetric.isUniformEmbedding_iff' [PseudoEMetricSpace β] {f : γ → β} :
     IsUniformEmbedding f ↔
       (∀ ε > 0, ∃ δ > 0, ∀ {a b : γ}, edist a b < δ → edist (f a) (f b) < ε) ∧
         ∀ δ > 0, ∃ ε > 0, ∀ {a b : γ}, edist (f a) (f b) < ε → edist a b < δ := by

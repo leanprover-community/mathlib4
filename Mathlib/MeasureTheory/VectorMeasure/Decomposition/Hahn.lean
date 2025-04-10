@@ -40,7 +40,6 @@ noncomputable section
 open scoped NNReal ENNReal MeasureTheory
 
 variable {α β : Type*} [MeasurableSpace α]
-variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M] [OrderedAddCommMonoid M]
 
 namespace MeasureTheory
 

@@ -704,8 +704,9 @@ end CoeToLp
 
 section Order
 
-variable {G : Type*} [NormedLatticeAddCommGroup G]
+variable {G : Type*} [NormedAddCommGroup G] [Lattice G] [HasSolidNorm G] [IsOrderedAddMonoid G]
 
+omit [HasSolidNorm G] [IsOrderedAddMonoid G] in
 theorem coeFn_le (f g : Lp.simpleFunc G p μ) : (f : α → G) ≤ᵐ[μ] g ↔ f ≤ g := by
   rw [← Subtype.coe_le_coe, ← Lp.coeFn_le]
 
@@ -715,14 +716,17 @@ instance instAddLeftMono : AddLeftMono (Lp.simpleFunc G p μ) := by
 
 variable (p μ G)
 
+omit [Lattice G] [HasSolidNorm G] [IsOrderedAddMonoid G] in
 theorem coeFn_zero : (0 : Lp.simpleFunc G p μ) =ᵐ[μ] (0 : α → G) :=
   Lp.coeFn_zero _ _ _
 
 variable {p μ G}
 
+omit [HasSolidNorm G] [IsOrderedAddMonoid G] in
 theorem coeFn_nonneg (f : Lp.simpleFunc G p μ) : (0 : α → G) ≤ᵐ[μ] f ↔ 0 ≤ f := by
   rw [← Subtype.coe_le_coe, Lp.coeFn_nonneg, AddSubmonoid.coe_zero]
 
+omit [HasSolidNorm G] [IsOrderedAddMonoid G] in
 theorem exists_simpleFunc_nonneg_ae_eq {f : Lp.simpleFunc G p μ} (hf : 0 ≤ f) :
     ∃ f' : α →ₛ G, 0 ≤ f' ∧ f =ᵐ[μ] f' := by
   rcases f with ⟨⟨f, hp⟩, g, (rfl : _ = f)⟩
@@ -736,6 +740,7 @@ variable (p μ G)
 def coeSimpleFuncNonnegToLpNonneg :
     { g : Lp.simpleFunc G p μ // 0 ≤ g } → { g : Lp G p μ // 0 ≤ g } := fun g => ⟨g, g.2⟩
 
+omit [HasSolidNorm G] [IsOrderedAddMonoid G] in
 theorem denseRange_coeSimpleFuncNonnegToLpNonneg [hp : Fact (1 ≤ p)] (hp_ne_top : p ≠ ∞) :
     DenseRange (coeSimpleFuncNonnegToLpNonneg p μ G) := fun g ↦ by
   borelize G

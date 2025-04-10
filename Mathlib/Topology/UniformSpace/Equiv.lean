@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Sébastien Gouëzel, Zhouhang Zhou, Reid Barton,
 Anatole Dedecker
 -/
-import Mathlib.Topology.Homeomorph.Lemmas
+import Mathlib.Logic.Equiv.Fin.Basic
 import Mathlib.Topology.UniformSpace.UniformEmbedding
 import Mathlib.Topology.UniformSpace.Pi
 

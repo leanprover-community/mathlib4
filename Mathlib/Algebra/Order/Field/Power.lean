@@ -151,9 +151,9 @@ def evalZPow : PositivityExt where eval {u α} zα pα e := do
     match ra with
     | .positive pa =>
       try
-        let _a ← synthInstanceQ (q(Semifield $α) : Q(Type u))
-        let _a ← synthInstanceQ (q(LinearOrder $α) : Q(Type u))
-        let _a ← synthInstanceQ (q(IsStrictOrderedRing $α) : Q(Prop))
+        let _a ← synthInstanceQ q(Semifield $α)
+        let _a ← synthInstanceQ q(LinearOrder $α)
+        let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
         haveI' : $e =Q $a ^ $b := ⟨⟩
         assumeInstancesCommute
         pure (.positive q(zpow_pos $pa $b))
@@ -164,8 +164,9 @@ def evalZPow : PositivityExt where eval {u α} zα pα e := do
         let iα ← synthInstanceQ q(IsStrictOrderedRing $α)
         orElse (← catchNone (ofNonneg q(le_of_lt $pa) sα oα iα))
           (ofNonzero q(ne_of_gt $pa) q(inferInstance))
-    | .nonnegative pa => ofNonneg pa (← synthInstanceQ (_ : Q(Type u)))
-                           (← synthInstanceQ (_ : Q(Type u))) (← synthInstanceQ (_ : Q(Prop)))
+    | .nonnegative pa =>
+      ofNonneg pa (← synthInstanceQ (_ : Q(Type u)))
+                  (← synthInstanceQ (_ : Q(Type u))) (← synthInstanceQ (_ : Q(Prop)))
     | .nonzero pa => ofNonzero pa (← synthInstanceQ (_ : Q(Type u)))
     | .none => pure .none
 

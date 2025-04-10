@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Yaël Dillies, Andrew Yang
 -/
 import Mathlib.Algebra.Order.GroupWithZero.Canonical
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Lemmas
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
 import Mathlib.Data.Finset.Lattice.Fold
 
 /-!
@@ -49,7 +49,7 @@ set_option linter.docPrime false in
 lemma mul₀_sup' [PosMulMono G₀] [PosMulReflectLE G₀] (ha : 0 < a) (f : ι → G₀) (s : Finset ι) (hs) :
     a * s.sup' hs f = s.sup' hs fun i ↦ a * f i := map_finset_sup' (OrderIso.mulLeft₀ _ ha) hs f
 
-lemma sup'_div₀ [ZeroLEOneClass G₀] [MulPosStrictMono G₀] [MulPosReflectLE G₀] [PosMulReflectLT G₀]
+lemma sup'_div₀ [MulPosStrictMono G₀] [MulPosReflectLE G₀] [PosMulReflectLT G₀]
     (ha : 0 < a) (f : ι → G₀) (s : Finset ι) (hs) : s.sup' hs f / a = s.sup' hs fun i ↦ f i / a :=
   map_finset_sup' (OrderIso.divRight₀ _ ha) hs f
 

@@ -296,7 +296,8 @@ end NatCast
 
 namespace NonemptyInterval
 
-instance [OrderedCommSemiring α] [CanonicallyOrderedAdd α] : CommSemiring (NonemptyInterval α) :=
+instance [CommSemiring α] [PartialOrder α] [CanonicallyOrderedAdd α] :
+    CommSemiring (NonemptyInterval α) :=
   NonemptyInterval.toProd_injective.commSemiring _
     toProd_zero toProd_one toProd_add toProd_mul (swap toProd_nsmul) toProd_pow (fun _ => rfl)
 

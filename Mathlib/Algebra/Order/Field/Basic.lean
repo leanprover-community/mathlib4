@@ -702,11 +702,11 @@ such that `positivity` successfully recognises both `a` and `b`. -/
   let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← withReducible (whnf e)
     | throwError "not /"
   let _e_eq : $e =Q $f $a $b := ⟨⟩
-  let _a ← synthInstanceQ (q(Semifield $α) : Q(Type u))
-  let _a ← synthInstanceQ (q(LinearOrder $α) : Q(Type u))
-  let _a ← synthInstanceQ (q(IsStrictOrderedRing $α) : Q(Prop))
+  let _a ← synthInstanceQ q(Semifield $α)
+  let _a ← synthInstanceQ q(LinearOrder $α)
+  let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
   assumeInstancesCommute
-  let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ (u := u.succ) f q(HDiv.hDiv)
+  let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ q($f) q(HDiv.hDiv)
   let ra ← core zα pα a; let rb ← core zα pα b
   match ra, rb with
   | .positive pa, .positive pb => pure (.positive q(div_pos $pa $pb))
@@ -728,7 +728,7 @@ def evalInv : PositivityExt where eval {u α} zα pα e := do
   let _a ← synthInstanceQ q(LinearOrder $α)
   let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
   assumeInstancesCommute
-  let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ (u := u.succ) f q(Inv.inv)
+  let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ q($f) q(Inv.inv)
   let ra ← core zα pα a
   match ra with
   | .positive pa => pure (.positive q(inv_pos_of_pos $pa))

@@ -136,6 +136,7 @@
   "Mathlib.Tactic.NormNum.Eq",
   "Mathlib.Tactic.NormNum.Ineq",
   "Mathlib.Tactic.NthRewrite",
+  "Mathlib.Tactic.Order",
   "Mathlib.Tactic.PPWithUniv",
   "Mathlib.Tactic.Peel",
   "Mathlib.Tactic.Polyrith",
@@ -199,6 +200,8 @@
   "Mathlib.Topology.Sheaves.Forget": ["Mathlib.Algebra.Category.Ring.Limits"],
   "Mathlib.Topology.Sheaves.CommRingCat":
   ["Mathlib.Algebra.Category.Ring.Limits"],
+  "Mathlib.Topology.Separation.GDelta":
+  ["Mathlib.Topology.Connected.TotallyDisconnected"],
   "Mathlib.Topology.Order.LeftRightNhds":
   ["Mathlib.Algebra.Ring.Pointwise.Set"],
   "Mathlib.Topology.Germ": ["Mathlib.Analysis.Normed.Module.Basic"],
@@ -224,6 +227,7 @@
   "Mathlib.Tactic.Says": ["Batteries.Data.String.Basic"],
   "Mathlib.Tactic.ReduceModChar":
   ["Mathlib.Data.ZMod.Basic", "Mathlib.RingTheory.Polynomial.Basic"],
+  "Mathlib.Tactic.Qify": ["Mathlib.Data.NNRat.Defs"],
   "Mathlib.Tactic.ProxyType": ["Mathlib.Logic.Equiv.Defs"],
   "Mathlib.Tactic.ProdAssoc": ["Mathlib.Logic.Equiv.Defs"],
   "Mathlib.Tactic.Positivity.Finset":
@@ -349,8 +353,8 @@
   "Mathlib.RepresentationTheory.FDRep":
   ["Mathlib.CategoryTheory.Monoidal.Rigid.Braided"],
   "Mathlib.Probability.Notation":
-  ["Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue",
-   "Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic"],
+  ["Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic",
+   "Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue"],
   "Mathlib.Probability.Kernel.Proper":
   ["Mathlib.Probability.Kernel.Composition.CompNotation"],
   "Mathlib.Order.RelClasses": ["Batteries.WF"],
