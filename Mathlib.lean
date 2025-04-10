@@ -53,7 +53,10 @@ import Mathlib.Algebra.BigOperators.Finsupp.Basic
 import Mathlib.Algebra.BigOperators.Finsupp.Fin
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+import Mathlib.Algebra.BigOperators.Group.Finset.Indicator
+import Mathlib.Algebra.BigOperators.Group.Finset.Lemmas
 import Mathlib.Algebra.BigOperators.Group.Finset.Pi
+import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
 import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
 import Mathlib.Algebra.BigOperators.Group.Finset.Preimage
 import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
