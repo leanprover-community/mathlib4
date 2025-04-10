@@ -9,7 +9,7 @@ import Mathlib.Data.Finset.Range
 /-!
 # Extra lemmas about unions of intervals
 
-This file contains lemmas about finite unions of intervals which can't be inclued with the lemmas
+This file contains lemmas about finite unions of intervals which can't be included with the lemmas
 concerning infinite unions in `Order.Interval.Set.Disjoint` because we use `Finset.range`.
 -/
 
