@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.Order.Sub.WithTop
-import Mathlib.Data.NNReal.Archimedean
+import Mathlib.Data.NNReal.Defs
 import Mathlib.Order.Interval.Set.WithBotTop
 
 /-!
@@ -121,11 +121,6 @@ instance : CanonicallyOrderedAdd ℝ≥0∞ :=
 instance : NoZeroDivisors ℝ≥0∞ :=
   inferInstanceAs (NoZeroDivisors (WithTop ℝ≥0))
 
-noncomputable instance : CompleteLinearOrder ℝ≥0∞ :=
-  inferInstanceAs (CompleteLinearOrder (WithTop ℝ≥0))
-
-instance : DenselyOrdered ℝ≥0∞ := inferInstanceAs (DenselyOrdered (WithTop ℝ≥0))
-
 noncomputable instance : LinearOrderedAddCommMonoid ℝ≥0∞ :=
   inferInstanceAs (LinearOrderedAddCommMonoid (WithTop ℝ≥0))
 
@@ -135,8 +130,21 @@ instance : OrderedSub ℝ≥0∞ := inferInstanceAs (OrderedSub (WithTop ℝ≥0
 noncomputable instance : LinearOrderedAddCommMonoidWithTop ℝ≥0∞ :=
   inferInstanceAs (LinearOrderedAddCommMonoidWithTop (WithTop ℝ≥0))
 
+/-- Coercion from `ℝ≥0` to `ℝ≥0∞`. -/
+@[coe, match_pattern] def ofNNReal : ℝ≥0 → ℝ≥0∞ := WithTop.some
+
+instance : Coe ℝ≥0 ℝ≥0∞ := ⟨ofNNReal⟩
+
+/-- A version of `WithTop.recTopCoe` that uses `ENNReal.ofNNReal`. -/
+@[elab_as_elim, induction_eliminator, cases_eliminator]
+def recTopCoe {C : ℝ≥0∞ → Sort*} (top : C ∞) (coe : ∀ x : ℝ≥0, C x) (x : ℝ≥0∞) : C x :=
+  WithTop.recTopCoe top coe x
+
 -- RFC: redefine using pattern matching?
-noncomputable instance : Inv ℝ≥0∞ := ⟨fun a => sInf { b | 1 ≤ a * b }⟩
+noncomputable instance : Inv ℝ≥0∞ where
+  inv
+  | .none => 0
+  | .some x => if x = 0 then ⊤ else (ofNNReal ⟨(x : ℝ)⁻¹, by simp⟩)
 
 noncomputable instance : DivInvMonoid ℝ≥0∞ where
 
@@ -155,16 +163,6 @@ instance : Unique (AddUnits ℝ≥0∞) where
   uniq a := AddUnits.ext <| le_zero_iff.1 <| by rw [← a.add_neg]; exact le_self_add
 
 instance : Inhabited ℝ≥0∞ := ⟨0⟩
-
-/-- Coercion from `ℝ≥0` to `ℝ≥0∞`. -/
-@[coe, match_pattern] def ofNNReal : ℝ≥0 → ℝ≥0∞ := WithTop.some
-
-instance : Coe ℝ≥0 ℝ≥0∞ := ⟨ofNNReal⟩
-
-/-- A version of `WithTop.recTopCoe` that uses `ENNReal.ofNNReal`. -/
-@[elab_as_elim, induction_eliminator, cases_eliminator]
-def recTopCoe {C : ℝ≥0∞ → Sort*} (top : C ∞) (coe : ∀ x : ℝ≥0, C x) (x : ℝ≥0∞) : C x :=
-  WithTop.recTopCoe top coe x
 
 instance canLift : CanLift ℝ≥0∞ ℝ≥0 ofNNReal (· ≠ ∞) := WithTop.canLift
 
@@ -552,23 +550,6 @@ theorem max_zero_left : max 0 a = a :=
 theorem max_zero_right : max a 0 = a :=
   max_eq_left (zero_le a)
 
-theorem lt_iff_exists_rat_btwn :
-    a < b ↔ ∃ q : ℚ, 0 ≤ q ∧ a < Real.toNNReal q ∧ (Real.toNNReal q : ℝ≥0∞) < b :=
-  ⟨fun h => by
-    rcases lt_iff_exists_coe.1 h with ⟨p, rfl, _⟩
-    rcases exists_between h with ⟨c, pc, cb⟩
-    rcases lt_iff_exists_coe.1 cb with ⟨r, rfl, _⟩
-    rcases (NNReal.lt_iff_exists_rat_btwn _ _).1 (coe_lt_coe.1 pc) with ⟨q, hq0, pq, qr⟩
-    exact ⟨q, hq0, coe_lt_coe.2 pq, lt_trans (coe_lt_coe.2 qr) cb⟩,
-      fun ⟨_, _, qa, qb⟩ => lt_trans qa qb⟩
-
-theorem lt_iff_exists_real_btwn :
-    a < b ↔ ∃ r : ℝ, 0 ≤ r ∧ a < ENNReal.ofReal r ∧ (ENNReal.ofReal r : ℝ≥0∞) < b :=
-  ⟨fun h =>
-    let ⟨q, q0, aq, qb⟩ := ENNReal.lt_iff_exists_rat_btwn.1 h
-    ⟨q, Rat.cast_nonneg.2 q0, aq, qb⟩,
-    fun ⟨_, _, qa, qb⟩ => lt_trans qa qb⟩
-
 theorem lt_iff_exists_nnreal_btwn : a < b ↔ ∃ r : ℝ≥0, a < r ∧ (r : ℝ≥0∞) < b :=
   WithTop.lt_iff_exists_coe_btwn
 
@@ -589,45 +570,6 @@ theorem natCast_lt_coe {n : ℕ} : n < (r : ℝ≥0∞) ↔ n < r := ENNReal.coe
 
 theorem coe_lt_natCast {n : ℕ} : (r : ℝ≥0∞) < n ↔ r < n := ENNReal.coe_natCast n ▸ coe_lt_coe
 
-protected theorem exists_nat_gt {r : ℝ≥0∞} (h : r ≠ ∞) : ∃ n : ℕ, r < n := by
-  lift r to ℝ≥0 using h
-  rcases exists_nat_gt r with ⟨n, hn⟩
-  exact ⟨n, coe_lt_natCast.2 hn⟩
-
-@[simp]
-theorem iUnion_Iio_coe_nat : ⋃ n : ℕ, Iio (n : ℝ≥0∞) = {∞}ᶜ := by
-  ext x
-  rw [mem_iUnion]
-  exact ⟨fun ⟨n, hn⟩ => ne_top_of_lt hn, ENNReal.exists_nat_gt⟩
-
-@[simp]
-theorem iUnion_Iic_coe_nat : ⋃ n : ℕ, Iic (n : ℝ≥0∞) = {∞}ᶜ :=
-  Subset.antisymm (iUnion_subset fun n _x hx => ne_top_of_le_ne_top (natCast_ne_top n) hx) <|
-    iUnion_Iio_coe_nat ▸ iUnion_mono fun _ => Iio_subset_Iic_self
-
-@[simp]
-theorem iUnion_Ioc_coe_nat : ⋃ n : ℕ, Ioc a n = Ioi a \ {∞} := by
-  simp only [← Ioi_inter_Iic, ← inter_iUnion, iUnion_Iic_coe_nat, diff_eq]
-
-@[simp]
-theorem iUnion_Ioo_coe_nat : ⋃ n : ℕ, Ioo a n = Ioi a \ {∞} := by
-  simp only [← Ioi_inter_Iio, ← inter_iUnion, iUnion_Iio_coe_nat, diff_eq]
-
-@[simp]
-theorem iUnion_Icc_coe_nat : ⋃ n : ℕ, Icc a n = Ici a \ {∞} := by
-  simp only [← Ici_inter_Iic, ← inter_iUnion, iUnion_Iic_coe_nat, diff_eq]
-
-@[simp]
-theorem iUnion_Ico_coe_nat : ⋃ n : ℕ, Ico a n = Ici a \ {∞} := by
-  simp only [← Ici_inter_Iio, ← inter_iUnion, iUnion_Iio_coe_nat, diff_eq]
-
-@[simp]
-theorem iInter_Ici_coe_nat : ⋂ n : ℕ, Ici (n : ℝ≥0∞) = {∞} := by
-  simp only [← compl_Iio, ← compl_iUnion, iUnion_Iio_coe_nat, compl_compl]
-
-@[simp]
-theorem iInter_Ioi_coe_nat : ⋂ n : ℕ, Ioi (n : ℝ≥0∞) = {∞} := by
-  simp only [← compl_Iic, ← compl_iUnion, iUnion_Iic_coe_nat, compl_compl]
 
 @[simp, norm_cast]
 theorem coe_min (r p : ℝ≥0) : ((min r p : ℝ≥0) : ℝ≥0∞) = min (r : ℝ≥0∞) p := rfl
@@ -651,28 +593,9 @@ end Order
 section CompleteLattice
 variable {ι : Sort*} {f : ι → ℝ≥0}
 
-theorem coe_sSup {s : Set ℝ≥0} : BddAbove s → (↑(sSup s) : ℝ≥0∞) = ⨆ a ∈ s, ↑a :=
-  WithTop.coe_sSup
-
-theorem coe_sInf {s : Set ℝ≥0} (hs : s.Nonempty) : (↑(sInf s) : ℝ≥0∞) = ⨅ a ∈ s, ↑a :=
-  WithTop.coe_sInf hs (OrderBot.bddBelow s)
-
-theorem coe_iSup {ι : Sort*} {f : ι → ℝ≥0} (hf : BddAbove (range f)) :
-    (↑(iSup f) : ℝ≥0∞) = ⨆ a, ↑(f a) :=
-  WithTop.coe_iSup _ hf
-
-@[norm_cast]
-theorem coe_iInf {ι : Sort*} [Nonempty ι] (f : ι → ℝ≥0) : (↑(iInf f) : ℝ≥0∞) = ⨅ a, ↑(f a) :=
-  WithTop.coe_iInf (OrderBot.bddBelow _)
-
 theorem coe_mem_upperBounds {s : Set ℝ≥0} :
     ↑r ∈ upperBounds (ofNNReal '' s) ↔ r ∈ upperBounds s := by
   simp +contextual [upperBounds, forall_mem_image, -mem_image, *]
-
-lemma iSup_coe_eq_top : ⨆ i, (f i : ℝ≥0∞) = ⊤ ↔ ¬ BddAbove (range f) := WithTop.iSup_coe_eq_top
-lemma iSup_coe_lt_top : ⨆ i, (f i : ℝ≥0∞) < ⊤ ↔ BddAbove (range f) := WithTop.iSup_coe_lt_top
-lemma iInf_coe_eq_top : ⨅ i, (f i : ℝ≥0∞) = ⊤ ↔ IsEmpty ι := WithTop.iInf_coe_eq_top
-lemma iInf_coe_lt_top : ⨅ i, (f i : ℝ≥0∞) < ⊤ ↔ Nonempty ι := WithTop.iInf_coe_lt_top
 
 end CompleteLattice
 
