@@ -230,20 +230,53 @@ theorem hasDerivAt_taylorWithinEval_succ {x₀ x : ℝ} {s : Set ℝ} (f : ℝ �
   field_simp [Nat.factorial_succ]
   ring
 
-theorem taylor_isLittleO'' {f f': ℝ → E} {x₀ : ℝ} {n : ℕ} {s : Set ℝ}
+section
+
+variable {G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G]
+  {f g : E → G} {C : ℝ} {s : Set E} {x y : E} {f' g' : E → E →L[ℝ] G} {φ : E →L[ℝ] G}
+
+lemma _root_.Convex.todo (hs : Convex ℝ s) {x₀ : E} (hx₀s : x₀ ∈ s) {p : E → Prop}
+    (h : ∀ᶠ x in 𝓝[s] x₀, p x) :
+    ∀ᶠ x in 𝓝[s] x₀, ∀ y ∈ segment ℝ x₀ x, p y := by
+  sorry
+
+theorem _root_.Convex.isLittleO_pow_succ {x₀ : E} {n : ℕ}
     (hs : Convex ℝ s) (hx₀s : x₀ ∈ s)
-    (hff' : ∀ x, HasDerivWithinAt f (f' x) s x) (hf' : f' =o[𝓝[s] x₀] fun x ↦ (x - x₀) ^ n) :
-    (fun x ↦ f x - f x₀) =o[𝓝[s] x₀] fun x ↦ (x - x₀) ^ (n + 1) := by
+    (hff' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (hf' : f' =o[𝓝[s] x₀] fun x ↦ ‖x - x₀‖ ^ n) :
+    (fun x ↦ f x - f x₀) =o[𝓝[s] x₀] fun x ↦ ‖x - x₀‖ ^ (n + 1) := by
   rw [Asymptotics.isLittleO_iff] at hf' ⊢
   intro c hc
-  simp_rw [norm_pow, pow_succ, ← mul_assoc]
-  simp_rw [norm_pow] at hf'
-  have : ∀ᶠ x in 𝓝[s] x₀, uIcc x₀ x ⊆ s ∧ ∀ y ∈ uIcc x₀ x, ‖f' y‖ ≤ c * ‖x - x₀‖ ^ n := by
-    sorry
-  filter_upwards [this] with x ⟨h_Icc, h⟩
-  refine hs.norm_image_sub_le_of_norm_hasFDerivWithin_le (f := fun x ↦ f x - f x₀)
-    (f' := fun x ↦ f' x) ?_ ?_  h _ _ h
-  sorry
+  simp_rw [norm_pow, pow_succ, ← mul_assoc, norm_norm]
+  simp_rw [norm_pow, norm_norm] at hf'
+  have : ∀ᶠ x in 𝓝[s] x₀, segment ℝ x₀ x ⊆ s ∧ ∀ y ∈ segment ℝ x₀ x, ‖f' y‖ ≤ c * ‖x - x₀‖ ^ n := by
+    have h1 : ∀ᶠ x in 𝓝[s] x₀, x ∈ s := eventually_mem_nhdsWithin
+    specialize hf' hc
+    have hf'' : ∀ᶠ x in 𝓝[s] x₀, ∀ y ∈ segment ℝ x₀ x, ‖f' y‖ ≤ c * ‖y - x₀‖ ^ n := by
+      exact hs.todo hx₀s hf'
+    filter_upwards [h1, hf''] with x hxs h
+    refine ⟨hs.segment_subset hx₀s hxs, fun y hy ↦ (h y hy).trans ?_⟩
+    gcongr
+    sorry -- `⊢ ‖y - x₀‖ ≤ ‖x - x₀‖`
+  filter_upwards [this] with x ⟨h_segment, h⟩
+  convert (convex_segment x₀ x).norm_image_sub_le_of_norm_hasFDerivWithin_le
+    (f := fun x ↦ f x - f x₀) (y := x) (x := x₀) (s := segment ℝ x₀ x) ?_ h
+    (left_mem_segment ℝ x₀ x) (right_mem_segment ℝ x₀ x) using 1
+  · simp
+  · simp only [hasFDerivWithinAt_sub_const_iff]
+    exact fun x hx ↦ (hff' x (h_segment hx)).mono h_segment
+
+end
+
+theorem _root_.Convex.isLittleO_pow_succ' {f f': ℝ → E} {x₀ : ℝ} {n : ℕ} {s : Set ℝ}
+    (hs : Convex ℝ s) (hx₀s : x₀ ∈ s)
+    (hff' : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) (hf' : f' =o[𝓝[s] x₀] fun x ↦ (x - x₀) ^ n) :
+    (fun x ↦ f x - f x₀) =o[𝓝[s] x₀] fun x ↦ (x - x₀) ^ (n + 1) := by
+  have h := hs.isLittleO_pow_succ hx₀s hff' ?_ (n := n)
+  · rw [Asymptotics.isLittleO_iff] at h ⊢
+    simpa using h
+  · rw [Asymptotics.isLittleO_iff] at hf' ⊢
+    convert hf' using 4 with c hc x
+    simp
 
 /-- **Taylor's theorem** using little-o notation. -/
 theorem taylor_isLittleO' {f : ℝ → E} {x₀ : ℝ} {n : ℕ} {s : Set ℝ}
@@ -259,76 +292,12 @@ theorem taylor_isLittleO' {f : ℝ → E} {x₀ : ℝ} {n : ℕ} {s : Set ℝ}
     · simp
     replace hs' := uniqueDiffOn_convex hs (hs.nontrivial_iff_nonempty_interior.1 hs')
     simp only [Nat.cast_add, Nat.cast_one] at hf
-    specialize h (ContDiffOn.of_succ hf)
-    sorry
-
-/-- **Taylor's theorem** as a limit. -/
-theorem taylor_tendsto' {f : ℝ → E} {x₀ : ℝ} {n : ℕ} {s : Set ℝ}
-    (hs : Convex ℝ s) (hx₀s : x₀ ∈ s) (hf : ContDiffOn ℝ n f s) :
-    Filter.Tendsto (fun x ↦ ((x - x₀) ^ n)⁻¹ • (f x - taylorWithinEval f n s x₀ x))
-      (𝓝[s] x₀) (𝓝 0) := by
-  induction n generalizing f with
-  | zero =>
-    simp only [pow_zero, inv_one, taylor_within_zero_eval, one_smul]
-    rw [tendsto_sub_nhds_zero_iff]
-    exact hf.continuousOn.continuousWithinAt hx₀s
-  | succ n h =>
-    rcases s.eq_singleton_or_nontrivial hx₀s with rfl | hs'
-    · rw [nhdsWithin_singleton]
-      convert tendsto_pure_nhds _ _
-      simp [taylorWithinEval_self]
-    replace hs' := uniqueDiffOn_convex hs (hs.nontrivial_iff_nonempty_interior.1 hs')
-    simp only [Nat.cast_add, Nat.cast_one] at hf
-    have h_le : ∀ᶠ x in 𝓝[s] x₀,
-        ‖(derivWithin f s - taylorWithinEval (derivWithin f s) n s x₀) x‖ ≤ ‖x - x₀‖ ^ n := by
-      sorry
-    specialize h (ContDiffOn.of_succ hf)
-    have hf_le y (hy : y ∈ s) := hs.norm_image_sub_le_of_norm_hasDerivWithin_le
-      (f := fun x ↦ f x - taylorWithinEval f (n + 1) s x₀ x)
-      (f' := derivWithin f s - taylorWithinEval (derivWithin f s) n s x₀) ?_ ?_
-      hx₀s hy (C := ‖y - x₀‖ ^ n)
-    · sorry
+    convert Convex.isLittleO_pow_succ' hs hx₀s ?_ (h (hf.derivWithin hs' le_rfl))
+      (f := fun x ↦ f x - taylorWithinEval f (n + 1) s x₀ x) using 1
+    · simp
     · intro x hx
-      refine HasDerivWithinAt.sub ?_ ?_
-      · sorry
-      · exact (hasDerivAt_taylorWithinEval_succ f n).hasDerivWithinAt
-    · sorry
-    rw [← tendsto_inf_principal_nhds_iff_of_forall_eq (s := {x₀}ᶜ), ← nhdsWithin_inter', ← diff_eq]
-    swap
-    · intro x hx
-      rw [not_mem_compl_iff, mem_singleton_iff] at hx
-      simp [hx]
-    rw [tendsto_iff_dist_tendsto_zero]
-    simp only [dist_zero_right, norm_smul, norm_inv, norm_pow, Real.norm_eq_abs]
-    simp_rw [← div_eq_inv_mul]
-    refine HasDerivWithinAt.lhopital_zero_nhdsWithin_convex hs
-      (f' := fun x ↦ derivWithin f s x - taylorWithinEval (derivWithin f s) n s x₀ x)
-      (g' := fun x ↦ (n + 1 : ℕ) * (x - x₀) ^ n * 1) ?_ ?_ ?_ ?_ ?_ ?_
-    any_goals
-      apply eventually_nhdsWithin_of_forall
-      intro x hx
-      rw [mem_diff_singleton] at hx
-    · rw [Nat.cast_add, Nat.cast_one] at hf
-      apply hf.differentiableOn le_add_self _ hx.1 |>.hasDerivWithinAt |>.sub
-        (hasDerivAt_taylorWithinEval_succ ..).hasDerivWithinAt |>.mono diff_subset
-    · exact hasDerivWithinAt_id _ _ |>.sub_const _ |>.pow _
-    · apply mul_ne_zero (mul_ne_zero ?_ <| pow_ne_zero _ <| sub_ne_zero_of_ne hx.2) one_ne_zero
-      rw [Nat.cast_ne_zero]
-      exact n.add_one_ne_zero
-    all_goals apply Filter.Tendsto.mono_left ?_ <| nhdsWithin_mono x₀ diff_subset
-    · convert ContinuousWithinAt.tendsto ?_
-      · rw [taylorWithinEval_self, sub_self]
-      · apply (hf.continuousOn.continuousWithinAt hx₀s).sub
-        unfold taylorWithinEval
-        simp_rw [← PolynomialModule.eval_equivPolynomial]
-        apply Polynomial.continuousWithinAt
-    · apply Filter.Tendsto.mono_left ?_ nhdsWithin_le_nhds
-      apply Continuous.tendsto'
-      · continuity
-      · rw [sub_self, zero_pow n.add_one_ne_zero]
-    · simp_rw [mul_one, div_mul_eq_div_div_swap]
-      convert h (hf.derivWithin hs' le_rfl) |>.div_const _
-      rw [zero_div]
+      refine HasDerivWithinAt.sub ?_ (hasDerivAt_taylorWithinEval_succ f n).hasDerivWithinAt
+      exact (hf.differentiableOn le_add_self _ hx).hasDerivWithinAt
 
 /-- **Taylor's theorem** as a limit. -/
 theorem taylor_tendsto {f : ℝ → ℝ} {x₀ : ℝ} {n : ℕ} {s : Set ℝ}
