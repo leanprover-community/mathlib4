@@ -38,8 +38,7 @@ initialize
   registerTraceClass `depRewrite.visit
   registerTraceClass `depRewrite.cast
 
-/-- Determines which, if any, type-incorrect subterms
-should be casted along the equality that `depRewrite` is rewriting by. -/
+/-- See `Config.castMode`. -/
 inductive CastMode where
   /-- Don't insert any casts. -/
   | none
@@ -60,6 +59,7 @@ instance : ToString CastMode := ⟨fun
   | .proofs => "proofs"
   | .all => "all"⟩
 
+/-- Embedding of `CastMode` into naturals. -/
 def CastMode.toNat : CastMode → Nat
   | .none => 0
   | .proofs => 1
@@ -71,13 +71,22 @@ instance : LE CastMode where
 instance : DecidableLE CastMode :=
   fun a b => inferInstanceAs (Decidable (a.toNat ≤ b.toNat))
 
+/-- Configures the behavior of the `rewrite!` and `rw!` tactics. -/
 structure Config where
+  /-- Which transparency level to use when unifying the rewrite rule's LHS
+  against subterms of the term being rewritten. -/
   transparency : TransparencyMode := .reducible
+  /-- Whether to support offset constraints such as `?x + 1 =?= e` -/
   offsetCnstrs : Bool := true
+  /-- Which occurrences to rewrite. -/
   occs : Occurrences := .all
+  /-- Determines which, if any, type-incorrect subterms
+  should be casted along the equality that `depRewrite` is rewriting by. -/
   castMode : CastMode := .proofs
 
+/-- `ReaderT` context for `M`. -/
 structure Context where
+  /-- Configuration. -/
   cfg : DepRewrite.Config
   /-- The pattern to generalize over. -/
   p : Expr
@@ -85,9 +94,13 @@ structure Context where
   x : Expr
   /-- A proof of `p = x`. Must be an fvar. -/
   h : Expr
-  pHeadIdx : HeadIndex := p.toHeadIndex
-  pNumArgs : Nat := p.headNumArgs
+  /-- Delayed substitution of type-casted variables. See `withSubst?`. -/
   subst : FVarSubst := {}
+  -- TODO: use `@[computed_field]`s below when `structure` supports that
+  /-- Cached `p.toHeadIndex` .-/
+  pHeadIdx : HeadIndex := p.toHeadIndex
+  /-- Cached `p.toNumArgs` .-/
+  pNumArgs : Nat := p.headNumArgs
 
 /-- Monad for computing `dabstract`.
 The cache is for `visit` (not `visitAndCast`, which has two arguments),
@@ -118,14 +131,17 @@ def castBack? (e te x h : Expr) : MetaM (Option Expr) := do
       mkLambdaFVars #[x', h'] <| te.replaceFVars #[x, h] #[x', ← mkEqTrans h h']
   some <$> mkEqRec motive e (← mkEqSymm h)
 
-def withSubst? {α : Type} (x tx : Expr) (k : M α) : M α := do
+/-- Supposing `y : ty` is a local variable,
+run `k` with `[⋯ ▸ y/y]` in the substitution map,
+where `⋯ ▸ y : ty[p/x,rfl/h]`. -/
+def withSubst? {α : Type} (y ty : Expr) (k : M α) : M α := do
   let ctx ← read
-  match ← castBack? x tx ctx.x ctx.h with
+  match ← castBack? y ty ctx.x ctx.h with
   | some e =>
     -- We do NOT check whether this is an allowed cast here
     -- because it might not ever be used
     -- (e.g. if the bound variable is never mentioned).
-    withReader (fun ctx => { ctx with subst := ctx.subst.insert x.fvarId! e }) k
+    withReader (fun ctx => { ctx with subst := ctx.subst.insert y.fvarId! e }) k
   | none => k
 
 mutual
@@ -242,6 +258,7 @@ partial def visit (e : Expr) (et? : Option Expr) : M Expr :=
 
 end
 
+/-- Analogue of `kabstract` with support for inserting casts. -/
 def dabstract (e : Expr) (p : Expr) (cfg : DepRewrite.Config) : MetaM Expr := do
   let e ← instantiateMVars e
   let tp ← inferType p
@@ -254,6 +271,7 @@ def dabstract (e : Expr) (p : Expr) (cfg : DepRewrite.Config) : MetaM Expr := do
     let e' ← visit e none |>.run { cfg, p, x, h } |>.run |>.run' 1
     mkLambdaFVars #[x, h] e'
 
+/-- Analogue of `Lean.MVarId.rewrite` with support for inserting casts. -/
 def _root_.Lean.MVarId.depRewrite (mvarId : MVarId) (e : Expr) (heq : Expr)
     (symm : Bool := false) (config := { : DepRewrite.Config }) : MetaM RewriteResult :=
   mvarId.withContext do
@@ -373,6 +391,7 @@ It is available as an ordinary tactic and a `conv` tactic.
 -/
 syntax (name := depRwSeq) "rw!" optConfig rwRuleSeq (location)? : tactic
 
+/-- Apply `rewrite!` to the goal. -/
 def depRewriteTarget (stx : Syntax) (symm : Bool) (config : DepRewrite.Config := {}) :
     TacticM Unit := do
   Term.withSynthesize <| withMainContext do
@@ -381,6 +400,7 @@ def depRewriteTarget (stx : Syntax) (symm : Bool) (config : DepRewrite.Config :=
     let mvarId' ← (← getMainGoal).replaceTargetEq r.eNew r.eqProof
     replaceMainGoal (mvarId' :: r.mvarIds)
 
+/-- Apply `rewrite!` to a local declaration. -/
 def depRewriteLocalDecl (stx : Syntax) (symm : Bool) (fvarId : FVarId)
     (config : DepRewrite.Config := {}) : TacticM Unit := withMainContext do
   -- Note: we cannot execute `replaceLocalDecl` inside `Term.withSynthesize`.
@@ -392,9 +412,11 @@ def depRewriteLocalDecl (stx : Syntax) (symm : Bool) (fvarId : FVarId)
   let replaceResult ← (← getMainGoal).replaceLocalDecl fvarId rwResult.eNew rwResult.eqProof
   replaceMainGoal (replaceResult.mvarId :: rwResult.mvarIds)
 
+/-- Elaborate `DepRewrite.Config`. -/
 declare_config_elab elabDepRewriteConfig Config
 
-@[tactic depRewriteSeq] def evalDepRewriteSeq : Tactic := fun stx => do
+@[tactic depRewriteSeq, inherit_doc depRewriteSeq]
+def evalDepRewriteSeq : Tactic := fun stx => do
   let cfg ← elabDepRewriteConfig stx[1]
   let loc   := expandOptLocation stx[3]
   withRWRulesSeq stx[0] stx[2] fun symm term => do
@@ -403,7 +425,8 @@ declare_config_elab elabDepRewriteConfig Config
       (depRewriteTarget term symm cfg)
       (throwTacticEx `depRewrite · "did not find instance of the pattern in the current goal")
 
-@[tactic depRwSeq] def evalDepRwSeq : Tactic := fun stx => do
+@[tactic depRwSeq, inherit_doc depRwSeq]
+def evalDepRwSeq : Tactic := fun stx => do
   let cfg ← elabDepRewriteConfig stx[1]
   let loc   := expandOptLocation stx[3]
   withRWRulesSeq stx[0] stx[2] fun symm term => do
@@ -423,6 +446,7 @@ syntax (name := depRewrite) "rewrite!" optConfig rwRuleSeq (location)? : conv
 @[inherit_doc depRwSeq]
 syntax (name := depRw) "rw!" optConfig rwRuleSeq (location)? : conv
 
+/-- Apply `rewrite!` to the goal. -/
 def depRewriteTarget (stx : Syntax) (symm : Bool) (config : DepRewrite.Config := {}) :
     TacticM Unit := do
   Term.withSynthesize <| withMainContext do
@@ -431,6 +455,7 @@ def depRewriteTarget (stx : Syntax) (symm : Bool) (config : DepRewrite.Config :=
     updateLhs r.eNew r.eqProof
     replaceMainGoal ((← getMainGoal) :: r.mvarIds)
 
+/-- Apply `rw!` to the goal. -/
 def depRwTarget (stx : Syntax) (symm : Bool) (config : DepRewrite.Config := {}) : TacticM Unit := do
   Term.withSynthesize <| withMainContext do
     let e ← elabTerm stx none true
@@ -440,6 +465,7 @@ def depRwTarget (stx : Syntax) (symm : Bool) (config : DepRewrite.Config := {}) 
     changeLhs (← dsimp (← getLhs) (← depRwContext)).1
     replaceMainGoal ((← getMainGoal) :: r.mvarIds)
 
+/-- Apply `rw!` to a local declaration. -/
 def depRwLocalDecl (stx : Syntax) (symm : Bool) (fvarId : FVarId)
     (config : DepRewrite.Config := {}) : TacticM Unit := withMainContext do
   -- Note: we cannot execute `replaceLocalDecl` inside `Term.withSynthesize`.
@@ -453,7 +479,7 @@ def depRwLocalDecl (stx : Syntax) (symm : Bool) (fvarId : FVarId)
   let replaceResult ← replaceResult.mvarId.changeLocalDecl replaceResult.fvarId dsimpResult
   replaceMainGoal (replaceResult :: rwResult.mvarIds)
 
-@[tactic depRewrite]
+@[tactic depRewrite, inherit_doc depRewriteSeq]
 def evalDepRewriteSeq : Tactic := fun stx => do
   let cfg ← elabDepRewriteConfig stx[1]
   let loc   := expandOptLocation stx[3]
@@ -463,7 +489,7 @@ def evalDepRewriteSeq : Tactic := fun stx => do
       (depRewriteTarget term symm cfg)
       (throwTacticEx `depRewrite · "did not find instance of the pattern in the current goal")
 
-@[tactic depRw]
+@[tactic depRw, inherit_doc depRwSeq]
 def evalDepRwSeq : Tactic := fun stx => do
   let cfg ← elabDepRewriteConfig stx[1]
   let loc   := expandOptLocation stx[3]
