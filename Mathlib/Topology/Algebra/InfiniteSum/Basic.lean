@@ -563,7 +563,8 @@ protected theorem Multipliable.tprod_mul (hf : Multipliable f) (hg : Multipliabl
     ∏' b, (f b * g b) = (∏' b, f b) * ∏' b, g b :=
   (hf.hasProd.mul hg.hasProd).tprod_eq
 
-@[to_additive, deprecated (since := "2025-04-11")] alias tprod_mul := Multipliable.tprod_mul
+@[deprecated (since := "2025-04-11")] alias tsum_add := Summable.tsum_add
+@[to_additive existing, deprecated (since := "2025-04-11")] alias tprod_mul := Multipliable.tprod_mul
 
 @[to_additive]
 protected theorem Multipliable.tprod_finsetProd {f : γ → β → α} {s : Finset γ}
