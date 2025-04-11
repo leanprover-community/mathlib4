@@ -189,7 +189,8 @@ theorem substAlgHom_eq_aeval
   exact DiscreteUniformity.eq_bot.symm
 
 @[simp]
-theorem coe_substAlgHom (ha : HasSubst a) : ⇑(substAlgHom ha) = subst (R := R) a := by
+theorem coe_substAlgHom (ha : HasSubst a) :
+    ⇑(substAlgHom ha) = subst (R := R) a := by
   letI : UniformSpace R := ⊥
   letI : UniformSpace S := ⊥
   rw [substAlgHom_eq_aeval, coe_aeval ha.hasEval, subst_eq_eval₂]
