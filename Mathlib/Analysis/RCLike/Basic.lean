@@ -528,6 +528,10 @@ theorem norm_conj (z : K) : ‖conj z‖ = ‖z‖ := by simp only [← sqrt_nor
 instance (priority := 100) : CStarRing K where
   norm_mul_self_le x := le_of_eq <| ((norm_mul _ _).trans <| congr_arg (· * ‖x‖) (norm_conj _)).symm
 
+instance : StarModule ℝ K where
+  star_smul r a := by
+    apply RCLike.ext <;> simp [RCLike.smul_re, RCLike.smul_im]
+
 /-! ### Cast lemmas -/
 
 @[rclike_simps, norm_cast]
