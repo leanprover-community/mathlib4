@@ -266,11 +266,7 @@ lemma invtsubmodule_to_root_subset {K : Type*} [Field K] [Module K M] [Module K 
   by_contra ntop
   have := l3 P q h₁ h₀ ntop
   obtain ⟨Φ, b, c, d, e⟩ := this
-  have rr : Φ.Nonempty := by
-    exact nonempty_iff_ne_empty.mpr e
-  have ss :  P.root '' Φ ⊆ q := by
-    exact image_subset_iff.mpr b
-  have s2 := h₂ Φ rr ss c
-  contradiction
+  have s2 := h₂ Φ (nonempty_iff_ne_empty.mpr e) (image_subset_iff.mpr b) c
+  exact False.elim (d s2)
 
 end RootPairing
