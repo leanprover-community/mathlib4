@@ -6,6 +6,7 @@ Authors: Calle Sönne, Adam Topaz
 import Mathlib.Data.Setoid.Partition
 import Mathlib.Topology.LocallyConstant.Basic
 import Mathlib.Topology.Separation.Regular
+import Mathlib.Topology.Connected.TotallyDisconnected
 
 /-!
 

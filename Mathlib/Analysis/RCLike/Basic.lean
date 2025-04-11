@@ -189,7 +189,7 @@ theorem ofReal_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
 @[simp, rclike_simps, norm_cast]
 theorem ofReal_finsupp_sum {α M : Type*} [Zero M] (f : α →₀ M) (g : α → M → ℝ) :
     ((f.sum fun a b => g a b : ℝ) : K) = f.sum fun a b => (g a b : K) :=
-  map_finsupp_sum (algebraMap ℝ K) f g
+  map_finsuppSum (algebraMap ℝ K) f g
 
 @[rclike_simps, norm_cast]
 theorem ofReal_mul (r s : ℝ) : ((r * s : ℝ) : K) = r * s :=
@@ -205,9 +205,11 @@ theorem ofReal_prod {α : Type*} (s : Finset α) (f : α → ℝ) :
   map_prod (algebraMap ℝ K) _ _
 
 @[simp, rclike_simps, norm_cast]
-theorem ofReal_finsupp_prod {α M : Type*} [Zero M] (f : α →₀ M) (g : α → M → ℝ) :
+theorem ofReal_finsuppProd {α M : Type*} [Zero M] (f : α →₀ M) (g : α → M → ℝ) :
     ((f.prod fun a b => g a b : ℝ) : K) = f.prod fun a b => (g a b : K) :=
-  map_finsupp_prod _ f g
+  map_finsuppProd _ f g
+
+@[deprecated (since := "2025-04-06")] alias ofReal_finsupp_prod := ofReal_finsuppProd
 
 @[simp, norm_cast, rclike_simps]
 theorem real_smul_ofReal (r x : ℝ) : r • (x : K) = (r : K) * (x : K) :=
@@ -521,6 +523,8 @@ theorem norm_conj (z : K) : ‖conj z‖ = ‖z‖ := by simp only [← sqrt_nor
 
 @[simp, rclike_simps] lemma nnnorm_conj (z : K) : ‖conj z‖₊ = ‖z‖₊ := by simp [nnnorm]
 
+@[simp, rclike_simps] lemma enorm_conj (z : K) : ‖conj z‖ₑ = ‖z‖ₑ := by simp [enorm]
+
 instance (priority := 100) : CStarRing K where
   norm_mul_self_le x := le_of_eq <| ((norm_mul _ _).trans <| congr_arg (· * ‖x‖) (norm_conj _)).symm
 
@@ -828,18 +832,25 @@ lemma toStarOrderedRing : StarOrderedRing K :=
 
 scoped[ComplexOrder] attribute [instance] RCLike.toStarOrderedRing
 
+lemma toZeroLEOneClass : ZeroLEOneClass K where
+  zero_le_one := by simp [@RCLike.le_iff_re_im K]
+
+scoped[ComplexOrder] attribute [instance] RCLike.toZeroLEOneClass
+
+lemma toIsOrderedAddMonoid : IsOrderedAddMonoid K where
+  add_le_add_left _ _ := add_le_add_left
+
+scoped[ComplexOrder] attribute [instance] RCLike.toIsOrderedAddMonoid
+
 /-- With `z ≤ w` iff `w - z` is real and nonnegative, `ℝ` and `ℂ` are strictly ordered rings.
 
 Note this is only an instance with `open scoped ComplexOrder`. -/
-def toStrictOrderedCommRing : StrictOrderedCommRing K where
-  zero_le_one := by simp [@RCLike.le_iff_re_im K]
-  add_le_add_left _ _ := add_le_add_left
-  mul_pos z w hz hw := by
+lemma toIsStrictOrderedRing : IsStrictOrderedRing K :=
+  .of_mul_pos fun z w hz hw ↦ by
     rw [lt_iff_re_im, map_zero] at hz hw ⊢
     simp [mul_re, mul_im, ← hz.2, ← hw.2, mul_pos hz.1 hw.1]
-  mul_comm := by intros; apply ext <;> ring_nf
 
-scoped[ComplexOrder] attribute [instance] RCLike.toStrictOrderedCommRing
+scoped[ComplexOrder] attribute [instance] RCLike.toIsStrictOrderedRing
 
 theorem toOrderedSMul : OrderedSMul ℝ K :=
   OrderedSMul.mk' fun a b r hab hr => by
@@ -885,6 +896,8 @@ lemma instPosMulReflectLE : PosMulReflectLE K where
   elim a b c h := by
     obtain ⟨a', ha1, ha2⟩ := pos_iff_exists_ofReal.mp a.2
     rw [← sub_nonneg]
+    #adaptation_note /-- 2025-03-29 need beta reduce for lean4#7717 -/
+    beta_reduce at h
     rw [← ha2, ← sub_nonneg, ← mul_sub, le_iff_lt_or_eq] at h
     rcases h with h | h
     · rw [ofReal_mul_pos_iff] at h

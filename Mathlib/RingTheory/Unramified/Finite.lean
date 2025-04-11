@@ -110,7 +110,7 @@ lemma finite_of_free_aux (I) [DecidableEq I] (b : Basis I R S)
   have h₂ : ∀ (x : S), ((b.repr x).support.sum fun a ↦ b.repr x a • b a) = x := by
     simpa only [Finsupp.linearCombination_apply, Finsupp.sum] using b.linearCombination_repr
   simp only [a] at h₁
-  simp_rw [map_finsupp_sum, map_smul, h₁, Finsupp.sum, Finset.sum_comm (t := f.support),
+  simp_rw [map_finsuppSum, map_smul, h₁, Finsupp.sum, Finset.sum_comm (t := f.support),
     TensorProduct.smul_tmul', ← TensorProduct.sum_tmul, ← Finset.smul_sum, h₂]
   apply Finset.sum_congr rfl
   intros i hi
@@ -198,7 +198,7 @@ lemma finite_of_free [Module.Free R S] : Module.Finite R S := by
     apply (b.tensorProduct b).repr.symm.injective
     simp only [Basis.repr_symm_apply, Finsupp.coe_lsum, LinearMap.coe_smulRight,
       LinearMap.id_coe, id_eq, Basis.tensorProduct_apply, Finsupp.finsuppProdEquiv,
-      Equiv.coe_fn_symm_mk, Finsupp.uncurry, map_finsupp_sum,
+      Equiv.coe_fn_symm_mk, Finsupp.uncurry, map_finsuppSum,
       Finsupp.linearCombination_single, Basis.tensorProduct_apply, Finsupp.equivCongrLeft_apply,
       Finsupp.linearCombination_equivMapDomain, Equiv.coe_prodComm]
     rw [Finsupp.onFinset_sum, Finsupp.onFinset_sum]
@@ -220,7 +220,7 @@ lemma finite_of_free [Module.Free R S] : Module.Finite R S := by
     apply b.repr.injective
     exact DFunLike.congr_fun this j
   -- Since `∑ₛ fⱼbⱼ = 1`, `x = ∑ₛ aᵢⱼfᵢbⱼ` is indeed in the span of `{ fᵢbⱼ | i, j ∈ s }`.
-  rw [← mul_one x, ← @lmul_elem R, hf, map_finsupp_sum, Finsupp.sum, Finset.mul_sum]
+  rw [← mul_one x, ← @lmul_elem R, hf, map_finsuppSum, Finsupp.sum, Finset.mul_sum]
   simp only [TensorProduct.lmul'_apply_tmul, Finset.coe_image₂, ← mul_assoc, this,
     Finsupp.sum, Finset.sum_mul, smul_mul_assoc]
   apply Submodule.sum_mem; intro i hi

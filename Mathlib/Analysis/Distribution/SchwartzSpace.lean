@@ -44,7 +44,7 @@ infinity
 
 ## Main statements
 
-* `SchwartzMap.instUniformAddGroup` and `SchwartzMap.instLocallyConvexSpace`: The Schwartz space
+* `SchwartzMap.instIsUniformAddGroup` and `SchwartzMap.instLocallyConvexSpace`: The Schwartz space
 is a locally convex topological vector space.
 * `SchwartzMap.one_add_le_sup_seminorm_apply`: For a Schwartz function `f` there is a uniform bound
 on `(1 + ‖x‖) ^ k * ‖iteratedFDeriv ℝ n f x‖`.
@@ -503,8 +503,11 @@ instance instIsTopologicalAddGroup : IsTopologicalAddGroup 𝓢(E, F) :=
 instance instUniformSpace : UniformSpace 𝓢(E, F) :=
   (schwartzSeminormFamily ℝ E F).addGroupFilterBasis.uniformSpace
 
-instance instUniformAddGroup : UniformAddGroup 𝓢(E, F) :=
-  (schwartzSeminormFamily ℝ E F).addGroupFilterBasis.uniformAddGroup
+instance instIsUniformAddGroup : IsUniformAddGroup 𝓢(E, F) :=
+  (schwartzSeminormFamily ℝ E F).addGroupFilterBasis.isUniformAddGroup
+
+@[deprecated (since := "2025-03-31")] alias instUniformAddGroup :=
+  SchwartzMap.instIsUniformAddGroup
 
 instance instLocallyConvexSpace : LocallyConvexSpace ℝ 𝓢(E, F) :=
   (schwartz_withSeminorms ℝ E F).toLocallyConvexSpace
@@ -750,16 +753,19 @@ def mkCLMtoNormedSpace [RingHomIsometric σ] (A : 𝓢(D, E) → G)
     (hsmul : ∀ (a : 𝕜) (f : 𝓢(D, E)), A (a • f) = σ a • A f)
     (hbound : ∃ (s : Finset (ℕ × ℕ)) (C : ℝ), 0 ≤ C ∧ ∀ (f : 𝓢(D, E)),
       ‖A f‖ ≤ C * s.sup (schwartzSeminormFamily 𝕜 D E) f) :
-    𝓢(D, E) →SL[σ] G where
-  toLinearMap :=
+    𝓢(D, E) →SL[σ] G :=
+  letI f : 𝓢(D, E) →ₛₗ[σ] G :=
     { toFun := (A ·)
       map_add' := hadd
       map_smul' := hsmul }
-  cont := by
-    change Continuous (LinearMap.mk _ _)
-    apply Seminorm.cont_withSeminorms_normedSpace G (schwartz_withSeminorms 𝕜 D E)
-    rcases hbound with ⟨s, C, hC, h⟩
-    exact ⟨s, ⟨C, hC⟩, h⟩
+  { toLinearMap := f
+    cont := by
+      change Continuous (LinearMap.mk _ _)
+      apply Seminorm.cont_withSeminorms_normedSpace G (schwartz_withSeminorms 𝕜 D E)
+      rcases hbound with ⟨s, C, hC, h⟩
+      exact ⟨s, ⟨C, hC⟩, h⟩ }
+
+
 
 end CLM
 

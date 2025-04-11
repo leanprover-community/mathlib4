@@ -9,6 +9,7 @@ import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.Algebra.Group.Pointwise.Set.BigOperators
 import Mathlib.Algebra.Module.Submodule.Pointwise
 import Mathlib.Algebra.Ring.NonZeroDivisors
+import Mathlib.Algebra.Ring.Submonoid.Pointwise
 import Mathlib.Data.Set.Semiring
 import Mathlib.GroupTheory.GroupAction.SubMulAction.Pointwise
 
@@ -183,7 +184,7 @@ theorem smul_iSup {ι : Sort*} {I : Submodule R A} {t : ι → Submodule R M} :
 
 theorem iSup_smul {ι : Sort*} {t : ι → Submodule R A} {N : Submodule R M} :
     (⨆ i, t i) • N = ⨆ i, t i • N :=
-  le_antisymm (smul_le.mpr fun t ht s hs ↦ iSup_induction _ (C := (· • s ∈ _)) ht
+  le_antisymm (smul_le.mpr fun t ht s hs ↦ iSup_induction _ (motive := (· • s ∈ _)) ht
     (fun i t ht ↦ mem_iSup_of_mem i <| smul_mem_smul ht hs)
     (by simp_rw [zero_smul]; apply zero_mem) fun x y ↦ by simp_rw [add_smul]; apply add_mem)
     (iSup_le fun i ↦ Submodule.smul_mono_left <| le_iSup _ i)
@@ -532,8 +533,8 @@ theorem mem_mul_span_singleton {x y : A} : x ∈ P * span R {y} ↔ ∃ z ∈ P,
 lemma span_singleton_mul {x : A} {p : Submodule R A} :
     Submodule.span R {x} * p = x • p := ext fun _ ↦ mem_span_singleton_mul
 
-lemma mem_smul_iff_inv_mul_mem {S} [Field S] [Algebra R S] {x : S} {p : Submodule R S} {y : S}
-    (hx : x ≠ 0) : y ∈ x • p ↔ x⁻¹ * y ∈ p := by
+lemma mem_smul_iff_inv_mul_mem {S} [DivisionSemiring S] [Algebra R S] {x : S} {p : Submodule R S}
+    {y : S} (hx : x ≠ 0) : y ∈ x • p ↔ x⁻¹ * y ∈ p := by
   constructor
   · rintro ⟨a, ha : a ∈ p, rfl⟩; simpa [inv_mul_cancel_left₀ hx]
   · exact fun h ↦ ⟨_, h, by simp [mul_inv_cancel_left₀ hx]⟩
