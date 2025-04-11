@@ -201,11 +201,11 @@ lemma aux {K : Type*} [Field K] [Module K M] [Module K N]
   | smul _ _ _ m => rw [LinearMap.smul_apply, smul_eq_mul, m, mul_zero]
 
 lemma l3 {K : Type*} [Field K] [Module K M] [Module K N]
-    (P : RootSystem ι K M N) (q : Submodule K M) (ha : ∀ i, q ∈ invtSubmodule (P.reflection i))
+    (P : RootSystem ι K M N) (q : Submodule K M) (h₁ : ∀ i, q ∈ invtSubmodule (P.reflection i))
     (h_bot: q ≠ ⊥) (h_top: q ≠ ⊤) :
     ∃ (Φ : Set ι), (∀ i ∈ Φ, P.root i ∈ q) ∧ (∀ i ∉ Φ, q ≤ LinearMap.ker (P.coroot' i)) ∧
     Φ ≠ univ ∧ Φ ≠ ∅ := by
-  obtain ⟨Φ, b, c⟩ := root_subset_characterization q P.toRootPairing ha
+  obtain ⟨Φ, b, c⟩ := root_subset_characterization q P.toRootPairing h₁
   use Φ
   constructor
   · exact b
@@ -254,6 +254,23 @@ lemma l3 {K : Type*} [Field K] [Module K M] [Module K N]
       image_univ, RootSystem.span_coroot_eq_top, IsEmpty.forall_iff, forall_const,
         Submodule.dualAnnihilator_eq_top_iff]
   have := (Module.forall_dual_apply_eq_zero_iff K v1).1 help
+  contradiction
+
+lemma invtsubmodule_to_root_subset {K : Type*} [Field K] [Module K M] [Module K N]
+    (P : RootSystem ι K M N)
+    (q : Submodule K M)
+    (h₀ : q ≠ ⊥)
+    (h₁ : ∀ i, q ∈ invtSubmodule (P.reflection i))
+    (h₂ : ∀ Φ, Φ.Nonempty → P.root '' Φ ⊆ q → (∀ i ∉ Φ, q ≤ ker (P.coroot' i)) → Φ = univ) :
+    q = ⊤ := by
+  by_contra ntop
+  have := l3 P q h₁ h₀ ntop
+  obtain ⟨Φ, b, c, d, e⟩ := this
+  have rr : Φ.Nonempty := by
+    exact nonempty_iff_ne_empty.mpr e
+  have ss :  P.root '' Φ ⊆ q := by
+    exact image_subset_iff.mpr b
+  have s2 := h₂ Φ rr ss c
   contradiction
 
 end RootPairing
