@@ -278,9 +278,11 @@ end diam
 
 section radius
 
+/-- The radius of a simple graph is the minimum eccentricity of any vertex. -/
 noncomputable def radius (G : SimpleGraph α) : ℕ∞ :=
   ⨅ u, G.eccent u
 
+/-- The center of a simple graph is the set of vertices with eccentricity equal to the radius. -/
 def center (G : SimpleGraph α) : Set α :=
   {u | G.eccent u = G.radius}
 
