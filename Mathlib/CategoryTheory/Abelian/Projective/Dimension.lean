@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.HasEnoughProjectives
+import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
 
 /-!
 # Projective dimension
