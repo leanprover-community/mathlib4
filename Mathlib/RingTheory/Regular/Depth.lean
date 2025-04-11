@@ -3,23 +3,12 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Yi Song
 -/
-import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.Data.Finite.Card
-import Mathlib.Data.Set.Card
-import Mathlib.LinearAlgebra.Quotient.Basic
-import Mathlib.RingTheory.Finiteness.Defs
-import Mathlib.Order.RelSeries
-import Mathlib.Algebra.Exact
-import Mathlib.Algebra.Module.Torsion
-import Mathlib.Order.CompletePartialOrder
-import Mathlib.RingTheory.Ideal.AssociatedPrime.Finiteness
 import Mathlib.Algebra.Module.FinitePresentation
-import Mathlib.RingTheory.Regular.IsSMulRegular
-import Mathlib.RingTheory.Spectrum.Prime.Defs
-import Mathlib.RingTheory.Support
-import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
-import Mathlib.RingTheory.Spectrum.Prime.RingHom
 import Mathlib.LinearAlgebra.Dual.Lemmas
+import Mathlib.RingTheory.Ideal.AssociatedPrime.Finiteness
+import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
+import Mathlib.RingTheory.Regular.IsSMulRegular
+import Mathlib.RingTheory.Support
 
 /-!
 
