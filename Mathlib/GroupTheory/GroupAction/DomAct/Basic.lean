@@ -7,7 +7,7 @@ import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Algebra.GroupWithZero.Action.Defs
-import Mathlib.Algebra.Ring.Defs
+import Mathlib.Algebra.Field.Defs
 
 /-!
 # Type tags for right action on the domain of a function
@@ -112,8 +112,8 @@ run_cmd
     `RightCancelSemigroup, `MulOneClass, `Monoid, `CommMonoid, `LeftCancelMonoid,
     `RightCancelMonoid, `CancelMonoid, `CancelCommMonoid, `InvolutiveInv, `DivInvMonoid,
     `InvOneClass, `DivInvOneMonoid, `DivisionMonoid, `DivisionCommMonoid, `Group,
-    `CommGroup, `NonAssocSemiring, `NonUnitalSemiring, `Semiring,
-    `Ring, `CommRing].map Lean.mkIdent do
+    `CommGroup, `NonAssocSemiring, `NonUnitalSemiring, `Semiring, `Ring, `CommSemiring, `CommRing,
+    `Semifield, `Field, `DivisionSemiring, `DivisionRing].map Lean.mkIdent do
   Lean.Elab.Command.elabCommand (← `(
     @[to_additive] instance [$n Mᵐᵒᵖ] : $n Mᵈᵐᵃ := ‹_›
   ))

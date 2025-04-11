@@ -699,8 +699,16 @@ theorem isAtom_top : IsAtom (⊤ : α) :=
   ⟨top_ne_bot, fun a ha => Or.resolve_right (eq_bot_or_eq_top a) (ne_of_lt ha)⟩
 
 @[simp]
+theorem isAtom_iff_eq_top {a : α} : IsAtom a ↔ a = ⊤ :=
+  ⟨fun h ↦ (eq_bot_or_eq_top a).resolve_left h.1, (· ▸ isAtom_top)⟩
+
+@[simp]
 theorem isCoatom_bot : IsCoatom (⊥ : α) :=
   isAtom_dual_iff_isCoatom.1 isAtom_top
+
+@[simp]
+theorem isCoatom_iff_eq_bot {a : α} : IsCoatom a ↔ a = ⊥ :=
+  ⟨fun h ↦ (eq_bot_or_eq_top a).resolve_right h.1, (· ▸ isCoatom_bot)⟩
 
 theorem bot_covBy_top : (⊥ : α) ⋖ ⊤ :=
   isAtom_top.bot_covBy
