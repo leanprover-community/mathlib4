@@ -55,11 +55,20 @@ lemma eccent_eq_top_of_not_connected (h : ¬G.Connected) (u : α) :
   rw [eq_top_iff, ← edist_eq_top_of_not_reachable h]
   exact le_iSup (G.edist u) v
 
+lemma eccent_eq_zero_of_subsingleton [Subsingleton α] (u : α) : G.eccent u = 0 := by
+  simpa [eccent, edist_eq_zero_iff] using subsingleton_iff.mp ‹_› u
+
 lemma eccent_ne_zero [Nontrivial α] (u : α) : G.eccent u ≠ 0 := by
   obtain ⟨v, huv⟩ := exists_ne ‹_›
   contrapose! huv
   simp only [eccent, ENat.iSup_eq_zero, edist_eq_zero_iff] at huv
   exact (huv v).symm
+
+lemma eccent_eq_zero_iff (u : α) : G.eccent u = 0 ↔ Subsingleton α := by
+  refine ⟨fun h ↦ ?_, fun _ ↦ eccent_eq_zero_of_subsingleton u⟩
+  contrapose! h
+  rw [not_subsingleton_iff_nontrivial] at h
+  exact eccent_ne_zero u
 
 @[simp]
 lemma eccent_bot [Nontrivial α] (u : α) : (⊥ : SimpleGraph α).eccent u = ⊤ :=
@@ -327,7 +336,7 @@ lemma exists_edist_eq_radius_of_finite [Nonempty α] [Finite α] :
 lemma radius_le_ediam [Nonempty α] : G.radius ≤ G.ediam :=
   iInf_le_iSup
 
-lemma ediam_le_radius_mul_two [Finite α] : G.ediam ≤ 2 * G.radius := by
+lemma ediam_le_two_mul_radius [Finite α] : G.ediam ≤ 2 * G.radius := by
   cases isEmpty_or_nonempty α
   · rw [radius_eq_top_of_isEmpty]
     exact le_top
