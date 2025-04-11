@@ -255,11 +255,17 @@ lemma Ideal.height_le_spanRank_toENat_of_mem_minimal_primes
 /-- In a commutative Noetherian ring `R`, the height of a (finitely-generated) ideal is smaller
 than or equal to the minimum number of generators for this ideal. -/
 lemma Ideal.height_le_spanRank_toENat  (I : Ideal R) (hI : I ≠ ⊤) :
-    I.height ≤ Cardinal.toENat I.spanRank := by
+    I.height ≤ I.spanRank.toENat := by
   obtain ⟨J, hJ⟩ := Ideal.nonempty_minimalPrimes hI
   refine (iInf₂_le J hJ).trans ?_
   convert (I.height_le_spanRank_toENat_of_mem_minimal_primes J hJ)
   exact Eq.symm (@height_eq_primeHeight _ _ J hJ.1.1)
+
+lemma Ideal.height_le_spanFinrank  (I : Ideal R) (hI : I ≠ ⊤) :
+    I.height ≤ I.spanFinrank := by
+  have : I.spanFinrank = I.spanRank.toENat := by
+    rw [Submodule.fg_iff_spanRank_eq_spanFinrank.mpr (IsNoetherian.noetherian I), map_natCast]
+  exact this ▸ height_le_spanRank_toENat I hI
 
 lemma Ideal.height_le_spanRank  (I : Ideal R) (hI : I ≠ ⊤) :
     I.height ≤ I.spanRank := by
