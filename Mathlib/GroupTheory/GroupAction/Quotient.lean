@@ -76,8 +76,8 @@ instance quotient [QuotientAction β H] : MulAction β (α ⧸ H) where
   smul b :=
     Quotient.map' (b • ·) fun _ _ h =>
       leftRel_apply.mpr <| QuotientAction.inv_mul_mem b <| leftRel_apply.mp h
-  one_smul q := Quotient.inductionOn' q fun a => congr_arg Quotient.mk'' (one_smul β a)
-  mul_smul b b' q := Quotient.inductionOn' q fun a => congr_arg Quotient.mk'' (mul_smul b b' a)
+  one_smul q := Quotient.inductionOn q fun a => congr_arg Quotient.mk'' (one_smul β a)
+  mul_smul b b' q := Quotient.inductionOn q fun a => congr_arg Quotient.mk'' (mul_smul b b' a)
 
 variable {β}
 
@@ -161,17 +161,17 @@ theorem ofQuotientStabilizer_mk (g : α) : ofQuotientStabilizer α x (QuotientGr
 
 @[to_additive]
 theorem ofQuotientStabilizer_mem_orbit (g) : ofQuotientStabilizer α x g ∈ orbit α x :=
-  Quotient.inductionOn' g fun g => ⟨g, rfl⟩
+  Quotient.inductionOn g fun g => ⟨g, rfl⟩
 
 @[to_additive]
 theorem ofQuotientStabilizer_smul (g : α) (g' : α ⧸ MulAction.stabilizer α x) :
     ofQuotientStabilizer α x (g • g') = g • ofQuotientStabilizer α x g' :=
-  Quotient.inductionOn' g' fun _ => mul_smul _ _ _
+  Quotient.inductionOn g' fun _ => mul_smul _ _ _
 
 @[to_additive]
 theorem injective_ofQuotientStabilizer : Function.Injective (ofQuotientStabilizer α x) :=
   fun y₁ y₂ =>
-  Quotient.inductionOn₂' y₁ y₂ fun g₁ g₂ (H : g₁ • x = g₂ • x) =>
+  Quotient.inductionOn₂ y₁ y₂ fun g₁ g₂ (H : g₁ • x = g₂ • x) =>
     Quotient.sound' <| by
       rw [leftRel_apply]
       show (g₁⁻¹ * g₂) • x = x
@@ -359,12 +359,12 @@ noncomputable def equivSubgroupOrbitsSetoidComap (H : Subgroup α) (ω : Ω) :
   left_inv := by
     simp only [LeftInverse]
     intro q
-    induction q using Quotient.inductionOn'
+    induction q using Quotient.inductionOn
     rfl
   right_inv := by
     simp only [Function.RightInverse, LeftInverse]
     intro q
-    induction q using Quotient.inductionOn'
+    induction q using Quotient.inductionOn
     rfl
 
 /-- A bijection between the orbits under the action of a subgroup `H` on `β`, and the orbits
@@ -413,13 +413,13 @@ noncomputable def equivSubgroupOrbitsQuotientGroup [IsPretransitive α β]
     rw [← @Quotient.mk''_eq_mk, Quotient.eq'', orbitRel_apply]
     exact ⟨⟨_, h⟩, by simp [mul_smul]⟩)
   left_inv := fun y ↦ by
-    induction' y using Quotient.inductionOn' with y
+    induction' y using Quotient.inductionOn with y
     simp only [Quotient.liftOn'_mk'']
     rw [← @Quotient.mk''_eq_mk, Quotient.eq'', orbitRel_apply]
     convert mem_orbit_self _
     rw [inv_smul_eq_iff, (exists_smul_eq α y x).choose_spec]
   right_inv := fun g ↦ by
-    induction' g using Quotient.inductionOn' with g
+    induction' g using Quotient.inductionOn with g
     simp only [Quotient.liftOn'_mk'', Quotient.liftOn'_mk, QuotientGroup.mk]
     rw [Quotient.eq'', leftRel_eq]
     simp only

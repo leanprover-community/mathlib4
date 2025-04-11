@@ -91,7 +91,7 @@ See note [partially-applied ext lemmas]. -/
 @[ext 1100]
 theorem ringHom_ext [NonAssocSemiring S] ⦃f g : R ⧸ I →+* S⦄ (h : f.comp (mk I) = g.comp (mk I)) :
     f = g :=
-  RingHom.ext fun x => Quotient.inductionOn' x <| (RingHom.congr_fun h :)
+  RingHom.ext fun x => Quotient.inductionOn x <| (RingHom.congr_fun h :)
 
 instance : Nonempty (R ⧸ I) :=
   ⟨mk I 37⟩
@@ -113,7 +113,7 @@ theorem mk_out (x : R ⧸ I) : Ideal.Quotient.mk I (Quotient.out x) = x :=
   Quotient.out_eq x
 
 theorem mk_surjective : Function.Surjective (mk I) := fun y =>
-  Quotient.inductionOn' y fun x => Exists.intro x rfl
+  Quotient.inductionOn y fun x => Exists.intro x rfl
 
 instance : RingHomSurjective (mk I) :=
   ⟨mk_surjective⟩
@@ -135,7 +135,7 @@ lift it to the quotient by this ideal. -/
 def lift (f : R →+* S) (H : ∀ a : R, a ∈ I → f a = 0) : R ⧸ I →+* S :=
   { QuotientAddGroup.lift I.toAddSubgroup f.toAddMonoidHom H with
     map_one' := f.map_one
-    map_mul' := fun a₁ a₂ => Quotient.inductionOn₂' a₁ a₂ f.map_mul }
+    map_mul' := fun a₁ a₂ => Quotient.inductionOn₂ a₁ a₂ f.map_mul }
 
 @[simp]
 theorem lift_mk (f : R →+* S) (H : ∀ a : R, a ∈ I → f a = 0) :

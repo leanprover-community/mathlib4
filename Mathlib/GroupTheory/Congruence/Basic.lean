@@ -298,28 +298,28 @@ theorem coe_smul {α M : Type*} [MulOneClass M] [SMul α M] [IsScalarTower α M 
 instance instSMulCommClass {α β M : Type*} [MulOneClass M] [SMul α M] [SMul β M]
     [IsScalarTower α M M] [IsScalarTower β M M] [SMulCommClass α β M] (c : Con M) :
     SMulCommClass α β c.Quotient where
-  smul_comm a b := Quotient.ind' fun m => congr_arg Quotient.mk'' <| smul_comm a b m
+  smul_comm a b := Quotient.ind fun m => congr_arg Quotient.mk'' <| smul_comm a b m
 
 instance instIsScalarTower {α β M : Type*} [MulOneClass M] [SMul α β] [SMul α M] [SMul β M]
     [IsScalarTower α M M] [IsScalarTower β M M] [IsScalarTower α β M] (c : Con M) :
     IsScalarTower α β c.Quotient where
-  smul_assoc a b := Quotient.ind' fun m => congr_arg Quotient.mk'' <| smul_assoc a b m
+  smul_assoc a b := Quotient.ind fun m => congr_arg Quotient.mk'' <| smul_assoc a b m
 
 instance instIsCentralScalar {α M : Type*} [MulOneClass M] [SMul α M] [SMul αᵐᵒᵖ M]
     [IsScalarTower α M M] [IsScalarTower αᵐᵒᵖ M M] [IsCentralScalar α M] (c : Con M) :
     IsCentralScalar α c.Quotient where
-  op_smul_eq_smul a := Quotient.ind' fun m => congr_arg Quotient.mk'' <| op_smul_eq_smul a m
+  op_smul_eq_smul a := Quotient.ind fun m => congr_arg Quotient.mk'' <| op_smul_eq_smul a m
 
 @[to_additive]
 instance mulAction {α M : Type*} [Monoid α] [MulOneClass M] [MulAction α M] [IsScalarTower α M M]
     (c : Con M) : MulAction α c.Quotient where
-  one_smul := Quotient.ind' fun _ => congr_arg Quotient.mk'' <| one_smul _ _
-  mul_smul _ _ := Quotient.ind' fun _ => congr_arg Quotient.mk'' <| mul_smul _ _ _
+  one_smul := Quotient.ind fun _ => congr_arg Quotient.mk'' <| one_smul _ _
+  mul_smul _ _ := Quotient.ind fun _ => congr_arg Quotient.mk'' <| mul_smul _ _ _
 
 instance mulDistribMulAction {α M : Type*} [Monoid α] [Monoid M] [MulDistribMulAction α M]
     [IsScalarTower α M M] (c : Con M) : MulDistribMulAction α c.Quotient :=
   { smul_one := fun _ => congr_arg Quotient.mk'' <| smul_one _
-    smul_mul := fun _ => Quotient.ind₂' fun _ _ => congr_arg Quotient.mk'' <| smul_mul' _ _ _ }
+    smul_mul := fun _ => Quotient.ind₂ fun _ _ => congr_arg Quotient.mk'' <| smul_mul' _ _ _ }
 
 end Actions
 
