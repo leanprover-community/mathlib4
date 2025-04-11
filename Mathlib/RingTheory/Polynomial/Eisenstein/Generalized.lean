@@ -145,32 +145,24 @@ theorem generalizedEisenstein {q f : R[X]} {p : ℕ}
     apply hfmodP2
     suffices f %ₘ q = (r * s) %ₘ q by
       -- Since the coefficients of `r` and `s` are in `P`, those of `r * s` are in `P ^ 2`
-      simp only [ext_iff, ← coeff_map, eq_zero_iff_mem]
-      rw [← ext_iff, this, map_modByMonic _ hq_monic]
-      convert zero_modByMonic _
+      suffices h : map (Ideal.Quotient.mk (P ^ 2)) (r * s) = 0 by
+        simp [this, h, map_modByMonic, hq_monic]
       ext n
-      rw [coeff_map, coeff_mul, map_sum, coeff_zero]
-      apply Finset.sum_eq_zero
-      intro x hx
-      rw [eq_zero_iff_mem, pow_two]
-      apply mul_mem_mul
-      · rw [mem_ker, ← coeff_map, hr, coeff_zero]
-      · rw [mem_ker, ← coeff_map, hs, coeff_zero]
+      have h (x : ℕ × ℕ) : (Ideal.Quotient.mk (P ^ 2)) (r.coeff x.1 * s.coeff x.2) = 0 := by
+        rw [eq_zero_iff_mem, pow_two]
+        apply mul_mem_mul
+        · rw [mem_ker, ← coeff_map, hr, coeff_zero]
+        · rw [mem_ker, ← coeff_map, hs, coeff_zero]
+      simp [- Polynomial.map_mul, coeff_mul, h]
     -- It remains to prove the equality `f %ₘ q = (r * s) %ₘ q`, which is straightforward
     rw [h_eq, hg, hh]
     simp only [add_mul, mul_add, map_add, ← modByMonicHom_apply]
     simp only [← add_assoc, modByMonicHom_apply]
-    convert zero_add _
-    convert zero_add _
-    · convert zero_add _
-      · rw [modByMonic_eq_zero_iff_dvd hq_monic]
-        exact ((dvd_pow_self q hn).mul_left _).mul_left _
-      · symm
-        rw [modByMonic_eq_zero_iff_dvd hq_monic]
-        simp only [← mul_assoc]
-        exact (dvd_pow_self q hn).mul_left _
-    · symm
-      rw [modByMonic_eq_zero_iff_dvd hq_monic]
-      exact ((dvd_pow_self q hm).mul_left _).mul_right _
+    iterate 3 rw [(modByMonic_eq_zero_iff_dvd hq_monic).mpr]
+    · simp
+    · exact ((dvd_pow_self q hm).mul_left _).mul_right _
+    · simp only [← mul_assoc]
+      exact (dvd_pow_self q hn).mul_left _
+    · exact ((dvd_pow_self q hn).mul_left _).mul_left _
 
 end Polynomial
