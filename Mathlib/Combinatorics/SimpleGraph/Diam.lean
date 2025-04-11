@@ -13,10 +13,10 @@ This module defines the eccentricity of vertices, the diameter, and the radius o
 ## Main definitions
 
 - `SimpleGraph.eccent`: the eccentricity of a vertex in a simple graph, which is the maximum
-distances between it and the other vertices.
+  distances between it and the other vertices.
 
 - `SimpleGraph.ediam`: the graph extended diameter, which is the maximum eccentricity.
-It is `ℕ∞`-valued.
+  It is `ℕ∞`-valued.
 
 - `SimpleGraph.diam`: an `ℕ`-values version of `SimpleGraph.ediam`.
 
@@ -39,12 +39,12 @@ noncomputable def eccent (G : SimpleGraph α) (u : α) : ℕ∞ :=
 
 lemma eccent_def : G.eccent = fun u ↦ ⨆ v, G.edist u v := rfl
 
-lemma edist_le_ecc (u v : α) : G.edist u v ≤ G.eccent u :=
+lemma edist_le_eccent (u v : α) : G.edist u v ≤ G.eccent u :=
   le_iSup (G.edist u) v
 
 lemma exists_edist_eq_eccent_of_finite [Finite α] (u : α) :
     ∃ v, G.edist u v = G.eccent u :=
-  haveI : Nonempty α := Nonempty.intro u
+  have : Nonempty α := Nonempty.intro u
   exists_eq_ciSup_of_finite
 
 lemma eccent_eq_top_of_not_connected (h : ¬G.Connected) (u : α) :
