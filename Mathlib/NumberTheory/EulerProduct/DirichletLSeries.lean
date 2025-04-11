@@ -181,7 +181,7 @@ lemma DirichletCharacter.LSeries_changeLevel {M N : ℕ} [NeZero N]
   -- convert to a form suitable for `tprod_subtype`
   have (f : Primes → ℂ) : ∏' (p : Primes), f p = ∏' (p : ↑{p : ℕ | p.Prime}), f p := rfl
   rw [this, tprod_subtype _ fun p : ℕ ↦ (1 - (changeLevel hMN χ) p * p ^ (-s))⁻¹,
-    this, tprod_subtype _ fun p : ℕ ↦ (1 - χ p * p ^ (-s))⁻¹, ← tprod_mul]
+    this, tprod_subtype _ fun p : ℕ ↦ (1 - χ p * p ^ (-s))⁻¹, ← Multipliable.tprod_mul]
   rotate_left -- deal with convergence goals first
   · exact multipliable_subtype_iff_mulIndicator.mp
       (DirichletCharacter.LSeries_eulerProduct_hasProd χ hs).multipliable

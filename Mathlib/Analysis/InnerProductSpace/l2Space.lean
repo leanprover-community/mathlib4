@@ -190,7 +190,7 @@ protected def linearIsometry (hV : OrthogonalFamily 𝕜 G V) : lp G 2 →ₗᵢ
       LinearIsometry.map_add]
   map_smul' c f := by
     simpa only [LinearIsometry.map_smul, Pi.smul_apply, lp.coeFn_smul] using
-      tsum_const_smul c (hV.summable_of_lp f)
+      (hV.summable_of_lp f).tsum_const_smul c
   norm_map' f := by
     classical
       -- needed for lattice instance on `Finset ι`, for `Filter.atTop_neBot`

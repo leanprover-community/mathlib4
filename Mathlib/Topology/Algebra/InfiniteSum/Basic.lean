@@ -559,51 +559,70 @@ section ContinuousMul
 variable [ContinuousMul α]
 
 @[to_additive]
-theorem tprod_mul (hf : Multipliable f) (hg : Multipliable g) :
+protected theorem Multipliable.tprod_mul (hf : Multipliable f) (hg : Multipliable g) :
     ∏' b, (f b * g b) = (∏' b, f b) * ∏' b, g b :=
   (hf.hasProd.mul hg.hasProd).tprod_eq
 
+@[to_additive, deprecated (since := "2025-04-11")] alias tprod_mul := Multipliable.tprod_mul
+
 @[to_additive]
-theorem tprod_finsetProd {f : γ → β → α} {s : Finset γ} (hf : ∀ i ∈ s, Multipliable (f i)) :
-    ∏' b, ∏ i ∈ s, f i b = ∏ i ∈ s, ∏' b, f i b :=
+protected theorem Multipliable.tprod_finsetProd {f : γ → β → α} {s : Finset γ}
+    (hf : ∀ i ∈ s, Multipliable (f i)) : ∏' b, ∏ i ∈ s, f i b = ∏ i ∈ s, ∏' b, f i b :=
   (hasProd_prod fun i hi ↦ (hf i hi).hasProd).tprod_eq
 
-@[deprecated (since := "2025-02-13")] alias tprod_of_prod := tprod_finsetProd
+@[to_additive, deprecated (since := "2025-02-13")]
+  alias tprod_of_prod := Multipliable.tprod_finsetProd
+
+@[to_additive, deprecated (since := "2025-04-11")]
+  alias tprod_finsetProd := Multipliable.tprod_finsetProd
 
 /-- Version of `tprod_eq_mul_tprod_ite` for `CommMonoid` rather than `CommGroup`.
 Requires a different convergence assumption involving `Function.update`. -/
 @[to_additive "Version of `tsum_eq_add_tsum_ite` for `AddCommMonoid` rather than `AddCommGroup`.
 Requires a different convergence assumption involving `Function.update`."]
-theorem tprod_eq_mul_tprod_ite' [DecidableEq β] {f : β → α} (b : β)
+protected theorem Multipliable.tprod_eq_mul_tprod_ite' [DecidableEq β] {f : β → α} (b : β)
     (hf : Multipliable (update f b 1)) :
     ∏' x, f x = f b * ∏' x, ite (x = b) 1 (f x) :=
   calc
     ∏' x, f x = ∏' x, (ite (x = b) (f x) 1 * update f b 1 x) :=
       tprod_congr fun n ↦ by split_ifs with h <;> simp [update_apply, h]
     _ = (∏' x, ite (x = b) (f x) 1) * ∏' x, update f b 1 x :=
-      tprod_mul ⟨ite (b = b) (f b) 1, hasProd_single b fun _ hb ↦ if_neg hb⟩ hf
+      Multipliable.tprod_mul ⟨ite (b = b) (f b) 1, hasProd_single b fun _ hb ↦ if_neg hb⟩ hf
     _ = ite (b = b) (f b) 1 * ∏' x, update f b 1 x := by
       congr
       exact tprod_eq_mulSingle b fun b' hb' ↦ if_neg hb'
     _ = f b * ∏' x, ite (x = b) 1 (f x) := by
       simp only [update, eq_self_iff_true, if_true, eq_rec_constant, dite_eq_ite]
 
-@[to_additive]
-theorem tprod_mul_tprod_compl {s : Set β} (hs : Multipliable (f ∘ (↑) : s → α))
-    (hsc : Multipliable (f ∘ (↑) : ↑sᶜ → α)) : (∏' x : s, f x) * ∏' x : ↑sᶜ, f x = ∏' x, f x :=
-  (hs.hasProd.mul_compl hsc.hasProd).tprod_eq.symm
+@[to_additive, deprecated (since := "2025-04-11")] alias tprod_eq_mul_tprod_ite' :=
+  Multipliable.tprod_eq_mul_tprod_ite'
 
 @[to_additive]
-theorem tprod_union_disjoint {s t : Set β} (hd : Disjoint s t) (hs : Multipliable (f ∘ (↑) : s → α))
-    (ht : Multipliable (f ∘ (↑) : t → α)) :
+protected theorem Multipliable.tprod_mul_tprod_compl {s : Set β}
+    (hs : Multipliable (f ∘ (↑) : s → α)) (hsc : Multipliable (f ∘ (↑) : ↑sᶜ → α)) :
+    (∏' x : s, f x) * ∏' x : ↑sᶜ, f x = ∏' x, f x :=
+  (hs.hasProd.mul_compl hsc.hasProd).tprod_eq.symm
+
+@[to_additive, deprecated (since := "2025-04-11")] alias tprod_mul_tprod_compl :=
+    Multipliable.tprod_mul_tprod_compl
+
+@[to_additive]
+protected theorem Multipliable.tprod_union_disjoint {s t : Set β} (hd : Disjoint s t)
+    (hs : Multipliable (f ∘ (↑) : s → α)) (ht : Multipliable (f ∘ (↑) : t → α)) :
     ∏' x : ↑(s ∪ t), f x = (∏' x : s, f x) * ∏' x : t, f x :=
   (hs.hasProd.mul_disjoint hd ht.hasProd).tprod_eq
 
+@[to_additive, deprecated (since := "2025-04-11")] alias tprod_union_disjoint :=
+    Multipliable.tprod_union_disjoint
+
 @[to_additive]
-theorem tprod_finset_bUnion_disjoint {ι} {s : Finset ι} {t : ι → Set β}
+protected theorem Multipliable.tprod_finset_bUnion_disjoint {ι} {s : Finset ι} {t : ι → Set β}
     (hd : (s : Set ι).Pairwise (Disjoint on t)) (hf : ∀ i ∈ s, Multipliable (f ∘ (↑) : t i → α)) :
     ∏' x : ⋃ i ∈ s, t i, f x = ∏ i ∈ s, ∏' x : t i, f x :=
   (hasProd_prod_disjoint _ hd fun i hi ↦ (hf i hi).hasProd).tprod_eq
+
+@[to_additive, deprecated (since := "2025-04-11")] alias tprod_finset_bUnion_disjoint :=
+    Multipliable.tprod_finset_bUnion_disjoint
 
 end ContinuousMul
 

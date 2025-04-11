@@ -92,11 +92,14 @@ lemma HasProd.sum {α β M : Type*} [CommMonoid M] [TopologicalSpace M] [Continu
     simp
   simpa [Tendsto, ← Filter.map_map] using this
 
-@[to_additive "For the statement that `tsum` commutes with `Finset.sum`, see `tsum_finsetSum`."]
-lemma tprod_sum {α β M : Type*} [CommMonoid M] [TopologicalSpace M] [ContinuousMul M] [T2Space M]
-    {f : α ⊕ β → M} (h₁ : Multipliable (f ∘ .inl)) (h₂ : Multipliable (f ∘ .inr)) :
-    ∏' i, f i = (∏' i, f (.inl i)) * (∏' i, f (.inr i)) :=
+@[to_additive "For the statement that `tsum` commutes with `Finset.sum`,
+  see `Summable.tsum_finsetSum`."]
+protected lemma Multipliable.tprod_sum {α β M : Type*} [CommMonoid M] [TopologicalSpace M]
+    [ContinuousMul M] [T2Space M] {f : α ⊕ β → M} (h₁ : Multipliable (f ∘ .inl))
+    (h₂ : Multipliable (f ∘ .inr)) : ∏' i, f i = (∏' i, f (.inl i)) * (∏' i, f (.inr i)) :=
   (h₁.hasProd.sum h₂.hasProd).tprod_eq
+
+@[to_additive, deprecated (since := "2025-04-11")] alias tprod_sum := Multipliable.tprod_sum
 
 @[to_additive]
 lemma Multipliable.sum {α β M : Type*} [CommMonoid M] [TopologicalSpace M] [ContinuousMul M]
@@ -155,10 +158,12 @@ theorem HasProd.sigma_of_hasProd {γ : β → Type*} {f : (Σ b : β, γ b) → 
     HasProd f a := by simpa [(hf'.hasProd.sigma hf).unique ha] using hf'.hasProd
 
 @[to_additive]
-theorem tprod_sigma' {γ : β → Type*} {f : (Σ b : β, γ b) → α}
+protected theorem Multipliable.tprod_sigma' {γ : β → Type*} {f : (Σ b : β, γ b) → α}
     (h₁ : ∀ b, Multipliable fun c ↦ f ⟨b, c⟩) (h₂ : Multipliable f) :
     ∏' p, f p = ∏' (b) (c), f ⟨b, c⟩ :=
   (h₂.hasProd.sigma fun b ↦ (h₁ b).hasProd).tprod_eq.symm
+
+@[to_additive, deprecated (since := "2025-04-11")] alias tprod_sigma' := Multipliable.tprod_sigma'
 
 @[to_additive tsum_prod']
 theorem tprod_prod' {f : β × γ → α} (h : Multipliable f)
@@ -249,19 +254,26 @@ section CompleteT0Space
 variable [T0Space α]
 
 @[to_additive]
-theorem tprod_sigma {γ : β → Type*} {f : (Σ b : β, γ b) → α} (ha : Multipliable f) :
-    ∏' p, f p = ∏' (b) (c), f ⟨b, c⟩ :=
-  tprod_sigma' (fun b ↦ ha.sigma_factor b) ha
+protected theorem Multipliable.tprod_sigma {γ : β → Type*} {f : (Σ b : β, γ b) → α}
+    (ha : Multipliable f) : ∏' p, f p = ∏' (b) (c), f ⟨b, c⟩ :=
+  Multipliable.tprod_sigma' (fun b ↦ ha.sigma_factor b) ha
 
-@[to_additive tsum_prod]
-theorem tprod_prod {f : β × γ → α} (h : Multipliable f) :
+@[to_additive, deprecated (since := "2025-04-11")] alias tprod_sigma := Multipliable.tprod_sigma
+
+@[to_additive Summable.tsum_prod]
+protected theorem Multipliable.tprod_prod {f : β × γ → α} (h : Multipliable f) :
     ∏' p, f p = ∏' (b) (c), f ⟨b, c⟩ :=
   tprod_prod' h h.prod_factor
 
+@[to_additive tsum_prod, deprecated (since := "2025-04-11")]
+  alias tprod_prod := Multipliable.tprod_prod
+
 @[to_additive]
-theorem tprod_comm {f : β → γ → α} (h : Multipliable (Function.uncurry f)) :
+protected theorem Multipliable.tprod_comm {f : β → γ → α} (h : Multipliable (Function.uncurry f)) :
     ∏' (c) (b), f b c = ∏' (b) (c), f b c :=
   tprod_comm' h h.prod_factor h.prod_symm.prod_factor
+
+@[to_additive, deprecated (since := "2025-04-11")] alias tprod_comm := Multipliable.tprod_comm
 
 end CompleteT0Space
 
