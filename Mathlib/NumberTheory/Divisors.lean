@@ -162,6 +162,16 @@ lemma divisors_filter_dvd_of_dvd {n m : ℕ} (hn : n ≠ 0) (hm : m ∣ n) :
   simp_rw [mem_filter, mem_divisors]
   exact ⟨fun ⟨_, hkm⟩ ↦ ⟨hkm, ne_zero_of_dvd_ne_zero hn hm⟩, fun ⟨hk, _⟩ ↦ ⟨⟨hk.trans hm, hn⟩, hk⟩⟩
 
+theorem divisors_image_mul (n : ℕ) {d : ℕ} (hd : d ≠ 0) :
+    n.divisors.image (d * ·) = (d*n).divisors.filter (fun k ↦ d ∣ k) := by
+  ext r
+  simp only [mem_image, mem_divisors, ne_eq, mem_filter, _root_.mul_eq_zero, not_or]
+  constructor
+  · rintro ⟨x, ⟨hx, hn⟩, rfl⟩
+    refine ⟨⟨Nat.mul_dvd_mul_left d hx, hd, hn⟩, d.dvd_mul_right x⟩
+  · rintro ⟨⟨hrdn, hd, hn⟩, hdr⟩
+    exact ⟨r/d, ⟨(div_dvd_iff_dvd_mul hdr hd).mpr hrdn, hn⟩, Nat.mul_div_cancel' hdr⟩
+
 @[simp]
 theorem divisors_zero : divisors 0 = ∅ := by
   ext
