@@ -827,7 +827,8 @@ theorem lintegral_add_mul_meas_add_le_le_lintegral {f g : α → ℝ≥0∞} (hl
   simp only [indicator_apply]; split_ifs with hx₂
   exacts [hx₂, (add_zero _).trans_le <| (hφ_le x).trans hx₁]
 
-/-- **Markov's inequality**, multiplication form for `AEMeasurable` functions. -/
+/-- **Markov's inequality** aka **Chebyshev's first inequality**.
+Multiplication form for `AEMeasurable` functions. -/
 theorem mul_meas_ge_le_lintegral₀ {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) (ε : ℝ≥0∞) :
     ε * μ { x | ε ≤ f x } ≤ ∫⁻ a, f a ∂μ :=
   calc
@@ -836,7 +837,8 @@ theorem mul_meas_ge_le_lintegral₀ {f : α → ℝ≥0∞} (hf : AEMeasurable f
       setLIntegral_mono_ae hf.restrict (ae_of_all μ fun _ ↦ id)
     _ = _ := setLIntegral_const _ _
 
-/-- **Markov's inequality**, multiplication form for `Measurable` functions. -/
+/-- **Markov's inequality** aka **Chebyshev's first inequality**.
+Multiplication form for `Measurable` functions. -/
 theorem mul_meas_ge_le_lintegral {f : α → ℝ≥0∞} (hf : Measurable f) (ε : ℝ≥0∞) :
     ε * μ { x | ε ≤ f x } ≤ ∫⁻ a, f a ∂μ :=
   mul_meas_ge_le_lintegral₀ hf.aemeasurable ε
@@ -883,7 +885,8 @@ theorem measure_eq_top_of_setLintegral_ne_top {f : α → ℝ≥0∞} {s : Set �
     μ ({x ∈ s | f x = ∞}) = 0 :=
   of_not_not fun h => hμf <| setLintegral_eq_top_of_measure_eq_top_ne_zero hf h
 
-/-- **Markov's inequality**, division form for `AEMeasurable` functions. -/
+/-- **Markov's inequality** aka **Chebyshev's first inequality**.
+Division form for `AEMeasurable` functions. -/
 theorem meas_ge_le_lintegral_div {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) {ε : ℝ≥0∞} (hε : ε ≠ 0)
     (hε' : ε ≠ ∞) : μ { x | ε ≤ f x } ≤ (∫⁻ a, f a ∂μ) / ε :=
   (ENNReal.le_div_iff_mul_le (Or.inl hε) (Or.inl hε')).2 <| by
