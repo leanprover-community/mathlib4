@@ -70,17 +70,15 @@ theorem nonempty_of_measureReal_ne_zero (h : μ.real s ≠ 0) : s.Nonempty :=
 
 @[simp] theorem measureReal_ennreal_smul_apply (c : ℝ≥0∞) :
     (c • μ).real s = c.toReal * μ.real s := by
-  rw [measureReal_def, smul_apply, smul_eq_mul, ENNReal.toReal_mul]
-  rfl
+  simp [Measure.real]
 
 @[simp] theorem measureReal_nnreal_smul_apply (c : ℝ≥0) :
     (c • μ).real s = c * μ.real s := by
-  simp [measureReal_def, smul_apply]
+  simp [measureReal_def]
 
 theorem map_measureReal_apply [MeasurableSpace β] {f : α → β} (hf : Measurable f)
     {s : Set β} (hs : MeasurableSet s) : (μ.map f).real s = μ.real (f ⁻¹' s) := by
-  rw [measureReal_def, map_apply hf hs]
-  rfl
+  simp_rw [measureReal_def, map_apply hf hs]
 
 @[gcongr] theorem measureReal_mono (h : s₁ ⊆ s₂) (h₂ : μ s₂ ≠ ∞ := by finiteness) :
     μ.real s₁ ≤ μ.real s₂ :=
@@ -93,7 +91,7 @@ theorem measureReal_mono_null (h : s₁ ⊆ s₂) (h₂ : μ.real s₂ = 0) (h'�
 
 theorem measureReal_le_measureReal_union_left (h : μ t ≠ ∞ := by finiteness) :
     μ.real s ≤ μ.real (s ∪ t) := by
-  rcases eq_top_or_lt_top (μ s) with hs|hs
+  rcases eq_top_or_lt_top (μ s) with hs | hs
   · simp [Measure.real, hs]
   · exact measureReal_mono subset_union_left (measure_union_lt_top hs h.lt_top).ne
 
@@ -129,8 +127,8 @@ theorem measureReal_iUnion_fintype_le [Fintype β] (f : β → Set α) :
 theorem measureReal_iUnion_fintype [Fintype β] {f : β → Set α} (hn : Pairwise (Disjoint on f))
     (h : ∀ i, MeasurableSet (f i)) (h' : ∀ i, μ (f i) ≠ ∞ := by finiteness) :
     μ.real (⋃ b, f b) = ∑ p, μ.real (f p) := by
-  rw [measureReal_def, measure_iUnion hn h, tsum_fintype, ENNReal.toReal_sum (fun i _hi ↦ h' i)]
-  rfl
+  simp_rw [measureReal_def, measure_iUnion hn h, tsum_fintype,
+    ENNReal.toReal_sum (fun i _hi ↦ h' i)]
 
 theorem measureReal_union_null (h₁ : μ.real s₁ = 0) (h₂ : μ.real s₂ = 0) :
     μ.real (s₁ ∪ s₂) = 0 :=
@@ -255,7 +253,7 @@ theorem measureReal_biUnion_finset {s : Finset ι} {f : ι → Set α} (hd : Pai
 of the fibers `f ⁻¹' {y}`. -/
 theorem sum_measureReal_preimage_singleton (s : Finset β) {f : α → β}
     (hf : ∀ y ∈ s, MeasurableSet (f ⁻¹' {y})) (h : ∀ a ∈ s, μ (f ⁻¹' {a}) ≠ ∞ := by finiteness) :
-    (∑ b ∈ s, μ.real (f ⁻¹' {b})) = μ.real (f ⁻¹' ↑s) := by
+    (∑ b ∈ s, μ.real (f ⁻¹' {b})) = μ.real (f ⁻¹' s) := by
   simp only [measureReal_def, ← sum_measure_preimage_singleton s hf, ENNReal.toReal_sum h]
 
 /-- If `s` is a `Finset`, then the sums of the real measures of the singletons in the set is the
