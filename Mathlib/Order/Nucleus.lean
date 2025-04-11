@@ -5,7 +5,7 @@ Authors: Chriara Cimino, Christian Krause
 -/
 import Mathlib.Order.Closure
 import Mathlib.Order.Hom.Bounded
-import Mathlib.Order.Hom.Lattice
+import Mathlib.Order.Hom.CompleteLattice
 
 /-!
 # Nucleus
@@ -197,4 +197,129 @@ instance : Order.Frame (Nucleus X) where
    __ := Nucleus.instCompleteLattice
 
 end Frame
+open Set
+
+variable [Order.Frame X] {n : Nucleus X}
+
+/--
+Restrict the Nucleus to its image.
+-/
+abbrev restrict (n : Nucleus X) := codRestrict n (range n) (by simp)
+
+lemma mem_range_iff (n : Nucleus X) (x : X) : x ∈ range n ↔ n x = x := by
+  apply Iff.intro
+  · simp only [mem_range, forall_exists_index]
+    intro y h
+    rw [← h, idempotent]
+  · aesop
+
+lemma coe_range_fixpoint (n : Nucleus X) (x : range n) : n x = x :=
+  (n.mem_range_iff x).mp x.coe_prop
+
+instance range_instBoundedOrder : BoundedOrder (range n) where
+  top := n.restrict ⊤
+  le_top := by simp [← Subtype.coe_le_coe]
+  bot := n.restrict ⊥
+  bot_le := by
+    simp only [← Subtype.coe_le_coe, val_codRestrict_apply, Subtype.forall, mem_range,
+      forall_exists_index, forall_apply_eq_imp_iff]
+    exact fun _ ↦ n.monotone bot_le
+
+instance range_instCompleteLattice : CompleteLattice (range n) where
+  sup a b := n.restrict (a ⊔ b)
+  le_sup_left a b := by
+    simp only [← Subtype.coe_le_coe, val_codRestrict_apply]
+    exact le_trans le_sup_left n.le_apply
+  le_sup_right a b := by
+    simp only [← Subtype.coe_le_coe, val_codRestrict_apply]
+    exact le_trans le_sup_right n.le_apply
+  sup_le a b c h1 h2 := by
+    simp only [← Subtype.coe_le_coe, val_codRestrict_apply]
+    rw [← coe_range_fixpoint n c]
+    exact n.monotone (sup_le h1 h2)
+  inf a b := n.restrict (a ⊓ b)
+  inf_le_left a b := by
+    simp only [← Subtype.coe_le_coe, val_codRestrict_apply, InfHomClass.map_inf]
+    rw [← map_inf, ← coe_range_fixpoint n a]
+    apply n.monotone
+    rw [coe_range_fixpoint]
+    exact inf_le_left
+  inf_le_right a b := by
+    simp only [← Subtype.coe_le_coe, val_codRestrict_apply, InfHomClass.map_inf]
+    rw [← map_inf, ← coe_range_fixpoint n b]
+    apply n.monotone
+    rw [coe_range_fixpoint]
+    exact inf_le_right
+  le_inf a b := by
+    simp_all only [← Subtype.coe_le_coe, val_codRestrict_apply, InfHomClass.map_inf, le_inf_iff,
+      Subtype.forall, mem_range, forall_exists_index, forall_apply_eq_imp_iff, idempotent, and_true]
+    intro c h1 h2
+    exact le_trans h1 n.le_apply
+  sSup s := n.restrict (⨆ x ∈ s, x)
+  le_sSup s x h := by
+    simp only [← Subtype.coe_le_coe, val_codRestrict_apply]
+    rw [← coe_range_fixpoint n x]
+    exact n.monotone (le_biSup Subtype.val h)
+  sSup_le s x h := by
+    simp only [← Subtype.coe_le_coe, val_codRestrict_apply]
+    rw [← coe_range_fixpoint n x]
+    exact n.monotone (iSup₂_le_iff.mpr h)
+  sInf s := n.restrict (⨅ x ∈ s, x)
+  le_sInf s x h := by
+    simp only [← Subtype.coe_le_coe, val_codRestrict_apply]
+    rw [← coe_range_fixpoint n x]
+    exact n.monotone (le_iInf₂ h)
+  sInf_le s x h := by
+    simp only [← Subtype.coe_le_coe, val_codRestrict_apply]
+    rw [← coe_range_fixpoint n x]
+    exact n.monotone (biInf_le Subtype.val h)
+  __ := Nucleus.range_instBoundedOrder
+
+-- TODO is there a better way to expand these definitions than defining these lemmas?
+-- Or should I include them for all the other operations as well?
+lemma range_sSup_def (s : Set (range n)) : sSup s = n.restrict (⨆ x ∈ s, x) := rfl
+
+lemma range_top_def : (⊤ : range n) = n.restrict ⊤ := rfl
+
+lemma coe_range_map_inf (a b : range n) : ↑(a ⊓ b) = (↑a : X) ⊓ ↑b := by
+  simp_rw [min, SemilatticeInf.inf, Lattice.inf]
+  simpa [coe_range_fixpoint] using (by rfl)
+
+instance range_instMinAx : Order.Frame.MinimalAxioms (range n) where
+  inf_sSup_le_iSup_inf a s := by
+    rw [← Subtype.coe_le_coe, iSup_subtype', iSup, range_sSup_def,range_sSup_def]
+    repeat rw [iSup_subtype']
+    rw [coe_range_map_inf, val_codRestrict_apply, ← coe_range_fixpoint n a, ← map_inf]
+    apply n.monotone
+    rw [inf_iSup_eq, iSup_range']
+    gcongr
+    rw [coe_range_map_inf]
+
+instance : Order.Frame (range n) := Order.Frame.ofMinimalAxioms range_instMinAx
+
+/--
+A Nucleus is a morphism of frames from the frame it lives in to the range of the nucleus.
+-/
+def frameHom (n : Nucleus X) : FrameHom X (range n) where
+  toFun := n.restrict
+  map_inf' a b := by
+    ext
+    simp [coe_range_map_inf]
+  map_top' := by
+    ext
+    simp [range_top_def]
+  map_sSup' s := by
+    ext
+    simp only [val_codRestrict_apply, range_sSup_def]
+    apply le_antisymm
+    · apply n.monotone
+      simp only [mem_image, iSup_exists, le_iSup_iff, iSup_le_iff, and_imp,
+        forall_apply_eq_imp_iff₂, val_codRestrict_apply, sSup_le_iff]
+      exact fun _ h1 c h2 ↦ le_trans n.le_apply (h1 c h2)
+    · rw [← @n.idempotent _ _ (sSup _)]
+      apply n.monotone
+      simp only [mem_image, iSup_exists, iSup_le_iff, and_imp, forall_apply_eq_imp_iff₂,
+        val_codRestrict_apply]
+      exact fun a h ↦ n.monotone (CompleteLattice.le_sSup s a h)
+
 end Nucleus
