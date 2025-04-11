@@ -619,20 +619,9 @@ theorem cof_preOmega {o : Ordinal} (ho : IsSuccPrelimit o) : (preOmega o).cof = 
 theorem cof_omega {o : Ordinal} (ho : o.IsLimit) : (ω_ o).cof = o.cof :=
   isNormal_omega.cof_eq ho
 
-set_option linter.deprecated false in
-@[deprecated cof_preOmega (since := "2024-10-22")]
-theorem preAleph_cof {o : Ordinal} (ho : o.IsLimit) : (preAleph o).ord.cof = o.cof :=
-  aleph'_isNormal.cof_eq ho
-
-set_option linter.deprecated false in
-@[deprecated cof_preOmega (since := "2024-10-22")]
-theorem aleph'_cof {o : Ordinal} (ho : o.IsLimit) : (aleph' o).ord.cof = o.cof :=
-  aleph'_isNormal.cof_eq ho
-
-set_option linter.deprecated false in
-@[deprecated cof_omega (since := "2024-10-22")]
-theorem aleph_cof {o : Ordinal} (ho : o.IsLimit) : (ℵ_  o).ord.cof = o.cof :=
-  aleph_isNormal.cof_eq ho
+@[deprecated (since := "2024-10-22")] alias preAleph_cof := cof_preOmega
+@[deprecated (since := "2024-10-22")] alias aleph'_cof := cof_preOmega
+@[deprecated (since := "2024-10-22")] alias aleph_cof := cof_omega
 
 @[simp]
 theorem cof_omega0 : cof ω = ℵ₀ :=
