@@ -298,8 +298,7 @@ theorem HasBasis.limsup_eq_sInf_univ_of_empty {f : ι → α} {v : Filter ι}
 @[simp]
 theorem liminf_nat_add (f : ℕ → α) (k : ℕ) :
     liminf (fun i => f (i + k)) atTop = liminf f atTop := by
-  change liminf (f ∘ (· + k)) atTop = liminf f atTop
-  rw [liminf, liminf, ← map_map, map_add_atTop_eq_nat]
+  rw [← Function.comp_def, liminf, liminf, ← map_map, map_add_atTop_eq_nat]
 
 @[simp]
 theorem limsup_nat_add (f : ℕ → α) (k : ℕ) : limsup (fun i => f (i + k)) atTop = limsup f atTop :=
