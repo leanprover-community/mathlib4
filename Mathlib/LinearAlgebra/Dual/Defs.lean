@@ -125,7 +125,7 @@ theorem LinearMap.dualMap_id : (LinearMap.id : M₁ →ₗ[R] M₁).dualMap = Li
   ext
   rfl
 
-theorem LinearMap.dualMap_comp_dualMap {M₃ : Type*} [AddCommGroup M₃] [Module R M₃]
+theorem LinearMap.dualMap_comp_dualMap {M₃ : Type*} [AddCommMonoid M₃] [Module R M₃]
     (f : M₁ →ₗ[R] M₂) (g : M₂ →ₗ[R] M₃) : f.dualMap.comp g.dualMap = (g.comp f).dualMap :=
   rfl
 
@@ -160,7 +160,7 @@ theorem LinearEquiv.dualMap_symm {f : M₁ ≃ₗ[R] M₂} :
     (LinearEquiv.dualMap f).symm = LinearEquiv.dualMap f.symm :=
   rfl
 
-theorem LinearEquiv.dualMap_trans {M₃ : Type*} [AddCommGroup M₃] [Module R M₃] (f : M₁ ≃ₗ[R] M₂)
+theorem LinearEquiv.dualMap_trans {M₃ : Type*} [AddCommMonoid M₃] [Module R M₃] (f : M₁ ≃ₗ[R] M₂)
     (g : M₂ ≃ₗ[R] M₃) : g.dualMap.trans f.dualMap = (f.trans g).dualMap :=
   rfl
 
@@ -188,7 +188,7 @@ end DualMap
 namespace Module
 
 variable {K V : Type*}
-variable [CommRing K] [AddCommGroup V] [Module K V]
+variable [CommSemiring K] [AddCommMonoid V] [Module K V]
 
 open Module Module.Dual Submodule LinearMap Module
 
@@ -196,7 +196,8 @@ section IsReflexive
 
 open Function
 
-variable (R M N : Type*) [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
+variable (R M N : Type*)
+variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
 
 /-- A reflexive module is one for which the natural map to its double dual is a bijection.
 
@@ -232,13 +233,13 @@ def evalEquiv : M ≃ₗ[R] Dual R (Dual R M) :=
   ext; simp
 
 @[simp] lemma Dual.eval_comp_comp_evalEquiv_eq
-    {M' : Type*} [AddCommGroup M'] [Module R M'] {f : M →ₗ[R] M'} :
+    {M' : Type*} [AddCommMonoid M'] [Module R M'] {f : M →ₗ[R] M'} :
     Dual.eval R M' ∘ₗ f ∘ₗ (evalEquiv R M).symm = f.dualMap.dualMap := by
   rw [← LinearMap.comp_assoc, LinearEquiv.comp_toLinearMap_symm_eq,
     evalEquiv_toLinearMap, eval_naturality]
 
 lemma dualMap_dualMap_eq_iff_of_injective
-    {M' : Type*} [AddCommGroup M'] [Module R M'] {f g : M →ₗ[R] M'}
+    {M' : Type*} [AddCommMonoid M'] [Module R M'] {f g : M →ₗ[R] M'}
     (h : Injective (Dual.eval R M')) :
     f.dualMap.dualMap = g.dualMap.dualMap ↔ f = g := by
   simp only [← Dual.eval_comp_comp_evalEquiv_eq]
@@ -248,7 +249,7 @@ lemma dualMap_dualMap_eq_iff_of_injective
   exact hfg
 
 @[simp] lemma dualMap_dualMap_eq_iff
-    {M' : Type*} [AddCommGroup M'] [Module R M'] [IsReflexive R M'] {f g : M →ₗ[R] M'} :
+    {M' : Type*} [AddCommMonoid M'] [Module R M'] [IsReflexive R M'] {f g : M →ₗ[R] M'} :
     f.dualMap.dualMap = g.dualMap.dualMap ↔ f = g :=
   dualMap_dualMap_eq_iff_of_injective _ _ (bijective_dual_eval R M').injective
 
@@ -500,11 +501,10 @@ theorem range_dualMap_le_dualAnnihilator_ker :
 
 end LinearMap
 
-section CommRing
+section CommSemiring
 
 variable {R M M' : Type*}
-variable [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup M'] [Module R M']
-
+variable [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M']
 
 namespace LinearMap
 
@@ -521,4 +521,4 @@ lemma dualCoannihilator_range_eq_ker_flip (B : M →ₗ[R] M' →ₗ[R] R) :
 
 end LinearMap
 
-end CommRing
+end CommSemiring
