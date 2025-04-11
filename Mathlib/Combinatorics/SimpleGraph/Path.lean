@@ -1176,15 +1176,6 @@ lemma mem_supp_congr_adj {v w : V} (c : G.ConnectedComponent) (hadj : G.Adj v w)
   · exact hadj.symm
   · exact hadj
 
-lemma adj_spanningCoe_induce_supp {v w : V} (c : G.ConnectedComponent) :
-    (G.induce c.supp).spanningCoe.Adj v w ↔ v ∈ c.supp ∧ G.Adj v w := by
-  by_cases h : v ∈ c.supp
-  · refine ⟨by aesop, ?_⟩
-    intro h'
-    have : w ∈ c.supp := by rwa [c.mem_supp_congr_adj h'.2] at h
-    aesop
-  · aesop
-
 theorem connectedComponentMk_mem {v : V} : v ∈ G.connectedComponentMk v :=
   rfl
 
@@ -1238,6 +1229,70 @@ lemma top_supp_eq_univ (c : ConnectedComponent (⊤ : SimpleGraph V)) :
   simp only [Set.mem_univ, iff_true, mem_supp_iff, ← hw]
   apply SimpleGraph.ConnectedComponent.sound
   exact (@SimpleGraph.top_connected V (Nonempty.intro v)).preconnected v w
+
+lemma reachable_of_mem_supp {G : SimpleGraph V} (C : G.ConnectedComponent) {u v : V}
+    (hu : u ∈ C.supp) (hv : v ∈ C.supp) : G.Reachable u v := by
+  rw [mem_supp_iff] at hu hv
+  exact SimpleGraph.ConnectedComponent.exact (hv ▸ hu)
+
+lemma mem_supp_of_adj_mem_supp {G : SimpleGraph V} (C : G.ConnectedComponent) {u v : V}
+    (hu : u ∈ C.supp) (hadj : G.Adj u v) : v ∈ C.supp := by
+  have hconcomp : G.connectedComponentMk u = G.connectedComponentMk v :=
+    connectedComponentMk_eq_of_adj hadj
+  rw [hu] at hconcomp
+  exact hconcomp.symm
+
+/-- Graph on a connected component. -/
+def toSimpleGraph {G : SimpleGraph V} (C : G.ConnectedComponent) : SimpleGraph C := G.induce C.supp
+
+/-- Homomorphism from a connected component graph to the original graph. -/
+def toSimpleGraph_hom {G : SimpleGraph V} (C : G.ConnectedComponent) : C.toSimpleGraph →g G where
+  toFun := fun u ↦ u.val
+  map_rel' := by
+    intro u v h
+    exact h
+
+lemma toSimpleGraph_hom_val {G : SimpleGraph V} (C : G.ConnectedComponent) (u : C) :
+    C.toSimpleGraph_hom u = u.val := rfl
+
+lemma toSimpleGraph_adj {G : SimpleGraph V} (C : G.ConnectedComponent) {u v : V} (hu : u ∈ C)
+    (hv : v ∈ C) : C.toSimpleGraph.Adj ⟨u, hu⟩ ⟨v, hv⟩ ↔ G.Adj u v := by
+  simp [toSimpleGraph]
+
+lemma adj_spanningCoe_induce_supp {v w : V} (C : G.ConnectedComponent) :
+    (C.toSimpleGraph).spanningCoe.Adj v w ↔ v ∈ C.supp ∧ G.Adj v w := by
+  apply Iff.intro
+  · intro h
+    simp_all only [map_adj, SetLike.coe_sort_coe, Subtype.exists, mem_supp_iff]
+    obtain ⟨_, ⟨a, ⟨_, ⟨_, ⟨h₁, ⟨h₂, h₃⟩⟩⟩⟩⟩⟩ := h
+    subst h₂ h₃
+    exact ⟨a, h₁⟩
+  · simp [toSimpleGraph]
+    intro h hadj
+    exact ⟨v, ⟨h, ⟨w, ⟨hadj, ⟨rfl, ⟨(C.mem_supp_congr_adj hadj).mp h, rfl⟩⟩⟩⟩⟩⟩
+
+/-- Get the walk between two vertices in a connected component from a walk in the original graph. -/
+private def toSimpleGraph_walk' {G : SimpleGraph V} (C : G.ConnectedComponent) {u v : V}
+    (hu : u ∈ C) (hv : v ∈ C) (p : G.Walk u v) : C.toSimpleGraph.Walk ⟨u, hu⟩ ⟨v, hv⟩ := by
+  cases p with
+  | nil => exact Walk.nil
+  | @cons v w u h p =>
+    have hw : w ∈ C := C.mem_supp_of_adj_mem_supp hu h
+    have h' : C.toSimpleGraph.Adj ⟨u, hu⟩ ⟨w, hw⟩ := h
+    exact Walk.cons h' (C.toSimpleGraph_walk' hw hv p)
+
+/-- There is a walk beetwen every pair of vertices in a connected component. -/
+noncomputable def toSimpleGraph_walk {G : SimpleGraph V} (C : G.ConnectedComponent) (u v : C) :
+    C.toSimpleGraph.Walk u v :=
+  C.toSimpleGraph_walk' u.property v.property ((C.reachable_of_mem_supp u.property v.property).some)
+
+lemma toSimpleGraph_reachable {G : SimpleGraph V} (C : G.ConnectedComponent) (u v : C)
+    : C.toSimpleGraph.Reachable u v := Walk.reachable (C.toSimpleGraph_walk u v)
+
+lemma toSimpleGraph_preconnected {G : SimpleGraph V} (C : G.ConnectedComponent)
+    : C.toSimpleGraph.Preconnected := by
+  intro u v
+  exact toSimpleGraph_reachable C u v
 
 end ConnectedComponent
 
