@@ -272,28 +272,7 @@ theorem setLIntegral_congr_fun {f g : α → ℝ≥0∞} {s : Set α} (hs : Meas
   rw [EventuallyEq]
   rwa [ae_restrict_iff' hs]
 
-section Markov
-
-/-- **Markov's inequality**, multiplication form for `AEMeasurable` functions. -/
-theorem mul_meas_ge_le_lintegral₀ {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) (ε : ℝ≥0∞) :
-    ε * μ { x | ε ≤ f x } ≤ ∫⁻ a, f a ∂μ :=
-  calc
-    _ ≥ ∫⁻ a in {x | ε ≤ f x}, f a ∂μ := setLIntegral_le_lintegral _ _
-    _ ≥ ∫⁻ _ in {x | ε ≤ f x}, ε ∂μ :=
-      setLIntegral_mono_ae hf.restrict (ae_of_all μ fun _ ↦ id)
-    _ = _ := setLIntegral_const _ _
-
-/-- **Markov's inequality**, multiplication form for `Measurable` functions. -/
-theorem mul_meas_ge_le_lintegral {f : α → ℝ≥0∞} (hf : Measurable f) (ε : ℝ≥0∞) :
-    ε * μ { x | ε ≤ f x } ≤ ∫⁻ a, f a ∂μ :=
-  mul_meas_ge_le_lintegral₀ hf.aemeasurable ε
-
-/-- **Markov's inequality**, division form. -/
-theorem meas_ge_le_lintegral_div {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) {ε : ℝ≥0∞} (hε : ε ≠ 0)
-    (hε' : ε ≠ ∞) : μ { x | ε ≤ f x } ≤ (∫⁻ a, f a ∂μ) / ε :=
-  (ENNReal.le_div_iff_mul_le (Or.inl hε) (Or.inl hε')).2 <| by
-    rw [mul_comm]
-    exact mul_meas_ge_le_lintegral₀ hf ε
+section
 
 @[simp]
 theorem lintegral_eq_zero_iff' {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) :
@@ -301,7 +280,13 @@ theorem lintegral_eq_zero_iff' {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) 
   refine ⟨fun h ↦ ?_, fun h ↦ (lintegral_congr_ae h).trans lintegral_zero⟩
   have meas_levels_0 : ∀ ε > 0, μ { x | ε ≤ f x } = 0 := fun ε εpos ↦ by
     by_contra! h'; rw [← zero_lt_iff] at h'
-    exact ((mul_pos_iff.mpr ⟨εpos, h'⟩).trans_le (mul_meas_ge_le_lintegral₀ hf ε)).ne' h
+    refine ((mul_pos_iff.mpr ⟨εpos, h'⟩).trans_le ?_).ne' h
+    -- This is just Markov's inequality, but we inline the proof for the sake of imports
+    calc
+      _ ≥ ∫⁻ a in {x | ε ≤ f x}, f a ∂μ := setLIntegral_le_lintegral _ _
+      _ ≥ ∫⁻ _ in {x | ε ≤ f x}, ε ∂μ :=
+        setLIntegral_mono_ae hf.restrict (ae_of_all μ fun _ ↦ id)
+      _ = _ := setLIntegral_const _ _
   obtain ⟨u, -, bu, tu⟩ := exists_seq_strictAnti_tendsto' (α := ℝ≥0∞) zero_lt_one
   have u_union : {x | f x ≠ 0} = ⋃ n, {x | u n ≤ f x} := by
     ext x; rw [mem_iUnion, mem_setOf_eq, ← zero_lt_iff]
@@ -333,7 +318,7 @@ theorem setLintegral_pos_iff {f : α → ℝ≥0∞} (hf : Measurable f) {s : Se
     0 < ∫⁻ a in s, f a ∂μ ↔ 0 < μ (Function.support f ∩ s) := by
   rw [lintegral_pos_iff_support hf, Measure.restrict_apply (measurableSet_support hf)]
 
-end Markov
+end
 
 /-- **Monotone convergence theorem** -- sometimes called **Beppo-Levi convergence**.
 See `lintegral_iSup_directed` for a more general form. -/
@@ -842,6 +827,20 @@ theorem lintegral_add_mul_meas_add_le_le_lintegral {f g : α → ℝ≥0∞} (hl
   simp only [indicator_apply]; split_ifs with hx₂
   exacts [hx₂, (add_zero _).trans_le <| (hφ_le x).trans hx₁]
 
+/-- **Markov's inequality**, multiplication form for `AEMeasurable` functions. -/
+theorem mul_meas_ge_le_lintegral₀ {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) (ε : ℝ≥0∞) :
+    ε * μ { x | ε ≤ f x } ≤ ∫⁻ a, f a ∂μ :=
+  calc
+    _ ≥ ∫⁻ a in {x | ε ≤ f x}, f a ∂μ := setLIntegral_le_lintegral _ _
+    _ ≥ ∫⁻ _ in {x | ε ≤ f x}, ε ∂μ :=
+      setLIntegral_mono_ae hf.restrict (ae_of_all μ fun _ ↦ id)
+    _ = _ := setLIntegral_const _ _
+
+/-- **Markov's inequality**, multiplication form for `Measurable` functions. -/
+theorem mul_meas_ge_le_lintegral {f : α → ℝ≥0∞} (hf : Measurable f) (ε : ℝ≥0∞) :
+    ε * μ { x | ε ≤ f x } ≤ ∫⁻ a, f a ∂μ :=
+  mul_meas_ge_le_lintegral₀ hf.aemeasurable ε
+
 lemma meas_le_lintegral₀ {f : α → ℝ≥0∞} (hf : AEMeasurable f μ)
     {s : Set α} (hs : ∀ x ∈ s, 1 ≤ f x) : μ s ≤ ∫⁻ a, f a ∂μ := by
   apply le_trans _ (mul_meas_ge_le_lintegral₀ hf 1)
@@ -883,6 +882,13 @@ theorem measure_eq_top_of_setLintegral_ne_top {f : α → ℝ≥0∞} {s : Set �
     (hf : AEMeasurable f (μ.restrict s)) (hμf : ∫⁻ x in s, f x ∂μ ≠ ∞) :
     μ ({x ∈ s | f x = ∞}) = 0 :=
   of_not_not fun h => hμf <| setLintegral_eq_top_of_measure_eq_top_ne_zero hf h
+
+/-- **Markov's inequality**, division form for `AEMeasurable` functions. -/
+theorem meas_ge_le_lintegral_div {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) {ε : ℝ≥0∞} (hε : ε ≠ 0)
+    (hε' : ε ≠ ∞) : μ { x | ε ≤ f x } ≤ (∫⁻ a, f a ∂μ) / ε :=
+  (ENNReal.le_div_iff_mul_le (Or.inl hε) (Or.inl hε')).2 <| by
+    rw [mul_comm]
+    exact mul_meas_ge_le_lintegral₀ hf ε
 
 theorem ae_eq_of_ae_le_of_lintegral_le {f g : α → ℝ≥0∞} (hfg : f ≤ᵐ[μ] g) (hf : ∫⁻ x, f x ∂μ ≠ ∞)
     (hg : AEMeasurable g μ) (hgf : ∫⁻ x, g x ∂μ ≤ ∫⁻ x, f x ∂μ) : f =ᵐ[μ] g := by
