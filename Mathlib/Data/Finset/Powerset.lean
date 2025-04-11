@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Finset.Card
 import Mathlib.Data.Finset.Lattice.Union
+import Mathlib.Data.Fintype.EquivFin
 import Mathlib.Data.Multiset.Powerset
 import Mathlib.Data.Set.Pairwise.Lattice
 
@@ -126,6 +127,16 @@ instance decidableExistsOfDecidableSubsets' {s : Finset α} {p : Finset α → P
 instance decidableForallOfDecidableSubsets' {s : Finset α} {p : Finset α → Prop}
     [∀ t, Decidable (p t)] : Decidable (∀ t ⊆ s, p t) :=
   decidable_of_iff (∀ (t : _) (_h : t ⊆ s), p t) <| by simp
+
+lemma exists_minimal_subset {p : Finset α → Prop} (s : Finset α) (hs : p s) :
+    ∃ t ⊆ s, Minimal (p ·) t := by
+  classical
+  obtain ⟨t, hts, ht, htmax⟩ : ∃ t ⊆ s, p t ∧ ∀ ⦃u : Finset α⦄, u ⊆ s → u ⊆ t → p u → t ⊆ u := by
+    simpa +contextual [and_assoc, forall_swap (α := p _), subset_trans,
+      ssubset_iff_subset_not_subset]
+      using {t ∈ s.powerset | p t}.exists_minimal <| by
+        simpa [Finset.filter_nonempty_iff] using ⟨s, Subset.rfl, hs⟩
+  exact ⟨t, hts, ht, fun u hu hut ↦ htmax (hut.trans hts) hut hu⟩
 
 end Powerset
 
