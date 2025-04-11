@@ -275,10 +275,7 @@ theorem changeForm_ι (m : M) : changeForm h (ι (M := M) Q m) = ι (M := M) Q' 
     Eq.symm <| by rw [changeFormAux_apply_apply, mul_one, contractLeft_one, sub_zero]
 
 theorem changeForm_ι_mul (m : M) (x : CliffordAlgebra Q) :
-    changeForm h (ι (M := M) Q m * x) = ι (M := M) Q' m * changeForm h x
-    - contractLeft (Q := Q') (B m) (changeForm h x) :=
--- Porting note: original statement
---    - BilinForm.toLin B m⌋changeForm h x :=
+    changeForm h (ι Q m * x) = ι Q' m * changeForm h x - B m⌋changeForm h x :=
   (foldr_mul _ _ _ _ _ _).trans <| by rw [foldr_ι]; rfl
 
 theorem changeForm_ι_mul_ι (m₁ m₂ : M) :
@@ -287,9 +284,7 @@ theorem changeForm_ι_mul_ι (m₁ m₂ : M) :
 
 /-- Theorem 23 of [grinberg_clifford_2016][] -/
 theorem changeForm_contractLeft (d : Module.Dual R M) (x : CliffordAlgebra Q) :
-    -- Porting note: original statement
-    --    changeForm h (d⌋x) = d⌋changeForm h x := by
-    changeForm h (contractLeft (Q := Q) d x) = contractLeft (Q := Q') d (changeForm h x) := by
+    changeForm h (d⌋x) = d⌋(changeForm h x) := by
   induction x using CliffordAlgebra.left_induction with
   | algebraMap => simp only [contractLeft_algebraMap, changeForm_algebraMap, map_zero]
   | add _ _ hx hy => rw [map_add, map_add, map_add, map_add, hx, hy]

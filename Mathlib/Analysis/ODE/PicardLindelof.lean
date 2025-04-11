@@ -185,9 +185,6 @@ instance : MetricSpace v.FunSpace :=
 theorem isUniformInducing_toContinuousMap : IsUniformInducing (@toContinuousMap _ _ _ v) :=
   ⟨rfl⟩
 
-@[deprecated (since := "2024-10-05")]
-alias uniformInducing_toContinuousMap := isUniformInducing_toContinuousMap
-
 theorem range_toContinuousMap :
     range toContinuousMap =
       {f : C(Icc v.tMin v.tMax, E) | f v.t₀ = v.x₀ ∧ LipschitzWith v.C f} := by

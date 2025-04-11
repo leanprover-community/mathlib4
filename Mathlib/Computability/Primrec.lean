@@ -22,6 +22,20 @@ we need that the composition of encode with decode yields a
 primitive recursive function, so we have the `Primcodable` type class
 for this.)
 
+In the above, the pairing function is primitive recursive by definition.
+This deviates from the textbook definition of primitive recursive functions,
+which instead work with *`n`-ary* functions. We formalize the textbook
+definition in `Nat.Primrec'`. `Nat.Primrec'.prim_iff` then proves it is
+equivalent to our chosen formulation. For more discussionn of this and
+other design choices in this formalization, see [carneiro2019].
+
+## Main definitions
+
+- `Nat.Primrec f`: `f` is primitive recursive, for functions `f : ℕ → ℕ`
+- `Primrec f`: `f` is primitive recursive, for functions between `Primcodable` types
+- `Primcodable α`: well-behaved encoding of `α` into `ℕ`, i.e. one such that roundtripping through
+  the encoding functions adds no computational power
+
 ## References
 
 * [Mario Carneiro, *Formalizing computability theory via partial recursive functions*][carneiro2019]
@@ -103,8 +117,16 @@ end Primrec
 
 end Nat
 
-/-- A `Primcodable` type is an `Encodable` type for which
-  the encode/decode functions are primitive recursive. -/
+/-- A `Primcodable` type is, essentially, an `Encodable` type for which
+the encode/decode functions are primitive recursive.
+However, such a definition is circular.
+
+Instead, we ask that the composition of `decode : ℕ → option α` with
+`encode : option α → ℕ` is primitive recursive. Said composition is
+the identity function, restricted to the image of `encode`.
+Thus, in a way, the added requirement ensures that no predicates
+can be smuggled in through a cunning choice of the subset of `ℕ` into
+which the type is encoded. -/
 class Primcodable (α : Type*) extends Encodable α where
   -- Porting note: was `prim [] `.
   -- This means that `prim` does not take the type explicitly in Lean 4

@@ -59,7 +59,7 @@ end Semiring
 
 section OrderedSemiring
 
-variable [OrderedSemiring R] [Fintype n]
+variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [Fintype n]
 
 lemma dotProduct_nonneg_of_nonneg {v w : n → R} (hv : 0 ≤ v) (hw : 0 ≤ w) : 0 ≤ dotProduct v w :=
   Finset.sum_nonneg (fun i _ => mul_nonneg (hv i) (hw i))
@@ -90,7 +90,8 @@ section Self
 variable [Fintype m] [Fintype n] [Fintype p]
 
 @[simp]
-theorem dotProduct_self_eq_zero [LinearOrderedRing R] {v : n → R} : dotProduct v v = 0 ↔ v = 0 :=
+theorem dotProduct_self_eq_zero [Ring R] [LinearOrder R] [IsStrictOrderedRing R] {v : n → R} :
+    dotProduct v v = 0 ↔ v = 0 :=
   (Finset.sum_eq_zero_iff_of_nonneg fun i _ => mul_self_nonneg (v i)).trans <| by
     simp [funext_iff]
 

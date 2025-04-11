@@ -365,7 +365,7 @@ theorem optionEquivLeft_monomial (m : Option S₁ →₀ ℕ) (r : R) :
     simp only [Polynomial.algebraMap_apply, algebraMap_eq, Option.elim_none, Option.elim_some,
       map_mul, mul_assoc]
     apply congr_arg₂ _ rfl
-    simp only [mul_comm, map_finsupp_prod, map_pow]
+    simp only [mul_comm, map_finsuppProd, map_pow]
   · intros; simp
   · intros; rw [pow_add]
 

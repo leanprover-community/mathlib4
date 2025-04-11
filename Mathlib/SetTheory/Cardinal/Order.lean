@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 import Mathlib.Algebra.Order.GroupWithZero.Canonical
 import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Data.Fintype.Option
-import Mathlib.Order.ConditionallyCompleteLattice.Defs
 import Mathlib.Order.InitialSeg
 import Mathlib.Order.Nat
 import Mathlib.Order.SuccPred.CompleteLinearOrder
@@ -155,16 +154,6 @@ theorem mem_range_lift_of_le {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
     b ≤ lift.{v, u} a → b ∈ Set.range lift.{v, u} :=
   liftInitialSeg.mem_range_of_le
 
-@[deprecated mem_range_lift_of_le (since := "2024-10-07")]
-theorem lift_down {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
-    b ≤ lift.{v, u} a → ∃ a', lift.{v, u} a' = b :=
-  mem_range_lift_of_le
-
-/-- `Cardinal.lift` as an `OrderEmbedding`. -/
-@[deprecated Cardinal.liftInitialSeg (since := "2024-10-07")]
-def liftOrderEmbedding : Cardinal.{v} ↪o Cardinal.{max v u} :=
-  liftInitialSeg.toOrderEmbedding
-
 theorem lift_injective : Injective lift.{u, v} :=
   liftInitialSeg.injective
 
@@ -308,11 +297,8 @@ instance canonicallyOrderedAdd : CanonicallyOrderedAdd Cardinal.{u} where
       ⟨#(↥(range f)ᶜ), mk_congr this.symm⟩
   le_self_add a _ := (add_zero a).ge.trans <| add_le_add_left (Cardinal.zero_le _) _
 
-instance orderedCommSemiring : OrderedCommSemiring Cardinal.{u} :=
-  CanonicallyOrderedAdd.toOrderedCommSemiring
-
-instance : LinearOrderedAddCommMonoid Cardinal.{u} :=
-  { Cardinal.orderedCommSemiring, Cardinal.linearOrder with }
+instance isOrderedRing : IsOrderedRing Cardinal.{u} :=
+  CanonicallyOrderedAdd.toIsOrderedRing
 
 instance orderBot : OrderBot Cardinal.{u} := inferInstance
 
@@ -330,12 +316,12 @@ instance : LinearOrderedCommMonoidWithZero Cardinal.{u} :=
 
 -- Computable instance to prevent a non-computable one being found via the one above
 instance : CommMonoidWithZero Cardinal.{u} :=
-  { Cardinal.orderedCommSemiring with }
+  { Cardinal.commSemiring with }
 
 -- Porting note: new
 -- Computable instance to prevent a non-computable one being found via the one above
 instance : CommMonoid Cardinal.{u} :=
-  { Cardinal.orderedCommSemiring with }
+  { Cardinal.commSemiring with }
 
 theorem zero_power_le (c : Cardinal.{u}) : (0 : Cardinal.{u}) ^ c ≤ 1 := by
   by_cases h : c = 0
