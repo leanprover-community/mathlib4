@@ -6,7 +6,7 @@ Authors: Yaël Dillies, Bhavik Mehta
 import Mathlib.Algebra.Field.Rat
 import Mathlib.Algebra.Group.Indicator
 import Mathlib.Algebra.GroupWithZero.Action.End
-import Mathlib.Algebra.Order.Field.Rat
+import Mathlib.Algebra.Order.Ring.Rat
 
 /-!
 # Field and action structures on the nonnegative rationals

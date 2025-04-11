@@ -5,6 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Order.Module.OrderedSMul
+import Mathlib.Algebra.Order.Nonneg.Lattice
 import Mathlib.Data.Real.Archimedean
 
 /-!
@@ -86,8 +87,8 @@ instance : IsOrderedRing ℝ≥0 :=
 instance : IsStrictOrderedRing ℝ≥0 :=
   Nonneg.isStrictOrderedRing
 
-noncomputable instance : LinearOrderedCommGroupWithZero ℝ≥0 :=
-  Nonneg.linearOrderedCommGroupWithZero
+instance : IsOrderedMonoidWithZero ℝ≥0 :=
+  Nonneg.isOrderedMonoidWithZero
 
 /-- Coercion `ℝ≥0 → ℝ`. -/
 @[coe] def toReal : ℝ≥0 → ℝ := Subtype.val
@@ -358,8 +359,6 @@ example : Semiring ℝ≥0 := by infer_instance
 example : CommMonoid ℝ≥0 := by infer_instance
 
 example : IsOrderedMonoid ℝ≥0 := by infer_instance
-
-noncomputable example : LinearOrderedCommMonoidWithZero ℝ≥0 := by infer_instance
 
 example : DenselyOrdered ℝ≥0 := by infer_instance
 
@@ -938,7 +937,7 @@ section StrictMono
 
 open NNReal
 
-variable {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
+variable {Γ₀ : Type*} [CommGroupWithZero Γ₀] [LinearOrder Γ₀]
 
 /-- If `Γ₀ˣ` is nontrivial and `f : Γ₀ →*₀ ℝ≥0` is strictly monotone, then for any positive
   `r : ℝ≥0`, there exists `d : Γ₀ˣ` with `f d < r`. -/

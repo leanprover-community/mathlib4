@@ -5,7 +5,6 @@ Authors: Floris van Doorn
 -/
 import Mathlib.Algebra.Order.GroupWithZero.Canonical
 import Mathlib.Algebra.Order.Nonneg.Basic
-import Mathlib.Algebra.Order.Nonneg.Lattice
 import Mathlib.Algebra.Order.Ring.InjSurj
 import Mathlib.Tactic.FastInstance
 
@@ -73,10 +72,9 @@ instance nontrivial [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] :
     Nontrivial { x : α // 0 ≤ x } :=
   ⟨⟨0, 1, fun h => zero_ne_one (congr_arg Subtype.val h)⟩⟩
 
-instance linearOrderedCommMonoidWithZero [CommSemiring α] [LinearOrder α] [IsStrictOrderedRing α] :
-    LinearOrderedCommMonoidWithZero { x : α // 0 ≤ x } :=
-  { Nonneg.commSemiring, Nonneg.isOrderedRing with
-    mul_le_mul_left := fun _ _ h c ↦ mul_le_mul_of_nonneg_left h c.prop }
+instance isOrderedMonoidWithZero [CommSemiring α] [LinearOrder α] [IsStrictOrderedRing α] :
+    IsOrderedMonoidWithZero { x : α // 0 ≤ x } :=
+  { mul_le_mul_left := fun _ _ h c ↦ mul_le_mul_of_nonneg_left h c.prop }
 
 instance canonicallyOrderedAdd [Ring α] [PartialOrder α] [IsOrderedRing α] :
     CanonicallyOrderedAdd { x : α // 0 ≤ x } :=

@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Kevin Kappelmann
 -/
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Floor.Defs
+import Mathlib.Order.SetNotation
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith

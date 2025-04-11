@@ -5,6 +5,7 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Combinatorics.SimpleGraph.Clique
 import Mathlib.Data.Finset.Sym

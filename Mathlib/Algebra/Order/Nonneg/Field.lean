@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.Order.Field.Canonical
-import Mathlib.Algebra.Order.Nonneg.Ring
+import Mathlib.Algebra.Order.Nonneg.Basic
 import Mathlib.Data.Nat.Cast.Order.Ring
+import Mathlib.Tactic.FastInstance
 
 /-!
 # Semifield structure on the type of nonnegative elements
@@ -30,6 +30,8 @@ variable {α : Type*}
 section NNRat
 variable [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] {a : α}
 
+-- TODO: Now `Data.Rat.Cast.Order` has to import this file because of this lemma.
+-- These files need to be reorganized.
 lemma NNRat.cast_nonneg (q : ℚ≥0) : 0 ≤ (q : α) := by
   rw [cast_def]; exact div_nonneg q.num.cast_nonneg q.den.cast_nonneg
 
@@ -100,9 +102,5 @@ instance semifield : Semifield { x : α // 0 ≤ x } := fast_instance%
     Nonneg.coe_zpow Nonneg.coe_natCast coe_nnratCast
 
 end LinearOrderedSemifield
-
-instance linearOrderedCommGroupWithZero [Field α] [LinearOrder α] [IsStrictOrderedRing α] :
-    LinearOrderedCommGroupWithZero { x : α // 0 ≤ x } :=
-  CanonicallyOrderedAdd.toLinearOrderedCommGroupWithZero
 
 end Nonneg
