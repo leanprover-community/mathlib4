@@ -58,7 +58,7 @@ def divisorsAntidiagonal : Finset (ℕ × ℕ) :=
   (Icc 1 n).filterMap (fun x ↦ let y := n / x; if x * y = n then some (x, y) else none)
     fun x₁ x₂ (x, y) hx₁ hx₂ ↦ by aesop
 
-/-- Pairs of divisors of a natural number as a list.
+/-- Pairs of divisors of a natural number, as a list.
 
 `n.divisorsAntidiagonalList` is the list of pairs `(a, b) : ℕ × ℕ` such that `a * b = n`, ordered
 by increasing `a`. By convention, we set `Nat.divisorsAntidiagonalList 0 = []`.
@@ -128,26 +128,34 @@ theorem mem_divisorsAntidiagonal {x : ℕ × ℕ} :
     simpa [hab.1, hab.2] using Nat.le_mul_of_pos_right _ hab.2.bot_lt
 
 @[simp]
-lemma divisorsAntidiagonalList_coe {n : ℕ} :
+lemma toFinset_divisorsAntidiagonalList {n : ℕ} :
     n.divisorsAntidiagonalList.toFinset = n.divisorsAntidiagonal := by
   rw [divisorsAntidiagonalList, divisorsAntidiagonal, List.toFinset_filterMap (f_inj := by aesop),
     List.toFinset_range'_1_1]
 
-lemma divisorsAntidiagonalList_sorted {n : ℕ} :
+lemma sorted_divisorsAntidiagonalList {n : ℕ} :
     n.divisorsAntidiagonalList.Sorted (Prod.Lex (· < ·) (· < ·)) := by
-  apply List.Sorted.filterMap (List.sorted_lt_range' _ _ (Nat.one_ne_zero))
-  intro a b c d h h' ha
+  refine (List.sorted_lt_range' _ _ Nat.one_ne_zero).filterMap fun a b c d h h' ha => ?_
   apply Prod.Lex.left
   rw [Option.ite_none_right_eq_some, Option.some.injEq] at h h'
-  simpa [←h.right, ←h'.right]
+  simpa [← h.right, ← h'.right]
 
-lemma divisorsAntidiagonalList_nodup {n : ℕ} : n.divisorsAntidiagonalList.Nodup :=
-  divisorsAntidiagonalList_sorted.nodup
+lemma nodup_divisorsAntidiagonalList {n : ℕ} : n.divisorsAntidiagonalList.Nodup :=
+  sorted_divisorsAntidiagonalList.nodup
+
+proof_wanted divisorsAntidiagonalList_reverse {n : ℕ} :
+    n.divisorsAntidiagonalList.reverse = n.divisorsAntidiagonalList.map Prod.swap
+
+/-- The `Finset` and `List` versions agree by definition. -/
+@[simp]
+theorem val_divisorsAntidiagonal (n : ℕ) :
+    (divisorsAntidiagonal n).val = divisorsAntidiagonalList n :=
+  rfl
 
 @[simp]
 lemma mem_divisorsAntidiagonalList_of_pos {n : ℕ} (a : ℕ × ℕ) :
     a ∈ n.divisorsAntidiagonalList ↔ a.1 * a.2 = n ∧ n ≠ 0 := by
-  rw [←List.mem_toFinset, divisorsAntidiagonalList_coe, mem_divisorsAntidiagonal]
+  rw [← List.mem_toFinset, toFinset_divisorsAntidiagonalList, mem_divisorsAntidiagonal]
 
 lemma ne_zero_of_mem_divisorsAntidiagonal {p : ℕ × ℕ} (hp : p ∈ n.divisorsAntidiagonal) :
     p.1 ≠ 0 ∧ p.2 ≠ 0 := by
