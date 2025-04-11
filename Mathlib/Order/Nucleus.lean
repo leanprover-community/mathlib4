@@ -215,7 +215,10 @@ lemma mem_range_iff (n : Nucleus X) (x : X) : x ∈ range n ↔ n x = x := by
 
 lemma coe_range_fixpoint (n : Nucleus X) (x : range n) : n x = x :=
   (n.mem_range_iff x).mp x.coe_prop
-
+/--
+The Nucleus restricted to its image together with the canoncial map backwards form a
+GaloisInsertion.
+-/
 def gi (n : Nucleus X) : GaloisInsertion (n.restrict) Subtype.val :=
   GaloisInsertion.monotoneIntro
   (fun ⦃a b⦄ a ↦ a)
