@@ -14,12 +14,12 @@ at position `(i, j)`, and zeroes elsewhere.
 
 assert_not_exists Matrix.trace
 
-variable {l m n : Type*}
+variable {l m n o : Type*}
 variable {R α β : Type*}
 
 namespace Matrix
 
-variable [DecidableEq l] [DecidableEq m] [DecidableEq n]
+variable [DecidableEq l] [DecidableEq m] [DecidableEq n] [DecidableEq o]
 
 section Zero
 variable [Zero α]
@@ -232,6 +232,14 @@ theorem mul_same (i : l) (j : m) (k : n) (d : α) :
   ext a b
   simp only [mul_apply, stdBasisMatrix, boole_mul]
   by_cases h₁ : i = a <;> by_cases h₂ : k = b <;> simp [h₁, h₂]
+
+@[simp]
+theorem stdBasisMatrix_mul_mul_stdBasisMatrix [Fintype n]
+    (i : l) (i' : m) (j' : n) (j : o) (a : α) (x : Matrix m n α) (b : α) :
+    stdBasisMatrix i i' a * x * stdBasisMatrix j' j b = stdBasisMatrix i j (a * x i' j' * b) := by
+  ext i'' j''
+  simp only [mul_apply, stdBasisMatrix, boole_mul]
+  by_cases h₁ : i = i'' <;> by_cases h₂ : j = j'' <;> simp [h₁, h₂]
 
 @[simp]
 theorem mul_of_ne (i : l) (j k : m) {l : n} (h : j ≠ k) (d : α) :
