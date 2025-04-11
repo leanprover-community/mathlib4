@@ -158,3 +158,7 @@ theorem IsNoetherianRing.isArtinianRing_of_krullDimLE_zero {R} [CommRing R]
 @[stacks 00KH] theorem isArtinianRing_iff_isNoetherianRing_krullDimLE_zero {R} [CommRing R] :
     IsArtinianRing R ↔ IsNoetherianRing R ∧ Ring.KrullDimLE 0 R :=
   ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨h, _⟩ ↦ h.isArtinianRing_of_krullDimLE_zero⟩
+
+theorem isArtinianRing_iff_krullDimLE_zero {R} [CommRing R] [IsNoetherianRing R] :
+    IsArtinianRing R ↔ Ring.KrullDimLE 0 R := by
+  rwa [isArtinianRing_iff_isNoetherianRing_krullDimLE_zero, and_iff_right]
