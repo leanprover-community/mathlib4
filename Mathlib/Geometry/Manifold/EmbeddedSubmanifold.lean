@@ -12,16 +12,15 @@ TODO: write doc-string when things are clearer
 
 -/
 
-open scoped Manifold Topology ContDiff
-
-open Function Set
+open scoped Manifold ContDiff
+open Topology Function Set
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E E' E'' : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] [NormedAddCommGroup E''] [NormedSpace 𝕜 E'']
+  {E E' E'' : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup E']
+    [NormedSpace 𝕜 E'] [NormedAddCommGroup E''] [NormedSpace 𝕜 E'']
   {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  {H : Type*} [TopologicalSpace H] {H' : Type*} [TopologicalSpace H'] {H'' : Type*} [TopologicalSpace H'']
-  {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCorners 𝕜 E' H'}
-  {J : ModelWithCorners 𝕜 E'' H''}
+  {H H' H'' : Type*} [TopologicalSpace H] [TopologicalSpace H'] [TopologicalSpace H'']
+  {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCorners 𝕜 E' H'} {J : ModelWithCorners 𝕜 E'' H''}
   {M M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M'] {n : WithTop ℕ∞}
 
 variable (I I' F) in
@@ -110,8 +109,6 @@ instance : SliceModel (⊥ : Subspace 𝕜 E) I I where
 
 -- apparently all missing: LinearEquiv.prodCongr, ContinuousLinearEquiv.prodCongr
 
-open Topology
-
 instance [h : SliceModel F I I'] : SliceModel F (J.prod I) (J.prod I') where
   equiv := by
     let sdf := h.equiv
@@ -132,73 +129,17 @@ end
 
 namespace PartialHomeomorph
 
-variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
-
-noncomputable def _root_.PartialEquiv.pullback (φ : PartialEquiv Y Z) {f : X → Y} (hf : Injective f) [Nonempty X] :
-    PartialEquiv X Z where
-  toFun := φ ∘ f
-  invFun := (Function.extend f id (fun _ ↦ (Classical.arbitrary X))) ∘ φ.invFun
-  left_inv' x hx := by
-    have : φ.symm (φ (f x)) = f x := φ.left_inv' hx
-    simp only [PartialEquiv.invFun_as_coe, comp_apply, this]
-    exact hf.extend_apply _ _ _
-  right_inv' x hx := by
-    simp only [comp_apply]
-    set y := φ.invFun x with hy
-    have : y ∈ φ.source := φ.map_target' hx
-    -- trouble: this is true if y ∈ im f, and maybe VERY false otherwise!!
-    have : f (Function.extend f id (fun x ↦ Classical.arbitrary X) y) = y := by
-      unfold Function.extend
-      by_cases h : ∃ a, f a = y
-      · obtain ⟨a, ha⟩ := h
-        rw [← ha]
-        simp
-        sorry -- seems true, but lean is stuck somewhere
-      · simp [h]
-        sorry -- this is clearly false
-    rw [this, hy]
-    exact φ.right_inv' hx
-  -- trouble: I *could* restrict the target (e.g. by intersecting with im f), but then the target
-  -- would generally not be open any more! for pulling back, I really need a better way.
-  source := f ⁻¹' φ.source
-  target := φ.target
-  map_source' := fun x hx ↦ φ.map_source hx
-  map_target' x hx := by
-    rw [mem_preimage]
-    simp only [comp_apply]
-    set y := φ.invFun x with hy
-    convert φ.map_target' hx
-    rw [← hy]
-    -- now, we're just at the interesting part of right_inv'
-    sorry
-
-/-- Pulling back a partial homeomorphism by an injective continuous map.
-XXX: what's the inverse map? not sure! -/
-noncomputable  def pullback (φ : PartialHomeomorph Y Z) {f : X → Y}
-    (hf : Injective f) (hf' : Continuous f) [Nonempty X] : PartialHomeomorph X Z where
-  toPartialEquiv := φ.toPartialEquiv.pullback hf
-  continuousOn_toFun := φ.continuousOn_toFun.comp hf'.continuousOn (fun ⦃x⦄ a ↦ a)
-  continuousOn_invFun := by
-    let finv := Function.extend f id (fun _ ↦ (Classical.arbitrary X))
-    sorry
-  open_source := IsOpen.preimage hf' φ.open_source
-  open_target := φ.open_target
-
 variable [TopologicalSpace M] [IsManifold I' n M']
-
-open Topology
-
-section
 
 variable [Nonempty H] {φ : PartialHomeomorph M' H'} {f : M → M'}
 omit [ChartedSpace H' M']
 
 -- continuity of `toFun`
-lemma continuousOn_source (h : SliceModel F I I') (hf : IsEmbedding f)
+lemma continuousOn_source (h : SliceModel F I I') (hf : Continuous f)
     (hyp : φ.target ⊆ range h.map) : ContinuousOn (h.inverse ∘ φ ∘ f) (f ⁻¹' φ.source) := by
   rw [h.hmap.continuousOn_iff]
   have : ContinuousOn (φ ∘ f) (f ⁻¹' φ.source) :=
-    φ.continuousOn_toFun.comp hf.continuous.continuousOn (fun ⦃x⦄ a ↦ a)
+    φ.continuousOn_toFun.comp hf.continuousOn (fun ⦃x⦄ a ↦ a)
   apply this.congr
   intro x hx
   apply h.inverse_right_inv
@@ -241,9 +182,10 @@ theorem missing (h : SliceModel F I I') (hsource : φ.source ⊆ range f)
 
 variable [Nonempty M]
 
-/-- Pull back a partial homeomorphism using a slice model.
-The slice model conditions should guarantee the necessary condition for continuity and inverses. -/
-noncomputable def pullback_sliceModel (hf : IsEmbedding f) (h : SliceModel F I I')
+variable (φ) in
+/-- Pull back a partial homeomorphism using a slice model. -/
+-- XXX: does this hold for merely inducing maps? depends on the missing sorry for the inverse
+noncomputable def pullback_sliceModel (h : SliceModel F I I') (hf : IsEmbedding f)
     (hsource : φ.source ⊆ range f) (htarget : φ.target ⊆ range h.map) : PartialHomeomorph M H where
   toFun := h.inverse ∘ φ ∘ f
   invFun :=
@@ -295,13 +237,8 @@ noncomputable def pullback_sliceModel (hf : IsEmbedding f) (h : SliceModel F I I
       _ = h.inverse ((φ ∘ φ.symm) (h.map x)) := by simp [Function.comp_apply]
       _ = h.inverse (h.map x) := by congr; exact φ.right_inv' hx
       _ = x := h.inverse_left_inv x
-  continuousOn_toFun := continuousOn_source h hf htarget
+  continuousOn_toFun := continuousOn_source h hf.continuous htarget
   continuousOn_invFun := continuousOn_aux_invFun h hf hsource
-
-#exit
--- next: pull back a partial homeo by a slice model
--- the slice condition guarantees the condition below is what I want
--- target should be inverse '' φ.target, and that lies in the image :-)
 
 end PartialHomeomorph
 
