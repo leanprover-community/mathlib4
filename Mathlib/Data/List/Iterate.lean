@@ -33,7 +33,7 @@ theorem getElem?_iterate (f : α → α) (a : α) :
 @[simp]
 theorem getElem_iterate (f : α → α) (a : α) (n : ℕ) (i : Nat) (h : i < (iterate f a n).length) :
     (iterate f a n)[i] = f^[i] a :=
-  getElem_eq_iff.2 <| getElem?_iterate _ _ _ _ <| by rwa [length_iterate] at h
+  (getElem_eq_iff _).2 <| getElem?_iterate _ _ _ _ <| by rwa [length_iterate] at h
 
 @[simp]
 theorem mem_iterate {f : α → α} {a : α} {n : ℕ} {b : α} :

@@ -42,7 +42,7 @@ theorem eval₂_one_cyclotomic_prime_pow {R S : Type*} [CommRing R] [Semiring S]
     {p : ℕ} (k : ℕ) [Fact p.Prime] : eval₂ f 1 (cyclotomic (p ^ (k + 1)) R) = p := by simp
 
 private theorem cyclotomic_neg_one_pos {n : ℕ} (hn : 2 < n) {R}
-    [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] :
+    [CommRing R] [PartialOrder R] [IsStrictOrderedRing R] :
     0 < eval (-1 : R) (cyclotomic n R) := by
   haveI := NeZero.of_gt hn
   rw [← map_cyclotomic_int, ← Int.cast_one, ← Int.cast_neg, eval_intCast_map, Int.coe_castRingHom,

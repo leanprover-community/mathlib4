@@ -112,7 +112,7 @@ end Mul
 section mul_comm
 
 instance commMonoid [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R] :
-    CommMonoid { x : R // 0 < x } :=
+    CommMonoid { x : R // 0 < x } := fast_instance%
   Subtype.coe_injective.commMonoid (M₂ := R) (Subtype.val) val_one val_mul val_pow
 
 instance isOrderedMonoid [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R] :

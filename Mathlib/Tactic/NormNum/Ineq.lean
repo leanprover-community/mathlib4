@@ -24,9 +24,9 @@ expressions. -/
 def inferOrderedSemiring (α : Q(Type u)) : MetaM <|
     (_ : Q(Semiring $α)) × (_ : Q(PartialOrder $α)) × Q(IsOrderedRing $α) :=
   let go := do
-    let semiring ← synthInstanceQ (q(Semiring $α) : Q(Type u))
-    let partialOrder ← synthInstanceQ (q(PartialOrder $α) : Q(Type u))
-    let isOrderedRing ← synthInstanceQ (q(IsOrderedRing $α) : Q(Prop))
+    let semiring ← synthInstanceQ q(Semiring $α)
+    let partialOrder ← synthInstanceQ q(PartialOrder $α)
+    let isOrderedRing ← synthInstanceQ q(IsOrderedRing $α)
     return ⟨semiring, partialOrder, isOrderedRing⟩
   go <|> throwError "not an ordered semiring"
 
@@ -35,9 +35,9 @@ expressions. -/
 def inferOrderedRing (α : Q(Type u)) : MetaM <|
     (_ : Q(Ring $α)) × (_ : Q(PartialOrder $α)) × Q(IsOrderedRing $α) :=
   let go := do
-    let ring ← synthInstanceQ (q(Ring $α) : Q(Type u))
-    let partialOrder ← synthInstanceQ (q(PartialOrder $α) : Q(Type u))
-    let isOrderedRing ← synthInstanceQ (q(IsOrderedRing $α) : Q(Prop))
+    let ring ← synthInstanceQ q(Ring $α)
+    let partialOrder ← synthInstanceQ q(PartialOrder $α)
+    let isOrderedRing ← synthInstanceQ q(IsOrderedRing $α)
     return ⟨ring, partialOrder, isOrderedRing⟩
   go <|> throwError "not an ordered ring"
 
@@ -46,9 +46,9 @@ expressions. -/
 def inferLinearOrderedField (α : Q(Type u)) : MetaM <|
     (_ : Q(Field $α)) × (_ : Q(LinearOrder $α)) × Q(IsStrictOrderedRing $α) :=
   let go := do
-    let field ← synthInstanceQ (q(Field $α) : Q(Type u))
-    let linearOrder ← synthInstanceQ (q(LinearOrder $α) : Q(Type u))
-    let isStrictOrderedRing ← synthInstanceQ (q(IsStrictOrderedRing $α) : Q(Prop))
+    let field ← synthInstanceQ q(Field $α)
+    let linearOrder ← synthInstanceQ q(LinearOrder $α)
+    let isStrictOrderedRing ← synthInstanceQ q(IsStrictOrderedRing $α)
     return ⟨field, linearOrder, isStrictOrderedRing⟩
   go <|> throwError "not a linear ordered field"
 
@@ -154,7 +154,7 @@ where
     if decide (za ≤ zb) then
       let r : Q(decide ($na ≤ $nb) = true) := (q(Eq.refl true) : Expr)
       return .isTrue q(isInt_le_true $pa $pb $r)
-    else if let .some _i ← trySynthInstanceQ (q(@Nontrivial $α) : Q(Prop)) then
+    else if let .some _i ← trySynthInstanceQ q(Nontrivial $α) then
       let r : Q(decide ($nb < $na) = true) := (q(Eq.refl true) : Expr)
       return .isFalse q(isInt_le_false $pa $pb $r)
     else
@@ -185,7 +185,7 @@ where
     if na.natLit! ≤ nb.natLit! then
       let r : Q(Nat.ble $na $nb = true) := (q(Eq.refl true) : Expr)
       return .isTrue q(isNat_le_true $pa $pb $r)
-    else if let .some _i ← trySynthInstanceQ (q(CharZero $α) : Q(Prop)) then
+    else if let .some _i ← trySynthInstanceQ q(CharZero $α) then
       let r : Q(Nat.ble $na $nb = false) := (q(Eq.refl false) : Expr)
       return .isFalse q(isNat_le_false $pa $pb $r)
     else -- Nats can appear in an `OrderedRing` without `CharZero`.
@@ -216,7 +216,7 @@ where
     let ⟨zb, nb, pb⟩ ← rb.toInt q($_ir)
     assumeInstancesCommute
     if za < zb then
-      if let .some _i ← trySynthInstanceQ (q(@Nontrivial $α) : Q(Prop)) then
+      if let .some _i ← trySynthInstanceQ q(Nontrivial $α) then
         let r : Q(decide ($na < $nb) = true) := (q(Eq.refl true) : Expr)
         return .isTrue q(isInt_lt_true $pa $pb $r)
       else

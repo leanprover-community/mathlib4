@@ -64,9 +64,6 @@ theorem add_neg [IsStrictOrderedRing α] {a b : α} (ha : a < 0)
 variable (α) in
 lemma natCast_nonneg [IsOrderedRing α] (n : ℕ) : (0 : α) ≤ n := Nat.cast_nonneg n
 
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_nonneg := natCast_nonneg
-
 -- used alongside `mul_neg` and `mul_nonpos`, so has the same argument pattern for uniformity
 @[nolint unusedArguments]
 theorem mul_eq [IsOrderedRing α] {a b : α} (ha : a = 0) (_ : 0 < b) : b * a = 0 := by

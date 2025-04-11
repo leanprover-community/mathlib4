@@ -3,7 +3,7 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Algebra.Order.Floor
+import Mathlib.Algebra.Order.Floor.Defs
 import Mathlib.Algebra.Order.Nonneg.Basic
 
 /-!
@@ -19,7 +19,7 @@ This is used to derive algebraic structures on `ℝ≥0` and `ℚ≥0` automatic
 * `{x : α // 0 ≤ x}` is a `FloorSemiring` if `α` is.
 -/
 
-assert_not_exists Finset
+assert_not_exists Finset LinearOrderedField
 
 namespace Nonneg
 

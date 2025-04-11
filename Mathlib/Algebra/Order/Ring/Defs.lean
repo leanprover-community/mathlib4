@@ -6,7 +6,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Yaël Dillies, Yuyang
 import Mathlib.Algebra.Order.Ring.Unbundled.Basic
 import Mathlib.Algebra.CharZero.Defs
 import Mathlib.Algebra.Order.Group.Defs
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 import Mathlib.Algebra.Order.Monoid.NatCast
 import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 import Mathlib.Algebra.Ring.Defs
@@ -233,7 +233,7 @@ set_option linter.deprecated false in
 /-- An `OrderedSemiring` is a semiring with a partial order such that addition is monotone and
 multiplication by a nonnegative number is monotone. -/
 @[deprecated "Use `[Semiring α] [PartialOrder α] [IsOrderedRing α]` instead."
-  (since := "2025-01-05")]
+  (since := "2025-04-10")]
 structure OrderedSemiring (α : Type u) extends Semiring α, OrderedAddCommMonoid α where
   /-- `0 ≤ 1` in any ordered semiring. -/
   protected zero_le_one : (0 : α) ≤ 1
@@ -248,7 +248,7 @@ set_option linter.deprecated false in
 /-- An `OrderedCommSemiring` is a commutative semiring with a partial order such that addition is
 monotone and multiplication by a nonnegative number is monotone. -/
 @[deprecated "Use `[CommSemiring α] [PartialOrder α] [IsOrderedRing α]` instead."
-  (since := "2025-01-05")]
+  (since := "2025-04-10")]
 structure OrderedCommSemiring (α : Type u) extends OrderedSemiring α, CommSemiring α where
   mul_le_mul_of_nonneg_right a b c ha hc :=
     -- parentheses ensure this generates an `optParam` rather than an `autoParam`
@@ -258,7 +258,7 @@ set_option linter.deprecated false in
 /-- An `OrderedRing` is a ring with a partial order such that addition is monotone and
 multiplication by a nonnegative number is monotone. -/
 @[deprecated "Use `[Ring α] [PartialOrder α] [IsOrderedRing α]` instead."
-  (since := "2025-01-05")]
+  (since := "2025-04-10")]
 structure OrderedRing (α : Type u) extends Ring α, OrderedAddCommGroup α where
   /-- `0 ≤ 1` in any ordered ring. -/
   protected zero_le_one : 0 ≤ (1 : α)
@@ -269,14 +269,14 @@ set_option linter.deprecated false in
 /-- An `OrderedCommRing` is a commutative ring with a partial order such that addition is monotone
 and multiplication by a nonnegative number is monotone. -/
 @[deprecated "Use `[CommRing α] [PartialOrder α] [IsOrderedRing α]` instead."
-  (since := "2025-01-05")]
+  (since := "2025-04-10")]
 structure OrderedCommRing (α : Type u) extends OrderedRing α, CommRing α
 
 set_option linter.deprecated false in
 /-- A `StrictOrderedSemiring` is a nontrivial semiring with a partial order such that addition is
 strictly monotone and multiplication by a positive number is strictly monotone. -/
 @[deprecated "Use `[Semiring α] [PartialOrder α] [IsStrictOrderedRing α]` instead."
-  (since := "2025-01-05")]
+  (since := "2025-04-10")]
 structure StrictOrderedSemiring (α : Type u) extends Semiring α, OrderedCancelAddCommMonoid α,
     Nontrivial α where
   /-- In a strict ordered semiring, `0 ≤ 1`. -/
@@ -290,14 +290,14 @@ set_option linter.deprecated false in
 /-- A `StrictOrderedCommSemiring` is a commutative semiring with a partial order such that
 addition is strictly monotone and multiplication by a positive number is strictly monotone. -/
 @[deprecated "Use `[CommSemiring α] [PartialOrder α] [IsStrictOrderedRing α]` instead."
-  (since := "2025-01-05")]
+  (since := "2025-04-10")]
 structure StrictOrderedCommSemiring (α : Type u) extends StrictOrderedSemiring α, CommSemiring α
 
 set_option linter.deprecated false in
 /-- A `StrictOrderedRing` is a ring with a partial order such that addition is strictly monotone
 and multiplication by a positive number is strictly monotone. -/
 @[deprecated "Use `[Ring α] [PartialOrder α] [IsStrictOrderedRing α]` instead."
-  (since := "2025-01-05")]
+  (since := "2025-04-10")]
 structure StrictOrderedRing (α : Type u) extends Ring α, OrderedAddCommGroup α, Nontrivial α where
   /-- In a strict ordered ring, `0 ≤ 1`. -/
   protected zero_le_one : 0 ≤ (1 : α)
@@ -308,7 +308,7 @@ set_option linter.deprecated false in
 /-- A `StrictOrderedCommRing` is a commutative ring with a partial order such that addition is
 strictly monotone and multiplication by a positive number is strictly monotone. -/
 @[deprecated "Use `[CommRing α] [PartialOrder α] [IsStrictOrderedRing α]` instead."
-  (since := "2025-01-05")]
+  (since := "2025-04-10")]
 structure StrictOrderedCommRing (α : Type*) extends StrictOrderedRing α, CommRing α
 
 /- It's not entirely clear we should assume `Nontrivial` at this point; it would be reasonable to
@@ -318,7 +318,7 @@ set_option linter.deprecated false in
 /-- A `LinearOrderedSemiring` is a nontrivial semiring with a linear order such that
 addition is monotone and multiplication by a positive number is strictly monotone. -/
 @[deprecated "Use `[Semiring α] [LinearOrder α] [IsStrictOrderedRing α]` instead."
-  (since := "2025-01-05")]
+  (since := "2025-04-10")]
 structure LinearOrderedSemiring (α : Type u) extends StrictOrderedSemiring α,
   LinearOrderedAddCommMonoid α
 
@@ -326,7 +326,7 @@ set_option linter.deprecated false in
 /-- A `LinearOrderedCommSemiring` is a nontrivial commutative semiring with a linear order such
 that addition is monotone and multiplication by a positive number is strictly monotone. -/
 @[deprecated "Use `[CommSemiring α] [LinearOrder α] [IsStrictOrderedRing α]` instead."
-  (since := "2025-01-05")]
+  (since := "2025-04-10")]
 structure LinearOrderedCommSemiring (α : Type*) extends StrictOrderedCommSemiring α,
   LinearOrderedSemiring α
 
@@ -334,14 +334,14 @@ set_option linter.deprecated false in
 /-- A `LinearOrderedRing` is a ring with a linear order such that addition is monotone and
 multiplication by a positive number is strictly monotone. -/
 @[deprecated "Use `[Ring α] [LinearOrder α] [IsStrictOrderedRing α]` instead."
-  (since := "2025-01-05")]
+  (since := "2025-04-10")]
 structure LinearOrderedRing (α : Type u) extends StrictOrderedRing α, LinearOrder α
 
 set_option linter.deprecated false in
 /-- A `LinearOrderedCommRing` is a commutative ring with a linear order such that addition is
 monotone and multiplication by a positive number is strictly monotone. -/
 @[deprecated "Use `[CommRing α] [LinearOrder α] [IsStrictOrderedRing α]` instead."
-  (since := "2025-01-05")]
+  (since := "2025-04-10")]
 structure LinearOrderedCommRing (α : Type u) extends LinearOrderedRing α, CommMonoid α
 
 attribute [nolint docBlame]

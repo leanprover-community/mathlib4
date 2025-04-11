@@ -39,4 +39,24 @@ instance isOrderedAddMonoid [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMo
     IsOrderedAddMonoid (WithBot α) :=
   { add_le_add_left := fun _ _ h c => add_le_add_left h c }
 
+protected theorem le_self_add [Add α] [LE α] [CanonicallyOrderedAdd α]
+    {x : WithBot α} (hx : x ≠ ⊥) (y : WithBot α) :
+    y ≤ y + x := by
+  induction x
+  · simp at hx
+  induction y
+  · simp
+  · rw [← WithBot.coe_add, WithBot.coe_le_coe]
+    exact _root_.le_self_add (α := α)
+
+protected theorem le_add_self [AddCommMagma α] [LE α] [CanonicallyOrderedAdd α]
+    {x : WithBot α} (hx : x ≠ ⊥) (y : WithBot α) :
+    y ≤ x + y := by
+  induction x
+  · simp at hx
+  induction y
+  · simp
+  · rw [← WithBot.coe_add, WithBot.coe_le_coe]
+    exact _root_.le_add_self (α := α)
+
 end WithBot

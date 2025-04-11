@@ -89,25 +89,13 @@ lemma apply_weylGroup_smul (g : P.weylGroup) (x y : M) :
     intro x y
     rw [← Submonoid.mk_mul_mk _ _ _ hg₁ hg₂, mul_smul, mul_smul, hg₁', hg₂']
 
-variable [NoZeroDivisors R] [NeZero (2 : R)]
-
 @[simp]
-lemma apply_root_root_zero_iff :
+lemma apply_root_root_zero_iff [IsDomain R] [NeZero (2 : R)]:
     B.form (P.root i) (P.root j) = 0 ↔ P.pairing i j = 0 := by
   calc B.form (P.root i) (P.root j) = 0
       ↔ 2 * B.form (P.root i) (P.root j) = 0 := by simp [two_ne_zero]
     _ ↔ P.pairing i j * B.form (P.root j) (P.root j) = 0 := by rw [B.two_mul_apply_root_root i j]
     _ ↔ P.pairing i j = 0 := by simp [B.ne_zero j]
-
-include B
-
-lemma pairing_zero_iff :
-    P.pairing i j = 0 ↔ P.pairing j i = 0 := by
-  rw [← B.apply_root_root_zero_iff, ← B.apply_root_root_zero_iff, ← B.symm.eq, RingHom.id_apply]
-
-lemma coxeterWeight_zero_iff_isOrthogonal :
-    P.coxeterWeight i j = 0 ↔ P.IsOrthogonal i j := by
-  simp [coxeterWeight, IsOrthogonal, B.pairing_zero_iff i j]
 
 end InvariantForm
 

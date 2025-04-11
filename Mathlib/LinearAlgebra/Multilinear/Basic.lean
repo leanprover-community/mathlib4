@@ -105,6 +105,19 @@ instance : FunLike (MultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
 
 initialize_simps_projections MultilinearMap (toFun → apply)
 
+/-- Constructor for `MultilinearMap R M₁ M₂` when the
+index type `ι` is already endowed with a `DecidableEq` instance. -/
+@[simps]
+def mk' [DecidableEq ι] (f : (∀ i, M₁ i) → M₂)
+    (h₁ : ∀ (m : ∀ i, M₁ i) (i : ι) (x y : M₁ i),
+      f (update m i (x + y)) = f (update m i x) + f (update m i y) := by aesop)
+    (h₂ : ∀ (m : ∀ i, M₁ i) (i : ι) (c : R) (x : M₁ i),
+      f (update m i (c • x)) = c • f (update m i x) := by aesop) :
+    MultilinearMap R M₁ M₂ where
+  toFun := f
+  map_update_add' m i x y := by convert h₁ m i x y
+  map_update_smul' m i c x := by convert h₂ m i c x
+
 @[simp]
 theorem toFun_eq_coe : f.toFun = ⇑f :=
   rfl
@@ -284,15 +297,11 @@ def restr {k n : ℕ} (f : MultilinearMap R (fun _ : Fin n => M') M₂) (s : Fin
   /- Porting note: The proofs of the following two lemmas used to only use `erw` followed by `simp`,
   but it seems `erw` no longer unfolds or unifies well enough to work without more help. -/
   map_update_add' v i x y := by
-    have : DFunLike.coe (s.orderIsoOfFin hk).symm = (s.orderIsoOfFin hk).toEquiv.symm := rfl
-    simp only [this]
     erw [dite_comp_equiv_update (s.orderIsoOfFin hk).toEquiv,
       dite_comp_equiv_update (s.orderIsoOfFin hk).toEquiv,
       dite_comp_equiv_update (s.orderIsoOfFin hk).toEquiv]
     simp
   map_update_smul' v i c x := by
-    have : DFunLike.coe (s.orderIsoOfFin hk).symm = (s.orderIsoOfFin hk).toEquiv.symm := rfl
-    simp only [this]
     erw [dite_comp_equiv_update (s.orderIsoOfFin hk).toEquiv,
       dite_comp_equiv_update (s.orderIsoOfFin hk).toEquiv]
     simp
@@ -729,12 +738,10 @@ def domDomRestrict (f : MultilinearMap R M₁ M₂) (P : ι → Prop) [Decidable
   toFun x := f (fun j ↦ if h : P j then x ⟨j, h⟩ else z ⟨j, h⟩)
   map_update_add' x i a b := by
     classical
-    simp only
     repeat (rw [domDomRestrict_aux])
     simp only [MultilinearMap.map_update_add]
   map_update_smul' z i c a := by
     classical
-    simp only
     repeat (rw [domDomRestrict_aux])
     simp only [MultilinearMap.map_update_smul]
 
@@ -1142,19 +1149,15 @@ to `m` the product of all the `m i`.
 
 See also `MultilinearMap.mkPiAlgebra` for a version that assumes `[CommSemiring A]` but works
 for `A^ι` with any finite type `ι`. -/
-protected def mkPiAlgebraFin : MultilinearMap R (fun _ : Fin n => A) A where
-  toFun m := (List.ofFn m).prod
-  map_update_add' {dec} m i x y := by
-    rw [Subsingleton.elim dec (by infer_instance)]
-    have : (List.finRange n).idxOf i < n := by
-      simpa using List.idxOf_lt_length_iff.2 (List.mem_finRange i)
-    simp [List.ofFn_eq_map, (List.nodup_finRange n).map_update, List.prod_set, add_mul, this,
-      mul_add, add_mul]
-  map_update_smul' {dec} m i c x := by
-    rw [Subsingleton.elim dec (by infer_instance)]
-    have : (List.finRange n).idxOf i < n := by
-      simpa using List.idxOf_lt_length_iff.2 (List.mem_finRange i)
-    simp [List.ofFn_eq_map, (List.nodup_finRange n).map_update, List.prod_set, this]
+protected def mkPiAlgebraFin : MultilinearMap R (fun _ : Fin n => A) A :=
+  MultilinearMap.mk' (fun m ↦ (List.ofFn m).prod)
+    (fun m i x y ↦ by
+      have : (List.finRange n).idxOf i < n := by simp
+      simp [List.ofFn_eq_map, (List.nodup_finRange n).map_update, List.prod_set, add_mul, this,
+        mul_add, add_mul])
+    (fun m i c x ↦ by
+      have : (List.finRange n).idxOf i < n := by simp
+      simp [List.ofFn_eq_map, (List.nodup_finRange n).map_update, List.prod_set, this])
 
 variable {R A n}
 

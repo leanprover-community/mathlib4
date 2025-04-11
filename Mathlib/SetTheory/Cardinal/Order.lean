@@ -240,7 +240,7 @@ instance commSemiring : CommSemiring Cardinal.{u} where
   nsmul := nsmulRec
   npow n c := c ^ (n : Cardinal)
   npow_zero := power_zero
-  npow_succ n c := by dsimp; rw [cast_succ, power_add, power_one]
+  npow_succ n c := by rw [cast_succ, power_add, power_one]
   natCast n := lift #(Fin n)
   natCast_zero := rfl
   natCast_succ n := cast_succ n

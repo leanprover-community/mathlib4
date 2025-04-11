@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
 -/
 import Mathlib.Topology.Sets.Opens
+import Mathlib.Topology.Clopen
 
 /-!
 # Closed sets
@@ -330,6 +331,10 @@ lemma coe_finset_sup (s : Finset ι) (U : ι → Clopens α) :
   induction s using Finset.induction_on with
   | empty => simp
   | insert _ IH => simp [IH]
+
+@[simp, norm_cast]
+lemma coe_disjoint {s t : Clopens α} : Disjoint (s : Set α) t ↔ Disjoint s t := by
+  simp [disjoint_iff, ← SetLike.coe_set_eq]
 
 end Clopens
 

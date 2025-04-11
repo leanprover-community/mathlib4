@@ -171,13 +171,15 @@ theorem Convex.is_linear_image (hs : Convex 𝕜 s) {f : E → F} (hf : IsLinear
     Convex 𝕜 (f '' s) :=
   hs.linear_image <| hf.mk' f
 
-theorem Convex.linear_preimage {s : Set F} (hs : Convex 𝕜 s) (f : E →ₗ[𝕜] F) :
-    Convex 𝕜 (f ⁻¹' s) := by
-  intro x hx y hy a b ha hb hab
-  rw [mem_preimage, f.map_add, f.map_smul, f.map_smul]
+theorem Convex.linear_preimage {𝕜₁ : Type*} [Semiring 𝕜₁] [Module 𝕜₁ E] [Module 𝕜₁ F] {s : Set F}
+    [SMul 𝕜 𝕜₁] [IsScalarTower 𝕜 𝕜₁ E] [IsScalarTower 𝕜 𝕜₁ F] (hs : Convex 𝕜 s) (f : E →ₗ[𝕜₁] F) :
+    Convex 𝕜 (f ⁻¹' s) := fun x hx y hy a b ha hb hab => by
+  rw [mem_preimage, f.map_add, LinearMap.map_smul_of_tower, LinearMap.map_smul_of_tower]
   exact hs hx hy ha hb hab
 
-theorem Convex.is_linear_preimage {s : Set F} (hs : Convex 𝕜 s) {f : E → F} (hf : IsLinearMap 𝕜 f) :
+theorem Convex.is_linear_preimage {𝕜₁ : Type*} [Semiring 𝕜₁] [Module 𝕜₁ E] [Module 𝕜₁ F] {s : Set F}
+  [SMul 𝕜 𝕜₁] [IsScalarTower 𝕜 𝕜₁ E] [IsScalarTower 𝕜 𝕜₁ F] (hs : Convex 𝕜 s) {f : E → F}
+  (hf : IsLinearMap 𝕜₁ f) :
     Convex 𝕜 (f ⁻¹' s) :=
   hs.linear_preimage <| hf.mk' f
 
@@ -468,7 +470,7 @@ theorem Convex.affine_image (f : E →ᵃ[𝕜] F) (hs : Convex 𝕜 s) : Convex
   exact (hs hx).affine_image _
 
 theorem Convex.neg (hs : Convex 𝕜 s) : Convex 𝕜 (-s) :=
-  hs.is_linear_preimage IsLinearMap.isLinearMap_neg
+  hs.is_linear_preimage IsLinearMap.isLinearMap_neg (𝕜₁ := 𝕜)
 
 theorem Convex.sub (hs : Convex 𝕜 s) (ht : Convex 𝕜 t) : Convex 𝕜 (s - t) := by
   rw [sub_eq_add_neg]

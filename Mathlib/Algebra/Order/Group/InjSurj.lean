@@ -12,11 +12,11 @@ import Mathlib.Algebra.Order.Monoid.Basic
 
 variable {α β : Type*}
 
-@[deprecated (since := "2025-01-06")]
+@[deprecated (since := "2025-04-10")]
 alias Function.Injective.orderedCommGroup := Function.Injective.isOrderedMonoid
-@[deprecated (since := "2025-01-06")]
+@[deprecated (since := "2025-04-10")]
 alias Function.Injective.orderedAddCommGroup := Function.Injective.isOrderedAddMonoid
-@[deprecated (since := "2025-01-06")]
+@[deprecated (since := "2025-04-10")]
 alias Function.Injective.linearOrderedCommGroup := Function.Injective.isOrderedMonoid
-@[deprecated (since := "2025-01-06")]
+@[deprecated (since := "2025-04-10")]
 alias Function.Injective.linearOrderedAddCommGroup := Function.Injective.isOrderedAddMonoid

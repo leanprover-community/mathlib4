@@ -63,25 +63,23 @@ open Function
 
 namespace LinearOrderedAddCommGroup
 
-@[nolint unusedArguments]
-instance instNeg [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α] : Neg (WithTop α) where
+instance instNeg [AddCommGroup α] : Neg (WithTop α) where
   neg := Option.map fun a : α => -a
 
 /-- If `α` has subtraction, we can extend the subtraction to `WithTop α`, by
 setting `x - ⊤ = ⊤` and `⊤ - x = ⊤`. This definition is only registered as an instance on linearly
 ordered additive commutative groups, to avoid conflicting with the instance `WithTop.instSub` on
 types with a bottom element. -/
-@[nolint unusedArguments]
-protected def sub [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α] :
+protected def sub [AddCommGroup α] :
     WithTop α → WithTop α → WithTop α
   | _, ⊤ => ⊤
   | ⊤, (x : α) => ⊤
   | (x : α), (y : α) => (x - y : α)
 
-instance instSub [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α] : Sub (WithTop α) where
+instance instSub [AddCommGroup α] : Sub (WithTop α) where
   sub := WithTop.LinearOrderedAddCommGroup.sub
 
-variable [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
+variable [AddCommGroup α]
 
 @[simp, norm_cast]
 theorem coe_neg (a : α) : ((-a : α) : WithTop α) = -a :=
@@ -104,7 +102,7 @@ theorem sub_top {a : WithTop α} : a - ⊤ = ⊤ := by cases a <;> rfl
 lemma sub_eq_top_iff {a b : WithTop α} : a - b = ⊤ ↔ (a = ⊤ ∨ b = ⊤) := by
   cases a <;> cases b <;> simp [← coe_sub]
 
-instance : LinearOrderedAddCommGroupWithTop (WithTop α) where
+instance [LinearOrder α] [IsOrderedAddMonoid α] : LinearOrderedAddCommGroupWithTop (WithTop α) where
   __ := WithTop.linearOrderedAddCommMonoidWithTop
   __ := Option.nontrivial
   sub_eq_add_neg a b := by

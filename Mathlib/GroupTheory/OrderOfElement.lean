@@ -1133,13 +1133,13 @@ section NonAssocRing
 variable (R : Type*) [NonAssocRing R] (p : ℕ)
 
 lemma CharP.addOrderOf_one : CharP R (addOrderOf (1 : R)) where
-  cast_eq_zero_iff' n := by rw [← Nat.smul_one_eq_cast, addOrderOf_dvd_iff_nsmul_eq_zero]
+  cast_eq_zero_iff n := by rw [← Nat.smul_one_eq_cast, addOrderOf_dvd_iff_nsmul_eq_zero]
 
 variable [Fintype R]
 
 variable {R} in
 lemma charP_of_ne_zero (hn : card R = p) (hR : ∀ i < p, (i : R) = 0 → i = 0) : CharP R p where
-  cast_eq_zero_iff' n := by
+  cast_eq_zero_iff n := by
     have H : (p : R) = 0 := by rw [← hn, Nat.cast_card_eq_zero]
     constructor
     · intro h

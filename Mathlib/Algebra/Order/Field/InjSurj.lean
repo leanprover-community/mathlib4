@@ -15,9 +15,9 @@ variable {α β : Type*}
 
 namespace Function.Injective
 
-@[deprecated (since := "2025-01-06")]
+@[deprecated (since := "2025-04-10")]
 alias linearOrderedSemifield := Function.Injective.isStrictOrderedRing
-@[deprecated (since := "2025-01-06")]
+@[deprecated (since := "2025-04-10")]
 alias linearOrderedField := Function.Injective.isStrictOrderedRing
 
 end Function.Injective

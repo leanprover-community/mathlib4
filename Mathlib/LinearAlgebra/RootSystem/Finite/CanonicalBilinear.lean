@@ -205,7 +205,7 @@ theorem range_polarization_domRestrict_le_span_coroot :
   intro y hy
   obtain ⟨x, hx⟩ := hy
   rw [← hx, LinearMap.domRestrict_apply, Polarization_apply]
-  refine (mem_span_range_iff_exists_fun R).mpr ?_
+  refine (Submodule.mem_span_range_iff_exists_fun R).mpr ?_
   use fun i => (P.toPerfectPairing x) (P.coroot i)
   simp
 

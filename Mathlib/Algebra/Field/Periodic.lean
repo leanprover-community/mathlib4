@@ -167,4 +167,4 @@ theorem Antiperiodic.div_inv [DivisionSemiring α] [Neg β] (h : Antiperiodic f 
 end Function
 
 theorem Int.fract_periodic (α) [Ring α] [LinearOrder α] [IsStrictOrderedRing α] [FloorRing α] :
-    Function.Periodic Int.fract (1 : α) := fun a => mod_cast Int.fract_add_int a 1
+    Function.Periodic Int.fract (1 : α) := fun a => mod_cast Int.fract_add_intCast a 1

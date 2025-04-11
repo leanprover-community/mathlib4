@@ -176,13 +176,10 @@ applying the right coefficient of `p` to each block of the composition, and then
 the resulting vector. It is called `f.compAlongComposition p c`. -/
 def compAlongComposition {n : ℕ} (p : FormalMultilinearSeries 𝕜 E F) (c : Composition n)
     (f : F [×c.length]→L[𝕜] G) : E [×n]→L[𝕜] G where
-  toFun v := f (p.applyComposition c v)
-  map_update_add' v i x y := by
-    cases Subsingleton.elim ‹_› (instDecidableEqFin _)
-    simp only [applyComposition_update, ContinuousMultilinearMap.map_update_add]
-  map_update_smul' v i c x := by
-    cases Subsingleton.elim ‹_› (instDecidableEqFin _)
-    simp only [applyComposition_update, ContinuousMultilinearMap.map_update_smul]
+  toMultilinearMap :=
+    MultilinearMap.mk' (fun v ↦ f (p.applyComposition c v))
+      (fun v i x y ↦ by simp only [applyComposition_update, map_update_add])
+      (fun v i c x ↦ by simp only [applyComposition_update, map_update_smul])
   cont :=
     f.cont.comp <|
       continuous_pi fun _ => (coe_continuous _).comp <| continuous_pi fun _ => continuous_apply _
@@ -1100,7 +1097,7 @@ theorem sizeUpTo_sizeUpTo_add (a : Composition n) (b : Composition a.length) {i 
     have : sizeUpTo b i + Nat.succ j = (sizeUpTo b i + j).succ := rfl
     rw [this, sizeUpTo_succ _ D, IHj A, sizeUpTo_succ _ B]
     simp only [sigmaCompositionAux, add_assoc, add_left_inj, Fin.val_mk]
-    rw [getElem_of_eq (getElem_splitWrtComposition _ _ _ _), getElem_drop, getElem_take' _ _ C]
+    rw [getElem_of_eq (getElem_splitWrtComposition _ _ _ _), getElem_drop, getElem_take]
 
 /-- Natural equivalence between `(Σ (a : Composition n), Composition a.length)` and
 `(Σ (c : Composition n), Π (i : Fin c.length), Composition (c.blocksFun i))`, that shows up as a
