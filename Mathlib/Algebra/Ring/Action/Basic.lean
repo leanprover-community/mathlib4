@@ -6,6 +6,7 @@ Authors: Kenny Lau
 import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Algebra.GroupWithZero.Action.End
 import Mathlib.Algebra.Ring.Hom.Defs
+import Mathlib.Algebra.Group.Nat.Hom
 
 /-!
 # Group action on rings
@@ -96,6 +97,14 @@ abbrev MulSemiringAction.compHom (f : N →* M) [MulSemiringAction M R] : MulSem
   { DistribMulAction.compHom R f, MulDistribMulAction.compHom R f with }
 
 end
+
+/-- Given a monoid `M` and a `MulSemiringAction M R`, we can obtain a
+`MulSemiringAction` of `(Multiplicative ℕ)` on `R` by
+choosing an element `φ : M` and letting `Multiplicative.ofAdd n • r := φ ^ n • a`.
+See note [reducible non-instances]. -/
+abbrev MulSemiringAction.ofPowers [MulSemiringAction M R] (φ : M) :
+    MulSemiringAction (Multiplicative ℕ) R :=
+  MulSemiringAction.compHom R (powersHom M φ)
 
 section SimpLemmas
 
