@@ -33,7 +33,8 @@ variable (A) [AddMonoid A] [Monoid M] [DistribMulAction M A]
 /-- Compose a `DistribMulAction` with a `MonoidHom`, with action `f r' • m`.
 See note [reducible non-instances]. -/
 abbrev DistribMulAction.compHom [Monoid N] (f : N →* M) : DistribMulAction N A :=
-  { DistribSMul.compFun A f, MulAction.compHom A f with }
+  reduceProj% zeta%
+  { delta% DistribSMul.compFun A f, delta% MulAction.compHom A f with }
 
 end AddMonoid
 

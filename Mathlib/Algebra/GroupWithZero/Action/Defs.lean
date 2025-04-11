@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Action.Opposite
 import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.GroupWithZero.Opposite
+import Mathlib.Util.TermReduce
 
 /-!
 # Definitions of group actions
@@ -239,10 +240,11 @@ protected abbrev Function.Surjective.mulActionWithZero (f : ZeroHom A A') (hf : 
 variable (A)
 
 /-- Compose a `MulActionWithZero` with a `MonoidWithZeroHom`, with action `f r' • m` -/
-def MulActionWithZero.compHom (f : M₀' →*₀ M₀) : MulActionWithZero M₀' A where
-  __ := SMulWithZero.compHom A f.toZeroHom
-  mul_smul r s m := by show f (r * s) • m = f r • f s • m; simp [mul_smul]
-  one_smul m := by show f 1 • m = m; simp
+def MulActionWithZero.compHom (f : M₀' →*₀ M₀) : MulActionWithZero M₀' A :=
+  reduceProj% zeta%
+  { delta% SMulWithZero.compHom A f.toZeroHom with
+    mul_smul r s m := by show f (r * s) • m = f r • f s • m; simp [mul_smul]
+    one_smul m := by show f 1 • m = m; simp }
 
 end MonoidWithZero
 
@@ -317,7 +319,8 @@ variable (A)
 /-- Compose a `DistribSMul` with a function, with scalar multiplication `f r' • m`.
 See note [reducible non-instances]. -/
 abbrev DistribSMul.compFun (f : N → M) : DistribSMul N A :=
-  { SMulZeroClass.compFun A f with
+  reduceProj% zeta%
+  { delta% SMulZeroClass.compFun A f with
     smul_add := fun x => smul_add (f x) }
 
 /-- Each element of the scalars defines an additive monoid homomorphism. -/
