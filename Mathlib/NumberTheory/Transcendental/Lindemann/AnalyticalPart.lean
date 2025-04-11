@@ -12,6 +12,8 @@ import Mathlib.Topology.Algebra.Polynomial
 
 /-!
 # Analytic part of the Lindemann-Weierstrass theorem
+
+The proof is partially based on [Jacobson, *Basic Algebra I, 4.12*][jacobson1974].
 -/
 
 namespace LindemannWeierstrass
@@ -45,9 +47,15 @@ theorem integral_exp_mul_eval (p : ℂ[X]) (s : ℂ) :
   simp
 
 /--
-`P` is a slightly generalized version of `Iᵢ` in
+In what follows, we will use integration by parts to rewrite provide an integral form for `P`
+(`P_eq_integral_exp_mul_eval`) and under some hypotheses find a bound `|P(fₚ, s)| ≤ c' ^ p` for a
+sequence of polynomials `fₚ` (`P_le`). We will then apply this to `fₚ := X ^ (p - 1) * f ^ p` for
+any `f : ℤ[X]` and `p ≠ 0` (`exp_polynomial_approx_aux`) and this will be exactly the bound we need
+in `exp_polynomial_approx`.
+
+This approach is based on
 [the wikipedia proof](https://en.wikipedia.org/wiki/Lindemann%E2%80%93Weierstrass_theorem):
-`Iᵢ(s) = P(fᵢ, s)`.
+`Iᵢ(s) = P(fᵢ, s)`. Jacobson finds a slightly different bound using the power series of `eˣ`.
 -/
 private def P (f : ℂ[X]) (s : ℂ) :=
   exp s * f.sumIDeriv.eval 0 - f.sumIDeriv.eval s
@@ -56,6 +64,10 @@ private theorem P_eq_integral_exp_mul_eval (f : ℂ[X]) (s : ℂ) :
     P f s = exp s * (s * ∫ x in (0)..1, exp (-(x • s)) * f.eval (x • s)) := by
   rw [integral_exp_mul_eval, mul_add, mul_neg, exp_neg, mul_inv_cancel_left₀ (exp_ne_zero s),
     neg_add_eq_sub, P]
+
+private theorem P_algebraMap (f : ℤ[X]) (s : ℂ) :
+    P (f.map <| algebraMap ℤ ℂ) s = exp s * f.sumIDeriv.eval 0 - f.sumIDeriv.aeval s := by
+  simp [P, aeval_sumIDeriv_eq_eval]
 
 /--
 Given a sequence of complex polynomials `fₚ`, a complex constant `s`, and a real constant `c` such
@@ -113,8 +125,7 @@ Given a polynomial with integer coefficients `p` and a complex constant `s`, the
 Note: Jacobson writes `h(x)` for `x ^ (q - 1) * p(x) ^ q` and `bⱼ` for its coefficients.
 -/
 private theorem exp_polynomial_approx_aux (f : ℤ[X]) (s : ℂ) :
-    ∃ c ≥ 0,
-      ∀ p ≠ 0, ‖P (map (algebraMap ℤ ℂ) (X ^ (p - 1) * f ^ p)) s‖ ≤ c ^ p := by
+    ∃ c ≥ 0, ∀ p ≠ 0, ‖P (map (algebraMap ℤ ℂ) (X ^ (p - 1) * f ^ p)) s‖ ≤ c ^ p := by
   have : Bornology.IsBounded
       ((fun x : ℝ ↦ max (x * ‖s‖) 1 * ‖aeval (x * s) f‖) '' Set.Ioc 0 1) := by
     have h :
@@ -140,8 +151,6 @@ private theorem exp_polynomial_approx_aux (f : ℤ[X]) (s : ℂ) :
     exact pow_le_pow_right₀ hx1.le (Nat.sub_le _ _)
 
 /--
-See equation (68), page 285 of [Jacobson, *Basic Algebra I, 4.12*][jacobson1974].
-
 Given a polynomial `f` with integer coefficients, we can find a constant `c : ℝ` and for each prime
 `p > |f₀|`, `nₚ : ℤ` and `gₚ : ℤ[X]` such that
 
@@ -152,58 +161,55 @@ Given a polynomial `f` with integer coefficients, we can find a constant `c : �
 In the proof of Lindemann-Weierstrass, we will take `f` to be a polynomial whose complex roots
 are the algebraic numbers whose exponentials we want to prove to be linearly independent.
 
-Note: Jacobson writes `Nₚ` for our `nₚ` and `M` for our `c` (modulo a constant factor).
+Note: Jacobson (equation (68), page 285) writes `Nₚ` for our `nₚ` and `M` for our `c` (modulo a
+constant factor).
 -/
 theorem exp_polynomial_approx (f : ℤ[X]) (hf : f.eval 0 ≠ 0) :
     ∃ c,
       ∀ p > (eval 0 f).natAbs, p.Prime →
-        ∃ n : ℤ, ¬ ↑p ∣ n ∧ ∃ gp : ℤ[X], gp.natDegree ≤ p * f.natDegree - 1 ∧
+        ∃ nₚ : ℤ, ¬ ↑p ∣ nₚ ∧ ∃ gₚ : ℤ[X], gₚ.natDegree ≤ p * f.natDegree - 1 ∧
           ∀ {r : ℂ}, r ∈ f.aroots ℂ →
-            ‖n • exp r - p • aeval r gp‖ ≤ c ^ p / (p - 1)! := by
+            ‖nₚ • exp r - p • aeval r gₚ‖ ≤ c ^ p / (p - 1)! := by
   simp_rw [nsmul_eq_mul, zsmul_eq_mul]
-  choose c' c'0 Pp'_le using exp_polynomial_approx_aux f
-  use
-    if h : ((f.aroots ℂ).map c').toFinset.Nonempty then ((f.aroots ℂ).map c').toFinset.max' h else 0
-  intro p p_gt prime_p
-  obtain ⟨gp', -, h'⟩ := eval_sumIDeriv_of_pos (X ^ (p - 1) * f ^ p) prime_p.pos
-  specialize h' 0 (by rw [C_0, sub_zero])
-  use f.eval 0 ^ p + p * gp'.eval 0
-  constructor
+  choose c' c'0 abs_P_le using exp_polynomial_approx_aux f
+  by_cases h : f.aroots ℂ = 0
+  · refine ⟨0, fun p _ pp => ⟨p + 1, ?_, 0, ?_⟩⟩ <;> simp [pp.ne_one, Int.natCast_dvd, h]
+  replace h : ((f.aroots ℂ).map c').toFinset.Nonempty := by simpa
+  refine ⟨((f.aroots ℂ).map c').toFinset.max' h, fun p p_gt prime_p => ?_⟩
+  let h := X ^ (p - 1) * f ^ p
+  obtain ⟨gₚ', -, gₚ'_eq⟩ := eval_sumIDeriv_of_pos h prime_p.pos
+  refine ⟨f.eval 0 ^ p + p * gₚ'.eval 0, ?_, ?_⟩
   · rw [dvd_add_left (dvd_mul_right _ _)]
     contrapose! p_gt with h
     exact Nat.le_of_dvd (Int.natAbs_pos.mpr hf) (Int.natCast_dvd.mp (Int.Prime.dvd_pow' prime_p h))
-  obtain ⟨gp, gp'_le, h⟩ := aeval_sumIDeriv ℂ (X ^ (p - 1) * f ^ p) p
-  refine ⟨gp, ?_, ?_⟩
-  · refine gp'_le.trans ((tsub_le_tsub_right natDegree_mul_le p).trans ?_)
+  obtain ⟨gₚ, gₚ_le, gₚ_eq⟩ := aeval_sumIDeriv ℂ h p
+  refine ⟨gₚ, ?_, ?_⟩
+  · refine gₚ_le.trans ((tsub_le_tsub_right natDegree_mul_le p).trans ?_)
     rw [natDegree_X_pow, natDegree_pow, tsub_add_eq_add_tsub prime_p.one_le, tsub_right_comm,
       add_tsub_cancel_left]
   intro r hr
-  specialize h r _
-  · rw [mem_roots'] at hr
-    rw [Polynomial.map_mul, f.map_pow]
-    exact dvd_mul_of_dvd_right (pow_dvd_pow_of_dvd (dvd_iff_isRoot.mpr hr.2) _) _
-  rw [nsmul_eq_mul] at h
-  have :
-      (↑(eval 0 f ^ p + p * eval 0 gp') * cexp r - p * (aeval r) gp) * (p - 1)! =
-      ((eval 0 f ^ p * cexp r) * (p - 1)! +
-        ↑(p * (p - 1)!) * (eval 0 gp' * cexp r - (aeval r) gp)) := by
-    push_cast; ring
-  rw [le_div_iff₀ (Nat.cast_pos.mpr (Nat.factorial_pos _) : (0 : ℝ) < _), ← norm_natCast,
-    ← norm_mul, this, Nat.mul_factorial_pred prime_p.ne_zero, mul_sub, ← h]
-  have :
-      ↑(eval 0 f) ^ p * cexp r * ↑(p - 1)! +
-        (↑p ! * (↑(eval 0 gp') * cexp r) - (aeval r) (sumIDeriv (X ^ (p - 1) * f ^ p))) =
-      ((p - 1)! • ↑(eval 0 (f ^ p)) + p ! • ↑(eval 0 gp') : ℤ) * cexp r -
-        (aeval r) (sumIDeriv (X ^ (p - 1) * f ^ p)) := by
-    simp; ring
-  rw [this, ← h', mul_comm, ← eq_intCast (algebraMap ℤ ℂ),
-    ← aeval_algebraMap_apply_eq_algebraMap_eval, map_zero,
-    aeval_sumIDeriv_eq_eval, aeval_sumIDeriv_eq_eval, ← P]
-  refine (Pp'_le r p prime_p.ne_zero).trans (pow_le_pow_left₀ (c'0 r) ?_ _)
-  have aux : c' r ∈ (Multiset.map c' (f.aroots ℂ)).toFinset := by
-    simpa only [Multiset.mem_toFinset] using Multiset.mem_map_of_mem _ hr
-  have h : ((f.aroots ℂ).map c').toFinset.Nonempty := ⟨c' r, aux⟩
-  simpa only [h, ↓reduceDIte] using Finset.le_max' _ _ aux
+  rw [le_div_iff₀' (Nat.cast_pos.mpr (Nat.factorial_pos _) : (0 : ℝ) < _)]
+  calc ↑(p - 1)! * ‖↑(eval 0 f ^ p + ↑p * eval 0 gₚ') * cexp r - ↑p * (aeval r) gₚ‖
+    _ = ‖↑(p - 1)! * (↑(eval 0 f ^ p + ↑p * eval 0 gₚ') * cexp r - ↑p * (aeval r) gₚ)‖ := ?_
+    _ = ‖(↑(p - 1)! * eval 0 f ^ p + ↑p ! * eval 0 gₚ') * cexp r - ↑p ! * (aeval r) gₚ‖ := ?_
+    _ = ‖P (map (algebraMap ℤ ℂ) h) r‖ := ?_
+    _ ≤ c' r ^ p := abs_P_le r p prime_p.ne_zero
+    _ ≤ _ := pow_le_pow_left₀ (c'0 r) ?_ _
+  · rw [norm_mul, norm_natCast]
+  · rw [← Nat.mul_factorial_pred prime_p.ne_zero]
+    push_cast
+    ring_nf
+  · specialize gₚ_eq r _
+    · rw [mem_roots'] at hr
+      rw [Polynomial.map_mul, f.map_pow]
+      exact dvd_mul_of_dvd_right (pow_dvd_pow_of_dvd (dvd_iff_isRoot.mpr hr.2) _) _
+    specialize gₚ'_eq 0 (by rw [C_0, sub_zero])
+    simp_rw [nsmul_eq_mul] at gₚ_eq gₚ'_eq
+    rw [P_algebraMap, gₚ_eq, gₚ'_eq, eval_pow]
+    push_cast
+    ring_nf
+  · apply Finset.le_max'
+    simpa using Multiset.mem_map_of_mem _ hr
 
 end
 
