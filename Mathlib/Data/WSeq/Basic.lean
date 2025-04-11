@@ -463,15 +463,15 @@ theorem mem_of_mem_dropn {s : WSeq α} {a} : ∀ {n}, a ∈ drop s n → a ∈ s
   | n + 1, h => @mem_of_mem_dropn s a n (mem_of_mem_tail h)
 
 theorem get?_mem {s : WSeq α} {a n} : some a ∈ get? s n → a ∈ s := by
-  revert s; induction n with <;> intro s h
-  | zero =>
+  revert s; induction n <;> intro s h
+  case zero =>
     rcases Computation.exists_of_mem_map h with ⟨o, h1, h2⟩
     rcases o with - | o
     · injection h2
     injection h2 with h'
     obtain ⟨a', s'⟩ := o
     exact (eq_or_mem_iff_mem h1).2 (Or.inl h'.symm)
-  | succ n IH =>
+  case succ n IH =>
     have := @IH (tail s)
     rw [get?_tail] at this
     exact mem_of_mem_tail (this h)

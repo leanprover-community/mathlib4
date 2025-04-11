@@ -590,12 +590,12 @@ section powers
 theorem support_pow_subset_closure [AddCommMonoid Γ] [PartialOrder Γ] [IsOrderedCancelAddMonoid Γ]
     [Semiring R] (x : HahnSeries Γ R)
     (n : ℕ) : support (x ^ n) ⊆ AddSubmonoid.closure (support x) := by
-  induction n with <;> intro g hn
-  | zero =>
+  induction n <;> intro g hn
+  case zero =>
     simp only [pow_zero, mem_support, coeff_one, ne_eq, ite_eq_right_iff, Classical.not_imp] at hn
     simp only [hn, SetLike.mem_coe]
     exact AddSubmonoid.zero_mem _
-  | succ n ih =>
+  case succ n ih =>
     obtain ⟨i, hi, j, hj, rfl⟩ := support_mul_subset_add_support hn
     exact SetLike.mem_coe.2 (AddSubmonoid.add_mem _ (ih hi) (AddSubmonoid.subset_closure hj))
 
