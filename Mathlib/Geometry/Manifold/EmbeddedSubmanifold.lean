@@ -240,6 +240,48 @@ noncomputable def pullback_sliceModel (h : SliceModel F I I') (hf : IsEmbedding 
   continuousOn_toFun := continuousOn_source h hf.continuous htarget
   continuousOn_invFun := continuousOn_aux_invFun h hf hsource
 
+@[simp, mfld_simps]
+lemma pullback_sliceModel_coe (h : SliceModel F I I') (hf : IsEmbedding f)
+    (hsource : φ.source ⊆ range f) (htarget : φ.target ⊆ range h.map) :
+      φ.pullback_sliceModel h hf hsource htarget = h.inverse ∘ φ ∘ f := by
+  rfl
+
+@[simp, mfld_simps]
+lemma pullback_sliceModel_source (h : SliceModel F I I') (hf : IsEmbedding f)
+    (hsource : φ.source ⊆ range f) (htarget : φ.target ⊆ range h.map) :
+      (φ.pullback_sliceModel h hf hsource htarget).source = f ⁻¹' φ.source := by
+  rfl
+
+@[simp, mfld_simps]
+lemma pullback_sliceModel_target (h : SliceModel F I I') (hf : IsEmbedding f)
+    (hsource : φ.source ⊆ range f) (htarget : φ.target ⊆ range h.map) :
+      (φ.pullback_sliceModel h hf hsource htarget).target = h.map ⁻¹' φ.target := by
+  rfl
+
+@[simp, mfld_simps]
+lemma pullback_sliceModel_symm_coe (h : SliceModel F I I') (hf : IsEmbedding f)
+    (hsource : φ.source ⊆ range f) (htarget : φ.target ⊆ range h.map) :
+    (φ.pullback_sliceModel h hf hsource htarget).symm =
+      (Function.extend f id (fun _ ↦ (Classical.arbitrary M))) ∘ φ.symm ∘ h.map := by
+  rfl
+
+lemma pullback_sliceModel_trans_eqOn_source (h : SliceModel F I I')
+    (hf : IsEmbedding f) {ψ : PartialHomeomorph M' H'}
+    (hsource : φ.source ⊆ range f) (htarget : φ.target ⊆ range h.map)
+    (hsource' : ψ.source ⊆ range f) (htarget' : ψ.target ⊆ range h.map) :
+    EqOn ((φ.pullback_sliceModel h hf hsource htarget).symm.trans
+        (ψ.pullback_sliceModel h hf hsource' htarget'))
+      (h.inverse ∘ ψ ∘ φ.symm ∘ h.map) (φ.pullback_sliceModel h hf hsource htarget).target := by
+  dsimp only [coe_trans, pullback_sliceModel_coe, pullback_sliceModel_symm_coe]
+  intro x hx
+  calc
+    _ = ((h.inverse ∘ ψ) ∘ (f ∘ (Function.extend f id (fun x'' ↦ Classical.arbitrary M))))
+        ((φ.symm ∘ h.map) x) := rfl
+    _ = (h.inverse ∘ ψ) (φ.symm (SliceModel.map F I I' x)) := by
+      choose x' hx' using missing h hsource hx
+      simp only [← hx', comp_apply, hf.injective.extend_apply]
+      congr
+
 end PartialHomeomorph
 
 variable (I I' F M M' n) in
@@ -259,19 +301,12 @@ noncomputable def myChart (inst : IsImmersedSubmanifold F I I' M M' n h) (x : M)
   (chartAt H' (inst.emb x)).pullback_sliceModel h inst.hemb (hcharts_source (mem_range_self x))
     (hcharts_target (mem_range_self x))
 
--- missing simp lemmas: source, target of pullback!
-lemma myChart_source (inst : IsImmersedSubmanifold F I I' M M' n h) (x : M) :
-    (inst.myChart x).source = inst.emb ⁻¹' ((chartAt H' (inst.emb x)).source) := by
-  rfl
-
 -- XXX: making this an instance makes Lean complain about synthesization order
 noncomputable def chartedSpace (inst : IsImmersedSubmanifold F I I' M M' n h) :
     ChartedSpace H M where
-  atlas := {inst.myChart x | x : M }
+  atlas := { inst.myChart x | x : M }
   chartAt x := inst.myChart x
-  mem_chart_source x := by
-    rw [myChart_source]
-    exact mem_chart_source _ (emb n h x)
+  mem_chart_source x := by simp [myChart]
   chart_mem_atlas x := by rw [mem_setOf]; use x
 
 -- cannot state this yet because of the synthesisation order issue
@@ -279,6 +314,33 @@ noncomputable def chartedSpace (inst : IsImmersedSubmanifold F I I' M M' n h) :
 /- noncomputable def isManifold (inst : IsImmersedSubmanifold F I I' M M' n h) :
     haveI : ChartedSpace H M := inst.chartedSpace; IsManifold I n M where
   compatible := sorry -/
+
+-- XXX: turn this proof into the isManifold instance
+lemma compatible  (inst : IsImmersedSubmanifold F I I' M M' n h)
+    -- {e e' : PartialHomeomorph M H} (he : e ∈ atlas H M) (he' : e' ∈ atlas H M) :
+    -- e.symm ≫ₕ e' ∈ (contDiffGroupoid n I)
+    {x x' : M} : (inst.myChart x).symm ≫ₕ (inst.myChart x') ∈ (contDiffGroupoid n I) := by
+  rw [contDiffGroupoid, contDiffPregroupoid, mem_groupoid_of_pregroupoid]
+  constructor
+  · dsimp
+    simp [myChart]
+    show ContDiffOn 𝕜 n
+      (I ∘ ((h.inverse ∘ (chartAt H' (emb n h x')) ∘ emb n h) ∘
+        (extend (emb n h) id fun x ↦ Classical.arbitrary M) ∘ (chartAt H' (emb n h x)).symm ∘ h.map) ∘
+      ↑I.symm)
+      (↑I.symm ⁻¹' (h.map ⁻¹' (chartAt H' (emb n h x)).target) ∩
+      ↑I.symm ⁻¹'
+        ((extend (emb n h) id fun x ↦ Classical.arbitrary M) ∘
+            ↑(chartAt H' (emb n h x)).symm ∘ h.map ⁻¹' (emb n h ⁻¹' (chartAt H' (emb n h x')).source)) ∩ range ↑I)
+    -- this can help, but not sufficient yet
+    -- rw [pullback_sliceModel_trans_eqOn_source]
+    sorry
+
+  dsimp
+  set X := emb (M' := M') n h x
+  set X' := emb (M' := M') n h x'
+
+  sorry
 
 /- lemma isImmersion_emb (inst : IsImmersedSubmanifold F I I' M M' n h) :
     IsImmersion F I I' n inst.emb := sorry -/
