@@ -3,10 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
+import Mathlib.Algebra.Algebra.Pi
 import Mathlib.LinearAlgebra.Finsupp.SumProd
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
-import Mathlib.LinearAlgebra.Pi
 
 /-!
 # The standard basis
@@ -162,6 +162,29 @@ end
 end Module
 
 end Pi
+
+/-- Let `k` be an integral domain and `G` an arbitrary finite set.
+Then any algebra morphism `φ : (G → k) →ₐ[k] k` is an evaluation map. -/
+lemma eval_of_algHom' {k G : Type*} [CommSemiring k] [NoZeroDivisors k] [Nontrivial k]
+    [Finite G] (φ : (G → k) →ₐ[k] k) : ∃ (s : G), φ = Pi.evalAlgHom _ _ s := by
+  have h1 := map_one φ
+  classical
+  have := Fintype.ofFinite G
+  simp only [← Finset.univ_sum_single (1 : G → k), Pi.one_apply, map_sum] at h1
+  obtain ⟨s, hs⟩ : ∃ (s : G), φ (Pi.single s 1) ≠ 0 := by
+    by_contra
+    simp_all
+  have h2 : ∀ t ≠ s, φ (Pi.single t 1) = 0 := by
+    refine fun _ _ ↦ (eq_zero_or_eq_zero_of_mul_eq_zero ?_).resolve_left hs
+    rw [← map_mul]
+    convert map_zero φ
+    ext u
+    by_cases u = s <;> simp_all
+  have h3 : φ (Pi.single s 1) = 1 := by
+    rwa [Fintype.sum_eq_single s h2] at h1
+  use s
+  refine AlgHom.toLinearMap_injective ((Pi.basisFun k G).ext fun t ↦ ?_)
+  by_cases t = s <;> simp_all
 
 namespace Module
 
