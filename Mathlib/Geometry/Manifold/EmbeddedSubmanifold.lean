@@ -213,22 +213,20 @@ noncomputable def pullback_sliceModel [Nonempty M] [Nonempty H] (φ : PartialHom
   map_source' x hx := by
     rw [← φ.image_source_eq_target, mem_preimage]
     convert mem_image_of_mem φ hx
-    apply aux φ h hyp (mem_range_self x)
+    exact aux φ h hyp (mem_range_self x)
   map_target' x hx := by
     rw [mem_preimage] at hx ⊢
     -- f and f.extend cancel
     -- φ.symm '' target ∈ φ.source
     -- use
     sorry
-  left_inv' x hx := by
-    let y := φ (f x)
-    have : SliceModel.map F I I' (SliceModel.inverse (h := h) y) = y :=
-      aux φ h hyp (mem_range_self x)
-    calc
+  left_inv' x hx := calc
       _ = ((Function.extend f id fun x ↦ Classical.arbitrary M) ∘ φ.symm ∘
           (SliceModel.map F I I' ∘ SliceModel.inverse) ∘ φ ∘ f) x := rfl
       _ = ((Function.extend f id fun x ↦ Classical.arbitrary M) ∘ φ.symm ∘ φ ∘ f) x := by
-        simp_rw [comp_apply]; rw [this]
+        simp_rw [comp_apply]
+        congr
+        exact aux φ h hyp (mem_range_self x)
       _ = (Function.extend f id fun x ↦ Classical.arbitrary M) (f x) := by
         simp only [comp_apply]
         congr
