@@ -108,11 +108,6 @@ theorem finiteDimensional_sup {K L : Type*} [Field K] [Field L] [Algebra K L]
     FiniteDimensional K (↥(E1 ⊔ E2)) :=
   IntermediateField.finiteDimensional_sup E1 E2
 
-/-- An element of `L ≃ₐ[K] L` is in `Gal(L/E)` if and only if it fixes every element of `E`. -/
-theorem IntermediateField.mem_fixingSubgroup_iff {K L : Type*} [Field K] [Field L] [Algebra K L]
-    (E : IntermediateField K L) (σ : L ≃ₐ[K] L) : σ ∈ E.fixingSubgroup ↔ ∀ x : L, x ∈ E → σ x = x :=
-  ⟨fun hσ x hx => hσ ⟨x, hx⟩, fun h ⟨x, hx⟩ => h x hx⟩
-
 /-- The map `E ↦ Gal(L/E)` is inclusion-reversing -/
 theorem IntermediateField.fixingSubgroup.antimono {K L : Type*} [Field K] [Field L] [Algebra K L]
     {E1 E2 : IntermediateField K L} (h12 : E1 ≤ E2) : E2.fixingSubgroup ≤ E1.fixingSubgroup := by
@@ -294,12 +289,12 @@ end TotallySeparated
 @[simp] lemma IntermediateField.fixingSubgroup_top (K L : Type*) [Field K] [Field L] [Algebra K L] :
     IntermediateField.fixingSubgroup (⊤ : IntermediateField K L) = ⊥ := by
   ext
-  simp [mem_fixingSubgroup_iff, DFunLike.ext_iff]
+  simp [IntermediateField.mem_fixingSubgroup_iff, DFunLike.ext_iff]
 
 @[simp] lemma IntermediateField.fixingSubgroup_bot (K L : Type*) [Field K] [Field L] [Algebra K L] :
     IntermediateField.fixingSubgroup (⊥ : IntermediateField K L) = ⊤ := by
   ext
-  simp [mem_fixingSubgroup_iff, mem_bot]
+  simp [IntermediateField.mem_fixingSubgroup_iff, mem_bot]
 
 instance krullTopology_discreteTopology_of_finiteDimensional (K L : Type*) [Field K] [Field L]
     [Algebra K L] [FiniteDimensional K L] : DiscreteTopology (L ≃ₐ[K] L) := by
@@ -322,7 +317,7 @@ theorem map_fixingSubgroup [Normal k E] :
     (L.map (IsScalarTower.toAlgHom k E K)).fixingSubgroup =
       L.fixingSubgroup.comap (AlgEquiv.restrictNormalHom (F := k) (K₁ := K) E) := by
   ext f
-  simp only [Subgroup.mem_comap, mem_fixingSubgroup_iff]
+  simp only [Subgroup.mem_comap, IntermediateField.mem_fixingSubgroup_iff]
   constructor
   · rintro h x hx
     change f.restrictNormal E x = x
