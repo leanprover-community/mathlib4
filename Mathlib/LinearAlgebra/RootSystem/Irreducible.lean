@@ -215,15 +215,13 @@ lemma l3 {K : Type*} [Field K] [Module K M] [Module K N]
   · by_contra h
     subst h
     have : q = ⊤ := by
-      rw [eq_top_mono (span_le.mpr (image_subset_iff.mpr b)) (by rw
-      [image_univ, RootSystem.span_root_eq_top])]
+      rw [eq_top_mono (span_le.mpr (image_subset_iff.mpr b)) (by rw [image_univ,
+      RootSystem.span_root_eq_top])]
     exact False.elim (h_top this)
   by_contra h
   subst h
-  have lll (i : ι) : q ≤ ker (P.coroot' i) := c i (fun a ↦ a)
-  obtain ⟨v1, ⟨v21, _⟩⟩ := ((Submodule.ne_bot_iff q).1 h_bot)
-  have help (d : Module.Dual K M) : d v1 = 0 := aux P v1 (fun i ↦ lll i v21) d
-  have := (Module.forall_dual_apply_eq_zero_iff K v1).1 help
+  obtain ⟨v₁, ⟨v₂, _⟩⟩ := ((Submodule.ne_bot_iff q).1 h_bot)
+  have := (Module.forall_dual_apply_eq_zero_iff K v₁).1 (aux P v₁ (fun i ↦ c i (fun a ↦ a) v₂))
   contradiction
 
 lemma invtsubmodule_to_root_subset {K : Type*} [Field K] [Module K M] [Module K N]
@@ -236,7 +234,7 @@ lemma invtsubmodule_to_root_subset {K : Type*} [Field K] [Module K M] [Module K 
   by_contra ntop
   have := l3 P q h₁ h₀ ntop
   obtain ⟨Φ, b, c, d, e⟩ := this
-  have s2 := h₂ Φ (nonempty_iff_ne_empty.mpr e) (image_subset_iff.mpr b) c
-  exact False.elim (d s2)
+  have s := h₂ Φ (nonempty_iff_ne_empty.mpr e) (image_subset_iff.mpr b) c
+  exact False.elim (d s)
 
 end RootPairing
