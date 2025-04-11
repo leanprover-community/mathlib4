@@ -68,13 +68,12 @@ lemma hasExt_iff [HasDerivedCategory.{w'} C] :
     exact (small_congr ((shiftFunctorZero _ ℤ).app
       ((singleFunctor C 0).obj X)).homFromEquiv).1 (h X Y 0 n)
   · intro h X Y a b
-    by_cases hab : a ≤ b
+    obtain hab | hav := le_or_lt a b
     · refine (small_congr ?_).1 (h X Y (b - a) (by simpa))
       exact (Functor.FullyFaithful.ofFullyFaithful
         (shiftFunctor _ a)).homEquiv.trans
         ((shiftFunctorAdd' _ _ _ _ (Int.sub_add_cancel b a)).symm.app _).homToEquiv
-    · simp only [not_le] at hab
-      suffices Subsingleton ((Q.obj ((CochainComplex.singleFunctor C 0).obj X))⟦a⟧ ⟶
+    · suffices Subsingleton ((Q.obj ((CochainComplex.singleFunctor C 0).obj X))⟦a⟧ ⟶
           (Q.obj ((CochainComplex.singleFunctor C 0).obj Y))⟦b⟧) from inferInstance
       constructor
       intro x y
