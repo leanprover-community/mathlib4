@@ -5272,6 +5272,7 @@ import Mathlib.RingTheory.TwoSidedIdeal.Instances
 import Mathlib.RingTheory.TwoSidedIdeal.Kernel
 import Mathlib.RingTheory.TwoSidedIdeal.Lattice
 import Mathlib.RingTheory.TwoSidedIdeal.Operations
+import Mathlib.RingTheory.TwoSidedIdeal.SpanAsSum
 import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
 import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
 import Mathlib.RingTheory.UniqueFactorizationDomain.FactorSet
@@ -5305,6 +5306,7 @@ import Mathlib.RingTheory.Valuation.RankOne
 import Mathlib.RingTheory.Valuation.ValExtension
 import Mathlib.RingTheory.Valuation.ValuationRing
 import Mathlib.RingTheory.Valuation.ValuationSubring
+import Mathlib.RingTheory.WedderburnArtin
 import Mathlib.RingTheory.WittVector.Basic
 import Mathlib.RingTheory.WittVector.Compare
 import Mathlib.RingTheory.WittVector.Complete
