@@ -65,6 +65,10 @@ instance : FunLike (SummableFamily Γ R α) α (HahnSeries Γ R) where
   coe := toFun
   coe_injective' | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
 
+theorem eq_toFun {s : SummableFamily Γ R α} (a : α) :
+    s a = s.toFun a :=
+  rfl
+
 theorem isPWO_iUnion_support (s : SummableFamily Γ R α) : Set.IsPWO (⋃ a : α, (s a).support) :=
   s.isPWO_iUnion_support'
 
@@ -923,29 +927,33 @@ theorem pow_finite_co_support {x : HahnSeries Γ R} (hx : 0 < x.orderTop) (g : �
 
 /-- A summable family of powers of a Hahn series `x`. If `x` has non-positive orderTop, then we
 return the junk value zero. -/
+@[simps]
 def powers (x : HahnSeries Γ R) : SummableFamily Γ R ℕ where
-  toFun n := if 0 < x.orderTop then x ^ n else 0
+  toFun n := if 0 < x.orderTop then x ^ n else 0 ^ n
   isPWO_iUnion_support' := by
     by_cases h : 0 < x.orderTop
     · simp only [h, ↓reduceIte]
       exact isPWO_iUnion_support_powers (zero_le_orderTop_iff.mp <| le_of_lt h)
-    · simp [h]
+    · simp only [h, ↓reduceIte]
+      apply isPWO_iUnion_support_powers
+      rw [order_zero]
   finite_co_support' g := by
     by_cases h : 0 < x.orderTop
     · simp only [h, ↓reduceIte]
       exact pow_finite_co_support h g
-    · simp [h]
+    · simp only [h, ↓reduceIte]
+      exact pow_finite_co_support (orderTop_zero (R := R) (Γ := Γ) ▸ WithTop.top_pos) g
 
 @[simp]
 theorem powers_of_orderTop_pos {x : HahnSeries Γ R} (hx : 0 < x.orderTop) (n : ℕ) :
     powers x n = x ^ n := by
-  simp [powers, hx]
+  simp only [powers, hx, ↓reduceIte]
   exact rfl
 
 @[simp]
-theorem powers_of_not_orderTop_pos {x : HahnSeries Γ R} (hx : ¬ 0 < x.orderTop) :
-    powers x = 0 := by
-  simp [powers, hx]
+theorem powers_of_not_orderTop_pos {x : HahnSeries Γ R} (hx : ¬ 0 < x.orderTop) (n : ℕ) :
+    powers x n = 0 ^ n := by
+  simp only [powers, hx, ↓reduceIte]
   exact rfl
 
 variable {x : HahnSeries Γ R} (hx : 0 < x.orderTop)

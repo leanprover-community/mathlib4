@@ -5,8 +5,7 @@ Authors: Scott Carnahan
 -/
 import Mathlib.RingTheory.HahnSeries.PowerSeries
 import Mathlib.RingTheory.HahnSeries.HEval
-import Mathlib.RingTheory.PowerSeries.WellKnown
-import Mathlib.RingTheory.Binomial
+import Mathlib.RingTheory.PowerSeries.Binomial
 
 /-!
 # Hahn Series
@@ -95,21 +94,58 @@ section BinomialPow
 variable [LinearOrderedAddCommGroup Γ] [CommRing R] [BinomialRing R] [Module R Γ]
 [CommRing A] [Algebra R A]
 
-theorem pos_orderTop_single_sub {g g' : Γ} (h : g < g') (r : A) :
-    0 < (single (g' - g) r).orderTop := by
-  by_cases hr : r = 0
-  · simp [hr]
-  · rw [orderTop_single hr, WithTop.coe_pos]
+theorem pos_orderTop_single_sub {g g' : Γ} (h : g < g') (a : A) :
+    0 < (single (g' - g) a).orderTop := by
+  by_cases ha : a = 0
+  · simp [ha]
+  · rw [orderTop_single ha, WithTop.coe_pos]
     exact sub_pos.mpr h
+--#find_home! pos_orderTop_single_sub --[Mathlib.RingTheory.HahnSeries.Multiplication]
 
 /-- A Hahn series formally expanding `(X g - X g') ^ r` where `r` is an element of a binomial ring.
 -/
-def binomialPowFamily {g g' : Γ} (h : g < g') (r : R) : HahnSeries Γ A :=
-  single (r • g) 1 *
-    (PowerSeries.heval (pos_orderTop_single_sub h (-1))
-      (PowerSeries.mk (fun n => Ring.choose r n) • 1))
+def binomialPow (g g' : Γ) (r : R) : HahnSeries Γ A :=
+  single (r • g) (1 : A) *
+    (PowerSeries.heval ((single (g' - g)) (-1 : A)) (PowerSeries.binomialSeries A r))
 
+@[simp]
+theorem binomialPow_apply (g g' : Γ) (r : R) :
+    binomialPow g g' r = single (r • g) 1 *
+      (PowerSeries.heval ((single (g' - g)) (-1 : A)) (PowerSeries.binomialSeries A r)) :=
+  rfl
 
+theorem binomialPow_apply_of_not_gt {g g' : Γ} (h : ¬ g < g') (r : R) :
+    binomialPow g g' r = single (r • g) (1 : A) := by
+  cases subsingleton_or_nontrivial A
+  · have _ : Subsingleton (HahnSeries Γ A) := instSubsingleton
+    exact Subsingleton.elim _ _
+  · have : ¬ 0 < (single (g' - g) (-1 : A)).orderTop := by
+      rw [orderTop_single (neg_ne_zero.mpr one_ne_zero), WithTop.coe_pos, sub_pos]
+      exact h
+    rw [binomialPow_apply, PowerSeries.heval_of_orderTop_not_pos _ this]
+    simp
+
+theorem binomialPow_add {g g' : Γ} (r r' : R) :
+    binomialPow (A := A) g g' r * binomialPow g g' r' =
+      binomialPow g g' (r + r') := by
+  simp only [binomialPow, PowerSeries.binomialSeries_add, PowerSeries.heval_mul, add_smul]
+  rw [mul_left_comm, ← mul_assoc, ← mul_assoc, single_mul_single, mul_one, add_comm, ← mul_assoc]
+
+theorem binomialPow_nat {g g' : Γ} (h : g < g') (n : ℕ) :
+    binomialPow g g' (n : R) = ((single g (1 : A)) - single g' 1) ^ n := by
+  induction n with
+  | zero => simp [PowerSeries.binomialSeries_zero, map_one]
+  | succ n ih =>
+    rw [Nat.cast_add, ← binomialPow_add, pow_add, ih]
+    have : binomialPow g g' (Nat.cast (R := R) 1) = ((single g) (1 : A) - (single g') 1) := by
+      simp only [Nat.cast_one, binomialPow_apply, one_smul]
+      rw [← Nat.cast_one (R := R), PowerSeries.binomialSeries_nat 1, pow_one, map_add,
+        PowerSeries.heval_X, ← RingHom.map_one (f := PowerSeries.C A), PowerSeries.heval_C,
+        one_smul, mul_add, mul_one, single_mul_single, one_mul, single_neg, add_sub_cancel,
+        sub_eq_add_neg]
+      · exact pos_orderTop_single_sub h (-1)
+      · exact pos_orderTop_single_sub h (-1)
+    rw [this, pow_one]
 
 end BinomialPow
 

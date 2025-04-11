@@ -325,6 +325,11 @@ theorem coeff_neg {x : HahnSeries Γ R} : (-x).coeff = -x.coeff :=
 @[deprecated (since := "2025-01-31")] alias neg_coeff := coeff_neg
 
 @[simp]
+theorem single_neg (g : Γ) (r : R) :
+    single g (-r) = -single g r := by
+  rw [eq_neg_iff_add_eq_zero, ← single_add, single_eq_zero_iff, neg_add_eq_zero]
+
+@[simp]
 theorem support_neg {x : HahnSeries Γ R} : (-x).support = x.support := by
   ext
   simp
@@ -417,6 +422,13 @@ theorem coeff_smul {r : R} {x : HahnSeries Γ V} {a : Γ} : (r • x).coeff a = 
   rfl
 
 @[deprecated (since := "2025-01-31")] alias smul_coeff := coeff_smul
+
+@[simp]
+theorem single_smul {g : Γ} {r : R} {s : V} : single g (r • s) = r • single g s := by
+  ext g'
+  by_cases h : g = g'
+  · simp [h]
+  · simp [coeff_single_of_ne (fun a ↦ h a.symm)]
 
 instance : SMulZeroClass R (HahnSeries Γ V) :=
   { inferInstanceAs (SMul R (HahnSeries Γ V)) with
