@@ -225,10 +225,10 @@ lemma continuousOn_aux_invFun [Nonempty M] (h : SliceModel F I I') (hf : IsEmbed
   exact this.comp h.hmap.continuous.continuousOn (fun ⦃x⦄ a ↦ a)
 
 omit [TopologicalSpace M] in
-lemma aux (h : SliceModel F I I') (hyp : range (φ ∘ f) ⊆ range h.map)
-    {y : H'} (hy : y ∈ range (φ ∘ f)) : h.map (h.inverse y) = y := by
-  choose x' hx' using hyp hy
+lemma aux' (h : SliceModel F I I') {y : H'} (hy : y ∈ range (φ ∘ f)) (hy' : y ∈ range h.map) :
+    h.map (h.inverse y) = y := by
   choose x hx using hy
+  choose x' hx' using hy'
   rw [← hx', h.inverse_left_inv x']
 
 -- key lemma to this, if true: have : range (φ.symm ∘ h.map) ⊆ range f := sorry
@@ -254,7 +254,8 @@ noncomputable def pullback_sliceModel (hf : IsEmbedding f) (h : SliceModel F I I
   map_source' x hx := by
     rw [← φ.image_source_eq_target, mem_preimage]
     convert mem_image_of_mem φ hx
-    exact aux h hyp.le (mem_range_self x)
+    apply aux' h (mem_range_self x) (htarget ?_)
+    exact φ.image_source_eq_target ▸ mem_image_of_mem φ hx
   map_target' x hx := by
     rw [mem_preimage] at hx ⊢
     convert map_target φ hx
@@ -273,7 +274,8 @@ noncomputable def pullback_sliceModel (hf : IsEmbedding f) (h : SliceModel F I I
       _ = ((Function.extend f id fun x ↦ Classical.arbitrary M) ∘ φ.symm ∘ φ ∘ f) x := by
         simp_rw [comp_apply]
         congr
-        exact aux h hyp.le (mem_range_self x)
+        apply aux' h (mem_range_self x) (htarget ?_)
+        exact φ.image_source_eq_target ▸ mem_image_of_mem φ hx
       _ = (Function.extend f id fun x ↦ Classical.arbitrary M) (f x) := by
         simp only [comp_apply]
         congr
