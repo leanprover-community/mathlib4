@@ -168,14 +168,19 @@ theorem tprod_inv : ∏' b, (f b)⁻¹ = (∏' b, f b)⁻¹ := by
       tprod_eq_one_of_not_multipliable (mt Multipliable.of_inv hf)]
 
 @[to_additive]
-theorem tprod_div (hf : Multipliable f) (hg : Multipliable g) :
+protected theorem Multipliable.tprod_div (hf : Multipliable f) (hg : Multipliable g) :
     ∏' b, (f b / g b) = (∏' b, f b) / ∏' b, g b :=
   (hf.hasProd.div hg.hasProd).tprod_eq
 
+@[to_additive, deprecated (since := "2025-04-11")] alias tprod_div := Multipliable.tprod_div
+
 @[to_additive]
-theorem prod_mul_tprod_compl {s : Finset β} (hf : Multipliable f) :
+protected theorem Multipliable.prod_mul_tprod_compl {s : Finset β} (hf : Multipliable f) :
     (∏ x ∈ s, f x) * ∏' x : ↑(s : Set β)ᶜ, f x = ∏' x, f x :=
   ((s.hasProd f).mul_compl (s.multipliable_compl_iff.2 hf).hasProd).tprod_eq.symm
+
+@[to_additive, deprecated (since := "2025-04-11")] alias prod_mul_tprod_compl :=
+  Multipliable.prod_mul_tprod_compl
 
 /-- Let `f : β → α` be a multipliable function and let `b ∈ β` be an index.
 Lemma `tprod_eq_mul_tprod_ite` writes `∏ n, f n` as `f b` times the product of the
@@ -183,10 +188,13 @@ remaining terms. -/
 @[to_additive "Let `f : β → α` be a summable function and let `b ∈ β` be an index.
 Lemma `tsum_eq_add_tsum_ite` writes `Σ' n, f n` as `f b` plus the sum of the
 remaining terms."]
-theorem tprod_eq_mul_tprod_ite [DecidableEq β] (hf : Multipliable f) (b : β) :
-    ∏' n, f n = f b * ∏' n, ite (n = b) 1 (f n) := by
+protected theorem Multipliable.tprod_eq_mul_tprod_ite [DecidableEq β] (hf : Multipliable f)
+    (b : β) : ∏' n, f n = f b * ∏' n, ite (n = b) 1 (f n) := by
   rw [(hasProd_ite_div_hasProd hf.hasProd b).tprod_eq]
   exact (mul_div_cancel _ _).symm
+
+@[to_additive, deprecated (since := "2025-04-11")] alias tprod_eq_mul_tprod_ite :=
+  Multipliable.tprod_eq_mul_tprod_ite
 
 end tprod
 
@@ -305,16 +313,23 @@ theorem multipliable_subtype_and_compl {s : Set β} :
   ⟨and_imp.2 Multipliable.mul_compl, fun h ↦ ⟨h.subtype s, h.subtype sᶜ⟩⟩
 
 @[to_additive]
-theorem tprod_subtype_mul_tprod_subtype_compl [T2Space α] {f : β → α} (hf : Multipliable f)
-    (s : Set β) : (∏' x : s, f x) * ∏' x : ↑sᶜ, f x = ∏' x, f x :=
+protected theorem Multipliable.tprod_subtype_mul_tprod_subtype_compl [T2Space α] {f : β → α}
+    (hf : Multipliable f) (s : Set β) : (∏' x : s, f x) * ∏' x : ↑sᶜ, f x = ∏' x, f x :=
   ((hf.subtype s).hasProd.mul_compl (hf.subtype { x | x ∉ s }).hasProd).unique hf.hasProd
 
+@[to_additive, deprecated (since := "2025-04-11")] alias tprod_subtype_mul_tprod_subtype_compl :=
+  Multipliable.tprod_subtype_mul_tprod_subtype_compl
+
 @[to_additive]
-theorem prod_mul_tprod_subtype_compl [T2Space α] {f : β → α} (hf : Multipliable f) (s : Finset β) :
+protected theorem Multipliable.prod_mul_tprod_subtype_compl [T2Space α] {f : β → α}
+    (hf : Multipliable f) (s : Finset β) :
     (∏ x ∈ s, f x) * ∏' x : { x // x ∉ s }, f x = ∏' x, f x := by
-  rw [← tprod_subtype_mul_tprod_subtype_compl hf s]
+  rw [← hf.tprod_subtype_mul_tprod_subtype_compl s]
   simp only [Finset.tprod_subtype', mul_right_inj]
   rfl
+
+@[to_additive, deprecated (since := "2025-04-11")] alias prod_mul_tprod_subtype_compl :=
+  Multipliable.prod_mul_tprod_subtype_compl
 
 end IsUniformGroup
 
@@ -429,10 +444,12 @@ lemma HasProd.congr_cofinite₀ {c : K} (hc : HasProd f c) {s : Finset α}
   _ = ∏ i ∈ t, g i := by
     rw [← prod_union disjoint_sdiff, union_sdiff_of_subset ht]
 
-lemma tsum_congr_cofinite₀ [T2Space K] (hc : Multipliable f) {s : Finset α}
+protected lemma Multipliable.tsum_congr_cofinite₀ [T2Space K] (hc : Multipliable f) {s : Finset α}
     (hs : ∀ a ∈ s, f a ≠ 0) (hs' : ∀ a ∉ s, f a = g a) :
     ∏' i, g i = ((∏' i, f i) * ((∏ i ∈ s, g i) / ∏ i ∈ s, f i)) :=
   (hc.hasProd.congr_cofinite₀ hs hs').tprod_eq
+
+@[deprecated (since := "2025-04-11")] alias tsum_congr_cofinite := Multipliable.tsum_congr_cofinite₀
 
 /--
 See also `Multipliable.congr_cofinite`, which does not have a non-vanishing condition, but instead

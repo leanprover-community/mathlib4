@@ -34,9 +34,12 @@ theorem le_hasProd_of_le_prod [ClosedIciTopology α]
   ge_of_tendsto' hf h
 
 @[to_additive]
-theorem tprod_le_of_prod_range_le [ClosedIicTopology α] {f : ℕ → α} (hf : Multipliable f)
-    (h : ∀ n, ∏ i ∈ range n, f i ≤ c) : ∏' n, f n ≤ c :=
+protected theorem Multipliable.tprod_le_of_prod_range_le [ClosedIicTopology α] {f : ℕ → α}
+    (hf : Multipliable f) (h : ∀ n, ∏ i ∈ range n, f i ≤ c) : ∏' n, f n ≤ c :=
   le_of_tendsto' hf.hasProd.tendsto_prod_nat h
+
+@[to_additive, deprecated (since := "2025-04-11")] alias tprod_le_of_prod_range_le :=
+  Multipliable.tprod_le_of_prod_range_le
 
 end Preorder
 
@@ -67,22 +70,28 @@ theorem hasProd_le_inj {g : κ → α} (e : ι → κ) (he : Injective e)
     exact hs _ h
 
 @[to_additive]
-theorem tprod_le_tprod_of_inj {g : κ → α} (e : ι → κ) (he : Injective e)
+protected theorem Multipliable.tprod_le_tprod_of_inj {g : κ → α} (e : ι → κ) (he : Injective e)
     (hs : ∀ c, c ∉ Set.range e → 1 ≤ g c) (h : ∀ i, f i ≤ g (e i)) (hf : Multipliable f)
     (hg : Multipliable g) : tprod f ≤ tprod g :=
   hasProd_le_inj _ he hs h hf.hasProd hg.hasProd
 
+@[to_additive, deprecated (since := "2025-04-11")] alias tprod_le_tprod_of_inj :=
+  Multipliable.tprod_le_tprod_of_inj
+
 @[to_additive]
-lemma tprod_subtype_le {κ γ : Type*} [CommGroup γ] [PartialOrder γ] [IsOrderedMonoid γ]
-    [UniformSpace γ] [IsUniformGroup γ]
-    [OrderClosedTopology γ] [CompleteSpace γ] (f : κ → γ) (β : Set κ) (h : ∀ a : κ, 1 ≤ f a)
-    (hf : Multipliable f) : (∏' (b : β), f b) ≤ (∏' (a : κ), f a) := by
-  apply tprod_le_tprod_of_inj _
+protected lemma Multipliable.tprod_subtype_le {κ γ : Type*} [CommGroup γ] [PartialOrder γ]
+    [IsOrderedMonoid γ] [UniformSpace γ] [IsUniformGroup γ] [OrderClosedTopology γ]
+    [CompleteSpace γ] (f : κ → γ) (β : Set κ) (h : ∀ a : κ, 1 ≤ f a) (hf : Multipliable f) :
+    (∏' (b : β), f b) ≤ (∏' (a : κ), f a) := by
+  apply Multipliable.tprod_le_tprod_of_inj _
     (Subtype.coe_injective)
     (by simp only [Subtype.range_coe_subtype, Set.setOf_mem_eq, h, implies_true])
     (by simp only [le_refl, Subtype.forall, implies_true])
     (by apply hf.subtype)
   apply hf
+
+@[to_additive, deprecated (since := "2025-04-11")] alias tprod_subtype_le :=
+  Multipliable.tprod_subtype_le
 
 @[to_additive]
 theorem prod_le_hasProd (s : Finset ι) (hs : ∀ i, i ∉ s → 1 ≤ f i) (hf : HasProd f a) :
@@ -113,34 +122,49 @@ theorem lt_hasProd [MulRightStrictMono α] (hf : HasProd f a) (i : ι)
     _ ≤ a := prod_le_hasProd _ (fun k hk ↦ hi k (hk ∘ mem_insert_of_mem ∘ mem_singleton.mpr)) hf
 
 @[to_additive]
-theorem prod_le_tprod {f : ι → α} (s : Finset ι) (hs : ∀ i, i ∉ s → 1 ≤ f i) (hf : Multipliable f) :
-    ∏ i ∈ s, f i ≤ ∏' i, f i :=
+protected theorem Multipliable.prod_le_tprod {f : ι → α} (s : Finset ι) (hs : ∀ i, i ∉ s → 1 ≤ f i)
+    (hf : Multipliable f) : ∏ i ∈ s, f i ≤ ∏' i, f i :=
   prod_le_hasProd s hs hf.hasProd
 
+@[to_additive, deprecated (since := "2025-04-11")] alias prod_le_tprod := Multipliable.prod_le_tprod
+
 @[to_additive]
-theorem le_tprod (hf : Multipliable f) (i : ι) (hb : ∀ j, j ≠ i → 1 ≤ f j) : f i ≤ ∏' i, f i :=
+protected theorem Multipliable.le_tprod (hf : Multipliable f) (i : ι) (hb : ∀ j, j ≠ i → 1 ≤ f j) :
+    f i ≤ ∏' i, f i :=
   le_hasProd hf.hasProd i hb
 
+@[to_additive, deprecated (since := "2025-04-11")] alias le_tprod := Multipliable.le_tprod
+
 @[to_additive]
-theorem tprod_le_tprod (h : ∀ i, f i ≤ g i) (hf : Multipliable f) (hg : Multipliable g) :
-    ∏' i, f i ≤ ∏' i, g i :=
+protected theorem Multipliable.tprod_le_tprod (h : ∀ i, f i ≤ g i) (hf : Multipliable f)
+    (hg : Multipliable g) : ∏' i, f i ≤ ∏' i, g i :=
   hasProd_le h hf.hasProd hg.hasProd
 
+@[to_additive, deprecated (since := "2025-04-11")] alias tprod_le_tprod :=
+  Multipliable.tprod_le_tprod
+
 @[to_additive (attr := mono)]
-theorem tprod_mono (hf : Multipliable f) (hg : Multipliable g) (h : f ≤ g) :
+protected theorem Multipliable.tprod_mono (hf : Multipliable f) (hg : Multipliable g) (h : f ≤ g) :
     ∏' n, f n ≤ ∏' n, g n :=
-  tprod_le_tprod h hf hg
+  hf.tprod_le_tprod h hg
+
+@[to_additive (attr := mono), deprecated (since := "2025-04-11")] alias tprod_mono :=
+  Multipliable.tprod_mono
 
 omit [IsOrderedMonoid α] in
 @[to_additive]
-theorem tprod_le_of_prod_le (hf : Multipliable f) (h : ∀ s, ∏ i ∈ s, f i ≤ a₂) : ∏' i, f i ≤ a₂ :=
+protected theorem Multipliable.tprod_le_of_prod_le (hf : Multipliable f)
+    (h : ∀ s, ∏ i ∈ s, f i ≤ a₂) : ∏' i, f i ≤ a₂ :=
   hasProd_le_of_prod_le hf.hasProd h
+
+@[to_additive, deprecated (since := "2025-04-11")] alias tprod_le_of_prod_le :=
+  Multipliable.tprod_le_of_prod_le
 
 omit [IsOrderedMonoid α] in
 @[to_additive]
 theorem tprod_le_of_prod_le' (ha₂ : 1 ≤ a₂) (h : ∀ s, ∏ i ∈ s, f i ≤ a₂) : ∏' i, f i ≤ a₂ := by
   by_cases hf : Multipliable f
-  · exact tprod_le_of_prod_le hf h
+  · exact hf.tprod_le_of_prod_le h
   · rw [tprod_eq_one_of_not_multipliable hf]
     exact ha₂
 
@@ -194,21 +218,29 @@ theorem hasProd_strict_mono (hf : HasProd f a₁) (hg : HasProd g a₂) (h : f <
   hasProd_lt hle hi hf hg
 
 @[to_additive]
-theorem tprod_lt_tprod (h : f ≤ g) (hi : f i < g i) (hf : Multipliable f) (hg : Multipliable g) :
-    ∏' n, f n < ∏' n, g n :=
+protected theorem Multipliable.tprod_lt_tprod (h : f ≤ g) (hi : f i < g i) (hf : Multipliable f)
+    (hg : Multipliable g) : ∏' n, f n < ∏' n, g n :=
   hasProd_lt h hi hf.hasProd hg.hasProd
 
+@[to_additive, deprecated (since := "2025-04-11")] alias tprod_lt_tprod :=
+  Multipliable.tprod_lt_tprod
+
 @[to_additive (attr := mono)]
-theorem tprod_strict_mono (hf : Multipliable f) (hg : Multipliable g) (h : f < g) :
-    ∏' n, f n < ∏' n, g n :=
+protected theorem Multipliable.tprod_strict_mono (hf : Multipliable f) (hg : Multipliable g)
+    (h : f < g) : ∏' n, f n < ∏' n, g n :=
   let ⟨hle, _i, hi⟩ := Pi.lt_def.mp h
-  tprod_lt_tprod hle hi hf hg
+  hf.tprod_lt_tprod hle hi hg
+
+@[to_additive (attr := mono), deprecated (since := "2025-04-11")] alias tprod_strict_mono :=
+  Multipliable.tprod_strict_mono
 
 @[to_additive tsum_pos]
-theorem one_lt_tprod (hsum : Multipliable g) (hg : ∀ i, 1 ≤ g i) (i : ι) (hi : 1 < g i) :
-    1 < ∏' i, g i := by
+protected theorem Multipliable.one_lt_tprod (hsum : Multipliable g) (hg : ∀ i, 1 ≤ g i) (i : ι)
+    (hi : 1 < g i) : 1 < ∏' i, g i := by
   rw [← tprod_one]
-  exact tprod_lt_tprod hg hi multipliable_one hsum
+  exact Multipliable.tprod_lt_tprod hg hi multipliable_one hsum
+
+@[to_additive, deprecated (since := "2025-04-11")] alias one_lt_tprod := Multipliable.one_lt_tprod
 
 end OrderedCommGroup
 
@@ -223,20 +255,30 @@ theorem le_hasProd' (hf : HasProd f a) (i : ι) : f i ≤ a :=
   le_hasProd hf i fun _ _ ↦ one_le _
 
 @[to_additive]
-theorem le_tprod' (hf : Multipliable f) (i : ι) : f i ≤ ∏' i, f i :=
-  le_tprod hf i fun _ _ ↦ one_le _
+protected theorem Multipliable.le_tprod' (hf : Multipliable f) (i : ι) : f i ≤ ∏' i, f i :=
+  hf.le_tprod i fun _ _ ↦ one_le _
+
+@[to_additive, deprecated (since := "2025-04-11")] alias le_tprod' := Multipliable.le_tprod'
 
 @[to_additive]
 theorem hasProd_one_iff : HasProd f 1 ↔ ∀ x, f x = 1 :=
   (hasProd_one_iff_of_one_le fun _ ↦ one_le _).trans funext_iff
 
 @[to_additive]
-theorem tprod_eq_one_iff (hf : Multipliable f) : ∏' i, f i = 1 ↔ ∀ x, f x = 1 := by
+protected theorem Multipliable.tprod_eq_one_iff (hf : Multipliable f) :
+    ∏' i, f i = 1 ↔ ∀ x, f x = 1 := by
   rw [← hasProd_one_iff, hf.hasProd_iff]
 
+@[to_additive, deprecated (since := "2025-04-11")] alias tprod_eq_one_iff :=
+  Multipliable.tprod_eq_one_iff
+
 @[to_additive]
-theorem tprod_ne_one_iff (hf : Multipliable f) : ∏' i, f i ≠ 1 ↔ ∃ x, f x ≠ 1 := by
-  rw [Ne, tprod_eq_one_iff hf, not_forall]
+protected theorem Multipliable.tprod_ne_one_iff (hf : Multipliable f) :
+    ∏' i, f i ≠ 1 ↔ ∃ x, f x ≠ 1 := by
+  rw [Ne, hf.tprod_eq_one_iff, not_forall]
+
+@[to_additive, deprecated (since := "2025-04-11")] alias tprod_ne_one_iff :=
+  Multipliable.tprod_ne_one_iff
 
 @[to_additive]
 theorem isLUB_hasProd' (hf : HasProd f a) : IsLUB (Set.range fun s ↦ ∏ i ∈ s, f i) a := by
@@ -316,8 +358,10 @@ nonrec theorem HasProd.abs (hfx : HasProd f x) : HasProd (|f ·|) |x| := by
 theorem Multipliable.abs (hf : Multipliable f) : Multipliable (|f ·|) :=
   let ⟨x, hx⟩ := hf; ⟨|x|, hx.abs⟩
 
-theorem abs_tprod (hf : Multipliable f) : |∏' i, f i| = ∏' i, |f i| :=
+protected theorem Multipliable.abs_tprod (hf : Multipliable f) : |∏' i, f i| = ∏' i, |f i| :=
   hf.hasProd.abs.tprod_eq.symm
+
+@[deprecated (since := "2025-04-11")] alias abs_tprod := Multipliable.abs_tprod
 
 end LinearOrderedCommRing
 
