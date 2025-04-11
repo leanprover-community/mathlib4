@@ -31,7 +31,7 @@ lemma IsArtinianRing.radical_eq_maximalIdeal [IsArtinianRing R] [IsLocalRing R]
   · rintro J ⟨h₁, h₂⟩
     exact (eq_maximalIdeal_of_isPrime J).ge
 
-lemma isArtinianRing_iff_isNilpotent_maximalIdeal [IsNoetherianRing R] [IsLocalRing R]:
+lemma isArtinianRing_iff_isNilpotent_maximalIdeal [IsNoetherianRing R] [IsLocalRing R] :
     IsArtinianRing R ↔ IsNilpotent (IsLocalRing.maximalIdeal R) := by
   constructor
   · intro h
