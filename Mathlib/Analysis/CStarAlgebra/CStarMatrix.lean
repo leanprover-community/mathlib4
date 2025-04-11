@@ -338,7 +338,7 @@ lemma ofMatrix_eq_ofMatrixStarAlgEquiv [Fintype n] [SMul ℂ A] [Semiring A] [St
 
 end basic
 
-variable [Fintype m] [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
+variable [Fintype m] [NonUnitalCStarAlgebra A]
 
 
 
@@ -404,7 +404,8 @@ lemma toCLM_apply_single_apply [DecidableEq m] {M : CStarMatrix m n A}{i : m} {j
     (toCLM M) (equiv _ _ |>.symm <| Pi.single i a) j = a * M i j := by simp
 
 open WithCStarModule in
-lemma mul_entry_mul_eq_inner_toCLM [Fintype n] [DecidableEq m] [DecidableEq n]
+lemma mul_entry_mul_eq_inner_toCLM [PartialOrder A] [StarOrderedRing A]
+    [Fintype n] [DecidableEq m] [DecidableEq n]
     {M : CStarMatrix m n A} {i : m} {j : n} (a b : A) :
     a * M i j * star b
       = ⟪equiv _ _ |>.symm (Pi.single j b), toCLM M (equiv _ _ |>.symm <| Pi.single i a)⟫_A := by
@@ -419,7 +420,7 @@ lemma toCLM_injective : Function.Injective (toCLM (A := A) (m := m) (n := n)) :=
     ← toCLM_apply_single_apply]
   simp [h]
 
-variable [Fintype n]
+variable [PartialOrder A] [StarOrderedRing A] [Fintype n]
 
 open WithCStarModule in
 lemma inner_toCLM_conjTranspose_left {M : CStarMatrix m n A} {v : C⋆ᵐᵒᵈ(A, n → A)}

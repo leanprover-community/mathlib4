@@ -92,7 +92,7 @@ theorem memLp_zero_iff_aestronglyMeasurable [TopologicalSpace ε] {f : α → ε
 @[deprecated (since := "2025-02-21")]
 alias memℒp_zero_iff_aestronglyMeasurable := memLp_zero_iff_aestronglyMeasurable
 
-variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
+variable {ε : Type*} [TopologicalSpace ε] [AddMonoid ε] [ENormedAddMonoid ε]
 
 @[simp]
 theorem eLpNorm'_zero (hp0_lt : 0 < q) : eLpNorm' (0 : α → ε) q μ = 0 := by
@@ -399,7 +399,7 @@ theorem eLpNormEssSup_lt_top_of_ae_bound {f : α → F} {C : ℝ} (hfC : ∀ᵐ 
     eLpNormEssSup f μ < ∞ :=
   (eLpNormEssSup_le_of_ae_bound hfC).trans_lt ENNReal.ofReal_lt_top
 
-theorem eLpNorm_le_of_ae_enorm_bound {ε} [TopologicalSpace ε] [ENormedAddMonoid ε]
+theorem eLpNorm_le_of_ae_enorm_bound {ε} [TopologicalSpace ε] [AddMonoid ε] [ENormedAddMonoid ε]
     {f : α → ε} {C : ℝ≥0∞} (hfC : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ C) :
     eLpNorm f p μ ≤ C • μ Set.univ ^ p.toReal⁻¹ := by
   rcases eq_zero_or_neZero μ with rfl | hμ
@@ -598,7 +598,8 @@ alias Memℒp.mono_measure := MemLp.mono_measure
 section Indicator
 variable {c : ε} {hf : AEStronglyMeasurable f μ} {s : Set α}
 
-lemma eLpNorm_indicator_eq_eLpNorm_restrict {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
+lemma eLpNorm_indicator_eq_eLpNorm_restrict {ε : Type*}
+    [TopologicalSpace ε] [AddMonoid ε] [ENormedAddMonoid ε]
     {f : α → ε} {s : Set α} (hs : MeasurableSet s) :
     eLpNorm (s.indicator f) p μ = eLpNorm f p (μ.restrict s) := by
   by_cases hp_zero : p = 0
@@ -627,7 +628,7 @@ lemma eLpNorm_restrict_le (f : α → ε) (p : ℝ≥0∞) (μ : Measure α) (s 
     eLpNorm f p (μ.restrict s) ≤ eLpNorm f p μ :=
   eLpNorm_mono_measure f Measure.restrict_le_self
 
-variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
+variable {ε : Type*} [TopologicalSpace ε] [AddMonoid ε] [ENormedAddMonoid ε]
 
 lemma eLpNorm_indicator_le (f : α → ε) :
     eLpNorm (s.indicator f) p μ ≤ eLpNorm f p μ := by
@@ -768,7 +769,7 @@ alias Memℒp.piecewise := MemLp.piecewise
 
 end Indicator
 
-variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
+variable {ε : Type*} [TopologicalSpace ε] [AddMonoid ε] [ENormedAddMonoid ε]
 
 /-- For a function `f` with support in `s`, the Lᵖ norms of `f` with respect to `μ` and
 `μ.restrict s` are the same. -/
@@ -851,7 +852,7 @@ theorem eLpNorm_one_smul_measure {f : α → F} (c : ℝ≥0∞) :
     eLpNorm f 1 (c • μ) = c * eLpNorm f 1 μ := by
   rw [eLpNorm_smul_measure_of_ne_top] <;> simp
 
-theorem MemLp.of_measure_le_smul {ε} [TopologicalSpace ε] [ENormedAddMonoid ε]
+theorem MemLp.of_measure_le_smul {ε} [TopologicalSpace ε] [AddMonoid ε] [ENormedAddMonoid ε]
     {μ' : Measure α} {c : ℝ≥0∞} (hc : c ≠ ∞)
     (hμ'_le : μ' ≤ c • μ) {f : α → ε} (hf : MemLp f p μ) : MemLp f p μ' := by
   refine ⟨hf.1.mono_ac (Measure.absolutelyContinuous_of_le_smul hμ'_le), ?_⟩
@@ -905,7 +906,7 @@ theorem MemLp.right_of_add_measure [TopologicalSpace ε] {f : α → ε} (h : Me
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.right_of_add_measure := MemLp.right_of_add_measure
 
-variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
+variable {ε : Type*} [TopologicalSpace ε] [AddMonoid ε] [ENormedAddMonoid ε]
 
 theorem MemLp.norm {f : α → E} (h : MemLp f p μ) : MemLp (fun x => ‖f x‖) p μ :=
   h.of_le h.aestronglyMeasurable.norm (Eventually.of_forall fun x => by simp)
@@ -1003,7 +1004,7 @@ alias Memℒp.of_discrete := MemLp.of_discrete
 
 section MapMeasure
 
-variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
+variable {ε : Type*} [TopologicalSpace ε] [AddMonoid ε] [ENormedAddMonoid ε]
   {β : Type*} {mβ : MeasurableSpace β} {f : α → β} {g : β → ε}
 
 theorem eLpNormEssSup_map_measure (hg : AEStronglyMeasurable g (Measure.map f μ))
