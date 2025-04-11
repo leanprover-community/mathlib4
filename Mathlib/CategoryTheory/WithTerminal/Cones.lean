@@ -95,7 +95,7 @@ def coneLift {X : C} {K : J ⥤ Over X} : Cone K ⥤ Cone (liftFromOver.obj K) w
 /-- This is the inverse of the previous construction: a cone of an extended functor
 `liftFromOver.obj K : WithTerminal J ⥤ C` consists of an object of `C`, together
 with morphisms. This same object is a cone of the original functor `K : J ⥤ Over X`. -/
-@[simps]
+@[simps map obj_π]
 def coneBack {X : C} {K : J ⥤ Over X} : Cone (liftFromOver.obj K) ⥤ Cone K where
   obj t := {
     pt := Over.mk (t.π.app star)
@@ -122,11 +122,9 @@ def coneBack {X : C} {K : J ⥤ Over X} : Cone (liftFromOver.obj K) ⥤ Cone K w
     hom := Over.homMk f.hom
   }
 
-/-- `coneBack` and `coneLift` are (left and right, respectively) inverses
-at the level of the object defining a cone. -/
 @[simp]
-lemma coneToFromObj {X : C} {K : J ⥤ Over X} (t : Cone K) :
-  (coneBack.obj (coneLift.obj t)).pt = t.pt := by aesop
+theorem coneBack_obj_pt {X : C} {K : J ⥤ Over X} (t : Cone (liftFromOver.obj K)) :
+    (coneBack.obj t).pt  = Over.mk (t.π.app star) := rfl
 
 /-- The isomorphism between `coneLift ⋙ coneBack` and the identity, at the level of objects. -/
 @[simps]
