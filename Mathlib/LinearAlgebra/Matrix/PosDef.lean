@@ -356,7 +356,7 @@ theorem transpose {M : Matrix n n R} (hM : M.PosDef) : Mᵀ.PosDef := by
   rw [mulVec_transpose, dotProduct_mulVec, star_star, dotProduct_comm]
 
 @[simp]
-theorem transpose_iff {M : Matrix n n R} : Mᵀ.PosSemidef ↔ M.PosSemidef :=
+theorem transpose_iff {M : Matrix n n R} : Mᵀ.PosDef ↔ M.PosDef :=
   ⟨(by simpa using ·.transpose), .transpose⟩
 
 protected theorem diagonal [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R]
