@@ -174,12 +174,12 @@ theorem length_sublists (l : List α) : length (sublists l) = 2 ^ length l := by
   simp only [sublists_eq_sublists', length_map, length_sublists', length_reverse]
 
 theorem map_pure_sublist_sublists (l : List α) : map pure l <+ sublists l := by
-  induction l using reverseRecOn with <;> simp only [map, map_append, sublists_concat]
-  | nil => simp only [sublists_nil, sublist_cons_self]
-  | append_singleton l a ih => ?_
-  exact ((append_sublist_append_left _).2 <|
-              singleton_sublist.2 <| mem_map.2 ⟨[], mem_sublists.2 (nil_sublist _), by rfl⟩).trans
-          ((append_sublist_append_right _).2 ih)
+  induction l using reverseRecOn <;> simp only [map, map_append, sublists_concat]
+  case nil => simp only [sublists_nil, sublist_cons_self]
+  case append_singleton l a ih =>
+    exact ((append_sublist_append_left _).2 <|
+      singleton_sublist.2 <| mem_map.2 ⟨[], mem_sublists.2 (nil_sublist _), by rfl⟩).trans
+        ((append_sublist_append_right _).2 ih)
 
 /-! ### sublistsLen -/
 
@@ -387,11 +387,11 @@ theorem revzip_sublists (l : List α) : ∀ l₁ l₂, (l₁, l₂) ∈ revzip l
 
 theorem revzip_sublists' (l : List α) : ∀ l₁ l₂, (l₁, l₂) ∈ revzip l.sublists' → l₁ ++ l₂ ~ l := by
   rw [revzip]
-  induction l with <;> intro l₁ l₂ h
-  | nil =>
+  induction l <;> intro l₁ l₂ h
+  case nil =>
     simp_all only [sublists'_nil, reverse_cons, reverse_nil, nil_append, zip_cons_cons,
       zip_nil_right, mem_singleton, Prod.mk.injEq, append_nil, Perm.refl]
-  | cons a l IH =>
+  case cons a l IH =>
     rw [sublists'_cons, reverse_append, zip_append, ← map_reverse, zip_map_right, zip_map_left] at *
       <;> [simp only [mem_append, mem_map, Prod.map_apply, id_eq, Prod.mk.injEq, Prod.exists,
         exists_eq_right_right] at h; simp]

@@ -310,11 +310,11 @@ theorem self_eq_mul_add_iff {l m n : Language α} (hm : [] ∉ m) : l = m * l + 
       · exact ⟨[], nil_mem_kstar _, _, ⟨hx, nil_append _⟩⟩
     · rw [kstar_eq_iSup_pow, iSup_mul, iSup_le_iff]
       intro i
-      induction i with <;> rw [h]
-      | zero =>
+      induction i <;> rw [h]
+      case a.zero =>
         rw [pow_zero, one_mul, add_comm]
         exact le_self_add
-      | succ _ ih =>
+      case a.succ _ ih =>
         rw [add_comm, pow_add, pow_one, mul_assoc]
         exact le_add_right (mul_le_mul_left' ih _)
   mpr h := by rw [h, add_comm, ← mul_assoc, ← one_add_mul, one_add_self_mul_kstar_eq_kstar]

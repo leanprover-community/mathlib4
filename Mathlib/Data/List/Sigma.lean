@@ -692,16 +692,16 @@ theorem Perm.kunion {l₁ l₂ l₃ l₄ : List (Sigma β)} (nd₃ : l₃.NodupK
 @[simp]
 theorem dlookup_kunion_left {a} {l₁ l₂ : List (Sigma β)} (h : a ∈ l₁.keys) :
     dlookup a (kunion l₁ l₂) = dlookup a l₁ := by
-  induction l₁ generalizing l₂ with <;> simp at h; rcases h with h | h <;> obtain ⟨a'⟩ := s
-  | nil =>
-    subst h
-    simp
-  | cons s _ ih =>
-    rw [kunion_cons]
-    by_cases h' : a = a'
-    · subst h'
+  induction l₁ generalizing l₂ <;> simp at h
+  case cons s _ ih =>
+    rcases h with h | h <;> obtain ⟨a'⟩ := s
+    · subst h
       simp
-    · simp [h', ih h]
+    · rw [kunion_cons]
+      by_cases h' : a = a'
+      · subst h'
+        simp
+      · simp [h', ih h]
 
 @[simp]
 theorem dlookup_kunion_right {a} {l₁ l₂ : List (Sigma β)} (h : a ∉ l₁.keys) :

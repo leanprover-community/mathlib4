@@ -323,8 +323,8 @@ def corec (f : β → Option (α × β)) (b : β) : Seq α := by
   rw [Stream'.corec'_eq]
   change Stream'.corec' (Corec.f f) (Corec.f f (some b)).2 n = none
   revert h; generalize some b = o; revert o
-  induction n with <;> intro o
-  | zero =>
+  induction n <;> intro o
+  case zero =>
     change (Corec.f f o).1 = none → (Corec.f f (Corec.f f o).2).1 = none
     rcases o with - | b <;> intro h
     · rfl
@@ -334,7 +334,7 @@ def corec (f : β → Option (α × β)) (b : β) : Seq α := by
     · rfl
     · obtain ⟨a, b'⟩ := s
       contradiction
-  | succ n IH =>
+  case succ n IH =>
     rw [Stream'.corec'_eq (Corec.f f) (Corec.f f o).2, Stream'.corec'_eq (Corec.f f) o]
     exact IH (Corec.f f o).2
 

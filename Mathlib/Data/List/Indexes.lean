@@ -49,14 +49,14 @@ theorem map_enumFrom_eq_zipWith : ∀ (l : List α) (n : ℕ) (f : ℕ → α �
   intro l
   generalize e : l.length = len
   revert l
-  induction len with <;> intros l e n f
-  | zero =>
+  induction len <;> intro l e n f
+  case zero =>
     have : l = [] := by
       cases l
       · rfl
       · contradiction
     rw [this]; rfl
-  | succ len ih =>
+  case succ len ih =>
     rcases l with - | ⟨head, tail⟩
     · contradiction
     · simp only [enumFrom_cons, map_cons, range_succ_eq_map, zipWith_cons_cons,
@@ -209,14 +209,14 @@ theorem mapIdxMGo_eq_mapIdxMAuxSpec
     mapIdxM.go f as arr = (arr.toList ++ ·) <$> mapIdxMAuxSpec f arr.size as := by
   generalize e : as.length = len
   revert as arr
-  induction len with <;> intro arr as h
-  | zero =>
+  induction len <;> intro arr as h
+  case zero =>
     have : as = [] := by
       cases as
       · rfl
       · contradiction
     simp only [this, mapIdxM.go, mapIdxMAuxSpec, enumFrom_nil, List.traverse, map_pure, append_nil]
-  | succ len ih =>
+  case succ len ih =>
     match as with
     | nil => contradiction
     | cons head tail =>
@@ -246,9 +246,9 @@ variable {m : Type u → Type v} [Monad m] [LawfulMonad m]
 theorem mapIdxMAux'_eq_mapIdxMGo {α} (f : ℕ → α → m PUnit) (as : List α) (arr : Array PUnit) :
     mapIdxMAux' f arr.size as = mapIdxM.go f as arr *> pure PUnit.unit := by
   revert arr
-  induction as with <;> intro arr
-  | nil => simp only [mapIdxMAux', mapIdxM.go, seqRight_eq, map_pure, seq_pure]
-  | cons head tail ih =>
+  induction as <;> intro arr
+  case nil => simp only [mapIdxMAux', mapIdxM.go, seqRight_eq, map_pure, seq_pure]
+  case cons head tail ih =>
     simp only [mapIdxMAux', seqRight_eq, map_eq_pure_bind, seq_eq_bind, bind_pure_unit,
       LawfulMonad.bind_assoc, pure_bind, mapIdxM.go, seq_pure]
     generalize (f (Array.size arr) head) = head
