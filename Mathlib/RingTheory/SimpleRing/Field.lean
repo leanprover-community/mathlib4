@@ -21,7 +21,7 @@ namespace IsSimpleRing
 
 open TwoSidedIdeal in
 lemma isField_center (A : Type*) [Ring A] [IsSimpleRing A] : IsField (Subring.center A) where
-  exists_pair_ne := ⟨0, 1, zero_ne_one⟩
+  exists_pair_ne := exists_pair_ne _
   mul_comm := mul_comm
   mul_inv_cancel := by
     rintro ⟨x, hx1⟩ hx2
@@ -31,8 +31,8 @@ lemma isField_center (A : Type*) [Ring A] [IsSimpleRing A] : IsField (Subring.ce
     let I := TwoSidedIdeal.mk' (Set.range (x * ·)) ⟨0, by simp⟩
       (by rintro _ _ ⟨x, rfl⟩ ⟨y, rfl⟩; exact ⟨x + y, mul_add _ _ _⟩)
       (by rintro _ ⟨x, rfl⟩; exact ⟨-x, by simp⟩)
-      (by rintro a _ ⟨c, rfl⟩; exact ⟨a * c, by dsimp; rw [← mul_assoc, ← hx1, mul_assoc]⟩)
-      (by rintro _ b ⟨a, rfl⟩; exact ⟨a * b, by dsimp; rw [← mul_assoc, ← hx1, mul_assoc]⟩)
+      (by rintro a _ ⟨c, rfl⟩; exact ⟨a * c, Commute.left_comm (hx1 a).symm c⟩)
+      (by rintro _ b ⟨a, rfl⟩; exact ⟨a * b, mul_assoc _ _ _ |>.symm⟩)
     have mem : 1 ∈ I := one_mem_of_ne_zero_mem I hx2 (by simpa [I, mem_mk'] using ⟨1, by simp⟩)
     simp only [TwoSidedIdeal.mem_mk', Set.mem_range, I] at mem
     obtain ⟨y, hy⟩ := mem
