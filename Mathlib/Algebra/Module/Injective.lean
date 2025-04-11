@@ -196,8 +196,8 @@ theorem extensionOfMax_is_max :
   fun _ ↦ (@zorn_le_nonempty (ExtensionOf i f) _ ⟨Inhabited.default⟩ fun _ hchain hnonempty =>
     ⟨ExtensionOf.max hchain hnonempty, ExtensionOf.le_max hchain hnonempty⟩).choose_spec.eq_of_ge
 
--- Porting note: helper function. Lean looks for an instance of `Sup (Type u)` when the
--- right hand side is substituted in directly
+/-- A helper function for `ExtensionOfMaxAdjoin`.
+Lean looks for an instance of `Sup (Type u)` when the right hand side is substituted in directly. -/
 abbrev supExtensionOfMaxSingleton (y : N) : Submodule R N :=
   (extensionOfMax i f).domain ⊔ (Submodule.span R {y})
 

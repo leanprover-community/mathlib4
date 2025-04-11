@@ -60,6 +60,7 @@ denoted as `R[X]` within the `Polynomial` namespace.
 Polynomials should be seen as (semi-)rings with the additional constructor `X`.
 The embedding from `R` is called `C`. -/
 structure Polynomial (R : Type*) [Semiring R] where ofFinsupp ::
+  /-- `p.toFinsupp` is `p` as a term of `AddMonoidAlgebra R ℕ`. -/
   toFinsupp : AddMonoidAlgebra R ℕ
 
 @[inherit_doc] scoped[Polynomial] notation:9000 R "[X]" => Polynomial R
