@@ -170,7 +170,8 @@ lemma exists_nnnorm_lt_one : ∃ x : 𝒪[K], 0 < ‖x‖₊ ∧ ‖x‖₊ < 1 
   exists_norm_coe_lt_one K
 
 lemma isPrincipalIdealRing_of_compactSpace {F Γ₀} [Field F]
-    [LinearOrderedCommGroupWithZero Γ₀] [MulArchimedean Γ₀] [hv : Valued F Γ₀] [CompactSpace 𝒪[F]]
+    [CommGroupWithZero Γ₀] [LinearOrder Γ₀] [IsOrderedMonoidWithZero Γ₀]
+    [MulArchimedean Γ₀] [hv : Valued F Γ₀] [CompactSpace 𝒪[F]]
     (h : ∃ x : F, 0 < Valued.v x ∧ Valued.v x < 1) :
     IsPrincipalIdealRing 𝒪[F] := by
   -- TODO: generalize to `Valuation.Integer`, which will require showing that `IsCompact`
