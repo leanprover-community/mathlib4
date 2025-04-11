@@ -207,21 +207,19 @@ lemma invtsubmodule_to_root_subset {K : Type*} [Field K] [Module K M] [Module K 
     (h₁ : ∀ i, q ∈ invtSubmodule (P.reflection i))
     (h₂ : ∀ Φ, Φ.Nonempty → P.root '' Φ ⊆ q → (∀ i ∉ Φ, q ≤ ker (P.coroot' i)) → Φ = univ) :
     q = ⊤ := by
-  by_contra ntopp
   obtain ⟨Φ, b, c⟩ := root_subset_characterization q P.toRootPairing h₁
   by_cases hΦ : Φ = ∅
   · subst hΦ
     simp at c
-    obtain ⟨v₁, ⟨v₂, _⟩⟩ := (Submodule.ne_bot_iff q).1 h₀
+    obtain ⟨v₁, ⟨v₂, v₃⟩⟩ := (Submodule.ne_bot_iff q).1 h₀
     have : ∀ d : Module.Dual K M, d v₁ = 0 := by
       intro d
       exact aux P v₁ (fun i => c i v₂) d
     have := (Module.forall_dual_apply_eq_zero_iff K v₁).1 this
-    contradiction
-  · have hu := h₂ Φ (Set.nonempty_iff_ne_empty.mpr hΦ) (image_subset_iff.mpr b) c
-    subst hu
-    have : q = ⊤ := by
-      rw [eq_top_mono (span_le.mpr (image_subset_iff.mpr b)) (by rw [image_univ, RootSystem.span_root_eq_top])]
-    contradiction
+    exact False.elim (v₃ this)
+  have hu := h₂ Φ (Set.nonempty_iff_ne_empty.mpr hΦ) (image_subset_iff.mpr b) c
+  subst hu
+  rw [eq_top_mono (span_le.mpr (image_subset_iff.mpr b))
+  (by rw [image_univ, RootSystem.span_root_eq_top])]
 
 end RootPairing
