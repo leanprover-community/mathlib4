@@ -190,25 +190,12 @@ open Topology
 
 section
 
-variable [Nonempty M] [Nonempty H] {φ : PartialHomeomorph M' H'} {f : M → M'}
-
--- auxiliary definition; will become the invFun of pullback_sliceModel
-variable (f φ) in
-noncomputable def aux_invFun (h : SliceModel F I I') : H → M :=
-  (Function.extend f id (fun _ ↦ (Classical.arbitrary M))) ∘ φ.symm ∘ h.map
-
-omit [Nonempty M] [ChartedSpace H' M'] [TopologicalSpace M] in
-lemma aux (h : SliceModel F I I') (hyp : range (φ ∘ f) = range h.map)
-    {y : H'} (hy : y ∈ range (φ ∘ f)) : h.map (h.inverse y) = y := by
-  have : y ∈ range h.map := by
-    simp_rw [← hyp]; exact hy
-  choose x hx using hy
-  choose x' hx' using this
-  rw [← hx', h.inverse_left_inv x']
+variable [Nonempty H] {φ : PartialHomeomorph M' H'} {f : M → M'}
+omit [ChartedSpace H' M']
 
 -- continuity of `toFun`
-lemma continuousOn_source (h : SliceModel F I I') (hf : IsEmbedding f) (hyp : φ.target ⊆ range h.map) :
-    ContinuousOn (h.inverse ∘ φ ∘ f) (f ⁻¹' φ.source) := by
+lemma continuousOn_source (h : SliceModel F I I') (hf : IsEmbedding f)
+    (hyp : φ.target ⊆ range h.map) : ContinuousOn (h.inverse ∘ φ ∘ f) (f ⁻¹' φ.source) := by
   rw [h.hmap.continuousOn_iff]
   have : ContinuousOn (φ ∘ f) (f ⁻¹' φ.source) :=
     φ.continuousOn_toFun.comp hf.continuous.continuousOn (fun ⦃x⦄ a ↦ a)
@@ -219,8 +206,13 @@ lemma continuousOn_source (h : SliceModel F I I') (hf : IsEmbedding f) (hyp : φ
   rw [← φ.image_source_eq_target]
   exact mem_image_of_mem φ hx
 
+-- auxiliary definition; will become the invFun of pullback_sliceModel
+variable (f φ) in
+noncomputable def aux_invFun [Nonempty M] (h : SliceModel F I I') : H → M :=
+  (Function.extend f id (fun _ ↦ (Classical.arbitrary M))) ∘ φ.symm ∘ h.map
+
 -- continuity of the inverse function
-lemma continuousOn_aux_invFun (h : SliceModel F I I') (hf : IsEmbedding f)
+lemma continuousOn_aux_invFun [Nonempty M] (h : SliceModel F I I') (hf : IsEmbedding f)
     (hyp : φ.source ⊆ range f) :
     ContinuousOn (aux_invFun φ f h) (h.map ⁻¹' φ.target) := by
   have : ContinuousOn ((Function.extend f id fun x ↦ Classical.arbitrary M) ∘ φ.symm) φ.target := by
@@ -232,12 +224,22 @@ lemma continuousOn_aux_invFun (h : SliceModel F I I') (hf : IsEmbedding f)
     exact missing.mono hyp
   exact this.comp h.hmap.continuous.continuousOn (fun ⦃x⦄ a ↦ a)
 
--- key lemma to this, if true: have : range (φ.symm ∘ h.map) ⊆ range f := sorry
+omit [ChartedSpace H' M'] [TopologicalSpace M] in
+lemma aux (h : SliceModel F I I') (hyp : range (φ ∘ f) = range h.map)
+    {y : H'} (hy : y ∈ range (φ ∘ f)) : h.map (h.inverse y) = y := by
+  have : y ∈ range h.map := by
+    simp_rw [← hyp]; exact hy
+  choose x hx using hy
+  choose x' hx' using this
+  rw [← hx', h.inverse_left_inv x']
 
+-- key lemma to this, if true: have : range (φ.symm ∘ h.map) ⊆ range f := sorry
 theorem missing (φ : PartialHomeomorph M' H') (hf : IsEmbedding f)
-  (h : SliceModel F I I') (hyp : range (φ ∘ f) = range h.map) (x : H) (hx : h.map x ∈ φ.target) :
-  (φ.symm ∘ SliceModel.map F I I') x ∈ range f := by
+    (h : SliceModel F I I') (hyp : range (φ ∘ f) = range h.map) (x : H) (hx : h.map x ∈ φ.target) :
+    (φ.symm ∘ SliceModel.map F I I') x ∈ range f := by
   sorry -- last missing sorry
+
+variable [Nonempty M]
 
 /-- Pull back a partial homeomorphism using a slice model.
 The slice model conditions should guarantee the necessary condition for continuity and inverses. -/
@@ -300,13 +302,14 @@ noncomputable def pullback_sliceModel (hf : IsEmbedding f) (h : SliceModel F I I
   continuousOn_toFun := continuousOn_source h hf htarget
   continuousOn_invFun := continuousOn_aux_invFun h hf hsource
 
-
 #exit
 -- next: pull back a partial homeo by a slice model
 -- the slice condition guarantees the condition below is what I want
 -- target should be inverse '' φ.target, and that lies in the image :-)
 
 end PartialHomeomorph
+
+variable [ChartedSpace H' M']
 
 variable (I I' M M' n) in
 class IsImmersedSubmanifold [TopologicalSpace M] [IsManifold I' n M'] [SliceModel F I I'] where
