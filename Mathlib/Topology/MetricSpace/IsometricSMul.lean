@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.GroupWithZero.Pointwise.Set.Basic
 import Mathlib.Algebra.Ring.Pointwise.Set
+import Mathlib.Topology.Algebra.ConstMulAction
 import Mathlib.Topology.MetricSpace.Isometry
 import Mathlib.Topology.MetricSpace.Lipschitz
 
