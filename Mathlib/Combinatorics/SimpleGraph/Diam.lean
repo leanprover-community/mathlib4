@@ -18,7 +18,7 @@ This module defines the eccentricity of vertices, the diameter, and the radius o
 - `SimpleGraph.ediam`: the graph extended diameter, which is the maximum eccentricity.
   It is `ℕ∞`-valued.
 
-- `SimpleGraph.diam`: an `ℕ`-values version of `SimpleGraph.ediam`.
+- `SimpleGraph.diam`: the graph diameter, an `ℕ`-valued version of `SimpleGraph.ediam`.
 
 - `SimpleGraph.radius`: the graph radius, which is the minimum eccentricity. It is `ℕ∞`-valued.
 
@@ -39,7 +39,7 @@ noncomputable def eccent (G : SimpleGraph α) (u : α) : ℕ∞ :=
 
 lemma eccent_def : G.eccent = fun u ↦ ⨆ v, G.edist u v := rfl
 
-lemma edist_le_eccent (u v : α) : G.edist u v ≤ G.eccent u :=
+lemma edist_le_eccent {u v : α} : G.edist u v ≤ G.eccent u :=
   le_iSup (G.edist u) v
 
 lemma exists_edist_eq_eccent_of_finite [Finite α] (u : α) :
@@ -47,7 +47,7 @@ lemma exists_edist_eq_eccent_of_finite [Finite α] (u : α) :
   have : Nonempty α := Nonempty.intro u
   exists_eq_ciSup_of_finite
 
-lemma eccent_eq_top_of_not_connected (h : ¬G.Connected) (u : α) :
+lemma eccent_eq_top_of_not_connected (h : ¬ G.Connected) (u : α) :
     G.eccent u = ⊤ := by
   rw [connected_iff_exists_forall_reachable] at h
   push_neg at h
@@ -105,7 +105,7 @@ lemma ediam_eq_iSup_iSup_edist : G.ediam = ⨆ u, ⨆ v, G.edist u v :=
 lemma ediam_def : G.ediam = ⨆ p : α × α, G.edist p.1 p.2 := by
   rw [ediam, eccent_def, iSup_prod]
 
-lemma eccent_le_ediam (u : α) : G.eccent u ≤ G.ediam :=
+lemma eccent_le_ediam {u : α} : G.eccent u ≤ G.ediam :=
   le_iSup G.eccent u
 
 lemma edist_le_ediam {u v : α} : G.edist u v ≤ G.ediam :=
@@ -301,10 +301,10 @@ lemma center_nonempty [Nonempty α] : G.center.Nonempty :=
 lemma radius_eq_iInf_iSup_edist : G.radius = ⨅ u, ⨆ v, G.edist u v :=
   rfl
 
-lemma radius_le_eccent (u : α) : G.radius ≤ G.eccent u :=
+lemma radius_le_eccent {u : α} : G.radius ≤ G.eccent u :=
   iInf_le G.eccent u
 
-lemma radius_eq_top_of_not_connected (h : ¬G.Connected) :
+lemma radius_eq_top_of_not_connected (h : ¬ G.Connected) :
     G.radius = ⊤ := by
   simp [radius, eccent_eq_top_of_not_connected h]
 
