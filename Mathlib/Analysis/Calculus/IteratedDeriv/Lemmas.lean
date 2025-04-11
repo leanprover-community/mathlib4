@@ -3,10 +3,13 @@ Copyright (c) 2023 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck, Ruben Van de Velde
 -/
+import Mathlib.Analysis.Analytic.Uniqueness
 import Mathlib.Analysis.Calculus.ContDiff.Operations
 import Mathlib.Analysis.Calculus.Deriv.Mul
 import Mathlib.Analysis.Calculus.Deriv.Shift
 import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+import Mathlib.Analysis.NormedSpace.Connected
+import Mathlib.Analysis.RCLike.Basic
 
 /-!
 # One-dimensional iterated derivatives
@@ -224,3 +227,33 @@ lemma iteratedDeriv_comp_add_const (n : ℕ) (f : 𝕜 → F) (s : 𝕜) :
     simpa only [iteratedDeriv_succ, IH] using funext <| deriv_comp_add_const _ s
 
 end shift_invariance
+
+/-- If `f` is analytic on `Bᵣ(x₀)` and its Taylor series converges on this ball, then it converges
+to `f`. -/
+theorem AnalyticOnNhd.hasFPowerSeriesOnBall {𝕜 : Type*} [RCLike 𝕜] {f : 𝕜 → 𝕜} {x : 𝕜} {r : ENNReal}
+    (hr_pos : 0 < r) (h : AnalyticOnNhd 𝕜 f (EMetric.ball x r)) :
+    let p := FormalMultilinearSeries.ofScalars 𝕜 (fun n ↦ iteratedDeriv n f x / n.factorial);
+    r ≤ p.radius → HasFPowerSeriesOnBall f p x r := by
+  intro p hr
+  let g (t : 𝕜) : 𝕜 := p.sum (t - x)
+  have hg : HasFPowerSeriesOnBall g p x p.radius := by
+    simpa using
+      HasFPowerSeriesOnBall.comp_sub (p.hasFPowerSeriesOnBall (lt_of_lt_of_le hr_pos hr)) x
+  have hg' : AnalyticOnNhd 𝕜 g (EMetric.ball x p.radius) := by
+    simpa using AnalyticOnNhd.comp_sub p.AnalyticOnNhd x
+  replace hg' : AnalyticOnNhd 𝕜 g (EMetric.ball x r) :=
+    AnalyticOnNhd.mono hg' (EMetric.ball_subset_ball hr)
+  replace hg' := AnalyticOnNhd.eqOn_of_preconnected_of_eventuallyEq h hg'
+  specialize hg' (IsConnected.isPreconnected (Metric.isConnected_eball hr_pos))
+    (show x ∈ EMetric.ball x r by simpa) ?_
+  · have hf : AnalyticAt 𝕜 f x := by
+      apply h
+      simp [hr_pos]
+    apply AnalyticAt.hasFPowerSeriesAt at hf
+    unfold Filter.EventuallyEq Filter.Eventually
+    rw [EMetric.mem_nhds_iff]
+    obtain ⟨ε, hf⟩ := hf
+    use ε
+    refine ⟨hf.r_pos, ?_⟩
+    exact HasFPowerSeriesOnBall.unique hf (HasFPowerSeriesOnBall.mono hg hf.r_pos hf.r_le)
+  exact HasFPowerSeriesOnBall.congr (HasFPowerSeriesOnBall.mono hg hr_pos hr) hg'.symm
