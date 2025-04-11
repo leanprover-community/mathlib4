@@ -589,7 +589,7 @@ alias _root_.Subgroup.MemLeftTransversals.toEquiv := leftQuotientEquiv
 @[to_additive "A left transversal is finite iff the subgroup has finite index."]
 theorem finite_left_iff (h : IsComplement S H) : Finite S ↔ H.FiniteIndex := by
   rw [← h.leftQuotientEquiv.finite_iff]
-  exact ⟨fun _ ↦ finiteIndex_of_finite_quotient H, fun _ ↦ finite_quotient_of_finiteIndex H⟩
+  exact ⟨fun _ ↦ finiteIndex_of_finite_quotient, fun _ ↦ finite_quotient_of_finiteIndex⟩
 
 @[deprecated (since := "2024-12-28")]
 alias _root_.Subgroup.MemLeftTransversals.finite_iff := finite_left_iff
@@ -653,7 +653,7 @@ alias _root_.Subgroup.MemRightTransversals.toEquiv := rightQuotientEquiv
 theorem finite_right_iff (h : IsComplement H T) : Finite T ↔ H.FiniteIndex := by
   rw [← h.rightQuotientEquiv.finite_iff,
     (QuotientGroup.quotientRightRelEquivQuotientLeftRel H).finite_iff]
-  exact ⟨fun _ ↦ finiteIndex_of_finite_quotient H, fun _ ↦ finite_quotient_of_finiteIndex H⟩
+  exact ⟨fun _ ↦ finiteIndex_of_finite_quotient, fun _ ↦ finite_quotient_of_finiteIndex⟩
 
 @[deprecated (since := "2024-12-28")]
 alias _root_.Subgroup.MemRightTransversals.finite_iff := finite_right_iff
