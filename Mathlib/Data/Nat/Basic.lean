@@ -5,6 +5,7 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Data.Nat.Init
 import Mathlib.Logic.Nontrivial.Defs
+import Mathlib.Order.Defs.LinearOrder
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.GCongr.CoreAttrs
 import Mathlib.Util.AssertExists
