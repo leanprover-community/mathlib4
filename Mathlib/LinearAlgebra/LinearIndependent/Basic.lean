@@ -167,8 +167,8 @@ theorem LinearIndepOn.congr {w : ι → M} (hli : LinearIndepOn R v s) (h : EqOn
     LinearIndepOn R w s :=
   (linearIndepOn_congr h).1 hli
 
-theorem LinearIndependent.group_smul {G : Type*} [hG : Group G] [DistribMulAction G R]
-    [DistribMulAction G M] [IsScalarTower G R M] [SMulCommClass G R M] {v : ι → M}
+theorem LinearIndependent.group_smul {G : Type*} [hG : Group G] [MulAction G R]
+    [SMul G M] [IsScalarTower G R M] [SMulCommClass G R M] {v : ι → M}
     (hv : LinearIndependent R v) (w : ι → G) : LinearIndependent R (w • v) := by
   rw [linearIndependent_iff''ₛ] at hv ⊢
   intro s g₁ g₂ hgs hsum i
@@ -178,8 +178,8 @@ theorem LinearIndependent.group_smul {G : Type*} [hG : Group G] [DistribMulActio
   · simpa only [smul_assoc, smul_comm] using hsum
 
 @[simp]
-theorem LinearIndependent.group_smul_iff {G : Type*} [hG : Group G] [DistribMulAction G R]
-    [DistribMulAction G M] [IsScalarTower G R M] [SMulCommClass G R M] (v : ι → M) (w : ι → G) :
+theorem LinearIndependent.group_smul_iff {G : Type*} [hG : Group G] [MulAction G R]
+    [MulAction G M] [IsScalarTower G R M] [SMulCommClass G R M] (v : ι → M) (w : ι → G) :
     LinearIndependent R (w • v) ↔ LinearIndependent R v := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.group_smul w⟩
   convert h.group_smul (fun i ↦ (w i)⁻¹)
@@ -386,7 +386,7 @@ scalar multiplications on `M` and `M'` are compatible, then `j` sends linearly i
 of vectors to linearly independent families of vectors. As a special case, taking `R = R'`
 it is `LinearIndependent.map'`. -/
 theorem LinearIndependent.map_of_surjective_injective {R' M' : Type*}
-    [Ring R'] [AddCommGroup M'] [Module R' M'] (hv : LinearIndependent R v)
+    [Semiring R'] [AddCommMonoid M'] [Module R' M'] (hv : LinearIndependent R v)
     (i : R → R') (j : M →+ M') (hi : Surjective i) (hj : ∀ m, j m = 0 → m = 0)
     (hc : ∀ (r : R) (m : M), j (r • m) = i r • j m) : LinearIndependent R' (j ∘ v) :=
   hv.map_of_surjective_injectiveₛ i _ hi ((injective_iff_map_eq_zero _).mpr hj) hc
@@ -507,7 +507,7 @@ theorem LinearIndepOn.image {s : Set M} {f : M →ₗ[R] M'}
 --  <https://kconrad.math.uconn.edu/blurbs/galoistheory/linearchar.pdf>
 /-- Dedekind's linear independence of characters -/
 @[stacks 0CKL]
-theorem linearIndependent_monoidHom (G : Type*) [Monoid G] (L : Type*) [CommRing L]
+theorem linearIndependent_monoidHom (G : Type*) [MulOneClass G] (L : Type*) [CommRing L]
     [NoZeroDivisors L] : LinearIndependent L (M := G → L) (fun f => f : (G →* L) → G → L) := by
   -- Porting note: Some casts are required.
   letI := Classical.decEq (G →* L)
