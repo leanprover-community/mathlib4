@@ -17,8 +17,8 @@ numbers.
 The theory also comes with usual theorems and arithmetic operations on integers and wraps everything
 in a commutative ring structure.
 
-Finally, we show that that the `ZFInt` type is isomorphic to Lean's `Int` type using the
-Schröder-Bernstein theorem.
+Finally, we show that that the `ZFInt` type is isomorphic to the type of elements contained in
+`ZFSet.Int` type using the Schröder-Bernstein theorem.
 -/
 
 noncomputable section
@@ -1207,7 +1207,13 @@ theorem mem_Int_empty_not_mem {x : ZFSet} {h : x ∈ Int} : ∅ ∉ x := by
       specialize contr a
       simp at contr
 
+/-! ## Well-definedness of `ZFInt` with respect to `ZFSet.Int` -/
+
 open Classical in
+
+/--
+This function maps `ZFInt` to `Int` by taking the first projection of the pair.
+-/
 def ZFInt.into (x : ZFInt) : {x // x ∈ Int} :=
   let ⟨a,b⟩ := x.out
   if a < b then
@@ -1285,6 +1291,13 @@ def ZFInt.EmbeddingIntZFInt : {x // x ∈ Int} ↪ ZFInt where
   toFun := outof
   inj' := outof.injective
 
+/--
+The type `ZFInt` correctly represents the set `ZFSet.Int`.
+
+**NOTE**: There is a constructive proof of the Schröder-Bernstein theorem stating
+the equi-computability of sets. It is called the Myhill isomorphism and applies
+to countable sets only.
+-/
 instance instEquivZFIntInt : ZFInt ≃ {x // x ∈ Int} :=
   Classical.choice (Function.Embedding.antisymm ZFInt.EmbeddingZFIntInt ZFInt.EmbeddingIntZFInt)
 
@@ -1300,13 +1313,6 @@ instance : LinearOrder {x // x ∈ Int} where
     rwa [Equiv.invFun_as_coe, EmbeddingLike.apply_eq_iff_eq] at this
   le_total := (ZFInt.instLinearOrder.le_total · ·)
   decidableLE := (ZFInt.instLinearOrder.decidableLE · ·)
-
-
-/-
-NOTE: There is a constructive proof of the Schröder-Bernstein theorem stating
-the equi-computability of sets. It is called the Myhill isomorphism and applies
-to countable sets only.
--/
 
 end Integers
 end ZFSet
