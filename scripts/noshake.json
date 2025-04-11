@@ -371,6 +371,7 @@
   "Mathlib.NumberTheory.Harmonic.Defs": ["Mathlib.Algebra.Order.Field.Basic"],
   "Mathlib.NumberTheory.Cyclotomic.Basic": ["Mathlib.Init.Core"],
   "Mathlib.NumberTheory.ArithmeticFunction": ["Mathlib.Tactic.ArithMult"],
+  "Mathlib.MeasureTheory.Measure.Real": ["Mathlib.Tactic.Finiteness"],
   "Mathlib.MeasureTheory.MeasurableSpace.Embedding": ["Mathlib.Tactic.FunProp"],
   "Mathlib.MeasureTheory.MeasurableSpace.Defs": ["Mathlib.Tactic.FunProp.Attr"],
   "Mathlib.MeasureTheory.Function.LpSeminorm.CompareExp":
