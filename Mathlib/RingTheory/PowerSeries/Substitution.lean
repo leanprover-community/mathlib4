@@ -60,6 +60,12 @@ theorem HasSubst.of_constantCoeff_zero {a : MvPowerSeries τ S}
     (ha : MvPowerSeries.constantCoeff τ S a = 0) : HasSubst a := by
   simp [HasSubst, ha]
 
+/-- A variant of `HasSubst.of_constantCoeff_zero` for `PowerSeries`
+to avoid the expansion of `Unit` -/
+theorem HasSubst.of_constantCoeff_zero' {a : PowerSeries S}
+    (ha : PowerSeries.constantCoeff S a = 0) : HasSubst a :=
+  HasSubst.of_constantCoeff_zero ha
+
 protected theorem HasSubst.X {t : τ} :
     HasSubst (MvPowerSeries.X t : MvPowerSeries τ S) := by
   simp [HasSubst]
@@ -67,12 +73,31 @@ protected theorem HasSubst.X {t : τ} :
 /-- The univariate `X : R⟦X⟧` can be substituted in power series
 
 This lemma is added because `simp` doesn't find it from `HasSubst.X` -/
-theorem HasSubst.X' : HasSubst (X : R⟦X⟧) :=
+protected theorem HasSubst.X' : HasSubst (X : R⟦X⟧) :=
   HasSubst.X
+
+protected theorem HasSubst.X_pow {n : ℕ} (hn : n ≠ 0) : HasSubst (X ^ n : R⟦X⟧) :=
+  HasSubst.of_constantCoeff_zero' (by simp only [map_pow, constantCoeff_X, zero_pow hn])
+
+protected theorem HasSubst.monomial {n : τ →₀ ℕ} (hn : n ≠ 0) (s : S) :
+    HasSubst (MvPowerSeries.monomial S n s) := by
+  classical
+  apply HasSubst.of_constantCoeff_zero
+  rw [← MvPowerSeries.coeff_zero_eq_constantCoeff, MvPowerSeries.coeff_monomial,
+    if_neg (Ne.symm hn)]
+
+/-- A variant of `HasSubst.monomial` to avoid the expansion of `Unit` -/
+protected theorem HasSubst.monomial' {n : ℕ} (hn : n ≠ 0) (s : S) :
+    HasSubst (monomial S n s) :=
+  HasSubst.monomial (Finsupp.single_ne_zero.mpr hn) s
 
 theorem HasSubst.zero : HasSubst (0 : MvPowerSeries τ R) := by
   rw [hasSubst_iff]
   exact MvPowerSeries.HasSubst.zero
+
+/-- A variant of `HasSubst.zero` to avoid the expansion of `Unit` -/
+theorem HasSubst.zero' : HasSubst (0 : PowerSeries R) :=
+  PowerSeries.HasSubst.zero
 
 theorem HasSubst.add {f g : MvPowerSeries τ R} (hf : HasSubst f) (hg : HasSubst g) :
     HasSubst (f + g) := by
