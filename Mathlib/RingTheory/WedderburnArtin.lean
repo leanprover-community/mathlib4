@@ -169,7 +169,7 @@ private noncomputable abbrev Wedderburn_Artin.aux.nxi_ne_zero
   if xj_eq : x j = 0
   then rw [xj_eq, mul_zero, zero_add] at one_eq; exact ⟨_, _, one_eq.symm⟩
   else erw [hj xj_eq, Submodule.coe_zero, zero_mul, zero_add] at one_eq; exact ⟨_, _, one_eq.symm⟩
-
+#check LinearEquiv.piRing
 private lemma Wedderburn_Artin.aux.equivIdeal
     {A : Type u} [Ring A] [simple : IsSimpleRing A]
     (I : Ideal A) (I_nontrivial : I ≠ ⊥) (I_minimal : ∀ J : Ideal A, J ≠ ⊥ → ¬ J < I) :
@@ -185,14 +185,12 @@ private lemma Wedderburn_Artin.aux.equivIdeal
 
   haveI : IsSimpleModule A I := minimal_ideal_isSimpleModule I I_nontrivial I_minimal
 
-  letI g : (Fin n → I) →ₗ[A] A :=
-  { toFun := fun v ↦ ∑ j : Fin n, v j * x j
-    map_add' := fun v1 v2 => by simp [add_mul, Finset.sum_add_distrib]
-    map_smul' := fun a v => by simp [Finset.mul_sum, mul_assoc] }
+  letI g : (Fin n → I) →ₗ[A] A := Fintype.linearCombination A x ∘ₗ
+    LinearMap.compLeft I.subtype _
 
   have g_surj : Function.Surjective g := fun a =>
     ⟨fun j ↦ ⟨a * (i j), I.mul_mem_left _ (i j).2⟩,
-      by simp [g, mul_assoc, ← Finset.mul_sum, one_eq]⟩
+      by simp [g, Fintype.linearCombination_apply, mul_assoc, ← Finset.mul_sum, one_eq]⟩
 
   have g_inj : Function.Injective g := by
     rw [← LinearMap.ker_eq_bot]
@@ -222,7 +220,7 @@ private lemma Wedderburn_Artin.aux.equivIdeal
       _ = _ := one_eq'.symm
       _ = ∑ k : Option (Fin (n - 1)),
             (i (e.symm k) * x (e.symm k) - r * y (e.symm k) * x (e.symm k)) :=
-          Fintype.sum_bijective e (Equiv.bijective _) _ _ (fun _ ↦ by simp)
+          Fintype.sum_bijective e (Equiv.bijective _) _ _ (fun _ ↦ by simp [mul_assoc])
       _ = ∑ k : Option (Fin (n - 1)),
             ((i (e.symm k) - r * y (e.symm k)) * x (e.symm k)) :=
           Finset.sum_congr rfl (fun _ _ ↦ by simp only [sub_mul, mul_assoc])
