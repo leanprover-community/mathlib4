@@ -83,7 +83,7 @@ class Fact (p : Prop) : Prop where
   `Fact p`. -/
   out : p
 
-library_note "fact non-instances"/--
+library_note2 factNonInstances /--
 In most cases, we should not have global instances of `Fact`; typeclass search only reads the head
 symbol and then tries any instances, which means that adding any such instance will cause slowdowns
 everywhere. We instead make them as lemmata and make them local instances as required.
@@ -152,7 +152,7 @@ if hp : p then hpq hp else hnpq hp
 
 alias by_contra := by_contradiction
 
-library_note "decidable namespace"/--
+library_note2 decidableNamespace /--
 In most of mathlib, we use the law of excluded middle (LEM) and the axiom of choice (AC) freely.
 The `Decidable` namespace contains versions of lemmas from the root namespace that explicitly
 attempt to avoid the axiom of choice, usually by adding decidability assumptions on the inputs.
@@ -161,7 +161,7 @@ You can check if a lemma uses the axiom of choice by using `#print axioms foo` a
 `Classical.choice` appears in the list.
 -/
 
-library_note "decidable arguments"/--
+library_note2 decidableArguments /--
 As mathlib is primarily classical,
 if the type signature of a `def` or `lemma` does not require any `Decidable` instances to state,
 it is preferable not to introduce any `Decidable` instances that are needed in the proof
