@@ -4866,6 +4866,7 @@ import Mathlib.RingTheory.AlgebraicIndependent.RankAndCardinality
 import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
 import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
 import Mathlib.RingTheory.Artinian.Algebra
+import Mathlib.RingTheory.Artinian.HopkinsLevitzki
 import Mathlib.RingTheory.Artinian.Instances
 import Mathlib.RingTheory.Artinian.Module
 import Mathlib.RingTheory.Artinian.Ring
@@ -4991,6 +4992,7 @@ import Mathlib.RingTheory.Ideal.IdempotentFG
 import Mathlib.RingTheory.Ideal.IsPrimary
 import Mathlib.RingTheory.Ideal.IsPrincipal
 import Mathlib.RingTheory.Ideal.IsPrincipalPowQuotient
+import Mathlib.RingTheory.Ideal.KrullHeightTheorem
 import Mathlib.RingTheory.Ideal.Lattice
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Ideal.Maximal
