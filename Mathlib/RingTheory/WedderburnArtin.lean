@@ -169,7 +169,7 @@ private noncomputable abbrev Wedderburn_Artin.aux.nxi_ne_zero
   if xj_eq : x j = 0
   then rw [xj_eq, mul_zero, zero_add] at one_eq; exact ⟨_, _, one_eq.symm⟩
   else erw [hj xj_eq, Submodule.coe_zero, zero_mul, zero_add] at one_eq; exact ⟨_, _, one_eq.symm⟩
-#check LinearEquiv.piRing
+
 private lemma Wedderburn_Artin.aux.equivIdeal
     {A : Type u} [Ring A] [simple : IsSimpleRing A]
     (I : Ideal A) (I_nontrivial : I ≠ ⊥) (I_minimal : ∀ J : Ideal A, J ≠ ⊥ → ¬ J < I) :
