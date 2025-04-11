@@ -39,7 +39,8 @@ lemma Set.Nonempty.ordConnected_iff_of_bdd
 
 /-- A version of `Set.Nonempty.ordConnected_iff_of_bdd` for complete linear orders, such as `Fin n`,
 in which the explicit boundedness hypotheses are not necessary. -/
-lemma Set.Nonempty.ordConnected_iff_of_bdd' [CompleteLinearOrder α] [LocallyFiniteOrder α]
+lemma Set.Nonempty.ordConnected_iff_of_bdd' [ConditionallyCompleteLinearOrder α]
+    [OrderTop α] [OrderBot α] [LocallyFiniteOrder α]
     (h₀ : I.Nonempty) :
     I.OrdConnected ↔ I = Icc (sInf I) (sSup I) :=
   h₀.ordConnected_iff_of_bdd (OrderBot.bddBelow I) (OrderTop.bddAbove I)
