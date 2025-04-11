@@ -17,10 +17,11 @@ open scoped Manifold Topology ContDiff
 open Function Set
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E E' : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  {E E' E'' : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] [NormedAddCommGroup E''] [NormedSpace 𝕜 E'']
   {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  {H : Type*} [TopologicalSpace H] {H' : Type*} [TopologicalSpace H']
+  {H : Type*} [TopologicalSpace H] {H' : Type*} [TopologicalSpace H'] {H'' : Type*} [TopologicalSpace H'']
   {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCorners 𝕜 E' H'}
+  {J : ModelWithCorners 𝕜 E'' H''}
   {M M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M'] {n : WithTop ℕ∞}
 
 variable (I I' F) in
@@ -39,47 +40,84 @@ class SliceModel where
   hmap : Topology.IsEmbedding map
   compatible : I' ∘ map = equiv ∘ ((·, 0) : E → E × F) ∘ I
 
+/-- A choice of inverse of `map`: its value outside of `range map` is unspecified. -/
+noncomputable def SliceModel.inverse [Nonempty H] [h : SliceModel F I I']: H' → H :=
+  (Function.extend h.map id (fun _ ↦ (Classical.arbitrary H)))
+
 -- warm-up: I' ∘ map ⊆ im equiv ∘ I: that's basically obvious, nothing to prove
+
+lemma SliceModel.inverse_left_inv [Nonempty H] [h : SliceModel F I I'] (x : H) :
+    h.inverse (h.map x) = x :=
+  Injective.extend_apply h.hmap.injective ..
 
 section
 
 variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G] [Unique G]
 
--- TODO: this ought to be available already/ what am I missing?
 variable (𝕜 E) in
-def LinearEquiv.prodSingleton {y : G} : E ≃ₗ[𝕜] (E × G) where
-  toFun := (·, y)
+def LinearEquiv.prodUnique : (E × G) ≃ₗ[𝕜] E where
+  toEquiv := Equiv.prodUnique E G
   map_add' := sorry
   map_smul' := sorry
-  invFun := Prod.fst
-  left_inv := sorry
-  right_inv := sorry
 
+@[simp]
+lemma LinearEquiv.prodUnique_toEquiv : (LinearEquiv.prodUnique 𝕜 E).toEquiv = Equiv.prodUnique E G := rfl
+
+variable (𝕜 E) in
+def ContinuousLinearEquiv.prodUnique : (E × G) ≃L[𝕜] E where
+  toLinearEquiv := LinearEquiv.prodUnique 𝕜 E
+  continuous_toFun := by
+    show Continuous (Equiv.prodUnique E G)
+    dsimp; fun_prop
+  continuous_invFun := by
+    dsimp
+    show Continuous (Equiv.prodUnique E G).symm
+    sorry -- dsimp; continuity--fun_prop
+
+@[simp]
+lemma ContinuousLinearEquiv.prodUnique_toEquiv :
+    (ContinuousLinearEquiv.prodUnique 𝕜 E).toEquiv = Equiv.prodUnique E G := rfl
+
+@[simp]
+lemma ContinuousLinearEquiv.prodUnique_apply (x : E × G) :
+    (ContinuousLinearEquiv.prodUnique 𝕜 E) x = x.1 := rfl
+
+@[simp]
+lemma ContinuousLinearEquiv.prodUnique_symm_apply (x : E) :
+    (ContinuousLinearEquiv.prodUnique 𝕜 E (G := G)).symm x = (x, (sorry : G)) := sorry -- rfl
+
+/- do I want all/any of these lemma?
 @[simp]
 lemma LinearEquiv.prodSingle_coe {y : G} :
     (LinearEquiv.prodSingleton 𝕜 E (y := y)) = ((·, y) : E → E × G) := rfl
-
-lemma LinearEquiv.prodSingle_apply {y : G} (x : E) :
-    (LinearEquiv.prodSingleton 𝕜 E (y := y)) x = (x, y) := by simp
-
-@[simp]
-lemma LinearEquiv.prodSingle_symm_apply {y : G} (x : E × G) :
-    (LinearEquiv.prodSingleton 𝕜 E (y := y)).symm x = x.1 := rfl
-
-def ContinuousLinearEquiv.prodSingleton {y : G} : E ≃L[𝕜] (E × G) where
-  toLinearEquiv := LinearEquiv.prodSingleton 𝕜 E (y := y)
-  continuous_toFun := by dsimp; fun_prop
-  continuous_invFun := by show Continuous Prod.fst; fun_prop
+-/
 
 /-- Every model with corners is a slice model over itself. -/
 instance : SliceModel (⊥ : Subspace 𝕜 E) I I where
-  equiv := (ContinuousLinearEquiv.prodSingleton (y := 0)).symm
+  equiv := ContinuousLinearEquiv.prodUnique 𝕜 E
   map := id
   hmap := Topology.IsEmbedding.id
-  compatible := by
-    ext x
-    dsimp
-    erw [LinearEquiv.prodSingle_symm_apply] -- TODO: add the appropriate coercions!
+  compatible := by ext x; dsimp
+
+-- apparently all missing: LinearEquiv.prodCongr, ContinuousLinearEquiv.prodCongr
+
+open Topology
+
+instance [h : SliceModel F I I'] : SliceModel F (J.prod I) (J.prod I') where
+  equiv := by
+    let sdf := h.equiv
+    -- want h.equiv.prodCongr (.id), and probably re-associating...
+    sorry
+  map := Prod.map id h.map
+  hmap := IsEmbedding.id.prodMap h.hmap
+  compatible := sorry
+
+-- a bit more cumbersom, as equiv needs some reordering
+instance [h : SliceModel F I I'] : SliceModel F (I.prod J) (I'.prod J) where
+  equiv := sorry
+  map := Prod.map h.map id
+  hmap := h.hmap.prodMap IsEmbedding.id
+  compatible := sorry
 
 end
 
