@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Sébastien Gouëzel, Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Integral.SetIntegral
+import Mathlib.MeasureTheory.Group.Measure
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 import Mathlib.MeasureTheory.Measure.Haar.Unique
 
@@ -74,6 +75,17 @@ mathlib's conventions for integrals over finite intervals (see `intervalIntegral
 of finite integrals, see `intervalIntegral.integral_comp_neg`.
 -/
 
+theorem MeasureTheory.IntegrableOn.comp_neg_Iic {E : Type*} [NormedAddCommGroup E]
+    {c : ℝ} {f : ℝ → E} (hf : IntegrableOn f (Ioi (-c))) :
+    IntegrableOn (fun x => f (-x)) (Iic c) := by
+  rw [(by simp : Iic c = - (Ici (-c)))]
+  exact (integrableOn_Ici_iff_integrableOn_Ioi.mpr hf).comp_neg
+
+theorem MeasureTheory.IntegrableOn.comp_neg_Ioi {E : Type*} [NormedAddCommGroup E]
+    {c : ℝ} {f : ℝ → E} (hf : IntegrableOn f (Iic (-c))) :
+    IntegrableOn (fun x => f (-x)) (Ioi c) := by
+  rw [(by simp : Ioi c = - (Iio (-c)))]
+  exact (integrableOn_Iic_iff_integrableOn_Iio.mp hf).comp_neg
 
 /- @[simp] Porting note: Linter complains it does not apply to itself. Although it does apply to
 itself, it does not apply when `f` is more complicated -/
