@@ -97,14 +97,6 @@ theorem IsOfFinOrder.one : IsOfFinOrder (1 : G) :=
   isOfFinOrder_iff_pow_eq_one.mpr ⟨1, Nat.one_pos, one_pow 1⟩
 
 @[to_additive]
-alias isOfFinOrder_one := IsOfFinOrder.one
-
--- `alias` doesn't add the deprecation suggestion to the `to_additive` version
--- see https://github.com/leanprover-community/mathlib4/issues/19424
-attribute [deprecated IsOfFinOrder.one (since := "2024-10-11")] isOfFinOrder_one
-attribute [deprecated IsOfFinAddOrder.zero (since := "2024-10-11")] isOfFinAddOrder_zero
-
-@[to_additive]
 lemma IsOfFinOrder.pow {n : ℕ} : IsOfFinOrder a → IsOfFinOrder (a ^ n) := by
   simp_rw [isOfFinOrder_iff_pow_eq_one]
   rintro ⟨m, hm, ha⟩

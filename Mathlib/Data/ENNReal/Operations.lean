@@ -30,25 +30,11 @@ section Mul
 @[mono, gcongr]
 theorem mul_lt_mul (ac : a < c) (bd : b < d) : a * b < c * d := WithTop.mul_lt_mul ac bd
 
-@[deprecated mul_left_mono (since := "2024-10-15")]
-protected theorem mul_left_mono : Monotone (a * ·) := mul_left_mono
-
-@[deprecated mul_right_mono (since := "2024-10-15")]
-protected theorem mul_right_mono : Monotone (· * a) := mul_right_mono
-
 protected lemma pow_right_strictMono {n : ℕ} (hn : n ≠ 0) : StrictMono fun a : ℝ≥0∞ ↦ a ^ n :=
   WithTop.pow_right_strictMono hn
 
-@[deprecated (since := "2024-10-15")] alias pow_strictMono := ENNReal.pow_right_strictMono
-
 @[gcongr] protected lemma pow_lt_pow_left (hab : a < b) {n : ℕ} (hn : n ≠ 0) : a ^ n < b ^ n :=
   WithTop.pow_lt_pow_left hab hn
-
-@[deprecated max_mul (since := "2024-10-15")]
-protected theorem max_mul : max a b * c = max (a * c) (b * c) := mul_right_mono.map_max
-
-@[deprecated mul_max (since := "2024-10-15")]
-protected theorem mul_max : a * max b c = max (a * b) (a * c) := mul_left_mono.map_max
 
 -- TODO: generalize to `WithTop`
 theorem mul_left_strictMono (h0 : a ≠ 0) (hinf : a ≠ ∞) : StrictMono (a * ·) := by

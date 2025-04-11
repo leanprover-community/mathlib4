@@ -495,18 +495,6 @@ theorem adjoin_induction₂ {s : Set A} {p : (x y : A) → x ∈ adjoin R s → 
   | mul _ _ _ _ h₁ h₂ => exact mul_right _ _ _ _ _ _ h₁ h₂
   | add _ _ _ _ h₁ h₂ => exact add_right _ _ _ _ _ _ h₁ h₂
 
-/-- The difference with `Algebra.adjoin_induction` is that this acts on the subtype. -/
-@[elab_as_elim, deprecated adjoin_induction (since := "2024-10-11")]
-theorem adjoin_induction' {p : adjoin R s → Prop} (mem : ∀ (x) (h : x ∈ s), p ⟨x, subset_adjoin h⟩)
-    (algebraMap : ∀ r, p (algebraMap R _ r)) (add : ∀ x y, p x → p y → p (x + y))
-    (mul : ∀ x y, p x → p y → p (x * y)) (x : adjoin R s) : p x :=
-  Subtype.recOn x fun x hx => by
-    induction hx using adjoin_induction with
-    | mem _ h => exact mem _ h
-    | algebraMap _ => exact algebraMap _
-    | mul _ _ _ _ h₁ h₂ => exact mul _ _ h₁ h₂
-    | add _ _ _ _ h₁ h₂ => exact add _ _ h₁ h₂
-
 @[simp]
 theorem adjoin_adjoin_coe_preimage {s : Set A} : adjoin R (((↑) : adjoin R s → A) ⁻¹' s) = ⊤ := by
   refine eq_top_iff.2 fun ⟨x, hx⟩ ↦

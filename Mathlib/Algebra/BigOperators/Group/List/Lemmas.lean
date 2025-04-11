@@ -130,8 +130,6 @@ lemma ranges_flatten : ∀ (l : List ℕ), l.ranges.flatten = range l.sum
 theorem ranges_nodup {l s : List ℕ} (hs : s ∈ ranges l) : s.Nodup :=
   (List.pairwise_flatten.mp <| by rw [ranges_flatten]; exact nodup_range).1 s hs
 
-@[deprecated (since := "2024-10-15")] alias ranges_join := ranges_flatten
-
 /-- Any entry of any member of `l.ranges` is strictly smaller than `l.sum`. -/
 lemma mem_mem_ranges_iff_lt_sum (l : List ℕ) {n : ℕ} :
     (∃ s ∈ l.ranges, n ∈ s) ↔ n < l.sum := by

@@ -132,10 +132,6 @@ theorem toList_prod (xs : List (FreeMonoid α)) : toList xs.prod = (xs.map toLis
 theorem ofList_flatten (xs : List (List α)) : ofList xs.flatten = (xs.map ofList).prod :=
   toList.injective <| by simp
 
-@[deprecated (since := "2024-10-15")] alias ofList_join := ofList_flatten
-@[deprecated (since := "2024-10-15")]
-alias _root_.FreeAddMonoid.ofList_join := _root_.FreeAddMonoid.ofList_flatten
-
 /-- Embeds an element of `α` into `FreeMonoid α` as a singleton list. -/
 @[to_additive "Embeds an element of `α` into `FreeAddMonoid α` as a singleton list."]
 def of (x : α) : FreeMonoid α := ofList [x]

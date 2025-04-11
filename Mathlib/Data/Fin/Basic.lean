@@ -206,11 +206,6 @@ def factorial {n : ℕ} : Fin n → ℕ
 instance {n : ℕ} : WellFoundedRelation (Fin n) :=
   measure (val : Fin n → ℕ)
 
-/-- Given a positive `n`, `Fin.ofNat' i` is `i % n` as an element of `Fin n`. -/
-@[deprecated Fin.ofNat' (since := "2024-10-15")]
-def ofNat'' [NeZero n] (i : ℕ) : Fin n :=
-  ⟨i % n, mod_lt _ n.pos_of_neZero⟩
-
 @[deprecated (since := "2025-02-24")]
 alias val_zero' := val_zero
 

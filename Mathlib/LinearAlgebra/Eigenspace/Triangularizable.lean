@@ -53,13 +53,6 @@ theorem exists_hasEigenvalue_of_genEigenspace_eq_top [Nontrivial M] {f : End R M
     exact HasUnifEigenvalue.lt zero_lt_one hμ
   simp [HasUnifEigenvalue, ← not_forall, ← iSup_eq_bot, hf]
 
-@[deprecated exists_hasEigenvalue_of_genEigenspace_eq_top (since := "2024-10-11")]
-theorem exists_hasEigenvalue_of_iSup_genEigenspace_eq_top [Nontrivial M] {f : End R M}
-    (hf : ⨆ μ, ⨆ k : ℕ, f.genEigenspace μ k = ⊤) :
-    ∃ μ, f.HasEigenvalue μ := by
-  simp_rw [iSup_genEigenspace_eq] at hf
-  apply exists_hasEigenvalue_of_genEigenspace_eq_top _ hf
-
 -- This is Lemma 5.21 of [axler2015], although we are no longer following that proof.
 /-- In finite dimensions, over an algebraically closed field, every linear endomorphism has an
 eigenvalue. -/
@@ -138,15 +131,6 @@ theorem iSup_maxGenEigenspace_eq_top [IsAlgClosed K] [FiniteDimensional K V] (f 
     show ⨆ (μ : K), f.maxGenEigenspace μ = ⊤
     rw [← top_le_iff, ← Submodule.eq_top_of_disjoint ER ES h_dim_add.ge h_disjoint]
     apply sup_le hER hES
-
--- Lemma 8.21 of [axler2015]
-/-- In finite dimensions, over an algebraically closed field, the generalized eigenspaces of any
-linear endomorphism span the whole space. -/
-@[deprecated iSup_maxGenEigenspace_eq_top (since := "2024-10-11")]
-theorem iSup_genEigenspace_eq_top [IsAlgClosed K] [FiniteDimensional K V] (f : End K V) :
-    ⨆ (μ : K) (k : ℕ), f.genEigenspace μ k = ⊤ := by
-  simp_rw [iSup_genEigenspace_eq]
-  apply iSup_maxGenEigenspace_eq_top
 
 end Module.End
 
@@ -255,13 +239,3 @@ theorem Module.End.genEigenspace_restrict_eq_top
   simp_rw [Submodule.inf_genEigenspace f p h, Submodule.comap_subtype_self,
     ← Submodule.map_iSup, Submodule.comap_map_eq_of_injective h_inj] at this
   exact this.symm
-
-/-- In finite dimensions, if the generalized eigenspaces of a linear endomorphism span the whole
-space then the same is true of its restriction to any invariant submodule. -/
-@[deprecated Module.End.genEigenspace_restrict_eq_top (since := "2024-10-11")]
-theorem Module.End.iSup_genEigenspace_restrict_eq_top
-    {p : Submodule K V} {f : Module.End K V} [FiniteDimensional K V]
-    (h : ∀ x ∈ p, f x ∈ p) (h' : ⨆ μ, ⨆ k : ℕ, f.genEigenspace μ k = ⊤) :
-    ⨆ μ, ⨆ k : ℕ, Module.End.genEigenspace (LinearMap.restrict f h) μ k = ⊤ := by
-  simp_rw [iSup_genEigenspace_eq] at h' ⊢
-  apply Module.End.genEigenspace_restrict_eq_top h h'

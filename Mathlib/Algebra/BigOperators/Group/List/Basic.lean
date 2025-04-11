@@ -55,9 +55,6 @@ theorem prod_flatten {l : List (List M)} : l.flatten.prod = (l.map List.prod).pr
   | nil => simp
   | cons head tail ih => simp only [*, List.flatten, map, prod_append, prod_cons]
 
-@[deprecated (since := "2024-10-15")] alias prod_join := prod_flatten
-@[deprecated (since := "2024-10-15")] alias sum_join := sum_flatten
-
 open scoped Relator in
 @[to_additive]
 theorem rel_prod {R : M → N → Prop} (h : R 1 1) (hf : (R ⇒ R ⇒ R) (· * ·) (· * ·)) :
@@ -498,8 +495,6 @@ lemma take_sum_flatten (L : List (List α)) (i : ℕ) :
   · simp
   · cases i <;> simp [take_append, *]
 
-@[deprecated (since := "2024-10-15")] alias take_sum_join := take_sum_flatten
-
 /-- In a flatten, dropping all the elements up to an index which is the sum of the lengths of the
 first `i` sublists, is the same as taking the join after dropping the first `i` sublists. -/
 lemma drop_sum_flatten (L : List (List α)) (i : ℕ) :
@@ -508,10 +503,7 @@ lemma drop_sum_flatten (L : List (List α)) (i : ℕ) :
   · simp
   · cases i <;> simp [take_append, *]
 
-@[deprecated (since := "2024-10-15")] alias drop_sum_join := drop_sum_flatten
-
 end List
-
 
 namespace List
 

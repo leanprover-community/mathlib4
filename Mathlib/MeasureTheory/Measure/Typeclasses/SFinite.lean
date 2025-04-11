@@ -31,33 +31,20 @@ class SFinite (μ : Measure α) : Prop where
 /-- A sequence of finite measures such that `μ = sum (sfiniteSeq μ)` (see `sum_sfiniteSeq`). -/
 noncomputable def sfiniteSeq (μ : Measure α) [h : SFinite μ] : ℕ → Measure α := h.1.choose
 
-@[deprecated (since := "2024-10-11")] alias sFiniteSeq := sfiniteSeq
-
 instance isFiniteMeasure_sfiniteSeq [h : SFinite μ] (n : ℕ) : IsFiniteMeasure (sfiniteSeq μ n) :=
   h.1.choose_spec.1 n
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-10-11")]
-instance isFiniteMeasure_sFiniteSeq [SFinite μ] (n : ℕ) : IsFiniteMeasure (sFiniteSeq μ n) :=
-  isFiniteMeasure_sfiniteSeq n
 
 lemma sum_sfiniteSeq (μ : Measure α) [h : SFinite μ] : sum (sfiniteSeq μ) = μ :=
   h.1.choose_spec.2.symm
 
-@[deprecated (since := "2024-10-11")] alias sum_sFiniteSeq := sum_sfiniteSeq
-
 lemma sfiniteSeq_le (μ : Measure α) [SFinite μ] (n : ℕ) : sfiniteSeq μ n ≤ μ :=
   (le_sum _ n).trans (sum_sfiniteSeq μ).le
-
-@[deprecated (since := "2024-10-11")] alias sFiniteSeq_le := sfiniteSeq_le
 
 instance : SFinite (0 : Measure α) := ⟨fun _ ↦ 0, inferInstance, by rw [Measure.sum_zero]⟩
 
 @[simp]
 lemma sfiniteSeq_zero (n : ℕ) : sfiniteSeq (0 : Measure α) n = 0 :=
   bot_unique <| sfiniteSeq_le _ _
-
-@[deprecated (since := "2024-10-11")] alias sFiniteSeq_zero := sfiniteSeq_zero
 
 /-- A countable sum of finite measures is s-finite.
 This lemma is superseded by the instance below. -/

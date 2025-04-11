@@ -139,16 +139,11 @@ theorem drop_take_succ_flatten_eq_getElem' (L : List (List α)) (i : Nat) (h : i
   simp only [this, length_map, take_sum_flatten', drop_sum_flatten',
     drop_take_succ_eq_cons_getElem, h, flatten, append_nil]
 
-@[deprecated (since := "2024-10-15")]
-alias drop_take_succ_join_eq_getElem' := drop_take_succ_flatten_eq_getElem'
-
 theorem flatten_drop_length_sub_one {L : List (List α)} (h : L ≠ []) :
     (L.drop (L.length - 1)).flatten = L.getLast h := by
   induction L using List.reverseRecOn
   · cases h rfl
   · simp
-
-@[deprecated (since := "2024-10-15")] alias join_drop_length_sub_one := flatten_drop_length_sub_one
 
 /-- We can rebracket `x ++ (l₁ ++ x) ++ (l₂ ++ x) ++ ... ++ (lₙ ++ x)` to
 `(x ++ l₁) ++ (x ++ l₂) ++ ... ++ (x ++ lₙ) ++ x` where `L = [l₁, l₂, ..., lₙ]`. -/
@@ -158,7 +153,5 @@ theorem append_flatten_map_append (L : List (List α)) (x : List α) :
   | nil => rw [map_nil, flatten, append_nil, map_nil, flatten, nil_append]
   | cons _ _ ih =>
     rw [map_cons, flatten, map_cons, flatten, append_assoc, ih, append_assoc, append_assoc]
-
-@[deprecated (since := "2024-10-15")] alias append_join_map_append := append_flatten_map_append
 
 end List

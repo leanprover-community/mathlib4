@@ -472,16 +472,10 @@ theorem add_le_of_limit {a b c : Ordinal} (h : IsLimit b) :
 theorem isNormal_add_right (a : Ordinal) : IsNormal (a + ·) :=
   ⟨fun b => (add_lt_add_iff_left a).2 (lt_succ b), fun _b l _c => add_le_of_limit l⟩
 
-@[deprecated isNormal_add_right (since := "2024-10-11")]
-alias add_isNormal := isNormal_add_right
-
 theorem isLimit_add (a) {b} : IsLimit b → IsLimit (a + b) :=
   (isNormal_add_right a).isLimit
 
-@[deprecated isLimit_add (since := "2024-10-11")]
-alias add_isLimit := isLimit_add
-
-alias IsLimit.add := add_isLimit
+alias IsLimit.add := isLimit_add
 
 /-! ### Subtraction on ordinals -/
 
@@ -581,9 +575,6 @@ theorem isLimit_sub {a b} (ha : IsLimit a) (h : b < a) : IsLimit (a - b) := by
   rw [lt_sub] at hc ⊢
   rw [add_succ]
   exact ha.succ_lt hc
-
-@[deprecated isLimit_sub (since := "2024-10-11")]
-alias sub_isLimit := isLimit_sub
 
 /-! ### Multiplication of ordinals -/
 
@@ -750,9 +741,6 @@ theorem isNormal_mul_right {a : Ordinal} (h : 0 < a) : IsNormal (a * ·) :=
       simpa only [add_zero] using (add_lt_add_iff_left (a * b)).2 h,
     fun _ l _ => mul_le_of_limit l⟩
 
-@[deprecated isNormal_mul_right (since := "2024-10-11")]
-alias mul_isNormal := isNormal_mul_right
-
 theorem lt_mul_of_limit {a b c : Ordinal} (h : IsLimit c) : a < b * c ↔ ∃ c' < c, a < b * c' := by
   -- Porting note: `bex_def` is required.
   simpa only [not_forall₂, not_le, bex_def] using not_congr (@mul_le_of_limit b c a h)
@@ -781,18 +769,12 @@ theorem mul_right_inj {a b c : Ordinal} (a0 : 0 < a) : a * b = a * c ↔ b = c :
 theorem isLimit_mul {a b : Ordinal} (a0 : 0 < a) : IsLimit b → IsLimit (a * b) :=
   (isNormal_mul_right a0).isLimit
 
-@[deprecated isLimit_mul (since := "2024-10-11")]
-alias mul_isLimit := isLimit_mul
-
 theorem isLimit_mul_left {a b : Ordinal} (l : IsLimit a) (b0 : 0 < b) : IsLimit (a * b) := by
   rcases zero_or_succ_or_limit b with (rfl | ⟨b, rfl⟩ | lb)
   · exact b0.false.elim
   · rw [mul_succ]
     exact isLimit_add _ l
   · exact isLimit_mul l.pos lb
-
-@[deprecated isLimit_mul_left (since := "2024-10-11")]
-alias mul_isLimit_left := isLimit_mul_left
 
 theorem smul_eq_mul : ∀ (n : ℕ) (a : Ordinal), n • a = a * n
   | 0, a => by rw [zero_nsmul, Nat.cast_zero, mul_zero]
@@ -1156,9 +1138,6 @@ theorem isLimit_omega0 : IsLimit ω := by
   obtain ⟨n, rfl⟩ := lt_omega0.1 h
   exact nat_lt_omega0 (n + 1)
 
-@[deprecated "No deprecation message was provided." (since := "2024-10-14")]
-alias omega0_isLimit := isLimit_omega0
-
 theorem omega0_le {o : Ordinal} : ω ≤ o ↔ ∀ n : ℕ, ↑n ≤ o :=
   ⟨fun h n => (nat_lt_omega0 _).le.trans h, fun H =>
     le_of_forall_lt fun a h => by
@@ -1237,9 +1216,6 @@ theorem isLimit_ord {c} (co : ℵ₀ ≤ c) : (ord c).IsLimit := by
     · exact co.trans h
     · rw [ord_aleph0]
       exact Ordinal.isLimit_omega0
-
-@[deprecated "No deprecation message was provided." (since := "2024-10-14")]
-alias ord_isLimit := isLimit_ord
 
 theorem noMaxOrder {c} (h : ℵ₀ ≤ c) : NoMaxOrder c.ord.toType :=
   toType_noMax_of_succ_lt fun _ ↦ (isLimit_ord h).succ_lt
