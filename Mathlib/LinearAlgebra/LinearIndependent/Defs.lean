@@ -160,6 +160,11 @@ theorem linearIndependent_zero_iff [Nontrivial R] : LinearIndependent R (0 : ι 
 theorem linearIndepOn_zero_iff [Nontrivial R] : LinearIndepOn R (0 : ι → M) s ↔ s = ∅ :=
   linearIndependent_zero_iff.trans isEmpty_coe_sort
 
+@[simp]
+theorem linearIndependent_subsingleton_iff [Nontrivial R] [Subsingleton M] (f : ι → M) :
+    LinearIndependent R f ↔ IsEmpty ι := by
+  rw [Subsingleton.elim f 0, linearIndependent_zero_iff]
+
 variable (R M) in
 theorem linearIndependent_empty : LinearIndependent R (fun x => x : (∅ : Set M) → M) :=
   linearIndependent_empty_type
