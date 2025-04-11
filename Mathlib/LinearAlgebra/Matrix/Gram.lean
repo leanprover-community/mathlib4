@@ -5,121 +5,145 @@ Author: Peter Pfaffelhuber
 -/
 import Mathlib.LinearAlgebra.Matrix.PosDef
 import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.MeasureTheory.Function.L2Space
 import Mathlib.MeasureTheory.Function.LpSpace.Indicator
-
+import Mathlib.Algebra.GroupWithZero.Defs
 
 /-! # Gram Matrices
 
 This file defines Gram matrices and proves their positive semi-definiteness.
-Results require `𝕜 = ℝ` or `ℂ`.
+Results require `RCLike 𝕜`.
 
 ## Main definition
 
 * `Matrix.Gram` : a matrix `M : Matrix n n 𝕜` is a Gram matrix if
 `M i j = ⟪v i, v j⟫` for all `i j : n`, where
-`v : n → E` for an `InnerProductSpace E`.
+`v : n → α` for an `InnerProductSpace α`.
 
 ## Main results
 
 * `Matrix.Gram.PosSemidef` Gram matrices are positive semi-definite.
 -/
 
-open RCLike Real Matrix Topology ComplexConjugate Finsupp
-
-open LinearMap (BilinForm)
-
-variable {E F n : Type*}
+open RCLike Real Matrix MeasureTheory
 
 open scoped InnerProductSpace
 
-variable [SeminormedAddCommGroup E] [InnerProductSpace ℝ E]
-
-local notation "⟪" x ", " y "⟫" => @inner ℝ _ _ x y
-
 namespace Matrix
 
+variable {E n : Type*}
+variable {α : Type*} [MeasurableSpace α] {μ : Measure α}
+variable {𝕜 : Type*} [RCLike 𝕜]
+variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+
 /-- The entries of a Gram matrix are inner products of vectors in an inner product space. -/
-def Gram (M : Matrix n n ℝ) (v : n → E) : Prop := ∀ i j, M i j = ⟪v i, v j⟫
+def Gram (𝕜 : Type*) [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+    (v : n → E) : Matrix n n 𝕜  := fun i j ↦ inner (v i) (v j)
 
-namespace Gram
+local notation "⟪" x ", " y "⟫" => @inner 𝕜  _ _ x y
 
-theorem entry {M : Matrix n n ℝ} {v : n → E} (hM : M.Gram v) (i j : n) : M i j = ⟪v i, v j⟫ :=
-  hM i j
+/-- Special case of a Gram matrix where the underlying inner product space is an L2-space. -/
+noncomputable def L2Gram (v : n → (α →₂[μ] 𝕜)) :
+  Matrix n n 𝕜 := Gram 𝕜 v
 
-lemma IsHermitian (M : Matrix n n ℝ) {v : n → E} (hM : Gram M v) : M.IsHermitian := by
-  refine IsHermitian.ext_iff.mpr ?_
-  intro i j
-  rw [hM, hM]
-  simp only [RCLike.star_def, inner_conj_symm]
+def IsGram (M : Matrix n n 𝕜) (v : n → E) : Prop := (M = Gram 𝕜 v)
 
-variable {m : Type*} [Fintype m] [Fintype n]
+namespace IsGram
 
-example (a : ℝ) (x : m → ℝ) : a * ∑ i, x i = ∑ i, a * (x i) := by
-  rw [Finset.mul_sum]
-
-example (M : Matrix m n ℝ) (x : m → ℝ) (y : n → ℝ) :
-    x ⬝ᵥ M *ᵥ y = ∑ i, ∑ j, (x i) * (M i j) * (y j) := by
-  simp_rw [dotProduct, mul_assoc, ← Finset.mul_sum, mulVec]
+lemma of_Gram (v : n → E) : IsGram (Gram 𝕜 v) v := by
   rfl
 
-theorem PosSemidef (M : Matrix n n ℝ) {v : n → E} (hM : M.Gram v) : PosSemidef M := by
-  refine ⟨Gram.IsHermitian M hM, fun x ↦ ?_⟩
+lemma of_L2Gram (v : n →  (α →₂[μ] 𝕜)) : IsGram (L2Gram v) v := by
+  rfl
+
+lemma entry {M : Matrix n n 𝕜} {v : n → E} (hM : IsGram M v) (i j : n) : M i j = ⟪v i, v j⟫ := by
+  rw [hM, Gram]
+
+/-- A Gram matrix is Hermitian. -/
+lemma IsHermitian {M : Matrix n n 𝕜} {v : n → E} (hM : IsGram M v) : M.IsHermitian := by
+  refine IsHermitian.ext_iff.mpr ?_
+  intro i j
+  rw [hM, Gram, Gram]
+  simp only [RCLike.star_def, inner_conj_symm]
+
+/-- A Gram matrix is positive semidefinite. -/
+theorem PosSemidef [Fintype n] {M : Matrix n n 𝕜} {v : n → E} (hM : IsGram M v) :
+    @PosSemidef _ _ _ _ toPartialOrder _ M := by
+  refine ⟨hM.IsHermitian, fun x ↦ ?_⟩
   let y := ∑ (i : n), x i • v i
-  have h : inner y y = (star x ⬝ᵥ M *ᵥ x) := by
+  have h : ⟪y, y⟫ = star x ⬝ᵥ M *ᵥ x := by
+    simp [y]
     calc
-      inner y y = (∑ (i : n), ∑ (j : n), (x i) * (x j) * (inner (v i) (v j))) := by
+      ⟪y, y⟫ = (∑ (i : n), ∑ (j : n), (starRingEnd 𝕜) (x i) * (x j) * ⟪v i, v j⟫) := by
           simp_rw [y, sum_inner, inner_sum, inner_smul_left, inner_smul_right, mul_assoc]
-          simp only [conj_trivial, y]
-        _ = (∑ (i : n), ∑ (j : n), (x i) * (x j) * (M i j)) := by
+        _ = (∑ (i : n), ∑ (j : n), (starRingEnd 𝕜) (x i) * (x j) * (M i j)) := by
           simp_rw [hM.entry]
-        _ = (x ⬝ᵥ M *ᵥ x) := by
-          simp_rw [dotProduct, mul_assoc, ← Finset.mul_sum, mulVec, dotProduct, mul_comm]
-  refine nonneg_iff.mpr ⟨?_, ?_⟩
-  · rw [← h]
-    exact real_inner_self_nonneg
-  · simp only [im_to_real]
+        _ = star x ⬝ᵥ M *ᵥ x := by
+          simp_rw [dotProduct, mul_assoc, ← Finset.mul_sum, mulVec, dotProduct,
+            mul_comm, ← star_def]
+          rfl
+  rw [← h, le_iff_re_im]
+  refine ⟨?_, ?_⟩
+  · simp only [map_zero]
+    exact inner_self_nonneg
+  · simp only [map_zero, inner_self_im, y]
 
-
-end Gram
+end IsGram
 
 end Matrix
 
-open Set NNReal MeasureTheory
+section covariance
 
-def covariance (J : Finset NNReal) : Matrix J J ℝ≥0 :=
-  (fun i j => i ⊓ j)
+variable {E n : Type*}
+variable {α : Type*} [MeasurableSpace α] {μ : Measure α}
+variable [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+variable {M : Type*} [MulZeroClass M]
 
-variable [NormedAddCommGroup E] [NormedSpace ℝ E]
+omit [MeasurableSpace α] in
+lemma Set.indicator_mul_eq_inter (s t : Set α) (f g : α → M) (x : α) :
+  (Set.indicator s f x) * (Set.indicator t g x) =
+    Set.indicator (s ∩ t) (f * g) x := by
+  by_cases h : x ∈ s ∩ t
+  · rw [Set.indicator_of_mem h (f * g), Set.indicator_of_mem (mem_of_mem_inter_left h) f,
+      Set.indicator_of_mem (mem_of_mem_inter_right h) g]
+    simp only [Pi.mul_apply]
+  · have g : x ∉ s ∨ x ∉ t := by
+      exact Classical.not_and_iff_not_or_not.mp h
+    rcases g with (g1 | g2)
+    · rw [Set.indicator_of_not_mem g1 f, Set.indicator_of_not_mem h (f * g)]
+      let y := (t.indicator g x)
+      rw [MulZeroClass.zero_mul]
+    · rw [Set.indicator_of_not_mem g2 g, Set.indicator_of_not_mem h (f * g)]
+      simp only [mul_zero]
 
-example (t : ℝ) : MeasurableSet (Icc 0 t) := by exact measurableSet_Icc
+local notation "⟪" x ", " y "⟫" => @inner ℝ _ _ x y
 
-example [MeasurableSpace E] {μ : Measure E} [TopologicalSpace E] [IsFiniteMeasureOnCompacts μ]
-    {K : Set E} (hK : IsCompact K) : μ K < ⊤ := by
-  exact IsCompact.measure_lt_top hK
+open MeasureTheory L2
+
+example (f g : α → ℝ) (s : Set α) (hs : MeasurableSet s) (hfg : f =ᶠ[ae μ] g) :
+    ∫ a in s, f a ∂μ = ∫ a in s, g a ∂μ := by
+  refine setIntegral_congr_ae hs ?_
+  exact Filter.Eventually.mono hfg fun x a a_1 ↦ a
+
+lemma innerProduct_eq_inter (v w : (Set α)) (hv₁ : MeasurableSet v)
+  (hw₁ : MeasurableSet w) (hv₂ : μ v ≠ ⊤) (hw₂ : μ w ≠ ⊤) :
+  ⟪((indicatorConstLp 2 hv₁ hv₂ (1 : ℝ))), (indicatorConstLp 2 hw₁ hw₂ (1 : ℝ)) ⟫ =
+    (μ (v ∩ w)).toReal := by
+  rw [inner_indicatorConstLp_one]
+  have h : ((indicatorConstLp 2 hw₁ hw₂ (1 : ℝ)) : α → ℝ) =ᶠ[ae μ] w.indicator fun x ↦ (1 : ℝ) :=
+    indicatorConstLp_coeFn (hs := hw₁) (hμs := hw₂)
+  have g : ∀ᵐ (x : α) ∂μ, x ∈ v → ((indicatorConstLp 2 hw₁ hw₂ (1 : ℝ)) : α → ℝ) x =
+      w.indicator (fun x ↦ (1 : ℝ)) x := by
+    exact Filter.Eventually.mono h fun x a a_1 ↦ a
+  rw [setIntegral_congr_ae hv₁ g]
+  rw [setIntegral_indicator hw₁]
+  simp only [integral_const, MeasurableSet.univ,
+    Measure.restrict_apply, Set.univ_inter, smul_eq_mul, mul_one]
+
+
+def covMatrix (v : n → (Set α)) (hv₁ : ∀ j, MeasurableSet (v j))
+   (hv₂ : ∀ j, μ (v j) ≠ ⊤) : Matrix n n ℝ := fun i j ↦ (μ (v i ∩ v j)).toReal
 
 
 
-example [Preorder E] [OrderBot E] [MeasurableSpace E] {μ : Measure E} [TopologicalSpace E]
-  [CompactIccSpace E] [IsFiniteMeasureOnCompacts μ] (t : E) :
-      μ (Icc ⊥ t) ≠ ⊤ :=
-    by
-  exact IsCompact.measure_ne_top isCompact_Icc
-
-example [Preorder E] [OrderBot E] [MeasurableSpace E] [TopologicalSpace E]
-[OpensMeasurableSpace E]  [OrderClosedTopology E] (t : E) :
-      (MeasurableSet (Icc ⊥ t)) :=
-    by
-  apply measurableSet_Icc
-
-example [Lattice E] [OrderBot E] (s t : E) : (Icc ⊥ s) ∩ (Icc ⊥ t) = (Icc ⊥ (s ⊓ t)) := by
-  have h : ⊥ = ((⊥ : E) ⊔ ⊥)  := by
-    simp only [le_refl, sup_of_le_left]
-  nth_rewrite 3 [h]
-  rw [Icc_inter_Icc]
-
-def v [NormedAddCommGroup F] [Lattice E] [OrderBot E] [MeasurableSpace E] [TopologicalSpace E]
-  [CompactIccSpace E] {μ : Measure E} {_ : IsFiniteMeasureOnCompacts μ} : E →₂[μ] F := by
-    have h (t : E) := isCompact_Icc (a := ⊥) (b := t)
-    have h' (t : E) : μ (Icc ⊥ t) ≠ ⊤ := IsCompact.measure_ne_top (h t)
-    -- IsCompact.measure_ne_top <|
-    exact indicatorConstLp 2  measurableSet_Icc -- (IsCompact.measure_ne_top isCompact_Icc)
+end covariance
