@@ -836,12 +836,12 @@ theorem vecMul_natCast (x : ℕ) (v : m → α) : v ᵥ* x = MulOpposite.op (x :
 
 
 @[simp]
-theorem ofNat_mulVec (x : ℕ) [x.AtLeastTwo] (v : m → α) :
+theorem ofNat_mulVec (x : ℕ) (v : m → α) :
     ofNat(x) *ᵥ v = (OfNat.ofNat x : α) • v :=
   natCast_mulVec _ _
 
 @[simp]
-theorem vecMul_ofNat (x : ℕ) [x.AtLeastTwo] (v : m → α) :
+theorem vecMul_ofNat (x : ℕ) (v : m → α) :
     v ᵥ* ofNat(x) = MulOpposite.op (OfNat.ofNat x : α) • v :=
   vecMul_natCast _ _
 

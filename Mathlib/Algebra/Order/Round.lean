@@ -51,7 +51,7 @@ theorem round_one : round (1 : α) = 1 := by simp [round]
 theorem round_natCast (n : ℕ) : round (n : α) = n := by simp [round]
 
 @[simp]
-theorem round_ofNat (n : ℕ) [n.AtLeastTwo] : round (ofNat(n) : α) = ofNat(n) :=
+theorem round_ofNat (n : ℕ) : round (ofNat(n) : α) = ofNat(n) :=
   round_natCast n
 
 @[simp]
@@ -90,7 +90,7 @@ theorem round_add_natCast (x : α) (y : ℕ) : round (x + y) = round x + y :=
 alias round_add_nat := round_add_natCast
 
 @[simp]
-theorem round_add_ofNat (x : α) (n : ℕ) [n.AtLeastTwo] :
+theorem round_add_ofNat (x : α) (n : ℕ) :
     round (x + ofNat(n)) = round x + ofNat(n) :=
   round_add_natCast x n
 
@@ -102,7 +102,7 @@ theorem round_sub_natCast (x : α) (y : ℕ) : round (x - y) = round x - y :=
 alias round_sub_nat := round_sub_natCast
 
 @[simp]
-theorem round_sub_ofNat (x : α) (n : ℕ) [n.AtLeastTwo] :
+theorem round_sub_ofNat (x : α) (n : ℕ) :
     round (x - ofNat(n)) = round x - ofNat(n) :=
   round_sub_natCast x n
 
@@ -121,7 +121,7 @@ theorem round_natCast_add (x : α) (y : ℕ) : round ((y : α) + x) = y + round 
 alias round_nat_add := round_natCast_add
 
 @[simp]
-theorem round_ofNat_add (n : ℕ) [n.AtLeastTwo] (x : α) :
+theorem round_ofNat_add (n : ℕ) (x : α) :
     round (ofNat(n) + x) = ofNat(n) + round x :=
   round_natCast_add x n
 

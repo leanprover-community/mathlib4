@@ -63,7 +63,7 @@ theorem ofReal_log {x : ℝ} (hx : 0 ≤ x) : (x.log : ℂ) = log x :=
 lemma natCast_log {n : ℕ} : Real.log n = log n := ofReal_natCast n ▸ ofReal_log n.cast_nonneg
 
 @[simp]
-lemma ofNat_log {n : ℕ} [n.AtLeastTwo] :
+lemma ofNat_log {n : ℕ} :
     Real.log ofNat(n) = log (OfNat.ofNat n) :=
   natCast_log
 

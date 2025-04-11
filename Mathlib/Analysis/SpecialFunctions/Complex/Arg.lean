@@ -212,7 +212,7 @@ lemma natCast_arg {n : ℕ} : arg n = 0 :=
   ofReal_natCast n ▸ arg_ofReal_of_nonneg n.cast_nonneg
 
 @[simp]
-lemma ofNat_arg {n : ℕ} [n.AtLeastTwo] : arg ofNat(n) = 0 :=
+lemma ofNat_arg {n : ℕ} : arg ofNat(n) = 0 :=
   natCast_arg
 
 theorem arg_eq_zero_iff {z : ℂ} : arg z = 0 ↔ 0 ≤ z.re ∧ z.im = 0 := by

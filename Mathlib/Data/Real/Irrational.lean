@@ -122,7 +122,7 @@ theorem irrational_sqrt_natCast_iff {n : ℕ} : Irrational (√n) ↔ ¬IsSquare
   rw [← Rat.isSquare_natCast_iff, ← irrational_sqrt_ratCast_iff_of_nonneg n.cast_nonneg,
     Rat.cast_natCast]
 
-theorem irrational_sqrt_ofNat_iff {n : ℕ} [n.AtLeastTwo] :
+theorem irrational_sqrt_ofNat_iff {n : ℕ} :
     Irrational √(ofNat(n)) ↔ ¬IsSquare ofNat(n) :=
   irrational_sqrt_natCast_iff
 
@@ -140,7 +140,7 @@ unseal Nat.sqrt.iter in
 example : Irrational √24 := by decide
 ```
 -/
-instance {n : ℕ} [n.AtLeastTwo] : Decidable (Irrational √(ofNat(n))) :=
+instance {n : ℕ} : Decidable (Irrational √(ofNat(n))) :=
   decidable_of_iff' _ irrational_sqrt_ofNat_iff
 
 instance (n : ℕ) : Decidable (Irrational (√n)) :=
@@ -181,7 +181,7 @@ theorem ne_zero (h : Irrational x) : x ≠ 0 := mod_cast h.ne_nat 0
 
 theorem ne_one (h : Irrational x) : x ≠ 1 := by simpa only [Nat.cast_one] using h.ne_nat 1
 
-@[simp] theorem ne_ofNat (h : Irrational x) (n : ℕ) [n.AtLeastTwo] : x ≠ ofNat(n) :=
+@[simp] theorem ne_ofNat (h : Irrational x) (n : ℕ) : x ≠ ofNat(n) :=
   h.ne_nat n
 
 end Irrational
@@ -195,7 +195,7 @@ theorem Int.not_irrational (m : ℤ) : ¬Irrational m := fun h => h.ne_int m rfl
 @[simp]
 theorem Nat.not_irrational (m : ℕ) : ¬Irrational m := fun h => h.ne_nat m rfl
 
-@[simp] theorem not_irrational_ofNat (n : ℕ) [n.AtLeastTwo] : ¬Irrational ofNat(n) :=
+@[simp] theorem not_irrational_ofNat (n : ℕ) : ¬Irrational ofNat(n) :=
   n.not_irrational
 namespace Irrational
 

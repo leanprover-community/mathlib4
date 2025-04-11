@@ -264,11 +264,11 @@ instance : NatCast (X q) where
 
 @[simp] theorem snd_natCast (n : ℕ) : (n : X q).snd = (0 : ZMod q) := rfl
 
-@[simp] theorem ofNat_fst (n : ℕ) [n.AtLeastTwo] :
+@[simp] theorem ofNat_fst (n : ℕ) :
     (ofNat(n) : X q).fst = OfNat.ofNat n :=
   rfl
 
-@[simp] theorem ofNat_snd (n : ℕ) [n.AtLeastTwo] :
+@[simp] theorem ofNat_snd (n : ℕ) :
     (ofNat(n) : X q).snd = 0 :=
   rfl
 

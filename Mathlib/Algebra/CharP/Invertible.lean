@@ -56,7 +56,7 @@ theorem CharP.isUnit_natCast_iff {n : ℕ} (hp : p.Prime) : IsUnit (n : R) ↔ �
     letI := invertibleOfCoprime (R := R) (hp.coprime_iff_not_dvd.2 not_dvd).symm
     isUnit_of_invertible _
 
-theorem CharP.isUnit_ofNat_iff {n : ℕ} [n.AtLeastTwo] (hp : p.Prime) :
+theorem CharP.isUnit_ofNat_iff {n : ℕ} (hp : p.Prime) :
     IsUnit (ofNat(n) : R) ↔ ¬p ∣ ofNat(n) :=
   CharP.isUnit_natCast_iff hp
 

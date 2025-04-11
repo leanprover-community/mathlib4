@@ -85,7 +85,7 @@ theorem map_add_one [AddMonoidWithOne G] [Add H] [AddConstMapClass F G H 1 b]
 
 @[scoped simp]
 theorem map_add_ofNat' [AddMonoidWithOne G] [AddMonoid H] [AddConstMapClass F G H 1 b]
-    (f : F) (x : G) (n : ℕ) [n.AtLeastTwo] :
+    (f : F) (x : G) (n : ℕ) :
     f (x + ofNat(n)) = f x + (ofNat(n) : ℕ) • b :=
   map_add_nat' f x n
 
@@ -93,7 +93,7 @@ theorem map_add_nat [AddMonoidWithOne G] [AddMonoidWithOne H] [AddConstMapClass 
     (f : F) (x : G) (n : ℕ) : f (x + n) = f x + n := by simp
 
 theorem map_add_ofNat [AddMonoidWithOne G] [AddMonoidWithOne H] [AddConstMapClass F G H 1 1]
-    (f : F) (x : G) (n : ℕ) [n.AtLeastTwo] :
+    (f : F) (x : G) (n : ℕ) :
     f (x + ofNat(n)) = f x + ofNat(n) := map_add_nat f x n
 
 @[scoped simp]
@@ -116,7 +116,7 @@ theorem map_nat' [AddMonoidWithOne G] [AddMonoid H] [AddConstMapClass F G H 1 b]
   simpa using map_add_nat' f 0 n
 
 theorem map_ofNat' [AddMonoidWithOne G] [AddMonoid H] [AddConstMapClass F G H 1 b]
-    (f : F) (n : ℕ) [n.AtLeastTwo] :
+    (f : F) (n : ℕ) :
     f (ofNat(n)) = f 0 + (ofNat(n) : ℕ) • b :=
   map_nat' f n
 
@@ -124,7 +124,7 @@ theorem map_nat [AddMonoidWithOne G] [AddMonoidWithOne H] [AddConstMapClass F G 
     (f : F) (n : ℕ) : f n = f 0 + n := by simp
 
 theorem map_ofNat [AddMonoidWithOne G] [AddMonoidWithOne H] [AddConstMapClass F G H 1 1]
-    (f : F) (n : ℕ) [n.AtLeastTwo] :
+    (f : F) (n : ℕ) :
     f ofNat(n) = f 0 + ofNat(n) := map_nat f n
 
 @[scoped simp]
@@ -146,7 +146,7 @@ theorem map_nat_add' [AddCommMonoidWithOne G] [AddMonoid H] [AddConstMapClass F 
   simpa using map_nsmul_add f n x
 
 theorem map_ofNat_add' [AddCommMonoidWithOne G] [AddMonoid H] [AddConstMapClass F G H 1 b]
-    (f : F) (n : ℕ) [n.AtLeastTwo] (x : G) :
+    (f : F) (n : ℕ) (x : G) :
     f (ofNat(n) + x) = f x + ofNat(n) • b :=
   map_nat_add' f n x
 
@@ -154,7 +154,7 @@ theorem map_nat_add [AddCommMonoidWithOne G] [AddMonoidWithOne H] [AddConstMapCl
     (f : F) (n : ℕ) (x : G) : f (↑n + x) = f x + n := by simp
 
 theorem map_ofNat_add [AddCommMonoidWithOne G] [AddMonoidWithOne H] [AddConstMapClass F G H 1 1]
-    (f : F) (n : ℕ) [n.AtLeastTwo] (x : G) :
+    (f : F) (n : ℕ) (x : G) :
     f (ofNat(n) + x) = f x + ofNat(n) :=
   map_nat_add f n x
 
@@ -179,7 +179,7 @@ theorem map_sub_nat' [AddGroupWithOne G] [AddGroup H] [AddConstMapClass F G H 1 
 
 @[scoped simp]
 theorem map_sub_ofNat' [AddGroupWithOne G] [AddGroup H] [AddConstMapClass F G H 1 b]
-    (f : F) (x : G) (n : ℕ) [n.AtLeastTwo] :
+    (f : F) (x : G) (n : ℕ) :
     f (x - ofNat(n)) = f x - ofNat(n) • b :=
   map_sub_nat' f x n
 

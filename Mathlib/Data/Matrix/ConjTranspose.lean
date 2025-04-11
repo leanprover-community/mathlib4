@@ -173,13 +173,13 @@ theorem conjTranspose_eq_natCast [DecidableEq n] [NonAssocSemiring α] [StarRing
     by rw [conjTranspose_natCast]
 
 @[simp]
-theorem conjTranspose_ofNat [DecidableEq n] [NonAssocSemiring α] [StarRing α] (d : ℕ)
-    [d.AtLeastTwo] : (ofNat(d) : Matrix n n α)ᴴ = OfNat.ofNat d :=
+theorem conjTranspose_ofNat [DecidableEq n] [NonAssocSemiring α] [StarRing α] (d : ℕ) :
+    (ofNat(d) : Matrix n n α)ᴴ = OfNat.ofNat d :=
   conjTranspose_natCast _
 
 @[simp]
 theorem conjTranspose_eq_ofNat [DecidableEq n] [Semiring α] [StarRing α]
-    {M : Matrix n n α} {d : ℕ} [d.AtLeastTwo] :
+    {M : Matrix n n α} {d : ℕ} :
     Mᴴ = ofNat(d) ↔ M = OfNat.ofNat d :=
   conjTranspose_eq_natCast
 
@@ -248,7 +248,7 @@ theorem conjTranspose_natCast_smul [Semiring R] [AddCommMonoid α] [StarAddMonoi
 
 @[simp]
 theorem conjTranspose_ofNat_smul [Semiring R] [AddCommMonoid α] [StarAddMonoid α] [Module R α]
-    (c : ℕ) [c.AtLeastTwo] (M : Matrix m n α) :
+    (c : ℕ) (M : Matrix m n α) :
     ((ofNat(c) : R) • M)ᴴ = (OfNat.ofNat c : R) • Mᴴ :=
   conjTranspose_natCast_smul c M
 
@@ -264,7 +264,7 @@ theorem conjTranspose_inv_natCast_smul [DivisionSemiring R] [AddCommMonoid α] [
 
 @[simp]
 theorem conjTranspose_inv_ofNat_smul [DivisionSemiring R] [AddCommMonoid α] [StarAddMonoid α]
-    [Module R α] (c : ℕ) [c.AtLeastTwo] (M : Matrix m n α) :
+    [Module R α] (c : ℕ) (M : Matrix m n α) :
     ((ofNat(c) : R)⁻¹ • M)ᴴ = (OfNat.ofNat c : R)⁻¹ • Mᴴ :=
   conjTranspose_inv_natCast_smul c M
 

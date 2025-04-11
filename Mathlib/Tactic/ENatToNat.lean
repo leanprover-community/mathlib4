@@ -38,7 +38,7 @@ attribute [enat_to_nat_top] top_add ENat.sub_top ENat.top_sub_coe ENat.mul_top E
 @[enat_to_nat_coe] lemma coe_mul (m n : ℕ) :
     (m : ENat) * (n : ENat) = ((m * n : ℕ) : ENat) := rfl
 
-@[enat_to_nat_coe] lemma coe_ofNat (n : ℕ) [n.AtLeastTwo] :
+@[enat_to_nat_coe] lemma coe_ofNat (n : ℕ) :
     (OfNat.ofNat n : ENat) = (OfNat.ofNat n : ℕ) := rfl
 
 @[enat_to_nat_coe] lemma coe_zero : (0 : ENat) = ((0 : ℕ) : ENat) := rfl

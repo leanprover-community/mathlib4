@@ -141,7 +141,7 @@ theorem preOmega_natCast (n : ℕ) : preOmega n = n := by
     exact lt_succ n
 
 @[simp]
-theorem preOmega_ofNat (n : ℕ) [n.AtLeastTwo] : preOmega ofNat(n) = n :=
+theorem preOmega_ofNat (n : ℕ) : preOmega ofNat(n) = n :=
   preOmega_natCast n
 
 theorem preOmega_le_of_forall_lt {o a : Ordinal} (ha : IsInitial a) (H : ∀ b < o, preOmega b < a) :

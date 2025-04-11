@@ -24,7 +24,7 @@ theorem cast_commute (n : ℕ) (x : α) : Commute (n : α) x := by
   | zero => rw [Nat.cast_zero]; exact Commute.zero_left x
   | succ n ihn => rw [Nat.cast_succ]; exact ihn.add_left (Commute.one_left x)
 
-theorem _root_.Commute.ofNat_left (n : ℕ) [n.AtLeastTwo] (x : α) : Commute (OfNat.ofNat n) x :=
+theorem _root_.Commute.ofNat_left (n : ℕ) (x : α) : Commute (OfNat.ofNat n) x :=
   n.cast_commute x
 
 theorem cast_comm (n : ℕ) (x : α) : (n : α) * x = x * n :=
@@ -33,7 +33,7 @@ theorem cast_comm (n : ℕ) (x : α) : (n : α) * x = x * n :=
 theorem commute_cast (x : α) (n : ℕ) : Commute x n :=
   (n.cast_commute x).symm
 
-theorem _root_.Commute.ofNat_right (x : α) (n : ℕ) [n.AtLeastTwo] : Commute x (OfNat.ofNat n) :=
+theorem _root_.Commute.ofNat_right (x : α) (n : ℕ) : Commute x (OfNat.ofNat n) :=
   n.commute_cast x
 
 end Commute

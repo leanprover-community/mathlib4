@@ -88,9 +88,9 @@ theorem val_natCast (n a : ℕ) : (a : ZMod n).val = a % n := by
 lemma val_natCast_of_lt {n a : ℕ} (h : a < n) : (a : ZMod n).val = a := by
   rwa [val_natCast, Nat.mod_eq_of_lt]
 
-lemma val_ofNat (n a : ℕ) [a.AtLeastTwo] : (ofNat(a) : ZMod n).val = ofNat(a) % n := val_natCast ..
+lemma val_ofNat (n a : ℕ) : (ofNat(a) : ZMod n).val = ofNat(a) % n := val_natCast ..
 
-lemma val_ofNat_of_lt {n a : ℕ} [a.AtLeastTwo] (han : a < n) : (ofNat(a) : ZMod n).val = ofNat(a) :=
+lemma val_ofNat_of_lt {n a : ℕ} (han : a < n) : (ofNat(a) : ZMod n).val = ofNat(a) :=
   val_natCast_of_lt han
 
 theorem val_unit' {n : ZMod 0} : IsUnit n ↔ n.val = 1 := by

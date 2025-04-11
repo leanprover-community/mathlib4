@@ -101,7 +101,7 @@ theorem map_natCast' {A} [AddMonoidWithOne A] [FunLike F A B] [AddMonoidHomClass
   eq_natCast' ((f : A →+ B).comp <| Nat.castAddMonoidHom _) (by simpa)
 
 theorem map_ofNat' {A} [AddMonoidWithOne A] [FunLike F A B] [AddMonoidHomClass F A B]
-    (f : F) (h : f 1 = 1) (n : ℕ) [n.AtLeastTwo] : f (OfNat.ofNat n) = OfNat.ofNat n :=
+    (f : F) (h : f 1 = 1) (n : ℕ) : f (OfNat.ofNat n) = OfNat.ofNat n :=
   map_natCast' f h n
 
 end AddMonoidHomClass
@@ -141,7 +141,7 @@ be `DFunLike.coe _ _`, due to the `ofNat` that https://github.com/leanprover/lea
 forces us to include, and therefore it would negatively impact performance.
 
 If that issue is resolved, this can be marked `@[simp]`. -/
-theorem map_ofNat [FunLike F R S] [RingHomClass F R S] (f : F) (n : ℕ) [Nat.AtLeastTwo n] :
+theorem map_ofNat [FunLike F R S] [RingHomClass F R S] (f : F) (n : ℕ) :
     (f ofNat(n) : S) = OfNat.ofNat n :=
   map_natCast f n
 

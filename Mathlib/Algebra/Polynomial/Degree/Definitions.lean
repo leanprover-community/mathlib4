@@ -176,7 +176,7 @@ theorem natDegree_natCast (n : ℕ) : natDegree (n : R[X]) = 0 := by
   simp only [← C_eq_natCast, natDegree_C]
 
 @[simp]
-theorem natDegree_ofNat (n : ℕ) [Nat.AtLeastTwo n] :
+theorem natDegree_ofNat (n : ℕ) :
     natDegree (ofNat(n) : R[X]) = 0 :=
   natDegree_natCast _
 

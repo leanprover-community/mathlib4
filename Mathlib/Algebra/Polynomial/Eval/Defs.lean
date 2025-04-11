@@ -101,7 +101,7 @@ theorem eval₂_natCast (n : ℕ) : (n : R[X]).eval₂ f x = n := by
   | succ n ih => rw [n.cast_succ, eval₂_add, ih, eval₂_one, n.cast_succ]
 
 @[simp]
-lemma eval₂_ofNat {S : Type*} [Semiring S] (n : ℕ) [n.AtLeastTwo] (f : R →+* S) (a : S) :
+lemma eval₂_ofNat {S : Type*} [Semiring S] (n : ℕ) (f : R →+* S) (a : S) :
     (ofNat(n) : R[X]).eval₂ f a = ofNat(n) := by
   simp [OfNat.ofNat]
 
@@ -258,7 +258,7 @@ theorem eval₂_at_natCast {S : Type*} [Semiring S] (f : R →+* S) (n : ℕ) :
   simp
 
 @[simp]
-theorem eval₂_at_ofNat {S : Type*} [Semiring S] (f : R →+* S) (n : ℕ) [n.AtLeastTwo] :
+theorem eval₂_at_ofNat {S : Type*} [Semiring S] (f : R →+* S) (n : ℕ) :
     p.eval₂ f ofNat(n) = f (p.eval (ofNat(n))) := by
   simp [OfNat.ofNat]
 
@@ -270,7 +270,7 @@ theorem eval_C : (C a).eval x = a :=
 theorem eval_natCast {n : ℕ} : (n : R[X]).eval x = n := by simp only [← C_eq_natCast, eval_C]
 
 @[simp]
-lemma eval_ofNat (n : ℕ) [n.AtLeastTwo] (a : R) :
+lemma eval_ofNat (n : ℕ) (a : R) :
     (ofNat(n) : R[X]).eval a = ofNat(n) := by
   simp only [OfNat.ofNat, eval_natCast]
 
@@ -378,7 +378,7 @@ theorem C_comp : (C a).comp p = C a :=
 theorem natCast_comp {n : ℕ} : (n : R[X]).comp p = n := by rw [← C_eq_natCast, C_comp]
 
 @[simp]
-theorem ofNat_comp (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : R[X]).comp p = n :=
+theorem ofNat_comp (n : ℕ) : (ofNat(n) : R[X]).comp p = n :=
   natCast_comp
 
 @[simp]
@@ -518,7 +518,7 @@ protected theorem map_natCast (n : ℕ) : (n : R[X]).map f = n :=
   map_natCast (mapRingHom f) n
 
 @[simp]
-protected theorem map_ofNat (n : ℕ) [n.AtLeastTwo] :
+protected theorem map_ofNat (n : ℕ) :
     (ofNat(n) : R[X]).map f = ofNat(n) :=
   show (n : R[X]).map f = n by rw [Polynomial.map_natCast]
 

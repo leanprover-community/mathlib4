@@ -185,7 +185,7 @@ lemma ofReal_lt_one {p : ℝ} : ENNReal.ofReal p < 1 ↔ p < 1 := by
   exact mod_cast ofReal_lt_natCast one_ne_zero
 
 @[simp]
-lemma ofReal_lt_ofNat {p : ℝ} {n : ℕ} [n.AtLeastTwo] :
+lemma ofReal_lt_ofNat {p : ℝ} {n : ℕ} [NeZero n] :
     ENNReal.ofReal p < ofNat(n) ↔ p < OfNat.ofNat n :=
   ofReal_lt_natCast (NeZero.ne n)
 
@@ -198,7 +198,7 @@ lemma one_le_ofReal {p : ℝ} : 1 ≤ ENNReal.ofReal p ↔ 1 ≤ p := by
   exact mod_cast natCast_le_ofReal one_ne_zero
 
 @[simp]
-lemma ofNat_le_ofReal {n : ℕ} [n.AtLeastTwo] {p : ℝ} :
+lemma ofNat_le_ofReal {n : ℕ} [NeZero n] {p : ℝ} :
     ofNat(n) ≤ ENNReal.ofReal p ↔ OfNat.ofNat n ≤ p :=
   natCast_le_ofReal (NeZero.ne n)
 
@@ -211,7 +211,7 @@ lemma ofReal_le_one {r : ℝ} : ENNReal.ofReal r ≤ 1 ↔ r ≤ 1 :=
   coe_le_coe.trans Real.toNNReal_le_one
 
 @[simp]
-lemma ofReal_le_ofNat {r : ℝ} {n : ℕ} [n.AtLeastTwo] :
+lemma ofReal_le_ofNat {r : ℝ} {n : ℕ} :
     ENNReal.ofReal r ≤ ofNat(n) ↔ r ≤ OfNat.ofNat n :=
   ofReal_le_natCast
 
@@ -223,7 +223,7 @@ lemma natCast_lt_ofReal {n : ℕ} {r : ℝ} : n < ENNReal.ofReal r ↔ n < r :=
 lemma one_lt_ofReal {r : ℝ} : 1 < ENNReal.ofReal r ↔ 1 < r := coe_lt_coe.trans Real.one_lt_toNNReal
 
 @[simp]
-lemma ofNat_lt_ofReal {n : ℕ} [n.AtLeastTwo] {r : ℝ} :
+lemma ofNat_lt_ofReal {n : ℕ} {r : ℝ} :
     ofNat(n) < ENNReal.ofReal r ↔ OfNat.ofNat n < r :=
   natCast_lt_ofReal
 
@@ -236,7 +236,7 @@ lemma ofReal_eq_one {r : ℝ} : ENNReal.ofReal r = 1 ↔ r = 1 :=
   ENNReal.coe_inj.trans Real.toNNReal_eq_one
 
 @[simp]
-lemma ofReal_eq_ofNat {r : ℝ} {n : ℕ} [n.AtLeastTwo] :
+lemma ofReal_eq_ofNat {r : ℝ} {n : ℕ} [NeZero n] :
     ENNReal.ofReal r = ofNat(n) ↔ r = OfNat.ofNat n :=
   ofReal_eq_natCast (NeZero.ne n)
 
