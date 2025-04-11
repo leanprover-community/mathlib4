@@ -1,126 +1,213 @@
 /-
-Copyright (c) 2020 Chris Hughes. All rights reserved.
+Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes
+Authors: Chris Hughes, Antoine Chambert-Loir
 -/
-import Mathlib.Data.Nat.Cast.WithTop
-import Mathlib.RingTheory.Ideal.Quotient.Basic
+
+import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Polynomial.Content
-import Mathlib.RingTheory.Prime
+import Mathlib.RingTheory.Ideal.Quotient.Defs
 
-/-!
-# Eisenstein's criterion
+import Mathlib.Algebra.CharP.Quotient
+import Mathlib.Algebra.Field.ZMod
+import Mathlib.Algebra.Polynomial.SpecificDegree
+import Mathlib.RingTheory.Ideal.Quotient.Operations
 
-A proof of a slight generalisation of Eisenstein's criterion for the irreducibility of
-a polynomial over an integral domain.
+/-! # The Eisenstein criterion
+
+`Polynomial.generalizedEisenstein` :
+  Let `R` be an integral domain
+  and let `K` an `R`-algebra which is a field
+  Let `q : R[X]` be a monic polynomial which is prime in `K[X]`.
+  Let `f : R[X]` be a polynomial of strictly positive degree
+  satisfying the following properties:
+  * the image of `f` in `K[X]` is a power of `q`.
+  * the leading coefficient of `f` is not zero in `K`
+  * the polynomial `f` is primitive.
+  Assume moreover that `f.modByMonic q` is not zero in `(R ⧸ (P ^ 2))[X]`,
+  where `P` is the kernel of `algebraMap R K`.
+  Then `f` is irreducible.
+
+We give in `Archive.Examples.Eisenstein` an explicit example
+of application of this criterion.
+
+* `Polynomial.irreducible_of_eisenstein_criterion` :
+the classic Eisenstein criterion.
+It is the particular case where `q := X`.
+
+# TODO
+
+The case of a polynomial `q := X - a` is interesting,
+then the mod `P ^ 2` hypothesis can rephrased as saying
+that `f.derivative.eval a ∉ P ^ 2`. (TODO)
+The case of cyclotomic polynomials of prime index `p`
+could be proved directly using that result, taking `a = 1`.
+
+The result can also be generalized to the case where
+the leading coefficients of `f` and `q` do not belong to `P`.
+(By localization at `P`, make these coefficients invertible.)
+There are two obstructions, though :
+
+* Usually, one will only obtain irreducibility in `F[X]`, where `F` is the field
+of fractions of `R`. (If `R` is a UFD, this will be close to what is wanted,
+but not in general.)
+
+* The mod `P ^ 2` hypothesis will have to be rephrased to a condition
+in the second symbolic power of `P`. When `P` is a maximal ideal,
+that symbolic power coincides with `P ^ 2`, but not in general.
+
 -/
-
-
-open Polynomial Ideal.Quotient
-
-variable {R : Type*} [CommRing R]
 
 namespace Polynomial
 
-namespace EisensteinCriterionAux
+open Ideal.Quotient Ideal RingHom
 
--- Section for auxiliary lemmas used in the proof of `irreducible_of_eisenstein_criterion`
-theorem map_eq_C_mul_X_pow_of_forall_coeff_mem {f : R[X]} {P : Ideal R}
-    (hfP : ∀ n : ℕ, ↑n < f.degree → f.coeff n ∈ P) :
-    map (mk P) f = C ((mk P) f.leadingCoeff) * X ^ f.natDegree :=
-  Polynomial.ext fun n => by
-    by_cases hf0 : f = 0
-    · simp [hf0]
-    rcases lt_trichotomy (n : WithBot ℕ) (degree f) with (h | h | h)
-    · rw [coeff_map, eq_zero_iff_mem.2 (hfP n h), coeff_C_mul, coeff_X_pow, if_neg, mul_zero]
-      rintro rfl
-      exact not_lt_of_ge degree_le_natDegree h
-    · have : natDegree f = n := natDegree_eq_of_degree_eq_some h.symm
-      rw [coeff_C_mul, coeff_X_pow, if_pos this.symm, mul_one, leadingCoeff, this, coeff_map]
-    · rw [coeff_eq_zero_of_degree_lt, coeff_eq_zero_of_degree_lt]
-      · refine lt_of_le_of_lt (degree_C_mul_X_pow_le _ _) ?_
-        rwa [← degree_eq_natDegree hf0]
-      · exact lt_of_le_of_lt degree_map_le h
+variable {R : Type*} [CommRing R] [IsDomain R]
+  {K : Type*} [Field K] [Algebra R K]
 
-theorem le_natDegree_of_map_eq_mul_X_pow {n : ℕ} {P : Ideal R} (hP : P.IsPrime) {q : R[X]}
-    {c : Polynomial (R ⧸ P)} (hq : map (mk P) q = c * X ^ n) (hc0 : c.degree = 0) :
-    n ≤ q.natDegree :=
-  Nat.cast_le.1
-    (calc
-      ↑n = degree (q.map (mk P)) := by
-        rw [hq, degree_mul, hc0, zero_add, degree_pow, degree_X, nsmul_one]
-      _ ≤ degree q := degree_map_le
-      _ ≤ natDegree q := degree_le_natDegree
-      )
+private lemma generalizedEisenstein_aux {q f g : R[X]} {p : ℕ}
+    (hq_irr : Irreducible (q.map (algebraMap R K)))
+    (hq_monic : q.Monic)
+    (hf_lC : algebraMap R K f.leadingCoeff ≠ 0)
+    (hf_prim : f.IsPrimitive)
+    (hfmodP : f.map (algebraMap R K) =
+      C (algebraMap R K f.leadingCoeff) * q.map (algebraMap R K) ^ p)
+    (hg_div : g ∣ f) :
+    ∃ m r, g = C g.leadingCoeff * q ^ m + r ∧
+          r.map (algebraMap R K) = 0 ∧ (m = 0 → IsUnit g) := by
+  set P := ker (algebraMap R K)
+  have hP : P.IsPrime := ker_isPrime (algebraMap R K)
+  have hgP : g.leadingCoeff ∉ P := by
+    simp only [mem_ker, P]
+    obtain ⟨h, rfl⟩ := hg_div
+    simp only [leadingCoeff_mul, map_mul, ne_eq, mul_eq_zero, not_or] at hf_lC
+    exact hf_lC.1
+  have map_dvd_pow_q :
+      g.map  (algebraMap R K) ∣ q.map (algebraMap R K) ^ p := by
+    rw [← IsUnit.dvd_mul_left _, ← hfmodP]
+    · exact Polynomial.map_dvd _ hg_div
+    · simp_all
+  obtain ⟨m, hm, hf⟩ := (dvd_prime_pow hq_irr.prime _).mp map_dvd_pow_q
+  set r := g - C g.leadingCoeff * q ^ m
+  have hg : g = C g.leadingCoeff * q ^ m + r := by ring
+  have hr : r.map (algebraMap R K) = 0 := by
+    obtain ⟨u, hu⟩ := hf.symm
+    obtain ⟨a, ha, ha'⟩ := Polynomial.isUnit_iff.mp u.isUnit
+    suffices C (algebraMap R K g.leadingCoeff) = u by
+      simp [r, ← this, Polynomial.map_sub, ← hu, Polynomial.map_mul, map_C,
+        Polynomial.map_pow, sub_eq_zero, mul_comm]
+    rw [← leadingCoeff_map_of_leadingCoeff_ne_zero _ hgP, ← hu, ← ha',
+      leadingCoeff_mul, leadingCoeff_C, (hq_monic.map _).pow m, one_mul]
+  use m, r, hg, hr
+  intro hm
+  rw [isPrimitive_iff_isUnit_of_C_dvd] at hf_prim
+  rw [hm, pow_zero, mul_one] at hg
+  suffices g.natDegree = 0 by
+    obtain ⟨a, rfl⟩ := Polynomial.natDegree_eq_zero.mp this
+    apply IsUnit.map
+    apply hf_prim
+    rwa [leadingCoeff_C] at hgP
+  by_contra hg'
+  apply hgP
+  rw [hg, leadingCoeff, coeff_add, ← hg, coeff_C, if_neg hg', zero_add,
+    mem_ker, ← coeff_map, hr, coeff_zero]
 
-theorem eval_zero_mem_ideal_of_eq_mul_X_pow {n : ℕ} {P : Ideal R} {q : R[X]}
-    {c : Polynomial (R ⧸ P)} (hq : map (mk P) q = c * X ^ n) (hn0 : n ≠ 0) : eval 0 q ∈ P := by
-  rw [← coeff_zero_eq_eval_zero, ← eq_zero_iff_mem, ← coeff_map, hq,
-    coeff_zero_eq_eval_zero, eval_mul, eval_pow, eval_X, zero_pow hn0, mul_zero]
+ /-- A generalized Eisenstein criterion
 
-theorem isUnit_of_natDegree_eq_zero_of_isPrimitive {p q : R[X]}
-    -- Porting note: stated using `IsPrimitive` which is defeq to old statement.
-    (hu : IsPrimitive (p * q)) (hpm : p.natDegree = 0) : IsUnit p := by
-  rw [eq_C_of_degree_le_zero (natDegree_eq_zero_iff_degree_le_zero.1 hpm), isUnit_C]
-  refine hu _ ?_
-  rw [← eq_C_of_degree_le_zero (natDegree_eq_zero_iff_degree_le_zero.1 hpm)]
-  exact dvd_mul_right _ _
-
-end EisensteinCriterionAux
-
-open EisensteinCriterionAux
-
-variable [IsDomain R]
+  Let `R` be an integral domain and `K` an `R`-algebra which is a domain.
+  Let `q : R[X]` be a monic polynomial which is prime in `K[X]`.
+  Let `f : R[X]` be a primitive polynomial of strictly positive degree
+  whose leading coefficient is not zero in `K`
+  and such that the image `f` in `K[X]` is a power of `q`.
+  Assume moreover that `f.modByMonic q` is not zero in `(R ⧸ (P ^ 2))[X]`,
+  where `P` is the kernel of `algebraMap R K`.
+  Then `f` is irreducible. -/
+theorem generalizedEisenstein {q f : R[X]} {p : ℕ}
+    (hq_irr : Irreducible (q.map (algebraMap R K))) (hq_monic : q.Monic)
+    (hf_prim : f.IsPrimitive)
+    (hfd0 : 0 < natDegree f)
+    (hfP : algebraMap R K f.leadingCoeff ≠ 0)
+    (hfmodP : f.map (algebraMap R K) =
+      C (algebraMap R K f.leadingCoeff) * q.map (algebraMap R K) ^ p)
+    (hfmodP2 : (f.modByMonic q).map (mk ((ker (algebraMap R K)) ^ 2)) ≠ 0) :
+    Irreducible f where
+  not_isUnit := mt degree_eq_zero_of_isUnit fun h => by
+    simp_all [lt_irrefl, natDegree_pos_iff_degree_pos]
+  isUnit_or_isUnit g h h_eq := by
+    -- We have to show that factorizations `f = g * h` are trivial
+    set P : Ideal R := ker (algebraMap R K)
+    obtain ⟨m, r, hg, hr, hm0⟩ :=
+      generalizedEisenstein_aux hq_irr hq_monic hfP hf_prim hfmodP (h_eq ▸ dvd_mul_right g h)
+    obtain ⟨n, s, hh, hs, hn0⟩ :=
+      generalizedEisenstein_aux hq_irr hq_monic hfP hf_prim hfmodP (h_eq ▸ dvd_mul_left h g)
+    by_cases hm : m = 0
+    -- If `m = 0`, `generalizedEisenstein_aux` shows that `g` is a unit.
+    · left; exact hm0 hm
+    by_cases hn : n = 0
+    -- If `n = 0`, `generalizedEisenstein_aux` shows that `h` is a unit.
+    · right; exact hn0 hn
+    -- Otherwise, we will get a contradiction by showing that `f %ₘ q` is zero mod `P ^ 2`.
+    exfalso
+    apply hfmodP2
+    suffices f %ₘ q = (r * s) %ₘ q by
+      -- Since the coefficients of `r` and `s` are in `P`, those of `r * s` are in `P ^ 2`
+      suffices h : map (Ideal.Quotient.mk (P ^ 2)) (r * s) = 0 by
+        simp [this, h, map_modByMonic, hq_monic]
+      ext n
+      have h (x : ℕ × ℕ) : (Ideal.Quotient.mk (P ^ 2)) (r.coeff x.1 * s.coeff x.2) = 0 := by
+        rw [eq_zero_iff_mem, pow_two]
+        apply mul_mem_mul
+        · rw [mem_ker, ← coeff_map, hr, coeff_zero]
+        · rw [mem_ker, ← coeff_map, hs, coeff_zero]
+      simp [- Polynomial.map_mul, coeff_mul, h]
+    -- It remains to prove the equality `f %ₘ q = (r * s) %ₘ q`, which is straightforward
+    rw [h_eq, hg, hh]
+    simp only [add_mul, mul_add, map_add, ← modByMonicHom_apply]
+    simp only [← add_assoc, modByMonicHom_apply]
+    iterate 3 rw [(modByMonic_eq_zero_iff_dvd hq_monic).mpr]
+    · simp
+    · exact ((dvd_pow_self q hm).mul_left _).mul_right _
+    · simp only [← mul_assoc]
+      exact (dvd_pow_self q hn).mul_left _
+    · exact ((dvd_pow_self q hn).mul_left _).mul_left _
 
 /-- If `f` is a non constant polynomial with coefficients in `R`, and `P` is a prime ideal in `R`,
 then if every coefficient in `R` except the leading coefficient is in `P`, and
 the trailing coefficient is not in `P^2` and no non units in `R` divide `f`, then `f` is
 irreducible. -/
 theorem irreducible_of_eisenstein_criterion {f : R[X]} {P : Ideal R} (hP : P.IsPrime)
-    (hfl : f.leadingCoeff ∉ P) (hfP : ∀ n : ℕ, ↑n < degree f → f.coeff n ∈ P) (hfd0 : 0 < degree f)
-    (h0 : f.coeff 0 ∉ P ^ 2) (hu : f.IsPrimitive) : Irreducible f :=
-  have hf0 : f ≠ 0 := fun _ => by simp_all only [not_true, Submodule.zero_mem, coeff_zero]
-  have hf : f.map (mk P) = C (mk P (leadingCoeff f)) * X ^ natDegree f :=
-    map_eq_C_mul_X_pow_of_forall_coeff_mem hfP
-  have hfd0 : 0 < f.natDegree := WithBot.coe_lt_coe.1 (lt_of_lt_of_le hfd0 degree_le_natDegree)
-  ⟨mt degree_eq_zero_of_isUnit fun h => by simp_all only [lt_irrefl], by
-    rintro p q rfl
-    rw [Polynomial.map_mul] at hf
-    rcases mul_eq_mul_prime_pow
-        (show Prime (X : Polynomial (R ⧸ P)) from monic_X.prime_of_degree_eq_one degree_X) hf with
-      ⟨m, n, b, c, hmnd, hbc, hp, hq⟩
-    have hmn : 0 < m → 0 < n → False := by
-      intro hm0 hn0
-      refine h0 ?_
-      rw [coeff_zero_eq_eval_zero, eval_mul, sq]
-      exact
-        Ideal.mul_mem_mul (eval_zero_mem_ideal_of_eq_mul_X_pow hp hm0.ne')
-          (eval_zero_mem_ideal_of_eq_mul_X_pow hq hn0.ne')
-    have hpql0 : (mk P) (p * q).leadingCoeff ≠ 0 := by rwa [Ne, eq_zero_iff_mem]
-    have hp0 : p ≠ 0 := fun h => by
-      simp_all only [zero_mul, eq_self_iff_true, not_true, Ne]
-    have hq0 : q ≠ 0 := fun h => by
-      simp_all only [eq_self_iff_true, not_true, Ne, mul_zero]
-    have hbc0 : degree b = 0 ∧ degree c = 0 := by
-      apply_fun degree at hbc
-      rwa [degree_C hpql0, degree_mul, eq_comm, Nat.WithBot.add_eq_zero_iff] at hbc
-    have hmp : m ≤ natDegree p := le_natDegree_of_map_eq_mul_X_pow hP hp hbc0.1
-    have hnq : n ≤ natDegree q := le_natDegree_of_map_eq_mul_X_pow hP hq hbc0.2
-    have hpmqn : p.natDegree = m ∧ q.natDegree = n := by
-      rw [natDegree_mul hp0 hq0] at hmnd
-      contrapose hmnd
-      apply ne_of_lt
-      rw [not_and_or] at hmnd
-      rcases hmnd with hmnd | hmnd
-      · exact add_lt_add_of_lt_of_le (lt_of_le_of_ne hmp (Ne.symm hmnd)) hnq
-      · exact add_lt_add_of_le_of_lt hmp (lt_of_le_of_ne hnq (Ne.symm hmnd))
-    obtain rfl | rfl : m = 0 ∨ n = 0 := by
-      rwa [pos_iff_ne_zero, pos_iff_ne_zero, imp_false, Classical.not_not, ← or_iff_not_imp_left]
-        at hmn
-    · exact Or.inl (isUnit_of_natDegree_eq_zero_of_isPrimitive hu hpmqn.1)
-    · exact Or.inr
-          (isUnit_of_natDegree_eq_zero_of_isPrimitive
-            (show IsPrimitive (q * p) by simpa [mul_comm] using hu)
-            hpmqn.2)⟩
+    (hfl : f.leadingCoeff ∉ P)
+    (hfP : ∀ n : ℕ, ↑n < degree f → f.coeff n ∈ P) (hfd0 : 0 < degree f)
+    (h0 : f.coeff 0 ∉ P ^ 2) (hu : f.IsPrimitive) : Irreducible f := by
+  apply generalizedEisenstein (K := FractionRing (R ⧸ P)) (q := X) (p := f.natDegree)
+    (by simp [map_X, irreducible_X]) monic_X hu
+    (natDegree_pos_iff_degree_pos.mpr hfd0)
+  · simp only [IsScalarTower.algebraMap_eq R (R ⧸ P) (FractionRing (R ⧸ P)),
+      Quotient.algebraMap_eq, coe_comp, Function.comp_apply, ne_eq,
+      FaithfulSMul.algebraMap_eq_zero_iff]
+    rw [Ideal.Quotient.eq_zero_iff_mem]
+    exact hfl
+  · rw [← map_C, ← Polynomial.map_pow, ← Polynomial.map_mul]
+    simp only [IsScalarTower.algebraMap_eq R (R ⧸ P) (FractionRing (R ⧸ P)),
+      Quotient.algebraMap_eq, coe_comp, Function.comp_apply, ← map_map]
+    congr 1
+    ext n
+    simp only [coeff_map, Ideal.Quotient.mk_eq_mk_iff_sub_mem]
+    simp only [coeff_C_mul, coeff_X_pow, mul_ite, mul_one, mul_zero, sub_ite, sub_zero]
+    split_ifs with hn
+    · rw [hn, leadingCoeff, sub_self]
+      exact zero_mem _
+    · by_cases hn' : n < f.natDegree
+      · exact hfP _ (coe_lt_degree.mpr hn')
+      · rw [f.coeff_eq_zero_of_natDegree_lt]
+        · exact P.zero_mem
+        · simp [Nat.lt_iff_le_and_ne, ← Nat.not_lt, hn', Ne.symm hn]
+  · rw [modByMonic_X, map_C, ne_eq, C_eq_zero, Ideal.Quotient.eq_zero_iff_mem,
+      ← coeff_zero_eq_eval_zero]
+    convert h0
+    · rw [IsScalarTower.algebraMap_eq R (R ⧸ P) (FractionRing (R ⧸ P))]
+      rw [ker_comp_of_injective]
+      · ext a; simp
+      · exact FaithfulSMul.algebraMap_injective (R ⧸ P) (FractionRing (R ⧸ P))
 
 end Polynomial

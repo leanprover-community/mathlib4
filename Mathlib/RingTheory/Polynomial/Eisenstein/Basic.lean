@@ -3,7 +3,7 @@ Copyright (c) 2022 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.RingTheory.EisensteinCriterion
+import Mathlib.RingTheory.Polynomial.Eisenstein.Criterion
 import Mathlib.RingTheory.Polynomial.ScaleRoots
 
 /-!
@@ -212,7 +212,8 @@ variable [CommRing R] [IsDomain R] {𝓟 : Ideal R} {f : R[X]}
 then `f` is irreducible. -/
 theorem irreducible (hf : f.IsEisensteinAt 𝓟) (hprime : 𝓟.IsPrime) (hu : f.IsPrimitive)
     (hfd0 : 0 < f.natDegree) : Irreducible f :=
-  irreducible_of_eisenstein_criterion hprime hf.leading (fun _ hn => hf.mem (coe_lt_degree.1 hn))
+  irreducible_of_eisenstein_criterion hprime hf.leading
+    (fun _ hn => hf.mem (coe_lt_degree.1 hn))
     (natDegree_pos_iff_degree_pos.1 hfd0) hf.not_mem hu
 
 end IsDomain
