@@ -30,13 +30,13 @@ following <https://stacks.math.columbia.edu/tag/007X>.
 assert_not_exists CommRingCat
 
 
-universe v
+universe u v
 
 noncomputable section
 
 open TopCat Opposite TopologicalSpace CategoryTheory
 
-variable {X : TopCat.{v}} (F : Presheaf (Type v) X)
+variable {X : TopCat.{u}} (F : Presheaf (Type v) X)
 
 namespace TopCat.Presheaf
 
@@ -46,14 +46,15 @@ attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /--
 The prelocal predicate on functions into the stalks, asserting that the function is equal to a germ.
 -/
-def isGerm : PrelocalPredicate fun x => F.stalk x where
-  pred {U} f := ∃ g : F.obj (op U), ∀ x : U, f x = F.germ U x.1 x.2 g
-  res := fun i _ ⟨g, p⟩ => ⟨F.map i.op g, fun x ↦ (p (i x)).trans (F.germ_res_apply i x x.2 g).symm⟩
+def isGerm : PrelocalPredicate fun x ↦ stalk (F ⋙ uliftFunctor.{u}) x where
+  pred {U} f := ∃ g : F.obj (op U), ∀ x : U, f x = germ (F ⋙ uliftFunctor) U x.1 x.2 ⟨g⟩
+  res := fun i _ ⟨g, p⟩ => ⟨F.map i.op g,
+    fun x ↦ (p (i x)).trans (germ_res_apply (F ⋙ uliftFunctor) i x x.2 ⟨g⟩).symm⟩
 
 /-- The local predicate on functions into the stalks,
 asserting that the function is locally equal to a germ.
 -/
-def isLocallyGerm : LocalPredicate fun x => F.stalk x :=
+def isLocallyGerm : LocalPredicate fun x ↦ stalk (F ⋙ uliftFunctor.{u}) x :=
   (isGerm F).sheafify
 
 end Sheafify
@@ -61,29 +62,30 @@ end Sheafify
 /-- The sheafification of a `Type` valued presheaf, defined as the functions into the stalks which
 are locally equal to germs.
 -/
-def sheafify : Sheaf (Type v) X :=
+def sheafify : Sheaf (Type _) X :=
   subsheafToTypes (Sheafify.isLocallyGerm F)
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
+attribute [local instance] Types.instFunLike Types.instConcreteCategory
+
 /-- The morphism from a presheaf to its sheafification,
 sending each section to its germs.
 (This forms the unit of the adjunction.)
 -/
-def toSheafify : F ⟶ F.sheafify.1 where
-  app U f := ⟨fun x => F.germ _ x x.2 f, PrelocalPredicate.sheafifyOf ⟨f, fun x => rfl⟩⟩
+def toSheafify (F : Presheaf (Type u) X) : F ⟶ F.sheafify.1 where
+  app U f := ⟨fun x ↦ germ (F ⋙ uliftFunctor) _ x x.2 ⟨f⟩,
+    PrelocalPredicate.sheafifyOf ⟨f, fun x ↦ rfl⟩⟩
   naturality U U' f := by
     ext x
     apply Subtype.ext -- Porting note: Added `apply`
     ext ⟨u, m⟩
-    exact germ_res_apply F f.unop u m x
+    exact germ_res_apply (F ⋙ uliftFunctor) f.unop u m ⟨x⟩
 
 /-- The natural morphism from the stalk of the sheafification to the original stalk.
 In `sheafifyStalkIso` we show this is an isomorphism.
 -/
-def stalkToFiber (x : X) : F.sheafify.presheaf.stalk x ⟶ F.stalk x :=
-  TopCat.stalkToFiber (Sheafify.isLocallyGerm F) x
+def stalkToFiber (x : X) : F.sheafify.presheaf.stalk x → stalk (F ⋙ uliftFunctor.{u}) x :=
+  TopCat.stalkToFiber (Sheafify.isLocallyGerm F).1 x
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 theorem stalkToFiber_surjective (x : X) : Function.Surjective (F.stalkToFiber x) := by
   apply TopCat.stalkToFiber_surjective
   intro t
@@ -93,7 +95,6 @@ theorem stalkToFiber_surjective (x : X) : Function.Surjective (F.stalkToFiber x)
   · exact fun y => F.germ _ _ y.2 s
   · exact ⟨PrelocalPredicate.sheafifyOf ⟨s, fun _ => rfl⟩, rfl⟩
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 theorem stalkToFiber_injective (x : X) : Function.Injective (F.stalkToFiber x) := by
   apply TopCat.stalkToFiber_injective
   intro U V fU hU fV hV e
