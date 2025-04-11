@@ -44,7 +44,8 @@ local notation "Φ" => range P.root
 local notation "α" => P.root
 
 /-- SGA3 XXI Prop. 2.3.1 -/
-lemma coxeterWeightIn_le_four (S : Type*) [LinearOrderedCommRing S] [Algebra S R] [FaithfulSMul S R]
+lemma coxeterWeightIn_le_four (S : Type*)
+    [CommRing S] [LinearOrder S] [IsStrictOrderedRing S] [Algebra S R] [FaithfulSMul S R]
     [Module S M] [IsScalarTower S R M] [P.IsValuedIn S] (i j : ι) :
     P.coxeterWeightIn S i j ≤ 4 := by
   have : Fintype ι := Fintype.ofFinite ι

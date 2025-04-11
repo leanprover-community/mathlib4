@@ -4,10 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
 import Mathlib.Algebra.BigOperators.Associated
-import Mathlib.Algebra.GroupWithZero.Action.Defs
-import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.ENat.Basic
-import Mathlib.Data.Multiset.OrderedMonoid
 import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
 
 /-!
@@ -223,10 +220,10 @@ theorem factors_mul {x y : α} (hx : x ≠ 0) (hy : y ≠ 0) :
 theorem factors_pow {x : α} (n : ℕ) :
     Multiset.Rel Associated (factors (x ^ n)) (n • factors x) := by
   match n with
-  | 0 => rw [zero_smul, pow_zero, factors_one, Multiset.rel_zero_right]
+  | 0 => rw [zero_nsmul, pow_zero, factors_one, Multiset.rel_zero_right]
   | n+1 =>
     by_cases h0 : x = 0
-    · simp [h0, zero_pow n.succ_ne_zero, smul_zero]
+    · simp [h0, zero_pow n.succ_ne_zero, nsmul_zero]
     · rw [pow_succ', succ_nsmul']
       refine Multiset.Rel.trans _ (factors_mul h0 (pow_ne_zero n h0)) ?_
       refine Multiset.Rel.add ?_ <| factors_pow n

@@ -130,7 +130,8 @@ theorem nhds_bot : 𝓝 (⊥ : EReal) = ⨅ (a) (_ : a ≠ ⊥), 𝓟 (Iio a) :=
   nhds_bot_order.trans <| by simp only [bot_lt_iff_ne_bot]
 
 theorem nhds_bot_basis : (𝓝 (⊥ : EReal)).HasBasis (fun _ : ℝ ↦ True) (Iio ·) := by
-  refine _root_.nhds_bot_basis.to_hasBasis (fun x hx => ?_) fun _ _ ↦ ⟨_, bot_lt_coe _, Subset.rfl⟩
+  refine (_root_.nhds_bot_basis (α := EReal)).to_hasBasis (fun x hx => ?_)
+    fun _ _ ↦ ⟨_, bot_lt_coe _, Subset.rfl⟩
   rcases exists_rat_btwn_of_lt hx with ⟨y, -, hxy⟩
   exact ⟨_, trivial, Iio_subset_Iio hxy.le⟩
 
