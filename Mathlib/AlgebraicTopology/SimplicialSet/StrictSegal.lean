@@ -210,6 +210,86 @@ lemma spine_δ_arrow_eq (hij : j = i.succ.castSucc) :
     mkOfSucc_δ_eq hij, spineToSimplex_edge]
 
 end StrictSegal
+
+section
+
+open Limits
+
+variable {Z : SSet.Truncated.{u} 2}
+
+variable (Z) in
+/-- The spine of a 2-simplex of a 2-truncated simplicial set valued in a product rather than
+in paths. -/
+noncomputable def segalSpine : Z _⦋2⦌₂ ⟶ Z _⦋1⦌₂ ⨯ Z _⦋1⦌₂ :=
+  prod.lift (Z.map (δ 2).op) (Z.map (δ 0).op)
+
+theorem StrictSegal.spineMonic (sz : StrictSegal Z) :
+    Mono (Y := Path Z 2) (Z.spine 2 (by omega)) :=
+  (CategoryTheory.mono_iff_injective _).mpr (StrictSegal.spineInjective sz 2 _)
+
+instance [IsStrictSegal Z] :
+    Mono (Y := Path Z 2) (Z.spine 2 (by omega)) :=
+  StrictSegal.spineMonic (Truncated.StrictSegal.ofIsStrictSegal Z)
+
+variable (Z) in
+/-- Paths of length two in a 2-truncated simplicial set include into pairs of 1-simplices. -/
+noncomputable def pathToPair : Path Z 2 ⟶ Z _⦋1⦌₂ ⨯ Z _⦋1⦌₂ :=
+  prod.lift (fun p ↦ p.arrow 0) (fun p ↦ p.arrow 1)
+
+lemma pathToPair_fst :
+    pathToPair _ ≫ (prod.fst (X := Z _⦋1⦌₂) (Y := Z _⦋1⦌₂)) = (fun p ↦ p.arrow 0) := by
+  dsimp [pathToPair]
+  simp only [limit.lift_π, BinaryFan.mk_fst]
+
+lemma pathToPair_snd :
+    pathToPair _ ≫ (prod.snd (X := Z _⦋1⦌₂) (Y := Z _⦋1⦌₂)) = (fun p ↦ p.arrow 1) := by
+  dsimp [pathToPair]
+  simp only [limit.lift_π, BinaryFan.mk_snd]
+
+lemma pathToPair_fst_apply (p : Path Z 2) :
+    (prod.fst (X := Z _⦋1⦌₂) (Y := Z _⦋1⦌₂)) (pathToPair _ p) = p.arrow 0 := by
+  have := congr_fun pathToPair_fst p
+  simp only [types_comp_apply] at this
+  exact this
+
+lemma pathToPair_snd_apply (p : Path Z 2) :
+    (prod.snd (X := Z _⦋1⦌₂) (Y := Z _⦋1⦌₂)) (pathToPair _ p) = p.arrow 1 := by
+  have := congr_fun pathToPair_snd p
+  simp only [types_comp_apply] at this
+  exact this
+
+theorem segalSpine_eq : segalSpine (Z := Z) = (Z.spine 2) ≫ pathToPair _ := by
+  unfold segalSpine pathToPair
+  refine Limits.prod.hom_ext ?_ ?_
+  · simp only [limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_left, BinaryFan.mk_fst,
+    prod.comp_lift]
+    ext φ
+    simp only [types_comp_apply, spine_arrow]
+    rw [δ_two_eq_mkOfSucc]
+    congr!
+  · simp only [limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_right, BinaryFan.mk_snd,
+    prod.comp_lift]
+    ext φ
+    simp only [types_comp_apply, spine_arrow]
+    rw [δ_zero_eq_mkOfSucc]
+    congr!
+
+theorem StrictSegal.segalSpineMono (sz : StrictSegal Z) : Mono (segalSpine Z) := by
+  rw [CategoryTheory.mono_iff_injective, segalSpine_eq]
+  refine Function.Injective.comp ?_ (StrictSegal.spineInjective sz 2)
+  · intro p q hyp
+    ext i
+    fin_cases i
+    · apply_fun (prod.fst (X := Z _⦋1⦌₂)) at hyp
+      rwa [pathToPair_fst_apply, pathToPair_fst_apply] at hyp
+    · apply_fun (prod.snd (X := Z _⦋1⦌₂)) at hyp
+      rwa [pathToPair_snd_apply, pathToPair_snd_apply] at hyp
+
+instance [IsStrictSegal Z] : Mono (segalSpine (Z := Z)) :=
+  StrictSegal.segalSpineMono (StrictSegal.ofIsStrictSegal Z)
+
+end
+
 end Truncated
 
 variable (X : SSet.{u})
@@ -420,5 +500,13 @@ noncomputable def strictSegal : StrictSegal (nerve C) where
 
 instance isStrictSegal : IsStrictSegal (nerve C) :=
   strictSegal C |>.isStrictSegal
+
+/-- Simplices in the nerve of categories are uniquely determined by their spine.
+Indeed, this property describes the essential image of the nerve functor. -/
+noncomputable def strictSegal₂ : Truncated.StrictSegal ((truncation 2).obj (nerve C)) :=
+  (strictSegal C).truncation 1
+
+instance isStrictSegal₂ : Truncated.IsStrictSegal ((truncation 2).obj (nerve C)) :=
+  strictSegal₂ C |>.isStrictSegal
 
 end CategoryTheory.Nerve
