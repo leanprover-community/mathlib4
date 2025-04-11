@@ -260,8 +260,7 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
     · calc
         _ ≤ (μ (V n)).toReal := by
           apply (ENNReal.ofReal_le_iff_le_toReal _).mp
-          · refine le_rieszMeasure_tsupport_subset hΛ ?_ (hg.1 n)
-            exact fun x ↦ hg.2.2.1 n x
+          · exact le_rieszMeasure_tsupport_subset hΛ (fun x ↦ hg.2.2.1 n x) (hg.1 n)
           · rw [← lt_top_iff_ne_top]
             apply lt_of_le_of_lt (hV n).2.2
             rw [WithTop.add_lt_top]
@@ -293,23 +292,23 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
     linarith
   · -- Use that `y n - ε' ≤ f x` on `E n`
     gcongr
-    suffices h : ∀ n, (y n - ε') * (μ (E n)).toReal ≤ ∫ x in (E n), f x ∂μ by
-      calc
-        _ ≤ ∑ n, ∫ (x : X) in E n, f x ∂μ := Finset.sum_le_sum fun i a ↦ h i
-        _ = ∫ x in (⋃ n, E n), f x ∂μ := by
-          refine Eq.symm <| integral_fintype_iUnion hE.2.2.2 (fun _ _ ↦ hE.2.1 trivial trivial) ?_
-          dsimp [μ, rieszMeasure]
-          exact fun _ ↦
-            Integrable.integrableOn <| Continuous.integrable_of_hasCompactSupport f.1.2 f.2
-        _ = ∫ x in tsupport f, f x ∂μ := by simp_rw [hE.1]
-        _ = _ := setIntegral_tsupport
-    intro n
-    apply setIntegral_ge_of_const_le (hE.2.2.2 n) (hE' n)
-    · intro x hx
-      dsimp [y]; linarith [(hE.2.2.1 n x hx).1]
-    · apply Integrable.integrableOn
-      dsimp [μ, rieszMeasure]
-      exact Continuous.integrable_of_hasCompactSupport f.1.2 f.2
+    have h : ∀ n, (y n - ε') * (μ (E n)).toReal ≤ ∫ x in (E n), f x ∂μ := by
+      intro n
+      apply setIntegral_ge_of_const_le (hE.2.2.2 n) (hE' n)
+      · intro x hx
+        dsimp [y]; linarith [(hE.2.2.1 n x hx).1]
+      · apply Integrable.integrableOn
+        dsimp [μ, rieszMeasure]
+        exact Continuous.integrable_of_hasCompactSupport f.1.2 f.2
+    calc
+      _ ≤ ∑ n, ∫ (x : X) in E n, f x ∂μ := Finset.sum_le_sum fun i a ↦ h i
+      _ = ∫ x in (⋃ n, E n), f x ∂μ := by
+        refine Eq.symm <| integral_fintype_iUnion hE.2.2.2 (fun _ _ ↦ hE.2.1 trivial trivial) ?_
+        dsimp [μ, rieszMeasure]
+        exact fun _ ↦
+          Integrable.integrableOn <| Continuous.integrable_of_hasCompactSupport f.1.2 f.2
+      _ = ∫ x in tsupport f, f x ∂μ := by simp_rw [hE.1]
+      _ = _ := setIntegral_tsupport
   · -- Rough bound of the sum
     rw [mul_comm 2 ε', show ε' / N = ε' * 1 / N by rw [mul_one], mul_assoc, mul_div_assoc,
       mul_assoc, add_assoc, ← mul_add]
