@@ -30,6 +30,10 @@ are surprising to mathematicians -- see for example its definition of a group.
 Note that this design decision is also compatible with that of `Coalgebra`. The lengthy
 docstring for these convoluted fields attempts to explain what is going on.
 
+The constructor `Bialgebra.ofAlgHom` is dual to the default constructor: For `R` is a commutative
+semiring and `A` a `R`-algebra, it consumes the counit and comultiplication as algebra homomorphisms
+that satisfy the coalgebra axioms to define a bialgebra structure on `A`.
+
 ## References
 
 * <https://en.wikipedia.org/wiki/Bialgebra>
