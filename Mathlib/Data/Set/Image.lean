@@ -564,6 +564,23 @@ theorem powerset_insert (s : Set α) (a : α) : 𝒫 insert a s = 𝒫 s ∪ ins
     · exact subset_trans h (subset_insert a s)
     · exact insert_subset_insert h₁
 
+theorem powerset_insert_disjoint {s : Set α} {a : α} (h : a ∉ s) :
+    Disjoint (𝒫 s) (insert a '' 𝒫 s) := by
+  rw [Set.disjoint_iff_forall_ne]
+  intros u u_mem v v_mem uv
+  have au : a ∉ u := Set.not_mem_subset (Set.subset_of_mem_powerset u_mem) h
+  have av : a ∈ v := by
+    simp only [mem_powerset_iff, mem_image] at v_mem
+    obtain ⟨_, _, eq⟩ := v_mem
+    simp [← eq]
+  exact au (uv ▸ av)
+
+theorem powerset_insert_injOn {s : Set α} {a : α} (h : a ∉ s) :
+    Set.InjOn (insert a) (𝒫 s) := fun u u_mem v v_mem eq ↦ by
+  rw [Subset.antisymm_iff] at eq ⊢
+  rwa [Set.insert_subset_insert_iff <| Set.not_mem_subset ((mem_powerset_iff _ _).mp v_mem) h,
+  Set.insert_subset_insert_iff <| Set.not_mem_subset ((mem_powerset_iff _ _).mp u_mem) h] at eq
+
 /-! ### Lemmas about range of a function. -/
 
 
