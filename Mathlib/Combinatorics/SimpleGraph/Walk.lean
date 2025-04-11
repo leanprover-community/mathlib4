@@ -819,11 +819,9 @@ theorem edgeSet_copy {u v u' v'} (p : G.Walk u v) (hu : u = u') (hv : v = v') :
   ext
   simp
 
-@[simp]
 theorem coe_edges_toFinset [DecidableEq V] {u v : V} (p : G.Walk u v) :
     (p.edges.toFinset : Set (Sym2 V)) = p.edgeSet := by
-  ext
-  simp
+  simp [edgeSet]
 
 /-- Predicate for the empty walk.
 
