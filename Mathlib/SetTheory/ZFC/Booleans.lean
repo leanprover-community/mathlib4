@@ -444,6 +444,16 @@ def ofBool : Bool → ZFBool
   | .true  => ⟨zftrue, ZFBool.zftrue_mem_𝔹⟩
   | .false => ⟨zffalse, ZFBool.zffalse_mem_𝔹⟩
 
+theorem mem_ofBool_𝔹 (b : Bool) : (ofBool b).val ∈ 𝔹 := by
+  unfold 𝔹
+  rcases b <;> simp [ofBool]
+
+theorem sub_ofBool_singleton_𝔹 (b : Bool) : {(ofBool b).val} ⊆ 𝔹 := by
+  intro
+  rw [mem_singleton]
+  rintro rfl
+  exact mem_ofBool_𝔹 b
+
 theorem to_Bool_ofBool (b : Bool) : ZFBool.toBool (ofBool b) = b := by
   cases b <;> rw [ofBool, ZFBool.toBool]
   · split_ifs with h
