@@ -139,6 +139,8 @@ lemma span_root_image_eq_top_of_forall_orthogonal (s : Set ι)
   apply IsIrreducible.eq_top_of_invtSubmodule_reflection _ hq
   simpa using ⟨hne.choose, hne.choose_spec, P.ne_zero _⟩
 
+section FieldCharacterization
+
 lemma root_mem_or_subset_ker_coroot {K : Type*} [Field K] [Module K M] [Module K N]
     (q : Submodule K M) (P : RootPairing ι K M N) (i : ι)
     (h₁ : q ∈ invtSubmodule (P.reflection i)) :
@@ -166,39 +168,14 @@ lemma root_subset_characterization {K : Type*} [Field K] [Module K M] [Module K 
   use {i | P.root i ∈ q}
   constructor
   · exact fun _ => id
-  · intro i hi
-    exact (root_mem_or_subset_ker_coroot q P i (h₁ i)).resolve_left hi
+  intro i hi
+  exact (root_mem_or_subset_ker_coroot q P i (h₁ i)).resolve_left hi
 
-lemma span_coroot_eq_top' {K : Type*} [Field K] [Module K M] [Module K N]
-    (P : RootSystem ι K M N) : span K (range P.coroot') = ⊤ := by
-  have key (d : Module.Dual K M) :
-      d ∈ span K (range fun i ↦ P.flip.toDualLeft (P.flip.root i)) := by
-    simp only [PerfectPairing.toDualLeft_apply]
-    rw [range_comp' P.flip.toPerfectPairing P.flip.root]
-    have h₁ := Submodule.apply_mem_span_image_iff_mem_span (s := (range fun i ↦ (P.flip.root i)))
-      (x := (P.flip.toDualLeft.invFun d)) P.flip.toDualLeft.injective
-    have h₂: P.flip.toDualLeft.symm d ∈ span K (range fun i ↦ (P.flip.root i)) := by
-      simp only [Submodule.mem_top, RootSystem.span_root_eq_top]
-    have h₃ : P.flip.toDualLeft (P.flip.toDualLeft.invFun d) = d := by
-      exact (LinearEquiv.eq_symm_apply P.flip.toDualLeft).mp rfl
-    have := h₁.mpr h₂
-    rw [h₃] at this
-    exact this
-  exact Submodule.eq_top_iff'.mpr key
+end FieldCharacterization
 
-lemma dual_vanish_aux {K : Type*} [Field K] [Module K M] [Module K N]
-    (P : RootSystem ι K M N) (v : M) (h₁ : ∀ (i : ι), v ∈ ker (P.coroot' i))
-    (d : Module.Dual K M) : d v = 0 := by
-  have : d ∈ span K (range P.coroot') := by
-    simp only [Submodule.mem_top, span_coroot_eq_top' P]
-  induction this using Submodule.span_induction with
-  | mem x hx' =>
-    rcases hx' with ⟨w, h⟩
-    subst h
-    exact h₁ w
-  | zero => simp only [Submodule.mem_top, LinearMap.zero_apply]
-  | add _ _ _ _ a₁ a₂ => rw [LinearMap.add_apply, a₁, a₂, add_zero]
-  | smul _ _ _ m => rw [LinearMap.smul_apply, smul_eq_mul, m, mul_zero]
+end RootPairing
+
+namespace RootSystem
 
 lemma invtsubmodule_to_root_subset {K : Type*} [Field K] [Module K M] [Module K N]
     (P : RootSystem ι K M N)
@@ -207,19 +184,19 @@ lemma invtsubmodule_to_root_subset {K : Type*} [Field K] [Module K M] [Module K 
     (h₁ : ∀ i, q ∈ invtSubmodule (P.reflection i))
     (h₂ : ∀ Φ, Φ.Nonempty → P.root '' Φ ⊆ q → (∀ i ∉ Φ, q ≤ ker (P.coroot' i)) → Φ = univ) :
     q = ⊤ := by
-  obtain ⟨Φ, b, c⟩ := root_subset_characterization q P.toRootPairing h₁
+  obtain ⟨Φ, b, c⟩ := RootPairing.root_subset_characterization q P.toRootPairing h₁
   by_cases hΦ : Φ = ∅
   · subst hΦ
     simp only [mem_empty_iff_false, not_false_eq_true, forall_const] at c
     obtain ⟨v₁, ⟨v₂, v₃⟩⟩ := (Submodule.ne_bot_iff q).1 h₀
     have : ∀ d : Module.Dual K M, d v₁ = 0 := by
       intro d
-      exact dual_vanish_aux P v₁ (fun i => c i v₂) d
+      exact RootPairing.dual_vanish_aux P v₁ (fun i => c i v₂) d
     have := (Module.forall_dual_apply_eq_zero_iff K v₁).1 this
     exact False.elim (v₃ this)
   have hu := h₂ Φ (Set.nonempty_iff_ne_empty.mpr hΦ) (image_subset_iff.mpr b) c
   subst hu
   rw [eq_top_mono (span_le.mpr (image_subset_iff.mpr b))
-  (by rw [image_univ, RootSystem.span_root_eq_top])]
+  (by rw [image_univ, span_root_eq_top])]
 
-end RootPairing
+end RootSystem
