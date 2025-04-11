@@ -250,9 +250,9 @@ theorem IsLocalRing.linearIndependent_of_flat [Flat R M] {ι : Type u} (v : ι �
     (h : LinearIndependent k (TensorProduct.mk R k M 1 ∘ v)) : LinearIndependent R v := by
   rw [linearIndependent_iff']; intro s f hfv
   classical
-  induction s using Finset.induction generalizing v with <;> intro i hi
-  | empty => exact (Finset.not_mem_empty _ hi).elim
-  | @insert n s hn ih => ?_
+  induction s using Finset.induction generalizing v <;> intro i hi
+  case empty => exact (Finset.not_mem_empty _ hi).elim
+  case insert n s hn ih =>
   rw [← Finset.sum_coe_sort] at hfv
   have ⟨l, a, y, hay, hfa⟩ := Flat.isTrivialRelation_of_sum_smul_eq_zero hfv
   have : v n ∉ 𝔪 • (⊤ : Submodule R M) := by

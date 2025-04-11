@@ -651,9 +651,9 @@ theorem evaln_sound : ∀ {k c n x}, x ∈ evaln k c n → x ∈ eval c n
       exact ⟨_, hg _ _ eg, hf _ _ ef⟩
     case prec cf cg hf hg _ =>
       revert h
-      induction n.unpair.2 generalizing x with <;> simp [Option.bind_eq_some]
-      | zero => apply hf
-      | succ m IH =>
+      induction n.unpair.2 generalizing x <;> simp [Option.bind_eq_some]
+      case zero => apply hf
+      case succ m IH =>
         refine fun y h₁ h₂ => ⟨y, IH _ ?_, ?_⟩
         · have := evaln_mono k.le_succ h₁
           simp [evaln, Option.bind_eq_some] at this
@@ -700,12 +700,12 @@ theorem evaln_complete {c n x} : x ∈ eval c n ↔ ∃ k, x ∈ evaln k c n := 
   | prec cf cg hf hg =>
     revert h
     generalize n.unpair.1 = n₁; generalize n.unpair.2 = n₂
-    induction n₂ generalizing x n with <;> simp [Option.bind_eq_some]
-    | zero =>
+    induction n₂ generalizing x n <;> simp [Option.bind_eq_some]
+    case zero =>
       intro h
       rcases hf h with ⟨k, hk⟩
       exact ⟨_, le_max_left _ _, evaln_mono (Nat.succ_le_succ <| le_max_right _ _) hk⟩
-    | succ m IH =>
+    case succ m IH =>
       intro y hy hx
       rcases IH hy with ⟨k₁, nk₁, hk₁⟩
       rcases hg hx with ⟨k₂, hk₂⟩
@@ -725,12 +725,12 @@ theorem evaln_complete {c n x} : x ∈ eval c n ↔ ∃ k, x ∈ evaln k c n := 
     revert hy₁ hy₂
     generalize n.unpair.2 = m
     intro hy₁ hy₂
-    induction y generalizing m with <;> simp [evaln, Option.bind_eq_some]
-    | zero =>
+    induction y generalizing m <;> simp [evaln, Option.bind_eq_some]
+    case zero =>
       simp at hy₁
       rcases hf hy₁ with ⟨k, hk⟩
       exact ⟨_, Nat.le_of_lt_succ <| evaln_bound hk, _, hk, by simp⟩
-    | succ y IH =>
+    case succ y IH =>
       rcases hy₂ (Nat.succ_pos _) with ⟨a, ha, a0⟩
       rcases hf ha with ⟨k₁, hk₁⟩
       rcases IH m.succ (by simpa [Nat.succ_eq_add_one, add_comm, add_left_comm] using hy₁)

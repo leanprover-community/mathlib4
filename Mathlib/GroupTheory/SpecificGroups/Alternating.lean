@@ -166,20 +166,18 @@ theorem closure_three_cycles_eq_alternating :
       rw [← two_mul] at hn
       exact hind n l hl hn
     intro n
-    induction n with <;> intro l hl hn
-    | zero => simp [List.length_eq_zero_iff.1 hn, one_mem]
-    | succ n ih => ?_
-    rw [Nat.mul_succ] at hn
-    obtain ⟨a, l, rfl⟩ := l.exists_of_length_succ hn
-    rw [List.length_cons, Nat.succ_inj'] at hn
-    obtain ⟨b, l, rfl⟩ := l.exists_of_length_succ hn
-    rw [List.prod_cons, List.prod_cons, ← mul_assoc]
-    rw [List.length_cons, Nat.succ_inj'] at hn
-    exact
-      mul_mem
-        (IsSwap.mul_mem_closure_three_cycles (hl a List.mem_cons_self)
-          (hl b (List.mem_cons_of_mem a List.mem_cons_self)))
-        (ih _ (fun g hg => hl g (List.mem_cons_of_mem _ (List.mem_cons_of_mem _ hg))) hn)
+    induction n <;> intro l hl hn
+    case zero => simp [List.length_eq_zero_iff.1 hn, one_mem]
+    case succ n ih =>
+      rw [Nat.mul_succ] at hn
+      obtain ⟨a, l, rfl⟩ := l.exists_of_length_succ hn
+      rw [List.length_cons, Nat.succ_inj'] at hn
+      obtain ⟨b, l, rfl⟩ := l.exists_of_length_succ hn
+      rw [List.prod_cons, List.prod_cons, ← mul_assoc]
+      rw [List.length_cons, Nat.succ_inj'] at hn
+      exact mul_mem (IsSwap.mul_mem_closure_three_cycles (hl a List.mem_cons_self)
+        (hl b (List.mem_cons_of_mem a List.mem_cons_self)))
+          (ih _ (fun g hg => hl g (List.mem_cons_of_mem _ (List.mem_cons_of_mem _ hg))) hn)
 
 /-- A key lemma to prove $A_5$ is simple. Shows that any normal subgroup of an alternating group on
   at least 5 elements is the entire alternating group if it contains a 3-cycle. -/
