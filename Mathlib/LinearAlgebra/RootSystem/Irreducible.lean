@@ -210,7 +210,7 @@ lemma invtsubmodule_to_root_subset {K : Type*} [Field K] [Module K M] [Module K 
   obtain ⟨Φ, b, c⟩ := root_subset_characterization q P.toRootPairing h₁
   by_cases hΦ : Φ = ∅
   · subst hΦ
-    simp at c
+    simp only [mem_empty_iff_false, not_false_eq_true, forall_const] at c
     obtain ⟨v₁, ⟨v₂, v₃⟩⟩ := (Submodule.ne_bot_iff q).1 h₀
     have : ∀ d : Module.Dual K M, d v₁ = 0 := by
       intro d
