@@ -31,14 +31,12 @@ variable (H : Subgroup G) [Nontrivial H]
 @[to_additive exists_neg_generator]
 lemma exists_generator_lt_one : ∃ (a : G), a < 1 ∧ Subgroup.zpowers a = H := by
   obtain ⟨a, ha⟩ := H.isCyclic_iff_exists_zpowers_eq_top.mp H.isCyclic
-  by_cases ha1 : a < 1
+  obtain ha1 | rfl | ha1 := lt_trichotomy a 1
   · exact ⟨a, ha1, ha⟩
-  · simp only [not_lt, le_iff_eq_or_lt] at ha1
-    rcases ha1 with (ha1 | ha1)
-    · rw [← ha1, Subgroup.zpowers_one_eq_bot] at ha
-      exact absurd ha.symm <| (H.nontrivial_iff_ne_bot).mp (by infer_instance)
-    · use a⁻¹, Left.inv_lt_one_iff.mpr ha1
-      rw [Subgroup.zpowers_inv, ha]
+  · rw [Subgroup.zpowers_one_eq_bot] at ha
+    exact absurd ha.symm <| (H.nontrivial_iff_ne_bot).mp inferInstance
+  · use a⁻¹, Left.inv_lt_one_iff.mpr ha1
+    rw [Subgroup.zpowers_inv, ha]
 
 /-- Given a subgroup of a cyclic linearly ordered commutative group, this is a generator of
 the subgroup that is `< 1`. -/
