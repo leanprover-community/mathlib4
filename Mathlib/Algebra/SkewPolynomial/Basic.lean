@@ -18,8 +18,8 @@ $$Xa = \varphi (a)X$$
 by extending it to all polynomials in the obvious way.
 
 Skew polynomials are represented as `SkewMonoidAlgebra R (Multiplicative ℕ)`,
-where `R` is usually at least a Semiring. In this file, we define `SkewPolynomial`,
-provide basic instances, and prove an `ext` lemma.
+where `R` is usually at least a Semiring. In this file, we define `SkewPolynomial`
+and provide basic instances.
 
 **Note**: To register the endomorphism `φ` see notation below.
 
@@ -62,6 +62,7 @@ Skew Polynomials, Twisted Polynomials.
 ## TODO :
   - Add algebra instance (need the algebra instance in `SkewMonoidAlgebra`)
   - Add definition of `monomial` and related theorems (need `lsingle` in `SkewMonoidAlgebra`)
+  - Add `ext` lemma in terms of `Coeff`.
 -/
 
 noncomputable section
