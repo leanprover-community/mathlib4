@@ -575,9 +575,10 @@ theorem lintegral_finset_sum' (s : Finset β) {f : β → α → ℝ≥0∞}
     (hf : ∀ b ∈ s, AEMeasurable (f b) μ) :
     ∫⁻ a, ∑ b ∈ s, f b a ∂μ = ∑ b ∈ s, ∫⁻ a, f b a ∂μ := by
   classical
-  induction' s using Finset.induction_on with a s has ih
-  · simp
-  · simp only [Finset.sum_insert has]
+  induction s using Finset.induction_on with
+  | empty => simp
+  | @insert a s has ih =>
+    simp only [Finset.sum_insert has]
     rw [Finset.forall_mem_insert] at hf
     rw [lintegral_add_left' hf.1, ih hf.2]
 
@@ -977,9 +978,9 @@ theorem lintegral_iInf_ae {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, Measu
           (have h_mono : ∀ᵐ a ∂μ, ∀ n : ℕ, f n.succ a ≤ f n a := ae_all_iff.2 h_mono
           have h_mono : ∀ n, ∀ᵐ a ∂μ, f n a ≤ f 0 a := fun n =>
             h_mono.mono fun a h => by
-              induction' n with n ih
-              · exact le_rfl
-              · exact le_trans (h n) ih
+              induction n with
+              | zero => exact le_rfl
+              | succ n ih => exact le_trans (h n) ih
           congr_arg iSup <|
             funext fun n =>
               lintegral_sub (h_meas _) (ne_top_of_le_ne_top h_fin <| lintegral_mono_ae <| h_mono n)

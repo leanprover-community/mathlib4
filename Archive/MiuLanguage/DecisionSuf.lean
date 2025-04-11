@@ -53,10 +53,12 @@ open MiuAtom List Nat
 where `count I w` is a power of 2.
 -/
 private theorem der_cons_replicate (n : ℕ) : Derivable (M :: replicate (2 ^ n) I) := by
-  induction' n with k hk
-  · -- base case
+  induction n with
+  | zero =>
+    -- base case
     constructor
-  · -- inductive step
+  | succ k hk =>
+    -- inductive step
     rw [pow_add, pow_one 2, mul_two, replicate_add]
     exact Derivable.r2 hk
 
@@ -84,10 +86,12 @@ to produce another `Derivable` `Miustr`.
 -/
 theorem der_of_der_append_replicate_U_even {z : Miustr} {m : ℕ}
     (h : Derivable (z ++ ↑(replicate (m * 2) U))) : Derivable z := by
-  induction' m with k hk
-  · revert h
+  induction m with
+  | zero =>
+    revert h
     rw [replicate, append_nil]; exact id
-  · apply hk
+  | succ k hk =>
+    apply hk
     simp only [succ_mul, replicate_add] at h
     rw [← append_nil ↑(z ++ ↑(replicate (k * 2) U))]
     apply Derivable.r4
@@ -109,9 +113,11 @@ theorem der_cons_replicate_I_replicate_U_append_of_der_cons_replicate_I_append (
     (hder : Derivable (↑(M :: replicate (c + 3 * k) I) ++ xs)) :
     Derivable (↑(M :: (replicate c I ++ replicate k U)) ++ xs) := by
   revert xs
-  induction' k with a ha
-  · simp only [replicate, zero_eq, mul_zero, add_zero, append_nil, forall_true_iff, imp_self]
-  · intro xs
+  induction k with
+  | zero =>
+    simp only [replicate, zero_eq, mul_zero, add_zero, append_nil, forall_true_iff, imp_self]
+  | succ a ha =>
+    intro xs
     specialize ha (U :: xs)
     intro h₂
     -- We massage the goal into a form amenable to the application of `ha`.
@@ -141,9 +147,11 @@ theorem add_mod2 (a : ℕ) : ∃ t, a + a % 2 = t * 2 := by
 
 private theorem le_pow2_and_pow2_eq_mod3' (c : ℕ) (x : ℕ) (h : c = 1 ∨ c = 2) :
     ∃ m : ℕ, c + 3 * x ≤ 2 ^ m ∧ 2 ^ m % 3 = c % 3 := by
-  induction' x with k hk
-  · use c + 1
+  induction x with
+  | zero =>
+    use c + 1
     rcases h with hc | hc <;> · rw [hc]; norm_num
+  | succ k hk => ?_
   rcases hk with ⟨g, hkg, hgmod⟩
   by_cases hp : c + 3 * (k + 1) ≤ 2 ^ g
   · use g, hp, hgmod
@@ -328,9 +336,10 @@ theorem der_of_decstr {en : Miustr} (h : Decstr en) : Derivable en := by
   have hu : ∃ n, count U en = n := exists_eq'
   obtain ⟨n, hu⟩ := hu
   revert en -- Crucially, we need the induction hypothesis to quantify over `en`
-  induction' n with k hk
-  · exact base_case_suf _
-  · intro ys hdec hus
+  induction n with
+  | zero => exact base_case_suf _
+  | succ k hk =>
+    intro ys hdec hus
     rcases ind_hyp_suf k ys hus hdec with ⟨as, bs, hyab, habuc, hdecab⟩
     have h₂ : Derivable (↑(M :: as) ++ ↑[I, I, I] ++ bs) := hk hdecab habuc
     rw [hyab]

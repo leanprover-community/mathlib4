@@ -130,9 +130,10 @@ namespace DFA
 theorem toNFA_evalFrom_match (M : DFA α σ) (start : σ) (s : List α) :
     M.toNFA.evalFrom {start} s = {M.evalFrom start s} := by
   change List.foldl M.toNFA.stepSet {start} s = {List.foldl M.step start s}
-  induction' s with a s ih generalizing start
-  · tauto
-  · rw [List.foldl, List.foldl,
+  induction s generalizing start with
+  | nil => tauto
+  | cons a s ih =>
+    rw [List.foldl, List.foldl,
       show M.toNFA.stepSet {start} a = {M.step start a} by simp [NFA.stepSet] ]
     tauto
 

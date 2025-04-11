@@ -323,9 +323,10 @@ theorem pow_le_self {n : ℕ} (hn : n ≠ 0) : I ^ n ≤ I :=
     _ = I := Submodule.pow_one _
 
 theorem pow_right_mono (e : I ≤ J) (n : ℕ) : I ^ n ≤ J ^ n := by
-  induction' n with _ hn
-  · rw [Submodule.pow_zero, Submodule.pow_zero]
-  · rw [Submodule.pow_succ, Submodule.pow_succ]
+  induction n with
+  | zero => rw [Submodule.pow_zero, Submodule.pow_zero]
+  | succ _ hn =>
+    rw [Submodule.pow_succ, Submodule.pow_succ]
     exact Ideal.mul_mono hn e
 
 namespace IsTwoSided
@@ -963,12 +964,14 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
           refine Set.Subset.trans hi <| Set.Subset.trans ?_ Set.subset_union_right
           exact Set.subset_biUnion_of_mem (u := fun x ↦ (f x : Set R)) (Finset.mem_coe.2 his)⟩
   generalize hn : s.card = n; intro h
-  induction' n with n ih generalizing a b s
-  · clear hp
+  induction n generalizing a b s with
+  | zero =>
+    clear hp
     rw [Finset.card_eq_zero] at hn
     subst hn
     rw [Finset.coe_empty, Set.biUnion_empty, Set.union_empty, subset_union] at h
     simpa only [exists_prop, Finset.not_mem_empty, false_and, exists_false, or_false]
+  | succ n ih => ?_
   classical
     replace hn : ∃ (i : ι) (t : Finset ι), i ∉ t ∧ insert i t = s ∧ t.card = n :=
       Finset.card_eq_succ.1 hn

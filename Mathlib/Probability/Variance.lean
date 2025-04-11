@@ -297,8 +297,9 @@ theorem IndepFun.variance_sum [IsProbabilityMeasure μ] {ι : Type*} {X : ι →
     (h : Set.Pairwise ↑s fun i j => IndepFun (X i) (X j) μ) :
     variance (∑ i ∈ s, X i) μ = ∑ i ∈ s, variance (X i) μ := by
   classical
-  induction' s using Finset.induction_on with k s ks IH
-  · simp only [Finset.sum_empty, variance_zero]
+  induction s using Finset.induction_on with
+  | empty => simp only [Finset.sum_empty, variance_zero]
+  | @insert k s ks IH => ?_
   rw [variance_def' (memLp_finset_sum' _ hs), sum_insert ks, sum_insert ks]
   simp only [add_sq']
   calc

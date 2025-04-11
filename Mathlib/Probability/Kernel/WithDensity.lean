@@ -228,8 +228,9 @@ theorem isSFiniteKernel_withDensity_of_isFiniteKernel (κ : Kernel α β) [IsFin
       ENNReal.tsum_eq_liminf_sum_nat]
     have h_finset_sum : ∀ n, ∑ i ∈ Finset.range n, fs i a b = min (f a b) n := by
       intro n
-      induction' n with n hn
-      · simp
+      induction n with
+      | zero => simp
+      | succ n hn => ?_
       rw [Finset.sum_range_succ, hn]
       simp [fs]
     simp_rw [h_finset_sum]

@@ -633,7 +633,7 @@ theorem isUniversalColimit_extendCofan {n : ℕ} (f : Fin (n + 1) → C)
   rintro ⟨j⟩
   simp only [Discrete.functor_obj, limit.lift_π, PullbackCone.mk_pt,
     PullbackCone.mk_π_app, Category.comp_id]
-  induction' j using Fin.inductionOn
+  induction j using Fin.inductionOn
   · simp only [Fin.cases_zero]
   · simp only [Fin.cases_succ]
 

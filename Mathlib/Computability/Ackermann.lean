@@ -73,21 +73,22 @@ theorem ack_succ_succ (m n : ℕ) : ack (m + 1) (n + 1) = ack m (ack (m + 1) n) 
 
 @[simp]
 theorem ack_one (n : ℕ) : ack 1 n = n + 2 := by
-  induction' n with n IH
-  · simp
-  · simp [IH]
+  induction n with
+  | zero => simp
+  | succ n IH => simp [IH]
 
 @[simp]
 theorem ack_two (n : ℕ) : ack 2 n = 2 * n + 3 := by
-  induction' n with n IH
-  · simp
-  · simpa [mul_succ]
+  induction n with
+  | zero => simp
+  | succ n IH => simpa [mul_succ]
 
 @[simp]
 theorem ack_three (n : ℕ) : ack 3 n = 2 ^ (n + 3) - 3 := by
-  induction' n with n IH
-  · simp
-  · rw [ack_succ_succ, IH, ack_two, Nat.succ_add, Nat.pow_succ 2 (n + 3), mul_comm _ 2,
+  induction n with
+  | zero => simp
+  | succ n IH =>
+    rw [ack_succ_succ, IH, ack_two, Nat.succ_add, Nat.pow_succ 2 (n + 3), mul_comm _ 2,
         Nat.mul_sub_left_distrib, ← Nat.sub_add_comm, two_mul 3, Nat.add_sub_add_right]
     have H : 2 * 3 ≤ 2 * 2 ^ 3 := by norm_num
     apply H.trans
@@ -224,9 +225,10 @@ theorem ack_succ_right_le_ack_succ_left (m n : ℕ) : ack m (n + 1) ≤ ack (m +
 
 -- All the inequalities from this point onwards are specific to the main proof.
 private theorem sq_le_two_pow_add_one_minus_three (n : ℕ) : n ^ 2 ≤ 2 ^ (n + 1) - 3 := by
-  induction' n with k hk
-  · norm_num
-  · rcases k with - | k
+  induction n with
+  | zero => norm_num
+  | succ k hk =>
+    rcases k with - | k
     · norm_num
     · rw [add_sq, Nat.pow_succ 2, mul_comm _ 2, two_mul (2 ^ _),
           add_tsub_assoc_of_le, add_comm (2 ^ _), add_assoc]

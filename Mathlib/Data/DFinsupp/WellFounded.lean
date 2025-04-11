@@ -114,10 +114,12 @@ theorem Lex.acc_of_single (hbot : ∀ ⦃i a⦄, ¬s i a 0) [DecidableEq ι]
     (∀ i ∈ x.support, Acc (DFinsupp.Lex r s) <| single i (x i)) → Acc (DFinsupp.Lex r s) x := by
   generalize ht : x.support = t; revert x
   classical
-    induction' t using Finset.induction with b t hb ih
-    · intro x ht
+    induction t using Finset.induction with
+    | empty =>
+      intro x ht
       rw [support_eq_empty.1 ht]
       exact fun _ => Lex.acc_zero hbot
+    | @insert b t hb ih => ?_
     refine fun x ht h => Lex.acc_of_single_erase b (h b <| t.mem_insert_self b) ?_
     refine ih _ (by rw [support_erase, ht, Finset.erase_insert hb]) fun a ha => ?_
     rw [erase_ne (ha.ne_of_not_mem hb)]

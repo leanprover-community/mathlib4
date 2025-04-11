@@ -167,9 +167,10 @@ export MeasurablePow (measurable_pow)
 instance Monoid.measurablePow (M : Type*) [Monoid M] [MeasurableSpace M] [MeasurableMul₂ M] :
     MeasurablePow M ℕ :=
   ⟨measurable_from_prod_countable fun n => by
-      induction' n with n ih
-      · simp only [pow_zero, ← Pi.one_def, measurable_one]
-      · simp only [pow_succ]
+      induction n with
+      | zero => simp only [pow_zero, ← Pi.one_def, measurable_one]
+      | succ n ih =>
+        simp only [pow_succ]
         exact ih.mul measurable_id⟩
 
 section Pow
@@ -596,9 +597,10 @@ instance AddMonoid.measurableSMul_nat₂ (M : Type*) [AddMonoid M] [MeasurableSp
   ⟨by
     suffices Measurable fun p : M × ℕ => p.2 • p.1 by apply this.comp measurable_swap
     refine measurable_from_prod_countable fun n => ?_
-    induction' n with n ih
-    · simp only [zero_smul, ← Pi.zero_def, measurable_zero]
-    · simp only [succ_nsmul]
+    induction n with
+    | zero => simp only [zero_smul, ← Pi.zero_def, measurable_zero]
+    | succ n ih =>
+      simp only [succ_nsmul]
       exact ih.add measurable_id⟩
 
 /-- `SubNegMonoid.SMulInt` is measurable. -/

@@ -133,9 +133,9 @@ variable {δ : Type*} {X : δ → Type*} [∀ i, MeasurableSpace (X i)]
 -- for some reason the equation compiler doesn't like this definition
 /-- A product of measures in `tprod α l`. -/
 protected def tprod (l : List δ) (μ : ∀ i, Measure (X i)) : Measure (TProd X l) := by
-  induction' l with i l ih
-  · exact dirac PUnit.unit
-  · exact (μ i).prod (α := X i) ih
+  induction l with
+  | nil => exact dirac PUnit.unit
+  | cons i l ih => exact (μ i).prod (α := X i) ih
 
 @[simp]
 theorem tprod_nil (μ : ∀ i, Measure (X i)) : Measure.tprod [] μ = dirac PUnit.unit :=

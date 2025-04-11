@@ -95,9 +95,10 @@ theorem infinite_of_nonempty_of_isEmpty (a b : α) [ha : Nonempty (β a)] [he : 
           show WType β from Nat.recOn n ⟨b, IsEmpty.elim' he⟩ fun _ ih => ⟨a, fun _ => ih⟩)
         ?_
     intro n m h
-    induction' n with n ih generalizing m
-    · rcases m with - | m <;> simp_all
-    · rcases m with - | m
+    induction n generalizing m with
+    | zero => rcases m with - | m <;> simp_all
+    | succ n ih =>
+      rcases m with - | m
       · simp_all
       · refine congr_arg Nat.succ (ih ?_)
         simp_all [funext_iff]⟩

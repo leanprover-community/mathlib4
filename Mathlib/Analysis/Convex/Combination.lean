@@ -159,8 +159,9 @@ provided that all weights are non-negative, and the total weight is positive. -/
 theorem Convex.centerMass_mem (hs : Convex R s) :
     (∀ i ∈ t, 0 ≤ w i) → (0 < ∑ i ∈ t, w i) → (∀ i ∈ t, z i ∈ s) → t.centerMass w z ∈ s := by
   classical
-  induction' t using Finset.induction with i t hi ht
-  · simp [lt_irrefl]
+  induction t using Finset.induction with
+  | empty => simp [lt_irrefl]
+  | @insert i t hi ht => ?_
   intro h₀ hpos hmem
   have zi : z i ∈ s := hmem _ (mem_insert_self _ _)
   have hs₀ : ∀ j ∈ t, 0 ≤ w j := fun j hj => h₀ j <| mem_insert_of_mem hj
