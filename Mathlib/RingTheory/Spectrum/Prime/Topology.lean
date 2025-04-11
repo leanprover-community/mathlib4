@@ -1249,9 +1249,6 @@ theorem isLocalHom_iff_comap_closedPoint {S : Type v} [CommSemiring S] [IsLocalR
   rw [this, PrimeSpectrum.ext_iff]
   rfl
 
-@[deprecated (since := "2024-10-10")]
-alias isLocalRingHom_iff_comap_closedPoint := isLocalHom_iff_comap_closedPoint
-
 @[simp]
 theorem comap_closedPoint {S : Type v} [CommSemiring S] [IsLocalRing S] (f : R →+* S)
     [IsLocalHom f] : PrimeSpectrum.comap f (closedPoint S) = closedPoint R :=

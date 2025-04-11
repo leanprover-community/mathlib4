@@ -267,8 +267,6 @@ which may also be rephrased as a natural isomorphism `yoneda.obj X ≅ F` when `
 class IsRepresentable (F : Cᵒᵖ ⥤ Type v) : Prop where
   has_representation : ∃ (Y : C), Nonempty (F.RepresentableBy Y)
 
-@[deprecated (since := "2024-10-03")] alias Representable := IsRepresentable
-
 lemma RepresentableBy.isRepresentable {F : Cᵒᵖ ⥤ Type v} {Y : C} (e : F.RepresentableBy Y) :
     F.IsRepresentable where
   has_representation := ⟨Y, ⟨e⟩⟩
@@ -287,8 +285,6 @@ instance {X : C} : IsRepresentable (yoneda.obj X) :=
 @[stacks 001Q]
 class IsCorepresentable (F : C ⥤ Type v) : Prop where
   has_corepresentation : ∃ (X : C), Nonempty (F.CorepresentableBy X)
-
-@[deprecated (since := "2024-10-03")] alias Corepresentable := IsCorepresentable
 
 lemma CorepresentableBy.isCorepresentable {F : C ⥤ Type v} {X : C} (e : F.CorepresentableBy X) :
     F.IsCorepresentable where

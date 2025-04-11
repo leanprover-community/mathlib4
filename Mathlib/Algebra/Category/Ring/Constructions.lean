@@ -325,9 +325,6 @@ theorem equalizer_ι_isLocalHom (F : WalkingParallelPair ⥤ CommRingCat.{u}) :
   change IsLocalHom ((lim.map _ ≫ _ ≫ (equalizerFork _ _).ι) ≫ _).hom
   infer_instance
 
-@[deprecated (since := "2024-10-10")]
-alias equalizer_ι_isLocalRingHom := equalizer_ι_isLocalHom
-
 open CategoryTheory.Limits.WalkingParallelPair Opposite
 
 open CategoryTheory.Limits.WalkingParallelPairHom
