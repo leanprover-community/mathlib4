@@ -147,6 +147,22 @@ lemma toCycles_moduleCatCyclesIso_hom :
     Category.assoc, S.moduleCatCyclesIso_hom_subtype, toCycles_i]
   rfl
 
+theorem mapCyclesIso_trans_forget₂_moduleCatCyclesIso (M : ShortComplex (ModuleCat R)) :
+    (M.mapCyclesIso (forget₂ (ModuleCat R) Ab)) ≪≫
+      (forget₂ (ModuleCat R) Ab).mapIso M.moduleCatCyclesIso = ShortComplex.abCyclesIso _ := by
+  refine Iso.ext <| (Iso.inv_eq_inv _ _).1 <|
+    (cancel_mono (M.map (forget₂ (ModuleCat R) Ab)).iCycles).1 ?_
+  simpa only [Iso.trans_inv, Functor.mapIso_inv, ← Functor.map_comp, Category.assoc, mapCyclesIso,
+    LeftHomologyData.cyclesIso_inv_comp_iCycles, abCyclesIso]
+    using congr((forget₂ (ModuleCat R) Ab).map $(moduleCatCyclesIso_inv_iCycles _))
+
+theorem moduleCatCyclesIso_inv_apply {M : ShortComplex (ModuleCat R)}
+    (x : M.X₂) (hx : M.g x = 0) :
+    M.moduleCatCyclesIso.inv ⟨x, hx⟩ = M.cyclesMk x hx := by
+  have := congr(Iso.inv $(mapCyclesIso_trans_forget₂_moduleCatCyclesIso M))
+  rw [Iso.trans_inv, Iso.comp_inv_eq] at this
+  exact congr($this ⟨x, _⟩)
+
 /-- Given a short complex `S` of modules, this is the isomorphism between
 the abstract `S.homology` of the homology API and the more explicit
 quotient of `LinearMap.ker S.g` by the image of
