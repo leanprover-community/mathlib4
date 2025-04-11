@@ -234,9 +234,8 @@ lemma aux (h : SliceModel F I I') (hyp : range (φ ∘ f) = range h.map)
   rw [← hx', h.inverse_left_inv x']
 
 -- key lemma to this, if true: have : range (φ.symm ∘ h.map) ⊆ range f := sorry
-theorem missing (φ : PartialHomeomorph M' H') (hf : IsEmbedding f)
-    (h : SliceModel F I I') (hyp : range (φ ∘ f) = range h.map) (x : H) (hx : h.map x ∈ φ.target) :
-    (φ.symm ∘ SliceModel.map F I I') x ∈ range f := by
+theorem missing (hf : IsEmbedding f) (h : SliceModel F I I') (hyp : range (φ ∘ f) = range h.map)
+    {x : H} (hx : h.map x ∈ φ.target) : (φ.symm ∘ SliceModel.map F I I') x ∈ range f := by
   sorry -- last missing sorry
 
 variable [Nonempty M]
@@ -262,7 +261,7 @@ noncomputable def pullback_sliceModel (hf : IsEmbedding f) (h : SliceModel F I I
     rw [mem_preimage] at hx ⊢
     convert map_target φ hx
     -- LAST MAJOR TODO: f and f.extend cancel
-    have : (φ.symm ∘ SliceModel.map F I I') x ∈ range f := missing φ hf h hyp x hx
+    have : (φ.symm ∘ SliceModel.map F I I') x ∈ range f := missing hf h hyp hx
     choose x' hx' using this
     calc
       _ = f (Function.extend f id (fun x ↦ Classical.arbitrary M) ((φ.symm ∘ SliceModel.map F I I') x)) := rfl
@@ -283,7 +282,7 @@ noncomputable def pullback_sliceModel (hf : IsEmbedding f) (h : SliceModel F I I
         apply φ.left_inv' hx
       _ = x := hf.injective.extend_apply _ _ x
   right_inv' x hx := by
-    have : (φ.symm ∘ SliceModel.map F I I') x ∈ range f := missing φ hf h hyp x hx
+    have : (φ.symm ∘ SliceModel.map F I I') x ∈ range f := missing hf h hyp hx
     choose x' hx' using this
     have (x') : (Function.extend f id (fun x ↦ Classical.arbitrary M)) (f x') = x' := by
       simp [hf.injective.extend_apply]
