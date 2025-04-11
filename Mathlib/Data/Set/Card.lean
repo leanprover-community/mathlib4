@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
 import Mathlib.SetTheory.Cardinal.Finite
+import Mathlib.Data.Set.Finite.Powerset
 
 /-!
 # Noncomputable Set Cardinality
@@ -583,6 +584,13 @@ theorem ncard_singleton_inter (a : α) (s : Set α) : ({a} ∩ s).ncard ≤ 1 :=
 @[simp]
 theorem ncard_prod : (s ×ˢ t).ncard = s.ncard * t.ncard := by
   simp [ncard, ENat.toNat_mul]
+
+@[simp]
+theorem ncard_powerset (s : Set α) (hs : s.Finite := by toFinite_tac) :
+    (𝒫 s).ncard = 2 ^ s.ncard := by
+  have h := Cardinal.mk_powerset s
+  rw [← Set.cast_ncard hs.powerset, ← Set.cast_ncard hs] at h
+  norm_cast at h
 
 section InsertErase
 
