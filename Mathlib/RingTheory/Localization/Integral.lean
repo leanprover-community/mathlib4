@@ -352,7 +352,7 @@ theorem isAlgebraic_iff' [Field K] [IsDomain R] [Algebra R K] [Algebra S K]
   simp only [Algebra.isAlgebraic_def]
   constructor
   · intro h x
-    letI := IsFractionRing.nontrivial_of_field S K
+    letI := MulActionWithZero.nontrivial S K
     letI := FractionRing.liftAlgebra R K
     have := FractionRing.isScalarTower_liftAlgebra R K
     rw [IsFractionRing.isAlgebraic_iff R (FractionRing R) K, isAlgebraic_iff_isIntegral]

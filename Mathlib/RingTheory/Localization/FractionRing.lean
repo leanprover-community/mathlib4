@@ -447,15 +447,6 @@ protected theorem nontrivial (R S : Type*) [CommRing R] [Nontrivial R] [CommRing
       IsLocalization.injective S (le_of_eq rfl)
         (((algebraMap R S).map_zero.trans h).trans (algebraMap R S).map_one.symm)
 
-protected theorem nontrivial_of_field (R S : Type*) [CommRing R] [Field S] [Algebra R S]
-    [IsFractionRing R S] : Nontrivial R := by
-  have := IsLocalization.surj (nonZeroDivisors R) (0 : S)
-  simp only [zero_mul, Prod.exists, exists_const] at this
-  obtain ⟨a, ha⟩ := this
-  apply nontrivial_of_ne a 1
-  · by_contra hh
-    simp_all
-
 end IsFractionRing
 
 section algebraMap_injective
