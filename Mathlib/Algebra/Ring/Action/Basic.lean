@@ -102,7 +102,7 @@ end
 `MulSemiringAction` of `(Multiplicative ℕ)` on `R` by
 choosing an element `φ : M` and letting `Multiplicative.ofAdd n • r := φ ^ n • a`.
 See note [reducible non-instances]. -/
-abbrev MulSemiringAction.ofRingHom [MulSemiringAction M R] (φ : M) :
+abbrev MulSemiringAction.ofPowers [MulSemiringAction M R] (φ : M) :
     MulSemiringAction (Multiplicative ℕ) R :=
   MulSemiringAction.compHom R (powersHom M φ)
 
