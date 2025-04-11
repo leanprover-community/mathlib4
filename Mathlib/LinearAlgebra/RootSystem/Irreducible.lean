@@ -212,47 +212,17 @@ lemma l3 {K : Type*} [Field K] [Module K M] [Module K N]
   constructor
   · exact c
   constructor
-  · by_contra hu
-    have lll (i : ι) : P.root i ∈ q := by
-      subst hu
-      simp_all only [ne_eq, mem_univ, forall_const, not_true_eq_false, IsEmpty.forall_iff,
-        implies_true]
-    have : span K (P.root '' univ) ≤ q := by
-      subst hu
-      simp_all only [ne_eq, mem_univ, implies_true, forall_const, not_true_eq_false,
-        IsEmpty.forall_iff, image_univ]
-      rw [span_le]
-      exact range_subset_iff.mpr b
-    have : span K (P.root '' univ) = ⊤ := by
-      subst hu
-      simp_all only [ne_eq, mem_univ, implies_true, image_univ, RootSystem.span_root_eq_top,
-        top_le_iff]
+  · by_contra h
+    subst h
     have : q = ⊤ := by
-      subst hu
-      simp_all only [ne_eq, mem_univ, implies_true, image_univ, RootSystem.span_root_eq_top,
-        top_le_iff]
-    · contradiction
-  by_contra hn
-  have lll (i : ι) : q ≤ ker (P.coroot' i) := by
-    subst hn
-    simp_all only [ne_eq, mem_empty_iff_false, IsEmpty.forall_iff, implies_true, not_false_eq_true,
-      forall_const]
-  have : ∃ v ∈ q, v ≠ 0 := by
-    exact (Submodule.ne_bot_iff q).1 h_bot
-  obtain ⟨v1, ⟨v21, v22⟩⟩ := this
-  have xxx (i : ι) : v1 ∈ ker (P.coroot' i) := by
-    subst hn
-    simp_all only [ne_eq, mem_empty_iff_false, not_false_eq_true, implies_true, IsEmpty.forall_iff,
-      forall_const, LinearMap.mem_ker, PerfectPairing.flip_apply_apply]
-    apply c
-    simp_all only
-  have help (d : Module.Dual K M) : d v1 = 0 := by
-    exact aux P v1 xxx d
-  have : q.dualAnnihilator ≠ ⊤ := by
-    subst hn
-    simp_all only [ne_eq, mem_empty_iff_false, not_false_eq_true, implies_true, LinearMap.mem_ker,
-      image_univ, RootSystem.span_coroot_eq_top, IsEmpty.forall_iff, forall_const,
-        Submodule.dualAnnihilator_eq_top_iff]
+      rw [eq_top_mono (span_le.mpr (image_subset_iff.mpr b)) (by rw
+      [image_univ, RootSystem.span_root_eq_top])]
+    exact False.elim (h_top this)
+  by_contra h
+  subst h
+  have lll (i : ι) : q ≤ ker (P.coroot' i) := c i (fun a ↦ a)
+  obtain ⟨v1, ⟨v21, _⟩⟩ := ((Submodule.ne_bot_iff q).1 h_bot)
+  have help (d : Module.Dual K M) : d v1 = 0 := aux P v1 (fun i ↦ lll i v21) d
   have := (Module.forall_dual_apply_eq_zero_iff K v1).1 help
   contradiction
 
