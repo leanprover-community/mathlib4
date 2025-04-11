@@ -287,18 +287,18 @@ theorem geom_sum_eq [DivisionRing K] {x : K} (h : x ≠ 1) (n : ℕ) :
   rw [← geom_sum_mul, mul_div_cancel_right₀ _ this]
 
 lemma geom_sum_of_one_lt {x : K} [Semifield K] [LinearOrder K] [IsStrictOrderedRing K]
-    [CanonicallyOrderedAdd K] [Sub R] [OrderedSub K]
+    [CanonicallyOrderedAdd K] [Sub K] [OrderedSub K]
     (h : 1 < x) (n : ℕ) :
     ∑ i ∈ Finset.range n, x ^ i = (x ^ n - 1) / (x - 1) :=
   eq_div_of_mul_eq (tsub_pos_of_lt h).ne' (geom_sum_mul_of_one_le h.le n)
 
-lemma geom_sum_of_lt_one {x : K} [Semifield K] [LinearOrder K] [IsStrictOrderedRing 
+lemma geom_sum_of_lt_one {x : K} [Semifield K] [LinearOrder K] [IsStrictOrderedRing K]
     [CanonicallyOrderedAdd K] [Sub K] [OrderedSub K]
     (h : x < 1) (n : ℕ) :
     ∑ i ∈ Finset.range n, x ^ i = (1 - x ^ n) / (1 - x) :=
   eq_div_of_mul_eq (tsub_pos_of_lt h).ne' (geom_sum_mul_of_le_one h.le n)
 
-theorem geom_sum_lt {x : K} [Semifield K] [LinearOrder K] [IsStrictOrderedRing 
+theorem geom_sum_lt {x : K} [Semifield K] [LinearOrder K] [IsStrictOrderedRing K]
     [CanonicallyOrderedAdd K] [Sub K] [OrderedSub K]
     (h0 : x ≠ 0) (h1 : x < 1) (n : ℕ) : ∑ i ∈ range n, x ^ i < (1 - x)⁻¹ := by
   rw [← pos_iff_ne_zero] at h0
