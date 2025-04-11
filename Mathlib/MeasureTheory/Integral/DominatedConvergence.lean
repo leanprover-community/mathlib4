@@ -3,7 +3,7 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov, Patrick Massot
 -/
-import Mathlib.MeasureTheory.Integral.IntervalIntegral
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 import Mathlib.Order.Filter.IndicatorFunction
 
 /-!
@@ -102,11 +102,11 @@ theorem hasSum_integral_of_dominated_convergence {ι} [Countable ι] {F : ι →
       _ ≤ ∑' n, bound n a := sum_le_tsum _ (fun n _ => ha0 n) has
 
 theorem integral_tsum {ι} [Countable ι] {f : ι → α → G} (hf : ∀ i, AEStronglyMeasurable (f i) μ)
-    (hf' : ∑' i, ∫⁻ a : α, ‖f i a‖₊ ∂μ ≠ ∞) :
+    (hf' : ∑' i, ∫⁻ a : α, ‖f i a‖ₑ ∂μ ≠ ∞) :
     ∫ a : α, ∑' i, f i a ∂μ = ∑' i, ∫ a : α, f i a ∂μ := by
   by_cases hG : CompleteSpace G; swap
   · simp [integral, hG]
-  have hf'' : ∀ i, AEMeasurable (fun x => (‖f i x‖₊ : ℝ≥0∞)) μ := fun i => (hf i).ennnorm
+  have hf'' i : AEMeasurable (‖f i ·‖ₑ) μ := (hf i).enorm
   have hhh : ∀ᵐ a : α ∂μ, Summable fun n => (‖f n a‖₊ : ℝ) := by
     rw [← lintegral_tsum hf''] at hf'
     refine (ae_lt_top' (AEMeasurable.ennreal_tsum hf'') hf').mono ?_
@@ -124,7 +124,7 @@ theorem integral_tsum {ι} [Countable ι] {f : ι → α → G} (hf : ∀ i, AES
     apply AEMeasurable.nnreal_tsum
     exact fun i => (hf i).nnnorm.aemeasurable
   · dsimp [HasFiniteIntegral]
-    have : ∫⁻ a, ∑' n, ‖f n a‖₊ ∂μ < ⊤ := by rwa [lintegral_tsum hf'', lt_top_iff_ne_top]
+    have : ∫⁻ a, ∑' n, ‖f n a‖ₑ ∂μ < ⊤ := by rwa [lintegral_tsum hf'', lt_top_iff_ne_top]
     convert this using 1
     apply lintegral_congr_ae
     simp_rw [← coe_nnnorm, ← NNReal.coe_tsum, enorm_eq_nnnorm, NNReal.nnnorm_eq]
@@ -140,19 +140,33 @@ lemma hasSum_integral_of_summable_integral_norm {ι} [Countable ι] {F : ι → 
   · simp [integral, hE, hasSum_zero]
   rw [integral_tsum (fun i ↦ (hF_int i).1)]
   · exact (hF_sum.of_norm_bounded _ fun i ↦ norm_integral_le_integral_norm _).hasSum
-  have (i : ι) : ∫⁻ (a : α), ‖F i a‖₊ ∂μ = ‖(∫ a : α, ‖F i a‖ ∂μ)‖₊ := by
+  have (i : ι) : ∫⁻ a, ‖F i a‖ₑ ∂μ = ‖∫ a, ‖F i a‖ ∂μ‖ₑ := by
+    dsimp [enorm]
     rw [lintegral_coe_eq_integral _ (hF_int i).norm, coe_nnreal_eq, coe_nnnorm,
       Real.norm_of_nonneg (integral_nonneg (fun a ↦ norm_nonneg (F i a)))]
     simp only [coe_nnnorm]
-  rw [funext this, ← ENNReal.coe_tsum]
-  · apply coe_ne_top
-  · simp_rw [← NNReal.summable_coe, coe_nnnorm]
-    exact hF_sum.abs
+  rw [funext this]
+  exact ENNReal.tsum_coe_ne_top_iff_summable.2 <| NNReal.summable_coe.1 hF_sum.abs
 
 lemma integral_tsum_of_summable_integral_norm {ι} [Countable ι] {F : ι → α → E}
     (hF_int : ∀ i : ι, Integrable (F i) μ) (hF_sum : Summable fun i ↦ ∫ a, ‖F i a‖ ∂μ) :
     ∑' i, (∫ a, F i a ∂μ) = ∫ a, (∑' i, F i a) ∂μ :=
   (hasSum_integral_of_summable_integral_norm hF_int hF_sum).tsum_eq
+
+/-- Corollary of the Lebesgue dominated convergence theorem: If a sequence of functions `F n` is
+(eventually) uniformly bounded by a constant and converges (eventually) pointwise to a
+function `f`, then the integrals of `F n` with respect to a finite measure `μ` converge
+to the integral of `f`. -/
+theorem tendsto_integral_filter_of_norm_le_const {ι} {l : Filter ι} [l.IsCountablyGenerated]
+    {F : ι → α → G} [IsFiniteMeasure μ] {f : α → G}
+    (h_meas : ∀ᶠ n in l, AEStronglyMeasurable (F n) μ)
+    (h_bound : ∃ C, ∀ᶠ n in l, (∀ᵐ ω ∂μ, ‖F n ω‖ ≤ C))
+    (h_lim : ∀ᵐ ω ∂μ, Tendsto (fun n => F n ω) l (𝓝 (f ω))) :
+    Tendsto (fun n => ∫ ω, F n ω ∂μ) l (nhds (∫ ω, f ω ∂μ)) := by
+  obtain ⟨c, h_boundc⟩ := h_bound
+  let C : α → ℝ := (fun _ => c)
+  exact tendsto_integral_filter_of_dominated_convergence
+    C h_meas h_boundc (integrable_const c) h_lim
 
 end MeasureTheory
 
@@ -180,9 +194,6 @@ theorem _root_.Antitone.tendsto_setIntegral (hsm : ∀ i, MeasurableSet (s i)) (
     refine fun n => Eventually.of_forall fun x => ?_
     exact indicator_le_indicator_of_subset (h_anti (zero_le n)) (fun a => norm_nonneg _) _
   · filter_upwards [] with a using le_trans (h_anti.tendsto_indicator _ _ _) (pure_le_nhds _)
-
-@[deprecated (since := "2024-04-17")]
-alias _root_.Antitone.tendsto_set_integral :=  _root_.Antitone.tendsto_setIntegral
 
 end TendstoMono
 
@@ -342,7 +353,8 @@ theorem continuousWithinAt_primitive (hb₀ : μ {b₀} = 0)
     refine continuousWithinAt_of_dominated_interval ?_ ?_ this ?_ <;> clear this
     · filter_upwards [self_mem_nhdsWithin]
       intro x hx
-      erw [aestronglyMeasurable_indicator_iff, Measure.restrict_restrict, Iic_inter_Ioc_of_le]
+      rw [aestronglyMeasurable_indicator_iff, Measure.restrict_restrict, uIoc, Iic_def,
+        Iic_inter_Ioc_of_le]
       · rw [min₁₂]
         exact (h_int' hx).1.aestronglyMeasurable
       · exact le_max_of_le_right hx.2
@@ -490,8 +502,8 @@ theorem continuous_primitive (h_int : ∀ a b, IntervalIntegrable f μ a b) (a :
     Continuous fun b => ∫ x in a..b, f x ∂μ := by
   rw [continuous_iff_continuousAt]
   intro b₀
-  cases' exists_lt b₀ with b₁ hb₁
-  cases' exists_gt b₀ with b₂ hb₂
+  obtain ⟨b₁, hb₁⟩ := exists_lt b₀
+  obtain ⟨b₂, hb₂⟩ := exists_gt b₀
   apply ContinuousWithinAt.continuousAt _ (Icc_mem_nhds hb₁ hb₂)
   exact continuousWithinAt_primitive (measure_singleton b₀) (h_int _ _)
 
@@ -510,8 +522,8 @@ theorem continuous_parametric_primitive_of_continuous
   apply Metric.continuousAt_iff'.2 (fun ε εpos ↦ ?_)
   -- choose `a` and `b` such that `(a, b)` contains both `a₀` and `b₀`. We will use uniform
   -- estimates on a neighborhood of the compact set `{q} × [a, b]`.
-  cases' exists_lt (min a₀ b₀) with a a_lt
-  cases' exists_gt (max a₀ b₀) with b lt_b
+  obtain ⟨a, a_lt⟩ := exists_lt (min a₀ b₀)
+  obtain ⟨b, lt_b⟩ := exists_gt (max a₀ b₀)
   rw [lt_min_iff] at a_lt
   rw [max_lt_iff] at lt_b
   have : IsCompact ({q} ×ˢ (Icc a b)) := isCompact_singleton.prod isCompact_Icc
@@ -532,7 +544,7 @@ theorem continuous_parametric_primitive_of_continuous
       suffices Tendsto
         (fun δ ↦ (M + 1) * (μ (Icc (b₀ - δ) (b₀ + δ))).toReal + δ * (μ (Icc a b)).toReal)
           (𝓝 0) (𝓝 ((M + 1) * (0 : ℝ≥0∞).toReal + 0 * (μ (Icc a b)).toReal)) by
-        simp only [zero_toReal, mul_zero, zero_mul, add_zero] at this
+        simp only [toReal_zero, mul_zero, zero_mul, add_zero] at this
         exact (tendsto_order.1 this).2 _ εpos
       apply Tendsto.add (Tendsto.mul tendsto_const_nhds _)
         (Tendsto.mul tendsto_id tendsto_const_nhds)

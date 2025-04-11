@@ -29,9 +29,6 @@ theorem eLpNorm'_trim (hm : m ≤ m0) {f : α → E} (hf : StronglyMeasurable[m]
   apply @StronglyMeasurable.measurable
   exact @StronglyMeasurable.nnnorm α m _ _ _ hf
 
-@[deprecated (since := "2024-07-27")]
-alias snorm'_trim := eLpNorm'_trim
-
 theorem limsup_trim (hm : m ≤ m0) {f : α → ℝ≥0∞} (hf : Measurable[m] f) :
     limsup f (ae (μ.trim hm)) = limsup f (ae μ) := by
   simp_rw [limsup_eq]
@@ -51,10 +48,7 @@ theorem essSup_trim (hm : m ≤ m0) {f : α → ℝ≥0∞} (hf : Measurable[m] 
 
 theorem eLpNormEssSup_trim (hm : m ≤ m0) {f : α → E} (hf : StronglyMeasurable[m] f) :
     eLpNormEssSup f (μ.trim hm) = eLpNormEssSup f μ :=
-  essSup_trim _ (@StronglyMeasurable.ennnorm _ m _ _ _ hf)
-
-@[deprecated (since := "2024-07-27")]
-alias snormEssSup_trim := eLpNormEssSup_trim
+  essSup_trim _ (@StronglyMeasurable.enorm _ m _ _ _ hf)
 
 theorem eLpNorm_trim (hm : m ≤ m0) {f : α → E} (hf : StronglyMeasurable[m] f) :
     eLpNorm f p (μ.trim hm) = eLpNorm f p μ := by
@@ -64,19 +58,16 @@ theorem eLpNorm_trim (hm : m ≤ m0) {f : α → E} (hf : StronglyMeasurable[m] 
   · simpa only [h_top, eLpNorm_exponent_top] using eLpNormEssSup_trim hm hf
   simpa only [eLpNorm_eq_eLpNorm' h0 h_top] using eLpNorm'_trim hm hf
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_trim := eLpNorm_trim
-
-theorem eLpNorm_trim_ae (hm : m ≤ m0) {f : α → E} (hf : AEStronglyMeasurable f (μ.trim hm)) :
+theorem eLpNorm_trim_ae (hm : m ≤ m0) {f : α → E} (hf : AEStronglyMeasurable[m] f (μ.trim hm)) :
     eLpNorm f p (μ.trim hm) = eLpNorm f p μ := by
   rw [eLpNorm_congr_ae hf.ae_eq_mk, eLpNorm_congr_ae (ae_eq_of_ae_eq_trim hf.ae_eq_mk)]
   exact eLpNorm_trim hm hf.stronglyMeasurable_mk
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_trim_ae := eLpNorm_trim_ae
-
-theorem memℒp_of_memℒp_trim (hm : m ≤ m0) {f : α → E} (hf : Memℒp f p (μ.trim hm)) : Memℒp f p μ :=
+theorem memLp_of_memLp_trim (hm : m ≤ m0) {f : α → E} (hf : MemLp f p (μ.trim hm)) : MemLp f p μ :=
   ⟨aestronglyMeasurable_of_aestronglyMeasurable_trim hm hf.1,
     (le_of_eq (eLpNorm_trim_ae hm hf.1).symm).trans_lt hf.2⟩
+
+@[deprecated (since := "2025-02-21")]
+alias memℒp_of_memℒp_trim := memLp_of_memLp_trim
 
 end MeasureTheory

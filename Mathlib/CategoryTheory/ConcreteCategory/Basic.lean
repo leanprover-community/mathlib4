@@ -185,7 +185,7 @@ instance forget₂_faithful (C : Type u) (D : Type u') [Category.{v} C] [HasForg
 
 instance InducedCategory.hasForget {C : Type u} {D : Type u'}
     [Category.{v'} D] [HasForget.{w} D] (f : C → D) :
-      HasForget (InducedCategory D f) where
+    HasForget (InducedCategory D f) where
   forget := inducedFunctor f ⋙ forget D
 
 instance InducedCategory.hasForget₂ {C : Type u} {D : Type u'} [Category.{v} D]
@@ -231,12 +231,6 @@ def hasForgetToType (C : Type u) [Category.{v} C] [HasForget.{w} C] :
     HasForget₂ C (Type w) where
   forget₂ := forget C
   forget_comp := Functor.comp_id _
-
-@[simp]
-lemma NatTrans.naturality_apply {C D : Type*} [Category C] [Category D] [HasForget D]
-    {F G : C ⥤ D} (φ : F ⟶ G) {X Y : C} (f : X ⟶ Y) (x : F.obj X) :
-    φ.app Y (F.map f x) = G.map f (φ.app X x) := by
-  simpa only [Functor.map_comp] using congr_fun ((forget D).congr_map (φ.naturality f)) x
 
 section ConcreteCategory
 
@@ -362,6 +356,26 @@ theorem coe_toHasForget_instFunLike {C : Type*} [Category C] {FC : C → C → T
     (f : X ⟶ Y) :
     @DFunLike.coe (X ⟶ Y) (ToType X) (fun _ => ToType Y) HasForget.instFunLike f = f := rfl
 
+lemma ConcreteCategory.forget₂_comp_apply {C : Type u} {D : Type u'} [Category.{v} C]
+    {FC : C → C → Type*} {CC : C → Type w} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
+    [ConcreteCategory.{w} C FC] [Category.{v'} D] {FD : D → D → Type*} {CD : D → Type w}
+    [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)] [ConcreteCategory.{w} D FD] [HasForget₂ C D] {X Y Z : C}
+    (f : X ⟶ Y) (g : Y ⟶ Z) (x : ToType ((forget₂ C D).obj X)) :
+    ((forget₂ C D).map (f ≫ g) x) =
+      (forget₂ C D).map g ((forget₂ C D).map f x) := by
+  rw [Functor.map_comp, ConcreteCategory.comp_apply]
+
+instance hom_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] :
+    IsIso (C := Type _) ⇑(ConcreteCategory.hom f) :=
+  ((forget C).mapIso (asIso f)).isIso_hom
+
+@[simp]
+lemma NatTrans.naturality_apply {C D : Type*} [Category C] [Category D] {FD : D → D → Type*}
+    {CD : D → Type*} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)] [ConcreteCategory D FD]
+    {F G : C ⥤ D} (φ : F ⟶ G) {X Y : C} (f : X ⟶ Y) (x : ToType (F.obj X)) :
+    φ.app Y (F.map f x) = G.map f (φ.app X x) := by
+  simpa only [Functor.map_comp] using congr_fun ((forget D).congr_map (φ.naturality f)) x
+
 section
 
 variable (C)
@@ -425,6 +439,30 @@ abbrev Types.instConcreteCategory : ConcreteCategory (Type u) (fun X Y => X ⟶ 
   ofHom f := f
 
 end
+
+open ConcreteCategory
+
+instance InducedCategory.concreteCategory {C : Type u} {D : Type u'} [Category.{v'} D]
+    {FD : D → D → Type*} {CD : D → Type w} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
+    [ConcreteCategory.{w} D FD] (f : C → D) :
+    ConcreteCategory (InducedCategory D f) (fun X Y => FD (f X) (f Y)) where
+  hom := hom (C := D)
+  ofHom := ofHom (C := D)
+  hom_ofHom := hom_ofHom (C := D)
+  ofHom_hom := ofHom_hom (C := D)
+  comp_apply := ConcreteCategory.comp_apply (C := D)
+  id_apply := ConcreteCategory.id_apply (C := D)
+
+instance FullSubcategory.concreteCategory {C : Type u} [Category.{v} C]
+    {FC : C → C → Type*} {CC : C → Type w} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
+    [ConcreteCategory.{w} C FC]
+    (Z : C → Prop) : ConcreteCategory (FullSubcategory Z) (fun X Y => FC X.1 Y.1) where
+  hom := hom (C := C)
+  ofHom := ofHom (C := C)
+  hom_ofHom := hom_ofHom (C := C)
+  ofHom_hom := ofHom_hom (C := C)
+  comp_apply := ConcreteCategory.comp_apply (C := C)
+  id_apply := ConcreteCategory.id_apply (C := C)
 
 end ConcreteCategory
 

@@ -15,7 +15,7 @@ at position `(i, j)`, and zeroes elsewhere.
 assert_not_exists Matrix.trace
 
 variable {l m n : Type*}
-variable {R α : Type*}
+variable {R α β : Type*}
 
 namespace Matrix
 
@@ -37,6 +37,11 @@ theorem stdBasisMatrix_eq_of_single_single (i : m) (j : n) (a : α) :
   by_cases hi : i = a <;> by_cases hj : j = b <;> simp [*]
 
 @[simp]
+theorem of_symm_stdBasisMatrix (i : m) (j : n) (a : α) :
+    of.symm (stdBasisMatrix i j a) = Pi.single i (Pi.single j a) :=
+  congr_arg of.symm <| stdBasisMatrix_eq_of_single_single i j a
+
+@[simp]
 theorem smul_stdBasisMatrix [SMulZeroClass R α] (r : R) (i : m) (j : n) (a : α) :
     r • stdBasisMatrix i j a = stdBasisMatrix i j (r • a) := by
   unfold stdBasisMatrix
@@ -48,6 +53,17 @@ theorem stdBasisMatrix_zero (i : m) (j : n) : stdBasisMatrix i j (0 : α) = 0 :=
   unfold stdBasisMatrix
   ext
   simp
+
+@[simp]
+lemma transpose_stdBasisMatrix (i : m) (j : n) (a : α) :
+    (stdBasisMatrix i j a)ᵀ = stdBasisMatrix j i a := by
+  aesop (add unsafe unfold stdBasisMatrix)
+
+@[simp]
+lemma map_stdBasisMatrix (i : m) (j : n) (a : α) {β : Type*} [Zero β]
+    {F : Type*} [FunLike F α β] [ZeroHomClass F α β] (f : F) :
+    (stdBasisMatrix i j a).map f = stdBasisMatrix i j (f a) := by
+  aesop (add unsafe unfold stdBasisMatrix)
 
 end Zero
 
@@ -70,24 +86,12 @@ theorem matrix_eq_sum_stdBasisMatrix [AddCommMonoid α] [Fintype m] [Fintype n] 
     x = ∑ i : m, ∑ j : n, stdBasisMatrix i j (x i j) := by
   ext i j
   rw [← Fintype.sum_prod_type']
-  simp [stdBasisMatrix, Matrix.sum_apply, Matrix.of_apply, ← Prod.mk.inj_iff]
-
-@[deprecated (since := "2024-08-11")] alias matrix_eq_sum_std_basis := matrix_eq_sum_stdBasisMatrix
+  simp [stdBasisMatrix, Matrix.sum_apply, Matrix.of_apply, ← Prod.mk_inj]
 
 theorem stdBasisMatrix_eq_single_vecMulVec_single [MulZeroOneClass α] (i : m) (j : n) :
     stdBasisMatrix i j (1 : α) = vecMulVec (Pi.single i 1) (Pi.single j 1) := by
   ext i' j'
-  -- Porting note: lean3 didn't apply `mul_ite`.
   simp [-mul_ite, stdBasisMatrix, vecMulVec, ite_and, Pi.single_apply, eq_comm]
-
--- TODO: tie this up with the `Basis` machinery of linear algebra
--- this is not completely trivial because we are indexing by two types, instead of one
-@[deprecated stdBasisMatrix_eq_single_vecMulVec_single (since := "2024-08-11")]
-theorem std_basis_eq_basis_mul_basis [MulZeroOneClass α] (i : m) (j : n) :
-    stdBasisMatrix i j (1 : α) =
-      vecMulVec (fun i' => ite (i = i') 1 0) fun j' => ite (j = j') 1 0 := by
-  rw [stdBasisMatrix_eq_single_vecMulVec_single]
-  congr! with i <;> simp only [Pi.single_apply, eq_comm]
 
 -- todo: the old proof used fintypes, I don't know `Finsupp` but this feels generalizable
 @[elab_as_elim]
@@ -112,6 +116,53 @@ protected theorem induction_on
       inhabit n
       simpa using h_std_basis default default 0)
     h_add h_std_basis
+
+/-- `Matrix.stdBasisMatrix` as a bundled additive map. -/
+@[simps]
+def stdBasisMatrixAddMonoidHom [AddCommMonoid α] (i : m) (j : n) : α →+ Matrix m n α where
+  toFun := stdBasisMatrix i j
+  map_zero' := stdBasisMatrix_zero _ _
+  map_add' _ _ := stdBasisMatrix_add _ _ _ _
+
+variable (R)
+/-- `Matrix.stdBasisMatrix` as a bundled linear map. -/
+@[simps!]
+def stdBasisMatrixLinearMap [Semiring R] [AddCommMonoid α] [Module R α] (i : m) (j : n) :
+    α →ₗ[R] Matrix m n α where
+  __ := stdBasisMatrixAddMonoidHom i j
+  map_smul' _ _:= smul_stdBasisMatrix _ _ _ _ |>.symm
+
+section ext
+
+/-- Additive maps from finite matrices are equal if they agree on the standard basis.
+
+See note [partially-applied ext lemmas]. -/
+@[local ext]
+theorem ext_addMonoidHom
+    [Finite m] [Finite n] [AddCommMonoid α] [AddCommMonoid β] ⦃f g : Matrix m n α →+ β⦄
+    (h : ∀ i j, f.comp (stdBasisMatrixAddMonoidHom i j) = g.comp (stdBasisMatrixAddMonoidHom i j)) :
+    f = g := by
+  cases nonempty_fintype m
+  cases nonempty_fintype n
+  ext x
+  rw [matrix_eq_sum_stdBasisMatrix x]
+  simp_rw [map_sum]
+  congr! 2
+  exact DFunLike.congr_fun (h _ _) _
+
+/-- Linear maps from finite matrices are equal if they agree on the standard basis.
+
+See note [partially-applied ext lemmas]. -/
+@[local ext]
+theorem ext_linearMap
+    [Finite m] [Finite n][Semiring R] [AddCommMonoid α] [AddCommMonoid β] [Module R α] [Module R β]
+    ⦃f g : Matrix m n α →ₗ[R] β⦄
+    (h : ∀ i j, f ∘ₗ stdBasisMatrixLinearMap R i j = g ∘ₗ stdBasisMatrixLinearMap R i j) :
+    f = g :=
+  LinearMap.toAddMonoidHom_injective <| ext_addMonoidHom fun i j =>
+    congrArg LinearMap.toAddMonoidHom <| h i j
+
+end ext
 
 namespace StdBasisMatrix
 
@@ -188,14 +239,8 @@ theorem mul_of_ne (i : l) (j k : m) {l : n} (h : j ≠ k) (d : α) :
   ext a b
   simp only [mul_apply, boole_mul, stdBasisMatrix, of_apply]
   by_cases h₁ : i = a
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp [h₁, h, h.symm]`
-  · simp only [h₁, true_and, mul_ite, ite_mul, zero_mul, mul_zero, ← ite_and, zero_apply]
-    refine Finset.sum_eq_zero (fun x _ => ?_)
-    apply if_neg
-    rintro ⟨⟨rfl, rfl⟩, h⟩
-    contradiction
-  · simp only [h₁, false_and, ite_false, mul_ite, zero_mul, mul_zero, ite_self,
-      Finset.sum_const_zero, zero_apply]
+  · simp [h₁, h, Finset.sum_eq_zero]
+  · simp [h₁]
 
 end mul
 

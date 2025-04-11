@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 import Mathlib.Order.SetNotation
 import Mathlib.Tactic.Continuity
 import Mathlib.Tactic.FunProp
+import Mathlib.Tactic.MkIffOfInductiveProp
 /-!
 # Basic definitions about topological spaces
 
@@ -52,6 +53,8 @@ other than `Mathlib.Data.Set.Lattice`.
 We introduce notation `IsOpen[t]`, `IsClosed[t]`, `closure[t]`, `Continuous[t₁, t₂]`
 that allow passing custom topologies to these predicates and functions without using `@`.
 -/
+
+assert_not_exists Monoid
 
 universe u v
 open Set

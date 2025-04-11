@@ -3,7 +3,7 @@ Copyright (c) 2022 Paul Reichert. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul Reichert
 -/
-import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
+import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 
 /-!
 # Affine map restrictions
@@ -33,7 +33,6 @@ theorem AffineSubspace.nonempty_map {E : AffineSubspace k P₁} [Ene : Nonempty 
   obtain ⟨x, hx⟩ := id Ene
   exact ⟨⟨φ x, AffineSubspace.mem_map.mpr ⟨x, hx, rfl⟩⟩⟩
 
--- Porting note: removed "local nolint fails_quickly" attribute
 attribute [local instance] AffineSubspace.nonempty_map AffineSubspace.toAddTorsor
 
 /-- Restrict domain and codomain of an affine map to the given subspaces. -/

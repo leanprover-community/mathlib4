@@ -1025,9 +1025,6 @@ theorem mul_eq_one_iff_of_one_le [MulLeftMono α]
       And.intro ‹a = 1› ‹b = 1›)
     (by rintro ⟨rfl, rfl⟩; rw [mul_one])
 
-@[deprecated (since := "2024-07-24")] alias mul_eq_one_iff' := mul_eq_one_iff_of_one_le
-@[deprecated (since := "2024-07-24")] alias add_eq_zero_iff' := add_eq_zero_iff_of_nonneg
-
 section Left
 
 variable [MulLeftMono α] {a b : α}
@@ -1347,7 +1344,7 @@ theorem Contravariant.MulLECancellable [Mul α] [LE α] [MulLeftReflectLE α]
   fun _ _ => le_of_mul_le_mul_left'
 
 @[to_additive (attr := simp)]
-theorem mulLECancellable_one [Monoid α] [LE α] : MulLECancellable (1 : α) := fun a b => by
+theorem mulLECancellable_one [MulOneClass α] [LE α] : MulLECancellable (1 : α) := fun a b => by
   simpa only [one_mul] using id
 
 namespace MulLECancellable

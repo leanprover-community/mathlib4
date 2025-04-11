@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Mario Carneiro, Robert Y. Lewis
 -/
 import Mathlib.Algebra.Order.Ring.Cast
-import Mathlib.Algebra.Order.Ring.Rat
 import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.Data.NNRat.Defs
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Zify
 
@@ -69,9 +69,6 @@ macro_rules
 @[qify_simps] lemma intCast_lt (a b : ℤ) : a < b ↔ (a : ℚ) < (b : ℚ) := Int.cast_lt.symm
 @[qify_simps] lemma intCast_ne (a b : ℤ) : a ≠ b ↔ (a : ℚ) ≠ (b : ℚ) := by
   simp only [ne_eq, Int.cast_inj]
-
-@[deprecated (since := "2024-04-17")]
-alias int_cast_ne := intCast_ne
 
 end Qify
 

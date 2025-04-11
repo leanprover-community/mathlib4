@@ -55,9 +55,9 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
   for d in libs.reverse do  -- reverse to create `Mathlib/Tactic.lean` before `Mathlib.lean`
     let fileName := addExtension d "lean"
     let mut allFiles ← getAllModulesSorted git d
-    -- mathlib exception: manually import Batteries in `Mathlib.lean`
+    -- mathlib exception: manually import Std and Batteries in `Mathlib.lean`
     if d == "Mathlib" then
-      allFiles := #["Batteries"] ++ allFiles
+      allFiles := #["Std", "Batteries"] ++ allFiles
     let fileContent := ("\n".intercalate (allFiles.map ("import " ++ ·)).toList).push '\n'
     if !(← pathExists fileName) then
       if check then

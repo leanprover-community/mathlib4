@@ -122,11 +122,11 @@ lemma specializingMap (H : ValuativeCriterion.Existence f) :
       ← Scheme.Spec_map_stalkSpecializes_fromSpecStalk h]
     simp_rw [← Spec.map_comp_assoc]
     rfl
-  obtain ⟨l, hl₁, hl₂⟩ := (H { R := A, K := X.residueField x', commSq := ⟨w⟩ }).exists_lift
+  obtain ⟨l, hl₁, hl₂⟩ := (H { R := A, K := X.residueField x', commSq := ⟨w⟩, .. }).exists_lift
   dsimp only at hl₁ hl₂
   refine ⟨l.base (closedPoint A), ?_, ?_⟩
   · simp_rw [← Scheme.fromSpecResidueField_apply x' (closedPoint (X.residueField x')), ← hl₁]
-    exact (specializes_closedPoint _).map l.base.2
+    exact (specializes_closedPoint _).map l.base.hom.2
   · rw [← Scheme.comp_base_apply, hl₂]
     simp only [Scheme.comp_coeBase, TopCat.coe_comp, Function.comp_apply]
     have : (Spec.map stalk_y_to_A).base (closedPoint A) = closedPoint (Y.presheaf.stalk y) :=
@@ -157,10 +157,12 @@ lemma of_specializingMap (H : (topologically @SpecializingMap).universally f) :
     simp only [CommRingCat.coe_of, Iso.trans_hom, Iso.symm_hom, TopCat.Presheaf.stalkCongr_hom,
       Category.assoc, α, e, β, stalkClosedPointIso_inv, StructureSheaf.toStalk]
     show (Scheme.ΓSpecIso (.of R)).inv ≫ (Spec (.of R)).presheaf.germ _ _ _ ≫ _ = _
-    simp only [TopCat.Presheaf.germ_stalkSpecializes_assoc, Scheme.stalkMap_germ_assoc,
-      TopologicalSpace.Opens.map_top]
-    erw [Scheme.germ_stalkClosedPointTo lft ⊤ trivial,
-      ← Scheme.comp_app_assoc lft (pullback.fst i₂ f)]
+    simp only [TopCat.Presheaf.germ_stalkSpecializes_assoc, Scheme.stalkMap_germ_assoc]
+    -- `map_top` introduces defeq problems, according to `check_compositions`.
+    -- This is probably the cause of the `erw` needed below.
+    simp only [TopologicalSpace.Opens.map_top]
+    rw [Scheme.germ_stalkClosedPointTo lft ⊤ trivial]
+    erw [← Scheme.comp_app_assoc lft (pullback.fst i₂ f)]
     rw [pullback.lift_fst]
     simp
   have hbij := (bijective_rangeRestrict_comp_of_valuationRing (R := R) (K := K) α.hom β.hom
@@ -304,7 +306,7 @@ lemma IsSeparated.valuativeCriterion [IsSeparated f] : ValuativeCriterion.Unique
         RingHom.toMorphismProperty_respectsIso_iff.mp RingHom.injective_respectsIso
       show P _
       rw [← MorphismProperty.arrow_mk_iso_iff (P := P) e]
-      exact NoZeroSMulDivisors.algebraMap_injective S.R S.K
+      exact FaithfulSMul.algebraMap_injective S.R S.K
     rw [Scheme.comp_appTop] at this
     exact Function.Injective.of_comp this
   · rw [@HasAffineProperty.iff_of_isAffine @IsClosedImmersion] at this

@@ -35,10 +35,10 @@ instance preservesLimits_preadditiveYonedaObj (X : C) : PreservesLimits (preaddi
     (inferInstance : PreservesLimits (yoneda.obj X))
   preservesLimits_of_reflects_of_preserves _ (forget _)
 
-instance preservesLimits_preadditiveCoyonedaObj (X : Cᵒᵖ) :
+instance preservesLimits_preadditiveCoyonedaObj (X : C) :
     PreservesLimits (preadditiveCoyonedaObj X) :=
   have : PreservesLimits (preadditiveCoyonedaObj X ⋙ forget _) :=
-    (inferInstance : PreservesLimits (coyoneda.obj X))
+    (inferInstance : PreservesLimits (coyoneda.obj (op X)))
   preservesLimits_of_reflects_of_preserves _ (forget _)
 
 instance preservesLimits_preadditiveYoneda_obj (X : C) :
@@ -47,6 +47,6 @@ instance preservesLimits_preadditiveYoneda_obj (X : C) :
 
 instance preservesLimits_preadditiveCoyoneda_obj (X : Cᵒᵖ) :
     PreservesLimits (preadditiveCoyoneda.obj X) :=
-  show PreservesLimits (preadditiveCoyonedaObj X ⋙ forget₂ _ _) from inferInstance
+  show PreservesLimits (preadditiveCoyonedaObj (unop X) ⋙ forget₂ _ _) from inferInstance
 
 end CategoryTheory

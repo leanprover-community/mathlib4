@@ -144,15 +144,13 @@ theorem mk_injective (h : ∀ i j hij, Function.Injective (f i j hij)) (i) :
 
 section map₀
 
-open Classical (arbitrary)
-
 variable [Nonempty ι] (ih : ∀ i, F i)
 
 /-- "Nullary map" to construct an element in the direct limit. -/
-noncomputable def map₀ : DirectLimit F f := ⟦⟨arbitrary ι, ih _⟩⟧
+noncomputable def map₀ : DirectLimit F f := ⟦⟨Classical.arbitrary ι, ih _⟩⟧
 
 theorem map₀_def (compat : ∀ i j h, f i j h (ih i) = ih j) (i) : map₀ f ih = ⟦⟨i, ih i⟩⟧ :=
-  have ⟨j, hcj, hij⟩ := exists_ge_ge (arbitrary ι) i
+  have ⟨j, hcj, hij⟩ := exists_ge_ge (Classical.arbitrary ι) i
   Quotient.sound ⟨j, hcj, hij, (compat ..).trans (compat ..).symm⟩
 
 end map₀
@@ -251,8 +249,8 @@ variable (f : ∀ ⦃i j : ι⦄, i ≤ j → F j → F i) ⦃i j : ι⦄ (h : i
 /-- A inverse system indexed by a preorder is a contravariant functor from the preorder
 to another category. It is dual to `DirectedSystem`. -/
 class InverseSystem : Prop where
-  map_self ⦃i⦄ (x : F i) : f le_rfl x = x
-  map_map ⦃k j i⦄ (hkj : k ≤ j) (hji : j ≤ i) (x : F i) : f hkj (f hji x) = f (hkj.trans hji) x
+  map_self ⦃i : ι⦄ (x : F i) : f le_rfl x = x
+  map_map ⦃k j i : ι⦄ (hkj : k ≤ j) (hji : j ≤ i) (x : F i) : f hkj (f hji x) = f (hkj.trans hji) x
 
 namespace InverseSystem
 
@@ -402,7 +400,7 @@ variable [SuccOrder ι] (f) (equivSucc : ∀ ⦃i⦄, ¬IsMax i → F i⁺ ≃ F
   /-- It is a natural family of bijections. -/
   nat : IsNatEquiv f equiv
   /-- It is compatible with a family of bijections relating `F i⁺` to `F i`. -/
-  compat {i} (hsi : (i⁺ : ι) ∈ s) (hi : ¬IsMax i) (x) :
+  compat {i : ι} (hsi : (i⁺ : ι) ∈ s) (hi : ¬IsMax i) (x) :
     equiv ⟨i⁺, hsi⟩ x ⟨i, lt_succ_of_not_isMax hi⟩ = (equivSucc hi x).2
 
 variable {s t : Set ι} {f equivSucc} [WellFoundedLT ι]

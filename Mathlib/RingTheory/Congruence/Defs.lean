@@ -105,7 +105,7 @@ protected theorem sub {S : Type*} [AddGroup S] [Mul S] (t : RingCon S)
 protected theorem neg {S : Type*} [AddGroup S] [Mul S] (t : RingCon S)
     {a b} (h : t a b) : t (-a) (-b) := t.toAddCon.neg h
 
-protected theorem nsmul {S : Type*} [AddGroup S] [Mul S] (t : RingCon S)
+protected theorem nsmul {S : Type*} [AddMonoid S] [Mul S] (t : RingCon S)
     (m : ℕ) {x y : S} (hx : t x y) : t (m • x) (m • y) := t.toAddCon.nsmul m hx
 
 protected theorem zsmul {S : Type*} [AddGroup S] [Mul S] (t : RingCon S)
@@ -287,9 +287,6 @@ instance : NatCast c.Quotient :=
 theorem coe_natCast (n : ℕ) : (↑(n : R) : c.Quotient) = n :=
   rfl
 
-@[deprecated (since := "2024-04-17")]
-alias coe_nat_cast := coe_natCast
-
 end NatCast
 
 section IntCast
@@ -302,9 +299,6 @@ instance : IntCast c.Quotient :=
 @[simp, norm_cast]
 theorem coe_intCast (n : ℕ) : (↑(n : R) : c.Quotient) = n :=
   rfl
-
-@[deprecated (since := "2024-04-17")]
-alias coe_int_cast := coe_intCast
 
 end IntCast
 

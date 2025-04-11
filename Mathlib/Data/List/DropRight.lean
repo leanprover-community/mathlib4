@@ -3,7 +3,9 @@ Copyright (c) 2022 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Data.List.Basic
+import Mathlib.Data.List.Induction
+import Mathlib.Data.List.TakeWhile
+
 /-!
 
 # Dropping or taking from lists on the right
@@ -73,7 +75,7 @@ theorem rtake_eq_reverse_take_reverse : l.rtake n = reverse (l.reverse.take n) :
   induction' l using List.reverseRecOn with xs x IH generalizing n
   · simp
   · cases n
-    · exact drop_length _
+    · exact drop_length
     · simp [drop_append_eq_append_drop, IH]
 
 @[simp]
@@ -121,7 +123,7 @@ theorem rdropWhile_eq_nil_iff : rdropWhile p l = [] ↔ ∀ x ∈ l, p x := by s
 -- it is in this file because it requires `List.Infix`
 @[simp]
 theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p (l.get ⟨0, hl⟩) := by
-  cases' l with hd tl
+  rcases l with - | ⟨hd, tl⟩
   · simp only [dropWhile, true_iff]
     intro h
     by_contra
@@ -182,18 +184,9 @@ variable {p} {l}
 theorem rtakeWhile_eq_self_iff : rtakeWhile p l = l ↔ ∀ x ∈ l, p x := by
   simp [rtakeWhile, reverse_eq_iff]
 
--- Porting note: This needed a lot of rewriting.
 @[simp]
 theorem rtakeWhile_eq_nil_iff : rtakeWhile p l = [] ↔ ∀ hl : l ≠ [], ¬p (l.getLast hl) := by
-  induction' l using List.reverseRecOn with l a
-  · simp only [rtakeWhile, takeWhile, reverse_nil, true_iff]
-    intro f; contradiction
-  · simp only [rtakeWhile, reverse_append, reverse_cons, reverse_nil, nil_append, singleton_append,
-      takeWhile, ne_eq, cons_ne_self, not_false_eq_true, getLast_append_of_ne_nil,
-      getLast_singleton]
-    refine ⟨fun h => ?_ , fun h => ?_⟩
-    · split at h <;> simp_all
-    · simp [h]
+  induction' l using List.reverseRecOn with l a <;> simp [rtakeWhile]
 
 theorem mem_rtakeWhile_imp {x : α} (hx : x ∈ rtakeWhile p l) : p x := by
   rw [rtakeWhile, mem_reverse] at hx
@@ -209,7 +202,7 @@ lemma rdrop_add (i j : ℕ) : (l.rdrop i).rdrop j = l.rdrop (i + j) := by
 @[simp]
 lemma rdrop_append_length {l₁ l₂ : List α} :
     List.rdrop (l₁ ++ l₂) (List.length l₂) = l₁ := by
-  rw [rdrop_eq_reverse_drop_reverse, ← length_reverse l₂,
+  rw [rdrop_eq_reverse_drop_reverse, ← length_reverse,
       reverse_append, drop_left, reverse_reverse]
 
 lemma rdrop_append_of_le_length {l₁ l₂ : List α} (k : ℕ) :
