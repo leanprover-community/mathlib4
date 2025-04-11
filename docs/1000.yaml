@@ -2391,6 +2391,9 @@ Q3527233:
 
 Q3527241:
   title: Krull's principal ideal theorem
+  decl: Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes
+  authors: Andrew Yang
+  date: 2025
 
 Q3527245:
   title: Six exponentials theorem
