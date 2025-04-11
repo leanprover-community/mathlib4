@@ -234,13 +234,14 @@ protected theorem Multipliable.tprod_strict_mono (hf : Multipliable f) (hg : Mul
 @[to_additive (attr := mono), deprecated (since := "2025-04-11")] alias tprod_strict_mono :=
   Multipliable.tprod_strict_mono
 
-@[to_additive tsum_pos]
+@[to_additive Summable.tsum_pos]
 protected theorem Multipliable.one_lt_tprod (hsum : Multipliable g) (hg : ∀ i, 1 ≤ g i) (i : ι)
     (hi : 1 < g i) : 1 < ∏' i, g i := by
   rw [← tprod_one]
   exact Multipliable.tprod_lt_tprod hg hi multipliable_one hsum
 
-@[to_additive, deprecated (since := "2025-04-11")] alias one_lt_tprod := Multipliable.one_lt_tprod
+@[to_additive tsum_pos, deprecated (since := "2025-04-11")] alias one_lt_tprod :=
+  Multipliable.one_lt_tprod
 
 end OrderedCommGroup
 

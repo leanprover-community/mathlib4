@@ -80,7 +80,7 @@ theorem remainder_summable {m : ℝ} (hm : 1 < m) (k : ℕ) :
   convert (summable_nat_add_iff (k + 1)).2 (LiouvilleNumber.summable hm)
 
 theorem remainder_pos {m : ℝ} (hm : 1 < m) (k : ℕ) : 0 < remainder m k :=
-  tsum_pos (remainder_summable hm k) (fun _ => by positivity) 0 (by positivity)
+  (remainder_summable hm k).tsum_pos (fun _ => by positivity) 0 (by positivity)
 
 theorem partialSum_succ (m : ℝ) (n : ℕ) :
     partialSum m (n + 1) = partialSum m n + 1 / m ^ (n + 1)! :=
