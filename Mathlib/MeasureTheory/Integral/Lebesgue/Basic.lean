@@ -303,14 +303,14 @@ theorem lintegral_eq_zero_iff' {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) 
     by_contra! h'; rw [← zero_lt_iff] at h'
     exact ((mul_pos_iff.mpr ⟨εpos, h'⟩).trans_le (mul_meas_ge_le_lintegral₀ hf ε)).ne' h
   obtain ⟨u, -, bu, tu⟩ := exists_seq_strictAnti_tendsto' (α := ℝ≥0∞) zero_lt_one
-  have u_union : {x | 0 < f x} = ⋃ n : ℕ, {x | u n ≤ f x} := by
-    ext x; simp only [mem_setOf_eq, mem_iUnion]
+  have u_union : {x | f x ≠ 0} = ⋃ n, {x | u n ≤ f x} := by
+    ext x; rw [mem_iUnion, mem_setOf_eq, ← zero_lt_iff]
     rw [ENNReal.tendsto_atTop_zero] at tu
     constructor <;> intro h'
     · obtain ⟨n, hn⟩ := tu _ h'; use n, hn _ le_rfl
     · obtain ⟨n, hn⟩ := h'; exact (bu n).1.trans_le hn
   have res := measure_iUnion_null_iff.mpr fun n ↦ meas_levels_0 _ (bu n).1
-  simpa only [← u_union, zero_lt_iff] using res
+  rwa [← u_union] at res
 
 @[simp]
 theorem lintegral_eq_zero_iff {f : α → ℝ≥0∞} (hf : Measurable f) : ∫⁻ a, f a ∂μ = 0 ↔ f =ᵐ[μ] 0 :=
