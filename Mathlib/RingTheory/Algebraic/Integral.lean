@@ -365,6 +365,7 @@ theorem IsAlgebraic.of_mul [NoZeroDivisors R] {y z : S} (hy : y ∈ nonZeroDivis
   exact this.of_smul (mem_nonZeroDivisors_of_ne_zero hr)
 
 open Algebra in
+set_option linter.style.commandStart false in -- false positive from the pretty-printer
 omit [Algebra R A] [IsScalarTower R S A] in
 theorem IsAlgebraic.adjoin_of_forall_isAlgebraic [NoZeroDivisors S] {s t : Set S}
     (alg : ∀ x ∈ s \ t, IsAlgebraic (adjoin R t) x) {a : A}

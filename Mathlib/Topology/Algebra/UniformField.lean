@@ -94,6 +94,7 @@ open Classical in
 The value of `hat_inv` at zero is not really specified, although it's probably zero.
 Here we explicitly enforce the `inv_zero` axiom.
 -/
+open Classical in
 instance instInvCompletion : Inv (hat K) :=
   ⟨fun x => if x = 0 then 0 else hatInv x⟩
 
