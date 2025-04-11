@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2025 Nailin Guan. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Nailin Guan, Yi Song
+-/
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.Data.Finite.Card
 import Mathlib.Data.Set.Card
@@ -7,7 +12,7 @@ import Mathlib.Order.RelSeries
 import Mathlib.Algebra.Exact
 import Mathlib.Algebra.Module.Torsion
 import Mathlib.Order.CompletePartialOrder
-import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
+import Mathlib.RingTheory.Ideal.AssociatedPrime.Finiteness
 import Mathlib.Algebra.Module.FinitePresentation
 import Mathlib.RingTheory.Regular.IsSMulRegular
 import Mathlib.RingTheory.Spectrum.Prime.Defs
@@ -15,6 +20,16 @@ import Mathlib.RingTheory.Support
 import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 import Mathlib.RingTheory.Spectrum.Prime.RingHom
 import Mathlib.LinearAlgebra.Dual.Lemmas
+
+/-!
+
+# Hom(N,M) is subsingleton iff exist smul regular element of M in ann(N)
+
+In this section, we proved that for `R` modules `M N`, `Hom(N,M)` is subsingleton iff
+there exist `r : R`, `IsSMulRegular M r` and `r ∈ ann(N)`.
+This is the case for `Depth[I](M) = 0`.
+
+-/
 
 open IsLocalRing LinearMap
 
@@ -119,7 +134,8 @@ lemma exist_mem_ann_isSMulRegular_of_hom_subsingleton_nontrivial [IsNoetherianRi
   let Mₚ' := Mₚ ⧸ (IsLocalRing.maximalIdeal (Localization.AtPrime p)) • (⊤ : Submodule Rₚ Mₚ)
   let _ : Module p.ResidueField Nₚ' :=
     Module.instQuotientIdealSubmoduleHSMulTop Nₚ (maximalIdeal (Localization.AtPrime p))
-  have := AssociatePrimes.mem_iff.mp (mem_associatePrimes_localizedModule_atPrime_of_mem_associated_primes pass)
+  have := AssociatePrimes.mem_iff.mp
+    (mem_associatePrimes_localizedModule_atPrime_of_mem_associated_primes pass)
   rcases this.2 with ⟨x, hx⟩
   have : Nontrivial (Module.Dual p.ResidueField Nₚ') := by simpa using ntr
   rcases exists_ne (α := Module.Dual p.ResidueField Nₚ') 0 with ⟨g, hg⟩
@@ -149,7 +165,7 @@ lemma exist_mem_ann_isSMulRegular_of_hom_subsingleton_nontrivial [IsNoetherianRi
   let _ := Module.finitePresentation_of_finite R N
   contrapose! f_ne0
   exact (LinearEquiv.map_eq_zero_iff
-    (Module.FinitePresentation.LinearEquiv_mapExtendScalars N M p'.asIdeal.primeCompl).symm).mp
+    (Module.FinitePresentation.LinearEquiv_mapExtendScalars p'.asIdeal.primeCompl).symm).mp
       (Subsingleton.eq_zero _)
 
 --lemma_212_b
