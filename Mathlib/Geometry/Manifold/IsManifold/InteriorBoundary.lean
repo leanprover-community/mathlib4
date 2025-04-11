@@ -201,7 +201,7 @@ lemma interior_prod :
     (I.prod J).interior (M × N) = (I.interior M) ×ˢ (J.interior N) := by
   ext p
   have aux : (interior (range ↑I)) ×ˢ (interior (range J)) = interior (range (I.prod J)) := by
-    rw [← interior_prod_eq, ← Set.range_prod_map, modelWithCorners_prod_coe]
+    rw [← interior_prod_eq, ← range_prodMap, modelWithCorners_prod_coe]
   constructor <;> intro hp
   · replace hp : (I.prod J).IsInteriorPoint p := hp
     rw [IsInteriorPoint, ← aux] at hp

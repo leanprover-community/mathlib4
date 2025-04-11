@@ -167,11 +167,14 @@ lemma FermatLastTheoremWith.fermatLastTheoremWith' {α : Type*} [CommSemiring α
     (h : FermatLastTheoremWith α n) : FermatLastTheoremWith' α n :=
   fun a b c _ _ _ _ ↦ by exfalso; apply h a b c <;> assumption
 
-lemma fermatLastTheoremWith'_of_field (α : Type*) [Field α] (n : ℕ) : FermatLastTheoremWith' α n :=
-  fun a b c ha hb hc _ ↦
-    ⟨1, a, b, c,
-     ⟨(mul_one a).symm, (mul_one b).symm, (mul_one c).symm⟩,
-     ⟨ha.isUnit, hb.isUnit, hc.isUnit⟩⟩
+lemma fermatLastTheoremWith'_of_semifield (α : Type*) [Semifield α] (n : ℕ) :
+    FermatLastTheoremWith' α n := fun a b c ha hb hc _ ↦
+  ⟨1, a, b, c,
+    ⟨(mul_one a).symm, (mul_one b).symm, (mul_one c).symm⟩,
+    ⟨ha.isUnit, hb.isUnit, hc.isUnit⟩⟩
+
+@[deprecated (since := "2025-03-21")]
+alias fermatLastTheoremWith'_of_field := fermatLastTheoremWith'_of_semifield
 
 lemma FermatLastTheoremWith'.fermatLastTheoremWith {α : Type*} [CommSemiring α] [IsDomain α]
     {n : ℕ} (h : FermatLastTheoremWith' α n)
