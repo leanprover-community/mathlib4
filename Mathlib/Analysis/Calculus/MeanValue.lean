@@ -667,6 +667,38 @@ theorem _root_.eq_of_fderiv_eq
   exact convex_univ.eqOn_of_fderivWithin_eq hf.differentiableOn hg.differentiableOn
     uniqueDiffOn_univ (fun x _ => by simpa using hf' _) (mem_univ _) hfgx
 
+lemma isLittleO_pow_succ {x₀ : E} {n : ℕ} (hs : Convex ℝ s) (hx₀s : x₀ ∈ s)
+    (hff' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (hf' : f' =o[𝓝[s] x₀] fun x ↦ ‖x - x₀‖ ^ n) :
+    (fun x ↦ f x - f x₀) =o[𝓝[s] x₀] fun x ↦ ‖x - x₀‖ ^ (n + 1) := by
+  rw [Asymptotics.isLittleO_iff] at hf' ⊢
+  intro c hc
+  simp_rw [norm_pow, pow_succ, ← mul_assoc, norm_norm]
+  simp_rw [norm_pow, norm_norm] at hf'
+  have : ∀ᶠ x in 𝓝[s] x₀, segment ℝ x₀ x ⊆ s ∧ ∀ y ∈ segment ℝ x₀ x, ‖f' y‖ ≤ c * ‖x - x₀‖ ^ n := by
+    have h1 : ∀ᶠ x in 𝓝[s] x₀, x ∈ s := eventually_mem_nhdsWithin
+    filter_upwards [h1, hs.eventually_nhdsWithin_segment hx₀s (hf' hc)] with x hxs h
+    refine ⟨hs.segment_subset hx₀s hxs, fun y hy ↦ (h y hy).trans ?_⟩
+    gcongr
+    exact norm_sub_le_of_mem_segment hy
+  filter_upwards [this] with x ⟨h_segment, h⟩
+  convert (convex_segment x₀ x).norm_image_sub_le_of_norm_hasFDerivWithin_le
+    (f := fun x ↦ f x - f x₀) (y := x) (x := x₀) (s := segment ℝ x₀ x) ?_ h
+    (left_mem_segment ℝ x₀ x) (right_mem_segment ℝ x₀ x) using 1
+  · simp
+  · simp only [hasFDerivWithinAt_sub_const_iff]
+    exact fun x hx ↦ (hff' x (h_segment hx)).mono h_segment
+
+theorem isLittleO_pow_succ_real {f f' : ℝ → E} {x₀ : ℝ} {n : ℕ} {s : Set ℝ}
+    (hs : Convex ℝ s) (hx₀s : x₀ ∈ s)
+    (hff' : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) (hf' : f' =o[𝓝[s] x₀] fun x ↦ (x - x₀) ^ n) :
+    (fun x ↦ f x - f x₀) =o[𝓝[s] x₀] fun x ↦ (x - x₀) ^ (n + 1) := by
+  have h := hs.isLittleO_pow_succ hx₀s hff' ?_ (n := n)
+  · rw [Asymptotics.isLittleO_iff] at h ⊢
+    simpa using h
+  · rw [Asymptotics.isLittleO_iff] at hf' ⊢
+    convert hf' using 4 with c hc x
+    simp
+
 end Convex
 
 namespace Convex
