@@ -645,6 +645,41 @@ theorem edges_toPath_subset {u v : V} (p : G.Walk u v) : (p.toPath : G.Walk u v)
 
 end Walk
 
+/-! ### Circuits to cycles -/
+
+-- The type of cycles for a closed walk.
+abbrev Cycle (u : V) := { p : G.Walk u u // p.IsCycle }
+
+namespace Walk
+
+variable {G} [DecidableEq V]
+
+/-- Given a closed walk, produces a closed walk removing subwalks between repeated vertices
+through the use of the bypass definition.
+If the walk provided is a circuit, this results in a cycle, as
+seen in `SimpleGraph.Walk.isCycle_shortcircuit`
+This idea is packaged up in `SimpleGraph.Walk.ToCycle`. -/
+def shortcircuit {u : V} : G.Walk u u → G.Walk u u
+  | nil => nil
+  | cons ha p => cons ha p.bypass
+
+theorem isCycle_shortcircuit {u : V} (p : G.Walk u u) (h : p.IsCircuit) :
+    p.shortcircuit.IsCycle :=
+  match p, h.ne_nil with
+  | cons (v := v) ha p, _ => by
+    contrapose h
+    suffices s(u, v) ∈ p.edges by simp [isCircuit_def, this]
+    have : s(u, v) ∈ p.bypass.edges := by
+      simpa [shortcircuit, cons_isCycle_iff, bypass_isPath] using h
+    exact (edges_bypass_subset p) this
+
+/-- Given a closed walk that is a circuit, produces a cycle with the same initial & final
+vertex using `SimpleGraph.Walk.shortcircuit`. -/
+def toCycle {u : V} (p : G.Walk u u) (h: p.IsCircuit) : G.Cycle u :=
+  ⟨p.shortcircuit, p.isCycle_shortcircuit h⟩
+
+end Walk
+
 /-! ### Mapping paths -/
 
 namespace Walk
