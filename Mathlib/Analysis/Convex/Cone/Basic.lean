@@ -249,7 +249,7 @@ end OrderedSemiring
 
 section LinearOrderedField
 
-variable [LinearOrderedField 𝕜]
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
 
 section MulAction
 
@@ -263,7 +263,7 @@ end MulAction
 
 section OrderedAddCommGroup
 
-variable [OrderedAddCommGroup E] [Module 𝕜 E]
+variable [AddCommGroup E] [PartialOrder E] [Module 𝕜 E]
 
 /-- Constructs an ordered module given an `OrderedAddCommGroup`, a cone, and a proof that
 the order relation is the one defined by the cone.
@@ -361,10 +361,12 @@ def toPartialOrder (h₁ : S.Pointed) (h₂ : S.Salient) : PartialOrder E :=
       rw [neg_sub b a] at H
       exact H ba }
 
-/-- A pointed and salient cone defines an `OrderedAddCommGroup`. -/
-def toOrderedAddCommGroup (h₁ : S.Pointed) (h₂ : S.Salient) : OrderedAddCommGroup E :=
-  { toPartialOrder S h₁ h₂, show AddCommGroup E by infer_instance with
-    add_le_add_left := by
+/-- A pointed and salient cone defines an `IsOrderedAddMonoid`. -/
+lemma toIsOrderedAddMonoid (h₁ : S.Pointed) (h₂ : S.Salient) :
+    let _ := toPartialOrder S h₁ h₂
+    IsOrderedAddMonoid E :=
+  let _ := toPartialOrder S h₁ h₂
+  { add_le_add_left := by
       intro a b hab c
       change c + b - (c + a) ∈ S
       rw [add_sub_add_left_eq_sub]
@@ -550,7 +552,7 @@ end ConvexCone
 
 section ConeFromConvex
 
-variable [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
 
 namespace Convex
 
