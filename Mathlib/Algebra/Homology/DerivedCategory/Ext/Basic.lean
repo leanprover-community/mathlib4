@@ -457,9 +457,7 @@ lemma hasExt_iff_small_ext :
   · intro h X Y n
     exact h X Y n (by simp)
   · intro h X Y n hn
-    obtain ⟨k, hk⟩ := Int.le.dest hn
-    simp only [zero_add] at hk
-    subst hk
-    exact h X Y k
+    lift n to ℕ using hn
+    exact h X Y n
 
 end CategoryTheory
