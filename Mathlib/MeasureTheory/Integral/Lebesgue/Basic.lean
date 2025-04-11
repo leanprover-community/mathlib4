@@ -274,6 +274,8 @@ theorem setLIntegral_congr_fun {f g : α → ℝ≥0∞} {s : Set α} (hs : Meas
 
 section
 
+/-- The Lebesgue integral is zero iff the function is a.e. zero. The proof implicitly uses
+Markov's inequality, but it has been inlined for the sake of imports. -/
 @[simp]
 theorem lintegral_eq_zero_iff' {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) :
     ∫⁻ a, f a ∂μ = 0 ↔ f =ᵐ[μ] 0 := by
@@ -281,7 +283,6 @@ theorem lintegral_eq_zero_iff' {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) 
   have meas_levels_0 : ∀ ε > 0, μ { x | ε ≤ f x } = 0 := fun ε εpos ↦ by
     by_contra! h'; rw [← zero_lt_iff] at h'
     refine ((mul_pos_iff.mpr ⟨εpos, h'⟩).trans_le ?_).ne' h
-    -- This is just Markov's inequality, but we inline the proof for the sake of imports
     calc
       _ ≥ ∫⁻ a in {x | ε ≤ f x}, f a ∂μ := setLIntegral_le_lintegral _ _
       _ ≥ ∫⁻ _ in {x | ε ≤ f x}, ε ∂μ :=
@@ -827,18 +828,14 @@ theorem lintegral_add_mul_meas_add_le_le_lintegral {f g : α → ℝ≥0∞} (hl
   simp only [indicator_apply]; split_ifs with hx₂
   exacts [hx₂, (add_zero _).trans_le <| (hφ_le x).trans hx₁]
 
-/-- **Markov's inequality** aka **Chebyshev's first inequality**.
-Multiplication form for `AEMeasurable` functions. -/
+/-- **Markov's inequality** also known as **Chebyshev's first inequality**. -/
 theorem mul_meas_ge_le_lintegral₀ {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) (ε : ℝ≥0∞) :
-    ε * μ { x | ε ≤ f x } ≤ ∫⁻ a, f a ∂μ :=
-  calc
-    _ ≥ ∫⁻ a in {x | ε ≤ f x}, f a ∂μ := setLIntegral_le_lintegral _ _
-    _ ≥ ∫⁻ _ in {x | ε ≤ f x}, ε ∂μ :=
-      setLIntegral_mono_ae hf.restrict (ae_of_all μ fun _ ↦ id)
-    _ = _ := setLIntegral_const _ _
+    ε * μ { x | ε ≤ f x } ≤ ∫⁻ a, f a ∂μ := by
+  simpa only [lintegral_zero, zero_add] using
+    lintegral_add_mul_meas_add_le_le_lintegral (ae_of_all _ fun x => zero_le (f x)) hf ε
 
-/-- **Markov's inequality** aka **Chebyshev's first inequality**.
-Multiplication form for `Measurable` functions. -/
+/-- **Markov's inequality** also known as **Chebyshev's first inequality**. For a version assuming
+`AEMeasurable`, see `mul_meas_ge_le_lintegral₀`. -/
 theorem mul_meas_ge_le_lintegral {f : α → ℝ≥0∞} (hf : Measurable f) (ε : ℝ≥0∞) :
     ε * μ { x | ε ≤ f x } ≤ ∫⁻ a, f a ∂μ :=
   mul_meas_ge_le_lintegral₀ hf.aemeasurable ε
@@ -885,8 +882,7 @@ theorem measure_eq_top_of_setLintegral_ne_top {f : α → ℝ≥0∞} {s : Set �
     μ ({x ∈ s | f x = ∞}) = 0 :=
   of_not_not fun h => hμf <| setLintegral_eq_top_of_measure_eq_top_ne_zero hf h
 
-/-- **Markov's inequality** aka **Chebyshev's first inequality**.
-Division form for `AEMeasurable` functions. -/
+/-- **Markov's inequality**, also known as **Chebyshev's first inequality**. -/
 theorem meas_ge_le_lintegral_div {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) {ε : ℝ≥0∞} (hε : ε ≠ 0)
     (hε' : ε ≠ ∞) : μ { x | ε ≤ f x } ≤ (∫⁻ a, f a ∂μ) / ε :=
   (ENNReal.le_div_iff_mul_le (Or.inl hε) (Or.inl hε')).2 <| by
