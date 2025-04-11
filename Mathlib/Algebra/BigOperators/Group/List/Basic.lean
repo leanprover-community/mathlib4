@@ -481,12 +481,6 @@ end MonoidHom
 
 namespace List
 
-@[deprecated (since := "2024-10-16")] alias length_bind := length_flatMap
-
-@[deprecated (since := "2024-10-16")] alias countP_bind := countP_flatMap
-
-@[deprecated (since := "2024-10-16")] alias count_bind := count_flatMap
-
 /-- In a flatten, taking the first elements up to an index which is the sum of the lengths of the
 first `i` sublists, is the same as taking the flatten of the first `i` sublists. -/
 lemma take_sum_flatten (L : List (List α)) (i : ℕ) :
@@ -502,6 +496,9 @@ lemma drop_sum_flatten (L : List (List α)) (i : ℕ) :
   induction L generalizing i
   · simp
   · cases i <;> simp [take_append, *]
+
+@[deprecated (since := "2024-10-25")] alias take_sum_join' := take_sum_flatten
+@[deprecated (since := "2024-10-25")] alias drop_sum_join' := drop_sum_flatten
 
 end List
 

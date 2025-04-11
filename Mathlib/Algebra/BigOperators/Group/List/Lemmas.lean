@@ -145,8 +145,10 @@ lemma drop_take_succ_flatten_eq_getElem (L : List (List α)) (i : Nat) (h : i < 
   simp only [this, length_map, take_sum_flatten, drop_sum_flatten,
     drop_take_succ_eq_cons_getElem, h, flatten, append_nil]
 
-end List
+@[deprecated (since := "2024-11-18")]
+alias mem_mem_ranges_iff_lt_natSum := mem_mem_ranges_iff_lt_sum
 
+end List
 
 namespace List
 

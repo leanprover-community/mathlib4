@@ -955,8 +955,6 @@ theorem list_flatten : Primrec (@List.flatten α) :=
 theorem list_flatMap {f : α → List β} {g : α → β → List σ} (hf : Primrec f) (hg : Primrec₂ g) :
     Primrec (fun a => (f a).flatMap (g a)) := list_flatten.comp (list_map hf hg)
 
-@[deprecated (since := "2024-10-16")] alias list_bind := list_flatMap
-
 theorem optionToList : Primrec (Option.toList : Option α → List α) :=
   (option_casesOn Primrec.id (const [])
     ((list_cons.comp Primrec.id (const [])).comp₂ Primrec₂.right)).of_eq

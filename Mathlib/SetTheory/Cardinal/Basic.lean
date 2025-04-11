@@ -259,22 +259,6 @@ theorem lift_iSup_le_lift_iSup' {ι : Type v} {ι' : Type v'} {f : ι → Cardin
 theorem mk_finset_of_fintype [Fintype α] : #(Finset α) = 2 ^ Fintype.card α := by
   simp [Pow.pow]
 
-@[deprecated Nat.cast_le (since := "2024-10-16")]
-theorem natCast_le {m n : ℕ} : (m : Cardinal) ≤ n ↔ m ≤ n := Nat.cast_le
-
-@[deprecated Nat.cast_lt (since := "2024-10-16")]
-theorem natCast_lt {m n : ℕ} : (m : Cardinal) < n ↔ m < n := Nat.cast_lt
-
-@[deprecated Nat.cast_inj (since := "2024-10-16")]
-theorem natCast_inj {m n : ℕ} : (m : Cardinal) = n ↔ m = n := Nat.cast_inj
-
-@[deprecated Nat.cast_injective (since := "2024-10-16")]
-theorem natCast_injective : Injective ((↑) : ℕ → Cardinal) := Nat.cast_injective
-
-@[deprecated Nat.cast_pow (since := "2024-10-16")]
-theorem natCast_pow {m n : ℕ} : (↑(m ^ n) : Cardinal) = (↑m : Cardinal) ^ (↑n : Cardinal) :=
-  Nat.cast_pow m n
-
 @[norm_cast]
 theorem nat_succ (n : ℕ) : (n.succ : Cardinal) = succ ↑n := by
   rw [Nat.cast_succ]

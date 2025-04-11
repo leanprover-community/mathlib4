@@ -138,9 +138,6 @@ theorem isLimit_of_principal_add (ho₁ : 1 < o) (ho : Principal (· + ·) o) : 
   rw [isLimit_iff, isSuccPrelimit_iff_succ_lt]
   exact ⟨ho₁.ne_bot, fun _ ha ↦ ho ha ho₁⟩
 
-@[deprecated (since := "2024-10-16")]
-alias principal_add_isLimit := isLimit_of_principal_add
-
 theorem principal_add_iff_add_left_eq_self : Principal (· + ·) o ↔ ∀ a < o, a + o = o := by
   refine ⟨fun ho a hao => ?_, fun h a b hao hbo => ?_⟩
   · rcases lt_or_le 1 o with ho₁ | ho₁
@@ -226,9 +223,6 @@ theorem principal_add_opow_of_principal_add {a} (ha : Principal (· + ·) a) (b 
   · rw [← opow_mul]
     exact principal_add_omega0_opow _
 
-@[deprecated (since := "2024-10-16")]
-alias opow_principal_add_of_principal_add := principal_add_opow_of_principal_add
-
 theorem add_absorp (h₁ : a < ω ^ b) (h₂ : ω ^ b ≤ c) : a + c = c := by
   rw [← Ordinal.add_sub_cancel_of_le h₂, ← add_assoc, add_omega0_opow h₁]
 
@@ -248,9 +242,6 @@ theorem principal_add_mul_of_principal_add (a : Ordinal.{u}) {b : Ordinal.{u}} (
       use x + y, hb hx hy
       rw [mul_add]
       exact Left.add_lt_add hx' hy'
-
-@[deprecated (since := "2024-10-16")]
-alias mul_principal_add_is_principal_add := principal_add_mul_of_principal_add
 
 /-! #### Multiplicative principal ordinals -/
 
@@ -287,9 +278,6 @@ theorem principal_add_of_principal_mul (ho : Principal (· * ·) o) (ho₂ : o �
 theorem isLimit_of_principal_mul (ho₂ : 2 < o) (ho : Principal (· * ·) o) : o.IsLimit :=
   isLimit_of_principal_add ((lt_succ 1).trans (succ_one ▸ ho₂))
     (principal_add_of_principal_mul ho (ne_of_gt ho₂))
-
-@[deprecated (since := "2024-10-16")]
-alias principal_mul_isLimit := isLimit_of_principal_mul
 
 theorem principal_mul_iff_mul_left_eq : Principal (· * ·) o ↔ ∀ a, 0 < a → a < o → a * o = o := by
   refine ⟨fun h a ha₀ hao => ?_, fun h a b hao hbo => ?_⟩

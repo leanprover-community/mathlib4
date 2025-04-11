@@ -126,8 +126,6 @@ theorem measurableSet_spanningSets (μ : Measure α) [SigmaFinite μ] (i : ℕ) 
     MeasurableSet (spanningSets μ i) :=
   MeasurableSet.iUnion fun j => MeasurableSet.iUnion fun _ => μ.toFiniteSpanningSetsIn.set_mem j
 
-@[deprecated (since := "2024-10-16")] alias measurable_spanningSets := measurableSet_spanningSets
-
 theorem measure_spanningSets_lt_top (μ : Measure α) [SigmaFinite μ] (i : ℕ) :
     μ (spanningSets μ i) < ∞ :=
   measure_biUnion_lt_top (finite_le_nat i) fun j _ => μ.toFiniteSpanningSetsIn.finite j
