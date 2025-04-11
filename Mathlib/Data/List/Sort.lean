@@ -234,12 +234,14 @@ lemma Sorted.filterMap {α β : Type*} [DecidableEq α] [DecidableEq β]
   | nil => simp
   | cons a l ih =>
     rw [List.filterMap_cons]
-    obtain H | ⟨b, hb⟩ := Option.eq_none_or_eq_some (p a)
-    · exact H ▸ ih (List.sorted_cons.mp hl).right
-    · rw [hb, List.sorted_cons]
+    cases ha : p a with
+    | none =>
+      exact ih (List.sorted_cons.mp hl).right
+    | some b =>
+      rw [List.sorted_cons]
       refine ⟨fun x hx ↦ ?_, ih (List.sorted_cons.mp hl).right⟩
       obtain ⟨u, hu, hu'⟩ := List.mem_filterMap.mp hx
-      exact hp a u b x hb hu' <| (List.sorted_cons.mp hl).left u hu
+      exact hp a u b x ha hu' <| (List.sorted_cons.mp hl).left u hu
 
 end List
 
