@@ -141,7 +141,7 @@ lemma span_root_image_eq_top_of_forall_orthogonal (s : Set ι)
 
 lemma root_mem_or_subset_ker_coroot {K : Type*} [Field K] [Module K M] [Module K N]
     (q : Submodule K M) (P : RootPairing ι K M N) (i : ι)
-    (hi : q ∈ invtSubmodule (P.reflection i)) :
+    (h₁ : q ∈ invtSubmodule (P.reflection i)) :
     P.root i ∈ q ∨ q ≤ ker (P.coroot' i) := by
   by_cases h_root : P.root i ∈ q
   · left
@@ -152,7 +152,7 @@ lemma root_mem_or_subset_ker_coroot {K : Type*} [Field K] [Module K M] [Module K
   · subst h_zero
     simp only [Submodule.zero_mem]
   have : (P.coroot' i) v • P.root i ∈ q := by
-    simpa using (Submodule.sub_mem_iff_right q hv).mp (hi hv)
+    simpa using (Submodule.sub_mem_iff_right q hv).mp (h₁ hv)
   by_contra h_ne
   have : P.root i ∈ q := by
     have := Submodule.smul_mem q (((P.coroot' i) v)⁻¹) this
