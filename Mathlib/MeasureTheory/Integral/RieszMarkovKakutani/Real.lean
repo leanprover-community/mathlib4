@@ -310,25 +310,16 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
       _ = ∫ x in tsupport f, f x ∂μ := by simp_rw [hE.1]
       _ = _ := setIntegral_tsupport
   · -- Rough bound of the sum
-    rw [mul_comm 2 ε', show ε' / N = ε' * 1 / N by rw [mul_one], mul_assoc, mul_div_assoc,
-      mul_assoc, add_assoc, ← mul_add]
-    simp_rw [add_assoc |a|, add_comm (y _) ε', ← add_assoc]
-    rw [Finset.sum_add_distrib, Finset.sum_const, Finset.card_univ, Fintype.card_fin, smul_add,
-      nsmul_eq_mul, nsmul_eq_mul, ← mul_add, mul_add (1 / _), mul_comm (1 / _), mul_one_div,
-      mul_div_cancel_left₀ _ (Nat.cast_ne_zero.mpr <| Nat.not_eq_zero_of_lt hN), add_assoc _ ε',
-      show 2 * (μ K).toReal + |a| + b + ε' = 2 * (μ K).toReal + |a| + ε' + b by linarith,
-      ← add_assoc, ← add_assoc]
-    gcongr
-    · exact le_of_lt hε'.1
-    · have h : ∑ n : Fin N, y n ≤ N * b := by
-        have (n : Fin N) := calc y n
-          _ ≤ a + ε' * N := by simp_all [y, show (n : ℝ) + 1 ≤ N by norm_cast; omega]
-          _ = b := by field_simp [ε', ← mul_div_assoc, mul_div_cancel_left₀]
-        have : ∑ n, y n ≤ ∑ n, b := Finset.sum_le_sum (fun n ↦ fun _ ↦ this n)
-        simp_all
-      calc
-        _ ≤ 1 / N * (N * b) := by simp [h, hN]
-        _ ≤ _ := by simp [div_mul_cancel₀, Nat.cast_ne_zero.mpr <| Nat.not_eq_zero_of_lt hN]
+    have h : ∑ n : Fin N, y n ≤ N * b := by
+      have (n : Fin N) := calc y n
+        _ ≤ a + ε' * N := by simp_all [y, show (n : ℝ) + 1 ≤ N by norm_cast; omega]
+        _ = b := by field_simp [ε', ← mul_div_assoc, mul_div_cancel_left₀]
+      have : ∑ n, y n ≤ ∑ n, b := Finset.sum_le_sum (fun n ↦ fun _ ↦ this n)
+      simp_all
+    simp only [add_assoc, add_le_add_iff_left, Finset.sum_add_distrib, Finset.sum_add_distrib,
+               Fin.sum_const, Fin.sum_const, nsmul_eq_mul, ← add_assoc, mul_add, ← mul_assoc]
+    simpa [show (N : ℝ) ≠ 0 by simp [hN.ne.symm], mul_comm _ ε', div_eq_mul_inv, mul_assoc]
+      using (mul_le_mul_iff_of_pos_left hε'.1).mpr <| (inv_mul_le_iff₀ (Nat.cast_pos'.mpr hN)).mpr h
 
 /-- The **Riesz-Markov-Kakutani representation theorem**: given a positive linear functional `Λ`,
 the integral of `f` with respect to the `rieszMeasure` associated to `Λ` is equal to `Λ f`. -/
