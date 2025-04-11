@@ -7,7 +7,7 @@ import Mathlib.MeasureTheory.Measure.Prod
 import Mathlib.Tactic.Finiteness
 
 /-!
-# Measures as real valued-functions
+# Measures as real-valued functions
 
 Given a measure `μ`, we define `μ.real` as the function sending a set `s` to `(μ s).toReal`, and
 develop a basic API around this.
