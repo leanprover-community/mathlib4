@@ -175,6 +175,80 @@ noncomputable  def pullback (φ : PartialHomeomorph Y Z) {f : X → Y}
   open_source := IsOpen.preimage hf' φ.open_source
   open_target := φ.open_target
 
+variable [TopologicalSpace M] [IsManifold I' n M']
+
+open Topology
+
+/-- Pull back a partial homeomorphism using a slice model.
+The slice model conditions should guarantee the necessary condition for continuity and inverses. -/
+noncomputable def pullback_sliceModel [Nonempty M] [Nonempty H] (φ : PartialHomeomorph M' H')
+    {f : M → M'} (hf : IsEmbedding f) (h : SliceModel F I I') : PartialHomeomorph M H where
+  toFun := h.inverse ∘ φ ∘ f
+  invFun :=
+    letI finv := Function.extend f id (fun _ ↦ (Classical.arbitrary M))
+    (finv ∘ φ.symm ∘ h.map)
+  source := f ⁻¹' φ.source
+  open_source := IsOpen.preimage hf.continuous φ.open_source
+  target := h.inverse '' φ.target
+  -- h.inverse ∘ φ '' φ.source
+  open_target := sorry -- think, does that work?
+  map_source' x hx := by
+    rw [← φ.image_source_eq_target]
+    exact mem_image_of_mem SliceModel.inverse (mem_image_of_mem φ hx)
+  map_target' x hx := by
+    rw [mem_preimage]
+    sorry --rw [φ.image_source_eq_target] at hx
+    --sorry
+  left_inv' x hx := by
+    let y := φ (f x)
+    -- lemma 1: φ ∘ f (x) is in "the right image", for the next lemma
+    -- lemma 2: for y "nice", SliceModel.map (SliceModel.inverse y) = y
+    have : SliceModel.map F I I' (SliceModel.inverse (h := h) y) = y := sorry
+    calc
+      _ = ((Function.extend f id fun x ↦ Classical.arbitrary M) ∘ φ.symm ∘
+          (SliceModel.map F I I' ∘ SliceModel.inverse) ∘ φ ∘ f) x := rfl
+      _ = ((Function.extend f id fun x ↦ Classical.arbitrary M) ∘ φ.symm ∘ φ ∘ f) x := by
+        simp_rw [comp_apply]; rw [this]
+      _ = (Function.extend f id fun x ↦ Classical.arbitrary M) (f x) := by
+        simp only [comp_apply]
+        congr
+        apply φ.left_inv' hx
+      _ = x := hf.injective.extend_apply _ _ x
+  right_inv' x hx := by
+    -- key: image (φ.symm ∘ map) ⊆ image f
+    have : range (φ.symm ∘ h.map) ⊆ range f := sorry
+    have : (φ.symm ∘ SliceModel.map F I I') x ∈ range f := sorry
+    choose x' hx' using this
+    have (x') : (Function.extend f id (fun x ↦ Classical.arbitrary M)) (f x') = x' := by
+      simp [hf.injective.extend_apply]
+    specialize this x'
+    calc
+      _ = (SliceModel.inverse ∘ φ ∘ f) ((Function.extend f id fun x ↦ Classical.arbitrary M) ((φ.symm ∘ SliceModel.map F I I') x)) := rfl
+      _ = (SliceModel.inverse (h := h) ∘ φ) ((φ.symm ∘ SliceModel.map F I I') x) := by
+        rw [← hx']
+        apply congrArg
+        apply this
+      _ = SliceModel.inverse (h := h) ((φ ∘ φ.symm) (SliceModel.map F I I' x)) := by simp [Function.comp_apply]
+      _ = SliceModel.inverse (h := h) (SliceModel.map F I I' x) := by
+        apply congrArg
+        apply φ.right_inv'
+        obtain ⟨x₀, hx₀, hxx₀⟩ := hx
+        rw [← hxx₀]
+        -- x₀ lies in the good set we want, so can cancel!
+        have : x₀ ∈ φ.target := hx₀
+        sorry -- basically hx, plus map ∘ inverse cancel
+      _ = x := SliceModel.inverse_left_inv x
+
+  -- tricky question: why is all that continuous? need to use the slice model!
+  continuousOn_toFun := sorry
+  continuousOn_invFun := sorry
+
+
+#exit
+-- next: pull back a partial homeo by a slice model
+-- the slice condition guarantees the condition below is what I want
+-- target should be inverse '' φ.target, and that lies in the image :-)
+
 end PartialHomeomorph
 
 variable (I I' M M' n) in
