@@ -284,7 +284,7 @@ lemma pullback_sliceModel_trans_eqOn_source (h : SliceModel F I I')
 
 end PartialHomeomorph
 
-variable (I I' F M M' n) in
+variable (F M M' n) in
 class IsImmersedSubmanifold [TopologicalSpace M] [IsManifold I' n M'] (h: SliceModel F I I') where
   emb: M → M'
   hemb: IsEmbedding emb
@@ -296,13 +296,13 @@ namespace IsImmersedSubmanifold
 
 variable [TopologicalSpace M] [IsManifold I' n M'] [h: SliceModel F I I'] [Nonempty H] [Nonempty M]
 
-noncomputable def myChart (inst : IsImmersedSubmanifold F I I' M M' n h) (x : M) :
+noncomputable def myChart (inst : IsImmersedSubmanifold F M M' n h) (x : M) :
     PartialHomeomorph M H :=
   (chartAt H' (inst.emb x)).pullback_sliceModel h inst.hemb (hcharts_source (mem_range_self x))
     (hcharts_target (mem_range_self x))
 
 -- XXX: making this an instance makes Lean complain about synthesization order
-noncomputable def chartedSpace (inst : IsImmersedSubmanifold F I I' M M' n h) :
+noncomputable def chartedSpace (inst : IsImmersedSubmanifold F M M' n h) :
     ChartedSpace H M where
   atlas := { inst.myChart x | x : M }
   chartAt x := inst.myChart x
@@ -315,8 +315,8 @@ noncomputable def chartedSpace (inst : IsImmersedSubmanifold F I I' M M' n h) :
     haveI : ChartedSpace H M := inst.chartedSpace; IsManifold I n M where
   compatible := sorry -/
 
--- XXX: turn this proof into the isManifold instance
-lemma compatible  (inst : IsImmersedSubmanifold F I I' M M' n h)
+-- XXX: turn this proof into the isManifold instance, once the above is solved
+lemma compatible (inst : IsImmersedSubmanifold F M M' n h)
     -- {e e' : PartialHomeomorph M H} (he : e ∈ atlas H M) (he' : e' ∈ atlas H M) :
     -- e.symm ≫ₕ e' ∈ (contDiffGroupoid n I)
     {x x' : M} : (inst.myChart x).symm ≫ₕ (inst.myChart x') ∈ (contDiffGroupoid n I) := by
@@ -335,11 +335,8 @@ lemma compatible  (inst : IsImmersedSubmanifold F I I' M M' n h)
     -- this can help, but not sufficient yet
     -- rw [pullback_sliceModel_trans_eqOn_source]
     sorry
-
-  dsimp
   set X := emb (M' := M') n h x
   set X' := emb (M' := M') n h x'
-
   sorry
 
 /- lemma isImmersion_emb (inst : IsImmersedSubmanifold F I I' M M' n h) :
