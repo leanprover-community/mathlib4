@@ -14,6 +14,11 @@ pullbacks, then `Over B` has `J`-indexed products.
 
 Note that the binary case is done separately to ensure defeqs with the pullback in the base
 category.
+
+## TODO
+
+* Generalise from arbitrary products to arbitrary limits. This is done in Toric.
+* Dualise to get the `Under X` results.
 -/
 
 
@@ -26,15 +31,25 @@ variable {C : Type u} [Category.{v} C]
 variable {X Y Z : C}
 
 /-!
-## Binary products
+### Binary products
 
-One could have used the following but it gives worse defeqs.
-`(Cones.postcomposeEquivalence (diagramIsoCospan _).symm).trans (conesEquiv _ (pair Y Z))`
+In this section we construct binary products in `Over X` and binary coproducts in `Under X`
+explicitly as the pullbacks and pushouts of binary (co)fans in the base category.
+
+For `Over X`, one could construct these binary products from the general theory of arbitrary
+products from the next section, ie
+```
+(Cones.postcomposeEquivalence (diagramIsoCospan _).symm).trans
+  (Over.ConstructProducts.conesEquiv _ (pair (Over.mk f) (Over.mk g)))
+```
+but this gives worse defeqs.
+
+For `Under X`, there is currently no general theory of arbitrary coproducts.
 -/
 
 namespace CategoryTheory.Limits
 section Over
-variable {f : Y ⟶ X} {g : Z ⟶ X} {c : PullbackCone f g}
+variable {f : Y ⟶ X} {g : Z ⟶ X}
 
 /-- Pullback cones to `X` are the same thing as binary fans in `Over X`. -/
 @[simps]
@@ -53,21 +68,47 @@ def pullbackConeEquivBinaryFan : PullbackCone f g ≌ BinaryFan (Over.mk f) (.mk
     (by intros; ext; dsimp; simp [BinaryFan.ext])
   functor_unitIso_comp c := by ext; dsimp; simp [BinaryFan.ext]
 
-/-- A pullback cone to `X` is a limit if its corresponding binary fan in `Over X` is a limit. -/
+/-- A binary fan in `Over X` is a limit if its corresponding pullback cone to `X` is a limit. -/
 -- `IsLimit.ofConeEquiv` isn't used here because the lift it defines is `𝟙 _ ≫ pullback.lift`.
+-- TODO: Define `IsLimit.copy`?
 @[simps!]
-def IsLimit.pullbackConeEquivBinaryFan {c : PullbackCone f g} (hc : IsLimit c) :
+def IsLimit.pullbackConeEquivBinaryFanFunctor {c : PullbackCone f g} (hc : IsLimit c) :
     IsLimit <| pullbackConeEquivBinaryFan.functor.obj c :=
   BinaryFan.isLimitMk
-    (fun s ↦ Over.homMk
-      (hc.lift (PullbackCone.mk s.fst.left s.snd.left (s.fst.w.trans s.snd.w.symm))) <| by
-        simpa using s.fst.w)
+    -- TODO: Rename `BinaryFan.IsLimit.lift'` to `BinaryFan.IsLimit.lift`
+    -- TODO: Make `BinaryFan.IsLimit.lift'` not subtype-valued. Instead provide lemmas separately.
+    -- TODO: Make `BinaryFan.IsLimit.lift'` take in two binary fans, rather than a binary fan and
+    -- two maps.
+    -- TODO: Define `abbrev BinaryFan.IsLimit (c : BinaryFan X Y) := IsLimit c` for dot notation?
+    (fun s ↦ Over.homMk (hc.lift <| pullbackConeEquivBinaryFan.inverse.obj s) <| by
+      simpa using s.fst.w)
     (fun s ↦ Over.OverMorphism.ext (hc.fac _ _)) (fun s ↦ Over.OverMorphism.ext (hc.fac _ _))
-      fun s m e₁ e₂ ↦ by
-    ext1
-    apply PullbackCone.IsLimit.hom_ext hc
-    · simpa using congr(($e₁).left)
-    · simpa using congr(($e₂).left)
+    fun s m e₁ e₂ ↦ by
+      ext1
+      apply PullbackCone.IsLimit.hom_ext hc
+      · simpa using congr(($e₁).left)
+      · simpa using congr(($e₂).left)
+
+/-- A pullback cone to `X` is a limit if its corresponding binary fan in `Over X` is a limit. -/
+-- This could also be `(IsLimit.ofConeEquiv pullbackConeEquivBinaryFan.symm).symm hc`, but possibly
+-- bad defeqs?
+def IsLimit.pullbackConeEquivBinaryFanInverse {c : BinaryFan (Over.mk f) (.mk g)} (hc : IsLimit c) :
+    IsLimit <| pullbackConeEquivBinaryFan.inverse.obj c :=
+  PullbackCone.IsLimit.mk
+    (c.fst.w.trans c.snd.w.symm)
+    (fun s ↦ (hc.lift <| pullbackConeEquivBinaryFan.functor.obj s).left)
+    (fun s ↦ by simpa only using congr($(hc.fac _ _).left))
+    (fun s ↦ by simpa only using congr($(hc.fac _ _).left))
+    <| fun s m hm₁ hm₂ ↦ by
+      simp [-PullbackCone.π_app_left, -PullbackCone.π_app_right] at *
+      change PullbackCone f g at s
+      have := hc.uniq (pullbackConeEquivBinaryFan.functor.obj s) (Over.homMk m <| by
+        have := c.fst.w
+        dsimp at this
+        simp only [pullbackConeEquivBinaryFan_functor_obj, ← hm₁, this, Category.assoc,
+          Category.comp_id, BinaryFan.mk_pt, Over.mk_left, Functor.const_obj_obj, Over.mk_hom])
+        (by rintro (_ | _) <;> ext <;> simpa)
+      exact congr(($this).left)
 
 end Over
 
@@ -91,11 +132,12 @@ def pushoutCoconeEquivBinaryCofan : PushoutCocone f g ≌ BinaryCofan (Under.mk 
     (by intros; ext; dsimp; simp)
   functor_unitIso_comp c := by ext; dsimp; simp
 
-/-- A pushout cocone from `X` is a colimit if its corresponding binary cofan in `Under X` is a
+/-- A binary cofan in `Under X` is a colimit if its corresponding pushout cocone from `X` is a
 colimit. -/
 -- `IsColimit.ofCoconeEquiv` isn't used here because the lift it defines is `pushout.desc ≫ 𝟙 _`.
+-- TODO: Define `IsColimit.copy`?
 @[simps!]
-def IsColimit.pushoutCoconeEquivBinaryCofan {c : PushoutCocone f g} (hc : IsColimit c) :
+def IsColimit.pushoutCoconeEquivBinaryCofanFunctor {c : PushoutCocone f g} (hc : IsColimit c) :
     IsColimit <| pushoutCoconeEquivBinaryCofan.functor.obj c :=
   BinaryCofan.isColimitMk
     (fun s ↦ Under.homMk
@@ -108,12 +150,81 @@ def IsColimit.pushoutCoconeEquivBinaryCofan {c : PushoutCocone f g} (hc : IsColi
     · simpa using congr(($e₁).right)
     · simpa using congr(($e₂).right)
 
+/-- A pushout cocone from `X` is a colimit if its corresponding binary cofan in `Under X` is a
+colimit. -/
+-- This could also be `(IsColimit.ofCoconeEquiv pushoutCoconeEquivBinaryCofan.symm).symm hc`,
+-- but possibly bad defeqs?
+def IsColimit.pushoutCoconeEquivBinaryCofanInverse {c : BinaryCofan (Under.mk f) (.mk g)}
+    (hc : IsColimit c) : IsColimit <| pushoutCoconeEquivBinaryCofan.inverse.obj c :=
+  PushoutCocone.IsColimit.mk
+    (c.inl.w.symm.trans c.inr.w)
+    (fun s ↦ (hc.desc <| pushoutCoconeEquivBinaryCofan.functor.obj s).right)
+    (fun s ↦ by simpa only using congr($(hc.fac _ _).right))
+    (fun s ↦ by simpa only using congr($(hc.fac _ _).right))
+    <| fun s m hm₁ hm₂ ↦ by
+      simp [-PushoutCocone.ι_app_left, -PushoutCocone.ι_app_right] at *
+      change PushoutCocone f g at s
+      have := hc.uniq (pushoutCoconeEquivBinaryCofan.functor.obj s) (Under.homMk m <| by
+        have := c.inl.w
+        dsimp at this
+        simp only [Functor.const_obj_obj, pushoutCoconeEquivBinaryCofan, BinaryCofan.mk_pt,
+          pair_obj_left, pair_obj_right, Functor.comp_obj, PushoutCocone.mk_pt,
+          PushoutCocone.mk_ι_app, span_zero, Functor.id_obj, Under.mk_right, Under.mk_hom, ← hm₁, ←
+          Category.assoc, ← this, Category.id_comp])
+        (by rintro (_ | _) <;> ext <;> simpa)
+      exact congr(($this).right)
+
 end Under
 end Limits
 
-/-! ## Arbitrary products -/
+namespace Over
+section BinaryProduct
+variable {X : C} {Y Z : Over X}
 
-namespace Over.ConstructProducts
+open Limits
+
+lemma isPullback_of_binaryFan_isLimit (c : BinaryFan Y Z) (hc : IsLimit c) :
+    IsPullback c.fst.left c.snd.left Y.hom Z.hom :=
+  ⟨by simp, ⟨hc.pullbackConeEquivBinaryFanInverse⟩⟩
+
+variable (Y Z) [HasPullback Y.hom Z.hom] [HasBinaryProduct Y Z]
+
+/-- The product of `Y` and `Z` in `Over X` is isomorpic to `Y ×ₓ Z`. -/
+noncomputable
+def prodLeftIsoPullback :
+    (Y ⨯ Z).left ≅ pullback Y.hom Z.hom :=
+  (Over.isPullback_of_binaryFan_isLimit _ (prodIsProd Y Z)).isoPullback
+
+@[reassoc (attr := simp)]
+lemma prodLeftIsoPullback_hom_fst :
+    (prodLeftIsoPullback Y Z).hom ≫ pullback.fst _ _ = (prod.fst (X := Y)).left :=
+  IsPullback.isoPullback_hom_fst _
+
+@[reassoc (attr := simp)]
+lemma prodLeftIsoPullback_hom_snd :
+    (prodLeftIsoPullback Y Z).hom ≫ pullback.snd _ _ = (prod.snd (X := Y)).left :=
+  IsPullback.isoPullback_hom_snd _
+
+@[reassoc (attr := simp)]
+lemma prodLeftIsoPullback_inv_fst :
+    (prodLeftIsoPullback Y Z).inv ≫ (prod.fst (X := Y)).left = pullback.fst _ _ :=
+  IsPullback.isoPullback_inv_fst _
+
+@[reassoc (attr := simp)]
+lemma prodLeftIsoPullback_inv_snd :
+    (prodLeftIsoPullback Y Z).inv ≫ (prod.snd (X := Y)).left = pullback.snd _ _ :=
+  IsPullback.isoPullback_inv_snd _
+
+end BinaryProduct
+
+/-!
+### Arbitrary products
+
+In this section, we prove that `J`-indexed products in `Over X` correspond to `J`-indexed pullbacks
+in `C`.
+-/
+
+namespace ConstructProducts
 
 /-- (Implementation)
 Given a product diagram in `C/B`, construct the corresponding wide pullback diagram
@@ -252,47 +363,5 @@ theorem over_hasTerminal (B : C) : HasTerminal (Over B) where
             have := m.w
             dsimp at this
             rwa [Category.comp_id, Category.comp_id] at this } }
-
-section BinaryProduct
-
-variable {X : C} {Y Z : Over X}
-
-open Limits
-
-lemma isPullback_of_binaryFan_isLimit (c : BinaryFan Y Z) (hc : IsLimit c) :
-    IsPullback c.fst.left c.snd.left Y.hom Z.hom :=
-  ⟨by simp, ⟨((IsLimit.postcomposeHomEquiv (diagramIsoCospan _) _).symm
-    ((IsLimit.ofConeEquiv (ConstructProducts.conesEquiv X _).symm).symm hc)).ofIsoLimit
-    (PullbackCone.isoMk _)⟩⟩
-
-variable (Y Z) [HasPullback Y.hom Z.hom] [HasBinaryProduct Y Z]
-
-/-- The product of `Y` and `Z` in `Over X` is isomorpic to `Y ×ₓ Z`. -/
-noncomputable
-def prodLeftIsoPullback :
-    (Y ⨯ Z).left ≅ pullback Y.hom Z.hom :=
-  (Over.isPullback_of_binaryFan_isLimit _ (prodIsProd Y Z)).isoPullback
-
-@[reassoc (attr := simp)]
-lemma prodLeftIsoPullback_hom_fst :
-    (prodLeftIsoPullback Y Z).hom ≫ pullback.fst _ _ = (prod.fst (X := Y)).left :=
-  IsPullback.isoPullback_hom_fst _
-
-@[reassoc (attr := simp)]
-lemma prodLeftIsoPullback_hom_snd :
-    (prodLeftIsoPullback Y Z).hom ≫ pullback.snd _ _ = (prod.snd (X := Y)).left :=
-  IsPullback.isoPullback_hom_snd _
-
-@[reassoc (attr := simp)]
-lemma prodLeftIsoPullback_inv_fst :
-    (prodLeftIsoPullback Y Z).inv ≫ (prod.fst (X := Y)).left = pullback.fst _ _ :=
-  IsPullback.isoPullback_inv_fst _
-
-@[reassoc (attr := simp)]
-lemma prodLeftIsoPullback_inv_snd :
-    (prodLeftIsoPullback Y Z).inv ≫ (prod.snd (X := Y)).left = pullback.snd _ _ :=
-  IsPullback.isoPullback_inv_snd _
-
-end BinaryProduct
 
 end CategoryTheory.Over
