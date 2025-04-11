@@ -209,9 +209,6 @@ protected theorem Topology.IsOpenEmbedding.locallyCompactSpace [LocallyCompactSp
     (hf : IsOpenEmbedding f) : LocallyCompactSpace X :=
   hf.isInducing.locallyCompactSpace hf.isOpen_range.isLocallyClosed
 
-@[deprecated (since := "2024-10-18")]
-alias OpenEmbedding.locallyCompactSpace := IsOpenEmbedding.locallyCompactSpace
-
 protected theorem IsLocallyClosed.locallyCompactSpace [LocallyCompactSpace X] {s : Set X}
     (hs : IsLocallyClosed s) : LocallyCompactSpace s :=
   IsEmbedding.subtypeVal.locallyCompactSpace <| by rwa [Subtype.range_val]

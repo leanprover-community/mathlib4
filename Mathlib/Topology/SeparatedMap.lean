@@ -153,9 +153,6 @@ theorem IsLocallyInjective_iff_isOpenEmbedding {f : X → Y} :
   rw [isLocallyInjective_iff_isOpen_diagonal, ← range_toPullbackDiag]
   exact ⟨fun h ↦ ⟨.toPullbackDiag f, h⟩, fun h ↦ h.isOpen_range⟩
 
-@[deprecated (since := "2024-10-18")]
-alias IsLocallyInjective_iff_openEmbedding := IsLocallyInjective_iff_isOpenEmbedding
-
 theorem isLocallyInjective_iff_isOpenMap {f : X → Y} :
     IsLocallyInjective f ↔ IsOpenMap (toPullbackDiag f) :=
   IsLocallyInjective_iff_isOpenEmbedding.trans

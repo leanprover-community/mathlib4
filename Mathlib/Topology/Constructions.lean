@@ -346,9 +346,6 @@ theorem IsOpen.isOpenEmbedding_subtypeVal {s : Set X} (hs : IsOpen s) :
     IsOpenEmbedding ((↑) : s → X) :=
   ⟨.subtypeVal, (@Subtype.range_coe _ s).symm ▸ hs⟩
 
-@[deprecated (since := "2024-10-18")]
-alias IsOpen.openEmbedding_subtype_val := IsOpen.isOpenEmbedding_subtypeVal
-
 theorem IsOpen.isOpenMap_subtype_val {s : Set X} (hs : IsOpen s) : IsOpenMap ((↑) : s → X) :=
   hs.isOpenEmbedding_subtypeVal.isOpenMap
 
@@ -1047,9 +1044,6 @@ lemma Topology.IsOpenEmbedding.sigmaMk {i : ι} : IsOpenEmbedding (@Sigma.mk ι 
 
 @[deprecated (since := "2024-10-30")] alias isOpenEmbedding_sigmaMk := IsOpenEmbedding.sigmaMk
 
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_sigmaMk := IsOpenEmbedding.sigmaMk
-
 lemma Topology.IsClosedEmbedding.sigmaMk {i : ι} : IsClosedEmbedding (@Sigma.mk ι σ i) :=
   .of_continuous_injective_isClosedMap continuous_sigmaMk sigma_mk_injective isClosedMap_sigmaMk
 
@@ -1149,9 +1143,6 @@ lemma Topology.isOpenEmbedding_sigmaMap {f₁ : ι → κ} {f₂ : ∀ i, σ i �
     forall_and]
 
 @[deprecated (since := "2024-10-30")] alias isOpenEmbedding_sigma_map := isOpenEmbedding_sigmaMap
-
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_sigma_map := isOpenEmbedding_sigmaMap
 
 end Sigma
 

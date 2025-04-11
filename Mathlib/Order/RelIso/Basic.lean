@@ -363,17 +363,6 @@ noncomputable def Quotient.outRelEmbedding {_ : Setoid α} {r : α → α → Pr
     refine @fun x y => Quotient.inductionOn₂ x y fun a b => ?_
     apply iff_iff_eq.2 (H _ _ _ _ _ _) <;> apply Quotient.mk_out⟩
 
-set_option linter.deprecated false in
-/-- `Quotient.out'` as a relation embedding between the lift of a relation and the relation. -/
-@[deprecated Quotient.outRelEmbedding (since := "2024-10-19"), simps]
-noncomputable def Quotient.out'RelEmbedding {_ : Setoid α} {r : α → α → Prop}
-    (H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂) :
-    (fun a b => Quotient.liftOn₂' a b r H) ↪r r :=
-  { Quotient.outRelEmbedding H with toFun := Quotient.out' }
-
-attribute [deprecated Quotient.outRelEmbedding_apply (since := "2024-10-19")]
-  Quotient.out'RelEmbedding_apply
-
 @[simp]
 theorem acc_lift₂_iff {_ : Setoid α} {r : α → α → Prop}
     {H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂} {a} :

@@ -64,9 +64,6 @@ alias quotientMap_mk := isQuotientMap_mk
 @[deprecated (since := "2024-10-20")]
 alias closedEmbedding_mk := isClosedEmbedding_mk
 
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_mk := isOpenEmbedding_mk
-
 @[to_additive] theorem isInducing_mk_symm : IsInducing (@mk M).symm := mkHomeomorph.symm.isInducing
 @[to_additive] theorem isEmbedding_mk_symm : IsEmbedding (@mk M).symm :=
   mkHomeomorph.symm.isEmbedding

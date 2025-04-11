@@ -603,9 +603,6 @@ protected lemma Topology.IsOpenEmbedding.prodMap {f : X → Y} {g : Z → W} (hf
     (hg : IsOpenEmbedding g) : IsOpenEmbedding (Prod.map f g) :=
   .of_isEmbedding_isOpenMap (hf.1.prodMap hg.1) (hf.isOpenMap.prodMap hg.isOpenMap)
 
-@[deprecated (since := "2024-10-18")]
-alias OpenEmbedding.prodMap := IsOpenEmbedding.prodMap
-
 lemma isEmbedding_graph {f : X → Y} (hf : Continuous f) : IsEmbedding fun x => (x, f x) :=
   .of_comp (continuous_id.prodMk hf) continuous_fst .id
 
@@ -691,16 +688,10 @@ protected lemma Topology.IsOpenEmbedding.inl : IsOpenEmbedding (@inl X Y) :=
 
 @[deprecated (since := "2024-10-30")] alias isOpenEmbedding_inl := IsOpenEmbedding.inl
 
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_inl := IsOpenEmbedding.inl
-
 protected lemma Topology.IsOpenEmbedding.inr : IsOpenEmbedding (@inr X Y) :=
   .of_continuous_injective_isOpenMap continuous_inr inr_injective isOpenMap_inr
 
 @[deprecated (since := "2024-10-30")] alias isOpenEmbedding_inr := IsOpenEmbedding.inr
-
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_inr := IsOpenEmbedding.inr
 
 protected lemma Topology.IsEmbedding.inl : IsEmbedding (@inl X Y) := IsOpenEmbedding.inl.1
 protected lemma Topology.IsEmbedding.inr : IsEmbedding (@inr X Y) := IsOpenEmbedding.inr.1

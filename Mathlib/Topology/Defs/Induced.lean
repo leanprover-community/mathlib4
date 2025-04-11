@@ -124,9 +124,6 @@ structure IsOpenEmbedding (f : X → Y) : Prop extends IsEmbedding f where
   /-- The range of an open embedding is an open set. -/
   isOpen_range : IsOpen <| range f
 
-@[deprecated (since := "2024-10-18")]
-alias OpenEmbedding := IsOpenEmbedding
-
 /-- A closed embedding is an embedding with closed image. -/
 @[mk_iff]
 structure IsClosedEmbedding (f : X → Y) : Prop extends IsEmbedding f where

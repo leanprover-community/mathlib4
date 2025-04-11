@@ -659,9 +659,6 @@ theorem ContDiffWithinAt.comp_of_mem_nhdsWithin_image
     (hs : t ∈ 𝓝[f '' s] f x) : ContDiffWithinAt 𝕜 n (g ∘ f) s x :=
   (hg.mono_of_mem_nhdsWithin hs).comp x hf (subset_preimage_image f s)
 
-@[deprecated (since := "2024-10-18")]
-alias ContDiffWithinAt.comp_of_mem := ContDiffWithinAt.comp_of_mem_nhdsWithin_image
-
 /-- The composition of `C^n` functions at points in domains is `C^n`,
   with a weaker condition on `s` and `t`. -/
 theorem ContDiffWithinAt.comp_of_mem_nhdsWithin_image_of_eq
@@ -689,9 +686,6 @@ theorem ContDiffWithinAt.comp_of_preimage_mem_nhdsWithin
     (hg : ContDiffWithinAt 𝕜 n g t (f x)) (hf : ContDiffWithinAt 𝕜 n f s x)
     (hs : f ⁻¹' t ∈ 𝓝[s] x) : ContDiffWithinAt 𝕜 n (g ∘ f) s x :=
   (hg.comp_inter x hf).mono_of_mem_nhdsWithin (inter_mem self_mem_nhdsWithin hs)
-
-@[deprecated (since := "2024-10-18")]
-alias ContDiffWithinAt.comp' := ContDiffWithinAt.comp_inter
 
 /-- The composition of `C^n` functions at points in domains is `C^n`,
   with a weaker condition on `s` and `t`. -/

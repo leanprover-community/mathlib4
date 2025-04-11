@@ -449,8 +449,6 @@ alias embedding := isEmbedding
 alias quotientMap := isQuotientMap
 
 @[deprecated (since := "2024-10-20")] alias closedEmbedding := isClosedEmbedding
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding := isOpenEmbedding
 
 end IsHomeomorph
 

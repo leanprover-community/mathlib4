@@ -340,9 +340,6 @@ theorem separated_by_isOpenEmbedding [TopologicalSpace Y] [T2Space X]
   ⟨f '' u, f '' v, hf.isOpenMap _ uo, hf.isOpenMap _ vo, mem_image_of_mem _ xu,
     mem_image_of_mem _ yv, disjoint_image_of_injective hf.injective uv⟩
 
-@[deprecated (since := "2024-10-18")]
-alias separated_by_openEmbedding := separated_by_isOpenEmbedding
-
 instance {p : X → Prop} [T2Space X] : T2Space (Subtype p) := inferInstance
 
 instance Prod.t2Space [T2Space X] [TopologicalSpace Y] [T2Space Y] : T2Space (X × Y) :=

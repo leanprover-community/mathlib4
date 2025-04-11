@@ -382,9 +382,6 @@ theorem fromGlued_open_map : IsOpenMap 𝒰.fromGlued.base := by
 theorem fromGlued_isOpenEmbedding : IsOpenEmbedding 𝒰.fromGlued.base :=
   .of_continuous_injective_isOpenMap (by fun_prop) 𝒰.fromGlued_injective 𝒰.fromGlued_open_map
 
-@[deprecated (since := "2024-10-18")]
-alias fromGlued_openEmbedding := fromGlued_isOpenEmbedding
-
 instance : Epi 𝒰.fromGlued.base := by
   rw [TopCat.epi_iff_surjective]
   intro x

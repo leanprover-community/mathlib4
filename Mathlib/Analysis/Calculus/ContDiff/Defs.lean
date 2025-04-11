@@ -227,9 +227,6 @@ theorem Filter.EventuallyEq.congr_contDiffWithinAt (h₁ : f₁ =ᶠ[𝓝[s] x] 
     ContDiffWithinAt 𝕜 n f₁ s x ↔ ContDiffWithinAt 𝕜 n f s x :=
   ⟨fun H ↦ H.congr_of_eventuallyEq h₁.symm hx.symm, fun H ↦ H.congr_of_eventuallyEq h₁ hx⟩
 
-@[deprecated (since := "2024-10-18")]
-alias Filter.EventuallyEq.contDiffWithinAt_iff := Filter.EventuallyEq.congr_contDiffWithinAt
-
 theorem ContDiffWithinAt.congr_of_eventuallyEq_insert (h : ContDiffWithinAt 𝕜 n f s x)
     (h₁ : f₁ =ᶠ[𝓝[insert x s] x] f) : ContDiffWithinAt 𝕜 n f₁ s x :=
   h.congr_of_eventuallyEq (nhdsWithin_mono x (subset_insert x s) h₁)
@@ -242,9 +239,6 @@ theorem Filter.EventuallyEq.congr_contDiffWithinAt_of_insert (h₁ : f₁ =ᶠ[�
 theorem ContDiffWithinAt.congr_of_eventuallyEq_of_mem (h : ContDiffWithinAt 𝕜 n f s x)
     (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : x ∈ s) : ContDiffWithinAt 𝕜 n f₁ s x :=
   h.congr_of_eventuallyEq h₁ <| h₁.self_of_nhdsWithin hx
-
-@[deprecated (since := "2024-10-18")]
-alias ContDiffWithinAt.congr_of_eventually_eq' := ContDiffWithinAt.congr_of_eventuallyEq_of_mem
 
 theorem Filter.EventuallyEq.congr_contDiffWithinAt_of_mem (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : x ∈ s):
     ContDiffWithinAt 𝕜 n f₁ s x ↔ ContDiffWithinAt 𝕜 n f s x :=
@@ -261,9 +255,6 @@ theorem contDiffWithinAt_congr (h₁ : ∀ y ∈ s, f₁ y = f y) (hx : f₁ x =
 theorem ContDiffWithinAt.congr_of_mem (h : ContDiffWithinAt 𝕜 n f s x) (h₁ : ∀ y ∈ s, f₁ y = f y)
     (hx : x ∈ s) : ContDiffWithinAt 𝕜 n f₁ s x :=
   h.congr h₁ (h₁ _ hx)
-
-@[deprecated (since := "2024-10-18")]
-alias ContDiffWithinAt.congr' := ContDiffWithinAt.congr_of_mem
 
 theorem contDiffWithinAt_congr_of_mem (h₁ : ∀ y ∈ s, f₁ y = f y) (hx : x ∈ s) :
     ContDiffWithinAt 𝕜 n f₁ s x ↔ ContDiffWithinAt 𝕜 n f s x :=

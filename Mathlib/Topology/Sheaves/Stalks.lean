@@ -209,8 +209,6 @@ theorem stalkPushforward_iso_of_isInducing {f : X ⟶ Y} (hf : IsInducing f)
 
 @[deprecated (since := "2024-10-27")]
 alias stalkPushforward_iso_of_isOpenEmbedding := stalkPushforward_iso_of_isInducing
-@[deprecated (since := "2024-10-18")]
-alias stalkPushforward_iso_of_openEmbedding := stalkPushforward_iso_of_isInducing
 
 end stalkPushforward
 

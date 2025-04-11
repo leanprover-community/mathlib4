@@ -638,9 +638,6 @@ theorem localization_away_isOpenEmbedding (S : Type v) [CommSemiring S] [Algebra
     rw [localization_away_comap_range S r]
     exact isOpen_basicOpen
 
-@[deprecated (since := "2024-10-18")]
-alias localization_away_openEmbedding := localization_away_isOpenEmbedding
-
 theorem isCompact_basicOpen (f : R) : IsCompact (basicOpen f : Set (PrimeSpectrum R)) := by
   rw [← localization_away_comap_range (Localization (Submonoid.powers f))]
   exact isCompact_range (map_continuous _)

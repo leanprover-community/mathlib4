@@ -121,9 +121,6 @@ theorem Topology.IsOpenEmbedding.locPathConnectedSpace {e : Y → X} (he : IsOpe
   .of_bases this fun x s ⟨_, hs, hse⟩ ↦ by
     rwa [he.isPathConnected_iff, image_preimage_eq_of_subset hse]
 
-@[deprecated (since := "2024-10-18")]
-alias OpenEmbedding.locPathConnectedSpace := IsOpenEmbedding.locPathConnectedSpace
-
 theorem IsOpen.locPathConnectedSpace {U : Set X} (h : IsOpen U) : LocPathConnectedSpace U :=
   h.isOpenEmbedding_subtypeVal.locPathConnectedSpace
 

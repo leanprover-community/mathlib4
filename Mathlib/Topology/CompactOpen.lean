@@ -81,8 +81,6 @@ section Functorial
 theorem continuous_postcomp (g : C(Y, Z)) : Continuous (ContinuousMap.comp g : C(X, Y) → C(X, Z)) :=
   continuous_compactOpen.2 fun _K hK _U hU ↦ isOpen_setOf_mapsTo hK (hU.preimage g.2)
 
-@[deprecated (since := "2024-10-19")] alias continuous_comp := continuous_postcomp
-
 /-- If `g : C(Y, Z)` is a topology inducing map,
 then the composition `ContinuousMap.comp g : C(X, Y) → C(X, Z)` is a topology inducing map too. -/
 theorem isInducing_postcomp (g : C(Y, Z)) (hg : IsInducing g) :
@@ -93,8 +91,6 @@ theorem isInducing_postcomp (g : C(Y, Z)) (hg : IsInducing g) :
 
 @[deprecated (since := "2024-10-28")] alias inducing_postcomp := isInducing_postcomp
 
-@[deprecated (since := "2024-10-19")] alias inducing_comp := isInducing_postcomp
-
 /-- If `g : C(Y, Z)` is a topological embedding,
 then the composition `ContinuousMap.comp g : C(X, Y) → C(X, Z)` is an embedding too. -/
 theorem isEmbedding_postcomp (g : C(Y, Z)) (hg : IsEmbedding g) :
@@ -104,15 +100,11 @@ theorem isEmbedding_postcomp (g : C(Y, Z)) (hg : IsEmbedding g) :
 @[deprecated (since := "2024-10-26")]
 alias embedding_postcomp := isEmbedding_postcomp
 
-@[deprecated (since := "2024-10-19")] alias embedding_comp := isEmbedding_postcomp
-
 /-- `C(·, Z)` is a functor. -/
 @[continuity, fun_prop]
 theorem continuous_precomp (f : C(X, Y)) : Continuous (fun g => g.comp f : C(Y, Z) → C(X, Z)) :=
   continuous_compactOpen.2 fun K hK U hU ↦ by
     simpa only [mapsTo_image_iff] using isOpen_setOf_mapsTo (hK.image f.2) hU
-
-@[deprecated (since := "2024-10-19")] alias continuous_comp_left := continuous_precomp
 
 variable (Z) in
 /-- Precomposition by a continuous map is itself a continuous map between spaces of continuous maps.
@@ -132,14 +124,6 @@ protected def _root_.Homeomorph.arrowCongr (φ : X ≃ₜ Z) (ψ : Y ≃ₜ T) :
   right_inv f := ext fun _ ↦ ψ.right_inv (f _) |>.trans <| congrArg f <| φ.right_inv _
   continuous_toFun := continuous_postcomp _ |>.comp <| continuous_precomp _
   continuous_invFun := continuous_postcomp _ |>.comp <| continuous_precomp _
-
-variable (Z) in
-/-- Precomposition by a homeomorphism is itself a homeomorphism between spaces of continuous maps.
--/
-@[deprecated Homeomorph.arrowCongr (since := "2024-10-19")]
-def compRightHomeomorph (f : X ≃ₜ Y) :
-    C(Y, Z) ≃ₜ C(X, Z) :=
-  .arrowCongr f.symm (.refl _)
 
 variable [LocallyCompactPair Y Z]
 

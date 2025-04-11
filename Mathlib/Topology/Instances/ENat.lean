@@ -39,9 +39,6 @@ alias embedding_natCast := isEmbedding_natCast
 theorem isOpenEmbedding_natCast : IsOpenEmbedding ((↑) : ℕ → ℕ∞) :=
   ⟨isEmbedding_natCast, range_natCast ▸ isOpen_Iio⟩
 
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_natCast := isOpenEmbedding_natCast
-
 theorem nhds_natCast (n : ℕ) : 𝓝 (n : ℕ∞) = pure (n : ℕ∞) := by
   simp [← isOpenEmbedding_natCast.map_nhds_eq]
 

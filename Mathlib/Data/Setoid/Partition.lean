@@ -417,8 +417,6 @@ theorem out_proj (x : α) : hs.out (hs.proj x) = hs.some (hs.index x) :=
 theorem index_out (x : hs.Quotient) : hs.index x.out = hs.index (hs.out x) :=
   Quotient.inductionOn' x fun x => (Setoid.ker_apply_mk_out x).trans (hs.index_some _).symm
 
-@[deprecated (since := "2024-10-19")] alias index_out' := index_out
-
 /-- This lemma is analogous to `Quotient.out_eq'`. -/
 @[simp]
 theorem proj_out (x : hs.Quotient) : hs.proj (hs.out x) = x :=

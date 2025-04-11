@@ -151,9 +151,6 @@ theorem Topology.IsOpenEmbedding.compatiblePreserving (hf : IsOpenEmbedding f) :
   obtain ⟨_, _, rfl⟩ := i.le h
   exact ⟨_, rfl⟩
 
-@[deprecated (since := "2024-10-18")]
-alias OpenEmbedding.compatiblePreserving := IsOpenEmbedding.compatiblePreserving
-
 theorem IsOpenMap.coverPreserving (hf : IsOpenMap f) :
     CoverPreserving (Opens.grothendieckTopology X) (Opens.grothendieckTopology Y) hf.functor := by
   constructor
@@ -169,16 +166,10 @@ lemma Topology.IsOpenEmbedding.functor_isContinuous (h : IsOpenEmbedding f) :
   · exact h.compatiblePreserving
   · exact h.isOpenMap.coverPreserving
 
-@[deprecated (since := "2024-10-18")]
-alias OpenEmbedding.functor_isContinuous := IsOpenEmbedding.functor_isContinuous
-
 theorem TopCat.Presheaf.isSheaf_of_isOpenEmbedding (h : IsOpenEmbedding f) (hF : F.IsSheaf) :
     IsSheaf (h.isOpenMap.functor.op ⋙ F) := by
   have := h.functor_isContinuous
   exact Functor.op_comp_isSheaf _ _ _ ⟨_, hF⟩
-
-@[deprecated (since := "2024-10-18")]
-alias TopCat.Presheaf.isSheaf_of_openEmbedding := TopCat.Presheaf.isSheaf_of_isOpenEmbedding
 
 variable (f)
 

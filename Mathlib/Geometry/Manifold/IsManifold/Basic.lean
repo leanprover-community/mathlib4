@@ -868,10 +868,6 @@ theorem Topology.IsOpenEmbedding.isManifold_singleton {𝕜 E H : Type*}
 alias Topology.IsOpenEmbedding.singleton_smoothManifoldWithCorners :=
   Topology.IsOpenEmbedding.isManifold_singleton
 
-@[deprecated (since := "2024-10-18")]
-alias OpenEmbedding.singleton_smoothManifoldWithCorners :=
-  Topology.IsOpenEmbedding.isManifold_singleton
-
 namespace TopologicalSpace.Opens
 
 open TopologicalSpace
