@@ -949,11 +949,13 @@ lemma finprod_option {f : Option α → M} (hf : (mulSupport (f ∘ some)).Finit
   · rw [finprod_mem_range]
     exact Option.some_injective _
 
+@[to_additive]
 lemma finprod_mem_powerset_insert {f : Set α → M} {s : Set α} {a : α} (hs : s.Finite)
     (has : a ∉ s) : ∏ᶠ t ∈ 𝒫 insert a s, f t = (∏ᶠ t ∈ 𝒫 s, f t) * ∏ᶠ t ∈ 𝒫 s, f (insert a t) := by
   rw [Set.powerset_insert, finprod_mem_union (powerset_insert_disjoint has) hs.powerset
   (hs.powerset.image (insert a)), finprod_mem_image (powerset_insert_injOn has)]
 
+@[to_additive]
 lemma finprod_mem_powerset_diff_elem {f : Set α → M} {s : Set α} {a : α} (hs : s.Finite)
     (has : a ∈ s) : ∏ᶠ t ∈ 𝒫 s, f t = (∏ᶠ t ∈ 𝒫 (s \ {a}), f t)
     * ∏ᶠ t ∈ 𝒫 (s \ {a}), f (insert a t) := by
