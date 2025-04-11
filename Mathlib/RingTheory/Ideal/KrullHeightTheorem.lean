@@ -97,7 +97,7 @@ lemma Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes_of_isLocalRing [Is
     rw [← Set.singleton_subset_iff, ← Ideal.span_le, Ideal.span_singleton_generator]
     exact fun e => h₂.not_le (hp.2 ⟨h₁, e⟩ h₂.le)
 
-/-- Krull's Hauptidealsatz: In a commutative Noetherian ring `R`,
+/-- **Krull's Hauptidealsatz**: In a commutative Noetherian ring `R`,
   any prime ideal that is minimal over a principal ideal has height at most 1. -/
 lemma Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes [IsNoetherianRing R]
     (I : Ideal R) (hI : I.IsPrincipal) (p : Ideal R) (hp : p ∈ I.minimalPrimes) : p.height ≤ 1 := by
