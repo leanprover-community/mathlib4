@@ -179,10 +179,27 @@ variable [TopologicalSpace M] [IsManifold I' n M']
 
 open Topology
 
+section
+
+variable [Nonempty M] [Nonempty H] (φ : PartialHomeomorph M' H') {f : M → M'}
+
+-- auxiliary definition; will become the invFun of pullback_sliceModel
+variable (f) in
+noncomputable def aux_invFun (h : SliceModel F I I') : H → M :=
+  (Function.extend f id (fun _ ↦ (Classical.arbitrary M))) ∘ φ.symm ∘ h.map
+
+omit [Nonempty M] [ChartedSpace H' M'] [TopologicalSpace M] in
+lemma aux (h : SliceModel F I I') (hyp : range φ ⊆ range h.map)
+    {y : H'} (hy : y ∈ range (φ ∘ f)) : h.map (h.inverse y) = y := by
+  choose x hx using hy
+  choose x' hx' using hyp ⟨f x, hx⟩
+  rw [← hx', SliceModel.inverse_left_inv x']
+
 /-- Pull back a partial homeomorphism using a slice model.
 The slice model conditions should guarantee the necessary condition for continuity and inverses. -/
 noncomputable def pullback_sliceModel [Nonempty M] [Nonempty H] (φ : PartialHomeomorph M' H')
-    {f : M → M'} (hf : IsEmbedding f) (h : SliceModel F I I') : PartialHomeomorph M H where
+    {f : M → M'} (hf : IsEmbedding f) (h : SliceModel F I I') (hyp : range φ ⊆ range h.map) :
+    PartialHomeomorph M H where
   toFun := h.inverse ∘ φ ∘ f
   invFun :=
     letI finv := Function.extend f id (fun _ ↦ (Classical.arbitrary M))
@@ -192,12 +209,9 @@ noncomputable def pullback_sliceModel [Nonempty M] [Nonempty H] (φ : PartialHom
   target := h.map ⁻¹' φ.target
   open_target := IsOpen.preimage h.hmap.continuous φ.open_target
   map_source' x hx := by
-    rw [← φ.image_source_eq_target]
-    rw [mem_preimage] at hx ⊢
-    -- y := φ (f x) ∈ range, so h.map (h.inverse) y = y
-    have : (φ ∘ f) x ∈ φ '' φ.source := mem_image_of_mem φ hx
-    -- then `this` does it
-    sorry
+    rw [← φ.image_source_eq_target, mem_preimage]
+    convert mem_image_of_mem φ hx
+    apply aux φ h hyp (mem_range_self x)
   map_target' x hx := by
     rw [mem_preimage] at hx ⊢
     -- f and f.extend cancel
@@ -206,10 +220,8 @@ noncomputable def pullback_sliceModel [Nonempty M] [Nonempty H] (φ : PartialHom
     sorry
   left_inv' x hx := by
     let y := φ (f x)
-    -- lemma 1: φ ∘ f (x) is in "the right image", for the next lemma
-    -- KEY LEMMA: for y "nice", SliceModel.map (SliceModel.inverse y) = y
-    -- corollary:
-    have : SliceModel.map F I I' (SliceModel.inverse (h := h) y) = y := sorry
+    have : SliceModel.map F I I' (SliceModel.inverse (h := h) y) = y :=
+      aux φ h hyp (mem_range_self x)
     calc
       _ = ((Function.extend f id fun x ↦ Classical.arbitrary M) ∘ φ.symm ∘
           (SliceModel.map F I I' ∘ SliceModel.inverse) ∘ φ ∘ f) x := rfl
