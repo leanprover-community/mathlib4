@@ -45,8 +45,8 @@ lemma Set.Nonempty.ordConnected_iff_of_bdd' [CompleteLinearOrder α] [LocallyFin
   h₀.ordConnected_iff_of_bdd (OrderBot.bddBelow I) (OrderTop.bddAbove I)
 
 /- TODO The `LocallyFiniteOrder` assumption here is probably too strong (e.g., it rules out `ℝ`
-   for which this result holds). However at the time of writing it is not clear what weaker
-   assumption(s) should replace it. -/
+for which this result holds). However at the time of writing it is not clear what weaker
+assumption(s) should replace it. -/
 lemma Set.ordConnected_iff_disjoint_Ioo_empty [LinearOrder α] [LocallyFiniteOrder α] :
     I.OrdConnected ↔ ∀ᵉ (x ∈ I) (y ∈ I), Disjoint (Ioo x y) I → Ioo x y = ∅ := by
   simp_rw [← Set.subset_compl_iff_disjoint_right]
