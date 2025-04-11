@@ -105,7 +105,7 @@ lemma bddabove {f : PowerSeries R} (hf : IsRestricted R f c) : BddAbove (converg
   · exact Or.inl (le_of_lt (lt_of_le_of_lt (mul_le_mul_of_nonneg_left
       (by simpa only [abs_pow] using le_abs_self (c ^ i)) (norm_nonneg _)) (hf i h)))
 
-def bddabove_nneg {f : PowerSeries R} (hf : IsRestricted R f c) :
+lemma bddabove_nneg {f : PowerSeries R} (hf : IsRestricted R f c) :
      ∃ A, A > 0 ∧ ∀ i, ‖coeff R i f‖ * c^i ≤ A := by
   obtain ⟨n, hn⟩ := by simpa only [bddAbove_def] using (bddabove R c hf)
   simp_rw [convergenceSet, Set.mem_setOf_eq, forall_exists_index, forall_apply_eq_imp_iff] at hn
