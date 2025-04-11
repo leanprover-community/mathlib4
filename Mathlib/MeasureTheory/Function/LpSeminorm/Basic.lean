@@ -8,6 +8,7 @@ import Mathlib.Data.Fintype.Order
 import Mathlib.MeasureTheory.Function.AEEqFun
 import Mathlib.MeasureTheory.Function.LpSeminorm.Defs
 import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
+import Mathlib.MeasureTheory.Integral.Lebesgue.Convergence
 import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
 
 /-!
