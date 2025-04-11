@@ -244,7 +244,7 @@ lemma head_toList (p : RelSeries r) : p.toList.head p.toList_ne_nil = p.head := 
 @[simp]
 lemma toList_getElem_eq_apply (p : RelSeries r) (i : Fin (p.length + 1)) :
     p.toList[(i : ℕ)] = p i := by
-  simp only [Fin.getElem_fin, toList, List.getElem_ofFn p.toFun]
+  simp only [Fin.getElem_fin, toList, List.getElem_ofFn]
 
 @[simp]
 lemma toList_getElem_zero_eq_head (p : RelSeries r) : p.toList[0] = p.head := by
@@ -453,6 +453,14 @@ def cons (p : RelSeries r) (newHead : α) (rel : r newHead p.head) : RelSeries r
   delta cons
   rw [last_append]
 
+lemma cons_cast_succ (s : RelSeries r) (a : α) (h : r a s.head) (i : Fin (s.length + 1)) :
+    (s.cons a h) (.cast (by simp) (.succ i)) = s i := by
+  dsimp [cons]
+  convert append_apply_right (singleton r a) s h i
+  ext
+  show i.1 + 1 = _ % _
+  simpa using (Nat.mod_eq_of_lt (by simp)).symm
+
 @[simp]
 lemma append_singleton_left (p : RelSeries r) (x : α) (hx : r x p.head) :
     (singleton r x).append p hx = p.cons x hx :=
@@ -483,17 +491,10 @@ lemma append_cons {p q : RelSeries r} {x : α} (hx : r x p.head) (hq : r p.last 
   · simp only [singleton, Nat.reduceAdd, append, Fin.append, cons, id_eq, eq_mpr_eq_cast,
       Function.comp_apply, Fin.addCases, Fin.coe_cast, zero_add, Fin.coe_castLT, Nat.lt_one_iff,
       Fin.cast_trans, Fin.subNat, Fin.natAdd_mk, eq_rec_constant, Int.reduceNeg,
-      Int.Nat.cast_ofNat_Int, Fin.cast_mk, Fin.castLT_mk, Fin.subNat_mk]
+      Int.cast_ofNat_Int, Fin.cast_mk, Fin.castLT_mk, Fin.subNat_mk]
     split_ifs <;> try rfl; <;> try omega
     congr 2
     omega
-lemma cons_cast_succ (s : RelSeries r) (a : α) (h : r a s.head) (i : Fin (s.length + 1)) :
-    (s.cons a h) (.cast (by simp) (.succ i)) = s i := by
-  dsimp [cons]
-  convert append_apply_right (singleton r a) s h i
-  ext
-  show i.1 + 1 = _ % _
-  simpa using (Nat.mod_eq_of_lt (by simp)).symm
 
 /--
 Given a series `a₀ -r→ a₁ -r→ ... -r→ aₙ` and an `a` such that `aₙ -r→ a` holds, there is
