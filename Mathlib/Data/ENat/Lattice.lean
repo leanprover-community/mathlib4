@@ -86,16 +86,6 @@ lemma sSup_eq_zero' : sSup s = 0 ↔ s = ∅ ∨ s = {0} :=
 @[simp] lemma iSup_eq_zero : iSup f = 0 ↔ ∀ i, f i = 0 := iSup_eq_bot
 @[simp] lemma iSup_zero : ⨆ _ : ι, (0 : ℕ∞) = 0 := by simp
 
-lemma exists_eq_iInf [Nonempty ι] (f : ι → ℕ∞) : ∃ a, f a = ⨅ x, f x := by
-  obtain htop | hlt := eq_top_or_lt_top (⨅ x, f x)
-  · rw [htop]
-    exact ⟨Classical.arbitrary _, iInf_eq_top.1 htop _⟩
-  apply exists_eq_iInf_of_not_isPredPrelimit
-  simp only [Order.IsPredPrelimit, not_forall, not_not]
-  refine ⟨Order.succ (⨅ x, f x), Order.covBy_succ_of_not_isMax fun hmax ↦ ?_⟩
-  simp only [isMax_iff_eq_top, iInf_eq_top] at hmax
-  simp [hmax] at hlt
-
 lemma sSup_eq_top_of_infinite (h : s.Infinite) : sSup s = ⊤ := by
   apply (sSup_eq_top ..).mpr
   intro x hx
@@ -122,6 +112,9 @@ lemma sSup_mem_of_nonempty_of_lt_top [Nonempty s] (hs' : sSup s < ⊤) : sSup s 
 lemma exists_eq_iSup_of_lt_top [Nonempty ι] (h : ⨆ i, f i < ⊤) :
     ∃ i, f i = ⨆ i, f i :=
   sSup_mem_of_nonempty_of_lt_top h
+
+lemma exists_eq_iInf [Nonempty ι] (f : ι → ℕ∞) : ∃ a, f a = ⨅ x, f x :=
+  csInf_mem (range_nonempty fun i ↦ f i)
 
 lemma exists_eq_iSup₂_of_lt_top {ι₁ ι₂ : Type*} {f : ι₁ → ι₂ → ℕ∞} [Nonempty ι₁] [Nonempty ι₂]
     (h : ⨆ i, ⨆ j, f i j < ⊤) : ∃ i j, f i j = ⨆ i, ⨆ j, f i j := by
