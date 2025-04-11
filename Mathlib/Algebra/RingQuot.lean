@@ -391,6 +391,14 @@ irreducible_def mkRingHom (r : R → R → Prop) : R →+* RingQuot r :=
     map_zero' := by simp [← zero_quot]
     map_add' := by simp [add_quot] }
 
+theorem mkRingHom_eq_iff (r : R → R → Prop) (x y : R) :
+    mkRingHom r x = mkRingHom r y ↔ (Relation.EqvGen (Rel r)) x y := by
+  simp [mkRingHom_def, Quot.eq]
+
+theorem mkRingHom_eq_iff' (r : R → R → Prop) (x y : R) :
+    mkRingHom r x = mkRingHom r y ↔ (RingConGen.Rel r) x y := by
+  rw [← eqvGen_rel_eq]; exact mkRingHom_eq_iff r x y
+
 theorem mkRingHom_rel {r : R → R → Prop} {x y : R} (w : r x y) : mkRingHom r x = mkRingHom r y := by
   simp [mkRingHom_def, Quot.sound (Rel.of w)]
 
@@ -539,6 +547,14 @@ irreducible_def mkAlgHom (s : A → A → Prop) : A →ₐ[S] RingQuot s :=
 theorem mkAlgHom_coe (s : A → A → Prop) : (mkAlgHom S s : A →+* RingQuot s) = mkRingHom s := by
   simp_rw [mkAlgHom_def, mkRingHom_def]
   rfl
+
+theorem mkAlgHom_eq_iff (s : A → A → Prop) (x y : A) :
+    mkAlgHom S s x = mkAlgHom S s y ↔ (Relation.EqvGen (Rel s)) x y := by
+  simp [mkAlgHom_def, mkRingHom_def, Quot.eq]
+
+theorem mkAlgHom_eq_iff' (s : A → A → Prop) (x y : A) :
+    mkAlgHom S s x = mkAlgHom S s y ↔ (RingConGen.Rel s) x y := by
+  rw [← eqvGen_rel_eq]; exact mkAlgHom_eq_iff S s x y
 
 theorem mkAlgHom_rel {s : A → A → Prop} {x y : A} (w : s x y) :
     mkAlgHom S s x = mkAlgHom S s y := by
