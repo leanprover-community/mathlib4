@@ -3,8 +3,8 @@ Copyright (c) 2023 Bhavik Mehta, Rishi Mehta, Linus Sommer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Rishi Mehta, Linus Sommer
 -/
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.List.Count
+import Mathlib.Algebra.GroupWithZero.Nat
+import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Combinatorics.SimpleGraph.Path
 
 /-!
@@ -114,7 +114,7 @@ lemma IsHamiltonianCycle.count_support_self (hp : p.IsHamiltonianCycle) :
 
 lemma IsHamiltonianCycle.support_count_of_ne (hp : p.IsHamiltonianCycle) (h : a ≠ b) :
     p.support.count b = 1 := by
-  rw [← cons_support_tail p hp.1.not_nil, List.count_cons_of_ne h.symm, hp.isHamiltonian_tail]
+  rw [← cons_support_tail p hp.1.not_nil, List.count_cons_of_ne h, hp.isHamiltonian_tail]
 
 end Walk
 

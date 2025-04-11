@@ -123,13 +123,13 @@ theorem not_irreducible_pow {M} [Monoid M] {x : M} {n : ℕ} (hn : n ≠ 1) :
   | zero => simp
   | succ n =>
     intro ⟨h₁, h₂⟩
-    have := h₂ _ _ (pow_succ _ _)
+    have := h₂ (pow_succ _ _)
     rw [isUnit_pow_iff (Nat.succ_ne_succ.mp hn), or_self] at this
     exact h₁ (this.pow _)
 
 theorem Irreducible.of_map {F : Type*} [Monoid M] [Monoid N] [FunLike F M N] [MonoidHomClass F M N]
     {f : F} [IsLocalHom f] {x} (hfx : Irreducible (f x)) : Irreducible x :=
-  ⟨fun hu ↦ hfx.not_unit <| hu.map f,
+  ⟨fun hu ↦ hfx.not_isUnit <| hu.map f,
    by rintro p q rfl
       exact (hfx.isUnit_or_isUnit <| map_mul f p q).imp (.of_map f _) (.of_map f _)⟩
 
@@ -187,7 +187,7 @@ It is local because the only add unit in `N` is `0`, with preimage `{(0, 0)}` al
 Then `x = (1, 0)` is irreducible in `M`, but `f x = 2 = 1 + 1` is not irreducible in `N`.
 -/
 theorem Irreducible.map {x : M} (h : Irreducible x) : Irreducible (f x) :=
-  ⟨fun g ↦ h.not_unit g.of_map, fun a b g ↦
+  ⟨fun g ↦ h.not_isUnit g.of_map, fun a b g ↦
     let f := MulEquivClass.toMulEquiv f
     (h.isUnit_or_isUnit (symm_apply_apply f x ▸ map_mul f.symm a b ▸ congrArg f.symm g)).imp
       (·.of_map) (·.of_map)⟩
@@ -241,7 +241,7 @@ section CommMonoidWithZero
 theorem DvdNotUnit.isUnit_of_irreducible_right [CommMonoidWithZero M] {p q : M}
     (h : DvdNotUnit p q) (hq : Irreducible q) : IsUnit p := by
   obtain ⟨_, x, hx, hx'⟩ := h
-  exact Or.resolve_right ((irreducible_iff.1 hq).right p x hx') hx
+  exact ((irreducible_iff.1 hq).right hx').resolve_right hx
 
 theorem not_irreducible_of_not_unit_dvdNotUnit [CommMonoidWithZero M] {p q : M} (hp : ¬IsUnit p)
     (h : DvdNotUnit p q) : ¬Irreducible q :=
@@ -267,9 +267,6 @@ theorem pow_injective_of_not_isUnit [CancelCommMonoidWithZero M] {q : M} (hq : �
   refine injective_of_lt_imp_ne fun n m h => DvdNotUnit.ne ⟨pow_ne_zero n hq', q ^ (m - n), ?_, ?_⟩
   · exact not_isUnit_of_not_isUnit_dvd hq (dvd_pow (dvd_refl _) (Nat.sub_pos_of_lt h).ne')
   · exact (pow_mul_pow_sub q h.le).symm
-
-@[deprecated (since := "2024-09-22")]
-alias pow_injective_of_not_unit := pow_injective_of_not_isUnit
 
 theorem pow_inj_of_not_isUnit [CancelCommMonoidWithZero M] {q : M} (hq : ¬IsUnit q)
     (hq' : q ≠ 0) {m n : ℕ} : q ^ m = q ^ n ↔ m = n :=

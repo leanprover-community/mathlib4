@@ -296,6 +296,11 @@ instance [Nontrivial G] : Nontrivial (Subgroup G) :=
   nontrivial_iff.mpr ‹_›
 
 @[to_additive]
+instance [Nontrivial G] : Nontrivial (⊤ : Subgroup G) := by
+  rw [nontrivial_iff_ne_bot]
+  exact top_ne_bot
+
+@[to_additive]
 theorem eq_top_iff' : H = ⊤ ↔ ∀ x : G, x ∈ H :=
   eq_top_iff.trans ⟨fun h m => h <| mem_top m, fun h m _ => h m⟩
 
@@ -354,9 +359,6 @@ theorem closure_induction {p : (g : G) → g ∈ closure k → Prop}
       one_mem' := ⟨_, one⟩
       inv_mem' := fun ⟨_, hb⟩ ↦ ⟨_, inv _ _ hb⟩ }
   closure_le (K := K) |>.mpr (fun y hy ↦ ⟨subset_closure hy, mem y hy⟩) hx |>.elim fun _ ↦ id
-
-@[deprecated closure_induction (since := "2024-10-10")]
-alias closure_induction' := closure_induction
 
 /-- An induction principle for closure membership for predicates with two arguments. -/
 @[to_additive (attr := elab_as_elim)

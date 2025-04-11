@@ -98,7 +98,8 @@ namespace IsLocalization
 
 instance isLocalization_algebraMapSubmonoid_map_algHom (f : A →ₐ[R] B) :
     IsLocalization ((algebraMapSubmonoid A M).map f.toRingHom) Bₚ := by
-  erw [algebraMapSubmonoid_map_eq M f]
+  rw [AlgHom.toRingHom_eq_coe, ← Submonoid.map_coe_toMonoidHom, AlgHom.toRingHom_toMonoidHom,
+    Submonoid.map_coe_toMonoidHom, algebraMapSubmonoid_map_eq M f]
   infer_instance
 
 /-- An algebra map `A →ₐ[R] B` induces an algebra map on localizations `Aₚ →ₐ[Rₚ] Bₚ`. -/
@@ -151,7 +152,7 @@ namespace Polynomial
 `R[X]` at `S.map Polynomial.C`.
 
 See also `MvPolynomial.isLocalization` for the multivariate case. -/
-lemma isLocalization {R} [CommRing R] (S : Submonoid R) (A) [CommRing A] [Algebra R A]
+lemma isLocalization {R} [CommSemiring R] (S : Submonoid R) (A) [CommSemiring A] [Algebra R A]
     [IsLocalization S A] : letI := (mapRingHom (algebraMap R A)).toAlgebra
     IsLocalization (S.map C) A[X] :=
   letI := (mapRingHom (algebraMap R A)).toAlgebra

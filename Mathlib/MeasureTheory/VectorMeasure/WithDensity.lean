@@ -44,7 +44,6 @@ def Measure.withDensityᵥ {m : MeasurableSpace α} (μ : Measure α) (f : α �
       empty' := by simp
       not_measurable' := fun _ hs => if_neg hs
       m_iUnion' := fun s hs₁ hs₂ => by
-        dsimp only
         convert hasSum_integral_iUnion hs₁ hs₂ hf.integrableOn with n
         · rw [if_pos (hs₁ n)]
         · rw [if_pos (MeasurableSet.iUnion hs₁)] }
@@ -83,9 +82,9 @@ theorem withDensityᵥ_add (hf : Integrable f μ) (hg : Integrable g μ) :
   rw [withDensityᵥ_apply (hf.add hg) hi, VectorMeasure.add_apply, withDensityᵥ_apply hf hi,
     withDensityᵥ_apply hg hi]
   simp_rw [Pi.add_apply]
-  rw [integral_add] <;> rw [← integrableOn_univ]
-  · exact hf.integrableOn.restrict MeasurableSet.univ
-  · exact hg.integrableOn.restrict MeasurableSet.univ
+  rw [integral_add]
+  · exact hf.integrableOn
+  · exact hg.integrableOn
 
 theorem withDensityᵥ_add' (hf : Integrable f μ) (hg : Integrable g μ) :
     (μ.withDensityᵥ fun x => f x + g x) = μ.withDensityᵥ f + μ.withDensityᵥ g :=

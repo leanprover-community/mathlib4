@@ -6,6 +6,7 @@ Authors: Oliver Nash, Deepro Choudhury, Mitchell Lee, Johan Commelin
 import Mathlib.Algebra.EuclideanDomain.Basic
 import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.Algebra.Module.LinearMap.Basic
+import Mathlib.Algebra.Module.Submodule.Invariant
 import Mathlib.Algebra.Module.Torsion
 import Mathlib.GroupTheory.MonoidLocalization.Basic
 import Mathlib.GroupTheory.OrderOfElement
@@ -124,6 +125,14 @@ lemma invOn_reflection_of_mapsTo {Φ : Set M} (h : f x = 2) :
 lemma bijOn_reflection_of_mapsTo {Φ : Set M} (h : f x = 2) (h' : MapsTo (reflection h) Φ Φ) :
     BijOn (reflection h) Φ Φ :=
   (invOn_reflection_of_mapsTo h).bijOn h' h'
+
+lemma _root_.Submodule.mem_invtSubmodule_reflection_of_mem (h : f x = 2)
+    (p : Submodule R M) (hx : x ∈ p) :
+    p ∈ End.invtSubmodule (reflection h) := by
+  suffices ∀ y ∈ p, reflection h y ∈ p from
+    (End.mem_invtSubmodule _).mpr fun y hy ↦ by simpa using this y hy
+  intro y hy
+  simpa only [reflection_apply, p.sub_mem_iff_right hy] using p.smul_mem (f y) hx
 
 /-! ### Powers of the product of two reflections
 

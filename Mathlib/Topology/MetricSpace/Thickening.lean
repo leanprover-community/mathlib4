@@ -305,7 +305,7 @@ theorem closure_subset_thickening {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) :
 
 /-- A set is contained in its own (open) thickening. -/
 theorem self_subset_thickening {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) : E ⊆ thickening δ E :=
-  (@subset_closure _ E).trans (closure_subset_thickening δ_pos E)
+  (@subset_closure _ _ E).trans (closure_subset_thickening δ_pos E)
 
 /-- A set is contained in its own closed thickening. -/
 theorem self_subset_cthickening {δ : ℝ} (E : Set α) : E ⊆ cthickening δ E :=

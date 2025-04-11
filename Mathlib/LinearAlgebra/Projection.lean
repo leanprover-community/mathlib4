@@ -73,7 +73,7 @@ def quotientEquivOfIsCompl (h : IsCompl p q) : (E ⧸ p) ≃ₗ[R] q :=
 @[simp]
 theorem quotientEquivOfIsCompl_symm_apply (h : IsCompl p q) (x : q) :
     -- Porting note: type ascriptions needed on the RHS
-    (quotientEquivOfIsCompl p q h).symm x = (Quotient.mk (x : E) : E ⧸ p) := rfl
+    (quotientEquivOfIsCompl p q h).symm x = (Quotient.mk x : E ⧸ p) := rfl
 
 @[simp]
 theorem quotientEquivOfIsCompl_apply_mk_coe (h : IsCompl p q) (x : q) :
@@ -262,7 +262,7 @@ variable {R₁ : Type*} [CommRing R₁] [Module R₁ E] [Module R₁ F]
 def ofIsComplProd {p q : Submodule R₁ E} (h : IsCompl p q) :
     (p →ₗ[R₁] F) × (q →ₗ[R₁] F) →ₗ[R₁] E →ₗ[R₁] F where
   toFun φ := ofIsCompl h φ.1 φ.2
-  map_add' := by intro φ ψ; dsimp only; rw [Prod.snd_add, Prod.fst_add, ofIsCompl_add]
+  map_add' := by intro φ ψ; rw [Prod.snd_add, Prod.fst_add, ofIsCompl_add]
   map_smul' := by intro c φ; simp [Prod.smul_snd, Prod.smul_fst, ofIsCompl_smul]
 
 @[simp]
@@ -418,8 +418,8 @@ theorem eq_conj_prod_map' {f : E →ₗ[R] E} (h : IsProj p f) :
   rw [← LinearMap.comp_assoc, LinearEquiv.eq_comp_toLinearMap_symm]
   ext x
   · simp only [coe_prodEquivOfIsCompl, comp_apply, coe_inl, coprod_apply, coe_subtype,
-      _root_.map_zero, add_zero, h.map_id x x.2, prodMap_apply, id_apply]
-  · simp only [coe_prodEquivOfIsCompl, comp_apply, coe_inr, coprod_apply, _root_.map_zero,
+      map_zero, add_zero, h.map_id x x.2, prodMap_apply, id_apply]
+  · simp only [coe_prodEquivOfIsCompl, comp_apply, coe_inr, coprod_apply, map_zero,
       coe_subtype, zero_add, map_coe_ker, prodMap_apply, zero_apply, add_zero]
 
 end IsProj

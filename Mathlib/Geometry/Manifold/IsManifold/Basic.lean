@@ -255,9 +255,6 @@ theorem target_eq : I.target = range (I : H → E) := by
 protected theorem uniqueDiffOn : UniqueDiffOn 𝕜 (range I) :=
   I.target_eq ▸ I.uniqueDiffOn'
 
-@[deprecated (since := "2024-09-30")]
-protected alias unique_diff := ModelWithCorners.uniqueDiffOn
-
 theorem range_subset_closure_interior : range I ⊆ closure (interior (range I)) := by
   rw [← I.target_eq]
   exact I.target_subset_closure_interior
@@ -323,21 +320,12 @@ theorem uniqueDiffOn_preimage {s : Set H} (hs : IsOpen s) :
   rw [inter_comm]
   exact I.uniqueDiffOn.inter (hs.preimage I.continuous_invFun)
 
-@[deprecated (since := "2024-09-30")]
-alias unique_diff_preimage := uniqueDiffOn_preimage
-
 theorem uniqueDiffOn_preimage_source {β : Type*} [TopologicalSpace β] {e : PartialHomeomorph H β} :
     UniqueDiffOn 𝕜 (I.symm ⁻¹' e.source ∩ range I) :=
   I.uniqueDiffOn_preimage e.open_source
 
-@[deprecated (since := "2024-09-30")]
-alias unique_diff_preimage_source := uniqueDiffOn_preimage_source
-
 theorem uniqueDiffWithinAt_image {x : H} : UniqueDiffWithinAt 𝕜 (range I) (I x) :=
   I.uniqueDiffOn _ (mem_range_self _)
-
-@[deprecated (since := "2024-09-30")]
-alias unique_diff_at_image := uniqueDiffWithinAt_image
 
 theorem symm_continuousWithinAt_comp_right_iff {X} [TopologicalSpace X] {f : H → X} {s : Set H}
     {x : H} :
@@ -759,6 +747,8 @@ instance : IsManifold I 0 M := by
 instance [IsManifold I 2 M] :
     IsManifold I 1 M :=
   IsManifold.of_le one_le_two
+
+instance [IsManifold I 3 M] : IsManifold I 2 M := IsManifold.of_le (n := 3) (by norm_cast)
 
 variable (I n M) in
 /-- The maximal atlas of `M` for the `C^n` manifold with corners structure corresponding to the
