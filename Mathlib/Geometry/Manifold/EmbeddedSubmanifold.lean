@@ -242,40 +242,51 @@ noncomputable def pullback_sliceModel (h : SliceModel F I I') (hf : IsEmbedding 
 
 end PartialHomeomorph
 
-variable [ChartedSpace H' M']
-
-variable (I I' M M' n) in
-class IsImmersedSubmanifold [TopologicalSpace M] [IsManifold I' n M'] [SliceModel F I I'] where
+variable (I I' F M M' n) in
+class IsImmersedSubmanifold [TopologicalSpace M] [IsManifold I' n M'] (h: SliceModel F I I') where
   emb: M → M'
+  hemb: IsEmbedding emb
+  hcharts_source : ∀ ⦃y⦄, y ∈ range emb → (chartAt H' y).source ⊆ range emb
+  hcharts_target : ∀ ⦃y⦄, (hy : y ∈ range emb) →
+    (chartAt H' y).target ⊆ range (SliceModel.map F I I')
 
 namespace IsImmersedSubmanifold
 
-variable [TopologicalSpace M] [IsManifold I' n M']
+variable [TopologicalSpace M] [IsManifold I' n M'] [h: SliceModel F I I'] [Nonempty H] [Nonempty M]
 
---instance instChartedSpace [IsImmersedSubmanifold I' M M' n] : ChartedSpace H M := sorry
--- IsManifold I n M
--- IsImmersion ...emb
+noncomputable def myChart (inst : IsImmersedSubmanifold F I I' M M' n h) (x : M) :
+    PartialHomeomorph M H :=
+  (chartAt H' (inst.emb x)).pullback_sliceModel h inst.hemb (hcharts_source (mem_range_self x))
+    (hcharts_target (mem_range_self x))
 
--- conversely, if f: M → M' is an immersion (embedding), we can define the image model I₀ on M',
--- prove that this is a slice model and deduce IsImmersedSubmanifold via f! (same for embedded)
+-- missing simp lemmas: source, target of pullback!
+lemma myChart_source (inst : IsImmersedSubmanifold F I I' M M' n h) (x : M) :
+    (inst.myChart x).source = inst.emb ⁻¹' ((chartAt H' (inst.emb x)).source) := by
+  rfl
+
+-- XXX: making this an instance makes Lean complain about synthesization order
+noncomputable def chartedSpace (inst : IsImmersedSubmanifold F I I' M M' n h) :
+    ChartedSpace H M where
+  atlas := {inst.myChart x | x : M }
+  chartAt x := inst.myChart x
+  mem_chart_source x := by
+    rw [myChart_source]
+    exact mem_chart_source _ (emb n h x)
+  chart_mem_atlas x := by rw [mem_setOf]; use x
+
+-- cannot state this yet because of the synthesisation order issue
+-- TODO fix, and make an instance
+/- noncomputable def isManifold (inst : IsImmersedSubmanifold F I I' M M' n h) :
+    haveI : ChartedSpace H M := inst.chartedSpace; IsManifold I n M where
+  compatible := sorry -/
+
+/- lemma isImmersion_emb (inst : IsImmersedSubmanifold F I I' M M' n h) :
+    IsImmersion F I I' n inst.emb := sorry -/
+
+-- TODO: define embedded submanifolds, deduce that `emb` is an embedding
+
+-- TODO: conversely, if f: M → M' is an immersion (embedding), we can define the image model
+-- I₀ on M', prove that this is a slice model and deduce IsImmersedSubmanifold via f
+-- (same for embedded)
+
 end IsImmersedSubmanifold
-
-#exit
-
-
-
--- XXX: does NontriviallyNormedField also work? Splits seems to require more...
-variable {𝕜 : Type*} [RCLike 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-  {F F' : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
-  {H : Type*} [TopologicalSpace H] {H' : Type*} [TopologicalSpace H']
-  {G : Type*} [TopologicalSpace G] {G' : Type*} [TopologicalSpace G']
-  {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCorners 𝕜 E' H'}
-  {J : ModelWithCorners 𝕜 F G} {J' : ModelWithCorners 𝕜 F G'}
-
-variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
-  {N : Type*} [TopologicalSpace N] [ChartedSpace G N]
-  {N' : Type*} [TopologicalSpace N'] [ChartedSpace G' N']
-  {n : WithTop ℕ∞}
