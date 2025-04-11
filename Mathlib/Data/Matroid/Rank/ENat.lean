@@ -333,9 +333,8 @@ lemma eRk_eq_top_iff : M.eRk X = ⊤ ↔ ¬ M.IsRkFinite X := by
   obtain ⟨I, hI⟩ := M.exists_isBasis' X
   rw [hI.eRk_eq_encard, encard_eq_top_iff, ← hI.finite_iff_isRkFinite, Set.Infinite]
 
-@[simp]
 lemma eRk_ne_top_iff : M.eRk X ≠ ⊤ ↔ M.IsRkFinite X := by
-  rw [ne_eq, eRk_eq_top_iff, not_not]
+  simp
 
 @[simp]
 lemma eRk_lt_top_iff : M.eRk X < ⊤ ↔ M.IsRkFinite X := by
@@ -367,14 +366,6 @@ lemma eRk_comap_eq {β : Type*} {f : α → β} (M : Matroid β) (X : Set α) :
   obtain ⟨I, hI⟩ := (M.comap f).exists_isBasis' X
   obtain ⟨hI', hinj, -⟩ := comap_isBasis'_iff.1 hI
   rw [← hI.encard_eq_eRk, ← hI'.encard_eq_eRk, hinj.encard_image]
-
-@[simp]
-lemma eRank_loopyOn (X : Set α) : (loopyOn X).eRank = 0 := by
-  simp [← (show (loopyOn X).IsBase ∅ by simp).encard_eq_eRank]
-
-@[simp]
-lemma eRank_emptyOn (α : Type*) : (emptyOn α).eRank = 0 := by
-  simp [← (show (emptyOn α).IsBase ∅ by simp).encard_eq_eRank]
 
 @[simp]
 lemma loopyOn_eRk_eq (X Y : Set α) : (loopyOn Y).eRk X = 0 := by
