@@ -404,7 +404,7 @@ lemma comul_def :
       tensorTensorTensorComm _ _ _ _ _ (comul (R := R) a ⊗ₜ[R] comul (R := R) b) := rfl
 
 lemma counit_def :
-    Coalgebra.counit (R := R) (A := A ⊗[R] B) = TensorProduct.lid R R ∘ₗ map counit counit :=
+    Coalgebra.counit (R := R) (A := A ⊗[R] B) = LinearMap.mul' R R ∘ₗ map counit counit :=
   rfl
 
 @[deprecated (since := "2025-04-09")] alias instCoalgebraStruct_counit := counit_def
