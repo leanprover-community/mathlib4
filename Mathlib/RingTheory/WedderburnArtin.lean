@@ -71,23 +71,23 @@ lemma minimal_ideal_isSimpleModule {A : Type u} [Ring A]
   exact hx.1
 
 lemma TwoSidedIdeal.span_eq_bot {R : Type*} [NonUnitalNonAssocRing R] {s : Set R}:
-    span s = ⊥ ↔ ∀x ∈ span s, x = 0 :=
-  eq_bot_iff.trans ⟨fun H _ h => mem_bot _|>.1 <| H h,
-    fun H ↦ span_le.2 fun x h => mem_bot _|>.2 <| H x <| subset_span h⟩
+    span s = ⊥ ↔ ∀x ∈ s, x = 0 :=
+  eq_bot_iff.trans ⟨fun H _ h => mem_bot _|>.1 <| H <| subset_span h,
+    fun H ↦ span_le.2 fun x h => mem_bot _|>.2 <| H x <| h⟩
 
+open TwoSidedIdeal in
 lemma Wedderburn_Artin.aux.one_eq
     {A : Type u} [Ring A] [simple : IsSimpleRing A]
     (I : Ideal A) (I_nontrivial : I ≠ ⊥) :
     ∃ (n : ℕ) (x : Fin n → A) (i : Fin n → I), ∑ j : Fin n, i j * x j = 1 := by
 
-  letI I' : TwoSidedIdeal A := TwoSidedIdeal.span I
+  letI I' : TwoSidedIdeal A := span I
   have I'_is_everything : I' = ⊤ := simple.1.2 I' |>.resolve_left (fun r ↦ by
-    rw [TwoSidedIdeal.span_eq_bot] at r
-    obtain ⟨⟨y, hy1⟩, hy⟩ := Submodule.nonzero_mem_of_bot_lt (bot_lt_iff_ne_bot.mpr I_nontrivial)
-    exact hy <| Submodule.mk_eq_zero _ _|>.2 <| r y (TwoSidedIdeal.subset_span hy1))
+    rw [span_eq_bot] at r
+    exact I_nontrivial <| SetLike.ext <| fun x ↦ ⟨r x, fun _ ↦ by simp_all⟩ )
   have one_mem_I' : 1 ∈ I' := by rw [I'_is_everything]; trivial
 
-  rw [TwoSidedIdeal.mem_span_ideal_iff_exists_fin] at one_mem_I'
+  rw [mem_span_ideal_iff_exists_fin] at one_mem_I'
   obtain ⟨n, finn, x, y, hy⟩ := one_mem_I'
   exact ⟨Fintype.card n, x ∘ (Fintype.equivFin _).symm, y ∘ (Fintype.equivFin _).symm, hy ▸
     Fintype.sum_bijective (Fintype.equivFin _).symm (Equiv.bijective _) _ _ fun k ↦ rfl⟩
