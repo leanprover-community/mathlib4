@@ -62,43 +62,53 @@ section
 
 variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G] [Unique G]
 
+namespace LinearEquiv
+
 variable (𝕜 E) in
-def LinearEquiv.prodUnique : (E × G) ≃ₗ[𝕜] E where
+/-- The natural equivalence `E × G ≃ₗ[𝕜] E` for any `Unique` type `G`.
+This is `Equiv.prodUnique` as a linear equivalence. -/
+def prodUnique : (E × G) ≃ₗ[𝕜] E where
   toEquiv := Equiv.prodUnique E G
-  map_add' := sorry
-  map_smul' := sorry
+  map_add' x y := by simp
+  map_smul' r x := by simp
 
 @[simp]
-lemma LinearEquiv.prodUnique_toEquiv : (LinearEquiv.prodUnique 𝕜 E).toEquiv = Equiv.prodUnique E G := rfl
+lemma prodUnique_toEquiv : (prodUnique 𝕜 E).toEquiv = Equiv.prodUnique E G := rfl
+
+end LinearEquiv
+
+namespace ContinuousLinearEquiv
 
 variable (𝕜 E) in
-def ContinuousLinearEquiv.prodUnique : (E × G) ≃L[𝕜] E where
+/-- The natural equivalence `E × G ≃L[𝕜] E` for any `Unique` type `G`.
+This is `Equiv.prodUnique` as a continuous linear equivalence. -/
+def prodUnique : (E × G) ≃L[𝕜] E where
   toLinearEquiv := LinearEquiv.prodUnique 𝕜 E
   continuous_toFun := by
     show Continuous (Equiv.prodUnique E G)
     dsimp; fun_prop
   continuous_invFun := by
-    dsimp
-    show Continuous (Equiv.prodUnique E G).symm
-    sorry -- dsimp; continuity--fun_prop
+    show Continuous fun x ↦ (x, default)
+    fun_prop
 
 @[simp]
-lemma ContinuousLinearEquiv.prodUnique_toEquiv :
-    (ContinuousLinearEquiv.prodUnique 𝕜 E).toEquiv = Equiv.prodUnique E G := rfl
+lemma prodUnique_toEquiv : (prodUnique 𝕜 E).toEquiv = Equiv.prodUnique E G := rfl
 
 @[simp]
-lemma ContinuousLinearEquiv.prodUnique_apply (x : E × G) :
-    (ContinuousLinearEquiv.prodUnique 𝕜 E) x = x.1 := rfl
+lemma prodUnique_apply (x : E × G) : prodUnique 𝕜 E x = x.1 := rfl
 
 @[simp]
-lemma ContinuousLinearEquiv.prodUnique_symm_apply (x : E) :
-    (ContinuousLinearEquiv.prodUnique 𝕜 E (G := G)).symm x = (x, (sorry : G)) := sorry -- rfl
+lemma prodUnique_symm_apply (x : E) : (prodUnique 𝕜 E (G := G)).symm x = (x, default) := rfl
 
 /- do I want all/any of these lemma?
 @[simp]
-lemma LinearEquiv.prodSingle_coe {y : G} :
-    (LinearEquiv.prodSingleton 𝕜 E (y := y)) = ((·, y) : E → E × G) := rfl
+lemma prodSingle_coe {y : G} :
+    (prodSingleton 𝕜 E (y := y)) = ((·, y) : E → E × G) := rfl
 -/
+
+end ContinuousLinearEquiv
+
+end
 
 /-- Every model with corners is a slice model over itself. -/
 instance : SliceModel (⊥ : Subspace 𝕜 E) I I where
@@ -118,14 +128,12 @@ instance [h : SliceModel F I I'] : SliceModel F (J.prod I) (J.prod I') where
   hmap := IsEmbedding.id.prodMap h.hmap
   compatible := sorry
 
--- a bit more cumbersom, as equiv needs some reordering
+-- a bit more cumbersome, as equiv needs some reordering
 instance [h : SliceModel F I I'] : SliceModel F (I.prod J) (I'.prod J) where
   equiv := sorry
   map := Prod.map h.map id
   hmap := h.hmap.prodMap IsEmbedding.id
   compatible := sorry
-
-end
 
 namespace PartialHomeomorph
 
