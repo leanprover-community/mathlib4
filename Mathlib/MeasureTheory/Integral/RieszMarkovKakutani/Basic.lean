@@ -44,6 +44,19 @@ lemma CompactlySupportedContinuousMap.monotone_of_nnreal : Monotone Λ := by
   rw [← hg]
   simp
 
+/-- The positivity of a linear functional `Λ` implies that `Λ` is monotone. -/
+lemma CompactlySupportedContinuousMap.monotone_of_nonneg {Λ : C_c(X, ℝ) →ₗ[ℝ] ℝ}
+    (hΛ : ∀ f, 0 ≤ f → 0 ≤ Λ f) : Monotone Λ := by
+  intro f₁ f₂ h
+  have : 0 ≤ Λ (f₂ - f₁) := by
+    apply hΛ
+    intro x
+    simp only [coe_zero, Pi.zero_apply, coe_sub, Pi.sub_apply, sub_nonneg]
+    exact h x
+  calc Λ f₁ ≤ Λ f₁ + Λ (f₂ - f₁) := by exact (le_add_iff_nonneg_right (Λ f₁)).mpr this
+  _ =  Λ (f₁ + (f₂ - f₁)) := by exact Eq.symm (LinearMap.map_add Λ f₁ (f₂ - f₁))
+  _ = Λ f₂ := by congr; exact add_sub_cancel f₁ f₂
+
 end Monotone
 
 /-- Given a positive linear functional `Λ` on continuous compactly supported functions on `X`
@@ -305,7 +318,7 @@ lemma contentRegular_rieszContent : (rieszContent Λ).ContentRegular := by
 
 end RieszContentRegular
 
-section RieszMeasure
+namespace NNRealRMK
 
 variable [T2Space X] [LocallyCompactSpace X] [MeasurableSpace X] [BorelSpace X]
 
@@ -338,4 +351,4 @@ lemma le_rieszMeasure_of_tsupport_subset {f : C_c(X, ℝ≥0)} (hf : ∀ x, f x 
   apply le_rieszMeasure_of_isCompact_tsupport_subset Λ hf f.hasCompactSupport
   exact subset_rfl
 
-end RieszMeasure
+end NNRealRMK
