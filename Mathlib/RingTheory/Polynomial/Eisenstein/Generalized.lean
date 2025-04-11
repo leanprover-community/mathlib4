@@ -124,9 +124,9 @@ theorem generalizedEisenstein {q f : R[X]} {p : ℕ}
       C (algebraMap R K f.leadingCoeff) * q.map (algebraMap R K) ^ p)
     (hfmodP2 : (f.modByMonic q).map (mk ((ker (algebraMap R K)) ^ 2)) ≠ 0) :
     Irreducible f where
-  not_unit := mt degree_eq_zero_of_isUnit fun h => by
+  not_isUnit := mt degree_eq_zero_of_isUnit fun h => by
     simp_all [lt_irrefl, natDegree_pos_iff_degree_pos]
-  isUnit_or_isUnit' g h h_eq := by
+  isUnit_or_isUnit g h h_eq := by
     -- We have to show that factorizations `f = g * h` are trivial
     set P : Ideal R := ker (algebraMap R K)
     have hP : P.IsPrime := ker_isPrime (algebraMap R K)
