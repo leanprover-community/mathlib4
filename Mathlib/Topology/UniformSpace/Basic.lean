@@ -759,8 +759,6 @@ theorem UniformContinuous.prodMap [UniformSpace δ] {f : α → γ} {g : β → 
     (hf : UniformContinuous f) (hg : UniformContinuous g) : UniformContinuous (Prod.map f g) :=
   (hf.comp uniformContinuous_fst).prodMk (hg.comp uniformContinuous_snd)
 
-@[deprecated (since := "2024-10-06")] alias UniformContinuous.prod_map := UniformContinuous.prodMap
-
 theorem toTopologicalSpace_prod {α} {β} [u : UniformSpace α] [v : UniformSpace β] :
     @UniformSpace.toTopologicalSpace (α × β) instUniformSpaceProd =
       @instTopologicalSpaceProd α β u.toTopologicalSpace v.toTopologicalSpace :=

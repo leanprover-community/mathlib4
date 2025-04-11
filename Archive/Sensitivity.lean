@@ -200,15 +200,12 @@ variable {n : ℕ}
 open Classical in
 theorem duality (p q : Q n) : ε p (e q) = if p = q then 1 else 0 := by
   induction' n with n IH
-  · rw [show p = q from Subsingleton.elim (α := Q 0) p q]
-    dsimp [ε, e]
-    simp
+  · simp [Subsingleton.elim (α := Q 0) p q, ε, e]
   · dsimp [ε, e]
     cases hp : p 0 <;> cases hq : q 0
     all_goals
-      repeat rw [Bool.cond_true]
-      repeat rw [Bool.cond_false]
-      simp only [LinearMap.fst_apply, LinearMap.snd_apply, LinearMap.comp_apply, IH, V]
+      simp only [Bool.cond_true, Bool.cond_false, LinearMap.fst_apply, LinearMap.snd_apply,
+        LinearMap.comp_apply, IH, V]
       congr 1; rw [Q.succ_n_eq]; simp [hp, hq]
 
 /-- Any vector in `V n` annihilated by all `ε p`'s is zero. -/

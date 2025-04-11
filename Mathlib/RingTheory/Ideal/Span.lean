@@ -197,7 +197,7 @@ theorem span_singleton_le_span_singleton {x y : α} :
     span ({x} : Set α) ≤ span ({y} : Set α) ↔ y ∣ x :=
   span_le.trans <| singleton_subset_iff.trans mem_span_singleton
 
-theorem span_singleton_eq_span_singleton {α : Type u} [CommRing α] [IsDomain α] {x y : α} :
+theorem span_singleton_eq_span_singleton {α : Type u} [CommSemiring α] [IsDomain α] {x y : α} :
     span ({x} : Set α) = span ({y} : Set α) ↔ Associated x y := by
   rw [← dvd_dvd_iff_associated, le_antisymm_iff, and_comm]
   apply and_congr <;> rw [span_singleton_le_span_singleton]

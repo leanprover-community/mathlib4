@@ -3,6 +3,7 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
+import Mathlib.Algebra.Order.Group.Int
 import Mathlib.Algebra.Order.Group.Unbundled.Int
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.Int.Parity
@@ -32,21 +33,8 @@ open Function Nat
 
 namespace Int
 
-instance instLinearOrderedCommRing : LinearOrderedCommRing ℤ where
-  __ := instCommRing
-  __ := instLinearOrder
-  add_le_add_left := @Int.add_le_add_left
-  mul_pos := @Int.mul_pos
-  zero_le_one := le_of_lt Int.zero_lt_one
-
-/-!
-### Extra instances to short-circuit type class resolution
-
-These also prevent non-computable instances being used to construct these instances non-computably.
--/
-
-instance instOrderedCommRing : OrderedCommRing ℤ := StrictOrderedCommRing.toOrderedCommRing'
-instance instOrderedRing : OrderedRing ℤ := StrictOrderedRing.toOrderedRing'
+instance instZeroLEOneClass : ZeroLEOneClass ℤ := ⟨Int.zero_lt_one.le⟩
+instance instIsStrictOrderedRing : IsStrictOrderedRing ℤ := .of_mul_pos @Int.mul_pos
 
 /-! ### Miscellaneous lemmas -/
 

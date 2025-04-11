@@ -60,15 +60,9 @@ theorem isUniformInducing_equivBoundedOfCompact : IsUniformInducing (equivBounde
           ⟨⟨Set.univ, { p | dist p.1 p.2 ≤ ε }⟩, ⟨isCompact_univ, ⟨ε, hε, fun _ h => h⟩⟩,
             fun ⟨f, g⟩ h => hs _ _ (ht ((dist_le hε.le).mpr fun x => h x (mem_univ x)))⟩⟩)
 
-@[deprecated (since := "2024-10-05")]
-alias uniformInducing_equivBoundedOfCompact := isUniformInducing_equivBoundedOfCompact
-
 theorem isUniformEmbedding_equivBoundedOfCompact : IsUniformEmbedding (equivBoundedOfCompact α β) :=
   { isUniformInducing_equivBoundedOfCompact α β with
     injective := (equivBoundedOfCompact α β).injective }
-
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_equivBoundedOfCompact := isUniformEmbedding_equivBoundedOfCompact
 
 /-- When `α` is compact, the bounded continuous maps `α →ᵇ 𝕜` are
 additively equivalent to `C(α, 𝕜)`.

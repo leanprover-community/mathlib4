@@ -289,10 +289,6 @@ theorem log_def {b : Ordinal} (h : 1 < b) (x : Ordinal) : log b x = pred (sInf {
 theorem log_of_left_le_one {b : Ordinal} (h : b ≤ 1) (x : Ordinal) : log b x = 0 :=
   if_neg h.not_lt
 
-@[deprecated log_of_left_le_one (since := "2024-10-10")]
-theorem log_of_not_one_lt_left {b : Ordinal} (h : ¬1 < b) (x : Ordinal) : log b x = 0 := by
-  simp only [log, if_neg h]
-
 @[simp]
 theorem log_zero_left : ∀ b, log 0 b = 0 :=
   log_of_left_le_one zero_le_one
