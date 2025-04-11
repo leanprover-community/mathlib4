@@ -189,16 +189,18 @@ noncomputable def aux_invFun (h : SliceModel F I I') : H → M :=
   (Function.extend f id (fun _ ↦ (Classical.arbitrary M))) ∘ φ.symm ∘ h.map
 
 omit [Nonempty M] [ChartedSpace H' M'] [TopologicalSpace M] in
-lemma aux (h : SliceModel F I I') (hyp : range (φ ∘ f) ⊆ range h.map)
+lemma aux (h : SliceModel F I I') (hyp : range (φ ∘ f) = range h.map)
     {y : H'} (hy : y ∈ range (φ ∘ f)) : h.map (h.inverse y) = y := by
+  have : y ∈ range h.map := by
+    simp_rw [← hyp]; exact hy
   choose x hx using hy
-  choose x' hx' using hyp ⟨x, hx⟩
+  choose x' hx' using this
   rw [← hx', SliceModel.inverse_left_inv x']
 
 /-- Pull back a partial homeomorphism using a slice model.
 The slice model conditions should guarantee the necessary condition for continuity and inverses. -/
 noncomputable def pullback_sliceModel [Nonempty M] [Nonempty H] (φ : PartialHomeomorph M' H')
-    {f : M → M'} (hf : IsEmbedding f) (h : SliceModel F I I') (hyp : range (φ ∘ f) ⊆ range h.map) :
+    {f : M → M'} (hf : IsEmbedding f) (h : SliceModel F I I') (hyp : range (φ ∘ f) = range h.map) :
     PartialHomeomorph M H where
   toFun := h.inverse ∘ φ ∘ f
   invFun :=
