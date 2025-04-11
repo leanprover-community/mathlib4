@@ -819,9 +819,6 @@ theorem isClosedEmbedding_update {ι : Type*} {β : ι → Type*}
   apply isClosed_set_pi
   simp [forall_update_iff, hs, isClosed_singleton]
 
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_update := isClosedEmbedding_update
-
 /-! ### R₁ (preregular) spaces -/
 
 section R1Space

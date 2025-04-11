@@ -53,9 +53,6 @@ theorem isClosedEmbedding_inclusion {S₁ S₂ : StarSubalgebra R A} (h : S₁ �
           · intro _ h'
             apply h h' ⟩ }
 
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_inclusion := isClosedEmbedding_inclusion
-
 variable [IsTopologicalSemiring A] [ContinuousStar A]
 variable [TopologicalSpace B] [Semiring B] [Algebra R B] [StarRing B]
 
@@ -240,8 +237,6 @@ theorem isClosedEmbedding_coe (x : A) : IsClosedEmbedding ((↑) : elemental R x
 
 @[deprecated (since := "2024-11-05")]
 alias _root_.elementalStarAlgebra.isClosedEmbedding_coe := isClosedEmbedding_coe
-@[deprecated (since := "2024-10-20")]
-alias _root_.elementalStarAlgebra.closedEmbedding_coe := isClosedEmbedding_coe
 
 @[elab_as_elim]
 theorem induction_on {x y : A}

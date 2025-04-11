@@ -138,9 +138,6 @@ lemma cfcₙHom_isClosedEmbedding :
     IsClosedEmbedding <| (cfcₙHom ha : C(σₙ R a, R)₀ →⋆ₙₐ[R] A) :=
   (NonUnitalContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.1
 
-@[deprecated (since := "2024-10-20")]
-alias cfcₙHom_closedEmbedding := cfcₙHom_isClosedEmbedding
-
 @[fun_prop]
 lemma cfcₙHom_continuous : Continuous (cfcₙHom ha : C(σₙ R a, R)₀ →⋆ₙₐ[R] A) :=
   cfcₙHom_isClosedEmbedding ha |>.continuous
@@ -773,9 +770,6 @@ lemma isClosedEmbedding_cfcₙHom_of_cfcHom {a : A} (ha : p a) :
   have : ∀ U ∈ 𝓤 (C(Unit, R)), (0, 0) ∈ U := fun U hU ↦ refl_mem_uniformity hU
   convert Filter.comap_const_of_mem this with ⟨u, v⟩ <;>
   ext ⟨x, rfl⟩ <;> [exact map_zero u; exact map_zero v]
-
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_cfcₙHom_of_cfcHom := isClosedEmbedding_cfcₙHom_of_cfcHom
 
 instance ContinuousFunctionalCalculus.toNonUnital :
     NonUnitalContinuousFunctionalCalculus R A p where

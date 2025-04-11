@@ -68,13 +68,7 @@ theorem Set.restrictPreimage_isClosedEmbedding (s : Set β) (h : IsClosedEmbeddi
   ⟨h.1.restrictPreimage s,
     (s.range_restrictPreimage f).symm ▸ IsInducing.subtypeVal.isClosed_preimage _ h.isClosed_range⟩
 
-@[deprecated (since := "2024-10-20")]
-alias Set.restrictPreimage_closedEmbedding := Set.restrictPreimage_isClosedEmbedding
-
 alias Topology.IsClosedEmbedding.restrictPreimage := Set.restrictPreimage_isClosedEmbedding
-
-@[deprecated (since := "2024-10-20")]
-alias ClosedEmbedding.restrictPreimage := IsClosedEmbedding.restrictPreimage
 
 theorem IsClosedMap.restrictPreimage (H : IsClosedMap f) (s : Set β) :
     IsClosedMap (s.restrictPreimage f) := by
@@ -287,10 +281,6 @@ theorem isOpenEmbedding_iff_isOpenEmbedding_of_iSup_eq_top (h : Continuous f) :
 theorem isClosedEmbedding_iff_isClosedEmbedding_of_iSup_eq_top (h : Continuous f) :
     IsClosedEmbedding f ↔ ∀ i, IsClosedEmbedding ((U i).1.restrictPreimage f) :=
   (IsOpenCover.mk hU).isClosedEmbedding_iff_restrictPreimage h
-
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_iff_closedEmbedding_of_iSup_eq_top :=
- isClosedEmbedding_iff_isClosedEmbedding_of_iSup_eq_top
 
 omit [TopologicalSpace α] in
 @[deprecated IsOpenCover.denseRange_iff_restrictPreimage (since := "2025-02-10")]

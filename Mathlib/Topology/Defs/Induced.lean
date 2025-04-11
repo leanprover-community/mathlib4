@@ -130,9 +130,6 @@ structure IsClosedEmbedding (f : X → Y) : Prop extends IsEmbedding f where
   /-- The range of a closed embedding is a closed set. -/
   isClosed_range : IsClosed <| range f
 
-@[deprecated (since := "2024-10-20")]
-alias ClosedEmbedding := IsClosedEmbedding
-
 /-- A function between topological spaces is a quotient map if it is surjective,
   and for all `s : Set Y`, `s` is open iff its preimage is an open set. -/
 @[mk_iff isQuotientMap_iff']

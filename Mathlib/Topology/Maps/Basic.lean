@@ -704,9 +704,6 @@ lemma of_isEmbedding_isClosedMap (h₁ : IsEmbedding f) (h₂ : IsClosedMap f) :
 @[deprecated (since := "2024-10-26")]
 alias _root_.IsClosedEmbedding.of_embedding_closed := of_isEmbedding_isClosedMap
 
-@[deprecated (since := "2024-10-20")]
-alias _root_.closedEmbedding_of_embedding_closed := of_isEmbedding_isClosedMap
-
 lemma of_continuous_injective_isClosedMap (h₁ : Continuous f) (h₂ : Injective f)
     (h₃ : IsClosedMap f) : IsClosedEmbedding f := by
   refine .of_isEmbedding_isClosedMap ⟨⟨?_⟩, h₂⟩ h₃
@@ -714,19 +711,12 @@ lemma of_continuous_injective_isClosedMap (h₁ : Continuous f) (h₂ : Injectiv
   refine ⟨(f '' sᶜ)ᶜ, (h₃ _ hs.isClosed_compl).isOpen_compl, ?_⟩
   rw [preimage_compl, preimage_image_eq _ h₂, compl_compl]
 
-@[deprecated (since := "2024-10-20")]
-alias _root_.closedEmbedding_of_continuous_injective_closed :=
-  IsClosedEmbedding.of_continuous_injective_isClosedMap
-
 lemma isClosedEmbedding_iff_continuous_injective_isClosedMap {f : X → Y} :
     IsClosedEmbedding f ↔ Continuous f ∧ Injective f ∧ IsClosedMap f where
   mp h := ⟨h.continuous, h.injective, h.isClosedMap⟩
   mpr h := .of_continuous_injective_isClosedMap h.1 h.2.1 h.2.2
 
 protected theorem id : IsClosedEmbedding (@id X) := ⟨.id, IsClosedMap.id.isClosed_range⟩
-
-@[deprecated (since := "2024-10-20")]
-alias _root_.closedEmbedding_id := IsClosedEmbedding.id
 
 theorem comp (hg : IsClosedEmbedding g) (hf : IsClosedEmbedding f) :
     IsClosedEmbedding (g ∘ f) :=

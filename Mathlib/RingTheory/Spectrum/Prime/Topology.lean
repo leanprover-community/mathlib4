@@ -492,9 +492,6 @@ lemma isClosedEmbedding_comap_of_surjective (hf : Surjective f) : IsClosedEmbedd
   injective := comap_injective_of_surjective f hf
   isClosed_range := isClosed_range_comap_of_surjective S f hf
 
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_comap_of_surjective := isClosedEmbedding_comap_of_surjective
-
 end SpecOfSurjective
 
 section SpecProd

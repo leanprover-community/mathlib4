@@ -50,8 +50,6 @@ namespace IsClosedImmersion
 
 @[deprecated (since := "2024-10-24")]
 alias isClosedEmbedding := Scheme.Hom.isClosedEmbedding
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding := isClosedEmbedding
 
 lemma eq_inf : @IsClosedImmersion = (topologically IsClosedEmbedding) ⊓
     @SurjectiveOnStalks := by

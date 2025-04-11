@@ -274,22 +274,13 @@ protected lemma IsHomeomorph.isProperMap (hf : IsHomeomorph f) : IsProperMap f :
 lemma Topology.IsClosedEmbedding.isProperMap (hf : IsClosedEmbedding f) : IsProperMap f :=
   isProperMap_of_isClosedMap_of_inj hf.continuous hf.injective hf.isClosedMap
 
-@[deprecated (since := "2024-10-20")]
-alias isProperMap_of_closedEmbedding := IsClosedEmbedding.isProperMap
-
 /-- The coercion from a closed subset is proper. -/
 lemma IsClosed.isProperMap_subtypeVal {C : Set X} (hC : IsClosed C) : IsProperMap ((↑) : C → X) :=
   hC.isClosedEmbedding_subtypeVal.isProperMap
 
-@[deprecated (since := "2024-10-20")]
-alias isProperMap_subtype_val_of_closed := IsClosed.isProperMap_subtypeVal
-
 /-- The restriction of a proper map to a closed subset is proper. -/
 lemma IsProperMap.restrict {C : Set X} (hf : IsProperMap f) (hC : IsClosed C) :
     IsProperMap fun x : C ↦ f x := hC.isProperMap_subtypeVal.comp  hf
-
-@[deprecated (since := "2024-10-20")]
-alias isProperMap_restr_of_proper_of_closed := IsProperMap.restrict
 
 /-- The range of a proper map is closed. -/
 lemma IsProperMap.isClosed_range (hf : IsProperMap f) : IsClosed (range f) :=

@@ -715,16 +715,10 @@ theorem Topology.IsClosedEmbedding.inl : IsClosedEmbedding (inl : X → X ⊕ Y)
 
 @[deprecated (since := "2024-10-30")] alias isClosedEmbedding_inl := IsClosedEmbedding.inl
 
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_inl := IsClosedEmbedding.inl
-
 theorem Topology.IsClosedEmbedding.inr : IsClosedEmbedding (inr : Y → X ⊕ Y) :=
   ⟨.inr, isClosed_range_inr⟩
 
 @[deprecated (since := "2024-10-30")] alias isClosedEmbedding_inr := IsClosedEmbedding.inr
-
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_inr := IsClosedEmbedding.inr
 
 theorem nhds_inl (x : X) : 𝓝 (inl x : X ⊕ Y) = map inl (𝓝 x) :=
   (IsOpenEmbedding.inl.map_nhds_eq _).symm

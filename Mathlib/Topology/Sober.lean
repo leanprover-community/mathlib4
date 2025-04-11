@@ -179,9 +179,6 @@ lemma Topology.IsClosedEmbedding.quasiSober {f : α → β} (hf : IsClosedEmbedd
     apply image_injective.mpr hf.injective
     rw [← hx.def, ← hf.closure_image_eq, image_singleton]
 
-@[deprecated (since := "2024-10-20")]
-alias ClosedEmbedding.quasiSober := Topology.IsClosedEmbedding.quasiSober
-
 theorem Topology.IsOpenEmbedding.quasiSober {f : α → β} (hf : IsOpenEmbedding f) [QuasiSober β] :
     QuasiSober α where
   sober hS hS' := by

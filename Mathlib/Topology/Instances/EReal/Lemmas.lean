@@ -88,9 +88,6 @@ alias embedding_coe_ennreal := isEmbedding_coe_ennreal
 theorem isClosedEmbedding_coe_ennreal : IsClosedEmbedding ((↑) : ℝ≥0∞ → EReal) :=
   ⟨isEmbedding_coe_ennreal, by rw [range_coe_ennreal]; exact isClosed_Ici⟩
 
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_coe_ennreal := isClosedEmbedding_coe_ennreal
-
 @[norm_cast]
 theorem tendsto_coe_ennreal {α : Type*} {f : Filter α} {m : α → ℝ≥0∞} {a : ℝ≥0∞} :
     Tendsto (fun a => (m a : EReal)) f (𝓝 ↑a) ↔ Tendsto m f (𝓝 a) :=

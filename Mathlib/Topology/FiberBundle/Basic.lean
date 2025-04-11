@@ -275,9 +275,6 @@ theorem totalSpaceMk_isClosedEmbedding [T1Space B] (x : B) :
     rw [TotalSpace.range_mk]
     exact isClosed_singleton.preimage <| continuous_proj F E⟩
 
-@[deprecated (since := "2024-10-20")]
-alias totalSpaceMk_closedEmbedding := totalSpaceMk_isClosedEmbedding
-
 variable {E F}
 
 @[simp, mfld_simps]

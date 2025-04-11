@@ -262,9 +262,6 @@ theorem exists_extension_norm_eq_of_isClosedEmbedding' (f : X →ᵇ ℝ) (e : C
   · rw [← hge]
     exact norm_compContinuous_le _ _
 
-@[deprecated (since := "2024-10-20")]
-alias exists_extension_norm_eq_of_closedEmbedding' := exists_extension_norm_eq_of_isClosedEmbedding'
-
 /-- **Tietze extension theorem** for real-valued bounded continuous maps, a version with a closed
 embedding and unbundled composition. If `e : C(X, Y)` is a closed embedding of a topological space
 into a normal topological space and `f : X →ᵇ ℝ` is a bounded continuous function, then there exists
@@ -273,9 +270,6 @@ theorem exists_extension_norm_eq_of_isClosedEmbedding (f : X →ᵇ ℝ) {e : X 
     (he : IsClosedEmbedding e) : ∃ g : Y →ᵇ ℝ, ‖g‖ = ‖f‖ ∧ g ∘ e = f := by
   rcases exists_extension_norm_eq_of_isClosedEmbedding' f ⟨e, he.continuous⟩ he with ⟨g, hg, rfl⟩
   exact ⟨g, hg, rfl⟩
-
-@[deprecated (since := "2024-10-20")]
-alias exists_extension_norm_eq_of_closedEmbedding := exists_extension_norm_eq_of_isClosedEmbedding
 
 /-- **Tietze extension theorem** for real-valued bounded continuous maps, a version for a closed
 set. If `f` is a bounded continuous real-valued function defined on a closed set in a normal
@@ -308,10 +302,6 @@ theorem exists_extension_forall_mem_Icc_of_isClosedEmbedding (f : X →ᵇ ℝ) 
   · ext x
     have : g (e x) = f x - (a + b) / 2 := congr_fun hge x
     simp [this]
-
-@[deprecated (since := "2024-10-20")]
-alias exists_extension_forall_mem_Icc_of_closedEmbedding :=
-  exists_extension_forall_mem_Icc_of_isClosedEmbedding
 
 /-- **Tietze extension theorem** for real-valued bounded continuous maps, a version for a closed
 embedding. Let `e` be a closed embedding of a nonempty topological space `X` into a normal
@@ -423,10 +413,6 @@ theorem exists_extension_forall_exists_le_ge_of_isClosedEmbedding [Nonempty X] (
   · refine ⟨xl y, xu, ?_, hyxu.le⟩
     simp [dg0 (Or.inr hc), hxl]
 
-@[deprecated (since := "2024-10-20")]
-alias exists_extension_forall_exists_le_ge_of_closedEmbedding :=
-  exists_extension_forall_exists_le_ge_of_isClosedEmbedding
-
 /-- **Tietze extension theorem** for real-valued bounded continuous maps, a version for a closed
 embedding. Let `e` be a closed embedding of a nonempty topological space `X` into a normal
 topological space `Y`. Let `f` be a bounded continuous real-valued function on `X`. Let `t` be
@@ -444,10 +430,6 @@ theorem exists_extension_forall_mem_of_isClosedEmbedding (f : X →ᵇ ℝ) {t :
   refine ⟨g, fun y => ?_, hgf⟩
   rcases hg y with ⟨xl, xu, h⟩
   exact hs.out (hf _) (hf _) h
-
-@[deprecated (since := "2024-10-20")]
-alias exists_extension_forall_mem_of_closedEmbedding :=
-  exists_extension_forall_mem_of_isClosedEmbedding
 
 /-- **Tietze extension theorem** for real-valued bounded continuous maps, a version for a closed
 set. Let `s` be a closed set in a normal topological space `Y`. Let `f` be a bounded continuous
@@ -504,13 +486,6 @@ theorem exists_extension_forall_mem_of_isClosedEmbedding (f : C(X, ℝ)) {t : Se
     exact hgG.2 hay.symm
   · ext x
     exact hgG.2 (congr_fun hGF _)
-
-@[deprecated (since := "2024-10-20")]
-alias exists_extension_forall_mem_of_closedEmbedding :=
-  exists_extension_forall_mem_of_isClosedEmbedding
-
-@[deprecated (since := "2024-10-20")]
-alias exists_extension_of_closedEmbedding := exists_extension'
 
 /-- **Tietze extension theorem** for real-valued continuous maps, a version for a closed set. Let
 `s` be a closed set in a normal topological space `Y`. Let `f` be a continuous real-valued function
