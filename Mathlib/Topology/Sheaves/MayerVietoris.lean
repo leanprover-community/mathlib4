@@ -6,6 +6,7 @@ Authors: Joël Riou
 
 import Mathlib.CategoryTheory.Sites.MayerVietorisSquare
 import Mathlib.CategoryTheory.Sites.Spaces
+import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 
 /-!
 # Mayer-Vietoris squares

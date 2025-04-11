@@ -80,9 +80,7 @@ lemma isLocallyInjective_of_injective (hφ : ∀ (X : Cᵒᵖ), Function.Injecti
     ext Y f
     simp only [equalizerSieve_apply, op_unop, Sieve.top_apply, iff_true]
     apply hφ
-    -- Invoke `elementwise_of%` manually to get a `ConcreteCategory`-based result, instead of the
-    -- `HasForget`-based result.
-    simp [h, elementwise_of% NatTrans.naturality (D := D)]
+    simp [h]
 
 instance [IsIso φ] : IsLocallyInjective J φ :=
   isLocallyInjective_of_injective J φ (fun X => Function.Bijective.injective (by
@@ -118,10 +116,7 @@ lemma isLocallyInjective_iff_equalizerSieve_mem_imp :
     · intro Y f hf
       refine J.superset_covering (Sieve.le_pullback_bind S.1 T _ hf)
         (equalizerSieve_mem J φ _ _ ?_)
-      -- Invoke `elementwise_of%` manually to get a `ConcreteCategory`-based result, instead of the
-      -- `HasForget`-based result.
-      rw [elementwise_of% NatTrans.naturality (D := D),
-        elementwise_of% NatTrans.naturality (D := D)]
+      rw [NatTrans.naturality_apply, NatTrans.naturality_apply]
       exact hf
   · intro hφ
     exact ⟨fun {X} x y h => hφ x y (by simp [h])⟩

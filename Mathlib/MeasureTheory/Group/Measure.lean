@@ -695,8 +695,8 @@ arbitrary locally compact groups. Use `[IsAddHaarMeasure μ] [Regular μ]` or
 sense is automatically regular and inner regular on second countable locally compact groups, as
 checked just below this definition. -/
 class IsAddHaarMeasure {G : Type*} [AddGroup G] [TopologicalSpace G] [MeasurableSpace G]
-  (μ : Measure G) extends IsFiniteMeasureOnCompacts μ, IsAddLeftInvariant μ, IsOpenPosMeasure μ :
-  Prop
+    (μ : Measure G) : Prop
+    extends IsFiniteMeasureOnCompacts μ, IsAddLeftInvariant μ, IsOpenPosMeasure μ
 
 /-- A measure on a group is a Haar measure if it is left-invariant, and gives finite mass to
 compact sets and positive mass to open sets.
@@ -708,13 +708,13 @@ sense is automatically regular and inner regular on second countable locally com
 checked just below this definition. -/
 @[to_additive existing]
 class IsHaarMeasure {G : Type*} [Group G] [TopologicalSpace G] [MeasurableSpace G]
-  (μ : Measure G) extends IsFiniteMeasureOnCompacts μ, IsMulLeftInvariant μ, IsOpenPosMeasure μ :
-  Prop
+    (μ : Measure G) : Prop
+    extends IsFiniteMeasureOnCompacts μ, IsMulLeftInvariant μ, IsOpenPosMeasure μ
 
 variable [Group G] [TopologicalSpace G] (μ : Measure G) [IsHaarMeasure μ]
 
 @[to_additive (attr := simp)]
-theorem haar_singleton [IsTopologicalGroup G] [BorelSpace G] (g : G) : μ {g} = μ {(1 : G)} := by
+theorem haar_singleton [ContinuousMul G] [BorelSpace G] (g : G) : μ {g} = μ {(1 : G)} := by
   convert measure_preimage_mul μ g⁻¹ _
   simp only [mul_one, preimage_mul_left_singleton, inv_inv]
 
@@ -741,7 +741,7 @@ a Haar measure. See also `MulEquiv.isHaarMeasure_map` and `ContinuousMulEquiv.is
 "The image of an additive Haar measure under a continuous surjective proper additive group
 homomorphism is again an additive Haar measure. See also `AddEquiv.isAddHaarMeasure_map`,
 `ContinuousAddEquiv.isAddHaarMeasure_map` and `ContinuousLinearEquiv.isAddHaarMeasure_map`."]
-theorem isHaarMeasure_map [BorelSpace G] [IsTopologicalGroup G] {H : Type*} [Group H]
+theorem isHaarMeasure_map [BorelSpace G] [ContinuousMul G] {H : Type*} [Group H]
     [TopologicalSpace H] [MeasurableSpace H] [BorelSpace H] [IsTopologicalGroup H]
     (f : G →* H) (hf : Continuous f) (h_surj : Surjective f)
     (h_prop : Tendsto f (cocompact G) (cocompact H)) : IsHaarMeasure (Measure.map f μ) :=
@@ -759,8 +759,8 @@ a Haar measure. See also `isHaarMeasure_map`. -/
 "The image of a finite additive Haar measure under a continuous surjective additive group
 homomorphism is again an additive Haar measure. See also `isAddHaarMeasure_map`."]
 theorem isHaarMeasure_map_of_isFiniteMeasure
-    [BorelSpace G] [IsTopologicalGroup G] {H : Type*} [Group H]
-    [TopologicalSpace H] [MeasurableSpace H] [BorelSpace H] [IsTopologicalGroup H]
+    [BorelSpace G] [ContinuousMul G] {H : Type*} [Group H]
+    [TopologicalSpace H] [MeasurableSpace H] [BorelSpace H] [ContinuousMul H]
     [IsFiniteMeasure μ] (f : G →* H) (hf : Continuous f) (h_surj : Surjective f) :
     IsHaarMeasure (Measure.map f μ) where
   toIsMulLeftInvariant := isMulLeftInvariant_map f.toMulHom hf.measurable h_surj
@@ -790,7 +790,7 @@ instance isHaarMeasure_map_mul_right [BorelSpace G] [IsTopologicalGroup G] (g : 
 
 /-- A convenience wrapper for `MeasureTheory.Measure.isHaarMeasure_map`. -/
 @[to_additive "A convenience wrapper for `MeasureTheory.Measure.isAddHaarMeasure_map`."]
-nonrec theorem _root_.MulEquiv.isHaarMeasure_map [BorelSpace G] [IsTopologicalGroup G] {H : Type*}
+nonrec theorem _root_.MulEquiv.isHaarMeasure_map [BorelSpace G] [ContinuousMul G] {H : Type*}
     [Group H] [TopologicalSpace H] [MeasurableSpace H] [BorelSpace H]
     [IsTopologicalGroup H] (e : G ≃* H) (he : Continuous e) (hesymm : Continuous e.symm) :
     IsHaarMeasure (Measure.map e μ) :=
@@ -862,6 +862,15 @@ instance (priority := 100) IsHaarMeasure.noAtoms [IsTopologicalGroup G] [BorelSp
     have K_inf : Set.Infinite K := infinite_of_mem_nhds (1 : G) K_nhds
     exact absurd (K_inf.meas_eq_top ⟨_, h, fun x _ ↦ (haar_singleton _ _).ge⟩)
       K_compact.measure_lt_top.ne
+
+instance IsAddHaarMeasure.domSMul {G A : Type*} [Group G] [AddCommGroup A] [DistribMulAction G A]
+    -- We only need `MeasurableConstSMul G A` but we don't have this class. So we erroneously must
+    -- assume `MeasurableSpace G` + `MeasurableSMul G A`
+    [MeasurableSpace A] [MeasurableSpace G] [MeasurableSMul G A] [TopologicalSpace A] [BorelSpace A]
+    [IsTopologicalAddGroup A] [ContinuousConstSMul G A] {μ : Measure A} [μ.IsAddHaarMeasure]
+    (g : Gᵈᵐᵃ) : (g • μ).IsAddHaarMeasure :=
+  (DistribMulAction.toAddEquiv _ (DomMulAct.mk.symm g⁻¹)).isAddHaarMeasure_map _
+    (continuous_const_smul _) (continuous_const_smul _)
 
 end Measure
 

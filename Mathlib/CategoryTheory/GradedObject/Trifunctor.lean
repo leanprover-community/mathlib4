@@ -186,12 +186,10 @@ noncomputable def mapTrifunctorMapFunctorObj (X₁ : GradedObject I₁ C₁)
     { obj := fun X₃ => mapTrifunctorMapObj F p X₁ X₂ X₃
       map := fun {_ _} φ => mapTrifunctorMapMap F p (𝟙 X₁) (𝟙 X₂) φ
       map_id := fun X₃ => by
-        dsimp
         ext j i₁ i₂ i₃ h
         simp only [ι_mapTrifunctorMapMap, categoryOfGradedObjects_id, Functor.map_id,
           NatTrans.id_app, id_comp, comp_id]
       map_comp := fun {X₃ Y₃ Z₃} φ ψ => by
-        dsimp
         ext j i₁ i₂ i₃ h
         simp only [ι_mapTrifunctorMapMap, categoryOfGradedObjects_id, Functor.map_id,
           NatTrans.id_app, categoryOfGradedObjects_comp, Functor.map_comp, assoc, id_comp,

@@ -42,9 +42,8 @@ open AlgebraicIndependent
 
 theorem exists_isTranscendenceBasis (h : Injective (algebraMap R A)) :
     ∃ s : Set A, IsTranscendenceBasis R ((↑) : s → A) := by
-  cases' exists_maximal_algebraicIndependent (∅ : Set A) Set.univ (Set.subset_univ _)
-      ((algebraicIndependent_empty_iff R A).2 h) with
-    s hs
+  obtain ⟨s, hs⟩ := exists_maximal_algebraicIndependent (∅ : Set A) Set.univ (Set.subset_univ _)
+      ((algebraicIndependent_empty_iff R A).2 h)
   refine ⟨s, hs.2.1.1, fun t ht hst ↦ ?_⟩
   simp only [Subtype.range_coe_subtype, setOf_mem_eq] at *
   exact hs.2.eq_of_le ⟨ht, subset_univ _⟩ hst
@@ -82,7 +81,7 @@ theorem IsTranscendenceBasis.isAlgebraic [Nontrivial R] (hx : IsTranscendenceBas
     Algebra.IsAlgebraic (adjoin R (range x)) A := by
   constructor
   intro a
-  rw [← not_iff_comm.1 (hx.1.option_iff _).symm]
+  rw [← not_iff_comm.1 (hx.1.option_iff_transcendental _).symm]
   intro ai
   have h₁ : range x ⊆ range fun o : Option ι => o.elim a x := by
     rintro x ⟨y, rfl⟩

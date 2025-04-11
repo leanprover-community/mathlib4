@@ -3,8 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Kim Morrison
 -/
-import Mathlib.LinearAlgebra.LinearIndependent
-import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.Algebra.Algebra.Tower
+import Mathlib.LinearAlgebra.LinearIndependent.Basic
+import Mathlib.Data.Set.Card
 
 /-!
 # Dimension of modules and vector spaces
@@ -54,7 +55,11 @@ For a free module over any ring satisfying the strong rank condition
 (e.g. left-noetherian rings, commutative rings, and in particular division rings and fields),
 this is the same as the dimension of the space (i.e. the cardinality of any basis).
 
-In particular this agrees with the usual notion of the dimension of a vector space. -/
+In particular this agrees with the usual notion of the dimension of a vector space.
+
+See also `Module.finrank` for a `ℕ`-valued function which returns the correct value
+for a finite-dimensional vector space (but 0 for an infinite-dimensional vector space).
+-/
 @[stacks 09G3 "first part"]
 protected irreducible_def Module.rank : Cardinal :=
   ⨆ ι : { s : Set M // LinearIndepOn R id s }, (#ι.1)
@@ -66,7 +71,6 @@ lemma nonempty_linearIndependent_set : Nonempty {s : Set M // LinearIndepOn R id
   ⟨⟨∅, linearIndepOn_empty _ _⟩⟩
 
 end
-
 
 namespace LinearIndependent
 variable [Semiring R] [AddCommMonoid M] [Module R M]
@@ -91,6 +95,10 @@ theorem cardinal_le_rank {ι : Type v} {v : ι → M}
 theorem cardinal_le_rank' {s : Set M}
     (hs : LinearIndependent R (fun x => x : s → M)) : #s ≤ Module.rank R M :=
   hs.cardinal_le_rank
+
+theorem _root_.LinearIndepOn.encard_le_toENat_rank {ι : Type*} {v : ι → M} {s : Set ι}
+    (hs : LinearIndepOn R v s) : s.encard ≤ (Module.rank R M).toENat := by
+  simpa using OrderHom.mono (β := ℕ∞) Cardinal.toENat hs.linearIndependent.cardinal_lift_le_rank
 
 end LinearIndependent
 
@@ -305,8 +313,6 @@ theorem rank_map_le (f : M →ₗ[R] M₁) (p : Submodule R M) :
 lemma Submodule.rank_mono {s t : Submodule R M} (h : s ≤ t) : Module.rank R s ≤ Module.rank R t :=
   (Submodule.inclusion h).rank_le_of_injective fun ⟨x, _⟩ ⟨y, _⟩ eq =>
     Subtype.eq <| show x = y from Subtype.ext_iff_val.1 eq
-
-@[deprecated (since := "2024-09-30")] alias rank_le_of_submodule := Submodule.rank_mono
 
 /-- Two linearly equivalent vector spaces have the same dimension, a version with different
 universes. -/

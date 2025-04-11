@@ -28,7 +28,7 @@ elements. -/
 
 /-- Left multiplication by a nonzero element in a `GroupWithZero` is a permutation of the
 underlying type. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 protected def mulLeft₀ (a : G₀) (ha : a ≠ 0) : Perm G₀ :=
   (Units.mk0 a ha).mulLeft
 
@@ -37,7 +37,7 @@ theorem _root_.mulLeft_bijective₀ (a : G₀) (ha : a ≠ 0) : Function.Bijecti
 
 /-- Right multiplication by a nonzero element in a `GroupWithZero` is a permutation of the
 underlying type. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 protected def mulRight₀ (a : G₀) (ha : a ≠ 0) : Perm G₀ :=
   (Units.mk0 a ha).mulRight
 

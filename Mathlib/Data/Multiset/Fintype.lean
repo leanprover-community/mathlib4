@@ -3,6 +3,7 @@ Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
+import Mathlib.Data.Fintype.Card
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
@@ -47,8 +48,6 @@ instance : CoeSort (Multiset α) (Type _) := ⟨Multiset.ToType⟩
 
 example : DecidableEq m := inferInstanceAs <| DecidableEq ((x : α) × Fin (m.count x))
 
--- Porting note: syntactic equality
-
 /-- Constructor for terms of the coercion of `m` to a type.
 This helps Lean pick up the correct instances. -/
 @[reducible, match_pattern]
@@ -60,11 +59,6 @@ component. -/
 instance instCoeSortMultisetType.instCoeOutToType : CoeOut m α :=
   ⟨fun x ↦ x.1⟩
 
--- Porting note: syntactic equality
-
--- Syntactic equality
-
--- @[simp] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10685): dsimp can prove this
 theorem coe_mk {x : α} {i : Fin (m.count x)} : ↑(m.mkToType x i) = x :=
   rfl
 
@@ -82,11 +76,11 @@ protected theorem exists_coe (p : m → Prop) :
 
 instance : Fintype { p : α × ℕ | p.2 < m.count p.1 } :=
   Fintype.ofFinset
-    (m.toFinset.biUnion fun x ↦ (Finset.range (m.count x)).map ⟨Prod.mk x, Prod.mk.inj_left x⟩)
+    (m.toFinset.biUnion fun x ↦ (Finset.range (m.count x)).map ⟨_, Prod.mk_right_injective x⟩)
     (by
       rintro ⟨x, i⟩
       simp only [Finset.mem_biUnion, Multiset.mem_toFinset, Finset.mem_map, Finset.mem_range,
-        Function.Embedding.coeFn_mk, Prod.mk.inj_iff, Set.mem_setOf_eq]
+        Function.Embedding.coeFn_mk, Prod.mk_inj, Set.mem_setOf_eq]
       simp only [← and_assoc, exists_eq_right, and_iff_right_iff_imp]
       exact fun h ↦ Multiset.count_pos.mp (by omega))
 
@@ -105,7 +99,7 @@ theorem mem_of_mem_toEnumFinset {p : α × ℕ} (h : p ∈ m.toEnumFinset) : p.1
   have := (m.mem_toEnumFinset p).mp h; Multiset.count_pos.mp (by omega)
 
 @[simp] lemma toEnumFinset_filter_eq (m : Multiset α) (a : α) :
-    m.toEnumFinset.filter (·.1 = a) = {a} ×ˢ Finset.range (m.count a) := by aesop
+    {x ∈ m.toEnumFinset | x.1 = a} = {a} ×ˢ Finset.range (m.count a) := by aesop
 
 @[simp] lemma map_toEnumFinset_fst (m : Multiset α) : m.toEnumFinset.val.map Prod.fst = m := by
   ext a; simp [count_map, ← Finset.filter_val, eq_comm (a := a)]
@@ -123,7 +117,7 @@ theorem mem_of_mem_toEnumFinset {p : α × ℕ} (h : p ∈ m.toEnumFinset) : p.1
     exact Nat.zero_le _
   obtain ⟨n, han, hn⟩ : ∃ n ≥ card (s.1.filter fun x ↦ a = x.1) - 1, (a, n) ∈ s := by
     by_contra! h
-    replace h : s.filter (·.1 = a) ⊆ {a} ×ˢ .range (card (s.1.filter fun x ↦ a = x.1) - 1) := by
+    replace h : {x ∈ s | x.1 = a} ⊆ {a} ×ˢ .range (card (s.1.filter fun x ↦ a = x.1) - 1) := by
       simpa (config := { contextual := true }) [forall_swap (β := _ = a), Finset.subset_iff,
         imp_not_comm, not_le, Nat.lt_sub_iff_add_lt] using h
     have : card (s.1.filter fun x ↦ a = x.1) ≤ card (s.1.filter fun x ↦ a = x.1) - 1 := by
@@ -184,7 +178,7 @@ theorem map_univ_coeEmbedding (m : Multiset α) :
     (Finset.univ : Finset m).map m.coeEmbedding = m.toEnumFinset := by
   ext ⟨x, i⟩
   simp only [Fin.exists_iff, Finset.mem_map, Finset.mem_univ, Multiset.coeEmbedding_apply,
-    Prod.mk.inj_iff, exists_true_left, Multiset.exists_coe, Multiset.coe_mk, Fin.val_mk,
+    Prod.mk_inj, exists_true_left, Multiset.exists_coe, Multiset.coe_mk, Fin.val_mk,
     exists_prop, exists_eq_right_right, exists_eq_right, Multiset.mem_toEnumFinset, true_and]
 
 @[simp]

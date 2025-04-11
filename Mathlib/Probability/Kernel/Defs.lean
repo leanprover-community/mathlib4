@@ -60,10 +60,10 @@ structure Kernel (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] where
   measurable' : Measurable toFun
 
 /-- Notation for `Kernel` with respect to a non-standard σ-algebra in the domain. -/
-scoped notation "Kernel[" mα "]" α:arg β:arg => @Kernel α β mα _
+scoped notation "Kernel[" mα "] " α:arg β:arg => @Kernel α β mα _
 
 /-- Notation for `Kernel` with respect to a non-standard σ-algebra in the domain and codomain. -/
-scoped notation "Kernel[" mα ", " mβ "]" α:arg β:arg => @Kernel α β mα mβ
+scoped notation "Kernel[" mα ", " mβ "] " α:arg β:arg => @Kernel α β mα mβ
 
 variable {α β ι : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
 
@@ -75,6 +75,8 @@ instance instFunLike : FunLike (Kernel α β) α (Measure β) where
 
 @[fun_prop]
 lemma measurable (κ : Kernel α β) : Measurable κ := κ.measurable'
+
+lemma aemeasurable (κ : Kernel α β) {μ : Measure α} : AEMeasurable κ μ := κ.measurable.aemeasurable
 
 @[simp, norm_cast] lemma coe_mk (f : α → Measure β) (hf) : mk f hf = f := rfl
 
@@ -114,6 +116,10 @@ def coeAddHom (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] :
   toFun := (⇑)
   map_zero' := coe_zero
   map_add' := coe_add
+
+@[simp]
+theorem coeAddHom_apply (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] (κ : Kernel α β) :
+    coeAddHom α β κ = ⇑κ := rfl
 
 @[simp]
 theorem coe_finset_sum (I : Finset ι) (κ : ι → Kernel α β) : ⇑(∑ i ∈ I, κ i) = ∑ i ∈ I, ⇑(κ i) :=
@@ -234,6 +240,16 @@ lemma apply_congr_of_mem_measurableAtom (κ : Kernel α β) {y' y : α} (hy' : y
     κ y' = κ y := by
   ext s hs
   exact mem_of_mem_measurableAtom hy' (κ.measurable_coe hs (measurableSet_singleton (κ y s))) rfl
+
+@[nontriviality]
+lemma eq_zero_of_isEmpty_left (κ : Kernel α β) [h : IsEmpty α] : κ = 0 := by
+  ext a
+  exact h.elim a
+
+@[nontriviality]
+lemma eq_zero_of_isEmpty_right (κ : Kernel α β) [IsEmpty β] : κ = 0 := by
+  ext a
+  simp [Measure.eq_zero_of_isEmpty (κ a)]
 
 section Sum
 

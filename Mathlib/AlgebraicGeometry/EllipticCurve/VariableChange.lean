@@ -15,7 +15,7 @@ This file defines admissible linear change of variables of Weierstrass curves.
  * `WeierstrassCurve.VariableChange`: a change of variables of Weierstrass curves.
  * `WeierstrassCurve.VariableChange.instGroup`: change of variables form a group.
  * `WeierstrassCurve.variableChange`: the Weierstrass curve induced by a change of variables.
- * `WeierstrassCurve.instMulActionVariableChange`: change of variables act on Weierstrass curves.
+ * `WeierstrassCurve.instIsEllipticVariableChange`: change of variables act on Weierstrass curves.
 
 ## Main statements
 
@@ -42,12 +42,12 @@ variable {R : Type u} [CommRing R] (W : WeierstrassCurve R)
 
 section VariableChange
 
-/-! ### Variable changes -/
+/-! ## Variable changes -/
 
 /-- An admissible linear change of variables of Weierstrass curves defined over a ring `R` given by
-a tuple $(u, r, s, t)$ for some $u \in R^\times$ and some $r, s, t \in R$. As a matrix, it is
-$\begin{pmatrix} u^2 & 0 & r \cr u^2s & u^3 & t \cr 0 & 0 & 1 \end{pmatrix}$.
-In other words, this is the change of variables $(X, Y) \mapsto (u^2X + r, u^3Y + u^2sX + t)$.
+a tuple `(u, r, s, t)` for some `u` in `Rˣ` and some `r, s, t` in `R`. As a matrix, it is
+$$\begin{pmatrix} u^2 & 0 & r \cr u^2s & u^3 & t \cr 0 & 0 & 1 \end{pmatrix}.$$
+In other words, this is the change of variables `(X, Y) ↦ (u²X + r, u³Y + u²sX + t)`.
 When `R` is a field, any two isomorphic Weierstrass equations are related by this. -/
 @[ext]
 structure VariableChange (R : Type u) [CommRing R] where
@@ -100,7 +100,7 @@ lemma comp_left_inv (C : VariableChange R) : comp (inv C) C = id := by
 lemma comp_assoc (C C' C'' : VariableChange R) : comp (comp C C') C'' = comp C (comp C' C'') := by
   ext <;> simp only [comp, Units.val_mul] <;> ring1
 
-instance instGroup : Group (VariableChange R) where
+instance : Group (VariableChange R) where
   one := id
   inv := inv
   mul := comp
@@ -114,7 +114,7 @@ end VariableChange
 variable (C : VariableChange R)
 
 /-- The Weierstrass curve over `R` induced by an admissible linear change of variables
-$(X, Y) \mapsto (u^2X + r, u^3Y + u^2sX + t)$ for some $u \in R^\times$ and some $r, s, t \in R$. -/
+`(X, Y) ↦ (u²X + r, u³Y + u²sX + t)` for some `u` in `Rˣ` and some `r, s, t` in `R`. -/
 @[simps]
 def variableChange : WeierstrassCurve R where
   a₁ := C.u⁻¹ * (W.a₁ + 2 * C.s)
@@ -157,7 +157,7 @@ lemma variableChange_comp (C C' : VariableChange R) (W : WeierstrassCurve R) :
         - C.r * C.t * C.u⁻¹ ^ 6 * ↑C'.u⁻¹ * (C'.s * 2 + W.a₁) * pow_mul_pow_eq_one 5 C'.u.inv_mul
         + C.u⁻¹ ^ 6 * (C.r ^ 3 - C.t ^ 2) * pow_mul_pow_eq_one 6 C'.u.inv_mul
 
-instance instMulActionVariableChange : MulAction (VariableChange R) (WeierstrassCurve R) where
+instance : MulAction (VariableChange R) (WeierstrassCurve R) where
   smul := fun C W => W.variableChange C
   one_smul := variableChange_id
   mul_smul := variableChange_comp
@@ -234,7 +234,7 @@ end VariableChange
 
 section BaseChange
 
-/-! ### Maps and base changes of variable changes -/
+/-! ## Maps and base changes -/
 
 variable {A : Type v} [CommRing A] (φ : R →+* A)
 
@@ -247,13 +247,10 @@ variable (C : VariableChange R)
 def map : VariableChange A :=
   ⟨Units.map φ C.u, φ C.r, φ C.s, φ C.t⟩
 
-variable (A)
-
+variable (A) in
 /-- The change of variables base changed to an algebra `A` over `R`. -/
 abbrev baseChange [Algebra R A] : VariableChange A :=
   C.map <| algebraMap R A
-
-variable {A}
 
 @[simp]
 lemma map_id : C.map (RingHom.id R) = C :=

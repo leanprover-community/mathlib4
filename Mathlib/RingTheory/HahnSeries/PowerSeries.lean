@@ -49,7 +49,7 @@ variable [Semiring R]
 @[simps]
 def toPowerSeries : HahnSeries ℕ R ≃+* PowerSeries R where
   toFun f := PowerSeries.mk f.coeff
-  invFun f := ⟨fun n => PowerSeries.coeff R n f, (Nat.lt_wfRel.wf.isWF _).isPWO⟩
+  invFun f := ⟨fun n => PowerSeries.coeff R n f, .of_linearOrder _⟩
   left_inv f := by
     ext
     simp
@@ -79,7 +79,7 @@ theorem coeff_toPowerSeries_symm {f : PowerSeries R} {n : ℕ} :
     (HahnSeries.toPowerSeries.symm f).coeff n = PowerSeries.coeff R n f :=
   rfl
 
-variable (Γ R) [StrictOrderedSemiring Γ]
+variable (Γ R) [Semiring Γ] [PartialOrder Γ] [IsStrictOrderedRing Γ]
 
 /-- Casts a power series as a Hahn series with coefficients from a `StrictOrderedSemiring`. -/
 def ofPowerSeries : PowerSeries R →+* HahnSeries Γ R :=
@@ -141,7 +141,8 @@ theorem ofPowerSeries_X_pow {R} [Semiring R] (n : ℕ) :
 /-- The ring `HahnSeries (σ →₀ ℕ) R` is isomorphic to `MvPowerSeries σ R` for a `Finite` `σ`.
 We take the index set of the hahn series to be `Finsupp` rather than `pi`,
 even though we assume `Finite σ` as this is more natural for alignment with `MvPowerSeries`.
-After importing `Algebra.Order.Pi` the ring `HahnSeries (σ → ℕ) R` could be constructed instead.
+After importing `Mathlib.Algebra.Order.Pi` the ring `HahnSeries (σ → ℕ) R` could be constructed
+instead.
 -/
 @[simps]
 def toMvPowerSeries {σ : Type*} [Finite σ] : HahnSeries (σ →₀ ℕ) R ≃+* MvPowerSeries σ R where
@@ -158,7 +159,6 @@ def toMvPowerSeries {σ : Type*} [Finite σ] : HahnSeries (σ →₀ ℕ) R ≃+
     simp
   map_mul' f g := by
     ext n
-    simp only [MvPowerSeries.coeff_mul]
     classical
       change (f * g).coeff n = _
       simp_rw [coeff_mul]
@@ -200,7 +200,7 @@ def toPowerSeriesAlg : HahnSeries ℕ A ≃ₐ[R] PowerSeries A :=
       ext n
       cases n <;> simp [algebraMap_apply, PowerSeries.algebraMap_apply] }
 
-variable (Γ) [StrictOrderedSemiring Γ]
+variable (Γ) [Semiring Γ] [PartialOrder Γ] [IsStrictOrderedRing Γ]
 
 /-- Casting a power series as a Hahn series with coefficients from a `StrictOrderedSemiring`
   is an algebra homomorphism. -/

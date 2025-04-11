@@ -7,6 +7,7 @@ import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 import Mathlib.Algebra.Module.Equiv.Basic
 import Mathlib.Algebra.Module.Submodule.LinearMap
 import Mathlib.LinearAlgebra.Finsupp.Defs
+import Mathlib.Tactic.ApplyFun
 
 /-!
 # Sums as a linear map
@@ -61,8 +62,8 @@ variable [Semiring S] [AddCommMonoid M] [AddCommMonoid N] [Module S M] [Module S
 instance _root_.LinearMap.CompatibleSMul.finsupp_dom [SMulZeroClass R M] [DistribSMul R N]
     [LinearMap.CompatibleSMul M N R S] : LinearMap.CompatibleSMul (ι →₀ M) N R S where
   map_smul f r m := by
-    conv_rhs => rw [← sum_single m, map_finsupp_sum, smul_sum]
-    erw [← sum_single (r • m), sum_mapRange_index single_zero, map_finsupp_sum]
+    conv_rhs => rw [← sum_single m, map_finsuppSum, smul_sum]
+    erw [← sum_single (r • m), sum_mapRange_index single_zero, map_finsuppSum]
     congr; ext i m; exact (f.comp <| lsingle i).map_smul_of_tower r m
 
 instance _root_.LinearMap.CompatibleSMul.finsupp_cod [SMul R M] [SMulZeroClass R N]
@@ -229,9 +230,11 @@ section
 
 variable (R)
 
-protected theorem Submodule.finsupp_sum_mem {ι β : Type*} [Zero β] (S : Submodule R M) (f : ι →₀ β)
+protected theorem Submodule.finsuppSum_mem {ι β : Type*} [Zero β] (S : Submodule R M) (f : ι →₀ β)
     (g : ι → β → M) (h : ∀ c, f c ≠ 0 → g c (f c) ∈ S) : f.sum g ∈ S :=
-  AddSubmonoidClass.finsupp_sum_mem S f g h
+  AddSubmonoidClass.finsuppSum_mem S f g h
+
+@[deprecated (since := "2025-04-06")] alias Submodule.finsupp_sum_mem := Submodule.finsuppSum_mem
 
 end
 

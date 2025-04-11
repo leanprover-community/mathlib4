@@ -3,8 +3,10 @@ Copyright (c) 2024 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Robin Carlier
 -/
+import Mathlib.CategoryTheory.Limits.FullSubcategory
 import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 import Mathlib.CategoryTheory.Monoidal.OfChosenFiniteProducts.Symmetric
 
 /-!
@@ -78,6 +80,10 @@ lean to do the necessary elaboration.
 -/
 lemma toUnit_unique {X : C} (f g : X ⟶ 𝟙_ _) : f = g :=
   Subsingleton.elim _ _
+
+@[reassoc (attr := simp)]
+theorem comp_toUnit {X Y : C} (f : X ⟶ Y) : f ≫ toUnit Y = toUnit X :=
+  toUnit_unique _ _
 
 /--
 Construct a morphism to the product given its two components.
@@ -189,25 +195,32 @@ lemma associator_hom_fst (X Y Z : C) :
 @[reassoc (attr := simp)]
 lemma associator_hom_snd_fst (X Y Z : C) :
     (α_ X Y Z).hom ≫ snd _ _ ≫ fst _ _ = fst _ _ ≫ snd _ _  := by
-  erw [lift_snd_assoc, lift_fst]
+  erw [lift_snd_assoc]
+  erw [lift_fst]
   rfl
 
 @[reassoc (attr := simp)]
 lemma associator_hom_snd_snd (X Y Z : C) :
     (α_ X Y Z).hom ≫ snd _ _ ≫ snd _ _ = snd _ _  := by
-  erw [lift_snd_assoc, lift_snd]
+  erw [lift_snd_assoc]
+  erw [lift_snd]
   rfl
 
 @[reassoc (attr := simp)]
-lemma associator_inv_fst (X Y Z : C) :
+lemma associator_inv_fst_fst (X Y Z : C) :
     (α_ X Y Z).inv ≫ fst _ _ ≫ fst _ _ = fst _ _ := by
-  erw [lift_fst_assoc, lift_fst]
+  erw [lift_fst_assoc]
+  erw [lift_fst]
   rfl
+
+@[deprecated (since := "2025-04-01")] alias associator_inv_fst := associator_inv_fst_fst
+@[deprecated (since := "2025-04-01")] alias associator_inv_fst_assoc := associator_inv_fst_fst_assoc
 
 @[reassoc (attr := simp)]
 lemma associator_inv_fst_snd (X Y Z : C) :
     (α_ X Y Z).inv ≫ fst _ _ ≫ snd _ _ = snd _ _ ≫ fst _ _ := by
-  erw [lift_fst_assoc, lift_snd]
+  erw [lift_fst_assoc]
+  erw [lift_snd]
   rfl
 
 @[reassoc (attr := simp)]
@@ -268,6 +281,20 @@ theorem braiding_inv_fst {X Y : C} : (β_ X Y).inv ≫ fst _ _ = snd _ _ := by
 theorem braiding_inv_snd {X Y : C} : (β_ X Y).inv ≫ snd _ _ = fst _ _ := by
   simp [braiding_eq_braiding, fst, snd]
 
+theorem lift_snd_fst {X Y : C} : lift (snd X Y) (fst X Y) = (β_ X Y).hom := rfl
+
+@[simp, reassoc]
+lemma lift_snd_comp_fst_comp {W X Y Z : C} (g : W ⟶ X) (g' : Y ⟶ Z) :
+    lift (snd _ _ ≫ g') (fst _ _ ≫ g) = (β_ _ _).hom ≫ (g' ⊗ g) := by ext <;> simp
+
+@[reassoc (attr := simp)]
+lemma lift_braiding_hom {T X Y : C} (f : T ⟶ X) (g : T ⟶ Y) :
+    lift f g ≫ (β_ X Y).hom = lift g f := by aesop
+
+@[reassoc (attr := simp)]
+lemma lift_braiding_inv {T X Y : C} (f : T ⟶ X) (g : T ⟶ Y) :
+    lift f g ≫ (β_ Y X).inv = lift g f := by aesop
+
 /--
 Construct an instance of `ChosenFiniteProducts C` given an instance of `HasFiniteProducts C`.
 -/
@@ -295,7 +322,7 @@ section terminalComparison
 `terminalComparison F` is the unique map `F (𝟙_ C) ⟶ 𝟙_ D`. -/
 abbrev terminalComparison : F.obj (𝟙_ C) ⟶ 𝟙_ D := toUnit _
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma map_toUnit_comp_terminalCompariso (A : C) :
     F.map (toUnit A) ≫ terminalComparison F = toUnit _ := toUnit_unique _ _
 
@@ -526,7 +553,7 @@ lemma preservesLimit_pair_of_isIso_prodComparison (A B : C)
  · dsimp only [BinaryFan.snd]
    simp [pairComp, prodComparison, lift, snd]
 
-  /-- If `prodComparison F A B` is an isomorphism for all `A B` then `F` preserves limits of shape
+/-- If `prodComparison F A B` is an isomorphism for all `A B` then `F` preserves limits of shape
 `Discrete (WalkingPair)`. -/
 lemma preservesLimitsOfShape_discrete_walkingPair_of_isIso_prodComparison
     [∀ A B, IsIso (prodComparison F A B)] : PreservesLimitsOfShape (Discrete WalkingPair) F := by
@@ -540,6 +567,27 @@ end ProdComparisonIso
 end prodComparison
 
 end ChosenFiniteProductsComparison
+
+open Limits
+
+variable {P : C → Prop}
+
+-- TODO: Introduce `ClosedUnderFiniteProducts`?
+/-- The restriction of a cartesian-monoidal category along an object property that's closed under
+finite products is cartesian-monoidal. -/
+noncomputable def fullSubcategory (hP₀ : ClosedUnderLimitsOfShape (Discrete PEmpty) P)
+    (hP₂ : ClosedUnderLimitsOfShape (Discrete WalkingPair) P) :
+    ChosenFiniteProducts (FullSubcategory P) where
+  product X Y := {
+    cone := BinaryFan.mk
+      (P := ⟨X.1 ⊗ Y.1, hP₂ (product X.obj Y.obj).isLimit <| by rintro ⟨_ | _⟩ <;> simp [X.2, Y.2]⟩)
+      (fst X.1 Y.1) (snd X.1 Y.1)
+    isLimit := BinaryFan.IsLimit.mk _ (fun {T} f g ↦ lift (f : T.1 ⟶ X.1) g)
+      (fun f g ↦ lift_fst _ _) (fun f g ↦ lift_snd _ _)
+      (by rintro T f g m rfl rfl; symm; exact lift_comp_fst_snd _)
+  }
+  terminal.cone := asEmptyCone ⟨𝟙_ C, hP₀ terminal.isLimit <| by simp⟩
+  terminal.isLimit := IsTerminal.isTerminalOfObj (fullSubcategoryInclusion _) _ <| .ofUnique (𝟙_ C)
 
 end ChosenFiniteProducts
 
@@ -671,20 +719,47 @@ end Functor.Monoidal
 
 namespace Functor
 
+open Limits
+
 variable {C : Type u} [Category.{v} C] [ChosenFiniteProducts C]
-  {D : Type u₁} [Category.{v₁} D] [ChosenFiniteProducts D] (F : C ⥤ D)
+  {D : Type u₁} [Category.{v₁} D] [ChosenFiniteProducts D] (F : C ⥤ D) [PreservesFiniteProducts F]
 
 attribute [local instance] monoidalOfChosenFiniteProducts
 
 /-- A finite-product-preserving functor between categories with chosen finite products is
 braided. -/
-noncomputable def braidedOfChosenFiniteProducts [Limits.PreservesFiniteProducts F] : F.Braided :=
+noncomputable def braidedOfChosenFiniteProducts : F.Braided :=
   { monoidalOfChosenFiniteProducts F with
     braided X Y := by
       rw [← cancel_mono (Monoidal.μIso _ _ _).inv]
       apply ChosenFiniteProducts.hom_ext <;> simp [← Functor.map_comp] }
 
-end Functor
+namespace EssImageSubcategory
+variable [F.Full] [F.Faithful] {T X Y Z : F.EssImageSubcategory}
+
+@[simps!]
+noncomputable instance instChosenFiniteProducts : ChosenFiniteProducts F.EssImageSubcategory :=
+  .fullSubcategory (.essImage _) (.essImage _)
+
+lemma tensor_obj (X Y : F.EssImageSubcategory) : (X ⊗ Y).obj = X.obj ⊗ Y.obj := rfl
+
+lemma fst_def (X Y : F.EssImageSubcategory) : fst X Y = fst X.obj Y.obj := rfl
+lemma snd_def (X Y : F.EssImageSubcategory) : snd X Y = snd X.obj Y.obj := rfl
+lemma lift_def (f : T ⟶ X) (g : T ⟶ Y) : lift f g = lift (T := T.1) f g := rfl
+
+lemma whiskerLeft_def (X : F.EssImageSubcategory) (f : Y ⟶ Z) : X ◁ f = X.obj ◁ f := rfl
+lemma whiskerRight_def (f : Y ⟶ Z) (X : F.EssImageSubcategory) :
+    f ▷ X = MonoidalCategoryStruct.whiskerRight (C := D) f X.obj := rfl
+
+lemma associator_hom_def (X Y Z : F.EssImageSubcategory) :
+    (α_ X Y Z).hom = (α_ X.obj Y.obj Z.obj).hom := rfl
+
+lemma associator_inv_def (X Y Z : F.EssImageSubcategory) :
+    (α_ X Y Z).inv = (α_ X.obj Y.obj Z.obj).inv := rfl
+
+lemma toUnit_def (X : F.EssImageSubcategory) : toUnit X = toUnit X.obj := toUnit_unique ..
+
+end Functor.EssImageSubcategory
 
 namespace NatTrans
 

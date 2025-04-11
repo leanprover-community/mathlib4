@@ -3,8 +3,9 @@ Copyright (c) 2025 Peter Nelson and Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson, Junyan Xu
 -/
-import Mathlib.Data.Matroid.Rank.Finite
 import Mathlib.Data.Matroid.Map
+import Mathlib.Data.Matroid.Rank.ENat
+import Mathlib.Data.Matroid.Rank.Finite
 import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-!
@@ -31,12 +32,13 @@ both for itself and all its minors.
 
 # Notes
 
-It is not the case that all matroids are `InvariantCardinalRank`,
-since the equicardinality of isBases in general matroids is independent of ZFC
+It is not (provably) the case that all matroids are `InvariantCardinalRank`,
+since the equicardinality of bases in general matroids is independent of ZFC
 (see the module docstring of `Mathlib.Data.Matroid.Basic`).
 Lemmas like `Matroid.Base.cardinalMk_diff_comm` become true for all matroids
-only if they are weakened by replacing `Cardinal.mk`
-with the cruder `ℕ∞`-valued `Set.encard`; see, for example, `Matroid.Base.encard_diff_comm`.
+only if they are weakened by replacing `Cardinal.mk` with the cruder `ℕ∞`-valued `Set.encard`.
+The `ℕ∞`-valued rank and rank functions `Matroid.eRank` and `Matroid.eRk`,
+which have a more unconditionally strong API, are developed in `Mathlib.Data.Matroid.Rank.ENat`.
 
 # Implementation Details
 
@@ -68,11 +70,12 @@ section Rank
 
 variable {κ : Cardinal}
 
-/-- The rank (supremum of the cardinalities of bases) of a matroid `M` as a `Cardinal`. -/
+/-- The rank (supremum of the cardinalities of bases) of a matroid `M` as a `Cardinal`.
+See `Matroid.eRank` for a better-behaved `ℕ∞`-valued version. -/
 noncomputable def cRank (M : Matroid α) := ⨆ B : {B // M.IsBase B}, #B
 
 /-- The rank (supremum of the cardinalities of bases) of a set `X` in a matroid `M`,
-as a `Cardinal`. -/
+as a `Cardinal`. See `Matroid.eRk` for a better-behaved `ℕ∞`-valued version. -/
 noncomputable def cRk (M : Matroid α) (X : Set α) := (M ↾ X).cRank
 
 theorem IsBase.cardinalMk_le_cRank (hB : M.IsBase B) : #B ≤ M.cRank :=
@@ -187,8 +190,8 @@ end Rank
 section Invariant
 
 /-- A class stating that cardinality-valued rank is well-defined
-(i.e. all isBases are equicardinal) for a matroid `M` and its minors.
-Notably, this holds for `Finitary` matroids; see `Matroid.invariantCardinalRank_of_finitary`.  -/
+(i.e. all bases are equicardinal) for a matroid `M` and its minors.
+Notably, this holds for `Finitary` matroids; see `Matroid.invariantCardinalRank_of_finitary`. -/
 @[mk_iff]
 class InvariantCardinalRank (M : Matroid α) : Prop where
   forall_card_isBasis_diff :
@@ -364,18 +367,21 @@ theorem rankFinite_iff_cRank_lt_aleph0 : M.RankFinite ↔ M.cRank < ℵ₀ := by
   simp_rw [← finite_coe_iff, ← lt_aleph0_iff_finite]
   exact ⟨B, hB, hB.cardinalMk_le_cRank.trans_lt h⟩
 
+theorem rankInfinite_iff_aleph0_le_cRank : M.RankInfinite ↔ ℵ₀ ≤ M.cRank := by
+  rw [← not_lt, ← rankFinite_iff_cRank_lt_aleph0, not_rankFinite_iff]
+
 theorem isRkFinite_iff_cRk_lt_aleph0 : M.IsRkFinite X ↔ M.cRk X < ℵ₀ := by
   rw [IsRkFinite, rankFinite_iff_cRank_lt_aleph0, cRank_restrict]
 
 theorem Indep.isBase_of_cRank_le [M.RankFinite] (ind : M.Indep I) (le : M.cRank ≤ #I) :
     M.IsBase I :=
-  ind.isBase_of_maximal fun _J ind_J hIJ ↦ ind.finite.eq_of_subset_of_encard_le' hIJ <|
+  ind.isBase_of_maximal fun _J ind_J hIJ ↦ ind.finite.eq_of_subset_of_encard_le hIJ <|
     toENat.monotone' <| ind_J.cardinalMk_le_cRank.trans le
 
 theorem Spanning.isBase_of_le_cRank [M.RankFinite] (h : M.Spanning X) (le : #X ≤ M.cRank) :
     M.IsBase X := by
   have ⟨B, hB, hBX⟩ := h.exists_isBase_subset
-  rwa [← hB.finite.eq_of_subset_of_encard_le' hBX
+  rwa [← hB.finite.eq_of_subset_of_encard_le hBX
     (toENat.monotone' <| le.trans hB.cardinalMk_eq_cRank.ge)]
 
 theorem Indep.isBase_of_cRank_le_of_finite (ind : M.Indep I)
@@ -388,5 +394,16 @@ theorem Spanning.isBase_of_le_cRank_of_finite (h : M.Spanning X)
   have ⟨_B, hB, hBX⟩ := h.exists_isBase_subset
   have := hB.rankFinite_of_finite (fin.subset hBX)
   h.isBase_of_le_cRank le
+
+@[simp]
+theorem toENat_cRank_eq (M : Matroid α) : M.cRank.toENat = M.eRank := by
+  obtain h | h := M.rankFinite_or_rankInfinite
+  · obtain ⟨B, hB⟩ := M.exists_isBase
+    rw [← hB.cardinalMk_eq_cRank, ← hB.encard_eq_eRank, toENat_cardinalMk]
+  simp [rankInfinite_iff_aleph0_le_cRank.1 h]
+
+@[simp]
+theorem toENat_cRk_eq (M : Matroid α) (X : Set α) : (M.cRk X).toENat = M.eRk X := by
+  rw [cRk, toENat_cRank_eq, eRk]
 
 end Matroid

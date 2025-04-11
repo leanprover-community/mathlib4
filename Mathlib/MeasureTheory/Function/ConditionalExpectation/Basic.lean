@@ -82,8 +82,9 @@ variable [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 
 open scoped Classical in
 variable (m) in
-/-- Conditional expectation of a function. It is defined as 0 if any one of the following conditions
-is true:
+/-- Conditional expectation of a function, with notation `μ[f|m]`.
+
+It is defined as 0 if any one of the following conditions is true:
 - `m` is not a sub-σ-algebra of `m₀`,
 - `μ` is not σ-finite with respect to `m`,
 - `f` is not integrable. -/
@@ -97,8 +98,20 @@ noncomputable irreducible_def condExp (μ : Measure[m₀] α) (f : α → E) : �
 
 @[deprecated (since := "2025-01-21")] alias condexp := condExp
 
--- We define notation `μ[f|m]` for the conditional expectation of `f` with respect to `m`.
-@[inherit_doc] scoped notation μ "[" f "|" m "]" => MeasureTheory.condExp m μ f
+@[inherit_doc MeasureTheory.condExp]
+scoped macro:max μ:term noWs "[" f:term "|" m:term "]" : term =>
+  `(MeasureTheory.condExp $m $μ $f)
+
+/-- Unexpander for `μ[f|m]` notation. -/
+@[app_unexpander MeasureTheory.condExp]
+def condExpUnexpander : Lean.PrettyPrinter.Unexpander
+  | `($_ $m $μ $f) => `($μ[$f|$m])
+  | _ => throw ()
+
+/-- info: μ[f|m] : α → E -/
+#guard_msgs in #check μ[f | m]
+/-- info: μ[f|m] sorry : E -/
+#guard_msgs in #check μ[f | m] (sorry : α)
 
 theorem condExp_of_not_le (hm_not : ¬m ≤ m₀) : μ[f|m] = 0 := by rw [condExp, dif_neg hm_not]
 
@@ -203,6 +216,11 @@ theorem condExp_congr_ae (h : f =ᵐ[μ] g) : μ[f|m] =ᵐ[μ] μ[g|m] := by
 
 @[deprecated (since := "2025-01-21")] alias condexp_congr_ae := condExp_congr_ae
 
+lemma condExp_congr_ae_trim (hm : m ≤ m₀) (hfg : f =ᵐ[μ] g) :
+    μ[f|m] =ᵐ[μ.trim hm] μ[g|m] :=
+  StronglyMeasurable.ae_eq_trim_of_stronglyMeasurable hm
+    stronglyMeasurable_condExp stronglyMeasurable_condExp (condExp_congr_ae hfg)
+
 theorem condExp_of_aestronglyMeasurable' (hm : m ≤ m₀) [hμm : SigmaFinite (μ.trim hm)] {f : α → E}
     (hf : AEStronglyMeasurable[m] f μ) (hfi : Integrable f μ) : μ[f|m] =ᵐ[μ] f := by
   refine ((condExp_congr_ae hf.ae_eq_mk).trans ?_).trans hf.ae_eq_mk.symm
@@ -272,7 +290,7 @@ theorem condExp_bot' [hμ : NeZero μ] (f : α → E) :
   · have h : ¬SigmaFinite (μ.trim bot_le) := by rwa [sigmaFinite_trim_bot_iff]
     rw [not_isFiniteMeasure_iff] at hμ_finite
     rw [condExp_of_not_sigmaFinite bot_le h]
-    simp only [hμ_finite, ENNReal.top_toReal, inv_zero, zero_smul]
+    simp only [hμ_finite, ENNReal.toReal_top, inv_zero, zero_smul]
     rfl
   have h_meas : StronglyMeasurable[⊥] (μ[f|⊥]) := stronglyMeasurable_condExp
   obtain ⟨c, h_eq⟩ := stronglyMeasurable_bot_iff.mp h_meas
@@ -294,7 +312,7 @@ theorem condExp_bot_ae_eq (f : α → E) :
 @[deprecated (since := "2025-01-21")] alias condexp_bot_ae_eq := condExp_bot_ae_eq
 
 theorem condExp_bot [IsProbabilityMeasure μ] (f : α → E) : μ[f|⊥] = fun _ => ∫ x, f x ∂μ := by
-  refine (condExp_bot' f).trans ?_; rw [measure_univ, ENNReal.one_toReal, inv_one, one_smul]
+  refine (condExp_bot' f).trans ?_; rw [measure_univ, ENNReal.toReal_one, inv_one, one_smul]
 
 @[deprecated (since := "2025-01-21")] alias condexp_bot := condExp_bot
 
@@ -315,9 +333,10 @@ theorem condExp_finset_sum {ι : Type*} {s : Finset ι} {f : ι → α → E}
     (hf : ∀ i ∈ s, Integrable (f i) μ) (m : MeasurableSpace α) :
     μ[∑ i ∈ s, f i|m] =ᵐ[μ] ∑ i ∈ s, μ[f i|m] := by
   classical
-  induction' s using Finset.induction_on with i s his heq hf
-  · rw [Finset.sum_empty, Finset.sum_empty, condExp_zero]
-  · rw [Finset.sum_insert his, Finset.sum_insert his]
+  induction s using Finset.induction_on with
+  | empty => rw [Finset.sum_empty, Finset.sum_empty, condExp_zero]
+  | @insert i s his heq =>
+    rw [Finset.sum_insert his, Finset.sum_insert his]
     exact (condExp_add (hf i <| Finset.mem_insert_self i s)
       (integrable_finset_sum' _ <| Finset.forall_of_forall_insert hf) _).trans
         ((EventuallyEq.refl _ _).add <| heq <| Finset.forall_of_forall_insert hf)
@@ -440,7 +459,7 @@ lemma condExp_ofNat (n : ℕ) [n.AtLeastTwo] (f : α → R) :
 end NormedRing
 
 section NormedLatticeAddCommGroup
-variable [NormedLatticeAddCommGroup E] [CompleteSpace E] [NormedSpace ℝ E]
+variable [NormedAddCommGroup E] [CompleteSpace E] [NormedSpace ℝ E]
 
 /-- **Lebesgue dominated convergence theorem**: sufficient conditions under which almost
   everywhere convergence of a sequence of functions implies the convergence of their image by
@@ -486,7 +505,7 @@ theorem tendsto_condExp_unique (fs gs : ℕ → α → E) (f g : α → E)
 
 @[deprecated (since := "2025-01-21")] alias tendsto_condexp_unique := tendsto_condExp_unique
 
-variable [OrderedSMul ℝ E]
+variable [Lattice E] [HasSolidNorm E] [IsOrderedAddMonoid E] [OrderedSMul ℝ E]
 
 lemma condExp_mono (hf : Integrable f μ) (hg : Integrable g μ) (hfg : f ≤ᵐ[μ] g) :
     μ[f|m] ≤ᵐ[μ] μ[g|m] := by

@@ -306,12 +306,11 @@ protected theorem StrictMono.ite (hf : StrictMono f) (hg : StrictMono g) {p : α
     StrictMono fun x ↦ if p x then f x else g x :=
   (hf.ite' hg hp) fun _ y _ _ h ↦ (hf h).trans_le (hfg y)
 
--- Porting note: `Strict*.dual_right` dot notation is not working here for some reason
 protected theorem StrictAnti.ite' (hf : StrictAnti f) (hg : StrictAnti g) {p : α → Prop}
     [DecidablePred p]
     (hp : ∀ ⦃x y⦄, x < y → p y → p x) (hfg : ∀ ⦃x y⦄, p x → ¬p y → x < y → g y < f x) :
     StrictAnti fun x ↦ if p x then f x else g x :=
-  StrictMono.ite' (StrictAnti.dual_right hf) (StrictAnti.dual_right hg) hp hfg
+  StrictMono.ite' hf.dual_right hg.dual_right hp hfg
 
 protected theorem StrictAnti.ite (hf : StrictAnti f) (hg : StrictAnti g) {p : α → Prop}
     [DecidablePred p] (hp : ∀ ⦃x y⦄, x < y → p y → p x) (hfg : ∀ x, g x ≤ f x) :
@@ -703,6 +702,19 @@ lemma Nat.stabilises_of_monotone {f : ℕ → ℕ} {b n : ℕ} (hfmono : Monoton
   replace key : ∀ k ≥ m, f k = f m := fun k hk =>
     (congr_arg f (Nat.add_sub_of_le hk)).symm.trans (key (k - m)).2
   exact (key n (hmb.trans hbn)).trans (key b hmb).symm
+
+/-- A bounded monotone function `ℕ → ℕ` converges. -/
+lemma converges_of_monotone_of_bounded {f : ℕ → ℕ} (mono_f : Monotone f)
+    {c : ℕ} (hc : ∀ n, f n ≤ c) : ∃ b N, ∀ n ≥ N, f n = b := by
+  induction c with
+  | zero => use 0, 0, fun n _ ↦ Nat.eq_zero_of_le_zero (hc n)
+  | succ c ih =>
+    by_cases h : ∀ n, f n ≤ c
+    · exact ih h
+    · push_neg at h; obtain ⟨N, hN⟩ := h
+      replace hN : f N = c + 1 := by specialize hc N; omega
+      use c + 1, N; intro n hn
+      specialize mono_f hn; specialize hc n; omega
 
 @[deprecated (since := "2024-11-27")]
 alias Group.card_pow_eq_card_pow_card_univ_aux := Nat.stabilises_of_monotone
