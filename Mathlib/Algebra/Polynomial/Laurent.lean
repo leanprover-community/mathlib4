@@ -523,7 +523,6 @@ theorem mk'_eq (p : R[X]) (n : ℕ) : IsLocalization.mk' R[T;T⁻¹] p
   rw [←IsUnit.mul_left_inj (isUnit_T n), mul_T_assoc, neg_add_cancel, T_zero, mul_one]
   exact mk'_mul_T p n
 
-@[simp]
 theorem mk'_one_X_pow (n : ℕ) : IsLocalization.mk' R[T;T⁻¹] 1
   (⟨X^n, n, rfl⟩ : Submonoid.powers (X : R[X])) = T (-n) := by
   rw [mk'_eq 1 n, toLaurent_one, one_mul]
