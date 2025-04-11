@@ -246,18 +246,18 @@ section LE
 variable {ι : Sort*} {α : Type*} [LE α] {P : ι → Prop} {f : ι → α} {i j : ι}
 
 /-- `Minimal P i` means that `i` is an element with minimal image along `f` satisfying `P`. -/
-def MinimalWrt (P : ι → Prop) (f : ι → α) (i : ι) : Prop := P i ∧ ∀ ⦃j⦄, P j → f j ≤ f i → f i ≤ f j
+def MinimalFor (P : ι → Prop) (f : ι → α) (i : ι) : Prop := P i ∧ ∀ ⦃j⦄, P j → f j ≤ f i → f i ≤ f j
 
 /-- `Maximal P i` means that `i` is an element with minimal image along `f` satisfying `P`. -/
-def MaximalWrt (P : ι → Prop) (f : ι → α) (i : ι) : Prop := P i ∧ ∀ ⦃j⦄, P j → f i ≤ f j → f j ≤ f i
+def MaximalFor (P : ι → Prop) (f : ι → α) (i : ι) : Prop := P i ∧ ∀ ⦃j⦄, P j → f i ≤ f j → f j ≤ f i
 
-lemma MinimalWrt.prop (h : MinimalWrt P f i) : P i := h.1
-lemma MaximalWrt.prop (h : MaximalWrt P f i) : P i := h.1
+lemma MinimalFor.prop (h : MinimalFor P f i) : P i := h.1
+lemma MaximalFor.prop (h : MaximalFor P f i) : P i := h.1
 
-lemma MinimalWrt.le_of_le (h : MinimalWrt P f i) (hj : P j) (hji : f j ≤ f i) : f i ≤ f j :=
+lemma MinimalFor.le_of_le (h : MinimalFor P f i) (hj : P j) (hji : f j ≤ f i) : f i ≤ f j :=
   h.2 hj hji
 
-lemma MaximalWrt.le_of_le (h : MaximalWrt P f i) (hj : P j) (hij : f i ≤ f j) : f j ≤ f i :=
+lemma MaximalFor.le_of_le (h : MaximalFor P f i) (hj : P j) (hij : f i ≤ f j) : f j ≤ f i :=
   h.2 hj hij
 
 end LE
