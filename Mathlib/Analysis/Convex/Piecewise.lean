@@ -27,8 +27,10 @@ This file proves convex and concave theorems for piecewise functions.
 -/
 
 
-variable {𝕜 E β : Type*} [OrderedSemiring 𝕜] [LinearOrderedAddCommMonoid E] [Module 𝕜 E]
-  [OrderedSMul 𝕜 E] [OrderedAddCommGroup β] [Module 𝕜 β] [PosSMulMono 𝕜 β] {e : E} {f g : E → β}
+variable {𝕜 E β : Type*} [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
+  [AddCommMonoid E] [LinearOrder E] [IsOrderedAddMonoid E] [Module 𝕜 E]
+  [OrderedSMul 𝕜 E] [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β]
+  [Module 𝕜 β] [PosSMulMono 𝕜 β] {e : E} {f g : E → β}
 
 /-- The piecewise function `(Set.Iic e).piecewise f g` of a function `f` decreasing and convex on
 `Set.Iic e` and a function `g` increasing and convex on `Set.Ici e`, such that `f e = g e`, is

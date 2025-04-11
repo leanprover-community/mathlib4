@@ -832,18 +832,25 @@ lemma toStarOrderedRing : StarOrderedRing K :=
 
 scoped[ComplexOrder] attribute [instance] RCLike.toStarOrderedRing
 
+lemma toZeroLEOneClass : ZeroLEOneClass K where
+  zero_le_one := by simp [@RCLike.le_iff_re_im K]
+
+scoped[ComplexOrder] attribute [instance] RCLike.toZeroLEOneClass
+
+lemma toIsOrderedAddMonoid : IsOrderedAddMonoid K where
+  add_le_add_left _ _ := add_le_add_left
+
+scoped[ComplexOrder] attribute [instance] RCLike.toIsOrderedAddMonoid
+
 /-- With `z ≤ w` iff `w - z` is real and nonnegative, `ℝ` and `ℂ` are strictly ordered rings.
 
 Note this is only an instance with `open scoped ComplexOrder`. -/
-def toStrictOrderedCommRing : StrictOrderedCommRing K where
-  zero_le_one := by simp [@RCLike.le_iff_re_im K]
-  add_le_add_left _ _ := add_le_add_left
-  mul_pos z w hz hw := by
+lemma toIsStrictOrderedRing : IsStrictOrderedRing K :=
+  .of_mul_pos fun z w hz hw ↦ by
     rw [lt_iff_re_im, map_zero] at hz hw ⊢
     simp [mul_re, mul_im, ← hz.2, ← hw.2, mul_pos hz.1 hw.1]
-  mul_comm := by intros; apply ext <;> ring_nf
 
-scoped[ComplexOrder] attribute [instance] RCLike.toStrictOrderedCommRing
+scoped[ComplexOrder] attribute [instance] RCLike.toIsStrictOrderedRing
 
 theorem toOrderedSMul : OrderedSMul ℝ K :=
   OrderedSMul.mk' fun a b r hab hr => by

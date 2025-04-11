@@ -177,9 +177,6 @@ theorem isUniformEmbedding_toUniformOnFunIsCompact :
   comap_uniformity := rfl
   injective := DFunLike.coe_injective
 
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_toUniformOnFunIsCompact := isUniformEmbedding_toUniformOnFunIsCompact
-
 -- The following definitions and theorems
 -- used to be a part of the construction of the `UniformSpace C(α, β)` structure
 -- before it was migrated to `UniformOnFun`
@@ -269,17 +266,11 @@ theorem isUniformInducing_comp (g : C(β, δ)) (hg : IsUniformInducing g) :
     UniformOnFun.postcomp_isUniformInducing hg |>.comp
       isUniformEmbedding_toUniformOnFunIsCompact.isUniformInducing
 
-@[deprecated (since := "2024-10-05")]
-alias uniformInducing_comp := isUniformInducing_comp
-
 theorem isUniformEmbedding_comp (g : C(β, δ)) (hg : IsUniformEmbedding g) :
     IsUniformEmbedding (ContinuousMap.comp g : C(α, β) → C(α, δ)) :=
   isUniformEmbedding_toUniformOnFunIsCompact.of_comp_iff.mp <|
     UniformOnFun.postcomp_isUniformEmbedding hg |>.comp
       isUniformEmbedding_toUniformOnFunIsCompact
-
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_comp := isUniformEmbedding_comp
 
 theorem uniformContinuous_comp_left (g : C(α, γ)) :
     UniformContinuous (fun f ↦ f.comp g : C(γ, β) → C(α, β)) :=

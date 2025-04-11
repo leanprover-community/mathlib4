@@ -254,7 +254,7 @@ theorem det_reindex_self (e : m ≃ n) (A : Matrix m m R) : det (reindex e e A) 
 For the `simp` version of this lemma, see `abs_det_submatrix_equiv_equiv`;
 this one is unsuitable because `Matrix.reindex_apply` unfolds `reindex` first.
 -/
-theorem abs_det_reindex {R : Type*} [LinearOrderedCommRing R]
+theorem abs_det_reindex {R : Type*} [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
     (e₁ e₂ : m ≃ n) (A : Matrix m m R) :
     |det (reindex e₁ e₂ A)| = |det A| :=
   abs_det_submatrix_equiv_equiv e₁.symm e₂.symm A
