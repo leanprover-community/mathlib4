@@ -306,7 +306,7 @@ theorem smeval_ascPochhammer_neg_of_lt {n k : ℕ} (h : n < k) :
     smeval (ascPochhammer ℕ k) (-n : ℤ) = 0 := by
   rw [show k = n + (k - n - 1) + 1 by omega, smeval_ascPochhammer_neg_add]
 
-theorem smeval_ascPochhammer_nat_cast {R} [NonAssocRing R] [Pow R ℕ] [NatPowAssoc R] (n k : ℕ) :
+theorem smeval_ascPochhammer_nat_cast {R} [NonAssocSemiring R] [Pow R ℕ] [NatPowAssoc R] (n k : ℕ) :
     smeval (ascPochhammer ℕ k) (n : R) = smeval (ascPochhammer ℕ k) n := by
   rw [smeval_at_natCast (ascPochhammer ℕ k) n]
 

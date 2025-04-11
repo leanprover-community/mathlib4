@@ -164,7 +164,7 @@ theorem Subalgebra.finite_sup {K L : Type*} [CommSemiring K] [CommSemiring L] [A
 
 open TensorProduct in
 lemma RingHom.surjective_of_tmul_eq_tmul_of_finite {R S}
-    [CommRing R] [CommRing S] [Algebra R S] [Module.Finite R S]
+    [CommRing R] [Ring S] [Algebra R S] [Module.Finite R S]
     (h₁ : ∀ s : S, s ⊗ₜ[R] 1 = 1 ⊗ₜ s) : Function.Surjective (algebraMap R S) := by
   let R' := LinearMap.range (Algebra.ofId R S).toLinearMap
   rcases subsingleton_or_nontrivial (S ⧸ R') with h | _

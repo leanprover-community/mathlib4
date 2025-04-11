@@ -369,7 +369,7 @@ noncomputable abbrev awayLift (f : R →+* P) (r : R) (hr : IsUnit (f r)) :
     Localization.Away r →+* P :=
   IsLocalization.Away.lift r hr
 
-lemma awayLift_mk {A : Type*} [CommRing A] (f : R →+* A) (r : R)
+lemma awayLift_mk {A : Type*} [CommSemiring A] (f : R →+* A) (r : R)
     (a : R) (v : A) (hv : f r * v = 1) (j : ℕ) :
     Localization.awayLift f r (isUnit_iff_exists_inv.mpr ⟨v, hv⟩)
       (Localization.mk a ⟨r ^ j, j, rfl⟩) = f a * v ^ j := by
