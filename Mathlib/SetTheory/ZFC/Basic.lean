@@ -458,6 +458,11 @@ theorem sep_empty_iff {A : ZFSet} {P : ZFSet → Prop} : A.sep P = ∅ ↔ (A = 
       · intro hz
         nomatch not_mem_empty z, hz
 
+theorem sep_subset_self {P : ZFSet → Prop} {a : ZFSet} : a.sep P ⊆ a := by
+  intros x hx
+  rw [mem_sep] at hx
+  exact hx.left
+
 /-- The powerset operation, the collection of subsets of a ZFC set -/
 def powerset : ZFSet → ZFSet :=
   Quotient.map PSet.powerset
