@@ -288,7 +288,7 @@ instance [SemilatticeInf Y] [Zero Y] : Min (locallyFinsuppWithin U Y) where
 lemma min_apply [SemilatticeInf Y] [Zero Y] {D₁ D₂ : locallyFinsuppWithin U Y} {x : X} :
     min D₁ D₂ x = min (D₁ x) (D₂ x) := rfl
 
-instance  [Lattice Y] [Zero Y] : Lattice (locallyFinsuppWithin U Y) where
+instance [Lattice Y] [Zero Y] : Lattice (locallyFinsuppWithin U Y) where
   le := (· ≤ ·)
   lt := (· < ·)
   le_refl := by simp [le_def]
@@ -308,10 +308,8 @@ instance  [Lattice Y] [Zero Y] : Lattice (locallyFinsuppWithin U Y) where
 /--
 Functions with locally finite support within `U` form an ordered commutative group.
 -/
-instance [LinearOrderedAddCommGroup Y] :
-    OrderedAddCommGroup (locallyFinsuppWithin U Y) where
-  __ := inferInstanceAs (AddCommGroup (locallyFinsuppWithin U Y))
-  __ := inferInstanceAs (Lattice (locallyFinsuppWithin U Y))
+instance [AddCommGroup Y] [LinearOrder Y] [IsOrderedAddMonoid Y]:
+    IsOrderedAddMonoid (locallyFinsuppWithin U Y) where
   add_le_add_left := fun _ _ _ _ ↦ by simpa [le_def]
 
 /-!

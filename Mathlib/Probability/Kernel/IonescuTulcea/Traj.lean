@@ -248,7 +248,7 @@ lemma trajContent_ne_top {a : ℕ} {x : Π i : Iic a, X i} {s : Set (Π n, X n)}
 /-- This is an auxiliary result for `trajContent_tendsto_zero`. Consider `f` a sequence of bounded
 measurable functions such that `f n` depends only on the first coordinates up to `a n`.
 Assume that when integrating `f n` against `partialTraj (k + 1) (a n)`, one gets a non-increasing
-sequence of functions wich converges to `l`.
+sequence of functions which converges to `l`.
 Assume then that there exists `ε` and `y : Π i : Iic k, X i` such that
 when integrating `f n` against `partialTraj k (a n) y`, you get something at least
 `ε` for all `n`. Then there exists `z` such that this remains true when integrating
@@ -456,7 +456,7 @@ theorem isSigmaSubadditive_trajContent {a : ℕ} (x₀ : Π i : Iic a, X i) :
     (trajContent κ x₀) (fun _ _ ↦ trajContent_ne_top) ?_ hf hf_Union hf'
   exact fun s hs anti_s inter_s ↦ trajContent_tendsto_zero hs anti_s inter_s x₀
 
-/-- This function is the kernel given by the Ionescu-Tulcea theorem. It is shown belown that it
+/-- This function is the kernel given by the Ionescu-Tulcea theorem. It is shown below that it
 is measurable and turned into a true kernel in `Kernel.traj`. -/
 noncomputable def trajFun (a : ℕ) (x₀ : Π i : Iic a, X i) : Measure (Π n, X n) :=
   (trajContent κ x₀).measure isSetSemiring_measurableCylinders generateFrom_measurableCylinders.ge
@@ -561,7 +561,7 @@ theorem traj_comp_partialTraj {a b : ℕ} (hab : a ≤ b) :
   rw [map_comp, traj_map_frestrictLe, partialTraj_comp_partialTraj' _ hab]
 
 /-- This theorem shows that `traj κ n` is, up to an equivalence, the product of
-a determinstic kernel with another kernel. This is an intermediate result to compute integrals
+a deterministic kernel with another kernel. This is an intermediate result to compute integrals
 with respect to this kernel. -/
 theorem traj_eq_prod (a : ℕ) :
     traj κ a = (Kernel.id ×ₖ (traj κ a).map (Set.Ioi a).restrict).map (IicProdIoi a) := by

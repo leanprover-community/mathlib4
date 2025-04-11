@@ -92,9 +92,6 @@ protected theorem prodMap [TopologicalSpace γ] [TopologicalSpace δ] {e₁ : α
   toIsInducing := de₁.isInducing.prodMap de₂.isInducing
   dense := de₁.dense.prodMap de₂.dense
 
-@[deprecated (since := "2024-10-06")]
-protected alias prod := IsDenseInducing.prodMap
-
 open TopologicalSpace
 
 /-- If the domain of a `IsDenseInducing` map is a separable space, then so is the codomain. -/
@@ -292,8 +289,6 @@ protected theorem prodMap {e₁ : α → β} {e₂ : γ → δ} (de₁ : IsDense
   toIsDenseInducing := de₁.isDenseInducing.prodMap de₂.isDenseInducing
   injective := de₁.injective.prodMap de₂.injective
 
-@[deprecated (since := "2024-10-06")] protected alias prod := IsDenseEmbedding.prodMap
-
 /-- The dense embedding of a subtype inside its closure. -/
 @[simps]
 def subtypeEmb {α : Type*} (p : α → Prop) (e : α → β) (x : { x // p x }) :
@@ -375,9 +370,9 @@ theorem DenseRange.equalizer (hfd : DenseRange f) {g h : β → γ} (hg : Contin
 
 end
 
--- Bourbaki GT III §3 no.4 Proposition 7 (generalised to any dense-inducing map to a T₃ space)
+-- Bourbaki GT III §3 no.4 Proposition 7 (generalised to any dense-inducing map to a regular space)
 theorem Filter.HasBasis.hasBasis_of_isDenseInducing [TopologicalSpace α] [TopologicalSpace β]
-    [T3Space β] {ι : Type*} {s : ι → Set α} {p : ι → Prop} {x : α} (h : (𝓝 x).HasBasis p s)
+    [RegularSpace β] {ι : Type*} {s : ι → Set α} {p : ι → Prop} {x : α} (h : (𝓝 x).HasBasis p s)
     {f : α → β} (hf : IsDenseInducing f) : (𝓝 (f x)).HasBasis p fun i => closure <| f '' s i := by
   rw [Filter.hasBasis_iff] at h ⊢
   intro T
