@@ -22,14 +22,14 @@ such as splittings and equivalences.
 
 ```text
 For multiplicative groups:
-      ↗︎ E  ↘
+      ↗ E  ↘
 1 → N   ↓    G → 1
-      ↘︎ E' ↗︎️
+      ↘ E' ↗
 
 For additive groups:
-      ↗︎ E  ↘
+      ↗ E  ↘
 0 → N   ↓    G → 0
-      ↘︎ E' ↗︎️
+      ↘ E' ↗
 ```
 
 - `(Add?)GroupExtension.Section S`: structure for right inverses to `rightHom` of a group extension
