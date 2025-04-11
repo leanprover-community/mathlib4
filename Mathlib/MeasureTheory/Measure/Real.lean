@@ -39,7 +39,7 @@ protected def Measure.real (s : Set α) : ℝ :=
 
 theorem measureReal_def (s : Set α) : μ.real s = (μ s).toReal := rfl
 
-/-- The real-valued version of a measure. Maps infinite measure sets to zero. Use as `μ.real s`. -/
+/-- The nnreal-valued version of a measure. Maps infinite measure sets to zero. Use as `μ.nnreal s`. -/
 protected def Measure.nnreal (s : Set α) : ℝ≥0 :=
   (μ s).toNNReal
 
@@ -123,9 +123,10 @@ theorem measureReal_union_le (s₁ s₂ : Set α) : μ.real (s₁ ∪ s₂) ≤ 
 theorem measureReal_biUnion_finset_le (s : Finset β) (f : β → Set α) :
     μ.real (⋃ b ∈ s, f b) ≤ ∑ p ∈ s, μ.real (f p) := by
   classical
-  induction' s using Finset.induction_on with x s hx IH
-  · simp
-  · simp only [hx, Finset.mem_insert, iUnion_iUnion_eq_or_left, not_false_eq_true,
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert hx IH =>
+    simp only [hx, Finset.mem_insert, iUnion_iUnion_eq_or_left, not_false_eq_true,
       Finset.sum_insert]
     exact (measureReal_union_le _ _).trans (by gcongr)
 
@@ -150,7 +151,7 @@ theorem measureReal_union_null_iff
     μ.real (s₁ ∪ s₂) = 0 ↔ μ.real s₁ = 0 ∧ μ.real s₂ = 0 :=
   ⟨fun h ↦ ⟨measureReal_mono_null subset_union_left h (measure_union_ne_top h₁ h₂),
       measureReal_mono_null subset_union_right h (measure_union_ne_top h₁ h₂)⟩,
-        fun h ↦ measureReal_union_null h.1 h.2⟩
+  fun h ↦ measureReal_union_null h.1 h.2⟩
 
 /-- If two sets are equal modulo a set of measure zero, then `μ.real s = μ.real t`. -/
 theorem measureReal_congr (H : s =ᵐ[μ] t) : μ.real s = μ.real t := by
@@ -189,10 +190,13 @@ theorem measureReal_union₀' (hs : NullMeasurableSet s μ) (hd : AEDisjoint μ 
     μ.real (s ∪ t) = μ.real s + μ.real t := by
   rw [union_comm, measureReal_union₀ hs (AEDisjoint.symm hd) h₂ h₁, add_comm]
 
-theorem measureReal_add_measureReal_compl₀ [IsFiniteMeasure μ]
-    (hs : NullMeasurableSet s μ) :
+theorem measureReal_add_measureReal_compl₀ [IsFiniteMeasure μ] (hs : NullMeasurableSet s μ) :
     μ.real s + μ.real sᶜ = μ.real univ := by
   rw [← measureReal_union₀' hs aedisjoint_compl_right, union_compl_self]
+
+theorem measureReal_add_measureReal_compl [IsFiniteMeasure μ] (h : MeasurableSet s) :
+    μ.real s + μ.real sᶜ = μ.real univ :=
+  measureReal_add_measureReal_compl₀ h.nullMeasurableSet
 
 theorem measureReal_union (hd : Disjoint s₁ s₂) (h : MeasurableSet s₂)
     (h₁ : μ s₁ ≠ ∞ := by finiteness) (h₂ : μ s₂ ≠ ∞ := by finiteness) :
@@ -245,10 +249,6 @@ lemma measureReal_symmDiff_le (s t u : Set α)
       (measure_symmDiff_ne_top h₁ h₂) (measure_symmDiff_ne_top h₂ hu.ne)))
         (measureReal_union_le (s ∆ t) (t ∆ u))
 
-theorem measureReal_add_measureReal_compl [IsFiniteMeasure μ] (h : MeasurableSet s) :
-    μ.real s + μ.real sᶜ = μ.real univ :=
-  measureReal_add_measureReal_compl₀ h.nullMeasurableSet
-
 theorem measureReal_biUnion_finset₀ {s : Finset ι} {f : ι → Set α}
     (hd : Set.Pairwise (↑s) (AEDisjoint μ on f)) (hm : ∀ b ∈ s, NullMeasurableSet (f b) μ)
     (h : ∀ b ∈ s, μ (f b) ≠ ∞ := by finiteness) :
@@ -298,8 +298,7 @@ theorem measureReal_diff' (s : Set α) (hm : MeasurableSet t)
   rw [union_comm, ← measureReal_add_diff hm s h₂ h₁]
   ring
 
-theorem measureReal_diff (h : s₂ ⊆ s₁) (h₂ : MeasurableSet s₂)
-    (h₁ : μ s₁ ≠ ∞ := by finiteness) :
+theorem measureReal_diff (h : s₂ ⊆ s₁) (h₂ : MeasurableSet s₂) (h₁ : μ s₁ ≠ ∞ := by finiteness) :
     μ.real (s₁ \ s₂) = μ.real s₁ - μ.real s₂ := by
   rw [measureReal_diff' _ h₂ h₁ (measure_ne_top_of_subset h h₁), union_eq_self_of_subset_right h]
 
