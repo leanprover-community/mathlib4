@@ -210,7 +210,7 @@ end CommMonoid
 
 section LeftCancelMonoid
 
-variable [LeftCancelMonoid M] {a b : M}
+variable [Monoid M] [IsLeftCancelMul M] {a b : M}
 
 @[to_additive (attr := simp)]
 theorem mul_eq_left : a * b = a ↔ b = 1 := calc
@@ -819,7 +819,7 @@ theorem inv_pow_sub (a : G) {m n : ℕ} (h : n ≤ m) : a⁻¹ ^ (m - n) = (a ^ 
 @[to_additive add_one_zsmul]
 lemma zpow_add_one (a : G) : ∀ n : ℤ, a ^ (n + 1) = a ^ n * a
   | (n : ℕ) => by simp only [← Int.ofNat_succ, zpow_natCast, pow_succ]
-  | .negSucc 0 => by simp [Int.negSucc_eq', Int.add_left_neg]
+  | -1 => by simp [Int.add_left_neg]
   | .negSucc (n + 1) => by
     rw [zpow_negSucc, pow_succ', mul_inv_rev, inv_mul_cancel_right]
     rw [Int.negSucc_eq, Int.neg_add, Int.neg_add_cancel_right]

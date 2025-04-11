@@ -374,8 +374,6 @@ theorem forall_normAtPlace_eq_zero_iff {x : mixedSpace K} :
     · exact norm_eq_zero.mp (normAtPlace_apply_of_isComplex w.prop _ ▸ h w.1)
   · simp_rw [h, map_zero, implies_true]
 
-@[deprecated (since := "2024-09-13")] alias normAtPlace_eq_zero := forall_normAtPlace_eq_zero_iff
-
 @[simp]
 theorem exists_normAtPlace_ne_zero_iff {x : mixedSpace K} :
     (∃ w, normAtPlace w x ≠ 0) ↔ x ≠ 0 := by
@@ -1221,7 +1219,7 @@ theorem normAtComplexPlaces_normAtAllPlaces (x : mixedSpace K) :
   normAtComplexPlaces_mixedSpaceOfRealSpace fun _ _ ↦ (normAtAllPlaces_nonneg _ _)
 
 theorem normAtAllPlaces_eq_of_normAtComplexPlaces_eq {x y : mixedSpace K}
-    (h: normAtComplexPlaces x = normAtComplexPlaces y) :
+    (h : normAtComplexPlaces x = normAtComplexPlaces y) :
     normAtAllPlaces x = normAtAllPlaces y := by
   ext w
   obtain hw | hw := isReal_or_isComplex w

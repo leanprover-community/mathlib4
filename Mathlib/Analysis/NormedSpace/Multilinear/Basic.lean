@@ -82,9 +82,6 @@ instance ContinuousMultilinearMap.instContinuousEval :
     exact ⟨ball m 1, NormedSpace.isVonNBounded_of_isBounded _ isBounded_ball,
       ball_mem_nhds _ one_pos⟩
 
-@[deprecated (since := "2024-10-05")]
-protected alias ContinuousMultilinearMap.continuous_eval := continuous_eval
-
 namespace ContinuousLinearMap
 
 variable {G : Type*} [AddCommGroup G] [TopologicalSpace G] [Module 𝕜 G] [ContinuousConstSMul 𝕜 F]
@@ -946,11 +943,11 @@ def mkContinuousLinear (f : G →ₗ[𝕜] MultilinearMap 𝕜 E G') (C : ℝ)
     { toFun := fun x => (f x).mkContinuous (C * ‖x‖) <| H x
       map_add' := fun x y => by
         ext1
-        simp only [_root_.map_add]
+        simp only [map_add]
         rfl
       map_smul' := fun c x => by
         ext1
-        simp only [_root_.map_smul]
+        simp only [map_smul]
         rfl }
     (max C 0) fun x => by
       simpa using ((f x).mkContinuous_norm_le' _).trans_eq <| by
