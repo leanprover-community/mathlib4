@@ -237,7 +237,7 @@ instance distribMulAction' : DistribMulAction R₁ (⨂[R] i, s i) where
 
 instance smulCommClass' [SMulCommClass R₁ R₂ R] : SMulCommClass R₁ R₂ (⨂[R] i, s i) :=
   ⟨fun {r' r''} x ↦
-    PiTensorProduct.induction_on' x (fun {xr xf} ↦ by simp only [smul_tprodCoeff', smul_comm])
+    PiTensorProduct.induction_on' x (fun {xr xf} ↦ by simp only [smul_tprodCoeff', smul_comm r'])
       fun {z y} ihz ihy ↦ by simp_rw [PiTensorProduct.smul_add, ihz, ihy]⟩
 
 instance isScalarTower' [SMul R₁ R₂] [IsScalarTower R₁ R₂ R] :

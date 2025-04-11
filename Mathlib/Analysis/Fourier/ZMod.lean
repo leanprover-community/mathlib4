@@ -145,7 +145,7 @@ commute with the `ℂ`-action, rather than just `ℂ` itself.
 
 lemma dft_const_smul {R : Type*} [DistribSMul R E] [SMulCommClass R ℂ E] (r : R) (Φ : ZMod N → E) :
     𝓕 (r • Φ) = r • 𝓕 Φ := by
-  simp only [Pi.smul_def, dft_def, smul_sum, smul_comm]
+  simp only [Pi.smul_def, dft_def, smul_sum, smul_comm r]
 
 lemma dft_smul_const {R : Type*} [Ring R] [Module ℂ R] [Module R E] [IsScalarTower ℂ R E]
     (Φ : ZMod N → R) (e : E) :

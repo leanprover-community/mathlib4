@@ -369,7 +369,7 @@ variable [SMulCommClass R R'₂ M]
 instance smulCommClass_left [SMulCommClass R' R'₂ M] : SMulCommClass R' R'₂ (M ⊗[R] N) where
   smul_comm r' r'₂ x :=
     TensorProduct.induction_on x (by simp_rw [TensorProduct.smul_zero])
-      (fun m n => by simp_rw [smul_tmul', smul_comm]) fun x y ihx ihy => by
+      (fun m n => by simp_rw [smul_tmul']; rw [smul_comm]) fun x y ihx ihy => by
       simp_rw [TensorProduct.smul_add]; rw [ihx, ihy]
 
 variable [SMul R'₂ R']

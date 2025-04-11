@@ -246,7 +246,7 @@ protected lemma smul_comm [SMulCommClass 𝕜' 𝕜 E]
   simp only [smul_def, ← MemLp.toLp_const_smul]
   apply MemLp.toLp_congr
   filter_upwards [Lp.coeFn_smul c f, Lp.coeFn_smul c g] with x hfx hgx
-  simp [smul_comm, hfx, hgx]
+  simp [smul_comm c, hfx, hgx]
 
 end Module
 

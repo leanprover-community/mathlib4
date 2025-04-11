@@ -121,14 +121,12 @@ the typeclass, which is still sufficient to recover a `≃+` or `→+` structure
 An example of where this is used is `LinearMap.prod_equiv`.
 -/
 
-/-- Commutativity of actions is a symmetric relation. This lemma can't be an instance because this
-would cause a loop in the instance search graph. -/
+/-- Commutativity of actions is a symmetric relation. -/
 @[to_additive]
-lemma SMulCommClass.symm (M N α : Type*) [SMul M α] [SMul N α] [SMulCommClass M N α] :
+instance SMulCommClass.symm (M N α : Type*) [SMul M α] [SMul N α] [SMulCommClass M N α] :
     SMulCommClass N M α where smul_comm a' a b := (smul_comm a a' b).symm
 
-/-- Commutativity of additive actions is a symmetric relation. This lemma can't be an instance
-because this would cause a loop in the instance search graph. -/
+/-- Commutativity of additive actions is a symmetric relation. -/
 add_decl_doc VAddCommClass.symm
 
 @[to_additive]
