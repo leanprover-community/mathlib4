@@ -25,7 +25,7 @@ assert_not_exists Finset
 
 open Set
 
-variable {R : Type*}
+variable {R K : Type*}
 
 namespace Nat
 
@@ -361,11 +361,11 @@ end LinearOrderedRing
 
 section LinearOrderedSemifield
 
-variable [Semifield R] [LinearOrder R] [IsStrictOrderedRing R] [FloorSemiring R]
+variable [Semifield K] [LinearOrder K] [IsStrictOrderedRing K] [FloorSemiring K]
 
 -- TODO: should these lemmas be `simp`? `norm_cast`?
 
-theorem floor_div_natCast (a : R) (n : ℕ) : ⌊a / n⌋₊ = ⌊a⌋₊ / n := by
+theorem floor_div_natCast (a : K) (n : ℕ) : ⌊a / n⌋₊ = ⌊a⌋₊ / n := by
   rcases le_total a 0 with ha | ha
   · rw [floor_of_nonpos, floor_of_nonpos ha]
     · simp
@@ -382,19 +382,19 @@ theorem floor_div_natCast (a : R) (n : ℕ) : ⌊a / n⌋₊ = ⌊a⌋₊ / n :=
 
 @[deprecated (since := "2025-04-01")] alias floor_div_nat := floor_div_natCast
 
-theorem floor_div_ofNat (a : R) (n : ℕ) [n.AtLeastTwo] :
+theorem floor_div_ofNat (a : K) (n : ℕ) [n.AtLeastTwo] :
     ⌊a / ofNat(n)⌋₊ = ⌊a⌋₊ / ofNat(n) :=
   floor_div_natCast a n
 
 /-- Natural division is the floor of field division. -/
-theorem floor_div_eq_div (m n : ℕ) : ⌊(m : R) / n⌋₊ = m / n := by
-  convert floor_div_natCast (m : R) n
+theorem floor_div_eq_div (m n : ℕ) : ⌊(m : K) / n⌋₊ = m / n := by
+  convert floor_div_natCast (m : K) n
   rw [m.floor_natCast]
 
 end LinearOrderedSemifield
 
 section LinearOrderedField
-variable [Field R] [LinearOrder R] [IsStrictOrderedRing R] [FloorSemiring R] {a b : R}
+variable [Field K] [LinearOrder K] [IsStrictOrderedRing K] [FloorSemiring K] {a b : K}
 
 lemma mul_lt_floor (hb₀ : 0 < b) (hb : b < 1) (hba : ⌈b / (1 - b)⌉₊ ≤ a) : b * a < ⌊a⌋₊ := by
   calc
@@ -407,7 +407,7 @@ lemma mul_lt_floor (hb₀ : 0 < b) (hb : b < 1) (hba : ⌈b / (1 - b)⌉₊ ≤ 
 lemma ceil_lt_mul (hb : 1 < b) (hba : ⌈(b - 1)⁻¹⌉₊ / b < a) : ⌈a⌉₊ < b * a := by
   obtain hab | hba := le_total a (b - 1)⁻¹
   · calc
-      ⌈a⌉₊ ≤ (⌈(b - 1)⁻¹⌉₊ : R) := by gcongr
+      ⌈a⌉₊ ≤ (⌈(b - 1)⁻¹⌉₊ : K) := by gcongr
       _ < b * a := by rwa [← div_lt_iff₀']; positivity
   · rw [← sub_pos] at hb
     calc

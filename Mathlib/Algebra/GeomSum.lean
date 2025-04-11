@@ -29,9 +29,9 @@ which `x` and `y` commute. Even versions not using division or subtraction, vali
 are recorded.
 -/
 
-universe u
+universe u v
 
-variable {R : Type u}
+variable {R : Type u} {K : Type v}
 
 open Finset MulOpposite
 
@@ -260,46 +260,46 @@ theorem geom_sum₂_comm {R : Type u} [CommSemiring R] (x y : R) (n : ℕ) :
     ∑ i ∈ range n, x ^ i * y ^ (n - 1 - i) = ∑ i ∈ range n, y ^ i * x ^ (n - 1 - i) :=
   (Commute.all x y).geom_sum₂_comm n
 
-protected theorem Commute.geom_sum₂ [DivisionRing R] {x y : R} (h' : Commute x y) (h : x ≠ y)
+protected theorem Commute.geom_sum₂ [DivisionRing K] {x y : K} (h' : Commute x y) (h : x ≠ y)
     (n : ℕ) : ∑ i ∈ range n, x ^ i * y ^ (n - 1 - i) = (x ^ n - y ^ n) / (x - y) := by
   have : x - y ≠ 0 := by simp_all [sub_eq_iff_eq_add]
   rw [← h'.geom_sum₂_mul, mul_div_cancel_right₀ _ this]
 
-theorem geom₂_sum [Field R] {x y : R} (h : x ≠ y) (n : ℕ) :
+theorem geom₂_sum [Field K] {x y : K} (h : x ≠ y) (n : ℕ) :
     ∑ i ∈ range n, x ^ i * y ^ (n - 1 - i) = (x ^ n - y ^ n) / (x - y) :=
   (Commute.all x y).geom_sum₂ h n
 
-theorem geom₂_sum_of_gt {R : Type*} [Semifield R] [LinearOrder R] [IsStrictOrderedRing R]
-    [CanonicallyOrderedAdd R] [Sub R] [OrderedSub R]
-    {x y : R} (h : y < x) (n : ℕ) :
+theorem geom₂_sum_of_gt [Semifield K] [LinearOrder K] [IsStrictOrderedRing K]
+    [CanonicallyOrderedAdd K] [Sub K] [OrderedSub K]
+    {x y : K} (h : y < x) (n : ℕ) :
     ∑ i ∈ range n, x ^ i * y ^ (n - 1 - i) = (x ^ n - y ^ n) / (x - y) :=
   eq_div_of_mul_eq (tsub_pos_of_lt h).ne' (geom_sum₂_mul_of_ge h.le n)
 
-theorem geom₂_sum_of_lt {R : Type*} [Semifield R] [LinearOrder R] [IsStrictOrderedRing R]
-    [CanonicallyOrderedAdd R] [Sub R] [OrderedSub R]
-    {x y : R} (h : x < y) (n : ℕ) :
+theorem geom₂_sum_of_lt [Semifield K] [LinearOrder K] [IsStrictOrderedRing K]
+    [CanonicallyOrderedAdd K] [Sub K] [OrderedSub K]
+    {x y : K} (h : x < y) (n : ℕ) :
     ∑ i ∈ range n, x ^ i * y ^ (n - 1 - i) = (y ^ n - x ^ n) / (y - x) :=
   eq_div_of_mul_eq (tsub_pos_of_lt h).ne' (geom_sum₂_mul_of_le h.le n)
 
-theorem geom_sum_eq [DivisionRing R] {x : R} (h : x ≠ 1) (n : ℕ) :
+theorem geom_sum_eq [DivisionRing K] {x : K} (h : x ≠ 1) (n : ℕ) :
     ∑ i ∈ range n, x ^ i = (x ^ n - 1) / (x - 1) := by
   have : x - 1 ≠ 0 := by simp_all [sub_eq_iff_eq_add]
   rw [← geom_sum_mul, mul_div_cancel_right₀ _ this]
 
-lemma geom_sum_of_one_lt {x : R} [Semifield R] [LinearOrder R] [IsStrictOrderedRing R]
-    [CanonicallyOrderedAdd R] [Sub R] [OrderedSub R]
+lemma geom_sum_of_one_lt {x : K} [Semifield K] [LinearOrder K] [IsStrictOrderedRing K]
+    [CanonicallyOrderedAdd K] [Sub R] [OrderedSub K]
     (h : 1 < x) (n : ℕ) :
     ∑ i ∈ Finset.range n, x ^ i = (x ^ n - 1) / (x - 1) :=
   eq_div_of_mul_eq (tsub_pos_of_lt h).ne' (geom_sum_mul_of_one_le h.le n)
 
-lemma geom_sum_of_lt_one {x : R} [Semifield R] [LinearOrder R] [IsStrictOrderedRing R]
-    [CanonicallyOrderedAdd R] [Sub R] [OrderedSub R]
+lemma geom_sum_of_lt_one {x : K} [Semifield K] [LinearOrder K] [IsStrictOrderedRing 
+    [CanonicallyOrderedAdd K] [Sub K] [OrderedSub K]
     (h : x < 1) (n : ℕ) :
     ∑ i ∈ Finset.range n, x ^ i = (1 - x ^ n) / (1 - x) :=
   eq_div_of_mul_eq (tsub_pos_of_lt h).ne' (geom_sum_mul_of_le_one h.le n)
 
-theorem geom_sum_lt {x : R} [Semifield R] [LinearOrder R] [IsStrictOrderedRing R]
-    [CanonicallyOrderedAdd R] [Sub R] [OrderedSub R]
+theorem geom_sum_lt {x : K} [Semifield K] [LinearOrder K] [IsStrictOrderedRing 
+    [CanonicallyOrderedAdd K] [Sub K] [OrderedSub K]
     (h0 : x ≠ 0) (h1 : x < 1) (n : ℕ) : ∑ i ∈ range n, x ^ i < (1 - x)⁻¹ := by
   rw [← pos_iff_ne_zero] at h0
   rw [geom_sum_of_lt_one h1, div_lt_iff₀, inv_mul_cancel₀, tsub_lt_self_iff]
@@ -325,8 +325,7 @@ protected theorem Commute.mul_geom_sum₂_Ico [Ring R] {x y : R} (h : Commute x 
   rw [← sum_mul, mul_sub, h.mul_geom_sum₂, ← mul_assoc, h.mul_geom_sum₂, sub_mul, ← pow_add,
     add_tsub_cancel_of_le hmn, sub_sub_sub_cancel_right (x ^ n) (x ^ m * y ^ (n - m)) (y ^ n)]
 
-protected theorem Commute.geom_sum₂_succ_eq {R : Type u} [Ring R] {x y : R} (h : Commute x y)
-    {n : ℕ} :
+protected theorem Commute.geom_sum₂_succ_eq [Ring R] {x y : R} (h : Commute x y) {n : ℕ} :
     ∑ i ∈ range (n + 1), x ^ i * y ^ (n - i) =
       x ^ n + y * ∑ i ∈ range n, x ^ i * y ^ (n - 1 - i) := by
   simp_rw [mul_sum, sum_range_succ_comm, tsub_self, pow_zero, mul_one, add_right_inj, ← mul_assoc,
@@ -336,7 +335,7 @@ protected theorem Commute.geom_sum₂_succ_eq {R : Type u} [Ring R] {x y : R} (h
   rw [Finset.mem_range] at hi
   omega
 
-theorem geom_sum₂_succ_eq {R : Type u} [CommRing R] (x y : R) {n : ℕ} :
+theorem geom_sum₂_succ_eq [CommRing R] (x y : R) {n : ℕ} :
     ∑ i ∈ range (n + 1), x ^ i * y ^ (n - i) =
       x ^ n + y * ∑ i ∈ range n, x ^ i * y ^ (n - 1 - i) :=
   (Commute.all x y).geom_sum₂_succ_eq
@@ -366,27 +365,27 @@ theorem geom_sum_Ico_mul_neg [Ring R] (x : R) {m n : ℕ} (hmn : m ≤ n) :
     (∑ i ∈ Finset.Ico m n, x ^ i) * (1 - x) = x ^ m - x ^ n := by
   rw [sum_Ico_eq_sub _ hmn, sub_mul, geom_sum_mul_neg, geom_sum_mul_neg, sub_sub_sub_cancel_left]
 
-protected theorem Commute.geom_sum₂_Ico [DivisionRing R] {x y : R} (h : Commute x y) (hxy : x ≠ y)
+protected theorem Commute.geom_sum₂_Ico [DivisionRing K] {x y : K} (h : Commute x y) (hxy : x ≠ y)
     {m n : ℕ} (hmn : m ≤ n) :
     (∑ i ∈ Finset.Ico m n, x ^ i * y ^ (n - 1 - i)) = (x ^ n - y ^ (n - m) * x ^ m) / (x - y) := by
   have : x - y ≠ 0 := by simp_all [sub_eq_iff_eq_add]
   rw [← h.geom_sum₂_Ico_mul hmn, mul_div_cancel_right₀ _ this]
 
-theorem geom_sum₂_Ico [Field R] {x y : R} (hxy : x ≠ y) {m n : ℕ} (hmn : m ≤ n) :
+theorem geom_sum₂_Ico [Field K] {x y : K} (hxy : x ≠ y) {m n : ℕ} (hmn : m ≤ n) :
     (∑ i ∈ Finset.Ico m n, x ^ i * y ^ (n - 1 - i)) = (x ^ n - y ^ (n - m) * x ^ m) / (x - y) :=
   (Commute.all x y).geom_sum₂_Ico hxy hmn
 
-theorem geom_sum_Ico [DivisionRing R] {x : R} (hx : x ≠ 1) {m n : ℕ} (hmn : m ≤ n) :
+theorem geom_sum_Ico [DivisionRing K] {x : K} (hx : x ≠ 1) {m n : ℕ} (hmn : m ≤ n) :
     ∑ i ∈ Finset.Ico m n, x ^ i = (x ^ n - x ^ m) / (x - 1) := by
   simp only [sum_Ico_eq_sub _ hmn, geom_sum_eq hx, div_sub_div_same, sub_sub_sub_cancel_right]
 
-theorem geom_sum_Ico' [DivisionRing R] {x : R} (hx : x ≠ 1) {m n : ℕ} (hmn : m ≤ n) :
+theorem geom_sum_Ico' [DivisionRing K] {x : K} (hx : x ≠ 1) {m n : ℕ} (hmn : m ≤ n) :
     ∑ i ∈ Finset.Ico m n, x ^ i = (x ^ m - x ^ n) / (1 - x) := by
   simp only [geom_sum_Ico hx hmn]
   convert neg_div_neg_eq (x ^ m - x ^ n) (1 - x) using 2 <;> abel
 
-theorem geom_sum_Ico_le_of_lt_one [Field R] [LinearOrder R] [IsStrictOrderedRing R]
-    {x : R} (hx : 0 ≤ x) (h'x : x < 1)
+theorem geom_sum_Ico_le_of_lt_one [Field K] [LinearOrder K] [IsStrictOrderedRing K]
+    {x : K} (hx : 0 ≤ x) (h'x : x < 1)
     {m n : ℕ} : ∑ i ∈ Ico m n, x ^ i ≤ x ^ m / (1 - x) := by
   rcases le_or_lt m n with (hmn | hmn)
   · rw [geom_sum_Ico' h'x.ne hmn]
@@ -397,7 +396,7 @@ theorem geom_sum_Ico_le_of_lt_one [Field R] [LinearOrder R] [IsStrictOrderedRing
       simpa using h'x.le
     · simpa using hmn.le
 
-theorem geom_sum_inv [DivisionRing R] {x : R} (hx1 : x ≠ 1) (hx0 : x ≠ 0) (n : ℕ) :
+theorem geom_sum_inv [DivisionRing K] {x : K} (hx1 : x ≠ 1) (hx0 : x ≠ 0) (n : ℕ) :
     ∑ i ∈ range n, x⁻¹ ^ i = (x - 1)⁻¹ * (x - x⁻¹ ^ n * x) := by
   have h₁ : x⁻¹ ≠ 1 := by rwa [inv_eq_one_div, Ne, div_eq_iff_mul_eq hx0, one_mul]
   have h₂ : x⁻¹ - 1 ≠ 0 := mt sub_eq_zero.1 h₁
@@ -412,13 +411,13 @@ theorem geom_sum_inv [DivisionRing R] {x : R} (hx1 : x ≠ 1) (hx0 : x ≠ 0) (n
     add_left_comm]
   rw [add_comm _ (-x), add_assoc, add_assoc _ _ 1]
 
-variable {β : Type*}
+variable {S : Type*}
 
 -- TODO: for consistency, the next two lemmas should be moved to the root namespace
-theorem RingHom.map_geom_sum [Semiring R] [Semiring β] (x : R) (n : ℕ) (f : R →+* β) :
+theorem RingHom.map_geom_sum [Semiring R] [Semiring S] (x : R) (n : ℕ) (f : R →+* S) :
     f (∑ i ∈ range n, x ^ i) = ∑ i ∈ range n, f x ^ i := by simp [map_sum f]
 
-theorem RingHom.map_geom_sum₂ [Semiring R] [Semiring β] (x y : R) (n : ℕ) (f : R →+* β) :
+theorem RingHom.map_geom_sum₂ [Semiring R] [Semiring S] (x y : R) (n : ℕ) (f : R →+* S) :
     f (∑ i ∈ range n, x ^ i * y ^ (n - 1 - i)) = ∑ i ∈ range n, f x ^ i * f y ^ (n - 1 - i) := by
   simp [map_sum f]
 
