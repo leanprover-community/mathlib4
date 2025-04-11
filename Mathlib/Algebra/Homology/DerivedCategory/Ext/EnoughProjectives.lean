@@ -17,7 +17,7 @@ However, the main lemma `hasExt_of_enoughProjectives` is not made an instance:
 for a given category `C`, there may be different reasonable choices for the universe `w`,
 and if we have two `HasExt.{w₁}` and `HasExt.{w₂}` instances, we would have
 to specify the universe explicitly almost everywhere, which would be an inconvenience.
-Then, we must be very selective regarding `HasExt` instances.
+So we must be very selective regarding `HasExt` instances.
 
 -/
 
