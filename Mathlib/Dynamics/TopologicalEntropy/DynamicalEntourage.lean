@@ -35,7 +35,7 @@ namespace Dynamics
 
 open Prod Set Uniformity UniformSpace
 
-variable {X : Type*}
+variable {X : Type*} {T : X → X} {U V : Set (X × X)} {m n : ℕ}
 
 /-- The dynamical entourage associated to a transformation `T`, entourage `U` and time `n`
 is the set of points `(x, y)` such that `(T^[k] x, T^[k] y) ∈ U` for all `k < n`, i.e.
@@ -68,13 +68,10 @@ lemma idRel_subset_dynEntourage (T : X → X) {U : Set (X × X)} (h : idRel ⊆ 
   simp only [dynEntourage, map_iterate, subset_iInter_iff, idRel_subset, mem_preimage, map_apply]
   exact fun _ _ _ ↦ h rfl
 
-lemma _root_.IsSymmetricRel.dynEntourage (T : X → X) {U : Set (X × X)}
-    (h : IsSymmetricRel U) (n : ℕ) :
+protected lemma _root_.IsSymmetricRel.dynEntourage (h : IsSymmetricRel U) :
     IsSymmetricRel (dynEntourage T U n) := by
-  ext xy
-  simp only [Dynamics.dynEntourage, map_iterate, mem_preimage, mem_iInter]
-  refine forall₂_congr fun k _ ↦ ?_
-  exact map_apply' _ _ _ ▸ IsSymmetricRel.mk_mem_comm h
+  simp only [IsSymmetricRel, Dynamics.dynEntourage, map_iterate, mem_preimage, mem_iInter]
+  exact fun x y hxy i hin ↦ h <| hxy i hin
 
 @[deprecated (since := "2025-03-05")]
 alias _root_.SymmetricRel.dynEntourage := _root_.IsSymmetricRel.dynEntourage
@@ -98,9 +95,18 @@ lemma dynEntourage_monotone (T : X → X) (n : ℕ) :
     Monotone (fun U : Set (X × X) ↦ dynEntourage T U n) :=
   fun _ _ h ↦ iInter₂_mono fun _ _ ↦ preimage_mono h
 
+@[gcongr] lemma dynEntourage_mono (hUV : U ⊆ V) : dynEntourage T U n ⊆ dynEntourage T V n :=
+  dynEntourage_monotone _ _ hUV
+
 lemma dynEntourage_antitone (T : X → X) (U : Set (X × X)) :
     Antitone (fun n : ℕ ↦ dynEntourage T U n) :=
   fun m n m_n ↦ iInter₂_mono' fun k k_m ↦ by use k, lt_of_lt_of_le k_m m_n
+
+@[gcongr] lemma dynEntourage_anti (hnm : n ≤ m) : dynEntourage T U m ⊆ dynEntourage T U n :=
+  dynEntourage_antitone _ _ hnm
+
+@[gcongr] protected lemma GCongr.dynEntourage_mono (hUV : U ⊆ V) (hnm : n ≤ m) :
+    dynEntourage T U m ⊆ dynEntourage T V n := (dynEntourage_mono hUV).trans (dynEntourage_anti hnm)
 
 @[simp]
 lemma dynEntourage_zero {T : X → X} {U : Set (X × X)} :
@@ -118,7 +124,7 @@ lemma mem_ball_dynEntourage_comp (T : X → X) (n : ℕ) {U : Set (X × X)} (U_s
     (x y : X) (h : (ball x (dynEntourage T U n) ∩ ball y (dynEntourage T U n)).Nonempty) :
     x ∈ ball y (dynEntourage T (U ○ U) n) := by
   rcases h with ⟨z, z_Bx, z_By⟩
-  rw [mem_ball_symmetry (IsSymmetricRel.dynEntourage T U_symm n)] at z_Bx
+  rw [mem_ball_symmetry U_symm.dynEntourage] at z_Bx
   exact dynEntourage_comp_subset T U U n (mem_ball_comp z_By z_Bx)
 
 lemma _root_.Function.Semiconj.preimage_dynEntourage {Y : Type*} {S : X → X} {T : Y → Y} {φ : X → Y}
