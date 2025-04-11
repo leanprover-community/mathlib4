@@ -1168,7 +1168,7 @@ theorem edges_map : (p.map f).edges = p.edges.map (Sym2.map f) := by
       true_and, ih]
 
 @[simp]
-theorem edgesSet_map : (p.map f).edgeSet = (Sym2.map f) '' p.edgeSet := by
+theorem edgeSet_map : (p.map f).edgeSet = (Sym2.map f) '' p.edgeSet := by
   ext
   simp
 
