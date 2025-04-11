@@ -307,9 +307,5 @@ theorem totallyBounded_absConvexHull (hs : TotallyBounded s) :
 end
 
 lemma zero_mem_absConvexHull {s : Set E} [SeminormedRing 𝕜] [NormOneClass 𝕜]
-    [AddCommGroup E] [Module ℝ E] [Module 𝕜 E] [Nonempty s] : 0 ∈ absConvexHull 𝕜 s := by
-  obtain ⟨w, hw⟩ := (inferInstance : Nonempty s)
-  rw [← add_neg_cancel ((1/2 : ℝ) • w), ← smul_neg]
-  exact convex_absConvexHull (subset_absConvexHull hw)
-    ((Balanced.neg_mem_iff balanced_absConvexHull).mpr (subset_absConvexHull hw))
-    (le_of_lt one_half_pos) (le_of_lt one_half_pos) (add_halves 1)
+    [AddCommGroup E] [Module ℝ E] [Module 𝕜 E] [Nonempty s] : 0 ∈ absConvexHull 𝕜 s :=
+  balanced_absConvexHull.zero_mem (Nonempty.mono subset_absConvexHull Set.Nonempty.of_subtype)
