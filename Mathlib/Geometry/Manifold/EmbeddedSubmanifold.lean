@@ -189,20 +189,26 @@ noncomputable def pullback_sliceModel [Nonempty M] [Nonempty H] (φ : PartialHom
     (finv ∘ φ.symm ∘ h.map)
   source := f ⁻¹' φ.source
   open_source := IsOpen.preimage hf.continuous φ.open_source
-  target := h.inverse '' φ.target
-  -- h.inverse ∘ φ '' φ.source
-  open_target := sorry -- think, does that work?
+  target := h.map ⁻¹' φ.target
+  open_target := IsOpen.preimage h.hmap.continuous φ.open_target
   map_source' x hx := by
     rw [← φ.image_source_eq_target]
-    exact mem_image_of_mem SliceModel.inverse (mem_image_of_mem φ hx)
+    rw [mem_preimage] at hx ⊢
+    -- y := φ (f x) ∈ range, so h.map (h.inverse) y = y
+    have : (φ ∘ f) x ∈ φ '' φ.source := mem_image_of_mem φ hx
+    -- then `this` does it
+    sorry
   map_target' x hx := by
-    rw [mem_preimage]
-    sorry --rw [φ.image_source_eq_target] at hx
-    --sorry
+    rw [mem_preimage] at hx ⊢
+    -- f and f.extend cancel
+    -- φ.symm '' target ∈ φ.source
+    -- use
+    sorry
   left_inv' x hx := by
     let y := φ (f x)
     -- lemma 1: φ ∘ f (x) is in "the right image", for the next lemma
-    -- lemma 2: for y "nice", SliceModel.map (SliceModel.inverse y) = y
+    -- KEY LEMMA: for y "nice", SliceModel.map (SliceModel.inverse y) = y
+    -- corollary:
     have : SliceModel.map F I I' (SliceModel.inverse (h := h) y) = y := sorry
     calc
       _ = ((Function.extend f id fun x ↦ Classical.arbitrary M) ∘ φ.symm ∘
@@ -231,12 +237,7 @@ noncomputable def pullback_sliceModel [Nonempty M] [Nonempty H] (φ : PartialHom
       _ = SliceModel.inverse (h := h) ((φ ∘ φ.symm) (SliceModel.map F I I' x)) := by simp [Function.comp_apply]
       _ = SliceModel.inverse (h := h) (SliceModel.map F I I' x) := by
         apply congrArg
-        apply φ.right_inv'
-        obtain ⟨x₀, hx₀, hxx₀⟩ := hx
-        rw [← hxx₀]
-        -- x₀ lies in the good set we want, so can cancel!
-        have : x₀ ∈ φ.target := hx₀
-        sorry -- basically hx, plus map ∘ inverse cancel
+        apply φ.right_inv' hx
       _ = x := SliceModel.inverse_left_inv x
 
   -- tricky question: why is all that continuous? need to use the slice model!
