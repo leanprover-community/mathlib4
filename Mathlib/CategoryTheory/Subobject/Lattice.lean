@@ -496,7 +496,7 @@ section Lattice
 instance boundedOrder [HasInitial C] [InitialMonoClass C] {B : C} : BoundedOrder (Subobject B) :=
   { Subobject.orderTop, Subobject.orderBot with }
 
-variable [HasPullbacks C] [HasImages C] [HasBinaryCoproducts C]
+variable [HasImages C] [HasPullbacks C] [HasBinaryCoproducts C]
 
 instance {B : C} : Lattice (Subobject B) :=
   { Subobject.semilatticeInf, Subobject.semilatticeSup with }
@@ -596,15 +596,14 @@ end Inf
 
 section Sup
 
-variable [LocallySmall.{w} C] [WellPowered.{w} C] [HasCoproducts.{w} C]
-
 /-- The universal morphism out of the coproduct of a set of subobjects,
 after using `[WellPowered C]` to reindex by a small type.
 -/
-def smallCoproductDesc {A : C} (s : Set (Subobject A)) :=
+def smallCoproductDesc [LocallySmall.{w} C] [WellPowered.{w} C] [HasCoproducts.{w} C]
+    {A : C} (s : Set (Subobject A)) :=
   Limits.Sigma.desc fun j : equivShrink _ '' s => ((equivShrink (Subobject A)).symm j).arrow
 
-variable [HasImages C]
+variable [HasImages C] [LocallySmall.{w} C] [WellPowered.{w} C] [HasCoproducts.{w} C]
 
 /-- When `[WellPowered C] [HasImages C] [HasCoproducts C]`,
 `Subobject A` has arbitrary supremums. -/
