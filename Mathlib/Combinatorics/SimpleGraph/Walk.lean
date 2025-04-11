@@ -780,6 +780,51 @@ theorem edges_injective {u v : V} : Function.Injective (Walk.edges : G.Walk u v 
 theorem darts_injective {u v : V} : Function.Injective (Walk.darts : G.Walk u v → List G.Dart) :=
   edges_injective.of_comp
 
+/-- The `Set` of edges of a walk. -/
+def edgeSet {u v : V} (p : G.Walk u v) : Set (Sym2 V) := {e | e ∈ p.edges}
+
+@[simp]
+lemma mem_edgeSet {u v : V} {p : G.Walk u v} {e : Sym2 V} : e ∈ p.edgeSet ↔ e ∈ p.edges := Iff.rfl
+
+@[simp]
+lemma edgeSet_nil (u : V) : (nil : G.Walk u u).edgeSet = ∅ := by
+  ext
+  simp
+
+@[simp]
+lemma edgeSet_reverse {u v : V} (p : G.Walk u v) : p.reverse.edgeSet = p.edgeSet := by
+  ext
+  simp
+
+@[simp]
+theorem edgeSet_cons {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
+    (cons h p).edgeSet = insert s(u, v) p.edgeSet := by
+  ext
+  simp
+
+@[simp]
+theorem edgeSet_concat {u v w : V} (p : G.Walk u v) (h : G.Adj v w) :
+    (p.concat h).edgeSet = insert s(v, w) p.edgeSet := by
+  ext
+  simp [or_comm]
+
+theorem edgeSet_append {u v w : V} (p : G.Walk u v) (q : G.Walk v w) :
+    (p.append q).edgeSet = p.edgeSet ∪ q.edgeSet := by
+  ext
+  simp
+
+@[simp]
+theorem edgeSet_copy {u v u' v'} (p : G.Walk u v) (hu : u = u') (hv : v = v') :
+    (p.copy hu hv).edgeSet = p.edgeSet := by
+  ext
+  simp
+
+@[simp]
+theorem coe_edges_toFinset [DecidableEq V] {u v : V} (p : G.Walk u v) :
+    (p.edges.toFinset : Set (Sym2 V)) = p.edgeSet := by
+  ext
+  simp
+
 /-- Predicate for the empty walk.
 
 Solves the dependent type problem where `p = G.Walk.nil` typechecks
@@ -1122,6 +1167,10 @@ theorem edges_map : (p.map f).edges = p.edges.map (Sym2.map f) := by
     simp only [Walk.map_cons, edges_cons, List.map_cons, Sym2.map_pair_eq, List.cons.injEq,
       true_and, ih]
 
+@[simp]
+theorem edgesSet_map : (p.map f).edgeSet = (Sym2.map f) '' p.edgeSet := by
+  simp [Set.ext_iff]
+
 theorem map_injective_of_injective {f : G →g G'} (hinj : Function.Injective f) (u v : V) :
     Function.Injective (Walk.map f : G.Walk u v → G'.Walk (f u) (f v)) := by
   intro p p' h
@@ -1170,6 +1219,11 @@ theorem transfer_eq_map_ofLE (hp) (GH : G ≤ H) : p.transfer H hp = p.map (.ofL
 @[simp]
 theorem edges_transfer (hp) : (p.transfer H hp).edges = p.edges := by
   induction p <;> simp [*]
+
+@[simp]
+theorem edgeSet_transfer (hp) : (p.transfer H hp).edgeSet = p.edgeSet := by
+  ext
+  simp
 
 @[simp]
 theorem support_transfer (hp) : (p.transfer H hp).support = p.support := by
