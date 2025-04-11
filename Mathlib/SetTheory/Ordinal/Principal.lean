@@ -197,15 +197,15 @@ theorem principal_add_omega0 : Principal (· + ·) ω :=
 theorem add_omega0_opow (h : a < ω ^ b) : a + ω ^ b = ω ^ b := by
   refine le_antisymm ?_ (le_add_left _ a)
   induction b using limitRecOn with
-  | H₁ =>
+  | zero =>
     rw [opow_zero, ← succ_zero, lt_succ_iff, Ordinal.le_zero] at h
     rw [h, zero_add]
-  | H₂ =>
+  | succ =>
     rw [opow_succ] at h
     rcases (lt_mul_of_limit isLimit_omega0).1 h with ⟨x, xo, ax⟩
     apply (add_le_add_right ax.le _).trans
     rw [opow_succ, ← mul_add, add_omega0 xo]
-  | H₃ b l IH =>
+  | isLimit b l IH =>
     rcases (lt_opow_of_limit omega0_ne_zero l).1 h with ⟨x, xb, ax⟩
     apply (((isNormal_add_right a).trans <| isNormal_opow one_lt_omega0).limit_le l).2
     intro y yb
