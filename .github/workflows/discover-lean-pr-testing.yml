@@ -24,6 +24,13 @@ jobs:
         git config --global user.name "github-actions"
         git config --global user.email "github-actions@github.com"
 
+    - name: Configure Lean
+      uses: leanprover/lean-action@f3ad22e9ca29cb9475bc9bee9afd1f39bb52bf6d # v1.1.2
+      with:
+        auto-config: false
+        use-github-cache: false
+        use-mathlib-cache: false
+
     - name: Determine old and new lean-toolchain
       id: determine-toolchains
       run: |

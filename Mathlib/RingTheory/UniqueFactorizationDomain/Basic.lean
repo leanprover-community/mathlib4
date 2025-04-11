@@ -113,7 +113,7 @@ theorem prime_factors_irreducible [CommMonoidWithZero α] {a : α} {f : Multiset
   haveI := Classical.decEq α
   refine @Multiset.induction_on _
     (fun g => (g.prod ~ᵤ a) → (∀ b ∈ g, Prime b) → ∃ p, a ~ᵤ p ∧ g = {p}) f ?_ ?_ pfa.2 pfa.1
-  · intro h; exact (ha.not_unit (associated_one_iff_isUnit.1 (Associated.symm h))).elim
+  · intro h; exact (ha.not_isUnit (associated_one_iff_isUnit.1 (Associated.symm h))).elim
   · rintro p s _ ⟨u, hu⟩ hs
     use p
     have hs0 : s = 0 := by

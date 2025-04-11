@@ -267,8 +267,6 @@ which may also be rephrased as a natural isomorphism `yoneda.obj X ≅ F` when `
 class IsRepresentable (F : Cᵒᵖ ⥤ Type v) : Prop where
   has_representation : ∃ (Y : C), Nonempty (F.RepresentableBy Y)
 
-@[deprecated (since := "2024-10-03")] alias Representable := IsRepresentable
-
 lemma RepresentableBy.isRepresentable {F : Cᵒᵖ ⥤ Type v} {Y : C} (e : F.RepresentableBy Y) :
     F.IsRepresentable where
   has_representation := ⟨Y, ⟨e⟩⟩
@@ -287,8 +285,6 @@ instance {X : C} : IsRepresentable (yoneda.obj X) :=
 @[stacks 001Q]
 class IsCorepresentable (F : C ⥤ Type v) : Prop where
   has_corepresentation : ∃ (X : C), Nonempty (F.CorepresentableBy X)
-
-@[deprecated (since := "2024-10-03")] alias Corepresentable := IsCorepresentable
 
 lemma CorepresentableBy.isCorepresentable {F : C ⥤ Type v} {X : C} (e : F.CorepresentableBy X) :
     F.IsCorepresentable where
@@ -799,6 +795,45 @@ def yonedaMap (X : C) : yoneda.obj X ⟶ F.op ⋙ yoneda.obj (F.obj X) where
 @[simp]
 lemma yonedaMap_app_apply {Y : C} {X : Cᵒᵖ} (f : X.unop ⟶ Y) :
     (yonedaMap F Y).app X f = F.map f := rfl
+
+end
+
+section
+
+variable {C : Type u₁} [Category.{v₁} C]
+
+/-- A type-level equivalence between sections of a functor and morphisms from a terminal functor
+to it. We use the constant functor on a given singleton type here as a specific choice of terminal
+functor. -/
+@[simps apply_app]
+def Functor.sectionsEquivHom (F : C ⥤ Type u₂) (X : Type u₂) [Unique X] :
+    F.sections ≃ ((const _).obj X ⟶ F) where
+  toFun s :=
+    { app j x := s.1 j
+      naturality _ _ _ := by ext x; simp }
+  invFun τ := ⟨fun j ↦ τ.app _ (default : X), fun φ ↦ (congr_fun (τ.naturality φ) _).symm⟩
+  left_inv s := rfl
+  right_inv τ := by
+    ext _ (x : X)
+    rw [Unique.eq_default x]
+
+lemma Functor.sectionsEquivHom_naturality {F G : C ⥤ Type u₂} (f : F ⟶ G) (X : Type u₂) [Unique X]
+    (x : F.sections) :
+    (G.sectionsEquivHom X) ((sectionsFunctor C).map f x) = (F.sectionsEquivHom X) x ≫ f := by
+  rfl
+
+lemma Functor.sectionsEquivHom_naturality_symm {F G : C ⥤ Type u₂} (f : F ⟶ G) (X : Type u₂)
+    [Unique X] (τ : (const C).obj X ⟶ F) :
+    (G.sectionsEquivHom X).symm (τ ≫ f) =
+      (sectionsFunctor C).map f ((F.sectionsEquivHom X).symm τ) := by
+  rfl
+
+/-- A natural isomorphism between the sections functor `(C ⥤ Type _) ⥤ Type _` and the co-Yoneda
+embedding of a terminal functor, specifically a constant functor on a given singleton type `X`. -/
+@[simps!]
+noncomputable def sectionsFunctorNatIsoCoyoneda (X : Type max u₁ u₂) [Unique X] :
+    Functor.sectionsFunctor.{v₁, max u₁ u₂} C ≅ coyoneda.obj (op ((Functor.const C).obj X)) :=
+  NatIso.ofComponents fun F ↦ (F.sectionsEquivHom X).toIso
 
 end
 

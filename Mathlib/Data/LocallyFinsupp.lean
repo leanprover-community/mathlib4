@@ -288,7 +288,7 @@ instance [SemilatticeInf Y] [Zero Y] : Min (locallyFinsuppWithin U Y) where
 lemma min_apply [SemilatticeInf Y] [Zero Y] {D₁ D₂ : locallyFinsuppWithin U Y} {x : X} :
     min D₁ D₂ x = min (D₁ x) (D₂ x) := rfl
 
-instance  [Lattice Y] [Zero Y] : Lattice (locallyFinsuppWithin U Y) where
+instance [Lattice Y] [Zero Y] : Lattice (locallyFinsuppWithin U Y) where
   le := (· ≤ ·)
   lt := (· < ·)
   le_refl := by simp [le_def]

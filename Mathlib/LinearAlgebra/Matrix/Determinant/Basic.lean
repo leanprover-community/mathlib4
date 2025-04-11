@@ -489,7 +489,8 @@ theorem det_updateCol_add_smul_self (A : Matrix n n R) {i j : n} (hij : i ≠ j)
 alias det_updateColumn_add_smul_self := det_updateCol_add_smul_self
 
 theorem linearIndependent_rows_of_det_ne_zero [IsDomain R] {A : Matrix m m R} (hA : A.det ≠ 0) :
-    LinearIndependent R (fun i ↦ A i) := by
+    LinearIndependent R A.row := by
+  rw [row_def]
   contrapose! hA
   obtain ⟨c, hc0, i, hci⟩ := Fintype.not_linearIndependent_iff.1 hA
   have h0 := A.det_updateRow_sum i c
@@ -497,7 +498,7 @@ theorem linearIndependent_rows_of_det_ne_zero [IsDomain R] {A : Matrix m m R} (h
     mul_eq_zero_iff_left hci] at h0
 
 theorem linearIndependent_cols_of_det_ne_zero [IsDomain R] {A : Matrix m m R} (hA : A.det ≠ 0) :
-    LinearIndependent R (fun i ↦ Aᵀ i) :=
+    LinearIndependent R A.col :=
   Matrix.linearIndependent_rows_of_det_ne_zero (by simpa)
 
 theorem det_eq_of_forall_row_eq_smul_add_const_aux {A B : Matrix n n R} {s : Finset n} :

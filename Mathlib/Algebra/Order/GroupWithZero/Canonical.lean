@@ -69,13 +69,13 @@ lemma Function.Injective.isOrderedMonoidWithZero {β : Type*} [Zero β] [One β]
     [Pow β ℕ] [Max β] [Min β] (f : β → α) (hf : Function.Injective f) (zero : f 0 = 0)
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y)) (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) :
-    let _ : LinearOrder β := LinearOrder.lift f hf hsup hinf
-    let _ : CommMonoidWithZero β := hf.commMonoidWithZero f zero one mul npow
-    let _ : IsOrderedMonoid β := hf.isOrderedMonoid f one mul npow
+    letI _ : LinearOrder β := LinearOrder.lift f hf hsup hinf
+    letI _ : CommMonoidWithZero β := hf.commMonoidWithZero f zero one mul npow
+    haveI _ : IsOrderedMonoid β := hf.isOrderedMonoid f one mul npow
     IsOrderedMonoidWithZero β :=
-  let _ : LinearOrder β := LinearOrder.lift f hf hsup hinf
-  let _ : CommMonoidWithZero β := hf.commMonoidWithZero f zero one mul npow
-  let _ : IsOrderedMonoid β := hf.isOrderedMonoid f one mul npow
+  letI _ : LinearOrder β := LinearOrder.lift f hf hsup hinf
+  letI _ : CommMonoidWithZero β := hf.commMonoidWithZero f zero one mul npow
+  haveI _ : IsOrderedMonoid β := hf.isOrderedMonoid f one mul npow
   { zero_le_one :=
       show f 0 ≤ f 1 by simp only [zero, one, zero_le_one] }
 

@@ -25,32 +25,20 @@ variable [Semiring R] [Semiring S] [Semiring T]
 theorem isLocalHom_id (R : Type*) [Semiring R] : IsLocalHom (RingHom.id R) where
   map_nonunit _ := id
 
-@[deprecated (since := "2024-10-10")]
-alias isLocalRingHom_id := isLocalHom_id
-
 -- see note [lower instance priority]
 @[instance 100]
 theorem isLocalHom_toRingHom {F : Type*} [FunLike F R S]
     [RingHomClass F R S] (f : F) [IsLocalHom f] : IsLocalHom (f : R →+* S) :=
   ⟨IsLocalHom.map_nonunit (f := f)⟩
 
-@[deprecated (since := "2024-10-10")]
-alias isLocalRingHom_toRingHom := isLocalHom_toRingHom
-
 @[instance]
 theorem RingHom.isLocalHom_comp (g : S →+* T) (f : R →+* S) [IsLocalHom g]
     [IsLocalHom f] : IsLocalHom (g.comp f) where
   map_nonunit a := IsLocalHom.map_nonunit a ∘ IsLocalHom.map_nonunit (f := g) (f a)
 
-@[deprecated (since := "2024-10-10")]
-alias RingHom.isLocalRingHom_comp := RingHom.isLocalHom_comp
-
 theorem isLocalHom_of_comp (f : R →+* S) (g : S →+* T) [IsLocalHom (g.comp f)] :
     IsLocalHom f :=
   ⟨fun _ ha => (isUnit_map_iff (g.comp f) _).mp (g.isUnit_map ha)⟩
-
-@[deprecated (since := "2024-10-10")]
-alias isLocalRingHom_of_comp := isLocalHom_of_comp
 
 /-- If `f : R →+* S` is a local ring hom, then `R` is a local ring if `S` is. -/
 theorem RingHom.domain_isLocalRing {R S : Type*} [CommSemiring R] [CommSemiring S] [IsLocalRing S]
