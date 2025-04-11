@@ -30,7 +30,7 @@ open Cardinal Basis Submodule Function Set DirectSum Module
 section Tower
 
 variable (F : Type u) (K : Type v) (A : Type w)
-variable [Semiring F] [Semiring K] [AddCommMonoid A]
+variable [Ring F] [Ring K] [AddCommGroup A]
 variable [Module F K] [Module K A] [Module F A] [IsScalarTower F K A]
 variable [StrongRankCondition F] [StrongRankCondition K] [Module.Free F K] [Module.Free K A]
 
@@ -67,10 +67,10 @@ theorem Module.finrank_mul_finrank : finrank F K * finrank K A = finrank F A := 
 end Tower
 
 variable {R : Type u} {M M₁ : Type v} {M' : Type v'}
-variable [Semiring R] [StrongRankCondition R]
-variable [AddCommMonoid M] [Module R M] [Module.Free R M]
-variable [AddCommMonoid M'] [Module R M'] [Module.Free R M']
-variable [AddCommMonoid M₁] [Module R M₁] [Module.Free R M₁]
+variable [Ring R] [StrongRankCondition R]
+variable [AddCommGroup M] [Module R M] [Module.Free R M]
+variable [AddCommGroup M'] [Module R M'] [Module.Free R M']
+variable [AddCommGroup M₁] [Module R M₁] [Module.Free R M₁]
 
 namespace Module.Free
 
