@@ -242,16 +242,7 @@ def frameHom (n : Nucleus X) : FrameHom X (range n) where
   map_inf' a b := by
     ext
     simp [n.gi.gc.u_inf]
-  map_top' := by
-    simp [Top.top, n.gi.choice_eq]
-  map_sSup' s := by
-    ext
-    apply le_antisymm
-    · apply n.monotone
-      simp only [le_sSup_iff, upperBounds, mem_image, exists_exists_and_eq_and,
-        val_codRestrict_apply, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, mem_setOf_eq,
-        sSup_le_iff]
-      exact fun _ h1 c h2 ↦ le_trans n.le_apply (h1 c h2)
-    · rw [n.gi.gc.l_sSup, sSup_image]
+  map_top' := n.gi.l_top
+  map_sSup' s := by rw [n.gi.gc.l_sSup, sSup_image]
 
 end Nucleus
