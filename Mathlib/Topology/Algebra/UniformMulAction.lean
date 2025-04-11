@@ -25,6 +25,8 @@ TODO: Generalise the results here from the concrete `Completion` to any `Abstrac
 
 universe u v w x y
 
+open scoped Uniformity
+
 noncomputable section
 
 variable (R : Type u) (M : Type v) (N : Type w) (X : Type x) (Y : Type y) [UniformSpace X]
@@ -149,6 +151,30 @@ theorem uniformContinuous_div_const' {R : Type*} [DivisionRing R] [UniformSpace 
   uniformContinuous_id.div_const' _
 
 end Ring
+
+section Unit
+
+variable {M X}
+
+open scoped Pointwise in
+theorem IsUnit.smul_uniformity [Monoid M] [MulAction M X] [UniformContinuousConstSMul M X] {c : M}
+    (hc : IsUnit c) : c • 𝓤 X = 𝓤 X :=
+  let ⟨d, hcd⟩ := hc.exists_right_inv
+  have cU : c • 𝓤 X ≤ 𝓤 X := uniformContinuous_const_smul c
+  have dU : d • 𝓤 X ≤ 𝓤 X := uniformContinuous_const_smul d
+  le_antisymm cU <| by simpa [smul_smul, hcd] using Filter.smul_filter_le_smul_filter (a := c) dU
+
+open scoped Pointwise in
+theorem smul_uniformity [Group M] [MulAction M X] [UniformContinuousConstSMul M X] (c : M) :
+    c • 𝓤 X = 𝓤 X :=
+  Group.isUnit _ |>.smul_uniformity
+
+open scoped Pointwise in
+theorem smul_uniformity₀ [GroupWithZero M] [MulAction M X] [UniformContinuousConstSMul M X] {c : M}
+    (hc : c ≠ 0) : c • 𝓤 X = 𝓤 X :=
+  hc.isUnit.smul_uniformity
+
+end Unit
 
 namespace UniformSpace
 
