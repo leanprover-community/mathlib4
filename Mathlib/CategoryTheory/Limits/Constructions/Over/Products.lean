@@ -75,10 +75,7 @@ def pullbackConeEquivBinaryFan : PullbackCone f g ≌ BinaryFan (Over.mk f) (.mk
 def IsLimit.pullbackConeEquivBinaryFanFunctor {c : PullbackCone f g} (hc : IsLimit c) :
     IsLimit <| pullbackConeEquivBinaryFan.functor.obj c :=
   BinaryFan.isLimitMk
-    -- TODO: Rename `BinaryFan.IsLimit.lift'` to `BinaryFan.IsLimit.lift`
-    -- TODO: Make `BinaryFan.IsLimit.lift'` not subtype-valued. Instead provide lemmas separately.
-    -- TODO: Make `BinaryFan.IsLimit.lift'` take in two binary fans, rather than a binary fan and
-    -- two maps.
+    -- TODO: Drop `BinaryFan.IsLimit.lift'`. Instead provide the lemmas it bundles separately.
     -- TODO: Define `abbrev BinaryFan.IsLimit (c : BinaryFan X Y) := IsLimit c` for dot notation?
     (fun s ↦ Over.homMk (hc.lift <| pullbackConeEquivBinaryFan.inverse.obj s) <| by
       simpa using s.fst.w)
@@ -100,13 +97,13 @@ def IsLimit.pullbackConeEquivBinaryFanInverse {c : BinaryFan (Over.mk f) (.mk g)
     (fun s ↦ by simpa only using congr($(hc.fac _ _).left))
     (fun s ↦ by simpa only using congr($(hc.fac _ _).left))
     <| fun s m hm₁ hm₂ ↦ by
-      simp [-PullbackCone.π_app_left, -PullbackCone.π_app_right] at *
       change PullbackCone f g at s
       have := hc.uniq (pullbackConeEquivBinaryFan.functor.obj s) (Over.homMk m <| by
         have := c.fst.w
-        dsimp at this
-        simp only [pullbackConeEquivBinaryFan_functor_obj, ← hm₁, this, Category.assoc,
-          Category.comp_id, BinaryFan.mk_pt, Over.mk_left, Functor.const_obj_obj, Over.mk_hom])
+        simp only [pair_obj_left, Over.mk_left, Functor.id_obj, pair_obj_right,
+          Functor.const_obj_obj, Over.mk_hom, Functor.id_map, CostructuredArrow.right_eq_id,
+          Discrete.functor_map_id, Category.comp_id] at hm₁ this
+        simp [← hm₁, this])
         (by rintro (_ | _) <;> ext <;> simpa)
       exact congr(($this).left)
 
@@ -162,15 +159,13 @@ def IsColimit.pushoutCoconeEquivBinaryCofanInverse {c : BinaryCofan (Under.mk f)
     (fun s ↦ by simpa only using congr($(hc.fac _ _).right))
     (fun s ↦ by simpa only using congr($(hc.fac _ _).right))
     <| fun s m hm₁ hm₂ ↦ by
-      simp [-PushoutCocone.ι_app_left, -PushoutCocone.ι_app_right] at *
       change PushoutCocone f g at s
       have := hc.uniq (pushoutCoconeEquivBinaryCofan.functor.obj s) (Under.homMk m <| by
         have := c.inl.w
-        dsimp at this
-        simp only [Functor.const_obj_obj, pushoutCoconeEquivBinaryCofan, BinaryCofan.mk_pt,
-          pair_obj_left, pair_obj_right, Functor.comp_obj, PushoutCocone.mk_pt,
-          PushoutCocone.mk_ι_app, span_zero, Functor.id_obj, Under.mk_right, Under.mk_hom, ← hm₁, ←
-          Category.assoc, ← this, Category.id_comp])
+        simp only [pair_obj_left, Functor.const_obj_obj, Functor.id_obj, StructuredArrow.left_eq_id,
+          Discrete.functor_map_id, Category.id_comp, Under.mk_right, Under.mk_hom, Functor.id_map,
+          pair_obj_right] at this hm₁
+        simp [← hm₁, ← Category.assoc, ← this])
         (by rintro (_ | _) <;> ext <;> simpa)
       exact congr(($this).right)
 
