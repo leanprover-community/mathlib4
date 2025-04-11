@@ -6,7 +6,6 @@ Authors: Yury Kudryashov
 import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Data.Nat.Lattice
 import Mathlib.Data.ENat.Basic
-import Mathlib.Order.SuccPred.CompleteLinearOrder
 
 /-!
 # Extended natural numbers form a complete linear order
