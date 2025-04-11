@@ -5,6 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.GradedMonoid
 import Mathlib.Algebra.DirectSum.Basic
+import Mathlib.Algebra.Ring.Associator
 
 /-!
 # Additively-graded multiplicative structures on `⨁ i, A i`
@@ -230,15 +231,13 @@ private nonrec theorem mul_one (x : ⨁ i, A i) : x * 1 = x := by
 
 private theorem mul_assoc (a b c : ⨁ i, A i) : a * b * c = a * (b * c) := by
   -- (`fun a b c => a * b * c` as a bundled hom) = (`fun a b c => a * (b * c)` as a bundled hom)
-  suffices (mulHom A).compHom.comp (mulHom A) =
-      (AddMonoidHom.compHom flipHom <| (mulHom A).flip.compHom.comp (mulHom A)).flip by
-      simpa only [coe_comp, Function.comp_apply, AddMonoidHom.compHom_apply_apply, flip_apply,
-        AddMonoidHom.flipHom_apply]
-        using DFunLike.congr_fun (DFunLike.congr_fun (DFunLike.congr_fun this a) b) c
+  suffices AddMonoidHom.mulLeft₃ = AddMonoidHom.mulRight₃ by
+      simpa only [AddMonoidHom.mulLeft₃_apply, AddMonoidHom.mulRight₃_apply] using
+        DFunLike.congr_fun (DFunLike.congr_fun (DFunLike.congr_fun this a) b) c
   ext ai ax bi bx ci cx : 6
-  dsimp only [coe_comp, Function.comp_apply, AddMonoidHom.compHom_apply_apply, flip_apply,
-    AddMonoidHom.flipHom_apply]
-  simp_rw [mulHom_of_of]
+  dsimp only [coe_comp, Function.comp_apply, AddMonoidHom.mulLeft₃_apply,
+    AddMonoidHom.mulRight₃_apply]
+  simp_rw [of_mul_of]
   exact of_eq_of_gradedMonoid_eq (_root_.mul_assoc (GradedMonoid.mk ai ax) ⟨bi, bx⟩ ⟨ci, cx⟩)
 
 instance instNatCast : NatCast (⨁ i, A i) where
