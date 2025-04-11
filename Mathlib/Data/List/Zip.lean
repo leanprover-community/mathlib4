@@ -123,9 +123,10 @@ theorem revzip_swap (l : List α) : (revzip l).map Prod.swap = revzip l.reverse 
 
 theorem mem_zip_inits_tails {l : List α} {init tail : List α} :
     (init, tail) ∈ zip l.inits l.tails ↔ init ++ tail = l := by
-  induction' l with hd tl ih generalizing init tail <;> simp_rw [tails, inits, zip_cons_cons]
-  · simp
-  · constructor <;> rw [mem_cons, zip_map_left, mem_map, Prod.exists]
+  induction l generalizing init tail with <;> simp_rw [tails, inits, zip_cons_cons]
+  | nil => simp
+  | cons hd tl ih =>
+    constructor <;> rw [mem_cons, zip_map_left, mem_map, Prod.exists]
     · rintro (⟨rfl, rfl⟩ | ⟨_, _, h, rfl, rfl⟩)
       · simp
       · simp [ih.mp h]

@@ -58,16 +58,18 @@ theorem destutter'_singleton : [b].destutter' R a = if R a b then [a, b] else [a
   split_ifs with h <;> simp! [h]
 
 theorem destutter'_sublist (a) : l.destutter' R a <+ a :: l := by
-  induction' l with b l hl generalizing a
-  · simp
+  induction l generalizing a with
+  | nil => simp
+  | cons b l hl => ?_
   rw [destutter']
   split_ifs
   · exact Sublist.cons₂ a (hl b)
   · exact (hl a).trans ((l.sublist_cons_self b).cons_cons a)
 
 theorem mem_destutter' (a) : a ∈ l.destutter' R a := by
-  induction' l with b l hl
-  · simp
+  induction l with
+  | nil => simp
+  | cons b l hl => ?_
   rw [destutter']
   split_ifs
   · simp
@@ -83,16 +85,18 @@ theorem destutter'_is_chain : ∀ l : List α, ∀ {a b}, R a b → (l.destutter
     · exact destutter'_is_chain l h
 
 theorem destutter'_is_chain' (a) : (l.destutter' R a).Chain' R := by
-  induction' l with b l hl generalizing a
-  · simp
+  induction l generalizing a with
+  | nil => simp
+  | cons b l hl => ?_
   rw [destutter']
   split_ifs with h
   · exact destutter'_is_chain R l h
   · exact hl a
 
 theorem destutter'_of_chain (h : l.Chain R a) : l.destutter' R a = a :: l := by
-  induction' l with b l hb generalizing a
-  · simp
+  induction l generalizing a with
+  | nil => simp
+  | cons b l hb => ?_
   obtain ⟨h, hc⟩ := chain_cons.mp h
   rw [l.destutter'_cons_pos h, hb hc]
 

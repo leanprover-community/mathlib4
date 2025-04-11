@@ -180,8 +180,9 @@ theorem powersetCardAux_cons (n : ℕ) (a : α) (l : List α) :
 
 theorem powersetCardAux_perm {n} {l₁ l₂ : List α} (p : l₁ ~ l₂) :
     powersetCardAux n l₁ ~ powersetCardAux n l₂ := by
-  induction' n with n IHn generalizing l₁ l₂
-  · simp
+  induction n generalizing l₁ l₂ with
+  | zero => simp
+  | succ n IHn => ?_
   induction p with
   | nil => rfl
   | cons _ p IH =>

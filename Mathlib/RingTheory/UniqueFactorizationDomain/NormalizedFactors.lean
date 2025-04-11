@@ -162,8 +162,9 @@ theorem normalizedFactors_mul {x y : α} (hx : x ≠ 0) (hy : y ≠ 0) :
 @[simp]
 theorem normalizedFactors_pow {x : α} (n : ℕ) :
     normalizedFactors (x ^ n) = n • normalizedFactors x := by
-  induction' n with n ih
-  · simp [zero_nsmul]
+  induction n with
+  | zero => simp [zero_nsmul]
+  | succ n ih => ?_
   by_cases h0 : x = 0
   · simp [h0, zero_pow n.succ_ne_zero, nsmul_zero]
   rw [pow_succ', succ_nsmul', normalizedFactors_mul h0 (pow_ne_zero _ h0), ih]

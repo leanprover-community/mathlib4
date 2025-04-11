@@ -223,14 +223,16 @@ theorem add_iSup {ι : Sort v} [Nonempty ι] (l : ι → Language α) (m : Langu
 
 theorem mem_pow {l : Language α} {x : List α} {n : ℕ} :
     x ∈ l ^ n ↔ ∃ S : List (List α), x = S.flatten ∧ S.length = n ∧ ∀ y ∈ S, y ∈ l := by
-  induction' n with n ihn generalizing x
-  · simp only [mem_one, pow_zero, length_eq_zero_iff]
+  induction n generalizing x with
+  | zero =>
+    simp only [mem_one, pow_zero, length_eq_zero_iff]
     constructor
     · rintro rfl
       exact ⟨[], rfl, rfl, fun _ h ↦ by contradiction⟩
     · rintro ⟨_, rfl, rfl, _⟩
       rfl
-  · simp only [pow_succ', mem_mul, ihn]
+  | succ n ihn =>
+    simp only [pow_succ', mem_mul, ihn]
     constructor
     · rintro ⟨a, ha, b, ⟨S, rfl, rfl, hS⟩, rfl⟩
       exact ⟨a :: S, rfl, rfl, forall_mem_cons.2 ⟨ha, hS⟩⟩
@@ -274,8 +276,9 @@ instance : KleeneAlgebra (Language α) :=
     kstar_mul_le_self := fun l m h ↦ by
       rw [kstar_eq_iSup_pow, iSup_mul]
       refine iSup_le (fun n ↦ ?_)
-      induction' n with n ih
-      · simp
+      induction n with
+      | zero => simp
+      | succ n ih => ?_
       rw [pow_succ, mul_assoc (l^n) l m]
       exact le_trans (le_mul_congr le_rfl h) ih,
     mul_kstar_le_self := fun l m h ↦ by
@@ -292,7 +295,8 @@ theorem self_eq_mul_add_iff {l m n : Language α} (hm : [] ∉ m) : l = m * l + 
   mp h := by
     apply le_antisymm
     · intro x hx
-      induction' hlen : x.length using Nat.strong_induction_on with _ ih generalizing x
+      induction hlen : x.length using Nat.strong_induction_on generalizing x with
+      | h _ ih => ?_
       subst hlen
       rw [h] at hx
       obtain hx | hx := hx
@@ -306,10 +310,12 @@ theorem self_eq_mul_add_iff {l m n : Language α} (hm : [] ∉ m) : l = m * l + 
       · exact ⟨[], nil_mem_kstar _, _, ⟨hx, nil_append _⟩⟩
     · rw [kstar_eq_iSup_pow, iSup_mul, iSup_le_iff]
       intro i
-      induction' i with _ ih <;> rw [h]
-      · rw [pow_zero, one_mul, add_comm]
+      induction i with <;> rw [h]
+      | zero =>
+        rw [pow_zero, one_mul, add_comm]
         exact le_self_add
-      · rw [add_comm, pow_add, pow_one, mul_assoc]
+      | succ _ ih =>
+        rw [add_comm, pow_add, pow_one, mul_assoc]
         exact le_add_right (mul_le_mul_left' ih _)
   mpr h := by rw [h, add_comm, ← mul_assoc, ← one_add_mul, one_add_self_mul_kstar_eq_kstar]
 

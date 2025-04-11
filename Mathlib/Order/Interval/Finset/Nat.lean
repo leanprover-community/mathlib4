@@ -178,11 +178,13 @@ theorem Ico_succ_left_eq_erase_Ico : Ico a.succ b = erase (Ico a b) a := by
     and_comm (a := a ≠ x), lt_iff_le_and_ne]
 
 theorem mod_injOn_Ico (n a : ℕ) : Set.InjOn (· % a) (Finset.Ico n (n + a)) := by
-  induction' n with n ih
-  · simp only [zero_add, Ico_zero_eq_range]
+  induction n with
+  | zero =>
+    simp only [zero_add, Ico_zero_eq_range]
     rintro k hk l hl (hkl : k % a = l % a)
     simp only [Finset.mem_range, Finset.mem_coe] at hk hl
     rwa [mod_eq_of_lt hk, mod_eq_of_lt hl] at hkl
+  | succ n ih => ?_
   rw [Ico_succ_left_eq_erase_Ico, succ_add, succ_eq_add_one,
     Ico_succ_right_eq_insert_Ico (by omega)]
   rintro k hk l hl (hkl : k % a = l % a)

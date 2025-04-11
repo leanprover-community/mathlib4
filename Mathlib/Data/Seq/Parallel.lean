@@ -119,8 +119,9 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
     from
     let ⟨n, h⟩ := h
     this n [] S c (Or.inr h) T
-  intro n; induction' n with n IH <;> intro l S c o T
-  · rcases o with a | a
+  intro n; induction n with <;> intro l S c o T
+  | zero =>
+    rcases o with a | a
     · exact terminates_parallel.aux a T
     have H : Seq.destruct S = some (some c, Seq.tail S) := by simp [Seq.destruct, (· <$> ·), ← a]
     induction' h : parallel.aux2 l with a l'
@@ -138,7 +139,8 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
       refine @Computation.think_terminates _ _ ?_
       apply terminates_parallel.aux _ T
       simp
-  · rcases o with a | a
+  | succ n IH =>
+    rcases o with a | a
     · exact terminates_parallel.aux a T
     induction' h : parallel.aux2 l with a l'
     · have C : corec parallel.aux1 (l, S) = pure a := by
@@ -187,11 +189,13 @@ theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parall
     · exact ∀ a', (∃ c ∈ l', a' ∈ c) → ∃ c ∈ l, a' ∈ c
   have lem1 : ∀ l : List (Computation α), F l (parallel.aux2 l) := by
     intro l
-    induction' l with c l IH <;> simp only [parallel.aux2, List.foldr]
-    · intro a h
+    induction l with <;> simp only [parallel.aux2, List.foldr]
+    | nil =>
+      intro a h
       rcases h with ⟨c, hn, _⟩
       exact False.elim <| List.not_mem_nil hn
-    · simp only [parallel.aux2] at IH
+    | cons c l IH =>
+      simp only [parallel.aux2] at IH
       -- Porting note: `revert IH` & `intro IH` are required.
       revert IH
       cases List.foldr (fun c o =>

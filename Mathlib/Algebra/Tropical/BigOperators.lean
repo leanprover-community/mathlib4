@@ -36,9 +36,9 @@ variable {R S : Type*}
 open Tropical Finset
 
 theorem List.trop_sum [AddMonoid R] (l : List R) : trop l.sum = List.prod (l.map trop) := by
-  induction' l with hd tl IH
-  · simp
-  · simp [← IH]
+  induction l with
+  | nil => simp
+  | cons hd tl IH => simp [← IH]
 
 theorem Multiset.trop_sum [AddCommMonoid R] (s : Multiset R) :
     trop s.sum = Multiset.prod (s.map trop) :=
@@ -52,9 +52,9 @@ theorem trop_sum [AddCommMonoid R] (s : Finset S) (f : S → R) :
 
 theorem List.untrop_prod [AddMonoid R] (l : List (Tropical R)) :
     untrop l.prod = List.sum (l.map untrop) := by
-  induction' l with hd tl IH
-  · simp
-  · simp [← IH]
+  induction l with
+  | nil => simp
+  | cons hd tl IH => simp [← IH]
 
 theorem Multiset.untrop_prod [AddCommMonoid R] (s : Multiset (Tropical R)) :
     untrop s.prod = Multiset.sum (s.map untrop) :=
@@ -68,9 +68,9 @@ theorem untrop_prod [AddCommMonoid R] (s : Finset S) (f : S → Tropical R) :
 
 theorem List.trop_minimum [LinearOrder R] (l : List R) :
     trop l.minimum = List.sum (l.map (trop ∘ WithTop.some)) := by
-  induction' l with hd tl IH
-  · simp
-  · simp [List.minimum_cons, ← IH]
+  induction l with
+  | nil => simp
+  | cons hd tl IH => simp [List.minimum_cons, ← IH]
 
 theorem Multiset.trop_inf [LinearOrder R] [OrderTop R] (s : Multiset R) :
     trop s.inf = Multiset.sum (s.map trop) := by

@@ -189,11 +189,13 @@ theorem iteratedFDeriv_tsum (hf : ∀ i, ContDiff 𝕜 N (f i))
     (h'f : ∀ (k : ℕ) (i : α) (x : E), (k : ℕ∞) ≤ N → ‖iteratedFDeriv 𝕜 k (f i) x‖ ≤ v k i) {k : ℕ}
     (hk : (k : ℕ∞) ≤ N) :
     (iteratedFDeriv 𝕜 k fun y => ∑' n, f n y) = fun x => ∑' n, iteratedFDeriv 𝕜 k (f n) x := by
-  induction' k with k IH
-  · ext1 x
+  induction k with
+  | zero =>
+    ext1 x
     simp_rw [iteratedFDeriv_zero_eq_comp]
     exact (continuousMultilinearCurryFin0 𝕜 E F).symm.toContinuousLinearEquiv.map_tsum
-  · have h'k : (k : ℕ∞) < N := lt_of_lt_of_le (WithTop.coe_lt_coe.2 (Nat.lt_succ_self _)) hk
+  | succ k IH =>
+    have h'k : (k : ℕ∞) < N := lt_of_lt_of_le (WithTop.coe_lt_coe.2 (Nat.lt_succ_self _)) hk
     have A : Summable fun n => iteratedFDeriv 𝕜 k (f n) 0 :=
       .of_norm_bounded (v k) (hv k h'k.le) fun n => h'f k n 0 h'k.le
     simp_rw [iteratedFDeriv_succ_eq_comp_left, IH h'k.le]

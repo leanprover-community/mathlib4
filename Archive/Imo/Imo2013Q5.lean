@@ -113,8 +113,9 @@ theorem fx_gt_xm1 {f : ℚ → ℝ} {x : ℚ} (hx : 1 ≤ x)
 theorem pow_f_le_f_pow {f : ℚ → ℝ} {n : ℕ} (hn : 0 < n) {x : ℚ} (hx : 1 < x)
     (H1 : ∀ x y, 0 < x → 0 < y → f (x * y) ≤ f x * f y) (H4 : ∀ n : ℕ, 0 < n → (n : ℝ) ≤ f n) :
     f (x ^ n) ≤ f x ^ n := by
-  induction' n with pn hpn
-  · exfalso; exact Nat.lt_asymm hn hn
+  induction n with
+  | zero => exfalso; exact Nat.lt_asymm hn hn
+  | succ pn hpn => ?_
   rcases pn with - | pn
   · norm_num
   have hpn' := hpn pn.succ_pos
@@ -169,8 +170,9 @@ theorem imo2013_q5 (f : ℚ → ℝ) (H1 : ∀ x y, 0 < x → 0 < y → f (x * y
     intro x hx n hn
     rcases n with - | n
     · exact (lt_irrefl 0 hn).elim
-    induction' n with pn hpn
-    · norm_num
+    induction n with
+    | zero => norm_num
+    | succ pn hpn => ?_
     calc
       ↑(pn + 2) * f x = (↑pn + 1 + 1) * f x := by norm_cast
       _ = (↑pn + 1) * f x + f x := by ring

@@ -135,8 +135,9 @@ private lemma transGen_oneStep_of_isDershowitzMannaLT :
     IsDershowitzMannaLT M N → TransGen OneStep M N := by
   classical
   rintro ⟨X, Y, Z, hZ, hM, hN, hYZ⟩
-  induction' Z using Multiset.induction_on with z Z ih generalizing X Y M N
-  · simp at hZ
+  induction Z using Multiset.induction_on generalizing X Y M N with
+  | empty => simp at hZ
+  | cons z Z ih => ?_
   obtain rfl | hZ := eq_or_ne Z 0
   · exact .single ⟨X, Y, z, hM, hN, by simpa using hYZ⟩
   let Y' : Multiset α := Y.filter (· < z)

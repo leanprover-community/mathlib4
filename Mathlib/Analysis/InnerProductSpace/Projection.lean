@@ -1110,8 +1110,9 @@ theorem LinearIsometryEquiv.reflections_generate_dim_aux [FiniteDimensional ℝ 
     ∃ l : List F, l.length ≤ n ∧ φ = (l.map fun v => reflection (ℝ ∙ v)ᗮ).prod := by
   -- We prove this by strong induction on `n`, the dimension of the orthogonal complement of the
   -- fixed subspace of the endomorphism `φ`
-  induction' n with n IH generalizing φ
-  · -- Base case: `n = 0`, the fixed subspace is the whole space, so `φ = id`
+  induction n generalizing φ with
+  | zero =>
+    -- Base case: `n = 0`, the fixed subspace is the whole space, so `φ = id`
     refine ⟨[], rfl.le, show φ = 1 from ?_⟩
     have : ker (ContinuousLinearMap.id ℝ F - φ) = ⊤ := by
       rwa [le_zero_iff, Submodule.finrank_eq_zero, Submodule.orthogonal_eq_bot_iff] at hn
@@ -1120,7 +1121,8 @@ theorem LinearIsometryEquiv.reflections_generate_dim_aux [FiniteDimensional ℝ 
     have := LinearMap.congr_fun (LinearMap.ker_eq_top.mp this) x
     simpa only [sub_eq_zero, ContinuousLinearMap.coe_sub, LinearMap.sub_apply,
       LinearMap.zero_apply] using this
-  · -- Inductive step.  Let `W` be the fixed subspace of `φ`.  We suppose its complement to have
+  | succ n IH =>
+    -- Inductive step.  Let `W` be the fixed subspace of `φ`.  We suppose its complement to have
     -- dimension at most n + 1.
     let W := ker (ContinuousLinearMap.id ℝ F - φ)
     have hW : ∀ w ∈ W, φ w = w := fun w hw => (sub_eq_zero.mp hw).symm

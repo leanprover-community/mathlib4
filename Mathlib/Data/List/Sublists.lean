@@ -66,9 +66,11 @@ theorem sublists'_cons (a : α) (l : List α) :
 
 @[simp]
 theorem mem_sublists' {s t : List α} : s ∈ sublists' t ↔ s <+ t := by
-  induction' t with a t IH generalizing s
-  · simp only [sublists'_nil, mem_singleton]
+  induction t generalizing s with
+  | nil =>
+    simp only [sublists'_nil, mem_singleton]
     exact ⟨fun h => by rw [h], eq_nil_of_sublist_nil⟩
+  | cons a t IH => ?_
   simp only [sublists'_cons, mem_append, IH, mem_map]
   constructor <;> intro h
   · rcases h with (h | ⟨s, h, rfl⟩)
@@ -172,8 +174,9 @@ theorem length_sublists (l : List α) : length (sublists l) = 2 ^ length l := by
   simp only [sublists_eq_sublists', length_map, length_sublists', length_reverse]
 
 theorem map_pure_sublist_sublists (l : List α) : map pure l <+ sublists l := by
-  induction' l using reverseRecOn with l a ih <;> simp only [map, map_append, sublists_concat]
-  · simp only [sublists_nil, sublist_cons_self]
+  induction l using reverseRecOn with <;> simp only [map, map_append, sublists_concat]
+  | nil => simp only [sublists_nil, sublist_cons_self]
+  | append_singleton l a ih => ?_
   exact ((append_sublist_append_left _).2 <|
               singleton_sublist.2 <| mem_map.2 ⟨[], mem_sublists.2 (nil_sublist _), by rfl⟩).trans
           ((append_sublist_append_right _).2 ih)
@@ -362,13 +365,15 @@ theorem sublists_cons_perm_append (a : α) (l : List α) :
 
 theorem revzip_sublists (l : List α) : ∀ l₁ l₂, (l₁, l₂) ∈ revzip l.sublists → l₁ ++ l₂ ~ l := by
   rw [revzip]
-  induction' l using List.reverseRecOn with l' a ih
-  · intro l₁ l₂ h
+  induction l using List.reverseRecOn with
+  | nil =>
+    intro l₁ l₂ h
     simp? at h says
       simp only [sublists_nil, reverse_cons, reverse_nil, nil_append, zip_cons_cons, zip_nil_right,
         mem_cons, Prod.mk.injEq, not_mem_nil, or_false] at h
     simp [h]
-  · intro l₁ l₂ h
+  | append_singleton l' a ih =>
+    intro l₁ l₂ h
     rw [sublists_concat, reverse_append, zip_append (by simp), ← map_reverse, zip_map_right,
       zip_map_left] at *
     simp only [Prod.mk_inj, mem_map, mem_append, Prod.map_apply, Prod.exists] at h
@@ -382,10 +387,12 @@ theorem revzip_sublists (l : List α) : ∀ l₁ l₂, (l₁, l₂) ∈ revzip l
 
 theorem revzip_sublists' (l : List α) : ∀ l₁ l₂, (l₁, l₂) ∈ revzip l.sublists' → l₁ ++ l₂ ~ l := by
   rw [revzip]
-  induction' l with a l IH <;> intro l₁ l₂ h
-  · simp_all only [sublists'_nil, reverse_cons, reverse_nil, nil_append, zip_cons_cons,
+  induction l with <;> intro l₁ l₂ h
+  | nil =>
+    simp_all only [sublists'_nil, reverse_cons, reverse_nil, nil_append, zip_cons_cons,
       zip_nil_right, mem_singleton, Prod.mk.injEq, append_nil, Perm.refl]
-  · rw [sublists'_cons, reverse_append, zip_append, ← map_reverse, zip_map_right, zip_map_left] at *
+  | cons a l IH =>
+    rw [sublists'_cons, reverse_append, zip_append, ← map_reverse, zip_map_right, zip_map_left] at *
       <;> [simp only [mem_append, mem_map, Prod.map_apply, id_eq, Prod.mk.injEq, Prod.exists,
         exists_eq_right_right] at h; simp]
     rcases h with (⟨l₁, l₂', h, rfl, rfl⟩ | ⟨l₁', h, rfl⟩)
@@ -394,9 +401,10 @@ theorem revzip_sublists' (l : List α) : ∀ l₁ l₂, (l₁, l₂) ∈ revzip 
 
 theorem range_bind_sublistsLen_perm (l : List α) :
     ((List.range (l.length + 1)).flatMap fun n => sublistsLen n l) ~ sublists' l := by
-  induction' l with h tl l_ih
-  · simp [range_succ]
-  · simp_rw [range_succ_eq_map, length, flatMap_cons, flatMap_map, sublistsLen_succ_cons,
+  induction l with
+  | nil => simp [range_succ]
+  | cons h tl l_ih =>
+    simp_rw [range_succ_eq_map, length, flatMap_cons, flatMap_map, sublistsLen_succ_cons,
       sublists'_cons, List.sublistsLen_zero, List.singleton_append]
     refine ((flatMap_append_perm (range (tl.length + 1)) _ _).symm.cons _).trans ?_
     simp_rw [← List.map_flatMap, ← cons_append]

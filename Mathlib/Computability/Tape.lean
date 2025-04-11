@@ -262,10 +262,12 @@ def ListBlank.modifyNth {Γ} [Inhabited Γ] (f : Γ → Γ) : ℕ → ListBlank 
 
 theorem ListBlank.nth_modifyNth {Γ} [Inhabited Γ] (f : Γ → Γ) (n i) (L : ListBlank Γ) :
     (L.modifyNth f n).nth i = if i = n then f (L.nth i) else L.nth i := by
-  induction' n with n IH generalizing i L
-  · cases i <;> simp only [ListBlank.nth_zero, if_true, ListBlank.head_cons, ListBlank.modifyNth,
+  induction n generalizing i L with
+  | zero =>
+    cases i <;> simp only [ListBlank.nth_zero, if_true, ListBlank.head_cons, ListBlank.modifyNth,
       ListBlank.nth_succ, if_false, ListBlank.tail_cons, reduceCtorEq]
-  · cases i
+  | succ n IH =>
+    cases i
     · rw [if_neg (Nat.succ_ne_zero _).symm]
       simp only [ListBlank.nth_zero, ListBlank.head_cons, ListBlank.modifyNth]
     · simp only [IH, ListBlank.modifyNth, ListBlank.nth_succ, ListBlank.tail_cons, Nat.succ.injEq]
@@ -380,8 +382,9 @@ def ListBlank.flatMap {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (l : ListBlank Γ)
   apply l.liftOn (fun l ↦ ListBlank.mk (l.flatMap f))
   rintro l _ ⟨i, rfl⟩; obtain ⟨n, e⟩ := hf; refine Quotient.sound' (Or.inl ⟨i * n, ?_⟩)
   rw [List.flatMap_append, mul_comm]; congr
-  induction' i with i IH
-  · rfl
+  induction i with
+  | zero => rfl
+  | succ i IH => ?_
   simp only [IH, e, List.replicate_add, Nat.mul_succ, add_comm, List.replicate_succ,
     List.flatMap_cons]
 
@@ -588,9 +591,11 @@ theorem Tape.map_write {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap �
 theorem Tape.write_move_right_n {Γ} [Inhabited Γ] (f : Γ → Γ) (L R : ListBlank Γ) (n : ℕ) :
     ((Tape.move Dir.right)^[n] (Tape.mk' L R)).write (f (R.nth n)) =
       (Tape.move Dir.right)^[n] (Tape.mk' L (R.modifyNth f n)) := by
-  induction' n with n IH generalizing L R
-  · simp only [ListBlank.nth_zero, ListBlank.modifyNth, iterate_zero_apply]
+  induction n generalizing L R with
+  | zero =>
+    simp only [ListBlank.nth_zero, ListBlank.modifyNth, iterate_zero_apply]
     rw [← Tape.write_mk', ListBlank.cons_head_tail]
+  | succ n IH => ?_
   simp only [ListBlank.head_cons, ListBlank.nth_succ, ListBlank.modifyNth, Tape.move_right_mk',
     ListBlank.tail_cons, iterate_succ_apply, IH]
 

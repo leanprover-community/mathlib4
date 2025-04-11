@@ -180,12 +180,14 @@ theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type*} [hne : Nonemp
     {p : ι → P} (ha : AffineIndependent ℝ p) :
     ∃! cs : Sphere P, cs.center ∈ affineSpan ℝ (Set.range p) ∧ Set.range p ⊆ (cs : Set P) := by
   cases nonempty_fintype ι
-  induction' hn : Fintype.card ι with m hm generalizing ι
-  · exfalso
+  induction hn : Fintype.card ι generalizing ι with
+  | zero =>
+    exfalso
     have h := Fintype.card_pos_iff.2 hne
     rw [hn] at h
     exact lt_irrefl 0 h
-  · rcases m with - | m
+  | succ m hm =>
+    rcases m with - | m
     · rw [Fintype.card_eq_one_iff] at hn
       obtain ⟨i, hi⟩ := hn
       haveI : Unique ι := ⟨⟨i⟩, hi⟩

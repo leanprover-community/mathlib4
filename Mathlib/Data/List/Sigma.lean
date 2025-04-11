@@ -213,9 +213,10 @@ theorem lookup_ext {l₀ l₁ : List (Sigma β)} (nd₀ : l₀.NodupKeys) (nd₁
 theorem dlookup_map (l : List (Sigma β))
     {f : α → α'} (hf : Function.Injective f) (g : ∀ a, β a → β' (f a)) (a : α) :
     (l.map fun x => ⟨f x.1, g _ x.2⟩).dlookup (f a) = (l.dlookup a).map (g a) := by
-  induction' l with b l IH
-  · rw [map_nil, dlookup_nil, dlookup_nil, Option.map_none']
-  · rw [map_cons]
+  induction l with
+  | nil => rw [map_nil, dlookup_nil, dlookup_nil, Option.map_none']
+  | cons b l IH =>
+    rw [map_cons]
     obtain rfl | h := eq_or_ne a b.1
     · rw [dlookup_cons_eq, dlookup_cons_eq, Option.map_some']
     · rw [dlookup_cons_ne _ _ h, dlookup_cons_ne _ _ (fun he => h <| hf he), IH]
@@ -432,9 +433,10 @@ theorem kerase_kerase {a a'} {l : List (Sigma β)} :
     (kerase a' l).kerase a = (kerase a l).kerase a' := by
   by_cases h : a = a'
   · subst a'; rfl
-  induction' l with x xs
-  · rfl
-  · by_cases a' = x.1
+  induction l with
+  | nil => rfl
+  | cons x xs =>
+    by_cases a' = x.1
     · subst a'
       simp [kerase_cons_ne h, kerase_cons_eq rfl]
     by_cases h' : a = x.1
@@ -519,9 +521,9 @@ theorem kerase_comm (a₁ a₂) (l : List (Sigma β)) :
 theorem sizeOf_kerase [SizeOf (Sigma β)] (x : α)
     (xs : List (Sigma β)) : SizeOf.sizeOf (List.kerase x xs) ≤ SizeOf.sizeOf xs := by
   simp only [SizeOf.sizeOf, _sizeOf_1]
-  induction' xs with y ys
-  · simp
-  · by_cases x = y.1 <;> simp [*]
+  induction xs with
+  | nil => simp
+  | cons y ys => by_cases x = y.1 <;> simp [*]
 
 /-! ### `kinsert` -/
 
@@ -594,9 +596,10 @@ theorem nodupKeys_dedupKeys (l : List (Sigma β)) : NodupKeys (dedupKeys l) := b
     rw [← hl]
     apply nodup_nil
   clear hl
-  induction' l with x xs l_ih
-  · apply this
-  · cases x
+  induction l with
+  | nil => apply this
+  | cons x xs l_ih =>
+    cases x
     simp only [foldr_cons, kinsert_def, nodupKeys_cons, ne_eq, not_true]
     constructor
     · simp only [keys_kerase]
@@ -604,8 +607,9 @@ theorem nodupKeys_dedupKeys (l : List (Sigma β)) : NodupKeys (dedupKeys l) := b
     · exact l_ih.kerase _
 
 theorem dlookup_dedupKeys (a : α) (l : List (Sigma β)) : dlookup a (dedupKeys l) = dlookup a l := by
-  induction' l with l_hd _ l_ih
-  · rfl
+  induction l with
+  | nil => rfl
+  | cons l_hd _ l_ih => ?_
   obtain ⟨a', b⟩ := l_hd
   by_cases h : a = a'
   · subst a'
@@ -616,9 +620,10 @@ theorem dlookup_dedupKeys (a : α) (l : List (Sigma β)) : dlookup a (dedupKeys 
 theorem sizeOf_dedupKeys [SizeOf (Sigma β)]
     (xs : List (Sigma β)) : SizeOf.sizeOf (dedupKeys xs) ≤ SizeOf.sizeOf xs := by
   simp only [SizeOf.sizeOf, _sizeOf_1]
-  induction' xs with x xs
-  · simp [dedupKeys]
-  · simp only [dedupKeys_cons, kinsert_def, Nat.add_le_add_iff_left, Sigma.eta]
+  induction xs with
+  | nil => simp [dedupKeys]
+  | cons x xs =>
+    simp only [dedupKeys_cons, kinsert_def, Nat.add_le_add_iff_left, Sigma.eta]
     trans
     · apply sizeOf_kerase
     · assumption
@@ -687,10 +692,12 @@ theorem Perm.kunion {l₁ l₂ l₃ l₄ : List (Sigma β)} (nd₃ : l₃.NodupK
 @[simp]
 theorem dlookup_kunion_left {a} {l₁ l₂ : List (Sigma β)} (h : a ∈ l₁.keys) :
     dlookup a (kunion l₁ l₂) = dlookup a l₁ := by
-  induction' l₁ with s _ ih generalizing l₂ <;> simp at h; rcases h with h | h <;> obtain ⟨a'⟩ := s
-  · subst h
+  induction l₁ generalizing l₂ with <;> simp at h; rcases h with h | h <;> obtain ⟨a'⟩ := s
+  | nil =>
+    subst h
     simp
-  · rw [kunion_cons]
+  | cons s _ ih =>
+    rw [kunion_cons]
     by_cases h' : a = a'
     · subst h'
       simp

@@ -152,9 +152,11 @@ theorem Matrix.det_det [Fintype m] [Fintype n] (f : S →+* Matrix n n R) :
     (f M.det).det = ((M.map f).comp m m n n R).det := by
   set l := Fintype.card m with hl
   clear_value l; revert R S m
-  induction' l with l ih <;> intro R S m _ _ M _ _ f card
-  · rw [eq_comm, Fintype.card_eq_zero_iff] at card
+  induction l with <;> intro R S m _ _ M _ _ f card
+  | zero =>
+    rw [eq_comm, Fintype.card_eq_zero_iff] at card
     simp_rw [Matrix.det_isEmpty, map_one, det_one]
+  | succ l ih => ?_
   have ⟨k⟩ := Fintype.card_pos_iff.mp (l.succ_pos.trans_eq card)
   let f' := f.polyToMatrix
   let M' := cornerAddX M k

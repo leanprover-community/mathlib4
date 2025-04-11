@@ -605,21 +605,24 @@ theorem measure_univ_of_isMulLeftInvariant [WeaklyLocallyCompactSpace G] [Noncom
   set L : ℕ → Set G := fun n => (fun T => T ∪ g T • K)^[n] K
   have Lcompact : ∀ n, IsCompact (L n) := by
     intro n
-    induction' n with n IH
-    · exact hK
-    · simp_rw [L, iterate_succ']
+    induction n with
+    | zero => exact hK
+    | succ n IH =>
+      simp_rw [L, iterate_succ']
       apply IsCompact.union IH (hK.smul (g (L n)))
   have Lclosed : ∀ n, IsClosed (L n) := by
     intro n
-    induction' n with n IH
-    · exact Kclosed
-    · simp_rw [L, iterate_succ']
+    induction n with
+    | zero => exact Kclosed
+    | succ n IH =>
+      simp_rw [L, iterate_succ']
       apply IsClosed.union IH (Kclosed.smul (g (L n)))
   have M : ∀ n, μ (L n) = (n + 1 : ℕ) * μ K := by
     intro n
-    induction' n with n IH
-    · simp only [L, one_mul, Nat.cast_one, iterate_zero, id, Nat.zero_add]
-    · calc
+    induction n with
+    | zero => simp only [L, one_mul, Nat.cast_one, iterate_zero, id, Nat.zero_add]
+    | succ n IH =>
+      calc
         μ (L (n + 1)) = μ (L n) + μ (g (L n) • K) := by
           simp_rw [L, iterate_succ']
           exact measure_union' (hg _ (Lcompact _)) (Lclosed _).measurableSet

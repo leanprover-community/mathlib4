@@ -427,9 +427,11 @@ all sequences indexed by a finite type. -/
 theorem unifIntegrable_fin (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) {n : ℕ} {f : Fin n → α → β}
     (hf : ∀ i, MemLp (f i) p μ) : UnifIntegrable f p μ := by
   revert f
-  induction' n with n h
-  · intro f hf
+  induction n with
+  | zero =>
+    intro f hf
     exact unifIntegrable_subsingleton hp_one hp_top hf
+  | succ n h => ?_
   intro f hfLp ε hε
   let g : Fin n → α → β := fun k => f k
   have hgLp : ∀ i, MemLp (g i) p μ := fun i => hfLp i

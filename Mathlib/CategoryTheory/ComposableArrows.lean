@@ -176,12 +176,14 @@ def homMk {F G : ComposableArrows C n} (app : ∀ i, F.obj i ⟶ G.obj i)
       obtain ⟨k, hk⟩ := Nat.le.dest hij'
       exact this k i j hk (by valid)
     intro k
-    induction' k with k hk
-    · intro i j hj hj'
+    induction k with
+    | zero =>
+      intro i j hj hj'
       simp only [add_zero] at hj
       obtain rfl := hj
       rw [F.map'_self i, G.map'_self i, id_comp, comp_id]
-    · intro i j hj hj'
+    | succ k hk =>
+      intro i j hj hj'
       rw [← add_assoc] at hj
       subst hj
       rw [F.map'_comp i (i + k) (i + k + 1), G.map'_comp i (i + k) (i + k + 1), assoc,
@@ -838,10 +840,12 @@ lemma mkOfObjOfMapSucc_exists : ∃ (F : ComposableArrows C n) (e : ∀ i, F.obj
     ∀ (i : ℕ) (hi : i < n), mapSucc ⟨i, hi⟩ =
       (e ⟨i, _⟩).inv ≫ F.map' i (i + 1) ≫ (e ⟨i + 1, _⟩).hom := by
   revert obj mapSucc
-  induction' n with n hn
-  · intro obj _
+  induction n with
+  | zero =>
+    intro obj _
     exact ⟨mk₀ (obj 0), fun 0 => Iso.refl _, fun i hi => by simp at hi⟩
-  · intro obj mapSucc
+  | succ n hn =>
+    intro obj mapSucc
     obtain ⟨F, e, h⟩ := hn (fun i => obj i.succ) (fun i => mapSucc i.succ)
     refine ⟨F.precomp (mapSucc 0 ≫ (e 0).inv), fun i => match i with
       | 0 => Iso.refl _

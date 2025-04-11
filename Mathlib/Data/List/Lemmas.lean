@@ -29,10 +29,12 @@ lemma Nat.sum_eq_listSum (l : List ℕ) : Nat.sum l = l.sum := rfl
 
 theorem injOn_insertIdx_index_of_not_mem (l : List α) (x : α) (hx : x ∉ l) :
     Set.InjOn (fun k => l.insertIdx k x) { n | n ≤ l.length } := by
-  induction' l with hd tl IH
-  · intro n hn m hm _
+  induction l with
+  | nil =>
+    intro n hn m hm _
     simp_all [Set.mem_singleton_iff, Set.setOf_eq_eq_singleton, length]
-  · intro n hn m hm h
+  | cons hd tl IH =>
+    intro n hn m hm h
     simp only [length, Set.mem_setOf_eq] at hn hm
     simp only [mem_cons, not_or] at hx
     cases n <;> cases m
@@ -51,9 +53,10 @@ alias injOn_insertNth_index_of_not_mem := injOn_insertIdx_index_of_not_mem
 theorem foldr_range_subset_of_range_subset {f : β → α → α} {g : γ → α → α}
     (hfg : Set.range f ⊆ Set.range g) (a : α) : Set.range (foldr f a) ⊆ Set.range (foldr g a) := by
   rintro _ ⟨l, rfl⟩
-  induction' l with b l H
-  · exact ⟨[], rfl⟩
-  · obtain ⟨c, hgf⟩ := hfg (Set.mem_range_self b)
+  induction l with
+  | nil => exact ⟨[], rfl⟩
+  | cons b l H =>
+    obtain ⟨c, hgf⟩ := hfg (Set.mem_range_self b)
     obtain ⟨m, hgf'⟩ := H
     rw [foldr_cons, ← hgf, ← hgf']
     exact ⟨c :: m, rfl⟩

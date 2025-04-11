@@ -463,14 +463,16 @@ theorem mem_of_mem_dropn {s : WSeq α} {a} : ∀ {n}, a ∈ drop s n → a ∈ s
   | n + 1, h => @mem_of_mem_dropn s a n (mem_of_mem_tail h)
 
 theorem get?_mem {s : WSeq α} {a n} : some a ∈ get? s n → a ∈ s := by
-  revert s; induction' n with n IH <;> intro s h
-  · rcases Computation.exists_of_mem_map h with ⟨o, h1, h2⟩
+  revert s; induction n with <;> intro s h
+  | zero =>
+    rcases Computation.exists_of_mem_map h with ⟨o, h1, h2⟩
     rcases o with - | o
     · injection h2
     injection h2 with h'
     obtain ⟨a', s'⟩ := o
     exact (eq_or_mem_iff_mem h1).2 (Or.inl h'.symm)
-  · have := @IH (tail s)
+  | succ n IH =>
+    have := @IH (tail s)
     rw [get?_tail] at this
     exact mem_of_mem_tail (this h)
 
@@ -608,9 +610,9 @@ theorem toList_nil : toList (nil : WSeq α) = Computation.pure [] :=
   destruct_eq_pure rfl
 
 theorem toList_ofList (l : List α) : l ∈ toList (ofList l) := by
-  induction' l with a l IH
-  · simp [ret_mem]
-  · simpa [ret_mem] using think_mem (Computation.mem_map _ IH)
+  induction l with
+  | nil => simp [ret_mem]
+  | cons a l IH => simpa [ret_mem] using think_mem (Computation.mem_map _ IH)
 
 @[simp]
 theorem destruct_ofSeq (s : Seq α) :

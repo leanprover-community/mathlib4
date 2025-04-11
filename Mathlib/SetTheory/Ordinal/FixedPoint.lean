@@ -99,9 +99,9 @@ theorem nfpFamily_le_fp (H : ∀ i, Monotone (f i)) {a b} (ab : a ≤ b) (h : �
     nfpFamily f a ≤ b := by
   apply Ordinal.iSup_le
   intro l
-  induction' l with i l IH generalizing a
-  · exact ab
-  · exact (H i (IH ab)).trans (h i)
+  induction l generalizing a with
+  | nil => exact ab
+  | cons i l IH => exact (H i (IH ab)).trans (h i)
 
 theorem nfpFamily_fp [Small.{u} ι] {i} (H : IsNormal (f i)) (a) :
     f i (nfpFamily f a) = nfpFamily f a := by
@@ -574,9 +574,9 @@ end
 theorem nfp_add_zero (a) : nfp (a + ·) 0 = a * ω := by
   simp_rw [← iSup_iterate_eq_nfp, ← iSup_mul_nat]
   congr; funext n
-  induction' n with n hn
-  · rw [Nat.cast_zero, mul_zero, iterate_zero_apply]
-  · rw [iterate_succ_apply', Nat.add_comm, Nat.cast_add, Nat.cast_one, mul_one_add, hn]
+  induction n with
+  | zero => rw [Nat.cast_zero, mul_zero, iterate_zero_apply]
+  | succ n hn => rw [iterate_succ_apply', Nat.add_comm, Nat.cast_add, Nat.cast_one, mul_one_add, hn]
 
 theorem nfp_add_eq_mul_omega0 {a b} (hba : b ≤ a * ω) : nfp (a + ·) b = a * ω := by
   apply le_antisymm (nfp_le_fp (isNormal_add_right a).monotone hba _)
@@ -614,9 +614,9 @@ theorem nfp_mul_one {a : Ordinal} (ha : 0 < a) : nfp (a * ·) 1 = a ^ ω := by
   rw [← iSup_iterate_eq_nfp, ← iSup_pow ha]
   congr
   funext n
-  induction' n with n hn
-  · rw [pow_zero, iterate_zero_apply]
-  · rw [iterate_succ_apply', Nat.add_comm, pow_add, pow_one, hn]
+  induction n with
+  | zero => rw [pow_zero, iterate_zero_apply]
+  | succ n hn => rw [iterate_succ_apply', Nat.add_comm, pow_add, pow_one, hn]
 
 @[simp]
 theorem nfp_mul_zero (a : Ordinal) : nfp (a * ·) 0 = 0 := by

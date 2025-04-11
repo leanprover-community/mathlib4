@@ -247,9 +247,10 @@ theorem exists_code.comp {m n} {f : List.Vector ℕ n →. ℕ} {g : Fin n → L
       ⟨cf.comp cg, fun v => by
         simp [hg, hf, map_bind, seq_bind_eq, Function.comp_def]
         rfl⟩
-  clear hf f; induction' n with n IH
-  · exact ⟨nil, fun v => by simp [Vector.mOfFn, Bind.bind]; rfl⟩
-  · obtain ⟨cg, hg₁⟩ := hg 0
+  clear hf f; induction n with
+  | zero => exact ⟨nil, fun v => by simp [Vector.mOfFn, Bind.bind]; rfl⟩
+  | succ n IH =>
+    obtain ⟨cg, hg₁⟩ := hg 0
     obtain ⟨cl, hl⟩ := IH fun i => hg i.succ
     exact
       ⟨cons cg cl, fun v => by
@@ -300,11 +301,13 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
         erw [Part.eq_some_iff.2 (this 0 n (zero_add n))]
         simp only [List.headI, Part.bind_some, List.tail_cons]
       intro a b e
-      induction' b with b IH generalizing a
-      · refine PFun.mem_fix_iff.2 (Or.inl <| Part.eq_some_iff.1 ?_)
+      induction b generalizing a with
+      | zero =>
+        refine PFun.mem_fix_iff.2 (Or.inl <| Part.eq_some_iff.1 ?_)
         simp only [hg, ← e, Part.bind_some, List.tail_cons, pure]
         rfl
-      · refine PFun.mem_fix_iff.2 (Or.inr ⟨_, ?_, IH (a + 1) (by rwa [add_right_comm])⟩)
+      | succ b IH =>
+        refine PFun.mem_fix_iff.2 (Or.inr ⟨_, ?_, IH (a + 1) (by rwa [add_right_comm])⟩)
         simp only [hg, eval, Part.bind_some, Nat.rec_add_one, List.tail_nil, List.tail_cons, pure]
         exact Part.mem_some_iff.2 rfl
   | comp g _ _ IHf IHg => exact exists_code.comp IHf IHg

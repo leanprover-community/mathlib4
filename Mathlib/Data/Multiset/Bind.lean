@@ -225,9 +225,9 @@ variable (op : α → α → α) [hc : Std.Commutative op] [ha : Std.Associative
 theorem fold_bind {ι : Type*} (s : Multiset ι) (t : ι → Multiset α) (b : ι → α) (b₀ : α) :
     (s.bind t).fold op ((s.map b).fold op b₀) =
     (s.map fun i => (t i).fold op (b i)).fold op b₀ := by
-  induction' s using Multiset.induction_on with a ha ih
-  · rw [zero_bind, map_zero, map_zero, fold_zero]
-  · rw [cons_bind, map_cons, map_cons, fold_cons_left, fold_cons_left, fold_add, ih]
+  induction s using Multiset.induction_on with
+  | empty => rw [zero_bind, map_zero, map_zero, fold_zero]
+  | cons a ha ih => rw [cons_bind, map_cons, map_cons, fold_cons_left, fold_cons_left, fold_add, ih]
 
 end Bind
 

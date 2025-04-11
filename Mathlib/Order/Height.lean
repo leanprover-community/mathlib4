@@ -196,9 +196,10 @@ theorem chainHeight_image (f : α → β) (hf : ∀ {x y}, x < y ↔ f x < f y) 
       obtain ⟨l', h₁, rfl⟩ := this l hl
       exact ⟨l', h₁, length_map _⟩
     intro l
-    induction' l with x xs hx
-    · exact fun _ ↦ ⟨nil, ⟨trivial, fun x h ↦ (not_mem_nil h).elim⟩, rfl⟩
-    · intro h
+    induction l with
+    | nil => exact fun _ ↦ ⟨nil, ⟨trivial, fun x h ↦ (not_mem_nil h).elim⟩, rfl⟩
+    | cons x xs hx =>
+      intro h
       rw [cons_mem_subchain_iff] at h
       obtain ⟨⟨x, hx', rfl⟩, h₁, h₂⟩ := h
       obtain ⟨l', h₃, rfl⟩ := hx h₁

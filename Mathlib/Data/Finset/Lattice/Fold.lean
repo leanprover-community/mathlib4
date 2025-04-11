@@ -1118,14 +1118,14 @@ variable [DecidableEq α] {s : Finset ι} {f : ι → Finset α} {a : α}
 
 set_option linter.docPrime false in
 @[simp] lemma mem_sup' (hs) : a ∈ s.sup' hs f ↔ ∃ i ∈ s, a ∈ f i := by
-  induction' hs using Nonempty.cons_induction <;> simp [*]
+  induction hs using Nonempty.cons_induction <;> simp [*]
 
 set_option linter.docPrime false in
 @[simp] lemma mem_inf' (hs) : a ∈ s.inf' hs f ↔ ∀ i ∈ s, a ∈ f i := by
-  induction' hs using Nonempty.cons_induction <;> simp [*]
+  induction hs using Nonempty.cons_induction <;> simp [*]
 
 @[simp] lemma mem_sup : a ∈ s.sup f ↔ ∃ i ∈ s, a ∈ f i := by
-  induction' s using cons_induction <;> simp [*]
+  induction s using cons_induction <;> simp [*]
 
 @[simp]
 theorem sup_singleton'' (s : Finset β) (f : β → α) :

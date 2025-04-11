@@ -39,8 +39,9 @@ lemma of_abv_le (n : ℕ) (hm : ∀ m, n ≤ m → abv (f m) ≤ a m) :
   rw [hk]
   dsimp only
   clear hk ji j
-  induction' k with k' hi
-  · simp [abv_zero abv]
+  induction k with
+  | zero => simp [abv_zero abv]
+  | succ k' hi => ?_
   simp only [Nat.succ_add, Nat.succ_eq_add_one, Finset.sum_range_succ_comm]
   simp only [add_assoc, sub_eq_add_neg]
   refine le_trans (abv_add _ _ _) ?_
@@ -209,10 +210,12 @@ lemma series_ratio_test {f : ℕ → β} (n : ℕ) (r : α) (hr0 : 0 ≤ r) (hr1
     simpa [Nat.sub_add_cancel m_pos, pow_succ] using this
   generalize hk : m - n.succ = k
   replace hk : m = k + n.succ := (tsub_eq_iff_eq_add_of_le hmn).1 hk
-  induction' k with k ih generalizing m n
-  · rw [hk, Nat.zero_add, mul_right_comm, inv_pow _ _, ← div_eq_mul_inv, mul_div_cancel_right₀]
+  induction k generalizing m n with
+  | zero =>
+    rw [hk, Nat.zero_add, mul_right_comm, inv_pow _ _, ← div_eq_mul_inv, mul_div_cancel_right₀]
     positivity
-  · have kn : k + n.succ ≥ n.succ := by
+  | succ k ih =>
+    have kn : k + n.succ ≥ n.succ := by
       rw [← zero_add n.succ]; exact add_le_add (Nat.zero_le _) (by simp)
     rw [hk, Nat.succ_add, pow_succ r, ← mul_assoc]
     refine

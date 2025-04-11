@@ -981,9 +981,11 @@ theorem trTape'_move_left (L R : ListBlank Γ) :
       Tape.mk' L' (ListBlank.append (Vector.toList (enc a)) R') by
     simpa only [List.length_reverse, Vector.toList_length] using this (List.reverse_reverse _).symm
   intro _ _ l₁ l₂ e
-  induction' l₁ with b l₁ IH generalizing l₂
-  · cases e
+  induction l₁ generalizing l₂ with
+  | nil =>
+    cases e
     rfl
+  | cons b l₁ IH => ?_
   simp only [List.length, List.cons_append, iterate_succ_apply]
   convert IH e
   simp only [ListBlank.tail_cons, ListBlank.append, Tape.move_left_mk', ListBlank.head_cons]
@@ -995,8 +997,9 @@ theorem trTape'_move_right (L R : ListBlank Γ) :
     simp only [trTape'_move_left, ListBlank.cons_head_tail, ListBlank.head_cons,
       ListBlank.tail_cons]
   intro i _
-  induction' i with i IH
-  · rfl
+  induction i with
+  | zero => rfl
+  | succ i IH => ?_
   rw [iterate_succ_apply, iterate_succ_apply', Tape.move_left_right, IH]
 
 theorem stepAux_write (q : Stmt Bool (Λ' Γ Λ σ) σ) (v : σ) (a b : Γ) (L R : ListBlank Γ) :
@@ -1009,9 +1012,11 @@ theorem stepAux_write (q : Stmt Bool (Λ' Γ Λ σ) σ) (v : σ) (a b : Γ) (L R
     exact this [] _ _ ((enc b).2.trans (enc a).2.symm)
   clear a b L R
   intro L' R' l₁ l₂ l₂' e
-  induction' l₂ with a l₂ IH generalizing l₁ l₂'
-  · cases List.length_eq_zero_iff.1 e
+  induction l₂ generalizing l₁ l₂' with
+  | nil =>
+    cases List.length_eq_zero_iff.1 e
     rfl
+  | cons a l₂ IH => ?_
   rcases l₂' with - | ⟨b, l₂'⟩ <;>
     simp only [List.length_nil, List.length_cons, Nat.succ_inj', reduceCtorEq] at e
   rw [List.reverseAux, ← IH (a :: l₁) l₂' e]
@@ -1038,8 +1043,9 @@ theorem stepAux_read (f : Γ → Stmt Bool (Λ' Γ Λ σ) σ) (v : σ) (L R : Li
   clear f L a R
   intro i f L' R' l₁ l₂ _
   subst i
-  induction' l₂ with a l₂ IH generalizing l₁
-  · rfl
+  induction l₂ generalizing l₁ with
+  | nil => rfl
+  | cons a l₂ IH => ?_
   trans
     stepAux (readAux l₂.length fun v ↦ f (a ::ᵥ v)) v
       (Tape.mk' ((L'.append l₁).cons a) (R'.append l₂))

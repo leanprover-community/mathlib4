@@ -55,8 +55,9 @@ theorem induction_on_prime_power {P : α → Prop} (s : Finset α) (i : α → �
     (hcp : ∀ {x y}, IsRelPrime x y → P x → P y → P (x * y)) :
     P (∏ p ∈ s, p ^ i p) := by
   letI := Classical.decEq α
-  induction' s using Finset.induction_on with p f' hpf' ih
-  · simpa using h1 isUnit_one
+  induction s using Finset.induction_on with
+  | empty => simpa using h1 isUnit_one
+  | @insert p f' hpf' ih => ?_
   rw [Finset.prod_insert hpf']
   exact
     hcp (prime_pow_coprime_prod_of_coprime_insert i p hpf' is_prime is_coprime)
@@ -94,8 +95,9 @@ theorem multiplicative_prime_power {f : α → β} (s : Finset α) (i j : α →
     (hcp : ∀ {x y}, IsRelPrime x y → f (x * y) = f x * f y) :
     f (∏ p ∈ s, p ^ (i p + j p)) = f (∏ p ∈ s, p ^ i p) * f (∏ p ∈ s, p ^ j p) := by
   letI := Classical.decEq α
-  induction' s using Finset.induction_on with p s hps ih
-  · simpa using h1 isUnit_one
+  induction s using Finset.induction_on with
+  | empty => simpa using h1 isUnit_one
+  | @insert p s hps ih => ?_
   have hpr_p := is_prime _ (Finset.mem_insert_self _ _)
   have hpr_s : ∀ p ∈ s, Prime p := fun p hp => is_prime _ (Finset.mem_insert_of_mem hp)
   have hcp_p := fun i => prime_pow_coprime_prod_of_coprime_insert i p hps is_prime is_coprime

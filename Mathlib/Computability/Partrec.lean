@@ -46,9 +46,9 @@ private def wf_lbp (H : ∃ n, true ∈ p n ∧ ∀ k < n, (p k).Dom) : WellFoun
     let ⟨n, pn⟩ := H
     suffices ∀ m k, n ≤ k + m → Acc (lbp p) k by exact fun a => this _ _ (Nat.le_add_left _ _)
     intro m k kn
-    induction' m with m IH generalizing k <;> refine ⟨_, fun y r => ?_⟩ <;> rcases r with ⟨rfl, a⟩
-    · injection mem_unique pn.1 (a _ kn)
-    · exact IH _ (by rw [Nat.add_right_comm]; exact kn)⟩
+    induction m generalizing k with <;> refine ⟨_, fun y r => ?_⟩ <;> rcases r with ⟨rfl, a⟩
+    | zero => injection mem_unique pn.1 (a _ kn)
+    | succ m IH => exact IH _ (by rw [Nat.add_right_comm]; exact kn)⟩
 
 variable (H : ∃ n, true ∈ p n ∧ ∀ k < n, (p k).Dom)
 
@@ -728,8 +728,9 @@ theorem fix_aux {α σ} (f : α →. σ ⊕ α) (a : α) (b : σ) :
   · rcases h with ⟨n, ⟨_x, h₁⟩, h₂⟩
     have : ∀ m a', Sum.inr a' ∈ F a m → b ∈ PFun.fix f a' → b ∈ PFun.fix f a := by
       intro m a' am ba
-      induction' m with m IH generalizing a' <;> simp [F] at am
-      · rwa [← am]
+      induction m generalizing a' with <;> simp [F] at am
+      | zero => rwa [← am]
+      | succ m IH => ?_
       rcases am with ⟨a₂, am₂, fa₂⟩
       exact IH _ am₂ (PFun.mem_fix_iff.2 (Or.inr ⟨_, fa₂, ba⟩))
     cases n <;> simp [F] at h₂

@@ -64,9 +64,10 @@ theorem max_eq_bot {s : Finset α} : s.max = ⊥ ↔ s = ∅ :=
     fun h ↦ h.symm ▸ max_empty⟩
 
 theorem mem_of_max {s : Finset α} : ∀ {a : α}, s.max = a → a ∈ s := by
-  induction' s using Finset.induction_on with b s _ ih
-  · intro _ H; cases H
-  · intro a h
+  induction s using Finset.induction_on with
+  | empty => intro _ H; cases H
+  | @insert b s _ ih =>
+    intro a h
     by_cases p : b = a
     · induction p
       exact mem_insert_self b s

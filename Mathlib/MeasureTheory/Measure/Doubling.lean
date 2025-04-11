@@ -67,8 +67,9 @@ theorem exists_eventually_forall_measure_closedBall_le_mul (K : ℝ) :
     ∀ n : ℕ, ∀ᶠ ε in 𝓝[>] 0, ∀ x,
       μ (closedBall x ((2 : ℝ) ^ n * ε)) ≤ ↑(C ^ n) * μ (closedBall x ε) := by
     intro n
-    induction' n with n ih
-    · simp
+    induction n with
+    | zero => simp
+    | succ n ih => ?_
     replace ih := eventually_nhdsGT_zero_mul_left (two_pos : 0 < (2 : ℝ)) ih
     refine (ih.and (exists_measure_closedBall_le_mul' μ)).mono fun ε hε x => ?_
     calc

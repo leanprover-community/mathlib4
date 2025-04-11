@@ -513,9 +513,11 @@ theorem prod_prodExtendRight {α : Type*} [DecidableEq α] (σ : α → Perm β)
     obtain ⟨_, prod_eq⟩ := Or.resolve_right this (not_and.mpr fun h _ => h (mem_l a))
     rw [prod_eq, prodCongrRight_apply]
   clear mem_l
-  induction' l with a' l ih
-  · refine Or.inr ⟨List.not_mem_nil, ?_⟩
+  induction l with
+  | nil =>
+    refine Or.inr ⟨List.not_mem_nil, ?_⟩
     rw [List.map_nil, List.prod_nil, one_apply]
+  | cons a' l ih => ?_
   rw [List.map_cons, List.prod_cons, mul_apply]
   rcases ih (List.nodup_cons.mp hl).2 with (⟨mem_l, prod_eq⟩ | ⟨not_mem_l, prod_eq⟩) <;>
     rw [prod_eq]
