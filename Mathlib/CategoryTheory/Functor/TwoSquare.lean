@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Jakob von Raumer
 -/
 import Mathlib.CategoryTheory.Whiskering
+import Mathlib.CategoryTheory.Opposites
 import Mathlib.Tactic.CategoryTheory.Slice
 
 /-!
@@ -63,6 +64,13 @@ def equivNatTrans : TwoSquare T L R B ≃ (T ⋙ R ⟶ L ⋙ B) where
   right_inv _ := rfl
 
 variable {T L R B}
+
+/-- The opposite of a `2`-square. -/
+def op (α : TwoSquare T L R B) : TwoSquare L.op T.op B.op R.op := NatTrans.op α
+
+@[simp]
+lemma natTrans_op (α : TwoSquare T L R B) :
+    α.op.natTrans = NatTrans.op α.natTrans := rfl
 
 @[ext]
 lemma ext (w w' : TwoSquare T L R B) (h : ∀ (X : C₁), w.natTrans.app X = w'.natTrans.app X) :
