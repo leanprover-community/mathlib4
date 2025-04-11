@@ -26,8 +26,7 @@ open Function Multiplicative
 
 open scoped NNReal
 
-variable {R : Type*} [Ring R] {Γ₀ : Type*}
-  [CommGroupWithZero Γ₀] [LinearOrder Γ₀] [IsOrderedMonoidWithZero Γ₀]
+variable {R : Type*} [Ring R] {Γ₀ : Type*} [CommGroupWithZero Γ₀] [LinearOrder Γ₀]
 
 namespace Valuation
 
@@ -49,7 +48,7 @@ lemma nontrivial : ∃ r : R, v r ≠ 0 ∧ v r ≠ 1 := nontrivial'
 
 /-- If `v` is a rank one valuation and `x : Γ₀` has image `0` under `RankOne.hom v`, then
   `x = 0`. -/
-theorem zero_of_hom_zero {x : Γ₀} (hx : hom v x = 0) : x = 0 := by
+theorem zero_of_hom_zero [IsOrderedMonoidWithZero Γ₀] {x : Γ₀} (hx : hom v x = 0) : x = 0 := by
   refine (eq_of_le_of_not_lt (zero_le' (a := x)) fun h_lt ↦ ?_).symm
   have hs := strictMono v h_lt
   rw [map_zero, hx] at hs
@@ -57,7 +56,7 @@ theorem zero_of_hom_zero {x : Γ₀} (hx : hom v x = 0) : x = 0 := by
 
 /-- If `v` is a rank one valuation, then`x : Γ₀` has image `0` under `RankOne.hom v` if and
   only if `x = 0`. -/
-theorem hom_eq_zero_iff {x : Γ₀} : RankOne.hom v x = 0 ↔ x = 0 :=
+theorem hom_eq_zero_iff [IsOrderedMonoidWithZero Γ₀] {x : Γ₀} : RankOne.hom v x = 0 ↔ x = 0 :=
   ⟨fun h ↦ zero_of_hom_zero v h, fun h ↦ by rw [h, map_zero]⟩
 
 /-- A nontrivial unit of `Γ₀`, given that there exists a rank one `v : Valuation R Γ₀`. -/

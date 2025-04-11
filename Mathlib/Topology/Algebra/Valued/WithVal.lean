@@ -30,8 +30,7 @@ fractions of a Dedekind domain with respect to a height-one prime ideal of the d
 
 noncomputable section
 
-variable {R Γ₀ : Type*} [Ring R]
-  [CommGroupWithZero Γ₀] [LinearOrder Γ₀] [IsOrderedMonoidWithZero Γ₀]
+variable {R Γ₀ : Type*} [Ring R] [CommGroupWithZero Γ₀] [LinearOrder Γ₀]
 
 /-- Type synonym for a ring equipped with the topology coming from a valuation. -/
 @[nolint unusedArguments]
@@ -74,7 +73,7 @@ instance {P S : Type*} [Ring S] [CommRing R] [Semiring P] [Module P R] [Module P
     IsScalarTower P (WithVal v) S :=
   ‹IsScalarTower P R S›
 
-instance (v : Valuation R Γ₀) : Valued (WithVal v) Γ₀ := Valued.mk' v
+instance (v : Valuation R Γ₀) [IsOrderedMonoidWithZero Γ₀] : Valued (WithVal v) Γ₀ := Valued.mk' v
 
 /-- Canonical ring equivalence between `WithVal v` and `R`. -/
 def equiv : WithVal v ≃+* R := RingEquiv.refl _
@@ -89,7 +88,7 @@ namespace Valuation
 
 open WithVal
 
-variable {R : Type*} [Ring R] (v : Valuation R Γ₀)
+variable [IsOrderedMonoidWithZero Γ₀] {R : Type*} [Ring R] (v : Valuation R Γ₀)
 
 /-- The completion of a field with respect to a valuation. -/
 abbrev Completion := UniformSpace.Completion (WithVal v)

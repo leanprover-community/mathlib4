@@ -23,12 +23,11 @@ noncomputable section
 
 universe v u
 
-variable {R : Type u} [Ring R] {Γ₀ : Type v}
-  [CommGroupWithZero Γ₀] [LinearOrder Γ₀] [IsOrderedMonoidWithZero Γ₀]
+variable {R : Type u} [Ring R] {Γ₀ : Type v} [CommGroupWithZero Γ₀] [LinearOrder Γ₀]
 
 namespace Valuation
 
-variable (v : Valuation R Γ₀)
+variable [IsOrderedMonoidWithZero Γ₀] (v : Valuation R Γ₀)
 
 /-- The basis of open subgroups for the topology on a ring determined by a valuation. -/
 theorem subgroups_basis : RingSubgroupsBasis fun γ : Γ₀ˣ => (v.ltAddSubgroup γ : AddSubgroup R) :=
@@ -88,7 +87,7 @@ the same universe as the ring.
 
 See Note [forgetful inheritance] for why we extend `UniformSpace`, `IsUniformAddGroup`. -/
 class Valued (R : Type u) [Ring R] (Γ₀ : outParam (Type v))
-    [CommGroupWithZero Γ₀] [LinearOrder Γ₀] [IsOrderedMonoidWithZero Γ₀] extends
+    [CommGroupWithZero Γ₀] [LinearOrder Γ₀] extends
     UniformSpace R, IsUniformAddGroup R where
   v : Valuation R Γ₀
   is_topological_valuation : ∀ s, s ∈ 𝓝 (0 : R) ↔ ∃ γ : Γ₀ˣ, { x : R | v x < γ } ⊆ s
@@ -96,7 +95,7 @@ class Valued (R : Type u) [Ring R] (Γ₀ : outParam (Type v))
 namespace Valued
 
 /-- Alternative `Valued` constructor for use when there is no preferred `UniformSpace` structure. -/
-def mk' (v : Valuation R Γ₀) : Valued R Γ₀ :=
+def mk' [IsOrderedMonoidWithZero Γ₀] (v : Valuation R Γ₀) : Valued R Γ₀ :=
   { v
     toUniformSpace := @IsTopologicalAddGroup.toUniformSpace R _ v.subgroups_basis.topology _
     toIsUniformAddGroup := @isUniformAddGroup_of_addCommGroup _ _ v.subgroups_basis.topology _
@@ -119,7 +118,7 @@ theorem hasBasis_uniformity : (𝓤 R).HasBasis (fun _ => True)
   rw [uniformity_eq_comap_nhds_zero]
   exact (hasBasis_nhds_zero R Γ₀).comap _
 
-theorem toUniformSpace_eq :
+theorem toUniformSpace_eq [IsOrderedMonoidWithZero Γ₀] :
     toUniformSpace = @IsTopologicalAddGroup.toUniformSpace R _ v.subgroups_basis.topology _ :=
   UniformSpace.ext
     ((hasBasis_uniformity R Γ₀).eq_of_same_basis <| v.subgroups_basis.hasBasis_nhds_zero.comap _)
@@ -132,6 +131,8 @@ theorem mem_nhds {s : Set R} {x : R} : s ∈ 𝓝 x ↔ ∃ γ : Γ₀ˣ, { y | 
 
 theorem mem_nhds_zero {s : Set R} : s ∈ 𝓝 (0 : R) ↔ ∃ γ : Γ₀ˣ, { x | v x < (γ : Γ₀) } ⊆ s := by
   simp only [mem_nhds, sub_zero]
+
+variable [IsOrderedMonoidWithZero Γ₀]
 
 theorem loc_const {x : R} (h : (v x : Γ₀) ≠ 0) : { y : R | v y = v x } ∈ 𝓝 x := by
   rw [mem_nhds]
@@ -167,6 +168,7 @@ theorem isOpen_ball (r : Γ₀) : IsOpen (X := R) {x | v x < r} := by
   exact ⟨Units.mk0 _ hr,
     fun y hy => (sub_add_cancel y x).symm ▸ (v.map_add _ x).trans_lt (max_lt hy hx)⟩
 
+omit [IsOrderedMonoidWithZero Γ₀] in
 /-- A closed ball centred at the origin in a valued ring is open. -/
 theorem isOpen_closedball {r : Γ₀} (hr : r ≠ 0) : IsOpen (X := R) {x | v x ≤ r} := by
   rw [isOpen_iff_mem_nhds]

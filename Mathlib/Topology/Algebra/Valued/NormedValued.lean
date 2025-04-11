@@ -73,8 +73,7 @@ end
 
 namespace Valued
 
-variable {L : Type*} [Field L] {Γ₀ : Type*}
-  [CommGroupWithZero Γ₀] [LinearOrder Γ₀] [IsOrderedMonoidWithZero Γ₀]
+variable {L : Type*} [Field L] {Γ₀ : Type*} [CommGroupWithZero Γ₀] [LinearOrder Γ₀]
   [val : Valued L Γ₀] [hv : RankOne val.v]
 
 /-- The norm function determined by a rank one valuation on a field `L`. -/
@@ -99,7 +98,7 @@ theorem norm_pos_iff_valuation_pos {x : L} : 0 < Valued.norm x ↔ (0 : Γ₀) <
 variable (L) (Γ₀)
 
 /-- The normed field structure determined by a rank one valuation. -/
-def toNormedField : NormedField L :=
+def toNormedField [IsOrderedMonoidWithZero Γ₀] : NormedField L :=
   { (inferInstance : Field L) with
     norm := norm
     dist := fun x y => norm (x - y)
@@ -153,6 +152,7 @@ scoped[Valued] attribute [instance] Valued.toNormedField
 scoped[NormedField] attribute [instance] NormedField.toValued
 
 section NormedField
+variable [IsOrderedMonoidWithZero Γ₀]
 
 open scoped Valued
 
@@ -172,7 +172,7 @@ variable {L} {Γ₀}
 
 namespace toNormedField
 
-variable {x x' : L}
+variable [IsOrderedMonoidWithZero Γ₀] {x x' : L}
 
 @[simp]
 theorem norm_le_iff : ‖x‖ ≤ ‖x'‖ ↔ val.v x ≤ val.v x' :=
@@ -203,7 +203,7 @@ end toNormedField
 /--
 The nontrivially normed field structure determined by a rank one valuation.
 -/
-def toNontriviallyNormedField: NontriviallyNormedField L := {
+def toNontriviallyNormedField [IsOrderedMonoidWithZero Γ₀] : NontriviallyNormedField L := {
   val.toNormedField with
   non_trivial := by
     obtain ⟨x, hx⟩ := Valuation.RankOne.nontrivial val.v

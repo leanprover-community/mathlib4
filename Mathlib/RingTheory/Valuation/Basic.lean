@@ -66,22 +66,20 @@ variable {K F R : Type*} [DivisionRing K]
 
 section
 
+variable (F R) (Γ₀ : Type*) [CommMonoidWithZero Γ₀] [LinearOrder Γ₀] [Ring R]
+
 /-- The type of `Γ₀`-valued valuations on `R`.
 
 When you extend this structure, make sure to extend `ValuationClass`. -/
-structure Valuation (R) (Γ₀ : Type*) [CommMonoidWithZero Γ₀] [LinearOrder Γ₀]
-    [IsOrderedMonoidWithZero Γ₀] [Ring R] extends R →*₀ Γ₀ where
+structure Valuation extends R →*₀ Γ₀ where
   /-- The valuation of a a sum is less that the sum of the valuations -/
   map_add_le_max' : ∀ x y, toFun (x + y) ≤ max (toFun x) (toFun y)
-
-variable (F R) (Γ₀ : Type*) [CommMonoidWithZero Γ₀] [LinearOrder Γ₀] [IsOrderedMonoidWithZero Γ₀]
-  [Ring R]
 
 /-- `ValuationClass F α β` states that `F` is a type of valuations.
 
 You should also extend this typeclass when you extend `Valuation`. -/
 class ValuationClass (F) (R Γ₀ : outParam Type*)
-    [CommMonoidWithZero Γ₀] [LinearOrder Γ₀] [IsOrderedMonoidWithZero Γ₀] [Ring R]
+    [CommMonoidWithZero Γ₀] [LinearOrder Γ₀] [Ring R]
     [FunLike F R Γ₀] : Prop
   extends MonoidWithZeroHomClass F R Γ₀ where
   /-- The valuation of a a sum is less that the sum of the valuations -/
@@ -103,7 +101,7 @@ namespace Valuation
 
 variable {Γ₀ : Type*}
 variable {Γ'₀ : Type*}
-variable {Γ''₀ : Type*} [CommMonoidWithZero Γ''₀] [LinearOrder Γ''₀] [IsOrderedMonoidWithZero Γ''₀]
+variable {Γ''₀ : Type*} [CommMonoidWithZero Γ''₀] [LinearOrder Γ''₀]
 
 section Basic
 
@@ -111,8 +109,7 @@ variable [Ring R]
 
 section Monoid
 
-variable [CommMonoidWithZero Γ₀] [LinearOrder Γ₀] [IsOrderedMonoidWithZero Γ₀]
-   [CommMonoidWithZero Γ'₀] [LinearOrder Γ'₀] [IsOrderedMonoidWithZero Γ'₀]
+variable [CommMonoidWithZero Γ₀] [LinearOrder Γ₀] [CommMonoidWithZero Γ'₀] [LinearOrder Γ'₀]
 
 instance : FunLike (Valuation R Γ₀) R Γ₀ where
   coe f := f.toFun
@@ -169,6 +166,9 @@ theorem map_add_le {x y g} (hx : v x ≤ g) (hy : v y ≤ g) : v (x + y) ≤ g :
 theorem map_add_lt {x y g} (hx : v x < g) (hy : v y < g) : v (x + y) < g :=
   lt_of_le_of_lt (v.map_add x y) <| max_lt hx hy
 
+section
+variable [IsOrderedMonoidWithZero Γ₀]
+
 theorem map_sum_le {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hf : ∀ i ∈ s, v (f i) ≤ g) :
     v (∑ i ∈ s, f i) ≤ g := by
   classical
@@ -191,6 +191,8 @@ theorem map_sum_lt' {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hg 
     (hf : ∀ i ∈ s, v (f i) < g) : v (∑ i ∈ s, f i) < g :=
   v.map_sum_lt (ne_of_gt hg) hf
 
+end
+
 protected theorem map_pow : ∀ (x) (n : ℕ), v (x ^ n) = v x ^ n :=
   v.toMonoidWithZeroHom.toMonoidHom.map_pow
 
@@ -207,7 +209,8 @@ theorem zero_iff [Nontrivial Γ₀] (v : Valuation K Γ₀) {x : K} : v x = 0 �
 theorem ne_zero_iff [Nontrivial Γ₀] (v : Valuation K Γ₀) {x : K} : v x ≠ 0 ↔ x ≠ 0 :=
   map_ne_zero v
 
-lemma pos_iff [Nontrivial Γ₀] (v : Valuation K Γ₀) {x : K} : 0 < v x ↔ x ≠ 0 := by
+lemma pos_iff [IsOrderedMonoidWithZero Γ₀] [Nontrivial Γ₀]
+    (v : Valuation K Γ₀) {x : K} : 0 < v x ↔ x ≠ 0 := by
   rw [zero_lt_iff, ne_zero_iff]
 
 theorem unit_map_eq (u : Rˣ) : (Units.map (v : R →* Γ₀) u : Γ₀) = v u :=
@@ -256,6 +259,8 @@ lemma map_apply (f : Γ₀ →*₀ Γ'₀) (hf : Monotone f) (v : Valuation R Γ
 /-- Two valuations on `R` are defined to be equivalent if they induce the same preorder on `R`. -/
 def IsEquiv (v₁ : Valuation R Γ₀) (v₂ : Valuation R Γ'₀) : Prop :=
   ∀ r s, v₁ r ≤ v₁ s ↔ v₂ r ≤ v₂ s
+
+variable [IsOrderedMonoidWithZero Γ₀]
 
 @[simp]
 theorem map_neg (x : R) : v (-x) = v x :=
@@ -341,14 +346,15 @@ end Monoid
 
 section Group
 
-variable [CommGroupWithZero Γ₀] [LinearOrder Γ₀] [IsOrderedMonoidWithZero Γ₀]
-  (v : Valuation R Γ₀) {x y : R}
+variable [CommGroupWithZero Γ₀] [LinearOrder Γ₀] (v : Valuation R Γ₀) {x y : R}
 
 theorem map_inv {R : Type*} [DivisionRing R] (v : Valuation R Γ₀) : ∀ x, v x⁻¹ = (v x)⁻¹ :=
   map_inv₀ _
 
 theorem map_div {R : Type*} [DivisionRing R] (v : Valuation R Γ₀) : ∀ x y, v (x / y) = v x / v y :=
   map_div₀ _
+
+variable [IsOrderedMonoidWithZero Γ₀]
 
 theorem one_lt_val_iff (v : Valuation K Γ₀) {x : K} (h : x ≠ 0) : 1 < v x ↔ v x⁻¹ < 1 := by
   simp [inv_lt_one₀ (v.pos_iff.2 h)]
@@ -396,8 +402,7 @@ end Basic
 namespace IsEquiv
 
 variable [Ring R]
-  [CommMonoidWithZero Γ₀] [LinearOrder Γ₀] [IsOrderedMonoidWithZero Γ₀]
-  [CommMonoidWithZero Γ'₀] [LinearOrder Γ'₀] [IsOrderedMonoidWithZero Γ'₀]
+  [CommMonoidWithZero Γ₀] [LinearOrder Γ₀] [CommMonoidWithZero Γ'₀] [LinearOrder Γ'₀]
   {v : Valuation R Γ₀} {v₁ : Valuation R Γ₀} {v₂ : Valuation R Γ'₀} {v₃ : Valuation R Γ''₀}
 
 @[refl]
@@ -438,15 +443,13 @@ end IsEquiv
 section
 
 theorem isEquiv_of_map_strictMono
-    [CommMonoidWithZero Γ₀] [LinearOrder Γ₀] [IsOrderedMonoidWithZero Γ₀]
-    [CommMonoidWithZero Γ'₀] [LinearOrder Γ'₀] [IsOrderedMonoidWithZero Γ'₀]
+    [CommMonoidWithZero Γ₀] [LinearOrder Γ₀] [CommMonoidWithZero Γ'₀] [LinearOrder Γ'₀]
     [Ring R] {v : Valuation R Γ₀} (f : Γ₀ →*₀ Γ'₀)
     (H : StrictMono f) : IsEquiv (v.map f H.monotone) v := fun _x _y =>
   ⟨H.le_iff_le.mp, fun h => H.monotone h⟩
 
 theorem isEquiv_iff_val_lt_val
-    [CommGroupWithZero Γ₀] [LinearOrder Γ₀] [IsOrderedMonoidWithZero Γ₀]
-    [CommGroupWithZero Γ'₀] [LinearOrder Γ'₀] [IsOrderedMonoidWithZero Γ'₀]
+    [CommGroupWithZero Γ₀] [LinearOrder Γ₀] [CommGroupWithZero Γ'₀] [LinearOrder Γ'₀]
     {v : Valuation K Γ₀} {v' : Valuation K Γ'₀} :
     v.IsEquiv v' ↔ ∀ {x y : K}, v x < v y ↔ v' x < v' y := by
   simp only [IsEquiv, le_iff_le_iff_lt_iff_lt]
@@ -990,11 +993,11 @@ instance (v : Valuation R Γ₀) : CommMonoidWithZero (MonoidHom.mrange v) where
     intro a
     exact Subtype.ext (mul_zero a.val)
 
+omit [IsOrderedMonoidWithZero Γ₀] in
 @[simp]
 lemma val_mrange_zero (v : Valuation R Γ₀) : ((0 : MonoidHom.mrange v) : Γ₀) = 0 := rfl
 
-instance {Γ₀} [CommGroupWithZero Γ₀] [LinearOrder Γ₀] [IsOrderedMonoidWithZero Γ₀]
-    [DivisionRing K] (v : Valuation K Γ₀) :
+instance {Γ₀} [CommGroupWithZero Γ₀] [LinearOrder Γ₀] [DivisionRing K] (v : Valuation K Γ₀) :
     CommGroupWithZero (MonoidHom.mrange v) where
   inv := fun x ↦ ⟨x⁻¹, by
     obtain ⟨y, hy⟩ := x.prop

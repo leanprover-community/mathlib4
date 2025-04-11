@@ -48,8 +48,8 @@ Valuation, Extension of Valuations
 open Valuation
 
 variable {R A ΓR ΓA : Type*} [CommRing R] [Ring A]
-    [CommMonoidWithZero ΓR] [LinearOrder ΓR] [IsOrderedMonoidWithZero ΓR]
-    [CommMonoidWithZero ΓA] [LinearOrder ΓA] [IsOrderedMonoidWithZero ΓA]
+    [CommMonoidWithZero ΓR] [LinearOrder ΓR]
+    [CommMonoidWithZero ΓA] [LinearOrder ΓA]
     [Algebra R A]
     (vR : Valuation R ΓR) (vA : Valuation A ΓA)
 
