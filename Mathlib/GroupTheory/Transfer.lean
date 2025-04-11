@@ -143,8 +143,8 @@ the transfer homomorphism is `transfer ϕ : G →+ A`."]
 noncomputable def transfer [FiniteIndex H] : G →* A :=
   let T : H.LeftTransversal := default
   { toFun := fun g => diff ϕ T (g • T)
-    map_one' := by beta_reduce; rw [one_smul, diff_self]
-    map_mul' := fun g h => by dsimp only; rw [mul_smul, ← diff_mul_diff, smul_diff_smul] }
+    map_one' := by rw [one_smul, diff_self]
+    map_mul' := fun g h => by rw [mul_smul, ← diff_mul_diff, smul_diff_smul] }
 
 variable (T : H.LeftTransversal)
 
@@ -205,13 +205,13 @@ theorem transfer_eq_pow [FiniteIndex H] (g : G)
   classical
     letI := H.fintypeQuotientOfFiniteIndex
     change ∀ (k g₀) (hk : g₀⁻¹ * g ^ k * g₀ ∈ H), ↑(⟨g₀⁻¹ * g ^ k * g₀, hk⟩ : H) = g ^ k at key
-    rw [transfer_eq_prod_quotient_orbitRel_zpowers_quot, ← Finset.prod_to_list]
+    rw [transfer_eq_prod_quotient_orbitRel_zpowers_quot, ← Finset.prod_map_toList]
     refine (List.prod_map_hom _ _ _).trans ?_ -- Porting note: this used to be in the `rw`
     refine congrArg ϕ (Subtype.coe_injective ?_)
     dsimp only
     rw [H.coe_mk, ← (zpowers g).coe_mk g (mem_zpowers g), ← (zpowers g).coe_pow, index_eq_card,
       Nat.card_eq_fintype_card, Fintype.card_congr (selfEquivSigmaOrbits (zpowers g) (G ⧸ H)),
-      Fintype.card_sigma, ← Finset.prod_pow_eq_pow_sum, ← Finset.prod_to_list]
+      Fintype.card_sigma, ← Finset.prod_pow_eq_pow_sum, ← Finset.prod_map_toList]
     simp only [Subgroup.val_list_prod, List.map_map, ← minimalPeriod_eq_card]
     congr
     funext
@@ -242,16 +242,15 @@ include hP
 /-- The homomorphism `G →* P` in Burnside's transfer theorem. -/
 noncomputable def transferSylow [FiniteIndex (P : Subgroup G)] : G →* (P : Subgroup G) :=
   @transfer G _ P P
-    (@Subgroup.IsCommutative.commGroup G _ P
-      ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩)
-    (MonoidHom.id P) _
+    (@CommGroup.ofIsMulCommutative P _ ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩)
+      (MonoidHom.id P) _
 
 variable [Fact p.Prime] [Finite (Sylow p G)]
 
 /-- Auxiliary lemma in order to state `transferSylow_eq_pow`. -/
 theorem transferSylow_eq_pow_aux (g : G) (hg : g ∈ P) (k : ℕ) (g₀ : G)
     (h : g₀⁻¹ * g ^ k * g₀ ∈ P) : g₀⁻¹ * g ^ k * g₀ = g ^ k := by
-  haveI : (P : Subgroup G).IsCommutative :=
+  haveI : IsMulCommutative (P : Subgroup G) :=
     ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩
   replace hg := (P : Subgroup G).pow_mem hg k
   obtain ⟨n, hn, h⟩ := P.conj_eq_normalizer_conj_of_mem (g ^ k) g₀ hg h
@@ -262,7 +261,7 @@ variable [FiniteIndex (P : Subgroup G)]
 theorem transferSylow_eq_pow (g : G) (hg : g ∈ P) :
     transferSylow P hP g =
       ⟨g ^ (P : Subgroup G).index, transfer_eq_pow_aux g (transferSylow_eq_pow_aux P hP g hg)⟩ :=
-  haveI : P.IsCommutative := ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩
+  haveI : IsMulCommutative P := ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩
   transfer_eq_pow _ _ <| transferSylow_eq_pow_aux P hP g hg
 
 theorem transferSylow_restrict_eq_pow : ⇑((transferSylow P hP).restrict (P : Subgroup G)) =

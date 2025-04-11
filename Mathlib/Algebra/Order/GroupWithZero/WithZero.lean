@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard
 -/
 import Mathlib.Algebra.Order.GroupWithZero.Canonical
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 /-!
 
 # Covariant instances on `WithZero`
@@ -34,7 +34,7 @@ instance {α : Type*} [Mul α] [Preorder α] [MulLeftStrictMono α] :
     | ⟨(x : α), hx⟩, 0, (b : α), _ => by
         simpa only [mul_zero] using WithZero.zero_lt_coe _
     | ⟨(x : α), hx⟩, (a : α), (b : α), h => by
-        dsimp only
+        dsimp only at h ⊢
         norm_cast at h ⊢
         exact mul_lt_mul_left' h x
 
@@ -45,7 +45,7 @@ instance {α : Type*} [Mul α] [Preorder α] [MulRightStrictMono α] :
     | ⟨(x : α), hx⟩, 0, (b : α), _ => by
         simpa only [mul_zero] using WithZero.zero_lt_coe _
     | ⟨(x : α), hx⟩, (a : α), (b : α), h => by
-        dsimp only
+        dsimp only at h ⊢
         norm_cast at h ⊢
         exact mul_lt_mul_right' h x
 
@@ -59,7 +59,7 @@ instance {α : Type*} [Mul α] [Preorder α] [MulLeftMono α] :
     | ⟨(x : α), _⟩, (a : α), 0, h =>
         (lt_irrefl 0 (lt_of_lt_of_le (WithZero.zero_lt_coe a) h)).elim
     | ⟨(x : α), hx⟩, (a : α), (b : α), h => by
-        dsimp only
+        dsimp only at h ⊢
         norm_cast at h ⊢
         exact mul_le_mul_left' h x
 
@@ -75,6 +75,6 @@ instance {α : Type*} [Mul α] [Preorder α] [MulRightMono α] :
     | ⟨(x : α), _⟩, (a : α), 0, h =>
         (lt_irrefl 0 (lt_of_lt_of_le (WithZero.zero_lt_coe a) h)).elim
     | ⟨(x : α), hx⟩, (a : α), (b : α), h => by
-        dsimp only
+        dsimp only at h ⊢
         norm_cast at h ⊢
         exact mul_le_mul_right' h x

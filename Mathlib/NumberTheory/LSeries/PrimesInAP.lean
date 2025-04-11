@@ -75,7 +75,7 @@ as an iterated product or sum over primes and natural numbers.
 
 section auxiliary
 
-variable {α β γ : Type*} [CommGroup α] [UniformSpace α] [UniformGroup α] [CompleteSpace α]
+variable {α β γ : Type*} [CommGroup α] [UniformSpace α] [IsUniformGroup α] [CompleteSpace α]
   [T0Space α]
 
 open Nat.Primes in
@@ -250,7 +250,7 @@ lemma summable_residueClass_non_primes_div :
     simp only [Function.comp_apply, Prod.map_fst, id_eq, Prod.map_snd, F'', F']
   refine (Function.Injective.summable_iff ?_ fun u hu ↦ ?_).mp <| hF'₁ ▸ summable_F''
   · exact Function.Injective.prodMap (fun ⦃a₁ a₂⦄ a ↦ a) <| add_left_injective 1
-  · simp only [Set.range_prod_map, Set.range_id, Set.mem_prod, Set.mem_univ, Set.mem_range,
+  · simp only [Set.range_prodMap, Set.range_id, Set.mem_prod, Set.mem_univ, Set.mem_range,
       Nat.exists_add_one_eq, true_and, not_lt, nonpos_iff_eq_zero] at hu
     rw [← hF'₀ u.1, ← hu]
 
@@ -382,7 +382,7 @@ lemma LFunctionResidueClassAux_real (ha : IsUnit a) {x : ℝ} (hx : 1 < x) :
     · simp only [term_zero, zero_re, ofReal_zero]
     · simp only [term_of_ne_zero hn, ← ofReal_natCast n, ← ofReal_cpow n.cast_nonneg, ← ofReal_div,
         ofReal_re]
-  · rw [show (q.totient : ℂ) = (q.totient : ℝ) from rfl, ← ofReal_one, ← ofReal_sub, ← ofReal_inv,
+  · rw [← ofReal_natCast, ← ofReal_one, ← ofReal_sub, ← ofReal_inv,
       ← ofReal_div, ofReal_re]
 
 variable {q : ℕ} [NeZero q] {a : ZMod q}

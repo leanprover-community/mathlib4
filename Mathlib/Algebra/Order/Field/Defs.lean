@@ -25,24 +25,29 @@ assert_not_exists MonoidHom
 
 variable {α : Type*}
 
+set_option linter.deprecated false in
 /-- A linear ordered semifield is a field with a linear order respecting the operations. -/
-class LinearOrderedSemifield (α : Type*) extends LinearOrderedCommSemiring α, Semifield α
+@[deprecated "Use `[Semifield α] [LinearOrder α] [IsStrictOrderedRing α]` instead."
+  (since := "2025-04-10")]
+structure LinearOrderedSemifield (α : Type*) extends LinearOrderedCommSemiring α, Semifield α
 
+set_option linter.deprecated false in
 /-- A linear ordered field is a field with a linear order respecting the operations. -/
-class LinearOrderedField (α : Type*) extends LinearOrderedCommRing α, Field α
+@[deprecated "Use `[Field α] [LinearOrder α] [IsStrictOrderedRing α]` instead."
+  (since := "2025-04-10")]
+structure LinearOrderedField (α : Type*) extends LinearOrderedCommRing α, Field α
 
--- See note [lower instance priority]
-instance (priority := 100) LinearOrderedField.toLinearOrderedSemifield [LinearOrderedField α] :
-    LinearOrderedSemifield α :=
-  { LinearOrderedRing.toLinearOrderedSemiring, ‹LinearOrderedField α› with }
+attribute [nolint docBlame] LinearOrderedSemifield.toSemifield LinearOrderedField.toField
 
-variable [LinearOrderedSemifield α] {a b c : α}
+variable [Semifield α] [LinearOrder α] {a b c : α}
 
 /-- Equality holds when `a ≠ 0`. See `mul_inv_cancel`. -/
-lemma mul_inv_le_one : a * a⁻¹ ≤ 1 := by obtain rfl | ha := eq_or_ne a 0 <;> simp [*]
+lemma mul_inv_le_one [ZeroLEOneClass α] : a * a⁻¹ ≤ 1 := by
+  obtain rfl | ha := eq_or_ne a 0 <;> simp [*]
 
 /-- Equality holds when `a ≠ 0`. See `inv_mul_cancel`. -/
-lemma inv_mul_le_one : a⁻¹ * a ≤ 1 := by obtain rfl | ha := eq_or_ne a 0 <;> simp [*]
+lemma inv_mul_le_one [ZeroLEOneClass α] : a⁻¹ * a ≤ 1 := by
+  obtain rfl | ha := eq_or_ne a 0 <;> simp [*]
 
 /-- Equality holds when `a ≠ 0`. See `mul_inv_cancel_left`. -/
 lemma mul_inv_left_le (hb : 0 ≤ b) : a * (a⁻¹ * b) ≤ b := by

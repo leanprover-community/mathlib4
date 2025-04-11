@@ -225,7 +225,7 @@ def IsSheaf.amalgamate {A : Type u₂} [Category.{v₂} A] {E : A} {X : C} {P : 
     (hx : ∀ ⦃I₁ I₂ : S.Arrow⦄ (r : I₁.Relation I₂),
        x I₁ ≫ P.map r.g₁.op = x I₂ ≫ P.map r.g₂.op) : E ⟶ P.obj (op X) :=
   (hP _ _ S.condition).amalgamate (fun Y f hf => x ⟨Y, f, hf⟩) fun _ _ _ _ _ _ _ h₁ h₂ w =>
-    @hx { hf := h₁ } { hf := h₂ } { w := w }
+    @hx { hf := h₁, .. } { hf := h₂, .. } { w := w, .. }
 
 @[reassoc (attr := simp)]
 theorem IsSheaf.amalgamate_map {A : Type u₂} [Category.{v₂} A] {E : A} {X : C} {P : Cᵒᵖ ⥤ A}
@@ -344,6 +344,12 @@ def sheafToPresheaf : Sheaf J A ⥤ Cᵒᵖ ⥤ A where
 
 /-- The sections of a sheaf (i.e. evaluation as a presheaf on `C`). -/
 abbrev sheafSections : Cᵒᵖ ⥤ Sheaf J A ⥤ A := (sheafToPresheaf J A).flip
+
+/-- The sheaf sections functor on `X` is given by evaluation of presheaves on `X`. -/
+@[simps!]
+def sheafSectionsNatIsoEvaluation {X : C} :
+    (sheafSections J A).obj (op X) ≅ sheafToPresheaf J A ⋙ (evaluation _ _).obj (op X) :=
+  NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
 /-- The functor `Sheaf J A ⥤ Cᵒᵖ ⥤ A` is fully faithful. -/
 @[simps]
@@ -517,7 +523,7 @@ section MultiequalizerConditions
 /-- When `P` is a sheaf and `S` is a cover, the associated multifork is a limit. -/
 def isLimitOfIsSheaf {X : C} (S : J.Cover X) (hP : IsSheaf J P) : IsLimit (S.multifork P) where
   lift := fun E : Multifork _ => hP.amalgamate S (fun _ => E.ι _)
-    (fun _ _ r => E.condition ⟨_, _, r⟩)
+    (fun _ _ r => E.condition ⟨r⟩)
   fac := by
     rintro (E : Multifork _) (a | b)
     · apply hP.amalgamate_map

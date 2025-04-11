@@ -8,7 +8,7 @@ import Mathlib.Algebra.CharP.Basic
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.Algebra.Order.BigOperators.Group.Multiset
-import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Data.ZMod.Defs
 
 /-!

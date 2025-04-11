@@ -6,7 +6,7 @@ Authors: Anatole Dedecker
 import Mathlib.Topology.UniformSpace.UniformConvergence
 import Mathlib.Topology.UniformSpace.Pi
 import Mathlib.Topology.UniformSpace.Equiv
-import Mathlib.Topology.RestrictGen
+import Mathlib.Topology.Coherent
 
 /-!
 # Topology and uniform structure of uniform convergence
@@ -372,9 +372,6 @@ lemma postcomp_isUniformInducing [UniformSpace γ] {f : γ → β}
   ⟨((UniformFun.hasBasis_uniformity _ _).comap _).eq_of_same_basis <|
     UniformFun.hasBasis_uniformity_of_basis _ _ (hf.basis_uniformity (𝓤 β).basis_sets)⟩
 
-@[deprecated (since := "2024-10-05")]
-alias postcomp_uniformInducing := postcomp_isUniformInducing
-
 /-- Post-composition by a uniform embedding is
 a uniform embedding for the uniform structures of uniform convergence.
 
@@ -385,9 +382,6 @@ protected theorem postcomp_isUniformEmbedding [UniformSpace γ] {f : γ → β}
     IsUniformEmbedding (ofFun ∘ (f ∘ ·) ∘ toFun : (α →ᵤ γ) → α →ᵤ β) where
   toIsUniformInducing := UniformFun.postcomp_isUniformInducing hf.isUniformInducing
   injective _ _ H := funext fun _ ↦ hf.injective (congrFun H _)
-
-@[deprecated (since := "2024-10-01")]
-alias postcomp_uniformEmbedding := UniformFun.postcomp_isUniformEmbedding
 
 /-- If `u` is a uniform structures on `β` and `f : γ → β`, then
 `𝒰(α, γ, comap f u) = comap (fun g ↦ f ∘ g) 𝒰(α, γ, u₁)`. -/
@@ -878,9 +872,6 @@ lemma postcomp_isUniformInducing [UniformSpace γ] {f : γ → β}
   rw [← UniformSpace.ext hf, UniformOnFun.comap_eq]
   rfl
 
-@[deprecated (since := "2024-10-05")]
-alias postcomp_uniformInducing := postcomp_isUniformInducing
-
 /-- Post-composition by a uniform embedding is a uniform embedding for the
 uniform structures of `𝔖`-convergence.
 
@@ -890,9 +881,6 @@ protected theorem postcomp_isUniformEmbedding [UniformSpace γ] {f : γ → β}
     (hf : IsUniformEmbedding f) : IsUniformEmbedding (ofFun 𝔖 ∘ (f ∘ ·) ∘ toFun 𝔖) where
   toIsUniformInducing := UniformOnFun.postcomp_isUniformInducing hf.isUniformInducing
   injective _ _ H := funext fun _ ↦ hf.injective (congrFun H _)
-
-@[deprecated (since := "2024-10-01")]
-alias postcomp_uniformEmbedding := UniformOnFun.postcomp_isUniformEmbedding
 
 /-- Turn a uniform isomorphism `γ ≃ᵤ β` into a uniform isomorphism `(α →ᵤ[𝔖] γ) ≃ᵤ (α →ᵤ[𝔖] β)`
 by post-composing. -/
@@ -1059,7 +1047,7 @@ protected def uniformEquivPiComm : (α →ᵤ[𝔖] ((i : ι) → δ i)) ≃ᵤ 
 
 Then the set of continuous functions is closed
 in the topology of uniform convergence on the sets of `𝔖`. -/
-theorem isClosed_setOf_continuous [TopologicalSpace α] (h : RestrictGenTopology 𝔖) :
+theorem isClosed_setOf_continuous [TopologicalSpace α] (h : IsCoherentWith 𝔖) :
     IsClosed {f : α →ᵤ[𝔖] β | Continuous (toFun 𝔖 f)} := by
   refine isClosed_iff_forall_filter.2 fun f u _ hu huf ↦ h.continuous_iff.2 fun s hs ↦ ?_
   rw [← tendsto_id', UniformOnFun.tendsto_iff_tendstoUniformlyOn] at huf
@@ -1085,7 +1073,12 @@ theorem uniformSpace_eq_inf_precomp_of_cover {δ₁ δ₂ : Type*} (φ₁ : δ�
     exact UniformOnFun.precomp_uniformContinuous h_image₁
   · rw [← uniformContinuous_iff]
     exact UniformOnFun.precomp_uniformContinuous h_image₂
-  · simp_rw [this S hS, UniformSpace.comap_iInf, UniformSpace.comap_inf, ← UniformSpace.comap_comap]
+  · #adaptation_note
+    /-- 2025-03-29 lean4#7717 a single `simp_rw` needed to be broken up to fully apply -/
+    simp_rw [this S hS]
+    conv => enter [1]; rw [UniformSpace.comap_iInf]; enter [1,1,i]; rw [UniformSpace.comap_iInf]
+    conv => enter [1]; rw [UniformSpace.comap_iInf]; enter [2,1,i]; rw [UniformSpace.comap_iInf]
+    simp_rw [UniformSpace.comap_inf, ← UniformSpace.comap_comap]
     exact inf_le_inf
       (iInf₂_le_of_le _ (h_preimage₁ hS) le_rfl)
       (iInf₂_le_of_le _ (h_preimage₂ hS) le_rfl)
@@ -1107,7 +1100,10 @@ theorem uniformSpace_eq_iInf_precomp_of_cover {δ : ι → Type*} (φ : Π i, δ
   refine le_antisymm (le_iInf fun i ↦ ?_) (le_iInf₂ fun S hS ↦ ?_)
   · rw [← uniformContinuous_iff]
     exact UniformOnFun.precomp_uniformContinuous (h_image i)
-  · simp_rw [this S hS, UniformSpace.comap_iInf, ← UniformSpace.comap_comap]
+  · simp_rw [this S hS]
+    #adaptation_note /-- 2025-03-29 lean4#7717 needed this additional rw for the `simp_rw` -/
+    conv => enter [1,1,i]; rw [UniformSpace.comap_iInf]
+    simp_rw [UniformSpace.comap_iInf, ← UniformSpace.comap_comap]
     exact iInf_mono fun i ↦ iInf₂_le_of_le _ (h_preimage i hS) le_rfl
 
 end UniformOnFun

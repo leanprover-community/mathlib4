@@ -5,10 +5,8 @@ Authors: María Inés de Frutos-Fernández
 -/
 import Mathlib.RingTheory.DedekindDomain.Ideal
 import Mathlib.RingTheory.Valuation.ExtendToLocalization
-import Mathlib.RingTheory.Valuation.ValuationSubring
 import Mathlib.Topology.Algebra.Valued.ValuedField
 import Mathlib.Topology.Algebra.Valued.WithVal
-import Mathlib.Algebra.Order.Group.TypeTags
 
 /-!
 # Adic valuations on Dedekind domains
@@ -534,7 +532,7 @@ lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOn
       toAdd_ofAdd, toAdd_one,
       show d.natAbs • (-1) = (d.natAbs : ℤ) • (-1) by simp only [nsmul_eq_mul,
         Int.natCast_natAbs, smul_eq_mul],
-      ← Int.eq_natAbs_of_zero_le ha.le, smul_eq_mul]
+      ← Int.eq_natAbs_of_nonneg ha.le, smul_eq_mul]
     -- and now it's easy
     omega
 
