@@ -65,26 +65,26 @@ smaller.
 
 This previously allowed the element to be minimal. This usage is now covered by `IsSuccPrelimit`. -/
 def IsSuccLimit (a : α) : Prop :=
-  ¬IsMin a ∧ IsSuccPrelimit a
+  ¬ IsMin a ∧ IsSuccPrelimit a
 
-protected theorem IsSuccLimit.not_isMin (h : IsSuccLimit a) : ¬IsMin a := h.1
+protected theorem IsSuccLimit.not_isMin (h : IsSuccLimit a) : ¬ IsMin a := h.1
 protected theorem IsSuccLimit.isSuccPrelimit (h : IsSuccLimit a) : IsSuccPrelimit a := h.2
 
-theorem IsSuccPrelimit.isSuccLimit_of_not_isMin (h : IsSuccPrelimit a) (ha : ¬IsMin a) :
+theorem IsSuccPrelimit.isSuccLimit_of_not_isMin (h : IsSuccPrelimit a) (ha : ¬ IsMin a) :
     IsSuccLimit a :=
   ⟨ha, h⟩
 
 theorem IsSuccPrelimit.isSuccLimit [NoMinOrder α] (h : IsSuccPrelimit a) : IsSuccLimit a :=
   h.isSuccLimit_of_not_isMin (not_isMin a)
 
-theorem isSuccPrelimit_iff_isSuccLimit_of_not_isMin (h : ¬IsMin a) :
+theorem isSuccPrelimit_iff_isSuccLimit_of_not_isMin (h : ¬ IsMin a) :
     IsSuccPrelimit a ↔ IsSuccLimit a :=
   ⟨fun ha ↦ ha.isSuccLimit_of_not_isMin h, IsSuccLimit.isSuccPrelimit⟩
 
 theorem isSuccPrelimit_iff_isSuccLimit [NoMinOrder α] : IsSuccPrelimit a ↔ IsSuccLimit a :=
   isSuccPrelimit_iff_isSuccLimit_of_not_isMin (not_isMin a)
 
-protected theorem _root_.IsMin.not_isSuccLimit (h : IsMin a) : ¬IsSuccLimit a :=
+protected theorem _root_.IsMin.not_isSuccLimit (h : IsMin a) : ¬ IsSuccLimit a :=
   fun ha ↦ ha.not_isMin h
 
 protected theorem _root_.IsMin.isSuccPrelimit : IsMin a → IsSuccPrelimit a := fun h _ hab =>
@@ -93,14 +93,14 @@ protected theorem _root_.IsMin.isSuccPrelimit : IsMin a → IsSuccPrelimit a := 
 theorem isSuccPrelimit_bot [OrderBot α] : IsSuccPrelimit (⊥ : α) :=
   isMin_bot.isSuccPrelimit
 
-theorem not_isSuccLimit_bot [OrderBot α] : ¬IsSuccLimit (⊥ : α) :=
+theorem not_isSuccLimit_bot [OrderBot α] : ¬ IsSuccLimit (⊥ : α) :=
   isMin_bot.not_isSuccLimit
 
 theorem IsSuccLimit.ne_bot [OrderBot α] (h : IsSuccLimit a) : a ≠ ⊥ := by
   rintro rfl
   exact not_isSuccLimit_bot h
 
-theorem not_isSuccLimit_iff : ¬IsSuccLimit a ↔ IsMin a ∨ ¬IsSuccPrelimit a := by
+theorem not_isSuccLimit_iff : ¬ IsSuccLimit a ↔ IsMin a ∨ ¬ IsSuccPrelimit a := by
   rw [IsSuccLimit, not_and_or, not_not]
 
 variable [SuccOrder α]
@@ -112,10 +112,10 @@ protected theorem IsSuccPrelimit.isMax (h : IsSuccPrelimit (succ a)) : IsMax a :
 protected theorem IsSuccLimit.isMax (h : IsSuccLimit (succ a)) : IsMax a :=
   h.isSuccPrelimit.isMax
 
-theorem not_isSuccPrelimit_succ_of_not_isMax (ha : ¬IsMax a) : ¬IsSuccPrelimit (succ a) :=
+theorem not_isSuccPrelimit_succ_of_not_isMax (ha : ¬ IsMax a) : ¬ IsSuccPrelimit (succ a) :=
   mt IsSuccPrelimit.isMax ha
 
-theorem not_isSuccLimit_succ_of_not_isMax (ha : ¬IsMax a) : ¬IsSuccLimit (succ a) :=
+theorem not_isSuccLimit_succ_of_not_isMax (ha : ¬ IsMax a) : ¬ IsSuccLimit (succ a) :=
   mt IsSuccLimit.isMax ha
 
 /-- Given `j < i` with `i` a prelimit, `IsSuccPrelimit.mid` picks an arbitrary element strictly
@@ -159,10 +159,10 @@ theorem isSuccPrelimit_iff_of_noMax : IsSuccPrelimit a ↔ IsMin a :=
   ⟨IsSuccPrelimit.isMin_of_noMax, IsMin.isSuccPrelimit⟩
 
 @[simp]
-theorem not_isSuccLimit_of_noMax : ¬IsSuccLimit a :=
+theorem not_isSuccLimit_of_noMax : ¬ IsSuccLimit a :=
   fun h ↦ h.not_isMin h.isSuccPrelimit.isMin_of_noMax
 
-theorem not_isSuccPrelimit_of_noMax [NoMinOrder α] : ¬IsSuccPrelimit a := by simp
+theorem not_isSuccPrelimit_of_noMax [NoMinOrder α] : ¬ IsSuccPrelimit a := by simp
 
 end IsSuccArchimedean
 
@@ -183,7 +183,7 @@ variable [SuccOrder α]
 theorem isSuccPrelimit_of_succ_ne (h : ∀ b, succ b ≠ a) : IsSuccPrelimit a := fun b hba =>
   h b (CovBy.succ_eq hba)
 
-theorem not_isSuccPrelimit_iff : ¬IsSuccPrelimit a ↔ ∃ b, ¬IsMax b ∧ succ b = a := by
+theorem not_isSuccPrelimit_iff : ¬ IsSuccPrelimit a ↔ ∃ b, ¬ IsMax b ∧ succ b = a := by
   rw [not_isSuccPrelimit_iff_exists_covBy]
   refine exists_congr fun b => ⟨fun hba => ⟨hba.lt.not_isMax, (CovBy.succ_eq hba)⟩, ?_⟩
   rintro ⟨h, rfl⟩
@@ -191,7 +191,7 @@ theorem not_isSuccPrelimit_iff : ¬IsSuccPrelimit a ↔ ∃ b, ¬IsMax b ∧ suc
 
 /-- See `not_isSuccPrelimit_iff` for a version that states that `a` is a successor of a value other
 than itself. -/
-theorem mem_range_succ_of_not_isSuccPrelimit (h : ¬IsSuccPrelimit a) :
+theorem mem_range_succ_of_not_isSuccPrelimit (h : ¬ IsSuccPrelimit a) :
     a ∈ range (succ : α → α) := by
   obtain ⟨b, hb⟩ := not_isSuccPrelimit_iff.1 h
   exact ⟨b, hb.2⟩
@@ -235,7 +235,7 @@ variable [NoMaxOrder α]
 theorem isSuccPrelimit_iff_succ_ne : IsSuccPrelimit a ↔ ∀ b, succ b ≠ a :=
   ⟨IsSuccPrelimit.succ_ne, isSuccPrelimit_of_succ_ne⟩
 
-theorem not_isSuccPrelimit_iff' : ¬IsSuccPrelimit a ↔ a ∈ range (succ : α → α) := by
+theorem not_isSuccPrelimit_iff' : ¬ IsSuccPrelimit a ↔ a ∈ range (succ : α → α) := by
   simp_rw [isSuccPrelimit_iff_succ_ne, not_forall, not_ne_iff, mem_range]
 
 end NoMaxOrder
@@ -256,10 +256,10 @@ theorem isSuccPrelimit_iff : IsSuccPrelimit a ↔ IsMin a :=
   ⟨IsSuccPrelimit.isMin, IsMin.isSuccPrelimit⟩
 
 @[simp]
-theorem not_isSuccLimit : ¬IsSuccLimit a :=
+theorem not_isSuccLimit : ¬ IsSuccLimit a :=
   fun h ↦ h.not_isMin <| h.isSuccPrelimit.isMin
 
-theorem not_isSuccPrelimit [NoMinOrder α] : ¬IsSuccPrelimit a := by simp
+theorem not_isSuccPrelimit [NoMinOrder α] : ¬ IsSuccPrelimit a := by simp
 
 end IsSuccArchimedean
 
@@ -346,7 +346,7 @@ anything smaller.
 
 Use `IsPredLimit` to exclude the case of a maximal element. -/
 def IsPredPrelimit (a : α) : Prop :=
-  ∀ b, ¬a ⋖ b
+  ∀ b, ¬ a ⋖ b
 
 theorem not_isPredPrelimit_iff_exists_covBy (a : α) : ¬IsPredPrelimit a ↔ ∃ b, a ⋖ b := by
   simp [IsPredPrelimit]
@@ -378,9 +378,9 @@ anything larger.
 
 This previously allowed the element to be maximal. This usage is now covered by `IsPredPreLimit`. -/
 def IsPredLimit (a : α) : Prop :=
-  ¬IsMax a ∧ IsPredPrelimit a
+  ¬ IsMax a ∧ IsPredPrelimit a
 
-protected theorem IsPredLimit.not_isMax (h : IsPredLimit a) : ¬IsMax a := h.1
+protected theorem IsPredLimit.not_isMax (h : IsPredLimit a) : ¬ IsMax a := h.1
 protected theorem IsPredLimit.isPredPrelimit (h : IsPredLimit a) : IsPredPrelimit a := h.2
 
 @[simp]
@@ -394,21 +394,21 @@ theorem isPredLimit_toDual_iff : IsPredLimit (toDual a) ↔ IsSuccLimit a := by
 alias ⟨_, IsPredLimit.dual⟩ := isSuccLimit_toDual_iff
 alias ⟨_, IsSuccLimit.dual⟩ := isPredLimit_toDual_iff
 
-theorem IsPredPrelimit.isPredLimit_of_not_isMax (h : IsPredPrelimit a) (ha : ¬IsMax a) :
+theorem IsPredPrelimit.isPredLimit_of_not_isMax (h : IsPredPrelimit a) (ha : ¬ IsMax a) :
     IsPredLimit a :=
   ⟨ha, h⟩
 
 theorem IsPredPrelimit.isPredLimit [NoMaxOrder α] (h : IsPredPrelimit a) : IsPredLimit a :=
   h.isPredLimit_of_not_isMax (not_isMax a)
 
-theorem isPredPrelimit_iff_isPredLimit_of_not_isMax (h : ¬IsMax a) :
+theorem isPredPrelimit_iff_isPredLimit_of_not_isMax (h : ¬ IsMax a) :
     IsPredPrelimit a ↔ IsPredLimit a :=
   ⟨fun ha ↦ ha.isPredLimit_of_not_isMax h, IsPredLimit.isPredPrelimit⟩
 
 theorem isPredPrelimit_iff_isPredLimit [NoMaxOrder α] : IsPredPrelimit a ↔ IsPredLimit a :=
   isPredPrelimit_iff_isPredLimit_of_not_isMax (not_isMax a)
 
-protected theorem _root_.IsMax.not_isPredLimit (h : IsMax a) : ¬IsPredLimit a :=
+protected theorem _root_.IsMax.not_isPredLimit (h : IsMax a) : ¬ IsPredLimit a :=
   fun ha ↦ ha.not_isMax h
 
 protected theorem _root_.IsMax.isPredPrelimit : IsMax a → IsPredPrelimit a := fun h _ hab =>
@@ -417,16 +417,16 @@ protected theorem _root_.IsMax.isPredPrelimit : IsMax a → IsPredPrelimit a := 
 theorem isPredPrelimit_top [OrderTop α] : IsPredPrelimit (⊤ : α) :=
   isMax_top.isPredPrelimit
 
-theorem not_isPredLimit_top [OrderTop α] : ¬IsPredLimit (⊤ : α) :=
+theorem not_isPredLimit_top [OrderTop α] : ¬ IsPredLimit (⊤ : α) :=
   isMax_top.not_isPredLimit
 
 theorem IsPredLimit.ne_top [OrderTop α] (h : IsPredLimit a) : a ≠ ⊤ :=
   h.dual.ne_bot
 
-theorem not_isPredLimit_iff : ¬IsPredLimit a ↔ IsMax a ∨ ¬IsPredPrelimit a := by
+theorem not_isPredLimit_iff : ¬ IsPredLimit a ↔ IsMax a ∨ ¬ IsPredPrelimit a := by
   rw [IsPredLimit, not_and_or, not_not]
 
-theorem not_isPredLimit_of_not_isPredPrelimit (h : ¬IsPredPrelimit a) : ¬IsPredLimit a :=
+theorem not_isPredLimit_of_not_isPredPrelimit (h : ¬ IsPredPrelimit a) : ¬ IsPredLimit a :=
   not_isPredLimit_iff.2 (Or.inr h)
 
 variable [PredOrder α]
@@ -437,10 +437,10 @@ protected theorem IsPredPrelimit.isMin (h : IsPredPrelimit (pred a)) : IsMin a :
 protected theorem IsPredLimit.isMin (h : IsPredLimit (pred a)) : IsMin a :=
   h.dual.isMax
 
-theorem not_isPredPrelimit_pred_of_not_isMin (ha : ¬IsMin a) : ¬IsPredPrelimit (pred a) :=
+theorem not_isPredPrelimit_pred_of_not_isMin (ha : ¬ IsMin a) : ¬ IsPredPrelimit (pred a) :=
   mt IsPredPrelimit.isMin ha
 
-theorem not_isPredLimit_pred_of_not_isMin (ha : ¬IsMin a) : ¬IsPredLimit (pred a) :=
+theorem not_isPredLimit_pred_of_not_isMin (ha : ¬ IsMin a) : ¬ IsPredLimit (pred a) :=
   mt IsPredLimit.isMin ha
 
 section NoMinOrder
@@ -454,10 +454,10 @@ theorem IsPredLimit.pred_ne (h : IsPredLimit a) (b : α) : pred b ≠ a :=
   h.isPredPrelimit.pred_ne b
 
 @[simp]
-theorem not_isPredPrelimit_pred (a : α) : ¬IsPredPrelimit (pred a) := fun h => h.pred_ne _ rfl
+theorem not_isPredPrelimit_pred (a : α) : ¬ IsPredPrelimit (pred a) := fun h => h.pred_ne _ rfl
 
 @[simp]
-theorem not_isPredLimit_pred (a : α) : ¬IsPredLimit (pred a) := fun h => h.pred_ne _ rfl
+theorem not_isPredLimit_pred (a : α) : ¬ IsPredLimit (pred a) := fun h => h.pred_ne _ rfl
 
 end NoMinOrder
 
@@ -472,10 +472,10 @@ theorem IsPredPrelimit.isMax_of_noMin (h : IsPredPrelimit a) : IsMax a :=
 theorem isPredPrelimit_iff_of_noMin : IsPredPrelimit a ↔ IsMax a :=
   ⟨IsPredPrelimit.isMax_of_noMin, IsMax.isPredPrelimit⟩
 
-theorem not_isPredPrelimit_of_noMin [NoMaxOrder α] : ¬IsPredPrelimit a := by simp
+theorem not_isPredPrelimit_of_noMin [NoMaxOrder α] : ¬ IsPredPrelimit a := by simp
 
 @[simp]
-theorem not_isPredLimit_of_noMin : ¬IsPredLimit a :=
+theorem not_isPredLimit_of_noMin : ¬ IsPredLimit a :=
   fun h ↦ h.not_isMax h.isPredPrelimit.isMax_of_noMin
 
 end IsPredArchimedean
@@ -497,13 +497,13 @@ variable [PredOrder α]
 theorem isPredPrelimit_of_pred_ne (h : ∀ b, pred b ≠ a) : IsPredPrelimit a := fun b hba =>
   h b (CovBy.pred_eq hba)
 
-theorem not_isPredPrelimit_iff : ¬IsPredPrelimit a ↔ ∃ b, ¬IsMin b ∧ pred b = a := by
+theorem not_isPredPrelimit_iff : ¬ IsPredPrelimit a ↔ ∃ b, ¬ IsMin b ∧ pred b = a := by
   rw [← isSuccPrelimit_toDual_iff]
   exact not_isSuccPrelimit_iff
 
 /-- See `not_isPredPrelimit_iff` for a version that states that `a` is a successor of a value other
 than itself. -/
-theorem mem_range_pred_of_not_isPredPrelimit (h : ¬IsPredPrelimit a) :
+theorem mem_range_pred_of_not_isPredPrelimit (h : ¬ IsPredPrelimit a) :
     a ∈ range (pred : α → α) := by
   obtain ⟨b, hb⟩ := not_isPredPrelimit_iff.1 h
   exact ⟨b, hb.2⟩
@@ -536,7 +536,7 @@ variable [NoMinOrder α]
 theorem isPredPrelimit_iff_pred_ne : IsPredPrelimit a ↔ ∀ b, pred b ≠ a :=
   ⟨IsPredPrelimit.pred_ne, isPredPrelimit_of_pred_ne⟩
 
-theorem not_isPredPrelimit_iff' : ¬IsPredPrelimit a ↔ a ∈ range (pred : α → α) := by
+theorem not_isPredPrelimit_iff' : ¬ IsPredPrelimit a ↔ a ∈ range (pred : α → α) := by
   simp_rw [isPredPrelimit_iff_pred_ne, not_forall, not_ne_iff, mem_range]
 
 end NoMinOrder
@@ -553,10 +553,10 @@ theorem isPredPrelimit_iff : IsPredPrelimit a ↔ IsMax a :=
   ⟨IsPredPrelimit.isMax, IsMax.isPredPrelimit⟩
 
 @[simp]
-theorem not_isPredLimit : ¬IsPredLimit a :=
+theorem not_isPredLimit : ¬ IsPredLimit a :=
   fun h ↦ h.not_isMax <| h.isPredPrelimit.isMax
 
-theorem not_isPredPrelimit [NoMaxOrder α] : ¬IsPredPrelimit a := by simp
+theorem not_isPredPrelimit [NoMaxOrder α] : ¬ IsPredPrelimit a := by simp
 
 end IsPredArchimedean
 
