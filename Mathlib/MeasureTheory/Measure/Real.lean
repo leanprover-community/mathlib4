@@ -31,26 +31,14 @@ open scoped ENNReal NNReal Function symmDiff
 
 namespace MeasureTheory
 
-variable {α β ι : Type*} {_ : MeasurableSpace α} (μ : Measure α) {s s₁ s₂ s₃ t t₁ t₂ u : Set α}
+variable {α β ι : Type*} {_ : MeasurableSpace α} {μ : Measure α} {s s₁ s₂ s₃ t t₁ t₂ u : Set α}
 
+variable (μ) in
 /-- The real-valued version of a measure. Maps infinite measure sets to zero. Use as `μ.real s`. -/
 protected def Measure.real (s : Set α) : ℝ :=
   (μ s).toReal
 
 theorem measureReal_def (s : Set α) : μ.real s = (μ s).toReal := rfl
-
-/-- The nnreal-valued version of a measure. Maps infinite measure sets to zero.
-Use as `μ.nnreal s`. -/
-protected def Measure.nnreal (s : Set α) : ℝ≥0 :=
-  (μ s).toNNReal
-
-theorem measureNNReal_def (s : Set α) : μ.nnreal s = (μ s).toNNReal := rfl
-
-@[simp] theorem measureNNReal_toReal (s : Set α) : (μ.nnreal s).toReal = μ.real s := rfl
-
-theorem measureNNReal_val (s : Set α) : (μ.nnreal s).val = μ.real s := rfl
-
-variable {μ}
 
 theorem measureReal_eq_zero_iff (h : μ s ≠ ∞ := by finiteness) :
     μ.real s = 0 ↔ μ s = 0 := by
