@@ -13,7 +13,7 @@ import Mathlib.RingTheory.Nakayama
 import Mathlib.RingTheory.Artinian.HopkinsLevitzki
 import Mathlib.RingTheory.Artinian.Ring
 /-!
-# Krull Height Theorem
+# Krull's Height Theorem
 
 In this file, we proved Krull's principal ideal theorem and Krull's height theorem.
 
