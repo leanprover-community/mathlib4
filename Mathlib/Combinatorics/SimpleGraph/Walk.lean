@@ -1169,7 +1169,8 @@ theorem edges_map : (p.map f).edges = p.edges.map (Sym2.map f) := by
 
 @[simp]
 theorem edgesSet_map : (p.map f).edgeSet = (Sym2.map f) '' p.edgeSet := by
-  simp [Set.ext_iff]
+  ext
+  simp
 
 theorem map_injective_of_injective {f : G →g G'} (hinj : Function.Injective f) (u v : V) :
     Function.Injective (Walk.map f : G.Walk u v → G'.Walk (f u) (f v)) := by
