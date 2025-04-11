@@ -459,8 +459,8 @@ section NormedSpace
 
 variable {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
 
-instance instNormedSpace [Fact (1 ≤ p)] : NormedSpace 𝕜 (Lp E p μ) where
-  norm_smul_le _ _ := norm_smul_le _ _
+instance instNormedSpace [Fact (1 ≤ p)] : NormedSpace 𝕜 (Lp E p μ) :=
+  .of_isBoundedSMul
 
 end NormedSpace
 

@@ -206,9 +206,9 @@ noncomputable instance : NormedAddCommGroup (V →ᴬ[𝕜] W) :=
           rfl }
 
 instance : NormedSpace 𝕜 (V →ᴬ[𝕜] W) where
-  norm_smul_le t f := by
+  norm_smul t f := by
     simp only [norm_def, coe_smul, Pi.smul_apply, norm_smul, smul_contLinear,
-      ← mul_max_of_nonneg _ _ (norm_nonneg t), le_refl]
+      ← mul_max_of_nonneg _ _ (norm_nonneg t)]
 
 theorem norm_comp_le (g : W₂ →ᴬ[𝕜] V) : ‖f.comp g‖ ≤ ‖f‖ * ‖g‖ + ‖f 0‖ := by
   rw [norm_def, max_le_iff]

@@ -467,7 +467,7 @@ theorem norm_toBCF_eq_norm {f : C₀(α, β)} : ‖f.toBCF‖ = ‖f‖ :=
   rfl
 
 instance : NormedSpace 𝕜 C₀(α, β) where
-  norm_smul_le k f := norm_smul_le k f.toBCF
+  norm_smul k f := norm_smul k f.toBCF
 
 end NormedSpace
 

@@ -410,7 +410,7 @@ attribute [local instance] toSeminormedAddCommGroup
 /-- Normed space (which is actually a seminorm) structure constructed from an
 `PreInnerProductSpace.Core` structure -/
 def toSeminormedSpace : NormedSpace 𝕜 F where
-  norm_smul_le r x := by
+  norm_smul r x := by
     rw [norm_eq_sqrt_inner, inner_smul_left, inner_smul_right, ← mul_assoc]
     rw [RCLike.conj_mul, ← ofReal_pow, re_ofReal_mul, sqrt_mul, ← ofReal_normSq_eq_inner_self,
       ofReal_re]
@@ -474,7 +474,7 @@ attribute [local instance] toNormedAddCommGroup
 
 /-- Normed space structure constructed from an `InnerProductSpace.Core` structure -/
 def toNormedSpace : NormedSpace 𝕜 F where
-  norm_smul_le r x := by
+  norm_smul r x := by
     rw [norm_eq_sqrt_inner, inner_smul_left, inner_smul_right, ← mul_assoc]
     rw [RCLike.conj_mul, ← ofReal_pow, re_ofReal_mul, sqrt_mul, ← ofReal_normSq_eq_inner_self,
       ofReal_re]

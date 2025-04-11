@@ -226,8 +226,8 @@ noncomputable instance : SeminormedAddCommGroup (⨂[𝕜] i, E i) :=
   AddGroupSeminorm.toSeminormedAddCommGroup injectiveSeminorm.toAddGroupSeminorm
 
 noncomputable instance : NormedSpace 𝕜 (⨂[𝕜] i, E i) where
-  norm_smul_le a x := by
-    change injectiveSeminorm.toFun (a • x) ≤ _
+  norm_smul a x := by
+    change injectiveSeminorm.toFun (a • x) = _
     rw [injectiveSeminorm.smul']
     rfl
 

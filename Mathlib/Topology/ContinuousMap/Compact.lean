@@ -270,9 +270,7 @@ section
 
 variable {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
 
-instance normedSpace : NormedSpace 𝕜 C(α, E) where
-  norm_smul_le := norm_smul_le
-
+instance normedSpace : NormedSpace 𝕜 C(α, E) := .of_isBoundedSMul
 section
 
 variable (α 𝕜 E)
