@@ -145,24 +145,24 @@ def DeleteFar (p : MyGraph V → Prop) (r : 𝕜) : Prop :=
   ∀ ⦃s⦄, s ⊆ G.edgeFinset → p (G.deleteEdges s) → r ≤ #s
 
 variable {G}
-
+/-- This needs changing to take account of G.verts. -/
 theorem deleteFar_iff [Fintype (Sym2 V)] :
     G.DeleteFar p r ↔ ∀ ⦃H : MyGraph _⦄ [DecidableRel H.Adj],
-      H ≤ G → p H → r ≤ #G.edgeFinset - #H.edgeFinset := by
-  classical
-  refine ⟨fun h H _ hHG hH ↦ ?_, fun h s hs hG ↦ ?_⟩
-  · have : p (G.deleteEdges ↑(G.edgeFinset \ H.edgeFinset)) := by
+      H.edgeFinset ⊆ G.edgeFinset → p H → r ≤ #G.edgeFinset - #H.edgeFinset := by
+  sorry
+  -- classical
+  -- refine ⟨fun h H _ hHG hH ↦ ?_, fun h s hs hG ↦ ?_⟩
+  -- · have : p (G.deleteEdges ↑(G.edgeFinset \ H.edgeFinset)) := by
 
-      sorry
-    -- simp only [deleteEdges_sdiff_eq_of_le hHG, edgeFinset_mono hHG, card_sdiff,
-    --   card_le_card, coe_sdiff, coe_edgeFinset, Nat.cast_sub] at this
-    apply (h (sdiff_subset (t := H.edgeFinset)) this).trans
-    simp only [edgeFinset_mono hHG, card_sdiff,
-       card_le_card, coe_sdiff, coe_edgeFinset, Nat.cast_sub]
-    rfl
-  · classical
-    simpa [card_sdiff hs, edgeFinset_deleteEdges, -Set.toFinset_card, Nat.cast_sub,
-      card_le_card hs] using h (G.deleteEdges_le s) hG
+  --     sorry
+  --   apply (h (sdiff_subset (t := H.edgeFinset)) this).trans
+  --   rw [card_sdiff hHG, Nat.cast_sub]
+  --   exact card_le_card hHG
+
+  -- · classical
+  --   have := h (G.deleteEdges_le s).2 hG
+  --   simpa [card_sdiff hs, edgeFinset_deleteEdges, -Set.toFinset_card, Nat.cast_sub,
+  --     card_le_card hs] using h (G.deleteEdges_le s).2 hG
 
 alias ⟨DeleteFar.le_card_sub_card, _⟩ := deleteFar_iff
 

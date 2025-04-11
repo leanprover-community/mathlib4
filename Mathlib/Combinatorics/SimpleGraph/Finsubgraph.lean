@@ -42,6 +42,7 @@ namespace SimpleGraph
 /-- The subtype of `G.subgraph` comprising those subgraphs with finite vertex sets. -/
 abbrev Finsubgraph (G : SimpleGraph V) :=
   { G' : G.Subgraph // G'.verts.Finite }
+variable {A B : G.Subgraph}
 
 /-- A graph homomorphism from a finite subgraph of G to F. -/
 abbrev FinsubgraphHom (G' : G.Finsubgraph) (F : SimpleGraph W) :=

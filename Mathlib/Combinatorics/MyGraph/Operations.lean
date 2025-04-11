@@ -168,6 +168,13 @@ def edge : MyGraph V := fromEdgeSet {s(s, t)}
 lemma edge_adj (v w : V) : (edge s t).Adj v w ↔ (v = s ∧ w = t ∨ v = t ∧ w = s) ∧ v ≠ w := by
   rw [edge, fromEdgeSet_adj, Set.mem_singleton_iff, Sym2.eq_iff]
 
+@[simp]
+lemma edge_verts {s t : V} [DecidableEq V] :
+    (edge s t).verts = if s = t then ∅ else {s, t} := by
+  ext x
+  rw [edge]
+  aesop
+
 lemma adj_edge {v w : V} : (edge s t).Adj v w ↔ s(s, t) = s(v, w) ∧ v ≠ w := by
   simp only [edge_adj, ne_eq, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk,
     and_congr_left_iff]
@@ -180,44 +187,84 @@ variable [DecidableEq V] in
 instance : DecidableRel (edge s t).Adj := fun _ _ ↦ by
   rw [edge_adj]; infer_instance
 
-lemma edge_self_eq_bot : edge s s = ⊥ := by
-  ext
-  · rw [fromEdgeSet_verts] rw [edge_adj]; aesop
-  · sorry
+lemma edge_self_eq_bot  : edge s s = ⊥ := by
+  classical
+  ext x y
+  · rw [edge_verts, if_pos rfl, bot_verts]
+  · rw [edge_adj];
+    simp only [or_self, ne_eq, not_bot_adj, iff_false, not_and, Decidable.not_not, and_imp]
+    intro h1 h2
+    exact (h2 ▸ h1)
+
 @[simp]
 lemma sup_edge_self : G ⊔ edge s s = G := by
   rw [edge_self_eq_bot, sup_of_le_left bot_le]
 
 lemma lt_sup_edge (hne : s ≠ t) (hn : ¬ G.Adj s t) : G < G ⊔ edge s t :=
-  left_lt_sup.2 fun h ↦ hn <| h <| (edge_adj ..).mpr ⟨Or.inl ⟨rfl, rfl⟩, hne⟩
+  left_lt_sup.2 fun h ↦ hn <| h.2 <| (edge_adj ..).mpr ⟨Or.inl ⟨rfl, rfl⟩, hne⟩
 
 variable {s t}
 
+@[simp]
+lemma edge_edgeSet_of_eq (h : s = t) : (edge s t).edgeSet = ∅ := by
+  ext e;
+  rw [edge, edgeSet_fromEdgeSet]
+  simp only [h, Set.mem_diff, Set.mem_singleton_iff, Set.mem_setOf_eq, Set.mem_empty_iff_false,
+    iff_false, not_and, not_not]
+  rintro rfl
+  simp
+
+@[simp]
 lemma edge_edgeSet_of_ne (h : s ≠ t) : (edge s t).edgeSet = {s(s, t)} := by
   rwa [edge, edgeSet_fromEdgeSet, sdiff_eq_left, Set.disjoint_singleton_left, Set.mem_setOf_eq,
     Sym2.isDiag_iff_proj_eq]
 
 lemma sup_edge_of_adj (h : G.Adj s t) : G ⊔ edge s t = G := by
-  rwa [sup_eq_left, ← edgeSet_subset_edgeSet, edge_edgeSet_of_ne h.ne, Set.singleton_subset_iff,
-    mem_edgeSet]
+  classical
+  ext x y
+  · rw [sup_verts, edge_verts, if_neg h.ne]
+    simp only [Set.union_insert, Set.union_singleton, Set.mem_insert_iff]
+    constructor
+    · rintro (rfl | rfl | h')
+      · exact G.edge_vert h
+      · exact G.edge_vert h.symm
+      · exact h'
+    · intro h'
+      exact Or.inr <| Or.inr h'
+  · rw [sup_adj, or_iff_left_iff_imp, edge_adj]
+    rintro ⟨⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ ,h'⟩
+    · exact h
+    · exact h.symm
 
-lemma disjoint_edge {u v : V} : Disjoint G (edge u v) ↔ ¬G.Adj u v := by
-  by_cases h : u = v
-  · subst h
-    simp [edge_self_eq_bot]
-  simp [← disjoint_edgeSet, edge_edgeSet_of_ne h]
+lemma disjoint_edge_adj {u v : V} : Disjoint G.edgeSet (edge u v).edgeSet ↔ ¬G.Adj u v := by
+  by_cases h : u = v <;> simp [h]
 
 lemma sdiff_edge {u v : V} (h : ¬G.Adj u v) : G \ edge u v = G := by
-  simp [disjoint_edge, h]
+  ext x y
+  · simp
+  · simp only [sdiff_adj, and_iff_left_iff_imp]
+    intro h' h1
+    rw [edge_adj] at h1
+    cases h1.1 with
+    | inl h1 => exact h (h1.1 ▸ (h1.2 ▸ h'))
+    | inr h1 => exact h (h1.1 ▸ (h1.2 ▸ h'.symm))
 
-theorem Subgraph.spanningCoe_sup_edge_le {H : Subgraph (G ⊔ edge s t)} (h : ¬ H.Adj s t) :
-    H.spanningCoe ≤ G := by
-  intro v w hvw
-  have := hvw.adj_sub
-  simp only [Subgraph.spanningCoe_adj, MyGraph.sup_adj, MyGraph.edge_adj] at *
+/-- Need s,t in G.verts for actual subgraphs here -/
+theorem edgeSet_sup_edge_le {H : MyGraph V} (hH : H ≤ G ⊔ edge s t)
+    (h : ¬ H.Adj s t) : H.edgeSet ⊆ G.edgeSet := by
+  intro e;
+  cases e with
+  | h v w =>
+  simp_rw [mem_edgeSet]
+  intro hvw
+  have := hH.2 hvw
+  simp only [sup_adj] at this
   by_cases hs : s(v, w) = s(s, t)
-  · exact (h ((Subgraph.adj_congr_of_sym2 hs).mp hvw)).elim
-  · aesop
+  · exact (h ((adj_congr_of_sym2 hs).mp hvw)).elim
+  · rw [adj_edge] at this
+    cases this with
+    | inl h => exact h
+    | inr h => exact (hs h.1.symm).elim
 
 variable [Fintype V] [DecidableRel G.Adj]
 

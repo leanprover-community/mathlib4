@@ -5,9 +5,10 @@ import Mathlib.Data.Sym.Sym2
 import Mathlib.Data.Fintype.Powerset
 
 universe u v
+variable {ι : Sort*} {V : Type u} {W : Type v}
 
-/--
-Version of Graph API based on Subgraph (i.e. without MyGraph)
+/-!
+Version of SimpleGraph API based on Subgraph/SimpleGraph but with nicer vertex sets
 -/
 
 @[ext]
@@ -21,8 +22,8 @@ structure MyGraph (V : Type u)  where
   loopless : Irreflexive Adj
 
 initialize_simps_projections MyGraph (Adj → adj)
-variable {ι : Sort*} {V : Type u} {W : Type v}
 
+initialize_simps_projections MyGraph (verts → verts)
 
 namespace MyGraph
 
@@ -75,6 +76,29 @@ theorem adj_congr_of_sym2 {H : MyGraph V} {u v w x : V} (h2 : s(u, v) = s(w, x))
 def IsSpanning (G : MyGraph V) : Prop :=
   ∀ v : V, v ∈ G.verts
 
+
+def toSpanning (G : MyGraph V) : MyGraph V where
+  verts := Set.univ
+  Adj := G.Adj
+  edge_vert h := by trivial
+  symm := G.symm
+  loopless := G.loopless
+
+@[simp]
+lemma toSpanning_verts {G : MyGraph V} : G.toSpanning.verts = Set.univ := rfl
+
+@[simp]
+lemma toSpanning_adj {G : MyGraph V} : G.toSpanning.Adj = G.Adj := rfl
+
+@[simp]
+lemma toSpanning_eq_iff : G.toSpanning = G ↔ G.verts = Set.univ := by
+  constructor <;> intro h
+  · rw [MyGraph.ext_iff, toSpanning_verts] at h
+    exact h.1.symm
+  · rw [MyGraph.ext_iff, toSpanning_verts, toSpanning_adj]
+    exact ⟨h.symm, rfl⟩
+
+
 theorem isSpanning_iff {G : MyGraph V} : G.IsSpanning ↔ G.verts = Set.univ :=
   Set.eq_univ_iff_forall.symm
 
@@ -91,11 +115,9 @@ theorem support_subset_verts (H : MyGraph V) : H.support ⊆ H.verts :=
 /-- `G.neighborSet v` is the set of vertices adjacent to `v` in `G`. -/
 def neighborSet (G : MyGraph V) (v : V) : Set V := {w | G.Adj v w}
 
-
 instance neighborSet.memDecidable (v : V) [DecidableRel G.Adj] :
     DecidablePred (· ∈ G.neighborSet v) :=
   inferInstanceAs <| DecidablePred (Adj G v)
-
 
 theorem neighborSet_subset_verts (G : MyGraph V) (v : V) : G.neighborSet v ⊆ G.verts :=
   fun _ h ↦ G.edge_vert (adj_symm G h)
@@ -108,12 +130,37 @@ theorem neighborSet_subset_support (G : MyGraph V) (v : V) : G.neighborSet v ⊆
 @[simp]
 theorem mem_neighborSet (G : MyGraph V) (v w : V) : w ∈ G.neighborSet v ↔ G.Adj v w := Iff.rfl
 
-
 /-- The edge set of `G` consists of a subset of edges of `G`. -/
 def edgeSet (G : MyGraph V) : Set (Sym2 V) := Sym2.fromRel G.symm
 
 @[simp]
 lemma mem_edgeSet {G : MyGraph V} {v w : V} : s(v, w) ∈ G.edgeSet ↔ G.Adj v w := .rfl
+
+lemma edgeSet_subset_edgeSet  {G H : MyGraph V} : G.edgeSet ⊆ H.edgeSet ↔ G.Adj ≤ H.Adj := by
+  constructor <;> intro h
+  · intro u v h'
+    rw [← mem_edgeSet] at *
+    exact h h'
+  · intro e h'
+    cases e with
+    | h u v =>
+    rw [mem_edgeSet] at *
+    exact h _ _ h'
+
+lemma edgeSet_eq_iff  {G H : MyGraph V} : G.edgeSet = H.edgeSet ↔ G.Adj = H.Adj := by
+  constructor <;> intro h
+  · exact le_antisymm (edgeSet_subset_edgeSet.1 h.le) (edgeSet_subset_edgeSet.1 h.symm.le)
+  · exact le_antisymm (edgeSet_subset_edgeSet.2 h.le) (edgeSet_subset_edgeSet.2 h.symm.le)
+
+lemma edgeSet_eq_empty_iff {G : MyGraph V} : G.edgeSet = ∅  ↔ ∀ {u v}, ¬ G.Adj u v := by
+  rw [Set.eq_empty_iff_forall_not_mem]
+  constructor
+  · intro h1 u v h2
+    apply h1 s(u,v) h2
+  · intro h1 e h2
+    cases e with
+    | h u v =>
+      apply h1 h2
 
 theorem mem_verts_of_mem_edge {G : MyGraph V} {e : Sym2 V} {v : V} (he : e ∈ G.edgeSet)
     (hv : v ∈ e) : v ∈ G.verts := by
@@ -121,7 +168,6 @@ theorem mem_verts_of_mem_edge {G : MyGraph V} {e : Sym2 V} {v : V} (he : e ∈ G
   rcases Sym2.mem_iff.mp hv with (rfl | rfl)
   · exact G.edge_vert he
   · exact G.edge_vert (G.symm he)
-
 
 variable {e : Sym2 V} (G)
 theorem not_isDiag_of_mem_edgeSet : e ∈ edgeSet G → ¬e.IsDiag :=
@@ -154,6 +200,19 @@ theorem copy_eq (G : MyGraph V) (V'' : Set V) (hV : V'' = G.verts)
     (adj' : V → V → Prop) (hadj : adj' = G.Adj) : G.copy V'' hV adj' hadj = G :=
   MyGraph.ext hV hadj
 
+section Order
+
+def IsSubgraph (x y : MyGraph V) : Prop :=
+  x.verts ⊆ y.verts ∧ ∀ ⦃v w : V⦄, x.Adj v w → y.Adj v w
+
+instance : LE (MyGraph V) :=
+  ⟨IsSubgraph⟩
+
+@[simp]
+theorem isSubgraph_eq_le : (IsSubgraph : MyGraph V → MyGraph V → Prop) = (· ≤ ·) :=
+  rfl
+
+
 /-- The union of two MyGraphs. -/
 instance : Max (MyGraph V) where
   max G₁ G₂ :=
@@ -175,14 +234,15 @@ instance : Min (MyGraph V) where
       symm := fun _ _ => And.imp G₁.adj_symm G₂.adj_symm
       loopless := fun _ h => G₁.loopless _ h.1}
 
-/-- The `top` MyGraph is the complete graph on `Set.univ V`. -/
-instance : Top (MyGraph V) where
-  top :=
-    { verts := Set.univ
-      Adj := Ne
-      edge_vert := @fun v _ _ => Set.mem_univ v
-      symm := by intro a b h; exact h.symm
-      loopless := by intro _ _; contradiction }
+/-- The complete graph on a type `V` is the simple graph with all pairs of distinct vertices
+adjacent. In `Mathlib`, this is usually referred to as `⊤`. -/
+@[simp]
+def completeGraph (V : Type u) : MyGraph V where
+  verts := Set.univ
+  Adj := Ne
+  edge_vert h := by trivial
+  symm := (fun _ _ h ↦ Ne.symm h)
+  loopless := (fun _ a ↦ a rfl)
 
 /-- The `bot` MyGraph is the empty graph (on V) with no vertices or edges. -/
 instance : Bot (MyGraph V) where
@@ -217,47 +277,63 @@ theorem sup_adj : (G₁ ⊔ G₂).Adj a b ↔ G₁.Adj a b ∨ G₂.Adj a b :=
   Iff.rfl
 
 @[simp]
+theorem sup_verts (G₁ G₂ : MyGraph V) : (G₁ ⊔ G₂).verts = G₁.verts ∪ G₂.verts :=
+  rfl
+
+@[simp]
 theorem inf_adj : (G₁ ⊓ G₂).Adj a b ↔ G₁.Adj a b ∧ G₂.Adj a b :=
   Iff.rfl
 
 @[simp]
-theorem top_adj : (⊤ : MyGraph V).Adj a b ↔ a ≠ b :=
-  Iff.rfl
+theorem inf_verts (G₁ G₂ : MyGraph V) : (G₁ ⊓ G₂).verts = G₁.verts ∩ G₂.verts :=
+  rfl
 
 @[simp]
 theorem not_bot_adj : ¬ (⊥ : MyGraph V).Adj a b :=
   not_false
 
 @[simp]
-theorem verts_sup (G₁ G₂ : MyGraph V) : (G₁ ⊔ G₂).verts = G₁.verts ∪ G₂.verts :=
-  rfl
+theorem bot_adj : (⊥ : MyGraph V).Adj a b ↔ False := by
+  simp
 
 @[simp]
-theorem verts_inf (G₁ G₂ : MyGraph V) : (G₁ ⊓ G₂).verts = G₁.verts ∩ G₂.verts :=
-  rfl
-
-@[simp]
-theorem verts_top : (⊤ : MyGraph V).verts = Set.univ :=
-  rfl
-
-@[simp]
-theorem verts_bot : (⊥ : MyGraph V).verts = ∅ :=
+theorem bot_verts : (⊥ : MyGraph V).verts = ∅ :=
   rfl
 
 @[simp]
 theorem sSup_adj {s : Set (MyGraph V)} : (sSup s).Adj a b ↔ ∃ G ∈ s, Adj G a b :=
   Iff.rfl
 
+
+@[simp]
+theorem sSup_verts (s : Set (MyGraph V)) : (sSup s).verts = ⋃ G ∈ s, verts G :=
+  rfl
+
 @[simp]
 theorem sInf_adj {s : Set (MyGraph V)} : (sInf s).Adj a b ↔ (∀ G ∈ s, Adj G a b) ∧ a ≠ b :=
   Iff.rfl
+
+
+@[simp]
+theorem sInf_verts (s : Set (MyGraph V)) : (sInf s).verts = ⋂ G ∈ s, verts G :=
+  rfl
 
 @[simp]
 theorem iSup_adj {f : ι → MyGraph V} : (⨆ i, f i).Adj a b ↔ ∃ i, (f i).Adj a b := by
   simp [iSup]
 
 @[simp]
+theorem iSup_verts {f : ι → MyGraph V} : (⨆ i, f i).verts = ⋃ i, (f i).verts := by
+  ext
+  simp [iSup]
+
+@[simp]
 theorem iInf_adj {f : ι → MyGraph V} : (⨅ i, f i).Adj a b ↔ (∀ i, (f i).Adj a b) ∧ a ≠ b := by
+  simp [iInf]
+
+@[simp]
+theorem iInf_verts {f : ι → MyGraph V} : (⨅ i, f i).verts = ⋂ i, (f i).verts := by
+  ext
   simp [iInf]
 
 theorem sInf_adj_of_nonempty {s : Set (MyGraph V)} (hs : s.Nonempty) :
@@ -281,29 +357,12 @@ instance [IsEmpty V] : Unique (MyGraph V) where
   uniq G := by
     ext a b <;> exact False.elim <| IsEmpty.false a
 
-@[simp]
-theorem verts_sSup (s : Set (MyGraph V)) : (sSup s).verts = ⋃ G ∈ s, verts G :=
-  rfl
-
-@[simp]
-theorem verts_sInf (s : Set (MyGraph V)) : (sInf s).verts = ⋂ G ∈ s, verts G :=
-  rfl
-
-@[simp]
-theorem verts_iSup {f : ι → MyGraph V} : (⨆ i, f i).verts = ⋃ i, (f i).verts := by
-  ext
-  simp [iSup]
-
-@[simp]
-theorem verts_iInf {f : ι → MyGraph V} : (⨅ i, f i).verts = ⋂ i, (f i).verts := by
-  ext
-  simp [iInf]
 
 
 /-- For MyGraphs `G₁`, `G₂`, `G₁ ≤ G₂` iff `G₁.verts ⊆ G₂.verts` and
 `∀ a b, G₁.adj a b → G₂.adj a b`. -/
 instance distribLattice : DistribLattice (MyGraph V) where
-  le := fun x y => x.verts ⊆ y.verts ∧ ∀ ⦃v w : V⦄, x.Adj v w → y.Adj v w
+  le := (· ≤ ·)
   le_refl := fun x => ⟨subset_refl x.verts, fun _ _ h => h⟩
   le_trans :=  fun _ _ _ h h' => ⟨h.1.trans h'.1, by intro v w h''; exact h'.2 (h.2 h'')⟩
   le_antisymm := fun x y h h' => by
@@ -324,23 +383,31 @@ instance distribLattice : DistribLattice (MyGraph V) where
   le_sup_inf :=  by
     intro x y z
     constructor
-    · intro a ha; rwa [verts_inf, verts_sup, verts_inf, Set.union_inter_distrib_left] at *
+    · intro a ha; rwa [inf_verts, sup_verts, inf_verts, Set.union_inter_distrib_left] at *
     · aesop
 
 instance : BoundedOrder (MyGraph V) where
-  top := ⊤
+  top := completeGraph V
   bot := ⊥
   le_top _ := ⟨Set.subset_univ _, fun _ _ h => h.ne⟩
   bot_le _ := ⟨Set.empty_subset _, fun _ _ => False.elim⟩
 
+
+@[simp]
+theorem top_adj : (⊤ : MyGraph V).Adj a b ↔ a ≠ b :=
+  Iff.rfl
+
+@[simp]
+theorem top_verts : (⊤ : MyGraph V).verts = Set.univ :=
+  rfl
+
+@[simp]
+theorem completeGraph_eq_top (V : Type*) : completeGraph V = ⊤ :=
+  rfl
+
 /-- Note that MyGraphs do not form a Boolean algebra, because of `verts`. -/
 def completelyDistribLatticeMinimalAxioms : CompletelyDistribLattice.MinimalAxioms (MyGraph V) :=
   { MyGraph.distribLattice with
-    le := (· ≤ ·)
-    sup := (· ⊔ ·)
-    inf := (· ⊓ ·)
-    top := ⊤
-    bot := ⊥
     le_top := fun G => ⟨Set.subset_univ _, fun v w h ↦ h.ne⟩
     bot_le := fun _ => ⟨Set.empty_subset _, fun _ _ => False.elim⟩
     sSup := sSup
@@ -360,8 +427,9 @@ def completelyDistribLatticeMinimalAxioms : CompletelyDistribLattice.MinimalAxio
 instance completelyDistribLattice : CompletelyDistribLattice (MyGraph V) :=
   .ofMinimalAxioms completelyDistribLatticeMinimalAxioms
 
-
-/-- The difference of two graphs `x \ y` has the edges of `x` with the edges of `y` removed. -/
+/--
+The difference of two graphs `x \ y` has the edges of `x` with the edges of `y` removed.
+The vertices are those of `x` -/
 instance sdiff : SDiff (MyGraph V) where
   sdiff x y :=
     { verts := x.verts
@@ -383,6 +451,10 @@ theorem sdiff_le_self (x y : MyGraph V) : x \ y ≤ x := by
   · simp
   · intro v w h; simp [h.1]
 
+/--
+The complement of `G` is the graph with the same vertex set but edges that are not in `G`
+between these vertices.
+-/
 instance hasCompl : HasCompl (MyGraph V) where
   compl G :=
     { verts := G.verts
@@ -421,6 +493,11 @@ instance Inf.adjDecidable : DecidableRel (G ⊓ H).Adj :=
 instance Sdiff.adjDecidable : DecidableRel (G \ H).Adj :=
   inferInstanceAs <| DecidableRel fun v w => G.Adj v w ∧ ¬H.Adj v w
 
+instance Bot.vertsDecidable : DecidablePred (· ∈ (⊥ : MyGraph V).verts) :=
+  inferInstanceAs <| DecidablePred fun _ => False
+
+instance Top.vertsDecidable : DecidablePred (· ∈ (⊤ : MyGraph V).verts) :=
+  inferInstanceAs <| DecidablePred fun _ => True
 
 variable [DecidableEq V]
 
@@ -428,9 +505,6 @@ instance Top.adjDecidable : DecidableRel (⊤ : MyGraph V).Adj :=
   inferInstanceAs <| DecidableRel fun v w => v ≠ w
 
 variable [DecidablePred (· ∈ G.verts)] [DecidablePred (· ∈ H.verts)]
-
-instance Bot.vertsDecidable : DecidablePred (· ∈ (⊥ : MyGraph V).verts) :=
-  inferInstanceAs <| DecidablePred fun _ => False
 
 instance Sup.vertsDecidable : DecidablePred (· ∈ (G ⊔ H).verts) :=
   inferInstanceAs <| DecidablePred fun v  => v ∈ G.verts ∨ v ∈ H.verts
@@ -441,16 +515,12 @@ instance Inf.vertsDecidable : DecidablePred (· ∈ (G ⊓ H).verts) :=
 instance Sdiff.vertsDecidable : DecidablePred (· ∈ (G \ H).verts) :=
   inferInstanceAs <| DecidablePred fun v  => v ∈ G.verts
 
-instance Top.vertsDecidable : DecidablePred (· ∈ (⊤ : MyGraph V).verts) :=
-  inferInstanceAs <| DecidablePred fun _ => True
-
--- instance Compl.adjDecidable : DecidableRel (Gᶜ.Adj) :=
---   inferInstanceAs <| DecidableRel fun v w => v ≠ w ∧ ¬G.Adj v w
+instance Compl.adjDecidable : DecidableRel (Gᶜ.Adj) :=
+  inferInstanceAs <| DecidableRel fun v w => v ≠ w ∧ ¬G.Adj v w ∧ v ∈ G.verts ∧ w ∈ G.verts
 
 end Decidable
 
-
-
+end Order
 
 theorem adj_iff_exists_edge {v w : V} : G.Adj v w ↔ v ≠ w ∧ ∃ e ∈ G.edgeSet, v ∈ e ∧ w ∈ e := by
   refine ⟨fun _ => ⟨G.ne_of_adj ‹_›, s(v, w), by simpa⟩, ?_⟩
@@ -468,18 +538,18 @@ theorem edge_other_ne {e : Sym2 V} (he : e ∈ G.edgeSet) {v : V} (h : v ∈ e) 
   exact G.ne_of_adj he
 
 @[simp]
-theorem edgeSet_subset_edgeSet (h : G₁ ≤ G₂) : edgeSet G₁ ⊆ edgeSet G₂  := by
+theorem edgeSet_subset_edgeSet_of_le (h : G₁ ≤ G₂) : edgeSet G₁ ⊆ edgeSet G₂  := by
   intro e he
   cases e
   rw [mem_edgeSet] at *
   exact h.2 he
 
 @[gcongr] lemma verts_mono {H H' : MyGraph V} (h : H ≤ H') : H.verts ⊆ H'.verts := h.1
+
 lemma verts_monotone : Monotone (verts : MyGraph V → Set V) := fun _ _ h ↦ h.1
 
 @[simps]
 instance MyGraphInhabited : Inhabited (MyGraph V) := ⟨⊥⟩
-
 
 @[simp]
 theorem neighborSet_sup {H H' : MyGraph V} (v : V) :
@@ -488,7 +558,6 @@ theorem neighborSet_sup {H H' : MyGraph V} (v : V) :
 @[simp]
 theorem neighborSet_inf {H H' : MyGraph V} (v : V) :
     (H ⊓ H').neighborSet v = H.neighborSet v ∩ H'.neighborSet v := rfl
-
 
 @[simp]
 theorem neighborSet_sSup (s : Set (MyGraph V)) (v : V) :
@@ -582,7 +651,6 @@ instance [DecidableEq V] [Fintype V] : Fintype (MyGraph V) := by
     exact ⟨⟨(H.verts.toFinset, fun a b ↦ H.Adj a b), fun a b ↦
         by simpa using H.edge_vert, by simp [H.adj_comm]⟩, by simp⟩
 
-
 instance [Finite V] : Finite (MyGraph V) := by classical cases nonempty_fintype V; infer_instance
 
 theorem neighborSet_subset_of_subgraph {x y : MyGraph V} (h : x ≤ y) (v : V) :
@@ -592,8 +660,6 @@ theorem neighborSet_subset_of_subgraph {x y : MyGraph V} (h : x ≤ y) (v : V) :
 instance neighborSet.decidablePred (G : MyGraph V) [h : DecidableRel G.Adj] (v : V) :
     DecidablePred (· ∈ G.neighborSet v) :=
   h v
-
-
 
 instance decidableMemEdgeSet [DecidableRel G.Adj] : DecidablePred (· ∈ G.edgeSet) :=
   Sym2.fromRel.decidablePred G.symm
@@ -620,14 +686,12 @@ instance fintypeEdgeSetSdiff [DecidableEq V] [Fintype G₁.edgeSet] [Fintype G�
   rw [edgeSet_sdiff]
   exact Set.fintypeDiff _ _
 
-
 /-! ### Edge deletion -/
 
+/-- Given a graph `G'` and a set of vertex pairs, remove all of the corresponding edges
+from its edge set, if present. Vertices are unchanged.
 
-/-- Given a subgraph `G'` and a set of vertex pairs, remove all of the corresponding edges
-from its edge set, if present.
-
-See also: `MyGraph.deleteEdges`. -/
+See also: `FullGraph.deleteEdges`. -/
 def deleteEdges (G' : MyGraph V) (s : Set (Sym2 V)) : MyGraph V where
   verts := G'.verts
   Adj := G'.Adj \ Sym2.ToRel s
@@ -653,7 +717,6 @@ instance instDecidableRel_deleteEdges_adj (G : MyGraph V) (s : Set (Sym2 V))
    : DecidableRel (G.deleteEdges s).Adj :=
   fun u v => by rw [deleteEdges_adj]; infer_instance
 
-
 @[simp] lemma deleteEdges_edgeSet (G G' : MyGraph V) : G.deleteEdges G'.edgeSet = G \ G' := by
   ext x y <;> simp
 
@@ -678,7 +741,6 @@ theorem deleteEdges_disjoint (h : Disjoint s G'.edgeSet) : G'.deleteEdges s = G'
     apply h.not_mem_of_mem_left hf h'
 
 
-
 @[simp]
 theorem deleteEdges_le (s : Set (Sym2 V)) : G'.deleteEdges s ≤ G' := by
   constructor <;> simp +contextual [subset_rfl]
@@ -699,16 +761,14 @@ theorem deleteEdges_inter_edgeSet_right_eq :
     G'.deleteEdges (s ∩ G'.edgeSet) = G'.deleteEdges s := by
   ext <;> simp +contextual [imp_false]
 
+-- theorem sdiff_sdiff_eq_self {G H : MyGraph V} (h : H ≤ G) : G \ (G \ H) = H := by
 
 
-theorem sdiff_sdiff_eq_self {G H : MyGraph V} (h : H ≤ G) : G \ (G \ H) = H := by
+--   sorry
 
-
-  sorry
-
-theorem deleteEdges_sdiff_eq_of_le {H : MyGraph V} (h : H ≤ G) :
-    G.deleteEdges (G.edgeSet \ H.edgeSet) = H := by
-  rw [← edgeSet_sdiff, deleteEdges_edgeSet, sdiff_sdiff_eq_self h]
+-- theorem deleteEdges_sdiff_eq_of_le {H : MyGraph V} (h : H ≤ G) :
+--     G.deleteEdges (G.edgeSet \ H.edgeSet) = H := by
+--   rw [← edgeSet_sdiff, deleteEdges_edgeSet, sdiff_sdiff_eq_self h]
 
 
 end DeleteEdges
@@ -771,7 +831,7 @@ lemma le_induce_top_verts : G ≤ (⊤ : MyGraph V).induce G.verts :=
 
 lemma le_induce_union : G.induce s ⊔ G.induce s' ≤ G.induce (s ∪ s') := by
   constructor
-  · simp only [verts_sup, induce_verts, Set.Subset.rfl]
+  · simp only [sup_verts, induce_verts, Set.Subset.rfl]
   · simp only [sup_adj, induce_adj, Set.mem_union]
     rintro v w (h | h) <;> simp [h]
 
@@ -876,27 +936,24 @@ theorem edgeSet_fromEdgeSet : (fromEdgeSet s).edgeSet = s \ { e | e.IsDiag } := 
 theorem fromEdgeSet_edgeSet : fromEdgeSet G.edgeSet ≤ G := by
   constructor
   · intro v hv
-    apply G.support_subset_verts hv.
+    rw [fromEdgeSet] at hv
+    obtain ⟨w, hw⟩ := hv
+    apply G.edge_vert hw.1
   · intro v w h
     simpa using h.1
 
 @[simp]
 theorem fromEdgeSet_empty : fromEdgeSet (∅ : Set (Sym2 V)) = ⊥ := by
-  ext v w
-  · simp only [verts_bot, Set.mem_empty_iff_false, iff_false]
-    intro h
-    change ∃ y, (Sym2.ToRel ∅) y v at h
-    simp at h
-  · simp
+  ext <;> simp
 
 @[simp] -- Need two vertices in V for this to hold
 theorem fromEdgeSet_univ [Nontrivial V]: fromEdgeSet (Set.univ : Set (Sym2 V)) = ⊤ := by
   ext v w
-  · simp only [verts_top, Set.mem_univ, iff_true]
+  · simp only [top_verts, Set.mem_univ, iff_true]
     obtain ⟨x, y, hy⟩ := exists_pair_ne V
     by_cases h : x = v
-    · use y; simp
-    · use x; simp
+    · use y; exact ⟨by trivial, h ▸ hy⟩
+    · use x; exact ⟨by trivial, Ne.symm h⟩
   · simp
 
 @[simp]
@@ -904,8 +961,9 @@ theorem fromEdgeSet_inter (s t : Set (Sym2 V)) :
     fromEdgeSet (s ∩ t) ≤ fromEdgeSet s ⊓ fromEdgeSet t := by
   constructor
   · intro v hv
+    simp
     obtain ⟨w, hw⟩ := hv
-    exact ⟨⟨_, hw.1⟩,⟨_, hw.2⟩⟩
+    exact ⟨⟨_, hw.1.1, hw.2⟩,⟨_, hw.1.2, hw.2⟩⟩
   · simp only [fromEdgeSet_adj, Set.mem_inter_iff, Ne, inf_adj]
     tauto
 
@@ -913,18 +971,8 @@ theorem fromEdgeSet_inter (s t : Set (Sym2 V)) :
 theorem fromEdgeSet_union (s t : Set (Sym2 V)) :
     fromEdgeSet (s ∪ t) = fromEdgeSet s ⊔ fromEdgeSet t := by
   ext v w
-  · simp only [verts_sup, Set.mem_union]
-    constructor <;> intro h
-    · obtain ⟨w, (hw | hw)⟩ := h
-      · exact Or.inl ⟨_, hw⟩
-      · exact Or.inr ⟨_, hw⟩
-    · cases h with
-    | inl h =>
-      obtain ⟨_, hw⟩ := h
-      exact ⟨_, Or.inl hw⟩
-    | inr h =>
-      obtain ⟨_, hw⟩ := h
-      exact ⟨_, Or.inr hw⟩
+  · simp only [fromEdgeSet_verts, Set.mem_union, ne_eq, sup_verts]
+    aesop
   · simp [Set.mem_union, or_and_right]
 
 @[simp]
@@ -932,7 +980,7 @@ theorem fromEdgeSet_sdiff (s t : Set (Sym2 V)) :
     fromEdgeSet (s \ t) ≤ fromEdgeSet s \ fromEdgeSet t   := by
   constructor
   · intro v ⟨w, hw⟩
-    use w, hw.1
+    use w, hw.1.1, hw.2
   · simp only [fromEdgeSet_adj, Set.mem_diff, ne_eq, sdiff_adj, not_and, not_not, and_imp]
     intro v w hs ht hne
     use ⟨hs, hne⟩
@@ -941,8 +989,10 @@ theorem fromEdgeSet_sdiff (s t : Set (Sym2 V)) :
 @[gcongr, mono]
 theorem fromEdgeSet_mono {s t : Set (Sym2 V)} (h : s ⊆ t) : fromEdgeSet s ≤ fromEdgeSet t := by
   constructor
-  · intro v ⟨w, hw⟩
-    use w, h hw
+  · intro v
+    simp only [fromEdgeSet_verts, ne_eq, forall_exists_index, and_imp]
+    intro w  hw h'
+    use w, h hw, h'
   · simp only [fromEdgeSet_adj, ne_eq, and_imp]
     intro v w h' hf
     exact ⟨(h h'), hf⟩
@@ -960,6 +1010,7 @@ theorem deleteEdges_eq_sdiff_fromEdgeSet (s : Set (Sym2 V)) :
 @[simp] lemma disjoint_fromEdgeSet (h : Disjoint G (fromEdgeSet s)) : Disjoint G.edgeSet s := by
   rw [Set.disjoint_left]
   intro e he hf
+
 
 
   sorry
@@ -1142,5 +1193,15 @@ theorem neighborSet_induce_of_not_mem  (h : v ∉ s) :
   simp [h]
 
 
+/-- Two vertices are adjacent in the complete bipartite graph on two vertex types
+if and only if they are not from the same side.
+Any bipartite graph may be regarded as a subgraph of one of these. -/
+@[simps]
+def completeBipartiteGraph (V W : Type*) : MyGraph (V ⊕ W) where
+  verts := Set.univ
+  Adj v w := v.isLeft ∧ w.isRight ∨ v.isRight ∧ w.isLeft
+  symm v w := by cases v <;> cases w <;> simp
+  loopless v := by cases v <;> simp
+  edge_vert h := by trivial
 
 end MyGraph
