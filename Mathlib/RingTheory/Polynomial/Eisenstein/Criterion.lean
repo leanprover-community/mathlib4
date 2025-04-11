@@ -6,11 +6,6 @@ Authors: Chris Hughes, Antoine Chambert-Loir
 
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Polynomial.Content
-import Mathlib.RingTheory.Ideal.Quotient.Defs
-
-import Mathlib.Algebra.CharP.Quotient
-import Mathlib.Algebra.Field.ZMod
-import Mathlib.Algebra.Polynomial.SpecificDegree
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 
 /-! # The Eisenstein criterion
