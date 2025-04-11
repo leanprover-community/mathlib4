@@ -190,10 +190,10 @@ open Topology
 
 section
 
-variable [Nonempty M] [Nonempty H] (φ : PartialHomeomorph M' H') {f : M → M'}
+variable [Nonempty M] [Nonempty H] {φ : PartialHomeomorph M' H'} {f : M → M'}
 
 -- auxiliary definition; will become the invFun of pullback_sliceModel
-variable (f) in
+variable (f φ) in
 noncomputable def aux_invFun (h : SliceModel F I I') : H → M :=
   (Function.extend f id (fun _ ↦ (Classical.arbitrary M))) ∘ φ.symm ∘ h.map
 
@@ -206,6 +206,32 @@ lemma aux (h : SliceModel F I I') (hyp : range (φ ∘ f) = range h.map)
   choose x' hx' using this
   rw [← hx', h.inverse_left_inv x']
 
+-- continuity of `toFun`
+lemma continuousOn_source (h : SliceModel F I I') (hf : IsEmbedding f) (hyp : φ.target ⊆ range h.map) :
+    ContinuousOn (h.inverse ∘ φ ∘ f) (f ⁻¹' φ.source) := by
+  rw [h.hmap.continuousOn_iff]
+  have : ContinuousOn (φ ∘ f) (f ⁻¹' φ.source) :=
+    φ.continuousOn_toFun.comp hf.continuous.continuousOn (fun ⦃x⦄ a ↦ a)
+  apply this.congr
+  intro x hx
+  apply h.inverse_right_inv
+  apply hyp
+  rw [← φ.image_source_eq_target]
+  exact mem_image_of_mem φ hx
+
+-- continuity of the inverse function
+lemma continuousOn_aux_invFun (h : SliceModel F I I') (hf : IsEmbedding f)
+    (hyp : φ.source ⊆ range f) :
+    ContinuousOn (aux_invFun φ f h) (h.map ⁻¹' φ.target) := by
+  have : ContinuousOn ((Function.extend f id fun x ↦ Classical.arbitrary M) ∘ φ.symm) φ.target := by
+    refine ContinuousOn.comp ?_ φ.continuousOn_symm φ.symm_mapsTo
+    -- This holds for any embedding, but seems to be missing.
+    have missing : ContinuousOn (Function.extend f id fun x ↦ Classical.arbitrary M) (range f) := by
+      -- does this help? refine IsOpenMap.continuousOn_range_of_leftInverse ?_ ?_
+      sorry
+    exact missing.mono hyp
+  exact this.comp h.hmap.continuous.continuousOn (fun ⦃x⦄ a ↦ a)
+
 -- key lemma to this, if true: have : range (φ.symm ∘ h.map) ⊆ range f := sorry
 
 theorem missing (φ : PartialHomeomorph M' H') (hf : IsEmbedding f)
@@ -215,9 +241,9 @@ theorem missing (φ : PartialHomeomorph M' H') (hf : IsEmbedding f)
 
 /-- Pull back a partial homeomorphism using a slice model.
 The slice model conditions should guarantee the necessary condition for continuity and inverses. -/
-noncomputable def pullback_sliceModel [Nonempty M] [Nonempty H] (φ : PartialHomeomorph M' H')
-    {f : M → M'} (hf : IsEmbedding f) (h : SliceModel F I I') (hyp : range (φ ∘ f) = range h.map) :
-    PartialHomeomorph M H where
+noncomputable def pullback_sliceModel (hf : IsEmbedding f) (h : SliceModel F I I')
+    (hyp : range (φ ∘ f) = range h.map) (htarget : φ.target ⊆ range h.map)
+    (hsource : φ.source ⊆ range f) : PartialHomeomorph M H where
   toFun := h.inverse ∘ φ ∘ f
   invFun :=
     letI finv := Function.extend f id (fun _ ↦ (Classical.arbitrary M))
@@ -229,29 +255,33 @@ noncomputable def pullback_sliceModel [Nonempty M] [Nonempty H] (φ : PartialHom
   map_source' x hx := by
     rw [← φ.image_source_eq_target, mem_preimage]
     convert mem_image_of_mem φ hx
-    exact aux φ h hyp (mem_range_self x)
+    exact aux h hyp (mem_range_self x)
   map_target' x hx := by
     rw [mem_preimage] at hx ⊢
-    -- f and f.extend cancel
-    -- φ.symm '' target ∈ φ.source
-    -- use
-    sorry
+    convert map_target φ hx
+    -- LAST MAJOR TODO: f and f.extend cancel
+    have : (φ.symm ∘ SliceModel.map F I I') x ∈ range f := missing φ hf h hyp x hx
+    choose x' hx' using this
+    calc
+      _ = f (Function.extend f id (fun x ↦ Classical.arbitrary M) ((φ.symm ∘ SliceModel.map F I I') x)) := rfl
+      _ = ((φ.symm ∘ SliceModel.map F I I') x) := by
+        rw [← hx']
+        congr
+        apply hf.injective.extend_apply
   left_inv' x hx := calc
       _ = ((Function.extend f id fun x ↦ Classical.arbitrary M) ∘ φ.symm ∘
           (SliceModel.map F I I' ∘ h.inverse) ∘ φ ∘ f) x := rfl
       _ = ((Function.extend f id fun x ↦ Classical.arbitrary M) ∘ φ.symm ∘ φ ∘ f) x := by
         simp_rw [comp_apply]
         congr
-        exact aux φ h hyp (mem_range_self x)
+        exact aux h hyp (mem_range_self x)
       _ = (Function.extend f id fun x ↦ Classical.arbitrary M) (f x) := by
         simp only [comp_apply]
         congr
         apply φ.left_inv' hx
       _ = x := hf.injective.extend_apply _ _ x
   right_inv' x hx := by
-    -- key: image (φ.symm ∘ map) ⊆ image f
-    have : range (φ.symm ∘ h.map) ⊆ range f := sorry
-    have : (φ.symm ∘ SliceModel.map F I I') x ∈ range f := sorry
+    have : (φ.symm ∘ SliceModel.map F I I') x ∈ range f := missing φ hf h hyp x hx
     choose x' hx' using this
     have (x') : (Function.extend f id (fun x ↦ Classical.arbitrary M)) (f x') = x' := by
       simp [hf.injective.extend_apply]
@@ -267,10 +297,8 @@ noncomputable def pullback_sliceModel [Nonempty M] [Nonempty H] (φ : PartialHom
         apply congrArg
         apply φ.right_inv' hx
       _ = x := h.inverse_left_inv x
-
-  -- tricky question: why is all that continuous? need to use the slice model!
-  continuousOn_toFun := sorry
-  continuousOn_invFun := sorry
+  continuousOn_toFun := continuousOn_source h hf htarget
+  continuousOn_invFun := continuousOn_aux_invFun h hf hsource
 
 
 #exit
