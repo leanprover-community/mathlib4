@@ -221,8 +221,6 @@ def instTrans (h : SliceModel F I I') (h' : SliceModel F' I' I'') : SliceModel (
 
 end instances
 
-#exit
-
 namespace PartialHomeomorph
 
 variable [TopologicalSpace M] [IsManifold I' n M']
@@ -278,49 +276,56 @@ theorem missing (h : SliceModel F I I') (hsource : φ.source ⊆ range f)
 
 variable [Nonempty M]
 
+-- TODO: `hsource` is much too restrictive:
+-- if M has smaller dimension that M', then range f is never open, while φ.source is
+-- similarly for htarget
+
 variable (φ) in
 /-- Pull back a partial homeomorphism using a slice model. -/
 -- XXX: does this hold for merely inducing maps? depends on the missing sorry for the inverse
-noncomputable def pullback_sliceModel (h : SliceModel F I I') (hf : IsEmbedding f)
-    (hsource : φ.source ⊆ range f) (htarget : φ.target ⊆ range h.map) : PartialHomeomorph M H where
+noncomputable def pullback_sliceModel (h : SliceModel F I I') (hf : IsEmbedding f) :
+    PartialHomeomorph M H where
   toFun := h.inverse ∘ φ ∘ f
   invFun :=
     letI finv := Function.extend f id (fun _ ↦ (Classical.arbitrary M))
     (finv ∘ φ.symm ∘ h.map)
-  source := f ⁻¹' φ.source
-  open_source := IsOpen.preimage hf.continuous φ.open_source
-  target := h.map ⁻¹' φ.target
-  open_target := IsOpen.preimage h.hmap.continuous φ.open_target
-  map_source' x hx := by
+  source := f ⁻¹' φ.source ∩ (φ ∘ f) ⁻¹' (range h.map)
+  open_source := sorry -- IsOpen.preimage hf.continuous φ.open_source
+  target := h.map ⁻¹' (range h.map ∩ φ.target)
+  open_target := sorry -- IsOpen.preimage h.hmap.continuous φ.open_target
+  map_source' := by
+    rintro x ⟨hx₁, hx₂⟩
     rw [← φ.image_source_eq_target, mem_preimage]
-    convert mem_image_of_mem φ hx
-    apply aux' h (mem_range_self x) (htarget ?_)
-    exact φ.image_source_eq_target ▸ mem_image_of_mem φ hx
+    refine ⟨mem_range_self ((h.inverse ∘ φ ∘ f) x), ?_⟩
+    convert mem_image_of_mem φ hx₁
+    exact aux' h (mem_range_self x) hx₂
   map_target' x hx := by
-    rw [mem_preimage] at hx ⊢
-    convert map_target φ hx
-    choose x' hx' using missing h hsource hx
-    calc
-      _ = f (Function.extend f id (fun x ↦ Classical.arbitrary M) ((φ.symm ∘ h.map) x)) := rfl
-      _ = (φ.symm ∘ h.map) x := by
-        rw [← hx']
-        congr
-        apply hf.injective.extend_apply
+    --rw [mem_preimage] at hx ⊢
+    --convert map_target φ hx.2
+    sorry
+    -- choose x' hx' using missing h hsource hx
+    -- calc
+    --   _ = f (Function.extend f id (fun x ↦ Classical.arbitrary M) ((φ.symm ∘ h.map) x)) := rfl
+    --   _ = (φ.symm ∘ h.map) x := by
+    --     rw [← hx']
+    --     congr
+    --     apply hf.injective.extend_apply
   left_inv' x hx := calc
       _ = ((Function.extend f id fun x ↦ Classical.arbitrary M) ∘ φ.symm ∘
           (h.map ∘ h.inverse) ∘ φ ∘ f) x := rfl
       _ = ((Function.extend f id fun x ↦ Classical.arbitrary M) ∘ φ.symm ∘ φ ∘ f) x := by
-        simp_rw [comp_apply]
+        sorry /- simp_rw [comp_apply]
         congr
         apply aux' h (mem_range_self x) (htarget ?_)
-        exact φ.image_source_eq_target ▸ mem_image_of_mem φ hx
+        exact φ.image_source_eq_target ▸ mem_image_of_mem φ hx -/
       _ = (Function.extend f id fun x ↦ Classical.arbitrary M) (f x) := by
         simp only [comp_apply]
         congr
-        apply φ.left_inv' hx
+        sorry -- apply φ.left_inv' hx
       _ = x := hf.injective.extend_apply _ _ x
   right_inv' x hx := by
-    choose x' hx' using missing h hsource hx
+    sorry
+    /- choose x' hx' using missing h hsource hx
     have (x') : (Function.extend f id (fun x ↦ Classical.arbitrary M)) (f x') = x' := by
       simp [hf.injective.extend_apply]
     specialize this x'
@@ -332,9 +337,11 @@ noncomputable def pullback_sliceModel (h : SliceModel F I I') (hf : IsEmbedding 
         simp_rw [comp_apply]
       _ = h.inverse ((φ ∘ φ.symm) (h.map x)) := by simp [Function.comp_apply]
       _ = h.inverse (h.map x) := by congr; exact φ.right_inv' hx
-      _ = x := h.inverse_left_inv x
-  continuousOn_toFun := continuousOn_source h hf.continuous htarget
-  continuousOn_invFun := continuousOn_aux_invFun h hf hsource
+      _ = x := h.inverse_left_inv x -/
+  continuousOn_toFun := sorry -- continuousOn_source h hf.continuous htarget
+  continuousOn_invFun := sorry -- continuousOn_aux_invFun h hf hsource
+
+#exit
 
 @[simp, mfld_simps]
 lemma pullback_sliceModel_coe (h : SliceModel F I I') (hf : IsEmbedding f)
