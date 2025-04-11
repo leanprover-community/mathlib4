@@ -245,9 +245,8 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
     gcongr with n hn
     apply monotone_of_nonneg hΛ
     intro x
-    simp only [smul_eq_mul, coe_mul, Pi.mul_apply, coe_smul, Pi.smul_apply]
     by_cases hx : x ∈ tsupport (g n)
-    · rw [mul_comm]
+    · rw [smul_eq_mul, mul_comm]
       apply mul_le_mul_of_nonneg_right ?_ (hg.2.2.1 n x).1
       exact le_of_lt <| (hV n).2.1 x <| mem_of_subset_of_mem (hg.1 n) hx
     · simp [image_eq_zero_of_nmem_tsupport hx]
