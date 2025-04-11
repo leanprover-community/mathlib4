@@ -129,7 +129,6 @@ theorem generalizedEisenstein {q f : R[X]} {p : ℕ}
   isUnit_or_isUnit g h h_eq := by
     -- We have to show that factorizations `f = g * h` are trivial
     set P : Ideal R := ker (algebraMap R K)
-    have hP : P.IsPrime := ker_isPrime (algebraMap R K)
     obtain ⟨m, r, hg, hr, hm0⟩ :=
       generalizedEisenstein_aux hq_irr hq_monic hfP hf_prim hfmodP (h_eq ▸ dvd_mul_right g h)
     obtain ⟨n, s, hh, hs, hn0⟩ :=

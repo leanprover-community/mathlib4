@@ -47,7 +47,7 @@ variable [CharP R p] {a b : ℕ}
 lemma cast_eq_zero_iff' (R : Type*) [AddMonoidWithOne R] (p : ℕ) [CharP R p] (a : ℕ) :
     (a : R) = 0 ↔ p ∣ a := cast_eq_zero_iff R p a
 
-lemma _root_.CharP.ofNat_eq_zero' (p : ℕ) [CharP R p] [p.AtLeastTwo]
+lemma _root_.CharP.ofNat_eq_zero' (p : ℕ) [CharP R p]
     (a : ℕ) [a.AtLeastTwo] (h : p ∣ a) :
     (ofNat(a) : R) = 0 := by
   rwa [← CharP.cast_eq_zero_iff R p] at h
