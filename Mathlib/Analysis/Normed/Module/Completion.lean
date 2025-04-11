@@ -31,7 +31,7 @@ variable (𝕜 E : Type*)
 
 instance [NormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] :
     NormedSpace 𝕜 (Completion E) :=
-  .of_norm_smul_le norm_smul_le
+  .of_isBoundedSMul
 
 section Module
 
@@ -82,7 +82,6 @@ instance [SeminormedCommRing A] : NormedCommRing (Completion A) where
 
 instance [NormedField 𝕜] [SeminormedCommRing A] [NormedAlgebra 𝕜 A] :
     NormedAlgebra 𝕜 (Completion A) where
-  norm_smul := norm_smul
 
 instance [NormedField A] [CompletableTopField A] :
     NormedField (UniformSpace.Completion A) where

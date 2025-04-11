@@ -85,7 +85,6 @@ noncomputable instance : NormedDivisionRing ℍ where
   norm_mul _ _ := by simp [norm_eq_sqrt_real_inner, inner_self]
 
 noncomputable instance : NormedAlgebra ℝ ℍ where
-  norm_smul := norm_smul
 
 instance : CStarRing ℍ where
   norm_mul_self_le x :=
