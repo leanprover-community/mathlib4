@@ -197,9 +197,7 @@ theorem bodd_bit (b n) : bodd (bit b n) = b := by
 theorem testBit_bit_zero (b) : ∀ n, testBit (bit b n) 0 = b
   | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.testBit_bit_zero
   | -[n+1] => by
-    rw [bit_negSucc]; dsimp [testBit]; rw [Nat.testBit_bit_zero]; clear testBit_bit_zero
-    cases b <;>
-      rfl
+    rw [bit_negSucc]; dsimp [testBit]; rw [Nat.testBit_bit_zero, Bool.not_not]
 
 @[simp]
 theorem testBit_bit_succ (m b) : ∀ n, testBit (bit b n) (Nat.succ m) = testBit n m
