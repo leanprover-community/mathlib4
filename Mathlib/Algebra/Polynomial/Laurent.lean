@@ -512,7 +512,6 @@ instance isLocalization : IsLocalization.Away (X : R[X]) R[T;T⁻¹] :=
       rintro rfl
       exact ⟨1, rfl⟩ }
 
-@[simp]
 theorem mk'_mul_T (p : R[X]) (n : ℕ) :
   IsLocalization.mk' R[T;T⁻¹] p (⟨X^n, n, rfl⟩ : Submonoid.powers (X : R[X])) * T n =
     toLaurent p := by
