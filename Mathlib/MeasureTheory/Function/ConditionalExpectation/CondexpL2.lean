@@ -75,7 +75,7 @@ variable {E 𝕜}
 
 theorem aestronglyMeasurable_condExpL2 (hm : m ≤ m0) (f : α →₂[μ] E) :
     AEStronglyMeasurable[m] (condExpL2 E 𝕜 hm f : α → E) μ :=
-  lpMeas.aeStronglyMeasurable _
+  lpMeas.aestronglyMeasurable _
 
 @[deprecated (since := "2025-01-24")]
 alias aeStronglyMeasurable'_condExpL2 := aestronglyMeasurable_condExpL2
@@ -112,7 +112,7 @@ theorem norm_condExpL2_le (hm : m ≤ m0) (f : α →₂[μ] E) : ‖condExpL2 E
 
 theorem eLpNorm_condExpL2_le (hm : m ≤ m0) (f : α →₂[μ] E) :
     eLpNorm (ε := E) (condExpL2 E 𝕜 hm f) 2 μ ≤ eLpNorm f 2 μ := by
-  rw [lpMeas_coe, ← ENNReal.toReal_le_toReal (Lp.eLpNorm_ne_top _) (Lp.eLpNorm_ne_top _), ←
+  rw [← ENNReal.toReal_le_toReal (Lp.eLpNorm_ne_top _) (Lp.eLpNorm_ne_top _), ←
     Lp.norm_def, ← Lp.norm_def, Submodule.norm_coe]
   exact norm_condExpL2_le hm f
 
@@ -120,7 +120,7 @@ theorem eLpNorm_condExpL2_le (hm : m ≤ m0) (f : α →₂[μ] E) :
 
 theorem norm_condExpL2_coe_le (hm : m ≤ m0) (f : α →₂[μ] E) :
     ‖(condExpL2 E 𝕜 hm f : α →₂[μ] E)‖ ≤ ‖f‖ := by
-  rw [Lp.norm_def, Lp.norm_def, ← lpMeas_coe]
+  rw [Lp.norm_def, Lp.norm_def]
   exact ENNReal.toReal_mono (Lp.eLpNorm_ne_top _) (eLpNorm_condExpL2_le hm f)
 
 @[deprecated (since := "2025-01-21")] alias norm_condexpL2_coe_le := norm_condExpL2_coe_le
@@ -154,7 +154,7 @@ theorem inner_condExpL2_eq_inner_fun (hm : m ≤ m0) (f g : α →₂[μ] E)
     ⟪(condExpL2 E 𝕜 hm f : α →₂[μ] E), g⟫₂ = ⟪f, g⟫₂ := by
   symm
   rw [← sub_eq_zero, ← inner_sub_left, condExpL2]
-  simp only [mem_lpMeas_iff_aeStronglyMeasurable.mpr hg, orthogonalProjection_inner_eq_zero f g]
+  simp only [mem_lpMeas_iff_aestronglyMeasurable.mpr hg, orthogonalProjection_inner_eq_zero f g]
 
 @[deprecated (since := "2025-01-21")]
 alias inner_condexpL2_eq_inner_fun := inner_condExpL2_eq_inner_fun
@@ -176,7 +176,7 @@ alias integral_condexpL2_eq_of_fin_meas_real := integral_condExpL2_eq_of_fin_mea
 
 theorem lintegral_nnnorm_condExpL2_le (hs : MeasurableSet[m] s) (hμs : μ s ≠ ∞) (f : Lp ℝ 2 μ) :
     ∫⁻ x in s, ‖(condExpL2 ℝ ℝ hm f : α → ℝ) x‖₊ ∂μ ≤ ∫⁻ x in s, ‖f x‖₊ ∂μ := by
-  let h_meas := lpMeas.aeStronglyMeasurable (condExpL2 ℝ ℝ hm f)
+  let h_meas := lpMeas.aestronglyMeasurable (condExpL2 ℝ ℝ hm f)
   let g := h_meas.choose
   have hg_meas : StronglyMeasurable[m] g := h_meas.choose_spec.1
   have hg_eq : g =ᵐ[μ] condExpL2 ℝ ℝ hm f := h_meas.choose_spec.2.symm
@@ -209,7 +209,6 @@ theorem condExpL2_ae_eq_zero_of_ae_eq_zero (hs : MeasurableSet[m] s) (hμs : μ 
       rw [Pi.zero_apply] at hx ⊢
       · rwa [ENNReal.coe_eq_zero, nnnorm_eq_zero] at hx
     · refine Measurable.coe_nnreal_ennreal (Measurable.nnnorm ?_)
-      rw [lpMeas_coe]
       exact (Lp.stronglyMeasurable _).measurable
   refine le_antisymm ?_ (zero_le _)
   refine (lintegral_nnnorm_condExpL2_le hs hμs f).trans (le_of_eq ?_)
@@ -251,9 +250,8 @@ linear maps. -/
 theorem condExpL2_const_inner (hm : m ≤ m0) (f : Lp E 2 μ) (c : E) :
     condExpL2 𝕜 𝕜 hm (((Lp.memLp f).const_inner c).toLp fun a => ⟪c, f a⟫) =ᵐ[μ]
     fun a => ⟪c, (condExpL2 E 𝕜 hm f : α → E) a⟫ := by
-  rw [lpMeas_coe]
   have h_mem_Lp : MemLp (fun a => ⟪c, (condExpL2 E 𝕜 hm f : α → E) a⟫) 2 μ := by
-    refine MemLp.const_inner _ ?_; rw [lpMeas_coe]; exact Lp.memLp _
+    refine MemLp.const_inner _ ?_; exact Lp.memLp _
   have h_eq : h_mem_Lp.toLp _ =ᵐ[μ] fun a => ⟪c, (condExpL2 E 𝕜 hm f : α → E) a⟫ :=
     h_mem_Lp.coeFn_toLp
   refine EventuallyEq.trans ?_ h_eq
@@ -263,23 +261,23 @@ theorem condExpL2_const_inner (hm : m ≤ m0) (f : Lp E 2 μ) (c : E) :
     rw [IntegrableOn, integrable_congr (ae_restrict_of_ae h_eq)]
     exact (integrableOn_condExpL2_of_measure_ne_top hm hμs.ne _).const_inner _
   · intro s hs hμs
-    rw [← lpMeas_coe, integral_condExpL2_eq_of_fin_meas_real _ hs hμs.ne,
-      integral_congr_ae (ae_restrict_of_ae h_eq), lpMeas_coe, ←
+    rw [integral_condExpL2_eq_of_fin_meas_real _ hs hμs.ne,
+      integral_congr_ae (ae_restrict_of_ae h_eq), ←
       L2.inner_indicatorConstLp_eq_setIntegral_inner 𝕜 (↑(condExpL2 E 𝕜 hm f)) (hm s hs) c hμs.ne,
       ← inner_condExpL2_left_eq_right, condExpL2_indicator_of_measurable _ hs,
       L2.inner_indicatorConstLp_eq_setIntegral_inner 𝕜 f (hm s hs) c hμs.ne,
       setIntegral_congr_ae (hm s hs)
         ((MemLp.coeFn_toLp ((Lp.memLp f).const_inner c)).mono fun x hx _ => hx)]
-  · rw [← lpMeas_coe]; exact lpMeas.aeStronglyMeasurable _
+  · exact lpMeas.aestronglyMeasurable _
   · refine AEStronglyMeasurable.congr ?_ h_eq.symm
-    exact (lpMeas.aeStronglyMeasurable _).const_inner
+    exact (lpMeas.aestronglyMeasurable _).const_inner
 
 @[deprecated (since := "2025-01-21")] alias condexpL2_const_inner := condExpL2_const_inner
 
 /-- `condExpL2` verifies the equality of integrals defining the conditional expectation. -/
 theorem integral_condExpL2_eq (hm : m ≤ m0) (f : Lp E' 2 μ) (hs : MeasurableSet[m] s)
     (hμs : μ s ≠ ∞) : ∫ x in s, (condExpL2 E' 𝕜 hm f : α → E') x ∂μ = ∫ x in s, f x ∂μ := by
-  rw [← sub_eq_zero, lpMeas_coe, ←
+  rw [← sub_eq_zero, ←
     integral_sub' (integrableOn_Lp_of_measure_ne_top _ fact_one_le_two_ennreal.elim hμs)
       (integrableOn_Lp_of_measure_ne_top _ fact_one_le_two_ennreal.elim hμs)]
   refine integral_eq_zero_of_forall_integral_inner_eq_zero 𝕜 _ ?_ ?_
@@ -291,7 +289,7 @@ theorem integral_condExpL2_eq (hm : m ≤ m0) (f : Lp E' 2 μ) (hs : MeasurableS
       ((integrableOn_Lp_of_measure_ne_top _ fact_one_le_two_ennreal.elim hμs).const_inner c)
       ((integrableOn_Lp_of_measure_ne_top _ fact_one_le_two_ennreal.elim hμs).const_inner c)]
   have h_ae_eq_f := MemLp.coeFn_toLp (E := 𝕜) ((Lp.memLp f).const_inner c)
-  rw [← lpMeas_coe, sub_eq_zero, ←
+  rw [sub_eq_zero, ←
     setIntegral_congr_ae (hm s hs) ((condExpL2_const_inner hm f c).mono fun x hx _ => hx), ←
     setIntegral_congr_ae (hm s hs) (h_ae_eq_f.mono fun x hx _ => hx)]
   exact integral_condExpL2_eq_of_fin_meas_real _ hs hμs
@@ -313,15 +311,15 @@ theorem condExpL2_comp_continuousLinearMap (hm : m ≤ m0) (T : E' →L[ℝ] E''
     rw [T.setIntegral_compLp _ (hm s hs),
       T.integral_comp_comm
         (integrableOn_Lp_of_measure_ne_top _ fact_one_le_two_ennreal.elim hμs.ne),
-      ← lpMeas_coe, ← lpMeas_coe, integral_condExpL2_eq hm f hs hμs.ne,
+      integral_condExpL2_eq hm f hs hμs.ne,
       integral_condExpL2_eq hm (T.compLp f) hs hμs.ne, T.setIntegral_compLp _ (hm s hs),
       T.integral_comp_comm
         (integrableOn_Lp_of_measure_ne_top f fact_one_le_two_ennreal.elim hμs.ne)]
-  · rw [← lpMeas_coe]; exact lpMeas.aeStronglyMeasurable _
+  · exact lpMeas.aestronglyMeasurable _
   · have h_coe := T.coeFn_compLp (condExpL2 E' 𝕜 hm f : α →₂[μ] E')
     rw [← EventuallyEq] at h_coe
     refine AEStronglyMeasurable.congr ?_ h_coe.symm
-    exact T.continuous.comp_aestronglyMeasurable (lpMeas.aeStronglyMeasurable (condExpL2 E' 𝕜 hm f))
+    exact T.continuous.comp_aestronglyMeasurable (lpMeas.aestronglyMeasurable (condExpL2 E' 𝕜 hm f))
 
 @[deprecated (since := "2025-01-21")]
 alias condexpL2_comp_continuousLinearMap := condExpL2_comp_continuousLinearMap
@@ -340,7 +338,6 @@ theorem condExpL2_indicator_ae_eq_smul (hm : m ≤ m0) (hs : MeasurableSet s) (h
   have h_comp :=
     condExpL2_comp_continuousLinearMap ℝ 𝕜 hm (toSpanSingleton ℝ x)
       (indicatorConstLp 2 hs hμs (1 : ℝ))
-  rw [← lpMeas_coe] at h_comp
   refine h_comp.trans ?_
   exact (toSpanSingleton ℝ x).coeFn_compLp _
 
@@ -351,7 +348,6 @@ theorem condExpL2_indicator_eq_toSpanSingleton_comp (hm : m ≤ m0) (hs : Measur
     (hμs : μ s ≠ ∞) (x : E') : (condExpL2 E' 𝕜 hm (indicatorConstLp 2 hs hμs x) : α →₂[μ] E') =
     (toSpanSingleton ℝ x).compLp (condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1)) := by
   ext1
-  rw [← lpMeas_coe]
   refine (condExpL2_indicator_ae_eq_smul 𝕜 hm hs hμs x).trans ?_
   have h_comp := (toSpanSingleton ℝ x).coeFn_compLp
     (condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α →₂[μ] ℝ)
@@ -375,7 +371,7 @@ theorem setLIntegral_nnnorm_condExpL2_indicator_le (hm : m ≤ m0) (hs : Measura
         ((condExpL2_indicator_ae_eq_smul 𝕜 hm hs hμs x).mono fun a ha _ => by rw [ha])
     _ = (∫⁻ a in t, ‖(condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α → ℝ) a‖₊ ∂μ) * ‖x‖₊ := by
       simp_rw [nnnorm_smul, ENNReal.coe_mul]
-      rw [lintegral_mul_const, lpMeas_coe]
+      rw [lintegral_mul_const]
       exact (Lp.stronglyMeasurable _).enorm
     _ ≤ μ (s ∩ t) * ‖x‖₊ :=
       mul_le_mul_right' (lintegral_nnnorm_condExpL2_indicator_le_real hs hμs ht hμt) _
@@ -401,7 +397,7 @@ theorem integrable_condExpL2_indicator (hm : m ≤ m0) [SigmaFinite (μ.trim hm)
     Integrable (ε := E') (condExpL2 E' 𝕜 hm (indicatorConstLp 2 hs hμs x)) μ := by
   refine integrable_of_forall_fin_meas_le' hm (μ s * ‖x‖₊)
     (ENNReal.mul_lt_top hμs.lt_top ENNReal.coe_lt_top) ?_ ?_
-  · rw [lpMeas_coe]; exact Lp.aestronglyMeasurable _
+  · exact Lp.aestronglyMeasurable _
   · refine fun t ht hμt =>
       (setLIntegral_nnnorm_condExpL2_indicator_le hm hs hμs x ht hμt).trans ?_
     gcongr
@@ -474,7 +470,7 @@ theorem setLIntegral_nnnorm_condExpIndSMul_le (hm : m ≤ m0) (hs : MeasurableSe
         ((condExpIndSMul_ae_eq_smul hm hs hμs x).mono fun a ha _ => by rw [ha])
     _ = (∫⁻ a in t, ‖(condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α → ℝ) a‖₊ ∂μ) * ‖x‖₊ := by
       simp_rw [nnnorm_smul, ENNReal.coe_mul]
-      rw [lintegral_mul_const, lpMeas_coe]
+      rw [lintegral_mul_const]
       exact (Lp.stronglyMeasurable _).enorm
     _ ≤ μ (s ∩ t) * ‖x‖₊ :=
       mul_le_mul_right' (lintegral_nnnorm_condExpL2_indicator_le_real hs hμs ht hμt) _
@@ -565,7 +561,8 @@ theorem condExpL2_indicator_nonneg (hm : m ≤ m0) (hs : MeasurableSet s) (hμs 
 
 @[deprecated (since := "2025-01-21")] alias condexpL2_indicator_nonneg := condExpL2_indicator_nonneg
 
-theorem condExpIndSMul_nonneg {E} [NormedLatticeAddCommGroup E] [NormedSpace ℝ E] [OrderedSMul ℝ E]
+theorem condExpIndSMul_nonneg {E}
+    [NormedAddCommGroup E] [Lattice E] [NormedSpace ℝ E] [OrderedSMul ℝ E]
     [SigmaFinite (μ.trim hm)] (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : E) (hx : 0 ≤ x) :
     (0 : α → E) ≤ᵐ[μ] condExpIndSMul hm hs hμs x := by
   refine EventuallyLE.trans_eq ?_ (condExpIndSMul_ae_eq_smul hm hs hμs x).symm

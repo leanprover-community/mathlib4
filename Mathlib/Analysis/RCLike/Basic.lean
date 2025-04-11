@@ -54,7 +54,9 @@ This typeclass captures properties shared by ℝ and ℂ, with an API that close
 -/
 class RCLike (K : semiOutParam Type*) extends DenselyNormedField K, StarRing K,
     NormedAlgebra ℝ K, CompleteSpace K where
+  /-- The real part as an additive monoid homomorphism -/
   re : K →+ ℝ
+  /-- The imaginary part as an additive monoid homomorphism -/
   im : K →+ ℝ
   /-- Imaginary unit in `K`. Meant to be set to `0` for `K = ℝ`. -/
   I : K
@@ -187,7 +189,7 @@ theorem ofReal_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
 @[simp, rclike_simps, norm_cast]
 theorem ofReal_finsupp_sum {α M : Type*} [Zero M] (f : α →₀ M) (g : α → M → ℝ) :
     ((f.sum fun a b => g a b : ℝ) : K) = f.sum fun a b => (g a b : K) :=
-  map_finsupp_sum (algebraMap ℝ K) f g
+  map_finsuppSum (algebraMap ℝ K) f g
 
 @[rclike_simps, norm_cast]
 theorem ofReal_mul (r s : ℝ) : ((r * s : ℝ) : K) = r * s :=
@@ -203,9 +205,11 @@ theorem ofReal_prod {α : Type*} (s : Finset α) (f : α → ℝ) :
   map_prod (algebraMap ℝ K) _ _
 
 @[simp, rclike_simps, norm_cast]
-theorem ofReal_finsupp_prod {α M : Type*} [Zero M] (f : α →₀ M) (g : α → M → ℝ) :
+theorem ofReal_finsuppProd {α M : Type*} [Zero M] (f : α →₀ M) (g : α → M → ℝ) :
     ((f.prod fun a b => g a b : ℝ) : K) = f.prod fun a b => (g a b : K) :=
-  map_finsupp_prod _ f g
+  map_finsuppProd _ f g
+
+@[deprecated (since := "2025-04-06")] alias ofReal_finsupp_prod := ofReal_finsuppProd
 
 @[simp, norm_cast, rclike_simps]
 theorem real_smul_ofReal (r x : ℝ) : r • (x : K) = (r : K) * (x : K) :=
@@ -519,6 +523,8 @@ theorem norm_conj (z : K) : ‖conj z‖ = ‖z‖ := by simp only [← sqrt_nor
 
 @[simp, rclike_simps] lemma nnnorm_conj (z : K) : ‖conj z‖₊ = ‖z‖₊ := by simp [nnnorm]
 
+@[simp, rclike_simps] lemma enorm_conj (z : K) : ‖conj z‖ₑ = ‖z‖ₑ := by simp [enorm]
+
 instance (priority := 100) : CStarRing K where
   norm_mul_self_le x := le_of_eq <| ((norm_mul _ _).trans <| congr_arg (· * ‖x‖) (norm_conj _)).symm
 
@@ -656,7 +662,7 @@ theorem im_le_norm (z : K) : im z ≤ ‖z‖ :=
   (abs_le.1 (abs_im_le_norm _)).2
 
 theorem im_eq_zero_of_le {a : K} (h : ‖a‖ ≤ re a) : im a = 0 := by
-  simpa only [mul_self_norm a, normSq_apply, self_eq_add_right, mul_self_eq_zero]
+  simpa only [mul_self_norm a, normSq_apply, left_eq_add, mul_self_eq_zero]
     using congr_arg (fun z => z * z) ((re_le_norm a).antisymm h)
 
 theorem re_eq_self_of_le {a : K} (h : ‖a‖ ≤ re a) : (re a : K) = a := by
@@ -883,6 +889,8 @@ lemma instPosMulReflectLE : PosMulReflectLE K where
   elim a b c h := by
     obtain ⟨a', ha1, ha2⟩ := pos_iff_exists_ofReal.mp a.2
     rw [← sub_nonneg]
+    #adaptation_note /-- 2025-03-29 need beta reduce for lean4#7717 -/
+    beta_reduce at h
     rw [← ha2, ← sub_nonneg, ← mul_sub, le_iff_lt_or_eq] at h
     rcases h with h | h
     · rw [ofReal_mul_pos_iff] at h
@@ -1054,6 +1062,9 @@ theorem continuous_ofReal : Continuous (ofReal : ℝ → K) :=
 @[continuity]
 theorem continuous_normSq : Continuous (normSq : K → ℝ) :=
   (continuous_re.mul continuous_re).add (continuous_im.mul continuous_im)
+
+theorem lipschitzWith_ofReal : LipschitzWith 1 (ofReal : ℝ → K) :=
+  ofRealLI.lipschitz
 
 end LinearMaps
 

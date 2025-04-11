@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
 import Mathlib.Algebra.Group.Submonoid.BigOperators
 import Mathlib.Algebra.GroupWithZero.Associated
-import Mathlib.Algebra.GroupWithZero.Submonoid
+import Mathlib.Algebra.GroupWithZero.Submonoid.Primal
 import Mathlib.Order.WellFounded
 
 /-!
@@ -28,7 +28,7 @@ local infixl:50 " ~ᵤ " => Associated
 /-- Well-foundedness of the strict version of ∣, which is equivalent to the descending chain
 condition on divisibility and to the ascending chain condition on
 principal ideals in an integral domain.
-  -/
+-/
 abbrev WfDvdMonoid (α : Type*) [CommMonoidWithZero α] : Prop :=
   IsWellFounded α DvdNotUnit
 
@@ -55,18 +55,19 @@ theorem exists_irreducible_factor {a : α} (ha : ¬IsUnit a) (ha0 : a ≠ 0) :
     hs.1⟩
 
 @[elab_as_elim]
-theorem induction_on_irreducible {P : α → Prop} (a : α) (h0 : P 0) (hu : ∀ u : α, IsUnit u → P u)
-    (hi : ∀ a i : α, a ≠ 0 → Irreducible i → P a → P (i * a)) : P a :=
+theorem induction_on_irreducible {motive : α → Prop} (a : α)
+    (zero : motive 0) (unit : ∀ u : α, IsUnit u → motive u)
+    (mul : ∀ a i : α, a ≠ 0 → Irreducible i → motive a → motive (i * a)) : motive a :=
   haveI := Classical.dec
   wellFounded_dvdNotUnit.fix
     (fun a ih =>
-      if ha0 : a = 0 then ha0.substr h0
+      if ha0 : a = 0 then ha0.substr zero
       else
-        if hau : IsUnit a then hu a hau
+        if hau : IsUnit a then unit a hau
         else
-          let ⟨i, hii, b, hb⟩ := exists_irreducible_factor hau ha0
+          let ⟨i, i_irred, b, hb⟩ := exists_irreducible_factor hau ha0
           let hb0 : b ≠ 0 := ne_zero_of_dvd_ne_zero ha0 ⟨i, mul_comm i b ▸ hb⟩
-          hb.symm ▸ hi b i hb0 hii <| ih b ⟨hb0, i, hii.1, mul_comm i b ▸ hb⟩)
+          hb.symm ▸ mul b i hb0 i_irred <| ih b ⟨hb0, i, i_irred.1, mul_comm i b ▸ hb⟩)
     a
 
 theorem exists_factors (a : α) :
@@ -106,10 +107,9 @@ section Prio
 -- set_option default_priority 100
 
 -- see Note [default priority]
-/-- unique factorization monoids.
-
-These are defined as `CancelCommMonoidWithZero`s with well-founded strict divisibility
-relations, but this is equivalent to more familiar definitions:
+/--
+Unique factorization monoids are defined as `CancelCommMonoidWithZero`s with well-founded
+strict divisibility relations, but this is equivalent to more familiar definitions:
 
 Each element (except zero) is uniquely represented as a multiset of irreducible factors.
 Uniqueness is only up to associated elements.
@@ -122,10 +122,9 @@ of irreducible factors, use the definition `of_existsUnique_irreducible_factors`
 
 To define a UFD using the definition in terms of multisets
 of prime factors, use the definition `of_exists_prime_factors`
-
 -/
-class UniqueFactorizationMonoid (α : Type*) [CancelCommMonoidWithZero α] extends
-    IsWellFounded α DvdNotUnit : Prop where
+class UniqueFactorizationMonoid (α : Type*) [CancelCommMonoidWithZero α] : Prop
+    extends IsWellFounded α DvdNotUnit where
   protected irreducible_iff_prime : ∀ {a : α}, Irreducible a ↔ Prime a
 
 instance (priority := 100) ufm_of_decomposition_of_wfDvdMonoid

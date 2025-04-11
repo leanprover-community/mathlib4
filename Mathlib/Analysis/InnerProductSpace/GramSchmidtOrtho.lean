@@ -229,14 +229,11 @@ noncomputable def gramSchmidtBasis (b : Basis ι 𝕜 E) : Basis ι 𝕜 E :=
 theorem coe_gramSchmidtBasis (b : Basis ι 𝕜 E) : (gramSchmidtBasis b : ι → E) = gramSchmidt 𝕜 b :=
   Basis.coe_mk _ _
 
-variable (𝕜)
-
+variable (𝕜) in
 /-- the normalized `gramSchmidt`
 (i.e each vector in `gramSchmidtNormed` has unit length.) -/
 noncomputable def gramSchmidtNormed (f : ι → E) (n : ι) : E :=
   (‖gramSchmidt 𝕜 f n‖ : 𝕜)⁻¹ • gramSchmidt 𝕜 f n
-
-variable {𝕜}
 
 theorem gramSchmidtNormed_unit_length_coe {f : ι → E} (n : ι)
     (h₀ : LinearIndependent 𝕜 (f ∘ ((↑) : Set.Iic n → ι))) : ‖gramSchmidtNormed 𝕜 f n‖ = 1 := by
@@ -353,8 +350,6 @@ theorem gramSchmidtOrthonormalBasis_inv_blockTriangular :
     ((gramSchmidtOrthonormalBasis h f).toBasis.toMatrix f).BlockTriangular id := fun _ _ =>
   gramSchmidtOrthonormalBasis_inv_triangular' h f
 
--- Porting note: added a `DecidableEq` argument to help with timeouts in
--- `Mathlib/Analysis/InnerProductSpace/Orientation.lean`
 theorem gramSchmidtOrthonormalBasis_det [DecidableEq ι] :
     (gramSchmidtOrthonormalBasis h f).toBasis.det f =
       ∏ i, ⟪gramSchmidtOrthonormalBasis h f i, f i⟫ := by

@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kim Morrison
 -/
 import Mathlib.Algebra.Group.Indicator
+import Mathlib.Algebra.Group.InjSurj
 import Mathlib.Data.Set.Finite.Basic
 import Mathlib.Tactic.FastInstance
+import Mathlib.Algebra.Group.Equiv.Defs
 
 /-!
 # Type of functions with finite support
@@ -33,11 +35,10 @@ in a different way in the library:
 
 Most of the theory assumes that the range is a commutative additive monoid. This gives us the big
 sum operator as a powerful way to construct `Finsupp` elements, which is defined in
-`Algebra/BigOperators/Finsupp`.
+`Mathlib.Algebra.BigOperators.Finsupp.Basic`.
 
--- Porting note: the semireducibility remark no longer applies in Lean 4, afaict.
-Many constructions based on `α →₀ M` use `semireducible` type tags to avoid reusing unwanted type
-instances. E.g., `MonoidAlgebra`, `AddMonoidAlgebra`, and types based on these two have
+Many constructions based on `α →₀ M` are `def`s rather than `abbrev`s to avoid reusing unwanted type
+class instances. E.g., `MonoidAlgebra`, `AddMonoidAlgebra`, and types based on these two have
 non-pointwise multiplication.
 
 ## Main declarations
@@ -76,7 +77,7 @@ This file is a `noncomputable theory` and uses classical logic throughout.
 
 -/
 
-assert_not_exists Submonoid
+assert_not_exists CompleteLattice Submonoid
 
 noncomputable section
 
@@ -279,7 +280,7 @@ variable [Zero M] [Zero N] [Zero P]
 which is well-defined when `f 0 = 0`.
 
 This preserves the structure on `f`, and exists in various bundled forms for when `f` is itself
-bundled (defined in `Data/Finsupp/Basic`):
+bundled (defined in `Mathlib/Data/Finsupp/Basic.lean`):
 
 * `Finsupp.mapRange.equiv`
 * `Finsupp.mapRange.zeroHom`
@@ -393,8 +394,8 @@ theorem embDomain_zero (f : α ↪ β) : (embDomain f 0 : β →₀ M) = 0 :=
 @[simp]
 theorem embDomain_apply (f : α ↪ β) (v : α →₀ M) (a : α) : embDomain f v (f a) = v a := by
   classical
-    change dite _ _ _ = _
-    split_ifs with h <;> rw [Finset.mem_map' f] at h
+    simp_rw [embDomain, coe_mk, mem_map']
+    split_ifs with h
     · refine congr_arg (v : α → M) (f.inj' ?_)
       exact Finset.choose_property (fun a₁ => f a₁ = f a) _ _
     · exact (not_mem_support_iff.1 h).symm
@@ -513,7 +514,8 @@ instance instIsCancelAdd [IsCancelAdd M] : IsCancelAdd (α →₀ M) where
 
 /-- Evaluation of a function `f : α →₀ M` at a point as an additive monoid homomorphism.
 
-See `Finsupp.lapply` in `LinearAlgebra/Finsupp` for the stronger version as a linear map. -/
+See `Finsupp.lapply` in `Mathlib/LinearAlgebra/Finsupp/Defs.lean` for the stronger version as a
+linear map. -/
 @[simps apply]
 def applyAddHom (a : α) : (α →₀ M) →+ M where
   toFun g := g a

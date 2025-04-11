@@ -36,21 +36,33 @@ section CartesianProduct
 variable {G : Type w} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 variable {f₂ : 𝕜 → G} {f₂' : G}
 
-nonrec theorem HasDerivAtFilter.prod (hf₁ : HasDerivAtFilter f₁ f₁' x L)
+nonrec theorem HasDerivAtFilter.prodMk (hf₁ : HasDerivAtFilter f₁ f₁' x L)
     (hf₂ : HasDerivAtFilter f₂ f₂' x L) : HasDerivAtFilter (fun x => (f₁ x, f₂ x)) (f₁', f₂') x L :=
-  hf₁.prod hf₂
+  hf₁.prodMk hf₂
 
-nonrec theorem HasDerivWithinAt.prod (hf₁ : HasDerivWithinAt f₁ f₁' s x)
+@[deprecated (since := "2025-03-09")]
+alias HasDerivAtFilter.prod := HasDerivAtFilter.prodMk
+
+nonrec theorem HasDerivWithinAt.prodMk (hf₁ : HasDerivWithinAt f₁ f₁' s x)
     (hf₂ : HasDerivWithinAt f₂ f₂' s x) : HasDerivWithinAt (fun x => (f₁ x, f₂ x)) (f₁', f₂') s x :=
-  hf₁.prod hf₂
+  hf₁.prodMk hf₂
 
-nonrec theorem HasDerivAt.prod (hf₁ : HasDerivAt f₁ f₁' x) (hf₂ : HasDerivAt f₂ f₂' x) :
+@[deprecated (since := "2025-03-09")]
+alias HasDerivWithinAt.prod := HasDerivWithinAt.prodMk
+
+nonrec theorem HasDerivAt.prodMk (hf₁ : HasDerivAt f₁ f₁' x) (hf₂ : HasDerivAt f₂ f₂' x) :
     HasDerivAt (fun x => (f₁ x, f₂ x)) (f₁', f₂') x :=
-  hf₁.prod hf₂
+  hf₁.prodMk hf₂
 
-nonrec theorem HasStrictDerivAt.prod (hf₁ : HasStrictDerivAt f₁ f₁' x)
+@[deprecated (since := "2025-03-09")]
+alias HasDerivAt.prod := HasDerivAt.prodMk
+
+nonrec theorem HasStrictDerivAt.prodMk (hf₁ : HasStrictDerivAt f₁ f₁' x)
     (hf₂ : HasStrictDerivAt f₂ f₂' x) : HasStrictDerivAt (fun x => (f₁ x, f₂ x)) (f₁', f₂') x :=
-  hf₁.prod hf₂
+  hf₁.prodMk hf₂
+
+@[deprecated (since := "2025-03-09")]
+alias HasStrictDerivAt.prod := HasStrictDerivAt.prodMk
 
 end CartesianProduct
 

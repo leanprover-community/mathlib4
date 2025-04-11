@@ -3,7 +3,7 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Order.Floor
+import Mathlib.Algebra.Order.Floor.Semiring
 import Mathlib.Data.Nat.Log
 
 /-!
@@ -48,7 +48,7 @@ def digits (b : ℕ) (q : ℚ) (n : ℕ) : ℕ :=
 
 assert_not_exists Finset
 
-variable {R : Type*} [LinearOrderedSemifield R] [FloorSemiring R]
+variable {R : Type*} [Semifield R] [LinearOrder R] [IsStrictOrderedRing R] [FloorSemiring R]
 
 namespace Int
 
@@ -56,6 +56,7 @@ namespace Int
 def log (b : ℕ) (r : R) : ℤ :=
   if 1 ≤ r then Nat.log b ⌊r⌋₊ else -Nat.clog b ⌈r⁻¹⌉₊
 
+omit [IsStrictOrderedRing R] in
 theorem log_of_one_le_right (b : ℕ) {r : R} (hr : 1 ≤ r) : log b r = Nat.log b ⌊r⌋₊ :=
   if_pos hr
 
@@ -121,18 +122,19 @@ theorem log_zero_right (b : ℕ) : log b (0 : R) = 0 :=
 theorem log_one_right (b : ℕ) : log b (1 : R) = 0 := by
   rw [log_of_one_le_right _ le_rfl, Nat.floor_one, Nat.log_one_right, Int.ofNat_zero]
 
+omit [IsStrictOrderedRing R] in
 @[simp]
 theorem log_zero_left (r : R) : log 0 r = 0 := by
   simp only [log, Nat.log_zero_left, Nat.cast_zero, Nat.clog_zero_left, neg_zero, ite_self]
 
+omit [IsStrictOrderedRing R] in
 @[simp]
 theorem log_one_left (r : R) : log 1 r = 0 := by
   by_cases hr : 1 ≤ r
   · simp_all only [log, ↓reduceIte, Nat.log_one_left, Nat.cast_zero]
   · simp only [log, Nat.log_one_left, Nat.cast_zero, Nat.clog_one_left, neg_zero, ite_self]
 
--- Porting note: needed to replace b ^ z with (b : R) ^ z in the below
-theorem log_zpow {b : ℕ} (hb : 1 < b) (z : ℤ) : log b ((b : R) ^ z : R) = z := by
+theorem log_zpow {b : ℕ} (hb : 1 < b) (z : ℤ) : log b (b ^ z : R) = z := by
   obtain ⟨n, rfl | rfl⟩ := Int.eq_nat_or_neg z
   · rw [log_of_one_le_right _ (one_le_zpow₀ (mod_cast hb.le) <| Int.natCast_nonneg _), zpow_natCast,
       ← Nat.cast_pow, Nat.floor_natCast, Nat.log_pow hb]
@@ -152,8 +154,7 @@ theorem log_mono_right {b : ℕ} {r₁ r₂ : R} (h₀ : 0 < r₁) (h : r₁ ≤
   · rw [log_of_one_le_right _ h₁, log_of_one_le_right _ h₂, Int.ofNat_le]
     exact Nat.log_mono_right (Nat.floor_mono h)
 
-variable (R)
-
+variable (R) in
 /-- Over suitable subtypes, `zpow` and `Int.log` form a galois coinsertion -/
 def zpowLogGi {b : ℕ} (hb : 1 < b) :
     GaloisCoinsertion
@@ -163,8 +164,6 @@ def zpowLogGi {b : ℕ} (hb : 1 < b) :
   GaloisCoinsertion.monotoneIntro (fun r₁ _ => log_mono_right r₁.2)
     (fun _ _ hz => Subtype.coe_le_coe.mp <| (zpow_right_strictMono₀ <| mod_cast hb).monotone hz)
     (fun r => Subtype.coe_le_coe.mp <| zpow_log_le_self hb r.2) fun _ => log_zpow (R := R) hb _
-
-variable {R}
 
 /-- `zpow b` and `Int.log b` (almost) form a Galois connection. -/
 theorem lt_zpow_iff_log_lt {b : ℕ} (hb : 1 < b) {x : ℤ} {r : R} (hr : 0 < r) :
@@ -180,6 +179,7 @@ theorem zpow_le_iff_le_log {b : ℕ} (hb : 1 < b) {x : ℤ} {r : R} (hr : 0 < r)
 def clog (b : ℕ) (r : R) : ℤ :=
   if 1 ≤ r then Nat.clog b ⌈r⌉₊ else -Nat.log b ⌊r⁻¹⌋₊
 
+omit [IsStrictOrderedRing R] in
 theorem clog_of_one_le_right (b : ℕ) {r : R} (hr : 1 ≤ r) : clog b r = Nat.clog b ⌈r⌉₊ :=
   if_pos hr
 
@@ -250,18 +250,19 @@ theorem clog_zero_right (b : ℕ) : clog b (0 : R) = 0 :=
 theorem clog_one_right (b : ℕ) : clog b (1 : R) = 0 := by
   rw [clog_of_one_le_right _ le_rfl, Nat.ceil_one, Nat.clog_one_right, Int.ofNat_zero]
 
+omit [IsStrictOrderedRing R] in
 @[simp]
 theorem clog_zero_left (r : R) : clog 0 r = 0 := by
   by_cases hr : 1 ≤ r
   · simp only [clog, Nat.clog_zero_left, Nat.cast_zero, Nat.log_zero_left, neg_zero, ite_self]
   · simp only [clog, hr, ite_cond_eq_false, Nat.log_zero_left, Nat.cast_zero, neg_zero]
 
+omit [IsStrictOrderedRing R] in
 @[simp]
 theorem clog_one_left (r : R) : clog 1 r = 0 := by
   simp only [clog, Nat.log_one_left, Nat.cast_zero, Nat.clog_one_left, neg_zero, ite_self]
 
--- Porting note: needed to replace b ^ z with (b : R) ^ z in the below
-theorem clog_zpow {b : ℕ} (hb : 1 < b) (z : ℤ) : clog b ((b : R) ^ z : R) = z := by
+theorem clog_zpow {b : ℕ} (hb : 1 < b) (z : ℤ) : clog b (b ^ z : R) = z := by
   rw [← neg_log_inv_eq_clog, ← zpow_neg, log_zpow hb, neg_neg]
 
 @[mono]
@@ -270,8 +271,7 @@ theorem clog_mono_right {b : ℕ} {r₁ r₂ : R} (h₀ : 0 < r₁) (h : r₁ �
   rw [← neg_log_inv_eq_clog, ← neg_log_inv_eq_clog, neg_le_neg_iff]
   exact log_mono_right (inv_pos.mpr <| h₀.trans_le h) (inv_anti₀ h₀ h)
 
-variable (R)
-
+variable (R) in
 /-- Over suitable subtypes, `Int.clog` and `zpow` form a galois insertion -/
 def clogZPowGi {b : ℕ} (hb : 1 < b) :
     GaloisInsertion (fun r : Set.Ioi (0 : R) => Int.clog b (r : R)) fun z : ℤ =>
@@ -280,8 +280,6 @@ def clogZPowGi {b : ℕ} (hb : 1 < b) :
     (fun _ _ hz => Subtype.coe_le_coe.mp <| (zpow_right_strictMono₀ <| mod_cast hb).monotone hz)
     (fun r₁ _ => clog_mono_right r₁.2)
     (fun _ => Subtype.coe_le_coe.mp <| self_le_zpow_clog hb _) fun _ => clog_zpow (R := R) hb _
-
-variable {R}
 
 /-- `Int.clog b` and `zpow b` (almost) form a Galois connection. -/
 theorem zpow_lt_iff_lt_clog {b : ℕ} (hb : 1 < b) {x : ℤ} {r : R} (hr : 0 < r) :

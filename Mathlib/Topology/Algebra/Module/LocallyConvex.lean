@@ -31,6 +31,7 @@ In a module, this is equivalent to `0` satisfying such properties.
 
 -/
 
+assert_not_exists NormedSpace
 
 open TopologicalSpace Filter Set
 
@@ -40,15 +41,16 @@ section Semimodule
 
 /-- A `LocallyConvexSpace` is a topological semimodule over an ordered semiring in which convex
 neighborhoods of a point form a neighborhood basis at that point. -/
-class LocallyConvexSpace (𝕜 E : Type*) [OrderedSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E]
-    [TopologicalSpace E] : Prop where
+class LocallyConvexSpace (𝕜 E : Type*) [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
+    [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] : Prop where
   convex_basis : ∀ x : E, (𝓝 x).HasBasis (fun s : Set E => s ∈ 𝓝 x ∧ Convex 𝕜 s) id
 
-variable (𝕜 E : Type*) [OrderedSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
+variable (𝕜 E : Type*) [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
+  [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
 
 theorem locallyConvexSpace_iff :
     LocallyConvexSpace 𝕜 E ↔ ∀ x : E, (𝓝 x).HasBasis (fun s : Set E => s ∈ 𝓝 x ∧ Convex 𝕜 s) id :=
-  ⟨@LocallyConvexSpace.convex_basis _ _ _ _ _ _, LocallyConvexSpace.mk⟩
+  ⟨@LocallyConvexSpace.convex_basis _ _ _ _ _ _ _ _, LocallyConvexSpace.mk⟩
 
 theorem LocallyConvexSpace.ofBases {ι : Type*} (b : E → ι → Set E) (p : E → ι → Prop)
     (hbasis : ∀ x : E, (𝓝 x).HasBasis (p x) (b x)) (hconvex : ∀ x i, p x i → Convex 𝕜 (b x i)) :
@@ -71,7 +73,8 @@ end Semimodule
 
 section Module
 
-variable (𝕜 E : Type*) [OrderedSemiring 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+variable (𝕜 E : Type*) [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
+  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
   [IsTopologicalAddGroup E]
 
 theorem LocallyConvexSpace.ofBasisZero {ι : Type*} (b : ι → Set E) (p : ι → Prop)
@@ -84,7 +87,7 @@ theorem LocallyConvexSpace.ofBasisZero {ι : Type*} (b : ι → Set E) (p : ι �
 
 theorem locallyConvexSpace_iff_zero : LocallyConvexSpace 𝕜 E ↔
     (𝓝 0 : Filter E).HasBasis (fun s : Set E => s ∈ (𝓝 0 : Filter E) ∧ Convex 𝕜 s) id :=
-  ⟨fun h => @LocallyConvexSpace.convex_basis _ _ _ _ _ _ h 0, fun h =>
+  ⟨fun _ => LocallyConvexSpace.convex_basis 0, fun h =>
     LocallyConvexSpace.ofBasisZero 𝕜 E _ _ h fun _ => And.right⟩
 
 theorem locallyConvexSpace_iff_exists_convex_subset_zero :
@@ -112,7 +115,8 @@ end Module
 
 section LinearOrderedField
 
-variable (𝕜 E : Type*) [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+variable (𝕜 E : Type*) [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
   [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
 
 theorem LocallyConvexSpace.convex_open_basis_zero [LocallyConvexSpace 𝕜 E] :
@@ -131,7 +135,7 @@ theorem Disjoint.exists_open_convexes [LocallyConvexSpace 𝕜 E] {s t : Set E} 
     (hs₁ : Convex 𝕜 s) (hs₂ : IsCompact s) (ht₁ : Convex 𝕜 t) (ht₂ : IsClosed t) :
     ∃ u v, IsOpen u ∧ IsOpen v ∧ Convex 𝕜 u ∧ Convex 𝕜 v ∧ s ⊆ u ∧ t ⊆ v ∧ Disjoint u v := by
   letI : UniformSpace E := IsTopologicalAddGroup.toUniformSpace E
-  haveI : UniformAddGroup E := comm_topologicalAddGroup_is_uniform
+  haveI : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
   have := (LocallyConvexSpace.convex_open_basis_zero 𝕜 E).comap fun x : E × E => x.2 - x.1
   rw [← uniformity_eq_comap_nhds_zero] at this
   rcases disj.exists_uniform_thickening_of_basis this hs₂ ht₂ with ⟨V, ⟨hV0, hVopen, hVconvex⟩, hV⟩
@@ -145,11 +149,13 @@ end LinearOrderedField
 
 section LatticeOps
 
-variable {ι : Sort*} {𝕜 E F : Type*} [OrderedSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E]
+variable {ι : Sort*} {𝕜 E F : Type*} [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
+  [AddCommMonoid E] [Module 𝕜 E]
   [AddCommMonoid F] [Module 𝕜 F]
 
 theorem locallyConvexSpace_sInf {ts : Set (TopologicalSpace E)}
-    (h : ∀ t ∈ ts, @LocallyConvexSpace 𝕜 E _ _ _ t) : @LocallyConvexSpace 𝕜 E _ _ _ (sInf ts) := by
+    (h : ∀ t ∈ ts, @LocallyConvexSpace 𝕜 E _ _ _ _ _ t) :
+    @LocallyConvexSpace 𝕜 E _ _ _ _ _ (sInf ts) := by
   letI : TopologicalSpace E := sInf ts
   refine
     LocallyConvexSpace.ofBases 𝕜 E (fun _ => fun If : Set ts × (ts → Set E) => ⋂ i ∈ If.1, If.2 i)
@@ -157,22 +163,23 @@ theorem locallyConvexSpace_sInf {ts : Set (TopologicalSpace E)}
         If.1.Finite ∧ ∀ i ∈ If.1, If.2 i ∈ @nhds _ (↑i) x ∧ Convex 𝕜 (If.2 i))
       (fun x => ?_) fun x If hif => convex_iInter fun i => convex_iInter fun hi => (hif.2 i hi).2
   rw [nhds_sInf, ← iInf_subtype'']
-  exact hasBasis_iInf' fun i : ts => (@locallyConvexSpace_iff 𝕜 E _ _ _ ↑i).mp (h (↑i) i.2) x
+  exact hasBasis_iInf' fun i : ts => (@locallyConvexSpace_iff 𝕜 E _ _ _ _ _ ↑i).mp (h (↑i) i.2) x
 
 theorem locallyConvexSpace_iInf {ts' : ι → TopologicalSpace E}
-    (h' : ∀ i, @LocallyConvexSpace 𝕜 E _ _ _ (ts' i)) :
-    @LocallyConvexSpace 𝕜 E _ _ _ (⨅ i, ts' i) := by
+    (h' : ∀ i, @LocallyConvexSpace 𝕜 E _ _ _ _ _ (ts' i)) :
+    @LocallyConvexSpace 𝕜 E _ _ _ _ _ (⨅ i, ts' i) := by
   refine locallyConvexSpace_sInf ?_
   rwa [forall_mem_range]
 
-theorem locallyConvexSpace_inf {t₁ t₂ : TopologicalSpace E} (h₁ : @LocallyConvexSpace 𝕜 E _ _ _ t₁)
-    (h₂ : @LocallyConvexSpace 𝕜 E _ _ _ t₂) : @LocallyConvexSpace 𝕜 E _ _ _ (t₁ ⊓ t₂) := by
+theorem locallyConvexSpace_inf {t₁ t₂ : TopologicalSpace E}
+    (h₁ : @LocallyConvexSpace 𝕜 E _ _ _ _ _ t₁)
+    (h₂ : @LocallyConvexSpace 𝕜 E _ _ _ _ _ t₂) : @LocallyConvexSpace 𝕜 E _ _ _ _ _ (t₁ ⊓ t₂) := by
   rw [inf_eq_iInf]
   refine locallyConvexSpace_iInf fun b => ?_
   cases b <;> assumption
 
 theorem locallyConvexSpace_induced {t : TopologicalSpace F} [LocallyConvexSpace 𝕜 F]
-    (f : E →ₗ[𝕜] F) : @LocallyConvexSpace 𝕜 E _ _ _ (t.induced f) := by
+    (f : E →ₗ[𝕜] F) : @LocallyConvexSpace 𝕜 E _ _ _ _ _ (t.induced f) := by
   letI : TopologicalSpace E := t.induced f
   refine LocallyConvexSpace.ofBases 𝕜 E (fun _ => preimage f)
     (fun x => fun s : Set F => s ∈ 𝓝 (f x) ∧ Convex 𝕜 s) (fun x => ?_) fun x s ⟨_, hs⟩ =>
@@ -187,9 +194,39 @@ instance Pi.locallyConvexSpace {ι : Type*} {X : ι → Type*} [∀ i, AddCommMo
 
 instance Prod.locallyConvexSpace [TopologicalSpace E] [TopologicalSpace F] [LocallyConvexSpace 𝕜 E]
     [LocallyConvexSpace 𝕜 F] : LocallyConvexSpace 𝕜 (E × F) :=
--- Porting note: had to specify `t₁` and `t₂`
-  locallyConvexSpace_inf (t₁ := induced Prod.fst _) (t₂ := induced Prod.snd _)
+  locallyConvexSpace_inf
     (locallyConvexSpace_induced (LinearMap.fst _ _ _))
     (locallyConvexSpace_induced (LinearMap.snd _ _ _))
 
 end LatticeOps
+
+section LinearOrderedSemiring
+
+instance LinearOrderedSemiring.toLocallyConvexSpace {R : Type*} [TopologicalSpace R]
+    [LinearOrderedSemiring R] [OrderTopology R] :
+    LocallyConvexSpace R R where
+  convex_basis x := by
+    obtain hl | hl := isBot_or_exists_lt x
+    · refine hl.rec ?_ _
+      intro
+      refine nhds_bot_basis.to_hasBasis' ?_ ?_
+      · intros
+        refine ⟨Set.Iio _, ?_, .rfl⟩
+        simp_all [Iio_mem_nhds, convex_Iio]
+      · simp +contextual
+    obtain hu | hu := isTop_or_exists_gt x
+    · refine hu.rec ?_ _
+      intro
+      refine nhds_top_basis.to_hasBasis' ?_ ?_
+      · intros
+        refine ⟨Set.Ioi _, ?_, subset_refl _⟩
+        simp_all [Ioi_mem_nhds, convex_Ioi]
+      · simp +contextual
+    refine (nhds_basis_Ioo' hl hu).to_hasBasis' ?_ ?_
+    · simp only [id_eq, and_imp, Prod.forall]
+      intros
+      refine ⟨_, ?_, subset_refl _⟩
+      simp_all [Ioo_mem_nhds, convex_Ioo]
+    · simp +contextual
+
+end LinearOrderedSemiring

@@ -40,7 +40,7 @@ a binary fan on `c₁.pt` and `f 0`, we can build a fan for all `n+1`.
 In `extendFanIsLimit` we show that if the two given fans are limits, then this fan is also a
 limit.
 -/
-@[simps!] -- Porting note: removed semi-reducible config
+@[simps!]
 def extendFan {n : ℕ} {f : Fin (n + 1) → C} (c₁ : Fan fun i : Fin n => f i.succ)
     (c₂ : BinaryFan (f 0) c₁.pt) : Fan f :=
   Fan.mk c₂.pt
@@ -99,10 +99,10 @@ private theorem hasProduct_fin : ∀ (n : ℕ) (f : Fin n → C), HasProduct f
 
 /-- If `C` has a terminal object and binary products, then it has finite products. -/
 theorem hasFiniteProducts_of_has_binary_and_terminal : HasFiniteProducts C :=
-  ⟨fun n => ⟨fun K =>
-    let this := hasProduct_fin n fun n => K.obj ⟨n⟩
+  ⟨fun n => ⟨fun K => by
     let that : (Discrete.functor fun n => K.obj ⟨n⟩) ≅ K := Discrete.natIso fun ⟨_⟩ => Iso.refl _
-    @hasLimitOfIso _ _ _ _ _ _ this that⟩⟩
+    rw [← hasLimit_iff_of_iso that]
+    apply hasProduct_fin⟩⟩
 
 
 end
@@ -171,7 +171,7 @@ In `extendCofanIsColimit` we show that if the two given cofans are colimits,
 then this cofan is also a colimit.
 -/
 
-@[simps!] -- Porting note: removed semireducible config
+@[simps!]
 def extendCofan {n : ℕ} {f : Fin (n + 1) → C} (c₁ : Cofan fun i : Fin n => f i.succ)
     (c₂ : BinaryCofan (f 0) c₁.pt) : Cofan f :=
   Cofan.mk c₂.pt
@@ -231,10 +231,10 @@ private theorem hasCoproduct_fin : ∀ (n : ℕ) (f : Fin n → C), HasCoproduct
 
 /-- If `C` has an initial object and binary coproducts, then it has finite coproducts. -/
 theorem hasFiniteCoproducts_of_has_binary_and_initial : HasFiniteCoproducts C :=
-  ⟨fun n => ⟨fun K =>
-    letI := hasCoproduct_fin n fun n => K.obj ⟨n⟩
+  ⟨fun n => ⟨fun K => by
     let that : K ≅ Discrete.functor fun n => K.obj ⟨n⟩ := Discrete.natIso fun ⟨_⟩ => Iso.refl _
-    @hasColimitOfIso _ _ _ _ _ _ this that⟩⟩
+    rw [hasColimit_iff_of_iso that]
+    apply hasCoproduct_fin⟩⟩
 
 end
 

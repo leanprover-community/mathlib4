@@ -3,10 +3,14 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+import Mathlib.Algebra.Group.Action.End
+import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+import Mathlib.Algebra.Group.Action.Prod
 import Mathlib.Algebra.Group.Subgroup.Map
+import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 import Mathlib.Data.Finite.Sigma
 import Mathlib.Data.Set.Finite.Range
-import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Data.Setoid.Basic
 import Mathlib.GroupTheory.GroupAction.Defs
 
@@ -95,11 +99,11 @@ end FixedPoints
 
 end MulAction
 
-/-- `smul` by a `k : M` over a ring is injective, if `k` is not a zero divisor.
+/-- `smul` by a `k : M` over a group is injective, if `k` is not a zero divisor.
 The general theory of such `k` is elaborated by `IsSMulRegular`.
 The typeclass that restricts all terms of `M` to have this property is `NoZeroSMulDivisors`. -/
-theorem smul_cancel_of_non_zero_divisor {M R : Type*} [Monoid M] [NonUnitalNonAssocRing R]
-    [DistribMulAction M R] (k : M) (h : ∀ x : R, k • x = 0 → x = 0) {a b : R} (h' : k • a = k • b) :
+theorem smul_cancel_of_non_zero_divisor {M G : Type*} [Monoid M] [AddGroup G]
+    [DistribMulAction M G] (k : M) (h : ∀ x : G, k • x = 0 → x = 0) {a b : G} (h' : k • a = k • b) :
     a = b := by
   rw [← sub_eq_zero]
   refine h _ ?_
@@ -283,7 +287,6 @@ theorem Equiv.swap_mem_stabilizer {α : Type*} [DecidableEq α] {S : Set α} {a 
   rw [MulAction.mem_stabilizer_iff, Set.ext_iff, ← swap_inv]
   simp_rw [Set.mem_inv_smul_set_iff, Perm.smul_def, swap_apply_def]
   exact ⟨fun h ↦ by simpa [Iff.comm] using h a, by intros; split_ifs <;> simp [*]⟩
-
 
 namespace MulAction
 

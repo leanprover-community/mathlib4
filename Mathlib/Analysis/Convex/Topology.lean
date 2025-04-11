@@ -5,9 +5,10 @@ Authors: Alexander Bentkamp, Yury Kudryashov
 -/
 import Mathlib.Analysis.Convex.Combination
 import Mathlib.Analysis.Convex.Strict
-import Mathlib.Topology.Connected.PathConnected
 import Mathlib.Topology.Algebra.Affine
 import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Topology.Connected.PathConnected
+import Mathlib.Topology.MetricSpace.ProperSpace.Real
 
 /-!
 # Topological properties of convex sets
@@ -79,7 +80,7 @@ instance stdSimplex.instCompactSpace_coe : CompactSpace ↥(stdSimplex ℝ ι) :
 
 /-- The standard one-dimensional simplex in `ℝ² = Fin 2 → ℝ`
 is homeomorphic to the unit interval. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def stdSimplexHomeomorphUnitInterval : stdSimplex ℝ (Fin 2) ≃ₜ unitInterval where
   toEquiv := stdSimplexEquivIcc ℝ
   continuous_toFun := .subtype_mk ((continuous_apply 0).comp continuous_subtype_val) _
@@ -93,7 +94,8 @@ end stdSimplex
 /-! ### Topological vector spaces -/
 section TopologicalSpace
 
-variable [LinearOrderedRing 𝕜] [DenselyOrdered 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜]
+variable [Ring 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [DenselyOrdered 𝕜]
+  [TopologicalSpace 𝕜] [OrderTopology 𝕜]
   [AddCommGroup E] [TopologicalSpace E] [ContinuousAdd E] [Module 𝕜 E] [ContinuousSMul 𝕜 E]
   {x y : E}
 
@@ -105,7 +107,8 @@ end TopologicalSpace
 
 section PseudoMetricSpace
 
-variable [LinearOrderedRing 𝕜] [DenselyOrdered 𝕜] [PseudoMetricSpace 𝕜] [OrderTopology 𝕜]
+variable [Ring 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [DenselyOrdered 𝕜]
+  [PseudoMetricSpace 𝕜] [OrderTopology 𝕜]
   [ProperSpace 𝕜] [CompactIccSpace 𝕜] [AddCommGroup E] [TopologicalSpace E] [T2Space E]
   [ContinuousAdd E] [Module 𝕜 E] [ContinuousSMul 𝕜 E]
 
@@ -119,7 +122,8 @@ end PseudoMetricSpace
 
 section ContinuousConstSMul
 
-variable [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
   [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
 
 /-- If `s` is a convex set, then `a • interior s + b • closure s ⊆ interior s` for all `0 < a`,
@@ -270,7 +274,8 @@ end ContinuousConstSMul
 
 section ContinuousSMul
 
-variable [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
   [IsTopologicalAddGroup E] [TopologicalSpace 𝕜] [OrderTopology 𝕜] [ContinuousSMul 𝕜 E]
 
 theorem Convex.closure_interior_eq_closure_of_nonempty_interior {s : Set E} (hs : Convex 𝕜 s)
@@ -295,21 +300,19 @@ end ContinuousSMul
 
 section TopologicalSpace
 
-variable [OrderedSemiring 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+variable [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
+  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
 
 theorem convex_closed_sInter {S : Set (Set E)} (h : ∀ s ∈ S, Convex 𝕜 s ∧ IsClosed s) :
     Convex 𝕜 (⋂₀ S) ∧ IsClosed (⋂₀ S) :=
   ⟨fun _ hx => starConvex_sInter fun _ hs => (h _ hs).1 <| hx _ hs,
     isClosed_sInter fun _ hs => (h _ hs).2⟩
 
-variable (𝕜)
-
+variable (𝕜) in
 /-- The convex closed hull of a set `s` is the minimal convex closed set that includes `s`. -/
 @[simps! isClosed]
 def closedConvexHull : ClosureOperator (Set E) := .ofCompletePred (fun s => Convex 𝕜 s ∧ IsClosed s)
   fun _ ↦ convex_closed_sInter
-
-variable {𝕜}
 
 theorem convex_closedConvexHull {s : Set E} :
     Convex 𝕜 (closedConvexHull 𝕜 s) := ((closedConvexHull 𝕜).isClosed_closure s).1
@@ -342,7 +345,8 @@ end TopologicalSpace
 
 section ContinuousConstSMul
 
-variable [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
   [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
 
 theorem closedConvexHull_eq_closure_convexHull {s : Set E} :

@@ -7,7 +7,7 @@ import Mathlib.Algebra.BigOperators.Module
 import Mathlib.Algebra.Order.Field.Power
 import Mathlib.Algebra.Polynomial.Monic
 import Mathlib.Analysis.Asymptotics.Lemmas
-import Mathlib.Analysis.Normed.Field.InfiniteSum
+import Mathlib.Analysis.Normed.Ring.InfiniteSum
 import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Data.List.TFAE
@@ -729,7 +729,8 @@ end
 
 section
 
-variable {E : Type*} [OrderedRing E] [TopologicalSpace E] [OrderClosedTopology E]
+variable {E : Type*} [Ring E] [PartialOrder E] [IsOrderedRing E]
+  [TopologicalSpace E] [OrderClosedTopology E]
   {l : E} {f : ℕ → E}
 
 /-- Partial sums of an alternating monotone series with an even number of terms provide

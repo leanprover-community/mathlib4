@@ -41,7 +41,8 @@ open Set Finset
 
 universe u
 
-variable {𝕜 : Type*} {E : Type u} [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable {𝕜 : Type*} {E : Type u} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+  [AddCommGroup E] [Module 𝕜 E]
 
 namespace Caratheodory
 
@@ -170,7 +171,8 @@ theorem eq_pos_convex_span_of_mem_convexHull {x : E} (hx : x ∈ convexHull 𝕜
   · exact ht₂.comp_embedding ⟨_, inclusion_injective (Finset.filter_subset (fun i => w i ≠ 0) t)⟩
   · exact fun i =>
       (hw₁ _ (Finset.mem_filter.mp i.2).1).lt_of_ne (Finset.mem_filter.mp i.property).2.symm
-  · erw [Finset.sum_attach, Finset.sum_filter_ne_zero, hw₂]
+  · simp only [univ_eq_attach, Function.comp_apply]
+    rw [Finset.sum_attach, Finset.sum_filter_ne_zero, hw₂]
   · change (∑ i ∈ t'.attach, (fun e => w e • e) ↑i) = x
     rw [Finset.sum_attach (f := fun e => w e • e), Finset.sum_filter_of_ne]
     · rw [t.centerMass_eq_of_sum_1 id hw₂] at hw₃

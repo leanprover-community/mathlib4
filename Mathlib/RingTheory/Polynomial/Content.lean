@@ -151,7 +151,7 @@ theorem normUnit_content {p : R[X]} : normUnit (content p) = 1 := by
   · simp [hp0]
   · ext
     apply mul_left_cancel₀ hp0
-    erw [← normalize_apply, normalize_content, mul_one]
+    rw [← normalize_apply, normalize_content, Units.val_one, mul_one]
 
 theorem content_eq_gcd_range_of_lt (p : R[X]) (n : ℕ) (h : p.natDegree < n) :
     p.content = (Finset.range n).gcd p.coeff := by
@@ -268,7 +268,7 @@ theorem aeval_primPart_eq_zero {S : Type*} [Ring S] [IsDomain S] [Algebra R S]
   rw [map_zero] at hcont
   exact eq_zero_of_ne_zero_of_mul_left_eq_zero hcont hp
 
-theorem eval₂_primPart_eq_zero {S : Type*} [CommRing S] [IsDomain S] {f : R →+* S}
+theorem eval₂_primPart_eq_zero {S : Type*} [CommSemiring S] [IsDomain S] {f : R →+* S}
     (hinj : Function.Injective f) {p : R[X]} {s : S} (hpzero : p ≠ 0) (hp : eval₂ f s p = 0) :
     eval₂ f s p.primPart = 0 := by
   rw [eq_C_content_mul_primPart p, eval₂_mul, eval₂_C] at hp
