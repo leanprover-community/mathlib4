@@ -5,10 +5,29 @@ Authors: Vincent Trélat
 -/
 import Mathlib.SetTheory.ZFC.Basic
 
+/-!
+# Boolean algebra on `ZFSet`
+
+This file defines the boolean algebra on `ZFSet` and the type of booleans `ZFBool`.
+It defines the following operations:
+- `not` : negation
+- `and` : conjunction
+- `or` : disjunction
+- `true` : ZF true value
+- `false` : ZF false value
+- `𝔹` : set of ZF booleans
+- `toBool` : conversion from `ZFBool` to `Bool`
+- `ofBool` : conversion from `Bool` to `ZFBool`
+
+-/
+
 noncomputable section
+
+/-! ## Preliminary definitions -/
 
 namespace ZFSet
 
+/-- Symmetric difference of two sets, denoted by `Δ`. -/
 def symmDiff (p q : ZFSet) : ZFSet := (p \ q) ∪ (q \ p)
 infix:70 " Δ " => symmDiff
 
@@ -33,9 +52,15 @@ theorem symmDiff_self (p : ZFSet) : p Δ p = ∅ := by
 
 section Booleans
 
+/-! ## ZF Boolean Algebra -/
+
+/-- False value defined as the empty set. -/
 abbrev zffalse : ZFSet := ∅
+/-- True value defined as the singleton containing the empty set. -/
 abbrev zftrue : ZFSet := {zffalse}
+/-- Set of ZF booleans, defined as the set containing `zffalse` and `zftrue`. -/
 abbrev 𝔹 : ZFSet := {zffalse,zftrue}
+/-- Type of ZF booleans. -/
 abbrev ZFBool := { x // x ∈ 𝔹 }
 
 theorem zftrue_ne_zffalse : zftrue ≠ zffalse := by
@@ -61,7 +86,9 @@ lemma 𝔹.nonempty : ZFSet.𝔹 ≠ ∅ := by
   simp only [ZFSet.not_mem_empty, iff_false] at h
   nomatch h ZFSet.zffalse (ZFSet.ZFBool.zffalse_mem_𝔹)
 
+/-- False value, lifted on `ZFBool`. -/
 abbrev false : ZFBool := ⟨zffalse, zffalse_mem_𝔹⟩
+/-- True value, lifted on `ZFBool`. -/
 abbrev true : ZFBool := ⟨zftrue, zftrue_mem_𝔹⟩
 instance Bool_top : Top ZFBool := ⟨true⟩
 instance Bool_bot : Bot ZFBool := ⟨false⟩
@@ -86,6 +113,9 @@ theorem powerset_false : zffalse.powerset = zftrue := by
   · exact ZFSet.subset_of_empty x
   · exact (subset_of_subset_of_eq (fun _ a => a) ·)
 
+/--
+The enumeration of the powerset of `𝔹`.
+-/
 theorem powerset_𝔹_def :
   ZFSet.𝔹.powerset = {∅, {ZFSet.zffalse}, {ZFSet.zftrue}, {ZFSet.zffalse, ZFSet.zftrue}} := by
   ext1 x
@@ -141,6 +171,7 @@ theorem powerset_𝔹_def :
       rcases ZFSet.mem_singleton.mp hx
       right; rfl
 
+/-- Boolean negation, defined as the symmetric difference with `true`. -/
 protected abbrev not (p : ZFBool) : ZFBool := ⟨true Δ p.1, by
   let ⟨p, hp⟩ := p
   rw [mem_𝔹_iff] at hp ⊢
@@ -150,6 +181,7 @@ protected abbrev not (p : ZFBool) : ZFBool := ⟨true Δ p.1, by
   · left
     exact symmDiff_self _⟩
 
+/-- Cases elimination for `ZFBool`. -/
 @[cases_eliminator]
 def casesOn {motive : ZFBool → Sort _}
   (p : ZFBool)
@@ -163,6 +195,54 @@ def casesOn {motive : ZFBool → Sort _}
   · have := Or.resolve_left this h
     subst this
     exact true
+
+/-- Boolean conjunction, defined as set intersection. -/
+protected abbrev and (p q : ZFBool) : ZFBool :=
+  let ⟨P, hP⟩ := p
+  let ⟨Q, hQ⟩ := q
+  ⟨P ∩ Q, by
+    rw [mem_𝔹_iff]
+    rw [mem_𝔹_iff] at hP hQ
+    cases hP <;> cases hQ <;> subst_eqs
+    · apply Or.inl
+      ext1
+      rw [mem_inter, and_self]
+    · apply Or.inl
+      ext1
+      simp only [mem_inter, not_mem_empty, false_and]
+    · apply Or.inl
+      ext1
+      simp only [mem_inter,  not_mem_empty, and_false]
+    · apply Or.inr
+      ext1
+      simp only [mem_inter, and_self]⟩
+
+infixl:55 " ⋀ " => ZFBool.and
+
+protected abbrev or (p q : ZFBool) : ZFBool :=
+  let ⟨P, hP⟩ := p
+  let ⟨Q, hQ⟩ := q
+  ⟨P ∪ Q,
+    by
+    rw [mem_𝔹_iff]
+    rw [mem_𝔹_iff] at hP hQ
+    cases hP <;> cases hQ <;> subst_eqs
+    · apply Or.inl
+      ext1
+      rw [mem_union, or_self]
+    · apply Or.inr
+      ext1
+      simp only [mem_union, not_mem_empty, mem_singleton, false_or]
+    · apply Or.inr
+      ext1
+      simp only [mem_union, not_mem_empty, or_false]
+    · apply Or.inr
+      ext1
+      simp only [mem_union, subset_of_empty, or_self]⟩
+
+infixl:55 " ⋁ " => ZFBool.or
+
+/-! ### Boolean algebra -/
 
 @[simp]
 theorem not_true_eq_false : ZFBool.not ⊤ = ⊥ := by
@@ -186,28 +266,6 @@ theorem not_false_eq_true : ZFBool.not ⊥ = ⊤ := by
   · intro h
     left
     exact ⟨h, not_mem_empty _⟩
-
-protected abbrev and (p q : ZFBool) : ZFBool :=
-  let ⟨P, hP⟩ := p
-  let ⟨Q, hQ⟩ := q
-  ⟨P ∩ Q, by
-    rw [mem_𝔹_iff]
-    rw [mem_𝔹_iff] at hP hQ
-    cases hP <;> cases hQ <;> subst_eqs
-    · apply Or.inl
-      ext1
-      rw [mem_inter, and_self]
-    · apply Or.inl
-      ext1
-      simp only [mem_inter, not_mem_empty, false_and]
-    · apply Or.inl
-      ext1
-      simp only [mem_inter,  not_mem_empty, and_false]
-    · apply Or.inr
-      ext1
-      simp only [mem_inter, and_self]⟩
-
-infixl:55 " ⋀ " => ZFBool.and
 
 theorem and_comm (p q : ZFBool) : p ⋀ q = q ⋀ p := by
   obtain ⟨P, hP⟩ := p
@@ -268,29 +326,6 @@ theorem and_iff (p q : ZFBool) : p ⋀ q = ⊤ ↔ p = ⊤ ∧ q = ⊤ := by
 
 abbrev and_intro p q := and_iff p q |>.mpr
 
-protected abbrev or (p q : ZFBool) : ZFBool :=
-  let ⟨P, hP⟩ := p
-  let ⟨Q, hQ⟩ := q
-  ⟨P ∪ Q,
-    by
-    rw [mem_𝔹_iff]
-    rw [mem_𝔹_iff] at hP hQ
-    cases hP <;> cases hQ <;> subst_eqs
-    · apply Or.inl
-      ext1
-      rw [mem_union, or_self]
-    · apply Or.inr
-      ext1
-      simp only [mem_union, not_mem_empty, mem_singleton, false_or]
-    · apply Or.inr
-      ext1
-      simp only [mem_union, not_mem_empty, or_false]
-    · apply Or.inr
-      ext1
-      simp only [mem_union, subset_of_empty, or_self]⟩
-
-infixl:55 " ⋁ " => ZFBool.or
-
 theorem or_comm (p q : ZFBool) : p ⋁ q = q ⋁ p := by
   obtain ⟨P, hP⟩ := p
   obtain ⟨Q, hQ⟩ := q
@@ -344,6 +379,7 @@ theorem or_iff (p q : ZFBool) : p ⋁ q = ⊤ ↔ p = ⊤ ∨ q = ⊤ := by
 abbrev or_intro p q := or_iff p q |>.mpr
 
 open Classical in
+/-- Conversion of `ZFBool` to `Lean.Bool`. -/
 def toBool : ZFBool → Bool
   | ⟨b, hb⟩ =>
     if h : b = zftrue then Bool.true
@@ -403,6 +439,7 @@ theorem not_bot_iff_top {P : ZFBool} : P ≠ ⊥ ↔ P = ⊤ := by
     injections h
     nomatch zftrue_ne_zffalse h
 
+/-- Conversion of `Lean.Bool` to `ZFBool` -/
 def ofBool : Bool → ZFBool
   | .true  => ⟨zftrue, ZFBool.zftrue_mem_𝔹⟩
   | .false => ⟨zffalse, ZFBool.zffalse_mem_𝔹⟩
