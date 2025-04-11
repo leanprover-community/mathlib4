@@ -40,6 +40,8 @@ protected def Measure.real (s : Set α) : ℝ :=
 
 theorem measureReal_def (s : Set α) : μ.real s = (μ s).toReal := rfl
 
+alias Measure.real_def := measureReal_def
+
 theorem measureReal_eq_zero_iff (h : μ s ≠ ∞ := by finiteness) :
     μ.real s = 0 ↔ μ s = 0 := by
   rw [Measure.real, ENNReal.toReal_eq_zero_iff]
