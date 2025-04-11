@@ -3,7 +3,6 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.LinearAlgebra.BilinearMap
 import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 import Mathlib.RingTheory.Finiteness.Basic
 
@@ -15,51 +14,16 @@ import Mathlib.RingTheory.Finiteness.Basic
 open Function (Surjective)
 open Finsupp
 
-namespace LinearMap
-
-variable {R M N ι : Type*} (S : Type*) [Semiring R] [AddCommMonoid M] [AddCommMonoid N]
-variable [Module R M] [Module R N] [Semiring S] [Module S N] [SMulCommClass R S N]
-
-/-- The linear map from `Hom(M,N)^(ι)` to `Hom(M,N^(ι))`. -/
-@[simps!] noncomputable def finsuppLinearMap : (ι →₀ M →ₗ[R] N) →ₗ[S] M →ₗ[R] ι →₀ N :=
-  have := SMulCommClass.symm
-  LinearMap.flip
-  { toFun := (Finsupp.mapRange.linearMap <| flip id ·)
-    map_add' := fun _ _ ↦ by ext; simp
-    map_smul' := fun _ _ ↦ by ext; simp }
-
-variable (R M N ι)
-
-theorem finsuppLinearMap_injective :
-    Function.Injective (finsuppLinearMap S : (ι →₀ M →ₗ[R] N) → M →ₗ[R] ι →₀ N) :=
-  fun _ _ eq ↦ by ext i m; exact congr($eq m i)
-
-theorem finsuppLinearMap_bijective [Module.Finite R M] :
-    Function.Bijective (finsuppLinearMap S : (ι →₀ M →ₗ[R] N) → M →ₗ[R] ι →₀ N) := by
-  have ⟨s, span_s⟩ := Module.finite_def.mp ‹Module.Finite R M›
-  classical refine ⟨finsuppLinearMap_injective ..,
-    fun x ↦ ⟨.onFinset (s.sup fun m ↦ (x m).support) (lapply · ∘ₗ x) fun i h ↦ ?_, ?_⟩⟩
-  · contrapose! h; exact LinearMap.ext_on span_s (by simpa using h)
-  · ext; rfl
-
-variable {R M N ι}
-
-/-- The linear isomorphism between `Hom(M,N)^(ι)` and `Hom(M,N^(ι))` when `M` is finitely
-generated over `R`. -/
-@[simps!] noncomputable def _root_.LinearEquiv.finsuppLinearMap [Module.Finite R M] :
-    (ι →₀ M →ₗ[R] N) ≃ₗ[S] M →ₗ[R] ι →₀ N :=
-  .ofBijective (LinearMap.finsuppLinearMap S) (finsuppLinearMap_bijective ..)
-
-end LinearMap
-
 namespace Submodule
 
-variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+variable {R : Type*} {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
 
 open Set
 
 variable {P : Type*} [AddCommMonoid P] [Module R P]
-variable {f : M →ₗ[R] P}
+variable (f : M →ₗ[R] P)
+
+variable {f}
 
 /-- If 0 → M' → M → M'' → 0 is exact and M' and M'' are
 finitely generated then so is M. -/
