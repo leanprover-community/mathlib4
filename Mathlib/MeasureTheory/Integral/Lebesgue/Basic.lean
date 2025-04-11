@@ -272,6 +272,54 @@ theorem setLIntegral_congr_fun {f g : α → ℝ≥0∞} {s : Set α} (hs : Meas
   rw [EventuallyEq]
   rwa [ae_restrict_iff' hs]
 
+section
+
+@[simp]
+theorem lintegral_eq_zero_iff' {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) :
+    ∫⁻ a, f a ∂μ = 0 ↔ f =ᵐ[μ] 0 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ (lintegral_congr_ae h).trans lintegral_zero⟩
+  have meas_levels_0 : ∀ ε > 0, μ { x | ε ≤ f x } = 0 := fun ε εpos ↦ by
+    by_contra! h'; rw [← zero_lt_iff] at h'
+    refine ((mul_pos_iff.mpr ⟨εpos, h'⟩).trans_le ?_).ne' h
+    -- This is just Markov's inequality, but we inline the proof for the sake of imports
+    calc
+      _ ≥ ∫⁻ a in {x | ε ≤ f x}, f a ∂μ := setLIntegral_le_lintegral _ _
+      _ ≥ ∫⁻ _ in {x | ε ≤ f x}, ε ∂μ :=
+        setLIntegral_mono_ae hf.restrict (ae_of_all μ fun _ ↦ id)
+      _ = _ := setLIntegral_const _ _
+  obtain ⟨u, -, bu, tu⟩ := exists_seq_strictAnti_tendsto' (α := ℝ≥0∞) zero_lt_one
+  have u_union : {x | f x ≠ 0} = ⋃ n, {x | u n ≤ f x} := by
+    ext x; rw [mem_iUnion, mem_setOf_eq, ← zero_lt_iff]
+    rw [ENNReal.tendsto_atTop_zero] at tu
+    constructor <;> intro h'
+    · obtain ⟨n, hn⟩ := tu _ h'; use n, hn _ le_rfl
+    · obtain ⟨n, hn⟩ := h'; exact (bu n).1.trans_le hn
+  have res := measure_iUnion_null_iff.mpr fun n ↦ meas_levels_0 _ (bu n).1
+  rwa [← u_union] at res
+
+@[simp]
+theorem lintegral_eq_zero_iff {f : α → ℝ≥0∞} (hf : Measurable f) : ∫⁻ a, f a ∂μ = 0 ↔ f =ᵐ[μ] 0 :=
+  lintegral_eq_zero_iff' hf.aemeasurable
+
+theorem setLIntegral_eq_zero_iff' {s : Set α} (hs : MeasurableSet s)
+    {f : α → ℝ≥0∞} (hf : AEMeasurable f (μ.restrict s)) :
+    ∫⁻ a in s, f a ∂μ = 0 ↔ ∀ᵐ x ∂μ, x ∈ s → f x = 0 :=
+  (lintegral_eq_zero_iff' hf).trans (ae_restrict_iff' hs)
+
+theorem setLIntegral_eq_zero_iff {s : Set α} (hs : MeasurableSet s) {f : α → ℝ≥0∞}
+    (hf : Measurable f) : ∫⁻ a in s, f a ∂μ = 0 ↔ ∀ᵐ x ∂μ, x ∈ s → f x = 0 :=
+  setLIntegral_eq_zero_iff' hs hf.aemeasurable
+
+theorem lintegral_pos_iff_support {f : α → ℝ≥0∞} (hf : Measurable f) :
+    (0 < ∫⁻ a, f a ∂μ) ↔ 0 < μ (Function.support f) := by
+  simp [pos_iff_ne_zero, hf, Filter.EventuallyEq, ae_iff, Function.support]
+
+theorem setLintegral_pos_iff {f : α → ℝ≥0∞} (hf : Measurable f) {s : Set α} :
+    0 < ∫⁻ a in s, f a ∂μ ↔ 0 < μ (Function.support f ∩ s) := by
+  rw [lintegral_pos_iff_support hf, Measure.restrict_apply (measurableSet_support hf)]
+
+end
+
 /-- **Monotone convergence theorem** -- sometimes called **Beppo-Levi convergence**.
 See `lintegral_iSup_directed` for a more general form. -/
 theorem lintegral_iSup {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (f n)) (h_mono : Monotone f) :
@@ -779,14 +827,16 @@ theorem lintegral_add_mul_meas_add_le_le_lintegral {f g : α → ℝ≥0∞} (hl
   simp only [indicator_apply]; split_ifs with hx₂
   exacts [hx₂, (add_zero _).trans_le <| (hφ_le x).trans hx₁]
 
-/-- **Markov's inequality** also known as **Chebyshev's first inequality**. -/
+/-- **Markov's inequality**, multiplication form for `AEMeasurable` functions. -/
 theorem mul_meas_ge_le_lintegral₀ {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) (ε : ℝ≥0∞) :
-    ε * μ { x | ε ≤ f x } ≤ ∫⁻ a, f a ∂μ := by
-  simpa only [lintegral_zero, zero_add] using
-    lintegral_add_mul_meas_add_le_le_lintegral (ae_of_all _ fun x => zero_le (f x)) hf ε
+    ε * μ { x | ε ≤ f x } ≤ ∫⁻ a, f a ∂μ :=
+  calc
+    _ ≥ ∫⁻ a in {x | ε ≤ f x}, f a ∂μ := setLIntegral_le_lintegral _ _
+    _ ≥ ∫⁻ _ in {x | ε ≤ f x}, ε ∂μ :=
+      setLIntegral_mono_ae hf.restrict (ae_of_all μ fun _ ↦ id)
+    _ = _ := setLIntegral_const _ _
 
-/-- **Markov's inequality** also known as **Chebyshev's first inequality**. For a version assuming
-`AEMeasurable`, see `mul_meas_ge_le_lintegral₀`. -/
+/-- **Markov's inequality**, multiplication form for `Measurable` functions. -/
 theorem mul_meas_ge_le_lintegral {f : α → ℝ≥0∞} (hf : Measurable f) (ε : ℝ≥0∞) :
     ε * μ { x | ε ≤ f x } ≤ ∫⁻ a, f a ∂μ :=
   mul_meas_ge_le_lintegral₀ hf.aemeasurable ε
@@ -833,7 +883,7 @@ theorem measure_eq_top_of_setLintegral_ne_top {f : α → ℝ≥0∞} {s : Set �
     μ ({x ∈ s | f x = ∞}) = 0 :=
   of_not_not fun h => hμf <| setLintegral_eq_top_of_measure_eq_top_ne_zero hf h
 
-/-- **Markov's inequality**, also known as **Chebyshev's first inequality**. -/
+/-- **Markov's inequality**, division form for `AEMeasurable` functions. -/
 theorem meas_ge_le_lintegral_div {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) {ε : ℝ≥0∞} (hε : ε ≠ 0)
     (hε' : ε ≠ ∞) : μ { x | ε ≤ f x } ≤ (∫⁻ a, f a ∂μ) / ε :=
   (ENNReal.le_div_iff_mul_le (Or.inl hε) (Or.inl hε')).2 <| by
@@ -854,36 +904,6 @@ theorem ae_eq_of_ae_le_of_lintegral_le {f g : α → ℝ≥0∞} (hfg : f ≤ᵐ
     ge_of_tendsto' this fun i => (hlt i).le
   simpa only [inv_top, add_zero] using
     tendsto_const_nhds.add (ENNReal.tendsto_inv_iff.2 ENNReal.tendsto_nat_nhds_top)
-
-@[simp]
-theorem lintegral_eq_zero_iff' {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) :
-    ∫⁻ a, f a ∂μ = 0 ↔ f =ᵐ[μ] 0 :=
-  have : ∫⁻ _ : α, 0 ∂μ ≠ ∞ := by simp [lintegral_zero, zero_ne_top]
-  ⟨fun h =>
-    (ae_eq_of_ae_le_of_lintegral_le (ae_of_all _ <| zero_le f) this hf
-        (h.trans lintegral_zero.symm).le).symm,
-    fun h => (lintegral_congr_ae h).trans lintegral_zero⟩
-
-@[simp]
-theorem lintegral_eq_zero_iff {f : α → ℝ≥0∞} (hf : Measurable f) : ∫⁻ a, f a ∂μ = 0 ↔ f =ᵐ[μ] 0 :=
-  lintegral_eq_zero_iff' hf.aemeasurable
-
-theorem setLIntegral_eq_zero_iff' {s : Set α} (hs : MeasurableSet s)
-    {f : α → ℝ≥0∞} (hf : AEMeasurable f (μ.restrict s)) :
-    ∫⁻ a in s, f a ∂μ = 0 ↔ ∀ᵐ x ∂μ, x ∈ s → f x = 0 :=
-  (lintegral_eq_zero_iff' hf).trans (ae_restrict_iff' hs)
-
-theorem setLIntegral_eq_zero_iff {s : Set α} (hs : MeasurableSet s) {f : α → ℝ≥0∞}
-    (hf : Measurable f) : ∫⁻ a in s, f a ∂μ = 0 ↔ ∀ᵐ x ∂μ, x ∈ s → f x = 0 :=
-  setLIntegral_eq_zero_iff' hs hf.aemeasurable
-
-theorem lintegral_pos_iff_support {f : α → ℝ≥0∞} (hf : Measurable f) :
-    (0 < ∫⁻ a, f a ∂μ) ↔ 0 < μ (Function.support f) := by
-  simp [pos_iff_ne_zero, hf, Filter.EventuallyEq, ae_iff, Function.support]
-
-theorem setLintegral_pos_iff {f : α → ℝ≥0∞} (hf : Measurable f) {s : Set α} :
-    0 < ∫⁻ a in s, f a ∂μ ↔ 0 < μ (Function.support f ∩ s) := by
-  rw [lintegral_pos_iff_support hf, Measure.restrict_apply (measurableSet_support hf)]
 
 /-- Weaker version of the monotone convergence theorem -/
 theorem lintegral_iSup_ae {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (f n))
