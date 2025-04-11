@@ -174,9 +174,16 @@ instance : CommRing ((𝟙_ (ModuleCat.{u} R) : ModuleCat.{u} R) : Type u) :=
 namespace MonoidalCategory
 
 @[simp]
+lemma hom_tensorHom {W X Y Z: ModuleCat R} (f : W ⟶ X) (g : Y ⟶ Z) :
+    (f ⊗ g).hom = TensorProduct.map f.hom g.hom :=
+  rfl
+
+@[simp]
 theorem tensorHom_tmul {K L M N : ModuleCat.{u} R} (f : K ⟶ L) (g : M ⟶ N) (k : K) (m : M) :
     (f ⊗ g) (k ⊗ₜ m) = f k ⊗ₜ g m :=
   rfl
+
+@[deprecated (since := "2024-09-30")] alias hom_apply := tensorHom_tmul
 
 @[simp]
 theorem whiskerLeft_apply (L : ModuleCat.{u} R) {M N : ModuleCat.{u} R} (f : M ⟶ N)
