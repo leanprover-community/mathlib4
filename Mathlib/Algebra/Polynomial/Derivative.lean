@@ -42,7 +42,6 @@ variable [Semiring R]
 def derivative : R[X] →ₗ[R] R[X] where
   toFun p := p.sum fun n a => C (a * n) * X ^ (n - 1)
   map_add' p q := by
-    dsimp only
     rw [sum_add_index] <;>
       simp only [add_mul, forall_const, RingHom.map_add, eq_self_iff_true, zero_mul,
         RingHom.map_zero]
@@ -139,12 +138,12 @@ theorem iterate_derivative_sum (k : ℕ) (s : Finset ι) (f : ι → R[X]) :
     derivative^[k] (∑ b ∈ s, f b) = ∑ b ∈ s, derivative^[k] (f b) := by
   simp_rw [← LinearMap.pow_apply, map_sum]
 
-theorem derivative_smul {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (s : S)
+theorem derivative_smul {S : Type*} [SMulZeroClass S R] [IsScalarTower S R R] (s : S)
     (p : R[X]) : derivative (s • p) = s • derivative p :=
   derivative.map_smul_of_tower s p
 
 @[simp]
-theorem iterate_derivative_smul {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R]
+theorem iterate_derivative_smul {S : Type*} [SMulZeroClass S R] [IsScalarTower S R R]
     (s : S) (p : R[X]) (k : ℕ) : derivative^[k] (s • p) = s • derivative^[k] p := by
   induction k generalizing p with
   | zero => simp
@@ -249,11 +248,11 @@ theorem eq_C_of_derivative_eq_zero [NoZeroSMulDivisors ℕ R] {f : R[X]} (h : de
 @[simp]
 theorem derivative_mul {f g : R[X]} : derivative (f * g) = derivative f * g + f * derivative g := by
   induction f using Polynomial.induction_on' with
-  | h_add => simp only [add_mul, map_add, add_assoc, add_left_comm, *]
-  | h_monomial m a =>
+  | add => simp only [add_mul, map_add, add_assoc, add_left_comm, *]
+  | monomial m a => ?_
   induction g using Polynomial.induction_on' with
-  | h_add => simp only [mul_add, map_add, add_assoc, add_left_comm, *]
-  | h_monomial n b =>
+  | add => simp only [mul_add, map_add, add_assoc, add_left_comm, *]
+  | monomial n b => ?_
   simp only [monomial_mul_monomial, derivative_monomial]
   simp only [mul_assoc, (Nat.cast_commute _ _).eq, Nat.cast_add, mul_add, map_add]
   cases m with

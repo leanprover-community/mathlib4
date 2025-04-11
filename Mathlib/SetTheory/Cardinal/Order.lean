@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 import Mathlib.Algebra.Order.GroupWithZero.Canonical
 import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Data.Fintype.Option
-import Mathlib.Order.ConditionallyCompleteLattice.Defs
 import Mathlib.Order.InitialSeg
 import Mathlib.Order.Nat
 import Mathlib.Order.SuccPred.CompleteLinearOrder
@@ -155,16 +154,6 @@ theorem mem_range_lift_of_le {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
     b ≤ lift.{v, u} a → b ∈ Set.range lift.{v, u} :=
   liftInitialSeg.mem_range_of_le
 
-@[deprecated mem_range_lift_of_le (since := "2024-10-07")]
-theorem lift_down {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
-    b ≤ lift.{v, u} a → ∃ a', lift.{v, u} a' = b :=
-  mem_range_lift_of_le
-
-/-- `Cardinal.lift` as an `OrderEmbedding`. -/
-@[deprecated Cardinal.liftInitialSeg (since := "2024-10-07")]
-def liftOrderEmbedding : Cardinal.{v} ↪o Cardinal.{max v u} :=
-  liftInitialSeg.toOrderEmbedding
-
 theorem lift_injective : Injective lift.{u, v} :=
   liftInitialSeg.injective
 
@@ -193,8 +182,7 @@ theorem lift_min {a b : Cardinal} : lift.{u, v} (min a b) = min (lift.{u, v} a) 
 theorem lift_max {a b : Cardinal} : lift.{u, v} (max a b) = max (lift.{u, v} a) (lift.{u, v} b) :=
   lift_monotone.map_max
 
--- Porting note: simpNF is not happy with universe levels.
-@[simp, nolint simpNF]
+-- This cannot be a `@[simp]` lemma because `simp` can't figure out the universes.
 theorem lift_umax_eq {a : Cardinal.{u}} {b : Cardinal.{v}} :
     lift.{max v w} a = lift.{max u w} b ↔ lift.{v} a = lift.{u} b := by
   rw [← lift_lift.{v, w, u}, ← lift_lift.{u, w, v}, lift_inj]
@@ -242,7 +230,7 @@ instance commSemiring : CommSemiring Cardinal.{u} where
   nsmul := nsmulRec
   npow n c := c ^ (n : Cardinal)
   npow_zero := power_zero
-  npow_succ n c := by dsimp; rw [cast_succ, power_add, power_one]
+  npow_succ n c := by rw [cast_succ, power_add, power_one]
   natCast n := lift #(Fin n)
   natCast_zero := rfl
   natCast_succ n := cast_succ n
@@ -309,11 +297,8 @@ instance canonicallyOrderedAdd : CanonicallyOrderedAdd Cardinal.{u} where
       ⟨#(↥(range f)ᶜ), mk_congr this.symm⟩
   le_self_add a _ := (add_zero a).ge.trans <| add_le_add_left (Cardinal.zero_le _) _
 
-instance orderedCommSemiring : OrderedCommSemiring Cardinal.{u} :=
-  CanonicallyOrderedAdd.toOrderedCommSemiring
-
-instance : LinearOrderedAddCommMonoid Cardinal.{u} :=
-  { Cardinal.orderedCommSemiring, Cardinal.linearOrder with }
+instance isOrderedRing : IsOrderedRing Cardinal.{u} :=
+  CanonicallyOrderedAdd.toIsOrderedRing
 
 instance orderBot : OrderBot Cardinal.{u} := inferInstance
 
@@ -325,17 +310,18 @@ instance noZeroDivisors : NoZeroDivisors Cardinal.{u} where
 instance : LinearOrderedCommMonoidWithZero Cardinal.{u} :=
   { Cardinal.commSemiring,
     Cardinal.linearOrder with
+    bot_le _ := bot_le
     mul_le_mul_left := @mul_le_mul_left' _ _ _ _
     zero_le_one := zero_le _ }
 
 -- Computable instance to prevent a non-computable one being found via the one above
 instance : CommMonoidWithZero Cardinal.{u} :=
-  { Cardinal.orderedCommSemiring with }
+  { Cardinal.commSemiring with }
 
 -- Porting note: new
 -- Computable instance to prevent a non-computable one being found via the one above
 instance : CommMonoid Cardinal.{u} :=
-  { Cardinal.orderedCommSemiring with }
+  { Cardinal.commSemiring with }
 
 theorem zero_power_le (c : Cardinal.{u}) : (0 : Cardinal.{u}) ^ c ≤ 1 := by
   by_cases h : c = 0
@@ -441,13 +427,6 @@ theorem lift_succ (a) : lift.{v, u} (succ a) = succ (lift.{v, u} a) :=
 
 /-! ### Limit cardinals -/
 
-/-- A cardinal is a limit if it is not zero or a successor cardinal. Note that `ℵ₀` is a limit
-  cardinal by this definition, but `0` isn't.
-Deprecated. Use `Order.IsSuccLimit` instead. -/
-@[deprecated IsSuccLimit (since := "2024-09-17")]
-def IsLimit (c : Cardinal) : Prop :=
-  c ≠ 0 ∧ IsSuccPrelimit c
-
 theorem ne_zero_of_isSuccLimit {c} (h : IsSuccLimit c) : c ≠ 0 :=
   h.ne_bot
 
@@ -456,32 +435,6 @@ theorem isSuccPrelimit_zero : IsSuccPrelimit (0 : Cardinal) :=
 
 protected theorem isSuccLimit_iff {c : Cardinal} : IsSuccLimit c ↔ c ≠ 0 ∧ IsSuccPrelimit c :=
   isSuccLimit_iff
-
-section deprecated
-
-set_option linter.deprecated false in
-@[deprecated IsSuccLimit.isSuccPrelimit (since := "2024-09-17")]
-protected theorem IsLimit.isSuccPrelimit {c} (h : IsLimit c) : IsSuccPrelimit c :=
-  h.2
-
-set_option linter.deprecated false in
-@[deprecated ne_zero_of_isSuccLimit (since := "2024-09-17")]
-protected theorem IsLimit.ne_zero {c} (h : IsLimit c) : c ≠ 0 :=
-  h.1
-
-set_option linter.deprecated false in
-@[deprecated IsLimit.isSuccPrelimit (since := "2024-09-05")]
-alias IsLimit.isSuccLimit := IsLimit.isSuccPrelimit
-
-set_option linter.deprecated false in
-@[deprecated IsSuccLimit.succ_lt (since := "2024-09-17")]
-theorem IsLimit.succ_lt {x c} (h : IsLimit c) : x < c → succ x < c :=
-  h.isSuccPrelimit.succ_lt
-
-@[deprecated isSuccPrelimit_zero (since := "2024-09-05")]
-alias isSuccLimit_zero := isSuccPrelimit_zero
-
-end deprecated
 
 /-- A cardinal is a strong limit if it is not zero and it is closed under powersets.
 Note that `ℵ₀` is a strong limit by this definition. -/
@@ -496,11 +449,6 @@ protected theorem IsStrongLimit.isSuccLimit {c} (H : IsStrongLimit c) : IsSuccLi
 
 protected theorem IsStrongLimit.isSuccPrelimit {c} (H : IsStrongLimit c) : IsSuccPrelimit c :=
   H.isSuccLimit.isSuccPrelimit
-
-set_option linter.deprecated false in
-@[deprecated IsStrongLimit.isSuccLimit (since := "2024-09-17")]
-theorem IsStrongLimit.isLimit {c} (H : IsStrongLimit c) : IsLimit c :=
-  ⟨H.ne_zero, H.isSuccPrelimit⟩
 
 /-! ### Indexed cardinal `sum` -/
 
@@ -603,18 +551,6 @@ lemma exists_eq_of_iSup_eq_of_not_isSuccLimit
   rw [Cardinal.isSuccLimit_iff] at hc
   refine (not_and_or.mp hc).elim (fun e ↦ ⟨hι.some, ?_⟩)
     (Cardinal.exists_eq_of_iSup_eq_of_not_isSuccPrelimit.{u, v} f c · h)
-  cases not_not.mp e
-  rw [← le_zero_iff] at h ⊢
-  exact (le_ciSup hf _).trans h
-
-set_option linter.deprecated false in
-@[deprecated exists_eq_of_iSup_eq_of_not_isSuccLimit (since := "2024-09-17")]
-lemma exists_eq_of_iSup_eq_of_not_isLimit
-    {ι : Type u} [hι : Nonempty ι] (f : ι → Cardinal.{v}) (hf : BddAbove (range f))
-    (ω : Cardinal.{v}) (hω : ¬ ω.IsLimit)
-    (h : ⨆ i : ι, f i = ω) : ∃ i, f i = ω := by
-  refine (not_and_or.mp hω).elim (fun e ↦ ⟨hι.some, ?_⟩)
-    (Cardinal.exists_eq_of_iSup_eq_of_not_isSuccPrelimit.{u, v} f ω · h)
   cases not_not.mp e
   rw [← le_zero_iff] at h ⊢
   exact (le_ciSup hf _).trans h

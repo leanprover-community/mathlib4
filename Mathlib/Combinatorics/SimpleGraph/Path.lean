@@ -461,6 +461,7 @@ lemma IsCycle.isPath_takeUntil {c : G.Walk v v} (hc : c.IsCycle) (h : w ∈ c.su
   rw [← isCycle_reverse, ← take_spec c h, reverse_append] at hc
   exact (c.takeUntil w h).isPath_reverse_iff.mp (hc.isPath_of_append_right (not_nil_of_ne hvw))
 
+/-- Taking a strict initial segment of a path removes the end vertex from the support. -/
 lemma endpoint_not_mem_support_takeUntil {p : G.Walk u v} (hp : p.IsPath) (hw : w ∈ p.support)
     (h : v ≠ w) : v ∉ (p.takeUntil w hw).support := by
   intro hv
@@ -673,7 +674,7 @@ protected theorem IsPath.of_map {f : G →g G'} (hp : (p.map f).IsPath) : p.IsPa
     obtain ⟨hp1, hp2⟩ := hp
     refine ⟨ih hp1, ?_⟩
     contrapose! hp2
-    exact List.mem_map_of_mem f hp2
+    exact List.mem_map_of_mem hp2
 
 theorem map_isPath_iff_of_injective (hinj : Function.Injective f) : (p.map f).IsPath ↔ p.IsPath :=
   ⟨IsPath.of_map, map_isPath_of_injective hinj⟩
@@ -862,6 +863,11 @@ protected theorem Reachable.map {u v : V} {G : SimpleGraph V} {G' : SimpleGraph 
 protected lemma Reachable.mono {u v : V} {G G' : SimpleGraph V}
     (h : G ≤ G') (Guv : G.Reachable u v) : G'.Reachable u v := Guv.map (.ofLE h)
 
+theorem Reachable.exists_isPath {u v} (hr : G.Reachable u v) : ∃ p : G.Walk u v, p.IsPath := by
+  classical
+  obtain ⟨W⟩ := hr
+  exact ⟨_, Path.isPath W.toPath⟩
+
 theorem Iso.reachable_iff {G : SimpleGraph V} {G' : SimpleGraph V'} {φ : G ≃g G'} {u v : V} :
     G'.Reachable (φ u) (φ v) ↔ G.Reachable u v :=
   ⟨fun r => φ.left_inv u ▸ φ.left_inv v ▸ r.map φ.symm.toHom, Reachable.map φ.toHom⟩
@@ -928,6 +934,10 @@ theorem Iso.preconnected_iff {G : SimpleGraph V} {H : SimpleGraph V'} (e : G ≃
   ⟨Preconnected.map e.toHom e.toEquiv.surjective,
     Preconnected.map e.symm.toHom e.symm.toEquiv.surjective⟩
 
+theorem Preconnected.exists_isPath {G : SimpleGraph V} (h : G.Preconnected) (u v : V) :
+    ∃ p : G.Walk u v, p.IsPath :=
+  (h u v).exists_isPath
+
 /-- A graph is connected if it's preconnected and contains at least one vertex.
 This follows the convention observed by mathlib that something is connected iff it has
 exactly one connected component.
@@ -958,6 +968,10 @@ protected lemma Connected.mono {G G' : SimpleGraph V} (h : G ≤ G')
     (hG : G.Connected) : G'.Connected where
   preconnected := hG.preconnected.mono h
   nonempty := hG.nonempty
+
+theorem Connected.exists_isPath {G : SimpleGraph V} (h : G.Connected) (u v : V) :
+    ∃ p : G.Walk u v, p.IsPath :=
+  (h u v).exists_isPath
 
 lemma bot_not_connected [Nontrivial V] : ¬(⊥ : SimpleGraph V).Connected := by
   simp [bot_not_preconnected, connected_iff, ‹_›]
@@ -1346,6 +1360,23 @@ theorem isBridge_iff_adj_and_forall_cycle_not_mem {v w : V} : G.IsBridge s(v, w)
 theorem isBridge_iff_mem_and_forall_cycle_not_mem {e : Sym2 V} :
     G.IsBridge e ↔ e ∈ G.edgeSet ∧ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → e ∉ p.edges :=
   Sym2.ind (fun _ _ => isBridge_iff_adj_and_forall_cycle_not_mem) e
+
+/-- Deleting a non-bridge edge from a connected graph preserves connectedness. -/
+lemma Connected.connected_delete_edge_of_not_isBridge (hG : G.Connected) {x y : V}
+    (h : ¬ G.IsBridge s(x, y)) : (G.deleteEdges {s(x, y)}).Connected := by
+  classical
+  simp only [isBridge_iff, not_and, not_not] at h
+  obtain hxy | hxy := em' <| G.Adj x y
+  · rwa [deleteEdges, Disjoint.sdiff_eq_left (by simpa)]
+  refine (connected_iff_exists_forall_reachable _).2 ⟨x, fun w ↦ ?_⟩
+  obtain ⟨P, hP⟩ := hG.exists_isPath w x
+  obtain heP | heP := em' <| s(x,y) ∈ P.edges
+  · exact ⟨(P.toDeleteEdges {s(x,y)} (by aesop)).reverse⟩
+  have hyP := P.snd_mem_support_of_mem_edges heP
+  let P₁ := P.takeUntil y hyP
+  have hxP₁ := Walk.endpoint_not_mem_support_takeUntil hP hyP hxy.ne
+  have heP₁ : s(x,y) ∉ P₁.edges := fun h ↦ hxP₁ <| P₁.fst_mem_support_of_mem_edges h
+  exact (h hxy).trans (Reachable.symm ⟨P₁.toDeleteEdges {s(x,y)} (by aesop)⟩)
 
 end BridgeEdges
 

@@ -50,14 +50,14 @@ end Zero
 ## Simplifying Lemmas in cases where α is an AddMonoid
 -/
 @[simp]
-lemma untopD_add [AddMonoid α] {a b : WithTop α} {c : α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) :
+lemma untopD_add [Add α] {a b : WithTop α} {c : α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) :
     (a + b).untopD c = a.untopD c + b.untopD c := by
   lift a to α using ha
   lift b to α using hb
   simp [← coe_add]
 
 @[simp]
-lemma untop₀_add [AddMonoid α] {a b : WithTop α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) :
+lemma untop₀_add [AddZeroClass α] {a b : WithTop α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) :
     (a + b).untop₀ = a.untop₀ + b.untop₀ := untopD_add ha hb
 
 /-!
@@ -69,14 +69,29 @@ lemma untop₀_mul [DecidableEq α] [MulZeroClass α] (a b : WithTop α) :
     (a * b).untop₀ = a.untop₀ * b.untop₀ := untopD_zero_mul a b
 
 /-!
-## Simplifying Lemmas in cases where α is a LinearOrderedAddCommGroup
+## Simplifying Lemmas in cases where α is a OrderedAddCommGroup
+-/
+
+/--
+Elements of ordered additive commutative groups are nonnegative iff their untop₀ is nonnegative.
 -/
 @[simp]
-lemma untop₀_neg [LinearOrderedAddCommGroup α] (a : WithTop α) :
+lemma untop₀_nonneg [AddCommGroup α] [PartialOrder α] {a : WithTop α} :
+    0 ≤ a.untop₀ ↔ 0 ≤ a := by
+  cases a with
+  | top => tauto
+  | coe a => simp
+
+/-!
+## Simplifying Lemmas in cases where α is a LinearOrderedAddCommGroup
+-/
+
+@[simp]
+lemma untop₀_neg [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α] (a : WithTop α) :
     (-a).untop₀ = -a.untop₀ := by
-  by_cases ha : a = ⊤
-  · simp [ha]
-  · lift a to α using ha
+  cases a with
+  | top => simp
+  | coe a =>
     rw [← LinearOrderedAddCommGroup.coe_neg, untop₀_coe]
     simp
 

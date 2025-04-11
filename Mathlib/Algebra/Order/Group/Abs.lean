@@ -24,7 +24,7 @@ open Function
 variable {G : Type*}
 
 section LinearOrderedCommGroup
-variable [LinearOrderedCommGroup G] {a b c : G}
+variable [CommGroup G] [LinearOrder G] [IsOrderedMonoid G] {a b c : G}
 
 @[to_additive] lemma mabs_pow (n : ℕ) (a : G) : |a ^ n|ₘ = |a|ₘ ^ n := by
   obtain ha | ha := le_total a 1
@@ -145,21 +145,25 @@ theorem mabs_le_max_mabs_mabs (hab : a ≤ b) (hbc : b ≤ c) : |b|ₘ ≤ max |
     ⟨by simp [hbc.trans (le_mabs_self c)], by
       simp [(inv_le_inv_iff.mpr hab).trans (inv_le_mabs a)]⟩
 
+omit [IsOrderedMonoid G] in
 @[to_additive]
 theorem min_mabs_mabs_le_mabs_max : min |a|ₘ |b|ₘ ≤ |max a b|ₘ :=
   (le_total a b).elim (fun h => (min_le_right _ _).trans_eq <| congr_arg _ (max_eq_right h).symm)
     fun h => (min_le_left _ _).trans_eq <| congr_arg _ (max_eq_left h).symm
 
+omit [IsOrderedMonoid G] in
 @[to_additive]
 theorem min_mabs_mabs_le_mabs_min : min |a|ₘ |b|ₘ ≤ |min a b|ₘ :=
   (le_total a b).elim (fun h => (min_le_left _ _).trans_eq <| congr_arg _ (min_eq_left h).symm)
     fun h => (min_le_right _ _).trans_eq <| congr_arg _ (min_eq_right h).symm
 
+omit [IsOrderedMonoid G] in
 @[to_additive]
 theorem mabs_max_le_max_mabs_mabs : |max a b|ₘ ≤ max |a|ₘ |b|ₘ :=
   (le_total a b).elim (fun h => (congr_arg _ <| max_eq_right h).trans_le <| le_max_right _ _)
     fun h => (congr_arg _ <| max_eq_left h).trans_le <| le_max_left _ _
 
+omit [IsOrderedMonoid G] in
 @[to_additive]
 theorem mabs_min_le_max_mabs_mabs : |min a b|ₘ ≤ max |a|ₘ |b|ₘ :=
   (le_total a b).elim (fun h => (congr_arg _ <| min_eq_left h).trans_le <| le_max_left _ _) fun h =>
@@ -242,7 +246,7 @@ end LinearOrderedCommGroup
 
 section LinearOrderedAddCommGroup
 
-variable [LinearOrderedAddCommGroup G] {a b c : G}
+variable [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] {a b c : G}
 
 @[to_additive]
 theorem apply_abs_le_mul_of_one_le' {H : Type*} [MulOneClass H] [LE H]

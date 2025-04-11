@@ -266,10 +266,9 @@ instance isSeparable : Algebra.IsSeparable (FixedPoints.subfield G F) F := by
   classical
   exact ⟨fun x => by
     cases nonempty_fintype G
-    -- this was a plain rw when we were using unbundled subrings
-    erw [IsSeparable, ← minpoly_eq_minpoly,
+    rw [IsSeparable, ← minpoly_eq_minpoly,
       ← Polynomial.separable_map (FixedPoints.subfield G F).subtype, minpoly,
-      Polynomial.map_toSubring _ (subfield G F).toSubring]
+      ← Subfield.toSubring_subtype_eq_subtype, Polynomial.map_toSubring _ (subfield G F).toSubring]
     exact Polynomial.separable_prod_X_sub_C_iff.2 (injective_ofQuotientStabilizer G x)⟩
 
 instance : FiniteDimensional (subfield G F) F := by
@@ -286,7 +285,7 @@ theorem finrank_le_card [Fintype G] : finrank (subfield G F) F ≤ Fintype.card 
 end FixedPoints
 
 theorem linearIndependent_toLinearMap (R : Type u) (A : Type v) (B : Type w) [CommSemiring R]
-    [Ring A] [Algebra R A] [CommRing B] [IsDomain B] [Algebra R B] :
+    [Semiring A] [Algebra R A] [CommRing B] [IsDomain B] [Algebra R B] :
     LinearIndependent B (AlgHom.toLinearMap : (A →ₐ[R] B) → A →ₗ[R] B) :=
   have : LinearIndependent B (LinearMap.ltoFun R A B ∘ AlgHom.toLinearMap) :=
     ((linearIndependent_monoidHom A B).comp ((↑) : (A →ₐ[R] B) → A →* B) fun _ _ hfg =>
@@ -294,7 +293,7 @@ theorem linearIndependent_toLinearMap (R : Type u) (A : Type v) (B : Type w) [Co
       _)
   this.of_comp _
 
-theorem cardinalMk_algHom (K : Type u) (V : Type v) (W : Type w) [Field K] [Field V] [Algebra K V]
+theorem cardinalMk_algHom (K : Type u) (V : Type v) (W : Type w) [Field K] [Ring V] [Algebra K V]
     [FiniteDimensional K V] [Field W] [Algebra K W] :
     Cardinal.mk (V →ₐ[K] W) ≤ finrank W (V →ₗ[K] W) :=
   (linearIndependent_toLinearMap K V W).cardinalMk_le_finrank
