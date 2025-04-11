@@ -98,8 +98,8 @@ abbrev MulSemiringAction.compHom (f : N →* M) [MulSemiringAction M R] : MulSem
 
 end
 
-/-- Given a a semiring homomorphism `φ` we can obtain a `MulSemiringAction` from
-`(Multiplicative ℕ)` to `R` by letting `Multiplicative.ofAdd n • r := φ ^ [n] a`.
+/-- Given a a semiring homomorphism `φ` we can obtain a `MulSemiringAction` of
+`(Multiplicative ℕ)` on `R` by letting `Multiplicative.ofAdd n • r := φ ^ [n] a`.
 See note [reducible non-instances]. -/
 abbrev MulSemiringAction.ofRingHom (φ : R →+* R) :
     MulSemiringAction (Multiplicative ℕ) R :=
