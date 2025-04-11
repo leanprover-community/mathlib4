@@ -168,15 +168,15 @@ instance Spec_essSurj : Spec.EssSurj := Functor.EssSurj.toEssImage (F := _)
 /-- The forgetful functor `AffineScheme ⥤ Scheme`. -/
 @[simps!]
 def forgetToScheme : AffineScheme ⥤ Scheme :=
-  Scheme.Spec.essImageInclusion
+  Scheme.Spec.essImage.ι
 
 /-! We copy over instances from `Scheme.Spec.essImageInclusion`. -/
 
 instance forgetToScheme_full : forgetToScheme.Full :=
-  inferInstanceAs Scheme.Spec.essImageInclusion.Full
+  inferInstanceAs Scheme.Spec.essImage.ι.Full
 
 instance forgetToScheme_faithful : forgetToScheme.Faithful :=
-  inferInstanceAs Scheme.Spec.essImageInclusion.Faithful
+  inferInstanceAs Scheme.Spec.essImage.ι.Faithful
 
 /-- The global section functor of an affine scheme. -/
 def Γ : AffineSchemeᵒᵖ ⥤ CommRingCat :=
