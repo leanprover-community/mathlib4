@@ -7,7 +7,6 @@ Authors: Frédéric Dupuis
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-import Mathlib.Data.Real.StarOrdered
 
 /-!
 # Real powers defined via the continuous functional calculus
@@ -72,7 +71,7 @@ section NonUnital
 
 variable {A : Type*} [PartialOrder A] [NonUnitalRing A] [TopologicalSpace A] [StarRing A]
   [Module ℝ A] [SMulCommClass ℝ A A] [IsScalarTower ℝ A A]
-  [NonUnitalContinuousFunctionalCalculus ℝ≥0 (fun (a : A) => 0 ≤ a)]
+  [NonUnitalContinuousFunctionalCalculus ℝ≥0 A (0 ≤ ·)]
 
 /- ## `nnrpow` -/
 
@@ -219,7 +218,7 @@ end NonUnital
 section Unital
 
 variable {A : Type*} [PartialOrder A] [Ring A] [StarRing A] [TopologicalSpace A]
-  [Algebra ℝ A] [ContinuousFunctionalCalculus ℝ≥0 (fun (a : A) => 0 ≤ a)]
+  [Algebra ℝ A] [ContinuousFunctionalCalculus ℝ≥0 A (0 ≤ ·)]
 
 /- ## `rpow` -/
 
@@ -299,7 +298,7 @@ lemma rpow_neg_one_eq_inv (a : Aˣ) (ha : (0 : A) ≤ a := by cfc_tac) :
   simpa [rpow_one (a : A)] using rpow_neg_mul_rpow 1 (spectrum.zero_not_mem ℝ≥0 a.isUnit)
 
 lemma rpow_neg_one_eq_cfc_inv {A : Type*} [PartialOrder A] [NormedRing A] [StarRing A]
-    [NormedAlgebra ℝ A] [ContinuousFunctionalCalculus ℝ≥0 ((0 : A) ≤ ·)] (a : A) :
+    [NormedAlgebra ℝ A] [ContinuousFunctionalCalculus ℝ≥0 A (0 ≤ ·)] (a : A) :
     a ^ (-1 : ℝ) = cfc (·⁻¹ : ℝ≥0 → ℝ≥0) a :=
   cfc_congr fun x _ ↦ NNReal.rpow_neg_one x
 

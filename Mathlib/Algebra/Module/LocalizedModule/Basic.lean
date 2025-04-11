@@ -553,6 +553,10 @@ lemma IsLocalizedModule.eq_iff_exists [IsLocalizedModule S f] {x₁ x₂} :
     simp_rw [f.map_smul_of_tower, Submonoid.smul_def, ← Module.algebraMap_end_apply R R] at h
     exact ((Module.End_isUnit_iff _).mp <| map_units f c).1 h
 
+lemma IsLocalizedModule.injective_iff_isRegular [IsLocalizedModule S f] :
+    Function.Injective f ↔ ∀ c : S, IsSMulRegular M c := by
+  simp_rw [IsSMulRegular, Function.Injective, eq_iff_exists S, exists_imp, forall_comm (α := S)]
+
 instance IsLocalizedModule.of_linearEquiv (e : M' ≃ₗ[R] M'') [hf : IsLocalizedModule S f] :
     IsLocalizedModule S (e ∘ₗ f : M →ₗ[R] M'') where
   map_units s := by
@@ -712,7 +716,7 @@ instance localizedModuleIsLocalizedModule :
   exists_of_eq eq1 := by simpa only [eq_comm, one_smul] using LocalizedModule.mk_eq.mp eq1
 
 lemma IsLocalizedModule.of_restrictScalars (S : Submonoid R)
-    {N : Type*} [AddCommGroup N] [Module R N] [Module A M] [Module A N]
+    {N : Type*} [AddCommMonoid N] [Module R N] [Module A M] [Module A N]
     [IsScalarTower R A M] [IsScalarTower R A N]
     (f : M →ₗ[A] N) [IsLocalizedModule S (f.restrictScalars R)] :
     IsLocalizedModule (Algebra.algebraMapSubmonoid A S) f where
@@ -728,7 +732,7 @@ lemma IsLocalizedModule.of_restrictScalars (S : Submonoid R)
     obtain ⟨c, hc⟩ := IsLocalizedModule.exists_of_eq (S := S) (f := f.restrictScalars R) e
     refine ⟨⟨_, c, c.2, rfl⟩, by simpa [Submonoid.smul_def]⟩
 
-lemma IsLocalizedModule.of_exists_mul_mem {N : Type*} [AddCommGroup N] [Module R N]
+lemma IsLocalizedModule.of_exists_mul_mem {N : Type*} [AddCommMonoid N] [Module R N]
     (S T : Submonoid R) (h : S ≤ T) (h' : ∀ x : T, ∃ m : R, m * x ∈ S)
     (f : M →ₗ[R] N) [IsLocalizedModule S f] :
     IsLocalizedModule T f where
@@ -959,6 +963,14 @@ include f in
 theorem smul_inj (s : S) (m₁ m₂ : M') : s • m₁ = s • m₂ ↔ m₁ = m₂ :=
   (smul_injective f s).eq_iff
 
+include f in
+lemma isRegular_of_smul_left_injective {m : M'} (inj : Function.Injective fun r : R ↦ r • m)
+    (s : S) : IsRegular (s : R) :=
+  (Commute.isRegular_iff (Commute.all _)).mpr fun r r' eq ↦ by
+    have := congr_arg (· • m) eq
+    simp_rw [mul_smul, ← Submonoid.smul_def, smul_inj f] at this
+    exact inj this
+
 /-- `mk' f m s` is the fraction `m/s` with respect to the localization map `f`. -/
 noncomputable def mk' (m : M) (s : S) : M' :=
   fromLocalizedModule S f (LocalizedModule.mk m s)
@@ -1011,23 +1023,24 @@ theorem mk'_eq_mk'_iff (m₁ m₂ : M) (s₁ s₂ : S) :
   rw [(fromLocalizedModule.inj S f).eq_iff, LocalizedModule.mk_eq]
   simp_rw [eq_comm]
 
-theorem mk'_neg {M M' : Type*} [AddCommGroup M] [AddCommGroup M'] [Module R M] [Module R M']
-    (f : M →ₗ[R] M') [IsLocalizedModule S f] (m : M) (s : S) : mk' f (-m) s = -mk' f m s := by
+theorem mk'_neg {M M' : Type*} [AddCommGroup M] [SubtractionCommMonoid M'] [Module R M]
+    [Module R M'] (f : M →ₗ[R] M') [IsLocalizedModule S f] (m : M) (s : S) :
+    mk' f (-m) s = -mk' f m s := by
   delta mk'
   rw [LocalizedModule.mk_neg, map_neg]
 
-theorem mk'_sub {M M' : Type*} [AddCommGroup M] [AddCommGroup M'] [Module R M] [Module R M']
-    (f : M →ₗ[R] M') [IsLocalizedModule S f] (m₁ m₂ : M) (s : S) :
+theorem mk'_sub {M M' : Type*} [AddCommGroup M] [SubtractionCommMonoid M'] [Module R M]
+    [Module R M'] (f : M →ₗ[R] M') [IsLocalizedModule S f] (m₁ m₂ : M) (s : S) :
     mk' f (m₁ - m₂) s = mk' f m₁ s - mk' f m₂ s := by
   rw [sub_eq_add_neg, sub_eq_add_neg, mk'_add, mk'_neg]
 
-theorem mk'_sub_mk' {M M' : Type*} [AddCommGroup M] [AddCommGroup M'] [Module R M] [Module R M']
-    (f : M →ₗ[R] M') [IsLocalizedModule S f] (m₁ m₂ : M) (s₁ s₂ : S) :
+theorem mk'_sub_mk' {M M' : Type*} [AddCommGroup M] [SubtractionCommMonoid M'] [Module R M]
+    [Module R M'] (f : M →ₗ[R] M') [IsLocalizedModule S f] (m₁ m₂ : M) (s₁ s₂ : S) :
     mk' f m₁ s₁ - mk' f m₂ s₂ = mk' f (s₂ • m₁ - s₁ • m₂) (s₁ * s₂) := by
   rw [sub_eq_add_neg, ← mk'_neg, mk'_add_mk', smul_neg, ← sub_eq_add_neg]
 
-theorem mk'_mul_mk'_of_map_mul {M M' : Type*} [Semiring M] [Semiring M'] [Module R M]
-    [Algebra R M'] (f : M →ₗ[R] M') (hf : ∀ m₁ m₂, f (m₁ * m₂) = f m₁ * f m₂)
+theorem mk'_mul_mk'_of_map_mul {M M' : Type*} [NonUnitalNonAssocSemiring M] [Semiring M']
+    [Module R M] [Algebra R M'] (f : M →ₗ[R] M') (hf : ∀ m₁ m₂, f (m₁ * m₂) = f m₁ * f m₂)
     [IsLocalizedModule S f] (m₁ m₂ : M) (s₁ s₂ : S) :
     mk' f m₁ s₁ * mk' f m₂ s₂ = mk' f (m₁ * m₂) (s₁ * s₂) := by
   symm
@@ -1252,7 +1265,7 @@ theorem map_comp' (g : M₀ →ₗ[R] M₁) (h : M₁ →ₗ[R] M₂) :
 
 section Algebra
 
-theorem mkOfAlgebra {R S S' : Type*} [CommRing R] [CommRing S] [CommRing S'] [Algebra R S]
+theorem mkOfAlgebra {R S S' : Type*} [CommSemiring R] [Ring S] [Ring S'] [Algebra R S]
     [Algebra R S'] (M : Submonoid R) (f : S →ₐ[R] S') (h₁ : ∀ x ∈ M, IsUnit (algebraMap R S' x))
     (h₂ : ∀ y, ∃ x : S × M, x.2 • y = f x.1) (h₃ : ∀ x, f x = 0 → ∃ m : M, m • x = 0) :
     IsLocalizedModule M f.toLinearMap := by
