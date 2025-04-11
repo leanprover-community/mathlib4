@@ -11,7 +11,7 @@ import Mathlib.MeasureTheory.Integral.SetToL1
 The Bochner integral extends the definition of the Lebesgue integral to functions that map from a
 measure space into a Banach space (complete normed vector space). It is constructed here
 for L1 functions by extending the integral on simple functions. See the file
-`Mathlib.MeasureTheory.Integral.Bochner` for the integral of functions and corresponding API.
+`Mathlib.MeasureTheory.Integral.Bochner.Basic` for the integral of functions and corresponding API.
 
 ## Main definitions
 
@@ -123,7 +123,7 @@ theorem weightedSMul_union (s t : Set α) (_hs : MeasurableSet s) (ht : Measurab
     (weightedSMul μ (s ∪ t) : F →L[ℝ] F) = weightedSMul μ s + weightedSMul μ t :=
   weightedSMul_union' s t ht hs_finite ht_finite hdisj
 
-theorem weightedSMul_smul [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F] (c : 𝕜)
+theorem weightedSMul_smul [SMul 𝕜 F] [SMulCommClass ℝ 𝕜 F] (c : 𝕜)
     (s : Set α) (x : F) : weightedSMul μ s (c • x) = c • weightedSMul μ s x := by
   simp_rw [weightedSMul_apply, smul_comm]
 
