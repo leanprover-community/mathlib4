@@ -292,6 +292,33 @@ theorem hasMFDerivWithinAt_snd (s : Set (M × M')) (x : M × M') :
       (ContinuousLinearMap.snd 𝕜 (TangentSpace I x.1) (TangentSpace I' x.2)) :=
   (hasMFDerivAt_snd x).hasMFDerivWithinAt
 
+section temp
+
+variable {f₁ : M → N} {f₁' : E →L[𝕜] F} {f₂ : M → N'} {f₂' : E →L[𝕜] F'} {s : Set M} {x : M}
+
+theorem hasMFDerivWithinAt_prod
+    (hf₁ : HasMFDerivWithinAt I J f₁ s x f₁') (hf₂ : HasMFDerivWithinAt I J' f₂ s x f₂') :
+    HasMFDerivWithinAt I (J.prod J') (fun x => (f₁ x, f₂ x)) s x (f₁'.prod f₂') := sorry
+
+-- use the preceding sorry
+theorem hasMFDerivAt_prod
+    (hf₁ : HasMFDerivAt I J f₁ x f₁') (hf₂ : HasMFDerivAt I J' f₂ x f₂') :
+    HasMFDerivAt I (J.prod J') (fun x => (f₁ x, f₂ x)) x (f₁'.prod f₂') := sorry
+
+-- use the preceding sorry
+lemma mfderiv_prod (hf₁ : MDifferentiableAt I J f₁ x) (hf₂ : MDifferentiableAt I J' f₂ x) :
+    mfderiv I (J.prod J') (fun x => (f₁ x, f₂ x)) x
+    = (mfderiv I J f₁ x).prod (mfderiv I J' f₂ x) := sorry
+
+-- should be similar
+lemma mfderiv_prodMap {x' : M'} {f : M → N} {g : M' → N'}
+    (hf : MDifferentiableAt I J f x) (hg : MDifferentiableAt I' J' g x') :
+    mfderiv (I.prod I') (J.prod J') (Prod.map f g) (x, x')
+    = (mfderiv I J f x).prodMap (mfderiv I' J' g x') := sorry
+
+end temp
+
+#exit
 theorem mdifferentiableAt_snd {x : M × M'} : MDifferentiableAt (I.prod I') I' Prod.snd x :=
   (hasMFDerivAt_snd x).mdifferentiableAt
 
