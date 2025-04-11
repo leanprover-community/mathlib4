@@ -116,8 +116,7 @@ lemma hasExt_of_enoughProjectives [LocallySmall.{w} C] [EnoughProjectives C] :
       rw [small_congr Ext.homEquiv₀]
       infer_instance
     | succ n hn =>
-      intro X₃ Y
-      let S := ShortComplex.mk _ _ (kernel.condition (Projective.π X₃))
+      let S := ShortComplex.mk _ _ (kernel.condition (Projective.π X))
       have hS : S.ShortExact :=
         { exact := ShortComplex.exact_of_f_is_kernel _ (kernelIsKernel S.g) }
       have : Function.Surjective (Ext.precomp hS.extClass Y (add_comm 1 n)) := fun x₃ ↦
