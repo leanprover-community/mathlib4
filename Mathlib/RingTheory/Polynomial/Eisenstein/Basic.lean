@@ -3,7 +3,7 @@ Copyright (c) 2022 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.RingTheory.EisensteinCriterion
+import Mathlib.RingTheory.Polynomial.Eisenstein.Criterion
 import Mathlib.RingTheory.Polynomial.ScaleRoots
 
 /-!
@@ -58,7 +58,7 @@ section CommSemiring
 
 variable [CommSemiring R] {𝓟 : Ideal R} {f : R[X]}
 
-theorem map (hf : f.IsWeaklyEisensteinAt 𝓟) {A : Type v} [CommRing A] (φ : R →+* A) :
+theorem map (hf : f.IsWeaklyEisensteinAt 𝓟) {A : Type v} [CommSemiring A] (φ : R →+* A) :
     (f.map φ).IsWeaklyEisensteinAt (𝓟.map φ) := by
   refine (isWeaklyEisensteinAt_iff _ _).2 fun hn => ?_
   rw [coeff_map]

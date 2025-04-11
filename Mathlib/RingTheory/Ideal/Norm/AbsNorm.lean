@@ -196,8 +196,8 @@ theorem cardQuot_mul [IsDedekindDomain S] [Module.Free ℤ S] (I J : Ideal S) :
 noncomputable def Ideal.absNorm [Nontrivial S] [IsDedekindDomain S] [Module.Free ℤ S] :
     Ideal S →*₀ ℕ where
   toFun := Submodule.cardQuot
-  map_mul' I J := by dsimp only; rw [cardQuot_mul]
-  map_one' := by dsimp only; rw [Ideal.one_eq_top, cardQuot_top]
+  map_mul' I J := by rw [cardQuot_mul]
+  map_one' := by rw [Ideal.one_eq_top, cardQuot_top]
   map_zero' := by
     have : Infinite S := Module.Free.infinite ℤ S
     rw [Ideal.zero_eq_bot, cardQuot_bot]
@@ -209,7 +209,7 @@ variable [Nontrivial S] [IsDedekindDomain S] [Module.Free ℤ S]
 theorem absNorm_apply (I : Ideal S) : absNorm I = cardQuot I := rfl
 
 @[simp]
-theorem absNorm_bot : absNorm (⊥ : Ideal S) = 0 := by rw [← Ideal.zero_eq_bot, _root_.map_zero]
+theorem absNorm_bot : absNorm (⊥ : Ideal S) = 0 := by rw [← Ideal.zero_eq_bot, map_zero]
 
 @[simp]
 theorem absNorm_top : absNorm (⊤ : Ideal S) = 1 := by rw [← Ideal.one_eq_top, map_one]
@@ -229,7 +229,7 @@ theorem irreducible_of_irreducible_absNorm {I : Ideal S} (hI : Irreducible (Idea
     Irreducible I :=
   irreducible_iff.mpr
     ⟨fun h =>
-      hI.not_unit (by simpa only [Ideal.isUnit_iff, Nat.isUnit_iff, absNorm_eq_one_iff] using h),
+      hI.not_isUnit (by simpa only [Ideal.isUnit_iff, Nat.isUnit_iff, absNorm_eq_one_iff] using h),
       by
       rintro a b rfl
       simpa only [Ideal.isUnit_iff, Nat.isUnit_iff, absNorm_eq_one_iff] using
@@ -294,7 +294,7 @@ theorem absNorm_span_singleton (r : S) :
   rw [Algebra.norm_apply]
   by_cases hr : r = 0
   · simp only [hr, Ideal.span_zero, Algebra.coe_lmul_eq_mul, eq_self_iff_true, Ideal.absNorm_bot,
-      LinearMap.det_zero'', Set.singleton_zero, _root_.map_zero, Int.natAbs_zero]
+      LinearMap.det_zero'', Set.singleton_zero, map_zero, Int.natAbs_zero]
   letI := Ideal.finiteQuotientOfFreeOfNeBot (span {r}) (mt span_singleton_eq_bot.mp hr)
   let b := Module.Free.chooseBasis ℤ S
   rw [← natAbs_det_equiv _ (b.equiv (basisSpanSingleton b hr) (Equiv.refl _))]

@@ -52,9 +52,9 @@ open Function
 -- to ensure these instances are computable
 /-- Nonnegative real numbers, denoted as `ℝ≥0` withinin the NNReal namespace -/
 def NNReal := { r : ℝ // 0 ≤ r } deriving
-  Zero, One, Semiring, StrictOrderedSemiring, CommMonoidWithZero, CommSemiring,
-  PartialOrder, SemilatticeInf, SemilatticeSup, DistribLattice, OrderedCommSemiring,
-  OrderedCommMonoid, Nontrivial, Inhabited
+  Zero, One, Semiring, CommMonoidWithZero, CommSemiring,
+  PartialOrder, SemilatticeInf, SemilatticeSup, DistribLattice,
+  Nontrivial, Inhabited
 
 namespace NNReal
 
@@ -74,8 +74,17 @@ instance : OrderedSub ℝ≥0 := Nonneg.orderedSub
 -- a computable copy of `Nonneg.instNNRatCast`
 instance : NNRatCast ℝ≥0 where nnratCast r := ⟨r, r.cast_nonneg⟩
 
-noncomputable instance : LinearOrderedSemifield ℝ≥0 :=
-  Nonneg.linearOrderedSemifield
+noncomputable instance : LinearOrder ℝ≥0 :=
+  Subtype.instLinearOrder _
+
+noncomputable instance : Semifield ℝ≥0 :=
+  Nonneg.semifield
+
+instance : IsOrderedRing ℝ≥0 :=
+  Nonneg.isOrderedRing
+
+instance : IsStrictOrderedRing ℝ≥0 :=
+  Nonneg.isStrictOrderedRing
 
 noncomputable instance : LinearOrderedCommGroupWithZero ℝ≥0 :=
   Nonneg.linearOrderedCommGroupWithZero
@@ -334,7 +343,9 @@ example : OrderBot ℝ≥0 := by infer_instance
 
 example : PartialOrder ℝ≥0 := by infer_instance
 
-noncomputable example : LinearOrderedAddCommMonoid ℝ≥0 := by infer_instance
+example : AddCommMonoid ℝ≥0 := by infer_instance
+
+example : IsOrderedAddMonoid ℝ≥0 := by infer_instance
 
 example : DistribLattice ℝ≥0 := by infer_instance
 
@@ -342,11 +353,11 @@ example : SemilatticeInf ℝ≥0 := by infer_instance
 
 example : SemilatticeSup ℝ≥0 := by infer_instance
 
-noncomputable example : LinearOrderedSemiring ℝ≥0 := by infer_instance
+example : Semiring ℝ≥0 := by infer_instance
 
-example : OrderedCommSemiring ℝ≥0 := by infer_instance
+example : CommMonoid ℝ≥0 := by infer_instance
 
-noncomputable example : LinearOrderedCommMonoid ℝ≥0 := by infer_instance
+example : IsOrderedMonoid ℝ≥0 := by infer_instance
 
 noncomputable example : LinearOrderedCommMonoidWithZero ℝ≥0 := by infer_instance
 
@@ -477,7 +488,8 @@ theorem coe_min (x y : ℝ≥0) : ((min x y : ℝ≥0) : ℝ) = min (x : ℝ) (y
 theorem zero_le_coe {q : ℝ≥0} : 0 ≤ (q : ℝ) :=
   q.2
 
-instance instOrderedSMul {M : Type*} [OrderedAddCommMonoid M] [Module ℝ M] [OrderedSMul ℝ M] :
+instance instOrderedSMul {M : Type*} [AddCommMonoid M] [PartialOrder M]
+    [Module ℝ M] [OrderedSMul ℝ M] :
     OrderedSMul ℝ≥0 M where
   smul_lt_smul_of_pos hab hc := (smul_lt_smul_of_pos_left hab (NNReal.coe_pos.2 hc) :)
   lt_of_smul_lt_smul_of_pos {_ _ c} hab _ :=
@@ -647,6 +659,9 @@ theorem toNNReal_pow {x : ℝ} (hx : 0 ≤ x) (n : ℕ) : (x ^ n).toNNReal = x.t
   rw [← coe_inj, NNReal.coe_pow, Real.coe_toNNReal _ (pow_nonneg hx _),
     Real.coe_toNNReal x hx]
 
+theorem toNNReal_zpow {x : ℝ} (hx : 0 ≤ x) (n : ℤ) : (x ^ n).toNNReal = x.toNNReal ^ n := by
+  rw [← coe_inj, NNReal.coe_zpow, Real.coe_toNNReal _ (zpow_nonneg hx _), Real.coe_toNNReal x hx]
+
 theorem toNNReal_mul {p q : ℝ} (hp : 0 ≤ p) :
     Real.toNNReal (p * q) = Real.toNNReal p * Real.toNNReal q :=
   NNReal.eq <| by simp [mul_max_of_nonneg, hp]
@@ -729,21 +744,6 @@ theorem div_le_of_le_mul {a b c : ℝ≥0} (h : a ≤ b * c) : a / c ≤ b :=
 theorem div_le_of_le_mul' {a b c : ℝ≥0} (h : a ≤ b * c) : a / b ≤ c :=
   div_le_of_le_mul <| mul_comm b c ▸ h
 
-@[deprecated le_div_iff₀' (since := "2024-10-02")]
-theorem le_div_iff' {a b r : ℝ≥0} (hr : r ≠ 0) : a ≤ b / r ↔ r * a ≤ b := le_div_iff₀' hr.bot_lt
-
-@[deprecated div_lt_iff₀ (since := "2024-10-02")]
-theorem div_lt_iff {a b r : ℝ≥0} (hr : r ≠ 0) : a / r < b ↔ a < b * r := div_lt_iff₀ hr.bot_lt
-
-@[deprecated div_lt_iff₀' (since := "2024-10-02")]
-theorem div_lt_iff' {a b r : ℝ≥0} (hr : r ≠ 0) : a / r < b ↔ a < r * b := div_lt_iff₀' hr.bot_lt
-
-@[deprecated lt_div_iff₀ (since := "2024-10-02")]
-theorem lt_div_iff {a b r : ℝ≥0} (hr : r ≠ 0) : a < b / r ↔ a * r < b := lt_div_iff₀ hr.bot_lt
-
-@[deprecated lt_div_iff₀' (since := "2024-10-02")]
-theorem lt_div_iff' {a b r : ℝ≥0} (hr : r ≠ 0) : a < b / r ↔ r * a < b := lt_div_iff₀' hr.bot_lt
-
 theorem mul_lt_of_lt_div {a b r : ℝ≥0} (h : a < b / r) : a * r < b :=
   (lt_div_iff₀ <| pos_iff_ne_zero.2 fun hr => False.elim <| by simp [hr] at h).1 h
 
@@ -790,9 +790,6 @@ theorem _root_.Real.toNNReal_div' {x y : ℝ} (hy : 0 ≤ y) :
 
 theorem inv_lt_one_iff {x : ℝ≥0} (hx : x ≠ 0) : x⁻¹ < 1 ↔ 1 < x := by
   rw [← one_div, div_lt_iff₀ hx.bot_lt, one_mul]
-
-@[deprecated zpow_pos (since := "2024-10-08")]
-protected theorem zpow_pos {x : ℝ≥0} (hx : x ≠ 0) (n : ℤ) : 0 < x ^ n := zpow_pos hx.bot_lt _
 
 theorem inv_lt_inv {x y : ℝ≥0} (hx : x ≠ 0) (h : x < y) : y⁻¹ < x⁻¹ :=
   inv_strictAnti₀ hx.bot_lt h
