@@ -19,6 +19,10 @@ structure AutoIndPrincipleConfig where
   dischargers : NameMap (TSyntax ``tacticSeq) := default
 deriving Inhabited
 
+def AutoIndPrincipleConfig.setInfo (cfg : AutoIndPrincipleConfig) (info : SourceInfo):
+    AutoIndPrincipleConfig :=
+  ⟨cfg.dischargers.filterMap fun _ stx => stx.raw.setInfo info |> .mk |> .some⟩
+
 instance : Repr AutoIndPrincipleConfig where
   reprPrec x := reprPrec <| x.dischargers.toList.map (fun z => (z.fst,
     toString (Syntax.prettyPrint z.snd)))
