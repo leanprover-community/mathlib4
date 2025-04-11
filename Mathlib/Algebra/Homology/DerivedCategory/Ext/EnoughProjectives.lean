@@ -86,7 +86,6 @@ open Limits
 
 variable {C : Type u} [Category.{v} C] [Abelian C]
 
-
 namespace Abelian.Ext
 
 open DerivedCategory
