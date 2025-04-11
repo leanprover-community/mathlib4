@@ -422,8 +422,8 @@ theorem Scheme.toSpecΓ_base (X : Scheme.{u}) (x) :
 
 @[reassoc]
 theorem Scheme.toSpecΓ_naturality {X Y : Scheme.{u}} (f : X ⟶ Y) :
-    f ≫ Y.toSpecΓ = X.toSpecΓ ≫ Spec.map (f.appTop) :=
-  ΓSpec.adjunction.unit.naturality f
+    f ≫ Y.toSpecΓ = X.toSpecΓ ≫ Spec.map (f.appTop) := by
+  simpa using ΓSpec.adjunction.unit.naturality f
 
 @[simp]
 theorem Scheme.toSpecΓ_appTop (X : Scheme.{u}) :
@@ -432,10 +432,15 @@ theorem Scheme.toSpecΓ_appTop (X : Scheme.{u}) :
   dsimp at this
   rw [← IsIso.eq_comp_inv] at this
   simp only [ΓSpec.adjunction_counit_app, Functor.id_obj, Functor.comp_obj, Functor.rightOp_obj,
-    Scheme.Γ_obj, Category.id_comp] at this
+    Scheme.Γ_obj, Category.id_comp, Γ_map, Quiver.Hom.unop_op] at this
   rw [← Quiver.Hom.op_inj.eq_iff, this, ← op_inv, IsIso.Iso.inv_inv]
 
-@[deprecated (since := "2024-11-23")] alias Scheme.toSpecΓ_app_top := Scheme.toSpecΓ_appTop
+@[simp]
+lemma Scheme.toSpecΓ_app_top (X : Scheme.{u}) :
+    Hom.app X.toSpecΓ ⊤ = (ΓSpecIso Γ(X, ⊤)).hom := by
+  rw [← Scheme.toSpecΓ_appTop]
+  simp only [Opens.map_top, Hom.appTop, Hom.appLE, homOfLE_refl, op_id,
+    CategoryTheory.Functor.map_id, Category.comp_id]
 
 @[simp]
 theorem SpecMap_ΓSpecIso_hom (R : CommRingCat.{u}) :
@@ -446,10 +451,8 @@ theorem SpecMap_ΓSpecIso_hom (R : CommRingCat.{u}) :
 
 lemma Scheme.toSpecΓ_preimage_basicOpen (X : Scheme.{u}) (r : Γ(X, ⊤)) :
     X.toSpecΓ ⁻¹ᵁ (PrimeSpectrum.basicOpen r) = X.basicOpen r := by
-  rw [← basicOpen_eq_of_affine, Scheme.preimage_basicOpen, ← Scheme.Hom.appTop]
-  congr
-  rw [Scheme.toSpecΓ_appTop]
-  exact Iso.inv_hom_id_apply (C := CommRingCat) _ _
+  rw [← basicOpen_eq_of_affine, Scheme.preimage_basicOpen]
+  simp
 
 -- Warning: this LHS of this lemma breaks the structure-sheaf abstraction.
 @[reassoc (attr := simp)]
@@ -467,7 +470,10 @@ theorem toOpen_toSpecΓ_app {X : Scheme.{u}} (U) :
 lemma ΓSpecIso_inv_ΓSpec_adjunction_homEquiv {X : Scheme.{u}} {B : CommRingCat} (φ : B ⟶ Γ(X, ⊤)) :
     (Scheme.ΓSpecIso B).inv ≫ ((ΓSpec.adjunction.homEquiv X (op B)) φ.op).appTop = φ := by
   simp only [Adjunction.homEquiv_apply, Scheme.Spec_map, Opens.map_top, Scheme.comp_app]
-  simp
+  simp only [Scheme.Spec_obj, Functor.comp_obj, Functor.rightOp_obj, Scheme.Γ_obj,
+    ΓSpec.adjunction_unit_app, Quiver.Hom.unop_op, Scheme.comp_appLE, Opens.map_top,
+    Scheme.toSpecΓ_appTop]
+  simp [-Scheme.toSpecΓ_appTop, Scheme.Hom.app_eq_appLE]
 
 lemma ΓSpec_adjunction_homEquiv_eq {X : Scheme.{u}} {B : CommRingCat} (φ : B ⟶ Γ(X, ⊤)) :
     ((ΓSpec.adjunction.homEquiv X (op B)) φ.op).appTop = (Scheme.ΓSpecIso B).hom ≫ φ := by
