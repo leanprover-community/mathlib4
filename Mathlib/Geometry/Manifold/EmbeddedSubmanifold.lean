@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
 import Mathlib.Geometry.Manifold.IsImmersionEmbedding
-
+import Mathlib.Geometry.Manifold.Instances.Real -- XXX: disentangle these later
 /-!
 # Embedded submanifolds
 
@@ -16,11 +16,14 @@ open scoped Manifold ContDiff
 open Topology Function Set
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E E' E'' : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup E']
-    [NormedSpace 𝕜 E'] [NormedAddCommGroup E''] [NormedSpace 𝕜 E'']
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  {H H' H'' : Type*} [TopologicalSpace H] [TopologicalSpace H'] [TopologicalSpace H'']
-  {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCorners 𝕜 E' H'} {J : ModelWithCorners 𝕜 E'' H''}
+  {E E' E'' E''' : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup E']
+    [NormedSpace 𝕜 E'] [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] [NormedAddCommGroup E''']
+    [NormedSpace 𝕜 E''']
+  {F F' : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
+  {H H' H'' H''' : Type*} [TopologicalSpace H] [TopologicalSpace H']
+  [TopologicalSpace H''] [TopologicalSpace H''']
+  {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCorners 𝕜 E' H'} {I'' : ModelWithCorners 𝕜 E'' H''}
+  {J : ModelWithCorners 𝕜 E''' H'''}
   {M M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M'] {n : WithTop ℕ∞}
 
 variable (I I' F) in
@@ -110,6 +113,8 @@ end ContinuousLinearEquiv
 
 end
 
+section instances
+
 /-- Every model with corners is a slice model over itself. -/
 instance : SliceModel (⊥ : Subspace 𝕜 E) I I where
   equiv := ContinuousLinearEquiv.prodUnique 𝕜 E
@@ -134,6 +139,89 @@ instance [h : SliceModel F I I'] : SliceModel F (I.prod J) (I'.prod J) where
   map := Prod.map h.map id
   hmap := h.hmap.prodMap IsEmbedding.id
   compatible := sorry
+
+instance (h : (E × F) ≃L[𝕜] E') : SliceModel F (𝓘(𝕜, E)) (𝓘(𝕜, E')) where
+  equiv := h
+  map := h ∘ (·, (0 : F))
+  hmap := by
+    apply IsEmbedding.comp
+    · sorry -- apply ContinuousLinearEquiv.isEmbedding
+    have : IsEmbedding (@Prod.swap E F) := sorry -- missing, it seems
+    rw [← IsEmbedding.of_comp_iff this]
+    have : ((·, (0 : F)) : E → E × F) = Prod.swap ∘ Prod.mk 0 := by
+      ext x
+      simp_all; sorry
+    convert isEmbedding_prodMk (0 : F)
+  compatible := by simp
+
+/-- *Any* model with corners on `E` which is an embedding is a slice model with the trivial model
+on `E`. (The embedding condition excludes strange cases of submanifolds with boundary).
+For boundaryless models, that is always true. -/
+instance {I : ModelWithCorners 𝕜 E H} (hI : IsEmbedding I) :
+    SliceModel (⊥ : Subspace 𝕜 E) I 𝓘(𝕜, E) where
+  equiv := ContinuousLinearEquiv.prodUnique 𝕜 E
+  map := I
+  hmap := hI
+  compatible := by ext; simp
+
+-- TODO: prove that I is an embedding if I is boundaryless, then add the corresponding instance
+-- TODO: think about the boundary case, and which particular version of submanifolds this enforces...
+
+open scoped Manifold
+
+-- XXX: can this be golfed using the previous instance?
+noncomputable instance {n : ℕ} [NeZero n] :
+    SliceModel (⊥ : Subspace ℝ ((Fin n → ℝ))) (𝓡∂ n) (𝓡 n) where
+  equiv := ContinuousLinearEquiv.prodUnique ℝ (EuclideanSpace ℝ (Fin n))
+  map := Subtype.val
+  hmap := Topology.IsEmbedding.subtypeVal
+  compatible := by
+    ext x'
+    simp only [modelWithCornersSelf_coe, comp_apply, id_eq, ContinuousLinearEquiv.prodUnique_apply]
+    rfl
+
+noncomputable instance {n : ℕ} [NeZero n] :
+    SliceModel (⊥ : Subspace ℝ ((Fin n → ℝ))) (modelWithCornersEuclideanQuadrant n) (𝓡∂ n) where
+  equiv := ContinuousLinearEquiv.prodUnique ℝ (EuclideanSpace ℝ (Fin n))
+  map := fun ⟨x, hx⟩ ↦ ⟨x, hx 0⟩
+  hmap :=
+    -- general result: two subtypes, one contained in the other: is Subtype.val always an
+    -- embedding? can one prove this?
+    sorry
+  compatible := by
+    ext x
+    simp_all only [comp_apply, ContinuousLinearEquiv.prodUnique_apply]
+    rfl
+
+section
+
+variable (R M₁ M₂ M₃ : Type*) [Semiring R]
+  [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃] [Module R M₁] [Module R M₂] [Module R M₃]
+  [TopologicalSpace M₁] [TopologicalSpace M₂] [TopologicalSpace M₃]
+
+def ContinuousLinearEquiv.prodAssoc : ((M₁ × M₂) × M₃) ≃L[R] M₁ × M₂ × M₃ where
+  toLinearEquiv := LinearEquiv.prodAssoc R M₁ M₂ M₃
+  continuous_toFun := by
+    show Continuous (Equiv.prodAssoc M₁ M₂ M₃)
+    sorry
+  continuous_invFun := sorry
+
+end
+
+-- TODO: make an instance/ figure out why Lean complains about synthesisation order!
+def instTrans (h : SliceModel F I I') (h' : SliceModel F' I' I'') : SliceModel (F × F') I I'' where
+  equiv := (ContinuousLinearEquiv.prodAssoc 𝕜 E F F').symm.trans
+    ((h.equiv.prod (ContinuousLinearEquiv.refl 𝕜 F')).trans h'.equiv)
+  map := h'.map ∘ h.map
+  hmap := h'.hmap.comp h.hmap
+  compatible := by -- paste the two commutative diagrams together
+    ext x
+    simp [h.compatible, h'.compatible]
+    sorry
+
+end instances
+
+#exit
 
 namespace PartialHomeomorph
 
