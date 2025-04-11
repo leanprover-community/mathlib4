@@ -111,7 +111,6 @@ instance [HasProjectiveDimensionLT X n] :
 
 instance [Projective X] : HasProjectiveDimensionLT X 1 := by
   letI := HasExt.standard C
-  change HasProjectiveDimensionLT X 1
   rw [hasProjectiveDimensionLT_iff]
   intro i hi Y e
   obtain _ | i := i
