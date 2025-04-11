@@ -550,9 +550,6 @@ theorem prod_roots_eq_coeff_zero_of_monic_of_splits {P : K[X]} (hmo : P.Monic)
     rw [neg_eq_neg_one_mul]
   simp only [splits_iff_card_roots.1 hP, neg_mul, one_mul, Multiset.prod_map_neg]
 
-@[deprecated (since := "2024-10-01")]
-alias prod_roots_eq_coeff_zero_of_monic_of_split := prod_roots_eq_coeff_zero_of_monic_of_splits
-
 /-- If `P` is a monic polynomial that splits, then `P.nextCoeff` equals the sum of the roots. -/
 theorem sum_roots_eq_nextCoeff_of_monic_of_split {P : K[X]} (hmo : P.Monic)
     (hP : P.Splits (RingHom.id K)) : P.nextCoeff = -P.roots.sum := by

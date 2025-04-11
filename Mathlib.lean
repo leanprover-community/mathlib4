@@ -17,10 +17,11 @@ import Mathlib.Algebra.Algebra.Operations
 import Mathlib.Algebra.Algebra.Opposite
 import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.Algebra.Prod
-import Mathlib.Algebra.Algebra.Quasispectrum
 import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Algebra.Algebra.RestrictScalars
-import Mathlib.Algebra.Algebra.Spectrum
+import Mathlib.Algebra.Algebra.Spectrum.Basic
+import Mathlib.Algebra.Algebra.Spectrum.Pi
+import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Algebra.Subalgebra.Centralizer
 import Mathlib.Algebra.Algebra.Subalgebra.Directed
@@ -52,7 +53,10 @@ import Mathlib.Algebra.BigOperators.Finsupp.Basic
 import Mathlib.Algebra.BigOperators.Finsupp.Fin
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+import Mathlib.Algebra.BigOperators.Group.Finset.Indicator
+import Mathlib.Algebra.BigOperators.Group.Finset.Lemmas
 import Mathlib.Algebra.BigOperators.Group.Finset.Pi
+import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
 import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
 import Mathlib.Algebra.BigOperators.Group.Finset.Preimage
 import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
@@ -1486,6 +1490,7 @@ import Mathlib.Analysis.Distribution.FourierSchwartz
 import Mathlib.Analysis.Distribution.SchwartzSpace
 import Mathlib.Analysis.Fourier.AddCircle
 import Mathlib.Analysis.Fourier.AddCircleMulti
+import Mathlib.Analysis.Fourier.BoundedContinuousFunctionChar
 import Mathlib.Analysis.Fourier.FiniteAbelian.Orthogonality
 import Mathlib.Analysis.Fourier.FiniteAbelian.PontryaginDuality
 import Mathlib.Analysis.Fourier.FourierTransform
@@ -2421,6 +2426,7 @@ import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
 import Mathlib.CategoryTheory.Sites.EpiMono
 import Mathlib.CategoryTheory.Sites.EqualizerSheafCondition
 import Mathlib.CategoryTheory.Sites.Equivalence
+import Mathlib.CategoryTheory.Sites.GlobalSections
 import Mathlib.CategoryTheory.Sites.Grothendieck
 import Mathlib.CategoryTheory.Sites.IsSheafFor
 import Mathlib.CategoryTheory.Sites.IsSheafOneHypercover
@@ -2509,7 +2515,8 @@ import Mathlib.CategoryTheory.Types
 import Mathlib.CategoryTheory.UnivLE
 import Mathlib.CategoryTheory.Whiskering
 import Mathlib.CategoryTheory.Widesubcategory
-import Mathlib.CategoryTheory.WithTerminal
+import Mathlib.CategoryTheory.WithTerminal.Basic
+import Mathlib.CategoryTheory.WithTerminal.FinCategory
 import Mathlib.CategoryTheory.Yoneda
 import Mathlib.Combinatorics.Additive.AP.Three.Behrend
 import Mathlib.Combinatorics.Additive.AP.Three.Defs
@@ -4186,6 +4193,7 @@ import Mathlib.MeasureTheory.Measure.AEDisjoint
 import Mathlib.MeasureTheory.Measure.AEMeasurable
 import Mathlib.MeasureTheory.Measure.AbsolutelyContinuous
 import Mathlib.MeasureTheory.Measure.AddContent
+import Mathlib.MeasureTheory.Measure.CharacteristicFunction
 import Mathlib.MeasureTheory.Measure.Comap
 import Mathlib.MeasureTheory.Measure.Complex
 import Mathlib.MeasureTheory.Measure.Content
@@ -5233,6 +5241,7 @@ import Mathlib.RingTheory.Spectrum.Prime.ChevalleyComplexity
 import Mathlib.RingTheory.Spectrum.Prime.ConstructibleSet
 import Mathlib.RingTheory.Spectrum.Prime.Defs
 import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
+import Mathlib.RingTheory.Spectrum.Prime.Homeomorph
 import Mathlib.RingTheory.Spectrum.Prime.IsOpenComapC
 import Mathlib.RingTheory.Spectrum.Prime.Jacobson
 import Mathlib.RingTheory.Spectrum.Prime.Module
@@ -5822,7 +5831,11 @@ import Mathlib.Topology.Category.Profinite.CofilteredLimit
 import Mathlib.Topology.Category.Profinite.EffectiveEpi
 import Mathlib.Topology.Category.Profinite.Extend
 import Mathlib.Topology.Category.Profinite.Limits
-import Mathlib.Topology.Category.Profinite.Nobeling
+import Mathlib.Topology.Category.Profinite.Nobeling.Basic
+import Mathlib.Topology.Category.Profinite.Nobeling.Induction
+import Mathlib.Topology.Category.Profinite.Nobeling.Span
+import Mathlib.Topology.Category.Profinite.Nobeling.Successor
+import Mathlib.Topology.Category.Profinite.Nobeling.ZeroLimit
 import Mathlib.Topology.Category.Profinite.Product
 import Mathlib.Topology.Category.Profinite.Projective
 import Mathlib.Topology.Category.Sequential
