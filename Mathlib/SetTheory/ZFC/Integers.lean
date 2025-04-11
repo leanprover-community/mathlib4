@@ -21,8 +21,6 @@ Finally, we show that that the `ZFInt` type is isomorphic to the type of element
 `ZFSet.Int` type using the Schröder-Bernstein theorem.
 -/
 
-noncomputable section
-
 namespace ZFSet
 
 section Integers
@@ -87,7 +85,7 @@ theorem mk_eq_zero_iff {n m} : ZFInt.mk (n,m) = 0 ↔ n = m := by
     exact ZFInt.sound rfl
 
 open ZFNat in
-abbrev add (n m : ZFInt) : ZFInt :=
+noncomputable abbrev add (n m : ZFInt) : ZFInt :=
   Quotient.liftOn₂ n m (fun ⟨a, b⟩ ⟨c, d⟩ => mk (a + c, b + d)) fun x y x' y' hx hy => sound (by
     have h1 : x.1 + x'.2 = x.2 + x'.1 := hx
     have h2 : y.1 + y'.2 = y.2 + y'.1 := hy
@@ -99,7 +97,7 @@ abbrev add (n m : ZFInt) : ZFInt :=
     conv_rhs => rw [add_assoc]; lhs; rw [← add_assoc]; rhs; rw [add_comm]
     rw [add_assoc])
 
-protected instance : Add ZFInt := ⟨ZFInt.add⟩
+protected noncomputable instance : Add ZFInt := ⟨ZFInt.add⟩
 theorem add_eq (n m : ZFNat × ZFNat) : mk n + mk m = mk (n.1 + m.1, n.2 + m.2) := rfl
 
 theorem add_assoc (n m k : ZFInt) : n + (m + k) = n + m + k := by
@@ -195,8 +193,8 @@ theorem neg_add {a b : ZFInt} : -(a + b) = -a + -b := by
   apply add_left_cancel (a := a + b)
   rw [add_right_neg, add_comm a, add_assoc, ← add_assoc b, add_right_neg, add_zero, add_right_neg]
 
-abbrev sub (n m : ZFInt) : ZFInt := n + -m
-protected instance : Sub ZFInt := ⟨ZFInt.sub⟩
+noncomputable abbrev sub (n m : ZFInt) : ZFInt := n + -m
+protected noncomputable instance : Sub ZFInt := ⟨ZFInt.sub⟩
 theorem sub_eq (n m : ZFNat × ZFNat) : mk n - mk m = mk (n.1 + m.2, n.2 + m.1) := rfl
 
 theorem sub_eq_add_neg {a b : ZFInt} : a - b = a + -b := rfl
@@ -254,11 +252,11 @@ theorem add_eq_sub_iff {a b c : ZFInt} : a + b = c ↔ a = c - b where
   mp := fun h => by rw [← h, add_sub_cancel]
   mpr := fun h => by rw [h, sub_add_cancel]
 
-private abbrev nsmul : ℕ → ZFInt → ZFInt
+private noncomputable abbrev nsmul : ℕ → ZFInt → ZFInt
   | 0, _ => 0
   | n+1, m => m + nsmul n m
 
-private abbrev zsmul (n : ℤ) (x : ZFInt) : ZFInt :=
+private noncomputable abbrev zsmul (n : ℤ) (x : ZFInt) : ZFInt :=
   match n with
   | .ofNat n => nsmul n x
   | .negSucc n => -nsmul (n+1) x
@@ -293,11 +291,11 @@ private theorem mul_wf {a b c d s t u v : ZFNat}
 
   ac_rfl
 
-abbrev mul (n m : ZFInt) : ZFInt :=
+noncomputable abbrev mul (n m : ZFInt) : ZFInt :=
   Quotient.liftOn₂ n m
     (fun ⟨a, b⟩ ⟨c, d⟩ => mk (a * c + b * d, a * d + b * c)) fun _ _ _ _ => (sound <| mul_wf · ·)
 
-instance : Mul ZFInt := ⟨ZFInt.mul⟩
+noncomputable instance : Mul ZFInt := ⟨ZFInt.mul⟩
 theorem mul_eq (n m : ZFNat × ZFNat) :
   mk n * mk m = mk (n.1 * m.1 + n.2 * m.2, n.1 * m.2 + n.2 * m.1) := rfl
 
@@ -352,7 +350,7 @@ theorem one_mul (a : ZFInt) : 1 * a = a := by
 theorem mul_one (a : ZFInt) : a * 1 = a := by
   rw [mul_comm, one_mul]
 
-instance : CommRing ZFInt where
+noncomputable instance : CommRing ZFInt where
   zero := 0
   one := 1
   add := add
@@ -546,7 +544,7 @@ theorem le_neg_iff {a b : ZFInt} : a ≤ b ↔ -b ≤ -a := by
       right
       rwa [eq, ZFSet.zrel, ZFNat.add_comm a₁, ZFNat.add_comm a₂]
 
-instance : LinearOrder ZFInt where
+noncomputable instance : LinearOrder ZFInt where
   le := int_le.le
   le_refl x := Or.inr rfl
   le_trans _ _ _ := le_trans
@@ -555,7 +553,7 @@ instance : LinearOrder ZFInt where
   decidableLE := fun _ _ => Classical.propDecidable ((· ≤ ·) _ _)
   lt_iff_le_not_le _ _ := lt_iff_le_not_le
 
-instance : AddCommGroup ZFInt where
+noncomputable instance : AddCommGroup ZFInt where
   add := add
   add_assoc := (add_assoc · · · |>.symm)
   zero := zero
@@ -957,7 +955,7 @@ theorem mul_right_cancel_iff {a b n : ZFInt} (h : n ≠ 0) : a * n = b * n ↔ a
   rw [mul_comm a n, mul_comm b n]
   exact mul_left_cancel_iff h
 
-instance : CommRing ZFInt where
+noncomputable instance : CommRing ZFInt where
   add := add
   add_assoc := (add_assoc · · · |>.symm)
   add_comm := add_comm
@@ -988,13 +986,13 @@ instance : IsOrderedRing ZFInt where
 
 end ZFInt
 
-abbrev Int := Nat.prod {∅} ∪ ZFSet.prod {∅} Nat
+noncomputable abbrev Int := Nat.prod {∅} ∪ ZFSet.prod {∅} Nat
 
-def ofInt : ℤ → ZFSet
+noncomputable def ofInt : ℤ → ZFSet
   | .ofNat n => ZFSet.pair ∅ (n : ZFNat)
   | .negSucc n => ZFSet.pair (n+1 : ZFNat) ∅
 
-def toZFInt : ℤ → ZFInt
+noncomputable def toZFInt : ℤ → ZFInt
   | .ofNat n => ZFInt.mk (0, ↑n)
   | .negSucc n => ZFInt.mk (↑n+1, 0)
 
@@ -1053,7 +1051,7 @@ lemma Int.nonempty : ZFSet.Int ≠ ∅ := by
 def π₁ (x : ZFSet) : ZFSet := ⋃₀ (⋂₀ x)
 
 open Classical in -- couldn't find another way
-def π₂ (x : ZFSet) : ZFSet :=
+noncomputable def π₂ (x : ZFSet) : ZFSet :=
   let δ : ZFSet := (⋃₀ x \ ⋂₀ x)
   if δ = ∅ then π₁ x else ⋃₀ δ
 
@@ -1131,7 +1129,7 @@ theorem mem_Int_proj {x : ZFSet} : x ∈ Int → (x.π₁ = ∅ ∧ x.π₂ ∈ 
     exact ⟨l ▸ hn, r⟩
 
 open Classical in
-private def ZFInt.outof : {x // x ∈ Int} → ZFInt := fun ⟨n, hn⟩ =>
+private noncomputable def ZFInt.outof : {x // x ∈ Int} → ZFInt := fun ⟨n, hn⟩ =>
   have := mem_Int_proj hn
   if case : n.π₁ = ∅ ∧ n.π₂ ∈ Nat then
     ZFInt.mk ⟨0, n.π₂, case.right⟩
@@ -1208,6 +1206,7 @@ theorem mem_Int_empty_not_mem {x : ZFSet} {h : x ∈ Int} : ∅ ∉ x := by
       simp at contr
 
 /-! ## Well-definedness of `ZFInt` with respect to `ZFSet.Int` -/
+noncomputable section ZFIntEquivInt
 
 open Classical in
 
@@ -1314,6 +1313,6 @@ instance : LinearOrder {x // x ∈ Int} where
   le_total := (ZFInt.instLinearOrder.le_total · ·)
   decidableLE := (ZFInt.instLinearOrder.decidableLE · ·)
 
+end ZFIntEquivInt
 end Integers
 end ZFSet
-end
