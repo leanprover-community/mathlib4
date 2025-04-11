@@ -92,9 +92,6 @@ protected theorem prodMap [TopologicalSpace γ] [TopologicalSpace δ] {e₁ : α
   toIsInducing := de₁.isInducing.prodMap de₂.isInducing
   dense := de₁.dense.prodMap de₂.dense
 
-@[deprecated (since := "2024-10-06")]
-protected alias prod := IsDenseInducing.prodMap
-
 open TopologicalSpace
 
 /-- If the domain of a `IsDenseInducing` map is a separable space, then so is the codomain. -/
@@ -291,8 +288,6 @@ protected theorem prodMap {e₁ : α → β} {e₂ : γ → δ} (de₁ : IsDense
     (de₂ : IsDenseEmbedding e₂) : IsDenseEmbedding fun p : α × γ => (e₁ p.1, e₂ p.2) where
   toIsDenseInducing := de₁.isDenseInducing.prodMap de₂.isDenseInducing
   injective := de₁.injective.prodMap de₂.injective
-
-@[deprecated (since := "2024-10-06")] protected alias prod := IsDenseEmbedding.prodMap
 
 /-- The dense embedding of a subtype inside its closure. -/
 @[simps]

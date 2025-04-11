@@ -250,7 +250,7 @@ lemma summable_residueClass_non_primes_div :
     simp only [Function.comp_apply, Prod.map_fst, id_eq, Prod.map_snd, F'', F']
   refine (Function.Injective.summable_iff ?_ fun u hu ↦ ?_).mp <| hF'₁ ▸ summable_F''
   · exact Function.Injective.prodMap (fun ⦃a₁ a₂⦄ a ↦ a) <| add_left_injective 1
-  · simp only [Set.range_prod_map, Set.range_id, Set.mem_prod, Set.mem_univ, Set.mem_range,
+  · simp only [Set.range_prodMap, Set.range_id, Set.mem_prod, Set.mem_univ, Set.mem_range,
       Nat.exists_add_one_eq, true_and, not_lt, nonpos_iff_eq_zero] at hu
     rw [← hF'₀ u.1, ← hu]
 

@@ -791,8 +791,6 @@ lemma zpow_pos [ZeroLEOneClass G₀] (ha : 0 < a) : ∀ n : ℤ, 0 < a ^ n
   | (n : ℕ) => by rw [zpow_natCast]; exact pow_pos ha _
   |-(n + 1 : ℕ) => by rw [zpow_neg, inv_pos, zpow_natCast]; exact pow_pos ha _
 
-@[deprecated (since := "2024-10-08")] alias zpow_pos_of_pos := zpow_pos
-
 /-- See `le_inv_mul_iff₀'` for a version with multiplication on the other side. -/
 lemma le_inv_mul_iff₀ (hc : 0 < c) : a ≤ c⁻¹ * b ↔ c * a ≤ b where
   mp h := by simpa [hc.ne'] using mul_le_mul_of_nonneg_left h hc.le

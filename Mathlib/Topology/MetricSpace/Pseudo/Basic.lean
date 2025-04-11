@@ -67,16 +67,10 @@ nonrec theorem isUniformInducing_iff [PseudoMetricSpace β] {f : α → β} :
     ((uniformity_basis_dist.comap _).le_basis_iff uniformity_basis_dist).trans <| by
       simp only [subset_def, Prod.forall, gt_iff_lt, preimage_setOf_eq, Prod.map_apply, mem_setOf]
 
-@[deprecated (since := "2024-10-05")]
-alias uniformInducing_iff := isUniformInducing_iff
-
 nonrec theorem isUniformEmbedding_iff [PseudoMetricSpace β] {f : α → β} :
     IsUniformEmbedding f ↔ Function.Injective f ∧ UniformContinuous f ∧
       ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, dist (f a) (f b) < ε → dist a b < δ := by
   rw [isUniformEmbedding_iff, and_comm, isUniformInducing_iff]
-
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_iff := isUniformEmbedding_iff
 
 /-- If a map between pseudometric spaces is a uniform embedding then the distance between `f x`
 and `f y` is controlled in terms of the distance between `x` and `y`. -/
@@ -85,9 +79,6 @@ theorem controlled_of_isUniformEmbedding [PseudoMetricSpace β] {f : α → β}
     (∀ ε > 0, ∃ δ > 0, ∀ {a b : α}, dist a b < δ → dist (f a) (f b) < ε) ∧
       ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, dist (f a) (f b) < ε → dist a b < δ :=
   ⟨uniformContinuous_iff.1 h.uniformContinuous, (isUniformEmbedding_iff.1 h).2.2⟩
-
-@[deprecated (since := "2024-10-01")]
-alias controlled_of_uniformEmbedding := controlled_of_isUniformEmbedding
 
 theorem totallyBounded_iff {s : Set α} :
     TotallyBounded s ↔ ∀ ε > 0, ∃ t : Set α, t.Finite ∧ s ⊆ ⋃ y ∈ t, ball y ε :=

@@ -81,8 +81,6 @@ local notation "hatα" => pkg.space
 
 local notation "ι" => pkg.coe
 
-@[deprecated (since := "2024-10-08")] alias uniformInducing := isUniformInducing
-
 /-- If `α` is complete, then it is an abstract completion of itself. -/
 def ofComplete [T0Space α] [CompleteSpace α] : AbstractCompletion α :=
   mk α id inferInstance inferInstance inferInstance .id denseRange_id
