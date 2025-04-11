@@ -256,8 +256,6 @@ theorem mem_verts_of_mem_edge {G' : Subgraph G} {e : Sym2 V} {v : V} (he : e ∈
   · exact G'.edge_vert he
   · exact G'.edge_vert (G'.symm he)
 
-@[deprecated (since := "2024-10-01")] alias mem_verts_if_mem_edge := mem_verts_of_mem_edge
-
 /-- The `incidenceSet` is the set of edges incident to a given vertex. -/
 def incidenceSet (G' : Subgraph G) (v : V) : Set (Sym2 V) := {e ∈ G'.edgeSet | v ∈ e}
 
@@ -1199,6 +1197,10 @@ theorem subgraphOfAdj_eq_induce {v w : V} (hvw : G.Adj v w) :
     · intro h
       simp only [induce_adj, Set.mem_insert_iff, Set.mem_singleton_iff, top_adj] at h
       obtain ⟨rfl | rfl, rfl | rfl, ha⟩ := h <;> first |exact (ha.ne rfl).elim|simp
+
+instance instDecidableRel_induce_adj (s : Set V) [∀ a, Decidable (a ∈ s)] [DecidableRel G'.Adj] :
+    DecidableRel (G'.induce s).Adj :=
+  fun _ _ ↦ instDecidableAnd
 
 end Induce
 

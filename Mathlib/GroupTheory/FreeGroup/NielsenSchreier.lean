@@ -219,21 +219,24 @@ lemma endIsFree : IsFreeGroup (End (root' T)) :=
       refine ⟨F'.mapEnd _, ?_, ?_⟩
       · suffices ∀ {x y} (q : x ⟶ y), F'.map (loopOfHom T q) = (F'.map q : X) by
           rintro ⟨⟨a, b, e⟩, h⟩
-          erw [Functor.mapEnd_apply, this, hF']
+          -- Work around the defeq `X = End (F'.obj (IsFreeGroupoid.SpanningTree.root' T))`
+          erw [Functor.mapEnd_apply]
+          rw [this, hF']
           exact dif_neg h
         intros x y q
         suffices ∀ {a} (p : Path (root T) a), F'.map (homOfPath T p) = 1 by
           simp only [this, treeHom, comp_as_mul, inv_as_inv, loopOfHom, inv_one, mul_one,
             one_mul, Functor.map_inv, Functor.map_comp]
         intro a p
-        induction' p with b c p e ih
-        · rw [homOfPath, F'.map_id, id_as_one]
-        rw [homOfPath, F'.map_comp, comp_as_mul, ih, mul_one]
-        rcases e with ⟨e | e, eT⟩
-        · rw [hF']
-          exact dif_pos (Or.inl eT)
-        · rw [F'.map_inv, inv_as_inv, inv_eq_one, hF']
-          exact dif_pos (Or.inr eT)
+        induction p with
+        | nil => rw [homOfPath, F'.map_id, id_as_one]
+        | cons p e ih =>
+          rw [homOfPath, F'.map_comp, comp_as_mul, ih, mul_one]
+          rcases e with ⟨e | e, eT⟩
+          · rw [hF']
+            exact dif_pos (Or.inl eT)
+          · rw [F'.map_inv, inv_as_inv, inv_eq_one, hF']
+            exact dif_pos (Or.inr eT)
       · intro E hE
         ext x
         suffices (functorOfMonoidHom T E).map x = F'.map x by

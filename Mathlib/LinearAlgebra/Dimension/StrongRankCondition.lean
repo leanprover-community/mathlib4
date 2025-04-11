@@ -45,7 +45,7 @@ universe u v w w'
 variable {R : Type u} {M : Type v} [Semiring R] [AddCommMonoid M] [Module R M]
 variable {ι : Type w} {ι' : Type w'}
 
-open Cardinal Basis Submodule Function Set
+open Cardinal Basis Submodule Function Set Module
 
 attribute [local instance] nontrivial_of_invariantBasisNumber
 
@@ -372,6 +372,11 @@ theorem rank_span_set {s : Set M} (hs : LinearIndepOn R id s) : Module.rank R �
   rw [← @setOf_mem_eq _ s, ← Subtype.range_coe_subtype]
   exact rank_span hs
 
+theorem toENat_rank_span_set {v : ι → M} {s : Set ι} (hs : LinearIndepOn R v s) :
+    (Module.rank R <| span R <| v '' s).toENat = s.encard := by
+  rw [image_eq_range, ← hs.injOn.encard_image, ← toENat_cardinalMk, image_eq_range,
+    ← rank_span hs.linearIndependent]
+
 /-- An induction (and recursion) principle for proving results about all submodules of a fixed
 finite free module `M`. A property is true for all submodules of `M` if it satisfies the following
 "inductive step": the property is true for a submodule `N` if it's true for all submodules `N'`
@@ -441,19 +446,16 @@ theorem finrank_self : finrank R R = 1 :=
 
 /-- Given a basis of a ring over itself indexed by a type `ι`, then `ι` is `Unique`. -/
 noncomputable def _root_.Basis.unique {ι : Type*} (b : Basis ι R R) : Unique ι := by
-  have A : Cardinal.mk ι = ↑(Module.finrank R R) :=
-    (Module.mk_finrank_eq_card_basis b).symm
-  -- Porting note: replace `algebraMap.coe_one` with `Nat.cast_one`
-  simp only [Cardinal.eq_one_iff_unique, Module.finrank_self, Nat.cast_one] at A
-  exact Nonempty.some ((unique_iff_subsingleton_and_nonempty _).2 A)
+  have : Cardinal.mk ι = ↑(Module.finrank R R) := (Module.mk_finrank_eq_card_basis b).symm
+  have : Subsingleton ι ∧ Nonempty ι := by simpa [Cardinal.eq_one_iff_unique]
+  exact Nonempty.some ((unique_iff_subsingleton_and_nonempty _).2 this)
 
 variable (M)
 
 /-- The rank of a finite module is finite. -/
 theorem rank_lt_aleph0 [Module.Finite R M] : Module.rank R M < ℵ₀ := by
   simp only [Module.rank_def]
-  -- Porting note: can't use `‹_›` as that pulls the unused `N` into the context
-  obtain ⟨S, hS⟩ := Module.finite_def.mp ‹Module.Finite R M›
+  obtain ⟨S, hS⟩ := Module.finite_def.mp ‹_›
   refine (ciSup_le' fun i => ?_).trans_lt (nat_lt_aleph0 S.card)
   exact linearIndependent_le_span_finset _ i.prop S hS
 
@@ -479,8 +481,6 @@ protected theorem _root_.Submodule.finrank_eq_rank [Module.Finite R M] (N : Subm
 
 end Module
 
-open Module
-
 variable {M'} [AddCommMonoid M'] [Module R M']
 
 theorem LinearMap.finrank_le_finrank_of_injective [Module.Finite R M'] {f : M →ₗ[R] M'}
@@ -503,3 +503,42 @@ theorem LinearMap.finrank_le_of_isSMulRegular {S : Type*} [CommSemiring S] [Alge
 alias LinearMap.finrank_le_of_smul_regular := LinearMap.finrank_le_of_isSMulRegular
 
 end StrongRankCondition
+
+namespace Submodule
+
+variable {K M : Type*} [DivisionRing K] [AddCommGroup M] [Module K M] {s : Set M} {x : M}
+  [Module.Finite K (span K s)]
+
+variable (K s) in
+/-- This is a version of `exists_linearIndependent`
+with an upper estimate on the size of the finite set we choose. -/
+theorem exists_finset_span_eq_linearIndepOn :
+    ∃ t : Finset M, ↑t ⊆ s ∧ t.card = finrank K (span K s) ∧
+      span K t = span K s ∧ LinearIndepOn K id (t : Set M) := by
+  rcases exists_linearIndependent K s with ⟨t, ht_sub, ht_span, ht_indep⟩
+  obtain ⟨t, rfl, ht_card⟩ : ∃ u : Finset M, ↑u = t ∧ u.card = finrank K (span K s) := by
+    rw [← Cardinal.mk_set_eq_nat_iff_finset, finrank_eq_rank, ← ht_span, rank_span_set ht_indep]
+  exact ⟨t, ht_sub, ht_card, ht_span, ht_indep⟩
+
+variable (K s) in
+theorem exists_fun_fin_finrank_span_eq :
+    ∃ f : Fin (finrank K (span K s)) → M, (∀ i, f i ∈ s) ∧ span K (range f) = span K s ∧
+      LinearIndependent K f := by
+  rcases exists_finset_span_eq_linearIndepOn K s with ⟨t, hts, ht_card, ht_span, ht_indep⟩
+  set e := (Finset.equivFinOfCardEq ht_card).symm
+  exact ⟨(↑) ∘ e, fun i ↦ hts (e i).2, by simpa, ht_indep.comp _ e.injective⟩
+
+/-- This is a version of `mem_span_set` with an estimate on the number of terms in the sum. -/
+theorem mem_span_set_iff_exists_finsupp_le_finrank :
+    x ∈ span K s ↔ ∃ c : M →₀ K, c.support.card ≤ finrank K (span K s) ∧
+      ↑c.support ⊆ s ∧ c.sum (fun mi r ↦ r • mi) = x := by
+  constructor
+  · intro h
+    rcases exists_finset_span_eq_linearIndepOn K s with ⟨t, ht_sub, ht_card, ht_span, ht_indep⟩
+    rcases mem_span_set.mp (ht_span ▸ h) with ⟨c, hct, hx⟩
+    refine ⟨c, ?_, hct.trans ht_sub, hx⟩
+    exact ht_card ▸ Finset.card_mono hct
+  · rintro ⟨c, -, hcs, hx⟩
+    exact mem_span_set.mpr ⟨c, hcs, hx⟩
+
+end Submodule

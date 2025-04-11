@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
 import Mathlib.Algebra.Group.Submonoid.BigOperators
 import Mathlib.Algebra.GroupWithZero.Associated
-import Mathlib.Algebra.GroupWithZero.Submonoid
+import Mathlib.Algebra.GroupWithZero.Submonoid.Primal
 import Mathlib.Order.WellFounded
 
 /-!
@@ -55,18 +55,19 @@ theorem exists_irreducible_factor {a : α} (ha : ¬IsUnit a) (ha0 : a ≠ 0) :
     hs.1⟩
 
 @[elab_as_elim]
-theorem induction_on_irreducible {P : α → Prop} (a : α) (h0 : P 0) (hu : ∀ u : α, IsUnit u → P u)
-    (hi : ∀ a i : α, a ≠ 0 → Irreducible i → P a → P (i * a)) : P a :=
+theorem induction_on_irreducible {motive : α → Prop} (a : α)
+    (zero : motive 0) (unit : ∀ u : α, IsUnit u → motive u)
+    (mul : ∀ a i : α, a ≠ 0 → Irreducible i → motive a → motive (i * a)) : motive a :=
   haveI := Classical.dec
   wellFounded_dvdNotUnit.fix
     (fun a ih =>
-      if ha0 : a = 0 then ha0.substr h0
+      if ha0 : a = 0 then ha0.substr zero
       else
-        if hau : IsUnit a then hu a hau
+        if hau : IsUnit a then unit a hau
         else
-          let ⟨i, hii, b, hb⟩ := exists_irreducible_factor hau ha0
+          let ⟨i, i_irred, b, hb⟩ := exists_irreducible_factor hau ha0
           let hb0 : b ≠ 0 := ne_zero_of_dvd_ne_zero ha0 ⟨i, mul_comm i b ▸ hb⟩
-          hb.symm ▸ hi b i hb0 hii <| ih b ⟨hb0, i, hii.1, mul_comm i b ▸ hb⟩)
+          hb.symm ▸ mul b i hb0 i_irred <| ih b ⟨hb0, i, i_irred.1, mul_comm i b ▸ hb⟩)
     a
 
 theorem exists_factors (a : α) :
@@ -91,7 +92,7 @@ theorem not_unit_iff_exists_factors_eq (a : α) (hn0 : a ≠ 0) :
       · rw [Multiset.prod_cons, mul_comm b, mul_assoc, Multiset.prod_erase h, mul_comm],
     fun ⟨_, hi, he, hne⟩ =>
     let ⟨b, h⟩ := Multiset.exists_mem_of_ne_zero hne
-    not_isUnit_of_not_isUnit_dvd (hi b h).not_unit <| he ▸ Multiset.dvd_prod h⟩
+    not_isUnit_of_not_isUnit_dvd (hi b h).not_isUnit <| he ▸ Multiset.dvd_prod h⟩
 
 theorem isRelPrime_of_no_irreducible_factors {x y : α} (nonzero : ¬(x = 0 ∧ y = 0))
     (H : ∀ z : α, Irreducible z → z ∣ x → ¬z ∣ y) : IsRelPrime x y :=
