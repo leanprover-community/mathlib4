@@ -269,7 +269,7 @@ lemma Ideal.height_le_spanRank [IsNoetherianRing R] (I : Ideal R) (hI : I ≠ �
   · norm_cast; exact I.height_le_spanRank_toENat hI
   · exact Cardinal.ofENat_toENat_le (Submodule.spanRank I)
 
-instance Ideal.finite_height_of_is_noetherian_ring [IsNoetherianRing R] (I : Ideal R) :
+instance Ideal.finiteHeight_of_isNoetherianRing [IsNoetherianRing R] (I : Ideal R) :
     I.FiniteHeight := by
   rw [Ideal.finiteHeight_iff_lt, Classical.or_iff_not_imp_left]
   intro h; have := Ideal.height_le_spanRank_toENat I h
