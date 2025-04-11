@@ -63,8 +63,9 @@ def equivFnOfDiscrete : C(α, β) ≃ (α → β) :=
     fun _ => by ext; rfl,
     fun _ => by ext; rfl⟩
 
-@[simp] lemma coe_equivFnOfDiscrete (f : C(α, β)) : equivFnOfDiscrete f = f := rfl
-@[simp] lemma coe_equivFnOfDiscrete_symm (f : α → β) : equivFnOfDiscrete.symm f = f := rfl
+@[simp] lemma coe_equivFnOfDiscrete : ⇑equivFnOfDiscrete = (DFunLike.coe : C(α, β) → α → β) := rfl
+
+@[simp] lemma equivFnOfDiscrete_symm_apply (f : α → β) : equivFnOfDiscrete.symm f = f := rfl
 
 end DiscreteTopology
 
