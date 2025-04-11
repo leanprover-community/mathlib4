@@ -229,17 +229,19 @@ variable [Nonempty H] {φ : PartialHomeomorph M' H'} {f : M → M'}
 omit [ChartedSpace H' M']
 
 -- continuity of `toFun`
-lemma continuousOn_source (h : SliceModel F I I') (hf : Continuous f)
-    (hyp : φ.target ⊆ range h.map) : ContinuousOn (h.inverse ∘ φ ∘ f) (f ⁻¹' φ.source) := by
+lemma continuousOn_source (h : SliceModel F I I') (hf : Continuous f) :
+    ContinuousOn (h.inverse ∘ φ ∘ f) (f ⁻¹' (φ.source ∩ (φ ⁻¹' range h.map))) := by
   rw [h.hmap.continuousOn_iff]
-  have : ContinuousOn (φ ∘ f) (f ⁻¹' φ.source) :=
+  have : ContinuousOn (↑φ ∘ f) (f ⁻¹' φ.source) :=
     φ.continuousOn_toFun.comp hf.continuousOn (fun ⦃x⦄ a ↦ a)
+  have : ContinuousOn (φ ∘ f) (f ⁻¹' (φ.source ∩ (φ ⁻¹' range h.map))) := by
+    apply this.mono
+    gcongr
+    exact inter_subset_left
   apply this.congr
   intro x hx
   apply h.inverse_right_inv
-  apply hyp
-  rw [← φ.image_source_eq_target]
-  exact mem_image_of_mem φ hx
+  apply hx.2
 
 -- auxiliary definition; will become the invFun of pullback_sliceModel
 variable (f φ) in
@@ -289,20 +291,25 @@ noncomputable def pullback_sliceModel (h : SliceModel F I I') (hf : IsEmbedding 
   invFun :=
     letI finv := Function.extend f id (fun _ ↦ (Classical.arbitrary M))
     (finv ∘ φ.symm ∘ h.map)
-  source := f ⁻¹' φ.source ∩ (φ ∘ f) ⁻¹' (range h.map)
-  open_source := sorry -- IsOpen.preimage hf.continuous φ.open_source
-  target := h.map ⁻¹' (range h.map ∩ φ.target)
+  source := f ⁻¹' (φ.source ∩ (φ ⁻¹' range h.map))
+  open_source := by
+    apply IsOpen.preimage hf.continuous --φ.open_source
+    apply φ.open_source.inter
+    sorry -- IsOpen (φ ⁻¹' range (SliceModel.map F I I'))
+  target := h.map ⁻¹' φ.target
   open_target := sorry -- IsOpen.preimage h.hmap.continuous φ.open_target
   map_source' := by
     rintro x ⟨hx₁, hx₂⟩
     rw [← φ.image_source_eq_target, mem_preimage]
-    refine ⟨mem_range_self ((h.inverse ∘ φ ∘ f) x), ?_⟩
     convert mem_image_of_mem φ hx₁
     exact aux' h (mem_range_self x) hx₂
   map_target' x hx := by
-    --rw [mem_preimage] at hx ⊢
-    --convert map_target φ hx.2
-    sorry
+    sorry /- rw [mem_preimage] at hx ⊢
+    constructor
+    · convert map_target φ hx.2
+      sorry
+    · rw [mem_preimage]
+      sorry -/
     -- choose x' hx' using missing h hsource hx
     -- calc
     --   _ = f (Function.extend f id (fun x ↦ Classical.arbitrary M) ((φ.symm ∘ h.map) x)) := rfl
@@ -338,7 +345,7 @@ noncomputable def pullback_sliceModel (h : SliceModel F I I') (hf : IsEmbedding 
       _ = h.inverse ((φ ∘ φ.symm) (h.map x)) := by simp [Function.comp_apply]
       _ = h.inverse (h.map x) := by congr; exact φ.right_inv' hx
       _ = x := h.inverse_left_inv x -/
-  continuousOn_toFun := sorry -- continuousOn_source h hf.continuous htarget
+  continuousOn_toFun := continuousOn_source h hf.continuous
   continuousOn_invFun := sorry -- continuousOn_aux_invFun h hf hsource
 
 #exit
