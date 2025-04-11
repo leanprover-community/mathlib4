@@ -271,7 +271,44 @@ def embMap {m n : Type*} (e : m ↪ n) : (n ↪ α) →[G]  (m ↪ α) where
   toFun i := e.trans i
   map_smul' _ _ := rfl
 
-theorem _root_.Function.Embedding.giveMeAName'
+def _root_.Fin.Embedding.merge {m n p : ℕ}
+    (h : m + n = p) (x : Fin m ↪ α) (y : Fin n ↪ ↑(range ⇑x)ᶜ) :
+    Fin p ↪ α where
+  toFun (i : Fin p) : α :=
+    if hi : i < m
+    then x ⟨i, hi⟩
+    else y ⟨i - m, by
+      rw [Nat.sub_lt_iff_lt_add (not_lt.mp hi), h]
+      exact i.prop⟩
+  inj' i j h := by
+    by_cases hi : i < m
+    · by_cases hj : j < m
+      · apply Fin.eq_of_val_eq
+        simpa [dif_pos hi, dif_pos hj] using h
+      · simp only [dif_pos hi, dif_neg hj] at h
+        exfalso
+        apply ne_of_mem_of_not_mem (Set.mem_range_self _) _ h
+        rw [← Set.mem_compl_iff]
+        apply Subtype.coe_prop
+    · by_cases hj : j < m
+      · simp only [dif_neg hi, dif_pos hj] at h
+        exfalso
+        apply ne_of_mem_of_not_mem (Set.mem_range_self _) _ h.symm
+        rw [← Set.mem_compl_iff]
+        apply Subtype.coe_prop
+      · apply Fin.eq_of_val_eq
+        rw [← tsub_left_inj (not_lt.mp hi) (not_lt.mp hj)]
+        simpa [dif_neg hi, dif_neg hj, Subtype.coe_inj, y.injective.eq_iff] using h
+
+/-- Extend a fin embedding by another element -/
+def Fin.Embedding.append {n : ℕ} (x : Fin n ↪ α) {a : α} (ha : a ∉ range ⇑x) :
+    Fin n.succ ↪ α := by
+  apply Fin.Embedding.merge (Nat.succ_eq_add_one n).symm x
+  exact {
+    toFun i := ⟨a, ha⟩
+    inj' i j h := Subsingleton.elim _ _ }
+
+theorem _root_.Fin.Embedding.restrictSurjective_of_le_ENatCard
     {m n : ℕ} (hmn : m ≤ n) (hn : n ≤ ENat.card α) :
     Function.Surjective (fun x : Fin n ↪ α ↦ (Fin.castLEEmb hmn).trans x) := by
   intro x
@@ -288,60 +325,40 @@ theorem _root_.Function.Embedding.giveMeAName'
       exact le_trans hn (by simp)
     · exact ⟨valEmbedding.trans (finite_range x).infinite_compl.to_subtype.natEmbedding⟩
   obtain ⟨y⟩ := this
-  let z (i : Fin n) : α := if hi : i < m then x ⟨i, hi⟩ else y ⟨i -m, by
-    simp only [not_lt] at hi
-    exact Nat.sub_lt_sub_right hi i.prop⟩
-  have : Function.Injective z := fun i j h ↦ by
-    by_cases hi : i < m
-    · by_cases hj : j < m
-      · apply Fin.eq_of_val_eq
-        simpa [dif_pos hi, dif_pos hj, z] using h
-      · simp only [dif_pos hi, dif_neg hj, z] at h
-        exfalso
-        apply ne_of_mem_of_not_mem (Set.mem_range_self _) _ h
-        rw [← Set.mem_compl_iff]
-        apply Subtype.coe_prop
-    · by_cases hj : j < m
-      · simp only [dif_neg hi, dif_pos hj, z] at h
-        exfalso
-        apply ne_of_mem_of_not_mem (Set.mem_range_self _) _ h.symm
-        rw [← Set.mem_compl_iff]
-        apply Subtype.coe_prop
-      · apply Fin.eq_of_val_eq
-        rw [← tsub_left_inj (not_lt.mp hi) (not_lt.mp hj)]
-        simpa [dif_neg hi, dif_neg hj, Subtype.coe_inj, y.injective.eq_iff, z] using h
-  use ⟨z, this⟩
+  use Fin.Embedding.merge (add_sub_of_le hmn) x y
   ext i
-  simp [z, dif_pos i.prop]
+  simp [Fin.Embedding.merge, dif_pos i.prop]
 
-theorem _root_.Function.Embedding.giveMeAName
+theorem _root_.Fin.Embedding.restrictSurjective_of_le_natCard
     {m n : ℕ} [Finite α] (hmn : m ≤ n) (hn : n ≤ Nat.card α) :
     Function.Surjective (fun x : Fin n ↪ α ↦ (Fin.castLEEmb hmn).trans x) :=
-  giveMeAName' hmn (by rwa [← ENat.coe_le_coe, ← ENat.card_eq_coe_natCard α] at hn)
+  Fin.Embedding.restrictSurjective_of_le_ENatCard
+    hmn (by rwa [← ENat.coe_le_coe, ← ENat.card_eq_coe_natCard α] at hn)
 
 /-- If `α` has at least n elements, then any n-pretransitive action on `α`
 is m-pretransitive for any m ≤ n.
 
-This version authorizes `α` to be infinite and uses `ENat.card`.
+This version allows `α` to be infinite and uses `ENat.card`.
 For `Finite α`, use `MulAction.isMultiplyPretransitive_of_le` -/
 @[to_additive
 "If `α` has at least n elements, then any n-pretransitive action on `α`
 is m-pretransitive for any m ≤ n.
 
-This version authorizes `α` to be infinite and uses `ENat.card`.
+This version allows `α` to be infinite and uses `ENat.card`.
 For `Finite α`, use `AddAction.isMultiplyPretransitive_of_le`."]
 theorem isMultiplyPretransitive_of_le' {m n : ℕ} [IsMultiplyPretransitive G α n]
     (hmn : m ≤ n) (hα : n ≤ ENat.card α) :
     IsMultiplyPretransitive G α m :=
   IsPretransitive.of_surjective_map (f := embMap (castLEEmb hmn))
-    (giveMeAName' hmn hα) inferInstance
+    (Fin.Embedding.restrictSurjective_of_le_ENatCard hmn hα) inferInstance
 
 /-- An n-pretransitive action is m-pretransitive for any m ≤ n -/
 @[to_additive]
 theorem isMultiplyPretransitive_of_le {m n : ℕ} [IsMultiplyPretransitive G α n]
     (hmn : m ≤ n) (hα : n ≤ Nat.card α) [Finite α] :
     IsMultiplyPretransitive G α m :=
-  IsPretransitive.of_surjective_map (f := embMap (castLEEmb hmn)) (giveMeAName hmn hα) inferInstance
+  IsPretransitive.of_surjective_map (f := embMap (castLEEmb hmn))
+    (Fin.Embedding.restrictSurjective_of_le_natCard hmn hα) inferInstance
 
 end Higher
 
