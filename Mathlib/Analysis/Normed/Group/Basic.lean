@@ -117,7 +117,7 @@ endowed with a continuous enorm.
 We don't have `ENormedAddCommMonoid` extend `EMetricSpace`, since the canonical instance `ℝ≥0∞`
 is not an `EMetricSpace`. This is because `ℝ≥0∞` carries the order topology, which is distinct from
 the topology coming from `edist`. -/
-@[deprecated "Use `[TopologicalSpace E] [AddCommMonoid E] [ENormedAddMonoid]` instead."
+@[deprecated "Use `[TopologicalSpace E] [AddCommMonoid E] [ENormedAddMonoid E]` instead."
   (since := "2025-04-12")]
 structure ENormedAddCommMonoid (E : Type*) [TopologicalSpace E] extends
     AddCommMonoid E, ENormedAddMonoid E where
@@ -125,7 +125,7 @@ structure ENormedAddCommMonoid (E : Type*) [TopologicalSpace E] extends
 set_option linter.existingAttributeWarning false in
 /-- An enormed commutative monoid is a commutative monoid endowed with a continuous enorm. -/
 @[to_additive,
-  deprecated "Use `[TopologicalSpace E] [CommMonoid E] [ENormedMonoid]` instead."
+  deprecated "Use `[TopologicalSpace E] [CommMonoid E] [ENormedMonoid E]` instead."
   (since := "2025-04-12")]
 structure ENormedCommMonoid (E : Type*) [TopologicalSpace E] extends
     CommMonoid E, ENormedMonoid E where
