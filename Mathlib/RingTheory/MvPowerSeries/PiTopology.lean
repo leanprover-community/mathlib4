@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 import Mathlib.RingTheory.MvPowerSeries.Basic
+import Mathlib.RingTheory.MvPowerSeries.Trunc
 import Mathlib.RingTheory.Nilpotent.Defs
 import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 import Mathlib.Topology.Algebra.Ring.Basic
@@ -77,6 +78,8 @@ namespace MvPowerSeries
 
 open Function Filter
 
+open scoped Topology
+
 variable {σ R : Type*}
 
 namespace WithPiTopology
@@ -122,6 +125,29 @@ theorem tendsto_iff_coeff_tendsto [Semiring R] {ι : Type*}
     ∀ d : σ →₀ ℕ, Tendsto (fun i => coeff R d (f i)) u (nhds (coeff R d g)) := by
   rw [nhds_pi, tendsto_pi]
   exact forall_congr' (fun d => Iff.rfl)
+
+theorem trunc'_tendsto [CommSemiring R] (f : MvPowerSeries σ R) :
+    Tendsto (fun d ↦ (trunc' R d f : MvPowerSeries σ R)) atTop (𝓝 f) := by
+  rw [tendsto_iff_coeff_tendsto]
+  intro d
+  exact tendsto_atTop_of_eventually_const fun n (hdn : d ≤ n) ↦ (by simp [coeff_trunc', hdn])
+
+theorem trunc_tendsto [CommSemiring R] [Nonempty σ] (f : MvPowerSeries σ R) :
+    Tendsto (fun d ↦ (trunc R d f : MvPowerSeries σ R)) atTop (𝓝 f) := by
+  rw [tendsto_iff_coeff_tendsto]
+  intro d
+  obtain ⟨s, _⟩ := (exists_const σ).mpr trivial
+  apply tendsto_atTop_of_eventually_const (i₀ := d + Finsupp.single s 1)
+  intro n hn
+  rw [MvPolynomial.coeff_coe, coeff_trunc, if_pos]
+  apply lt_of_lt_of_le _ hn
+  simp only [lt_add_iff_pos_right, Finsupp.lt_def]
+  refine ⟨zero_le _, ⟨s, by simp⟩⟩
+
+/-- The inclusion of polynomials into power series has dense image -/
+theorem toMvPowerSeries_denseRange [CommSemiring R] :
+    DenseRange (MvPolynomial.toMvPowerSeries (R := R) (σ := σ)) := fun f =>
+  mem_closure_of_tendsto (trunc'_tendsto f) <| .of_forall fun _ ↦ Set.mem_range_self _
 
 variable (σ R)
 
