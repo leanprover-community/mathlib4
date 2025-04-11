@@ -651,7 +651,7 @@ section NormedSpace
 variable [NormedField 𝕜] [∀ i, NormedSpace 𝕜 (E i)]
 
 instance instNormedSpace [Fact (1 ≤ p)] : NormedSpace 𝕜 (lp E p) where
-  norm_smul_le c f := norm_smul_le c f
+  norm_smul _ := norm_const_smul ((zero_lt_one.trans_le <| Fact.out).ne')
 
 end NormedSpace
 

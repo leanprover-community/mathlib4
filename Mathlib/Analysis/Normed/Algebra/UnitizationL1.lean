@@ -125,8 +125,7 @@ noncomputable instance instUnitizationNormedRing : NormedRing (WithLp 1 (Unitiza
 
 noncomputable instance instUnitizationNormedAlgebra :
     NormedAlgebra 𝕜 (WithLp 1 (Unitization 𝕜 A)) where
-  norm_smul_le r x := by
+  norm_smul r x := by
     simp_rw [unitization_norm_def, equiv_smul, fst_smul, snd_smul, norm_smul, mul_add]
-    exact le_rfl
 
 end WithLp

@@ -1153,7 +1153,7 @@ noncomputable def RCLike.copy_of_normedField {𝕜 : Type*} (h : RCLike 𝕜) (h
     map_add' := by subst h''; exact h.algebraMap.map_add' }
   commutes' := by subst h''; exact h.commutes'
   smul_def' := by subst h''; exact h.smul_def'
-  norm_smul_le := by subst h''; exact h.norm_smul_le
+  norm_smul := by subst h''; exact h.norm_smul
   -- RCLike fields
   re := by subst h''; exact h.re
   im := by subst h''; exact h.im
