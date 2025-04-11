@@ -1047,9 +1047,17 @@ theorem mul_finsum {R : Type*} [Semiring R] (f : α → R) (r : R) (h : (support
     (r * ∑ᶠ a : α, f a) = ∑ᶠ a : α, r * f a :=
   (AddMonoidHom.mulLeft r).map_finsum h
 
+theorem mul_finsum_mem {R : Type*} [Semiring R] {s : Set α} (f : α → R) (r : R) (hs : s.Finite) :
+    (r * ∑ᶠ a ∈ s, f a) = ∑ᶠ a ∈ s, r * f a :=
+  (AddMonoidHom.mulLeft r).map_finsum_mem f hs
+
 theorem finsum_mul {R : Type*} [Semiring R] (f : α → R) (r : R) (h : (support f).Finite) :
     (∑ᶠ a : α, f a) * r = ∑ᶠ a : α, f a * r :=
   (AddMonoidHom.mulRight r).map_finsum h
+
+theorem finsum_mem_mul {R : Type*} [Semiring R] {s : Set α} (f : α → R) (r : R) (hs : s.Finite) :
+    (∑ᶠ a ∈ s, f a) * r = ∑ᶠ a ∈ s, f a * r :=
+  (AddMonoidHom.mulRight r).map_finsum_mem f hs
 
 @[to_additive (attr := simp)]
 lemma finprod_apply {α ι : Type*} {f : ι → α → N} (hf : (mulSupport f).Finite) (a : α) :
