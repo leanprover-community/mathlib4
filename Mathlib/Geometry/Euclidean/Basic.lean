@@ -200,9 +200,9 @@ def orthogonalProjectionFn (s : AffineSubspace ℝ P) [Nonempty s]
     [HasOrthogonalProjection s.direction] (p : P) : P :=
   Classical.choose <|
     inter_eq_singleton_of_nonempty_of_isCompl (nonempty_subtype.mp ‹_›)
-      (mk'_nonempty p s.directionᗮ)
+      (s.directionᗮ.shift_nonempty p)
       (by
-        rw [direction_mk' p s.directionᗮ]
+        rw [s.directionᗮ.direction_shift p]
         exact Submodule.isCompl_orthogonal_of_completeSpace)
 
 /-- The intersection of the subspace and the orthogonal subspace
@@ -212,12 +212,12 @@ setting up the bundled version and should not be used once that is
 defined. -/
 theorem inter_eq_singleton_orthogonalProjectionFn {s : AffineSubspace ℝ P} [Nonempty s]
     [HasOrthogonalProjection s.direction] (p : P) :
-    (s : Set P) ∩ mk' p s.directionᗮ = {orthogonalProjectionFn s p} :=
+    (s : Set P) ∩ s.directionᗮ.shift p = {orthogonalProjectionFn s p} :=
   Classical.choose_spec <|
     inter_eq_singleton_of_nonempty_of_isCompl (nonempty_subtype.mp ‹_›)
-      (mk'_nonempty p s.directionᗮ)
+      (s.directionᗮ.shift_nonempty p)
       (by
-        rw [direction_mk' p s.directionᗮ]
+        rw [s.directionᗮ.direction_shift p]
         exact Submodule.isCompl_orthogonal_of_completeSpace)
 
 /-- The `orthogonalProjectionFn` lies in the given subspace. This
@@ -233,7 +233,7 @@ subspace. This lemma is only intended for use in setting up the
 bundled version and should not be used once that is defined. -/
 theorem orthogonalProjectionFn_mem_orthogonal {s : AffineSubspace ℝ P} [Nonempty s]
     [HasOrthogonalProjection s.direction] (p : P) :
-    orthogonalProjectionFn s p ∈ mk' p s.directionᗮ := by
+    orthogonalProjectionFn s p ∈ s.directionᗮ.shift p := by
   rw [← mem_coe, ← Set.singleton_subset_iff, ← inter_eq_singleton_orthogonalProjectionFn]
   exact Set.inter_subset_right
 
@@ -244,8 +244,8 @@ is defined. -/
 theorem orthogonalProjectionFn_vsub_mem_direction_orthogonal {s : AffineSubspace ℝ P} [Nonempty s]
     [HasOrthogonalProjection s.direction] (p : P) :
     orthogonalProjectionFn s p -ᵥ p ∈ s.directionᗮ :=
-  direction_mk' p s.directionᗮ ▸
-    vsub_mem_direction (orthogonalProjectionFn_mem_orthogonal p) (self_mem_mk' _ _)
+  s.directionᗮ.direction_shift p ▸
+    vsub_mem_direction (orthogonalProjectionFn_mem_orthogonal p) (Submodule.self_mem_shift _ _)
 
 attribute [local instance] AffineSubspace.toAddTorsor
 
@@ -265,9 +265,9 @@ nonrec def orthogonalProjection (s : AffineSubspace ℝ P) [Nonempty s]
         (orthogonalProjectionFn_mem p)
     have ho :
       ((orthogonalProjection s.direction) v : V) +ᵥ orthogonalProjectionFn s p ∈
-        mk' (v +ᵥ p) s.directionᗮ := by
-      rw [← vsub_right_mem_direction_iff_mem (self_mem_mk' _ _) _, direction_mk',
-        vsub_vadd_eq_vsub_sub, vadd_vsub_assoc, add_comm, add_sub_assoc]
+        s.directionᗮ.shift (v +ᵥ p) := by
+      rw [← vsub_right_mem_direction_iff_mem (Submodule.self_mem_shift _ _) _,
+        Submodule.direction_shift, vsub_vadd_eq_vsub_sub, vadd_vsub_assoc, add_comm, add_sub_assoc]
       refine Submodule.add_mem _ (orthogonalProjectionFn_vsub_mem_direction_orthogonal p) ?_
       rw [Submodule.mem_orthogonal']
       intro w hw
@@ -299,7 +299,7 @@ through the given point is the `orthogonalProjection` of that point
 onto the subspace. -/
 theorem inter_eq_singleton_orthogonalProjection {s : AffineSubspace ℝ P} [Nonempty s]
     [HasOrthogonalProjection s.direction] (p : P) :
-    (s : Set P) ∩ mk' p s.directionᗮ = {↑(orthogonalProjection s p)} := by
+    (s : Set P) ∩ s.directionᗮ.shift p = {↑(orthogonalProjection s p)} := by
   rw [← orthogonalProjectionFn_eq]
   exact inter_eq_singleton_orthogonalProjectionFn p
 
@@ -311,7 +311,7 @@ theorem orthogonalProjection_mem {s : AffineSubspace ℝ P} [Nonempty s]
 /-- The `orthogonalProjection` lies in the orthogonal subspace. -/
 theorem orthogonalProjection_mem_orthogonal (s : AffineSubspace ℝ P) [Nonempty s]
     [HasOrthogonalProjection s.direction] (p : P) :
-    ↑(orthogonalProjection s p) ∈ mk' p s.directionᗮ :=
+    ↑(orthogonalProjection s p) ∈ s.directionᗮ.shift p :=
   orthogonalProjectionFn_mem_orthogonal p
 
 /-- Subtracting a point in the given subspace from the
@@ -336,7 +336,7 @@ theorem orthogonalProjection_eq_self_iff {s : AffineSubspace ℝ P} [Nonempty s]
   constructor
   · exact fun h => h ▸ orthogonalProjection_mem p
   · intro h
-    have hp : p ∈ (s : Set P) ∩ mk' p s.directionᗮ := ⟨h, self_mem_mk' p _⟩
+    have hp : p ∈ (s : Set P) ∩ s.directionᗮ.shift p := ⟨h, Submodule.self_mem_shift _ _⟩
     rw [inter_eq_singleton_orthogonalProjection p] at hp
     symm
     exact hp
@@ -391,8 +391,8 @@ theorem orthogonalProjection_vsub_mem_direction_orthogonal (s : AffineSubspace �
 in the orthogonal direction. -/
 theorem vsub_orthogonalProjection_mem_direction_orthogonal (s : AffineSubspace ℝ P) [Nonempty s]
     [HasOrthogonalProjection s.direction] (p : P) : p -ᵥ orthogonalProjection s p ∈ s.directionᗮ :=
-  direction_mk' p s.directionᗮ ▸
-    vsub_mem_direction (self_mem_mk' _ _) (orthogonalProjection_mem_orthogonal s p)
+  s.directionᗮ.direction_shift p ▸
+    vsub_mem_direction (Submodule.self_mem_shift _ _) (orthogonalProjection_mem_orthogonal s p)
 
 /-- Subtracting the `orthogonalProjection` from `p` produces a result in the kernel of the linear
 part of the orthogonal projection. -/

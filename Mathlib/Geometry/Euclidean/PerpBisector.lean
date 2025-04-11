@@ -33,7 +33,7 @@ variable {c p₁ p₂ : P}
 
 /-- Perpendicular bisector of a segment in a Euclidean affine space. -/
 def perpBisector (p₁ p₂ : P) : AffineSubspace ℝ P :=
-  mk' (midpoint ℝ p₁ p₂) (LinearMap.ker (innerₛₗ ℝ (p₂ -ᵥ p₁)))
+  (LinearMap.ker (innerₛₗ ℝ (p₂ -ᵥ p₁))).shift (midpoint ℝ p₁ p₂)
 
 /-- A point `c` belongs the perpendicular bisector of `[p₁, p₂] iff `p₂ -ᵥ p₁` is orthogonal to
 `c -ᵥ midpoint ℝ p₁ p₂`. -/
@@ -69,7 +69,7 @@ theorem perpBisector_nonempty : (perpBisector p₁ p₂ : Set P).Nonempty :=
 @[simp]
 theorem direction_perpBisector (p₁ p₂ : P) :
     (perpBisector p₁ p₂).direction = (ℝ ∙ (p₂ -ᵥ p₁))ᗮ := by
-  rw [perpBisector, direction_mk']
+  rw [perpBisector, Submodule.direction_shift]
   ext x
   exact Submodule.mem_orthogonal_singleton_iff_inner_right.symm
 
