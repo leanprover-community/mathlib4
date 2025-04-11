@@ -165,7 +165,7 @@ end Pi
 
 /-- Let `k` be an integral domain and `G` an arbitrary finite set.
 Then any algebra morphism `φ : (G → k) →ₐ[k] k` is an evaluation map. -/
-lemma eval_of_algHom' {k G : Type*} [CommSemiring k] [NoZeroDivisors k] [Nontrivial k]
+lemma AlgHom.eq_piEvalAlgHom {k G : Type*} [CommSemiring k] [NoZeroDivisors k] [Nontrivial k]
     [Finite G] (φ : (G → k) →ₐ[k] k) : ∃ (s : G), φ = Pi.evalAlgHom _ _ s := by
   have h1 := map_one φ
   classical
