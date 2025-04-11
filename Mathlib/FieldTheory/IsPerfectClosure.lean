@@ -114,12 +114,12 @@ theorem pow_expChar_pow_inj_of_pNilradical_eq_bot (R : Type*) [CommRing R] (p : 
     (h : pNilradical R p = ⊥) (n : ℕ) : Function.Injective fun x : R ↦ x ^ p ^ n := fun _ _ H ↦
   sub_eq_zero.1 <| Ideal.mem_bot.1 <| h ▸ sub_mem_pNilradical_iff_pow_expChar_pow_eq.2 ⟨n, H⟩
 
-theorem pNilradical_eq_bot_of_frobenius_inj (R : Type*) [CommRing R] (p : ℕ) [ExpChar R p]
+theorem pNilradical_eq_bot_of_frobenius_inj (R : Type*) [CommSemiring R] (p : ℕ) [ExpChar R p]
     (h : Function.Injective (frobenius R p)) : pNilradical R p = ⊥ := bot_unique fun x ↦ by
   rw [mem_pNilradical, Ideal.mem_bot]
   exact fun ⟨n, _⟩ ↦ h.iterate n (by rwa [← coe_iterateFrobenius, map_zero])
 
-theorem PerfectRing.pNilradical_eq_bot (R : Type*) [CommRing R] (p : ℕ) [ExpChar R p]
+theorem PerfectRing.pNilradical_eq_bot (R : Type*) [CommSemiring R] (p : ℕ) [ExpChar R p]
     [PerfectRing R p] : pNilradical R p = ⊥ :=
   pNilradical_eq_bot_of_frobenius_inj R p (injective_frobenius R p)
 

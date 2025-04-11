@@ -128,9 +128,6 @@ theorem isUniformEmbedding_coeFn [UniformSpace F] [IsUniformAddGroup F] (𝔖 : 
     IsUniformEmbedding (α := UniformConvergenceCLM σ F 𝔖) (UniformOnFun.ofFun 𝔖 ∘ DFunLike.coe) :=
   ⟨isUniformInducing_coeFn .., DFunLike.coe_injective⟩
 
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_coeFn := isUniformEmbedding_coeFn
-
 theorem isEmbedding_coeFn [UniformSpace F] [IsUniformAddGroup F] (𝔖 : Set (Set E)) :
     IsEmbedding (X := UniformConvergenceCLM σ F 𝔖) (Y := E →ᵤ[𝔖] F)
       (UniformOnFun.ofFun 𝔖 ∘ DFunLike.coe) :=
@@ -239,7 +236,7 @@ theorem eventually_nhds_zero_mapsTo [TopologicalSpace F] [IsTopologicalAddGroup 
 variable {σ F} in
 theorem isVonNBounded_image2_apply {R : Type*} [SeminormedRing R]
     [TopologicalSpace F] [IsTopologicalAddGroup F]
-    [Module R F] [ContinuousConstSMul R F] [SMulCommClass 𝕜₂ R F]
+    [DistribMulAction R F] [ContinuousConstSMul R F] [SMulCommClass 𝕜₂ R F]
     {𝔖 : Set (Set E)} {S : Set (UniformConvergenceCLM σ F 𝔖)} (hS : IsVonNBounded R S)
     {s : Set E} (hs : s ∈ 𝔖) : IsVonNBounded R (Set.image2 (fun f x ↦ f x) S s) := by
   intro U hU
@@ -301,7 +298,7 @@ theorem isUniformInducing_postcomp
   exact (UniformOnFun.postcomp_isUniformInducing hg).comp (isUniformInducing_coeFn _ _ _)
 
 theorem completeSpace [UniformSpace F] [IsUniformAddGroup F] [ContinuousSMul 𝕜₂ F] [CompleteSpace F]
-    {𝔖 : Set (Set E)} (h𝔖 : RestrictGenTopology 𝔖) (h𝔖U : ⋃₀ 𝔖 = univ) :
+    {𝔖 : Set (Set E)} (h𝔖 : IsCoherentWith 𝔖) (h𝔖U : ⋃₀ 𝔖 = univ) :
     CompleteSpace (UniformConvergenceCLM σ F 𝔖) := by
   wlog hF : T2Space F generalizing F
   · rw [(isUniformInducing_postcomp σ (SeparationQuotient.mkCLM 𝕜₂ F)
@@ -392,9 +389,6 @@ theorem isUniformEmbedding_toUniformOnFun [UniformSpace F] [IsUniformAddGroup F]
       fun f : E →SL[σ] F ↦ UniformOnFun.ofFun {s | Bornology.IsVonNBounded 𝕜₁ s} f :=
   UniformConvergenceCLM.isUniformEmbedding_coeFn ..
 
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_toUniformOnFun := isUniformEmbedding_toUniformOnFun
-
 instance uniformContinuousConstSMul
     {M : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
     [UniformSpace F] [IsUniformAddGroup F] [UniformContinuousConstSMul M F] :
@@ -433,7 +427,7 @@ then the set `{f x | (f ∈ S) (x ∈ s)}` is von Neumann bounded.
 See also `isVonNBounded_iff` for an `Iff` version with stronger typeclass assumptions. -/
 theorem isVonNBounded_image2_apply {R : Type*} [SeminormedRing R]
     [TopologicalSpace F] [IsTopologicalAddGroup F]
-    [Module R F] [ContinuousConstSMul R F] [SMulCommClass 𝕜₂ R F]
+    [DistribMulAction R F] [ContinuousConstSMul R F] [SMulCommClass 𝕜₂ R F]
     {S : Set (E →SL[σ] F)} (hS : IsVonNBounded R S) {s : Set E} (hs : IsVonNBounded 𝕜₁ s) :
     IsVonNBounded R (Set.image2 (fun f x ↦ f x) S s) :=
   UniformConvergenceCLM.isVonNBounded_image2_apply hS hs
@@ -452,7 +446,7 @@ theorem isVonNBounded_iff {R : Type*} [NormedDivisionRing R]
   UniformConvergenceCLM.isVonNBounded_iff
 
 theorem completeSpace [UniformSpace F] [IsUniformAddGroup F] [ContinuousSMul 𝕜₂ F] [CompleteSpace F]
-    [ContinuousSMul 𝕜₁ E] (h : RestrictGenTopology {s : Set E | IsVonNBounded 𝕜₁ s}) :
+    [ContinuousSMul 𝕜₁ E] (h : IsCoherentWith {s : Set E | IsVonNBounded 𝕜₁ s}) :
     CompleteSpace (E →SL[σ] F) :=
   UniformConvergenceCLM.completeSpace _ _ h isVonNBounded_covers
 
@@ -535,9 +529,6 @@ theorem isUniformEmbedding_restrictScalars :
   rw [← isUniformEmbedding_toUniformOnFun.of_comp_iff]
   convert isUniformEmbedding_toUniformOnFun using 4 with s
   exact ⟨fun h ↦ h.extend_scalars _, fun h ↦ h.restrict_scalars _⟩
-
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_restrictScalars := isUniformEmbedding_restrictScalars
 
 theorem uniformContinuous_restrictScalars :
     UniformContinuous (restrictScalars 𝕜' : (E →L[𝕜] F) → (E →L[𝕜'] F)) :=

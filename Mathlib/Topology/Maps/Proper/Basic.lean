@@ -182,8 +182,6 @@ lemma IsProperMap.prodMap {g : Z → W} (hf : IsProperMap f) (hg : IsProperMap g
     rw [nhds_prod_eq, le_prod]
     exact ⟨hx, hz⟩
 
-@[deprecated (since := "2024-10-06")] alias IsProperMap.prod_map := IsProperMap.prodMap
-
 /-- Any product of proper maps is proper. -/
 lemma IsProperMap.pi_map {X Y : ι → Type*} [∀ i, TopologicalSpace (X i)]
     [∀ i, TopologicalSpace (Y i)] {f : (i : ι) → X i → Y i} (h : ∀ i, IsProperMap (f i)) :

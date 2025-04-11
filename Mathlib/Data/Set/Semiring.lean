@@ -197,8 +197,8 @@ instance : CanonicallyOrderedAdd (SetSemiring α) where
   exists_add_of_le {_ b} ab := ⟨b, (union_eq_right.2 ab).symm⟩
   le_self_add _ _ := subset_union_left
 
-instance [CommMonoid α] : OrderedCommSemiring (SetSemiring α) :=
-  CanonicallyOrderedAdd.toOrderedCommSemiring
+instance [CommMonoid α] : IsOrderedRing (SetSemiring α) :=
+  CanonicallyOrderedAdd.toIsOrderedRing
 
 /-- The image of a set under a multiplicative homomorphism is a ring homomorphism
 with respect to the pointwise operations on sets. -/

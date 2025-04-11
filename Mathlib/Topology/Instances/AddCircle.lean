@@ -57,7 +57,8 @@ variable {𝕜 B : Type*}
 
 section Continuity
 
-variable [LinearOrderedAddCommGroup 𝕜] [Archimedean 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜]
+variable [AddCommGroup 𝕜] [LinearOrder 𝕜] [IsOrderedAddMonoid 𝕜] [Archimedean 𝕜]
+  [TopologicalSpace 𝕜] [OrderTopology 𝕜]
   {p : 𝕜} (hp : 0 < p) (a x : 𝕜)
 
 theorem continuous_right_toIcoMod : ContinuousWithinAt (toIcoMod hp a) (Ici x) x := by
@@ -111,14 +112,14 @@ theorem continuousAt_toIocMod (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a) : Continu
 end Continuity
 
 /-- The "additive circle": `𝕜 ⧸ (ℤ ∙ p)`. See also `Circle` and `Real.angle`. -/
-abbrev AddCircle [LinearOrderedAddCommGroup 𝕜] (p : 𝕜) :=
+abbrev AddCircle [AddCommGroup 𝕜] (p : 𝕜) :=
   𝕜 ⧸ zmultiples p
 
 namespace AddCircle
 
 section LinearOrderedAddCommGroup
 
-variable [LinearOrderedAddCommGroup 𝕜] (p : 𝕜)
+variable [AddCommGroup 𝕜] (p : 𝕜)
 
 theorem coe_nsmul {n : ℕ} {x : 𝕜} : (↑(n • x) : AddCircle p) = n • (x : AddCircle p) :=
   rfl
@@ -142,16 +143,6 @@ theorem coe_zero : ↑(0 : 𝕜) = (0 : AddCircle p) :=
 theorem coe_eq_zero_iff {x : 𝕜} : (x : AddCircle p) = 0 ↔ ∃ n : ℤ, n • p = x := by
   simp [AddSubgroup.mem_zmultiples_iff]
 
-theorem coe_eq_zero_of_pos_iff (hp : 0 < p) {x : 𝕜} (hx : 0 < x) :
-    (x : AddCircle p) = 0 ↔ ∃ n : ℕ, n • p = x := by
-  rw [coe_eq_zero_iff]
-  constructor <;> rintro ⟨n, rfl⟩
-  · replace hx : 0 < n := by
-      contrapose! hx
-      simpa only [← neg_nonneg, ← zsmul_neg, zsmul_neg'] using zsmul_nonneg hp.le (neg_nonneg.2 hx)
-    exact ⟨n.toNat, by rw [← natCast_zsmul, Int.toNat_of_nonneg hx.le]⟩
-  · exact ⟨(n : ℤ), by simp⟩
-
 theorem coe_period : (p : AddCircle p) = 0 :=
   (QuotientAddGroup.eq_zero_iff p).2 <| mem_zmultiples p
 
@@ -162,6 +153,18 @@ theorem coe_add_period (x : 𝕜) : ((x + p : 𝕜) : AddCircle p) = x := by
 protected theorem continuous_mk' [TopologicalSpace 𝕜] :
     Continuous (QuotientAddGroup.mk' (zmultiples p) : 𝕜 → AddCircle p) :=
   continuous_coinduced_rng
+
+variable [LinearOrder 𝕜] [IsOrderedAddMonoid 𝕜]
+
+theorem coe_eq_zero_of_pos_iff (hp : 0 < p) {x : 𝕜} (hx : 0 < x) :
+    (x : AddCircle p) = 0 ↔ ∃ n : ℕ, n • p = x := by
+  rw [coe_eq_zero_iff]
+  constructor <;> rintro ⟨n, rfl⟩
+  · replace hx : 0 < n := by
+      contrapose! hx
+      simpa only [← neg_nonneg, ← zsmul_neg, zsmul_neg'] using zsmul_nonneg hp.le (neg_nonneg.2 hx)
+    exact ⟨n.toNat, by rw [← natCast_zsmul, Int.toNat_of_nonneg hx.le]⟩
+  · exact ⟨(n : ℤ), by simp⟩
 
 variable [hp : Fact (0 < p)] (a : 𝕜) [Archimedean 𝕜]
 
@@ -305,7 +308,7 @@ end LinearOrderedAddCommGroup
 
 section LinearOrderedField
 
-variable [LinearOrderedField 𝕜] (p q : 𝕜)
+variable [Field 𝕜] (p q : 𝕜)
 
 /-- The rescaling equivalence between additive circles with different periods. -/
 def equivAddCircle (hp : p ≠ 0) (hq : q ≠ 0) : AddCircle p ≃+ AddCircle q :=
@@ -324,7 +327,7 @@ theorem equivAddCircle_symm_apply_mk (hp : p ≠ 0) (hq : q ≠ 0) (x : 𝕜) :
   rfl
 
 section
-variable [TopologicalSpace 𝕜] [OrderTopology 𝕜]
+variable [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜]
 
 /-- The rescaling homeomorphism between additive circles with different periods. -/
 def homeomorphAddCircle (hp : p ≠ 0) (hq : q ≠ 0) : AddCircle p ≃ₜ AddCircle q :=
@@ -343,7 +346,7 @@ theorem homeomorphAddCircle_symm_apply_mk (hp : p ≠ 0) (hq : q ≠ 0) (x : �
   rfl
 end
 
-variable [hp : Fact (0 < p)]
+variable [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [hp : Fact (0 < p)]
 
 section FloorRing
 
@@ -528,7 +531,8 @@ end AddCircle
 
 section UnitAddCircle
 
-instance instZeroLTOne [StrictOrderedSemiring 𝕜] : Fact ((0 : 𝕜) < 1) := ⟨zero_lt_one⟩
+instance instZeroLTOne [Semiring 𝕜] [PartialOrder 𝕜] [IsStrictOrderedRing 𝕜] : Fact ((0 : 𝕜) < 1) :=
+  ⟨zero_lt_one⟩
 
 /-- The unit circle `ℝ ⧸ ℤ`. -/
 abbrev UnitAddCircle :=
@@ -545,7 +549,7 @@ by the equivalence relation identifying the endpoints. -/
 
 namespace AddCircle
 
-variable [LinearOrderedAddCommGroup 𝕜] (p a : 𝕜)
+variable [AddCommGroup 𝕜] [LinearOrder 𝕜] [IsOrderedAddMonoid 𝕜] (p a : 𝕜)
   [hp : Fact (0 < p)]
 
 local notation "𝕋" => AddCircle p
