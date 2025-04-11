@@ -539,6 +539,16 @@ theorem biprod.isoProd_inv {X Y : C} [HasBinaryBiproduct X Y] :
     (biprod.isoProd X Y).inv = biprod.lift prod.fst prod.snd := by
   ext <;> simp [Iso.inv_comp_eq]
 
+@[reassoc (attr := simp)]
+theorem biprod.inl_comp_prodLift_inl_inr {X Y : C} [HasBinaryBiproduct X Y] :
+    biprod.inl ≫ prod.lift biprod.fst biprod.snd = prod.inl X Y := by
+  simp [prod.inl]
+
+@[reassoc (attr := simp)]
+theorem biprod.inr_comp_prodLift_inl_inr {X Y : C} [HasBinaryBiproduct X Y] :
+    biprod.inr ≫ prod.lift biprod.fst biprod.snd = prod.inr X Y := by
+  simp [prod.inr]
+
 /-- The canonical isomorphism between the chosen biproduct and the chosen coproduct. -/
 def biprod.isoCoprod (X Y : C) [HasBinaryBiproduct X Y] : X ⊞ Y ≅ X ⨿ Y :=
   IsColimit.coconePointUniqueUpToIso (BinaryBiproduct.isColimit X Y) (colimit.isColimit _)
@@ -552,6 +562,16 @@ theorem biprod.isoCoprod_inv {X Y : C} [HasBinaryBiproduct X Y] :
 theorem biprod_isoCoprod_hom {X Y : C} [HasBinaryBiproduct X Y] :
     (biprod.isoCoprod X Y).hom = biprod.desc coprod.inl coprod.inr := by
   ext <;> simp [← Iso.eq_comp_inv]
+
+@[reassoc (attr := simp)]
+theorem biprod.coprodDesc_inl_inr_comp_fst {X Y : C} [HasBinaryBiproduct X Y] :
+    coprod.desc biprod.inl biprod.inr ≫ biprod.fst = coprod.fst X Y := by
+  simp [coprod.fst]
+
+@[reassoc (attr := simp)]
+theorem biprod.coprodDesc_inl_inr_comp_snd {X Y : C} [HasBinaryBiproduct X Y] :
+    coprod.desc biprod.inl biprod.inr ≫ biprod.snd = coprod.snd X Y := by
+  simp [coprod.snd]
 
 theorem biprod.map_eq_map' {W X Y Z : C} [HasBinaryBiproduct W X] [HasBinaryBiproduct Y Z]
     (f : W ⟶ Y) (g : X ⟶ Z) : biprod.map f g = biprod.map' f g := by
