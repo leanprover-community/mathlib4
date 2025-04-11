@@ -271,6 +271,8 @@ def embMap {m n : Type*} (e : m ↪ n) : (n ↪ α) →[G]  (m ↪ α) where
   toFun i := e.trans i
   map_smul' _ _ := rfl
 
+/-- Merge two disjoint embeddings from `Fin m` and `Fin n` into `α`
+  to an embedding from `Fin m + n`. -/
 def _root_.Fin.Embedding.merge {m n p : ℕ}
     (h : m + n = p) (x : Fin m ↪ α) (y : Fin n ↪ ↑(range ⇑x)ᶜ) :
     Fin p ↪ α where
