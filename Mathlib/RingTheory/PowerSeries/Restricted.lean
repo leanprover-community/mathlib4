@@ -72,6 +72,8 @@ lemma add {f g : PowerSeries R} (hf : IsRestricted R f c) (hg : IsRestricted R g
 lemma neg {f : PowerSeries R} (hf : IsRestricted R f c) : IsRestricted R (-f) c := by
   simpa only [IsRestricted, map_neg, norm_neg] using hf
 
+/-- The set of restricted power series over `R` for a parameter `c` forms an additive subgroup of
+    power series over `R`. -/
 def addsubgroup : AddSubgroup (PowerSeries R) where
   carrier := (SetOf R c)
   zero_mem' := zero R c
@@ -83,7 +85,8 @@ def addsubgroup : AddSubgroup (PowerSeries R) where
 instance IsGroup : AddGroup (SetOf R c) :=
   AddSubgroup.toAddGroup (addsubgroup R c)
 
-def convergenceSet (f : PowerSeries R): Set ℝ :=
+/-- The set of `‖coeff R i f‖ * c^i` for a given power series `f` and parameter `c`. -/
+def convergenceSet (f : PowerSeries R) : Set ℝ :=
   {‖coeff R i f‖ * c^i | i : ℕ}
 
 lemma bddabove {f : PowerSeries R} (hf : IsRestricted R f c) : BddAbove (convergenceSet R c f) := by
@@ -162,6 +165,8 @@ lemma mul {f g : PowerSeries R} (hf : IsRestricted R f c) (hg : IsRestricted R g
       (by simpa only [mul_div_left_comm] using ((mul_le_iff_le_one_right hε).mpr
       ((div_le_one₀ (lt_sup_of_lt_left ha)).mpr (le_max_left a b))))
 
+/-- The set of restricted power series over `R` for a parameter `c` are a subring of power series
+    over `R`. -/
 def subring: Subring (PowerSeries R) where
   carrier := SetOf R c
   zero_mem' := zero R c
