@@ -186,7 +186,7 @@ lemma span_coroot_eq_top' {K : Type*} [Field K] [Module K M] [Module K N]
     exact this
   exact Submodule.eq_top_iff'.mpr key
 
-lemma aux {K : Type*} [Field K] [Module K M] [Module K N]
+lemma dual_vanish_aux {K : Type*} [Field K] [Module K M] [Module K N]
     (P : RootSystem ι K M N) (v : M) (h₁ : ∀ (i : ι), v ∈ ker (P.coroot' i))
     (d : Module.Dual K M) : d v = 0 := by
   have : d ∈ span K (range P.coroot') := by
@@ -214,7 +214,7 @@ lemma invtsubmodule_to_root_subset {K : Type*} [Field K] [Module K M] [Module K 
     obtain ⟨v₁, ⟨v₂, v₃⟩⟩ := (Submodule.ne_bot_iff q).1 h₀
     have : ∀ d : Module.Dual K M, d v₁ = 0 := by
       intro d
-      exact aux P v₁ (fun i => c i v₂) d
+      exact dual_vanish_aux P v₁ (fun i => c i v₂) d
     have := (Module.forall_dual_apply_eq_zero_iff K v₁).1 this
     exact False.elim (v₃ this)
   have hu := h₂ Φ (Set.nonempty_iff_ne_empty.mpr hΦ) (image_subset_iff.mpr b) c
