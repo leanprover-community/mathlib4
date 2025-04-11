@@ -112,16 +112,16 @@ def deprecated.moduleLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   if (← get).messages.hasErrors then
     return
-  if ← IsLaterCommand.get then
+  let laterCommand ← IsLaterCommand.get
+  -- If `IsLaterCommand` is `true`, then the linter already did what it was supposed to do.
+  -- If `IsLaterCommand` is `false` at the end of file, the file is an import-only file and
+  -- the linter should not do anything.
+  if laterCommand || (Parser.isTerminalCommand stx && !laterCommand) then
     return
   IsLaterCommand.set true
   let deprecations := deprecatedModuleExt.getState (← getEnv)
   if deprecations.isEmpty then
     return
-  let mainModule ← getMainModule
-  -- `Mathlib.lean` and `Mathlib/Tactic.Lean` are allowed to import deprecated files,
-  -- since they (are expected to) import all modules in certain directories.
-  if #[`Mathlib, `Mathlib.Tactic].contains mainModule then return
   if stx.isOfKind ``Linter.deprecated_modules then return
   let fm ← getFileMap
   let fil ← getFileName
