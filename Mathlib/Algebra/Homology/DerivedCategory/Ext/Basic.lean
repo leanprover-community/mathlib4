@@ -35,10 +35,6 @@ Then, for `C := Sheaf X.etale AddCommGrp.{u}`, we will have
 (as `C` has enough injectives). Then, the `Ext` groups between étale
 sheaves over `X` shall be in `Type u`.
 
-## TODO
-* compute `Ext X Y 0`
-* construct the contravariant long exact sequences of `Ext`.
-
 -/
 
 assert_not_exists TwoSidedIdeal
