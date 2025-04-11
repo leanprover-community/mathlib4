@@ -38,7 +38,7 @@ instance smulCommClass_finset [SMul α γ] [SMul β γ] [SMulCommClass α β γ]
 @[to_additive]
 instance smulCommClass_finset' [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
     SMulCommClass α (Finset β) (Finset γ) :=
-  ⟨fun a s t => coe_injective <| by simp only [coe_smul_finset, coe_smul, smul_comm]⟩
+  ⟨fun a s t => coe_injective <| by simp only [coe_smul_finset, coe_smul]; rw [smul_comm]⟩
 
 @[to_additive]
 instance smulCommClass_finset'' [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
@@ -49,7 +49,7 @@ instance smulCommClass_finset'' [SMul α γ] [SMul β γ] [SMulCommClass α β �
 @[to_additive]
 instance smulCommClass [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
     SMulCommClass (Finset α) (Finset β) (Finset γ) :=
-  ⟨fun s t u => coe_injective <| by simp_rw [coe_smul, smul_comm]⟩
+  ⟨fun s t u => coe_injective <| by simp only [coe_smul]; rw [smul_comm]⟩
 
 @[to_additive vaddAssocClass]
 instance isScalarTower [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :

@@ -344,7 +344,7 @@ protected def Fintype.bilinearCombination : (α → M) →ₗ[S] (α → R) →�
   toFun v := Fintype.linearCombination R v
   map_add' u v := by ext; simp [Fintype.linearCombination,
     Finset.sum_add_distrib, Pi.add_apply, smul_add]
-  map_smul' r v := by ext; simp [Fintype.linearCombination, Finset.smul_sum, smul_comm]
+  map_smul' r v := by ext; simp [Fintype.linearCombination, Finset.smul_sum, smul_comm r]
 
 variable {S}
 

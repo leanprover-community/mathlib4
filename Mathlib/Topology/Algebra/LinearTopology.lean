@@ -203,7 +203,7 @@ lemma hasBasis_subbimodule [IsLinearTopology R M] [IsLinearTopology R' M] :
     _ = uR • (J : Set M) := union_self _
     _ ⊆ S := subset_union_right
   have hR'S : uR' • S ⊆ S := calc
-    uR' • S = uR' • (J : Set M) ∪ uR • uR' • (J : Set M) := by simp_rw [S, smul_union, smul_comm]
+    uR' • S = uR' • (J : Set M) ∪ uR • uR' • (J : Set M) := by simp_rw [S, smul_union, smul_comm uR]
     _ ⊆ J ∪ uR • J := by gcongr
     _ = S := rfl
   set A : AddSubgroup M := .closure S

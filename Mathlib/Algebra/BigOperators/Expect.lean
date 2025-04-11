@@ -294,7 +294,7 @@ lemma card_smul_expect (s : Finset ι) (f : ι → M) : #s • 𝔼 i ∈ s, f i
 
 lemma smul_expect {G : Type*} [DistribSMul G M] [SMulCommClass G ℚ≥0 M] (a : G)
     (s : Finset ι) (f : ι → M) : a • 𝔼 i ∈ s, f i = 𝔼 i ∈ s, a • f i := by
-  simp only [expect, smul_sum, smul_comm]
+  simp only [expect, smul_sum, smul_comm a]
 
 end AddCommMonoid
 

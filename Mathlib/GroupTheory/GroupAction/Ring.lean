@@ -45,7 +45,7 @@ instance NonUnitalNonAssocRing.int_smulCommClass [NonUnitalNonAssocRing α] :
     SMulCommClass ℤ α α where
   smul_comm n x y :=
     match n with
-    | (n : ℕ) => by simp_rw [natCast_zsmul, smul_comm]
+    | (n : ℕ) => by rw [natCast_zsmul, natCast_zsmul, smul_comm]
     | -[n+1] => by simp_rw [negSucc_zsmul, smul_eq_mul, mul_neg, mul_smul_comm]
 
 /-- Note that `AddCommGroup.int_isScalarTower` requires stronger assumptions on `α`. -/

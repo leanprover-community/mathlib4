@@ -125,7 +125,7 @@ theorem weightedSMul_union (s t : Set α) (_hs : MeasurableSet s) (ht : Measurab
 
 theorem weightedSMul_smul [SMul 𝕜 F] [SMulCommClass ℝ 𝕜 F] (c : 𝕜)
     (s : Set α) (x : F) : weightedSMul μ s (c • x) = c • weightedSMul μ s x := by
-  simp_rw [weightedSMul_apply, smul_comm]
+  simp_rw [weightedSMul_apply, smul_comm c]
 
 theorem norm_weightedSMul_le (s : Set α) : ‖(weightedSMul μ s : F →L[ℝ] F)‖ ≤ (μ s).toReal :=
   calc

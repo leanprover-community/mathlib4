@@ -44,7 +44,7 @@ def MellinConvergent (f : ℝ → E) (s : ℂ) : Prop :=
 theorem MellinConvergent.const_smul {f : ℝ → E} {s : ℂ} (hf : MellinConvergent f s) {𝕜 : Type*}
     [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] [SMulCommClass ℂ 𝕜 E] (c : 𝕜) :
     MellinConvergent (fun t => c • f t) s := by
-  simpa only [MellinConvergent, smul_comm] using hf.smul c
+  simpa only [MellinConvergent, smul_comm _ c] using hf.smul c
 
 theorem MellinConvergent.cpow_smul {f : ℝ → E} {s a : ℂ} :
     MellinConvergent (fun t => (t : ℂ) ^ a • f t) s ↔ MellinConvergent f (s + a) := by
@@ -101,7 +101,8 @@ theorem mellin_cpow_smul (f : ℝ → E) (s a : ℂ) :
 
 theorem mellin_const_smul (f : ℝ → E) (s : ℂ) {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     [NormedSpace 𝕜 E] [SMulCommClass ℂ 𝕜 E] (c : 𝕜) :
-    mellin (fun t => c • f t) s = c • mellin f s := by simp only [mellin, smul_comm, integral_smul]
+    mellin (fun t => c • f t) s = c • mellin f s := by
+      simp only [mellin, smul_comm _ c, integral_smul]
 
 theorem mellin_div_const (f : ℝ → ℂ) (s a : ℂ) : mellin (fun t => f t / a) s = mellin f s / a := by
   simp_rw [mellin, smul_eq_mul, ← mul_div_assoc, integral_div]

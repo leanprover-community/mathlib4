@@ -462,7 +462,7 @@ instance [SMul R S] [IsScalarTower R S V] : IsScalarTower R S (HahnSeries Γ V) 
 instance [SMulCommClass R S V] : SMulCommClass R S (HahnSeries Γ V) :=
   ⟨fun r s a => by
     ext
-    simp [smul_comm]⟩
+    simp_rw [coeff_smul, smul_comm r]⟩
 
 end DistribMulAction
 

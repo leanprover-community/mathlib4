@@ -611,7 +611,7 @@ instance monoid [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulActio
         show
           (x.1 * y.1) •> z.2 + (x.1 •> y.2 + x.2 <• y.1) <• z.1 =
             x.1 •> (y.1 •> z.2 + y.2 <• z.1) + x.2 <• (y.1 * z.1)
-          by simp_rw [smul_add, ← mul_smul, add_assoc, smul_comm, op_mul]
+          by simp_rw [smul_add, ← mul_smul, add_assoc, op_mul]; rw [smul_comm]
     npow := fun n x => x ^ n
     npow_zero := fun x => ext (pow_zero x.fst) (by simp [snd_pow_eq_sum])
     npow_succ := fun n x =>
@@ -740,7 +740,7 @@ abbrev invertibleOfInvertibleFst (x : tsze R M) [Invertible x.fst] : Invertible 
     ext <;> simp
   mul_invOf_self := by
     convert mul_right_eq_one _ _ (mul_invOf_self x.fst)
-    ext <;> simp [smul_comm]
+    ext <;> simp [smul_comm (⅟ x.fst)]
 
 theorem snd_invOf (x : tsze R M) [Invertible x] [Invertible x.fst] :
     (⅟x).snd = -(⅟x.fst •> x.snd <• ⅟x.fst) := by

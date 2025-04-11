@@ -274,7 +274,7 @@ protected theorem Balanced.convexHull (hs : Balanced 𝕜 s) : Balanced 𝕜 (co
     refine fun a ha x hx => convexHull_min ?_ this hx a ha
     exact fun y hy a ha => subset_convexHull ℝ s (hs ha hy)
   intro x hx y hy u v hu hv huv a ha
-  simp only [smul_add, ← smul_comm]
+  simp only [smul_add, smul_comm a u x, smul_comm a v y]
   exact convex_convexHull ℝ s (hx a ha) (hy a ha) hu hv huv
 
 end NontriviallyNormedField

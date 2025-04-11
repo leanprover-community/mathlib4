@@ -734,7 +734,7 @@ instance : SMul S (M →ₛₗ[σ₁₂] M₂) :=
   ⟨fun a f ↦
     { toFun := a • (f : M → M₂)
       map_add' := fun x y ↦ by simp only [Pi.smul_apply, f.map_add, smul_add]
-      map_smul' := fun c x ↦ by simp [Pi.smul_apply, smul_comm] }⟩
+      map_smul' := fun c x ↦ by simp only [Pi.smul_apply, LinearMap.map_smulₛₗ]; rw [smul_comm] }⟩
 
 @[simp]
 theorem smul_apply (a : S) (f : M →ₛₗ[σ₁₂] M₂) (x : M) : (a • f) x = a • f x :=

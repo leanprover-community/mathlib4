@@ -60,7 +60,7 @@ come from actions on `ℝ`). See https://github.com/leanprover-community/mathlib
 
 -- priority manually adjusted in https://github.com/leanprover-community/mathlib4/pull/11980
 instance (priority := 90) [SMul R ℝ] [SMul S ℝ] [SMulCommClass R S ℝ] : SMulCommClass R S ℂ where
-  smul_comm r s x := by ext <;> simp [smul_re, smul_im, smul_comm]
+  smul_comm r s x := by ext <;> simp [smul_re, smul_im, smul_comm r]
 
 -- priority manually adjusted in https://github.com/leanprover-community/mathlib4/pull/11980
 instance (priority := 90) [SMul R S] [SMul R ℝ] [SMul S ℝ] [IsScalarTower R S ℝ] :
