@@ -76,7 +76,7 @@ lemma eq_top_iff_forall_eccent_eq_one [Nontrivial α] :
     G = ⊤ ↔ ∀ u, G.eccent u = 1 := by
   refine ⟨fun h ↦ h ▸ eccent_top, fun h ↦ ?_⟩
   ext u v
-  exact ⟨Adj.ne, fun huv ↦ edist_eq_one_iff_adj.mp <| le_antisymm ((h u).symm ▸ edist_le_ecc u v)
+  exact ⟨Adj.ne, fun huv ↦ edist_eq_one_iff_adj.mp <| le_antisymm ((h u).symm ▸ edist_le_eccent u v)
   <| Order.one_le_iff_pos.mpr <| pos_iff_ne_zero.mpr <| edist_eq_zero_iff.ne.mpr huv.ne⟩
 
 end eccent
@@ -334,8 +334,9 @@ lemma ediam_le_radius_mul_two [Finite α] : G.ediam ≤ 2 * G.radius := by
   · by_cases h : G.Connected
     · obtain ⟨u, v, h⟩ := G.exists_edist_eq_ediam_of_ne_top (connected_iff_ediam_ne_top.mp h)
       obtain ⟨w, hw⟩ := G.center_nonempty
-      exact le_trans (h.symm ▸ G.edist_triangle (v := w))
-      <| two_mul G.radius ▸ hw ▸ add_le_add (G.edist_comm ▸ G.edist_le_ecc w u) (G.edist_le_ecc w v)
+      apply le_trans (h ▸ G.edist_triangle (v := w))
+      rw [two_mul]
+      exact hw ▸ add_le_add (G.edist_comm ▸ G.edist_le_eccent w u) (G.edist_le_eccent w v)
     · rw [G.radius_eq_top_of_not_connected h]
       exact le_top
 
