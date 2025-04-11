@@ -39,7 +39,8 @@ protected def Measure.real (s : Set α) : ℝ :=
 
 theorem measureReal_def (s : Set α) : μ.real s = (μ s).toReal := rfl
 
-/-- The nnreal-valued version of a measure. Maps infinite measure sets to zero. Use as `μ.nnreal s`. -/
+/-- The nnreal-valued version of a measure. Maps infinite measure sets to zero.
+Use as `μ.nnreal s`. -/
 protected def Measure.nnreal (s : Set α) : ℝ≥0 :=
   (μ s).toNNReal
 
