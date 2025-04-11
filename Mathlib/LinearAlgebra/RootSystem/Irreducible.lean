@@ -200,30 +200,6 @@ lemma aux {K : Type*} [Field K] [Module K M] [Module K N]
   | add _ _ _ _ a₁ a₂ => rw [LinearMap.add_apply, a₁, a₂, add_zero]
   | smul _ _ _ m => rw [LinearMap.smul_apply, smul_eq_mul, m, mul_zero]
 
-lemma l3 {K : Type*} [Field K] [Module K M] [Module K N]
-    (P : RootSystem ι K M N) (q : Submodule K M) (h₁ : ∀ i, q ∈ invtSubmodule (P.reflection i))
-    (h_bot: q ≠ ⊥) (h_top: q ≠ ⊤) :
-    ∃ (Φ : Set ι), (∀ i ∈ Φ, P.root i ∈ q) ∧ (∀ i ∉ Φ, q ≤ LinearMap.ker (P.coroot' i)) ∧
-    Φ ≠ univ ∧ Φ ≠ ∅ := by
-  obtain ⟨Φ, b, c⟩ := root_subset_characterization q P.toRootPairing h₁
-  use Φ
-  constructor
-  · exact b
-  constructor
-  · exact c
-  constructor
-  · by_contra h
-    subst h
-    have : q = ⊤ := by
-      rw [eq_top_mono (span_le.mpr (image_subset_iff.mpr b)) (by rw [image_univ,
-      RootSystem.span_root_eq_top])]
-    exact False.elim (h_top this)
-  by_contra h
-  subst h
-  obtain ⟨v₁, ⟨v₂, _⟩⟩ := ((Submodule.ne_bot_iff q).1 h_bot)
-  have := (Module.forall_dual_apply_eq_zero_iff K v₁).1 (aux P v₁ (fun i ↦ c i (fun a ↦ a) v₂))
-  contradiction
-
 lemma invtsubmodule_to_root_subset {K : Type*} [Field K] [Module K M] [Module K N]
     (P : RootSystem ι K M N)
     (q : Submodule K M)
@@ -231,10 +207,21 @@ lemma invtsubmodule_to_root_subset {K : Type*} [Field K] [Module K M] [Module K 
     (h₁ : ∀ i, q ∈ invtSubmodule (P.reflection i))
     (h₂ : ∀ Φ, Φ.Nonempty → P.root '' Φ ⊆ q → (∀ i ∉ Φ, q ≤ ker (P.coroot' i)) → Φ = univ) :
     q = ⊤ := by
-  by_contra ntop
-  have := l3 P q h₁ h₀ ntop
-  obtain ⟨Φ, b, c, d, e⟩ := this
-  have s := h₂ Φ (nonempty_iff_ne_empty.mpr e) (image_subset_iff.mpr b) c
-  exact False.elim (d s)
+  by_contra ntopp
+  obtain ⟨Φ, b, c⟩ := root_subset_characterization q P.toRootPairing h₁
+  by_cases hΦ : Φ = ∅
+  · subst hΦ
+    simp at c
+    obtain ⟨v₁, ⟨v₂, _⟩⟩ := (Submodule.ne_bot_iff q).1 h₀
+    have : ∀ d : Module.Dual K M, d v₁ = 0 := by
+      intro d
+      exact aux P v₁ (fun i => c i v₂) d
+    have := (Module.forall_dual_apply_eq_zero_iff K v₁).1 this
+    contradiction
+  · have hu := h₂ Φ (Set.nonempty_iff_ne_empty.mpr hΦ) (image_subset_iff.mpr b) c
+    subst hu
+    have : q = ⊤ := by
+      rw [eq_top_mono (span_le.mpr (image_subset_iff.mpr b)) (by rw [image_univ, RootSystem.span_root_eq_top])]
+    contradiction
 
 end RootPairing
