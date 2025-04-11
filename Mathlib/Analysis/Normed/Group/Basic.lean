@@ -100,13 +100,14 @@ class ContinuousENorm (E : Type*) [TopologicalSpace E] extends ENorm E where
   continuous_enorm : Continuous enorm
 
 /-- An enormed monoid is an additive monoid endowed with a continuous enorm. -/
-class ENormedAddMonoid (E : Type*) [TopologicalSpace E] extends ContinuousENorm E, AddMonoid E where
+class ENormedAddMonoid (E : Type*) [TopologicalSpace E] [AddMonoid E] extends
+    ContinuousENorm E where
   enorm_eq_zero : ∀ x : E, ‖x‖ₑ = 0 ↔ x = 0
   protected enorm_add_le : ∀ x y : E, ‖x + y‖ₑ ≤ ‖x‖ₑ + ‖y‖ₑ
 
 /-- An enormed monoid is a monoid endowed with a continuous enorm. -/
 @[to_additive]
-class ENormedMonoid (E : Type*) [TopologicalSpace E] extends ContinuousENorm E, Monoid E where
+class ENormedMonoid (E : Type*) [TopologicalSpace E] [Monoid E] extends ContinuousENorm E where
   enorm_eq_zero : ∀ x : E, ‖x‖ₑ = 0 ↔ x = 1
   enorm_mul_le : ∀ x y : E, ‖x * y‖ₑ ≤ ‖x‖ₑ + ‖y‖ₑ
 
@@ -116,12 +117,18 @@ endowed with a continuous enorm.
 We don't have `ENormedAddCommMonoid` extend `EMetricSpace`, since the canonical instance `ℝ≥0∞`
 is not an `EMetricSpace`. This is because `ℝ≥0∞` carries the order topology, which is distinct from
 the topology coming from `edist`. -/
-class ENormedAddCommMonoid (E : Type*) [TopologicalSpace E]
-  extends ENormedAddMonoid E, AddCommMonoid E where
+@[deprecated "Use `[TopologicalSpace E] [AddCommMonoid E] [ENormedAddMonoid]` instead."
+  (since := "2025-04-12")]
+structure ENormedAddCommMonoid (E : Type*) [TopologicalSpace E] extends
+    AddCommMonoid E, ENormedAddMonoid E where
 
+set_option linter.existingAttributeWarning false in
 /-- An enormed commutative monoid is a commutative monoid endowed with a continuous enorm. -/
-@[to_additive]
-class ENormedCommMonoid (E : Type*) [TopologicalSpace E] extends ENormedMonoid E, CommMonoid E where
+@[to_additive,
+  deprecated "Use `[TopologicalSpace E] [CommMonoid E] [ENormedMonoid]` instead."
+  (since := "2025-04-12")]
+structure ENormedCommMonoid (E : Type*) [TopologicalSpace E] extends
+    CommMonoid E, ENormedMonoid E where
 
 /-- A seminormed group is an additive group endowed with a norm for which `dist x y = ‖x - y‖`
 defines a pseudometric space structure. -/
@@ -849,11 +856,12 @@ end NNNorm
 section ENorm
 
 @[to_additive (attr := simp) enorm_zero]
-lemma enorm_one' {E : Type*} [TopologicalSpace E] [ENormedMonoid E] : ‖(1 : E)‖ₑ = 0 := by
+lemma enorm_one' {E : Type*} [TopologicalSpace E] [Monoid E] [ENormedMonoid E] :
+    ‖(1 : E)‖ₑ = 0 := by
   rw [ENormedMonoid.enorm_eq_zero]
 
 @[to_additive exists_enorm_lt]
-lemma exists_enorm_lt' (E : Type*) [TopologicalSpace E] [ENormedMonoid E]
+lemma exists_enorm_lt' (E : Type*) [TopologicalSpace E] [Monoid E] [ENormedMonoid E]
     [hbot : NeBot (𝓝[≠] (1 : E))] {c : ℝ≥0∞} (hc : c ≠ 0) : ∃ x ≠ (1 : E), ‖x‖ₑ < c :=
   frequently_iff_neBot.mpr hbot |>.and_eventually
     (ContinuousENorm.continuous_enorm.tendsto' 1 0 (by simp) |>.eventually_lt_const hc.bot_lt)
@@ -921,7 +929,7 @@ end ContinuousENorm
 
 section ENormedMonoid
 
-variable {E : Type*} [TopologicalSpace E] [ENormedMonoid E]
+variable {E : Type*} [TopologicalSpace E] [Monoid E] [ENormedMonoid E]
 
 @[to_additive enorm_add_le]
 lemma enorm_mul_le' (a b : E) : ‖a * b‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ := ENormedMonoid.enorm_mul_le a b
