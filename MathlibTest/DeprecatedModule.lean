@@ -7,7 +7,7 @@ deprecated_module since 2025-04-10
 info: Deprecated modules
 
 'MathlibTest.DeprecatedModule' deprecates to
-#[Mathlib.Tactic.Linter.DeprecatedModule, Mathlib.Tactic.Basic]
+#[Mathlib.Tactic.Basic]
 -/
 #guard_msgs in
 #show_deprecated_modules
@@ -19,7 +19,7 @@ deprecated_module since 2025-02-31
 info: Deprecated modules
 
 'MathlibTest.DeprecatedModule' deprecates to
-#[Mathlib.Tactic.Linter.DeprecatedModule, Mathlib.Tactic.Basic]
+#[Mathlib.Tactic.Basic]
 -/
 #guard_msgs in
 #show_deprecated_modules

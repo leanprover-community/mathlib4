@@ -59,11 +59,16 @@ current module name and the array of its direct imports.
 
 It ignores the `Init` import, since this is a special module that is expected to be imported
 by all files.
+
+It also ignores the `Mathlib.Tactic.Linter.DeprecatedModule` import (namely, the current file),
+since there is no need to import this module.
 -/
 def addModuleDeprecation {m : Type → Type} [Monad m] [MonadEnv m] [MonadQuotation m] : m Unit := do
+  let modName ← getMainModule
   modifyEnv (deprecatedModuleExt.addEntry ·
-    (← getMainModule, (← getEnv).imports.filterMap fun i ↦
-      if i.module == `Init then none else i.module))
+    (modName, (← getEnv).imports.filterMap fun i ↦
+      if i.module == `Init ||
+         i.module == `Mathlib.Tactic.Linter.DeprecatedModule then none else i.module))
 
 /--
 `deprecated_module since yyyy-mm-dd` deprecates the current module `A` in favour of
