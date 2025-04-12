@@ -85,29 +85,39 @@ instance NormalSpace.instCompletelyRegularSpace [NormalSpace X] : CompletelyRegu
 
 /-- A T₃.₅ space is a completely regular space that is also T1. -/
 @[mk_iff]
-class T35Space (X : Type u) [TopologicalSpace X] extends T1Space X, CompletelyRegularSpace X : Prop
+class T35Space (X : Type u) [TopologicalSpace X] : Prop extends T1Space X, CompletelyRegularSpace X
 
 instance T35Space.instT3space [T35Space X] : T3Space X := {}
 
 instance T4Space.instT35Space [T4Space X] : T35Space X := {}
 
-lemma separatesPoints_continuous_of_t35Space [T35Space X] :
+lemma separatesPoints_continuous_of_completelyRegularSpace [CompletelyRegularSpace X] :
     SeparatesPoints (Continuous : Set (X → ℝ)) := by
   intro x y x_ne_y
   obtain ⟨f, f_cont, f_zero, f_one⟩ :=
     CompletelyRegularSpace.completely_regular x {y} isClosed_singleton x_ne_y
   exact ⟨fun x ↦ f x, continuous_subtype_val.comp f_cont, by aesop⟩
 
-lemma separatesPoints_continuous_of_t35Space_Icc [T35Space X] :
+@[deprecated (since := "2025-03-21")]
+alias separatesPoints_continuous_of_t35Space := separatesPoints_continuous_of_completelyRegularSpace
+
+lemma separatesPoints_continuous_of_completelyRegularSpace_Icc [CompletelyRegularSpace X] :
     SeparatesPoints (Continuous : Set (X → I)) := by
   intro x y x_ne_y
   obtain ⟨f, f_cont, f_zero, f_one⟩ :=
     CompletelyRegularSpace.completely_regular x {y} isClosed_singleton x_ne_y
   exact ⟨f, f_cont, by aesop⟩
 
-lemma injective_stoneCechUnit_of_t35Space [T35Space X] :
+@[deprecated (since := "2025-03-21")]
+alias separatesPoints_continuous_of_t35Space_Icc :=
+  separatesPoints_continuous_of_completelyRegularSpace_Icc
+
+lemma injective_stoneCechUnit_of_completelyRegularSpace [CompletelyRegularSpace X] :
     Function.Injective (stoneCechUnit : X → StoneCech X) := by
   intros a b hab
   contrapose hab
-  obtain ⟨f, fc, fab⟩ := separatesPoints_continuous_of_t35Space_Icc hab
+  obtain ⟨f, fc, fab⟩ := separatesPoints_continuous_of_completelyRegularSpace_Icc hab
   exact fun q ↦ fab (eq_if_stoneCechUnit_eq fc q)
+
+@[deprecated (since := "2025-03-21")]
+alias injective_stoneCechUnit_of_t35Space := injective_stoneCechUnit_of_completelyRegularSpace

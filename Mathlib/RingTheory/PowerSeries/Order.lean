@@ -211,7 +211,7 @@ theorem coeff_mul_of_lt_order {φ ψ : R⟦X⟧} {n : ℕ} (h : ↑n < ψ.order)
   norm_cast
   omega
 
-theorem coeff_mul_one_sub_of_lt_order {R : Type*} [CommRing R] {φ ψ : R⟦X⟧} (n : ℕ)
+theorem coeff_mul_one_sub_of_lt_order {R : Type*} [Ring R] {φ ψ : R⟦X⟧} (n : ℕ)
     (h : ↑n < ψ.order) : coeff R n (φ * (1 - ψ)) = coeff R n φ := by
   simp [coeff_mul_of_lt_order h, mul_sub]
 
@@ -315,7 +315,7 @@ variable [CommRing R] [IsDomain R]
 theorem order_mul (φ ψ : R⟦X⟧) : order (φ * ψ) = order φ + order ψ := by
   classical
   simp only [order_eq_emultiplicity_X]
-  rw [emultiplicity_mul X_prime]
+  exact emultiplicity_mul X_prime
 
 -- Dividing `X` by the maximal power of `X` dividing it leaves `1`.
 @[simp]

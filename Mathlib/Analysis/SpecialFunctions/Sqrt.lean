@@ -3,7 +3,7 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Basic
+import Mathlib.Analysis.Calculus.ContDiff.Operations
 import Mathlib.Analysis.Calculus.Deriv.Pow
 
 /-!
@@ -42,7 +42,7 @@ noncomputable def sqPartialHomeomorph : PartialHomeomorph ℝ ℝ where
 
 theorem deriv_sqrt_aux {x : ℝ} (hx : x ≠ 0) :
     HasStrictDerivAt (√·) (1 / (2 * √x)) x ∧ ∀ n, ContDiffAt ℝ n (√·) x := by
-  cases' hx.lt_or_lt with hx hx
+  rcases hx.lt_or_lt with hx | hx
   · rw [sqrt_eq_zero_of_nonpos hx.le, mul_zero, div_zero]
     have : (√·) =ᶠ[𝓝 x] fun _ => 0 := (gt_mem_nhds hx).mono fun x hx => sqrt_eq_zero_of_nonpos hx.le
     exact

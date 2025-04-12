@@ -97,7 +97,7 @@ section count
 
 variable [DecidableEq (Associates α)]
 
-/-- `bcount p s` is the multiplicity of `p` in the FactorSet `s` (with bundled `p`)-/
+/-- `bcount p s` is the multiplicity of `p` in the FactorSet `s` (with bundled `p`). -/
 def bcount (p : { a : Associates α // Irreducible a }) :
     FactorSet α → ℕ
   | ⊤ => 0
@@ -246,8 +246,6 @@ theorem factors_subsingleton [Subsingleton α] {a : Associates α} : a.factors =
 theorem factors_eq_top_iff_zero {a : Associates α} : a.factors = ⊤ ↔ a = 0 := by
   nontriviality α
   exact ⟨fun h ↦ by rwa [← factors_prod a, FactorSet.prod_eq_zero_iff], fun h ↦ h ▸ factors_zero⟩
-
-@[deprecated (since := "2024-04-16")] alias factors_eq_none_iff_zero := factors_eq_top_iff_zero
 
 theorem factors_eq_some_iff_ne_zero {a : Associates α} :
     (∃ s : Multiset { p : Associates α // Irreducible p }, a.factors = s) ↔ a ≠ 0 := by
@@ -525,7 +523,7 @@ theorem count_mul_of_coprime {a : Associates α} {b : Associates α}
     count p a.factors = 0 ∨ count p a.factors = count p (a * b).factors := by
   by_cases ha : a = 0
   · simp [ha]
-  cases' count_of_coprime ha hb hab hp with hz hb0; · tauto
+  rcases count_of_coprime ha hb hab hp with hz | hb0; · tauto
   apply Or.intro_right
   rw [count_mul ha hb hp, hb0, add_zero]
 
@@ -537,7 +535,7 @@ theorem count_mul_of_coprime' {a b : Associates α} {p : Associates α}
   by_cases hb : b = 0
   · simp [hb]
   rw [count_mul ha hb hp]
-  cases' count_of_coprime ha hb hab hp with ha0 hb0
+  rcases count_of_coprime ha hb hab hp with ha0 | hb0
   · apply Or.intro_right
     rw [ha0, zero_add]
   · apply Or.intro_left
@@ -548,7 +546,7 @@ theorem dvd_count_of_dvd_count_mul {a b : Associates α} (hb : b ≠ 0)
     (habk : k ∣ count p (a * b).factors) : k ∣ count p a.factors := by
   by_cases ha : a = 0
   · simpa [*] using habk
-  cases' count_of_coprime ha hb hab hp with hz h
+  rcases count_of_coprime ha hb hab hp with hz | h
   · rw [hz]
     exact dvd_zero k
   · rw [count_mul ha hb hp, h] at habk
@@ -612,7 +610,7 @@ theorem count_factors_eq_find_of_dvd_pow {a p : Associates α}
     symm
     exact eq_pow_count_factors_of_dvd_pow hp h
   · have hph := pow_ne_zero (@Nat.find (fun n => a ∣ p ^ n) _ ⟨n, h⟩) hp.ne_zero
-    cases' subsingleton_or_nontrivial α with hα hα
+    rcases subsingleton_or_nontrivial α with hα | hα
     · simp [eq_iff_true_of_subsingleton] at hph
     convert count_le_count_of_le hph hp (@Nat.find_spec (fun n => a ∣ p ^ n) _ ⟨n, h⟩)
     rw [count_pow hp.ne_zero hp, count_self hp, mul_one]

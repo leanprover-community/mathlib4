@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Data.DFinsupp.Defs
-import Mathlib.Logic.Equiv.List
+import Mathlib.Logic.Encodable.Pi
 /-!
 # `Encodable` and `Countable` instances for `Π₀ i, α i`
 

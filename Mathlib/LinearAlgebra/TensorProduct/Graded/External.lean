@@ -150,7 +150,7 @@ theorem gradedComm_one_tmul [DirectSum.GRing 𝒜] (b : ⨁ i, ℬ i) :
     gradedComm R 𝒜 ℬ (1 ⊗ₜ b) = b ⊗ₜ 1 :=
   gradedComm_of_zero_tmul _ _ _ _ _
 
-@[simp, nolint simpNF] -- linter times out
+@[simp]
 theorem gradedComm_one [DirectSum.GRing 𝒜] [DirectSum.GRing ℬ] : gradedComm R 𝒜 ℬ 1 = 1 :=
   gradedComm_one_tmul _ _ _ _
 

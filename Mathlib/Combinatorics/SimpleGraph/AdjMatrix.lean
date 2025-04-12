@@ -121,7 +121,7 @@ theorem compl [Zero α] [One α] (h : IsAdjMatrix A) : IsAdjMatrix A.compl :=
 theorem toGraph_compl_eq [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) :
     h.compl.toGraph = h.toGraphᶜ := by
   ext v w
-  cases' h.zero_or_one v w with h h <;> by_cases hvw : v = w <;> simp [Matrix.compl, h, hvw]
+  rcases h.zero_or_one v w with h | h <;> by_cases hvw : v = w <;> simp [Matrix.compl, h, hvw]
 
 end IsAdjMatrix
 
@@ -134,14 +134,12 @@ open Matrix
 namespace SimpleGraph
 
 variable (G : SimpleGraph V) [DecidableRel G.Adj]
-variable (α)
 
+variable (α) in
 /-- `adjMatrix G α` is the matrix `A` such that `A i j = (1 : α)` if `i` and `j` are
   adjacent in the simple graph `G`, and otherwise `A i j = 0`. -/
 def adjMatrix [Zero α] [One α] : Matrix V V α :=
   of fun i j => if G.Adj i j then (1 : α) else 0
-
-variable {α}
 
 -- TODO: set as an equation lemma for `adjMatrix`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
@@ -176,7 +174,7 @@ variable {α}
 
 /-- The sum of the identity, the adjacency matrix, and its complement is the all-ones matrix. -/
 theorem one_add_adjMatrix_add_compl_adjMatrix_eq_allOnes [DecidableEq V] [DecidableEq α]
-    [NonAssocSemiring α] : 1 + G.adjMatrix α + (G.adjMatrix α).compl = Matrix.of fun _ _ ↦ 1 := by
+    [AddMonoidWithOne α] : 1 + G.adjMatrix α + (G.adjMatrix α).compl = Matrix.of fun _ _ ↦ 1 := by
   ext i j
   unfold Matrix.compl
   rw [of_apply, add_apply, adjMatrix_apply, add_apply, adjMatrix_apply, one_apply]
@@ -218,13 +216,10 @@ theorem mul_adjMatrix_apply [NonAssocSemiring α] (M : Matrix V V α) (v w : V) 
     (M * G.adjMatrix α) v w = ∑ u ∈ G.neighborFinset w, M v u := by
   simp [mul_apply, neighborFinset_eq_filter, sum_filter, adj_comm]
 
-variable (α)
-
+variable (α) in
 @[simp]
 theorem trace_adjMatrix [AddCommMonoid α] [One α] : Matrix.trace (G.adjMatrix α) = 0 := by
   simp [Matrix.trace]
-
-variable {α}
 
 theorem adjMatrix_mul_self_apply_self [NonAssocSemiring α] (i : V) :
     (G.adjMatrix α * G.adjMatrix α) i i = degree G i := by simp [filter_true_of_mem]
@@ -241,16 +236,17 @@ theorem adjMatrix_mulVec_const_apply_of_regular [NonAssocSemiring α] {d : ℕ} 
 theorem adjMatrix_pow_apply_eq_card_walk [DecidableEq V] [Semiring α] (n : ℕ) (u v : V) :
     (G.adjMatrix α ^ n) u v = Fintype.card { p : G.Walk u v | p.length = n } := by
   rw [card_set_walk_length_eq]
-  induction' n with n ih generalizing u v
-  · obtain rfl | h := eq_or_ne u v <;> simp [finsetWalkLength, *]
-  · simp only [pow_succ', finsetWalkLength, ih, adjMatrix_mul_apply]
+  induction n generalizing u v with
+  | zero => obtain rfl | h := eq_or_ne u v <;> simp [finsetWalkLength, *]
+  | succ n ih =>
+    simp only [pow_succ', finsetWalkLength, ih, adjMatrix_mul_apply]
     rw [Finset.card_biUnion]
     · norm_cast
       simp only [Nat.cast_sum, card_map, neighborFinset_def]
       apply Finset.sum_toFinset_eq_subtype
     -- Disjointness for card_bUnion
     · rintro ⟨x, hx⟩ - ⟨y, hy⟩ - hxy
-      rw [disjoint_iff_inf_le]
+      rw [Function.onFun, disjoint_iff_inf_le]
       intro p hp
       simp only [inf_eq_inter, mem_inter, mem_map, Function.Embedding.coeFn_mk, exists_prop] at hp
       obtain ⟨⟨px, _, rfl⟩, ⟨py, hpy, hp⟩⟩ := hp

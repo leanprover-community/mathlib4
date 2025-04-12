@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
 import Mathlib.Algebra.GCDMonoid.Basic
+import Mathlib.Algebra.Order.Group.Multiset
 import Mathlib.Data.Multiset.FinsetOps
 import Mathlib.Data.Multiset.Fold
 
@@ -193,9 +194,6 @@ theorem extract_gcd' (s t : Multiset α) (hs : ∃ x, x ∈ s ∧ x ≠ (0 : α)
     contrapose! hs
     exact s.gcd_eq_zero_iff.1 hs
 
-/- Porting note: The old proof used a strange form
-`have := _, refine ⟨s.pmap @f (fun _ ↦ id), this, extract_gcd' s _ h this⟩,`
-so I rearranged the proof slightly. -/
 theorem extract_gcd (s : Multiset α) (hs : s ≠ 0) :
     ∃ t : Multiset α, s = t.map (s.gcd * ·) ∧ t.gcd = 1 := by
   classical

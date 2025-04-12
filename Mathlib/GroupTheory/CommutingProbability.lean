@@ -3,7 +3,8 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Algebra.CharZero.Lemmas
+import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.Data.Nat.Cast.Field
 import Mathlib.GroupTheory.Abelianization
 import Mathlib.GroupTheory.GroupAction.CardCommute
 import Mathlib.GroupTheory.SpecificGroups.Dihedral

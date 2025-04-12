@@ -94,37 +94,14 @@ theorem of_decide_false {p : Prop} [Decidable p] : decide p = false → ¬p :=
 theorem decide_congr {p q : Prop} [Decidable p] [Decidable q] (h : p ↔ q) : decide p = decide q :=
   decide_eq_decide.mpr h
 
-@[deprecated (since := "2024-06-07")] alias coe_or_iff := or_eq_true_iff
-
-@[deprecated (since := "2024-06-07")] alias coe_and_iff := and_eq_true_iff
-
 theorem coe_xor_iff (a b : Bool) : xor a b ↔ Xor' (a = true) (b = true) := by
   cases a <;> cases b <;> decide
 
 end
 
-@[deprecated (since := "2024-06-07")] alias decide_True := decide_true
-
-@[deprecated (since := "2024-06-07")] alias decide_False := decide_false
-
-@[deprecated (since := "2024-06-07")] alias coe_decide := decide_eq_true_iff
-
-@[deprecated decide_eq_true_iff (since := "2024-06-07")]
-alias of_decide_iff := decide_eq_true_iff
-
-@[deprecated (since := "2024-06-07")] alias decide_not := decide_not
-
-@[deprecated (since := "2024-06-07")] alias not_false' := false_ne_true
-
-@[deprecated (since := "2024-06-07")] alias eq_iff_eq_true_iff := eq_iff_iff
-
 theorem dichotomy (b : Bool) : b = false ∨ b = true := by cases b <;> simp
 
 theorem not_ne_id : not ≠ id := fun h ↦ false_ne_true <| congrFun h true
-
-@[deprecated (since := "2024-06-07")] alias eq_true_of_ne_false := eq_true_of_ne_false
-
-@[deprecated (since := "2024-06-07")] alias eq_false_of_ne_true := eq_false_of_ne_true
 
 theorem or_inl {a b : Bool} (H : a) : a || b := by simp [H]
 
@@ -143,15 +120,13 @@ lemma not_eq_iff : ∀ {a b : Bool}, !a = b ↔ a ≠ b := by decide
 theorem ne_not {a b : Bool} : a ≠ !b ↔ a = b :=
   not_eq_not
 
-@[deprecated (since := "2024-06-07")] alias not_ne := not_not_eq
-
 lemma not_ne_self : ∀ b : Bool, (!b) ≠ b := by decide
 
 lemma self_ne_not : ∀ b : Bool, b ≠ !b := by decide
 
 lemma eq_or_eq_not : ∀ a b, a = b ∨ a = !b := by decide
 
--- Porting note: naming issue again: these two `not` are different.
+-- TODO naming issue: these two `not` are different.
 theorem not_iff_not : ∀ {b : Bool}, !b ↔ ¬b := by simp
 
 theorem eq_true_of_not_eq_false' {a : Bool} : !a = false → a = true := by

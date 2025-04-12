@@ -41,9 +41,6 @@ theorem GradedAlgebra.ι_apply (m : M) :
 instance : SetLike.GradedMonoid fun i : ℕ ↦ ⋀[R]^i M :=
   Submodule.nat_power_gradedMonoid (LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M))
 
--- Porting note: Lean needs to be reminded of this instance otherwise it cannot
--- synthesize 0 in the next theorem
-attribute [local instance 1100] MulZeroClass.toZero in
 theorem GradedAlgebra.ι_sq_zero (m : M) : GradedAlgebra.ι R M m * GradedAlgebra.ι R M m = 0 := by
   rw [GradedAlgebra.ι_apply, DirectSum.of_mul_of]
   exact DFinsupp.single_eq_zero.mpr (Subtype.ext <| ExteriorAlgebra.ι_sq_zero _)
@@ -56,7 +53,7 @@ def GradedAlgebra.liftι :
 
 theorem GradedAlgebra.liftι_eq (i : ℕ) (x : ⋀[R]^i M) :
     GradedAlgebra.liftι R M x = DirectSum.of (fun i => ⋀[R]^i M) i x := by
-  cases' x with x hx
+  obtain ⟨x, hx⟩ := x
   dsimp only [Subtype.coe_mk, DirectSum.lof_eq_of]
   induction hx using Submodule.pow_induction_on_left' with
   | algebraMap => simp_rw [AlgHom.commutes, DirectSum.algebraMap_apply]; rfl
@@ -87,9 +84,9 @@ lemma ιMulti_span :
   rw [Submodule.eq_top_iff']
   intro x
   induction x using DirectSum.Decomposition.inductionOn fun i => ⋀[R]^i M with
-  | h_zero => exact Submodule.zero_mem _
-  | h_add _ _ hm hm' => exact Submodule.add_mem _ hm hm'
-  | h_homogeneous hm =>
+  | zero => exact Submodule.zero_mem _
+  | add _ _ hm hm' => exact Submodule.add_mem _ hm hm'
+  | homogeneous hm =>
     let ⟨m, hm⟩ := hm
     apply Set.mem_of_mem_of_subset hm
     rw [← ιMulti_span_fixedDegree]

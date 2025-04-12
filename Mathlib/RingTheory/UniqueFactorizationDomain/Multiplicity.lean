@@ -16,6 +16,7 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
   occurs in the `normalizedFactors`.
 -/
 
+assert_not_exists Field
 
 variable {α : Type*}
 
@@ -31,7 +32,7 @@ theorem WfDvdMonoid.max_power_factor' [CommMonoidWithZero α] [WfDvdMonoid α] {
 
 theorem WfDvdMonoid.max_power_factor [CommMonoidWithZero α] [WfDvdMonoid α] {a₀ x : α}
     (h : a₀ ≠ 0) (hx : Irreducible x) : ∃ (n : ℕ) (a : α), ¬x ∣ a ∧ a₀ = x ^ n * a :=
-  max_power_factor' h hx.not_unit
+  max_power_factor' h hx.not_isUnit
 
 theorem FiniteMultiplicity.of_not_isUnit [CancelCommMonoidWithZero α] [WfDvdMonoid α]
     {a b : α} (ha : ¬IsUnit a) (hb : b ≠ 0) : FiniteMultiplicity a b := by

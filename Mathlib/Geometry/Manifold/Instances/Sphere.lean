@@ -106,8 +106,7 @@ theorem continuousOn_stereoToFun :
     ContinuousOn (stereoToFun v) {x : E | innerSL _ v x ≠ (1 : ℝ)} :=
   (contDiffOn_stereoToFun (n := 0)).continuousOn
 
-variable (v)
-
+variable (v) in
 /-- Auxiliary function for the construction of the reverse direction of the stereographic
 projection.  This is a map from the orthogonal complement of a unit vector `v` in an inner product
 space `E` to `E`; we will later prove that it takes values in the unit sphere.
@@ -115,8 +114,6 @@ space `E` to `E`; we will later prove that it takes values in the unit sphere.
 For most purposes, use `stereoInvFun`, not `stereoInvFunAux`. -/
 def stereoInvFunAux (w : E) : E :=
   (‖w‖ ^ 2 + 4)⁻¹ • ((4 : ℝ) • w + (‖w‖ ^ 2 - 4) • v)
-
-variable {v}
 
 @[simp]
 theorem stereoInvFunAux_apply (w : E) :
@@ -564,8 +561,7 @@ instance : LieGroup (𝓡 1) ω Circle where
     -- Porting note: needed to fill in first 3 arguments or could not figure out typeclasses
     suffices h₁ : ContMDiff ((𝓡 1).prod (𝓡 1)) (𝓘(ℝ, ℂ).prod 𝓘(ℝ, ℂ)) ω (Prod.map c c) from
       h₂.comp h₁
-    apply ContMDiff.prod_map <;>
-    exact contMDiff_coe_sphere
+    apply ContMDiff.prodMap <;> exact contMDiff_coe_sphere
   contMDiff_inv := by
     apply ContMDiff.codRestrict_sphere
     simp only [← Circle.coe_inv, Circle.coe_inv_eq_conj]
@@ -574,7 +570,5 @@ instance : LieGroup (𝓡 1) ω Circle where
 /-- The map `fun t ↦ exp (t * I)` from `ℝ` to the unit circle in `ℂ` is analytic. -/
 theorem contMDiff_circleExp {m : WithTop ℕ∞} : ContMDiff 𝓘(ℝ, ℝ) (𝓡 1) m Circle.exp :=
   (contDiff_exp.comp (contDiff_id.smul contDiff_const)).contMDiff.codRestrict_sphere _
-
-@[deprecated (since := "2024-07-25")] alias contMDiff_expMapCircle := contMDiff_circleExp
 
 end Circle
