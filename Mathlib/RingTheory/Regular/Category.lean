@@ -93,4 +93,3 @@ lemma IsSMulRegular.SMul_ShortComplex_shortExact {r : R} (reg : IsSMulRegular M 
     (SMul_ShortComplex M r).ShortExact where
   exact := SMul_ShortComplex_exact M r
   mono_f := by simpa [SMul_ShortComplex, ModuleCat.mono_iff_injective] using reg
-  epi_g := inferInstance
