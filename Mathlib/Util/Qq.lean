@@ -40,9 +40,9 @@ def findLocalDeclWithTypeQ? {u : Level} (sort : Q(Sort u)) : MetaM (Option Q($so
 This is a Qq version of `Lean.Meta.mkDecideProof`. -/
 def mkDecideProofQ (p : Q(Prop)) : MetaM Q($p) := mkDecideProof p
 
-/-- Join a list of elements of type `α` into a container `m α`.
+/-- Join a list of elements of type `α` into a container `β`.
 
-Usually `m` is `q(Multiset)` or `q(Finset)` or `q(Set)`. -/
+Usually `β` is `q(Multiset α)` or `q(Finset α)` or `q(Set α)`. -/
 def mkSetLiteralQ {u v : Level} {α : Q(Type u)} (β : Q(Type v))
     (elems : List Q($α))
     (_ : Q(EmptyCollection $β) := by exact q(inferInstance))
