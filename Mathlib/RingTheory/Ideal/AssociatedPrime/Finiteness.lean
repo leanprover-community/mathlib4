@@ -289,8 +289,8 @@ lemma AssociatedPrimes.subset_iUnion_quotient (p : LTSeries (Submodule R M)) (h_
     simp only [RelSeries.head_singleton] at h_head
     simp only [RelSeries.singleton_length, RelSeries.singleton_toFun, Set.iUnion_of_empty,
       Set.subset_empty_iff]
-    erw [RelSeries.last_singleton, h_head]
-    apply associatedPrimes.eq_empty_of_subsingleton
+    convert associatedPrimes.eq_empty_of_subsingleton
+    simp [h_head, Unique.instSubsingleton]
   case snoc p N hN ih =>
     simp only [RelSeries.head_snoc] at h_head
     specialize ih h_head
