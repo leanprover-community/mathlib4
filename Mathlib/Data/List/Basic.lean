@@ -1335,7 +1335,7 @@ section range'
 
 @[simp]
 lemma range'_0 (a b : ℕ) :
-    List.range' a b 0 = List.replicate b a := by
+   range' a b 0 = replicate b a := by
   induction b with
   | zero => simp
   | succ b ih => simp [range'_succ, ih, replicate_succ]

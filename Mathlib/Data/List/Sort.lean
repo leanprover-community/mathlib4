@@ -139,7 +139,7 @@ theorem sorted_lt_range (n : ℕ) : Sorted (· < ·) (range n) := by
   simp
 
 theorem sorted_replicate (n : ℕ) (a : α) : Sorted r (replicate n a) ↔ n ≤ 1 ∨ r a a :=
-  List.pairwise_replicate
+  pairwise_replicate
 
 theorem sorted_le_replicate (n : ℕ) (a : α) [Preorder α] : Sorted (· ≤ ·) (replicate n a) := by
   simp [sorted_replicate]
@@ -148,7 +148,7 @@ theorem sorted_le_range (n : ℕ) : Sorted (· ≤ ·) (range n) :=
   (sorted_lt_range n).le_of_lt
 
 lemma sorted_lt_range' (a b) {s} (hs : s ≠ 0) :
-    List.Sorted (· < ·) (List.range' a b s) := by
+    Sorted (· < ·) (range' a b s) := by
   induction b generalizing a with
   | zero => simp
   | succ n ih =>
@@ -158,7 +158,7 @@ lemma sorted_lt_range' (a b) {s} (hs : s ≠ 0) :
       (List.left_le_of_mem_range' hb)
 
 lemma sorted_le_range' (a b s) :
-    List.Sorted (· ≤ ·) (List.range' a b s) := by
+    Sorted (· ≤ ·) (range' a b s) := by
   by_cases hs : s ≠ 0
   · exact (sorted_lt_range' a b hs).le_of_lt
   · rw [ne_eq, Decidable.not_not] at hs
@@ -225,7 +225,7 @@ alias ⟨_, _root_.Antitone.ofFn_sorted⟩ := sorted_ge_ofFn_iff
 
 end Monotone
 
-lemma Sorted.filterMap {α β : Type*} [DecidableEq α] [DecidableEq β]
+lemma filterMap {α β : Type*} [DecidableEq α] [DecidableEq β]
     {p : α → Option β} {l : List α}
     {r : α → α → Prop} {r' : β → β → Prop} (hl : l.Sorted r)
     (hp : ∀ (a b : α) (c d : β), p a = some c → p b = some d → r a b → r' c d) :

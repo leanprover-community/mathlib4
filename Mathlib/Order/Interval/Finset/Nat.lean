@@ -240,7 +240,7 @@ end Nat
 
 namespace List
 
-lemma toFinset_range'_1 (a b : ℕ) : (List.range' a b).toFinset = Ico a (a+b) := by
+lemma toFinset_range'_1 (a b : ℕ) : (List.range' a b).toFinset = Ico a (a + b) := by
   ext x
   rw [List.mem_toFinset, List.mem_range'_1, Finset.mem_Ico]
 
