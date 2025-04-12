@@ -3,8 +3,9 @@ Copyright (c) 2025 Oliver Butterley. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Butterley
 -/
-import Mathlib.Data.Set.Lattice
 import Mathlib.Data.Finset.Range
+import Mathlib.Data.Set.Lattice
+import Mathlib.Order.Interval.Set.LinearOrder
 
 /-!
 # Extra lemmas about unions of intervals

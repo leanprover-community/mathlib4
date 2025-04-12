@@ -60,7 +60,7 @@ lemma le_rieszMeasure_tsupport_subset {f : C_c(X, ℝ)} (hf : ∀ (x : X), 0 ≤
   have := Content.measure_eq_content_of_regular (rieszContent (toNNRealLinear Λ hΛ))
     (contentRegular_rieszContent (toNNRealLinear Λ hΛ)) (⟨tsupport f, f.hasCompactSupport⟩)
   rw [← Compacts.coe_mk (tsupport f) f.hasCompactSupport, rieszMeasure, this, rieszContent,
-    ENNReal.ofReal_eq_coe_nnreal (hΛ f fun x ↦ (hf x).1), ENNReal.coe_le_coe]
+    ENNReal.ofReal_eq_coe_nnreal (hΛ f fun x ↦ (hf x).1), Content.mk_apply, ENNReal.coe_le_coe]
   apply le_iff_forall_pos_le_add.mpr
   intro _ hε
   obtain ⟨g, hg⟩ := exists_lt_rieszContentAux_add_pos (toNNRealLinear Λ hΛ)
@@ -72,7 +72,7 @@ lemma le_rieszMeasure_tsupport_subset {f : C_c(X, ℝ)} (hf : ∀ (x : X), 0 ≤
   · simpa using le_trans (hf x).2 (hg.1 x hx)
   · simp [image_eq_zero_of_nmem_tsupport hx]
 
-/-- If `f` assumes the value `1` on a compact set `K` then `rieszMeasure K ≤ Λ f`.-/
+/-- If `f` assumes the value `1` on a compact set `K` then `rieszMeasure K ≤ Λ f`. -/
 lemma rieszMeasure_le_of_eq_one {f : C_c(X, ℝ)} (hf : ∀ x, 0 ≤ f x) {K : Set X}
     (hK : IsCompact K) (hfK : ∀ x ∈ K, f x = 1) : rieszMeasure hΛ K ≤ ENNReal.ofReal (Λ f) := by
   rw [show K = Compacts.mk K hK by exact rfl, rieszMeasure,
