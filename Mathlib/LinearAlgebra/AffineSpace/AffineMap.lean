@@ -49,13 +49,15 @@ induces a corresponding linear map from `V1` to `V2`. -/
 structure AffineMap (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*} (P2 : Type*) [Ring k]
   [AddCommGroup V1] [Module k V1] [AffineSpace V1 P1] [AddCommGroup V2] [Module k V2]
   [AffineSpace V2 P2] where
-  /-- The underlying function from `P1` to `P2`. -/
+  /-- The underlying function between the affine spaces `P1` and `P2`. -/
   toFun : P1 → P2
-  /-- The linear map from `V1` to `V2` induced by this affine map. -/
+  /-- The linear map between the corresponding vector spaces `V1` and `V2`.
+  This represents how differences of points under the affine map act. -/
   linear : V1 →ₗ[k] V2
-  /-- The compatibility condition between the function and the linear map:
-  applying the function to a point translated by a vector equals translating
-  the image point by the image vector. -/
+  /-- The key property that makes this an affine map: translating a point `p` by a vector `v`
+  and then applying the map is the same as applying the map to `p` and translating by
+  the image of `v` under the linear map. In other words, this shows that the map preserves
+  the affine space structure. -/
   map_vadd' : ∀ (p : P1) (v : V1), toFun (v +ᵥ p) = linear v +ᵥ toFun p
 
 /-- An `AffineMap k P1 P2` (notation: `P1 →ᵃ[k] P2`) is a map from `P1` to `P2` that
