@@ -284,6 +284,15 @@ theorem map_reverseAux (f : α → β) (l₁ l₂ : List α) :
     map f (reverseAux l₁ l₂) = reverseAux (map f l₁) (map f l₂) := by
   simp only [reverseAux_eq, map_append, map_reverse]
 
+-- TODO: Rename `List.reverse_perm` to `List.reverse_perm_self`
+@[simp] lemma reverse_perm' : l₁.reverse ~ l₂ ↔ l₁ ~ l₂ where
+  mp := l₁.reverse_perm.symm.trans
+  mpr := l₁.reverse_perm.trans
+
+@[simp] lemma perm_reverse : l₁ ~ l₂.reverse ↔ l₁ ~ l₂ where
+  mp hl := hl.trans l₂.reverse_perm
+  mpr hl := hl.trans l₂.reverse_perm.symm
+
 /-! ### getLast -/
 
 attribute [simp] getLast_cons
@@ -1311,5 +1320,21 @@ lemma lookup_graph (f : α → β) {a : α} {as : List α} (h : a ∈ as) :
     · simpa [lookup_cons, beq_false_of_ne ha] using ih (List.mem_of_ne_of_mem ha h)
 
 end lookup
+
+section range'
+
+@[simp]
+lemma range'_0 (a b : ℕ) :
+   range' a b 0 = replicate b a := by
+  induction b with
+  | zero => simp
+  | succ b ih => simp [range'_succ, ih, replicate_succ]
+
+lemma left_le_of_mem_range' {a b s x : ℕ}
+    (hx : x ∈ List.range' a b s) : a ≤ x := by
+  obtain ⟨i, _, rfl⟩ := List.mem_range'.mp hx
+  exact le_add_right a (s * i)
+
+end range'
 
 end List
