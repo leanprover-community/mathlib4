@@ -442,7 +442,11 @@ def succEmb (n : ℕ) : Fin n ↪ Fin (n + 1) where
   inj' := succ_injective _
 
 @[simp]
-theorem val_succEmb : ⇑(succEmb n) = Fin.succ := rfl
+theorem coe_succEmb : ⇑(succEmb n) = Fin.succ :=
+  rfl
+
+@[deprecated (since := "2025-04-12")]
+alias val_succEmb := coe_succEmb
 
 @[simp]
 theorem exists_succ_eq {x : Fin (n + 1)} : (∃ y, Fin.succ y = x) ↔ x ≠ 0 :=
