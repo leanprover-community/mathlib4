@@ -14,9 +14,7 @@ This file adds additional tools for metaprogramming with the `simp` tactic
 
 open Lean Meta Qq
 
-namespace Simp
-
-open Simp
+namespace Lean.Meta.Simp
 
 /-- `Qq` version of `Lean.Meta.Simp.Methods.discharge?`, which avoids having to use `~q` matching
 on the proof expression returned by `discharge?`
@@ -25,11 +23,4 @@ on the proof expression returned by `discharge?`
 `some (pf : Q(a))` if a proof is found and `none` otherwise.
 -/
 @[inline]
-def Methods.dischargeQ? (M : Methods) (a : Q(Prop)) : SimpM <| Option Q($a) := do
-  match ← M.discharge? a with
-  | some pf =>
-    let pf : Q($a) := pf
-    pf.check
-  | none => return none
-
---TODO(Paul-Lez): add tests
+def Methods.dischargeQ? (M : Methods) (a : Q(Prop)) : SimpM <| Option Q($a) := M.discharge? a
