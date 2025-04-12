@@ -202,20 +202,7 @@ variable [CommRing R] [IsDomain R] [Module R M] [Module R N] (P : RootPairing ι
 @[simp]
 lemma finrank_rootSpan_map_polarization_eq_finrank_corootSpan :
     finrank R ((P.rootSpan R).map P.Polarization) = finrank R (P.corootSpan R) := by
-  rw [← LinearMap.range_domRestrict]
-  apply (Submodule.finrank_mono P.range_polarization_domRestrict_le_span_coroot).antisymm
-  have : IsReflexive R N := PerfectPairing.reflexive_right P.toPerfectPairing
-  have h_ne : ∏ i, P.RootForm (P.root i) (P.root i) ≠ 0 :=
-    Finset.prod_ne_zero_iff.mpr fun i _ ↦ IsAnisotropic.rootForm_root_ne_zero i
-  refine LinearMap.finrank_le_of_isSMulRegular (P.corootSpan R)
-    (LinearMap.range (P.Polarization.domRestrict (P.rootSpan R)))
-    (smul_right_injective N h_ne)
-    fun _ hx => ?_
-  obtain ⟨c, hc⟩ := (Submodule.mem_span_range_iff_exists_fun R).mp hx
-  rw [← hc, Finset.smul_sum]
-  simp_rw [smul_smul, mul_comm, ← smul_smul]
-  exact Submodule.sum_smul_mem (LinearMap.range (P.Polarization.domRestrict (P.rootSpan R))) c
-    (fun c _ ↦ prod_rootForm_smul_coroot_mem_range_domRestrict P c)
+  rw [← P.finrank_range_polarization_eq_finrank_span_coroot R, range_polarizationIn]
 
 /-- An auxiliary lemma en route to `RootPairing.finrank_corootSpan_eq'`. -/
 private lemma finrank_corootSpan_le' :
