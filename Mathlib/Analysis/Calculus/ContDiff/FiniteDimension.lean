@@ -17,9 +17,9 @@ noncomputable section
 universe uD uE uF
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {D : Type uD} [NormedAddCommGroup D] [NormedSpace 𝕜 D]
-  {E : Type uE} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  {F : Type uF} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  {D : Type uD} [AddCommGroup D] [NormedAddGroup D] [NormedSpace 𝕜 D]
+  {E : Type uE} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
+  {F : Type uF} [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
   {n : WithTop ℕ∞} {f : D → E} {s : Set D}
 
 /-! ### Finite dimensional results -/

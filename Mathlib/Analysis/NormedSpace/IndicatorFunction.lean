@@ -43,7 +43,7 @@ end ENormedAddMonoid
 
 section SeminormedAddGroup
 
-variable {α E : Type*} [SeminormedAddGroup E] {s t : Set α} (f : α → E) (a : α)
+variable {α E : Type*} [AddGroup E] [SeminormedAddGroup E] {s t : Set α} (f : α → E) (a : α)
 
 theorem norm_indicator_eq_indicator_norm : ‖indicator s f a‖ = indicator s (fun a => ‖f a‖) a :=
   flip congr_fun a (indicator_comp_of_zero norm_zero).symm

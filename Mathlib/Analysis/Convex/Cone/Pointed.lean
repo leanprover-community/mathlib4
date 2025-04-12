@@ -177,7 +177,7 @@ theorem toConvexCone_positive : ↑(positive 𝕜 E) = ConvexCone.positive 𝕜 
 end PositiveCone
 section Dual
 
-variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [InnerProductSpace ℝ E]
 
 /-- The inner dual cone of a pointed cone is a pointed cone. -/
 def dual (S : PointedCone ℝ E) : PointedCone ℝ E :=

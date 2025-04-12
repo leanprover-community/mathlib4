@@ -237,7 +237,8 @@ theorem _root_.fourierIntegral_gaussian_pi (hb : 0 < b.re) :
 
 section InnerProductSpace
 
-variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [FiniteDimensional ℝ V]
+variable {V : Type*} [AddCommGroup V] [NormedAddGroup V]
+  [InnerProductSpace ℝ V] [FiniteDimensional ℝ V]
   [MeasurableSpace V] [BorelSpace V]
 
 theorem integrable_cexp_neg_sum_mul_add {ι : Type*} [Fintype ι] {b : ι → ℂ}

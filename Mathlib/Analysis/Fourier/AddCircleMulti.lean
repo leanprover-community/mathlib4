@@ -178,7 +178,7 @@ end Lp
 
 section fourierCoeff
 
-variable {E : Type} [NormedAddCommGroup E] [NormedSpace ℂ E]
+variable {E : Type} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℂ E]
 
 /-- The `n`-th Fourier coefficient of a function `UnitAddTorus d → E`, for `E` a complete normed
 `ℂ`-vector space, defined as the integral over `UnitAddTorus d` of `mFourier (-n) t • f t`. -/

@@ -12,7 +12,7 @@ import Mathlib.Data.Complex.Basic
 
 This file defines inner product spaces.
 Hilbert spaces can be obtained using the set of assumptions
-`[RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [CompleteSpace E]`.
+`[RCLike 𝕜] [AddCommGroup E] [NormedAddGroup E] [InnerProductSpace 𝕜 E] [CompleteSpace E]`.
 For convenience, a variable alias `HilbertSpace` is provided so that one can write
 `variable? [HilbertSpace 𝕜 E]` and get this as a suggestion.
 
@@ -98,7 +98,8 @@ Note that `NormedSpace` does not assume that `‖x‖=0` implies `x=0` (it is ra
 
 To construct a seminorm from an inner product, see `PreInnerProductSpace.ofCore`.
 -/
-class InnerProductSpace (𝕜 : Type*) (E : Type*) [RCLike 𝕜] [SeminormedAddCommGroup E] extends
+class InnerProductSpace (𝕜 : Type*) (E : Type*) [RCLike 𝕜]
+    [AddCommGroup E] [SeminormedAddGroup E] extends
   NormedSpace 𝕜 E, Inner 𝕜 E where
   /-- The inner product induces the norm. -/
   norm_sq_eq_inner : ∀ x : E, ‖x‖ ^ 2 = re (inner x x)
@@ -165,7 +166,8 @@ instance (𝕜 : Type*) (F : Type*) [RCLike 𝕜] [AddCommGroup F]
 `PreInnerProductSpace.Core` for `PreInnerProductSpace`s. Note that the `Seminorm` instance provided
 by `PreInnerProductSpace.Core.norm` is propositionally but not definitionally equal to the original
 norm. -/
-def PreInnerProductSpace.toCore [SeminormedAddCommGroup E] [c : InnerProductSpace 𝕜 E] :
+def PreInnerProductSpace.toCore [AddCommGroup E] [SeminormedAddGroup E]
+    [c : InnerProductSpace 𝕜 E] :
     PreInnerProductSpace.Core 𝕜 E :=
   { c with
     nonneg_re := fun x => by
@@ -176,7 +178,7 @@ def PreInnerProductSpace.toCore [SeminormedAddCommGroup E] [c : InnerProductSpac
 `InnerProductSpace.Core` for `InnerProductSpace`s. Note that the `Norm` instance provided by
 `InnerProductSpace.Core.norm` is propositionally but not definitionally equal to the original
 norm. -/
-def InnerProductSpace.toCore [NormedAddCommGroup E] [c : InnerProductSpace 𝕜 E] :
+def InnerProductSpace.toCore [AddCommGroup E] [NormedAddGroup E] [c : InnerProductSpace 𝕜 E] :
     InnerProductSpace.Core 𝕜 E :=
   { c with
     nonneg_re := fun x => by
@@ -392,8 +394,8 @@ theorem norm_inner_le_norm (x y : F) : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ :=
       _ = ‖x‖ * ‖y‖ * (‖x‖ * ‖y‖) := by simp only [inner_self_eq_norm_mul_norm]; ring
 
 /-- Seminormed group structure constructed from an `PreInnerProductSpace.Core` structure -/
-def toSeminormedAddCommGroup : SeminormedAddCommGroup F :=
-  AddGroupSeminorm.toSeminormedAddCommGroup
+def toSeminormedAddGroup : SeminormedAddGroup F :=
+  AddGroupSeminorm.toSeminormedAddGroup
     { toFun := fun x => √(re ⟪x, x⟫)
       map_zero' := by simp only [sqrt_zero, inner_zero_right, map_zero]
       neg' := fun x => by simp only [inner_neg_left, neg_neg, inner_neg_right]
@@ -406,6 +408,9 @@ def toSeminormedAddCommGroup : SeminormedAddCommGroup F :=
           simp only [← inner_self_eq_norm_mul_norm, inner_add_add_self, mul_add, mul_comm, map_add]
           linarith
         exact nonneg_le_nonneg_of_sq_le_sq (add_nonneg (sqrt_nonneg _) (sqrt_nonneg _)) this }
+
+@[deprecated (since := "2025-04-12")]
+noncomputable alias toSeminormedAddCommGroup := toSeminormedAddGroup
 
 attribute [local instance] toSeminormedAddCommGroup
 
@@ -455,8 +460,8 @@ theorem inner_self_ne_zero {x : F} : ⟪x, x⟫ ≠ 0 ↔ x ≠ 0 :=
 attribute [local instance] toNorm
 
 /-- Normed group structure constructed from an `InnerProductSpace.Core` structure -/
-def toNormedAddCommGroup : NormedAddCommGroup F :=
-  AddGroupNorm.toNormedAddCommGroup
+def toNormedAddGroup : NormedAddGroup F :=
+  AddGroupNorm.toNormedAddGroup
     { toFun := fun x => √(re ⟪x, x⟫)
       map_zero' := by simp only [sqrt_zero, inner_zero_right, map_zero]
       neg' := fun x => by simp only [inner_neg_left, neg_neg, inner_neg_right]
@@ -471,6 +476,9 @@ def toNormedAddCommGroup : NormedAddCommGroup F :=
         exact nonneg_le_nonneg_of_sq_le_sq (add_nonneg (sqrt_nonneg _) (sqrt_nonneg _)) this
       eq_zero_of_map_eq_zero' := fun _ hx =>
         normSq_eq_zero.1 <| (sqrt_eq_zero inner_self_nonneg).1 hx }
+
+@[deprecated (since := "2025-04-12")]
+noncomputable alias toNormedAddCommGroup := toNormedAddGroup
 
 attribute [local instance] toNormedAddCommGroup
 
@@ -508,6 +516,6 @@ end
 /-- A Hilbert space is a complete normed inner product space. -/
 @[variable_alias]
 structure HilbertSpace (𝕜 E : Type*) [RCLike 𝕜]
-  [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [CompleteSpace E]
+  [AddCommGroup E] [NormedAddGroup E] [InnerProductSpace 𝕜 E] [CompleteSpace E]
 
 end

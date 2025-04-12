@@ -200,8 +200,8 @@ end Continuous
 
 section fderiv
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {s : Set E} {a : E}
-  {f' : E →L[ℝ] ℝ} {n : ℕ∞}
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
+  {f : E → ℝ} {s : Set E} {a : E} {f' : E →L[ℝ] ℝ} {n : ℕ∞}
 
 theorem HasStrictFDerivAt.arsinh (hf : HasStrictFDerivAt f f' a) :
     HasStrictFDerivAt (fun x => arsinh (f x)) ((√(1 + f a ^ 2))⁻¹ • f') a :=

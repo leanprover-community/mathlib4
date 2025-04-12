@@ -41,7 +41,8 @@ open scoped ENNReal
 section LpPiLp
 
 
-variable {α : Type*} {E : α → Type*} [∀ i, NormedAddCommGroup (E i)] {p : ℝ≥0∞}
+variable {α : Type*} {E : α → Type*} [∀ i, AddCommGroup (E i)] [∀ i, NormedAddGroup (E i)]
+  {p : ℝ≥0∞}
 
 section Finite
 
@@ -121,7 +122,7 @@ open BoundedContinuousFunction
 -- note: `R` and `A` are explicit because otherwise Lean has elaboration problems
 variable {α E : Type*} (R A 𝕜 : Type*) [TopologicalSpace α] [DiscreteTopology α]
 variable [NormedRing A] [NormOneClass A] [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 A]
-variable [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NonUnitalNormedRing R]
+variable [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E] [NonUnitalNormedRing R]
 
 section NormedAddCommGroup
 
@@ -163,7 +164,7 @@ section RingAlgebra
 
 /-- The canonical map between `lp (fun _ : α ↦ R) ∞` and `α →ᵇ R` as a `RingEquiv`. -/
 noncomputable def RingEquiv.lpBCF : lp (fun _ : α ↦ R) ∞ ≃+* (α →ᵇ R) :=
-  { @AddEquiv.lpBCF _ R _ _ _ with
+  { AddEquiv.lpBCF with
     map_mul' := fun _f _g => rfl }
 
 

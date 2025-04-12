@@ -103,7 +103,7 @@ sets. -/
 lemma continuous_integral_apply_inv_mul
     {G : Type*} [TopologicalSpace G] [LocallyCompactSpace G] [Group G] [IsTopologicalGroup G]
     [MeasurableSpace G] [BorelSpace G]
-    {μ : Measure G} [IsFiniteMeasureOnCompacts μ] {E : Type*} [NormedAddCommGroup E]
+    {μ : Measure G} [IsFiniteMeasureOnCompacts μ] {E : Type*} [AddCommGroup E] [NormedAddGroup E]
     [NormedSpace ℝ E] {g : G → E}
     (hg : Continuous g) (h'g : HasCompactSupport g) :
     Continuous (fun (x : G) ↦ ∫ y, g (y⁻¹ * x) ∂μ) := by

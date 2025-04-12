@@ -94,7 +94,7 @@ theorem norm_extendTo𝕜'_apply_sq (fr : F →ₗ[ℝ] ℝ) (x : F) :
 
 end LinearMap
 
-variable [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable [AddCommGroup F] [SeminormedAddGroup F] [NormedSpace 𝕜 F]
 namespace ContinuousLinearMap
 
 variable [NormedSpace ℝ F] [IsScalarTower ℝ 𝕜 F]

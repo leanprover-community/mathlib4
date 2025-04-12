@@ -22,7 +22,7 @@ open scoped EuclideanGeometry Real RealInnerProductSpace ComplexConjugate
 
 namespace Orientation
 
-variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+variable {V : Type*} [AddCommGroup V] [NormedAddGroup V] [InnerProductSpace ℝ V]
 variable [Fact (finrank ℝ V = 2)] (o : Orientation ℝ V (Fin 2))
 
 /-- Angle at center of a circle equals twice angle at circumference, oriented vector angle
@@ -66,8 +66,8 @@ end Orientation
 
 namespace EuclideanGeometry
 
-variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
-  [NormedAddTorsor V P] [hd2 : Fact (finrank ℝ V = 2)] [Module.Oriented ℝ V (Fin 2)]
+variable {V : Type*} {P : Type*} [AddCommGroup V] [NormedAddGroup V] [InnerProductSpace ℝ V]
+  [MetricSpace P] [NormedAddTorsor V P] [hd2 : Fact (finrank ℝ V = 2)] [Module.Oriented ℝ V (Fin 2)]
 
 local notation "o" => Module.Oriented.positiveOrientation
 
@@ -236,8 +236,8 @@ namespace Triangle
 
 open EuclideanGeometry
 
-variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
-  [NormedAddTorsor V P] [hd2 : Fact (finrank ℝ V = 2)] [Module.Oriented ℝ V (Fin 2)]
+variable {V : Type*} {P : Type*} [AddCommGroup V] [NormedAddGroup V] [InnerProductSpace ℝ V]
+  [MetricSpace P] [NormedAddTorsor V P] [hd2 : Fact (finrank ℝ V = 2)] [Module.Oriented ℝ V (Fin 2)]
 
 local notation "o" => Module.Oriented.positiveOrientation
 
@@ -330,8 +330,8 @@ end Affine
 
 namespace EuclideanGeometry
 
-variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
-  [NormedAddTorsor V P] [hd2 : Fact (finrank ℝ V = 2)] [Module.Oriented ℝ V (Fin 2)]
+variable {V : Type*} {P : Type*} [AddCommGroup V] [NormedAddGroup V] [InnerProductSpace ℝ V]
+  [MetricSpace P] [NormedAddTorsor V P] [hd2 : Fact (finrank ℝ V = 2)] [Module.Oriented ℝ V (Fin 2)]
 
 local notation "o" => Module.Oriented.positiveOrientation
 

@@ -34,7 +34,7 @@ See also:
 * `continuous_tsum` (continuity of infinite sums in a parameter)
 -/
 lemma tendsto_tsum_of_dominated_convergence {α β G : Type*} {𝓕 : Filter α}
-    [NormedAddCommGroup G] [CompleteSpace G]
+    [AddCommGroup G] [NormedAddGroup G] [CompleteSpace G]
     {f : α → β → G} {g : β → G} {bound : β → ℝ} (h_sum : Summable bound)
     (hab : ∀ k : β, Tendsto (f · k) 𝓕 (𝓝 (g k)))
     (h_bound : ∀ᶠ n in 𝓕, ∀ k, ‖f n k‖ ≤ bound k) :

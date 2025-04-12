@@ -19,7 +19,7 @@ space.
 open Metric
 open scoped Convex
 
-variable {V P : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
+variable {V P : Type*} [AddCommGroup V] [NormedAddGroup V] [NormedSpace ℝ V]
 variable [StrictConvexSpace ℝ V]
 
 section PseudoMetricSpace
@@ -98,9 +98,9 @@ lemma dist_add_dist_eq_iff : dist a b + dist b c = dist a c ↔ Wbtw ℝ a b c :
 
 end MetricSpace
 
-variable {E F PE PF : Type*} [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E]
-  [NormedSpace ℝ F] [StrictConvexSpace ℝ E] [MetricSpace PE] [MetricSpace PF] [NormedAddTorsor E PE]
-  [NormedAddTorsor F PF] {r : ℝ} {f : PF → PE} {x y z : PE}
+variable {E F PE PF : Type*} [AddCommGroup E] [NormedAddGroup E] [AddCommGroup F] [NormedAddGroup F]
+  [NormedSpace ℝ E] [NormedSpace ℝ F] [StrictConvexSpace ℝ E] [MetricSpace PE] [MetricSpace PF]
+  [NormedAddTorsor E PE] [NormedAddTorsor F PF] {r : ℝ} {f : PF → PE} {x y z : PE}
 
 lemma eq_lineMap_of_dist_eq_mul_of_dist_eq_mul (hxy : dist x y = r * dist x z)
     (hyz : dist y z = (1 - r) * dist x z) : y = AffineMap.lineMap x z r := by

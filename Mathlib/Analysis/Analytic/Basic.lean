@@ -104,8 +104,10 @@ end FormalMultilinearSeries
 
 /-! ### The radius of a formal multilinear series -/
 
-variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F]
-  [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable [NontriviallyNormedField 𝕜]
+  [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
+  [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
+  [AddCommGroup G] [NormedAddGroup G] [NormedSpace 𝕜 G]
 
 namespace FormalMultilinearSeries
 
@@ -298,8 +300,9 @@ theorem le_mul_pow_of_radius_pos (p : FormalMultilinearSeries 𝕜 E F) (h : 0 <
   exact hCp n
 
 lemma radius_le_of_le {𝕜' E' F' : Type*}
-    [NontriviallyNormedField 𝕜'] [NormedAddCommGroup E'] [NormedSpace 𝕜' E']
-    [NormedAddCommGroup F'] [NormedSpace 𝕜' F']
+    [NontriviallyNormedField 𝕜']
+    [AddCommGroup E'] [NormedAddGroup E'] [NormedSpace 𝕜' E']
+    [AddCommGroup F'] [NormedAddGroup F'] [NormedSpace 𝕜' F']
     {p : FormalMultilinearSeries 𝕜 E F} {q : FormalMultilinearSeries 𝕜' E' F'}
     (h : ∀ n, ‖p n‖ ≤ ‖q n‖) : q.radius ≤ p.radius := by
   apply le_of_forall_nnreal_lt (fun r hr ↦ ?_)

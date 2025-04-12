@@ -21,15 +21,16 @@ open scoped Topology Manifold
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   -- declare a charted space `M` over the pair `(E, H)`.
   {E : Type*}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
+  [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
   {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   -- declare normed spaces `E'`, `F`, `F'`, `F₁`, `F₂`, `F₃`, `F₄`.
-  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  {F' : Type*} [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
-  {F₁ : Type*} [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] {F₂ : Type*} [NormedAddCommGroup F₂]
-  [NormedSpace 𝕜 F₂] {F₃ : Type*} [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃] {F₄ : Type*}
-  [NormedAddCommGroup F₄] [NormedSpace 𝕜 F₄]
+  {E' : Type*} [AddCommGroup E'] [NormedAddGroup E'] [NormedSpace 𝕜 E']
+  {F : Type*} [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
+  {F' : Type*} [AddCommGroup F'] [NormedAddGroup F'] [NormedSpace 𝕜 F']
+  {F₁ : Type*} [AddCommGroup F₁] [NormedAddGroup F₁] [NormedSpace 𝕜 F₁]
+  {F₂ : Type*} [AddCommGroup F₂] [NormedAddGroup F₂] [NormedSpace 𝕜 F₂]
+  {F₃ : Type*} [AddCommGroup F₃] [NormedAddGroup F₃] [NormedSpace 𝕜 F₃]
+  {F₄ : Type*} [AddCommGroup F₄] [NormedAddGroup F₄] [NormedSpace 𝕜 F₄]
   -- declare functions, sets, points and smoothness indices
   {s : Set M} {x : M} {n : WithTop ℕ∞}
 
@@ -259,7 +260,7 @@ theorem ContMDiff.clm_prodMap {g : M → F₁ →L[𝕜] F₃} {f : M → F₂ �
 
 /-! ### Smoothness of scalar multiplication -/
 
-variable {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
+variable {V : Type*} [AddCommGroup V] [NormedAddGroup V] [NormedSpace 𝕜 V]
 
 /-- On any vector space, multiplication by a scalar is a smooth operation. -/
 theorem contMDiff_smul : ContMDiff (𝓘(𝕜).prod 𝓘(𝕜, V)) 𝓘(𝕜, V) ⊤ fun p : 𝕜 × V => p.1 • p.2 :=

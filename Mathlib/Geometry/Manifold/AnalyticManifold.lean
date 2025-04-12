@@ -25,7 +25,7 @@ open scoped Manifold Filter Topology ContDiff
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*}
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E] {H : Type*}
   [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M]
 
 /-!
@@ -122,8 +122,8 @@ theorem mem_analyticGroupoid_of_boundaryless [I.Boundaryless] (e : PartialHomeom
   · exact I.continuous_symm.isOpen_preimage _ e.open_source
 
 /-- `analyticGroupoid` is closed under products -/
-theorem analyticGroupoid_prod {E A : Type} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [TopologicalSpace A] {F B : Type} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+theorem analyticGroupoid_prod {E A : Type} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
+    [TopologicalSpace A] {F B : Type} [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
     [TopologicalSpace B] {I : ModelWithCorners 𝕜 E A} {J : ModelWithCorners 𝕜 F B}
     {f : PartialHomeomorph A A} {g : PartialHomeomorph B B}
     (fa : f ∈ analyticGroupoid I) (ga : g ∈ analyticGroupoid J) :
@@ -150,8 +150,8 @@ class AnalyticManifold (I : ModelWithCorners 𝕜 E H) (M : Type*) [TopologicalS
 instance AnalyticManifold.self : AnalyticManifold 𝓘(𝕜, E) E where
 
 /-- `M × N` is an analytic manifold if `M` and `N` are -/
-instance AnalyticManifold.prod {E A : Type} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [TopologicalSpace A] {F B : Type} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+instance AnalyticManifold.prod {E A : Type} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
+    [TopologicalSpace A] {F B : Type} [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
     [TopologicalSpace B] {I : ModelWithCorners 𝕜 E A} {J : ModelWithCorners 𝕜 F B}
     {M : Type} [TopologicalSpace M] [ChartedSpace A M] [m : AnalyticManifold I M]
     {N : Type} [TopologicalSpace N] [ChartedSpace B N] [n : AnalyticManifold J N] :

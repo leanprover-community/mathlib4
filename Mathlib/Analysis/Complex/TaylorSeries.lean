@@ -35,7 +35,8 @@ namespace Complex
 
 open Nat
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E] {f : ℂ → E}
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℂ E] [CompleteSpace E]
+  {f : ℂ → E}
 
 section ball
 

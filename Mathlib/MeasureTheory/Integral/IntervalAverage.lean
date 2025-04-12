@@ -29,7 +29,7 @@ open MeasureTheory Set TopologicalSpace
 
 open scoped Interval
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
 
 /-- `⨍ x in a..b, f x` is the average of `f` over the interval `Ι a w.r.t. the Lebesgue measure. -/
 notation3 "⨍ "(...)" in "a".."b",

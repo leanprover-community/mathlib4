@@ -278,7 +278,7 @@ end Metric
 
 section SeminormedAddCommGroup
 
-variable [PseudoMetricSpace X] [SeminormedAddCommGroup Y] {C C' r : ℝ≥0} {f g : X → Y}
+variable [PseudoMetricSpace X] [AddCommGroup Y] [SeminormedAddGroup Y] {C C' r : ℝ≥0} {f g : X → Y}
 
 namespace HolderWith
 

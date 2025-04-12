@@ -34,9 +34,6 @@ normed space, extended norm
 
 noncomputable section
 
-attribute [local instance] Classical.propDecidable
-set_option linter.deprecated false
-
 open ENNReal
 
 /-- Extended norm on a vector space. As in the case of normed spaces, we require only
@@ -117,6 +114,7 @@ instance partialOrder : PartialOrder (ENormedSpace 𝕜 V) where
   le_trans _ _ _ h₁₂ h₂₃ x := le_trans (h₁₂ x) (h₂₃ x)
   le_antisymm _ _ h₁₂ h₂₁ := ext fun x => le_antisymm (h₁₂ x) (h₂₁ x)
 
+open Classical in
 /-- The `ENormedSpace` sending each non-zero vector to infinity. -/
 noncomputable instance : Top (ENormedSpace 𝕜 V) :=
   ⟨{  toFun := fun x => if x = 0 then 0 else ⊤
@@ -138,6 +136,7 @@ noncomputable instance : Inhabited (ENormedSpace 𝕜 V) :=
 theorem top_map {x : V} (hx : x ≠ 0) : (⊤ : ENormedSpace 𝕜 V) x = ⊤ :=
   if_neg hx
 
+open Classical in
 noncomputable instance : OrderTop (ENormedSpace 𝕜 V) where
   top := ⊤
   le_top e x := if h : x = 0 then by simp [h] else by simp [top_map h]
@@ -201,7 +200,7 @@ theorem finite_edist_eq (x y : e.finiteSubspace) : edist x y = e (x - y) :=
   rfl
 
 /-- Normed group instance on `e.finiteSubspace`. -/
-instance normedAddCommGroup : NormedAddCommGroup e.finiteSubspace :=
+instance normedAddGroup : NormedAddGroup e.finiteSubspace :=
   { e.metricSpace with
     norm := fun x => (e x).toReal
     dist_eq := fun _ _ => rfl }

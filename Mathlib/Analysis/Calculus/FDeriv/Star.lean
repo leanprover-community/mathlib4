@@ -21,9 +21,9 @@ star operation; which as should be expected rules out `𝕜 = ℂ`.
 
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [StarRing 𝕜] [TrivialStar 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type*} [NormedAddCommGroup F] [StarAddMonoid F] [NormedSpace 𝕜 F] [StarModule 𝕜 F]
-  [ContinuousStar F]
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
+variable {F : Type*} [AddCommGroup F] [NormedAddGroup F] [StarAddMonoid F]
+  [NormedSpace 𝕜 F] [StarModule 𝕜 F] [ContinuousStar F]
 
 variable {f : E → F} {f' : E →L[𝕜] F} {x : E} {s : Set E} {L : Filter E}
 

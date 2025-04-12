@@ -50,7 +50,7 @@ noncomputable section
 
 universe u
 
-variable {E : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E] {n : ℕ}
+variable {E : Type u} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E] {n : ℕ}
 
 namespace BoxIntegral
 

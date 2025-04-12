@@ -16,7 +16,8 @@ in `MeasureTheory.Lp.instCompleteSpace`.
 open MeasureTheory Filter
 open scoped ENNReal Topology
 
-variable {α E : Type*} {m : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measure α} [NormedAddCommGroup E]
+variable {α E : Type*} {m : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measure α}
+  [AddCommGroup E] [NormedAddGroup E]
 
 namespace MeasureTheory.Lp
 

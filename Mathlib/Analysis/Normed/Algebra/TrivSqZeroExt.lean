@@ -191,12 +191,12 @@ end Topology
 noncomputable section Seminormed
 
 section Ring
-variable [SeminormedCommRing S] [SeminormedRing R] [SeminormedAddCommGroup M]
+variable [SeminormedCommRing S] [SeminormedRing R] [AddCommGroup M] [SeminormedAddGroup M]
 variable [Algebra S R] [Module S M]
 variable [IsBoundedSMul S R] [IsBoundedSMul S M]
 
-instance instL1SeminormedAddCommGroup : SeminormedAddCommGroup (tsze R M) :=
-  inferInstanceAs <| SeminormedAddCommGroup (WithLp 1 <| R × M)
+instance instL1SeminormedAddGroup : SeminormedAddGroup (tsze R M) :=
+  inferInstanceAs <| SeminormedAddGroup (WithLp 1 <| R × M)
 
 example :
     (TrivSqZeroExt.instUniformSpace : UniformSpace (tsze R M)) =
@@ -233,8 +233,7 @@ instance instL1SeminormedRing : SeminormedRing (tsze R M) where
       apply le_add_of_nonneg_right
       positivity
     _ = (‖r₁‖ + ‖m₁‖) * (‖r₂‖ + ‖m₂‖) := by ring
-  __ : SeminormedAddCommGroup (tsze R M) := inferInstance
-  __ : Ring (tsze R M) := inferInstance
+  __ : SeminormedAddGroup (tsze R M) := inferInstance
 
 instance instL1IsBoundedSMul : IsBoundedSMul S (tsze R M) :=
   inferInstanceAs <| IsBoundedSMul S (WithLp 1 <| R × M)
@@ -247,7 +246,7 @@ end Ring
 
 section CommRing
 
-variable [SeminormedCommRing R] [SeminormedAddCommGroup M]
+variable [SeminormedCommRing R] [AddCommGroup M] [SeminormedAddGroup M]
 variable [Module R M] [Module Rᵐᵒᵖ M] [IsCentralScalar R M]
 variable [IsBoundedSMul R M]
 
@@ -263,21 +262,21 @@ noncomputable section Normed
 
 section Ring
 
-variable [NormedRing R] [NormedAddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M]
+variable [NormedRing R] [AddCommGroup M] [NormedAddGroup M] [Module R M] [Module Rᵐᵒᵖ M]
 variable [IsBoundedSMul R M] [IsBoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
 
-instance instL1NormedAddCommGroup : NormedAddCommGroup (tsze R M) :=
-  inferInstanceAs <| NormedAddCommGroup (WithLp 1 <| R × M)
+instance instL1NormedAddGroup : NormedAddGroup (tsze R M) :=
+  inferInstanceAs <| NormedAddGroup (WithLp 1 <| R × M)
 
 instance instL1NormedRing : NormedRing (tsze R M) where
-  __ : NormedAddCommGroup (tsze R M) := inferInstance
+  __ : NormedAddGroup (tsze R M) := inferInstance
   __ : SeminormedRing (tsze R M) := inferInstance
 
 end Ring
 
 section CommRing
 
-variable [NormedCommRing R] [NormedAddCommGroup M]
+variable [NormedCommRing R] [AddCommGroup M] [NormedAddGroup M]
 variable [Module R M] [Module Rᵐᵒᵖ M] [IsCentralScalar R M]
 variable [IsBoundedSMul R M]
 
@@ -289,7 +288,7 @@ end CommRing
 
 section Algebra
 
-variable [NormedField 𝕜] [NormedRing R] [NormedAddCommGroup M]
+variable [NormedField 𝕜] [NormedRing R] [AddCommGroup M] [NormedAddGroup M]
 variable [NormedAlgebra 𝕜 R] [NormedSpace 𝕜 M] [Module R M] [Module Rᵐᵒᵖ M]
 variable [IsBoundedSMul R M] [IsBoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
 variable [IsScalarTower 𝕜 R M] [IsScalarTower 𝕜 Rᵐᵒᵖ M]
@@ -307,7 +306,7 @@ end Normed
 
 section
 
-variable [RCLike 𝕜] [NormedRing R] [NormedAddCommGroup M]
+variable [RCLike 𝕜] [NormedRing R] [AddCommGroup M] [NormedAddGroup M]
 variable [NormedAlgebra 𝕜 R] [NormedSpace 𝕜 M] [Module R M] [Module Rᵐᵒᵖ M]
 variable [IsBoundedSMul R M] [IsBoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
 variable [IsScalarTower 𝕜 R M] [IsScalarTower 𝕜 Rᵐᵒᵖ M]

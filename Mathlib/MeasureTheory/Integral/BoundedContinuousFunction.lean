@@ -73,7 +73,7 @@ section BochnerIntegral
 
 variable {X : Type*} [MeasurableSpace X] [TopologicalSpace X]
 variable (μ : Measure X)
-variable {E : Type*} [NormedAddCommGroup E]
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E]
 
 lemma lintegral_nnnorm_le (f : X →ᵇ E) :
     ∫⁻ x, ‖f x‖₊ ∂μ ≤ ‖f‖₊ * (μ Set.univ) := by

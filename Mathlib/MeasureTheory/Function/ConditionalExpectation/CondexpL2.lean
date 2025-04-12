@@ -41,18 +41,18 @@ namespace MeasureTheory
 variable {α E E' F G G' 𝕜 : Type*} [RCLike 𝕜]
   -- 𝕜 for ℝ or ℂ
   -- E for an inner product space
-  [NormedAddCommGroup E]
+  [AddCommGroup E] [NormedAddGroup E]
   [InnerProductSpace 𝕜 E] [CompleteSpace E]
   -- E' for an inner product space on which we compute integrals
-  [NormedAddCommGroup E']
+  [AddCommGroup E'] [NormedAddGroup E']
   [InnerProductSpace 𝕜 E'] [CompleteSpace E'] [NormedSpace ℝ E']
   -- F for a Lp submodule
-  [NormedAddCommGroup F]
+  [AddCommGroup F] [NormedAddGroup F]
   [NormedSpace 𝕜 F]
   -- G for a Lp add_subgroup
-  [NormedAddCommGroup G]
+  [AddCommGroup G] [NormedAddGroup G]
   -- G' for integrals on a Lp add_subgroup
-  [NormedAddCommGroup G']
+  [AddCommGroup G'] [NormedAddGroup G']
   [NormedSpace ℝ G'] [CompleteSpace G']
 
 variable {m m0 : MeasurableSpace α} {μ : Measure α} {s t : Set α}
@@ -65,7 +65,7 @@ variable (E 𝕜)
 
 /-- Conditional expectation of a function in L2 with respect to a sigma-algebra -/
 noncomputable def condExpL2 (hm : m ≤ m0) : (α →₂[μ] E) →L[𝕜] lpMeas E 𝕜 m 2 μ :=
-  @orthogonalProjection 𝕜 (α →₂[μ] E) _ _ _ (lpMeas E 𝕜 m 2 μ)
+  @orthogonalProjection 𝕜 (α →₂[μ] E) _ _ _ _ (lpMeas E 𝕜 m 2 μ)
     haveI : Fact (m ≤ m0) := ⟨hm⟩
     inferInstance
 
@@ -98,14 +98,14 @@ theorem integrable_condExpL2_of_isFiniteMeasure (hm : m ≤ m0) [IsFiniteMeasure
 @[deprecated (since := "2025-01-21")]
 alias integrable_condexpL2_of_isFiniteMeasure := integrable_condExpL2_of_isFiniteMeasure
 
-theorem norm_condExpL2_le_one (hm : m ≤ m0) : ‖@condExpL2 α E 𝕜 _ _ _ _ _ _ μ hm‖ ≤ 1 :=
+theorem norm_condExpL2_le_one (hm : m ≤ m0) : ‖condExpL2 E 𝕜 (μ := μ) hm‖ ≤ 1 :=
   haveI : Fact (m ≤ m0) := ⟨hm⟩
   orthogonalProjection_norm_le _
 
 @[deprecated (since := "2025-01-21")] alias norm_condexpL2_le_one := norm_condExpL2_le_one
 
 theorem norm_condExpL2_le (hm : m ≤ m0) (f : α →₂[μ] E) : ‖condExpL2 E 𝕜 hm f‖ ≤ ‖f‖ :=
-  ((@condExpL2 _ E 𝕜 _ _ _ _ _ _ μ hm).le_opNorm f).trans
+  ((condExpL2 E 𝕜 (μ := μ) hm).le_opNorm f).trans
     (mul_le_of_le_one_left (norm_nonneg _) (norm_condExpL2_le_one hm))
 
 @[deprecated (since := "2025-01-21")] alias norm_condexpL2_le := norm_condExpL2_le
@@ -230,7 +230,8 @@ theorem lintegral_nnnorm_condExpL2_indicator_le_real (hs : MeasurableSet s) (hμ
     ∫⁻ x in t, ‖(indicatorConstLp 2 hs hμs (1 : ℝ)) x‖₊ ∂μ =
       ∫⁻ x in t, s.indicator (fun _ => (1 : ℝ≥0∞)) x ∂μ := by
     refine lintegral_congr_ae (ae_restrict_of_ae ?_)
-    refine (@indicatorConstLp_coeFn _ _ _ 2 _ _ _ hs hμs (1 : ℝ)).mono fun x hx => ?_
+    refine (indicatorConstLp_coeFn (E := ℝ) (p := 2) (hs := hs) (hμs := hμs) (c := 1)).mono
+      fun x hx => ?_
     dsimp only
     rw [hx]
     classical
@@ -296,7 +297,8 @@ theorem integral_condExpL2_eq (hm : m ≤ m0) (f : Lp E' 2 μ) (hs : MeasurableS
 
 @[deprecated (since := "2025-01-21")] alias integral_condexpL2_eq := integral_condExpL2_eq
 
-variable {E'' 𝕜' : Type*} [RCLike 𝕜'] [NormedAddCommGroup E''] [InnerProductSpace 𝕜' E'']
+variable {E'' 𝕜' : Type*} [RCLike 𝕜']
+  [AddCommGroup E''] [NormedAddGroup E''] [InnerProductSpace 𝕜' E'']
   [CompleteSpace E''] [NormedSpace ℝ E'']
 
 variable (𝕜 𝕜')
@@ -514,7 +516,7 @@ theorem setIntegral_condExpL2_indicator (hs : MeasurableSet[m] s) (ht : Measurab
   calc
     ∫ x in s, (condExpL2 ℝ ℝ hm (indicatorConstLp 2 ht hμt 1) : α → ℝ) x ∂μ =
         ∫ x in s, indicatorConstLp 2 ht hμt (1 : ℝ) x ∂μ :=
-      @integral_condExpL2_eq α _ ℝ _ _ _ _ _ _ _ _ _ hm (indicatorConstLp 2 ht hμt (1 : ℝ)) hs hμs
+      integral_condExpL2_eq hm (indicatorConstLp 2 ht hμt (1 : ℝ)) hs hμs
     _ = (μ (t ∩ s)).toReal • (1 : ℝ) := setIntegral_indicatorConstLp (hm s hs) ht hμt 1
     _ = (μ (t ∩ s)).toReal := by rw [smul_eq_mul, mul_one]
 
@@ -544,7 +546,7 @@ theorem condExpL2_indicator_nonneg (hm : m ≤ m0) (hs : MeasurableSet s) (hμs 
   refine @ae_le_of_ae_le_trim _ _ _ _ _ _ hm (0 : α → ℝ) _ ?_
   refine ae_nonneg_of_forall_setIntegral_nonneg_of_sigmaFinite ?_ ?_
   · rintro t - -
-    refine @Integrable.integrableOn _ _ m _ _ _ _ ?_
+    refine @Integrable.integrableOn _ _ m _ _ _ _ _ ?_
     refine Integrable.trim hm ?_ ?_
     · rw [integrable_congr h.ae_eq_mk.symm]
       exact integrable_condExpL2_indicator hm hs hμs _
@@ -562,7 +564,7 @@ theorem condExpL2_indicator_nonneg (hm : m ≤ m0) (hs : MeasurableSet s) (hμs 
 @[deprecated (since := "2025-01-21")] alias condexpL2_indicator_nonneg := condExpL2_indicator_nonneg
 
 theorem condExpIndSMul_nonneg {E}
-    [NormedAddCommGroup E] [Lattice E] [NormedSpace ℝ E] [OrderedSMul ℝ E]
+    [AddCommGroup E] [NormedAddGroup E] [Lattice E] [NormedSpace ℝ E] [OrderedSMul ℝ E]
     [SigmaFinite (μ.trim hm)] (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : E) (hx : 0 ≤ x) :
     (0 : α → E) ≤ᵐ[μ] condExpIndSMul hm hs hμs x := by
   refine EventuallyLE.trans_eq ?_ (condExpIndSMul_ae_eq_smul hm hs hμs x).symm

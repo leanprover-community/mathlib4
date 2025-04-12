@@ -36,7 +36,8 @@ noncomputable section
 open scoped NNReal ENNReal
 
 variable {α ε ε' E F G : Type*} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ}
-  [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G] [ENorm ε] [ENorm ε']
+  [AddCommGroup E] [NormedAddGroup E] [AddCommGroup F] [NormedAddGroup F]
+  [AddCommGroup G] [NormedAddGroup G] [ENorm ε] [ENorm ε']
 
 namespace MeasureTheory
 

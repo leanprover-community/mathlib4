@@ -53,7 +53,7 @@ This instance generates a type-class problem with a metavariable `?m` that shoul
 instance rclike_to_real : FiniteDimensional ℝ K := ⟨{1, I}, by simp [span_one_I]⟩
 
 variable (K E)
-variable [NormedAddCommGroup E] [NormedSpace K E]
+variable [AddCommGroup E] [NormedAddGroup E] [NormedSpace K E]
 
 /-- A finite dimensional vector space over an `RCLike` is a proper metric space.
 

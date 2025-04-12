@@ -54,8 +54,8 @@ def TendstoInMeasure [Dist E] {_ : MeasurableSpace α} (μ : Measure α) (f : ι
     (g : α → E) : Prop :=
   ∀ ε, 0 < ε → Tendsto (fun i => μ { x | ε ≤ dist (f i x) (g x) }) l (𝓝 0)
 
-theorem tendstoInMeasure_iff_norm [SeminormedAddCommGroup E] {l : Filter ι} {f : ι → α → E}
-    {g : α → E} :
+theorem tendstoInMeasure_iff_norm [AddCommGroup E] [SeminormedAddGroup E]
+    {l : Filter ι} {f : ι → α → E} {g : α → E} :
     TendstoInMeasure μ f l g ↔
       ∀ ε, 0 < ε → Tendsto (fun i => μ { x | ε ≤ ‖f i x - g x‖ }) l (𝓝 0) := by
   simp_rw [TendstoInMeasure, dist_eq_norm]
@@ -296,7 +296,7 @@ end TendstoInMeasureUnique
 
 section AEMeasurableOf
 
-variable [MeasurableSpace E] [NormedAddCommGroup E] [BorelSpace E]
+variable [MeasurableSpace E] [AddCommGroup E] [NormedAddGroup E] [BorelSpace E]
 
 theorem TendstoInMeasure.aemeasurable {u : Filter ι} [NeBot u] [IsCountablyGenerated u]
     {f : ι → α → E} {g : α → E} (hf : ∀ n, AEMeasurable (f n) μ)
@@ -308,7 +308,7 @@ end AEMeasurableOf
 
 section TendstoInMeasureOf
 
-variable [NormedAddCommGroup E] {p : ℝ≥0∞}
+variable [AddCommGroup E] [NormedAddGroup E] {p : ℝ≥0∞}
 variable {f : ι → α → E} {g : α → E}
 
 /-- This lemma is superseded by `MeasureTheory.tendstoInMeasure_of_tendsto_eLpNorm` where we
@@ -351,8 +351,9 @@ theorem tendstoInMeasure_of_tendsto_eLpNorm_of_ne_top (hp_ne_zero : p ≠ 0) (hp
 
 /-- See also `MeasureTheory.tendstoInMeasure_of_tendsto_eLpNorm` which work for general
 Lp-convergence for all `p ≠ 0`. -/
-theorem tendstoInMeasure_of_tendsto_eLpNorm_top {E} [NormedAddCommGroup E] {f : ι → α → E}
-    {g : α → E} {l : Filter ι} (hfg : Tendsto (fun n => eLpNorm (f n - g) ∞ μ) l (𝓝 0)) :
+theorem tendstoInMeasure_of_tendsto_eLpNorm_top {E} [AddCommGroup E] [NormedAddGroup E]
+    {f : ι → α → E} {g : α → E} {l : Filter ι}
+    (hfg : Tendsto (fun n => eLpNorm (f n - g) ∞ μ) l (𝓝 0)) :
     TendstoInMeasure μ f l g := by
   intro δ hδ
   simp only [eLpNorm_exponent_top, eLpNormEssSup] at hfg

@@ -39,8 +39,8 @@ section SemiNormed
 
 open Metric ContinuousLinearMap
 
-variable [SeminormedAddCommGroup E] [SeminormedAddCommGroup F] [SeminormedAddCommGroup Fₗ]
-  [SeminormedAddCommGroup G]
+variable [AddCommGroup E] [SeminormedAddGroup E] [AddCommGroup F] [SeminormedAddGroup F]
+  [AddCommGroup Fₗ] [SeminormedAddGroup Fₗ] [AddCommGroup G] [SeminormedAddGroup G]
 
 variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [NontriviallyNormedField 𝕜₃]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜 Fₗ] [NormedSpace 𝕜₃ G]
@@ -311,11 +311,11 @@ private lemma uniformity_eq_seminorm :
     exact le_trans (le_of_opNorm_le_of_le _ hf.le (hε _ hx)) hδ.le
 
 instance toPseudoMetricSpace : PseudoMetricSpace (E →SL[σ₁₂] F) := .replaceUniformity
-  ContinuousLinearMap.seminorm.toSeminormedAddCommGroup.toPseudoMetricSpace uniformity_eq_seminorm
+  ContinuousLinearMap.seminorm.toSeminormedAddGroup.toPseudoMetricSpace uniformity_eq_seminorm
 
 /-- Continuous linear maps themselves form a seminormed space with respect to
     the operator norm. -/
-instance toSeminormedAddCommGroup : SeminormedAddCommGroup (E →SL[σ₁₂] F) where
+instance toSeminormedAddGroup : SeminormedAddGroup (E →SL[σ₁₂] F) where
 
 instance toNormedSpace {𝕜' : Type*} [NormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass 𝕜₂ 𝕜' F] :
     NormedSpace 𝕜' (E →SL[σ₁₂] F) :=
@@ -330,7 +330,7 @@ theorem opNorm_comp_le (f : E →SL[σ₁₂] F) : ‖h.comp f‖ ≤ ‖h‖ * 
 
 /-- Continuous linear maps form a seminormed ring with respect to the operator norm. -/
 instance toSeminormedRing : SeminormedRing (E →L[𝕜] E) :=
-  { toSeminormedAddCommGroup, ring with norm_mul_le := opNorm_comp_le }
+  { toSeminormedAddGroup, ring with norm_mul_le := opNorm_comp_le }
 
 /-- For a normed space `E`, continuous linear endomorphisms form a normed algebra with
 respect to the operator norm. -/
@@ -384,7 +384,8 @@ theorem restrictScalarsIsometry_toLinearMap :
 end RestrictScalars
 
 lemma norm_pi_le_of_le {ι : Type*} [Fintype ι]
-    {M : ι → Type*} [∀ i, SeminormedAddCommGroup (M i)] [∀ i, NormedSpace 𝕜 (M i)] {C : ℝ}
+    {M : ι → Type*} [∀ i, AddCommGroup (M i)] [∀ i, SeminormedAddGroup (M i)]
+    [∀ i, NormedSpace 𝕜 (M i)] {C : ℝ}
     {L : (i : ι) → (E →L[𝕜] M i)} (hL : ∀ i, ‖L i‖ ≤ C) (hC : 0 ≤ C) :
     ‖pi L‖ ≤ C := by
   refine opNorm_le_bound _ hC (fun x ↦ ?_)

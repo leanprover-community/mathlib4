@@ -39,7 +39,7 @@ universe uι u𝕜 uE uF
 
 variable {ι : Type uι} [Fintype ι]
 variable {𝕜 : Type u𝕜} [NontriviallyNormedField 𝕜]
-variable {E : ι → Type uE} [∀ i, SeminormedAddCommGroup (E i)]
+variable {E : ι → Type uE} [∀ i, AddCommGroup (E i)] [∀ i, SeminormedAddGroup (E i)]
 
 open scoped TensorProduct
 
@@ -115,7 +115,8 @@ theorem projectiveSeminorm_tprod_le (m : Π i, E i) :
   · simp [projectiveSeminormAux]
   · rw [mem_lifts_iff, FreeAddMonoid.toList_of,List.map_singleton, List.sum_singleton, one_smul]
 
-theorem norm_eval_le_projectiveSeminorm (x : ⨂[𝕜] i, E i) (G : Type*) [SeminormedAddCommGroup G]
+theorem norm_eval_le_projectiveSeminorm (x : ⨂[𝕜] i, E i) (G : Type*)
+    [AddCommGroup G] [SeminormedAddGroup G]
     [NormedSpace 𝕜 G] (f : ContinuousMultilinearMap 𝕜 E G) :
     ‖lift f.toMultilinearMap x‖ ≤ projectiveSeminorm x * ‖f‖ := by
   letI := nonempty_subtype.mpr (nonempty_lifts x)

@@ -85,7 +85,8 @@ section Real
 
 open Finset
 
-theorem Asymptotics.IsLittleO.sum_range {α : Type*} [NormedAddCommGroup α] {f : ℕ → α} {g : ℕ → ℝ}
+theorem Asymptotics.IsLittleO.sum_range {α : Type*} [AddCommGroup α] [NormedAddGroup α]
+    {f : ℕ → α} {g : ℕ → ℝ}
     (h : f =o[atTop] g) (hg : 0 ≤ g) (h'g : Tendsto (fun n => ∑ i ∈ range n, g i) atTop atTop) :
     (fun n => ∑ i ∈ range n, f i) =o[atTop] fun n => ∑ i ∈ range n, g i := by
   have A : ∀ i, ‖g i‖ = g i := fun i => Real.norm_of_nonneg (hg i)
@@ -115,7 +116,8 @@ theorem Asymptotics.IsLittleO.sum_range {α : Type*} [NormedAddCommGroup α] {f 
       simp only [B]
       ring
 
-theorem Asymptotics.isLittleO_sum_range_of_tendsto_zero {α : Type*} [NormedAddCommGroup α]
+theorem Asymptotics.isLittleO_sum_range_of_tendsto_zero {α : Type*}
+    [AddCommGroup α] [NormedAddGroup α]
     {f : ℕ → α} (h : Tendsto f atTop (𝓝 0)) :
     (fun n => ∑ i ∈ range n, f i) =o[atTop] fun n => (n : ℝ) := by
   have := ((isLittleO_one_iff ℝ).2 h).sum_range fun i => zero_le_one
@@ -123,7 +125,8 @@ theorem Asymptotics.isLittleO_sum_range_of_tendsto_zero {α : Type*} [NormedAddC
   exact this tendsto_natCast_atTop_atTop
 
 /-- The Cesaro average of a converging sequence converges to the same limit. -/
-theorem Filter.Tendsto.cesaro_smul {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {u : ℕ → E}
+theorem Filter.Tendsto.cesaro_smul {E : Type*} [AddCommGroup E] [NormedAddGroup E]
+    [NormedSpace ℝ E] {u : ℕ → E}
     {l : E} (h : Tendsto u atTop (𝓝 l)) :
     Tendsto (fun n : ℕ => (n⁻¹ : ℝ) • ∑ i ∈ range n, u i) atTop (𝓝 l) := by
   rw [← tendsto_sub_nhds_zero_iff, ← isLittleO_one_iff ℝ]

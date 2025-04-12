@@ -15,7 +15,7 @@ continuous.
 open FiniteDimensional Metric Set List Bornology
 open scoped Topology
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
   {C : Set E} {f : E → ℝ} {x₀ : E} {ε r r' M : ℝ}
 
 lemma ConvexOn.lipschitzOnWith_of_abs_le (hf : ConvexOn ℝ (ball x₀ r) f) (hε : 0 < ε)

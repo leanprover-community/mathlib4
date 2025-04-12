@@ -23,7 +23,7 @@ variable {α β : Type*}
 
 section SeminormedAddGroup
 
-variable [SeminormedAddGroup α] [SeminormedAddGroup β] [SMulZeroClass α β]
+variable [AddGroup α] [SeminormedAddGroup α] [AddGroup β] [SeminormedAddGroup β] [SMulZeroClass α β]
 variable [IsBoundedSMul α β] {r : α} {x : β}
 
 @[bound]
@@ -68,7 +68,7 @@ instance NonUnitalSeminormedRing.isBoundedSMulOpposite [NonUnitalSeminormedRing 
 
 section SeminormedRing
 
-variable [SeminormedRing α] [SeminormedAddCommGroup β] [Module α β]
+variable [SeminormedRing α] [AddCommGroup β] [SeminormedAddGroup β] [Module α β]
 
 theorem IsBoundedSMul.of_norm_smul_le (h : ∀ (r : α) (x : β), ‖r • x‖ ≤ ‖r‖ * ‖x‖) :
     IsBoundedSMul α β :=
@@ -88,7 +88,7 @@ end SeminormedRing
 
 section NormedDivisionRing
 
-variable [NormedDivisionRing α] [SeminormedAddGroup β]
+variable [NormedDivisionRing α] [AddGroup β] [SeminormedAddGroup β]
 variable [MulActionWithZero α β] [IsBoundedSMul α β]
 
 theorem norm_smul (r : α) (x : β) : ‖r • x‖ = ‖r‖ * ‖x‖ := by
@@ -109,7 +109,7 @@ end NormedDivisionRing
 
 section NormedDivisionRingModule
 
-variable [NormedDivisionRing α] [SeminormedAddCommGroup β]
+variable [NormedDivisionRing α] [AddCommGroup β] [SeminormedAddGroup β]
 variable [Module α β] [IsBoundedSMul α β]
 
 theorem dist_smul₀ (s : α) (x y : β) : dist (s • x) (s • y) = ‖s‖ * dist x y := by

@@ -68,7 +68,8 @@ section WeightedSMul
 
 open ContinuousLinearMap
 
-variable [NormedAddCommGroup F] [NormedSpace ℝ F] {m : MeasurableSpace α} {μ : Measure α}
+variable [AddCommGroup F] [NormedAddGroup F] [NormedSpace ℝ F]
+  {m : MeasurableSpace α} {μ : Measure α}
 
 /-- Given a set `s`, return the continuous linear map `fun x => (μ s).toReal • x`. The extension
 of that set function through `setToL1` gives the Bochner integral of L1 functions. -/
@@ -188,7 +189,7 @@ and prove basic property of this integral.
 
 open Finset
 
-variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ F]
+variable [AddCommGroup E] [NormedAddGroup E] [AddCommGroup F] [NormedAddGroup F] [NormedSpace ℝ F]
   {m : MeasurableSpace α} {μ : Measure α}
 
 /-- Bochner integral of simple functions whose codomain is a real `NormedSpace`.
@@ -327,7 +328,7 @@ namespace L1
 
 open AEEqFun Lp.simpleFunc Lp
 
-variable [NormedAddCommGroup E] {m : MeasurableSpace α} {μ : Measure α}
+variable [AddCommGroup E] [NormedAddGroup E] {m : MeasurableSpace α} {μ : Measure α}
 
 namespace SimpleFunc
 
@@ -546,7 +547,7 @@ theorem nnnorm_Integral_le_one : ‖integralCLM (α := α) (E := E) (μ := μ)�
 theorem norm_integral_le (f : α →₁[μ] E) : ‖integral f‖ ≤ ‖f‖ :=
   calc
     ‖integral f‖ = ‖integralCLM f‖ := by simp only [integral]
-    _ ≤ ‖integralCLM (α := α) (μ := μ)‖ * ‖f‖ := le_opNorm _ _
+    _ ≤ ‖integralCLM (E := E) (μ := μ)‖ * ‖f‖ := le_opNorm _ _
     _ ≤ 1 * ‖f‖ := mul_le_mul_of_nonneg_right norm_Integral_le_one <| norm_nonneg _
     _ = ‖f‖ := one_mul _
 

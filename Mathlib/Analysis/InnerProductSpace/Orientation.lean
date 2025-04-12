@@ -36,7 +36,7 @@ This file provides definitions and proves lemmas about orientations of real inne
 
 noncomputable section
 
-variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [InnerProductSpace ℝ E]
 
 open Module
 
@@ -145,7 +145,7 @@ protected def finOrthonormalBasis (hn : 0 < n) (h : finrank ℝ E = n) (x : Orie
     OrthonormalBasis (Fin n) ℝ E := by
   haveI := Fin.pos_iff_nonempty.1 hn
   haveI : FiniteDimensional ℝ E := .of_finrank_pos <| h.symm ▸ hn
-  exact ((@stdOrthonormalBasis _ _ _ _ _ this).reindex <| finCongr h).adjustToOrientation x
+  exact ((@stdOrthonormalBasis _ _ _ _ _ _ this).reindex <| finCongr h).adjustToOrientation x
 
 /-- `Orientation.finOrthonormalBasis` gives a basis with the required orientation. -/
 @[simp]
@@ -153,7 +153,7 @@ theorem finOrthonormalBasis_orientation (hn : 0 < n) (h : finrank ℝ E = n)
     (x : Orientation ℝ E (Fin n)) : (x.finOrthonormalBasis hn h).toBasis.orientation = x := by
   haveI := Fin.pos_iff_nonempty.1 hn
   haveI : FiniteDimensional ℝ E := .of_finrank_pos <| h.symm ▸ hn
-  exact ((@stdOrthonormalBasis _ _ _ _ _ this).reindex <|
+  exact ((@stdOrthonormalBasis _ _ _ _ _ _ this).reindex <|
     finCongr h).orientation_adjustToOrientation x
 
 section VolumeForm
@@ -286,7 +286,7 @@ theorem abs_volumeForm_apply_of_orthonormal (v : OrthonormalBasis (Fin n) ℝ E)
     |o.volumeForm v| = 1 := by
   simpa [o.volumeForm_robust' v v] using congr_arg abs v.toBasis.det_self
 
-theorem volumeForm_map {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
+theorem volumeForm_map {F : Type*} [AddCommGroup F] [NormedAddGroup F] [InnerProductSpace ℝ F]
     [Fact (finrank ℝ F = n)] (φ : E ≃ₗᵢ[ℝ] F) (x : Fin n → F) :
     (Orientation.map (Fin n) φ.toLinearEquiv o).volumeForm x = o.volumeForm (φ.symm ∘ x) := by
   rcases n with - | n

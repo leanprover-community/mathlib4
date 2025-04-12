@@ -41,8 +41,8 @@ open scoped Topology
 namespace MeasureTheory
 
 variable {α E G : Type*}
-  [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [NormedAddCommGroup G] [NormedSpace ℝ G]
+  [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
+  [AddCommGroup G] [NormedAddGroup G] [NormedSpace ℝ G]
   {m : MeasurableSpace α} {μ : Measure α}
 
 /-- **Lebesgue dominated convergence theorem** provides sufficient conditions under which almost
@@ -173,7 +173,7 @@ end MeasureTheory
 section TendstoMono
 
 variable {α E : Type*} [MeasurableSpace α]
-  {μ : Measure α} [NormedAddCommGroup E] [NormedSpace ℝ E] {s : ℕ → Set α}
+  {μ : Measure α} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E] {s : ℕ → Set α}
   {f : α → E}
 
 theorem _root_.Antitone.tendsto_setIntegral (hsm : ∀ i, MeasurableSet (s i)) (h_anti : Antitone s)
@@ -205,7 +205,7 @@ namespace intervalIntegral
 
 section DCT
 
-variable {ι E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {ι E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
   {a b : ℝ} {f : ℝ → E} {μ : Measure ℝ}
 
 /-- Lebesgue dominated convergence theorem for filters with a countable basis -/
@@ -314,7 +314,7 @@ section ContinuousPrimitive
 
 open scoped Interval
 
-variable {E X : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [TopologicalSpace X]
+variable {E X : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E] [TopologicalSpace X]
   {a b b₀ b₁ b₂ : ℝ} {μ : Measure ℝ} {f : ℝ → E}
 
 theorem continuousWithinAt_primitive (hb₀ : μ {b₀} = 0)

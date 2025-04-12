@@ -28,7 +28,7 @@ open scoped Topology
 open Filter Set
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
-variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {F : Type v} [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
 variable {f : 𝕜 → F}
 variable {f' : F}
 variable {x : 𝕜}

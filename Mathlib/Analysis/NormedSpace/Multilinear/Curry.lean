@@ -50,9 +50,11 @@ universe u v v' wE wE₁ wE' wEi wG wG'
 
 variable {𝕜 : Type u} {ι : Type v} {ι' : Type v'} {n : ℕ} {E : ι → Type wE}
   {Ei : Fin n.succ → Type wEi} {G : Type wG} {G' : Type wG'} [Fintype ι]
-  [Fintype ι'] [NontriviallyNormedField 𝕜] [∀ i, NormedAddCommGroup (E i)]
-  [∀ i, NormedSpace 𝕜 (E i)] [∀ i, NormedAddCommGroup (Ei i)] [∀ i, NormedSpace 𝕜 (Ei i)]
-  [NormedAddCommGroup G] [NormedSpace 𝕜 G] [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
+  [Fintype ι'] [NontriviallyNormedField 𝕜]
+  [∀ i, AddCommGroup (E i)] [∀ i, NormedAddGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
+  [∀ i, AddCommGroup (Ei i)] [∀ i, NormedAddGroup (Ei i)] [∀ i, NormedSpace 𝕜 (Ei i)]
+  [AddCommGroup G] [NormedAddGroup G] [NormedSpace 𝕜 G]
+  [AddCommGroup G'] [NormedAddGroup G'] [NormedSpace 𝕜 G']
 
 
 theorem ContinuousLinearMap.norm_map_tail_le
@@ -603,8 +605,8 @@ end ContinuousMultilinearMap
 
 namespace ContinuousLinearMap
 
-variable {F G : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {F G : Type*} [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
+  [AddCommGroup G] [NormedAddGroup G] [NormedSpace 𝕜 G]
 
 /-- Given a linear map into continuous multilinear maps
 `B : G →L[𝕜] ContinuousMultilinearMap 𝕜 E F`, one can not always uncurry it as `G` and `E` might

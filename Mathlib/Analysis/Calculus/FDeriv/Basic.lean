@@ -222,8 +222,8 @@ end TVS
 
 section
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
+variable {F : Type*} [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
 
 variable {f f₀ f₁ g : E → F}
 variable {f' f₀' f₁' g' : E →L[𝕜] F}
@@ -1373,8 +1373,8 @@ section Support
 
 open Function
 
-variable (𝕜 : Type*) {E F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : E → F} {x : E}
+variable (𝕜 : Type*) {E F : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup E] [NormedAddGroup E]
+  [NormedSpace 𝕜 E] [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F] {f : E → F} {x : E}
 
 theorem HasStrictFDerivAt.of_nmem_tsupport (h : x ∉ tsupport f) :
     HasStrictFDerivAt f (0 : E →L[𝕜] F) x := by

@@ -222,7 +222,7 @@ theorem Integrable.uniformIntegrable_condExp_filtration [Preorder ι] {μ : Meas
 alias Integrable.uniformIntegrable_condexp_filtration :=
   Integrable.uniformIntegrable_condExp_filtration
 
-theorem Filtration.condExp_condExp [Preorder ι] {E : Type*} [NormedAddCommGroup E]
+theorem Filtration.condExp_condExp [Preorder ι] {E : Type*} [AddCommGroup E] [NormedAddGroup E]
     [NormedSpace ℝ E] [CompleteSpace E] (f : Ω → E) {μ : Measure Ω} (ℱ : Filtration ι m)
     {i j : ι} (hij : i ≤ j) [SigmaFinite (μ.trim (ℱ.le j))] :
     μ[μ[f|ℱ j]|ℱ i] =ᵐ[μ] μ[f|ℱ i] := condExp_condExp_of_le (ℱ.mono hij) (ℱ.le j)
@@ -322,7 +322,8 @@ theorem stronglyMeasurable_limitProcess : StronglyMeasurable[⨆ n, ℱ n] (limi
 theorem stronglyMeasurable_limit_process' : StronglyMeasurable[m] (limitProcess f ℱ μ) :=
   stronglyMeasurable_limitProcess.mono (sSup_le fun _ ⟨_, hn⟩ => hn ▸ ℱ.le _)
 
-theorem memLp_limitProcess_of_eLpNorm_bdd {R : ℝ≥0} {p : ℝ≥0∞} {F : Type*} [NormedAddCommGroup F]
+theorem memLp_limitProcess_of_eLpNorm_bdd {R : ℝ≥0} {p : ℝ≥0∞} {F : Type*}
+    [AddCommGroup F] [NormedAddGroup F]
     {ℱ : Filtration ℕ m} {f : ℕ → Ω → F} (hfm : ∀ n, AEStronglyMeasurable (f n) μ)
     (hbdd : ∀ n, eLpNorm (f n) p μ ≤ R) : MemLp (limitProcess f ℱ μ) p μ := by
   rw [limitProcess]

@@ -25,7 +25,7 @@ open scoped Interval Real
 
 noncomputable section
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] (R : ℝ) (z w : ℂ)
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℂ E] (R : ℝ) (z w : ℂ)
 
 namespace Complex
 

@@ -85,8 +85,9 @@ open scoped NNReal ENNReal ComplexConjugate Topology
 noncomputable section
 
 variable {ι 𝕜 : Type*} [RCLike 𝕜] {E : Type*}
-variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable {G : ι → Type*} [∀ i, NormedAddCommGroup (G i)] [∀ i, InnerProductSpace 𝕜 (G i)]
+variable [AddCommGroup E] [NormedAddGroup E] [InnerProductSpace 𝕜 E]
+variable {G : ι → Type*}
+  [∀ i, AddCommGroup (G i)] [∀ i, NormedAddGroup (G i)] [∀ i, InnerProductSpace 𝕜 (G i)]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
@@ -108,7 +109,7 @@ theorem summable_inner (f g : lp G 2) : Summable fun i => ⟪f i, g i⟫ := by
   exact norm_inner_le_norm (𝕜 := 𝕜) _ _
 
 instance instInnerProductSpace : InnerProductSpace 𝕜 (lp G 2) :=
-  { lp.normedAddCommGroup (E := G) (p := 2) with
+  { lp.normedAddGroup (E := G) (p := 2) with
     inner := fun f g => ∑' i, ⟪f i, g i⟫
     norm_sq_eq_inner := fun f => by
       calc

@@ -39,13 +39,14 @@ open scoped Filter Topology NNReal ENNReal Nat Interval
 
 noncomputable section
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
 
 /-- `Prop` structure holding the hypotheses of the Picard-Lindelöf theorem.
 
 The similarly named `PicardLindelof` structure is part of the internal API for convenience, so as
 not to constantly invoke choice, but is not intended for public use. -/
-structure IsPicardLindelof {E : Type*} [NormedAddCommGroup E] (v : ℝ → E → E) (tMin t₀ tMax : ℝ)
+structure IsPicardLindelof {E : Type*} [AddCommGroup E] [NormedAddGroup E]
+    (v : ℝ → E → E) (tMin t₀ tMax : ℝ)
     (x₀ : E) (L : ℝ≥0) (R C : ℝ) : Prop where
   ht₀ : t₀ ∈ Icc tMin tMax
   hR : 0 ≤ R
@@ -62,7 +63,7 @@ of using this structure.
 The similarly named `IsPicardLindelof` is a bundled `Prop` holding the long hypotheses of the
 Picard-Lindelöf theorem as named arguments. It is used as part of the public API.
 -/
-structure PicardLindelof (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E] where
+structure PicardLindelof (E : Type*) [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E] where
   /-- Function of the initial value problem -/
   toFun : ℝ → E → E
   /-- Lower limit of `t` -/
@@ -182,7 +183,7 @@ def toContinuousMap : v.FunSpace ↪ C(Icc v.tMin v.tMax, E) :=
 instance : MetricSpace v.FunSpace :=
   MetricSpace.induced toContinuousMap toContinuousMap.injective inferInstance
 
-theorem isUniformInducing_toContinuousMap : IsUniformInducing (@toContinuousMap _ _ _ v) :=
+theorem isUniformInducing_toContinuousMap : IsUniformInducing (toContinuousMap (v := v)) :=
   ⟨rfl⟩
 
 theorem range_toContinuousMap :
@@ -341,7 +342,7 @@ theorem exists_solution [CompleteSpace E] :
 
 end PicardLindelof
 
-theorem IsPicardLindelof.norm_le₀ {E : Type*} [NormedAddCommGroup E] {v : ℝ → E → E}
+theorem IsPicardLindelof.norm_le₀ {E : Type*} [AddCommGroup E] [NormedAddGroup E] {v : ℝ → E → E}
     {tMin t₀ tMax : ℝ} {x₀ : E} {C R : ℝ} {L : ℝ≥0}
     (hpl : IsPicardLindelof v tMin t₀ tMax x₀ L R C) : ‖v t₀ x₀‖ ≤ C :=
   hpl.norm_le t₀ hpl.ht₀ x₀ <| mem_closedBall_self hpl.hR

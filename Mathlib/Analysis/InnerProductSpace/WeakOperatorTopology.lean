@@ -20,7 +20,7 @@ open scoped Topology InnerProductSpace
 namespace ContinuousLinearMapWOT
 
 variable {𝕜 : Type*} {E : Type*} {F : Type*} [RCLike 𝕜] [AddCommGroup E] [TopologicalSpace E]
-  [Module 𝕜 E] [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
+  [Module 𝕜 E] [AddCommGroup F] [NormedAddGroup F] [InnerProductSpace 𝕜 F]
 
 @[ext]
 lemma ext_inner {A B : E →WOT[𝕜] F} (h : ∀ x y, ⟪y, A x⟫_𝕜 = ⟪y, B x⟫_𝕜) : A = B := by

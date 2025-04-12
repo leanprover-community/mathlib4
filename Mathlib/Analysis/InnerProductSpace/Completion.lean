@@ -21,7 +21,7 @@ open LinearMap (BilinForm)
 variable {𝕜 E F : Type*} [RCLike 𝕜]
 
 section SeparationQuotient
-variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [AddCommGroup E] [SeminormedAddGroup E] [InnerProductSpace 𝕜 E]
 
 theorem Inseparable.inner_eq_inner {x₁ x₂ y₁ y₂ : E}
     (hx : Inseparable x₁ x₂) (hy : Inseparable y₁ y₂) :
@@ -49,7 +49,7 @@ end SeparationQuotient
 
 section UniformSpace.Completion
 
-variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [AddCommGroup E] [SeminormedAddGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 

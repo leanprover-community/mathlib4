@@ -17,7 +17,7 @@ TODO: Uniformize API between analytic and meromorphic functions
 open Filter  Set
 open scoped Topology
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [AddCommGroup E] [NormedAddGroup E]
   [NormedSpace 𝕜 E] {f g : 𝕜 → E} {n : ℕ} {z₀ : 𝕜}
 
 /-!

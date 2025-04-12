@@ -25,8 +25,8 @@ variable {𝕜 𝕜₂ 𝕜₃ E F Fₗ G : Type*}
 
 section Normed
 
-variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G]
-  [NormedAddCommGroup Fₗ]
+variable [AddCommGroup E] [NormedAddGroup E] [AddCommGroup F] [NormedAddGroup F]
+  [AddCommGroup G] [NormedAddGroup G] [AddCommGroup Fₗ] [NormedAddGroup Fₗ]
 
 open Metric ContinuousLinearMap
 
@@ -118,12 +118,12 @@ instance normOneClass [Nontrivial E] : NormOneClass (E →L[𝕜] E) :=
 
 /-- Continuous linear maps themselves form a normed space with respect to
     the operator norm. -/
-instance toNormedAddCommGroup [RingHomIsometric σ₁₂] : NormedAddCommGroup (E →SL[σ₁₂] F) :=
-  NormedAddCommGroup.ofSeparation fun f => (opNorm_zero_iff f).mp
+instance toNormedAddGroup [RingHomIsometric σ₁₂] : NormedAddGroup (E →SL[σ₁₂] F) :=
+  NormedAddGroup.ofSeparation fun f => (opNorm_zero_iff f).mp
 
 /-- Continuous linear maps form a normed ring with respect to the operator norm. -/
 instance toNormedRing : NormedRing (E →L[𝕜] E) where
-  __ := toNormedAddCommGroup
+  __ := toNormedAddGroup
   __ := toSeminormedRing
 
 variable {f} in
@@ -183,7 +183,8 @@ variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [Nontr
   [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜₃ G] [NormedSpace 𝕜 Fₗ]
   {σ₂₃ : 𝕜₂ →+* 𝕜₃}
 
-variable {𝕜₂' : Type*} [NontriviallyNormedField 𝕜₂'] {F' : Type*} [NormedAddCommGroup F']
+variable {𝕜₂' : Type*} [NontriviallyNormedField 𝕜₂']
+  {F' : Type*} [AddCommGroup F'] [NormedAddGroup F']
   [NormedSpace 𝕜₂' F'] {σ₂' : 𝕜₂' →+* 𝕜₂} {σ₂'' : 𝕜₂ →+* 𝕜₂'} {σ₂₃' : 𝕜₂' →+* 𝕜₃}
   [RingHomInvPair σ₂' σ₂''] [RingHomInvPair σ₂'' σ₂'] [RingHomCompTriple σ₂' σ₂₃ σ₂₃']
   [RingHomCompTriple σ₂'' σ₂₃' σ₂₃] [RingHomIsometric σ₂₃] [RingHomIsometric σ₂']
@@ -285,13 +286,15 @@ end Normed
 /-- A bounded bilinear form `B` in a real normed space is *coercive*
 if there is some positive constant C such that `C * ‖u‖ * ‖u‖ ≤ B u u`.
 -/
-def IsCoercive [NormedAddCommGroup E] [NormedSpace ℝ E] (B : E →L[ℝ] E →L[ℝ] ℝ) : Prop :=
+def IsCoercive [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
+    (B : E →L[ℝ] E →L[ℝ] ℝ) : Prop :=
   ∃ C, 0 < C ∧ ∀ u, C * ‖u‖ * ‖u‖ ≤ B u u
 
 section Equicontinuous
 
 variable {ι : Type*} [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
-  [RingHomIsometric σ₁₂] [SeminormedAddCommGroup E] [SeminormedAddCommGroup F]
+  [RingHomIsometric σ₁₂] [AddCommGroup E] [SeminormedAddGroup E]
+  [AddCommGroup F] [SeminormedAddGroup F]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] (f : ι → E →SL[σ₁₂] F)
 
 /-- Equivalent characterizations for equicontinuity of a family of continuous linear maps

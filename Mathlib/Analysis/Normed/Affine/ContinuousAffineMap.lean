@@ -42,9 +42,9 @@ submultiplicative: for a composition of maps, we have only `‖f.comp g‖ ≤ �
 namespace ContinuousAffineMap
 
 variable {𝕜 R V W W₂ P Q Q₂ : Type*}
-variable [NormedAddCommGroup V] [MetricSpace P] [NormedAddTorsor V P]
-variable [NormedAddCommGroup W] [MetricSpace Q] [NormedAddTorsor W Q]
-variable [NormedAddCommGroup W₂] [MetricSpace Q₂] [NormedAddTorsor W₂ Q₂]
+variable [AddCommGroup V] [NormedAddGroup V] [MetricSpace P] [NormedAddTorsor V P]
+variable [AddCommGroup W] [NormedAddGroup W] [MetricSpace Q] [NormedAddTorsor W Q]
+variable [AddCommGroup W₂] [NormedAddGroup W₂] [MetricSpace Q₂] [NormedAddTorsor W₂ Q₂]
 variable [NormedField R] [NormedSpace R V] [NormedSpace R W] [NormedSpace R W₂]
 variable [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 V] [NormedSpace 𝕜 W] [NormedSpace 𝕜 W₂]
 
@@ -181,8 +181,8 @@ theorem norm_eq (h : f 0 = 0) : ‖f‖ = ‖f.contLinear‖ :=
     _ = max 0 ‖f.contLinear‖ := by rw [h, norm_zero]
     _ = ‖f.contLinear‖ := max_eq_right (norm_nonneg _)
 
-noncomputable instance : NormedAddCommGroup (V →ᴬ[𝕜] W) :=
-  AddGroupNorm.toNormedAddCommGroup
+noncomputable instance : NormedAddGroup (V →ᴬ[𝕜] W) :=
+  AddGroupNorm.toNormedAddGroup
     { toFun := fun f => max ‖f 0‖ ‖f.contLinear‖
       map_zero' := by simp [(ContinuousAffineMap.zero_apply)]
       neg' := fun f => by

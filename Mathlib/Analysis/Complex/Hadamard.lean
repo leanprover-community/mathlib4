@@ -71,13 +71,13 @@ def verticalClosedStrip (a : ℝ) (b : ℝ) : Set ℂ := re ⁻¹' Icc a b
 
 /-- The supremum of the norm of `f` on imaginary lines. (Fixed real part)
 This is also known as the function `M` -/
-noncomputable def sSupNormIm {E : Type*} [NormedAddCommGroup E]
+noncomputable def sSupNormIm {E : Type*} [AddCommGroup E] [NormedAddGroup E]
     (f : ℂ → E) (x : ℝ) : ℝ :=
   sSup ((norm ∘ f) '' (re ⁻¹' {x}))
 
 section invInterpStrip
 
-variable {E : Type*} [NormedAddCommGroup E] (f : ℂ → E) (z : ℂ)
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] (f : ℂ → E) (z : ℂ)
 
 /--
 The inverse of the interpolation of `sSupNormIm` on the two boundaries.
@@ -235,7 +235,7 @@ end invInterpStrip
 
 -----
 
-variable {E : Type*} [NormedAddCommGroup E] (f : ℂ → E)
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] (f : ℂ → E)
 
 /--
 The interpolation of `sSupNormIm` on the two boundaries.

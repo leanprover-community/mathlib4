@@ -35,7 +35,7 @@ open scoped RealInnerProductSpace
 
 namespace InnerProductGeometry
 
-variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+variable {V : Type*} [AddCommGroup V] [NormedAddGroup V] [InnerProductSpace ℝ V]
 
 /-- Pythagorean theorem, if-and-only-if vector angle form. -/
 theorem norm_add_sq_eq_norm_sq_add_norm_sq_iff_angle_eq_pi_div_two (x y : V) :
@@ -317,8 +317,8 @@ namespace EuclideanGeometry
 
 open InnerProductGeometry
 
-variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
-  [NormedAddTorsor V P]
+variable {V : Type*} {P : Type*} [AddCommGroup V] [NormedAddGroup V] [InnerProductSpace ℝ V]
+  [MetricSpace P] [NormedAddTorsor V P]
 
 /-- **Pythagorean theorem**, if-and-only-if angle-at-point form. -/
 theorem dist_sq_eq_dist_sq_add_dist_sq_iff_angle_eq_pi_div_two (p₁ p₂ p₃ : P) :

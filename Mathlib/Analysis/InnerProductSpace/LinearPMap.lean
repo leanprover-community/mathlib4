@@ -53,8 +53,8 @@ open RCLike
 open scoped ComplexConjugate
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
-variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
+variable [AddCommGroup E] [NormedAddGroup E] [InnerProductSpace 𝕜 E]
+variable [AddCommGroup F] [NormedAddGroup F] [InnerProductSpace 𝕜 F]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 

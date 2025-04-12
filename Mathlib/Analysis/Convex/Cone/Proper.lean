@@ -131,9 +131,9 @@ end Module
 
 section InnerProductSpace
 
-variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
-variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
-variable {G : Type*} [NormedAddCommGroup G] [InnerProductSpace ℝ G]
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [InnerProductSpace ℝ E]
+variable {F : Type*} [AddCommGroup F] [NormedAddGroup F] [InnerProductSpace ℝ F]
+variable {G : Type*} [AddCommGroup G] [NormedAddGroup G] [InnerProductSpace ℝ G]
 
 protected theorem pointed (K : ProperCone ℝ E) : (K : ConvexCone ℝ E).Pointed :=
   (K : ConvexCone ℝ E).pointed_of_nonempty_of_isClosed K.nonempty K.isClosed
@@ -201,8 +201,8 @@ section CompleteSpace
 
 open scoped InnerProductSpace
 
-variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [CompleteSpace E]
-variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F] [CompleteSpace F]
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [InnerProductSpace ℝ E] [CompleteSpace E]
+variable {F : Type*} [AddCommGroup F] [NormedAddGroup F] [InnerProductSpace ℝ F] [CompleteSpace F]
 
 /-- The dual of the dual of a proper cone is itself. -/
 @[simp]
@@ -241,9 +241,8 @@ theorem hyperplane_separation (K : ProperCone ℝ E) {f : E →L[ℝ] F} {b : F}
 
       -- as `b ∉ K.map f`, there is a hyperplane `y` separating `b` from `K.map f`
       let C := PointedCone.toConvexCone (𝕜 := ℝ) (E := F) (K.map f)
-      obtain ⟨y, hxy, hyb⟩ :=
-        @ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_nmem
-        _ _ _ _ C (K.map f).nonempty (K.map f).isClosed b h
+      obtain ⟨y, hxy, hyb⟩ := ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_nmem C
+        (K.map f).nonempty (K.map f).isClosed h
 
       -- the rest of the proof is a straightforward algebraic manipulation
       refine ⟨y, ?_, hyb⟩

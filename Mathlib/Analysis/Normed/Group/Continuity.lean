@@ -22,6 +22,7 @@ open Filter Function Metric Bornology ENNReal NNReal Uniformity Pointwise Topolo
 
 section SeminormedGroup
 
+variable [Group E] [Group F] [Group G]
 variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G] {s : Set E} {a : E}
 
 @[to_additive]
@@ -92,11 +93,11 @@ end SeminormedGroup
 section Instances
 
 @[to_additive]
-instance SeminormedGroup.toContinuousENorm [SeminormedGroup E] : ContinuousENorm E where
+instance SeminormedGroup.toContinuousENorm [Group E] [SeminormedGroup E] : ContinuousENorm E where
   continuous_enorm := ENNReal.isOpenEmbedding_coe.continuous.comp continuous_nnnorm'
 
 @[to_additive]
-instance NormedGroup.toENormedMonoid {F : Type*} [NormedGroup F] : ENormedMonoid F where
+instance NormedGroup.toENormedMonoid {F : Type*} [Group F] [NormedGroup F] : ENormedMonoid F where
   enorm_eq_zero := by simp [enorm_eq_nnnorm]
   enorm_mul_le := by simp [enorm_eq_nnnorm, ← coe_add, nnnorm_mul_le']
 
@@ -104,6 +105,7 @@ end Instances
 
 section SeminormedGroup
 
+variable [Group E] [Group F] [Group G]
 variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G] {s : Set E} {a : E}
 
 set_option linter.docPrime false in
@@ -164,6 +166,7 @@ end SeminormedGroup
 
 section SeminormedGroup
 
+variable [Group E] [Group F] [Group G]
 variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G] {s : Set E} {a : E}
 
 section
@@ -245,7 +248,8 @@ end SeminormedGroup
 
 section SeminormedCommGroup
 
-variable [SeminormedCommGroup E] [SeminormedCommGroup F] {a b : E} {r : ℝ}
+variable [CommGroup E] [CommGroup F]
+variable [SeminormedGroup E] [SeminormedGroup F] {a b : E} {r : ℝ}
 
 open Finset
 
@@ -280,6 +284,7 @@ theorem controlled_prod_of_mem_closure {s : Subgroup E} (hg : a ∈ closure (s :
     obtain ⟨k, rfl⟩ : ∃ k, l = k + 1 := Nat.exists_eq_succ_of_ne_zero hl.ne'
     apply hφ
 
+omit [SeminormedGroup E] in
 @[to_additive]
 theorem controlled_prod_of_mem_closure_range {j : E →* F} {b : F}
     (hb : b ∈ closure (j.range : Set F)) {f : ℕ → ℝ} (b_pos : ∀ n, 0 < f n) :
@@ -296,7 +301,7 @@ end SeminormedCommGroup
 
 section NormedGroup
 
-variable [NormedGroup E] {a b : E}
+variable [Group E] [NormedGroup E] {a b : E}
 
 /-- See `tendsto_norm_one` for a version with full neighborhoods. -/
 @[to_additive "See `tendsto_norm_zero` for a version with full neighborhoods."]

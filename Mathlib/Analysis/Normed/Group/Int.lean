@@ -14,7 +14,7 @@ open NNReal
 variable {α : Type*}
 namespace Int
 
-instance instNormedAddCommGroup : NormedAddCommGroup ℤ where
+instance instNormedAddGroup : NormedAddGroup ℤ where
   norm n := ‖(n : ℝ)‖
   dist_eq m n := by simp only [Int.dist_eq, norm, Int.cast_sub]
 
@@ -44,7 +44,7 @@ end Int
 -- we can state some lemmas about `zsmul`.
 section
 
-variable [SeminormedCommGroup α]
+variable [CommGroup α] [SeminormedGroup α]
 
 @[to_additive norm_zsmul_le]
 theorem norm_zpow_le_mul_norm (n : ℤ) (a : α) : ‖a ^ n‖ ≤ ‖n‖ * ‖a‖ := by

@@ -106,7 +106,7 @@ theorem lintegral_withDensity (κ : Kernel α β) [IsSFiniteKernel κ]
     lintegral_withDensity_eq_lintegral_mul _ (Measurable.of_uncurry_left hf) hg]
   simp_rw [Pi.mul_apply]
 
-theorem integral_withDensity {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+theorem integral_withDensity {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
     {f : β → E} [IsSFiniteKernel κ] {a : α} {g : α → β → ℝ≥0}
     (hg : Measurable (Function.uncurry g)) :
     ∫ b, f b ∂withDensity κ (fun a b => g a b) a = ∫ b, g a b • f b ∂κ a := by

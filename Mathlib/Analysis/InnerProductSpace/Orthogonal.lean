@@ -24,8 +24,8 @@ Note this is not the same unicode symbol as `⊥` (`Bot`).
 -/
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
-variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
+variable [AddCommGroup E] [NormedAddGroup E] [InnerProductSpace 𝕜 E]
+variable [AddCommGroup F] [NormedAddGroup F] [InnerProductSpace 𝕜 F]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
@@ -192,7 +192,8 @@ theorem orthogonalFamily_self :
 end Submodule
 
 @[simp]
-theorem bilinFormOfRealInner_orthogonal {E} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+theorem bilinFormOfRealInner_orthogonal {E}
+    [AddCommGroup E] [NormedAddGroup E] [InnerProductSpace ℝ E]
     (K : Submodule ℝ E) : K.orthogonalBilin bilinFormOfRealInner = Kᗮ :=
   rfl
 

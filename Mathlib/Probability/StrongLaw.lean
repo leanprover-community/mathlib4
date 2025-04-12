@@ -644,7 +644,7 @@ end StrongLawAeReal
 section StrongLawVectorSpace
 
 variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {μ : Measure Ω} [IsProbabilityMeasure μ]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+  {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E] [CompleteSpace E]
   [MeasurableSpace E]
 
 open Set TopologicalSpace
@@ -832,7 +832,7 @@ end StrongLawVectorSpace
 section StrongLawLp
 
 variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {μ : Measure Ω}
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+  {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E] [CompleteSpace E]
   [MeasurableSpace E] [BorelSpace E]
 
 /-- **Strong law of large numbers**, Lᵖ version: if `X n` is a sequence of independent

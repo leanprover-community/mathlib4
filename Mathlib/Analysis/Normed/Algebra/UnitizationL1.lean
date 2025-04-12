@@ -36,9 +36,9 @@ noncomputable def unitization_addEquiv_prod : WithLp 1 (Unitization 𝕜 A) ≃+
   (WithLp.linearEquiv 1 𝕜 (Unitization 𝕜 A)).toAddEquiv.trans <|
     (addEquiv 𝕜 A).trans (WithLp.linearEquiv 1 𝕜 (𝕜 × A)).symm.toAddEquiv
 
-noncomputable instance instUnitizationNormedAddCommGroup :
-    NormedAddCommGroup (WithLp 1 (Unitization 𝕜 A)) :=
-  NormedAddCommGroup.induced (WithLp 1 (Unitization 𝕜 A)) (WithLp 1 (𝕜 × A))
+noncomputable instance instUnitizationNormedAddGroup :
+    NormedAddGroup (WithLp 1 (Unitization 𝕜 A)) :=
+  NormedAddGroup.induced (WithLp 1 (Unitization 𝕜 A)) (WithLp 1 (𝕜 × A))
     (unitization_addEquiv_prod 𝕜 A) (AddEquiv.injective _)
 
 /-- Bundle `WithLp.unitization_addEquiv_prod` as a `UniformEquiv`. -/

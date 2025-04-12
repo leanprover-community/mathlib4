@@ -38,7 +38,8 @@ instance {E : Type*} [TopologicalSpace E] [AddCommGroup E] [IsTopologicalAddGrou
     simp only [map_zero] at hf
     exact ⟨f, hf.ne'⟩⟩
 
-instance {E 𝕜 : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] : SeparatingDual 𝕜 E :=
+instance {E 𝕜 : Type*} [RCLike 𝕜] [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E] :
+    SeparatingDual 𝕜 E :=
   ⟨fun x hx ↦ by
     rcases exists_dual_vector 𝕜 x hx with ⟨f, -, hf⟩
     refine ⟨f, ?_⟩
@@ -152,8 +153,9 @@ open Filter
 open scoped Topology
 
 section
-variable (𝕜 E F : Type*) [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [NormedAddCommGroup F] [NormedSpace 𝕜 F] [SeparatingDual 𝕜 E] [Nontrivial E]
+variable (𝕜 E F : Type*) [NontriviallyNormedField 𝕜]
+    [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
+    [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F] [SeparatingDual 𝕜 E] [Nontrivial E]
 
 /-- If a space of linear maps from `E` to `F` is complete, and `E` is nontrivial, then `F` is
 complete. -/
@@ -177,7 +179,8 @@ lemma completeSpace_continuousLinearMap_iff :
 
 open ContinuousMultilinearMap
 
-variable {ι : Type*} [Finite ι] {M : ι → Type*} [∀ i, NormedAddCommGroup (M i)]
+variable {ι : Type*} [Finite ι] {M : ι → Type*}
+  [∀ i, AddCommGroup (M i)] [∀ i, NormedAddGroup (M i)]
   [∀ i, NormedSpace 𝕜 (M i)] [∀ i, SeparatingDual 𝕜 (M i)]
 
 /-- If a space of multilinear maps from `Π i, E i` to `F` is complete, and each `E i` has a nonzero

@@ -70,8 +70,8 @@ In this file we prove the following facts:
   strictly differentiable. (This is a corollary of the mean value inequality.)
 -/
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {F : Type*} [NormedAddCommGroup F]
-  [NormedSpace ℝ F]
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
+  {F : Type*} [AddCommGroup F] [NormedAddGroup F] [NormedSpace ℝ F]
 
 open Metric Set Asymptotics ContinuousLinearMap Filter
 
@@ -241,7 +241,7 @@ Let `f` and `B` be continuous functions on `[a, b]` such that
 
 Then `‖f x‖ ≤ B x` everywhere on `[a, b]`. -/
 theorem image_norm_le_of_liminf_right_slope_norm_lt_deriv_boundary {E : Type*}
-    [NormedAddCommGroup E] {f : ℝ → E} {f' : ℝ → ℝ} (hf : ContinuousOn f (Icc a b))
+    [AddCommGroup E] [NormedAddGroup E] {f : ℝ → E} {f' : ℝ → ℝ} (hf : ContinuousOn f (Icc a b))
     -- `hf'` actually says `liminf (‖f z‖ - ‖f x‖) / (z - x) ≤ f' x`
     (hf' : ∀ x ∈ Ico a b, ∀ r, f' x < r → ∃ᶠ z in 𝓝[>] x, slope (norm ∘ f) x z < r)
     {B B' : ℝ → ℝ} (ha : ‖f a‖ ≤ B a) (hB : ContinuousOn B (Icc a b))
@@ -430,7 +430,7 @@ section
 namespace Convex
 
 variable {𝕜 G : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
-  [NormedSpace 𝕜 E] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+  [NormedSpace 𝕜 E] [AddCommGroup G] [NormedAddGroup G] [NormedSpace 𝕜 G]
   {f g : E → G} {C : ℝ} {s : Set E} {x y : E} {f' g' : E → E →L[𝕜] G} {φ : E →L[𝕜] G}
 
 instance (priority := 100) : PathConnectedSpace 𝕜 := by
@@ -532,7 +532,7 @@ theorem lipschitzOnWith_of_nnnorm_fderiv_le {C : ℝ≥0} (hf : ∀ x ∈ s, Dif
 /-- The mean value theorem: if the derivative of a function is bounded by `C`, then the function is
 `C`-Lipschitz. Version with `fderiv` and `LipschitzWith`. -/
 theorem _root_.lipschitzWith_of_nnnorm_fderiv_le
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {f : E → G}
+    {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E] {f : E → G}
     {C : ℝ≥0} (hf : Differentiable 𝕜 f)
     (bound : ∀ x, ‖fderiv 𝕜 f x‖₊ ≤ C) : LipschitzWith C f := by
   letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
@@ -582,7 +582,7 @@ theorem is_const_of_fderivWithin_eq_zero (hs : Convex ℝ s) (hf : Differentiabl
     hs.norm_image_sub_le_of_norm_fderivWithin_le hf bound hx hy
 
 theorem _root_.is_const_of_fderiv_eq_zero
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {f : E → G}
+    {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E] {f : E → G}
     (hf : Differentiable 𝕜 f) (hf' : ∀ x, fderiv 𝕜 f x = 0)
     (x y : E) : f x = f y := by
   letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
@@ -658,7 +658,7 @@ theorem _root_.IsOpen.eqOn_of_fderiv_eq (hs : IsOpen s) (hs' : IsPreconnected s)
   simpa using ha
 
 theorem _root_.eq_of_fderiv_eq
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {f g : E → G}
+    {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E] {f g : E → G}
     (hf : Differentiable 𝕜 f) (hg : Differentiable 𝕜 g)
     (hf' : ∀ x, fderiv 𝕜 f x = fderiv 𝕜 g x) (x : E) (hfgx : f x = g x) : f = g := by
   letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
@@ -671,7 +671,7 @@ end Convex
 
 namespace Convex
 
-variable {𝕜 G : Type*} [RCLike 𝕜] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {𝕜 G : Type*} [RCLike 𝕜] [AddCommGroup G] [NormedAddGroup G] [NormedSpace 𝕜 G]
   {f f' : 𝕜 → G} {s : Set 𝕜} {x y : 𝕜}
 
 /-- The mean value theorem on a convex set in dimension 1: if the derivative of a function is
@@ -1242,8 +1242,10 @@ make sense and are enough. Many formulations of the mean value inequality could 
 balls over `ℝ` or `ℂ`. For now, we only include the ones that we need.
 -/
 
-variable {𝕜 : Type*} [RCLike 𝕜] {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G] {H : Type*}
-  [NormedAddCommGroup H] [NormedSpace 𝕜 H] {f : G → H} {f' : G → G →L[𝕜] H} {x : G}
+variable {𝕜 : Type*} [RCLike 𝕜]
+  {G : Type*} [AddCommGroup G] [NormedAddGroup G] [NormedSpace 𝕜 G]
+  {H : Type*} [AddCommGroup H] [NormedAddGroup H] [NormedSpace 𝕜 H]
+  {f : G → H} {f' : G → G →L[𝕜] H} {x : G}
 
 /-- Over the reals or the complexes, a continuously differentiable function is strictly
 differentiable. -/

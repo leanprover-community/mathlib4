@@ -19,8 +19,8 @@ open Filter Finset
 
 open Topology
 
-variable {G : Type*} [NormedAddCommGroup G] [CompleteSpace G]
-variable {H : Type*} [NormedAddCommGroup H]
+variable {G : Type*} [AddCommGroup G] [NormedAddGroup G] [CompleteSpace G]
+variable {H : Type*} [AddCommGroup H] [NormedAddGroup H]
 
 /-- Given `f : NormedAddGroupHom G H` for some complete `G` and a subgroup `K` of `H`, if every
 element `x` of `K` has a preimage under `f` whose norm is at most `C*‖x‖` then the same holds for
@@ -111,7 +111,8 @@ This is useful in particular if `j` is the inclusion of a normed group into its 
 (in this case the closure is the full target group).
 -/
 theorem controlled_closure_range_of_complete {f : NormedAddGroupHom G H} {K : Type*}
-    [SeminormedAddCommGroup K] {j : NormedAddGroupHom K H} (hj : ∀ x, ‖j x‖ = ‖x‖) {C ε : ℝ}
+    [AddCommGroup K] [SeminormedAddGroup K] {j : NormedAddGroupHom K H}
+    (hj : ∀ x, ‖j x‖ = ‖x‖) {C ε : ℝ}
     (hC : 0 < C) (hε : 0 < ε) (hyp : ∀ k, ∃ g, f g = j k ∧ ‖g‖ ≤ C * ‖k‖) :
     f.SurjectiveOnWith j.range.topologicalClosure (C + ε) := by
   replace hyp : ∀ h ∈ j.range, ∃ g, f g = h ∧ ‖g‖ ≤ C * ‖h‖ := by

@@ -18,7 +18,7 @@ open Filter
 open scoped ENNReal
 
 variable {α E : Type*} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {μ : Measure α}
-  [NormedAddCommGroup E]
+  [AddCommGroup E] [NormedAddGroup E]
 
 theorem eLpNorm'_trim (hm : m ≤ m0) {f : α → E} (hf : StronglyMeasurable[m] f) :
     eLpNorm' f q (μ.trim hm) = eLpNorm' f q μ := by
@@ -27,7 +27,7 @@ theorem eLpNorm'_trim (hm : m ≤ m0) {f : α → E} (hf : StronglyMeasurable[m]
   refine lintegral_trim hm ?_
   refine @Measurable.pow_const _ _ _ _ _ _ _ m _ (@Measurable.coe_nnreal_ennreal _ m _ ?_) q
   apply @StronglyMeasurable.measurable
-  exact @StronglyMeasurable.nnnorm α m _ _ _ hf
+  exact StronglyMeasurable.nnnorm hf
 
 theorem limsup_trim (hm : m ≤ m0) {f : α → ℝ≥0∞} (hf : Measurable[m] f) :
     limsup f (ae (μ.trim hm)) = limsup f (ae μ) := by
@@ -48,7 +48,7 @@ theorem essSup_trim (hm : m ≤ m0) {f : α → ℝ≥0∞} (hf : Measurable[m] 
 
 theorem eLpNormEssSup_trim (hm : m ≤ m0) {f : α → E} (hf : StronglyMeasurable[m] f) :
     eLpNormEssSup f (μ.trim hm) = eLpNormEssSup f μ :=
-  essSup_trim _ (@StronglyMeasurable.enorm _ m _ _ _ hf)
+  essSup_trim _ (StronglyMeasurable.enorm hf)
 
 theorem eLpNorm_trim (hm : m ≤ m0) {f : α → E} (hf : StronglyMeasurable[m] f) :
     eLpNorm f p (μ.trim hm) = eLpNorm f p μ := by

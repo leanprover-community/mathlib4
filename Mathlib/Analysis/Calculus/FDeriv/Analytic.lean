@@ -68,8 +68,8 @@ open scoped ENNReal Topology
 universe u v
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {E : Type u} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
+variable {F : Type v} [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
 
 section fderiv
 
@@ -551,7 +551,8 @@ end deriv
 
 namespace ContinuousMultilinearMap
 
-variable {ι : Type*} {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
+variable {ι : Type*} {E : ι → Type*}
+  [∀ i, AddCommGroup (E i)] [∀ i, NormedAddGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
   [Fintype ι] (f : ContinuousMultilinearMap 𝕜 E F)
 
 open FormalMultilinearSeries
@@ -607,7 +608,7 @@ protected theorem hasFDerivAt [DecidableEq ι] : HasFDerivAt f (f.linearDeriv x)
 /-- Given `f` a multilinear map, then the derivative of `x ↦ f (g₁ x, ..., gₙ x)` at `x` applied
 to a vector `v` is given by `∑ i, f (g₁ x, ..., g'ᵢ v, ..., gₙ x)`. Version inside a set. -/
 theorem _root_.HasFDerivWithinAt.multilinear_comp
-    [DecidableEq ι] {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+    [DecidableEq ι] {G : Type*} [AddCommGroup G] [NormedAddGroup G] [NormedSpace 𝕜 G]
     {g : ∀ i, G → E i} {g' : ∀ i, G →L[𝕜] E i} {s : Set G} {x : G}
     (hg : ∀ i, HasFDerivWithinAt (g i) (g' i) s x) :
     HasFDerivWithinAt (fun x ↦ f (fun i ↦ g i x))
@@ -619,7 +620,7 @@ theorem _root_.HasFDerivWithinAt.multilinear_comp
 /-- Given `f` a multilinear map, then the derivative of `x ↦ f (g₁ x, ..., gₙ x)` at `x` applied
 to a vector `v` is given by `∑ i, f (g₁ x, ..., g'ᵢ v, ..., gₙ x)`. -/
 theorem _root_.HasFDerivAt.multilinear_comp
-    [DecidableEq ι] {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+    [DecidableEq ι] {G : Type*} [AddCommGroup G] [NormedAddGroup G] [NormedSpace 𝕜 G]
     {g : ∀ i, G → E i} {g' : ∀ i, G →L[𝕜] E i} {x : G}
     (hg : ∀ i, HasFDerivAt (g i) (g' i) x) :
     HasFDerivAt (fun x ↦ f (fun i ↦ g i x))
@@ -752,11 +753,11 @@ theorem iteratedFDeriv_zero_apply_diag : iteratedFDeriv 𝕜 0 f x = p 0 := by
 
 open ContinuousLinearMap
 
-private theorem factorial_smul' {n : ℕ} : ∀ {F : Type max u v} [NormedAddCommGroup F]
+private theorem factorial_smul' {n : ℕ} : ∀ {F : Type max u v} [AddCommGroup F] [NormedAddGroup F]
     [NormedSpace 𝕜 F] [CompleteSpace F] {p : FormalMultilinearSeries 𝕜 E F}
     {f : E → F}, HasFPowerSeriesOnBall f p x r →
     n ! • p n (fun _ ↦ y) = iteratedFDeriv 𝕜 n f x (fun _ ↦ y) := by
-  induction n with | zero => _ | succ n ih => _ <;> intro F _ _ _ p f h
+  induction n with | zero => _ | succ n ih => _ <;> intro F _ _ _ _ p f h
   · rw [factorial_zero, one_smul, h.iteratedFDeriv_zero_apply_diag]
   · rw [factorial_succ, mul_comm, mul_smul, ← derivSeries_apply_diag,
       ← ContinuousLinearMap.smul_apply, ih h.fderiv, iteratedFDeriv_succ_apply_right]
@@ -791,8 +792,9 @@ end HasFPowerSeriesOnBall
 
 namespace ContinuousLinearMap
 
-variable {ι : Type*} {G : ι → Type*} [∀ i, NormedAddCommGroup (G i)] [∀ i, NormedSpace 𝕜 (G i)]
-  [Fintype ι] {H : Type*} [NormedAddCommGroup H]
+variable {ι : Type*} {G : ι → Type*}
+  [∀ i, AddCommGroup (G i)] [∀ i, NormedAddGroup (G i)] [∀ i, NormedSpace 𝕜 (G i)]
+  [Fintype ι] {H : Type*} [AddCommGroup H] [NormedAddGroup H]
   [NormedSpace 𝕜 H]
 
 theorem hasFDerivAt_uncurry_of_multilinear [DecidableEq ι]

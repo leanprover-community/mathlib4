@@ -20,8 +20,10 @@ open Set Filter Metric
 
 open scoped Topology
 
-variable (𝕜 : Type*) {E F G : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] [NormedAddCommGroup G]
+variable (𝕜 : Type*) {E F G : Type*} [NontriviallyNormedField 𝕜]
+  [AddCommGroup E] [NormedAddGroup E]
+  [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
+  [AddCommGroup G] [NormedAddGroup G]
   [NormedSpace 𝕜 G] {f g : E → F} {s t : Set E} {x : E}
 
 /-- A predicate saying that a function is differentiable on a set and is continuous on its
@@ -112,7 +114,7 @@ theorem smul_const {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebr
 
 theorem inv {f : E → 𝕜} (hf : DiffContOnCl 𝕜 f s) (h₀ : ∀ x ∈ closure s, f x ≠ 0) :
     DiffContOnCl 𝕜 f⁻¹ s :=
-  ⟨differentiableOn_inv.comp hf.1 fun _ hx => h₀ _ (subset_closure hx), hf.2.inv₀ h₀⟩
+  ⟨differentiableOn_inv.comp (f := f) hf.1 fun _ hx => h₀ _ (subset_closure hx), hf.2.inv₀ h₀⟩
 
 end DiffContOnCl
 

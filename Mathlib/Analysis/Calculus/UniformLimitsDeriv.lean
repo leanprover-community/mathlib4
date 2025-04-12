@@ -99,9 +99,9 @@ open scoped uniformity Filter Topology
 
 section LimitsOfDerivatives
 
-variable {ι : Type*} {l : Filter ι} {E : Type*} [NormedAddCommGroup E] {𝕜 : Type*}
-  [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
-  [NormedSpace 𝕜 E] {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G] {f : ι → E → G}
+variable {ι : Type*} {l : Filter ι} {E : Type*} [AddCommGroup E] [NormedAddGroup E] {𝕜 : Type*}
+  [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜] [NormedSpace 𝕜 E]
+  {G : Type*} [AddCommGroup G] [NormedAddGroup G] [NormedSpace 𝕜 G] {f : ι → E → G}
   {g : E → G} {f' : ι → E → E →L[𝕜] G} {g' : E → E →L[𝕜] G} {x : E}
 
 /-- If a sequence of functions real or complex functions are eventually differentiable on a
@@ -252,9 +252,9 @@ theorem cauchy_map_of_uniformCauchySeqOn_fderiv {s : Set E} (hs : IsOpen s) (h's
 /-- If `f_n → g` pointwise and the derivatives `(f_n)' → h` _uniformly_ converge, then
 in fact for a fixed `y`, the difference quotients `‖z - y‖⁻¹ • (f_n z - f_n y)` converge
 _uniformly_ to `‖z - y‖⁻¹ • (g z - g y)` -/
-theorem difference_quotients_converge_uniformly
-    {E : Type*} [NormedAddCommGroup E] {𝕜 : Type*} [RCLike 𝕜]
-    [NormedSpace 𝕜 E] {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G] {f : ι → E → G}
+theorem difference_quotients_converge_uniformly {𝕜 : Type*} [RCLike 𝕜]
+    {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
+    {G : Type*} [AddCommGroup G] [NormedAddGroup G] [NormedSpace 𝕜 G] {f : ι → E → G}
     {g : E → G} {f' : ι → E → E →L[𝕜] G} {g' : E → E →L[𝕜] G} {x : E}
     (hf' : TendstoUniformlyOnFilter f' g' l (𝓝 x))
     (hf : ∀ᶠ n : ι × E in l ×ˢ 𝓝 x, HasFDerivAt (f n.1) (f' n.1 n.2) n.2)
@@ -440,7 +440,7 @@ In this section, we provide `deriv` equivalents of the `fderiv` lemmas in the pr
 
 
 variable {ι : Type*} {l : Filter ι} {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {G : Type*} [NormedAddCommGroup G]
+  {G : Type*} [AddCommGroup G] [NormedAddGroup G]
   [NormedSpace 𝕜 G] {f : ι → 𝕜 → G} {g : 𝕜 → G} {f' : ι → 𝕜 → G} {g' : 𝕜 → G} {x : 𝕜}
 
 /-- If our derivatives converge uniformly, then the Fréchet derivatives converge uniformly -/

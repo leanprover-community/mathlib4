@@ -61,7 +61,7 @@ instance {R : Type*} [NormedField R] [NormedAlgebra R ℝ] : NormedAlgebra R ℂ
   norm_smul_le r x := by
     rw [← algebraMap_smul ℝ r x, real_smul, norm_mul, norm_real, norm_algebraMap']
 
-variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℂ E]
+variable {E : Type*} [AddCommGroup E] [SeminormedAddGroup E] [NormedSpace ℂ E]
 
 -- see Note [lower instance priority]
 /-- The module structure from `Module.complexToReal` is a normed space. -/
@@ -601,8 +601,8 @@ end Complex
 
 section realPart_imaginaryPart
 
-variable {A : Type*} [SeminormedAddCommGroup A] [StarAddMonoid A] [NormedSpace ℂ A] [StarModule ℂ A]
-  [NormedStarGroup A]
+variable {A : Type*} [AddCommGroup A] [SeminormedAddGroup A] [StarAddMonoid A]
+  [NormedSpace ℂ A] [StarModule ℂ A] [NormedStarGroup A]
 
 lemma realPart.norm_le (x : A) : ‖realPart x‖ ≤ ‖x‖ := by
   rw [← inv_mul_cancel_left₀ two_ne_zero ‖x‖, ← AddSubgroup.norm_coe, realPart_apply_coe,

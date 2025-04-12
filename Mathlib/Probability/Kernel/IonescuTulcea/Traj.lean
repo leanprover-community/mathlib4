@@ -592,7 +592,7 @@ section integral
 
 /-! ### Integrals and `traj` -/
 
-variable {E : Type*} [NormedAddCommGroup E]
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E]
 
 theorem integrable_traj {a b : ℕ} (hab : a ≤ b) {f : (Π n, X n) → E}
     (x₀ : Π i : Iic a, X i) (i_f : Integrable f (traj κ a x₀)) :

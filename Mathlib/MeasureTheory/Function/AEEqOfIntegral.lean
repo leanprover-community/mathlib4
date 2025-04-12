@@ -53,7 +53,7 @@ section AeEqOfForall
 
 variable {α E 𝕜 : Type*} {m : MeasurableSpace α} {μ : Measure α} [RCLike 𝕜]
 
-theorem ae_eq_zero_of_forall_inner [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+theorem ae_eq_zero_of_forall_inner [AddCommGroup E] [NormedAddGroup E] [InnerProductSpace 𝕜 E]
     [SecondCountableTopology E] {f : α → E} (hf : ∀ c : E, (fun x => (inner c (f x) : 𝕜)) =ᵐ[μ] 0) :
     f =ᵐ[μ] 0 := by
   let s := denseSeq E
@@ -69,7 +69,8 @@ local notation "⟪" x ", " y "⟫" => y x
 
 variable (𝕜)
 
-theorem ae_eq_zero_of_forall_dual_of_isSeparable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+theorem ae_eq_zero_of_forall_dual_of_isSeparable
+    [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
     {t : Set E} (ht : TopologicalSpace.IsSeparable t) {f : α → E}
     (hf : ∀ c : Dual 𝕜 E, (fun x => ⟪f x, c⟫) =ᵐ[μ] 0) (h't : ∀ᵐ x ∂μ, f x ∈ t) : f =ᵐ[μ] 0 := by
   rcases ht with ⟨d, d_count, hd⟩
@@ -103,7 +104,7 @@ theorem ae_eq_zero_of_forall_dual_of_isSeparable [NormedAddCommGroup E] [NormedS
   filter_upwards [hf', h't] with x hx h'x
   exact A (f x) h'x hx
 
-theorem ae_eq_zero_of_forall_dual [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+theorem ae_eq_zero_of_forall_dual [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
     [SecondCountableTopology E] {f : α → E} (hf : ∀ c : Dual 𝕜 E, (fun x => ⟪f x, c⟫) =ᵐ[μ] 0) :
     f =ᵐ[μ] 0 :=
   ae_eq_zero_of_forall_dual_of_isSeparable 𝕜 (.of_separableSpace Set.univ) hf
@@ -114,7 +115,7 @@ variable {𝕜}
 end AeEqOfForall
 
 variable {α E : Type*} {m m0 : MeasurableSpace α} {μ : Measure α}
-  [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E] {p : ℝ≥0∞}
+  [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E] [CompleteSpace E] {p : ℝ≥0∞}
 
 section AeEqOfForallSetIntegralEq
 

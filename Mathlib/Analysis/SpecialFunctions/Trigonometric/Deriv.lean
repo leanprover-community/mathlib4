@@ -252,8 +252,8 @@ section
 /-! ### Simp lemmas for derivatives of `fun x => Complex.cos (f x)` etc., `f : E → ℂ` -/
 
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] {f : E → ℂ} {f' : E →L[ℂ] ℂ} {x : E}
-  {s : Set E}
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℂ E]
+  {f : E → ℂ} {f' : E →L[ℂ] ℂ} {x : E} {s : Set E}
 
 /-! #### `Complex.cos` -/
 
@@ -763,8 +763,8 @@ section
 /-! ### Simp lemmas for derivatives of `fun x => Real.cos (f x)` etc., `f : E → ℝ` -/
 
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {f' : E →L[ℝ] ℝ} {x : E}
-  {s : Set E}
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
+  {f : E → ℝ} {f' : E →L[ℝ] ℝ} {x : E} {s : Set E}
 
 /-! #### `Real.cos` -/
 

@@ -43,10 +43,10 @@ variable {𝕜₁ : Type*} [NontriviallyNormedField 𝕜₁] {𝕜₂ : Type*} [
   (σ : 𝕜₁ →+* 𝕜₂)
 
 variable {B : Type*}
-variable {F₁ : Type*} [NormedAddCommGroup F₁] [NormedSpace 𝕜₁ F₁] (E₁ : B → Type*)
+variable {F₁ : Type*} [AddCommGroup F₁] [NormedAddGroup F₁] [NormedSpace 𝕜₁ F₁] (E₁ : B → Type*)
   [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜₁ (E₁ x)] [TopologicalSpace (TotalSpace F₁ E₁)]
 
-variable {F₂ : Type*} [NormedAddCommGroup F₂] [NormedSpace 𝕜₂ F₂] (E₂ : B → Type*)
+variable {F₂ : Type*} [AddCommGroup F₂] [NormedAddGroup F₂] [NormedSpace 𝕜₂ F₂] (E₂ : B → Type*)
   [∀ x, AddCommGroup (E₂ x)] [∀ x, Module 𝕜₂ (E₂ x)] [TopologicalSpace (TotalSpace F₂ E₂)]
 
 /-- A reducible type synonym for the bundle of continuous (semi)linear maps. For some reason, it

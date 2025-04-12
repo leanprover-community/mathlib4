@@ -23,8 +23,9 @@ open NNReal Topology
 
 open Filter
 
-variable {V P W Q : Type*} [SeminormedAddCommGroup V] [PseudoMetricSpace P] [NormedAddTorsor V P]
-  [NormedAddCommGroup W] [MetricSpace Q] [NormedAddTorsor W Q]
+variable {V P W Q : Type*} [AddCommGroup V] [SeminormedAddGroup V]
+  [PseudoMetricSpace P] [NormedAddTorsor V P]
+  [AddCommGroup W] [NormedAddGroup W] [MetricSpace Q] [NormedAddTorsor W Q]
 
 section NormedSpace
 
@@ -266,7 +267,7 @@ section
 
 open Dilation
 
-variable {𝕜 E : Type*} [NormedDivisionRing 𝕜] [SeminormedAddCommGroup E]
+variable {𝕜 E : Type*} [NormedDivisionRing 𝕜] [AddCommGroup E] [SeminormedAddGroup E]
 variable [Module 𝕜 E] [IsBoundedSMul 𝕜 E] {P : Type*} [PseudoMetricSpace P] [NormedAddTorsor E P]
 
 -- TODO: define `ContinuousAffineEquiv` and reimplement this as one of those.

@@ -15,7 +15,8 @@ open NNReal ENNReal
 
 variable {α : Type*} {m : MeasurableSpace α} {μ : MeasureTheory.Measure α}
 
-theorem aemeasurable_withDensity_iff {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+theorem aemeasurable_withDensity_iff {E : Type*} [AddCommGroup E] [NormedAddGroup E]
+    [NormedSpace ℝ E]
     [SecondCountableTopology E] [MeasurableSpace E] [BorelSpace E] {f : α → ℝ≥0}
     (hf : Measurable f) {g : α → E} :
     AEMeasurable g (μ.withDensity fun x => (f x : ℝ≥0∞)) ↔

@@ -33,7 +33,7 @@ variable {α : Type*} [LinearOrder α] {E : Type*} [PseudoEMetricSpace E]
 
 /-! ##  -/
 
-variable {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V] [FiniteDimensional ℝ V]
+variable {V : Type*} [AddCommGroup V] [NormedAddGroup V] [NormedSpace ℝ V] [FiniteDimensional ℝ V]
 
 namespace LocallyBoundedVariationOn
 

@@ -21,27 +21,28 @@ open scoped Topology Manifold
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
   -- declare a charted space `M` over the pair `(E, H)`.
   {E : Type*}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
+  [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
   {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   -- declare a `C^n` manifold `M'` over the pair `(E', H')`.
   {E' : Type*}
-  [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
+  [AddCommGroup E'] [NormedAddGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
   {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
   [IsManifold I' n M']
   -- declare a `C^n` manifold `N` over the pair `(F, G)`.
   {F : Type*}
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*} [TopologicalSpace G]
+  [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F] {G : Type*} [TopologicalSpace G]
   {J : ModelWithCorners 𝕜 F G} {N : Type*} [TopologicalSpace N] [ChartedSpace G N]
   [IsManifold J n N]
   -- declare a `C^n` manifold `N'` over the pair `(F', G')`.
   {F' : Type*}
-  [NormedAddCommGroup F'] [NormedSpace 𝕜 F'] {G' : Type*} [TopologicalSpace G']
+  [AddCommGroup F'] [NormedAddGroup F'] [NormedSpace 𝕜 F'] {G' : Type*} [TopologicalSpace G']
   {J' : ModelWithCorners 𝕜 F' G'} {N' : Type*} [TopologicalSpace N'] [ChartedSpace G' N']
   [IsManifold J' n N']
   -- F₁, F₂, F₃, F₄ are normed spaces
-  {F₁ : Type*} [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] {F₂ : Type*} [NormedAddCommGroup F₂]
-  [NormedSpace 𝕜 F₂] {F₃ : Type*} [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃] {F₄ : Type*}
-  [NormedAddCommGroup F₄] [NormedSpace 𝕜 F₄]
+  {F₁ : Type*} [AddCommGroup F₁] [NormedAddGroup F₁] [NormedSpace 𝕜 F₁]
+  {F₂ : Type*} [AddCommGroup F₂] [NormedAddGroup F₂] [NormedSpace 𝕜 F₂]
+  {F₃ : Type*} [AddCommGroup F₃] [NormedAddGroup F₃] [NormedSpace 𝕜 F₃]
+  {F₄ : Type*} [AddCommGroup F₄] [NormedAddGroup F₄] [NormedSpace 𝕜 F₄]
   -- declare functions, sets, points and smoothness indices
   {f f₁ : M → M'} {s t : Set M} {x : M} {m n : ℕ∞}
 
@@ -272,7 +273,7 @@ theorem MDifferentiable.clm_prodMap {g : M → F₁ →L[𝕜] F₃} {f : M → 
 
 /-! ### Differentiability of scalar multiplication -/
 
-variable {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
+variable {V : Type*} [AddCommGroup V] [NormedAddGroup V] [NormedSpace 𝕜 V]
 
 theorem MDifferentiableWithinAt.smul {f : M → 𝕜} {g : M → V}
     (hf : MDifferentiableWithinAt I 𝓘(𝕜) f s x) (hg : MDifferentiableWithinAt I 𝓘(𝕜, V) g s x) :

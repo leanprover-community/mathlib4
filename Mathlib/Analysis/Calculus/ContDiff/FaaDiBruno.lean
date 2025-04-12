@@ -79,9 +79,9 @@ noncomputable section
 open Set Fin Filter Function
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+  {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
+  {F : Type*} [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
+  {G : Type*} [AddCommGroup G] [NormedAddGroup G] [NormedSpace 𝕜 G]
   {s : Set E} {t : Set F}
   {q : F → FormalMultilinearSeries 𝕜 F G} {p : E → FormalMultilinearSeries 𝕜 E F}
 

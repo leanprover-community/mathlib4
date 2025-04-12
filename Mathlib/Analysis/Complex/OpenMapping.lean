@@ -35,8 +35,8 @@ open Set Filter Metric Complex
 
 open scoped Topology
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] {U : Set E} {f : ℂ → ℂ} {g : E → ℂ}
-  {z₀ : ℂ} {ε r : ℝ}
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℂ E]
+  {U : Set E} {f : ℂ → ℂ} {g : E → ℂ} {z₀ : ℂ} {ε r : ℝ}
 
 /-- If the modulus of a holomorphic function `f` is bounded below by `ε` on a circle, then its range
 contains a disk of radius `ε / 2`. -/

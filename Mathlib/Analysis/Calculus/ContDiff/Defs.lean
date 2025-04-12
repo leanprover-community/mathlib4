@@ -101,9 +101,11 @@ open scoped NNReal Topology ContDiff
 
 universe u uE uF uG uX
 
-variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type uE} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {F : Type uF} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type uG}
-  [NormedAddCommGroup G] [NormedSpace 𝕜 G] {X : Type uX} [NormedAddCommGroup X] [NormedSpace 𝕜 X]
+variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
+  {E : Type uE} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
+  {F : Type uF} [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
+  {G : Type uG} [AddCommGroup G] [NormedAddGroup G] [NormedSpace 𝕜 G]
+  {X : Type uX} [AddCommGroup X] [NormedAddGroup X] [NormedSpace 𝕜 X]
   {s s₁ t u : Set E} {f f₁ : E → F} {g : F → G} {x x₀ : E} {c : F} {m n : WithTop ℕ∞}
   {p : E → FormalMultilinearSeries 𝕜 E F}
 

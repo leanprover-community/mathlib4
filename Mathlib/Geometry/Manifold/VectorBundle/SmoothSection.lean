@@ -20,11 +20,12 @@ open Bundle Filter Function
 
 open scoped Bundle Manifold ContDiff
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
+  {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 
-variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable (F : Type*) [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
   -- `F` model fiber
   (n : WithTop ℕ∞)
   (V : M → Type*) [TopologicalSpace (TotalSpace F V)]

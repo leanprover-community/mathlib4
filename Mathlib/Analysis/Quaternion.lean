@@ -46,8 +46,8 @@ theorem inner_self (a : ℍ) : ⟪a, a⟫ = normSq a :=
 theorem inner_def (a b : ℍ) : ⟪a, b⟫ = (a * star b).re :=
   rfl
 
-noncomputable instance : NormedAddCommGroup ℍ :=
-  @InnerProductSpace.Core.toNormedAddCommGroup ℝ ℍ _ _ _
+noncomputable instance : NormedAddGroup ℍ :=
+  @InnerProductSpace.Core.toNormedAddGroup ℝ ℍ _ _ _
     { toInner := inferInstance
       conj_symm := fun x y => by simp [inner_def, mul_comm]
       nonneg_re := fun _ => normSq_nonneg

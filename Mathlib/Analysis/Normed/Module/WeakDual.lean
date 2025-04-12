@@ -103,7 +103,7 @@ by the dual-norm (i.e. the operator-norm).
 
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {E : Type*} [AddCommGroup E] [SeminormedAddGroup E] [NormedSpace 𝕜 E]
 
 namespace NormedSpace
 
@@ -137,7 +137,7 @@ def continuousLinearMapToWeakDual : Dual 𝕜 E →L[𝕜] WeakDual 𝕜 E :=
 theorem dual_norm_topology_le_weak_dual_topology :
     (UniformSpace.toTopologicalSpace : TopologicalSpace (Dual 𝕜 E)) ≤
       (WeakDual.instTopologicalSpace : TopologicalSpace (WeakDual 𝕜 E)) := by
-  convert (@toWeakDual_continuous _ _ _ _ (by assumption)).le_induced
+  convert toWeakDual_continuous.le_induced
   exact induced_id.symm
 
 end Dual

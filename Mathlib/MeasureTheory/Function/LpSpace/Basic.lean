@@ -60,7 +60,7 @@ open MeasureTheory Filter
 open scoped NNReal ENNReal
 
 variable {α 𝕜 𝕜' E F : Type*} {m : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measure α}
-  [NormedAddCommGroup E] [NormedAddCommGroup F]
+  [AddCommGroup E] [NormedAddGroup E] [AddCommGroup F] [NormedAddGroup F]
 
 namespace MeasureTheory
 
@@ -71,20 +71,21 @@ The space of equivalence classes of measurable functions for which `eLpNorm f p 
 -/
 
 @[simp]
-theorem eLpNorm_aeeqFun {α E : Type*} [MeasurableSpace α] {μ : Measure α} [NormedAddCommGroup E]
+theorem eLpNorm_aeeqFun {α E : Type*} [MeasurableSpace α]
+    {μ : Measure α} [AddCommGroup E] [NormedAddGroup E]
     {p : ℝ≥0∞} {f : α → E} (hf : AEStronglyMeasurable f μ) :
     eLpNorm (AEEqFun.mk f hf) p μ = eLpNorm f p μ :=
   eLpNorm_congr_ae (AEEqFun.coeFn_mk _ _)
 
 theorem MemLp.eLpNorm_mk_lt_top {α E : Type*} [MeasurableSpace α] {μ : Measure α}
-    [NormedAddCommGroup E] {p : ℝ≥0∞} {f : α → E} (hfp : MemLp f p μ) :
+    [AddCommGroup E] [NormedAddGroup E] {p : ℝ≥0∞} {f : α → E} (hfp : MemLp f p μ) :
     eLpNorm (AEEqFun.mk f hfp.1) p μ < ∞ := by simp [hfp.2]
 
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.eLpNorm_mk_lt_top := MemLp.eLpNorm_mk_lt_top
 
 /-- Lp space -/
-def Lp {α} (E : Type*) {m : MeasurableSpace α} [NormedAddCommGroup E] (p : ℝ≥0∞)
+def Lp {α} (E : Type*) {m : MeasurableSpace α} [AddCommGroup E] [NormedAddGroup E] (p : ℝ≥0∞)
     (μ : Measure α := by volume_tac) : AddSubgroup (α →ₘ[μ] E) where
   carrier := { f | eLpNorm f p μ < ∞ }
   zero_mem' := by simp [eLpNorm_congr_ae AEEqFun.coeFn_zero, eLpNorm_zero]
@@ -383,8 +384,8 @@ theorem norm_le_of_ae_bound [IsFiniteMeasure μ] {f : Lp E p μ} {C : ℝ} (hC :
   have := nnnorm_le_of_ae_bound hfC
   rwa [← NNReal.coe_le_coe, NNReal.coe_mul, NNReal.coe_rpow] at this
 
-instance instNormedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (Lp E p μ) :=
-  { AddGroupNorm.toNormedAddCommGroup
+instance instNormedAddGroup [hp : Fact (1 ≤ p)] : NormedAddGroup (Lp E p μ) :=
+  { AddGroupNorm.toNormedAddGroup
       { toFun := (norm : Lp E p μ → ℝ)
         map_zero' := norm_zero
         neg' := by simp only [norm_neg, implies_true] -- squeezed for performance reasons
@@ -596,7 +597,8 @@ section Composition
 variable {g : E → F} {c : ℝ≥0}
 
 theorem LipschitzWith.comp_memLp {α E F} {K} [MeasurableSpace α] {μ : Measure α}
-    [NormedAddCommGroup E] [NormedAddCommGroup F] {f : α → E} {g : E → F} (hg : LipschitzWith K g)
+    [AddCommGroup E] [NormedAddGroup E] [AddCommGroup F] [NormedAddGroup F]
+    {f : α → E} {g : E → F} (hg : LipschitzWith K g)
     (g0 : g 0 = 0) (hL : MemLp f p μ) : MemLp (g ∘ f) p μ :=
   have : ∀ x, ‖g (f x)‖ ≤ K * ‖f x‖ := fun x ↦ by
     -- TODO: add `LipschitzWith.nnnorm_sub_le` and `LipschitzWith.nnnorm_le`
@@ -607,7 +609,8 @@ theorem LipschitzWith.comp_memLp {α E F} {K} [MeasurableSpace α] {μ : Measure
 alias LipschitzWith.comp_memℒp := LipschitzWith.comp_memLp
 
 theorem MeasureTheory.MemLp.of_comp_antilipschitzWith {α E F} {K'} [MeasurableSpace α]
-    {μ : Measure α} [NormedAddCommGroup E] [NormedAddCommGroup F] {f : α → E} {g : E → F}
+    {μ : Measure α} [AddCommGroup E] [NormedAddGroup E] [AddCommGroup F] [NormedAddGroup F]
+    {f : α → E} {g : E → F}
     (hL : MemLp (g ∘ f) p μ) (hg : UniformContinuous g) (hg' : AntilipschitzWith K' g)
     (g0 : g 0 = 0) : MemLp f p μ := by
   have A : ∀ x, ‖f x‖ ≤ K' * ‖g (f x)‖ := by
@@ -625,7 +628,8 @@ alias MeasureTheory.Memℒp.of_comp_antilipschitzWith := MeasureTheory.MemLp.of_
 namespace LipschitzWith
 
 theorem memLp_comp_iff_of_antilipschitz {α E F} {K K'} [MeasurableSpace α] {μ : Measure α}
-    [NormedAddCommGroup E] [NormedAddCommGroup F] {f : α → E} {g : E → F} (hg : LipschitzWith K g)
+    [AddCommGroup E] [NormedAddGroup E] [AddCommGroup F] [NormedAddGroup F]
+    {f : α → E} {g : E → F} (hg : LipschitzWith K g)
     (hg' : AntilipschitzWith K' g) (g0 : g 0 = 0) : MemLp (g ∘ f) p μ ↔ MemLp f p μ :=
   ⟨fun h => h.of_comp_antilipschitzWith hg.uniformContinuous hg' g0, fun h => hg.comp_memLp g0 h⟩
 

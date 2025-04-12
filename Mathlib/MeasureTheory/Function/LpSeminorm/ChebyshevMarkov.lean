@@ -15,7 +15,7 @@ open scoped NNReal ENNReal
 
 namespace MeasureTheory
 
-variable {α E : Type*} {m0 : MeasurableSpace α} [NormedAddCommGroup E]
+variable {α E : Type*} {m0 : MeasurableSpace α} [AddCommGroup E] [NormedAddGroup E]
   {p : ℝ≥0∞} (μ : Measure α) {f : α → E}
 
 theorem pow_mul_meas_ge_le_eLpNorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)

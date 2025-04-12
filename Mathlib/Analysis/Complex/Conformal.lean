@@ -58,7 +58,7 @@ theorem isConformalMap_conj : IsConformalMap (conjLIE : ℂ →L[ℝ] ℂ) :=
 
 section ConformalIntoComplexNormed
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace ℂ E]
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E] [NormedSpace ℂ E]
 
 theorem isConformalMap_complex_linear {map : ℂ →L[ℂ] E} (nonzero : map ≠ 0) :
     IsConformalMap (map.restrictScalars ℝ) := by
@@ -129,7 +129,7 @@ end ConformalIntoComplexPlane
 /-! ### Conformality of real-differentiable complex maps -/
 
 section Conformality
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] {z : ℂ} {f : ℂ → E}
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℂ E] {z : ℂ} {f : ℂ → E}
 
 /-- A real differentiable function of the complex plane into some complex normed space `E` is
 conformal at a point `z` if it is holomorphic at that point with a nonvanishing differential.

@@ -25,7 +25,7 @@ assert_not_exists HasFDerivAt
 section Barycentric
 
 variable {ι 𝕜 E P : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
-variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
 variable [MetricSpace P] [NormedAddTorsor E P]
 
 theorem isOpenMap_barycentric_coord [Nontrivial ι] (b : AffineBasis ι 𝕜 P) (i : ι) :
@@ -50,7 +50,7 @@ to this basis.
 
 TODO Restate this result for affine spaces (instead of vector spaces) once the definition of
 convexity is generalised to this setting. -/
-theorem AffineBasis.interior_convexHull {ι E : Type*} [Finite ι] [NormedAddCommGroup E]
+theorem AffineBasis.interior_convexHull {ι E : Type*} [Finite ι] [AddCommGroup E] [NormedAddGroup E]
     [NormedSpace ℝ E] (b : AffineBasis ι ℝ E) :
     interior (convexHull ℝ (range b)) = {x | ∀ i, 0 < b.coord i x} := by
   cases subsingleton_or_nontrivial ι
@@ -68,7 +68,7 @@ theorem AffineBasis.interior_convexHull {ι E : Type*} [Finite ι] [NormedAddCom
         (continuous_barycentric_coord b _),
       interior_Ici, mem_iInter, mem_setOf_eq, mem_Ioi, mem_preimage]
 
-variable {V P : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V] [MetricSpace P]
+variable {V P : Type*} [AddCommGroup V] [NormedAddGroup V] [NormedSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
 
 open AffineMap

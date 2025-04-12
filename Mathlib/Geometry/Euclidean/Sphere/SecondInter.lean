@@ -25,8 +25,8 @@ open RealInnerProductSpace
 
 namespace EuclideanGeometry
 
-variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
-  [NormedAddTorsor V P]
+variable {V : Type*} {P : Type*} [AddCommGroup V] [NormedAddGroup V] [InnerProductSpace ℝ V]
+  [MetricSpace P] [NormedAddTorsor V P]
 
 /-- The second intersection of a sphere with a line through a point on that sphere; that point
 if it is the only point of intersection of the line with the sphere. The intended use of this

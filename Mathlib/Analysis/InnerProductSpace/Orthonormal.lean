@@ -37,8 +37,8 @@ variable {𝕜 E F : Type*} [RCLike 𝕜]
 
 section OrthonormalSets_Seminormed
 
-variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable [SeminormedAddCommGroup F] [InnerProductSpace ℝ F]
+variable [AddCommGroup E] [SeminormedAddGroup E] [InnerProductSpace 𝕜 E]
+variable [AddCommGroup F] [SeminormedAddGroup F] [InnerProductSpace ℝ F]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
@@ -282,16 +282,16 @@ section Norm_Seminormed
 
 open scoped InnerProductSpace
 
-variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable [SeminormedAddCommGroup F] [InnerProductSpace ℝ F]
+variable [AddCommGroup E] [SeminormedAddGroup E] [InnerProductSpace 𝕜 E]
+variable [AddCommGroup F] [SeminormedAddGroup F] [InnerProductSpace ℝ F]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
 section
 
 variable {ι : Type*} {ι' : Type*} {ι'' : Type*}
-variable {E' : Type*} [SeminormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
-variable {E'' : Type*} [SeminormedAddCommGroup E''] [InnerProductSpace 𝕜 E'']
+variable {E' : Type*} [AddCommGroup E'] [SeminormedAddGroup E'] [InnerProductSpace 𝕜 E']
+variable {E'' : Type*} [AddCommGroup E''] [SeminormedAddGroup E''] [InnerProductSpace 𝕜 E'']
 
 /-- A linear isometry preserves the property of being orthonormal. -/
 theorem LinearIsometry.orthonormal_comp_iff {v : ι → E} (f : E →ₗᵢ[𝕜] E') :
@@ -393,7 +393,8 @@ end
 
 section
 
-variable {ι : Type*} {ι' : Type*} {E' : Type*} [SeminormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
+variable {ι : Type*} {ι' : Type*} {E' : Type*}
+  [AddCommGroup E'] [SeminormedAddGroup E'] [InnerProductSpace 𝕜 E']
 
 @[simp]
 theorem Orthonormal.equiv_refl {v : Basis ι 𝕜 E} (hv : Orthonormal 𝕜 v) :
@@ -414,7 +415,7 @@ end Norm_Seminormed
 
 section BesselsInequality
 
-variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [AddCommGroup E] [SeminormedAddGroup E] [InnerProductSpace 𝕜 E]
 
 variable {ι : Type*} (x : E) {v : ι → E}
 

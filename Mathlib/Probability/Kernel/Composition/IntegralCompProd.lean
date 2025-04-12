@@ -51,7 +51,7 @@ open Set Function Real ENNReal MeasureTheory Filter ProbabilityTheory Probabilit
 open scoped Topology ENNReal MeasureTheory
 
 variable {α β γ E : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
-  {mγ : MeasurableSpace γ} [NormedAddCommGroup E] {a : α}
+  {mγ : MeasurableSpace γ} [AddCommGroup E] [NormedAddGroup E] {a : α}
 
 namespace ProbabilityTheory
 
@@ -166,7 +166,7 @@ theorem _root_.MeasureTheory.Integrable.integral_compProd [NormedSpace ℝ E]
 /-! ### Bochner integral -/
 
 
-variable [NormedSpace ℝ E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace ℝ E']
+variable [NormedSpace ℝ E] {E' : Type*} [AddCommGroup E'] [NormedAddGroup E'] [NormedSpace ℝ E']
 
 theorem Kernel.integral_fn_integral_add ⦃f g : β × γ → E⦄ (F : E → E')
     (hf : Integrable f ((κ ⊗ₖ η) a)) (hg : Integrable g ((κ ⊗ₖ η) a)) :
@@ -354,7 +354,7 @@ theorem _root_.MeasureTheory.Integrable.integral_comp [NormedSpace ℝ E] ⦃f :
 
 /-! ### Bochner integral with respect to the composition -/
 
-variable [NormedSpace ℝ E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace ℝ E']
+variable [NormedSpace ℝ E] {E' : Type*} [AddCommGroup E'] [NormedAddGroup E'] [NormedSpace ℝ E']
 
 namespace Kernel
 
@@ -452,17 +452,18 @@ namespace MeasureTheory
 namespace Measure
 
 variable {α β E : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
-  [NormedAddCommGroup E] {a : α} {κ : Kernel α β} {μ : Measure α} {f : β → E}
+  [AddCommGroup E] [NormedAddGroup E] {a : α} {κ : Kernel α β} {μ : Measure α} {f : β → E}
 
 section Integral
 
 lemma _root_.MeasureTheory.AEStronglyMeasurable.ae_of_compProd [SFinite μ] [IsSFiniteKernel κ]
-    {E : Type*} [NormedAddCommGroup E] {f : α → β → E}
+    {E : Type*} [AddCommGroup E] [NormedAddGroup E] {f : α → β → E}
     (hf : AEStronglyMeasurable f.uncurry (μ ⊗ₘ κ)) :
     ∀ᵐ x ∂μ, AEStronglyMeasurable (f x) (κ x) := by
   simpa using hf.compProd_mk_left
 
-lemma integrable_compProd_iff [SFinite μ] [IsSFiniteKernel κ] {E : Type*} [NormedAddCommGroup E]
+lemma integrable_compProd_iff [SFinite μ] [IsSFiniteKernel κ]
+    {E : Type*} [AddCommGroup E] [NormedAddGroup E]
     {f : α × β → E} (hf : AEStronglyMeasurable f (μ ⊗ₘ κ)) :
     Integrable f (μ ⊗ₘ κ) ↔
       (∀ᵐ x ∂μ, Integrable (fun y => f (x, y)) (κ x)) ∧
@@ -471,14 +472,14 @@ lemma integrable_compProd_iff [SFinite μ] [IsSFiniteKernel κ] {E : Type*} [Nor
     Kernel.const_apply]
 
 lemma integral_compProd [SFinite μ] [IsSFiniteKernel κ] {E : Type*}
-    [NormedAddCommGroup E] [NormedSpace ℝ E]
+    [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
     {f : α × β → E} (hf : Integrable f (μ ⊗ₘ κ)) :
     ∫ x, f x ∂(μ ⊗ₘ κ) = ∫ a, ∫ b, f (a, b) ∂(κ a) ∂μ := by
   rw [Measure.compProd, ProbabilityTheory.integral_compProd hf]
   simp
 
 lemma setIntegral_compProd [SFinite μ] [IsSFiniteKernel κ] {E : Type*}
-    [NormedAddCommGroup E] [NormedSpace ℝ E]
+    [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
     {s : Set α} (hs : MeasurableSet s) {t : Set β} (ht : MeasurableSet t)
     {f : α × β → E} (hf : IntegrableOn f (s ×ˢ t) (μ ⊗ₘ κ))  :
     ∫ x in s ×ˢ t, f x ∂(μ ⊗ₘ κ) = ∫ a in s, ∫ b in t, f (a, b) ∂(κ a) ∂μ := by

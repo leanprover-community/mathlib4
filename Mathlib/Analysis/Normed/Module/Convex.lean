@@ -28,7 +28,7 @@ variable {E : Type*}
 open Metric Set
 
 section SeminormedAddCommGroup
-variable [SeminormedAddCommGroup E] [NormedSpace ℝ E]
+variable [AddCommGroup E] [SeminormedAddGroup E] [NormedSpace ℝ E]
 variable {s : Set E}
 
 /-- The norm on a real normed space is convex on any convex set. See also `Seminorm.convexOn`

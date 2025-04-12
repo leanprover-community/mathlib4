@@ -28,7 +28,8 @@ open scoped Topology Interval ENNReal
 
 variable {X Y E F R : Type*} [MeasurableSpace X] [TopologicalSpace X]
 variable [MeasurableSpace Y] [TopologicalSpace Y]
-variable [NormedAddCommGroup E] [NormedAddCommGroup F] {f g : X → E} {μ : Measure X} {s : Set X}
+variable [AddCommGroup E] [NormedAddGroup E] [AddCommGroup F] [NormedAddGroup F]
+  {f g : X → E} {μ : Measure X} {s : Set X}
 
 namespace MeasureTheory
 
@@ -300,7 +301,8 @@ protected theorem LocallyIntegrable.sub (hf : LocallyIntegrable f μ) (hg : Loca
 protected theorem LocallyIntegrable.neg (hf : LocallyIntegrable f μ) :
     LocallyIntegrable (-f) μ := fun x ↦ (hf x).neg
 
-protected theorem LocallyIntegrable.smul {𝕜 : Type*} [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 E]
+protected theorem LocallyIntegrable.smul {𝕜 : Type*} [AddCommGroup 𝕜] [NormedAddGroup 𝕜]
+    [SMulZeroClass 𝕜 E]
     [IsBoundedSMul 𝕜 E] (hf : LocallyIntegrable f μ) (c : 𝕜) :
     LocallyIntegrable (c • f) μ := fun x ↦ (hf x).smul c
 

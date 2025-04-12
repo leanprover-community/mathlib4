@@ -34,7 +34,7 @@ open scoped Pointwise
 variable {α ι : Type*}
 
 section NormedOrderedGroup
-variable [NormedCommGroup α] [PartialOrder α] [IsOrderedMonoid α] {s : Set α}
+variable [CommGroup α] [NormedGroup α] [PartialOrder α] [IsOrderedMonoid α] {s : Set α}
 
 @[to_additive IsUpperSet.thickening]
 protected theorem IsUpperSet.thickening' (hs : IsUpperSet s) (ε : ℝ) :

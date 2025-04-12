@@ -39,7 +39,7 @@ open ComplexConjugate
 section Seminormed
 
 variable {𝕜 E : Type*} [RCLike 𝕜]
-variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [AddCommGroup E] [SeminormedAddGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
@@ -129,7 +129,7 @@ theorem IsSymmetric.restrictScalars {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) 
 
 section Complex
 
-variable {V : Type*} [SeminormedAddCommGroup V] [InnerProductSpace ℂ V]
+variable {V : Type*} [AddCommGroup V] [SeminormedAddGroup V] [InnerProductSpace ℂ V]
 
 attribute [local simp] map_ofNat in -- use `ofNat` simp theorem with bad keys
 open scoped InnerProductSpace in
@@ -181,7 +181,7 @@ end Seminormed
 section Normed
 
 variable {𝕜 E : Type*} [RCLike 𝕜]
-variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [AddCommGroup E] [NormedAddGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 

@@ -66,7 +66,7 @@ lemma threeAPFree_frontier {𝕜 E : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsS
   ring_nf
   simp
 
-lemma threeAPFree_sphere {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+lemma threeAPFree_sphere {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
     [StrictConvexSpace ℝ E] (x : E) (r : ℝ) : ThreeAPFree (sphere x r) := by
   obtain rfl | hr := eq_or_ne r 0
   · rw [sphere_zero]

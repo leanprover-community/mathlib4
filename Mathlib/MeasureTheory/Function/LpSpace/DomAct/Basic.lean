@@ -22,7 +22,7 @@ open scoped ENNReal
 namespace DomMulAct
 
 variable {M N α E : Type*} [MeasurableSpace M] [MeasurableSpace N]
-  [MeasurableSpace α] [NormedAddCommGroup E] {μ : MeasureTheory.Measure α} {p : ℝ≥0∞}
+  [MeasurableSpace α] [AddCommGroup E] [NormedAddGroup E] {μ : MeasureTheory.Measure α} {p : ℝ≥0∞}
 
 section SMul
 

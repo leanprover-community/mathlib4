@@ -70,9 +70,9 @@ open scoped ContDiff
 universe u
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {EM : Type*} [NormedAddCommGroup EM] [NormedSpace 𝕜 EM]
+  {EM : Type*} [AddCommGroup EM] [NormedAddGroup EM] [NormedSpace 𝕜 EM]
   {HM : Type*} [TopologicalSpace HM] (IM : ModelWithCorners 𝕜 EM HM)
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
   {H' : Type*} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 E H')
   (M : Type u) [TopologicalSpace M] [ChartedSpace HM M]

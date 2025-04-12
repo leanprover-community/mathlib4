@@ -46,7 +46,7 @@ open scoped Interval Topology Nat
 open Set
 
 variable {𝕜 E F : Type*}
-variable [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
 
 /-- The `k`th coefficient of the Taylor polynomial. -/
 noncomputable def taylorCoeffWithin (f : ℝ → E) (k : ℕ) (s : Set ℝ) (x₀ : ℝ) : E :=

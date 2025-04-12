@@ -11,7 +11,7 @@ import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
 
 -/
 
-variable {α 𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable {α 𝕜 E : Type*} [RCLike 𝕜] [AddCommGroup E] [NormedAddGroup E] [InnerProductSpace 𝕜 E]
 
 namespace MeasureTheory
 

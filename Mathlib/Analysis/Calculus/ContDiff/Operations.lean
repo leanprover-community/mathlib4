@@ -36,9 +36,10 @@ open Set Fin Filter Function
 open scoped Topology
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E : Type uE} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {F : Type uF}
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type uG} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-  {X : Type*} [NormedAddCommGroup X] [NormedSpace 𝕜 X] {s t : Set E} {f : E → F}
+  {E : Type uE} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
+  {F : Type uF} [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
+  {G : Type uG} [AddCommGroup G] [NormedAddGroup G] [NormedSpace 𝕜 G]
+  {X : Type*} [AddCommGroup X] [NormedAddGroup X] [NormedSpace 𝕜 X] {s t : Set E} {f : E → F}
   {g : F → G} {x x₀ : E} {b : E × F → G} {m n : WithTop ℕ∞} {p : E → FormalMultilinearSeries 𝕜 E F}
 
 /-!
@@ -47,7 +48,8 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 section Pi
 
-variable {ι ι' : Type*} [Fintype ι] [Fintype ι'] {F' : ι → Type*} [∀ i, NormedAddCommGroup (F' i)]
+variable {ι ι' : Type*} [Fintype ι] [Fintype ι']
+  {F' : ι → Type*} [∀ i, AddCommGroup (F' i)] [∀ i, NormedAddGroup (F' i)]
   [∀ i, NormedSpace 𝕜 (F' i)] {φ : ∀ i, E → F' i} {p' : ∀ i, E → FormalMultilinearSeries 𝕜 E (F' i)}
   {Φ : E → ∀ i, F' i} {P' : E → FormalMultilinearSeries 𝕜 E (∀ i, F' i)}
 
@@ -511,8 +513,8 @@ end ConstSMul
 
 section prodMap
 
-variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-variable {F' : Type*} [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
+variable {E' : Type*} [AddCommGroup E'] [NormedAddGroup E'] [NormedSpace 𝕜 E']
+variable {F' : Type*} [AddCommGroup F'] [NormedAddGroup F'] [NormedSpace 𝕜 F']
 
 /-- The product map of two `C^n` functions within a set at a point is `C^n`
 within the product set at the product point. -/
@@ -534,8 +536,9 @@ theorem ContDiffWithinAt.prodMap {s : Set E} {t : Set E'} {f : E → F} {g : E' 
 alias ContDiffWithinAt.prod_map := ContDiffWithinAt.prodMap
 
 /-- The product map of two `C^n` functions on a set is `C^n` on the product set. -/
-theorem ContDiffOn.prodMap {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {F' : Type*}
-    [NormedAddCommGroup F'] [NormedSpace 𝕜 F'] {s : Set E} {t : Set E'} {f : E → F} {g : E' → F'}
+theorem ContDiffOn.prodMap {E' : Type*} [AddCommGroup E'] [NormedAddGroup E'] [NormedSpace 𝕜 E']
+    {F' : Type*} [AddCommGroup F'] [NormedAddGroup F'] [NormedSpace 𝕜 F']
+    {s : Set E} {t : Set E'} {f : E → F} {g : E' → F'}
     (hf : ContDiffOn 𝕜 n f s) (hg : ContDiffOn 𝕜 n g t) : ContDiffOn 𝕜 n (Prod.map f g) (s ×ˢ t) :=
   (hf.comp contDiffOn_fst (prod_subset_preimage_fst _ _)).prodMk
     (hg.comp contDiffOn_snd (prod_subset_preimage_snd _ _))

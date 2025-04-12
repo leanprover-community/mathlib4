@@ -27,10 +27,10 @@ noncomputable section
 section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
+variable {F : Type*} [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
+variable {G : Type*} [AddCommGroup G] [NormedAddGroup G] [NormedSpace 𝕜 G]
+variable {G' : Type*} [AddCommGroup G'] [NormedAddGroup G'] [NormedSpace 𝕜 G']
 variable {f : E → F} {f' : E →L[𝕜] F} {x : E} {s : Set E}
 
 namespace ContinuousLinearEquiv
@@ -426,8 +426,8 @@ section
   we can use scalar multiplication in the `tendsto` characterization
   of the Fréchet derivative.
 -/
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
+variable {F : Type*} [AddCommGroup F] [NormedAddGroup F] [NormedSpace ℝ F]
 variable {f : E → F} {f' : E →L[ℝ] F} {x : E}
 
 theorem has_fderiv_at_filter_real_equiv {L : Filter E} :
@@ -448,8 +448,9 @@ end
 
 section TangentCone
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : E → F} {s : Set E}
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
+  {F : Type*} [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F] {f : E → F} {s : Set E}
   {f' : E →L[𝕜] F}
 
 /-- The image of a tangent cone under the differential of a map is included in the tangent cone to

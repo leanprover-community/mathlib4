@@ -29,13 +29,14 @@ We establish integrability of `f` from `f = O(g)`.
 
 open Asymptotics MeasureTheory Set Filter
 
-variable {α E F : Type*} [NormedAddCommGroup E] {f : α → E} {g : α → F} {a : α} {l : Filter α}
+variable {α E F : Type*} [AddCommGroup E] [NormedAddGroup E]
+  {f : α → E} {g : α → F} {a : α} {l : Filter α}
 
 namespace Asymptotics
 
 section Basic
 
-variable [MeasurableSpace α] [NormedAddCommGroup F] {μ : Measure α}
+variable [MeasurableSpace α] [AddCommGroup F] [NormedAddGroup F] {μ : Measure α}
 
 /-- If `f = O[l] g` on measurably generated `l`, `f` is strongly measurable at `l`,
 and `g` is integrable at `l`, then `f` is integrable at `l`. -/
@@ -77,7 +78,7 @@ theorem IsBigO.eventually_integrableOn [Norm F]
   intro y hy
   exact ht (y, x) <| huv ⟨hu hy, hx.2⟩
 
-variable [NormedSpace ℝ E] [NormedAddCommGroup F]
+variable [NormedSpace ℝ E] [AddCommGroup F] [NormedAddGroup F]
 
 /-- Let `f : X x Y → Z`. If as `y` tends to `l`, `f(x, y) = O(g(y))` uniformly on `s : Set X`
 of finite measure, then the integral of `f` along `s` is `O(g(y))`. -/
@@ -101,7 +102,7 @@ theorem IsBigO.set_integral_isBigO
 end Asymptotics
 
 variable [TopologicalSpace α] [SecondCountableTopology α] [MeasurableSpace α] {μ : Measure α}
-  [NormedAddCommGroup F]
+  [AddCommGroup F] [NormedAddGroup F]
 
 namespace MeasureTheory
 

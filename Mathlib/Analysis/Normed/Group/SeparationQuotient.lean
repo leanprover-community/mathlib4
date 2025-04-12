@@ -37,7 +37,8 @@ section
 
 open SeparationQuotient NNReal
 
-variable {M N : Type*} [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]
+variable {M N : Type*}
+  [AddCommGroup M] [SeminormedAddGroup M] [AddCommGroup N] [SeminormedAddGroup N]
 
 namespace SeparationQuotient
 
@@ -53,6 +54,7 @@ noncomputable def normedMk : NormedAddGroupHom M (SeparationQuotient M) where
 theorem norm_normedMk_le : ‖normedMk (M := M)‖ ≤ 1 :=
   NormedAddGroupHom.opNorm_le_bound _ zero_le_one fun m => by simp
 
+omit [SeminormedAddGroup N] in
 lemma apply_eq_apply_of_inseparable {F : Type*} [FunLike F M N] [AddMonoidHomClass F M N] (f : F)
     (hf : ∀ x, ‖x‖ = 0 → f x = 0) : ∀ x y, Inseparable x y → f x = f y :=
   fun x y h ↦ eq_of_sub_eq_zero <| by
@@ -80,7 +82,7 @@ theorem norm_liftNormedAddGroupHom_apply_le (f : NormedAddGroupHom M N)
 /-- The equivalence between `NormedAddGroupHom M N` vanishing on the inseparable setoid and
 `NormedAddGroupHom (SeparationQuotient M) N`. -/
 @[simps]
-noncomputable def liftNormedAddGroupHomEquiv {N : Type*} [SeminormedAddCommGroup N] :
+noncomputable def liftNormedAddGroupHomEquiv {N : Type*} [AddCommGroup N] [SeminormedAddGroup N] :
     {f : NormedAddGroupHom M N // ∀ x, ‖x‖ = 0 → f x = 0} ≃
     NormedAddGroupHom (SeparationQuotient M) N where
   toFun f := liftNormedAddGroupHom f f.prop
@@ -96,17 +98,17 @@ noncomputable def liftNormedAddGroupHomEquiv {N : Type*} [SeminormedAddCommGroup
 
 /-- For a norm-continuous group homomorphism `f`, its lift to the separation quotient
 is bounded by the norm of `f`. -/
-theorem norm_liftNormedAddGroupHom_le {N : Type*} [SeminormedAddCommGroup N]
+theorem norm_liftNormedAddGroupHom_le {N : Type*} [AddCommGroup N] [SeminormedAddGroup N]
     (f : NormedAddGroupHom M N) (hf : ∀ s, ‖s‖ = 0 → f s = 0) :
     ‖liftNormedAddGroupHom f hf‖ ≤ ‖f‖ :=
   NormedAddGroupHom.opNorm_le_bound _ (norm_nonneg f) (norm_liftNormedAddGroupHom_apply_le f hf)
 
-theorem liftNormedAddGroupHom_norm_le {N : Type*} [SeminormedAddCommGroup N]
+theorem liftNormedAddGroupHom_norm_le {N : Type*} [AddCommGroup N] [SeminormedAddGroup N]
     (f : NormedAddGroupHom M N) (hf : ∀ s, ‖s‖ = 0 → f s = 0) {c : ℝ≥0} (fb : ‖f‖ ≤ c) :
     ‖liftNormedAddGroupHom f hf‖ ≤ c :=
   (norm_liftNormedAddGroupHom_le f hf).trans fb
 
-theorem liftNormedAddGroupHom_normNoninc {N : Type*} [SeminormedAddCommGroup N]
+theorem liftNormedAddGroupHom_normNoninc {N : Type*} [AddCommGroup N] [SeminormedAddGroup N]
     (f : NormedAddGroupHom M N) (hf : ∀ s, ‖s‖ = 0 → f s = 0) (fb : f.NormNoninc) :
     (liftNormedAddGroupHom f hf).NormNoninc := fun x => by
   have fb' : ‖f‖ ≤ 1 := NormedAddGroupHom.NormNoninc.normNoninc_iff_norm_le_one.mp fb

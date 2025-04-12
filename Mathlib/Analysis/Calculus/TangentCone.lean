@@ -101,9 +101,9 @@ theorem tangentCone_mono (h : s ⊆ t) : tangentConeAt 𝕜 s x ⊆ tangentConeA
 end TVS
 
 section Normed
-variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable [NormedAddCommGroup G] [NormedSpace ℝ G]
+variable [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
+variable [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
+variable [AddCommGroup G] [NormedAddGroup G] [NormedSpace ℝ G]
 variable {x y : E} {s t : Set E}
 
 /-- Auxiliary lemma ensuring that, under the assumptions defining the tangent cone,
@@ -180,7 +180,8 @@ theorem subset_tangentCone_prod_right {t : Set F} {y : F} (hs : x ∈ closure s)
 
 /-- The tangent cone of a product contains the tangent cone of each factor. -/
 theorem mapsTo_tangentCone_pi {ι : Type*} [DecidableEq ι] {E : ι → Type*}
-    [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)] {s : ∀ i, Set (E i)} {x : ∀ i, E i}
+    [∀ i, AddCommGroup (E i)] [∀ i, NormedAddGroup (E i)]
+    [∀ i, NormedSpace 𝕜 (E i)] {s : ∀ i, Set (E i)} {x : ∀ i, E i}
     {i : ι} (hi : ∀ j ≠ i, x j ∈ closure (s j)) :
     MapsTo (LinearMap.single 𝕜 E i) (tangentConeAt 𝕜 (s i) (x i))
       (tangentConeAt 𝕜 (Set.pi univ s) x) := by
@@ -382,8 +383,9 @@ theorem UniqueDiffWithinAt.congr_pt (h : UniqueDiffWithinAt 𝕜 s x) (hy : x = 
 end TVS
 
 section Normed
-variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
+variable [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
+variable [AddCommGroup G] [NormedAddGroup G] [NormedSpace ℝ G]
 variable {x y : E} {s t : Set E}
 
 theorem UniqueDiffWithinAt.mono_nhds (h : UniqueDiffWithinAt 𝕜 s x) (st : 𝓝[s] x ≤ 𝓝[t] x) :
@@ -441,7 +443,8 @@ theorem UniqueDiffWithinAt.prod {t : Set F} {y : F} (hs : UniqueDiffWithinAt �
   exact (hs.1.prod ht.1).mono this
 
 theorem UniqueDiffWithinAt.univ_pi (ι : Type*) [Finite ι] (E : ι → Type*)
-    [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)] (s : ∀ i, Set (E i)) (x : ∀ i, E i)
+    [∀ i, AddCommGroup (E i)] [∀ i, NormedAddGroup (E i)]
+    [∀ i, NormedSpace 𝕜 (E i)] (s : ∀ i, Set (E i)) (x : ∀ i, E i)
     (h : ∀ i, UniqueDiffWithinAt 𝕜 (s i) (x i)) : UniqueDiffWithinAt 𝕜 (Set.pi univ s) x := by
   classical
   simp only [uniqueDiffWithinAt_iff, closure_pi_set] at h ⊢
@@ -452,7 +455,8 @@ theorem UniqueDiffWithinAt.univ_pi (ι : Type*) [Finite ι] (E : ι → Type*)
   exact fun i => (mapsTo_tangentCone_pi fun j _ => (h j).2).mono Subset.rfl Submodule.subset_span
 
 theorem UniqueDiffWithinAt.pi (ι : Type*) [Finite ι] (E : ι → Type*)
-    [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)] (s : ∀ i, Set (E i)) (x : ∀ i, E i)
+    [∀ i, AddCommGroup (E i)] [∀ i, NormedAddGroup (E i)]
+    [∀ i, NormedSpace 𝕜 (E i)] (s : ∀ i, Set (E i)) (x : ∀ i, E i)
     (I : Set ι) (h : ∀ i ∈ I, UniqueDiffWithinAt 𝕜 (s i) (x i)) :
     UniqueDiffWithinAt 𝕜 (Set.pi I s) x := by
   classical
@@ -467,7 +471,8 @@ theorem UniqueDiffOn.prod {t : Set F} (hs : UniqueDiffOn 𝕜 s) (ht : UniqueDif
 
 /-- The finite product of a family of sets of unique differentiability is a set of unique
 differentiability. -/
-theorem UniqueDiffOn.pi (ι : Type*) [Finite ι] (E : ι → Type*) [∀ i, NormedAddCommGroup (E i)]
+theorem UniqueDiffOn.pi (ι : Type*) [Finite ι] (E : ι → Type*)
+    [∀ i, AddCommGroup (E i)] [∀ i, NormedAddGroup (E i)]
     [∀ i, NormedSpace 𝕜 (E i)] (s : ∀ i, Set (E i)) (I : Set ι)
     (h : ∀ i ∈ I, UniqueDiffOn 𝕜 (s i)) : UniqueDiffOn 𝕜 (Set.pi I s) :=
   fun x hx => UniqueDiffWithinAt.pi _ _ _ _ _ fun i hi => h i hi (x i) (hx i hi)
@@ -475,14 +480,15 @@ theorem UniqueDiffOn.pi (ι : Type*) [Finite ι] (E : ι → Type*) [∀ i, Norm
 /-- The finite product of a family of sets of unique differentiability is a set of unique
 differentiability. -/
 theorem UniqueDiffOn.univ_pi (ι : Type*) [Finite ι] (E : ι → Type*)
-    [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)] (s : ∀ i, Set (E i))
+    [∀ i, AddCommGroup (E i)] [∀ i, NormedAddGroup (E i)]
+    [∀ i, NormedSpace 𝕜 (E i)] (s : ∀ i, Set (E i))
     (h : ∀ i, UniqueDiffOn 𝕜 (s i)) : UniqueDiffOn 𝕜 (Set.pi univ s) :=
   UniqueDiffOn.pi _ _ _ _ fun i _ => h i
 
 end Normed
 
 section RealNormed
-variable [NormedAddCommGroup G] [NormedSpace ℝ G]
+variable [AddCommGroup G] [NormedAddGroup G] [NormedSpace ℝ G]
 
 /-- In a real vector space, a convex set with nonempty interior is a set of unique
 differentiability at every point of its closure. -/

@@ -32,7 +32,7 @@ local notation "dim" => Module.finrank ℝ
 noncomputable section
 namespace MeasureTheory
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
   [MeasurableSpace E]
 
 namespace Measure
@@ -128,7 +128,7 @@ theorem measurePreserving_homeomorphUnitSphereProd :
 
 end Measure
 
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+variable {F : Type*} [AddCommGroup F] [NormedAddGroup F] [NormedSpace ℝ F]
   [Nontrivial E] (μ : Measure E) [FiniteDimensional ℝ E] [BorelSpace E] [μ.IsAddHaarMeasure]
 
 lemma integral_fun_norm_addHaar (f : ℝ → F) :

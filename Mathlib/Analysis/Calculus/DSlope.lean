@@ -23,7 +23,8 @@ open scoped Topology Filter
 
 open Function Set Filter
 
-variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜]
+  [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
 
 open Classical in
 /-- `dslope f a b` is defined as `slope f a b = (b - a)⁻¹ • (f b - f a)` for `a ≠ b` and
@@ -42,7 +43,8 @@ theorem dslope_of_ne (f : 𝕜 → E) (h : b ≠ a) : dslope f a b = slope f a b
   classical
   exact update_of_ne h ..
 
-theorem ContinuousLinearMap.dslope_comp {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+theorem ContinuousLinearMap.dslope_comp {F : Type*}
+    [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
     (f : E →L[𝕜] F) (g : 𝕜 → E) (a b : 𝕜) (H : a = b → DifferentiableAt 𝕜 g a) :
     dslope (f ∘ g) a b = f (dslope g a b) := by
   rcases eq_or_ne b a with (rfl | hne)

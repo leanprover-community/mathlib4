@@ -23,7 +23,8 @@ open scoped Pointwise Topology
 variable {α E F G : Type*}
 
 section SeminormedGroup
-variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G] {s : Set E}
+variable [Group E] [SeminormedGroup E] [Group F] [SeminormedGroup F]
+  [Group G] [SeminormedGroup G] {s : Set E}
 
 @[to_additive (attr := simp) comap_norm_atTop]
 lemma comap_norm_atTop' : comap norm atTop = cobounded E := by
@@ -142,7 +143,7 @@ theorem Filter.Tendsto.op_one_isBoundedUnder_le {f : α → E} {g : α → F} {l
 end SeminormedGroup
 
 section NormedAddGroup
-variable [NormedAddGroup E] [TopologicalSpace α] {f : α → E}
+variable [AddGroup E] [NormedAddGroup E] [TopologicalSpace α] {f : α → E}
 
 lemma Continuous.bounded_above_of_compact_support (hf : Continuous f) (h : HasCompactSupport f) :
     ∃ C, ∀ x, ‖f x‖ ≤ C := by
@@ -151,7 +152,7 @@ lemma Continuous.bounded_above_of_compact_support (hf : Continuous f) (h : HasCo
 end NormedAddGroup
 
 section NormedAddGroupSource
-variable [NormedAddGroup α] {f : α → E}
+variable [AddGroup α] [NormedAddGroup α] {f : α → E}
 
 @[to_additive]
 lemma HasCompactMulSupport.exists_pos_le_norm [One E] (hf : HasCompactMulSupport f) :

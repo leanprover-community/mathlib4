@@ -98,8 +98,9 @@ universe u𝕜 uG uE uE' uE'' uF uF' uF'' uP
 variable {𝕜 : Type u𝕜} {G : Type uG} {E : Type uE} {E' : Type uE'} {E'' : Type uE''} {F : Type uF}
   {F' : Type uF'} {F'' : Type uF''} {P : Type uP}
 
-variable [NormedAddCommGroup E] [NormedAddCommGroup E'] [NormedAddCommGroup E'']
-  [NormedAddCommGroup F] {f f' : G → E} {g g' : G → E'} {x x' : G} {y y' : E}
+variable [AddCommGroup E] [NormedAddGroup E] [AddCommGroup E'] [NormedAddGroup E']
+  [AddCommGroup E''] [NormedAddGroup E''] [AddCommGroup F] [NormedAddGroup F]
+  {f f' : G → E} {g g' : G → E'} {x x' : G} {y y' : E}
 
 namespace MeasureTheory
 section NontriviallyNormedField
@@ -708,7 +709,7 @@ end CommGroup
 
 section NormedAddCommGroup
 
-variable [SeminormedAddCommGroup G]
+variable [AddCommGroup G] [SeminormedAddGroup G]
 
 /-- Compute `(f ⋆ g) x₀` if the support of the `f` is within `Metric.ball 0 R`, and `g` is constant
 on `Metric.ball x₀ R`.
@@ -846,8 +847,10 @@ variable (L : E →L[𝕜] E' →L[𝕜] F)
 
 section Assoc
 variable [CompleteSpace F]
-variable [NormedAddCommGroup F'] [NormedSpace ℝ F'] [NormedSpace 𝕜 F'] [CompleteSpace F']
-variable [NormedAddCommGroup F''] [NormedSpace ℝ F''] [NormedSpace 𝕜 F''] [CompleteSpace F'']
+variable [AddCommGroup F'] [NormedAddGroup F']
+  [NormedSpace ℝ F'] [NormedSpace 𝕜 F'] [CompleteSpace F']
+variable [AddCommGroup F''] [NormedAddGroup F'']
+  [NormedSpace ℝ F''] [NormedSpace 𝕜 F''] [CompleteSpace F'']
 variable {k : G → E''}
 variable (L₂ : F →L[𝕜] E'' →L[𝕜] F')
 variable (L₃ : E →L[𝕜] F'' →L[𝕜] F')
@@ -939,7 +942,7 @@ theorem convolution_assoc (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z =
 
 end Assoc
 
-variable [NormedAddCommGroup G] [BorelSpace G]
+variable [AddCommGroup G] [NormedAddGroup G] [BorelSpace G]
 
 theorem convolution_precompR_apply {g : G → E'' →L[𝕜] E'} (hf : LocallyIntegrable f μ)
     (hcg : HasCompactSupport g) (hg : Continuous g) (x₀ : G) (x : E'') :
@@ -1023,8 +1026,8 @@ end Real
 section WithParam
 
 variable [RCLike 𝕜] [NormedSpace 𝕜 E] [NormedSpace 𝕜 E'] [NormedSpace 𝕜 E''] [NormedSpace ℝ F]
-  [NormedSpace 𝕜 F] [MeasurableSpace G] [NormedAddCommGroup G] [BorelSpace G]
-  [NormedSpace 𝕜 G] [NormedAddCommGroup P] [NormedSpace 𝕜 P] {μ : Measure G}
+  [NormedSpace 𝕜 F] [MeasurableSpace G] [AddCommGroup G] [NormedAddGroup G] [BorelSpace G]
+  [NormedSpace 𝕜 G] [AddCommGroup P] [NormedAddGroup P] [NormedSpace 𝕜 P] {μ : Measure G}
   (L : E →L[𝕜] E' →L[𝕜] F)
 
 /-- The derivative of the convolution `f * g` is given by `f * Dg`, when `f` is locally integrable
@@ -1173,10 +1176,12 @@ parameter space `P` (and the compact support `k` is independent of the parameter
 In this version, all the types belong to the same universe (to get an induction working in the
 proof). Use instead `contDiffOn_convolution_right_with_param`, which removes this restriction. -/
 theorem contDiffOn_convolution_right_with_param_aux {G : Type uP} {E' : Type uP} {F : Type uP}
-    {P : Type uP} [NormedAddCommGroup E'] [NormedAddCommGroup F] [NormedSpace 𝕜 E']
+    {P : Type uP} [AddCommGroup E'] [NormedAddGroup E']
+    [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 E']
     [NormedSpace ℝ F] [NormedSpace 𝕜 F] [MeasurableSpace G]
     {μ : Measure G}
-    [NormedAddCommGroup G] [BorelSpace G] [NormedSpace 𝕜 G] [NormedAddCommGroup P] [NormedSpace 𝕜 P]
+    [AddCommGroup G] [NormedAddGroup G] [BorelSpace G] [NormedSpace 𝕜 G]
+    [AddCommGroup P] [NormedAddGroup P] [NormedSpace 𝕜 P]
     {f : G → E} {n : ℕ∞} (L : E →L[𝕜] E' →L[𝕜] F) {g : P → G → E'} {s : Set P} {k : Set G}
     (hs : IsOpen s) (hk : IsCompact k) (hgs : ∀ p, ∀ x, p ∈ s → x ∉ k → g p x = 0)
     (hf : LocallyIntegrable f μ) (hg : ContDiffOn 𝕜 n (↿g) (s ×ˢ univ)) :

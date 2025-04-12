@@ -38,14 +38,14 @@ section Norm_Seminormed
 
 open scoped InnerProductSpace
 
-variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable [SeminormedAddCommGroup F] [InnerProductSpace ℝ F]
+variable [AddCommGroup E] [SeminormedAddGroup E] [InnerProductSpace 𝕜 E]
+variable [AddCommGroup F] [SeminormedAddGroup F] [InnerProductSpace ℝ F]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
 section Complex_Seminormed
 
-variable {V : Type*} [SeminormedAddCommGroup V] [InnerProductSpace ℂ V]
+variable {V : Type*} [AddCommGroup V] [SeminormedAddGroup V] [InnerProductSpace ℂ V]
 
 /-- A complex polarization identity, with a linear map. -/
 theorem inner_map_polarization (T : V →ₗ[ℂ] V) (x y : V) :
@@ -74,7 +74,7 @@ end Complex_Seminormed
 
 section Complex
 
-variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℂ V]
+variable {V : Type*} [AddCommGroup V] [NormedAddGroup V] [InnerProductSpace ℂ V]
 
 /-- A linear map `T` is zero, if and only if the identity `⟪T x, x⟫_ℂ = 0` holds for all `x`.
 -/
@@ -102,8 +102,8 @@ end Complex
 section
 
 variable {ι : Type*} {ι' : Type*} {ι'' : Type*}
-variable {E' : Type*} [SeminormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
-variable {E'' : Type*} [SeminormedAddCommGroup E''] [InnerProductSpace 𝕜 E'']
+variable {E' : Type*} [AddCommGroup E'] [SeminormedAddGroup E'] [InnerProductSpace 𝕜 E']
+variable {E'' : Type*} [AddCommGroup E''] [SeminormedAddGroup E''] [InnerProductSpace 𝕜 E'']
 
 /-- A linear isometry preserves the inner product. -/
 @[simp]
@@ -198,8 +198,7 @@ theorem innerSL_apply (v w : E) : innerSL 𝕜 v w = ⟪v, w⟫ :=
 
 /-- The inner product as a continuous sesquilinear map, with the two arguments flipped. -/
 def innerSLFlip : E →L[𝕜] E →L⋆[𝕜] 𝕜 :=
-  @ContinuousLinearMap.flipₗᵢ' 𝕜 𝕜 𝕜 E E 𝕜 _ _ _ _ _ _ _ _ _ (RingHom.id 𝕜) (starRingEnd 𝕜) _ _
-    (innerSL 𝕜)
+  ContinuousLinearMap.flipₗᵢ' E E 𝕜 (RingHom.id 𝕜) (starRingEnd 𝕜) (innerSL 𝕜)
 
 @[simp]
 theorem innerSLFlip_apply (x y : E) : innerSLFlip 𝕜 x y = ⟪y, x⟫ :=
@@ -217,7 +216,7 @@ variable {𝕜}
 
 namespace ContinuousLinearMap
 
-variable {E' : Type*} [SeminormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
+variable {E' : Type*} [AddCommGroup E'] [SeminormedAddGroup E'] [InnerProductSpace 𝕜 E']
 
 -- Note: odd and expensive build behavior is explicitly turned off using `noncomputable`
 /-- Given `f : E →L[𝕜] E'`, construct the continuous sesquilinear form `fun x y ↦ ⟪x, A y⟫`, given
@@ -233,7 +232,7 @@ theorem toSesqForm_apply_coe (f : E →L[𝕜] E') (x : E') : toSesqForm f x = (
 theorem toSesqForm_apply_norm_le {f : E →L[𝕜] E'} {v : E'} : ‖toSesqForm f v‖ ≤ ‖f‖ * ‖v‖ := by
   refine opNorm_le_bound _ (by positivity) fun x ↦ ?_
   have h₁ : ‖f x‖ ≤ ‖f‖ * ‖x‖ := le_opNorm _ _
-  have h₂ := @norm_inner_le_norm 𝕜 E' _ _ _ v (f x)
+  have h₂ := norm_inner_le_norm (𝕜 := 𝕜) v (f x)
   calc
     ‖⟪v, f x⟫‖ ≤ ‖v‖ * ‖f x‖ := h₂
     _ ≤ ‖v‖ * (‖f‖ * ‖x‖) := mul_le_mul_of_nonneg_left h₁ (norm_nonneg v)
@@ -270,14 +269,15 @@ variable {G : Type*}
 
 /-- The inner product on an inner product space of dimension 2 can be evaluated in terms
 of a complex-number representation of the space. -/
-theorem inner_map_complex [SeminormedAddCommGroup G] [InnerProductSpace ℝ G] (f : G ≃ₗᵢ[ℝ] ℂ)
-    (x y : G) : ⟪x, y⟫_ℝ = (f y * conj (f x)).re := by rw [← Complex.inner, f.inner_map_map]
+theorem inner_map_complex [AddCommGroup G] [SeminormedAddGroup G] [InnerProductSpace ℝ G]
+    (f : G ≃ₗᵢ[ℝ] ℂ) (x y : G) : ⟪x, y⟫_ℝ = (f y * conj (f x)).re := by
+  rw [← Complex.inner, f.inner_map_map]
 
 end RCLikeToReal
 
 section ReApplyInnerSelf
 
-variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [AddCommGroup E] [SeminormedAddGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
@@ -294,7 +294,7 @@ end ReApplyInnerSelf
 
 section ReApplyInnerSelf_Seminormed
 
-variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [AddCommGroup E] [SeminormedAddGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 

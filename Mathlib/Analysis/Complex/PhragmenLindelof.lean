@@ -54,7 +54,7 @@ namespace PhragmenLindelof
 -/
 
 
-variable {E : Type*} [NormedAddCommGroup E]
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E]
 
 /-- An auxiliary lemma that combines two double exponential estimates into a similar estimate
 on the difference of the functions. -/

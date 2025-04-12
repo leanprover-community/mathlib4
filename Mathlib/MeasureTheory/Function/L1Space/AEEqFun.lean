@@ -30,7 +30,7 @@ noncomputable section
 open EMetric ENNReal Filter MeasureTheory NNReal Set
 
 variable {α β : Type*} {m : MeasurableSpace α} {μ ν : Measure α}
-variable [NormedAddCommGroup β]
+variable [AddCommGroup β] [NormedAddGroup β]
 
 namespace MeasureTheory
 

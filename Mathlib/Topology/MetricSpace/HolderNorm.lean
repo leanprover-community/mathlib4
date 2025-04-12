@@ -195,7 +195,7 @@ end MetricSpace
 
 section SeminormedAddCommGroup
 
-variable [MetricSpace X] [NormedAddCommGroup Y]
+variable [MetricSpace X] [AddCommGroup Y] [NormedAddGroup Y]
 variable {r : ℝ≥0} {f g : X → Y}
 
 lemma MemHolder.add (hf : MemHolder r f) (hg : MemHolder r g) : MemHolder r (f + g) :=

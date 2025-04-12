@@ -275,7 +275,7 @@ variable [hT : Fact (0 < T)]
 
 section fourierCoeff
 
-variable {E : Type} [NormedAddCommGroup E] [NormedSpace ℂ E]
+variable {E : Type} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℂ E]
 
 /-- The `n`-th Fourier coefficient of a function `AddCircle T → E`, for `E` a complete normed
 `ℂ`-vector space, defined as the integral over `AddCircle T` of `fourier (-n) t • f t`. -/
@@ -390,7 +390,7 @@ theorem tsum_sq_fourierCoeff (f : Lp ℂ 2 <| @haarAddCircle T hT) :
     apply_mod_cast lp.norm_rpow_eq_tsum ?_ (fourierBasis.repr f)
     norm_num
   have H₂ : ‖fourierBasis.repr f‖ ^ 2 = ‖f‖ ^ 2 := by simp
-  have H₃ := congr_arg RCLike.re (@L2.inner_def (AddCircle T) ℂ ℂ _ _ _ _ _ f f)
+  have H₃ := congr_arg RCLike.re (@L2.inner_def (AddCircle T) ℂ ℂ _ _ _ _ _ _ f f)
   rw [← integral_re] at H₃
   · simp only [← norm_sq_eq_inner] at H₃
     rw [← H₁, H₂, H₃]

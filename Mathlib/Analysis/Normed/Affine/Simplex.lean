@@ -24,7 +24,8 @@ namespace Affine
 
 open Function
 
-variable {R V P : Type*} [Ring R] [SeminormedAddCommGroup V] [PseudoMetricSpace P] [Module R V]
+variable {R V P : Type*} [Ring R] [AddCommGroup V] [SeminormedAddGroup V]
+  [PseudoMetricSpace P] [Module R V]
 variable [NormedAddTorsor V P]
 
 namespace Simplex

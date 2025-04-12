@@ -21,7 +21,7 @@ open scoped Topology
 
 namespace ContDiffBump
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [HasContDiffBump E]
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E] [HasContDiffBump E]
   [MeasurableSpace E] {c : E} (f : ContDiffBump c) {x : E} {n : ℕ∞} {μ : Measure E}
 
 /-- A bump function normed so that `∫ x, f.normed μ x ∂μ = 1`. -/
@@ -87,7 +87,7 @@ theorem tendsto_support_normed_smallSets {ι} {φ : ι → ContDiffBump c} {l : 
 
 variable (μ)
 
-theorem integral_normed_smul {X} [NormedAddCommGroup X] [NormedSpace ℝ X]
+theorem integral_normed_smul {X} [AddCommGroup X] [NormedAddGroup X] [NormedSpace ℝ X]
     [CompleteSpace X] (z : X) : ∫ x, f.normed μ x • z ∂μ = z := by
   simp_rw [integral_smul_const, f.integral_normed (μ := μ), one_smul]
 

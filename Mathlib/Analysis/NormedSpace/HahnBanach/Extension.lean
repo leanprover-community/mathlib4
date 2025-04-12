@@ -33,7 +33,7 @@ universe u v
 
 namespace Real
 
-variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [AddCommGroup E] [SeminormedAddGroup E] [NormedSpace ℝ E]
 
 /-- **Hahn-Banach theorem** for continuous linear functions over `ℝ`.
 See also `exists_extension_norm_eq` in the root namespace for a more general version
@@ -44,7 +44,7 @@ theorem exists_extension_norm_eq (p : Subspace ℝ E) (f : p →L[ℝ] ℝ) :
       (fun c hc x => by simp only [norm_smul c x, Real.norm_eq_abs, abs_of_pos hc, mul_left_comm])
       (fun x y => by
         rw [← left_distrib]
-        exact mul_le_mul_of_nonneg_left (norm_add_le x y) (@norm_nonneg _ _ f))
+        exact mul_le_mul_of_nonneg_left (norm_add_le x y) (norm_nonneg f))
       fun x => le_trans (le_abs_self _) (f.le_opNorm _) with ⟨g, g_eq, g_le⟩
   set g' :=
     g.mkContinuous ‖f‖ fun x => abs_le.2 ⟨neg_le.1 <| g.map_neg x ▸ norm_neg x ▸ g_le (-x), g_le x⟩
@@ -62,8 +62,8 @@ section RCLike
 open RCLike
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜] {E F : Type*}
-  [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  [AddCommGroup E] [SeminormedAddGroup E] [NormedSpace 𝕜 E]
+  [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
 
 /-- **Hahn-Banach theorem** for continuous linear functions over `𝕜`
 satisfying `IsRCLikeNormedField 𝕜`. -/
@@ -143,7 +143,7 @@ end RCLike
 section DualVector
 
 variable (𝕜 : Type v) [RCLike 𝕜]
-variable {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {E : Type u} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
 
 open ContinuousLinearEquiv Submodule
 

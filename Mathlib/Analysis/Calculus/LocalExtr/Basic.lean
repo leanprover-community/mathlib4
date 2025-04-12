@@ -62,7 +62,7 @@ open scoped Topology Convex
 
 section Module
 
-variable {E : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type u} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
   {f : E → ℝ} {f' : E →L[ℝ] ℝ} {s : Set E} {a x y : E}
 
 /-!

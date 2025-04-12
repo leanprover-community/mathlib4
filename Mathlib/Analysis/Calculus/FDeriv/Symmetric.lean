@@ -68,8 +68,8 @@ open scoped Topology ContDiff
 section General
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E F : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F]
-  [NormedSpace 𝕜 F] {s t : Set E} {f : E → F} {x : E}
+  {E F : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
+  [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F] {s t : Set E} {f : E → F} {x : E}
 
 variable (𝕜) in
 /-- Definition recording that a function has a symmetric second derivative within a set at
@@ -176,8 +176,9 @@ end General
 
 section Real
 
-variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F]
-  [NormedSpace ℝ F] {s : Set E} (s_conv : Convex ℝ s) {f : E → F} {f' : E → E →L[ℝ] F}
+variable {E F : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
+  [AddCommGroup F] [NormedAddGroup F] [NormedSpace ℝ F]
+  {s : Set E} (s_conv : Convex ℝ s) {f : E → F} {f' : E → E →L[ℝ] F}
   {f'' : E →L[ℝ] E →L[ℝ] F} (hf : ∀ x ∈ interior s, HasFDerivAt f (f' x) x) {x : E} (xs : x ∈ s)
   (hx : HasFDerivWithinAt f' f'' (interior s) x)
 
@@ -430,8 +431,8 @@ end Real
 section IsRCLikeNormedField
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E F : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F]
-  [NormedSpace 𝕜 F] {s : Set E} {f : E → F} {x : E}
+  {E F : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
+  [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F] {s : Set E} {f : E → F} {x : E}
 
 theorem second_derivative_symmetric_of_eventually [IsRCLikeNormedField 𝕜]
     {f' : E → E →L[𝕜] F} {x : E}

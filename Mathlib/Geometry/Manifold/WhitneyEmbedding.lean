@@ -31,7 +31,7 @@ universe uι uE uH uM
 open Function Filter Module Set Topology
 open scoped Manifold ContDiff
 
-variable {ι : Type uι} {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {ι : Type uι} {E : Type uE} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
   [FiniteDimensional ℝ E] {H : Type uH} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
   {M : Type uM} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I ∞ M]
 

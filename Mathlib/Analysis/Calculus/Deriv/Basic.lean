@@ -222,7 +222,7 @@ theorem differentiableWithinAt_of_derivWithin_ne_zero (h : derivWithin f s x ≠
 end TVS
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
-variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {F : Type v} [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
 
 variable {f f₀ f₁ : 𝕜 → F}
 variable {f' f₀' f₁' g' : F}
@@ -499,7 +499,8 @@ theorem differentiableWithinAt_Ioi_iff_Ici [PartialOrder 𝕜] :
     h.hasDerivWithinAt.Ioi_of_Ici.differentiableWithinAt⟩
 
 -- Golfed while splitting the file
-theorem derivWithin_Ioi_eq_Ici {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (f : ℝ → E)
+theorem derivWithin_Ioi_eq_Ici {E : Type*} [AddCommGroup E] [NormedAddGroup E]
+    [NormedSpace ℝ E] (f : ℝ → E)
     (x : ℝ) : derivWithin f (Ioi x) x = derivWithin f (Ici x) x := by
   by_cases H : DifferentiableWithinAt ℝ f (Ioi x) x
   · have A := H.hasDerivWithinAt.Ici_of_Ioi

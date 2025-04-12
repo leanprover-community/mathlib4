@@ -46,10 +46,10 @@ open Filter MeasureTheory Measure Module Metric Set Asymptotics
 
 open scoped NNReal ENNReal Topology
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
   [MeasurableSpace E] [BorelSpace E]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] {C D : ℝ≥0} {f g : E → ℝ} {s : Set E}
-  {μ : Measure E}
+  {F : Type*} [AddCommGroup F] [NormedAddGroup F] [NormedSpace ℝ F]
+  {C D : ℝ≥0} {f g : E → ℝ} {s : Set E} {μ : Measure E}
 
 namespace LipschitzWith
 

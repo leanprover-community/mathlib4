@@ -35,7 +35,7 @@ noncomputable section
 /-- Auxiliary definition for `HasCokernels SemiNormedGrp₁`. -/
 def cokernelCocone {X Y : SemiNormedGrp₁.{u}} (f : X ⟶ Y) : Cofork f 0 :=
   Cofork.ofπ
-    (@SemiNormedGrp₁.mkHom _ (Y ⧸ NormedAddGroupHom.range f.1) _ _
+    (SemiNormedGrp₁.mkHom (N := Y ⧸ NormedAddGroupHom.range f.1)
       f.hom.1.range.normedMk (NormedAddGroupHom.isQuotientQuotient _).norm_le)
     (by
       ext x

@@ -33,7 +33,8 @@ namespace MeasureTheory
 
 local infixr:25 " →ₛ " => SimpleFunc
 
-variable {α G : Type*} {p : ℝ≥0∞} {m m0 : MeasurableSpace α} {μ : Measure α} [NormedAddCommGroup G]
+variable {α G : Type*} {p : ℝ≥0∞} {m m0 : MeasurableSpace α} {μ : Measure α}
+  [AddCommGroup G] [NormedAddGroup G]
   {f : α → G}
 
 theorem MemLp.finStronglyMeasurable_of_stronglyMeasurable (hf : MemLp f p μ)
