@@ -135,9 +135,7 @@ lemma finrank_corootSpan_eq [P.IsAnisotropic] :
 
 lemma polarizationIn_Injective [P.IsAnisotropic] :
     Function.Injective (P.PolarizationIn S) := by
-  have : IsReflexive R N := PerfectPairing.reflexive_right P.toPerfectPairing
   have : IsReflexive R M := PerfectPairing.reflexive_left P.toPerfectPairing
-  have : NoZeroSMulDivisors S N := NoZeroSMulDivisors.trans_faithfulSMul S R N
   have : NoZeroSMulDivisors S M := NoZeroSMulDivisors.trans_faithfulSMul S R M
   rw [← LinearMap.ker_eq_bot, ← top_disjoint]
   refine Submodule.disjoint_ker_of_finrank_le (L := ⊤) (P.PolarizationIn S) ?_
@@ -164,8 +162,7 @@ variable (S : Type*) [CommRing S] [LinearOrder S] [IsStrictOrderedRing S] [IsDom
 [FaithfulSMul S R] [P.IsValuedIn S] [Module S M] [IsScalarTower S R M] [Module S N]
 [IsScalarTower S R N]
 
-theorem posRootForm_posForm_pos_of_ne_zero [NoZeroSMulDivisors S M] [NoZeroSMulDivisors S N]
-    {x : span S (range P.root)} (hx : x ≠ 0) :
+theorem posRootForm_posForm_pos_of_ne_zero {x : span S (range P.root)} (hx : x ≠ 0) :
     0 < ((P.posRootForm S).posForm x x) := by
   rw [posRootForm_posForm_apply_apply]
   have := P.isAnisotropic_of_isValuedIn S
@@ -175,12 +172,12 @@ theorem posRootForm_posForm_pos_of_ne_zero [NoZeroSMulDivisors S M] [NoZeroSMulD
     exact ⟨Finset.mem_univ i, mul_self_pos.mpr hi⟩
   exact Finset.sum_pos' (fun i a ↦ mul_self_nonneg ((P.coroot'In S i) x)) this
 
-lemma posRootForm_posForm_anisotropic [NoZeroSMulDivisors S M] [NoZeroSMulDivisors S N] :
+lemma posRootForm_posForm_anisotropic :
     (P.posRootForm S).posForm.toQuadraticMap.Anisotropic :=
   fun _ hx ↦ Classical.byContradiction fun h ↦
     (ne_of_lt (posRootForm_posForm_pos_of_ne_zero P S h)).symm hx
 
-lemma posRootForm_posForm_nondegenerate [NoZeroSMulDivisors S M] [NoZeroSMulDivisors S N] :
+lemma posRootForm_posForm_nondegenerate :
     (P.posRootForm S).posForm.Nondegenerate := by
   refine LinearMap.BilinForm.nondegenerate_iff_ker_eq_bot.mpr ?_
   refine LinearMap.ker_eq_bot'.mpr ?_
