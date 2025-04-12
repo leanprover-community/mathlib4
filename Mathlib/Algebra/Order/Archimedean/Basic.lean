@@ -532,7 +532,7 @@ instance Units.instMulArchimedean (M) [CommMonoid M] [PartialOrder M] [MulArchim
     MulArchimedean Mˣ :=
   ⟨fun x {_} h ↦ MulArchimedean.arch x.val h⟩
 
-instance WithBot.instArchimedean (M) [OrderedAddCommMonoid M] [Archimedean M] :
+instance WithBot.instArchimedean (M) [AddCommMonoid M] [PartialOrder M] [Archimedean M] :
     Archimedean (WithBot M) := by
   constructor
   intro x y hxy
@@ -543,7 +543,7 @@ instance WithBot.instArchimedean (M) [OrderedAddCommMonoid M] [Archimedean M] :
     | bot => refine ⟨0, bot_le⟩
     | coe x => simpa [← WithBot.coe_nsmul] using (Archimedean.arch x (by simpa using hxy))
 
-instance WithZero.instMulArchimedean (M) [OrderedCommMonoid M] [MulArchimedean M] :
+instance WithZero.instMulArchimedean (M) [CommMonoid M] [PartialOrder M] [MulArchimedean M] :
     MulArchimedean (WithZero M) := by
   constructor
   intro x y hxy
