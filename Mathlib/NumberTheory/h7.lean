@@ -13,7 +13,7 @@ set_option linter.style.multiGoal false
 set_option linter.style.cases false
 set_option linter.unusedVariables false
 set_option linter.unusedSectionVars true
-set_option linter.style.longFile 1700
+set_option linter.style.longFile 1900
 
 open BigOperators Module.Free Fintype NumberField Embeddings FiniteDimensional
   Matrix Set Polynomial Finset IntermediateField Complex
@@ -474,15 +474,31 @@ lemma hAkl : ∀ (k : Fin (m K * n K q)) (l : Fin (q * q)),
       apply mul_le_mul
       apply mul_le_mul
       · rfl
-      · sorry
-      · sorry
+      · unfold a b k
+        sorry
+      · apply house_nonneg
       · apply house_nonneg
       · sorry
       · apply house_nonneg
-      · sorry
+      · rw [mul_nonneg_iff]
+        left
+        constructor
+        · apply house_nonneg
+        · apply pow_nonneg
+          apply house_nonneg
       · sorry
       · apply house_nonneg
-      · sorry
+      · rw [mul_nonneg_iff]
+        left
+        constructor
+        · rw [mul_nonneg_iff]
+          left
+          constructor
+          · apply house_nonneg
+          · apply pow_nonneg
+            apply house_nonneg
+        · apply pow_nonneg
+          apply house_nonneg
     · simp only [house_intCast, Int.cast_abs]
       unfold c₃
       --simp?
@@ -503,20 +519,22 @@ lemma hAkl : ∀ (k : Fin (m K * n K q)) (l : Fin (q * q)),
         simp only [abs_pow, abs_abs]
         unfold c₂
         sorry
+
         -- refine pow_le_pow_right₀ ?_ ?_
         -- · sorry
         -- · rw [n]
         --   sorry
       · sorry
-      · sorry
-
-      · sorry
-      · sorry
-
+      · apply pow_nonneg
+        apply house_nonneg
       · sorry
       · sorry
+      · apply pow_nonneg
+        apply house_nonneg
       · sorry
       · sorry
+      · apply pow_nonneg
+        apply house_nonneg
       · sorry
       --unfold a b k l
       --simp?
@@ -878,9 +896,10 @@ variable (hdistinct : ∀ (i j : Fin (q * q)), i ≠ j → ρ α β q i ≠ ρ �
 include α β σ hq0 h2mq hd hirr htriv K σ α' β' γ' habc h2mq  in
 lemma iteratedDeriv_vanishes :
   let l : ℕ := (finProdFinEquiv.symm.1 u).1 + 1
+  let k : ℕ := (finProdFinEquiv.symm.1 u).2
   l < n K q →
   iteratedDeriv k (R K α β hirr htriv σ hd α' β' γ' habc q h2mq u hq0 t) l = 0 := by
-  intros l hl
+  intros l k hl
   apply iteratedDeriv_of_R_is_zero
 
   --unfold R
@@ -957,7 +976,10 @@ lemma foo :
   sorry
   }
 
-lemma order_R_at_l : k < n K q →
+lemma order_R_at_l :
+  let k : ℕ := (finProdFinEquiv.symm.1 u).2
+  let l : ℕ := (finProdFinEquiv.symm.1 u).1 + 1
+  k < n K q →
   order (R_analyt_at_point K α β hirr htriv σ hd α' β' γ'
     habc q h2mq u t hq0 l).choose ≥ n K q := by {
       intros hkn
@@ -987,6 +1009,17 @@ lemma exists_nonzero_iteratedFDeriv :
 def l₀ : ℕ :=
   (exists_nonzero_iteratedFDeriv K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0).choose
 
+
+
+
+
+
+
+
+
+
+
+
 def cρ := (c₁ K α' β' γ')^(r K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0) *
   (c₁ K α' β' γ')^(2*m K * q)
 
@@ -996,10 +1029,10 @@ lemma rho_nonzero :
   rho K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0 ≠ 0 := by
   unfold rho
   simp only [ne_eq, FaithfulSMul.algebraMap_eq_zero_iff]
-  intros H
+  have := applylemma82_ne_zero K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0
+  rw [← ne_eq]
+  unfold η
   sorry
-
-  --have := applylemma82_ne_zero K α β hirr htriv σ hd α' β' γ' habc q h2mq u t hq0
   --apply this
   --rw [funext_iff]
   --simp only [ne_eq, Pi.zero_apply, FaithfulSMul.algebraMap_eq_zero_iff] at this
@@ -1186,10 +1219,6 @@ lemma alt_cauchy :
         exact hm K
       · simp_all only [Nat.cast_lt, lt_add_iff_pos_right,
           Nat.cast_pos, div_pos_iff_of_pos_right, l₀]
-        obtain ⟨left, right⟩ := htriv
-        obtain ⟨left_1, right_1⟩ := habc
-        obtain ⟨left_2, right_1⟩ := right_1
-        subst left_2 left_1
         sorry
 
 lemma hcauchy :
