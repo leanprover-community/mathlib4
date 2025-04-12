@@ -343,15 +343,18 @@ theorem le_to_int {m n : ZNum} : (m : ℤ) ≤ n ↔ m ≤ n := by
   rw [← not_lt]; exact not_congr lt_to_int
 
 @[simp, norm_cast]
-theorem cast_lt [StrictOrderedRing α] {m n : ZNum} : (m : α) < n ↔ m < n := by
+theorem cast_lt [Ring α] [PartialOrder α] [IsStrictOrderedRing α] {m n : ZNum} :
+    (m : α) < n ↔ m < n := by
   rw [← cast_to_int m, ← cast_to_int n, Int.cast_lt, lt_to_int]
 
 @[simp, norm_cast]
-theorem cast_le [LinearOrderedRing α] {m n : ZNum} : (m : α) ≤ n ↔ m ≤ n := by
+theorem cast_le [Ring α] [LinearOrder α] [IsStrictOrderedRing α] {m n : ZNum} :
+    (m : α) ≤ n ↔ m ≤ n := by
   rw [← not_lt]; exact not_congr cast_lt
 
 @[simp, norm_cast]
-theorem cast_inj [StrictOrderedRing α] {m n : ZNum} : (m : α) = n ↔ m = n := by
+theorem cast_inj [Ring α] [PartialOrder α] [IsStrictOrderedRing α] {m n : ZNum} :
+    (m : α) = n ↔ m = n := by
   rw [← cast_to_int m, ← cast_to_int n, Int.cast_inj (α := α), to_int_inj]
 
 /-- This tactic tries to turn an (in)equality about `ZNum`s to one about `Int`s by rewriting.
@@ -437,8 +440,8 @@ private theorem add_le_add_left : ∀ (a b : ZNum), a ≤ b → ∀ (c : ZNum), 
   transfer_rw
   exact fun h => _root_.add_le_add_left h c
 
-instance linearOrderedCommRing : LinearOrderedCommRing ZNum :=
-  { ZNum.linearOrder, ZNum.addCommGroup, ZNum.addMonoidWithOne with
+instance commRing : CommRing ZNum :=
+  { ZNum.addCommGroup, ZNum.addMonoidWithOne with
     mul := (· * ·)
     mul_assoc a b c := show a * b * c = a * (b * c) by transfer
     zero_mul := by transfer
@@ -451,14 +454,21 @@ instance linearOrderedCommRing : LinearOrderedCommRing ZNum :=
     right_distrib := by
       transfer
       simp [mul_add, _root_.mul_comm]
-    mul_comm := mul_comm
-    exists_pair_ne := ⟨0, 1, by decide⟩
-    add_le_add_left := add_le_add_left
-    mul_pos a b :=
-      show 0 < a → 0 < b → 0 < a * b by
-        transfer_rw
-        apply mul_pos
-    zero_le_one := by decide }
+    mul_comm := mul_comm }
+
+instance nontrivial : Nontrivial ZNum :=
+  { exists_pair_ne := ⟨0, 1, by decide⟩ }
+
+instance zeroLEOneClass : ZeroLEOneClass ZNum :=
+  { zero_le_one := by decide }
+
+instance isOrderedAddMonoid : IsOrderedAddMonoid ZNum :=
+  { add_le_add_left := add_le_add_left }
+
+instance isStrictOrderedRing : IsStrictOrderedRing ZNum :=
+  .of_mul_pos fun a b ↦ by
+    transfer_rw
+    apply mul_pos
 
 @[simp, norm_cast]
 theorem cast_sub [AddCommGroupWithOne α] (m n) : ((m - n : ZNum) : α) = m - n := by

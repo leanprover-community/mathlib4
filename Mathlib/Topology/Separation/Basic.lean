@@ -227,6 +227,9 @@ protected theorem Topology.IsEmbedding.t0Space [TopologicalSpace Y] [T0Space Y] 
 @[deprecated (since := "2024-10-26")]
 alias Embedding.t0Space := IsEmbedding.t0Space
 
+protected theorem Homeomorph.t0Space [TopologicalSpace Y] [T0Space X] (h : X ≃ₜ Y) : T0Space Y :=
+  h.symm.isEmbedding.t0Space
+
 instance Subtype.t0Space [T0Space X] {p : X → Prop} : T0Space (Subtype p) :=
   IsEmbedding.subtypeVal.t0Space
 
@@ -513,6 +516,9 @@ protected theorem Topology.IsEmbedding.t1Space [TopologicalSpace Y] [T1Space Y] 
 
 @[deprecated (since := "2024-10-26")]
 alias Embedding.t1Space := IsEmbedding.t1Space
+
+protected theorem Homeomorph.t1Space [TopologicalSpace Y] [T1Space X] (h : X ≃ₜ Y) : T1Space Y :=
+  h.symm.isEmbedding.t1Space
 
 instance Subtype.t1Space {X : Type u} [TopologicalSpace X] [T1Space X] {p : X → Prop} :
     T1Space (Subtype p) :=

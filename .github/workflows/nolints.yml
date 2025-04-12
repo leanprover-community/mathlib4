@@ -42,12 +42,7 @@ jobs:
         with:
           auto-config: false
           use-github-cache: false
-          use-mathlib-cache: false
-
-      - name: get cache
-        run: |
-          lake exe cache clean
-          lake exe cache get
+          use-mathlib-cache: true
 
       - name: build mathlib
         id: build

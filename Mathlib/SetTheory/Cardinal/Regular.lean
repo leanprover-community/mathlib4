@@ -224,16 +224,16 @@ theorem derivFamily_lt_ord_lift {ι : Type u} {f : ι → Ordinal → Ordinal} {
     rw [hc.cof_eq]
     exact lt_of_le_of_ne hc.1 hc'.symm
   induction a using limitRecOn with
-  | H₁ =>
+  | zero =>
     rw [derivFamily_zero]
     exact nfpFamily_lt_ord_lift hω (by rwa [hc.cof_eq]) hf
-  | H₂ b hb =>
+  | succ b hb =>
     intro hb'
     rw [derivFamily_succ]
     exact
       nfpFamily_lt_ord_lift hω (by rwa [hc.cof_eq]) hf
         ((isLimit_ord hc.1).succ_lt (hb ((lt_succ b).trans hb')))
-  | H₃ b hb H =>
+  | isLimit b hb H =>
     intro hb'
     -- TODO: generalize the universes of the lemmas in this file so we don't have to rely on bsup
     have : ⨆ a : Iio b, _ = _ :=

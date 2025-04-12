@@ -3,7 +3,6 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Algebra.Order.Floor.Semiring
 import Mathlib.Algebra.Order.Monoid.Units
 import Mathlib.Algebra.Order.Ring.Pow
@@ -488,8 +487,8 @@ end LinearOrderedField
 
 instance : Archimedean ℕ :=
   ⟨fun n m m0 => ⟨n, by
-    rw [← mul_one n, smul_eq_mul, mul_assoc, one_mul m]
-    exact Nat.mul_le_mul_left n (by omega)⟩⟩
+    rw [← mul_one n, nsmul_eq_mul, Nat.cast_id, mul_one]
+    exact Nat.le_mul_of_pos_right n m0⟩⟩
 
 instance : Archimedean ℤ :=
   ⟨fun n m m0 =>

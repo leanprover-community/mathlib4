@@ -965,7 +965,7 @@ namespace Affine
 
 namespace Simplex
 
-variable {k V P : Type*} [OrderedRing k] [AddCommGroup V] [Module k V] [AffineSpace V P]
+variable {k V P : Type*} [Ring k] [PartialOrder k] [AddCommGroup V] [Module k V] [AffineSpace V P]
 
 /-- The interior of a simplex is the set of points that can be expressed as an affine combination
 of the vertices with weights strictly between 0 and 1. This is equivalent to the intrinsic
