@@ -601,11 +601,11 @@ protected theorem tsum_eq_iSup_sum' {ι : Type*} (s : ι → Finset α) (hs : �
 
 protected theorem tsum_sigma {β : α → Type*} (f : ∀ a, β a → ℝ≥0∞) :
     ∑' p : Σ a, β a, f p.1 p.2 = ∑' (a) (b), f a b :=
-  tsum_sigma' (fun _ => ENNReal.summable) ENNReal.summable
+  ENNReal.summable.tsum_sigma' (fun _ => ENNReal.summable)
 
 protected theorem tsum_sigma' {β : α → Type*} (f : (Σ a, β a) → ℝ≥0∞) :
     ∑' p : Σ a, β a, f p = ∑' (a) (b), f ⟨a, b⟩ :=
-  tsum_sigma' (fun _ => ENNReal.summable) ENNReal.summable
+  ENNReal.summable.tsum_sigma' (fun _ => ENNReal.summable)
 
 protected theorem tsum_prod {f : α → β → ℝ≥0∞} : ∑' p : α × β, f p.1 p.2 = ∑' (a) (b), f a b :=
   tsum_prod' ENNReal.summable fun _ => ENNReal.summable
@@ -649,11 +649,11 @@ protected theorem tsum_eq_limsup_sum_nat {f : ℕ → ℝ≥0∞} :
   ENNReal.summable.hasSum.tendsto_sum_nat.limsup_eq.symm
 
 protected theorem le_tsum (a : α) : f a ≤ ∑' a, f a :=
-  le_tsum' ENNReal.summable a
+  ENNReal.summable.le_tsum' a
 
 @[simp]
 protected theorem tsum_eq_zero : ∑' i, f i = 0 ↔ ∀ i, f i = 0 :=
-  tsum_eq_zero_iff ENNReal.summable
+  ENNReal.summable.tsum_eq_zero_iff
 
 protected theorem tsum_eq_top_of_eq_top : (∃ a, f a = ∞) → ∑' a, f a = ∞
   | ⟨a, ha⟩ => top_unique <| ha ▸ ENNReal.le_tsum a

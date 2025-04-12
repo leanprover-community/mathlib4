@@ -287,7 +287,7 @@ theorem sum_add [Countable ι] (κ η : ι → Kernel α β) :
     (Kernel.sum fun n => κ n + η n) = Kernel.sum κ + Kernel.sum η := by
   ext a s hs
   simp only [coe_add, Pi.add_apply, sum_apply, Measure.sum_apply _ hs, Pi.add_apply,
-    Measure.coe_add, tsum_add ENNReal.summable ENNReal.summable]
+    Measure.coe_add, ENNReal.summable.tsum_add ENNReal.summable]
 
 end Sum
 

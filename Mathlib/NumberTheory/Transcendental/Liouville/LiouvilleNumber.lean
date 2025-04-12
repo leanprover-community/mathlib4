@@ -89,7 +89,7 @@ theorem partialSum_succ (m : ℝ) (n : ℕ) :
 /-- Split the sum defining a Liouville number into the first `k` terms and the rest. -/
 theorem partialSum_add_remainder {m : ℝ} (hm : 1 < m) (k : ℕ) :
     partialSum m k + remainder m k = liouvilleNumber m :=
-  sum_add_tsum_nat_add _ (LiouvilleNumber.summable hm)
+  (LiouvilleNumber.summable hm).sum_add_tsum_nat_add _
 
 /-! We now prove two useful inequalities, before collecting everything together. -/
 

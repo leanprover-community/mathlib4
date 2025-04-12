@@ -100,7 +100,7 @@ theorem apply_eq_one_iff (p : PMF α) (a : α) : p a = 1 ↔ p.support = {a} := 
   suffices 1 < ∑' a, p a from ne_of_lt this p.tsum_coe.symm
   classical
   have : 0 < ∑' b, ite (b = a) 0 (p b) := lt_of_le_of_ne' zero_le'
-    ((tsum_ne_zero_iff ENNReal.summable).2
+    (ENNReal.summable.tsum_ne_zero_iff.2
       ⟨a', ite_ne_left_iff.2 ⟨ha, Ne.symm <| (p.mem_support_iff a').2 ha'⟩⟩)
   calc
     1 = 1 + 0 := (add_zero 1).symm
