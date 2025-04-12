@@ -124,9 +124,10 @@ def deprecated.moduleLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   if stx.isOfKind ``Linter.deprecated_modules then return
   let fm ← getFileMap
-  let (importStx, _) ← Parser.parseHeader { input := fm.source, fileName := ← getFileName, fileMap := fm }
+  let (importStx, _) ←
+    Parser.parseHeader { input := fm.source, fileName := ← getFileName, fileMap := fm }
   let modulesWithNames := (getImportIds importStx).map fun i ↦ (i, i.getId)
-  for (_i, preferred) in deprecations do
+  for (i, preferred) in deprecations do
     for (nmStx, _) in modulesWithNames.filter (·.2 == i) do
       Linter.logLint linter.deprecated.module nmStx
         m!"'{nmStx}' has been deprecated: please replace this import by\n\n\
