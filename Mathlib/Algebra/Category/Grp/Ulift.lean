@@ -200,6 +200,7 @@ noncomputable instance : PreservesColimitsOfSize.{w', w} uliftFunctor.{v, u} whe
 The functor `uliftFunctor : AddCommGrp.{u} ⥤ AddCommGrp.{max u v}` creates `u`-small colimits.
 -/
 noncomputable instance : CreatesColimitsOfSize.{w, u} uliftFunctor.{v, u} where
-  CreatesColimitsOfShape := { CreatesColimit := fun {_} ↦ createsColimitOfFullyFaithfulOfPreserves }
+  CreatesColimitsOfShape :=
+    { CreatesColimit := fun {_} ↦ createsColimitOfReflectsIsomorphismsOfPreserves }
 
 end AddCommGrp

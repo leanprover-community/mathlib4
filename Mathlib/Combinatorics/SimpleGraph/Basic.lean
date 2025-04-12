@@ -193,7 +193,7 @@ theorem adj_inj {G H : SimpleGraph V} : G.Adj = H.Adj ↔ G = H :=
 
 theorem adj_congr_of_sym2 {u v w x : V} (h : s(u, v) = s(w, x)) : G.Adj u v ↔ G.Adj w x := by
   simp only [Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk] at h
-  cases' h with hl hr
+  rcases h with hl | hr
   · rw [hl.1, hl.2]
   · rw [hr.1, hr.2, adj_comm]
 
@@ -403,6 +403,9 @@ def neighborSet (v : V) : Set V := {w | G.Adj v w}
 instance neighborSet.memDecidable (v : V) [DecidableRel G.Adj] :
     DecidablePred (· ∈ G.neighborSet v) :=
   inferInstanceAs <| DecidablePred (Adj G v)
+
+lemma neighborSet_subset_support (v : V) : G.neighborSet v ⊆ G.support :=
+  fun _ hadj ↦ ⟨v, hadj.symm⟩
 
 section EdgeSet
 
@@ -771,7 +774,7 @@ theorem edge_other_incident_set {v : V} {e : Sym2 V} (h : e ∈ G.incidenceSet v
 
 theorem incidence_other_prop {v : V} {e : Sym2 V} (h : e ∈ G.incidenceSet v) :
     G.otherVertexOfIncident h ∈ G.neighborSet v := by
-  cases' h with he hv
+  obtain ⟨he, hv⟩ := h
   rwa [← Sym2.other_spec' hv, mem_edgeSet] at he
 
 -- Porting note: as a simp lemma this does not apply even to itself

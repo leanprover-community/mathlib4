@@ -3,7 +3,6 @@ Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Data.Nat.Defs
 import Mathlib.Data.Nat.Find
 import Mathlib.Data.Set.Basic
 
@@ -14,6 +13,8 @@ The distinction between this file and `Mathlib.Algebra.Order.Ring.Nat` is not pa
 They were separated for now to minimize the porting requirements for tactics
 during the transition to mathlib4. Please feel free to reorganize these two files.
 -/
+
+assert_not_exists RelIso
 
 namespace Nat
 

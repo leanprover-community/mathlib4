@@ -57,7 +57,7 @@ lemma meas_le_of_le_of_forall_le_meas_thickening_add {ε₁ ε₂ : ℝ≥0∞} 
     (h_le : ε₁ ≤ ε₂) {B : Set Ω} (hε₁ : μ B ≤ ν (thickening ε₁.toReal B) + ε₁) :
     μ B ≤ ν (thickening ε₂.toReal B) + ε₂ := by
   by_cases ε_top : ε₂ = ∞
-  · simp only [ne_eq, FiniteMeasure.ennreal_coeFn_eq_coeFn_toMeasure, ε_top, top_toReal,
+  · simp only [ne_eq, FiniteMeasure.ennreal_coeFn_eq_coeFn_toMeasure, ε_top, toReal_top,
                 add_top, le_top]
   apply hε₁.trans (add_le_add ?_ h_le)
   exact measure_mono (μ := ν) (thickening_mono (toReal_mono ε_top h_le) B)
@@ -130,7 +130,7 @@ lemma levyProkhorovEDist_triangle [OpensMeasurableSpace Ω] (μ ν κ : Measure 
   · simp [LPνκ_finite]
   apply levyProkhorovEDist_le_of_forall_add_pos_le
   intro ε B ε_pos ε_lt_top B_mble
-  have half_ε_pos : 0 < ε / 2 := ENNReal.div_pos ε_pos.ne' two_ne_top
+  have half_ε_pos : 0 < ε / 2 := ENNReal.div_pos ε_pos.ne' ofNat_ne_top
   have half_ε_lt_top : ε / 2 < ∞ := ENNReal.div_lt_top ε_lt_top.ne two_ne_zero
   let r := levyProkhorovEDist μ ν + ε / 2
   let s := levyProkhorovEDist ν κ + ε / 2
@@ -171,7 +171,7 @@ noncomputable def levyProkhorovDist (μ ν : Measure Ω) : ℝ :=
 
 lemma levyProkhorovDist_self (μ : Measure Ω) :
     levyProkhorovDist μ μ = 0 := by
-  simp only [levyProkhorovDist, levyProkhorovEDist_self, zero_toReal]
+  simp only [levyProkhorovDist, levyProkhorovEDist_self, toReal_zero]
 
 lemma levyProkhorovDist_comm (μ ν : Measure Ω) :
     levyProkhorovDist μ ν = levyProkhorovDist ν μ := by
@@ -279,7 +279,7 @@ noncomputable instance levyProkhorovDist_metricSpace_probabilityMeasure [BorelSp
     · intro A A_closed
       apply measure_eq_measure_of_levyProkhorovEDist_eq_zero_of_isClosed
       · simpa only [levyProkhorovEDist_ne_top μ.toMeasure ν.toMeasure, mem_setOf_eq,
-                    or_false, ne_eq, zero_ne_top, not_false_eq_true, zero_toReal]
+                    or_false, ne_eq, zero_ne_top, not_false_eq_true, toReal_zero]
           using (toReal_eq_zero_iff _).mp h
       · exact A_closed
       · exact ⟨1, Real.zero_lt_one, measure_ne_top _ _⟩

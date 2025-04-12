@@ -45,13 +45,11 @@ theorem derivedSeries_succ (n : ℕ) :
     derivedSeries G (n + 1) = ⁅derivedSeries G n, derivedSeries G n⁆ :=
   rfl
 
--- Porting note: had to provide inductive hypothesis explicitly
 theorem derivedSeries_normal (n : ℕ) : (derivedSeries G n).Normal := by
   induction n with
   | zero => exact (⊤ : Subgroup G).normal_of_characteristic
-  | succ n ih => exact @Subgroup.commutator_normal G _ (derivedSeries G n) (derivedSeries G n) ih ih
+  | succ n ih => exact Subgroup.commutator_normal (derivedSeries G n) (derivedSeries G n)
 
--- Porting note: higher simp priority to restore Lean 3 behavior
 @[simp 1100]
 theorem derivedSeries_one : derivedSeries G 1 = commutator G :=
   rfl
@@ -62,15 +60,12 @@ section CommutatorMap
 
 section DerivedSeriesMap
 
-variable (f)
-
+variable (f) in
 theorem map_derivedSeries_le_derivedSeries (n : ℕ) :
     (derivedSeries G n).map f ≤ derivedSeries G' n := by
   induction n with
   | zero => exact le_top
   | succ n ih => simp only [derivedSeries_succ, map_commutator, commutator_mono, ih]
-
-variable {f}
 
 theorem derivedSeries_le_map_derivedSeries (hf : Function.Surjective f) (n : ℕ) :
     derivedSeries G' n ≤ (derivedSeries G n).map f := by
@@ -191,7 +186,7 @@ theorem IsSimpleGroup.derivedSeries_succ {n : ℕ} : derivedSeries G n.succ = co
   | zero => exact derivedSeries_one G
   | succ n ih =>
     rw [_root_.derivedSeries_succ, ih, _root_.commutator]
-    cases' (commutator_normal (⊤ : Subgroup G) (⊤ : Subgroup G)).eq_bot_or_eq_top with h h
+    rcases (commutator_normal (⊤ : Subgroup G) (⊤ : Subgroup G)).eq_bot_or_eq_top with h | h
     · rw [h, commutator_bot_left]
     · rwa [h]
 

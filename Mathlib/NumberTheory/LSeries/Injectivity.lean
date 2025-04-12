@@ -106,12 +106,12 @@ lemma LSeries.tendsto_cpow_mul_atTop {f : ℕ → ℂ} {n : ℕ} (h : ∀ m ≤ 
   filter_upwards [mem_atTop y] with y' hy' k
   -- it remains to show that `‖F y' k‖ ≤ ‖F y k‖` (for `y' ≥ y`)
   rcases lt_or_le (n + 1) k with H | H
-  · simp only [Set.mem_setOf_eq, H, Set.indicator_of_mem, norm_div, Complex.norm_eq_abs,
-      abs_cpow_real, map_div₀, abs_natCast, F]
-    rw [← Nat.cast_one, ← Nat.cast_add, abs_natCast]
+  · simp only [Set.mem_setOf_eq, H, Set.indicator_of_mem, norm_div, norm_cpow_real,
+      Complex.norm_natCast, F]
+    rw [← Nat.cast_one, ← Nat.cast_add, Complex.norm_natCast]
     have hkn : 1 ≤ (k / (n + 1 :) : ℝ) :=
       (one_le_div (by positivity)).mpr <| mod_cast Nat.le_of_succ_le H
-    exact div_le_div_of_nonneg_left (Complex.abs.nonneg _)
+    exact div_le_div_of_nonneg_left (norm_nonneg _)
       (rpow_pos_of_pos (zero_lt_one.trans_le hkn) _) <| rpow_le_rpow_of_exponent_le hkn hy'
   · simp [hF₀ _ H]
 
@@ -154,7 +154,7 @@ lemma LSeries_eventually_eq_zero_iff' {f : ℕ → ℂ} :
         obtain ⟨s, hs⟩ := H
         exact ⟨s, hs.1, fun x hx ↦ by simp [hs.2 hx]⟩
       intro n
-      induction' n using Nat.strongRecOn with n ih
+      induction n using Nat.strongRecOn with | ind n ih =>
       -- it suffices to show that `n ^ x * LSeries F x` tends to `F n` as `x` tends to `∞`
       suffices Tendsto (fun x : ℝ ↦ n ^ (x : ℂ) * LSeries F x) atTop (nhds (F n)) by
         replace this := this.congr' <| H' n

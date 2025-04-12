@@ -71,7 +71,7 @@ elaborator.
 Note that the `pos` and `goalType` arguments to `mkCmdStr` could be extracted for the `Params`
 argument but that extraction would happen in every example, hence it is factored out here.
 We also make sure `mkCmdStr` is executed in the right context.
- -/
+-/
 def mkSelectionPanelRPC {Params : Type} [SelectInsertParamsClass Params]
     (mkCmdStr : (pos : Array GoalsLocation) → (goalType : Expr) → Params →
    MetaM (String × String × Option (String.Pos × String.Pos)))

@@ -5,6 +5,7 @@ Authors: Aaron Anderson
 -/
 import Mathlib.Algebra.CharZero.Infinite
 import Mathlib.Data.Rat.Encodable
+import Mathlib.Data.Finset.Sort
 import Mathlib.ModelTheory.Complexity
 import Mathlib.ModelTheory.Fraisse
 import Mathlib.Order.CountableDenseLinearOrder
@@ -165,7 +166,7 @@ example [L.Structure M] [M ⊨ L.linearOrderTheory] (S : L.Substructure M) :
     S ⊨ L.linearOrderTheory := inferInstance
 
 /-- A sentence indicating that an order has no top element:
-$\forall x, \exists y, \neg y \le x$.   -/
+$\forall x, \exists y, \neg y \le x$. -/
 def noTopOrderSentence : L.Sentence :=
   ∀'∃'∼((&1).le &0)
 
@@ -366,7 +367,7 @@ instance : @OrderedStructure L M _ (L.leOfStructure M) _ := by
 def decidableLEOfStructure
     [h : DecidableRel (fun (a b : M) => Structure.RelMap (leSymb : L.Relations 2) ![a,b])] :
     letI := L.leOfStructure M
-    DecidableRel ((· : M) ≤ ·) := h
+    DecidableLE M := h
 
 /-- Any model of a theory of preorders is a preorder. -/
 def preorderOfModels [h : M ⊨ L.preorderTheory] : Preorder M where
@@ -438,8 +439,8 @@ lemma strictMono [EmbeddingLike F M N] [PartialOrder M] [L.OrderedStructure M]
 end HomClass
 
 /-- This is not an instance because it would form a loop with
-  `FirstOrder.Language.order.instStrongHomClassOfOrderIsoClass`.
-  As both types are `Prop`s, it would only cause a slowdown.  -/
+`FirstOrder.Language.order.instStrongHomClassOfOrderIsoClass`.
+As both types are `Prop`s, it would only cause a slowdown. -/
 lemma StrongHomClass.toOrderIsoClass
     (L : Language) [L.IsOrdered] (M : Type*) [L.Structure M] [LE M] [L.OrderedStructure M]
     (N : Type*) [L.Structure N] [LE N] [L.OrderedStructure N]

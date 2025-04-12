@@ -43,12 +43,11 @@ proved in `Mathlib.NumberTheory.LSeries.HurwitzZetaEven`.
 -/
 
 
-open CharZero MeasureTheory Set Filter Asymptotics TopologicalSpace Real Asymptotics
-  Classical HurwitzZeta
+open CharZero Set Filter HurwitzZeta
 
-open Complex hiding exp norm_eq_abs abs_of_nonneg abs_two continuous_exp
+open Complex hiding exp continuous_exp
 
-open scoped Topology Real Nat
+open scoped Topology Real
 
 noncomputable section
 
@@ -127,7 +126,7 @@ lemma HurwitzZeta.hurwitzZeta_zero : hurwitzZeta 0 = riemannZeta := by
 
 lemma HurwitzZeta.expZeta_zero : expZeta 0 = riemannZeta := by
   ext1 s
-  rw [expZeta, cosZeta_zero, add_right_eq_self, mul_eq_zero, eq_false_intro I_ne_zero, false_or,
+  rw [expZeta, cosZeta_zero, add_eq_left, mul_eq_zero, eq_false_intro I_ne_zero, false_or,
     ← eq_neg_self_iff, ← sinZeta_neg, neg_zero]
 
 /-- The Riemann zeta function is differentiable away from `s = 1`. -/
@@ -224,20 +223,5 @@ theorem tendsto_sub_mul_tsum_nat_rpow :
 /- naming scheme was changed from `riemannCompletedZeta` to `completedRiemannZeta`; add
 aliases for the old names -/
 section aliases
-
-@[deprecated (since := "2024-05-27")]
-noncomputable alias riemannCompletedZeta₀ := completedRiemannZeta₀
-
-@[deprecated (since := "2024-05-27")]
-noncomputable alias riemannCompletedZeta := completedRiemannZeta
-
-@[deprecated (since := "2024-05-27")]
-alias riemannCompletedZeta₀_one_sub := completedRiemannZeta₀_one_sub
-
-@[deprecated (since := "2024-05-27")]
-alias riemannCompletedZeta_one_sub := completedRiemannZeta_one_sub
-
-@[deprecated (since := "2024-05-27")]
-alias riemannCompletedZeta_residue_one := completedRiemannZeta_residue_one
 
 end aliases

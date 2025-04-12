@@ -177,7 +177,7 @@ theorem judge_pairs_card_lower_bound {z : ℕ} (hJ : Fintype.card J = 2 * z + 1)
   rw [h]; apply Int.le_of_ofNat_le_ofNat; simp only [Int.ofNat_add, Int.ofNat_mul]
   apply norm_bound_of_odd_sum
   suffices x + y = 2 * z + 1 by simp [← Int.ofNat_add, this]
-  rw [Finset.filter_card_add_filter_neg_card_eq_card, ← hJ]; rfl
+  rw [Finset.filter_card_add_filter_neg_card_eq_card, ← hJ, Finset.card_univ]
 
 open scoped Classical in
 theorem distinct_judge_pairs_card_lower_bound {z : ℕ} (hJ : Fintype.card J = 2 * z + 1) (c : C) :
@@ -192,7 +192,7 @@ theorem distinct_judge_pairs_card_lower_bound {z : ℕ} (hJ : Fintype.card J = 2
     · unfold s t
       suffices p.judge₁ = p.judge₂ by simp [this]
       aesop
-  have hst' : (s \ t).card = 2 * z + 1 := by rw [hst, Finset.diag_card, ← hJ]; rfl
+  have hst' : (s \ t).card = 2 * z + 1 := by rw [hst, Finset.diag_card, ← hJ, Finset.card_univ]
   rw [Finset.filter_and, ← Finset.sdiff_sdiff_self_left s t, Finset.card_sdiff]
   · rw [hst']; rw [add_assoc] at hs; apply le_tsub_of_add_le_right hs
   · apply Finset.sdiff_subset
@@ -211,10 +211,7 @@ end
 theorem clear_denominators {a b k : ℕ} (ha : 0 < a) (hb : 0 < b) :
     (b - 1 : ℚ) / (2 * b) ≤ k / a ↔ ((b : ℕ) - 1) * a ≤ k * (2 * b) := by
   rw [div_le_div_iff₀]
-  -- Porting note: proof used to finish with `<;> norm_cast <;> simp [ha, hb]`
-  · convert Nat.cast_le (α := ℚ)
-    · aesop
-    · norm_cast
+  on_goal 1 => convert Nat.cast_le (α := ℚ)
   all_goals simp [ha, hb]
 
 end
@@ -237,6 +234,6 @@ theorem imo1998_q2 [Fintype J] [Fintype C] (a b k : ℕ) (hC : Fintype.card C = 
     simp only [mul_comm, add_mul, one_mul, nonpos_iff_eq_zero, add_tsub_cancel_right]; ring
   have hr : 2 * z * z * a = 2 * z * a * z := by ring
   rw [hl, hr] at h
-  cases' z with z
+  rcases z with - | z
   · simp
   · exact le_of_mul_le_mul_right h z.succ_pos

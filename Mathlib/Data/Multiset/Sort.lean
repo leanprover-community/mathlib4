@@ -37,9 +37,7 @@ theorem coe_sort (l : List α) : sort r l = mergeSort l (r · ·) :=
 
 @[simp]
 theorem sort_sorted (s : Multiset α) : Sorted r (sort r s) :=
-  Quot.inductionOn s fun l => by
-    simpa using sorted_mergeSort (le := (r · ·)) IsTrans.trans
-      (fun a b => by simpa using IsTotal.total a b) l
+  Quot.inductionOn s (sorted_mergeSort' _)
 
 @[simp]
 theorem sort_eq (s : Multiset α) : ↑(sort r s) = s :=
@@ -73,7 +71,7 @@ theorem sort_cons (a : α) (s : Multiset α) :
 
 @[simp]
 theorem sort_range (n : ℕ) : sort (· ≤ ·) (range n) = List.range n :=
-  List.mergeSort_eq_self (sorted_le_range n)
+  List.mergeSort_eq_self _ (sorted_le_range n)
 
 end sort
 
