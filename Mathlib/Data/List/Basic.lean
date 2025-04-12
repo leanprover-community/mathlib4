@@ -284,6 +284,15 @@ theorem map_reverseAux (f : α → β) (l₁ l₂ : List α) :
     map f (reverseAux l₁ l₂) = reverseAux (map f l₁) (map f l₂) := by
   simp only [reverseAux_eq, map_append, map_reverse]
 
+-- TODO: Rename `List.reverse_perm` to `List.reverse_perm_self`
+@[simp] lemma reverse_perm' : l₁.reverse ~ l₂ ↔ l₁ ~ l₂ where
+  mp := l₁.reverse_perm.symm.trans
+  mpr := l₁.reverse_perm.trans
+
+@[simp] lemma perm_reverse : l₁ ~ l₂.reverse ↔ l₁ ~ l₂ where
+  mp hl := hl.trans l₂.reverse_perm
+  mpr hl := hl.trans l₂.reverse_perm.symm
+
 /-! ### getLast -/
 
 attribute [simp] getLast_cons
