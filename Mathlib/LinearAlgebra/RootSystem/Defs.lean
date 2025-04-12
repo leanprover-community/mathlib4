@@ -682,6 +682,35 @@ lemma _root_.RootSystem.reflection_perm_eq_reflection_perm_iff (P : RootSystem �
   ext x
   exact (P.reflection_perm_eq_reflection_perm_iff_of_span i j).mp h x <| by simp
 
+lemma span_coroot_eq_top' (P : RootSystem ι R M N) : span R (range P.coroot') = ⊤ := by
+  have key (d : Module.Dual R M) :
+      d ∈ span R (range fun i ↦ P.flip.toDualLeft (P.flip.root i)) := by
+    simp only [PerfectPairing.toDualLeft_apply]
+    rw [range_comp' P.flip.toPerfectPairing P.flip.root]
+    have h₁ := Submodule.apply_mem_span_image_iff_mem_span (s := (range fun i ↦ (P.flip.root i)))
+      (x := (P.flip.toDualLeft.invFun d)) P.flip.toDualLeft.injective
+    have h₂: P.flip.toDualLeft.symm d ∈ span R (range fun i ↦ (P.flip.root i)) := by
+      simp only [Submodule.mem_top, RootSystem.span_root_eq_top]
+    have h₃ : P.flip.toDualLeft (P.flip.toDualLeft.invFun d) = d := by
+      exact (LinearEquiv.eq_symm_apply P.flip.toDualLeft).mp rfl
+    have := h₁.mpr h₂
+    rw [h₃] at this
+    exact this
+  exact Submodule.eq_top_iff'.mpr key
+
+lemma dual_vanish_aux (P : RootSystem ι R M N) (v : M)
+    (h₁ : ∀ (i : ι), v ∈ LinearMap.ker (P.coroot' i)) (d : Module.Dual R M) : d v = 0 := by
+  have : d ∈ span R (range P.coroot') := by
+    simp only [Submodule.mem_top, span_coroot_eq_top' P]
+  induction this using Submodule.span_induction with
+  | mem x hx' =>
+    rcases hx' with ⟨w, h⟩
+    subst h
+    exact h₁ w
+  | zero => simp only [Submodule.mem_top, LinearMap.zero_apply]
+  | add _ _ _ _ a₁ a₂ => rw [LinearMap.add_apply, a₁, a₂, add_zero]
+  | smul _ _ _ m => rw [LinearMap.smul_apply, smul_eq_mul, m, mul_zero]
+
 /-- The Coxeter Weight of a pair gives the weight of an edge in a Coxeter diagram, when it is
 finite.  It is `4 cos² θ`, where `θ` describes the dihedral angle between hyperplanes. -/
 def coxeterWeight : R := pairing P i j * pairing P j i
