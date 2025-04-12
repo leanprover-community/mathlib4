@@ -302,31 +302,6 @@ variable {J : ModelWithCorners 𝕜 E' H}
   [TopologicalSpace M''] [ChartedSpace H M''] [TopologicalSpace N] [ChartedSpace H N]
   {N' : Type*} [TopologicalSpace N'] [ChartedSpace H N']
 
-section
-
-variable {R R₂ M M₂ : Type*} [DivisionRing R] [Semiring R₂] [AddCommMonoid M] [AddCommGroup M₂]
-  [Module R M] [Module R M₂] [FiniteDimensional R M₂]
-
-namespace _root_.LinearEquiv
-
-/-- An injective linear map between finite-dimensional space of equal rank
-is a linear equivalence. -/
-noncomputable def of_injective_finrank_eq (f : M →ₗ[R] M₂) (hinj : Function.Injective f)
-    (hrank : Module.finrank R M = Module.finrank R M₂) : M ≃ₗ[R] M₂ :=
-  haveI : LinearMap.range f = ⊤ := by
-    apply Submodule.eq_top_of_finrank_eq (S := LinearMap.range f)
-    exact (LinearMap.finrank_range_of_inj hinj).trans hrank
-  (LinearEquiv.ofInjective f hinj).trans (LinearEquiv.ofTop (LinearMap.range f) this)
-
-@[simp]
-lemma of_injective_finrank_eq_coe (f : M →ₗ[R] M₂) (hinj : Function.Injective f)
-    (hrank : Module.finrank R M = Module.finrank R M₂) :
-    (of_injective_finrank_eq f hinj hrank).toLinearMap = f := rfl
-
-end _root_.LinearEquiv
-
-end
-
 variable [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 E']
 
 variable (I J M M' N n) in
