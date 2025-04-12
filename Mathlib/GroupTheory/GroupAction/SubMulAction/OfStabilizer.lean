@@ -59,7 +59,8 @@ namespace SubMulAction
 
 variable (G : Type*) [Group G] {α : Type*} [MulAction G α]
 
-/-- Action of stabilizer of a point on the complement -/
+/-- Action of the stabilizer of a point on the complement -/
+@[to_additive "Action of the stabilizer of a point on the complement"]
 def ofStabilizer (a : α) : SubMulAction (stabilizer G a) α where
   carrier := {a}ᶜ
   smul_mem' g x := by
@@ -71,15 +72,19 @@ def ofStabilizer (a : α) : SubMulAction (stabilizer G a) α where
     rw [hgx, ← smul_eq_iff_eq_inv_smul]
     exact g.prop
 
+@[to_additive]
 theorem ofStabilizer_carrier (a : α) : (ofStabilizer G a).carrier = {a}ᶜ :=
   rfl
 
+@[to_additive]
 theorem mem_ofStabilizer_iff (a : α) {x : α} : x ∈ ofStabilizer G a ↔ x ≠ a :=
   Iff.rfl
 
+@[to_additive]
 theorem neq_of_mem_ofStabilizer (a : α) {x : (ofStabilizer G a)} : ↑x ≠ a :=
   x.prop
 
+@[to_additive]
 lemma Enat_card_ofStabilizer_eq_add_one (a : α) :
     ENat.card (ofStabilizer G a) + 1 = ENat.card α := by
   unfold ENat.card
@@ -87,6 +92,7 @@ lemma Enat_card_ofStabilizer_eq_add_one (a : α) :
   congr
   simp
 
+@[to_additive]
 lemma nat_card_ofStabilizer_eq [Finite α] (a : α) :
     Nat.card (ofStabilizer G a) = Nat.card α - 1 := by
   unfold Nat.card
@@ -98,22 +104,41 @@ lemma nat_card_ofStabilizer_eq [Finite α] (a : α) :
 variable {a b : α} {g : G} (hg : g • b = a)
 variable {G}
 
+/-- Conjugation induces an equivariant map between the SubAddAction of
+the stabilizer of a point and that of its translate -/
+def _root_.SubAddAction.ofStabilizer.conjMap {G : Type*} [AddGroup G] {α : Type*} [AddAction G α]
+    {a b : α} {g : G} (hg : g +ᵥ b = a) :
+    AddActionHom (AddAction.stabilizerEquivStabilizer hg)
+      (SubAddAction.ofStabilizer G b) (SubAddAction.ofStabilizer G a) where
+  toFun := fun ⟨x, hx⟩ =>
+    ⟨g +ᵥ x, fun hy ↦ by
+      simp only [← hg, Set.mem_singleton_iff, vadd_left_cancel_iff] at hy
+      exact hx  hy⟩
+  map_vadd' _ _ := by
+    rw [← SetLike.coe_eq_coe]
+    simp [SubAddAction.val_vadd_of_tower, AddAction.addSubgroup_vadd_def,
+       AddAction.stabilizerEquivStabilizer_apply, ← vadd_assoc, AddAut.conj_apply]
+
 /-- Conjugation induces an equivariant map between the SubMulAction of
 the stabilizer of a point and that of its translate -/
+@[to_additive existing]
 def ofStabilizer.conjMap :
-    ofStabilizer G b →ₑ[stabilizerEquivStabilizer hg] ofStabilizer G a where
-  toFun := fun ⟨x, hx⟩ =>
-    ⟨g • x, fun hy ↦ by
+    MulActionHom (stabilizerEquivStabilizer hg) (ofStabilizer G b) (ofStabilizer G a) where
+    -- stabilizerEquivStabilizer hg] ofStabilizer G a where
+  toFun x :=
+    ⟨g • x.val, fun hy ↦ by
       simp only [← hg, Set.mem_singleton_iff, smul_left_cancel_iff] at hy
-      exact hx hy⟩
-  map_smul' := fun ⟨m, hm⟩ ⟨x, hx⟩ => by
+      exact x.prop hy⟩
+  map_smul' _ _ := by
     rw [← SetLike.coe_eq_coe]
     simp [SubMulAction.val_smul_of_tower, subgroup_smul_def,
        stabilizerEquivStabilizer_apply, ← smul_assoc, MulAut.conj_apply]
 
+@[to_additive]
 theorem ofStabilizer.conjMap_apply (x : ofStabilizer G b) :
     (conjMap hg x : α) = g • x := rfl
 
+@[to_additive]
 theorem ofStabilizer.conjMap_bijective :
     Function.Bijective (conjMap hg) := by
   constructor
@@ -125,7 +150,9 @@ theorem ofStabilizer.conjMap_bijective :
     use (ofStabilizer.conjMap (inv_smul_eq_iff.mpr hg.symm)) ⟨x, hx⟩
     simp [← SetLike.coe_eq_coe, conjMap_apply]
 
-/-- Append `a` to `x : Fin n ↪ ofStabilizer G a`  to get an element of `Fin n.succ ↪ α`. -/
+/-- Append `a` to `x : Fin n ↪ ofStabilizer G a`  to get an element of `Fin n.succ ↪ α` -/
+@[to_additive
+  "Append `a` to `x : Fin n ↪ ofStabilizer G a`  to get an element of `Fin n.succ ↪ α`"]
 def ofStabilizer.append {n : ℕ} (x : Fin n ↪ ofStabilizer G a) :
     Fin n.succ ↪ α := by
   let j : ofStabilizer G a ↪ α := {
@@ -135,16 +162,19 @@ def ofStabilizer.append {n : ℕ} (x : Fin n ↪ ofStabilizer G a) :
   simp [Set.mem_range, trans_apply, not_exists, j]
   exact fun i ↦ (x i).prop
 
+@[to_additive]
 theorem ofStabilizer.append_apply_of_lt {n : ℕ} (x : Fin n ↪ ofStabilizer G a)
     {i : Fin n.succ} (hi : i.val < n) :
     append x i = (x ⟨i, hi⟩ : α) := by
   simp [append, Fin.Embedding.append_apply_of_lt hi]
 
+@[to_additive]
 theorem ofStabilizer.append_apply_last {n : ℕ} (x : Fin n ↪ ofStabilizer G a) :
     append x (Fin.last n) = a := by
   simp [append, Fin.Embedding.append_apply_last]
 
 variable (G) in
+@[to_additive]
 lemma exists_smul_of_last_eq [IsPretransitive G α] {n : ℕ} (a : α) (x : Fin n.succ ↪ α) :
     ∃ (g : G) (y : Fin n ↪ ofStabilizer G a),
       Fin.castSuccEmb.trans (g • x) = trans y (subtype _) ∧
@@ -160,23 +190,27 @@ lemma exists_smul_of_last_eq [IsPretransitive G α] {n : ℕ} (a : α) (x : Fin 
     by ext; simp; rfl,
     hgx⟩
 
+@[to_additive]
 theorem ofStabilizer.isPretransitive_iff_of_conj {a b : α} {g : G} (hg : g • b = a) :
     IsPretransitive (stabilizer G b) (ofStabilizer G b) ↔
       IsPretransitive (stabilizer G a) (ofStabilizer G a) :=
   isPretransitive_congr (MulEquiv.surjective _) (ofStabilizer.conjMap_bijective hg)
 
+@[to_additive]
 theorem ofStabilizer.isPretransitive_iff [IsPretransitive G α] {a b : α} :
     IsPretransitive (stabilizer G b) (ofStabilizer G b) ↔
       IsPretransitive (stabilizer G a) (ofStabilizer G a) := by
   obtain ⟨g, hg⟩ := exists_smul_eq G b a
   exact isPretransitive_congr (MulEquiv.surjective _) (ofStabilizer.conjMap_bijective hg)
 
+@[to_additive]
 theorem ofStabilizer.isMultiplyPretransitive_iff_of_conj
     {n : ℕ} {a b : α} {g : G} (hg : g • b = a) :
     IsMultiplyPretransitive (stabilizer G b) (ofStabilizer G b) n ↔
       IsMultiplyPretransitive (stabilizer G a) (ofStabilizer G a) n :=
   IsPretransitive.of_embedding_congr (MulEquiv.surjective _) (ofStabilizer.conjMap_bijective hg)
 
+@[to_additive]
 theorem ofStabilizer.isMultiplyPretransitive_iff [IsPretransitive G α] {n : ℕ} {a b : α} :
     IsMultiplyPretransitive (stabilizer G b) (ofStabilizer G b) n ↔
       IsMultiplyPretransitive (stabilizer G a) (ofStabilizer G a) n := by
@@ -187,6 +221,10 @@ theorem ofStabilizer.isMultiplyPretransitive_iff [IsPretransitive G α] {n : ℕ
 /-- Multiple transitivity of a pretransitive action
   is equivalent to one less transitivity of stabilizer of a point
   (Wielandt, th. 9.1, 1st part) -/
+@[to_additive
+  "Multiple transitivity of a pretransitive action
+  is equivalent to one less transitivity of stabilizer of a point
+  (Wielandt, th. 9.1, 1st part)"]
 theorem ofStabilizer.isMultiplyPretransitive [IsPretransitive G α] {n : ℕ} {a : α} :
     IsMultiplyPretransitive G α n.succ ↔
       IsMultiplyPretransitive (stabilizer G a) (SubMulAction.ofStabilizer G a) n := by
