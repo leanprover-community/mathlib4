@@ -3044,7 +3044,10 @@ import Mathlib.Data.Matroid.IndepAxioms
 import Mathlib.Data.Matroid.Init
 import Mathlib.Data.Matroid.Loop
 import Mathlib.Data.Matroid.Map
-import Mathlib.Data.Matroid.Minor.Basic
+import Mathlib.Data.Matroid.Minor.Contract
+import Mathlib.Data.Matroid.Minor.Delete
+import Mathlib.Data.Matroid.Minor.Order
+import Mathlib.Data.Matroid.Minor.Restrict
 import Mathlib.Data.Matroid.Rank.Cardinal
 import Mathlib.Data.Matroid.Rank.ENat
 import Mathlib.Data.Matroid.Rank.Finite
