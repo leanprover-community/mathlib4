@@ -62,7 +62,7 @@ Weak normal head form of an expression involving morphism applications. Addition
 can specify which when to unfold definitions.
 
 For example calling this on `coe (f a) b` will put `f` in weak normal head form instead of `coe`.
- -/
+-/
 partial def whnfPred (e : Expr) (pred : Expr → MetaM Bool) :
     MetaM Expr := do
   whnfEasyCases e fun e => do
@@ -87,7 +87,7 @@ partial def whnfPred (e : Expr) (pred : Expr → MetaM Bool) :
 Weak normal head form of an expression involving morphism applications.
 
 For example calling this on `coe (f a) b` will put `f` in weak normal head form instead of `coe`.
- -/
+-/
 def whnf (e : Expr) : MetaM Expr :=
   whnfPred e (fun _ => return false)
 

@@ -105,13 +105,13 @@ theorem isCaratheodory_inter (h₁ : IsCaratheodory m s₁) (h₂ : IsCaratheodo
 lemma isCaratheodory_diff (h₁ : IsCaratheodory m s₁) (h₂ : IsCaratheodory m s₂) :
     IsCaratheodory m (s₁ \ s₂) := m.isCaratheodory_inter h₁ (m.isCaratheodory_compl h₂)
 
-lemma isCaratheodory_partialSups {ι : Type*} [PartialOrder ι] [LocallyFiniteOrderBot ι]
+lemma isCaratheodory_partialSups {ι : Type*} [Preorder ι] [LocallyFiniteOrderBot ι]
     {s : ι → Set α} (h : ∀ i, m.IsCaratheodory (s i)) (i : ι) :
     m.IsCaratheodory (partialSups s i) := by
   simpa only [partialSups_apply, Finset.sup'_eq_sup, Finset.sup_set_eq_biUnion, ← Finset.mem_coe,
     Finset.coe_Iic] using .biUnion_of_finite (finite_Iic _) (fun j _ ↦ h j)
 
-lemma isCaratheodory_disjointed {ι : Type*} [PartialOrder ι] [LocallyFiniteOrderBot ι]
+lemma isCaratheodory_disjointed {ι : Type*} [Preorder ι] [LocallyFiniteOrderBot ι]
     {s : ι → Set α} (h : ∀ i, m.IsCaratheodory (s i)) (i : ι) :
     m.IsCaratheodory (disjointed s i) :=
   disjointedRec (fun _ j ht ↦ m.isCaratheodory_diff ht <| h j) (h i)

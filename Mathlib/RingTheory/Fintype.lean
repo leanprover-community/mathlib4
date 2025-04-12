@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Data.ZMod.Basic
+import Mathlib.Tactic.NormNum
 
 /-!
 # Some facts about finite rings
@@ -11,6 +12,8 @@ import Mathlib.Data.ZMod.Basic
 
 
 open Finset ZMod
+
+section Ring
 
 variable {R : Type*} [Ring R] [Fintype R] [DecidableEq R]
 
@@ -50,7 +53,32 @@ lemma Finset.univ_of_card_le_three (h : Fintype.card R ≤ 3) :
       · exact zero_ne_one h
       · exact zero_ne_one h.symm
 
+end Ring
+
+section MonoidWithZero
+
+variable (M₀ : Type*) [MonoidWithZero M₀] [Nontrivial M₀]
+
 open scoped Classical in
-theorem card_units_lt (M₀ : Type*) [MonoidWithZero M₀] [Nontrivial M₀] [Fintype M₀] :
-    Fintype.card M₀ˣ < Fintype.card M₀ :=
+theorem card_units_lt [Fintype M₀] : Fintype.card M₀ˣ < Fintype.card M₀ :=
   Fintype.card_lt_of_injective_of_not_mem Units.val Units.ext not_isUnit_zero
+
+lemma natCard_units_lt [Finite M₀] : Nat.card M₀ˣ < Nat.card M₀ := by
+  have : Fintype M₀ := Fintype.ofFinite M₀
+  simpa only [Fintype.card_eq_nat_card] using card_units_lt M₀
+
+variable {M₀}
+
+lemma orderOf_lt_card [Finite M₀] (a : M₀) : orderOf a < Nat.card M₀ := by
+  by_cases h : IsUnit a
+  · rw [← h.unit_spec, orderOf_units]
+    exact orderOf_le_card.trans_lt <| natCard_units_lt M₀
+  · rw [orderOf_eq_zero_iff'.mpr fun n hn ha ↦ h <| IsUnit.of_pow_eq_one ha hn.ne']
+    exact Nat.card_pos
+
+end MonoidWithZero
+
+lemma ZMod.orderOf_lt {n : ℕ} (hn : 1 < n) (a : ZMod n) : orderOf a < n :=
+  have : NeZero n := ⟨Nat.ne_zero_of_lt hn⟩
+  have : Nontrivial (ZMod n) := nontrivial_iff.mpr hn.ne'
+  (orderOf_lt_card a).trans_eq <| Nat.card_zmod n

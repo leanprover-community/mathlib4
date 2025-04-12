@@ -47,9 +47,21 @@ protected def subtype : S' →ₗ[R] M where
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
+variable {S'} in
 @[simp]
-protected theorem coeSubtype : (SMulMemClass.subtype S' : S' → M) = Subtype.val :=
+lemma subtype_apply (x : S') :
+    SMulMemClass.subtype S' x = x := rfl
+
+lemma subtype_injective :
+    Function.Injective (SMulMemClass.subtype S') :=
+  Subtype.coe_injective
+
+@[simp]
+protected theorem coe_subtype : (SMulMemClass.subtype S' : S' → M) = Subtype.val :=
   rfl
+
+@[deprecated (since := "2025-02-18")]
+protected alias coeSubtype := SMulMemClass.coe_subtype
 
 end SMulMemClass
 
@@ -72,20 +84,23 @@ protected def subtype : p →ₗ[R] M where
   map_add' := by simp [coe_smul]
   map_smul' := by simp [coe_smul]
 
+variable {p} in
+@[simp]
 theorem subtype_apply (x : p) : p.subtype x = x :=
   rfl
+
+lemma subtype_injective :
+    Function.Injective p.subtype :=
+  Subtype.coe_injective
 
 @[simp]
 theorem coe_subtype : (Submodule.subtype p : p → M) = Subtype.val :=
   rfl
 
-@[deprecated (since := "2024-09-27")] alias coeSubtype := coe_subtype
-
 theorem injective_subtype : Injective p.subtype :=
   Subtype.coe_injective
 
 /-- Note the `AddSubmonoid` version of this lemma is called `AddSubmonoid.coe_finset_sum`. -/
--- Porting note: removing the `@[simp]` attribute since it's literally `AddSubmonoid.coe_finset_sum`
 theorem coe_sum (x : ι → p) (s : Finset ι) : ↑(∑ i ∈ s, x i) = ∑ i ∈ s, (x i : M) :=
   map_sum p.subtype _ _
 

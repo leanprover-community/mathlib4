@@ -6,6 +6,7 @@ Authors: Kevin Buzzard, Antoine Labelle
 import Mathlib.Algebra.Module.Defs
 import Mathlib.LinearAlgebra.Finsupp.SumProd
 import Mathlib.LinearAlgebra.FreeModule.Basic
+import Mathlib.LinearAlgebra.TensorProduct.Basis
 import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 /-!
@@ -103,16 +104,22 @@ theorem projective_lifting_property [h : Projective R P] (f : M →ₗ[R] N) (g 
     -/
   let φ : (P →₀ R) →ₗ[R] M := Finsupp.linearCombination _ fun p => Function.surjInv hf (g p)
   -- By projectivity we have a map `P →ₗ (P →₀ R)`;
-  cases' h.out with s hs
+  obtain ⟨s, hs⟩ := h.out
   -- Compose to get `P →ₗ M`. This works.
   use φ.comp s
   ext p
   conv_rhs => rw [← hs p]
-  simp [φ, Finsupp.linearCombination_apply, Function.surjInv_eq hf, map_finsupp_sum]
+  simp [φ, Finsupp.linearCombination_apply, Function.surjInv_eq hf, map_finsuppSum]
 
 theorem _root_.LinearMap.exists_rightInverse_of_surjective [Projective R P]
     (f : M →ₗ[R] P) (hf_surj : range f = ⊤) : ∃ g : P →ₗ[R] M, f ∘ₗ g = LinearMap.id :=
   projective_lifting_property f (.id : P →ₗ[R] P) (LinearMap.range_eq_top.1 hf_surj)
+
+open Function in
+theorem _root_.Function.Surjective.surjective_linearMapComp_left [Projective R P]
+    {f : M →ₗ[R] P} (hf_surj : Surjective f) : Surjective (fun g : N →ₗ[R] M ↦ f.comp g) :=
+  surjective_comp_left_of_exists_rightInverse <|
+    f.exists_rightInverse_of_surjective <| range_eq_top_of_surjective f hf_surj
 
 /-- A module which satisfies the universal property is projective: If all surjections of
 `R`-modules `(P →₀ R) →ₗ[R] P` have `R`-linear left inverse maps, then `P` is
@@ -151,7 +158,7 @@ theorem Projective.of_basis {ι : Type*} (b : Basis ι R P) : Projective R P := 
   use b.constr ℕ fun i => Finsupp.single (b i) (1 : R)
   intro m
   simp only [b.constr_apply, mul_one, id, Finsupp.smul_single', Finsupp.linearCombination_single,
-    map_finsupp_sum]
+    map_finsuppSum]
   exact b.linearCombination_repr m
 
 instance (priority := 100) Projective.of_free [Module.Free R P] : Module.Projective R P :=
@@ -188,7 +195,7 @@ theorem Projective.of_ringEquiv {R S} [Semiring R] [Semiring S] {M N}
     map_smul' := fun r v ↦ by ext i; simp [e₂.symm.map_smulₛₗ] }
   refine ⟨⟨g, fun x ↦ ?_⟩⟩
   replace hf := congr(e₂ $(hf (e₂.symm x)))
-  simpa [linearCombination_apply, sum_mapRange_index, g, map_finsupp_sum, e₂.map_smulₛₗ] using hf
+  simpa [linearCombination_apply, sum_mapRange_index, g, map_finsuppSum, e₂.map_smulₛₗ] using hf
 
 end Semiring
 
@@ -205,7 +212,6 @@ theorem Projective.iff_split : Module.Projective R P ↔
   ⟨fun ⟨i, hi⟩ ↦ ⟨P →₀ R, _, _, inferInstance, i, Finsupp.linearCombination R id, LinearMap.ext hi⟩,
     fun ⟨_, _, _, _, i, s, H⟩ ↦ Projective.of_split i s H⟩
 
-set_option maxSynthPendingDepth 2 in
 open TensorProduct in
 instance Projective.tensorProduct [hM : Module.Projective R M] [hN : Module.Projective R₀ N] :
     Module.Projective R (M ⊗[R₀] N) := by

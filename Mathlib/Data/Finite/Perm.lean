@@ -11,6 +11,8 @@ import Mathlib.SetTheory.Cardinal.Finite
 
 -/
 
+assert_not_exists Field
+
 namespace Nat
 
 theorem card_perm {α : Type*} [Finite α] : Nat.card (Equiv.Perm α) = (Nat.card α)! := by

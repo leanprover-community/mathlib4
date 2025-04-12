@@ -101,7 +101,7 @@ instance isAdicCompleteIdealSpanP : IsAdicComplete (Ideal.span {(p : 𝕎 k)}) (
   haus' := by
     intro _ h
     ext n
-    simp at h
+    simp only [smul_eq_mul, Ideal.mul_top] at h
     have := h (n + 1)
     simp only [Ideal.span_singleton_pow, smul_eq_mul, Ideal.mul_top, SModEq.zero,
         mem_span_p_pow_iff_le_coeff_eq_zero] at this

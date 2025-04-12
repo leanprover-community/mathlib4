@@ -10,6 +10,8 @@ import Mathlib.CategoryTheory.Preadditive.Basic
 # The category of additive commutative groups is preadditive.
 -/
 
+assert_not_exists Subgroup
+
 open CategoryTheory
 
 universe u

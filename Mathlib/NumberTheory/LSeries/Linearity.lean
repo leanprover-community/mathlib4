@@ -3,6 +3,7 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
+import Mathlib.Algebra.BigOperators.Field
 import Mathlib.NumberTheory.LSeries.Basic
 
 /-!
@@ -137,7 +138,7 @@ variable {ι : Type*} (f : ι → ℕ → ℂ) (S : Finset ι) (s : ℂ)
 
 @[simp]
 lemma LSeries.term_sum_apply (n : ℕ) :
-    term (∑ i ∈ S, f i) s n  = ∑ i ∈ S, term (f i) s n := by
+    term (∑ i ∈ S, f i) s n = ∑ i ∈ S, term (f i) s n := by
   rcases eq_or_ne n 0 with hn | hn <;>
   simp [hn, Finset.sum_div]
 
@@ -157,6 +158,6 @@ lemma LSeriesSummable.sum (hf : ∀ i ∈ S, LSeriesSummable (f i) s) :
 @[simp]
 lemma LSeries_sum (hf : ∀ i ∈ S, LSeriesSummable (f i) s) :
     LSeries (∑ i ∈ S, f i) s = ∑ i ∈ S, LSeries (f i) s := by
-  simpa [LSeries, term_sum] using tsum_sum hf
+  simpa [LSeries, term_sum] using tsum_finsetSum hf
 
 end sum

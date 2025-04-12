@@ -478,7 +478,7 @@ variable (p : Submodule R M) (q : Submodule R M₂)
 @[simp]
 theorem map_inl : p.map (inl R M M₂) = prod p ⊥ := by
   ext ⟨x, y⟩
-  simp only [and_left_comm, eq_comm, mem_map, Prod.mk.inj_iff, inl_apply, mem_bot, exists_eq_left',
+  simp only [and_left_comm, eq_comm, mem_map, Prod.mk_inj, inl_apply, mem_bot, exists_eq_left',
     mem_prod]
 
 @[simp]
@@ -528,10 +528,9 @@ def fst : Submodule R (M × M₂) :=
 def fstEquiv : Submodule.fst R M M₂ ≃ₗ[R] M where
   -- Porting note: proofs were `tidy` or `simp`
   toFun x := x.1.1
-  invFun m := ⟨⟨m, 0⟩, by simp only [fst, comap_bot, mem_ker, snd_apply]⟩
-  map_add' := by simp only [coe_add, Prod.fst_add, implies_true]
-  map_smul' := by simp only [SetLike.val_smul, Prod.smul_fst, RingHom.id_apply, Subtype.forall,
-    implies_true]
+  invFun m := ⟨⟨m, 0⟩, by simp [fst]⟩
+  map_add' := by simp
+  map_smul' := by simp
   left_inv := by
     rintro ⟨⟨x, y⟩, hy⟩
     simp only [fst, comap_bot, mem_ker, snd_apply] at hy
@@ -539,16 +538,10 @@ def fstEquiv : Submodule.fst R M M₂ ≃ₗ[R] M where
   right_inv := by rintro x; rfl
 
 theorem fst_map_fst : (Submodule.fst R M M₂).map (LinearMap.fst R M M₂) = ⊤ := by
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10936): was `tidy`
-  rw [eq_top_iff]; rintro x -
-  simp only [fst, comap_bot, mem_map, mem_ker, snd_apply, fst_apply,
-    Prod.exists, exists_eq_left, exists_eq]
+  aesop
 
 theorem fst_map_snd : (Submodule.fst R M M₂).map (LinearMap.snd R M M₂) = ⊥ := by
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10936): was `tidy`
-  rw [eq_bot_iff]; intro x
-  simp only [fst, comap_bot, mem_map, mem_ker, snd_apply, eq_comm, Prod.exists, exists_eq_left,
-    exists_const, mem_bot, imp_self]
+  aesop (add simp fst)
 
 /-- `N` as a submodule of `M × N`. -/
 def snd : Submodule R (M × M₂) :=
@@ -559,10 +552,9 @@ def snd : Submodule R (M × M₂) :=
 def sndEquiv : Submodule.snd R M M₂ ≃ₗ[R] M₂ where
   -- Porting note: proofs were `tidy` or `simp`
   toFun x := x.1.2
-  invFun n := ⟨⟨0, n⟩, by simp only [snd, comap_bot, mem_ker, fst_apply]⟩
-  map_add' := by simp only [coe_add, Prod.snd_add, implies_true]
-  map_smul' := by simp only [SetLike.val_smul, Prod.smul_snd, RingHom.id_apply, Subtype.forall,
-    implies_true]
+  invFun n := ⟨⟨0, n⟩, by simp [snd]⟩
+  map_add' := by simp
+  map_smul' := by simp
   left_inv := by
     rintro ⟨⟨x, y⟩, hx⟩
     simp only [snd, comap_bot, mem_ker, fst_apply] at hx
@@ -570,16 +562,10 @@ def sndEquiv : Submodule.snd R M M₂ ≃ₗ[R] M₂ where
   right_inv := by rintro x; rfl
 
 theorem snd_map_fst : (Submodule.snd R M M₂).map (LinearMap.fst R M M₂) = ⊥ := by
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10936): was `tidy`
-  rw [eq_bot_iff]; intro x
-  simp only [snd, comap_bot, mem_map, mem_ker, fst_apply, eq_comm, Prod.exists, exists_eq_left,
-    exists_const, mem_bot, imp_self]
+  aesop (add simp snd)
 
 theorem snd_map_snd : (Submodule.snd R M M₂).map (LinearMap.snd R M M₂) = ⊤ := by
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10936): was `tidy`
-  rw [eq_top_iff]; rintro x -
-  simp only [snd, comap_bot, mem_map, mem_ker, snd_apply, fst_apply,
-    Prod.exists, exists_eq_right, exists_eq]
+  aesop
 
 theorem fst_sup_snd : Submodule.fst R M M₂ ⊔ Submodule.snd R M M₂ = ⊤ := by
   rw [eq_top_iff]
@@ -590,10 +576,7 @@ theorem fst_sup_snd : Submodule.fst R M M₂ ⊔ Submodule.snd R M M₂ = ⊤ :=
   · exact Submodule.mem_sup_right (Submodule.mem_comap.mpr (by simp))
 
 theorem fst_inf_snd : Submodule.fst R M M₂ ⊓ Submodule.snd R M M₂ = ⊥ := by
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10936): was `tidy`
-  rw [eq_bot_iff]; rintro ⟨x, y⟩
-  simp only [fst, comap_bot, snd, mem_inf, mem_ker, snd_apply, fst_apply, mem_bot,
-    Prod.mk_eq_zero, and_comm, imp_self]
+  aesop
 
 theorem le_prod_iff {p₁ : Submodule R M} {p₂ : Submodule R M₂} {q : Submodule R (M × M₂)} :
     q ≤ p₁.prod p₂ ↔ map (LinearMap.fst R M M₂) q ≤ p₁ ∧ map (LinearMap.snd R M M₂) q ≤ p₂ := by
@@ -789,12 +772,12 @@ theorem range_prod_eq {f : M →ₗ[R] M₂} {g : M →ₗ[R] M₃} (h : ker f �
     Prod.forall, Pi.prod]
   rintro _ _ x rfl y rfl
   -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specify `(f := f)`
-  simp only [Prod.mk.inj_iff, ← sub_mem_ker_iff (f := f)]
+  simp only [Prod.mk_inj, ← sub_mem_ker_iff (f := f)]
   have : y - x ∈ ker f ⊔ ker g := by simp only [h, mem_top]
   rcases mem_sup.1 this with ⟨x', hx', y', hy', H⟩
   refine ⟨x' + x, ?_, ?_⟩
   · rwa [add_sub_cancel_right]
-  · simp [← eq_sub_iff_add_eq.1 H, map_add, add_left_inj, self_eq_add_right, mem_ker.mp hy']
+  · simp [← eq_sub_iff_add_eq.1 H, map_add, add_left_inj, left_eq_add, mem_ker.mp hy']
 
 end LinearMap
 

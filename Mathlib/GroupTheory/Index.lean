@@ -5,9 +5,9 @@ Authors: Thomas Browning
 -/
 import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 import Mathlib.Data.Finite.Card
+import Mathlib.Data.Finite.Prod
 import Mathlib.Data.Set.Card
 import Mathlib.GroupTheory.Coset.Card
-import Mathlib.GroupTheory.Finiteness
 import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.GroupTheory.QuotientGroup.Basic
 
@@ -35,6 +35,7 @@ Several theorems proved in this file are known as Lagrange's theorem.
 - `MulAction.index_stabilizer`: the index of the stabilizer is the cardinality of the orbit
 -/
 
+assert_not_exists Field
 
 namespace Subgroup
 
@@ -176,7 +177,6 @@ theorem sq_mem_of_index_two (h : H.index = 2) (a : G) : a ^ 2 ∈ H :=
 
 variable (H K)
 
--- Porting note: had to replace `Cardinal.toNat_eq_one_iff_unique` with `Nat.card_eq_one_iff_unique`
 @[to_additive (attr := simp)]
 theorem index_top : (⊤ : Subgroup G).index = 1 :=
   Nat.card_eq_one_iff_unique.mpr ⟨QuotientGroup.subsingleton_quotient_top, ⟨1⟩⟩
@@ -360,7 +360,6 @@ theorem index_iInf_ne_zero {ι : Type*} [Finite ι] {f : ι → Subgroup G}
 theorem index_iInf_le {ι : Type*} [Fintype ι] (f : ι → Subgroup G) :
     (⨅ i, f i).index ≤ ∏ i, (f i).index := by simp_rw [← relindex_top_right, relindex_iInf_le]
 
--- Porting note: had to replace `Cardinal.toNat_eq_one_iff_unique` with `Nat.card_eq_one_iff_unique`
 @[to_additive (attr := simp) index_eq_one]
 theorem index_eq_one : H.index = 1 ↔ H = ⊤ :=
   ⟨fun h =>
@@ -389,7 +388,6 @@ theorem index_ne_zero_of_finite [hH : Finite (G ⧸ H)] : H.index ≠ 0 := by
   rw [index_eq_card]
   exact Nat.card_pos.ne'
 
--- Porting note: changed due to error with `Cardinal.toNat_apply_of_aleph0_le`
 /-- Finite index implies finite quotient. -/
 @[to_additive "Finite index implies finite quotient."]
 noncomputable def fintypeOfIndexNeZero (hH : H.index ≠ 0) : Fintype (G ⧸ H) :=
@@ -467,12 +465,15 @@ lemma pow_mem_of_relindex_ne_zero_of_dvd (h : H.relindex K ≠ 0) {a : G} (ha : 
   convert pow_mem_of_index_ne_zero_of_dvd h ⟨a, ha⟩ hn
   simp [pow_mem ha, mem_subgroupOf]
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) index_prod]
 lemma index_prod (H : Subgroup G) (K : Subgroup G') : (H.prod K).index = H.index * K.index := by
   simp_rw [index, ← Nat.card_prod]
   refine Nat.card_congr
     ((Quotient.congrRight (fun x y ↦ ?_)).trans (Setoid.prodQuotientEquiv _ _).symm)
   rw [QuotientGroup.leftRel_prod]
+
+@[deprecated (since := "2025-03-11")]
+alias _root_.AddSubgroup.index_sum := AddSubgroup.index_prod
 
 @[to_additive (attr := simp)]
 lemma index_pi {ι : Type*} [Fintype ι] (H : ι → Subgroup G) :
@@ -587,18 +588,6 @@ instance finiteIndex_normalCore [H.FiniteIndex] : H.normalCore.FiniteIndex := by
   rw [normalCore_eq_ker]
   infer_instance
 
-variable (G)
-
-instance finiteIndex_center [Finite (commutatorSet G)] [Group.FG G] : FiniteIndex (center G) := by
-  obtain ⟨S, -, hS⟩ := Group.rank_spec G
-  exact ⟨mt (Finite.card_eq_zero_of_embedding (quotientCenterEmbedding hS)) Finite.card_pos.ne'⟩
-
-theorem index_center_le_pow [Finite (commutatorSet G)] [Group.FG G] :
-    (center G).index ≤ Nat.card (commutatorSet G) ^ Group.rank G := by
-  obtain ⟨S, hS1, hS2⟩ := Group.rank_spec G
-  rw [← hS1, ← Fintype.card_coe, ← Nat.card_eq_fintype_card, ← Finset.coe_sort_coe, ← Nat.card_fun]
-  exact Finite.card_le_of_embedding (quotientCenterEmbedding hS2)
-
 end FiniteIndex
 
 end Subgroup
@@ -619,6 +608,14 @@ variable (G : Type*) {X : Type*} [Group G] [MulAction G X] (x : X)
 end MulAction
 
 namespace MonoidHom
+
+@[to_additive AddMonoidHom.surjective_of_card_ker_le_div]
+lemma surjective_of_card_ker_le_div {G M : Type*} [Group G] [Group M] [Finite G] [Finite M]
+    (f : G →* M) (h : Nat.card f.ker ≤ Nat.card G / Nat.card M) : Function.Surjective f := by
+  refine range_eq_top.1 <| SetLike.ext' <| Set.eq_of_subset_of_ncard_le (Set.subset_univ _) ?_
+  rw [Subgroup.coe_top, Set.ncard_univ, ← Set.Nat.card_coe_set_eq, SetLike.coe_sort_coe,
+    ← Nat.card_congr (QuotientGroup.quotientKerEquivRange f).toEquiv]
+  exact Nat.le_of_mul_le_mul_left (f.ker.card_mul_index ▸ Nat.mul_le_of_le_div _ _ _ h) Nat.card_pos
 
 open Finset
 

@@ -290,12 +290,14 @@ lemma L₀X₂ToP_comp_φ₁ : S.L₀X₂ToP ≫ S.φ₁ = 0 := by
     pullback.lift_fst_assoc, w₀₂_τ₂, zero_comp]
 
 lemma L₀_g_δ : S.L₀.g ≫ S.δ = 0 := by
-  erw [← L₀X₂ToP_comp_pullback_snd, assoc, S.L₀'_exact.g_desc,
-    L₀X₂ToP_comp_φ₁_assoc, zero_comp]
+  rw [← L₀X₂ToP_comp_pullback_snd, assoc]
+  erw [S.L₀'_exact.g_desc]
+  rw [L₀X₂ToP_comp_φ₁_assoc, zero_comp]
 
 lemma δ_L₃_f : S.δ ≫ S.L₃.f = 0 := by
-  erw [← cancel_epi S.L₀'.g, S.L₀'_exact.g_desc_assoc, assoc, S.v₂₃.comm₁₂, S.φ₁_L₂_f_assoc,
-    φ₂, assoc, w₁₃_τ₂, comp_zero, comp_zero]
+  rw [← cancel_epi S.L₀'.g]
+  erw [S.L₀'_exact.g_desc_assoc]
+  simp [S.v₂₃.comm₁₂, φ₂]
 
 /-- The short complex `L₀.X₂ ⟶ L₀.X₃ ⟶ L₃.X₁`. -/
 @[simps]

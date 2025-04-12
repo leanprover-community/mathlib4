@@ -5,7 +5,7 @@ Authors: Michael Jendrusch, Kim Morrison
 -/
 import Mathlib.CategoryTheory.Monoidal.Functor
 import Mathlib.CategoryTheory.ChosenFiniteProducts
-import Mathlib.CategoryTheory.Limits.Shapes.Types
+import Mathlib.CategoryTheory.Limits.Types.Shapes
 
 /-!
 # The category of types is a (symmetric) monoidal category
@@ -101,6 +101,11 @@ theorem braiding_hom_apply {X Y : Type u} {x : X} {y : Y} :
 @[simp]
 theorem braiding_inv_apply {X Y : Type u} {x : X} {y : Y} :
     ((β_ X Y).inv : Y ⊗ X → X ⊗ Y) (y, x) = (x, y) :=
+  rfl
+
+@[simp]
+theorem ChosenFiniteProducts.lift_apply {X Y Z : Type u} {f : X ⟶ Y} {g : X ⟶ Z} {x : X} :
+    lift f g x = (f x, g x) :=
   rfl
 
 -- We don't yet have an API for tensor products indexed by finite ordered types,

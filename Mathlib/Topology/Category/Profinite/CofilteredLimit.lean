@@ -59,15 +59,15 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
 
   -- Since `U` is also closed, hence compact, it is covered by finitely many of the
   -- clopens constructed in the previous step.
-  have hUo : ∀ (i : ↑S), IsOpen ((fun s ↦ (forget Profinite).map (C.π.app (j s)) ⁻¹' V s) i) := by
+  have hUo : ∀ (i : ↑S), IsOpen ((fun s ↦ (C.π.app (j s)) ⁻¹' V s) i) := by
     intro s
     exact (hV s).1.2.preimage (C.π.app (j s)).hom.continuous
-  have hsU : U ⊆ ⋃ (i : ↑S), (fun s ↦ (forget Profinite).map (C.π.app (j s)) ⁻¹' V s) i := by
+  have hsU : U ⊆ ⋃ (i : ↑S), (fun s ↦ C.π.app (j s) ⁻¹' V s) i := by
     dsimp only
     rw [h]
     rintro x ⟨T, hT, hx⟩
     refine ⟨_, ⟨⟨T, hT⟩, rfl⟩, ?_⟩
-    dsimp only [ConcreteCategory.forget_map_eq_coe]
+    dsimp only
     rwa [← (hV ⟨T, hT⟩).2]
   have := hU.1.isCompact.elim_finite_subcover (fun s : S => C.π.app (j s) ⁻¹' V s) hUo hsU
   -- Porting note: same remark as after `hB`
@@ -114,8 +114,7 @@ theorem exists_locallyConstant_fin_two (hC : IsLimit C) (f : LocallyConstant C.p
   apply LocallyConstant.locallyConstant_eq_of_fiber_zero_eq
   simp only [Fin.isValue, Functor.const_obj_obj, LocallyConstant.coe_comap, Set.preimage_comp,
     LocallyConstant.ofIsClopen_fiber_zero]
-  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-  erw [← h]
+  exact h
 
 open Classical in
 theorem exists_locallyConstant_finite_aux {α : Type*} [Finite α] (hC : IsLimit C)
@@ -169,8 +168,9 @@ theorem exists_locallyConstant_finite_nonempty {α : Type*} [Finite α] [Nonempt
     rw [h]
     rfl
   have h2 : ∃ a : α, ι a = gg (C.π.app j x) := ⟨f x, h1⟩
-  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-  erw [dif_pos h2]
+  rw [dif_pos]
+  swap
+  · assumption
   apply_fun ι
   · rw [h2.choose_spec]
     exact h1

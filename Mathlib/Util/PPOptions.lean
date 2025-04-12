@@ -14,7 +14,7 @@ namespace Mathlib
 open Lean
 
 /--
-The `pp.mathlib.binderPredicates` option is used to contol whether mathlib pretty printers
+The `pp.mathlib.binderPredicates` option is used to control whether mathlib pretty printers
 should use binder predicate notation (such as `∀ x < 2, p x`).
 -/
 register_option pp.mathlib.binderPredicates : Bool := {

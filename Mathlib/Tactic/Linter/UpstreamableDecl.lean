@@ -27,11 +27,7 @@ Here, "definition" means everything that is not a theorem, and so includes `def`
 -/
 def Lean.Environment.localDefinitionDependencies (env : Environment) (stx id : Syntax) :
     CommandElabM Bool := do
-  let declName : NameSet ← try
-    NameSet.ofList <$> resolveGlobalConst id
-  catch _ =>
-    pure ∅
-
+  let declName ← getDeclName stx
   let immediateDeps ← getAllDependencies stx id
 
   -- Drop all the unresolvable constants, otherwise `transitivelyUsedConstants` fails.
@@ -48,7 +44,7 @@ def Lean.Environment.localDefinitionDependencies (env : Environment) (stx id : S
   -- whether the `ConstInfo` is a constructor declared in this piece of `Syntax`.)
   let defs := constInfos.filter (fun constInfo => !(constInfo.isTheorem || constInfo.isCtor))
 
-  return defs.any fun constInfo => !(declName.contains constInfo.name) && constInfo.name.isLocal env
+  return defs.any fun constInfo => declName != constInfo.name && constInfo.name.isLocal env
 
 namespace Mathlib.Linter
 
@@ -101,12 +97,11 @@ def upstreamableDeclLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let id ← getId stx
     if id != .missing then
       -- Skip defs and private decls by default.
-      let names ← resolveGlobalConst id
-      if (skipDef && names.any fun name =>
-         if let some constInfo := env.find? name
+      let name ← getDeclName stx
+      if (skipDef && if let some constInfo := env.find? name
          then !(constInfo.isTheorem || constInfo.isCtor)
          else true) ||
-         (skipPrivate && names.any isPrivateName) then
+       (skipPrivate && isPrivateName name) then
         return
 
       let minImports := getIrredundantImports env (← getAllImports stx id)

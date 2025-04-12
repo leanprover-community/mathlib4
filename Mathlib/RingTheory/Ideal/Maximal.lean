@@ -70,14 +70,11 @@ theorem exists_le_maximal (I : Ideal α) (hI : I ≠ ⊤) : ∃ M : Ideal α, M.
   let ⟨m, hm⟩ := (eq_top_or_exists_le_coatom I).resolve_left hI
   ⟨m, ⟨⟨hm.1⟩, hm.2⟩⟩
 
-variable (α)
-
+variable (α) in
 /-- Krull's theorem: a nontrivial ring has a maximal ideal. -/
 theorem exists_maximal [Nontrivial α] : ∃ M : Ideal α, M.IsMaximal :=
   let ⟨I, ⟨hI, _⟩⟩ := exists_le_maximal (⊥ : Ideal α) bot_ne_top
   ⟨I, hI⟩
-
-variable {α}
 
 instance [Nontrivial α] : Nontrivial (Ideal α) := by
   rcases@exists_maximal α _ _ with ⟨M, hM, _⟩
@@ -93,7 +90,7 @@ theorem maximal_of_no_maximal {P : Ideal α}
 
 theorem IsMaximal.exists_inv {I : Ideal α} (hI : I.IsMaximal) {x} (hx : x ∉ I) :
     ∃ y, ∃ i ∈ I, y * x + i = 1 := by
-  cases' isMaximal_iff.1 hI with H₁ H₂
+  obtain ⟨H₁, H₂⟩ := isMaximal_iff.1 hI
   rcases mem_span_insert.1
       (H₂ (span (insert x I)) x (Set.Subset.trans (subset_insert _ _) subset_span) hx
         (subset_span (mem_insert _ _))) with
@@ -102,7 +99,7 @@ theorem IsMaximal.exists_inv {I : Ideal α} (hI : I.IsMaximal) {x} (hx : x ∉ I
   rwa [← span_eq I]
 
 theorem sInf_isPrime_of_isChain {s : Set (Ideal α)} (hs : s.Nonempty) (hs' : IsChain (· ≤ ·) s)
-    (H : ∀ p ∈ s, Ideal.IsPrime p) : (sInf s).IsPrime :=
+    (H : ∀ p ∈ s, p.IsPrime) : (sInf s).IsPrime :=
   ⟨fun e =>
     let ⟨x, hx⟩ := hs
     (H x hx).ne_top (eq_top_iff.mpr (e.symm.trans_le (sInf_le hx))),
@@ -112,7 +109,7 @@ theorem sInf_isPrime_of_isChain {s : Set (Ideal α)} (hs : s.Nonempty) (hs' : Is
       push_neg at hx
       obtain ⟨I, hI, hI'⟩ := hx
       intro J hJ
-      cases' hs'.total hI hJ with h h
+      rcases hs'.total hI hJ with h | h
       · exact h (((H I hI).mem_or_mem (e hI)).resolve_left hI')
       · exact ((H J hJ).mem_or_mem (e hJ)).resolve_left fun x => hI' <| h x⟩
 
@@ -139,7 +136,7 @@ theorem IsMaximal.isPrime {I : Ideal α} (H : I.IsMaximal) : I.IsPrime :=
       let J : Ideal α := Submodule.span α (insert x ↑I)
       have IJ : I ≤ J := Set.Subset.trans (subset_insert _ _) subset_span
       have xJ : x ∈ J := Ideal.subset_span (Set.mem_insert x I)
-      cases' isMaximal_iff.1 H with _ oJ
+      obtain ⟨_, oJ⟩ := isMaximal_iff.1 H
       specialize oJ J x IJ hx xJ
       rcases Submodule.mem_span_insert.mp oJ with ⟨a, b, h, oe⟩
       obtain F : y * 1 = y * (a • x + b) := congr_arg (fun g : α => y * g) oe

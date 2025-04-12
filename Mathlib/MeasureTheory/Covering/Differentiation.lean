@@ -4,11 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.MeasureTheory.Covering.VitaliFamily
-import Mathlib.MeasureTheory.Measure.Regular
 import Mathlib.MeasureTheory.Function.AEMeasurableOrder
-import Mathlib.MeasureTheory.Integral.Lebesgue
 import Mathlib.MeasureTheory.Integral.Average
-import Mathlib.MeasureTheory.Decomposition.Lebesgue
+import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
+import Mathlib.MeasureTheory.Measure.Regular
 
 /-!
 # Differentiation of measures
@@ -888,7 +887,7 @@ theorem ae_tendsto_average_norm_sub {f : α → E} (hf : LocallyIntegrable f μ)
     ∀ᵐ x ∂μ, Tendsto (fun a => ⨍ y in a, ‖f y - f x‖ ∂μ) (v.filterAt x) (𝓝 0) := by
   filter_upwards [v.ae_tendsto_lintegral_enorm_sub_div hf] with x hx
   have := (ENNReal.tendsto_toReal ENNReal.zero_ne_top).comp hx
-  simp only [ENNReal.zero_toReal] at this
+  simp only [ENNReal.toReal_zero] at this
   apply Tendsto.congr' _ this
   filter_upwards [v.eventually_measure_lt_top x, v.eventually_filterAt_integrableOn x hf]
     with a h'a h''a

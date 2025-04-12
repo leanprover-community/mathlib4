@@ -57,7 +57,7 @@ attribute [reassoc] map_comp
 
 variable (M M₁ M₂ : PresheafOfModules.{v} R)
 
-lemma map_smul {X Y : Cᵒᵖ} (f : X ⟶ Y) (r : R.obj X) (m : M.obj X) :
+protected lemma map_smul {X Y : Cᵒᵖ} (f : X ⟶ Y) (r : R.obj X) (m : M.obj X) :
     M.map f (r • m) = R.map f r • M.map f m := by simp
 
 lemma congr_map_apply {X Y : Cᵒᵖ} {f g : X ⟶ Y} (h : f = g) (m : M.obj X) :
@@ -97,7 +97,7 @@ lemma comp_app {M₁ M₂ M₃ : PresheafOfModules R} (f : M₁ ⟶ M₂) (g : M
 
 lemma naturality_apply (f : M₁ ⟶ M₂) {X Y : Cᵒᵖ} (g : X ⟶ Y) (x : M₁.obj X) :
     Hom.app f Y (M₁.map g x) = M₂.map g (Hom.app f X x) :=
-  congr_fun ((forget _).congr_map (Hom.naturality f g)) x
+  CategoryTheory.congr_fun (Hom.naturality f g) x
 
 /-- Constructor for isomorphisms in the category of presheaves of modules. -/
 @[simps!]
@@ -190,7 +190,7 @@ def homMk (φ : M₁.presheaf ⟶ M₂.presheaf)
       map_smul' := hφ X }
   naturality := fun f ↦ by
     ext x
-    exact congr_fun ((forget _).congr_map (φ.naturality f)) x
+    exact CategoryTheory.congr_fun (φ.naturality f) x
 
 instance : Zero (M₁ ⟶ M₂) where
   zero := { app := fun _ ↦ 0 }
