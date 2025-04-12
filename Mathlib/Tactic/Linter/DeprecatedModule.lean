@@ -73,8 +73,9 @@ suggesting to instead import the *direct imports* of `A`.
 -/
 elab (name := deprecated_modules)
     "deprecated_module " &"since " yyyy:num "-" mm:num "-" dd:num : command => do
-  if yyyy.getNat < 2025 then
-    throwErrorAt yyyy "The year should be at least 2025!"
+  let year := 2025
+  if yyyy.getNat < year then
+    throwErrorAt yyyy "The year should be at least {year}!"
   if mm.getNat == 0 || 12 < mm.getNat || mm.raw.getSubstring?.get!.toString.trim.length != 2 then
     throwErrorAt mm "The month should be of the form 01, 02, ..., 12!"
   if dd.getNat == 0 || 31 < dd.getNat || dd.raw.getSubstring?.get!.toString.trim.length != 2 then
