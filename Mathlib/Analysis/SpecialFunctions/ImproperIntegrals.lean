@@ -62,43 +62,28 @@ theorem integrableOn_exp_mul_complex_Ioi {a : ℂ} (ha : a.re < 0) (c : ℝ) :
   refine (integrable_norm_iff ?_).mp ?_
   · apply Continuous.aestronglyMeasurable
     fun_prop
-  · conv in (fun x => _) =>
-      ext x
-      rw [(by simp [Complex.norm_exp] : ‖Complex.exp (a * x)‖ = exp (-(-a.re * x)))]
-    have a_neg : 0 < -a.re := by simp [ha]
-    apply (integrableOn_Ioi_comp_mul_left_iff (fun x => exp (-x)) c a_neg).mpr
-    apply integrableOn_exp_neg_Ioi
+  · simpa [Complex.norm_exp] using
+      (integrableOn_Ioi_comp_mul_left_iff (fun x => exp (-x)) c (a := -a.re) (by simpa)).mpr <|
+        integrableOn_exp_neg_Ioi _
 
 theorem integrableOn_exp_mul_complex_Iic {a : ℂ} (ha : 0 < a.re) (c : ℝ) :
     IntegrableOn (fun x : ℝ => Complex.exp (a * x)) (Iic c) := by
-  conv in (fun x => _) =>
-    ext x
-    rw [(by simp : a * x = -a * (-x : ℝ))]
-  have a_neg : (-a).re < 0 := by simp [ha]
-  exact (integrableOn_exp_mul_complex_Ioi a_neg (-c)).comp_neg_Iic
+  simpa using (integrableOn_exp_mul_complex_Ioi (a := -a) (by simpa) (-c)).comp_neg_Iic
 
 theorem integral_exp_mul_complex_Ioi {a : ℂ} (ha : a.re < 0) (c : ℝ) :
     ∫ x : ℝ in Set.Ioi c, Complex.exp (a * x) = - Complex.exp (a * c) / a := by
-  refine
-    tendsto_nhds_unique (intervalIntegral_tendsto_integral_Ioi c
-      (integrableOn_exp_mul_complex_Ioi ha c) tendsto_id) ?_
-  have nonzero : a ≠ 0 := fun h => (Complex.zero_re ▸ h ▸ ha).false
-  simp_rw [integral_exp_mul_complex nonzero, id_eq]
-  rw [(by simp : - Complex.exp (a * c) / a = (0 - Complex.exp (a * c)) / a)]
-  refine Tendsto.div_const (Tendsto.sub_const ?_ _) _
-  apply Complex.tendsto_exp_nhds_zero_iff.mpr
-  simp only [Complex.mul_re, Complex.ofReal_re, Complex.ofReal_im, mul_zero, sub_zero]
-  exact Tendsto.neg_mul_atTop ha tendsto_const_nhds tendsto_id
+  refine tendsto_nhds_unique (intervalIntegral_tendsto_integral_Ioi c
+    (integrableOn_exp_mul_complex_Ioi ha c) tendsto_id) ?_
+  simp_rw [integral_exp_mul_complex (c := a) (by aesop), id_eq]
+  suffices Tendsto (fun x : ℝ ↦ Complex.exp (a * x)) atTop (𝓝 0) by
+    simpa using this.sub_const _ |>.div_const _
+  simpa [Complex.tendsto_exp_nhds_zero_iff] using tendsto_const_nhds.neg_mul_atTop ha tendsto_id
 
 theorem integral_exp_mul_complex_Iic {a : ℂ} (ha : 0 < a.re) (c : ℝ) :
     ∫ x : ℝ in Set.Iic c, Complex.exp (a * x) = Complex.exp (a * c) / a := by
-  conv in (fun x => _) =>
-    ext x
-    rw [(by simp : a * x = -a * (-x : ℝ))]
-  rw [integral_comp_neg_Iic c (fun x => Complex.exp (-a * x))]
-  have a_neg : (-a).re < 0 := by simp [ha]
-  rw [integral_exp_mul_complex_Ioi a_neg]
-  simp
+  simpa [neg_mul, ← mul_neg, ← Complex.ofReal_neg,
+    integral_comp_neg_Ioi (f := fun x : ℝ ↦ Complex.exp (a * x))]
+    using integral_exp_mul_complex_Ioi (a := -a) (by simpa) (-c)
 
 /-- If `0 < c`, then `(fun t : ℝ ↦ t ^ a)` is integrable on `(c, ∞)` for all `a < -1`. -/
 theorem integrableOn_Ioi_rpow_of_lt {a : ℝ} (ha : a < -1) {c : ℝ} (hc : 0 < c) :
