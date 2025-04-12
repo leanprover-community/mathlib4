@@ -29,9 +29,7 @@ which `x` and `y` commute. Even versions not using division or subtraction, vali
 are recorded.
 -/
 
-universe u v
-
-variable {R : Type u} {K : Type v}
+variable {R K : Type*}
 
 open Finset MulOpposite
 
