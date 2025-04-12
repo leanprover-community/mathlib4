@@ -310,11 +310,9 @@ lemma CompleteOrthogonalIdempotents.lift_of_isNilpotent_ker_aux
   refine ⟨_, (equiv (finSuccEquiv n)).mpr
     (CompleteOrthogonalIdempotents.option (h₁.embedding (Fin.succEmb _))), funext fun i ↦ ?_⟩
   have (i) : f (e' i) = e i := congr_fun h₂ i
-  obtain ⟨_ | i, rfl⟩ := (finSuccEquiv n).symm.surjective i
-  · simp only [Fin.val_succEmb, Function.comp_apply, finSuccEquiv_symm_none, finSuccEquiv_zero,
-      Option.elim_none, map_sub, map_one, map_sum, this, ← he.complete, sub_eq_iff_eq_add,
-      Fin.sum_univ_succ]
-  · simp [this]
+  cases i using Fin.cases with
+  | zero => simp [this, Fin.sum_univ_succ, ← he.complete]
+  | succ i => simp [this]
 
 /-- A system of complete orthogonal idempotents lift along nil ideals. -/
 lemma CompleteOrthogonalIdempotents.lift_of_isNilpotent_ker
