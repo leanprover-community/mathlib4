@@ -5,6 +5,7 @@ Authors: Antoine Chambert-Loir
 -/
 
 import Mathlib.GroupTheory.GroupAction.SubMulAction.OfStabilizer
+import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 
 
 /-!
