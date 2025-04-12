@@ -131,7 +131,7 @@ def deprecated.moduleLinter : Linter where run := withSetOptionIn fun stx ↦ do
     for (nmStx, _) in modulesWithNames.filter (·.2 == i) do
       Linter.logLint linter.deprecated.module nmStx
         m!"'{nmStx}' has been deprecated: please replace this import by\n\n\
-          {String.join <| (preferred.foldl (·.push s!"import {·}\n") #[]).toList}"
+          {String.join (preferred.foldl (·.push s!"import {·}\n") #[]).toList}"
 
 initialize addLinter deprecated.moduleLinter
 
