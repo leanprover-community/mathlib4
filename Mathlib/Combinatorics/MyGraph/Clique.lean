@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Combinatorics.MyGraph.Path
-import Mathlib.Combinatorics.MyGraph.Operations
+import Mathlib.Combinatorics.MyGraph.OperationsSpanning
 import Mathlib.Data.Finset.Pairwise
 import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.Data.Fintype.Powerset
@@ -15,7 +15,8 @@ import Mathlib.Data.Nat.Lattice
 
 This file defines cliques in simple graphs.
 A clique is a set of vertices that are pairwise adjacent.
-
+We don't treat 1 - cliques correctly yet: we call `{v}` a `1` - clique as long as `v : V`
+rather than req∈ing `v ∈ G.verts`
 ## Main declarations
 
 * `MyGraph.IsClique`: Predicate for a set of vertices to be a clique.
@@ -41,8 +42,15 @@ variable {s t : Set α}
 abbrev IsClique (s : Set α) : Prop :=
   s.Pairwise G.Adj
 
+
 theorem isClique_iff : G.IsClique s ↔ s.Pairwise G.Adj :=
   Iff.rfl
+
+@[simp]
+lemma isClique_iff_toSpanning {G : MyGraph α} {s : Set α} :
+    G.toSpanning.IsClique s ↔ G.IsClique s := by
+  simp [isClique_iff]
+
 
 /-- A clique is a set of vertices whose induced graph is complete. -/
   -- theorem isClique_iff_induce_eq : G.IsClique s ↔ G.induce s = ⊤ := by
@@ -65,6 +73,7 @@ variable {G H} {a b : α}
 
 lemma isClique_empty : G.IsClique ∅ := by simp
 
+/-- We ignore the G.verts   -/
 lemma isClique_singleton (a : α) : G.IsClique {a} := by simp
 
 theorem IsClique.of_subsingleton {G : MyGraph α} (hs : s.Subsingleton) : G.IsClique s :=
@@ -92,6 +101,11 @@ theorem IsClique.subset (h : t ⊆ s) : G.IsClique s → G.IsClique t := Set.Pai
 
 @[simp]
 theorem isClique_bot_iff : (⊥ : MyGraph α).IsClique s ↔ (s : Set α).Subsingleton :=
+  Set.pairwise_bot_iff
+
+@[simp]
+theorem _root_.SpanningGraph.isClique_bot_iff :
+    (⊥ : SpanningGraph α).IsClique s ↔ (s : Set α).Subsingleton :=
   Set.pairwise_bot_iff
 
 alias ⟨IsClique.subsingleton, _⟩ := isClique_bot_iff
@@ -151,6 +165,49 @@ theorem isClique_map_finset_iff :
 protected theorem IsClique.finsetMap {f : α ↪ β} {s : Finset α} (h : G.IsClique s) :
     (G.map f).IsClique (s.map f) := by
   simpa
+section Spanning
+open SpanningGraph
+variable {G : SpanningGraph α}
+
+protected theorem _root_.SpanningGraph.IsClique.map (h : G.IsClique s) {f : α ↪ β} :
+    (G.map f).IsClique (f '' s) := by simp [h]
+
+@[simp]
+protected theorem _root_.SpanningGraph.IsClique.map_iff {f : α ↪ β} {s : Set β}:
+    (G.map f).IsClique s ↔ ((G : MyGraph α).map f).IsClique s  := by
+  simp
+
+theorem _root_.SpanningGraph.isClique_map_iff_of_nontrivial {f : α ↪ β} {t : Set β}
+    (ht : t.Nontrivial) :
+    (G.map f).IsClique t ↔ ∃ (s : Set α), G.IsClique s ∧ f '' s = t := by
+  simp [MyGraph.isClique_map_iff_of_nontrivial ht]
+
+theorem _root_.SpanningGraph.isClique_map_iff {f : α ↪ β} {t : Set β} :
+    (G.map f).IsClique t ↔ t.Subsingleton ∨ ∃ (s : Set α), G.IsClique s ∧ f '' s = t := by
+  simp only [map_eq_toSpanning, isClique_iff_toSpanning]
+  exact MyGraph.isClique_map_iff
+
+@[simp]
+theorem _root_.SpanningGraph.isClique_map_image_iff {f : α ↪ β} :
+    (G.map f).IsClique (f '' s) ↔ G.IsClique s := by
+  simp
+
+variable {f : α ↪ β} {t : Finset β}
+
+theorem _root_.SpanningGraph.isClique_map_finset_iff_of_nontrivial (ht : t.Nontrivial) :
+    (G.map f).IsClique t ↔ ∃ (s : Finset α), G.IsClique s ∧ s.map f = t := by
+  simp [MyGraph.isClique_map_finset_iff_of_nontrivial ht]
+
+theorem _root_.SpanningGraph.isClique_map_finset_iff :
+    (G.map f).IsClique t ↔ #t ≤ 1 ∨ ∃ (s : Finset α), G.IsClique s ∧ s.map f = t := by
+  simp only [map_eq_toSpanning, isClique_iff_toSpanning]
+  exact MyGraph.isClique_map_finset_iff
+
+protected theorem _root_.SpanningGraph.IsClique.finsetMap {f : α ↪ β} {s : Finset α}
+   (h : G.IsClique s) : (G.map f).IsClique (s.map f) := by
+  simpa
+
+end Spanning
 
 -- /-- If a set of vertices `A` is a clique in subgraph of `G` induced by a superset of `A`,
 --  its embedding is a clique in `G`. -/
@@ -160,11 +217,16 @@ protected theorem IsClique.finsetMap {f : α ↪ β} {s : Finset α} (h : G.IsCl
 --   intro _ ⟨_, ainA⟩ _ ⟨_, binA⟩ anb
 --   exact S.adj_sub (c ainA binA (Subtype.coe_ne_coe.mp anb)).2.2
 
-lemma IsClique.sdiff_of_sup_edge {v w : α} {s : Set α} (hc : (G ⊔ edge v w).IsClique s) :
-    G.IsClique (s \ {v}) := by
+section Spanning
+open SpanningGraph
+
+
+variable {G : SpanningGraph α}
+lemma IsClique.sdiff_of_sup_edge {v w : α} {s : Set α}
+   (hc : (G ⊔ edge v w).IsClique s) : G.IsClique (s \ {v}) := by
   intro _ hx _ hy hxy
   have := hc hx.1 hy.1 hxy
-  simp_all [sup_adj, edge_adj]
+  simp_all [coe_sup, sup_adj, edge_adj]
 
 lemma isClique_sup_edge_of_ne_sdiff {v w : α} {s : Set α} (h : v ≠ w ) (hv : G.IsClique (s \ {v}))
     (hw : G.IsClique (s \ {w})) : (G ⊔ edge v w).IsClique s := by
@@ -180,6 +242,7 @@ lemma isClique_sup_edge_of_ne_iff {v w : α} {s : Set α} (h : v ≠ w) :
   ⟨fun h' ↦ ⟨h'.sdiff_of_sup_edge, (edge_comm .. ▸ h').sdiff_of_sup_edge⟩,
     fun h' ↦ isClique_sup_edge_of_ne_sdiff h h'.1 h'.2⟩
 
+end Spanning
 end Clique
 
 /-! ### `n`-cliques -/
@@ -196,6 +259,13 @@ structure IsNClique (n : ℕ) (s : Finset α) : Prop where
 
 theorem isNClique_iff : G.IsNClique n s ↔ G.IsClique s ∧ #s = n :=
   ⟨fun h ↦ ⟨h.1, h.2⟩, fun h ↦ ⟨h.1, h.2⟩⟩
+
+
+@[simp]
+lemma isNClique_iff_toSpanning {G : MyGraph α} {s : Finset α} {n : ℕ} :
+    G.toSpanning.IsNClique n s ↔ G.IsNClique n s := by
+  simp [isNClique_iff]
+
 
 instance [DecidableEq α] [DecidableRel G.Adj] {n : ℕ} {s : Finset α} :
     Decidable (G.IsNClique n s) :=
@@ -229,6 +299,15 @@ theorem isNClique_map_iff (hn : 1 < n) {t : Finset β} {f : α ↪ β} :
 @[simp]
 theorem isNClique_bot_iff : (⊥ : MyGraph α).IsNClique n s ↔ n ≤ 1 ∧ #s = n := by
   rw [isNClique_iff, isClique_bot_iff]
+  refine and_congr_left ?_
+  rintro rfl
+  exact card_le_one.symm
+
+
+@[simp]
+theorem _root_.SpanningGraph.isNClique_bot_iff :
+  (⊥ : SpanningGraph α).IsNClique n s ↔ n ≤ 1 ∧ #s = n := by
+  rw [isNClique_iff, SpanningGraph.isClique_bot_iff]
   refine and_congr_left ?_
   rintro rfl
   exact card_le_one.symm
@@ -296,12 +375,16 @@ theorem is3Clique_iff_exists_cycle_length_three :
 --   rw [isNClique_iff] at cc ⊢
 --   simp only [Subgraph.induce_verts, coe_map, card_map]
 --   exact ⟨cc.left.of_induce, cc.right⟩
+section Spanning
+open SpanningGraph
+variable {G : SpanningGraph α}
 
 lemma IsNClique.erase_of_sup_edge_of_mem [DecidableEq α] {v w : α} {s : Finset α} {n : ℕ}
     (hc : (G ⊔ edge v w).IsNClique n s) (hx : v ∈ s) : G.IsNClique (n - 1) (s.erase v) where
   isClique := coe_erase v _ ▸ hc.1.sdiff_of_sup_edge
   card_eq  := by rw [card_erase_of_mem hx, hc.2]
 
+end Spanning
 end NClique
 
 /-! ### Graphs without cliques -/
@@ -369,6 +452,13 @@ theorem cliqueFree_bot (h : 2 ≤ n) : (⊥ : MyGraph α).CliqueFree n := by
   have := le_trans h (isNClique_bot_iff.1 ht).1
   contradiction
 
+@[simp]
+theorem _root_.SpanningGraph.cliqueFree_bot (h : 2 ≤ n) : (⊥ : SpanningGraph α).CliqueFree n := by
+  intro t ht
+  have := le_trans h (SpanningGraph.isNClique_bot_iff.1 ht).1
+  contradiction
+
+
 theorem CliqueFree.mono (h : m ≤ n) : G.CliqueFree m → G.CliqueFree n := by
   intro hG s hs
   obtain ⟨t, hts, ht⟩ := exists_subset_card_eq (h.trans hs.card_eq.ge)
@@ -406,9 +496,12 @@ theorem cliqueFree_completeMultipartiteGraph {ι : Type*} [Fintype ι] (V : ι �
   rw [← top_adj, ← f.map_adj_iff, comap_adj, top_adj] at hn
   exact absurd he hn
 
+section Spanning
+open SpanningGraph
+variable {G : SpanningGraph α}
 /-- Clique-freeness is preserved by `replaceVertex`. -/
 protected theorem CliqueFree.replaceVertex [DecidableEq α] (h : G.CliqueFree n) (s t : α)
-    (ht : t ∈ G.verts) : (G.replaceVertex s t ht).CliqueFree n := by
+    : (G.replaceVertex s t).CliqueFree n := by
   contrapose h
   obtain ⟨φ, hφ⟩ := topEmbeddingOfNotCliqueFree h
   rw [not_cliqueFree_iff]
@@ -421,6 +514,7 @@ protected theorem CliqueFree.replaceVertex [DecidableEq α] (h : G.CliqueFree n)
       simp_rw [← hx, e, hy, replaceVertex_self, not_cliqueFree_iff] at h
       exact h
     · unfold replaceVertex at hφ
+      dsimp at hφ
       use φ.setValue x s
       intro a b
       simp only [Embedding.coeFn_mk, Embedding.setValue, not_exists.mp ms, ite_false]
@@ -430,7 +524,7 @@ protected theorem CliqueFree.replaceVertex [DecidableEq α] (h : G.CliqueFree n)
     simp_rw [Set.mem_range, not_exists, ← ne_eq] at mt
     conv at hφ => enter [a, b]; rw [G.adj_replaceVertex_iff_of_ne _ (mt a) (mt b)]
     exact hφ
-
+end Spanning
 @[simp]
 lemma cliqueFree_one : G.CliqueFree 1 ↔ IsEmpty α := by
   simp [CliqueFree, isEmpty_iff]
@@ -445,7 +539,10 @@ theorem cliqueFree_two : G.CliqueFree 2 ↔ G.edgeSet = ∅ := by
     rw [card_eq_two] at h2
     obtain ⟨x, y, hne, rfl⟩ := h2
     exact h <| hc (by simp) (by simp) hne
+section Spanning
 
+open SpanningGraph
+variable {G : SpanningGraph α}
 lemma CliqueFree.mem_of_sup_edge_isNClique {x y : α} {t : Finset α} {n : ℕ} (h : G.CliqueFree n)
     (hc : (G ⊔ edge x y).IsNClique n t) : x ∈ t := by
   by_contra! hf
@@ -459,6 +556,7 @@ protected theorem CliqueFree.sup_edge (h : G.CliqueFree n) (v w : α) :
   fun _ hs ↦ (hs.erase_of_sup_edge_of_mem <|
     (h.mono n.le_succ).mem_of_sup_edge_isNClique hs).not_cliqueFree h
 
+end Spanning
 end CliqueFree
 
 section CliqueFreeOn
@@ -536,6 +634,11 @@ theorem mem_cliqueSet_iff : s ∈ G.cliqueSet n ↔ G.IsNClique n s :=
   Iff.rfl
 
 @[simp]
+lemma cliqueSet_toSpanning {G : MyGraph α}  :
+    G.toSpanning.cliqueSet n = G.cliqueSet n := by
+  ext; simp
+
+@[simp]
 theorem cliqueSet_eq_empty_iff : G.cliqueSet n = ∅ ↔ G.CliqueFree n := by
   simp_rw [CliqueFree, Set.eq_empty_iff_forall_not_mem, mem_cliqueSet_iff]
 
@@ -579,12 +682,24 @@ theorem cliqueSet_map (hn : n ≠ 1) (G : MyGraph α) (f : α ↪ β) :
     exact hs.map
 
 @[simp]
+theorem _root_.SpanningGraph.cliqueSet_map (hn : n ≠ 1) (G : SpanningGraph α) (f : α ↪ β) :
+    (G.map f).cliqueSet n = map f '' G.cliqueSet n := by
+  simp only [SpanningGraph.map_eq_toSpanning, cliqueSet_toSpanning]
+  exact MyGraph.cliqueSet_map hn _ _
+
+
+@[simp]
 theorem cliqueSet_map_of_equiv (G : MyGraph α) (e : α ≃ β) (n : ℕ) :
     (G.map e.toEmbedding).cliqueSet n = map e.toEmbedding '' G.cliqueSet n := by
   obtain rfl | hn := eq_or_ne n 1
   · ext
     simp [e.exists_congr_left]
   · exact cliqueSet_map hn _ _
+
+section Spanning
+
+
+end Spanning
 
 end CliqueSet
 

@@ -23,8 +23,6 @@ structure MyGraph (V : Type u)  where
 
 initialize_simps_projections MyGraph (Adj → adj)
 
-initialize_simps_projections MyGraph (verts → verts)
-
 namespace MyGraph
 
 variable {G₁ G₂ : MyGraph V} {a b : V}
@@ -74,7 +72,7 @@ theorem adj_congr_of_sym2 {H : MyGraph V} {u v w x : V} (h2 : s(u, v) = s(w, x))
 
 /-- A MyGraph is called a *spanning MyGraph* if it contains all the vertices of `G`. -/
 def IsSpanning (G : MyGraph V) : Prop :=
-  ∀ v : V, v ∈ G.verts
+  G.verts = Set.univ
 
 
 def toSpanning (G : MyGraph V) : MyGraph V where
@@ -90,6 +88,7 @@ lemma toSpanning_verts {G : MyGraph V} : G.toSpanning.verts = Set.univ := rfl
 @[simp]
 lemma toSpanning_adj {G : MyGraph V} : G.toSpanning.Adj = G.Adj := rfl
 
+
 @[simp]
 lemma toSpanning_eq_iff : G.toSpanning = G ↔ G.verts = Set.univ := by
   constructor <;> intro h
@@ -98,9 +97,7 @@ lemma toSpanning_eq_iff : G.toSpanning = G ↔ G.verts = Set.univ := by
   · rw [MyGraph.ext_iff, toSpanning_verts, toSpanning_adj]
     exact ⟨h.symm, rfl⟩
 
-
-theorem isSpanning_iff {G : MyGraph V} : G.IsSpanning ↔ G.verts = Set.univ :=
-  Set.eq_univ_iff_forall.symm
+theorem isSpanning_iff {G : MyGraph V} : G.IsSpanning ↔ G.verts = Set.univ := Iff.rfl
 
 protected alias ⟨IsSpanning.verts_eq_univ, _⟩ := isSpanning_iff
 
@@ -151,6 +148,9 @@ lemma edgeSet_eq_iff  {G H : MyGraph V} : G.edgeSet = H.edgeSet ↔ G.Adj = H.Ad
   constructor <;> intro h
   · exact le_antisymm (edgeSet_subset_edgeSet.1 h.le) (edgeSet_subset_edgeSet.1 h.symm.le)
   · exact le_antisymm (edgeSet_subset_edgeSet.2 h.le) (edgeSet_subset_edgeSet.2 h.symm.le)
+
+@[simp]
+lemma toSpanning_edgeSet {G : MyGraph V} : G.toSpanning.edgeSet = G.edgeSet := rfl
 
 lemma edgeSet_eq_empty_iff {G : MyGraph V} : G.edgeSet = ∅  ↔ ∀ {u v}, ¬ G.Adj u v := by
   rw [Set.eq_empty_iff_forall_not_mem]
@@ -669,6 +669,12 @@ instance fintypeEdgeSet [Fintype (Sym2 V)] [DecidableRel G.Adj] : Fintype G.edge
 
 instance fintypeEdgeSetBot : Fintype (⊥ : MyGraph V).edgeSet := by
   rw [edgeSet_bot]
+  infer_instance
+
+
+instance fintypeEdgeSetTop [DecidableEq V] [Fintype (Sym2 V)] :
+    Fintype (⊤ : MyGraph V).edgeSet := by
+  rw [edgeSet_top]
   infer_instance
 
 instance fintypeEdgeSetSup [DecidableEq V] [Fintype G₁.edgeSet] [Fintype G₂.edgeSet] :

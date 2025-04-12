@@ -134,43 +134,6 @@ theorem edgeFinset_deleteEdges [DecidableEq V] [Fintype G.edgeSet] (s : Finset (
   ext e
   simp [edgeSet_deleteEdges]
 
-section DeleteFar
-
-variable {𝕜 : Type*} [Ring 𝕜] [PartialOrder 𝕜]
-  [Fintype G.edgeSet] {p : MyGraph V → Prop} {r r₁ r₂ : 𝕜}
-
-/-- A graph is `r`-*delete-far* from a property `p` if we must delete at least `r` edges from it to
-get a graph with the property `p`. -/
-def DeleteFar (p : MyGraph V → Prop) (r : 𝕜) : Prop :=
-  ∀ ⦃s⦄, s ⊆ G.edgeFinset → p (G.deleteEdges s) → r ≤ #s
-
-variable {G}
-/-- This needs changing to take account of G.verts. -/
-theorem deleteFar_iff [Fintype (Sym2 V)] :
-    G.DeleteFar p r ↔ ∀ ⦃H : MyGraph _⦄ [DecidableRel H.Adj],
-      H.edgeFinset ⊆ G.edgeFinset → p H → r ≤ #G.edgeFinset - #H.edgeFinset := by
-  sorry
-  -- classical
-  -- refine ⟨fun h H _ hHG hH ↦ ?_, fun h s hs hG ↦ ?_⟩
-  -- · have : p (G.deleteEdges ↑(G.edgeFinset \ H.edgeFinset)) := by
-
-  --     sorry
-  --   apply (h (sdiff_subset (t := H.edgeFinset)) this).trans
-  --   rw [card_sdiff hHG, Nat.cast_sub]
-  --   exact card_le_card hHG
-
-  -- · classical
-  --   have := h (G.deleteEdges_le s).2 hG
-  --   simpa [card_sdiff hs, edgeFinset_deleteEdges, -Set.toFinset_card, Nat.cast_sub,
-  --     card_le_card hs] using h (G.deleteEdges_le s).2 hG
-
-alias ⟨DeleteFar.le_card_sub_card, _⟩ := deleteFar_iff
-
-theorem DeleteFar.mono (h : G.DeleteFar p r₂) (hr : r₁ ≤ r₂) : G.DeleteFar p r₁ := fun _ hs hG =>
-  hr.trans <| h hs hG
-
-end DeleteFar
-
 section FiniteAt
 
 /-!
