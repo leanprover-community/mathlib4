@@ -368,7 +368,7 @@ lemma ediam_le_two_mul_radius [Finite α] : G.ediam ≤ 2 * G.radius := by
     · rw [G.radius_eq_top_of_not_connected h]
       exact le_top
 
-lemma radius_eq_ediam_iff [Nonempty α] [Finite α] :
+lemma radius_eq_ediam_iff [Nonempty α] :
     G.radius = G.ediam ↔ ∃ e, ∀ u, G.eccent u = e := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · use G.radius
@@ -402,7 +402,7 @@ lemma center_nonempty [Nonempty α] : G.center.Nonempty :=
 lemma mem_center_iff (u : α) : u ∈ G.center ↔ G.eccent u = G.radius :=
   Set.mem_def
 
-lemma center_eq_univ_iff_radius_eq_ediam [Nonempty α] [Finite α] :
+lemma center_eq_univ_iff_radius_eq_ediam [Nonempty α] :
     G.center = Set.univ ↔ G.radius = G.ediam := by
   rw [radius_eq_ediam_iff, ← Set.univ_subset_iff]
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
