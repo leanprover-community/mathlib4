@@ -986,43 +986,33 @@ lemma subtype_comp_inclusion {S T : L.Substructure M} (h : S ≤ T) :
 namespace Equiv
 
 /-- Equivalence between equal substructures. -/
-def ofEq {S T : L.Substructure M} (h : S = T) : S ≃[L] T := by
-  cases h
-  exact Equiv.refl _ _
+def ofEq {S T : L.Substructure M} (h : S = T) : S ≃[L] T :=
+  { Equiv.setCongr (congr_arg _ h) with }
 
 @[simp]
 theorem ofEq_refl (S : L.Substructure M) : (ofEq (Eq.refl S)) = Equiv.refl L S := rfl
 
 @[simp]
 theorem symm_ofEq {S T : L.Substructure M} (h : S = T) :
-    (ofEq h).symm = ofEq h.symm := by
-  cases h
-  rfl
+    (ofEq h).symm = ofEq h.symm := rfl
 
 @[simp]
 theorem ofEq_comp_ofEq {S T U : L.Substructure M} (h : S = T) (h' : T = U) :
-    (ofEq h').comp (ofEq h) = ofEq (h.trans h') := by
-  cases h
-  cases h'
-  rfl
+    (ofEq h').comp (ofEq h) = ofEq (h.trans h') := rfl
 
 @[simp]
 theorem ofEq_apply {S T : L.Substructure M} (h : S = T) {m : M} (hm : m ∈ S) :
-    ofEq h ⟨m, hm⟩ = ⟨m, h ▸ hm⟩ := by
-  cases h
-  rfl
+    ofEq h ⟨m, hm⟩ = ⟨m, h ▸ hm⟩ := rfl
 
 @[simp]
 theorem subtype_comp_EquivOfEq {S T : L.Substructure M} (h : S = T) :
-    T.subtype.comp (ofEq h).toEmbedding = S.subtype := by
-  cases h
-  rfl
+    T.subtype.comp (ofEq h).toEmbedding = S.subtype := rfl
 
 @[simp]
 theorem substructureEquivMap_refl (S : L.Substructure M) :
     (Embedding.refl L M).substructureEquivMap S = ofEq (map_id S).symm := by
   ext ⟨⟩
-  simp only [Embedding.refl_toHom, SetLike.coe_eq_coe, ofEq_apply]
+  simp only [Embedding.refl_toHom]
   rfl
 
 @[simp]
