@@ -15,7 +15,7 @@
    "type": "git",
    "subDir": null,
    "scope": "leanprover-community",
-   "rev": "8d29bc2c3ebe1f863c2f02df816b4f3dd1b65226",
+   "rev": "25078369972d295301f5a1e53c3e5850cf6d9d4c",
    "name": "LeanSearchClient",
    "manifestFile": "lake-manifest.json",
    "inputRev": "main",
