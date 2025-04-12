@@ -238,20 +238,4 @@ protected theorem finiteDimensional (f : V ≃ₗ[K] V₂) [FiniteDimensional K 
     FiniteDimensional K V₂ :=
   Module.Finite.equiv f
 
-variable {R R₂ M M₂ : Type*} [DivisionRing R] [Semiring R₂] [AddCommMonoid M] [AddCommGroup M₂]
-  [Module R M] [Module R M₂] [FiniteDimensional R M₂]
-
-/-- An injective linear map between finite-dimensional space of equal rank
-is a linear equivalence. -/
-noncomputable def of_injective_finrank_eq (f : M →ₗ[R] M₂) (hinj : Function.Injective f)
-    (hrank : Module.finrank R M = Module.finrank R M₂) : M ≃ₗ[R] M₂ :=
-  haveI : LinearMap.range f = ⊤ :=
-    Submodule.eq_top_of_finrank_eq ((LinearMap.finrank_range_of_inj hinj).trans hrank)
-  (ofInjective f hinj).trans (ofTop (LinearMap.range f) this)
-
-@[simp]
-lemma of_injective_finrank_eq_coe (f : M →ₗ[R] M₂) (hinj : Function.Injective f)
-    (hrank : Module.finrank R M = Module.finrank R M₂) :
-    (of_injective_finrank_eq f hinj hrank).toLinearMap = f := rfl
-
 end LinearEquiv
