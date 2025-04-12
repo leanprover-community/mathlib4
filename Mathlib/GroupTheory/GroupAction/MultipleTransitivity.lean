@@ -283,9 +283,6 @@ end One
 
 section Two
 
--- Should be somewhere else, but where?
-lemma _root_.Fin.eq_zero_or_one : ∀ (i : Fin 2), i = 0 ∨ i = 1 := by decide
-
 /-- Two distinct elements of `α` give an embedding `Fin 2 ↪ α` -/
 def _root_.Function.Embedding.embFinTwo {a b: α} (h : a ≠ b) : Fin 2 ↪ α where
   toFun := ![a, b]
