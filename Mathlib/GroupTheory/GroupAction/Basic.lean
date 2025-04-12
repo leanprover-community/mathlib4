@@ -244,26 +244,26 @@ theorem stabilizer_smul_eq_stabilizer_map_conj (g : G) (a : α) :
   rw [mem_stabilizer_iff, ← smul_left_cancel_iff g⁻¹, smul_smul, smul_smul, smul_smul,
     inv_mul_cancel, one_smul, ← mem_stabilizer_iff, Subgroup.mem_map_equiv, MulAut.conj_symm_apply]
 
-/-- A bijection between the stabilizers of two elements in the same orbit. -/
-noncomputable def stabilizerEquivStabilizer {a b : α} {g : G} (hg : g • b = a) :
-    stabilizer G a ≃* stabilizer G b :=
-  have this : stabilizer G a = (stabilizer G b).map (MulAut.conj g).toMonoidHom := by
-    rw [← hg, stabilizer_smul_eq_stabilizer_map_conj]
-  (MulEquiv.subgroupCongr this).trans ((MulAut.conj g).subgroupMap <| stabilizer G b).symm
+/-- The natural group equivalence between the stabilizers of two elements in the same orbit. -/
+def stabilizerEquivStabilizer {a b : α} {g : G} (hg : g • b = a) :
+    stabilizer G b ≃* stabilizer G a :=
+  ((MulAut.conj g).subgroupMap <| stabilizer G b).trans
+    (MulEquiv.subgroupCongr (by
+      simp [← hg, stabilizer_smul_eq_stabilizer_map_conj]))
 
-theorem stabilizerEquivStabilizer_apply {a b : α} {g : G} (hg : g • b = a) (x : stabilizer G a) :
-    stabilizerEquivStabilizer hg x = MulAut.conj g⁻¹ x := by
+theorem stabilizerEquivStabilizer_apply {a b : α} {g : G} (hg : g • b = a) (x : stabilizer G b) :
+    stabilizerEquivStabilizer hg x = MulAut.conj g x := by
   simp [stabilizerEquivStabilizer]
 
 theorem stabilizerEquivStabilizer_symm_apply
-    {a b : α} {g : G} (hg : g • b = a) (x : stabilizer G b) :
-    (stabilizerEquivStabilizer hg).symm x = MulAut.conj g x := by
+    {a b : α} {g : G} (hg : g • b = a) (x : stabilizer G a) :
+    (stabilizerEquivStabilizer hg).symm x = MulAut.conj g⁻¹ x := by
   simp [stabilizerEquivStabilizer]
 
 /-- A bijection between the stabilizers of two elements in the same orbit. -/
 noncomputable def stabilizerEquivStabilizerOfOrbitRel {a b : α} (h : orbitRel G α a b) :
     stabilizer G a ≃* stabilizer G b :=
-  stabilizerEquivStabilizer (Classical.choose_spec h)
+  (stabilizerEquivStabilizer (Classical.choose_spec h)).symm
 
 end Stabilizer
 
