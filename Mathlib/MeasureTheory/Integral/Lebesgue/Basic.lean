@@ -274,11 +274,11 @@ theorem setLIntegral_congr_fun {f g : α → ℝ≥0∞} {s : Set α} (hs : Meas
 
 section
 
-/-- The Lebesgue integral is zero iff the function is a.e. zero. The proof implicitly uses
-Markov's inequality, but it has been inlined for the sake of imports. -/
+/-- The Lebesgue integral is zero iff the function is a.e. zero. -/
 @[simp]
 theorem lintegral_eq_zero_iff' {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) :
     ∫⁻ a, f a ∂μ = 0 ↔ f =ᵐ[μ] 0 := by
+  /- The proof implicitly uses Markov's inequality, but it has been inlined for the sake of imports. -/
   refine ⟨fun h ↦ ?_, fun h ↦ (lintegral_congr_ae h).trans lintegral_zero⟩
   have meas_levels_0 : ∀ ε > 0, μ { x | ε ≤ f x } = 0 := fun ε εpos ↦ by
     by_contra! h'; rw [← zero_lt_iff] at h'
