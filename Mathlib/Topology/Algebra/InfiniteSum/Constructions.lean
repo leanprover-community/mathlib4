@@ -99,7 +99,9 @@ protected lemma Multipliable.tprod_sum {α β M : Type*} [CommMonoid M] [Topolog
     (h₂ : Multipliable (f ∘ .inr)) : ∏' i, f i = (∏' i, f (.inl i)) * (∏' i, f (.inr i)) :=
   (h₁.hasProd.sum h₂.hasProd).tprod_eq
 
-@[to_additive, deprecated (since := "2025-04-11")] alias tprod_sum := Multipliable.tprod_sum
+@[deprecated (since := "2025-04-12")] alias tsum_sum := Summable.tsum_sum
+@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_sum :=
+  Multipliable.tprod_sum
 
 @[to_additive]
 lemma Multipliable.sum {α β M : Type*} [CommMonoid M] [TopologicalSpace M] [ContinuousMul M]
@@ -163,7 +165,9 @@ protected theorem Multipliable.tprod_sigma' {γ : β → Type*} {f : (Σ b : β,
     ∏' p, f p = ∏' (b) (c), f ⟨b, c⟩ :=
   (h₂.hasProd.sigma fun b ↦ (h₁ b).hasProd).tprod_eq.symm
 
-@[to_additive, deprecated (since := "2025-04-11")] alias tprod_sigma' := Multipliable.tprod_sigma'
+@[deprecated (since := "2025-04-12")] alias tsum_sigma' := Summable.tsum_sigma'
+@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_sigma' :=
+  Multipliable.tprod_sigma'
 
 @[to_additive tsum_prod']
 theorem tprod_prod' {f : β × γ → α} (h : Multipliable f)
@@ -258,14 +262,17 @@ protected theorem Multipliable.tprod_sigma {γ : β → Type*} {f : (Σ b : β, 
     (ha : Multipliable f) : ∏' p, f p = ∏' (b) (c), f ⟨b, c⟩ :=
   Multipliable.tprod_sigma' (fun b ↦ ha.sigma_factor b) ha
 
-@[to_additive, deprecated (since := "2025-04-11")] alias tprod_sigma := Multipliable.tprod_sigma
+@[deprecated (since := "2025-04-12")] alias tsum_sigma := Summable.tsum_sigma
+@[to_additive existing, deprecated (since := "2025-04-12")] alias
+  tprod_sigma := Multipliable.tprod_sigma
 
 @[to_additive Summable.tsum_prod]
 protected theorem Multipliable.tprod_prod {f : β × γ → α} (h : Multipliable f) :
     ∏' p, f p = ∏' (b) (c), f ⟨b, c⟩ :=
   tprod_prod' h h.prod_factor
 
-@[to_additive tsum_prod, deprecated (since := "2025-04-11")]
+@[deprecated (since := "2025-04-12")] alias tsum_prod := Summable.tsum_prod
+@[to_additive existing tsum_prod, deprecated (since := "2025-04-12")]
   alias tprod_prod := Multipliable.tprod_prod
 
 @[to_additive]
@@ -273,7 +280,9 @@ protected theorem Multipliable.tprod_comm {f : β → γ → α} (h : Multipliab
     ∏' (c) (b), f b c = ∏' (b) (c), f b c :=
   tprod_comm' h h.prod_factor h.prod_symm.prod_factor
 
-@[to_additive, deprecated (since := "2025-04-11")] alias tprod_comm := Multipliable.tprod_comm
+@[deprecated (since := "2025-04-12")] alias tsum_comm := Summable.tsum_comm
+@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_comm :=
+  Multipliable.tprod_comm
 
 end CompleteT0Space
 

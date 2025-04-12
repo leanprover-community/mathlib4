@@ -563,19 +563,21 @@ protected theorem Multipliable.tprod_mul (hf : Multipliable f) (hg : Multipliabl
     ∏' b, (f b * g b) = (∏' b, f b) * ∏' b, g b :=
   (hf.hasProd.mul hg.hasProd).tprod_eq
 
-@[deprecated (since := "2025-04-11")] alias tsum_add := Summable.tsum_add
-@[to_additive existing, deprecated (since := "2025-04-11")] alias tprod_mul := Multipliable.tprod_mul
+@[deprecated (since := "2025-04-12")] alias tsum_add := Summable.tsum_add
+@[to_additive existing, deprecated (since := "2025-04-12")] alias
+  tprod_mul := Multipliable.tprod_mul
 
 @[to_additive]
 protected theorem Multipliable.tprod_finsetProd {f : γ → β → α} {s : Finset γ}
     (hf : ∀ i ∈ s, Multipliable (f i)) : ∏' b, ∏ i ∈ s, f i b = ∏ i ∈ s, ∏' b, f i b :=
   (hasProd_prod fun i hi ↦ (hf i hi).hasProd).tprod_eq
 
-@[to_additive, deprecated (since := "2025-02-13")]
+@[deprecated (since := "2025-02-13")]
   alias tprod_of_prod := Multipliable.tprod_finsetProd
 
-@[to_additive, deprecated (since := "2025-04-11")]
-  alias tprod_finsetProd := Multipliable.tprod_finsetProd
+@[deprecated (since := "2025-04-12")] alias tsum_finsetSum := Summable.tsum_finsetSum
+@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_finsetProd :=
+  Multipliable.tprod_finsetProd
 
 /-- Version of `tprod_eq_mul_tprod_ite` for `CommMonoid` rather than `CommGroup`.
 Requires a different convergence assumption involving `Function.update`. -/
@@ -595,7 +597,9 @@ protected theorem Multipliable.tprod_eq_mul_tprod_ite' [DecidableEq β] {f : β 
     _ = f b * ∏' x, ite (x = b) 1 (f x) := by
       simp only [update, eq_self_iff_true, if_true, eq_rec_constant, dite_eq_ite]
 
-@[to_additive, deprecated (since := "2025-04-11")] alias tprod_eq_mul_tprod_ite' :=
+@[deprecated (since := "2025-04-12")] alias tsum_eq_add_tsum_ite' :=
+  Summable.tsum_eq_add_tsum_ite'
+@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_eq_mul_tprod_ite' :=
   Multipliable.tprod_eq_mul_tprod_ite'
 
 @[to_additive]
@@ -604,7 +608,8 @@ protected theorem Multipliable.tprod_mul_tprod_compl {s : Set β}
     (∏' x : s, f x) * ∏' x : ↑sᶜ, f x = ∏' x, f x :=
   (hs.hasProd.mul_compl hsc.hasProd).tprod_eq.symm
 
-@[to_additive, deprecated (since := "2025-04-11")] alias tprod_mul_tprod_compl :=
+@[deprecated (since := "2025-04-12")] alias tsum_add_tsum_compl := Summable.tsum_add_tsum_compl
+@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_mul_tprod_compl :=
     Multipliable.tprod_mul_tprod_compl
 
 @[to_additive]
@@ -613,7 +618,8 @@ protected theorem Multipliable.tprod_union_disjoint {s t : Set β} (hd : Disjoin
     ∏' x : ↑(s ∪ t), f x = (∏' x : s, f x) * ∏' x : t, f x :=
   (hs.hasProd.mul_disjoint hd ht.hasProd).tprod_eq
 
-@[to_additive, deprecated (since := "2025-04-11")] alias tprod_union_disjoint :=
+@[deprecated (since := "2025-04-12")] alias tsum_union_disjoint := Summable.tsum_union_disjoint
+@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_union_disjoint :=
     Multipliable.tprod_union_disjoint
 
 @[to_additive]
@@ -622,7 +628,9 @@ protected theorem Multipliable.tprod_finset_bUnion_disjoint {ι} {s : Finset ι}
     ∏' x : ⋃ i ∈ s, t i, f x = ∏ i ∈ s, ∏' x : t i, f x :=
   (hasProd_prod_disjoint _ hd fun i hi ↦ (hf i hi).hasProd).tprod_eq
 
-@[to_additive, deprecated (since := "2025-04-11")] alias tprod_finset_bUnion_disjoint :=
+@[deprecated (since := "2025-04-12")] alias tsum_finset_bUnion_disjoint :=
+    Summable.tsum_finset_bUnion_disjoint
+@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_finset_bUnion_disjoint :=
     Multipliable.tprod_finset_bUnion_disjoint
 
 end ContinuousMul

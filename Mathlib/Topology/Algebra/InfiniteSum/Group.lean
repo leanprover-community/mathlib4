@@ -172,14 +172,17 @@ protected theorem Multipliable.tprod_div (hf : Multipliable f) (hg : Multipliabl
     ∏' b, (f b / g b) = (∏' b, f b) / ∏' b, g b :=
   (hf.hasProd.div hg.hasProd).tprod_eq
 
-@[to_additive, deprecated (since := "2025-04-11")] alias tprod_div := Multipliable.tprod_div
+@[deprecated (since := "2025-04-12")] alias tsum_sub := Summable.tsum_sub
+@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_div :=
+  Multipliable.tprod_div
 
 @[to_additive]
 protected theorem Multipliable.prod_mul_tprod_compl {s : Finset β} (hf : Multipliable f) :
     (∏ x ∈ s, f x) * ∏' x : ↑(s : Set β)ᶜ, f x = ∏' x, f x :=
   ((s.hasProd f).mul_compl (s.multipliable_compl_iff.2 hf).hasProd).tprod_eq.symm
 
-@[to_additive, deprecated (since := "2025-04-11")] alias prod_mul_tprod_compl :=
+@[deprecated (since := "2025-04-12")] alias sum_add_tsum_compl := Summable.sum_add_tsum_compl
+@[to_additive existing, deprecated (since := "2025-04-12")] alias prod_mul_tprod_compl :=
   Multipliable.prod_mul_tprod_compl
 
 /-- Let `f : β → α` be a multipliable function and let `b ∈ β` be an index.
@@ -193,7 +196,8 @@ protected theorem Multipliable.tprod_eq_mul_tprod_ite [DecidableEq β] (hf : Mul
   rw [(hasProd_ite_div_hasProd hf.hasProd b).tprod_eq]
   exact (mul_div_cancel _ _).symm
 
-@[to_additive, deprecated (since := "2025-04-11")] alias tprod_eq_mul_tprod_ite :=
+@[deprecated (since := "2025-04-12")] alias tsum_eq_add_tsum_ite := Summable.tsum_eq_add_tsum_ite
+@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_eq_mul_tprod_ite :=
   Multipliable.tprod_eq_mul_tprod_ite
 
 end tprod
@@ -317,8 +321,10 @@ protected theorem Multipliable.tprod_subtype_mul_tprod_subtype_compl [T2Space α
     (hf : Multipliable f) (s : Set β) : (∏' x : s, f x) * ∏' x : ↑sᶜ, f x = ∏' x, f x :=
   ((hf.subtype s).hasProd.mul_compl (hf.subtype { x | x ∉ s }).hasProd).unique hf.hasProd
 
-@[to_additive, deprecated (since := "2025-04-11")] alias tprod_subtype_mul_tprod_subtype_compl :=
-  Multipliable.tprod_subtype_mul_tprod_subtype_compl
+@[deprecated (since := "2025-04-12")] alias tsum_subtype_add_tsum_subtype_compl :=
+  Summable.tsum_subtype_add_tsum_subtype_compl
+@[to_additive existing, deprecated (since := "2025-04-12")] alias
+  tprod_subtype_mul_tprod_subtype_compl := Multipliable.tprod_subtype_mul_tprod_subtype_compl
 
 @[to_additive]
 protected theorem Multipliable.prod_mul_tprod_subtype_compl [T2Space α] {f : β → α}
@@ -328,7 +334,9 @@ protected theorem Multipliable.prod_mul_tprod_subtype_compl [T2Space α] {f : β
   simp only [Finset.tprod_subtype', mul_right_inj]
   rfl
 
-@[to_additive, deprecated (since := "2025-04-11")] alias prod_mul_tprod_subtype_compl :=
+@[deprecated (since := "2025-04-12")] alias sum_add_tsum_subtype_compl :=
+  Summable.sum_add_tsum_subtype_compl
+@[to_additive existing, deprecated (since := "2025-04-12")] alias prod_mul_tprod_subtype_compl :=
   Multipliable.prod_mul_tprod_subtype_compl
 
 end IsUniformGroup
@@ -449,7 +457,7 @@ protected lemma Multipliable.tsum_congr_cofinite₀ [T2Space K] (hc : Multipliab
     ∏' i, g i = ((∏' i, f i) * ((∏ i ∈ s, g i) / ∏ i ∈ s, f i)) :=
   (hc.hasProd.congr_cofinite₀ hs hs').tprod_eq
 
-@[deprecated (since := "2025-04-11")] alias tsum_congr_cofinite := Multipliable.tsum_congr_cofinite₀
+@[deprecated (since := "2025-04-12")] alias tsum_congr_cofinite := Multipliable.tsum_congr_cofinite₀
 
 /--
 See also `Multipliable.congr_cofinite`, which does not have a non-vanishing condition, but instead

@@ -166,7 +166,7 @@ protected theorem Summable.tsum_mul_tsum (hf : Summable f) (hg : Summable g)
     ((∑' x, f x) * ∑' y, g y) = ∑' z : ι × κ, f z.1 * g z.2 :=
   hf.hasSum.mul_eq hg.hasSum hfg.hasSum
 
-@[deprecated (since := "2025-04-11")] alias tsum_mul_tsum := Summable.tsum_mul_tsum
+@[deprecated (since := "2025-04-12")] alias tsum_mul_tsum := Summable.tsum_mul_tsum
 
 end tsum_mul_tsum
 
@@ -219,7 +219,7 @@ protected theorem Summable.tsum_mul_tsum_eq_tsum_sum_antidiagonal (hf : Summable
     tsum_sigma' (fun n ↦ (hasSum_fintype _).summable)
       (summable_mul_prod_iff_summable_mul_sigma_antidiagonal.mp hfg)
 
-@[deprecated (since := "2025-04-11")] alias tsum_mul_tsum_eq_tsum_sum_antidiagonal :=
+@[deprecated (since := "2025-04-12")] alias tsum_mul_tsum_eq_tsum_sum_antidiagonal :=
   Summable.tsum_mul_tsum_eq_tsum_sum_antidiagonal
 
 end HasAntidiagonal
@@ -245,7 +245,7 @@ protected theorem Summable.tsum_mul_tsum_eq_tsum_sum_range (hf : Summable f) (hg
   simp_rw [← Nat.sum_antidiagonal_eq_sum_range_succ fun k l ↦ f k * g l]
   exact hf.tsum_mul_tsum_eq_tsum_sum_antidiagonal hg hfg
 
-@[deprecated (since := "2025-04-11")] alias tsum_mul_tsum_eq_tsum_sum_range :=
+@[deprecated (since := "2025-04-12")] alias tsum_mul_tsum_eq_tsum_sum_range :=
   Summable.tsum_mul_tsum_eq_tsum_sum_range
 
 end Nat

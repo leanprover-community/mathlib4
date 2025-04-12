@@ -236,7 +236,9 @@ protected theorem Multipliable.prod_mul_tprod_nat_add [T2Space G] {f : ℕ → G
     (h : Multipliable f) : ((∏ i ∈ range k, f i) * ∏' i, f (i + k)) = ∏' i, f i :=
   prod_mul_tprod_nat_mul' <| (multipliable_nat_add_iff k).2 h
 
-@[to_additive, deprecated (since := "2025-04-11")] alias prod_mul_tprod_nat_add :=
+@[deprecated (since := "2025-04-12")] alias sum_add_tsum_nat_add :=
+  Summable.sum_add_tsum_nat_add
+@[to_additive existing, deprecated (since := "2025-04-12")] alias prod_mul_tprod_nat_add :=
   Multipliable.prod_mul_tprod_nat_add
 
 @[to_additive]
@@ -244,7 +246,8 @@ protected theorem Multipliable.tprod_eq_zero_mul [T2Space G] {f : ℕ → G} (hf
     ∏' b, f b = f 0 * ∏' b, f (b + 1) :=
   tprod_eq_zero_mul' <| (multipliable_nat_add_iff 1).2 hf
 
-@[to_additive, deprecated (since := "2025-04-11")] alias tprod_eq_zero_mul :=
+@[deprecated (since := "2025-04-12")] alias tsum_eq_zero_add := Summable.tsum_eq_zero_add
+@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_eq_zero_mul :=
   Multipliable.tprod_eq_zero_mul
 
 /-- For `f : ℕ → G`, the product `∏' k, f (k + i)` tends to one. This does not require a
@@ -499,7 +502,9 @@ protected lemma Multipliable.tprod_of_nat_of_neg [T2Space G] {f : ℤ → G}
     ∏' n : ℤ, f n = (∏' n : ℕ, f n) * (∏' n : ℕ, f (-n)) / f 0 :=
   (hf₁.hasProd.of_nat_of_neg hf₂.hasProd).tprod_eq
 
-@[to_additive, deprecated (since := "2025-04-11")] alias tprod_of_nat_of_neg :=
+@[deprecated (since := "2025-04-12")] alias tsum_of_nat_of_neg :=
+  Summable.tsum_of_nat_of_neg
+@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_of_nat_of_neg :=
   Multipliable.tprod_of_nat_of_neg
 
 end IsTopologicalGroup

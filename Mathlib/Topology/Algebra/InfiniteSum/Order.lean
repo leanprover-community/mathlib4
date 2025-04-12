@@ -38,7 +38,9 @@ protected theorem Multipliable.tprod_le_of_prod_range_le [ClosedIicTopology α] 
     (hf : Multipliable f) (h : ∀ n, ∏ i ∈ range n, f i ≤ c) : ∏' n, f n ≤ c :=
   le_of_tendsto' hf.hasProd.tendsto_prod_nat h
 
-@[to_additive, deprecated (since := "2025-04-11")] alias tprod_le_of_prod_range_le :=
+@[deprecated (since := "2025-04-12")] alias tsum_le_of_sum_range_le :=
+  Summable.tsum_le_of_sum_range_le
+@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_le_of_prod_range_le :=
   Multipliable.tprod_le_of_prod_range_le
 
 end Preorder
@@ -75,7 +77,8 @@ protected theorem Multipliable.tprod_le_tprod_of_inj {g : κ → α} (e : ι →
     (hg : Multipliable g) : tprod f ≤ tprod g :=
   hasProd_le_inj _ he hs h hf.hasProd hg.hasProd
 
-@[to_additive, deprecated (since := "2025-04-11")] alias tprod_le_tprod_of_inj :=
+@[deprecated (since := "2025-04-12")] alias tsum_le_tsum_of_inj := Summable.tsum_le_tsum_of_inj
+@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_le_tprod_of_inj :=
   Multipliable.tprod_le_tprod_of_inj
 
 @[to_additive]
@@ -90,7 +93,8 @@ protected lemma Multipliable.tprod_subtype_le {κ γ : Type*} [CommGroup γ] [Pa
     (by apply hf.subtype)
   apply hf
 
-@[to_additive, deprecated (since := "2025-04-11")] alias tprod_subtype_le :=
+@[deprecated (since := "2025-04-12")] alias tsum_subtype_le := Summable.tsum_subtype_le
+@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_subtype_le :=
   Multipliable.tprod_subtype_le
 
 @[to_additive]
@@ -126,21 +130,25 @@ protected theorem Multipliable.prod_le_tprod {f : ι → α} (s : Finset ι) (hs
     (hf : Multipliable f) : ∏ i ∈ s, f i ≤ ∏' i, f i :=
   prod_le_hasProd s hs hf.hasProd
 
-@[to_additive, deprecated (since := "2025-04-11")] alias prod_le_tprod := Multipliable.prod_le_tprod
+@[deprecated (since := "2025-04-12")] alias sum_le_tsum := Summable.sum_le_tsum
+@[to_additive existing, deprecated (since := "2025-04-12")] alias prod_le_tprod :=
+  Multipliable.prod_le_tprod
 
 @[to_additive]
 protected theorem Multipliable.le_tprod (hf : Multipliable f) (i : ι) (hb : ∀ j, j ≠ i → 1 ≤ f j) :
     f i ≤ ∏' i, f i :=
   le_hasProd hf.hasProd i hb
 
-@[to_additive, deprecated (since := "2025-04-11")] alias le_tprod := Multipliable.le_tprod
+@[deprecated (since := "2025-04-12")] alias le_tsum := Summable.le_tsum
+@[to_additive existing, deprecated (since := "2025-04-12")] alias le_tprod := Multipliable.le_tprod
 
 @[to_additive]
 protected theorem Multipliable.tprod_le_tprod (h : ∀ i, f i ≤ g i) (hf : Multipliable f)
     (hg : Multipliable g) : ∏' i, f i ≤ ∏' i, g i :=
   hasProd_le h hf.hasProd hg.hasProd
 
-@[to_additive, deprecated (since := "2025-04-11")] alias tprod_le_tprod :=
+@[deprecated (since := "2025-04-12")] alias tsum_le_tsum := Summable.tsum_le_tsum
+@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_le_tprod :=
   Multipliable.tprod_le_tprod
 
 @[to_additive (attr := mono)]
@@ -148,7 +156,8 @@ protected theorem Multipliable.tprod_mono (hf : Multipliable f) (hg : Multipliab
     ∏' n, f n ≤ ∏' n, g n :=
   hf.tprod_le_tprod h hg
 
-@[to_additive (attr := mono), deprecated (since := "2025-04-11")] alias tprod_mono :=
+@[deprecated (since := "2025-04-12")] alias tsum_mono := Summable.tsum_mono
+@[to_additive existing (attr := mono), deprecated (since := "2025-04-12")] alias tprod_mono :=
   Multipliable.tprod_mono
 
 omit [IsOrderedMonoid α] in
@@ -157,7 +166,8 @@ protected theorem Multipliable.tprod_le_of_prod_le (hf : Multipliable f)
     (h : ∀ s, ∏ i ∈ s, f i ≤ a₂) : ∏' i, f i ≤ a₂ :=
   hasProd_le_of_prod_le hf.hasProd h
 
-@[to_additive, deprecated (since := "2025-04-11")] alias tprod_le_of_prod_le :=
+@[deprecated (since := "2025-04-12")] alias tsum_le_of_sum_le := Summable.tsum_le_of_sum_le
+@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_le_of_prod_le :=
   Multipliable.tprod_le_of_prod_le
 
 omit [IsOrderedMonoid α] in
@@ -222,7 +232,8 @@ protected theorem Multipliable.tprod_lt_tprod (h : f ≤ g) (hi : f i < g i) (hf
     (hg : Multipliable g) : ∏' n, f n < ∏' n, g n :=
   hasProd_lt h hi hf.hasProd hg.hasProd
 
-@[to_additive, deprecated (since := "2025-04-11")] alias tprod_lt_tprod :=
+@[deprecated (since := "2025-04-12")] alias tsum_lt_tsum := Summable.tsum_lt_tsum
+@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_lt_tprod :=
   Multipliable.tprod_lt_tprod
 
 @[to_additive (attr := mono)]
@@ -231,8 +242,9 @@ protected theorem Multipliable.tprod_strict_mono (hf : Multipliable f) (hg : Mul
   let ⟨hle, _i, hi⟩ := Pi.lt_def.mp h
   hf.tprod_lt_tprod hle hi hg
 
-@[to_additive (attr := mono), deprecated (since := "2025-04-11")] alias tprod_strict_mono :=
-  Multipliable.tprod_strict_mono
+@[deprecated (since := "2025-04-12")] alias tsum_strict_mono := Summable.tsum_strict_mono
+@[to_additive existing (attr := mono), deprecated (since := "2025-04-12")] alias
+  tprod_strict_mono := Multipliable.tprod_strict_mono
 
 @[to_additive Summable.tsum_pos]
 protected theorem Multipliable.one_lt_tprod (hsum : Multipliable g) (hg : ∀ i, 1 ≤ g i) (i : ι)
@@ -240,7 +252,8 @@ protected theorem Multipliable.one_lt_tprod (hsum : Multipliable g) (hg : ∀ i,
   rw [← tprod_one]
   exact Multipliable.tprod_lt_tprod hg hi multipliable_one hsum
 
-@[to_additive tsum_pos, deprecated (since := "2025-04-11")] alias one_lt_tprod :=
+@[deprecated (since := "2025-04-12")] alias tsum_pos := Summable.tsum_pos
+@[to_additive existing tsum_pos, deprecated (since := "2025-04-12")] alias one_lt_tprod :=
   Multipliable.one_lt_tprod
 
 end OrderedCommGroup
@@ -259,7 +272,9 @@ theorem le_hasProd' (hf : HasProd f a) (i : ι) : f i ≤ a :=
 protected theorem Multipliable.le_tprod' (hf : Multipliable f) (i : ι) : f i ≤ ∏' i, f i :=
   hf.le_tprod i fun _ _ ↦ one_le _
 
-@[to_additive, deprecated (since := "2025-04-11")] alias le_tprod' := Multipliable.le_tprod'
+@[deprecated (since := "2025-04-12")] alias le_tsum' := Summable.le_tsum'
+@[to_additive existing, deprecated (since := "2025-04-12")] alias le_tprod' :=
+  Multipliable.le_tprod'
 
 @[to_additive]
 theorem hasProd_one_iff : HasProd f 1 ↔ ∀ x, f x = 1 :=
@@ -270,7 +285,8 @@ protected theorem Multipliable.tprod_eq_one_iff (hf : Multipliable f) :
     ∏' i, f i = 1 ↔ ∀ x, f x = 1 := by
   rw [← hasProd_one_iff, hf.hasProd_iff]
 
-@[to_additive, deprecated (since := "2025-04-11")] alias tprod_eq_one_iff :=
+@[deprecated (since := "2025-04-12")] alias tsum_eq_zero_iff := Summable.tsum_eq_zero_iff
+@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_eq_one_iff :=
   Multipliable.tprod_eq_one_iff
 
 @[to_additive]
@@ -278,7 +294,8 @@ protected theorem Multipliable.tprod_ne_one_iff (hf : Multipliable f) :
     ∏' i, f i ≠ 1 ↔ ∃ x, f x ≠ 1 := by
   rw [Ne, hf.tprod_eq_one_iff, not_forall]
 
-@[to_additive, deprecated (since := "2025-04-11")] alias tprod_ne_one_iff :=
+@[deprecated (since := "2025-04-12")] alias tsum_ne_zero_iff := Summable.tsum_ne_zero_iff
+@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_ne_one_iff :=
   Multipliable.tprod_ne_one_iff
 
 @[to_additive]
@@ -362,7 +379,7 @@ theorem Multipliable.abs (hf : Multipliable f) : Multipliable (|f ·|) :=
 protected theorem Multipliable.abs_tprod (hf : Multipliable f) : |∏' i, f i| = ∏' i, |f i| :=
   hf.hasProd.abs.tprod_eq.symm
 
-@[deprecated (since := "2025-04-11")] alias abs_tprod := Multipliable.abs_tprod
+@[deprecated (since := "2025-04-12")] alias abs_tprod := Multipliable.abs_tprod
 
 end LinearOrderedCommRing
 
