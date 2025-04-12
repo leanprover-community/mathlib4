@@ -100,12 +100,14 @@ lemma pairingIn_zero_iff {S : Type*} [CommRing S] [Algebra S R] [FaithfulSMul S 
 
 section DomainAlg
 
-variable (S : Type*) [CommRing S] [IsDomain S] [Algebra S R] [FaithfulSMul S R]
+variable (S : Type*) [CommRing S] [IsDomain R] [IsDomain S] [Algebra S R] [FaithfulSMul S R]
 [P.IsValuedIn S] [Module S M] [IsScalarTower S R M] [Module S N] [IsScalarTower S R N]
 
-lemma finrank_range_polarization_eq_finrank_span_coroot [P.IsAnisotropic] [NoZeroSMulDivisors S N] :
+lemma finrank_range_polarization_eq_finrank_span_coroot [P.IsAnisotropic] :
     finrank S (LinearMap.range (P.PolarizationIn S)) = finrank S (span S (range P.coroot)) := by
   apply (Submodule.finrank_mono (P.range_polarizationIn_le_span_coroot S)).antisymm
+  have : IsReflexive R N := PerfectPairing.reflexive_right P.toPerfectPairing
+  have : NoZeroSMulDivisors S N := NoZeroSMulDivisors.trans_faithfulSMul S R N
   have h_ne : ∏ i, (P.RootFormIn S (P.rootSpanMem S i) (P.rootSpanMem S i)) ≠ 0 := by
     refine Finset.prod_ne_zero_iff.mpr fun i _ h ↦ ?_
     have := (FaithfulSMul.algebraMap_eq_zero_iff S R).mpr h
@@ -115,30 +117,34 @@ lemma finrank_range_polarization_eq_finrank_span_coroot [P.IsAnisotropic] [NoZer
     (LinearMap.range (M₂ := N) (P.PolarizationIn S))
     (smul_right_injective N h_ne) ?_
   intro _ hx
-  obtain ⟨c, hc⟩ := (mem_span_range_iff_exists_fun S).mp hx
+  obtain ⟨c, hc⟩ := (Submodule.mem_span_range_iff_exists_fun S).mp hx
   rw [← hc, Finset.smul_sum]
   simp_rw [smul_smul, mul_comm, ← smul_smul]
   exact Submodule.sum_smul_mem (LinearMap.range (P.PolarizationIn S)) c
     fun j _ ↦ prod_rootFormIn_smul_coroot_mem_range_PolarizationIn P S j
 
 /-- An auxiliary lemma en route to `RootPairing.finrank_corootSpan_eq`. -/
-private lemma finrank_corootSpan_le [P.IsAnisotropic] [NoZeroSMulDivisors S N] :
+private lemma finrank_corootSpan_le [P.IsAnisotropic] :
     finrank S (P.corootSpan S) ≤ finrank S (P.rootSpan S) := by
   rw [← finrank_range_polarization_eq_finrank_span_coroot]
   exact LinearMap.finrank_range_le (P.PolarizationIn S)
 
-lemma finrank_corootSpan_eq [P.IsAnisotropic] [NoZeroSMulDivisors S M] [NoZeroSMulDivisors S N] :
+lemma finrank_corootSpan_eq [P.IsAnisotropic] :
     finrank S (P.corootSpan S) = finrank S (P.rootSpan S) :=
   le_antisymm (P.finrank_corootSpan_le S) (P.flip.finrank_corootSpan_le S)
 
-lemma polarizationIn_Injective [P.IsAnisotropic] [NoZeroSMulDivisors S M] [NoZeroSMulDivisors S N] :
+lemma polarizationIn_Injective [P.IsAnisotropic] :
     Function.Injective (P.PolarizationIn S) := by
+  have : IsReflexive R N := PerfectPairing.reflexive_right P.toPerfectPairing
+  have : IsReflexive R M := PerfectPairing.reflexive_left P.toPerfectPairing
+  have : NoZeroSMulDivisors S N := NoZeroSMulDivisors.trans_faithfulSMul S R N
+  have : NoZeroSMulDivisors S M := NoZeroSMulDivisors.trans_faithfulSMul S R M
   rw [← LinearMap.ker_eq_bot, ← top_disjoint]
   refine Submodule.disjoint_ker_of_finrank_le (L := ⊤) (P.PolarizationIn S) ?_
   rw [finrank_top, ← finrank_corootSpan_eq, ← finrank_range_polarization_eq_finrank_span_coroot]
   exact Submodule.finrank_mono <| le_of_eq <| LinearMap.range_eq_map (P.PolarizationIn S)
 
-lemma exists_coroot_ne [P.IsAnisotropic] [NoZeroSMulDivisors S M] [NoZeroSMulDivisors S N]
+lemma exists_coroot_ne [P.IsAnisotropic]
     {x : span S (range P.root)} (hx : x ≠ 0) :
     ∃ i, P.coroot'In S i x ≠ 0 := by
   have hI := P.polarizationIn_Injective S
@@ -154,8 +160,9 @@ end DomainAlg
 
 section LinearOrderedCommRingAlg
 
-variable (S : Type*) [LinearOrderedCommRing S] [Algebra S R] [FaithfulSMul S R]
-[P.IsValuedIn S] [Module S M] [IsScalarTower S R M] [Module S N] [IsScalarTower S R N]
+variable (S : Type*) [CommRing S] [LinearOrder S] [IsStrictOrderedRing S] [IsDomain R] [Algebra S R]
+[FaithfulSMul S R] [P.IsValuedIn S] [Module S M] [IsScalarTower S R M] [Module S N]
+[IsScalarTower S R N]
 
 theorem posRootForm_posForm_pos_of_ne_zero [NoZeroSMulDivisors S M] [NoZeroSMulDivisors S N]
     {x : span S (range P.root)} (hx : x ≠ 0) :

@@ -145,33 +145,17 @@ abbrev corootSpanMem [Module S N] (i : ι) : P.corootSpan S :=
 
 /-- The `S`-linear map on the span of coroots given by evaluating at a root. -/
 def root'In [Module S N] [IsScalarTower S R N] [FaithfulSMul S R] [P.IsValuedIn S] (i : ι) :
-    Dual S (P.corootSpan S) where
-  toFun x := (P.root'_apply_apply_mem_of_mem_span S x.2 i).choose
-  map_add' x y := by
-    simp only
-    have hinj : Function.Injective <| Algebra.linearMap S R := by -- make this a lemma?
-      rw [Algebra.coe_linearMap]
-      exact FaithfulSMul.algebraMap_injective S R
-    refine hinj ?_
-    rw [map_add, (P.root'_apply_apply_mem_of_mem_span S (x + y).2 i).choose_spec, Submodule.coe_add,
-      LinearMap.map_add, (P.root'_apply_apply_mem_of_mem_span S x.2 i).choose_spec,
-      (P.root'_apply_apply_mem_of_mem_span S y.2 i).choose_spec]
-  map_smul' s x := by
-    have hinj : Function.Injective <| Algebra.linearMap S R := by
-      rw [Algebra.coe_linearMap]
-      exact FaithfulSMul.algebraMap_injective S R
-    refine hinj ?_
-    simp only
-    rw [map_smul, (P.root'_apply_apply_mem_of_mem_span S x.2 i).choose_spec, RingHom.id_apply,
-      (P.root'_apply_apply_mem_of_mem_span S (s • x).2 i).choose_spec, Submodule.coe_smul_of_tower,
-      LinearMap.map_smul_of_tower]
+    Dual S (P.corootSpan S) :=
+  LinearMap.restrictScalarsRange (P.corootSpan S).subtype (Algebra.linearMap S R)
+    (FaithfulSMul.algebraMap_injective S R) (P.root' i)
+    (fun m ↦ P.root'_apply_apply_mem_of_mem_span S m.2 i)
 
 @[simp]
 lemma algebraMap_root'In_apply [Module S N] [IsScalarTower S R N] [FaithfulSMul S R]
     [P.IsValuedIn S] (i : ι) (x : P.corootSpan S) :
     algebraMap S R (P.root'In S i x) = P.root' i x := by
-  simp only [root'In, Algebra.linearMap_apply, LinearMap.coe_mk, AddHom.coe_mk]
-  exact (P.root'_apply_apply_mem_of_mem_span S x.2 i).choose_spec
+  rw [root'In, ← Algebra.linearMap_apply, LinearMap.restrictScalarsRange_apply,
+    Submodule.subtype_apply]
 
 @[simp]
 lemma root'In_corootSpanMem_eq_pairingIn [Module S N] [IsScalarTower S R N] [FaithfulSMul S R]
@@ -179,7 +163,7 @@ lemma root'In_corootSpanMem_eq_pairingIn [Module S N] [IsScalarTower S R N] [Fai
     P.root'In S i (P.corootSpanMem S j) = P.pairingIn S i j :=
   rfl
 
-/-- The `S`-linear map on the span of coroots given by evaluating at a root. -/
+/-- The `S`-linear map on the span of roots given by evaluating at a coroot. -/
 def coroot'In [Module S M] [IsScalarTower S R M] [FaithfulSMul S R] [P.IsValuedIn S] (i : ι) :
     Dual S (P.rootSpan S) :=
   P.flip.root'In S i
