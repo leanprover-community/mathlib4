@@ -65,6 +65,7 @@ variable {R : Type u} [CommRing R] (M : ModuleCat.{v} R)
 open CategoryTheory Ideal Pointwise
 
 /-- The short complex `M → M → M⧸xM` given by an element `x : R`. -/
+@[simps]
 def SMul_ShortComplex (r : R) :
     ShortComplex (ModuleCat R) where
   X₁ := M
