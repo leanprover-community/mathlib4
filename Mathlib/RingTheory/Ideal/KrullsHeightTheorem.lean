@@ -125,11 +125,12 @@ lemma Ideal.height_le_spanRank_toENat_of_mem_minimal_primes
   induction hn : hs.toFinset.card using Nat.strong_induction_on generalizing R with
   | h n H =>
     have := hp.1.1; subst hs'
-    cases n
-    · rw [CharP.cast_eq_zero, nonpos_iff_eq_zero, @Ideal.height_eq_primeHeight _ _ p hp.1.1,
+    cases n with
+    | zero =>
+      rw [CharP.cast_eq_zero, nonpos_iff_eq_zero, @Ideal.height_eq_primeHeight _ _ p hp.1.1,
         Ideal.primeHeight_eq_zero_iff, minimalPrimes]
       simp_all
-    · rename ℕ => n
+    | succ n =>
       rw [← @Localization.AtPrime.comap_maximalIdeal _ _ p,
         IsLocalization.height_comap p.primeCompl]
       rw [← @Localization.AtPrime.comap_maximalIdeal _ _ p, ← Set.mem_preimage,
