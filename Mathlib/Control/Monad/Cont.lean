@@ -41,16 +41,15 @@ class LawfulMonadCont (m : Type u → Type v) [Monad m] [MonadCont m] : Prop
 
 export LawfulMonadCont (callCC_bind_right callCC_bind_left callCC_dummy)
 
-/-- The continuation monad transformer. Given a return type `r`, a monad `m`, and a type `α`,
+/--
+The continuation transformer.
+
+Given a return type `r`, a type transformer (typically a monad) `m`, and a type `α`,
 it represents computations that take a continuation function from `α` to `m r` and return an `m r`.
 
 This allows for continuation-passing style programming, where control flow can be manipulated by
 capturing and invoking continuations.
-
-For example, if `r` is `String`, `m` is `IO`, and `α` is `Int`, then `ContT r m α` represents
-computations that can be given a function `Int → IO String` and will produce an `IO String`.
-
-The transformer adds continuation capabilities to any existing monad `m`. -/
+-/
 def ContT (r : Type u) (m : Type u → Type v) (α : Type w) :=
   (α → m r) → m r
 
