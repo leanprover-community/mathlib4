@@ -233,8 +233,11 @@ corresponding filter, we require that the diameters of all boxes `J` of a tagged
 bounded from above by a constant upper estimate that may not depend on the geometry of `J`, and each
 tag belongs to the corresponding closed box. -/
 def Riemann : IntegrationParams where
+  /-- Whether the filter corresponds to a Riemann-style integral, requiring a constant upper estimate on box sizes -/
   bRiemann := true
+  /-- Whether each tag must belong to its own closed box -/
   bHenstock := true
+  /-- Whether the estimate can depend on the maximal ratio of sides of boxes -/
   bDistortion := false
 
 /-- The `BoxIntegral.IntegrationParams` corresponding to the Henstock-Kurzweil integral. In the
