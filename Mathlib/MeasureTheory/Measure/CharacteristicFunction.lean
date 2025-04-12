@@ -25,7 +25,7 @@ and `L`.
 ## Main definitions
 
 * `innerProbChar`: the bounded continuous map `x ↦ exp(⟪x, t⟫ * I)` in an inner product space.
-  This is `char` for the inner product bilinear map and the additive character `e = Real.probChar`.
+  This is `char` for the inner product bilinear map and the additive character `e = probChar`.
 * `charFun μ t`: the characteristic function of a measure `μ` at `t` in an inner product space `E`.
   This is defined as `∫ x, exp (⟪x, t⟫ * I) ∂μ`, where `⟪x, t⟫` is the inner product on `E`.
   It is equal to `∫ v, innerProbChar w v ∂P` (see `charFun_eq_integral_innerProbChar`).
@@ -48,7 +48,7 @@ variable {E : Type*} [SeminormedAddCommGroup E] [InnerProductSpace ℝ E]
 /-- The bounded continuous map `x ↦ exp(⟪x, t⟫ * I)`. -/
 noncomputable
 def innerProbChar (t : E) : BoundedContinuousFunction E ℂ :=
-  char Real.continuous_probChar (L := bilinFormOfRealInner) continuous_inner t
+  char continuous_probChar (L := bilinFormOfRealInner) continuous_inner t
 
 lemma innerProbChar_apply (t x : E) : innerProbChar t x = exp (⟪x, t⟫ * I) := rfl
 
@@ -120,12 +120,12 @@ lemma charFun_neg (t : E) : charFun μ (-t) = conj (charFun μ t) := by
 lemma charFun_eq_integral_innerProbChar : charFun μ t = ∫ v, innerProbChar t v ∂μ := by
   simp [charFun_apply, innerProbChar_apply]
 
-lemma charFun_eq_integral_probChar (y : E) : charFun μ y = ∫ x, (Real.probChar ⟪x, y⟫ : ℂ) ∂μ := by
-  simp [charFun_apply, Real.probChar_apply]
+lemma charFun_eq_integral_probChar (y : E) : charFun μ y = ∫ x, (probChar ⟪x, y⟫ : ℂ) ∂μ := by
+  simp [charFun_apply, probChar_apply]
 
 /-- `charFun` is a Fourier integral for the inner product and the character `probChar`. -/
 lemma charFun_eq_fourierIntegral (t : E) :
-    charFun μ t = VectorFourier.fourierIntegral Real.probChar μ sesqFormOfInner 1 (-t) := by
+    charFun μ t = VectorFourier.fourierIntegral probChar μ sesqFormOfInner 1 (-t) := by
   simp only [charFun_apply, real_smul, VectorFourier.fourierIntegral_probChar, Pi.one_apply,
     smul_eq_mul, mul_one, map_neg, ofReal_neg, neg_neg]
   simp_rw [real_inner_comm t]
@@ -133,10 +133,10 @@ lemma charFun_eq_fourierIntegral (t : E) :
 
 /-- `charFun` is a Fourier integral for the inner product and the character `fourierChar`. -/
 lemma charFun_eq_fourierIntegral' (t : E) :
-    charFun μ t = VectorFourier.fourierIntegral Real.fourierChar μ
-      sesqFormOfInner 1 (-(2 * π)⁻¹ • t) := by
-  have h : (2 : ℂ) * π ≠ 0 := by simp [Real.pi_ne_zero]
-  simp only [charFun_apply, real_smul, VectorFourier.fourierIntegral, Real.fourierChar, neg_smul,
+    charFun μ t
+      = VectorFourier.fourierIntegral fourierChar μ sesqFormOfInner 1 (-(2 * π)⁻¹ • t) := by
+  have h : (2 : ℂ) * π ≠ 0 := by simp [pi_ne_zero]
+  simp only [charFun_apply, real_smul, VectorFourier.fourierIntegral, fourierChar, neg_smul,
     map_neg, _root_.map_smul, smul_eq_mul, neg_neg, AddChar.coe_mk, ← mul_assoc, Pi.one_apply,
     Circle.smul_def, Circle.coe_exp, ofReal_mul, ofReal_ofNat, ofReal_inv, mul_inv_cancel₀ h,
     one_mul, mul_one]
