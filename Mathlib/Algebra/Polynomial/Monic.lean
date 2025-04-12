@@ -280,7 +280,7 @@ variable [NoZeroDivisors R] {p q : R[X]}
 lemma irreducible_of_monic (hp : p.Monic) (hp1 : p ≠ 1) :
     Irreducible p ↔ ∀ f g : R[X], f.Monic → g.Monic → f * g = p → f = 1 ∨ g = 1 := by
   refine
-    ⟨fun h f g hf hg hp => (h.2 f g hp.symm).imp hf.eq_one_of_isUnit hg.eq_one_of_isUnit, fun h =>
+    ⟨fun h f g hf hg hp => (h.2 hp.symm).imp hf.eq_one_of_isUnit hg.eq_one_of_isUnit, fun h =>
       ⟨hp1 ∘ hp.eq_one_of_isUnit, fun f g hfg =>
         (h (g * C f.leadingCoeff) (f * C g.leadingCoeff) ?_ ?_ ?_).symm.imp
           (isUnit_of_mul_eq_one f _)
