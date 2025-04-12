@@ -88,11 +88,15 @@ def Iso.mk (f : M ≃[L] N) : M ≅ N where
   hom_inv_id := by simp only [ConcreteCategory.comp_def, Equiv.symm_comp_self_toEmbedding,
     ConcreteCategory.ofHom_def, ConcreteCategory.id_def]
 
-theorem Iso.bijective (f : M ≅ N) : Function.Bijective f.hom := by
+theorem Iso.bijective_hom (f : M ≅ N) : Function.Bijective f.hom := by
   refine ⟨Embedding.injective f.hom, Function.RightInverse.surjective (g := f.inv) ?_⟩
   intro x
   change (f.inv ≫ f.hom) x = x
   simp only [Iso.inv_hom_id, ConcreteCategory.id_apply]
+
+theorem Iso.bijective_inv (f : M ≅ N) : Function.Bijective f.inv := by
+  rw [← Iso.symm_hom]
+  exact Iso.bijective_hom f.symm
 
 /-- Construct an equivalence between two bundled `L.Structure`s from a categorical isomorphism. -/
 def Equiv.ofIso (f : M ≅ N) : M ≃[L] N where
