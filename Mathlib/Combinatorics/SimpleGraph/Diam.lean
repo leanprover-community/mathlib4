@@ -368,6 +368,18 @@ lemma ediam_le_two_mul_radius [Finite α] : G.ediam ≤ 2 * G.radius := by
     · rw [G.radius_eq_top_of_not_connected h]
       exact le_top
 
+lemma radius_eq_ediam_iff [Nonempty α] [Finite α] :
+    G.radius = G.ediam ↔ ∃ e, ∀ u, G.eccent u = e := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · use G.radius
+    intro u
+    exact le_antisymm (h ▸ eccent_le_ediam) radius_le_eccent
+  · obtain ⟨e, h⟩ := h
+    have ediam_eq : G.ediam = e :=
+      le_antisymm (iSup_le fun u ↦ (h u).le) ((h Classical.ofNonempty) ▸ eccent_le_ediam)
+    rw [ediam_eq]
+    exact le_antisymm ((h Classical.ofNonempty) ▸ radius_le_eccent) (le_iInf fun u ↦ (h u).ge)
+
 @[simp]
 lemma radius_bot [Nontrivial α] : (⊥ : SimpleGraph α).radius = ⊤ :=
   radius_eq_top_of_not_connected bot_not_connected
@@ -389,6 +401,17 @@ lemma center_nonempty [Nonempty α] : G.center.Nonempty :=
 
 lemma mem_center_iff (u : α) : u ∈ G.center ↔ G.eccent u = G.radius :=
   Set.mem_def
+
+lemma center_eq_univ_iff_radius_eq_ediam [Nonempty α] [Finite α] :
+    G.center = Set.univ ↔ G.radius = G.ediam := by
+  rw [radius_eq_ediam_iff, ← Set.univ_subset_iff]
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · use G.radius
+    exact fun _ ↦ h trivial
+  · obtain ⟨e, h⟩ := h
+    intro u hu
+    rw [mem_center_iff, h u]
+    exact le_antisymm (le_iInf fun u ↦ (h u).ge) ((h Classical.ofNonempty) ▸ radius_le_eccent)
 
 lemma center_eq_univ_of_subsingleton [Subsingleton α] : G.center = Set.univ := by
   rw [← Set.univ_subset_iff]
