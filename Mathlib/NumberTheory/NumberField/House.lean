@@ -102,7 +102,7 @@ theorem basis_repr_norm_le_const_mul_house (α : 𝓞 K) (i : K →+* ℂ) :
 
 /-- `newBasis K` defines a reindexed basis of the ring of integers of `K`,
   adjusted by the inverse of the equivalence `equivReindex`. -/
-private def newBasis := (RingOfIntegers.basis K).reindex (equivReindex K).symm
+def newBasis := (RingOfIntegers.basis K).reindex (equivReindex K).symm
 
 /-- `supOfBasis K` calculates the supremum of the absolute values of
   the elements in `newBasis K`. -/
