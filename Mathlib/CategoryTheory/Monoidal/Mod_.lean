@@ -144,6 +144,8 @@ class Mod_Class_ (S : C) where
   mul_smul (S) : (𝟙 M ⊗ smul) ≫ smul = (α_ M M S).inv ≫ (μ ⊗ (𝟙 S)) ≫ smul := by aesop_cat
   one_smul (S) : (λ_ S).inv ≫ η ▷ S ≫ smul = 𝟙 S := by aesop_cat
 
+attribute [reassoc (attr := simp)] Mod_Class_.mul_smul Mod_Class_.one_smul
+
 namespace Mod_Class_
 
 @[inherit_doc] notation "γ" => Mod_Class_.smul
