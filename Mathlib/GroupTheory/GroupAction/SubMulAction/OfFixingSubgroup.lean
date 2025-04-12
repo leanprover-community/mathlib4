@@ -130,7 +130,7 @@ def equivariantMap_ofFixingSubgroup_to_ofStabilizer (a : α) (s : Set (ofStabili
       apply Set.mem_insert)⟩,
     fun h ↦ (mem_ofFixingSubgroup_iff M).mp x.prop <|
       Set.mem_insert_of_mem _ ⟨⟨(x : α), _⟩, ⟨h, rfl⟩⟩⟩
-  map_smul' _ _ := rfl }
+  map_smul' _ _ := rfl
 
 @[simp]
 theorem equivariantMap_ofFixingSubgroup_to_ofStabilizer_coe {a : α} {s : Set (ofStabilizer M a)}
