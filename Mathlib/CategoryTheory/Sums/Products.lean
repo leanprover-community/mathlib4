@@ -166,7 +166,12 @@ def associativityFunctorEquivNaturalityFunctorIso :
       (isoWhiskerLeft _ (Functor.associator _ _ E).symm ≪≫ (Functor.associator _ _ E).symm ≪≫
         isoWhiskerRight (sum.inlCompInrCompInverseAssociator A A' T) E ≪≫ Functor.associator _ _ E)
       (isoWhiskerLeft _ (Functor.associator _ _ E).symm ≪≫ (Functor.associator _ _ E).symm ≪≫
-        isoWhiskerRight (sum.inrCompInrCompInverseAssociator A A' T) E)))
+        isoWhiskerRight (sum.inrCompInrCompInverseAssociator A A' T) E))) (by
+      intros
+      ext
+      all_goals
+        dsimp
+        simp only [Category.comp_id, Category.id_comp, NatTrans.naturality])
 
 end CompatibilityWithProductAssociator
 
