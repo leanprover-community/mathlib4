@@ -112,7 +112,7 @@ def ofStabilizer.conjMap :
     simp [SubMulAction.val_smul_of_tower, subgroup_smul_def,
        stabilizerEquivStabilizer_apply, ← smul_assoc, MulAut.conj_apply]
 
-def ofStabilizer.conjMap_apply (x : ofStabilizer G a) :
+theorem ofStabilizer.conjMap_apply (x : ofStabilizer G a) :
     (conjMap hg x : α) = g⁻¹ • x := rfl
 
 theorem ofStabilizer.conjMap_bijective :
@@ -126,6 +126,7 @@ theorem ofStabilizer.conjMap_bijective :
     use (ofStabilizer.conjMap (inv_smul_eq_iff.mpr hg.symm)) ⟨x, hx⟩
     simp [← SetLike.coe_eq_coe, conjMap_apply]
 
+/-- Append `a` to `x : Fin n ↪ ofStabilizer G a`  to get an element of `Fin n.succ ↪ α`. -/
 def ofStabilizer.append {n : ℕ} (x : Fin n ↪ ofStabilizer G a) :
     Fin n.succ ↪ α := by
   let j : ofStabilizer G a ↪ α := {
