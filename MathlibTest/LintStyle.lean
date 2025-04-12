@@ -456,7 +456,7 @@ def aux : Nat := 1
 def aux' : Nat := 1
 
 /--
-warning: please do not add 'Classical.prodDecidable' as a local or scoped instance:
+warning: please do not add 'Classical.propDecidable' as a local or scoped instance:
 this can hide theorem statements which would be better stated with explicit decidability statements.
 Instead, use `open Classical in` for definitions or instances, the `classical` tactic for proofs.
 For theorem statements, either add missing decidability assumptions or use `open Classical in`.
@@ -469,7 +469,7 @@ def foo'''' := True
 namespace foo
 
 /--
-warning: please do not add 'Classical.prodDecidable' as a local or scoped instance:
+warning: please do not add 'Classical.propDecidable' as a local or scoped instance:
 this can hide theorem statements which would be better stated with explicit decidability statements.
 Instead, use `open Classical in` for definitions or instances, the `classical` tactic for proofs.
 For theorem statements, either add missing decidability assumptions or use `open Classical in`.
@@ -477,6 +477,16 @@ note: this linter can be disabled with `set_option linter.style.openClassical fa
 -/
 #guard_msgs in
 attribute [scoped instance] Classical.propDecidable
+
+/--
+warning: please do not add 'Classical.dec' as a local or scoped instance:
+this can hide theorem statements which would be better stated with explicit decidability statements.
+Instead, use `open Classical in` for definitions or instances, the `classical` tactic for proofs.
+For theorem statements, either add missing decidability assumptions or use `open Classical in`.
+note: this linter can be disabled with `set_option linter.style.openClassical false`
+-/
+#guard_msgs in
+attribute [scoped instance] Classical.dec
 
 -- Instances other than this are not linted.
 #guard_msgs in

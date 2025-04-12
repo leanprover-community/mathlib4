@@ -32,7 +32,7 @@ instead of the `fun` keyword: mathlib prefers the latter for reasons of readabil
 - the `longFile` linter checks for files which have more than 1500 lines
 - the `longLine` linter checks for lines which have more than 100 characters
 - the `openClassical` linter checks for `open (scoped) Classical` statements which are not
-scoped to a single declaration
+scoped to a single declaration, and for `Classical` declarations made local or scoped instances.
 
 All of these linters are enabled in mathlib by default, but disabled globally
 since they enforce conventions which are inherently subjective.
@@ -474,6 +474,8 @@ end Style.nameCheck
 /-- The "openClassical" linter emits a warning on `open Classical` statements which are not
 scoped to a single declaration. A non-scoped `open Classical` can hide that some theorem statements
 would be better stated with explicit decidability statements.
+We also check for declarations in the Classical namespace being made local or scoped instances,
+as this has basically the same effect.
 -/
 register_option linter.style.openClassical : Bool := {
   defValue := false
@@ -529,10 +531,10 @@ def openClassicalLinter : Linter where run stx := do
       Instead, use `open Classical in` for definitions or instances, the `classical` tactic \
       for proofs.\nFor theorem statements, \
       either add missing decidability assumptions or use `open Classical in`."
-    -- Also lint if `Classical.prodDecidable` is added as a local or scoped instance.
+    -- Also lint if some `Classical` declaration is added as a local or scoped instance.
     if let some id := getLocalScopedAttributes? stx then
-      if id.raw.getId == `Classical.propDecidable then
-        Linter.logLint linter.style.openClassical stx "please do not add 'Classical.prodDecidable' \
+      if id.raw.getId.getRoot == `Classical then
+        Linter.logLint linter.style.openClassical stx s!"please do not add '{id.raw.getId}' \
         as a local or scoped instance:\nthis can hide theorem statements \
         which would be better stated with explicit decidability statements.\n\
         Instead, use `open Classical in` for definitions or instances, the `classical` tactic \
