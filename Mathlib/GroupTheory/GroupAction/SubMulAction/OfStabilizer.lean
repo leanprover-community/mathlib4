@@ -136,14 +136,14 @@ def ofStabilizer.append {n : ℕ} (x : Fin n ↪ ofStabilizer G a) :
   simp [Set.mem_range, trans_apply, not_exists, j]
   exact fun i ↦ (x i).prop
 
-theorem ofStabilizer.append_apply {n : ℕ} (x : Fin n ↪ ofStabilizer G a)
+theorem ofStabilizer.append_apply_of_lt {n : ℕ} (x : Fin n ↪ ofStabilizer G a)
     {i : Fin n.succ} (hi : i.val < n) :
     append x i = (x ⟨i, hi⟩ : α) := by
-  simp [append, Fin.Embedding.append, Fin.Embedding.merge, dif_pos hi]
+  simp [append, Fin.Embedding.append_apply_of_lt hi]
 
 theorem ofStabilizer.append_apply_last {n : ℕ} (x : Fin n ↪ ofStabilizer G a) :
     append x (Fin.last n) = a := by
-  simp [append, Fin.Embedding.append, Fin.Embedding.merge, dif_neg]
+  simp [append, Fin.Embedding.append_apply_last]
 
 variable (G) in
 lemma exists_smul_of_last_eq [IsPretransitive G α] {n : ℕ} (a : α) (x : Fin n.succ ↪ α) :
@@ -204,8 +204,8 @@ theorem ofStabilizer.isMultiplyPretransitive [IsPretransitive G α] {n : ℕ} {a
         ext ⟨i, hi⟩
         simp only [Function.Embedding.smul_apply, SubMulAction.val_smul_of_tower]
         simp only [subgroup_smul_def]
-        rw [← append_apply x (i := ⟨i, Nat.lt_succ_of_lt hi⟩),
-          ← Function.Embedding.smul_apply, hgxy, append_apply y] }
+        rw [← append_apply_of_lt x (i := ⟨i, Nat.lt_succ_of_lt hi⟩),
+          ← Function.Embedding.smul_apply, hgxy, append_apply_of_lt y] }
   · exact fun hn ↦ {
       exists_smul_eq x y := by
         -- gx • x = x1 :: a

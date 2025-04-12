@@ -39,6 +39,106 @@ on `α`, and some results are developed in this context.
 
 open MulAction MulActionHom Function.Embedding Fin Set Nat
 
+namespace Fin.Embedding
+
+variable {α : Type*}
+
+/-- Merge two disjoint embeddings from `Fin m` and `Fin n` into `α`
+  to an embedding from `Fin m + n`. -/
+def merge {m n p : ℕ} (h : m + n = p)
+    (x : Fin m ↪ α) (y : Fin n ↪ α) (hxy : Disjoint (range x) (range y)) :
+    Fin p ↪ α where
+  toFun (i : Fin p) : α :=
+    if hi : i < m
+    then x ⟨i, hi⟩
+    else y ⟨i - m, by
+      rw [Nat.sub_lt_iff_lt_add (not_lt.mp hi), h]
+      exact i.prop⟩
+  inj' i j h := by
+    by_cases hi : i < m
+    · by_cases hj : j < m
+      · apply Fin.eq_of_val_eq
+        simpa [dif_pos hi, dif_pos hj] using h
+      · simp only [dif_pos hi, dif_neg hj] at h
+        exfalso
+        apply ne_of_mem_of_not_mem (Set.mem_range_self _) _ h
+        apply hxy.not_mem_of_mem_right (by simp)
+    · by_cases hj : j < m
+      · simp only [dif_neg hi, dif_pos hj] at h
+        exfalso
+        apply ne_of_mem_of_not_mem (Set.mem_range_self _) _ h.symm
+        apply hxy.not_mem_of_mem_right (by simp)
+      · apply Fin.eq_of_val_eq
+        rw [← tsub_left_inj (not_lt.mp hi) (not_lt.mp hj)]
+        simpa [dif_neg hi, dif_neg hj, Subtype.coe_inj, y.injective.eq_iff] using h
+
+@[simp]
+theorem merge_apply {m n p : ℕ} (h : m + n = p)
+    (x : Fin m ↪ α) (y : Fin n ↪ α) (hxy : Disjoint (range x) (range y)) (i : Fin p) :
+    Fin.Embedding.merge h x y hxy i =
+    if hi : i < m then x ⟨i, hi⟩ else y ⟨i - m, by
+      rw [Nat.sub_lt_iff_lt_add (not_lt.mp hi), h]
+      exact i.prop⟩ :=
+  rfl
+
+/-- Merge two disjoint embeddings from `Fin m` and `Fin n` into `α`
+  to an embedding from `Fin m + n`. -/
+def merge_compl {m n p : ℕ} (h : m + n = p)
+    (x : Fin m ↪ α) (y : Fin n ↪ ↑(range ⇑x)ᶜ) : Fin p ↪ α :=
+  Fin.Embedding.merge h x (y.trans (subtype _)) (by
+    rw [Set.disjoint_right]
+    rintro _ ⟨i, rfl⟩
+    simp only [trans_apply, subtype_apply, ← mem_compl_iff]
+    exact Subtype.coe_prop (y i))
+
+/-- Extend a fin embedding by another element -/
+def append {n : ℕ} (x : Fin n ↪ α) {a : α} (ha : a ∉ range ⇑x) : Fin n.succ ↪ α :=
+  Fin.Embedding.merge_compl (Nat.succ_eq_add_one n).symm x
+    { toFun _ := ⟨a, ha⟩, inj' _ _ _ := Subsingleton.elim _ _ }
+
+theorem append_apply {n : ℕ} {x : Fin n ↪ α}
+    {a : α} {ha : a ∉ range ⇑x} {i : Fin n.succ} :
+    append x ha i = if hi : i.val < n then  x ⟨i, hi⟩ else a :=
+  rfl
+
+theorem append_apply_of_lt {n : ℕ} {x : Fin n ↪ α}
+    {a : α} {ha : a ∉ range ⇑x} {i : Fin n.succ} (hi : i.val < n) :
+    Fin.Embedding.append x ha i = x ⟨i, hi⟩ := by
+  simp_all [append_apply]
+
+theorem append_apply_last {n : ℕ} (x : Fin n ↪ α) {a : α} (ha : a ∉ range ⇑x) :
+    Fin.Embedding.append x ha (Fin.last n) = a := by
+  simp [append_apply]
+
+theorem restrictSurjective_of_le_ENatCard
+    {m n : ℕ} (hmn : m ≤ n) (hn : n ≤ ENat.card α) :
+    Function.Surjective (fun x : Fin n ↪ α ↦ (Fin.castLEEmb hmn).trans x) := by
+  intro x
+  classical
+  have : Nonempty (Fin (n - m) ↪ ((Set.range x)ᶜ : Set α)) := by
+    rcases finite_or_infinite α with hα | hα
+    · have : Fintype α := Fintype.ofFinite α
+      classical
+      apply Function.Embedding.nonempty_of_card_le
+      rw [Fintype.card_fin, ← card_eq_fintype_card, Set.Nat.card_coe_set_eq,
+        ← add_le_add_iff_left, ncard_add_ncard_compl, ← Set.Nat.card_coe_set_eq,
+        Nat.card_range_of_injective x.injective, card_eq_fintype_card,
+        Fintype.card_fin, Nat.add_sub_of_le hmn, ← ENat.coe_le_coe]
+      exact le_trans hn (by simp)
+    · exact ⟨valEmbedding.trans (finite_range x).infinite_compl.to_subtype.natEmbedding⟩
+  obtain ⟨y⟩ := this
+  use Fin.Embedding.merge_compl (add_sub_of_le hmn) x y
+  ext i
+  simp [Fin.Embedding.merge_compl, Fin.Embedding.merge, dif_pos i.prop]
+
+theorem restrictSurjective_of_le_natCard
+    {m n : ℕ} [Finite α] (hmn : m ≤ n) (hn : n ≤ Nat.card α) :
+    Function.Surjective (fun x : Fin n ↪ α ↦ (Fin.castLEEmb hmn).trans x) :=
+  Fin.Embedding.restrictSurjective_of_le_ENatCard
+    hmn (by rwa [← ENat.coe_le_coe, ← ENat.card_eq_coe_natCard α] at hn)
+
+end Fin.Embedding
+
 section Functoriality
 
 variable {G α : Type*} [Group G] [MulAction G α]
@@ -270,72 +370,6 @@ section Higher
 def embMap {m n : Type*} (e : m ↪ n) : (n ↪ α) →[G]  (m ↪ α) where
   toFun i := e.trans i
   map_smul' _ _ := rfl
-
-/-- Merge two disjoint embeddings from `Fin m` and `Fin n` into `α`
-  to an embedding from `Fin m + n`. -/
-def _root_.Fin.Embedding.merge {m n p : ℕ}
-    (h : m + n = p) (x : Fin m ↪ α) (y : Fin n ↪ ↑(range ⇑x)ᶜ) :
-    Fin p ↪ α where
-  toFun (i : Fin p) : α :=
-    if hi : i < m
-    then x ⟨i, hi⟩
-    else y ⟨i - m, by
-      rw [Nat.sub_lt_iff_lt_add (not_lt.mp hi), h]
-      exact i.prop⟩
-  inj' i j h := by
-    by_cases hi : i < m
-    · by_cases hj : j < m
-      · apply Fin.eq_of_val_eq
-        simpa [dif_pos hi, dif_pos hj] using h
-      · simp only [dif_pos hi, dif_neg hj] at h
-        exfalso
-        apply ne_of_mem_of_not_mem (Set.mem_range_self _) _ h
-        rw [← Set.mem_compl_iff]
-        apply Subtype.coe_prop
-    · by_cases hj : j < m
-      · simp only [dif_neg hi, dif_pos hj] at h
-        exfalso
-        apply ne_of_mem_of_not_mem (Set.mem_range_self _) _ h.symm
-        rw [← Set.mem_compl_iff]
-        apply Subtype.coe_prop
-      · apply Fin.eq_of_val_eq
-        rw [← tsub_left_inj (not_lt.mp hi) (not_lt.mp hj)]
-        simpa [dif_neg hi, dif_neg hj, Subtype.coe_inj, y.injective.eq_iff] using h
-
-/-- Extend a fin embedding by another element -/
-def Fin.Embedding.append {n : ℕ} (x : Fin n ↪ α) {a : α} (ha : a ∉ range ⇑x) :
-    Fin n.succ ↪ α := by
-  apply Fin.Embedding.merge (Nat.succ_eq_add_one n).symm x
-  exact {
-    toFun i := ⟨a, ha⟩
-    inj' i j h := Subsingleton.elim _ _ }
-
-theorem _root_.Fin.Embedding.restrictSurjective_of_le_ENatCard
-    {m n : ℕ} (hmn : m ≤ n) (hn : n ≤ ENat.card α) :
-    Function.Surjective (fun x : Fin n ↪ α ↦ (Fin.castLEEmb hmn).trans x) := by
-  intro x
-  classical
-  have : Nonempty (Fin (n - m) ↪ ((Set.range x)ᶜ : Set α)) := by
-    rcases finite_or_infinite α with hα | hα
-    · have : Fintype α := Fintype.ofFinite α
-      classical
-      apply Function.Embedding.nonempty_of_card_le
-      rw [Fintype.card_fin, ← card_eq_fintype_card, Set.Nat.card_coe_set_eq,
-        ← add_le_add_iff_left, ncard_add_ncard_compl, ← Set.Nat.card_coe_set_eq,
-        Nat.card_range_of_injective x.injective, card_eq_fintype_card,
-        Fintype.card_fin, Nat.add_sub_of_le hmn, ← ENat.coe_le_coe]
-      exact le_trans hn (by simp)
-    · exact ⟨valEmbedding.trans (finite_range x).infinite_compl.to_subtype.natEmbedding⟩
-  obtain ⟨y⟩ := this
-  use Fin.Embedding.merge (add_sub_of_le hmn) x y
-  ext i
-  simp [Fin.Embedding.merge, dif_pos i.prop]
-
-theorem _root_.Fin.Embedding.restrictSurjective_of_le_natCard
-    {m n : ℕ} [Finite α] (hmn : m ≤ n) (hn : n ≤ Nat.card α) :
-    Function.Surjective (fun x : Fin n ↪ α ↦ (Fin.castLEEmb hmn).trans x) :=
-  Fin.Embedding.restrictSurjective_of_le_ENatCard
-    hmn (by rwa [← ENat.coe_le_coe, ← ENat.card_eq_coe_natCard α] at hn)
 
 /-- If `α` has at least n elements, then any n-pretransitive action on `α`
 is m-pretransitive for any m ≤ n.

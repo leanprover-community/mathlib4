@@ -47,6 +47,37 @@ variable {M}
 theorem not_mem_of_mem_ofFixingSubgroup {s : Set α}
   (x : ofFixingSubgroup M s) : ↑x ∉ s := x.prop
 
+section Comparisons
+
+section Empty
+
+variable (M α) in
+/-- The identity map of the sub_mul_action of the fixing_subgroup
+of the empty set into the ambient set, as an equivariant map -/
+def ofFixingSubgroupEmpty_equivariantMap :
+    ofFixingSubgroup M (∅ : Set α) →ₑ[(fixingSubgroup M (∅ : Set α)).subtype] α where
+  toFun x := x
+  map_smul' _ _ := rfl
+
+variable (α) in
+theorem ofFixingSubgroupEmpty_equivariantMap_bijective :
+    Function.Bijective (ofFixingSubgroupEmpty_equivariantMap M α) := by
+  constructor
+  · rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
+    simp [Subtype.mk_eq_mk]; exact hxy
+  · exact fun x ↦ ⟨⟨x, (mem_ofFixingSubgroup_iff M).mp (Set.not_mem_empty x)⟩, rfl⟩
+
+theorem of_fixingSubgroupEmpty_mapScalars_surjective :
+    Function.Surjective (fixingSubgroup M (∅ : Set α)).subtype := fun g ↦ by
+  suffices g ∈ fixingSubgroup M (∅ : Set α) by
+    exact ⟨⟨g, this⟩, rfl⟩
+  simp [mem_fixingSubgroup_iff]
+
+end Empty
+
+
+section InsertStabilizer
+
 theorem mem_fixingSubgroup_insert_iff {a : α} {s : Set α} {m : M} :
     m ∈ fixingSubgroup M (insert a s) ↔ m • a = a ∧ m ∈ fixingSubgroup M s := by
   simp [mem_fixingSubgroup_iff]
@@ -73,27 +104,7 @@ theorem fixingSubgroup_of_insert (a : α) (s : Set (ofStabilizer M a)) :
       rcases hx with ⟨y, hy, rfl⟩
       conv_rhs => rw [← hn y hy, SubMulAction.val_smul, subgroup_smul_def]
 
-variable (M α) in
-/-- The identity map of the sub_mul_action of the fixing_subgroup
-of the empty set into the ambient set, as an equivariant map -/
-def ofFixingSubgroupEmpty_equivariantMap :
-    ofFixingSubgroup M (∅ : Set α) →ₑ[(fixingSubgroup M (∅ : Set α)).subtype] α where
-  toFun x := x
-  map_smul' _ _ := rfl
-
-variable (α) in
-theorem ofFixingSubgroupEmpty_equivariantMap_bijective :
-    Function.Bijective (ofFixingSubgroupEmpty_equivariantMap M α) := by
-  constructor
-  · rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
-    simp [Subtype.mk_eq_mk]; exact hxy
-  · exact fun x ↦ ⟨⟨x, (mem_ofFixingSubgroup_iff M).mp (Set.not_mem_empty x)⟩, rfl⟩
-
-theorem of_fixingSubgroupEmpty_mapScalars_surjective :
-    Function.Surjective (fixingSubgroup M (∅ : Set α)).subtype := fun g ↦ by
-  suffices g ∈ fixingSubgroup M (∅ : Set α) by
-    exact ⟨⟨g, this⟩, rfl⟩
-  simp [mem_fixingSubgroup_iff]
+end InsertStabilizer
 
 section FixingSubgroupInsert
 
@@ -325,6 +336,123 @@ theorem ofFixingSubgroup_of_eq_bijective {s t : Set α} (hst : s = t) :
     Function.Bijective (ofFixingSubgroup_of_eq M hst) :=
   ⟨fun _ _ hxy ↦ by simpa [← SetLike.coe_eq_coe] using hxy,
     fun ⟨x, hxt⟩ ↦ ⟨⟨x, by rwa [hst]⟩, by simp [← SetLike.coe_eq_coe]⟩⟩
+
+end Comparisons
+
+section Transitivity
+
+noncomputable example (n : ℕ) (s : Set α) [Finite s] (hs : s.ncard = n) :
+    s ≃ Fin n := Finite.equivFinOfCardEq hs
+
+open Function.Embedding Fin.Embedding
+
+noncomputable def ofFixingSubgroup.merge
+    {m n : ℕ} {s : Set α} [Finite s] (hmn : s.ncard + m = n)
+    (x : Fin m ↪ ofFixingSubgroup M s) : Fin n ↪ α :=
+  Fin.Embedding.merge hmn
+    ((Finite.equivFinOfCardEq rfl).symm.toEmbedding.trans (subtype s.Mem))
+    (x.trans (subtype _)) (by
+      rw [Set.disjoint_iff_forall_ne]
+      rintro a hs b hx h
+      simp only [Set.mem_range, trans_apply, Equiv.coe_toEmbedding,
+        Function.Embedding.subtype_apply] at hs hx
+      obtain ⟨i, rfl⟩ := hs
+      obtain ⟨j, rfl⟩ := hx
+      apply (x j).prop
+      rw [← h]
+      exact Subtype.coe_prop ((Finite.equivFinOfCardEq rfl).symm i))
+
+theorem ofFixingSubgroup.merge_apply₁
+    {m n : ℕ} {s : Set α} [Finite s] (hmn : s.ncard + m = n)
+    (x : Fin m ↪ ofFixingSubgroup M s) (i : Fin n) (hi : i.val < s.ncard) :
+    ofFixingSubgroup.merge hmn x i = (Finite.equivFinOfCardEq rfl).symm ⟨i.val, hi⟩ := by
+  simp [merge, Fin.Embedding.merge_apply, trans_apply, Equiv.coe_toEmbedding,
+    Function.Embedding.subtype_apply, dif_pos hi]
+  rfl
+
+theorem ofFixingSubgroup.merge_apply₂
+    {m n : ℕ} {s : Set α} [Finite s] (hmn : s.ncard + m = n)
+    (x : Fin m ↪ ofFixingSubgroup M s) (i : Fin n) (hi : s.ncard ≤ i.val ) :
+    ofFixingSubgroup.merge hmn x i = x ⟨i.val - s.ncard,
+      Nat.sub_lt_left_of_lt_add hi (by simp [hmn, i.prop])⟩ := by
+  rw [← not_lt] at hi
+  simp only [merge, Fin.Embedding.merge_apply, trans_apply, Equiv.coe_toEmbedding,
+    Function.Embedding.subtype_apply, dif_neg hi]
+
+noncomputable def ofFixingSubgroup.merge'
+    {m n : ℕ} {s : Set α} [Finite s] (hmn : m + s.ncard = n)
+    (x : Fin m ↪ ofFixingSubgroup M s) : Fin n ↪ α :=
+  Fin.Embedding.merge hmn
+    (x.trans (subtype _))
+    ((Finite.equivFinOfCardEq rfl).symm.toEmbedding.trans (subtype s.Mem))
+    (by
+      rw [Set.disjoint_iff_forall_ne]
+      rintro a hs b hx h
+      simp only [Set.mem_range, trans_apply, Equiv.coe_toEmbedding,
+        Function.Embedding.subtype_apply] at hs hx
+      obtain ⟨i, rfl⟩ := hx
+      obtain ⟨j, rfl⟩ := hs
+      apply (x j).prop
+      rw [h]
+      exact Subtype.coe_prop ((Finite.equivFinOfCardEq rfl).symm i))
+
+theorem ofFixingSubgroup.merge'_apply₁
+    {m n : ℕ} {s : Set α} [Finite s] (hmn : m + s.ncard = n)
+    (x : Fin m ↪ ofFixingSubgroup M s) (i : Fin n) (hi : i.val < m) :
+    ofFixingSubgroup.merge' hmn x i = x ⟨i.val, hi⟩ := by
+  simp only [merge', Fin.Embedding.merge_apply, trans_apply,
+    Function.Embedding.subtype_apply, Equiv.coe_toEmbedding, dif_pos hi]
+
+theorem ofFixingSubgroup.merge'_apply₂
+    {m n : ℕ} {s : Set α} [Finite s] (hmn : m + s.ncard = n)
+    (x : Fin m ↪ ofFixingSubgroup M s) (i : Fin n) (hi : m ≤ i.val) :
+    ofFixingSubgroup.merge' hmn x i =
+      (Finite.equivFinOfCardEq (α := s) rfl).symm ⟨i.val - m,
+        by simp [Nat.sub_lt_iff_lt_add hi, Set.Nat.card_coe_set_eq, hmn]⟩ := by
+  rw [← not_lt] at hi
+  simp only [merge', Fin.Embedding.merge_apply, trans_apply,
+    Function.Embedding.subtype_apply, Equiv.coe_toEmbedding, dif_neg hi]
+  congr
+
+/-- The fixator of a subset of cardinal d in a k-transitive action
+acts (k-d) transitively on the remaining -/
+theorem ofFixingSubgroup.isMultiplyPretransitive {m n : ℕ} [IsMultiplyPretransitive M α n]
+    (s : Set α) [Finite s] (hmn : s.ncard + m = n) :
+    IsMultiplyPretransitive (fixingSubgroup M s) (ofFixingSubgroup M s) m where
+  exists_smul_eq x y := by
+    set x' := ofFixingSubgroup.merge hmn x with hx'
+    set y' := ofFixingSubgroup.merge hmn y with hy'
+    obtain ⟨g, hg⟩ := exists_smul_eq M x' y'
+    suffices g ∈ fixingSubgroup M s by
+      use ⟨g, this⟩
+      ext i
+      have hi : s.ncard + i < n := by
+        rw [← hmn]
+        exact Nat.add_lt_add_left i.prop s.ncard
+      simp only [smul_apply, SetLike.val_smul, Subgroup.mk_smul]
+      rw [DFunLike.ext_iff] at hg
+      specialize hg ⟨_, hi⟩
+      simp only [smul_apply] at hg
+      simpa [smul_apply, hx', hy',
+        ofFixingSubgroup.merge_apply₂ hmn _ ⟨_, hi⟩ (Nat.le_add_right s.ncard ↑i)] using hg
+    simp [DFunLike.ext_iff, smul_apply, hx', hy'] at hg
+    intro a
+    set i := (Finite.equivFinOfCardEq rfl) a
+    have hi : i.val < n := lt_of_lt_of_le i.prop (by simp [← hmn, Set.Nat.card_coe_set_eq])
+    have := ofFixingSubgroup.merge_apply₁ hmn x ⟨i.val, hi⟩ (by
+        simpa [Set.Nat.card_coe_set_eq] using i.prop)
+    specialize hg ⟨i.val, hi⟩
+    simpa [ofFixingSubgroup.merge_apply₁ hmn _ ⟨i.val, hi⟩ (by
+        simpa [Set.Nat.card_coe_set_eq] using i.prop),
+      Fin.eta, i] using hg
+
+theorem ofFixingSubgroup.isMultiplyPretransitive' {m n : ℕ} [IsMultiplyPretransitive M α n]
+    (s : Set α) [Finite s] (hmn : s.ncard + m ≤ n) (hn : (n : ENat) ≤ ENat.card α) :
+    IsMultiplyPretransitive (fixingSubgroup M s) (SubMulAction.ofFixingSubgroup M s) m :=
+  letI : IsMultiplyPretransitive M α (s.ncard + m) := isMultiplyPretransitive_of_le' hmn hn
+  isMultiplyPretransitive s rfl
+
+end Transitivity
 
 end SubMulAction
 
