@@ -10,7 +10,7 @@ import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 import Mathlib.RingTheory.Regular.Category
 import Mathlib.RingTheory.Support
 import Mathlib.RingTheory.Spectrum.Prime.Topology
-
+import Mathlib.Algebra.Category.Grp.Zero
 /-!
 
 # Hom(N,M) is subsingleton iff exist smul regular element of M in ann(N)
@@ -179,7 +179,7 @@ lemma exist_mem_ann_isSMulRegular_of_hom_subsingleton [IsNoetherianRing R]
 universe u v w
 
 open IsLocalRing LinearMap
-open RingTheory.Sequence Ideal CategoryTheory CategoryTheory.Abelian
+open RingTheory.Sequence Ideal CategoryTheory Abelian Limits
 
 variable {R : Type u} [CommRing R] [Small.{v} R] [UnivLE.{v, w}]
 
@@ -264,6 +264,17 @@ lemma mono_of_mono (a : R) {k : ℕ} (kpos : k > 0) (i : ℕ) {M N : ModuleCat.{
       rw [eq_comp]
       exact CategoryTheory.mono_comp' (ih (Nat.zero_lt_of_ne_zero eq0)) f_mono
 
+omit [UnivLE.{v, w}] in
+private lemma addCommGrp_isZero_of_subsingleton {G : AddCommGrp} (h : Subsingleton G) : IsZero G :=
+  AddCommGrp.isZero_of_subsingleton G
+
+omit [UnivLE.{v, w}] in
+lemma addCommGrp_subsingleton_of_isZero {G : AddCommGrp} (h : IsZero G) :
+    Subsingleton G := by
+  apply subsingleton_of_forall_eq 0 (fun g ↦ ?_)
+  rw [← AddMonoidHom.id_apply G g, ← AddCommGrp.hom_id]
+  simp [(IsZero.iff_id_eq_zero G).mp h]
+
 lemma lemma222_4_to_1 [IsNoetherianRing R] (I : Ideal R) (n : ℕ) (N : ModuleCat.{v} R)
     (Nntr : Nontrivial N) (Nfin : Module.Finite R N)
     (Nsupp : Module.support R N ⊆ PrimeSpectrum.zeroLocus I) :
@@ -316,15 +327,16 @@ lemma lemma222_4_to_1 [IsNoetherianRing R] (I : Ideal R) (n : ℕ) (N : ModuleCa
         exact (homEquiv₀_hom N M).subsingleton
       · have lt : i - 1 < n := by omega
         let g := (AddCommGrp.ofHom ((Ext.mk₀ (SMul_ShortComplex M a).f).postcomp N (add_zero i)))
-        have mono_g : Mono g := mono_of_subsingleton
-          (CategoryTheory.Abelian.Ext.covariant_sequence_exact₁'
-          N reg.1.SMul_ShortComplex_exact (i - 1) i (by omega))
-          (ih (ModuleCat.of R M') Qntr (Module.Finite.quotient R _) smul_lt' exist_reg' (i - 1) lt)
+        have mono_g : Mono g := by
+          apply ShortComplex.Exact.mono_g (CategoryTheory.Abelian.Ext.covariant_sequence_exact₁'
+            N reg.1.SMul_ShortComplex_exact (i - 1) i (by omega)) (IsZero.eq_zero_of_src _ _)
+          exact addCommGrp_isZero_of_subsingleton (ih (ModuleCat.of R M') Qntr
+            (Module.Finite.quotient R _) smul_lt' exist_reg' (i - 1) lt)
         let gk := (AddCommGrp.ofHom
           ((Ext.mk₀ (SMul_ShortComplex M (a ^ k)).f).postcomp N (add_zero i)))
         have mono_gk : Mono gk := mono_of_mono a kpos i mono_g
         have zero_gk : gk = 0 := ext_hom_eq_zero_of_mem_ann hk i
-        exact subsingleton_of_mono_zero mono_gk zero_gk
+        exact addCommGrp_subsingleton_of_isZero (IsZero.of_mono_eq_zero _ zero_gk)
 
 --lemma222 i.e. Rees theorem
 lemma lemma222 [IsNoetherianRing R] (I : Ideal R) [Small.{v} (R ⧸ I)] (n : ℕ) (M : ModuleCat.{v} R)
