@@ -21,7 +21,7 @@ deprecated_module since yyyy-mm-dd
 ```
 in module `A` with the expectation that `A` contains nothing else.
 This triggers the `deprecated.module` linter to notify every file with `import A`
-to instead import the *direct imports* of `A`, that is `B,...,Z`.
+to instead import the *direct imports* of `A`, that is `B, ..., Z`.
 -/
 
 open Lean Elab Command
@@ -62,7 +62,7 @@ by all files.
 -/
 def addModuleDeprecation {m : Type → Type} [Monad m] [MonadEnv m] [MonadQuotation m] : m Unit := do
   modifyEnv (deprecatedModuleExt.addEntry ·
-    (← getMainModule, (← getEnv).imports.filterMap fun i =>
+    (← getMainModule, (← getEnv).imports.filterMap fun i ↦
       if i.module == `Init then none else i.module))
 
 /--
@@ -80,14 +80,14 @@ elab (name := deprecated_modules)
   if dd.getNat == 0 || 31 < dd.getNat || dd.raw.getSubstring?.get!.toString.trim.length != 2 then
     throwErrorAt dd "The day should be of the form 01, 02, ..., 31!"
   addModuleDeprecation
-  -- disable the linter, so that it does not complain in the file with the deprecation
+  -- Disable the linter, so that it does not complain in the file with the deprecation.
   elabCommand (← `(set_option linter.deprecated.module false))
 
-/-- A utility function to show the pairings `(deprecatedModule, #[preferredModules])`. -/
+/-- A utility command to show the current pairings `(deprecatedModule, #[preferredModules])`. -/
 elab "#show_deprecated_modules" : command => do
   let directImports := deprecatedModuleExt.getState (← getEnv)
   logInfo <| "\n".intercalate <|
-    directImports.fold (init := ["Deprecated modules\n"]) fun nms (i, deps) =>
+    directImports.fold (init := ["Deprecated modules\n"]) fun nms (i, deps) ↦
       nms ++ [s!"'{i}' deprecates to\n{deps}\n"]
 
 namespace DeprecatedModule
@@ -124,15 +124,13 @@ def deprecated.moduleLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   if stx.isOfKind ``Linter.deprecated_modules then return
   let fm ← getFileMap
-  let fil ← getFileName
-  let (importStx, _) ← Parser.parseHeader { input := fm.source, fileName := fil, fileMap := fm }
-  let importIds := getImportIds importStx
-  let modulesWithNames := importIds.map fun i => (i, i.getId)
-  for is@(i, undeprecated) in deprecations do
+  let (importStx, _) ← Parser.parseHeader { input := fm.source, fileName := ← getFileName, fileMap := fm }
+  let modulesWithNames := (getImportIds importStx).map fun i ↦ (i, i.getId)
+  for (_i, preferred) in deprecations do
     for (nmStx, _) in modulesWithNames.filter (·.2 == i) do
       Linter.logLint linter.deprecated.module nmStx
         m!"'{nmStx}' has been deprecated: please replace this import by\n\n\
-          {String.join <| (undeprecated.foldl (·.push s!"import {·}\n") #[]).toList}"
+          {String.join <| (preferred.foldl (·.push s!"import {·}\n") #[]).toList}"
 
 initialize addLinter deprecated.moduleLinter
 
