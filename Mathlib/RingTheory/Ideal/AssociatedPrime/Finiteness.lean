@@ -289,8 +289,8 @@ lemma AssociatedPrimes.subset_iUnion_quotient (p : LTSeries (Submodule R M)) (h_
     simp only [RelSeries.head_singleton] at h_head
     simp only [RelSeries.singleton_length, RelSeries.singleton_toFun, Set.iUnion_of_empty,
       Set.subset_empty_iff]
-    erw [RelSeries.last_singleton, h_head]
-    apply associatedPrimes.eq_empty_of_subsingleton
+    convert associatedPrimes.eq_empty_of_subsingleton
+    simp [h_head, Unique.instSubsingleton]
   case snoc p N hN ih =>
     simp only [RelSeries.head_snoc] at h_head
     specialize ih h_head
@@ -306,10 +306,7 @@ lemma AssociatedPrimes.subset_iUnion_quotient (p : LTSeries (Submodule R M)) (h_
       exact hx
     · refine ⟨Fin.last _, ?_⟩
       have : (p.snoc N hN).toFun (Fin.last p.length).castSucc = p.last := by
-        simp only [RelSeries.snoc, RelSeries.append, RelSeries.singleton_length, Nat.add_zero,
-          Nat.reduceAdd, show (Fin.last p.length).castSucc = (Fin.last p.length).castAdd 1 from rfl,
-          Fin.cast_refl, Function.comp_apply, id_eq, Fin.append_left]
-        rfl
+        simp [RelSeries.snoc, RelSeries.append, Fin.castSucc, RelSeries.last]
       simp only [Fin.succ_last, Nat.succ_eq_add_one]
       rw [RelSeries.last_snoc', this]
       exact hx
@@ -317,28 +314,15 @@ lemma AssociatedPrimes.subset_iUnion_quotient (p : LTSeries (Submodule R M)) (h_
 theorem AssociatedPrimes.of_quotient_iso_quotient_prime (p : LTSeries (Submodule R M))
     (h_head : p.head = ⊥) (h_last : p.last = ⊤) (P : Fin p.length → Ideal R)
     (hPprime : ∀ (i : Fin p.length), (P i).IsPrime) (hP : ∀ (i : Fin p.length),
-      Nonempty (((p i.succ) ⧸ (Submodule.comap (p i.succ).subtype (p (Fin.castSucc i))))
-        ≃ₗ[R] (R ⧸ (P i)))) :
-    (associatedPrimes R M) ⊆ P '' Set.univ := by
-  have heq1 : ∀ (i : Fin p.length),
+      Nonempty (((p i.succ) ⧸ (Submodule.comap (p i.succ).subtype (p (Fin.castSucc i)))) ≃ₗ[R]
+      (R ⧸ (P i)))) : (associatedPrimes R M) ⊆ P '' Set.univ := by
+  have heq1 (i : Fin p.length) :
     associatedPrimes R ((p i.succ) ⧸(Submodule.comap (p i.succ).subtype (p (Fin.castSucc i)))) =
-    associatedPrimes R (R ⧸ (P i)) := by
-    intro i
-    let e := Classical.choice (hP i)
-    exact LinearEquiv.AssociatedPrimes.eq e
-  have heq1' := Set.iUnion_congr heq1
-  have heq2 : ∀ (i : Fin p.length), associatedPrimes R (R ⧸ (P i)) = {P i} := by
-    intro i
-    exact AssociatedPrimes.quotient_prime_eq_singleton R _
-  have heq2' := Set.iUnion_congr heq2
-  have hmem : ⋃ i : Fin p.length, {P i} ⊆ P '' Set.univ := by
-    rw[Set.iUnion_subset_iff]
-    intro i
-    rw [Set.image_univ, Set.singleton_subset_iff, Set.mem_range]
-    use i
+    associatedPrimes R (R ⧸ (P i)) := LinearEquiv.AssociatedPrimes.eq (Classical.choice (hP i))
+  have heq2 (i : Fin p.length) : associatedPrimes R (R ⧸ (P i)) = {P i} :=
+    AssociatedPrimes.quotient_prime_eq_singleton R _
   apply subset_trans (AssociatedPrimes.subset_iUnion_quotient _ _ p h_head h_last)
-  rw [heq1', heq2']
-  exact hmem
+  simp [Set.iUnion_congr heq1, Set.iUnion_congr heq2]
 
 end chain
 
@@ -366,9 +350,7 @@ theorem exists_LTSeries_quotient_cyclic:
         fun i ↦ match i with | 0 => bot_lt_top⟩, ⟨rfl, ⟨rfl, fun i ↦ ?_⟩⟩⟩
       match i with
       | 0 =>
-        refine ⟨Ideal.torsionOf R N a, ⟨?_⟩⟩
-        apply quotTorsionOfEquivSpanSingleton' ..
-        assumption
+        exact ⟨Ideal.torsionOf R N a, ⟨quotTorsionOfEquivSpanSingleton' _ _ _ hN⟩⟩
     · exact ⟨⟨0, fun i ↦ ⊥, fun i ↦ Fin.elim0 i⟩,
       ⟨rfl, ⟨subsingleton_iff_bot_eq_top.2 <|
         not_nontrivial_iff_subsingleton.1 htri, fun i ↦ Fin.elim0 i⟩⟩⟩
@@ -387,13 +369,11 @@ theorem exists_LTSeries_quotient_cyclic:
     · intro i
       obtain ⟨P, ⟨hP'⟩⟩ := hpN3 i
       refine ⟨P, ⟨LinearEquiv.trans (show (_ ≃ₗ[R] _) from ?_) hP'⟩⟩
-      simp only [LTSeries.map_length, LTSeries.map_toFun, pN', pMN']
-      exact submodule_equiv ..
+      simpa only [LTSeries.map_length, LTSeries.map_toFun, pN', pMN'] using submodule_equiv ..
     · intro i
       obtain ⟨P, ⟨hP'⟩⟩ := hpMN3 i
       refine ⟨P, ⟨LinearEquiv.trans (show (_ ≃ₗ[R] _) from ?_) hP'⟩⟩
-      simp only [LTSeries.map_length, LTSeries.map_toFun, pMN']
-      exact mkQ_equiv ..
+      simpa only [LTSeries.map_length, LTSeries.map_toFun, pMN'] using mkQ_equiv ..
   exact fg_induction P P_zero P_base P_ext _ inferInstance
 
 -- [Stacks 00L0]
@@ -450,9 +430,7 @@ theorem exists_LTSeries_quotient_iso_quotient_prime [IsNoetherianRing R] :
           fun i ↦ match i with | 0 => bot_lt_top⟩, ⟨rfl, ⟨rfl, fun i ↦ ?_⟩⟩⟩
         match i with
         | 0 =>
-          refine ⟨I, h, ⟨hI ▸ ?_⟩⟩
-          apply quotTorsionOfEquivSpanSingleton' ..
-          assumption
+          exact ⟨I, h, ⟨hI ▸ quotTorsionOfEquivSpanSingleton' _ _ _ hN⟩⟩
       · rw [Ideal.isPrime_iff] at h
         simp only [ne_eq, h_triv, not_false_eq_true, true_and, not_forall, Classical.not_imp,
         not_or] at h
