@@ -132,6 +132,9 @@ theorem LinearIndependent.injective [Nontrivial R] (hv : LinearIndependent R v) 
 theorem LinearIndepOn.injOn [Nontrivial R] (hv : LinearIndepOn R v s) : InjOn v s :=
   injOn_iff_injective.2 <| LinearIndependent.injective hv
 
+theorem LinearIndependent.smul_left_injective (hv : LinearIndependent R v) (i : ι) :
+    Injective fun r : R ↦ r • v i := by convert hv.comp (Finsupp.single_injective i); simp
+
 theorem LinearIndependent.ne_zero [Nontrivial R] (i : ι) (hv : LinearIndependent R v) :
     v i ≠ 0 := by
   intro h
@@ -553,6 +556,7 @@ theorem linearIndependent_iff :
     LinearIndependent R v ↔ ∀ l, Finsupp.linearCombination R v l = 0 → l = 0 := by
   simp [linearIndependent_iff_ker, LinearMap.ker_eq_bot']
 
+/-- A version of `linearIndependent_iff` where the linear combination is a `Finset` sum. -/
 theorem linearIndependent_iff' :
     LinearIndependent R v ↔
       ∀ s : Finset ι, ∀ g : ι → R, ∑ i ∈ s, g i • v i = 0 → ∀ i ∈ s, g i = 0 := by
@@ -562,6 +566,8 @@ theorem linearIndependent_iff' :
   · rw [← sub_eq_zero, ← Finset.sum_sub_distrib]
     convert h s (f - g) using 3 <;> simp only [Pi.sub_apply, sub_smul, sub_eq_zero]
 
+/-- A version of `linearIndependent_iff` where the linear combination is a `Finset` sum
+of a function with support contained in the `Finset`. -/
 theorem linearIndependent_iff'' :
     LinearIndependent R v ↔
       ∀ (s : Finset ι) (g : ι → R), (∀ i ∉ s, g i = 0) → ∑ i ∈ s, g i • v i = 0 → ∀ i, g i = 0 := by
@@ -651,6 +657,28 @@ theorem linearIndepOn_iff_linearCombinationOn :
 @[deprecated (since := "2025-02-15")] alias linearIndependent_iff_linearCombinationOn :=
   linearIndepOn_iff_linearCombinationOn
 
+/-- A version of `linearIndepOn_iff` where the linear combination is a `Finset` sum. -/
+lemma linearIndepOn_iff' : LinearIndepOn R v s ↔ ∀ (t : Finset ι) (g : ι → R), (t : Set ι) ⊆ s →
+    ∑ i ∈ t, g i • v i = 0 → ∀ i ∈ t, g i = 0 := by
+  classical
+  rw [LinearIndepOn, linearIndependent_iff']
+  refine ⟨fun h t g hts h0 i hit ↦ ?_, fun h t g h0 i hit ↦ ?_⟩
+  · refine h (t.preimage _ Subtype.val_injective.injOn) (fun i ↦ g i) ?_ ⟨i, hts hit⟩ (by simpa)
+    rwa [t.sum_preimage ((↑) : s → ι) Subtype.val_injective.injOn (fun i ↦ g i • v i)]
+    simp only [Subtype.range_coe_subtype, setOf_mem_eq, smul_eq_zero]
+    exact fun x hxt hxs ↦ (hxs (hts hxt)) |>.elim
+  replace h : ∀ i (hi : i ∈ s), ⟨i, hi⟩ ∈ t → ∀ (h : i ∈ s), g ⟨i, h⟩ = 0 := by
+    simpa [h0] using h (t.image (↑)) (fun i ↦ if hi : i ∈ s then g ⟨i, hi⟩ else 0)
+  apply h _ _ hit
+
+/-- A version of `linearIndepOn_iff` where the linear combination is a `Finset` sum
+of a function with support contained in the `Finset`. -/
+lemma linearIndepOn_iff'' : LinearIndepOn R v s ↔ ∀ (t : Finset ι) (g : ι → R), (t : Set ι) ⊆ s →
+    (∀ i ∉ t, g i = 0) → ∑ i ∈ t, g i • v i = 0 → ∀ i ∈ t, g i = 0 := by
+  classical
+  exact linearIndepOn_iff'.trans ⟨fun h t g hts htg h0 ↦ h _ _ hts h0, fun h t g hts h0 ↦
+    by simpa +contextual [h0] using h t (fun i ↦ if i ∈ t then g i else 0) hts⟩
+
 end LinearIndepOn
 
 end Module
@@ -694,7 +722,7 @@ These can be considered generalizations of properties of linear independence in 
 section Module
 
 variable [DivisionRing K] [AddCommGroup V] [Module K V]
-variable {v : ι → V} {s t : Set V} {x y : V}
+variable {v : ι → V} {s t : Set ι} {x y : V}
 
 open Submodule
 
@@ -707,5 +735,11 @@ theorem linearIndependent_iff_not_mem_span :
   · intro h i a ha
     by_contra ha'
     exact False.elim (h _ ((smul_mem_iff _ ha').1 ha))
+
+lemma linearIndepOn_iff_not_mem_span :
+    LinearIndepOn K v s ↔ ∀ i ∈ s, v i ∉ span K (v '' (s \ {i})) := by
+  rw [LinearIndepOn, linearIndependent_iff_not_mem_span, ← Function.comp_def]
+  simp_rw [Set.image_comp]
+  simp [Set.image_diff Subtype.val_injective]
 
 end Module

@@ -156,6 +156,14 @@ theorem null_iff_toMeasure_null (ν : FiniteMeasure Ω) (s : Set Ω) :
 theorem apply_mono (μ : FiniteMeasure Ω) {s₁ s₂ : Set Ω} (h : s₁ ⊆ s₂) : μ s₁ ≤ μ s₂ :=
   ENNReal.toNNReal_mono (measure_ne_top _ s₂) ((μ : Measure Ω).mono h)
 
+/-- Continuity from below: the measure of the union of a sequence of (not necessarily measurable)
+sets is the limit of the measures of the partial unions. -/
+protected lemma tendsto_measure_iUnion_accumulate {ι : Type*} [Preorder ι]
+    [IsCountablyGenerated (atTop : Filter ι)] {μ : FiniteMeasure Ω} {f : ι → Set Ω} :
+    Tendsto (fun i ↦ μ (Accumulate f i)) atTop (𝓝 (μ (⋃ i, f i))) := by
+  simpa [← ennreal_coeFn_eq_coeFn_toMeasure]
+    using tendsto_measure_iUnion_accumulate (μ := μ.toMeasure) (ι := ι)
+
 /-- The (total) mass of a finite measure `μ` is `μ univ`, i.e., the cast to `NNReal` of
 `(μ : measure Ω) univ`. -/
 def mass (μ : FiniteMeasure Ω) : ℝ≥0 := μ univ
@@ -357,7 +365,7 @@ theorem testAgainstNN_one (μ : FiniteMeasure Ω) : μ.testAgainstNN 1 = μ.mass
 
 @[simp]
 theorem zero_testAgainstNN_apply (f : Ω →ᵇ ℝ≥0) : (0 : FiniteMeasure Ω).testAgainstNN f = 0 := by
-  simp only [testAgainstNN, toMeasure_zero, lintegral_zero_measure, ENNReal.zero_toNNReal]
+  simp only [testAgainstNN, toMeasure_zero, lintegral_zero_measure, ENNReal.toNNReal_zero]
 
 theorem zero_testAgainstNN : (0 : FiniteMeasure Ω).testAgainstNN = 0 := by
   funext

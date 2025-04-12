@@ -3,8 +3,6 @@ Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos-Fernández. All
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Data.Finsupp.Antidiagonal
 import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
@@ -134,8 +132,9 @@ theorem le_weight (w : σ → ℕ) {s : σ} (hs : w s ≠ 0) (f : σ →₀ ℕ)
     rw [h]
     apply zero_le
 
-variable [OrderedAddCommMonoid M] (w : σ → M)
-  {R : Type*} [OrderedCommSemiring R] [CanonicallyOrderedAdd R] [NoZeroDivisors R] [Module R M]
+variable [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M] (w : σ → M)
+  {R : Type*} [CommSemiring R] [PartialOrder R] [IsOrderedRing R]
+  [CanonicallyOrderedAdd R] [NoZeroDivisors R] [Module R M]
 
 instance : SMulPosMono ℕ M :=
   ⟨fun b hb m m' h ↦ by
@@ -159,7 +158,8 @@ end OrderedAddCommMonoid
 
 section CanonicallyOrderedAddCommMonoid
 
-variable {M : Type*} [OrderedAddCommMonoid M] [CanonicallyOrderedAdd M] (w : σ → M)
+variable {M : Type*} [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M]
+  [CanonicallyOrderedAdd M] (w : σ → M)
 
 theorem le_weight_of_ne_zero' {s : σ} {f : σ →₀ ℕ} (hs : f s ≠ 0) :
     w s ≤ weight w f :=
@@ -218,13 +218,15 @@ theorem degree_single (a : σ) (r : R) : (Finsupp.single a r).degree = r :=
 @[simp]
 theorem degree_zero : degree (0 : σ →₀ R) = 0 := by simp [degree]
 
-lemma degree_eq_zero_iff {R : Type*} [OrderedAddCommMonoid R] [CanonicallyOrderedAdd R]
+lemma degree_eq_zero_iff {R : Type*}
+    [AddCommMonoid R] [PartialOrder R] [CanonicallyOrderedAdd R]
     (d : σ →₀ R) :
     degree d = 0 ↔ d = 0 := by
   simp only [degree, Finset.sum_eq_zero_iff, mem_support_iff, ne_eq, _root_.not_imp_self,
     DFunLike.ext_iff, coe_zero, Pi.zero_apply]
 
-theorem le_degree {R : Type*} [OrderedAddCommMonoid R] [CanonicallyOrderedAdd R]
+theorem le_degree {R : Type*}
+    [AddCommMonoid R] [PartialOrder R] [IsOrderedAddMonoid R] [CanonicallyOrderedAdd R]
     (s : σ) (f : σ →₀ R) :
     f s ≤ degree f := by
   by_cases h : s ∈ f.support

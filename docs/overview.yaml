@@ -443,7 +443,7 @@ Combinatorics:
     Harris-Kleitman inequality: 'IsLowerSet.le_card_inter_finset'
     # Antichains:
     Ahlswede-Zhang identity: 'AhlswedeZhang.infSum_eq_one'
-    LYM inequality: 'Finset.sum_card_slice_div_choose_le_one'
+    LYM inequality: 'Finset.lubell_yamamoto_meshalkin_inequality_sum_card_div_choose'
     Sperner's theorem: 'IsAntichain.sperner'
     # Intersecting families:
     Maximum size of an intersecting family: 'Set.Intersecting.is_max_iff_card_eq'
@@ -503,7 +503,7 @@ Data structures:
     array: 'Array'
     # buffer: 'buffer'
     difference list: 'Batteries.DList'
-    lazy list: 'LazyList'
+    lazy list: 'MLList'
     stream: 'Stream'''
     sequence: 'Stream''.Seq'
     weak sequence: 'Stream''.WSeq'

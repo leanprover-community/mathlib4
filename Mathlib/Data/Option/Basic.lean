@@ -44,6 +44,7 @@ theorem mem_map {f : α → β} {y : β} {o : Option α} : y ∈ o.map f ↔ ∃
 
 -- The simpNF linter says that the LHS can be simplified via `Option.mem_def`.
 -- However this is a higher priority lemma.
+-- It seems the side condition `H` is not applied by `simpNF`.
 -- https://github.com/leanprover/std4/issues/207
 @[simp 1100, nolint simpNF]
 theorem mem_map_of_injective {f : α → β} (H : Function.Injective f) {a : α} {o : Option α} :
@@ -88,14 +89,17 @@ theorem bind_eq_some' {x : Option α} {f : α → Option β} {b : β} :
     x.bind f = some b ↔ ∃ a, x = some a ∧ f a = some b := by
   cases x <;> simp
 
-theorem bind_congr {f g : α → Option β} {x : Option α}
-    (h : ∀ a ∈ x, f a = g a) : x.bind f = x.bind g := by
-  cases x <;> simp only [some_bind, none_bind, mem_def, h]
-
 @[congr]
 theorem bind_congr' {f g : α → Option β} {x y : Option α} (hx : x = y)
     (hf : ∀ a ∈ y, f a = g a) : x.bind f = y.bind g :=
   hx.symm ▸ bind_congr hf
+
+@[deprecated bind_congr (since := "2025-03-20")]
+-- This was renamed from `bind_congr` after https://github.com/leanprover/lean4/pull/7529
+-- upstreamed it with a slightly different statement.
+theorem bind_congr'' {f g : α → Option β} {x : Option α}
+    (h : ∀ a ∈ x, f a = g a) : x.bind f = x.bind g := by
+  cases x <;> simp only [some_bind, none_bind, mem_def, h]
 
 theorem joinM_eq_join : joinM = @join α :=
   funext fun _ ↦ rfl
@@ -280,8 +284,8 @@ theorem choice_eq_none (α : Type*) [IsEmpty α] : choice α = none :=
 end
 
 @[simp]
-theorem elim_none_some (f : Option α → β) : (fun x ↦ Option.elim x (f none) (f ∘ some)) = f :=
-  funext fun o ↦ by cases o <;> rfl
+theorem elim_none_some (f : Option α → β) (i : Option α) : i.elim (f none) (f ∘ some) = f i := by
+  cases i <;> rfl
 
 theorem elim_comp (h : α → β) {f : γ → α} {x : α} {i : Option γ} :
     (i.elim (h x) fun j => h (f j)) = h (i.elim x f) := by cases i <;> rfl
@@ -318,8 +322,10 @@ lemma isNone_eq_false_iff (a : Option α) : Option.isNone a = false ↔ Option.i
 lemma eq_none_or_eq_some (a : Option α) : a = none ∨ ∃ x, a = some x :=
   Option.exists.mp exists_eq'
 
-lemma forall_some_ne_iff_eq_none {o : Option α} : (∀ (x : α), some x ≠ o) ↔ o = none := by
+lemma eq_none_iff_forall_some_ne {o : Option α} : o = none ↔ ∀ a : α, some a ≠ o := by
   apply not_iff_not.1
-  simpa only [not_forall, not_not] using Option.ne_none_iff_exists.symm
+  simpa only [not_forall, not_not] using Option.ne_none_iff_exists
+
+@[deprecated (since := "2025-03-19")] alias forall_some_ne_iff_eq_none := eq_none_iff_forall_some_ne
 
 end Option

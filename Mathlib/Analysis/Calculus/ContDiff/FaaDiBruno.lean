@@ -749,13 +749,14 @@ variables by applying `p m` to each part of the partition, and then
 applying `f` to the resulting vector. It is called `c.compAlongOrderedFinpartition f p`. -/
 def compAlongOrderedFinpartition (f : F [×c.length]→L[𝕜] G) (p : ∀ i, E [×c.partSize i]→L[𝕜] F) :
     E[×n]→L[𝕜] G where
-  toFun v := f (c.applyOrderedFinpartition p v)
-  map_update_add' v i x y := by
-    cases Subsingleton.elim ‹_› (instDecidableEqFin _)
-    simp only [applyOrderedFinpartition_update_right, ContinuousMultilinearMap.map_update_add]
-  map_update_smul' v i c x := by
-    cases Subsingleton.elim ‹_› (instDecidableEqFin _)
-    simp only [applyOrderedFinpartition_update_right, ContinuousMultilinearMap.map_update_smul]
+  toMultilinearMap :=
+    MultilinearMap.mk' (fun v ↦ f (c.applyOrderedFinpartition p v))
+      (fun v i x y ↦ by
+        simp only [applyOrderedFinpartition_update_right,
+          ContinuousMultilinearMap.map_update_add])
+      (fun v i c x ↦ by
+        simp only [applyOrderedFinpartition_update_right,
+          ContinuousMultilinearMap.map_update_smul])
   cont := by
     apply f.cont.comp
     change Continuous (fun v m ↦ p m (v ∘ c.emb m))
@@ -775,22 +776,18 @@ theorem norm_compAlongOrderedFinpartition_le (f : F [×c.length]→L[𝕜] G)
 
 /-- Bundled version of `compAlongOrderedFinpartition`, depending linearly on `f`
 and multilinearly on `p`. -/
-@[simps apply_apply]
+@[simps! apply_apply]
 def compAlongOrderedFinpartitionₗ :
     (F [×c.length]→L[𝕜] G) →ₗ[𝕜]
       MultilinearMap 𝕜 (fun i : Fin c.length ↦ E[×c.partSize i]→L[𝕜] F) (E[×n]→L[𝕜] G) where
   toFun f :=
-    { toFun := fun p ↦ c.compAlongOrderedFinpartition f p
-      map_update_add' := by
-        intro inst p m q q'
-        cases Subsingleton.elim ‹_› (instDecidableEqFin _)
+    MultilinearMap.mk' (fun p ↦ c.compAlongOrderedFinpartition f p)
+      (fun p m q q' ↦ by
         ext v
-        simp [applyOrderedFinpartition_update_left]
-      map_update_smul' := by
-        intro inst p m a q
-        cases Subsingleton.elim ‹_› (instDecidableEqFin _)
+        simp [applyOrderedFinpartition_update_left])
+      (fun p m a q ↦ by
         ext v
-        simp [applyOrderedFinpartition_update_left] }
+        simp [applyOrderedFinpartition_update_left])
   map_add' _ _ := rfl
   map_smul' _ _ :=  rfl
 
@@ -984,7 +981,7 @@ theorem HasFTaylorSeriesUpToOn.comp {n : WithTop ℕ∞} {g : F → G} {f : E �
     let B := c.compAlongOrderedFinpartitionL 𝕜 E F G
     change ContinuousOn
       ((fun p ↦ B p.1 p.2) ∘ (fun x ↦ (q (f x) c.length, fun i ↦ p x (c.partSize i)))) s
-    apply B.continuous_uncurry_of_multilinear.comp_continuousOn (ContinuousOn.prod ?_ ?_)
+    apply B.continuous_uncurry_of_multilinear.comp_continuousOn (ContinuousOn.prodMk ?_ ?_)
     · have : (c.length : WithTop ℕ∞) ≤ m := mod_cast OrderedFinpartition.length_le c
       exact (hg.cont c.length (this.trans hm)).comp hf.continuousOn h
     · apply continuousOn_pi.2 (fun i ↦ ?_)

@@ -18,6 +18,7 @@ important specific limit computations in metric spaces, in ordered rings/fields,
 instances of these such as `ℝ`, `ℝ≥0` and `ℝ≥0∞`.
 -/
 
+assert_not_exists Basis NormedSpace
 
 noncomputable section
 
@@ -75,7 +76,7 @@ algebra over `ℝ`, e.g., `ℂ`).
 TODO: introduce a typeclass saying that `1 / n` tends to 0 at top, making it possible to get this
 statement simultaneously on `ℚ`, `ℝ` and `ℂ`. -/
 theorem tendsto_natCast_div_add_atTop {𝕜 : Type*} [DivisionRing 𝕜] [TopologicalSpace 𝕜]
-    [CharZero 𝕜] [Algebra ℝ 𝕜] [ContinuousSMul ℝ 𝕜] [TopologicalDivisionRing 𝕜] (x : 𝕜) :
+    [CharZero 𝕜] [Algebra ℝ 𝕜] [ContinuousSMul ℝ 𝕜] [IsTopologicalDivisionRing 𝕜] (x : 𝕜) :
     Tendsto (fun n : ℕ ↦ (n : 𝕜) / (n + x)) atTop (𝓝 1) := by
   convert Tendsto.congr' ((eventually_ne_atTop 0).mp (Eventually.of_forall fun n hn ↦ _)) _
   · exact fun n : ℕ ↦ 1 / (1 + x / n)
@@ -105,7 +106,8 @@ theorem Filter.EventuallyEq.div_mul_cancel {α G : Type*} [GroupWithZero G] {f g
   aesop
 
 /-- If `g` tends to `∞`, then eventually for all `x` we have `(f x / g x) * g x = f x`. -/
-theorem Filter.EventuallyEq.div_mul_cancel_atTop {α K : Type*} [LinearOrderedSemifield K]
+theorem Filter.EventuallyEq.div_mul_cancel_atTop {α K : Type*}
+    [Semifield K] [LinearOrder K] [IsStrictOrderedRing K]
     {f g : α → K} {l : Filter α} (hg : Tendsto g l atTop) :
     (fun x ↦ f x / g x * g x) =ᶠ[l] fun x ↦ f x :=
   div_mul_cancel <| hg.mono_right <| le_principal_iff.mpr <|
@@ -113,27 +115,29 @@ theorem Filter.EventuallyEq.div_mul_cancel_atTop {α K : Type*} [LinearOrderedSe
 
 /-- If when `x` tends to `∞`, `g` tends to `∞` and `f x / g x` tends to a positive
   constant, then `f` tends to `∞`. -/
-theorem Tendsto.num {α K : Type*} [LinearOrderedField K] [TopologicalSpace K] [OrderTopology K]
+theorem Tendsto.num {α K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
+    [TopologicalSpace K] [OrderTopology K]
     {f g : α → K} {l : Filter α} (hg : Tendsto g l atTop) {a : K} (ha : 0 < a)
     (hlim : Tendsto (fun x => f x / g x) l (𝓝 a)) :
     Tendsto f l atTop :=
-  Tendsto.congr' (EventuallyEq.div_mul_cancel_atTop hg) (Tendsto.mul_atTop ha hlim hg)
+  (hlim.pos_mul_atTop ha hg).congr' (EventuallyEq.div_mul_cancel_atTop hg)
 
 /-- If when `x` tends to `∞`, `g` tends to `∞` and `f x / g x` tends to a positive
   constant, then `f` tends to `∞`. -/
-theorem Tendsto.den {α K : Type*} [LinearOrderedField K] [TopologicalSpace K] [OrderTopology K]
+theorem Tendsto.den {α K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
+    [TopologicalSpace K] [OrderTopology K]
     [ContinuousInv K] {f g : α → K} {l : Filter α} (hf : Tendsto f l atTop) {a : K} (ha : 0 < a)
     (hlim : Tendsto (fun x => f x / g x) l (𝓝 a)) :
-    Tendsto g l atTop := by
+    Tendsto g l atTop :=
   have hlim' : Tendsto (fun x => g x / f x) l (𝓝 a⁻¹) := by
     simp_rw [← inv_div (f _)]
     exact Filter.Tendsto.inv (f := fun x => f x / g x) hlim
-  apply Tendsto.congr' (EventuallyEq.div_mul_cancel_atTop hf)
-    (Tendsto.mul_atTop (inv_pos_of_pos ha) hlim' hf)
+  (hlim'.pos_mul_atTop (inv_pos_of_pos ha) hf).congr' (.div_mul_cancel_atTop hf)
 
 /-- If when `x` tends to `∞`, `f x / g x` tends to a positive constant, then `f` tends to `∞` if
   and only if `g` tends to `∞`. -/
-theorem Tendsto.num_atTop_iff_den_atTop {α K : Type*} [LinearOrderedField K] [TopologicalSpace K]
+theorem Tendsto.num_atTop_iff_den_atTop {α K : Type*}
+    [Field K] [LinearOrder K] [IsStrictOrderedRing K] [TopologicalSpace K]
     [OrderTopology K] [ContinuousInv K] {f g : α → K} {l : Filter α} {a : K} (ha : 0 < a)
     (hlim : Tendsto (fun x => f x / g x) l (𝓝 a)) :
     Tendsto f l atTop ↔ Tendsto g l atTop :=
@@ -142,12 +146,14 @@ theorem Tendsto.num_atTop_iff_den_atTop {α K : Type*} [LinearOrderedField K] [T
 /-! ### Powers -/
 
 
-theorem tendsto_add_one_pow_atTop_atTop_of_pos [LinearOrderedSemiring α] [Archimedean α] {r : α}
+theorem tendsto_add_one_pow_atTop_atTop_of_pos
+    [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] [Archimedean α] {r : α}
     (h : 0 < r) : Tendsto (fun n : ℕ ↦ (r + 1) ^ n) atTop atTop :=
   tendsto_atTop_atTop_of_monotone' (pow_right_mono₀ <| le_add_of_nonneg_left h.le) <|
     not_bddAbove_iff.2 fun _ ↦ Set.exists_range_iff.2 <| add_one_pow_unbounded_of_pos _ h
 
-theorem tendsto_pow_atTop_atTop_of_one_lt [LinearOrderedRing α] [Archimedean α] {r : α}
+theorem tendsto_pow_atTop_atTop_of_one_lt
+    [Ring α] [LinearOrder α] [IsStrictOrderedRing α] [Archimedean α] {r : α}
     (h : 1 < r) : Tendsto (fun n : ℕ ↦ r ^ n) atTop atTop :=
   sub_add_cancel r 1 ▸ tendsto_add_one_pow_atTop_atTop_of_pos (sub_pos.2 h)
 
@@ -155,7 +161,8 @@ theorem Nat.tendsto_pow_atTop_atTop_of_one_lt {m : ℕ} (h : 1 < m) :
     Tendsto (fun n : ℕ ↦ m ^ n) atTop atTop :=
   tsub_add_cancel_of_le (le_of_lt h) ▸ tendsto_add_one_pow_atTop_atTop_of_pos (tsub_pos_of_lt h)
 
-theorem tendsto_pow_atTop_nhds_zero_of_lt_one {𝕜 : Type*} [LinearOrderedField 𝕜] [Archimedean 𝕜]
+theorem tendsto_pow_atTop_nhds_zero_of_lt_one {𝕜 : Type*}
+    [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [Archimedean 𝕜]
     [TopologicalSpace 𝕜] [OrderTopology 𝕜] {r : 𝕜} (h₁ : 0 ≤ r) (h₂ : r < 1) :
     Tendsto (fun n : ℕ ↦ r ^ n) atTop (𝓝 0) :=
   h₁.eq_or_lt.elim
@@ -165,7 +172,8 @@ theorem tendsto_pow_atTop_nhds_zero_of_lt_one {𝕜 : Type*} [LinearOrderedField
       have := (one_lt_inv₀ hr).2 h₂ |> tendsto_pow_atTop_atTop_of_one_lt
       (tendsto_inv_atTop_zero.comp this).congr fun n ↦ by simp)
 
-@[simp] theorem tendsto_pow_atTop_nhds_zero_iff {𝕜 : Type*} [LinearOrderedField 𝕜] [Archimedean 𝕜]
+@[simp] theorem tendsto_pow_atTop_nhds_zero_iff {𝕜 : Type*}
+    [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [Archimedean 𝕜]
     [TopologicalSpace 𝕜] [OrderTopology 𝕜] {r : 𝕜} :
     Tendsto (fun n : ℕ ↦ r ^ n) atTop (𝓝 0) ↔ |r| < 1 := by
   rw [tendsto_zero_iff_abs_tendsto_zero]
@@ -182,7 +190,8 @@ theorem tendsto_pow_atTop_nhds_zero_of_lt_one {𝕜 : Type*} [LinearOrderedField
       · simpa only [← abs_pow]
   · simpa only [← abs_pow] using (tendsto_pow_atTop_nhds_zero_of_lt_one (abs_nonneg r)) h
 
-theorem tendsto_pow_atTop_nhdsWithin_zero_of_lt_one {𝕜 : Type*} [LinearOrderedField 𝕜]
+theorem tendsto_pow_atTop_nhdsWithin_zero_of_lt_one {𝕜 : Type*}
+    [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
     [Archimedean 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜] {r : 𝕜} (h₁ : 0 < r) (h₂ : r < 1) :
     Tendsto (fun n : ℕ ↦ r ^ n) atTop (𝓝[>] 0) :=
   tendsto_inf.2
@@ -646,21 +655,25 @@ theorem tendsto_factorial_div_pow_self_atTop :
 
 section
 
-theorem tendsto_nat_floor_atTop {α : Type*} [LinearOrderedSemiring α] [FloorSemiring α] :
+theorem tendsto_nat_floor_atTop {α : Type*}
+    [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] [FloorSemiring α] :
     Tendsto (fun x : α ↦ ⌊x⌋₊) atTop atTop :=
   Nat.floor_mono.tendsto_atTop_atTop fun x ↦ ⟨max 0 (x + 1), by simp [Nat.le_floor_iff]⟩
 
-lemma tendsto_nat_ceil_atTop {α : Type*} [LinearOrderedSemiring α] [FloorSemiring α] :
+lemma tendsto_nat_ceil_atTop {α : Type*}
+    [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] [FloorSemiring α] :
     Tendsto (fun x : α ↦ ⌈x⌉₊) atTop atTop := by
   refine Nat.ceil_mono.tendsto_atTop_atTop (fun x ↦ ⟨x, ?_⟩)
   simp only [Nat.ceil_natCast, le_refl]
 
-lemma tendsto_nat_floor_mul_atTop {α : Type _} [LinearOrderedSemifield α] [FloorSemiring α]
+lemma tendsto_nat_floor_mul_atTop {α : Type _}
+    [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] [FloorSemiring α]
     [Archimedean α] (a : α) (ha : 0 < a) : Tendsto (fun (x : ℕ) => ⌊a * x⌋₊) atTop atTop :=
   Tendsto.comp tendsto_nat_floor_atTop
     <| Tendsto.const_mul_atTop ha tendsto_natCast_atTop_atTop
 
-variable {R : Type*} [TopologicalSpace R] [LinearOrderedField R] [OrderTopology R] [FloorRing R]
+variable {R : Type*} [TopologicalSpace R] [Field R] [LinearOrder R] [IsStrictOrderedRing R]
+  [OrderTopology R] [FloorRing R]
 
 theorem tendsto_nat_floor_mul_div_atTop {a : R} (ha : 0 ≤ a) :
     Tendsto (fun x ↦ (⌊a * x⌋₊ : R) / x) atTop (𝓝 a) := by

@@ -34,6 +34,8 @@ outer measure, Carathéodory-measurable, Carathéodory's criterion
 
 -/
 
+assert_not_exists Basis
+
 noncomputable section
 
 open Set Function Filter

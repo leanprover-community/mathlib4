@@ -39,7 +39,7 @@ multiplication map (but still allowing `𝕜` to be an arbitrary ring equipped w
 
 The most familiar case of all is when `V = W = 𝕜 = ℝ`, `L` is multiplication, `μ` is volume, and
 `e` is `Real.fourierChar`, i.e. the character `fun x ↦ exp ((2 * π * x) * I)` (for which we
-introduce the notation `𝐞` in the locale `FourierTransform`).
+introduced the notation `𝐞` in the locale `FourierTransform`).
 
 Another familiar case (which generalizes the previous one) is when `V = W` is an inner product space
 over `ℝ` and `L` is the scalar product. We introduce two notations `𝓕` for the Fourier transform in
@@ -125,8 +125,7 @@ theorem fourierIntegral_convergent_iff (he : Continuous e)
   -- first prove one-way implication
   have aux {g : V → E} (hg : Integrable g μ) (x : W) :
       Integrable (fun v : V ↦ e (-L v x) • g v) μ := by
-    have c : Continuous fun v ↦ e (-L v x) :=
-      he.comp (hL.comp (continuous_prod_mk.mpr ⟨continuous_id, continuous_const⟩)).neg
+    have c : Continuous fun v ↦ e (-L v x) := he.comp (hL.comp (.prodMk_left _)).neg
     simp_rw [← integrable_norm_iff (c.aestronglyMeasurable.smul hg.1), Circle.norm_smul]
     exact hg.norm
   -- then use it for both directions
@@ -155,7 +154,7 @@ theorem fourierIntegral_continuous [FirstCountableTopology W] (he : Continuous e
   · exact fun w ↦ ae_of_all _ fun v ↦ le_of_eq (Circle.norm_smul _ _)
   · exact hf.norm
   · refine ae_of_all _ fun v ↦ (he.comp ?_).smul continuous_const
-    exact (hL.comp (continuous_prod_mk.mpr ⟨continuous_const, continuous_id⟩)).neg
+    exact (hL.comp (.prodMk_right _)).neg
 
 end Continuous
 
@@ -298,22 +297,7 @@ open scoped Real
 
 namespace Real
 
-/-- The standard additive character of `ℝ`, given by `fun x ↦ exp (2 * π * x * I)`.
-Denoted as `𝐞` within the `Real.FourierTransform` namespace. -/
-def fourierChar : AddChar ℝ 𝕊 where
-  toFun z := .exp (2 * π * z)
-  map_zero_eq_one' := by simp only; rw [mul_zero, Circle.exp_zero]
-  map_add_eq_mul' x y := by simp only; rw [mul_add, Circle.exp_add]
-
-@[inherit_doc] scoped[FourierTransform] notation "𝐞" => Real.fourierChar
-
 open FourierTransform
-
-theorem fourierChar_apply (x : ℝ) : 𝐞 x = Complex.exp (↑(2 * π * x) * Complex.I) :=
-  rfl
-
-@[continuity]
-theorem continuous_fourierChar : Continuous 𝐞 := Circle.exp.continuous.comp (continuous_mul_left _)
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 

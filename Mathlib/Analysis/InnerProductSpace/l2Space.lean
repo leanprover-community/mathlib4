@@ -102,7 +102,7 @@ namespace lp
 theorem summable_inner (f g : lp G 2) : Summable fun i => ⟪f i, g i⟫ := by
   -- Apply the Direct Comparison Test, comparing with ∑' i, ‖f i‖ * ‖g i‖ (summable by Hölder)
   refine .of_norm_bounded (fun i => ‖f i‖ * ‖g i‖) (lp.summable_mul ?_ f g) ?_
-  · rw [Real.isConjExponent_iff]; norm_num
+  · rw [Real.holderConjugate_iff]; norm_num
   intro i
   -- Then apply Cauchy-Schwarz pointwise
   exact norm_inner_le_norm (𝕜 := 𝕜) _ _
@@ -322,7 +322,7 @@ elements of `E`. -/
 protected theorem IsHilbertSum.linearIsometryEquiv_symm_apply_dfinsupp_sum_single
     [DecidableEq ι] [∀ i, DecidableEq (G i)] (hV : IsHilbertSum 𝕜 G V) (W₀ : Π₀ i : ι, G i) :
     hV.linearIsometryEquiv.symm (W₀.sum (lp.single 2)) = W₀.sum fun i => V i := by
-  simp only [map_dfinsupp_sum, IsHilbertSum.linearIsometryEquiv_symm_apply_single]
+  simp only [map_dfinsuppSum, IsHilbertSum.linearIsometryEquiv_symm_apply_single]
 
 /-- In the canonical isometric isomorphism between a Hilbert sum `E` of `G : ι → Type*` and
 `lp G 2`, a finitely-supported vector in `lp G 2` is the image of the associated finite sum of
@@ -331,7 +331,7 @@ elements of `E`. -/
 protected theorem IsHilbertSum.linearIsometryEquiv_apply_dfinsupp_sum_single
     [DecidableEq ι] [∀ i, DecidableEq (G i)] (hV : IsHilbertSum 𝕜 G V) (W₀ : Π₀ i : ι, G i) :
     ((W₀.sum (γ := lp G 2) fun a b ↦ hV.linearIsometryEquiv (V a b)) : ∀ i, G i) = W₀ := by
-  rw [← map_dfinsupp_sum]
+  rw [← map_dfinsuppSum]
   rw [← hV.linearIsometryEquiv_symm_apply_dfinsupp_sum_single]
   rw [LinearIsometryEquiv.apply_symm_apply]
   ext i

@@ -76,6 +76,8 @@ instance instFunLike : FunLike (Kernel α β) α (Measure β) where
 @[fun_prop]
 lemma measurable (κ : Kernel α β) : Measurable κ := κ.measurable'
 
+lemma aemeasurable (κ : Kernel α β) {μ : Measure α} : AEMeasurable κ μ := κ.measurable.aemeasurable
+
 @[simp, norm_cast] lemma coe_mk (f : α → Measure β) (hf) : mk f hf = f := rfl
 
 initialize_simps_projections Kernel (toFun → apply)
@@ -114,6 +116,10 @@ def coeAddHom (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] :
   toFun := (⇑)
   map_zero' := coe_zero
   map_add' := coe_add
+
+@[simp]
+theorem coeAddHom_apply (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] (κ : Kernel α β) :
+    coeAddHom α β κ = ⇑κ := rfl
 
 @[simp]
 theorem coe_finset_sum (I : Finset ι) (κ : ι → Kernel α β) : ⇑(∑ i ∈ I, κ i) = ∑ i ∈ I, ⇑(κ i) :=

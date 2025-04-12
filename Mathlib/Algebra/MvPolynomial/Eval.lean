@@ -399,14 +399,23 @@ theorem map_injective (hf : Function.Injective f) :
   intro m
   exact hf (h m)
 
+theorem map_injective_iff : Function.Injective (map (σ := σ) f) ↔ Function.Injective f :=
+  ⟨fun h r r' eq ↦ by simpa using h (a₁ := C r) (a₂ := C r') (by simpa), map_injective f⟩
+
 theorem map_surjective (hf : Function.Surjective f) :
     Function.Surjective (map f : MvPolynomial σ R → MvPolynomial σ S₁) := fun p => by
-  induction' p using MvPolynomial.induction_on' with i fr a b ha hb
-  · obtain ⟨r, rfl⟩ := hf fr
+  induction p using MvPolynomial.induction_on' with
+  | monomial i fr =>
+    obtain ⟨r, rfl⟩ := hf fr
     exact ⟨monomial i r, map_monomial _ _ _⟩
-  · obtain ⟨a, rfl⟩ := ha
+  | add a b ha hb =>
+    obtain ⟨a, rfl⟩ := ha
     obtain ⟨b, rfl⟩ := hb
     exact ⟨a + b, RingHom.map_add _ _ _⟩
+
+theorem map_surjective_iff : Function.Surjective (map (σ := σ) f) ↔ Function.Surjective f :=
+  ⟨fun h s ↦ let ⟨p, h⟩ := h (C s); ⟨p.coeff 0, by simpa [coeff_map] using congr(coeff 0 $h)⟩,
+    map_surjective f⟩
 
 /-- If `f` is a left-inverse of `g` then `map f` is a left-inverse of `map g`. -/
 theorem map_leftInverse {f : R →+* S₁} {g : S₁ →+* R} (hf : Function.LeftInverse f g) :
@@ -757,13 +766,43 @@ variable {S T : Type*} [CommSemiring S] [Algebra R S] [CommSemiring T] [Algebra 
 lemma aeval_sumElim {σ τ : Type*} (p : MvPolynomial (σ ⊕ τ) R) (f : τ → S) (g : σ → T) :
     (aeval (Sum.elim g (algebraMap S T ∘ f))) p =
       (aeval g) ((aeval (Sum.elim X (C ∘ f))) p) := by
-  induction' p using MvPolynomial.induction_on with r p q hp hq p i h
-  · simp [← IsScalarTower.algebraMap_apply]
-  · simp [hp, hq]
-  · cases i <;> simp [h]
+  induction p using MvPolynomial.induction_on with
+  | C r => simp [← IsScalarTower.algebraMap_apply]
+  | add p q hp hq => simp [hp, hq]
+  | mul_X p i h => cases i <;> simp [h]
 
 @[deprecated (since := "2025-02-21")] alias aeval_sum_elim := aeval_sumElim
 
 end CommSemiring
+
+section Algebra
+
+variable {R S σ : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
+
+/--
+If `S` is an `R`-algebra, then `MvPolynomial σ S` is a `MvPolynomial σ R` algebra.
+
+Warning: This produces a diamond for
+`Algebra (MvPolynomial σ R) (MvPolynomial σ (MvPolynomial σ S))`. That's why it is not a
+global instance.
+-/
+noncomputable def algebraMvPolynomial : Algebra (MvPolynomial σ R) (MvPolynomial σ S) :=
+  (MvPolynomial.map (algebraMap R S)).toAlgebra
+
+attribute [local instance] algebraMvPolynomial
+
+@[simp]
+lemma algebraMap_def :
+    algebraMap (MvPolynomial σ R) (MvPolynomial σ S) = MvPolynomial.map (algebraMap R S) :=
+  rfl
+
+instance : IsScalarTower R (MvPolynomial σ R) (MvPolynomial σ S) :=
+  IsScalarTower.of_algebraMap_eq' (by ext; simp)
+
+instance [FaithfulSMul R S] : FaithfulSMul (MvPolynomial σ R) (MvPolynomial σ S) :=
+  (faithfulSMul_iff_algebraMap_injective ..).mpr
+    (map_injective _ <| FaithfulSMul.algebraMap_injective ..)
+
+end Algebra
 
 end MvPolynomial
