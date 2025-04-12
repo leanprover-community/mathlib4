@@ -5,8 +5,6 @@ Authors: Jingting Wang, Wanyi He, Nailin Guan
 -/
 import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 import Mathlib.CategoryTheory.EffectiveEpi.RegularEpi
-import Mathlib.Combinatorics.Quiver.ReflQuiver
-import Mathlib.Order.CompletePartialOrder
 import Mathlib.RingTheory.QuotSMulTop
 
 /-!
