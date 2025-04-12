@@ -109,9 +109,10 @@ protected theorem Sorted.filter {l : List α} (f : α → Bool) (h : Sorted r l)
 
 theorem eq_of_perm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (hp : l₁ ~ l₂) (hs₁ : Sorted r l₁)
     (hs₂ : Sorted r l₂) : l₁ = l₂ := by
-  induction' hs₁ with a l₁ h₁ hs₁ IH generalizing l₂
-  · exact hp.nil_eq
-  · have : a ∈ l₂ := hp.subset mem_cons_self
+  induction hs₁ generalizing l₂ with
+  | nil => exact hp.nil_eq
+  | @cons a l₁ h₁ hs₁ IH =>
+    have : a ∈ l₂ := hp.subset mem_cons_self
     rcases append_of_mem this with ⟨u₂, v₂, rfl⟩
     have hp' := (perm_cons a).1 (hp.trans perm_middle)
     obtain rfl := IH hp' (hs₂.sublist <| by simp)

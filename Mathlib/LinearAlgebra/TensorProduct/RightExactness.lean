@@ -174,16 +174,6 @@ theorem TensorProduct.map_surjective : Function.Surjective (TensorProduct.map g 
   rw [← lTensor_comp_rTensor, coe_comp]
   exact Function.Surjective.comp (lTensor_surjective _ hg') (rTensor_surjective _ hg)
 
-variable (M R) in
-theorem TensorProduct.mk_surjective (S) [Semiring S] [Algebra R S]
-    (h : Function.Surjective (algebraMap R S)) :
-    Function.Surjective (TensorProduct.mk R S M 1) := by
-  rw [← LinearMap.range_eq_top, ← top_le_iff, ← span_tmul_eq_top, Submodule.span_le]
-  rintro _ ⟨x, y, rfl⟩
-  obtain ⟨x, rfl⟩ := h x
-  rw [Algebra.algebraMap_eq_smul_one, smul_tmul]
-  exact ⟨x • y, rfl⟩
-
 end Semiring
 
 variable {R M N P : Type*} [CommRing R]
