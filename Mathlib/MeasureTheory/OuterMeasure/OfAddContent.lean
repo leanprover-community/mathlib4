@@ -92,7 +92,7 @@ theorem isCaratheodory_ofFunction_of_mem (hC : IsSetSemiring C) (m : AddContent 
   have h_m_eq i : m (f i) = m (f i ∩ s) + ∑ u ∈ A i, m u :=
     eq_add_disjointOfDiff_of_subset hC (hC.inter_mem (f i) (hf i) s hs) (hf i) inter_subset_left
   simp_rw [h_m_eq]
-  rw [tsum_add ENNReal.summable ENNReal.summable]
+  rw [ENNReal.tsum_add]
   refine add_le_add ?_ ?_
   · refine iInf_le_of_le (fun i ↦ f i ∩ s) <| iInf_le_of_le ?_ le_rfl
     rw [← iUnion_inter]

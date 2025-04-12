@@ -186,16 +186,20 @@ section ContinuousMul
 variable [T2Space M] [ContinuousMul M]
 
 @[to_additive]
-theorem prod_mul_tprod_nat_mul'
+protected theorem Multipliable.prod_mul_tprod_nat_mul'
     {f : ℕ → M} {k : ℕ} (h : Multipliable (fun n ↦ f (n + k))) :
     ((∏ i ∈ range k, f i) * ∏' i, f (i + k)) = ∏' i, f i :=
   h.hasProd.prod_range_mul.tprod_eq.symm
+
+@[deprecated (since := "2025-04-12")] alias sum_add_tsum_nat_add' := Summable.sum_add_tsum_nat_add'
+@[to_additive existing, deprecated (since := "2025-04-12")] alias prod_mul_tprod_nat_mul' :=
+  Multipliable.prod_mul_tprod_nat_mul'
 
 @[to_additive]
 theorem tprod_eq_zero_mul'
     {f : ℕ → M} (hf : Multipliable (fun n ↦ f (n + 1))) :
     ∏' b, f b = f 0 * ∏' b, f (b + 1) := by
-  simpa only [prod_range_one] using (prod_mul_tprod_nat_mul' hf).symm
+  simpa only [prod_range_one] using hf.prod_mul_tprod_nat_mul'.symm
 
 @[to_additive]
 theorem tprod_even_mul_odd {f : ℕ → M} (he : Multipliable fun k ↦ f (2 * k))
@@ -234,7 +238,7 @@ theorem hasProd_nat_add_iff' {f : ℕ → G} (k : ℕ) :
 @[to_additive]
 protected theorem Multipliable.prod_mul_tprod_nat_add [T2Space G] {f : ℕ → G} (k : ℕ)
     (h : Multipliable f) : ((∏ i ∈ range k, f i) * ∏' i, f (i + k)) = ∏' i, f i :=
-  prod_mul_tprod_nat_mul' <| (multipliable_nat_add_iff k).2 h
+  Multipliable.prod_mul_tprod_nat_mul' <| (multipliable_nat_add_iff k).2 h
 
 @[deprecated (since := "2025-04-12")] alias sum_add_tsum_nat_add :=
   Summable.sum_add_tsum_nat_add

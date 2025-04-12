@@ -61,7 +61,7 @@ lemma summable_riemannZetaSummand (hs : 1 < s.re) :
 lemma tsum_riemannZetaSummand (hs : 1 < s.re) :
     ∑' (n : ℕ), riemannZetaSummandHom (ne_zero_of_one_lt_re hs) n = riemannZeta s := by
   have hsum := summable_riemannZetaSummand hs
-  rw [zeta_eq_tsum_one_div_nat_add_one_cpow hs, tsum_eq_zero_add hsum.of_norm, map_zero, zero_add]
+  rw [zeta_eq_tsum_one_div_nat_add_one_cpow hs, hsum.of_norm.tsum_eq_zero_add, map_zero, zero_add]
   simp only [riemannZetaSummandHom, cpow_neg, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
     Nat.cast_add, Nat.cast_one, one_div]
 
