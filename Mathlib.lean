@@ -2515,8 +2515,7 @@ import Mathlib.CategoryTheory.Types
 import Mathlib.CategoryTheory.UnivLE
 import Mathlib.CategoryTheory.Whiskering
 import Mathlib.CategoryTheory.Widesubcategory
-import Mathlib.CategoryTheory.WithTerminal.Basic
-import Mathlib.CategoryTheory.WithTerminal.FinCategory
+import Mathlib.CategoryTheory.WithTerminal
 import Mathlib.CategoryTheory.Yoneda
 import Mathlib.Combinatorics.Additive.AP.Three.Behrend
 import Mathlib.Combinatorics.Additive.AP.Three.Defs
@@ -3044,13 +3043,11 @@ import Mathlib.Data.Matroid.IndepAxioms
 import Mathlib.Data.Matroid.Init
 import Mathlib.Data.Matroid.Loop
 import Mathlib.Data.Matroid.Map
-import Mathlib.Data.Matroid.Minor.Contract
-import Mathlib.Data.Matroid.Minor.Delete
-import Mathlib.Data.Matroid.Minor.Order
-import Mathlib.Data.Matroid.Minor.Restrict
+import Mathlib.Data.Matroid.Minor.Basic
 import Mathlib.Data.Matroid.Rank.Cardinal
 import Mathlib.Data.Matroid.Rank.ENat
 import Mathlib.Data.Matroid.Rank.Finite
+import Mathlib.Data.Matroid.Restrict
 import Mathlib.Data.Matroid.Sum
 import Mathlib.Data.Multiset.AddSub
 import Mathlib.Data.Multiset.Antidiagonal
@@ -3615,6 +3612,8 @@ import Mathlib.GroupTheory.GroupAction.Primitive
 import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.GroupTheory.GroupAction.SubMulAction
+import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
+import Mathlib.GroupTheory.GroupAction.SubMulAction.OfStabilizer
 import Mathlib.GroupTheory.GroupAction.SubMulAction.Pointwise
 import Mathlib.GroupTheory.GroupAction.Support
 import Mathlib.GroupTheory.GroupAction.Transitive
@@ -5157,7 +5156,6 @@ import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 import Mathlib.RingTheory.Polynomial.Dickson
 import Mathlib.RingTheory.Polynomial.Eisenstein.Basic
 import Mathlib.RingTheory.Polynomial.Eisenstein.Distinguished
-import Mathlib.RingTheory.Polynomial.Eisenstein.Generalized
 import Mathlib.RingTheory.Polynomial.Eisenstein.IsIntegral
 import Mathlib.RingTheory.Polynomial.GaussLemma
 import Mathlib.RingTheory.Polynomial.Hermite.Basic
