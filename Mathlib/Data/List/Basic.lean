@@ -1189,18 +1189,8 @@ theorem map_diff [DecidableEq β] {f : α → β} (finj : Injective f) {l₁ l�
     map f (l₁.diff l₂) = (map f l₁).diff (map f l₂) := by
   simp only [diff_eq_foldl, foldl_map, map_foldl_erase finj]
 
-theorem erase_diff_erase_sublist_of_sublist {a : α} :
-    ∀ {l₁ l₂ : List α}, l₁ <+ l₂ → (l₂.erase a).diff (l₁.erase a) <+ l₂.diff l₁
-  | [], _, _ => erase_sublist
-  | b :: l₁, l₂, h =>
-    if heq : b = a then by simp only [heq, erase_cons_head, diff_cons]; rfl
-    else by
-      simp only [erase_cons_head, erase_cons_tail (not_beq_of_ne heq),
-        diff_cons ((List.erase l₂ a)) (List.erase l₁ a) b, diff_cons l₂ l₁ b,
-        erase_comm a]
-      have h' := h.erase b
-      rw [erase_cons_head] at h'
-      exact @erase_diff_erase_sublist_of_sublist _ l₁ (l₂.erase b) h'
+@[deprecated (since := "2025-04-10")]
+alias erase_diff_erase_sublist_of_sublist := Sublist.erase_diff_erase_sublist
 
 end Diff
 

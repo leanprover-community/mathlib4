@@ -124,7 +124,7 @@ variable {α : Type u} {β : Type*}
 `zero_le_one` field. -/
 
 
-theorem add_one_le_two_mul [LE α] [Semiring α] [AddLeftMono α] {a : α}
+theorem add_one_le_two_mul [LE α] [NonAssocSemiring α] [AddLeftMono α] {a : α}
     (a1 : 1 ≤ a) : a + 1 ≤ 2 * a :=
   calc
     a + 1 ≤ a + a := add_le_add_left a1 a

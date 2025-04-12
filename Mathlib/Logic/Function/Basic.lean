@@ -108,8 +108,6 @@ theorem Injective.piMap {ι : Sort*} {α β : ι → Sort*} {f : ∀ i, α i →
     (hf : ∀ i, Injective (f i)) : Injective (Pi.map f) := fun _ _ h ↦
   funext fun i ↦ hf i <| congrFun h _
 
-@[deprecated (since := "2024-10-06")] alias injective_pi_map := Injective.piMap
-
 /-- Composition by an injective function on the left is itself injective. -/
 theorem Injective.comp_left {g : β → γ} (hg : Injective g) : Injective (g ∘ · : (α → β) → α → γ) :=
   .piMap fun _ ↦ hg
@@ -453,8 +451,6 @@ theorem Surjective.piMap {ι : Sort*} {α β : ι → Sort*} {f : ∀ i, α i �
     (hf : ∀ i, Surjective (f i)) : Surjective (Pi.map f) := fun g ↦
   ⟨fun i ↦ surjInv (hf i) (g i), funext fun _ ↦ rightInverse_surjInv _ _⟩
 
-@[deprecated (since := "2024-10-06")] alias surjective_pi_map := Surjective.piMap
-
 /-- Composition by a surjective function on the left is itself surjective. -/
 theorem Surjective.comp_left {g : β → γ} (hg : Surjective g) :
     Surjective (g ∘ · : (α → β) → α → γ) :=
@@ -469,8 +465,6 @@ theorem surjective_comp_left_iff [Nonempty α] {g : β → γ} :
 theorem Bijective.piMap {ι : Sort*} {α β : ι → Sort*} {f : ∀ i, α i → β i}
     (hf : ∀ i, Bijective (f i)) : Bijective (Pi.map f) :=
   ⟨.piMap fun i ↦ (hf i).1, .piMap fun i ↦ (hf i).2⟩
-
-@[deprecated (since := "2024-10-06")] alias bijective_pi_map := Bijective.piMap
 
 /-- Composition by a bijective function on the left is itself bijective. -/
 theorem Bijective.comp_left {g : β → γ} (hg : Bijective g) :

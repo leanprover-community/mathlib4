@@ -139,7 +139,7 @@ theorem repr_self_apply (j) [Decidable (i = j)] : b.repr (b i) j = if i = j then
 theorem repr_symm_apply (v) : b.repr.symm v = Finsupp.linearCombination R b v :=
   calc
     b.repr.symm v = b.repr.symm (v.sum Finsupp.single) := by simp
-    _ = v.sum fun i vi => b.repr.symm (Finsupp.single i vi) := map_finsupp_sum ..
+    _ = v.sum fun i vi => b.repr.symm (Finsupp.single i vi) := map_finsuppSum ..
     _ = Finsupp.linearCombination R b v := by simp only [repr_symm_single,
                                                          Finsupp.linearCombination_apply]
 

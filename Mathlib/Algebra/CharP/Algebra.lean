@@ -42,7 +42,7 @@ theorem CharP.of_ringHom_of_ne_zero {R A : Type*} [Ring R] [NoZeroDivisors R]
   have H := (CharP.char_is_prime_or_zero R p).resolve_right hp
   obtain ⟨q, hq⟩ := CharP.exists A
   obtain ⟨k, e⟩ := dvd_of_ringHom f p q
-  have := Nat.isUnit_iff.mp ((H.2 q k e).resolve_left (Nat.isUnit_iff.not.mpr (char_ne_one A q)))
+  have := Nat.isUnit_iff.mp ((H.2 e).resolve_left (Nat.isUnit_iff.not.mpr (char_ne_one A q)))
   rw [this, mul_one] at e
   exact e ▸ hq
 
