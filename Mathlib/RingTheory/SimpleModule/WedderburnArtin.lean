@@ -40,10 +40,22 @@ theorem isSimpleRing_isArtinianRing_iff :
   · exact ⟨this, by rwa [and_comm]⟩
   · exact ⟨⟨‹_›, ‹_›⟩, inferInstance⟩
 
-theorem IsSimpleRing.exists_ringEquiv_matrix_divisionRing [IsSimpleRing R] [IsArtinianRing R] :
-    ∃ (n : ℕ) (D : Type u) (_ : DivisionRing D), Nonempty (R ≃+* Matrix (Fin n) (Fin n) D) := by
+section simple_artinian
+
+variable (R) [IsSimpleRing R] [IsArtinianRing R]
+
+theorem IsSimpleRing.exists_ringEquiv_matrix_end_mulOpposite :
+    ∃ (n : ℕ) (_ : NeZero n) (I : Ideal R) (_ : IsSimpleModule R I),
+      Nonempty (R ≃+* Matrix (Fin n) (Fin n) (Module.End R I)ᵐᵒᵖ) := by
   have ⟨_, iso, _⟩ := isSimpleRing_isArtinianRing_iff (R := R).mp ⟨‹_›, ‹_›⟩
-  have ⟨n, S, _, ⟨e⟩⟩ := iso.linearEquiv_fun
-  have e := ((RingEquiv.opOp R).trans <| (Module.moduleEndSelf R).trans e.conjRingEquiv |>.trans
-    (endVecRingEquivMatrixEnd ..) |>.op).trans (.symm .mopMatrix)
-  classical exact ⟨n, _, inferInstance, ⟨e⟩⟩
+  have ⟨n, hn, S, hS, ⟨e⟩⟩ := iso.linearEquiv_fun
+  refine ⟨n, hn, S, hS, ⟨.trans (.opOp R) <| .trans (.op ?_) (.symm .mopMatrix)⟩⟩
+  exact (Module.moduleEndSelf R).trans e.conjRingEquiv |>.trans (endVecRingEquivMatrixEnd ..)
+
+theorem IsSimpleRing.exists_ringEquiv_matrix_divisionRing :
+    ∃ (n : ℕ) (_ : NeZero n) (D : Type u) (_ : DivisionRing D),
+      Nonempty (R ≃+* Matrix (Fin n) (Fin n) D) := by
+  have ⟨n, hn, I, _, ⟨e⟩⟩ := IsSimpleRing.exists_ringEquiv_matrix_end_mulOpposite R
+  classical exact ⟨n, hn, _, inferInstance, ⟨e⟩⟩
+
+end simple_artinian

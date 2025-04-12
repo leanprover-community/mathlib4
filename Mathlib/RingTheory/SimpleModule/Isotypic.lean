@@ -93,11 +93,13 @@ theorem IsIsotypicOfType.linearEquiv_finsupp (h : IsIsotypicOfType R M S) :
     |>.trans (finsuppLequivDFinsupp R).symm⟩⟩
 
 theorem IsIsotypic.linearEquiv_finsupp [Nontrivial M] (h : IsIsotypic R M) :
-    ∃ (ι : Type u) (S : Submodule R M), IsSimpleModule R S ∧ Nonempty (M ≃ₗ[R] ι →₀ S) := by
+    ∃ (ι : Type u) (_ : Nonempty ι) (S : Submodule R M),
+      IsSimpleModule R S ∧ Nonempty (M ≃ₗ[R] ι →₀ S) := by
   have ⟨S, hS⟩ := IsAtomic.exists_atom (Submodule R M)
   rw [← isSimpleModule_iff_isAtom] at hS
   have ⟨ι, e⟩ := (h S).linearEquiv_finsupp
-  exact ⟨ι, S, hS, e⟩
+  exact ⟨ι, (isEmpty_or_nonempty ι).resolve_left fun _ ↦ not_subsingleton _ (e.some.subsingleton),
+    S, hS, e⟩
 
 theorem IsIsotypicOfType.linearEquiv_fun [Module.Finite R M] (h : IsIsotypicOfType R M S) :
     ∃ n : ℕ, Nonempty (M ≃ₗ[R] Fin n → S) := by
@@ -106,11 +108,12 @@ theorem IsIsotypicOfType.linearEquiv_fun [Module.Finite R M] (h : IsIsotypicOfTy
     |>.trans (finsuppLequivDFinsupp R).symm |>.trans (Finsupp.linearEquivFunOnFinite ..)⟩⟩
 
 theorem IsIsotypic.linearEquiv_fun [Module.Finite R M] [Nontrivial M] (h : IsIsotypic R M) :
-    ∃ (n : ℕ) (S : Submodule R M), IsSimpleModule R S ∧ Nonempty (M ≃ₗ[R] Fin n → S) := by
+    ∃ (n : ℕ) (_ : NeZero n) (S : Submodule R M),
+      IsSimpleModule R S ∧ Nonempty (M ≃ₗ[R] Fin n → S) := by
   have ⟨S, hS⟩ := IsAtomic.exists_atom (Submodule R M)
   rw [← isSimpleModule_iff_isAtom] at hS
   have ⟨n, e⟩ := (h S).linearEquiv_fun
-  exact ⟨n, S, hS, e⟩
+  exact ⟨n, neZero_iff.2 <| by rintro rfl; exact not_subsingleton _ (e.some.subsingleton), S, hS, e⟩
 
 end Finsupp
 
