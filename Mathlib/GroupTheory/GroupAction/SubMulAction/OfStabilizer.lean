@@ -8,7 +8,6 @@ import Mathlib.GroupTheory.GroupAction.MultipleTransitivity
 
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.GroupTheory.GroupAction.Basic
-import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.Tactic.Group
 import Mathlib.SetTheory.Cardinal.Finite
