@@ -131,7 +131,7 @@ theorem balancedCore_nonempty_iff : (balancedCore 𝕜 s).Nonempty ↔ (0 : E) �
     fun h => ⟨0, balancedCore_zero_mem h⟩⟩
 
 lemma Balanced.zero_mem (hs : Balanced 𝕜 s) (hs_nonempty : s.Nonempty) : (0 : E) ∈ s := by
-  rw [← balancedCore_eq_self_of_balanced hs] at hs_nonempty
+  rw [← hs.balancedCore_eq] at hs_nonempty
   exact balancedCore_nonempty_iff.mp hs_nonempty
 
 variable (𝕜) in
