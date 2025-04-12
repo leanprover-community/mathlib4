@@ -3051,7 +3051,6 @@ import Mathlib.Data.Matroid.Minor.Restrict
 import Mathlib.Data.Matroid.Rank.Cardinal
 import Mathlib.Data.Matroid.Rank.ENat
 import Mathlib.Data.Matroid.Rank.Finite
-import Mathlib.Data.Matroid.Restrict
 import Mathlib.Data.Matroid.Sum
 import Mathlib.Data.Multiset.AddSub
 import Mathlib.Data.Multiset.Antidiagonal
