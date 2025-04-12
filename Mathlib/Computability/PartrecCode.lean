@@ -612,25 +612,24 @@ theorem evaln_mono : ∀ {k₁ k₂ c n x}, k₁ ≤ k₂ → x ∈ evaln k₁ c
       introv h h₁ h₂ h₃
       exact ⟨le_trans h₂ h, h₁ h₃⟩
     simp? at h ⊢ says simp only [Option.mem_def] at h ⊢
-    induction' c with cf cg hf hg cf cg hf hg cf cg hf hg cf hf generalizing x n <;>
-      rw [evaln] at h ⊢ <;> refine this hl' (fun h => ?_) h
+    induction c generalizing x n <;> rw [evaln] at h ⊢ <;> refine this hl' (fun h => ?_) h
     iterate 4 exact h
-    · -- pair cf cg
+    case pair cf cg hf hg _ =>
       simp? [Seq.seq, Option.bind_eq_some] at h ⊢ says
         simp only [Seq.seq, Option.map_eq_map, Option.mem_def, Option.bind_eq_some,
           Option.map_eq_some', exists_exists_and_eq_and] at h ⊢
       exact h.imp fun a => And.imp (hf _ _) <| Exists.imp fun b => And.imp_left (hg _ _)
-    · -- comp cf cg
+    case comp cf cg hf hg _ =>
       simp? [Bind.bind, Option.bind_eq_some] at h ⊢ says
         simp only [bind, Option.mem_def, Option.bind_eq_some] at h ⊢
       exact h.imp fun a => And.imp (hg _ _) (hf _ _)
-    · -- prec cf cg
+    case prec cf cg hf hg _ =>
       revert h
       simp only [unpaired, bind, Option.mem_def]
       induction n.unpair.2 <;> simp [Option.bind_eq_some]
       · apply hf
       · exact fun y h₁ h₂ => ⟨y, evaln_mono hl' h₁, hg _ _ h₂⟩
-    · -- rfind' cf
+    case rfind' cf hf _ =>
       simp? [Bind.bind, Option.bind_eq_some] at h ⊢ says
         simp only [unpaired, bind, pair_unpair, Option.pure_def, Option.mem_def,
           Option.bind_eq_some] at h ⊢
@@ -641,17 +640,16 @@ theorem evaln_mono : ∀ {k₁ k₂ c n x}, k₁ ≤ k₂ → x ∈ evaln k₁ c
 theorem evaln_sound : ∀ {k c n x}, x ∈ evaln k c n → x ∈ eval c n
   | 0, _, n, x, h => by simp [evaln] at h
   | k + 1, c, n, x, h => by
-    induction' c with cf cg hf hg cf cg hf hg cf cg hf hg cf hf generalizing x n <;>
-        simp [eval, evaln, Option.bind_eq_some, Seq.seq] at h ⊢ <;>
+    induction c generalizing x n <;> simp [eval, evaln, Option.bind_eq_some, Seq.seq] at h ⊢ <;>
       obtain ⟨_, h⟩ := h
     iterate 4 simpa [pure, PFun.pure, eq_comm] using h
-    · -- pair cf cg
+    case pair cf cg hf hg _ =>
       rcases h with ⟨y, ef, z, eg, rfl⟩
       exact ⟨_, hf _ _ ef, _, hg _ _ eg, rfl⟩
-    · --comp hf hg
+    case comp cf cg hf hg _ =>
       rcases h with ⟨y, eg, ef⟩
       exact ⟨_, hg _ _ eg, hf _ _ ef⟩
-    · -- prec cf cg
+    case prec cf cg hf hg _ =>
       revert h
       induction' n.unpair.2 with m IH generalizing x <;> simp [Option.bind_eq_some]
       · apply hf
@@ -660,7 +658,7 @@ theorem evaln_sound : ∀ {k c n x}, x ∈ evaln k c n → x ∈ eval c n
           simp [evaln, Option.bind_eq_some] at this
           exact this.2
         · exact hg _ _ h₂
-    · -- rfind' cf
+    case rfind' cf hf _ =>
       rcases h with ⟨m, h₁, h₂⟩
       by_cases m0 : m = 0 <;> simp [m0] at h₂
       · exact

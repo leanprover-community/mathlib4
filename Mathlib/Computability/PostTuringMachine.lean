@@ -198,10 +198,12 @@ def Respects {σ₁ σ₂} (f₁ : σ₁ → Option σ₁) (f₂ : σ₂ → Opt
 
 theorem tr_reaches₁ {σ₁ σ₂ f₁ f₂} {tr : σ₁ → σ₂ → Prop} (H : Respects f₁ f₂ tr) {a₁ a₂}
     (aa : tr a₁ a₂) {b₁} (ab : Reaches₁ f₁ a₁ b₁) : ∃ b₂, tr b₁ b₂ ∧ Reaches₁ f₂ a₂ b₂ := by
-  induction' ab with c₁ ac c₁ d₁ _ cd IH
-  · have := H aa
+  induction ab with
+  | single ac =>
+    have := H aa
     rwa [show f₁ a₁ = _ from ac] at this
-  · rcases IH with ⟨c₂, cc, ac₂⟩
+  | @tail c₁ d₁ _ cd IH =>
+    rcases IH with ⟨c₂, cc, ac₂⟩
     have := H cc
     rw [show f₁ c₁ = _ from cd] at this
     rcases this with ⟨d₂, dd, cd₂⟩
@@ -217,9 +219,10 @@ theorem tr_reaches {σ₁ σ₂ f₁ f₂} {tr : σ₁ → σ₂ → Prop} (H : 
 theorem tr_reaches_rev {σ₁ σ₂ f₁ f₂} {tr : σ₁ → σ₂ → Prop} (H : Respects f₁ f₂ tr) {a₁ a₂}
     (aa : tr a₁ a₂) {b₂} (ab : Reaches f₂ a₂ b₂) :
     ∃ c₁ c₂, Reaches f₂ b₂ c₂ ∧ tr c₁ c₂ ∧ Reaches f₁ a₁ c₁ := by
-  induction' ab with c₂ d₂ _ cd IH
-  · exact ⟨_, _, ReflTransGen.refl, aa, ReflTransGen.refl⟩
-  · rcases IH with ⟨e₁, e₂, ce, ee, ae⟩
+  induction ab with
+  | refl => exact ⟨_, _, ReflTransGen.refl, aa, ReflTransGen.refl⟩
+  | tail _ cd IH =>
+    rcases IH with ⟨e₁, e₂, ce, ee, ae⟩
     rcases ReflTransGen.cases_head ce with (rfl | ⟨d', cd', de⟩)
     · have := H ee
       revert this

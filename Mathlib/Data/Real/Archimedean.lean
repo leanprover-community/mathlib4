@@ -132,8 +132,6 @@ protected theorem isGLB_sInf (h₁ : s.Nonempty) (h₂ : BddBelow s) : IsGLB s (
   rw [sInf_def, ← isLUB_neg', neg_neg]
   exact Real.isLUB_sSup h₁.neg h₂.neg
 
-@[deprecated (since := "2024-10-02")] alias is_glb_sInf := isGLB_sInf
-
 noncomputable instance : ConditionallyCompleteLinearOrder ℝ where
   __ := Real.linearOrder
   __ := Real.lattice

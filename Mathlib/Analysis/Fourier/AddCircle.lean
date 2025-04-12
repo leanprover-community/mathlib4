@@ -9,9 +9,9 @@ import Mathlib.Analysis.InnerProductSpace.l2Space
 import Mathlib.MeasureTheory.Function.ContinuousMapDense
 import Mathlib.MeasureTheory.Function.L2Space
 import Mathlib.MeasureTheory.Group.Integral
-import Mathlib.MeasureTheory.Integral.Periodic
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
 import Mathlib.Topology.ContinuousMap.StoneWeierstrass
-import Mathlib.MeasureTheory.Integral.IntegrationByParts
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 
 /-!
 
@@ -22,9 +22,10 @@ This file contains basic results on Fourier series for functions on the additive
 
 ## Main definitions
 
-* `haarAddCircle`, Haar measure on `AddCircle T`, normalized to have total measure `1`. (Note
-  that this is not the same normalisation as the standard measure defined in `Integral.Periodic`,
-  so we do not declare it as a `MeasureSpace` instance, to avoid confusion.)
+* `haarAddCircle`, Haar measure on `AddCircle T`, normalized to have total measure `1`.
+  Note that this is not the same normalisation
+  as the standard measure defined in `IntervalIntegral.Periodic`,
+  so we do not declare it as a `MeasureSpace` instance, to avoid confusion.
 * for `n : ℤ`, `fourier n` is the monomial `fun x => exp (2 π i n x / T)`,
   bundled as a continuous map from `AddCircle T` to `ℂ`.
 * `fourierBasis` is the Hilbert basis of `Lp ℂ 2 haarAddCircle` given by the images of the

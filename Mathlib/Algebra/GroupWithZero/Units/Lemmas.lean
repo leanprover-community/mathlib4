@@ -33,9 +33,6 @@ lemma isLocalHom_of_exists_map_ne_one [FunLike F G₀ M] [MonoidHomClass F G₀ 
       exact (h.mul_right_cancel this).symm
     · exact ⟨⟨a, a⁻¹, mul_inv_cancel₀ h, inv_mul_cancel₀ h⟩, rfl⟩
 
-@[deprecated (since := "2024-10-10")]
-alias isLocalRingHom_of_exists_map_ne_one := isLocalHom_of_exists_map_ne_one
-
 instance [GroupWithZero G₀] [FunLike F G₀ M₀] [MonoidWithZeroHomClass F G₀ M₀] [Nontrivial M₀]
     (f : F) : IsLocalHom f :=
   isLocalHom_of_exists_map_ne_one ⟨0, by simp⟩

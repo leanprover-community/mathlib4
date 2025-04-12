@@ -266,13 +266,12 @@ theorem LinearIndependent.not_mem_span_image [Nontrivial R] (hv : LinearIndepend
 
 theorem LinearIndependent.linearCombination_ne_of_not_mem_support [Nontrivial R]
     (hv : LinearIndependent R v) {x : ι} (f : ι →₀ R) (h : x ∉ f.support) :
-    Finsupp.linearCombination R v f ≠ v x := by
+    f.linearCombination R v ≠ v x := by
   replace h : x ∉ (f.support : Set ι) := h
-  have p := hv.not_mem_span_image h
   intro w
-  rw [← w] at p
-  rw [Finsupp.span_image_eq_map_linearCombination] at p
-  simp only [not_exists, not_and, mem_map] at p -- Porting note: `mem_map` isn't currently triggered
+  have p : ∀ x ∈ Finsupp.supported R R f.support,
+    Finsupp.linearCombination R v x ≠ f.linearCombination R v := by
+    simpa [← w, Finsupp.span_image_eq_map_linearCombination] using hv.not_mem_span_image h
   exact p f (f.mem_supported_support R) rfl
 
 end Subtype
@@ -433,9 +432,7 @@ theorem linearIndependent_sum {v : ι ⊕ ι' → M} :
   refine ⟨?_, ?_⟩
   · intro h
     refine ⟨h.comp _ Sum.inl_injective, h.comp _ Sum.inr_injective, ?_⟩
-    refine h.disjoint_span_image ?_
-    -- Porting note: `isCompl_range_inl_range_inr.1` timeouts.
-    exact IsCompl.disjoint isCompl_range_inl_range_inr
+    exact h.disjoint_span_image <| isCompl_range_inl_range_inr.disjoint
   rintro ⟨hl, hr, hlr⟩
   rw [linearIndependent_iff'] at *
   intro s g hg i hi
@@ -447,10 +444,8 @@ theorem linearIndependent_sum {v : ι ⊕ ι' → M} :
     rw [Finset.sum_preimage' (g := fun x => g x • v x),
       Finset.sum_preimage' (g := fun x => g x • v x), ← Finset.sum_union, ← Finset.filter_or]
     · simpa only [← mem_union, range_inl_union_range_inr, mem_univ, Finset.filter_True]
-    · -- Porting note: Here was one `exact`, but timeouted.
-      refine Finset.disjoint_filter.2 fun x _ hx =>
-        disjoint_left.1 ?_ hx
-      exact IsCompl.disjoint isCompl_range_inl_range_inr
+    · exact Finset.disjoint_filter.2 fun x _ hx =>
+        disjoint_left.1 isCompl_range_inl_range_inr.disjoint hx
   rw [← eq_neg_iff_add_eq_zero] at this
   rw [disjoint_def'] at hlr
   have A := by
