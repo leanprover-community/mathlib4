@@ -6,6 +6,10 @@ Authors: Paul Lezeau
 import Mathlib.CategoryTheory.ChosenFiniteProducts
 import Mathlib.CategoryTheory.Monoidal.Mod_
 
+/-!
+# Additional results about module objects in cartesian monoidal categories
+-/
+
 universe v₁ v₂ u₁ u₂
 
 open CategoryTheory MonoidalCategory
