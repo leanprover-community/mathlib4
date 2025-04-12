@@ -10,7 +10,6 @@ import Mathlib.Order.KrullDimension
 import Mathlib.Order.Atoms
 import Mathlib.RingTheory.KrullDimension.Zero
 import Mathlib.RingTheory.Nakayama
-import Mathlib.RingTheory.Artinian.HopkinsLevitzki
 import Mathlib.RingTheory.Artinian.Ring
 /-!
 # Krull's Height Theorem
@@ -127,7 +126,7 @@ lemma Ideal.height_le_spanRank_toENat_of_mem_minimal_primes
   have := hp.1.1; subst hs'
   cases n
   · rw [CharP.cast_eq_zero, nonpos_iff_eq_zero, @Ideal.height_eq_primeHeight _ _ p hp.1.1,
-      @Ideal.primeHeight_eq_zero_iff, minimalPrimes]
+      Ideal.primeHeight_eq_zero_iff, minimalPrimes]
     simp_all
   · rename ℕ => n
     rw [← @Localization.AtPrime.comap_maximalIdeal _ _ p, IsLocalization.height_comap p.primeCompl]
@@ -254,30 +253,28 @@ lemma Ideal.height_le_spanRank_toENat_of_mem_minimal_primes
 
 /-- In a commutative Noetherian ring `R`, the height of a (finitely-generated) ideal is smaller
 than or equal to the minimum number of generators for this ideal. -/
-lemma Ideal.height_le_spanRank_toENat  (I : Ideal R) (hI : I ≠ ⊤) :
+lemma Ideal.height_le_spanRank_toENat (I : Ideal R) (hI : I ≠ ⊤) :
     I.height ≤ I.spanRank.toENat := by
   obtain ⟨J, hJ⟩ := Ideal.nonempty_minimalPrimes hI
   refine (iInf₂_le J hJ).trans ?_
   convert (I.height_le_spanRank_toENat_of_mem_minimal_primes J hJ)
   exact Eq.symm (@height_eq_primeHeight _ _ J hJ.1.1)
 
-lemma Ideal.height_le_spanFinrank  (I : Ideal R) (hI : I ≠ ⊤) :
+lemma Ideal.height_le_spanFinrank (I : Ideal R) (hI : I ≠ ⊤) :
     I.height ≤ I.spanFinrank := by
   have : I.spanFinrank = I.spanRank.toENat := by
     rw [Submodule.fg_iff_spanRank_eq_spanFinrank.mpr (IsNoetherian.noetherian I), map_natCast]
   exact this ▸ height_le_spanRank_toENat I hI
 
-lemma Ideal.height_le_spanRank  (I : Ideal R) (hI : I ≠ ⊤) :
+lemma Ideal.height_le_spanRank (I : Ideal R) (hI : I ≠ ⊤) :
     I.height ≤ I.spanRank := by
   apply le_trans (b := ((Cardinal.toENat I.spanRank) : Cardinal))
   · norm_cast; exact I.height_le_spanRank_toENat hI
   · exact Cardinal.ofENat_toENat_le (Submodule.spanRank I)
 
-instance Ideal.finiteHeight_of_isNoetherianRing  (I : Ideal R) :
-    I.FiniteHeight := by
-  rw [Ideal.finiteHeight_iff_lt, Classical.or_iff_not_imp_left]
-  intro h; have := Ideal.height_le_spanRank_toENat I h
-  exact lt_of_le_of_lt this (by simpa using (IsNoetherian.noetherian I))
+instance Ideal.finiteHeight_of_isNoetherianRing (I : Ideal R) :
+    I.FiniteHeight := Ideal.finiteHeight_iff_lt.mpr <| Or.elim (em (I = ⊤)) Or.inl <|
+  fun h ↦ Or.inr <| (lt_of_le_of_lt (I.height_le_spanFinrank h) (ENat.coe_lt_top _))
 
 lemma exists_spanRank_eq_and_height_eq  (I : Ideal R) (hI : I ≠ ⊤) :
     ∃ J ≤ I, J.spanRank = I.height ∧ J.height = I.height := by

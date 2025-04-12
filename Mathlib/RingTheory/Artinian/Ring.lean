@@ -10,7 +10,6 @@ import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 import Mathlib.RingTheory.HopkinsLevitzki
 import Mathlib.RingTheory.KrullDimension.Zero
 
-
 /-!
 # Artinian rings
 
