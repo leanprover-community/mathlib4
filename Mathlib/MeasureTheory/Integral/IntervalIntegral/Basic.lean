@@ -173,6 +173,10 @@ theorem trans {a b c : ℝ} (hab : IntervalIntegrable f μ a b) (hbc : IntervalI
   ⟨(hab.1.union hbc.1).mono_set Ioc_subset_Ioc_union_Ioc,
     (hbc.2.union hab.2).mono_set Ioc_subset_Ioc_union_Ioc⟩
 
+theorem trans_iff (h : b ∈ [[a, c]]) :
+    IntervalIntegrable f μ a c ↔ IntervalIntegrable f μ a b ∧ IntervalIntegrable f μ b c := by
+  simp only [intervalIntegrable_iff, ← integrableOn_union, uIoc_union_uIoc h]
+
 theorem trans_iterate_Ico {a : ℕ → ℝ} {m n : ℕ} (hmn : m ≤ n)
     (hint : ∀ k ∈ Ico m n, IntervalIntegrable f μ (a k) (a <| k + 1)) :
     IntervalIntegrable f μ (a m) (a n) := by
