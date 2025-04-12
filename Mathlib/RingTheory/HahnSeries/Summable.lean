@@ -650,31 +650,31 @@ theorem pow_finite_co_support {x : HahnSeries Γ R} (hx : 0 < x.orderTop) (g : �
       exact ⟨hj, ⟨n, hi⟩, add_comm j i⟩
 
 /-- A summable family of powers of a Hahn series `x`. If `x` has non-positive `orderTop`, then
-return the junk value zero. -/
+return a junk value given by pretending `x = 0`. -/
+@[simps]
 def powers (x : HahnSeries Γ R) : SummableFamily Γ R ℕ where
-  toFun n := if 0 < x.orderTop then x ^ n else 0
+  toFun n := if 0 < x.orderTop then x ^ n else 0 ^ n
   isPWO_iUnion_support' := by
     by_cases h : 0 < x.orderTop
     · simp only [h, ↓reduceIte]
       exact isPWO_iUnion_support_powers (zero_le_orderTop_iff.mp <| le_of_lt h)
-    · simp [h]
+    · simp only [h, ↓reduceIte]
+      apply isPWO_iUnion_support_powers
+      rw [order_zero]
   finite_co_support' g := by
     by_cases h : 0 < x.orderTop
     · simp only [h, ↓reduceIte]
       exact pow_finite_co_support h g
-    · simp [h]
+    · simp only [h, ↓reduceIte]
+      exact pow_finite_co_support (orderTop_zero (R := R) (Γ := Γ) ▸ WithTop.top_pos) g
 
-@[simp]
 theorem powers_of_orderTop_pos {x : HahnSeries Γ R} (hx : 0 < x.orderTop) (n : ℕ) :
     powers x n = x ^ n := by
-  simp only [powers, hx, ↓reduceIte]
-  exact rfl
+  simp [hx]
 
-@[simp]
-theorem powers_of_not_orderTop_pos {x : HahnSeries Γ R} (hx : ¬ 0 < x.orderTop) :
-    powers x = 0 := by
-  simp only [powers, hx, ↓reduceIte]
-  exact rfl
+theorem powers_of_not_orderTop_pos {x : HahnSeries Γ R} (hx : ¬ 0 < x.orderTop) (n : ℕ) :
+    powers x n = 0 ^ n := by
+  simp [hx]
 
 variable {x : HahnSeries Γ R} (hx : 0 < x.orderTop)
 
