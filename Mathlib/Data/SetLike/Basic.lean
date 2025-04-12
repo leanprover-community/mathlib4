@@ -223,4 +223,16 @@ abbrev instSubtype {X S} [SetLike S X] {p : S → Prop} : SetLike {s // p s} X w
   coe := (↑)
   coe_injective' := SetLike.coe_injective.comp Subtype.val_injective
 
+section
+
+attribute [local instance] instSubtypeSet instSubtype
+
+@[simp] lemma mem_mk_set {X} {p : Set X → Prop} {U : Set X} {h : p U} {x : X} :
+    x ∈ Subtype.mk U h ↔ x ∈ U := Iff.rfl
+
+@[simp] lemma mem_mk {X S} [SetLike S X] {p : S → Prop} {U : S} {h : p U} {x : X} :
+    x ∈ Subtype.mk U h ↔ x ∈ U := Iff.rfl
+
+end
+
 end SetLike

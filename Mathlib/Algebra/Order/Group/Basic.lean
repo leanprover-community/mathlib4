@@ -18,7 +18,7 @@ open Function Int
 variable {α : Type*}
 
 section OrderedCommGroup
-variable [OrderedCommGroup α] {m n : ℤ} {a b : α}
+variable [CommGroup α] [PartialOrder α] [IsOrderedMonoid α] {m n : ℤ} {a b : α}
 
 @[to_additive zsmul_left_strictMono]
 lemma zpow_right_strictMono (ha : 1 < a) : StrictMono fun n : ℤ ↦ a ^ n := by
@@ -101,7 +101,7 @@ end OrderedCommGroup
 
 section LinearOrderedCommGroup
 
-variable [LinearOrderedCommGroup α] {n : ℤ} {a b : α}
+variable [CommGroup α] [LinearOrder α] [IsOrderedMonoid α] {n : ℤ} {a b : α}
 
 @[to_additive zsmul_le_zsmul_iff_right]
 lemma zpow_le_zpow_iff_left (hn : 0 < n) : a ^ n ≤ b ^ n ↔ a ≤ b :=

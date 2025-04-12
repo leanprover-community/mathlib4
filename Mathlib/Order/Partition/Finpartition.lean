@@ -629,33 +629,54 @@ lemma card_mod_card_parts_le : #s % #P.parts ≤ #P.parts := by
     rw [h]
   · exact (Nat.mod_lt _ h).le
 
+section SetSetoid
+
+/-- A setoid over a finite type induces a finpartition of the type's elements,
+where the parts are the setoid's equivalence classes. -/
+@[simps -isSimp]
+def ofSetSetoid (s : Setoid α) (x : Finset α) [DecidableRel s.r] : Finpartition x where
+  parts := x.image fun a ↦ {b ∈ x | s.r a b}
+  supIndep := by
+    suffices ∀ (a b c d : α), s a d → s b d → (s a c ↔ s b c) by
+      simp [supIndep_iff_pairwiseDisjoint, Set.PairwiseDisjoint, Set.Pairwise, onFun,
+        disjoint_iff_ne, filter_inj', @not_imp_comm (_ ↔ _)]
+      intro _ _ _ _ _ _ _ _ ha _ hb
+      exact ⟨(s.trans' hb <| s.trans' (s.symm' ha) ·), (s.trans' ha <| s.trans' (s.symm' hb) ·)⟩
+    simp +contextual [← Quotient.eq]
+  sup_parts := by
+    ext a
+    simp_rw [sup_image, id_comp, mem_sup, mem_filter]
+    refine ⟨(·.choose_spec.2.1), fun _ ↦ by use a⟩
+  not_bot_mem := by
+    suffices ∀ x₁ ∈ x, ∃ x₂ ∈ x, s x₁ x₂ by simpa [filter_eq_empty_iff]
+    intro x _
+    use x
+
+theorem mem_part_ofSetSetoid_iff_rel {s : Setoid α} (x : Finset α) [DecidableRel s.r] {b : α} :
+    b ∈ (ofSetSetoid s x).part a ↔ a ∈ x ∧ b ∈ x ∧ s a b := by
+  suffices (∃ a₁ ∈ x, (b ∈ x ∧ s a₁ b) ∧ a ∈ x ∧ s a₁ a) ↔ a ∈ x ∧ b ∈ x ∧ s a b by
+    simpa [mem_part_iff_exists, ofSetSetoid_parts]
+  exact ⟨
+    fun ⟨c, _, ⟨hb, hcb⟩, ⟨ha, hca⟩⟩ ↦ ⟨ha, hb, s.trans' (s.symm' hca) hcb⟩,
+    fun h ↦ ⟨a, ⟨h.1, ⟨⟨h.2.1, h.2.2⟩, ⟨h.1, s.refl _⟩⟩⟩⟩
+  ⟩
+
+end SetSetoid
+
 section Setoid
 
 variable [Fintype α]
 
 /-- A setoid over a finite type induces a finpartition of the type's elements,
 where the parts are the setoid's equivalence classes. -/
-@[simps -isSimp]
-def ofSetoid (s : Setoid α) [DecidableRel s.r] : Finpartition (univ : Finset α) where
-  parts := univ.image fun a ↦ ({b | s.r a b} : Finset α)
-  supIndep := by
-    suffices ∀ (a b c d : α), s a d → s b d → (s a c ↔ s b c) by
-      simpa [supIndep_iff_pairwiseDisjoint, Set.PairwiseDisjoint, Set.Pairwise, onFun,
-        disjoint_iff_ne, filter_inj', @not_imp_comm (_ ↔ _)]
-    simp +contextual [← Quotient.eq]
-  sup_parts := by
-    ext a
-    simp only [sup_image, Function.id_comp, mem_univ, mem_sup, mem_filter, true_and, iff_true]
-    use a
-  not_bot_mem := by
-    suffices ∀ x, ∃ y, s x y by simpa [filter_eq_empty_iff]
-    intro x
-    use x
+@[simps! -isSimp]
+def ofSetoid (s : Setoid α) [DecidableRel s.r] : Finpartition (univ : Finset α) :=
+  ofSetSetoid s univ
 
 theorem mem_part_ofSetoid_iff_rel {s : Setoid α} [DecidableRel s.r] {b : α} :
     b ∈ (ofSetoid s).part a ↔ s a b := by
-  suffices (∃ c, s c b ∧ s c a) ↔ s a b by simpa [mem_part_iff_exists, ofSetoid_parts]
-  exact ⟨fun ⟨c, hcb, hca⟩ ↦ s.trans' (s.symm hca) hcb, fun h ↦ ⟨a, h, s.refl _⟩⟩
+  suffices b ∈ (ofSetSetoid s univ).part a ↔ a ∈ univ ∧ b ∈ univ ∧ s a b by simpa
+  exact mem_part_ofSetSetoid_iff_rel univ
 
 end Setoid
 
