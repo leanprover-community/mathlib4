@@ -225,8 +225,7 @@ alias ⟨_, _root_.Antitone.ofFn_sorted⟩ := sorted_ge_ofFn_iff
 
 end Monotone
 
-lemma Sorted.filterMap {α β : Type*} [DecidableEq α] [DecidableEq β]
-    {p : α → Option β} {l : List α}
+lemma Sorted.filterMap {α β : Type*} {p : α → Option β} {l : List α}
     {r : α → α → Prop} {r' : β → β → Prop} (hl : l.Sorted r)
     (hp : ∀ (a b : α) (c d : β), p a = some c → p b = some d → r a b → r' c d) :
     (l.filterMap p).Sorted r' := by
