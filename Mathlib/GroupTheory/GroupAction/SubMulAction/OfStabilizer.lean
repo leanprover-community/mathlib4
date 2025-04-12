@@ -101,25 +101,25 @@ variable {G}
 /-- Conjugation induces an equivariant map between the SubMulAction of
 the stabilizer of a point and that of its translate -/
 def ofStabilizer.conjMap :
-    ofStabilizer G a →ₑ[stabilizerEquivStabilizer hg] ofStabilizer G b where
+    ofStabilizer G b →ₑ[stabilizerEquivStabilizer hg] ofStabilizer G a where
   toFun := fun ⟨x, hx⟩ =>
-    ⟨g⁻¹ • x, fun hy ↦ by
-      simp only [Set.mem_singleton_iff, inv_smul_eq_iff, hg] at hy
+    ⟨g • x, fun hy ↦ by
+      simp only [← hg, Set.mem_singleton_iff, smul_left_cancel_iff] at hy
       exact hx hy⟩
   map_smul' := fun ⟨m, hm⟩ ⟨x, hx⟩ => by
     rw [← SetLike.coe_eq_coe]
     simp [SubMulAction.val_smul_of_tower, subgroup_smul_def,
        stabilizerEquivStabilizer_apply, ← smul_assoc, MulAut.conj_apply]
 
-theorem ofStabilizer.conjMap_apply (x : ofStabilizer G a) :
-    (conjMap hg x : α) = g⁻¹ • x := rfl
+theorem ofStabilizer.conjMap_apply (x : ofStabilizer G b) :
+    (conjMap hg x : α) = g • x := rfl
 
 theorem ofStabilizer.conjMap_bijective :
     Function.Bijective (conjMap hg) := by
   constructor
   · rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
     simp only [Subtype.mk_eq_mk]
-    apply (MulAction.injective g⁻¹)
+    apply (MulAction.injective g)
     rwa [← SetLike.coe_eq_coe, conjMap_apply] at hxy
   · rintro ⟨x, hx⟩
     use (ofStabilizer.conjMap (inv_smul_eq_iff.mpr hg.symm)) ⟨x, hx⟩
@@ -135,14 +135,14 @@ def ofStabilizer.append {n : ℕ} (x : Fin n ↪ ofStabilizer G a) :
   simp [Set.mem_range, trans_apply, not_exists, j]
   exact fun i ↦ (x i).prop
 
-theorem ofStabilizer.append_apply {n : ℕ} (x : Fin n ↪ ofStabilizer G a)
+theorem ofStabilizer.append_apply_of_lt {n : ℕ} (x : Fin n ↪ ofStabilizer G a)
     {i : Fin n.succ} (hi : i.val < n) :
     append x i = (x ⟨i, hi⟩ : α) := by
-  simp [append, Fin.Embedding.append, Fin.Embedding.merge, dif_pos hi]
+  simp [append, Fin.Embedding.append_apply_of_lt hi]
 
 theorem ofStabilizer.append_apply_last {n : ℕ} (x : Fin n ↪ ofStabilizer G a) :
     append x (Fin.last n) = a := by
-  simp [append, Fin.Embedding.append, Fin.Embedding.merge, dif_neg]
+  simp [append, Fin.Embedding.append_apply_last]
 
 variable (G) in
 lemma exists_smul_of_last_eq [IsPretransitive G α] {n : ℕ} (a : α) (x : Fin n.succ ↪ α) :
@@ -161,25 +161,25 @@ lemma exists_smul_of_last_eq [IsPretransitive G α] {n : ℕ} (a : α) (x : Fin 
     hgx⟩
 
 theorem ofStabilizer.isPretransitive_iff_of_conj {a b : α} {g : G} (hg : g • b = a) :
-    IsPretransitive (stabilizer G a) (ofStabilizer G a) ↔
-      IsPretransitive (stabilizer G b) (ofStabilizer G b) :=
+    IsPretransitive (stabilizer G b) (ofStabilizer G b) ↔
+      IsPretransitive (stabilizer G a) (ofStabilizer G a) :=
   isPretransitive_congr (MulEquiv.surjective _) (ofStabilizer.conjMap_bijective hg)
 
 theorem ofStabilizer.isPretransitive_iff [IsPretransitive G α] {a b : α} :
-    IsPretransitive (stabilizer G a) (ofStabilizer G a) ↔
-      IsPretransitive (stabilizer G b) (ofStabilizer G b) := by
+    IsPretransitive (stabilizer G b) (ofStabilizer G b) ↔
+      IsPretransitive (stabilizer G a) (ofStabilizer G a) := by
   obtain ⟨g, hg⟩ := exists_smul_eq G b a
   exact isPretransitive_congr (MulEquiv.surjective _) (ofStabilizer.conjMap_bijective hg)
 
 theorem ofStabilizer.isMultiplyPretransitive_iff_of_conj
     {n : ℕ} {a b : α} {g : G} (hg : g • b = a) :
-    IsMultiplyPretransitive (stabilizer G a) (ofStabilizer G a) n ↔
-      IsMultiplyPretransitive (stabilizer G b) (ofStabilizer G b) n :=
+    IsMultiplyPretransitive (stabilizer G b) (ofStabilizer G b) n ↔
+      IsMultiplyPretransitive (stabilizer G a) (ofStabilizer G a) n :=
   IsPretransitive.of_embedding_congr (MulEquiv.surjective _) (ofStabilizer.conjMap_bijective hg)
 
 theorem ofStabilizer.isMultiplyPretransitive_iff [IsPretransitive G α] {n : ℕ} {a b : α} :
-    IsMultiplyPretransitive (stabilizer G a) (ofStabilizer G a) n ↔
-      IsMultiplyPretransitive (stabilizer G b) (ofStabilizer G b) n := by
+    IsMultiplyPretransitive (stabilizer G b) (ofStabilizer G b) n ↔
+      IsMultiplyPretransitive (stabilizer G a) (ofStabilizer G a) n := by
   obtain ⟨g, hg⟩ := exists_smul_eq G b a
   exact IsPretransitive.of_embedding_congr (MulEquiv.surjective _)
     (ofStabilizer.conjMap_bijective hg)
@@ -203,8 +203,8 @@ theorem ofStabilizer.isMultiplyPretransitive [IsPretransitive G α] {n : ℕ} {a
         ext ⟨i, hi⟩
         simp only [Function.Embedding.smul_apply, SubMulAction.val_smul_of_tower]
         simp only [subgroup_smul_def]
-        rw [← append_apply x (i := ⟨i, Nat.lt_succ_of_lt hi⟩),
-          ← Function.Embedding.smul_apply, hgxy, append_apply y] }
+        rw [← append_apply_of_lt x (i := ⟨i, Nat.lt_succ_of_lt hi⟩),
+          ← Function.Embedding.smul_apply, hgxy, append_apply_of_lt y] }
   · exact fun hn ↦ {
       exists_smul_eq x y := by
         -- gx • x = x1 :: a
