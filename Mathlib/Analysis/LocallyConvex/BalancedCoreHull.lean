@@ -90,8 +90,8 @@ theorem Balanced.subset_balancedCore_of_subset (hs : Balanced 𝕜 s) (h : s ⊆
     s ⊆ balancedCore 𝕜 t :=
   subset_sUnion_of_mem ⟨hs, h⟩
 
-lemma balancedCore_eq_self_of_balanced (h : Balanced 𝕜 s) : balancedCore 𝕜 s = s :=
-  le_antisymm (balancedCore_subset _) (Balanced.subset_balancedCore_of_subset h (subset_refl _))
+lemma Balanced.balancedCore_eq (h : Balanced 𝕜 s) : balancedCore 𝕜 s = s :=
+  le_antisymm (balancedCore_subset _) (h.subset_balancedCore_of_subset (subset_refl _))
 
 theorem mem_balancedCoreAux_iff : x ∈ balancedCoreAux 𝕜 s ↔ ∀ r : 𝕜, 1 ≤ ‖r‖ → x ∈ r • s :=
   mem_iInter₂
