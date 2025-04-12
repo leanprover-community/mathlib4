@@ -61,7 +61,7 @@ variable {M N O : Bundled.{w} L.Structure}
 
 instance : Category (Bundled.{w} L.Structure) where
   Hom := (· ↪[L] ·)
-  id _ := Embedding.refl _ _
+  id _ := .refl _ _
   comp f g := g.comp f
 
 instance instConcreteCategory : ConcreteCategory (Bundled.{w} L.Structure) (· ↪[L] ·) where
