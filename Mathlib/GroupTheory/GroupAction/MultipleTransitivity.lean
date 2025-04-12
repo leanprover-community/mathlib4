@@ -11,24 +11,24 @@ import Mathlib.GroupTheory.GroupAction.Transitive
 /-! # Multiple transitivity
 
 * `MulAction.IsMultiplyPretransitive`:
-An multiplicative action of a group `G` on a type `α` is n-transitive
-if the action of `G` on `Fin n ↪ α` is pretransitive.
+  A multiplicative action of a group `G` on a type `α` is n-transitive
+  if the action of `G` on `Fin n ↪ α` is pretransitive.
 
 * Any action is 0-pretransitive
 
 * `MulAction.is_one_pretransitive_iff` :
-An action is 1-pretransitive iff it is pretransitive
+  An action is 1-pretransitive iff it is pretransitive
 
 * `MulAction.is_two_pretransitive_iff` :
-An action is 2-pretransitive if for any `a`, `b`, `c`, `d`, such that
-`a ≠ b` and `c ≠ d`, there exist `g : G` such that `g • a = b` and `g • c = d`.
+  An action is 2-pretransitive if for any `a`, `b`, `c`, `d`, such that
+  `a ≠ b` and `c ≠ d`, there exist `g : G` such that `g • a = b` and `g • c = d`.
 
 * `MulAction.isPreprimitive_of_is_two_pretransitive` :
-A 2-transitive action is preprimitive
+  A 2-transitive action is preprimitive
 
 * `MulAction.isMultiplyPretransitive_of_le` :
-If an action is `n`-pretransitive, then it is `m`-pretransitive for all `m ≤ n`,
-provided `α` has at least `n` elements.
+  If an action is `n`-pretransitive, then it is `m`-pretransitive for all `m ≤ n`,
+  provided `α` has at least `n` elements.
 
 ## Remarks on implementation
 
@@ -288,9 +288,7 @@ lemma _root_.Fin.eq_zero_or_one : ∀ (i : Fin 2), i = 0 ∨ i = 1 := by decide
 
 /-- Two distinct elements of `α` give an embedding `Fin 2 ↪ α` -/
 def _root_.Function.Embedding.embFinTwo {a b: α} (h : a ≠ b) : Fin 2 ↪ α where
-  toFun
-    | 0 => a
-    | 1 => b
+  toFun := ![a, b]
   inj' i j hij := by
     rcases i.eq_zero_or_one with hi | hi
     · rcases j.eq_zero_or_one with hj | hj
