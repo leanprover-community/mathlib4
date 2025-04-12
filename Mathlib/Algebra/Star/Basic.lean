@@ -282,7 +282,7 @@ theorem star_natCast [NonAssocSemiring R] [StarRing R] (n : ℕ) : star (n : R) 
   (congr_arg unop (map_natCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) n)).trans (unop_natCast _)
 
 @[simp]
-theorem star_ofNat [NonAssocSemiring R] [StarRing R] (n : ℕ) [n.AtLeastTwo] :
+theorem star_ofNat [NonAssocSemiring R] [StarRing R] (n : ℕ) :
     star (ofNat(n) : R) = ofNat(n) :=
   star_natCast _
 

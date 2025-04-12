@@ -129,7 +129,7 @@ lemma nnnorm_real (r : ℝ) : ‖(r : ℂ)‖₊ = ‖r‖₊ := by ext; exact n
 lemma norm_natCast (n : ℕ) : ‖(n : ℂ)‖ = n := Complex.norm_of_nonneg n.cast_nonneg
 
 @[simp 1100]
-lemma norm_ofNat (n : ℕ) [n.AtLeastTwo] :
+lemma norm_ofNat (n : ℕ) :
     ‖(ofNat(n) : ℂ)‖ = OfNat.ofNat n := norm_natCast n
 
 protected lemma norm_two : ‖(2 : ℂ)‖ = 2 := norm_ofNat 2
@@ -138,7 +138,7 @@ protected lemma norm_two : ‖(2 : ℂ)‖ = 2 := norm_ofNat 2
 lemma nnnorm_natCast (n : ℕ) : ‖(n : ℂ)‖₊ = n := Subtype.ext <| by simp
 
 @[simp 1100]
-lemma nnnorm_ofNat (n : ℕ) [n.AtLeastTwo] :
+lemma nnnorm_ofNat (n : ℕ) :
     ‖(ofNat(n) : ℂ)‖₊ = OfNat.ofNat n := nnnorm_natCast n
 
 @[deprecated (since := "2025-02-16")] alias abs_natCast := norm_natCast

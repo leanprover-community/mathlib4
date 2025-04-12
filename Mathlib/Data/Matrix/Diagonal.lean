@@ -116,10 +116,10 @@ theorem diagonal_natCast [Zero α] [NatCast α] (m : ℕ) : diagonal (fun _ : n 
 @[norm_cast]
 theorem diagonal_natCast' [Zero α] [NatCast α] (m : ℕ) : diagonal ((m : n → α)) = m := rfl
 
-theorem diagonal_ofNat [Zero α] [NatCast α] (m : ℕ) [m.AtLeastTwo] :
+theorem diagonal_ofNat [Zero α] [NatCast α] (m : ℕ) :
     diagonal (fun _ : n => (ofNat(m) : α)) = OfNat.ofNat m := rfl
 
-theorem diagonal_ofNat' [Zero α] [NatCast α] (m : ℕ) [m.AtLeastTwo] :
+theorem diagonal_ofNat' [Zero α] [NatCast α] (m : ℕ) :
     diagonal (ofNat(m) : n → α) = OfNat.ofNat m := rfl
 
 instance [Zero α] [IntCast α] : IntCast (Matrix n n α) where
@@ -144,7 +144,7 @@ protected theorem map_natCast [AddMonoidWithOne α] [Zero β]
   diagonal_map h
 
 protected theorem map_ofNat [AddMonoidWithOne α] [Zero β]
-    {f : α → β} (h : f 0 = 0) (d : ℕ) [d.AtLeastTwo] :
+    {f : α → β} (h : f 0 = 0) (d : ℕ) :
     (ofNat(d) : Matrix n n α).map f = diagonal (fun _ => f (OfNat.ofNat d)) :=
   diagonal_map h
 
@@ -303,13 +303,13 @@ theorem transpose_eq_natCast [DecidableEq n] [AddMonoidWithOne α] {M : Matrix n
   transpose_eq_diagonal
 
 @[simp]
-theorem transpose_ofNat [DecidableEq n] [AddMonoidWithOne α] (d : ℕ) [d.AtLeastTwo] :
+theorem transpose_ofNat [DecidableEq n] [AddMonoidWithOne α] (d : ℕ) :
     (ofNat(d) : Matrix n n α)ᵀ = OfNat.ofNat d :=
   transpose_natCast _
 
 @[simp]
 theorem transpose_eq_ofNat [DecidableEq n] [AddMonoidWithOne α]
-    {M : Matrix n n α} {d : ℕ} [d.AtLeastTwo] :
+    {M : Matrix n n α} {d : ℕ} :
     Mᵀ = ofNat(d) ↔ M = OfNat.ofNat d :=
   transpose_eq_diagonal
 

@@ -1029,10 +1029,10 @@ theorem le_norm_self (r : ℝ) : r ≤ ‖r‖ :=
 @[simp 1100] lemma nnnorm_natCast (n : ℕ) : ‖(n : ℝ)‖₊ = n := NNReal.eq <| norm_natCast _
 @[simp 1100] lemma enorm_natCast (n : ℕ) : ‖(n : ℝ)‖ₑ = n := by simp [enorm]
 
-@[simp 1100] lemma norm_ofNat (n : ℕ) [n.AtLeastTwo] :
+@[simp 1100] lemma norm_ofNat (n : ℕ) :
     ‖(ofNat(n) : ℝ)‖ = ofNat(n) := norm_natCast n
 
-@[simp 1100] lemma nnnorm_ofNat (n : ℕ) [n.AtLeastTwo] :
+@[simp 1100] lemma nnnorm_ofNat (n : ℕ) :
     ‖(ofNat(n) : ℝ)‖₊ = ofNat(n) := nnnorm_natCast n
 
 lemma norm_two : ‖(2 : ℝ)‖ = 2 := abs_of_pos zero_lt_two

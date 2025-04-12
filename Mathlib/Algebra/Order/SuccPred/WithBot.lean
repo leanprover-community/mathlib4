@@ -23,7 +23,7 @@ lemma succ_natCast (n : ℕ) : succ (n : WithBot α) = n + 1 := by
 lemma succ_one : succ (1 : WithBot α) = 2 := by simpa [one_add_one_eq_two] using succ_natCast 1
 
 @[simp]
-lemma succ_ofNat (n : ℕ) [n.AtLeastTwo] :
+lemma succ_ofNat (n : ℕ) :
     succ (ofNat(n) : WithBot α) = ofNat(n) + 1 := succ_natCast n
 
 lemma one_le_iff_pos {α : Type*} [PartialOrder α] [AddMonoidWithOne α]

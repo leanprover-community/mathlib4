@@ -828,7 +828,7 @@ theorem card_nat (n : ℕ) : card.{u} n = n := by
   induction n <;> [simp; simp only [card_add, card_one, Nat.cast_succ, *]]
 
 @[simp]
-theorem card_ofNat (n : ℕ) [n.AtLeastTwo] :
+theorem card_ofNat (n : ℕ) :
     card.{u} ofNat(n) = OfNat.ofNat n :=
   card_nat n
 
@@ -1139,7 +1139,7 @@ theorem ord_nat (n : ℕ) : ord n = n :=
 theorem ord_one : ord 1 = 1 := by simpa using ord_nat 1
 
 @[simp]
-theorem ord_ofNat (n : ℕ) [n.AtLeastTwo] : ord ofNat(n) = OfNat.ofNat n :=
+theorem ord_ofNat (n : ℕ) : ord ofNat(n) = OfNat.ofNat n :=
   ord_nat n
 
 @[simp]
@@ -1336,7 +1336,7 @@ theorem card_lt_nat {o} {n : ℕ} : card o < n ↔ o < n :=
   lt_iff_lt_of_le_iff_le nat_le_card
 
 @[simp]
-theorem card_lt_ofNat {o} {n : ℕ} [n.AtLeastTwo] :
+theorem card_lt_ofNat {o} {n : ℕ} :
     card o < ofNat(n) ↔ o < OfNat.ofNat n :=
   card_lt_nat
 
@@ -1349,7 +1349,7 @@ theorem card_le_one {o} : card o ≤ 1 ↔ o ≤ 1 := by
   simpa using card_le_nat (n := 1)
 
 @[simp]
-theorem card_le_ofNat {o} {n : ℕ} [n.AtLeastTwo] :
+theorem card_le_ofNat {o} {n : ℕ} :
     card o ≤ ofNat(n) ↔ o ≤ OfNat.ofNat n :=
   card_le_nat
 
@@ -1371,7 +1371,7 @@ theorem mem_range_lift_of_card_le {a : Cardinal.{u}} {b : Ordinal.{max u v}}
   exact mem_range_lift_of_le h.le
 
 @[simp]
-theorem card_eq_ofNat {o} {n : ℕ} [n.AtLeastTwo] :
+theorem card_eq_ofNat {o} {n : ℕ} :
     card o = ofNat(n) ↔ o = OfNat.ofNat n :=
   card_eq_nat
 

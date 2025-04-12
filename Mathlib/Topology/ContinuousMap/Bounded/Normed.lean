@@ -334,7 +334,7 @@ instance : NatCast (α →ᵇ R) :=
 theorem coe_natCast (n : ℕ) : ((n : α →ᵇ R) : α → R) = n := rfl
 
 @[simp, norm_cast]
-theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
+theorem coe_ofNat (n : ℕ) :
     ((ofNat(n) : α →ᵇ R) : α → R) = ofNat(n) :=
   rfl
 

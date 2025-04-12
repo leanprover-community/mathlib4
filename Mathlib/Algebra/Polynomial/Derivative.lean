@@ -198,7 +198,7 @@ theorem derivative_natCast {n : ℕ} : derivative (n : R[X]) = 0 := by
   exact derivative_C
 
 @[simp]
-theorem derivative_ofNat (n : ℕ) [n.AtLeastTwo] :
+theorem derivative_ofNat (n : ℕ) :
     derivative (ofNat(n) : R[X]) = 0 :=
   derivative_natCast
 

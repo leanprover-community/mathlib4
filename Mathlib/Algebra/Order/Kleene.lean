@@ -133,8 +133,8 @@ lemma natCast_eq_one {n : ℕ} (nezero : n ≠ 0) : (n : α) = 1 := by
   | base => exact Nat.cast_one
   | succ x _ hx => rw [Nat.cast_add, hx, Nat.cast_one, add_idem 1]
 
-lemma ofNat_eq_one {n : ℕ} [n.AtLeastTwo] : (ofNat(n) : α) = 1 :=
-  natCast_eq_one <| Nat.ne_zero_of_lt Nat.AtLeastTwo.prop
+lemma ofNat_eq_one {n : ℕ} [NeZero n] : (ofNat(n) : α) = 1 :=
+  natCast_eq_one <| NeZero.ne n
 
 theorem nsmul_eq_self : ∀ {n : ℕ} (_ : n ≠ 0) (a : α), n • a = a
   | 0, h => (h rfl).elim

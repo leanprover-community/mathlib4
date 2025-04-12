@@ -262,7 +262,7 @@ theorem inv_natCast_num (a : ℕ) : (a : ℚ)⁻¹.num = Int.sign a :=
   inv_intCast_num a
 
 @[simp]
-theorem inv_ofNat_num (a : ℕ) [a.AtLeastTwo] : (ofNat(a) : ℚ)⁻¹.num = 1 :=
+theorem inv_ofNat_num (a : ℕ) [NeZero a] : (ofNat(a) : ℚ)⁻¹.num = 1 :=
   inv_natCast_num_of_pos (Nat.pos_of_neZero a)
 
 @[simp]
@@ -284,7 +284,7 @@ theorem inv_natCast_den (a : ℕ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a 
   simpa [-inv_intCast_den, ofInt_eq_cast] using inv_intCast_den a
 
 @[simp]
-theorem inv_ofNat_den (a : ℕ) [a.AtLeastTwo] :
+theorem inv_ofNat_den (a : ℕ) [NeZero a] :
     (ofNat(a) : ℚ)⁻¹.den = OfNat.ofNat a :=
   inv_natCast_den_of_pos (Nat.pos_of_neZero a)
 

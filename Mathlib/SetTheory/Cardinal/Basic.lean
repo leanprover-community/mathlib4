@@ -564,11 +564,11 @@ theorem nat_mul_aleph0 {n : ℕ} (hn : n ≠ 0) : ↑n * ℵ₀ = ℵ₀ :=
 theorem aleph0_mul_nat {n : ℕ} (hn : n ≠ 0) : ℵ₀ * n = ℵ₀ := by rw [mul_comm, nat_mul_aleph0 hn]
 
 @[simp]
-theorem ofNat_mul_aleph0 {n : ℕ} [Nat.AtLeastTwo n] : ofNat(n) * ℵ₀ = ℵ₀ :=
+theorem ofNat_mul_aleph0 {n : ℕ} [NeZero n] : ofNat(n) * ℵ₀ = ℵ₀ :=
   nat_mul_aleph0 (NeZero.ne n)
 
 @[simp]
-theorem aleph0_mul_ofNat {n : ℕ} [Nat.AtLeastTwo n] : ℵ₀ * ofNat(n) = ℵ₀ :=
+theorem aleph0_mul_ofNat {n : ℕ} [NeZero n] : ℵ₀ * ofNat(n) = ℵ₀ :=
   aleph0_mul_nat (NeZero.ne n)
 
 @[simp]
@@ -584,11 +584,11 @@ theorem aleph0_add_nat (n : ℕ) : ℵ₀ + n = ℵ₀ :=
 theorem nat_add_aleph0 (n : ℕ) : ↑n + ℵ₀ = ℵ₀ := by rw [add_comm, aleph0_add_nat]
 
 @[simp]
-theorem ofNat_add_aleph0 {n : ℕ} [Nat.AtLeastTwo n] : ofNat(n) + ℵ₀ = ℵ₀ :=
+theorem ofNat_add_aleph0 {n : ℕ} : ofNat(n) + ℵ₀ = ℵ₀ :=
   nat_add_aleph0 n
 
 @[simp]
-theorem aleph0_add_ofNat {n : ℕ} [Nat.AtLeastTwo n] : ℵ₀ + ofNat(n) = ℵ₀ :=
+theorem aleph0_add_ofNat {n : ℕ} : ℵ₀ + ofNat(n) = ℵ₀ :=
   aleph0_add_nat n
 
 theorem exists_nat_eq_of_le_nat {c : Cardinal} {n : ℕ} (h : c ≤ n) : ∃ m, m ≤ n ∧ c = m := by

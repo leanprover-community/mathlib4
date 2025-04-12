@@ -172,7 +172,7 @@ theorem sqrt_eq_rpow (x : ℝ≥0) : sqrt x = x ^ (1 / (2 : ℝ)) := by
   exact Real.sqrt_eq_rpow x.1
 
 @[simp]
-lemma rpow_ofNat (x : ℝ≥0) (n : ℕ) [n.AtLeastTwo] :
+lemma rpow_ofNat (x : ℝ≥0) (n : ℕ) :
     x ^ (ofNat(n) : ℝ) = x ^ (OfNat.ofNat n : ℕ) :=
   rpow_natCast x n
 
@@ -624,7 +624,7 @@ theorem rpow_natCast (x : ℝ≥0∞) (n : ℕ) : x ^ (n : ℝ) = x ^ n := by
   · simp [← coe_rpow_of_nonneg _ (Nat.cast_nonneg n)]
 
 @[simp]
-lemma rpow_ofNat (x : ℝ≥0∞) (n : ℕ) [n.AtLeastTwo] :
+lemma rpow_ofNat (x : ℝ≥0∞) (n : ℕ) :
     x ^ (ofNat(n) : ℝ) = x ^ (OfNat.ofNat n) :=
   rpow_natCast x n
 

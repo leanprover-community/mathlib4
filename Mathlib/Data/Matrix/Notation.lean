@@ -427,12 +427,12 @@ theorem natCast_fin_three (n : ℕ) :
   ext i j
   fin_cases i <;> fin_cases j <;> rfl
 
-theorem ofNat_fin_two (n : ℕ) [n.AtLeastTwo] :
+theorem ofNat_fin_two (n : ℕ) :
     (ofNat(n) : Matrix (Fin 2) (Fin 2) α) =
       !![ofNat(n), 0; 0, ofNat(n)] :=
   natCast_fin_two _
 
-theorem ofNat_fin_three (n : ℕ) [n.AtLeastTwo] :
+theorem ofNat_fin_three (n : ℕ) :
     (ofNat(n) : Matrix (Fin 3) (Fin 3) α) =
       !![ofNat(n), 0, 0; 0, ofNat(n), 0; 0, 0, ofNat(n)] :=
   natCast_fin_three _

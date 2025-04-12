@@ -112,14 +112,14 @@ lemma cpow_mul_int (x y : ℂ) (n : ℤ) : x ^ (y * n) = (x ^ y) ^ n := by rw [m
 lemma cpow_nat_mul (x : ℂ) (n : ℕ) (y : ℂ) : x ^ (n * y) = (x ^ y) ^ n :=
   mod_cast cpow_int_mul x n y
 
-lemma cpow_ofNat_mul (x : ℂ) (n : ℕ) [n.AtLeastTwo] (y : ℂ) :
+lemma cpow_ofNat_mul (x : ℂ) (n : ℕ) (y : ℂ) :
     x ^ (ofNat(n) * y) = (x ^ y) ^ ofNat(n) :=
   cpow_nat_mul x n y
 
 lemma cpow_mul_nat (x y : ℂ) (n : ℕ) : x ^ (y * n) = (x ^ y) ^ n := by
   rw [mul_comm, cpow_nat_mul]
 
-lemma cpow_mul_ofNat (x y : ℂ) (n : ℕ) [n.AtLeastTwo] :
+lemma cpow_mul_ofNat (x y : ℂ) (n : ℕ) :
     x ^ (y * ofNat(n)) = (x ^ y) ^ ofNat(n) :=
   cpow_mul_nat x y n
 
@@ -127,7 +127,7 @@ lemma cpow_mul_ofNat (x y : ℂ) (n : ℕ) [n.AtLeastTwo] :
 theorem cpow_natCast (x : ℂ) (n : ℕ) : x ^ (n : ℂ) = x ^ n := by simpa using cpow_nat_mul x n 1
 
 @[simp]
-lemma cpow_ofNat (x : ℂ) (n : ℕ) [n.AtLeastTwo] :
+lemma cpow_ofNat (x : ℂ) (n : ℕ) :
     x ^ (ofNat(n) : ℂ) = x ^ ofNat(n) :=
   cpow_natCast x n
 
@@ -142,7 +142,7 @@ theorem cpow_nat_inv_pow (x : ℂ) {n : ℕ} (hn : n ≠ 0) : (x ^ (n⁻¹ : ℂ
   assumption_mod_cast
 
 @[simp]
-lemma cpow_ofNat_inv_pow (x : ℂ) (n : ℕ) [n.AtLeastTwo] :
+lemma cpow_ofNat_inv_pow (x : ℂ) (n : ℕ) [NeZero n] :
     (x ^ ((ofNat(n) : ℂ)⁻¹)) ^ (ofNat(n) : ℕ) = x :=
   cpow_nat_inv_pow _ (NeZero.ne n)
 
@@ -163,7 +163,7 @@ lemma cpow_nat_mul' {x : ℂ} {n : ℕ} (hlt : -π < n * x.arg) (hle : n * x.arg
     x ^ (n * y) = (x ^ n) ^ y :=
   cpow_int_mul' hlt hle y
 
-lemma cpow_ofNat_mul' {x : ℂ} {n : ℕ} [n.AtLeastTwo] (hlt : -π < OfNat.ofNat n * x.arg)
+lemma cpow_ofNat_mul' {x : ℂ} {n : ℕ} (hlt : -π < OfNat.ofNat n * x.arg)
     (hle : OfNat.ofNat n * x.arg ≤ π) (y : ℂ) :
     x ^ (OfNat.ofNat n * y) = (x ^ ofNat(n)) ^ y :=
   cpow_nat_mul' hlt hle y
@@ -174,7 +174,7 @@ lemma pow_cpow_nat_inv {x : ℂ} {n : ℕ} (h₀ : n ≠ 0) (hlt : -(π / n) < x
   · rwa [← div_lt_iff₀' (Nat.cast_pos.2 h₀.bot_lt), neg_div]
   · rwa [← le_div_iff₀' (Nat.cast_pos.2 h₀.bot_lt)]
 
-lemma pow_cpow_ofNat_inv {x : ℂ} {n : ℕ} [n.AtLeastTwo] (hlt : -(π / OfNat.ofNat n) < x.arg)
+lemma pow_cpow_ofNat_inv {x : ℂ} {n : ℕ} [NeZero n] (hlt : -(π / OfNat.ofNat n) < x.arg)
     (hle : x.arg ≤ π / OfNat.ofNat n) :
     (x ^ ofNat(n)) ^ ((OfNat.ofNat n : ℂ)⁻¹) = x :=
   pow_cpow_nat_inv (NeZero.ne n) hlt hle

@@ -277,7 +277,7 @@ instance instNatCast [NatCast R] : NatCast (SeparationQuotient R) where
 theorem mk_natCast [NatCast R] (n : ℕ) : mk (n : R) = n := rfl
 
 @[simp]
-theorem mk_ofNat [NatCast R] (n : ℕ) [n.AtLeastTwo] :
+theorem mk_ofNat [NatCast R] (n : ℕ) :
     mk (ofNat(n) : R) = OfNat.ofNat n :=
   rfl
 

@@ -329,7 +329,7 @@ theorem Gamma_nat_eq_factorial (n : ℕ) : Gamma (n + 1) = n ! := by
     congr
 
 @[simp]
-theorem Gamma_ofNat_eq_factorial (n : ℕ) [(n + 1).AtLeastTwo] :
+theorem Gamma_ofNat_eq_factorial (n : ℕ) :
     Gamma (ofNat(n + 1) : ℂ) = n ! :=
   mod_cast Gamma_nat_eq_factorial (n : ℕ)
 
@@ -433,7 +433,7 @@ theorem Gamma_nat_eq_factorial (n : ℕ) : Gamma (n + 1) = n ! := by
     Complex.Gamma_nat_eq_factorial, ← Complex.ofReal_natCast, Complex.ofReal_re]
 
 @[simp]
-theorem Gamma_ofNat_eq_factorial (n : ℕ) [(n + 1).AtLeastTwo] :
+theorem Gamma_ofNat_eq_factorial (n : ℕ) :
     Gamma (ofNat(n + 1) : ℝ) = n ! :=
   mod_cast Gamma_nat_eq_factorial (n : ℕ)
 

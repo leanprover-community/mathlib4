@@ -333,9 +333,9 @@ lemma coprime_num_den (q : ℚ≥0) : q.num.Coprime q.den := by simpa [num, den]
 @[simp, norm_cast] lemma num_natCast (n : ℕ) : num n = n := rfl
 @[simp, norm_cast] lemma den_natCast (n : ℕ) : den n = 1 := rfl
 
-@[simp] lemma num_ofNat (n : ℕ) [n.AtLeastTwo] : num ofNat(n) = OfNat.ofNat n :=
+@[simp] lemma num_ofNat (n : ℕ) : num ofNat(n) = OfNat.ofNat n :=
   rfl
-@[simp] lemma den_ofNat (n : ℕ) [n.AtLeastTwo] : den ofNat(n) = 1 := rfl
+@[simp] lemma den_ofNat (n : ℕ) : den ofNat(n) = 1 := rfl
 
 theorem ext_num_den (hn : p.num = q.num) (hd : p.den = q.den) : p = q := by
   refine ext <| Rat.ext ?_ hd

@@ -95,7 +95,7 @@ theorem toNat_lt_toNat (hcd : c < d) (hd : d < ℵ₀) : toNat c < toNat d :=
   toNat_strictMonoOn (hcd.trans hd) hd hcd
 
 @[simp]
-theorem toNat_ofNat (n : ℕ) [n.AtLeastTwo] :
+theorem toNat_ofNat (n : ℕ) :
     Cardinal.toNat ofNat(n) = OfNat.ofNat n :=
   toNat_natCast n
 
@@ -124,9 +124,9 @@ theorem toNat_eq_iff {n : ℕ} (hn : n ≠ 0) : toNat c = n ↔ c = n := by
   rw [← toNat_toENat, ENat.toNat_eq_iff hn, toENat_eq_nat]
 
 /-- A version of `toNat_eq_iff` for literals -/
-theorem toNat_eq_ofNat {n : ℕ} [Nat.AtLeastTwo n] :
+theorem toNat_eq_ofNat {n : ℕ} [NeZero n] :
     toNat c = OfNat.ofNat n ↔ c = OfNat.ofNat n :=
-  toNat_eq_iff <| OfNat.ofNat_ne_zero n
+  toNat_eq_iff <| NeZero.ne n
 
 @[simp]
 theorem toNat_eq_one : toNat c = 1 ↔ c = 1 := by

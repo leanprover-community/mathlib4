@@ -95,7 +95,7 @@ lemma Nat.cast_smul_eq_nsmul (n : ℕ) (b : M) : (n : R) • b = n • b := by
   | succ n ih => rw [Nat.cast_succ, add_smul, add_smul, one_smul, ih, one_smul]
 
 /-- `nsmul` is equal to any other module structure via a cast. -/
-lemma ofNat_smul_eq_nsmul (n : ℕ) [n.AtLeastTwo] (b : M) :
+lemma ofNat_smul_eq_nsmul (n : ℕ) (b : M) :
     (ofNat(n) : R) • b = ofNat(n) • b := Nat.cast_smul_eq_nsmul ..
 
 end
