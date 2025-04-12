@@ -44,13 +44,13 @@ theorem continuous_algebraMap [ContinuousSMul R A] : Continuous (algebraMap R A)
   rw [algebraMap_eq_smul_one']
   exact continuous_id.smul continuous_const
 
-theorem continuous_algebraMap_iff_smul [IsTopologicalSemiring A] :
+theorem continuous_algebraMap_iff_smul [ContinuousMul A] :
     Continuous (algebraMap R A) ↔ Continuous fun p : R × A => p.1 • p.2 := by
   refine ⟨fun h => ?_, fun h => have : ContinuousSMul R A := ⟨h⟩; continuous_algebraMap _ _⟩
   simp only [Algebra.smul_def]
   exact (h.comp continuous_fst).mul continuous_snd
 
-theorem continuousSMul_of_algebraMap [IsTopologicalSemiring A] (h : Continuous (algebraMap R A)) :
+theorem continuousSMul_of_algebraMap [ContinuousMul A] (h : Continuous (algebraMap R A)) :
     ContinuousSMul R A :=
   ⟨(continuous_algebraMap_iff_smul R A).1 h⟩
 

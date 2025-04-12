@@ -64,9 +64,6 @@ theorem eventually_eventually_nhdsWithin {a : α} {s : Set α} {p : α → Prop}
   simp only [eventually_nhdsWithin_iff] at h ⊢
   exact h.mono fun x hx hxs => (hx hxs).self_of_nhds hxs
 
-@[deprecated (since := "2024-10-04")]
-alias eventually_nhdsWithin_nhdsWithin := eventually_eventually_nhdsWithin
-
 @[simp]
 theorem eventually_mem_nhdsWithin_iff {x : α} {s t : Set α} :
     (∀ᶠ x' in 𝓝[s] x, t ∈ 𝓝[s] x') ↔ t ∈ 𝓝[s] x :=
@@ -767,9 +764,6 @@ theorem continuousWithinAt_insert_self :
 
 protected alias ⟨_, ContinuousWithinAt.insert⟩ := continuousWithinAt_insert_self
 
-@[deprecated (since := "2024-10-10")]
-protected alias ContinuousWithinAt.insert_self := ContinuousWithinAt.insert
-
 /- `continuousWithinAt_insert` gives the same equivalence but at a point `y` possibly different
 from `x`. As this requires the space to be T1, and this property is not available in this file,
 this is found in another file although it is part of the basic API for `continuousWithinAt`. -/
@@ -941,9 +935,6 @@ theorem ContinuousWithinAt.comp_inter {g : β → γ} {t : Set β}
     (hg : ContinuousWithinAt g t (f x)) (hf : ContinuousWithinAt f s x) :
     ContinuousWithinAt (g ∘ f) (s ∩ f ⁻¹' t) x :=
   hg.comp (hf.mono inter_subset_left) inter_subset_right
-
-@[deprecated (since := "2024-10-10")]
-protected alias ContinuousWithinAt.comp' := ContinuousWithinAt.comp_inter
 
 theorem ContinuousWithinAt.comp_inter_of_eq {g : β → γ} {t : Set β} {y : β}
     (hg : ContinuousWithinAt g t y) (hf : ContinuousWithinAt f s x) (hy : f x = y) :

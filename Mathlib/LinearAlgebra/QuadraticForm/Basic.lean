@@ -983,9 +983,6 @@ theorem exists_quadraticMap_ne_zero {Q : QuadraticMap R M N}
   apply hB₁
   rw [(QuadraticMap.ext h : Q = 0), LinearMap.map_zero]
 
-@[deprecated (since := "2024-10-05")] alias exists_quadraticForm_ne_zero :=
-  exists_quadraticMap_ne_zero
-
 end AssociatedHom
 
 section Associated
@@ -1134,7 +1131,8 @@ def PosDef (Q₂ : QuadraticMap R₂ M N) : Prop :=
   ∀ x, x ≠ 0 → 0 < Q₂ x
 
 
-theorem PosDef.smul {R} [LinearOrderedCommRing R] [Module R M] [Module R N] [PosSMulStrictMono R N]
+theorem PosDef.smul {R} [CommRing R] [LinearOrder R]
+    [Module R M] [Module R N] [PosSMulStrictMono R N]
     {Q : QuadraticMap R M N} (h : PosDef Q) {a : R} (a_pos : 0 < a) : PosDef (a • Q) :=
   fun x hx => smul_pos a_pos (h x hx)
 
@@ -1162,7 +1160,8 @@ theorem PosDef.add [AddLeftStrictMono N]
     PosDef (Q + Q') :=
   fun x hx => add_pos (hQ x hx) (hQ' x hx)
 
-theorem linMulLinSelfPosDef {R} [LinearOrderedCommRing R] [Module R M] [LinearOrderedSemiring A]
+theorem linMulLinSelfPosDef {R} [CommRing R] [Module R M]
+    [Semiring A] [LinearOrder A] [IsStrictOrderedRing A]
     [ExistsAddOfLE A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A] (f : M →ₗ[R] A)
     (hf : LinearMap.ker f = ⊥) : PosDef (linMulLin (A := A) f f) :=
   fun _x hx => mul_self_pos.2 fun h => hx <| LinearMap.ker_eq_bot'.mp hf _ h

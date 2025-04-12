@@ -595,7 +595,8 @@ instance [CommRing R] : CommRing (HahnSeries Γ R) :=
   { inferInstanceAs (CommSemiring (HahnSeries Γ R)),
     inferInstanceAs (Ring (HahnSeries Γ R)) with }
 
-theorem orderTop_nsmul_le_orderTop_pow {Γ} [LinearOrderedCancelAddCommMonoid Γ]
+theorem orderTop_nsmul_le_orderTop_pow {Γ}
+    [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ]
     [Semiring R] {x : HahnSeries Γ R} {n : ℕ} : n • x.orderTop ≤ (x ^ n).orderTop := by
   induction n with
   | zero =>

@@ -52,14 +52,14 @@ namespace PositiveLinearMap
 variable [NonUnitalCStarAlgebra A₁] [NonUnitalCStarAlgebra A₂] [PartialOrder A₁]
   [StarOrderedRing A₁] [PartialOrder A₂] [StarOrderedRing A₂]
   [CStarAlgebra B₁] [CStarAlgebra B₂] [PartialOrder B₁] [PartialOrder B₂]
-  [StarOrderedRing B₁] [StarOrderedRing B₂]
+  [StarOrderedRing B₁]
 
 lemma apply_le_of_isSelfAdjoint (f : B₁ →ₚ[ℂ] B₂) (x : B₁) (hx : IsSelfAdjoint x) :
     f x ≤ f (algebraMap ℝ B₁ ‖x‖) := by
   gcongr
   exact IsSelfAdjoint.le_algebraMap_norm_self hx
 
-lemma norm_apply_le_of_nonneg (f : B₁ →ₚ[ℂ] B₂) (x : B₁) (hx : 0 ≤ x) :
+lemma norm_apply_le_of_nonneg [StarOrderedRing B₂] (f : B₁ →ₚ[ℂ] B₂) (x : B₁) (hx : 0 ≤ x) :
     ‖f x‖ ≤ ‖f 1‖ * ‖x‖ := by
   have h : ‖‖x‖‖ = ‖x‖ := by simp
   rw [mul_comm, ← h, ← norm_smul ‖x‖ (f 1)]
