@@ -1,9 +1,10 @@
 /-
 Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison
+Authors: Kim Morrison, Paul Lezeau
 -/
 import Mathlib.CategoryTheory.Monoidal.Mon_
+import Mathlib.CategoryTheory.ChosenFiniteProducts
 
 /-!
 # The category of module objects over a monoid object.
@@ -14,8 +15,11 @@ universe v₁ v₂ u₁ u₂
 
 open CategoryTheory MonoidalCategory
 
-variable (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C]
-variable {C}
+variable {C : Type u₁} [Category.{v₁} C]
+
+section MonoidalCategory
+
+variable [MonoidalCategory.{v₁} C]
 
 /-- A module object for a monoid object, all internal to some monoidal category. -/
 structure Mod_ (A : Mon_ C) where
@@ -129,3 +133,61 @@ def comap {A B : Mon_ C} (f : A ⟶ B) : Mod_ B ⥤ Mod_ A where
 -- Lots more could be said about `comap`, e.g. how it interacts with
 -- identities, compositions, and equalities of monoid object morphisms.
 end Mod_
+
+section Mod_Class_
+
+open CategoryTheory Mon_Class MonoidalCategory
+
+variable (M : C) [Mon_Class M]
+
+/--
+An action of a monoid object `M` on an object `S` is the data of map
+`smul : M ⊗ S ⟶ S` that satisfies "the right commutative diagrams" -/
+class Mod_Class_ (S : C) where
+  /-- The action map -/
+  smul : M ⊗ S ⟶ S
+  mul_smul' : (𝟙 M ⊗ smul) ≫ smul
+    = (α_ M M S).inv ≫ (μ ⊗ (𝟙 S)) ≫ smul := by aesop_cat
+  one_smul' : (λ_ S).inv ≫ η ▷ S ≫ smul = 𝟙 S := by aesop_cat
+
+namespace Mod_Class_
+
+@[inherit_doc] notation "γ" => Mod_Class_.smul
+
+/- The simp attribute is reserved for the unprimed versions. -/
+attribute [reassoc] mul_smul' one_smul'
+
+@[reassoc (attr := simp)]
+lemma mul_smul (S : C) [Mod_Class_ M S] : (𝟙 M ⊗ γ) ≫ γ
+    = (α_ M M S).inv ≫
+      (μ ⊗ (𝟙 S) : (M ⊗ M) ⊗ S ⟶ M ⊗ S) ≫ γ := mul_smul'
+
+@[reassoc (attr := simp)]
+lemma one_smul (S : C) [Mod_Class_ M S] :
+    (λ_ S).inv ≫ η ▷ S ≫ (γ : M ⊗ S ⟶ S) = 𝟙 S := one_smul'
+
+def regular : Mod_Class_ M M where
+  smul := μ
+
+end Mod_Class_
+
+end Mod_Class_
+
+end MonoidalCategory
+
+section ChosenFiniteProducts
+
+variable [ChosenFiniteProducts C]
+
+/-- Every object is a module over a monoid object via the trivial action. -/
+@[simps]
+def Mod_.trivialAction (A : Mon_ C) (X : C) : Mod_ A where
+  X := X
+  act := ChosenFiniteProducts.snd A.X X
+
+/-- Every object is a module over a monoid object via the trivial action. -/
+def Mon_Class.trivialAction (M : C) [Mon_Class M] (S : C) : Mod_Class_ M S where
+  smul := ChosenFiniteProducts.snd M S
+
+
+end ChosenFiniteProducts
