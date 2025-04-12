@@ -141,8 +141,10 @@ An action of a monoid object `M` on an object `S` is the data of map
 class Mod_Class_ (S : C) where
   /-- The action map -/
   smul : M ⊗ S ⟶ S
-  mul_smul (S) : (𝟙 M ⊗ smul) ≫ smul = (α_ M M S).inv ≫ (μ ⊗ (𝟙 S)) ≫ smul := by aesop_cat
-  one_smul (S) : (λ_ S).inv ≫ η ▷ S ≫ smul = 𝟙 S := by aesop_cat
+  /-- The action map is compatible with the monoid's multiplication -/
+  mul_smul (S) : (μ ▷ S) ≫ smul = (α_ M M S).hom ≫ (M ◁ smul) ≫ smul := by aesop_cat
+  /-- The identity acts trivially -/
+  one_smul (S) : (η ▷ S) ≫ smul = (λ_ S).hom := by aesop_cat
 
 attribute [reassoc (attr := simp)] Mod_Class_.mul_smul Mod_Class_.one_smul
 
