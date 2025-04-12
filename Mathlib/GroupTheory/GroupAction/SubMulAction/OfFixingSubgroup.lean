@@ -379,6 +379,7 @@ theorem ofFixingSubgroup.merge_apply₂
   simp only [merge, Fin.Embedding.merge_apply, trans_apply, Equiv.coe_toEmbedding,
     Function.Embedding.subtype_apply, dif_neg hi]
 
+/-
 noncomputable def ofFixingSubgroup.merge'
     {m n : ℕ} {s : Set α} [Finite s] (hmn : m + s.ncard = n)
     (x : Fin m ↪ ofFixingSubgroup M s) : Fin n ↪ α :=
@@ -413,6 +414,7 @@ theorem ofFixingSubgroup.merge'_apply₂
   simp only [merge', Fin.Embedding.merge_apply, trans_apply,
     Function.Embedding.subtype_apply, Equiv.coe_toEmbedding, dif_neg hi]
   congr
+-/
 
 /-- The fixator of a subset of cardinal d in a k-transitive action
 acts (k-d) transitively on the remaining -/
@@ -439,8 +441,6 @@ theorem ofFixingSubgroup.isMultiplyPretransitive {m n : ℕ} [IsMultiplyPretrans
     intro a
     set i := (Finite.equivFinOfCardEq rfl) a
     have hi : i.val < n := lt_of_lt_of_le i.prop (by simp [← hmn, Set.Nat.card_coe_set_eq])
-    have := ofFixingSubgroup.merge_apply₁ hmn x ⟨i.val, hi⟩ (by
-        simpa [Set.Nat.card_coe_set_eq] using i.prop)
     specialize hg ⟨i.val, hi⟩
     simpa [ofFixingSubgroup.merge_apply₁ hmn _ ⟨i.val, hi⟩ (by
         simpa [Set.Nat.card_coe_set_eq] using i.prop),
