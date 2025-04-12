@@ -398,7 +398,7 @@ omit [FiniteDimensional K V]
 
 /-- An injective linear map between finite-dimensional space of equal rank
 is a linear equivalence. -/
-noncomputable def of_injective_finrank_eq (f : V →ₗ[K] V') (hinj : Function.Injective f)
+noncomputable def ofInjectiveOfFinrankEq (f : V →ₗ[K] V') (hinj : Function.Injective f)
     (hrank : Module.finrank K V = Module.finrank K V') : V ≃ₗ[K] V' :=
   haveI : LinearMap.range f = ⊤ :=
     Submodule.eq_top_of_finrank_eq ((LinearMap.finrank_range_of_inj hinj).trans hrank)
