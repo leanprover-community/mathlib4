@@ -215,9 +215,9 @@ protected theorem Summable.tsum_mul_tsum_eq_tsum_sum_antidiagonal (hf : Summable
     ((∑' n, f n) * ∑' n, g n) = ∑' n, ∑ kl ∈ antidiagonal n, f kl.1 * g kl.2 := by
   conv_rhs => congr; ext; rw [← Finset.sum_finset_coe, ← tsum_fintype]
   rw [hf.tsum_mul_tsum hg hfg, ← sigmaAntidiagonalEquivProd.tsum_eq (_ : A × A → α)]
-  exact
-    tsum_sigma' (fun n ↦ (hasSum_fintype _).summable)
-      (summable_mul_prod_iff_summable_mul_sigma_antidiagonal.mp hfg)
+  exact (summable_mul_prod_iff_summable_mul_sigma_antidiagonal.mp hfg).tsum_sigma'
+    (fun n ↦ (hasSum_fintype _).summable)
+
 
 @[deprecated (since := "2025-04-12")] alias tsum_mul_tsum_eq_tsum_sum_antidiagonal :=
   Summable.tsum_mul_tsum_eq_tsum_sum_antidiagonal

@@ -920,7 +920,7 @@ theorem HasFPowerSeriesWithinOnBall.tendsto_partialSum_prod {y : E}
     _ ≤ ∑ i ∈ range (n - k), ‖p (i + k)‖ * ↑r' ^ (i + k) := by
         gcongr with i _hi; simpa [← coe_nnnorm] using hw.le
     _ ≤ ∑' i, ‖p (i + k)‖ * ↑r' ^ (i + k) := by
-        apply sum_le_tsum _ (fun i _hi ↦ by positivity)
+        apply Summable.sum_le_tsum _ (fun i _hi ↦ by positivity)
         apply ((_root_.summable_nat_add_iff k).2 S)
     _ ≤ ε / 4 := hk.le
   calc
