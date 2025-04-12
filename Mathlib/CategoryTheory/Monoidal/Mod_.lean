@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Paul Lezeau
 -/
 import Mathlib.CategoryTheory.Monoidal.Mon_
-import Mathlib.CategoryTheory.ChosenFiniteProducts
 
 /-!
 # The category of module objects over a monoid object.
@@ -15,11 +14,7 @@ universe v₁ v₂ u₁ u₂
 
 open CategoryTheory MonoidalCategory
 
-variable {C : Type u₁} [Category.{v₁} C]
-
-section MonoidalCategory
-
-variable [MonoidalCategory.{v₁} C]
+variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
 
 /-- A module object for a monoid object, all internal to some monoidal category. -/
 structure Mod_ (A : Mon_ C) where
@@ -172,22 +167,3 @@ def regular : Mod_Class_ M M where
 end Mod_Class_
 
 end Mod_Class_
-
-end MonoidalCategory
-
-section ChosenFiniteProducts
-
-variable [ChosenFiniteProducts C]
-
-/-- Every object is a module over a monoid object via the trivial action. -/
-@[simps]
-def Mod_.trivialAction (A : Mon_ C) (X : C) : Mod_ A where
-  X := X
-  act := ChosenFiniteProducts.snd A.X X
-
-/-- Every object is a module over a monoid object via the trivial action. -/
-def Mon_Class.trivialAction (M : C) [Mon_Class M] (S : C) : Mod_Class_ M S where
-  smul := ChosenFiniteProducts.snd M S
-
-
-end ChosenFiniteProducts
