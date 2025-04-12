@@ -65,11 +65,11 @@ theorem ContinuousMul.induced {α : Type*} {β : Type*} {F : Type*} [FunLike F �
   simp only [Function.comp_def, map_mul]
   fun_prop
 
-@[to_additive (attr := continuity, fun_prop)]
+@[to_additive (attr := continuity)]
 theorem continuous_mul_left (a : M) : Continuous fun b : M => a * b :=
   continuous_const.mul continuous_id
 
-@[to_additive (attr := continuity, fun_prop)]
+@[to_additive (attr := continuity)]
 theorem continuous_mul_right (a : M) : Continuous fun b : M => b * a :=
   continuous_id.mul continuous_const
 
@@ -672,7 +672,7 @@ theorem continuousOn_list_prod {f : ι → X → M} (l : List ι) {t : Set X}
   rw [continuousWithinAt_iff_continuousAt_restrict _ hx] at h
   exact h
 
-@[to_additive (attr := continuity, fun_prop)]
+@[to_additive (attr := continuity)]
 theorem continuous_pow : ∀ n : ℕ, Continuous fun a : M => a ^ n
   | 0 => by simpa using continuous_const
   | k + 1 => by
