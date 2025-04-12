@@ -39,7 +39,8 @@ lemma Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes_of_isLocalRing
     [IsLocalRing R] (I : Ideal R) (hI : I.IsPrincipal)
     (hp : (IsLocalRing.maximalIdeal R) ∈ I.minimalPrimes) :
     (IsLocalRing.maximalIdeal R).height ≤ 1 := by
-  apply (Ideal.height_le_iff (p := (IsLocalRing.maximalIdeal R)) (n := 1)).mpr; intro q h₁ h₂
+  erw [Ideal.height_le_iff]
+  intro q h₁ h₂
   suffices q.primeHeight = 0 by rw [Ideal.height_eq_primeHeight, this]; exact zero_lt_one
   rw [← Ideal.height_eq_primeHeight, ← WithBot.coe_inj,
     ← IsLocalization.AtPrime.ringKrullDim_eq_height q (Localization.AtPrime q),
@@ -94,7 +95,7 @@ lemma Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes_of_isLocalRing
       show Submodule.IsPrincipal.generator I ∈ q.primeCompl from ?_⟩
     show Submodule.IsPrincipal.generator I ∉ (↑q : Set R)
     rw [← Set.singleton_subset_iff, ← Ideal.span_le, Ideal.span_singleton_generator]
-    exact fun e => h₂.not_le (hp.2 ⟨h₁, e⟩ h₂.le)
+    exact fun e ↦ h₂.not_le (hp.2 ⟨h₁, e⟩ h₂.le)
 
 /-- **Krull's Hauptidealsatz**: In a commutative Noetherian ring `R`,
   any prime ideal that is minimal over a principal ideal has height at most 1. -/
@@ -117,10 +118,12 @@ lemma Ideal.height_le_spanRank_toENat_of_mem_minimal_primes
     p.height ≤ I.spanRank.toENat := by
   classical
   rw [I.spanRank_toENat_eq_iInf_finset_card]
-  apply le_iInf; rintro ⟨s, hs, hs'⟩
+  apply le_iInf
+  rintro ⟨s, hs, hs'⟩
   induction hn : hs.toFinset.card using Nat.strong_induction_on generalizing R with
   | h n H =>
-    have := hp.1.1; subst hs'
+    have := hp.1.1
+    subst hs'
     cases n with
     | zero =>
       rw [CharP.cast_eq_zero, nonpos_iff_eq_zero, @Ideal.height_eq_primeHeight _ _ p hp.1.1,
@@ -158,10 +161,7 @@ lemma Ideal.height_le_spanRank_toENat_of_mem_minimal_primes
         refine hq' J hJ' (lt_of_le_of_ne (le_sup_left.trans hJ) ?_)
           (lt_of_le_not_le (IsLocalRing.le_maximalIdeal hJ'.ne_top) h)
         rintro rfl
-        apply hxq
-        apply hJ
-        apply Ideal.mem_sup_right
-        exact Submodule.mem_span_singleton_self _
+        exact hxq <| hJ <| Ideal.mem_sup_right <| Submodule.mem_span_singleton_self _
       have h : ∀ z ∈ s, z ∈ (q ⊔ Ideal.span {x}).radical := by
         have := hp.1.2.trans this
         rw [Ideal.span_le, Set.insert_subset_iff] at this
@@ -176,14 +176,13 @@ lemma Ideal.height_le_spanRank_toENat_of_mem_minimal_primes
       let I' := Ideal.span (Set.range y)
       let f := Ideal.Quotient.mk I'
       have hf : Function.Surjective f := Ideal.Quotient.mk_surjective
-      have hf' : ∀ z, f (y z) = 0 := by
-        intro z
+      have hf' : ∀ z, f (y z) = 0 := fun z ↦ by
         rw [← RingHom.mem_ker, Ideal.mk_ker]
         exact Ideal.subset_span ⟨z, rfl⟩
       have hI'q : I' ≤ q := by
         rw [Ideal.span_le]
         rintro _ ⟨z, rfl⟩
-        apply hyq
+        exact hyq _
       have hI'p' : I' ≤ p' := hI'q.trans hpq.le
       have h :=
         @Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes _ _ _
@@ -238,17 +237,14 @@ lemma Ideal.height_le_spanRank_toENat_of_mem_minimal_primes
         rwa [sup_eq_left.mpr hI'q, sup_eq_left.mpr hq₁.1.2, eq_comm] at hq₂
       have hs : s.Finite := ht.subset (Set.subset_insert _ _)
       have := hs.fintype
-      suffices h' : (Set.finite_range y).toFinset.card ≤ n by
-        apply le_trans (H (Set.finite_range y).toFinset.card ?_ _ _ hq₁ (Set.range y)
-          (Set.finite_range y) rfl rfl) ?_
-        · rwa [Nat.lt_add_one_iff]
-        · norm_cast
+      suffices h' : (Set.finite_range y).toFinset.card ≤ n from
+        le_trans (H (Set.finite_range y).toFinset.card (by rwa [Nat.lt_add_one_iff]) _ _ hq₁
+          (Set.range y) (Set.finite_range y) rfl rfl) (by norm_cast)
       trans hs.toFinset.card
       · convert Finset.card_image_le (s := Finset.univ) (f := y) <;> simp
-      · apply Nat.le_of_lt_succ; show hs.toFinset.card + 1 ≤ n + 1
-        rw [← Finset.card_insert_of_not_mem (a := x)]; swap
-        · simpa
-        · simpa using hn
+      · refine Nat.le_of_lt_succ <| show hs.toFinset.card + 1 ≤ n + 1 from ?_
+        rw [← Finset.card_insert_of_not_mem (a := x) (by simpa)]
+        simpa using hn
 
 /-- In a commutative Noetherian ring `R`, the height of a (finitely-generated) ideal is smaller
 than or equal to the minimum number of generators for this ideal. -/
@@ -268,7 +264,8 @@ lemma Ideal.height_le_spanFinrank (I : Ideal R) (hI : I ≠ ⊤) :
 lemma Ideal.height_le_spanRank (I : Ideal R) (hI : I ≠ ⊤) :
     I.height ≤ I.spanRank := by
   apply le_trans (b := ((Cardinal.toENat I.spanRank) : Cardinal))
-  · norm_cast; exact I.height_le_spanRank_toENat hI
+  · norm_cast
+    exact I.height_le_spanRank_toENat hI
   · exact Cardinal.ofENat_toENat_le (Submodule.spanRank I)
 
 instance Ideal.finiteHeight_of_isNoetherianRing (I : Ideal R) :
@@ -282,19 +279,22 @@ lemma exists_spanRank_eq_and_height_eq  (I : Ideal R) (hI : I ≠ ⊤) :
   rw [ENat.coe_toNat_eq_self.mpr (Ideal.height_ne_top hI)] at hJ₃
   refine ⟨J, hJ₁, le_antisymm ?_ (le_trans ?_ (J.height_le_spanRank ?_)),
     le_antisymm (Ideal.height_mono hJ₁) hJ₃⟩
-  · convert hJ₂; exact Cardinal.ofENat_eq_nat.mpr (ENat.coe_toNat (I.height_ne_top hI)).symm
+  · convert hJ₂
+    exact Cardinal.ofENat_eq_nat.mpr (ENat.coe_toNat (I.height_ne_top hI)).symm
   · exact Cardinal.ofENat_le_ofENat_of_le hJ₃
-  · rintro rfl; exact hI (top_le_iff.mp hJ₁)
+  · rintro rfl
+    exact hI (top_le_iff.mp hJ₁)
 
 /-- In a commutative Noetherian ring `R`, a prime ideal `p` has height no greater than `n` if and
 only if it is a minimal ideal over some ideal generated by no more than `n` elements. -/
 lemma Ideal.height_le_iff_exists_minimalPrimes  (p : Ideal R) [p.IsPrime]
     (n : ℕ∞) : p.height ≤ n ↔ ∃ I : Ideal R, p ∈ I.minimalPrimes ∧ I.spanRank ≤ n := by
   constructor
-  · intro h;
+  · intro h
     obtain ⟨I, hI, e₁, e₂⟩ := exists_spanRank_eq_and_height_eq p (IsPrime.ne_top ‹_›)
     refine ⟨I, Ideal.mem_minimalPrimes_of_height_eq hI e₂.ge, e₁.symm ▸ ?_⟩
     norm_cast
-  · rintro ⟨I, hp, hI⟩; exact le_trans
+  · rintro ⟨I, hp, hI⟩
+    exact le_trans
       (Ideal.height_le_spanRank_toENat_of_mem_minimal_primes I p hp)
       (by simpa using (Cardinal.toENat.monotone' hI))
