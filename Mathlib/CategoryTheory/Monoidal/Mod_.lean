@@ -141,27 +141,16 @@ An action of a monoid object `M` on an object `S` is the data of map
 class Mod_Class_ (S : C) where
   /-- The action map -/
   smul : M ⊗ S ⟶ S
-  mul_smul' : (𝟙 M ⊗ smul) ≫ smul
-    = (α_ M M S).inv ≫ (μ ⊗ (𝟙 S)) ≫ smul := by aesop_cat
-  one_smul' : (λ_ S).inv ≫ η ▷ S ≫ smul = 𝟙 S := by aesop_cat
+  mul_smul (S) : (𝟙 M ⊗ smul) ≫ smul = (α_ M M S).inv ≫ (μ ⊗ (𝟙 S)) ≫ smul := by aesop_cat
+  one_smul (S) : (λ_ S).inv ≫ η ▷ S ≫ smul = 𝟙 S := by aesop_cat
 
 namespace Mod_Class_
 
 @[inherit_doc] notation "γ" => Mod_Class_.smul
 
-/- The simp attribute is reserved for the unprimed versions. -/
-attribute [reassoc] mul_smul' one_smul'
-
-@[reassoc (attr := simp)]
-lemma mul_smul (S : C) [Mod_Class_ M S] : (𝟙 M ⊗ γ) ≫ γ
-    = (α_ M M S).inv ≫
-      (μ ⊗ (𝟙 S) : (M ⊗ M) ⊗ S ⟶ M ⊗ S) ≫ γ := mul_smul'
-
-@[reassoc (attr := simp)]
-lemma one_smul (S : C) [Mod_Class_ M S] :
-    (λ_ S).inv ≫ η ▷ S ≫ (γ : M ⊗ S ⟶ S) = 𝟙 S := one_smul'
-
-def regular : Mod_Class_ M M where
+-- See note [reducible non instances]
+/-- The action of a monoid object on itself. -/
+abbrev regular : Mod_Class_ M M where
   smul := μ
 
 end Mod_Class_
