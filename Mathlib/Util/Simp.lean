@@ -20,7 +20,6 @@ namespace Lean.Meta.Simp
 on the proof expression returned by `discharge?`
 
 `dischargeQ? (a : Q(Prop))` attempts to prove `a` using the discharger, returning
-`some (pf : Q(a))` if a proof is found and `none` otherwise.
--/
+`some (pf : Q(a))` if a proof is found and `none` otherwise. -/
 @[inline]
 def Methods.dischargeQ? (M : Methods) (a : Q(Prop)) : SimpM <| Option Q($a) := M.discharge? a
