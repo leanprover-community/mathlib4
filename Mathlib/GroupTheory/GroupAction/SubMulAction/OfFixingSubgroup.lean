@@ -204,6 +204,8 @@ theorem fixingSubgroup_smul_eq_fixingSubgroup_map_conj :
     fixingSubgroup M (g • s) = (fixingSubgroup M s).map (MulAut.conj g).toMonoidHom :=
   (fixingSubgroup_map_conj_eq rfl).symm
 
+/-- The equivalence of `fixingSubgroup M t` with `fixingSubgroup M s`
+  when `t` is a translate of `g` -/
 def fixingSubgroupEquivFixingSubgroup (hg : g • t = s) :
     fixingSubgroup M t ≃* fixingSubgroup M s :=
   ((MulAut.conj g).subgroupMap (fixingSubgroup M t)).trans
@@ -346,6 +348,7 @@ noncomputable example (n : ℕ) (s : Set α) [Finite s] (hs : s.ncard = n) :
 
 open Function.Embedding Fin.Embedding
 
+/-- Append `Fin m ↪ ofFixingSubgroup M s` at the end of an enumeration of `s` -/
 noncomputable def ofFixingSubgroup.merge
     {m n : ℕ} {s : Set α} [Finite s] (hmn : s.ncard + m = n)
     (x : Fin m ↪ ofFixingSubgroup M s) : Fin n ↪ α :=
