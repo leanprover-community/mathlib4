@@ -274,18 +274,13 @@ end MulAction
 namespace AddAction
 variable {G α : Type*} [AddGroup G] [AddAction G α]
 
-@[simp]
-theorem _root_.AddAut.conj_symm_apply'  {G : Type*} [AddGroup G] (g h : G) :
-    (AddEquiv.symm (AddAut.conj g).toMul) h = -g + h + g :=
-  rfl
-
 /-- If the stabilizer of `x` is `S`, then the stabilizer of `g +ᵥ x` is `g + S + (-g)`. -/
 theorem stabilizer_vadd_eq_stabilizer_map_conj (g : G) (a : α) :
     stabilizer G (g +ᵥ a) = (stabilizer G a).map (AddAut.conj g).toMul.toAddMonoidHom := by
   ext h
   rw [mem_stabilizer_iff, ← vadd_left_cancel_iff (-g), vadd_vadd, vadd_vadd, vadd_vadd,
     neg_add_cancel, zero_vadd, ← mem_stabilizer_iff, AddSubgroup.mem_map_equiv,
-    AddAut.conj_symm_apply']
+    AddAut.conj_symm_apply]
 
 /-- The natural group equivalence between the stabilizers of two elements in the same orbit. -/
 def stabilizerEquivStabilizer {a b : α} {g : G} (hg : g +ᵥ b = a) :
