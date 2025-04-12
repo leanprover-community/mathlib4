@@ -396,8 +396,11 @@ theorem ofInjectiveEndo_left_inv (f : V →ₗ[K] V) (h_inj : Injective f) :
 variable {V' : Type*} [AddCommGroup V'] [Module K V'] [FiniteDimensional K V']
 omit [FiniteDimensional K V]
 
-/-- An injective linear map between finite-dimensional space of equal rank
-is a linear equivalence. -/
+/-- An injective linear map between finite-dimensional modules of equal rank
+is a linear equivalence.
+Unlike `LinearEquiv.ofFinrankEq` (which creates an *abstract* linear equivalence between `V` and `V'`),
+this lemma improves a *given* injective linear map to a linear equivalence.
+-/
 noncomputable def ofInjectiveOfFinrankEq (f : V →ₗ[K] V') (hinj : Function.Injective f)
     (hrank : Module.finrank K V = Module.finrank K V') : V ≃ₗ[K] V' :=
   haveI : LinearMap.range f = ⊤ :=
