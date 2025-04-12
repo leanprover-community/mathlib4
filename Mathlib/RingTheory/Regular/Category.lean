@@ -29,21 +29,6 @@ theorem subsingleton_of_subsingleton_subsingleton (h0 : Subsingleton C.X₁)
   rw [show b = 0 from (@Subsingleton.elim _ h0 _ 0), map_zero] at hb
   exact hb.symm
 
-include h in
-theorem mono_of_subsingleton (h0 : Subsingleton C.X₁) : Mono C.g := by
-  rw [CategoryTheory.ShortComplex.ab_exact_iff] at h
-  rw [AddCommGrp.mono_iff_ker_eq_bot, eq_bot_iff]
-  intro x hx
-  rcases h x hx with ⟨y, hy⟩
-  simp only [Subsingleton.eq_zero y, map_zero] at hy
-  simp [← hy]
-
-lemma subsingleton_of_mono_zero {X Y : AddCommGrp.{u}} {f : X ⟶ Y} (mono : Mono f)
-    (eq0 : f = 0) : Subsingleton X := by
-  apply subsingleton_of_forall_eq 0
-  intro x
-  apply (AddCommGrp.mono_iff_injective f).mp mono
-  simp [eq0]
 /-- Given two exact short complex `C1 C2` with two isomorphisms `e : Iso C1.X₂ C2.X₁` and
 `e' : Iso C1.X₃ C2.X₂` that commute with `C1 C2`, if `C1.X₁` is subsingleton and `C2.g = 0`,
 there is an isomorphism `C1.X₂ ≃+ C1.X₃` -/
@@ -94,15 +79,19 @@ def SMul_ShortComplex (r : R) :
       ModuleCat.hom_zero, LinearMap.zero_apply, Submodule.Quotient.mk_eq_zero]
     exact Submodule.smul_mem_pointwise_smul m r ⊤ trivial
 
+lemma SMul_ShortComplex_exact (r : R) : (SMul_ShortComplex M r).Exact := by
+  simp only [SMul_ShortComplex, ShortComplex.ShortExact.moduleCat_exact_iff_function_exact,
+    ModuleCat.hom_ofHom]
+  intro x
+  simp [Submodule.mem_smul_pointwise_iff_exists, Submodule.ideal_span_singleton_smul r ⊤,
+    Submodule.mem_smul_pointwise_iff_exists]
+
+instance SMul_ShortComplex_g_epi (r : R) : Epi (SMul_ShortComplex M r).g := by
+  simpa [SMul_ShortComplex, ModuleCat.epi_iff_surjective] using Submodule.mkQ_surjective _
+
 variable {M} in
-lemma IsSMulRegular.SMul_ShortComplex_exact {r : R} (reg : IsSMulRegular M r) :
+lemma IsSMulRegular.SMul_ShortComplex_shortExact {r : R} (reg : IsSMulRegular M r) :
     (SMul_ShortComplex M r).ShortExact where
-  exact := by
-    simp only [SMul_ShortComplex, ShortComplex.ShortExact.moduleCat_exact_iff_function_exact,
-      ModuleCat.hom_ofHom]
-    intro x
-    simp [Submodule.mem_smul_pointwise_iff_exists, Submodule.ideal_span_singleton_smul r ⊤,
-      Submodule.mem_smul_pointwise_iff_exists]
+  exact := SMul_ShortComplex_exact M r
   mono_f := by simpa [SMul_ShortComplex, ModuleCat.mono_iff_injective] using reg
-  epi_g := by
-    simpa [SMul_ShortComplex, ModuleCat.epi_iff_surjective] using Submodule.mkQ_surjective _
+  epi_g := inferInstance
