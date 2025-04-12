@@ -167,7 +167,7 @@ theorem isPWO_iUnion_support_MVpow [LinearOrderedCancelAddCommMonoid Γ] [CommSe
 
 section PowerSeriesFamily
 
-variable [LinearOrderedCancelAddCommMonoid Γ] [CommRing R]
+variable [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ] [CommRing R]
 
 lemma supp_eq_univ_of_pos (σ : Type*) (y : σ →₀ HahnSeries Γ R)
     (hy : ∀ i : σ, 0 < (y i).order) : y.support = Set.univ (α := σ) := by
@@ -520,7 +520,8 @@ namespace PowerSeries
 
 open HahnSeries SummableFamily
 
-variable [LinearOrderedCancelAddCommMonoid Γ] [CommRing R] (x : HahnSeries Γ R)
+variable [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ]
+  [CommRing R] {x : HahnSeries Γ R}
 
 /-- The `R`-algebra homomorphism from `R[[X]]` to `HahnSeries Γ R` given by sending the power series
 variable `X` to a positive order element `x` and extending to infinite sums. -/

@@ -14,7 +14,8 @@ import Mathlib.Analysis.NormedSpace.HahnBanach.SeparatingDual
 A parametric integral is a function with shape `f = fun x : H ↦ ∫ a : α, F x a ∂μ` for some
 `F : H → α → E`, where `H` and `E` are normed spaces and `α` is a measured space with measure `μ`.
 
-We already know from `continuous_of_dominated` in `Mathlib/MeasureTheory/Integral/Bochner.lean` how
+We already know from `continuous_of_dominated`
+in `Mathlib/MeasureTheory/Integral/Bochner/Basic.lean` how
 to guarantee that `f` is continuous using the dominated convergence theorem. In this file,
 we want to express the derivative of `f` as the integral of the derivative of `F` with respect
 to `x`.

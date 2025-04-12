@@ -490,8 +490,8 @@ end SMul
 
 section Semiring
 
-variable [OrderedCancelAddCommMonoid Γ] [PartialOrder Γ'] [AddAction Γ Γ']
-  [IsOrderedCancelVAdd Γ Γ'] [Semiring R] [AddCommMonoid V] [Module R V]
+variable [AddCommMonoid Γ] [PartialOrder Γ] [IsOrderedCancelAddMonoid Γ] [PartialOrder Γ']
+[AddAction Γ Γ'] [IsOrderedCancelVAdd Γ Γ'] [Semiring R]
 
 instance : Module (HahnSeries Γ R) (SummableFamily Γ' V α) where
   smul := (· • ·)
@@ -838,8 +838,7 @@ def embDomain (s : SummableFamily Γ R α) (f : α ↪ β) : SummableFamily Γ R
   isPWO_iUnion_support' := by
     refine s.isPWO_iUnion_support.mono (Set.iUnion_subset fun b g h => ?_)
     by_cases hb : b ∈ Set.range f
-    · dsimp only at h
-      rw [dif_pos hb] at h
+    · rw [dif_pos hb] at h
       exact Set.mem_iUnion.2 ⟨Classical.choose hb, h⟩
     · simp [-Set.mem_range, dif_neg hb] at h
   finite_co_support' g :=
@@ -878,7 +877,8 @@ end EmbDomain
 
 section powers
 
-theorem support_pow_subset_closure [OrderedCancelAddCommMonoid Γ] [Semiring R] (x : HahnSeries Γ R)
+theorem support_pow_subset_closure [AddCommMonoid Γ] [PartialOrder Γ] [IsOrderedCancelAddMonoid Γ]
+    [Semiring R] (x : HahnSeries Γ R)
     (n : ℕ) : support (x ^ n) ⊆ AddSubmonoid.closure (support x) := by
   induction' n with n ih <;> intro g hn
   · simp only [pow_zero, mem_support, coeff_one, ne_eq, ite_eq_right_iff, Classical.not_imp] at hn
@@ -887,21 +887,23 @@ theorem support_pow_subset_closure [OrderedCancelAddCommMonoid Γ] [Semiring R] 
   · obtain ⟨i, hi, j, hj, rfl⟩ := support_mul_subset_add_support hn
     exact SetLike.mem_coe.2 (AddSubmonoid.add_mem _ (ih hi) (AddSubmonoid.subset_closure hj))
 
-theorem isPWO_iUnion_support_powers [LinearOrderedCancelAddCommMonoid Γ] [Semiring R]
+theorem isPWO_iUnion_support_powers [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ]
+    [Semiring R]
     {x : HahnSeries Γ R} (hx : 0 ≤ x.order) :
     (⋃ n : ℕ, (x ^ n).support).IsPWO :=
   (x.isPWO_support'.addSubmonoid_closure
     fun _ hg => le_trans hx (order_le_of_coeff_ne_zero (Function.mem_support.mp hg))).mono
     (Set.iUnion_subset fun n => support_pow_subset_closure x n)
 
-theorem co_support_zero [OrderedCancelAddCommMonoid Γ] [Semiring R] (g : Γ) :
+theorem co_support_zero [AddCommMonoid Γ] [PartialOrder Γ] [IsOrderedCancelAddMonoid Γ]
+    [Semiring R] (g : Γ) :
     {a | ¬((0 : HahnSeries Γ R) ^ a).coeff g = 0} ⊆ {0} := by
   simp only [Set.subset_singleton_iff, Set.mem_setOf_eq]
   intro n hn
   by_contra h'
   simp_all only [ne_eq, not_false_eq_true, zero_pow, coeff_zero, not_true_eq_false]
 
-variable [LinearOrderedCancelAddCommMonoid Γ] [CommRing R]
+variable [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ] [CommRing R]
 
 theorem pow_finite_co_support {x : HahnSeries Γ R} (hx : 0 < x.orderTop) (g : Γ) :
     Set.Finite {a | ((fun n ↦ x ^ n) a).coeff g ≠ 0} := by
@@ -995,28 +997,7 @@ section Inversion
 
 section Monoid
 
-variable [LinearOrderedCancelAddCommMonoid Γ] [CommRing R]
-
-/-!
-theorem isUnit_of_leadingCoeff_one_order_zero {x : HahnSeries Γ R}
-    (hx : x.leadingCoeff = 1) (hxo : x.order = 0) :  IsUnit x := by
-  have h₁ : x.leadingTerm = 1 := by
-    rw [leadingTerm, ]
-  have h : 0 < (x - 1).orderTop := by
-
-
-theorem isUnit_of_isUnit_leadingCoeff_order_add_unit {x : HahnSeries Γ R}
-    (hx : IsUnit x.leadingCoeff) (hxo : IsAddUnit x.order) : IsUnit x := by
-  let ⟨⟨u, i, ui, iu⟩, h⟩ := hx
-  rw [Units.val_mk] at h
-  rw [h] at iu
-  have h' : ((single (IsAddUnit.addUnit hxo).neg i) * x).leadingCoeff = 1 := by
-    rw [leadingCoeff_mul_of_nonzero, leadingCoeff_of_single]
-    exact iu
-    rw [leadingCoeff_of_single]
-    --by_cases hz : 0 = (1 : R)
-    sorry
--/
+variable [AddCommGroup Γ] [LinearOrder Γ] [IsOrderedAddMonoid Γ] [CommRing R]
 
 theorem one_minus_single_neg_mul {x y : HahnSeries Γ R} {r : R} (hr : r * x.leadingCoeff = 1)
     (hxy : x = y + single x.order x.leadingCoeff) (hxo : IsAddUnit x.order) :
@@ -1056,37 +1037,29 @@ end Monoid
 
 section CommRing
 
-variable [LinearOrderedAddCommGroup Γ] [CommRing R]
+variable [AddCommGroup Γ] [LinearOrder Γ] [IsOrderedAddMonoid Γ] [CommRing R] [IsDomain R]
 
-theorem neg_eq_addUnit_neg {G : Type*} [AddGroup G] (g : G) :
-    -g = (IsAddUnit.addUnit (AddGroup.isAddUnit g)).neg := by
-  simp only [AddUnits.neg_eq_val_neg, AddUnits.val_neg_eq_neg_val, IsAddUnit.addUnit_spec]
---#find_home! neg_eq_addUnit_neg --[Mathlib.Algebra.Group.Units]
-
-theorem one_minus_single_mul (x y : HahnSeries Γ R) (r : R) (hr : r * x.leadingCoeff = 1)
-    (hxy : x = y + x.leadingTerm) : 1 - single (-order x) r * x = -(single (-x.order) r * y) := by
-  rw [neg_eq_addUnit_neg]
-  rw [leadingTerm_eq, ← leadingCoeff_eq] at hxy
-  exact one_minus_single_neg_mul hr hxy (AddGroup.isAddUnit x.order)
-
-theorem isUnit_of_isUnit_leadingCoeff {x : HahnSeries Γ R} (hx : IsUnit x.leadingCoeff) :
-    IsUnit x := by
-  exact isUnit_of_isUnit_leadingCoeff_AddUnitOrder hx (AddGroup.isAddUnit x.order)
-
-theorem isUnit_iff [IsDomain R] {x : HahnSeries Γ R} :
-    IsUnit x ↔ IsUnit (x.leadingCoeff) := by
-  refine { mp := ?mp, mpr := isUnit_of_isUnit_leadingCoeff }
-  rintro ⟨⟨u, i, ui, iu⟩, rfl⟩
-  refine
-    isUnit_of_mul_eq_one (u.leadingCoeff) (i.leadingCoeff)
-      ((coeff_mul_order_add_order u i).symm.trans ?_)
-  rw [ui, coeff_one, if_pos]
-  rw [← order_mul (left_ne_zero_of_mul_eq_one ui) (right_ne_zero_of_mul_eq_one ui), ui, order_one]
+theorem isUnit_iff {x : HahnSeries Γ R} : IsUnit x ↔ IsUnit (x.leadingCoeff) := by
+  constructor
+  · rintro ⟨⟨u, i, ui, iu⟩, rfl⟩
+    refine
+      isUnit_of_mul_eq_one (u.leadingCoeff) (i.leadingCoeff)
+        ((coeff_mul_order_add_order u i).symm.trans ?_)
+    rw [ui, coeff_one, if_pos]
+    rw [← order_mul (left_ne_zero_of_mul_eq_one ui) (right_ne_zero_of_mul_eq_one ui), ui, order_one]
+  · rintro ⟨⟨u, i, ui, iu⟩, hx⟩
+    rw [Units.val_mk] at hx
+    rw [hx] at iu
+    have h :=
+      SummableFamily.one_sub_self_mul_hsum_powers (unit_aux x iu (AddGroup.isAddUnit x.order))
+    rw [sub_sub_cancel] at h
+    exact isUnit_of_mul_isUnit_right (isUnit_of_mul_eq_one _ _ h)
 
 end CommRing
 
 open Classical in
-instance instField [LinearOrderedAddCommGroup Γ] [Field R] : Field (HahnSeries Γ R) where
+instance instField [AddCommGroup Γ] [LinearOrder Γ] [IsOrderedAddMonoid Γ] [Field R] :
+    Field (HahnSeries Γ R) where
   __ : IsDomain (HahnSeries Γ R) := inferInstance
   inv x :=
     if x0 : x = 0 then 0

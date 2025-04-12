@@ -169,8 +169,8 @@ def Stable : Prop :=
 @[simps]
 def _root_.Ideal.stableFiltration (I : Ideal R) (N : Submodule R M) : I.Filtration M where
   N i := I ^ i • N
-  mono i := by dsimp only; rw [add_comm, pow_add, mul_smul]; exact Submodule.smul_le_right
-  smul_le i := by dsimp only; rw [add_comm, pow_add, mul_smul, pow_one]
+  mono i := by rw [add_comm, pow_add, mul_smul]; exact Submodule.smul_le_right
+  smul_le i := by rw [add_comm, pow_add, mul_smul, pow_one]
 
 theorem _root_.Ideal.stableFiltration_stable (I : Ideal R) (N : Submodule R M) :
     (I.stableFiltration N).Stable := by

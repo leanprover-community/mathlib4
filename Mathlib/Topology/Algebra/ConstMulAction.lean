@@ -11,7 +11,6 @@ import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.Topology.Algebra.Constructions
 import Mathlib.Topology.Algebra.Support
 import Mathlib.Topology.Bases
-import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 # Monoid actions continuous in the second variable

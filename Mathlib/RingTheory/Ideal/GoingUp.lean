@@ -312,28 +312,6 @@ theorem exists_ideal_over_prime_of_isIntegral_of_isPrime
   · refine _root_.trans (comap_map_of_surjective _ Quotient.mk_surjective _) (sup_eq_left.2 ?_)
     simpa [← RingHom.ker_eq_comap_bot] using hIP
 
-lemma exists_ideal_comap_le_prime (P : Ideal R) [P.IsPrime]
-    (I : Ideal S) (hI : I.comap (algebraMap R S) ≤ P) :
-    ∃ Q ≥ I, Q.IsPrime ∧ Q.comap (algebraMap R S) ≤ P := by
-  let Sₚ := Localization (Algebra.algebraMapSubmonoid S P.primeCompl)
-  let Iₚ := I.map (algebraMap S Sₚ)
-  have hI' : Disjoint (Algebra.algebraMapSubmonoid S P.primeCompl : Set S) I := by
-    rw [Set.disjoint_iff]
-    rintro _ ⟨⟨x, hx : x ∉ P, rfl⟩, hx'⟩
-    exact (hx (hI hx')).elim
-  have : Iₚ ≠ ⊤ := by
-    rw [Ne, Ideal.eq_top_iff_one, IsLocalization.mem_map_algebraMap_iff
-      (Algebra.algebraMapSubmonoid S P.primeCompl) Sₚ, not_exists]
-    simp only [one_mul, IsLocalization.eq_iff_exists (Algebra.algebraMapSubmonoid S P.primeCompl),
-      not_exists]
-    exact fun x c ↦ hI'.ne_of_mem (mul_mem c.2 x.2.2) (I.mul_mem_left c x.1.2)
-  obtain ⟨M, hM, hM'⟩ := Ideal.exists_le_maximal _ this
-  refine ⟨_, Ideal.map_le_iff_le_comap.mp hM', hM.isPrime.comap _, ?_⟩
-  intro x hx
-  by_contra hx'
-  exact Set.disjoint_left.mp ((IsLocalization.isPrime_iff_isPrime_disjoint
-    (Algebra.algebraMapSubmonoid S P.primeCompl) Sₚ M).mp hM.isPrime).2 ⟨_, hx', rfl⟩ hx
-
 theorem exists_ideal_over_prime_of_isIntegral [Algebra.IsIntegral R S] (P : Ideal R) [IsPrime P]
     (I : Ideal S) (hIP : I.comap (algebraMap R S) ≤ P) :
     ∃ Q ≥ I, IsPrime Q ∧ Q.comap (algebraMap R S) = P := by
