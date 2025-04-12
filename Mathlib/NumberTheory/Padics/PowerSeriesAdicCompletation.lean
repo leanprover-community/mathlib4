@@ -280,7 +280,7 @@ noncomputable def Amice_power:( C(ℤ_[p],ℤ_[p])→L[ℤ_[p]] ℤ_[p])
    map_smul' a b:=by
        simp
        exact rfl
-   invFun a := Amice_iso.symm (fun n=> (Amice_iso a).coeff n)
+   invFun a := Amice_iso.symm (fun n=> a.coeff  ℤ_[p] n)
    left_inv := sorry
    right_inv := sorry
 lemma exact :Function.Exact (Amice_Trans_in_P (p:=p) ∘ₗ Amice_power.toLinearMap)
