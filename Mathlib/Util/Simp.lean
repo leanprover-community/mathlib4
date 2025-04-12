@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul Lezeau
 -/
 import Lean.Meta.Tactic.Simp.Types
+import Mathlib.Init
 import Qq
 
 /-! # Additional simp utilities
@@ -23,3 +24,5 @@ on the proof expression returned by `discharge?`
 `some (pf : Q(a))` if a proof is found and `none` otherwise. -/
 @[inline]
 def Methods.dischargeQ? (M : Methods) (a : Q(Prop)) : SimpM <| Option Q($a) := M.discharge? a
+
+end Lean.Meta.Simp
