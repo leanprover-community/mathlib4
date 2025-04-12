@@ -64,7 +64,7 @@ lemma Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes_of_isLocalRing
     { toFun := fun n => ((q.map f ^ n).comap f).map (Ideal.Quotient.mk (I := I))
       monotone' := fun i j e => Ideal.map_mono (Ideal.comap_mono (Ideal.pow_le_pow_right e)) }
   obtain ⟨n, hn⟩ := (@wellFoundedGT_iff_monotone_chain_condition (OrderDual _) _).mp (by
-    rw [wellFoundedGT_dual_iff]; exact this) qs
+    rwa [wellFoundedGT_dual_iff]) qs
   refine ⟨n, (?_ : q.map f ^ n = 0)⟩
   apply Submodule.eq_bot_of_le_smul_of_le_jacobson_bot (q.map f) _ (IsNoetherian.noetherian _)
   rotate_left
@@ -122,134 +122,136 @@ lemma Ideal.height_le_spanRank_toENat_of_mem_minimal_primes
   classical
   rw [I.spanRank_toENat_eq_iInf_finset_card]
   apply le_iInf; rintro ⟨s, hs, hs'⟩
-  induction' hn : hs.toFinset.card using Nat.strong_induction_on with n H generalizing R
-  have := hp.1.1; subst hs'
-  cases n
-  · rw [CharP.cast_eq_zero, nonpos_iff_eq_zero, @Ideal.height_eq_primeHeight _ _ p hp.1.1,
-      Ideal.primeHeight_eq_zero_iff, minimalPrimes]
-    simp_all
-  · rename ℕ => n
-    rw [← @Localization.AtPrime.comap_maximalIdeal _ _ p, IsLocalization.height_comap p.primeCompl]
-    rw [← @Localization.AtPrime.comap_maximalIdeal _ _ p, ← Set.mem_preimage,
-      ← IsLocalization.minimalPrimes_map p.primeCompl, ← Ideal.span, Ideal.map_span] at hp
-    let A' := Localization p.primeCompl
-    let p' := IsLocalRing.maximalIdeal A'
-    let t := algebraMap R A' '' s
-    have ht : t.Finite := hs.image _
-    replace hn : ht.toFinset.card ≤ n + 1 := by
-      rw [show ht.toFinset = hs.toFinset.image (algebraMap R A') by ext; simp [t]]
-      exact Finset.card_image_le.trans_eq hn
-    change p' ∈ (Ideal.span t).minimalPrimes at hp
-    show p'.height ≤ _
-    clear_value t
-    clear hs s
-    simp_rw [Ideal.height_le_iff_covBy, ENat.coe_add, ENat.coe_one, ENat.lt_coe_add_one_iff]
-    intro q hq hpq hq'
-    obtain ⟨x, s, hxs, rfl, hxq⟩ : ∃ x s, x ∉ s ∧ t = insert x s ∧ x ∉ q := by
-      have : ¬t ⊆ q := by
-        rw [← Ideal.span_le]
-        exact fun e => lt_irrefl _ ((hp.2 ⟨hq, e⟩ hpq.le).trans_lt hpq)
-      obtain ⟨x, hxt, hxq⟩ := Set.not_subset.mp this
-      refine ⟨x, t \ {x}, fun e => e.2 rfl, ?_, hxq⟩
-      rw [Set.insert_diff_singleton, Set.insert_eq_of_mem hxt]
-    have : p' ≤ (q ⊔ Ideal.span {x}).radical := by
-      rw [Ideal.radical_eq_sInf, le_sInf_iff]
-      rintro J ⟨hJ, hJ'⟩
-      by_contra h
-      refine hq' J hJ' (lt_of_le_of_ne (le_sup_left.trans hJ) ?_)
-        (lt_of_le_not_le (IsLocalRing.le_maximalIdeal hJ'.ne_top) h)
-      rintro rfl
-      apply hxq
-      apply hJ
-      apply Ideal.mem_sup_right
-      exact Submodule.mem_span_singleton_self _
-    have h : ∀ z ∈ s, z ∈ (q ⊔ Ideal.span {x}).radical := by
-      have := hp.1.2.trans this
-      rw [Ideal.span_le, Set.insert_subset_iff] at this
-      exact this.2
-    replace h : ∀ z : s, ∃ (m : ℕ) (y : A') (h : y ∈ q) (a : A'), y + a * x = z ^ m := by
-      rintro ⟨z, hzs⟩
-      dsimp [Ideal.radical] at h
-      simp only [Submodule.mem_sup, Ideal.mem_span_singleton'] at h
-      obtain ⟨m, y, hyq, _, ⟨a, rfl⟩, hy⟩ := h z hzs
-      exact ⟨m, y, hyq, a, hy⟩
-    choose m y hyq a hy using h
-    let I' := Ideal.span (Set.range y)
-    let f := Ideal.Quotient.mk I'
-    have hf : Function.Surjective f := Ideal.Quotient.mk_surjective
-    have hf' : ∀ z, f (y z) = 0 := by
-      intro z
-      rw [← RingHom.mem_ker, Ideal.mk_ker]
-      exact Ideal.subset_span ⟨z, rfl⟩
-    have hI'q : I' ≤ q := by
-      rw [Ideal.span_le]
-      rintro _ ⟨z, rfl⟩
-      apply hyq
-    have hI'p' : I' ≤ p' := hI'q.trans hpq.le
-    have h :=
-      @Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes _ _ _
-        ((Ideal.span {x}).map f) ⟨⟨algebraMap _ _ x,
-          by rw [Ideal.map_span, Set.image_singleton]; rfl⟩⟩ (p'.map f) ?_
-    swap
-    · have : (p'.map f).IsPrime := Ideal.map_isPrime_of_surjective hf (by rwa [Ideal.mk_ker])
-      obtain ⟨p'', h₁, h₂⟩ := Ideal.exists_minimalPrimes_le
-        (show (Ideal.span {x}).map f ≤ p'.map f by
-          apply Ideal.map_mono
-          rw [Ideal.span_singleton_le_iff_mem]
-          exact hp.1.2 (Ideal.subset_span (Set.mem_insert x s)))
-      have hxp'' : f x ∈ p'' := by
-        rw [← Ideal.span_singleton_le_iff_mem, ← Set.image_singleton, ← Ideal.map_span]
-        exact h₁.1.2
-      convert h₁
-      refine (Ideal.map_le_iff_le_comap.mpr
-        (hp.2 ⟨@Ideal.IsPrime.comap _ _ _ _ _ _ f _ _ h₁.1.1, ?_⟩ ?_)).antisymm h₂
-      · rw [Ideal.span_le, Set.insert_subset_iff]
-        refine ⟨hxp'', ?_⟩
-        intro z hz
-        show f z ∈ p''
-        apply h₁.1.1.mem_of_pow_mem (m ⟨z, hz⟩)
-        specialize hy ⟨z, hz⟩
-        rw [Subtype.coe_mk] at hy
-        rw [← map_pow, ← hy, map_add, hf', zero_add, f.map_mul]
-        exact Ideal.mul_mem_left _ _ hxp''
-      · conv_rhs => rw [← sup_eq_left.mpr hI'p', ← @Ideal.mk_ker _ _ I', RingHom.ker_eq_comap_bot,
-          ← Ideal.comap_map_of_surjective f hf p']
-        exact Ideal.comap_mono h₂
-    have h_lt : q.map f < p'.map f := by
-      refine lt_of_le_not_le (Ideal.map_mono hpq.le) (fun e => ?_)
-      have := @Ideal.comap_mono _ _ _ _ _ _ f _ _ _ e
-      simp_rw [Ideal.comap_map_of_surjective f hf, ← RingHom.ker_eq_comap_bot, f, Ideal.mk_ker,
-        sup_eq_left.mpr hI'q, sup_eq_left.mpr (hI'q.trans hpq.le)] at this
-      exact lt_irrefl _ (this.trans_lt hpq)
-    have : (p'.map f).IsPrime := Ideal.map_isPrime_of_surjective hf (by rwa [Ideal.mk_ker])
-    have : (q.map f).IsPrime := Ideal.map_isPrime_of_surjective hf (by rwa [Ideal.mk_ker])
-    have : (p'.map f).FiniteHeight := by
-      rw [Ideal.finiteHeight_iff, ← lt_top_iff_ne_top]
-      exact Or.inr (h.trans_lt (WithTop.coe_lt_top 1))
-    rw [Ideal.height_eq_primeHeight] at h
-    have := (Ideal.primeHeight_strict_mono h_lt).trans_le h
-    rw [ENat.lt_one_iff_eq_zero, Ideal.primeHeight_eq_zero_iff, minimalPrimes,
-      ← @Ideal.map_bot A' (A' ⧸ I') _ _ _ _ f, Ideal.minimalPrimes_map_of_surjective hf,
-      bot_sup_eq, Ideal.mk_ker] at this
-    obtain ⟨q', hq₁, hq₂⟩ := this
-    obtain rfl : q = q' := by
-      apply_fun Ideal.comap f at hq₂
-      simp_rw [Ideal.comap_map_of_surjective f hf, ← RingHom.ker_eq_comap_bot,
-        f, Ideal.mk_ker] at hq₂
-      rwa [sup_eq_left.mpr hI'q, sup_eq_left.mpr hq₁.1.2, eq_comm] at hq₂
-    have hs : s.Finite := ht.subset (Set.subset_insert _ _)
-    have := hs.fintype
-    suffices h' : (Set.finite_range y).toFinset.card ≤ n by
-      apply le_trans (H (Set.finite_range y).toFinset.card ?_ _ _ hq₁ (Set.range y)
-        (Set.finite_range y) rfl rfl) ?_
-      · rwa [Nat.lt_add_one_iff]
-      · norm_cast
-    trans hs.toFinset.card
-    · convert Finset.card_image_le (s := Finset.univ) (f := y) <;> simp
-    · apply Nat.le_of_lt_succ; show hs.toFinset.card + 1 ≤ n + 1
-      rw [← Finset.card_insert_of_not_mem (a := x)]; swap
-      · simpa
-      · simpa using hn
+  induction hn : hs.toFinset.card using Nat.strong_induction_on generalizing R with
+  | h n H =>
+    have := hp.1.1; subst hs'
+    cases n
+    · rw [CharP.cast_eq_zero, nonpos_iff_eq_zero, @Ideal.height_eq_primeHeight _ _ p hp.1.1,
+        Ideal.primeHeight_eq_zero_iff, minimalPrimes]
+      simp_all
+    · rename ℕ => n
+      rw [← @Localization.AtPrime.comap_maximalIdeal _ _ p,
+        IsLocalization.height_comap p.primeCompl]
+      rw [← @Localization.AtPrime.comap_maximalIdeal _ _ p, ← Set.mem_preimage,
+        ← IsLocalization.minimalPrimes_map p.primeCompl, ← Ideal.span, Ideal.map_span] at hp
+      let A' := Localization p.primeCompl
+      let p' := IsLocalRing.maximalIdeal A'
+      let t := algebraMap R A' '' s
+      have ht : t.Finite := hs.image _
+      replace hn : ht.toFinset.card ≤ n + 1 := by
+        rw [show ht.toFinset = hs.toFinset.image (algebraMap R A') by ext; simp [t]]
+        exact Finset.card_image_le.trans_eq hn
+      change p' ∈ (Ideal.span t).minimalPrimes at hp
+      show p'.height ≤ _
+      clear_value t
+      clear hs s
+      simp_rw [Ideal.height_le_iff_covBy, ENat.coe_add, ENat.coe_one, ENat.lt_coe_add_one_iff]
+      intro q hq hpq hq'
+      obtain ⟨x, s, hxs, rfl, hxq⟩ : ∃ x s, x ∉ s ∧ t = insert x s ∧ x ∉ q := by
+        have : ¬t ⊆ q := by
+          rw [← Ideal.span_le]
+          exact fun e => lt_irrefl _ ((hp.2 ⟨hq, e⟩ hpq.le).trans_lt hpq)
+        obtain ⟨x, hxt, hxq⟩ := Set.not_subset.mp this
+        refine ⟨x, t \ {x}, fun e => e.2 rfl, ?_, hxq⟩
+        rw [Set.insert_diff_singleton, Set.insert_eq_of_mem hxt]
+      have : p' ≤ (q ⊔ Ideal.span {x}).radical := by
+        rw [Ideal.radical_eq_sInf, le_sInf_iff]
+        rintro J ⟨hJ, hJ'⟩
+        by_contra h
+        refine hq' J hJ' (lt_of_le_of_ne (le_sup_left.trans hJ) ?_)
+          (lt_of_le_not_le (IsLocalRing.le_maximalIdeal hJ'.ne_top) h)
+        rintro rfl
+        apply hxq
+        apply hJ
+        apply Ideal.mem_sup_right
+        exact Submodule.mem_span_singleton_self _
+      have h : ∀ z ∈ s, z ∈ (q ⊔ Ideal.span {x}).radical := by
+        have := hp.1.2.trans this
+        rw [Ideal.span_le, Set.insert_subset_iff] at this
+        exact this.2
+      replace h : ∀ z : s, ∃ (m : ℕ) (y : A') (h : y ∈ q) (a : A'), y + a * x = z ^ m := by
+        rintro ⟨z, hzs⟩
+        dsimp [Ideal.radical] at h
+        simp only [Submodule.mem_sup, Ideal.mem_span_singleton'] at h
+        obtain ⟨m, y, hyq, _, ⟨a, rfl⟩, hy⟩ := h z hzs
+        exact ⟨m, y, hyq, a, hy⟩
+      choose m y hyq a hy using h
+      let I' := Ideal.span (Set.range y)
+      let f := Ideal.Quotient.mk I'
+      have hf : Function.Surjective f := Ideal.Quotient.mk_surjective
+      have hf' : ∀ z, f (y z) = 0 := by
+        intro z
+        rw [← RingHom.mem_ker, Ideal.mk_ker]
+        exact Ideal.subset_span ⟨z, rfl⟩
+      have hI'q : I' ≤ q := by
+        rw [Ideal.span_le]
+        rintro _ ⟨z, rfl⟩
+        apply hyq
+      have hI'p' : I' ≤ p' := hI'q.trans hpq.le
+      have h :=
+        @Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes _ _ _
+          ((Ideal.span {x}).map f) ⟨⟨algebraMap _ _ x,
+            by rw [Ideal.map_span, Set.image_singleton]; rfl⟩⟩ (p'.map f) ?_
+      swap
+      · have : (p'.map f).IsPrime := Ideal.map_isPrime_of_surjective hf (by rwa [Ideal.mk_ker])
+        obtain ⟨p'', h₁, h₂⟩ := Ideal.exists_minimalPrimes_le
+          (show (Ideal.span {x}).map f ≤ p'.map f by
+            apply Ideal.map_mono
+            rw [Ideal.span_singleton_le_iff_mem]
+            exact hp.1.2 (Ideal.subset_span (Set.mem_insert x s)))
+        have hxp'' : f x ∈ p'' := by
+          rw [← Ideal.span_singleton_le_iff_mem, ← Set.image_singleton, ← Ideal.map_span]
+          exact h₁.1.2
+        convert h₁
+        refine (Ideal.map_le_iff_le_comap.mpr
+          (hp.2 ⟨@Ideal.IsPrime.comap _ _ _ _ _ _ f _ _ h₁.1.1, ?_⟩ ?_)).antisymm h₂
+        · rw [Ideal.span_le, Set.insert_subset_iff]
+          refine ⟨hxp'', ?_⟩
+          intro z hz
+          show f z ∈ p''
+          apply h₁.1.1.mem_of_pow_mem (m ⟨z, hz⟩)
+          specialize hy ⟨z, hz⟩
+          rw [Subtype.coe_mk] at hy
+          rw [← map_pow, ← hy, map_add, hf', zero_add, f.map_mul]
+          exact Ideal.mul_mem_left _ _ hxp''
+        · conv_rhs => rw [← sup_eq_left.mpr hI'p', ← @Ideal.mk_ker _ _ I', RingHom.ker_eq_comap_bot,
+            ← Ideal.comap_map_of_surjective f hf p']
+          exact Ideal.comap_mono h₂
+      have h_lt : q.map f < p'.map f := by
+        refine lt_of_le_not_le (Ideal.map_mono hpq.le) (fun e => ?_)
+        have := @Ideal.comap_mono _ _ _ _ _ _ f _ _ _ e
+        simp_rw [Ideal.comap_map_of_surjective f hf, ← RingHom.ker_eq_comap_bot, f, Ideal.mk_ker,
+          sup_eq_left.mpr hI'q, sup_eq_left.mpr (hI'q.trans hpq.le)] at this
+        exact lt_irrefl _ (this.trans_lt hpq)
+      have : (p'.map f).IsPrime := Ideal.map_isPrime_of_surjective hf (by rwa [Ideal.mk_ker])
+      have : (q.map f).IsPrime := Ideal.map_isPrime_of_surjective hf (by rwa [Ideal.mk_ker])
+      have : (p'.map f).FiniteHeight := by
+        rw [Ideal.finiteHeight_iff, ← lt_top_iff_ne_top]
+        exact Or.inr (h.trans_lt (WithTop.coe_lt_top 1))
+      rw [Ideal.height_eq_primeHeight] at h
+      have := (Ideal.primeHeight_strict_mono h_lt).trans_le h
+      rw [ENat.lt_one_iff_eq_zero, Ideal.primeHeight_eq_zero_iff, minimalPrimes,
+        ← @Ideal.map_bot A' (A' ⧸ I') _ _ _ _ f, Ideal.minimalPrimes_map_of_surjective hf,
+        bot_sup_eq, Ideal.mk_ker] at this
+      obtain ⟨q', hq₁, hq₂⟩ := this
+      obtain rfl : q = q' := by
+        apply_fun Ideal.comap f at hq₂
+        simp_rw [Ideal.comap_map_of_surjective f hf, ← RingHom.ker_eq_comap_bot,
+          f, Ideal.mk_ker] at hq₂
+        rwa [sup_eq_left.mpr hI'q, sup_eq_left.mpr hq₁.1.2, eq_comm] at hq₂
+      have hs : s.Finite := ht.subset (Set.subset_insert _ _)
+      have := hs.fintype
+      suffices h' : (Set.finite_range y).toFinset.card ≤ n by
+        apply le_trans (H (Set.finite_range y).toFinset.card ?_ _ _ hq₁ (Set.range y)
+          (Set.finite_range y) rfl rfl) ?_
+        · rwa [Nat.lt_add_one_iff]
+        · norm_cast
+      trans hs.toFinset.card
+      · convert Finset.card_image_le (s := Finset.univ) (f := y) <;> simp
+      · apply Nat.le_of_lt_succ; show hs.toFinset.card + 1 ≤ n + 1
+        rw [← Finset.card_insert_of_not_mem (a := x)]; swap
+        · simpa
+        · simpa using hn
 
 /-- In a commutative Noetherian ring `R`, the height of a (finitely-generated) ideal is smaller
 than or equal to the minimum number of generators for this ideal. -/
