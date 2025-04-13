@@ -269,6 +269,8 @@ theorem isPreprimitive_ofFixingSubgroup_conj_iff {s : Set α} {g : M} :
 end FixingSubgroupConj
 
 variable (M) in
+/-- The natural group morphism from `fixingSubgroup M (s ∪ t)`
+  to the `fixingSubgroup` in `fixingSubgroup M s` of the preimage of `t` -/
 def fixingSubgroup_union_to_fixingSubgroup_fixingSubgroup (s t : Set α) :
     fixingSubgroup M (s ∪ t) →*
       fixingSubgroup (fixingSubgroup M s)
