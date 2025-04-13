@@ -43,9 +43,7 @@ namespace TopModuleCat
 
 noncomputable instance : CoeSort (TopModuleCat.{v} R) (Type v) := ⟨fun M ↦ M.toModuleCat⟩
 
-instance (M : TopModuleCat R) : TopologicalSpace M := M.2
-instance (M : TopModuleCat R) : IsTopologicalAddGroup M := M.3
-instance (M : TopModuleCat R) : ContinuousSMul R M := M.4
+attribute [instance] TopModuleCat.isTopologicalSpace isIsTopologicalAddGroup isContinuousSMul
 
 /-- Make an object in `TopModuleCat R` from an unbundled topological module. -/
 def of (M : Type v) [AddCommGroup M] [Module R M] [TopologicalSpace M] [ContinuousAdd M]
@@ -71,7 +69,7 @@ instance : Category (TopModuleCat R) where
   id M := ⟨ContinuousLinearMap.id R M⟩
   comp φ ψ := ⟨ψ.hom' ∘L φ.hom'⟩
 
-instance : ConcreteCategory (TopModuleCat R) (fun M₁ M₂ ↦ (M₁ →L[R] M₂)) where
+instance : ConcreteCategory (TopModuleCat R) (· →L[R] ·) where
   hom   := Hom.hom'
   ofHom := Hom.ofHom'
 
@@ -82,10 +80,16 @@ abbrev Hom.hom {X Y : TopModuleCat R} (f : X.Hom Y) : X →L[R] Y :=
 
 variable {R} in
 /-- Construct a hom in `TopModuleCat` from a continuous linear map. -/
-abbrev ofHom {X Y : TopModuleCat R} (f : X →L[R] Y) : X ⟶ Y :=
-  ConcreteCategory.ofHom (C := TopModuleCat R) f
+abbrev ofHom {X Y : Type v}
+    [AddCommGroup X] [Module R X] [TopologicalSpace X] [ContinuousAdd X] [ContinuousSMul R X]
+    [AddCommGroup Y] [Module R Y] [TopologicalSpace Y] [ContinuousAdd Y] [ContinuousSMul R Y]
+    (f : X →L[R] Y) : of R X ⟶ of R Y :=
+  ConcreteCategory.ofHom f
 
-@[simp] lemma hom_ofHom {X Y : TopModuleCat R} (f : X →L[R] Y) :
+@[simp] lemma hom_ofHom  {X Y : Type v}
+    [AddCommGroup X] [Module R X] [TopologicalSpace X] [ContinuousAdd X] [ContinuousSMul R X]
+    [AddCommGroup Y] [Module R Y] [TopologicalSpace Y] [ContinuousAdd Y] [ContinuousSMul R Y]
+    (f : X →L[R] Y) :
   (ofHom f).hom = f := rfl
 
 @[simp] lemma ofHom_hom {X Y : TopModuleCat R} (f : X.Hom Y) :
@@ -126,11 +130,6 @@ instance {X Y : TopModuleCat R} : AddCommGroup (X ⟶ Y) where
 instance : Preadditive (TopModuleCat R) where
   add_comp _ _ _ _ _ _  := ConcreteCategory.ext (ContinuousLinearMap.comp_add _ _ _)
   comp_add _ _ _ _ _ _  := ConcreteCategory.ext (ContinuousLinearMap.add_comp _ _ _)
-
-instance (M : TopModuleCat R) : TopologicalSpace M := M.2
-instance (M : TopModuleCat R) : IsTopologicalAddGroup M := M.3
-instance (M : TopModuleCat R) : ContinuousSMul R M := M.4
-
 section
 
 variable {M₁ M₂ : TopModuleCat R}
@@ -206,7 +205,8 @@ def coinduced : TopModuleCat R :=
 
 /-- The maps into the coinduced topology as homs in `TopModuleCat R`. -/
 def toCoinduced (i) : X i ⟶ coinduced f :=
-  ofHom ⟨(f i).hom, continuous_iff_coinduced_le.mpr (le_sInf fun _ hτ ↦ hτ.2.2 i)⟩
+  ofHom (Y := coinduced f)
+    ⟨(f i).hom, continuous_iff_coinduced_le.mpr (le_sInf fun _ hτ ↦ hτ.2.2 i)⟩
 
 /-- The cocone of topological modules associated to a cocone over the underlying modules, where
 the cocone point is given the coinduced topology. This is colimiting when the given cocone is. -/
@@ -222,7 +222,7 @@ the coinduced topology gives a colimit cocone in `TopModuleCat R`. -/
 def isColimit {J : Type*} [Category J] {F : J ⥤ TopModuleCat R}
     {c : Cocone (F ⋙ forget₂ _ (ModuleCat R))} (hc : IsColimit c) :
     IsColimit (ofCocone c) where
-  desc s := ofHom ⟨(hc.desc ((forget₂ _ _).mapCocone s)).hom, by
+  desc s := ofHom (X := (ofCocone c).pt) ⟨(hc.desc ((forget₂ _ _).mapCocone s)).hom, by
     rw [continuous_iff_le_induced]
     refine sInf_le ⟨continuousSMul_induced (M₂ := s.pt) (hc.desc ((forget₂ _ _).mapCocone s)).hom,
       continuousAdd_induced (N := s.pt) (hc.desc ((forget₂ _ _).mapCocone s)).hom, fun i ↦ ?_⟩
@@ -265,7 +265,7 @@ def induced : TopModuleCat R :=
 
 /-- The maps from the induced topology as homs in `TopModuleCat R`. -/
 def fromInduced (i) : induced f ⟶ X i :=
-  ofHom ⟨(f i).hom, continuous_iff_le_induced.mpr (iInf_le _ i)⟩
+  ofHom (X := induced f) ⟨(f i).hom, continuous_iff_le_induced.mpr (iInf_le _ i)⟩
 
 open Limits
 
@@ -283,7 +283,7 @@ the induced topology gives a limit cone in `TopModuleCat R`. -/
 def isLimit {J : Type*} [Category J] {F : J ⥤ TopModuleCat R}
     {c : Cone (F ⋙ forget₂ _ (ModuleCat R))} (hc : IsLimit c) :
     IsLimit (ofCone c) where
-  lift s := ofHom ⟨(hc.lift ((forget₂ _ _).mapCone s)).hom, by
+  lift s := ofHom (Y := (ofCone c).pt) ⟨(hc.lift ((forget₂ _ _).mapCone s)).hom, by
     rw [continuous_iff_coinduced_le]
     refine le_iInf fun i ↦ ?_
     rw [coinduced_le_iff_le_induced, induced_compose, ← continuous_iff_le_induced]
@@ -329,30 +329,29 @@ end Limit
 
 section Adjunction
 
+instance (priority := low) {R : Type*} [TopologicalSpace R] {A : Type*} [Add A] [SMul R A] :
+    letI := moduleTopology R A; IsModuleTopology R A :=
+  letI := moduleTopology R A; ⟨rfl⟩
+
 /-- The functor equipping a module with the finest possible topology.
 This is left adjoint to the forgetful functor. -/
 def withModuleTopology : ModuleCat R ⥤ TopModuleCat R where
   obj X :=
     letI := moduleTopology R X
-    haveI : IsModuleTopology R X := ⟨rfl⟩
-    haveI := IsModuleTopology.topologicalAddGroup R X
+    letI := IsModuleTopology.topologicalAddGroup R X
     .of R X
   map {X Y} f :=
     letI := moduleTopology R X
-    haveI : IsModuleTopology R X := ⟨rfl⟩
     letI := moduleTopology R Y
-    haveI : IsModuleTopology R Y := ⟨rfl⟩
-    haveI := IsModuleTopology.topologicalAddGroup R Y
+    letI := IsModuleTopology.topologicalAddGroup R Y
     ⟨f.hom, IsModuleTopology.continuous_of_linearMap f.hom⟩
 
 /-- The adjunction between `withModuleTopology` and the forgetful functor. -/
 def withModuleTopologyAdj : withModuleTopology R ⊣ forget₂ (TopModuleCat R) (ModuleCat R) where
   unit := 𝟙 _
   counit :=
-  { app X :=
-    haveI : IsModuleTopology R
-      ((forget₂ (TopModuleCat R) (ModuleCat R) ⋙ withModuleTopology R).obj X) := ⟨rfl⟩
-    ofHom ⟨.id, IsModuleTopology.continuous_of_linearMap _⟩ }
+  { app X := ofHom (X := (withModuleTopology R).obj (.of R X))
+      ⟨.id, IsModuleTopology.continuous_of_linearMap _⟩ }
 
 instance : (forget₂ (TopModuleCat R) (ModuleCat R)).IsRightAdjoint := ⟨_, ⟨withModuleTopologyAdj R⟩⟩
 instance : (withModuleTopology R).IsLeftAdjoint := ⟨_, ⟨withModuleTopologyAdj R⟩⟩
@@ -366,14 +365,14 @@ def indiscrete : ModuleCat.{v} R ⥤ TopModuleCat.{v} R where
     haveI : ContinuousSMul R X := ⟨by rw [continuous_iff_coinduced_le]; exact le_top⟩
     .of R X
   map {X Y} f :=
-    letI inst : TopologicalSpace X := ⊤
-    letI inst : TopologicalSpace Y := ⊤
-    ofHom ⟨f.hom, by rw [continuous_iff_coinduced_le]; exact le_top⟩
+    ConcreteCategory.ofHom (C := TopModuleCat R)
+      ⟨f.hom, by rw [continuous_iff_coinduced_le]; exact le_top⟩
 
 /-- The adjunction between the forgetful functor and the indiscrete topology functor. -/
 def indiscreteAdj : forget₂ (TopModuleCat.{v} R) (ModuleCat.{v} R) ⊣ indiscrete.{v} R where
   counit := 𝟙 _
-  unit := { app X := ofHom ⟨.id, by rw [continuous_iff_coinduced_le]; exact le_top⟩ }
+  unit := { app X := ConcreteCategory.ofHom (C := TopModuleCat R)
+              ⟨.id, by rw [continuous_iff_coinduced_le]; exact le_top⟩ }
 
 instance : (forget₂ (TopModuleCat.{v} R) (ModuleCat.{v} R)).IsLeftAdjoint := ⟨_, ⟨indiscreteAdj R⟩⟩
 instance : (indiscrete.{v} R).IsRightAdjoint := ⟨_, ⟨indiscreteAdj R⟩⟩
@@ -393,7 +392,7 @@ lemma coe_freeObj (X : TopCat.{v}) : freeObj R X = (X →₀ R) := rfl
 /-- The free topological module over a topological space is functorial. -/
 noncomputable
 def freeMap {X Y : TopCat.{v}} (f : X ⟶ Y) : freeObj R X ⟶ freeObj R Y :=
-  ofHom ⟨Finsupp.lmapDomain _ _ f.hom, by
+  ConcreteCategory.ofHom ⟨Finsupp.lmapDomain _ _ f.hom, by
     rw [continuous_iff_coinduced_le]
     refine le_sInf fun (τ : TopologicalSpace (_ →₀ R)) ⟨hτ₁, hτ₂, hτ₃⟩ ↦ ?_
     rw [coinduced_le_iff_le_induced]
@@ -427,7 +426,7 @@ def freeAdj : free.{max v u} R ⊣ forget₂ (TopModuleCat.{max v u} R) TopCat.{
       continuous_iff_coinduced_le.mpr (le_sInf fun _ h ↦ h.2.2)⟩,
     naturality {X Y} f := by ext x; simp [freeMap_map] }
   counit :=
-  { app X := ofHom ⟨Finsupp.lift _ R X id, by
+  { app X := ConcreteCategory.ofHom (C := TopModuleCat R) ⟨Finsupp.lift _ R X id, by
       rw [continuous_iff_le_induced]
       refine sInf_le ⟨continuousSMul_induced (Finsupp.lift _ R X id),
         continuousAdd_induced (Finsupp.lift _ R X id), ?_⟩
