@@ -527,47 +527,36 @@ theorem X_dvd_iff {φ : R⟦X⟧} : (X : R⟦X⟧) ∣ φ ↔ constantCoeff R φ
   · intro m hm
     rwa [Nat.eq_zero_of_le_zero (Nat.le_of_succ_le_succ hm)]
 
-theorem eq_zero_or_eq_zero_of_mul_eq_zero [NoZeroDivisors R] (φ ψ : R⟦X⟧) (h : φ * ψ = 0) :
-    φ = 0 ∨ ψ = 0 := by
-  classical
-  rw [or_iff_not_imp_left]
-  intro H
-  have ex : ∃ m, coeff R m φ ≠ 0 := by
-    contrapose! H
-    exact ext H
-  let m := Nat.find ex
-  have hm₁ : coeff R m φ ≠ 0 := Nat.find_spec ex
-  have hm₂ : ∀ k < m, ¬coeff R k φ ≠ 0 := fun k => Nat.find_min ex
-  ext n
-  rw [(coeff R n).map_zero]
-  induction' n using Nat.strong_induction_on with n ih
-  replace h := congr_arg (coeff R (m + n)) h
-  rw [LinearMap.map_zero, coeff_mul, Finset.sum_eq_single (m, n)] at h
-  · replace h := NoZeroDivisors.eq_zero_or_eq_zero_of_mul_eq_zero h
-    rw [or_iff_not_imp_left] at h
-    exact h hm₁
-  · rintro ⟨i, j⟩ hij hne
-    by_cases hj : j < n
-    · rw [ih j hj, mul_zero]
-    by_cases hi : i < m
-    · specialize hm₂ _ hi
-      push_neg at hm₂
-      rw [hm₂, zero_mul]
-    rw [mem_antidiagonal] at hij
-    push_neg at hi hj
-    suffices m < i by
-      have : m + n < i + j := add_lt_add_of_lt_of_le this hj
-      exfalso
-      exact ne_of_lt this hij.symm
-    contrapose! hne
-    obtain rfl := le_antisymm hi hne
-    simpa [Ne, Prod.mk_inj] using (add_right_inj m).mp hij
-  · contrapose!
-    intro
-    rw [mem_antidiagonal]
-
 instance [NoZeroDivisors R] : NoZeroDivisors R⟦X⟧ where
-  eq_zero_or_eq_zero_of_mul_eq_zero := eq_zero_or_eq_zero_of_mul_eq_zero _ _
+  eq_zero_or_eq_zero_of_mul_eq_zero {φ ψ} h := by
+    classical
+    rw [or_iff_not_imp_left]
+    intro H
+    have ex : ∃ m, coeff R m φ ≠ 0 := by
+      contrapose! H
+      exact ext H
+    let m := Nat.find ex
+    have hm₁ : coeff R m φ ≠ 0 := Nat.find_spec ex
+    have hm₂ : ∀ k < m, ¬coeff R k φ ≠ 0 := fun k => Nat.find_min ex
+    simp only [ne_eq, Decidable.not_not] at hm₂
+    ext n
+    rw [(coeff R n).map_zero]
+    induction' n using Nat.strong_induction_on with n ih
+    replace h := congr_arg (coeff R (m + n)) h
+    rw [LinearMap.map_zero, coeff_mul, Finset.sum_eq_single (m, n)] at h
+    · replace h := NoZeroDivisors.eq_zero_or_eq_zero_of_mul_eq_zero h
+      rw [or_iff_not_imp_left] at h
+      exact h hm₁
+    · rintro ⟨i, j⟩ hij hne
+      rw [mem_antidiagonal] at hij
+      rcases trichotomy_of_add_eq_add hij with h_eq | hi_lt | hj_lt
+      · apply False.elim (hne ?_)
+        simpa using h_eq
+      · rw [hm₂ i hi_lt, zero_mul]
+      · rw [ih j hj_lt, mul_zero]
+    · contrapose!
+      intro
+      rw [mem_antidiagonal]
 
 end Semiring
 
