@@ -526,20 +526,20 @@ def openClassicalLinter : Linter where run stx := do
     -- If `stx` describes an `open` command, extract the list of opened namespaces.
     for stxN in (extractOpenNames stx).filter (·.getId == `Classical) do
       Linter.logLint linter.style.openClassical stxN "\
-      please avoid 'open (scoped) Classical' statements: this can hide theorem statements \
+      please avoid 'open (scoped) Classical' statements: this can hide theorem statements\n\
       which would be better stated with explicit decidability statements.\n\
-      Instead, use `open Classical in` for definitions or instances, the `classical` tactic \
+      Instead, use `open scoped Classical in` for definitions or instances, the `classical` tactic \
       for proofs.\nFor theorem statements, \
-      either add missing decidability assumptions or use `open Classical in`."
+      either add missing decidability assumptions or use `open scoped Classical in`."
     -- Also lint if some `Classical` declaration is added as a local or scoped instance.
     if let some id := getLocalScopedAttributes? stx then
       if id.raw.getId.getRoot == `Classical then
         Linter.logLint linter.style.openClassical stx s!"please do not add '{id.raw.getId}' \
         as a local or scoped instance:\nthis can hide theorem statements \
         which would be better stated with explicit decidability statements.\n\
-        Instead, use `open Classical in` for definitions or instances, the `classical` tactic \
-        for proofs.\nFor theorem statements, \
-        either add missing decidability assumptions or use `open Classical in`."
+        Instead, use `open scoped Classical in` for definitions or instances and \
+        the `classical` tactic for proofs.\nFor theorem statements, \
+        either add missing decidability assumptions or use `open scoped Classical in`."
 
 initialize addLinter openClassicalLinter
 
