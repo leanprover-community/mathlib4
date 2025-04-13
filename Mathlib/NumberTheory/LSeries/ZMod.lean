@@ -53,7 +53,6 @@ Results for completed L-functions:
   `s ∈ ℂ`, unless `s = 1` and `∑ j, Φ j ≠ 0`, or `s = 0` and `Φ 0 ≠ 0`.
 * `ZMod.completedLFunction_one_sub_even` and `ZMod.completedLFunction_one_sub_odd`:
   the functional equation relating `completedLFunction Φ (1 - s)` to `completedLFunction (𝓕 Φ) s`.
-
 -/
 
 open HurwitzZeta Complex ZMod Finset Topology Filter Set
