@@ -140,8 +140,8 @@ theorem mem_unstep {s t : σ} {a : α} : s ∈ M.unstep t a ↔ t ∈ M.step s a
 def unstepSet (S : Set σ) (a : α) : Set σ :=
   ⋃ s ∈ S, M.unstep s a
 
-theorem mem_unstepSet (s : σ) (S : Set σ) (a : α) :
-  s ∈ M.unstepSet S a ↔ ∃ t ∈ S, s ∈ M.unstep t a := by
+theorem mem_unstepSet {s : σ} {S : Set σ} {a : α} :
+    s ∈ M.unstepSet S a ↔ ∃ t ∈ S, s ∈ M.unstep t a := by
   simp [unstepSet]
 
 theorem mem_unstepSet_step (s : σ) (S : Set σ) (a : α) :
