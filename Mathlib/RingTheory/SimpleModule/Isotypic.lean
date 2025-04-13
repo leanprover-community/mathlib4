@@ -6,7 +6,7 @@ Authors: Junyan Xu
 import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
-# Wedderburn-Artin Theorem
+# Isotypic modules and isotypic components
 -/
 
 
