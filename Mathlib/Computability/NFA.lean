@@ -148,10 +148,11 @@ theorem mem_unstepSet_step (s : σ) (S : Set σ) (a : α) :
     s ∈ M.unstepSet S a ↔ ∃ t ∈ S, t ∈ M.step s a := by
   simp [mem_unstepSet, mem_unstep]
 
-/-- `M.rewindFrom S x` computes all possible paths through `M` with input `x` ending at an element
-  of `S`. -/
-def rewindFrom (final : Set σ) : List α → Set σ :=
-  List.foldl M.unstepSet final
+/-- Reseversed analog of `M.evalFrom S x`:
+  `M.rewindFrom S x` computes all possible reversed paths through `M` with
+  input `x` starting at an element of `S`. -/
+def rewindFrom : Set σ → List α → Set σ :=
+  List.foldl M.unstepSet
 
 /-- `M.rewind x` computes all possible paths through `M` with input `x` ending at an element of
   `M.accept`. -/
