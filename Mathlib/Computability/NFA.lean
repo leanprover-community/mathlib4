@@ -145,7 +145,7 @@ theorem mem_unstepSet {s : σ} {S : Set σ} {a : α} :
   simp [unstepSet]
 
 theorem mem_unstepSet_step (s : σ) (S : Set σ) (a : α) :
-  s ∈ M.unstepSet S a ↔ ∃ t ∈ S, t ∈ M.step s a := by
+    s ∈ M.unstepSet S a ↔ ∃ t ∈ S, t ∈ M.step s a := by
   simp [mem_unstepSet, mem_unstep]
 
 /-- `M.rewindFrom S x` computes all possible paths through `M` with input `x` ending at an element
@@ -165,8 +165,7 @@ def startsTo (S : Set σ) : Language α :=
   { x | ∃ s ∈ M.start, s ∈ M.rewindFrom S x }
 
 lemma mem_startsTo {S : Set σ} {x : List α} :
-  x ∈ M.startsTo S ↔ ∃ s ∈ M.start, s ∈ M.rewindFrom S x := by
-    rfl
+    x ∈ M.startsTo S ↔ ∃ s ∈ M.start, s ∈ M.rewindFrom S x := Iff.rfl
 
 end Auxilary
 
@@ -177,13 +176,13 @@ def reverse (M : NFA α σ) : NFA α σ :=
   NFA.mk M.unstep M.accept M.start
 
 lemma spec_from (M : NFA α σ) :
-  M.reverse.acceptsFrom = M.startsTo := by
+    M.reverse.acceptsFrom = M.startsTo := by
   ext xs
   rfl
 
 lemma reverse.rewindFromSpec (xs : List α) (S1 S2 : Set σ) (M : NFA α σ) :
-  (∃ s1 ∈ S1, s1 ∈ M.rewindFrom S2 xs) ↔
-  (∃ s2 ∈ S2, s2 ∈ M.evalFrom S1 xs.reverse) := by
+    (∃ s1 ∈ S1, s1 ∈ M.rewindFrom S2 xs) ↔
+    (∃ s2 ∈ S2, s2 ∈ M.evalFrom S1 xs.reverse) := by
   dsimp [evalFrom, rewindFrom]
   rw [List.foldl_reverse]
   revert S1 S2
@@ -212,13 +211,12 @@ lemma reverse.rewindFromSpec (xs : List α) (S1 S2 : Set σ) (M : NFA α σ) :
       exists s2
 
 lemma reverse.startsToSpec (xs : List α) (M : NFA α σ) :
-  xs ∈ M.startsTo M.reverse.start ↔ xs.reverse ∈ M.acceptsFrom M.start := by
+    xs ∈ M.startsTo M.reverse.start ↔ xs.reverse ∈ M.acceptsFrom M.start := by
   rw [mem_startsTo, mem_acceptsFrom]
   apply reverse.rewindFromSpec
 
 theorem reverse.Spec (M : NFA α σ) :
-  M.reverse.accepts
-  = { xs : List α | xs.reverse ∈ M.accepts } := by
+  M.reverse.accepts = { xs : List α | xs.reverse ∈ M.accepts } := by
   ext xs
   rw [accepts_acceptsFrom, accepts_acceptsFrom, spec_from, Set.mem_setOf]
   apply reverse.startsToSpec
@@ -254,14 +252,13 @@ def union (M1 : NFA α σ1) (M2 : NFA α σ2) : NFA α (σ1 ⊕ σ2) :=
 
 lemma union.biUnionSpec
   (x : α) (S1 : Set σ1) (S2 : Set σ2) (M1 : NFA α σ1) (M2 : NFA α σ2) :
-  (⋃ s,
-    ⋃ (_ : Sum.rec (fun s1 ↦ S1 s1) (fun s2 ↦ S2 s2) s),
-    stepSum M1 M2 s x)
-  =
-  {s' | Sum.rec
-    (fun s1' ↦ (⋃ (s1 : σ1) (_ : s1 ∈ S1), M1.step s1 x) s1')
-    (fun s2' ↦ (⋃ (s2 : σ2) (_ : s2 ∈ S2), M2.step s2 x) s2') s'}
-  := by
+    (⋃ s,
+      ⋃ (_ : Sum.rec (fun s1 ↦ S1 s1) (fun s2 ↦ S2 s2) s),
+      stepSum M1 M2 s x)
+    =
+    {s' | Sum.rec
+      (fun s1' ↦ (⋃ (s1 : σ1) (_ : s1 ∈ S1), M1.step s1 x) s1')
+      (fun s2' ↦ (⋃ (s2 : σ2) (_ : s2 ∈ S2), M2.step s2 x) s2') s'} := by
   ext s'
   rw [Set.mem_iUnion, Set.mem_setOf]
   dsimp [stepSum]
@@ -293,7 +290,7 @@ lemma union.biUnionSpec
       exists s2
 
 lemma union.startSpec (M1 : NFA α σ1) (M2 : NFA α σ2) :
-  (union M1 M2).start = { s : σ1 ⊕ σ2 | s.casesOn M1.start M2.start } := by rfl
+    (union M1 M2).start = { s : σ1 ⊕ σ2 | s.casesOn M1.start M2.start } := by rfl
 
 lemma union.SpecFrom
   (S1 : Set σ1) (S2 : Set σ2) (M1 : NFA α σ1) (M2 : NFA α σ2) :
@@ -320,7 +317,7 @@ lemma union.SpecFrom
 
 theorem union.Spec
   (M1 : NFA α σ1) (M2 : NFA α σ2) :
-  accepts (union M1 M2) = M1.accepts ∪ M2.accepts := by
+    accepts (union M1 M2) = M1.accepts ∪ M2.accepts := by
   rw [accepts_acceptsFrom, accepts_acceptsFrom, accepts_acceptsFrom,
     union.startSpec, union.SpecFrom]
 
@@ -350,19 +347,18 @@ def intersect (M1 : NFA α σ1) (M2 : NFA α σ2) : NFA α (σ1 × σ2) :=
       { s : σ1 × σ2 | s.1 ∈ M1.accept ∧ s.2 ∈ M2.accept } }
 
 lemma intersect.startSpec (M1 : NFA α σ1) (M2 : NFA α σ2) :
-  (intersect M1 M2).start =
-  { s : σ1 × σ2 | s.1 ∈ M1.start ∧ s.2 ∈ M2.start } := by rfl
+    (intersect M1 M2).start = { s : σ1 × σ2 | s.1 ∈ M1.start ∧ s.2 ∈ M2.start } := by rfl
 
 lemma intersect.biUnionSpec
   (a : α)
   (S1 : Set σ1) (S2 : Set σ2)
   (M1 : NFA α σ1) (M2 : NFA α σ2) :
-  (⋃ s : σ1 × σ2,
-    ⋃ (_ : s.1 ∈ S1 ∧ s.2 ∈ S2),
-      stepProd M1 M2 s a) =
-  { s' : σ1 × σ2 |
-    s'.1 ∈ (⋃ s1 ∈ S1, M1.step s1 a) ∧
-    s'.2 ∈ (⋃ s2 ∈ S2, M2.step s2 a) } := by
+    (⋃ s : σ1 × σ2,
+      ⋃ (_ : s.1 ∈ S1 ∧ s.2 ∈ S2),
+        stepProd M1 M2 s a) =
+    { s' : σ1 × σ2 |
+      s'.1 ∈ (⋃ s1 ∈ S1, M1.step s1 a) ∧
+      s'.2 ∈ (⋃ s2 ∈ S2, M2.step s2 a) } := by
   ext ⟨s1', s2'⟩
   rw [Set.mem_setOf, Set.mem_iUnion₂, Set.mem_iUnion₂,]
   simp [stepProd]
@@ -402,7 +398,7 @@ lemma intersect.SpecFrom
 
 theorem intersect.Spec
   (M1 : NFA α σ1) (M2 : NFA α σ2) :
-  (intersect M1 M2).accepts = M1.accepts ∩ M2.accepts := by
+    (intersect M1 M2).accepts = M1.accepts ∩ M2.accepts := by
   rw [NFA.accepts_acceptsFrom, NFA.accepts_acceptsFrom, NFA.accepts_acceptsFrom]
   rw [intersect.startSpec, intersect.SpecFrom]
 
