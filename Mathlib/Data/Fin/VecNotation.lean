@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.Data.Fin.Tuple.Basic
-import Mathlib.Util.Qq
 
 /-!
 # Matrix and vector notation
@@ -136,7 +135,7 @@ theorem cons_val_succ' {i : ℕ} (h : i.succ < m.succ) (x : α) (u : Fin m → �
   simp only [vecCons, Fin.cons, Fin.cases_succ']
 
 section simprocs
-open Lean Qq
+open Lean
 
 /-- Parses a chain of `Matrix.vecCons` calls into elements, leaving everything else in the tail. -/
 partial def matchVecConsPrefix (e : Expr) : MetaM <| List Expr × Expr := do
