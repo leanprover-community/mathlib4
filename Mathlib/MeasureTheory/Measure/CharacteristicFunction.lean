@@ -182,8 +182,7 @@ theorem Measure.ext_of_charFun {E : Type*} [MeasurableSpace E]
     [SecondCountableTopology E] {μ ν : Measure E} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     (h : charFun μ = charFun ν) :
     μ = ν := by
-  rw [funext_iff] at h
-  simp_rw [charFun_eq_integral_innerProbChar] at h
+  simp_rw [funext_iff, charFun_eq_integral_innerProbChar] at h
   refine ext_of_integral_char_eq continuous_probChar probChar_ne_one (L := bilinFormOfRealInner)
     ?_ ?_ h
   · exact fun v hv ↦ DFunLike.ne_iff.mpr ⟨v, inner_self_ne_zero.mpr hv⟩
