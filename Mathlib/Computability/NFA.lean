@@ -100,9 +100,7 @@ def accepts : Language α := {x | ∃ S ∈ M.accept, S ∈ M.eval x}
 theorem mem_accepts {x : List α} : x ∈ M.accepts ↔ ∃ S ∈ M.accept, S ∈ M.evalFrom M.start x := by
   rfl
 
-lemma accepts_acceptsFrom :
-  M.accepts = M.acceptsFrom M.start := by
-  dsimp [accepts, acceptsFrom, eval]
+lemma accepts_acceptsFrom : M.accepts = M.acceptsFrom M.start := rfl
 
 /-- `M.toDFA` is a `DFA` constructed from an `NFA` `M` using the subset construction. The
   states is the type of `Set`s of `M.state` and the step function is `M.stepSet`. -/
