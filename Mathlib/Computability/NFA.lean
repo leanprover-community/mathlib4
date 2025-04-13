@@ -345,10 +345,10 @@ def intersect (M1 : NFA α σ1) (M2 : NFA α σ2) : NFA α (σ1 × σ2) where
   step : σ1 × σ2 → α → Set (σ1 × σ2) := stepProd M1 M2
   accept : Set (σ1 × σ2) := { s : σ1 × σ2 | s.1 ∈ M1.accept ∧ s.2 ∈ M2.accept }
 
-lemma intersect_start (M1 : NFA α σ1) (M2 : NFA α σ2) :
+lemma intersect_start_spec (M1 : NFA α σ1) (M2 : NFA α σ2) :
     (intersect M1 M2).start = { s : σ1 × σ2 | s.1 ∈ M1.start ∧ s.2 ∈ M2.start } := by rfl
 
-lemma intersect_biUnion
+lemma intersect_biUnion_spec
   (a : α)
   (S1 : Set σ1) (S2 : Set σ2)
   (M1 : NFA α σ1) (M2 : NFA α σ2) :
@@ -393,13 +393,13 @@ lemma intersect_acceptsFrom
       · rintro ⟨⟨x1, h1, hS1⟩, ⟨x2, h2, hS2⟩⟩
         exists x1, x2
     case cons x xs ih =>
-      rw [intersect_biUnion, ih]
+      rw [intersect_biUnion_spec, ih]
 
 theorem intersect_accepts
   (M1 : NFA α σ1) (M2 : NFA α σ2) :
     (intersect M1 M2).accepts = M1.accepts ∩ M2.accepts := by
   rw [NFA.accepts_acceptsFrom, NFA.accepts_acceptsFrom, NFA.accepts_acceptsFrom]
-  rw [intersect_start, intersect_acceptsFrom]
+  rw [intersect_start_spec, intersect_acceptsFrom]
 
 end Intersection
 
