@@ -135,50 +135,53 @@ theorem cons_val_succ' {i : ℕ} (h : i.succ < m.succ) (x : α) (u : Fin m → �
   simp only [vecCons, Fin.cons, Fin.cases_succ']
 
 section simprocs
-open Lean
+open Lean Qq
 
-/-- Parses a chain of `Matrix.vecCons` calls into elements, leaving everything else in the tail. -/
-partial def matchVecConsPrefix (e : Expr) : MetaM <| List Expr × Expr := do
+/-- Parses a chain of `Matrix.vecCons` calls into elements, leaving everything else in the tail.
+
+`let ⟨xs, tailn, tail⟩ ← matchVecConsPrefix n e` decomposes `e : Fin n → _` in the form
+`vecCons x₀ <| ... <| vecCons xₙ <| tail` where `tail : Fin tailn → _`.
+ -/
+partial def matchVecConsPrefix (n : Q(Nat)) (e : Expr) : MetaM <| List Expr × Q(Nat) × Expr := do
   match_expr ← Meta.whnfR e with
-  | Matrix.vecCons _ _ x xs => do
-    let (elems, tail) ← matchVecConsPrefix xs
-    return (x :: elems, tail)
-  | _ => return ([], e)
+  | Matrix.vecCons _ n x xs => do
+    let (elems, n', tail) ← matchVecConsPrefix n xs
+    return (x :: elems, n', tail)
+  | _ =>
+    return ([], n, e)
 
+open Qq in
 /-- A simproc that handles terms of the form `Matrix.vecCons a f i` where `i` is a numeric literal.
 
 In practice, this is most effective at handling `![a, b, c] i`-style terms. -/
 dsimproc cons_val (Matrix.vecCons _ _ _) := fun e => do
-  let_expr Matrix.vecCons α _ x xs' ei := ← Meta.whnfR e | return .continue
+  let_expr Matrix.vecCons α en x xs' ei := ← Meta.whnfR e | return .continue
   let some i := ei.int? | return .continue
-  let (length, variadic) ← do
-    let_expr Fin length := (← instantiateMVars (← Meta.inferType ei)) | return .continue
-    let length ← Meta.whnfD length
-    if let Expr.lit (.natVal length) := length then
-      pure (length, false)
-    else
-      let .some (_, offset) ← (Meta.isOffset? length).run | pure (0, true)
-      pure (offset, true)
-  let (xs, tail) ← matchVecConsPrefix xs'
+  let (xs, etailn, tail) ← matchVecConsPrefix en xs'
   let xs := x :: xs
-  -- We now have that `e` is of the form `vecCons x₀ <| ... <| vecCons xₙ <| tail`.
+  -- Determine if the tail is a numeral or only an offset.
+  let (tailn, variadic) ← do
+    if let Expr.lit (.natVal length) := ← Meta.whnfD etailn then
+      pure (length, false)
+    else if let .some (_, offset) ← (Meta.isOffset? etailn).run then
+      pure (offset, true)
+    else
+      pure (0, true)
   -- Wrap the index if possible, and abort if not
   let wrapped_i ←
     if variadic then
       -- can't wrap as we don't know the length
-      unless 0 ≤ i ∧ i < length do return .continue
+      unless 0 ≤ i ∧ i < xs.length + tailn do return .continue
       pure i.toNat
     else
-      pure (i % length).toNat
+      pure (i % (xs.length + tailn)).toNat
   if h : wrapped_i < xs.length then
     return .continue xs[wrapped_i]
   else
     -- Within the `tail`
-    let i_expr := mkRawNatLit (wrapped_i - xs.length)
-    -- TODO: could build this without going through the elaborator
-    let (newn, _) ← Elab.Term.TermElabM.run <| do
-      Elab.Term.elabTerm (← `($(← tail.toSyntax) <| OfNat.ofNat $(← i_expr.toSyntax))) (some α)
-    return .continue (.some newn)
+    let _ ← synthInstanceQ q(NeZero $etailn)
+    have i_lit : Q(ℕ) := mkRawNatLit (wrapped_i - xs.length)
+    return .continue (.some <| .app tail q(OfNat.ofNat $i_lit : Fin $etailn))
 
 end simprocs
 
