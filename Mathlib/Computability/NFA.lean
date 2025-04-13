@@ -172,8 +172,10 @@ end Auxilary
 /-- NFAs are closed under reversal:
   Given NFA `M`, there is an NFA `reverse(M)` such that
   `L(reverse(M)) = reverse(L(M))`. -/
-def reverse (M : NFA α σ) : NFA α σ :=
-  NFA.mk M.unstep M.accept M.start
+def reverse (M : NFA α σ) : NFA α σ where
+  step := M.unstep
+  start := M.accept
+  accept := M.start
 
 lemma spec_from (M : NFA α σ) :
     M.reverse.acceptsFrom = M.startsTo := by
@@ -242,13 +244,10 @@ def stepSum (M1 : NFA α σ1) (M2 : NFA α σ2)
 /-- NFAs are closed under union:
   Given NFAs `M₁` and `M₂`, `M₁ ∪ M₂` is a NFA such that
   `L(M₁ ∪ M₂) = L(M₁) ∪ L(M₂)`. -/
-def union (M1 : NFA α σ1) (M2 : NFA α σ2) : NFA α (σ1 ⊕ σ2) :=
-  { start : Set (σ1 ⊕ σ2) :=
-      { s : σ1 ⊕ σ2 | s.casesOn M1.start M2.start }
-    step : σ1 ⊕ σ2 → α → Set (σ1 ⊕ σ2) :=
-      stepSum M1 M2
-    accept : Set (σ1 ⊕ σ2) :=
-      { s : σ1 ⊕ σ2 | s.casesOn M1.accept M2.accept } }
+def union (M1 : NFA α σ1) (M2 : NFA α σ2) : NFA α (σ1 ⊕ σ2) where
+  start : Set (σ1 ⊕ σ2) := { s : σ1 ⊕ σ2 | s.casesOn M1.start M2.start }
+  step : σ1 ⊕ σ2 → α → Set (σ1 ⊕ σ2) := stepSum M1 M2
+  accept : Set (σ1 ⊕ σ2) := { s : σ1 ⊕ σ2 | s.casesOn M1.accept M2.accept }
 
 lemma union.biUnionSpec
   (x : α) (S1 : Set σ1) (S2 : Set σ2) (M1 : NFA α σ1) (M2 : NFA α σ2) :
@@ -338,13 +337,10 @@ def stepProd (M1 : NFA α σ1) (M2 : NFA α σ2)
 /-- NFAs are closed under intersection:
   Given NFAs `M₁` and `M₂`, `M₁ ∩ M₂` is a NFA such that
   `L(M₁ ∩ M₂) = L(M₁) ∩ L(M₂)`. -/
-def intersect (M1 : NFA α σ1) (M2 : NFA α σ2) : NFA α (σ1 × σ2) :=
-  { start : Set (σ1 × σ2) :=
-      { s : σ1 × σ2 | s.1 ∈ M1.start ∧ s.2 ∈ M2.start }
-    step : σ1 × σ2 → α → Set (σ1 × σ2) :=
-      stepProd M1 M2
-    accept : Set (σ1 × σ2) :=
-      { s : σ1 × σ2 | s.1 ∈ M1.accept ∧ s.2 ∈ M2.accept } }
+def intersect (M1 : NFA α σ1) (M2 : NFA α σ2) : NFA α (σ1 × σ2) where
+  start : Set (σ1 × σ2) := { s : σ1 × σ2 | s.1 ∈ M1.start ∧ s.2 ∈ M2.start }
+  step : σ1 × σ2 → α → Set (σ1 × σ2) := stepProd M1 M2
+  accept : Set (σ1 × σ2) := { s : σ1 × σ2 | s.1 ∈ M1.accept ∧ s.2 ∈ M2.accept }
 
 lemma intersect.startSpec (M1 : NFA α σ1) (M2 : NFA α σ2) :
     (intersect M1 M2).start = { s : σ1 × σ2 | s.1 ∈ M1.start ∧ s.2 ∈ M2.start } := by rfl
