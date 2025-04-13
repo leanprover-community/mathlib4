@@ -3,11 +3,10 @@ Copyright (c) 2025 Peter Pfaffelhuber. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Author: Peter Pfaffelhuber
 -/
+
 import Mathlib.LinearAlgebra.Matrix.PosDef
-import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.MeasureTheory.Function.L2Space
-import Mathlib.MeasureTheory.Function.LpSpace.Indicator
-import Mathlib.Algebra.GroupWithZero.Defs
+import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 
 /-! # Gram Matrices
 
@@ -16,9 +15,10 @@ Results require `RCLike 𝕜`.
 
 ## Main definition
 
-* `Matrix.Gram` : a matrix `M : Matrix n n 𝕜` is a Gram matrix if
-`M i j = ⟪v i, v j⟫` for all `i j : n`, where
-`v : n → α` for an `InnerProductSpace α`.
+* `Matrix.Gram` : the `Matrix n n 𝕜` with `⟪v i, v j⟫` at `i j : n`, where `v : n → α` for an
+`InnerProductSpace 𝕜 α`.
+* `Matrix.L2Gram` : special case of `Matrix.Gram` where the `InnerProductSpace 𝕜 α`
+  is an `L2`-space.
 
 ## Main results
 
@@ -29,22 +29,18 @@ open RCLike Real Matrix MeasureTheory
 
 open scoped InnerProductSpace
 
-namespace Matrix
-
 variable {E n : Type*}
 variable {α : Type*} [MeasurableSpace α] {μ : Measure α}
 variable {𝕜 : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+
+namespace Matrix
 
 /-- The entries of a Gram matrix are inner products of vectors in an inner product space. -/
 def Gram (𝕜 : Type*) [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
     (v : n → E) : Matrix n n 𝕜  := fun i j ↦ inner (v i) (v j)
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜  _ _ x y
-
-/-- Special case of a Gram matrix where the underlying inner product space is an L2-space. -/
-noncomputable def L2Gram (v : n → (α →₂[μ] 𝕜)) :
-  Matrix n n 𝕜 := Gram 𝕜 v
 
 def IsGram (M : Matrix n n 𝕜) (v : n → E) : Prop := (M = Gram 𝕜 v)
 
@@ -53,9 +49,7 @@ namespace IsGram
 lemma of_Gram (v : n → E) : IsGram (Gram 𝕜 v) v := by
   rfl
 
-lemma of_L2Gram (v : n →  (α →₂[μ] 𝕜)) : IsGram (L2Gram v) v := by
-  rfl
-
+/-- For `M : Matrix n n 𝕜` with `IsGram M v`, the entry at `i j : n` equals `⟪v i, v j⟫`. -/
 lemma entry {M : Matrix n n 𝕜} {v : n → E} (hM : IsGram M v) (i j : n) : M i j = ⟪v i, v j⟫ := by
   rw [hM, Gram]
 
@@ -92,11 +86,83 @@ end IsGram
 
 end Matrix
 
+section L2
+
+open L2 ENNReal
+
+local notation "⟪" x ", " y "⟫" => @inner ℝ _ _ x y
+
+/-- Special case of a Gram matrix where the underlying inner product space is an L2-space. -/
+noncomputable def Matrix.L2Gram (v : n → (α →₂[μ] 𝕜)) :
+  Matrix n n 𝕜 := Gram 𝕜 v
+
+lemma Matrix.IsGram.of_L2Gram (v : n →  (α →₂[μ] 𝕜)) : IsGram (L2Gram v) v := by
+  rfl
+
+lemma innerProduct_eq_inter (v w : (Set α)) (hv₁ : MeasurableSet v)
+  (hw₁ : MeasurableSet w) (hv₂ : μ v ≠ ⊤) (hw₂ : μ w ≠ ⊤) :
+  ⟪((indicatorConstLp 2 hv₁ hv₂ (1 : ℝ))), (indicatorConstLp 2 hw₁ hw₂ (1 : ℝ)) ⟫ =
+    (μ (v ∩ w)).toReal := by
+  rw [inner_indicatorConstLp_one]
+  have h : ((indicatorConstLp 2 hw₁ hw₂ (1 : ℝ)) : α → ℝ) =ᶠ[ae μ] w.indicator fun x ↦ (1 : ℝ) :=
+    indicatorConstLp_coeFn (hs := hw₁) (hμs := hw₂)
+  have g : ∀ᵐ (x : α) ∂μ, x ∈ v → ((indicatorConstLp 2 hw₁ hw₂ (1 : ℝ)) : α → ℝ) x =
+      w.indicator (fun x ↦ (1 : ℝ)) x := Filter.Eventually.mono h fun x a a_1 ↦ a
+  rw [setIntegral_congr_ae hv₁ g, setIntegral_indicator hw₁]
+  simp
+
+/-- A matrix with entry `μ (v i ∩ v j)` at index `i j : n`. -/
+def interMatrix (μ : Measure α) (v : n → (Set α)) : Matrix n n ℝ := fun i j ↦ (μ (v i ∩ v j)).toReal
+
+theorem posSemidef_interMatrix [Fintype n] (μ : Measure α) (v : n → (Set α))
+    (hv₁ : ∀ j, MeasurableSet (v j)) (hv₂ : ∀ j, μ (v j) ≠ ⊤) :
+      PosSemidef (interMatrix μ v) := by
+  let M : Matrix n n ℝ := Matrix.L2Gram fun i ↦ (indicatorConstLp 2 (hv₁ i) (hv₂ i) (1 : ℝ))
+  obtain hg := Matrix.IsGram.of_L2Gram fun i ↦ (indicatorConstLp 2 (hv₁ i) (hv₂ i) (1 : ℝ))
+  have hf : (fun i j ↦ (μ (v i ∩ v j)).toReal) =
+    (fun i j ↦ ⟪(indicatorConstLp 2 (hv₁ i) (hv₂ i) (1 : ℝ)),
+    (indicatorConstLp 2 (hv₁ j) (hv₂ j) (1 : ℝ))⟫) := by
+    ext i j
+    exact Eq.symm (innerProduct_eq_inter (v i) (v j) (hv₁ i) (hv₁ j) (hv₂ i) (hv₂ j))
+  change PosSemidef fun i j ↦ (μ (v i ∩ v j)).toReal
+  rw [hf]
+  exact IsGram.PosSemidef hg
+
+end L2
+
+
+
+
+
+
+
 section covariance
 
 variable {E n : Type*}
 variable {α : Type*} [MeasurableSpace α] {μ : Measure α}
 variable [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+
+open MeasureTheory L2 NNReal ENNReal
+/-- This is the covariance matrix of Brownian Motion. -/
+def covMatrix (t : n → ℝ≥0) : Matrix n n ℝ := fun i j ↦ ((t i) ⊓ (t j)).toReal
+
+theorem posSemidef_covMatrix [Fintype n] (t : n → ℝ≥0) :
+    PosSemidef (covMatrix t) := by
+  let v : n → (Set ℝ) := fun i ↦ Set.Icc 0 (t i)
+  have h : covMatrix t = interMatrix volume (fun i ↦ Set.Icc 0 (t i).toReal) := by
+    ext i j
+    rw [covMatrix, interMatrix, Set.Icc_inter_Icc]
+    simp
+  apply h ▸ posSemidef_interMatrix _ v  (fun j ↦ measurableSet_Icc)
+    (fun j ↦ IsCompact.measure_ne_top isCompact_Icc)
+
+end covariance
+
+
+
+
+
+
 variable {M : Type*} [MulZeroClass M]
 
 omit [MeasurableSpace α] in
@@ -107,43 +173,7 @@ lemma Set.indicator_mul_eq_inter (s t : Set α) (f g : α → M) (x : α) :
   · rw [Set.indicator_of_mem h (f * g), Set.indicator_of_mem (mem_of_mem_inter_left h) f,
       Set.indicator_of_mem (mem_of_mem_inter_right h) g]
     simp only [Pi.mul_apply]
-  · have g : x ∉ s ∨ x ∉ t := by
-      exact Classical.not_and_iff_not_or_not.mp h
+  · have g : x ∉ s ∨ x ∉ t := Classical.not_and_iff_not_or_not.mp h
     rcases g with (g1 | g2)
-    · rw [Set.indicator_of_not_mem g1 f, Set.indicator_of_not_mem h (f * g)]
-      let y := (t.indicator g x)
-      rw [MulZeroClass.zero_mul]
-    · rw [Set.indicator_of_not_mem g2 g, Set.indicator_of_not_mem h (f * g)]
-      simp only [mul_zero]
-
-local notation "⟪" x ", " y "⟫" => @inner ℝ _ _ x y
-
-open MeasureTheory L2
-
-example (f g : α → ℝ) (s : Set α) (hs : MeasurableSet s) (hfg : f =ᶠ[ae μ] g) :
-    ∫ a in s, f a ∂μ = ∫ a in s, g a ∂μ := by
-  refine setIntegral_congr_ae hs ?_
-  exact Filter.Eventually.mono hfg fun x a a_1 ↦ a
-
-lemma innerProduct_eq_inter (v w : (Set α)) (hv₁ : MeasurableSet v)
-  (hw₁ : MeasurableSet w) (hv₂ : μ v ≠ ⊤) (hw₂ : μ w ≠ ⊤) :
-  ⟪((indicatorConstLp 2 hv₁ hv₂ (1 : ℝ))), (indicatorConstLp 2 hw₁ hw₂ (1 : ℝ)) ⟫ =
-    (μ (v ∩ w)).toReal := by
-  rw [inner_indicatorConstLp_one]
-  have h : ((indicatorConstLp 2 hw₁ hw₂ (1 : ℝ)) : α → ℝ) =ᶠ[ae μ] w.indicator fun x ↦ (1 : ℝ) :=
-    indicatorConstLp_coeFn (hs := hw₁) (hμs := hw₂)
-  have g : ∀ᵐ (x : α) ∂μ, x ∈ v → ((indicatorConstLp 2 hw₁ hw₂ (1 : ℝ)) : α → ℝ) x =
-      w.indicator (fun x ↦ (1 : ℝ)) x := by
-    exact Filter.Eventually.mono h fun x a a_1 ↦ a
-  rw [setIntegral_congr_ae hv₁ g]
-  rw [setIntegral_indicator hw₁]
-  simp only [integral_const, MeasurableSet.univ,
-    Measure.restrict_apply, Set.univ_inter, smul_eq_mul, mul_one]
-
-
-def covMatrix (v : n → (Set α)) (hv₁ : ∀ j, MeasurableSet (v j))
-   (hv₂ : ∀ j, μ (v j) ≠ ⊤) : Matrix n n ℝ := fun i j ↦ (μ (v i ∩ v j)).toReal
-
-
-
-end covariance
+    · rw [Set.indicator_of_not_mem g1 f, Set.indicator_of_not_mem h (f * g), MulZeroClass.zero_mul]
+    · rw [Set.indicator_of_not_mem g2 g, Set.indicator_of_not_mem h (f * g), mul_zero]
