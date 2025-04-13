@@ -1117,14 +1117,12 @@ end IsModularLattice
 
 namespace «Prop»
 
-theorem isAtom_iff {p : Prop} : IsAtom p ↔ p := by
-  simp [IsAtom, show ⊥ = False from rfl, fun q r : Prop => show q < r ↔ _ ∧ _ from .rfl]
-
-theorem isCoatom_iff {p : Prop} : IsCoatom p ↔ ¬ p := by
-  simp [IsCoatom, show ⊤ = True from rfl, fun q r : Prop => show q < r ↔ _ ∧ _ from .rfl]; tauto
-
 instance : IsSimpleOrder Prop where
   eq_bot_or_eq_top p := by simp [em']
+
+theorem isAtom_iff {p : Prop} : IsAtom p ↔ p := by simp
+
+theorem isCoatom_iff {p : Prop} : IsCoatom p ↔ ¬ p := by simp
 
 end «Prop»
 

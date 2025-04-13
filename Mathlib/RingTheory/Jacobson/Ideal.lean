@@ -224,9 +224,7 @@ theorem jacobson_mono {I J : Ideal R} : I ≤ J → I.jacobson ≤ J.jacobson :=
   rw [jacobson, mem_sInf] at hx ⊢
   exact fun K ⟨hK, hK_max⟩ => hx ⟨Trans.trans h hK, hK_max⟩
 
-/-- The Jacobson radical of a two-sided ideal is two-sided.
-
-It is preferable to use `TwoSidedIdeal.jacobson` instead of this lemma. -/
+/-- The Jacobson radical of a two-sided ideal is two-sided. -/
 instance {I : Ideal R} [I.IsTwoSided] : I.jacobson.IsTwoSided where
   -- Proof generalized from
   -- https://ysharifi.wordpress.com/2022/08/16/the-jacobson-radical-definition-and-basic-results/
