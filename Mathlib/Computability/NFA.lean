@@ -159,13 +159,13 @@ def rewindFrom (final : Set σ) : List α → Set σ :=
 def rewind : List α → Set σ :=
   M.rewindFrom M.accept
 
-/-- `M.startsTo S` is the language of `x`
-  such that starting from `S` we arrive at `M.start`. -/
-def startsTo (S : Set σ) : Language α :=
+/-- `M.rewindsToStart S` is the language of `x`
+  such that starting from `S` we rewind to `M.start`. -/
+def rewindsToStart (S : Set σ) : Language α :=
   { x | ∃ s ∈ M.start, s ∈ M.rewindFrom S x }
 
-lemma mem_startsTo {S : Set σ} {x : List α} :
-    x ∈ M.startsTo S ↔ ∃ s ∈ M.start, s ∈ M.rewindFrom S x := Iff.rfl
+lemma mem_rewindsToStart {S : Set σ} {x : List α} :
+    x ∈ M.rewindsToStart S ↔ ∃ s ∈ M.start, s ∈ M.rewindFrom S x := Iff.rfl
 
 end Auxilary
 
@@ -178,7 +178,7 @@ def reverse (M : NFA α σ) : NFA α σ where
   accept := M.start
 
 lemma spec_from (M : NFA α σ) :
-    M.reverse.acceptsFrom = M.startsTo := by
+    M.reverse.acceptsFrom = M.rewindsToStart := by
   ext xs
   rfl
 
@@ -212,16 +212,16 @@ lemma reverse.rewindFromSpec (xs : List α) (S1 S2 : Set σ) (M : NFA α σ) :
       constructor <;> try assumption
       exists s2
 
-lemma reverse.startsToSpec (xs : List α) (M : NFA α σ) :
-    xs ∈ M.startsTo M.reverse.start ↔ xs.reverse ∈ M.acceptsFrom M.start := by
-  rw [mem_startsTo, mem_acceptsFrom]
+lemma reverse.rewindsToStartSpec (xs : List α) (M : NFA α σ) :
+    xs ∈ M.rewindsToStart M.reverse.start ↔ xs.reverse ∈ M.acceptsFrom M.start := by
+  rw [mem_rewindsToStart, mem_acceptsFrom]
   apply reverse.rewindFromSpec
 
 theorem reverse.Spec (M : NFA α σ) :
     M.reverse.accepts = { xs : List α | xs.reverse ∈ M.accepts } := by
   ext xs
   rw [accepts_acceptsFrom, accepts_acceptsFrom, spec_from, Set.mem_setOf]
-  apply reverse.startsToSpec
+  apply reverse.rewindsToStartSpec
 
 end Reversal
 
