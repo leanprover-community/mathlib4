@@ -140,8 +140,7 @@ open Lean Qq
 /-- Parses a chain of `Matrix.vecCons` calls into elements, leaving everything else in the tail.
 
 `let ⟨xs, tailn, tail⟩ ← matchVecConsPrefix n e` decomposes `e : Fin n → _` in the form
-`vecCons x₀ <| ... <| vecCons xₙ <| tail` where `tail : Fin tailn → _`.
- -/
+`vecCons x₀ <| ... <| vecCons xₙ <| tail` where `tail : Fin tailn → _`. -/
 partial def matchVecConsPrefix (n : Q(Nat)) (e : Expr) : MetaM <| List Expr × Q(Nat) × Expr := do
   match_expr ← Meta.whnfR e with
   | Matrix.vecCons _ n x xs => do
@@ -160,13 +159,15 @@ dsimproc cons_val (Matrix.vecCons _ _ _) := fun e => do
   let (xs, etailn, tail) ← matchVecConsPrefix en xs'
   let xs := x :: xs
   -- Determine if the tail is a numeral or only an offset.
-  let (tailn, variadic) ← do
-    if let Expr.lit (.natVal length) := ← Meta.whnfD etailn then
-      pure (length, false)
-    else if let .some (_, offset) ← (Meta.isOffset? etailn).run then
-      pure (offset, true)
+  let (tailn, variadic, etailn) ← do
+    let etailn_whnf : Q(ℕ) ← Meta.whnfD etailn
+    if let Expr.lit (.natVal length) := etailn_whnf then
+      pure (length, false, q(OfNat.ofNat $etailn_whnf))
+    else if let .some ((base : Q(ℕ)), offset) ← (Meta.isOffset? etailn_whnf).run then
+      let offset_e : Q(ℕ) := mkNatLit offset
+      pure (offset, true, q($base + $offset))
     else
-      pure (0, true)
+      pure (0, true, etailn)
   -- Wrap the index if possible, and abort if not
   let wrapped_i ←
     if variadic then
