@@ -238,19 +238,8 @@ lemma sup_univ_eq_ciSup [Fintype ι] (f : ι → α) : univ.sup f = ⨆ i, f i :
     (ciSup_le' fun _ => Finset.le_sup (mem_univ _))
 
 theorem sup_eq_ciSup [Nonempty β] (s : Finset β) (f : β → α) :
-    s.sup f = ⨆ (b : β) (_ : b ∈ s), f b := by
-  apply le_antisymm ?_ (ciSup₂_le fun x ↦ Finset.le_sup)
-  · apply Finset.sup_le
-    intro a ha
-    apply Set.Finite.le_ciSup₂_of_le _ a ha (le_refl (f a))
-    have hrange : (Set.range fun b : β ↦ ⨆ _ : b ∈ s, f b) ⊆
-      (Set.range fun b : s ↦ f b) ∪ {⊥} := by
-      rintro y ⟨x, hxy⟩
-      simp only [Set.mem_range, Set.union_singleton, Set.mem_insert_iff] at y ⊢
-      by_cases hx : x ∈ s
-      · right; simp only [hx, ciSup_pos] at hxy ; exact ⟨⟨x, hx⟩, hxy⟩
-      · left; simp only [hx, ciSup_false] at hxy ; exact hxy.symm
-    exact ((Set.range fun b : ↥s ↦ f ↑b) ∪ {⊥}).toFinite.subset hrange
+    s.sup f = ⨆ b : s, f b :=
+  Finset.isLUB_sup.unique <| isLUB_ciSup_set' (s.finite_toSet.image _).bddAbove
 
 end ConditionallyCompleteLinearOrderBot
 
