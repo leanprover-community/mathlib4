@@ -109,8 +109,9 @@ def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
                please remove 'set_option {name}'."
         else if name.components.contains `maxHeartbeats then
           Linter.logLint linter.style.setOption head m!"Unscoped option {name} is not allowed:\n\
-          Please scope this to individual declarations, as in\nset_option {name} in\n\
-          -- comment explaining why this is necessary\n..."
+          Please scope this to individual declarations, as in\n```\nset_option {name} in\n\
+          -- comment explaining why this is necessary\n\
+          example : ... := ...\n```"
 
 initialize addLinter setOptionLinter
 
