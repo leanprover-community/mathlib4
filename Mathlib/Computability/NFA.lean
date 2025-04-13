@@ -154,7 +154,7 @@ def rewindFrom (final : Set σ) : List α → Set σ :=
   List.foldl M.unstepSet final
 
 
-/-- `M.rewind x` computes all possible paths though `M` with input `x` ending at an element of
+/-- `M.rewind x` computes all possible paths through `M` with input `x` ending at an element of
   `M.accept`. -/
 def rewind : List α → Set σ :=
   M.rewindFrom M.accept
