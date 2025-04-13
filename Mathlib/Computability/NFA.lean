@@ -171,7 +171,8 @@ lemma mem_startsTo {S : Set σ} {x : List α} :
 end Auxilary
 
 /-- NFAs are closed under reversal:
-Given NFA `M`, there is an NFA `reverse(M)` such that `L(reverse(M)) = reverse(L(M))`.-/
+  Given NFA `M`, there is an NFA `reverse(M)` such that
+  `L(reverse(M)) = reverse(L(M))`. -/
 def reverse (M : NFA α σ) : NFA α σ :=
   NFA.mk M.unstep M.accept M.start
 
