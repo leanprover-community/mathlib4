@@ -267,6 +267,56 @@ theorem setLIntegral_congr_fun {f g : α → ℝ≥0∞} {s : Set α} (hs : Meas
   rw [EventuallyEq]
   rwa [ae_restrict_iff' hs]
 
+section
+
+/-- The Lebesgue integral is zero iff the function is a.e. zero. -/
+@[simp]
+theorem lintegral_eq_zero_iff' {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) :
+    ∫⁻ a, f a ∂μ = 0 ↔ f =ᵐ[μ] 0 := by
+  -- The proof implicitly uses Markov's inequality,
+  -- but it has been inlined for the sake of imports
+  refine ⟨fun h ↦ ?_, fun h ↦ (lintegral_congr_ae h).trans lintegral_zero⟩
+  have meas_levels_0 : ∀ ε > 0, μ { x | ε ≤ f x } = 0 := fun ε εpos ↦ by
+    by_contra! h'; rw [← zero_lt_iff] at h'
+    refine ((mul_pos_iff.mpr ⟨εpos, h'⟩).trans_le ?_).ne' h
+    calc
+      _ ≥ ∫⁻ a in {x | ε ≤ f x}, f a ∂μ := setLIntegral_le_lintegral _ _
+      _ ≥ ∫⁻ _ in {x | ε ≤ f x}, ε ∂μ :=
+        setLIntegral_mono_ae hf.restrict (ae_of_all μ fun _ ↦ id)
+      _ = _ := setLIntegral_const _ _
+  obtain ⟨u, -, bu, tu⟩ := exists_seq_strictAnti_tendsto' (α := ℝ≥0∞) zero_lt_one
+  have u_union : {x | f x ≠ 0} = ⋃ n, {x | u n ≤ f x} := by
+    ext x; rw [mem_iUnion, mem_setOf_eq, ← zero_lt_iff]
+    rw [ENNReal.tendsto_atTop_zero] at tu
+    constructor <;> intro h'
+    · obtain ⟨n, hn⟩ := tu _ h'; use n, hn _ le_rfl
+    · obtain ⟨n, hn⟩ := h'; exact (bu n).1.trans_le hn
+  have res := measure_iUnion_null_iff.mpr fun n ↦ meas_levels_0 _ (bu n).1
+  rwa [← u_union] at res
+
+@[simp]
+theorem lintegral_eq_zero_iff {f : α → ℝ≥0∞} (hf : Measurable f) : ∫⁻ a, f a ∂μ = 0 ↔ f =ᵐ[μ] 0 :=
+  lintegral_eq_zero_iff' hf.aemeasurable
+
+theorem setLIntegral_eq_zero_iff' {s : Set α} (hs : MeasurableSet s)
+    {f : α → ℝ≥0∞} (hf : AEMeasurable f (μ.restrict s)) :
+    ∫⁻ a in s, f a ∂μ = 0 ↔ ∀ᵐ x ∂μ, x ∈ s → f x = 0 :=
+  (lintegral_eq_zero_iff' hf).trans (ae_restrict_iff' hs)
+
+theorem setLIntegral_eq_zero_iff {s : Set α} (hs : MeasurableSet s) {f : α → ℝ≥0∞}
+    (hf : Measurable f) : ∫⁻ a in s, f a ∂μ = 0 ↔ ∀ᵐ x ∂μ, x ∈ s → f x = 0 :=
+  setLIntegral_eq_zero_iff' hs hf.aemeasurable
+
+theorem lintegral_pos_iff_support {f : α → ℝ≥0∞} (hf : Measurable f) :
+    (0 < ∫⁻ a, f a ∂μ) ↔ 0 < μ (Function.support f) := by
+  simp [pos_iff_ne_zero, hf, Filter.EventuallyEq, ae_iff, Function.support]
+
+theorem setLintegral_pos_iff {f : α → ℝ≥0∞} (hf : Measurable f) {s : Set α} :
+    0 < ∫⁻ a in s, f a ∂μ ↔ 0 < μ (Function.support f ∩ s) := by
+  rw [lintegral_pos_iff_support hf, Measure.restrict_apply (measurableSet_support hf)]
+
+end
+
 /-- If `f` has finite integral, then `∫⁻ x in s, f x ∂μ` is absolutely continuous in `s`: it tends
 to zero as `μ s` tends to zero. This lemma states this fact in terms of `ε` and `δ`. -/
 theorem exists_pos_setLIntegral_lt_of_measure_lt {f : α → ℝ≥0∞} (h : ∫⁻ x, f x ∂μ ≠ ∞) {ε : ℝ≥0∞}
