@@ -147,9 +147,10 @@ def algHomOfRightFDRepComp (η : Aut (forget k G)) : (G → k) →ₐ[k] (G → 
   apply_fun (fun x ↦ (x.hom.app rightFDRep).hom (1 : G → k)) at this
   exact this
 
-/-- Auxiliary map for the proof of `toRightFDRepComp_inj`. -/
+/-- For `v : X` and `G` a finite group, the `G`-equivariant linear map from the right
+regular representation `rightFDRep` to `X` sending `1` to `v`. -/
 @[simps]
-def auxLinearMap {X : FDRep k G} (v : X) : (G → k) →ₗ[k] X where
+def sumSMulInv {X : FDRep k G} (v : X) : (G → k) →ₗ[k] X where
   toFun f := ∑ s : G, (f s) • (X.ρ s⁻¹ v)
   map_add' _ _ := by
     simp only [add_apply, add_smul, sum_add_distrib]
@@ -157,7 +158,7 @@ def auxLinearMap {X : FDRep k G} (v : X) : (G → k) →ₗ[k] X where
     simp only [smul_apply, smul_eq_mul, RingHom.id_apply, smul_sum, smul_smul]
 
 @[simp]
-lemma _root_.FDRep.sumSMulInv_single_id [DecidableEq G] {X : FDRep k G} (v : X) :
+lemma sumSMulInv_single_id [DecidableEq G] {X : FDRep k G} (v : X) :
     ∑ s : G, (single 1 1 : G → k) s • (X.ρ s⁻¹) v = v := by
   calc
     _ = ∑ s ∈ {1}ᶜ, single 1 1 s • (X.ρ s⁻¹) v + single 1 1 1 • (X.ρ 1⁻¹) v :=
@@ -169,10 +170,11 @@ lemma _root_.FDRep.sumSMulInv_single_id [DecidableEq G] {X : FDRep k G} (v : X) 
     _ = v := by
       simp
 
-/-- Auxiliary representation morphism for the proof of `toRightFDRepComp_inj`. -/
+/-- For `v : X` and `G` a finite group, the representation morphism from the right
+regular representation `rightFDRep` to `X` sending `1` to `v`. -/
 @[simps]
-def auxFDRepHom (X : FDRep k G) (v : X) : rightFDRep ⟶ X where
-  hom := ofHom (auxLinearMap v)
+def ofRightFDRep (X : FDRep k G) (v : X) : rightFDRep ⟶ X where
+  hom := ofHom (sumSMulInv v)
   comm t := by
     ext f
     let φ_term (X : FDRep k G) (f : G → k) v s := (f s) • (X.ρ s⁻¹ v)
@@ -183,8 +185,8 @@ lemma toRightFDRepComp_inj (η₁ η₂ : Aut (forget k G))
     (h : η₁.hom.hom.app rightFDRep = η₂.hom.hom.app rightFDRep) : η₁ = η₂ := by
   classical
   ext X v
-  have h1 := η₁.hom.hom.naturality (auxFDRepHom X v)
-  have h2 := η₂.hom.hom.naturality (auxFDRepHom X v)
+  have h1 := η₁.hom.hom.naturality (ofRightFDRep X v)
+  have h2 := η₂.hom.hom.naturality (ofRightFDRep X v)
   rw [h, ← h2] at h1
   apply_fun (Hom.hom · (single 1 1)) at h1
   simpa using h1
