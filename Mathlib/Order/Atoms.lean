@@ -694,7 +694,6 @@ protected def IsSimpleOrder.linearOrder [DecidableEq α] : LinearOrder α :=
             hb (top_unique (le_trans (top_le_iff.mpr (Or.resolve_left
               (eq_bot_or_eq_top a) ha)) H)) }
 
-@[simp]
 theorem isAtom_top : IsAtom (⊤ : α) :=
   ⟨top_ne_bot, fun a ha => Or.resolve_right (eq_bot_or_eq_top a) (ne_of_lt ha)⟩
 
@@ -702,7 +701,6 @@ theorem isAtom_top : IsAtom (⊤ : α) :=
 theorem isAtom_iff_eq_top {a : α} : IsAtom a ↔ a = ⊤ :=
   ⟨fun h ↦ (eq_bot_or_eq_top a).resolve_left h.1, (· ▸ isAtom_top)⟩
 
-@[simp]
 theorem isCoatom_bot : IsCoatom (⊥ : α) :=
   isAtom_dual_iff_isCoatom.1 isAtom_top
 
@@ -1119,10 +1117,10 @@ end IsModularLattice
 
 namespace «Prop»
 
-@[simp] theorem isAtom_iff {p : Prop} : IsAtom p ↔ p := by
+theorem isAtom_iff {p : Prop} : IsAtom p ↔ p := by
   simp [IsAtom, show ⊥ = False from rfl, fun q r : Prop => show q < r ↔ _ ∧ _ from .rfl]
 
-@[simp] theorem isCoatom_iff {p : Prop} : IsCoatom p ↔ ¬ p := by
+theorem isCoatom_iff {p : Prop} : IsCoatom p ↔ ¬ p := by
   simp [IsCoatom, show ⊤ = True from rfl, fun q r : Prop => show q < r ↔ _ ∧ _ from .rfl]; tauto
 
 instance : IsSimpleOrder Prop where
