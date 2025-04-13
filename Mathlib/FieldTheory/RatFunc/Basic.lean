@@ -7,6 +7,8 @@ import Mathlib.FieldTheory.RatFunc.Defs
 import Mathlib.RingTheory.EuclideanDomain
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Polynomial.Content
+import Mathlib.RingTheory.PolynomialAlgebra
+import Mathlib.Algebra.Polynomial.Basic
 
 /-!
 # The field structure of rational functions
@@ -524,6 +526,21 @@ theorem mk_one (x : K[X]) : RatFunc.mk x 1 = algebraMap _ _ x :=
 theorem ofFractionRing_algebraMap (x : K[X]) :
     ofFractionRing (algebraMap _ (FractionRing K[X]) x) = algebraMap _ _ x := by
   rw [← mk_one, mk_one']
+
+def toFractionRingRAlgEquiv {R : Type*} [CommSemiring R]
+  [IsDomain K] [Algebra R K]:
+  RatFunc K ≃ₐ[R] FractionRing K[X] := {
+    RatFunc.toFractionRingRingEquiv K with
+    commutes' := fun r => by
+      simp_rw [RingEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
+        RatFunc.toFractionRingRingEquiv_apply]
+      letI : Algebra R[X] (RatFunc K) := by
+        letI : Algebra R[X] K[X] := Polynomial.algebra R K
+        exact RatFunc.instAlgebraOfPolynomial K R[X]
+      rw [show (algebraMap R _) r = (algebraMap K[X] (RatFunc K))
+        (Polynomial.C ((algebraMap R K) r)) by rfl]
+      rw [← RatFunc.ofFractionRing_algebraMap]; rfl
+  }
 
 @[simp]
 theorem mk_eq_div (p q : K[X]) : RatFunc.mk p q = algebraMap _ _ p / algebraMap _ _ q := by
