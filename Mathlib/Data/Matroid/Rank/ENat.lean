@@ -319,8 +319,12 @@ lemma eRank_ne_top_iff (M : Matroid α) : M.eRank ≠ ⊤ ↔ M.RankFinite := by
   rw [← hB.encard_eq_eRank, encard_ne_top_iff]
   exact ⟨fun h ↦ hB.rankFinite_of_finite h, fun h ↦ hB.finite⟩
 
+@[deprecated (since := "2025-04-13")] alias rankFinite_iff_eRk_ne_top := eRank_ne_top_iff
+
 lemma eRank_eq_top_iff (M : Matroid α) : M.eRank = ⊤ ↔ M.RankInfinite := by
   rw [← not_rankFinite_iff, ← eRank_ne_top_iff, not_not]
+
+@[deprecated (since := "2025-04-13")] alias rankInfinite_iff_eRk_eq_top := eRank_eq_top_iff
 
 @[simp]
 lemma eRank_eq_top [RankInfinite M] : M.eRank = ⊤ :=
