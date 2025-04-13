@@ -528,7 +528,7 @@ variable {ι : Type*}
 
 /-- `Function.eval` as a `NonUnitalStarAlgHom`. -/
 @[simps]
-def Pi.evalNonUnitalStarAlgHom (R : Type*) (A : ι → Type*) (i : ι) [Monoid R]
+def _root_.Pi.evalNonUnitalStarAlgHom (R : Type*) (A : ι → Type*) (i : ι) [Monoid R]
     [∀ i, NonUnitalNonAssocSemiring (A i)] [∀ i, DistribMulAction R (A i)] [∀ i, Star (A i)] :
     (∀ i, A i) →⋆ₙₐ[R] A i :=
   { Pi.evalMulHom A i, Pi.evalAddHom A i with
@@ -538,7 +538,7 @@ def Pi.evalNonUnitalStarAlgHom (R : Type*) (A : ι → Type*) (i : ι) [Monoid R
 
 /-- `Function.eval` as a `StarAlgHom`. -/
 @[simps]
-def Pi.evalStarAlgHom (R : Type*) (A : ι → Type*) (i : ι) [CommSemiring R]
+def _root_.Pi.evalStarAlgHom (R : Type*) (A : ι → Type*) (i : ι) [CommSemiring R]
     [∀ i, Semiring (A i)] [∀ i, Algebra R (A i)] [∀ i, Star (A i)] :
     (∀ i, A i) →⋆ₐ[R] A i :=
   { Pi.evalNonUnitalStarAlgHom R A i, Pi.evalRingHom A i with

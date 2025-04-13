@@ -6,6 +6,7 @@ Authors: Frédéric Dupuis
 
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
 import Mathlib.Algebra.Algebra.Spectrum.Pi
+import Mathlib.Algebra.Star.StarAlgHom
 
 /-! # The continuous functional calculus on product types
 
@@ -16,10 +17,12 @@ FIXME
 
 section nonunital_pi
 
-variable {ι R S : Type*} {A : ι → Type*} [CommSemiring R] [Nontrivial R] [StarRing R] [MetricSpace R]
+variable {ι R S : Type*} {A : ι → Type*} [CommSemiring R] [Nontrivial R] [StarRing R]
+  [MetricSpace R]
   [IsTopologicalSemiring R] [ContinuousStar R] [CommRing S] [Algebra R S]
-  [∀ i, NonUnitalRing (A i)] [∀ i, Module S (A i)] [∀ i, Module R (A i)] [∀ i, IsScalarTower R S (A i)]
-  [∀ i, SMulCommClass R (A i) (A i)] [∀ i, IsScalarTower R (A i) (A i)]
+  [∀ i, NonUnitalRing (A i)] [∀ i, Module S (A i)] [∀ i, Module R (A i)]
+  [∀ i, IsScalarTower R S (A i)] [∀ i, SMulCommClass R (A i) (A i)]
+  [∀ i, IsScalarTower R (A i) (A i)]
   [∀ i, StarRing (A i)] [∀ i, TopologicalSpace (A i)] {p : (∀ i, A i) → Prop}
   {q : (i : ι) → A i → Prop}
   [NonUnitalContinuousFunctionalCalculus R (∀ i, A i) p]
@@ -122,5 +125,3 @@ lemma Prod.cfc_eq (f : R → R) (a : A) (b : B) (hf : ContinuousOn f (spectrum R
     exact φ.map_cfc f ⟨a, b⟩ (by rwa [Prod.spectrum_eq]) continuous_snd hab hb
 
 end unital_prod
-
-
