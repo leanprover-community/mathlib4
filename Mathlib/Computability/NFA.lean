@@ -138,7 +138,8 @@ theorem mem_unstep {s t : σ} {a : α} : s ∈ M.unstep t a ↔ t ∈ M.step s a
 
 /-- Reversed analog of `M.stepSet S a`:
   `M.unstepSet S a` is the union of `unstep M s a` for all `s ∈ S`.
-  It computes the paths in `M` in reverse starting from `S`. -/
+  It computes the set of states that have a transition in `M`
+  to a state in `S`. -/
 def unstepSet (S : Set σ) (a : α) : Set σ :=
   ⋃ s ∈ S, M.unstep s a
 
