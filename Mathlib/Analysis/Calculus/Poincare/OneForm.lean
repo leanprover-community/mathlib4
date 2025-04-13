@@ -32,6 +32,10 @@ theorem HasFDerivWithinAt.comp_hasFDerivAt {𝕜 E F G : Type*} [NontriviallyNor
     (hf : HasFDerivAt f f' a) (hfs : ∀ᶠ x in 𝓝 a, f x ∈ s) : HasFDerivAt (g ∘ f) (g' ∘L f') a :=
   (hg.comp a hf.hasFDerivWithinAt (mapsTo_preimage f s)).hasFDerivAt hfs
 
+@[simp]
+theorem Path.extend_cast {X : Type*} [TopologicalSpace X] {x y x' y' : X} (γ : Path x y)
+    (hx : x' = x) (hy : y' = y) : (γ.cast hx hy).extend = γ.extend := rfl
+
 theorem Path.extend_trans_of_le_half {X : Type*} [TopologicalSpace X] {x y z : X} (γ₁ : Path x y)
     (γ₂ : Path y z) {t : ℝ} (ht : t ≤ 1 / 2) : (γ₁.trans γ₂).extend t = γ₁.extend (2 * t) := by
   cases le_total t 0 with
@@ -172,6 +176,22 @@ theorem pathIntegralFun_refl (ω : E → E →L[ℝ] F) (a : E) : pathIntegralFu
   simp [pathIntegralFun]
 
 @[simp]
+theorem pathIntegralFun_cast (ω : E → E →L[ℝ] F) (γ : Path a b) (hc : c = a) (hd : d = b) :
+    pathIntegralFun ω (γ.cast hc hd) = pathIntegralFun ω γ :=
+  rfl
+
+@[simp]
+theorem pathIntegral_cast (ω : E → E →L[ℝ] F) (γ : Path a b) (hc : c = a) (hd : d = b) :
+    pathIntegral ω (γ.cast hc hd) = pathIntegral ω γ :=
+  rfl
+
+@[simp]
+theorem PathIntegrable.cast_iff {ω : E → E →L[ℝ] F} {γ : Path a b} (hc : c = a) (hd : d = b) :
+    PathIntegrable ω (γ.cast hc hd) ↔ PathIntegrable ω γ := .rfl
+
+protected alias ⟨_, PathIntegrable.cast⟩ := PathIntegrable.cast_iff
+
+@[simp]
 theorem pathIntegral_refl (ω : E → E →L[ℝ] F) (a : E) : pathIntegral ω (.refl a) = 0 := by
   simp [pathIntegral]
 
@@ -292,14 +312,15 @@ theorem integral_divergence_prod_Icc_of_hasFDerivAt_of_le (f g : ℝ × ℝ → 
 
 attribute [fun_prop] Continuous.IccExtend
 
-theorem Path.Homotopy.pathIntegral_add_pathIntegral_eq_of_hasFDerivWithinAt_of_contDiffOn
+theorem ContinuousMap.Homotopy.pathIntegral_add_pathIntegral_eq_of_hasFDerivWithinAt_of_contDiffOn
     {ω : E → E →L[ℝ] F} {dω : E → E →L[ℝ] E →L[ℝ] F} {γ₁ : Path a b} {γ₂ : Path c d} {s : Set E}
     (φ : γ₁.toContinuousMap.Homotopy γ₂) (hω : ∀ x ∈ s, HasFDerivWithinAt ω (dω x) s x)
-    (hdω : ∀ x ∈ s, ∀ a b, dω x a b = dω x b a) (hφs : ∀ a, φ a ∈ s)
+    (hdω : ∀ x ∈ s, ∀ a ∈ tangentConeAt ℝ s x, ∀ b ∈ tangentConeAt ℝ s x, dω x a b = dω x b a)
+    (hφs : ∀ a, φ a ∈ s)
     (hF : ContDiffOn ℝ 2 (fun xy : ℝ × ℝ ↦ IccExtend zero_le_one (φ.extend xy.1) xy.2) (I ×ˢ I)) :
     pathIntegral ω γ₁ + pathIntegral ω (φ.evalAt 1) =
       pathIntegral ω γ₂ + pathIntegral ω (φ.evalAt 0) := by
-  set ψ : ℝ × ℝ → E := fun xy : ℝ × ℝ ↦ IccExtend zero_le_one (φ.extend xy.1) xy.2
+  set ψ : ℝ × ℝ → E := fun xy : ℝ × ℝ ↦ Set.IccExtend zero_le_one (φ.extend xy.1) xy.2
   have hψs : ∀ a, ψ a ∈ s := fun _ ↦ hφs _
   set U : Set (ℝ × ℝ) := Ioo 0 1 ×ˢ Ioo 0 1 with hU
   have hUI' : interior (Icc 0 1) = U := by
@@ -351,8 +372,21 @@ theorem Path.Homotopy.pathIntegral_add_pathIntegral_eq_of_hasFDerivWithinAt_of_c
     · exact ha
     · exact (hdψ _ ha).hasFDerivWithinAt.mono interior_subset
   have hdη_symm : ∀ a ∈ Icc 0 1, ∀ x y, dη a x y = dη a y x := by
-    intro a ha x y
-    simp [dη, hdω (ψ a) (hψs a) (dψ a x), hd2ψ_symm a ha x y]
+    intro a ha
+    set S := Submodule.span ℝ (tangentConeAt ℝ s (ψ a))
+    have H₁ : ∀ x ∈ S, ∀ y ∈ S, dω (ψ a) x y = dω (ψ a) y x := by
+      intro x hx y hy
+      induction hx, hy using Submodule.span_induction₂ with
+      | mem_mem x y hx hy => exact hdω (ψ a) (hψs a) _ hx _ hy
+      | zero_left => simp
+      | zero_right => simp
+      | add_left => simp [*]
+      | add_right => simp [*]
+      | smul_left => simp [*]
+      | smul_right => simp [*]
+    have H₂ (z) : dψ a z ∈ S := by sorry
+    intro x y
+    simp [dη, H₁ _ (H₂ x) _ (H₂ y), hd2ψ_symm a ha x y]
   have hdiv : EqOn (fun a : ℝ × ℝ ↦ f' a (1, 0) + g' a (0, 1)) 0 (Icc 0 1) := by
     intro a ha
     simp [f', g', hdη_symm a ha (1, 0)]
@@ -365,26 +399,67 @@ theorem Path.Homotopy.pathIntegral_add_pathIntegral_eq_of_hasFDerivWithinAt_of_c
     have hφ₀ : φ.extend 0 = γ₁ := by
       ext
       apply φ.extend_apply_of_le_zero le_rfl
-    have hfi (s : I) : ∫ t in (0)..1, f (s, t) = pathIntegral ω ⟨φ.extend s, rfl, rfl⟩ := by
-      apply intervalIntegral.integral_congr_ae_restrict
-      rw [uIoc_of_le zero_le_one, ← restrict_Ioo_eq_restrict_Ioc]
-      refine ae_restrict_of_forall_mem measurableSet_Ioo fun t ht ↦ ?_
+    have hfi (s : ℝ) (hs : s ∈ I) :
+        ∫ t in (0)..1, f (s, t) = pathIntegral ω ⟨φ.extend s, rfl, rfl⟩ := by
+      apply intervalIntegral.integral_congr
+      intro t ht
+      rw [uIcc_of_le zero_le_one] at ht
       simp only [ContinuousLinearMap.comp_apply, pathIntegralFun, f, η, dψ]
       congr 1
       have : HasDerivWithinAt (fun u : ℝ ↦ ((s : ℝ), u)) (0, 1) I t :=
         (hasDerivWithinAt_const _ _ _).prodMk (hasDerivWithinAt_id _ _)
-      rw [← this.derivWithin (uniqueDiffOn_Icc_zero_one _ <| Ioo_subset_Icc_self ht),
-        ← fderivWithin_comp_derivWithin]
+      rw [← this.derivWithin (uniqueDiffOn_Icc_zero_one _ ht), ← fderivWithin_comp_derivWithin]
       · rfl
       · refine hF.differentiableOn (by decide) _ ?_
         rw [← Icc_prod_Icc]
-        exact ⟨s.2, Ioo_subset_Icc_self ht⟩
+        exact ⟨hs, ht⟩
       · exact this.differentiableWithinAt
+      · intro u hu
+        rw [← Icc_prod_Icc]
+        exact ⟨hs, hu⟩
     have hf₀ : ∫ t in (0)..1, f (0, t) = pathIntegral ω γ₁ := by
-      rw [← unitInterval.coe_zero, hfi]
-      
+      rw [hfi 0 (by simp)]
+      simp [pathIntegral, pathIntegralFun, Path.extend]
+    have hf₁ : ∫ t in (0)..1, f (1, t) = pathIntegral ω γ₂ := by
+      rw [hfi 1 (by simp)]
+      simp [pathIntegral, pathIntegralFun, Path.extend]
+    have hgt (s : I) : pathIntegral ω (φ.evalAt s) = -∫ t in (0)..1, g (t, s) := by
+      rw [← intervalIntegral.integral_neg]
+      apply intervalIntegral.integral_congr
+      intro t ht
+      rw [uIcc_of_le zero_le_one] at ht
+      simp only [ContinuousLinearMap.comp_apply, pathIntegralFun, g, η, dψ, neg_neg]
+      congr 1
+      · simp [ψ]
+      · have : HasDerivWithinAt (fun u : ℝ ↦ (u, (s : ℝ))) (1, 0) I t :=
+          (hasDerivWithinAt_id _ _).prodMk (hasDerivWithinAt_const _ _ _)
+        rw [← this.derivWithin (uniqueDiffOn_Icc_zero_one _ ht),
+          ← fderivWithin_comp_derivWithin (f := (·, s.1))]
+        · simp [comp_def, ψ]
+        · refine hF.differentiableOn (by decide) _ ?_
+          rw [← Icc_prod_Icc]
+          exact ⟨ht, s.2⟩
+        · exact this.differentiableWithinAt
+        · intro u hu
+          rw [← Icc_prod_Icc]
+          exact ⟨hu, s.2⟩
+    rw [← hf₀, ← hf₁, hgt, hgt]
+    linear_combination (norm := {dsimp; abel}) this
   · rw [integrableOn_congr_fun hdiv measurableSet_Icc]
     exact integrableOn_zero
-    -- (fun a ha ↦ (ContinuousLinearMap.apply ℝ _ (1, 0)).hasFDerivAt.comp a (hη a ha))
+
+@[simps]
+def Path.segment (a b : E) : Path a b where
+  toFun t := AffineMap.lineMap a b t.1
+  continuous_toFun := by dsimp [AffineMap.lineMap_apply]; fun_prop
+  source' := by simp
+  target' := by simp
+  
+def ContinuousMap.Homotopy.linear {X : Type*} [TopologicalSpace X] (f g : C(X, E)) :
+    f.Homotopy g where
+  toFun x := Path.segment (f x.2) (g x.2) x.1
+  continuous_toFun := by dsimp [AffineMap.lineMap_apply]; fun_prop
+  map_zero_left := by simp
+  map_one_left := by simp
 
 end PathIntegral

@@ -73,7 +73,13 @@ protected theorem Path.ext : ∀ {γ₁ γ₂ : Path x y}, (γ₁ : I → X) = �
 
 namespace Path
 
+/-- A path constructed from a continuous map `f` has the same underlying function.
+
+Before 2025-04-13, this lemma used to be a misnamed specification of `ContinuousMap.coe_coe`
+to `Path _ _`. -/
 @[simp]
+theorem coe_mk (f : C(I, X)) (h₁ h₂) : ⇑(mk f h₁ h₂ : Path x y) = f := rfl
+
 theorem coe_mk_mk (f : I → X) (h₁) (h₂ : f 0 = x) (h₃ : f 1 = y) :
     ⇑(mk ⟨f, h₁⟩ h₂ h₃ : Path x y) = f :=
   rfl
@@ -101,10 +107,6 @@ initialize_simps_projections Path (toFun → simps.apply, -toContinuousMap)
 
 @[simp]
 theorem coe_toContinuousMap : ⇑γ.toContinuousMap = γ :=
-  rfl
-
-@[simp]
-theorem coe_mk : ⇑(γ : C(I, X)) = γ :=
   rfl
 
 /-- Any function `φ : Π (a : α), Path (x a) (y a)` can be seen as a function `α × I → X`. -/
