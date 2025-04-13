@@ -537,7 +537,9 @@ def openClassicalLinter : Linter where run stx := do
         Linter.logLint linter.style.openClassical stx s!"please do not add '{id.raw.getId}' \
         as a local or scoped instance:\nthis can hide theorem statements \
         which would be better stated with explicit decidability statements.\n\
-        Instead, use `open scoped Classical in` for definitions or instances and \
+        A local instance at default priority also overrides other better decidability instances.\n\
+        Instead, specify an instance priority, or \
+        use `open scoped Classical in` for definitions or instances and \
         the `classical` tactic for proofs.\nFor theorem statements, \
         either add missing decidability assumptions or use `open scoped Classical in`."
 
