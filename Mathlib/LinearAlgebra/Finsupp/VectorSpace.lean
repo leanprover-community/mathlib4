@@ -30,7 +30,7 @@ section Ring
 variable {R : Type*} {M : Type*} {ι : Type*}
 variable [Ring R] [AddCommGroup M] [Module R M]
 
-theorem linearIndependent_single {φ : ι → Type*} {f : ∀ ι, φ ι → M}
+theorem linearIndependent_single {φ : ι → Type*} (f : ∀ ι, φ ι → M)
     (hf : ∀ i, LinearIndependent R (f i)) :
     LinearIndependent R fun ix : Σi, φ i => single ix.1 (f ix.1 ix.2) := by
   apply @linearIndependent_iUnion_finite R _ _ _ _ ι φ fun i x => single i (f i x)
@@ -49,11 +49,24 @@ theorem linearIndependent_single {φ : ι → Type*} {f : ∀ ι, φ ι → M}
       rw [span_le, range_coe]
       apply range_comp_subset_range _ (lsingle i)
 
+lemma linearIndependent_single_iff {φ : ι → Type*} {f : ∀ ι, φ ι → M} :
+    LinearIndependent R (fun ix : Σ i, φ i ↦ single ix.1 (f ix.1 ix.2)) ↔
+      ∀ i, LinearIndependent R (f i) := by
+  refine ⟨fun h i => ?_, linearIndependent_single _⟩
+  replace h := h.comp _ (sigma_mk_injective  (i := i))
+  exact .of_comp (Finsupp.lsingle i) h
+
 variable (ι R) in
 lemma linearIndependent_single_one : LinearIndependent R fun i : ι ↦ single i (1 : R) := by
   rw [← linearIndependent_equiv (Equiv.sigmaPUnit ι)]
   exact linearIndependent_single (f := fun (_ : ι) (_ : Unit) ↦ (1 : R)) <| by
     simp +contextual [Fintype.linearIndependent_iff]
+
+lemma linearIndependent_single_of_ne_zero [NoZeroSMulDivisors R M] [DecidableEq ι] {v : ι → M}
+    (hv : ∀ i, v i ≠ 0) : LinearIndependent R fun i : ι ↦ single i (v i) := by
+  rw [← linearIndependent_equiv (Equiv.sigmaPUnit ι)]
+  exact linearIndependent_single (f := fun i (_ : Unit) ↦ v i) <| by
+    simp +contextual [Fintype.linearIndependent_iff, hv]
 
 end Ring
 

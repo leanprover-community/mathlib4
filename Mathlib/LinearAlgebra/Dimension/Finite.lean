@@ -550,8 +550,21 @@ end RankOne
 namespace Module
 variable {ι : Type*}
 
-@[simp] lemma finite_finsupp [StrongRankCondition R] : Module.Finite R (ι →₀ R) ↔ Finite ι where
-  mp _ := (Finsupp.linearIndependent_single_one R ι).finite
-  mpr _ := inferInstance
+@[simp] lemma finite_finsupp [StrongRankCondition R] [Module.Free R M] [NoZeroSMulDivisors R M] :
+    Module.Finite R (ι →₀ M) ↔ IsEmpty ι ∨ Subsingleton M ∨ Module.Finite R M ∧ Finite ι where
+  mp _ := by
+    obtain _ | ⟨⟨i⟩⟩ := isEmpty_or_nonempty ι
+    · simp [*]
+    cases subsingleton_or_nontrivial M
+    · simp [*]
+    classical
+    refine .inr <| .inr ⟨?_, ?_⟩
+    · exact .of_surjective _ (Finsupp.lapply_surjective (R := R) (M := M) i)
+    · obtain ⟨x, hx⟩ := exists_ne (0 : M)
+      exact (Finsupp.linearIndependent_single_of_ne_zero (R := R) fun _ ↦ hx).finite
+  mpr
+  | .inl _ => inferInstance
+  | .inr <| .inl h => inferInstance
+  | .inr <| .inr h => by cases h; infer_instance
 
 end Module
