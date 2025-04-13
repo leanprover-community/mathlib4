@@ -787,37 +787,25 @@ def edgeSet {u v : V} (p : G.Walk u v) : Set (Sym2 V) := {e | e ∈ p.edges}
 lemma mem_edgeSet {u v : V} {p : G.Walk u v} {e : Sym2 V} : e ∈ p.edgeSet ↔ e ∈ p.edges := Iff.rfl
 
 @[simp]
-lemma edgeSet_nil (u : V) : (nil : G.Walk u u).edgeSet = ∅ := by
-  ext
-  simp
+lemma edgeSet_nil (u : V) : (nil : G.Walk u u).edgeSet = ∅ := by ext; simp
 
 @[simp]
-lemma edgeSet_reverse {u v : V} (p : G.Walk u v) : p.reverse.edgeSet = p.edgeSet := by
-  ext
-  simp
+lemma edgeSet_reverse {u v : V} (p : G.Walk u v) : p.reverse.edgeSet = p.edgeSet := by ext; simp
 
 @[simp]
 theorem edgeSet_cons {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
-    (cons h p).edgeSet = insert s(u, v) p.edgeSet := by
-  ext
-  simp
+    (cons h p).edgeSet = insert s(u, v) p.edgeSet := by ext; simp
 
 @[simp]
 theorem edgeSet_concat {u v w : V} (p : G.Walk u v) (h : G.Adj v w) :
-    (p.concat h).edgeSet = insert s(v, w) p.edgeSet := by
-  ext
-  simp [or_comm]
+    (p.concat h).edgeSet = insert s(v, w) p.edgeSet := by ext; simp [or_comm]
 
 theorem edgeSet_append {u v w : V} (p : G.Walk u v) (q : G.Walk v w) :
-    (p.append q).edgeSet = p.edgeSet ∪ q.edgeSet := by
-  ext
-  simp
+    (p.append q).edgeSet = p.edgeSet ∪ q.edgeSet := by ext; simp
 
 @[simp]
 theorem edgeSet_copy {u v u' v'} (p : G.Walk u v) (hu : u = u') (hv : v = v') :
-    (p.copy hu hv).edgeSet = p.edgeSet := by
-  ext
-  simp
+    (p.copy hu hv).edgeSet = p.edgeSet := by ext; simp
 
 theorem coe_edges_toFinset [DecidableEq V] {u v : V} (p : G.Walk u v) :
     (p.edges.toFinset : Set (Sym2 V)) = p.edgeSet := by
@@ -1166,9 +1154,7 @@ theorem edges_map : (p.map f).edges = p.edges.map (Sym2.map f) := by
       true_and, ih]
 
 @[simp]
-theorem edgeSet_map : (p.map f).edgeSet = (Sym2.map f) '' p.edgeSet := by
-  ext
-  simp
+theorem edgeSet_map : (p.map f).edgeSet = Sym2.map f '' p.edgeSet := by ext; simp
 
 theorem map_injective_of_injective {f : G →g G'} (hinj : Function.Injective f) (u v : V) :
     Function.Injective (Walk.map f : G.Walk u v → G'.Walk (f u) (f v)) := by
@@ -1220,9 +1206,7 @@ theorem edges_transfer (hp) : (p.transfer H hp).edges = p.edges := by
   induction p <;> simp [*]
 
 @[simp]
-theorem edgeSet_transfer (hp) : (p.transfer H hp).edgeSet = p.edgeSet := by
-  ext
-  simp
+theorem edgeSet_transfer (hp) : (p.transfer H hp).edgeSet = p.edgeSet := by ext; simp
 
 @[simp]
 theorem support_transfer (hp) : (p.transfer H hp).support = p.support := by
