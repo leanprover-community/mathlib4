@@ -216,7 +216,7 @@ lemma reverse.startsToSpec (xs : List α) (M : NFA α σ) :
   apply reverse.rewindFromSpec
 
 theorem reverse.Spec (M : NFA α σ) :
-  M.reverse.accepts = { xs : List α | xs.reverse ∈ M.accepts } := by
+    M.reverse.accepts = { xs : List α | xs.reverse ∈ M.accepts } := by
   ext xs
   rw [accepts_acceptsFrom, accepts_acceptsFrom, spec_from, Set.mem_setOf]
   apply reverse.startsToSpec
