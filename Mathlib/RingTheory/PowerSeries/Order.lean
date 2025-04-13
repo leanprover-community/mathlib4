@@ -377,11 +377,6 @@ theorem order_pow [Nontrivial R] (φ : R⟦X⟧) (n : ℕ) :
   | succ n hn =>
     simp only [add_smul, one_smul, pow_succ, order_mul, hn]
 
-theorem mul_X_pow_eq_X_pow_mul {R : Type*} [Semiring R] {f : R⟦X⟧} {n : ℕ} :
-    f * X ^ n = X ^ n * f := by
-  rw [← commute_iff_eq]
-  refine Commute.pow_right (commute_X f) n
-
 end NoZeroDivisors
 
 section OrderIsDomain

@@ -211,6 +211,11 @@ def X : R⟦X⟧ :=
 theorem commute_X (φ : R⟦X⟧) : Commute φ X :=
   MvPowerSeries.commute_X _ _
 
+theorem mul_X_pow_eq_X_pow_mul {φ : R⟦X⟧} {n : ℕ} :
+    φ * X ^ n = X ^ n * φ := by
+  rw [← commute_iff_eq]
+  exact Commute.pow_right (commute_X φ) n
+
 @[simp]
 theorem coeff_zero_eq_constantCoeff : ⇑(coeff R 0) = constantCoeff R := by
   rw [coeff, Finsupp.single_zero]
