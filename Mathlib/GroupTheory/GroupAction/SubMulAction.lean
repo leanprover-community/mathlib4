@@ -87,10 +87,14 @@ variable [SMul R M] [SetLike S M] [hS : SMulMemClass S R M] (s : S)
 instance (priority := 50) smul : SMul R s :=
   ⟨fun r x => ⟨r • x.1, smul_mem r x.2⟩⟩
 
+instance (priority := 50) [SMul T M] [SMulMemClass S T M] [SMulCommClass T R M] :
+    SMulCommClass T R s where
+  smul_comm _ _ _ := Subtype.ext (smul_comm ..)
+
 /-- This can't be an instance because Lean wouldn't know how to find `N`, but we can still use
 this to manually derive `SMulMemClass` on specific types. -/
-theorem _root_.SMulMemClass.ofIsScalarTower (S M N α : Type*) [SetLike S α] [SMul M N]
-    [SMul M α] [Monoid N] [MulAction N α] [SMulMemClass S N α] [IsScalarTower M N α] :
+@[to_additive] theorem _root_.SMulMemClass.ofIsScalarTower (S M N α : Type*) [SetLike S α]
+    [SMul M N] [SMul M α] [Monoid N] [MulAction N α] [SMulMemClass S N α] [IsScalarTower M N α] :
     SMulMemClass S M α :=
   { smul_mem := fun m a ha => smul_one_smul N m a ▸ SMulMemClass.smul_mem _ ha }
 
@@ -133,8 +137,9 @@ variable {N α : Type*} [SetLike S α] [SMul M N] [SMul M α] [Monoid N]
 -- lower priority so other instances are found first
 /-- A subset closed under the scalar action inherits that action. -/
 @[to_additive "A subset closed under the additive action inherits that action."]
-instance (priority := 50) smul' : SMul M s where
-  smul r x := ⟨r • x.1, smul_one_smul N r x.1 ▸ smul_mem _ x.2⟩
+instance (priority := 50) smul' : SMul M s :=
+  have := SMulMemClass.ofIsScalarTower S M N α
+  inferInstance
 
 @[to_additive (attr := simp, norm_cast)]
 protected theorem val_smul_of_tower (r : M) (x : s) : (↑(r • x) : α) = r • (x : α) :=
@@ -149,6 +154,14 @@ theorem mk_smul_of_tower_mk (r : M) (x : α) (hx : x ∈ s) :
 theorem smul_of_tower_def (r : M) (x : s) :
     r • x = ⟨r • x, smul_one_smul N r x.1 ▸ smul_mem _ x.2⟩ :=
   rfl
+
+instance (priority := 50) [SMulCommClass M N α] : SMulCommClass M N s :=
+  have := SMulMemClass.ofIsScalarTower S M N α
+  inferInstance
+
+instance (priority := 50) [SMulCommClass N M α] : SMulCommClass N M s :=
+  have := SMulMemClass.ofIsScalarTower S M N α
+  inferInstance
 
 end OfTower
 
