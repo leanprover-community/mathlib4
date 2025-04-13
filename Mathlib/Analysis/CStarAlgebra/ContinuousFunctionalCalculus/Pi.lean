@@ -35,8 +35,10 @@ variable {ι R S : Type*} {A : ι → Type*} [CommSemiring R] [Nontrivial R] [St
   [∀ i, ContinuousMapZero.UniqueHom R (A i)]
 
 include S in
-lemma cfcₙ_map_pi (f : R → R) (a : ∀ i, A i) (hf : ContinuousOn f (⋃ i, quasispectrum R (a i)))
-    (ha : p a) (ha' : ∀ i, q i (a i)) : cfcₙ f a = fun i => cfcₙ f (a i) := by
+lemma cfcₙ_map_pi (f : R → R) (a : ∀ i, A i)
+    (hf : ContinuousOn f (⋃ i, quasispectrum R (a i)) := by cfc_cont_tac)
+    (ha : p a := by cfc_tac) (ha' : ∀ i, q i (a i) := by cfc_tac) :
+    cfcₙ f a = fun i => cfcₙ f (a i) := by
   by_cases hempty : Nonempty ι
   · by_cases hf₀ : f 0 = 0
     · ext i
@@ -65,8 +67,8 @@ variable {A B R S : Type*} [CommSemiring R] [CommRing S] [Nontrivial R] [StarRin
 
 include S in
 lemma cfcₙ_map_prod (f : R → R) (a : A) (b : B)
-    (hf : ContinuousOn f (quasispectrum R a ∪ quasispectrum R b))
-    (hab : pab ⟨a, b⟩) (ha : pa a) (hb : pb b) :
+    (hf : ContinuousOn f (quasispectrum R a ∪ quasispectrum R b) := by cfc_cont_tac)
+    (hab : pab ⟨a, b⟩ := by cfc_tac) (ha : pa a := by cfc_tac) (hb : pb b := by cfc_tac) :
     cfcₙ f (⟨a, b⟩ : A × B) = ⟨cfcₙ f a, cfcₙ f b⟩ := by
   by_cases hf₀ : f 0 = 0
   case pos =>
@@ -95,8 +97,10 @@ variable {ι R S : Type*} {A : ι → Type*} [CommSemiring R] [StarRing R] [Metr
   [∀ i, ContinuousMap.UniqueHom R (A i)]
 
 include S in
-lemma cfc_map_pi (f : R → R) (a : ∀ i, A i) (hf : ContinuousOn f (⋃ i, spectrum R (a i)))
-    (ha : p a) (ha' : ∀ i, q i (a i)) : cfc f a = fun i => cfc f (a i) := by
+lemma cfc_map_pi (f : R → R) (a : ∀ i, A i)
+    (hf : ContinuousOn f (⋃ i, spectrum R (a i)) := by cfc_cont_tac)
+    (ha : p a := by cfc_tac) (ha' : ∀ i, q i (a i) := by cfc_tac) :
+    cfc f a = fun i => cfc f (a i) := by
   ext i
   let φ := Pi.evalStarAlgHom S A i
   exact φ.map_cfc f a (by rwa [Pi.spectrum_eq]) (continuous_apply i) ha (ha' i)
@@ -116,8 +120,9 @@ variable {A B R S : Type*} [CommSemiring R] [StarRing R] [MetricSpace R]
   [ContinuousMap.UniqueHom R A] [ContinuousMap.UniqueHom R B]
 
 include S in
-lemma cfc_map_prod (f : R → R) (a : A) (b : B) (hf : ContinuousOn f (spectrum R a ∪ spectrum R b))
-    (hab : pab ⟨a, b⟩) (ha : pa a) (hb : pb b) :
+lemma cfc_map_prod (f : R → R) (a : A) (b : B)
+    (hf : ContinuousOn f (spectrum R a ∪ spectrum R b) := by cfc_cont_tac)
+    (hab : pab ⟨a, b⟩ := by cfc_tac) (ha : pa a := by cfc_tac) (hb : pb b := by cfc_tac) :
     cfc f (⟨a, b⟩ : A × B) = ⟨cfc f a, cfc f b⟩ := by
   ext
   case fst =>

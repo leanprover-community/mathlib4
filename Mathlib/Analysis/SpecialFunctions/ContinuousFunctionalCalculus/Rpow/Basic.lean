@@ -164,23 +164,24 @@ lemma nnrpow_inv_eq (a b : A) {x : ℝ≥0} (hx : x ≠ 0) (ha : 0 ≤ a := by c
   ⟨fun h ↦ nnrpow_inv_nnrpow a hx ▸ congr($(h) ^ x).symm,
     fun h ↦ nnrpow_nnrpow_inv b hx ▸ congr($(h) ^ x⁻¹).symm⟩
 
-/- Note that there is a diamond for `HPow (A × B) ℝ≥0` coming from the `HPow` instance for
-products, hence the direct use of `nnrpow` here. -/
-lemma nnrpow_map_prod {a : A} {b : B} {x : ℝ≥0} (ha : 0 ≤ a) (hb : 0 ≤ b) :
+/- Note that there is higher-priority instance of `Pow (A × B) ℝ≥0` coming from the `Pow` instance
+for products, hence the direct use of `nnrpow` here. -/
+lemma nnrpow_map_prod {a : A} {b : B} {x : ℝ≥0}
+    (ha : 0 ≤ a := by cfc_tac) (hb : 0 ≤ b := by cfc_tac) :
     nnrpow (⟨a, b⟩ : A × B) x = ⟨a ^ x, b ^ x⟩ := by
   simp only [nnrpow_def]
   unfold nnrpow
-  refine cfcₙ_map_prod (S := ℝ) _ a b (by fun_prop) ?_ ha hb
+  refine cfcₙ_map_prod (S := ℝ) _ a b (by cfc_cont_tac) ?_
   rw [Prod.le_def]
   constructor <;> simp [ha, hb]
 
-/- Note that there is a diamond for `HPow (∀ i, B i) ℝ≥0` coming from the `HPow` instance for
-pi types, hence the direct use of `nnrpow` here. -/
-lemma nnrpow_map_pi {c : ∀ i, C i} {x : ℝ≥0} (hc : ∀ i, 0 ≤ c i) :
+/- Note that there is higher-priority instance of `Pow (∀ i, C i) ℝ≥0` coming from the `Pow`
+instance for pi types, hence the direct use of `nnrpow` here. -/
+lemma nnrpow_map_pi {c : ∀ i, C i} {x : ℝ≥0} (hc : ∀ i, 0 ≤ c i := by cfc_tac) :
     nnrpow c x = fun i => (c i) ^ x := by
   simp only [nnrpow_def]
   unfold nnrpow
-  exact cfcₙ_map_pi (S := ℝ) _ c (by fun_prop) hc hc
+  exact cfcₙ_map_pi (S := ℝ) _ c
 
 end Unique
 
@@ -242,15 +243,15 @@ lemma sqrt_eq_iff (a b : A) (ha : 0 ≤ a := by cfc_tac) (hb : 0 ≤ b := by cfc
 lemma sqrt_eq_zero_iff (a : A) (ha : 0 ≤ a := by cfc_tac) : sqrt a = 0 ↔ a = 0 := by
   rw [sqrt_eq_iff a _, mul_zero, eq_comm]
 
-lemma sqrt_map_prod {a : A} {b : B} (ha : 0 ≤ a) (hb : 0 ≤ b) :
+lemma sqrt_map_prod {a : A} {b : B} (ha : 0 ≤ a := by cfc_tac) (hb : 0 ≤ b := by cfc_tac) :
     sqrt (⟨a, b⟩ : A × B) = ⟨sqrt a, sqrt b⟩ := by
   simp only [sqrt_eq_nnrpow]
-  exact nnrpow_map_prod ha hb
+  exact nnrpow_map_prod
 
-lemma sqrt_map_pi {c : ∀ i, C i} (hc : ∀ i, 0 ≤ c i) :
+lemma sqrt_map_pi {c : ∀ i, C i} (hc : ∀ i, 0 ≤ c i := by cfc_tac) :
     sqrt c = fun i => sqrt (c i) := by
   simp only [sqrt_eq_nnrpow]
-  exact nnrpow_map_pi hc
+  exact nnrpow_map_pi
 
 end sqrt
 
@@ -374,24 +375,25 @@ section prod_pi
 variable [IsTopologicalRing A] [T2Space A] [IsTopologicalRing B] [T2Space B]
   [∀ i, IsTopologicalRing (C i)] [∀ i, T2Space (C i)]
 
-/- Note that there is a diamond for `HPow (A × B) ℝ` coming from the `HPow` instance for
+/- Note that there is higher-priority instance of `Pow (A × B) ℝ` coming from the `Pow` instance for
 products, hence the direct use of `rpow` here. -/
 lemma rpow_map_prod {a : A} {b : B} {x : ℝ} (ha : 0 ∉ spectrum ℝ≥0 a) (hb : 0 ∉ spectrum ℝ≥0 b)
-    (ha' : 0 ≤ a) (hb' : 0 ≤ b) :
+    (ha' : 0 ≤ a := by cfc_tac) (hb' : 0 ≤ b := by cfc_tac) :
     rpow (⟨a, b⟩ : A × B) x = ⟨a ^ x, b ^ x⟩ := by
   simp only [rpow_def]
   unfold rpow
-  refine cfc_map_prod (R := ℝ≥0) (S := ℝ) _ a b (by cfc_cont_tac) ?_ ha' hb'
+  refine cfc_map_prod (R := ℝ≥0) (S := ℝ) _ a b (by cfc_cont_tac) ?_
   rw [Prod.le_def]
   constructor <;> simp [ha', hb']
 
-/- Note that there is a diamond for `HPow (∀ i, B i) ℝ` coming from the `HPow` instance for
-pi types, hence the direct use of `rpow` here. -/
-lemma rpow_map_pi {c : ∀ i, C i} {x : ℝ} (hc : ∀ i, 0 ∉ spectrum ℝ≥0 (c i)) (hc' : ∀ i, 0 ≤ c i) :
+/- Note that there is a higher-priority instance of `Pow (∀ i, B i) ℝ` coming from the `Pow`
+instance for pi types, hence the direct use of `rpow` here. -/
+lemma rpow_map_pi {c : ∀ i, C i} {x : ℝ} (hc : ∀ i, 0 ∉ spectrum ℝ≥0 (c i))
+    (hc' : ∀ i, 0 ≤ c i := by cfc_tac) :
     rpow c x = fun i => (c i) ^ x := by
   simp only [rpow_def]
   unfold rpow
-  exact cfc_map_pi (S := ℝ) _ c (by cfc_cont_tac) hc' hc'
+  exact cfc_map_pi (S := ℝ) _ c
 
 end prod_pi
 
@@ -457,10 +459,10 @@ lemma rpow_sqrt_nnreal {a : A} {x : ℝ≥0}
     (ha : 0 ≤ a := by cfc_tac) : (sqrt a) ^ (x : ℝ) = a ^ (x / 2 : ℝ) := by
   by_cases hx : x = 0
   case pos =>
-    have ha' : 0 ≤ sqrt a := by exact sqrt_nonneg
+    have ha' : 0 ≤ sqrt a := sqrt_nonneg
     simp [hx, rpow_zero _ ha', rpow_zero _ ha]
   case neg =>
-    have h₁ : 0 ≤ (x : ℝ) := by exact NNReal.zero_le_coe
+    have h₁ : 0 ≤ (x : ℝ) := NNReal.zero_le_coe
     rw [sqrt_eq_rpow, rpow_rpow_of_exponent_nonneg _ _ _ (by norm_num) h₁, one_div_mul_eq_div]
 
 end unital_vs_nonunital
