@@ -90,7 +90,9 @@ section Constructions
 variable {X : Type u} {Y : Type v} [MetricSpace X] [MetricSpace Y]
   {f : ProdSpaceFun X Y} {x y z t : X ⊕ Y}
 
+set_option linter.style.openClassical false
 attribute [local instance 10] Classical.inhabited_of_nonempty'
+set_option linter.style.openClassical true
 
 private theorem maxVar_bound [CompactSpace X] [Nonempty X] [CompactSpace Y] [Nonempty Y] :
     dist x y ≤ maxVar X Y :=
