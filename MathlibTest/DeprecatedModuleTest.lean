@@ -1,9 +1,19 @@
 import MathlibTest.DeprecatedModule
 
 /--
-warning: 'MathlibTest.DeprecatedModule' has been deprecated: please replace this import by
+warning: We can also give more details about the deprecation
+'MathlibTest.DeprecatedModule' has been deprecated: please replace this import by
 
-import Mathlib.Tactic.Basic
+import Mathlib.Tactic.Linter.DocPrime
+import Mathlib.Tactic.Linter.DocString
+
+note: this linter can be disabled with `set_option linter.deprecated.module false`
+---
+warning:
+'MathlibTest.DeprecatedModule' has been deprecated: please replace this import by
+
+import Mathlib.Tactic.Linter.DocPrime
+import Mathlib.Tactic.Linter.DocString
 
 note: this linter can be disabled with `set_option linter.deprecated.module false`
 -/
