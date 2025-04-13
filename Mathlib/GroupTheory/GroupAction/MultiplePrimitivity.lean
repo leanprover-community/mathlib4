@@ -132,24 +132,20 @@ theorem remaining_primitivity
     (hmp : IsMultiplyPreprimitive M α n) :
     IsMultiplyPreprimitive (fixingSubgroup M s) (SubMulAction.ofFixingSubgroup M s) m := by
   have _ : IsMultiplyPretransitive M α n := hmp.1
-  have hprim := hmp.2
   refine ⟨ofFixingSubgroup.isMultiplyPretransitive s hs', ?_⟩
   intro t ht
   let t' : Set α := Subtype.val '' t
-  have htt' : t = Subtype.val ⁻¹' t' := by
-    apply symm
-    apply Set.preimage_image_eq
-    exact Subtype.coe_injective
+  have htt' : t = Subtype.val ⁻¹' t' :=
+    (Set.preimage_image_eq _ Subtype.coe_injective).symm
   rw [htt']
-  have := hmp.2 s
   let f := map_ofFixingSubgroupUnion M s t'
   rw [← isPreprimitive_congr
     (fixingSubgroup_union_to_fixingSubgroup_fixingSubgroup_bijective M s t').surjective
     (map_ofFixingSubgroupUnion_bijective M s t') ]
-  apply hprim
+  apply hmp.2
   rw [Set.encard_union_eq _]
-  · rw [Subtype.coe_injective.encard_image, add_assoc, ht, hs, add_comm, Nat.cast_add]
-    rw [Set.Finite.cast_ncard_eq]
+  · rw [Subtype.coe_injective.encard_image, add_assoc, ht, hs, add_comm, Nat.cast_add,
+      Set.Finite.cast_ncard_eq]
     exact Set.toFinite s
   · rw [Set.disjoint_iff]
     intro a
