@@ -550,7 +550,7 @@ end RankOne
 namespace Module
 variable {ι : Type*}
 
-@[simp] lemma finite_finsupp [StrongRankCondition R] [Module.Free R M] [NoZeroSMulDivisors R M] :
+@[simp] lemma finite_finsupp [StrongRankCondition R] [NoZeroSMulDivisors R M] :
     Module.Finite R (ι →₀ M) ↔ IsEmpty ι ∨ Subsingleton M ∨ Module.Finite R M ∧ Finite ι where
   mp _ := by
     obtain _ | ⟨⟨i⟩⟩ := isEmpty_or_nonempty ι
