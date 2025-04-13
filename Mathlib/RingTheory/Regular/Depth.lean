@@ -232,7 +232,7 @@ lemma lemma222_3_to_4 [IsNoetherianRing R] (I : Ideal R) (n : ℕ) :
       simp only [ntr, fin, h_supp, true_and]
       intro i hi
       have := subsingleton_of_subsingleton_subsingleton
-        ((Ext.covariant_sequence_exact₃' N hxk.SMul_ShortComplex_exact) i (i + 1) rfl)
+        ((Ext.covariant_sequence_exact₃' N hxk.SMul_ShortComplex_shortExact) i (i + 1) rfl)
       exact this (h_ext i (Nat.lt_add_right 1 hi)) (h_ext (i + 1) (Nat.add_lt_add_right hi 1))
     rcases ih (ModuleCat.of R M') ntr'
       (Module.Finite.quotient R _) smul_lt' exist_N' with ⟨rs, len, mem, reg⟩
@@ -329,7 +329,7 @@ lemma lemma222_4_to_1 [IsNoetherianRing R] (I : Ideal R) (n : ℕ) (N : ModuleCa
         let g := (AddCommGrp.ofHom ((Ext.mk₀ (SMul_ShortComplex M a).f).postcomp N (add_zero i)))
         have mono_g : Mono g := by
           apply ShortComplex.Exact.mono_g (CategoryTheory.Abelian.Ext.covariant_sequence_exact₁'
-            N reg.1.SMul_ShortComplex_exact (i - 1) i (by omega)) (IsZero.eq_zero_of_src _ _)
+            N reg.1.SMul_ShortComplex_shortExact (i - 1) i (by omega)) (IsZero.eq_zero_of_src _ _)
           exact addCommGrp_isZero_of_subsingleton (ih (ModuleCat.of R M') Qntr
             (Module.Finite.quotient R _) smul_lt' exist_reg' (i - 1) lt)
         let gk := (AddCommGrp.ofHom
