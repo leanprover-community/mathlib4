@@ -129,10 +129,8 @@ theorem mem_unique : ∀ {a b : α} {o : Part α}, a ∈ o → b ∈ o → a = b
   | _, _, ⟨_, _⟩, ⟨_, rfl⟩, ⟨_, rfl⟩ => rfl
 
 theorem mem_right_unique : ∀ {a : α} {o p : Part α}, a ∈ o → a ∈ p → o = p
-  | _, ⟨_, _⟩, ⟨_, _⟩, ho, hp => by
-    ext
-    rw [mem_mk_iff] at *
-    simp only [ho.choose_spec, ho.choose, exists_const, mem_mk_iff, hp.choose_spec, hp.choose]
+  | _, _, _, ⟨ho, _⟩, ⟨hp, _⟩ => ext' (iff_of_true ho hp) (by simp [*])
+
 
 theorem Mem.left_unique : Relator.LeftUnique ((· ∈ ·) : α → Part α → Prop) := fun _ _ _ =>
   mem_unique
