@@ -250,7 +250,7 @@ protected theorem Multipliable.tprod_strict_mono (hf : Multipliable f) (hg : Mul
 protected theorem Multipliable.one_lt_tprod (hsum : Multipliable g) (hg : ∀ i, 1 ≤ g i) (i : ι)
     (hi : 1 < g i) : 1 < ∏' i, g i := by
   rw [← tprod_one]
-  exact Multipliable.tprod_lt_tprod hg hi multipliable_one hsum
+  exact multipliable_one.tprod_lt_tprod hg hi hsum
 
 @[deprecated (since := "2025-04-12")] alias tsum_pos := Summable.tsum_pos
 @[to_additive existing tsum_pos, deprecated (since := "2025-04-12")] alias one_lt_tprod :=
