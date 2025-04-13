@@ -509,4 +509,9 @@ noncomputable def strictSegal₂ : Truncated.StrictSegal ((truncation 2).obj (ne
 instance isStrictSegal₂ : Truncated.IsStrictSegal ((truncation 2).obj (nerve C)) :=
   strictSegal₂ C |>.isStrictSegal
 
+lemma mkOfObjOfMapSucc₂_δ_one
+    (obj : Fin (2 + 1) → C) (mapSucc : ∀ (i : Fin 2), obj i.castSucc ⟶ obj i.succ) :
+    (nerve C).map (δ 1).op (ComposableArrows.mkOfObjOfMapSucc obj mapSucc) =
+        ComposableArrows.mk₁ (mapSucc 0 ≫ mapSucc 1) := sorry
+
 end CategoryTheory.Nerve

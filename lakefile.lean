@@ -19,9 +19,6 @@ require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
 require "leanprover-community" / "plausible" @ git "main"
 
-require Canonical from git
-  "https://github.com/chasenorman/CanonicalLean.git"
-
 /-!
 ## Options for building mathlib
 -/

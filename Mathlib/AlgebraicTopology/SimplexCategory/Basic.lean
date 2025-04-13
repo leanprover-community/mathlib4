@@ -520,7 +520,19 @@ lemma δ_one_δ_zero_eq_const : δ (1 : Fin 2) ≫ δ (0 : Fin 3) = ⦋0⦌.cons
   fin_cases x
   rfl
 
+lemma δ_one_δ_one_eq_const : δ (1 : Fin 2) ≫ δ (1 : Fin 3) = ⦋0⦌.const ⦋2⦌ 0 := by
+  ext x
+  unfold δ
+  fin_cases x
+  rfl
+
 lemma δ_zero_δ_zero_eq_const : δ (0 : Fin 2) ≫ δ (0 : Fin 3) = ⦋0⦌.const ⦋2⦌ 2 := by
+  ext x
+  unfold δ
+  fin_cases x
+  rfl
+
+lemma δ_zero_δ_one_eq_const : δ (0 : Fin 2) ≫ δ (1 : Fin 3) = ⦋0⦌.const ⦋2⦌ 2 := by
   ext x
   unfold δ
   fin_cases x
