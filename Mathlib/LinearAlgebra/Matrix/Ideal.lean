@@ -131,7 +131,7 @@ def matrix (c : RingCon R) : RingCon (Matrix n n R) where
   add' h₁ h₂ := fun _ _ ↦ c.add (h₁ _ _) (h₂ _ _)
   mul' h₁ h₂ := fun _ _ ↦ c.finset_sum _ fun _ _ => c.mul (h₁ _ _) (h₂ _ _)
 
-@[simp]
+@[simp low]
 theorem matrix_apply {c : RingCon R} {M N : Matrix n n R} :
     c.matrix n M N ↔ ∀ i j, c (M i j) (N i j) :=
   Iff.rfl
