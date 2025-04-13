@@ -178,8 +178,7 @@ def reverse (M : NFA α σ) : NFA α σ :=
   NFA.mk M.unstep M.accept M.start
 
 lemma spec_from (S : Set σ) (M : NFA α σ) :
-  M.reverse.acceptsFrom S =
-  { xs : List α | xs ∈ M.startsTo S } := by
+  M.reverse.acceptsFrom = M.startsTo := by
   ext xs
   dsimp [NFA.reverse, acceptsFrom, startsTo, NFA.evalFrom, rewindFrom]
   unfold NFA.stepSet
