@@ -225,6 +225,7 @@ theorem refl_extend {a : X} : (Path.refl a).extend = fun _ => a :=
 theorem extend_symm_apply (γ : Path x y) (t : ℝ) : γ.symm.extend t = γ.extend (1 - t) :=
   congrArg γ <| symm_projIcc _
 
+@[simp]
 theorem extend_symm (γ : Path x y) : γ.symm.extend = (γ.extend <| 1 - ·) :=
   funext γ.extend_symm_apply
 
