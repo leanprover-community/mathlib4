@@ -128,8 +128,17 @@ theorem some_dom (a : α) : (some a).Dom :=
 theorem mem_unique : ∀ {a b : α} {o : Part α}, a ∈ o → b ∈ o → a = b
   | _, _, ⟨_, _⟩, ⟨_, rfl⟩, ⟨_, rfl⟩ => rfl
 
+theorem mem_right_unique : ∀ {a : α} {o p : Part α}, a ∈ o → a ∈ p → o = p
+  | _, ⟨_, _⟩, ⟨_, _⟩, ho, hp => by
+    ext
+    rw [mem_mk_iff] at *
+    simp only [ho.choose_spec, ho.choose, exists_const, mem_mk_iff, hp.choose_spec, hp.choose]
+
 theorem Mem.left_unique : Relator.LeftUnique ((· ∈ ·) : α → Part α → Prop) := fun _ _ _ =>
   mem_unique
+
+theorem Mem.right_unique : Relator.RightUnique ((· ∈ ·) : α → Part α → Prop) := fun _ _ _ =>
+  mem_right_unique
 
 theorem get_eq_of_mem {o : Part α} {a} (h : a ∈ o) (h') : get o h' = a :=
   mem_unique ⟨_, rfl⟩ h
