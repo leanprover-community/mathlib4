@@ -182,6 +182,20 @@ namespace IsSemisimpleModule
 
 variable [IsSemisimpleModule R M]
 
+section
+
+variable {R₀ P : Type*} [Semiring R₀] [AddCommMonoid P] [Module R P]
+
+instance [Module R₀ P] [SMulCommClass R R₀ P] [Module.Finite R₀ (M →ₗ[R] P)] :
+    Module.Finite R₀ (m →ₗ[R] P) :=
+  .of_isComplemented_domain _ _ (exists_isCompl m)
+
+instance [Module R₀ M] [SMulCommClass R R₀ M] [SMul R₀ R] [IsScalarTower R₀ R M]
+    [Module.Finite R₀ (P →ₗ[R] M)] : Module.Finite R₀ (P →ₗ[R] m) :=
+  .of_isComplemented_codomain _ _ (exists_isCompl m)
+
+end
+
 theorem eq_bot_or_exists_simple_le (N : Submodule R M) : N = ⊥ ∨ ∃ m ≤ N, IsSimpleModule R m := by
   simpa only [isSimpleModule_iff_isAtom, and_comm] using eq_bot_or_exists_atom_le _
 

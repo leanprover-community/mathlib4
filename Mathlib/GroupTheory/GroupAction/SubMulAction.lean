@@ -155,13 +155,11 @@ theorem smul_of_tower_def (r : M) (x : s) :
     r • x = ⟨r • x, smul_one_smul N r x.1 ▸ smul_mem _ x.2⟩ :=
   rfl
 
-instance (priority := 50) [SMulCommClass M N α] : SMulCommClass M N s :=
-  have := SMulMemClass.ofIsScalarTower S M N α
-  inferInstance
+@[to_additive] instance (priority := 50) [SMulCommClass M N α] : SMulCommClass M N s where
+  smul_comm _ _ _ := Subtype.ext (smul_comm ..)
 
-instance (priority := 50) [SMulCommClass N M α] : SMulCommClass N M s :=
-  have := SMulMemClass.ofIsScalarTower S M N α
-  inferInstance
+@[to_additive] instance (priority := 50) [SMulCommClass N M α] : SMulCommClass N M s where
+  smul_comm _ _ _ := Subtype.ext (smul_comm ..)
 
 end OfTower
 
