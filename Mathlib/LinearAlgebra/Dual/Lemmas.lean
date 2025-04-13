@@ -209,7 +209,7 @@ instance instNontrivialDual [Nontrivial V] : Nontrivial (Dual K V) :=
   (nontrivial_dual_iff K).mpr inferInstance
 
 omit [Projective K V] in
-/- May fail if `V` is only a projective `R`-module;
+/- May fail if `V` is only a projective `K`-module;
 see https://stacks.math.columbia.edu/tag/05WG#comment-9913. -/
 theorem finite_dual_iff [Free K V] : Module.Finite K (Dual K V) ↔ Module.Finite K V := by
   refine ⟨fun h ↦ ?_, fun _ ↦ inferInstance⟩
