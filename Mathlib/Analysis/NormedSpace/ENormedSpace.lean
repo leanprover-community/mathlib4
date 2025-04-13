@@ -32,6 +32,8 @@ normed space, extended norm
 -/
 
 
+noncomputable section
+
 open ENNReal
 
 /-- Extended norm on a vector space. As in the case of normed spaces, we require only
