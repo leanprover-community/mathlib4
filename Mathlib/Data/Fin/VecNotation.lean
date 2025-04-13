@@ -139,7 +139,7 @@ theorem cons_val_succ' {i : ℕ} (h : i.succ < m.succ) (x : α) (u : Fin m → �
 section simprocs
 open Lean Qq
 
-/-- Parses a chain of `Matrix.vecCons` calls into elements and a tail. -/
+/-- Parses a chain of `Matrix.vecCons` calls into elements, leaving everything else in the tail. -/
 partial def matchVecConsPrefix (e : Expr) : MetaM <| List Expr × Expr := do
   match_expr ← Meta.whnfR e with
   | Matrix.vecCons _ _ x xs => do
@@ -152,7 +152,7 @@ partial def matchVecConsPrefix (e : Expr) : MetaM <| List Expr × Expr := do
 In practice, this is most effective at handling `![a, b, c] i`-style terms. -/
 dsimproc cons_val (Matrix.vecCons _ _ _) := fun e => do
   let_expr Matrix.vecCons α _ x xs' i := ← Meta.whnfR e | return .continue
-  let some i' := i.int? | return .continue -- The docstring claims only nat or int, but works fine for Fin
+  let some i' := i.int? | return .continue
   let (length, variadic) ← do
     let_expr Fin length := (← instantiateMVars (← Meta.inferType i)) | return .continue
     let length ← Meta.whnfD length
@@ -182,7 +182,7 @@ dsimproc cons_val (Matrix.vecCons _ _ _) := fun e => do
     -- wrap around the index
     let i' := (i' % length).toNat
     if i' < xs.length then
-      return .continue (xs.get! i')
+      return .continue xs[i']!
     else if 0 < xs.length then
       let newn := unsafe toExpr (⟨i' - xs.length, lcProof⟩ : Fin (length - xs.length))
       return .continue (.some <| .app tail <| newn)
@@ -381,12 +381,10 @@ theorem vecHead_vecAlt0 (hm : m + 2 = n + 1 + (n + 1)) (v : Fin (m + 2) → α) 
 theorem vecHead_vecAlt1 (hm : m + 2 = n + 1 + (n + 1)) (v : Fin (m + 2) → α) :
     vecHead (vecAlt1 hm v) = v 1 := by simp [vecHead, vecAlt1]
 
-@[simp, deprecated]
 theorem cons_vec_bit0_eq_alt0 (x : α) (u : Fin n → α) (i : Fin (n + 1)) :
     vecCons x u (i + i) = vecAlt0 rfl (vecAppend rfl (vecCons x u) (vecCons x u)) i := by
   rw [vecAlt0_vecAppend]; rfl
 
-@[simp, deprecated]
 theorem cons_vec_bit1_eq_alt1 (x : α) (u : Fin n → α) (i : Fin (n + 1)) :
     vecCons x u ((i + i) + 1) = vecAlt1 rfl (vecAppend rfl (vecCons x u) (vecCons x u)) i := by
   rw [vecAlt1_vecAppend]; rfl
