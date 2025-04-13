@@ -160,8 +160,7 @@ def rewind : List α → Set σ :=
   M.rewindFrom M.accept
 
 /-- `M.startsTo S` is the language of `x`
-such that starting from `S` we arrive at `M.start`.
--/
+  such that starting from `S` we arrive at `M.start`. -/
 def startsTo (S : Set σ) : Language α :=
   { x | ∃ s ∈ M.start, s ∈ M.rewindFrom S x }
 
@@ -172,18 +171,14 @@ lemma mem_startsTo {S : Set σ} {x : List α} :
 end Auxilary
 
 /-- NFAs are closed under reversal:
-Given NFA `M`, there is an NFA `reverse(M)` such that `L(reverse(M)) = reverse(L(M))`.
--/
+Given NFA `M`, there is an NFA `reverse(M)` such that `L(reverse(M)) = reverse(L(M))`.-/
 def reverse (M : NFA α σ) : NFA α σ :=
   NFA.mk M.unstep M.accept M.start
 
 lemma spec_from (M : NFA α σ) :
   M.reverse.acceptsFrom = M.startsTo := by
   ext xs
-  dsimp [NFA.reverse, acceptsFrom, startsTo, NFA.evalFrom, rewindFrom]
-  unfold NFA.stepSet
-  unfold NFA.unstepSet
-  simp
+  rfl
 
 lemma reverse.rewindFromSpec (xs : List α) (S1 S2 : Set σ) (M : NFA α σ) :
   (∃ s1 ∈ S1, s1 ∈ M.rewindFrom S2 xs) ↔
@@ -236,8 +231,7 @@ variable {σ1 : Type v} {σ2 : Type v}
 private instance Language.instUnion : Union (Language α) := by
   apply Set.instUnion
 
-/--`stepSum M₁ M₂` computes the transition for `M₁ ∪ M₂`.
--/
+/--`stepSum M₁ M₂` computes the transition for `M₁ ∪ M₂`. -/
 def stepSum (M1 : NFA α σ1) (M2 : NFA α σ2)
   (s : σ1 ⊕ σ2) (a : α) : Set (σ1 ⊕ σ2) :=
     { s' : σ1 ⊕ σ2 |
@@ -247,8 +241,8 @@ def stepSum (M1 : NFA α σ1) (M2 : NFA α σ2)
         s s' }
 
 /-- NFAs are closed under union:
-Given NFAs `M₁` and `M₂`, `M₁ ∪ M₂` is a NFA such that `L(M₁ ∪ M₂) = L(M₁) ∪ L(M₂)`.
--/
+  Given NFAs `M₁` and `M₂`, `M₁ ∪ M₂` is a NFA such that
+  `L(M₁ ∪ M₂) = L(M₁) ∪ L(M₂)`. -/
 def union (M1 : NFA α σ1) (M2 : NFA α σ2) : NFA α (σ1 ⊕ σ2) :=
   { start : Set (σ1 ⊕ σ2) :=
       { s : σ1 ⊕ σ2 | s.casesOn M1.start M2.start }
@@ -338,15 +332,14 @@ variable {σ1 : Type v} {σ2 : Type v}
 private instance Language.instIntersect : Inter (Language α) := by
   apply Set.instInter
 
-/--`stepProd M₁ M₂` computes the transition for `M₁ ∩ M₂`.
--/
+/-- `stepProd M₁ M₂` computes the transition for `M₁ ∩ M₂`. -/
 def stepProd (M1 : NFA α σ1) (M2 : NFA α σ2)
   (s : σ1 × σ2) (a : α) : Set (σ1 × σ2) :=
     { s' : σ1 × σ2 | s'.1 ∈ M1.step s.1 a ∧ s'.2 ∈ M2.step s.2 a }
 
 /-- NFAs are closed under intersection:
-Given NFAs `M₁` and `M₂`, `M₁ ∩ M₂` is a NFA such that `L(M₁ ∩ M₂) = L(M₁) ∩ L(M₂)`.
--/
+  Given NFAs `M₁` and `M₂`, `M₁ ∩ M₂` is a NFA such that
+  `L(M₁ ∩ M₂) = L(M₁) ∩ L(M₂)`. -/
 def intersect (M1 : NFA α σ1) (M2 : NFA α σ2) : NFA α (σ1 × σ2) :=
   { start : Set (σ1 × σ2) :=
       { s : σ1 × σ2 | s.1 ∈ M1.start ∧ s.2 ∈ M2.start }
