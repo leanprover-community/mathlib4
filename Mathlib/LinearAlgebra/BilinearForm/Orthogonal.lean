@@ -161,7 +161,7 @@ theorem span_singleton_inf_orthogonal_eq_bot {B : BilinForm K V} {x : V} (hx : �
     (K ∙ x) ⊓ B.orthogonal (K ∙ x) = ⊥ := by
   rw [← Finset.coe_singleton]
   refine eq_bot_iff.2 fun y h => ?_
-  rcases mem_span_finset.1 h.1 with ⟨μ, rfl⟩
+  obtain ⟨μ, -, rfl⟩ := Submodule.mem_span_finset.1 h.1
   have := h.2 x ?_
   · rw [Finset.sum_singleton] at this ⊢
     suffices hμzero : μ x = 0 by rw [hμzero, zero_smul, Submodule.mem_bot]
@@ -209,9 +209,6 @@ theorem nondegenerate_restrict_of_disjoint_orthogonal (B : BilinForm R₁ M₁) 
   specialize b₁ ⟨y, hy⟩
   simp only [restrict_apply, domRestrict_apply] at b₁
   exact isOrtho_def.mpr (b x y b₁)
-
-@[deprecated (since := "2024-05-30")]
-alias nondegenerateRestrictOfDisjointOrthogonal := nondegenerate_restrict_of_disjoint_orthogonal
 
 /-- An orthogonal basis with respect to a nondegenerate bilinear form has no self-orthogonal
 elements. -/
@@ -364,9 +361,6 @@ theorem isCompl_orthogonal_of_restrict_nondegenerate
     finrank_add_finrank_orthogonal b₁]
   exact le_self_add
 
-@[deprecated (since := "2024-05-24")]
-alias restrict_nondegenerate_of_isCompl_orthogonal := isCompl_orthogonal_of_restrict_nondegenerate
-
 /-- A subspace is complement to its orthogonal complement with respect to some reflexive bilinear
 form if and only if that bilinear form restricted on to the subspace is nondegenerate. -/
 theorem restrict_nondegenerate_iff_isCompl_orthogonal
@@ -413,10 +407,6 @@ theorem restrict_nondegenerate_orthogonal_spanSingleton (B : BilinForm K V) (b�
   specialize hm ⟨z, hz⟩
   rw [restrict] at hm
   erw [add_right, show B m.1 y = 0 by rw [b₂]; exact m.2 y hy, hm, add_zero]
-
-@[deprecated (since := "2024-05-30")]
-alias restrictNondegenerateOrthogonalSpanSingleton :=
-  restrict_nondegenerate_orthogonal_spanSingleton
 
 end BilinForm
 

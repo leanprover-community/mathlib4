@@ -24,7 +24,7 @@ so that `m` factors through the `m'` in any other such factorisation.
     morphism `e`.
 * `HasImages C` means that every morphism in `C` has an image.
 * Let `f : X ⟶ Y` and `g : P ⟶ Q` be morphisms in `C`, which we will represent as objects of the
-  arrow category `arrow C`. Then `sq : f ⟶ g` is a commutative square in `C`. If `f` and `g` have
+  arrow category `Arrow C`. Then `sq : f ⟶ g` is a commutative square in `C`. If `f` and `g` have
   images, then `HasImageMap sq` represents the fact that there is a morphism
   `i : image f ⟶ image g` making the diagram
 
@@ -100,8 +100,8 @@ determined. -/
 @[ext (iff := false)]
 theorem ext {F F' : MonoFactorisation f} (hI : F.I = F'.I)
     (hm : F.m = eqToHom hI ≫ F'.m) : F = F' := by
-  cases' F with _ Fm _ _ Ffac; cases' F' with _ Fm' _ _ Ffac'
-  cases' hI
+  obtain ⟨_, Fm, _, Ffac⟩ := F; obtain ⟨_, Fm', _, Ffac'⟩ := F'
+  cases hI
   simp? at hm says simp only [eqToHom_refl, Category.id_comp] at hm
   congr
   apply (cancel_mono Fm).1
@@ -241,7 +241,7 @@ def ofArrowIso {f g : Arrow C} (F : ImageFactorisation f.hom) (sq : f ⟶ g) [Is
 
 end ImageFactorisation
 
-/-- `has_image f` means that there exists an image factorisation of `f`. -/
+/-- `HasImage f` means that there exists an image factorisation of `f`. -/
 class HasImage (f : X ⟶ Y) : Prop where mk' ::
   exists_image : Nonempty (ImageFactorisation f)
 
@@ -506,7 +506,7 @@ instance image.preComp_mono [HasImage g] [HasImage (f ≫ g)] : Mono (image.preC
   `image (f ≫ (g ≫ h)) ⟶ image (g ≫ h) ⟶ image h`
 agrees with the one step comparison map
   `image (f ≫ (g ≫ h)) ≅ image ((f ≫ g) ≫ h) ⟶ image h`.
- -/
+-/
 theorem image.preComp_comp {W : C} (h : Z ⟶ W) [HasImage (g ≫ h)] [HasImage (f ≫ g ≫ h)]
     [HasImage h] [HasImage ((f ≫ g) ≫ h)] :
     image.preComp f (g ≫ h) ≫ image.preComp g h =

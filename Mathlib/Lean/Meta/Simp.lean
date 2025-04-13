@@ -126,7 +126,7 @@ def isInSimpSet (simpAttr decl : Name) : CoreM Bool := do
   return (← simpDecl.getTheorems).contains decl
 
 /-- Returns all declarations with the `simp`-attribute `simpAttr`.
-  Note: this also returns many auxiliary declarations. -/
+Note: this also returns many auxiliary declarations. -/
 def getAllSimpDecls (simpAttr : Name) : CoreM (List Name) := do
   let .some simpDecl ← getSimpExtension? simpAttr | return []
   let thms ← simpDecl.getTheorems

@@ -20,11 +20,11 @@ As opposed to `Even`, `Odd` does not have a multiplicative counterpart.
 
 Try to generalize `Even` lemmas further. For example, there are still a few lemmas whose `Semiring`
 assumptions I (DT) am not convinced are necessary. If that turns out to be true, they could be moved
-to `Algebra.Group.Even`.
+to `Mathlib.Algebra.Group.Even`.
 
 ## See also
 
-`Algebra.Group.Even` for the definition of even elements.
+`Mathlib.Algebra.Group.Even` for the definition of even elements.
 -/
 
 assert_not_exists DenselyOrdered OrderedRing
@@ -54,7 +54,7 @@ lemma Even.neg_one_zpow (h : Even n) : (-1 : α) ^ n = 1 := by rw [h.neg_zpow, o
 
 end DivisionMonoid
 
-@[simp] lemma isSquare_zero [MulZeroClass α] : IsSquare (0 : α) := ⟨0, (mul_zero _).symm⟩
+@[simp] lemma IsSquare.zero [MulZeroClass α] : IsSquare (0 : α) := ⟨0, (mul_zero _).symm⟩
 
 section Semiring
 variable [Semiring α] [Semiring β] {a b : α} {m n : ℕ}
@@ -70,7 +70,8 @@ lemma Even.trans_dvd (ha : Even a) (hab : a ∣ b) : Even b :=
 
 lemma Dvd.dvd.even (hab : a ∣ b) (ha : Even a) : Even b := ha.trans_dvd hab
 
-@[simp] lemma range_two_mul (α) [Semiring α] : Set.range (fun x : α ↦ 2 * x) = {a | Even a} := by
+@[simp] lemma range_two_mul (α) [NonAssocSemiring α] :
+    Set.range (fun x : α ↦ 2 * x) = {a | Even a} := by
   ext x
   simp [eq_comm, two_mul, Even]
 
@@ -142,8 +143,7 @@ lemma Odd.pow (ha : Odd a) : ∀ {n : ℕ}, Odd (a ^ n)
 lemma Odd.pow_add_pow_eq_zero [IsCancelAdd α] (hn : Odd n) (hab : a + b = 0) :
     a ^ n + b ^ n = 0 := by
   obtain ⟨k, rfl⟩ := hn
-  induction' k with k ih
-  · simpa
+  induction k with | zero => simpa | succ k ih => ?_
   have : a ^ 2 = b ^ 2 := add_right_cancel <|
     calc
       a ^ 2 + a * b = 0 := by rw [sq, ← mul_add, hab, mul_zero]
@@ -207,12 +207,6 @@ lemma not_odd_iff : ¬Odd n ↔ n % 2 = 0 := by rw [odd_iff, mod_two_not_eq_one]
 
 @[simp] lemma not_odd_zero : ¬Odd 0 := not_odd_iff.mpr rfl
 
-@[deprecated not_odd_iff_even (since := "2024-08-21")]
-lemma even_iff_not_odd : Even n ↔ ¬Odd n := by rw [not_odd_iff, even_iff]
-
-@[deprecated not_even_iff_odd (since := "2024-08-21")]
-lemma odd_iff_not_even : Odd n ↔ ¬Even n := by rw [not_even_iff, odd_iff]
-
 lemma _root_.Odd.not_two_dvd_nat (h : Odd n) : ¬(2 ∣ n) := by
   rwa [← even_iff_two_dvd, not_even_iff_odd]
 
@@ -255,7 +249,7 @@ lemma even_sub' (h : n ≤ m) : Even (m - n) ↔ (Odd m ↔ Odd n) := by
 
 lemma Odd.sub_odd (hm : Odd m) (hn : Odd n) : Even (m - n) :=
   (le_total n m).elim (fun h ↦ by simp only [even_sub' h, *]) fun h ↦ by
-    simp only [Nat.sub_eq_zero_iff_le.2 h, even_zero]
+    simp only [Nat.sub_eq_zero_iff_le.2 h, Even.zero]
 
 alias _root_.Odd.tsub_odd := Nat.Odd.sub_odd
 
@@ -306,7 +300,6 @@ end
 example (m n : ℕ) (h : Even m) : ¬Even (n + 3) ↔ Even (m ^ 2 + m + n) := by
   simp [*, two_ne_zero, parity_simps]
 
-/- Porting note: the `simp` lemmas about `bit*` no longer apply. -/
 example : ¬Even 25394535 := by decide
 
 end Nat

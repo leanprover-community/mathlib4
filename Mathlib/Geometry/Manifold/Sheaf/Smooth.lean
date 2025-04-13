@@ -290,15 +290,15 @@ open CategoryTheory Limits
 /-- Identify the stalk at a point of the sheaf-of-commutative-rings of functions from `M` to `R`
 (for `R` a smooth ring) with the stalk at that point of the corresponding sheaf of types. -/
 def smoothSheafCommRing.forgetStalk (x : TopCat.of M) :
-    (forget _).obj ((smoothSheafCommRing IM I M R).presheaf.stalk x) ≅
+    ((smoothSheafCommRing IM I M R).presheaf.stalk x).carrier ≅
     (smoothSheaf IM I M R).presheaf.stalk x :=
-  preservesColimitIso _ _
+  preservesColimitIso (forget _) _
 
 @[simp, reassoc, elementwise] lemma smoothSheafCommRing.ι_forgetStalk_hom (x : TopCat.of M) (U) :
     CategoryStruct.comp
       (Z := (smoothSheaf IM I M R).presheaf.stalk x)
       (DFunLike.coe
-        (α := ((forget CommRingCat).obj ((smoothSheafCommRing IM I M R).presheaf.obj
+        (α := (((smoothSheafCommRing IM I M R).presheaf.obj
           (op ((OpenNhds.inclusion x).obj U.unop)))))
         (colimit.ι ((OpenNhds.inclusion x).op ⋙ (smoothSheafCommRing IM I M R).presheaf) U).hom)
       (forgetStalk IM I M R x).hom =
@@ -308,9 +308,8 @@ def smoothSheafCommRing.forgetStalk (x : TopCat.of M) :
 @[simp, reassoc, elementwise] lemma smoothSheafCommRing.ι_forgetStalk_inv (x : TopCat.of M) (U) :
     colimit.ι ((OpenNhds.inclusion x).op ⋙ (smoothSheaf IM I M R).presheaf) U ≫
     (smoothSheafCommRing.forgetStalk IM I M R x).inv =
-    (forget CommRingCat).map
-      (colimit.ι ((OpenNhds.inclusion x).op ⋙ (smoothSheafCommRing IM I M R).presheaf) U) := by
-  rw [Iso.comp_inv_eq, ← smoothSheafCommRing.ι_forgetStalk_hom, CommRingCat.forget_map]
+    ⇑(colimit.ι ((OpenNhds.inclusion x).op ⋙ (smoothSheafCommRing IM I M R).presheaf) U) := by
+  rw [Iso.comp_inv_eq, ← smoothSheafCommRing.ι_forgetStalk_hom]
   simp_rw [Functor.comp_obj, Functor.op_obj]
 
 /-- Given a smooth commutative ring `R` and a manifold `M`, and an open neighbourhood `U` of a point
@@ -353,17 +352,16 @@ def smoothSheafCommRing.eval (x : M) : (smoothSheafCommRing IM I M R).presheaf.s
   apply Limits.colimit.hom_ext
   intro U
   show (colimit.ι _ U) ≫ _ = colimit.ι ((OpenNhds.inclusion x).op ⋙ _) U ≫ _
-  rw [smoothSheafCommRing.ι_forgetStalk_inv_assoc]
-  convert congr_arg (fun i ↦ (forget CommRingCat).map i) (smoothSheafCommRing.ι_evalHom ..)
-  exact smoothSheaf.ι_evalHom IM I R x U
+  rw [smoothSheafCommRing.ι_forgetStalk_inv_assoc, smoothSheaf.ι_evalHom]
+  ext x
+  exact CategoryTheory.congr_fun (smoothSheafCommRing.ι_evalHom ..) x
 
 @[simp, reassoc, elementwise] lemma smoothSheafCommRing.forgetStalk_hom_comp_evalHom
     (x : TopCat.of M) :
     (smoothSheafCommRing.forgetStalk IM I M R x).hom ≫ (smoothSheaf.evalHom IM I R x) =
-    (forget _).map (smoothSheafCommRing.evalHom _ _ _ _ _) := by
+      ⇑(smoothSheafCommRing.evalHom _ _ _ _ _) := by
   simp_rw [← CategoryTheory.Iso.eq_inv_comp]
   rw [← smoothSheafCommRing.forgetStalk_inv_comp_eval]
-  rfl
 
 lemma smoothSheafCommRing.eval_surjective (x) :
     Function.Surjective (smoothSheafCommRing.eval IM I M R x) := by

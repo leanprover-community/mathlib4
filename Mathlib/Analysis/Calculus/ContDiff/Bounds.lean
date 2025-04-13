@@ -3,7 +3,7 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Basic
+import Mathlib.Analysis.Calculus.ContDiff.Operations
 import Mathlib.Data.Finset.Sym
 import Mathlib.Data.Nat.Choose.Cast
 import Mathlib.Data.Nat.Choose.Multinomial
@@ -112,7 +112,7 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear_aux {Du Eu 
     have A' : ContDiffOn 𝕜 n (fun y => B.precompL Du (fderivWithin 𝕜 f s y) (g y)) s :=
       (B.precompL Du).isBoundedBilinearMap.contDiff.comp₂_contDiffOn (hf.fderivWithin hs In)
         (hg.of_le (Nat.cast_le.2 (Nat.le_succ n)))
-    rw [iteratedFDerivWithin_add_apply' A A' hs hx]
+    rw [iteratedFDerivWithin_add_apply' (A.contDiffWithinAt hx) (A'.contDiffWithinAt hx) hs hx]
     apply (norm_add_le _ _).trans ((add_le_add I1 I2).trans (le_of_eq ?_))
     simp_rw [← mul_add, mul_assoc]
     congr 1
@@ -140,11 +140,10 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear (B : E →L
   have isoF : Fu ≃ₗᵢ[𝕜] F := LinearIsometryEquiv.ulift 𝕜 F
   have isoG : Gu ≃ₗᵢ[𝕜] G := LinearIsometryEquiv.ulift 𝕜 G
   -- lift `f` and `g` to versions `fu` and `gu` on the lifted spaces.
-  set fu : Du → Eu := isoE.symm ∘ f ∘ isoD with hfu
-  set gu : Du → Fu := isoF.symm ∘ g ∘ isoD with hgu
+  let fu : Du → Eu := isoE.symm ∘ f ∘ isoD
+  let gu : Du → Fu := isoF.symm ∘ g ∘ isoD
   -- lift the bilinear map `B` to a bilinear map `Bu` on the lifted spaces.
-  set Bu₀ : Eu →L[𝕜] Fu →L[𝕜] G := ((B.comp (isoE : Eu →L[𝕜] E)).flip.comp (isoF : Fu →L[𝕜] F)).flip
-    with hBu₀
+  let Bu₀ : Eu →L[𝕜] Fu →L[𝕜] G := ((B.comp (isoE : Eu →L[𝕜] E)).flip.comp (isoF : Fu →L[𝕜] F)).flip
   let Bu : Eu →L[𝕜] Fu →L[𝕜] Gu :=
    ContinuousLinearMap.compL 𝕜 Eu (Fu →L[𝕜] G) (Fu →L[𝕜] Gu)
     (ContinuousLinearMap.compL 𝕜 Fu G Gu (isoG.symm : G →L[𝕜] Gu)) Bu₀
@@ -152,12 +151,12 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear (B : E →L
       (ContinuousLinearMap.compL 𝕜 Fu G Gu (isoG.symm : G →L[𝕜] Gu)) Bu₀ := rfl
   have Bu_eq : (fun y => Bu (fu y) (gu y)) = isoG.symm ∘ (fun y => B (f y) (g y)) ∘ isoD := by
     ext1 y
-    simp [Du, Eu, Fu, Gu, hBu, hBu₀, hfu, hgu]
+    simp [Du, Eu, Fu, Gu, hBu, Bu₀, fu, gu]
   -- All norms are preserved by the lifting process.
   have Bu_le : ‖Bu‖ ≤ ‖B‖ := by
     refine ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg B) fun y => ?_
     refine ContinuousLinearMap.opNorm_le_bound _ (by positivity) fun x => ?_
-    simp only [Du, Eu, Fu, Gu, hBu, hBu₀, compL_apply, coe_comp', Function.comp_apply,
+    simp only [Du, Eu, Fu, Gu, hBu, Bu₀, compL_apply, coe_comp', Function.comp_apply,
       ContinuousLinearEquiv.coe_coe, LinearIsometryEquiv.coe_coe, flip_apply,
       LinearIsometryEquiv.norm_map]
     calc
@@ -436,8 +435,6 @@ theorem norm_iteratedFDerivWithin_comp_le_aux {Fu Gu : Type u} [NormedAddCommGro
     -- We are left with trivial algebraic manipulations to see that this is smaller than
     -- the claimed bound.
     _ = ∑ i ∈ Finset.range (n + 1),
-      -- Porting note: had to insert a few more explicit type ascriptions in this and similar
-      -- expressions.
         (n ! : ℝ) * ((i ! : ℝ)⁻¹ * i !) * C * (D ^ i * D ^ (n - i + 1)) * ((n - i)! : ℝ)⁻¹ := by
       congr! 1 with i hi
       simp only [Nat.cast_choose ℝ (Finset.mem_range_succ_iff.1 hi), div_eq_inv_mul, mul_inv]

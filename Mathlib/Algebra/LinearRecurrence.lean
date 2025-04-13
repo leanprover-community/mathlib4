@@ -45,7 +45,9 @@ open Polynomial
 /-- A "linear recurrence relation" over a commutative semiring is given by its
   order `n` and `n` coefficients. -/
 structure LinearRecurrence (α : Type*) [CommSemiring α] where
+  /-- Order of the linear recurrence -/
   order : ℕ
+  /-- Coefficients of the linear recurrence -/
   coeffs : Fin order → α
 
 instance (α : Type*) [CommSemiring α] : Inhabited (LinearRecurrence α) :=
@@ -92,11 +94,12 @@ theorem eq_mk_of_is_sol_of_eq_init {u : ℕ → α} {init : Fin E.order → α} 
   rw [mkSol]
   split_ifs with h'
   · exact mod_cast heq ⟨n, h'⟩
-  rw [← tsub_add_cancel_of_le (le_of_not_lt h'), h (n - E.order)]
-  congr with k
-  have : n - E.order + k < n := by omega
-  rw [eq_mk_of_is_sol_of_eq_init h heq (n - E.order + k)]
-  simp
+  · dsimp only
+    rw [← tsub_add_cancel_of_le (le_of_not_lt h'), h (n - E.order)]
+    congr with k
+    have : n - E.order + k < n := by omega
+    rw [eq_mk_of_is_sol_of_eq_init h heq (n - E.order + k)]
+    simp
 
 /-- If `u` is a solution to `E` and `init` designates its first `E.order` values,
   then `u = E.mkSol init`. This proves that `E.mkSol init` is the only solution
@@ -145,21 +148,18 @@ theorem sol_eq_of_eq_init (u v : ℕ → α) (hu : E.IsSolution u) (hv : E.IsSol
   exact mod_cast h (mem_range.mpr x.2)
 
 /-! `E.tupleSucc` maps `![s₀, s₁, ..., sₙ]` to `![s₁, ..., sₙ, ∑ (E.coeffs i) * sᵢ]`,
-  where `n := E.order`. This operation is quite useful for determining closed-form
-  solutions of `E`. -/
-
+where `n := E.order`. This operation is quite useful for determining closed-form
+solutions of `E`. -/
 
 /-- `E.tupleSucc` maps `![s₀, s₁, ..., sₙ]` to `![s₁, ..., sₙ, ∑ (E.coeffs i) * sᵢ]`,
-  where `n := E.order`. -/
+where `n := E.order`. -/
 def tupleSucc : (Fin E.order → α) →ₗ[α] Fin E.order → α where
   toFun X i := if h : (i : ℕ) + 1 < E.order then X ⟨i + 1, h⟩ else ∑ i, E.coeffs i * X i
   map_add' x y := by
     ext i
-    simp only
     split_ifs with h <;> simp [h, mul_add, sum_add_distrib]
   map_smul' x y := by
     ext i
-    simp only
     split_ifs with h <;> simp [h, mul_sum]
     exact sum_congr rfl fun x _ ↦ by ac_rfl
 

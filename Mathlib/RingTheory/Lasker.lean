@@ -33,7 +33,7 @@ section IsLasker
 variable (R : Type*) [CommSemiring R]
 
 /-- A ring `R` satisfies `IsLasker R` when any `I : Ideal R` can be decomposed into
-finitely many primary ideals.-/
+finitely many primary ideals. -/
 def IsLasker : Prop :=
   ∀ I : Ideal R, ∃ s : Finset (Ideal R), s.inf id = I ∧ ∀ ⦃J⦄, J ∈ s → J.IsPrimary
 
@@ -62,7 +62,7 @@ lemma isPrimary_decomposition_pairwise_ne_radical {I : Ideal R}
     ∃ t : Finset (Ideal R), t.inf id = I ∧ (∀ ⦃J⦄, J ∈ t → J.IsPrimary) ∧
       (t : Set (Ideal R)).Pairwise ((· ≠ ·) on radical) := by
   classical
-  refine ⟨(s.image (fun J ↦ s.filter (fun I ↦ I.radical = J.radical))).image fun t ↦ t.inf id,
+  refine ⟨(s.image (fun J ↦ {I ∈ s | I.radical = J.radical})).image fun t ↦ t.inf id,
     ?_, ?_, ?_⟩
   · rw [← hs]
     refine le_antisymm ?_ ?_ <;> intro x hx

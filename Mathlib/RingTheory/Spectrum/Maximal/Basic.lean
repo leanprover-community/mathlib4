@@ -18,6 +18,19 @@ variable (R S P : Type*) [CommSemiring R] [CommSemiring S] [CommSemiring P]
 
 namespace MaximalSpectrum
 
+/-- The prime spectrum is in bijection with the set of prime ideals. -/
+@[simps]
+def equivSubtype : MaximalSpectrum R ≃ {I : Ideal R // I.IsMaximal} where
+  toFun I := ⟨I.asIdeal, I.2⟩
+  invFun I := ⟨I, I.2⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+theorem range_asIdeal : Set.range MaximalSpectrum.asIdeal = {J : Ideal R | J.IsMaximal} :=
+  Set.ext fun J ↦
+    ⟨fun hJ ↦ let ⟨j, hj⟩ := Set.mem_range.mp hJ; Set.mem_setOf.mpr <| hj ▸ j.isMaximal,
+      fun hJ ↦ Set.mem_range.mpr ⟨⟨J, Set.mem_setOf.mp hJ⟩, rfl⟩⟩
+
 variable {R}
 
 instance [Nontrivial R] : Nonempty <| MaximalSpectrum R :=

@@ -34,7 +34,7 @@ universe u
 
 namespace TopologicalSpace.Opens
 
-variable {X Y Z : TopCat.{u}}
+variable {X Y Z : TopCat.{u}} {U V W : Opens X}
 
 /-!
 Since `Opens X` has a partial order, it automatically receives a `Category` instance.
@@ -43,9 +43,21 @@ the morphisms `U ⟶ V` are not just proofs `U ≤ V`, but rather
 `ULift (PLift (U ≤ V))`.
 -/
 
+instance opensHom.instFunLike : FunLike (U ⟶ V) U V where
+  coe f := Set.inclusion f.le
+  coe_injective' := by rintro ⟨⟨_⟩⟩ _ _; congr!
 
-instance opensHomHasCoeToFun {U V : Opens X} : CoeFun (U ⟶ V) fun _ => U → V :=
-  ⟨fun f x => ⟨x, f.le x.2⟩⟩
+lemma apply_def (f : U ⟶ V) (x : U) : f x = ⟨x, f.le x.2⟩ := rfl
+
+@[simp] lemma apply_mk (f : U ⟶ V) (x : X) (hx) : f ⟨x, hx⟩ = ⟨x, f.le hx⟩ := rfl
+
+@[simp] lemma val_apply (f : U ⟶ V) (x : U) : (f x : X) = x := rfl
+
+@[simp, norm_cast] lemma coe_id (f : U ⟶ U) : ⇑f = id := rfl
+
+lemma id_apply (f : U ⟶ U) (x : U) : f x = x := rfl
+
+@[simp] lemma comp_apply (f : U ⟶ V) (g : V ⟶ W) (x : U) : (f ≫ g) x = g (f x) := rfl
 
 /-!
 We now construct as morphisms various inclusions of open sets.
@@ -98,8 +110,9 @@ theorem leSupr_apply_mk {ι : Type*} (U : ι → Opens X) (i : ι) (x) (m) :
 realising each open set as a topological space itself.
 -/
 def toTopCat (X : TopCat.{u}) : Opens X ⥤ TopCat where
-  obj U := ⟨U, inferInstance⟩
-  map i := ⟨fun x ↦ ⟨x.1, i.le x.2⟩, IsEmbedding.subtypeVal.continuous_iff.2 continuous_induced_dom⟩
+  obj U := TopCat.of U
+  map i := TopCat.ofHom ⟨fun x ↦ ⟨x.1, i.le x.2⟩,
+    IsEmbedding.subtypeVal.continuous_iff.2 continuous_induced_dom⟩
 
 @[simp]
 theorem toTopCat_map (X : TopCat.{u}) {U V : Opens X} {f : U ⟶ V} {x} {h} :
@@ -108,10 +121,11 @@ theorem toTopCat_map (X : TopCat.{u}) {U V : Opens X} {f : U ⟶ V} {x} {h} :
 
 /-- The inclusion map from an open subset to the whole space, as a morphism in `TopCat`.
 -/
-@[simps (config := .asFn)]
-def inclusion' {X : TopCat.{u}} (U : Opens X) : (toTopCat X).obj U ⟶ X where
-  toFun := _
-  continuous_toFun := continuous_subtype_val
+@[simps! -fullyApplied]
+def inclusion' {X : TopCat.{u}} (U : Opens X) : (toTopCat X).obj U ⟶ X :=
+  TopCat.ofHom
+  { toFun := _
+    continuous_toFun := continuous_subtype_val }
 
 @[simp]
 theorem coe_inclusion' {X : TopCat} {U : Opens X} :
@@ -127,12 +141,12 @@ alias openEmbedding := isOpenEmbedding
 -/
 def inclusionTopIso (X : TopCat.{u}) : (toTopCat X).obj ⊤ ≅ X where
   hom := inclusion' ⊤
-  inv := ⟨fun x => ⟨x, trivial⟩, continuous_def.2 fun _ ⟨_, hS, hSU⟩ => hSU ▸ hS⟩
+  inv := TopCat.ofHom ⟨fun x => ⟨x, trivial⟩, continuous_def.2 fun _ ⟨_, hS, hSU⟩ => hSU ▸ hS⟩
 
 /-- `Opens.map f` gives the functor from open sets in Y to open set in X,
     given by taking preimages under f. -/
 def map (f : X ⟶ Y) : Opens Y ⥤ Opens X where
-  obj U := ⟨f ⁻¹' (U : Set Y), U.isOpen.preimage f.continuous⟩
+  obj U := ⟨f ⁻¹' (U : Set Y), U.isOpen.preimage f.hom.continuous⟩
   map i := ⟨⟨fun _ h => i.le h⟩⟩
 
 @[simp]
@@ -140,7 +154,7 @@ theorem map_coe (f : X ⟶ Y) (U : Opens Y) : ((map f).obj U : Set X) = f ⁻¹'
   rfl
 
 @[simp]
-theorem map_obj (f : X ⟶ Y) (U) (p) : (map f).obj ⟨U, p⟩ = ⟨f ⁻¹' U, p.preimage f.continuous⟩ :=
+theorem map_obj (f : X ⟶ Y) (U) (p) : (map f).obj ⟨U, p⟩ = ⟨f ⁻¹' U, p.preimage f.hom.continuous⟩ :=
   rfl
 
 @[simp]
@@ -154,16 +168,13 @@ theorem map_id_obj (U : Opens X) : (map (𝟙 X)).obj U = U :=
   let ⟨_, _⟩ := U
   rfl
 
-@[simp 1100]
+@[simp]
 theorem map_id_obj' (U) (p) : (map (𝟙 X)).obj ⟨U, p⟩ = ⟨U, p⟩ :=
   rfl
 
-@[simp 1100]
-theorem map_id_obj_unop (U : (Opens X)ᵒᵖ) : (map (𝟙 X)).obj (unop U) = unop U :=
-  let ⟨_, _⟩ := U.unop
-  rfl
+theorem map_id_obj_unop (U : (Opens X)ᵒᵖ) : (map (𝟙 X)).obj (unop U) = unop U := by
+  simp
 
-@[simp 1100]
 theorem op_map_id_obj (U : (Opens X)ᵒᵖ) : (map (𝟙 X)).op.obj U = U := by simp
 
 @[simp]
@@ -394,7 +405,6 @@ theorem functor_obj_map_obj {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) (U :
   · rintro ⟨⟨x, -, rfl⟩, hx⟩
     exact ⟨x, hx, rfl⟩
 
--- Porting note: added to ease the proof of `functor_map_eq_inf`
 lemma set_range_inclusion' {X : TopCat} (U : Opens X) :
     Set.range (inclusion' U) = (U : Set X) := by
   ext x
@@ -403,7 +413,6 @@ lemma set_range_inclusion' {X : TopCat} (U : Opens X) :
     exact x.2
   · intro h
     exact ⟨⟨x, h⟩, rfl⟩
-@[deprecated (since := "2024-09-07")] alias set_range_forget_map_inclusion' := set_range_inclusion'
 
 @[simp]
 theorem functor_map_eq_inf {X : TopCat} (U V : Opens X) :

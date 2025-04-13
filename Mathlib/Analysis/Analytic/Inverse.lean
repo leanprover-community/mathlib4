@@ -592,9 +592,9 @@ lemma HasFPowerSeriesAt.tendsto_partialSum_prod_of_comp
           apply mul_le_mul_of_nonneg_left _ (norm_nonneg _)
           rw [Finset.prod_const, Finset.card_fin]
           gcongr
-          rw [EMetric.mem_ball, edist_eq_coe_nnnorm] at hy
+          rw [EMetric.mem_ball, edist_zero_eq_enorm] at hy
           have := le_trans (le_of_lt hy) (min_le_right _ _)
-          rwa [ENNReal.coe_le_coe, ← NNReal.coe_le_coe, coe_nnnorm] at this
+          rwa [enorm_le_coe, ← NNReal.coe_le_coe, coe_nnnorm] at this
     apply HasSum.of_sigma (fun b ↦ hasSum_fintype _) ?_ cau
     simpa [FormalMultilinearSeries.comp] using h0.hasSum hy0
   have B : Tendsto (fun (n : ℕ × ℕ) => ∑ i ∈ compPartialSumTarget 0 n.1 n.2,
@@ -686,7 +686,7 @@ theorem PartialHomeomorph.hasFPowerSeriesAt_symm (f : PartialHomeomorph E F) {a 
   refine ⟨min r (p.leftInv i a).radius, min_le_right _ _,
     lt_min r_pos (radius_leftInv_pos_of_radius_pos h.radius_pos hp), fun {y} hy ↦ ?_⟩
   have : y + f a ∈ EMetric.ball (f a) r := by
-    simp only [EMetric.mem_ball, edist_eq_coe_nnnorm_sub, sub_zero, lt_min_iff,
+    simp only [EMetric.mem_ball, edist_eq_enorm_sub, sub_zero, lt_min_iff,
       add_sub_cancel_right] at hy ⊢
     exact hy.1
   simpa [add_comm] using hr this

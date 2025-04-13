@@ -50,8 +50,7 @@ mk_iff_of_inductive_prop List.Pairwise test.pairwise_iff
 example {α : Type} (R : α → α → Prop) (al : List α) :
     List.Pairwise R al ↔
       al = List.nil ∨
-        ∃ (a : α) (l : List α), (∀ (a' : α), a' ∈ l → R a a') ∧ List.Pairwise R l ∧ al = a :: l
- := test.pairwise_iff R al
+        ∃ (a : α) (l : List α), (∀ (a' : α), a' ∈ l → R a a') ∧ List.Pairwise R l ∧ al = a :: l := test.pairwise_iff R al
 
 inductive test.is_true (p : Prop) : Prop
 | triviality (h : p) : test.is_true p

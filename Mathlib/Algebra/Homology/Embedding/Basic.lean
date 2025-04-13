@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.Ring.Int.Defs
-import Mathlib.Algebra.Ring.Nat
+import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Tactic.ByContra
 
 /-! # Embeddings of complex shapes
@@ -49,6 +49,8 @@ transformation `e.ιTruncLENatTrans : e.truncGEFunctor C ⟶ 𝟭 _` which is a 
 in degrees in the image of `e.f` (TODO);
 
 -/
+
+assert_not_exists Nat.instAddMonoidWithOne Nat.instMulZeroClass
 
 variable {ι ι' : Type*} (c : ComplexShape ι) (c' : ComplexShape ι')
 
@@ -109,7 +111,7 @@ end
 
 /-- The condition that the image of the map `e.f` of an embedding of
 complex shapes `e : Embedding c c'` is stable by `c'.next`. -/
-class IsTruncGE extends e.IsRelIff : Prop where
+class IsTruncGE : Prop extends e.IsRelIff where
   mem_next {j : ι} {k' : ι'} (h : c'.Rel (e.f j) k') :
     ∃ k, e.f k = k'
 
@@ -118,7 +120,7 @@ lemma mem_next [e.IsTruncGE] {j : ι} {k' : ι'} (h : c'.Rel (e.f j) k') : ∃ k
 
 /-- The condition that the image of the map `e.f` of an embedding of
 complex shapes `e : Embedding c c'` is stable by `c'.prev`. -/
-class IsTruncLE extends e.IsRelIff : Prop where
+class IsTruncLE : Prop extends e.IsRelIff where
   mem_prev {i' : ι'} {j : ι} (h : c'.Rel i' (e.f j)) :
     ∃ i, e.f i = i'
 
@@ -219,9 +221,7 @@ lemma not_mem_range_embeddingUpIntLE_iff (n : ℤ) :
   constructor
   · intro h
     by_contra!
-    simp only [Int.not_lt] at this
-    obtain ⟨k, rfl⟩ := Int.le.dest this
-    exact (h k) (by simp)
+    exact h (p - n).natAbs (by simp; omega)
   · intros
     dsimp
     omega
@@ -231,9 +231,7 @@ lemma not_mem_range_embeddingUpIntGE_iff (n : ℤ) :
   constructor
   · intro h
     by_contra!
-    simp only [Int.not_lt] at this
-    obtain ⟨k, rfl⟩ := Int.le.dest this
-    exact (h k) (by simp)
+    exact h (n - p).natAbs (by simp; omega)
   · intros
     dsimp
     omega

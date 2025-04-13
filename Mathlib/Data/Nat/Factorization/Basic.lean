@@ -69,8 +69,7 @@ theorem Prime.factorization_self {p : ℕ} (hp : Prime p) : p.factorization p = 
 /-- If the factorization of `n` contains just one number `p` then `n` is a power of `p` -/
 theorem eq_pow_of_factorization_eq_single {n p k : ℕ} (hn : n ≠ 0)
     (h : n.factorization = Finsupp.single p k) : n = p ^ k := by
-  -- Porting note: explicitly added `Finsupp.prod_single_index`
-  rw [← Nat.factorization_prod_pow_eq_self hn, h, Finsupp.prod_single_index]
+  rw [← Nat.factorization_prod_pow_eq_self hn, h]
   simp
 
 /-- The only prime factor of prime `p` is `p` itself. -/
@@ -239,8 +238,7 @@ theorem factorization_ordCompl (n p : ℕ) :
     (ordCompl[p] n).factorization = n.factorization.erase p := by
   if hn : n = 0 then simp [hn] else
   if pp : p.Prime then ?_ else
-    -- Porting note: needed to solve side goal explicitly
-    rw [Finsupp.erase_of_not_mem_support] <;> simp [pp]
+    simp [pp]
   ext q
   rcases eq_or_ne q p with (rfl | hqp)
   · simp only [Finsupp.erase_same, factorization_eq_zero_iff, not_dvd_ordCompl pp hn]
@@ -288,7 +286,7 @@ theorem dvd_iff_div_factorization_eq_tsub {d n : ℕ} (hd : d ≠ 0) (hdn : d �
   intro h
   rw [dvd_iff_le_div_mul n d]
   by_contra h2
-  cases' exists_factorization_lt_of_lt (mul_ne_zero h1 hd) (not_le.mp h2) with p hp
+  obtain ⟨p, hp⟩ := exists_factorization_lt_of_lt (mul_ne_zero h1 hd) (not_le.mp h2)
   rwa [factorization_mul h1 hd, add_apply, ← lt_tsub_iff_right, h, tsub_apply,
    lt_self_iff_false] at hp
 
@@ -556,16 +554,13 @@ theorem eq_iff_prime_padicValNat_eq (a b : ℕ) (ha : a ≠ 0) (hb : b ≠ 0) :
 
 theorem prod_pow_prime_padicValNat (n : Nat) (hn : n ≠ 0) (m : Nat) (pr : n < m) :
     ∏ p ∈ range m with p.Prime, p ^ padicValNat p n = n := by
-  -- Porting note: was `nth_rw_rhs`
-  conv =>
-    rhs
-    rw [← factorization_prod_pow_eq_self hn]
+  nth_rw 2 [← factorization_prod_pow_eq_self hn]
   rw [eq_comm]
   apply Finset.prod_subset_one_on_sdiff
   · exact fun p hp => Finset.mem_filter.mpr ⟨Finset.mem_range.2 <| pr.trans_le' <|
       le_of_mem_primeFactors hp, prime_of_mem_primeFactors hp⟩
   · intro p hp
-    cases' Finset.mem_sdiff.mp hp with hp1 hp2
+    obtain ⟨hp1, hp2⟩ := Finset.mem_sdiff.mp hp
     rw [← factorization_def n (Finset.mem_filter.mp hp1).2]
     simp [Finsupp.not_mem_support_iff.mp hp2]
   · intro p hp

@@ -14,7 +14,8 @@ import Mathlib.Analysis.NormedSpace.HahnBanach.SeparatingDual
 A parametric integral is a function with shape `f = fun x : H ↦ ∫ a : α, F x a ∂μ` for some
 `F : H → α → E`, where `H` and `E` are normed spaces and `α` is a measured space with measure `μ`.
 
-We already know from `continuous_of_dominated` in `Mathlib/MeasureTheory/Integral/Bochner.lean` how
+We already know from `continuous_of_dominated`
+in `Mathlib/MeasureTheory/Integral/Bochner/Basic.lean` how
 to guarantee that `f` is continuous using the dominated convergence theorem. In this file,
 we want to express the derivative of `f` as the integral of the derivative of `F` with respect
 to `x`.
@@ -261,10 +262,8 @@ theorem hasDerivAt_integral_of_dominated_loc_of_lip {F' : α → E} (ε_pos : 0 
   replace h_diff : ∀ᵐ a ∂μ, HasFDerivAt (F · a) (L (F' a)) x₀ :=
     h_diff.mono fun x hx ↦ hx.hasFDerivAt
   have hm : AEStronglyMeasurable (L ∘ F') μ := L.continuous.comp_aestronglyMeasurable hF'_meas
-  cases'
-    hasFDerivAt_integral_of_dominated_loc_of_lip ε_pos hF_meas hF_int hm h_lipsch bound_integrable
-      h_diff with
-    hF'_int key
+  obtain ⟨hF'_int, key⟩ := hasFDerivAt_integral_of_dominated_loc_of_lip
+    ε_pos hF_meas hF_int hm h_lipsch bound_integrable h_diff
   replace hF'_int : Integrable F' μ := by
     rw [← integrable_norm_iff hm] at hF'_int
     simpa only [L, (· ∘ ·), integrable_norm_iff, hF'_meas, one_mul, norm_one,

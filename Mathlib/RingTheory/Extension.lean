@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.RingTheory.Ideal.Cotangent
+import Mathlib.RingTheory.Localization.Defs
 
 /-!
 
@@ -92,7 +93,7 @@ lemma algebraMap_surjective : Function.Surjective (algebraMap P.Ring S) := (⟨_
 section Construction
 
 /-- Construct `Extension` from a surjective algebra homomorphism. -/
-@[simps (config := .lemmasOnly) Ring σ]
+@[simps -isSimp Ring σ]
 noncomputable
 def ofSurjective {P : Type w} [CommRing P] [Algebra R P] (f : P →ₐ[R] S)
     (h : Function.Surjective f) : Extension.{w} R S where
@@ -104,7 +105,7 @@ def ofSurjective {P : Type w} [CommRing P] [Algebra R P] (f : P →ₐ[R] S)
 
 variable (R S) in
 /-- The trivial extension of `S`. -/
-@[simps (config := .lemmasOnly) Ring σ]
+@[simps -isSimp Ring σ]
 noncomputable
 def self : Extension R S where
   Ring := S
@@ -415,6 +416,13 @@ lemma Cotangent.map_comp (f : Hom P P') (g : Hom P' P'') :
   obtain ⟨x, rfl⟩ := Cotangent.mk_surjective x
   simp only [map_mk, Hom.toAlgHom_apply, Hom.comp_toRingHom, RingHom.coe_comp, Function.comp_apply,
     val_mk, LinearMap.coe_comp, LinearMap.coe_restrictScalars]
+
+lemma Cotangent.finite (hP : P.ker.FG) :
+    Module.Finite S P.Cotangent := by
+  refine ⟨.of_restrictScalars (R := P.Ring) _ ?_⟩
+  rw [Submodule.restrictScalars_top, ← LinearMap.range_eq_top.mpr Extension.Cotangent.mk_surjective,
+    ← Submodule.map_top]
+  exact (P.ker.fg_top.mpr hP).map _
 
 end Cotangent
 

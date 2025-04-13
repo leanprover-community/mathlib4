@@ -96,7 +96,7 @@ theorem dvd_or_coprime (x y : α) (h : Irreducible x) :
     x ∣ y ∨ IsCoprime x y :=
   letI := Classical.decEq α
   letI := EuclideanDomain.gcdMonoid α
-  _root_.dvd_or_coprime x y h
+  _root_.dvd_or_isCoprime x y h
 
 end EuclideanDomain
 

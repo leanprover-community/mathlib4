@@ -3,8 +3,10 @@ Copyright (c) 2019 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Module.Submodule.Equiv
 import Mathlib.Algebra.Module.Equiv.Basic
+import Mathlib.Algebra.Module.Rat
 import Mathlib.Data.Bracket
 import Mathlib.Tactic.Abel
 
@@ -65,7 +67,7 @@ class LieRing (L : Type v) extends AddCommGroup L, Bracket L L where
 
 /-- A Lie algebra is a module with compatible product, known as the bracket, satisfying the Jacobi
 identity. Forgetting the scalar multiplication, every Lie algebra is a Lie ring. -/
-class LieAlgebra (R : Type u) (L : Type v) [CommRing R] [LieRing L] extends Module R L where
+@[ext] class LieAlgebra (R : Type u) (L : Type v) [CommRing R] [LieRing L] extends Module R L where
   /-- A Lie algebra bracket is compatible with scalar multiplication in its second argument.
 
   The compatibility in the first argument is not a class property, but follows since every
@@ -121,6 +123,14 @@ lemma lie_swap_lie [Bracket L₂ L₁] [AddCommGroup M] [IsLieTower L₁ L₂ M]
 end IsLieTower
 
 section BasicProperties
+
+theorem LieAlgebra.toModule_injective (L : Type*) [LieRing L] :
+    Function.Injective (@LieAlgebra.toModule _ _ _ _ : LieAlgebra ℚ L → Module ℚ L) := by
+  rintro ⟨h₁⟩ ⟨h₂⟩ heq
+  congr
+
+instance (L : Type*) [LieRing L] : Subsingleton (LieAlgebra ℚ L) :=
+  LieAlgebra.toModule_injective L |>.subsingleton
 
 variable {R : Type u} {L : Type v} {M : Type w} {N : Type w₁}
 variable [CommRing R] [LieRing L] [LieAlgebra R L]
@@ -275,9 +285,34 @@ instance Module.Dual.instLieModule : LieModule R L (M →ₗ[R] R) where
   smul_lie := fun t x m ↦ by ext n; simp
   lie_smul := fun t x m ↦ by ext n; simp
 
+variable (L) in
+/-- It is sometimes useful to regard a `LieRing` as a `NonUnitalNonAssocRing`. -/
+def LieRing.toNonUnitalNonAssocRing : NonUnitalNonAssocRing L :=
+  { mul := Bracket.bracket
+    left_distrib := lie_add
+    right_distrib := add_lie
+    zero_mul := zero_lie
+    mul_zero := lie_zero }
+
+variable {ι κ : Type*}
+
+theorem sum_lie (s : Finset ι) (f : ι → L) (a : L) : ⁅∑ i ∈ s, f i, a⁆ = ∑ i ∈ s, ⁅f i, a⁆ :=
+  let _i := LieRing.toNonUnitalNonAssocRing L
+  s.sum_mul f a
+
+theorem lie_sum (s : Finset ι) (f : ι → L) (a : L) : ⁅a, ∑ i ∈ s, f i⁆ = ∑ i ∈ s, ⁅a, f i⁆ :=
+  let _i := LieRing.toNonUnitalNonAssocRing L
+  s.mul_sum f a
+
+theorem sum_lie_sum {κ : Type*} (s : Finset ι) (t : Finset κ) (f : ι → L) (g : κ → L) :
+    ⁅(∑ i ∈ s, f i), ∑ j ∈ t, g j⁆ = ∑ i ∈ s, ∑ j ∈ t, ⁅f i, g j⁆ :=
+  let _i := LieRing.toNonUnitalNonAssocRing L
+  s.sum_mul_sum t f g
+
 end BasicProperties
 
-/-- A morphism of Lie algebras is a linear map respecting the bracket operations. -/
+/-- A morphism of Lie algebras (denoted as `L₁ →ₗ⁅R⁆ L₂`)
+is a linear map respecting the bracket operations. -/
 structure LieHom (R L L' : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
   [LieRing L'] [LieAlgebra R L'] extends L →ₗ[R] L' where
   /-- A morphism of Lie algebras is compatible with brackets. -/
@@ -399,8 +434,7 @@ def comp (f : L₂ →ₗ⁅R⁆ L₃) (g : L₁ →ₗ⁅R⁆ L₂) : L₁ →�
   { LinearMap.comp f.toLinearMap g.toLinearMap with
     map_lie' := by
       intros x y
-      change f (g ⁅x, y⁆) = ⁅f (g x), f (g y)⁆
-      rw [map_lie, map_lie] }
+      simp }
 
 theorem comp_apply (f : L₂ →ₗ⁅R⁆ L₃) (g : L₁ →ₗ⁅R⁆ L₂) (x : L₁) : f.comp g x = f (g x) :=
   rfl
@@ -470,9 +504,10 @@ theorem LieModule.compLieHom [Module R M] [LieModule R L₂ M] :
 
 end ModulePullBack
 
-/-- An equivalence of Lie algebras is a morphism which is also a linear equivalence. We could
-instead define an equivalence to be a morphism which is also a (plain) equivalence. However it is
-more convenient to define via linear equivalence to get `.toLinearEquiv` for free. -/
+/-- An equivalence of Lie algebras (denoted as `L₁ ≃ₗ⁅R⁆ L₂`) is a morphism
+which is also a linear equivalence.
+We could instead define an equivalence to be a morphism which is also a (plain) equivalence.
+However, it is more convenient to define via linear equivalence to get `.toLinearEquiv` for free. -/
 structure LieEquiv (R : Type u) (L : Type v) (L' : Type w) [CommRing R] [LieRing L] [LieAlgebra R L]
   [LieRing L'] [LieAlgebra R L'] extends L →ₗ⁅R⁆ L' where
   /-- The inverse function of an equivalence of Lie algebras -/
@@ -642,8 +677,8 @@ variable [AddCommGroup M] [AddCommGroup N] [AddCommGroup P]
 variable [Module R M] [Module R N] [Module R P]
 variable [LieRingModule L M] [LieRingModule L N] [LieRingModule L P]
 
-/-- A morphism of Lie algebra modules is a linear map which commutes with the action of the Lie
-algebra. -/
+/-- A morphism of Lie algebra modules (denoted as `M →ₗ⁅R,L⁆ N`) is a linear map
+which commutes with the action of the Lie algebra. -/
 structure LieModuleHom extends M →ₗ[R] N where
   /-- A module of Lie algebra modules is compatible with the action of the Lie algebra on the
   modules. -/
@@ -756,8 +791,7 @@ def comp (f : N →ₗ⁅R,L⁆ P) (g : M →ₗ⁅R,L⁆ N) : M →ₗ⁅R,L⁆
   { LinearMap.comp f.toLinearMap g.toLinearMap with
     map_lie' := by
       intros x m
-      change f (g ⁅x, m⁆) = ⁅x, f (g m)⁆
-      rw [map_lie, map_lie] }
+      simp }
 
 theorem comp_apply (f : N →ₗ⁅R,L⁆ P) (g : M →ₗ⁅R,L⁆ N) (m : M) : f.comp g m = f (g m) :=
   rfl
@@ -857,8 +891,8 @@ instance : Module R (M →ₗ⁅R,L⁆ N) :=
 
 end LieModuleHom
 
-/-- An equivalence of Lie algebra modules is a linear equivalence which is also a morphism of
-Lie algebra modules. -/
+/-- An equivalence of Lie algebra modules (denoted as `M ≃ₗ⁅R,L⁆ N`) is a linear equivalence
+which is also a morphism of Lie algebra modules. -/
 structure LieModuleEquiv extends M →ₗ⁅R,L⁆ N where
   /-- The inverse function of an equivalence of Lie modules -/
   invFun : N → M

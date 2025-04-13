@@ -8,7 +8,7 @@ import Mathlib.Analysis.Calculus.Deriv.Slope
 import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 import Mathlib.Analysis.Normed.Module.FiniteDimension
 import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
+import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
 
 /-!
 # Derivative is measurable

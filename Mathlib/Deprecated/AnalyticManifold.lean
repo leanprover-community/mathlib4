@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Lee, Geoffrey Irving
 -/
 import Mathlib.Analysis.Analytic.Constructions
-import Mathlib.Geometry.Manifold.IsManifold
+import Mathlib.Geometry.Manifold.IsManifold.Basic
 
 /-!
 # Analytic manifolds (possibly with boundary or corners)
@@ -151,7 +151,7 @@ section AnalyticManifold
 s.t. all extended chart conversion maps are analytic. -/
 @[deprecated "use instead `IsManifold ω`" (since := "2025-01-23")]
 class AnalyticManifold (I : ModelWithCorners 𝕜 E H) (M : Type*) [TopologicalSpace M]
-  [ChartedSpace H M] extends HasGroupoid M (analyticGroupoid I) : Prop
+  [ChartedSpace H M] : Prop extends HasGroupoid M (analyticGroupoid I)
 
 /-- Normed spaces are analytic manifolds over themselves. -/
 instance AnalyticManifold.self : AnalyticManifold 𝓘(𝕜, E) E where

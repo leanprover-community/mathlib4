@@ -34,33 +34,33 @@ namespace DoldKan
 variable {C : Type*} [Category C] [Preadditive C]
 variable {X : SimplicialObject C}
 
-/-- A morphism `φ : Y ⟶ X _[n+1]` satisfies `HigherFacesVanish q φ`
+/-- A morphism `φ : Y ⟶ X _⦋n+1⦌` satisfies `HigherFacesVanish q φ`
 when the compositions `φ ≫ X.δ j` are `0` for `j ≥ max 1 (n+2-q)`. When `q ≤ n+1`,
 it basically means that the composition `φ ≫ X.δ j` are `0` for the `q` highest
 possible values of a nonzero `j`. Otherwise, when `q ≥ n+2`, all the compositions
 `φ ≫ X.δ j` for nonzero `j` vanish. See also the lemma `comp_P_eq_self_iff` in
 `Projections.lean` which states that `HigherFacesVanish q φ` is equivalent to
 the identity `φ ≫ (P q).f (n+1) = φ`. -/
-def HigherFacesVanish {Y : C} {n : ℕ} (q : ℕ) (φ : Y ⟶ X _[n + 1]) : Prop :=
+def HigherFacesVanish {Y : C} {n : ℕ} (q : ℕ) (φ : Y ⟶ X _⦋n + 1⦌) : Prop :=
   ∀ j : Fin (n + 1), n + 1 ≤ (j : ℕ) + q → φ ≫ X.δ j.succ = 0
 
 namespace HigherFacesVanish
 
 @[reassoc]
-theorem comp_δ_eq_zero {Y : C} {n : ℕ} {q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFacesVanish q φ)
+theorem comp_δ_eq_zero {Y : C} {n : ℕ} {q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : HigherFacesVanish q φ)
     (j : Fin (n + 2)) (hj₁ : j ≠ 0) (hj₂ : n + 2 ≤ (j : ℕ) + q) : φ ≫ X.δ j = 0 := by
   obtain ⟨i, rfl⟩ := Fin.eq_succ_of_ne_zero hj₁
   apply v i
   simp only [Fin.val_succ] at hj₂
   omega
 
-theorem of_succ {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFacesVanish (q + 1) φ) :
+theorem of_succ {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : HigherFacesVanish (q + 1) φ) :
     HigherFacesVanish q φ := fun j hj => v j (by simpa only [← add_assoc] using le_add_right hj)
 
-theorem of_comp {Y Z : C} {q n : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFacesVanish q φ) (f : Z ⟶ Y) :
+theorem of_comp {Y Z : C} {q n : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : HigherFacesVanish q φ) (f : Z ⟶ Y) :
     HigherFacesVanish q (f ≫ φ) := fun j hj => by rw [assoc, v j hj, comp_zero]
 
-theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFacesVanish q φ)
+theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : HigherFacesVanish q φ)
     (hnaq : n = a + q) :
     φ ≫ (Hσ q).f (n + 1) =
       -φ ≫ X.δ ⟨a + 1, Nat.succ_lt_succ (Nat.lt_succ_iff.mpr (Nat.le.intro hnaq.symm))⟩ ≫
@@ -106,7 +106,7 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFac
   /- the purpose of the following `simplif` is to create three subgoals in order
       to finish the proof -/
   have simplif :
-    ∀ a b c d e f : Y ⟶ X _[n + 1], b = f → d + e = 0 → c + a = 0 → a + b + (c + d + e) = f := by
+    ∀ a b c d e f : Y ⟶ X _⦋n + 1⦌, b = f → d + e = 0 → c + a = 0 → a + b + (c + d + e) = f := by
     intro a b c d e f h1 h2 h3
     rw [add_assoc c d e, h2, add_zero, add_comm a, add_assoc, add_comm a, h3, add_zero, h1]
   apply simplif
@@ -128,11 +128,12 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFac
       rw [Fin.le_iff_val_le_val]
       dsimp
       omega
-    erw [δ_comp_σ_of_le X hia, add_eq_zero_iff_eq_neg, ← neg_zsmul]
+    rw [← Fin.succ_mk, ← Fin.castSucc_mk _ i, δ_comp_σ_of_le X hia, add_eq_zero_iff_eq_neg,
+      ← neg_zsmul]
     congr 2
     ring
 
-theorem comp_Hσ_eq_zero {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFacesVanish q φ)
+theorem comp_Hσ_eq_zero {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : HigherFacesVanish q φ)
     (hqn : n < q) : φ ≫ (Hσ q).f (n + 1) = 0 := by
   simp only [Hσ, Homotopy.nullHomotopicMap'_f (c_mk (n + 2) (n + 1) rfl) (c_mk (n + 1) n rfl)]
   rw [hσ'_eq_zero hqn (c_mk (n + 1) n rfl), comp_zero, zero_add]
@@ -146,7 +147,8 @@ theorem comp_Hσ_eq_zero {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : Higher
         Fin.cast_mk, Fin.castSucc_mk]
       simp only [Fin.mk_zero, Fin.val_zero, pow_zero, one_zsmul, Fin.mk_one, Fin.val_one, pow_one,
         neg_smul, comp_neg]
-      erw [δ_comp_σ_self, δ_comp_σ_succ, add_neg_cancel]
+      rw [← Fin.castSucc_zero (n := n + 1), δ_comp_σ_self, ← Fin.succ_zero_eq_one, δ_comp_σ_succ,
+        add_neg_cancel]
     · intro j
       dsimp [Fin.cast, Fin.castLE, Fin.castLT]
       rw [comp_zsmul, comp_zsmul, δ_comp_σ_of_gt', v.comp_δ_eq_zero_assoc, zero_comp, zsmul_zero]
@@ -159,7 +161,7 @@ theorem comp_Hσ_eq_zero {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : Higher
       · simp only [Fin.pred, Fin.subNat, Nat.pred_eq_sub_one, Nat.succ_add_sub_one]
         omega
 
-theorem induction {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFacesVanish q φ) :
+theorem induction {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : HigherFacesVanish q φ) :
     HigherFacesVanish (q + 1) (φ ≫ (𝟙 _ + Hσ q).f (n + 1)) := by
   intro j hj₁
   dsimp
@@ -168,9 +170,9 @@ theorem induction {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFacesVa
   by_cases hqn : n < q
   · rw [v.comp_Hσ_eq_zero hqn, zero_comp, add_zero, v j (by omega)]
   -- we now assume that n≥q, and write n=a+q
-  cases' Nat.le.dest (not_lt.mp hqn) with a ha
+  obtain ⟨a, ha⟩ := Nat.le.dest (not_lt.mp hqn)
   rw [v.comp_Hσ_eq (show n = a + q by omega), neg_comp, add_neg_eq_zero, assoc, assoc]
-  cases' n with m hm
+  rcases n with - | m
   -- the boundary case n=0
   · simp only [Nat.eq_zero_of_add_eq_zero_left ha, Fin.eq_zero j, Fin.mk_zero, Fin.mk_one,
       δ_comp_σ_succ, comp_id]
