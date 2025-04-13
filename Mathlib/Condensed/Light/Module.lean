@@ -10,7 +10,6 @@ import Mathlib.Algebra.Category.ModuleCat.FilteredColimits
 import Mathlib.CategoryTheory.Sites.Abelian
 import Mathlib.CategoryTheory.Sites.Adjunction
 import Mathlib.CategoryTheory.Sites.Equivalence
-import Mathlib.CategoryTheory.Sites.LeftExact
 import Mathlib.Condensed.Light.Basic
 /-!
 
@@ -63,3 +62,11 @@ The category of condensed abelian groups, defined as sheaves of abelian groups o
 abbrev LightCondAb := LightCondMod ℤ
 
 noncomputable example : Abelian LightCondAb := inferInstance
+
+namespace LightCondMod
+
+lemma hom_naturality_apply {X Y : LightCondMod.{u} R} (f : X ⟶ Y) {S T : LightProfiniteᵒᵖ}
+    (g : S ⟶ T) (x : X.val.obj S) : f.val.app T (X.val.map g x) = Y.val.map g (f.val.app S x) :=
+  NatTrans.naturality_apply f.val g x
+
+end LightCondMod

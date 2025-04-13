@@ -4,11 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Algebra.Order.Ring.Rat
+import Mathlib.Algebra.Order.Ring.Unbundled.Rat
 import Mathlib.Data.Rat.Lemmas
 import Mathlib.Data.Int.Sqrt
-
-#align_import data.rat.sqrt from "leanprover-community/mathlib"@"46a64b5b4268c594af770c44d9e502afc6a515cb"
 
 /-!
 # Square root on rational numbers
@@ -23,24 +21,32 @@ namespace Rat
 
 /-- Square root function on rational numbers, defined by taking the (integer) square root of the
 numerator and the square root (on natural numbers) of the denominator. -/
--- @[pp_nodot] porting note: unknown attribute
+@[pp_nodot]
 def sqrt (q : ℚ) : ℚ := mkRat (Int.sqrt q.num) (Nat.sqrt q.den)
-#align rat.sqrt Rat.sqrt
 
 theorem sqrt_eq (q : ℚ) : Rat.sqrt (q * q) = |q| := by
   rw [sqrt, mul_self_num, mul_self_den, Int.sqrt_eq, Nat.sqrt_eq, abs_def, divInt_ofNat]
-#align rat.sqrt_eq Rat.sqrt_eq
 
 theorem exists_mul_self (x : ℚ) : (∃ q, q * q = x) ↔ Rat.sqrt x * Rat.sqrt x = x :=
   ⟨fun ⟨n, hn⟩ => by rw [← hn, sqrt_eq, abs_mul_abs_self], fun h => ⟨Rat.sqrt x, h⟩⟩
-#align rat.exists_mul_self Rat.exists_mul_self
 
 lemma sqrt_nonneg (q : ℚ) : 0 ≤ Rat.sqrt q := mkRat_nonneg (Int.sqrt_nonneg _) _
-#align rat.sqrt_nonneg Rat.sqrt_nonneg
 
 /-- `IsSquare` can be decided on `ℚ` by checking against the square root. -/
 instance : DecidablePred (IsSquare : ℚ → Prop) :=
   fun m => decidable_of_iff' (sqrt m * sqrt m = m) <| by
     simp_rw [← exists_mul_self m, IsSquare, eq_comm]
+
+@[simp, norm_cast]
+theorem sqrt_intCast (z : ℤ) : Rat.sqrt (z : ℚ) = Int.sqrt z := by
+  simp only [sqrt, num_intCast, den_intCast, Nat.sqrt_one, mkRat_one]
+
+@[simp, norm_cast]
+theorem sqrt_natCast (n : ℕ) : Rat.sqrt (n : ℚ) = Nat.sqrt n := by
+  rw [← Int.cast_natCast, sqrt_intCast, Int.sqrt_natCast, Int.cast_natCast]
+
+@[simp]
+theorem sqrt_ofNat (n : ℕ) : Rat.sqrt (ofNat(n) : ℚ) = Nat.sqrt (OfNat.ofNat n) :=
+  sqrt_natCast _
 
 end Rat

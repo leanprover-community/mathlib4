@@ -6,8 +6,6 @@ Authors: Julian Kuelshammer
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Tactic.ToAdditive
 
-#align_import algebra.pempty_instances from "leanprover-community/mathlib"@"c3019c79074b0619edb4b27553a91b2e82242395"
-
 /-!
 # Instances on pempty
 
@@ -22,5 +20,3 @@ universe u
 instance SemigroupPEmpty : Semigroup PEmpty.{u + 1} where
   mul x _ := by cases x
   mul_assoc x y z := by cases x
-#align semigroup_pempty SemigroupPEmpty
-#align add_semigroup_pempty AddSemigroupPEmpty
