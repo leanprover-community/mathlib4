@@ -68,7 +68,7 @@ theorem HasSubst.of_constantCoeff_zero' {a : PowerSeries S}
     (ha : PowerSeries.constantCoeff S a = 0) : HasSubst a :=
   HasSubst.of_constantCoeff_zero ha
 
-protected theorem HasSubst.X {t : τ} :
+protected theorem HasSubst.X (t : τ) :
     HasSubst (MvPowerSeries.X t : MvPowerSeries τ S) := by
   simp [HasSubst]
 
@@ -79,7 +79,7 @@ protected theorem HasSubst.X' : HasSubst (X : R⟦X⟧) :=
   HasSubst.X
 
 protected theorem HasSubst.X_pow {n : ℕ} (hn : n ≠ 0) : HasSubst (X ^ n : R⟦X⟧) :=
-  HasSubst.of_constantCoeff_zero' (by simp only [map_pow, constantCoeff_X, zero_pow hn])
+  HasSubst.of_constantCoeff_zero' (by simp [hn])
 
 protected theorem HasSubst.monomial {n : τ →₀ ℕ} (hn : n ≠ 0) (s : S) :
     HasSubst (MvPowerSeries.monomial S n s) := by
@@ -164,7 +164,7 @@ theorem substAlgHom_eq_aeval
     (substAlgHom ha : R⟦X⟧ →ₐ[R] MvPowerSeries τ S) = PowerSeries.aeval ha.hasEval := by
   ext1 f
   simpa only [substAlgHom, aeval, MvPowerSeries.coe_substAlgHom]
-    using congr_fun (MvPowerSeries.substAlgHom_eq_aeval (R := R) ha.const) f
+    using congr_fun (MvPowerSeries.substAlgHom_eq_aeval ha.const) f
 
 theorem subst_add (ha : HasSubst a) (f g : PowerSeries R) :
     subst a (f + g) = subst a f + subst a g := by
@@ -186,7 +186,7 @@ theorem subst_smul [Algebra A S] [IsScalarTower A R S]
 theorem coeff_subst_finite (ha : HasSubst a) (f : PowerSeries R) (e : τ →₀ ℕ) :
     Set.Finite (fun (d : ℕ) ↦ (coeff R d f) • (MvPowerSeries.coeff S e (a ^ d))).support := by
   convert (MvPowerSeries.coeff_subst_finite ha.const f e).image
-    ⇑(Finsupp.LinearEquiv.finsuppUnique ℕ ℕ Unit).toEquiv
+    (Finsupp.LinearEquiv.finsuppUnique ℕ ℕ Unit).toEquiv
   rw [← Equiv.preimage_eq_iff_eq_image, ← Function.support_comp_eq_preimage]
   apply congr_arg
   rw [← Equiv.eq_comp_symm]
@@ -194,7 +194,7 @@ theorem coeff_subst_finite (ha : HasSubst a) (f : PowerSeries R) (e : τ →₀ 
   simp only [Finsupp.prod_pow, Finset.univ_unique, PUnit.default_eq_unit, Finset.prod_singleton,
     LinearEquiv.coe_toEquiv_symm, EquivLike.coe_coe, Function.comp_apply,
     Finsupp.LinearEquiv.finsuppUnique_symm_apply, Finsupp.single_eq_same]
-  congr
+  rfl
 
 theorem coeff_subst_finite' (hb : HasSubst b) (f : PowerSeries R) (e : ℕ) :
     Set.Finite (fun (d : ℕ) ↦ (coeff R d f) • (PowerSeries.coeff S e (b ^ d))).support :=
@@ -204,8 +204,8 @@ theorem coeff_subst (ha : HasSubst a) (f : PowerSeries R) (e : τ →₀ ℕ) :
     MvPowerSeries.coeff S e (subst a f) =
       finsum (fun (d : ℕ) ↦
         (coeff R d f) • (MvPowerSeries.coeff S e (a ^ d))) := by
-  erw [MvPowerSeries.coeff_subst ha.const f e]
-  rw [← finsum_comp_equiv (Finsupp.LinearEquiv.finsuppUnique ℕ ℕ Unit).toEquiv.symm]
+  rw [subst, MvPowerSeries.coeff_subst ha.const f e, ← finsum_comp_equiv
+    (Finsupp.LinearEquiv.finsuppUnique ℕ ℕ Unit).toEquiv.symm]
   apply finsum_congr
   intro d
   congr
@@ -216,7 +216,7 @@ theorem coeff_subst' {b : S⟦X⟧} (hb : HasSubst b) (f : R⟦X⟧) (e : ℕ) :
     coeff S e (f.subst b) =
       finsum (fun (d : ℕ) ↦
         (coeff R d f) • (PowerSeries.coeff S e (b ^ d))) := by
-  simp only [PowerSeries.coeff, coeff_subst hb]
+  simp [PowerSeries.coeff, coeff_subst hb]
 
 theorem constantCoeff_subst (ha : HasSubst a) (f : PowerSeries R) :
     MvPowerSeries.constantCoeff τ S (subst a f) =
@@ -230,34 +230,33 @@ theorem map_algebraMap_eq_subst_X (f : R⟦X⟧) :
 theorem _root_.Polynomial.toPowerSeries_toMvPowerSeries (p : Polynomial R) :
     (p : PowerSeries R) =
       ((Polynomial.aeval (MvPolynomial.X ()) p : MvPolynomial Unit R) : MvPowerSeries Unit R) := by
-  change (Polynomial.coeToPowerSeries.algHom R) p =
+  suffices (Polynomial.coeToPowerSeries.algHom R) p =
     (MvPolynomial.coeToMvPowerSeries.algHom R)
-      (Polynomial.aeval (MvPolynomial.X () : MvPolynomial Unit R) p)
+      (Polynomial.aeval (MvPolynomial.X () : MvPolynomial Unit R) p) by simpa
   rw [← AlgHom.comp_apply]
   apply AlgHom.congr_fun
   apply Polynomial.algHom_ext
   simp only [Polynomial.coeToPowerSeries.algHom_apply, Algebra.id.map_eq_id, Polynomial.coe_X,
     map_X]
-  erw [AlgHom.comp_apply]
-  simp only [Polynomial.aeval_X, MvPolynomial.coeToMvPowerSeries.algHom_apply,
+  simp only [Polynomial.coeToPowerSeries.algHom_apply, Algebra.id.map_eq_id, Polynomial.coe_X,
+    map_X, AlgHom.comp_apply,Polynomial.aeval_X, MvPolynomial.coeToMvPowerSeries.algHom_apply,
     Algebra.id.map_eq_id, MvPowerSeries.map_id, MvPolynomial.coe_X, RingHom.id_apply]
   rfl
 
 theorem substAlgHom_coe (ha : HasSubst a) (p : Polynomial R) :
     substAlgHom ha (p : PowerSeries R) = ↑(Polynomial.aeval a p) := by
-  rw [p.toPowerSeries_toMvPowerSeries, substAlgHom]
-  erw [MvPowerSeries.coe_substAlgHom]
-  rw [MvPowerSeries.subst_coe, ← AlgHom.comp_apply]
+  rw [p.toPowerSeries_toMvPowerSeries, substAlgHom, MvPowerSeries.coe_substAlgHom,
+    MvPowerSeries.subst_coe, ← AlgHom.comp_apply]
   apply AlgHom.congr_fun
   apply Polynomial.algHom_ext
-  simp only [AlgHom.coe_comp, Function.comp_apply, Polynomial.aeval_X, MvPolynomial.aeval_X]
+  simp
 
 theorem substAlgHom_X (ha : HasSubst a) :
     substAlgHom ha (X : R⟦X⟧) = a := by
   rw [← Polynomial.coe_X, substAlgHom_coe, Polynomial.aeval_X]
 
 theorem subst_coe (ha : HasSubst a) (p : Polynomial R) :
-    subst (R := R) a (p : PowerSeries R) = ↑(Polynomial.aeval a p) := by
+    subst (R := R) a (p : PowerSeries R) = (Polynomial.aeval a p) := by
   rw [← coe_substAlgHom ha, substAlgHom_coe]
 
 theorem subst_X (ha : HasSubst a) :
@@ -265,17 +264,12 @@ theorem subst_X (ha : HasSubst a) :
   rw [← coe_substAlgHom ha, substAlgHom_X]
 
 theorem HasSubst.comp {a : PowerSeries S} (ha : HasSubst a)
-    {b : MvPowerSeries υ T} (hb : HasSubst b):
+  {b : MvPowerSeries υ T} (hb : HasSubst b) :
     HasSubst (substAlgHom hb a) :=
   MvPowerSeries.IsNilpotent_subst hb.const ha
 
-variable
-    {υ : Type*} -- [DecidableEq υ]
-    {T : Type*} [CommRing T] [Algebra R T]
-    {a : PowerSeries S}
-    {b : MvPowerSeries υ T}
-    {a' : MvPowerSeries τ S}
-    {b' : τ → MvPowerSeries υ T}
+variable {a : PowerSeries S} {b : MvPowerSeries υ T} {a' : MvPowerSeries τ S}
+  {b' : τ → MvPowerSeries υ T}
 
 theorem substAlgHom_comp_substAlgHom [Algebra S T] [IsScalarTower R S T]
     (ha : HasSubst a) (hb : HasSubst b) :
@@ -291,14 +285,12 @@ theorem substAlgHom_comp_substAlgHom_apply [Algebra S T] [IsScalarTower R S T]
 theorem subst_comp_subst [Algebra S T] [IsScalarTower R S T]
     (ha : HasSubst a) (hb : HasSubst b) :
     (subst b) ∘ (subst a) = subst (R := R) (subst b a) := by
-  simpa only [funext_iff, DFunLike.ext_iff, AlgHom.coe_comp, AlgHom.coe_restrictScalars',
-    Function.comp_apply, coe_substAlgHom]
-    using substAlgHom_comp_substAlgHom (R := R) ha hb
+simpa [funext_iff, DFunLike.ext_iff, coe_substAlgHom] using substAlgHom_comp_substAlgHom ha hb
 
 theorem subst_comp_subst_apply [Algebra S T] [IsScalarTower R S T]
     (ha : HasSubst a) (hb : HasSubst b) (f : PowerSeries R) :
     subst b (subst a f) = subst (subst b a) f :=
-  congr_fun (subst_comp_subst (R := R) ha hb) f
+  congr_fun (subst_comp_subst ha hb) f
 
 theorem _root_.MvPowerSeries.rescaleUnit (a : R) (f : R⟦X⟧) :
     MvPowerSeries.rescale (Function.const _ a) f = rescale a f := by
