@@ -180,12 +180,12 @@ def reverse (M : NFA α σ) : NFA α σ where
   start := M.accept
   accept := M.start
 
-lemma spec_from (M : NFA α σ) :
+lemma reverse_acceptsFrom_rewindsToStart (M : NFA α σ) :
     M.reverse.acceptsFrom = M.rewindsToStart := by
   ext xs
   rfl
 
-lemma reverse.rewindFromSpec (xs : List α) (S1 S2 : Set σ) (M : NFA α σ) :
+lemma reverse_rewindFrom_evalFrom (xs : List α) (S1 S2 : Set σ) (M : NFA α σ) :
     (∃ s1 ∈ S1, s1 ∈ M.rewindFrom S2 xs) ↔
     (∃ s2 ∈ S2, s2 ∈ M.evalFrom S1 xs.reverse) := by
   dsimp [evalFrom, rewindFrom]
@@ -215,16 +215,16 @@ lemma reverse.rewindFromSpec (xs : List α) (S1 S2 : Set σ) (M : NFA α σ) :
       constructor <;> try assumption
       exists s2
 
-lemma reverse.rewindsToStartSpec (xs : List α) (M : NFA α σ) :
+lemma reverse_rewindsToStart_acceptsFrom (xs : List α) (M : NFA α σ) :
     xs ∈ M.rewindsToStart M.reverse.start ↔ xs.reverse ∈ M.acceptsFrom M.start := by
   rw [mem_rewindsToStart, mem_acceptsFrom]
-  apply reverse.rewindFromSpec
+  apply reverse_rewindFrom_evalFrom
 
-theorem reverse.Spec (M : NFA α σ) :
+theorem reverse_accepts (M : NFA α σ) :
     M.reverse.accepts = { xs : List α | xs.reverse ∈ M.accepts } := by
   ext xs
-  rw [accepts_acceptsFrom, accepts_acceptsFrom, spec_from, Set.mem_setOf]
-  apply reverse.rewindsToStartSpec
+  rw [accepts_acceptsFrom, accepts_acceptsFrom, reverse_acceptsFrom_rewindsToStart, Set.mem_setOf]
+  apply reverse_rewindsToStart_acceptsFrom
 
 end Reversal
 
@@ -252,7 +252,7 @@ def union (M1 : NFA α σ1) (M2 : NFA α σ2) : NFA α (σ1 ⊕ σ2) where
   step : σ1 ⊕ σ2 → α → Set (σ1 ⊕ σ2) := stepSum M1 M2
   accept : Set (σ1 ⊕ σ2) := { s : σ1 ⊕ σ2 | s.casesOn M1.accept M2.accept }
 
-lemma union.biUnionSpec
+lemma union_biUnion_spec
   (x : α) (S1 : Set σ1) (S2 : Set σ2) (M1 : NFA α σ1) (M2 : NFA α σ2) :
     (⋃ s,
       ⋃ (_ : Sum.rec (fun s1 ↦ S1 s1) (fun s2 ↦ S2 s2) s),
@@ -291,10 +291,10 @@ lemma union.biUnionSpec
       rcases hs2 with ⟨hs2,h2⟩
       exists s2
 
-lemma union.startSpec (M1 : NFA α σ1) (M2 : NFA α σ2) :
+lemma union_start_spec (M1 : NFA α σ1) (M2 : NFA α σ2) :
     (union M1 M2).start = { s : σ1 ⊕ σ2 | s.casesOn M1.start M2.start } := by rfl
 
-lemma union.SpecFrom
+lemma union_acceptsFrom
   (S1 : Set σ1) (S2 : Set σ2) (M1 : NFA α σ1) (M2 : NFA α σ2) :
     acceptsFrom (union M1 M2)
       { s : σ1 ⊕ σ2 | s.casesOn S1 S2 }
@@ -315,13 +315,13 @@ lemma union.SpecFrom
       intro S1 S2
       rw [List.foldl_cons, List.foldl_cons, List.foldl_cons, ←ih]
       clear ih
-      simp [union.biUnionSpec]
+      simp [union_biUnion_spec]
 
-theorem union.Spec
+theorem union_accepts
   (M1 : NFA α σ1) (M2 : NFA α σ2) :
     accepts (union M1 M2) = M1.accepts ∪ M2.accepts := by
   rw [accepts_acceptsFrom, accepts_acceptsFrom, accepts_acceptsFrom,
-    union.startSpec, union.SpecFrom]
+    union_start_spec, union_acceptsFrom]
 
 end Union
 
@@ -345,10 +345,10 @@ def intersect (M1 : NFA α σ1) (M2 : NFA α σ2) : NFA α (σ1 × σ2) where
   step : σ1 × σ2 → α → Set (σ1 × σ2) := stepProd M1 M2
   accept : Set (σ1 × σ2) := { s : σ1 × σ2 | s.1 ∈ M1.accept ∧ s.2 ∈ M2.accept }
 
-lemma intersect.startSpec (M1 : NFA α σ1) (M2 : NFA α σ2) :
+lemma intersect_start (M1 : NFA α σ1) (M2 : NFA α σ2) :
     (intersect M1 M2).start = { s : σ1 × σ2 | s.1 ∈ M1.start ∧ s.2 ∈ M2.start } := by rfl
 
-lemma intersect.biUnionSpec
+lemma intersect_biUnion
   (a : α)
   (S1 : Set σ1) (S2 : Set σ2)
   (M1 : NFA α σ1) (M2 : NFA α σ2) :
@@ -372,7 +372,7 @@ lemma intersect.biUnionSpec
     · assumption
     · exists s2
 
-lemma intersect.SpecFrom
+lemma intersect_acceptsFrom
   (S1 : Set σ1) (S2 : Set σ2) (M1 : NFA α σ1) (M2 : NFA α σ2) :
     acceptsFrom (intersect M1 M2)
       { s : σ1 × σ2 | s.1 ∈ S1 ∧ s.2 ∈ S2 }
@@ -393,13 +393,13 @@ lemma intersect.SpecFrom
       · rintro ⟨⟨x1, h1, hS1⟩, ⟨x2, h2, hS2⟩⟩
         exists x1, x2
     case cons x xs ih =>
-      rw [intersect.biUnionSpec, ih]
+      rw [intersect_biUnion, ih]
 
-theorem intersect.Spec
+theorem intersect_accepts
   (M1 : NFA α σ1) (M2 : NFA α σ2) :
     (intersect M1 M2).accepts = M1.accepts ∩ M2.accepts := by
   rw [NFA.accepts_acceptsFrom, NFA.accepts_acceptsFrom, NFA.accepts_acceptsFrom]
-  rw [intersect.startSpec, intersect.SpecFrom]
+  rw [intersect_start, intersect_acceptsFrom]
 
 end Intersection
 
