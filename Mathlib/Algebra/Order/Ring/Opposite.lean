@@ -10,25 +10,25 @@ import Mathlib.Algebra.Ring.Opposite
 /-!
 # Ordered ring instances for `MulOpposite`/`AddOpposite`
 
-This files transfers ordered (semi)ring instances from `α` to `αᵐᵒᵖ` and `αᵃᵒᵖ`.
+This files transfers ordered (semi)ring instances from `R` to `Rᵐᵒᵖ` and `Rᵃᵒᵖ`.
 -/
 
-variable {α : Type*}
+variable {R : Type*}
 
 namespace MulOpposite
 
-instance [Semiring α] [PartialOrder α] [IsOrderedRing α] : IsOrderedRing αᵐᵒᵖ where
-  zero_le_one := zero_le_one (α := α)
-  mul_le_mul_of_nonneg_left _ _ _ := mul_le_mul_of_nonneg_right (α := α)
-  mul_le_mul_of_nonneg_right _ _ _ := mul_le_mul_of_nonneg_left (α := α)
+instance [Semiring R] [PartialOrder R] [IsOrderedRing R] : IsOrderedRing Rᵐᵒᵖ where
+  zero_le_one := zero_le_one (α := R)
+  mul_le_mul_of_nonneg_left _ _ _ := mul_le_mul_of_nonneg_right (α := R)
+  mul_le_mul_of_nonneg_right _ _ _ := mul_le_mul_of_nonneg_left (α := R)
 
 end MulOpposite
 
 namespace AddOpposite
 
-instance [Semiring α] [PartialOrder α] [IsOrderedRing α] : IsOrderedRing αᵃᵒᵖ where
-  zero_le_one := zero_le_one (α := α)
-  mul_le_mul_of_nonneg_left _ _ _ := mul_le_mul_of_nonneg_left (α := α)
-  mul_le_mul_of_nonneg_right _ _ _ := mul_le_mul_of_nonneg_right (α := α)
+instance [Semiring R] [PartialOrder R] [IsOrderedRing R] : IsOrderedRing Rᵃᵒᵖ where
+  zero_le_one := zero_le_one (α := R)
+  mul_le_mul_of_nonneg_left _ _ _ := mul_le_mul_of_nonneg_left (α := R)
+  mul_le_mul_of_nonneg_right _ _ _ := mul_le_mul_of_nonneg_right (α := R)
 
 end AddOpposite
