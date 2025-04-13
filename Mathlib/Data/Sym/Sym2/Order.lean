@@ -59,19 +59,6 @@ theorem eq_iff_inf_sup_eq [LinearOrder α] (s t : Sym2 (α)) :
       have: diag b = t := by aesop
       aesop
     · let a := (Quot.out s).1
-      have ainx:  a ∈ s := by exact out_fst_mem s
-      let b := Sym2.Mem.other ainx
-      have H:= Sym2.other_ne diag ainx
-      have t': b ∈ s ∧ a ∈ s ↔ s = s(b, a) := Sym2.mem_and_mem_iff H
-      observe binx: b ∈ s
-      change  (Sym2.Mem.other ainx) ∈ s at binx
-      have ainy: a ∈ t := by rwa [← h]
-      have: b ∈ t ∧ a ∈ t ↔ t = s(b, a) := Sym2.mem_and_mem_iff H
-      replace this:t = s(b,a) := by aesop
-      simp [ainx,binx] at t'
-      have: s = s(b,a) := by
-        rw [← t']
-        exact binx
       have: s = t := by exact Sym2.ext_iff.mpr h
       exact ⟨congrArg inf this, congrArg sup this⟩
   · let x1 := (Quot.out s).1
