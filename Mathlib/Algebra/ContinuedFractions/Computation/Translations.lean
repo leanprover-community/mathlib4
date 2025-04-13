@@ -44,8 +44,8 @@ namespace GenContFract
 
 open GenContFract (of)
 
--- Fix a discrete linear ordered floor field and a value `v`.
-variable {K : Type*} [LinearOrderedField K] [FloorRing K] {v : K}
+-- Fix a discrete linear ordered division ring with `floor` function and a value `v`.
+variable {K : Type*} [DivisionRing K] [LinearOrder K] [FloorRing K] {v : K}
 
 namespace IntFractPair
 
@@ -96,7 +96,8 @@ theorem stream_succ_of_some {p : IntFractPair K} (h : IntFractPair.stream v n = 
 
 /-- The stream of `IntFractPair`s of an integer stops after the first term.
 -/
-theorem stream_succ_of_int (a : ℤ) (n : ℕ) : IntFractPair.stream (a : K) (n + 1) = none := by
+theorem stream_succ_of_int [IsStrictOrderedRing K] (a : ℤ) (n : ℕ) :
+    IntFractPair.stream (a : K) (n + 1) = none := by
   induction n with
   | zero =>
     refine IntFractPair.stream_eq_none_of_fr_eq_zero (IntFractPair.stream_zero (a : K)) ?_
@@ -262,6 +263,7 @@ theorem of_s_head (h : fract v ≠ 0) : (of v).s.head = some ⟨1, ⌊(fract v)�
   rfl
 
 variable (K)
+variable [IsStrictOrderedRing K]
 
 /-- If `a` is an integer, then the coefficient sequence of its continued fraction is empty.
 -/

@@ -278,7 +278,7 @@ theorem AlgebraicIndependent.to_subtype_range (hx : AlgebraicIndependent R x) :
   rwa [algebraicIndependent_subtype_range hx.injective]
 
 theorem AlgebraicIndependent.to_subtype_range' (hx : AlgebraicIndependent R x) {t}
-    (ht : range x = t) :AlgebraicIndependent R ((↑) : t → A) :=
+    (ht : range x = t) : AlgebraicIndependent R ((↑) : t → A) :=
   ht ▸ hx.to_subtype_range
 
 theorem IsTranscendenceBasis.to_subtype_range (hx : IsTranscendenceBasis R x) :

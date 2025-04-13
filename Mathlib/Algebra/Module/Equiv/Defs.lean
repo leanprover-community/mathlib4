@@ -69,7 +69,7 @@ add_decl_doc LinearEquiv.left_inv
 ring homomorphism `σ`. -/
 notation:50 M " ≃ₛₗ[" σ "] " M₂ => LinearEquiv σ M M₂
 
-/-- `M ≃ₗ [R] M₂` denotes the type of linear equivalences between `M` and `M₂` over
+/-- `M ≃ₗ[R] M₂` denotes the type of linear equivalences between `M` and `M₂` over
 a plain linear map `M →ₗ M₂`. -/
 notation:50 M " ≃ₗ[" R "] " M₂ => LinearEquiv (RingHom.id R) M M₂
 

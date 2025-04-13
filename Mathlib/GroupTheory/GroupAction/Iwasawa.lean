@@ -46,7 +46,7 @@ structure IwasawaStructure where
   /-- The subgroups of the Iwasawa structure -/
   T : α → Subgroup M
   /-- The commutativity property of the subgroups -/
-  is_comm : ∀ x : α, (T x).IsCommutative
+  is_comm : ∀ x : α, IsMulCommutative (T x)
   /-- The conjugacy property of the subgroups -/
   is_conj : ∀ g : M, ∀ x : α, T (g • x) = MulAut.conj g • T x
   /-- The subgroups generate the group -/

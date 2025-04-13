@@ -117,6 +117,10 @@ theorem lt_of_eq_of_lt' : b = c → a < b → a < c :=
 theorem not_lt_iff_not_le_or_ge : ¬a < b ↔ ¬a ≤ b ∨ b ≤ a := by
   rw [lt_iff_le_not_le, Classical.not_and_iff_not_or_not, Classical.not_not]
 
+-- Unnecessary brackets are here for readability
+lemma not_lt_iff_le_imp_le : ¬ a < b ↔ (a ≤ b → b ≤ a) := by
+  simp [not_lt_iff_not_le_or_ge, or_iff_not_imp_left]
+
 /-- If `x = y` then `y ≤ x`. Note: this lemma uses `y ≤ x` instead of `x ≥ y`, because `le` is used
 almost exclusively in mathlib. -/
 lemma ge_of_eq (h : a = b) : b ≤ a := le_of_eq h.symm
@@ -205,6 +209,16 @@ alias LE.le.antisymm' := ge_antisymm
 alias LE.le.lt_of_ne := lt_of_le_of_ne
 alias LE.le.lt_of_ne' := lt_of_le_of_ne'
 alias LE.le.lt_or_eq := lt_or_eq_of_le
+
+-- Unnecessary brackets are here for readability
+lemma le_imp_eq_iff_le_imp_le : (a ≤ b → b = a) ↔ (a ≤ b → b ≤ a) where
+  mp h hab := (h hab).le
+  mpr h hab := (h hab).antisymm hab
+
+-- Unnecessary brackets are here for readability
+lemma ge_imp_eq_iff_le_imp_le : (a ≤ b → a = b) ↔ (a ≤ b → b ≤ a) where
+  mp h hab := (h hab).ge
+  mpr h hab := hab.antisymm (h hab)
 
 namespace LE.le
 
