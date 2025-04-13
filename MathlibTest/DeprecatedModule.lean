@@ -4,6 +4,16 @@ import Mathlib.Tactic.Linter.DocString
 
 deprecated_module (since "2025-04-10")
 
+/--
+info: Deprecated modules
+
+'MathlibTest.DeprecatedModule' deprecates to
+#[Mathlib.Tactic.Linter.DocPrime, Mathlib.Tactic.Linter.DocString]
+with no message
+-/
+#guard_msgs in
+#show_deprecated_modules
+
 -- Deprecating the current module is possible and allows to add more deprecation information.
 deprecated_module "We can also give more details about the deprecation" (since "2025-04-10")
 
