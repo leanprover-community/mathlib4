@@ -177,7 +177,7 @@ Given NFA `M`, there is an NFA `reverse(M)` such that `L(reverse(M)) = reverse(L
 def reverse (M : NFA α σ) : NFA α σ :=
   NFA.mk M.unstep M.accept M.start
 
-lemma reverse.SpecFrom (S : Set σ) (M : NFA α σ) :
+lemma spec_from (S : Set σ) (M : NFA α σ) :
   M.reverse.acceptsFrom S =
   { xs : List α | xs ∈ M.startsTo S } := by
   ext xs
