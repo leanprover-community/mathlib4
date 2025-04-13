@@ -104,7 +104,7 @@ private partial def evalPrimeFactorsListAux
         (q(Eq.refl $en) : Expr)
       have ehp₁ := q(isNat_mul rfl $ehb $ehm $ehbm)
       have ehp₂ : Q(Nat.blt $ea $eb = true) :=
-        have : a < b := lt_of_le_of_ne hab <| Ne.symm h_ba_eq
+        have : a < b := lt_of_le_of_ne' hab h_ba_eq
         (q(Eq.refl (true)) : Expr)
       let .isNat _ lit ehp₃ ← evalMinFac.core q($eb) q(inferInstance) q($eb) ehb b | failure
       assertInstancesCommute
