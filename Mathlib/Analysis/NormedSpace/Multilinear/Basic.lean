@@ -82,9 +82,6 @@ instance ContinuousMultilinearMap.instContinuousEval :
     exact ⟨ball m 1, NormedSpace.isVonNBounded_of_isBounded _ isBounded_ball,
       ball_mem_nhds _ one_pos⟩
 
-@[deprecated (since := "2024-10-05")]
-protected alias ContinuousMultilinearMap.continuous_eval := continuous_eval
-
 namespace ContinuousLinearMap
 
 variable {G : Type*} [AddCommGroup G] [TopologicalSpace G] [Module 𝕜 G] [ContinuousConstSMul 𝕜 F]

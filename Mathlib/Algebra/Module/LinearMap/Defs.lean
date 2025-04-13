@@ -945,7 +945,7 @@ theorem restrictScalars_add (f g : M →ₗ[S] N) :
   rfl
 
 @[simp]
-theorem restrictScalars_neg {M N : Type*} [AddCommGroup M] [AddCommGroup N]
+theorem restrictScalars_neg {M N : Type*} [AddCommMonoid M] [AddCommGroup N]
     [Module R M] [Module R N] [Module S M] [Module S N] [CompatibleSMul M N R S]
     (f : M →ₗ[S] N) : (-f).restrictScalars R = -f.restrictScalars R :=
   rfl
@@ -964,7 +964,7 @@ lemma restrictScalars_comp [AddCommMonoid P] [Module S P] [Module R P]
   rfl
 
 @[simp]
-lemma restrictScalars_trans {T : Type*} [CommSemiring T] [Module T M] [Module T N]
+lemma restrictScalars_trans {T : Type*} [Semiring T] [Module T M] [Module T N]
     [CompatibleSMul M N S T] [CompatibleSMul M N R T] (f : M →ₗ[T] N) :
     (f.restrictScalars S).restrictScalars R = f.restrictScalars R :=
   rfl

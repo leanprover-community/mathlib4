@@ -156,7 +156,7 @@ theorem continuous_C [Semiring R] :
   · exact tendsto_id
   · exact tendsto_const_nhds
 
-/-- Scalar multiplication on `MvPowerSeries` is continous -/
+/-- Scalar multiplication on `MvPowerSeries` is continuous. -/
 instance {S : Type*} [Semiring S] [TopologicalSpace S]
     [CommSemiring R] [Algebra R S] [ContinuousSMul R S] :
     ContinuousSMul R (MvPowerSeries σ S) :=

@@ -13,7 +13,14 @@ import Mathlib.Data.PFun
 The partial recursive functions are defined similarly to the primitive
 recursive functions, but now all functions are partial, implemented
 using the `Part` monad, and there is an additional operation, called
-μ-recursion, which performs unbounded minimization.
+μ-recursion, which performs unbounded minimization: `μ f` returns the
+least natural number `n` for which `f n = 0`, or diverges if such `n` doesn't exist.
+
+## Main definitions
+
+- `Nat.Partrec f`: `f` is partial recursive, for functions `f : ℕ →. ℕ`
+- `Partrec f`: `f` is partial recursive, for partial functions between `Primcodable` types
+- `Computable f`: `f` is partial recursive, for total functions between `Primcodable` types
 
 ## References
 
@@ -141,7 +148,7 @@ theorem rfindOpt_mono {α} {f : ℕ → Option α} (H : ∀ {a m n}, m ≤ n →
     have := (H (le_max_left _ _) h).symm.trans (H (le_max_right _ _) hk)
     simp at this; simp [this, get_mem]⟩
 
-/-- `PartRec f` means that the partial function `f : ℕ → ℕ` is partially recursive. -/
+/-- `Partrec f` means that the partial function `f : ℕ → ℕ` is partially recursive. -/
 inductive Partrec : (ℕ →. ℕ) → Prop
   | zero : Partrec (pure 0)
   | succ : Partrec succ

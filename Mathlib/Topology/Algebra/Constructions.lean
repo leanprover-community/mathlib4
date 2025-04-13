@@ -3,7 +3,7 @@ Copyright (c) 2021 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
-import Mathlib.Topology.Homeomorph.Lemmas
+import Mathlib.Topology.Separation.Hausdorff
 
 /-!
 # Topological space structure on the opposite monoid and on the units group

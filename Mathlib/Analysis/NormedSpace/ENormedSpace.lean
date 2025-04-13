@@ -135,7 +135,7 @@ theorem top_map {x : V} (hx : x ≠ 0) : (⊤ : ENormedSpace 𝕜 V) x = ⊤ :=
 
 noncomputable instance : OrderTop (ENormedSpace 𝕜 V) where
   top := ⊤
-  le_top e x := open scoped Classical in if h : x = 0 then by simp [h] else by simp [top_map h]
+  le_top e x := by obtain h | h := eq_or_ne x 0 <;> simp [top_map, h]
 
 noncomputable instance : SemilatticeSup (ENormedSpace 𝕜 V) :=
   { ENormedSpace.partialOrder with
