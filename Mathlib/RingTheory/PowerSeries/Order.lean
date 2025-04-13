@@ -377,11 +377,17 @@ theorem order_pow [Nontrivial R] (φ : R⟦X⟧) (n : ℕ) :
   | succ n hn =>
     simp only [add_smul, one_smul, pow_succ, order_mul, hn]
 
+theorem mul_X_pow_eq_X_pow_mul {R : Type*} [Semiring R] {f : R⟦X⟧} {n : ℕ} :
+    f * X ^ n = X ^ n * f := by
+  rw [← commute_iff_eq]
+  refine Commute.pow_right (commute_X f) n
+
 end NoZeroDivisors
 
 section OrderIsDomain
 
-variable [CommRing R] [IsDomain R]
+-- TODO : generalize to `[Semiring R] [NoZeroDivisors R]`
+variable [Ring R] [IsDomain R]
 
 -- Dividing `X` by the maximal power of `X` dividing it leaves `1`.
 @[simp]
@@ -404,7 +410,9 @@ theorem divided_by_X_pow_orderMul {f g : R⟦X⟧} (hf : f ≠ 0) (hg : g ≠ 0)
       f * g = X ^ df * divided_by_X_pow_order hf * (X ^ dg * divided_by_X_pow_order hg) := by
         rw [self_eq_X_pow_order_mul_divided_by_X_pow_order,
           self_eq_X_pow_order_mul_divided_by_X_pow_order]
-      _ = X ^ df * X ^ dg * divided_by_X_pow_order hf * divided_by_X_pow_order hg := by ring
+      _ = X ^ df * X ^ dg * divided_by_X_pow_order hf * divided_by_X_pow_order hg := by
+        rw [mul_assoc, ← mul_assoc _ (X ^ dg), mul_X_pow_eq_X_pow_mul]
+        simp [mul_assoc]
       _ = X ^ (df + dg) * divided_by_X_pow_order hf * divided_by_X_pow_order hg := by rw [pow_add]
       _ = X ^ dfg * divided_by_X_pow_order hf * divided_by_X_pow_order hg := by rw [H_add_d]
       _ = X ^ dfg * (divided_by_X_pow_order hf * divided_by_X_pow_order hg) := by rw [mul_assoc]
