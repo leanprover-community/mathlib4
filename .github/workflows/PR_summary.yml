@@ -66,7 +66,7 @@ jobs:
           if grep ^deprecated_module $file ; then
             echo "info: removed file $file contains a deprecation"
           else
-            echo "error: file $file was removed without a module deprecation" >> moved_without_deprecation.txt
+            echo "**error**: file $file was removed without a module deprecation" >> moved_without_deprecation.txt
           fi
         done
 
@@ -151,7 +151,7 @@ jobs:
 
     - name: Update the file-removed label
       run: |
-        undeprecatedMoves=$(cat moved_without_deprecation.txt)
+        undeprecatedMoves="$(cat moved_without_deprecation.txt)"
         if [ -n $undeprecatedMoves ]; then
           echo "This PR has undeprecated module (re)movals."
           # we use curl rather than octokit/request-action so that the job won't fail
