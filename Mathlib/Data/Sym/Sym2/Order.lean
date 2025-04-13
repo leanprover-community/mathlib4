@@ -13,6 +13,8 @@ This files provides `Sym2.sortEquiv`, the forward direction of which is somewhat
 `Multiset.sort`.
 -/
 
+
+
 namespace Sym2
 
 variable {α}
@@ -64,7 +66,6 @@ theorem eq_iff_inf_sup_eq [LinearOrder α] (s t : Sym2 (α)) :
       observe binx: b ∈ s
       change  (Sym2.Mem.other ainx) ∈ s at binx
       have ainy: a ∈ t := by rwa [← h]
-      have biny: b ∈ t := by rwa [← h]
       have: b ∈ t ∧ a ∈ t ↔ t = s(b, a) := Sym2.mem_and_mem_iff H
       replace this:t = s(b,a) := by aesop
       simp [ainx,binx] at t'
@@ -74,7 +75,6 @@ theorem eq_iff_inf_sup_eq [LinearOrder α] (s t : Sym2 (α)) :
       have: s = t := by exact Sym2.ext_iff.mpr h
       exact ⟨congrArg inf this, congrArg sup this⟩
   · let x1 := (Quot.out s).1
-    let x2 := (Quot.out s).2
     let y1 := (Quot.out t).1
     let y2 := (Quot.out t).2
 
