@@ -46,10 +46,32 @@ jobs:
         sudo apt-get install -y jq
         # If you have additional dependencies, install them here
 
-    - name: Get changed files
+    - name: Get changed and removed/renamed files
       run: |
         git fetch origin ${{ github.base_ref }}  # fetch the base branch
-        git diff --name-only origin/${{ github.base_ref }}... > changed_files.txt  # get the list of changed files
+        # Get the list of all changed files.
+        git diff --name-only origin/${{ github.base_ref }}... > changed_files.txt
+        # Get all files which were removed or renamed.
+        movedFiles=$(git diff --name-only --diff-filter DR origin/${{ github.base_ref }}...)
+        if [ -n "$movedFiles" ]; then
+          echo "info: found removed file(s) $movedFiles"
+        fi
+        echo $movedFiles > removed_renamed_files.txt
+
+    - name: Compute (re)moved files without deprecation
+      run: |
+        echo "" > moved_without_deprecation.txt
+        git checkout ${{ github.base_ref }}
+        for file in $(cat removed_renamed_files.txt) ; do
+          if grep ^deprecated_module $file ; then
+            echo "info: removed file $file contains a deprecation"
+          else
+            echo "error: file $file was removed without a module deprecation"
+            echo "error: file $file was removed without a module deprecation" >> moved_without_deprecation.txt
+          fi
+        done
+        echo "double-checking file contents"
+        echo $(cat moved_without_deprecation.txt)
 
     - name: Compute transitive imports
       run: |
@@ -69,6 +91,7 @@ jobs:
 
         # switch back to the current branch: the `declarations_diff` script should be here
         git checkout "${currentHash}"
+
     - name: Post or update the summary comment
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -122,6 +145,9 @@ jobs:
 
         # store in a file, to avoid "long arguments" error.
         printf '%s [%s](%s)%s\n\n%s\n\n---\n\n%s\n\n---\n\n%s\n' "${title}" "$(git rev-parse --short HEAD)" "${hashURL}" "${high_percentages}" "${importCount}" "${declDiff}" "${techDebtVar}" > please_merge_master.md
+
+        # At the end, include any errors about removed or renamed files without deprecation.
+        cat moved_without_deprecation.txt >> please_merge_master.md
 
         cat please_merge_master.md
         ./scripts/update_PR_comment.sh please_merge_master.md "${title}" "${PR}"

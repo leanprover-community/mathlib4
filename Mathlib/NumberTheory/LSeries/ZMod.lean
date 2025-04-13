@@ -54,7 +54,6 @@ Results for completed L-functions:
 * `ZMod.completedLFunction_one_sub_even` and `ZMod.completedLFunction_one_sub_odd`:
   the functional equation relating `completedLFunction Φ (1 - s)` to `completedLFunction (𝓕 Φ) s`.
 
-deprecated_module
 -/
 
 open HurwitzZeta Complex ZMod Finset Topology Filter Set
