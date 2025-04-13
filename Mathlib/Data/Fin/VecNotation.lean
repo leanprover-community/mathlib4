@@ -184,8 +184,11 @@ dsimproc cons_val (Matrix.vecCons _ _ _) := fun e => do
     if i' < xs.length then
       return .continue xs[i']!
     else if 0 < xs.length then
-      let newn := unsafe toExpr (⟨i' - xs.length, lcProof⟩ : Fin (length - xs.length))
-      return .continue (.some <| .app tail <| newn)
+      let i'' := mkRawNatLit (i' - xs.length)
+      -- TODO: could build this without going through the elaborator
+      let (newn, _) ← Elab.Term.TermElabM.run <| do
+        Elab.Term.elabTerm (← `($(← tail.toSyntax) <| OfNat.ofNat $(← i''.toSyntax))) (some α)
+      return .continue (.some newn)
     else
       return .continue
 
