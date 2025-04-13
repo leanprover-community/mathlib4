@@ -319,37 +319,15 @@ end NFA
 
 namespace εNFA
 
+@[simps]
 instance : Zero (εNFA α σ) :=
   ⟨⟨fun _ _ ↦ ∅, ∅, ∅⟩⟩
 
+@[simps]
 instance : One (εNFA α σ) :=
   ⟨⟨fun _ _ ↦ ∅, univ, univ⟩⟩
 
 instance : Inhabited (εNFA α σ) :=
   ⟨0⟩
-
-@[simp]
-theorem step_zero (s a) : (0 : εNFA α σ).step s a = ∅ :=
-  rfl
-
-@[simp]
-theorem step_one (s a) : (1 : εNFA α σ).step s a = ∅ :=
-  rfl
-
-@[simp]
-theorem start_zero : (0 : εNFA α σ).start = ∅ :=
-  rfl
-
-@[simp]
-theorem start_one : (1 : εNFA α σ).start = univ :=
-  rfl
-
-@[simp]
-theorem accept_zero : (0 : εNFA α σ).accept = ∅ :=
-  rfl
-
-@[simp]
-theorem accept_one : (1 : εNFA α σ).accept = univ :=
-  rfl
 
 end εNFA
