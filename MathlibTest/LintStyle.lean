@@ -465,6 +465,8 @@ A local instance at default priority also overrides other better decidability in
 Instead, specify an instance priority, or use `open scoped Classical in` for definitions or instances and the `classical` tactic for proofs.
 For theorem statements, either add missing decidability assumptions or use `open scoped Classical in`.
 note: this linter can be disabled with `set_option linter.style.openClassical false`
+---
+info: none
 -/
 #guard_msgs in
 attribute [local instance] Classical.propDecidable in
@@ -477,6 +479,8 @@ A local instance at default priority also overrides other better decidability in
 Instead, specify an instance priority, or use `open scoped Classical in` for definitions or instances and the `classical` tactic for proofs.
 For theorem statements, either add missing decidability assumptions or use `open scoped Classical in`.
 note: this linter can be disabled with `set_option linter.style.openClassical false`
+---
+info: none
 -/
 #guard_msgs in
 attribute [local instance 100] Classical.propDecidable in
@@ -491,9 +495,11 @@ A local instance at default priority also overrides other better decidability in
 Instead, specify an instance priority, or use `open scoped Classical in` for definitions or instances and the `classical` tactic for proofs.
 For theorem statements, either add missing decidability assumptions or use `open scoped Classical in`.
 note: this linter can be disabled with `set_option linter.style.openClassical false`
+---
+info: none
 -/
 #guard_msgs in
-attribute [scoped instance] Classical.propDecidable
+attribute [scoped instance 10] Classical.propDecidable
 
 /--
 warning: please do not add 'Classical.dec' as a local or scoped instance:

@@ -514,6 +514,17 @@ def getLocalScopedAttributes? : Syntax → Option Ident
       | `(Parser.Term.attrInstance| scoped $_attr:attr) => true
       | `(Parser.Command.eraseAttr| -$_) => false
       | `(attr| $_a) => false
+
+    let prio := if let some inner := xs then
+      let prio := inner.raw[1]
+      dbg_trace prio
+      some prio
+
+    else
+      none
+    --dbg_trace x.getElems
+    --let asdf := prio.map fun _ ↦ id
+    --dbg_trace asdf
     xs.map fun _ ↦ id
   | _ => default
 
