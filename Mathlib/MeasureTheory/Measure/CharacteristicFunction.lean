@@ -125,23 +125,19 @@ lemma charFun_eq_integral_probChar (y : E) : charFun μ y = ∫ x, (probChar ⟪
 
 /-- `charFun` is a Fourier integral for the inner product and the character `probChar`. -/
 lemma charFun_eq_fourierIntegral (t : E) :
-    charFun μ t = VectorFourier.fourierIntegral probChar μ sesqFormOfInner 1 (-t) := by
-  simp only [charFun_apply, real_smul, VectorFourier.fourierIntegral_probChar, Pi.one_apply,
-    smul_eq_mul, mul_one, map_neg, ofReal_neg, neg_neg]
-  simp_rw [real_inner_comm t]
-  congr
+    charFun μ t = VectorFourier.fourierIntegral probChar μ bilinFormOfRealInner 1 (-t) := by
+  simp [charFun_apply, VectorFourier.fourierIntegral_probChar]
 
 /-- `charFun` is a Fourier integral for the inner product and the character `fourierChar`. -/
 lemma charFun_eq_fourierIntegral' (t : E) :
     charFun μ t
-      = VectorFourier.fourierIntegral fourierChar μ sesqFormOfInner 1 (-(2 * π)⁻¹ • t) := by
-  have h : (2 : ℂ) * π ≠ 0 := by simp [pi_ne_zero]
-  simp only [charFun_apply, real_smul, VectorFourier.fourierIntegral, fourierChar, neg_smul,
-    map_neg, _root_.map_smul, smul_eq_mul, neg_neg, AddChar.coe_mk, ← mul_assoc, Pi.one_apply,
-    Circle.smul_def, Circle.coe_exp, ofReal_mul, ofReal_ofNat, ofReal_inv, mul_inv_cancel₀ h,
-    one_mul, mul_one]
-  simp_rw [real_inner_comm t]
-  congr
+      = VectorFourier.fourierIntegral fourierChar μ bilinFormOfRealInner 1 (-(2 * π)⁻¹ • t) := by
+  simp only [charFun_apply, VectorFourier.fourierIntegral, neg_smul,
+    bilinFormOfRealInner_apply_apply, inner_neg_right, inner_smul_right, neg_neg,
+    fourierChar_apply', Pi.ofNat_apply, Circle.smul_def, Circle.coe_exp, ofReal_mul, ofReal_ofNat,
+    ofReal_inv, smul_eq_mul, mul_one]
+  congr with x
+  rw [← mul_assoc, mul_inv_cancel₀ (by simp [pi_ne_zero]), one_mul]
 
 lemma norm_charFun_le (t : E) : ‖charFun μ t‖ ≤ (μ Set.univ).toReal := by
   rw [charFun_eq_fourierIntegral]
