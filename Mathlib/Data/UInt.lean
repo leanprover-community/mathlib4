@@ -24,6 +24,7 @@ cautious here.
 
 example : (0 : UInt8) = ⟨0⟩ := rfl
 
+set_option linter.style.commandStart false -- This is a false positive from pretty-printing.
 set_option hygiene false in
 run_cmd
   for typeName' in [`UInt8, `UInt16, `UInt32, `UInt64, `USize] do
