@@ -15,6 +15,14 @@ import Mathlib.Data.Nat.Choose.Sum
 
 This file contains the definitions of the real and complex exponential function.
 
+## Main definitions
+
+* `Complex.exp`: The complex exponential function, defined via its Taylor series
+
+* `Real.exp`: The real exponential function, defined as the real part of the complex exponential
+
+* `circleMap c R`: the exponential map $θ ↦ c + R e^{θi}$;
+
 -/
 
 open CauSeq Finset IsAbsoluteValue
@@ -685,3 +693,12 @@ theorem norm_exp_ofReal (x : ℝ) : ‖exp x‖ = Real.exp x := by
 @[deprecated (since := "2025-02-16")] alias abs_exp_ofReal := norm_exp_ofReal
 
 end Complex
+
+noncomputable section circleMap
+
+open Complex
+/-- The exponential map $θ ↦ c + R e^{θi}$. The range of this map is the circle in `ℂ` with center
+`c` and radius `|R|`. -/
+def circleMap (c : ℂ) (R : ℝ) : ℝ → ℂ := fun θ => c + R * exp (θ * I)
+
+end circleMap

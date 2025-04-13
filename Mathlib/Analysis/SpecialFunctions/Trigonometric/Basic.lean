@@ -1227,3 +1227,13 @@ theorem norm_exp_mul_exp_add_exp_neg_le_of_abs_im_le {a b : ℝ} (ha : a ≤ 0) 
   norm_exp_mul_exp_add_exp_neg_le_of_abs_im_le
 
 end Complex
+
+section circleMap
+
+open Function Complex Real
+
+/-- `circleMap` is `2π`-periodic. -/
+theorem periodic_circleMap (c : ℂ) (R : ℝ) : Periodic (circleMap c R) (2 * π) := fun θ => by
+  simp [circleMap, add_mul, exp_periodic _]
+
+end circleMap
