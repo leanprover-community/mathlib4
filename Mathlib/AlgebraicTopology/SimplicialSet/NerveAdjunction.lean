@@ -470,6 +470,9 @@ def toNerve₂.mk : X ⟶ nerveFunctor₂.obj (Cat.of C) where
   app n := toNerve₂.mk.app F n.unop
   naturality _ _ f := MorphismProperty.of_eq_top (toNerve₂.mk_naturality F hyp) f.unop
 
+/-- The morphism `X ⟶ nerveFunctor₂.obj (Cat.of C)` of 2-truncated simplicial sets that is
+constructed from a refl prefunctor `F : SSet.oneTruncation₂.obj X ⟶ ReflQuiv.of C` assuming
+`∀ (φ : : X _⦋2⦌₂), F.map (ev02₂ φ) = F.map (ev01₂ φ) ≫ F.map (ev12₂ φ)`. -/
 @[simps!] noncomputable def toNerve₂.mk'''' : X ⟶ nerveFunctor₂.obj (Cat.of C) := by
   refine toStrictSegal₂.mk (Nerve.strictSegal₂ C)
     (F ⋙rq (OneTruncation₂.ofNerve₂.natIso.app (Cat.of C)).inv) ?_
