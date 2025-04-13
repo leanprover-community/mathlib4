@@ -3,6 +3,7 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+import Mathlib.Algebra.Algebra.Opposite
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.LinearAlgebra.BilinearMap
 import Mathlib.LinearAlgebra.Pi
@@ -325,6 +326,11 @@ lemma of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommSemiring A₁] [CommSemi
   haveI := Module.Finite.of_restrictScalars_finite A₁ A₂ B₁
   exact Module.Finite.equiv e.toLinearEquiv
 
+instance {R A} [CommSemiring R] [Semiring A] [Algebra R A] [Module.Finite R A] :
+    Module.Finite R (End A A) :=
+  have := Module.Finite.equiv (MulOpposite.opLinearEquiv R (M := A))
+  Module.Finite.equiv (AlgEquiv.moduleEndSelf R (A := A)).toLinearEquiv
+
 end Algebra
 
 end Finite
@@ -417,20 +423,16 @@ end AlgHom
 namespace Module.Finite
 
 variable (R₀ N : Type*) {R M : Type*} [Semiring R₀] [Ring R] [AddCommGroup M] [AddCommMonoid N]
-  [Module R M] [Module R N]
+  [Module R M] [Module R N] {S : Submodule R M} (h : IsComplemented S)
+include h
 
-theorem of_isComplemented_domain [Module R₀ N] [SMulCommClass R R₀ N] [Module.Finite R₀ (M →ₗ[R] N)]
-    {S : Submodule R M} (h : IsComplemented S) : Module.Finite R₀ (S →ₗ[R] N) :=
-  .of_surjective (LinearMap.lcomp ..) (LinearMap.surjective_comp_subtype_of_isComplemented h)
-
-variable [Module R₀ M] [SMulCommClass R R₀ M] [SMul R₀ R]
-  [IsScalarTower R₀ R M] [Module.Finite R₀ (N →ₗ[R] M)] {S : Submodule R M} (h : IsComplemented S)
-
-#synth SMulCommClass R R₀ S
+theorem of_isComplemented_domain [Module R₀ N] [SMulCommClass R R₀ N]
+    [Module.Finite R₀ (M →ₗ[R] N)] : Module.Finite R₀ (S →ₗ[R] N) :=
+  .of_surjective (.lcomp ..) (LinearMap.surjective_comp_subtype_of_isComplemented h)
 
 theorem of_isComplemented_codomain [Module R₀ M] [SMulCommClass R R₀ M] [SMul R₀ R]
-    [IsScalarTower R₀ R M] [Module.Finite R₀ (N →ₗ[R] M)] {S : Submodule R M} (h : IsComplemented S) :
-    #synth SMulCommClass R R₀ (N →ₗ[R] S)
+    [IsScalarTower R₀ R M] [Module.Finite R₀ (N →ₗ[R] M)] :
     Module.Finite R₀ (N →ₗ[R] S) :=
+  .of_surjective (.compRight ..) (LinearMap.surjective_comp_linearProjOfIsCompl h.choose_spec)
 
 end Module.Finite
