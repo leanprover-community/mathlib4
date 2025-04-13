@@ -41,7 +41,7 @@ lemma AlgHom.mulLeftRight_bij [h : IsAzumaya R A] :
   to `AlgHom.mulLeftRight R R`. -/
 noncomputable abbrev tensorEquivEnd : R ⊗[R] Rᵐᵒᵖ ≃ₐ[R] Module.End R R :=
   Algebra.TensorProduct.lid R Rᵐᵒᵖ|>.trans <|
-  AlgEquiv.ofRingEquiv (f := Module.moduleEndSelf R) fun r ↦ by ext; simp
+  AlgEquiv.ofRingEquiv (f := .moduleEndSelf R) fun r ↦ by ext; simp
 
 lemma coe_tensorEquivEnd : tensorEquivEnd R = AlgHom.mulLeftRight R R := by
   ext; simp
@@ -65,7 +65,7 @@ End R A   ------------> End R B
 -/
 lemma mulLeftRight_comp_congr (e : A ≃ₐ[R] B) :
     (AlgHom.mulLeftRight R B).comp (Algebra.TensorProduct.congr e e.op).toAlgHom =
-    (e.toLinearEquiv.algConj).toAlgHom.comp (AlgHom.mulLeftRight R A) := by
+    (e.toLinearEquiv.algConj R).toAlgHom.comp (AlgHom.mulLeftRight R A) := by
   apply AlgHom.ext
   intro a
   induction a using TensorProduct.induction_on with

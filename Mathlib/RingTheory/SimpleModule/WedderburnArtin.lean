@@ -12,7 +12,7 @@ import Mathlib.RingTheory.SimpleRing.Congr
 -/
 
 universe u
-variable {R : Type u} [Ring R]
+variable (R₀ : Type*) {R : Type u} [CommSemiring R₀] [Ring R] [Algebra R₀ R]
 
 /-- A simple ring is semisimple iff it is artinian, iff it has a minimal left ideal. -/
 theorem IsSimpleRing.tfae [IsSimpleRing R] : List.TFAE
@@ -50,12 +50,26 @@ theorem IsSimpleRing.exists_ringEquiv_matrix_end_mulOpposite :
   have ⟨_, iso, _⟩ := isSimpleRing_isArtinianRing_iff (R := R).mp ⟨‹_›, ‹_›⟩
   have ⟨n, hn, S, hS, ⟨e⟩⟩ := iso.linearEquiv_fun
   refine ⟨n, hn, S, hS, ⟨.trans (.opOp R) <| .trans (.op ?_) (.symm .mopMatrix)⟩⟩
-  exact (Module.moduleEndSelf R).trans e.conjRingEquiv |>.trans (endVecRingEquivMatrixEnd ..)
+  exact .trans (.moduleEndSelf R) <| .trans e.conjRingEquiv (endVecRingEquivMatrixEnd ..)
 
 theorem IsSimpleRing.exists_ringEquiv_matrix_divisionRing :
     ∃ (n : ℕ) (_ : NeZero n) (D : Type u) (_ : DivisionRing D),
       Nonempty (R ≃+* Matrix (Fin n) (Fin n) D) := by
   have ⟨n, hn, I, _, ⟨e⟩⟩ := IsSimpleRing.exists_ringEquiv_matrix_end_mulOpposite R
-  classical exact ⟨n, hn, _, inferInstance, ⟨e⟩⟩
+  classical exact ⟨n, hn, _, _, ⟨e⟩⟩
+
+theorem IsSimpleRing.exists_algEquiv_matrix_end_mulOpposite :
+    ∃ (n : ℕ) (_ : NeZero n) (I : Ideal R) (_ : IsSimpleModule R I),
+      Nonempty (R ≃ₐ[R₀] Matrix (Fin n) (Fin n) (Module.End R I)ᵐᵒᵖ) := by
+  have ⟨_, iso, _⟩ := isSimpleRing_isArtinianRing_iff (R := R).mp ⟨‹_›, ‹_›⟩
+  have ⟨n, hn, S, hS, ⟨e⟩⟩ := iso.linearEquiv_fun
+  refine ⟨n, hn, S, hS, ⟨.trans (.opOp R₀ R) <| .trans (.op ?_) (.symm .mopMatrix)⟩⟩
+  exact .trans (.moduleEndSelf R₀) <| .trans (e.algConj R₀) (endVecAlgEquivMatrixEnd ..)
+
+theorem IsSimpleRing.exists_algEquiv_matrix_divisionRing :
+    ∃ (n : ℕ) (_ : NeZero n) (D : Type u) (_ : DivisionRing D) (_ : Algebra R₀ D),
+      Nonempty (R ≃ₐ[R₀] Matrix (Fin n) (Fin n) D) := by
+  have ⟨n, hn, I, _, ⟨e⟩⟩ := IsSimpleRing.exists_algEquiv_matrix_end_mulOpposite R₀ R
+  classical exact ⟨n, hn, _, _, _, ⟨e⟩⟩
 
 end simple_artinian

@@ -517,7 +517,7 @@ linear isomorphism with respect to an action on the domains. -/
 are isomorphic.
 
 See `LinearEquiv.conj` for the linear version of this isomorphism. -/
-def conjRingEquiv (e : M₁ ≃ₗ[R] M₂) : Module.End R M₁ ≃+* Module.End R M₂ where
+@[simps!] def conjRingEquiv (e : M₁ ≃ₗ[R] M₂) : Module.End R M₁ ≃+* Module.End R M₂ where
   __ := arrowCongrAddEquiv e e
   map_mul' _ _ := by ext; simp [arrowCongrAddEquiv]
 
