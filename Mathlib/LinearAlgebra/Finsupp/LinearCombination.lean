@@ -245,6 +245,11 @@ theorem linearCombination_restrict (s : Set α) :
       linearCombinationOn α M R v s ∘ₗ (supportedEquivFinsupp s).symm.toLinearMap := by
   classical ext; simp [linearCombinationOn]
 
+lemma linearCombination_subtypeVal (s : Set M) :
+    linearCombination R (Subtype.val : s → M) = Submodule.subtype _ ∘ₗ
+      linearCombinationOn M M R _root_.id s ∘ₗ (supportedEquivFinsupp s).symm.toLinearMap := by
+  classical ext; simp [linearCombinationOn]
+
 theorem linearCombination_comp (f : α' → α) :
     linearCombination R (v ∘ f) = (linearCombination R v).comp (lmapDomain R R f) := by
   ext
