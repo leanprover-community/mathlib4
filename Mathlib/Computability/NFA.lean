@@ -237,8 +237,8 @@ def stepSum (M1 : NFA α σ1) (M2 : NFA α σ2)
   (s : σ1 ⊕ σ2) (a : α) : Set (σ1 ⊕ σ2) :=
     { s' : σ1 ⊕ σ2 |
       Sum.LiftRel
-        (fun s1 s1' ↦ M1.step s1 a s1')
-        (fun s2 s2' ↦ M2.step s2 a s2')
+        (fun s1 s1' ↦ s1' ∈ M1.step s1 a)
+        (fun s2 s2' ↦ s2' ∈ M2.step s2 a)
         s s' }
 
 /-- NFAs are closed under union:
@@ -251,9 +251,7 @@ def union (M1 : NFA α σ1) (M2 : NFA α σ2) : NFA α (σ1 ⊕ σ2) where
 
 lemma union_biUnion_spec
   {x : α} {S1 : Set σ1} {S2 : Set σ2} {M1 : NFA α σ1} {M2 : NFA α σ2} :
-    (⋃ s,
-      ⋃ (_ : Sum.rec (fun s1 ↦ S1 s1) (fun s2 ↦ S2 s2) s),
-      stepSum M1 M2 s x)
+    (⋃ s, ⋃ (_ : Sum.rec S1 S2 s), stepSum M1 M2 s x)
     =
     {s' | Sum.rec
       (fun s1' ↦ (⋃ (s1 : σ1) (_ : s1 ∈ S1), M1.step s1 x) s1')
