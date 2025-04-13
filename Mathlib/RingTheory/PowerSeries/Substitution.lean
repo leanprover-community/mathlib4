@@ -141,7 +141,7 @@ noncomputable def subst (a : MvPowerSeries τ S) (f : PowerSeries R) :
     MvPowerSeries τ S :=
   MvPowerSeries.subst (fun _ ↦ a) f
 
-variable {a : MvPowerSeries τ S}
+variable {a : MvPowerSeries τ S} {b : S⟦X⟧}
 
 /-- Substitution of power series into a power series -/
 noncomputable def substAlgHom (ha : HasSubst a) :
@@ -194,6 +194,10 @@ theorem coeff_subst_finite (ha : HasSubst a) (f : PowerSeries R) (e : τ →₀ 
     Finsupp.LinearEquiv.finsuppUnique_symm_apply, Finsupp.single_eq_same]
   congr
 
+theorem coeff_subst_finite' (hb : HasSubst b) (f : PowerSeries R) (e : ℕ) :
+    Set.Finite (fun (d : ℕ) ↦ (coeff R d f) • (PowerSeries.coeff S e (b ^ d))).support :=
+  coeff_subst_finite hb f  _
+
 theorem coeff_subst (ha : HasSubst a) (f : PowerSeries R) (e : τ →₀ ℕ) :
     MvPowerSeries.coeff S e (subst a f) =
       finsum (fun (d : ℕ) ↦
@@ -205,6 +209,12 @@ theorem coeff_subst (ha : HasSubst a) (f : PowerSeries R) (e : τ →₀ ℕ) :
   congr
   · ext; simp
   · simp
+
+theorem coeff_subst' {b : S⟦X⟧} (hb : HasSubst b) (f : R⟦X⟧) (e : ℕ) :
+    coeff S e (f.subst b) =
+      finsum (fun (d : ℕ) ↦
+        (coeff R d f) • (PowerSeries.coeff S e (b ^ d))) := by
+  simp only [PowerSeries.coeff, coeff_subst hb]
 
 theorem constantCoeff_subst (ha : HasSubst a) (f : PowerSeries R) :
     MvPowerSeries.constantCoeff τ S (subst a f) =
@@ -293,5 +303,48 @@ theorem _root_.MvPowerSeries.rescaleUnit (a : R) (f : R⟦X⟧) :
   ext d
   rw [coeff_rescale, coeff, MvPowerSeries.coeff_rescale]
   simp [smul_eq_mul, Finsupp.prod_single_index]
+
+namespace Example
+
+open Nat
+
+/-- the exponential power series -/
+def exp : ℚ⟦X⟧ := mk (fun n ↦ 1/(n !))
+
+theorem exp_def : exp = mk (fun n ↦ 1/(n ! : ℚ)) := rfl
+
+example : exp.coeff ℚ 3 = 1/6 := by
+  simp [exp_def]; rfl
+
+def hasSubst_exp_sub_one : HasSubst (exp - 1) := by
+  apply HasSubst.of_constantCoeff_zero'
+  simp [map_sub, constantCoeff_one, ← coeff_zero_eq_constantCoeff, exp]
+
+/-- The power series exp (exp X - 1) -/
+noncomputable def e₂ : ℚ⟦X⟧ := exp.subst (exp - 1)
+
+theorem e₂_def : e₂ = exp.subst (exp - 1) := rfl
+
+example : e₂.coeff ℚ 2 = 1 := by
+  simp [e₂]
+  rw [coeff_subst' hasSubst_exp_sub_one exp 2]
+  set c := fun d ↦ (coeff ℚ 2) ((exp - 1) ^ d)
+  have hc (d : ℕ) (hd : d > 2) : coeff ℚ 2  ((exp - 1) ^ d) = 0 := sorry
+  set c' := fun d ↦ (coeff ℚ d) exp • (coeff ℚ 2) ((exp - 1) ^ d) with c'_eq
+  have hc' : Function.support c' ⊆ Finset.range 3 := sorry
+  have hc'' : (Function.support c').Finite :=
+    coeff_subst_finite' hasSubst_exp_sub_one exp _
+  rw [finsum_eq_sum_of_support_subset _ hc']
+  simp [Finset.sum_range_succ]
+  have H0 : c' 0 = 0 := by simp [c', exp]
+  have H1 : c' 1 = 1/(2 : ℚ) := by simp [c'_eq, exp]
+  have H2 : c' 2 = 1/2 := by
+    simp [c'_eq, exp, pow_two, coeff_mul]
+    rw [Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk]
+    simp [Finset.sum_range_succ]
+  rw [H0, H1, H2]
+  norm_num
+
+end Example
 
 end PowerSeries
