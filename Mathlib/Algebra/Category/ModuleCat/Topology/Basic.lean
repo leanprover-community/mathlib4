@@ -256,7 +256,7 @@ variable {R}
 variable {M : ModuleCat R} {I : Type*} {X : I → TopModuleCat R} (f : ∀ i, M ⟶ (X i).toModuleCat)
 
 /-- The induced topology on `M` from a family of continuous linear map from `M`, which is the
-coarsest topology that makes every maps continuous. -/
+coarsest topology that makes every map continuous. -/
 def induced : TopModuleCat R :=
   letI : TopologicalSpace M := ⨅ i, (X i).isTopologicalSpace.induced (f i)
   have : ContinuousAdd M := continuousAdd_iInf fun _ ↦ continuousAdd_induced _
