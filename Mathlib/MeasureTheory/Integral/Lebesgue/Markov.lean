@@ -14,9 +14,7 @@ the measure-theoretic form:
 ```
 μ { x | ε ≤ f x } ≤ (∫⁻ a, f a ∂μ) / ε
 ```
-This file proves a few variants of the inequality and other lemmas that depend on it, including
-`MeasureTheory.lintegral_eq_zero_iff`: a Lebesgue integral is zero iff the function is zero
-almost everywhere.
+This file proves a few variants of the inequality and other lemmas that depend on it.
 -/
 
 namespace MeasureTheory
@@ -119,36 +117,6 @@ theorem ae_eq_of_ae_le_of_lintegral_le {f g : α → ℝ≥0∞} (hfg : f ≤ᵐ
     ge_of_tendsto' this fun i => (hlt i).le
   simpa only [inv_top, add_zero] using
     tendsto_const_nhds.add (ENNReal.tendsto_inv_iff.2 ENNReal.tendsto_nat_nhds_top)
-
-@[simp]
-theorem lintegral_eq_zero_iff' {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) :
-    ∫⁻ a, f a ∂μ = 0 ↔ f =ᵐ[μ] 0 :=
-  have : ∫⁻ _ : α, 0 ∂μ ≠ ∞ := by simp [lintegral_zero, zero_ne_top]
-  ⟨fun h =>
-    (ae_eq_of_ae_le_of_lintegral_le (ae_of_all _ <| zero_le f) this hf
-        (h.trans lintegral_zero.symm).le).symm,
-    fun h => (lintegral_congr_ae h).trans lintegral_zero⟩
-
-@[simp]
-theorem lintegral_eq_zero_iff {f : α → ℝ≥0∞} (hf : Measurable f) : ∫⁻ a, f a ∂μ = 0 ↔ f =ᵐ[μ] 0 :=
-  lintegral_eq_zero_iff' hf.aemeasurable
-
-theorem setLIntegral_eq_zero_iff' {s : Set α} (hs : MeasurableSet s)
-    {f : α → ℝ≥0∞} (hf : AEMeasurable f (μ.restrict s)) :
-    ∫⁻ a in s, f a ∂μ = 0 ↔ ∀ᵐ x ∂μ, x ∈ s → f x = 0 :=
-  (lintegral_eq_zero_iff' hf).trans (ae_restrict_iff' hs)
-
-theorem setLIntegral_eq_zero_iff {s : Set α} (hs : MeasurableSet s) {f : α → ℝ≥0∞}
-    (hf : Measurable f) : ∫⁻ a in s, f a ∂μ = 0 ↔ ∀ᵐ x ∂μ, x ∈ s → f x = 0 :=
-  setLIntegral_eq_zero_iff' hs hf.aemeasurable
-
-theorem lintegral_pos_iff_support {f : α → ℝ≥0∞} (hf : Measurable f) :
-    (0 < ∫⁻ a, f a ∂μ) ↔ 0 < μ (Function.support f) := by
-  simp [pos_iff_ne_zero, hf, Filter.EventuallyEq, ae_iff, Function.support]
-
-theorem setLintegral_pos_iff {f : α → ℝ≥0∞} (hf : Measurable f) {s : Set α} :
-    0 < ∫⁻ a in s, f a ∂μ ↔ 0 < μ (Function.support f ∩ s) := by
-  rw [lintegral_pos_iff_support hf, Measure.restrict_apply (measurableSet_support hf)]
 
 theorem lintegral_strict_mono_of_ae_le_of_frequently_ae_lt {f g : α → ℝ≥0∞} (hg : AEMeasurable g μ)
     (hfi : ∫⁻ x, f x ∂μ ≠ ∞) (h_le : f ≤ᵐ[μ] g) (h : ∃ᵐ x ∂μ, f x ≠ g x) :
