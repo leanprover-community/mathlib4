@@ -9,6 +9,8 @@ import Mathlib.RingTheory.MvPowerSeries.Substitution
 import Mathlib.RingTheory.PowerSeries.Evaluation
 import Mathlib.RingTheory.PowerSeries.Basic
 
+import Mathlib.RingTheory.PowerSeries.Order
+
 /-! # Substitutions in power series
 
 A (possibly multivariate) power series can be substituted into
@@ -316,22 +318,51 @@ theorem exp_def : exp = mk (fun n ↦ 1/(n ! : ℚ)) := rfl
 example : exp.coeff ℚ 3 = 1/6 := by
   simp [exp_def]; rfl
 
-def hasSubst_exp_sub_one : HasSubst (exp - 1) := by
-  apply HasSubst.of_constantCoeff_zero'
+def coeff_zero_exp_sub_one : constantCoeff ℚ (exp - 1) = 0 := by
   simp [map_sub, constantCoeff_one, ← coeff_zero_eq_constantCoeff, exp]
+
+theorem hasSubst_exp_sub_one : HasSubst (exp - 1) := by
+  apply HasSubst.of_constantCoeff_zero'
+  exact coeff_zero_exp_sub_one
 
 /-- The power series exp (exp X - 1) -/
 noncomputable def e₂ : ℚ⟦X⟧ := exp.subst (exp - 1)
 
 theorem e₂_def : e₂ = exp.subst (exp - 1) := rfl
 
+theorem _root_.PowerSeries.order_pow
+    {R : Type*} [CommRing R] [IsDomain R] (φ : PowerSeries R) (n : ℕ) :
+    (φ ^ n).order = n • φ.order := by
+  induction n with
+  | zero => simp [order_one]
+  | succ n hn => simp [pow_succ, order_mul, add_smul, hn]
+
+theorem coeff_pow_eq_zero {b : S⟦X⟧} [IsDomain S]
+    (hf : constantCoeff S b = 0) {d n : ℕ} (hd : d < n) :
+    coeff S d (b ^ n) = 0 := by
+  suffices 1 ≤ b.order  by
+    apply PowerSeries.coeff_of_lt_order
+    rw [order_pow]
+    apply lt_of_lt_of_le  (b := (n : ℕ∞))
+    exact ENat.coe_lt_coe.mpr hd
+    simp
+    exact le_mul_of_one_le_right' this
+  apply le_order
+  intro i hi
+  simp only [cast_lt_one] at hi
+  simp [hi, hf]
+
 example : e₂.coeff ℚ 2 = 1 := by
   simp [e₂]
   rw [coeff_subst' hasSubst_exp_sub_one exp 2]
   set c := fun d ↦ (coeff ℚ 2) ((exp - 1) ^ d)
-  have hc (d : ℕ) (hd : d > 2) : coeff ℚ 2  ((exp - 1) ^ d) = 0 := sorry
   set c' := fun d ↦ (coeff ℚ d) exp • (coeff ℚ 2) ((exp - 1) ^ d) with c'_eq
-  have hc' : Function.support c' ⊆ Finset.range 3 := sorry
+  have hc' : Function.support c' ⊆ Finset.range 3 := by
+    intro d
+    simp only [Function.mem_support, ne_eq, not_imp_comm, Finset.coe_range, Set.mem_Iio, not_lt]
+    intro hd
+    simp only [c']
+    rw [coeff_pow_eq_zero coeff_zero_exp_sub_one hd, smul_zero]
   have hc'' : (Function.support c').Finite :=
     coeff_subst_finite' hasSubst_exp_sub_one exp _
   rw [finsum_eq_sum_of_support_subset _ hc']
