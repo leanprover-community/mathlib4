@@ -6,6 +6,7 @@ Authors: Frédéric Dupuis
 
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Pi
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 
 /-!
@@ -73,6 +74,18 @@ variable {A : Type*} [PartialOrder A] [NonUnitalRing A] [TopologicalSpace A] [St
   [Module ℝ A] [SMulCommClass ℝ A A] [IsScalarTower ℝ A A]
   [NonUnitalContinuousFunctionalCalculus ℝ≥0 A (0 ≤ ·)]
 
+variable {B : Type*} [PartialOrder B] [NonUnitalRing B] [TopologicalSpace B] [StarRing B]
+  [Module ℝ B] [SMulCommClass ℝ B B] [IsScalarTower ℝ B B]
+  [NonUnitalContinuousFunctionalCalculus ℝ≥0 B (0 ≤ ·)]
+  [NonUnitalContinuousFunctionalCalculus ℝ≥0 (A × B) (0 ≤ ·)]
+
+variable {ι : Type*} {C : ι → Type*} [∀ i, PartialOrder (C i)] [∀ i, NonUnitalRing (C i)]
+  [∀ i, TopologicalSpace (C i)] [∀ i, StarRing (C i)]
+  [∀ i, Module ℝ (C i)] [∀ i, SMulCommClass ℝ (C i) (C i)] [∀ i, IsScalarTower ℝ (C i) (C i)]
+  [∀ i, NonUnitalContinuousFunctionalCalculus ℝ≥0 (C i) (0 ≤ ·)]
+  [NonUnitalContinuousFunctionalCalculus ℝ≥0 (∀ i, C i) (0 ≤ ·)]
+  [∀ i, IsTopologicalRing (C i)] [∀ i, T2Space (C i)]
+
 /- ## `nnrpow` -/
 
 /-- Real powers of operators, based on the non-unital continuous functional calculus. -/
@@ -122,7 +135,7 @@ lemma zero_nnrpow {x : ℝ≥0} : (0 : A) ^ x = 0 := by simp [nnrpow_def]
 
 section Unique
 
-variable [IsTopologicalRing A] [T2Space A]
+variable [IsTopologicalRing A] [T2Space A] [IsTopologicalRing B] [T2Space B]
 
 @[simp]
 lemma nnrpow_nnrpow {a : A} {x y : ℝ≥0} : (a ^ x) ^ y = a ^ (x * y) := by
@@ -151,6 +164,24 @@ lemma nnrpow_inv_eq (a b : A) {x : ℝ≥0} (hx : x ≠ 0) (ha : 0 ≤ a := by c
   ⟨fun h ↦ nnrpow_inv_nnrpow a hx ▸ congr($(h) ^ x).symm,
     fun h ↦ nnrpow_nnrpow_inv b hx ▸ congr($(h) ^ x⁻¹).symm⟩
 
+/- Note that there is a diamond for `HPow (A × B) ℝ≥0` coming from the `HPow` instance for
+products, hence the direct use of `nnrpow` here. -/
+lemma nnrpow_map_prod {a : A} {b : B} {x : ℝ≥0} (ha : 0 ≤ a) (hb : 0 ≤ b) :
+    nnrpow (⟨a, b⟩ : A × B) x = ⟨a ^ x, b ^ x⟩ := by
+  simp only [nnrpow_def]
+  unfold nnrpow
+  refine cfcₙ_map_prod (S := ℝ) _ a b (by fun_prop) ?_ ha hb
+  rw [Prod.le_def]
+  constructor <;> simp [ha, hb]
+
+/- Note that there is a diamond for `HPow (∀ i, B i) ℝ≥0` coming from the `HPow` instance for
+pi types, hence the direct use of `nnrpow` here. -/
+lemma nnrpow_map_pi {c : ∀ i, C i} {x : ℝ≥0} (hc : ∀ i, 0 ≤ c i) :
+    nnrpow c x = fun i => (c i) ^ x := by
+  simp only [nnrpow_def]
+  unfold nnrpow
+  exact cfcₙ_map_pi (S := ℝ) _ c (by fun_prop) hc hc
+
 end Unique
 
 /- ## `sqrt` -/
@@ -172,7 +203,7 @@ lemma sqrt_eq_nnrpow {a : A} : sqrt a = a ^ (1 / 2 : ℝ≥0) := by
 @[simp]
 lemma sqrt_zero : sqrt (0 : A) = 0 := by simp [sqrt]
 
-variable [IsTopologicalRing A] [T2Space A]
+variable [IsTopologicalRing A] [T2Space A] [IsTopologicalRing B] [T2Space B]
 
 @[simp]
 lemma nnrpow_sqrt {a : A} {x : ℝ≥0} : (sqrt a) ^ x = a ^ (x / 2) := by
@@ -211,6 +242,16 @@ lemma sqrt_eq_iff (a b : A) (ha : 0 ≤ a := by cfc_tac) (hb : 0 ≤ b := by cfc
 lemma sqrt_eq_zero_iff (a : A) (ha : 0 ≤ a := by cfc_tac) : sqrt a = 0 ↔ a = 0 := by
   rw [sqrt_eq_iff a _, mul_zero, eq_comm]
 
+lemma sqrt_map_prod {a : A} {b : B} (ha : 0 ≤ a) (hb : 0 ≤ b) :
+    sqrt (⟨a, b⟩ : A × B) = ⟨sqrt a, sqrt b⟩ := by
+  simp only [sqrt_eq_nnrpow]
+  exact nnrpow_map_prod ha hb
+
+lemma sqrt_map_pi {c : ∀ i, C i} (hc : ∀ i, 0 ≤ c i) :
+    sqrt c = fun i => sqrt (c i) := by
+  simp only [sqrt_eq_nnrpow]
+  exact nnrpow_map_pi hc
+
 end sqrt
 
 end NonUnital
@@ -219,6 +260,15 @@ section Unital
 
 variable {A : Type*} [PartialOrder A] [Ring A] [StarRing A] [TopologicalSpace A]
   [Algebra ℝ A] [ContinuousFunctionalCalculus ℝ≥0 A (0 ≤ ·)]
+
+variable {B : Type*} [PartialOrder B] [Ring B] [StarRing B] [TopologicalSpace B]
+  [Algebra ℝ B] [ContinuousFunctionalCalculus ℝ≥0 B (0 ≤ ·)]
+  [ContinuousFunctionalCalculus ℝ≥0 (A × B) (0 ≤ ·)]
+
+variable {ι : Type*} {C : ι → Type*} [∀ i, PartialOrder (C i)] [∀ i, Ring (C i)]
+  [∀ i, StarRing (C i)] [∀ i, TopologicalSpace (C i)]
+  [∀ i, Algebra ℝ (C i)] [∀ i, ContinuousFunctionalCalculus ℝ≥0 (C i) (0 ≤ ·)]
+  [ContinuousFunctionalCalculus ℝ≥0 (∀ i, C i) (0 ≤ ·)]
 
 /- ## `rpow` -/
 
@@ -318,6 +368,32 @@ lemma rpow_intCast (a : Aˣ) (n : ℤ) (ha : (0 : A) ≤ a := by cfc_tac) :
   rw [← cfc_zpow (R := ℝ≥0) a n, rpow_def]
   refine cfc_congr fun _ _ => ?_
   simp
+
+section prod_pi
+
+variable [IsTopologicalRing A] [T2Space A] [IsTopologicalRing B] [T2Space B]
+  [∀ i, IsTopologicalRing (C i)] [∀ i, T2Space (C i)]
+
+/- Note that there is a diamond for `HPow (A × B) ℝ` coming from the `HPow` instance for
+products, hence the direct use of `rpow` here. -/
+lemma rpow_map_prod {a : A} {b : B} {x : ℝ} (ha : 0 ∉ spectrum ℝ≥0 a) (hb : 0 ∉ spectrum ℝ≥0 b)
+    (ha' : 0 ≤ a) (hb' : 0 ≤ b) :
+    rpow (⟨a, b⟩ : A × B) x = ⟨a ^ x, b ^ x⟩ := by
+  simp only [rpow_def]
+  unfold rpow
+  refine cfc_map_prod (R := ℝ≥0) (S := ℝ) _ a b (by cfc_cont_tac) ?_ ha' hb'
+  rw [Prod.le_def]
+  constructor <;> simp [ha', hb']
+
+/- Note that there is a diamond for `HPow (∀ i, B i) ℝ` coming from the `HPow` instance for
+pi types, hence the direct use of `rpow` here. -/
+lemma rpow_map_pi {c : ∀ i, C i} {x : ℝ} (hc : ∀ i, 0 ∉ spectrum ℝ≥0 (c i)) (hc' : ∀ i, 0 ≤ c i) :
+    rpow c x = fun i => (c i) ^ x := by
+  simp only [rpow_def]
+  unfold rpow
+  exact cfc_map_pi (S := ℝ) _ c (by cfc_cont_tac) hc' hc'
+
+end prod_pi
 
 section unital_vs_nonunital
 

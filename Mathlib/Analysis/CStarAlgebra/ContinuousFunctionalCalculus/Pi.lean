@@ -10,9 +10,14 @@ import Mathlib.Algebra.Star.StarAlgHom
 
 /-! # The continuous functional calculus on product types
 
+This file contains results about the continuous functional calculus on (indexed) product types.
+
 ## Main theorems
 
-FIXME
++ `cfc_map_pi` and `cfcₙ_map_pi`: given `a : ∀ i, A i`, then `cfc f a = fun i => cfc f (a i)`
+  (and likewise for the non-unital version)
++ `cfc_map_prod` and `cfcₙ_map_prod`: given `a : A` and `b : B`, then
+  `cfc f ⟨a, b⟩ = ⟨cfc f a, cfc f b⟩` (and likewise for the non-unital version)
 -/
 
 section nonunital_pi
@@ -30,14 +35,13 @@ variable {ι R S : Type*} {A : ι → Type*} [CommSemiring R] [Nontrivial R] [St
   [∀ i, ContinuousMapZero.UniqueHom R (A i)]
 
 include S in
-lemma Pi.cfcₙ_eq (f : R → R) (a : ∀ i, A i) (hf : ContinuousOn f (⋃ i, quasispectrum R (a i)))
+lemma cfcₙ_map_pi (f : R → R) (a : ∀ i, A i) (hf : ContinuousOn f (⋃ i, quasispectrum R (a i)))
     (ha : p a) (ha' : ∀ i, q i (a i)) : cfcₙ f a = fun i => cfcₙ f (a i) := by
   by_cases hempty : Nonempty ι
   · by_cases hf₀ : f 0 = 0
     · ext i
       let φ := Pi.evalNonUnitalStarAlgHom S A i
-      refine φ.map_cfcₙ f a ?_ hf₀ Pi.continuous_eval ha (ha' i)
-      rwa [Pi.quasispectrum_eq]
+      exact φ.map_cfcₙ f a (by rwa [Pi.quasispectrum_eq]) hf₀ (continuous_apply i) ha (ha' i)
     · simp only [cfcₙ_apply_of_not_map_zero _ hf₀]; rfl
   · simp only [not_nonempty_iff] at hempty
     ext i
@@ -48,20 +52,19 @@ end nonunital_pi
 section nonunital_prod
 
 variable {A B R S : Type*} [CommSemiring R] [CommRing S] [Nontrivial R] [StarRing R]
-  [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R] [Algebra R S] [NonUnitalRing A] [NonUnitalRing B] [Module S A] [Module R A]
-  [Module R B] [Module S B] [SMulCommClass R A A] [SMulCommClass R B B] [IsScalarTower R A A]
-  [IsScalarTower R B B] [StarRing A] [StarRing B] [TopologicalSpace A] [TopologicalSpace B]
+  [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R] [Algebra R S] [NonUnitalRing A]
+  [NonUnitalRing B] [Module S A] [Module R A] [Module R B] [Module S B]
+  [SMulCommClass R A A] [SMulCommClass R B B] [IsScalarTower R A A] [IsScalarTower R B B]
+  [StarRing A] [StarRing B] [TopologicalSpace A] [TopologicalSpace B]
   [IsScalarTower R S A] [IsScalarTower R S B]
-  {pab : A × B → Prop}
-  {pa : A → Prop} {pb : B → Prop}
+  {pab : A × B → Prop} {pa : A → Prop} {pb : B → Prop}
   [NonUnitalContinuousFunctionalCalculus R (A × B) pab]
   [NonUnitalContinuousFunctionalCalculus R A pa]
   [NonUnitalContinuousFunctionalCalculus R B pb]
   [ContinuousMapZero.UniqueHom R A] [ContinuousMapZero.UniqueHom R B]
 
-
 include S in
-lemma Prod.cfcₙ_eq (f : R → R) (a : A) (b : B)
+lemma cfcₙ_map_prod (f : R → R) (a : A) (b : B)
     (hf : ContinuousOn f (quasispectrum R a ∪ quasispectrum R b))
     (hab : pab ⟨a, b⟩) (ha : pa a) (hb : pb b) :
     cfcₙ f (⟨a, b⟩ : A × B) = ⟨cfcₙ f a, cfcₙ f b⟩ := by
@@ -92,11 +95,11 @@ variable {ι R S : Type*} {A : ι → Type*} [CommSemiring R] [StarRing R] [Metr
   [∀ i, ContinuousMap.UniqueHom R (A i)]
 
 include S in
-lemma Pi.cfc_eq (f : R → R) (a : ∀ i, A i) (hf : ContinuousOn f (⋃ i, spectrum R (a i)))
+lemma cfc_map_pi (f : R → R) (a : ∀ i, A i) (hf : ContinuousOn f (⋃ i, spectrum R (a i)))
     (ha : p a) (ha' : ∀ i, q i (a i)) : cfc f a = fun i => cfc f (a i) := by
   ext i
   let φ := Pi.evalStarAlgHom S A i
-  exact φ.map_cfc f a (by rwa [Pi.spectrum_eq]) Pi.continuous_eval ha (ha' i)
+  exact φ.map_cfc f a (by rwa [Pi.spectrum_eq]) (continuous_apply i) ha (ha' i)
 
 end unital_pi
 
@@ -113,7 +116,7 @@ variable {A B R S : Type*} [CommSemiring R] [StarRing R] [MetricSpace R]
   [ContinuousMap.UniqueHom R A] [ContinuousMap.UniqueHom R B]
 
 include S in
-lemma Prod.cfc_eq (f : R → R) (a : A) (b : B) (hf : ContinuousOn f (spectrum R a ∪ spectrum R b))
+lemma cfc_map_prod (f : R → R) (a : A) (b : B) (hf : ContinuousOn f (spectrum R a ∪ spectrum R b))
     (hab : pab ⟨a, b⟩) (ha : pa a) (hb : pb b) :
     cfc f (⟨a, b⟩ : A × B) = ⟨cfc f a, cfc f b⟩ := by
   ext
