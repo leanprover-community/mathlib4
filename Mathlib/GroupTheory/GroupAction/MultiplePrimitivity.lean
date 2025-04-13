@@ -2,18 +2,24 @@
 Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
-
-! This file was ported from Lean 3 source module multiple_primitivity
 -/
 
 import Mathlib.GroupTheory.GroupAction.MultipleTransitivity
 import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
 
+/-! # Multiply preprimitive actions
+
+TODO :
+ * Add documentation
+ * Clean up naming
+ * Add explicit arguments so that the type inference works better
+ * Maybe turn `IsMultiplyPreprimitive` into a class,
+ and to the same for `IsMultiplyPretransitive`?
+ * additivize
+
+-/
+
 open scoped BigOperators Pointwise Cardinal
-
--- open scoped Classical
-
-section MultiplePrimitivity
 
 namespace MulAction
 
@@ -21,6 +27,9 @@ open SubMulAction
 
 variable (M α : Type*) [Group M] [MulAction M α]
 
+/-- A group action is n-multiply preprimitive  if is is n-multiply transitive
+  and if, when n ≥ 1, for every set `s` of cardinality n - 1,
+  the action of `fixingSubgroup M s` on the complement of `s` is preprimitive. -/
 abbrev IsMultiplyPreprimitive (n : ℕ) :=
   IsMultiplyPretransitive M α n ∧
     ∀ (s : Set α), s.encard + 1 = n →
@@ -242,7 +251,4 @@ theorem isMultiplyPreprimitive_congr
   exact IsPreprimitive.of_surjective (f := f') (φ := φ') hf'
 
 end MulAction
-
-end MultiplePrimitivity
-
 
