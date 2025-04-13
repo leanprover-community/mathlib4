@@ -87,8 +87,10 @@ variable [NonDegenerate t₂]
 -- Let `T :A₁ ⥤ A₂` be a triangulated functor.
 variable (T : A₁ ⥤ A₂) [T.CommShift ℤ] [T.IsTriangulated]
 
--- Suppose that: (a) `T` admits an f-lifting `FT`.
+-- Condition (a) of Proposition A.3.2: `T` admits an f-lifting `FT`.
 variable (FT : T.filteredLifting L₁ L₂)
+
+-- We need some more vocabulary to state condition (b).
 
 -- Acyclic complexes of `T`-acyclic objects.
 def AcyclicComplexAcyclic : Triangulated.Subcategory

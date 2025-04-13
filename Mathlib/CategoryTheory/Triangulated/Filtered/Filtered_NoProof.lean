@@ -15,8 +15,6 @@ import Mathlib.Tactic.Linarith
 
 -/
 
---set_option diagnostics true
-
 noncomputable section
 
 open CategoryTheory Preadditive Limits
@@ -412,6 +410,8 @@ structure Functor.filteredLifting (L₁ : isFilteredTriangulated_over C A)
   commShift : functor.CommShift (ℤ × ℤ)
   triang : functor.IsFilteredTriangulated
   compat : F ⋙ L₂.functor ≅ L₁.functor ⋙ functor
+-- I am guessing that the compatibility isomorphism should satisfy some compatibilities,
+-- notably with the "commutation with shifts" isomorphisms.
 
 end Over
 
@@ -499,8 +499,8 @@ lemma truncLEGEIsoGELE_uniq {a b : ℤ} {X : C}
 -- Prop A.1.3 (iii) but with general indices
 
 -- Existence. Version with and without the `n + 1`.
--- This cheating in a way, because the connecting morphism in the triangle is not arbitrary,
--- it's given by the axioms. (The statement are still okay thanks to the uniqueness.)
+-- This is cheating in a way, because the connecting morphism in the triangle is not arbitrary,
+-- it's given by the axioms. (The statements are still okay thanks to the uniqueness.)
 
 def truncLEδGE' (n m : ℤ) (h : n + 1 = m) :
     truncLE n ⟶ truncGE m ⋙ shiftFunctor C (1 : ℤ) := sorry
@@ -516,21 +516,14 @@ def truncLEδGE (n : ℤ) :
     truncLE n ⟶ truncGE (n + 1) ⋙ shiftFunctor C (1 : ℤ) := truncLEδGE' n (n + 1) rfl
 
 @[simps!]
-def triangleGELE (n : ℤ) : C ⥤ Triangle C :=
-  Triangle.functorMk (truncGEι (n + 1)) (truncLEπ n) (truncLEδGE n)
+def triangleGELE (n : ℤ) : C ⥤ Triangle C := triangleGELE' n (n + 1) rfl
 
 lemma triangleGELE_distinguished (n : ℤ) (X : C) :
-    (triangleGELE n).obj X ∈ distTriang C := triangleGELE'_distinguished n (n + 1) rfl X
+    (triangleGELE n).obj X ∈ distTriang C :=
+  triangleGELE'_distinguished n (n + 1) rfl X
 
 -- Uniqueness.
-
-lemma truncLEδGE_uniq (n m : ℤ) (h : n + 1 = m) (X : C)
-    (f : (truncLE n).obj X ⟶ ((truncGE m).obj X)⟦1⟧)
-    (dist : Triangle.mk ((truncGEι m).app X) ((truncLEπ n).app X) f ∈ distTriang C) :
-  f = (truncLEδGE' n m h).app X := sorry
-
--- We need more general triangles.
--- Here this is cheating, because the maps are specific ones!
+-- Here we are cheating too, because the maps are specific ones!
 
 def truncGELE_le_up (a b c : ℤ) (h : b ≤ c) :
     truncGELE (C := C) a b ⟶ truncGELE a c := sorry
@@ -579,7 +572,7 @@ structure familyCommShift (F : ℤ → (C ⥤ C)) where
       iso n (a + b) n'' (by rw [add_comm a b, ← add_assoc, h', h]) =
       familyCommShift.isoAdd F n a b n' n'' (iso n a n' h) (iso n' b n'' h')
 
--- But this is enough, the isomorphisms are explicit!
+-- But this is not enough, the isomorphisms are explicit!
 def truncLE_commShift : familyCommShift (fun n ↦ truncLE (C := C) n) := sorry
 
 def truncGE_commShift : familyCommShift (fun n ↦ truncGE (C := C) n) := sorry
@@ -730,7 +723,7 @@ lemma ForgetFiltration_uniq_left_compat (G : C ⥤ A)
     left_adj = Adjunction.ofNatIsoLeft (ForgetFiltration_leftAdjoint L)
     (isoWhiskerLeft _ (ForgetFiltration_uniq_left L G left_adj shift)) := sorry
 
-def ForgetFiltration_uniq_left_uniq (G : C ⥤ A)
+lemma ForgetFiltration_uniq_left_uniq (G : C ⥤ A)
     (left_adj : Adjunction (fullSubcategoryInclusion (fun (X : C) ↦ IsLE X 0) ⋙ G)
     (FullSubcategory.lift _ L.functor
     (fun X ↦ (isFilteredTriangulated_over_image L X).1)))
@@ -792,7 +785,7 @@ def filteredLifting_compat_Gr (n : ℤ) :
 -- with `truncGELE`, as well as compatibilities with the connecting
 -- morphisms in the triangles of `truncGELE`.
 
-/- Let's do `truncLE`. The "commutative" square says two thing:
+/- Let's do `truncLE`. The "commutative" square says two things:
 (1) `FT` sends objects that are `LE n` to objects that are `LE n`.
 This gives an isomorphism from `FT.obj ((truncLE n).obj X)` to
 `(truncLEπ n).obj (FT.obj ((truncLE n).obj X))` for every `X : C`,
