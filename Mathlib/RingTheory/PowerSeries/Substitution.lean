@@ -9,8 +9,6 @@ import Mathlib.RingTheory.MvPowerSeries.Substitution
 import Mathlib.RingTheory.PowerSeries.Evaluation
 import Mathlib.RingTheory.PowerSeries.Basic
 
-import Mathlib.RingTheory.PowerSeries.Order
-
 /-! # Substitutions in power series
 
 A (possibly multivariate) power series can be substituted into
@@ -18,6 +16,9 @@ a (univariate) power series if and only if its constant coefficient is nilpotent
 
 This is a particularization of the substitution of multivariate power series
 to the case of univariate power series.
+
+Because of the special API for `PowerSeries`, some results for `MvPowerSeries`
+do not immediately apply and a “primed” version is provided here.
 
 -/
 
