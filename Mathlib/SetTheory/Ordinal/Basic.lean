@@ -404,15 +404,6 @@ def typein (r : α → α → Prop) [IsWellOrder α r] : @PrincipalSeg α Ordina
     rintro β s wo ⟨g⟩
     exact ⟨_, g.subrelIso.ordinal_type_eq⟩
 
-@[deprecated typein (since := "2024-10-09")]
-alias typein.principalSeg := typein
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-10-09")]
-theorem typein.principalSeg_coe (r : α → α → Prop) [IsWellOrder α r] :
-    (typein.principalSeg r : α → Ordinal) = typein r :=
-  rfl
-
 @[simp]
 theorem type_subrel (r : α → α → Prop) [IsWellOrder α r] (a : α) :
     type (Subrel r (r · a)) = typein r a :=
@@ -547,11 +538,13 @@ instance small_Ioc (a b : Ordinal.{u}) : Small.{u} (Ioc a b) := small_subset Ioc
 
 /-- `o.toType` is an `OrderBot` whenever `o ≠ 0`. -/
 def toTypeOrderBot {o : Ordinal} (ho : o ≠ 0) : OrderBot o.toType where
+  bot := (enum (· < ·)) ⟨0, _⟩
   bot_le := enum_zero_le' (by rwa [Ordinal.pos_iff_ne_zero])
 
 /-- `o.toType` is an `OrderBot` whenever `0 < o`. -/
 @[deprecated "use toTypeOrderBot" (since := "2025-02-13")]
 def toTypeOrderBotOfPos {o : Ordinal} (ho : 0 < o) : OrderBot o.toType where
+  bot := (enum (· < ·)) ⟨0, _⟩
   bot_le := enum_zero_le' ho
 
 theorem enum_zero_eq_bot {o : Ordinal} (ho : 0 < o) :
@@ -754,11 +747,6 @@ theorem mem_range_lift_of_le {a : Ordinal.{u}} {b : Ordinal.{max u v}} (h : b �
     b ∈ Set.range lift.{v} :=
   liftInitialSeg.mem_range_of_le h
 
-@[deprecated mem_range_lift_of_le (since := "2024-10-07")]
-theorem lift_down {a : Ordinal.{u}} {b : Ordinal.{max u v}} (h : b ≤ lift.{v, u} a) :
-    ∃ a', lift.{v,u} a' = b :=
-  mem_range_lift_of_le h
-
 theorem le_lift_iff {a : Ordinal.{u}} {b : Ordinal.{max u v}} :
     b ≤ lift.{v} a ↔ ∃ a' ≤ a, lift.{v} a' = b :=
   liftInitialSeg.le_apply_iff
@@ -942,7 +930,6 @@ theorem Iio_one_default_eq : (default : Iio (1 : Ordinal)) = ⟨0, zero_lt_one' 
 instance uniqueToTypeOne : Unique (toType 1) where
   default := enum (α := toType 1) (· < ·) ⟨0, by simp⟩
   uniq a := by
-    unfold default
     rw [← enum_typein (α := toType 1) (· < ·) a]
     congr
     rw [← lt_one_iff_zero]
@@ -1383,11 +1370,6 @@ theorem mem_range_lift_of_card_le {a : Cardinal.{u}} {b : Ordinal.{max u v}}
   rw [card_le_iff, ← lift_succ, ← lift_ord] at h
   exact mem_range_lift_of_le h.le
 
-@[deprecated mem_range_lift_of_card_le (since := "2024-10-07")]
-theorem lift_down' {a : Cardinal.{u}} {b : Ordinal.{max u v}}
-    (h : card.{max u v} b ≤ Cardinal.lift.{v, u} a) : ∃ a', lift.{v, u} a' = b :=
-  mem_range_lift_of_card_le h
-
 @[simp]
 theorem card_eq_ofNat {o} {n : ℕ} [n.AtLeastTwo] :
     card o = ofNat(n) ↔ o = OfNat.ofNat n :=
@@ -1415,7 +1397,7 @@ theorem List.Sorted.lt_ord_of_lt [LinearOrder α] [WellFoundedLT α] {l m : List
     | nil => intro i hi; simp at hi
     | cons b bs =>
       intro i hi
-      suffices h : i ≤ a by refine lt_of_le_of_lt ?_ (hlt a (mem_cons_self a as)); simpa
+      suffices h : i ≤ a by refine lt_of_le_of_lt ?_ (hlt a mem_cons_self); simpa
       cases hi with
       | head as => exact List.head_le_of_lt hmltl
       | tail b hi => exact le_of_lt (lt_of_lt_of_le (List.rel_of_sorted_cons hm _ hi)

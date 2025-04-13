@@ -20,10 +20,6 @@ This file contains basic results on algebraic independence of a family of elemen
 
 * [Stacks: Transcendence](https://stacks.math.columbia.edu/tag/030D)
 
-## TODO
-Define the transcendence degree and show it is independent of the choice of a
-transcendence basis.
-
 ## Tags
 transcendence basis, transcendence degree, transcendence
 
@@ -34,8 +30,16 @@ noncomputable section
 
 open Function Set Subalgebra MvPolynomial Algebra
 
-variable {ι ι' R K A A' : Type*} {x : ι → A}
+universe u v v'
+
+variable {ι : Type u} {ι' R : Type*} {A : Type v} {A' : Type v'} {x : ι → A}
 variable [CommRing R] [CommRing A] [CommRing A'] [Algebra R A] [Algebra R A']
+
+variable (R A) in
+/-- The transcendence degree of a commutative algebra `A` over a commutative ring `R` is
+defined to be the maximal cardinality of an `R`-algebraically independent set in `A`. -/
+@[stacks 030G] def Algebra.trdeg : Cardinal.{v} :=
+  ⨆ ι : { s : Set A // AlgebraicIndepOn R _root_.id s }, Cardinal.mk ι.1
 
 theorem algebraicIndependent_iff_ker_eq_bot :
     AlgebraicIndependent R x ↔
@@ -46,6 +50,9 @@ theorem algebraicIndependent_iff_ker_eq_bot :
 theorem algebraicIndependent_empty_type_iff [IsEmpty ι] :
     AlgebraicIndependent R x ↔ Injective (algebraMap R A) := by
   rw [algebraicIndependent_iff_injective_aeval, MvPolynomial.aeval_injective_iff_of_isEmpty]
+
+instance [FaithfulSMul R A] : Nonempty { s : Set A // AlgebraicIndepOn R id s } :=
+  ⟨∅, algebraicIndependent_empty_type_iff.mpr <| FaithfulSMul.algebraMap_injective R A⟩
 
 namespace AlgebraicIndependent
 
@@ -114,6 +121,14 @@ theorem of_aeval {f : ι → MvPolynomial ι R}
 
 end AlgebraicIndependent
 
+theorem isEmpty_algebraicIndependent (h : ¬ Injective (algebraMap R A)) :
+    IsEmpty { s : Set A // AlgebraicIndepOn R id s } where
+  false s := h s.2.algebraMap_injective
+
+theorem trdeg_eq_zero_of_not_injective (h : ¬ Injective (algebraMap R A)) : trdeg R A = 0 := by
+  have := isEmpty_algebraicIndependent h
+  rw [trdeg, ciSup_of_empty, bot_eq_zero]
+
 theorem MvPolynomial.algebraicIndependent_X (σ R : Type*) [CommRing R] :
     AlgebraicIndependent R (X (R := R) (σ := σ)) := by
   rw [AlgebraicIndependent, aeval_X_left]
@@ -126,8 +141,29 @@ theorem AlgHom.algebraicIndependent_iff (f : A →ₐ[R] A') (hf : Injective f) 
   ⟨fun h => h.of_comp f, fun h => h.map hf.injOn⟩
 
 @[nontriviality]
-theorem algebraicIndependent_of_subsingleton [Subsingleton R] : AlgebraicIndependent R x :=
+theorem AlgebraicIndependent.of_subsingleton [Subsingleton R] : AlgebraicIndependent R x :=
   algebraicIndependent_iff.2 fun _ _ => Subsingleton.elim _ _
+
+@[deprecated (since := "2025-02-07")] alias algebraicIndependent_of_subsingleton :=
+  AlgebraicIndependent.of_subsingleton
+
+theorem isTranscendenceBasis_iff_of_subsingleton [Subsingleton R] (x : ι → A) :
+    IsTranscendenceBasis R x ↔ Nonempty ι := by
+  have := Module.subsingleton R A
+  refine ⟨fun h ↦ ?_, fun h ↦ ⟨.of_subsingleton, fun s hs hx ↦
+    hx.antisymm fun a _ ↦ ⟨Classical.arbitrary _, Subsingleton.elim ..⟩⟩⟩
+  by_contra hι; rw [not_nonempty_iff] at hι
+  have := h.2 {0} .of_subsingleton
+  simp [range_eq_empty, eq_comm (a := ∅)] at this
+
+@[nontriviality] theorem IsTranscendenceBasis.of_subsingleton [Subsingleton R] [Nonempty ι] :
+    IsTranscendenceBasis R x :=
+  (isTranscendenceBasis_iff_of_subsingleton x).mpr ‹_›
+
+@[nontriviality] theorem trdeg_subsingleton [Subsingleton R] : trdeg R A = 1 :=
+  have := Module.subsingleton R A
+  (ciSup_le' fun s ↦ by simpa using Set.subsingleton_of_subsingleton).antisymm <| le_ciSup_of_le
+    (Cardinal.bddAbove_range _) ⟨{0}, .of_subsingleton⟩ (by simp)
 
 theorem algebraicIndependent_adjoin (hs : AlgebraicIndependent R x) :
     @AlgebraicIndependent ι R (adjoin R (range x))
@@ -236,14 +272,83 @@ theorem algebraicIndependent_empty_iff :
 
 end Subtype
 
-theorem AlgebraicIndependent.to_subtype_range {ι} {f : ι → A} (hf : AlgebraicIndependent R f) :
-    AlgebraicIndependent R ((↑) : range f → A) := by
+theorem AlgebraicIndependent.to_subtype_range (hx : AlgebraicIndependent R x) :
+    AlgebraicIndependent R ((↑) : range x → A) := by
   nontriviality R
-  rwa [algebraicIndependent_subtype_range hf.injective]
+  rwa [algebraicIndependent_subtype_range hx.injective]
 
-theorem AlgebraicIndependent.to_subtype_range' {ι} {f : ι → A} (hf : AlgebraicIndependent R f) {t}
-    (ht : range f = t) : AlgebraicIndependent R ((↑) : t → A) :=
-  ht ▸ hf.to_subtype_range
+theorem AlgebraicIndependent.to_subtype_range' (hx : AlgebraicIndependent R x) {t}
+    (ht : range x = t) : AlgebraicIndependent R ((↑) : t → A) :=
+  ht ▸ hx.to_subtype_range
+
+theorem IsTranscendenceBasis.to_subtype_range (hx : IsTranscendenceBasis R x) :
+    IsTranscendenceBasis R ((↑) : range x → A) := by
+  cases subsingleton_or_nontrivial R
+  · rw [isTranscendenceBasis_iff_of_subsingleton] at hx ⊢; infer_instance
+  · rwa [isTranscendenceBasis_subtype_range hx.1.injective]
+
+theorem IsTranscendenceBasis.to_subtype_range' (hx : IsTranscendenceBasis R x) {t}
+    (ht : range x = t) : IsTranscendenceBasis R ((↑) : t → A) :=
+  ht ▸ hx.to_subtype_range
+
+theorem AlgEquiv.isTranscendenceBasis (e : A ≃ₐ[R] A') (hx : IsTranscendenceBasis R x) :
+    IsTranscendenceBasis R (e ∘ x) := by
+  refine ⟨by apply hx.1.map' (id e.injective : Injective e.toAlgHom), fun s hs hxs ↦ ?_⟩
+  rw [AlgebraicIndepOn, ← e.symm.toAlgHom.algebraicIndependent_iff e.symm.injective] at hs
+  rw [range_comp, hx.2 _ hs.to_subtype_range, ← range_comp, ← comp_assoc, range_comp]
+  · convert s.image_id <;> (ext; simp)
+  rintro _ ⟨i, rfl⟩
+  exact ⟨⟨_, hxs ⟨i, rfl⟩⟩, by simp⟩
+
+theorem AlgEquiv.isTranscendenceBasis_iff (e : A ≃ₐ[R] A') :
+    IsTranscendenceBasis R (e ∘ x) ↔ IsTranscendenceBasis R x :=
+  ⟨fun hx ↦ by convert e.symm.isTranscendenceBasis hx; ext; simp, e.isTranscendenceBasis⟩
+
+section trdeg
+
+open Cardinal
+
+theorem AlgebraicIndependent.lift_cardinalMk_le_trdeg [Nontrivial R]
+    (hx : AlgebraicIndependent R x) : lift.{v} #ι ≤ lift.{u} (trdeg R A) := by
+  rw [lift_mk_eq'.mpr ⟨.ofInjective _ hx.injective⟩, lift_le]
+  exact le_ciSup_of_le (bddAbove_range _) ⟨_, hx.to_subtype_range⟩ le_rfl
+
+theorem AlgebraicIndependent.cardinalMk_le_trdeg [Nontrivial R] {ι : Type v} {x : ι → A}
+    (hx : AlgebraicIndependent R x) : #ι ≤ trdeg R A := by
+  rw [← (#ι).lift_id, ← (trdeg R A).lift_id]; exact hx.lift_cardinalMk_le_trdeg
+
+theorem lift_trdeg_le_of_injective (f : A →ₐ[R] A') (hf : Injective f) :
+    lift.{v'} (trdeg R A) ≤ lift.{v} (trdeg R A') := by
+  nontriviality R
+  rw [trdeg, lift_iSup (bddAbove_range _)]
+  exact ciSup_le' fun i ↦ (i.2.map' hf).lift_cardinalMk_le_trdeg
+
+theorem trdeg_le_of_injective {A' : Type v} [CommRing A'] [Algebra R A'] (f : A →ₐ[R] A')
+    (hf : Injective f) : trdeg R A ≤ trdeg R A' := by
+  rw [← (trdeg R A).lift_id, ← (trdeg R A').lift_id]; exact lift_trdeg_le_of_injective f hf
+
+theorem lift_trdeg_le_of_surjective (f : A →ₐ[R] A') (hf : Surjective f) :
+    lift.{v} (trdeg R A') ≤ lift.{v'} (trdeg R A) := by
+  nontriviality R
+  rw [trdeg, lift_iSup (bddAbove_range _)]
+  refine ciSup_le' fun i ↦ (lift_cardinalMk_le_trdeg (x := fun a : i.1 ↦ (⇑f).invFun a) <|
+    of_comp f ?_)
+  convert i.2; simp [invFun_eq (hf _)]
+
+theorem trdeg_le_of_surjective {A' : Type v} [CommRing A'] [Algebra R A'] (f : A →ₐ[R] A')
+    (hf : Surjective f) : trdeg R A' ≤ trdeg R A := by
+  rw [← (trdeg R A).lift_id, ← (trdeg R A').lift_id]; exact lift_trdeg_le_of_surjective f hf
+
+theorem AlgEquiv.lift_trdeg_eq (e : A ≃ₐ[R] A') :
+    lift.{v'} (trdeg R A) = lift.{v} (trdeg R A') :=
+  (lift_trdeg_le_of_injective e.toAlgHom e.injective).antisymm
+    (lift_trdeg_le_of_surjective e.toAlgHom e.surjective)
+
+theorem AlgEquiv.trdeg_eq {A' : Type v} [CommRing A'] [Algebra R A'] (e : A ≃ₐ[R] A') :
+    trdeg R A = trdeg R A' := by
+  rw [← (trdeg R A).lift_id, e.lift_trdeg_eq, lift_id]
+
+end trdeg
 
 theorem algebraicIndependent_comp_subtype {s : Set ι} :
     AlgebraicIndependent R (x ∘ (↑) : s → A) ↔
@@ -299,8 +404,8 @@ theorem algebraicIndependent_sUnion_of_directed {s : Set (Set A)} (hsn : s.Nonem
   exact algebraicIndependent_iUnion_of_directed hs.directed_val (by simpa using h)
 
 theorem exists_maximal_algebraicIndependent (s t : Set A) (hst : s ⊆ t)
-    (hs : AlgebraicIndependent R ((↑) : s → A)) : ∃ u, s ⊆ u ∧
-      Maximal (fun (x : Set A) ↦ AlgebraicIndependent R ((↑) : x → A) ∧ x ⊆ t) u := by
+    (hs : AlgebraicIndepOn R id s) : ∃ u, s ⊆ u ∧
+      Maximal (fun (x : Set A) ↦ AlgebraicIndepOn R id x ∧ x ⊆ t) u := by
   refine zorn_subset_nonempty { u : Set A | AlgebraicIndependent R ((↑) : u → A) ∧ u ⊆ t}
     (fun c hc chainc hcn ↦ ⟨⋃₀ c, ⟨?_, ?_⟩, fun _ ↦ subset_sUnion_of_mem⟩) s ⟨hs, hst⟩
   · exact algebraicIndependent_sUnion_of_directed hcn chainc.directedOn (fun x hxc ↦ (hc hxc).1)
@@ -374,7 +479,7 @@ theorem AlgebraicIndependent.aeval_comp_mvPolynomialOptionEquivPolynomialAdjoin
 
 section Field
 
-variable [Field K] [Algebra K A]
+variable {K : Type*} [Field K] [Algebra K A]
 
 /- Porting note: removing `simp`, not in simp normal form. Could make `Function.Injective f` a
 simp lemma when `f` is a field hom, and then simp would prove this -/

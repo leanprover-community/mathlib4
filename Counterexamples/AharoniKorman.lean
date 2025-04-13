@@ -3,16 +3,12 @@ Copyright (c) 2024 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Field.Rat
-import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Data.Nat.Cast.Order.Ring
-import Mathlib.Order.Chain
-import Mathlib.Order.WellFoundedSet
-import Mathlib.Order.Interval.Set.Infinite
 import Mathlib.Data.Setoid.Partition
-import Mathlib.Topology.Filter
+import Mathlib.Order.Filter.AtTopBot.Basic
+import Mathlib.Order.Interval.Set.Infinite
+import Mathlib.Order.WellFoundedSet
 
 /-!
 # Disproof of the Aharoni–Korman conjecture
@@ -70,6 +66,10 @@ aim of reaching a contradiction (as then, no such partition can exist). We may f
 * But as `f` maps each element of `S \ (C ∩ level n)` to `level (n - 1) ∪ level n ∪ level (n + 1)`,
   we have a contradiction (`no_spinalMap`), and therefore show that no spinal map exists.
 -/
+
+#adaptation_note /-- 2025-03-12
+We temporarily comment out this file on `nightly-testing`, awaiting fixes for a complex
+interaction between `omega`, `aesop`, and asynchronous elaboration.
 
 attribute [aesop norm 10 tactic] Lean.Elab.Tactic.Omega.omegaDefault
 attribute [aesop 2 simp] Set.subset_def Finset.subset_iff
@@ -1253,3 +1253,5 @@ theorem aharoni_korman_false :
     rw [Hollom.exists_partition_iff_nonempty_spinalMap hC] at h
     obtain ⟨f⟩ := h
     exact Hollom.no_spinalMap hC f
+
+-/

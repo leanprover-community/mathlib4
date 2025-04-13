@@ -10,6 +10,7 @@ import Mathlib.Algebra.Group.ULift
 import Mathlib.Order.Filter.Pointwise
 import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Topology.ContinuousMap.Defs
+import Mathlib.Topology.Algebra.Monoid.Defs
 
 /-!
 # Theory of topological monoids
@@ -30,25 +31,6 @@ variable {ι α M N X : Type*} [TopologicalSpace X]
 theorem continuous_one [TopologicalSpace M] [One M] : Continuous (1 : X → M) :=
   @continuous_const _ _ _ _ 1
 
-/-- Basic hypothesis to talk about a topological additive monoid or a topological additive
-semigroup. A topological additive monoid over `M`, for example, is obtained by requiring both the
-instances `AddMonoid M` and `ContinuousAdd M`.
-
-Continuity in only the left/right argument can be stated using
-`ContinuousConstVAdd α α`/`ContinuousConstVAdd αᵐᵒᵖ α`. -/
-class ContinuousAdd (M : Type u) [TopologicalSpace M] [Add M] : Prop where
-  continuous_add : Continuous fun p : M × M => p.1 + p.2
-
-/-- Basic hypothesis to talk about a topological monoid or a topological semigroup.
-A topological monoid over `M`, for example, is obtained by requiring both the instances `Monoid M`
-and `ContinuousMul M`.
-
-Continuity in only the left/right argument can be stated using
-`ContinuousConstSMul α α`/`ContinuousConstSMul αᵐᵒᵖ α`. -/
-@[to_additive]
-class ContinuousMul (M : Type u) [TopologicalSpace M] [Mul M] : Prop where
-  continuous_mul : Continuous fun p : M × M => p.1 * p.2
-
 section ContinuousMul
 
 variable [TopologicalSpace M] [Mul M] [ContinuousMul M]
@@ -56,10 +38,6 @@ variable [TopologicalSpace M] [Mul M] [ContinuousMul M]
 @[to_additive]
 instance : ContinuousMul Mᵒᵈ :=
   ‹ContinuousMul M›
-
-@[to_additive (attr := continuity, fun_prop)]
-theorem continuous_mul : Continuous fun p : M × M => p.1 * p.2 :=
-  ContinuousMul.continuous_mul
 
 @[to_additive]
 instance : ContinuousMul (ULift.{u} M) := by
@@ -79,18 +57,13 @@ instance ContinuousMul.to_continuousSMul_op : ContinuousSMul Mᵐᵒᵖ M :=
         continuous_swap.comp <| Continuous.prodMap MulOpposite.continuous_unop continuous_id⟩
 
 @[to_additive]
-theorem ContinuousMul.induced {α : Type*} {β : Type*} {F : Type*} [FunLike F α β] [MulOneClass α]
-    [MulOneClass β] [MonoidHomClass F α β] [tβ : TopologicalSpace β] [ContinuousMul β] (f : F) :
+theorem ContinuousMul.induced {α : Type*} {β : Type*} {F : Type*} [FunLike F α β] [Mul α]
+    [Mul β] [MulHomClass F α β] [tβ : TopologicalSpace β] [ContinuousMul β] (f : F) :
     @ContinuousMul α (tβ.induced f) _ := by
   let tα := tβ.induced f
   refine ⟨continuous_induced_rng.2 ?_⟩
   simp only [Function.comp_def, map_mul]
   fun_prop
-
-@[to_additive (attr := continuity, fun_prop)]
-theorem Continuous.mul {f g : X → M} (hf : Continuous f) (hg : Continuous g) :
-    Continuous fun x => f x * g x :=
-  continuous_mul.comp₂ hf hg
 
 @[to_additive (attr := continuity)]
 theorem continuous_mul_left (a : M) : Continuous fun b : M => a * b :=
@@ -100,19 +73,9 @@ theorem continuous_mul_left (a : M) : Continuous fun b : M => a * b :=
 theorem continuous_mul_right (a : M) : Continuous fun b : M => b * a :=
   continuous_id.mul continuous_const
 
-@[to_additive (attr := fun_prop)]
-theorem ContinuousOn.mul {f g : X → M} {s : Set X} (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
-    ContinuousOn (fun x => f x * g x) s :=
-  continuous_mul.comp_continuousOn (hf.prodMk hg)
-
 @[to_additive]
 theorem tendsto_mul {a b : M} : Tendsto (fun p : M × M => p.fst * p.snd) (𝓝 (a, b)) (𝓝 (a * b)) :=
   continuous_iff_continuousAt.mp ContinuousMul.continuous_mul (a, b)
-
-@[to_additive]
-theorem Filter.Tendsto.mul {f g : α → M} {x : Filter α} {a b : M} (hf : Tendsto f x (𝓝 a))
-    (hg : Tendsto g x (𝓝 b)) : Tendsto (fun x => f x * g x) x (𝓝 (a * b)) :=
-  tendsto_mul.comp (hf.prodMk_nhds hg)
 
 @[to_additive]
 theorem Filter.Tendsto.const_mul (b : M) {c : M} {f : α → M} {l : Filter α}
@@ -207,16 +170,6 @@ def Filter.Tendsto.units [TopologicalSpace N] [Monoid N] [ContinuousMul N] [T2Sp
   inv_val := by
     symm
     simpa using h₂.mul h₁
-
-@[to_additive (attr := fun_prop)]
-theorem ContinuousAt.mul {f g : X → M} {x : X} (hf : ContinuousAt f x) (hg : ContinuousAt g x) :
-    ContinuousAt (fun x => f x * g x) x :=
-  Filter.Tendsto.mul hf hg
-
-@[to_additive]
-theorem ContinuousWithinAt.mul {f g : X → M} {s : Set X} {x : X} (hf : ContinuousWithinAt f s x)
-    (hg : ContinuousWithinAt g s x) : ContinuousWithinAt (fun x => f x * g x) s x :=
-  Filter.Tendsto.mul hf hg
 
 @[to_additive]
 instance Prod.continuousMul [TopologicalSpace N] [Mul N] [ContinuousMul N] :
@@ -699,7 +652,7 @@ theorem tendsto_list_prod {f : ι → α → M} {x : Filter α} {a : ι → M} :
   | f::l, h => by
     simp only [List.map_cons, List.prod_cons]
     exact
-      (h f (List.mem_cons_self _ _)).mul
+      (h f List.mem_cons_self).mul
         (tendsto_list_prod l fun c hc => h c (List.mem_cons_of_mem _ hc))
 
 @[to_additive (attr := continuity)]
@@ -909,7 +862,7 @@ theorem eventuallyEq_prod {X M : Type*} [CommMonoid M] {s : Finset ι} {l : Filt
 open Function
 
 @[to_additive]
-theorem LocallyFinite.exists_finset_mulSupport {M : Type*} [CommMonoid M] {f : ι → X → M}
+theorem LocallyFinite.exists_finset_mulSupport {M : Type*} [One M] {f : ι → X → M}
     (hf : LocallyFinite fun i => mulSupport <| f i) (x₀ : X) :
     ∃ I : Finset ι, ∀ᶠ x in 𝓝 x₀, (mulSupport fun i => f i x) ⊆ I := by
   rcases hf x₀ with ⟨U, hxU, hUf⟩

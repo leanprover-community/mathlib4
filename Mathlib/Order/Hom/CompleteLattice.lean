@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Data.Set.Lattice.Image
-import Mathlib.Order.Hom.Lattice
+import Mathlib.Order.Hom.BoundedLattice
 
 /-!
 # Complete lattice homomorphisms
@@ -193,9 +193,6 @@ instance (priority := 100) OrderIsoClass.tosInfHomClass [CompleteLattice α]
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.toCompleteLatticeHomClass [CompleteLattice α]
     [CompleteLattice β] [OrderIsoClass F α β] : CompleteLatticeHomClass F α β :=
-  -- Porting note: Used to be:
-    -- { OrderIsoClass.tosSupHomClass, OrderIsoClass.toLatticeHomClass,
-    -- show sInfHomClass F α β from inferInstance with }
   { OrderIsoClass.tosSupHomClass, OrderIsoClass.tosInfHomClass with }
 
 end Equiv

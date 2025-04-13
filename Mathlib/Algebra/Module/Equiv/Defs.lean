@@ -69,7 +69,7 @@ add_decl_doc LinearEquiv.left_inv
 ring homomorphism `σ`. -/
 notation:50 M " ≃ₛₗ[" σ "] " M₂ => LinearEquiv σ M M₂
 
-/-- `M ≃ₗ [R] M₂` denotes the type of linear equivalences between `M` and `M₂` over
+/-- `M ≃ₗ[R] M₂` denotes the type of linear equivalences between `M` and `M₂` over
 a plain linear map `M →ₗ M₂`. -/
 notation:50 M " ≃ₗ[" R "] " M₂ => LinearEquiv (RingHom.id R) M M₂
 
@@ -161,6 +161,7 @@ theorem toLinearMap_inj {e₁ e₂ : M ≃ₛₗ[σ] M₂} : (↑e₁ : M →ₛ
   toLinearMap_injective.eq_iff
 
 instance : EquivLike (M ≃ₛₗ[σ] M₂) M M₂ where
+  coe e := e.toFun
   inv := LinearEquiv.invFun
   coe_injective' _ _ h _ := toLinearMap_injective (DFunLike.coe_injective h)
   left_inv := LinearEquiv.left_inv
@@ -244,7 +245,7 @@ def symm (e : M ≃ₛₗ[σ] M₂) : M₂ ≃ₛₗ[σ'] M :=
     e.toEquiv.symm with
     toFun := e.toLinearMap.inverse e.invFun e.left_inv e.right_inv
     invFun := e.toEquiv.symm.invFun
-    map_smul' := fun r x ↦ by dsimp only; rw [map_smulₛₗ] }
+    map_smul' := fun r x ↦ by rw [map_smulₛₗ] }
 
 /-- See Note [custom simps projection] -/
 def Simps.apply {R : Type*} {S : Type*} [Semiring R] [Semiring S]
