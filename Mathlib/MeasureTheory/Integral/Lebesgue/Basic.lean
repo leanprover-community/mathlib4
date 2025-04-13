@@ -872,28 +872,6 @@ theorem ae_eq_of_ae_le_of_lintegral_le {f g : α → ℝ≥0∞} (hfg : f ≤ᵐ
   simpa only [inv_top, add_zero] using
     tendsto_const_nhds.add (ENNReal.tendsto_inv_iff.2 ENNReal.tendsto_nat_nhds_top)
 
-/-- Weaker version of the monotone convergence theorem -/
-theorem lintegral_iSup_ae {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (f n))
-    (h_mono : ∀ n, ∀ᵐ a ∂μ, f n a ≤ f n.succ a) : ∫⁻ a, ⨆ n, f n a ∂μ = ⨆ n, ∫⁻ a, f n a ∂μ := by
-  classical
-  let ⟨s, hs⟩ := exists_measurable_superset_of_null (ae_iff.1 (ae_all_iff.2 h_mono))
-  let g n a := if a ∈ s then 0 else f n a
-  have g_eq_f : ∀ᵐ a ∂μ, ∀ n, g n a = f n a :=
-    (measure_zero_iff_ae_nmem.1 hs.2.2).mono fun a ha n => if_neg ha
-  calc
-    ∫⁻ a, ⨆ n, f n a ∂μ = ∫⁻ a, ⨆ n, g n a ∂μ :=
-      lintegral_congr_ae <| g_eq_f.mono fun a ha => by simp only [ha]
-    _ = ⨆ n, ∫⁻ a, g n a ∂μ :=
-      (lintegral_iSup (fun n => measurable_const.piecewise hs.2.1 (hf n))
-        (monotone_nat_of_le_succ fun n a => ?_))
-    _ = ⨆ n, ∫⁻ a, f n a ∂μ := by simp only [lintegral_congr_ae (g_eq_f.mono fun _a ha => ha _)]
-  simp only [g]
-  split_ifs with h
-  · rfl
-  · have := Set.not_mem_subset hs.1 h
-    simp only [not_forall, not_le, mem_setOf_eq, not_exists, not_lt] at this
-    exact this n
-
 theorem lintegral_sub' {f g : α → ℝ≥0∞} (hg : AEMeasurable g μ) (hg_fin : ∫⁻ a, g a ∂μ ≠ ∞)
     (h_le : g ≤ᵐ[μ] f) : ∫⁻ a, f a - g a ∂μ = ∫⁻ a, f a ∂μ - ∫⁻ a, g a ∂μ := by
   refine ENNReal.eq_sub_of_add_eq hg_fin ?_
