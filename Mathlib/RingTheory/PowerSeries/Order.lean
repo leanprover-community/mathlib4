@@ -185,21 +185,6 @@ theorem le_order_pow (φ : R⟦X⟧) (n : ℕ) : n • (order φ) ≤ order (φ 
     simp only [add_smul, one_smul, pow_succ]
     apply le_trans _ (le_order_mul _ _)
     exact add_le_add_right hn φ.order
-    /-
-    [IsDomain S]
-    (hf : constantCoeff S b = 0) {d n : ℕ} (hd : d < n) :
-    coeff S d (b ^ n) = 0 := by
-  suffices 1 ≤ b.order  by
-    apply PowerSeries.coeff_of_lt_order
-    rw [order_pow]
-    apply lt_of_lt_of_le  (b := (n : ℕ∞))
-    exact ENat.coe_lt_coe.mpr hd
-    simp
-    exact le_mul_of_one_le_right' this
-  apply le_order
-  intro i hi
-  simp only [cast_lt_one] at hi
-  simp [hi, hf] -/
 
 alias order_mul_ge := le_order_mul
 
@@ -326,6 +311,15 @@ theorem order_X_pow (n : ℕ) : order ((X : R⟦X⟧) ^ n) = n := by
   rw [X_pow_eq, order_monomial_of_ne_zero]
   exact one_ne_zero
 
+theorem divided_by_X_pow_order_of_X_eq_one :
+    divided_by_X_pow_order X_ne_zero = (1 : R⟦X⟧) := by
+  apply X_pow_mul_cancel
+  rw [self_eq_X_pow_order_mul_divided_by_X_pow_order]
+  simp
+
+example [NoZeroDivisors R] {f g : R⟦X⟧} (hf : f ≠ 0) (hg : g ≠ 0) : f * g ≠ 0 := by
+   exact (mul_ne_zero_iff_right hg).mpr hf
+
 end OrderZeroNeOne
 
 section NoZeroDivisors
@@ -335,9 +329,6 @@ variable [Semiring R] [NoZeroDivisors R]
 /-- The order of the product of two formal power series over an integral domain
  is the sum of their orders. -/
 theorem order_mul (φ ψ : R⟦X⟧) : order (φ * ψ) = order φ + order ψ := by
-/-   classical
-  simp only [order_eq_emultiplicity_X]
-  exact emultiplicity_mul X_prime -/
   apply le_antisymm _ (le_order_mul _ _)
   by_cases h : φ.order = ⊤ ∨ ψ.order = ⊤
   · rcases h with h | h <;> simp [h]
@@ -360,28 +351,20 @@ theorem order_mul (φ ψ : R⟦X⟧) : order (φ * ψ) = order φ + order ψ := 
 
 theorem order_pow [Nontrivial R] (φ : R⟦X⟧) (n : ℕ) :
     order (φ ^ n) = n • (order φ) := by
+  rcases subsingleton_or_nontrivial R with hR | hR
+  · simp [Subsingleton.eq_zero φ]
+    by_cases hn : n = 0
+    · simp [hn, pow_zero]
+    · simp [zero_pow hn, ENat.mul_top', if_neg hn]
   induction n with
   | zero => simp
   | succ n hn =>
     simp only [add_smul, one_smul, pow_succ, order_mul, hn]
 
-end NoZeroDivisors
-
-section OrderIsDomain
-
--- TODO : generalize to `[Semiring R] [NoZeroDivisors R]`
-variable [Ring R] [IsDomain R]
-
--- Dividing `X` by the maximal power of `X` dividing it leaves `1`.
-@[simp]
-theorem divided_by_X_pow_order_of_X_eq_one : divided_by_X_pow_order X_ne_zero = (1 : R⟦X⟧) := by
-  rw [← mul_eq_left₀ X_ne_zero]
-  simpa using self_eq_X_pow_order_mul_divided_by_X_pow_order (@X_ne_zero R _ _)
-
 -- Dividing a power series by the maximal power of `X` dividing it, respects multiplication.
 theorem divided_by_X_pow_orderMul {f g : R⟦X⟧} (hf : f ≠ 0) (hg : g ≠ 0) :
     divided_by_X_pow_order hf * divided_by_X_pow_order hg =
-      divided_by_X_pow_order (mul_ne_zero hf hg) := by
+      divided_by_X_pow_order ((mul_ne_zero_iff_right hg).mpr hf) := by
   set df := f.order.lift (order_finite_iff_ne_zero.mpr hf)
   set dg := g.order.lift (order_finite_iff_ne_zero.mpr hg)
   set dfg := (f * g).order.lift (order_finite_iff_ne_zero.mpr (mul_ne_zero hf hg))
@@ -394,16 +377,15 @@ theorem divided_by_X_pow_orderMul {f g : R⟦X⟧} (hf : f ≠ 0) (hg : g ≠ 0)
         rw [self_eq_X_pow_order_mul_divided_by_X_pow_order,
           self_eq_X_pow_order_mul_divided_by_X_pow_order]
       _ = X ^ df * X ^ dg * divided_by_X_pow_order hf * divided_by_X_pow_order hg := by
-        rw [mul_assoc, ← mul_assoc _ (X ^ dg), mul_X_pow_eq_X_pow_mul]
+        rw [mul_assoc, ← mul_assoc _ (X ^ dg), (commute_iff_eq _ _).mp commute_X_pow]
         simp [mul_assoc]
       _ = X ^ (df + dg) * divided_by_X_pow_order hf * divided_by_X_pow_order hg := by rw [pow_add]
       _ = X ^ dfg * divided_by_X_pow_order hf * divided_by_X_pow_order hg := by rw [H_add_d]
       _ = X ^ dfg * (divided_by_X_pow_order hf * divided_by_X_pow_order hg) := by rw [mul_assoc]
-  refine (IsLeftCancelMulZero.mul_left_cancel_of_ne_zero (pow_ne_zero dfg X_ne_zero) ?_).symm
-  simp only [this] at H
-  convert H
+  apply X_pow_mul_cancel
+  rw [← this, H]
 
-end OrderIsDomain
+end NoZeroDivisors
 
 end PowerSeries
 
