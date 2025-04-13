@@ -100,7 +100,7 @@ noncomputable def charFun [Inner ℝ E] (μ : Measure E) (t : E) : ℂ := ∫ x,
 
 lemma charFun_apply [Inner ℝ E] (t : E) : charFun μ t = ∫ x, exp (⟪x, t⟫ * I) ∂μ := rfl
 
-lemma charFun_apply_real {μ : Measure ℝ} {t : ℝ} :
+lemma charFun_apply_real {μ : Measure ℝ} (t : ℝ) :
     charFun μ t = ∫ x, exp (t * x * I) ∂μ := by simp [charFun_apply]
 
 variable [SeminormedAddCommGroup E] [InnerProductSpace ℝ E]
