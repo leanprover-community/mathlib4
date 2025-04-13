@@ -441,9 +441,12 @@ noncomputable def lemma_213 {rs : List R} (hr : IsWeaklyRegular M rs)
           apply Function.Surjective.comp <;> exact Submodule.mkQ_surjective _
       refine ih.trans ?_
       have h4 : IsSMulRegular M r := ((isWeaklyRegular_cons_iff M r rs).mp hr).1
-      have : r ∈ Module.annihilator R N := h r List.mem_cons_self
-      exact isoOfSubsingletonZeroMorphism
-        (Ext.covariant_sequence_exact₃' N (IsSMulRegular.SMul_ShortComplex_exact h4) n (n + 1) rfl)
-        (Ext.covariant_sequence_exact₁' N (IsSMulRegular.SMul_ShortComplex_exact h4) n (n + 1) rfl)
-        (Iso.refl _) (Iso.refl _) (by aesop_cat) h_left_subsingleton
-        (ext_hom_eq_zero_of_mem_ann this (n + 1))
+      let S := Ext.covariantSequence N (IsSMulRegular.SMul_ShortComplex_exact h4) n (n + 1) rfl
+      let hS := Ext.covariantSequence_exact
+        N (IsSMulRegular.SMul_ShortComplex_exact h4) n (n + 1) rfl
+      have : Subsingleton (S.obj' 1 (by omega)) := h_left_subsingleton
+      have h5 : S.map' 1 (1 + 1) (by omega) (by omega) = 0 :=
+        IsZero.eq_zero_of_src (AddCommGrp.isZero_of_subsingleton _) _
+      have isIso := ComposableArrows.Exact.isIso_map' hS 1 (by omega) h5
+        (ext_hom_eq_zero_of_mem_ann (h r List.mem_cons_self) (n + 1))
+      exact (asIso (S.map' (1 + 1) (1 + 2) _ _)).addCommGroupIsoToAddEquiv
