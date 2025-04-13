@@ -134,9 +134,7 @@ section Auxilary
 /-- `M.unstep` is the reverse of `M.step`. -/
 def unstep (s : σ) (a : α) : Set σ := {s' | s ∈ M.step s' a}
 
-theorem mem_unstep (s t : σ) (a : α) :
-  s ∈ M.unstep t a ↔ t ∈ M.step s a := by
-  rfl
+theorem mem_unstep {s t : σ} {a : α} : s ∈ M.unstep t a ↔ t ∈ M.step s a := Iff.rfl
 
 /-- `M.unstepSet S a` is the union of `unstep M s a` for all `s ∈ S`. -/
 def unstepSet (S : Set σ) (a : α) : Set σ :=
