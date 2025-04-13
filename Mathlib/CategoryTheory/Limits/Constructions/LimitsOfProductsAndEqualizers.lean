@@ -120,7 +120,7 @@ instance limitSubobjectProduct_mono [HasLimitsOfSize.{w, w} C] (F : J ⥤ C) :
     Mono (limitSubobjectProduct F) :=
   mono_comp _ _
 
-@[reassoc (attr := simp)]
+@[simp, reassoc] -- simp can prove the reassoc
 lemma limitSubobjectProduct_π {J : Type w} [Category.{w} J] {C : Type u} [Category.{v} C]
     [HasLimitsOfSize.{w, w} C] (F : J ⥤ C) (j : J) :
     limitSubobjectProduct F ≫ Pi.π F.obj j = limit.π F j := by
@@ -405,8 +405,8 @@ instance colimitQuotientCoproduct_epi [HasColimitsOfSize.{w, w} C] (F : J ⥤ C)
     Epi (colimitQuotientCoproduct F) :=
   epi_comp _ _
 
-@[reassoc (attr := simp)]
-lemma colimitQuotientCoproduct_ι {J : Type w} [Category.{w} J] {C : Type u} [Category.{v} C]
+@[simp, reassoc]
+lemma ι_colimitQuotientCoproduct {J : Type w} [Category.{w} J] {C : Type u} [Category.{v} C]
     [HasColimitsOfSize.{w, w} C] (F : J ⥤ C) (j : J) :
     Sigma.ι F.obj j ≫ colimitQuotientCoproduct F = colimit.ι F j := by
   simp only [colimitQuotientCoproduct, colimit.cocone_x, ← Category.assoc]
