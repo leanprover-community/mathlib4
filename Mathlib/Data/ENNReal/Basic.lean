@@ -104,48 +104,6 @@ scoped[ENNReal] notation "∞" => (⊤ : ENNReal)
 
 namespace ENNReal
 
-instance : OrderBot ℝ≥0∞ := inferInstanceAs (OrderBot (WithTop ℝ≥0))
-instance : OrderTop ℝ≥0∞ := inferInstanceAs (OrderTop (WithTop ℝ≥0))
-instance : BoundedOrder ℝ≥0∞ := inferInstanceAs (BoundedOrder (WithTop ℝ≥0))
-instance : CharZero ℝ≥0∞ := inferInstanceAs (CharZero (WithTop ℝ≥0))
-instance : Min ℝ≥0∞ := SemilatticeInf.toMin
-instance : Max ℝ≥0∞ := SemilatticeSup.toMax
-
-noncomputable instance : CommSemiring ℝ≥0∞ :=
-  inferInstanceAs (CommSemiring (WithTop ℝ≥0))
-
-instance : PartialOrder ℝ≥0∞ :=
-  inferInstanceAs (PartialOrder (WithTop ℝ≥0))
-
-instance : IsOrderedRing ℝ≥0∞ :=
-  inferInstanceAs (IsOrderedRing (WithTop ℝ≥0))
-
-instance : CanonicallyOrderedAdd ℝ≥0∞ :=
-  inferInstanceAs (CanonicallyOrderedAdd (WithTop ℝ≥0))
-
-instance : NoZeroDivisors ℝ≥0∞ :=
-  inferInstanceAs (NoZeroDivisors (WithTop ℝ≥0))
-
-noncomputable instance : CompleteLinearOrder ℝ≥0∞ :=
-  inferInstanceAs (CompleteLinearOrder (WithTop ℝ≥0))
-
-instance : DenselyOrdered ℝ≥0∞ := inferInstanceAs (DenselyOrdered (WithTop ℝ≥0))
-
-instance : AddCommMonoid ℝ≥0∞ :=
-  inferInstanceAs (AddCommMonoid (WithTop ℝ≥0))
-
-noncomputable instance : LinearOrder ℝ≥0∞ :=
-  inferInstanceAs (LinearOrder (WithTop ℝ≥0))
-
-instance : IsOrderedAddMonoid ℝ≥0∞ :=
-  inferInstanceAs (IsOrderedAddMonoid (WithTop ℝ≥0))
-
-instance instSub : Sub ℝ≥0∞ := inferInstanceAs (Sub (WithTop ℝ≥0))
-instance : OrderedSub ℝ≥0∞ := inferInstanceAs (OrderedSub (WithTop ℝ≥0))
-
-noncomputable instance : LinearOrderedAddCommMonoidWithTop ℝ≥0∞ :=
-  inferInstanceAs (LinearOrderedAddCommMonoidWithTop (WithTop ℝ≥0))
-
 -- RFC: redefine using pattern matching?
 noncomputable instance : Inv ℝ≥0∞ := ⟨fun a => sInf { b | 1 ≤ a * b }⟩
 
