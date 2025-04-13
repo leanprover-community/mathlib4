@@ -36,6 +36,8 @@ class NonUnitalSeminormedRing (α : Type*) extends Norm α, NonUnitalRing α,
   /-- The norm is submultiplicative. -/
   protected norm_mul_le : ∀ a b, norm (a * b) ≤ norm a * norm b
 
+attribute [instance 100] NonUnitalSeminormedRing.toNonUnitalRing
+
 /-- A seminormed ring is a ring endowed with a seminorm which satisfies the inequality
 `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
 class SeminormedRing (α : Type*) extends Norm α, Ring α, PseudoMetricSpace α where
@@ -49,6 +51,8 @@ class SeminormedRing (α : Type*) extends Norm α, Ring α, PseudoMetricSpace α
 instance (priority := 100) SeminormedRing.toNonUnitalSeminormedRing [β : SeminormedRing α] :
     NonUnitalSeminormedRing α :=
   { β with }
+
+attribute [instance 100] SeminormedRing.toRing
 
 /-- A non-unital normed ring is a not-necessarily-unital ring
 endowed with a norm which satisfies the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
@@ -64,6 +68,8 @@ instance (priority := 100) NonUnitalNormedRing.toNonUnitalSeminormedRing
     [β : NonUnitalNormedRing α] : NonUnitalSeminormedRing α :=
   { β with }
 
+attribute [instance 100] NonUnitalNormedRing.toNonUnitalRing
+
 /-- A normed ring is a ring endowed with a norm which satisfies the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
 class NormedRing (α : Type*) extends Norm α, Ring α, MetricSpace α where
   /-- The distance is induced by the norm. -/
@@ -75,6 +81,8 @@ class NormedRing (α : Type*) extends Norm α, Ring α, MetricSpace α where
 /-- A normed ring is a seminormed ring. -/
 instance (priority := 100) NormedRing.toSeminormedRing [β : NormedRing α] : SeminormedRing α :=
   { β with }
+
+attribute [instance 100] NormedRing.toRing
 
 -- see Note [lower instance priority]
 /-- A normed ring is a non-unital normed ring. -/
