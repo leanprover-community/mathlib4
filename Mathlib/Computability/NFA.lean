@@ -165,7 +165,7 @@ def rewindFrom (final : Set σ) : List α → Set σ :=
 def rewind : List α → Set σ :=
   M.rewindFrom M.accept
 
-/-- `startsTo M S` is the language of `x`
+/-- `M.startsTo S` is the language of `x`
 such that starting from `S` we arrive at `M.start`.
 -/
 def startsTo (S : Set σ) : Language α :=
