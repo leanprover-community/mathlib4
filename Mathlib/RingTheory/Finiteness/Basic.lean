@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Algebra.Tower
+import Mathlib.LinearAlgebra.BilinearMap
 import Mathlib.LinearAlgebra.Pi
+import Mathlib.LinearAlgebra.Projection
 import Mathlib.LinearAlgebra.Quotient.Defs
 import Mathlib.RingTheory.Finiteness.Defs
 
@@ -256,8 +258,7 @@ theorem of_restrictScalars_finite (R A M : Type*) [Semiring R] [Semiring A] [Add
   obtain ⟨S, hSfin, hSgen⟩ := hM
   refine ⟨S, hSfin, eq_top_iff.2 ?_⟩
   have := Submodule.span_le_restrictScalars R A S
-  rw [hSgen] at this
-  exact this
+  rwa [hSgen] at this
 
 variable {R M}
 
@@ -266,6 +267,8 @@ theorem equiv [Module.Finite R M] (e : M ≃ₗ[R] N) : Module.Finite R N :=
 
 theorem equiv_iff (e : M ≃ₗ[R] N) : Module.Finite R M ↔ Module.Finite R N :=
   ⟨fun _ ↦ equiv e, fun _ ↦ equiv e.symm⟩
+
+instance [Module.Finite R M] : Module.Finite R Mᵐᵒᵖ := equiv (MulOpposite.opLinearEquiv R)
 
 instance ulift [Module.Finite R M] : Module.Finite R (ULift M) := equiv ULift.moduleEquiv.symm
 
@@ -410,3 +413,24 @@ theorem of_comp_finite {f : A →ₐ[R] B} {g : B →ₐ[R] C} (h : (g.comp f).F
 end Finite
 
 end AlgHom
+
+namespace Module.Finite
+
+variable (R₀ N : Type*) {R M : Type*} [Semiring R₀] [Ring R] [AddCommGroup M] [AddCommMonoid N]
+  [Module R M] [Module R N]
+
+theorem of_isComplemented_domain [Module R₀ N] [SMulCommClass R R₀ N] [Module.Finite R₀ (M →ₗ[R] N)]
+    {S : Submodule R M} (h : IsComplemented S) : Module.Finite R₀ (S →ₗ[R] N) :=
+  .of_surjective (LinearMap.lcomp ..) (LinearMap.surjective_comp_subtype_of_isComplemented h)
+
+variable [Module R₀ M] [SMulCommClass R R₀ M] [SMul R₀ R]
+  [IsScalarTower R₀ R M] [Module.Finite R₀ (N →ₗ[R] M)] {S : Submodule R M} (h : IsComplemented S)
+
+#synth SMulCommClass R R₀ S
+
+theorem of_isComplemented_codomain [Module R₀ M] [SMulCommClass R R₀ M] [SMul R₀ R]
+    [IsScalarTower R₀ R M] [Module.Finite R₀ (N →ₗ[R] M)] {S : Submodule R M} (h : IsComplemented S) :
+    #synth SMulCommClass R R₀ (N →ₗ[R] S)
+    Module.Finite R₀ (N →ₗ[R] S) :=
+
+end Module.Finite
