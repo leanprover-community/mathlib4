@@ -311,14 +311,12 @@ theorem order_X_pow (n : ℕ) : order ((X : R⟦X⟧) ^ n) = n := by
   rw [X_pow_eq, order_monomial_of_ne_zero]
   exact one_ne_zero
 
+@[simp]
 theorem divided_by_X_pow_order_of_X_eq_one :
     divided_by_X_pow_order X_ne_zero = (1 : R⟦X⟧) := by
   apply X_pow_mul_cancel
   rw [self_eq_X_pow_order_mul_divided_by_X_pow_order]
   simp
-
-example [NoZeroDivisors R] {f g : R⟦X⟧} (hf : f ≠ 0) (hg : g ≠ 0) : f * g ≠ 0 := by
-   exact (mul_ne_zero_iff_right hg).mpr hf
 
 end OrderZeroNeOne
 
