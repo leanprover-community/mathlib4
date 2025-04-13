@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jingting Wang, Wanyi He, Nailin Guan
 -/
 import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-import Mathlib.CategoryTheory.EffectiveEpi.RegularEpi
 import Mathlib.RingTheory.QuotSMulTop
 
 /-!
