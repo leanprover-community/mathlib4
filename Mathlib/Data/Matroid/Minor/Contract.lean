@@ -57,7 +57,7 @@ a proof that its independent sets are the claimed ones. -/
 def contract (M : Matroid α) (C : Set α) : Matroid α := (M✶ ＼ C)✶
 
 /-- `M ／ C` refers to the contraction of a set `C` from the matroid `M`. -/
-infixl:75 " ／ " => Matroid.contract
+scoped infixl:75 " ／ " => Matroid.contract
 
 @[simp] lemma contract_ground (M : Matroid α) (C : Set α) : (M ／ C).E = M.E \ C := rfl
 
