@@ -47,7 +47,7 @@ variable {E : Type*} [SeminormedAddCommGroup E] [InnerProductSpace ℝ E]
 
 /-- The bounded continuous map `x ↦ exp(⟪x, t⟫ * I)`. -/
 noncomputable
-def innerProbChar (t : E) : BoundedContinuousFunction E ℂ :=
+def innerProbChar (t : E) : E →ᵇ ℂ :=
   char continuous_probChar (L := bilinFormOfRealInner) continuous_inner t
 
 lemma innerProbChar_apply (t x : E) : innerProbChar t x = exp (⟪x, t⟫ * I) := rfl
