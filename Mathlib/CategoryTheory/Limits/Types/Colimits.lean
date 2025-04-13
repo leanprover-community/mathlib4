@@ -278,7 +278,7 @@ theorem colimitEquivQuot_apply (j : J) (x : F.obj j) :
 
 /-- `colimitEquivQuot` is natural in `F`. -/
 @[simps!]
-noncomputable def colimIsoQuotFunctor :
+noncomputable def colimNatIsoQuotFunctor :
     colim (J := J) (C := Type max v u) ≅ Functor.quotFunctor J :=
   NatIso.ofComponents (Types.colimitEquivQuot · |>.toIso) fun {F G} η ↦ by
     apply colimit.hom_ext
