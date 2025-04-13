@@ -312,6 +312,28 @@ theorem IsAlgebraic.trans_isIntegral [Algebra.IsAlgebraic R S] [int : Algebra.Is
     Algebra.IsAlgebraic R A :=
   ⟨fun _ ↦ (int.1 _).trans_isAlgebraic _⟩
 
+variable {A}
+
+protected theorem IsIntegral.isAlgebraic_iff [Algebra.IsIntegral R S] [FaithfulSMul R S]
+    {a : A} : IsAlgebraic R a ↔ IsAlgebraic S a :=
+  ⟨.extendScalars (FaithfulSMul.algebraMap_injective ..), .restrictScalars_of_isIntegral _⟩
+
+theorem IsIntegral.isAlgebraic_iff_top [Algebra.IsIntegral R S]
+    [FaithfulSMul R S] : Algebra.IsAlgebraic R A ↔ Algebra.IsAlgebraic S A := by
+  simp_rw [Algebra.isAlgebraic_def, Algebra.IsIntegral.isAlgebraic_iff R S]
+
+protected theorem IsAlgebraic.isAlgebraic_iff [Algebra.IsAlgebraic R S] [FaithfulSMul R S]
+    {a : A} : IsAlgebraic R a ↔ IsAlgebraic S a :=
+  ⟨.extendScalars (FaithfulSMul.algebraMap_injective ..), .restrictScalars _⟩
+
+theorem IsAlgebraic.isAlgebraic_iff_top [Algebra.IsAlgebraic R S]
+    [FaithfulSMul R S] : Algebra.IsAlgebraic R A ↔ Algebra.IsAlgebraic S A := by
+  simp_rw [Algebra.isAlgebraic_def, Algebra.IsAlgebraic.isAlgebraic_iff R S]
+
+theorem IsAlgebraic.isAlgebraic_iff_bot [Algebra.IsAlgebraic S A] [FaithfulSMul S A] :
+    Algebra.IsAlgebraic R S ↔ Algebra.IsAlgebraic R A :=
+  ⟨fun _ ↦ .trans R S A, fun _ ↦ .tower_bot_of_injective (FaithfulSMul.algebraMap_injective S A)⟩
+
 end Algebra
 
 variable (R S)

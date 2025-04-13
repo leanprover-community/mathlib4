@@ -64,7 +64,7 @@ variable {M}
 end AddCommMonoid
 
 /-- A ring homomorphism `f : R →+* M` defines a module structure by `r • x = f r * x`. -/
-def RingHom.toModule [Semiring R] [Semiring S] (f : R →+* S) : Module R S :=
+abbrev RingHom.toModule [Semiring R] [Semiring S] (f : R →+* S) : Module R S :=
   Module.compHom S f
 
 /-- If the module action of `R` on `S` is compatible with multiplication on `S`, then
