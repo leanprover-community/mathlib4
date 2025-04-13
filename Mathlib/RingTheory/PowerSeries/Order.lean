@@ -350,22 +350,10 @@ theorem order_mul (φ ψ : R⟦X⟧) : order (φ * ψ) = order φ + order ψ := 
     rw [coeff_mul, Finset.sum_eq_single ⟨m, n⟩]
     · exact mul_ne_zero_iff.mpr ⟨hm.1, hn.1⟩
     · intro ij hij h
-      by_cases h' : ij.1 < m
+      rcases trichotomy_of_add_eq_add (mem_antidiagonal.mp hij) with h' | h' | h'
+      · exact False.elim (h (by simp [Prod.ext_iff, h'.1, h'.2]))
       · rw [hm.2 ij.1 h', zero_mul]
-      · rw [hn.2 ij.2]
-        · rw [mul_zero]
-        · simp only [mem_antidiagonal] at hij
-          apply Nat.lt_of_add_lt_add_left
-          rw [← hij]
-          refine Nat.add_lt_add_right ?_ ij.2
-          rw [lt_iff_le_and_ne]
-          refine ⟨not_lt.mp h', ?_⟩
-          intro h''
-          apply h
-          ext
-          · exact h''.symm
-          · dsimp
-            simpa only [h'', Nat.add_right_inj] using hij
+      · rw [hn.2 ij.2 h', mul_zero]
     · intro h
       apply False.elim (h _)
       simp [mem_antidiagonal]
