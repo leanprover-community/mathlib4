@@ -170,16 +170,6 @@ theorem equivariantMap_ofFixingSubgroup_to_ofStabilizer_bijective
     · obtain ⟨x1, hx1', rfl⟩ := h'
       exact (mem_ofFixingSubgroup_iff _).mp hx2 hx1'
 
-#print equivariantMap_ofFixingSubgroup_to_ofStabilizer
-/- (ofFixingSubgroup M (insert a (Subtype.val '' s)))
-      →ₑ[(fixingSubgroupMap_insert a s)]
-   (ofFixingSubgroup (↥(stabilizer M a)) s) -/
-
-
-#check fixingSubgroupMap_insert
-/- ↥(fixingSubgroup M (insert a (Subtype.val '' s)))
-    →* ↥(fixingSubgroup (↥(stabilizer M a)) s) -/
-
 theorem isPreprimitive_fixingSubgroup_insert_iff {a : α} {s : Set (ofStabilizer M a)} :
     IsPreprimitive (fixingSubgroup M (insert a (Subtype.val '' s)))
         (ofFixingSubgroup M (insert a (Subtype.val '' s))) ↔
