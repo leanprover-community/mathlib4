@@ -178,6 +178,29 @@ theorem le_order_mul (φ ψ : R⟦X⟧) : order φ + order ψ ≤ order (φ * ψ
   apply ne_of_lt (lt_of_lt_of_le hn <| add_le_add hi hj)
   rw [← Nat.cast_add, hij]
 
+theorem le_order_pow (φ : R⟦X⟧) (n : ℕ) : n • (order φ) ≤ order (φ ^ n) := by
+  induction n with
+  | zero => simp
+  | succ n hn =>
+    simp only [add_smul, one_smul, pow_succ]
+    apply le_trans _ (le_order_mul _ _)
+    exact add_le_add_right hn φ.order
+    /-
+    [IsDomain S]
+    (hf : constantCoeff S b = 0) {d n : ℕ} (hd : d < n) :
+    coeff S d (b ^ n) = 0 := by
+  suffices 1 ≤ b.order  by
+    apply PowerSeries.coeff_of_lt_order
+    rw [order_pow]
+    apply lt_of_lt_of_le  (b := (n : ℕ∞))
+    exact ENat.coe_lt_coe.mpr hd
+    simp
+    exact le_mul_of_one_le_right' this
+  apply le_order
+  intro i hi
+  simp only [cast_lt_one] at hi
+  simp [hi, hf] -/
+
 alias order_mul_ge := le_order_mul
 
 /-- The order of the monomial `a*X^n` is infinite if `a = 0` and `n` otherwise. -/
@@ -305,17 +328,60 @@ theorem order_X_pow (n : ℕ) : order ((X : R⟦X⟧) ^ n) = n := by
 
 end OrderZeroNeOne
 
-section OrderIsDomain
+section NoZeroDivisors
 
--- TODO: generalize to `[Semiring R] [NoZeroDivisors R]`
-variable [CommRing R] [IsDomain R]
+variable [Semiring R] [NoZeroDivisors R]
 
 /-- The order of the product of two formal power series over an integral domain
  is the sum of their orders. -/
 theorem order_mul (φ ψ : R⟦X⟧) : order (φ * ψ) = order φ + order ψ := by
-  classical
+/-   classical
   simp only [order_eq_emultiplicity_X]
-  exact emultiplicity_mul X_prime
+  exact emultiplicity_mul X_prime -/
+  apply le_antisymm _ (le_order_mul _ _)
+  by_cases h : φ.order = ⊤ ∨ ψ.order = ⊤
+  · rcases h with h | h <;> simp [h]
+  · simp only [not_or, ENat.ne_top_iff_exists] at h
+    obtain ⟨m, hm⟩ := h.1
+    obtain ⟨n, hn⟩ := h.2
+    rw [← hm, ← hn, ← ENat.coe_add]
+    rw [eq_comm, order_eq_nat] at hm hn
+    apply order_le
+    rw [coeff_mul, Finset.sum_eq_single ⟨m, n⟩]
+    · exact mul_ne_zero_iff.mpr ⟨hm.1, hn.1⟩
+    · intro ij hij h
+      by_cases h' : ij.1 < m
+      · rw [hm.2 ij.1 h', zero_mul]
+      · rw [hn.2 ij.2]
+        · rw [mul_zero]
+        · simp only [mem_antidiagonal] at hij
+          apply Nat.lt_of_add_lt_add_left
+          rw [← hij]
+          refine Nat.add_lt_add_right ?_ ij.2
+          rw [lt_iff_le_and_ne]
+          refine ⟨not_lt.mp h', ?_⟩
+          intro h''
+          apply h
+          ext
+          · exact h''.symm
+          · dsimp
+            simpa only [h'', Nat.add_right_inj] using hij
+    · intro h
+      apply False.elim (h _)
+      simp [mem_antidiagonal]
+
+theorem order_pow [Nontrivial R] (φ : R⟦X⟧) (n : ℕ) :
+    order (φ ^ n) = n • (order φ) := by
+  induction n with
+  | zero => simp
+  | succ n hn =>
+    simp only [add_smul, one_smul, pow_succ, order_mul, hn]
+
+end NoZeroDivisors
+
+section OrderIsDomain
+
+variable [CommRing R] [IsDomain R]
 
 -- Dividing `X` by the maximal power of `X` dividing it leaves `1`.
 @[simp]
