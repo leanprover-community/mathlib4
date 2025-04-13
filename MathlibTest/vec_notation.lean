@@ -93,6 +93,8 @@ example {a b c : α} {n : ℕ} {f : Fin n → α} : vecCons a (vecCons b (vecCon
 
 example {a b c : α} {n : ℕ} {f : Fin n.succ → α} :
     vecCons a (vecCons b (vecCons c f)) 3 = f 0 := by dsimp only [Matrix.cons_val]
+example {a b c : α} {n : ℕ} {f : Fin n.succ → α} :
+    vecCons a (vecCons b (vecCons c f)) 3 = f 0 := by dsimp only [Matrix.cons_val]
 example {a b c : α} {n : ℕ} {f : Fin (n + 2) → α} :
     vecCons a (vecCons b (vecCons c f)) 4 = f 1 := by dsimp only [Matrix.cons_val]
 
