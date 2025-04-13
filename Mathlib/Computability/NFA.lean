@@ -177,14 +177,13 @@ Given NFA `M`, there is an NFA `reverse(M)` such that `L(reverse(M)) = reverse(L
 def reverse (M : NFA α σ) : NFA α σ :=
   NFA.mk M.unstep M.accept M.start
 
-lemma spec_from (S : Set σ) (M : NFA α σ) :
+lemma spec_from (M : NFA α σ) :
   M.reverse.acceptsFrom = M.startsTo := by
   ext xs
   dsimp [NFA.reverse, acceptsFrom, startsTo, NFA.evalFrom, rewindFrom]
   unfold NFA.stepSet
   unfold NFA.unstepSet
   simp
-  rw [Set.mem_setOf, Set.mem_setOf, Set.mem_setOf]
 
 lemma reverse.rewindFromSpec (xs : List α) (S1 S2 : Set σ) (M : NFA α σ) :
   (∃ s1 ∈ S1, s1 ∈ M.rewindFrom S2 xs) ↔
@@ -225,8 +224,7 @@ theorem reverse.Spec (M : NFA α σ) :
   M.reverse.accepts
   = { xs : List α | xs.reverse ∈ M.accepts } := by
   ext xs
-  rw [accepts_acceptsFrom, accepts_acceptsFrom, reverse.SpecFrom]
-  rw [Set.mem_setOf, Set.mem_setOf]
+  rw [accepts_acceptsFrom, accepts_acceptsFrom, spec_from, Set.mem_setOf]
   apply reverse.startsToSpec
 
 end Reversal
