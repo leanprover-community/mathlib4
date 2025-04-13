@@ -7,43 +7,28 @@ open Qq Lean Elab Meta
 section mkSetLiteralQ
 
 /--
-info: {1, 2, 3}
+info: {1, 2, 3} : Finset ℕ
 -/
 #guard_msgs in
-run_cmd do
-  let β := q(Finset ℕ)
-  let elems :=  [q(1), q(2), q(3)]
-  Lean.logInfo <| ← Command.liftTermElabM (ppExpr (mkSetLiteralQ β elems))
+#check by_elab return mkSetLiteralQ q(Finset ℕ) [q(1), q(2), q(3)]
+
+/--
+info: {1, 2, 3} : Multiset ℕ
+-/
+#guard_msgs in
+#check by_elab return mkSetLiteralQ q(Multiset ℕ) [q(1), q(2), q(3)]
+
+/--
+info: {1, 2, 3} : Set ℕ
+-/
+#guard_msgs in
+#check by_elab return mkSetLiteralQ q(Set ℕ) [q(1), q(2), q(3)]
 
 
 /--
-info: {1, 2, 3}
+info: {1, 2, 3} : List ℕ
 -/
 #guard_msgs in
-run_cmd do
-  let β := q(Multiset ℕ)
-  let elems :=  [q(1), q(2), q(3)]
-  Lean.logInfo <| ← Command.liftTermElabM (ppExpr (mkSetLiteralQ β elems))
-
-
-/--
-info: {1, 2, 3}
--/
-#guard_msgs in
-run_cmd do
-  let β := q(Set ℕ)
-  let elems :=  [q(1), q(2), q(3)]
-  Lean.logInfo <| ← Command.liftTermElabM (ppExpr (mkSetLiteralQ β elems))
-
-
-/--
-info: {1, 2, 3}
--/
-#guard_msgs in
-run_cmd do
-  let β := q(List ℕ)
-  let elems :=  [q(1), q(2), q(3)]
-  Lean.logInfo <| ← Command.liftTermElabM (ppExpr (mkSetLiteralQ β elems))
-
+#check by_elab return mkSetLiteralQ q(List ℕ) [q(1), q(2), q(3)]
 
 end mkSetLiteralQ

@@ -42,7 +42,10 @@ def mkDecideProofQ (p : Q(Prop)) : MetaM Q($p) := mkDecideProof p
 
 /-- Join a list of elements of type `α` into a container `β`.
 
-Usually `β` is `q(Multiset α)` or `q(Finset α)` or `q(Set α)`. -/
+Usually `β` is `q(Multiset α)` or `q(Finset α)` or `q(Set α)`.
+Note: this is needed since there aren't `ToExpr` instances on these types, which is to be expected,
+since, e.g, there is in general no canonical way of ordering the elements in a Set/Finset/Multiset.
+-/
 def mkSetLiteralQ {u v : Level} {α : Q(Type u)} (β : Q(Type v))
     (elems : List Q($α))
     (_ : Q(EmptyCollection $β) := by exact q(inferInstance))
