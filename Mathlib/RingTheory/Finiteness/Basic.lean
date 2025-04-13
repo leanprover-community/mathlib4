@@ -326,11 +326,6 @@ lemma of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommSemiring A₁] [CommSemi
   haveI := Module.Finite.of_restrictScalars_finite A₁ A₂ B₁
   exact Module.Finite.equiv e.toLinearEquiv
 
-instance {R A} [CommSemiring R] [Semiring A] [Algebra R A] [Module.Finite R A] :
-    Module.Finite R (End A A) :=
-  have := Module.Finite.equiv (MulOpposite.opLinearEquiv R (M := A))
-  Module.Finite.equiv (AlgEquiv.moduleEndSelf R (A := A)).toLinearEquiv
-
 end Algebra
 
 end Finite
