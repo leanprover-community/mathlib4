@@ -615,7 +615,7 @@ theorem mapMatrix_trans (f : α ≃ₐ[R] β) (g : β ≃ₐ[R] γ) :
 
 /-- For any algebra `α` over a ring `R`, we have an `R`-algebra isomorphism
 `Matₙₓₙ(αᵒᵖ) ≅ (Matₙₓₙ(R))ᵒᵖ` given by transpose. -/
-@[simps] def mopMatrix : Matrix m m αᵐᵒᵖ ≃ₐ[R] (Matrix m m α)ᵐᵒᵖ where
+@[simps!] def mopMatrix : Matrix m m αᵐᵒᵖ ≃ₐ[R] (Matrix m m α)ᵐᵒᵖ where
   __ := RingEquiv.mopMatrix
   commutes' _ := MulOpposite.unop_injective <| by
     ext; simp [algebraMap_matrix_apply, eq_comm, apply_ite MulOpposite.unop]
