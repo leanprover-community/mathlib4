@@ -131,8 +131,7 @@ section Reversal
 
 section Auxilary
 
-/-- `M unstep` is the reverse of `M.step`
--/
+/-- `M.unstep` is the reverse of `M.step`. -/
 def unstep (s : σ) (a : α) : Set σ :=
   fun s' ↦ M.step s' a s
 
