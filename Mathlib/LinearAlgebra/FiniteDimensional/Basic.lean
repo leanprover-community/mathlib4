@@ -399,7 +399,7 @@ omit [FiniteDimensional K V]
 /-- An injective linear map between finite-dimensional modules of equal rank
 is a linear equivalence.
 
-Unlike `LinearEquiv.ofFinrankEq` (which creates an *abstract* linear equivalence between `V` and `V'`),
+Unlike `LinearEquiv.ofFinrankEq` (which creates an *abstract* linear equivalence from `V` to `V'`),
 this lemma improves a *given* injective linear map to a linear equivalence.
 -/
 noncomputable def ofInjectiveOfFinrankEq (f : V →ₗ[K] V') (hinj : Function.Injective f)
