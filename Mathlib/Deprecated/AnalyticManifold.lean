@@ -46,7 +46,7 @@ variable (I) in
 /-- Given a model with corners `(E, H)`, we define the pregroupoid of analytic transformations of
 `H` as the maps that are `AnalyticOn` when read in `E` through `I`.  Using `AnalyticOn`
 rather than `AnalyticOnNhd` gives us meaningful definitions at boundary points. -/
-@[deprecated "use instead `contDiffPregroupoid ω`" (since := "2025-01-23")]
+@[deprecated "use instead `contDiffPregroupoid ω`" (since := "2025-04-13")]
 def analyticPregroupoid : Pregroupoid H where
   property f s := AnalyticOn 𝕜 (I ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ range I)
   comp {f g u v} hf hg _ _ _ := by
@@ -81,7 +81,7 @@ variable (I) in
 /-- Given a model with corners `(E, H)`, we define the groupoid of analytic transformations of
 `H` as the maps that are `AnalyticOn` when read in `E` through `I`.  Using `AnalyticOn`
 rather than `AnalyticOnNhd` gives us meaningful definitions at boundary points. -/
-@[deprecated "use instead `contDiffGroupoid ω`" (since := "2025-01-23")]
+@[deprecated "use instead `contDiffGroupoid ω`" (since := "2025-04-13")]
 def analyticGroupoid : StructureGroupoid H :=
   (analyticPregroupoid I).groupoid
 
@@ -149,7 +149,7 @@ section AnalyticManifold
 
 /-- An analytic manifold w.r.t. a model `I : ModelWithCorners 𝕜 E H` is a charted space over `H`
 s.t. all extended chart conversion maps are analytic. -/
-@[deprecated "use instead `IsManifold ω`" (since := "2025-01-23")]
+@[deprecated "use instead `IsManifold ω`" (since := "2025-04-13")]
 class AnalyticManifold (I : ModelWithCorners 𝕜 E H) (M : Type*) [TopologicalSpace M]
   [ChartedSpace H M] : Prop extends HasGroupoid M (analyticGroupoid I)
 
