@@ -46,7 +46,7 @@ lemma Quot.jointly_surjective {F : J ⥤ Type u} (x : Quot F) : ∃ j y, x = Quo
 variable (J) in
 /-- `Quot` is functorial, so long as the universe levels work out. -/
 @[simps]
-noncomputable def _root_.CategoryTheory.Functor.quotFunctor [Small.{u} J] :
+noncomputable def _root_.CategoryTheory.Functor.quotFunctor :
     (J ⥤ Type u) ⥤ Type max u v where
   obj F := Quot F
   map {F G} η x := by
