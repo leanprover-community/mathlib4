@@ -151,10 +151,10 @@ partial def matchVecConsPrefix (e : Expr) : MetaM <| List Expr × Expr := do
 
 In practice, this is most effective at handling `![a, b, c] i`-style terms. -/
 dsimproc cons_val (Matrix.vecCons _ _ _) := fun e => do
-  let_expr Matrix.vecCons α _ x xs' i := ← Meta.whnfR e | return .continue
-  let some i' := i.int? | return .continue
+  let_expr Matrix.vecCons α _ x xs' ei := ← Meta.whnfR e | return .continue
+  let some i := ei.int? | return .continue
   let (length, variadic) ← do
-    let_expr Fin length := (← instantiateMVars (← Meta.inferType i)) | return .continue
+    let_expr Fin length := (← instantiateMVars (← Meta.inferType ei)) | return .continue
     let length ← Meta.whnfD length
     if let Expr.lit (.natVal length) := length then
       pure (length, false)
@@ -163,34 +163,24 @@ dsimproc cons_val (Matrix.vecCons _ _ _) := fun e => do
       pure (offset, true)
   let (xs, tail) ← matchVecConsPrefix xs'
   let xs := x :: xs
-  if variadic then
-    -- can't wrap if we don't know the length
-    unless 0 ≤ i' do return .continue
-    let i' := i'.toNat
-    if i' < xs.length then
-      -- prefix of `vecCons a (vecCons ... f)` where `f` is of unknown length
-      return .continue xs[i']!
-    else if i' < length then
-      let i'' := mkRawNatLit (i' - xs.length)
-      -- TODO: could build this without going through the elaborator
-      let (newn, _) ← Elab.Term.TermElabM.run <| do
-        Elab.Term.elabTerm (← `($(← tail.toSyntax) <| OfNat.ofNat $(← i''.toSyntax))) (some α)
-      return .continue (.some newn)
+  -- We now have that `e` is of the form `vecCons x₀ <| ... <| vecCons xₙ <| tail`.
+  -- Wrap the index if possible, and abort if not
+  let wrapped_i ←
+    if variadic then
+      -- can't wrap as we don't know the length
+      unless 0 ≤ i ∧ i < length do return .continue
+      pure i.toNat
     else
-      return .continue
+      pure (i % length).toNat
+  if h : wrapped_i < xs.length then
+    return .continue xs[wrapped_i]
   else
-    -- wrap around the index
-    let i' := (i' % length).toNat
-    if i' < xs.length then
-      return .continue xs[i']!
-    else if 0 < xs.length then
-      let i'' := mkRawNatLit (i' - xs.length)
-      -- TODO: could build this without going through the elaborator
-      let (newn, _) ← Elab.Term.TermElabM.run <| do
-        Elab.Term.elabTerm (← `($(← tail.toSyntax) <| OfNat.ofNat $(← i''.toSyntax))) (some α)
-      return .continue (.some newn)
-    else
-      return .continue
+    -- Within the `tail`
+    let i_expr := mkRawNatLit (wrapped_i - xs.length)
+    -- TODO: could build this without going through the elaborator
+    let (newn, _) ← Elab.Term.TermElabM.run <| do
+      Elab.Term.elabTerm (← `($(← tail.toSyntax) <| OfNat.ofNat $(← i_expr.toSyntax))) (some α)
+    return .continue (.some newn)
 
 end simprocs
 
