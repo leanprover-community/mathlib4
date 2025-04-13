@@ -40,36 +40,48 @@ theorem isSimpleRing_isArtinianRing_iff :
   · exact ⟨this, by rwa [and_comm]⟩
   · exact ⟨⟨‹_›, ‹_›⟩, inferInstance⟩
 
-section simple_artinian
+namespace IsSimpleRing
 
 variable (R) [IsSimpleRing R] [IsArtinianRing R]
 
-theorem IsSimpleRing.exists_ringEquiv_matrix_end_mulOpposite :
+theorem isIsotypic : IsIsotypic R R :=
+  (isSimpleRing_isArtinianRing_iff.mp ⟨‹_›, ‹_›⟩).2.1
+
+instance (priority := low) : IsSemisimpleRing R :=
+  (isSimpleRing_isArtinianRing_iff.mp ⟨‹_›, ‹_›⟩).1
+
+theorem exists_ringEquiv_matrix_end_mulOpposite :
     ∃ (n : ℕ) (_ : NeZero n) (I : Ideal R) (_ : IsSimpleModule R I),
       Nonempty (R ≃+* Matrix (Fin n) (Fin n) (Module.End R I)ᵐᵒᵖ) := by
-  have ⟨_, iso, _⟩ := isSimpleRing_isArtinianRing_iff (R := R).mp ⟨‹_›, ‹_›⟩
-  have ⟨n, hn, S, hS, ⟨e⟩⟩ := iso.linearEquiv_fun
+  have ⟨n, hn, S, hS, ⟨e⟩⟩ := (isIsotypic R).linearEquiv_fun
   refine ⟨n, hn, S, hS, ⟨.trans (.opOp R) <| .trans (.op ?_) (.symm .mopMatrix)⟩⟩
   exact .trans (.moduleEndSelf R) <| .trans e.conjRingEquiv (endVecRingEquivMatrixEnd ..)
 
-theorem IsSimpleRing.exists_ringEquiv_matrix_divisionRing :
+theorem exists_ringEquiv_matrix_divisionRing :
     ∃ (n : ℕ) (_ : NeZero n) (D : Type u) (_ : DivisionRing D),
       Nonempty (R ≃+* Matrix (Fin n) (Fin n) D) := by
-  have ⟨n, hn, I, _, ⟨e⟩⟩ := IsSimpleRing.exists_ringEquiv_matrix_end_mulOpposite R
+  have ⟨n, hn, I, _, ⟨e⟩⟩ := exists_ringEquiv_matrix_end_mulOpposite R
   classical exact ⟨n, hn, _, _, ⟨e⟩⟩
 
-theorem IsSimpleRing.exists_algEquiv_matrix_end_mulOpposite :
+theorem exists_algEquiv_matrix_end_mulOpposite :
     ∃ (n : ℕ) (_ : NeZero n) (I : Ideal R) (_ : IsSimpleModule R I),
       Nonempty (R ≃ₐ[R₀] Matrix (Fin n) (Fin n) (Module.End R I)ᵐᵒᵖ) := by
-  have ⟨_, iso, _⟩ := isSimpleRing_isArtinianRing_iff (R := R).mp ⟨‹_›, ‹_›⟩
-  have ⟨n, hn, S, hS, ⟨e⟩⟩ := iso.linearEquiv_fun
+  have ⟨n, hn, S, hS, ⟨e⟩⟩ := (isIsotypic R).linearEquiv_fun
   refine ⟨n, hn, S, hS, ⟨.trans (.opOp R₀ R) <| .trans (.op ?_) (.symm .mopMatrix)⟩⟩
   exact .trans (.moduleEndSelf R₀) <| .trans (e.algConj R₀) (endVecAlgEquivMatrixEnd ..)
 
-theorem IsSimpleRing.exists_algEquiv_matrix_divisionRing :
+theorem exists_algEquiv_matrix_divisionRing :
     ∃ (n : ℕ) (_ : NeZero n) (D : Type u) (_ : DivisionRing D) (_ : Algebra R₀ D),
       Nonempty (R ≃ₐ[R₀] Matrix (Fin n) (Fin n) D) := by
-  have ⟨n, hn, I, _, ⟨e⟩⟩ := IsSimpleRing.exists_algEquiv_matrix_end_mulOpposite R₀ R
+  have ⟨n, hn, I, _, ⟨e⟩⟩ := exists_algEquiv_matrix_end_mulOpposite R₀ R
   classical exact ⟨n, hn, _, _, _, ⟨e⟩⟩
 
-end simple_artinian
+theorem exists_algEquiv_matrix_divisionRing_finite [Module.Finite R₀ R] :
+    ∃ (n : ℕ) (_ : NeZero n) (D : Type u) (_ : DivisionRing D) (_ : Algebra R₀ D)
+      (_ : Module.Finite R₀ D), Nonempty (R ≃ₐ[R₀] Matrix (Fin n) (Fin n) D) := by
+  have ⟨n, hn, I, _, ⟨e⟩⟩ := exists_algEquiv_matrix_end_mulOpposite R₀ R
+  have := Module.Finite.equiv e.toLinearEquiv
+  classical exact ⟨n, hn, _, _, _, .of_surjective (Matrix.entryLinearMap R₀
+    (Module.End R I)ᵐᵒᵖ (0 : Fin n) (0 : Fin n)) fun f ↦ ⟨fun _ _ ↦ f, rfl⟩, ⟨e⟩⟩
+
+end IsSimpleRing
