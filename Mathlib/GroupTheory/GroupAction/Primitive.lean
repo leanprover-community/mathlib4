@@ -189,7 +189,7 @@ section EquivariantMap
 
 variable {M : Type*} [Group M] {α : Type*} [MulAction M α]
 variable {N β : Type*} [Group N] [MulAction N β]
-variable {φ : M →* N} {f : α →ₑ[φ] β}
+variable {φ : M → N} {f : α →ₑ[φ] β}
 
 @[to_additive]
 theorem IsPreprimitive.of_surjective [IsPreprimitive M α] (hf : Function.Surjective f) :

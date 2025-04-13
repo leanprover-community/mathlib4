@@ -6,6 +6,7 @@ Authors: Antoine Chambert-Loir
 
 import Mathlib.GroupTheory.GroupAction.SubMulAction.OfStabilizer
 import Mathlib.GroupTheory.GroupAction.FixingSubgroup
+import Mathlib.GroupTheory.GroupAction.MultipleTransitivity
 
 
 /-!
@@ -169,6 +170,24 @@ theorem equivariantMap_ofFixingSubgroup_to_ofStabilizer_bijective
     · obtain ⟨x1, hx1', rfl⟩ := h'
       exact (mem_ofFixingSubgroup_iff _).mp hx2 hx1'
 
+#print equivariantMap_ofFixingSubgroup_to_ofStabilizer
+/- (ofFixingSubgroup M (insert a (Subtype.val '' s)))
+      →ₑ[(fixingSubgroupMap_insert a s)]
+   (ofFixingSubgroup (↥(stabilizer M a)) s) -/
+
+
+#check fixingSubgroupMap_insert
+/- ↥(fixingSubgroup M (insert a (Subtype.val '' s)))
+    →* ↥(fixingSubgroup (↥(stabilizer M a)) s) -/
+
+theorem isPreprimitive_fixingSubgroup_insert_iff {a : α} {s : Set (ofStabilizer M a)} :
+    IsPreprimitive (fixingSubgroup M (insert a (Subtype.val '' s)))
+        (ofFixingSubgroup M (insert a (Subtype.val '' s))) ↔
+      IsPreprimitive (fixingSubgroup (stabilizer M a) s) (ofFixingSubgroup (stabilizer M a) s) :=
+  isPreprimitive_congr
+   (fixingSubgroupMap_insert_bijective a s).surjective
+   (equivariantMap_ofFixingSubgroup_to_ofStabilizer_bijective a s)
+
 end FixingSubgroupInsert
 
 section FixingSubgroupConj
@@ -230,7 +249,7 @@ def conjMap_ofFixingSubgroup (hg : g • t = s) :
 theorem conjMap_ofFixingSubgroup_apply {hg : g • t = s} (x : ofFixingSubgroup M t) :
     ↑(conjMap_ofFixingSubgroup hg x) = g • (x : α) := rfl
 
-theorem conjMap_ofFixingSubgroup_bijective {s t : Set α} {g : M} (hst : g • s = t) :
+theorem conjMap_ofFixingSubgroup_bijective {s t : Set α} {g : M} (hst : g • t = s) :
     Function.Bijective (conjMap_ofFixingSubgroup hst) := by
   constructor
   · rintro  _ _ hxy
@@ -240,26 +259,61 @@ theorem conjMap_ofFixingSubgroup_bijective {s t : Set α} {g : M} (hst : g • s
     use (SubMulAction.conjMap_ofFixingSubgroup hst) ⟨x, hx⟩
     simp [← SetLike.coe_eq_coe]
 
+theorem isPreprimitive_ofFixingSubgroup_conj_iff {s : Set α} {g : M} :
+    IsPreprimitive (fixingSubgroup M s) (ofFixingSubgroup M s) ↔
+      IsPreprimitive (fixingSubgroup M (g • s)) (ofFixingSubgroup M (g • s)) :=
+  isPreprimitive_congr
+    (φ := fixingSubgroupEquivFixingSubgroup (t := s) (s := g • s) (g := g) rfl)
+    (fixingSubgroupEquivFixingSubgroup _).surjective
+    (conjMap_ofFixingSubgroup_bijective rfl)
 end FixingSubgroupConj
+
+variable (M) in
+def fixingSubgroup_union_to_fixingSubgroup_fixingSubgroup (s t : Set α) :
+    fixingSubgroup M (s ∪ t) →*
+      fixingSubgroup (fixingSubgroup M s)
+        (Subtype.val ⁻¹' t : Set (ofFixingSubgroup M s)) where
+  toFun m := ⟨⟨m, by
+        let hm := m.prop
+        simp only [fixingSubgroup_union, Subgroup.mem_inf] at hm
+        exact hm.left⟩, by
+    let hm := m.prop
+    simp only [fixingSubgroup_union, Subgroup.mem_inf] at hm
+    rintro ⟨⟨x, hx⟩, hx'⟩
+    simp only [Set.mem_preimage] at hx'
+    simp only [← SetLike.coe_eq_coe, Subtype.coe_mk, SubMulAction.val_smul_of_tower]
+    exact hm.right ⟨x, hx'⟩⟩
+  map_one' := by simp
+  map_mul' x y := by simp [← Subtype.coe_inj]
+
+variable (M) in
+theorem fixingSubgroup_union_to_fixingSubgroup_fixingSubgroup_bijective (s t : Set α) :
+    Function.Bijective (fixingSubgroup_union_to_fixingSubgroup_fixingSubgroup M s t) := by
+  constructor
+  · intro _ _ h
+    simpa [fixingSubgroup_union_to_fixingSubgroup_fixingSubgroup] using h
+  · intro g
+    use ⟨g, ?_⟩
+    · simp [fixingSubgroup_union_to_fixingSubgroup_fixingSubgroup]
+    · rintro ⟨a, ha⟩
+      by_cases has : a ∈ s
+      · have hg := (g : fixingSubgroup M s).prop
+        simp only [mem_fixingSubgroup_iff] at hg
+        exact hg _ has
+      · have hg := g.prop
+        rw [mem_fixingSubgroup_iff] at hg
+        specialize hg ⟨a, has⟩ (by
+          simp only [Set.mem_preimage]
+          exact Or.resolve_left ha has)
+        simp [← Subtype.coe_inj] at hg
+        exact hg
 
 variable (M) in
 /-- The identity between the iterated sub_mul_action
   of the fixing_subgroups and the sub_mul_action of the fixing_subgroup
   of the union, as an equivariant map -/
 def map_ofFixingSubgroupUnion (s t : Set α) :
-    let ψ : fixingSubgroup M (s ∪ t) →
-      fixingSubgroup (fixingSubgroup M s) (Subtype.val ⁻¹' t : Set (ofFixingSubgroup M s)) :=
-      fun m ↦ ⟨⟨m, by
-        let hm := m.prop
-        simp only [fixingSubgroup_union, Subgroup.mem_inf] at hm
-        exact hm.left⟩, by
-      let hm := m.prop
-      simp only [fixingSubgroup_union, Subgroup.mem_inf] at hm
-      rintro ⟨⟨x, hx⟩, hx'⟩
-      simp only [Set.mem_preimage] at hx'
-      simp only [← SetLike.coe_eq_coe, Subtype.coe_mk, SubMulAction.val_smul_of_tower]
-      exact hm.right ⟨x, hx'⟩⟩
-    ofFixingSubgroup M (s ∪ t) →ₑ[ψ]
+    ofFixingSubgroup M (s ∪ t) →ₑ[fixingSubgroup_union_to_fixingSubgroup_fixingSubgroup M s t]
       ofFixingSubgroup (fixingSubgroup M s) (Subtype.val ⁻¹' t : Set (ofFixingSubgroup M s)) where
   toFun x :=
     ⟨⟨x, fun hx => x.prop (Set.mem_union_left t hx)⟩,
@@ -270,11 +324,13 @@ def map_ofFixingSubgroupUnion (s t : Set α) :
     rw [← SetLike.coe_eq_coe, ← SetLike.coe_eq_coe]
     rfl
 
+variable (M) in
 theorem map_ofFixingSubgroupUnion_def (s t : Set α)
     (x : SubMulAction.ofFixingSubgroup M (s ∪ t)) :
     ((SubMulAction.map_ofFixingSubgroupUnion M s t) x : α) = x :=
   rfl
 
+variable (M) in
 theorem map_ofFixingSubgroupUnion_bijective (s t : Set α) :
     Function.Bijective (map_ofFixingSubgroupUnion M s t) := by
   constructor
@@ -290,6 +346,17 @@ theorem map_ofFixingSubgroupUnion_bijective (s t : Set α) :
     · apply ha'
       simp only [Set.mem_preimage]
       exact h
+
+example (s t : Set α) :
+    IsPreprimitive (fixingSubgroup M (s ∪ t)) (ofFixingSubgroup M (s ∪ t)) ↔
+      IsPreprimitive
+        (fixingSubgroup (fixingSubgroup M s)
+          (Subtype.val ⁻¹' t : Set (ofFixingSubgroup M s)))
+        (ofFixingSubgroup (fixingSubgroup M s)
+          (Subtype.val ⁻¹' t : Set (ofFixingSubgroup M s))) :=
+  isPreprimitive_congr
+    (fixingSubgroup_union_to_fixingSubgroup_fixingSubgroup_bijective M s t).surjective
+    (map_ofFixingSubgroupUnion_bijective M s t)
 
 variable (M) in
 /-- The equivariant map on sub_mul_action.of_fixing_subgroup given a set inclusion -/
