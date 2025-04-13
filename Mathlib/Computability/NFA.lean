@@ -88,9 +88,7 @@ theorem eval_singleton (a : α) : M.eval [a] = M.stepSet M.start a :=
 theorem eval_append_singleton (x : List α) (a : α) : M.eval (x ++ [a]) = M.stepSet (M.eval x) a :=
   evalFrom_append_singleton _ _ _ _
 
-/--
-`M.acceptsFrom S` is the language of `x` such that `M.evalFrom S x` is an accept state.
--/
+/-- `M.acceptsFrom S` is the language of `x` such that `M.evalFrom S x` is an accept state. -/
 def acceptsFrom (S : Set σ) : Language α := {x | ∃ s ∈ M.accept, s ∈ M.evalFrom S x}
 
 theorem mem_acceptsFrom {S : Set σ} {x : List α} :
