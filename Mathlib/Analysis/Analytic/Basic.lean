@@ -138,7 +138,7 @@ theorem le_radius_of_eventually_le (C) (h : ∀ᶠ n in atTop, ‖p n‖ * (r : 
   p.le_radius_of_isBigO <| IsBigO.of_bound C <| h.mono fun n hn => by simpa
 
 theorem le_radius_of_summable_nnnorm (h : Summable fun n => ‖p n‖₊ * r ^ n) : ↑r ≤ p.radius :=
-  p.le_radius_of_bound_nnreal (∑' n, ‖p n‖₊ * r ^ n) fun _ => le_tsum' h _
+  p.le_radius_of_bound_nnreal (∑' n, ‖p n‖₊ * r ^ n) fun _ => h.le_tsum' _
 
 theorem le_radius_of_summable (h : Summable fun n => ‖p n‖ * (r : ℝ) ^ n) : ↑r ≤ p.radius :=
   p.le_radius_of_summable_nnnorm <| by
@@ -920,7 +920,7 @@ theorem HasFPowerSeriesWithinOnBall.tendsto_partialSum_prod {y : E}
     _ ≤ ∑ i ∈ range (n - k), ‖p (i + k)‖ * ↑r' ^ (i + k) := by
         gcongr with i _hi; simpa [← coe_nnnorm] using hw.le
     _ ≤ ∑' i, ‖p (i + k)‖ * ↑r' ^ (i + k) := by
-        apply sum_le_tsum _ (fun i _hi ↦ by positivity)
+        apply Summable.sum_le_tsum _ (fun i _hi ↦ by positivity)
         apply ((_root_.summable_nat_add_iff k).2 S)
     _ ≤ ε / 4 := hk.le
   calc
