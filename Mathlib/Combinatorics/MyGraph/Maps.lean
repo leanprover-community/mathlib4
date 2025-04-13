@@ -72,6 +72,7 @@ theorem map_adj (f : V ↪ W) (G : MyGraph V) (u v : W) :
 @[simp]
 theorem map_verts (f : V ↪ W) (G : MyGraph V) : (G.map f).verts = f '' G.verts := rfl
 
+
 lemma map_adj_apply {G : MyGraph V} {f : V ↪ W} {a b : V} :
     (G.map f).Adj (f a) (f b) ↔ G.Adj a b := by simp
 
@@ -234,6 +235,8 @@ theorem spanningCoe_eq_self {G : MyGraph V} (h : G.IsSpanning) : G.spanningCoe =
 The notation `G →g G'` represents the type of graph homomorphisms. -/
 abbrev Hom :=
   RelHom G.Adj G'.Adj
+
+
 
 /-- A graph embedding is an embedding `f` such that for vertices `v w : V`,
 `G'.Adj (f v) (f w) ↔ G.Adj v w`. Its image is an induced subgraph of G'.

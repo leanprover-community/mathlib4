@@ -9,9 +9,6 @@ structure SpanningGraph (V : Type*) extends MyGraph V where
  isSpanning : verts = Set.univ
 
 variable {G : SpanningGraph V}
-
-#check G.Adj
-
 @[simps]
 def SpanningGraph.mk' {V : Type*} (adj : V → V → Prop) (hs : Symmetric adj)
     (hi : Irreflexive adj) : SpanningGraph V :=
@@ -23,7 +20,7 @@ namespace SpanningGraph
 instance  : Coe (SpanningGraph V) (MyGraph V) := ⟨toMyGraph⟩
 
 
-initialize_simps_projections MyGraph (Adj → adj)
+initialize_simps_projections SpanningGraph (Adj → adj)
 
 /-- The graph with no edges on a given vertex type `V`. -/
 @[simp]
@@ -661,7 +658,8 @@ theorem comap_map_eq (f : V ↪ W) (G : SpanningGraph V) : (G.map f).comap f = G
 
 lemma comap_symm (G : SpanningGraph V) (e : V ≃ W) :
     G.comap e.symm.toEmbedding = G.map e.toEmbedding := by
-  ext u v; simp?
+  ext u v; simp only [Equiv.coe_toEmbedding, comap_eq_toSpanning, toSpanning_adj, MyGraph.comap_adj,
+    map_eq_toSpanning, MyGraph.map_adj]
   constructor <;> intro h
   · use e.symm u, e.symm v, h
     simp

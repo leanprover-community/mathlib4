@@ -19,7 +19,7 @@ In this file, we prove the triangle removal lemma.
 [Yaël Dillies, Bhavik Mehta, *Formalising Szemerédi’s Regularity Lemma in Lean*][srl_itp]
 -/
 
-open Finset Fintype Nat SzemerediRegularity
+open Finset Fintype Nat SzemerediRegularity MyGraph
 
 variable {α : Type*} [DecidableEq α] [Fintype α] {G : SpanningGraph α} [DecidableRel G.Adj]
   {s t : Finset α} {P : Finpartition (univ : Finset α)} {ε : ℝ}
@@ -69,6 +69,7 @@ private lemma triangle_removal_aux (hε : 0 < ε) (hP₁ : P.IsEquipartition)
     (hP₃ : #P.parts ≤ bound (ε / 8) ⌈4/ε⌉₊)
     (ht : t ∈ (G.regularityReduced P (ε/8) (ε/4)).cliqueFinset 3) :
     triangleRemovalBound ε * card α ^ 3 ≤ #(G.cliqueFinset 3) := by
+
   rw [mem_cliqueFinset_iff, is3Clique_iff] at ht
   obtain ⟨x, y, z, ⟨-, s, hX, Y, hY, xX, yY, nXY, uXY, dXY⟩,
                    ⟨-, X', hX', Z, hZ, xX', zZ, nXZ, uXZ, dXZ⟩,
@@ -90,8 +91,9 @@ private lemma triangle_removal_aux (hε : 0 < ε) (hP₁ : P.IsEquipartition)
       ring
     _ ≤ (1 - 2 * (ε / 8)) * (ε / 8) ^ 3 * #s * #Y * #Z := by
       gcongr <;> exact card_bound hP₁ hP₃ ‹_›
-    _ ≤ _ :=
-      triangle_counting G (by rwa [that]) uXY dXY (by rwa [that]) uXZ dXZ (by rwa [that]) uYZ dYZ
+    _ ≤ _ := by
+      convert triangle_counting G (by rwa [that]) uXY dXY
+         (by rwa [that]) uXZ dXZ (by rwa [that]) uYZ dYZ
 
 lemma regularityReduced_edges_card_aux [Nonempty α] (hε : 0 < ε) (hP : P.IsEquipartition)
     (hPε : P.IsUniform G (ε/8)) (hP' : 4 / ε ≤ #P.parts) :
@@ -105,8 +107,8 @@ lemma regularityReduced_edges_card_aux [Nonempty α] (hε : 0 < ε) (hP : P.IsEq
           G.Adj x y ∧ ¬(G.regularityReduced P (ε / 8) (ε /4)).Adj x y) : ℝ) := by
       rw [univ_product_univ, mul_sub, filter_and_not, cast_card_sdiff]
       · norm_cast
-        rw [two_mul_card_edgeFinset, two_mul_card_edgeFinset]
-      · exact monotone_filter_right _ fun xy hxy ↦ regularityReduced_le hxy
+        rw [MyGraph.two_mul_card_edgeFinset, MyGraph.two_mul_card_edgeFinset]
+      · exact monotone_filter_right _ fun xy hxy ↦ ((le_iff.1 regularityReduced_le) _ _ hxy)
     _ ≤ #(A ∪ B ∪ C) := by gcongr; exact unreduced_edges_subset
     _ ≤ #(A ∪ B) + #C := mod_cast (card_union_le _ _)
     _ ≤ #A + #B + #C := by gcongr; exact mod_cast card_union_le _ _
@@ -115,7 +117,7 @@ lemma regularityReduced_edges_card_aux [Nonempty α] (hε : 0 < ε) (hP : P.IsEq
     _ ≤ _ + ε / 2 * card α ^ 2 + 4 * (ε / 4) * card α ^ 2 := by
       gcongr
       · exact hP.card_biUnion_offDiag_le hε hP'
-      · exact hP.card_interedges_sparsePairs_le (G := G) (ε := ε / 4) (by positivity)
+      · convert hP.card_interedges_sparsePairs_le (G := G) (ε := ε / 4) (by positivity)
     _ = 2 * ε * (card α ^ 2 : ℕ) := by norm_cast; ring
 
 /-- **Triangle Removal Lemma**. If not all triangles can be removed by removing few edges (on the

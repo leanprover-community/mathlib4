@@ -51,21 +51,6 @@ lemma isClique_iff_toSpanning {G : MyGraph α} {s : Set α} :
     G.toSpanning.IsClique s ↔ G.IsClique s := by
   simp [isClique_iff]
 
-
-/-- A clique is a set of vertices whose induced graph is complete. -/
-  -- theorem isClique_iff_induce_eq : G.IsClique s ↔ G.induce s = ⊤ := by
-  -- rw [isClique_iff]
-  -- constructor
-  -- · intro h
-  --   ext ⟨v, hv⟩ ⟨w, hw⟩
-  --   simp only [comap_adj, Subtype.coe_mk, top_adj, Ne, Subtype.mk_eq_mk]
-  --   exact ⟨Adj.ne, h hv hw⟩
-  -- · intro h v hv w hw hne
-  --   have h2 : (G.induce s).Adj ⟨v, hv⟩ ⟨w, hw⟩ = _ := rfl
-  --   conv_lhs at h2 => rw [h]
-  --   simp only [top_adj, ne_eq, Subtype.mk.injEq, eq_iff_iff] at h2
-  --   exact h2.1 hne
-
 instance [DecidableEq α] [DecidableRel G.Adj] {s : Finset α} : Decidable (G.IsClique s) :=
   decidable_of_iff' _ G.isClique_iff
 
@@ -73,11 +58,18 @@ variable {G H} {a b : α}
 
 lemma isClique_empty : G.IsClique ∅ := by simp
 
-/-- We ignore the G.verts   -/
 lemma isClique_singleton (a : α) : G.IsClique {a} := by simp
 
 theorem IsClique.of_subsingleton {G : MyGraph α} (hs : s.Subsingleton) : G.IsClique s :=
   hs.pairwise G.Adj
+
+/-- We ignore the G.verts in the definition of `IsClique` so any Subsingleton set is a clique,
+but any non-trivial clique is contained in G.verts. -/
+lemma IsClique.subset_verts_of_nontrivial (h : G.IsClique s) (ht : s.Nontrivial) :
+    s ⊆ G.verts := by
+  intro x hx
+  obtain ⟨a, ha⟩ := ht.exists_ne x
+  exact (h ha.1 hx ha.2).mem_verts'
 
 lemma isClique_pair : G.IsClique {a, b} ↔ a ≠ b → G.Adj a b := Set.pairwise_pair_of_symmetric G.symm
 
@@ -259,7 +251,6 @@ structure IsNClique (n : ℕ) (s : Finset α) : Prop where
 
 theorem isNClique_iff : G.IsNClique n s ↔ G.IsClique s ∧ #s = n :=
   ⟨fun h ↦ ⟨h.1, h.2⟩, fun h ↦ ⟨h.1, h.2⟩⟩
-
 
 @[simp]
 lemma isNClique_iff_toSpanning {G : MyGraph α} {s : Finset α} {n : ℕ} :

@@ -27,6 +27,7 @@ namespace MyGraph
 
 variable {G₁ G₂ : MyGraph V} {a b : V}
 
+
 @[simp]
 protected theorem irrefl (G : MyGraph V) {v : V} : ¬ G.Adj v v :=
   G.loopless v
@@ -40,6 +41,14 @@ theorem adj_symm (G : MyGraph V) {u v : V} (h : G.Adj u v) : G.Adj v u :=
 
 protected theorem Adj.symm {G : MyGraph V} {u v : V} (h : G.Adj u v) : G.Adj v u :=
   G.symm h
+
+@[simp]
+protected lemma Adj.mem_verts {G : MyGraph V} {v w : V} (h : G.Adj v w) : v ∈ G.verts :=
+   G.edge_vert h
+
+@[simp]
+protected lemma Adj.mem_verts' {G : MyGraph V} {v w : V} (h : G.Adj w v) :
+    v ∈ G.verts := h.symm.mem_verts
 
 variable (G : MyGraph V)
 
