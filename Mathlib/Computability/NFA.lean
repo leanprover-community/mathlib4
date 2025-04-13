@@ -146,10 +146,7 @@ theorem mem_unstepSet {s : σ} {S : Set σ} {a : α} :
 
 theorem mem_unstepSet_step (s : σ) (S : Set σ) (a : α) :
   s ∈ M.unstepSet S a ↔ ∃ t ∈ S, t ∈ M.step s a := by
-  rw [mem_unstepSet]
-  apply exists_congr
-  intro t
-  rw [mem_unstep]
+  simp [mem_unstepSet, mem_unstep]
 
 /-- `M.rewindFrom S x` computes all possible paths though `M` with input `x` ending at an element
   of `S`. -/
