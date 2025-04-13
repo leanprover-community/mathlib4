@@ -9,6 +9,7 @@ import Counterexamples.GameMultiplication
 import Counterexamples.Girard
 import Counterexamples.HomogeneousPrimeNotPrime
 import Counterexamples.IrrationalPowerOfIrrational
+import Counterexamples.LIntegralZero
 import Counterexamples.LinearOrderWithPosMulPosEqZero
 import Counterexamples.MapFloor
 import Counterexamples.MonicNonRegular
