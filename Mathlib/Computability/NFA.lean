@@ -140,8 +140,7 @@ theorem mem_unstep {s t : σ} {a : α} : s ∈ M.unstep t a ↔ t ∈ M.step s a
   `M.unstepSet S a` is the union of `unstep M s a` for all `s ∈ S`.
   It computes the set of states that have a transition in `M`
   to a state in `S`. -/
-def unstepSet (S : Set σ) (a : α) : Set σ :=
-  ⋃ s ∈ S, M.unstep s a
+def unstepSet (S : Set σ) (a : α) : Set σ := ⋃ s ∈ S, M.unstep s a
 
 theorem mem_unstepSet {s : σ} {S : Set σ} {a : α} :
     s ∈ M.unstepSet S a ↔ ∃ t ∈ S, s ∈ M.unstep t a := by
@@ -154,13 +153,11 @@ theorem mem_unstepSet_step {s : σ} {S : Set σ} {a : α} :
 /-- Reseversed analog of `M.evalFrom S x`:
   `M.rewindFrom S x` computes all possible reversed paths through `M` with
   input `x` starting at an element of `S`. -/
-def rewindFrom : Set σ → List α → Set σ :=
-  List.foldl M.unstepSet
+def rewindFrom : Set σ → List α → Set σ := List.foldl M.unstepSet
 
 /-- `M.rewind x` computes all possible paths through `M` with input `x` ending at an element of
   `M.accept`. -/
-def rewind : List α → Set σ :=
-  M.rewindFrom M.accept
+def rewind : List α → Set σ := M.rewindFrom M.accept
 
 /-- `M.rewindsToStart S` is the language of `x`
   such that starting from `S` we rewind to `M.start`. -/
@@ -295,7 +292,7 @@ lemma union_start_spec {M1 : NFA α σ1} {M2 : NFA α σ2} :
     (union M1 M2).start = { s : σ1 ⊕ σ2 | s.casesOn M1.start M2.start } := by rfl
 
 lemma union_acceptsFrom
-  {S1 : Set σ1} {S2 : Set σ2} {M1 : NFA α σ1} {M2 : NFA α σ2} :
+ {S1 : Set σ1} {S2 : Set σ2} {M1 : NFA α σ1} {M2 : NFA α σ2} :
     acceptsFrom (union M1 M2)
       { s : σ1 ⊕ σ2 | s.casesOn S1 S2 }
     = M1.acceptsFrom S1 ∪ M2.acceptsFrom S2 := by
@@ -306,19 +303,14 @@ lemma union_acceptsFrom
     dsimp [NFA.step]
     rw [Set.mem_union, Set.mem_setOf, Set.mem_setOf]
     revert S1 S2
-    induction xs
+    induction xs <;> intro S1 S2
     case nil =>
-      intro S1 S2
       simp
       simp [Set.mem_def]
     case cons x xs ih =>
-      intro S1 S2
-      rw [List.foldl_cons, List.foldl_cons, List.foldl_cons, ←ih]
-      clear ih
-      simp [union_biUnion_spec]
+      simp [List.foldl_cons, List.foldl_cons, List.foldl_cons, ←ih, union_biUnion_spec]
 
-theorem union_accepts
-  {M1 : NFA α σ1} {M2 : NFA α σ2} :
+theorem union_accepts {M1 : NFA α σ1} {M2 : NFA α σ2} :
     accepts (union M1 M2) = M1.accepts ∪ M2.accepts := by
   rw [accepts_acceptsFrom, accepts_acceptsFrom, accepts_acceptsFrom,
     union_start_spec, union_acceptsFrom]
@@ -349,9 +341,7 @@ lemma intersect_start_spec {M1 : NFA α σ1} {M2 : NFA α σ2} :
     (intersect M1 M2).start = { s : σ1 × σ2 | s.1 ∈ M1.start ∧ s.2 ∈ M2.start } := by rfl
 
 lemma intersect_biUnion_spec
-  {a : α}
-  {S1 : Set σ1} {S2 : Set σ2}
-  {M1 : NFA α σ1} {M2 : NFA α σ2} :
+  {a : α} {S1 : Set σ1} {S2 : Set σ2} {M1 : NFA α σ1} {M2 : NFA α σ2} :
     (⋃ s : σ1 × σ2,
       ⋃ (_ : s.1 ∈ S1 ∧ s.2 ∈ S2),
         stepProd M1 M2 s a) =
@@ -395,11 +385,10 @@ lemma intersect_acceptsFrom
     case cons x xs ih =>
       rw [intersect_biUnion_spec, ih]
 
-theorem intersect_accepts
-  {M1 : NFA α σ1} {M2 : NFA α σ2} :
+theorem intersect_accepts {M1 : NFA α σ1} {M2 : NFA α σ2} :
     (intersect M1 M2).accepts = M1.accepts ∩ M2.accepts := by
-  rw [NFA.accepts_acceptsFrom, NFA.accepts_acceptsFrom, NFA.accepts_acceptsFrom]
-  rw [intersect_start_spec, intersect_acceptsFrom]
+  rw [NFA.accepts_acceptsFrom, NFA.accepts_acceptsFrom, NFA.accepts_acceptsFrom,
+      intersect_start_spec, intersect_acceptsFrom]
 
 end Intersection
 
