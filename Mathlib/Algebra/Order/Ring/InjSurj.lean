@@ -13,22 +13,22 @@ import Mathlib.Algebra.Ring.InjSurj
 
 open Function
 
-variable {α β : Type*}
+variable {R S : Type*}
 
 namespace Function.Injective
-variable [Semiring α] [PartialOrder α]
-  [Zero β] [One β] [Add β] [Mul β] [SMul ℕ β] [Pow β ℕ] [NatCast β] (f : β → α) (hf : Injective f)
+variable [Semiring R] [PartialOrder R]
+  [Zero S] [One S] [Add S] [Mul S] [SMul ℕ S] [Pow S ℕ] [NatCast S] (f : S → R) (hf : Injective f)
 
 /-- Pullback an `IsOrderedRing` under an injective map. -/
-protected lemma isOrderedRing [IsOrderedRing α] (zero : f 0 = 0) (one : f 1 = 1)
+protected lemma isOrderedRing [IsOrderedRing R] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (natCast : ∀ n : ℕ, f n = n) :
-    letI _ : Semiring β := hf.semiring f zero one add mul nsmul npow natCast
-    letI _ : PartialOrder β := PartialOrder.lift f hf
-    IsOrderedRing β :=
-  letI _ : Semiring β := hf.semiring f zero one add mul nsmul npow natCast
-  letI _ : PartialOrder β := PartialOrder.lift f hf
+    letI _ : Semiring S := hf.semiring f zero one add mul nsmul npow natCast
+    letI _ : PartialOrder S := PartialOrder.lift f hf
+    IsOrderedRing S :=
+  letI _ : Semiring S := hf.semiring f zero one add mul nsmul npow natCast
+  letI _ : PartialOrder S := PartialOrder.lift f hf
   { __ := hf.isOrderedAddMonoid f zero add (swap nsmul)
     zero_le_one := show f 0 ≤ f 1 by simp only [zero, one, zero_le_one]
     mul_le_mul_of_nonneg_left a b c h hc := show f (c * a) ≤ f (c * b) by
@@ -37,15 +37,15 @@ protected lemma isOrderedRing [IsOrderedRing α] (zero : f 0 = 0) (one : f 1 = 1
       rw [mul, mul]; refine mul_le_mul_of_nonneg_right h ?_; rwa [← zero] }
 
 /-- Pullback a `IsStrictOrderedRing` under an injective map. -/
-protected lemma isStrictOrderedRing [IsStrictOrderedRing α] (zero : f 0 = 0) (one : f 1 = 1)
+protected lemma isStrictOrderedRing [IsStrictOrderedRing R] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (natCast : ∀ n : ℕ, f n = n) :
-    letI _ : Semiring β := hf.semiring f zero one add mul nsmul npow natCast
-    letI _ : PartialOrder β := PartialOrder.lift f hf
-    IsStrictOrderedRing β :=
-  letI _ : Semiring β := hf.semiring f zero one add mul nsmul npow natCast
-  letI _ : PartialOrder β := PartialOrder.lift f hf
+    letI _ : Semiring S := hf.semiring f zero one add mul nsmul npow natCast
+    letI _ : PartialOrder S := PartialOrder.lift f hf
+    IsStrictOrderedRing S :=
+  letI _ : Semiring S := hf.semiring f zero one add mul nsmul npow natCast
+  letI _ : PartialOrder S := PartialOrder.lift f hf
   { __ := hf.isOrderedCancelAddMonoid f zero add (swap nsmul)
     __ := domain_nontrivial f zero one
     __ := hf.isOrderedRing f zero one add mul nsmul npow natCast
