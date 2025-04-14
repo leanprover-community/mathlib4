@@ -1342,11 +1342,8 @@ lemma abs_R :
 
   calc _ ≤ ∑ t, (‖σ ↑(_root_.η α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq t)‖
           * ‖cexp (_root_.ρ α β q t * z)‖) := ?_
-       _ ≤ ∑ t, (house (algebraMap (𝓞 K) K
-            (_root_.η α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq t))
-          * ‖cexp (_root_.ρ α β q t * z)‖) := ?_
-       _ ≤ (q^2) * ((house ((algebraMap (𝓞 K) K) (η t))) *(
-    Real.exp ((q+q*(norm β))* m K *(1+r/q))*(norm α))) := ?_
+       _ ≤ ∑ t : Fin (q*q), ((c₄)^(n K q : ℝ) * (n K q) ^((1/2)*(n K q +1)) *
+         (Real.exp ((q+q*(norm β))* m K *(1+r/q))*(norm α))) := ?_
        _ ≤ (q^2) * ((c₄)^(n K q : ℝ) * (n K q) ^((1/2)*(n K q +1))*(c₉)^(r+q)) := ?_
        _ ≤ (c₁₀)^r * r^(1/2*(r+3)) := ?_
   · unfold R
@@ -1357,70 +1354,18 @@ lemma abs_R :
   · apply sum_le_sum
     intros i hi
     apply mul_le_mul
-    · unfold house
-      unfold algebraMap
+    · have :=  fromlemma82_bound α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
       sorry
-    · simp only [le_refl]
-    · simp only [norm_nonneg]
-    · apply house_nonneg
-  · sorry
-  · apply mul_le_mul
-    · simp only [le_refl]
-    · apply mul_le_mul
-      · have :=  fromlemma82_bound α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
-        exact this
-      · sorry
-      · apply mul_nonneg
-        · trans
-          · exact zero_le_one
-          · apply Real.one_le_exp
-            · apply mul_nonneg
-              · apply mul_nonneg
-                · have : ↑q + ↑q * ‖β‖ = ↑q * (1 + ‖β‖) := by {
-                   rw [mul_add]
-                   rw [mul_one]
-                   }
-                  rw [this]
-                  apply mul_nonneg
-                  · simp only [Nat.cast_nonneg]
-                  · trans
-                    · exact zero_le_one
-                    · rw [le_add_iff_nonneg_right]
-                      simp only [norm_nonneg]
-                · simp only [Nat.cast_nonneg]
-              · trans
-                · exact zero_le_one
-                · simp only [le_add_iff_nonneg_right]
-                  sorry
-        · exact norm_nonneg α
-      · simp only [Nat.reduceDiv, zero_mul, pow_zero, mul_one]
-        sorry
-    · apply mul_nonneg
-      · apply house_nonneg
-      · apply mul_nonneg
-        · trans
-          · exact zero_le_one
-          · apply Real.one_le_exp
-            · apply mul_nonneg
-              · apply mul_nonneg
-                · have : ↑q + ↑q * ‖β‖ = ↑q * (1 + ‖β‖) := by {
-                   rw [mul_add]
-                   rw [mul_one]
-                   }
-                  rw [this]
-                  apply mul_nonneg
-                  · simp only [Nat.cast_nonneg]
-                  · trans
-                    · exact zero_le_one
-                    · rw [le_add_iff_nonneg_right]
-                      simp only [norm_nonneg]
-                · simp only [Nat.cast_nonneg]
-              · trans
-                · exact zero_le_one
-                · simp only [le_add_iff_nonneg_right]
-                  sorry
-        · exact norm_nonneg α
-    · simp only [Nat.cast_nonneg, pow_nonneg]
+    · have : ∀ i, ‖cexp (_root_.ρ α β q i * z)‖ ≤
+         (Real.exp ((q+q*(norm β))* m K *(1+r/q))*(norm α)) := sorry
+      apply this
+    · apply norm_nonneg
+    · unfold c₄
+      simp only [Real.rpow_natCast, Nat.reduceDiv, zero_mul, pow_zero, mul_one, le_sup_iff,
+        zero_le_one, true_or, pow_nonneg]
+  · simp only [Real.rpow_natCast, Nat.reduceDiv, zero_mul, pow_zero, mul_one, sum_const, card_univ,
+    Fintype.card_fin, nsmul_eq_mul, Nat.cast_mul]
+    sorry
   · sorry
 
 lemma abs_hmrqzl₀ :
