@@ -67,14 +67,21 @@ lemma insert_Icc_succ_left_eq_Icc (h : a ≤ b) : insert a (Icc (succ a) b) = Ic
 
 lemma insert_Icc_eq_Icc_succ_right (h : a ≤ succ b) :
     insert (succ b) (Icc a b) = Icc a (succ b) := by
-  ext x; simp [mem_insert, mem_Icc, or_and_left, le_succ_iff_eq_or_le]; aesop
+  ext x; simp [or_and_left, le_succ_iff_eq_or_le]; aesop
 
-lemma insert_Ico_right_eq_Ico_succ_right_of_not_isMax (h : a ≤ b) (hb : ¬ IsMax b) :
+lemma insert_Ico_eq_Ico_succ_right_of_not_isMax (h : a ≤ b) (hb : ¬ IsMax b) :
     insert b (Ico a b) = Ico a (succ b) := by
   rw [Ico_succ_right_of_not_isMax hb, ← Ico_insert_right h]
 
 lemma insert_Ico_succ_left_eq_Ico (h : a < b) : insert a (Ico (succ a) b) = Ico a b := by
   rw [Ico_succ_left_of_not_isMax h.not_isMax, ← Ioo_insert_left h]
+
+lemma insert_Ioc_eq_Ioc_succ_right_of_not_isMax (h : a ≤ b) (hb : ¬ IsMax b) :
+    insert (succ b) (Ioc a b) = Ioc a (succ b) := by
+  ext x; simp +contextual [or_and_left, le_succ_iff_eq_or_le, lt_succ_of_le_of_not_isMax h hb]
+
+lemma insert_Ioc_succ_left_eq_Ioc (h : a < b) : insert (succ a) (Ioc (succ a) b) = Ioc a b := by
+  rw [Ioc_insert_left (succ_le_of_lt h), Icc_succ_left_of_not_isMax h.not_isMax]
 
 /-!
 #### Orders with no maximal elements
@@ -98,8 +105,11 @@ lemma Ico_succ_succ_eq_Ioc (a b : α) : Ico (succ a) (succ b) = Ioc a b :=
 
 /-! ##### Inserting into intervals -/
 
-lemma insert_Ico_right_eq_Ico_succ_right (h : a ≤ b) : insert b (Ico a b) = Ico a (succ b) :=
-  insert_Ico_right_eq_Ico_succ_right_of_not_isMax h (not_isMax _)
+lemma insert_Ico_eq_Ico_succ_right (h : a ≤ b) : insert b (Ico a b) = Ico a (succ b) :=
+  insert_Ico_eq_Ico_succ_right_of_not_isMax h (not_isMax _)
+
+lemma insert_Ioc_eq_Ioc_succ_right (h : a ≤ b) : insert (succ b) (Ioc a b) = Ioc a (succ b) :=
+  insert_Ioc_eq_Ioc_succ_right_of_not_isMax h (not_isMax _)
 
 end SuccOrder
 
@@ -138,14 +148,21 @@ lemma insert_Icc_pred_right_eq_Icc (h : a ≤ b) : insert b (Icc a (pred b)) = I
 
 lemma insert_Icc_eq_Icc_pred_left (h : pred a ≤ b) :
     insert (pred a) (Icc a b) = Icc (pred a) b := by
-  ext x; simp [mem_insert, mem_Icc, or_and_left, pred_le_iff_eq_or_le]; aesop
+  ext x; simp [or_and_left, pred_le_iff_eq_or_le]; aesop
 
-lemma insert_Ioc_left_eq_Ioc_pred_left_of_not_isMin (h : a ≤ b) (ha : ¬ IsMin a) :
+lemma insert_Ioc_eq_Ioc_pred_left_of_not_isMin (h : a ≤ b) (ha : ¬ IsMin a) :
     insert a (Ioc a b) = Ioc (pred a) b := by
   rw [Ioc_pred_left_of_not_isMin ha, Ioc_insert_left h]
 
 lemma insert_Ioc_pred_right_eq_Ioc (h : a < b) : insert b (Ioc a (pred b)) = Ioc a b := by
   rw [Ioc_pred_right_of_not_isMin h.not_isMin, Ioo_insert_right h]
+
+lemma insert_Ico_eq_Ico_pred_left_of_not_isMin (h : a ≤ b) (ha : ¬ IsMin a) :
+    insert (pred a) (Ico a b) = Ico (pred a) b := by
+  ext x; simp +contextual [or_and_left, pred_le_iff_eq_or_le, pred_lt_of_not_isMin_of_le ha h]
+
+lemma insert_Ico_pred_right_eq_Ico (h : a < b) : insert (pred b) (Ico a (pred b)) = Ico a b := by
+  rw [Ico_insert_right (le_pred_of_lt h), Icc_pred_right_of_not_isMin h.not_isMin]
 
 /-!
 #### Orders with no minimal elements
@@ -169,8 +186,11 @@ lemma Ioc_pred_pred_eq_Ico (a b : α) : Ioc (pred a) (pred b) = Ico a b :=
 
 /-! ##### Inserting into intervals -/
 
-lemma insert_Ioc_left_eq_Ioc_pred_left (h : a ≤ b) : insert a (Ioc a b) = Ioc (pred a) b :=
-  insert_Ioc_left_eq_Ioc_pred_left_of_not_isMin h (not_isMin _)
+lemma insert_Ioc_eq_Ioc_pred_left (h : a ≤ b) : insert a (Ioc a b) = Ioc (pred a) b :=
+  insert_Ioc_eq_Ioc_pred_left_of_not_isMin h (not_isMin _)
+
+lemma insert_Ico_eq_Ico_pred_left (h : a ≤ b) : insert (pred a) (Ico a b) = Ico (pred a) b :=
+  insert_Ico_eq_Ico_pred_left_of_not_isMin h (not_isMin _)
 
 end PredOrder
 
