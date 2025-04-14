@@ -13,8 +13,8 @@ import Mathlib.Algebra.Order.Floor.Ring
 ## Summary
 
 This is a collection of simple lemmas between the different structures used for the computation
-of continued fractions defined in `Algebra.ContinuedFractions.Computation.Basic`. The file consists
-of three sections:
+of continued fractions defined in `Mathlib.Algebra.ContinuedFractions.Computation.Basic`.
+The file consists of three sections:
 1. Recurrences and inversion lemmas for `IntFractPair.stream`: these lemmas give us inversion
    rules and recurrences for the computation of the stream of integer and fractional parts of
    a value.
