@@ -22,8 +22,8 @@ universe u v
 variable {R : Type u}
 namespace ULift
 
-instance mulZeroClass [MulZeroClass R] : MulZeroClass (ULift R) :=
-  { zero := (0 : ULift R), mul := (· * ·), zero_mul := fun _ => (Equiv.ulift).injective (by simp),
+instance mulZeroClass {M₀ : Type*} [MulZeroClass M₀] : MulZeroClass (ULift M₀) :=
+  { zero := (0 : ULift M₀), mul := (· * ·), zero_mul := fun _ => (Equiv.ulift).injective (by simp),
     mul_zero := fun _ => (Equiv.ulift).injective (by simp) }
 
 instance distrib [Distrib R] : Distrib (ULift R) :=

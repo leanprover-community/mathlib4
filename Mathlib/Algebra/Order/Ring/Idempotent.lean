@@ -88,7 +88,7 @@ instance : BooleanAlgebra {a : R × R // a.1 * a.2 = 0 ∧ a.1 + a.2 = 1} where
 
 end CommSemiring
 
-instance [CommSemigroup R] : SemilatticeInf {a : R // IsIdempotentElem a} where
+instance {S : Type*} [CommSemigroup S] : SemilatticeInf {a : S // IsIdempotentElem a} where
   le a b := a.1 * b = a
   le_refl a := a.2
   le_trans a b c hab hbc := show _ = _ by rw [← hab, mul_assoc, hbc]
@@ -98,11 +98,11 @@ instance [CommSemigroup R] : SemilatticeInf {a : R // IsIdempotentElem a} where
   inf_le_right a b := show _ = _ by simp_rw [mul_assoc]; rw [b.2]
   le_inf a b c hab hac := by simp_rw [← mul_assoc]; rw [hab, hac]
 
-instance [CommMonoid R] : OrderTop {a : R // IsIdempotentElem a} where
+instance {M : Type*} [CommMonoid M] : OrderTop {a : M // IsIdempotentElem a} where
   top := ⟨1, .one⟩
   le_top _ := mul_one _
 
-instance [CommMonoidWithZero R] : OrderBot {a : R // IsIdempotentElem a} where
+instance {M₀ : Type*} [CommMonoidWithZero M₀] : OrderBot {a : M₀ // IsIdempotentElem a} where
   bot := ⟨0, .zero⟩
   bot_le _ := zero_mul _
 

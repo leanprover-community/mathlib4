@@ -29,9 +29,7 @@ which `x` and `y` commute. Even versions not using division or subtraction, vali
 are recorded.
 -/
 
-universe u v
-
-variable {R : Type u} {K : Type v}
+variable {R K : Type*}
 
 open Finset MulOpposite
 
@@ -247,7 +245,7 @@ theorem geom_sum_mul_neg [Ring R] (x : R) (n : ℕ) :
 theorem mul_neg_geom_sum [Ring R] (x : R) (n : ℕ) : ((1 - x) * ∑ i ∈ range n, x ^ i) = 1 - x ^ n :=
   op_injective <| by simpa using geom_sum_mul_neg (op x) n
 
-protected theorem Commute.geom_sum₂_comm {R : Type u} [Semiring R] {x y : R} (n : ℕ)
+protected theorem Commute.geom_sum₂_comm [Semiring R] {x y : R} (n : ℕ)
     (h : Commute x y) :
     ∑ i ∈ range n, x ^ i * y ^ (n - 1 - i) = ∑ i ∈ range n, y ^ i * x ^ (n - 1 - i) := by
   cases n; · simp
@@ -256,7 +254,7 @@ protected theorem Commute.geom_sum₂_comm {R : Type u} [Semiring R] {x y : R} (
   refine Finset.sum_congr rfl fun i hi => ?_
   simpa [Nat.sub_sub_self (Nat.succ_le_succ_iff.mp (Finset.mem_range.mp hi))] using h.pow_pow _ _
 
-theorem geom_sum₂_comm {R : Type u} [CommSemiring R] (x y : R) (n : ℕ) :
+theorem geom_sum₂_comm [CommSemiring R] (x y : R) (n : ℕ) :
     ∑ i ∈ range n, x ^ i * y ^ (n - 1 - i) = ∑ i ∈ range n, y ^ i * x ^ (n - 1 - i) :=
   (Commute.all x y).geom_sum₂_comm n
 

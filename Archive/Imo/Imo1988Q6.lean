@@ -23,10 +23,6 @@ and apply this to prove Q6 of IMO1988.
 To illustrate the technique, we also prove a similar result.
 -/
 
-
--- open_locale classical
-attribute [local instance] Classical.propDecidable
-
 attribute [local simp] sq
 
 namespace Imo1988Q6

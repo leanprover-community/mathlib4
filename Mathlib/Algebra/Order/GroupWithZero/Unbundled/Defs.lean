@@ -332,14 +332,25 @@ variable [@Std.Commutative α (· * ·)]
 theorem posMulMono_iff_mulPosMono : PosMulMono α ↔ MulPosMono α := by
   simp only [posMulMono_iff, mulPosMono_iff, Std.Commutative.comm]
 
+theorem PosMulMono.toMulPosMono [PosMulMono α] : MulPosMono α := posMulMono_iff_mulPosMono.mp ‹_›
+
 theorem posMulStrictMono_iff_mulPosStrictMono : PosMulStrictMono α ↔ MulPosStrictMono α := by
   simp only [posMulStrictMono_iff, mulPosStrictMono_iff, Std.Commutative.comm]
+
+theorem PosMulStrictMono.toMulPosStrictMono [PosMulStrictMono α] : MulPosStrictMono α :=
+  posMulStrictMono_iff_mulPosStrictMono.mp ‹_›
 
 theorem posMulReflectLE_iff_mulPosReflectLE : PosMulReflectLE α ↔ MulPosReflectLE α := by
   simp only [posMulReflectLE_iff, mulPosReflectLE_iff, Std.Commutative.comm]
 
+theorem PosMulReflectLE.toMulPosReflectLE [PosMulReflectLE α] : MulPosReflectLE α :=
+  posMulReflectLE_iff_mulPosReflectLE.mp ‹_›
+
 theorem posMulReflectLT_iff_mulPosReflectLT : PosMulReflectLT α ↔ MulPosReflectLT α := by
   simp only [posMulReflectLT_iff, mulPosReflectLT_iff, Std.Commutative.comm]
+
+theorem PosMulReflectLT.toMulPosReflectLT [PosMulReflectLT α] : MulPosReflectLT α :=
+  posMulReflectLT_iff_mulPosReflectLT.mp ‹_›
 
 end Preorder
 
