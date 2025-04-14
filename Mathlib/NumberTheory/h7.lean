@@ -1355,6 +1355,8 @@ lemma abs_R :
     intros i hi
     apply mul_le_mul
     · have :=  fromlemma82_bound α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
+      unfold c₄
+      simp only [Real.rpow_natCast, Nat.reduceDiv, zero_mul, pow_zero, mul_one, ge_iff_le]
       sorry
     · have : ∀ i, ‖cexp (_root_.ρ α β q i * z)‖ ≤
          (Real.exp ((q+q*(norm β))* m K *(1+r/q))*(norm α)) := sorry
@@ -1365,7 +1367,28 @@ lemma abs_R :
         zero_le_one, true_or, pow_nonneg]
   · simp only [Real.rpow_natCast, Nat.reduceDiv, zero_mul, pow_zero, mul_one, sum_const, card_univ,
     Fintype.card_fin, nsmul_eq_mul, Nat.cast_mul]
-    sorry
+    rw [sq]
+    apply mul_le_mul
+    · simp only [le_refl]
+    · apply mul_le_mul
+      · simp only [le_refl]
+      · sorry
+      · apply mul_nonneg
+        · sorry
+        · apply norm_nonneg
+      · unfold c₄
+        unfold _root_.c₄
+        simp only [Real.rpow_natCast, le_sup_iff, zero_le_one, true_or, pow_nonneg]
+    · apply mul_nonneg
+      · unfold c₄
+        unfold _root_.c₄
+        simp only [Real.rpow_natCast, le_sup_iff, zero_le_one, true_or, pow_nonneg]
+      · apply mul_nonneg
+        · sorry
+        · apply norm_nonneg
+    · apply mul_nonneg
+      · simp only [Nat.cast_nonneg]
+      · simp only [Nat.cast_nonneg]
   · sorry
 
 lemma abs_hmrqzl₀ :
@@ -1434,6 +1457,33 @@ lemma abs_z_k (k : Fin (m K)) :
     exact hlm
   · exact norm_sub_norm_le z k
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def c₁₁ : ℝ := sorry
 
 def c₁₂ : ℝ := sorry
@@ -1452,10 +1502,13 @@ lemma blah :
   calc
       _ = norm (((r.factorial) * (R z) / ((z - l₀) ^ r) *
           ∏ k ∈ Finset.range ((r - 1)) \ {(l₀ : ℕ)}, ((l₀ - k) / (z - k)) ^ r) : ℂ) := ?_
+
       _ = r.factorial * (norm (R z) * norm ( (1/(z - l₀ : ℂ) ^ r)) *
             norm (∏ k ∈ Finset.range ((r - 1)) \
                 {(l₀ : ℕ)}, ((l₀ - k) / (z - k)) ^ r)) := ?_
+
       _ ≤ r.factorial * (c₁₀)^r * r^((r+3)/2) * (c₁₁)^r * (q/r)^(m K *r) := ?_
+
       _ ≤ (c₁₂)^r*((3-m K)/2 + 3 /2) := ?_
   · sorry
   · sorry
