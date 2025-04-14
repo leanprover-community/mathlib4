@@ -59,7 +59,7 @@ print(f"Searching for: '{urlPR}'")
 
 # we store in `first_by_subject` the ID of the messages in a thread whose subject matches
 # the PR number and that we already visited. We use this to only react to the first message
-# in each thread in `PR reviews` the matches the PR number.
+# in each thread in `PR reviews` that matches the PR number.
 first_by_subject = {}
 
 for message in messages:
