@@ -3,8 +3,9 @@ Copyright (c) 2021 Stuart Presnell. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stuart Presnell, Daniel Weber
 -/
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled
 import Mathlib.Algebra.BigOperators.Group.List.Defs
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled
+import Mathlib.Algebra.Order.Hom.Basic
 
 /-!
 # Big operators on a list in ordered groups with zeros
@@ -57,6 +58,21 @@ theorem prod_map_le_prod_map₀ {ι : Type*} {s : List ι} (f : ι → R) (g : �
       apply h0
       simp [ha]
     · apply (h0 _ _).trans (h _ _) <;> simp
+
+theorem prod_map_le_pow_lenght {F L : Type*} [MulPosMono R] [AddCommGroup L] [FunLike F L R]
+    [NonnegHomClass F L R] {f : F} {y : L} {t : List L} (hf : ∀ x : R, x ∈ List.map f t → x ≤ f y) :
+    (List.map f t).prod ≤ f y ^ length t := by
+  induction t with
+  | nil => simp
+  | cons a s ih =>
+    simp only [map_cons, prod_cons, length_cons, length_map, pow_succ']
+    gcongr
+    · apply prod_nonneg
+      simp
+    · simp
+    · apply hf
+      simp
+    · simp_all
 
 omit [PosMulMono R]
 variable [PosMulStrictMono R] [NeZero (1 : R)]
