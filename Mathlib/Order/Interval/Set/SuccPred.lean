@@ -73,6 +73,9 @@ lemma insert_Ico_eq_Ico_succ_right_of_not_isMax (h : a ≤ b) (hb : ¬ IsMax b) 
     insert b (Ico a b) = Ico a (succ b) := by
   rw [Ico_succ_right_of_not_isMax hb, ← Ico_insert_right h]
 
+@[deprecated (since := "2025-04-14")]
+alias insert_Ico_right_eq_Ico_succ_right_of_not_isMax := insert_Ico_eq_Ico_succ_right_of_not_isMax
+
 lemma insert_Ico_succ_left_eq_Ico (h : a < b) : insert a (Ico (succ a) b) = Ico a b := by
   rw [Ico_succ_left_of_not_isMax h.not_isMax, ← Ioo_insert_left h]
 
@@ -107,6 +110,9 @@ lemma Ico_succ_succ_eq_Ioc (a b : α) : Ico (succ a) (succ b) = Ioc a b :=
 
 lemma insert_Ico_eq_Ico_succ_right (h : a ≤ b) : insert b (Ico a b) = Ico a (succ b) :=
   insert_Ico_eq_Ico_succ_right_of_not_isMax h (not_isMax _)
+
+@[deprecated (since := "2025-04-14")]
+alias insert_Ico_right_eq_Ico_succ_right := insert_Ico_eq_Ico_succ_right
 
 lemma insert_Ioc_eq_Ioc_succ_right (h : a ≤ b) : insert (succ b) (Ioc a b) = Ioc a (succ b) :=
   insert_Ioc_eq_Ioc_succ_right_of_not_isMax h (not_isMax _)
@@ -154,6 +160,9 @@ lemma insert_Ioc_eq_Ioc_pred_left_of_not_isMin (h : a ≤ b) (ha : ¬ IsMin a) :
     insert a (Ioc a b) = Ioc (pred a) b := by
   rw [Ioc_pred_left_of_not_isMin ha, Ioc_insert_left h]
 
+@[deprecated (since := "2025-04-14")]
+alias insert_Ioc_left_eq_Ioc_pred_left_of_not_isMin := insert_Ioc_eq_Ioc_pred_left_of_not_isMin
+
 lemma insert_Ioc_pred_right_eq_Ioc (h : a < b) : insert b (Ioc a (pred b)) = Ioc a b := by
   rw [Ioc_pred_right_of_not_isMin h.not_isMin, Ioo_insert_right h]
 
@@ -188,6 +197,9 @@ lemma Ioc_pred_pred_eq_Ico (a b : α) : Ioc (pred a) (pred b) = Ico a b :=
 
 lemma insert_Ioc_eq_Ioc_pred_left (h : a ≤ b) : insert a (Ioc a b) = Ioc (pred a) b :=
   insert_Ioc_eq_Ioc_pred_left_of_not_isMin h (not_isMin _)
+
+@[deprecated (since := "2025-04-14")]
+alias insert_Ioc_left_eq_Ioc_pred_left := insert_Ioc_eq_Ioc_pred_left
 
 lemma insert_Ico_eq_Ico_pred_left (h : a ≤ b) : insert (pred a) (Ico a b) = Ico (pred a) b :=
   insert_Ico_eq_Ico_pred_left_of_not_isMin h (not_isMin _)
