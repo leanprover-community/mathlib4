@@ -232,7 +232,6 @@ theorem tendsto_of_antitone {f : ℕ → ℝ≥0} (h_ant : Antitone f) :
 
 end Monotone
 
-/-- Given `f : ι → ℝ≥0` with bounded range and `n : ℕ`, we have `(iSup f) ^ n = iSup (f ^ n)`. -/
 theorem iSup_pow {ι : Sort*} [Nonempty ι] {f : ι → ℝ≥0} (hf_bdd : BddAbove (range f)) (n : ℕ) :
     (⨆ i : ι, f i) ^ n = ⨆ i : ι, f i ^ n := by
   by_cases hn : n = 0
@@ -242,8 +241,6 @@ theorem iSup_pow {ι : Sort*} [Nonempty ι] {f : ι → ℝ≥0} (hf_bdd : BddAb
 end NNReal
 
 open NNReal in
-/-- Given a non-negative and bounded above `f : ι → ℝ` and `n : ℕ`, we have
-  `(iSup f) ^ n = iSup (f ^ n)`. -/
 theorem Real.iSup_pow {ι : Sort*} [Nonempty ι] {f : ι → ℝ} (hf_bdd : BddAbove (range f))
     (hf : ∀ i, 0 ≤ f i) (n : ℕ) : (⨆ i : ι, f i) ^ n = ⨆ i : ι, f i ^ n := by
   let g : ι → ℝ≥0 := fun i ↦ ⟨f i, hf i⟩
