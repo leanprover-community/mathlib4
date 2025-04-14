@@ -109,6 +109,31 @@ lemma prodSingle_coe {y : G} :
     (prodSingleton 𝕜 E (y := y)) = ((·, y) : E → E × G) := rfl
 -/
 
+section
+
+variable (R M₁ M₂ M₃ : Type*) [Semiring R]
+  [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃] [Module R M₁] [Module R M₂] [Module R M₃]
+  [TopologicalSpace M₁] [TopologicalSpace M₂] [TopologicalSpace M₃]
+
+/-- The product of topological modules is associative up to continuous linear isomorphism.
+This is `LinearEquiv.prodAssoc` prodAssoc as a continuous linear equivalence. -/
+def prodAssoc : ((M₁ × M₂) × M₃) ≃L[R] M₁ × M₂ × M₃ where
+  toLinearEquiv := LinearEquiv.prodAssoc R M₁ M₂ M₃
+  continuous_toFun := (continuous_fst.comp continuous_fst).prodMk
+    ((continuous_snd.comp continuous_fst).prodMk continuous_snd)
+  continuous_invFun := (continuous_fst.prodMk (continuous_fst.comp continuous_snd)).prodMk
+    (continuous_snd.comp continuous_snd)
+
+@[simp]
+lemma prodAssoc_toLinearEquiv :
+  (prodAssoc 𝕜 E E' E'').toLinearEquiv = LinearEquiv.prodAssoc 𝕜 E E' E'' := rfl
+
+-- not simp as the combination of existing lemmas. TODO: should this one still be added?
+lemma prodAssoc_toEquiv :
+  (prodAssoc 𝕜 E E' E'').toEquiv = Equiv.prodAssoc E E' E'' := rfl
+
+end
+
 end ContinuousLinearEquiv
 
 end
@@ -192,21 +217,6 @@ noncomputable instance {n : ℕ} [NeZero n] :
     ext x
     simp_all only [comp_apply, ContinuousLinearEquiv.prodUnique_apply]
     rfl
-
-section
-
-variable (R M₁ M₂ M₃ : Type*) [Semiring R]
-  [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃] [Module R M₁] [Module R M₂] [Module R M₃]
-  [TopologicalSpace M₁] [TopologicalSpace M₂] [TopologicalSpace M₃]
-
-def ContinuousLinearEquiv.prodAssoc : ((M₁ × M₂) × M₃) ≃L[R] M₁ × M₂ × M₃ where
-  toLinearEquiv := LinearEquiv.prodAssoc R M₁ M₂ M₃
-  continuous_toFun := by
-    show Continuous (Equiv.prodAssoc M₁ M₂ M₃)
-    sorry
-  continuous_invFun := sorry
-
-end
 
 -- TODO: make an instance/ figure out why Lean complains about synthesisation order!
 def instTrans (h : SliceModel F I I') (h' : SliceModel F' I' I'') : SliceModel (F × F') I I'' where
