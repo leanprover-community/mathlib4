@@ -333,9 +333,10 @@ theorem condExp_finset_sum {ι : Type*} {s : Finset ι} {f : ι → α → E}
     (hf : ∀ i ∈ s, Integrable (f i) μ) (m : MeasurableSpace α) :
     μ[∑ i ∈ s, f i|m] =ᵐ[μ] ∑ i ∈ s, μ[f i|m] := by
   classical
-  induction' s using Finset.induction_on with i s his heq hf
-  · rw [Finset.sum_empty, Finset.sum_empty, condExp_zero]
-  · rw [Finset.sum_insert his, Finset.sum_insert his]
+  induction s using Finset.induction_on with
+  | empty => rw [Finset.sum_empty, Finset.sum_empty, condExp_zero]
+  | @insert i s his heq =>
+    rw [Finset.sum_insert his, Finset.sum_insert his]
     exact (condExp_add (hf i <| Finset.mem_insert_self i s)
       (integrable_finset_sum' _ <| Finset.forall_of_forall_insert hf) _).trans
         ((EventuallyEq.refl _ _).add <| heq <| Finset.forall_of_forall_insert hf)
@@ -458,7 +459,7 @@ lemma condExp_ofNat (n : ℕ) [n.AtLeastTwo] (f : α → R) :
 end NormedRing
 
 section NormedLatticeAddCommGroup
-variable [NormedLatticeAddCommGroup E] [CompleteSpace E] [NormedSpace ℝ E]
+variable [NormedAddCommGroup E] [CompleteSpace E] [NormedSpace ℝ E]
 
 /-- **Lebesgue dominated convergence theorem**: sufficient conditions under which almost
   everywhere convergence of a sequence of functions implies the convergence of their image by
@@ -504,7 +505,7 @@ theorem tendsto_condExp_unique (fs gs : ℕ → α → E) (f g : α → E)
 
 @[deprecated (since := "2025-01-21")] alias tendsto_condexp_unique := tendsto_condExp_unique
 
-variable [OrderedSMul ℝ E]
+variable [Lattice E] [HasSolidNorm E] [IsOrderedAddMonoid E] [OrderedSMul ℝ E]
 
 lemma condExp_mono (hf : Integrable f μ) (hg : Integrable g μ) (hfg : f ≤ᵐ[μ] g) :
     μ[f|m] ≤ᵐ[μ] μ[g|m] := by
