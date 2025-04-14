@@ -209,19 +209,18 @@ instance instNontrivialDual [Nontrivial V] : Nontrivial (Dual K V) :=
   (nontrivial_dual_iff K).mpr inferInstance
 
 omit [Projective K V] in
-/- May fail if `V` is only a projective `K`-module;
-see https://stacks.math.columbia.edu/tag/05WG#comment-9913. -/
+/-- For an example of a non-free projective `K`-module `V` for which the forward implication
+fails, see https://stacks.math.columbia.edu/tag/05WG#comment-9913. -/
 theorem finite_dual_iff [Free K V] : Module.Finite K (Dual K V) ↔ Module.Finite K V := by
   refine ⟨fun h ↦ ?_, fun _ ↦ inferInstance⟩
   have ⟨⟨ι, b⟩⟩ := Free.exists_basis (R := K) (M := V)
   cases finite_or_infinite ι
   · exact .of_basis b
-  have ⟨n, f, surj⟩ := Finite.exists_fin' K (Dual K V)
-  let g := Finsupp.llift K K K ι ≪≫ₗ b.repr.dualMap
-  let l := LinearMap.funLeft K K ((Fin.valEmbedding (n := n + 1)).trans (Infinite.natEmbedding ι))
-  have : Function.Surjective l := (Function.Embedding.injective _).surjective_comp_right
   nontriviality K
-  simpa using le_of_fin_surjective K (l ∘ₗ g.symm ∘ₗ f) (this.comp (g.symm.surjective.comp surj))
+  have ⟨n, hn⟩ := Module.Finite.exists_nat_not_surjective K (Dual K V)
+  let g := Finsupp.llift K K K ι ≪≫ₗ b.repr.dualMap
+  exact hn (LinearMap.funLeft K K (Fin.valEmbedding.trans (Infinite.natEmbedding ι)) ∘ₗ _)
+    ((Function.Embedding.injective _).surjective_comp_right.comp g.symm.surjective) |>.elim
 
 end
 
