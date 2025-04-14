@@ -361,7 +361,7 @@ end Continuous
 /-- The set of compact operators from a normed space to a complete topological vector space is
 closed. -/
 theorem isClosed_setOf_isCompactOperator {𝕜₁ 𝕜₂ : Type*} [Field 𝕜₁] [NontriviallyNormedField 𝕜₁]
-    [Field 𝕜₂] [StrictNormedRing 𝕜₂]
+    [Field 𝕜₂]
     {σ₁₂ : 𝕜₁ →+* 𝕜₂} {M₁ M₂ : Type*} [AddCommGroup M₁] [SeminormedAddGroup M₁]
     [AddCommGroup M₂] [NormedSpace 𝕜₁ M₁] [Module 𝕜₂ M₂] [UniformSpace M₂] [IsUniformAddGroup M₂]
     [ContinuousConstSMul 𝕜₂ M₂] [T2Space M₂] [CompleteSpace M₂] :

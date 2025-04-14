@@ -81,7 +81,7 @@ instance [Field 𝕜] [StrictNormedRing 𝕜] [CommRing A] [SeminormedRing A] [N
     NormedAlgebra 𝕜 (Completion A) where
   norm_smul_le := norm_smul_le
 
-instance [Field A] [StrictNormedRing A] [CompletableTopField A] :
+instance [Field A] [StrictNormedRing A] :
     StrictNormedRing (UniformSpace.Completion A) where
   __ : NormedRing (Completion A) := inferInstance
   norm_mul x y := induction_on₂ x y (isClosed_eq (by fun_prop) (by fun_prop)) (by simp [← coe_mul])

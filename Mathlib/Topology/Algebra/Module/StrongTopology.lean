@@ -290,7 +290,7 @@ theorem tendsto_iff_tendstoUniformlyOn {ι : Type*} {p : Filter ι} [UniformSpac
 variable {F} in
 theorem isUniformInducing_postcomp
     {G : Type*} [AddCommGroup G] [UniformSpace G] [IsUniformAddGroup G]
-    {𝕜₃ : Type*} [Field 𝕜₃] [StrictNormedRing 𝕜₃] [Module 𝕜₃ G]
+    {𝕜₃ : Type*} [Field 𝕜₃] [Module 𝕜₃ G]
     {τ : 𝕜₂ →+* 𝕜₃} {ρ : 𝕜₁ →+* 𝕜₃} [RingHomCompTriple σ τ ρ] [UniformSpace F] [IsUniformAddGroup F]
     (g : F →SL[τ] G) (hg : IsUniformInducing g) (𝔖 : Set (Set E)) :
     IsUniformInducing (α := UniformConvergenceCLM σ F 𝔖) (β := UniformConvergenceCLM ρ G 𝔖)
@@ -298,7 +298,7 @@ theorem isUniformInducing_postcomp
   rw [← (isUniformInducing_coeFn _ _ _).of_comp_iff]
   exact (UniformOnFun.postcomp_isUniformInducing hg).comp (isUniformInducing_coeFn _ _ _)
 
-theorem completeSpace [StrictNormedRing 𝕜₁] [StrictNormedRing 𝕜₂]
+theorem completeSpace [StrictNormedRing 𝕜₂]
     [UniformSpace F] [IsUniformAddGroup F] [ContinuousSMul 𝕜₂ F] [CompleteSpace F]
     {𝔖 : Set (Set E)} (h𝔖 : IsCoherentWith 𝔖) (h𝔖U : ⋃₀ 𝔖 = univ) :
     CompleteSpace (UniformConvergenceCLM σ F 𝔖) := by
