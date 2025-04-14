@@ -3,12 +3,11 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
+import Mathlib.Algebra.BigOperators.Group.Finset.Indicator
 import Mathlib.Algebra.Module.BigOperators
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
-import Mathlib.Tactic.FinCases
 import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+import Mathlib.Tactic.FinCases
 
 /-!
 # Affine combinations of points
@@ -1062,7 +1061,8 @@ theorem mem_affineSpan_iff_eq_weightedVSubOfPoint_vadd [Nontrivial k] (p : ι �
       have h₁ : (insert j s).sum w' = 1 := by
         by_cases hj : j ∈ s
         · simp [w', Finset.sum_update_of_mem hj, Finset.insert_eq_of_mem hj]
-        · simp [w', Finset.sum_insert hj, Finset.sum_update_of_not_mem hj, hj]
+        · simp_rw [w', Finset.sum_insert hj, Finset.sum_update_of_not_mem hj, Function.update_self,
+            ← Finset.erase_eq, Finset.erase_eq_of_not_mem hj, sub_add_cancel]
       have hww : ∀ i, i ≠ j → w i = w' i := by
         intro i hij
         simp [w', hij]

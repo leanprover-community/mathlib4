@@ -38,15 +38,15 @@ variable {α : Type u}
 def WithOne (α) :=
   Option α
 
-namespace WithOne
-
-instance [Repr α] : Repr (WithZero α) :=
+instance WithZero.instRepr [Repr α] : Repr (WithZero α) :=
   ⟨fun o _ =>
     match o with
     | none => "0"
     | some a => "↑" ++ repr a⟩
 
-@[to_additive]
+namespace WithOne
+
+@[to_additive existing]
 instance [Repr α] : Repr (WithOne α) :=
   ⟨fun o _ =>
     match o with
@@ -54,31 +54,31 @@ instance [Repr α] : Repr (WithOne α) :=
     | some a => "↑" ++ repr a⟩
 
 @[to_additive]
-instance monad : Monad WithOne :=
+instance instMonad : Monad WithOne :=
   instMonadOption
 
 @[to_additive]
-instance one : One (WithOne α) :=
+instance instOne : One (WithOne α) :=
   ⟨none⟩
 
 @[to_additive]
-instance mul [Mul α] : Mul (WithOne α) :=
+instance instMul [Mul α] : Mul (WithOne α) :=
   ⟨Option.liftOrGet (· * ·)⟩
 
 @[to_additive]
-instance inv [Inv α] : Inv (WithOne α) :=
+instance instInv [Inv α] : Inv (WithOne α) :=
   ⟨fun a => Option.map Inv.inv a⟩
 
 @[to_additive]
-instance invOneClass [Inv α] : InvOneClass (WithOne α) :=
-  { WithOne.one, WithOne.inv with inv_one := rfl }
+instance instInvOneClass [Inv α] : InvOneClass (WithOne α) :=
+  { WithOne.instOne, WithOne.instInv with inv_one := rfl }
 
 @[to_additive]
 instance inhabited : Inhabited (WithOne α) :=
   ⟨1⟩
 
 @[to_additive]
-instance nontrivial [Nonempty α] : Nontrivial (WithOne α) :=
+instance instNontrivial [Nonempty α] : Nontrivial (WithOne α) :=
   Option.nontrivial
 
 /-- The canonical map from `α` into `WithOne α` -/
@@ -87,24 +87,31 @@ def coe : α → WithOne α :=
   Option.some
 
 @[to_additive]
-instance coeTC : CoeTC α (WithOne α) :=
+instance instCoeTC : CoeTC α (WithOne α) :=
   ⟨coe⟩
 
+/-- Recursor for `WithZero` using the preferred forms `0` and `↑a`. -/
+@[elab_as_elim, induction_eliminator, cases_eliminator]
+def _root_.WithZero.recZeroCoe {motive : WithZero α → Sort*} (zero : motive 0)
+    (coe : ∀ a : α, motive a) : ∀ n : WithZero α, motive n
+  | Option.none => zero
+  | Option.some x => coe x
+
 /-- Recursor for `WithOne` using the preferred forms `1` and `↑a`. -/
-@[to_additive (attr := elab_as_elim, induction_eliminator, cases_eliminator)
-  "Recursor for `WithZero` using the preferred forms `0` and `↑a`."]
-def recOneCoe {C : WithOne α → Sort*} (h₁ : C 1) (h₂ : ∀ a : α, C a) : ∀ n : WithOne α, C n
-  | Option.none => h₁
-  | Option.some x => h₂ x
+@[to_additive existing, elab_as_elim, induction_eliminator, cases_eliminator]
+def recOneCoe {motive : WithOne α → Sort*} (one : motive 1) (coe : ∀ a : α, motive a) :
+    ∀ n : WithOne α, motive n
+  | Option.none => one
+  | Option.some x => coe x
 
 @[to_additive (attr := simp)]
-lemma recOneCoe_one {C : WithOne α → Sort*} (h₁ h₂) :
-    recOneCoe h₁ h₂ (1 : WithOne α) = (h₁ : C 1) :=
+lemma recOneCoe_one {motive : WithOne α → Sort*} (h₁ h₂) :
+    recOneCoe h₁ h₂ (1 : WithOne α) = (h₁ : motive 1) :=
   rfl
 
 @[to_additive (attr := simp)]
-lemma recOneCoe_coe {C : WithOne α → Sort*} (h₁ h₂) (a : α) :
-    recOneCoe h₁ h₂ (a : WithOne α) = (h₂ : ∀ a : α, C a) a :=
+lemma recOneCoe_coe {motive : WithOne α → Sort*} (h₁ h₂) (a : α) :
+    recOneCoe h₁ h₂ (a : WithOne α) = (h₂ : ∀ a : α, motive a) a :=
   rfl
 
 /-- Deconstruct an `x : WithOne α` to the underlying value in `α`, given a proof that `x ≠ 1`. -/
@@ -133,7 +140,7 @@ theorem ne_one_iff_exists {x : WithOne α} : x ≠ 1 ↔ ∃ a : α, ↑a = x :=
   Option.ne_none_iff_exists
 
 @[to_additive]
-instance canLift : CanLift (WithOne α) α (↑) fun a => a ≠ 1 where
+instance instCanLift : CanLift (WithOne α) α (↑) fun a => a ≠ 1 where
   prf _ := ne_one_iff_exists.1
 
 @[to_additive (attr := simp, norm_cast)]
@@ -145,7 +152,7 @@ protected theorem cases_on {P : WithOne α → Prop} : ∀ x : WithOne α, P 1 �
   Option.casesOn
 
 @[to_additive]
-instance mulOneClass [Mul α] : MulOneClass (WithOne α) where
+instance instMulOneClass [Mul α] : MulOneClass (WithOne α) where
   mul := (· * ·)
   one := 1
   one_mul := (Option.liftOrGet_isId _).left_id
@@ -155,8 +162,8 @@ instance mulOneClass [Mul α] : MulOneClass (WithOne α) where
 lemma coe_mul [Mul α] (a b : α) : (↑(a * b) : WithOne α) = a * b := rfl
 
 @[to_additive]
-instance monoid [Semigroup α] : Monoid (WithOne α) where
-  __ := mulOneClass
+instance instMonoid [Semigroup α] : Monoid (WithOne α) where
+  __ := instMulOneClass
   mul_assoc
     | 1, b, c => by simp
     | (a : α), 1, c => by simp
@@ -164,7 +171,7 @@ instance monoid [Semigroup α] : Monoid (WithOne α) where
     | (a : α), (b : α), (c : α) => by simp_rw [← coe_mul, mul_assoc]
 
 @[to_additive]
-instance commMonoid [CommSemigroup α] : CommMonoid (WithOne α) where
+instance instCommMonoid [CommSemigroup α] : CommMonoid (WithOne α) where
   mul_comm
     | (a : α), (b : α) => congr_arg some (mul_comm a b)
     | (_ : α), 1 => rfl

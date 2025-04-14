@@ -70,12 +70,12 @@ jobs:
         with:
           python-version: 3.8
 
-      - name: install elan
-        run: |
-          set -o pipefail
-          curl -sSfL https://github.com/leanprover/elan/releases/download/v3.1.1/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
-          ./elan-init -y --default-toolchain none
-          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
+      - name: Configure Lean
+        uses: leanprover/lean-action@f3ad22e9ca29cb9475bc9bee9afd1f39bb52bf6d # v1.1.2
+        with:
+          auto-config: false
+          use-github-cache: false
+          use-mathlib-cache: false
 
       - name: "run style linters"
         run: |
@@ -112,14 +112,14 @@ jobs:
       - name: 'Setup jq'
         uses: dcarbone/install-jq-action@f0e10f46ff84f4d32178b4b76e1ef180b16f82c3 # v3.1.1
 
-      - name: install elan
-        run: |
-          set -o pipefail
-          curl -sSfL https://github.com/leanprover/elan/releases/download/v3.1.1/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
-          ./elan-init -y --default-toolchain none
-          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
-
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Configure Lean
+        uses: leanprover/lean-action@f3ad22e9ca29cb9475bc9bee9afd1f39bb52bf6d # v1.1.2
+        with:
+          auto-config: false
+          use-github-cache: false
+          use-mathlib-cache: false
 
       - name: If using a lean-pr-release toolchain, uninstall
         run: |
@@ -344,7 +344,7 @@ jobs:
           scripts/lean-pr-testing-comments.sh lean
           scripts/lean-pr-testing-comments.sh batteries
 
-      - name: build lean4checker, but don't run it
+      - name: build lean4checker, but only run it on itself
         if: ${{ (always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure') && contains(github.event.pull_request.changed_files, 'lean-toolchain') }}
         run: |
           git clone https://github.com/leanprover/lean4checker
@@ -360,6 +360,7 @@ jobs:
           # Build lean4checker using the same toolchain
           cp ../lean-toolchain .
           lake build
+          lake -q exe lean4checker Lean4Checker
 
   final:
     name: Post-CI job (fork)

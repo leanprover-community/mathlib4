@@ -594,14 +594,21 @@ An `R`-algebra `S` is called standard smooth, if there
 exists a submersive presentation.
 -/
 class IsStandardSmooth : Prop where
-  out : Nonempty (SubmersivePresentation.{t, w} R S)
+  out : Nonempty (SubmersivePresentation.{0, 0} R S)
+
+lemma SubmersivePresentation.isStandardSmooth (P : SubmersivePresentation.{t, w} R S) :
+    IsStandardSmooth R S := by
+  cases nonempty_fintype P.vars
+  cases nonempty_fintype P.rels
+  exact ⟨⟨P.reindex _ _ (Fintype.equivFin P.vars).symm (Fintype.equivFin P.rels).symm⟩⟩
 
 /--
 The relative dimension of a standard smooth `R`-algebra `S` is
 the dimension of an arbitrarily chosen submersive `R`-presentation of `S`.
 
 Note: If `S` is non-trivial, this number is independent of the choice of the presentation as it is
-equal to the `S`-rank of `Ω[S/R]` (TODO).
+equal to the `S`-rank of `Ω[S/R]`
+(see `IsStandardSmoothOfRelativeDimension.rank_kaehlerDifferential`).
 -/
 noncomputable def IsStandardSmooth.relativeDimension [IsStandardSmooth R S] : ℕ :=
   ‹IsStandardSmooth R S›.out.some.dimension
@@ -611,23 +618,30 @@ An `R`-algebra `S` is called standard smooth of relative dimension `n`, if there
 a submersive presentation of dimension `n`.
 -/
 class IsStandardSmoothOfRelativeDimension : Prop where
-  out : ∃ P : SubmersivePresentation.{t, w} R S, P.dimension = n
+  out : ∃ P : SubmersivePresentation.{0, 0} R S, P.dimension = n
+
+lemma SubmersivePresentation.isStandardSmoothOfRelativeDimension
+    (P : SubmersivePresentation.{t, w} R S) (hP : P.dimension = n) :
+    IsStandardSmoothOfRelativeDimension n R S := by
+  cases nonempty_fintype P.vars
+  cases nonempty_fintype P.rels
+  refine ⟨⟨P.reindex _ _ (Fintype.equivFin P.vars).symm (Fintype.equivFin P.rels).symm, ?_⟩⟩
+  simp [hP]
 
 variable {R} {S}
 
 lemma IsStandardSmoothOfRelativeDimension.isStandardSmooth
-    [IsStandardSmoothOfRelativeDimension.{t, w} n R S] :
-    IsStandardSmooth.{t, w} R S :=
+    [IsStandardSmoothOfRelativeDimension n R S] : IsStandardSmooth R S :=
   ⟨‹IsStandardSmoothOfRelativeDimension n R S›.out.nonempty⟩
 
 lemma IsStandardSmoothOfRelativeDimension.of_algebraMap_bijective
     (h : Function.Bijective (algebraMap R S)) :
-    IsStandardSmoothOfRelativeDimension.{t, w} 0 R S :=
+    IsStandardSmoothOfRelativeDimension 0 R S :=
   ⟨SubmersivePresentation.ofBijectiveAlgebraMap h, Presentation.ofBijectiveAlgebraMap_dimension h⟩
 
 variable (R) in
 instance IsStandardSmoothOfRelativeDimension.id :
-    IsStandardSmoothOfRelativeDimension.{t, w} 0 R R :=
+    IsStandardSmoothOfRelativeDimension 0 R R :=
   IsStandardSmoothOfRelativeDimension.of_algebraMap_bijective Function.bijective_id
 
 instance (priority := 100) IsStandardSmooth.finitePresentation [IsStandardSmooth R S] :
@@ -639,16 +653,16 @@ section Composition
 
 variable (R S T) [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
-lemma IsStandardSmooth.trans [IsStandardSmooth.{t, w} R S] [IsStandardSmooth.{t', w'} S T] :
-    IsStandardSmooth.{max t t', max w w'} R T where
+lemma IsStandardSmooth.trans [IsStandardSmooth R S] [IsStandardSmooth S T] :
+    IsStandardSmooth R T where
   out := by
     obtain ⟨⟨P⟩⟩ := ‹IsStandardSmooth R S›
     obtain ⟨⟨Q⟩⟩ := ‹IsStandardSmooth S T›
     exact ⟨Q.comp P⟩
 
-lemma IsStandardSmoothOfRelativeDimension.trans [IsStandardSmoothOfRelativeDimension.{t, w} n R S]
-    [IsStandardSmoothOfRelativeDimension.{t', w'} m S T] :
-    IsStandardSmoothOfRelativeDimension.{max t t', max w w'} (m + n) R T where
+lemma IsStandardSmoothOfRelativeDimension.trans [IsStandardSmoothOfRelativeDimension n R S]
+    [IsStandardSmoothOfRelativeDimension m S T] :
+    IsStandardSmoothOfRelativeDimension (m + n) R T where
   out := by
     obtain ⟨P, hP⟩ := ‹IsStandardSmoothOfRelativeDimension n R S›
     obtain ⟨Q, hQ⟩ := ‹IsStandardSmoothOfRelativeDimension m S T›
@@ -658,11 +672,11 @@ lemma IsStandardSmoothOfRelativeDimension.trans [IsStandardSmoothOfRelativeDimen
 end Composition
 
 lemma IsStandardSmooth.localization_away (r : R) [IsLocalization.Away r S] :
-    IsStandardSmooth.{0, 0} R S where
+    IsStandardSmooth R S where
   out := ⟨SubmersivePresentation.localizationAway S r⟩
 
 lemma IsStandardSmoothOfRelativeDimension.localization_away (r : R) [IsLocalization.Away r S] :
-    IsStandardSmoothOfRelativeDimension.{0, 0} 0 R S where
+    IsStandardSmoothOfRelativeDimension 0 R S where
   out := ⟨SubmersivePresentation.localizationAway S r,
     Presentation.localizationAway_dimension_zero r⟩
 
@@ -670,15 +684,15 @@ section BaseChange
 
 variable (T) [CommRing T] [Algebra R T]
 
-instance IsStandardSmooth.baseChange [IsStandardSmooth.{t, w} R S] :
-    IsStandardSmooth.{t, w} T (T ⊗[R] S) where
+instance IsStandardSmooth.baseChange [IsStandardSmooth R S] :
+    IsStandardSmooth T (T ⊗[R] S) where
   out := by
     obtain ⟨⟨P⟩⟩ := ‹IsStandardSmooth R S›
     exact ⟨P.baseChange R S T⟩
 
 instance IsStandardSmoothOfRelativeDimension.baseChange
-    [IsStandardSmoothOfRelativeDimension.{t, w} n R S] :
-    IsStandardSmoothOfRelativeDimension.{t, w} n T (T ⊗[R] S) where
+    [IsStandardSmoothOfRelativeDimension n R S] :
+    IsStandardSmoothOfRelativeDimension n T (T ⊗[R] S) where
   out := by
     obtain ⟨P, hP⟩ := ‹IsStandardSmoothOfRelativeDimension n R S›
     exact ⟨P.baseChange R S T, hP⟩
