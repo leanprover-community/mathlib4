@@ -262,6 +262,22 @@ theorem stabilizerEquivStabilizer_symm_apply
     (stabilizerEquivStabilizer hg).symm x = MulAut.conj g⁻¹ x := by
   simp [stabilizerEquivStabilizer]
 
+theorem stabilizerEquivStabilizer_trans
+    {a b c : α} {g h k : G} {hg : g • b = a} {hh : h • c = b} {hk : k • c = a} (H : k = g * h) :
+    (stabilizerEquivStabilizer hh).trans (stabilizerEquivStabilizer hg)
+      = (stabilizerEquivStabilizer hk) := by
+  ext x; simp [stabilizerEquivStabilizer_apply, H]
+
+theorem stabilizerEquivStabilizer_one {a : α} :
+    stabilizerEquivStabilizer (one_smul G a) = MulEquiv.refl (stabilizer G a) := by
+  ext; simp [stabilizerEquivStabilizer_apply]
+
+theorem stabilizerEquivStabilizer_inv {a b : α} {g : G} (hg : g • b = a) :
+    let hg' : g⁻¹ • a = b := inv_smul_eq_iff.mpr (id (Eq.symm hg))
+    stabilizerEquivStabilizer hg' = (stabilizerEquivStabilizer hg).symm := by
+  ext
+  simp [stabilizerEquivStabilizer_apply, stabilizerEquivStabilizer_symm_apply]
+
 /-- A bijection between the stabilizers of two elements in the same orbit. -/
 noncomputable def stabilizerEquivStabilizerOfOrbitRel {a b : α} (h : orbitRel G α a b) :
     stabilizer G a ≃* stabilizer G b :=
