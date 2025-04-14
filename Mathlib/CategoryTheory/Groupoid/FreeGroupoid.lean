@@ -80,9 +80,10 @@ theorem congr_comp_reverse {X Y : Paths <| Quiver.Symmetrify V} (p : X ⟶ Y) :
     Quot.mk (@Quotient.CompClosure _ _ redStep _ _) (p ≫ p.reverse) =
       Quot.mk (@Quotient.CompClosure _ _ redStep _ _) (𝟙 X) := by
   apply Quot.eqvGen_sound
-  induction' p with a b q f ih
-  · apply EqvGen.refl
-  · simp only [Quiver.Path.reverse]
+  induction p with
+  | nil => apply EqvGen.refl
+  | cons q f ih =>
+    simp only [Quiver.Path.reverse]
     fapply EqvGen.trans
     -- Porting note: `Quiver.Path.*` and `Quiver.Hom.*` notation not working
     · exact q ≫ Quiver.Path.reverse q
