@@ -266,19 +266,9 @@ end NonUnitalRing
 
 /-- The `NormedRing` stucture on a ring `R` determined by a `RingNorm`. -/
 def toNormedRing [Ring R] (f : RingNorm R) : NormedRing R where
-  norm x := f x
-  dist x y := f (x - y)
-  dist_self x := by simp
-  dist_comm x y := by
-    rw [← neg_sub x y, map_neg_eq_map]
-  dist_triangle x y z := by
-    have hxyz : x - z = x - y + (y - z) := by abel
-    simp only [hxyz, map_add_le_add]
-  dist_eq x y := rfl
-  norm_mul_le x y := by simp [map_mul_le_mul]
-  edist_dist x y := by
-    rw [eq_comm, ENNReal.ofReal_eq_coe_nnreal]
-  eq_of_dist_eq_zero hxy := eq_of_sub_eq_zero (RingNorm.eq_zero_of_map_eq_zero' _ _ hxy)
+  __ := ‹Ring R›
+  __ := f.toAddGroupNorm.toNormedAddCommGroup
+  norm_mul_le := map_mul_le_mul f
 
 end RingNorm
 
