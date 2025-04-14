@@ -6,4 +6,4 @@ Authors: Johannes Hölzl
 import Mathlib.Order.Preorder.Chain
 import Mathlib.Tactic.Linter.DeprecatedModule
 
-deprecated_module (since "2025-04-13")
+deprecated_module (since := "2025-04-13")

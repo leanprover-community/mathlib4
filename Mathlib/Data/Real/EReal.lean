@@ -5,4 +5,4 @@ Authors: Kevin Buzzard
 -/
 import Mathlib.Data.EReal.Basic
 
-deprecated_module (since "2025-04-13")
+deprecated_module (since := "2025-04-13")
