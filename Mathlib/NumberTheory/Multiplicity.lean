@@ -96,9 +96,7 @@ theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
             (∑ x ∈ Finset.range p, a ^ (x - 1) * (a ^ (p - 1 - x) * (↑p * (b * ↑x)))) +
           mk (span {s}) (∑ x ∈ Finset.range p, a ^ (x + (p - 1 - x))) := by
       ring_nf
-      simp only [← pow_add, map_add, Finset.sum_add_distrib, ← map_sum]
-      congr
-      simp [pow_add a, mul_assoc]
+      simp_rw [← map_sum, sum_add_distrib, map_add]
     _ =
         mk (span {s})
             (∑ x ∈ Finset.range p, a ^ (x - 1) * (a ^ (p - 1 - x) * (↑p * (b * ↑x)))) +
