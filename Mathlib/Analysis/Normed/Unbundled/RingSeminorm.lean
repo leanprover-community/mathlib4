@@ -265,7 +265,8 @@ instance [DecidableEq R] : Inhabited (RingNorm R) :=
 end NonUnitalRing
 
 /-- The `NormedRing` stucture on a ring `R` determined by a `RingNorm`. -/
-def toNormedRing [Ring R] (f : RingNorm R) : NormedRing R where
+-- See note |reducible non instances]
+abbrev toNormedRing [Ring R] (f : RingNorm R) : NormedRing R where
   __ := ‹Ring R›
   __ := f.toAddGroupNorm.toNormedAddCommGroup
   norm_mul_le := map_mul_le_mul f
