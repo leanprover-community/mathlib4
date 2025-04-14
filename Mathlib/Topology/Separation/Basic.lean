@@ -548,9 +548,13 @@ theorem compl_singleton_mem_nhds [T1Space X] {x y : X} (h : y ≠ x) : {x}ᶜ �
 theorem closure_singleton [T1Space X] {x : X} : closure ({x} : Set X) = {x} :=
   isClosed_singleton.closure_eq
 
+theorem Set.Subsingleton.closure_eq [T1Space X] {s : Set X} (hs : s.Subsingleton) :
+    closure s = s := by
+  rcases hs.eq_empty_or_singleton with rfl | ⟨x, rfl⟩ <;> simp
+
 theorem Set.Subsingleton.closure [T1Space X] {s : Set X} (hs : s.Subsingleton) :
     (closure s).Subsingleton := by
-  rcases hs.eq_empty_or_singleton with (rfl | ⟨x, rfl⟩) <;> simp
+  rwa [hs.closure_eq]
 
 @[simp]
 theorem subsingleton_closure [T1Space X] {s : Set X} : (closure s).Subsingleton ↔ s.Subsingleton :=
