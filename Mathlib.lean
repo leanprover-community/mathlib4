@@ -4518,7 +4518,6 @@ import Mathlib.Order.Filter.FilterProduct
 import Mathlib.Order.Filter.Finite
 import Mathlib.Order.Filter.Germ.Basic
 import Mathlib.Order.Filter.Germ.OrderedMonoid
-import Mathlib.Order.Filter.Ideal
 import Mathlib.Order.Filter.IndicatorFunction
 import Mathlib.Order.Filter.Interval
 import Mathlib.Order.Filter.IsBounded
@@ -4527,6 +4526,7 @@ import Mathlib.Order.Filter.Lift
 import Mathlib.Order.Filter.ListTraverse
 import Mathlib.Order.Filter.Map
 import Mathlib.Order.Filter.NAry
+import Mathlib.Order.Filter.PFilter
 import Mathlib.Order.Filter.Partial
 import Mathlib.Order.Filter.Pi
 import Mathlib.Order.Filter.Pointwise
