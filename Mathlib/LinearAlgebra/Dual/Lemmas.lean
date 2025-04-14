@@ -125,7 +125,7 @@ theorem Basis.linearEquiv_dual_iff_finiteDimensional [Field K] [AddCommGroup V] 
   rwa [lift_umax, lift_id'.{uV}] at this
 
 theorem Basis.dual_rank_eq (b : Basis ι R M) :
-    Cardinal.lift.{uR,uM} (Module.rank R M) = Module.rank R (Dual R M) := by
+    Module.rank R (Dual R M) = Cardinal.lift.{uR,uM} (Module.rank R M) := by
   classical rw [← lift_umax.{uM,uR}, b.toDualEquiv.lift_rank_eq, lift_id'.{uM,uR}]
 
 end Finite
@@ -227,7 +227,7 @@ end
 omit [Projective K V]
 
 theorem dual_rank_eq [Free K V] [Module.Finite K V] :
-    Cardinal.lift.{uK,uV} (Module.rank K V) = Module.rank K (Dual K V) :=
+    Module.rank K (Dual K V) = Cardinal.lift.{uK,uV} (Module.rank K V) :=
   (Free.chooseBasis K V).dual_rank_eq
 
 section IsReflexive
