@@ -152,8 +152,6 @@ lemma hom_surjective {M N : ModuleCat.{v} R} :
     Function.Surjective (Hom.hom : (M ⟶ N) → (M →ₗ[R] N)) :=
   hom_bijective.surjective
 
-@[deprecated (since := "2024-10-06")] alias asHom := ModuleCat.ofHom
-
 @[simp]
 lemma hom_ofHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y]
     [Module R Y] (f : X →ₗ[R] Y) : (ofHom f).hom = f := rfl
@@ -257,8 +255,6 @@ open ModuleCat
 
 /-- Reinterpreting a linear map in the category of `R`-modules -/
 scoped[ModuleCat] notation "↟" f:1024 => ModuleCat.ofHom f
-
-@[deprecated (since := "2024-10-06")] alias ModuleCat.asHom_apply := ModuleCat.ofHom_apply
 
 -- Since `of` and the coercion now roundtrip reducibly, we don't need to distinguish in which place
 -- we need to add `of` when coercing from linear maps to morphisms.
