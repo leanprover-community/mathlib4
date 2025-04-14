@@ -37,27 +37,22 @@ theorem not_isLocalRing_def {R : Type*} [Semiring R] {a b : R} (ha : ¬IsUnit a)
   fun _ ↦ hb <| (isUnit_or_isUnit_of_add_one hab).resolve_left ha
 
 theorem not_isLocalRing_of_nontrivial_pi {ι : Type*} [Nontrivial ι] [DecidableEq ι] (R : ι → Type*)
-    [∀ i, Semiring (R i)] [∀ i, Nontrivial (R i)] : ¬IsLocalRing (Π i, R i) := by
-  obtain ⟨i₁, i₂, hi₁i₂⟩ := exists_pair_ne ι
-  let a : Π i, R i := fun i ↦ if i = i₁ then 0 else 1
-  let b : Π i, R i := fun i ↦ if i = i₁ then 1 else 0
-  have ha0 : Pi.evalRingHom R i₁ a = 0 := by simp [a]
-  have hb0 : Pi.evalRingHom R i₂ b = 0 := by simp [b]; exact hi₁i₂.symm
-  have ha : ¬IsUnit a := by
-    exact fun h ↦ not_isUnit_zero (ha0 ▸ IsUnit.map (Pi.evalRingHom R i₁) h)
-  have hb : ¬IsUnit b := by
-    exact fun h ↦ not_isUnit_zero (hb0 ▸ IsUnit.map (Pi.evalRingHom R i₂) h)
-  exact not_isLocalRing_def ha hb (by ext i; simp [a, b]; split <;> simp)
+    [∀ i, Semiring (R i)] [∀ i, Nontrivial (R i)] : ¬IsLocalRing (Π i, R i) :=
+  let ⟨i₁, i₂, hi₁i₂⟩ := exists_pair_ne ι
+  have ha : ¬IsUnit (fun i ↦ if i = i₁ then 0 else 1 : Π i, R i) :=
+    fun h ↦ not_isUnit_zero (M₀ := R i₁) (by simpa using IsUnit.map (Pi.evalRingHom R i₁) h)
+  have hb : ¬IsUnit (fun i ↦ if i = i₁ then 1 else 0 : Π i, R i) :=
+    fun h ↦ not_isUnit_zero (M₀ := R i₂)
+      (by simpa [hi₁i₂.symm] using IsUnit.map (Pi.evalRingHom R i₂) h)
+  not_isLocalRing_def ha hb (by ext i; dsimp; split <;> simp)
 
 theorem not_isLocalRing_of_prod_of_nontrivial (R₁ R₂ : Type*) [Semiring R₁] [Semiring R₂]
-    [Nontrivial R₁] [Nontrivial R₂] : ¬IsLocalRing (R₁ × R₂) := by
-  let a : R₁ × R₂ := (1, 0)
-  let b : R₁ × R₂ := (0, 1)
-  have ha0 : RingHom.snd R₁ R₂ a = 0 := by simp [a]
-  have hb0 : RingHom.fst R₁ R₂ b = 0 := by simp [b]
-  have ha : ¬IsUnit a := fun h ↦ not_isUnit_zero (ha0 ▸ IsUnit.map (RingHom.snd R₁ R₂) h)
-  have hb : ¬IsUnit b := fun h ↦ not_isUnit_zero (hb0 ▸ IsUnit.map (RingHom.fst R₁ R₂) h)
-  exact not_isLocalRing_def ha hb (by simp [a, b])
+    [Nontrivial R₁] [Nontrivial R₂] : ¬IsLocalRing (R₁ × R₂) :=
+  have ha : ¬IsUnit ((1, 0) : R₁ × R₂) :=
+    fun h ↦ not_isUnit_zero (M₀ := R₁) (by simpa using IsUnit.map (RingHom.snd R₁ R₂) h)
+  have hb : ¬IsUnit ((0, 1) : R₁ × R₂) :=
+    fun h ↦ not_isUnit_zero (M₀ := R₂) (by simpa using IsUnit.map (RingHom.fst R₁ R₂) h)
+  not_isLocalRing_def ha hb (by simp)
 
 section CommSemiring
 
