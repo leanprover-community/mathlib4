@@ -552,10 +552,12 @@ variable {ι : Type*}
 
 @[simp] lemma finite_finsupp_iff :
     Module.Finite R (ι →₀ M) ↔ IsEmpty ι ∨ Subsingleton M ∨ Module.Finite R M ∧ Finite ι where
-  mp h := by
+  mp := by
     simp only [or_iff_not_imp_left, not_subsingleton_iff_nontrivial, not_isEmpty_iff]
-    rintro ⟨i⟩
-    exact ⟨.of_surjective (Finsupp.lapply (R := R) (M := M) i) (Finsupp.apply_surjective i), ?_⟩
+    rintro h ⟨i⟩ _
+    obtain ⟨s, hs⟩ := id h
+    exact ⟨.of_surjective (Finsupp.lapply (R := R) (M := M) i) (Finsupp.apply_surjective i),
+       finite_of_span_finite_eq_top_finsupp s.finite_toSet hs⟩
   mpr
   | .inl _ => inferInstance
   | .inr <| .inl h => inferInstance

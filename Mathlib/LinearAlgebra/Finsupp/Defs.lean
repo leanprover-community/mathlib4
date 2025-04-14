@@ -127,9 +127,8 @@ theorem lapply_comp_lsingle_same (a : α) : lapply a ∘ₗ lsingle a = (.id : M
 theorem lapply_comp_lsingle_of_ne (a a' : α) (h : a ≠ a') :
     lapply a ∘ₗ lsingle a' = (0 : M →ₗ[R] M) := by ext; simp [h.symm]
 
-include R in
-lemma apply_surjective (a : α) : Function.Surjective fun f : α →₀ M ↦ f a :=
-  LinearMap.surjective_of_comp_eq_id (R := R) _ _ <| lapply_comp_lsingle_same a
+lemma apply_surjective (a : α) : Function.Surjective (fun f : α →₀ M => f a) :=
+  Function.RightInverse.surjective fun _ => single_eq_same
 
 section LMapDomain
 
