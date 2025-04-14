@@ -55,7 +55,7 @@ abbrev _root_.Quiver.Hom.toNegPath {X Y : V} (f : X ⟶ Y) :
 /-- The "reduction" relation -/
 inductive redStep : HomRel (Paths (Quiver.Symmetrify V))
   | step (X Z : Quiver.Symmetrify V) (f : X ⟶ Z) :
-    redStep (𝟙 (Paths.of.obj X)) (f.toPath ≫ (Quiver.reverse f).toPath)
+    redStep (𝟙 ((Paths.of (Quiver.Symmetrify V)).obj X)) (f.toPath ≫ (Quiver.reverse f).toPath)
 
 /-- The underlying vertices of the free groupoid -/
 def _root_.CategoryTheory.FreeGroupoid (V) [Q : Quiver V] :=
@@ -80,9 +80,10 @@ theorem congr_comp_reverse {X Y : Paths <| Quiver.Symmetrify V} (p : X ⟶ Y) :
     Quot.mk (@Quotient.CompClosure _ _ redStep _ _) (p ≫ p.reverse) =
       Quot.mk (@Quotient.CompClosure _ _ redStep _ _) (𝟙 X) := by
   apply Quot.eqvGen_sound
-  induction' p with a b q f ih
-  · apply EqvGen.refl
-  · simp only [Quiver.Path.reverse]
+  induction p with
+  | nil => apply EqvGen.refl
+  | cons q f ih =>
+    simp only [Quiver.Path.reverse]
     fapply EqvGen.trans
     -- Porting note: `Quiver.Path.*` and `Quiver.Hom.*` notation not working
     · exact q ≫ Quiver.Path.reverse q
@@ -127,7 +128,7 @@ def of (V) [Quiver V] : V ⥤q FreeGroupoid V where
   map f := Quot.mk _ f.toPosPath
 
 theorem of_eq :
-    of V = (Quiver.Symmetrify.of ⋙q Paths.of).comp
+    of V = (Quiver.Symmetrify.of ⋙q (Paths.of (Quiver.Symmetrify V))).comp
       (Quotient.functor <| @redStep V _).toPrefunctor := rfl
 
 section UniversalProperty

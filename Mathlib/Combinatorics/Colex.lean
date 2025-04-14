@@ -7,7 +7,7 @@ import Mathlib.Algebra.GeomSum
 import Mathlib.Data.Finset.Slice
 import Mathlib.Data.Nat.BitIndices
 import Mathlib.Order.SupClosed
-import Mathlib.Order.UpperLower.Basic
+import Mathlib.Order.UpperLower.Closure
 
 /-!
 # Colexigraphic order

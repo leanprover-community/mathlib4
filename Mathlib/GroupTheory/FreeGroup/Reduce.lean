@@ -115,9 +115,10 @@ only reduces to itself. -/
 @[to_additive "The second theorem that characterises the function `reduce`: the maximal reduction of
   a word only reduces to itself."]
 theorem reduce.min (H : Red (reduce L₁) L₂) : reduce L₁ = L₂ := by
-  induction' H with L1 L' L2 H1 H2 ih
-  · rfl
-  · obtain ⟨L4, L5, x, b⟩ := H1
+  induction H with
+  | refl => rfl
+  | tail _ H1 H2 =>
+    obtain ⟨L4, L5, x, b⟩ := H1
     exact reduce.not H2
 
 /-- `reduce` is idempotent, i.e. the maximal reduction of the maximal reduction of a word is the
@@ -335,7 +336,7 @@ theorem norm_mul_le (x y : FreeGroup α) : norm (x * y) ≤ norm x + norm y :=
   calc
     norm (x * y) = norm (mk (x.toWord ++ y.toWord)) := by rw [← mul_mk, mk_toWord, mk_toWord]
     _ ≤ (x.toWord ++ y.toWord).length := norm_mk_le
-    _ = norm x + norm y := List.length_append _ _
+    _ = norm x + norm y := List.length_append
 
 @[to_additive (attr := simp)]
 theorem norm_of_pow (a : α) (n : ℕ) : norm (of a ^ n) = n := by

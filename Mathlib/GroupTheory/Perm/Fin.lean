@@ -153,10 +153,9 @@ theorem cycleRange_of_le {n : ℕ} [NeZero n] {i j : Fin n} (h : j ≤ i) :
   have : j = (Fin.castLE (Nat.succ_le_of_lt i.is_lt))
     ⟨j, lt_of_le_of_lt h (Nat.lt_succ_self i)⟩ := by simp
   ext
-  erw [this, cycleRange, ofLeftInverse'_eq_ofInjective, ←
-    Function.Embedding.toEquivRange_eq_ofInjective, ← viaFintypeEmbedding,
-    viaFintypeEmbedding_apply_image, Function.Embedding.coeFn_mk,
-    coe_castLE, coe_finRotate]
+  rw [this, cycleRange, ofLeftInverse'_eq_ofInjective, ←
+    Function.Embedding.toEquivRange_eq_ofInjective, ← viaFintypeEmbedding, ← coe_castLEEmb,
+    viaFintypeEmbedding_apply_image, coe_castLEEmb, coe_castLE, coe_finRotate]
   simp only [Fin.ext_iff, val_last, val_mk, val_zero, Fin.eta, castLE_mk]
   split_ifs with heq
   · rfl

@@ -202,16 +202,21 @@ instance instIsTopologicalGroup [Group G] [IsTopologicalGroup G] :
 
 end Group
 
-section UniformGroup
+section IsUniformGroup
 
 @[to_additive]
-instance instUniformGroup {G : Type*} [Group G] [UniformSpace G] [UniformGroup G] :
-    UniformGroup (SeparationQuotient G) where
+instance instIsUniformGroup {G : Type*} [Group G] [UniformSpace G] [IsUniformGroup G] :
+    IsUniformGroup (SeparationQuotient G) where
   uniformContinuous_div := by
     rw [uniformContinuous_dom₂]
     exact uniformContinuous_mk.comp uniformContinuous_div
 
-end UniformGroup
+@[deprecated (since := "2025-03-31")] alias
+  instUniformAddGroup := SeparationQuotient.instIsUniformAddGroup
+@[to_additive existing, deprecated (since := "2025-03-31")] alias
+  instUniformGroup := SeparationQuotient.instIsUniformGroup
+
+end IsUniformGroup
 
 section MonoidWithZero
 
