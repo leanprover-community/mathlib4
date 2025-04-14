@@ -28,11 +28,13 @@ open Set
 
 section UniqueMDiff
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {M : Type*}
-  [TopologicalSpace M] [ChartedSpace H M] {E' : Type*}
-  [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
-  {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
+  {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  {E' : Type*} [AddCommGroup E'] [NormedAddGroup E'] [NormedSpace 𝕜 E']
+  {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
+  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
   {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H' M'']
   {s : Set M} {x : M}
 
@@ -127,7 +129,7 @@ end
 
 open Bundle
 
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {Z : M → Type*}
+variable {F : Type*} [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F] {Z : M → Type*}
   [TopologicalSpace (TotalSpace F Z)] [∀ b, TopologicalSpace (Z b)] [FiberBundle F Z]
 
 private lemma UniqueMDiffWithinAt.bundle_preimage_aux {p : TotalSpace F Z}

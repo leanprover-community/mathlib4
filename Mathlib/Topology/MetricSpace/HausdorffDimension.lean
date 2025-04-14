@@ -391,8 +391,9 @@ end IsometryEquiv
 
 namespace ContinuousLinearEquiv
 
-variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜]
+  [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
+  [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
 
 @[simp]
 theorem dimH_image (e : E ≃L[𝕜] F) (s : Set E) : dimH (e '' s) = dimH s :=
@@ -415,7 +416,8 @@ end ContinuousLinearEquiv
 
 namespace Real
 
-variable {E : Type*} [Fintype ι] [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+variable {E : Type*} [Fintype ι]
+  [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
 
 theorem dimH_ball_pi (x : ι → ℝ) {r : ℝ} (hr : 0 < r) :
     dimH (Metric.ball x r) = Fintype.card ι := by
@@ -473,8 +475,8 @@ lemma hausdorffMeasure_of_finrank_lt [MeasurableSpace E] [BorelSpace E] {d : ℝ
 
 end Real
 
-variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
-  [NormedAddCommGroup F] [NormedSpace ℝ F]
+variable {E F : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+  [AddCommGroup F] [NormedAddGroup F] [NormedSpace ℝ F]
 
 theorem dense_compl_of_dimH_lt_finrank {s : Set E} (hs : dimH s < finrank ℝ E) : Dense sᶜ := by
   refine fun x => mem_closure_iff_nhds.2 fun t ht => nonempty_iff_ne_empty.2 fun he => hs.not_le ?_

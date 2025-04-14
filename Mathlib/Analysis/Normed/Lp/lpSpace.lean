@@ -59,7 +59,8 @@ noncomputable section
 
 open scoped NNReal ENNReal Function
 
-variable {𝕜 𝕜' : Type*} {α : Type*} {E : α → Type*} {p q : ℝ≥0∞} [∀ i, NormedAddCommGroup (E i)]
+variable {𝕜 𝕜' : Type*} {α : Type*} {E : α → Type*} {p q : ℝ≥0∞}
+  [∀ i, AddCommGroup (E i)] [∀ i, NormedAddGroup (E i)]
 
 /-!
 ### `Memℓp` predicate
@@ -281,7 +282,7 @@ We choose to deal with this issue by making a type synonym for `∀ i, E i` rath
 subgroup itself, because this allows all the spaces `lp E p` (for varying `p`) to be subgroups of
 the same ambient group, which permits lemma statements like `lp.monotone` (below). -/
 @[nolint unusedArguments]
-def PreLp (E : α → Type*) [∀ i, NormedAddCommGroup (E i)] : Type _ :=
+def PreLp (E : α → Type*) [∀ i, AddCommGroup (E i)] [∀ i, NormedAddGroup (E i)] : Type _ :=
   ∀ i, E i --deriving AddCommGroup
 
 instance : AddCommGroup (PreLp E) := by unfold PreLp; infer_instance
@@ -291,7 +292,8 @@ instance PreLp.unique [IsEmpty α] : Unique (PreLp E) :=
 
 /-- lp space
 The `p=∞` case has notation `ℓ^∞(ι, E)` resp. `ℓ^∞(ι)` (for `E = ℝ`) in the `lp` namespace. -/
-def lp (E : α → Type*) [∀ i, NormedAddCommGroup (E i)] (p : ℝ≥0∞) : AddSubgroup (PreLp E) where
+def lp (E : α → Type*) [∀ i, AddCommGroup (E i)] [∀ i, NormedAddGroup (E i)] (p : ℝ≥0∞) :
+    AddSubgroup (PreLp E) where
   carrier := { f | Memℓp f p }
   zero_mem' := zero_memℓp
   add_mem' := Memℓp.add
@@ -451,8 +453,8 @@ theorem norm_neg ⦃f : lp E p⦄ : ‖-f‖ = ‖f‖ := by
     apply (lp.hasSum_norm hp (-f)).unique
     simpa only [coeFn_neg, Pi.neg_apply, _root_.norm_neg] using lp.hasSum_norm hp f
 
-instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) :=
-  AddGroupNorm.toNormedAddCommGroup
+instance normedAddGroup [hp : Fact (1 ≤ p)] : NormedAddGroup (lp E p) :=
+  AddGroupNorm.toNormedAddGroup
     { toFun := norm
       map_zero' := norm_zero
       neg' := norm_neg
@@ -734,7 +736,7 @@ instance nonUnitalRing : NonUnitalRing (lp B ∞) :=
     lp.coeFn_add infty_coeFn_mul lp.coeFn_neg lp.coeFn_sub (fun _ _ => rfl) fun _ _ => rfl
 
 instance nonUnitalNormedRing : NonUnitalNormedRing (lp B ∞) :=
-  { lp.normedAddCommGroup, lp.nonUnitalRing with
+  { lp.normedAddGroup, lp.nonUnitalRing with
     norm_mul_le f g := lp.norm_le_of_forall_le (by positivity) fun i ↦ calc
       ‖(f * g) i‖ ≤ ‖f i‖ * ‖g i‖ := norm_mul_le _ _
       _ ≤ ‖f‖ * ‖g‖ := mul_le_mul (lp.norm_apply_le_norm ENNReal.top_ne_zero f i)

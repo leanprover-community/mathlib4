@@ -25,9 +25,10 @@ variable {α : Type*} {β : Type*} {E : Type*} {F : Type*} {G : Type*} {E' : Typ
   {R : Type*} {R' : Type*} {𝕜 : Type*} {𝕜' : Type*}
 
 variable [Norm E] [Norm F] [Norm G]
-variable [SeminormedAddCommGroup E'] [SeminormedAddCommGroup F'] [SeminormedAddCommGroup G']
-  [NormedAddCommGroup E''] [NormedAddCommGroup F''] [NormedAddCommGroup G''] [SeminormedRing R]
-  [SeminormedAddGroup E''']
+variable [AddCommGroup E'] [SeminormedAddGroup E'] [AddCommGroup F'] [SeminormedAddGroup F']
+  [AddCommGroup G'] [SeminormedAddGroup G'] [AddCommGroup E''] [NormedAddGroup E'']
+  [AddCommGroup F''] [NormedAddGroup F''] [AddCommGroup G''] [NormedAddGroup G''] [SeminormedRing R]
+  [AddGroup E'''] [SeminormedAddGroup E''']
   [SeminormedRing R']
 
 variable [NormedDivisionRing 𝕜] [NormedDivisionRing 𝕜']
@@ -495,7 +496,8 @@ theorem isBigO_of_div_tendsto_nhds {α : Type*} {l : Filter α} {f g : α → �
     f =O[l] g :=
   (isBigO_iff_div_isBoundedUnder hgf).2 <| H.norm.isBoundedUnder_le
 
-theorem IsLittleO.tendsto_zero_of_tendsto {α E 𝕜 : Type*} [NormedAddCommGroup E] [NormedField 𝕜]
+theorem IsLittleO.tendsto_zero_of_tendsto {α E 𝕜 : Type*} [AddCommGroup E] [NormedAddGroup E]
+    [NormedField 𝕜]
     {u : α → E} {v : α → 𝕜} {l : Filter α} {y : 𝕜} (huv : u =o[l] v) (hv : Tendsto v l (𝓝 y)) :
     Tendsto u l (𝓝 0) := by
   suffices h : u =o[l] fun _x => (1 : 𝕜) by
@@ -519,7 +521,7 @@ theorem isLittleO_pow_id {n : ℕ} (h : 1 < n) : (fun x : 𝕜 => x ^ n) =o[𝓝
 
 theorem isLittleO_norm_pow_id {n : ℕ} (h : 1 < n) :
     (fun x : E' => ‖x‖ ^ n) =o[𝓝 0] fun x => x := by
-  have := @isLittleO_norm_pow_norm_pow E' _ _ _ h
+  have := isLittleO_norm_pow_norm_pow (E' := E') h
   simp only [pow_one] at this
   exact isLittleO_norm_right.mp this
 
@@ -612,20 +614,23 @@ theorem IsBigO.nat_of_atTop {f : ℕ → E''} {g : ℕ → F''} (hfg : f =O[atTo
   · simp [hf, hC_pos]
   exact hC fun a ↦ hf (h a)
 
-theorem isBigOWith_pi {ι : Type*} [Fintype ι] {E' : ι → Type*} [∀ i, NormedAddCommGroup (E' i)]
+theorem isBigOWith_pi {ι : Type*} [Fintype ι] {E' : ι → Type*}
+    [∀ i, AddCommGroup (E' i)] [∀ i, NormedAddGroup (E' i)]
     {f : α → ∀ i, E' i} {C : ℝ} (hC : 0 ≤ C) :
     IsBigOWith C l f g' ↔ ∀ i, IsBigOWith C l (fun x => f x i) g' := by
   have : ∀ x, 0 ≤ C * ‖g' x‖ := fun x => mul_nonneg hC (norm_nonneg _)
   simp only [isBigOWith_iff, pi_norm_le_iff_of_nonneg (this _), eventually_all]
 
 @[simp]
-theorem isBigO_pi {ι : Type*} [Fintype ι] {E' : ι → Type*} [∀ i, NormedAddCommGroup (E' i)]
+theorem isBigO_pi {ι : Type*} [Fintype ι] {E' : ι → Type*}
+    [∀ i, AddCommGroup (E' i)] [∀ i, NormedAddGroup (E' i)]
     {f : α → ∀ i, E' i} : f =O[l] g' ↔ ∀ i, (fun x => f x i) =O[l] g' := by
   simp only [isBigO_iff_eventually_isBigOWith, ← eventually_all]
   exact eventually_congr (eventually_atTop.2 ⟨0, fun c => isBigOWith_pi⟩)
 
 @[simp]
-theorem isLittleO_pi {ι : Type*} [Fintype ι] {E' : ι → Type*} [∀ i, NormedAddCommGroup (E' i)]
+theorem isLittleO_pi {ι : Type*} [Fintype ι] {E' : ι → Type*}
+    [∀ i, AddCommGroup (E' i)] [∀ i, NormedAddGroup (E' i)]
     {f : α → ∀ i, E' i} : f =o[l] g' ↔ ∀ i, (fun x => f x i) =o[l] g' := by
   simp +contextual only [IsLittleO_def, isBigOWith_pi, le_of_lt]
   exact ⟨fun h i c hc => h hc i, fun h c hc i => h i hc⟩
@@ -662,17 +667,18 @@ end Asymptotics
 
 open Asymptotics
 
-theorem summable_of_isBigO {ι E} [SeminormedAddCommGroup E] [CompleteSpace E]
+theorem summable_of_isBigO {ι E} [AddCommGroup E] [SeminormedAddGroup E] [CompleteSpace E]
     {f : ι → E} {g : ι → ℝ} (hg : Summable g) (h : f =O[cofinite] g) : Summable f :=
   let ⟨C, hC⟩ := h.isBigOWith
   .of_norm_bounded_eventually (fun x => C * ‖g x‖) (hg.abs.mul_left _) hC.bound
 
-theorem summable_of_isBigO_nat {E} [SeminormedAddCommGroup E] [CompleteSpace E]
+theorem summable_of_isBigO_nat {E} [AddCommGroup E] [SeminormedAddGroup E] [CompleteSpace E]
     {f : ℕ → E} {g : ℕ → ℝ} (hg : Summable g) (h : f =O[atTop] g) : Summable f :=
   summable_of_isBigO hg <| Nat.cofinite_eq_atTop.symm ▸ h
 
 lemma Asymptotics.IsBigO.comp_summable_norm {ι E F : Type*}
-    [SeminormedAddCommGroup E] [SeminormedAddCommGroup F] {f : E → F} {g : ι → E}
+    [AddCommGroup E] [SeminormedAddGroup E] [AddCommGroup F] [SeminormedAddGroup F]
+    {f : E → F} {g : ι → E}
     (hf : f =O[𝓝 0] id) (hg : Summable (‖g ·‖)) : Summable (‖f <| g ·‖) :=
   summable_of_isBigO hg <| hf.norm_norm.comp_tendsto <|
     tendsto_zero_iff_norm_tendsto_zero.2 hg.tendsto_cofinite_zero
@@ -740,7 +746,7 @@ variable {α E F : Type*} [TopologicalSpace α] {s : Set α} {f : α → E} {c :
 
 section IsBigO
 
-variable [SeminormedAddGroup E] [Norm F]
+variable [AddGroup E] [SeminormedAddGroup E] [Norm F]
 
 protected theorem isBigOWith_principal
     (hf : ContinuousOn f s) (hs : IsCompact s) (hc : ‖c‖ ≠ 0) :
@@ -758,7 +764,7 @@ end IsBigO
 
 section IsBigORev
 
-variable [NormedAddGroup E] [SeminormedAddGroup F]
+variable [AddGroup E] [NormedAddGroup E] [AddGroup F] [SeminormedAddGroup F]
 
 protected theorem isBigOWith_rev_principal
     (hf : ContinuousOn f s) (hs : IsCompact s) (hC : ∀ i ∈ s, f i ≠ 0) (c : F) :
@@ -783,7 +789,8 @@ end ContinuousOn
 
 /-- The (scalar) product of a sequence that tends to zero with a bounded one also tends to zero. -/
 lemma NormedField.tendsto_zero_smul_of_tendsto_zero_of_bounded {ι 𝕜 𝔸 : Type*}
-    [NormedDivisionRing 𝕜] [NormedAddCommGroup 𝔸] [Module 𝕜 𝔸] [IsBoundedSMul 𝕜 𝔸] {l : Filter ι}
+    [NormedDivisionRing 𝕜] [AddCommGroup 𝔸] [NormedAddGroup 𝔸] [Module 𝕜 𝔸] [IsBoundedSMul 𝕜 𝔸]
+    {l : Filter ι}
     {ε : ι → 𝕜} {f : ι → 𝔸} (hε : Tendsto ε l (𝓝 0)) (hf : IsBoundedUnder (· ≤ ·) l (norm ∘ f)) :
     Tendsto (ε • f) l (𝓝 0) := by
   rw [← isLittleO_one_iff 𝕜] at hε ⊢

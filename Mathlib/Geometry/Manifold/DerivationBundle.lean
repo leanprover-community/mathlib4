@@ -20,9 +20,10 @@ case of finite-dimensional `C^∞` real manifolds, but not in the general case.
 -/
 
 
-variable (𝕜 : Type*) [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) (M : Type*)
-  [TopologicalSpace M] [ChartedSpace H M] (n : WithTop ℕ∞)
+variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
+  {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
+  {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
+  (M : Type*) [TopologicalSpace M] [ChartedSpace H M] (n : WithTop ℕ∞)
 
 open scoped Manifold ContDiff
 
@@ -121,9 +122,9 @@ theorem evalAt_apply (x : M) : evalAt x X f = (X f) x :=
 
 end Derivation
 
-variable {I} {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*}
-  [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*} [TopologicalSpace M']
-  [ChartedSpace H' M']
+variable {I} {E' : Type*} [AddCommGroup E'] [NormedAddGroup E'] [NormedSpace 𝕜 E']
+  {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
+  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
 
 /-- The heterogeneous differential as a linear map, denoted as `𝒅ₕ` within the `Manifold` namespace.
 Instead of taking a function as an argument this
@@ -169,7 +170,7 @@ theorem hfdifferential_apply {f : C^∞⟮I, M; I', M'⟯} {x : M} {y : M'} (h :
   rfl
 @[deprecated (since := "2024-11-11")] alias apply_hfdifferential := hfdifferential_apply
 
-variable {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] {H'' : Type*}
+variable {E'' : Type*} [AddCommGroup E''] [NormedAddGroup E''] [NormedSpace 𝕜 E''] {H'' : Type*}
   [TopologicalSpace H''] {I'' : ModelWithCorners 𝕜 E'' H''} {M'' : Type*} [TopologicalSpace M'']
   [ChartedSpace H'' M'']
 

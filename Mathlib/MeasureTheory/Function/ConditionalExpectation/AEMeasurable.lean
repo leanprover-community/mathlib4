@@ -82,7 +82,8 @@ theorem const_smul [SMul 𝕜 β] [ContinuousConstSMul 𝕜 β] (c : 𝕜) (hf :
   AEStronglyMeasurable.const_smul hf _
 
 @[deprecated AEStronglyMeasurable.const_inner (since := "2025-01-23")]
-theorem const_inner {𝕜 β} [RCLike 𝕜] [NormedAddCommGroup β] [InnerProductSpace 𝕜 β] {f : α → β}
+theorem const_inner {𝕜 β} [RCLike 𝕜]
+    [AddCommGroup β] [NormedAddGroup β] [InnerProductSpace 𝕜 β] {f : α → β}
     (hfm : AEStronglyMeasurable[m] f μ) (c : β) :
     AEStronglyMeasurable[m] (fun x => (inner c (f x) : 𝕜)) μ :=
   AEStronglyMeasurable.const_inner hfm
@@ -158,7 +159,7 @@ theorem AEStronglyMeasurable'.aeStronglyMeasurable'_of_measurableSpace_le_on {α
 variable {α F 𝕜 : Type*} {p : ℝ≥0∞} [RCLike 𝕜]
   -- 𝕜 for ℝ or ℂ
   -- F for a Lp submodule
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
 
 section LpMeas
 
@@ -507,7 +508,7 @@ theorem Lp.induction_stronglyMeasurable_aux (hm : m ≤ m0) (hp_ne_top : p ≠ �
   change P ↑f'
   rw [hfg]
   refine
-    @Lp.induction α F m _ p (μ.trim hm) _ hp_ne_top
+    @Lp.induction α F m _ _ p (μ.trim hm) _ hp_ne_top
       (fun g => P ((lpMeasToLpTrimLie F ℝ p μ hm).symm g)) ?_ ?_ ?_ g
   · intro b t ht hμt
     rw [@Lp.simpleFunc.coe_indicatorConst _ _ m, lpMeasToLpTrimLie_symm_indicator ht hμt.ne b]

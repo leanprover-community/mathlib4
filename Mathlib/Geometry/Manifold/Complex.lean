@@ -39,8 +39,8 @@ stalks, such as the Weierstrass preparation theorem.
 open scoped Manifold Topology Filter
 open Function Set Filter Complex
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℂ E]
+variable {F : Type*} [AddCommGroup F] [NormedAddGroup F] [NormedSpace ℂ F]
 variable {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℂ E H} [I.Boundaryless]
 variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   [IsManifold I 1 M]

@@ -32,7 +32,7 @@ open Topology ENNReal MeasureTheory NNReal
 open Set Filter TopologicalSpace ENNReal EMetric MeasureTheory
 
 variable {α β γ ε : Type*} {m : MeasurableSpace α} {μ ν : Measure α}
-variable [NormedAddCommGroup β] [NormedAddCommGroup γ] [ENorm ε]
+variable [AddCommGroup β] [NormedAddGroup β] [AddCommGroup γ] [NormedAddGroup γ] [ENorm ε]
 
 namespace MeasureTheory
 
@@ -346,7 +346,8 @@ section NormedSpace
 
 variable {𝕜 : Type*}
 
-theorem HasFiniteIntegral.smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β] [IsBoundedSMul 𝕜 β]
+theorem HasFiniteIntegral.smul [AddCommGroup 𝕜] [NormedAddGroup 𝕜]
+    [SMulZeroClass 𝕜 β] [IsBoundedSMul 𝕜 β]
     (c : 𝕜) {f : α → β} :
     HasFiniteIntegral f μ → HasFiniteIntegral (c • f) μ := by
   simp only [HasFiniteIntegral]; intro hfi
@@ -387,7 +388,7 @@ end count
 
 section restrict
 
-variable {E : Type*} [NormedAddCommGroup E] {f : α → E}
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] {f : α → E}
 
 lemma HasFiniteIntegral.restrict (h : HasFiniteIntegral f μ) {s : Set α} :
     HasFiniteIntegral f (μ.restrict s) := by

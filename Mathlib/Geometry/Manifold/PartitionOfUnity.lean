@@ -62,8 +62,8 @@ open scoped Topology Manifold ContDiff
 
 noncomputable section
 
-variable {ι : Type uι} {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  {F : Type uF} [NormedAddCommGroup F] [NormedSpace ℝ F] {H : Type uH}
+variable {ι : Type uι} {E : Type uE} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
+  {F : Type uF} [AddCommGroup F] [NormedAddGroup F] [NormedSpace ℝ F] {H : Type uH}
   [TopologicalSpace H] (I : ModelWithCorners ℝ E H) {M : Type uM} [TopologicalSpace M]
   [ChartedSpace H M]
 
@@ -298,7 +298,8 @@ end SmoothPartitionOfUnity
 namespace BumpCovering
 
 -- Repeat variables to drop `[FiniteDimensional ℝ E]` and `[IsManifold I ∞ M]`
-theorem contMDiff_toPartitionOfUnity {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℝ E]
+theorem contMDiff_toPartitionOfUnity
+    {E : Type uE} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
     {H : Type uH} [TopologicalSpace H] {I : ModelWithCorners ℝ E H} {M : Type uM}
     [TopologicalSpace M] [ChartedSpace H M] {s : Set M} (f : BumpCovering ι M s)
     (hf : ∀ i, ContMDiff I 𝓘(ℝ) ∞ (f i)) (i : ι) : ContMDiff I 𝓘(ℝ) ∞ (f.toPartitionOfUnity i) :=

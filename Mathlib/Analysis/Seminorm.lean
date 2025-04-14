@@ -718,12 +718,12 @@ theorem sub_mem_closedBall (p : Seminorm 𝕜 E) (x₁ x₂ y : E) (r : ℝ) :
 
 /-- The image of a ball under addition with a singleton is another ball. -/
 theorem vadd_ball (p : Seminorm 𝕜 E) : x +ᵥ p.ball y r = p.ball (x +ᵥ y) r :=
-  letI := AddGroupSeminorm.toSeminormedAddCommGroup p.toAddGroupSeminorm
+  letI := AddGroupSeminorm.toSeminormedAddGroup p.toAddGroupSeminorm
   Metric.vadd_ball x y r
 
 /-- The image of a closed ball under addition with a singleton is another closed ball. -/
 theorem vadd_closedBall (p : Seminorm 𝕜 E) : x +ᵥ p.closedBall y r = p.closedBall (x +ᵥ y) r :=
-  letI := AddGroupSeminorm.toSeminormedAddCommGroup p.toAddGroupSeminorm
+  letI := AddGroupSeminorm.toSeminormedAddGroup p.toAddGroupSeminorm
   Metric.vadd_closedBall x y r
 
 end SMul
@@ -1161,13 +1161,13 @@ lemma uniformSpace_eq_of_hasBasis
     (h₁ : ∃ r, p.closedBall 0 r ∈ 𝓝 0) (h₂ : ∀ i, p' i → ∃ r > 0, p.ball 0 r ⊆ s i) :
     ‹UniformSpace E› = p.toAddGroupSeminorm.toSeminormedAddGroup.toUniformSpace := by
   refine IsUniformAddGroup.ext ‹_›
-    p.toAddGroupSeminorm.toSeminormedAddCommGroup.to_isUniformAddGroup ?_
+    p.toAddGroupSeminorm.toSeminormedAddGroup.to_isUniformAddGroup ?_
   apply le_antisymm
-  · rw [← @comap_norm_nhds_zero E p.toAddGroupSeminorm.toSeminormedAddGroup, ← tendsto_iff_comap]
+  · rw [← @comap_norm_nhds_zero E _ p.toAddGroupSeminorm.toSeminormedAddGroup, ← tendsto_iff_comap]
     suffices Continuous p from this.tendsto' 0 _ (map_zero p)
     rcases h₁ with ⟨r, hr⟩
     exact p.continuous' hr
-  · rw [(@NormedAddCommGroup.nhds_zero_basis_norm_lt E
+  · rw [(@NormedAddCommGroup.nhds_zero_basis_norm_lt E _
       p.toAddGroupSeminorm.toSeminormedAddGroup).le_basis_iff hb]
     simpa only [subset_def, mem_ball_zero] using h₂
 
@@ -1281,7 +1281,7 @@ end Seminorm
 
 section normSeminorm
 
-variable (𝕜) (E) [NormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] {r : ℝ}
+variable (𝕜) (E) [NormedField 𝕜] [AddCommGroup E] [SeminormedAddGroup E] [NormedSpace 𝕜 E] {r : ℝ}
 
 /-- The norm of a seminormed group as a seminorm. -/
 def normSeminorm : Seminorm 𝕜 E :=
@@ -1339,7 +1339,8 @@ lemma rescale_to_shell_semi_normed {c : 𝕜} (hc : 1 < ‖c‖) {ε : ℝ} (εp
     ∃d : 𝕜, d ≠ 0 ∧ ‖d • x‖ < ε ∧ (ε/‖c‖ ≤ ‖d • x‖) ∧ (‖d‖⁻¹ ≤ ε⁻¹ * ‖c‖ * ‖x‖) :=
   (normSeminorm 𝕜 E).rescale_to_shell hc εpos hx
 
-lemma rescale_to_shell_zpow [NormedAddCommGroup F] [NormedSpace 𝕜 F] {c : 𝕜} (hc : 1 < ‖c‖)
+lemma rescale_to_shell_zpow [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
+    {c : 𝕜} (hc : 1 < ‖c‖)
     {ε : ℝ} (εpos : 0 < ε) {x : F} (hx : x ≠ 0) :
     ∃ n : ℤ, c^n ≠ 0 ∧ ‖c^n • x‖ < ε ∧ (ε / ‖c‖ ≤ ‖c^n • x‖) ∧ (‖c^n‖⁻¹ ≤ ε⁻¹ * ‖c‖ * ‖x‖) :=
   rescale_to_shell_semi_normed_zpow hc εpos (norm_ne_zero_iff.mpr hx)
@@ -1347,7 +1348,7 @@ lemma rescale_to_shell_zpow [NormedAddCommGroup F] [NormedSpace 𝕜 F] {c : �
 /-- If there is a scalar `c` with `‖c‖>1`, then any element can be moved by scalar multiplication to
 any shell of width `‖c‖`. Also recap information on the norm of the rescaling element that shows
 up in applications. -/
-lemma rescale_to_shell [NormedAddCommGroup F] [NormedSpace 𝕜 F] {c : 𝕜} (hc : 1 < ‖c‖)
+lemma rescale_to_shell [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F] {c : 𝕜} (hc : 1 < ‖c‖)
     {ε : ℝ} (εpos : 0 < ε) {x : F} (hx : x ≠ 0) :
     ∃d : 𝕜, d ≠ 0 ∧ ‖d • x‖ < ε ∧ (ε/‖c‖ ≤ ‖d • x‖) ∧ (‖d‖⁻¹ ≤ ε⁻¹ * ‖c‖ * ‖x‖) :=
   rescale_to_shell_semi_normed hc εpos (norm_ne_zero_iff.mpr hx)

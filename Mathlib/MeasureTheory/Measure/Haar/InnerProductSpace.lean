@@ -20,8 +20,8 @@ open Module MeasureTheory MeasureTheory.Measure Set
 
 variable {ι E F : Type*}
 
-variable [NormedAddCommGroup F] [InnerProductSpace ℝ F]
-  [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+variable [AddCommGroup F] [NormedAddGroup F] [InnerProductSpace ℝ F]
+  [AddCommGroup E] [NormedAddGroup E] [InnerProductSpace ℝ E]
   [MeasurableSpace E] [BorelSpace E] [MeasurableSpace F] [BorelSpace F]
 
 namespace LinearIsometryEquiv
@@ -89,7 +89,8 @@ theorem OrthonormalBasis.volume_parallelepiped (b : OrthonormalBasis ι ℝ F) :
 
 /-- The Haar measure defined by any orthonormal basis of a finite-dimensional inner product space
 is equal to its volume measure. -/
-theorem OrthonormalBasis.addHaar_eq_volume {ι F : Type*} [Fintype ι] [NormedAddCommGroup F]
+theorem OrthonormalBasis.addHaar_eq_volume {ι F : Type*} [Fintype ι]
+    [AddCommGroup F] [NormedAddGroup F]
     [InnerProductSpace ℝ F] [FiniteDimensional ℝ F] [MeasurableSpace F] [BorelSpace F]
     (b : OrthonormalBasis ι ℝ F) :
     b.toBasis.addHaar = volume := by

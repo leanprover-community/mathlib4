@@ -45,7 +45,8 @@ open RCLike
 open scoped ComplexConjugate
 
 variable {𝕜 E F G : Type*} [RCLike 𝕜]
-variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G]
+variable [AddCommGroup E] [NormedAddGroup E] [AddCommGroup F] [NormedAddGroup F]
+  [AddCommGroup G] [NormedAddGroup G]
 variable [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 F] [InnerProductSpace 𝕜 G]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
@@ -455,11 +456,11 @@ end LinearMap
 
 section Unitary
 
-variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace 𝕜 H] [CompleteSpace H]
+variable {H : Type*} [AddCommGroup H] [NormedAddGroup H] [InnerProductSpace 𝕜 H] [CompleteSpace H]
 
 namespace ContinuousLinearMap
 
-variable {K : Type*} [NormedAddCommGroup K] [InnerProductSpace 𝕜 K] [CompleteSpace K]
+variable {K : Type*} [AddCommGroup K] [NormedAddGroup K] [InnerProductSpace 𝕜 K] [CompleteSpace K]
 
 theorem inner_map_map_iff_adjoint_comp_self (u : H →L[𝕜] K) :
     (∀ x y : H, ⟪u x, u y⟫_𝕜 = ⟪x, y⟫_𝕜) ↔ adjoint u ∘L u = 1 := by

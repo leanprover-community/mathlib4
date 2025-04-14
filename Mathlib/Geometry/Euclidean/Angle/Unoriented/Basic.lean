@@ -33,7 +33,7 @@ open RealInnerProductSpace
 
 namespace InnerProductGeometry
 
-variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] {x y : V}
+variable {V : Type*} [AddCommGroup V] [NormedAddGroup V] [InnerProductSpace ℝ V] {x y : V}
 
 /-- The undirected angle between two vectors. If either vector is 0,
 this is π/2. See `Orientation.oangle` for the corresponding oriented angle
@@ -52,7 +52,8 @@ theorem angle_smul_smul {c : ℝ} (hc : c ≠ 0) (x y : V) : angle (c • x) (c 
     mul_mul_mul_comm _ ‖x‖, abs_mul_abs_self, ← mul_assoc c c, mul_div_mul_left _ _ this]
 
 @[simp]
-theorem _root_.LinearIsometry.angle_map {E F : Type*} [NormedAddCommGroup E] [NormedAddCommGroup F]
+theorem _root_.LinearIsometry.angle_map {E F : Type*}
+    [AddCommGroup E] [NormedAddGroup E] [AddCommGroup F] [NormedAddGroup F]
     [InnerProductSpace ℝ E] [InnerProductSpace ℝ F] (f : E →ₗᵢ[ℝ] F) (u v : E) :
     angle (f u) (f v) = angle u v := by
   rw [angle, angle, f.inner_map_map, f.norm_map, f.norm_map]

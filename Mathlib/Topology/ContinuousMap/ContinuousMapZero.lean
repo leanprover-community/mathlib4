@@ -361,10 +361,10 @@ variable {α : Type*} {𝕜 : Type*} {R : Type*} [TopologicalSpace α] [CompactS
 noncomputable instance [MetricSpace R] [Zero R]: MetricSpace C(α, R)₀ :=
   ContinuousMapZero.isUniformEmbedding_toContinuousMap.comapMetricSpace _
 
-noncomputable instance [NormedAddCommGroup R] : Norm C(α, R)₀ where
+noncomputable instance [AddCommGroup R] [NormedAddGroup R] : Norm C(α, R)₀ where
   norm f := ‖(f : C(α, R))‖
 
-lemma norm_def [NormedAddCommGroup R] (f : C(α, R)₀) : ‖f‖ = ‖(f : C(α, R))‖ :=
+lemma norm_def [AddCommGroup R] [NormedAddGroup R] (f : C(α, R)₀) : ‖f‖ = ‖(f : C(α, R))‖ :=
   rfl
 
 noncomputable instance [NormedCommRing R] : NonUnitalNormedCommRing C(α, R)₀ where

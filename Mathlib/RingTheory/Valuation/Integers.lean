@@ -21,7 +21,8 @@ namespace Valuation
 
 section Ring
 
-variable {R : Type u} {Γ₀ : Type v} [Ring R] [LinearOrderedCommGroupWithZero Γ₀]
+variable {R : Type u} {Γ₀ : Type v} [Ring R]
+  [CommGroupWithZero Γ₀] [LinearOrder Γ₀] [IsOrderedMonoidWithZero Γ₀]
 variable (v : Valuation R Γ₀)
 
 /-- The ring of integers under a given valuation is the subring of elements with valuation ≤ 1. -/
@@ -39,7 +40,8 @@ end Ring
 
 section CommRing
 
-variable {R : Type u} {Γ₀ : Type v} [CommRing R] [LinearOrderedCommGroupWithZero Γ₀]
+variable {R : Type u} {Γ₀ : Type v} [CommRing R]
+  [CommGroupWithZero Γ₀] [LinearOrder Γ₀] [IsOrderedMonoidWithZero Γ₀]
 variable (v : Valuation R Γ₀)
 variable (O : Type w) [CommRing O] [Algebra O R]
 
@@ -74,6 +76,7 @@ theorem one_of_isUnit' {x : O} (hx : IsUnit x) (H : ∀ x, v (algebraMap O R x) 
 theorem one_of_isUnit (hv : Integers v O) {x : O} (hx : IsUnit x) : v (algebraMap O R x) = 1 :=
   one_of_isUnit' hx hv.map_le_one
 
+omit [IsOrderedMonoidWithZero Γ₀] in
 /--
 Let `O` be the integers of the valuation `v` on some commutative ring `R`. For every element `x` in
 `O`, `x` is a unit in `O` if and only if the image of `x` in `R` is a unit and has valuation 1.
@@ -102,7 +105,8 @@ end CommRing
 
 section Field
 
-variable {F : Type u} {Γ₀ : Type v} [Field F] [LinearOrderedCommGroupWithZero Γ₀]
+variable {F : Type u} {Γ₀ : Type v} [Field F]
+  [CommGroupWithZero Γ₀] [LinearOrder Γ₀] [IsOrderedMonoidWithZero Γ₀]
 variable {v : Valuation F Γ₀} {O : Type w} [CommRing O] [Algebra O F]
 
 namespace Integers
@@ -130,6 +134,7 @@ theorem le_iff_dvd (hv : Integers v O) {x y : O} :
     v (algebraMap O F x) ≤ v (algebraMap O F y) ↔ y ∣ x :=
   ⟨hv.dvd_of_le, hv.le_of_dvd⟩
 
+omit [IsOrderedMonoidWithZero Γ₀] in
 /--
 This is the special case of `Valuation.Integers.isUnit_of_one` when the valuation is defined
 over a field. Let `v` be a valuation on some field `F` and `O` be its integers. For every element

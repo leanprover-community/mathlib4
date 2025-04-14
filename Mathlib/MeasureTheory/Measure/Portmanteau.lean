@@ -498,7 +498,7 @@ lemma integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure
             BoundedContinuousFunction.lintegral_le_edist_mul (μ := μs i) g
     apply ENNReal.liminf_toReal_eq ENNReal.coe_ne_top (Eventually.of_forall bound)
   · apply ne_of_lt
-    have obs := fun (i : ℕ) ↦ @BoundedContinuousFunction.lintegral_nnnorm_le Ω _ _ (μs i) ℝ _ f
+    have obs := fun (i : ℕ) ↦ BoundedContinuousFunction.lintegral_nnnorm_le (μs i) f
     simp only [measure_univ, mul_one] at obs
     apply lt_of_le_of_lt _ (show (‖f‖₊ : ℝ≥0∞) < ∞ from ENNReal.coe_lt_top)
     apply liminf_le_of_le

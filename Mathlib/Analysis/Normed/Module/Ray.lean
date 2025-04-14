@@ -17,8 +17,8 @@ norms and `‖y‖ • x = ‖x‖ • y`.
 
 open Real
 
-variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E] {F : Type*}
-[NormedAddCommGroup F] [NormedSpace ℝ F]
+variable {E : Type*} [AddCommGroup E] [SeminormedAddGroup E] [NormedSpace ℝ E] {F : Type*}
+[AddCommGroup F] [NormedAddGroup F] [NormedSpace ℝ F]
 
 namespace SameRay
 

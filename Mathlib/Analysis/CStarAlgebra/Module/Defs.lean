@@ -262,13 +262,13 @@ lemma normedSpaceCore : NormedSpace.Core ℂ E where
 variable (A) in
 /-- This is not listed as an instance because we often want to replace the topology, uniformity
 and bornology instead of inheriting them from the norm. -/
-abbrev normedAddCommGroup : NormedAddCommGroup E :=
-  NormedAddCommGroup.ofCore (CStarModule.normedSpaceCore A)
+abbrev normedAddGroup : NormedAddGroup E :=
+  NormedAddGroup.ofCore (CStarModule.normedSpaceCore A)
 
 open scoped InnerProductSpace in
 lemma norm_eq_csSup (v : E) :
     ‖v‖ = sSup { ‖⟪w, v⟫_A‖ | (w : E) (_ : ‖w‖ ≤ 1) } := by
-  let instNACG : NormedAddCommGroup E := NormedAddCommGroup.ofCore (normedSpaceCore A)
+  let instNACG : NormedAddGroup E := NormedAddGroup.ofCore (normedSpaceCore A)
   let instNS : NormedSpace ℂ E := .ofCore (normedSpaceCore A)
   refine Eq.symm <| IsGreatest.csSup_eq ⟨⟨‖v‖⁻¹ • v, ?_, ?_⟩, ?_⟩
   · simpa only [norm_smul, norm_inv, norm_norm] using inv_mul_le_one_of_le₀ le_rfl (by positivity)
@@ -289,7 +289,7 @@ open scoped InnerProductSpace
 using `NormedAddCommGroup.ofCoreReplaceAll` and `NormedSpace.ofCore`. See
 `Analysis.CStarAlgebra.Module.Constructions` for examples. -/
 variable {A E : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A] [SMul A E]
-  [NormedAddCommGroup E] [NormedSpace ℂ E] [CStarModule A E]
+  [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℂ E] [CStarModule A E]
 
 /-- The function `⟨x, y⟩ ↦ ⟪x, y⟫` bundled as a continuous sesquilinear map. -/
 noncomputable def innerSL : E →L⋆[ℂ] E →L[ℂ] A :=

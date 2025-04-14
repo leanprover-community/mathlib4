@@ -616,12 +616,14 @@ lemma norm_nnratCast (q : ℚ≥0) : ‖(q : K)‖ = q := by
 lemma nnnorm_nnratCast (q : ℚ≥0) : ‖(q : K)‖₊ = q := by simp [nnnorm]
 
 variable (K) in
-lemma norm_nsmul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) : ‖n • x‖ = n • ‖x‖ := by
+lemma norm_nsmul [AddCommGroup E] [NormedAddGroup E] [NormedSpace K E]
+    (n : ℕ) (x : E) : ‖n • x‖ = n • ‖x‖ := by
   simpa [Nat.cast_smul_eq_nsmul] using norm_smul (n : K) x
 
 variable (K) in
-lemma nnnorm_nsmul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) :
-    ‖n • x‖₊ = n • ‖x‖₊ := by simpa [Nat.cast_smul_eq_nsmul] using nnnorm_smul (n : K) x
+lemma nnnorm_nsmul [AddCommGroup E] [NormedAddGroup E] [NormedSpace K E]
+    (n : ℕ) (x : E) : ‖n • x‖₊ = n • ‖x‖₊ := by
+  simpa [Nat.cast_smul_eq_nsmul] using nnnorm_smul (n : K) x
 
 section NormedField
 variable [NormedField E] [CharZero E] [NormedSpace K E]

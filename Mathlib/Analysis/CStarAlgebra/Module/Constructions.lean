@@ -93,8 +93,8 @@ section Prod
 open scoped InnerProductSpace
 
 variable {E F : Type*}
-variable [NormedAddCommGroup E] [Module ℂ E] [SMul A E]
-variable [NormedAddCommGroup F] [Module ℂ F] [SMul A F]
+variable [AddCommGroup E] [NormedAddGroup E] [Module ℂ E] [SMul A E]
+variable [AddCommGroup F] [NormedAddGroup F] [Module ℂ F] [SMul A F]
 variable [CStarModule A E] [CStarModule A F]
 
 noncomputable instance : Norm C⋆ᵐᵒᵈ(A, E × F) where
@@ -156,10 +156,10 @@ attribute [-instance] WithCStarModule.instUniformSpace WithCStarModule.instBorno
 /-- A normed additive commutative group structure on `C⋆ᵐᵒᵈ(A, E × F)` with the wrong topology,
 uniformity and bornology. This is only used to build the instance with the correct forgetful
 inheritance data. -/
-noncomputable def normedAddCommGroupProdAux : NormedAddCommGroup C⋆ᵐᵒᵈ(A, E × F) :=
-  NormedAddCommGroup.ofCore (CStarModule.normedSpaceCore A)
+noncomputable def normedAddGroupProdAux : NormedAddGroup C⋆ᵐᵒᵈ(A, E × F) :=
+  NormedAddGroup.ofCore (CStarModule.normedSpaceCore A)
 
-attribute [local instance] normedAddCommGroupProdAux
+attribute [local instance] normedAddGroupProdAux
 
 open Filter Uniformity Bornology
 
@@ -186,7 +186,7 @@ private lemma isBounded_prod_iff_aux (s : Set C⋆ᵐᵒᵈ(A, E × F)) :
 
 end Aux
 
-noncomputable instance : NormedAddCommGroup C⋆ᵐᵒᵈ(A, E × F) :=
+noncomputable instance : NormedAddGroup C⋆ᵐᵒᵈ(A, E × F) :=
   .ofCoreReplaceAll (normedSpaceCore A) uniformity_prod_eq_aux isBounded_prod_iff_aux
 
 instance : NormedSpace ℂ C⋆ᵐᵒᵈ(A, E × F) := .ofCore (normedSpaceCore A)
@@ -200,7 +200,8 @@ section Pi
 open scoped InnerProductSpace
 
 variable {ι : Type*} {E : ι → Type*} [Fintype ι]
-variable [∀ i, NormedAddCommGroup (E i)] [∀ i, Module ℂ (E i)] [∀ i, SMul A (E i)]
+variable [∀ i, AddCommGroup (E i)] [∀ i, NormedAddGroup (E i)] [∀ i, Module ℂ (E i)]
+  [∀ i, SMul A (E i)]
 variable [∀ i, CStarModule A (E i)]
 
 noncomputable instance : Norm C⋆ᵐᵒᵈ(A, Π i, E i) where
@@ -255,12 +256,12 @@ lemma inner_single_right [DecidableEq ι] (x : C⋆ᵐᵒᵈ(A, Π i, E i)) {i :
 @[simp]
 lemma norm_single [DecidableEq ι] (i : ι) (y : E i) :
     ‖equiv A _ |>.symm <| Pi.single i y‖ = ‖y‖ := by
-  let _ : NormedAddCommGroup C⋆ᵐᵒᵈ(A, Π i, E i) := normedAddCommGroup A
+  let _ : NormedAddGroup C⋆ᵐᵒᵈ(A, Π i, E i) := normedAddGroup A
   rw [← sq_eq_sq₀ (by positivity) (by positivity)]
   simp [norm_sq_eq A]
 
 lemma norm_apply_le_norm (x : C⋆ᵐᵒᵈ(A, Π i, E i)) (i : ι) : ‖x i‖ ≤ ‖x‖ := by
-  let _ : NormedAddCommGroup C⋆ᵐᵒᵈ(A, Π i, E i) := normedAddCommGroup A
+  let _ : NormedAddGroup C⋆ᵐᵒᵈ(A, Π i, E i) := normedAddGroup A
   refine abs_le_of_sq_le_sq' ?_ (by positivity) |>.2
   rw [pi_norm_sq, norm_sq_eq A]
   refine CStarAlgebra.norm_le_norm_of_nonneg_of_le inner_self_nonneg ?_
@@ -268,7 +269,7 @@ lemma norm_apply_le_norm (x : C⋆ᵐᵒᵈ(A, Π i, E i)) (i : ι) : ‖x i‖ 
 
 open Finset in
 lemma norm_equiv_le_norm_pi (x : C⋆ᵐᵒᵈ(A, Π i, E i)) : ‖equiv _ _ x‖ ≤ ‖x‖ := by
-  let _ : NormedAddCommGroup C⋆ᵐᵒᵈ(A, Π i, E i) := normedAddCommGroup A
+  let _ : NormedAddGroup C⋆ᵐᵒᵈ(A, Π i, E i) := normedAddGroup A
   rw [pi_norm_le_iff_of_nonneg (by positivity)]
   simpa using norm_apply_le_norm x
 
@@ -281,10 +282,10 @@ attribute [-instance] WithCStarModule.instUniformSpace WithCStarModule.instBorno
 /-- A normed additive commutative group structure on `C⋆ᵐᵒᵈ(A, Π i, E i)` with the wrong topology,
 uniformity and bornology. This is only used to build the instance with the correct forgetful
 inheritance data. -/
-noncomputable def normedAddCommGroupPiAux : NormedAddCommGroup C⋆ᵐᵒᵈ(A, Π i, E i) :=
-  NormedAddCommGroup.ofCore (CStarModule.normedSpaceCore A)
+noncomputable def normedAddGroupPiAux : NormedAddGroup C⋆ᵐᵒᵈ(A, Π i, E i) :=
+  NormedAddGroup.ofCore (CStarModule.normedSpaceCore A)
 
-attribute [local instance] normedAddCommGroupPiAux
+attribute [local instance] normedAddGroupPiAux
 
 open Uniformity Bornology
 
@@ -310,7 +311,7 @@ private lemma isBounded_pi_iff_aux (s : Set C⋆ᵐᵒᵈ(A, Π i, E i)) :
 
 end Aux
 
-noncomputable instance : NormedAddCommGroup C⋆ᵐᵒᵈ(A, Π i, E i) :=
+noncomputable instance : NormedAddGroup C⋆ᵐᵒᵈ(A, Π i, E i) :=
   .ofCoreReplaceAll (normedSpaceCore A) uniformity_pi_eq_aux isBounded_pi_iff_aux
 
 instance : NormedSpace ℂ C⋆ᵐᵒᵈ(A, Π i, E i) := .ofCore (normedSpaceCore A)
@@ -324,7 +325,7 @@ section InnerProductSpace
 open ComplexOrder
 
 variable {E : Type*}
-variable [NormedAddCommGroup E] [InnerProductSpace ℂ E]
+variable [AddCommGroup E] [NormedAddGroup E] [InnerProductSpace ℂ E]
 
 open scoped InnerProductSpace in
 /-- Reinterpret an inner product space `E` over `ℂ` as a `CStarModule` over `ℂ`.

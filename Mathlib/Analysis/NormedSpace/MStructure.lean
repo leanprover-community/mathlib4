@@ -59,7 +59,7 @@ M-summand, M-projection, L-summand, L-projection, M-ideal, M-structure
 
 -/
 
-variable (X : Type*) [NormedAddCommGroup X]
+variable (X : Type*) [AddCommGroup X] [NormedAddGroup X]
 variable {M : Type*} [Ring M] [Module M X]
 
 

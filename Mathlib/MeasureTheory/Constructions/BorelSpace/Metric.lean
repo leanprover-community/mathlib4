@@ -236,7 +236,8 @@ end ContinuousENorm
 
 section NormedAddCommGroup
 
-variable [MeasurableSpace α] [NormedAddCommGroup α] [OpensMeasurableSpace α] [MeasurableSpace β]
+variable [MeasurableSpace α] [AddGroup α] [NormedAddGroup α]
+  [OpensMeasurableSpace α] [MeasurableSpace β]
 
 @[fun_prop, measurability]
 theorem measurable_norm : Measurable (norm : α → ℝ) :=

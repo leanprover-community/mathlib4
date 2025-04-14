@@ -78,9 +78,11 @@ open Set Filter TopologicalSpace ENNReal EMetric
 
 namespace MeasureTheory
 
-variable {α E F F' G 𝕜 : Type*} {p : ℝ≥0∞} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedAddCommGroup F'] [NormedSpace ℝ F']
-  [NormedAddCommGroup G] {m : MeasurableSpace α} {μ : Measure α}
+variable {α E F F' G 𝕜 : Type*} {p : ℝ≥0∞}
+  [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
+  [AddCommGroup F] [NormedAddGroup F] [NormedSpace ℝ F]
+  [AddCommGroup F'] [NormedAddGroup F'] [NormedSpace ℝ F']
+  [AddCommGroup G] [NormedAddGroup G] {m : MeasurableSpace α} {μ : Measure α}
 
 local infixr:25 " →ₛ " => SimpleFunc
 
@@ -173,13 +175,14 @@ end FinMeasAdditive
 
 /-- A `FinMeasAdditive` set function whose norm on every set is less than the measure of the
 set (up to a multiplicative constant). -/
-def DominatedFinMeasAdditive {β} [SeminormedAddCommGroup β] {_ : MeasurableSpace α} (μ : Measure α)
+def DominatedFinMeasAdditive {β} [AddCommGroup β] [SeminormedAddGroup β]
+    {_ : MeasurableSpace α} (μ : Measure α)
     (T : Set α → β) (C : ℝ) : Prop :=
   FinMeasAdditive μ T ∧ ∀ s, MeasurableSet s → μ s < ∞ → ‖T s‖ ≤ C * (μ s).toReal
 
 namespace DominatedFinMeasAdditive
 
-variable {β : Type*} [SeminormedAddCommGroup β] {T T' : Set α → β} {C C' : ℝ}
+variable {β : Type*} [AddCommGroup β] [SeminormedAddGroup β] {T T' : Set α → β} {C C' : ℝ}
 
 theorem zero {m : MeasurableSpace α} (μ : Measure α) (hC : 0 ≤ C) :
     DominatedFinMeasAdditive μ (0 : Set α → β) C := by
@@ -187,14 +190,16 @@ theorem zero {m : MeasurableSpace α} (μ : Measure α) (hC : 0 ≤ C) :
   rw [Pi.zero_apply, norm_zero]
   exact mul_nonneg hC toReal_nonneg
 
-theorem eq_zero_of_measure_zero {β : Type*} [NormedAddCommGroup β] {T : Set α → β} {C : ℝ}
+theorem eq_zero_of_measure_zero {β : Type*} [AddCommGroup β] [NormedAddGroup β]
+    {T : Set α → β} {C : ℝ}
     (hT : DominatedFinMeasAdditive μ T C) {s : Set α} (hs : MeasurableSet s) (hs_zero : μ s = 0) :
     T s = 0 := by
   refine norm_eq_zero.mp ?_
   refine ((hT.2 s hs (by simp [hs_zero])).trans (le_of_eq ?_)).antisymm (norm_nonneg _)
   rw [hs_zero, ENNReal.toReal_zero, mul_zero]
 
-theorem eq_zero {β : Type*} [NormedAddCommGroup β] {T : Set α → β} {C : ℝ} {_ : MeasurableSpace α}
+theorem eq_zero {β : Type*} [AddCommGroup β] [NormedAddGroup β]
+    {T : Set α → β} {C : ℝ} {_ : MeasurableSpace α}
     (hT : DominatedFinMeasAdditive (0 : Measure α) T C) {s : Set α} (hs : MeasurableSet s) :
     T s = 0 :=
   eq_zero_of_measure_zero hT hs (by simp only [Measure.coe_zero, Pi.zero_apply])
@@ -458,7 +463,7 @@ theorem setToSimpleFunc_smul_real (T : Set α → E →L[ℝ] F) (h_add : FinMea
       (Finset.sum_congr rfl fun b _ => by rw [ContinuousLinearMap.map_smul (T (f ⁻¹' {b})) c b])
     _ = c • setToSimpleFunc T f := by simp only [setToSimpleFunc, smul_sum, smul_smul, mul_comm]
 
-theorem setToSimpleFunc_smul {E} [NormedAddCommGroup E] [SMulZeroClass 𝕜 E]
+theorem setToSimpleFunc_smul {E} [AddCommGroup E] [NormedAddGroup E] [SMulZeroClass 𝕜 E]
     [NormedSpace ℝ E] [DistribSMul 𝕜 F] (T : Set α → E →L[ℝ] F) (h_add : FinMeasAdditive μ T)
     (h_smul : ∀ c : 𝕜, ∀ s x, T s (c • x) = c • T s x) (c : 𝕜) {f : α →ₛ E} (hf : Integrable f μ) :
     setToSimpleFunc T (c • f) = c • setToSimpleFunc T f :=
@@ -471,8 +476,8 @@ theorem setToSimpleFunc_smul {E} [NormedAddCommGroup E] [SMulZeroClass 𝕜 E]
 section Order
 
 variable {G' G'' : Type*}
-  [NormedAddCommGroup G''] [Lattice G''] [IsOrderedAddMonoid G''] [NormedSpace ℝ G'']
-  [NormedAddCommGroup G'] [Lattice G'] [NormedSpace ℝ G']
+  [AddCommGroup G''] [NormedAddGroup G''] [Lattice G''] [IsOrderedAddMonoid G''] [NormedSpace ℝ G'']
+  [AddCommGroup G'] [NormedAddGroup G'] [Lattice G'] [NormedSpace ℝ G']
 
 theorem setToSimpleFunc_mono_left {m : MeasurableSpace α} (T T' : Set α → F →L[ℝ] G'')
     (hTT' : ∀ s x, T s x ≤ T' s x) (f : α →ₛ F) : setToSimpleFunc T f ≤ setToSimpleFunc T' f := by
@@ -720,7 +725,7 @@ theorem setToL1S_smul_real (T : Set α → E →L[ℝ] F)
   refine SimpleFunc.setToSimpleFunc_congr T h_zero h_add (SimpleFunc.integrable _) ?_
   exact smul_toSimpleFunc c f
 
-theorem setToL1S_smul {E} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E]
+theorem setToL1S_smul {E} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E]
     [DistribSMul 𝕜 F] (T : Set α → E →L[ℝ] F) (h_zero : ∀ s, MeasurableSet s → μ s = 0 → T s = 0)
     (h_add : FinMeasAdditive μ T) (h_smul : ∀ c : 𝕜, ∀ s x, T s (c • x) = c • T s x) (c : 𝕜)
     (f : α →₁ₛ[μ] E) : setToL1S T (c • f) = c • setToL1S T f := by
@@ -755,8 +760,8 @@ theorem setToL1S_const [IsFiniteMeasure μ] {T : Set α → E →L[ℝ] F}
 section Order
 
 variable {G'' G' : Type*}
-  [NormedAddCommGroup G'] [Lattice G'] [IsOrderedAddMonoid G'] [NormedSpace ℝ G']
-  [NormedAddCommGroup G''] [Lattice G''] [IsOrderedAddMonoid G''] [NormedSpace ℝ G'']
+  [AddCommGroup G'] [NormedAddGroup G'] [Lattice G'] [IsOrderedAddMonoid G'] [NormedSpace ℝ G']
+  [AddCommGroup G''] [NormedAddGroup G''] [Lattice G''] [IsOrderedAddMonoid G''] [NormedSpace ℝ G'']
   {T : Set α → G'' →L[ℝ] G'}
 
 theorem setToL1S_mono_left {T T' : Set α → E →L[ℝ] G''} (hTT' : ∀ s x, T s x ≤ T' s x)
@@ -876,8 +881,8 @@ theorem setToL1SCLM_const [IsFiniteMeasure μ] {T : Set α → E →L[ℝ] F} {C
 section Order
 
 variable {G' G'' : Type*}
-  [NormedAddCommGroup G''] [Lattice G''] [IsOrderedAddMonoid G''] [NormedSpace ℝ G'']
-  [NormedAddCommGroup G'] [Lattice G'] [IsOrderedAddMonoid G'] [NormedSpace ℝ G']
+  [AddCommGroup G''] [NormedAddGroup G''] [Lattice G''] [IsOrderedAddMonoid G''] [NormedSpace ℝ G'']
+  [AddCommGroup G'] [NormedAddGroup G'] [Lattice G'] [IsOrderedAddMonoid G'] [NormedSpace ℝ G']
 
 theorem setToL1SCLM_mono_left {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
     (hT : DominatedFinMeasAdditive μ T C) (hT' : DominatedFinMeasAdditive μ T' C')
@@ -1044,9 +1049,9 @@ theorem setToL1_const [IsFiniteMeasure μ] (hT : DominatedFinMeasAdditive μ T C
 section Order
 
 variable {G' G'' : Type*}
-  [NormedAddCommGroup G''] [Lattice G''] [HasSolidNorm G''] [IsOrderedAddMonoid G'']
+  [AddCommGroup G''] [NormedAddGroup G''] [Lattice G''] [HasSolidNorm G''] [IsOrderedAddMonoid G'']
   [NormedSpace ℝ G''] [CompleteSpace G'']
-  [NormedAddCommGroup G'] [Lattice G'] [NormedSpace ℝ G']
+  [AddCommGroup G'] [NormedAddGroup G'] [Lattice G'] [NormedSpace ℝ G']
 
 theorem setToL1_mono_left' {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
     (hT : DominatedFinMeasAdditive μ T C) (hT' : DominatedFinMeasAdditive μ T' C')
@@ -1304,7 +1309,7 @@ theorem setToFun_toL1 (hT : DominatedFinMeasAdditive μ T C) (hf : Integrable f 
 theorem setToFun_indicator_const (hT : DominatedFinMeasAdditive μ T C) {s : Set α}
     (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : E) :
     setToFun μ T hT (s.indicator fun _ => x) = T s x := by
-  rw [setToFun_congr_ae hT (@indicatorConstLp_coeFn _ _ _ 1 _ _ _ hs hμs x).symm]
+  rw [setToFun_congr_ae hT (indicatorConstLp_coeFn (hs := hs) (hμs := hμs)).symm]
   rw [L1.setToFun_eq_setToL1 hT]
   exact L1.setToL1_indicatorConstLp hT hs hμs x
 
@@ -1317,9 +1322,9 @@ theorem setToFun_const [IsFiniteMeasure μ] (hT : DominatedFinMeasAdditive μ T 
 section Order
 
 variable {G' G'' : Type*}
-  [NormedAddCommGroup G''] [Lattice G''] [HasSolidNorm G''] [IsOrderedAddMonoid G'']
+  [AddCommGroup G''] [NormedAddGroup G''] [Lattice G''] [HasSolidNorm G''] [IsOrderedAddMonoid G'']
   [NormedSpace ℝ G''] [CompleteSpace G'']
-  [NormedAddCommGroup G'] [Lattice G'] [NormedSpace ℝ G']
+  [AddCommGroup G'] [NormedAddGroup G'] [Lattice G'] [NormedSpace ℝ G']
 
 theorem setToFun_mono_left' {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
     (hT : DominatedFinMeasAdditive μ T C) (hT' : DominatedFinMeasAdditive μ T' C')

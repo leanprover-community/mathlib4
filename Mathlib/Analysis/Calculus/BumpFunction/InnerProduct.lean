@@ -21,7 +21,7 @@ smooth function, bump function, inner product space
 open Function Real
 open scoped Topology
 
-variable (E : Type*) [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+variable (E : Type*) [AddCommGroup E] [NormedAddGroup E] [InnerProductSpace ℝ E]
 
 /-- A base bump function in an inner product space. This construction works in any space with a
 norm smooth away from zero but we do not have a typeclass for this. -/

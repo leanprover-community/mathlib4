@@ -67,8 +67,8 @@ noncomputable section
 open scoped Nat NNReal ContDiff
 
 variable {𝕜 𝕜' D E F G V : Type*}
-variable [NormedAddCommGroup E] [NormedSpace ℝ E]
-variable [NormedAddCommGroup F] [NormedSpace ℝ F]
+variable [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
+variable [AddCommGroup F] [NormedAddGroup F] [NormedSpace ℝ F]
 variable (E F)
 
 /-- A function is a Schwartz function if it is smooth and all derivatives decay faster than
@@ -572,7 +572,7 @@ lemma _root_.ContinuousLinearMap.hasTemperateGrowth (f : E →L[ℝ] F) :
     simpa [this] using .const _
   · exact (f.le_opNorm x).trans (by simp [mul_add])
 
-variable [NormedAddCommGroup D] [MeasurableSpace D]
+variable [AddCommGroup D] [NormedAddGroup D] [MeasurableSpace D]
 
 open MeasureTheory Module
 open scoped ENNReal
@@ -638,7 +638,7 @@ are relevant for bounding the integral in `integral_pow_mul_le_of_le_of_pow_mul_
 the two lemmas with the same set of assumptions for ease of applications. -/
 -- We redeclare `E` here to avoid the `NormedSpace ℝ E` typeclass available throughout this file.
 lemma integrable_of_le_of_pow_mul_le
-    {E : Type*} [NormedAddCommGroup E]
+    {E : Type*} [AddCommGroup E] [NormedAddGroup E]
     {μ : Measure D} [μ.HasTemperateGrowth] {f : D → E} {C₁ C₂ : ℝ} {k : ℕ}
     (hf : ∀ x, ‖f x‖ ≤ C₁) (h'f : ∀ x, ‖x‖ ^ (k + μ.integrablePower) * ‖f x‖ ≤ C₂)
     (h''f : AEStronglyMeasurable f μ) :
@@ -653,7 +653,7 @@ lemma integrable_of_le_of_pow_mul_le
 one can bound explicitly the integral of `x ^ k * f`. -/
 -- We redeclare `E` here to avoid the `NormedSpace ℝ E` typeclass available throughout this file.
 lemma integral_pow_mul_le_of_le_of_pow_mul_le
-    {E : Type*} [NormedAddCommGroup E]
+    {E : Type*} [AddCommGroup E] [NormedAddGroup E]
     {μ : Measure D} [μ.HasTemperateGrowth] {f : D → E} {C₁ C₂ : ℝ} {k : ℕ}
     (hf : ∀ x, ‖f x‖ ≤ C₁) (h'f : ∀ x, ‖x‖ ^ (k + μ.integrablePower) * ‖f x‖ ≤ C₂) :
     ∫ x, ‖x‖ ^ k * ‖f x‖ ∂μ ≤ 2 ^ μ.integrablePower *
@@ -703,9 +703,10 @@ section CLM
 
 
 variable [NormedField 𝕜] [NormedField 𝕜']
-variable [NormedAddCommGroup D] [NormedSpace ℝ D]
+variable [AddCommGroup D] [NormedAddGroup D] [NormedSpace ℝ D]
 variable [NormedSpace 𝕜 E] [SMulCommClass ℝ 𝕜 E]
-variable [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜' G] [SMulCommClass ℝ 𝕜' G]
+variable [AddCommGroup G] [NormedAddGroup G]
+  [NormedSpace ℝ G] [NormedSpace 𝕜' G] [SMulCommClass ℝ 𝕜' G]
 variable {σ : 𝕜 →+* 𝕜'}
 
 /-- Create a semilinear map between Schwartz spaces.
@@ -795,8 +796,8 @@ end EvalCLM
 section Multiplication
 
 variable [NontriviallyNormedField 𝕜] [NormedAlgebra ℝ 𝕜]
-  [NormedAddCommGroup D] [NormedSpace ℝ D]
-  [NormedAddCommGroup G] [NormedSpace ℝ G]
+  [AddCommGroup D] [NormedAddGroup D] [NormedSpace ℝ D]
+  [AddCommGroup G] [NormedAddGroup G] [NormedSpace ℝ G]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] [NormedSpace 𝕜 G]
 
 /-- The map `f ↦ (x ↦ B (f x) (g x))` as a continuous `𝕜`-linear map on Schwartz space,
@@ -857,7 +858,7 @@ section Comp
 
 variable (𝕜)
 variable [RCLike 𝕜]
-variable [NormedAddCommGroup D] [NormedSpace ℝ D]
+variable [AddCommGroup D] [NormedAddGroup D] [NormedSpace ℝ D]
 variable [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
 /-- Composition with a function on the right is a continuous linear map on Schwartz space
@@ -1072,8 +1073,8 @@ section Integration
 open Real Complex Filter MeasureTheory MeasureTheory.Measure Module
 
 variable [RCLike 𝕜]
-variable [NormedAddCommGroup D] [NormedSpace ℝ D]
-variable [NormedAddCommGroup V] [NormedSpace ℝ V] [NormedSpace 𝕜 V]
+variable [AddCommGroup D] [NormedAddGroup D] [NormedSpace ℝ D]
+variable [AddCommGroup V] [NormedAddGroup V] [NormedSpace ℝ V] [NormedSpace 𝕜 V]
 variable [MeasurableSpace D]
 
 variable {μ : Measure D} [hμ : HasTemperateGrowth μ]
@@ -1258,7 +1259,8 @@ section Lp
 open MeasureTheory
 open scoped NNReal ENNReal
 
-variable [NormedAddCommGroup D] [MeasurableSpace D] [MeasurableSpace E] [OpensMeasurableSpace E]
+variable [AddCommGroup D] [NormedAddGroup D] [MeasurableSpace D]
+  [MeasurableSpace E] [OpensMeasurableSpace E]
   [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
 variable (𝕜 F) in

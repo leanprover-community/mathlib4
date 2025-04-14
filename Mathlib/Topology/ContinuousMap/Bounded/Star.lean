@@ -44,7 +44,8 @@ completeness is guaranteed when `β` is complete (see
 
 section NormedAddCommGroup
 
-variable {𝕜 : Type*} [NormedField 𝕜] [StarRing 𝕜] [TopologicalSpace α] [SeminormedAddCommGroup β]
+variable {𝕜 : Type*} [NormedField 𝕜] [StarRing 𝕜] [TopologicalSpace α]
+  [AddCommGroup β] [SeminormedAddGroup β]
   [StarAddMonoid β] [NormedStarGroup β]
 
 variable [NormedSpace 𝕜 β] [StarModule 𝕜 β]

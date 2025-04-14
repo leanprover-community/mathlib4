@@ -34,7 +34,8 @@ open Bundle Set FiberBundle
 
 namespace Bundle.Trivial
 
-variable (𝕜 : Type*) (B : Type*) (F : Type*) [NontriviallyNormedField 𝕜] [NormedAddCommGroup F]
+variable (𝕜 : Type*) (B : Type*) (F : Type*) [NontriviallyNormedField 𝕜]
+  [AddCommGroup F] [NormedAddGroup F]
   [NormedSpace 𝕜 F] [TopologicalSpace B]
 
 instance trivialization.isLinear : (trivialization B F).IsLinear 𝕜 where
@@ -65,8 +66,9 @@ end Bundle.Trivial
 section
 
 variable (𝕜 : Type*) {B : Type*} [NontriviallyNormedField 𝕜] [TopologicalSpace B] (F₁ : Type*)
-  [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] (E₁ : B → Type*) [TopologicalSpace (TotalSpace F₁ E₁)]
-  (F₂ : Type*) [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] (E₂ : B → Type*)
+  [AddCommGroup F₁] [NormedAddGroup F₁] [NormedSpace 𝕜 F₁]
+  (E₁ : B → Type*) [TopologicalSpace (TotalSpace F₁ E₁)]
+  (F₂ : Type*) [AddCommGroup F₂] [NormedAddGroup F₂] [NormedSpace 𝕜 F₂] (E₂ : B → Type*)
   [TopologicalSpace (TotalSpace F₂ E₂)]
 
 namespace Trivialization
@@ -158,7 +160,8 @@ instance [Semiring R] [∀ x : B, AddCommMonoid (E x)] [i : ∀ x, Module R (E x
     Module R ((f *ᵖ E) x) := i _
 
 variable {E F} [TopologicalSpace B'] [TopologicalSpace (TotalSpace F E)] [NontriviallyNormedField 𝕜]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [TopologicalSpace B] [∀ x, AddCommMonoid (E x)]
+  [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
+  [TopologicalSpace B] [∀ x, AddCommMonoid (E x)]
   [∀ x, Module 𝕜 (E x)] {K : Type*} [FunLike K B' B] [ContinuousMapClass K B' B]
 
 instance Trivialization.pullback_linear (e : Trivialization F (π F E)) [e.IsLinear 𝕜] (f : K) :

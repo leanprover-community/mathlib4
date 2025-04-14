@@ -21,7 +21,8 @@ open BoundedContinuousFunction MeasureTheory Filter
 open scoped ENNReal
 
 variable {α E : Type*} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measure α}
-  [TopologicalSpace α] [BorelSpace α] [NormedAddCommGroup E] [SecondCountableTopologyEither α E]
+  [TopologicalSpace α] [BorelSpace α] [AddCommGroup E] [NormedAddGroup E]
+  [SecondCountableTopologyEither α E]
 
 variable (E p μ) in
 /-- An additive subgroup of `Lp E p μ`, consisting of the equivalence classes which contain a

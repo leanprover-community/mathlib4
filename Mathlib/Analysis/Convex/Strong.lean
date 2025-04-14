@@ -25,7 +25,7 @@ Prove derivative properties of strongly convex functions.
 
 open Real
 
-variable {E : Type*} [NormedAddCommGroup E]
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E]
 
 section NormedSpace
 variable [NormedSpace ℝ E] {φ ψ : ℝ → ℝ} {s : Set E} {m : ℝ} {f g : E → ℝ}

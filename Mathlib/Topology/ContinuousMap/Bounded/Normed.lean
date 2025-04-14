@@ -30,7 +30,7 @@ namespace BoundedContinuousFunction
 
 section NormedAddCommGroup
 
-variable [TopologicalSpace α] [SeminormedAddCommGroup β]
+variable [TopologicalSpace α] [AddCommGroup β] [SeminormedAddGroup β]
 variable (f g : α →ᵇ β) {x : α} {C : ℝ}
 
 instance instNorm : Norm (α →ᵇ β) := ⟨(dist · 0)⟩
@@ -111,13 +111,15 @@ theorem norm_const_eq [h : Nonempty α] (b : β) : ‖const α b‖ = ‖b‖ :=
 
 /-- Constructing a bounded continuous function from a uniformly bounded continuous
 function taking values in a normed group. -/
-def ofNormedAddCommGroup {α : Type u} {β : Type v} [TopologicalSpace α] [SeminormedAddCommGroup β]
+def ofNormedAddCommGroup {α : Type u} {β : Type v} [TopologicalSpace α]
+    [AddCommGroup β] [SeminormedAddGroup β]
     (f : α → β) (Hf : Continuous f) (C : ℝ) (H : ∀ x, ‖f x‖ ≤ C) : α →ᵇ β :=
   ⟨⟨fun n => f n, Hf⟩, ⟨_, dist_le_two_norm' H⟩⟩
 
 @[simp]
 theorem coe_ofNormedAddCommGroup {α : Type u} {β : Type v} [TopologicalSpace α]
-    [SeminormedAddCommGroup β] (f : α → β) (Hf : Continuous f) (C : ℝ) (H : ∀ x, ‖f x‖ ≤ C) :
+    [AddCommGroup β] [SeminormedAddGroup β]
+    (f : α → β) (Hf : Continuous f) (C : ℝ) (H : ∀ x, ‖f x‖ ≤ C) :
     (ofNormedAddCommGroup f Hf C H : α → β) = f := rfl
 
 theorem norm_ofNormedAddCommGroup_le {f : α → β} (hfc : Continuous f) {C : ℝ} (hC : 0 ≤ C)
@@ -127,12 +129,14 @@ theorem norm_ofNormedAddCommGroup_le {f : α → β} (hfc : Continuous f) {C : �
 /-- Constructing a bounded continuous function from a uniformly bounded
 function on a discrete space, taking values in a normed group. -/
 def ofNormedAddCommGroupDiscrete {α : Type u} {β : Type v} [TopologicalSpace α] [DiscreteTopology α]
-    [SeminormedAddCommGroup β] (f : α → β) (C : ℝ) (H : ∀ x, norm (f x) ≤ C) : α →ᵇ β :=
+    [AddCommGroup β] [SeminormedAddGroup β]
+    (f : α → β) (C : ℝ) (H : ∀ x, norm (f x) ≤ C) : α →ᵇ β :=
   ofNormedAddCommGroup f continuous_of_discreteTopology C H
 
 @[simp]
 theorem coe_ofNormedAddCommGroupDiscrete {α : Type u} {β : Type v} [TopologicalSpace α]
-    [DiscreteTopology α] [SeminormedAddCommGroup β] (f : α → β) (C : ℝ) (H : ∀ x, ‖f x‖ ≤ C) :
+    [DiscreteTopology α] [AddCommGroup β] [SeminormedAddGroup β]
+    (f : α → β) (C : ℝ) (H : ∀ x, ‖f x‖ ≤ C) :
     (ofNormedAddCommGroupDiscrete f C H : α → β) = f := rfl
 
 /-- Taking the pointwise norm of a bounded continuous function with values in a
@@ -195,12 +199,12 @@ instance instAddCommGroup : AddCommGroup (α →ᵇ β) :=
   DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_nsmul _ _)
     fun _ _ => coe_zsmul _ _
 
-instance instSeminormedAddCommGroup : SeminormedAddCommGroup (α →ᵇ β) where
+instance instSeminormedAddGroup : SeminormedAddGroup (α →ᵇ β) where
   dist_eq f g := by simp only [norm_eq, dist_eq, dist_eq_norm, sub_apply]
 
-instance instNormedAddCommGroup {α β} [TopologicalSpace α] [NormedAddCommGroup β] :
-    NormedAddCommGroup (α →ᵇ β) :=
-  { instSeminormedAddCommGroup with
+instance instNormedAddGroup {α β} [TopologicalSpace α] [AddCommGroup β] [NormedAddGroup β] :
+    NormedAddGroup (α →ᵇ β) :=
+  { instSeminormedAddGroup with
     eq_of_dist_eq_zero }
 
 theorem nnnorm_def : ‖f‖₊ = nndist f 0 := rfl
@@ -242,7 +246,7 @@ end NormedAddCommGroup
 section NormedSpace
 
 variable {𝕜 : Type*}
-variable [TopologicalSpace α] [SeminormedAddCommGroup β]
+variable [TopologicalSpace α] [AddCommGroup β] [SeminormedAddGroup β]
 variable {f g : α →ᵇ β} {x : α} {C : ℝ}
 
 instance instNormedSpace [NormedField 𝕜] [NormedSpace 𝕜 β] : NormedSpace 𝕜 (α →ᵇ β) :=
@@ -252,7 +256,7 @@ instance instNormedSpace [NormedField 𝕜] [NormedSpace 𝕜 β] : NormedSpace 
       norm_smul c (f x) ▸ mul_le_mul_of_nonneg_left (f.norm_coe_le_norm _) (norm_nonneg _)⟩
 
 variable [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 β]
-variable [SeminormedAddCommGroup γ] [NormedSpace 𝕜 γ]
+variable [AddCommGroup γ] [SeminormedAddGroup γ] [NormedSpace 𝕜 γ]
 variable (α)
 
 -- TODO does this work in the `IsBoundedSMul` setting, too?
@@ -291,7 +295,7 @@ instance instNonUnitalRing : NonUnitalRing (α →ᵇ R) :=
     (fun _ _ => coe_nsmul _ _) fun _ _ => coe_zsmul _ _
 
 instance instNonUnitalSeminormedRing : NonUnitalSeminormedRing (α →ᵇ R) where
-  __ := instSeminormedAddCommGroup
+  __ := instSeminormedAddGroup
   __ := instNonUnitalRing
   norm_mul_le f g := norm_ofNormedAddCommGroup_le _ (by positivity)
     (fun x ↦ (norm_mul_le _ _).trans <| mul_le_mul
@@ -305,7 +309,7 @@ instance instNonUnitalSeminormedCommRing [NonUnitalSeminormedCommRing R] :
 
 instance instNonUnitalNormedRing [NonUnitalNormedRing R] : NonUnitalNormedRing (α →ᵇ R) where
   __ := instNonUnitalSeminormedRing
-  __ := instNormedAddCommGroup
+  __ := instNormedAddGroup
 
 instance instNonUnitalNormedCommRing [NonUnitalNormedCommRing R] :
     NonUnitalNormedCommRing (α →ᵇ R) where
@@ -383,7 +387,7 @@ instance instSeminormedCommRing [SeminormedCommRing R] : SeminormedCommRing (α 
 
 instance instNormedCommRing [NormedCommRing R] : NormedCommRing (α →ᵇ R) where
   __ := instSeminormedCommRing
-  __ := instNormedAddCommGroup
+  __ := instNormedAddGroup
 
 end NormedCommRing
 
@@ -407,7 +411,7 @@ end NonUnitalAlgebra
 section NormedAlgebra
 
 variable {𝕜 : Type*} [NormedField 𝕜]
-variable [TopologicalSpace α] [SeminormedAddCommGroup β] [NormedSpace 𝕜 β]
+variable [TopologicalSpace α] [AddCommGroup β] [SeminormedAddGroup β] [NormedSpace 𝕜 β]
 variable [NormedRing γ] [NormedAlgebra 𝕜 γ]
 variable {f g : α →ᵇ γ} {x : α} {c : 𝕜}
 
@@ -491,7 +495,7 @@ end NormedAlgebra
 section NormedLatticeOrderedGroup
 
 variable [TopologicalSpace α]
-  [NormedAddCommGroup β] [Lattice β] [HasSolidNorm β] [IsOrderedAddMonoid β]
+  [AddCommGroup β] [NormedAddGroup β] [Lattice β] [HasSolidNorm β] [IsOrderedAddMonoid β]
 
 instance instPartialOrder : PartialOrder (α →ᵇ β) :=
   PartialOrder.lift (fun f => f.toFun) (by simp [Injective])

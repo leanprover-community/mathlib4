@@ -27,15 +27,15 @@ open scoped Manifold ContDiff
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   -- declare the prerequisites for a charted space `M` over the pair `(E, H)`.
   {E : Type*}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
+  [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
   {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M]
   -- declare the prerequisites for a charted space `M'` over the pair `(E', H')`.
   {E' : Type*}
-  [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
+  [AddCommGroup E'] [NormedAddGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
   {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*} [TopologicalSpace M']
   -- declare the prerequisites for a charted space `M''` over the pair `(E'', H'')`.
   {E'' : Type*}
-  [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] {H'' : Type*} [TopologicalSpace H'']
+  [AddCommGroup E''] [NormedAddGroup E''] [NormedSpace 𝕜 E''] {H'' : Type*} [TopologicalSpace H'']
   {I'' : ModelWithCorners 𝕜 E'' H''} {M'' : Type*} [TopologicalSpace M'']
 
 section ChartedSpace
@@ -349,7 +349,7 @@ then `e` is `C^n`. -/
 lemma contMDiff_isOpenEmbedding [Nonempty M] :
     haveI := h.singletonChartedSpace; ContMDiff I I n e := by
   haveI := h.isManifold_singleton (I := I) (n := ω)
-  rw [@contMDiff_iff _ _ _ _ _ _ _ _ _ _ h.singletonChartedSpace]
+  rw [@contMDiff_iff _ _ _ _ _ _ _ _ _ _ _ h.singletonChartedSpace]
   use h.continuous
   intros x y
   -- show the function is actually the identity on the range of I ∘ e
@@ -363,7 +363,7 @@ lemma contMDiff_isOpenEmbedding [Nonempty M] :
     exact haveI := h.singletonChartedSpace; extChartAt_target_subset_range (I := I) x
   · -- `hz` implies that `z ∈ range (I ∘ e)`
     have := hz.1
-    rw [@extChartAt_target _ _ _ _ _ _ _ _ _ _ h.singletonChartedSpace] at this
+    rw [@extChartAt_target _ _ _ _ _ _ _ _ _ _ _ h.singletonChartedSpace] at this
     have := this.1
     rw [mem_preimage, PartialHomeomorph.singletonChartedSpace_chartAt_eq,
       h.toPartialHomeomorph_target] at this
@@ -411,7 +411,7 @@ lemma ContMDiff.of_comp_isOpenEmbedding {f : M → M'} (hf : ContMDiff I I' n (e
     ext
     rw [Function.comp_apply, Function.comp_apply, IsOpenEmbedding.toPartialHomeomorph_left_inv]
   rw [this]
-  apply @ContMDiffOn.comp_contMDiff _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+  apply @ContMDiffOn.comp_contMDiff _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
     h'.singletonChartedSpace _ _ (range e') _ (contMDiffOn_isOpenEmbedding_symm h') hf
   simp
 

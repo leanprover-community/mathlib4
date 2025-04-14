@@ -32,7 +32,7 @@ See [M. Hindry and J. Silverman, Diophantine Geometry: an Introduction][hindrysi
 -/
 
 /- We set ‖⬝‖ to be Matrix.seminormedAddCommGroup  -/
-attribute [local instance] Matrix.seminormedAddCommGroup
+attribute [local instance] Matrix.seminormedAddGroup
 
 open Matrix Finset
 

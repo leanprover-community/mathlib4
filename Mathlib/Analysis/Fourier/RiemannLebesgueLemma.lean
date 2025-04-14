@@ -49,12 +49,12 @@ open MeasureTheory Filter Complex Set Module
 
 open scoped Filter Topology Real ENNReal FourierTransform RealInnerProductSpace NNReal
 
-variable {E V : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] {f : V → E}
+variable {E V : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℂ E] {f : V → E}
 
 section InnerProductSpace
 
-variable [NormedAddCommGroup V] [MeasurableSpace V] [BorelSpace V] [InnerProductSpace ℝ V]
-  [FiniteDimensional ℝ V]
+variable [AddCommGroup V] [NormedAddGroup V] [MeasurableSpace V] [BorelSpace V]
+  [InnerProductSpace ℝ V] [FiniteDimensional ℝ V]
 
 local notation3 "i" => fun (w : V) => (1 / (2 * ‖w‖ ^ 2) : ℝ) • w
 

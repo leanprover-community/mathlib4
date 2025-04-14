@@ -7,7 +7,7 @@ import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Order.GroupWithZero.Canonical
 
 /-!
-An example of a `LinearOrderedCommMonoidWithZero` in which the product of two positive
+An example of a linear ordered commutative monoid with zero in which the product of two positive
 elements vanishes.
 
 This is the monoid with 3 elements `0, ε, 1` where `ε ^ 2 = 0` and everything else is forced.
@@ -68,18 +68,17 @@ instance commMonoid : CommMonoid Foo where
   mul_comm := by boom
   mul_assoc := by boom
 
-instance : LinearOrderedCommMonoidWithZero Foo where
-  __ := linearOrder
-  __ := commMonoid
-  zero := 0
-  zero_mul := by boom
-  mul_zero := by boom
-  mul_le_mul_left := by rintro ⟨⟩ ⟨⟩ h ⟨⟩ <;> revert h <;> decide
-  zero_le_one := by decide
-  bot := 0
-  bot_le := by boom
+instance : CommMonoidWithZero Foo :=
+  { zero := 0
+    zero_mul := by boom
+    mul_zero := by boom }
 
-theorem not_mul_pos : ¬∀ {M : Type} [LinearOrderedCommMonoidWithZero M],
+instance : IsOrderedMonoidWithZero Foo :=
+  { mul_le_mul_left := by rintro ⟨⟩ ⟨⟩ h ⟨⟩ <;> revert h <;> decide
+    zero_le_one := by decide }
+
+theorem not_mul_pos : ¬∀ {M : Type}
+    [CommMonoidWithZero M] [LinearOrder M] [IsOrderedMonoidWithZero M],
     ∀ a b : M, 0 < a → 0 < b → 0 < a * b := by
   intro h
   specialize h ε ε (by boom) (by boom)

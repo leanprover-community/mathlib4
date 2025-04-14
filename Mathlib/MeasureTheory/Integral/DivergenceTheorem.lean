@@ -62,7 +62,7 @@ universe u
 
 namespace MeasureTheory
 
-variable {E : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+variable {E : Type u} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 
 section
 
@@ -312,7 +312,8 @@ end
 /-- An auxiliary lemma that is used to specialize the general divergence theorem to spaces that do
 not have the form `Fin n → ℝ`. -/
 theorem integral_divergence_of_hasFDerivWithinAt_off_countable_of_equiv {F : Type*}
-    [NormedAddCommGroup F] [NormedSpace ℝ F] [Preorder F] [MeasureSpace F] [BorelSpace F]
+    [AddCommGroup F] [NormedAddGroup F] [NormedSpace ℝ F]
+    [Preorder F] [MeasureSpace F] [BorelSpace F]
     (eL : F ≃L[ℝ] ℝⁿ⁺¹) (he_ord : ∀ x y, eL x ≤ eL y ↔ x ≤ y)
     (he_vol : MeasurePreserving eL volume volume) (f : Fin (n + 1) → F → E)
     (f' : Fin (n + 1) → F → F →L[ℝ] E) (s : Set F) (hs : s.Countable) (a b : F) (hle : a ≤ b)

@@ -51,7 +51,7 @@ def AmpleSet (s : Set F) : Prop :=
 
 /-- A whole vector space is ample. -/
 @[simp]
-theorem ampleSet_univ {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] :
+theorem ampleSet_univ {F : Type*} [AddCommGroup F] [NormedAddGroup F] [NormedSpace ℝ F] :
     AmpleSet (univ : Set F) := by
   intro x _
   rw [connectedComponentIn_univ, PreconnectedSpace.connectedComponent_eq_univ, convexHull_univ]

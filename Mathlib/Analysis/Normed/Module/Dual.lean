@@ -52,8 +52,8 @@ namespace NormedSpace
 section General
 
 variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
-variable (E : Type*) [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable (E : Type*) [AddCommGroup E] [SeminormedAddGroup E] [NormedSpace 𝕜 E]
+variable (F : Type*) [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
 
 /-- The topological dual of a seminormed space `E`. -/
 abbrev Dual : Type _ := E →L[𝕜] 𝕜
@@ -94,7 +94,7 @@ end General
 
 section BidualIsometry
 
-variable (𝕜 : Type v) [RCLike 𝕜] {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable (𝕜 : Type v) [RCLike 𝕜] {E : Type u} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
 
 /-- If one controls the norm of every `f x`, then one controls the norm of `x`.
     Compare `ContinuousLinearMap.opNorm_le_bound`. -/
@@ -142,19 +142,21 @@ open Metric Set NormedSpace
 /-- Given a subset `s` in a normed space `E` (over a field `𝕜`), the polar
 `polar 𝕜 s` is the subset of `Dual 𝕜 E` consisting of those functionals which
 evaluate to something of norm at most one at all points `z ∈ s`. -/
-def polar (𝕜 : Type*) [NontriviallyNormedField 𝕜] {E : Type*} [SeminormedAddCommGroup E]
+def polar (𝕜 : Type*) [NontriviallyNormedField 𝕜]
+    {E : Type*} [AddCommGroup E] [SeminormedAddGroup E]
     [NormedSpace 𝕜 E] : Set E → Set (Dual 𝕜 E) :=
   (dualPairing 𝕜 E).flip.polar
 
 /-- Given a subset `s` in a normed space `E` (over a field `𝕜`) closed under scalar multiplication,
  the polar `polarSubmodule 𝕜 s` is the submodule of `Dual 𝕜 E` consisting of those functionals which
 evaluate to zero at all points `z ∈ s`. -/
-def polarSubmodule (𝕜 : Type*) [NontriviallyNormedField 𝕜] {E : Type*} [SeminormedAddCommGroup E]
+def polarSubmodule (𝕜 : Type*) [NontriviallyNormedField 𝕜]
+    {E : Type*} [AddCommGroup E] [SeminormedAddGroup E]
     [NormedSpace 𝕜 E] {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] (m : S) :
     Submodule 𝕜 (Dual 𝕜 E) := (dualPairing 𝕜 E).flip.polarSubmodule m
 
 variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
-variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {E : Type*} [AddCommGroup E] [SeminormedAddGroup E] [NormedSpace 𝕜 E]
 
 lemma polarSubmodule_eq_polar (m : SubMulAction 𝕜 E) :
     (polarSubmodule 𝕜 m : Set (Dual 𝕜 E)) = polar 𝕜 m := rfl
@@ -241,7 +243,8 @@ theorem closedBall_inv_subset_polar_closedBall {r : ℝ} :
 
 /-- The `polar` of closed ball in a normed space `E` is the closed ball of the dual with
 inverse radius. -/
-theorem polar_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] {r : ℝ}
+theorem polar_closedBall {𝕜 E : Type*} [RCLike 𝕜]
+    [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E] {r : ℝ}
     (hr : 0 < r) : polar 𝕜 (closedBall (0 : E) r) = closedBall (0 : Dual 𝕜 E) r⁻¹ := by
   refine Subset.antisymm ?_ (closedBall_inv_subset_polar_closedBall 𝕜)
   intro x' h
@@ -249,7 +252,8 @@ theorem polar_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [
   refine ContinuousLinearMap.opNorm_le_of_ball hr (inv_nonneg.mpr hr.le) fun z _ => ?_
   simpa only [one_div] using LinearMap.bound_of_ball_bound' hr 1 x'.toLinearMap h z
 
-theorem polar_ball {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] {r : ℝ}
+theorem polar_ball {𝕜 E : Type*} [RCLike 𝕜]
+    [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E] {r : ℝ}
     (hr : 0 < r) : polar 𝕜 (ball (0 : E) r) = closedBall (0 : Dual 𝕜 E) r⁻¹ := by
   apply le_antisymm
   · intro x hx
@@ -290,7 +294,8 @@ theorem mem_polar_singleton {a : E} (y : Dual 𝕜 E) : y ∈ polar 𝕜 {a} ↔
 theorem polar_zero : polar 𝕜 ({0} : Set E) = Set.univ :=
   LinearMap.polar_zero _
 
-theorem sInter_polar_eq_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+theorem sInter_polar_eq_closedBall {𝕜 E : Type*} [RCLike 𝕜]
+    [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
     {r : ℝ} (hr : 0 < r) :
     ⋂₀ (polar 𝕜 '' { F | F.Finite ∧ F ⊆ closedBall (0 : E) r⁻¹ }) = closedBall 0 r := by
   conv_rhs => rw [← inv_inv r]

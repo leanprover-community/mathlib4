@@ -24,7 +24,8 @@ map is cocompact.
 open Filter Metric
 
 variable {𝕜 E F 𝓕 : Type*}
-variable [NormedAddCommGroup E] [NormedAddCommGroup F]
+variable [AddCommGroup E] [AddCommGroup F]
+variable [NormedAddGroup E] [NormedAddGroup F]
 variable {f : 𝓕}
 
 theorem CocompactMapClass.norm_le [ProperSpace F] [FunLike 𝓕 E F] [CocompactMapClass 𝓕 E F]

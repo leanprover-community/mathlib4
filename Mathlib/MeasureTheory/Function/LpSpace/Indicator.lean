@@ -24,7 +24,8 @@ noncomputable section
 open MeasureTheory Filter
 open scoped NNReal ENNReal Topology symmDiff
 
-variable {α E : Type*} {m : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measure α} [NormedAddCommGroup E]
+variable {α E : Type*} {m : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measure α}
+  [AddCommGroup E] [NormedAddGroup E]
 
 namespace MeasureTheory
 
@@ -311,7 +312,8 @@ theorem indicatorConstLp_eq_toSpanSingleton_compLp {s : Set α} [NormedSpace ℝ
     (ContinuousLinearMap.toSpanSingleton ℝ x).coeFn_compLp (indicatorConstLp 2 hs hμs (1 : ℝ))
   rw [← EventuallyEq] at h_compLp
   refine EventuallyEq.trans ?_ h_compLp.symm
-  refine (@indicatorConstLp_coeFn _ _ _ 2 μ _ s hs hμs (1 : ℝ)).mono fun y hy => ?_
+  refine (indicatorConstLp_coeFn (E := ℝ) (p := 2) (hs := hs) (hμs := hμs) (c := 1)).mono
+    fun y hy => ?_
   dsimp only
   rw [hy]
   simp_rw [ContinuousLinearMap.toSpanSingleton_apply]

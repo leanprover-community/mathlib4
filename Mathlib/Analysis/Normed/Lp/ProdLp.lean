@@ -565,8 +565,9 @@ theorem prod_infty_equiv_isometry [PseudoEMetricSpace α] [PseudoEMetricSpace β
 
 /-- Seminormed group instance on the product of two normed groups, using the `L^p`
 norm. -/
-instance instProdSeminormedAddCommGroup [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] :
-    SeminormedAddCommGroup (WithLp p (α × β)) where
+instance instProdSeminormedAddGroup [AddCommGroup α] [SeminormedAddGroup α]
+    [AddCommGroup β] [SeminormedAddGroup β] :
+    SeminormedAddGroup (WithLp p (α × β)) where
   dist_eq x y := by
     rcases p.dichotomy with (rfl | h)
     · simp only [prod_dist_eq_sup, prod_norm_eq_sup, dist_eq_norm]
@@ -576,22 +577,23 @@ instance instProdSeminormedAddCommGroup [SeminormedAddCommGroup α] [SeminormedA
       rfl
 
 /-- normed group instance on the product of two normed groups, using the `L^p` norm. -/
-instance instProdNormedAddCommGroup [NormedAddCommGroup α] [NormedAddCommGroup β] :
-    NormedAddCommGroup (WithLp p (α × β)) :=
-  { instProdSeminormedAddCommGroup p α β with
+instance instProdNormedAddGroup [AddCommGroup α] [NormedAddGroup α]
+    [AddCommGroup β] [NormedAddGroup β] :
+    NormedAddGroup (WithLp p (α × β)) :=
+  { instProdSeminormedAddGroup p α β with
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
-example [NormedAddCommGroup α] [NormedAddCommGroup β] :
-    (instProdNormedAddCommGroup p α β).toMetricSpace.toUniformSpace.toTopologicalSpace =
+example [AddCommGroup α] [NormedAddGroup α] [AddCommGroup β] [NormedAddGroup β] :
+    (instProdNormedAddGroup p α β).toMetricSpace.toUniformSpace.toTopologicalSpace =
     instProdTopologicalSpace p α β :=
   rfl
 
-example [NormedAddCommGroup α] [NormedAddCommGroup β] :
-    (instProdNormedAddCommGroup p α β).toMetricSpace.toUniformSpace = instProdUniformSpace p α β :=
+example [AddCommGroup α] [NormedAddGroup α] [AddCommGroup β] [NormedAddGroup β] :
+    (instProdNormedAddGroup p α β).toMetricSpace.toUniformSpace = instProdUniformSpace p α β :=
   rfl
 
-example [NormedAddCommGroup α] [NormedAddCommGroup β] :
-    (instProdNormedAddCommGroup p α β).toMetricSpace.toBornology = instProdBornology p α β :=
+example [AddCommGroup α] [NormedAddGroup α] [AddCommGroup β] [NormedAddGroup β] :
+    (instProdNormedAddGroup p α β).toMetricSpace.toBornology = instProdBornology p α β :=
   rfl
 
 section norm_of
@@ -604,7 +606,7 @@ theorem prod_norm_eq_of_nat [Norm α] [Norm β] (n : ℕ) (h : p = n) (f : WithL
   simp only [one_div, h, Real.rpow_natCast, ENNReal.toReal_natCast, eq_self_iff_true,
     Finset.sum_congr, prod_norm_eq_add this]
 
-variable [SeminormedAddCommGroup α] [SeminormedAddCommGroup β]
+variable [AddCommGroup α] [SeminormedAddGroup α] [AddCommGroup β] [SeminormedAddGroup β]
 
 theorem prod_nnnorm_eq_add (hp : p ≠ ∞) (f : WithLp p (α × β)) :
     ‖f‖₊ = (‖f.fst‖₊ ^ p.toReal + ‖f.snd‖₊ ^ p.toReal) ^ (1 / p.toReal) := by
@@ -691,7 +693,7 @@ end L2
 
 end norm_of
 
-variable [SeminormedAddCommGroup α] [SeminormedAddCommGroup β]
+variable [AddCommGroup α] [SeminormedAddGroup α] [AddCommGroup β] [SeminormedAddGroup β]
 
 section Single
 
@@ -798,6 +800,9 @@ open ENNReal
 
 variable {p : ℝ≥0∞} {α β}
 
+section
+omit [SeminormedAddGroup α] [SeminormedAddGroup β]
+
 /-- Projection on `WithLp p (α × β)` with range `α` and kernel `β` -/
 def idemFst : AddMonoid.End (WithLp p (α × β)) := (AddMonoidHom.inl α β).comp (AddMonoidHom.fst α β)
 
@@ -821,6 +826,8 @@ lemma idemFst_compl : (1 : AddMonoid.End (WithLp p (α × β))) - idemFst = idem
 
 lemma idemSnd_compl : (1 : AddMonoid.End (WithLp p (α × β))) - idemSnd = idemFst := by
   rw [← idemFst_add_idemSnd, add_sub_cancel_right]
+
+end
 
 theorem prod_norm_eq_idemFst_sup_idemSnd (x : WithLp ∞ (α × β)) :
     ‖x‖ = max ‖idemFst x‖ ‖idemSnd x‖ := by

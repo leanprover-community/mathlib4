@@ -39,8 +39,9 @@ open ENNReal MeasureTheory MeasureTheory.Measure Metric Set Filter TopologicalSp
 
 open scoped Topology ENNReal Convex
 
-variable {α E F : Type*} {m0 : MeasurableSpace α} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F] {μ ν : Measure α}
+variable {α E F : Type*} {m0 : MeasurableSpace α}
+  [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
+  [AddCommGroup F] [NormedAddGroup F] [NormedSpace ℝ F] [CompleteSpace F] {μ ν : Measure α}
   {s t : Set α}
 
 /-!

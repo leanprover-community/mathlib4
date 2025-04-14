@@ -19,7 +19,7 @@ section one_dimensional
 
 variable
   {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  {F : Type*} [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
   {R : Type*} [Semiring R] [Module R F] [SMulCommClass 𝕜 R F] [ContinuousConstSMul R F]
   {n : ℕ} {x : 𝕜} {s : Set 𝕜} (hx : x ∈ s) (h : UniqueDiffOn 𝕜 s) {f g : 𝕜 → F}
 
@@ -205,7 +205,7 @@ end one_dimensional
 
 section shift_invariance
 
-variable {𝕜 F} [NontriviallyNormedField 𝕜] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {𝕜 F} [NontriviallyNormedField 𝕜] [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
 
 /-- The iterated derivative commutes with shifting the function by a constant on the left. -/
 lemma iteratedDeriv_comp_const_add (n : ℕ) (f : 𝕜 → F) (s : 𝕜) :

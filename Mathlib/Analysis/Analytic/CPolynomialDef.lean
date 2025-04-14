@@ -42,8 +42,10 @@ More API is available in the file `Mathlib/Analysis/Analytic/CPolynomial.lean`, 
 imports.
 -/
 
-variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜]
+  [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
+  [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
+  [AddCommGroup G] [NormedAddGroup G] [NormedSpace 𝕜 G]
 
 open scoped Topology
 open Set Filter Asymptotics NNReal ENNReal

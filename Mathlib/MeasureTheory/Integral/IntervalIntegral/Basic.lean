@@ -55,7 +55,7 @@ open MeasureTheory Set Filter Function
 
 open scoped Topology Filter ENNReal Interval NNReal
 
-variable {ι 𝕜 E F A : Type*} [NormedAddCommGroup E]
+variable {ι 𝕜 E F A : Type*} [AddCommGroup E] [NormedAddGroup E]
 
 /-!
 ### Integrability on an interval
@@ -221,7 +221,7 @@ theorem mono_set' (hf : IntervalIntegrable f μ a b) (hsub : Ι c d ⊆ Ι a b) 
     IntervalIntegrable f μ c d :=
   hf.mono_set_ae <| Eventually.of_forall hsub
 
-theorem mono_fun [NormedAddCommGroup F] {g : ℝ → F} (hf : IntervalIntegrable f μ a b)
+theorem mono_fun [AddCommGroup F] [NormedAddGroup F] {g : ℝ → F} (hf : IntervalIntegrable f μ a b)
     (hgm : AEStronglyMeasurable g (μ.restrict (Ι a b)))
     (hle : (fun x => ‖g x‖) ≤ᵐ[μ.restrict (Ι a b)] fun x => ‖f x‖) : IntervalIntegrable g μ a b :=
   intervalIntegrable_iff.2 <| hf.def'.integrable.mono hgm hle
@@ -680,7 +680,7 @@ nonrec theorem integral_ofReal {a b : ℝ} {μ : Measure ℝ} {f : ℝ → ℝ} 
 section ContinuousLinearMap
 
 variable {a b : ℝ} {μ : Measure ℝ} {f : ℝ → E}
-variable [RCLike 𝕜] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable [RCLike 𝕜] [NormedSpace 𝕜 E] [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
 
 open ContinuousLinearMap
 

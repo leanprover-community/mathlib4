@@ -63,7 +63,7 @@ variable {mX : MeasurableSpace X}
 
 section NormedAddCommGroup
 
-variable [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
   {f g : X → E} {s t : Set X} {μ : Measure X}
 
 theorem setIntegral_congr_ae₀ (hs : NullMeasurableSet s μ) (h : ∀ᵐ x ∂μ, x ∈ s → f x = g x) :
@@ -785,7 +785,7 @@ end Nonneg
 
 section IntegrableUnion
 
-variable {ι : Type*} [Countable ι] {μ : Measure X} [NormedAddCommGroup E]
+variable {ι : Type*} [Countable ι] {μ : Measure X} [AddCommGroup E] [NormedAddGroup E]
 
 theorem integrableOn_iUnion_of_summable_integral_norm {f : X → E} {s : ι → Set X}
     (hs : ∀ i : ι, MeasurableSet (s i)) (hi : ∀ i : ι, IntegrableOn f (s i) μ)
@@ -836,8 +836,9 @@ We prove that for any set `s`, the function
 
 section ContinuousSetIntegral
 
-variable [NormedAddCommGroup E]
-  {𝕜 : Type*} [NormedField 𝕜] [NormedAddCommGroup F] [NormedSpace 𝕜 F] {p : ℝ≥0∞} {μ : Measure X}
+variable [AddCommGroup E] [NormedAddGroup E]
+  {𝕜 : Type*} [NormedField 𝕜] [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
+  {p : ℝ≥0∞} {μ : Measure X}
 
 /-- For `f : Lp E p μ`, we can define an element of `Lp E p (μ.restrict s)` by
 `(Lp.memLp f).restrict s).toLp f`. This map is additive. -/
@@ -879,7 +880,7 @@ variable (X F 𝕜) in
 `Lp F p (μ.restrict s)`. -/
 def LpToLpRestrictCLM (μ : Measure X) (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] (s : Set X) :
     Lp F p μ →L[𝕜] Lp F p (μ.restrict s) :=
-  @LinearMap.mkContinuous 𝕜 𝕜 (Lp F p μ) (Lp F p (μ.restrict s)) _ _ _ _ _ _ (RingHom.id 𝕜)
+  LinearMap.mkContinuous
     ⟨⟨fun f => MemLp.toLp f ((Lp.memLp f).restrict s), fun f g => Lp_toLp_restrict_add f g s⟩,
       fun c f => Lp_toLp_restrict_smul c f s⟩
     1 (by intro f; rw [one_mul]; exact norm_Lp_toLp_restrict_le s f)
@@ -922,7 +923,7 @@ end OpenPos
 
 section Support
 
-variable {M : Type*} [NormedAddCommGroup M] [NormedSpace ℝ M] {mX : MeasurableSpace X}
+variable {M : Type*} [AddCommGroup M] [NormedAddGroup M] [NormedSpace ℝ M] {mX : MeasurableSpace X}
   {ν : Measure X} {F : X → M}
 
 theorem MeasureTheory.setIntegral_support : ∫ x in support F, F x ∂ν = ∫ x, F x ∂ν := by
@@ -943,7 +944,8 @@ section FTC
 
 open MeasureTheory Asymptotics Metric
 
-variable [MeasurableSpace X] {ι : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+variable [MeasurableSpace X] {ι : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
+  [CompleteSpace E]
 
 /-- Fundamental theorem of calculus for set integrals:
 if `μ` is a measure that is finite at a filter `l` and
@@ -1049,8 +1051,9 @@ as `ContinuousLinearMap.compLp`. We take advantage of this construction here.
 
 open scoped ComplexConjugate
 
-variable {μ : Measure X} {𝕜 : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {p : ENNReal}
+variable {μ : Measure X} {𝕜 : Type*} [RCLike 𝕜]
+  [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
+  [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F] {p : ENNReal}
 
 namespace ContinuousLinearMap
 
@@ -1088,7 +1091,8 @@ theorem integral_comp_comm [CompleteSpace E] (L : E →L[𝕜] F) {φ : X → E}
     · exact integral_congr_ae (hfg.fun_comp L).symm
     · rw [integral_congr_ae hfg.symm]
 
-theorem integral_apply {H : Type*} [NormedAddCommGroup H] [NormedSpace 𝕜 H] {φ : X → H →L[𝕜] E}
+theorem integral_apply {H : Type*} [AddCommGroup H] [NormedAddGroup H] [NormedSpace 𝕜 H]
+    {φ : X → H →L[𝕜] E}
     (φ_int : Integrable φ μ) (v : H) : (∫ x, φ x ∂μ) v = ∫ x, φ x v ∂μ := by
   by_cases hE : CompleteSpace E
   · exact ((ContinuousLinearMap.apply 𝕜 E v).integral_comp_comm φ_int).symm
@@ -1099,7 +1103,7 @@ theorem integral_apply {H : Type*} [NormedAddCommGroup H] [NormedSpace 𝕜 H] {
       simp [integral, hE, this]
 
 theorem _root_.ContinuousMultilinearMap.integral_apply {ι : Type*} [Fintype ι] {M : ι → Type*}
-    [∀ i, NormedAddCommGroup (M i)] [∀ i, NormedSpace 𝕜 (M i)]
+    [∀ i, AddCommGroup (M i)] [∀ i, NormedAddGroup (M i)] [∀ i, NormedSpace 𝕜 (M i)]
     {φ : X → ContinuousMultilinearMap 𝕜 M E} (φ_int : Integrable φ μ) (m : ∀ i, M i) :
     (∫ x, φ x ∂μ) m = ∫ x, φ x m ∂μ := by
   by_cases hE : CompleteSpace E
@@ -1414,8 +1418,9 @@ section ParametricIntegral
 
 variable {G 𝕜 : Type*} [TopologicalSpace X]
   [TopologicalSpace Y] [MeasurableSpace Y] [OpensMeasurableSpace Y] {μ : Measure Y}
-  [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+  [NontriviallyNormedField 𝕜] [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
+  [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
+  [AddCommGroup G] [NormedAddGroup G] [NormedSpace 𝕜 G]
 
 open Metric ContinuousLinearMap
 

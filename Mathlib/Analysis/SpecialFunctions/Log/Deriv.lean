@@ -133,8 +133,8 @@ end deriv
 
 section fderiv
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {x : E} {f' : E →L[ℝ] ℝ}
-  {s : Set E}
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
+  {f : E → ℝ} {x : E} {f' : E →L[ℝ] ℝ} {s : Set E}
 
 theorem HasFDerivWithinAt.log (hf : HasFDerivWithinAt f f' s x) (hx : f x ≠ 0) :
     HasFDerivWithinAt (fun x => log (f x)) ((f x)⁻¹ • f') s x :=

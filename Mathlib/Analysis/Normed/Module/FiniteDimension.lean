@@ -55,7 +55,8 @@ namespace LinearIsometry
 
 open LinearMap
 
-variable {F E₁ : Type*} [SeminormedAddCommGroup F] [NormedAddCommGroup E₁]
+variable {F E₁ : Type*} [AddCommGroup F] [SeminormedAddGroup F]
+  [AddCommGroup E₁] [NormedAddGroup E₁]
 variable {R₁ : Type*} [Field R₁] [Module R₁ E₁] [Module R₁ F] [FiniteDimensional R₁ E₁]
   [FiniteDimensional R₁ F]
 
@@ -82,8 +83,9 @@ namespace AffineIsometry
 
 open AffineMap
 
-variable {𝕜 : Type*} {V₁ V₂ : Type*} {P₁ P₂ : Type*} [NormedField 𝕜] [NormedAddCommGroup V₁]
-  [SeminormedAddCommGroup V₂] [NormedSpace 𝕜 V₁] [NormedSpace 𝕜 V₂] [MetricSpace P₁]
+variable {𝕜 : Type*} {V₁ V₂ : Type*} {P₁ P₂ : Type*} [NormedField 𝕜]
+  [AddCommGroup V₁] [NormedAddGroup V₁]
+  [AddCommGroup V₂] [SeminormedAddGroup V₂] [NormedSpace 𝕜 V₁] [NormedSpace 𝕜 V₂] [MetricSpace P₁]
   [PseudoMetricSpace P₂] [NormedAddTorsor V₁ P₁] [NormedAddTorsor V₂ P₂]
 
 variable [FiniteDimensional 𝕜 V₁] [FiniteDimensional 𝕜 V₂]
@@ -109,8 +111,9 @@ end AffineIsometry
 
 section CompleteField
 
-variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type v} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {F : Type w} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace 𝕜]
+variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type v} [AddCommGroup E] [NormedAddGroup E]
+  [NormedSpace 𝕜 E] {F : Type w} [AddCommGroup F] [NormedAddGroup F]
+  [NormedSpace 𝕜 F] [CompleteSpace 𝕜]
 
 section Affine
 
@@ -162,12 +165,13 @@ theorem ContinuousLinearMap.continuous_det : Continuous fun f : E →L[𝕜] E =
 vector space `E'` can be extended to a Lipschitz map on the whole space `α`, with a slightly worse
 constant `C * K` where `C` only depends on `E'`. We record a working value for this constant `C`
 as `lipschitzExtensionConstant E'`. -/
-irreducible_def lipschitzExtensionConstant (E' : Type*) [NormedAddCommGroup E'] [NormedSpace ℝ E']
-  [FiniteDimensional ℝ E'] : ℝ≥0 :=
+irreducible_def lipschitzExtensionConstant (E' : Type*) [AddCommGroup E'] [NormedAddGroup E']
+    [NormedSpace ℝ E'] [FiniteDimensional ℝ E'] : ℝ≥0 :=
   let A := (Basis.ofVectorSpace ℝ E').equivFun.toContinuousLinearEquiv
   max (‖A.symm.toContinuousLinearMap‖₊ * ‖A.toContinuousLinearMap‖₊) 1
 
-theorem lipschitzExtensionConstant_pos (E' : Type*) [NormedAddCommGroup E'] [NormedSpace ℝ E']
+theorem lipschitzExtensionConstant_pos (E' : Type*) [AddCommGroup E'] [NormedAddGroup E']
+    [NormedSpace ℝ E']
     [FiniteDimensional ℝ E'] : 0 < lipschitzExtensionConstant E' := by
   rw [lipschitzExtensionConstant]
   exact zero_lt_one.trans_le (le_max_right _ _)
@@ -176,7 +180,8 @@ theorem lipschitzExtensionConstant_pos (E' : Type*) [NormedAddCommGroup E'] [Nor
 vector space `E'` can be extended to a Lipschitz map on the whole space `α`, with a slightly worse
 constant `lipschitzExtensionConstant E' * K`. -/
 theorem LipschitzOnWith.extend_finite_dimension {α : Type*} [PseudoMetricSpace α] {E' : Type*}
-    [NormedAddCommGroup E'] [NormedSpace ℝ E'] [FiniteDimensional ℝ E'] {s : Set α} {f : α → E'}
+    [AddCommGroup E'] [NormedAddGroup E']
+    [NormedSpace ℝ E'] [FiniteDimensional ℝ E'] {s : Set α} {f : α → E'}
     {K : ℝ≥0} (hf : LipschitzOnWith K f s) :
     ∃ g : α → E', LipschitzWith (lipschitzExtensionConstant E' * K) g ∧ EqOn f g s := by
   /- This result is already known for spaces `ι → ℝ`. We use a continuous linear equiv between
@@ -477,7 +482,7 @@ theorem HasCompactMulSupport.eq_one_or_finiteDimensional {X : Type*} [Topologica
 
 /-- A locally compact normed vector space is proper. -/
 lemma ProperSpace.of_locallyCompactSpace (𝕜 : Type*) [NontriviallyNormedField 𝕜]
-    {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] [LocallyCompactSpace E] :
+    {E : Type*} [AddCommGroup E] [SeminormedAddGroup E] [NormedSpace 𝕜 E] [LocallyCompactSpace E] :
     ProperSpace E := by
   rcases exists_isCompact_closedBall (0 : E) with ⟨r, rpos, hr⟩
   rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
@@ -548,7 +553,7 @@ end CompleteField
 
 section LocallyCompactField
 
-variable (𝕜 : Type u) [NontriviallyNormedField 𝕜] (E : Type v) [NormedAddCommGroup E]
+variable (𝕜 : Type u) [NontriviallyNormedField 𝕜] (E : Type v) [AddCommGroup E] [NormedAddGroup E]
   [NormedSpace 𝕜 E] [LocallyCompactSpace 𝕜]
 
 /-- Any finite-dimensional vector space over a locally compact field is proper.
@@ -564,14 +569,16 @@ end LocallyCompactField
 
 /- Over the real numbers, we can register the previous statement as an instance as it will not
 cause problems in instance resolution since the properness of `ℝ` is already known. -/
-instance (priority := 900) FiniteDimensional.proper_real (E : Type u) [NormedAddCommGroup E]
+instance (priority := 900) FiniteDimensional.proper_real (E : Type u)
+    [AddCommGroup E] [NormedAddGroup E]
     [NormedSpace ℝ E] [FiniteDimensional ℝ E] : ProperSpace E :=
   FiniteDimensional.proper ℝ E
 
 /-- A submodule of a locally compact space over a complete field is also locally compact (and even
 proper). -/
 instance {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] [LocallyCompactSpace E] (S : Submodule 𝕜 E) :
+    [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
+    [LocallyCompactSpace E] (S : Submodule 𝕜 E) :
     ProperSpace S := by
   nontriviality E
   have : ProperSpace 𝕜 := .of_locallyCompact_module 𝕜 E
@@ -582,7 +589,7 @@ instance {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
 `x` that is not equal to the whole space, then there exists a point `y ∈ frontier s` at distance
 `Metric.infDist x sᶜ` from `x`. See also
 `IsCompact.exists_mem_frontier_infDist_compl_eq_dist`. -/
-theorem exists_mem_frontier_infDist_compl_eq_dist {E : Type*} [NormedAddCommGroup E]
+theorem exists_mem_frontier_infDist_compl_eq_dist {E : Type*} [AddCommGroup E] [NormedAddGroup E]
     [NormedSpace ℝ E] [FiniteDimensional ℝ E] {x : E} {s : Set E} (hx : x ∈ s) (hs : s ≠ univ) :
     ∃ y ∈ frontier s, Metric.infDist x sᶜ = dist x y := by
   rcases Metric.exists_mem_closure_infDist_eq_dist (nonempty_compl.2 hs) x with ⟨y, hys, hyd⟩
@@ -595,7 +602,8 @@ theorem exists_mem_frontier_infDist_compl_eq_dist {E : Type*} [NormedAddCommGrou
 `y` of the boundary of `K` at distance `Metric.infDist x Kᶜ` from `x`. See also
 `exists_mem_frontier_infDist_compl_eq_dist`. -/
 nonrec theorem IsCompact.exists_mem_frontier_infDist_compl_eq_dist {E : Type*}
-    [NormedAddCommGroup E] [NormedSpace ℝ E] [Nontrivial E] {x : E} {K : Set E} (hK : IsCompact K)
+    [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
+    [Nontrivial E] {x : E} {K : Set E} (hK : IsCompact K)
     (hx : x ∈ K) :
     ∃ y ∈ frontier K, Metric.infDist x Kᶜ = dist x y := by
   obtain hx' | hx' : x ∈ interior K ∪ frontier K := by
@@ -614,7 +622,7 @@ nonrec theorem IsCompact.exists_mem_frontier_infDist_compl_eq_dist {E : Type*}
 /-- In a finite dimensional vector space over `ℝ`, the series `∑ x, ‖f x‖` is unconditionally
 summable if and only if the series `∑ x, f x` is unconditionally summable. One implication holds in
 any complete normed space, while the other holds only in finite dimensional spaces. -/
-theorem summable_norm_iff {α E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+theorem summable_norm_iff {α E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] {f : α → E} : (Summable fun x => ‖f x‖) ↔ Summable f := by
   refine ⟨Summable.of_norm, fun hf ↦ ?_⟩
   -- First we use a finite basis to reduce the problem to the case `E = Fin N → ℝ`
@@ -636,42 +644,49 @@ theorem summable_norm_iff {α E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ
 
 alias ⟨_, Summable.norm⟩ := summable_norm_iff
 
-theorem summable_of_sum_range_norm_le {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [FiniteDimensional ℝ E] {c : ℝ} {f : ℕ → E} (h : ∀ n, ∑ i ∈ Finset.range n, ‖f i‖ ≤ c) :
+theorem summable_of_sum_range_norm_le {E : Type*} [AddCommGroup E] [NormedAddGroup E]
+    [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+    {c : ℝ} {f : ℕ → E} (h : ∀ n, ∑ i ∈ Finset.range n, ‖f i‖ ≤ c) :
     Summable f :=
   summable_norm_iff.mp <| summable_of_sum_range_le (fun _ ↦ norm_nonneg _)  h
 
-theorem summable_of_isBigO' {ι E F : Type*} [NormedAddCommGroup E] [CompleteSpace E]
-    [NormedAddCommGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ F] {f : ι → E} {g : ι → F}
+theorem summable_of_isBigO' {ι E F : Type*} [AddCommGroup E] [NormedAddGroup E] [CompleteSpace E]
+    [AddCommGroup F] [NormedAddGroup F] [NormedSpace ℝ F]
+    [FiniteDimensional ℝ F] {f : ι → E} {g : ι → F}
     (hg : Summable g) (h : f =O[cofinite] g) : Summable f :=
   summable_of_isBigO hg.norm h.norm_right
 
 lemma Asymptotics.IsBigO.comp_summable {ι E F : Type*}
-    [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
-    [NormedAddCommGroup F] [CompleteSpace F]
+    [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+    [AddCommGroup F] [NormedAddGroup F] [CompleteSpace F]
     {f : E → F} (hf : f =O[𝓝 0] id) {g : ι → E} (hg : Summable g) : Summable (f ∘ g) :=
   .of_norm <| hf.comp_summable_norm hg.norm
 
-theorem summable_of_isBigO_nat' {E F : Type*} [NormedAddCommGroup E] [CompleteSpace E]
-    [NormedAddCommGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ F] {f : ℕ → E} {g : ℕ → F}
+theorem summable_of_isBigO_nat' {E F : Type*} [AddCommGroup E] [NormedAddGroup E] [CompleteSpace E]
+    [AddCommGroup F] [NormedAddGroup F] [NormedSpace ℝ F]
+    [FiniteDimensional ℝ F] {f : ℕ → E} {g : ℕ → F}
     (hg : Summable g) (h : f =O[atTop] g) : Summable f :=
   summable_of_isBigO_nat hg.norm h.norm_right
 
-theorem summable_of_isEquivalent {ι E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [FiniteDimensional ℝ E] {f : ι → E} {g : ι → E} (hg : Summable g) (h : f ~[cofinite] g) :
+theorem summable_of_isEquivalent {ι E : Type*} [AddCommGroup E] [NormedAddGroup E]
+    [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+    {f : ι → E} {g : ι → E} (hg : Summable g) (h : f ~[cofinite] g) :
     Summable f :=
   hg.trans_sub (summable_of_isBigO' hg h.isLittleO.isBigO)
 
-theorem summable_of_isEquivalent_nat {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [FiniteDimensional ℝ E] {f : ℕ → E} {g : ℕ → E} (hg : Summable g) (h : f ~[atTop] g) :
+theorem summable_of_isEquivalent_nat {E : Type*} [AddCommGroup E] [NormedAddGroup E]
+    [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+    {f : ℕ → E} {g : ℕ → E} (hg : Summable g) (h : f ~[atTop] g) :
     Summable f :=
   hg.trans_sub (summable_of_isBigO_nat' hg h.isLittleO.isBigO)
 
-theorem IsEquivalent.summable_iff {ι E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [FiniteDimensional ℝ E] {f : ι → E} {g : ι → E} (h : f ~[cofinite] g) :
+theorem IsEquivalent.summable_iff {ι E : Type*} [AddCommGroup E] [NormedAddGroup E]
+    [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+    {f : ι → E} {g : ι → E} (h : f ~[cofinite] g) :
     Summable f ↔ Summable g :=
   ⟨fun hf => summable_of_isEquivalent hf h.symm, fun hg => summable_of_isEquivalent hg h⟩
 
-theorem IsEquivalent.summable_iff_nat {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [FiniteDimensional ℝ E] {f : ℕ → E} {g : ℕ → E} (h : f ~[atTop] g) : Summable f ↔ Summable g :=
+theorem IsEquivalent.summable_iff_nat {E : Type*} [AddCommGroup E] [NormedAddGroup E]
+    [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+    {f : ℕ → E} {g : ℕ → E} (h : f ~[atTop] g) : Summable f ↔ Summable g :=
   ⟨fun hf => summable_of_isEquivalent_nat hf h.symm, fun hg => summable_of_isEquivalent_nat hg h⟩

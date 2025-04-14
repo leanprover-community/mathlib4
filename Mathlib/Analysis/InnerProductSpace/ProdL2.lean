@@ -17,8 +17,8 @@ This is recorded in this file as an inner product space instance on `WithLp 2 (E
 -/
 
 variable {𝕜 ι₁ ι₂ E F : Type*}
-variable [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [NormedAddCommGroup F]
-  [InnerProductSpace 𝕜 F]
+variable [RCLike 𝕜] [AddCommGroup E] [NormedAddGroup E] [InnerProductSpace 𝕜 E]
+  [AddCommGroup F] [NormedAddGroup F] [InnerProductSpace 𝕜 F]
 
 namespace WithLp
 

@@ -58,12 +58,12 @@ theorem isBoundedAtImInfty_iff {α : Type*} [Norm α] {f : ℍ → α} :
   simp [IsBoundedAtImInfty, BoundedAtFilter, Asymptotics.isBigO_iff, Filter.Eventually,
     atImInfty_mem]
 
-theorem isZeroAtImInfty_iff {α : Type*} [SeminormedAddGroup α] {f : ℍ → α} :
+theorem isZeroAtImInfty_iff {α : Type*} [AddGroup α] [SeminormedAddGroup α] {f : ℍ → α} :
     IsZeroAtImInfty f ↔ ∀ ε : ℝ, 0 < ε → ∃ A : ℝ, ∀ z : ℍ, A ≤ im z → ‖f z‖ ≤ ε :=
   (atImInfty_basis.tendsto_iff Metric.nhds_basis_closedBall).trans <| by simp
 
-theorem IsZeroAtImInfty.isBoundedAtImInfty {α : Type*} [SeminormedAddGroup α] {f : ℍ → α}
-    (hf : IsZeroAtImInfty f) : IsBoundedAtImInfty f :=
+theorem IsZeroAtImInfty.isBoundedAtImInfty {α : Type*} [AddGroup α] [SeminormedAddGroup α]
+    {f : ℍ → α} (hf : IsZeroAtImInfty f) : IsBoundedAtImInfty f :=
   hf.boundedAtFilter
 
 lemma tendsto_comap_im_ofComplex :

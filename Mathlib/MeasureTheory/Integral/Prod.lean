@@ -46,7 +46,7 @@ open TopologicalSpace
 open Filter hiding prod_eq map
 
 variable {α β E : Type*} [MeasurableSpace α] [MeasurableSpace β] {μ : Measure α} {ν : Measure β}
-variable [NormedAddCommGroup E]
+variable [AddCommGroup E] [NormedAddGroup E]
 
 /-! ### Measurability
 
@@ -332,7 +332,7 @@ theorem setIntegral_prod_swap (s : Set α) (t : Set β) (f : α × β → E) :
     ∫ (z : β × α) in t ×ˢ s, f z.swap ∂ν.prod μ = ∫ (z : α × β) in s ×ˢ t, f z ∂μ.prod ν := by
   rw [← Measure.prod_restrict, ← Measure.prod_restrict, integral_prod_swap]
 
-variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace ℝ E']
+variable {E' : Type*} [AddCommGroup E'] [NormedAddGroup E'] [NormedSpace ℝ E']
 
 /-! Some rules about the sum/difference of double integrals. They follow from `integral_add`, but
   we separate them out as separate lemmas, because they involve quite some steps. -/

@@ -24,8 +24,10 @@ namespace ApproximatesLinearOn
 
 /-- In a real vector space, a function `f` that approximates a linear equivalence on a subset `s`
 can be extended to a homeomorphism of the whole space. -/
-theorem exists_homeomorph_extension {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ F] {s : Set E}
+theorem exists_homeomorph_extension
+    {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
+    {F : Type*} [AddCommGroup F] [NormedAddGroup F] [NormedSpace ℝ F]
+    [FiniteDimensional ℝ F] {s : Set E}
     {f : E → F} {f' : E ≃L[ℝ] F} {c : ℝ≥0} (hf : ApproximatesLinearOn f (f' : E →L[ℝ] F) s c)
     (hc : Subsingleton E ∨ lipschitzExtensionConstant F * c < ‖(f'.symm : F →L[ℝ] E)‖₊⁻¹) :
     ∃ g : E ≃ₜ F, EqOn f g s := by

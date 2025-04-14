@@ -18,7 +18,7 @@ for every `ε > 0` there exists a `r : ℝ` such that for all `x : E` with `r < 
 open Topology Filter
 
 variable {E F 𝓕 : Type*}
-variable [SeminormedAddGroup E] [SeminormedAddCommGroup F]
+variable [AddGroup E] [SeminormedAddGroup E] [AddCommGroup F] [SeminormedAddGroup F]
 variable [FunLike 𝓕 E F] [ZeroAtInftyContinuousMapClass 𝓕 E F]
 
 theorem ZeroAtInftyContinuousMapClass.norm_le (f : 𝓕) (ε : ℝ) (hε : 0 < ε) :

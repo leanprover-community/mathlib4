@@ -44,7 +44,8 @@ section general_case
 open MeasureTheory MeasureTheory.Measure Module ENNReal
 
 theorem MeasureTheory.measure_unitBall_eq_integral_div_gamma {E : Type*} {p : ℝ}
-    [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E]
+    [AddCommGroup E] [NormedAddGroup E]
+    [NormedSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E]
     [BorelSpace E] (μ : Measure E) [IsAddHaarMeasure μ] (hp : 0 < p) :
     μ (Metric.ball 0 1) =
       .ofReal ((∫ (x : E), Real.exp (- ‖x‖ ^ p) ∂μ) / Real.Gamma (finrank ℝ E / p + 1)) := by
@@ -77,7 +78,7 @@ theorem MeasureTheory.measure_lt_one_eq_integral_div_gamma {p : ℝ} (hp : 0 < p
       .ofReal ((∫ (x : E), Real.exp (- (g x) ^ p) ∂μ) / Real.Gamma (finrank ℝ E / p + 1)) := by
   -- We copy `E` to a new type `F` on which we will put the norm defined by `g`
   letI F : Type _ := E
-  letI : NormedAddCommGroup F :=
+  letI : NormedAddGroup F :=
   { norm := g
     dist := fun x y => g (x - y)
     dist_self := by simp only [_root_.sub_self, h1, forall_const]
@@ -103,7 +104,7 @@ theorem MeasureTheory.measure_lt_one_eq_integral_div_gamma {p : ℝ} (hp : 0 < p
   convert (measure_unitBall_eq_integral_div_gamma ν hp) using 1
   · rw [@Measure.map_apply E F mE _ μ φ _ _ measurableSet_ball]
     · congr!
-      simp_rw [Metric.ball, dist_zero_right]
+      simp_rw [Metric.ball, dist_zero_right (E := F)]
       rfl
     · refine @Continuous.measurable E F tE mE _ _ _ _ φ ?_
       exact @ContinuousLinearEquiv.continuous ℝ ℝ _ _ _ _ _ _ E tE _ F _ _ _ _ φ
@@ -120,7 +121,7 @@ theorem MeasureTheory.measure_le_eq_lt [Nontrivial E] (r : ℝ) :
     μ {x : E | g x ≤ r} = μ {x : E | g x < r} := by
   -- We copy `E` to a new type `F` on which we will put the norm defined by `g`
   letI F : Type _ := E
-  letI : NormedAddCommGroup F :=
+  letI : NormedAddGroup F :=
   { norm := g
     dist := fun x y => g (x - y)
     dist_self := by simp only [_root_.sub_self, h1, forall_const]
@@ -146,13 +147,13 @@ theorem MeasureTheory.measure_le_eq_lt [Nontrivial E] (r : ℝ) :
   convert addHaar_closedBall_eq_addHaar_ball ν 0 r using 1
   · rw [@Measure.map_apply E F mE _ μ φ _ _ measurableSet_closedBall]
     · congr!
-      simp_rw [Metric.closedBall, dist_zero_right]
+      simp_rw [Metric.closedBall, dist_zero_right (E := F)]
       rfl
     · refine @Continuous.measurable E F tE mE _ _ _ _ φ ?_
       exact @ContinuousLinearEquiv.continuous ℝ ℝ _ _ _ _ _ _ E tE _ F _ _ _ _ φ
   · rw [@Measure.map_apply E F mE _ μ φ _ _ measurableSet_ball]
     · congr!
-      simp_rw [Metric.ball, dist_zero_right]
+      simp_rw [Metric.ball, dist_zero_right (E := F)]
       rfl
     · refine @Continuous.measurable E F tE mE _ _ _ _ φ ?_
       exact @ContinuousLinearEquiv.continuous ℝ ℝ _ _ _ _ _ _ E tE _ F _ _ _ _ φ
@@ -349,7 +350,8 @@ namespace InnerProductSpace
 open scoped Nat
 open MeasureTheory MeasureTheory.Measure ENNReal Real Module Metric
 
-variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E]
+  [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
   [MeasurableSpace E] [BorelSpace E]
 
 section Nontrivial

@@ -395,8 +395,8 @@ theorem Integrable.tendsto_ae_condExp (hg : Integrable g μ)
     rcases hs with ⟨n, hn⟩
     exact this n _ hn
   | compl t htmeas ht =>
-    have hgeq := @setIntegral_compl _ _ (⨆ n, ℱ n) _ _ _ _ _ htmeas (hg.trim hle hgmeas)
-    have hheq := @setIntegral_compl _ _ (⨆ n, ℱ n) _ _ _ _ _ htmeas
+    have hgeq := setIntegral_compl (mX := ⨆ n, ℱ n) htmeas (hg.trim hle hgmeas)
+    have hheq := setIntegral_compl (mX := ⨆ n, ℱ n) htmeas
       (hlimint.trim hle stronglyMeasurable_limitProcess)
     rw [setIntegral_trim hle hgmeas htmeas.compl,
       setIntegral_trim hle stronglyMeasurable_limitProcess htmeas.compl, hgeq, hheq, ←

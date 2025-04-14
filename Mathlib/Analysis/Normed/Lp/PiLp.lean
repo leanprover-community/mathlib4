@@ -91,7 +91,7 @@ section
 /- Register simplification lemmas for the applications of `PiLp` elements, as the usual lemmas
 for Pi types will not trigger. -/
 variable {𝕜 p α}
-variable [Semiring 𝕜] [∀ i, SeminormedAddCommGroup (β i)]
+variable [Semiring 𝕜] [∀ i, AddCommGroup (β i)]
 variable [∀ i, Module 𝕜 (β i)] (c : 𝕜)
 variable (x y : PiLp p β) (i : ι)
 
@@ -512,10 +512,9 @@ theorem infty_equiv_isometry [∀ i, PseudoEMetricSpace (β i)] :
 
 /-- seminormed group instance on the product of finitely many normed groups, using the `L^p`
 norm. -/
-instance seminormedAddCommGroup [∀ i, SeminormedAddCommGroup (β i)] :
-    SeminormedAddCommGroup (PiLp p β) :=
-  { Pi.addCommGroup with
-    dist_eq := fun x y => by
+instance seminormedAddGroup [∀ i, AddCommGroup (β i)] [∀ i, SeminormedAddGroup (β i)] :
+    SeminormedAddGroup (PiLp p β) :=
+  { dist_eq := fun x y => by
       rcases p.dichotomy with (rfl | h)
       · simp only [dist_eq_iSup, norm_eq_ciSup, dist_eq_norm, sub_apply]
       · have : p ≠ ∞ := by
@@ -526,19 +525,20 @@ instance seminormedAddCommGroup [∀ i, SeminormedAddCommGroup (β i)] :
           dist_eq_norm, sub_apply] }
 
 /-- normed group instance on the product of finitely many normed groups, using the `L^p` norm. -/
-instance normedAddCommGroup [∀ i, NormedAddCommGroup (α i)] : NormedAddCommGroup (PiLp p α) :=
-  { PiLp.seminormedAddCommGroup p α with
+instance normedAddGroup [∀ i, AddCommGroup (α i)] [∀ i, NormedAddGroup (α i)] :
+    NormedAddGroup (PiLp p α) :=
+  { PiLp.seminormedAddGroup p α with
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
 theorem nnnorm_eq_sum {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type*} (hp : p ≠ ∞)
-    [∀ i, SeminormedAddCommGroup (β i)] (f : PiLp p β) :
+    [∀ i, AddCommGroup (β i)] [∀ i, SeminormedAddGroup (β i)] (f : PiLp p β) :
     ‖f‖₊ = (∑ i, ‖f i‖₊ ^ p.toReal) ^ (1 / p.toReal) := by
   ext
   simp [NNReal.coe_sum, norm_eq_sum (p.toReal_pos_iff_ne_top.mpr hp)]
 
 section Linfty
 variable {β}
-variable [∀ i, SeminormedAddCommGroup (β i)]
+variable [∀ i, AddCommGroup (β i)] [∀ i, SeminormedAddGroup (β i)]
 
 theorem nnnorm_eq_ciSup (f : PiLp ∞ β) : ‖f‖₊ = ⨆ i, ‖f i‖₊ := by
   ext
@@ -560,14 +560,14 @@ theorem nnnorm_eq_ciSup (f : PiLp ∞ β) : ‖f‖₊ = ⨆ i, ‖f i‖₊ := 
 end Linfty
 
 theorem norm_eq_of_nat {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type*}
-    [∀ i, SeminormedAddCommGroup (β i)] (n : ℕ) (h : p = n) (f : PiLp p β) :
+    [∀ i, AddCommGroup (β i)] [∀ i, SeminormedAddGroup (β i)] (n : ℕ) (h : p = n) (f : PiLp p β) :
     ‖f‖ = (∑ i, ‖f i‖ ^ n) ^ (1 / (n : ℝ)) := by
   have := p.toReal_pos_iff_ne_top.mpr (ne_of_eq_of_ne h <| ENNReal.natCast_ne_top n)
   simp only [one_div, h, Real.rpow_natCast, ENNReal.toReal_natCast, eq_self_iff_true,
     Finset.sum_congr, norm_eq_sum this]
 
 section L1
-variable {β} [∀ i, SeminormedAddCommGroup (β i)]
+variable {β} [∀ i, AddCommGroup (β i)] [∀ i, SeminormedAddGroup (β i)]
 
 theorem norm_eq_of_L1 (x : PiLp 1 β) : ‖x‖ = ∑ i : ι, ‖x i‖ := by
   simp [norm_eq_sum]
@@ -587,7 +587,7 @@ theorem edist_eq_of_L1 (x y : PiLp 1 β) : edist x y = ∑ i, edist (x i) (y i) 
 end L1
 
 section L2
-variable {β} [∀ i, SeminormedAddCommGroup (β i)]
+variable {β} [∀ i, AddCommGroup (β i)] [∀ i, SeminormedAddGroup (β i)]
 
 theorem norm_eq_of_L2 (x : PiLp 2 β) :
     ‖x‖ = √(∑ i : ι, ‖x i‖ ^ 2) := by
@@ -601,7 +601,8 @@ theorem nnnorm_eq_of_L2 (x : PiLp 2 β) :
     push_cast
     exact norm_eq_of_L2 x
 
-theorem norm_sq_eq_of_L2 (β : ι → Type*) [∀ i, SeminormedAddCommGroup (β i)] (x : PiLp 2 β) :
+theorem norm_sq_eq_of_L2 (β : ι → Type*) [∀ i, AddCommGroup (β i)] [∀ i, SeminormedAddGroup (β i)]
+    (x : PiLp 2 β) :
     ‖x‖ ^ 2 = ∑ i : ι, ‖x i‖ ^ 2 := by
   suffices ‖x‖₊ ^ 2 = ∑ i : ι, ‖x i‖₊ ^ 2 by
     simpa only [NNReal.coe_sum] using congr_arg ((↑) : ℝ≥0 → ℝ) this
@@ -622,7 +623,8 @@ theorem edist_eq_of_L2 (x y : PiLp 2 β) :
 
 end L2
 
-instance instIsBoundedSMul [SeminormedRing 𝕜] [∀ i, SeminormedAddCommGroup (β i)]
+instance instIsBoundedSMul [SeminormedRing 𝕜]
+    [∀ i, AddCommGroup (β i)] [∀ i, SeminormedAddGroup (β i)]
     [∀ i, Module 𝕜 (β i)] [∀ i, IsBoundedSMul 𝕜 (β i)] :
     IsBoundedSMul 𝕜 (PiLp p β) :=
   .of_nnnorm_smul_le fun c f => by
@@ -638,12 +640,13 @@ instance instIsBoundedSMul [SeminormedRing 𝕜] [∀ i, SeminormedAddCommGroup 
       exact Finset.sum_le_sum fun i _ => NNReal.rpow_le_rpow (nnnorm_smul_le _ _) hp0.le
 
 /-- The product of finitely many normed spaces is a normed space, with the `L^p` norm. -/
-instance normedSpace [NormedField 𝕜] [∀ i, SeminormedAddCommGroup (β i)]
+instance normedSpace [NormedField 𝕜] [∀ i, AddCommGroup (β i)] [∀ i, SeminormedAddGroup (β i)]
     [∀ i, NormedSpace 𝕜 (β i)] : NormedSpace 𝕜 (PiLp p β) where
   norm_smul_le := norm_smul_le
 
 variable {𝕜 p α}
-variable [Semiring 𝕜] [∀ i, SeminormedAddCommGroup (α i)] [∀ i, SeminormedAddCommGroup (β i)]
+variable [Semiring 𝕜] [∀ i, AddCommGroup (α i)] [∀ i, SeminormedAddGroup (α i)]
+  [∀ i, AddCommGroup (β i)] [∀ i, SeminormedAddGroup (β i)]
 variable [∀ i, Module 𝕜 (α i)] [∀ i, Module 𝕜 (β i)] (c : 𝕜)
 
 /-- The canonical map `WithLp.equiv` between `PiLp ∞ β` and `Π i, β i` as a linear isometric
@@ -658,7 +661,7 @@ section piLpCongrLeft
 variable {ι' : Type*}
 variable [Fintype ι']
 variable (p 𝕜)
-variable (E : Type*) [SeminormedAddCommGroup E] [Module 𝕜 E]
+variable (E : Type*) [AddCommGroup E] [SeminormedAddGroup E] [Module 𝕜 E]
 
 /-- An equivalence of finite domains induces a linearly isometric equivalence of finitely supported
 functions -/
@@ -752,7 +755,8 @@ section piLpCurry
 
 variable {ι : Type*} {κ : ι → Type*} (p : ℝ≥0∞) [Fact (1 ≤ p)]
   [Fintype ι] [∀ i, Fintype (κ i)]
-  (α : ∀ i, κ i → Type*) [∀ i k, SeminormedAddCommGroup (α i k)] [∀ i k, Module 𝕜 (α i k)]
+  (α : ∀ i, κ i → Type*)[∀ i k, AddCommGroup (α i k)] [∀ i k, SeminormedAddGroup (α i k)]
+  [∀ i k, Module 𝕜 (α i k)]
 
 variable (𝕜) in
 /-- `LinearEquiv.piCurry` for `PiLp`, as an isometry. -/
@@ -792,7 +796,7 @@ end piLpCurry
 section sumPiLpEquivProdLpPiLp
 
 variable {ι κ : Type*} (p : ℝ≥0∞) (α : ι ⊕ κ → Type*) [Fintype ι] [Fintype κ] [Fact (1 ≤ p)]
-variable [∀ i, SeminormedAddCommGroup (α i)] [∀ i, Module 𝕜 (α i)]
+variable [∀ i, AddCommGroup (α i)] [∀ i, SeminormedAddGroup (α i)] [∀ i, Module 𝕜 (α i)]
 
 /-- `LinearEquiv.sumPiEquivProdPi` for `PiLp`, as an isometry. -/
 @[simps! +simpRhs]
@@ -878,7 +882,7 @@ end Single
 the left-hand side simplifies to `0`, while the right-hand side simplifies to `‖b‖₊`. See
 `PiLp.nnnorm_equiv_symm_const'` for a version which exchanges the hypothesis `p ≠ ∞` for
 `Nonempty ι`. -/
-theorem nnnorm_equiv_symm_const {β} [SeminormedAddCommGroup β] (hp : p ≠ ∞) (b : β) :
+theorem nnnorm_equiv_symm_const {β} [AddCommGroup β] [SeminormedAddGroup β] (hp : p ≠ ∞) (b : β) :
     ‖(WithLp.equiv p (ι → β)).symm (Function.const _ b)‖₊ =
       (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖b‖₊ := by
   rcases p.dichotomy with (h | h)
@@ -892,7 +896,7 @@ theorem nnnorm_equiv_symm_const {β} [SeminormedAddCommGroup β] (hp : p ≠ ∞
 the left-hand side simplifies to `0`, while the right-hand side simplifies to `‖b‖₊`. See
 `PiLp.nnnorm_equiv_symm_const` for a version which exchanges the hypothesis `Nonempty ι`.
 for `p ≠ ∞`. -/
-theorem nnnorm_equiv_symm_const' {β} [SeminormedAddCommGroup β] [Nonempty ι] (b : β) :
+theorem nnnorm_equiv_symm_const' {β} [AddCommGroup β] [SeminormedAddGroup β] [Nonempty ι] (b : β) :
     ‖(WithLp.equiv p (ι → β)).symm (Function.const _ b)‖₊ =
       (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖b‖₊ := by
   rcases em <| p = ∞ with (rfl | hp)
@@ -904,7 +908,7 @@ theorem nnnorm_equiv_symm_const' {β} [SeminormedAddCommGroup β] [Nonempty ι] 
 the left-hand side simplifies to `0`, while the right-hand side simplifies to `‖b‖₊`. See
 `PiLp.norm_equiv_symm_const'` for a version which exchanges the hypothesis `p ≠ ∞` for
 `Nonempty ι`. -/
-theorem norm_equiv_symm_const {β} [SeminormedAddCommGroup β] (hp : p ≠ ∞) (b : β) :
+theorem norm_equiv_symm_const {β} [AddCommGroup β] [SeminormedAddGroup β] (hp : p ≠ ∞) (b : β) :
     ‖(WithLp.equiv p (ι → β)).symm (Function.const _ b)‖ =
       (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖b‖ :=
   (congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_equiv_symm_const hp b).trans <| by simp
@@ -913,17 +917,17 @@ theorem norm_equiv_symm_const {β} [SeminormedAddCommGroup β] (hp : p ≠ ∞) 
 the left-hand side simplifies to `0`, while the right-hand side simplifies to `‖b‖₊`. See
 `PiLp.norm_equiv_symm_const` for a version which exchanges the hypothesis `Nonempty ι`.
 for `p ≠ ∞`. -/
-theorem norm_equiv_symm_const' {β} [SeminormedAddCommGroup β] [Nonempty ι] (b : β) :
+theorem norm_equiv_symm_const' {β} [AddCommGroup β] [SeminormedAddGroup β] [Nonempty ι] (b : β) :
     ‖(WithLp.equiv p (ι → β)).symm (Function.const _ b)‖ =
       (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖b‖ :=
   (congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_equiv_symm_const' b).trans <| by simp
 
-theorem nnnorm_equiv_symm_one {β} [SeminormedAddCommGroup β] (hp : p ≠ ∞) [One β] :
+theorem nnnorm_equiv_symm_one {β} [AddCommGroup β] [SeminormedAddGroup β] (hp : p ≠ ∞) [One β] :
     ‖(WithLp.equiv p (ι → β)).symm 1‖₊ =
       (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖(1 : β)‖₊ :=
   (nnnorm_equiv_symm_const hp (1 : β)).trans rfl
 
-theorem norm_equiv_symm_one {β} [SeminormedAddCommGroup β] (hp : p ≠ ∞) [One β] :
+theorem norm_equiv_symm_one {β} [AddCommGroup β] [SeminormedAddGroup β] (hp : p ≠ ∞) [One β] :
     ‖(WithLp.equiv p (ι → β)).symm 1‖ = (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖(1 : β)‖ :=
   (norm_equiv_symm_const hp (1 : β)).trans rfl
 

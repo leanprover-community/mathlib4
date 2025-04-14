@@ -31,9 +31,9 @@ open Filter Asymptotics Set
 open ContinuousLinearMap (smulRight smulRight_one_eq_iff)
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
-variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {E : Type w} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {F : Type v} [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
+variable {E : Type w} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
+variable {G : Type*} [AddCommGroup G] [NormedAddGroup G] [NormedSpace 𝕜 G]
 variable {f : 𝕜 → F}
 variable {f' : F}
 variable {x : 𝕜}
@@ -429,7 +429,8 @@ section CLMCompApply
 
 open ContinuousLinearMap
 
-variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G] {c : 𝕜 → F →L[𝕜] G} {c' : F →L[𝕜] G}
+variable {G : Type*} [AddCommGroup G] [NormedAddGroup G] [NormedSpace 𝕜 G]
+  {c : 𝕜 → F →L[𝕜] G} {c' : F →L[𝕜] G}
   {d : 𝕜 → E →L[𝕜] F} {d' : E →L[𝕜] F} {u : 𝕜 → F} {u' : F}
 
 theorem HasStrictDerivAt.clm_comp (hc : HasStrictDerivAt c c' x) (hd : HasStrictDerivAt d d' x) :

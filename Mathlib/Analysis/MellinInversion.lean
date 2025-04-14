@@ -17,7 +17,7 @@ We derive the Mellin inversion formula as a consequence of the Fourier inversion
 
 open Real Complex Set MeasureTheory
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℂ E]
 
 open scoped FourierTransform
 

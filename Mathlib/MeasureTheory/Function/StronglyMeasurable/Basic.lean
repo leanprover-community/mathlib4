@@ -173,7 +173,8 @@ noncomputable def approxBounded {_ : MeasurableSpace α} [Norm β] [SMul ℝ β]
     (hf : StronglyMeasurable f) (c : ℝ) : ℕ → SimpleFunc α β := fun n =>
   (hf.approx n).map fun x => min 1 (c / ‖x‖) • x
 
-theorem tendsto_approxBounded_of_norm_le {β} {f : α → β} [NormedAddCommGroup β] [NormedSpace ℝ β]
+theorem tendsto_approxBounded_of_norm_le {β} {f : α → β} [AddCommGroup β] [NormedAddGroup β]
+    [NormedSpace ℝ β]
     {m : MeasurableSpace α} (hf : StronglyMeasurable[m] f) {c : ℝ} {x : α} (hfx : ‖f x‖ ≤ c) :
     Tendsto (fun n => hf.approxBounded c n x) atTop (𝓝 (f x)) := by
   have h_tendsto := hf.tendsto_approx x
@@ -204,13 +205,15 @@ theorem tendsto_approxBounded_of_norm_le {β} {f : α → β} [NormedAddCommGrou
   refine Tendsto.min tendsto_const_nhds ?_
   exact Tendsto.div tendsto_const_nhds h_tendsto.norm hfx0
 
-theorem tendsto_approxBounded_ae {β} {f : α → β} [NormedAddCommGroup β] [NormedSpace ℝ β]
+theorem tendsto_approxBounded_ae {β} {f : α → β} [AddCommGroup β] [NormedAddGroup β]
+    [NormedSpace ℝ β]
     {m m0 : MeasurableSpace α} {μ : Measure α} (hf : StronglyMeasurable[m] f) {c : ℝ}
     (hf_bound : ∀ᵐ x ∂μ, ‖f x‖ ≤ c) :
     ∀ᵐ x ∂μ, Tendsto (fun n => hf.approxBounded c n x) atTop (𝓝 (f x)) := by
   filter_upwards [hf_bound] with x hfx using tendsto_approxBounded_of_norm_le hf hfx
 
-theorem norm_approxBounded_le {β} {f : α → β} [SeminormedAddCommGroup β] [NormedSpace ℝ β]
+theorem norm_approxBounded_le {β} {f : α → β} [AddCommGroup β] [SeminormedAddGroup β]
+    [NormedSpace ℝ β]
     {m : MeasurableSpace α} {c : ℝ} (hf : StronglyMeasurable[m] f) (hc : 0 ≤ c) (n : ℕ) (x : α) :
     ‖hf.approxBounded c n x‖ ≤ c := by
   simp only [StronglyMeasurable.approxBounded, SimpleFunc.coe_map, Function.comp_apply]
@@ -848,12 +851,14 @@ protected theorem dist {_ : MeasurableSpace α} {β : Type*} [PseudoMetricSpace 
   continuous_dist.comp_stronglyMeasurable (hf.prodMk hg)
 
 @[measurability]
-protected theorem norm {_ : MeasurableSpace α} {β : Type*} [SeminormedAddCommGroup β] {f : α → β}
+protected theorem norm {_ : MeasurableSpace α} {β : Type*} [AddCommGroup β] [SeminormedAddGroup β]
+    {f : α → β}
     (hf : StronglyMeasurable f) : StronglyMeasurable fun x => ‖f x‖ :=
   continuous_norm.comp_stronglyMeasurable hf
 
 @[measurability]
-protected theorem nnnorm {_ : MeasurableSpace α} {β : Type*} [SeminormedAddCommGroup β] {f : α → β}
+protected theorem nnnorm {_ : MeasurableSpace α} {β : Type*} [AddCommGroup β] [SeminormedAddGroup β]
+    {f : α → β}
     (hf : StronglyMeasurable f) : StronglyMeasurable fun x => ‖f x‖₊ :=
   continuous_nnnorm.comp_stronglyMeasurable hf
 
@@ -863,7 +868,7 @@ Unlike `StrongMeasurable.norm` and `StronglyMeasurable.nnnorm`, this lemma prove
 **not** strong measurability. This is an intentional decision: for functions taking values in
 ℝ≥0∞, measurability is much more useful than strong measurability. -/
 @[fun_prop, measurability]
-protected theorem enorm {_ : MeasurableSpace α} {β : Type*} [SeminormedAddCommGroup β]
+protected theorem enorm {_ : MeasurableSpace α} {β : Type*} [AddCommGroup β] [SeminormedAddGroup β]
     {f : α → β} (hf : StronglyMeasurable f) : Measurable (‖f ·‖ₑ) :=
   (ENNReal.continuous_coe.comp_stronglyMeasurable hf.nnnorm).measurable
 
@@ -979,7 +984,8 @@ theorem stronglyMeasurable_of_measurableSpace_le_on {α E} {m m₂ : MeasurableS
 /-- If a function `f` is strongly measurable w.r.t. a sub-σ-algebra `m` and the measure is σ-finite
 on `m`, then there exists spanning measurable sets with finite measure on which `f` has bounded
 norm. In particular, `f` is integrable on each of those sets. -/
-theorem exists_spanning_measurableSet_norm_le [SeminormedAddCommGroup β] {m m0 : MeasurableSpace α}
+theorem exists_spanning_measurableSet_norm_le [AddCommGroup β] [SeminormedAddGroup β]
+    {m m0 : MeasurableSpace α}
     (hm : m ≤ m0) (hf : StronglyMeasurable[m] f) (μ : Measure α) [SigmaFinite (μ.trim hm)] :
     ∃ s : ℕ → Set α,
       (∀ n, MeasurableSet[m] (s n) ∧ μ (s n) < ∞ ∧ ∀ x ∈ s n, ‖f x‖ ≤ n) ∧
@@ -1144,7 +1150,7 @@ theorem finStronglyMeasurable_iff_stronglyMeasurable_and_exists_set_sigmaFinite 
 
 section SecondCountableTopology
 
-variable {G : Type*} [SeminormedAddCommGroup G] [MeasurableSpace G] [BorelSpace G]
+variable {G : Type*} [AddCommGroup G] [SeminormedAddGroup G] [MeasurableSpace G] [BorelSpace G]
   [SecondCountableTopology G] {f : α → G}
 
 /-- In a space with second countable topology and a sigma-finite measure, `FinStronglyMeasurable`

@@ -59,14 +59,16 @@ open Filter (Tendsto)
 
 open Metric ContinuousLinearMap
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [SeminormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {F : Type*} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*}
-  [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {E : Type*} [AddCommGroup E] [SeminormedAddGroup E] [NormedSpace 𝕜 E]
+  {F : Type*} [AddCommGroup F] [SeminormedAddGroup F] [NormedSpace 𝕜 F]
+  {G : Type*} [AddCommGroup G] [SeminormedAddGroup G] [NormedSpace 𝕜 G]
 
 /-- A function `f` satisfies `IsBoundedLinearMap 𝕜 f` if it is linear and satisfies the
 inequality `‖f x‖ ≤ M * ‖x‖` for some positive constant `M`. -/
-structure IsBoundedLinearMap (𝕜 : Type*) [NormedField 𝕜] {E : Type*} [SeminormedAddCommGroup E]
-    [NormedSpace 𝕜 E] {F : Type*} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] (f : E → F) : Prop
+structure IsBoundedLinearMap (𝕜 : Type*) [NormedField 𝕜]
+    {E : Type*} [AddCommGroup E] [SeminormedAddGroup E] [NormedSpace 𝕜 E]
+    {F : Type*} [AddCommGroup F] [SeminormedAddGroup F] [NormedSpace 𝕜 F] (f : E → F) : Prop
     extends IsLinearMap 𝕜 f where
   bound : ∃ M, 0 < M ∧ ∀ x : E, ‖f x‖ ≤ M * ‖x‖
 
@@ -197,7 +199,8 @@ variable {ι : Type*} [Fintype ι]
 
 /-- Taking the cartesian product of two continuous multilinear maps is a bounded linear
 operation. -/
-theorem isBoundedLinearMap_prod_multilinear {E : ι → Type*} [∀ i, SeminormedAddCommGroup (E i)]
+theorem isBoundedLinearMap_prod_multilinear {E : ι → Type*}
+    [∀ i, AddCommGroup (E i)] [∀ i, SeminormedAddGroup (E i)]
     [∀ i, NormedSpace 𝕜 (E i)] :
     IsBoundedLinearMap 𝕜 fun p : ContinuousMultilinearMap 𝕜 E F × ContinuousMultilinearMap 𝕜 E G =>
       p.1.prod p.2 :=
@@ -235,7 +238,8 @@ variable {R : Type*}
 variable {𝕜₂ 𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NontriviallyNormedField 𝕜₂]
 variable {M : Type*} [TopologicalSpace M]
 variable {σ₁₂ : 𝕜 →+* 𝕜₂}
-variable {G' : Type*} [SeminormedAddCommGroup G'] [NormedSpace 𝕜₂ G'] [NormedSpace 𝕜' G']
+variable {G' : Type*} [AddCommGroup G'] [SeminormedAddGroup G']
+  [NormedSpace 𝕜₂ G'] [NormedSpace 𝕜' G']
 variable [SMulCommClass 𝕜₂ 𝕜' G']
 
 section Semiring
@@ -363,7 +367,8 @@ theorem IsBoundedBilinearMap.isBoundedLinearMap_right (h : IsBoundedBilinearMap 
   (h.toContinuousLinearMap x).isBoundedLinearMap
 
 theorem isBoundedBilinearMap_smul {𝕜' : Type*} [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] {E : Type*}
-    [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedSpace 𝕜' E] [IsScalarTower 𝕜 𝕜' E] :
+    [AddCommGroup E] [SeminormedAddGroup E] [NormedSpace 𝕜 E] [NormedSpace 𝕜' E]
+    [IsScalarTower 𝕜 𝕜' E] :
     IsBoundedBilinearMap 𝕜 fun p : 𝕜' × E => p.1 • p.2 :=
   (lsmul 𝕜 𝕜' : 𝕜' →L[𝕜] E →L[𝕜] E).isBoundedBilinearMap
 
@@ -397,7 +402,7 @@ theorem isBoundedBilinearMap_smulRight :
 /-- The composition of a continuous linear map with a continuous multilinear map is a bounded
 bilinear operation. -/
 theorem isBoundedBilinearMap_compMultilinear {ι : Type*} {E : ι → Type*} [Fintype ι]
-    [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)] :
+    [∀ i, AddCommGroup (E i)] [∀ i, NormedAddGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)] :
     IsBoundedBilinearMap 𝕜 fun p : (F →L[𝕜] G) × ContinuousMultilinearMap 𝕜 E F =>
       p.1.compContinuousMultilinearMap p.2 :=
   (compContinuousMultilinearMapL 𝕜 E F G).isBoundedBilinearMap
@@ -462,8 +467,8 @@ end
 namespace ContinuousLinearEquiv
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type*} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
+variable {F : Type*} [AddCommGroup F] [SeminormedAddGroup F] [NormedSpace 𝕜 F]
 
 open Set
 open scoped Topology

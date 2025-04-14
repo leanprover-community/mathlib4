@@ -14,7 +14,7 @@ and `Metric.sphere (0 : E) 1 × Set.Ioi (0 : ℝ)`.
 One may think about it as generalization of polar coordinates to any normed space.
 -/
 
-variable (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable (E : Type*) [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
 
 open Set Metric
 

@@ -21,7 +21,7 @@ open scoped ENNReal NNReal Topology
 namespace MeasureTheory
 
 variable {Ω E F : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
-  [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E]
+  [AddCommGroup E] [NormedAddGroup E] [MeasurableSpace E] [BorelSpace E]
   [MeasurableSpace F]
 
 /-- If a nonzero function belongs to `ℒ^p` and is independent of another function, then

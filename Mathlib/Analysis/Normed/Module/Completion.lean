@@ -29,14 +29,15 @@ namespace Completion
 
 variable (𝕜 E : Type*)
 
-instance [NormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] :
+instance [NormedField 𝕜] [AddCommGroup E] [SeminormedAddGroup E] [NormedSpace 𝕜 E] :
     NormedSpace 𝕜 (Completion E) where
   norm_smul_le := norm_smul_le
 
 section Module
 
 variable {𝕜 E}
-variable [Semiring 𝕜] [SeminormedAddCommGroup E] [Module 𝕜 E] [UniformContinuousConstSMul 𝕜 E]
+variable [Semiring 𝕜] [AddCommGroup E] [SeminormedAddGroup E]
+  [Module 𝕜 E] [UniformContinuousConstSMul 𝕜 E]
 
 /-- Embedding of a normed space to its completion as a linear isometry. -/
 def toComplₗᵢ : E →ₗᵢ[𝕜] Completion E :=
@@ -58,7 +59,7 @@ theorem coe_toComplL : ⇑(toComplL : E →L[𝕜] Completion E) = ((↑) : E �
   rfl
 
 @[simp]
-theorem norm_toComplL {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
+theorem norm_toComplL {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup E] [NormedAddGroup E]
     [NormedSpace 𝕜 E] [Nontrivial E] : ‖(toComplL : E →L[𝕜] Completion E)‖ = 1 :=
   (toComplₗᵢ : E →ₗᵢ[𝕜] Completion E).norm_toContinuousLinearMap
 
@@ -69,7 +70,7 @@ section Algebra
 variable (A : Type*)
 
 instance [SeminormedRing A] : NormedRing (Completion A) where
-  __ : NormedAddCommGroup (Completion A) := inferInstance
+  __ : NormedAddGroup (Completion A) := inferInstance
   __ : Ring (Completion A) := inferInstance
   norm_mul_le x y := by
     induction x, y using induction_on₂ with

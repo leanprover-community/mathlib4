@@ -335,7 +335,8 @@ end Bundle
 open Bundle
 
 variable [NontriviallyNormedField R] [∀ x, AddCommMonoid (E x)] [∀ x, Module R (E x)]
-  [NormedAddCommGroup F] [NormedSpace R F] [TopologicalSpace B] [TopologicalSpace (TotalSpace F E)]
+  [AddCommGroup F] [NormedAddGroup F] [NormedSpace R F]
+  [TopologicalSpace B] [TopologicalSpace (TotalSpace F E)]
   [∀ x, TopologicalSpace (E x)] [FiberBundle F E]
 
 /-- The space `Bundle.TotalSpace F E` (for `E : B → Type*` such that each `E x` is a topological
@@ -714,7 +715,8 @@ end
 section
 
 variable [NontriviallyNormedField R] [∀ x, AddCommMonoid (E x)] [∀ x, Module R (E x)]
-  [NormedAddCommGroup F] [NormedSpace R F] [TopologicalSpace B] [∀ x, TopologicalSpace (E x)]
+  [AddCommGroup F] [NormedAddGroup F] [NormedSpace R F]
+  [TopologicalSpace B] [∀ x, TopologicalSpace (E x)]
 
 open TopologicalSpace
 
@@ -831,7 +833,8 @@ number of "pretrivializations" identifying parts of `E` with product spaces `U �
 establishes that for the topology constructed on the sigma-type using
 `VectorPrebundle.totalSpaceTopology`, these "pretrivializations" are actually
 "trivializations" (i.e., homeomorphisms with respect to the constructed topology). -/
-theorem toVectorBundle : @VectorBundle R _ F E _ _ _ _ _ _ a.totalSpaceTopology _ a.toFiberBundle :=
+theorem toVectorBundle :
+    @VectorBundle R _ F E _ _ _ _ _ _ _ a.totalSpaceTopology _ a.toFiberBundle :=
   letI := a.totalSpaceTopology; letI := a.toFiberBundle
   { trivialization_linear' := by
       rintro _ ⟨e, he, rfl⟩
@@ -855,7 +858,7 @@ variable {𝕜₁ 𝕜₂ : Type*} [NontriviallyNormedField 𝕜₁] [Nontrivial
 variable {σ : 𝕜₁ →+* 𝕜₂}
 variable {B' : Type*} [TopologicalSpace B']
 variable [NormedSpace 𝕜₁ F] [∀ x, Module 𝕜₁ (E x)] [TopologicalSpace (TotalSpace F E)]
-variable {F' : Type*} [NormedAddCommGroup F'] [NormedSpace 𝕜₂ F'] {E' : B' → Type*}
+variable {F' : Type*} [AddCommGroup F'] [NormedAddGroup F'] [NormedSpace 𝕜₂ F'] {E' : B' → Type*}
   [∀ x, AddCommMonoid (E' x)] [∀ x, Module 𝕜₂ (E' x)] [TopologicalSpace (TotalSpace F' E')]
 
 variable [FiberBundle F E] [VectorBundle 𝕜₁ F E]

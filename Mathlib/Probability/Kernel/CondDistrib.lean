@@ -48,7 +48,8 @@ open scoped ENNReal MeasureTheory ProbabilityTheory
 namespace ProbabilityTheory
 
 variable {α β Ω F : Type*} [MeasurableSpace Ω] [StandardBorelSpace Ω]
-  [Nonempty Ω] [NormedAddCommGroup F] {mα : MeasurableSpace α} {μ : Measure α} [IsFiniteMeasure μ]
+  [Nonempty Ω] [AddCommGroup F] [NormedAddGroup F]
+  {mα : MeasurableSpace α} {μ : Measure α} [IsFiniteMeasure μ]
   {X : α → β} {Y : α → Ω}
 
 /-- **Regular conditional probability distribution**: kernel associated with the conditional
@@ -290,7 +291,8 @@ alias condexp_ae_eq_integral_condDistrib := condExp_ae_eq_integral_condDistrib
 
 /-- The conditional expectation of `Y` given `X` is almost everywhere equal to the integral
 `∫ y, y ∂(condDistrib Y X μ (X a))`. -/
-theorem condExp_ae_eq_integral_condDistrib' {Ω} [NormedAddCommGroup Ω] [NormedSpace ℝ Ω]
+theorem condExp_ae_eq_integral_condDistrib' {Ω}
+    [AddCommGroup Ω] [NormedAddGroup Ω] [NormedSpace ℝ Ω]
     [CompleteSpace Ω] [MeasurableSpace Ω] [BorelSpace Ω] [SecondCountableTopology Ω] {Y : α → Ω}
     (hX : Measurable X) (hY_int : Integrable Y μ) :
     μ[Y|mβ.comap X] =ᵐ[μ] fun a => ∫ y, y ∂condDistrib Y X μ (X a) :=

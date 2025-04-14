@@ -24,10 +24,10 @@ noncomputable section
 section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
+variable {F : Type*} [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
+variable {G : Type*} [AddCommGroup G] [NormedAddGroup G] [NormedSpace 𝕜 G]
+variable {G' : Type*} [AddCommGroup G'] [NormedAddGroup G'] [NormedSpace 𝕜 G']
 variable {f f₀ f₁ g : E → F}
 variable {f' f₀' f₁' g' : E →L[𝕜] F}
 variable (e : E →L[𝕜] F)
@@ -371,7 +371,8 @@ theorem:
 -/
 
 
-variable {ι : Type*} [Fintype ι] {F' : ι → Type*} [∀ i, NormedAddCommGroup (F' i)]
+variable {ι : Type*} [Fintype ι]
+  {F' : ι → Type*} [∀ i, AddCommGroup (F' i)] [∀ i, NormedAddGroup (F' i)]
   [∀ i, NormedSpace 𝕜 (F' i)] {φ : ∀ i, E → F' i} {φ' : ∀ i, E →L[𝕜] F' i} {Φ : E → ∀ i, F' i}
   {Φ' : E →L[𝕜] ∀ i, F' i}
 
@@ -535,7 +536,7 @@ as `Matrix.vecCons` is defeq to `Fin.cons`.
 section PiFin
 
 variable {n : Nat} {F' : Fin n.succ → Type*}
-variable [∀ i, NormedAddCommGroup (F' i)] [∀ i, NormedSpace 𝕜 (F' i)]
+variable [∀ i, AddCommGroup (F' i)] [∀ i, NormedAddGroup (F' i)] [∀ i, NormedSpace 𝕜 (F' i)]
 variable {φ : E → F' 0} {φs : E → ∀ i, F' (Fin.succ i)}
 
 theorem hasStrictFDerivAt_finCons {φ' : E →L[𝕜] Π i, F' i} :

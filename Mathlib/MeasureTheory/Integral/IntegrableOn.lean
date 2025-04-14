@@ -71,13 +71,14 @@ namespace MeasureTheory
 
 section NormedAddCommGroup
 
-theorem hasFiniteIntegral_restrict_of_bounded [NormedAddCommGroup E] {f : α → E} {s : Set α}
+theorem hasFiniteIntegral_restrict_of_bounded [AddCommGroup E] [NormedAddGroup E]
+    {f : α → E} {s : Set α}
     {μ : Measure α} {C} (hs : μ s < ∞) (hf : ∀ᵐ x ∂μ.restrict s, ‖f x‖ ≤ C) :
     HasFiniteIntegral f (μ.restrict s) :=
   haveI : IsFiniteMeasure (μ.restrict s) := ⟨by rwa [Measure.restrict_apply_univ]⟩
   hasFiniteIntegral_of_bounded hf
 
-variable [NormedAddCommGroup E] {f g : α → E} {s t : Set α} {μ ν : Measure α}
+variable [AddCommGroup E] [NormedAddGroup E] {f g : α → E} {s t : Set α} {μ ν : Measure α}
 
 /-- A function is `IntegrableOn` a set `s` if it is almost everywhere strongly measurable on `s`
 and if the integral of its pointwise norm over `s` is less than infinity. -/
@@ -189,7 +190,7 @@ theorem integrableOn_finset_iUnion {s : Finset β} {t : β → Set α} :
 theorem integrableOn_finite_iUnion [Finite β] {t : β → Set α} :
     IntegrableOn f (⋃ i, t i) μ ↔ ∀ i, IntegrableOn f (t i) μ := by
   cases nonempty_fintype β
-  simpa using @integrableOn_finset_iUnion _ _ _ _ _ f μ Finset.univ t
+  simpa using integrableOn_finset_iUnion (s := Finset.univ)
 
 lemma IntegrableOn.finset [MeasurableSingletonClass α] {μ : Measure α} [IsFiniteMeasure μ]
     {s : Finset α} {f : α → E} : IntegrableOn f s μ := by
@@ -255,7 +256,7 @@ theorem IntegrableOn.indicator (h : IntegrableOn f s μ) (ht : MeasurableSet t) 
     IntegrableOn (indicator t f) s μ :=
   Integrable.indicator h ht
 
-theorem integrable_indicatorConstLp {E} [NormedAddCommGroup E] {p : ℝ≥0∞} {s : Set α}
+theorem integrable_indicatorConstLp {E} [AddCommGroup E] [NormedAddGroup E] {p : ℝ≥0∞} {s : Set α}
     (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : E) :
     Integrable (indicatorConstLp p hs hμs c) μ := by
   rw [integrable_congr indicatorConstLp_coeFn, integrable_indicator_iff hs, IntegrableOn,
@@ -330,7 +331,8 @@ theorem integrableOn_iff_integrable_of_support_subset (h1s : support f ⊆ s) :
   contrapose! hx
   exact h1s (mem_support.2 hx)
 
-theorem integrableOn_Lp_of_measure_ne_top {E} [NormedAddCommGroup E] {p : ℝ≥0∞} {s : Set α}
+theorem integrableOn_Lp_of_measure_ne_top {E} [AddCommGroup E] [NormedAddGroup E]
+    {p : ℝ≥0∞} {s : Set α}
     (f : Lp E p μ) (hp : 1 ≤ p) (hμs : μ s ≠ ∞) : IntegrableOn f s μ := by
   refine memLp_one_iff_integrable.mp ?_
   have hμ_restrict_univ : (μ.restrict s) Set.univ < ∞ := by
@@ -410,8 +412,9 @@ protected theorem IntegrableAtFilter.sub {f g : α → E}
   rw [sub_eq_add_neg]
   exact hf.add hg.neg
 
-protected theorem IntegrableAtFilter.smul {𝕜 : Type*} [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 E]
-    [IsBoundedSMul 𝕜 E] {f : α → E} (hf : IntegrableAtFilter f l μ) (c : 𝕜) :
+protected theorem IntegrableAtFilter.smul {𝕜 : Type*} [AddCommGroup 𝕜] [NormedAddGroup 𝕜]
+    [SMulZeroClass 𝕜 E] [IsBoundedSMul 𝕜 E]
+    {f : α → E} (hf : IntegrableAtFilter f l μ) (c : 𝕜) :
     IntegrableAtFilter (c • f) l μ := by
   rcases hf with ⟨s, sl, hs⟩
   exact ⟨s, sl, hs.smul c⟩
@@ -519,7 +522,7 @@ end MeasureTheory
 
 open MeasureTheory
 
-variable [NormedAddCommGroup E]
+variable [AddCommGroup E] [NormedAddGroup E]
 
 /-- A function which is continuous on a set `s` is almost everywhere measurable with respect to
 `μ.restrict s`. -/

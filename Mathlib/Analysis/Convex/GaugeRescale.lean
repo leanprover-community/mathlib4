@@ -178,7 +178,7 @@ theorem exists_homeomorph_image_eq {s t : Set E}
 
 end Module
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
 
 /-- If `s` is a convex bounded set with a nonempty interior in a real normed space,
 then there is a homeomorphism of the ambient space to itself

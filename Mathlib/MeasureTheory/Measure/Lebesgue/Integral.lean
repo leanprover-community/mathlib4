@@ -48,7 +48,8 @@ open ContinuousMap
 that `Icc a b` has volume `b - a`. -/
 /-- If the sequence with `n`-th term the sup norm of `fun x ↦ f (x + n)` on the interval `Icc 0 1`,
 for `n ∈ ℤ`, is summable, then `f` is integrable on `ℝ`. -/
-theorem Real.integrable_of_summable_norm_Icc {E : Type*} [NormedAddCommGroup E] {f : C(ℝ, E)}
+theorem Real.integrable_of_summable_norm_Icc {E : Type*}
+    [AddCommGroup E] [NormedAddGroup E] {f : C(ℝ, E)}
     (hf : Summable fun n : ℤ => ‖(f.comp <| ContinuousMap.addRight n).restrict (Icc 0 1)‖) :
     Integrable f := by
   refine integrable_of_summable_norm_restrict (.of_nonneg_of_le
@@ -77,7 +78,7 @@ of finite integrals, see `intervalIntegral.integral_comp_neg`.
 
 /- @[simp] Porting note: Linter complains it does not apply to itself. Although it does apply to
 itself, it does not apply when `f` is more complicated -/
-theorem integral_comp_neg_Iic {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+theorem integral_comp_neg_Iic {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
     (c : ℝ) (f : ℝ → E) : (∫ x in Iic c, f (-x)) = ∫ x in Ioi (-c), f x := by
   have A : MeasurableEmbedding fun x : ℝ => -x :=
     (Homeomorph.neg ℝ).isClosedEmbedding.measurableEmbedding
@@ -87,7 +88,7 @@ theorem integral_comp_neg_Iic {E : Type*} [NormedAddCommGroup E] [NormedSpace �
 
 /- @[simp] Porting note: Linter complains it does not apply to itself. Although it does apply to
 itself, it does not apply when `f` is more complicated -/
-theorem integral_comp_neg_Ioi {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+theorem integral_comp_neg_Ioi {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
     (c : ℝ) (f : ℝ → E) : (∫ x in Ioi c, f (-x)) = ∫ x in Iic (-c), f x := by
   rw [← neg_neg c, ← integral_comp_neg_Iic]
   simp only [neg_neg]

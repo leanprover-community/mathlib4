@@ -38,15 +38,15 @@ namespace MeasureTheory
 variable {α F F' G G' 𝕜 : Type*} [RCLike 𝕜]
   -- 𝕜 for ℝ or ℂ
   -- F for a Lp submodule
-  [NormedAddCommGroup F]
+  [AddCommGroup F] [NormedAddGroup F]
   [NormedSpace 𝕜 F]
   -- F' for integrals on a Lp submodule
-  [NormedAddCommGroup F']
+  [AddCommGroup F'] [NormedAddGroup F']
   [NormedSpace 𝕜 F'] [NormedSpace ℝ F'] [CompleteSpace F']
   -- G for a Lp add_subgroup
-  [NormedAddCommGroup G]
+  [AddCommGroup G] [NormedAddGroup G]
   -- G' for integrals on a Lp add_subgroup
-  [NormedAddCommGroup G']
+  [AddCommGroup G'] [NormedAddGroup G']
   [NormedSpace ℝ G'] [CompleteSpace G']
 
 section CondexpInd
@@ -380,14 +380,16 @@ theorem condExpInd_of_measurable (hs : MeasurableSet[m] s) (hμs : μ s ≠ ∞)
   refine (condExpInd_ae_eq_condExpIndSMul hm (hm s hs) hμs c).trans ?_
   refine (condExpIndSMul_ae_eq_smul hm (hm s hs) hμs c).trans ?_
   rw [condExpL2_indicator_of_measurable hm hs hμs (1 : ℝ)]
-  refine (@indicatorConstLp_coeFn α _ _ 2 μ _ s (hm s hs) hμs (1 : ℝ)).mono fun x hx => ?_
+  refine (indicatorConstLp_coeFn (E := ℝ) (p := 2) (hs := hm s hs) (hμs := hμs) (c := 1)).mono
+    fun x hx => ?_
   dsimp only
   rw [hx]
   by_cases hx_mem : x ∈ s <;> simp [hx_mem]
 
 @[deprecated (since := "2025-01-21")] alias condexpInd_of_measurable := condExpInd_of_measurable
 
-theorem condExpInd_nonneg {E} [NormedAddCommGroup E] [Lattice E] [NormedSpace ℝ E] [OrderedSMul ℝ E]
+theorem condExpInd_nonneg {E}
+    [AddCommGroup E] [NormedAddGroup E] [Lattice E] [NormedSpace ℝ E] [OrderedSMul ℝ E]
     (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : E) (hx : 0 ≤ x) : 0 ≤ condExpInd E hm μ s x := by
   rw [← coeFn_le]
   refine EventuallyLE.trans_eq ?_ (condExpInd_ae_eq_condExpIndSMul hm hs hμs x).symm
@@ -438,7 +440,7 @@ alias condexpL1CLM_indicatorConst := condExpL1CLM_indicatorConst
 /-- Auxiliary lemma used in the proof of `setIntegral_condExpL1CLM`. -/
 theorem setIntegral_condExpL1CLM_of_measure_ne_top (f : α →₁[μ] F') (hs : MeasurableSet[m] s)
     (hμs : μ s ≠ ∞) : ∫ x in s, condExpL1CLM F' hm μ f x ∂μ = ∫ x in s, f x ∂μ := by
-  refine @Lp.induction _ _ _ _ _ _ _ ENNReal.one_ne_top
+  refine Lp.induction ENNReal.one_ne_top
     (fun f : α →₁[μ] F' => ∫ x in s, condExpL1CLM F' hm μ f x ∂μ = ∫ x in s, f x ∂μ) ?_ ?_
     (isClosed_eq ?_ ?_) f
   · intro x t ht hμt
@@ -500,7 +502,7 @@ theorem setIntegral_condExpL1CLM (f : α →₁[μ] F') (hs : MeasurableSet[m] s
 
 theorem aestronglyMeasurable_condExpL1CLM (f : α →₁[μ] F') :
     AEStronglyMeasurable[m] (condExpL1CLM F' hm μ f) μ := by
-  refine @Lp.induction _ _ _ _ _ _ _ ENNReal.one_ne_top
+  refine Lp.induction ENNReal.one_ne_top
     (fun f : α →₁[μ] F' => AEStronglyMeasurable[m] (condExpL1CLM F' hm μ f) μ) ?_ ?_ ?_ f
   · intro c s hs hμs
     rw [condExpL1CLM_indicatorConst hs hμs.ne c]
@@ -529,7 +531,7 @@ theorem condExpL1CLM_lpMeas (f : lpMeas F' ℝ m 1 μ) :
   have hfg : f = (lpMeasToLpTrimLie F' ℝ 1 μ hm).symm g := by
     simp only [g, LinearIsometryEquiv.symm_apply_apply]
   rw [hfg]
-  refine @Lp.induction α F' m _ 1 (μ.trim hm) _ ENNReal.coe_ne_top (fun g : α →₁[μ.trim hm] F' =>
+  refine @Lp.induction α F' m _ _ 1 (μ.trim hm) _ ENNReal.coe_ne_top (fun g : α →₁[μ.trim hm] F' =>
     condExpL1CLM F' hm μ ((lpMeasToLpTrimLie F' ℝ 1 μ hm).symm g : α →₁[μ] F') =
     ↑((lpMeasToLpTrimLie F' ℝ 1 μ hm).symm g)) ?_ ?_ ?_ g
   · intro c s hs hμs
@@ -657,7 +659,7 @@ theorem condExpL1_of_aestronglyMeasurable' (hfm : AEStronglyMeasurable[m] f μ)
 alias condexpL1_of_aestronglyMeasurable' := condExpL1_of_aestronglyMeasurable'
 
 theorem condExpL1_mono {E}
-    [NormedAddCommGroup E] [Lattice E] [HasSolidNorm E] [IsOrderedAddMonoid E]
+    [AddCommGroup E] [NormedAddGroup E] [Lattice E] [HasSolidNorm E] [IsOrderedAddMonoid E]
     [CompleteSpace E] [NormedSpace ℝ E]
     [OrderedSMul ℝ E] {f g : α → E} (hf : Integrable f μ) (hg : Integrable g μ) (hfg : f ≤ᵐ[μ] g) :
     condExpL1 hm μ f ≤ᵐ[μ] condExpL1 hm μ g := by

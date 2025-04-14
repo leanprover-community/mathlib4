@@ -43,8 +43,9 @@ open scoped Convolution Topology
 
 namespace ContDiffBump
 
-variable {G : Type uG} {E' : Type uE'} [NormedAddCommGroup E'] {g : G → E'} [MeasurableSpace G]
-  {μ : MeasureTheory.Measure G} [NormedSpace ℝ E'] [NormedAddCommGroup G] [NormedSpace ℝ G]
+variable {G : Type uG} {E' : Type uE'} [AddCommGroup E'] [NormedAddGroup E']
+  {g : G → E'} [MeasurableSpace G] {μ : MeasureTheory.Measure G}
+  [NormedSpace ℝ E'] [AddCommGroup G] [NormedAddGroup G] [NormedSpace ℝ G]
   [HasContDiffBump G] [CompleteSpace E'] {φ : ContDiffBump (0 : G)} {x₀ : G}
 
 /-- If `φ` is a bump function, compute `(φ ⋆ g) x₀`

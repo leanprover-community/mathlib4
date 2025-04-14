@@ -74,7 +74,7 @@ theorem entry_norm_bound_of_unitary {U : Matrix n n 𝕜} (hU : U ∈ Matrix.uni
   rw [← sq_le_one_iff₀ (norm_nonneg (U i j)), ← diag_eq_one, re_diag_eq_norm_sum]
   exact norm_sum
 
-attribute [local instance] Matrix.normedAddCommGroup
+attribute [local instance] Matrix.normedAddGroup
 
 /-- The entrywise sup norm of a unitary matrix is at most 1. -/
 theorem entrywise_sup_norm_bound_of_unitary {U : Matrix n n 𝕜} (hU : U ∈ Matrix.unitaryGroup n 𝕜) :
@@ -124,11 +124,11 @@ lemma piLp_equiv_toEuclideanCLM (A : Matrix n n 𝕜) (x : EuclideanSpace 𝕜 n
       toLin' A (WithLp.equiv _ _ x) :=
   rfl
 
-/-- An auxiliary definition used only to construct the true `NormedAddCommGroup` (and `Metric`)
-structure provided by `Matrix.instMetricSpaceL2Op` and `Matrix.instNormedAddCommGroupL2Op`. -/
-def l2OpNormedAddCommGroupAux : NormedAddCommGroup (Matrix m n 𝕜) :=
-  @NormedAddCommGroup.induced ((Matrix m n 𝕜) ≃ₗ[𝕜] (EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 m)) _
-    _ _ _ ContinuousLinearMap.toNormedAddCommGroup.toNormedAddGroup _ _ <|
+/-- An auxiliary definition used only to construct the true `NormedAddGroup` (and `Metric`)
+structure provided by `Matrix.instMetricSpaceL2Op` and `Matrix.instNormedAddGroupL2Op`. -/
+def l2OpNormedAddGroupAux : NormedAddGroup (Matrix m n 𝕜) :=
+  @NormedAddGroup.induced ((Matrix m n 𝕜) ≃ₗ[𝕜] (EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 m)) _
+    _ _ _ _ ContinuousLinearMap.toNormedAddGroup _ _ <|
     (toEuclideanLin.trans toContinuousLinearMap).injective
 
 /-- An auxiliary definition used only to construct the true `NormedRing` (and `Metric`) structure
@@ -145,13 +145,13 @@ open scoped Topology Uniformity
 def instL2OpMetricSpace : MetricSpace (Matrix m n 𝕜) := by
   /- We first replace the topology so that we can automatically replace the uniformity using
   `IsUniformAddGroup.toUniformSpace_eq`. -/
-  letI normed_add_comm_group : NormedAddCommGroup (Matrix m n 𝕜) :=
-    { l2OpNormedAddCommGroupAux.replaceTopology <|
+  letI normed_add_group : NormedAddGroup (Matrix m n 𝕜) :=
+    { l2OpNormedAddGroupAux.replaceTopology <|
         (toEuclideanLin (𝕜 := 𝕜) (m := m) (n := n)).trans toContinuousLinearMap
         |>.toContinuousLinearEquiv.toHomeomorph.isInducing.eq_induced with
-      norm := l2OpNormedAddCommGroupAux.norm
-      dist_eq := l2OpNormedAddCommGroupAux.dist_eq }
-  exact normed_add_comm_group.replaceUniformity <| by
+      norm := l2OpNormedAddGroupAux.norm
+      dist_eq := l2OpNormedAddGroupAux.dist_eq }
+  exact normed_add_group.replaceUniformity <| by
     congr
     rw [← @IsUniformAddGroup.toUniformSpace_eq _ (Matrix.instUniformSpace m n 𝕜) _ _]
     rw [@IsUniformAddGroup.toUniformSpace_eq _ PseudoEMetricSpace.toUniformSpace _ _]
@@ -162,11 +162,11 @@ open scoped Matrix.L2OpNorm
 
 /-- The norm structure on `Matrix m n 𝕜` arising from the operator norm given by the identification
 with (continuous) linear maps of `EuclideanSpace`. -/
-def instL2OpNormedAddCommGroup : NormedAddCommGroup (Matrix m n 𝕜) where
-  norm := l2OpNormedAddCommGroupAux.norm
-  dist_eq := l2OpNormedAddCommGroupAux.dist_eq
+def instL2OpNormedAddGroup : NormedAddGroup (Matrix m n 𝕜) where
+  norm := l2OpNormedAddGroupAux.norm
+  dist_eq := l2OpNormedAddGroupAux.dist_eq
 
-scoped[Matrix.L2OpNorm] attribute [instance] Matrix.instL2OpNormedAddCommGroup
+scoped[Matrix.L2OpNorm] attribute [instance] Matrix.instL2OpNormedAddGroup
 
 lemma l2_opNorm_def (A : Matrix m n 𝕜) :
     ‖A‖ = ‖(toEuclideanLin (𝕜 := 𝕜) (m := m) (n := n)).trans toContinuousLinearMap A‖ := rfl

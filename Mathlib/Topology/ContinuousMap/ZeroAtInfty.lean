@@ -451,16 +451,16 @@ field `𝕜` whenever `β` is as well.
 
 section NormedSpace
 
-noncomputable instance instSeminormedAddCommGroup [SeminormedAddCommGroup β] :
-    SeminormedAddCommGroup C₀(α, β) :=
-  SeminormedAddCommGroup.induced _ _ (⟨⟨toBCF, rfl⟩, fun _ _ => rfl⟩ : C₀(α, β) →+ α →ᵇ β)
+noncomputable instance instSeminormedAddGroup [AddCommGroup β] [SeminormedAddGroup β] :
+    SeminormedAddGroup C₀(α, β) :=
+  SeminormedAddGroup.induced _ _ (⟨⟨toBCF, rfl⟩, fun _ _ => rfl⟩ : C₀(α, β) →+ α →ᵇ β)
 
-noncomputable instance instNormedAddCommGroup [NormedAddCommGroup β] :
-    NormedAddCommGroup C₀(α, β) :=
-  NormedAddCommGroup.induced _ _ (⟨⟨toBCF, rfl⟩, fun _ _ => rfl⟩ : C₀(α, β) →+ α →ᵇ β)
+noncomputable instance instNormedAddGroup [AddCommGroup β] [NormedAddGroup β] :
+    NormedAddGroup C₀(α, β) :=
+  NormedAddGroup.induced _ _ (⟨⟨toBCF, rfl⟩, fun _ _ => rfl⟩ : C₀(α, β) →+ α →ᵇ β)
     (toBCF_injective α β)
 
-variable [SeminormedAddCommGroup β] {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 β]
+variable [AddCommGroup β] [SeminormedAddGroup β] {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 β]
 
 @[simp]
 theorem norm_toBCF_eq_norm {f : C₀(α, β)} : ‖f.toBCF‖ = ‖f‖ :=
@@ -475,12 +475,12 @@ section NormedRing
 
 noncomputable instance instNonUnitalSeminormedRing [NonUnitalSeminormedRing β] :
     NonUnitalSeminormedRing C₀(α, β) :=
-  { instNonUnitalRing, instSeminormedAddCommGroup with
+  { instNonUnitalRing, instSeminormedAddGroup with
     norm_mul_le f g := norm_mul_le f.toBCF g.toBCF }
 
 noncomputable instance instNonUnitalNormedRing [NonUnitalNormedRing β] :
     NonUnitalNormedRing C₀(α, β) :=
-  { instNonUnitalSeminormedRing, instNormedAddCommGroup with }
+  { instNonUnitalSeminormedRing, instNormedAddGroup with }
 
 noncomputable instance instNonUnitalSeminormedCommRing [NonUnitalSeminormedCommRing β] :
     NonUnitalSeminormedCommRing C₀(α, β) :=
@@ -531,7 +531,7 @@ end Star
 
 section NormedStar
 
-variable [NormedAddCommGroup β] [StarAddMonoid β] [NormedStarGroup β]
+variable [AddCommGroup β] [NormedAddGroup β] [StarAddMonoid β] [NormedStarGroup β]
 
 instance instNormedStarGroup : NormedStarGroup C₀(α, β) where
   norm_star_le f := (norm_star f.toBCF :).le

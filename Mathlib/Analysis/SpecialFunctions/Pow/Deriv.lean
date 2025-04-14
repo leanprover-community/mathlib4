@@ -66,8 +66,8 @@ section fderiv
 
 open Complex
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] {f g : E → ℂ} {f' g' : E →L[ℂ] ℂ}
-  {x : E} {s : Set E} {c : ℂ}
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℂ E]
+  {f g : E → ℂ} {f' g' : E →L[ℂ] ℂ} {x : E} {s : Set E} {c : ℂ}
 
 theorem HasStrictFDerivAt.cpow (hf : HasStrictFDerivAt f f' x) (hg : HasStrictFDerivAt g g' x)
     (h0 : f x ∈ slitPlane) : HasStrictFDerivAt (fun x => f x ^ g x)
@@ -249,7 +249,7 @@ theorem hasDerivAt_ofReal_cpow_const' {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r
     suffices HasDerivAt (fun y : ℝ => (↑(-y) : ℂ) ^ (r + 1)) (-(r + 1) * ↑(-x) ^ r) x by
       convert this.neg.mul_const _ using 1; ring
     suffices HasDerivAt (fun y : ℝ => (y : ℂ) ^ (r + 1)) ((r + 1) * ↑(-x) ^ r) (-x) by
-      convert @HasDerivAt.scomp ℝ _ ℂ _ _ x ℝ _ _ _ _ _ _ _ _ this (hasDerivAt_neg x) using 1
+      convert HasDerivAt.scomp x this (hasDerivAt_neg x) using 1
       rw [real_smul, ofReal_neg 1, ofReal_one]; ring
     suffices HasDerivAt (fun y : ℂ => y ^ (r + 1)) ((r + 1) * ↑(-x) ^ r) ↑(-x) by
       exact this.comp_ofReal
@@ -450,8 +450,8 @@ open Real
 
 section fderiv
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f g : E → ℝ} {f' g' : E →L[ℝ] ℝ}
-  {x : E} {s : Set E} {c p : ℝ} {n : WithTop ℕ∞}
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
+  {f g : E → ℝ} {f' g' : E →L[ℝ] ℝ} {x : E} {s : Set E} {c p : ℝ} {n : WithTop ℕ∞}
 
 #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
   added `by exact` to deal with unification issues. -/

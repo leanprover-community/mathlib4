@@ -51,7 +51,7 @@ open LinearMap (ker range)
 open Topology Finsupp
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
-variable [NormedAddCommGroup E] [NormedAddCommGroup F]
+variable [AddCommGroup E] [NormedAddGroup E] [AddCommGroup F] [NormedAddGroup F]
 variable [InnerProductSpace 𝕜 E] [InnerProductSpace ℝ F]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
@@ -251,7 +251,7 @@ theorem norm_eq_iInf_iff_real_inner_le_zero {K : Set F} (h : Convex ℝ K) {u : 
           rw [sq]
           refine le_add_of_nonneg_right ?_
           exact sq_nonneg _
-        _ = ‖u - v - (w - v)‖ ^ 2 := (@norm_sub_sq ℝ _ _ _ _ _ _).symm
+        _ = ‖u - v - (w - v)‖ ^ 2 := (norm_sub_sq (𝕜 := ℝ) _ _).symm
         _ = ‖u - w‖ * ‖u - w‖ := by
           have : u - v - (w - v) = u - w := by abel
           rw [this, sq]
@@ -369,7 +369,7 @@ instance [HasOrthogonalProjection K] : HasOrthogonalProjection Kᗮ where
     exact K.le_orthogonal_orthogonal hwK
 
 instance HasOrthogonalProjection.map_linearIsometryEquiv [HasOrthogonalProjection K]
-    {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E'] (f : E ≃ₗᵢ[𝕜] E') :
+    {E' : Type*} [AddCommGroup E'] [NormedAddGroup E'] [InnerProductSpace 𝕜 E'] (f : E ≃ₗᵢ[𝕜] E') :
     HasOrthogonalProjection (K.map (f.toLinearEquiv : E →ₗ[𝕜] E')) where
   exists_orthogonal v := by
     rcases HasOrthogonalProjection.exists_orthogonal (K := K) (f.symm v) with ⟨w, hwK, hw⟩
@@ -377,7 +377,7 @@ instance HasOrthogonalProjection.map_linearIsometryEquiv [HasOrthogonalProjectio
     erw [← f.symm.inner_map_map, f.symm_apply_apply, map_sub, f.symm_apply_apply, hw u hu]
 
 instance HasOrthogonalProjection.map_linearIsometryEquiv' [HasOrthogonalProjection K]
-    {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E'] (f : E ≃ₗᵢ[𝕜] E') :
+    {E' : Type*} [AddCommGroup E'] [NormedAddGroup E'] [InnerProductSpace 𝕜 E'] (f : E ≃ₗᵢ[𝕜] E') :
     HasOrthogonalProjection (K.map f.toLinearIsometry) :=
   HasOrthogonalProjection.map_linearIsometryEquiv K f
 
@@ -549,8 +549,9 @@ theorem orthogonalProjection_eq_zero_iff {v : E} : orthogonalProjection K v = 0 
 theorem ker_orthogonalProjection : LinearMap.ker (orthogonalProjection K) = Kᗮ := by
   ext; exact orthogonalProjection_eq_zero_iff
 
-theorem LinearIsometry.map_orthogonalProjection {E E' : Type*} [NormedAddCommGroup E]
-    [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 E'] (f : E →ₗᵢ[𝕜] E')
+theorem LinearIsometry.map_orthogonalProjection {E E' : Type*}
+    [AddCommGroup E] [NormedAddGroup E] [InnerProductSpace 𝕜 E]
+    [AddCommGroup E'] [NormedAddGroup E'] [InnerProductSpace 𝕜 E'] (f : E →ₗᵢ[𝕜] E')
     (p : Submodule 𝕜 E) [HasOrthogonalProjection p] [HasOrthogonalProjection (p.map f.toLinearMap)]
     (x : E) : f (orthogonalProjection p x) = orthogonalProjection (p.map f.toLinearMap) (f x) := by
   refine (eq_orthogonalProjection_of_mem_of_inner_eq_zero ?_ fun y hy => ?_).symm
@@ -558,16 +559,18 @@ theorem LinearIsometry.map_orthogonalProjection {E E' : Type*} [NormedAddCommGro
   rcases hy with ⟨x', hx', rfl : f x' = y⟩
   rw [← f.map_sub, f.inner_map_map, orthogonalProjection_inner_eq_zero x x' hx']
 
-theorem LinearIsometry.map_orthogonalProjection' {E E' : Type*} [NormedAddCommGroup E]
-    [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 E'] (f : E →ₗᵢ[𝕜] E')
+theorem LinearIsometry.map_orthogonalProjection' {E E' : Type*}
+    [AddCommGroup E] [NormedAddGroup E] [InnerProductSpace 𝕜 E]
+    [AddCommGroup E'] [NormedAddGroup E'] [InnerProductSpace 𝕜 E'] (f : E →ₗᵢ[𝕜] E')
     (p : Submodule 𝕜 E) [HasOrthogonalProjection p] [HasOrthogonalProjection (p.map f)] (x : E) :
     f (orthogonalProjection p x) = orthogonalProjection (p.map f) (f x) :=
   have : HasOrthogonalProjection (p.map f.toLinearMap) := ‹_›
   f.map_orthogonalProjection p x
 
 /-- Orthogonal projection onto the `Submodule.map` of a subspace. -/
-theorem orthogonalProjection_map_apply {E E' : Type*} [NormedAddCommGroup E]
-    [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 E'] (f : E ≃ₗᵢ[𝕜] E')
+theorem orthogonalProjection_map_apply {E E' : Type*}
+    [AddCommGroup E] [NormedAddGroup E] [InnerProductSpace 𝕜 E]
+    [AddCommGroup E'] [NormedAddGroup E'] [InnerProductSpace 𝕜 E'] (f : E ≃ₗᵢ[𝕜] E')
     (p : Submodule 𝕜 E) [HasOrthogonalProjection p] (x : E') :
     (orthogonalProjection (p.map (f.toLinearEquiv : E →ₗ[𝕜] E')) x : E') =
       f (orthogonalProjection p (f.symm x)) := by
@@ -709,14 +712,16 @@ theorem reflection_mem_subspace_eq_self {x : E} (hx : x ∈ K) : reflection K x 
   (reflection_eq_self_iff x).mpr hx
 
 /-- Reflection in the `Submodule.map` of a subspace. -/
-theorem reflection_map_apply {E E' : Type*} [NormedAddCommGroup E] [NormedAddCommGroup E']
+theorem reflection_map_apply {E E' : Type*}
+    [AddCommGroup E] [NormedAddGroup E] [AddCommGroup E'] [NormedAddGroup E']
     [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 E'] (f : E ≃ₗᵢ[𝕜] E') (K : Submodule 𝕜 E)
     [HasOrthogonalProjection K] (x : E') :
     reflection (K.map (f.toLinearEquiv : E →ₗ[𝕜] E')) x = f (reflection K (f.symm x)) := by
   simp [two_smul, reflection_apply, orthogonalProjection_map_apply f K x]
 
 /-- Reflection in the `Submodule.map` of a subspace. -/
-theorem reflection_map {E E' : Type*} [NormedAddCommGroup E] [NormedAddCommGroup E']
+theorem reflection_map {E E' : Type*}
+    [AddCommGroup E] [NormedAddGroup E] [AddCommGroup E'] [NormedAddGroup E']
     [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 E'] (f : E ≃ₗᵢ[𝕜] E') (K : Submodule 𝕜 E)
     [HasOrthogonalProjection K] :
     reflection (K.map (f.toLinearEquiv : E →ₗ[𝕜] E')) = f.symm.trans ((reflection K).trans f) :=

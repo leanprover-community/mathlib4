@@ -26,9 +26,9 @@ section Missing
 section lambda_rules
 
 variable {K : Type*} [NontriviallyNormedField K]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace K F]
-variable {G : Type*} [NormedAddCommGroup G] [NormedSpace K G]
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace K E]
+variable {F : Type*} [AddCommGroup F] [NormedAddGroup F] [NormedSpace K F]
+variable {G : Type*} [AddCommGroup G] [NormedAddGroup G] [NormedSpace K G]
 variable {f : E → F} {x} {s}
 
 

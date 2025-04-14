@@ -32,7 +32,7 @@ namespace EuclideanGeometry
 
 open InnerProductGeometry
 
-variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V P : Type*} [AddCommGroup V] [NormedAddGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P] {p p₀ : P}
 
 /-- The undirected angle at `p₂` between the line segments to `p₁` and
@@ -52,7 +52,7 @@ theorem continuousAt_angle {x : P × P × P} (hx12 : x.1 ≠ x.2.1) (hx32 : x.2.
   exact (InnerProductGeometry.continuousAt_angle hf1 hf2).comp (by fun_prop)
 
 @[simp]
-theorem _root_.AffineIsometry.angle_map {V₂ P₂ : Type*} [NormedAddCommGroup V₂]
+theorem _root_.AffineIsometry.angle_map {V₂ P₂ : Type*} [AddCommGroup V₂] [NormedAddGroup V₂]
     [InnerProductSpace ℝ V₂] [MetricSpace P₂] [NormedAddTorsor V₂ P₂]
     (f : P →ᵃⁱ[ℝ] P₂) (p₁ p₂ p₃ : P) : ∠ (f p₁) (f p₂) (f p₃) = ∠ p₁ p₂ p₃ := by
   simp_rw [angle, ← AffineIsometry.map_vsub, LinearIsometry.angle_map]

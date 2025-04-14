@@ -3,12 +3,13 @@ Copyright (c) 2022 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Junyan Xu, Jack McKoen
 -/
-import Mathlib.RingTheory.Valuation.ValuationRing
-import Mathlib.RingTheory.Localization.AsSubring
-import Mathlib.Algebra.Ring.Subring.Pointwise
+import Mathlib.Algebra.Order.Nonneg.Lattice
 import Mathlib.Algebra.Ring.Action.Field
-import Mathlib.RingTheory.Spectrum.Prime.Basic
+import Mathlib.Algebra.Ring.Subring.Pointwise
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+import Mathlib.RingTheory.Localization.AsSubring
+import Mathlib.RingTheory.Spectrum.Prime.Basic
+import Mathlib.RingTheory.Valuation.ValuationRing
 
 /-!
 
@@ -144,10 +145,18 @@ instance : IsFractionRing A K where
 /-- The value group of the valuation associated to `A`. Note: it is actually a group with zero. -/
 def ValueGroup :=
   ValuationRing.ValueGroup A K
--- The `LinearOrderedCommGroupWithZero` instance should be constructed by a deriving handler.
+-- The following instances should be constructed by a deriving handler.
 -- https://github.com/leanprover-community/mathlib4/issues/380
 
-instance : LinearOrderedCommGroupWithZero (ValueGroup A) := by
+instance : CommGroupWithZero (ValueGroup A) := by
+  unfold ValueGroup
+  infer_instance
+
+instance : LinearOrder (ValueGroup A) := by
+  unfold ValueGroup
+  infer_instance
+
+instance : IsOrderedMonoidWithZero (ValueGroup A) := by
   unfold ValueGroup
   infer_instance
 
@@ -372,9 +381,11 @@ end ValuationSubring
 namespace Valuation
 
 variable {K}
-variable {Γ Γ₁ Γ₂ : Type*} [LinearOrderedCommGroupWithZero Γ]
-  [LinearOrderedCommGroupWithZero Γ₁] [LinearOrderedCommGroupWithZero Γ₂] (v : Valuation K Γ)
-  (v₁ : Valuation K Γ₁) (v₂ : Valuation K Γ₂)
+variable {Γ Γ₁ Γ₂ : Type*}
+  [CommGroupWithZero Γ] [LinearOrder Γ] [IsOrderedMonoidWithZero Γ]
+  [CommGroupWithZero Γ₁] [LinearOrder Γ₁] [IsOrderedMonoidWithZero Γ₁]
+  [CommGroupWithZero Γ₂] [LinearOrder Γ₂] [IsOrderedMonoidWithZero Γ₂]
+  (v : Valuation K Γ) (v₁ : Valuation K Γ₁) (v₂ : Valuation K Γ₂)
 
 /-- The valuation subring associated to a valuation. -/
 def valuationSubring : ValuationSubring K :=
@@ -794,7 +805,8 @@ end ValuationSubring
 
 namespace Valuation
 
-variable {Γ : Type*} [LinearOrderedCommGroupWithZero Γ] (v : Valuation K Γ) (x : Kˣ)
+variable {Γ : Type*} [CommGroupWithZero Γ] [LinearOrder Γ] [IsOrderedMonoidWithZero Γ]
+  (v : Valuation K Γ) (x : Kˣ)
 
 theorem mem_unitGroup_iff : x ∈ v.valuationSubring.unitGroup ↔ v x = 1 :=
   IsEquiv.eq_one_iff_eq_one (Valuation.isEquiv_valuation_valuationSubring _).symm

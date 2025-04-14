@@ -55,7 +55,8 @@ namespace Sphere
 open AffineSubspace RealInnerProductSpace
 
 variable {V P : Type*}
-variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
+variable [AddCommGroup V] [NormedAddGroup V] [InnerProductSpace ℝ V]
+  [MetricSpace P] [NormedAddTorsor V P]
 
 /-- The affine subspace orthogonal to the radius vector of the sphere `s` at the point `p` (in
 the typical cases, `p` lies in `s` and this is the tangent space). -/

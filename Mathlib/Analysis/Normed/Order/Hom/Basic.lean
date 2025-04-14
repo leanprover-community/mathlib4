@@ -35,18 +35,19 @@ abbrev GroupSeminormClass.toSeminormedGroup [Group α] [GroupSeminormClass F α 
 lemma GroupSeminormClass.toSeminormedGroup_norm_eq [Group α] [GroupSeminormClass F α ℝ]
     (f : F) (x : α) : @norm _ (GroupSeminormClass.toSeminormedGroup f).toNorm x = f x := rfl
 
-/-- Constructs a `SeminormedCommGroup` structure from a `GroupSeminormClass` on a `CommGroup`. -/
--- See note [reducible non-instances]
-@[to_additive "Constructs a `SeminormedAddCommGroup` structure from an `AddGroupSeminormClass` on an
-`AddCommGroup`."]
-abbrev GroupSeminormClass.toSeminormedCommGroup [CommGroup α] [GroupSeminormClass F α ℝ]
-    (f : F) : SeminormedCommGroup α where
-  __ := GroupSeminormClass.toSeminormedGroup f
-  __ : CommGroup α := inferInstance
+@[deprecated (since := "2025-04-12")]
+alias GroupSeminormClass.toSeminormedCommGroup := GroupSeminormClass.toSeminormedGroup
 
-@[to_additive]
-lemma GroupSeminormClass.toSeminormedCommGroup_norm_eq [CommGroup α] [GroupSeminormClass F α ℝ]
-    (f : F) (x : α) : @norm _ (GroupSeminormClass.toSeminormedCommGroup f).toNorm x = f x := rfl
+@[deprecated (since := "2025-04-12")]
+alias GroupSeminormClass.toSeminormedCommGroup_norm_eq :=
+  GroupSeminormClass.toSeminormedGroup_norm_eq
+
+@[deprecated (since := "2025-04-12")]
+alias AddGroupSeminormClass.toSeminormedAddCommGroup := AddGroupSeminormClass.toSeminormedAddGroup
+
+@[deprecated (since := "2025-04-12")]
+alias AddGroupSeminormClass.toSeminormedAddCommGroup_norm_eq :=
+  AddGroupSeminormClass.toSeminormedAddGroup_norm_eq
 
 /-- Constructs a `NormedGroup` structure from a `GroupNormClass` on a `Group`. -/
 -- See note [reducible non-instances]
@@ -61,15 +62,16 @@ abbrev GroupNormClass.toNormedGroup [Group α] [GroupNormClass F α ℝ]
 lemma GroupNormClass.toNormedGroup_norm_eq [Group α] [GroupNormClass F α ℝ]
     (f : F) (x : α) : @norm _ (GroupNormClass.toNormedGroup f).toNorm x = f x := rfl
 
-/-- Constructs a `NormedCommGroup` structure from a `GroupNormClass` on a `CommGroup`. -/
--- See note [reducible non-instances]
-@[to_additive "Constructs a `NormedAddCommGroup` structure from an `AddGroupNormClass` on an
-`AddCommGroup`."]
-abbrev GroupNormClass.toNormedCommGroup [CommGroup α] [GroupNormClass F α ℝ]
-    (f : F) : NormedCommGroup α where
-  __ := GroupNormClass.toNormedGroup f
-  __ : CommGroup α := inferInstance
+@[deprecated (since := "2025-04-12")]
+alias GroupNormClass.toNormedCommGroup := GroupNormClass.toNormedGroup
 
-@[to_additive]
-lemma GroupNormClass.toNormedCommGroup_norm_eq [CommGroup α] [GroupNormClass F α ℝ]
-    (f : F) (x : α) : @norm _ (GroupNormClass.toNormedCommGroup f).toNorm x = f x := rfl
+@[deprecated (since := "2025-04-12")]
+alias AddGroupNormClass.toNormedAddCommGroup := AddGroupNormClass.toNormedAddGroup
+
+@[deprecated (since := "2025-04-12")]
+alias GroupNormClass.toNormedCommGroup_norm_eq :=
+  GroupNormClass.toNormedGroup_norm_eq
+
+@[deprecated (since := "2025-04-12")]
+alias AddGroupNormClass.toNormedAddCommGroup_norm_eq :=
+  AddGroupNormClass.toNormedAddGroup_norm_eq

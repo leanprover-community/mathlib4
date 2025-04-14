@@ -21,7 +21,8 @@ open AffineBasis Module Metric Set
 open scoped Convex Pointwise Topology
 
 section SeminormedAddCommGroup
-variable [SeminormedAddCommGroup E] [NormedSpace ℝ E] [PseudoMetricSpace P] [NormedAddTorsor E P]
+variable [AddCommGroup E] [SeminormedAddGroup E] [NormedSpace ℝ E]
+  [PseudoMetricSpace P] [NormedAddTorsor E P]
 variable {s : Set E}
 
 theorem Wbtw.dist_add_dist {x y z : P} (h : Wbtw ℝ x y z) :
@@ -36,7 +37,8 @@ theorem dist_add_dist_of_mem_segment {x y z : E} (h : y ∈ [x -[ℝ] z]) :
 end SeminormedAddCommGroup
 
 section NormedAddCommGroup
-variable [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] {s : Set E} {x : E}
+variable [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
+  [FiniteDimensional ℝ E] {s : Set E} {x : E}
 
 /-- We can intercalate a simplex between a point and one of its neighborhoods. -/
 lemma exists_mem_interior_convexHull_affineBasis (hs : s ∈ 𝓝 x) :

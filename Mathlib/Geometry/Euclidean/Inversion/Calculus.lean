@@ -26,8 +26,8 @@ inversion, derivative
 open Metric Function AffineMap Set AffineSubspace
 open scoped Topology RealInnerProductSpace
 
-variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [NormedAddCommGroup F] [InnerProductSpace ℝ F]
+variable {E F : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
+  [AddCommGroup F] [NormedAddGroup F] [InnerProductSpace ℝ F]
 
 open EuclideanGeometry
 

@@ -526,9 +526,9 @@ namespace Matrix
 variable {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
 
 /-- A positive definite matrix `M` induces a norm `‖x‖ = sqrt (re xᴴMx)`. -/
-noncomputable abbrev NormedAddCommGroup.ofMatrix {M : Matrix n n 𝕜} (hM : M.PosDef) :
-    NormedAddCommGroup (n → 𝕜) :=
-  @InnerProductSpace.Core.toNormedAddCommGroup _ _ _ _ _
+noncomputable abbrev NormedAddGroup.ofMatrix {M : Matrix n n 𝕜} (hM : M.PosDef) :
+    NormedAddGroup (n → 𝕜) :=
+  @InnerProductSpace.Core.toNormedAddGroup _ _ _ _ _
     { inner := fun x y => dotProduct (M *ᵥ y) (star x)
       conj_symm := fun x y => by
         rw [dotProduct_comm, star_dotProduct, starRingEnd_apply, star_star,
@@ -544,9 +544,11 @@ noncomputable abbrev NormedAddCommGroup.ofMatrix {M : Matrix n n 𝕜} (hM : M.P
       smul_left := fun x y r => by
         rw [← smul_eq_mul, ← dotProduct_smul, starRingEnd_apply, ← star_smul] }
 
+@[deprecated (since := "2025-04-12")] alias NormedAddCommGroup.ofMatrix := NormedAddGroup.ofMatrix
+
 /-- A positive definite matrix `M` induces an inner product `⟪x, y⟫ = xᴴMy`. -/
 def InnerProductSpace.ofMatrix {M : Matrix n n 𝕜} (hM : M.PosDef) :
-    @InnerProductSpace 𝕜 (n → 𝕜) _ (NormedAddCommGroup.ofMatrix hM).toSeminormedAddCommGroup :=
+    @InnerProductSpace 𝕜 (n → 𝕜) _ _ (NormedAddGroup.ofMatrix hM).toSeminormedAddGroup :=
   InnerProductSpace.ofCore _
 
 end Matrix

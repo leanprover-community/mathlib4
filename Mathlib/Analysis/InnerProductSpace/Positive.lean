@@ -41,7 +41,7 @@ open scoped InnerProduct ComplexConjugate
 namespace ContinuousLinearMap
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
-variable [NormedAddCommGroup E] [NormedAddCommGroup F]
+variable [AddCommGroup E] [NormedAddGroup E] [AddCommGroup F] [NormedAddGroup F]
 variable [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 F]
 variable [CompleteSpace E] [CompleteSpace F]
 
@@ -101,7 +101,7 @@ theorem IsPositive.orthogonalProjection_comp {T : E →L[𝕜] E} (hT : T.IsPosi
 
 open scoped NNReal
 
-lemma antilipschitz_of_forall_le_inner_map {H : Type*} [NormedAddCommGroup H]
+lemma antilipschitz_of_forall_le_inner_map {H : Type*} [AddCommGroup H] [NormedAddGroup H]
     [InnerProductSpace 𝕜 H] (f : H →L[𝕜] H) {c : ℝ≥0} (hc : 0 < c)
     (h : ∀ x, ‖x‖ ^ 2 * c ≤ ‖⟪f x, x⟫_𝕜‖) : AntilipschitzWith c⁻¹ f := by
   refine f.antilipschitz_of_bound (K := c⁻¹) fun x ↦ ?_
@@ -126,7 +126,8 @@ lemma isUnit_of_forall_le_norm_inner_map (f : E →L[𝕜] E) {c : ℝ≥0} (hc 
 
 section Complex
 
-variable {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace ℂ E'] [CompleteSpace E']
+variable {E' : Type*} [AddCommGroup E'] [NormedAddGroup E'] [InnerProductSpace ℂ E']
+  [CompleteSpace E']
 
 theorem isPositive_iff_complex (T : E' →L[ℂ] E') :
     IsPositive T ↔ ∀ x, (re ⟪T x, x⟫_ℂ : ℂ) = ⟪T x, x⟫_ℂ ∧ 0 ≤ re ⟪T x, x⟫_ℂ := by

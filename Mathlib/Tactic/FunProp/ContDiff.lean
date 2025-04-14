@@ -20,9 +20,9 @@ section Missing
 section lambda_rules
 
 variable {K : Type*} [NontriviallyNormedField K]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace K F]
-variable {G : Type*} [NormedAddCommGroup G] [NormedSpace K G]
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace K E]
+variable {F : Type*} [AddCommGroup F] [NormedAddGroup F] [NormedSpace K F]
+variable {G : Type*} [AddCommGroup G] [NormedAddGroup G] [NormedSpace K G]
 variable {f : E → F} {x} {s} {n}
 
 theorem contDiff_id' : ContDiff K n (fun x : E => x) := contDiff_id
@@ -41,7 +41,8 @@ theorem ContDiffAt.comp' {f : E → F} {g : F → G} (hg : ContDiffAt K n g (f x
 -- theorem ContDiffOn.comp'' {g : F → G} {t : Set F} (hg : ContDiffOn K n g t)
 --     (hf : ContDiffOn K n f s) (st : Set.MapsTo f s t) : ContDiffOn K n (fun x => g (f x)) s :=
 
-variable {ι : Type*} [Fintype ι] {F' : ι → Type*} [∀ i, NormedAddCommGroup (F' i)]
+variable {ι : Type*} [Fintype ι] {F' : ι → Type*}
+  [∀ i, AddCommGroup (F' i)] [∀ i, NormedAddGroup (F' i)]
   [∀ i, NormedSpace K (F' i)] {Φ : E → ∀ i, F' i}
 
 theorem contDiff_pi' (hΦ : ∀ i, ContDiff K n fun x => Φ x i) : ContDiff K n Φ :=
@@ -58,7 +59,7 @@ end lambda_rules
 section div
 
 variable {K : Type*} [NontriviallyNormedField K]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E]
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace K E]
 variable {s}
 
 theorem ContDiffOn.div' {f g : E → K} {n} (hf : ContDiffOn K n f s)
@@ -72,7 +73,7 @@ end div
 section deriv
 
 variable {K : Type*} [NontriviallyNormedField K]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace K F]
+variable {F : Type*} [AddCommGroup F] [NormedAddGroup F] [NormedSpace K F]
 
 /-- Original version `ContDiff.differentiable_iteratedDeriv` introduces a new variable `(n:ℕ∞)`
 and `funProp` can't work with such theorem. The theorem should be state where `n` is explicitly

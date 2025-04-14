@@ -34,7 +34,7 @@ open Set LinearMap Pointwise
 
 section Dual
 
-variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℝ H] (s t : Set H)
+variable {H : Type*} [AddCommGroup H] [NormedAddGroup H] [InnerProductSpace ℝ H] (s t : Set H)
 
 open RealInnerProductSpace
 

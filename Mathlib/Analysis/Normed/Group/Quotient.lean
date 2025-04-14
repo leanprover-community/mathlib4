@@ -96,8 +96,10 @@ noncomputable section
 open Metric Set Topology NNReal
 
 namespace QuotientGroup
-variable {M : Type*} [SeminormedCommGroup M] {S : Subgroup M} {x : M ⧸ S} {m : M} {r ε : ℝ}
+variable {M : Type*} [CommGroup M] [SeminormedGroup M]
+  {S : Subgroup M} {x : M ⧸ S} {m : M} {r ε : ℝ}
 
+omit [SeminormedGroup M] in
 @[to_additive add_norm_aux]
 private lemma norm_aux (x : M ⧸ S) : {m : M | (m : M ⧸ S) = x}.Nonempty := Quot.exists_rep x
 
@@ -199,9 +201,9 @@ lemma exists_norm_mul_lt (S : Subgroup M) (m : M) {ε : ℝ} (hε : 0 < ε) :
 variable (S) in
 /-- The seminormed group structure on the quotient by a subgroup. -/
 @[to_additive "The seminormed group structure on the quotient by an additive subgroup."]
-noncomputable instance instSeminormedCommGroup : SeminormedCommGroup (M ⧸ S) where
+noncomputable instance instSeminormedGroup : SeminormedGroup (M ⧸ S) where
   toUniformSpace := IsTopologicalGroup.toUniformSpace (M ⧸ S)
-  __ := groupSeminorm.toSeminormedCommGroup
+  __ := groupSeminorm.toSeminormedGroup
   uniformity_dist := by
     rw [uniformity_eq_comap_nhds_one', (nhds_one_hasBasis.comap _).eq_biInf]
     simp only [dist, preimage_setOf_eq, norm_eq_groupSeminorm, map_div_rev]
@@ -209,24 +211,25 @@ noncomputable instance instSeminormedCommGroup : SeminormedCommGroup (M ⧸ S) w
 variable (S) in
 /-- The quotient in the category of normed groups. -/
 @[to_additive "The quotient in the category of normed groups."]
-noncomputable instance instNormedCommGroup [hS : IsClosed (S : Set M)] :
-    NormedCommGroup (M ⧸ S) where
+noncomputable instance instNormedGroup [hS : IsClosed (S : Set M)] :
+    NormedGroup (M ⧸ S) where
   __ := MetricSpace.ofT0PseudoMetricSpace _
 
 -- This is a sanity check left here on purpose to ensure that potential refactors won't destroy
 -- this important property.
 example :
     (instTopologicalSpaceQuotient : TopologicalSpace <| M ⧸ S) =
-      (instSeminormedCommGroup S).toUniformSpace.toTopologicalSpace := rfl
+      (instSeminormedGroup S).toUniformSpace.toTopologicalSpace := rfl
 
 example [IsClosed (S : Set M)] :
-   (instSeminormedCommGroup S) = NormedCommGroup.toSeminormedCommGroup := rfl
+   (instSeminormedGroup S) = NormedGroup.toSeminormedGroup := rfl
 
 end QuotientGroup
 
 open QuotientAddGroup Metric Set Topology NNReal
 
-variable {M N : Type*} [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]
+variable {M N : Type*} [AddCommGroup M] [SeminormedAddGroup M]
+  [AddCommGroup N] [SeminormedAddGroup N]
 
 /-- The definition of the norm on the quotient by an additive subgroup. -/
 @[deprecated QuotientAddGroup.instNorm (since := "2025-02-02")]
@@ -322,14 +325,14 @@ theorem quotient_nhd_basis (S : AddSubgroup M) :
     (𝓝 (0 : M ⧸ S)).HasBasis (fun ε ↦ 0 < ε) fun ε ↦ { x | ‖x‖ < ε } := nhds_zero_hasBasis
 
 /-- The seminormed group structure on the quotient by an additive subgroup. -/
-@[deprecated QuotientAddGroup.instSeminormedAddCommGroup (since := "2025-02-02")]
+@[deprecated QuotientAddGroup.instSeminormedAddGroup (since := "2025-02-02")]
 noncomputable def AddSubgroup.seminormedAddCommGroupQuotient (S : AddSubgroup M) :
-    SeminormedAddCommGroup (M ⧸ S) := inferInstance
+    SeminormedAddGroup (M ⧸ S) := inferInstance
 
 /-- The quotient in the category of normed groups. -/
-@[deprecated QuotientAddGroup.instNormedAddCommGroup (since := "2025-02-02")]
+@[deprecated QuotientAddGroup.instNormedAddGroup (since := "2025-02-02")]
 noncomputable instance AddSubgroup.normedAddCommGroupQuotient (S : AddSubgroup M)
-    [IsClosed (S : Set M)] : NormedAddCommGroup (M ⧸ S) := inferInstance
+    [IsClosed (S : Set M)] : NormedAddGroup (M ⧸ S) := inferInstance
 
 namespace AddSubgroup
 
@@ -400,17 +403,17 @@ structure IsQuotient (f : NormedAddGroupHom M N) : Prop where
 
 /-- Given `f : NormedAddGroupHom M N` such that `f s = 0` for all `s ∈ S`, where,
 `S : AddSubgroup M` is closed, the induced morphism `NormedAddGroupHom (M ⧸ S) N`. -/
-noncomputable def lift {N : Type*} [SeminormedAddCommGroup N] (S : AddSubgroup M)
+noncomputable def lift {N : Type*} [AddCommGroup N] [SeminormedAddGroup N] (S : AddSubgroup M)
     (f : NormedAddGroupHom M N) (hf : ∀ s ∈ S, f s = 0) : NormedAddGroupHom (M ⧸ S) N :=
   { QuotientAddGroup.lift S f.toAddMonoidHom hf with
     bound' := ⟨‖f‖, norm_lift_apply_le f hf⟩ }
 
-theorem lift_mk {N : Type*} [SeminormedAddCommGroup N] (S : AddSubgroup M)
+theorem lift_mk {N : Type*} [AddCommGroup N] [SeminormedAddGroup N] (S : AddSubgroup M)
     (f : NormedAddGroupHom M N) (hf : ∀ s ∈ S, f s = 0) (m : M) :
     lift S f hf (S.normedMk m) = f m :=
   rfl
 
-theorem lift_unique {N : Type*} [SeminormedAddCommGroup N] (S : AddSubgroup M)
+theorem lift_unique {N : Type*} [AddCommGroup N] [SeminormedAddGroup N] (S : AddSubgroup M)
     (f : NormedAddGroupHom M N) (hf : ∀ s ∈ S, f s = 0) (g : NormedAddGroupHom (M ⧸ S) N)
     (h : g.comp S.normedMk = f) : g = lift S f hf := by
   ext x
@@ -443,18 +446,18 @@ theorem IsQuotient.norm_le {f : NormedAddGroupHom M N} (hquot : IsQuotient f) (m
     apply norm_nonneg
   · exact ⟨0, f.ker.zero_mem, by simp⟩
 
-theorem norm_lift_le {N : Type*} [SeminormedAddCommGroup N] (S : AddSubgroup M)
+theorem norm_lift_le {N : Type*} [AddCommGroup N] [SeminormedAddGroup N] (S : AddSubgroup M)
     (f : NormedAddGroupHom M N) (hf : ∀ s ∈ S, f s = 0) :
     ‖lift S f hf‖ ≤ ‖f‖ :=
   opNorm_le_bound _ (norm_nonneg f) (norm_lift_apply_le f hf)
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: deprecate?
-theorem lift_norm_le {N : Type*} [SeminormedAddCommGroup N] (S : AddSubgroup M)
+theorem lift_norm_le {N : Type*} [AddCommGroup N] [SeminormedAddGroup N] (S : AddSubgroup M)
     (f : NormedAddGroupHom M N) (hf : ∀ s ∈ S, f s = 0) {c : ℝ≥0} (fb : ‖f‖ ≤ c) :
     ‖lift S f hf‖ ≤ c :=
   (norm_lift_le S f hf).trans fb
 
-theorem lift_normNoninc {N : Type*} [SeminormedAddCommGroup N] (S : AddSubgroup M)
+theorem lift_normNoninc {N : Type*} [AddCommGroup N] [SeminormedAddGroup N] (S : AddSubgroup M)
     (f : NormedAddGroupHom M N) (hf : ∀ s ∈ S, f s = 0) (fb : f.NormNoninc) :
     (lift S f hf).NormNoninc := fun x => by
   have fb' : ‖f‖ ≤ (1 : ℝ≥0) := NormNoninc.normNoninc_iff_norm_le_one.mp fb
@@ -480,12 +483,12 @@ section Submodule
 
 variable {R : Type*} [Ring R] [Module R M] (S : Submodule R M)
 
-instance Submodule.Quotient.seminormedAddCommGroup : SeminormedAddCommGroup (M ⧸ S) :=
-  QuotientAddGroup.instSeminormedAddCommGroup S.toAddSubgroup
+instance Submodule.Quotient.seminormedAddGroup : SeminormedAddGroup (M ⧸ S) :=
+  QuotientAddGroup.instSeminormedAddGroup S.toAddSubgroup
 
-instance Submodule.Quotient.normedAddCommGroup [hS : IsClosed (S : Set M)] :
-    NormedAddCommGroup (M ⧸ S) :=
-  QuotientAddGroup.instNormedAddCommGroup S.toAddSubgroup (hS := hS)
+instance Submodule.Quotient.normedAddGroup [hS : IsClosed (S : Set M)] :
+    NormedAddGroup (M ⧸ S) :=
+  QuotientAddGroup.instNormedAddGroup S.toAddSubgroup (hS := hS)
 
 instance Submodule.Quotient.completeSpace [CompleteSpace M] : CompleteSpace (M ⧸ S) :=
   QuotientAddGroup.completeSpace M S.toAddSubgroup
@@ -550,7 +553,7 @@ instance Ideal.Quotient.semiNormedCommRing : SeminormedCommRing (R ⧸ I) where
       _ ≤ _ := (sub_lt_iff_lt_add'.mp h.1).le
 
 instance Ideal.Quotient.normedCommRing [IsClosed (I : Set R)] : NormedCommRing (R ⧸ I) :=
-  { Ideal.Quotient.semiNormedCommRing I, Submodule.Quotient.normedAddCommGroup I with }
+  { Ideal.Quotient.semiNormedCommRing I, Submodule.Quotient.normedAddGroup I with }
 
 variable (𝕜 : Type*) [NormedField 𝕜]
 

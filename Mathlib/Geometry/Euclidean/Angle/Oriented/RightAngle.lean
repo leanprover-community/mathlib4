@@ -27,7 +27,7 @@ namespace Orientation
 
 open Module
 
-variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+variable {V : Type*} [AddCommGroup V] [NormedAddGroup V] [InnerProductSpace ℝ V]
 variable [hd2 : Fact (finrank ℝ V = 2)] (o : Orientation ℝ V (Fin 2))
 
 /-- An angle in a right-angled triangle expressed using `arccos`. -/
@@ -521,8 +521,8 @@ namespace EuclideanGeometry
 
 open Module
 
-variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
-  [NormedAddTorsor V P] [hd2 : Fact (finrank ℝ V = 2)] [Module.Oriented ℝ V (Fin 2)]
+variable {V : Type*} {P : Type*} [AddCommGroup V] [NormedAddGroup V] [InnerProductSpace ℝ V]
+  [MetricSpace P] [NormedAddTorsor V P] [hd2 : Fact (finrank ℝ V = 2)] [Module.Oriented ℝ V (Fin 2)]
 
 /-- An angle in a right-angled triangle expressed using `arccos`. -/
 theorem oangle_right_eq_arccos_of_oangle_eq_pi_div_two {p₁ p₂ p₃ : P} (h : ∡ p₁ p₂ p₃ = ↑(π / 2)) :

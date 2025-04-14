@@ -29,7 +29,7 @@ noncomputable section
 
 open Module.Free Module canonicalEmbedding Matrix Finset
 
-attribute [local instance] Matrix.seminormedAddCommGroup
+attribute [local instance] Matrix.seminormedAddGroup
 
 /-- The house of an algebraic number as the norm of its image by the canonical embedding. -/
 def house (α : K) : ℝ := ‖canonicalEmbedding K α‖
@@ -63,7 +63,7 @@ variable (K)
 
 open Module.Free Module canonicalEmbedding Matrix Finset
 
-attribute [local instance] Matrix.seminormedAddCommGroup
+attribute [local instance] Matrix.seminormedAddGroup
 
 section DecidableEq
 

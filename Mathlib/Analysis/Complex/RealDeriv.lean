@@ -60,7 +60,7 @@ theorem ContDiff.real_of_complex {n : WithTop ℕ∞} (h : ContDiff ℂ n e) :
     ContDiff ℝ n fun x : ℝ => (e x).re :=
   contDiff_iff_contDiffAt.2 fun _ => h.contDiffAt.real_of_complex
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℂ E]
 
 theorem HasStrictDerivAt.complexToReal_fderiv' {f : ℂ → E} {x : ℂ} {f' : E}
     (h : HasStrictDerivAt f f' x) :

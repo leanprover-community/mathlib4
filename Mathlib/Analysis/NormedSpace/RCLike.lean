@@ -29,7 +29,7 @@ This file exists mainly to avoid importing `RCLike` in the main normed space the
 
 open Metric
 
-variable {𝕜 : Type*} [RCLike 𝕜] {E : Type*} [NormedAddCommGroup E]
+variable {𝕜 : Type*} [RCLike 𝕜] {E : Type*} [AddCommGroup E] [NormedAddGroup E]
 
 theorem RCLike.norm_coe_norm {z : E} : ‖(‖z‖ : 𝕜)‖ = ‖z‖ := by simp
 

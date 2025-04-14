@@ -54,7 +54,7 @@ open Submodule MeasureTheory Module MeasureTheory Module ZSpan
 
 section General
 
-variable {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E] (L : Submodule ℤ E)
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [MeasurableSpace E] (L : Submodule ℤ E)
 
 /-- The covolume of a `ℤ`-lattice is the volume of some fundamental domain; see
 `ZLattice.covolume_eq_volume` for the proof that the volume does not depend on the choice of
@@ -65,7 +65,7 @@ end General
 
 section Basic
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
 variable [MeasurableSpace E] [BorelSpace E]
 variable (L : Submodule ℤ E) [DiscreteTopology L] [IsZLattice ℝ L]
 variable (μ : Measure E := by volume_tac) [Measure.IsAddHaarMeasure μ]
@@ -85,7 +85,8 @@ theorem covolume_ne_zero : covolume L μ ≠ 0 := by
 theorem covolume_pos : 0 < covolume L μ :=
   lt_of_le_of_ne ENNReal.toReal_nonneg (covolume_ne_zero L μ).symm
 
-theorem covolume_comap {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ F]
+theorem covolume_comap {F : Type*}
+    [AddCommGroup F] [NormedAddGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ F]
     [MeasurableSpace F] [BorelSpace F] (ν : Measure F := by volume_tac) [Measure.IsAddHaarMeasure ν]
     {e : F ≃L[ℝ] E} (he : MeasurePreserving e ν μ) :
     covolume (ZLattice.comap ℝ L e.toLinearMap) ν = covolume L μ := by
@@ -135,7 +136,7 @@ theorem volume_image_eq_volume_div_covolume {ι : Type*} [Fintype ι] [Decidable
 
 /-- A more general version of `ZLattice.volume_image_eq_volume_div_covolume`;
 see the `Naming conventions` section in the introduction. -/
-theorem volume_image_eq_volume_div_covolume' {E : Type*} [NormedAddCommGroup E]
+theorem volume_image_eq_volume_div_covolume' {E : Type*} [AddCommGroup E] [NormedAddGroup E]
     [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
     (L : Submodule ℤ E) [DiscreteTopology L] [IsZLattice ℝ L] {ι : Type*} [Fintype ι]
     (b : Basis ι ℤ L) {s : Set E} (hs : NullMeasurableSet s) :
@@ -164,7 +165,7 @@ section General
 
 open Filter Fintype Pointwise Topology BoxIntegral Bornology
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
 variable {L : Submodule ℤ E} [DiscreteTopology L] [IsZLattice ℝ L]
 variable {ι : Type*} [Fintype ι] (b : Basis ι ℤ L)
 
@@ -289,7 +290,8 @@ section InnerProductSpace
 
 open Filter Pointwise Topology Bornology
 
-variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E]
+  [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
   [MeasurableSpace E] [BorelSpace E]
 variable (L : Submodule ℤ E) [DiscreteTopology L] [IsZLattice ℝ L]
 

@@ -62,7 +62,7 @@ open Topology
 
 section NormedAddCommGroup
 
-variable {α β : Type*} [NormedAddCommGroup β]
+variable {α β : Type*} [AddCommGroup β] [NormedAddGroup β]
 
 /-- Two functions `u` and `v` are said to be asymptotically equivalent along a filter `l`
   (denoted as `u ~[l] v` in the `Asymptotics` namespace)
@@ -213,7 +213,8 @@ end NormedField
 
 section SMul
 
-theorem IsEquivalent.smul {α E 𝕜 : Type*} [NormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+theorem IsEquivalent.smul {α E 𝕜 : Type*} [NormedField 𝕜] [AddCommGroup E] [NormedAddGroup E]
+    [NormedSpace 𝕜 E]
     {a b : α → 𝕜} {u v : α → E} {l : Filter α} (hab : a ~[l] b) (huv : u ~[l] v) :
     (fun x ↦ a x • u x) ~[l] fun x ↦ b x • v x := by
   rcases hab.exists_eq_mul with ⟨φ, hφ, habφ⟩
@@ -320,7 +321,7 @@ open Filter Asymptotics
 
 open Asymptotics
 
-variable {α β β₂ : Type*} [NormedAddCommGroup β] [Norm β₂] {l : Filter α}
+variable {α β β₂ : Type*} [AddCommGroup β] [NormedAddGroup β] [Norm β₂] {l : Filter α}
 
 theorem Filter.EventuallyEq.isEquivalent {u v : α → β} (h : u =ᶠ[l] v) : u ~[l] v :=
   IsEquivalent.congr_right (isLittleO_refl_left _ _) h

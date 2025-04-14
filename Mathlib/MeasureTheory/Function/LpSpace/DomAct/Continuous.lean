@@ -40,7 +40,7 @@ variable {X M E : Type*}
   [TopologicalSpace X] [R1Space X] [MeasurableSpace X] [BorelSpace X]
   [Monoid M] [TopologicalSpace M] [MeasurableSpace M] [OpensMeasurableSpace M]
   [SMul M X] [ContinuousSMul M X]
-  [NormedAddCommGroup E]
+  [AddCommGroup E] [NormedAddGroup E]
   {μ : Measure X} [IsLocallyFiniteMeasure μ] [μ.InnerRegularCompactLTTop]
   [SMulInvariantMeasure M X μ]
   {p : ℝ≥0∞} [Fact (1 ≤ p)] [hp : Fact (p ≠ ∞)]

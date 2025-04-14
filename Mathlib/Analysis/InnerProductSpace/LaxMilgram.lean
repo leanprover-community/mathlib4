@@ -41,7 +41,7 @@ universe u
 
 namespace IsCoercive
 
-variable {V : Type u} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [CompleteSpace V]
+variable {V : Type u} [AddCommGroup V] [NormedAddGroup V] [InnerProductSpace ℝ V] [CompleteSpace V]
 variable {B : V →L[ℝ] V →L[ℝ] ℝ}
 
 local postfix:1024 "♯" => continuousLinearMapOfBilin (𝕜 := ℝ)

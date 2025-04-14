@@ -30,7 +30,8 @@ open Set Filter
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 variable {E F : Type*}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
+  [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
 
 /-!
 ### Basic properties

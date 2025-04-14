@@ -35,7 +35,7 @@ noncomputable section
 
 section Defs
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℂ E]
 
 /-- Predicate on `f` and `s` asserting that the Mellin integral is well-defined. -/
 def MellinConvergent (f : ℝ → E) (s : ℂ) : Prop :=
@@ -166,7 +166,7 @@ theorem hasMellin_sub {f g : ℝ → E} {s : ℂ} (hf : MellinConvergent f s)
 
 end Defs
 
-variable {E : Type*} [NormedAddCommGroup E]
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E]
 
 section MellinConvergent
 

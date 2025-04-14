@@ -33,7 +33,7 @@ namespace Lp
 
 section Order
 
-variable [NormedAddCommGroup E] [Lattice E]
+variable [AddCommGroup E] [NormedAddGroup E] [Lattice E]
 
 theorem coeFn_le (f g : Lp E p μ) : f ≤ᵐ[μ] g ↔ f ≤ g := by
   rw [← Subtype.coe_le_coe, ← AEEqFun.coeFn_le]

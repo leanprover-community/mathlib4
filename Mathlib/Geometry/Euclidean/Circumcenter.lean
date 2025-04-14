@@ -33,8 +33,8 @@ open RealInnerProductSpace
 
 namespace EuclideanGeometry
 
-variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
-  [NormedAddTorsor V P]
+variable {V : Type*} {P : Type*} [AddCommGroup V] [NormedAddGroup V] [InnerProductSpace ℝ V]
+  [MetricSpace P] [NormedAddTorsor V P]
 
 open AffineSubspace
 
@@ -235,8 +235,8 @@ namespace Simplex
 
 open Finset AffineSubspace EuclideanGeometry
 
-variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
-  [NormedAddTorsor V P]
+variable {V : Type*} {P : Type*} [AddCommGroup V] [NormedAddGroup V] [InnerProductSpace ℝ V]
+  [MetricSpace P] [NormedAddTorsor V P]
 
 /-- The circumsphere of a simplex. -/
 def circumsphere {n : ℕ} (s : Simplex ℝ P n) : Sphere P :=
@@ -669,8 +669,8 @@ namespace EuclideanGeometry
 
 open Affine AffineSubspace Module
 
-variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
-  [NormedAddTorsor V P]
+variable {V : Type*} {P : Type*} [AddCommGroup V] [NormedAddGroup V] [InnerProductSpace ℝ V]
+  [MetricSpace P] [NormedAddTorsor V P]
 
 /-- Given a nonempty affine subspace, whose direction is complete,
 that contains a set of points, those points are cospherical if and

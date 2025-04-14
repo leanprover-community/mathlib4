@@ -17,7 +17,7 @@ import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
 open Complex Set
 open scoped Topology
 
-variable {E : Type} [NormedAddCommGroup E] [NormedSpace ℂ E]
+variable {E : Type} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℂ E]
 variable {f g : E → ℂ} {z : ℂ} {x : E} {s : Set E}
 
 /-- `log` is analytic away from nonpositive reals -/

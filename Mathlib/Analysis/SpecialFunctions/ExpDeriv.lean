@@ -33,7 +33,7 @@ section
 
 open Complex
 
-variable {E : Type} [NormedAddCommGroup E] [NormedSpace ℂ E]
+variable {E : Type} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℂ E]
 variable {f g : E → ℂ} {z : ℂ} {x : E} {s : Set E}
 
 /-- `exp` is entire -/
@@ -143,7 +143,8 @@ end
 section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 ℂ] {E : Type*}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {f : E → ℂ} {f' : E →L[𝕜] ℂ} {x : E} {s : Set E}
+  [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
+  {f : E → ℂ} {f' : E →L[𝕜] ℂ} {x : E} {s : Set E}
 
 theorem HasStrictFDerivAt.cexp (hf : HasStrictFDerivAt f f' x) :
     HasStrictFDerivAt (fun x => Complex.exp (f x)) (Complex.exp (f x) • f') x :=
@@ -202,7 +203,8 @@ section
 
 open Real
 
-variable {x : ℝ} {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {s : Set E}
+variable {x : ℝ} {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
+  {f : E → ℝ} {s : Set E}
 
 /-- `exp` is entire -/
 theorem analyticOnNhd_rexp : AnalyticOnNhd ℝ exp univ := by
@@ -306,8 +308,8 @@ section
 function, for standalone use and use with `simp`. -/
 
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {f' : E →L[ℝ] ℝ} {x : E}
-  {s : Set E}
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
+  {f : E → ℝ} {f' : E →L[ℝ] ℝ} {x : E} {s : Set E}
 
 theorem ContDiff.exp {n} (hf : ContDiff ℝ n f) : ContDiff ℝ n fun x => Real.exp (f x) :=
   Real.contDiff_exp.comp hf

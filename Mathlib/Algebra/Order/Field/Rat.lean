@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Field.Rat
-import Mathlib.Algebra.Order.Nonneg.Field
+import Mathlib.Algebra.Order.Nonneg.Ring
 import Mathlib.Algebra.Order.Ring.Rat
 
 /-!
@@ -21,4 +21,5 @@ See note [foundational algebra order theory].
 rat, rationals, field, ℚ, numerator, denominator, num, denom
 -/
 
-deriving instance LinearOrderedCommGroupWithZero for NNRat
+instance : IsOrderedMonoidWithZero NNRat :=
+  Nonneg.isOrderedMonoidWithZero

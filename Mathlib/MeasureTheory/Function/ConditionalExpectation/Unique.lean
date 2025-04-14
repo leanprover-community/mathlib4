@@ -33,10 +33,10 @@ namespace MeasureTheory
 variable {α E' F' 𝕜 : Type*} {p : ℝ≥0∞} {m m0 : MeasurableSpace α} {μ : Measure α} [RCLike 𝕜]
   -- 𝕜 for ℝ or ℂ
   -- E' for an inner product space on which we compute integrals
-  [NormedAddCommGroup E']
+  [AddCommGroup E'] [NormedAddGroup E']
   [InnerProductSpace 𝕜 E'] [CompleteSpace E'] [NormedSpace ℝ E']
   -- F' for integrals on a Lp submodule
-  [NormedAddCommGroup F']
+  [AddCommGroup F'] [NormedAddGroup F']
   [NormedSpace ℝ F'] [CompleteSpace F']
 
 section UniquenessOfConditionalExpectation

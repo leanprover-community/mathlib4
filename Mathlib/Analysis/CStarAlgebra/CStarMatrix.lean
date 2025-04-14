@@ -338,7 +338,7 @@ lemma ofMatrix_eq_ofMatrixStarAlgEquiv [Fintype n] [SMul ℂ A] [Semiring A] [St
 
 end basic
 
-variable [Fintype m] [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
+variable [Fintype m] [NonUnitalCStarAlgebra A]
 
 
 
@@ -404,7 +404,8 @@ lemma toCLM_apply_single_apply [DecidableEq m] {M : CStarMatrix m n A}{i : m} {j
     (toCLM M) (equiv _ _ |>.symm <| Pi.single i a) j = a * M i j := by simp
 
 open WithCStarModule in
-lemma mul_entry_mul_eq_inner_toCLM [Fintype n] [DecidableEq m] [DecidableEq n]
+lemma mul_entry_mul_eq_inner_toCLM [PartialOrder A] [StarOrderedRing A]
+    [Fintype n] [DecidableEq m] [DecidableEq n]
     {M : CStarMatrix m n A} {i : m} {j : n} (a b : A) :
     a * M i j * star b
       = ⟪equiv _ _ |>.symm (Pi.single j b), toCLM M (equiv _ _ |>.symm <| Pi.single i a)⟫_A := by
@@ -419,7 +420,7 @@ lemma toCLM_injective : Function.Injective (toCLM (A := A) (m := m) (n := n)) :=
     ← toCLM_apply_single_apply]
   simp [h]
 
-variable [Fintype n]
+variable [PartialOrder A] [StarOrderedRing A] [Fintype n]
 
 open WithCStarModule in
 lemma inner_toCLM_conjTranspose_left {M : CStarMatrix m n A} {v : C⋆ᵐᵒᵈ(A, n → A)}
@@ -496,10 +497,10 @@ namespace CStarMatrix
 variable {m n A : Type*} [Fintype m] [Fintype n]
   [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
-private noncomputable def normedAddCommGroupAux : NormedAddCommGroup (CStarMatrix m n A) :=
+private noncomputable def normedAddGroupAux : NormedAddGroup (CStarMatrix m n A) :=
   .ofCore CStarMatrix.normedSpaceCore
 
-attribute [local instance] normedAddCommGroupAux
+attribute [local instance] normedAddGroupAux
 
 private def normedSpaceAux : NormedSpace ℂ (CStarMatrix m n A) :=
   .ofCore CStarMatrix.normedSpaceCore
@@ -507,7 +508,7 @@ private def normedSpaceAux : NormedSpace ℂ (CStarMatrix m n A) :=
 /- In this `Aux` section, we locally activate the following instances: a norm on `CStarMatrix`
  which induces a topology that is not defeq with the matrix one, and the elementwise norm on
  matrices, in order to show that the two topologies are in fact equal -/
-attribute [local instance] normedSpaceAux Matrix.normedAddCommGroup Matrix.normedSpace
+attribute [local instance] normedSpaceAux Matrix.normedAddGroup Matrix.normedSpace
 
 private lemma nnnorm_le_of_forall_inner_le {M : CStarMatrix m n A} {C : ℝ≥0}
     (h : ∀ v w, ‖⟪w, CStarMatrix.toCLM M v⟫_A‖₊ ≤ C * ‖v‖₊ * ‖w‖₊) : ‖M‖₊ ≤ C :=
@@ -598,8 +599,8 @@ instance instIsUniformAddGroup : IsUniformAddGroup (CStarMatrix m n A) :=
 instance instContinuousSMul {R : Type*} [SMul R A] [TopologicalSpace R] [ContinuousSMul R A] :
     ContinuousSMul R (CStarMatrix m n A) := instContinuousSMulForall
 
-noncomputable instance instNormedAddCommGroup :
-    NormedAddCommGroup (CStarMatrix m n A) :=
+noncomputable instance instNormedAddGroup :
+    NormedAddGroup (CStarMatrix m n A) :=
   .ofCoreReplaceAll CStarMatrix.normedSpaceCore
     CStarMatrix.uniformity_eq_aux.symm
       fun _ => Filter.ext_iff.1 CStarMatrix.cobounded_eq_aux.symm _
@@ -609,8 +610,7 @@ instance instNormedSpace : NormedSpace ℂ (CStarMatrix m n A) :=
 
 noncomputable instance instNonUnitalNormedRing :
     NonUnitalNormedRing (CStarMatrix n n A) where
-  __ : NormedAddCommGroup (CStarMatrix n n A) := inferInstance
-  __ : NonUnitalRing (CStarMatrix n n A) := inferInstance
+  __ : NormedAddGroup (CStarMatrix n n A) := inferInstance
   norm_mul_le _ _ := by simpa only [norm_def', map_mul] using norm_mul_le _ _
 
 open ContinuousLinearMap CStarModule in

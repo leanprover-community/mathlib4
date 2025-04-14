@@ -381,8 +381,8 @@ attribute [-instance] Quotient.instMeasurableSpace
 @[to_additive "This is a simple version of the **Unfolding Trick**: Given a subgroup `Γ` of an
   additive group `G`, the integral of a function `f` on `G` with respect to a right-invariant
   measure `μ` is equal to the integral over the quotient `G ⧸ Γ` of the automorphization of `f`."]
-lemma QuotientGroup.integral_eq_integral_automorphize {E : Type*} [NormedAddCommGroup E]
-    [NormedSpace ℝ E] [μ.IsMulRightInvariant] {f : G → E}
+lemma QuotientGroup.integral_eq_integral_automorphize {E : Type*}
+    [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E] [μ.IsMulRightInvariant] {f : G → E}
     (hf₁ : Integrable f μ) (hf₂ : AEStronglyMeasurable (automorphize f) μ_𝓕) :
     ∫ x : G, f x ∂μ = ∫ x : G ⧸ Γ, automorphize f x ∂μ_𝓕 := by
   calc ∫ x : G, f x ∂μ = ∑' γ : Γ.op, ∫ x in 𝓕, f (γ • x) ∂μ :=

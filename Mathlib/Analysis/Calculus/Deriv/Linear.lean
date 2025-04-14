@@ -27,8 +27,8 @@ open Topology Filter
 open Filter Asymptotics Set
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
-variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {E : Type w} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {F : Type v} [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
+variable {E : Type w} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
 variable {x : 𝕜}
 variable {s : Set 𝕜}
 variable {L : Filter 𝕜}

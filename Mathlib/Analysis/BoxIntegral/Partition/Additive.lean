@@ -161,7 +161,7 @@ theorem sum_boxes_congr [Finite ι] (f : ι →ᵇᵃ[I₀] M) (hI : ↑I ≤ I�
 
 section ToSMul
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
 
 /-- If `f` is a box-additive map, then so is the map sending `I` to the scalar multiplication
 by `f I` as a continuous linear map from `E` to itself. -/

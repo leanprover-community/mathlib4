@@ -23,7 +23,8 @@ namespace Measure
 
 /- The instance `MeasureTheory.Measure.IsAddHaarMeasure.noAtoms` applies in particular to show that
 an additive Haar measure on a nontrivial finite-dimensional real vector space has no atom. -/
-example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [Nontrivial E] [FiniteDimensional ℝ E]
+example {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
+    [Nontrivial E] [FiniteDimensional ℝ E]
     [MeasurableSpace E] [BorelSpace E] (μ : Measure E) [IsAddHaarMeasure μ] : NoAtoms μ := by
   infer_instance
 
@@ -44,7 +45,7 @@ end LinearEquiv
 section SeminormedGroup
 variable {G H : Type*} [MeasurableSpace G] [Group G] [TopologicalSpace G]
   [IsTopologicalGroup G] [BorelSpace G] [LocallyCompactSpace G]
-  [MeasurableSpace H] [SeminormedGroup H] [OpensMeasurableSpace H]
+  [MeasurableSpace H] [Group H] [SeminormedGroup H] [OpensMeasurableSpace H]
 
 -- TODO: This could be streamlined by proving that inner regular measures always exist
 open Metric Bornology in
@@ -72,14 +73,17 @@ end SeminormedGroup
 /-- A Borel-measurable group hom from a locally compact normed group to a real normed space is
 continuous. -/
 lemma AddMonoidHom.continuous_of_measurable {G H : Type*}
-    [SeminormedAddCommGroup G] [MeasurableSpace G] [BorelSpace G] [LocallyCompactSpace G]
-    [SeminormedAddCommGroup H] [MeasurableSpace H] [OpensMeasurableSpace H] [NormedSpace ℝ H]
+    [AddCommGroup G] [SeminormedAddGroup G] [MeasurableSpace G]
+    [BorelSpace G] [LocallyCompactSpace G]
+    [AddCommGroup H] [SeminormedAddGroup H] [MeasurableSpace H]
+    [OpensMeasurableSpace H] [NormedSpace ℝ H]
     (f : G →+ H) (hf : Measurable f) : Continuous f :=
   let ⟨_s, hs, hbdd⟩ := f.exists_nhds_isBounded hf 0; f.continuous_of_isBounded_nhds_zero hs hbdd
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
-  [FiniteDimensional ℝ E] (μ : Measure E) [IsAddHaarMeasure μ] {F : Type*} [NormedAddCommGroup F]
-  [NormedSpace ℝ F]
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
+  [MeasurableSpace E] [BorelSpace E]
+  [FiniteDimensional ℝ E] (μ : Measure E) [IsAddHaarMeasure μ]
+  {F : Type*} [AddCommGroup F] [NormedAddGroup F] [NormedSpace ℝ F]
 
 /-- The integral of `f (R • x)` with respect to an additive Haar measure is a multiple of the
 integral of `f`. The formula we give works even when `f` is not integrable or `R = 0`
@@ -166,9 +170,9 @@ theorem integral_comp_div (g : ℝ → F) (a : ℝ) : (∫ x : ℝ, g (x / a)) =
 
 end Measure
 
-variable {F : Type*} [NormedAddCommGroup F]
+variable {F : Type*} [AddCommGroup F] [NormedAddGroup F]
 
-theorem integrable_comp_smul_iff {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+theorem integrable_comp_smul_iff {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
     [MeasurableSpace E] [BorelSpace E] [FiniteDimensional ℝ E] (μ : Measure E) [IsAddHaarMeasure μ]
     (f : E → F) {R : ℝ} (hR : R ≠ 0) : Integrable (fun x => f (R • x)) μ ↔ Integrable f μ := by
   -- reduce to one-way implication
@@ -184,7 +188,7 @@ theorem integrable_comp_smul_iff {E : Type*} [NormedAddCommGroup E] [NormedSpace
   rwa [map_addHaar_smul μ hS, integrable_smul_measure _ ENNReal.ofReal_ne_top]
   simpa only [Ne, ENNReal.ofReal_eq_zero, not_le, abs_pos] using inv_ne_zero (pow_ne_zero _ hS)
 
-theorem Integrable.comp_smul {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+theorem Integrable.comp_smul {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
     [MeasurableSpace E] [BorelSpace E] [FiniteDimensional ℝ E] {μ : Measure E} [IsAddHaarMeasure μ]
     {f : E → F} (hf : Integrable f μ) {R : ℝ} (hR : R ≠ 0) : Integrable (fun x => f (R • x)) μ :=
   (integrable_comp_smul_iff μ f hR).2 hf
@@ -216,13 +220,13 @@ theorem Integrable.comp_div {g : ℝ → F} (hg : Integrable g) {R : ℝ} (hR : 
 section InnerProductSpace
 
 variable {E' F' A : Type*}
-variable [NormedAddCommGroup E'] [InnerProductSpace ℝ E'] [FiniteDimensional ℝ E']
+variable [AddCommGroup E'] [NormedAddGroup E'] [InnerProductSpace ℝ E'] [FiniteDimensional ℝ E']
   [MeasurableSpace E'] [BorelSpace E']
-variable [NormedAddCommGroup F'] [InnerProductSpace ℝ F'] [FiniteDimensional ℝ F']
+variable [AddCommGroup F'] [NormedAddGroup F'] [InnerProductSpace ℝ F'] [FiniteDimensional ℝ F']
   [MeasurableSpace F'] [BorelSpace F']
 
 variable (f : E' ≃ₗᵢ[ℝ] F')
-variable [NormedAddCommGroup A]
+variable [AddCommGroup A] [NormedAddGroup A]
 
 theorem integrable_comp (g : F' → A) : Integrable (g ∘ f) ↔ Integrable g :=
   f.measurePreserving.integrable_comp_emb f.toMeasurableEquiv.measurableEmbedding

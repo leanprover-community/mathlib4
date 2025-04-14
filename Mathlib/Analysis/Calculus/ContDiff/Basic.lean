@@ -46,17 +46,19 @@ open Set Fin Filter Function
 open scoped Topology
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E : Type uE} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {F : Type uF}
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type uG} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-  {X : Type*} [NormedAddCommGroup X] [NormedSpace 𝕜 X] {s t : Set E} {f : E → F}
+  {E : Type uE} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
+  {F : Type uF} [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
+  {G : Type uG} [AddCommGroup G] [NormedAddGroup G] [NormedSpace 𝕜 G]
+  {X : Type*} [AddCommGroup X] [NormedAddGroup X] [NormedSpace 𝕜 X] {s t : Set E} {f : E → F}
   {g : F → G} {x x₀ : E} {b : E × F → G} {m n : WithTop ℕ∞} {p : E → FormalMultilinearSeries 𝕜 E F}
 
 /-! ### Constants -/
 section constants
 
+set_option synthInstance.maxHeartbeats 40000 in -- wip
 theorem iteratedFDerivWithin_succ_const (n : ℕ) (c : F) :
     iteratedFDerivWithin 𝕜 (n + 1) (fun _ : E ↦ c) s = 0 := by
-  induction n  with
+  induction n with
   | zero =>
     ext1
     simp [iteratedFDerivWithin_succ_eq_comp_left, iteratedFDerivWithin_zero_eq_comp, comp_def]
@@ -859,7 +861,8 @@ theorem contDiffWithinAt_snd {s : Set (E × F)} {p : E × F} :
 section NAry
 
 variable {E₁ E₂ E₃ : Type*}
-variable [NormedAddCommGroup E₁] [NormedAddCommGroup E₂] [NormedAddCommGroup E₃]
+variable [AddCommGroup E₁] [NormedAddGroup E₁] [AddCommGroup E₂] [NormedAddGroup E₂]
+  [AddCommGroup E₃] [NormedAddGroup E₃]
   [NormedSpace 𝕜 E₁] [NormedSpace 𝕜 E₂] [NormedSpace 𝕜 E₃]
 
 theorem ContDiff.comp₂ {g : E₁ × E₂ → G} {f₁ : F → E₁} {f₂ : F → E₂} (hg : ContDiff 𝕜 n g)

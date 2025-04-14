@@ -36,14 +36,14 @@ open Topology
 local postfix:max "⋆" => star
 
 /-- A normed star group is a normed group with a compatible `star` which is isometric. -/
-class NormedStarGroup (E : Type*) [SeminormedAddCommGroup E] [StarAddMonoid E] : Prop where
+class NormedStarGroup (E : Type*) [AddCommGroup E] [SeminormedAddGroup E] [StarAddMonoid E] where
   norm_star_le : ∀ x : E, ‖x⋆‖ ≤ ‖x‖
 
 variable {𝕜 E α : Type*}
 
 section NormedStarGroup
 
-variable [SeminormedAddCommGroup E] [StarAddMonoid E] [NormedStarGroup E]
+variable [AddCommGroup E] [SeminormedAddGroup E] [StarAddMonoid E] [NormedStarGroup E]
 
 @[simp]
 lemma norm_star (x : E) : ‖x⋆‖ = ‖x‖ :=
@@ -69,7 +69,7 @@ end NormedStarGroup
 
 instance RingHomIsometric.starRingEnd [NormedCommRing E] [StarRing E] [NormedStarGroup E] :
     RingHomIsometric (starRingEnd E) :=
-  ⟨@norm_star _ _ _ _⟩
+  ⟨norm_star _⟩
 
 /-- A C*-ring is a normed star ring that satisfies the stronger condition `‖x‖ ^ 2 ≤ ‖x⋆ * x‖`
 for every `x`. Note that this condition actually implies equality, as is shown in
@@ -253,7 +253,7 @@ theorem selfAdjoint.nnnorm_pow_two_pow [NormedRing E] [StarRing E] [CStarRing E]
 section starₗᵢ
 
 variable [CommSemiring 𝕜] [StarRing 𝕜]
-variable [SeminormedAddCommGroup E] [StarAddMonoid E] [NormedStarGroup E]
+variable [AddCommGroup E] [SeminormedAddGroup E] [StarAddMonoid E] [NormedStarGroup E]
 variable [Module 𝕜 E] [StarModule 𝕜 E]
 
 variable (𝕜) in

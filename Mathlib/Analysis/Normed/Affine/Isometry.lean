@@ -38,12 +38,18 @@ open Function Set
 
 variable (𝕜 : Type*) {V V₁ V₁' V₂ V₃ V₄ : Type*} {P₁ P₁' : Type*} (P P₂ : Type*) {P₃ P₄ : Type*}
   [NormedField 𝕜]
-  [SeminormedAddCommGroup V] [NormedSpace 𝕜 V] [PseudoMetricSpace P] [NormedAddTorsor V P]
-  [SeminormedAddCommGroup V₁] [NormedSpace 𝕜 V₁] [PseudoMetricSpace P₁] [NormedAddTorsor V₁ P₁]
-  [SeminormedAddCommGroup V₁'] [NormedSpace 𝕜 V₁'] [MetricSpace P₁'] [NormedAddTorsor V₁' P₁']
-  [SeminormedAddCommGroup V₂] [NormedSpace 𝕜 V₂] [PseudoMetricSpace P₂] [NormedAddTorsor V₂ P₂]
-  [SeminormedAddCommGroup V₃] [NormedSpace 𝕜 V₃] [PseudoMetricSpace P₃] [NormedAddTorsor V₃ P₃]
-  [SeminormedAddCommGroup V₄] [NormedSpace 𝕜 V₄] [PseudoMetricSpace P₄] [NormedAddTorsor V₄ P₄]
+  [AddCommGroup V] [SeminormedAddGroup V]
+  [NormedSpace 𝕜 V] [PseudoMetricSpace P] [NormedAddTorsor V P]
+  [AddCommGroup V₁] [SeminormedAddGroup V₁]
+  [NormedSpace 𝕜 V₁] [PseudoMetricSpace P₁] [NormedAddTorsor V₁ P₁]
+  [AddCommGroup V₁'] [SeminormedAddGroup V₁']
+  [NormedSpace 𝕜 V₁'] [MetricSpace P₁'] [NormedAddTorsor V₁' P₁']
+  [AddCommGroup V₂] [SeminormedAddGroup V₂]
+  [NormedSpace 𝕜 V₂] [PseudoMetricSpace P₂] [NormedAddTorsor V₂ P₂]
+  [AddCommGroup V₃] [SeminormedAddGroup V₃]
+  [NormedSpace 𝕜 V₃] [PseudoMetricSpace P₃] [NormedAddTorsor V₃ P₃]
+  [AddCommGroup V₄] [SeminormedAddGroup V₄]
+  [NormedSpace 𝕜 V₄] [PseudoMetricSpace P₄] [NormedAddTorsor V₄ P₄]
 
 /-- A `𝕜`-affine isometric embedding of one normed add-torsor over a normed `𝕜`-space into
 another, denoted as `f : P →ᵃⁱ[𝕜] P₂`. -/

@@ -30,7 +30,7 @@ open Set Metric TopologicalSpace Function Asymptotics MeasureTheory Module
 
 open scoped Pointwise Topology NNReal Convolution ContDiff
 
-variable {E : Type*} [NormedAddCommGroup E]
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E]
 
 section
 
@@ -460,7 +460,7 @@ variable {E}
 
 end HelperDefinitions
 
-instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+instance (priority := 100) {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] : HasContDiffBump E := by
   refine ⟨⟨?_⟩⟩
   borelize E
