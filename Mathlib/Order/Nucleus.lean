@@ -227,7 +227,7 @@ instance : Frame (range n) := .ofMinimalAxioms range.instFrameMinimalAxioms
 
 /-- The restriction of a nucleus to its range forms a Galois insertion with the forgetful map from
 the range to the original frame. -/
-def giRestrict (n : Nucleus X) : GaloisInsertion (restrict n) Subtype.val := n.giAux
+def giRestrict (n : Nucleus X) : GaloisInsertion n.restrict Subtype.val := n.giAux
 
 end Frame
 end Nucleus
