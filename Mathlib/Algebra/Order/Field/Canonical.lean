@@ -23,7 +23,7 @@ attribute [nolint docBlame] CanonicallyLinearOrderedSemifield.toLinearOrderedSem
 
 variable {α : Type*} [Semifield α] [LinearOrder α] [CanonicallyOrderedAdd α]
 
-/-- Construct a `IsOrderedMonoidWithZero` from a canonically linear ordered semifield. -/
+/-- Construct an `IsOrderedMonoidWithZero` from a canonically linear ordered semifield. -/
 lemma CanonicallyOrderedAdd.toIsOrderedMonoidWithZero :
     IsOrderedMonoidWithZero α where
   zero_le_one := zero_le_one

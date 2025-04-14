@@ -46,7 +46,7 @@ structure LinearOrderedCommGroupWithZero (α : Type*) extends LinearOrderedCommM
 attribute [nolint docBlame] LinearOrderedCommMonoidWithZero.toCommMonoidWithZero
   LinearOrderedCommGroupWithZero.toCommGroupWithZero
 
-/-- An ordered monoid with zero is a “monoid with zero” with a order such that
+/-- An ordered monoid with zero is a “monoid with zero” with an order such that
 multiplication is monotone and `0` is less or equal to `1`. -/
 class IsOrderedMonoidWithZero (α : Type*) [CommMonoidWithZero α] [PartialOrder α] extends
     IsOrderedMonoid α, ZeroLEOneClass α
@@ -64,7 +64,7 @@ variable [CommMonoidWithZero α] [LinearOrder α] [IsOrderedMonoidWithZero α] {
 /-
 The following facts are true more generally in a (linearly) ordered commutative monoid.
 -/
-/-- Pullback a `IsOrderedMonoidWithZero` under an injective map. -/
+/-- Pullback an `IsOrderedMonoidWithZero` under an injective map. -/
 lemma Function.Injective.isOrderedMonoidWithZero {β : Type*} [Zero β] [One β] [Mul β]
     [Pow β ℕ] [Max β] [Min β] (f : β → α) (hf : Function.Injective f) (zero : f 0 = 0)
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
