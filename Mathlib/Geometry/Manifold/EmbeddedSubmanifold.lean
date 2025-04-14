@@ -205,6 +205,16 @@ noncomputable instance {n : ℕ} [NeZero n] :
     simp only [modelWithCornersSelf_coe, comp_apply, id_eq, ContinuousLinearEquiv.prodUnique_apply]
     rfl
 
+-- should be a not-too-hard exercise
+noncomputable instance {n m : ℕ} [NeZero n] :
+    SliceModel (⊥ : Subspace ℝ ((Fin m → ℝ))) (𝓡 n) (𝓡 (n + m)) where
+  equiv := sorry -- see zulip! ContinuousLinearEquiv.prodUnique ℝ (EuclideanSpace ℝ (Fin n))
+  map := sorry -- easy from `equiv`
+  hmap := sorry -- should be easy: `equiv` is an embedding, and prodMk{Left,Right} also are
+  compatible := by -- should be obvious then
+    ext x'
+    sorry
+
 noncomputable instance {n : ℕ} [NeZero n] :
     SliceModel (⊥ : Subspace ℝ ((Fin n → ℝ))) (modelWithCornersEuclideanQuadrant n) (𝓡∂ n) where
   equiv := ContinuousLinearEquiv.prodUnique ℝ (EuclideanSpace ℝ (Fin n))
