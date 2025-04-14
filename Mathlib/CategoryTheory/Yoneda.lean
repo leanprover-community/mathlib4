@@ -348,6 +348,11 @@ noncomputable def reprX : C :=
 noncomputable def representableBy : F.RepresentableBy F.reprX :=
   hF.has_representation.choose_spec.some
 
+/-- Any representing object for a representable functor `F` is isomorphic to `reprX F`. -/
+noncomputable def RepresentableBy.isoReprX {Y : C} (e : F.RepresentableBy Y) :
+    Y ≅ F.reprX :=
+  RepresentableBy.uniqueUpToIso e (representableBy F)
+
 /-- The representing element for the representable functor `F`, sometimes called the universal
 element of the functor.
 -/
@@ -379,6 +384,12 @@ noncomputable def coreprX : C :=
 /-- A chosen term in `F.CorepresentableBy (coreprX F)` when `F.IsCorepresentable` holds. -/
 noncomputable def corepresentableBy : F.CorepresentableBy F.coreprX :=
   hF.has_corepresentation.choose_spec.some
+
+variable {F} in
+/-- Any corepresenting object for a corepresentable functor `F` is isomorphic to `coreprX F`. -/
+noncomputable def CorepresentableBy.isoCoreprX {Y : C} (e : F.CorepresentableBy Y) :
+    Y ≅ F.coreprX :=
+  CorepresentableBy.uniqueUpToIso e (corepresentableBy F)
 
 /-- The representing element for the corepresentable functor `F`, sometimes called the universal
 element of the functor.
