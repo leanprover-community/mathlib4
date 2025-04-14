@@ -215,7 +215,8 @@ and `tendstoInMeasure_of_tendsto_eLpNorm`. -/
 /-- Intermediate lemma for `unifTight_of_tendsto_Lp`. -/
 private theorem unifTight_of_tendsto_Lp_zero (hp' : p ≠ ∞) (hf : ∀ n, MemLp (f n) p μ)
     (hf_tendsto : Tendsto (fun n ↦ eLpNorm (f n) p μ) atTop (𝓝 0)) :
-    UnifTight f p μ := fun ε hε ↦ by
+    (hf_tendsto : Tendsto (fun n ↦ eLpNorm (f n) p μ) atTop (𝓝 0)) : UnifTight f p μ := by
+  intro ε hε
   rw [ENNReal.tendsto_atTop_zero] at hf_tendsto
   obtain ⟨N, hNε⟩ := hf_tendsto ε (by simpa only [gt_iff_lt, ENNReal.coe_pos])
   let F : Fin N → α → β := fun n => f n
