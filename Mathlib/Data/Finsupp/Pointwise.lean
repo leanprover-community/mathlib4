@@ -92,9 +92,7 @@ instance [NonUnitalCommRing β] : NonUnitalCommRing (α →₀ β) :=
   DFunLike.coe_injective.nonUnitalCommRing _ coe_zero coe_add coe_mul coe_neg coe_sub
     (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
--- TODO can this be generalized in the direction of `Pi.smul'`
--- (i.e. dependent functions and finsupps)
--- TODO in theory this could be generalised, we only really need `smul_zero` for the definition
+-- TODO(Paul-Lez): add a `DFinsupp` version of this.
 instance pointwiseScalar {M : Type*} [Zero M] [SMulZeroClass β M] [Semiring β] :
     SMul (α → β) (α →₀ M) where
   smul f g :=
