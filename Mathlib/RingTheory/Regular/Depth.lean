@@ -189,13 +189,6 @@ local instance : CategoryTheory.HasExt.{w} (ModuleCat.{v} R) :=
 
 open Pointwise
 
-omit [UnivLE.{v, w}] in
-lemma addCommGrp_subsingleton_of_isZero {G : AddCommGrp} (h : IsZero G) :
-    Subsingleton G := by
-  apply subsingleton_of_forall_eq 0 (fun g ↦ ?_)
-  rw [← AddMonoidHom.id_apply G g, ← AddCommGrp.hom_id]
-  simp [(IsZero.iff_id_eq_zero G).mp h]
-
 lemma lemma222_3_to_4 [IsNoetherianRing R] (I : Ideal R) (n : ℕ) :
     ∀ M : ModuleCat.{v} R, Nontrivial M → Module.Finite R M →
     I • (⊤ : Submodule R M) < ⊤ → (∃ N : ModuleCat.{v} R, Nontrivial N ∧ Module.Finite R N ∧
@@ -242,7 +235,7 @@ lemma lemma222_3_to_4 [IsNoetherianRing R] (I : Ideal R) (n : ℕ) :
         @AddCommGrp.isZero_of_subsingleton _ (h_ext i (Nat.lt_add_right 1 hi))
       have zero2 : IsZero (AddCommGrp.of (Ext N M (i + 1))) :=
         @AddCommGrp.isZero_of_subsingleton _ (h_ext (i + 1) (Nat.add_lt_add_right hi 1))
-      exact addCommGrp_subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
+      exact AddCommGrp.subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
         ((Ext.covariant_sequence_exact₃' N hxk.SMul_ShortComplex_shortExact) i (i + 1) rfl)
         (zero1.eq_zero_of_src _) (zero2.eq_zero_of_tgt _)
     rcases ih (ModuleCat.of R M') ntr'
@@ -336,7 +329,7 @@ lemma lemma222_4_to_1 [IsNoetherianRing R] (I : Ideal R) (n : ℕ) (N : ModuleCa
           ((Ext.mk₀ (SMul_ShortComplex M (a ^ k)).f).postcomp N (add_zero i)))
         have mono_gk : Mono gk := mono_of_mono a kpos i mono_g
         have zero_gk : gk = 0 := ext_hom_eq_zero_of_mem_ann hk i
-        exact addCommGrp_subsingleton_of_isZero (IsZero.of_mono_eq_zero _ zero_gk)
+        exact AddCommGrp.subsingleton_of_isZero (IsZero.of_mono_eq_zero _ zero_gk)
 
 --lemma222 i.e. Rees theorem
 lemma lemma222 [IsNoetherianRing R] (I : Ideal R) [Small.{v} (R ⧸ I)] (n : ℕ) (M : ModuleCat.{v} R)
