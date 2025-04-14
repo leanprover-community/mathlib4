@@ -146,21 +146,21 @@ lemma length_boxProd {a₁ a₂ : α} {b₁ b₂ : β} [DecidableEq α] [Decidab
     [DecidableRel G.Adj] [DecidableRel H.Adj] (w : (G □ H).Walk (a₁, b₁) (a₂, b₂)) :
     w.length = w.ofBoxProdLeft.length + w.ofBoxProdRight.length := by
   match w with
-  | .nil => simp [length, ofBoxProdLeft, ofBoxProdRight]
+  | .nil => simp [ofBoxProdLeft, ofBoxProdRight]
   | .cons x w' => next c =>
-      unfold ofBoxProdLeft ofBoxProdRight Or.by_cases
-      rw [length_cons, length_boxProd w']
-      have disj : (G.Adj a₁ c.1 ∧ b₁ = c.2) ∨ (H.Adj b₁ c.2 ∧ a₁ = c.1) := by aesop
-      rcases disj with h₁ | h₂
-      · simp only [h₁, SimpleGraph.irrefl, false_and, and_self, ↓reduceDIte, length_cons]
-        rw [add_comm, add_comm w'.ofBoxProdLeft.length 1, add_assoc]
-        congr
-        · exact h₁.2.symm
-        · simp only [heq_eqRec_iff_heq, heq_eq_eq]
-      · simp only [h₂, SimpleGraph.irrefl, false_and, ↓reduceDIte, length_cons, add_assoc]
-        congr
-        · exact h₂.2.symm
-        · simp only [heq_eqRec_iff_heq, heq_eq_eq]
+    unfold ofBoxProdLeft ofBoxProdRight Or.by_cases
+    rw [length_cons, length_boxProd w']
+    have disj : (G.Adj a₁ c.1 ∧ b₁ = c.2) ∨ (H.Adj b₁ c.2 ∧ a₁ = c.1) := by aesop
+    rcases disj with h₁ | h₂
+    · simp only [h₁, SimpleGraph.irrefl, false_and, and_self, ↓reduceDIte, length_cons]
+      rw [add_comm, add_comm w'.ofBoxProdLeft.length 1, add_assoc]
+      congr
+      · exact h₁.2.symm
+      · simp
+    · simp only [h₂, SimpleGraph.irrefl, false_and, ↓reduceDIte, length_cons, add_assoc]
+      congr
+      · exact h₂.2.symm
+      · simp
 
 end Walk
 
@@ -242,27 +242,22 @@ lemma boxProd_reachable {x y : α × β} :
   · intro ⟨⟨w₁⟩, ⟨w₂⟩⟩
     exact ⟨(w₁.boxProdLeft _ _).append (w₂.boxProdRight _ _)⟩
 
-
-
 @[simp]
 lemma boxProd_edist (x y : α × β) :
     (G □ H).edist x y = G.edist x.1 y.1 + H.edist x.2 y.2 := by
   classical
+  -- The case `(G □ H).edist x y = ⊤` is used twice, so better to factor it out.
   have top_case : (G □ H).edist x y = ⊤ ↔ G.edist x.1 y.1 = ⊤ ∨ H.edist x.2 y.2 = ⊤ := by
     simp_rw [← not_ne_iff, edist_ne_top_iff_reachable, boxProd_reachable, not_and_or]
-
   by_cases h : (G □ H).edist x y = ⊤
   · rw [top_case] at h
     aesop
   · have rGH : G.edist x.1 y.1 ≠ ⊤ ∧ H.edist x.2 y.2 ≠ ⊤ := by rw [top_case] at h; aesop
     have ⟨wG, hwG⟩ := exists_walk_of_edist_ne_top rGH.1
     have ⟨wH, hwH⟩ := exists_walk_of_edist_ne_top rGH.2
-
     let w_app := (wG.boxProdLeft _ _).append (wH.boxProdRight _ _)
     have w_len : w_app.length = wG.length + wH.length := by
-      unfold w_app Walk.boxProdLeft Walk.boxProdRight
-      simp only [Walk.length_append, Walk.length_map]
-
+      unfold w_app Walk.boxProdLeft Walk.boxProdRight; simp
     refine le_antisymm ?_ ?_
     ·  calc (G □ H).edist x y ≤ w_app.length := by exact edist_le _
           _ = wG.length + wH.length := by exact_mod_cast w_len
