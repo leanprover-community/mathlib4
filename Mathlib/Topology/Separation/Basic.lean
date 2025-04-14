@@ -15,7 +15,7 @@ import Mathlib.Topology.Bases
 
 This file defines some of the weaker separation axioms (under the Kolmogorov classification),
 notably T₀, R₀, T₁ and R₁ spaces. For T₂ (Hausdorff) spaces and other stronger
-conditions, see the file `Topology/Separation/Hausdorff.lean`.
+conditions, see the file `Mathlib/Topology/Separation/Hausdorff.lean`.
 
 ## Main definitions
 

@@ -114,6 +114,12 @@ def opOpEquivalence : Cᵒᵖᵒᵖ ≌ C where
   unitIso := Iso.refl (𝟭 Cᵒᵖᵒᵖ)
   counitIso := Iso.refl (opOp C ⋙ unopUnop C)
 
+instance : (opOp C).IsEquivalence :=
+  (opOpEquivalence C).isEquivalence_inverse
+
+instance : (unopUnop C).IsEquivalence :=
+  (opOpEquivalence C).isEquivalence_functor
+
 end
 
 /-- If `f` is an isomorphism, so is `f.op` -/
