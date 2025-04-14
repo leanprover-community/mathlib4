@@ -327,9 +327,6 @@ theorem ContinuousMap.Homotopy.pathIntegral_add_pathIntegral_eq_of_hasFDerivWith
   have hId : UniqueDiffOn ℝ (Icc 0 1 : Set (ℝ × ℝ)) := by
     rw [Icc_prod_eq]
     exact uniqueDiffOn_Icc_zero_one.prod uniqueDiffOn_Icc_zero_one
-  have hψ' : ContDiffOn ℝ 2 ψ U := hF.mono <| by
-    simp only [U]
-    gcongr <;> exact Ioo_subset_Icc_self
   have hUo : IsOpen U := isOpen_Ioo.prod isOpen_Ioo
   set dψ : ℝ × ℝ → ℝ × ℝ →L[ℝ] E := fderivWithin ℝ ψ (Icc 0 1)
   set d2ψ : ℝ × ℝ → ℝ × ℝ →L[ℝ] ℝ × ℝ →L[ℝ] E := fderivWithin ℝ dψ (Icc 0 1)
