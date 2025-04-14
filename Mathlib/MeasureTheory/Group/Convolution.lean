@@ -37,7 +37,7 @@ scoped[MeasureTheory] infixl:80 " ∗ " => MeasureTheory.Measure.mconv
 /-- Scoped notation for the additive convolution of measures. -/
 scoped[MeasureTheory] infixl:80 " ∗ " => MeasureTheory.Measure.conv
 
-@[to_additive lintegral_conv]
+@[to_additive]
 theorem lintegral_mconv [MeasurableMul₂ M] {μ ν : Measure M} [SFinite ν]
     {f : M → ℝ≥0∞} (hf : Measurable f) :
     ∫⁻ z, f z ∂(μ ∗ ν) = ∫⁻ x, ∫⁻ y, f (x * y) ∂ν ∂μ := by
@@ -63,25 +63,25 @@ theorem mconv_dirac_one [MeasurableMul₂ M]
   fun_prop
 
 /-- Convolution of the zero measure with a measure μ returns the zero measure. -/
-@[to_additive (attr := simp) zero_conv]
+@[to_additive (attr := simp)]
 theorem zero_mconv (μ : Measure M) : (0 : Measure M) ∗ μ = (0 : Measure M) := by
   unfold mconv
   simp
 
 /-- Convolution of a measure μ with the zero measure returns the zero measure. -/
-@[to_additive (attr := simp) conv_zero]
+@[to_additive (attr := simp)]
 theorem mconv_zero (μ : Measure M) : μ ∗ (0 : Measure M) = (0 : Measure M) := by
   unfold mconv
   simp
 
-@[to_additive conv_add]
+@[to_additive]
 theorem mconv_add [MeasurableMul₂ M] (μ : Measure M) (ν : Measure M) (ρ : Measure M) [SFinite μ]
     [SFinite ν] [SFinite ρ] : μ ∗ (ν + ρ) = μ ∗ ν + μ ∗ ρ := by
   unfold mconv
   rw [prod_add, Measure.map_add]
   fun_prop
 
-@[to_additive add_conv]
+@[to_additive]
 theorem add_mconv [MeasurableMul₂ M] (μ : Measure M) (ν : Measure M) (ρ : Measure M) [SFinite μ]
     [SFinite ν] [SFinite ρ] : (μ + ν) ∗ ρ = μ ∗ ρ + ν ∗ ρ := by
   unfold mconv
@@ -89,7 +89,7 @@ theorem add_mconv [MeasurableMul₂ M] (μ : Measure M) (ν : Measure M) (ρ : M
   fun_prop
 
 /-- To get commutativity, we need the underlying multiplication to be commutative. -/
-@[to_additive conv_comm]
+@[to_additive]
 theorem mconv_comm {M : Type*} [CommMonoid M] [MeasurableSpace M] [MeasurableMul₂ M] (μ : Measure M)
     (ν : Measure M) [SFinite μ] [SFinite ν] : μ ∗ ν = ν ∗ μ := by
   unfold mconv
@@ -98,11 +98,11 @@ theorem mconv_comm {M : Type*} [CommMonoid M] [MeasurableSpace M] [MeasurableMul
   fun_prop
 
 /-- Convolution of SFinite maps is SFinite. -/
-@[to_additive sfinite_conv_of_sfinite]
+@[to_additive]
 instance sfinite_mconv_of_sfinite (μ : Measure M) (ν : Measure M) [SFinite μ] [SFinite ν] :
     SFinite (μ ∗ ν) := inferInstanceAs <| SFinite ((μ.prod ν).map fun (x : M × M) ↦ x.1 * x.2)
 
-@[to_additive finite_of_finite_conv]
+@[to_additive]
 instance finite_of_finite_mconv (μ : Measure M) (ν : Measure M) [IsFiniteMeasure μ]
     [IsFiniteMeasure ν] : IsFiniteMeasure (μ ∗ ν) := by
   have h : (μ ∗ ν) Set.univ < ⊤ := by
@@ -111,7 +111,7 @@ instance finite_of_finite_mconv (μ : Measure M) (ν : Measure M) [IsFiniteMeasu
   exact {measure_univ_lt_top := h}
 
 /-- Convolution is associative -/
-@[to_additive conv_assoc]
+@[to_additive]
 theorem mconv_assoc [MeasurableMul₂ M] (μ ν ρ : Measure M)
     [SFinite ν] [SFinite ρ] :
     (μ ∗ ν) ∗ ρ = μ ∗ (ν ∗ ρ) := by
@@ -125,7 +125,7 @@ theorem mconv_assoc [MeasurableMul₂ M] (μ ν ρ : Measure M)
   apply congr_arg
   simp [mul_assoc]
 
-@[to_additive probabilitymeasure_of_probabilitymeasures_conv]
+@[to_additive]
 instance probabilitymeasure_of_probabilitymeasures_mconv (μ : Measure M) (ν : Measure M)
     [MeasurableMul₂ M] [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] :
     IsProbabilityMeasure (μ ∗ ν) :=
