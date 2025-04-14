@@ -167,7 +167,6 @@ noncomputable def truncGE'Map : K.truncGE' e ⟶ L.truncGE' e where
     else
       (K.truncGE'XIso e rfl hi).hom ≫ φ.f (e.f i) ≫ (L.truncGE'XIso e rfl hi).inv
   comm' i j hij := by
-    dsimp
     rw [dif_neg (e.not_boundaryGE_next hij)]
     by_cases hi : e.BoundaryGE i
     · rw [dif_pos hi]

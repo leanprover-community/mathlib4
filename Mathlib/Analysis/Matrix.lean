@@ -131,20 +131,28 @@ instance [StarAddMonoid α] [NormedStarGroup α] : NormedStarGroup (Matrix m m �
   ⟨(le_of_eq <| norm_conjTranspose ·)⟩
 
 @[simp]
-theorem nnnorm_col (v : m → α) : ‖col ι v‖₊ = ‖v‖₊ := by
+theorem nnnorm_replicateCol (v : m → α) : ‖replicateCol ι v‖₊ = ‖v‖₊ := by
   simp [nnnorm_def, Pi.nnnorm_def]
 
-@[simp]
-theorem norm_col (v : m → α) : ‖col ι v‖ = ‖v‖ :=
-  congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_col v
+@[deprecated (since := "2025-03-20")] alias nnnorm_col := nnnorm_replicateCol
 
 @[simp]
-theorem nnnorm_row (v : n → α) : ‖row ι v‖₊ = ‖v‖₊ := by
+theorem norm_replicateCol (v : m → α) : ‖replicateCol ι v‖ = ‖v‖ :=
+  congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_replicateCol v
+
+@[deprecated (since := "2025-03-20")] alias norm_col := norm_replicateCol
+
+@[simp]
+theorem nnnorm_replicateRow (v : n → α) : ‖replicateRow ι v‖₊ = ‖v‖₊ := by
   simp [nnnorm_def, Pi.nnnorm_def]
 
+@[deprecated (since := "2025-03-20")] alias nnnorm_row := nnnorm_replicateRow
+
 @[simp]
-theorem norm_row (v : n → α) : ‖row ι v‖ = ‖v‖ :=
-  congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_row v
+theorem norm_replicateRow (v : n → α) : ‖replicateRow ι v‖ = ‖v‖ :=
+  congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_replicateRow v
+
+@[deprecated (since := "2025-03-20")] alias norm_row := norm_replicateRow
 
 @[simp]
 theorem nnnorm_diagonal [DecidableEq n] (v : n → α) : ‖diagonal v‖₊ = ‖v‖₊ := by
@@ -255,21 +263,29 @@ theorem linfty_opNNNorm_def (A : Matrix m n α) :
   Subtype.ext <| linfty_opNorm_def A
 
 @[simp]
-theorem linfty_opNNNorm_col (v : m → α) : ‖col ι v‖₊ = ‖v‖₊ := by
+theorem linfty_opNNNorm_replicateCol (v : m → α) : ‖replicateCol ι v‖₊ = ‖v‖₊ := by
   rw [linfty_opNNNorm_def, Pi.nnnorm_def]
   simp
 
-@[simp]
-theorem linfty_opNorm_col (v : m → α) : ‖col ι v‖ = ‖v‖ :=
-  congr_arg ((↑) : ℝ≥0 → ℝ) <| linfty_opNNNorm_col v
+@[deprecated (since := "2025-03-20")] alias linfty_opNNNorm_col := linfty_opNNNorm_replicateCol
 
 @[simp]
-theorem linfty_opNNNorm_row (v : n → α) : ‖row ι v‖₊ = ∑ i, ‖v i‖₊ := by
+theorem linfty_opNorm_replicateCol (v : m → α) : ‖replicateCol ι v‖ = ‖v‖ :=
+  congr_arg ((↑) : ℝ≥0 → ℝ) <| linfty_opNNNorm_replicateCol v
+
+@[deprecated (since := "2025-03-20")] alias linfty_opNorm_col := linfty_opNorm_replicateCol
+
+@[simp]
+theorem linfty_opNNNorm_replicateRow (v : n → α) : ‖replicateRow ι v‖₊ = ∑ i, ‖v i‖₊ := by
   simp [linfty_opNNNorm_def]
 
+@[deprecated (since := "2025-03-20")] alias linfty_opNNNorm_row := linfty_opNNNorm_replicateRow
+
 @[simp]
-theorem linfty_opNorm_row (v : n → α) : ‖row ι v‖ = ∑ i, ‖v i‖ :=
-  (congr_arg ((↑) : ℝ≥0 → ℝ) <| linfty_opNNNorm_row v).trans <| by simp [NNReal.coe_sum]
+theorem linfty_opNorm_replicateRow (v : n → α) : ‖replicateRow ι v‖ = ∑ i, ‖v i‖ :=
+  (congr_arg ((↑) : ℝ≥0 → ℝ) <| linfty_opNNNorm_replicateRow v).trans <| by simp [NNReal.coe_sum]
+
+@[deprecated (since := "2025-03-20")] alias linfty_opNorm_row := linfty_opNNNorm_replicateRow
 
 @[simp]
 theorem linfty_opNNNorm_diagonal [DecidableEq m] (v : m → α) : ‖diagonal v‖₊ = ‖v‖₊ := by
@@ -310,8 +326,9 @@ theorem linfty_opNorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B‖ 
   linfty_opNNNorm_mul _ _
 
 theorem linfty_opNNNorm_mulVec (A : Matrix l m α) (v : m → α) : ‖A *ᵥ v‖₊ ≤ ‖A‖₊ * ‖v‖₊ := by
-  rw [← linfty_opNNNorm_col (ι := Fin 1) (A *ᵥ v), ← linfty_opNNNorm_col v (ι := Fin 1)]
-  exact linfty_opNNNorm_mul A (col (Fin 1) v)
+  rw [← linfty_opNNNorm_replicateCol (ι := Fin 1) (A *ᵥ v),
+    ← linfty_opNNNorm_replicateCol v (ι := Fin 1)]
+  exact linfty_opNNNorm_mul A (replicateCol (Fin 1) v)
 
 theorem linfty_opNorm_mulVec (A : Matrix l m α) (v : m → α) : ‖A *ᵥ v‖ ≤ ‖A‖ * ‖v‖ :=
   linfty_opNNNorm_mulVec _ _
@@ -523,22 +540,34 @@ instance frobenius_normedStarGroup [StarAddMonoid α] [NormedStarGroup α] :
   ⟨(le_of_eq <| frobenius_norm_conjTranspose ·)⟩
 
 @[simp]
-theorem frobenius_norm_row (v : m → α) : ‖row ι v‖ = ‖(WithLp.equiv 2 _).symm v‖ := by
+theorem frobenius_norm_replicateRow (v : m → α) :
+    ‖replicateRow ι v‖ = ‖(WithLp.equiv 2 _).symm v‖ := by
   rw [frobenius_norm_def, Fintype.sum_unique, PiLp.norm_eq_of_L2, Real.sqrt_eq_rpow]
-  simp only [row_apply, Real.rpow_two, WithLp.equiv_symm_pi_apply]
+  simp only [replicateRow_apply, Real.rpow_two, WithLp.equiv_symm_pi_apply]
+
+@[deprecated (since := "2025-03-20")] alias frobenius_norm_row := frobenius_norm_replicateRow
 
 @[simp]
-theorem frobenius_nnnorm_row (v : m → α) : ‖row ι v‖₊ = ‖(WithLp.equiv 2 _).symm v‖₊ :=
-  Subtype.ext <| frobenius_norm_row v
+theorem frobenius_nnnorm_replicateRow (v : m → α) :
+    ‖replicateRow ι v‖₊ = ‖(WithLp.equiv 2 _).symm v‖₊ :=
+  Subtype.ext <| frobenius_norm_replicateRow v
+
+@[deprecated (since := "2025-03-20")] alias frobenius_nnnorm_row := frobenius_nnnorm_replicateRow
 
 @[simp]
-theorem frobenius_norm_col (v : n → α) : ‖col ι v‖ = ‖(WithLp.equiv 2 _).symm v‖ := by
+theorem frobenius_norm_replicateCol (v : n → α) :
+    ‖replicateCol ι v‖ = ‖(WithLp.equiv 2 _).symm v‖ := by
   simp_rw [frobenius_norm_def, Fintype.sum_unique, PiLp.norm_eq_of_L2, Real.sqrt_eq_rpow]
-  simp only [col_apply, Real.rpow_two, WithLp.equiv_symm_pi_apply]
+  simp only [replicateCol_apply, Real.rpow_two, WithLp.equiv_symm_pi_apply]
+
+@[deprecated (since := "2025-03-20")] alias frobenius_norm_col := frobenius_norm_replicateCol
 
 @[simp]
-theorem frobenius_nnnorm_col (v : n → α) : ‖col ι v‖₊ = ‖(WithLp.equiv 2 _).symm v‖₊ :=
-  Subtype.ext <| frobenius_norm_col v
+theorem frobenius_nnnorm_replicateCol (v : n → α) :
+    ‖replicateCol ι v‖₊ = ‖(WithLp.equiv 2 _).symm v‖₊ :=
+  Subtype.ext <| frobenius_norm_replicateCol v
+
+@[deprecated (since := "2025-03-20")] alias frobenius_nnnorm_col := frobenius_nnnorm_replicateCol
 
 @[simp]
 theorem frobenius_nnnorm_diagonal [DecidableEq n] (v : n → α) :

@@ -5,6 +5,7 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 import Mathlib.Topology.Algebra.LinearTopology
 import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.RingTheory.Nilpotent.Defs
 
 /-! # Topologically nilpotent elements
 
@@ -63,6 +64,13 @@ theorem map {F : Type*} [FunLike F R S] [MonoidWithZeroHomClass F R S]
 theorem zero : IsTopologicallyNilpotent (0 : R) :=
   tendsto_atTop_of_eventually_const (i₀ := 1)
     (fun _ hi => by rw [zero_pow (Nat.ne_zero_iff_zero_lt.mpr hi)])
+
+theorem _root_.IsNilpotent.isTopologicallyNilpotent {a : R} (ha : IsNilpotent a) :
+    IsTopologicallyNilpotent a := by
+  obtain ⟨n, hn⟩ := ha
+  apply tendsto_atTop_of_eventually_const (i₀ := n)
+  intro i hi
+  rw [← Nat.add_sub_of_le hi, pow_add, hn, zero_mul]
 
 theorem exists_pow_mem_of_mem_nhds {a : R} (ha : IsTopologicallyNilpotent a)
     {v : Set R} (hv : v ∈ 𝓝 0) :

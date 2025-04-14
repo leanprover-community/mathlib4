@@ -57,8 +57,7 @@ lemma mk_preimage_down {s : Set α} : #(ULift.down.{v} ⁻¹' s) = lift.{v} (#s)
     ULift.up_bijective.comp (restrictPreimage_bijective _ (ULift.down_bijective))
   exact Equiv.ofBijective f this
 
--- Porting note: simpNF is not happy with universe levels.
-@[simp, nolint simpNF]
+-- `simp` can't figure out universe levels: normal form is `lift_mk_shrink'`.
 theorem lift_mk_shrink (α : Type u) [Small.{v} α] :
     Cardinal.lift.{max u w} #(Shrink.{v} α) = Cardinal.lift.{max v w} #α :=
   lift_mk_eq.2 ⟨(equivShrink α).symm⟩

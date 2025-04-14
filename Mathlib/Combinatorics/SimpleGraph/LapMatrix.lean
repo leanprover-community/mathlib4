@@ -90,7 +90,7 @@ theorem lapMatrix_toLinearMap₂' [Field R] [CharZero R] (x : V → R) :
   ring_nf
 
 /-- The Laplacian matrix is positive semidefinite -/
-theorem posSemidef_lapMatrix [LinearOrderedField R] [StarRing R]
+theorem posSemidef_lapMatrix [Field R] [LinearOrder R] [IsStrictOrderedRing R] [StarRing R]
     [TrivialStar R] : PosSemidef (G.lapMatrix R) := by
   constructor
   · rw [IsHermitian, conjTranspose_eq_transpose_of_trivial, isSymm_lapMatrix]
@@ -98,7 +98,8 @@ theorem posSemidef_lapMatrix [LinearOrderedField R] [StarRing R]
     rw [star_trivial, ← toLinearMap₂'_apply', lapMatrix_toLinearMap₂']
     positivity
 
-theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj [LinearOrderedField R] (x : V → R) :
+theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj
+    [Field R] [LinearOrder R] [IsStrictOrderedRing R] (x : V → R) :
     Matrix.toLinearMap₂' R (G.lapMatrix R) x x = 0 ↔ ∀ i j : V, G.Adj i j → x i = x j := by
   simp (disch := intros; positivity)
     [lapMatrix_toLinearMap₂', sum_eq_zero_iff_of_nonneg, sub_eq_zero]
@@ -169,7 +170,7 @@ lemma linearIndependent_lapMatrix_ker_basis_aux :
 lemma top_le_span_range_lapMatrix_ker_basis_aux :
     ⊤ ≤ Submodule.span ℝ (Set.range (lapMatrix_ker_basis_aux G)) := by
   intro x _
-  rw [mem_span_range_iff_exists_fun]
+  rw [Submodule.mem_span_range_iff_exists_fun]
   use Quot.lift x.val (by rw [← lapMatrix_toLin'_apply_eq_zero_iff_forall_reachable G x,
     LinearMap.map_coe_ker])
   ext j

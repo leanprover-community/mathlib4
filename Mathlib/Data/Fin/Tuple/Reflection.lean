@@ -132,17 +132,34 @@ def sum [Add α] [Zero α] : ∀ {m} (_ : Fin m → α), α
   | 1, v => v 0
   | _ + 2, v => sum (fun i => v (Fin.castSucc i)) + v (Fin.last _)
 
+-- `to_additive` without `existing` fails, see
+-- https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/to_additive.20complains.20about.20equation.20lemmas/near/508910537
+/-- `Finset.univ.prod` with better defeq for `Fin`. -/
+@[to_additive existing]
+def prod [Mul α] [One α] : ∀ {m} (_ : Fin m → α), α
+  | 0, _ => 1
+  | 1, v => v 0
+  | _ + 2, v => prod (fun i => v (Fin.castSucc i)) * v (Fin.last _)
+
 /-- This can be used to prove
+```lean
+example [CommMonoid α] (a : Fin 3 → α) : ∏ i, a i = a 0 * a 1 * a 2 :=
+  (prod_eq _).symm
+```
+-/
+@[to_additive (attr := simp)
+"This can be used to prove
 ```lean
 example [AddCommMonoid α] (a : Fin 3 → α) : ∑ i, a i = a 0 + a 1 + a 2 :=
   (sum_eq _).symm
-```
--/
-@[simp]
-theorem sum_eq [AddCommMonoid α] : ∀ {m} (a : Fin m → α), sum a = ∑ i, a i
+```"]
+theorem prod_eq [CommMonoid α] : ∀ {m} (a : Fin m → α), prod a = ∏ i, a i
   | 0, _ => rfl
-  | 1, a => (Fintype.sum_unique a).symm
-  | n + 2, a => by rw [Fin.sum_univ_castSucc, sum, sum_eq]
+  | 1, a => (Fintype.prod_unique a).symm
+  | n + 2, a => by rw [Fin.prod_univ_castSucc, prod, prod_eq]
+
+example [CommMonoid α] (a : Fin 3 → α) : ∏ i, a i = a 0 * a 1 * a 2 :=
+  (prod_eq _).symm
 
 example [AddCommMonoid α] (a : Fin 3 → α) : ∑ i, a i = a 0 + a 1 + a 2 :=
   (sum_eq _).symm

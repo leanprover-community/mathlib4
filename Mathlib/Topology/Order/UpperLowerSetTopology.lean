@@ -81,9 +81,7 @@ namespace WithUpperSet
 @[match_pattern] def ofUpperSet : WithUpperSet α ≃ α := Equiv.refl _
 
 @[simp] lemma toUpperSet_symm : (@toUpperSet α).symm = ofUpperSet := rfl
-@[deprecated (since := "2024-10-10")] alias to_WithUpperSet_symm_eq := toUpperSet_symm
 @[simp] lemma ofUpperSet_symm : (@ofUpperSet α).symm = toUpperSet := rfl
-@[deprecated (since := "2024-10-10")] alias of_WithUpperSet_symm_eq := ofUpperSet_symm
 @[simp] lemma toUpperSet_ofUpperSet (a : WithUpperSet α) : toUpperSet (ofUpperSet a) = a := rfl
 @[simp] lemma ofUpperSet_toUpperSet (a : α) : ofUpperSet (toUpperSet a) = a := rfl
 lemma toUpperSet_inj {a b : α} : toUpperSet a = toUpperSet b ↔ a = b := Iff.rfl
@@ -129,9 +127,7 @@ namespace WithLowerSet
 @[match_pattern] def ofLowerSet : WithLowerSet α ≃ α := Equiv.refl _
 
 @[simp] lemma toLowerSet_symm : (@toLowerSet α).symm = ofLowerSet := rfl
-@[deprecated (since := "2024-10-10")] alias to_WithLowerSet_symm_eq := toLowerSet_symm
 @[simp] lemma ofLowerSet_symm : (@ofLowerSet α).symm = toLowerSet := rfl
-@[deprecated (since := "2024-10-10")] alias of_WithLowerSet_symm_eq := ofLowerSet_symm
 @[simp] lemma toLowerSet_ofLowerSet (a : WithLowerSet α) : toLowerSet (ofLowerSet a) = a := rfl
 @[simp] lemma ofLowerSet_toLowerSet (a : α) : ofLowerSet (toLowerSet a) = a := rfl
 lemma toLowerSet_inj {a b : α} : toLowerSet a = toLowerSet b ↔ a = b := Iff.rfl

@@ -112,17 +112,16 @@ jobs:
 
       - name: install Python
         if: steps.user_permission.outputs.require-result == 'true'
-        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5.5.0
         with:
           python-version: 3.8
 
-      - name: install elan
-        if: steps.user_permission.outputs.require-result == 'true'
-        run: |
-          set -o pipefail
-          curl -sSfL https://github.com/leanprover/elan/releases/download/v3.1.1/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
-          ./elan-init -y --default-toolchain none
-          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
+      - name: Configure Lean
+        uses: leanprover/lean-action@f3ad22e9ca29cb9475bc9bee9afd1f39bb52bf6d # v1.1.2
+        with:
+          auto-config: false
+          use-github-cache: false
+          use-mathlib-cache: false
 
       # run the same linting steps as in lint_and_suggest_pr.yaml
 
@@ -153,7 +152,6 @@ jobs:
         if: steps.user_permission.outputs.require-result == 'true'
         run: |
           # cleanup junk from build
-          rm elan-init
           rm docs/references.bib.old
           # setup commit and push
           git config user.name "leanprover-community-mathlib4-bot"
