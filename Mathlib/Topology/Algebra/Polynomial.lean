@@ -7,7 +7,6 @@ import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Inductions
 import Mathlib.Algebra.Polynomial.Splits
 import Mathlib.RingTheory.Polynomial.Vieta
-import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.Normed.Ring.Lemmas
 
 /-!

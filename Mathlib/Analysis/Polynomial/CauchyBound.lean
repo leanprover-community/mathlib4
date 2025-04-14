@@ -5,7 +5,7 @@ Authors: Daniel Weber
 -/
 import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.Polynomial.Monic
-import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Analysis.Normed.Ring.Basic
 
 /-!
 # Cauchy's bound on polynomial roots.
