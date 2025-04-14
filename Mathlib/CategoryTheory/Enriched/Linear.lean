@@ -25,13 +25,6 @@ variable {R : Type u} [CommRing R]
 variable {C : Type u} [Category.{u} C] [Preadditive C] [Linear R C]
 
 @[simp]
-lemma aux6 {X Y : Type u} [AddCommGroup X] [Module R X]
-    [AddCommGroup Y] [Module R Y] :
-    (tensorObj (𝒞 := ModuleCat.moduleCategory R) (ModuleCat.of R X) (ModuleCat.of R Y)).carrier =
-    X ⊗[R] Y := by
-  rfl
-
-@[simp]
 lemma aux1 {X Y : C} {Z W : Type u} [AddCommGroup Z] [Module R Z]
     [AddCommGroup W] [Module R W] (f : Z →ₗ[R] W) :
     (ModuleCat.ofHom f ▷ ModuleCat.of R (X ⟶ Y)).hom = f.rTensor (X ⟶ Y) :=
@@ -58,7 +51,6 @@ lemma lift_comp_lift_comp_rTensor_eq {W X Y Z : C} (f : ((W ⟶ X) ⊗[R] (X ⟶
       (fun _ _ h₂ h₃ => by simp [add_tmul, LinearEquiv.map_add, ← h₂, ← h₃]))
     (fun _ _ h₂ h₃ => by simp [h₂, h₃, LinearEquiv.map_add])
 
-
 open ModuleCat Hom
 
 noncomputable instance : EnrichedOrdinaryCategory (ModuleCat R) C where
@@ -67,22 +59,23 @@ noncomputable instance : EnrichedOrdinaryCategory (ModuleCat R) C where
   comp X Y Z := ModuleCat.ofHom <| lift (Linear.comp X Y Z)
   id_comp X Y := by
     ext f
-    simp only [LinearMap.ringLmapEquivSelf_symm_apply, ModuleCat.hom_comp, aux6, hom_ofHom,
+    simp only [LinearMap.ringLmapEquivSelf_symm_apply, ModuleCat.hom_comp,
+      ModuleCat.MonoidalCategory.carrier_of_tensorObj_of, hom_ofHom,
       LinearMap.coe_comp, Function.comp_apply, ModuleCat.hom_id, LinearMap.id_coe, id_eq] at f ⊢
-    rw [aux2, lid_symm_apply, aux1]
-    erw [LinearMap.rTensor_tmul _ (LinearMap.smulRight (1 : R →ₗ[R] R) (𝟙 X)) f 1]
-    simp
+    rw [aux2]
+    simp [ModuleCat.MonoidalCategory.tensorUnit_eq]
   comp_id X Y := by
     ext f
-    simp only [LinearMap.ringLmapEquivSelf_symm_apply, ModuleCat.hom_comp, aux6, hom_ofHom,
+    simp only [LinearMap.ringLmapEquivSelf_symm_apply, ModuleCat.hom_comp,
+      ModuleCat.MonoidalCategory.carrier_of_tensorObj_of, hom_ofHom,
       LinearMap.coe_comp, Function.comp_apply, ModuleCat.hom_id, LinearMap.id_coe, id_eq] at f ⊢
-    rw [aux2', rid_symm_apply, aux1']
-    erw [LinearMap.lTensor_tmul _ (LinearMap.smulRight (1 : R →ₗ[R] R) (𝟙 Y)) f 1]
-    simp
+    rw [aux2']
+    simp [ModuleCat.MonoidalCategory.tensorUnit_eq]
   assoc W X Y Z := by
     ext f
     change _ ⊗[R] _ ⊗[R] _ at f
-    simp only [ModuleCat.hom_comp, aux6, hom_ofHom, LinearMap.coe_comp, Function.comp_apply] at f ⊢
+    simp only [ModuleCat.hom_comp, ModuleCat.MonoidalCategory.carrier_of_tensorObj_of, hom_ofHom,
+      LinearMap.coe_comp, Function.comp_apply] at f ⊢
     erw [lift_comp_lift_comp_rTensor_eq]
     congr
     exact (TensorProduct.assoc R (W ⟶ X) (X ⟶ Y) (Y ⟶ Z)).right_inv f
@@ -143,7 +136,6 @@ instance linearEnrichedModuleCat :
       simp only [Equiv.smul_def]
       rw [eHomEquiv_comp, ← eHomEquiv, ← eHomEquiv]
       simp [eHomEquiv_comp] }
-
 
 end LinearOfEnriched
 

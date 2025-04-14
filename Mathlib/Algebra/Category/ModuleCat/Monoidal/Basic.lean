@@ -173,6 +173,14 @@ instance : CommRing ((𝟙_ (ModuleCat.{u} R) : ModuleCat.{u} R) : Type u) :=
 
 namespace MonoidalCategory
 
+lemma tensorUnit_eq : 𝟙_ (ModuleCat R) = of R R := rfl
+
+@[simp]
+lemma carrier_of_tensorObj_of {X Y : Type u} [AddCommGroup X] [Module R X]
+    [AddCommGroup Y] [Module R Y] :
+    ((of R X) ⊗ (of R Y)).carrier = TensorProduct R X Y := by
+  rfl
+
 @[simp]
 lemma hom_tensorHom {W X Y Z: ModuleCat R} (f : W ⟶ X) (g : Y ⟶ Z) :
     (f ⊗ g).hom = TensorProduct.map f.hom g.hom :=
