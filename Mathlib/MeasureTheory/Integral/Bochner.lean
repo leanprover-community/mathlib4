@@ -7,6 +7,4 @@ import Mathlib.MeasureTheory.Integral.Bochner.Basic
 import Mathlib.MeasureTheory.Integral.Bochner.L1
 import Mathlib.MeasureTheory.Integral.Bochner.VitaliCaratheodory
 
-set_option linter.style.header false
-
 deprecated_module (since "2025-04-13")

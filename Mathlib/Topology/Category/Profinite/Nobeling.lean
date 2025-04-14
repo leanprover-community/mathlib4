@@ -9,6 +9,4 @@ import Mathlib.Topology.Category.Profinite.Nobeling.Span
 import Mathlib.Topology.Category.Profinite.Nobeling.Successor
 import Mathlib.Topology.Category.Profinite.Nobeling.ZeroLimit
 
-set_option linter.style.header false
-
 deprecated_module (since "2025-04-13")
