@@ -91,8 +91,8 @@ namespace HahnSeries
 
 section BinomialPow
 
-variable [LinearOrderedAddCommGroup Γ] [CommRing R] [BinomialRing R] [Module R Γ]
-[CommRing A] [Algebra R A]
+variable [LinearOrder Γ] [AddCommGroup Γ] [IsOrderedAddMonoid Γ] [CommRing R] [BinomialRing R]
+[Module R Γ] [CommRing A] [Algebra R A]
 
 theorem pos_orderTop_single_sub {g g' : Γ} (h : g < g') (a : A) :
     0 < (single (g' - g) a).orderTop := by
@@ -166,13 +166,15 @@ theorem pos_addUnit_neg_add [AddMonoid Γ] [LT Γ]
 
 --#find_home pos_addUnit_neg_add --Mathlib.Algebra.Order.Group.Units
 
-theorem one_sub_single_sub_one_orderTop_pos [OrderedCancelAddCommMonoid Γ] [CommRing R]
-    {g : Γ} (hg : 0 < g) (r : R) : 0 < ((1 - single g r) - 1).orderTop := by
+theorem one_sub_single_sub_one_orderTop_pos [PartialOrder Γ] [AddCommMonoid Γ]
+    [IsOrderedAddMonoid Γ] [CommRing R] {g : Γ} (hg : 0 < g) (r : R) :
+    0 < ((1 - single g r) - 1).orderTop := by
   refine lt_of_lt_of_le (WithTop.coe_pos.mpr hg) ?_
   simp only [sub_sub_cancel_left, orderTop_neg, orderTop_single_le]
 
-variable [LinearOrderedCancelAddCommMonoid Γ] [CommRing R]
+variable [LinearOrder Γ] [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] [CommRing R]
 
+omit [IsOrderedCancelAddMonoid Γ] in
 theorem minus_one_orderTop_pos [Nontrivial R] (x : HahnSeries Γ R) :
     0 < (x - 1).orderTop ↔ x.orderTop = 0 ∧ x.leadingCoeff = 1 := by
   constructor
@@ -190,7 +192,8 @@ theorem minus_one_orderTop_pos [Nontrivial R] (x : HahnSeries Γ R) :
 
 /-- The monoid of elements close to 1, i.e., subtracting 1 yields positive `orderTop`. -/
 @[simps]
-def onePlusPosOrderTop (Γ) (R) [LinearOrderedCancelAddCommMonoid Γ] [CommRing R] :
+def onePlusPosOrderTop (Γ) (R) [LinearOrder Γ] [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ]
+    [CommRing R] :
     Submonoid (HahnSeries Γ R) where
   carrier := { x : HahnSeries Γ R | 0 < (x - 1).orderTop}
   mul_mem' := by
@@ -363,29 +366,36 @@ theorem leadingCoeff_unitBinomial [Nontrivial R] {g g' : Γ} (hg : IsAddUnit g) 
 
 -- coefficients of powers - use embDomain_coeff and embDomain_notin_range from Basic
 
+omit [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] in
 theorem orderTop_single_add_single {g g' : Γ} (hgg' : g < g') {a : R} (ha : a ≠ 0) (b : R) :
     (single g a + single g' b).orderTop = g := by
   rw [← orderTop_single ha]
   exact orderTop_add_eq_left (lt_of_eq_of_lt (orderTop_single ha)
     (lt_of_lt_of_le (WithTop.coe_lt_coe.mpr hgg') orderTop_single_le))
 
+omit [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] in
 theorem coeff_single_add_single {g g' : Γ} (hgg' : g < g') {a b : R} :
     (single g a + single g' b).coeff g = a := by
   simp_all [ne_of_lt hgg']
 
+omit [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] in
 theorem single_add_single_ne {g g' : Γ} (hgg' : g < g') {a : R} (ha : a ≠ 0) (b : R) :
     single g a + single g' b ≠ 0 :=
   ne_zero_of_coeff_ne_zero (ne_of_eq_of_ne (coeff_single_add_single hgg') ha)
 
 -- Do I need this?
+omit [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] in
 theorem single_add_single_support {g g' : Γ} {a b : R} :
     (single g a + single g' b).support ⊆ {g} ∪ {g'} := by
   refine support_add_subset.trans ?_
   simp_all only [Set.union_singleton, Set.union_subset_iff]
   refine { left := fun _ hk => Set.mem_insert_of_mem g' (support_single_subset hk), right := ?_ }
   rw [Set.pair_comm]
-  exact fun k hk => Equiv.Set.union.proof_1 k <| Set.mem_insert_of_mem g (support_single_subset hk)
+  refine Set.subset_pair_iff.mpr ?_
+  intro k hk
+  exact Set.mem_insert_of_mem g (support_single_subset hk)
 
+omit [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] in
 theorem leadingCoeff_single_add_single {g g' : Γ} (hgg' : g < g') {a b : R} (ha : a ≠ 0) :
     (single g a + single g' b).leadingCoeff = a := by
   have hn := single_add_single_ne hgg' ha b
@@ -393,11 +403,12 @@ theorem leadingCoeff_single_add_single {g g' : Γ} (hgg' : g < g') {a b : R} (ha
   rw [orderTop_of_ne hn, WithTop.coe_eq_coe] at ho
   rw [leadingCoeff_of_ne hn, ho, coeff_single_add_single hgg']
 
+omit [IsOrderedCancelAddMonoid Γ] in
 theorem order_single_add_single {g g' : Γ} (hgg' : g < g') {a b : R} (ha : a ≠ 0) :
     (single g a + single g' b).order = g := by
   refine WithTop.coe_eq_coe.mp ?_
   rw [order_eq_orderTop_of_ne (single_add_single_ne hgg' ha b), orderTop_single_add_single hgg' ha]
-
+/-!
 theorem isUnit_single_add_single {g g' : Γ} (hg : IsAddUnit g) (hgg' : g < g') (a : Units R)
     (b : R) : IsUnit (single g a.val + single g' b) := by
   by_cases ha : a.val = 0
@@ -405,11 +416,9 @@ theorem isUnit_single_add_single {g g' : Γ} (hg : IsAddUnit g) (hgg' : g < g') 
       isUnit_zero_iff.mp (Eq.mpr (congrArg (fun h ↦ IsUnit h) ha.symm) a.isUnit)
     rw [← MulAction.one_smul (α := R) ((single g) a.val + (single g') b), ← hz, zero_smul,
       isUnit_zero_iff, ← single_zero_one, ← hz, single_eq_zero]
-  · refine isUnit_of_isUnit_leadingCoeff_AddUnitOrder (R := R) ?_ ?_
-    · rw [leadingCoeff_single_add_single hgg' ha]
-      exact Units.isUnit a
-    · rw [order_single_add_single hgg' ha]
-      exact hg
+  · have hlead := (leadingCoeff_single_add_single (b := b) hgg' ha) ▸ Units.isUnit a
+    have hord := (order_single_add_single (b := b) hgg' ha) ▸ hg
+    exact isUnit_of_isUnit_leadingCoeff_AddUnitOrder (Γ := Γ) (R := R) hlead hord
 
 /-- A binomial Hahn series with unit leading coefficient -/
 abbrev UnitBinomial' {g g' : Γ} (hg : IsAddUnit g) (hgg' : g < g') {a : R} (ha : IsUnit a) (b : R) :
@@ -419,15 +428,15 @@ abbrev UnitBinomial' {g g' : Γ} (hg : IsAddUnit g) (hgg' : g < g') {a : R} (ha 
 theorem UnitBinomial_val {g g' : Γ} (hg : IsAddUnit g) (hgg' : g < g') {a : R} (ha : IsUnit a)
     (b : R) : (UnitBinomial' hg hgg' ha b).val = single g (IsUnit.unit ha).val + single g' b :=
   rfl
-/-!
+
 theorem UnitBinimial_inv_coeff {g g' : Γ} (hg : IsAddUnit g) (hgg' : g < g') {a : R} (ha : IsUnit a)
     (b : R) : (UnitBinomial hg hgg' ha b).inv = sorry := --hsum
   sorry -- induction, telescoping.
--/
+
 /-- A function for describing coefficients of powers of invertible binomials. -/
 def UnitBinomialPow_coeff_aux {a : R} (ha : IsUnit a) (b : R) (n : ℤ) :
     ℕ → R := fun k => (IsUnit.unit ha) ^ (n - k) • b ^ k • Ring.choose n k
-
+-/
 end Binomial
 
 section OneSubSingle -- may be superfluous
@@ -436,7 +445,7 @@ section OneSubSingle -- may be superfluous
 
 -- if k ∈ Monoid.closure g, then ... else 0
 
-variable [LinearOrderedCancelAddCommMonoid Γ] [CommRing R]
+variable [LinearOrder Γ] [AddCommMonoid Γ] [CommRing R]
 
 theorem supp_one_sub_single {g : Γ} (r : R) :
     (1 - single g r).support ⊆ {0, g} := by
@@ -465,7 +474,8 @@ theorem leadingCoeff_one_sub_single {g : Γ} (hg : 0 < g) (r : R) :
   · rw [not_nontrivial_iff_subsingleton] at h
     exact Subsingleton.eq_one (leadingCoeff (1 - (single g) r))
 
-theorem coeff_mul_one_sub_single {x : HahnSeries Γ R} {g g' : Γ} {r : R} :
+theorem coeff_mul_one_sub_single [IsOrderedCancelAddMonoid Γ] {x : HahnSeries Γ R} {g g' : Γ}
+    {r : R} :
     (x * (1 - single g r)).coeff (g + g') = x.coeff (g + g') - r * x.coeff g' := by
   rw [mul_one_sub, coeff_sub, Pi.sub_apply, sub_right_inj, add_comm, coeff_mul_single_add, mul_comm]
 
@@ -480,7 +490,7 @@ theorem support_one_sub_single_npow (g : Γ) (r : R) {n : ℕ} :
   support_one_sub_single_npow_zero.trans AddSubmonoid.closure_insert_zero
 -/
 
-theorem _root_.AddSubmonoid.neg_not_in_closure {Γ} [OrderedAddCommMonoid Γ] {g g' : Γ} (hg : 0 ≤ g)
+theorem _root_.AddSubmonoid.neg_not_in_closure [IsOrderedAddMonoid Γ] {g g' : Γ} (hg : 0 ≤ g)
     (hg' : g' < 0) : ¬ g' ∈ AddSubmonoid.closure {g} := by
   rw [AddSubmonoid.mem_closure_singleton, not_exists]
   intro k hk
@@ -505,7 +515,8 @@ theorem coeff_one_sub_single_pow_of_add_eq_zero {g g' : Γ} (hg : 0 < g) (hgg' :
     exact (lt_add_iff_pos_left g').mpr hg
   exact coeff_one_sub_single_pow_of_neg (le_of_lt hg) hg'
 -/
-theorem coeff_single_mul_of_no_add {x : HahnSeries Γ R} {a b : Γ} {r : R} (hab : ¬∃c, c + a = b) :
+theorem coeff_single_mul_of_no_add [IsOrderedCancelAddMonoid Γ] {x : HahnSeries Γ R} {a b : Γ}
+    {r : R} (hab : ¬∃c, c + a = b) :
     (x * single a r).coeff b = 0 := by
   rw [coeff_mul]
   trans Finset.sum ∅ fun (ij : Γ × Γ) => x.coeff ij.fst * (single a r).coeff ij.snd

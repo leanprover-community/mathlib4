@@ -119,9 +119,9 @@ end Coeff
 
 section Module
 
-variable [OrderedCancelAddCommMonoid Γ] [PartialOrder Γ₁] [AddAction Γ Γ₁]
-  [IsOrderedCancelVAdd Γ Γ₁] {R : Type*} [CommRing R] {V W : Type*} [AddCommGroup V]
-  [Module R V] [AddCommGroup W] [Module R W]
+variable [PartialOrder Γ] [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] [PartialOrder Γ₁]
+  [AddAction Γ Γ₁] [IsOrderedCancelVAdd Γ Γ₁] {R : Type*} [CommRing R] {V W : Type*}
+  [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W]
 
 /-- The scalar multiplication of Hahn series on heterogeneous vertex operators. -/
 def HahnSMul (x : HahnSeries Γ R) (A : HVertexOperator Γ₁ R V W) :
@@ -204,7 +204,7 @@ end CoeffOps
 
 section Products
 
-variable {Γ Γ' : Type*} [PartialOrder Γ] [PartialOrder Γ'] {R : Type*}
+variable {Γ Γ' : Type*} [PartialOrder Γ] [PartialOrder Γ₁] {R : Type*}
   [CommRing R] {U V W : Type*} [AddCommGroup U] [Module R U] [AddCommGroup V] [Module R V]
   [AddCommGroup W] [Module R W] (A : HVertexOperator Γ R V W) (B : HVertexOperator Γ₁ R U V)
 
@@ -397,7 +397,7 @@ theorem toLex_vAdd_of_sub (k l m n : ℤ) :
     Int.sub_add_cancel]
 --#find_home! toLex_vAdd_of_sub --[Mathlib.RingTheory.HahnSeries.Multiplication]
 
-variable [OrderedCancelAddCommMonoid Γ] {R : Type*} {V W : Type*} [CommRing R]
+variable [PartialOrder Γ] [AddCommMonoid Γ] {R : Type*} {V W : Type*} [CommRing R]
   [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W]
 
 /-- `-Y + X` as a unit of `R((X))((Y))` -/

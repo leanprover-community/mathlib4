@@ -90,8 +90,8 @@ namespace HahnSeries
 
 namespace SummableFamily
 
-theorem support_prod_subset_add_support [OrderedCancelAddCommMonoid Γ] [CommSemiring R]
-    (σ : Type*) (x : σ →₀ HahnSeries Γ R) (s : Finset σ) :
+theorem support_prod_subset_add_support [AddCommMonoid Γ] [PartialOrder Γ] [CommSemiring R]
+    [IsOrderedCancelAddMonoid Γ] (σ : Type*) (x : σ →₀ HahnSeries Γ R) (s : Finset σ) :
     haveI : AddCommMonoid (Set Γ) := Set.addCommMonoid
     (∏ i ∈ s, (x i)).support ⊆ ∑ i ∈ s, (x i).support := by
   refine Finset.cons_induction ?_ ?_ s
@@ -101,8 +101,8 @@ theorem support_prod_subset_add_support [OrderedCancelAddCommMonoid Γ] [CommSem
     simp_all only [prod_cons, mem_support, ne_eq, sum_cons]
     exact support_mul_subset_add_support.trans (Set.add_subset_add (fun ⦃a⦄ a ↦ a) his) hg
 
-theorem support_MVpow_subset_closure_support [OrderedCancelAddCommMonoid Γ] [CommSemiring R]
-    (σ : Type*) (x : σ →₀ HahnSeries Γ R) (n : σ →₀ ℕ) :
+theorem support_MVpow_subset_closure_support [AddCommMonoid Γ] [PartialOrder Γ] [CommSemiring R]
+    [IsOrderedCancelAddMonoid Γ] (σ : Type*) (x : σ →₀ HahnSeries Γ R) (n : σ →₀ ℕ) :
     (∏ i ∈ x.support, (x i) ^ (n i)).support ⊆ AddSubmonoid.closure (⋃ i : σ, (x i).support) := by
   refine Finset.cons_induction ?_ ?_ x.support
   · rw [prod_empty, ← single_zero_one]
@@ -117,8 +117,8 @@ theorem support_MVpow_subset_closure_support [OrderedCancelAddCommMonoid Γ] [Co
         Set.subset_iUnion_of_subset i fun ⦃a⦄ a ↦ a
     exact (support_mul_subset_add_support (x := x i ^ n i)).trans (AddSubmonoid.add_subset hi hx)
 
-theorem support_MVpow_subset_closure [OrderedCancelAddCommMonoid Γ] [CommSemiring R]
-    {σ : Type*} (s : Finset σ) (x : σ →₀ HahnSeries Γ R) (n : σ →₀ ℕ) :
+theorem support_MVpow_subset_closure [AddCommMonoid Γ] [PartialOrder Γ] [CommSemiring R]
+    [IsOrderedCancelAddMonoid Γ] {σ : Type*} (s : Finset σ) (x : σ →₀ HahnSeries Γ R) (n : σ →₀ ℕ) :
     (∏ i ∈ s, (x i) ^ (n i)).support ⊆ AddSubmonoid.closure (⋃ i : σ, (x i).support) := by
   refine Finset.cons_induction ?_ ?_ s
   · rw [prod_empty, ← single_zero_one]
@@ -133,8 +133,9 @@ theorem support_MVpow_subset_closure [OrderedCancelAddCommMonoid Γ] [CommSemiri
         Set.subset_iUnion_of_subset i fun ⦃a⦄ a ↦ a
     exact (support_mul_subset_add_support (x := x i ^ n i)).trans (AddSubmonoid.add_subset hi hx)
 
-theorem isPWO_iUnion_support_MVpow_support [LinearOrderedCancelAddCommMonoid Γ] [CommSemiring R]
-    (σ : Type*) (x : σ →₀ HahnSeries Γ R) (hx : ∀ i : σ, 0 ≤ (x i).order) :
+theorem isPWO_iUnion_support_MVpow_support [LinearOrder Γ] [AddCommMonoid Γ] [CommSemiring R]
+    [IsOrderedCancelAddMonoid Γ] (σ : Type*) (x : σ →₀ HahnSeries Γ R)
+    (hx : ∀ i : σ, 0 ≤ (x i).order) :
     (⋃ n : σ →₀ ℕ, (∏ i ∈ x.support, (x i) ^ (n i)).support).IsPWO := by
   refine Set.IsPWO.mono (Set.IsPWO.addSubmonoid_closure ?_ ?_)
     (Set.iUnion_subset fun n => support_MVpow_subset_closure x.support x n)
@@ -152,8 +153,8 @@ theorem isPWO_iUnion_support_MVpow_support [LinearOrderedCancelAddCommMonoid Γ]
     · rw [show (⋃ i, ⋃ (_ : i ∉ x.support), (x i).support) = ∅ by simp_all]
       exact Set.isPWO_empty
 
-theorem isPWO_iUnion_support_MVpow [LinearOrderedCancelAddCommMonoid Γ] [CommSemiring R]
-    {σ : Type*} [Fintype σ] (x : σ →₀ HahnSeries Γ R)
+theorem isPWO_iUnion_support_MVpow [LinearOrder Γ] [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ]
+    [CommSemiring R] {σ : Type*} [Fintype σ] (x : σ →₀ HahnSeries Γ R)
     (hx : ∀ i : σ, 0 ≤ (x i).order) :
     (⋃ n : σ →₀ ℕ, (∏ i, (x i) ^ (n i)).support).IsPWO := by
   refine Set.IsPWO.mono ?_ (Set.iUnion_subset fun n => support_MVpow_subset_closure Finset.univ x n)
@@ -169,6 +170,7 @@ section PowerSeriesFamily
 
 variable [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ] [CommRing R]
 
+omit [IsOrderedCancelAddMonoid Γ] in
 lemma supp_eq_univ_of_pos (σ : Type*) (y : σ →₀ HahnSeries Γ R)
     (hy : ∀ i : σ, 0 < (y i).order) : y.support = Set.univ (α := σ) := by
   have hy₁ : ∀ i : σ, y i ≠ 0 := fun i => ne_zero_of_order_ne (ne_of_gt (hy i))
@@ -181,6 +183,7 @@ def Fintype_of_pos_order (σ : Type*) (y : σ →₀ HahnSeries Γ R)
   rw [← supp_eq_univ_of_pos σ y hy]
   exact finite_toSet y.support
 
+omit [IsOrderedCancelAddMonoid Γ] in
 lemma supp_eq_univ_of_pos_fintype (σ : Type*) [Fintype σ] (y : σ →₀ HahnSeries Γ R)
     (hy : ∀ i : σ, 0 < (y i).order) : y.support = Finset.univ (α := σ) :=
   eq_univ_of_forall fun i => Finsupp.mem_support_iff.mpr (ne_zero_of_order_ne (ne_of_gt (hy i)))
@@ -294,6 +297,7 @@ theorem powerSeriesFamily_ext {x : HahnSeries Γ V} (f g : PowerSeries R) :
       ∀ n, powerSeriesFamily x f n = powerSeriesFamily x g n :=
   SummableFamily.ext_iff
 
+omit [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] in
 theorem coeff_sum {α} (s : Finset α) (f : α → HahnSeries Γ R) (g : Γ) :
     (Finset.sum s f).coeff g = Finset.sum s (fun i => (f i).coeff g) :=
   cons_induction_on s (by simp) fun i t hit hc => by rw [sum_cons, sum_cons, coeff_add, hc]
@@ -339,8 +343,8 @@ end PowerSeriesFamily
 
 section MVpowers
 
-variable [LinearOrderedCancelAddCommMonoid Γ] [CommRing R] [CommRing V] [Algebra R V]
-{x : HahnSeries Γ V} (hx : 0 < x.orderTop)
+variable [LinearOrder Γ] [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] [CommRing R] [CommRing V]
+[Algebra R V] {x : HahnSeries Γ V} (hx : 0 < x.orderTop)
 
 -- use Finsupp.sumFinsuppAddEquivProdFinsupp and maybe Finsupp.lsingle
 -- see also Finsupp.restrictSupportEquiv
@@ -521,7 +525,7 @@ namespace PowerSeries
 open HahnSeries SummableFamily
 
 variable [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ]
-  [CommRing R] {x : HahnSeries Γ R}
+  [CommRing R] (x : HahnSeries Γ R)
 
 /-- The `R`-algebra homomorphism from `R[[X]]` to `HahnSeries Γ R` given by sending the power series
 variable `X` to a positive order element `x` and extending to infinite sums. -/
@@ -604,24 +608,25 @@ namespace MvPowerSeries
 
 open HahnSeries SummableFamily
 
-variable [LinearOrderedCancelAddCommMonoid Γ] [CommRing R] {σ : Type*} [Fintype σ]
-(y : σ →₀ HahnSeries Γ R) (hy : ∀ i, 0 < (y i).orderTop)
+variable [LinearOrder Γ] [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] [CommRing R] {σ : Type*}
+[Fintype σ] (y : σ →₀ HahnSeries Γ R) (hy : ∀ i, 0 < (y i).orderTop)
 /-!
 /-- The `R`-algebra homomorphism from `R[[X₁,…,Xₙ]]` to `HahnSeries Γ R` given by sending each power
 series variable `Xᵢ` to a positive order element. -/
 @[simps]
-def heval {σ : Type*} [Fintype σ] (y : σ →₀ HahnSeries Γ R)
-    (hy : ∀ i, 0 < (y i).orderTop) : MvPowerSeries σ R →ₐ[R] HahnSeries Γ R where
-  toFun f := (mvPowerSeriesFamily y hy f).hsum
+def heval {σ : Type*} [Fintype σ] (y : σ →₀ HahnSeries Γ R) :
+    MvPowerSeries σ R →ₐ[R] HahnSeries Γ R where
+  toFun f := (mvPowerSeriesFamily y f).hsum
   map_one' := by
     classical
     simp only [hsum, mvPowerSeriesFamily_toFun, MvPowerSeries.coeff_one, ite_smul, one_smul,
       zero_smul, mvPowers_apply]
     ext g
-    simp_rw [finsum_eq_single (fun i => (if i = 0 then ∏ i_1 : σ, y i_1 ^ i i_1 else 0).coeff g)
+    simp_rw [finsum_eq_single (fun i =>
+      (if i = 0 then ∏ i_1 : σ, (if 0 < (y i_1).orderTop then y i_1 else 0) ^ i i_1 else 0).coeff g)
       (0 : σ →₀ ℕ) (fun n hn => by simp_all)]
-    rw [if_true]
-    rw [Fintype.prod_eq_one (fun i_1 ↦ y i_1 ^ (0 : σ →₀ ℕ) i_1) (congrFun rfl)]
+    rw [if_true, Fintype.prod_eq_one (fun i_1 ↦
+      (if 0 < (y i_1).orderTop then y i_1 else 0) ^ (0 : σ →₀ ℕ) i_1) (congrFun rfl)]
   map_mul' a b := by
     simp only [← hsum_family_mul]
     exact mvPowerSeries_family_prod_eq_family_mul y hy a b
@@ -632,8 +637,8 @@ def heval {σ : Type*} [Fintype σ] (y : σ →₀ HahnSeries Γ R)
     ext g
     simp only [coeff_hsum, map_add, mvPowers_apply, coeff_smul,
       smul_eq_mul, add_mul, coeff_add', Pi.add_apply]
-    rw [← finsum_add_distrib (finite_co_support (mvPowerSeriesFamily y hy a) g)
-      (finite_co_support (mvPowerSeriesFamily y hy b) g)]
+    rw [← finsum_add_distrib (finite_co_support (mvPowerSeriesFamily y a) g)
+      (finite_co_support (mvPowerSeriesFamily y b) g)]
     exact finsum_congr fun s => by rw [mvPowerSeriesFamilyAdd, add_apply, coeff_add]
   commutes' r := by
     simp only [MvPowerSeries.algebraMap_apply, Algebra.id.map_eq_id, RingHom.id_apply,
@@ -645,22 +650,22 @@ def heval {σ : Type*} [Fintype σ] (y : σ →₀ HahnSeries Γ R)
     by_cases hg : g = 0 <;> simp [hg, Algebra.algebraMap_eq_smul_one']
 
 theorem heval_mul {a b : MvPowerSeries σ R} :
-    heval y hy (a * b) = (heval y hy a) * heval y hy b :=
-  map_mul (heval y hy) a b
+    heval y (a * b) = (heval y a) * heval y b :=
+  map_mul (heval y) a b
 
-theorem heval_unit (u : (MvPowerSeries σ R)ˣ) : IsUnit (heval y hy u) := by
+theorem heval_unit (u : (MvPowerSeries σ R)ˣ) : IsUnit (heval y u) := by
   refine isUnit_iff_exists_inv.mpr ?_
   use heval y hy u.inv
   rw [← heval_mul, Units.val_inv, map_one]
 
 theorem heval_coeff (f : MvPowerSeries σ R) (g : Γ) :
-    (heval y hy f).coeff g = ∑ᶠ n, ((mvPowerSeriesFamily y hy f).coeff g) n := by
+    (heval y f).coeff g = ∑ᶠ n, ((mvPowerSeriesFamily y f).coeff g) n := by
   rw [heval_apply, coeff_hsum]
   exact rfl
 
 theorem heval_coeff_zero (f : MvPowerSeries σ R) :
-    (heval y hy f).coeff 0 = MvPowerSeries.constantCoeff σ R f := by
-  rw [heval_coeff, finsum_eq_single (fun n => ((mvPowerSeriesFamily y hy f).coeff 0) n) 0,
+    (heval y f).coeff 0 = MvPowerSeries.constantCoeff σ R f := by
+  rw [heval_coeff, finsum_eq_single (fun n => ((mvPowerSeriesFamily y f).coeff 0) n) 0,
     ← MvPowerSeries.coeff_zero_eq_constantCoeff_apply]
   · simp_all
   · intro n hn

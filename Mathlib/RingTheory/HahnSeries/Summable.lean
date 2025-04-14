@@ -491,7 +491,7 @@ end SMul
 section Semiring
 
 variable [AddCommMonoid Γ] [PartialOrder Γ] [IsOrderedCancelAddMonoid Γ] [PartialOrder Γ']
-[AddAction Γ Γ'] [IsOrderedCancelVAdd Γ Γ'] [Semiring R]
+[AddAction Γ Γ'] [IsOrderedCancelVAdd Γ Γ'] [Semiring R] [AddCommMonoid V] [Module R V]
 
 instance : Module (HahnSeries Γ R) (SummableFamily Γ' V α) where
   smul := (· • ·)
@@ -580,6 +580,7 @@ theorem pi_PWO_iUnion_support (s : Finset σ) {R} [CommSemiring R] (α : σ → 
     exact hor ▸ hf
 
 open Classical in
+omit [IsOrderedCancelAddMonoid Γ] in
 /-- delete this? -/
 theorem cosupp_subset_iunion_cosupp_left {V} [AddCommMonoid V] (s : SummableFamily Γ R α)
     (t : SummableFamily Γ' V β) (g : Γ') {gh : Γ × Γ'}

@@ -234,7 +234,7 @@ end Algebra
 
 section meval
 
-variable [LinearOrderedCancelAddCommMonoid Γ]
+variable [LinearOrder Γ] [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ]
 
 /-- Monomial evaluation of a power series by substitution of `X` into a Hahn series single of
 strictly positive order. -/
