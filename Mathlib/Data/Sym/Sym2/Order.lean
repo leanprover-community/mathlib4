@@ -13,8 +13,6 @@ This files provides `Sym2.sortEquiv`, the forward direction of which is somewhat
 `Multiset.sort`.
 -/
 
-
-
 namespace Sym2
 
 variable {α}
@@ -45,164 +43,12 @@ def sortEquiv [LinearOrder α] : Sym2 α ≃ { p : α × α // p.1 ≤ p.2 } whe
     Subtype.ext <| Prod.ext (by simp [hxy]) (by simp [hxy])
 
 /-- In a linear order, two symmetric squares are equal if and only if
-    they have the same infimum and supremum. -/
-theorem eq_iff_inf_sup_eq [LinearOrder α] (s t : Sym2 (α)) :
-  s = t ↔ (s.inf,s.sup) = (t.inf,t.sup) := by
-  constructor
-  · rw [@Sym2.ext_iff]
-    intro h
-    rw [@Prod.mk_inj]
-    by_cases diag: IsDiag s
-    · rw [Sym2.isDiag_iff_mem_range_diag] at diag
-      simp [IsDiag] at diag
-      obtain ⟨b,h'⟩ := diag
-      have: diag b = t := by aesop
-      aesop
-    · let a := (Quot.out s).1
-      have: s = t := by exact Sym2.ext_iff.mpr h
-      exact ⟨congrArg inf this, congrArg sup this⟩
-  · let x1 := (Quot.out s).1
-    let y1 := (Quot.out t).1
-    let y2 := (Quot.out t).2
-
-    by_cases diag: IsDiag s
-    · rw [Sym2.isDiag_iff_mem_range_diag] at diag
-      simp [IsDiag] at diag
-      obtain ⟨b,h'⟩ := diag
-      intro H
-      simp at H
-      obtain ⟨h1,h2⟩ := H
-      simp [diag] at h'
-      have: s.inf = b := by
-        subst h'
-        simp_all only [inf_mk, min_self, sup_mk, max_self]
-      have: s.sup = b := by
-        subst this
-        simp_all only
-        subst h'
-        simp_all only [inf_mk, min_self, sup_mk, max_self]
-      have yy: t.inf = b := by
-        rename_i this_1
-        subst this_1
-        simp_all only
-      have yy': t.sup = b := by
-        rename_i this_1
-        subst this_1
-        simp_all only
-      have: t.inf = t.sup := by rwa [yy']
-      have sy1y2: s(y1,y2) = t := by  simp [Sym2,y1,y2]
-      have yinfeq: t.inf = y1 ⊓ y2 := by
-        rw [← sy1y2]
-        simp only [inf_mk]
-      rw [yy] at this
-      have ysupeq: t.sup = y1 ⊔ y2 := by
-        rw [← sy1y2]
-        simp only [sup_mk]
-      rw [yy'] at this
-      have y1eqy2: y1 = y2 := by aesop
-      have: y1 = b := by aesop
-      rw [← y1eqy2,this] at sy1y2
-      rwa [h'] at sy1y2
-    · have x1inx:  x1 ∈ s := by exact out_fst_mem s
-      let x2' := Sym2.Mem.other x1inx
-      have H:= Sym2.other_ne diag x1inx
-      have sx1x2': s(x1,x2') = s := by aesop
-      have xinfeq: s.inf = x1 ⊓ x2' := by
-        rw [← sx1x2']
-        simp only [inf_mk]
-      have xsupeq: s.sup = x1 ⊔ x2' := by
-        rw [← sx1x2']
-        simp only [sup_mk]
-      rw [xinfeq,xsupeq]
-      intro h
-      simp at h
-      obtain ⟨h1,h2⟩ := h
-
-      have sy1y2: s(y1,y2) = t := by aesop
-      have ndiagy: ¬ t.IsDiag := by
-        have yinfeq: t.inf = y1 ⊓ y2 := by
-          rw [← sy1y2]
-          simp only [inf_mk]
-        have ysupeq: t.sup = y1 ⊔ y2 := by
-          rw [← sy1y2]
-          simp only [sup_mk]
-        by_contra!
-        rw [Sym2.isDiag_iff_mem_range_diag] at this
-        simp at this
-        obtain ⟨b,hb⟩ := this
-        rw [← sy1y2] at hb
-        simp [Sym2.diag] at hb
-        have: y1 = y2 := by aesop
-        have t1: t.sup = b := by aesop
-        have t2: t.inf = b := by aesop
-        suffices x1 = x2' by
-          dsimp [x2'] at this
-          rw [← this] at H
-          contradiction
-        rw [t2] at h1
-        rw [t1] at h2
-        have: x1 ⊔ x2' = x1 ⊓  x2':= by aesop
-        rwa [sup_eq_inf] at this
-
-      have y1inx:  y1 ∈ t := by exact out_fst_mem t
-      let y2' := Sym2.Mem.other y1inx
-      have Hy:= Sym2.other_ne ndiagy y1inx
-
-      have sy1y2: s(y1,y2') = t := by aesop
-      have yinfeq: t.inf = y1 ⊓ y2' := by
-        rw [← sy1y2]
-        simp only [inf_mk]
-      have ysupeq: t.sup = y1 ⊔ y2' := by
-        rw [← sy1y2]
-        simp only [sup_mk]
-
-      obtain ⟨xy1,xy2⟩ : x1 ⊓ x2' = y1 ⊓ y2' ∧ x1 ⊔ x2' = y1 ⊔ y2' := by aesop
-
-      obtain hx12 | hx12' : x1 < x2' ∨ x2' < x1 := lt_or_gt_of_ne (id (Ne.symm H)) <;>
-      obtain hy12 | hy12' : y1 < y2' ∨ y2' < y1 := lt_or_gt_of_ne (id (Ne.symm Hy))
-      · observe H1: x1 ⊓ x2' = x1
-        observe H2: y1 ⊓ y2' = y1
-        observe H3: x1 ⊔ x2' = x2'
-        have H4: y1 ⊔ y2' = y2' := by aesop
-        rw [H1,H2] at xy1
-        rw [H3,H4] at xy2
-        rw [xy1] at sx1x2'
-        rw [xy2] at sx1x2'
-        rw [← sx1x2',← sy1y2]
-      · observe H1: x1 ⊓ x2' = x1
-        observe H2: y1 ⊓ y2' = y2'
-        observe H3: x1 ⊔ x2' = x2'
-        have H4: y1 ⊔ y2' = y1 := by aesop
-        rw [H1,H2] at xy1
-        rw [H3,H4] at xy2
-        rw [xy1] at sx1x2'
-        rw [xy2] at sx1x2'
-        rw [← sx1x2',← sy1y2]
-        exact eq_swap
-      · observe H1: x1 ⊓ x2' = x2'
-        observe H2: y1 ⊓ y2' = y1
-        observe H3: x1 ⊔ x2' = x1
-        have H4: y1 ⊔ y2' = y2' := by
-          simp
-          exact le_of_lt hy12
-        rw [H1,H2] at xy1
-        rw [H3,H4] at xy2
-        rw [xy1] at sx1x2'
-        rw [xy2] at sx1x2'
-        rw [← sx1x2',← sy1y2]
-        exact eq_swap
-      · observe H1: x1 ⊓ x2' = x2'
-        have H2: y1 ⊓ y2' = y2' := by
-          simp
-          exact le_of_lt hy12'
-        observe H3: x1 ⊔ x2' = x1
-        have H4: y1 ⊔ y2' = y1 := by
-          simp
-          exact le_of_lt hy12'
-        rw [H1,H2] at xy1
-        rw [H3,H4] at xy2
-        rw [xy1] at sx1x2'
-        rw [xy2] at sx1x2'
-        rw [← sx1x2',← sy1y2]
+they have the same infimum and supremum. -/
+theorem inf_eq_inf_and_sup_eq_sup [LinearOrder α] {s t : Sym2 α} :
+    s.inf = t.inf ∧ s.sup = t.sup ↔ s = t := by
+  induction' s with a b
+  induction' t with c d
+  obtain hab | hba := le_total a b <;> obtain hcd | hdc := le_total c d <;>
+    aesop (add unsafe le_antisymm)
 
 end Sym2
