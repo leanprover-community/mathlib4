@@ -167,7 +167,7 @@ lemma allRoots_eq_map_allCoeffs :
 
 lemma allRoots_nodup : (allRoots P).Nodup := by
   have hli : Injective (Fintype.linearCombination ℤ ![shortRoot P, longRoot P]) := by
-    rw [← Fintype.linearIndependent_iff_injective]
+    rw [← linearIndependent_iff_injective_fintypeLinearCombination]
     exact (linearIndependent_short_long P).restrict_scalars' ℤ
   rw [allRoots_eq_map_allCoeffs, nodup_map_iff hli]
   decide
