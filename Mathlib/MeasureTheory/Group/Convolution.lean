@@ -27,7 +27,7 @@ open scoped ENNReal
 variable {M : Type*} [Monoid M] [MeasurableSpace M]
 
 /-- Multiplicative convolution of measures. -/
-@[to_additive conv "Additive convolution of measures."]
+@[to_additive "Additive convolution of measures."]
 noncomputable def mconv (μ : Measure M) (ν : Measure M) :
     Measure M := Measure.map (fun x : M × M ↦ x.1 * x.2) (μ.prod ν)
 
