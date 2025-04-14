@@ -1354,7 +1354,7 @@ lemma abs_R :
   · apply sum_le_sum
     intros i hi
     apply mul_le_mul
-    · have :=  fromlemma82_bound α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
+    · have := fromlemma82_bound α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
       unfold c₄
       sorry
     · have : ∀ i, ‖cexp (_root_.ρ α β q i * z)‖ ≤
@@ -1362,9 +1362,11 @@ lemma abs_R :
       apply this
     · apply norm_nonneg
     · unfold c₄
-      simp only [Real.rpow_natCast, Nat.reduceDiv, zero_mul, pow_zero, mul_one, le_sup_iff,
+      simp only [Real.rpow_natCast, Nat.reduceDiv, zero_mul,
+        pow_zero, mul_one, le_sup_iff,
         zero_le_one, true_or, pow_nonneg]
-  · simp only [Real.rpow_natCast, Nat.reduceDiv, zero_mul, pow_zero, mul_one, sum_const, card_univ,
+  · simp only [Real.rpow_natCast, Nat.reduceDiv, zero_mul, pow_zero,
+    mul_one, sum_const, card_univ,
     Fintype.card_fin, nsmul_eq_mul, Nat.cast_mul]
     rw [sq]
     apply mul_le_mul
@@ -1525,7 +1527,7 @@ lemma blah :
       _ ≤ (c₁₂)^r*((3-m K)/2 + 3 /2) := ?_
   · unfold S
     unfold _root_.S
-
+    sorry
   · sorry
   · sorry
   · sorry
