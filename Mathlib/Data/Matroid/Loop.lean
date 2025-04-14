@@ -29,7 +29,7 @@ and provides API for interacting with them.
 The dual notion of a loop is a 'coloop'. Geometrically, these can be thought of elements that are
 skew to the remainder of the matroid. Coloops in graphic matroids are 'bridge' edges of the graph,
 and coloops in linearly representable matroids are vectors not spanned by the other vectors
-in the elements of the matroid.
+in the matroid.
 Coloops also have many equivalent definitions in abstract matroid language;
 a coloop is an element of `M.E` if any of the following equivalent conditions holds :
 * `e` is a loop of `M✶`;
@@ -48,6 +48,8 @@ For `M` : Matroid `α`:
 * `M.IsColoop e ` means that `e` is a loop of `M✶`.
 * `M.coloops` is the set of coloops of `M✶`.
 * `M.isColoop_tfae` gives a number of properties that are equivalent to `IsColoop`.
+* `M.Loopless` is a typeclass meaning `M` has no loops.
+* `M.removeLoops` is the matroid obtained from `M` by restricting to its set of nonloop elements.
 -/
 
 variable {α β : Type*} {M N : Matroid α} {e f : α} {F X C I : Set α}
