@@ -86,7 +86,8 @@ elab (name := deprecated_modules)
     throwError "Invalid date: the expected format is \"{← Std.Time.PlainDate.now}\""
   addModuleDeprecation <| msg?.map (·.getString)
   -- Disable the linter, so that it does not complain in the file with the deprecation.
-  elabCommand (← `(set_option linter.deprecated.module false))
+  elabCommand <| mkNullNode #[← `(set_option linter.style.header false),
+                              ← `(set_option linter.deprecated.module false)]
 
 /--
 A utility command to show the current entries of the `deprecatedModuleExt` in the format:
