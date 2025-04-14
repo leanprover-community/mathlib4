@@ -152,7 +152,7 @@ def disjointGlueData' : GlueData' Scheme where
   t_fac _ _ _ _ _ _ := emptyIsInitial.strict_hom_ext _ _
   t_inv _ _ _ := Category.comp_id _
   cocycle _ _ _ _ _ _ := (emptyIsInitial.ofStrict (pullback.fst _ _)).hom_ext _ _
-  f_mono _ _ := by dsimp only; infer_instance
+  f_mono _ _ := inferInstance
 
 /-- (Implementation Detail) The glue data associated to a disjoint union. -/
 @[simps! J V U f t]

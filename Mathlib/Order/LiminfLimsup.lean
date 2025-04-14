@@ -525,7 +525,6 @@ theorem bliminf_antitone_filter (h : f ≤ g) : bliminf u g p ≤ bliminf u f p 
 theorem blimsup_monotone_filter (h : f ≤ g) : blimsup u f p ≤ blimsup u g p :=
   sInf_le_sInf fun _ ha => ha.filter_mono h
 
--- @[simp] -- Porting note: simp_nf linter, lhs simplifies, added _aux versions below
 theorem blimsup_and_le_inf : (blimsup u f fun x => p x ∧ q x) ≤ blimsup u f p ⊓ blimsup u f q :=
   le_inf (blimsup_mono <| by tauto) (blimsup_mono <| by tauto)
 
@@ -539,7 +538,6 @@ theorem bliminf_sup_le_inf_aux_right :
     (blimsup u f fun x => p x ∧ q x) ≤ blimsup u f q :=
   blimsup_and_le_inf.trans inf_le_right
 
--- @[simp] -- Porting note: simp_nf linter, lhs simplifies, added _aux simp version below
 theorem bliminf_sup_le_and : bliminf u f p ⊔ bliminf u f q ≤ bliminf u f fun x => p x ∧ q x :=
   blimsup_and_le_inf (α := αᵒᵈ)
 
@@ -552,7 +550,6 @@ theorem bliminf_sup_le_and_aux_right : bliminf u f q ≤ bliminf u f fun x => p 
   le_sup_right.trans bliminf_sup_le_and
 
 /-- See also `Filter.blimsup_or_eq_sup`. -/
--- @[simp] -- Porting note: simp_nf linter, lhs simplifies, added _aux simp versions below
 theorem blimsup_sup_le_or : blimsup u f p ⊔ blimsup u f q ≤ blimsup u f fun x => p x ∨ q x :=
   sup_le (blimsup_mono <| by tauto) (blimsup_mono <| by tauto)
 
@@ -565,7 +562,6 @@ theorem bliminf_sup_le_or_aux_right : blimsup u f q ≤ blimsup u f fun x => p x
   le_sup_right.trans blimsup_sup_le_or
 
 /-- See also `Filter.bliminf_or_eq_inf`. -/
---@[simp] -- Porting note: simp_nf linter, lhs simplifies, added _aux simp versions below
 theorem bliminf_or_le_inf : (bliminf u f fun x => p x ∨ q x) ≤ bliminf u f p ⊓ bliminf u f q :=
   blimsup_sup_le_or (α := αᵒᵈ)
 

@@ -294,6 +294,7 @@ coequalizers, and `D` has them.
 def monadicOfHasPreservesReflectsGSplitCoequalizers [HasCoequalizerOfIsSplitPair G]
     [PreservesColimitOfIsSplitPair G] [ReflectsColimitOfIsSplitPair G] :
     MonadicRightAdjoint G where
+  L := F
   adj := adj
   eqv := by
     have : ∀ (X : Algebra adj.toMonad), IsIso ((comparisonAdjunction adj).unit.app X) := by
@@ -390,6 +391,7 @@ variable [PreservesColimitOfIsReflexivePair G]
 reflexive coequalizers and `G` reflects isomorphisms, then `G` is monadic.
 -/
 def monadicOfHasPreservesReflexiveCoequalizersOfReflectsIsomorphisms : MonadicRightAdjoint G where
+  L := F
   adj := adj
   eqv := by
     have : ∀ (X : Algebra adj.toMonad), IsIso ((comparisonAdjunction adj).unit.app X) := by
