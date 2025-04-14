@@ -508,12 +508,14 @@ variable (H K)
 
 /-- Typeclass for finite index subgroups. -/
 class FiniteIndex : Prop where
-  /-- The subgroup has finite index -/
+  /-- The subgroup has finite index;
+  recall that `Subgroup.index` returns 0 when the index is infinite. -/
   index_ne_zero : H.index ≠ 0
 
 /-- Typeclass for finite index subgroups. -/
 class _root_.AddSubgroup.FiniteIndex {G : Type*} [AddGroup G] (H : AddSubgroup G) : Prop where
-  /-- The additive subgroup has finite index -/
+  /-- The additive subgroup has finite index;
+  recall that `AddSubgroup.index` returns 0 when the index is infinite. -/
   index_ne_zero : H.index ≠ 0
 
 @[deprecated (since := "2025-04-13")]
