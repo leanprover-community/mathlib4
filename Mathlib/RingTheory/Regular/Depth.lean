@@ -373,8 +373,9 @@ lemma lemma222 [IsNoetherianRing R] (I : Ideal R) [Small.{v} (R ⧸ I)] (n : ℕ
 
 variable {R : Type u} [CommRing R] {M N : ModuleCat.{max u v} R} [UnivLE.{max u v, w}]
 
+--lemma_213
 set_option maxHeartbeats 1000000 in
-noncomputable def lemma_213 {rs : List R} (hr : IsWeaklyRegular M rs)
+noncomputable def addEquivHomQuotientRegularExt {rs : List R} (hr : IsWeaklyRegular M rs)
     (h : ∀ r : R, r ∈ rs → r ∈ Module.annihilator R N) :
     (N →ₗ[R] M ⧸ (ofList rs • ⊤ : Submodule R M)) ≃+ Ext.{w} N M rs.length := by
   generalize h' : rs.length = n
