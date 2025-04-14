@@ -297,7 +297,7 @@ lemma mahlerSeries_apply_nat (ha : Tendsto a atTop (𝓝 0)) {m n : ℕ} (hmn : 
   have aux : Summable fun i ↦ m.choose (i + (n + 1)) • a (i + (n + 1)) := by
     simpa only [h_van, zero_smul] using summable_zero
   simp only [mahlerSeries_apply ha, mahler_natCast_eq, Nat.cast_smul_eq_nsmul, add_zero,
-    ← sum_add_tsum_nat_add' (f := fun i ↦ m.choose i • a i) aux, h_van, zero_smul, tsum_zero]
+    ← aux.sum_add_tsum_nat_add' (f := fun i ↦ m.choose i • a i), h_van, zero_smul, tsum_zero]
 
 /--
 The coefficients of a Mahler series can be recovered from the sum by taking forward differences at
