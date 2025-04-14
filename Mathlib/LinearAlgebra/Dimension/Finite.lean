@@ -553,25 +553,9 @@ variable {ι : Type*}
 @[simp] lemma finite_finsupp_iff :
     Module.Finite R (ι →₀ M) ↔ IsEmpty ι ∨ Subsingleton M ∨ Module.Finite R M ∧ Finite ι where
   mp h := by
-    classical
-    simp only [or_iff_not_imp_left, not_subsingleton_iff_nontrivial, not_isEmpty_iff,
-      Nonempty.forall]
-    rintro i
+    simp only [or_iff_not_imp_left, not_subsingleton_iff_nontrivial, not_isEmpty_iff]
+    rintro ⟨i⟩
     exact ⟨.of_surjective (Finsupp.lapply (R := R) (M := M) i) (Finsupp.apply_surjective i), ?_⟩
-    obtain ⟨s, hs⟩ := h
-    suffices (s.sup fun f ↦ f.support).toSet = .univ by
-      exact .of_finite_univ <| this ▸ Finset.finite_toSet _
-    obtain ⟨x, hx⟩ := exists_ne (0 : M)
-    ext j
-    simp only [SetLike.ext_iff, mem_span_iff_exists_finset_subset, Finset.coe_subset,
-      support_subset_iff, ne_eq, Finset.mem_coe, Finsupp.ext_iff, Finsupp.coe_finset_sum,
-      Finsupp.coe_smul, Finset.sum_apply, Pi.smul_apply, mem_top, iff_true, Finset.mem_sup,
-      Finsupp.mem_support_iff, mem_univ] at hs ⊢
-    contrapose! hx
-    obtain ⟨n, t, hts, -, hn⟩ := hs (.single j x)
-    specialize hn j
-    rw [Finset.sum_eq_zero fun k hk ↦ by rw [hx _ <| hts hk, smul_zero]] at hn
-    simpa [eq_comm] using hn
   mpr
   | .inl _ => inferInstance
   | .inr <| .inl h => inferInstance
