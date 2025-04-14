@@ -93,8 +93,8 @@ instance [NonUnitalCommRing β] : NonUnitalCommRing (α →₀ β) :=
     (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 -- TODO(Paul-Lez): add a `DFinsupp` version of this.
-instance pointwiseScalar {M : Type*} [Zero M] [SMulZeroClass β M] [Semiring β] :
-    SMul (α → β) (α →₀ M) where
+--Note: this creates an instance diamond with `SMul (α → β) (α →₀ (α → β))`
+instance pointwiseScalar {M : Type*} [Zero M] [SMulZeroClass β M] : SMul (α → β) (α →₀ M) where
   smul f g :=
     Finsupp.ofSupportFinite (fun a ↦ f a • g a) (by
       apply Set.Finite.subset g.finite_support
