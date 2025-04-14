@@ -597,7 +597,7 @@ theorem evaln_bound : ∀ {k c n x}, x ∈ evaln k c n → n < k
   | k + 1, c, n, x, h => by
     suffices ∀ {o : Option ℕ}, x ∈ do { guard (n ≤ k); o } → n < k + 1 by
       cases c <;> rw [evaln] at h <;> exact this h
-    simpa [Option.bind_eq_some] using Nat.lt_succ_of_le
+    simpa [Option.bind_eq_some_iff] using Nat.lt_succ_of_le
 
 theorem evaln_mono : ∀ {k₁ k₂ c n x}, k₁ ≤ k₂ → x ∈ evaln k₁ c n → x ∈ evaln k₂ c n
   | 0, k₂, c, n, x, _, h => by simp [evaln] at h
@@ -607,32 +607,32 @@ theorem evaln_mono : ∀ {k₁ k₂ c n x}, k₁ ≤ k₂ → x ∈ evaln k₁ c
       ∀ {k k₂ n x : ℕ} {o₁ o₂ : Option ℕ},
         k ≤ k₂ → (x ∈ o₁ → x ∈ o₂) →
           x ∈ do { guard (n ≤ k); o₁ } → x ∈ do { guard (n ≤ k₂); o₂ } := by
-      simp only [Option.mem_def, bind, Option.bind_eq_some, Option.guard_eq_some', exists_and_left,
-        exists_const, and_imp]
+      simp only [Option.mem_def, bind, Option.bind_eq_some_iff, Option.guard_eq_some',
+        exists_and_left, exists_const, and_imp]
       introv h h₁ h₂ h₃
       exact ⟨le_trans h₂ h, h₁ h₃⟩
     simp? at h ⊢ says simp only [Option.mem_def] at h ⊢
     induction c generalizing x n <;> rw [evaln] at h ⊢ <;> refine this hl' (fun h => ?_) h
     iterate 4 exact h
     case pair cf cg hf hg _ =>
-      simp? [Seq.seq, Option.bind_eq_some] at h ⊢ says
-        simp only [Seq.seq, Option.map_eq_map, Option.mem_def, Option.bind_eq_some,
-          Option.map_eq_some', exists_exists_and_eq_and] at h ⊢
+      simp? [Seq.seq, Option.bind_eq_some_iff] at h ⊢ says
+        simp only [Seq.seq, Option.map_eq_map, Option.mem_def, Option.bind_eq_some_iff,
+          Option.map_eq_some_iff, exists_exists_and_eq_and] at h ⊢
       exact h.imp fun a => And.imp (hf _ _) <| Exists.imp fun b => And.imp_left (hg _ _)
     case comp cf cg hf hg _ =>
-      simp? [Bind.bind, Option.bind_eq_some] at h ⊢ says
-        simp only [bind, Option.mem_def, Option.bind_eq_some] at h ⊢
+      simp? [Bind.bind, Option.bind_eq_some_iff] at h ⊢ says
+        simp only [bind, Option.mem_def, Option.bind_eq_some_iff] at h ⊢
       exact h.imp fun a => And.imp (hg _ _) (hf _ _)
     case prec cf cg hf hg _ =>
       revert h
       simp only [unpaired, bind, Option.mem_def]
-      induction n.unpair.2 <;> simp [Option.bind_eq_some]
+      induction n.unpair.2 <;> simp [Option.bind_eq_some_iff]
       · apply hf
       · exact fun y h₁ h₂ => ⟨y, evaln_mono hl' h₁, hg _ _ h₂⟩
     case rfind' cf hf _ =>
-      simp? [Bind.bind, Option.bind_eq_some] at h ⊢ says
+      simp? [Bind.bind, Option.bind_eq_some_iff] at h ⊢ says
         simp only [unpaired, bind, pair_unpair, Option.pure_def, Option.mem_def,
-          Option.bind_eq_some] at h ⊢
+          Option.bind_eq_some_iff] at h ⊢
       refine h.imp fun x => And.imp (hf _ _) ?_
       by_cases x0 : x = 0 <;> simp [x0]
       exact evaln_mono hl'
@@ -640,7 +640,7 @@ theorem evaln_mono : ∀ {k₁ k₂ c n x}, k₁ ≤ k₂ → x ∈ evaln k₁ c
 theorem evaln_sound : ∀ {k c n x}, x ∈ evaln k c n → x ∈ eval c n
   | 0, _, n, x, h => by simp [evaln] at h
   | k + 1, c, n, x, h => by
-    induction c generalizing x n <;> simp [eval, evaln, Option.bind_eq_some, Seq.seq] at h ⊢ <;>
+    induction c generalizing x n <;> simp [eval, evaln, Option.bind_eq_some_iff, Seq.seq] at h ⊢ <;>
       obtain ⟨_, h⟩ := h
     iterate 4 simpa [pure, PFun.pure, eq_comm] using h
     case pair cf cg hf hg _ =>
@@ -651,11 +651,11 @@ theorem evaln_sound : ∀ {k c n x}, x ∈ evaln k c n → x ∈ eval c n
       exact ⟨_, hg _ _ eg, hf _ _ ef⟩
     case prec cf cg hf hg _ =>
       revert h
-      induction' n.unpair.2 with m IH generalizing x <;> simp [Option.bind_eq_some]
+      induction' n.unpair.2 with m IH generalizing x <;> simp [Option.bind_eq_some_iff]
       · apply hf
       · refine fun y h₁ h₂ => ⟨y, IH _ ?_, ?_⟩
         · have := evaln_mono k.le_succ h₁
-          simp [evaln, Option.bind_eq_some] at this
+          simp [evaln, Option.bind_eq_some_iff] at this
           exact this.2
         · exact hg _ _ h₂
     case rfind' cf hf _ =>
@@ -679,7 +679,7 @@ theorem evaln_complete {c n x} : x ∈ eval c n ↔ ∃ k, x ∈ evaln k c n := 
   rsuffices ⟨k, h⟩ : ∃ k, x ∈ evaln (k + 1) c n
   · exact ⟨k + 1, h⟩
   induction c generalizing n x with
-      simp [eval, evaln, pure, PFun.pure, Seq.seq, Option.bind_eq_some] at h ⊢
+      simp [eval, evaln, pure, PFun.pure, Seq.seq, Option.bind_eq_some_iff] at h ⊢
   | pair cf cg hf hg =>
     rcases h with ⟨x, hx, y, hy, rfl⟩
     rcases hf hx with ⟨k₁, hk₁⟩; rcases hg hy with ⟨k₂, hk₂⟩
@@ -699,7 +699,7 @@ theorem evaln_complete {c n x} : x ∈ eval c n ↔ ∃ k, x ∈ evaln k c n := 
   | prec cf cg hf hg =>
     revert h
     generalize n.unpair.1 = n₁; generalize n.unpair.2 = n₂
-    induction' n₂ with m IH generalizing x n <;> simp [Option.bind_eq_some]
+    induction' n₂ with m IH generalizing x n <;> simp [Option.bind_eq_some_iff]
     · intro h
       rcases hf h with ⟨k, hk⟩
       exact ⟨_, le_max_left _ _, evaln_mono (Nat.succ_le_succ <| le_max_right _ _) hk⟩
@@ -712,17 +712,17 @@ theorem evaln_complete {c n x} : x ∈ eval c n ↔ ∃ k, x ∈ evaln k c n := 
             le_trans (le_max_left _ (Nat.pair n₁ m)) nk₁, y,
           evaln_mono (Nat.succ_le_succ <| le_max_left _ _) ?_,
           evaln_mono (Nat.succ_le_succ <| Nat.le_succ_of_le <| le_max_right _ _) hk₂⟩
-      simp only [evaln.eq_8, bind, unpaired, unpair_pair, Option.mem_def, Option.bind_eq_some,
+      simp only [evaln.eq_8, bind, unpaired, unpair_pair, Option.mem_def, Option.bind_eq_some_iff,
         Option.guard_eq_some', exists_and_left, exists_const]
       exact ⟨le_trans (le_max_right _ _) nk₁, hk₁⟩
   | rfind' cf hf =>
     rcases h with ⟨y, ⟨hy₁, hy₂⟩, rfl⟩
     suffices ∃ k, y + n.unpair.2 ∈ evaln (k + 1) (rfind' cf) (Nat.pair n.unpair.1 n.unpair.2) by
-      simpa [evaln, Option.bind_eq_some]
+      simpa [evaln, Option.bind_eq_some_iff]
     revert hy₁ hy₂
     generalize n.unpair.2 = m
     intro hy₁ hy₂
-    induction' y with y IH generalizing m <;> simp [evaln, Option.bind_eq_some]
+    induction' y with y IH generalizing m <;> simp [evaln, Option.bind_eq_some_iff]
     · simp at hy₁
       rcases hf hy₁ with ⟨k, hk⟩
       exact ⟨_, Nat.le_of_lt_succ <| evaln_bound hk, _, hk, by simp⟩

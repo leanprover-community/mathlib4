@@ -214,10 +214,10 @@ theorem dlookup_map (l : List (Sigma β))
     {f : α → α'} (hf : Function.Injective f) (g : ∀ a, β a → β' (f a)) (a : α) :
     (l.map fun x => ⟨f x.1, g _ x.2⟩).dlookup (f a) = (l.dlookup a).map (g a) := by
   induction' l with b l IH
-  · rw [map_nil, dlookup_nil, dlookup_nil, Option.map_none']
+  · rw [map_nil, dlookup_nil, dlookup_nil, Option.map_none]
   · rw [map_cons]
     obtain rfl | h := eq_or_ne a b.1
-    · rw [dlookup_cons_eq, dlookup_cons_eq, Option.map_some']
+    · rw [dlookup_cons_eq, dlookup_cons_eq, Option.map_some]
     · rw [dlookup_cons_ne _ _ h, dlookup_cons_ne _ _ (fun he => h <| hf he), IH]
 
 theorem dlookup_map₁ {β : Type v} (l : List (Σ _ : α, β))

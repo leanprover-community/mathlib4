@@ -1005,7 +1005,7 @@ lemma winningStrategy_play_one_eq_none_or_play_two_eq_none_of_edge_N (hN : 2 ≤
     (winningStrategy hN).play m 3 ⟨1, by norm_num⟩ = none ∨
       (winningStrategy hN).play m 3 ⟨2, by norm_num⟩ = none := by
   simp_rw [winningStrategy_play_one_of_edge_N hN hc₁N, winningStrategy_play_two_of_edge_N hN hc₁N,
-    Option.map_eq_none']
+    Option.map_eq_none_iff]
   have hc₁r0 : m.reflect (row1 hN) = 0 := by
     simp only [MonsterData.reflect, Function.Embedding.coeFn_mk, Function.comp_apply,
       ← Fin.rev_last, Fin.rev_inj]
