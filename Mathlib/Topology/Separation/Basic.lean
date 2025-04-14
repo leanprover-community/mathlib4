@@ -858,6 +858,15 @@ theorem Inseparable.of_nhds_neBot {x y : X} (h : NeBot (𝓝 x ⊓ 𝓝 y)) :
     Inseparable x y :=
   (r1Space_iff_inseparable_or_disjoint_nhds.mp ‹_› _ _).resolve_right fun h' => h.ne h'.eq_bot
 
+theorem r1_separation {x y : X} (h : ¬x ⤳ y) :
+    ∃ u v : Set X, IsOpen u ∧ IsOpen v ∧ x ∈ u ∧ y ∈ v ∧ Disjoint u v := by
+  rw [← disjoint_nhds_nhds_iff_not_specializes, Filter.disjoint_iff] at h
+  obtain ⟨s, hs, t, ht, hst⟩ := h
+  rw [mem_nhds_iff] at hs ht
+  obtain ⟨u, hus, hu, hxu⟩ := hs
+  obtain ⟨v, hvt, hv, hyv⟩ := ht
+  exact ⟨u, v, hu, hv, hxu, hyv, hst.mono hus hvt⟩
+
 /-- Limits are unique up to separability.
 
 A weaker version of `tendsto_nhds_unique` for `R1Space`. -/

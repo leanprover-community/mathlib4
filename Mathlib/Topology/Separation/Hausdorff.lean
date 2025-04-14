@@ -673,12 +673,22 @@ theorem IsQuotientMap.of_surjective_continuous [CompactSpace X] [T2Space Y] {f :
 @[deprecated (since := "2024-10-22")]
 alias QuotientMap.of_surjective_continuous := IsQuotientMap.of_surjective_continuous
 
+-- should this go in the other file?
+theorem isPreirreducible_iff_forall_subset_closure_singleton [R1Space X] {S : Set X} :
+    IsPreirreducible S ↔ ∀ x ∈ S, S ⊆ closure {x} := by
+  constructor
+  · intro h x hx y hy
+    by_contra e
+    obtain ⟨U, V, hU, hV, hxU, hyV, h'⟩ := r1_separation (mt specializes_iff_mem_closure.mp e)
+    exact ((h U V hU hV ⟨x, hx, hxU⟩ ⟨y, hy, hyV⟩).mono inter_subset_right).not_disjoint h'
+  · intro h u v hu hv ⟨x, hxs, hxu⟩ ⟨y, hys, hyv⟩
+    use x, hxs, hxu
+    exact (specializes_iff_mem_closure.mpr (h x hxs hys)).mem_open hv hyv
+
 theorem isPreirreducible_iff_subsingleton [T2Space X] {S : Set X} :
     IsPreirreducible S ↔ S.Subsingleton := by
-  refine ⟨fun h x hx y hy => ?_, Set.Subsingleton.isPreirreducible⟩
-  by_contra e
-  obtain ⟨U, V, hU, hV, hxU, hyV, h'⟩ := t2_separation e
-  exact ((h U V hU hV ⟨x, hx, hxU⟩ ⟨y, hy, hyV⟩).mono inter_subset_right).not_disjoint h'
+  simp_rw [isPreirreducible_iff_forall_subset_closure_singleton, closure_singleton,
+    subset_singleton_iff, Set.Subsingleton, eq_comm]
 
 -- todo: use `alias` + `attribute [protected]` once we get `attribute [protected]`
 protected lemma IsPreirreducible.subsingleton [T2Space X] {S : Set X} (h : IsPreirreducible S) :
