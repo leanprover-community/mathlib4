@@ -40,7 +40,9 @@ structure Octahedron
   {v₁₂ : X₂ ⟶ Z₁₂} {w₁₂ : Z₁₂ ⟶ X₁⟦(1 : ℤ)⟧} (h₁₂ : Triangle.mk u₁₂ v₁₂ w₁₂ ∈ distTriang C)
   {v₂₃ : X₃ ⟶ Z₂₃} {w₂₃ : Z₂₃ ⟶ X₂⟦(1 : ℤ)⟧} (h₂₃ : Triangle.mk u₂₃ v₂₃ w₂₃ ∈ distTriang C)
   {v₁₃ : X₃ ⟶ Z₁₃} {w₁₃ : Z₁₃ ⟶ X₁⟦(1 : ℤ)⟧} (h₁₃ : Triangle.mk u₁₃ v₁₃ w₁₃ ∈ distTriang C) where
+  /-- `m₁` is the morphism `a` of (TR 4) as presented in Stacks. -/
   m₁ : Z₁₂ ⟶ Z₁₃
+  /-- `m₃` is the morphism `b` of (TR 4) as presented in Stacks. -/
   m₃ : Z₁₃ ⟶ Z₂₃
   comm₁ : v₁₂ ≫ m₁ = u₂₃ ≫ v₁₃
   comm₂ : m₁ ≫ w₁₃ = w₁₂

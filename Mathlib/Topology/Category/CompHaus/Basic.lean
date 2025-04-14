@@ -65,10 +65,8 @@ abbrev of : CompHaus := CompHausLike.of _ X
 end CompHaus
 
 /-- The fully faithful embedding of `CompHaus` in `TopCat`. -/
--- Porting note: `semireducible` -> `.default`.
 abbrev compHausToTop : CompHaus.{u} ⥤ TopCat.{u} :=
   CompHausLike.compHausLikeToTop _
-  -- deriving Full, Faithful -- Porting note: deriving fails, adding manually.
 
 /-- (Implementation) The object part of the compactification functor from topological spaces to
 compact Hausdorff spaces.

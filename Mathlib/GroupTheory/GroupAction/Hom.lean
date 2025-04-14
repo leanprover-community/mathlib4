@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Antoine Chambert-Loir
 -/
 
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.Ring.Action.Basic
 import Mathlib.Algebra.Group.Hom.CompTypeclasses
+import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.Notation.Prod
+import Mathlib.Algebra.Ring.Action.Basic
 
 /-!
 # Equivariant homomorphisms
@@ -85,7 +86,7 @@ structure MulActionHom where
 /- Porting note: local notation given a name, conflict with Algebra.Hom.GroupAction
  see https://github.com/leanprover/lean4/issues/2000 -/
 /-- `φ`-equivariant functions `X → Y`,
-where `φ : M → N`, where `M` and `N` act on `X` and `Y` respectively.-/
+where `φ : M → N`, where `M` and `N` act on `X` and `Y` respectively. -/
 notation:25 (name := «MulActionHomLocal≺») X " →ₑ[" φ:25 "] " Y:0 => MulActionHom φ X Y
 
 /-- `M`-equivariant functions `X → Y` with respect to the action of `M`.
@@ -357,6 +358,62 @@ end MulActionHom
 
 end MulActionHom
 
+/-- Evaluation at a point as a `MulActionHom`. -/
+@[to_additive (attr := simps) "Evaluation at a point as an `AddActionHom`."]
+def Pi.evalMulActionHom {ι M : Type*} {X : ι → Type*} [∀ i, SMul M (X i)] (i : ι) :
+    (∀ i, X i) →[M] X i where
+  toFun := Function.eval i
+  map_smul' _ _ := rfl
+
+namespace MulActionHom
+
+section FstSnd
+
+variable {M α β : Type*} [SMul M α] [SMul M β]
+
+variable (M α β) in
+/-- `Prod.fst` as a bundled `MulActionHom`. -/
+@[to_additive (attr := simps -fullyApplied) "`Prod.fst` as a bundled `AddActionHom`."]
+def fst : α × β →[M] α where
+  toFun := Prod.fst
+  map_smul' _ _ := rfl
+
+variable (M α β) in
+/-- `Prod.snd` as a bundled `MulActionHom`. -/
+@[to_additive (attr := simps -fullyApplied) "`Prod.snd` as a bundled `AddActionHom`."]
+def snd : α × β →[M] β where
+  toFun := Prod.snd
+  map_smul' _ _ := rfl
+
+end FstSnd
+
+variable {M N α β γ δ : Type*} [SMul M α] [SMul M β] [SMul N γ] [SMul N δ] {σ : M → N}
+
+/-- If `f` and `g` are equivariant maps, then so is `x ↦ (f x, g x)`. -/
+@[to_additive (attr := simps -fullyApplied) prod
+  "If `f` and `g` are equivariant maps, then so is `x ↦ (f x, g x)`."]
+def prod (f : α →ₑ[σ] γ) (g : α →ₑ[σ] δ) : α →ₑ[σ] γ × δ where
+  toFun x := (f x, g x)
+  map_smul' _ _ := Prod.ext (map_smulₛₗ f _ _) (map_smulₛₗ g _ _)
+
+@[to_additive (attr := simp) fst_comp_prod]
+lemma fst_comp_prod (f : α →ₑ[σ] γ) (g : α →ₑ[σ] δ) : (fst _ _ _).comp (prod f g) = f := rfl
+
+@[to_additive (attr := simp) snd_comp_prod]
+lemma snd_comp_prod (f : α →ₑ[σ] γ) (g : α →ₑ[σ] δ) : (snd _ _ _).comp (prod f g) = g := rfl
+
+@[to_additive (attr := simp) prod_fst_snd]
+lemma prod_fst_snd : prod (fst M α β) (snd M α β) = .id .. := rfl
+
+/-- If `f` and `g` are equivariant maps, then so is `(x, y) ↦ (f x, g y)`. -/
+@[to_additive (attr := simps -fullyApplied) prodMap
+  "If `f` and `g` are equivariant maps, then so is `(x, y) ↦ (f x, g y)`."]
+def prodMap (f : α →ₑ[σ] γ) (g : β →ₑ[σ] δ) : α × β →ₑ[σ] γ × δ where
+  toFun := Prod.map f g
+  __ := (f.comp (fst ..)).prod (g.comp (snd ..))
+
+end MulActionHom
+
 section DistribMulAction
 
 variable {M : Type*} [Monoid M]
@@ -400,8 +457,8 @@ class DistribMulActionSemiHomClass (F : Type*)
     (A B : outParam Type*)
     [Monoid M] [Monoid N]
     [AddMonoid A] [AddMonoid B] [DistribMulAction M A] [DistribMulAction N B]
-    [FunLike F A B]
-    extends MulActionSemiHomClass F φ A B, AddMonoidHomClass F A B : Prop
+    [FunLike F A B] : Prop
+    extends MulActionSemiHomClass F φ A B, AddMonoidHomClass F A B
 
 /-- `DistribMulActionHomClass F M A B` states that `F` is a type of morphisms preserving
   the additive monoid structure and equivariant with respect to the action of `M`.
@@ -576,8 +633,7 @@ variable {σ : R →* S}
 @[ext]
 theorem ext_ring {f g : R →ₑ+[σ] N'} (h : f 1 = g 1) : f = g := by
   ext x
-  rw [← mul_one x, ← smul_eq_mul R, f.map_smulₑ, g.map_smulₑ, h]
-
+  rw [← mul_one x, ← smul_eq_mul, f.map_smulₑ, g.map_smulₑ, h]
 
 end Semiring
 
@@ -628,12 +684,12 @@ class MulSemiringActionSemiHomClass (F : Type*)
     {M N : outParam Type*} [Monoid M] [Monoid N]
     (φ : outParam (M → N))
     (R S : outParam Type*) [Semiring R] [Semiring S]
-    [DistribMulAction M R] [DistribMulAction N S] [FunLike F R S]
-    extends DistribMulActionSemiHomClass F φ R S, RingHomClass F R S : Prop
+    [DistribMulAction M R] [DistribMulAction N S] [FunLike F R S] : Prop
+    extends DistribMulActionSemiHomClass F φ R S, RingHomClass F R S
 
 /-- `MulSemiringActionHomClass F M R S` states that `F` is a type of morphisms preserving
 the ring structure and equivariant with respect to a `DistribMulAction`of `M` on `R` and `S` .
- -/
+-/
 abbrev MulSemiringActionHomClass
     (F : Type*)
     {M : outParam Type*} [Monoid M]

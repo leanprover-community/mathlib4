@@ -84,7 +84,7 @@ the maximum of of the cardinality of `R`, the cardinality of a transcendence bas
 `ℵ₀`
 
 For a simpler, but less universe-polymorphic statement, see
-`IsAlgClosed.cardinal_le_max_transcendence_basis'`  -/
+`IsAlgClosed.cardinal_le_max_transcendence_basis'` -/
 theorem cardinal_le_max_transcendence_basis (hv : IsTranscendenceBasis R v) :
     Cardinal.lift.{max u w} #K ≤ max (max (Cardinal.lift.{max v w} #R)
       (Cardinal.lift.{max u v} #ι)) ℵ₀ :=
@@ -105,7 +105,7 @@ the maximum of of the cardinality of `R`, the cardinality of a transcendence bas
 `ℵ₀`
 
 A less-universe polymorphic, but simpler statement of
-`IsAlgClosed.cardinal_le_max_transcendence_basis`  -/
+`IsAlgClosed.cardinal_le_max_transcendence_basis` -/
 theorem cardinal_le_max_transcendence_basis' (hv : IsTranscendenceBasis R v') :
     #K' ≤ max (max #R #ι') ℵ₀ := by
   simpa using cardinal_le_max_transcendence_basis v' hv
@@ -154,10 +154,10 @@ variable {K : Type u} {L : Type v} [Field K] [Field L] [IsAlgClosed K] [IsAlgClo
 if they have the same cardinality. -/
 theorem ringEquiv_of_equiv_of_charZero [CharZero K] [CharZero L] (hK : ℵ₀ < #K)
     (hKL : Nonempty (K ≃ L)) : Nonempty (K ≃+* L) := by
-  cases' exists_isTranscendenceBasis ℤ
-    (show Function.Injective (algebraMap ℤ K) from Int.cast_injective) with s hs
-  cases' exists_isTranscendenceBasis ℤ
-    (show Function.Injective (algebraMap ℤ L) from Int.cast_injective) with t ht
+  obtain ⟨s, hs⟩ := exists_isTranscendenceBasis ℤ
+    (show Function.Injective (algebraMap ℤ K) from Int.cast_injective)
+  obtain ⟨t, ht⟩ := exists_isTranscendenceBasis ℤ
+    (show Function.Injective (algebraMap ℤ L) from Int.cast_injective)
   have hL : ℵ₀ < #L := by
     rwa [← aleph0_lt_lift.{v, u}, ← lift_mk_eq'.2 hKL, aleph0_lt_lift]
   have : Cardinal.lift.{v} #s = Cardinal.lift.{u} #t := by
@@ -166,17 +166,17 @@ theorem ringEquiv_of_equiv_of_charZero [CharZero K] [CharZero L] (hK : ℵ₀ < 
       ← lift_injective (cardinal_eq_cardinal_transcendence_basis_of_aleph0_lt _
         ht (le_of_eq mk_int) hL)]
     exact Cardinal.lift_mk_eq'.2 hKL
-  cases' Cardinal.lift_mk_eq'.1 this with e
+  obtain ⟨e⟩ := Cardinal.lift_mk_eq'.1 this
   exact ⟨equivOfTranscendenceBasis _ _ e hs ht⟩
 
 private theorem ringEquiv_of_Cardinal_eq_of_charP (p : ℕ) [Fact p.Prime] [CharP K p] [CharP L p]
     (hK : ℵ₀ < #K) (hKL : Nonempty (K ≃ L)) : Nonempty (K ≃+* L) := by
   letI : Algebra (ZMod p) K := ZMod.algebra _ _
   letI : Algebra (ZMod p) L := ZMod.algebra _ _
-  cases' exists_isTranscendenceBasis (ZMod p)
-    (show Function.Injective (algebraMap (ZMod p) K) from RingHom.injective _) with s hs
-  cases' exists_isTranscendenceBasis (ZMod p)
-    (show Function.Injective (algebraMap (ZMod p) L) from RingHom.injective _) with t ht
+  obtain ⟨s, hs⟩ := exists_isTranscendenceBasis (ZMod p)
+    (show Function.Injective (algebraMap (ZMod p) K) from RingHom.injective _)
+  obtain ⟨t, ht⟩ := exists_isTranscendenceBasis (ZMod p)
+    (show Function.Injective (algebraMap (ZMod p) L) from RingHom.injective _)
   have hL : ℵ₀ < #L := by
     rwa [← aleph0_lt_lift.{v, u}, ← lift_mk_eq'.2 hKL, aleph0_lt_lift]
   have : Cardinal.lift.{v} #s = Cardinal.lift.{u} #t := by
@@ -185,7 +185,7 @@ private theorem ringEquiv_of_Cardinal_eq_of_charP (p : ℕ) [Fact p.Prime] [Char
       ← lift_injective (cardinal_eq_cardinal_transcendence_basis_of_aleph0_lt _
         ht (le_of_lt (lt_aleph0_of_finite _)) hL)]
     exact Cardinal.lift_mk_eq'.2 hKL
-  cases' Cardinal.lift_mk_eq'.1 this with e
+  obtain ⟨e⟩ := Cardinal.lift_mk_eq'.1 this
   exact ⟨equivOfTranscendenceBasis _ _ e hs ht⟩
 
 /-- Two uncountable algebraically closed fields are isomorphic

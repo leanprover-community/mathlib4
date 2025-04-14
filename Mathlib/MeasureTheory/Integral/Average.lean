@@ -107,7 +107,7 @@ theorem laverage_zero_measure (f : α → ℝ≥0∞) : ⨍⁻ x, f x ∂(0 : Me
 theorem laverage_eq' (f : α → ℝ≥0∞) : ⨍⁻ x, f x ∂μ = ∫⁻ x, f x ∂(μ univ)⁻¹ • μ := rfl
 
 theorem laverage_eq (f : α → ℝ≥0∞) : ⨍⁻ x, f x ∂μ = (∫⁻ x, f x ∂μ) / μ univ := by
-  rw [laverage_eq', lintegral_smul_measure, ENNReal.div_eq_inv_mul]
+  rw [laverage_eq', lintegral_smul_measure, ENNReal.div_eq_inv_mul, smul_eq_mul]
 
 theorem laverage_eq_lintegral [IsProbabilityMeasure μ] (f : α → ℝ≥0∞) :
     ⨍⁻ x, f x ∂μ = ∫⁻ x, f x ∂μ := by rw [laverage, measure_univ, inv_one, one_smul]
@@ -392,7 +392,7 @@ variable [CompleteSpace E]
 @[simp]
 theorem average_const (μ : Measure α) [IsFiniteMeasure μ] [h : NeZero μ] (c : E) :
     ⨍ _x, c ∂μ = c := by
-  rw [average, integral_const, measure_univ, ENNReal.one_toReal, one_smul]
+  rw [average, integral_const, measure_univ, ENNReal.toReal_one, one_smul]
 
 theorem setAverage_const {s : Set α} (hs₀ : μ s ≠ 0) (hs : μ s ≠ ∞) (c : E) :
     ⨍ _ in s, c ∂μ = c :=
@@ -752,7 +752,7 @@ theorem tendsto_integral_smul_of_tendsto_average_norm_sub
         exact Function.support_smul_subset_left _ _
       rw [← integrableOn_iff_integrable_of_support_subset A]
       apply Integrable.smul_of_top_right hif
-      exact memℒp_top_of_bound hig.aestronglyMeasurable.restrict
+      exact memLp_top_of_bound hig.aestronglyMeasurable.restrict
         (K / (μ (a i)).toReal) (Eventually.of_forall hibound)
     · exact hig.smul_const _
   have L0 : Tendsto (fun i ↦ ∫ y, g i y • (f y - c) ∂μ) l (𝓝 0) := by
@@ -764,7 +764,7 @@ theorem tendsto_integral_smul_of_tendsto_average_norm_sub
     have mu_ai : μ (a i) < ∞ := by
       rw [lt_top_iff_ne_top]
       intro h
-      simp only [h, ENNReal.top_toReal, _root_.div_zero, abs_nonpos_iff] at h'i
+      simp only [h, ENNReal.toReal_top, _root_.div_zero, abs_nonpos_iff] at h'i
       have : ∫ (y : α), g i y ∂μ = ∫ (y : α), 0 ∂μ := by congr; ext y; exact h'i y
       simp [this] at hi_int
     apply (norm_integral_le_integral_norm _).trans

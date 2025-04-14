@@ -28,7 +28,7 @@ namespace Rat
 variable {a b p q : ℚ}
 
 @[simp] lemma divInt_nonneg_iff_of_pos_right {a b : ℤ} (hb : 0 < b) : 0 ≤ a /. b ↔ 0 ≤ a := by
-  cases' hab : a /. b with n d hd hnd
+  rcases hab : a /. b with ⟨n, d, hd, hnd⟩
   rw [mk'_eq_divInt, divInt_eq_iff hb.ne' (mod_cast hd)] at hab
   rw [← num_nonneg, ← Int.mul_nonneg_iff_of_pos_right hb, ← hab,
     Int.mul_nonneg_iff_of_pos_right (mod_cast Nat.pos_of_ne_zero hd)]
@@ -117,7 +117,7 @@ protected theorem le_iff_sub_nonneg (a b : ℚ) : a ≤ b ↔ 0 ≤ b - a :=
       dsimp only
       refine ⟨(Int.ediv_nonneg · (Int.natCast_nonneg _)), fun H ↦ ?_⟩
       contrapose! H
-      apply Int.ediv_neg' H
+      apply Int.ediv_neg_of_neg_of_pos H
       simp only [Int.natCast_pos, Nat.pos_iff_ne_zero]
       exact Nat.gcd_ne_zero_right (Nat.mul_ne_zero hb ha)
 
@@ -157,13 +157,13 @@ These also prevent non-computable instances being used to construct these instan
 -/
 
 instance instDistribLattice : DistribLattice ℚ := inferInstance
-instance instLattice        : Lattice ℚ        := inferInstance
+instance instLattice : Lattice ℚ := inferInstance
 instance instSemilatticeInf : SemilatticeInf ℚ := inferInstance
 instance instSemilatticeSup : SemilatticeSup ℚ := inferInstance
-instance instInf            : Min ℚ            := inferInstance
-instance instSup            : Max ℚ            := inferInstance
-instance instPartialOrder   : PartialOrder ℚ   := inferInstance
-instance instPreorder       : Preorder ℚ       := inferInstance
+instance instInf : Min ℚ := inferInstance
+instance instSup : Max ℚ := inferInstance
+instance instPartialOrder : PartialOrder ℚ := inferInstance
+instance instPreorder : Preorder ℚ := inferInstance
 
 /-! ### Miscellaneous lemmas -/
 

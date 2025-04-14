@@ -117,7 +117,7 @@ theorem Equicontinuous.comap_uniformFun_eq [CompactSpace X] (F_eqcont : Equicont
     rcases mem_iUnion₂.mp (Acover.symm.subset <| mem_univ x) with ⟨a, ha, hax⟩
     -- Since `(i, j) ∈ 𝐒(V, a)` we also have `(F i a, F j a) ∈ V`, and finally we get
     -- `(F i x, F j x) ∈ V ○ V ○ V ⊆ U`.
-    exact hVU (prod_mk_mem_compRel (prod_mk_mem_compRel
+    exact hVU (prodMk_mem_compRel (prodMk_mem_compRel
       (Vsymm.mk_mem_comm.mp (hax i)) (hij a ha)) (hax j))
   -- This completes the proof.
   exact mem_of_superset
@@ -138,10 +138,6 @@ lemma Equicontinuous.isUniformInducing_uniformFun_iff_pi [UniformSpace ι] [Comp
   rw [isUniformInducing_iff_uniformSpace, isUniformInducing_iff_uniformSpace,
       ← F_eqcont.comap_uniformFun_eq]
   rfl
-
-@[deprecated (since := "2024-10-05")]
-alias Equicontinuous.uniformInducing_uniformFun_iff_pi :=
-  Equicontinuous.isUniformInducing_uniformFun_iff_pi
 
 /-- Let `X` be a compact topological space, `α` a uniform space, and `F : ι → (X → α)` an
 equicontinuous family. Then, the topologies of uniform convergence and pointwise convergence induce
@@ -261,10 +257,6 @@ lemma EquicontinuousOn.isUniformInducing_uniformOnFun_iff_pi' [UniformSpace ι]
       ← EquicontinuousOn.comap_uniformOnFun_eq 𝔖_compact F_eqcont]
   rfl
 
-@[deprecated (since := "2024-10-05")]
-alias EquicontinuousOn.uniformInducing_uniformOnFun_iff_pi' :=
-  EquicontinuousOn.isUniformInducing_uniformOnFun_iff_pi'
-
 /-- Let `X` be a topological space, `𝔖` a covering of `X` by compact subsets, `α` a uniform space,
 and `F : ι → (X → α)` a family which is equicontinuous on each `K ∈ 𝔖`. Then, the uniform
 structures of uniform convergence on `𝔖` and pointwise convergence induce the same
@@ -285,10 +277,6 @@ lemma EquicontinuousOn.isUniformInducing_uniformOnFun_iff_pi [UniformSpace ι]
   rw [EquicontinuousOn.isUniformInducing_uniformOnFun_iff_pi' 𝔖_compact F_eqcont,
       show restrict (⋃₀ 𝔖) ∘ F = φ.symm ∘ F by rfl]
   exact ⟨fun H ↦ φ.isUniformInducing.comp H, fun H ↦ φ.symm.isUniformInducing.comp H⟩
-
-@[deprecated (since := "2024-10-05")]
-alias EquicontinuousOn.uniformInducing_uniformOnFun_iff_pi :=
-  EquicontinuousOn.isUniformInducing_uniformOnFun_iff_pi
 
 /-- Let `X` be a topological space, `𝔖` a family of compact subsets of `X`, `α` a uniform space,
 and `F : ι → (X → α)` a family which is equicontinuous on each `K ∈ 𝔖`. Then, the topologies

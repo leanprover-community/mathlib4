@@ -3,6 +3,7 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Analysis.Normed.Module.FiniteDimension
 import Mathlib.Geometry.Manifold.IsManifold.Basic
 
 /-!
@@ -154,7 +155,7 @@ lemma interior_extend_target_subset_interior_range :
   exact inter_subset_right
 
 /-- If `y ∈ f.target` and `I y ∈ interior (range I)`,
-  then `I y` is an interior point of `(I ∘ f).target`. -/
+then `I y` is an interior point of `(I ∘ f).target`. -/
 lemma mem_interior_extend_target {y : H} (hy : y ∈ f.target)
     (hy' : I y ∈ interior (range I)) : I y ∈ interior (f.extend I).target := by
   rw [f.extend_target, interior_inter, (f.open_target.preimage I.continuous_symm).interior_eq,
@@ -781,7 +782,7 @@ variable
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 
 /-- A finite-dimensional manifold modelled on a locally compact field
-  (such as ℝ, ℂ or the `p`-adic numbers) is locally compact. -/
+(such as ℝ, ℂ or the `p`-adic numbers) is locally compact. -/
 lemma Manifold.locallyCompact_of_finiteDimensional
     (I : ModelWithCorners 𝕜 E H) [LocallyCompactSpace 𝕜] [FiniteDimensional 𝕜 E] :
     LocallyCompactSpace M := by
@@ -811,8 +812,7 @@ lemma LocallyCompactSpace.of_locallyCompact_manifold (I : ModelWithCorners 𝕜 
   exact interior_mono (extChartAt_target_subset_range x) hy
 
 /-- Riesz's theorem applied to manifolds: a locally compact manifolds must be modelled on a
-  finite-dimensional space. This is the converse to
-  `Manifold.locallyCompact_of_finiteDimensional`. -/
+finite-dimensional space. This is the converse to `Manifold.locallyCompact_of_finiteDimensional`. -/
 theorem FiniteDimensional.of_locallyCompact_manifold
     [CompleteSpace 𝕜] (I : ModelWithCorners 𝕜 E H) [Nonempty M] [LocallyCompactSpace M] :
     FiniteDimensional 𝕜 E := by

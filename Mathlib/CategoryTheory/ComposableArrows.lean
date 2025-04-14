@@ -847,9 +847,8 @@ lemma mkOfObjOfMapSucc_exists : ∃ (F : ComposableArrows C n) (e : ∀ i, F.obj
       | 0 => Iso.refl _
       | ⟨i + 1, hi⟩ => e _, fun i hi => ?_⟩
     obtain _ | i := i
-    · dsimp
-      rw [assoc, Iso.inv_hom_id, comp_id]
-      erw [id_comp]
+    · simp only [← Fin.mk_zero]
+      simp
     · exact h i (by valid)
 
 /-- Given `obj : Fin (n + 1) → C` and `mapSucc i : obj i.castSucc ⟶ obj i.succ`

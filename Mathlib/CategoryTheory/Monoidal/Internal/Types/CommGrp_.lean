@@ -39,6 +39,15 @@ noncomputable def inverse : CommGrp.{u} ⥤ CommGrp_ (Type u) where
         exact CommMonoid.mul_comm y x }
   map f := GrpTypeEquivalenceGrp.inverse.map ((forget₂ CommGrp Grp).map f)
 
+@[simp]
+theorem inverse_obj_X {A : CommGrp.{u}} : (inverse.obj A).X = A := rfl
+@[simp]
+theorem inverse_obj_one {A : CommGrp.{u}} {x} : (inverse.obj A).one x = (1 : A) := rfl
+@[simp]
+theorem inverse_obj_mul {A : CommGrp.{u}} {p} : (inverse.obj A).mul p = (p.1 : A) * p.2 := rfl
+@[simp]
+theorem inverse_obj_inv {A : CommGrp.{u}} {x} : (inverse.obj A).inv x = (x : A)⁻¹ := rfl
+
 end CommGrpTypeEquivalenceCommGrp
 
 /-- The category of commutative group objects in `Type u` is equivalent to the category of

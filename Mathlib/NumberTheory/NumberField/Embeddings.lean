@@ -155,7 +155,7 @@ abbrev conjugate (φ : K →+* ℂ) : K →+* ℂ := star φ
 theorem conjugate_coe_eq (φ : K →+* ℂ) (x : K) : (conjugate φ) x = conj (φ x) := rfl
 
 theorem place_conjugate (φ : K →+* ℂ) : place (conjugate φ) = place φ := by
-  ext; simp only [place_apply, norm_eq_abs, abs_conj, conjugate_coe_eq]
+  ext; simp only [place_apply, norm_conj, conjugate_coe_eq]
 
 /-- An embedding into `ℂ` is real if it is fixed by complex conjugation. -/
 abbrev IsReal (φ : K →+* ℂ) : Prop := IsSelfAdjoint φ
@@ -276,7 +276,7 @@ instance : NonnegHomClass (InfinitePlace K) K ℝ where
   apply_nonneg w _ := w.1.nonneg _
 
 @[simp]
-theorem apply (φ : K →+* ℂ) (x : K) : (mk φ) x = Complex.abs (φ x) := rfl
+theorem apply (φ : K →+* ℂ) (x : K) : (mk φ) x = ‖φ x‖ := rfl
 
 /-- For an infinite place `w`, return an embedding `φ` such that `w = infinite_place φ` . -/
 noncomputable def embedding (w : InfinitePlace K) : K →+* ℂ := w.2.choose
@@ -287,7 +287,7 @@ theorem mk_embedding (w : InfinitePlace K) : mk (embedding w) = w := Subtype.ext
 @[simp]
 theorem mk_conjugate_eq (φ : K →+* ℂ) : mk (ComplexEmbedding.conjugate φ) = mk φ := by
   refine DFunLike.ext _ _ (fun x => ?_)
-  rw [apply, apply, ComplexEmbedding.conjugate_coe_eq, Complex.abs_conj]
+  rw [apply, apply, ComplexEmbedding.conjugate_coe_eq, Complex.norm_conj]
 
 theorem norm_embedding_eq (w : InfinitePlace K) (x : K) :
     ‖(embedding w) x‖ = w x := by
@@ -428,12 +428,25 @@ open scoped Classical in
 define it, see `card_filter_mk_eq`. -/
 noncomputable def mult (w : InfinitePlace K) : ℕ := if (IsReal w) then 1 else 2
 
+@[simp]
+theorem mult_isReal (w : {w : InfinitePlace K // IsReal w}) :
+    mult w.1 = 1 := by
+  rw [mult, if_pos w.prop]
+
+@[simp]
+theorem mult_isComplex (w : {w : InfinitePlace K // IsComplex w}) :
+    mult w.1 = 2 := by
+  rw [mult, if_neg (not_isReal_iff_isComplex.mpr w.prop)]
+
 theorem mult_pos {w : InfinitePlace K} : 0 < mult w := by
   rw [mult]
   split_ifs <;> norm_num
 
 @[simp]
 theorem mult_ne_zero {w : InfinitePlace K} : mult w ≠ 0 := ne_of_gt mult_pos
+
+theorem mult_coe_ne_zero {w : InfinitePlace K} : (mult w : ℝ) ≠ 0 :=
+  Nat.cast_ne_zero.mpr mult_ne_zero
 
 theorem one_le_mult {w : InfinitePlace K} : (1 : ℝ) ≤ mult w := by
   rw [← Nat.cast_one, Nat.cast_le]
@@ -456,6 +469,13 @@ theorem card_filter_mk_eq [NumberField K] (w : InfinitePlace K) : #{φ | mk φ =
 open scoped Classical in
 noncomputable instance NumberField.InfinitePlace.fintype [NumberField K] :
     Fintype (InfinitePlace K) := Set.fintypeRange _
+
+open scoped Classical in
+@[to_additive]
+theorem prod_eq_prod_mul_prod {α : Type*} [CommMonoid α] [NumberField K] (f : InfinitePlace K → α) :
+    ∏ w, f w = (∏ w : {w // IsReal w}, f w.1) * (∏ w : {w // IsComplex w}, f w.1) := by
+  rw [← Equiv.prod_comp (Equiv.subtypeEquivRight (fun _ ↦ not_isReal_iff_isComplex))]
+  simp [Fintype.prod_subtype_mul_prod_subtype]
 
 theorem sum_mult_eq [NumberField K] :
     ∑ w : InfinitePlace K, mult w = Module.finrank ℚ K := by
@@ -496,14 +516,14 @@ variable [NumberField K]
 theorem prod_eq_abs_norm (x : K) :
     ∏ w : InfinitePlace K, w x ^ mult w = abs (Algebra.norm ℚ x) := by
   classical
-  convert (congr_arg Complex.abs (@Algebra.norm_eq_prod_embeddings ℚ _ _ _ _ ℂ _ _ _ _ _ x)).symm
-  · rw [map_prod, ← Fintype.prod_equiv RingHom.equivRatAlgHom (fun f => Complex.abs (f x))
-      (fun φ => Complex.abs (φ x)) fun _ => by simp [RingHom.equivRatAlgHom_apply]; rfl]
-    rw [← Finset.prod_fiberwise Finset.univ mk (fun φ => Complex.abs (φ x))]
+  convert (congr_arg (‖·‖) (@Algebra.norm_eq_prod_embeddings ℚ _ _ _ _ ℂ _ _ _ _ _ x)).symm
+  · rw [norm_prod, ← Fintype.prod_equiv RingHom.equivRatAlgHom (fun f => ‖f x‖)
+      (fun φ => ‖φ x‖) fun _ => by simp [RingHom.equivRatAlgHom_apply]]
+    rw [← Finset.prod_fiberwise Finset.univ mk (fun φ => ‖φ x‖)]
     have (w : InfinitePlace K) (φ) (hφ : φ ∈ ({φ | mk φ = w} : Finset _)) :
-        Complex.abs (φ x) = w x := by rw [← (Finset.mem_filter.mp hφ).2, apply]
+        ‖φ x‖ = w x := by rw [← (Finset.mem_filter.mp hφ).2, apply]
     simp_rw [Finset.prod_congr rfl (this _), Finset.prod_const, card_filter_mk_eq]
-  · rw [eq_ratCast, Rat.cast_abs, ← Complex.abs_ofReal, Complex.ofReal_ratCast]
+  · rw [eq_ratCast, Rat.cast_abs, ← Real.norm_eq_abs, ← Complex.norm_real, Complex.ofReal_ratCast]
 
 theorem one_le_of_lt_one {w : InfinitePlace K} {a : (𝓞 K)} (ha : a ≠ 0)
     (h : ∀ ⦃z⦄, z ≠ w → z a < 1) : 1 ≤ w a := by
@@ -527,7 +547,8 @@ theorem _root_.NumberField.is_primitive_element_of_infinitePlace_lt {x : 𝓞 K}
   · intro ψ hψ
     have h : 1 ≤ w x := one_le_of_lt_one h₁ h₂
     have main : w = InfinitePlace.mk ψ.toRingHom := by
-      erw [← norm_embedding_eq, hψ] at h
+      simp at hψ
+      rw [← norm_embedding_eq, hψ] at h
       contrapose! h
       exact h₂ h.symm
     rw [(mk_embedding w).symm, mk_eq_iff] at main
@@ -538,10 +559,13 @@ theorem _root_.NumberField.is_primitive_element_of_infinitePlace_lt {x : 𝓞 K}
     | inr hw =>
       refine congr_arg RingHom.toRatAlgHom (main.resolve_right fun h' ↦ hw.not_le ?_)
       have : (embedding w x).im = 0 := by
-        erw [← Complex.conj_eq_iff_im, RingHom.congr_fun h' x]
+        rw [← Complex.conj_eq_iff_im]
+        have := RingHom.congr_fun h' x
+        simp at this
+        rw [this]
         exact hψ.symm
       rwa [← norm_embedding_eq, ← Complex.re_add_im (embedding w x), this, Complex.ofReal_zero,
-        zero_mul, add_zero, Complex.norm_eq_abs, Complex.abs_ofReal] at h
+        zero_mul, add_zero, Complex.norm_real] at h
   · exact fun x ↦ IsAlgClosed.splits_codomain (minpoly ℚ x)
 
 theorem _root_.NumberField.adjoin_eq_top_of_infinitePlace_lt {x : 𝓞 K} {w : InfinitePlace K}
@@ -618,6 +642,14 @@ theorem nrRealPlaces_eq_one_of_finrank_eq_one (h : finrank ℚ K = 1) :
     nrRealPlaces K = 1 := by
   have := card_add_two_mul_card_eq_rank K
   rwa [nrComplexPlaces_eq_zero_of_finrank_eq_one h, h, mul_zero, add_zero] at this
+
+theorem nrRealPlaces_pos_of_odd_finrank (h : Odd (finrank ℚ K)) :
+    0 < nrRealPlaces K := by
+  refine Nat.pos_of_ne_zero ?_
+  by_contra hc
+  refine (Nat.not_odd_iff_even.mpr ?_) h
+  rw [← card_add_two_mul_card_eq_rank, hc, zero_add]
+  exact even_two_mul (nrComplexPlaces K)
 
 /-- The restriction of an infinite place along an embedding. -/
 def comap (w : InfinitePlace K) (f : k →+* K) : InfinitePlace k :=
@@ -915,14 +947,11 @@ lemma isUnramified_smul_iff :
   rw [isUnramified_iff, isUnramified_iff, isReal_smul_iff, comap_smul,
     ← AlgEquiv.toAlgHom_toRingHom, AlgHom.comp_algebraMap]
 
-variable (K)
-
+variable (K) in
 /-- A infinite place of the base field is unramified in a field extension if every
 infinite place over it is unramified. -/
 def IsUnramifiedIn (w : InfinitePlace k) : Prop :=
   ∀ v, comap v (algebraMap k K) = w → IsUnramified k v
-
-variable {K}
 
 lemma isUnramifiedIn_comap [IsGalois k K] {w : InfinitePlace K} :
     (w.comap (algebraMap k K)).IsUnramifiedIn K ↔ w.IsUnramified k := by
@@ -968,7 +997,7 @@ lemma card_isUnramified [NumberField k] [IsGalois k K] :
         ← Nat.card_eq_fintype_card (α := Stab w), card_stabilizer, if_pos,
         mul_one, Set.toFinset_card]
       rwa [← isUnramifiedIn_comap]
-  · simp [isUnramifiedIn_comap]
+  · simp [Set.MapsTo, isUnramifiedIn_comap]
 
 open Finset in
 open scoped Classical in
@@ -991,7 +1020,7 @@ lemma card_isUnramified_compl [NumberField k] [IsGalois k K] :
         ← Nat.card_eq_fintype_card (α := Stab w), InfinitePlace.card_stabilizer, if_neg,
         Nat.mul_div_cancel _ zero_lt_two, Set.toFinset_card]
       rwa [← isUnramifiedIn_comap]
-  · simp [isUnramifiedIn_comap]
+  · simp [Set.MapsTo, isUnramifiedIn_comap]
 
 open scoped Classical in
 lemma card_eq_card_isUnramifiedIn [NumberField k] [IsGalois k K] :
@@ -1078,9 +1107,9 @@ theorem nrRealPlaces_eq_zero_of_two_lt (hk : 2 < k) (hζ : IsPrimitiveRoot ζ k)
     rw [← Complex.conj_eq_iff_im, ← NumberField.ComplexEmbedding.conjugate_coe_eq]
     congr
   have hre : (f ζ).re = 1 ∨ (f ζ).re = -1 := by
-    rw [← Complex.abs_re_eq_abs] at him
+    rw [← Complex.abs_re_eq_norm] at him
     have := Complex.norm_eq_one_of_pow_eq_one hζ'.pow_eq_one (by omega)
-    rwa [Complex.norm_eq_abs, ← him, ← abs_one, abs_eq_abs] at this
+    rwa [← him, ← abs_one, abs_eq_abs] at this
   cases hre with
   | inl hone =>
     exact hζ'.ne_one (by omega) <| Complex.ext (by simp [hone]) (by simp [him])

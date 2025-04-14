@@ -315,7 +315,7 @@ We embed isometrically each factor, set the basepoints at distance 1, arbitraril
 and say that the distance from `a` to `b` is the sum of the distances of `a` and `b` to
 their respective basepoints, plus the distance 1 between the basepoints.
 Since there is an arbitrary choice in this construction, it is not an instance by default. -/
-def instDist : Dist (Σi, E i) :=
+def instDist : Dist (Σ i, E i) :=
   ⟨Sigma.dist⟩
 
 attribute [local instance] Sigma.instDist
@@ -334,12 +334,12 @@ theorem one_le_dist_of_ne {i j : ι} (h : i ≠ j) (x : E i) (y : E j) :
   rw [Sigma.dist_ne h x y]
   linarith [@dist_nonneg _ _ x (Nonempty.some ⟨x⟩), @dist_nonneg _ _ (Nonempty.some ⟨y⟩) y]
 
-theorem fst_eq_of_dist_lt_one (x y : Σi, E i) (h : dist x y < 1) : x.1 = y.1 := by
+theorem fst_eq_of_dist_lt_one (x y : Σ i, E i) (h : dist x y < 1) : x.1 = y.1 := by
   cases x; cases y
   contrapose! h
   apply one_le_dist_of_ne h
 
-protected theorem dist_triangle (x y z : Σi, E i) : dist x z ≤ dist x y + dist y z := by
+protected theorem dist_triangle (x y z : Σ i, E i) : dist x z ≤ dist x y + dist y z := by
   rcases x with ⟨i, x⟩; rcases y with ⟨j, y⟩; rcases z with ⟨k, z⟩
   rcases eq_or_ne i k with (rfl | hik)
   · rcases eq_or_ne i j with (rfl | hij)
@@ -370,7 +370,7 @@ protected theorem dist_triangle (x y z : Σi, E i) : dist x z ≤ dist x y + dis
             simp only [add_zero, zero_add]
           _ ≤ _ := by apply_rules [add_le_add, zero_le_one, dist_nonneg, le_rfl]
 
-protected theorem isOpen_iff (s : Set (Σi, E i)) :
+protected theorem isOpen_iff (s : Set (Σ i, E i)) :
     IsOpen s ↔ ∀ x ∈ s, ∃ ε > 0, ∀ y, dist x y < ε → y ∈ s := by
   constructor
   · rintro hs ⟨i, x⟩ hx
@@ -398,7 +398,7 @@ We embed isometrically each factor, set the basepoints at distance 1, arbitraril
 and say that the distance from `a` to `b` is the sum of the distances of `a` and `b` to
 their respective basepoints, plus the distance 1 between the basepoints.
 Since there is an arbitrary choice in this construction, it is not an instance by default. -/
-protected def metricSpace : MetricSpace (Σi, E i) := by
+protected def metricSpace : MetricSpace (Σ i, E i) := by
   refine MetricSpace.ofDistTopology Sigma.dist ?_ ?_ Sigma.dist_triangle Sigma.isOpen_iff ?_
   · rintro ⟨i, x⟩
     simp [Sigma.dist]
@@ -427,8 +427,8 @@ theorem isometry_mk (i : ι) : Isometry (Sigma.mk i : E i → Σk, E k) :=
   Isometry.of_dist_eq fun x y => by simp
 
 /-- A disjoint union of complete metric spaces is complete. -/
-protected theorem completeSpace [∀ i, CompleteSpace (E i)] : CompleteSpace (Σi, E i) := by
-  set s : ι → Set (Σi, E i) := fun i => Sigma.fst ⁻¹' {i}
+protected theorem completeSpace [∀ i, CompleteSpace (E i)] : CompleteSpace (Σ i, E i) := by
+  set s : ι → Set (Σ i, E i) := fun i => Sigma.fst ⁻¹' {i}
   set U := { p : (Σk, E k) × Σk, E k | dist p.1 p.2 < 1 }
   have hc : ∀ i, IsComplete (s i) := fun i => by
     simp only [s, ← range_sigmaMk]
@@ -557,7 +557,6 @@ def inductivePremetric (I : ∀ n, Isometry (f n)) : PseudoMetricSpace (Σn, X n
     let m := max x.1 y.1
     have hx : x.1 ≤ m := le_max_left _ _
     have hy : y.1 ≤ m := le_max_right _ _
-    unfold dist; simp only
     rw [inductiveLimitDist_eq_dist I x y m hx hy, inductiveLimitDist_eq_dist I y x m hy hx,
       dist_comm]
   dist_triangle x y z := by

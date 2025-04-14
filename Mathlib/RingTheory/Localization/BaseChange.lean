@@ -50,6 +50,32 @@ theorem isLocalizedModule_iff_isBaseChange : IsLocalizedModule S f ↔ IsBaseCha
     LinearEquiv.restrictScalars_apply, LinearEquiv.trans_apply, IsBaseChange.equiv_symm_apply,
     IsBaseChange.equiv_tmul, one_smul]
 
+open TensorProduct
+
+variable (M) in
+/-- The localization of an `R`-module `M` at a submonoid `S` is isomorphic to `S⁻¹R ⊗[R] M` as
+an `S⁻¹R`-module. -/
+noncomputable def LocalizedModule.equivTensorProduct :
+    LocalizedModule S M ≃ₗ[Localization S] Localization S ⊗[R] M :=
+  IsLocalizedModule.isBaseChange S (Localization S)
+    (LocalizedModule.mkLinearMap S M) |>.equiv.symm
+
+@[simp]
+lemma LocalizedModule.equivTensorProduct_symm_apply_tmul (x : M) (r : R) (s : S) :
+    (equivTensorProduct S M).symm (Localization.mk r s ⊗ₜ[R] x) = r • mk x s := by
+  simp [equivTensorProduct, IsBaseChange.equiv_tmul, mk_smul_mk, smul'_mk]
+
+@[simp]
+lemma LocalizedModule.equivTensorProduct_symm_apply_tmul_one (x : M) :
+    (equivTensorProduct S M).symm (1 ⊗ₜ[R] x) = mk x 1 := by
+  simp [← Localization.mk_one]
+
+@[simp]
+lemma LocalizedModule.equivTensorProduct_apply_mk (x : M) (s : S) :
+    equivTensorProduct S M (mk x s) = Localization.mk 1 s ⊗ₜ[R] x := by
+  apply (equivTensorProduct S M).symm.injective
+  simp
+
 namespace IsLocalization
 
 open TensorProduct Algebra.TensorProduct
@@ -116,8 +142,7 @@ instance (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
     [IsLocalizedModule S f] : IsLocalizedModule S (Finsupp.mapRange.linearMap (α := α) f) := by
   classical
   let e : Localization S ⊗[R] M ≃ₗ[R] Mₛ :=
-    (IsLocalizedModule.isBaseChange S (Localization S)
-      (LocalizedModule.mkLinearMap S M)).equiv.restrictScalars R ≪≫ₗ IsLocalizedModule.iso S f
+    (LocalizedModule.equivTensorProduct S M).symm.restrictScalars R ≪≫ₗ IsLocalizedModule.iso S f
   let e' : Localization S ⊗[R] (α →₀ M) ≃ₗ[R] (α →₀ Mₛ) :=
     finsuppRight R (Localization S) M α ≪≫ₗ Finsupp.mapRange.linearEquiv e
   suffices IsLocalizedModule S (e'.symm.toLinearMap ∘ₗ Finsupp.mapRange.linearMap f) by

@@ -50,8 +50,8 @@ theorem norm_cderiv_le (hr : 0 < r) (hf : ∀ w ∈ sphere z r, ‖f w‖ ≤ M)
     exact (norm_nonneg _).trans (hf w hw)
   have h1 : ∀ w ∈ sphere z r, ‖((w - z) ^ 2)⁻¹ • f w‖ ≤ M / r ^ 2 := by
     intro w hw
-    simp only [mem_sphere_iff_norm, norm_eq_abs] at hw
-    simp only [norm_smul, inv_mul_eq_div, hw, norm_eq_abs, map_inv₀, Complex.abs_pow]
+    simp only [mem_sphere_iff_norm] at hw
+    simp only [norm_smul, inv_mul_eq_div, hw, norm_inv, norm_pow]
     exact div_le_div₀ hM (hf w hw) (sq_pos_of_pos hr) le_rfl
   have h2 := circleIntegral.norm_integral_le_of_norm_le_const hr.le h1
   simp only [cderiv, norm_smul]

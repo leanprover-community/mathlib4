@@ -43,9 +43,10 @@ variable (R K : Type*) [CommRing R] [IsDedekindDomain R] [Field K] [Algebra R K]
 /-- The product of all `adicCompletionIntegers`, where `v` runs over the maximal ideals of `R`. -/
 def FiniteIntegralAdeles : Type _ :=
   ∀ v : HeightOneSpectrum R, v.adicCompletionIntegers K
--- deriving CommRing, TopologicalSpace, Inhabited
+-- The `CommRing, TopologicalSpace, Inhabited` instances should be constructed by a deriving
+-- handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
--- Porting note(https://github.com/leanprover-community/mathlib4/issues/5020): added
 section DerivedInstances
 
 instance : CommRing (FiniteIntegralAdeles R K) :=
@@ -108,8 +109,7 @@ def Coe.addMonoidHom : AddMonoidHom (R_hat R K) (K_hat R K) where
   map_add' x y := by
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): was `ext v`
     refine funext fun v => ?_
-    simp only [coe_apply, Pi.add_apply, Subring.coe_add]
-    rfl
+    simp only [coe_apply, (Pi.add_apply), (Subring.coe_add)]
 
 /-- The inclusion of `R_hat` in `K_hat` as a ring homomorphism. -/
 @[simps]
@@ -120,8 +120,7 @@ def Coe.ringHom : RingHom (R_hat R K) (K_hat R K) :=
     map_mul' := fun x y => by
       -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): was `ext p`
       refine funext fun p => ?_
-      simp only [Pi.mul_apply, Subring.coe_mul]
-      rfl }
+      simp only [(Pi.mul_apply), (Subring.coe_mul)] }
 
 end FiniteIntegralAdeles
 
@@ -269,27 +268,29 @@ theorem one : (1 : K_hat R K).IsFiniteAdele := by
 
 open scoped Multiplicative
 
-theorem algebraMap' (k : K) : (_root_.algebraMap K (K_hat R K) k).IsFiniteAdele := by
+open scoped algebraMap in
+theorem algebraMap' (k : K) : (algebraMap K (K_hat R K) k).IsFiniteAdele := by
   rw [IsFiniteAdele, Filter.eventually_cofinite]
   simp_rw [mem_adicCompletionIntegers, ProdAdicCompletions.algebraMap_apply',
     adicCompletion, Valued.valuedCompletion_apply, not_le]
-  change {v : HeightOneSpectrum R | 1 < v.valuation k}.Finite
+  change {v : HeightOneSpectrum R | 1 < v.valuation K k}.Finite
   -- The goal currently: if k ∈ K = field of fractions of a Dedekind domain R,
   -- then v(k)>1 for only finitely many v.
   -- We now write k=n/d and go via R to solve this goal. Do we need to do this?
   obtain ⟨⟨n, ⟨d, hd⟩⟩, hk⟩ := IsLocalization.surj (nonZeroDivisors R) k
   have hd' : d ≠ 0 := nonZeroDivisors.ne_zero hd
-  suffices {v : HeightOneSpectrum R | v.valuation (_root_.algebraMap R K d : K) < 1}.Finite by
+  suffices {v : HeightOneSpectrum R | v.valuation K d < 1}.Finite by
     apply Finite.subset this
     intro v hv
-    apply_fun v.valuation at hk
+    apply_fun v.valuation K at hk
     simp only [Valuation.map_mul, valuation_of_algebraMap] at hk
     rw [mem_setOf_eq, valuation_of_algebraMap]
     have := intValuation_le_one v n
     contrapose! this
     change 1 < v.intValuation n
     rw [← hk, mul_comm]
-    exact lt_mul_of_le_of_one_lt' this hv (by simp) (by simp)
+    exact (lt_mul_of_one_lt_right (by simp) hv).trans_le <|
+      mul_le_mul_of_nonneg_right this (by simp)
   simp_rw [valuation_of_algebraMap]
   change {v : HeightOneSpectrum R | v.intValuationDef d < 1}.Finite
   simp_rw [intValuation_lt_one_iff_dvd]

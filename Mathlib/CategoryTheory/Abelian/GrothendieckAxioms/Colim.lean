@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Filtered.Final
 import Mathlib.CategoryTheory.Limits.Connected
+import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
 
 /-!
@@ -32,7 +33,7 @@ namespace Limits
 /-- Assume that `colim : (J ⥤ C) ⥤ C` preserves monomorphisms, and
 `φ : X₁ ⟶ X₂` is a monomorphism in `J ⥤ C`, then if `f : c₁.pt ⟶ c₂.pt` is a morphism
 between the points of colimit cocones for `X₁` and `X₂` in such a way that `f`
-idenfities to `colim.map φ`, then `f` is a monomorphism. -/
+identifies to `colim.map φ`, then `f` is a monomorphism. -/
 lemma colim.map_mono' [HasColimitsOfShape J C]
     [(colim : (J ⥤ C) ⥤ C).PreservesMonomorphisms]
     {X₁ X₂ : J ⥤ C} (φ : X₁ ⟶ X₂) [Mono φ]
@@ -129,5 +130,27 @@ lemma colim.exact_mapShortComplex :
 end
 
 end Limits
+
+namespace MorphismProperty
+
+open Limits
+
+open MorphismProperty
+
+variable (J C) in
+lemma isStableUnderColimitsOfShape_monomorphisms
+    [HasColimitsOfShape J C] [(colim : (J ⥤ C) ⥤ C).PreservesMonomorphisms] :
+    (monomorphisms C).IsStableUnderColimitsOfShape J := by
+  intro X₁ X₂ c₁ c₂ hc₁ hc₂ f hf
+  have (j : J) : Mono (f.app j) := hf _
+  have := NatTrans.mono_of_mono_app f
+  exact colim.map_mono' f hc₁ hc₂ _ (by simp)
+
+instance [HasCoproducts.{u'} C] [AB4OfSize.{u'} C] :
+    IsStableUnderCoproducts.{u'} (monomorphisms C) where
+  isStableUnderCoproductsOfShape _ :=
+    isStableUnderColimitsOfShape_monomorphisms _ _
+
+end MorphismProperty
 
 end CategoryTheory

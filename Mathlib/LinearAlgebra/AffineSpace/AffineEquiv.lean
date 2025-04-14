@@ -70,11 +70,7 @@ theorem linear_toAffineMap (e : P₁ ≃ᵃ[k] P₂) : e.toAffineMap.linear = e.
 
 theorem toAffineMap_injective : Injective (toAffineMap : (P₁ ≃ᵃ[k] P₂) → P₁ →ᵃ[k] P₂) := by
   rintro ⟨e, el, h⟩ ⟨e', el', h'⟩ H
-  -- Porting note: added `AffineMap.mk.injEq`
-  simp only [toAffineMap_mk, AffineMap.mk.injEq, Equiv.coe_inj,
-    LinearEquiv.toLinearMap_inj] at H
-  congr
-  exacts [H.1, H.2]
+  simp_all
 
 @[simp]
 theorem toAffineMap_inj {e e' : P₁ ≃ᵃ[k] P₂} : e.toAffineMap = e'.toAffineMap ↔ e = e' :=
@@ -121,9 +117,7 @@ theorem coeFn_injective : @Injective (P₁ ≃ᵃ[k] P₂) (P₁ → P₂) (⇑)
   DFunLike.coe_injective
 
 @[norm_cast]
--- Porting note: removed `simp`: proof is `simp only [DFunLike.coe_fn_eq]`
-theorem coeFn_inj {e e' : P₁ ≃ᵃ[k] P₂} : (e : P₁ → P₂) = e' ↔ e = e' :=
-  coeFn_injective.eq_iff
+theorem coeFn_inj {e e' : P₁ ≃ᵃ[k] P₂} : (e : P₁ → P₂) = e' ↔ e = e' := by simp
 
 theorem toEquiv_injective : Injective (toEquiv : (P₁ ≃ᵃ[k] P₂) → P₁ ≃ P₂) := fun _ _ H =>
   ext <| Equiv.ext_iff.1 H
@@ -206,9 +200,7 @@ theorem ofBijective.symm_eq {φ : P₁ →ᵃ[k] P₂} (hφ : Function.Bijective
     (ofBijective hφ).symm.toEquiv = (Equiv.ofBijective _ hφ).symm :=
   rfl
 
-@[simp]
-theorem range_eq (e : P₁ ≃ᵃ[k] P₂) : range e = univ :=
-  e.surjective.range_eq
+theorem range_eq (e : P₁ ≃ᵃ[k] P₂) : range e = univ := by simp
 
 @[simp]
 theorem apply_symm_apply (e : P₁ ≃ᵃ[k] P₂) (p : P₂) : e (e.symm p) = p :=
@@ -221,9 +213,7 @@ theorem symm_apply_apply (e : P₁ ≃ᵃ[k] P₂) (p : P₁) : e.symm (e p) = p
 theorem apply_eq_iff_eq_symm_apply (e : P₁ ≃ᵃ[k] P₂) {p₁ p₂} : e p₁ = p₂ ↔ p₁ = e.symm p₂ :=
   e.toEquiv.apply_eq_iff_eq_symm_apply
 
--- Porting note: removed `simp`, proof is `by simp only [@EmbeddingLike.apply_eq_iff_eq]`
-theorem apply_eq_iff_eq (e : P₁ ≃ᵃ[k] P₂) {p₁ p₂ : P₁} : e p₁ = e p₂ ↔ p₁ = p₂ :=
-  e.toEquiv.apply_eq_iff_eq
+theorem apply_eq_iff_eq (e : P₁ ≃ᵃ[k] P₂) {p₁ p₂ : P₁} : e p₁ = e p₂ ↔ p₁ = p₂ := by simp
 
 @[simp]
 theorem image_symm (f : P₁ ≃ᵃ[k] P₂) (s : Set P₂) : f.symm '' s = f ⁻¹' s :=
@@ -465,6 +455,10 @@ open Function
 def pointReflection (x : P₁) : P₁ ≃ᵃ[k] P₁ :=
   (constVSub k x).trans (vaddConst k x)
 
+@[simp] lemma pointReflection_apply_eq_equivPointReflection_apply (x y : P₁) :
+    pointReflection k x y = Equiv.pointReflection x y :=
+  rfl
+
 theorem pointReflection_apply (x y : P₁) : pointReflection k x y = (x -ᵥ y) +ᵥ x :=
   rfl
 
@@ -477,7 +471,6 @@ theorem toEquiv_pointReflection (x : P₁) :
     (pointReflection k x).toEquiv = Equiv.pointReflection x :=
   rfl
 
-@[simp]
 theorem pointReflection_self (x : P₁) : pointReflection k x x = x :=
   vsub_vadd _ _
 
@@ -551,6 +544,6 @@ theorem vadd_lineMap (v : V₁) (p₁ p₂ : P₁) (c : k) :
 variable {R' : Type*} [CommRing R'] [Module R' V₁]
 
 theorem homothety_neg_one_apply (c p : P₁) : homothety c (-1 : R') p = pointReflection R' c p := by
-  simp [homothety_apply, pointReflection_apply]
+  simp [homothety_apply, Equiv.pointReflection_apply]
 
 end AffineMap

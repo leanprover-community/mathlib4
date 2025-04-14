@@ -23,39 +23,6 @@ variable {α : Type u} {β : Type v} {r : α → α → Prop} {s : β → β →
 
 open Function
 
-theorem of_eq [IsRefl α r] : ∀ {a b}, a = b → r a b
-  | _, _, .refl _ => refl _
-
-theorem comm [IsSymm α r] {a b : α} : r a b ↔ r b a :=
-  ⟨symm, symm⟩
-
-theorem antisymm' [IsAntisymm α r] {a b : α} : r a b → r b a → b = a := fun h h' => antisymm h' h
-
-theorem antisymm_iff [IsRefl α r] [IsAntisymm α r] {a b : α} : r a b ∧ r b a ↔ a = b :=
-  ⟨fun h => antisymm h.1 h.2, by
-    rintro rfl
-    exact ⟨refl _, refl _⟩⟩
-
-/-- A version of `antisymm` with `r` explicit.
-
-This lemma matches the lemmas from lean core in `Init.Algebra.Classes`, but is missing there. -/
-@[elab_without_expected_type]
-theorem antisymm_of (r : α → α → Prop) [IsAntisymm α r] {a b : α} : r a b → r b a → a = b :=
-  antisymm
-
-/-- A version of `antisymm'` with `r` explicit.
-
-This lemma matches the lemmas from lean core in `Init.Algebra.Classes`, but is missing there. -/
-@[elab_without_expected_type]
-theorem antisymm_of' (r : α → α → Prop) [IsAntisymm α r] {a b : α} : r a b → r b a → b = a :=
-  antisymm'
-
-/-- A version of `comm` with `r` explicit.
-
-This lemma matches the lemmas from lean core in `Init.Algebra.Classes`, but is missing there. -/
-theorem comm_of (r : α → α → Prop) [IsSymm α r] {a b : α} : r a b ↔ r b a :=
-  comm
-
 theorem IsRefl.swap (r) [IsRefl α r] : IsRefl α (swap r) :=
   ⟨refl_of r⟩
 
@@ -86,68 +53,8 @@ theorem IsStrictOrder.swap (r) [IsStrictOrder α r] : IsStrictOrder α (swap r) 
 theorem IsPartialOrder.swap (r) [IsPartialOrder α r] : IsPartialOrder α (swap r) :=
   { @IsPreorder.swap α r _, @IsAntisymm.swap α r _ with }
 
-protected theorem IsAsymm.isAntisymm (r) [IsAsymm α r] : IsAntisymm α r :=
-  ⟨fun _ _ h₁ h₂ => (_root_.asymm h₁ h₂).elim⟩
-
-protected theorem IsAsymm.isIrrefl [IsAsymm α r] : IsIrrefl α r :=
-  ⟨fun _ h => _root_.asymm h h⟩
-
-protected theorem IsTotal.isTrichotomous (r) [IsTotal α r] : IsTrichotomous α r :=
-  ⟨fun a b => or_left_comm.1 (Or.inr <| total_of r a b)⟩
-
--- see Note [lower instance priority]
-instance (priority := 100) IsTotal.to_isRefl (r) [IsTotal α r] : IsRefl α r :=
-  ⟨fun a => or_self_iff.1 <| total_of r a a⟩
-
-theorem ne_of_irrefl {r} [IsIrrefl α r] : ∀ {x y : α}, r x y → x ≠ y
-  | _, _, h, rfl => irrefl _ h
-
-theorem ne_of_irrefl' {r} [IsIrrefl α r] : ∀ {x y : α}, r x y → y ≠ x
-  | _, _, h, rfl => irrefl _ h
-
-theorem not_rel_of_subsingleton (r) [IsIrrefl α r] [Subsingleton α] (x y) : ¬r x y :=
-  Subsingleton.elim x y ▸ irrefl x
-
-theorem rel_of_subsingleton (r) [IsRefl α r] [Subsingleton α] (x y) : r x y :=
-  Subsingleton.elim x y ▸ refl x
-
-@[simp]
-theorem empty_relation_apply (a b : α) : EmptyRelation a b ↔ False :=
-  Iff.rfl
-
 theorem eq_empty_relation (r) [IsIrrefl α r] [Subsingleton α] : r = EmptyRelation :=
   funext₂ <| by simpa using not_rel_of_subsingleton r
-
-instance : IsIrrefl α EmptyRelation :=
-  ⟨fun _ => id⟩
-
-theorem trans_trichotomous_left [IsTrans α r] [IsTrichotomous α r] {a b c : α}
-    (h₁ : ¬r b a) (h₂ : r b c) : r a c := by
-  rcases trichotomous_of r a b with (h₃ | rfl | h₃)
-  exacts [_root_.trans h₃ h₂, h₂, absurd h₃ h₁]
-
-theorem trans_trichotomous_right [IsTrans α r] [IsTrichotomous α r] {a b c : α}
-    (h₁ : r a b) (h₂ : ¬r c b) : r a c := by
-  rcases trichotomous_of r b c with (h₃ | rfl | h₃)
-  exacts [_root_.trans h₁ h₃, h₁, absurd h₃ h₂]
-
-theorem transitive_of_trans (r : α → α → Prop) [IsTrans α r] : Transitive r := IsTrans.trans
-
-theorem rel_congr_left [IsSymm α r] [IsTrans α r] {a b c : α} (h : r a b) : r a c ↔ r b c :=
-  ⟨trans_of r (symm_of r h), trans_of r h⟩
-
-theorem rel_congr_right [IsSymm α r] [IsTrans α r] {a b c : α} (h : r b c) : r a b ↔ r a c :=
-  ⟨(trans_of r · h), (trans_of r · (symm_of r h))⟩
-
-theorem rel_congr [IsSymm α r] [IsTrans α r] {a b c d : α} (h₁ : r a b) (h₂ : r c d) :
-    r a c ↔ r b d := by
-  rw [rel_congr_left h₁, rel_congr_right h₂]
-
-/-- In a trichotomous irreflexive order, every element is determined by the set of predecessors. -/
-theorem extensional_of_trichotomous_of_irrefl (r : α → α → Prop) [IsTrichotomous α r] [IsIrrefl α r]
-    {a b : α} (H : ∀ x, r x a ↔ r x b) : a = b :=
-  ((@trichotomous _ r _ a b).resolve_left <| mt (H _).2 <| irrefl a).resolve_right <| mt (H _).1
-    <| irrefl b
 
 /-- Construct a partial order from an `isStrictOrder` relation.
 
@@ -216,6 +123,15 @@ instance (priority := 100) isStrictOrderConnected_of_isStrictTotalOrder [IsStric
     IsOrderConnected α r :=
   ⟨fun _ _ _ h ↦ (trichotomous _ _).imp_right
     fun o ↦ o.elim (fun e ↦ e ▸ h) fun h' ↦ _root_.trans h' h⟩
+
+/-! ### Inverse Image -/
+
+theorem InvImage.isTrichotomous [IsTrichotomous α r] {f : β → α} (h : Function.Injective f) :
+    IsTrichotomous β (InvImage r f)  where
+  trichotomous a b := trichotomous (f a) (f b) |>.imp3 id (h ·) id
+
+instance InvImage.isAsymm [IsAsymm α r] (f : β → α) : IsAsymm β (InvImage r f) where
+  asymm a b h h2 := IsAsymm.asymm (f a) (f b) h h2
 
 /-! ### Well-order -/
 
@@ -337,8 +253,8 @@ theorem wellFoundedLT_dual_iff (α : Type*) [LT α] : WellFoundedLT αᵒᵈ ↔
   ⟨fun h => ⟨h.wf⟩, fun h => ⟨h.wf⟩⟩
 
 /-- A well order is a well-founded linear order. -/
-class IsWellOrder (α : Type u) (r : α → α → Prop) extends
-  IsTrichotomous α r, IsTrans α r, IsWellFounded α r : Prop
+class IsWellOrder (α : Type u) (r : α → α → Prop) : Prop
+    extends IsTrichotomous α r, IsTrans α r, IsWellFounded α r
 
 -- see Note [lower instance priority]
 instance (priority := 100) {α} (r : α → α → Prop) [IsWellOrder α r] :

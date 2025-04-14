@@ -172,7 +172,7 @@ theorem covering_iff_covers_id (S : Sieve X) : S ∈ J X ↔ J.Covers S (𝟙 X)
 
 /-- The maximality axiom in 'arrow' form: Any arrow `f` in `S` is covered by `S`. -/
 theorem arrow_max (f : Y ⟶ X) (S : Sieve X) (hf : S f) : J.Covers S f := by
-  rw [Covers, (Sieve.pullback_eq_top_iff_mem f).1 hf]
+  rw [Covers, (Sieve.mem_iff_pullback_eq_top f).1 hf]
   apply J.top_mem
 
 /-- The stability axiom in 'arrow' form: If `S` covers `f` then `S` covers `g ≫ f` for any `g`. -/
@@ -307,7 +307,7 @@ theorem top_covering : S ∈ (⊤ : GrothendieckTopology C) X :=
   ⟨⟩
 
 theorem bot_covers (S : Sieve X) (f : Y ⟶ X) : (⊥ : GrothendieckTopology C).Covers S f ↔ S f := by
-  rw [covers_iff, bot_covering, ← Sieve.pullback_eq_top_iff_mem]
+  rw [covers_iff, bot_covering, ← Sieve.mem_iff_pullback_eq_top]
 
 @[simp]
 theorem top_covers (S : Sieve X) (f : Y ⟶ X) : (⊤ : GrothendieckTopology C).Covers S f := by
@@ -367,9 +367,10 @@ def atomic (hro : RightOreCondition C) : GrothendieckTopology C where
 Grothendieck topology `J`. -/
 -- Porting note: Lean 3 inferred `Type max u v`, Lean 4 by default gives `Type (max 0 u v)`
 def Cover (X : C) : Type max u v :=
-  { S : Sieve X // S ∈ J X } -- deriving Preorder
+  { S : Sieve X // S ∈ J X }
+-- The `Preorder` instance should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
--- Porting note: `deriving` didn't work above, so we add the preorder instance manually.
 instance (X : C) : Preorder (J.Cover X) :=
   show Preorder {S : Sieve X // S ∈ J X} from inferInstance
 
@@ -439,6 +440,7 @@ from `I.precomp g` to `I`. -/
 @[simps]
 def Arrow.precompRelation {S : J.Cover X} (I : S.Arrow) {Z : C} (g : Z ⟶ I.Y) :
     (I.precomp g).Relation I where
+  Z := (I.precomp g).Y
   g₁ := 𝟙 _
   g₂ := g
 
@@ -450,8 +452,8 @@ def Arrow.map {S T : J.Cover X} (I : S.Arrow) (f : S ⟶ T) : T.Arrow :=
 /-- Map an `Arrow.Relation` along a refinement `S ⟶ T`. -/
 @[simps]
 def Arrow.Relation.map {S T : J.Cover X} {I₁ I₂ : S.Arrow}
-    (r : I₁.Relation I₂) (f : S ⟶ T) : (I₁.map f).Relation (I₂.map f) where
-  w := r.w
+    (r : I₁.Relation I₂) (f : S ⟶ T) : (I₁.map f).Relation (I₂.map f) :=
+  { r with }
 
 /-- Pull back a cover along a morphism. -/
 def pullback (S : J.Cover X) (f : Y ⟶ X) : J.Cover Y :=
@@ -465,10 +467,8 @@ def Arrow.base {f : Y ⟶ X} {S : J.Cover X} (I : (S.pullback f).Arrow) : S.Arro
 /-- A relation of `S.pullback f` gives rise to a relation of `S`. -/
 def Arrow.Relation.base
     {f : Y ⟶ X} {S : J.Cover X} {I₁ I₂ : (S.pullback f).Arrow}
-    (r : I₁.Relation I₂) : I₁.base.Relation I₂.base where
-  g₁ := r.g₁
-  g₂ := r.g₂
-  w := by simp [r.w_assoc]
+    (r : I₁.Relation I₂) : I₁.base.Relation I₂.base :=
+  { r with w := by simp [r.w_assoc] }
 
 @[simp]
 theorem coe_pullback {Z : C} (f : Y ⟶ X) (g : Z ⟶ Y) (S : J.Cover X) :
@@ -543,9 +543,9 @@ theorem Arrow.middle_spec {X : C} {S : J.Cover X} {T : ∀ I : S.Arrow, J.Cover 
 @[ext]
 structure Relation (S : J.Cover X) where
   /-- The first arrow. -/
-  fst : S.Arrow
+  {fst : S.Arrow}
   /-- The second arrow. -/
-  snd : S.Arrow
+  {snd : S.Arrow}
   /-- The relation between the two arrows. -/
   r : fst.Relation snd
 
@@ -554,6 +554,8 @@ structure Relation (S : J.Cover X) where
 @[simps]
 def Relation.mk' {S : J.Cover X} {fst snd : S.Arrow} (r : fst.Relation snd) :
     S.Relation where
+  fst := fst
+  snd := snd
   r := r
 
 
