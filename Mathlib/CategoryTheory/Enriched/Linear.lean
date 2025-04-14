@@ -93,6 +93,7 @@ variable {C : Type u} [Category.{u} C] [EnrichedOrdinaryCategory (ModuleCat R) C
 
 variable (R)
 
+/-- The commutative group structure on morphisms of a category `C` enriched over `ModuleCat R`. -/
 abbrev addCommGroupEnrichedModuleCatHom (X Y : C) : AddCommGroup (X ⟶ Y) :=
   (eHomEquiv (V := ModuleCat R)).addCommGroup
 
@@ -101,6 +102,8 @@ instance moduleModuleCatHom {X Y : C} :
     Module R (X ⟶ Y) :=
   EnrichedOrdinaryCategory.homEquiv.module R
 
+/-- The preadditive structure on `C` induced by `C` being enriched over `ModuleCat R` for a
+commutative ring `R`. -/
 abbrev preadditiveEnrichedModuleCat : Preadditive C where
   homGroup X Y := addCommGroupEnrichedModuleCatHom R X Y
   add_comp X Y Z f f' g := by
