@@ -38,20 +38,19 @@ theorem not_isLocalRing_def {R : Type*} [Semiring R] {a b : R} (ha : ¬IsUnit a)
 
 theorem not_isLocalRing_of_nontrivial_pi {ι : Type*} [Nontrivial ι] [DecidableEq ι] (R : ι → Type*)
     [∀ i, Semiring (R i)] [∀ i, Nontrivial (R i)] : ¬IsLocalRing (Π i, R i) :=
-  let ⟨i₁, i₂, hi₁i₂⟩ := exists_pair_ne ι
+  let ⟨i₁, i₂, hi⟩ := exists_pair_ne ι
   have ha : ¬IsUnit (fun i ↦ if i = i₁ then 0 else 1 : Π i, R i) :=
-    fun h ↦ not_isUnit_zero (M₀ := R i₁) (by simpa using IsUnit.map (Pi.evalRingHom R i₁) h)
+    fun h ↦ not_isUnit_zero (M₀ := R i₁) (by simpa using h.map (Pi.evalRingHom R i₁))
   have hb : ¬IsUnit (fun i ↦ if i = i₁ then 1 else 0 : Π i, R i) :=
-    fun h ↦ not_isUnit_zero (M₀ := R i₂)
-      (by simpa [hi₁i₂.symm] using IsUnit.map (Pi.evalRingHom R i₂) h)
-  not_isLocalRing_def ha hb (by ext i; dsimp; split <;> simp)
+    fun h ↦ not_isUnit_zero (M₀ := R i₂) (by simpa [hi.symm] using h.map (Pi.evalRingHom R i₂))
+  not_isLocalRing_def ha hb (by ext; dsimp; split <;> simp)
 
 theorem not_isLocalRing_of_prod_of_nontrivial (R₁ R₂ : Type*) [Semiring R₁] [Semiring R₂]
     [Nontrivial R₁] [Nontrivial R₂] : ¬IsLocalRing (R₁ × R₂) :=
   have ha : ¬IsUnit ((1, 0) : R₁ × R₂) :=
-    fun h ↦ not_isUnit_zero (M₀ := R₁) (by simpa using IsUnit.map (RingHom.snd R₁ R₂) h)
+    fun h ↦ not_isUnit_zero (M₀ := R₁) (by simpa using h.map (RingHom.snd R₁ R₂))
   have hb : ¬IsUnit ((0, 1) : R₁ × R₂) :=
-    fun h ↦ not_isUnit_zero (M₀ := R₂) (by simpa using IsUnit.map (RingHom.fst R₁ R₂) h)
+    fun h ↦ not_isUnit_zero (M₀ := R₂) (by simpa using h.map (RingHom.fst R₁ R₂))
   not_isLocalRing_def ha hb (by simp)
 
 section CommSemiring
