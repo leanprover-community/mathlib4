@@ -225,6 +225,14 @@ theorem rightUnitor_inv_apply {M : ModuleCat.{u} R} (m : M) :
     ((ρ_ M).inv : M ⟶ M ⊗ 𝟙_ (ModuleCat.{u} R)) m = m ⊗ₜ[R] 1 :=
   TensorProduct.rid_symm_apply m
 
+lemma leftUnitor_inv_hom_apply {X : ModuleCat R} (x : X.carrier) :
+    (λ_ X).inv.hom x = (TensorProduct.lid R X).symm x :=
+  rfl
+
+lemma rightUnitor_inv_hom_apply {X : ModuleCat R} (x : X.carrier) :
+    (ρ_ X).inv.hom x = (TensorProduct.rid R X).symm x :=
+  rfl
+
 @[simp]
 theorem associator_hom_apply {M N K : ModuleCat.{u} R} (m : M) (n : N) (k : K) :
     ((α_ M N K).hom : (M ⊗ N) ⊗ K ⟶ M ⊗ N ⊗ K) (m ⊗ₜ n ⊗ₜ k) = m ⊗ₜ (n ⊗ₜ k) :=
@@ -233,6 +241,19 @@ theorem associator_hom_apply {M N K : ModuleCat.{u} R} (m : M) (n : N) (k : K) :
 @[simp]
 theorem associator_inv_apply {M N K : ModuleCat.{u} R} (m : M) (n : N) (k : K) :
     ((α_ M N K).inv : M ⊗ N ⊗ K ⟶ (M ⊗ N) ⊗ K) (m ⊗ₜ (n ⊗ₜ k)) = m ⊗ₜ n ⊗ₜ k :=
+  rfl
+
+@[simp]
+lemma hom_ofHom_whiskerRight_of {Z W : Type u}
+    [AddCommGroup Z] [Module R Z] [AddCommGroup W] [Module R W] (f : Z →ₗ[R] W)
+    (X : Type u) [AddCommGroup X] [Module R X] :
+    (ModuleCat.ofHom f ▷ ModuleCat.of R X).hom = f.rTensor X :=
+  rfl
+
+@[simp]
+lemma hom_of_whiskerLeft_ofHom (X : Type u) [AddCommGroup X] [Module R X]
+    { Z W : Type u} [AddCommGroup Z] [Module R Z] [AddCommGroup W] [Module R W] (f : Z →ₗ[R] W) :
+    (ModuleCat.of R X ◁ ModuleCat.ofHom f).hom = f.lTensor X :=
   rfl
 
 variable {M₁ M₂ M₃ M₄ : ModuleCat.{u} R}

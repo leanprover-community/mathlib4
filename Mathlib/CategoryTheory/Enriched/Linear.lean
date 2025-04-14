@@ -24,24 +24,6 @@ section EnrichedOfLinear
 variable {R : Type u} [CommRing R]
 variable {C : Type u} [Category.{u} C] [Preadditive C] [Linear R C]
 
-@[simp]
-lemma aux1 {X Y : C} {Z W : Type u} [AddCommGroup Z] [Module R Z]
-    [AddCommGroup W] [Module R W] (f : Z →ₗ[R] W) :
-    (ModuleCat.ofHom f ▷ ModuleCat.of R (X ⟶ Y)).hom = f.rTensor (X ⟶ Y) :=
-  rfl
-
-@[simp]
-lemma aux1' {X Y : C} {Z W : Type u} [AddCommGroup Z] [Module R Z]
-    [AddCommGroup W] [Module R W] (f : Z →ₗ[R] W) :
-    (ModuleCat.of R (X ⟶ Y) ◁ ModuleCat.ofHom f).hom = f.lTensor (X ⟶ Y) :=
-  rfl
-
-lemma aux2 {X : ModuleCat R} (x : X) : (λ_ X).inv.hom x = (TensorProduct.lid R X).symm x :=
-  rfl
-
-lemma aux2' {X : ModuleCat R} (x : X) : (ρ_ X).inv.hom x = (TensorProduct.rid R X).symm x :=
-  rfl
-
 lemma lift_comp_lift_comp_rTensor_eq {W X Y Z : C} (f : ((W ⟶ X) ⊗[R] (X ⟶ Y)) ⊗[R] (Y ⟶ Z)) :
     lift (Linear.comp W Y Z) (((lift (Linear.comp W X Y)).rTensor (Y ⟶ Z)) f) =
       lift (Linear.comp W X Z)
@@ -62,14 +44,14 @@ noncomputable instance : EnrichedOrdinaryCategory (ModuleCat R) C where
     simp only [LinearMap.ringLmapEquivSelf_symm_apply, ModuleCat.hom_comp,
       ModuleCat.MonoidalCategory.carrier_of_tensorObj_of, hom_ofHom,
       LinearMap.coe_comp, Function.comp_apply, ModuleCat.hom_id, LinearMap.id_coe, id_eq] at f ⊢
-    rw [aux2]
+    rw [ModuleCat.MonoidalCategory.leftUnitor_inv_hom_apply]
     simp [ModuleCat.MonoidalCategory.tensorUnit_eq]
   comp_id X Y := by
     ext f
     simp only [LinearMap.ringLmapEquivSelf_symm_apply, ModuleCat.hom_comp,
       ModuleCat.MonoidalCategory.carrier_of_tensorObj_of, hom_ofHom,
       LinearMap.coe_comp, Function.comp_apply, ModuleCat.hom_id, LinearMap.id_coe, id_eq] at f ⊢
-    rw [aux2']
+    rw [ModuleCat.MonoidalCategory.rightUnitor_inv_hom_apply]
     simp [ModuleCat.MonoidalCategory.tensorUnit_eq]
   assoc W X Y Z := by
     ext f
