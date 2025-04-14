@@ -225,10 +225,10 @@ variable (f : E' ≃ₗᵢ[ℝ] F')
 variable [NormedAddCommGroup A]
 
 theorem integrable_comp (g : F' → A) : Integrable (g ∘ f) ↔ Integrable g :=
-  f.measurePreserving.integrable_comp_emb f.toMeasureEquiv.measurableEmbedding
+  f.measurePreserving.integrable_comp_emb f.toMeasurableEquiv.measurableEmbedding
 
 theorem integral_comp [NormedSpace ℝ A] (g : F' → A) : ∫ (x : E'), g (f x) = ∫ (y : F'), g y :=
-  f.measurePreserving.integral_comp' (f := f.toMeasureEquiv) g
+  f.measurePreserving.integral_comp' (f := f.toMeasurableEquiv) g
 
 end InnerProductSpace
 

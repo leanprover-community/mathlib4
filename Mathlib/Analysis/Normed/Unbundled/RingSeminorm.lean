@@ -3,9 +3,9 @@ Copyright (c) 2022 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Yaël Dillies
 -/
+import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 import Mathlib.Analysis.Normed.Field.Lemmas
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Data.Real.IsNonarchimedean
 
 /-!
 # Seminorms and norms on rings
@@ -468,7 +468,7 @@ open Int
 @[deprecated "Use AbsoluteValue.apply_natAbs_eq instead" (since := "2025-01-07")]
 lemma MulRingNorm.apply_natAbs_eq {R : Type*} [Ring R] (x : ℤ) (f : MulRingNorm R) : f (natAbs x) =
     f x := by
-  obtain ⟨n, rfl | rfl⟩ := eq_nat_or_neg x <;>
+  obtain ⟨n, rfl | rfl⟩ := Int.eq_nat_or_neg x <;>
   simp only [natAbs_neg, natAbs_ofNat, cast_neg, cast_natCast, map_neg_eq_map]
 
 /-- The seminorm on a `SeminormedRing`, as a `RingSeminorm`. -/

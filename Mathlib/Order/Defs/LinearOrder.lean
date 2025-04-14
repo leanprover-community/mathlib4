@@ -72,7 +72,9 @@ class LinearOrder (α : Type*) extends PartialOrder α, Min α, Max α, Ord α w
 
 variable [LinearOrder α] {a b c : α}
 
-attribute [local instance] LinearOrder.decidableLE
+attribute [instance 900] LinearOrder.decidableLT
+attribute [instance 900] LinearOrder.decidableLE
+attribute [instance 900] LinearOrder.decidableEq
 
 lemma le_total : ∀ a b : α, a ≤ b ∨ b ≤ a := LinearOrder.le_total
 
@@ -112,10 +114,6 @@ lemma lt_iff_not_ge (x y : α) : x < y ↔ ¬x ≥ y := ⟨not_le_of_gt, lt_of_n
 
 @[simp] lemma not_lt : ¬a < b ↔ b ≤ a := ⟨le_of_not_gt, not_lt_of_ge⟩
 @[simp] lemma not_le : ¬a ≤ b ↔ b < a := (lt_iff_not_ge _ _).symm
-
-instance (priority := 900) (a b : α) : Decidable (a < b) := LinearOrder.decidableLT a b
-instance (priority := 900) (a b : α) : Decidable (a ≤ b) := LinearOrder.decidableLE a b
-instance (priority := 900) (a b : α) : Decidable (a = b) := LinearOrder.decidableEq a b
 
 lemma eq_or_lt_of_not_lt (h : ¬a < b) : a = b ∨ b < a :=
   if h₁ : a = b then Or.inl h₁ else Or.inr (lt_of_not_ge fun hge => h (lt_of_le_of_ne hge h₁))
