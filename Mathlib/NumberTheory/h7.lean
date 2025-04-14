@@ -148,7 +148,7 @@ def m := 2 * h K + 2
 
 def c₁ := (c' K α') * (c' K β') * (c' K γ')
 
-lemma c₁_α :  IsIntegral ℤ (c₁ K α' β' γ' • α') := by
+lemma c₁_α : IsIntegral ℤ (c₁ K α' β' γ' • α') := by
   have h := IsIntegral_assoc (x := c' K γ') (y := c' K β') K (c' K α') α' (c'_IsIntegral K α')
   rwa [c₁, mul_comm, mul_comm (c' K α') (c' K β'), ← mul_assoc]
 
@@ -222,11 +222,6 @@ lemma c1c :
       (le_sub_one_of_lt (finProdFinEquiv.symm.1 u).1.isLt))
         (add_le_of_le_sub hq0 (le_sub_one_of_lt (finProdFinEquiv.symm.1 t).2.isLt))
   · rw [← zsmul_eq_mul]; exact c₁_γ K α' β' γ'
-
-abbrev sys_coeffs' :
- (Fin q × Fin q) → (Fin (m K) × Fin (n K q)) → K := fun (a,b) (l,k) =>
-  ((a+1 : ℕ) + (b+1 : ℕ) • β')^(k : ℕ)
-  * α' ^((a+1) * (l+1 : ℕ)) * γ' ^((b+1) * (l+1 : ℕ))
 
 abbrev sys_coeffs :
  Fin (q *q) → (Fin (m K *n K q)) → K := fun i j => by
@@ -401,7 +396,19 @@ lemma hmn : m K * n K q < q*q := by
   · exact one_lt_two
   · exact Nat.pow_pos hq0
 
-def c₂ : ℝ := (c₁ K α' β' γ') ^ (1 + 2*(m K) * Nat.sqrt (2*(m K)))
+lemma housec1_gt_zero : 0 ≤ house.c₁ K := by {
+  unfold house.c₁
+  apply mul_nonneg
+  rw [le_iff_eq_or_lt]
+  right
+  simp only [Nat.cast_pos]
+  exact Module.finrank_pos
+  unfold house.c₂
+  apply mul_nonneg
+  simp only [le_sup_iff, zero_le_one, true_or]
+  exact house.supOfBasis_nonneg K}
+
+def c₂ : ℝ := max 1 ((c₁ K α' β' γ') ^ (1 + 2*(m K) * Nat.sqrt (2*(m K))))
 
 def house_pow_le (α : K) (i : ℕ) : house (α^i) ≤ house α ^ i := by {
   unfold house
@@ -483,6 +490,9 @@ lemma hAkl : ∀ (k : Fin (m K * n K q)) (l : Fin (q * q)),
             apply house_nonneg
         · apply pow_nonneg
           apply house_nonneg
+
+
+
     · simp only [house_intCast, Int.cast_abs]
       unfold c₃
       simp only [Int.cast_mul, Int.cast_pow, nsmul_eq_mul]
@@ -495,12 +505,20 @@ lemma hAkl : ∀ (k : Fin (m K * n K q)) (l : Fin (q * q)),
       apply mul_le_mul
       · simp only [abs_pow, abs_abs]
         unfold c₂
-        simp only [abs_pow]
-        refine pow_le_pow_right₀ ?_ ?_
-        · sorry
-        · unfold n
-          ring_nf
+        rw [← abs_pow]
+        apply abs_le_abs
+        simp only [le_sup_iff]
+        right
+        sorry
+        simp only [le_sup_iff]
+        left
+        trans
+        · have :  -(c₁ K α' β' γ' : ℝ) ^ (n K q - 1 + m K * q + m K * q) ≤ 0 := by {
+          simp only [Left.neg_nonpos_iff]
           sorry
+          }
+          apply this
+        · exact zero_le_one
       · sorry
       · apply pow_nonneg
         apply house_nonneg
@@ -531,6 +549,11 @@ lemma hAkl : ∀ (k : Fin (m K * n K q)) (l : Fin (q * q)),
               apply house_nonneg
         · apply pow_nonneg
           apply house_nonneg
+
+
+
+
+
     · nth_rw 1 [← Real.rpow_one ((c₃ K α' β' γ'))]
       apply Real.rpow_le_rpow_of_exponent_le
       · apply le_max_left
@@ -1022,13 +1045,6 @@ lemma foo' : IsIntegral (𝓞 K) (cρ α β hirr htriv K σ hd α' β' γ' habc 
 def c1ρ : (𝓞 K) := RingOfIntegers.restrict _
   (fun _ => (ρ_is_int α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq)) ℤ
 
-
-
-
-
-
-
-
 -- #check Algebra.norm_algebraMap
 -- #check Algebra.norm_algebraMap_of_basis (house.newBasis K)
 -- #check RingOfIntegers.rank
@@ -1162,6 +1178,22 @@ lemma eq5 :
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def c₆ : ℝ := sorry
 
 def c₇ : ℝ := sorry
@@ -1182,7 +1214,7 @@ lemma eq6 :
        _ ≤ c₈^r * r^( r + 3/2) := ?_
 
   · exact fromlemma82_bound α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
-  · have :  (c₄ ^ (n K q : ℝ)) * ((n K q)^((1/2)*((n K q)+1)))
+  · have : (c₄ ^ (n K q : ℝ)) * ((n K q)^((1/2)*((n K q)+1)))
            = ((c₄ ^ (n K q : ℝ)) * ((n K q)^((1/2)*((n K q)+1)) )) * 1 := by {
             simp only [Real.rpow_natCast,
              Nat.reduceDiv, zero_mul, pow_zero, mul_one]}
@@ -1237,8 +1269,7 @@ lemma holS :
         intros x HX
         rw [sub_eq_zero] at HX
         sorry
-    · sorry
-}
+    · sorry}
 
 lemma hcauchy :
   let r := r α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
