@@ -995,6 +995,7 @@ def nameDict : String → List String
   | "gpfree"      => ["apfree"]
   | "quantale"    => ["add", "Quantale"]
   | "square"      => ["even"]
+  | "mconv"       => ["conv"]
   | x             => [x]
 
 /--

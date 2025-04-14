@@ -5,4 +5,4 @@ Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Data.ENNReal.Operations
 
-deprecated_module (since "2025-04-13")
+deprecated_module (since := "2025-04-13")
