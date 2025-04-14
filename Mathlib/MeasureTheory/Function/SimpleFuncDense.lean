@@ -55,7 +55,7 @@ variable [MeasurableSpace α] [PseudoEMetricSpace α] [OpensMeasurableSpace α]
 points `e 0`, ..., `e N`. If more than one point are at the same distance from `x`, then
 `nearestPtInd e N x` returns the least of their indexes. -/
 noncomputable def nearestPtInd (e : ℕ → α) : ℕ → α →ₛ ℕ
-  | 0 => const α 0
+  | 0 => 0
   | N + 1 =>
     piecewise (⋂ k ≤ N, { x | edist (e (N + 1)) x < edist (e k) x })
       (MeasurableSet.iInter fun _ =>
@@ -70,7 +70,7 @@ noncomputable def nearestPt (e : ℕ → α) (N : ℕ) : α →ₛ α :=
   (nearestPtInd e N).map e
 
 @[simp]
-theorem nearestPtInd_zero (e : ℕ → α) : nearestPtInd e 0 = const α 0 :=
+theorem nearestPtInd_zero (e : ℕ → α) : nearestPtInd e 0 = 0 :=
   rfl
 
 @[simp]

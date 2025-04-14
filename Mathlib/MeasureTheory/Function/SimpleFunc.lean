@@ -136,6 +136,17 @@ theorem range_const (α) [MeasurableSpace α] [Nonempty α] (b : β) : (const α
 theorem range_const_subset (α) [MeasurableSpace α] (b : β) : (const α b).range ⊆ {b} :=
   Finset.coe_subset.1 <| by simp
 
+@[to_additive]
+instance instOne [One β] : One (α →ₛ β) :=
+  ⟨const α 1⟩
+
+@[to_additive (attr := simp)]
+theorem const_one [One β] : const α (1 : β) = 1 :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem one_apply [One β] (a : α) : (1 : α →ₛ β) a = 1 := rfl
+
 theorem simpleFunc_bot {α} (f : @SimpleFunc α ⊥ β) [Nonempty β] : ∃ c, ∀ x, f x = c := by
   have hf_meas := @SimpleFunc.measurableSet_fiber α _ ⊥ f
   simp_rw [MeasurableSpace.measurableSet_bot_iff] at hf_meas
@@ -218,7 +229,7 @@ theorem piecewise_same (f : α →ₛ β) {s : Set α} (hs : MeasurableSet s) :
   coe_injective <| Set.piecewise_same _ _
 
 theorem support_indicator [Zero β] {s : Set α} (hs : MeasurableSet s) (f : α →ₛ β) :
-    Function.support (f.piecewise s hs (SimpleFunc.const α 0)) = s ∩ Function.support f :=
+    Function.support (f.piecewise s hs (0 : α →ₛ β)) = s ∩ Function.support f :=
   Set.support_indicator
 
 open scoped Classical in
@@ -266,6 +277,10 @@ theorem range_map [DecidableEq γ] (g : β → γ) (f : α →ₛ β) : (f.map g
 
 @[simp]
 theorem map_const (g : β → γ) (b : β) : (const α b).map g = const α (g b) :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem map_one [One β] (g : β → γ) : (1 : α →ₛ β).map g = const α (g 1) :=
   rfl
 
 open scoped Classical in
@@ -362,10 +377,6 @@ theorem pair_preimage_singleton (f : α →ₛ β) (g : α →ₛ γ) (b : β) (
 theorem bind_const (f : α →ₛ β) : f.bind (const α) = f := by ext; simp
 
 @[to_additive]
-instance instOne [One β] : One (α →ₛ β) :=
-  ⟨const α 1⟩
-
-@[to_additive]
 instance instMul [Mul β] : Mul (α →ₛ β) :=
   ⟨fun f g => (f.map (· * ·)).seq g⟩
 
@@ -386,9 +397,6 @@ instance instInf [Min β] : Min (α →ₛ β) :=
 instance instLE [LE β] : LE (α →ₛ β) :=
   ⟨fun f g => ∀ a, f a ≤ g a⟩
 
-@[to_additive (attr := simp)]
-theorem const_one [One β] : const α (1 : β) = 1 :=
-  rfl
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_one [One β] : ⇑(1 : α →ₛ β) = 1 :=
@@ -621,7 +629,7 @@ variable [Zero β]
 
 open scoped Classical in
 /-- Restrict a simple function `f : α →ₛ β` to a set `s`. If `s` is measurable,
-then `f.restrict s a = if a ∈ s then f a else 0`, otherwise `f.restrict s = const α 0`. -/
+then `f.restrict s a = if a ∈ s then f a else 0`, otherwise `f.restrict s = 0`. -/
 def restrict (f : α →ₛ β) (s : Set α) : α →ₛ β :=
   if hs : MeasurableSet s then piecewise s hs f 0 else 0
 
@@ -961,6 +969,9 @@ theorem const_lintegral (c : ℝ≥0∞) : (const α c).lintegral μ = c * μ un
   · simp only [range_const, coe_const, Finset.sum_singleton]
     unfold Function.const; rw [preimage_const_of_mem (mem_singleton c)]
 
+theorem one_lintegral : (1 : α →ₛ ℝ≥0∞).lintegral μ = μ univ := by
+  rw [← const_one, const_lintegral, one_mul]
+
 theorem const_lintegral_restrict (c : ℝ≥0∞) (s : Set α) :
     (const α c).lintegral (μ.restrict s) = c * μ s := by
   rw [const_lintegral, Measure.restrict_apply MeasurableSet.univ, univ_inter]
@@ -1145,7 +1156,7 @@ To use in an induction proof, the syntax is `induction f using SimpleFunc.induct
 protected theorem induction {α γ} [MeasurableSpace α] [AddZeroClass γ]
     {motive : SimpleFunc α γ → Prop}
     (const : ∀ (c) {s} (hs : MeasurableSet s),
-      motive (SimpleFunc.piecewise s hs (SimpleFunc.const _ c) (SimpleFunc.const _ 0)))
+      motive (SimpleFunc.piecewise s hs (SimpleFunc.const _ c) 0))
     (add : ∀ ⦃f g : SimpleFunc α γ⦄,
       Disjoint (support f) (support g) → motive f → motive g → motive (f + g))
     (f : SimpleFunc α γ) : motive f := by

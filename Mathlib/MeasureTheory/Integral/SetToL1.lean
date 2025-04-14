@@ -559,7 +559,7 @@ theorem norm_setToSimpleFunc_le_sum_mul_norm_of_integrable (T : Set α → E →
 theorem setToSimpleFunc_indicator (T : Set α → F →L[ℝ] F') (hT_empty : T ∅ = 0)
     {m : MeasurableSpace α} {s : Set α} (hs : MeasurableSet s) (x : F) :
     SimpleFunc.setToSimpleFunc T
-        (SimpleFunc.piecewise s hs (SimpleFunc.const α x) (SimpleFunc.const α 0)) =
+        (SimpleFunc.piecewise s hs (SimpleFunc.const α x) 0) =
       T s x := by
   classical
   obtain rfl | hs_empty := s.eq_empty_or_nonempty
