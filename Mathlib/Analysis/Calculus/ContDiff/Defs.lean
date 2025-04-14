@@ -557,8 +557,11 @@ theorem contDiffOn_all_iff_nat :
   rintro H (_ | n)
   exacts [contDiffOn_infty.2 H, H n]
 
-@[fun_prop]
 theorem ContDiffOn.continuousOn (h : ContDiffOn 𝕜 n f s) : ContinuousOn f s := fun x hx =>
+  (h x hx).continuousWithinAt
+
+@[fun_prop]
+theorem ContDiffOn.continuousOn' (h : ContDiffOn 𝕜 0 f s) : ContinuousOn f s := fun x hx =>
   (h x hx).continuousWithinAt
 
 theorem ContDiffOn.congr (h : ContDiffOn 𝕜 n f s) (h₁ : ∀ x ∈ s, f₁ x = f x) :
@@ -575,9 +578,12 @@ theorem ContDiffOn.congr_mono (hf : ContDiffOn 𝕜 n f s) (h₁ : ∀ x ∈ s�
   (hf.mono hs).congr h₁
 
 /-- If a function is `C^n` on a set with `n ≥ 1`, then it is differentiable there. -/
-@[fun_prop]
 theorem ContDiffOn.differentiableOn (h : ContDiffOn 𝕜 n f s) (hn : 1 ≤ n) :
     DifferentiableOn 𝕜 f s := fun x hx => (h x hx).differentiableWithinAt hn
+
+@[fun_prop]
+theorem ContDiffOn.differentiableOn' (h : ContDiffOn 𝕜 1 f s) :
+    DifferentiableOn 𝕜 f s := fun x hx => (h x hx).differentiableWithinAt (le_refl 1)
 
 /-- If a function is `C^n` around each point in a set, then it is `C^n` on the set. -/
 theorem contDiffOn_of_locally_contDiffOn
@@ -994,10 +1000,14 @@ theorem contDiffWithinAt_compl_self :
   rw [compl_eq_univ_diff, contDiffWithinAt_diff_singleton, contDiffWithinAt_univ]
 
 /-- If a function is `C^n` with `n ≥ 1` at a point, then it is differentiable there. -/
-@[fun_prop]
 theorem ContDiffAt.differentiableAt (h : ContDiffAt 𝕜 n f x) (hn : 1 ≤ n) :
     DifferentiableAt 𝕜 f x := by
   simpa [hn, differentiableWithinAt_univ] using h.differentiableWithinAt
+
+@[fun_prop]
+theorem ContDiffAt.differentiableAt' (h : ContDiffAt 𝕜 1 f x) :
+    DifferentiableAt 𝕜 f x := by
+  simpa [(le_refl 1), differentiableWithinAt_univ] using h.differentiableWithinAt
 
 nonrec lemma ContDiffAt.contDiffOn (h : ContDiffAt 𝕜 n f x) (hm : m ≤ n) (h' : m = ∞ → n = ω):
     ∃ u ∈ 𝓝 x, ContDiffOn 𝕜 m f u := by
@@ -1131,8 +1141,11 @@ theorem ContDiff.of_succ (h : ContDiff 𝕜 (n + 1) f) : ContDiff 𝕜 n f :=
 theorem ContDiff.one_of_succ (h : ContDiff 𝕜 (n + 1) f) : ContDiff 𝕜 1 f := by
   apply h.of_le le_add_self
 
-@[fun_prop]
 theorem ContDiff.continuous (h : ContDiff 𝕜 n f) : Continuous f :=
+  contDiff_zero.1 (h.of_le bot_le)
+
+@[fun_prop]
+theorem ContDiff.continuous' (h : ContDiff 𝕜 0 f) : Continuous f :=
   contDiff_zero.1 (h.of_le bot_le)
 
 /-- If a function is `C^n` with `n ≥ 1`, then it is differentiable. -/
@@ -1210,13 +1223,16 @@ theorem contDiff_nat_iff_continuous_differentiable {n : ℕ} :
   simp
 
 /-- If `f` is `C^n` then its `m`-times iterated derivative is continuous for `m ≤ n`. -/
-@[fun_prop]
 theorem ContDiff.continuous_iteratedFDeriv {m : ℕ} (hm : m ≤ n) (hf : ContDiff 𝕜 n f) :
     Continuous fun x => iteratedFDeriv 𝕜 m f x :=
   (contDiff_iff_continuous_differentiable.mp (hf.of_le hm)).1 m le_rfl
 
-/-- If `f` is `C^n` then its `m`-times iterated derivative is differentiable for `m < n`. -/
 @[fun_prop]
+theorem ContDiff.continuous_iteratedFDeriv' {m : ℕ} (hf : ContDiff 𝕜 m f) :
+    Continuous fun x => iteratedFDeriv 𝕜 m f x :=
+  (contDiff_iff_continuous_differentiable.mp hf).1 m le_rfl
+
+/-- If `f` is `C^n` then its `m`-times iterated derivative is differentiable for `m < n`. -/
 theorem ContDiff.differentiable_iteratedFDeriv {m : ℕ} (hm : m < n) (hf : ContDiff 𝕜 n f) :
     Differentiable 𝕜 fun x => iteratedFDeriv 𝕜 m f x :=
   (contDiff_iff_continuous_differentiable.mp
