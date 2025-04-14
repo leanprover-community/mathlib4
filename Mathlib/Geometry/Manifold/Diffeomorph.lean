@@ -563,7 +563,8 @@ theorem prodComm_symm : (prodComm I J M N n).symm = prodComm J I N M n :=
 theorem coe_prodComm : ⇑(prodComm I J M N n) = Prod.swap :=
   rfl
 
-/-- `(M × N) × N'` is diffeomorphic to `M × (N × N')`. -/
+/-- `(M × N) × N'` is diffeomorphic to `M × (N × N')`.
+This is `Equiv.prodAssoc` as a diffeomorphism.  -/
 def prodAssoc : ((M × N) × N') ≃ₘ^n⟮(I.prod J).prod J', I.prod (J.prod J')⟯ M × N × N' where
   contMDiff_toFun :=
     (contMDiff_fst.comp contMDiff_fst).prodMk
@@ -572,6 +573,8 @@ def prodAssoc : ((M × N) × N') ≃ₘ^n⟮(I.prod J).prod J', I.prod (J.prod J
     (contMDiff_fst.prodMk (contMDiff_fst.comp contMDiff_snd)).prodMk
       (contMDiff_snd.comp contMDiff_snd)
   toEquiv := Equiv.prodAssoc M N N'
+
+lemma prodAssoc_toEquiv : (prodAssoc M N N').toEquiv = Equiv.prodAssoc M N N' := rfl
 
 end
 
