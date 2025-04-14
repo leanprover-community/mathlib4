@@ -397,16 +397,16 @@ theorem isClosed_setOf_isCompactOperator {𝕜₁ 𝕜₂ : Type*} [Field 𝕜�
   rw [ContinuousLinearMap.sub_apply]
   abel
 
-theorem compactOperator_topologicalClosure {𝕜₁ 𝕜₂ : Type*} [Field 𝕜₁] [NontriviallyNormedField 𝕜₁]
-    [Field 𝕜₂] [StrictNormedRing 𝕜₂]
+theorem compactOperator_topologicalClosure {𝕜₁ 𝕜₂ : Type*}
+    [Field 𝕜₁] [NontriviallyNormedField 𝕜₁] [Field 𝕜₂]
     {σ₁₂ : 𝕜₁ →+* 𝕜₂} {M₁ M₂ : Type*} [AddCommGroup M₁] [SeminormedAddGroup M₁]
     [AddCommGroup M₂] [NormedSpace 𝕜₁ M₁] [Module 𝕜₂ M₂] [UniformSpace M₂] [IsUniformAddGroup M₂]
     [ContinuousConstSMul 𝕜₂ M₂] [T2Space M₂] [CompleteSpace M₂] :
     (compactOperator σ₁₂ M₁ M₂).topologicalClosure = compactOperator σ₁₂ M₁ M₂ :=
   SetLike.ext' isClosed_setOf_isCompactOperator.closure_eq
 
-theorem isCompactOperator_of_tendsto {ι 𝕜₁ 𝕜₂ : Type*} [Field 𝕜₁] [NontriviallyNormedField 𝕜₁]
-    [Field 𝕜₂] [StrictNormedRing 𝕜₂]
+theorem isCompactOperator_of_tendsto {ι 𝕜₁ 𝕜₂ : Type*}
+    [Field 𝕜₁] [NontriviallyNormedField 𝕜₁] [Field 𝕜₂]
     {σ₁₂ : 𝕜₁ →+* 𝕜₂} {M₁ M₂ : Type*} [AddCommGroup M₁] [SeminormedAddGroup M₁]
     [AddCommGroup M₂] [NormedSpace 𝕜₁ M₁] [Module 𝕜₂ M₂] [UniformSpace M₂] [IsUniformAddGroup M₂]
     [ContinuousConstSMul 𝕜₂ M₂] [T2Space M₂] [CompleteSpace M₂] {l : Filter ι} [l.NeBot]
