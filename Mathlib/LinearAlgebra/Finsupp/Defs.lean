@@ -167,9 +167,9 @@ def lcomapDomain (f : α → β) (hf : Function.Injective f) : (β →₀ M) →
   map_add' x y := by ext; simp
   map_smul' c x := by ext; simp
 
-theorem lcomapDomain_leftInverse (f : α → β) (hf : Function.Injective f) :
+theorem leftInverse_lcomapDomain_mapDomain (f : α → β) (hf : Function.Injective f) :
     Function.LeftInverse (lcomapDomain (R := R) (M := M) f hf) (mapDomain f) :=
-  fun _ ↦ Finsupp.ext fun a ↦ by simp [mapDomain_apply hf]
+  comapDomain_mapDomain f hf
 
 end LComapDomain
 
