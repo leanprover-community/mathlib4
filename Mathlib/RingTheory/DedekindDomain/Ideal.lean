@@ -970,6 +970,10 @@ instance isMaximal : v.asIdeal.IsMaximal := v.isPrime.isMaximal v.ne_bot
 
 theorem prime : Prime v.asIdeal := Ideal.prime_of_isPrime v.ne_bot v.isPrime
 
+@[simps]
+def ofPrime (p : Ideal R) (hp : Prime p) : HeightOneSpectrum R :=
+  ⟨p, Ideal.isPrime_of_prime hp, hp.ne_zero⟩
+
 theorem irreducible : Irreducible v.asIdeal :=
   UniqueFactorizationMonoid.irreducible_iff_prime.mpr v.prime
 
