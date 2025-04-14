@@ -184,7 +184,7 @@ theorem min_val {a : Fin n} : min (a : ℕ) n = a := by simp
 theorem max_val {a : Fin n} : max (a : ℕ) n = n := by simp
 
 /-- The inclusion map `Fin n → ℕ` is an embedding. -/
-@[simps apply]
+@[simps -fullyApplied apply]
 def valEmbedding : Fin n ↪ ℕ :=
   ⟨val, val_injective⟩
 
@@ -720,6 +720,18 @@ def addNatEmb (m) : Fin n ↪ Fin (n + m) where
 def natAddEmb (n) {m} : Fin m ↪ Fin (n + m) where
   toFun := natAdd n
   inj' a b := by simp [Fin.ext_iff]
+
+theorem castSucc_castAdd (i : Fin n) : castSucc (castAdd m i) = castAdd (m + 1) i := rfl
+
+theorem castSucc_natAdd (i : Fin m) : castSucc (natAdd n i) = natAdd n (castSucc i) := rfl
+
+theorem succ_castAdd (i : Fin n) : succ (castAdd m i) =
+    if h : i.succ = last _ then natAdd n (0 : Fin (m + 1))
+      else castAdd (m + 1) ⟨i.1 + 1, lt_of_le_of_ne i.2 (Fin.val_ne_iff.mpr h)⟩ := by
+  split_ifs with h
+  exacts [Fin.ext (congr_arg Fin.val h :), rfl]
+
+theorem succ_natAdd (i : Fin m) : succ (natAdd n i) = natAdd n (succ i) := rfl
 
 end Succ
 

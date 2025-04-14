@@ -290,7 +290,7 @@ theorem linearIndependent_le_span'' {ι : Type v} {v : ι → M} (i : LinearInde
 
 /-- Let `R` satisfy the strong rank condition. If `m` elements of a free rank `n` `R`-module are
 linearly independent, then `m ≤ n`. -/
-theorem Basis.card_le_card_of_linearIndependent_aux {R : Type*} [Ring R] [StrongRankCondition R]
+theorem Basis.card_le_card_of_linearIndependent_aux {R : Type*} [Semiring R] [StrongRankCondition R]
     (n : ℕ) {m : ℕ} (v : Fin m → Fin n → R) : LinearIndependent R v → m ≤ n := fun h => by
   simpa using linearIndependent_le_basis (Pi.basisFun R (Fin n)) v h
 
@@ -446,19 +446,16 @@ theorem finrank_self : finrank R R = 1 :=
 
 /-- Given a basis of a ring over itself indexed by a type `ι`, then `ι` is `Unique`. -/
 noncomputable def _root_.Basis.unique {ι : Type*} (b : Basis ι R R) : Unique ι := by
-  have A : Cardinal.mk ι = ↑(Module.finrank R R) :=
-    (Module.mk_finrank_eq_card_basis b).symm
-  -- Porting note: replace `algebraMap.coe_one` with `Nat.cast_one`
-  simp only [Cardinal.eq_one_iff_unique, Module.finrank_self, Nat.cast_one] at A
-  exact Nonempty.some ((unique_iff_subsingleton_and_nonempty _).2 A)
+  have : Cardinal.mk ι = ↑(Module.finrank R R) := (Module.mk_finrank_eq_card_basis b).symm
+  have : Subsingleton ι ∧ Nonempty ι := by simpa [Cardinal.eq_one_iff_unique]
+  exact Nonempty.some ((unique_iff_subsingleton_and_nonempty _).2 this)
 
 variable (M)
 
 /-- The rank of a finite module is finite. -/
 theorem rank_lt_aleph0 [Module.Finite R M] : Module.rank R M < ℵ₀ := by
   simp only [Module.rank_def]
-  -- Porting note: can't use `‹_›` as that pulls the unused `N` into the context
-  obtain ⟨S, hS⟩ := Module.finite_def.mp ‹Module.Finite R M›
+  obtain ⟨S, hS⟩ := Module.finite_def.mp ‹_›
   refine (ciSup_le' fun i => ?_).trans_lt (nat_lt_aleph0 S.card)
   exact linearIndependent_le_span_finset _ i.prop S hS
 
