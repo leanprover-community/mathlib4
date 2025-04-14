@@ -74,8 +74,6 @@ instance (priority := 100) PriestleySpace.toTotallySeparatedSpace : TotallySepar
 
 -- See note [lower instance priority]
 instance (priority := 100) PriestleySpace.toT2Space : T2Space α :=
-  ⟨fun _ _ h ↦
-    let ⟨U, hU, _, hx, hy⟩ := exists_isClopen_upper_or_lower_of_ne h
-    ⟨U, Uᶜ, hU.isOpen, hU.compl.isOpen, hx, hy, disjoint_compl_right⟩⟩
+  inferInstance
 
 end PartialOrder
