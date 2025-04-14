@@ -8,6 +8,7 @@ import Mathlib.Data.List.Sort
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.NormNum.Ineq
 import Mathlib.Tactic.Ring.Basic
+
 /-! # Normal forms for morphisms in `SimplexCategoryGenRel`.
 
 In this file, we establish that `P_δ` and `P_σ` morphisms in `SimplexCategoryGenRel`
@@ -48,7 +49,7 @@ variable (m : ℕ)
 /-- A list of natural numbers [i₀, ⋯, iₙ]) is said to be `m`-admissible (for `m : ℕ`) if
 `i₀ < ⋯ < iₙ` and `iₖ ≤ m + k` for all `k`.
 -/
-abbrev IsAdmissible (L : List ℕ) : Prop :=
+def IsAdmissible (L : List ℕ) : Prop :=
   List.Sorted (· < ·) L ∧
   ∀ (k : ℕ), (h : k < L.length) → L[k] ≤ m + k
 
@@ -66,7 +67,7 @@ lemma le {L : List ℕ} (hL : IsAdmissible m L) : ∀ (k : ℕ), (h : k < L.leng
 lemma head_lt (a : ℕ) (L : List ℕ) (hl : IsAdmissible m (a :: L)) :
     ∀ a' ∈ L, a < a' := fun i hi ↦ (List.sorted_cons.mp hl.sorted).left i hi
 
-/-- If `L` is (m+1)-admissible index, and `a` is natural number such that a ≤ m and a < L[0], then
+/-- If `L` is a `(m + 1)`-admissible list, and `a` is natural number such that a ≤ m and a < L[0], then
   `a::L` is `m`-admissible -/
 lemma cons (L : List ℕ) (hL : IsAdmissible (m + 1) L) (a : ℕ) (ha : a ≤ m)
     (ha' : (_ : 0 < L.length) → a < L[0]) : IsAdmissible m (a :: L) := by
@@ -141,7 +142,7 @@ def getElemAsFin {L : List ℕ} (hl : IsAdmissible m L) (k : ℕ)
     (hK : k < L.length) : Fin (m + k + 1) :=
   Fin.mk L[k] <| Nat.le_iff_lt_add_one.mp (by simp [hl.le])
 
-/-- The head of an `m`-admissible list is a special case of this.  -/
+/-- The head of an `m`-admissible list. -/
 @[simps!]
 def head (a : ℕ) (L : List ℕ) (hl : IsAdmissible m (a :: L)) : Fin (m + 1) :=
   hl.getElemAsFin 0 (by simp)
