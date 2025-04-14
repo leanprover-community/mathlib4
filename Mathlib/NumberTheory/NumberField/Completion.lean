@@ -70,11 +70,11 @@ namespace Completion
 
 instance : Field v.Completion :=
   letI := (WithAbs.isUniformInducing_of_comp v.norm_embedding_eq).completableTopField
-  UniformSpace.Completion.instField
+  inferInstance
 
 instance : StrictNormedRing v.Completion :=
   letI := (WithAbs.isUniformInducing_of_comp v.norm_embedding_eq).completableTopField
-  UniformSpace.Completion.instStrictNormedRingOfCompletableTopField (WithAbs v.1)
+  inferInstance
 
 lemma norm_coe (x : WithAbs v.1) :
     ‖(x : v.Completion)‖ = v (WithAbs.equiv v.1 x) :=
