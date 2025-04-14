@@ -644,7 +644,8 @@ theorem snd_comp_prodComm :
 
 end prodComm
 
-/-- Product of modules is associative up to linear isomorphism. -/
+/-- Product of modules is associative up to linear isomorphism.
+This is `AddEquiv.prodAssoc` (and `Equiv.prodAssoc`) as a linear equivalence. -/
 @[simps apply]
 def prodAssoc (R M₁ M₂ M₃ : Type*) [Semiring R]
     [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
