@@ -87,7 +87,7 @@ open scoped Topology
 
 namespace ContinuousLinearMap
 
-variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 E F : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
   [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
   [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
 
@@ -100,7 +100,7 @@ end ContinuousLinearMap
 
 section fderiv
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
 variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
 variable {F : Type*} [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
 variable {f : E → F} (K : Set (E →L[𝕜] F))
@@ -781,7 +781,7 @@ to the previous sections, some assumptions are needed for this: if `f p.1` depen
 then the proofs in the previous sections adapt readily, as the set `A` defined above is open, so
 that the differentiability set `D` is measurable. -/
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
   {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E] [LocallyCompactSpace E]
   {F : Type*} [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
   {α : Type*} [TopologicalSpace α]

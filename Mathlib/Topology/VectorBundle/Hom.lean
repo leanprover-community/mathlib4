@@ -39,7 +39,8 @@ noncomputable section
 open Bundle Set ContinuousLinearMap Topology
 open scoped Bundle
 
-variable {𝕜₁ : Type*} [NontriviallyNormedField 𝕜₁] {𝕜₂ : Type*} [NontriviallyNormedField 𝕜₂]
+variable {𝕜₁ : Type*} [Field 𝕜₁] [NontriviallyNormedField 𝕜₁]
+  {𝕜₂ : Type*} [Field 𝕜₂] [NontriviallyNormedField 𝕜₂]
   (σ : 𝕜₁ →+* 𝕜₂)
 
 variable {B : Type*}

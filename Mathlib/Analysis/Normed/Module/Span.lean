@@ -32,7 +32,7 @@ variable (𝕜)
 
 section Seminormed
 
-variable [NormedDivisionRing 𝕜] [AddCommGroup E] [SeminormedAddGroup E]
+variable [DivisionRing 𝕜] [StrictNormedRing 𝕜] [AddCommGroup E] [SeminormedAddGroup E]
   [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 theorem toSpanSingleton_homothety (x : E) (c : 𝕜) :
@@ -49,7 +49,7 @@ namespace ContinuousLinearEquiv
 variable (𝕜)
 
 section Seminormed
-variable [NormedDivisionRing 𝕜] [AddCommGroup E] [SeminormedAddGroup E]
+variable [DivisionRing 𝕜] [StrictNormedRing 𝕜] [AddCommGroup E] [SeminormedAddGroup E]
   [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 theorem _root_.LinearEquiv.toSpanNonzeroSingleton_homothety (x : E) (h : x ≠ 0) (c : 𝕜) :
@@ -59,7 +59,7 @@ theorem _root_.LinearEquiv.toSpanNonzeroSingleton_homothety (x : E) (h : x ≠ 0
 end Seminormed
 
 section Normed
-variable [NormedField 𝕜] [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
+variable [Field 𝕜] [StrictNormedRing 𝕜] [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
 
 /-- Given a nonzero element `x` of a normed space `E₁` over a field `𝕜`, the natural
     continuous linear equivalence from `E₁` to the span of `x`. -/
@@ -98,7 +98,7 @@ end ContinuousLinearEquiv
 
 namespace LinearIsometryEquiv
 
-variable [NormedDivisionRing 𝕜] [AddCommGroup E] [SeminormedAddGroup E]
+variable [DivisionRing 𝕜] [StrictNormedRing 𝕜] [AddCommGroup E] [SeminormedAddGroup E]
   [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 /-- Given a unit element `x` of a normed space `E` over a field `𝕜`, the natural

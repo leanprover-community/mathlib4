@@ -61,7 +61,7 @@ variable {E ι : Type*}
 
 section NormedLatticeField
 
-variable {K : Type*} [NormedField K]
+variable {K : Type*} [Field K] [StrictNormedRing K]
 variable [AddCommGroup E] [NormedAddGroup E] [NormedSpace K E]
 variable (b : Basis ι K E)
 
@@ -418,7 +418,7 @@ open Submodule Module ZSpan
 -- TODO: generalize this class to other rings than `ℤ`
 /-- `L : Submodule ℤ E` where `E` is a vector space over a normed field `K` is a `ℤ`-lattice if
 it is discrete and spans `E` over `K`. -/
-class IsZLattice (K : Type*) [NormedField K]
+class IsZLattice (K : Type*) [Field K] [StrictNormedRing K]
     {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace K E]
     (L : Submodule ℤ E) [DiscreteTopology L] : Prop where
   /-- `L` spans the full space `E` over `K`. -/
@@ -431,7 +431,7 @@ instance instIsZLatticeRealSpan {E ι : Type*} [AddCommGroup E] [NormedAddGroup 
 
 section NormedLinearOrderedField
 
-variable (K : Type*) [NormedField K] [LinearOrder K] [IsStrictOrderedRing K]
+variable (K : Type*) [Field K] [StrictNormedRing K] [LinearOrder K] [IsStrictOrderedRing K]
   [HasSolidNorm K] [FloorRing K]
 variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace K E] [FiniteDimensional K E]
 variable [ProperSpace E] (L : Submodule ℤ E) [DiscreteTopology L]
@@ -646,7 +646,7 @@ end NormedLinearOrderedField
 
 section comap
 
-variable (K : Type*) [NormedField K] {E F : Type*}
+variable (K : Type*) [Field K] [StrictNormedRing K] {E F : Type*}
     [AddCommGroup E] [NormedAddGroup E] [NormedSpace K E]
     [AddCommGroup F] [NormedAddGroup F] [NormedSpace K F] (L : Submodule ℤ E)
 
@@ -722,8 +722,8 @@ end comap
 
 section NormedLinearOrderedField_comap
 
-variable (K : Type*) [NormedField K] [LinearOrder K] [IsStrictOrderedRing K] [HasSolidNorm K]
-  [FloorRing K]
+variable (K : Type*) [Field K] [StrictNormedRing K] [LinearOrder K] [IsStrictOrderedRing K]
+  [HasSolidNorm K] [FloorRing K]
 variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace K E] [FiniteDimensional K E]
   [ProperSpace E]
 variable {F : Type*} [AddCommGroup F] [NormedAddGroup F] [NormedSpace K F] [FiniteDimensional K F]

@@ -32,7 +32,8 @@ open Metric ContinuousLinearMap
 
 section
 
-variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [NontriviallyNormedField 𝕜₃]
+variable [Field 𝕜] [NontriviallyNormedField 𝕜] [Field 𝕜₂] [NontriviallyNormedField 𝕜₂]
+  [Field 𝕜₃] [NontriviallyNormedField 𝕜₃]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜₃ G] [NormedSpace 𝕜 Fₗ]
   {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₃ : 𝕜₂ →+* 𝕜₃} (f : E →SL[σ₁₂] F)
 
@@ -49,7 +50,7 @@ that produces a concrete bound.
 -/
 theorem bound_of_ball_bound {r : ℝ} (r_pos : 0 < r) (c : ℝ) (f : E →ₗ[𝕜] Fₗ)
     (h : ∀ z ∈ Metric.ball (0 : E) r, ‖f z‖ ≤ c) : ∃ C, ∀ z : E, ‖f z‖ ≤ C * ‖z‖ := by
-  obtain ⟨k, hk⟩ := @NontriviallyNormedField.non_trivial 𝕜 _
+  obtain ⟨k, hk⟩ := @NontriviallyNormedField.non_trivial 𝕜 _ _
   use c * (‖k‖ / r)
   intro z
   refine bound_of_shell _ r_pos hk (fun x hko hxo => ?_) _
@@ -179,11 +180,12 @@ end
 
 namespace ContinuousLinearMap
 
-variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [NontriviallyNormedField 𝕜₃]
+variable [Field 𝕜] [NontriviallyNormedField 𝕜] [Field 𝕜₂] [NontriviallyNormedField 𝕜₂]
+  [Field 𝕜₃] [NontriviallyNormedField 𝕜₃]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜₃ G] [NormedSpace 𝕜 Fₗ]
   {σ₂₃ : 𝕜₂ →+* 𝕜₃}
 
-variable {𝕜₂' : Type*} [NontriviallyNormedField 𝕜₂']
+variable {𝕜₂' : Type*} [Field 𝕜₂'] [NontriviallyNormedField 𝕜₂']
   {F' : Type*} [AddCommGroup F'] [NormedAddGroup F']
   [NormedSpace 𝕜₂' F'] {σ₂' : 𝕜₂' →+* 𝕜₂} {σ₂'' : 𝕜₂ →+* 𝕜₂'} {σ₂₃' : 𝕜₂' →+* 𝕜₃}
   [RingHomInvPair σ₂' σ₂''] [RingHomInvPair σ₂'' σ₂'] [RingHomCompTriple σ₂' σ₂₃ σ₂₃']
@@ -217,7 +219,7 @@ end ContinuousLinearMap
 
 namespace Submodule
 
-variable [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
+variable [Field 𝕜] [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
 
 theorem norm_subtypeL (K : Submodule 𝕜 E) [Nontrivial K] : ‖K.subtypeL‖ = 1 :=
   K.subtypeₗᵢ.norm_toContinuousLinearMap
@@ -226,7 +228,7 @@ end Submodule
 
 namespace ContinuousLinearEquiv
 
-variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂]
+variable [Field 𝕜] [NontriviallyNormedField 𝕜] [Field 𝕜₂] [NontriviallyNormedField 𝕜₂]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₁ : 𝕜₂ →+* 𝕜} [RingHomInvPair σ₁₂ σ₂₁]
   [RingHomInvPair σ₂₁ σ₁₂]
 
@@ -292,7 +294,8 @@ def IsCoercive [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
 
 section Equicontinuous
 
-variable {ι : Type*} [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
+variable {ι : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜] [Field 𝕜₂] [NontriviallyNormedField 𝕜₂]
+  {σ₁₂ : 𝕜 →+* 𝕜₂}
   [RingHomIsometric σ₁₂] [AddCommGroup E] [SeminormedAddGroup E]
   [AddCommGroup F] [SeminormedAddGroup F]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] (f : ι → E →SL[σ₁₂] F)

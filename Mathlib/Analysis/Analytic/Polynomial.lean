@@ -15,7 +15,7 @@ This file combines the analysis and algebra libraries and shows that evaluation 
 is an analytic function.
 -/
 
-variable {𝕜 E A B : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 E A B : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
   [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
   [CommSemiring A] {z : E} {s : Set E}
 

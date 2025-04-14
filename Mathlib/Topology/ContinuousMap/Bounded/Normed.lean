@@ -249,13 +249,14 @@ variable {𝕜 : Type*}
 variable [TopologicalSpace α] [AddCommGroup β] [SeminormedAddGroup β]
 variable {f g : α →ᵇ β} {x : α} {C : ℝ}
 
-instance instNormedSpace [NormedField 𝕜] [NormedSpace 𝕜 β] : NormedSpace 𝕜 (α →ᵇ β) :=
+instance instNormedSpace
+    [Field 𝕜] [StrictNormedRing 𝕜] [NormedSpace 𝕜 β] : NormedSpace 𝕜 (α →ᵇ β) :=
   ⟨fun c f => by
     refine norm_ofNormedAddCommGroup_le _ (mul_nonneg (norm_nonneg _) (norm_nonneg _)) ?_
     exact fun x =>
       norm_smul c (f x) ▸ mul_le_mul_of_nonneg_left (f.norm_coe_le_norm _) (norm_nonneg _)⟩
 
-variable [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 β]
+variable [Field 𝕜] [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 β]
 variable [AddCommGroup γ] [SeminormedAddGroup γ] [NormedSpace 𝕜 γ]
 variable (α)
 
@@ -389,7 +390,7 @@ end NonUnitalAlgebra
 
 section NormedAlgebra
 
-variable {𝕜 : Type*} [NormedField 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [StrictNormedRing 𝕜]
 variable [TopologicalSpace α] [AddCommGroup β] [SeminormedAddGroup β] [NormedSpace 𝕜 β]
 variable [Ring γ] [NormedRing γ] [NormedAlgebra 𝕜 γ]
 variable {f g : α →ᵇ γ} {x : α} {c : 𝕜}

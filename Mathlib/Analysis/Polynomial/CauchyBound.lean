@@ -16,7 +16,7 @@ is `1 + max_(0 ≤ i < n) a_i / a_n`.
 The theorem that this gives a bound to polynomial roots is `Polynomial.IsRoot.norm_lt_cauchyBound`.
 -/
 
-variable {K : Type*} [NormedDivisionRing K]
+variable {K : Type*} [DivisionRing K] [StrictNormedRing K]
 
 namespace Polynomial
 

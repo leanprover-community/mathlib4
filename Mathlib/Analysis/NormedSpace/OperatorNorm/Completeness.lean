@@ -24,7 +24,7 @@ variable {𝕜 𝕜₂ E F Fₗ : Type*}
 variable [AddCommGroup E] [NormedAddGroup E] [AddCommGroup F] [NormedAddGroup F]
   [AddCommGroup Fₗ] [NormedAddGroup Fₗ]
 
-variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂]
+variable [Field 𝕜] [NontriviallyNormedField 𝕜] [Field 𝕜₂] [NontriviallyNormedField 𝕜₂]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜 Fₗ]
   {σ₁₂ : 𝕜 →+* 𝕜₂} (f g : E →SL[σ₁₂] F)
 

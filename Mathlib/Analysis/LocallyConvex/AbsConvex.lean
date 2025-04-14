@@ -192,7 +192,7 @@ end AbsolutelyConvex
 
 section NormedField
 
-variable [NormedField 𝕜]
+variable [Field 𝕜] [StrictNormedRing 𝕜]
   [AddCommGroup E] [Module ℝ E] [Module 𝕜 E] [TopologicalSpace E]
   [IsTopologicalAddGroup E] [ContinuousSMul ℝ E] [ContinuousSMul 𝕜 E]
 
@@ -210,7 +210,7 @@ end NormedField
 section NontriviallyNormedField
 
 variable (𝕜 E)
-variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable [Field 𝕜] [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 variable [Module ℝ E] [SMulCommClass ℝ 𝕜 E]
 variable [TopologicalSpace E] [LocallyConvexSpace ℝ E] [ContinuousSMul 𝕜 E]
 
@@ -241,7 +241,7 @@ end NontriviallyNormedField
 
 section
 
-variable (𝕜) [NontriviallyNormedField 𝕜]
+variable (𝕜) [Field 𝕜] [NontriviallyNormedField 𝕜]
 variable [AddCommGroup E] [Module ℝ E] [Module 𝕜 E]
 
 theorem absConvexHull_add_subset {s t : Set E} :
@@ -293,7 +293,7 @@ theorem convexHull_union_neg_eq_absConvexHull {s : Set E} :
       exact convexHull_mono balancedHull_subset_convexHull_union_neg)
 
 variable (E 𝕜) {s : Set E}
-variable [NontriviallyNormedField 𝕜] [Module 𝕜 E] [SMulCommClass ℝ 𝕜 E]
+variable [Field 𝕜] [NontriviallyNormedField 𝕜] [Module 𝕜 E] [SMulCommClass ℝ 𝕜 E]
 variable [UniformSpace E] [IsUniformAddGroup E] [lcs : LocallyConvexSpace ℝ E] [ContinuousSMul ℝ E]
 
 -- TVS II.25 Prop3

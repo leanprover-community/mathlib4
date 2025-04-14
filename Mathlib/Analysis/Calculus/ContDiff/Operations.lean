@@ -35,7 +35,7 @@ open Set Fin Filter Function
 
 open scoped Topology
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
   {E : Type uE} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
   {F : Type uF} [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
   {G : Type uG} [AddCommGroup G] [NormedAddGroup G] [NormedSpace 𝕜 G]
@@ -333,7 +333,7 @@ section MulProd
 
 variable {𝔸 𝔸' ι 𝕜' : Type*} [Ring 𝔸] [NormedRing 𝔸] [NormedAlgebra 𝕜 𝔸]
   [CommRing 𝔸'] [NormedRing 𝔸'] [NormedAlgebra 𝕜 𝔸']
-  [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
+  [Field 𝕜'] [StrictNormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜']
 
 -- The product is smooth.
 theorem contDiff_mul : ContDiff 𝕜 n fun p : 𝔸 × 𝔸 => p.1 * p.2 :=
@@ -608,7 +608,7 @@ theorem contDiffAt_ring_inverse [HasSummableGeomSeries R] (x : Rˣ) :
     Units.isOpen.uniqueDiffOn x x.isUnit
   exact this.contDiffAt (Units.isOpen.mem_nhds x.isUnit)
 
-variable {𝕜' : Type*} [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
+variable {𝕜' : Type*} [Field 𝕜'] [StrictNormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜']
 
 theorem contDiffAt_inv {x : 𝕜'} (hx : x ≠ 0) {n} : ContDiffAt 𝕜 n Inv.inv x := by
   simpa only [Ring.inverse_eq_inv'] using contDiffAt_ring_inverse 𝕜 (Units.mk0 x hx)
@@ -830,7 +830,7 @@ over `𝕜`.
 
 
 variable (𝕜)
-variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
+variable {𝕜' : Type*} [Field 𝕜'] [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
 variable [NormedSpace 𝕜' E] [IsScalarTower 𝕜 𝕜' E]
 variable [NormedSpace 𝕜' F] [IsScalarTower 𝕜 𝕜' F]
 variable {p' : E → FormalMultilinearSeries 𝕜' E F}

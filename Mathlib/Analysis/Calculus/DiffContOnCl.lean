@@ -20,7 +20,7 @@ open Set Filter Metric
 
 open scoped Topology
 
-variable (𝕜 : Type*) {E F G : Type*} [NontriviallyNormedField 𝕜]
+variable (𝕜 : Type*) {E F G : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
   [AddCommGroup E] [NormedAddGroup E]
   [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
   [AddCommGroup G] [NormedAddGroup G]
@@ -102,12 +102,13 @@ theorem const_smul {R : Type*} [Semiring R] [Module R F] [SMulCommClass 𝕜 R F
     [ContinuousConstSMul R F] (hf : DiffContOnCl 𝕜 f s) (c : R) : DiffContOnCl 𝕜 (c • f) s :=
   ⟨hf.1.const_smul c, hf.2.const_smul c⟩
 
-theorem smul {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] [NormedSpace 𝕜' F]
-    [IsScalarTower 𝕜 𝕜' F] {c : E → 𝕜'} {f : E → F} {s : Set E} (hc : DiffContOnCl 𝕜 c s)
-    (hf : DiffContOnCl 𝕜 f s) : DiffContOnCl 𝕜 (fun x => c x • f x) s :=
+theorem smul {𝕜' : Type*} [Field 𝕜'] [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
+    [NormedSpace 𝕜' F] [IsScalarTower 𝕜 𝕜' F]
+    {c : E → 𝕜'} {f : E → F} {s : Set E} (hc : DiffContOnCl 𝕜 c s) (hf : DiffContOnCl 𝕜 f s) :
+    DiffContOnCl 𝕜 (fun x => c x • f x) s :=
   ⟨hc.1.smul hf.1, hc.2.smul hf.2⟩
 
-theorem smul_const {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
+theorem smul_const {𝕜' : Type*} [Field 𝕜'] [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
     [NormedSpace 𝕜' F] [IsScalarTower 𝕜 𝕜' F] {c : E → 𝕜'} {s : Set E} (hc : DiffContOnCl 𝕜 c s)
     (y : F) : DiffContOnCl 𝕜 (fun x => c x • y) s :=
   hc.smul diffContOnCl_const

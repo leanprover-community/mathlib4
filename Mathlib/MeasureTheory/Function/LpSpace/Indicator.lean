@@ -278,12 +278,13 @@ theorem Lp.norm_const_le : ‖Lp.const p μ c‖ ≤ ‖c‖ * (μ Set.univ).toR
 
 /-- `MeasureTheory.Lp.const` as a `ContinuousLinearMap`. -/
 @[simps! apply]
-protected def Lp.constL (𝕜 : Type*) [NormedField 𝕜] [NormedSpace 𝕜 E] [Fact (1 ≤ p)] :
+protected def Lp.constL (𝕜 : Type*)
+    [Field 𝕜] [StrictNormedRing 𝕜] [NormedSpace 𝕜 E] [Fact (1 ≤ p)] :
     E →L[𝕜] Lp E p μ :=
   (Lp.constₗ p μ 𝕜).mkContinuous ((μ Set.univ).toReal ^ (1 / p.toReal)) fun _ ↦
     (Lp.norm_const_le _ _ _).trans_eq (mul_comm _ _)
 
-theorem Lp.norm_constL_le (𝕜 : Type*) [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
+theorem Lp.norm_constL_le (𝕜 : Type*) [Field 𝕜] [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
     [Fact (1 ≤ p)] :
     ‖(Lp.constL p μ 𝕜 : E →L[𝕜] Lp E p μ)‖ ≤ (μ Set.univ).toReal ^ (1 / p.toReal) :=
   LinearMap.mkContinuous_norm_le _ (by positivity) _

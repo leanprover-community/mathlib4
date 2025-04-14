@@ -21,7 +21,7 @@ open Asymptotics
 
 section
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
 variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
 variable {F : Type*} [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
 variable {f : E → F}

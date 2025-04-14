@@ -32,7 +32,7 @@ variable [AddCommGroup E'] [SeminormedAddGroup E'] [AddCommGroup F'] [Seminormed
   [AddGroup E'''] [SeminormedAddGroup E''']
   [Ring R'] [SeminormedRing R']
 
-variable [NormedDivisionRing 𝕜] [NormedDivisionRing 𝕜']
+variable [DivisionRing 𝕜] [StrictNormedRing 𝕜] [DivisionRing 𝕜'] [StrictNormedRing 𝕜']
 variable {c c' c₁ c₂ : ℝ} {f : α → E} {g : α → F} {k : α → G}
 variable {f' : α → E'} {g' : α → F'} {k' : α → G'}
 variable {f'' : α → E''} {g'' : α → F''} {k'' : α → G''}
@@ -311,13 +311,15 @@ theorem IsBigO.listProd {L : List ι} {f : ι → α → R} {g : ι → α → �
     simp only [List.map_cons, List.prod_cons, List.forall_mem_cons] at hf ⊢
     exact hf.1.mul (ihL hf.2)
 
-theorem IsBigO.multisetProd {R 𝕜 : Type*} [CommRing R] [SeminormedRing R] [NormedField 𝕜]
+theorem IsBigO.multisetProd {R 𝕜 : Type*}
+    [CommRing R] [SeminormedRing R] [Field 𝕜] [StrictNormedRing 𝕜]
     {s : Multiset ι} {f : ι → α → R} {g : ι → α → 𝕜} (hf : ∀ i ∈ s, f i =O[l] g i) :
     (fun x ↦ (s.map (f · x)).prod) =O[l] (fun x ↦ (s.map (g · x)).prod) := by
   obtain ⟨l, rfl⟩ : ∃ l : List ι, ↑l = s := Quotient.mk_surjective s
   exact mod_cast IsBigO.listProd hf
 
-theorem IsBigO.finsetProd {R 𝕜 : Type*} [CommRing R] [SeminormedRing R] [NormedField 𝕜]
+theorem IsBigO.finsetProd {R 𝕜 : Type*}
+    [CommRing R] [SeminormedRing R] [Field 𝕜] [StrictNormedRing 𝕜]
     {s : Finset ι} {f : ι → α → R} {g : ι → α → 𝕜}
     (hf : ∀ i ∈ s, f i =O[l] g i) : (∏ i ∈ s, f i ·) =O[l] (∏ i ∈ s, g i ·) :=
   .multisetProd hf
@@ -334,14 +336,16 @@ theorem IsLittleO.listProd {L : List ι} {f : ι → α → R} {g : ι → α �
     | inl hi => exact hi.mul_isBigO <| .listProd h₁.2
     | inr hL => exact h₁.1.mul_isLittleO <| ihL h₁.2 hL
 
-theorem IsLittleO.multisetProd {R 𝕜 : Type*} [CommRing R] [SeminormedRing R] [NormedField 𝕜]
+theorem IsLittleO.multisetProd {R 𝕜 : Type*}
+    [CommRing R] [SeminormedRing R] [Field 𝕜] [StrictNormedRing 𝕜]
     {s : Multiset ι} {f : ι → α → R} {g : ι → α → 𝕜} (h₁ : ∀ i ∈ s, f i =O[l] g i)
     (h₂ : ∃ i ∈ s, f i =o[l] g i) :
     (fun x ↦ (s.map (f · x)).prod) =o[l] (fun x ↦ (s.map (g · x)).prod) := by
   obtain ⟨l, rfl⟩ : ∃ l : List ι, ↑l = s := Quotient.mk_surjective s
   exact mod_cast IsLittleO.listProd h₁ h₂
 
-theorem IsLittleO.finsetProd {R 𝕜 : Type*} [CommRing R] [SeminormedRing R] [NormedField 𝕜]
+theorem IsLittleO.finsetProd {R 𝕜 : Type*}
+    [CommRing R] [SeminormedRing R] [Field 𝕜] [StrictNormedRing 𝕜]
     {s : Finset ι} {f : ι → α → R} {g : ι → α → 𝕜} (h₁ : ∀ i ∈ s, f i =O[l] g i)
     (h₂ : ∃ i ∈ s, f i =o[l] g i) : (∏ i ∈ s, f i ·) =o[l] (∏ i ∈ s, g i ·) :=
   .multisetProd h₁ h₂
@@ -498,7 +502,7 @@ theorem isBigO_of_div_tendsto_nhds {α : Type*} {l : Filter α} {f g : α → �
   (isBigO_iff_div_isBoundedUnder hgf).2 <| H.norm.isBoundedUnder_le
 
 theorem IsLittleO.tendsto_zero_of_tendsto {α E 𝕜 : Type*} [AddCommGroup E] [NormedAddGroup E]
-    [NormedField 𝕜]
+    [Field 𝕜] [StrictNormedRing 𝕜]
     {u : α → E} {v : α → 𝕜} {l : Filter α} {y : 𝕜} (huv : u =o[l] v) (hv : Tendsto v l (𝓝 y)) :
     Tendsto u l (𝓝 0) := by
   suffices h : u =o[l] fun _x => (1 : 𝕜) by
@@ -790,7 +794,8 @@ end ContinuousOn
 
 /-- The (scalar) product of a sequence that tends to zero with a bounded one also tends to zero. -/
 lemma NormedField.tendsto_zero_smul_of_tendsto_zero_of_bounded {ι 𝕜 𝔸 : Type*}
-    [NormedDivisionRing 𝕜] [AddCommGroup 𝔸] [NormedAddGroup 𝔸] [Module 𝕜 𝔸] [IsBoundedSMul 𝕜 𝔸]
+    [DivisionRing 𝕜] [StrictNormedRing 𝕜]
+    [AddCommGroup 𝔸] [NormedAddGroup 𝔸] [Module 𝕜 𝔸] [IsBoundedSMul 𝕜 𝔸]
     {l : Filter ι}
     {ε : ι → 𝕜} {f : ι → 𝔸} (hε : Tendsto ε l (𝓝 0)) (hf : IsBoundedUnder (· ≤ ·) l (norm ∘ f)) :
     Tendsto (ε • f) l (𝓝 0) := by

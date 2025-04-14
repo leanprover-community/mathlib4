@@ -27,8 +27,10 @@ open Asymptotics Polynomial Topology
 
 namespace Polynomial
 
-variable {𝕜 : Type*} [NormedField 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] (P Q : 𝕜[X])
+variable {𝕜 : Type*} [Field 𝕜] [StrictNormedRing 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+  (P Q : 𝕜[X])
 
+omit [StrictNormedRing 𝕜] in
 theorem eventually_no_roots (hP : P ≠ 0) : ∀ᶠ x in atTop, ¬P.IsRoot x :=
   atTop_le_cofinite <| (finite_setOf_isRoot hP).compl_mem_cofinite
 

@@ -24,7 +24,7 @@ universe u uD uE uF uG
 
 open Set Fin Filter Function
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
   {D : Type uD} [AddCommGroup D] [NormedAddGroup D] [NormedSpace 𝕜 D]
   {E : Type uE} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
   {F : Type uF} [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
@@ -243,7 +243,7 @@ theorem ContinuousLinearMap.norm_iteratedFDeriv_le_of_bilinear_of_le_one (B : E 
 
 section
 
-variable {𝕜' : Type*} [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] [NormedSpace 𝕜' F]
+variable {𝕜' : Type*} [Field 𝕜'] [StrictNormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜'] [NormedSpace 𝕜' F]
   [IsScalarTower 𝕜 𝕜' F]
 
 theorem norm_iteratedFDerivWithin_smul_le {f : E → 𝕜'} {g : E → F} {N : WithTop ℕ∞}

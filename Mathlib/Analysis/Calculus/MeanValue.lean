@@ -421,15 +421,15 @@ end
 ### Vector-valued functions `f : E → G`
 
 Theorems in this section work both for real and complex differentiable functions. We use assumptions
-`[NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜] [NormedSpace 𝕜 E] [NormedSpace 𝕜 G]` to
-achieve this result. For the domain `E` we also assume `[NormedSpace ℝ E]` to have a notion
+`[Field 𝕜] [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜] [NormedSpace 𝕜 E] [NormedSpace 𝕜 G]`
+to achieve this result. For the domain `E` we also assume `[NormedSpace ℝ E]` to have a notion
 of a `Convex` set. -/
 
 section
 
 namespace Convex
 
-variable {𝕜 G : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
+variable {𝕜 G : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
   [NormedSpace 𝕜 E] [AddCommGroup G] [NormedAddGroup G] [NormedSpace 𝕜 G]
   {f g : E → G} {C : ℝ} {s : Set E} {x y : E} {f' g' : E → E →L[𝕜] G} {φ : E →L[𝕜] G}
 

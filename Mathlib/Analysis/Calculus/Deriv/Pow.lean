@@ -21,7 +21,7 @@ derivative, power
 
 universe u
 
-variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {x : 𝕜} {s : Set 𝕜}
+variable {𝕜 : Type u} [Field 𝕜] [NontriviallyNormedField 𝕜] {x : 𝕜} {s : Set 𝕜}
 
 /-! ### Derivative of `x ↦ x^n` for `n : ℕ` -/
 

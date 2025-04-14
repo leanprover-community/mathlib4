@@ -24,7 +24,7 @@ universe u v w
 
 open Topology Filter Asymptotics Set
 
-variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type u} [Field 𝕜] [NontriviallyNormedField 𝕜]
 variable {F : Type v} [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
 variable {f₁ : 𝕜 → F} {f₁' : F} {x : 𝕜} {s : Set 𝕜} {L : Filter 𝕜}
 

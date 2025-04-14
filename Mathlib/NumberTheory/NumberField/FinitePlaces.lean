@@ -125,8 +125,9 @@ noncomputable instance instRankOneValuedAdicCompletion :
       exact dvd_span_singleton.mpr hx1
 
 /-- The `v`-adic completion of `K` is a normed field. -/
-noncomputable instance instNormedFieldValuedAdicCompletion : NormedField (adicCompletion K v) :=
-  Valued.toNormedField (adicCompletion K v) (WithZero (Multiplicative ℤ))
+noncomputable instance instStrictNormedRingValuedAdicCompletion :
+    StrictNormedRing (adicCompletion K v) :=
+  Valued.toStrictNormedRing (adicCompletion K v) (WithZero (Multiplicative ℤ))
 
 /-- A finite place of a number field `K` is a place associated to an embedding into a completion
 with respect to a maximal ideal. -/
@@ -146,7 +147,8 @@ lemma toNNReal_valued_eq_adicAbv (x : WithVal (v.valuation K)) :
 /-- The norm of the image after the embedding associated to `v` is equal to the `v`-adic absolute
 value. -/
 theorem FinitePlace.norm_def (x : WithVal (v.valuation K)) : ‖embedding v x‖ = adicAbv v x := by
-  simp [NormedField.toNorm, instNormedFieldValuedAdicCompletion, Valued.toNormedField, Valued.norm,
+  simp [NormedField.toNorm, instStrictNormedRingValuedAdicCompletion,
+    Valued.toStrictNormedRing, Valued.norm,
     Valuation.RankOne.hom, embedding_apply, ← toNNReal_valued_eq_adicAbv]
 
 /-- The norm of the image after the embedding associated to `v` is equal to the norm of `v` raised

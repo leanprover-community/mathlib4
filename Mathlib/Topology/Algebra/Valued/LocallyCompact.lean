@@ -23,7 +23,7 @@ import Mathlib.Topology.Algebra.Valued.ValuedField
 norm, nonarchimedean, rank one, compact, locally compact
 -/
 
-variable {K : Type*} [NontriviallyNormedField K] [IsUltrametricDist K]
+variable {K : Type*} [Field K] [NontriviallyNormedField K] [IsUltrametricDist K]
 
 open NNReal
 
@@ -89,7 +89,7 @@ lemma _root_.Irreducible.maximalIdeal_pow_eq_closedBall_pow [IsDiscreteValuation
 
 section FiniteResidueField
 
-variable {K : Type*} [NontriviallyNormedField K] [IsUltrametricDist K]
+variable {K : Type*} [Field K] [NontriviallyNormedField K] [IsUltrametricDist K]
 
 open Valued
 

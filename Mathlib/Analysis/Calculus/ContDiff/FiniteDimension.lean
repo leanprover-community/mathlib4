@@ -16,7 +16,7 @@ noncomputable section
 
 universe uD uE uF
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
   {D : Type uD} [AddCommGroup D] [NormedAddGroup D] [NormedSpace 𝕜 D]
   {E : Type uE} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
   {F : Type uF} [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]

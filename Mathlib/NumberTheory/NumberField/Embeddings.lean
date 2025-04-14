@@ -79,7 +79,7 @@ section Bounded
 open Module Polynomial Set
 
 variable {K : Type*} [Field K] [NumberField K]
-variable {A : Type*} [NormedField A] [IsAlgClosed A] [NormedAlgebra ℚ A]
+variable {A : Type*} [Field A] [StrictNormedRing A] [IsAlgClosed A] [NormedAlgebra ℚ A]
 
 theorem coeff_bdd_of_norm_le {B : ℝ} {x : K} (h : ∀ φ : K →+* A, ‖φ x‖ ≤ B) (i : ℕ) :
     ‖(minpoly ℚ x).coeff i‖ ≤ max B 1 ^ finrank ℚ K * (finrank ℚ K).choose (finrank ℚ K / 2) := by
@@ -129,7 +129,8 @@ end NumberField.Embeddings
 
 section Place
 
-variable {K : Type*} [Field K] {A : Type*} [NormedDivisionRing A] [Nontrivial A] (φ : K →+* A)
+variable {K : Type*} [Field K]
+  {A : Type*} [DivisionRing A] [StrictNormedRing A] [Nontrivial A] (φ : K →+* A)
 
 /-- An embedding into a normed division ring defines a place of `K` -/
 def NumberField.place : AbsoluteValue K ℝ :=
@@ -314,7 +315,7 @@ theorem mk_eq_iff {φ ψ : K →+* ℂ} : mk φ = mk ψ ↔ φ = ψ ∨ ComplexE
       change LipschitzWith 1 (ψ ∘ ι.symm)
       apply LipschitzWith.of_dist_le_mul
       intro x y
-      rw [NNReal.coe_one, one_mul, NormedField.dist_eq, Function.comp_apply, Function.comp_apply,
+      rw [NNReal.coe_one, one_mul, dist_eq_norm, Function.comp_apply, Function.comp_apply,
         ← map_sub, ← map_sub]
       apply le_of_eq
       suffices ‖φ (ι.symm (x - y))‖ = ‖ψ (ι.symm (x - y))‖ by

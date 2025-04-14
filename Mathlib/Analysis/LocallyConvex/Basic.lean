@@ -148,7 +148,7 @@ end SeminormedRing
 
 section NormedDivisionRing
 
-variable [NormedDivisionRing 𝕜] [AddCommGroup E] [Module 𝕜 E] {s t : Set E}
+variable [DivisionRing 𝕜] [StrictNormedRing 𝕜] [AddCommGroup E] [Module 𝕜 E] {s t : Set E}
 
 theorem absorbs_iff_eventually_nhdsNE_zero :
     Absorbs 𝕜 s t ↔ ∀ᶠ c : 𝕜 in 𝓝[≠] 0, MapsTo (c • ·) t s := by
@@ -228,7 +228,8 @@ end NormedDivisionRing
 
 section NormedField
 
-variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s A : Set E} {x : E} {a b : 𝕜}
+variable [Field 𝕜] [StrictNormedRing 𝕜]
+  [AddCommGroup E] [Module 𝕜 E] {s A : Set E} {x : E} {a b : 𝕜}
 
 theorem Balanced.smul_mem_iff (hs : Balanced 𝕜 s) (h : ‖a‖ = ‖b‖) : a • x ∈ s ↔ b • x ∈ s :=
   ⟨(hs.smul_mem_mono · h.ge), (hs.smul_mem_mono · h.le)⟩
@@ -265,7 +266,7 @@ end NormedField
 
 section NontriviallyNormedField
 
-variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s : Set E}
+variable [Field 𝕜] [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s : Set E}
 
 variable [Module ℝ E] [SMulCommClass ℝ 𝕜 E]
 

@@ -460,7 +460,8 @@ noncomputable instance instNormedAddGroup [AddCommGroup β] [NormedAddGroup β] 
   NormedAddGroup.induced _ _ (⟨⟨toBCF, rfl⟩, fun _ _ => rfl⟩ : C₀(α, β) →+ α →ᵇ β)
     (toBCF_injective α β)
 
-variable [AddCommGroup β] [SeminormedAddGroup β] {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 β]
+variable [AddCommGroup β] [SeminormedAddGroup β]
+  {𝕜 : Type*} [Field 𝕜] [StrictNormedRing 𝕜] [NormedSpace 𝕜 β]
 
 @[simp]
 theorem norm_toBCF_eq_norm {f : C₀(α, β)} : ‖f.toBCF‖ = ‖f‖ :=

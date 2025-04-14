@@ -26,7 +26,7 @@ open scoped Topology Filter ENNReal
 
 open Asymptotics Set
 
-variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type u} [Field 𝕜] [NontriviallyNormedField 𝕜]
 variable {F : Type v} [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
 variable {f g : 𝕜 → F}
 variable {f' g' : F}

@@ -634,7 +634,7 @@ end Mul
 
 section SMul
 
-variable {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
+variable {𝕜 : Type*} [Field 𝕜] [StrictNormedRing 𝕜] [NormedSpace 𝕜 E]
 
 theorem IntegrableOn.continuousOn_smul [T2Space X] [SecondCountableTopologyEither X 𝕜] {g : X → E}
     (hg : IntegrableOn g K μ) {f : X → 𝕜} (hf : ContinuousOn f K) (hK : IsCompact K) :
@@ -672,14 +672,16 @@ theorem mul_continuousOn [LocallyCompactSpace X] [T2Space X] [Ring R] [NormedRin
   rw [MeasureTheory.locallyIntegrableOn_iff hs] at hf ⊢
   exact fun k hk_sub hk_c => (hf k hk_sub hk_c).mul_continuousOn (hg.mono hk_sub) hk_c
 
-theorem continuousOn_smul [LocallyCompactSpace X] [T2Space X] {𝕜 : Type*} [NormedField 𝕜]
+theorem continuousOn_smul [LocallyCompactSpace X] [T2Space X]
+    {𝕜 : Type*} [Field 𝕜] [StrictNormedRing 𝕜]
     [SecondCountableTopologyEither X 𝕜] [NormedSpace 𝕜 E] {f : X → E} {g : X → 𝕜} {s : Set X}
     (hs : IsLocallyClosed s) (hf : LocallyIntegrableOn f s μ) (hg : ContinuousOn g s) :
     LocallyIntegrableOn (fun x => g x • f x) s μ := by
   rw [MeasureTheory.locallyIntegrableOn_iff hs] at hf ⊢
   exact fun k hk_sub hk_c => (hf k hk_sub hk_c).continuousOn_smul (hg.mono hk_sub) hk_c
 
-theorem smul_continuousOn [LocallyCompactSpace X] [T2Space X] {𝕜 : Type*} [NormedField 𝕜]
+theorem smul_continuousOn [LocallyCompactSpace X] [T2Space X]
+    {𝕜 : Type*} [Field 𝕜] [StrictNormedRing 𝕜]
     [SecondCountableTopologyEither X E] [NormedSpace 𝕜 E] {f : X → 𝕜} {g : X → E} {s : Set X}
     (hs : IsLocallyClosed s) (hf : LocallyIntegrableOn f s μ) (hg : ContinuousOn g s) :
     LocallyIntegrableOn (fun x => f x • g x) s μ := by

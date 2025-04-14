@@ -23,7 +23,7 @@ open scoped Topology Filter
 
 open Function Set Filter
 
-variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 E : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
   [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
 
 open Classical in

@@ -32,7 +32,7 @@ section DerivativesProperties
 /-! ### Unique differentiability sets in manifolds -/
 
 variable
-  {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
   {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]

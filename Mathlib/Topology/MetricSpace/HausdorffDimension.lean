@@ -391,7 +391,7 @@ end IsometryEquiv
 
 namespace ContinuousLinearEquiv
 
-variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 E F : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
   [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
   [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
 

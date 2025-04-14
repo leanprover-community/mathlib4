@@ -37,7 +37,7 @@ model with corners, `V W : Π (x : M), TangentSpace I x` are the vector fields, 
 the basepoint.
 -/
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
   {H : Type*} [TopologicalSpace H]
   {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
   {I : ModelWithCorners 𝕜 E H}

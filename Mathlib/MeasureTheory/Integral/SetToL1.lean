@@ -210,7 +210,8 @@ theorem add (hT : DominatedFinMeasAdditive μ T C) (hT' : DominatedFinMeasAdditi
   rw [Pi.add_apply, add_mul]
   exact (norm_add_le _ _).trans (add_le_add (hT.2 s hs hμs) (hT'.2 s hs hμs))
 
-theorem smul [NormedField 𝕜] [NormedSpace 𝕜 β] (hT : DominatedFinMeasAdditive μ T C) (c : 𝕜) :
+theorem smul [Field 𝕜] [StrictNormedRing 𝕜] [NormedSpace 𝕜 β]
+    (hT : DominatedFinMeasAdditive μ T C) (c : 𝕜) :
     DominatedFinMeasAdditive μ (fun s => c • T s) (‖c‖ * C) := by
   refine ⟨hT.1.smul c, fun s hs hμs => ?_⟩
   dsimp only
@@ -631,7 +632,7 @@ theorem norm_eq_sum_mul (f : α →₁ₛ[μ] G) :
 
 section SetToL1S
 
-variable [NormedField 𝕜] [NormedSpace 𝕜 E]
+variable [Field 𝕜] [StrictNormedRing 𝕜] [NormedSpace 𝕜 E]
 
 attribute [local instance] Lp.simpleFunc.module
 
@@ -921,7 +922,8 @@ attribute [local instance] Lp.simpleFunc.module
 
 attribute [local instance] Lp.simpleFunc.normedSpace
 
-variable (𝕜) [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] [CompleteSpace F]
+variable (𝕜) [Field 𝕜] [NontriviallyNormedField 𝕜]
+  [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] [CompleteSpace F]
   {T T' T'' : Set α → E →L[ℝ] F} {C C' C'' : ℝ}
 
 /-- Extend `Set α → (E →L[ℝ] F)` to `(α →₁[μ] E) →L[𝕜] F`. -/
@@ -1274,7 +1276,7 @@ theorem setToFun_sub (hT : DominatedFinMeasAdditive μ T C) (hf : Integrable f �
     (hg : Integrable g μ) : setToFun μ T hT (f - g) = setToFun μ T hT f - setToFun μ T hT g := by
   rw [sub_eq_add_neg, sub_eq_add_neg, setToFun_add hT hf hg.neg, setToFun_neg hT g]
 
-theorem setToFun_smul [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
+theorem setToFun_smul [Field 𝕜] [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
     (hT : DominatedFinMeasAdditive μ T C) (h_smul : ∀ c : 𝕜, ∀ s x, T s (c • x) = c • T s x) (c : 𝕜)
     (f : α → E) : setToFun μ T hT (c • f) = c • setToFun μ T hT f := by
   by_cases hf : Integrable f μ

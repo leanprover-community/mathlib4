@@ -25,7 +25,7 @@ open Asymptotics ContinuousLinearMap Topology
 
 section
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
 variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
 variable {F : Type*} [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
 variable {G : Type*} [AddCommGroup G] [NormedAddGroup G] [NormedSpace 𝕜 G]
@@ -235,8 +235,8 @@ normed vector space.
 -/
 
 
-variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] [NormedSpace 𝕜' F]
-  [IsScalarTower 𝕜 𝕜' F]
+variable {𝕜' : Type*} [Field 𝕜'] [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
+  [NormedSpace 𝕜' F] [IsScalarTower 𝕜 𝕜' F]
 
 variable {c : E → 𝕜'} {c' : E →L[𝕜] 𝕜'}
 
@@ -870,7 +870,7 @@ counterparts in commutative fields involve simpler expressions, and are given in
 
 section DivisionRingInverse
 
-variable {R : Type*} [NormedDivisionRing R] [NormedAlgebra 𝕜 R]
+variable {R : Type*} [DivisionRing R] [StrictNormedRing R] [NormedAlgebra 𝕜 R]
 
 open NormedRing ContinuousLinearMap Ring
 

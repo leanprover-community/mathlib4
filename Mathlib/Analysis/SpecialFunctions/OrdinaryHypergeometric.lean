@@ -134,7 +134,8 @@ open Asymptotics Filter Real Set Nat
 
 open scoped Topology
 
-variable {𝕂 : Type*} (𝔸 : Type*) [RCLike 𝕂] [NormedDivisionRing 𝔸] [NormedAlgebra 𝕂 𝔸]
+variable {𝕂 : Type*} (𝔸 : Type*) [RCLike 𝕂]
+  [DivisionRing 𝔸] [StrictNormedRing 𝔸] [NormedAlgebra 𝕂 𝔸]
   (a b c : 𝕂)
 
 theorem ordinaryHypergeometric_radius_top_of_neg_nat₁ {k : ℕ} :

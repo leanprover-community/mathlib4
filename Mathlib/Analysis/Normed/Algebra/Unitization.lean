@@ -60,7 +60,7 @@ bornology.
 
 suppress_compilation
 
-variable (𝕜 A : Type*) [NontriviallyNormedField 𝕜] [NonUnitalRing A] [NormedRing A]
+variable (𝕜 A : Type*) [Field 𝕜] [NontriviallyNormedField 𝕜] [NonUnitalRing A] [NormedRing A]
 variable [NormedSpace 𝕜 A] [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A]
 
 open ContinuousLinearMap
@@ -208,7 +208,7 @@ def uniformEquivProd : (Unitization 𝕜 A) ≃ᵤ (𝕜 × A) :=
 instance instBornology : Bornology (Unitization 𝕜 A) :=
   Bornology.induced <| addEquiv 𝕜 A
 
-theorem isUniformEmbedding_addEquiv {𝕜} [NontriviallyNormedField 𝕜] :
+theorem isUniformEmbedding_addEquiv {𝕜} [Field 𝕜] [NontriviallyNormedField 𝕜] :
     IsUniformEmbedding (addEquiv 𝕜 A) where
   comap_uniformity := rfl
   injective := (addEquiv 𝕜 A).injective

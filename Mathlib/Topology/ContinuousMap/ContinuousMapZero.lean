@@ -371,7 +371,7 @@ noncomputable instance [CommRing R] [NormedRing R] : NormedRing C(α, R)₀ wher
   dist_eq f g := NormedAddGroup.dist_eq (f : C(α, R)) g
   norm_mul_le f g := norm_mul_le (f : C(α, R)) g
 
-instance [NormedField 𝕜] [CommRing R] [NormedRing R] [NormedAlgebra 𝕜 R] :
+instance [Field 𝕜] [StrictNormedRing 𝕜] [CommRing R] [NormedRing R] [NormedAlgebra 𝕜 R] :
     NormedSpace 𝕜 C(α, R)₀ where
   norm_smul_le r f := norm_smul_le r (f : C(α, R))
 

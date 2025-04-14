@@ -281,7 +281,7 @@ end starₗᵢ
 
 namespace StarSubalgebra
 
-instance toNormedAlgebra {𝕜 A : Type*} [NormedField 𝕜]
+instance toNormedAlgebra {𝕜 A : Type*} [Field 𝕜] [StrictNormedRing 𝕜]
     [StarRing 𝕜] [Ring A] [SeminormedRing A] [StarRing A]
     [NormedAlgebra 𝕜 A] [StarModule 𝕜 A] (S : StarSubalgebra 𝕜 A) : NormedAlgebra 𝕜 S :=
   NormedAlgebra.induced 𝕜 S A S.subtype

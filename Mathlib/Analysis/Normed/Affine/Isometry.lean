@@ -37,7 +37,7 @@ algebra-homomorphisms.)
 open Function Set
 
 variable (𝕜 : Type*) {V V₁ V₁' V₂ V₃ V₄ : Type*} {P₁ P₁' : Type*} (P P₂ : Type*) {P₃ P₄ : Type*}
-  [NormedField 𝕜]
+  [Field 𝕜] [StrictNormedRing 𝕜]
   [AddCommGroup V] [SeminormedAddGroup V]
   [NormedSpace 𝕜 V] [PseudoMetricSpace P] [NormedAddTorsor V P]
   [AddCommGroup V₁] [SeminormedAddGroup V₁]

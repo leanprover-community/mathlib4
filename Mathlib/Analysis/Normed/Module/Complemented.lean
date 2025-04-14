@@ -21,7 +21,7 @@ complemented subspace, normed vector space
 -/
 
 
-variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 E F G : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
   [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
   [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
   [AddCommGroup G] [NormedAddGroup G] [NormedSpace 𝕜 G]

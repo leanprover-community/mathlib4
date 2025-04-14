@@ -61,7 +61,7 @@ notation:25 E " →WOT[" 𝕜 "] " F => ContinuousLinearMapWOT 𝕜 E F
 
 namespace ContinuousLinearMapWOT
 
-variable {𝕜 : Type*} {E : Type*} {F : Type*} [NormedField 𝕜]
+variable {𝕜 : Type*} {E : Type*} {F : Type*} [Field 𝕜]
   [AddCommGroup E] [TopologicalSpace E] [Module 𝕜 E]
   [AddCommGroup F] [TopologicalSpace F] [Module 𝕜 F]
 
@@ -132,7 +132,7 @@ lemma ext_iff {A B : E →WOT[𝕜] F} : A = B ↔ ∀ x, A x = B x := Continuou
 -- version with an inner product (`ContinuousLinearMapWOT.ext_inner`) takes precedence
 -- in the case of Hilbert spaces.
 @[ext 900]
-lemma ext_dual [H : SeparatingDual 𝕜 F] {A B : E →WOT[𝕜] F}
+lemma ext_dual [StrictNormedRing 𝕜] [H : SeparatingDual 𝕜 F] {A B : E →WOT[𝕜] F}
     (h : ∀ x (y : F⋆), y (A x) = y (B x)) : A = B := by
   simp_rw [ext_iff, ← (separatingDual_iff_injective.mp H).eq_iff, LinearMap.ext_iff]
   exact h
@@ -165,7 +165,7 @@ of this topology. In particular, we show that it is a topological vector space.
 -/
 section Topology
 
-variable [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
+variable [StrictNormedRing 𝕜] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
 
 variable (𝕜) (E) (F) in
 /-- The function that induces the topology on `E →WOT[𝕜] F`, namely the function that takes
@@ -244,7 +244,7 @@ end Topology
 /-! ### The WOT is induced by a family of seminorms -/
 section Seminorms
 
-variable [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
+variable [StrictNormedRing 𝕜] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
 
 /-- The family of seminorms that induce the weak operator topology, namely `‖y (A x)‖` for
 all `x` and `y`. -/
@@ -279,6 +279,7 @@ end Seminorms
 
 section toWOT_continuous
 
+variable [StrictNormedRing 𝕜]
 variable [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F] [ContinuousSMul 𝕜 E]
 
 /-- The weak operator topology is coarser than the bounded convergence topology, i.e. the inclusion

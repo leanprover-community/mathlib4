@@ -17,7 +17,7 @@ section PiLp
 open ContinuousLinearMap
 
 variable {𝕜 ι : Type*} {E : ι → Type*} {H : Type*}
-variable [NontriviallyNormedField 𝕜] [AddCommGroup H] [NormedAddGroup H]
+variable [Field 𝕜] [NontriviallyNormedField 𝕜] [AddCommGroup H] [NormedAddGroup H]
   [∀ i, AddCommGroup (E i)] [∀ i, NormedAddGroup (E i)]
   [∀ i, NormedSpace 𝕜 (E i)] [NormedSpace 𝕜 H] [Fintype ι] (p) [Fact (1 ≤ p)]
   {f : H → PiLp p E} {f' : H →L[𝕜] PiLp p E} {t : Set H} {y : H}

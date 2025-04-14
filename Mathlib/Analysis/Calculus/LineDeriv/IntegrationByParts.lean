@@ -182,7 +182,7 @@ theorem integral_bilinear_fderiv_right_eq_neg_left_of_integrable
   integral_bilinear_hasFDerivAt_right_eq_neg_left_of_integrable hf'g hfg' hfg
     (fun x ↦ (hf x).hasFDerivAt) (fun x ↦ (hg x).hasFDerivAt)
 
-variable {𝕜 : Type*} [NormedField 𝕜] [NormedAlgebra ℝ 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [StrictNormedRing 𝕜] [NormedAlgebra ℝ 𝕜]
     [NormedSpace 𝕜 G] [IsScalarTower ℝ 𝕜 G]
 
 /-- **Integration by parts for Fréchet derivatives**

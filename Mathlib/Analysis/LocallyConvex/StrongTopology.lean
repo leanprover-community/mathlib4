@@ -39,7 +39,7 @@ namespace UniformConvergenceCLM
 
 variable (R)
 variable [Semiring R] [PartialOrder R] [IsOrderedRing R]
-variable [NormedField 𝕜₁] [NormedField 𝕜₂] [Module 𝕜₁ E] [Module 𝕜₂ F] {σ : 𝕜₁ →+* 𝕜₂}
+variable [Field 𝕜₁] [Field 𝕜₂] [Module 𝕜₁ E] [Module 𝕜₂ F] {σ : 𝕜₁ →+* 𝕜₂}
 variable [Module R F] [ContinuousConstSMul R F] [LocallyConvexSpace R F] [SMulCommClass 𝕜₂ R F]
 
 theorem locallyConvexSpace (𝔖 : Set (Set E)) (h𝔖₁ : 𝔖.Nonempty)
@@ -60,7 +60,8 @@ section BoundedSets
 namespace ContinuousLinearMap
 
 variable [Semiring R] [PartialOrder R] [IsOrderedRing R]
-variable [NormedField 𝕜₁] [NormedField 𝕜₂] [Module 𝕜₁ E] [Module 𝕜₂ F] {σ : 𝕜₁ →+* 𝕜₂}
+variable [Field 𝕜₁] [StrictNormedRing 𝕜₁] [Field 𝕜₂] [StrictNormedRing 𝕜₂]
+  [Module 𝕜₁ E] [Module 𝕜₂ F] {σ : 𝕜₁ →+* 𝕜₂}
 variable [Module R F] [ContinuousConstSMul R F] [LocallyConvexSpace R F] [SMulCommClass 𝕜₂ R F]
 
 instance instLocallyConvexSpace : LocallyConvexSpace R (E →SL[σ] F) :=

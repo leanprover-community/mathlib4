@@ -147,7 +147,8 @@ Define the Bochner integral on functions generally to be the `L1` Bochner integr
 functions, and 0 otherwise; prove its basic properties.
 -/
 
-variable [AddCommGroup E] [NormedAddGroup E] [hE : CompleteSpace E] [NontriviallyNormedField 𝕜]
+variable [AddCommGroup E] [NormedAddGroup E] [hE : CompleteSpace E]
+  [Field 𝕜] [NontriviallyNormedField 𝕜]
   [AddCommGroup F] [NormedAddGroup F] [NormedSpace ℝ F] [CompleteSpace F]
   {G : Type*} [AddCommGroup G] [NormedAddGroup G] [NormedSpace ℝ G]
 

@@ -12,7 +12,7 @@ In this file we define the type `ContMDiffMap` of `n` times continuously differe
 bundled maps.
 -/
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
   {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
   {E' : Type*} [AddCommGroup E'] [NormedAddGroup E'] [NormedSpace 𝕜 E']
   {H : Type*} [TopologicalSpace H] {H' : Type*} [TopologicalSpace H']

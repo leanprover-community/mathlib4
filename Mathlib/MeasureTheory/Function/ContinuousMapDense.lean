@@ -353,7 +353,7 @@ end Lp
 end MeasureTheory
 
 variable [SecondCountableTopologyEither α E] [_i : Fact (1 ≤ p)]
-variable (𝕜 : Type*) [NormedField 𝕜] [NormedAlgebra ℝ 𝕜] [NormedSpace 𝕜 E]
+variable (𝕜 : Type*) [Field 𝕜] [StrictNormedRing 𝕜] [NormedAlgebra ℝ 𝕜] [NormedSpace 𝕜 E]
 variable (E) (μ)
 
 namespace BoundedContinuousFunction

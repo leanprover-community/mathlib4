@@ -67,7 +67,7 @@ open scoped ENNReal Topology
 
 universe u v
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
 variable {E : Type u} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
 variable {F : Type v} [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
 

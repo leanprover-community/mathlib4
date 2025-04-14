@@ -64,7 +64,7 @@ section General
 
 /-! ### 𝔖-Topologies -/
 
-variable {𝕜₁ 𝕜₂ : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂] (σ : 𝕜₁ →+* 𝕜₂) {E F : Type*}
+variable {𝕜₁ 𝕜₂ : Type*} [Field 𝕜₁] [Field 𝕜₂] (σ : 𝕜₁ →+* 𝕜₂) {E F : Type*}
   [AddCommGroup E] [Module 𝕜₁ E] [TopologicalSpace E]
   [AddCommGroup F] [Module 𝕜₂ F]
 variable (F)
@@ -180,7 +180,8 @@ instance instModule (R : Type*) [Semiring R] [Module R F] [SMulCommClass 𝕜₂
     [TopologicalSpace F] [ContinuousConstSMul R F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
     Module R (UniformConvergenceCLM σ F 𝔖) := ContinuousLinearMap.module
 
-theorem continuousSMul [RingHomSurjective σ] [RingHomIsometric σ]
+theorem continuousSMul [StrictNormedRing 𝕜₁] [StrictNormedRing 𝕜₂]
+    [RingHomSurjective σ] [RingHomIsometric σ]
     [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousSMul 𝕜₂ F] (𝔖 : Set (Set E))
     (h𝔖₃ : ∀ S ∈ 𝔖, IsVonNBounded 𝕜₁ S) :
     ContinuousSMul 𝕜₂ (UniformConvergenceCLM σ F 𝔖) := by
@@ -250,7 +251,7 @@ variable {σ F} in
 /-- A set `S` of continuous linear maps with topology of uniform convergence on sets `s ∈ 𝔖`
 is von Neumann bounded iff for any `s ∈ 𝔖`,
 the set `{f x | (f ∈ S) (x ∈ s)}` is von Neumann bounded. -/
-theorem isVonNBounded_iff {R : Type*} [NormedDivisionRing R]
+theorem isVonNBounded_iff {R : Type*} [DivisionRing R] [StrictNormedRing R]
     [TopologicalSpace F] [IsTopologicalAddGroup F]
     [Module R F] [ContinuousConstSMul R F] [SMulCommClass 𝕜₂ R F]
     {𝔖 : Set (Set E)} {S : Set (UniformConvergenceCLM σ F 𝔖)} :
@@ -289,7 +290,7 @@ theorem tendsto_iff_tendstoUniformlyOn {ι : Type*} {p : Filter ι} [UniformSpac
 variable {F} in
 theorem isUniformInducing_postcomp
     {G : Type*} [AddCommGroup G] [UniformSpace G] [IsUniformAddGroup G]
-    {𝕜₃ : Type*} [NormedField 𝕜₃] [Module 𝕜₃ G]
+    {𝕜₃ : Type*} [Field 𝕜₃] [StrictNormedRing 𝕜₃] [Module 𝕜₃ G]
     {τ : 𝕜₂ →+* 𝕜₃} {ρ : 𝕜₁ →+* 𝕜₃} [RingHomCompTriple σ τ ρ] [UniformSpace F] [IsUniformAddGroup F]
     (g : F →SL[τ] G) (hg : IsUniformInducing g) (𝔖 : Set (Set E)) :
     IsUniformInducing (α := UniformConvergenceCLM σ F 𝔖) (β := UniformConvergenceCLM ρ G 𝔖)
@@ -297,7 +298,8 @@ theorem isUniformInducing_postcomp
   rw [← (isUniformInducing_coeFn _ _ _).of_comp_iff]
   exact (UniformOnFun.postcomp_isUniformInducing hg).comp (isUniformInducing_coeFn _ _ _)
 
-theorem completeSpace [UniformSpace F] [IsUniformAddGroup F] [ContinuousSMul 𝕜₂ F] [CompleteSpace F]
+theorem completeSpace [StrictNormedRing 𝕜₁] [StrictNormedRing 𝕜₂]
+    [UniformSpace F] [IsUniformAddGroup F] [ContinuousSMul 𝕜₂ F] [CompleteSpace F]
     {𝔖 : Set (Set E)} (h𝔖 : IsCoherentWith 𝔖) (h𝔖U : ⋃₀ 𝔖 = univ) :
     CompleteSpace (UniformConvergenceCLM σ F 𝔖) := by
   wlog hF : T2Space F generalizing F
@@ -336,10 +338,12 @@ section BoundedSets
 
 /-! ### Topology of bounded convergence  -/
 
-variable {𝕜₁ 𝕜₂ 𝕜₃ : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂] [NormedField 𝕜₃] {σ : 𝕜₁ →+* 𝕜₂}
-  {τ : 𝕜₂ →+* 𝕜₃} {ρ : 𝕜₁ →+* 𝕜₃} [RingHomCompTriple σ τ ρ] {E F G : Type*} [AddCommGroup E]
-  [Module 𝕜₁ E] [AddCommGroup F] [Module 𝕜₂ F]
-  [AddCommGroup G] [Module 𝕜₃ G] [TopologicalSpace E]
+variable {𝕜₁ 𝕜₂ 𝕜₃ : Type*}
+  [Field 𝕜₁] [StrictNormedRing 𝕜₁] [Field 𝕜₂] [Field 𝕜₃] [StrictNormedRing 𝕜₃]
+  {σ : 𝕜₁ →+* 𝕜₂} {τ : 𝕜₂ →+* 𝕜₃} {ρ : 𝕜₁ →+* 𝕜₃} [RingHomCompTriple σ τ ρ]
+  {E F G : Type*}
+  [AddCommGroup E] [Module 𝕜₁ E] [AddCommGroup F] [Module 𝕜₂ F] [AddCommGroup G] [Module 𝕜₃ G]
+  [TopologicalSpace E]
 
 /-- The topology of bounded convergence on `E →L[𝕜] F`. This coincides with the topology induced by
 the operator norm when `E` and `F` are normed spaces. -/
@@ -351,7 +355,8 @@ instance topologicalAddGroup [TopologicalSpace F] [IsTopologicalAddGroup F] :
     IsTopologicalAddGroup (E →SL[σ] F) :=
   UniformConvergenceCLM.instIsTopologicalAddGroup σ F _
 
-instance continuousSMul [RingHomSurjective σ] [RingHomIsometric σ] [TopologicalSpace F]
+instance continuousSMul [StrictNormedRing 𝕜₂]
+    [RingHomSurjective σ] [RingHomIsometric σ] [TopologicalSpace F]
     [IsTopologicalAddGroup F] [ContinuousSMul 𝕜₂ F] : ContinuousSMul 𝕜₂ (E →SL[σ] F) :=
   UniformConvergenceCLM.continuousSMul σ F { S | IsVonNBounded 𝕜₁ S } fun _ hs => hs
 
@@ -437,7 +442,7 @@ iff for any von Neumann bounded set `s`,
 the set `{f x | (f ∈ S) (x ∈ s)}` is von Neumann bounded.
 
 For the forward implication with weaker typeclass assumptions, see `isVonNBounded_image2_apply`. -/
-theorem isVonNBounded_iff {R : Type*} [NormedDivisionRing R]
+theorem isVonNBounded_iff {R : Type*} [DivisionRing R] [StrictNormedRing R]
     [TopologicalSpace F] [IsTopologicalAddGroup F]
     [Module R F] [ContinuousConstSMul R F] [SMulCommClass 𝕜₂ R F]
     {S : Set (E →SL[σ] F)} :
@@ -445,12 +450,14 @@ theorem isVonNBounded_iff {R : Type*} [NormedDivisionRing R]
       ∀ s, IsVonNBounded 𝕜₁ s → IsVonNBounded R (Set.image2 (fun f x ↦ f x) S s) :=
   UniformConvergenceCLM.isVonNBounded_iff
 
-theorem completeSpace [UniformSpace F] [IsUniformAddGroup F] [ContinuousSMul 𝕜₂ F] [CompleteSpace F]
+theorem completeSpace [StrictNormedRing 𝕜₂]
+    [UniformSpace F] [IsUniformAddGroup F] [ContinuousSMul 𝕜₂ F] [CompleteSpace F]
     [ContinuousSMul 𝕜₁ E] (h : IsCoherentWith {s : Set E | IsVonNBounded 𝕜₁ s}) :
     CompleteSpace (E →SL[σ] F) :=
   UniformConvergenceCLM.completeSpace _ _ h isVonNBounded_covers
 
-instance instCompleteSpace [IsTopologicalAddGroup E] [ContinuousSMul 𝕜₁ E] [SequentialSpace E]
+instance instCompleteSpace [StrictNormedRing 𝕜₂]
+    [IsTopologicalAddGroup E] [ContinuousSMul 𝕜₁ E] [SequentialSpace E]
     [UniformSpace F] [IsUniformAddGroup F] [ContinuousSMul 𝕜₂ F] [CompleteSpace F] :
     CompleteSpace (E →SL[σ] F) :=
   completeSpace <| .of_seq fun _ _ h ↦ (h.isVonNBounded_range 𝕜₁).insert _
@@ -461,7 +468,8 @@ variable (G) [TopologicalSpace F] [TopologicalSpace G]
 Note that in non-normed space it is not always true that composition is continuous
 in both variables, so we have to fix one of them. -/
 @[simps]
-def precomp [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G] [RingHomSurjective σ]
+def precomp [StrictNormedRing 𝕜₂]
+    [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G] [RingHomSurjective σ]
     [RingHomIsometric σ] (L : E →SL[σ] F) : (F →SL[τ] G) →L[𝕜₃] E →SL[ρ] G where
   toFun f := f.comp L
   map_add' f g := add_comp f g L
@@ -498,7 +506,7 @@ end BoundedSets
 
 section BilinearMaps
 
-variable {𝕜 : Type*} [NormedField 𝕜] {E F G : Type*}
+variable {𝕜 : Type*} [Field 𝕜] [StrictNormedRing 𝕜] {E F G : Type*}
   [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
   [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
   [AddCommGroup G] [Module 𝕜 G]
@@ -514,14 +522,14 @@ end BilinearMaps
 
 section RestrictScalars
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
   {E : Type*} [AddCommGroup E] [TopologicalSpace E] [Module 𝕜 E] [ContinuousSMul 𝕜 E]
   {F : Type*} [AddCommGroup F]
 
 section UniformSpace
 
 variable [UniformSpace F] [IsUniformAddGroup F] [Module 𝕜 F]
-  (𝕜' : Type*) [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
+  (𝕜' : Type*) [Field 𝕜'] [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
   [Module 𝕜' E] [IsScalarTower 𝕜' 𝕜 E] [Module 𝕜' F] [IsScalarTower 𝕜' 𝕜 F]
 
 theorem isUniformEmbedding_restrictScalars :
@@ -537,7 +545,7 @@ theorem uniformContinuous_restrictScalars :
 end UniformSpace
 
 variable [TopologicalSpace F] [IsTopologicalAddGroup F] [Module 𝕜 F]
-  (𝕜' : Type*) [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
+  (𝕜' : Type*) [Field 𝕜'] [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
   [Module 𝕜' E] [IsScalarTower 𝕜' 𝕜 E] [Module 𝕜' F] [IsScalarTower 𝕜' 𝕜 F]
 
 theorem isEmbedding_restrictScalars :
@@ -587,7 +595,7 @@ section Semilinear
 
 variable {𝕜 : Type*} {𝕜₂ : Type*} {𝕜₃ : Type*} {𝕜₄ : Type*} {E : Type*} {F : Type*}
   {G : Type*} {H : Type*} [AddCommGroup E] [AddCommGroup F] [AddCommGroup G] [AddCommGroup H]
-  [NormedField 𝕜] [NormedField 𝕜₂] [NormedField 𝕜₃] [NormedField 𝕜₄]
+  [Field 𝕜] [StrictNormedRing 𝕜] [Field 𝕜₂] [StrictNormedRing 𝕜₂] [Field 𝕜₃] [Field 𝕜₄]
   [Module 𝕜 E] [Module 𝕜₂ F] [Module 𝕜₃ G] [Module 𝕜₄ H]
   [TopologicalSpace E] [TopologicalSpace F] [TopologicalSpace G] [TopologicalSpace H]
   [IsTopologicalAddGroup G] [IsTopologicalAddGroup H] [ContinuousConstSMul 𝕜₃ G]
@@ -620,7 +628,7 @@ end Semilinear
 section Linear
 
 variable {𝕜 : Type*} {E : Type*} {F : Type*} {G : Type*} {H : Type*} [AddCommGroup E]
-  [AddCommGroup F] [AddCommGroup G] [AddCommGroup H] [NormedField 𝕜] [Module 𝕜 E]
+  [AddCommGroup F] [AddCommGroup G] [AddCommGroup H] [Field 𝕜] [StrictNormedRing 𝕜] [Module 𝕜 E]
   [Module 𝕜 F] [Module 𝕜 G] [Module 𝕜 H] [TopologicalSpace E] [TopologicalSpace F]
   [TopologicalSpace G] [TopologicalSpace H] [IsTopologicalAddGroup G] [IsTopologicalAddGroup H]
   [ContinuousConstSMul 𝕜 G] [ContinuousConstSMul 𝕜 H]

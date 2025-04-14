@@ -18,7 +18,7 @@ suppress_compilation
 open Metric
 open scoped NNReal Topology Uniformity
 
-variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 E : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
 
 section SemiNormed
 
@@ -106,7 +106,8 @@ class _root_.RegularNormedAlgebra : Prop where
   isometry_mul' : Isometry (mul 𝕜 R)
 
 /-- Every (unital) normed algebra such that `‖1‖ = 1` is a `RegularNormedAlgebra`. -/
-instance _root_.NormedAlgebra.instRegularNormedAlgebra {𝕜 R : Type*} [NontriviallyNormedField 𝕜]
+instance _root_.NormedAlgebra.instRegularNormedAlgebra {𝕜 R : Type*}
+    [Field 𝕜] [NontriviallyNormedField 𝕜]
     [Ring R] [SeminormedRing R]
     [NormedAlgebra 𝕜 R] [NormOneClass R] : RegularNormedAlgebra 𝕜 R where
   isometry_mul' := AddMonoidHomClass.isometry_of_norm (mul 𝕜 R) <|
@@ -181,7 +182,7 @@ end MultiplicationLinear
 
 section SMulLinear
 
-variable (𝕜) (R : Type*) [NormedField R]
+variable (𝕜) (R : Type*) [Field R] [StrictNormedRing R]
 variable [NormedAlgebra 𝕜 R] [NormedSpace R E] [IsScalarTower 𝕜 R E]
 
 /-- Scalar multiplication as a continuous bilinear map. -/
@@ -249,7 +250,7 @@ end
 
 This is `ContinuousLinearMap.opNorm_lsmul_le` as an equality. -/
 @[simp]
-theorem opNorm_lsmul [NormedField R] [NormedAlgebra 𝕜 R] [NormedSpace R E]
+theorem opNorm_lsmul [Field R] [StrictNormedRing R] [NormedAlgebra 𝕜 R] [NormedSpace R E]
     [IsScalarTower 𝕜 R E] [Nontrivial E] : ‖(lsmul 𝕜 R : R →L[𝕜] E →L[𝕜] E)‖ = 1 := by
   refine ContinuousLinearMap.opNorm_eq_of_bounds zero_le_one (fun x => ?_) fun N _ h => ?_
   · rw [one_mul]

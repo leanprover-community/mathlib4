@@ -268,7 +268,7 @@ theorem integral_eq_lintegral' {f : α →ₛ E} {g : E → ℝ≥0∞} (hf : In
     · apply mul_ne_top (ht a) (hf'.meas_preimage_singleton_ne_zero a0).ne
   · simp [hg0]
 
-variable [NormedField 𝕜] [NormedSpace 𝕜 E] [NormedSpace ℝ E] [SMulCommClass ℝ 𝕜 E]
+variable [Field 𝕜] [StrictNormedRing 𝕜] [NormedSpace 𝕜 E] [NormedSpace ℝ E] [SMulCommClass ℝ 𝕜 E]
 
 theorem integral_congr {f g : α →ₛ E} (hf : Integrable f μ) (h : f =ᵐ[μ] g) :
     f.integral μ = g.integral μ :=
@@ -367,7 +367,7 @@ Define the Bochner integral on `α →₁ₛ[μ] E` by extension from the simple
 and prove basic properties of this integral. -/
 
 
-variable [NormedField 𝕜] [NormedSpace 𝕜 E] [NormedSpace ℝ E] [SMulCommClass ℝ 𝕜 E]
+variable [Field 𝕜] [StrictNormedRing 𝕜] [NormedSpace 𝕜 E] [NormedSpace ℝ E] [SMulCommClass ℝ 𝕜 E]
 
 attribute [local instance] simpleFunc.normedSpace
 
@@ -472,8 +472,8 @@ open SimpleFunc
 
 local notation "Integral" => @integralCLM α E _ _ _ _ _ μ _
 
-variable [NormedSpace ℝ E] [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] [SMulCommClass ℝ 𝕜 E]
-  [CompleteSpace E]
+variable [NormedSpace ℝ E] [Field 𝕜] [NontriviallyNormedField 𝕜]
+  [NormedSpace 𝕜 E] [SMulCommClass ℝ 𝕜 E] [CompleteSpace E]
 
 section IntegrationInL1
 

@@ -26,7 +26,7 @@ section SpecificFunctions
 
 /-! ### Differentiability of specific functions -/
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
   -- declare a charted space `M` over the pair `(E, H)`.
   {E : Type*} [AddCommGroup E] [NormedAddGroup E]
   [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {M : Type*}

@@ -91,7 +91,7 @@ theorem Seminorm.continuous_of_lowerSemicontinuous {𝕜 E : Type*} [AddGroup E]
   BarrelledSpace.continuous_of_lowerSemicontinuous p hp
 
 theorem Seminorm.continuous_iSup
-    {ι : Sort*} {𝕜 E : Type*} [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+    {ι : Sort*} {𝕜 E : Type*} [Field 𝕜] [StrictNormedRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
     [TopologicalSpace E] [BarrelledSpace 𝕜 E] (p : ι → Seminorm 𝕜 E)
     (hp : ∀ i, Continuous (p i)) (bdd : BddAbove (range p)) :
     Continuous (⨆ i, p i) := by
@@ -106,8 +106,8 @@ end defs
 
 section TVS_anyField
 
-variable {α ι κ 𝕜₁ 𝕜₂ E F : Type*} [Nonempty κ] [NontriviallyNormedField 𝕜₁]
-    [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜₁ →+* 𝕜₂} [RingHomIsometric σ₁₂]
+variable {α ι κ 𝕜₁ 𝕜₂ E F : Type*} [Nonempty κ] [Field 𝕜₁] [NontriviallyNormedField 𝕜₁]
+    [Field 𝕜₂] [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜₁ →+* 𝕜₂} [RingHomIsometric σ₁₂]
     [AddCommGroup E] [AddCommGroup F] [Module 𝕜₁ E] [Module 𝕜₂ F]
 
 /-- Any TVS over a `NontriviallyNormedField` that is also a Baire space is barrelled. In

@@ -32,7 +32,7 @@ noncomputable section
 section Bilinear
 
 variable {α 𝕜 E F G : Type*} {m : MeasurableSpace α} {μ : Measure α}
-    {p q r : ENNReal} [hpqr : HolderTriple p q r] [NontriviallyNormedField 𝕜]
+    {p q r : ENNReal} [hpqr : HolderTriple p q r] [Field 𝕜] [NontriviallyNormedField 𝕜]
     [AddCommGroup E] [NormedAddGroup E] [AddCommGroup F] [NormedAddGroup F]
     [AddCommGroup G] [NormedAddGroup G]
     [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] [NormedSpace 𝕜 G]

@@ -24,7 +24,7 @@ open scoped UniformConvergence Filter
 namespace ContinuousMultilinearMap
 
 variable {𝕜 ι : Type*} {E : ι → Type*} {F : Type*}
-  [NormedField 𝕜]
+  [Field 𝕜] [StrictNormedRing 𝕜]
   [∀ i, TopologicalSpace (E i)] [∀ i, AddCommGroup (E i)] [∀ i, Module 𝕜 (E i)]
   [AddCommGroup F] [Module 𝕜 F]
 
@@ -147,7 +147,7 @@ end CompleteSpace
 
 section RestrictScalars
 
-variable (𝕜' : Type*) [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
+variable (𝕜' : Type*) [Field 𝕜'] [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
   [∀ i, Module 𝕜' (E i)] [∀ i, IsScalarTower 𝕜' 𝕜 (E i)] [Module 𝕜' F] [IsScalarTower 𝕜' 𝕜 F]
   [∀ i, ContinuousSMul 𝕜 (E i)]
 
@@ -155,7 +155,7 @@ theorem isUniformEmbedding_restrictScalars :
     IsUniformEmbedding
       (restrictScalars 𝕜' : ContinuousMultilinearMap 𝕜 E F → ContinuousMultilinearMap 𝕜' E F) := by
   letI : NontriviallyNormedField 𝕜 :=
-    ⟨let ⟨x, hx⟩ := @NontriviallyNormedField.non_trivial 𝕜' _; ⟨algebraMap 𝕜' 𝕜 x, by simpa⟩⟩
+    ⟨let ⟨x, hx⟩ := @NontriviallyNormedField.non_trivial 𝕜' _ _; ⟨algebraMap 𝕜' 𝕜 x, by simpa⟩⟩
   rw [← isUniformEmbedding_toUniformOnFun.of_comp_iff]
   convert isUniformEmbedding_toUniformOnFun using 4 with s
   exact ⟨fun h ↦ h.extend_scalars _, fun h ↦ h.restrict_scalars _⟩
@@ -226,7 +226,7 @@ instance instT3Space [T2Space F] : T3Space (ContinuousMultilinearMap 𝕜 E F) :
 
 section RestrictScalars
 
-variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
+variable {𝕜' : Type*} [Field 𝕜'] [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
   [∀ i, Module 𝕜' (E i)] [∀ i, IsScalarTower 𝕜' 𝕜 (E i)] [Module 𝕜' F] [IsScalarTower 𝕜' 𝕜 F]
 
 theorem isEmbedding_restrictScalars :

@@ -40,7 +40,7 @@ open Filter Asymptotics Set
 
 open ContinuousLinearMap (smulRight smulRight_one_eq_iff)
 
-variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type u} [Field 𝕜] [NontriviallyNormedField 𝕜]
 variable {F : Type v} [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
 variable {E : Type w} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
 variable {f : 𝕜 → F}
@@ -64,7 +64,8 @@ usual multiplication in `comp` lemmas.
 
 /- For composition lemmas, we put x explicit to help the elaborator, as otherwise Lean tends to
 get confused since there are too many possibilities for composition -/
-variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] [NormedSpace 𝕜' F]
+variable {𝕜' : Type*} [Field 𝕜'] [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
+  [NormedSpace 𝕜' F]
   [IsScalarTower 𝕜 𝕜' F] {s' t' : Set 𝕜'} {h : 𝕜 → 𝕜'} {h₂ : 𝕜' → 𝕜'} {h' h₂' : 𝕜'}
   {g₁ : 𝕜' → F} {g₁' : F} {L' : Filter 𝕜'} {y : 𝕜'} (x)
 

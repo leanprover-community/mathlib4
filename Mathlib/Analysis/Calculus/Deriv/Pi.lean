@@ -10,7 +10,7 @@ import Mathlib.Analysis.Calculus.Deriv.Basic
 # One-dimensional derivatives on pi-types.
 -/
 
-variable {𝕜 ι : Type*} [DecidableEq ι] [Fintype ι] [NontriviallyNormedField 𝕜]
+variable {𝕜 ι : Type*} [DecidableEq ι] [Fintype ι] [Field 𝕜] [NontriviallyNormedField 𝕜]
 
 theorem hasDerivAt_update (x : ι → 𝕜) (i : ι) (y : 𝕜) :
     HasDerivAt (Function.update x i) (Pi.single i (1 : 𝕜)) y := by

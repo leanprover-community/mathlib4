@@ -102,7 +102,7 @@ by the dual-norm (i.e. the operator-norm).
 -/
 
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
 variable {E : Type*} [AddCommGroup E] [SeminormedAddGroup E] [NormedSpace 𝕜 E]
 
 namespace NormedSpace

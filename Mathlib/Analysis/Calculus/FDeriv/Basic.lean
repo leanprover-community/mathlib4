@@ -126,7 +126,7 @@ open Filter Asymptotics ContinuousLinearMap Set Metric Topology NNReal ENNReal
 noncomputable section
 
 section TVS
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
 variable {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
 variable {F : Type*} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
 
@@ -221,7 +221,7 @@ theorem fderivWithin_univ : fderivWithin 𝕜 f univ = fderiv 𝕜 f := by
 end TVS
 
 section
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
 variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
 variable {F : Type*} [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
 
@@ -1373,7 +1373,8 @@ section Support
 
 open Function
 
-variable (𝕜 : Type*) {E F : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup E] [NormedAddGroup E]
+variable (𝕜 : Type*) {E F : Type*}
+  [Field 𝕜] [NontriviallyNormedField 𝕜] [AddCommGroup E] [NormedAddGroup E]
   [NormedSpace 𝕜 E] [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F] {f : E → F} {x : E}
 
 theorem HasStrictFDerivAt.of_nmem_tsupport (h : x ∉ tsupport f) :

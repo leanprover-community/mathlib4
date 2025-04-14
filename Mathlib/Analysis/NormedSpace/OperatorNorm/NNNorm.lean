@@ -29,7 +29,8 @@ variable [AddCommGroup E] [SeminormedAddGroup E] [AddCommGroup Eₗ] [Seminormed
   [AddCommGroup F] [SeminormedAddGroup F] [AddCommGroup Fₗ] [SeminormedAddGroup Fₗ]
   [AddCommGroup G] [SeminormedAddGroup G] [AddCommGroup Gₗ] [SeminormedAddGroup Gₗ]
 
-variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [NontriviallyNormedField 𝕜₃]
+variable [Field 𝕜] [NontriviallyNormedField 𝕜] [Field 𝕜₂] [NontriviallyNormedField 𝕜₂]
+  [Field 𝕜₃] [NontriviallyNormedField 𝕜₃]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜 Eₗ] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜 Fₗ] [NormedSpace 𝕜₃ G]
   [NormedSpace 𝕜 Gₗ] {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₃ : 𝕜₂ →+* 𝕜₃} {σ₁₃ : 𝕜 →+* 𝕜₃}
   [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
@@ -128,8 +129,8 @@ theorem exists_mul_lt_of_lt_opNorm (f : E →SL[σ₁₂] F) {r : ℝ} (hr₀ : 
   exact f.exists_mul_lt_apply_of_lt_opNNNorm hr
 
 theorem exists_lt_apply_of_lt_opNNNorm {𝕜 𝕜₂ E F : Type*} [AddCommGroup E] [NormedAddGroup E]
-    [AddCommGroup F] [SeminormedAddGroup F] [DenselyNormedField 𝕜]
-    [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
+    [AddCommGroup F] [SeminormedAddGroup F] [Field 𝕜] [DenselyNormedField 𝕜]
+    [Field 𝕜₂] [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
     [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [RingHomIsometric σ₁₂] (f : E →SL[σ₁₂] F) {r : ℝ≥0}
     (hr : r < ‖f‖₊) : ∃ x : E, ‖x‖₊ < 1 ∧ r < ‖f x‖₊ := by
   obtain ⟨y, hy⟩ := f.exists_mul_lt_apply_of_lt_opNNNorm hr
@@ -145,8 +146,8 @@ theorem exists_lt_apply_of_lt_opNNNorm {𝕜 𝕜₂ E F : Type*} [AddCommGroup 
   rwa [map_smulₛₗ f, nnnorm_smul, ← div_lt_iff₀ hfy.bot_lt, div_eq_mul_inv, this]
 
 theorem exists_lt_apply_of_lt_opNorm {𝕜 𝕜₂ E F : Type*} [AddCommGroup E] [NormedAddGroup E]
-    [AddCommGroup F] [SeminormedAddGroup F] [DenselyNormedField 𝕜]
-    [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
+    [AddCommGroup F] [SeminormedAddGroup F] [Field 𝕜] [DenselyNormedField 𝕜]
+    [Field 𝕜₂] [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
     [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [RingHomIsometric σ₁₂] (f : E →SL[σ₁₂] F) {r : ℝ}
     (hr : r < ‖f‖) : ∃ x : E, ‖x‖ < 1 ∧ r < ‖f x‖ := by
   by_cases hr₀ : r < 0
@@ -155,8 +156,8 @@ theorem exists_lt_apply_of_lt_opNorm {𝕜 𝕜₂ E F : Type*} [AddCommGroup E]
     exact f.exists_lt_apply_of_lt_opNNNorm hr
 
 theorem sSup_unit_ball_eq_nnnorm {𝕜 𝕜₂ E F : Type*} [AddCommGroup E] [NormedAddGroup E]
-    [AddCommGroup F] [SeminormedAddGroup F] [DenselyNormedField 𝕜]
-    [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
+    [AddCommGroup F] [SeminormedAddGroup F] [Field 𝕜] [DenselyNormedField 𝕜]
+    [Field 𝕜₂] [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
     [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [RingHomIsometric σ₁₂] (f : E →SL[σ₁₂] F) :
     sSup ((fun x => ‖f x‖₊) '' ball 0 1) = ‖f‖₊ := by
   refine csSup_eq_of_forall_le_of_forall_lt_exists_gt ((nonempty_ball.mpr zero_lt_one).image _) ?_
@@ -167,15 +168,15 @@ theorem sSup_unit_ball_eq_nnnorm {𝕜 𝕜₂ E F : Type*} [AddCommGroup E] [No
     exact ⟨_, ⟨x, mem_ball_zero_iff.2 hx, rfl⟩, hxf⟩
 
 theorem sSup_unit_ball_eq_norm {𝕜 𝕜₂ E F : Type*} [AddCommGroup E] [NormedAddGroup E]
-    [AddCommGroup F] [SeminormedAddGroup F] [DenselyNormedField 𝕜]
-    [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂} [NormedSpace 𝕜 E]
+    [AddCommGroup F] [SeminormedAddGroup F] [Field 𝕜] [DenselyNormedField 𝕜]
+    [Field 𝕜₂] [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂} [NormedSpace 𝕜 E]
     [NormedSpace 𝕜₂ F] [RingHomIsometric σ₁₂] (f : E →SL[σ₁₂] F) :
     sSup ((fun x => ‖f x‖) '' ball 0 1) = ‖f‖ := by
   simpa only [NNReal.coe_sSup, Set.image_image] using NNReal.coe_inj.2 f.sSup_unit_ball_eq_nnnorm
 
 theorem sSup_unitClosedBall_eq_nnnorm {𝕜 𝕜₂ E F : Type*} [AddCommGroup E] [NormedAddGroup E]
-    [AddCommGroup F] [SeminormedAddGroup F] [DenselyNormedField 𝕜]
-    [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
+    [AddCommGroup F] [SeminormedAddGroup F] [Field 𝕜] [DenselyNormedField 𝕜]
+    [Field 𝕜₂] [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
     [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [RingHomIsometric σ₁₂] (f : E →SL[σ₁₂] F) :
     sSup ((fun x => ‖f x‖₊) '' closedBall 0 1) = ‖f‖₊ := by
   have hbdd : ∀ y ∈ (fun x => ‖f x‖₊) '' closedBall 0 1, y ≤ ‖f‖₊ := by
@@ -190,8 +191,8 @@ theorem sSup_unitClosedBall_eq_nnnorm {𝕜 𝕜₂ E F : Type*} [AddCommGroup E
 alias sSup_closed_unit_ball_eq_nnnorm := sSup_unitClosedBall_eq_nnnorm
 
 theorem sSup_unitClosedBall_eq_norm {𝕜 𝕜₂ E F : Type*} [AddCommGroup E] [NormedAddGroup E]
-    [AddCommGroup F] [SeminormedAddGroup F] [DenselyNormedField 𝕜]
-    [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
+    [AddCommGroup F] [SeminormedAddGroup F] [Field 𝕜] [DenselyNormedField 𝕜]
+    [Field 𝕜₂] [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
     [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [RingHomIsometric σ₁₂] (f : E →SL[σ₁₂] F) :
     sSup ((fun x => ‖f x‖) '' closedBall 0 1) = ‖f‖ := by
   simpa only [NNReal.coe_sSup, Set.image_image] using

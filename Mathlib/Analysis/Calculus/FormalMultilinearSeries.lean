@@ -169,7 +169,7 @@ end FormalMultilinearSeries
 
 namespace FormalMultilinearSeries
 
-variable [NontriviallyNormedField 𝕜]
+variable [Field 𝕜] [NontriviallyNormedField 𝕜]
   [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
   [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
 
@@ -287,7 +287,7 @@ end Order
 
 section Coef
 
-variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
+variable [Field 𝕜] [NontriviallyNormedField 𝕜] [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
   {p : FormalMultilinearSeries 𝕜 𝕜 E} {f : 𝕜 → E} {n : ℕ} {z : 𝕜} {y : Fin n → 𝕜}
 
 /-- The `n`th coefficient of `p` when seen as a power series. -/
@@ -316,7 +316,7 @@ end Coef
 
 section Fslope
 
-variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
+variable [Field 𝕜] [NontriviallyNormedField 𝕜] [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
   {p : FormalMultilinearSeries 𝕜 𝕜 E} {n : ℕ}
 
 /-- The formal counterpart of `dslope`, corresponding to the expansion of `(f z - f 0) / z`. If `f`
@@ -345,7 +345,7 @@ section Const
 /-- The formal multilinear series where all terms of positive degree are equal to zero, and the term
 of degree zero is `c`. It is the power series expansion of the constant function equal to `c`
 everywhere. -/
-def constFormalMultilinearSeries (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
+def constFormalMultilinearSeries (𝕜 : Type*) [Field 𝕜] [NontriviallyNormedField 𝕜] (E : Type*)
     [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
     [ContinuousConstSMul 𝕜 E] [IsTopologicalAddGroup E]
     {F : Type*} [AddCommGroup F] [NormedAddGroup F] [IsTopologicalAddGroup F] [NormedSpace 𝕜 F]
@@ -354,14 +354,14 @@ def constFormalMultilinearSeries (𝕜 : Type*) [NontriviallyNormedField 𝕜] (
   | _ => 0
 
 @[simp]
-theorem constFormalMultilinearSeries_apply [NontriviallyNormedField 𝕜]
+theorem constFormalMultilinearSeries_apply [Field 𝕜] [NontriviallyNormedField 𝕜]
     [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
     [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F] {c : F} {n : ℕ} (hn : n ≠ 0) :
     constFormalMultilinearSeries 𝕜 E c n = 0 :=
   Nat.casesOn n (fun hn => (hn rfl).elim) (fun _ _ => rfl) hn
 
 @[simp]
-lemma constFormalMultilinearSeries_zero [NontriviallyNormedField 𝕜]
+lemma constFormalMultilinearSeries_zero [Field 𝕜] [NontriviallyNormedField 𝕜]
     [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
     [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F] :
     constFormalMultilinearSeries 𝕜 E (0 : F) = 0 := by
@@ -376,7 +376,7 @@ end Const
 
 section Linear
 
-variable [NontriviallyNormedField 𝕜]
+variable [Field 𝕜] [NontriviallyNormedField 𝕜]
   [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
   [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
 

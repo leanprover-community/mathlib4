@@ -78,7 +78,8 @@ def Seminorm.of [Ring 𝕜] [SeminormedRing 𝕜] [AddCommGroup E] [Module 𝕜 
 
 /-- Alternative constructor for a `Seminorm` over a normed field `𝕜` that only assumes `f 0 = 0`
 and an inequality for the scalar multiplication. -/
-def Seminorm.ofSMulLE [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] (f : E → ℝ) (map_zero : f 0 = 0)
+def Seminorm.ofSMulLE [Field 𝕜] [StrictNormedRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
+    (f : E → ℝ) (map_zero : f 0 = 0)
     (add_le : ∀ x y, f (x + y) ≤ f x + f y) (smul_le : ∀ (r : 𝕜) (x), f (r • x) ≤ ‖r‖ * f x) :
     Seminorm 𝕜 E :=
   Seminorm.of f add_le fun r x => by
@@ -416,7 +417,7 @@ end SeminormedCommRing
 
 section NormedField
 
-variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {p q : Seminorm 𝕜 E} {x : E}
+variable [Field 𝕜] [StrictNormedRing 𝕜] [AddCommGroup E] [Module 𝕜 E] {p q : Seminorm 𝕜 E} {x : E}
 
 /-- Auxiliary lemma to show that the infimum of seminorms is well-defined. -/
 theorem bddBelow_range_add : BddBelow (range fun u => p u + q (x - u)) :=
@@ -877,7 +878,8 @@ end SeminormedRing
 
 section NormedField
 
-variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] (p : Seminorm 𝕜 E) {r : ℝ} {x : E}
+variable [Field 𝕜] [StrictNormedRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
+  (p : Seminorm 𝕜 E) {r : ℝ} {x : E}
 
 theorem closedBall_iSup {ι : Sort*} {p : ι → Seminorm 𝕜 E} (hp : BddAbove (range p)) (e : E)
     {r : ℝ} (hr : 0 < r) : closedBall (⨆ i, p i) e r = ⋂ i, closedBall (p i) e r := by
@@ -972,7 +974,7 @@ end NormedField
 
 section Convex
 
-variable [NormedField 𝕜] [AddCommGroup E] [NormedSpace ℝ 𝕜] [Module 𝕜 E]
+variable [Field 𝕜] [StrictNormedRing 𝕜] [AddCommGroup E] [NormedSpace ℝ 𝕜] [Module 𝕜 E]
 
 section SMul
 
@@ -1013,7 +1015,8 @@ end Convex
 
 section RestrictScalars
 
-variable (𝕜) {𝕜' : Type*} [NormedField 𝕜] [Ring 𝕜'] [SeminormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜']
+variable (𝕜) {𝕜' : Type*} [Field 𝕜] [StrictNormedRing 𝕜]
+  [Ring 𝕜'] [SeminormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜']
   [NormOneClass 𝕜'] [AddCommGroup E] [Module 𝕜' E] [SMul 𝕜 E] [IsScalarTower 𝕜 𝕜' E]
 
 /-- Reinterpret a seminorm over a field `𝕜'` as a seminorm over a smaller field `𝕜`. This will
@@ -1042,7 +1045,8 @@ end RestrictScalars
 
 section Continuity
 
-variable [NontriviallyNormedField 𝕜] [Ring 𝕝] [SeminormedRing 𝕝] [AddCommGroup E] [Module 𝕜 E]
+variable [Field 𝕜] [NontriviallyNormedField 𝕜] [Ring 𝕝] [SeminormedRing 𝕝]
+  [AddCommGroup E] [Module 𝕜 E]
 variable [Module 𝕝 E]
 
 /-- A seminorm is continuous at `0` if `p.closedBall 0 r ∈ 𝓝 0` for *all* `r > 0`.
@@ -1183,7 +1187,7 @@ end Continuity
 
 section ShellLemmas
 
-variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable [Field 𝕜] [StrictNormedRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
 
 /-- Let `p` be a seminorm on a vector space over a `NormedField`.
 If there is a scalar `c` with `‖c‖>1`, then any `x` such that `p x ≠ 0` can be
@@ -1258,7 +1262,7 @@ end ShellLemmas
 
 section NontriviallyNormedField
 
-variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable [Field 𝕜] [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 
 /-- Let `p i` be a family of seminorms on `E`. Let `s` be an absorbent set in `𝕜`.
 If all seminorms are uniformly bounded at every point of `s`,
@@ -1282,7 +1286,8 @@ end Seminorm
 
 section normSeminorm
 
-variable (𝕜) (E) [NormedField 𝕜] [AddCommGroup E] [SeminormedAddGroup E] [NormedSpace 𝕜 E] {r : ℝ}
+variable (𝕜) (E) [Field 𝕜] [StrictNormedRing 𝕜]
+  [AddCommGroup E] [SeminormedAddGroup E] [NormedSpace 𝕜 E] {r : ℝ}
 
 /-- The norm of a seminormed group as a seminorm. -/
 def normSeminorm : Seminorm 𝕜 E :=

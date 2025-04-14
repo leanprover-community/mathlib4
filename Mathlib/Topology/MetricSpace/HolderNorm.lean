@@ -201,7 +201,7 @@ variable {r : ℝ≥0} {f g : X → Y}
 lemma MemHolder.add (hf : MemHolder r f) (hg : MemHolder r g) : MemHolder r (f + g) :=
   (hf.holderWith.add hg.holderWith).memHolder
 
-lemma MemHolder.smul {𝕜} [NormedDivisionRing 𝕜] [Module 𝕜 Y] [IsBoundedSMul 𝕜 Y]
+lemma MemHolder.smul {𝕜} [DivisionRing 𝕜] [StrictNormedRing 𝕜] [Module 𝕜 Y] [IsBoundedSMul 𝕜 Y]
     {c : 𝕜} (hf : MemHolder r f) : MemHolder r (c • f) :=
   (hf.holderWith.smul c).memHolder
 
@@ -225,7 +225,8 @@ lemma eHolderNorm_add_le :
     obtain (h | h) := hfg
     all_goals simp [h]
 
-lemma eHolderNorm_smul {α} [NormedDivisionRing α] [Module α Y] [IsBoundedSMul α Y] (c : α) :
+lemma eHolderNorm_smul {α}
+    [DivisionRing α] [StrictNormedRing α] [Module α Y] [IsBoundedSMul α Y] (c : α) :
     eHolderNorm r (c • f) = ‖c‖₊ * eHolderNorm r f := by
   by_cases hc : ‖c‖₊ = 0
   · rw [nnnorm_eq_zero] at hc
@@ -248,7 +249,8 @@ lemma eHolderNorm_smul {α} [NormedDivisionRing α] [Module α Y] [IsBoundedSMul
     rw [inv_smul_smul₀ hc] at this
     exact this.eHolderNorm_lt_top.ne hf
 
-lemma MemHolder.nnHolderNorm_smul {α} [NormedDivisionRing α] [Module α Y] [IsBoundedSMul α Y]
+lemma MemHolder.nnHolderNorm_smul {α}
+    [DivisionRing α] [StrictNormedRing α] [Module α Y] [IsBoundedSMul α Y]
     (hf : MemHolder r f) (c : α) :
     nnHolderNorm r (c • f) = ‖c‖₊ * nnHolderNorm r f := by
   rw [← ENNReal.coe_inj, coe_mul, hf.coe_nnHolderNorm_eq_eHolderNorm,

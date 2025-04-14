@@ -237,7 +237,7 @@ end
 
 section
 
-variable {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
+variable {𝕜 : Type*} [Field 𝕜] [StrictNormedRing 𝕜] [NormedSpace 𝕜 E]
 
 instance normedSpace : NormedSpace 𝕜 C(α, E) where
   norm_smul_le := norm_smul_le
@@ -290,20 +290,21 @@ theorem linearIsometryBoundedOfCompact_of_compact_toEquiv :
 end
 
 @[simp] lemma nnnorm_smul_const {R β : Type*} [AddCommGroup β] [NormedAddGroup β]
-    [NormedDivisionRing R]
+    [DivisionRing R] [StrictNormedRing R]
     [Module R β] [IsBoundedSMul R β] (f : C(α, R)) (b : β) :
     ‖f • const α b‖₊ = ‖f‖₊ * ‖b‖₊ := by
   simp only [nnnorm_eq_iSup_nnnorm, smul_apply', const_apply, nnnorm_smul, iSup_mul]
 
 @[simp] lemma norm_smul_const {R β : Type*} [AddCommGroup β] [NormedAddGroup β]
-    [NormedDivisionRing R]
+    [DivisionRing R] [StrictNormedRing R]
     [Module R β] [IsBoundedSMul R β] (f : C(α, R)) (b : β) :
     ‖f • const α b‖ = ‖f‖ * ‖b‖ := by
   simp only [← coe_nnnorm, NNReal.coe_mul, nnnorm_smul_const]
 
 section
 
-variable {𝕜 : Type*} {γ : Type*} [NormedField 𝕜] [Ring γ] [SeminormedRing γ] [NormedAlgebra 𝕜 γ]
+variable {𝕜 : Type*} {γ : Type*}
+  [Field 𝕜] [StrictNormedRing 𝕜] [Ring γ] [SeminormedRing γ] [NormedAlgebra 𝕜 γ]
 
 instance : NormedAlgebra 𝕜 C(α, γ) :=
   { ContinuousMap.normedSpace, ContinuousMap.algebra with }
@@ -349,7 +350,7 @@ end ContinuousMap
 section CompLeft
 
 variable (X : Type*) {𝕜 β γ : Type*} [TopologicalSpace X] [CompactSpace X]
-  [NontriviallyNormedField 𝕜]
+  [Field 𝕜] [NontriviallyNormedField 𝕜]
 
 variable [AddCommGroup β] [SeminormedAddGroup β] [NormedSpace 𝕜 β]
   [AddCommGroup γ] [SeminormedAddGroup γ] [NormedSpace 𝕜 γ]

@@ -33,7 +33,7 @@ open Filter TopologicalSpace Set
 
 section NormedField
 
-variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type u} [Field 𝕜] [NontriviallyNormedField 𝕜]
 variable {F : Type v} [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
 variable {f : 𝕜 → F}
 variable {f' : F}

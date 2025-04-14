@@ -31,7 +31,7 @@ This file proves analysis theorems for Pochhammer polynomials.
 
 section DescPochhammer
 
-variable {n : ℕ} {𝕜 : Type*} {k : 𝕜} [NontriviallyNormedField 𝕜]
+variable {n : ℕ} {𝕜 : Type*} {k : 𝕜} [Field 𝕜] [NontriviallyNormedField 𝕜]
 
 /-- `descPochhammer 𝕜 n` is differentiable. -/
 theorem differentiable_descPochhammer_eval : Differentiable 𝕜 (descPochhammer 𝕜 n).eval := by

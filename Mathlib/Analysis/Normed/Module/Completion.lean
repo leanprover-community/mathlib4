@@ -29,7 +29,7 @@ namespace Completion
 
 variable (𝕜 E : Type*)
 
-instance [NormedField 𝕜] [AddCommGroup E] [SeminormedAddGroup E] [NormedSpace 𝕜 E] :
+instance [Field 𝕜] [StrictNormedRing 𝕜] [AddCommGroup E] [SeminormedAddGroup E] [NormedSpace 𝕜 E] :
     NormedSpace 𝕜 (Completion E) where
   norm_smul_le := norm_smul_le
 
@@ -59,7 +59,8 @@ theorem coe_toComplL : ⇑(toComplL : E →L[𝕜] Completion E) = ((↑) : E �
   rfl
 
 @[simp]
-theorem norm_toComplL {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup E] [NormedAddGroup E]
+theorem norm_toComplL {𝕜 E : Type*}
+    [Field 𝕜] [NontriviallyNormedField 𝕜] [AddCommGroup E] [NormedAddGroup E]
     [NormedSpace 𝕜 E] [Nontrivial E] : ‖(toComplL : E →L[𝕜] Completion E)‖ = 1 :=
   (toComplₗᵢ : E →ₗᵢ[𝕜] Completion E).norm_toContinuousLinearMap
 
@@ -76,14 +77,13 @@ instance [Ring A] [SeminormedRing A] : NormedRing (Completion A) where
     | hp => apply isClosed_le <;> fun_prop
     | ih x y => simpa only [← coe_mul, norm_coe] using norm_mul_le x y
 
-instance [NormedField 𝕜] [CommRing A] [SeminormedRing A] [NormedAlgebra 𝕜 A] :
+instance [Field 𝕜] [StrictNormedRing 𝕜] [CommRing A] [SeminormedRing A] [NormedAlgebra 𝕜 A] :
     NormedAlgebra 𝕜 (Completion A) where
   norm_smul_le := norm_smul_le
 
-instance [NormedField A] [CompletableTopField A] :
-    NormedField (UniformSpace.Completion A) where
+instance [Field A] [StrictNormedRing A] [CompletableTopField A] :
+    StrictNormedRing (UniformSpace.Completion A) where
   __ : NormedRing (Completion A) := inferInstance
-  __ : Field (Completion A) := inferInstance
   norm_mul x y := induction_on₂ x y (isClosed_eq (by fun_prop) (by fun_prop)) (by simp [← coe_mul])
 
 end Algebra

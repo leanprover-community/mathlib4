@@ -39,7 +39,7 @@ section LieGroup
 open Bundle Filter Function Set
 open scoped Manifold
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
   {H : Type*} [TopologicalSpace H]
   {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
   {I : ModelWithCorners 𝕜 E H}

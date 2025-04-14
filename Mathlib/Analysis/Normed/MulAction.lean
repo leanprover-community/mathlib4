@@ -88,7 +88,7 @@ end SeminormedRing
 
 section NormedDivisionRing
 
-variable [NormedDivisionRing α] [AddGroup β] [SeminormedAddGroup β]
+variable [DivisionRing α] [StrictNormedRing α] [AddGroup β] [SeminormedAddGroup β]
 variable [MulActionWithZero α β] [IsBoundedSMul α β]
 
 theorem norm_smul (r : α) (x : β) : ‖r • x‖ = ‖r‖ * ‖x‖ := by
@@ -109,7 +109,7 @@ end NormedDivisionRing
 
 section NormedDivisionRingModule
 
-variable [NormedDivisionRing α] [AddCommGroup β] [SeminormedAddGroup β]
+variable [DivisionRing α] [StrictNormedRing α] [AddCommGroup β] [SeminormedAddGroup β]
 variable [Module α β] [IsBoundedSMul α β]
 
 theorem dist_smul₀ (s : α) (x y : β) : dist (s • x) (s • y) = ‖s‖ * dist x y := by

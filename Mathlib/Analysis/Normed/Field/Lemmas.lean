@@ -29,7 +29,7 @@ open scoped Topology NNReal Pointwise
 
 section NormedDivisionRing
 
-variable [NormedDivisionRing α]
+variable [DivisionRing α] [StrictNormedRing α]
 
 /-- Multiplication by a nonzero element `a` on the left
 as a `DilationEquiv` of a normed division ring. -/
@@ -145,8 +145,9 @@ In the discrete topology case, all the norms are 1, by `norm_eq_one_iff_ne_zero_
 The nontrivially normed field instance is provided by a subtype with a proof that the
 forgetful inheritance to the existing `NormedField` instance is definitionally true.
 This allows one to have the new `NontriviallyNormedField` instance without data clashes. -/
-lemma discreteTopology_or_nontriviallyNormedField (𝕜 : Type*) [h : NormedField 𝕜] :
-    DiscreteTopology 𝕜 ∨ Nonempty ({h' : NontriviallyNormedField 𝕜 // h'.toNormedField = h}) := by
+lemma discreteTopology_or_nontriviallyNormedField (𝕜 : Type*) [Field 𝕜] [h : StrictNormedRing 𝕜] :
+    DiscreteTopology 𝕜 ∨
+      Nonempty ({h' : NontriviallyNormedField 𝕜 // h'.toStrictNormedRing = h}) := by
   by_cases H : ∃ x : 𝕜, x ≠ 0 ∧ ‖x‖ ≠ 1
   · exact Or.inr ⟨(⟨NontriviallyNormedField.ofNormNeOne H, rfl⟩)⟩
   · simp_rw [discreteTopology_iff_isOpen_singleton_zero, Metric.isOpen_singleton_iff, dist_eq_norm,
@@ -157,7 +158,7 @@ lemma discreteTopology_or_nontriviallyNormedField (𝕜 : Type*) [h : NormedFiel
     -- contextual to reuse the `a ≠ 0` hypothesis in the proof of `a ≠ 0 ∧ ‖a‖ ≠ 1`
     simp (config := {contextual := true}) [add_comm, ne_of_lt]
 
-lemma discreteTopology_of_bddAbove_range_norm {𝕜 : Type*} [NormedField 𝕜]
+lemma discreteTopology_of_bddAbove_range_norm {𝕜 : Type*} [Field 𝕜] [StrictNormedRing 𝕜]
     (h : BddAbove (Set.range fun k : 𝕜 ↦ ‖k‖)) :
     DiscreteTopology 𝕜 := by
   refine (NormedField.discreteTopology_or_nontriviallyNormedField _).resolve_right ?_
@@ -168,7 +169,7 @@ lemma discreteTopology_of_bddAbove_range_norm {𝕜 : Type*} [NormedField 𝕜]
 
 section Densely
 
-variable (α) [DenselyNormedField α]
+variable (α) [Field α] [DenselyNormedField α]
 
 theorem denseRange_nnnorm : DenseRange (nnnorm : α → ℝ≥0) :=
   dense_of_exists_between fun _ _ hr =>
@@ -178,7 +179,7 @@ theorem denseRange_nnnorm : DenseRange (nnnorm : α → ℝ≥0) :=
 end Densely
 
 section NontriviallyNormedField
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℤ} {x : 𝕜}
+variable {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜] {n : ℤ} {x : 𝕜}
 
 @[simp]
 protected lemma continuousAt_zpow : ContinuousAt (fun x ↦ x ^ n) x ↔ x ≠ 0 ∨ 0 ≤ n := by
@@ -195,7 +196,7 @@ protected lemma continuousAt_inv : ContinuousAt Inv.inv x ↔ x ≠ 0 := by
 end NontriviallyNormedField
 end NormedField
 
-instance Rat.instNormedField : NormedField ℚ where
+instance Rat.instStrictNormedRing : StrictNormedRing ℚ where
   __ := instNormedAddGroup
   norm_mul a b := by simp only [norm, Rat.cast_mul, abs_mul]
 
@@ -206,7 +207,8 @@ instance Rat.instDenselyNormedField : DenselyNormedField ℚ where
 
 section Complete
 
-lemma NormedField.completeSpace_iff_isComplete_closedBall {K : Type*} [NormedField K] :
+lemma NormedField.completeSpace_iff_isComplete_closedBall {K : Type*}
+    [Field K] [StrictNormedRing K] :
     CompleteSpace K ↔ IsComplete (Metric.closedBall 0 1 : Set K) := by
   constructor <;> intro h
   · exact Metric.isClosed_closedBall.isComplete

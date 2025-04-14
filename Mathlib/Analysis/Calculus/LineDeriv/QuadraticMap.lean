@@ -16,7 +16,7 @@ Note that this statement does not need topology on the domain.
 In particular, it applies to discontinuous quadratic forms on infinite dimensional spaces.
 -/
 
-variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable {𝕜 E F : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
   [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
 
 namespace QuadraticMap

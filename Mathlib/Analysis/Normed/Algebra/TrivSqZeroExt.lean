@@ -265,7 +265,7 @@ end Ring
 
 section Algebra
 
-variable [NormedField 𝕜] [Ring R] [NormedRing R] [AddCommGroup M] [NormedAddGroup M]
+variable [Field 𝕜] [StrictNormedRing 𝕜] [Ring R] [NormedRing R] [AddCommGroup M] [NormedAddGroup M]
 variable [NormedAlgebra 𝕜 R] [NormedSpace 𝕜 M] [Module R M] [Module Rᵐᵒᵖ M]
 variable [IsBoundedSMul R M] [IsBoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
 variable [IsScalarTower 𝕜 R M] [IsScalarTower 𝕜 Rᵐᵒᵖ M]

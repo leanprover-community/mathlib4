@@ -18,7 +18,7 @@ import Mathlib.Analysis.NormedSpace.OperatorNorm.Prod
 open Set ChartedSpace
 open scoped Topology Manifold
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
   -- declare a charted space `M` over the pair `(E, H)`.
   {E : Type*}
   [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]

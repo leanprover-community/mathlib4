@@ -41,7 +41,7 @@ theorem chartAt_apply {a : Rˣ} {b : Rˣ} : chartAt R a b = b :=
 theorem chartAt_source {a : Rˣ} : (chartAt R a).source = Set.univ :=
   rfl
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 R]
+variable {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 R]
 
 instance : IsManifold 𝓘(𝕜, R) n Rˣ :=
   isOpenEmbedding_val.isManifold_singleton

@@ -44,7 +44,7 @@ noncomputable section
 open Set Filter Function
 open scoped Manifold Topology
 
-variable {𝕜 E M H E' M' H' : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 E M H E' M' H' : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
   [AddCommGroup E] [NormedAddGroup E]
   [NormedSpace 𝕜 E] [TopologicalSpace H] [TopologicalSpace M] {n : WithTop ℕ∞}
   (f f' : PartialHomeomorph M H) {I : ModelWithCorners 𝕜 E H}
@@ -778,7 +778,7 @@ section Topology
 
 -- Let `M` be a topological manifold over the field 𝕜.
 variable
-  {E : Type*} {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {E : Type*} {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
   [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 

@@ -180,7 +180,7 @@ theorem decay_neg_aux (k n : ℕ) (f : 𝓢(E, F)) (x : E) :
     ‖x‖ ^ k * ‖iteratedFDeriv ℝ n (-f : E → F) x‖ = ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ := by
   rw [iteratedFDeriv_neg_apply, norm_neg]
 
-variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+variable [Field 𝕜] [StrictNormedRing 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
 theorem decay_smul_aux (k n : ℕ) (f : 𝓢(E, F)) (c : 𝕜) (x : E) :
     ‖x‖ ^ k * ‖iteratedFDeriv ℝ n (c • (f : E → F)) x‖ =
@@ -214,8 +214,8 @@ end SeminormAux
 
 section SMul
 
-variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F] [NormedField 𝕜'] [NormedSpace 𝕜' F]
-  [SMulCommClass ℝ 𝕜' F]
+variable [Field 𝕜] [StrictNormedRing 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+  [Field 𝕜'] [StrictNormedRing 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F]
 
 instance instSMul : SMul 𝕜 𝓢(E, F) :=
   ⟨fun c f =>
@@ -367,7 +367,7 @@ end AddCommGroup
 
 section Module
 
-variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+variable [Field 𝕜] [StrictNormedRing 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
 instance instModule : Module 𝕜 𝓢(E, F) :=
   coeHom_injective.module 𝕜 (coeHom E F) fun _ _ => rfl
@@ -379,7 +379,7 @@ section Seminorms
 /-! ### Seminorms on Schwartz space -/
 
 
-variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+variable [Field 𝕜] [StrictNormedRing 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 variable (𝕜)
 
 /-- The seminorms of the Schwartz space given by the best constants in the definition of
@@ -479,7 +479,7 @@ section Topology
 /-! ### The topology on the Schwartz space -/
 
 
-variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+variable [Field 𝕜] [StrictNormedRing 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 variable (𝕜 E F)
 
 instance instTopologicalSpace : TopologicalSpace 𝓢(E, F) :=
@@ -702,7 +702,7 @@ section CLM
 /-! ### Construction of continuous linear maps between Schwartz spaces -/
 
 
-variable [NormedField 𝕜] [NormedField 𝕜']
+variable [Field 𝕜] [StrictNormedRing 𝕜] [Field 𝕜'] [StrictNormedRing 𝕜']
 variable [AddCommGroup D] [NormedAddGroup D] [NormedSpace ℝ D]
 variable [NormedSpace 𝕜 E] [SMulCommClass ℝ 𝕜 E]
 variable [AddCommGroup G] [NormedAddGroup G]
@@ -772,7 +772,7 @@ end CLM
 
 section EvalCLM
 
-variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+variable [Field 𝕜] [StrictNormedRing 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
 /-- The map applying a vector to Hom-valued Schwartz function as a continuous linear map. -/
 protected def evalCLM (m : E) : 𝓢(E, E →L[ℝ] F) →L[𝕜] 𝓢(E, F) :=
@@ -795,7 +795,7 @@ end EvalCLM
 
 section Multiplication
 
-variable [NontriviallyNormedField 𝕜] [NormedAlgebra ℝ 𝕜]
+variable [Field 𝕜] [NontriviallyNormedField 𝕜] [NormedAlgebra ℝ 𝕜]
   [AddCommGroup D] [NormedAddGroup D] [NormedSpace ℝ D]
   [AddCommGroup G] [NormedAddGroup G] [NormedSpace ℝ G]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] [NormedSpace 𝕜 G]
@@ -1261,7 +1261,7 @@ open scoped NNReal ENNReal
 
 variable [AddCommGroup D] [NormedAddGroup D] [MeasurableSpace D]
   [MeasurableSpace E] [OpensMeasurableSpace E]
-  [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+  [Field 𝕜] [StrictNormedRing 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
 variable (𝕜 F) in
 /-- The `L^p` norm of a Schwartz function is controlled by a finite family of Schwartz seminorms.

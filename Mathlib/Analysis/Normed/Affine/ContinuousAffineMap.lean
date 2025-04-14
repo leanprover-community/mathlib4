@@ -45,8 +45,9 @@ variable {𝕜 R V W W₂ P Q Q₂ : Type*}
 variable [AddCommGroup V] [NormedAddGroup V] [MetricSpace P] [NormedAddTorsor V P]
 variable [AddCommGroup W] [NormedAddGroup W] [MetricSpace Q] [NormedAddTorsor W Q]
 variable [AddCommGroup W₂] [NormedAddGroup W₂] [MetricSpace Q₂] [NormedAddTorsor W₂ Q₂]
-variable [NormedField R] [NormedSpace R V] [NormedSpace R W] [NormedSpace R W₂]
-variable [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 V] [NormedSpace 𝕜 W] [NormedSpace 𝕜 W₂]
+variable [Field R] [StrictNormedRing R] [NormedSpace R V] [NormedSpace R W] [NormedSpace R W₂]
+variable [Field 𝕜] [NontriviallyNormedField 𝕜]
+  [NormedSpace 𝕜 V] [NormedSpace 𝕜 W] [NormedSpace 𝕜 W₂]
 
 /-- The linear map underlying a continuous affine map is continuous. -/
 def contLinear (f : P →ᴬ[R] Q) : V →L[R] W :=

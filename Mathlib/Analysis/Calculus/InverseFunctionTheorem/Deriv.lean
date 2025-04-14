@@ -17,7 +17,7 @@ We use `ContinuousLinearEquiv.unitsEquivAut` to translate `HasStrictDerivAt f f'
 open Filter
 open scoped Topology
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] (f : 𝕜 → 𝕜)
+variable {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] (f : 𝕜 → 𝕜)
 
 noncomputable section
 namespace HasStrictDerivAt

@@ -29,8 +29,7 @@ open scoped Topology NNReal
 
 /-- A non-unital seminormed ring is a not-necessarily-unital ring
 endowed with a seminorm which satisfies the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
-@[deprecated "Use `[NonUnitalRing α] [SeminormedRing α]` instead."
-  (since := "2025-04-14")]
+@[deprecated "Use `[NonUnitalRing α] [SeminormedRing α]` instead." (since := "2025-04-14")]
 structure NonUnitalSeminormedRing (α : Type*) extends Norm α, NonUnitalRing α,
   PseudoMetricSpace α where
   /-- The distance is induced by the norm. -/
@@ -48,8 +47,7 @@ class SeminormedRing (α : Type*) [NonUnitalRing α] extends Norm α, PseudoMetr
 
 /-- A non-unital normed ring is a not-necessarily-unital ring
 endowed with a norm which satisfies the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
-@[deprecated "Use `[NonUnitalRing α] [NormedRing α]` instead."
-  (since := "2025-04-14")]
+@[deprecated "Use `[NonUnitalRing α] [NormedRing α]` instead." (since := "2025-04-14")]
 structure NonUnitalNormedRing (α : Type*) extends Norm α, NonUnitalRing α, MetricSpace α where
   /-- The distance is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = norm (x - y)
@@ -72,8 +70,7 @@ instance (priority := 100) NormedRing.toSeminormedRing [NonUnitalRing α] [β : 
 set_option linter.deprecated false in
 /-- A non-unital seminormed commutative ring is a non-unital commutative ring endowed with a
 seminorm which satisfies the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
-@[deprecated "Use `[NonUnitalCommRing α] [SeminormedRing α]` instead."
-  (since := "2025-04-14")]
+@[deprecated "Use `[NonUnitalCommRing α] [SeminormedRing α]` instead." (since := "2025-04-14")]
 structure NonUnitalSeminormedCommRing (α : Type*)
     extends NonUnitalSeminormedRing α, NonUnitalCommRing α where
 
@@ -82,8 +79,7 @@ attribute [nolint docBlame] NonUnitalSeminormedCommRing.toNonUnitalCommRing
 set_option linter.deprecated false in
 /-- A non-unital normed commutative ring is a non-unital commutative ring endowed with a
 norm which satisfies the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
-@[deprecated "Use `[NonUnitalCommRing α] [NormedRing α]` instead."
-  (since := "2025-04-14")]
+@[deprecated "Use `[NonUnitalCommRing α] [NormedRing α]` instead." (since := "2025-04-14")]
 structure NonUnitalNormedCommRing (α : Type*) extends
     NonUnitalNormedRing α, NonUnitalCommRing α where
 
@@ -91,15 +87,26 @@ attribute [nolint docBlame] NonUnitalNormedCommRing.toNonUnitalCommRing
 
 /-- A seminormed commutative ring is a commutative ring endowed with a seminorm which satisfies
 the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
-@[deprecated "Use `[CommRing α] [SeminormedRing α]` instead."
-  (since := "2025-04-14")]
+@[deprecated "Use `[CommRing α] [SeminormedRing α]` instead." (since := "2025-04-14")]
 structure SeminormedCommRing (α : Type*) extends CommRing α, SeminormedRing α where
 
 /-- A normed commutative ring is a commutative ring endowed with a norm which satisfies
 the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
-@[deprecated "Use `[CommRing α] [NormedRing α]` instead."
-  (since := "2025-04-14")]
+@[deprecated "Use `[CommRing α] [NormedRing α]` instead." (since := "2025-04-14")]
 structure NormedCommRing (α : Type*) extends CommRing α, NormedRing α where
+
+/-- A strictly normed ring is a ring endowed with a norm which satisfies `‖x y‖ = ‖x‖ ‖y‖`. -/
+class StrictNormedRing (α : Type*) [NonUnitalRing α] extends Norm α, MetricSpace α where
+  /-- The distance is induced by the norm. -/
+  dist_eq : ∀ x y, dist x y = norm (x - y)
+  /-- The norm is multiplicative. -/
+  protected norm_mul : ∀ a b, norm (a * b) = norm a * norm b
+
+-- see Note [lower instance priority]
+/-- A strictly normed ring is a normed ring. -/
+instance (priority := 100) StrictNormedRing.toNormedRing [NonUnitalRing α] [StrictNormedRing α] :
+    NormedRing α :=
+  { ‹StrictNormedRing α› with norm_mul_le a b := (StrictNormedRing.norm_mul a b).le }
 
 instance PUnit.normedRing : NormedRing PUnit :=
   { PUnit.normedAddGroup with
@@ -510,8 +517,7 @@ end RingHomIsometric
 section NormMulClass
 
 /-- A mixin class for strict multiplicativity of the norm, `‖a * b‖ = ‖a‖ * ‖b‖` (rather than
-`≤` as in the definition of `NormedRing`). Many `NormedRing`s satisfy this stronger property,
-including all `NormedDivisionRing`s and `NormedField`s. -/
+`≤` as in the definition of `NormedRing`). `StrictNormedRing`s satisfy this stronger property. -/
 class NormMulClass (α : Type*) [Norm α] [Mul α] : Prop where
   /-- The norm is multiplicative. -/
   protected norm_mul : ∀ (a b : α), ‖a * b‖ = ‖a‖ * ‖b‖
@@ -609,6 +615,14 @@ instance NormMulClass.toNoZeroDivisors : NoZeroDivisors α where
 
 end NormedRing
 
+instance (priority := 900) StrictNormedRing.toNormMulClass [NonUnitalRing α] [StrictNormedRing α] :
+    NormMulClass α where
+  norm_mul := StrictNormedRing.norm_mul
+
+instance (priority := 900) StrictNormedRing.toNormOneClass [DivisionRing α] [StrictNormedRing α] :
+    NormOneClass α :=
+  ⟨mul_left_cancel₀ (mt norm_eq_zero.1 (one_ne_zero' α)) <| by rw [← norm_mul, mul_one, mul_one]⟩
+
 end NormMulClass
 
 /-! ### Induced normed structures -/
@@ -627,12 +641,21 @@ abbrev SeminormedRing.induced [NonUnitalRing R] [NonUnitalRing S] [SeminormedRin
     norm_mul_le x y := show ‖f _‖ ≤ _ from (map_mul f x y).symm ▸ norm_mul_le (f x) (f y) }
 
 /-- An injective non-unital ring homomorphism from a `NonUnitalRing` to a non-unital
-`NonUnitalNormedRing` induces a `NonUnitalNormedRing` structure on the domain.
+`NormedRing` induces a `NormedRing` structure on the domain.
 
 See note [reducible non-instances] -/
 abbrev NormedRing.induced [NonUnitalRing R] [NonUnitalRing S] [NormedRing S]
     [NonUnitalRingHomClass F R S] (f : F) (hf : Function.Injective f) : NormedRing R :=
   { SeminormedRing.induced R S f, NormedAddGroup.induced R S f hf with }
+
+/-- An injective non-unital ring homomorphism from a `NonUnitalRing` to a non-unital
+`NormedRing` induces a `StrictNormedRing` structure on the domain.
+
+See note [reducible non-instances] -/
+abbrev StrictNormedRing.induced [NonUnitalRing R] [NonUnitalRing S] [StrictNormedRing S]
+    [NonUnitalRingHomClass F R S] (f : F) (hf : Function.Injective f) : StrictNormedRing R :=
+  { NormedAddGroup.induced R S f hf with
+    norm_mul x y := show ‖f _‖ = _ from (map_mul f x y).symm ▸ norm_mul (f x) (f y) }
 
 /-- A ring homomorphism from a `Ring R` to a `SeminormedRing S` which induces the norm structure
 `SeminormedRing.induced` makes `R` satisfy `‖(1 : R)‖ = 1` whenever `‖(1 : S)‖ = 1`. -/
@@ -663,6 +686,10 @@ instance toSeminormedRing [Ring R] [SeminormedRing R] [SubringClass S R] (s : S)
 instance toNormedRing [Ring R] [NormedRing R] [SubringClass S R] (s : S) : NormedRing s :=
   NormedRing.induced s R (SubringClass.subtype s) Subtype.val_injective
 
+instance toStrictNormedRing [Ring R] [StrictNormedRing R] [SubringClass S R] (s : S) :
+    StrictNormedRing s :=
+  StrictNormedRing.induced s R (SubringClass.subtype s) Subtype.val_injective
+
 instance toNormOneClass [Ring R] [SeminormedRing R] [NormOneClass R] [SubringClass S R] (s : S) :
     NormOneClass s :=
   .induced s R <| SubringClass.subtype _
@@ -687,5 +714,11 @@ noncomputable def toNormedRing {R : Type*} [Ring R] (v : AbsoluteValue R ℝ) : 
   norm_mul_le x y := (v.map_mul x y).le
   eq_of_dist_eq_zero := by simp only [MulHom.toFun_eq_coe, AbsoluteValue.coe_toMulHom,
     AbsoluteValue.map_sub_eq_zero_iff, imp_self, implies_true]
+
+/-- A real absolute value on a ring determines a `StrictNormedRing` structure. -/
+noncomputable def toStrictNormedRing {R : Type*} [Ring R] (v : AbsoluteValue R ℝ) :
+    StrictNormedRing R where
+  __ := v.toNormedRing
+  norm_mul := v.map_mul
 
 end AbsoluteValue

@@ -60,8 +60,8 @@ open scoped Nat Topology ENNReal
 
 section AnyFieldAnyAlgebra
 
-variable {𝕂 𝔸 : Type*} [NontriviallyNormedField 𝕂] [Ring 𝔸] [NormedRing 𝔸] [NormedAlgebra 𝕂 𝔸]
-  [CompleteSpace 𝔸]
+variable {𝕂 𝔸 : Type*} [Field 𝕂] [NontriviallyNormedField 𝕂]
+  [Ring 𝔸] [NormedRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
 
 /-- The exponential in a Banach algebra `𝔸` over a normed field `𝕂` has strict Fréchet derivative
 `1 : 𝔸 →L[𝕂] 𝔸` at zero, as long as it converges on a neighborhood of zero. -/
@@ -82,8 +82,8 @@ end AnyFieldAnyAlgebra
 
 section AnyFieldCommAlgebra
 
-variable {𝕂 𝔸 : Type*} [NontriviallyNormedField 𝕂] [CommRing 𝔸] [NormedRing 𝔸] [NormedAlgebra 𝕂 𝔸]
-  [CompleteSpace 𝔸]
+variable {𝕂 𝔸 : Type*} [Field 𝕂] [NontriviallyNormedField 𝕂]
+  [CommRing 𝔸] [NormedRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
 
 /-- The exponential map in a commutative Banach algebra `𝔸` over a normed field `𝕂` of
 characteristic zero has Fréchet derivative `NormedSpace.exp 𝕂 x • 1 : 𝔸 →L[𝕂] 𝔸`
@@ -118,7 +118,7 @@ end AnyFieldCommAlgebra
 
 section deriv
 
-variable {𝕂 : Type*} [NontriviallyNormedField 𝕂] [CompleteSpace 𝕂]
+variable {𝕂 : Type*} [Field 𝕂] [NontriviallyNormedField 𝕂] [CompleteSpace 𝕂]
 
 /-- The exponential map in a complete normed field `𝕂` of characteristic zero has strict derivative
 `NormedSpace.exp 𝕂 x` at any point `x` in the disk of convergence. -/
@@ -245,7 +245,7 @@ open Asymptotics Filter
 
 section MemBall
 
-variable [NontriviallyNormedField 𝕂] [CharZero 𝕂]
+variable [Field 𝕂] [NontriviallyNormedField 𝕂] [CharZero 𝕂]
 variable [CommRing 𝕊] [NormedRing 𝕊] [Ring 𝔸] [NormedRing 𝔸]
 variable [NormedSpace 𝕂 𝕊] [NormedAlgebra 𝕂 𝔸] [Algebra 𝕊 𝔸] [ContinuousSMul 𝕊 𝔸]
 variable [IsScalarTower 𝕂 𝕊 𝔸]

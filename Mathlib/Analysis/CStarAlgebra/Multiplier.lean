@@ -62,7 +62,7 @@ universe u v
 `𝓜(𝕜, A)`, of a non-unital normed algebra.
 
 If `x : 𝓜(𝕜, A)`, then `x.fst` and `x.snd` are what is usually referred to as $L$ and $R$. -/
-structure DoubleCentralizer (𝕜 : Type u) (A : Type v) [NontriviallyNormedField 𝕜]
+structure DoubleCentralizer (𝕜 : Type u) (A : Type v) [Field 𝕜] [NontriviallyNormedField 𝕜]
     [NonUnitalRing A] [NormedRing A]
     [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A] extends
     (A →L[𝕜] A) × (A →L[𝕜] A) where
@@ -75,7 +75,7 @@ scoped[MultiplierAlgebra] notation "𝓜(" 𝕜 ", " A ")" => DoubleCentralizer 
 open MultiplierAlgebra
 
 @[ext]
-lemma DoubleCentralizer.ext (𝕜 : Type u) (A : Type v) [NontriviallyNormedField 𝕜]
+lemma DoubleCentralizer.ext (𝕜 : Type u) (A : Type v) [Field 𝕜] [NontriviallyNormedField 𝕜]
     [NonUnitalRing A] [NormedRing A] [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
     (a b : 𝓜(𝕜, A)) (h : a.toProd = b.toProd) : a = b := by
   cases a
@@ -86,7 +86,7 @@ namespace DoubleCentralizer
 
 section NontriviallyNormed
 
-variable (𝕜 A : Type*) [NontriviallyNormedField 𝕜] [NonUnitalRing A] [NormedRing A]
+variable (𝕜 A : Type*) [Field 𝕜] [NontriviallyNormedField 𝕜] [NonUnitalRing A] [NormedRing A]
 variable [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
 
 /-!
@@ -590,7 +590,7 @@ end NontriviallyNormed
 
 section DenselyNormed
 
-variable {𝕜 A : Type*} [DenselyNormedField 𝕜] [StarRing 𝕜]
+variable {𝕜 A : Type*} [Field 𝕜] [DenselyNormedField 𝕜] [StarRing 𝕜]
 variable [NonUnitalRing A] [NormedRing A] [StarRing A] [CStarRing A]
 variable [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A] [StarModule 𝕜 A]
 
@@ -622,7 +622,7 @@ instance instCStarRing : CStarRing 𝓜(𝕜, A) where
           _ ≤ ‖a‖₊ * ‖a‖₊ := by simp only [mul_one, nnnorm_fst, le_rfl]
       rw [← nnnorm_snd]
       simp only [mul_snd, ← sSup_unitClosedBall_eq_nnnorm, star_snd, mul_apply]
-      simp only [← @opNNNorm_mul_apply 𝕜 _ A]
+      simp only [← opNNNorm_mul_apply 𝕜 A]
       simp only [← sSup_unitClosedBall_eq_nnnorm, mul_apply']
       refine csSup_eq_of_forall_le_of_forall_lt_exists_gt (hball.image _) ?_ fun r hr => ?_
       · rintro - ⟨x, hx, rfl⟩

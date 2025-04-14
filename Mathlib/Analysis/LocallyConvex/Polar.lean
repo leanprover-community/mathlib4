@@ -138,7 +138,7 @@ end NormedRing
 
 section NontriviallyNormedField
 
-variable [NontriviallyNormedField 𝕜] [AddCommMonoid E] [AddCommMonoid F]
+variable [Field 𝕜] [NontriviallyNormedField 𝕜] [AddCommMonoid E] [AddCommMonoid F]
 variable [Module 𝕜 E] [Module 𝕜 F]
 
 

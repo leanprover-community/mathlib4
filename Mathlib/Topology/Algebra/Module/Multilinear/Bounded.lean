@@ -30,7 +30,7 @@ open scoped Topology
 
 namespace Bornology.IsVonNBounded
 
-variable {ι 𝕜 F : Type*} {E : ι → Type*} [NormedField 𝕜]
+variable {ι 𝕜 F : Type*} {E : ι → Type*} [Field 𝕜] [StrictNormedRing 𝕜]
   [∀ i, AddCommGroup (E i)] [∀ i, Module 𝕜 (E i)] [∀ i, TopologicalSpace (E i)]
   [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
 

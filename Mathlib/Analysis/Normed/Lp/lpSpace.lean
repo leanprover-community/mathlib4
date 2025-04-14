@@ -637,7 +637,7 @@ end IsBoundedSMul
 
 section DivisionRing
 
-variable [NormedDivisionRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜 (E i)]
+variable [DivisionRing 𝕜] [StrictNormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜 (E i)]
 
 theorem norm_const_smul (hp : p ≠ 0) {c : 𝕜} (f : lp E p) : ‖c • f‖ = ‖c‖ * ‖f‖ := by
   obtain rfl | hc := eq_or_ne c 0
@@ -650,7 +650,7 @@ end DivisionRing
 
 section NormedSpace
 
-variable [NormedField 𝕜] [∀ i, NormedSpace 𝕜 (E i)]
+variable [Field 𝕜] [StrictNormedRing 𝕜] [∀ i, NormedSpace 𝕜 (E i)]
 
 instance instNormedSpace [Fact (1 ≤ p)] : NormedSpace 𝕜 (lp E p) where
   norm_smul_le c f := norm_smul_le c f
@@ -843,7 +843,8 @@ end NormedCommRing
 section Algebra
 
 variable {I : Type*} {B : I → Type*}
-variable [NormedField 𝕜] [∀ i, Ring (B i)] [∀ i, NormedRing (B i)] [∀ i, NormedAlgebra 𝕜 (B i)]
+variable [Field 𝕜] [StrictNormedRing 𝕜]
+  [∀ i, Ring (B i)] [∀ i, NormedRing (B i)] [∀ i, NormedAlgebra 𝕜 (B i)]
 
 /-- A variant of `Pi.algebra` that lean can't find otherwise. -/
 instance _root_.Pi.algebraOfNormedAlgebra : Algebra 𝕜 (∀ i, B i) :=

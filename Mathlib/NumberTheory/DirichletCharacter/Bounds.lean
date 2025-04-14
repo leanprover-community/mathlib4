@@ -15,7 +15,7 @@ We consider Dirichlet characters `χ` with values in a normed field `F`.
 We show that `‖χ a‖ = 1` if `a` is a unit and `‖χ a‖ ≤ 1` in general.
 -/
 
-variable {F : Type*} [NormedField F] {n : ℕ} (χ : DirichletCharacter F n)
+variable {F : Type*} [Field F] [StrictNormedRing F] {n : ℕ} (χ : DirichletCharacter F n)
 
 namespace DirichletCharacter
 

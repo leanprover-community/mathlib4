@@ -205,7 +205,7 @@ section Normed
 
 section AnyFieldAnyAlgebra
 
-variable {𝕂 𝔸 𝔹 : Type*} [NontriviallyNormedField 𝕂]
+variable {𝕂 𝔸 𝔹 : Type*} [Field 𝕂] [NontriviallyNormedField 𝕂]
 variable [Ring 𝔸] [NormedRing 𝔸] [Ring 𝔹] [NormedRing 𝔹] [NormedAlgebra 𝕂 𝔸] [NormedAlgebra 𝕂 𝔹]
 
 theorem norm_expSeries_summable_of_mem_ball (x : 𝔸)
@@ -330,7 +330,8 @@ end AnyFieldAnyAlgebra
 
 section AnyFieldDivisionAlgebra
 
-variable {𝕂 𝔸 : Type*} [NontriviallyNormedField 𝕂] [NormedDivisionRing 𝔸] [NormedAlgebra 𝕂 𝔸]
+variable {𝕂 𝔸 : Type*} [Field 𝕂] [NontriviallyNormedField 𝕂]
+  [DivisionRing 𝔸] [StrictNormedRing 𝔸] [NormedAlgebra 𝕂 𝔸]
 variable (𝕂)
 
 theorem norm_expSeries_div_summable_of_mem_ball (x : 𝔸)
@@ -361,8 +362,8 @@ end AnyFieldDivisionAlgebra
 
 section AnyFieldCommAlgebra
 
-variable {𝕂 𝔸 : Type*} [NontriviallyNormedField 𝕂] [CommRing 𝔸] [NormedRing 𝔸] [NormedAlgebra 𝕂 𝔸]
-  [CompleteSpace 𝔸]
+variable {𝕂 𝔸 : Type*} [Field 𝕂] [NontriviallyNormedField 𝕂]
+  [CommRing 𝔸] [NormedRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
 
 /-- In a commutative Banach-algebra `𝔸` over a normed field `𝕂` of characteristic zero,
 `NormedSpace.exp 𝕂 (x+y) = (NormedSpace.exp 𝕂 x) * (NormedSpace.exp 𝕂 y)`
@@ -552,7 +553,7 @@ end AnyAlgebra
 
 section DivisionAlgebra
 
-variable {𝕂 𝔸 : Type*} [RCLike 𝕂] [NormedDivisionRing 𝔸] [NormedAlgebra 𝕂 𝔸]
+variable {𝕂 𝔸 : Type*} [RCLike 𝕂] [DivisionRing 𝔸] [StrictNormedRing 𝔸] [NormedAlgebra 𝕂 𝔸]
 variable (𝕂)
 include 𝕂
 

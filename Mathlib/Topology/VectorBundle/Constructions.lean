@@ -34,7 +34,7 @@ open Bundle Set FiberBundle
 
 namespace Bundle.Trivial
 
-variable (𝕜 : Type*) (B : Type*) (F : Type*) [NontriviallyNormedField 𝕜]
+variable (𝕜 : Type*) (B : Type*) (F : Type*) [Field 𝕜] [NontriviallyNormedField 𝕜]
   [AddCommGroup F] [NormedAddGroup F]
   [NormedSpace 𝕜 F] [TopologicalSpace B]
 
@@ -65,7 +65,8 @@ end Bundle.Trivial
 
 section
 
-variable (𝕜 : Type*) {B : Type*} [NontriviallyNormedField 𝕜] [TopologicalSpace B] (F₁ : Type*)
+variable (𝕜 : Type*) {B : Type*}
+  [Field 𝕜] [NontriviallyNormedField 𝕜] [TopologicalSpace B] (F₁ : Type*)
   [AddCommGroup F₁] [NormedAddGroup F₁] [NormedSpace 𝕜 F₁]
   (E₁ : B → Type*) [TopologicalSpace (TotalSpace F₁ E₁)]
   (F₂ : Type*) [AddCommGroup F₂] [NormedAddGroup F₂] [NormedSpace 𝕜 F₂] (E₂ : B → Type*)
@@ -159,7 +160,8 @@ instance [i : ∀ x : B, AddCommMonoid (E x)] (x : B') : AddCommMonoid ((f *ᵖ 
 instance [Semiring R] [∀ x : B, AddCommMonoid (E x)] [i : ∀ x, Module R (E x)] (x : B') :
     Module R ((f *ᵖ E) x) := i _
 
-variable {E F} [TopologicalSpace B'] [TopologicalSpace (TotalSpace F E)] [NontriviallyNormedField 𝕜]
+variable {E F} [TopologicalSpace B'] [TopologicalSpace (TotalSpace F E)]
+  [Field 𝕜] [NontriviallyNormedField 𝕜]
   [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
   [TopologicalSpace B] [∀ x, AddCommMonoid (E x)]
   [∀ x, Module 𝕜 (E x)] {K : Type*} [FunLike K B' B] [ContinuousMapClass K B' B]

@@ -22,7 +22,8 @@ open Set
 
 variable {E F 𝕜 𝕜₂ : Type*} [AddCommGroup E] [SeminormedAddGroup E]
   [AddCommGroup F] [SeminormedAddGroup F]
-  [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F]
+  [Field 𝕜] [NontriviallyNormedField 𝕜] [Field 𝕜₂] [NontriviallyNormedField 𝕜₂]
+  [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F]
   {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 
 /-- This is the standard Banach-Steinhaus theorem, or Uniform Boundedness Principle.

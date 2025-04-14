@@ -433,7 +433,8 @@ theorem Integrable.abs {β}
   rw [← memLp_one_iff_integrable] at hf ⊢
   exact hf.abs
 
-theorem Integrable.bdd_mul {F : Type*} [NormedDivisionRing F] {f g : α → F} (hint : Integrable g μ)
+theorem Integrable.bdd_mul {F : Type*}
+    [DivisionRing F] [StrictNormedRing F] {f g : α → F} (hint : Integrable g μ)
     (hm : AEStronglyMeasurable f μ) (hfbdd : ∃ C, ∀ x, ‖f x‖ ≤ C) :
     Integrable (fun x => f x * g x) μ := by
   rcases isEmpty_or_nonempty α with hα | hα
@@ -453,7 +454,8 @@ theorem Integrable.bdd_mul {F : Type*} [NormedDivisionRing F] {f g : α → F} (
 
 /-- **Hölder's inequality for integrable functions**: the scalar multiplication of an integrable
 vector-valued function by a scalar function with finite essential supremum is integrable. -/
-theorem Integrable.essSup_smul {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 β] {f : α → β}
+theorem Integrable.essSup_smul {𝕜 : Type*}
+    [Field 𝕜] [StrictNormedRing 𝕜] [NormedSpace 𝕜 β] {f : α → β}
     (hf : Integrable f μ) {g : α → 𝕜} (g_aestronglyMeasurable : AEStronglyMeasurable g μ)
     (ess_sup_g : essSup (‖g ·‖ₑ) μ ≠ ∞) :
     Integrable (fun x : α => g x • f x) μ := by
@@ -832,12 +834,13 @@ theorem _root_.IsUnit.integrable_smul_iff [Ring 𝕜] [NormedRing 𝕜] [MulActi
     Integrable (c • f) μ ↔ Integrable f μ :=
   and_congr hc.aestronglyMeasurable_const_smul_iff (hasFiniteIntegral_smul_iff hc f)
 
-theorem integrable_smul_iff [NormedDivisionRing 𝕜] [MulActionWithZero 𝕜 β]
+theorem integrable_smul_iff [DivisionRing 𝕜] [StrictNormedRing 𝕜] [MulActionWithZero 𝕜 β]
     [IsBoundedSMul 𝕜 β] {c : 𝕜} (hc : c ≠ 0) (f : α → β) :
     Integrable (c • f) μ ↔ Integrable f μ :=
   (IsUnit.mk0 _ hc).integrable_smul_iff f
 
-theorem integrable_fun_smul_iff [NormedDivisionRing 𝕜] [MulActionWithZero 𝕜 β] [IsBoundedSMul 𝕜 β]
+theorem integrable_fun_smul_iff
+    [DivisionRing 𝕜] [StrictNormedRing 𝕜] [MulActionWithZero 𝕜 β] [IsBoundedSMul 𝕜 β]
     {c : 𝕜} (hc : c ≠ 0) (f : α → β) :
     Integrable (fun x ↦ c • f x) μ ↔ Integrable f μ :=
   integrable_smul_iff hc f
@@ -863,7 +866,7 @@ end IsBoundedSMul
 
 section NormedSpaceOverCompleteField
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
 variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
 
 theorem integrable_smul_const {f : α → 𝕜} {c : E} (hc : c ≠ 0) :
@@ -931,7 +934,7 @@ end NormedRing
 
 section NormedDivisionRing
 
-variable {𝕜 : Type*} [NormedDivisionRing 𝕜] {f : α → 𝕜}
+variable {𝕜 : Type*} [DivisionRing 𝕜] [StrictNormedRing 𝕜] {f : α → 𝕜}
 
 @[fun_prop]
 theorem Integrable.div_const {f : α → 𝕜} (h : Integrable f μ) (c : 𝕜) :
@@ -1021,7 +1024,8 @@ section ContinuousLinearMap
 
 open MeasureTheory
 
-variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {E : Type*} [AddCommGroup E] [NormedAddGroup E]
+  {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
   [NormedSpace 𝕜 E] {H : Type*} [AddCommGroup H] [NormedAddGroup H] [NormedSpace 𝕜 H]
 
 @[fun_prop]

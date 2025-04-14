@@ -14,7 +14,7 @@ https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/recall.20comm
 -/
 
 section
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type _} [Field 𝕜] [NontriviallyNormedField 𝕜]
 variable {E : Type _} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
 variable {F : Type _} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
 recall HasFDerivAt (f : E → F) (f' : E →L[𝕜] F) (x : E) :=

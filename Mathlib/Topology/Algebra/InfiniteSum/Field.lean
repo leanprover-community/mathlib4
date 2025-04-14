@@ -16,7 +16,7 @@ Lemmas on topological sums in fields (as opposed to groups).
 
 section NormedField
 
-variable {α E : Type*} [NormedField E] {f : α → E} {x : E}
+variable {α E : Type*} [Field E] [StrictNormedRing E] {f : α → E} {x : E}
 
 nonrec theorem HasProd.norm (hfx : HasProd f x) : HasProd (‖f ·‖) ‖x‖ := by
   simp only [HasProd, ← norm_prod]

@@ -67,7 +67,7 @@ open scoped Topology ContDiff
 
 section General
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
   {E F : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
   [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F] {s t : Set E} {f : E → F} {x : E}
 
@@ -430,7 +430,7 @@ end Real
 
 section IsRCLikeNormedField
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
   {E F : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
   [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F] {s : Set E} {f : E → F} {x : E}
 

@@ -30,7 +30,8 @@ example {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
 
 section LinearEquiv
 
-variable {𝕜 G H : Type*} [MeasurableSpace G] [MeasurableSpace H] [NontriviallyNormedField 𝕜]
+variable {𝕜 G H : Type*} [MeasurableSpace G] [MeasurableSpace H]
+  [Field 𝕜] [NontriviallyNormedField 𝕜]
   [TopologicalSpace G] [TopologicalSpace H] [AddCommGroup G] [AddCommGroup H]
   [IsTopologicalAddGroup G] [IsTopologicalAddGroup H] [Module 𝕜 G] [Module 𝕜 H] (μ : Measure G)
   [IsAddHaarMeasure μ] [BorelSpace G] [BorelSpace H]

@@ -458,7 +458,7 @@ end IsBoundedSMul
 
 section NormedSpace
 
-variable {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
+variable {𝕜 : Type*} [Field 𝕜] [StrictNormedRing 𝕜] [NormedSpace 𝕜 E]
 
 instance instNormedSpace [Fact (1 ≤ p)] : NormedSpace 𝕜 (Lp E p μ) where
   norm_smul_le _ _ := norm_smul_le _ _
@@ -684,7 +684,7 @@ end LipschitzWith
 
 namespace ContinuousLinearMap
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
+variable {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
 
 /-- Composing `f : Lp` with `L : E →L[𝕜] F`. -/
 def compLp (L : E →L[𝕜] F) (f : Lp E p μ) : Lp F p μ :=

@@ -21,7 +21,7 @@ open scoped UniformConvergence Filter
 
 namespace ContinuousAlternatingMap
 
-variable {𝕜 E F ι : Type*} [NormedField 𝕜]
+variable {𝕜 E F ι : Type*} [Field 𝕜] [StrictNormedRing 𝕜]
   [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [AddCommGroup F] [Module 𝕜 F]
 
 section IsClosedRange
@@ -109,7 +109,7 @@ end CompleteSpace
 
 section RestrictScalars
 
-variable (𝕜' : Type*) [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
+variable (𝕜' : Type*) [Field 𝕜'] [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
   [Module 𝕜' E] [IsScalarTower 𝕜' 𝕜 E] [Module 𝕜' F] [IsScalarTower 𝕜' 𝕜 F] [ContinuousSMul 𝕜 E]
 
 theorem isUniformEmbedding_restrictScalars :
@@ -189,7 +189,7 @@ instance instT3Space [T2Space F] : T3Space (E [⋀^ι]→L[𝕜] F) :=
 
 section RestrictScalars
 
-variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
+variable {𝕜' : Type*} [Field 𝕜'] [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
   [Module 𝕜' E] [IsScalarTower 𝕜' 𝕜 E] [Module 𝕜' F] [IsScalarTower 𝕜' 𝕜 F]
 
 theorem isEmbedding_restrictScalars :

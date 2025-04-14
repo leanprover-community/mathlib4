@@ -19,7 +19,7 @@ divisors.
 - Congruence lemmas for `codiscreteWithin`
 -/
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {U : Set 𝕜} {z : 𝕜}
+variable {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜] {U : Set 𝕜} {z : 𝕜}
   {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E] [CompleteSpace E]
 
 namespace MeromorphicOn

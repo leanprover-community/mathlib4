@@ -87,7 +87,7 @@ end
 
 section Bounded
 
-variable {𝕜₁ 𝕜₂ : Type*} [NontriviallyNormedField 𝕜₁] [Ring 𝕜₂]
+variable {𝕜₁ 𝕜₂ : Type*} [Field 𝕜₁] [NontriviallyNormedField 𝕜₁] [Ring 𝕜₂]
   {σ₁₂ : 𝕜₁ →+* 𝕜₂}
   {M₁ M₂ : Type*} [TopologicalSpace M₁] [AddCommMonoid M₁] [TopologicalSpace M₂] [AddCommMonoid M₂]
   [Module 𝕜₁ M₁] [Module 𝕜₂ M₂] [ContinuousConstSMul 𝕜₂ M₂]
@@ -112,7 +112,7 @@ end Bounded
 
 section NormedSpace
 
-variable {𝕜₁ 𝕜₂ : Type*} [NontriviallyNormedField 𝕜₁] [Ring 𝕜₂] {σ₁₂ : 𝕜₁ →+* 𝕜₂}
+variable {𝕜₁ 𝕜₂ : Type*} [Field 𝕜₁] [NontriviallyNormedField 𝕜₁] [Ring 𝕜₂] {σ₁₂ : 𝕜₁ →+* 𝕜₂}
   {M₁ M₂ : Type*} [AddCommGroup M₁] [SeminormedAddGroup M₁] [TopologicalSpace M₂] [AddCommMonoid M₂]
   [NormedSpace 𝕜₁ M₁] [Module 𝕜₂ M₂]
 
@@ -297,7 +297,8 @@ end Restrict
 
 section Continuous
 
-variable {𝕜₁ 𝕜₂ : Type*} [NontriviallyNormedField 𝕜₁] [NontriviallyNormedField 𝕜₂]
+variable {𝕜₁ 𝕜₂ : Type*}
+  [Field 𝕜₁] [NontriviallyNormedField 𝕜₁] [Field 𝕜₂] [NontriviallyNormedField 𝕜₂]
   {σ₁₂ : 𝕜₁ →+* 𝕜₂} [RingHomIsometric σ₁₂] {M₁ M₂ : Type*} [TopologicalSpace M₁] [AddCommGroup M₁]
   [TopologicalSpace M₂] [AddCommGroup M₂] [Module 𝕜₁ M₁] [Module 𝕜₂ M₂] [IsTopologicalAddGroup M₁]
   [ContinuousConstSMul 𝕜₁ M₁] [IsTopologicalAddGroup M₂] [ContinuousSMul 𝕜₂ M₂]
@@ -359,8 +360,9 @@ end Continuous
 
 /-- The set of compact operators from a normed space to a complete topological vector space is
 closed. -/
-theorem isClosed_setOf_isCompactOperator {𝕜₁ 𝕜₂ : Type*} [NontriviallyNormedField 𝕜₁]
-    [NormedField 𝕜₂] {σ₁₂ : 𝕜₁ →+* 𝕜₂} {M₁ M₂ : Type*} [AddCommGroup M₁] [SeminormedAddGroup M₁]
+theorem isClosed_setOf_isCompactOperator {𝕜₁ 𝕜₂ : Type*} [Field 𝕜₁] [NontriviallyNormedField 𝕜₁]
+    [Field 𝕜₂] [StrictNormedRing 𝕜₂]
+    {σ₁₂ : 𝕜₁ →+* 𝕜₂} {M₁ M₂ : Type*} [AddCommGroup M₁] [SeminormedAddGroup M₁]
     [AddCommGroup M₂] [NormedSpace 𝕜₁ M₁] [Module 𝕜₂ M₂] [UniformSpace M₂] [IsUniformAddGroup M₂]
     [ContinuousConstSMul 𝕜₂ M₂] [T2Space M₂] [CompleteSpace M₂] :
     IsClosed { f : M₁ →SL[σ₁₂] M₂ | IsCompactOperator f } := by
@@ -395,15 +397,17 @@ theorem isClosed_setOf_isCompactOperator {𝕜₁ 𝕜₂ : Type*} [Nontrivially
   rw [ContinuousLinearMap.sub_apply]
   abel
 
-theorem compactOperator_topologicalClosure {𝕜₁ 𝕜₂ : Type*} [NontriviallyNormedField 𝕜₁]
-    [NormedField 𝕜₂] {σ₁₂ : 𝕜₁ →+* 𝕜₂} {M₁ M₂ : Type*} [AddCommGroup M₁] [SeminormedAddGroup M₁]
+theorem compactOperator_topologicalClosure {𝕜₁ 𝕜₂ : Type*} [Field 𝕜₁] [NontriviallyNormedField 𝕜₁]
+    [Field 𝕜₂] [StrictNormedRing 𝕜₂]
+    {σ₁₂ : 𝕜₁ →+* 𝕜₂} {M₁ M₂ : Type*} [AddCommGroup M₁] [SeminormedAddGroup M₁]
     [AddCommGroup M₂] [NormedSpace 𝕜₁ M₁] [Module 𝕜₂ M₂] [UniformSpace M₂] [IsUniformAddGroup M₂]
     [ContinuousConstSMul 𝕜₂ M₂] [T2Space M₂] [CompleteSpace M₂] :
     (compactOperator σ₁₂ M₁ M₂).topologicalClosure = compactOperator σ₁₂ M₁ M₂ :=
   SetLike.ext' isClosed_setOf_isCompactOperator.closure_eq
 
-theorem isCompactOperator_of_tendsto {ι 𝕜₁ 𝕜₂ : Type*} [NontriviallyNormedField 𝕜₁]
-    [NormedField 𝕜₂] {σ₁₂ : 𝕜₁ →+* 𝕜₂} {M₁ M₂ : Type*} [AddCommGroup M₁] [SeminormedAddGroup M₁]
+theorem isCompactOperator_of_tendsto {ι 𝕜₁ 𝕜₂ : Type*} [Field 𝕜₁] [NontriviallyNormedField 𝕜₁]
+    [Field 𝕜₂] [StrictNormedRing 𝕜₂]
+    {σ₁₂ : 𝕜₁ →+* 𝕜₂} {M₁ M₂ : Type*} [AddCommGroup M₁] [SeminormedAddGroup M₁]
     [AddCommGroup M₂] [NormedSpace 𝕜₁ M₁] [Module 𝕜₂ M₂] [UniformSpace M₂] [IsUniformAddGroup M₂]
     [ContinuousConstSMul 𝕜₂ M₂] [T2Space M₂] [CompleteSpace M₂] {l : Filter ι} [l.NeBot]
     {F : ι → M₁ →SL[σ₁₂] M₂} {f : M₁ →SL[σ₁₂] M₂} (hf : Tendsto F l (𝓝 f))

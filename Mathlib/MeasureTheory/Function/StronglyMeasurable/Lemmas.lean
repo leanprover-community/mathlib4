@@ -45,7 +45,7 @@ theorem MeasureTheory.MeasurePreserving.aestronglyMeasurable_comp_iff {β : Type
 
 section NormedSpace
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
 variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
 
 theorem aestronglyMeasurable_smul_const_iff {f : α → 𝕜} {c : E} (hc : c ≠ 0) :
@@ -56,7 +56,7 @@ end NormedSpace
 
 section ContinuousLinearMapNontriviallyNormedField
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
 variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
 variable {F : Type*} [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
 variable {G : Type*} [AddCommGroup G] [NormedAddGroup G] [NormedSpace 𝕜 G]

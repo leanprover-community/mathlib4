@@ -36,7 +36,7 @@ namespace IsUltrametricDist
 
 section sufficient
 
-variable {R : Type*} [NormedDivisionRing R]
+variable {R : Type*} [DivisionRing R] [StrictNormedRing R]
 
 lemma isUltrametricDist_of_forall_norm_add_one_le_max_norm_one
     (h : ∀ x : R, ‖x + 1‖ ≤ max ‖x‖ 1) : IsUltrametricDist R := by
@@ -134,6 +134,6 @@ end sufficient
 end IsUltrametricDist
 
 theorem isUltrametricDist_iff_forall_norm_natCast_le_one {R : Type*}
-    [NormedDivisionRing R] : IsUltrametricDist R ↔ ∀ n : ℕ, ‖(n : R)‖ ≤ 1 :=
+    [DivisionRing R] [StrictNormedRing R] : IsUltrametricDist R ↔ ∀ n : ℕ, ‖(n : R)‖ ≤ 1 :=
   ⟨fun _ => IsUltrametricDist.norm_natCast_le_one R,
       IsUltrametricDist.isUltrametricDist_of_forall_norm_natCast_le_one⟩

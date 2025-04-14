@@ -34,7 +34,7 @@ variable [AddCommGroup F] [UniformSpace F]
 section NontriviallyNormedField
 
 variable [IsUniformAddGroup F]
-variable [NontriviallyNormedField 𝕜] [Module 𝕜 E] [Module 𝕜 F] [ContinuousSMul 𝕜 E]
+variable [Field 𝕜] [NontriviallyNormedField 𝕜] [Module 𝕜 E] [Module 𝕜 F] [ContinuousSMul 𝕜 E]
 
 /-- Construct a continuous linear map from a linear map `f : E →ₗ[𝕜] F` and the existence of a
 neighborhood of zero that gets mapped into a bounded set in `F`. -/

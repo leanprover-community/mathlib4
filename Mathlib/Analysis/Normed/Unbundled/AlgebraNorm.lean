@@ -30,7 +30,7 @@ structure AlgebraNorm (R : Type*) [CommRing R] [SeminormedRing R]
 
 attribute [nolint docBlame] AlgebraNorm.toSeminorm AlgebraNorm.toRingNorm
 
-instance (K : Type*) [NormedField K] : Inhabited (AlgebraNorm K K) :=
+instance (K : Type*) [Field K] [StrictNormedRing K] : Inhabited (AlgebraNorm K K) :=
   ⟨{  toFun     := norm
       map_zero' := norm_zero
       add_le'   := norm_add_le
@@ -123,7 +123,7 @@ structure MulAlgebraNorm (R : Type*) [CommRing R] [SeminormedRing R]
 
 attribute [nolint docBlame] MulAlgebraNorm.toSeminorm MulAlgebraNorm.toMulRingNorm
 
-instance (K : Type*) [NormedField K] : Inhabited (MulAlgebraNorm K K) :=
+instance (K : Type*) [Field K] [StrictNormedRing K] : Inhabited (MulAlgebraNorm K K) :=
   ⟨{  toFun     := norm
       map_zero' := norm_zero
       add_le'   := norm_add_le

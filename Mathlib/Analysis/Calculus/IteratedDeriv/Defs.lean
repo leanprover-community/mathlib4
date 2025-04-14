@@ -45,7 +45,7 @@ noncomputable section
 open scoped Topology
 open Filter Asymptotics Set
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
 variable {F : Type*} [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
 
 /-- The `n`-th iterated derivative of a function from `𝕜` to `F`, as a function from `𝕜` to `F`. -/
@@ -291,7 +291,8 @@ derivative. -/
 theorem iteratedDeriv_succ' : iteratedDeriv (n + 1) f = iteratedDeriv n (deriv f) := by
   rw [iteratedDeriv_eq_iterate, iteratedDeriv_eq_iterate]; rfl
 
-lemma AnalyticAt.hasFPowerSeriesAt {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+lemma AnalyticAt.hasFPowerSeriesAt {𝕜 : Type*}
+    [Field 𝕜] [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
     [CharZero 𝕜] {f : 𝕜 → 𝕜} {x : 𝕜} (h : AnalyticAt 𝕜 f x) :
     HasFPowerSeriesAt f
       (FormalMultilinearSeries.ofScalars 𝕜 (fun n ↦ iteratedDeriv n f x / n.factorial)) x := by

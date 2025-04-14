@@ -738,7 +738,8 @@ open scoped Pointwise
 
 theorem MeasureTheory.Measure.hausdorffMeasure_smul₀ {𝕜 E : Type*}
     [AddCommGroup E] [NormedAddGroup E]
-    [NormedField 𝕜] [NormedSpace 𝕜 E] [MeasurableSpace E] [BorelSpace E] {d : ℝ} (hd : 0 ≤ d)
+    [Field 𝕜] [StrictNormedRing 𝕜] [NormedSpace 𝕜 E] [MeasurableSpace E] [BorelSpace E]
+    {d : ℝ} (hd : 0 ≤ d)
     {r : 𝕜} (hr : r ≠ 0) (s : Set E) : μH[d] (r • s) = ‖r‖₊ ^ d • μH[d] s := by
   have {r : 𝕜} (s : Set E) : μH[d] (r • s) ≤ ‖r‖₊ ^ d • μH[d] s := by
     simpa [ENNReal.coe_rpow_of_nonneg, hd]
@@ -1035,8 +1036,8 @@ theorem hausdorffMeasure_smul_right_image [AddCommGroup E] [NormedAddGroup E] [N
 
 section NormedFieldAffine
 
-variable [NormedField 𝕜] [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E] [MeasurableSpace P]
-variable [MetricSpace P] [NormedAddTorsor E P] [BorelSpace P]
+variable [Field 𝕜] [StrictNormedRing 𝕜] [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
+variable [MeasurableSpace P] [MetricSpace P] [NormedAddTorsor E P] [BorelSpace P]
 
 /-- Scaling by `c` around `x` scales the measure by `‖c‖₊ ^ d`. -/
 theorem hausdorffMeasure_homothety_image {d : ℝ} (hd : 0 ≤ d) (x : P) {c : 𝕜} (hc : c ≠ 0)

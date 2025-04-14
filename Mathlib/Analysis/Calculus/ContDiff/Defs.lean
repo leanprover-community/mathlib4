@@ -101,7 +101,7 @@ open scoped NNReal Topology ContDiff
 
 universe u uE uF uG uX
 
-variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type u} [Field 𝕜] [NontriviallyNormedField 𝕜]
   {E : Type uE} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
   {F : Type uF} [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
   {G : Type uG} [AddCommGroup G] [NormedAddGroup G] [NormedSpace 𝕜 G]

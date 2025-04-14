@@ -80,7 +80,7 @@ theorem norm_star (a : ℍ) : ‖star a‖ = ‖a‖ := by
 theorem nnnorm_star (a : ℍ) : ‖star a‖₊ = ‖a‖₊ :=
   Subtype.ext <| norm_star a
 
-noncomputable instance : NormedDivisionRing ℍ where
+noncomputable instance : StrictNormedRing ℍ where
   dist_eq _ _ := rfl
   norm_mul _ _ := by simp [norm_eq_sqrt_real_inner, inner_self]
 

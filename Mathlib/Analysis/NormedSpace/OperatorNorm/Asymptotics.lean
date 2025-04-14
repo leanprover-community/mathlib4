@@ -18,7 +18,8 @@ open Asymptotics
 variable {𝕜 𝕜₂ 𝕜₃ E F G : Type*}
 variable [AddCommGroup E] [SeminormedAddGroup E] [AddCommGroup F] [SeminormedAddGroup F]
   [AddCommGroup G] [SeminormedAddGroup G]
-variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [NontriviallyNormedField 𝕜₃]
+variable [Field 𝕜] [NontriviallyNormedField 𝕜] [Field 𝕜₂] [NontriviallyNormedField 𝕜₂]
+  [Field 𝕜₃] [NontriviallyNormedField 𝕜₃]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜₃ G] {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₃ : 𝕜₂ →+* 𝕜₃}
 
 namespace ContinuousLinearMap

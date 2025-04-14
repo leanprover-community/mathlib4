@@ -48,7 +48,7 @@ variable {z : ℂ}
 
 open ComplexConjugate Topology Filter
 
-instance : NormedField ℂ where
+instance : StrictNormedRing ℂ where
   dist_eq _ _ := rfl
   norm_mul := Complex.norm_mul
 
@@ -57,7 +57,7 @@ instance : DenselyNormedField ℂ where
     let ⟨x, h⟩ := exists_between hr
     ⟨x, by rwa [norm_real, Real.norm_of_nonneg (h₀.trans_lt h.1).le]⟩
 
-instance {R : Type*} [NormedField R] [NormedAlgebra R ℝ] : NormedAlgebra R ℂ where
+instance {R : Type*} [Field R] [StrictNormedRing R] [NormedAlgebra R ℝ] : NormedAlgebra R ℂ where
   norm_smul_le r x := by
     rw [← algebraMap_smul ℝ r x, real_smul, norm_mul, norm_real, norm_algebraMap']
 

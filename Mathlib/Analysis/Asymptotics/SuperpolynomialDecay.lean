@@ -274,7 +274,7 @@ end LinearOrderedField
 
 section NormedLinearOrderedField
 
-variable [NormedField β]
+variable [Field β] [StrictNormedRing β]
 variable (l k f)
 
 theorem superpolynomialDecay_iff_norm_tendsto_zero :

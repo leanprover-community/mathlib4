@@ -334,7 +334,7 @@ end Bundle
 
 open Bundle
 
-variable [NontriviallyNormedField R] [∀ x, AddCommMonoid (E x)] [∀ x, Module R (E x)]
+variable [Field R] [NontriviallyNormedField R] [∀ x, AddCommMonoid (E x)] [∀ x, Module R (E x)]
   [AddCommGroup F] [NormedAddGroup F] [NormedSpace R F]
   [TopologicalSpace B] [TopologicalSpace (TotalSpace F E)]
   [∀ x, TopologicalSpace (E x)] [FiberBundle F E]
@@ -714,7 +714,7 @@ end
 
 section
 
-variable [NontriviallyNormedField R] [∀ x, AddCommMonoid (E x)] [∀ x, Module R (E x)]
+variable [Field R] [NontriviallyNormedField R] [∀ x, AddCommMonoid (E x)] [∀ x, Module R (E x)]
   [AddCommGroup F] [NormedAddGroup F] [NormedSpace R F]
   [TopologicalSpace B] [∀ x, TopologicalSpace (E x)]
 
@@ -834,7 +834,7 @@ establishes that for the topology constructed on the sigma-type using
 `VectorPrebundle.totalSpaceTopology`, these "pretrivializations" are actually
 "trivializations" (i.e., homeomorphisms with respect to the constructed topology). -/
 theorem toVectorBundle :
-    @VectorBundle R _ F E _ _ _ _ _ _ _ a.totalSpaceTopology _ a.toFiberBundle :=
+    @VectorBundle R _ F E _ _ _ _ _ _ _ _ a.totalSpaceTopology _ a.toFiberBundle :=
   letI := a.totalSpaceTopology; letI := a.toFiberBundle
   { trivialization_linear' := by
       rintro _ ⟨e, he, rfl⟩
@@ -854,7 +854,8 @@ end VectorPrebundle
 
 namespace ContinuousLinearMap
 
-variable {𝕜₁ 𝕜₂ : Type*} [NontriviallyNormedField 𝕜₁] [NontriviallyNormedField 𝕜₂]
+variable {𝕜₁ 𝕜₂ : Type*} [Field 𝕜₁] [NontriviallyNormedField 𝕜₁]
+  [Field 𝕜₂] [NontriviallyNormedField 𝕜₂]
 variable {σ : 𝕜₁ →+* 𝕜₂}
 variable {B' : Type*} [TopologicalSpace B']
 variable [NormedSpace 𝕜₁ F] [∀ x, Module 𝕜₁ (E x)] [TopologicalSpace (TotalSpace F E)]

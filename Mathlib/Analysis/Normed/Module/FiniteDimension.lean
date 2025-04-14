@@ -83,7 +83,7 @@ namespace AffineIsometry
 
 open AffineMap
 
-variable {𝕜 : Type*} {V₁ V₂ : Type*} {P₁ P₂ : Type*} [NormedField 𝕜]
+variable {𝕜 : Type*} {V₁ V₂ : Type*} {P₁ P₂ : Type*} [Field 𝕜] [StrictNormedRing 𝕜]
   [AddCommGroup V₁] [NormedAddGroup V₁]
   [AddCommGroup V₂] [SeminormedAddGroup V₂] [NormedSpace 𝕜 V₁] [NormedSpace 𝕜 V₂] [MetricSpace P₁]
   [PseudoMetricSpace P₂] [NormedAddTorsor V₁ P₁] [NormedAddTorsor V₂ P₂]
@@ -111,7 +111,8 @@ end AffineIsometry
 
 section CompleteField
 
-variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type v} [AddCommGroup E] [NormedAddGroup E]
+variable {𝕜 : Type u} [Field 𝕜] [NontriviallyNormedField 𝕜]
+  {E : Type v} [AddCommGroup E] [NormedAddGroup E]
   [NormedSpace 𝕜 E] {F : Type w} [AddCommGroup F] [NormedAddGroup F]
   [NormedSpace 𝕜 F] [CompleteSpace 𝕜]
 
@@ -481,7 +482,7 @@ theorem HasCompactMulSupport.eq_one_or_finiteDimensional {X : Type*} [Topologica
   HasCompactSupport.eq_zero_or_finiteDimensional (X := Additive X) 𝕜 hf h'f
 
 /-- A locally compact normed vector space is proper. -/
-lemma ProperSpace.of_locallyCompactSpace (𝕜 : Type*) [NontriviallyNormedField 𝕜]
+lemma ProperSpace.of_locallyCompactSpace (𝕜 : Type*) [Field 𝕜] [NontriviallyNormedField 𝕜]
     {E : Type*} [AddCommGroup E] [SeminormedAddGroup E] [NormedSpace 𝕜 E] [LocallyCompactSpace E] :
     ProperSpace E := by
   rcases exists_isCompact_closedBall (0 : E) with ⟨r, rpos, hr⟩
@@ -553,7 +554,8 @@ end CompleteField
 
 section LocallyCompactField
 
-variable (𝕜 : Type u) [NontriviallyNormedField 𝕜] (E : Type v) [AddCommGroup E] [NormedAddGroup E]
+variable (𝕜 : Type u) [Field 𝕜] [NontriviallyNormedField 𝕜]
+  (E : Type v) [AddCommGroup E] [NormedAddGroup E]
   [NormedSpace 𝕜 E] [LocallyCompactSpace 𝕜]
 
 /-- Any finite-dimensional vector space over a locally compact field is proper.
@@ -576,7 +578,7 @@ instance (priority := 900) FiniteDimensional.proper_real (E : Type u)
 
 /-- A submodule of a locally compact space over a complete field is also locally compact (and even
 proper). -/
-instance {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+instance {𝕜 E : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
     [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
     [LocallyCompactSpace E] (S : Submodule 𝕜 E) :
     ProperSpace S := by

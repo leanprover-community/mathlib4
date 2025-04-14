@@ -24,7 +24,7 @@ assert_not_exists HasFDerivAt
 
 section Barycentric
 
-variable {ι 𝕜 E P : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+variable {ι 𝕜 E P : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
 variable [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
 variable [MetricSpace P] [NormedAddTorsor E P]
 

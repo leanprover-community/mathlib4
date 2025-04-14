@@ -33,7 +33,7 @@ open scoped Topology
 
 noncomputable section
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
+variable {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
   {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
   {F : Type*} [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
   {G : Type*} [AddCommGroup G] [NormedAddGroup G] [NormedSpace 𝕜 G]

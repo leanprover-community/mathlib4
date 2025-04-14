@@ -170,7 +170,7 @@ open Asymptotics
 
 section NormedField
 
-variable {α β : Type*} [NormedField β] {u v : α → β} {l : Filter α}
+variable {α β : Type*} [Field β] [StrictNormedRing β] {u v : α → β} {l : Filter α}
 
 theorem isEquivalent_iff_exists_eq_mul :
     u ~[l] v ↔ ∃ (φ : α → β) (_ : Tendsto φ l (𝓝 1)), u =ᶠ[l] φ * v := by
@@ -213,8 +213,8 @@ end NormedField
 
 section SMul
 
-theorem IsEquivalent.smul {α E 𝕜 : Type*} [NormedField 𝕜] [AddCommGroup E] [NormedAddGroup E]
-    [NormedSpace 𝕜 E]
+theorem IsEquivalent.smul {α E 𝕜 : Type*}
+    [Field 𝕜] [StrictNormedRing 𝕜] [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
     {a b : α → 𝕜} {u v : α → E} {l : Filter α} (hab : a ~[l] b) (huv : u ~[l] v) :
     (fun x ↦ a x • u x) ~[l] fun x ↦ b x • v x := by
   rcases hab.exists_eq_mul with ⟨φ, hφ, habφ⟩
@@ -253,7 +253,7 @@ end SMul
 
 section mul_inv
 
-variable {α ι β : Type*} [NormedField β] {t u v w : α → β} {l : Filter α}
+variable {α ι β : Type*} [Field β] [StrictNormedRing β] {t u v w : α → β} {l : Filter α}
 
 protected theorem IsEquivalent.mul (htu : t ~[l] u) (hvw : v ~[l] w) : t * v ~[l] u * w :=
   htu.smul hvw
@@ -291,7 +291,7 @@ end mul_inv
 
 section NormedLinearOrderedField
 
-variable {α β : Type*} [NormedField β] [LinearOrder β] [IsStrictOrderedRing β]
+variable {α β : Type*} [Field β] [StrictNormedRing β] [LinearOrder β] [IsStrictOrderedRing β]
   {u v : α → β} {l : Filter α}
 
 theorem IsEquivalent.tendsto_atTop [OrderTopology β] (huv : u ~[l] v) (hu : Tendsto u l atTop) :

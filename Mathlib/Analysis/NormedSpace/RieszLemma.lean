@@ -26,7 +26,7 @@ open Set Metric
 
 open Topology
 
-variable {𝕜 : Type*} [NormedField 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [StrictNormedRing 𝕜]
 variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
 variable {F : Type*} [AddCommGroup F] [SeminormedAddGroup F] [NormedSpace ℝ F]
 

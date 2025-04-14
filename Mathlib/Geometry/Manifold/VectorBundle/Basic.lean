@@ -119,7 +119,7 @@ end
 
 section
 
-variable [NontriviallyNormedField 𝕜] [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
+variable [Field 𝕜] [NontriviallyNormedField 𝕜] [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
   [TopologicalSpace (TotalSpace F E)] [∀ x, TopologicalSpace (E x)]
   {EB : Type*} [AddCommGroup EB] [NormedAddGroup EB] [NormedSpace 𝕜 EB]
   {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners 𝕜 EB HB}
@@ -252,7 +252,7 @@ end
 /-! ### `C^n` vector bundles -/
 
 
-variable [NontriviallyNormedField 𝕜]
+variable [Field 𝕜] [NontriviallyNormedField 𝕜]
   {EB : Type*} [AddCommGroup EB] [NormedAddGroup EB] [NormedSpace 𝕜 EB]
   {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners 𝕜 EB HB} [TopologicalSpace B]
   [ChartedSpace HB B]
@@ -691,7 +691,7 @@ theorem mk_contMDiffCoordChange (he : e ∈ a.pretrivializationAtlas)
 variable (IB) in
 /-- Make a `ContMDiffVectorBundle` from a `ContMDiffVectorPrebundle`. -/
 theorem contMDiffVectorBundle : @ContMDiffVectorBundle n _ _ F E
-    _ _ _ _ _ _ _ IB _ _ _ _ _ _ _ a.totalSpaceTopology _ a.toFiberBundle a.toVectorBundle :=
+    _ _ _ _ _ _ _ _ IB _ _ _ _ _ _ _ a.totalSpaceTopology _ a.toFiberBundle a.toVectorBundle :=
   letI := a.totalSpaceTopology; letI := a.toFiberBundle; letI := a.toVectorBundle
   { contMDiffOn_coordChangeL := by
       rintro _ _ ⟨e, he, rfl⟩ ⟨e', he', rfl⟩

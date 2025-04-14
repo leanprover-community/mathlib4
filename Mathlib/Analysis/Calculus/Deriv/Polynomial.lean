@@ -34,7 +34,7 @@ open scoped Polynomial
 
 open ContinuousLinearMap (smulRight)
 
-variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {x : 𝕜} {s : Set 𝕜}
+variable {𝕜 : Type u} [Field 𝕜] [NontriviallyNormedField 𝕜] {x : 𝕜} {s : Set 𝕜}
 
 namespace Polynomial
 

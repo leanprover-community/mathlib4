@@ -42,7 +42,7 @@ def MellinConvergent (f : ℝ → E) (s : ℂ) : Prop :=
   IntegrableOn (fun t : ℝ => (t : ℂ) ^ (s - 1) • f t) (Ioi 0)
 
 theorem MellinConvergent.const_smul {f : ℝ → E} {s : ℂ} (hf : MellinConvergent f s) {𝕜 : Type*}
-    [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] [SMulCommClass ℂ 𝕜 E] (c : 𝕜) :
+    [Field 𝕜] [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] [SMulCommClass ℂ 𝕜 E] (c : 𝕜) :
     MellinConvergent (fun t => c • f t) s := by
   simpa only [MellinConvergent, smul_comm] using hf.smul c
 
@@ -99,7 +99,7 @@ theorem mellin_cpow_smul (f : ℝ → E) (s a : ℂ) :
   refine setIntegral_congr_fun measurableSet_Ioi fun t ht => ?_
   simp_rw [← sub_add_eq_add_sub, cpow_add _ _ (ofReal_ne_zero.2 <| ne_of_gt ht), mul_smul]
 
-theorem mellin_const_smul (f : ℝ → E) (s : ℂ) {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+theorem mellin_const_smul (f : ℝ → E) (s : ℂ) {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
     [NormedSpace 𝕜 E] [SMulCommClass ℂ 𝕜 E] (c : 𝕜) :
     mellin (fun t => c • f t) s = c • mellin f s := by simp only [mellin, smul_comm, integral_smul]
 

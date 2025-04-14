@@ -14,7 +14,7 @@ import Mathlib.Topology.Algebra.UniformField
 
 open SeminormedAddGroup IsUniformAddGroup Filter
 
-variable {F : Type*} [NormedField F]
+variable {F : Type*} [Field F] [StrictNormedRing F]
 
 instance NormedField.instCompletableTopField : CompletableTopField F where
   t0 := (inferInstanceAs <| T0Space _).t0

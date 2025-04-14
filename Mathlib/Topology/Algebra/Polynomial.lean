@@ -138,7 +138,7 @@ section Roots
 
 open Polynomial NNReal
 
-variable {F K : Type*} [CommRing F] [NormedField K]
+variable {F K : Type*} [CommRing F] [Field K] [StrictNormedRing K]
 
 open Multiset
 

@@ -50,7 +50,7 @@ universe u v v' wE wE₁ wE' wEi wG wG'
 
 variable {𝕜 : Type u} {ι : Type v} {ι' : Type v'} {n : ℕ} {E : ι → Type wE}
   {Ei : Fin n.succ → Type wEi} {G : Type wG} {G' : Type wG'} [Fintype ι]
-  [Fintype ι'] [NontriviallyNormedField 𝕜]
+  [Fintype ι'] [Field 𝕜] [NontriviallyNormedField 𝕜]
   [∀ i, AddCommGroup (E i)] [∀ i, NormedAddGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
   [∀ i, AddCommGroup (Ei i)] [∀ i, NormedAddGroup (Ei i)] [∀ i, NormedSpace 𝕜 (Ei i)]
   [AddCommGroup G] [NormedAddGroup G] [NormedSpace 𝕜 G]

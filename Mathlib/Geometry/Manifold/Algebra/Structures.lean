@@ -17,8 +17,9 @@ open scoped Manifold ContDiff
 
 section ContMDiffRing
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H] {E : Type*}
-  [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E] {n : WithTop ℕ∞}
+variable {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
+  {H : Type*} [TopologicalSpace H]
+  {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E] {n : WithTop ℕ∞}
 
 -- See note [Design choices about smooth algebraic structures]
 /-- A `C^n` (semi)ring is a (semi)ring `R` where addition and multiplication are `C^n`.
@@ -47,7 +48,7 @@ end ContMDiffRing
 
 -- see Note [lower instance priority]
 instance (priority := 100) instFieldContMDiffRing
-    {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞} :
+    {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞} :
     ContMDiffRing 𝓘(𝕜) n 𝕜 :=
   { instNormedSpaceLieAddGroup with
     contMDiff_mul := by
@@ -57,7 +58,8 @@ instance (priority := 100) instFieldContMDiffRing
       rw [contDiffOn_univ]
       exact contDiff_mul }
 
-variable {𝕜 R E H : Type*} [TopologicalSpace R] [TopologicalSpace H] [NontriviallyNormedField 𝕜]
+variable {𝕜 R E H : Type*} [TopologicalSpace R] [TopologicalSpace H]
+  [Field 𝕜] [NontriviallyNormedField 𝕜]
   [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E] [ChartedSpace H R]
   (I : ModelWithCorners 𝕜 E H) (n : WithTop ℕ∞)
 

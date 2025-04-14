@@ -85,7 +85,7 @@ variable {α β 𝕜 E F G : Type*}
 
 section TopologicalSpace
 
-variable [NontriviallyNormedField 𝕜]
+variable [Field 𝕜] [NontriviallyNormedField 𝕜]
   [AddCommGroup E] [TopologicalSpace E] [Module 𝕜 E]
   [AddCommGroup F] [TopologicalSpace F] [Module 𝕜 F]
   [AddCommGroup G] [TopologicalSpace G] [Module 𝕜 G]
@@ -265,7 +265,7 @@ end TopologicalSpace
 
 section NormedSpace
 
-variable [NontriviallyNormedField 𝕜]
+variable [Field 𝕜] [NontriviallyNormedField 𝕜]
 variable [AddCommGroup E] [SeminormedAddGroup E] [AddCommGroup F] [SeminormedAddGroup F]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
 

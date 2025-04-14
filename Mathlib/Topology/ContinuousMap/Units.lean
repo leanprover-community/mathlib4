@@ -93,11 +93,13 @@ end NormedRing
 
 section NormedField
 
-variable [NormedField 𝕜] [NormedDivisionRing R] [Algebra 𝕜 R] [CompleteSpace R]
+variable [Field 𝕜] [StrictNormedRing 𝕜]
+  [DivisionRing R] [StrictNormedRing R] [Algebra 𝕜 R] [CompleteSpace R]
 
 theorem isUnit_iff_forall_ne_zero (f : C(X, R)) : IsUnit f ↔ ∀ x, f x ≠ 0 := by
   simp_rw [f.isUnit_iff_forall_isUnit, isUnit_iff_ne_zero]
 
+omit [StrictNormedRing 𝕜] in
 theorem spectrum_eq_preimage_range (f : C(X, R)) :
     spectrum 𝕜 f = algebraMap _ _ ⁻¹' Set.range f := by
   ext x

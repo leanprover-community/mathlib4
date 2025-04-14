@@ -51,7 +51,7 @@ namespace NormedSpace
 
 section General
 
-variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
+variable (𝕜 : Type*) [Field 𝕜] [NontriviallyNormedField 𝕜]
 variable (E : Type*) [AddCommGroup E] [SeminormedAddGroup E] [NormedSpace 𝕜 E]
 variable (F : Type*) [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
 
@@ -142,7 +142,7 @@ open Metric Set NormedSpace
 /-- Given a subset `s` in a normed space `E` (over a field `𝕜`), the polar
 `polar 𝕜 s` is the subset of `Dual 𝕜 E` consisting of those functionals which
 evaluate to something of norm at most one at all points `z ∈ s`. -/
-def polar (𝕜 : Type*) [NontriviallyNormedField 𝕜]
+def polar (𝕜 : Type*) [Field 𝕜] [NontriviallyNormedField 𝕜]
     {E : Type*} [AddCommGroup E] [SeminormedAddGroup E]
     [NormedSpace 𝕜 E] : Set E → Set (Dual 𝕜 E) :=
   (dualPairing 𝕜 E).flip.polar
@@ -150,12 +150,12 @@ def polar (𝕜 : Type*) [NontriviallyNormedField 𝕜]
 /-- Given a subset `s` in a normed space `E` (over a field `𝕜`) closed under scalar multiplication,
  the polar `polarSubmodule 𝕜 s` is the submodule of `Dual 𝕜 E` consisting of those functionals which
 evaluate to zero at all points `z ∈ s`. -/
-def polarSubmodule (𝕜 : Type*) [NontriviallyNormedField 𝕜]
+def polarSubmodule (𝕜 : Type*) [Field 𝕜] [NontriviallyNormedField 𝕜]
     {E : Type*} [AddCommGroup E] [SeminormedAddGroup E]
     [NormedSpace 𝕜 E] {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] (m : S) :
     Submodule 𝕜 (Dual 𝕜 E) := (dualPairing 𝕜 E).flip.polarSubmodule m
 
-variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
+variable (𝕜 : Type*) [Field 𝕜] [NontriviallyNormedField 𝕜]
 variable {E : Type*} [AddCommGroup E] [SeminormedAddGroup E] [NormedSpace 𝕜 E]
 
 lemma polarSubmodule_eq_polar (m : SubMulAction 𝕜 E) :
@@ -311,7 +311,7 @@ namespace LinearMap
 section NormedField
 
 variable {𝕜 E F : Type*}
-variable [NormedField 𝕜] [NormedSpace ℝ 𝕜] [AddCommMonoid E] [AddCommMonoid F]
+variable [Field 𝕜] [StrictNormedRing 𝕜] [NormedSpace ℝ 𝕜] [AddCommMonoid E] [AddCommMonoid F]
 variable [Module 𝕜 E] [Module 𝕜 F]
 
 variable {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (s : Set E)

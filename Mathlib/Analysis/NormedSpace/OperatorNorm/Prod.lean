@@ -11,7 +11,7 @@ import Mathlib.Analysis.NormedSpace.OperatorNorm.Bilinear
 Interaction of operator norm with Cartesian products.
 -/
 
-variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 E F G : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
 
 open Set Real Metric ContinuousLinearMap
 

@@ -30,7 +30,7 @@ open Filter Asymptotics Set
 
 open ContinuousLinearMap (smulRight smulRight_one_eq_iff)
 
-variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type u} [Field 𝕜] [NontriviallyNormedField 𝕜]
 variable {F : Type v} [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
 variable {E : Type w} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
 variable {G : Type*} [AddCommGroup G] [NormedAddGroup G] [NormedSpace 𝕜 G]
@@ -80,8 +80,8 @@ section SMul
 /-! ### Derivative of the multiplication of a scalar function and a vector function -/
 
 
-variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] [NormedSpace 𝕜' F]
-  [IsScalarTower 𝕜 𝕜' F] {c : 𝕜 → 𝕜'} {c' : 𝕜'}
+variable {𝕜' : Type*} [Field 𝕜'] [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
+  [NormedSpace 𝕜' F] [IsScalarTower 𝕜 𝕜' F] {c : 𝕜 → 𝕜'} {c' : 𝕜'}
 
 theorem HasDerivWithinAt.smul (hc : HasDerivWithinAt c c' s x) (hf : HasDerivWithinAt f f' s x) :
     HasDerivWithinAt (fun y => c y • f y) (c x • f' + c' • f x) s x := by
@@ -186,7 +186,7 @@ section Mul
 /-! ### Derivative of the multiplication of two functions -/
 
 
-variable {𝕜' 𝔸 : Type*} [NormedField 𝕜']
+variable {𝕜' 𝔸 : Type*} [Field 𝕜'] [StrictNormedRing 𝕜']
   [Ring 𝔸] [NormedRing 𝔸] [NormedAlgebra 𝕜 𝕜'] [NormedAlgebra 𝕜 𝔸]
   {c d : 𝕜 → 𝔸} {c' d' : 𝔸} {u v : 𝕜 → 𝕜'}
 
@@ -381,7 +381,8 @@ end Prod
 
 section Div
 
-variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] {c : 𝕜 → 𝕜'} {c' : 𝕜'}
+variable {𝕜' : Type*} [Field 𝕜'] [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
+  {c : 𝕜 → 𝕜'} {c' : 𝕜'}
 
 theorem HasDerivAt.div_const (hc : HasDerivAt c c' x) (d : 𝕜') :
     HasDerivAt (fun x => c x / d) (c' / d) x := by

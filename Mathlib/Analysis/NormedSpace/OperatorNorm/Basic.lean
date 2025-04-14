@@ -42,7 +42,8 @@ open Metric ContinuousLinearMap
 variable [AddCommGroup E] [SeminormedAddGroup E] [AddCommGroup F] [SeminormedAddGroup F]
   [AddCommGroup Fₗ] [SeminormedAddGroup Fₗ] [AddCommGroup G] [SeminormedAddGroup G]
 
-variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [NontriviallyNormedField 𝕜₃]
+variable [Field 𝕜] [NontriviallyNormedField 𝕜]
+  [Field 𝕜₂] [NontriviallyNormedField 𝕜₂] [Field 𝕜₃] [NontriviallyNormedField 𝕜₃]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜 Fₗ] [NormedSpace 𝕜₃ G]
   {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₃ : 𝕜₂ →+* 𝕜₃} {σ₁₃ : 𝕜 →+* 𝕜₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 
@@ -275,7 +276,8 @@ theorem norm_id_of_nontrivial_seminorm (h : ∃ x : E, ‖x‖ ≠ 0) : ‖id �
     have := (id 𝕜 E).ratio_le_opNorm x
     rwa [id_apply, div_self hx] at this
 
-theorem opNorm_smul_le {𝕜' : Type*} [NormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass 𝕜₂ 𝕜' F]
+theorem opNorm_smul_le {𝕜' : Type*}
+    [Field 𝕜'] [StrictNormedRing 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass 𝕜₂ 𝕜' F]
     (c : 𝕜') (f : E →SL[σ₁₂] F) : ‖c • f‖ ≤ ‖c‖ * ‖f‖ :=
   (c • f).opNorm_le_bound (mul_nonneg (norm_nonneg _) (opNorm_nonneg _)) fun _ => by
     rw [smul_apply, norm_smul, mul_assoc]
@@ -317,7 +319,8 @@ instance toPseudoMetricSpace : PseudoMetricSpace (E →SL[σ₁₂] F) := .repla
     the operator norm. -/
 instance toSeminormedAddGroup : SeminormedAddGroup (E →SL[σ₁₂] F) where
 
-instance toNormedSpace {𝕜' : Type*} [NormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass 𝕜₂ 𝕜' F] :
+instance toNormedSpace {𝕜' : Type*}
+    [Field 𝕜'] [StrictNormedRing 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass 𝕜₂ 𝕜' F] :
     NormedSpace 𝕜' (E →SL[σ₁₂] F) :=
   ⟨opNorm_smul_le⟩
 
@@ -352,7 +355,7 @@ end OpNorm
 
 section RestrictScalars
 
-variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
+variable {𝕜' : Type*} [Field 𝕜'] [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
 variable [NormedSpace 𝕜' E] [IsScalarTower 𝕜' 𝕜 E]
 variable [NormedSpace 𝕜' Fₗ] [IsScalarTower 𝕜' 𝕜 Fₗ]
 

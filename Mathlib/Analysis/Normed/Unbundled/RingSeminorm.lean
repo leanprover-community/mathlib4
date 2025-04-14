@@ -495,7 +495,7 @@ theorem NormedRing.toRingNorm_apply (R : Type*) [Ring R] [NormedRing R] (x : R) 
   rfl
 
 /-- The norm on a `NormedField`, as a `MulRingNorm`. -/
-def NormedField.toMulRingNorm (R : Type*) [NormedField R] : MulRingNorm R where
+def NormedField.toMulRingNorm (R : Type*) [Field R] [StrictNormedRing R] : MulRingNorm R where
   toFun     := norm
   map_zero' := norm_zero
   map_one'  := norm_one
@@ -505,7 +505,7 @@ def NormedField.toMulRingNorm (R : Type*) [NormedField R] : MulRingNorm R where
   eq_zero_of_map_eq_zero' x hx := by rw [← norm_eq_zero]; exact hx
 
 /-- The norm on a `NormedField`, as an `AbsoluteValue`. -/
-def NormedField.toAbsoluteValue (R : Type*) [NormedField R] : AbsoluteValue R ℝ where
+def NormedField.toAbsoluteValue (R : Type*) [Field R] [StrictNormedRing R] : AbsoluteValue R ℝ where
   toFun     := norm
   map_mul'  := norm_mul
   nonneg'   := norm_nonneg

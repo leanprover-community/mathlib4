@@ -59,14 +59,14 @@ open Filter (Tendsto)
 
 open Metric ContinuousLinearMap
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
   {E : Type*} [AddCommGroup E] [SeminormedAddGroup E] [NormedSpace 𝕜 E]
   {F : Type*} [AddCommGroup F] [SeminormedAddGroup F] [NormedSpace 𝕜 F]
   {G : Type*} [AddCommGroup G] [SeminormedAddGroup G] [NormedSpace 𝕜 G]
 
 /-- A function `f` satisfies `IsBoundedLinearMap 𝕜 f` if it is linear and satisfies the
 inequality `‖f x‖ ≤ M * ‖x‖` for some positive constant `M`. -/
-structure IsBoundedLinearMap (𝕜 : Type*) [NormedField 𝕜]
+structure IsBoundedLinearMap (𝕜 : Type*) [Field 𝕜] [StrictNormedRing 𝕜]
     {E : Type*} [AddCommGroup E] [SeminormedAddGroup E] [NormedSpace 𝕜 E]
     {F : Type*} [AddCommGroup F] [SeminormedAddGroup F] [NormedSpace 𝕜 F] (f : E → F) : Prop
     extends IsLinearMap 𝕜 f where
@@ -235,7 +235,8 @@ argument of `f`.
 
 
 variable {R : Type*}
-variable {𝕜₂ 𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NontriviallyNormedField 𝕜₂]
+variable {𝕜₂ 𝕜' : Type*} [Field 𝕜'] [NontriviallyNormedField 𝕜']
+  [Field 𝕜₂] [NontriviallyNormedField 𝕜₂]
 variable {M : Type*} [TopologicalSpace M]
 variable {σ₁₂ : 𝕜 →+* 𝕜₂}
 variable {G' : Type*} [AddCommGroup G'] [SeminormedAddGroup G']
@@ -366,7 +367,8 @@ theorem IsBoundedBilinearMap.isBoundedLinearMap_right (h : IsBoundedBilinearMap 
     IsBoundedLinearMap 𝕜 fun y => f (x, y) :=
   (h.toContinuousLinearMap x).isBoundedLinearMap
 
-theorem isBoundedBilinearMap_smul {𝕜' : Type*} [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] {E : Type*}
+theorem isBoundedBilinearMap_smul {𝕜' : Type*}
+    [Field 𝕜'] [StrictNormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜'] {E : Type*}
     [AddCommGroup E] [SeminormedAddGroup E] [NormedSpace 𝕜 E] [NormedSpace 𝕜' E]
     [IsScalarTower 𝕜 𝕜' E] :
     IsBoundedBilinearMap 𝕜 fun p : 𝕜' × E => p.1 • p.2 :=
@@ -466,7 +468,7 @@ end
 
 namespace ContinuousLinearEquiv
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
 variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
 variable {F : Type*} [AddCommGroup F] [SeminormedAddGroup F] [NormedSpace 𝕜 F]
 

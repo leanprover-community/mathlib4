@@ -60,7 +60,7 @@ variable [AddCommGroup E'] [SeminormedAddGroup E'] [AddCommGroup F'] [Seminormed
   [Ring R'] [SeminormedRing R']
 
 variable {S : Type*} [Ring S] [NormedRing S] [NormMulClass S]
-variable [NormedDivisionRing 𝕜] [NormedDivisionRing 𝕜']
+variable [DivisionRing 𝕜] [StrictNormedRing 𝕜] [DivisionRing 𝕜'] [StrictNormedRing 𝕜']
 variable {c c' c₁ c₂ : ℝ} {f : α → E} {g : α → F} {k : α → G}
 variable {f' : α → E'} {g' : α → F'} {k' : α → G'}
 variable {f'' : α → E''} {g'' : α → F''} {k'' : α → G''}

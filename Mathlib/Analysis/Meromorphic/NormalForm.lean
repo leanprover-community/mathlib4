@@ -27,7 +27,7 @@ Establish the analogous notion `MeromorphicNFOn`.
 open Topology WithTop
 
 variable
-  {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
   {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
   {f : 𝕜 → E} {g : 𝕜 → 𝕜}
   {x : 𝕜}

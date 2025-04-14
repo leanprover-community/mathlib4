@@ -9,7 +9,7 @@ import Mathlib.Analysis.Calculus.FDeriv.Add
 # Derivatives on pi-types.
 -/
 
-variable {𝕜 ι : Type*} [DecidableEq ι] [Fintype ι] [NontriviallyNormedField 𝕜]
+variable {𝕜 ι : Type*} [DecidableEq ι] [Fintype ι] [Field 𝕜] [NontriviallyNormedField 𝕜]
 variable {E : ι → Type*} [∀ i, AddCommGroup (E i)] [∀ i, NormedAddGroup (E i)]
   [∀ i, NormedSpace 𝕜 (E i)]
 

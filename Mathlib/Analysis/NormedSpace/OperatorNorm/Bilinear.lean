@@ -32,7 +32,8 @@ variable [AddCommGroup E] [SeminormedAddGroup E] [AddCommGroup Eₗ] [Seminormed
   [AddCommGroup F] [SeminormedAddGroup F] [AddCommGroup Fₗ] [SeminormedAddGroup Fₗ]
   [AddCommGroup G] [SeminormedAddGroup G] [AddCommGroup Gₗ] [SeminormedAddGroup Gₗ]
 
-variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [NontriviallyNormedField 𝕜₃]
+variable [Field 𝕜] [NontriviallyNormedField 𝕜] [Field 𝕜₂] [NontriviallyNormedField 𝕜₂]
+  [Field 𝕜₃] [NontriviallyNormedField 𝕜₃]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜 Eₗ] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜 Fₗ] [NormedSpace 𝕜₃ G]
   [NormedSpace 𝕜 Gₗ] {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₃ : 𝕜₂ →+* 𝕜₃} {σ₁₃ : 𝕜 →+* 𝕜₃}
   [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
@@ -327,7 +328,8 @@ namespace ContinuousLinearMap
 
 variable {E' F' : Type*} [AddCommGroup E'] [SeminormedAddGroup E']
   [AddCommGroup F'] [SeminormedAddGroup F']
-variable {𝕜₁' : Type*} {𝕜₂' : Type*} [NontriviallyNormedField 𝕜₁'] [NontriviallyNormedField 𝕜₂']
+variable {𝕜₁' : Type*} {𝕜₂' : Type*}
+  [Field 𝕜₁'] [NontriviallyNormedField 𝕜₁'] [Field 𝕜₂'] [NontriviallyNormedField 𝕜₂']
   [NormedSpace 𝕜₁' E'] [NormedSpace 𝕜₂' F'] {σ₁' : 𝕜₁' →+* 𝕜} {σ₁₃' : 𝕜₁' →+* 𝕜₃} {σ₂' : 𝕜₂' →+* 𝕜₂}
   {σ₂₃' : 𝕜₂' →+* 𝕜₃} [RingHomCompTriple σ₁' σ₁₃ σ₁₃'] [RingHomCompTriple σ₂' σ₂₃ σ₂₃']
   [RingHomIsometric σ₂₃] [RingHomIsometric σ₁₃'] [RingHomIsometric σ₂₃']
@@ -416,7 +418,8 @@ section Restrict
 
 namespace ContinuousLinearMap
 
-variable {𝕜' : Type*} [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
+variable {𝕜' : Type*}
+  [Field 𝕜] [NontriviallyNormedField 𝕜] [Field 𝕜'] [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
   [AddCommGroup E] [SeminormedAddGroup E] [NormedSpace 𝕜 E]
   [NormedSpace 𝕜' E] [IsScalarTower 𝕜 𝕜' E]
   [AddCommGroup F] [SeminormedAddGroup F] [NormedSpace 𝕜 F]

@@ -15,7 +15,7 @@ and that local structomorphisms are `C^n` with `C^n` inverses.
 open Set ChartedSpace IsManifold
 open scoped Manifold ContDiff
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
   -- declare a `C^n` manifold `M` over the pair `(E, H)`.
   {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
   {H : Type*} [TopologicalSpace H]

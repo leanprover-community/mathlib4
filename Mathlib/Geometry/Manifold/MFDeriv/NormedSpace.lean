@@ -18,7 +18,7 @@ differentiability.
 open Set ChartedSpace IsManifold
 open scoped Topology Manifold
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
+variable {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
   -- declare a charted space `M` over the pair `(E, H)`.
   {E : Type*}
   [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]

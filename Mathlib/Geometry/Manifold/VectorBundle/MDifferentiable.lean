@@ -22,7 +22,7 @@ section
 
 variable {𝕜 B B' F M : Type*} {E : B → Type*}
 
-variable [NontriviallyNormedField 𝕜] [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
+variable [Field 𝕜] [NontriviallyNormedField 𝕜] [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
   [TopologicalSpace (TotalSpace F E)] [∀ x, TopologicalSpace (E x)]
   {EB : Type*} [AddCommGroup EB] [NormedAddGroup EB] [NormedSpace 𝕜 EB]
   {HB : Type*} [TopologicalSpace HB] (IB : ModelWithCorners 𝕜 EB HB)
@@ -68,7 +68,8 @@ and two vector bundles `E₁` and `E₂` respectively over `B₁` and `B₂` (wi
 
 Also a third manifold `M`, which will be the source of all our maps.
 -/
-variable {𝕜 F₁ F₂ B₁ B₂ M : Type*} {E₁ : B₁ → Type*} {E₂ : B₂ → Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 F₁ F₂ B₁ B₂ M : Type*} {E₁ : B₁ → Type*} {E₂ : B₂ → Type*}
+  [Field 𝕜] [NontriviallyNormedField 𝕜]
   [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜 (E₁ x)]
   [AddCommGroup F₁] [NormedAddGroup F₁] [NormedSpace 𝕜 F₁]
   [TopologicalSpace (TotalSpace F₁ E₁)] [∀ x, TopologicalSpace (E₁ x)] [∀ x, AddCommGroup (E₂ x)]

@@ -64,7 +64,8 @@ end Field
 
 section NormedField
 
-variable {𝕜 : Type u} [hnorm : NontriviallyNormedField 𝕜] {E : Type v} [AddCommGroup E] [Module 𝕜 E]
+variable {𝕜 : Type u} [Field 𝕜] [hnorm : NontriviallyNormedField 𝕜]
+  {E : Type v} [AddCommGroup E] [Module 𝕜 E]
   [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E] {F : Type w} [AddCommGroup F]
   [Module 𝕜 F] [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F] {F' : Type x}
   [AddCommGroup F'] [Module 𝕜 F'] [TopologicalSpace F'] [IsTopologicalAddGroup F']
@@ -484,7 +485,7 @@ end NormedField
 
 section IsUniformAddGroup
 
-variable (𝕜 E : Type*) [NontriviallyNormedField 𝕜]
+variable (𝕜 E : Type*) [Field 𝕜] [NontriviallyNormedField 𝕜]
   [CompleteSpace 𝕜] [AddCommGroup E] [UniformSpace E] [T2Space E] [IsUniformAddGroup E]
   [Module 𝕜 E] [ContinuousSMul 𝕜 E]
 
@@ -504,7 +505,7 @@ theorem Submodule.complete_of_finiteDimensional (s : Submodule 𝕜 E) [FiniteDi
 
 end IsUniformAddGroup
 
-variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+variable {𝕜 E F : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
    [AddCommGroup E] [TopologicalSpace E] [IsTopologicalAddGroup E] [Module 𝕜 E]
    [ContinuousSMul 𝕜 E]
    [AddCommGroup F] [TopologicalSpace F] [T2Space F] [IsTopologicalAddGroup F] [Module 𝕜 F]

@@ -195,7 +195,7 @@ protected theorem isBoundedSMul [Ring R] [SeminormedRing R]
 
 @[deprecated (since := "2025-03-10")] protected alias boundedSMul := Matrix.isBoundedSMul
 
-variable [NormedField R] [AddCommGroup α] [SeminormedAddGroup α] [NormedSpace R α]
+variable [Field R] [StrictNormedRing R] [AddCommGroup α] [SeminormedAddGroup α] [NormedSpace R α]
 
 /-- Normed space instance (using sup norm of sup norm) for matrices over a normed space.  Not
 declared as an instance because there are several natural choices for defining the norm of a
@@ -246,7 +246,7 @@ protected theorem linftyOpIsBoundedSMul
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[local instance]
-protected def linftyOpNormedSpace [NormedField R]
+protected def linftyOpNormedSpace [Field R] [StrictNormedRing R]
     [AddCommGroup α] [SeminormedAddGroup α] [NormedSpace R α] :
     NormedSpace R (Matrix m n α) :=
   (by infer_instance : NormedSpace R (m → PiLp 1 fun j : n => α))
@@ -375,13 +375,14 @@ protected noncomputable alias linftyOpNonUnitalNormedRing := Matrix.linftyOpSemi
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[local instance]
-protected def linftyOpNormedAlgebra [NormedField R] [Ring α] [SeminormedRing α] [NormedAlgebra R α]
+protected def linftyOpNormedAlgebra [Field R] [StrictNormedRing R]
+    [Ring α] [SeminormedRing α] [NormedAlgebra R α]
     [DecidableEq n] : NormedAlgebra R (Matrix n n α) :=
   { Matrix.linftyOpNormedSpace, Matrix.instAlgebra with }
 
 
 section
-variable [NormedDivisionRing α] [NormedAlgebra ℝ α]
+variable [DivisionRing α] [StrictNormedRing α] [NormedAlgebra ℝ α]
 
 /-- Auxiliary construction; an element of norm 1 such that `a * unitOf a = ‖a‖`. -/
 private def unitOf (a : α) : α := by classical exact if a = 0 then 1 else ‖a‖ • a⁻¹
@@ -406,7 +407,7 @@ For a matrix over a field, the norm defined in this section agrees with the oper
 `ContinuousLinearMap`s between function types (which have the infinity norm).
 -/
 section
-variable [NontriviallyNormedField α] [NormedAlgebra ℝ α]
+variable [Field α] [NontriviallyNormedField α] [NormedAlgebra ℝ α]
 
 lemma linfty_opNNNorm_eq_opNNNorm (A : Matrix m n α) :
     ‖A‖₊ = ‖ContinuousLinearMap.mk (Matrix.mulVecLin A)‖₊ := by
@@ -485,7 +486,8 @@ theorem frobeniusIsBoundedSMul [Ring R] [SeminormedRing R]
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[local instance]
-def frobeniusNormedSpace [NormedField R] [AddCommGroup α] [SeminormedAddGroup α] [NormedSpace R α] :
+def frobeniusNormedSpace [Field R] [StrictNormedRing R]
+    [AddCommGroup α] [SeminormedAddGroup α] [NormedSpace R α] :
     NormedSpace R (Matrix m n α) :=
   (by infer_instance : NormedSpace R (PiLp 2 fun i : m => PiLp 2 fun j : n => α))
 
@@ -630,7 +632,7 @@ def frobeniusNormedRing : NormedRing (Matrix m m α) :=
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[local instance]
-def frobeniusNormedAlgebra [DecidableEq m] [NormedField R] [NormedAlgebra R α] :
+def frobeniusNormedAlgebra [DecidableEq m] [Field R] [StrictNormedRing R] [NormedAlgebra R α] :
     NormedAlgebra R (Matrix m m α) :=
   { Matrix.frobeniusNormedSpace, Matrix.instAlgebra with }
 

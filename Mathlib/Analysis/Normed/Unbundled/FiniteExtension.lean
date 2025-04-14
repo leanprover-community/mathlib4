@@ -44,7 +44,7 @@ open Finset
 
 section Ring
 
-variable {K L : Type*} [NormedField K] [Ring L] [Algebra K L]
+variable {K L : Type*} [Field K] [StrictNormedRing K] [Ring L] [Algebra K L]
 
 namespace Basis
 
@@ -172,7 +172,7 @@ end Ring
 
 section Field
 
-variable {K L : Type*} [NormedField K] [Field L] [Algebra K L]
+variable {K L : Type*} [Field K] [StrictNormedRing K] [Field L] [Algebra K L]
 
 /-- If `K` is a nonarchimedean normed field `L/K` is a finite extension, then there exists a
 power-multiplicative nonarchimedean `K`-algebra norm on `L` extending the norm on `K`. -/

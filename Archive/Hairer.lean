@@ -31,7 +31,7 @@ open scoped ContDiff
 variable {ι : Type*} [Fintype ι]
 
 section normed
-variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 E F : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
 variable [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 variable (𝕜 E F) in

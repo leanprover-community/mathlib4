@@ -32,7 +32,7 @@ open scoped NNReal
 
 section
 
-variable {K : Type*} [hK : NormedField K] [IsUltrametricDist K]
+variable {K : Type*} [Field K] [hK : StrictNormedRing K] [IsUltrametricDist K]
 
 namespace NormedField
 
@@ -59,7 +59,7 @@ def toValued : Valued K ℝ≥0 :=
         fun ⟨ε, hε⟩ => ⟨(ε : ℝ), NNReal.coe_pos.mpr (Units.zero_lt _),
           fun x hx ↦ hε (mem_ball_zero_iff.mp hx)⟩⟩ }
 
-instance {K : Type*} [NontriviallyNormedField K] [IsUltrametricDist K] :
+instance {K : Type*} [Field K] [NontriviallyNormedField K] [IsUltrametricDist K] :
     Valuation.RankOne (valuation (K := K)) where
   hom := .id _
   strictMono' := strictMono_id
@@ -98,7 +98,7 @@ theorem norm_pos_iff_valuation_pos {x : L} : 0 < Valued.norm x ↔ (0 : Γ₀) <
 variable (L) (Γ₀)
 
 /-- The normed field structure determined by a rank one valuation. -/
-def toNormedField [IsOrderedMonoidWithZero Γ₀] : NormedField L :=
+def toStrictNormedRing [IsOrderedMonoidWithZero Γ₀] : StrictNormedRing L :=
   { (inferInstance : Field L) with
     norm := norm
     dist := fun x y => norm (x - y)
@@ -146,9 +146,9 @@ def toNormedField [IsOrderedMonoidWithZero Γ₀] : NormedField L :=
         exact ⟨fun a b hab => lt_of_lt_of_le hab (min_le_left _ _), fun a b hab =>
             lt_of_lt_of_le hab (min_le_right _ _)⟩ }
 
--- When a field is valued, one inherits a `NormedField`.
+-- When a field is valued, one inherits a `StrictNormedRing`.
 -- Scoped instance to avoid a typeclass loop or non-defeq topology or norms.
-scoped[Valued] attribute [instance] Valued.toNormedField
+scoped[Valued] attribute [instance] Valued.toStrictNormedRing
 scoped[NormedField] attribute [instance] NormedField.toValued
 
 section NormedField
@@ -204,7 +204,7 @@ end toNormedField
 The nontrivially normed field structure determined by a rank one valuation.
 -/
 def toNontriviallyNormedField [IsOrderedMonoidWithZero Γ₀] : NontriviallyNormedField L := {
-  val.toNormedField with
+  val.toStrictNormedRing with
   non_trivial := by
     obtain ⟨x, hx⟩ := Valuation.RankOne.nontrivial val.v
     rcases Valuation.val_le_one_or_val_inv_le_one val.v x with h | h

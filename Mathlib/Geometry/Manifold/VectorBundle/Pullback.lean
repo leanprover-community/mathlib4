@@ -21,7 +21,7 @@ open Bundle Set
 open scoped Manifold
 
 variable {𝕜 B B' : Type*} (F : Type*) (E : B → Type*) {n : WithTop ℕ∞}
-variable [NontriviallyNormedField 𝕜] [∀ x, AddCommMonoid (E x)] [∀ x, Module 𝕜 (E x)]
+variable [Field 𝕜] [NontriviallyNormedField 𝕜] [∀ x, AddCommMonoid (E x)] [∀ x, Module 𝕜 (E x)]
   [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F] [TopologicalSpace (TotalSpace F E)]
   [∀ x, TopologicalSpace (E x)]
   {EB : Type*} [AddCommGroup EB] [NormedAddGroup EB] [NormedSpace 𝕜 EB]

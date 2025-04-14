@@ -40,7 +40,8 @@ we formulate the definitions and lemmas for any model.
 /-- Basic hypothesis to talk about a `C^n` (Lie) additive monoid or a `C^n` additive
 semigroup. A `C^n` additive monoid over `G`, for example, is obtained by requiring both the
 instances `AddMonoid G` and `ContMDiffAdd I n G`. -/
-class ContMDiffAdd {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
+class ContMDiffAdd {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
+    {H : Type*} [TopologicalSpace H]
     {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
     (I : ModelWithCorners 𝕜 E H) (n : WithTop ℕ∞)
     (G : Type*) [Add G] [TopologicalSpace G] [ChartedSpace H G] : Prop
@@ -54,7 +55,8 @@ class ContMDiffAdd {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [To
 A `C^n` monoid over `G`, for example, is obtained by requiring both the instances `Monoid G`
 and `ContMDiffMul I n G`. -/
 @[to_additive]
-class ContMDiffMul {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
+class ContMDiffMul {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
+    {H : Type*} [TopologicalSpace H]
     {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
     (I : ModelWithCorners 𝕜 E H) (n : WithTop ℕ∞)
     (G : Type*) [Mul G] [TopologicalSpace G] [ChartedSpace H G] : Prop
@@ -65,7 +67,7 @@ class ContMDiffMul {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [To
 
 section ContMDiffMul
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
   {H : Type*} [TopologicalSpace H]
   {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
   {I : ModelWithCorners 𝕜 E H} {n : WithTop ℕ∞}
@@ -261,7 +263,7 @@ end
 
 -- Instance of product
 @[to_additive prod]
-instance ContMDiffMul.prod {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+instance ContMDiffMul.prod {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
     {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
     {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
     (G : Type*) [TopologicalSpace G] [ChartedSpace H G] [Mul G] [ContMDiffMul I n G]
@@ -278,7 +280,7 @@ end ContMDiffMul
 
 section Monoid
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
+variable {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
   {H : Type*} [TopologicalSpace H]
   {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H}
   {G : Type*} [Monoid G] [TopologicalSpace G] [ChartedSpace H G] [ContMDiffMul I n G]
@@ -347,7 +349,8 @@ section CommMonoid
 
 open Function
 
-variable {ι 𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞} {H : Type*} [TopologicalSpace H]
+variable {ι 𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
+  {H : Type*} [TopologicalSpace H]
   {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H}
   {G : Type*} [CommMonoid G] [TopologicalSpace G] [ChartedSpace H G] [ContMDiffMul I n G]
   {E' : Type*} [AddCommGroup E'] [NormedAddGroup E'] [NormedSpace 𝕜 E']
@@ -490,8 +493,8 @@ end CommMonoid
 
 section
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [AddCommGroup E] [NormedAddGroup E]
-  [NormedSpace 𝕜 E] {n : WithTop ℕ∞}
+variable {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
+  {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E] {n : WithTop ℕ∞}
 
 instance instContMDiffAddSelf : ContMDiffAdd 𝓘(𝕜, E) n E := by
   constructor
@@ -502,7 +505,7 @@ end
 
 section DivConst
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
+variable {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
   {H : Type*} [TopologicalSpace H]
   {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H}
   {G : Type*} [DivInvMonoid G] [TopologicalSpace G] [ChartedSpace H G] [ContMDiffMul I n G]

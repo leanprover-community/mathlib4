@@ -27,7 +27,7 @@ open MeasureTheory Measure Set
 open scoped ENNReal
 
 variable {𝕜 E F : Type*}
-  [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+  [Field 𝕜] [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
   [AddCommGroup E] [NormedAddGroup E] [MeasurableSpace E] [BorelSpace E] [NormedSpace 𝕜 E]
   [AddCommGroup F] [NormedAddGroup F] [MeasurableSpace F] [BorelSpace F] [NormedSpace 𝕜 F]
   {L : E →ₗ[𝕜] F} {μ : Measure E} {ν : Measure F}

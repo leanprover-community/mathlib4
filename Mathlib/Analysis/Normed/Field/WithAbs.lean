@@ -25,8 +25,11 @@ namespace WithAbs
 
 section more_instances
 
-instance normedField [Field R] (v : AbsoluteValue R ℝ) : NormedField (WithAbs v) :=
-  v.toNormedField
+instance field [Field R] (v : AbsoluteValue R ℝ) : Field (WithAbs v) :=
+  inferInstanceAs (Field R)
+
+instance strictNormedRing [Field R] (v : AbsoluteValue R ℝ) : StrictNormedRing (WithAbs v) :=
+  v.toStrictNormedRing
 
 end more_instances
 
@@ -35,25 +38,25 @@ end more_instances
 -/
 
 variable {K : Type*} [Field K] {v : AbsoluteValue K ℝ}
-  {L : Type*} [NormedField L] {f : WithAbs v →+* L}
+  {L : Type*} [Field L] [StrictNormedRing L] {f : WithAbs v →+* L}
 
 /-- If the absolute value `v` factors through an embedding `f` into a normed field, then
 `f` is an isometry. -/
 theorem isometry_of_comp (h : ∀ x, ‖f x‖ = v x) : Isometry f :=
-  Isometry.of_dist_eq <| fun x y => by simp only [‹NormedField L›.dist_eq, ← f.map_sub, h]; rfl
+  Isometry.of_dist_eq <| fun x y => by simp only [‹StrictNormedRing L›.dist_eq, ← f.map_sub, h]; rfl
 
 /-- If the absolute value `v` factors through an embedding `f` into a normed field, then
 the pseudo metric space associated to the absolute value is the same as the pseudo metric space
 induced by `f`. -/
 theorem pseudoMetricSpace_induced_of_comp (h : ∀ x, ‖f x‖ = v x) :
-    PseudoMetricSpace.induced f inferInstance = (normedField v).toPseudoMetricSpace := by
+    PseudoMetricSpace.induced f inferInstance = (strictNormedRing v).toPseudoMetricSpace := by
   ext; exact isometry_of_comp h |>.dist_eq _ _
 
 /-- If the absolute value `v` factors through an embedding `f` into a normed field, then
 the uniform structure associated to the absolute value is the same as the uniform structure
 induced by `f`. -/
 theorem uniformSpace_comap_eq_of_comp (h : ∀ x, ‖f x‖ = v x) :
-    UniformSpace.comap f inferInstance = (normedField v).toUniformSpace := by
+    UniformSpace.comap f inferInstance = (strictNormedRing v).toUniformSpace := by
   simp only [← pseudoMetricSpace_induced_of_comp h, PseudoMetricSpace.toUniformSpace]
 
 /-- If the absolute value `v` factors through an embedding `f` into a normed field, then
@@ -79,7 +82,7 @@ namespace Completion
 instance : Coe K v.Completion :=
   inferInstanceAs <| Coe (WithAbs v) (UniformSpace.Completion (WithAbs v))
 
-variable {L : Type*} [NormedField L] [CompleteSpace L] {f : WithAbs v →+* L} {v}
+variable {L : Type*} [Field L] [StrictNormedRing L] [CompleteSpace L] {f : WithAbs v →+* L} {v}
 
 /-- If the absolute value of a normed field factors through an embedding into another normed field
 `L`, then we can extend that embedding to an embedding on the completion `v.Completion →+* L`. -/

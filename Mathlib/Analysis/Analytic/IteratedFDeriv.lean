@@ -47,7 +47,7 @@ analyticity, for ease of use.
 open scoped ENNReal Topology ContDiff
 open Equiv Set
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
   {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
   {F : Type*} [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
   {f : E → F} {p : FormalMultilinearSeries 𝕜 E F} {s : Set E} {x : E} {r : ℝ≥0∞}

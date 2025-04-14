@@ -19,7 +19,7 @@ open Filter
 
 open scoped Topology
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
   {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E]
 
 /-- Meromorphy of `f` at `x` (more precisely, on a punctured neighbourhood of `x`; the value at

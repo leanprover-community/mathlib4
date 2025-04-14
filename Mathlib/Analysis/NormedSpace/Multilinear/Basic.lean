@@ -68,8 +68,8 @@ universe u v v' wE wE₁ wE' wG wG'
 section continuous_eval
 
 variable {𝕜 ι : Type*} {E : ι → Type*} {F : Type*}
-    [NormedField 𝕜] [Finite ι] [∀ i, AddCommGroup (E i)] [∀ i, SeminormedAddGroup (E i)]
-    [∀ i, NormedSpace 𝕜 (E i)]
+    [Field 𝕜] [StrictNormedRing 𝕜] [Finite ι]
+    [∀ i, AddCommGroup (E i)] [∀ i, SeminormedAddGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
     [TopologicalSpace F] [AddCommGroup F] [IsTopologicalAddGroup F] [Module 𝕜 F]
 
 instance ContinuousMultilinearMap.instContinuousEval :
@@ -111,7 +111,8 @@ section Seminorm
 
 variable {𝕜 : Type u} {ι : Type v} {ι' : Type v'} {E : ι → Type wE} {E₁ : ι → Type wE₁}
   {E' : ι' → Type wE'} {G : Type wG} {G' : Type wG'}
-  [Fintype ι'] [NontriviallyNormedField 𝕜] [∀ i, AddCommGroup (E i)] [∀ i, SeminormedAddGroup (E i)]
+  [Fintype ι'] [Field 𝕜] [NontriviallyNormedField 𝕜]
+  [∀ i, AddCommGroup (E i)] [∀ i, SeminormedAddGroup (E i)]
   [∀ i, NormedSpace 𝕜 (E i)] [∀ i, AddCommGroup (E₁ i)] [∀ i, SeminormedAddGroup (E₁ i)]
   [∀ i, NormedSpace 𝕜 (E₁ i)]
   [AddCommGroup G] [SeminormedAddGroup G] [NormedSpace 𝕜 G]
@@ -438,7 +439,7 @@ theorem opNorm_zero : ‖(0 : ContinuousMultilinearMap 𝕜 E G)‖ = 0 :=
 
 section
 
-variable {𝕜' : Type*} [NormedField 𝕜'] [NormedSpace 𝕜' G] [SMulCommClass 𝕜 𝕜' G]
+variable {𝕜' : Type*} [Field 𝕜'] [StrictNormedRing 𝕜'] [NormedSpace 𝕜' G] [SMulCommClass 𝕜 𝕜' G]
 
 theorem opNorm_smul_le (c : 𝕜') (f : ContinuousMultilinearMap 𝕜 E G) : ‖c • f‖ ≤ ‖c‖ * ‖f‖ :=
   (c • f).opNorm_le_bound (mul_nonneg (norm_nonneg _) (opNorm_nonneg _)) fun m ↦ by
@@ -632,7 +633,7 @@ end
 
 section RestrictScalars
 
-variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
+variable {𝕜' : Type*} [Field 𝕜'] [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
 variable [NormedSpace 𝕜' G] [IsScalarTower 𝕜' 𝕜 G]
 variable [∀ i, NormedSpace 𝕜' (E i)] [∀ i, IsScalarTower 𝕜' 𝕜 (E i)]
 
@@ -1271,7 +1272,7 @@ namespace ContinuousMultilinearMap
 `SeminormedAddCommGroup`). -/
 
 variable {𝕜 : Type u} {ι : Type v} {E : ι → Type wE} {G : Type wG} {G' : Type wG'} [Fintype ι]
-  [NontriviallyNormedField 𝕜] [∀ i, AddCommGroup (E i)] [∀ i, SeminormedAddGroup (E i)]
+  [Field 𝕜] [NontriviallyNormedField 𝕜] [∀ i, AddCommGroup (E i)] [∀ i, SeminormedAddGroup (E i)]
   [∀ i, NormedSpace 𝕜 (E i)]
   [AddCommGroup G] [NormedAddGroup G] [NormedSpace 𝕜 G] [AddCommGroup G']
   [SeminormedAddGroup G'] [NormedSpace 𝕜 G']
@@ -1311,7 +1312,7 @@ section Norm
 `SeminormedAddCommGroup`). -/
 
 variable {𝕜 : Type u} {ι : Type v} {E : ι → Type wE} {G : Type wG} [Fintype ι]
-  [NontriviallyNormedField 𝕜] [∀ i, AddCommGroup (E i)]
+  [Field 𝕜] [NontriviallyNormedField 𝕜] [∀ i, AddCommGroup (E i)]
   [∀ i, NormedAddGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
   [AddCommGroup G] [SeminormedAddGroup G] [NormedSpace 𝕜 G]
 

@@ -38,7 +38,7 @@ an isometry for every `i`), then we have `projectiveSeminorm ⨂ₜ[𝕜] i, m�
 universe uι u𝕜 uE uF
 
 variable {ι : Type uι} [Fintype ι]
-variable {𝕜 : Type u𝕜} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type u𝕜} [Field 𝕜] [NontriviallyNormedField 𝕜]
 variable {E : ι → Type uE} [∀ i, AddCommGroup (E i)] [∀ i, SeminormedAddGroup (E i)]
 
 open scoped TensorProduct

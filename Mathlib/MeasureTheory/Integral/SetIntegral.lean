@@ -837,7 +837,7 @@ We prove that for any set `s`, the function
 section ContinuousSetIntegral
 
 variable [AddCommGroup E] [NormedAddGroup E]
-  {𝕜 : Type*} [NormedField 𝕜] [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
+  {𝕜 : Type*} [Field 𝕜] [StrictNormedRing 𝕜] [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
   {p : ℝ≥0∞} {μ : Measure X}
 
 /-- For `f : Lp E p μ`, we can define an element of `Lp E p (μ.restrict s)` by
@@ -1418,7 +1418,7 @@ section ParametricIntegral
 
 variable {G 𝕜 : Type*} [TopologicalSpace X]
   [TopologicalSpace Y] [MeasurableSpace Y] [OpensMeasurableSpace Y] {μ : Measure Y}
-  [NontriviallyNormedField 𝕜] [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
+  [Field 𝕜] [NontriviallyNormedField 𝕜] [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℝ E]
   [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
   [AddCommGroup G] [NormedAddGroup G] [NormedSpace 𝕜 G]
 

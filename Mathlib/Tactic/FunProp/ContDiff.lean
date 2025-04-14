@@ -19,7 +19,7 @@ section Missing
 
 section lambda_rules
 
-variable {K : Type*} [NontriviallyNormedField K]
+variable {K : Type*} [Field K] [NontriviallyNormedField K]
 variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace K E]
 variable {F : Type*} [AddCommGroup F] [NormedAddGroup F] [NormedSpace K F]
 variable {G : Type*} [AddCommGroup G] [NormedAddGroup G] [NormedSpace K G]
@@ -58,7 +58,7 @@ end lambda_rules
 
 section div
 
-variable {K : Type*} [NontriviallyNormedField K]
+variable {K : Type*} [Field K] [NontriviallyNormedField K]
 variable {E : Type*} [AddCommGroup E] [NormedAddGroup E] [NormedSpace K E]
 variable {s}
 
@@ -72,7 +72,7 @@ end div
 
 section deriv
 
-variable {K : Type*} [NontriviallyNormedField K]
+variable {K : Type*} [Field K] [NontriviallyNormedField K]
 variable {F : Type*} [AddCommGroup F] [NormedAddGroup F] [NormedSpace K F]
 
 /-- Original version `ContDiff.differentiable_iteratedDeriv` introduces a new variable `(n:ℕ∞)`

@@ -51,7 +51,7 @@ open scoped Topology Filter ENNReal NNReal
 
 open Filter Asymptotics Set
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
 variable {F : Type*} [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
 
 section Module

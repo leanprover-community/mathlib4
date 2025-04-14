@@ -13,7 +13,7 @@ We show that if a function `f` has derivative `f'` at a point `a + x`, then `f (
 has derivative `f'` at `x`. Similarly for `x + a`.
 -/
 
-variable {𝕜 F : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 F : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
   [AddCommGroup F] [NormedAddGroup F] [NormedSpace 𝕜 F]
   {f : 𝕜 → F} {f' : F}
 

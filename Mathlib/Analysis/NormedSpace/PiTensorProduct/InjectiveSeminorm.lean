@@ -76,7 +76,7 @@ depends on PR https://github.com/leanprover-community/mathlib4/pull/11156. It sh
 universe uι u𝕜 uE uF
 
 variable {ι : Type uι} [Fintype ι]
-variable {𝕜 : Type u𝕜} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type u𝕜} [Field 𝕜] [NontriviallyNormedField 𝕜]
 variable {E : ι → Type uE} [∀ i, AddCommGroup (E i)] [∀ i, SeminormedAddGroup (E i)]
   [∀ i, NormedSpace 𝕜 (E i)]
 variable {F : Type uF} [AddCommGroup F] [SeminormedAddGroup F] [NormedSpace 𝕜 F]

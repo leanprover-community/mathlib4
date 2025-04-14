@@ -110,17 +110,18 @@ def Submonoid.unitSphere (𝕜 : Type*) [Ring 𝕜] [SeminormedRing 𝕜] [NormM
     simp [*]
   one_mem' := mem_sphere_zero_iff_norm.2 norm_one
 
-instance Metric.unitSphere.inv [NormedDivisionRing 𝕜] : Inv (sphere (0 : 𝕜) 1) :=
+instance Metric.unitSphere.inv [DivisionRing 𝕜] [StrictNormedRing 𝕜] : Inv (sphere (0 : 𝕜) 1) :=
   ⟨fun x =>
     ⟨x⁻¹,
       mem_sphere_zero_iff_norm.2 <| by
         rw [norm_inv, mem_sphere_zero_iff_norm.1 x.coe_prop, inv_one]⟩⟩
 
 @[simp, norm_cast]
-theorem coe_inv_unitSphere [NormedDivisionRing 𝕜] (x : sphere (0 : 𝕜) 1) : ↑x⁻¹ = (x⁻¹ : 𝕜) :=
+theorem coe_inv_unitSphere [DivisionRing 𝕜] [StrictNormedRing 𝕜] (x : sphere (0 : 𝕜) 1) :
+    ↑x⁻¹ = (x⁻¹ : 𝕜) :=
   rfl
 
-instance Metric.unitSphere.div [NormedDivisionRing 𝕜] : Div (sphere (0 : 𝕜) 1) :=
+instance Metric.unitSphere.div [DivisionRing 𝕜] [StrictNormedRing 𝕜] : Div (sphere (0 : 𝕜) 1) :=
   ⟨fun x y =>
     ⟨x / y,
       mem_sphere_zero_iff_norm.2 <| by
@@ -128,17 +129,17 @@ instance Metric.unitSphere.div [NormedDivisionRing 𝕜] : Div (sphere (0 : 𝕜
           div_one]⟩⟩
 
 @[simp, norm_cast]
-theorem coe_div_unitSphere [NormedDivisionRing 𝕜] (x y : sphere (0 : 𝕜) 1) :
+theorem coe_div_unitSphere [DivisionRing 𝕜] [StrictNormedRing 𝕜] (x y : sphere (0 : 𝕜) 1) :
     ↑(x / y) = (x / y : 𝕜) :=
   rfl
 
-instance Metric.unitSphere.pow [NormedDivisionRing 𝕜] : Pow (sphere (0 : 𝕜) 1) ℤ :=
+instance Metric.unitSphere.pow [DivisionRing 𝕜] [StrictNormedRing 𝕜] : Pow (sphere (0 : 𝕜) 1) ℤ :=
   ⟨fun x n =>
     ⟨(x : 𝕜) ^ n, by
       rw [mem_sphere_zero_iff_norm, norm_zpow, mem_sphere_zero_iff_norm.1 x.coe_prop, one_zpow]⟩⟩
 
 @[simp, norm_cast]
-theorem coe_zpow_unitSphere [NormedDivisionRing 𝕜] (x : sphere (0 : 𝕜) 1) (n : ℤ) :
+theorem coe_zpow_unitSphere [DivisionRing 𝕜] [StrictNormedRing 𝕜] (x : sphere (0 : 𝕜) 1) (n : ℤ) :
     ↑(x ^ n) = (x : 𝕜) ^ n :=
   rfl
 
@@ -169,20 +170,21 @@ theorem coe_pow_unitSphere [Ring 𝕜] [SeminormedRing 𝕜] [NormMulClass 𝕜]
   rfl
 
 /-- Monoid homomorphism from the unit sphere in a normed division ring to the group of units. -/
-def unitSphereToUnits (𝕜 : Type*) [NormedDivisionRing 𝕜] : sphere (0 : 𝕜) 1 →* Units 𝕜 :=
+def unitSphereToUnits (𝕜 : Type*) [DivisionRing 𝕜] [StrictNormedRing 𝕜] :
+    sphere (0 : 𝕜) 1 →* Units 𝕜 :=
   Units.liftRight (Submonoid.unitSphere 𝕜).subtype
     (fun x => Units.mk0 x <| ne_zero_of_mem_unit_sphere _) fun _x => rfl
 
 @[simp]
-theorem unitSphereToUnits_apply_coe [NormedDivisionRing 𝕜] (x : sphere (0 : 𝕜) 1) :
+theorem unitSphereToUnits_apply_coe [DivisionRing 𝕜] [StrictNormedRing 𝕜] (x : sphere (0 : 𝕜) 1) :
     (unitSphereToUnits 𝕜 x : 𝕜) = x :=
   rfl
 
-theorem unitSphereToUnits_injective [NormedDivisionRing 𝕜] :
+theorem unitSphereToUnits_injective [DivisionRing 𝕜] [StrictNormedRing 𝕜] :
     Function.Injective (unitSphereToUnits 𝕜) := fun x y h =>
   Subtype.eq <| by convert congr_arg Units.val h
 
-instance Metric.sphere.group [NormedDivisionRing 𝕜] : Group (sphere (0 : 𝕜) 1) :=
+instance Metric.sphere.group [DivisionRing 𝕜] [StrictNormedRing 𝕜] : Group (sphere (0 : 𝕜) 1) :=
   unitSphereToUnits_injective.group (unitSphereToUnits 𝕜) (Units.ext rfl)
     (fun _x _y => Units.ext rfl)
     (fun _x => Units.ext rfl) (fun _x _y => Units.ext <| div_eq_mul_inv _ _)
@@ -197,10 +199,10 @@ instance Metric.sphere.continuousMul [Ring 𝕜] [SeminormedRing 𝕜] [NormMulC
     ContinuousMul (sphere (0 : 𝕜) 1) :=
   (Submonoid.unitSphere 𝕜).continuousMul
 
-instance Metric.sphere.topologicalGroup [NormedDivisionRing 𝕜] :
+instance Metric.sphere.topologicalGroup [DivisionRing 𝕜] [StrictNormedRing 𝕜] :
     IsTopologicalGroup (sphere (0 : 𝕜) 1) where
   continuous_inv := (continuous_subtype_val.inv₀ ne_zero_of_mem_unit_sphere).subtype_mk _
 
-instance Metric.sphere.commGroup [NormedField 𝕜] : CommGroup (sphere (0 : 𝕜) 1) :=
+instance Metric.sphere.commGroup [Field 𝕜] [StrictNormedRing 𝕜] : CommGroup (sphere (0 : 𝕜) 1) :=
   { Metric.sphere.group,
     Subtype.coe_injective.commMonoid _ rfl (fun _ _ => rfl) (fun _ _ => rfl) with }

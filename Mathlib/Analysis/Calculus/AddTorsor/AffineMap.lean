@@ -20,7 +20,7 @@ This file contains results about smoothness of affine maps.
 
 namespace ContinuousAffineMap
 
-variable {𝕜 V W : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 V W : Type*} [Field 𝕜] [NontriviallyNormedField 𝕜]
 variable [AddCommGroup V] [NormedAddGroup V] [NormedSpace 𝕜 V]
 variable [AddCommGroup W] [NormedAddGroup W] [NormedSpace 𝕜 W]
 
