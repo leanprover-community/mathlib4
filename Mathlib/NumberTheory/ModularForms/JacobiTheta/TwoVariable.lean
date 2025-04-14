@@ -443,7 +443,7 @@ lemma jacobiTheta₂'_add_left' (z τ : ℂ) :
     ring
   rw [jacobiTheta₂', funext this, tsum_mul_left, ← (Equiv.subRight (1 : ℤ)).tsum_eq]
   simp only [jacobiTheta₂, jacobiTheta₂', Equiv.subRight_apply, sub_add_cancel,
-    tsum_sub (hasSum_jacobiTheta₂'_term z hτ).summable
+    (hasSum_jacobiTheta₂'_term z hτ).summable.tsum_sub
     ((hasSum_jacobiTheta₂_term z hτ).summable.mul_left _), tsum_mul_left]
 
 lemma jacobiTheta₂'_neg_left (z τ : ℂ) : jacobiTheta₂' (-z) τ = -jacobiTheta₂' z τ := by

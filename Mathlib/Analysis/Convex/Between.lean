@@ -30,15 +30,18 @@ open AffineEquiv AffineMap
 
 section OrderedRing
 
-variable [OrderedRing R] [AddCommGroup V] [Module R V] [AddTorsor V P]
-variable [AddCommGroup V'] [Module R V'] [AddTorsor V' P']
-
+-- TODO: remove `[IsOrderedRing R]` and `@[nolint unusedArguments]`.
 /-- The segment of points weakly between `x` and `y`. When convexity is refactored to support
 abstract affine combination spaces, this will no longer need to be a separate definition from
 `segment`. However, lemmas involving `+ᵥ` or `-ᵥ` will still be relevant after such a
 refactoring, as distinct from versions involving `+` or `-` in a module. -/
-def affineSegment (x y : P) :=
+@[nolint unusedArguments]
+def affineSegment [Ring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup V] [Module R V]
+    [AddTorsor V P] (x y : P) :=
   lineMap x y '' Set.Icc (0 : R) 1
+
+variable [Ring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup V] [Module R V] [AddTorsor V P]
+variable [AddCommGroup V'] [Module R V'] [AddTorsor V' P']
 
 theorem affineSegment_eq_segment (x y : V) : affineSegment R x y = segment R x y := by
   rw [segment_eq_image_lineMap, affineSegment]
@@ -470,7 +473,8 @@ end OrderedRing
 
 section StrictOrderedCommRing
 
-variable [StrictOrderedCommRing R] [AddCommGroup V] [Module R V] [AddTorsor V P]
+variable [CommRing R] [PartialOrder R] [IsStrictOrderedRing R]
+  [AddCommGroup V] [Module R V] [AddTorsor V P]
 variable {R}
 
 theorem Wbtw.sameRay_vsub {x y z : P} (h : Wbtw R x y z) : SameRay R (y -ᵥ x) (z -ᵥ y) := by
@@ -495,7 +499,8 @@ end StrictOrderedCommRing
 
 section LinearOrderedRing
 
-variable [LinearOrderedRing R] [AddCommGroup V] [Module R V] [AddTorsor V P]
+variable [Ring R] [LinearOrder R] [IsStrictOrderedRing R]
+  [AddCommGroup V] [Module R V] [AddTorsor V P]
 variable {R}
 
 /-- Suppose lines from two vertices of a triangle to interior points of the opposite side meet at
@@ -506,8 +511,6 @@ theorem sbtw_of_sbtw_of_sbtw_of_mem_affineSpan_pair [NoZeroSMulDivisors R V]
     (h₁ : Sbtw R (t.points i₂) p₁ (t.points i₃)) (h₂ : Sbtw R (t.points i₁) p₂ (t.points i₃))
     (h₁' : p ∈ line[R, t.points i₁, p₁]) (h₂' : p ∈ line[R, t.points i₂, p₂]) :
     Sbtw R (t.points i₁) p p₁ := by
-  -- Should not be needed; see comments on local instances in `Data.Sign`.
-  letI : DecidableRel ((· < ·) : R → R → Prop) := LinearOrderedRing.decidableLT
   have h₁₃ : i₁ ≠ i₃ := by
     rintro rfl
     simp at h₂
@@ -574,7 +577,8 @@ end LinearOrderedRing
 
 section LinearOrderedField
 
-variable [LinearOrderedField R] [AddCommGroup V] [Module R V] [AddTorsor V P] {x y z : P}
+variable [Field R] [LinearOrder R] [IsStrictOrderedRing R]
+  [AddCommGroup V] [Module R V] [AddTorsor V P] {x y z : P}
 variable {R}
 
 lemma wbtw_iff_of_le {x y z : R} (hxz : x ≤ z) : Wbtw R x y z ↔ x ≤ y ∧ y ≤ z := by

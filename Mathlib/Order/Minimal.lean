@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Peter Nelson
 -/
 import Mathlib.Order.Antichain
-import Mathlib.Order.UpperLower.Basic
-import Mathlib.Order.Interval.Set.Basic
 
 /-!
 # Minimality and Maximality
@@ -38,6 +36,8 @@ but it may be worth re-examining this to make it easier in the future; see the T
 * API to allow for easily expressing min/maximality with respect to an arbitrary non-`LE` relation.
 
 -/
+
+assert_not_exists CompleteLattice
 
 open Set OrderDual
 
@@ -406,18 +406,6 @@ theorem setOf_maximal_antichain (P : α → Prop) : IsAntichain (· ≤ ·) {x |
 
 theorem setOf_minimal_antichain (P : α → Prop) : IsAntichain (· ≤ ·) {x | Minimal P x} :=
   (setOf_maximal_antichain (α := αᵒᵈ) P).swap
-
-theorem IsAntichain.minimal_mem_upperClosure_iff_mem (hs : IsAntichain (· ≤ ·) s) :
-    Minimal (· ∈ upperClosure s) x ↔ x ∈ s := by
-  simp only [upperClosure, UpperSet.mem_mk, mem_setOf_eq]
-  refine ⟨fun h ↦ ?_, fun h ↦ ⟨⟨x, h, rfl.le⟩, fun b ⟨a, has, hab⟩ hbx ↦ ?_⟩⟩
-  · obtain ⟨a, has, hax⟩ := h.prop
-    rwa [h.eq_of_ge ⟨a, has, rfl.le⟩ hax]
-  rwa [← hs.eq has h (hab.trans hbx)]
-
-theorem IsAntichain.maximal_mem_lowerClosure_iff_mem (hs : IsAntichain (· ≤ ·) s) :
-    Maximal (· ∈ lowerClosure s) x ↔ x ∈ s :=
-  hs.to_dual.minimal_mem_upperClosure_iff_mem
 
 theorem IsLeast.minimal_iff (h : IsLeast s a) : Minimal (· ∈ s) x ↔ x = a :=
   ⟨fun h' ↦ h'.eq_of_ge h.1 (h.2 h'.prop), fun h' ↦ h' ▸ h.minimal⟩

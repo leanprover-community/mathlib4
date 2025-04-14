@@ -114,14 +114,14 @@ instance : Category (Grothendieck F) where
   id X := Grothendieck.id X
   comp f g := Grothendieck.comp f g
   comp_id {X Y} f := by
-    dsimp; ext
+    ext
     · simp [comp, id]
     · dsimp [comp, id]
       rw [← NatIso.naturality_2 (eqToIso (F.map_id Y.base)) f.fiber]
       simp
-  id_comp f := by dsimp; ext <;> simp [comp, id]
+  id_comp f := by ext <;> simp [comp, id]
   assoc f g h := by
-    dsimp; ext
+    ext
     · simp [comp, id]
     · dsimp [comp, id]
       rw [← NatIso.naturality_2 (eqToIso (F.map_comp _ _)) f.fiber]
@@ -245,8 +245,9 @@ def map (α : F ⟶ G) : Grothendieck F ⥤ Grothendieck G where
     congr 1
     simp only [comp_fiber f g, ← Category.assoc, Functor.map_comp, eqToHom_map]
     congr 1
-    simp only [Cat.eqToHom_app, Cat.comp_obj, eqToHom_trans, eqToHom_map, Category.assoc]
-    erw [Functor.congr_hom (α.naturality g.base).symm f.fiber]
+    simp only [Cat.eqToHom_app, Cat.comp_obj, eqToHom_trans, eqToHom_map, Category.assoc,
+      ← Cat.comp_map]
+    rw [Functor.congr_hom (α.naturality g.base).symm f.fiber]
     simp
 
 theorem map_obj {α : F ⟶ G} (X : Grothendieck F) :

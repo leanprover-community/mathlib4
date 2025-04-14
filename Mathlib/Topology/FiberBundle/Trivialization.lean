@@ -762,7 +762,7 @@ def liftCM (T : Trivialization F proj) : C(T.source × T.baseSet, T.source) wher
   continuous_toFun := by
     apply Continuous.subtype_mk
     refine T.continuousOn_invFun.comp_continuous ?_ (by simp [mem_target])
-    refine .prod_mk (by fun_prop) (.snd ?_)
+    refine .prodMk (by fun_prop) (.snd ?_)
     exact T.continuousOn_toFun.comp_continuous (by fun_prop) (by simp)
 
 variable {ι : Type*} [TopologicalSpace ι] [LocallyCompactPair ι T.baseSet]

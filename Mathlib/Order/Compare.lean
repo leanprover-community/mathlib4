@@ -25,16 +25,16 @@ variable {α β : Type*}
 
 /-- Like `cmp`, but uses a `≤` on the type instead of `<`. Given two elements `x` and `y`, returns a
 three-way comparison result `Ordering`. -/
-def cmpLE {α} [LE α] [DecidableRel (α := α) (· ≤ ·)] (x y : α) : Ordering :=
+def cmpLE {α} [LE α] [DecidableLE α] (x y : α) : Ordering :=
   if x ≤ y then if y ≤ x then Ordering.eq else Ordering.lt else Ordering.gt
 
-theorem cmpLE_swap {α} [LE α] [IsTotal α (· ≤ ·)] [DecidableRel (α := α) (· ≤ ·)] (x y : α) :
+theorem cmpLE_swap {α} [LE α] [IsTotal α (· ≤ ·)] [DecidableLE α] (x y : α) :
     (cmpLE x y).swap = cmpLE y x := by
   by_cases xy : x ≤ y <;> by_cases yx : y ≤ x <;> simp [cmpLE, *, Ordering.swap]
   cases not_or_intro xy yx (total_of _ _ _)
 
-theorem cmpLE_eq_cmp {α} [Preorder α] [IsTotal α (· ≤ ·)] [DecidableRel (α := α) (· ≤ ·)]
-    [DecidableRel (α := α) (· < ·)] (x y : α) : cmpLE x y = cmp x y := by
+theorem cmpLE_eq_cmp {α} [Preorder α] [IsTotal α (· ≤ ·)] [DecidableLE α] [DecidableLT α]
+    (x y : α) : cmpLE x y = cmp x y := by
   by_cases xy : x ≤ y <;> by_cases yx : y ≤ x <;> simp [cmpLE, lt_iff_le_not_le, *, cmp, cmpUsing]
   cases not_or_intro xy yx (total_of _ _ _)
 
@@ -99,14 +99,6 @@ theorem compares_iff_of_compares_impl [LinearOrder α] [Preorder β] {a b : α} 
   · have hab : Compares Ordering.gt a b := hab
     rwa [ho.inj (h hab)]
 
-set_option linter.deprecated false in
-@[deprecated swap_then (since := "2024-09-13")]
-theorem swap_orElse (o₁ o₂) : (orElse o₁ o₂).swap = orElse o₁.swap o₂.swap := swap_then ..
-
-set_option linter.deprecated false in
-@[deprecated then_eq_lt (since := "2024-09-13")]
-theorem orElse_eq_lt (o₁ o₂) : orElse o₁ o₂ = lt ↔ o₁ = lt ∨ o₁ = eq ∧ o₂ = lt := then_eq_lt ..
-
 end Ordering
 
 open Ordering OrderDual
@@ -131,36 +123,31 @@ theorem Ordering.Compares.cmp_eq [LinearOrder α] {a b : α} {o : Ordering} (h :
   (cmp_compares a b).inj h
 
 @[simp]
-theorem cmp_swap [Preorder α] [DecidableRel (α := α) (· < ·)] (a b : α) :
-    (cmp a b).swap = cmp b a := by
+theorem cmp_swap [Preorder α] [DecidableLT α] (a b : α) : (cmp a b).swap = cmp b a := by
   unfold cmp cmpUsing
   by_cases h : a < b <;> by_cases h₂ : b < a <;> simp [h, h₂, Ordering.swap]
   exact lt_asymm h h₂
 
 @[simp]
-theorem cmpLE_toDual [LE α] [DecidableRel (α := α) (· ≤ ·)] (x y : α) :
-    cmpLE (toDual x) (toDual y) = cmpLE y x :=
+theorem cmpLE_toDual [LE α] [DecidableLE α] (x y : α) : cmpLE (toDual x) (toDual y) = cmpLE y x :=
   rfl
 
 @[simp]
-theorem cmpLE_ofDual [LE α] [DecidableRel (α := α) (· ≤ ·)] (x y : αᵒᵈ) :
-    cmpLE (ofDual x) (ofDual y) = cmpLE y x :=
+theorem cmpLE_ofDual [LE α] [DecidableLE α] (x y : αᵒᵈ) : cmpLE (ofDual x) (ofDual y) = cmpLE y x :=
   rfl
 
 @[simp]
-theorem cmp_toDual [LT α] [DecidableRel (α := α) (· < ·)] (x y : α) :
-    cmp (toDual x) (toDual y) = cmp y x :=
+theorem cmp_toDual [LT α] [DecidableLT α] (x y : α) : cmp (toDual x) (toDual y) = cmp y x :=
   rfl
 
 @[simp]
-theorem cmp_ofDual [LT α] [DecidableRel (α := α) (· < ·)] (x y : αᵒᵈ) :
-    cmp (ofDual x) (ofDual y) = cmp y x :=
+theorem cmp_ofDual [LT α] [DecidableLT α] (x y : αᵒᵈ) : cmp (ofDual x) (ofDual y) = cmp y x :=
   rfl
 
 /-- Generate a linear order structure from a preorder and `cmp` function. -/
 def linearOrderOfCompares [Preorder α] (cmp : α → α → Ordering)
     (h : ∀ a b, (cmp a b).Compares a b) : LinearOrder α :=
-  let H : DecidableRel (α := α) (· ≤ ·) := fun a b => decidable_of_iff _ (h a b).ne_gt
+  let H : DecidableLE α := fun a b => decidable_of_iff _ (h a b).ne_gt
   { inferInstanceAs (Preorder α) with
     le_antisymm := fun a b => (h a b).le_antisymm,
     le_total := fun a b => (h a b).le_total,

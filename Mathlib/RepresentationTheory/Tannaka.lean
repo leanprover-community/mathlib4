@@ -114,6 +114,63 @@ lemma equivHom_inj [Nontrivial k] [DecidableEq G] : Function.Injective (equivHom
   apply_fun (fun x ↦ (x.hom.hom.app rightFDRep).hom (single t 1) 1) at h
   simp_all [single_apply]
 
+/-- The `FDRep k G` morphism induced by multiplication on `G → k`. -/
+def mulRepHom : rightFDRep (k := k) (G := G) ⊗ rightFDRep ⟶ rightFDRep where
+  hom := ofHom (LinearMap.mul' k (G → k))
+  comm := by
+    intro
+    ext u
+    refine TensorProduct.induction_on u rfl (fun _ _ ↦ rfl) (fun _ _ hx hy ↦ ?_)
+    simp only [map_add, hx, hy]
+
+/-- The `rightFDRep` component of `η : Aut (forget k G)` preserves multiplication -/
+lemma map_mul_toRightFDRepComp (η : Aut (forget k G)) (f g : G → k) :
+    let α : (G → k) →ₗ[k] (G → k) := (η.hom.hom.app rightFDRep).hom
+    α (f * g) = (α f) * (α g) := by
+  have nat := η.hom.hom.naturality mulRepHom
+  have tensor (X Y) : η.hom.hom.app (X ⊗ Y) = (η.hom.hom.app X ⊗ η.hom.hom.app Y) :=
+    η.hom.isMonoidal.tensor X Y
+  rw [tensor] at nat
+  apply_fun (Hom.hom · (f ⊗ₜ[k] g)) at nat
+  exact nat
+
+/-- The `rightFDRep` component of `η : Aut (forget k G)` gives rise to
+an algebra morphism `(G → k) →ₐ[k] (G → k)`. -/
+def algHomOfRightFDRepComp (η : Aut (forget k G)) : (G → k) →ₐ[k] (G → k) := by
+  let α : (G → k) →ₗ[k] (G → k) := (η.hom.hom.app rightFDRep).hom
+  let α_inv : (G → k) →ₗ[k] (G → k) := (η.inv.hom.app rightFDRep).hom
+  refine AlgHom.ofLinearMap α ?_ (map_mul_toRightFDRepComp η)
+  suffices α (α_inv 1) = (1 : G → k) by
+    have h := this
+    rwa [← one_mul (α_inv 1), map_mul_toRightFDRepComp, h, mul_one] at this
+  have := η.inv_hom_id
+  apply_fun (fun x ↦ (x.hom.app rightFDRep).hom (1 : G → k)) at this
+  exact this
+
 end FiniteGroup
 
 end TannakaDuality
+
+end
+
+/-- Let `k` be an integral domain and `G` an arbitrary finite set.
+Then any algebra morphism `φ : (G → k) →ₐ[k] k` is an evaluation map. -/
+lemma eval_of_algHom {k G : Type*} [CommRing k] [IsDomain k] [DecidableEq G] [Fintype G]
+    (φ : (G → k) →ₐ[k] k) : ∃ (s : G), φ = Pi.evalAlgHom _ _ s := by
+  have h1 := map_one φ
+  simp only [← Finset.univ_sum_single (1 : G → k), Pi.one_apply, map_sum] at h1
+  obtain ⟨s, hs⟩ : ∃ (s : G), φ (Pi.single s 1) ≠ 0 := by
+    by_contra
+    simp_all
+  have h2 : ∀ t ≠ s, φ (Pi.single t 1) = 0 := by
+    intros
+    apply eq_zero_of_ne_zero_of_mul_right_eq_zero hs
+    rw [← map_mul]
+    convert map_zero φ
+    ext u
+    by_cases u = s <;> simp_all
+  have h3 : φ (Pi.single s 1) = 1 := by
+    rwa [Fintype.sum_eq_single s h2] at h1
+  use s
+  refine AlgHom.toLinearMap_injective (Basis.ext (Pi.basisFun k G) (fun t ↦ ?_))
+  by_cases t = s <;> simp_all

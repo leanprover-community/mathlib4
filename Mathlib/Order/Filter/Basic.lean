@@ -392,9 +392,11 @@ theorem forall_mem_nonempty_iff_neBot {f : Filter α} :
     (∀ s : Set α, s ∈ f → s.Nonempty) ↔ NeBot f :=
   ⟨fun h => ⟨fun hf => not_nonempty_empty (h ∅ <| hf.symm ▸ mem_bot)⟩, @nonempty_of_mem _ _⟩
 
+instance instNeBotTop [Nonempty α] : NeBot (⊤ : Filter α) :=
+  forall_mem_nonempty_iff_neBot.1 fun s hs => by rwa [mem_top.1 hs, ← nonempty_iff_univ_nonempty]
+
 instance instNontrivialFilter [Nonempty α] : Nontrivial (Filter α) :=
-  ⟨⟨⊤, ⊥, NeBot.ne <| forall_mem_nonempty_iff_neBot.1
-    fun s hs => by rwa [mem_top.1 hs, ← nonempty_iff_univ_nonempty]⟩⟩
+  ⟨⟨⊤, ⊥, instNeBotTop.ne⟩⟩
 
 theorem nontrivial_iff_nonempty : Nontrivial (Filter α) ↔ Nonempty α :=
   ⟨fun _ =>
@@ -923,12 +925,15 @@ instance {l : Filter α} :
     Trans ((· =ᶠ[l] ·) : (α → β) → (α → β) → Prop) (· =ᶠ[l] ·) (· =ᶠ[l] ·) where
   trans := EventuallyEq.trans
 
-theorem EventuallyEq.prod_mk {l} {f f' : α → β} (hf : f =ᶠ[l] f') {g g' : α → γ} (hg : g =ᶠ[l] g') :
+theorem EventuallyEq.prodMk {l} {f f' : α → β} (hf : f =ᶠ[l] f') {g g' : α → γ} (hg : g =ᶠ[l] g') :
     (fun x => (f x, g x)) =ᶠ[l] fun x => (f' x, g' x) :=
   hf.mp <|
     hg.mono <| by
       intros
       simp only [*]
+
+@[deprecated (since := "2025-03-10")]
+alias EventuallyEq.prod_mk := EventuallyEq.prodMk
 
 -- See `EventuallyEq.comp_tendsto` further below for a similar statement w.r.t.
 -- composition on the right.
@@ -938,7 +943,7 @@ theorem EventuallyEq.fun_comp {f g : α → β} {l : Filter α} (H : f =ᶠ[l] g
 
 theorem EventuallyEq.comp₂ {δ} {f f' : α → β} {g g' : α → γ} {l} (Hf : f =ᶠ[l] f') (h : β → γ → δ)
     (Hg : g =ᶠ[l] g') : (fun x => h (f x) (g x)) =ᶠ[l] fun x => h (f' x) (g' x) :=
-  (Hf.prod_mk Hg).fun_comp (uncurry h)
+  (Hf.prodMk Hg).fun_comp (uncurry h)
 
 @[to_additive]
 theorem EventuallyEq.mul [Mul β] {f f' g g' : α → β} {l : Filter α} (h : f =ᶠ[l] g)
