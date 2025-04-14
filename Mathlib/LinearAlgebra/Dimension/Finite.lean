@@ -550,21 +550,35 @@ end RankOne
 namespace Module
 variable {ι : Type*}
 
-@[simp] lemma finite_finsupp [StrongRankCondition R] [NoZeroSMulDivisors R M] :
+@[simp] lemma finite_finsupp :
     Module.Finite R (ι →₀ M) ↔ IsEmpty ι ∨ Subsingleton M ∨ Module.Finite R M ∧ Finite ι where
-  mp _ := by
-    obtain _ | ⟨⟨i⟩⟩ := isEmpty_or_nonempty ι
-    · simp [*]
-    cases subsingleton_or_nontrivial M
-    · simp [*]
+  mp h := by
     classical
-    refine .inr <| .inr ⟨?_, ?_⟩
-    · exact .of_surjective _ (Finsupp.lapply_surjective (R := R) (M := M) i)
-    · obtain ⟨x, hx⟩ := exists_ne (0 : M)
-      exact (Finsupp.linearIndependent_single_of_ne_zero (R := R) fun _ ↦ hx).finite
+    simp only [or_iff_not_imp_left, not_subsingleton_iff_nontrivial, not_isEmpty_iff,
+      Nonempty.forall]
+    refine fun i _ ↦ ⟨.of_surjective _ (Finsupp.lapply_surjective (R := R) (M := M) i), ?_⟩
+    obtain ⟨s, hs⟩ := h
+    suffices (s.sup fun f ↦ f.support).toSet = .univ by
+      exact .of_finite_univ <| this ▸ Finset.finite_toSet _
+    obtain ⟨x, hx⟩ := exists_ne (0 : M)
+    ext j
+    simp only [SetLike.ext_iff, mem_span_iff_exists_finset_subset, Finset.coe_subset,
+      support_subset_iff, ne_eq, Finset.mem_coe, Finsupp.ext_iff, Finsupp.coe_finset_sum,
+      Finsupp.coe_smul, Finset.sum_apply, Pi.smul_apply, mem_top, iff_true, Finset.mem_sup,
+      Finsupp.mem_support_iff, mem_univ] at hs ⊢
+    contrapose! hx
+    obtain ⟨n, t, hts, -, hn⟩ := hs (.single j x)
+    specialize hn j
+    rw [Finset.sum_eq_zero fun k hk ↦ by rw [hx _ <| hts hk, smul_zero]] at hn
+    simpa [eq_comm] using hn
   mpr
   | .inl _ => inferInstance
   | .inr <| .inl h => inferInstance
   | .inr <| .inr h => by cases h; infer_instance
+
+@[simp high]
+lemma finite_finsupp_self : Module.Finite R (ι →₀ R) ↔ Subsingleton R ∨ Finite ι := by
+  simp only [finite_finsupp, Finite.self, true_and, or_iff_right_iff_imp]
+  exact fun _ ↦ .inr inferInstance
 
 end Module
