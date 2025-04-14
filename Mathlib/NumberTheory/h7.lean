@@ -1030,7 +1030,7 @@ def c1ρ : (𝓞 K) := RingOfIntegers.restrict _
 -- #check RingOfIntegers.rank
 -- #check house.newBasis
 
-def c₅ : ℝ := sorry
+def c₅ : ℝ := c₁ K α' β' γ' ^ ((h K : ℤ) * (2 * m K * q))
 
 -- The norm of an algebraic integer is again an integer,
 --  because it is equal (up to sign)
@@ -1042,16 +1042,17 @@ lemma eq5 :
   let c1ρ := c1ρ α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq;
   let cρ := cρ α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq;
 
-  c₅ ^ (- r : ℤ) < norm (Algebra.norm ℚ ρ) := by
+  c₅ K α' β' γ' q ^ (- r : ℤ) < norm (Algebra.norm ℚ ρ) := by
 
   intros r ρ c₁ c1ρ cρ
 
   simp only [zpow_neg, zpow_natCast, gt_iff_lt]
 
-  calc _ = _ := sorry
-       c₅ ^ ((-r : ℤ)) < c₁^ ((- h K : ℤ) * (r + 2 * m K * q)) := ?_
+  calc _ = _ := ?_
+       c₅ K α' β' γ' q ^ ((-r : ℤ)) < c₁^ ((- h K : ℤ) * (r + 2 * m K * q) ) := ?_
        _ < abs (Algebra.norm ℤ ρ) := ?_
 
+  · simp only [zpow_neg, zpow_natCast]
   · simp only [zpow_neg, zpow_natCast, neg_mul]
     rw [inv_lt_inv₀]
     · rw [mul_add]
@@ -1059,7 +1060,42 @@ lemma eq5 :
         rw [mul_assoc, mul_assoc, mul_assoc]
       rw [this]
       sorry
-    · sorry
+    · unfold c₅
+      unfold _root_.c₁
+      trans
+      · have : (0 : ℝ) < 1 := sorry
+        apply this
+      · apply one_lt_pow₀
+        · apply one_lt_pow₀
+          · sorry
+          · simp only [ne_eq, mul_eq_zero, OfNat.ofNat_ne_zero, false_or, not_or]
+            constructor
+            · have : h K > 0 := by {
+                unfold h
+                exact Module.finrank_pos}
+              simp_all only [gt_iff_lt, ne_eq]
+              obtain ⟨left, right⟩ := htriv
+              obtain ⟨left_1, right_1⟩ := habc
+              obtain ⟨left_2, right_1⟩ := right_1
+              subst left_2 left_1
+              apply Aesop.BuiltinRules.not_intro
+              intro a
+              simp_all only [lt_self_iff_false]
+            · constructor
+              have : m K > 0 := by {
+                unfold m
+                simp only [gt_iff_lt, lt_add_iff_pos_left, add_pos_iff, Nat.ofNat_pos,
+                  mul_pos_iff_of_pos_left, or_true]}
+              simp_all only [gt_iff_lt, ne_eq]
+              obtain ⟨left, right⟩ := htriv
+              obtain ⟨left_1, right_1⟩ := habc
+              obtain ⟨left_2, right_1⟩ := right_1
+              subst left_2 left_1
+              apply Aesop.BuiltinRules.not_intro
+              intro a
+              simp_all only [lt_self_iff_false]
+              · exact Nat.ne_zero_of_lt hq0
+        · sorry
     · sorry
   · --simp only [RingOfIntegers.restrict, zsmul_eq_mul, RingOfIntegers.map_mk]
     --rw [Algebra.norm_algebraMap]
@@ -1125,7 +1161,9 @@ lemma eq6 :
         unfold _root_.c₄
         simp only [Real.rpow_natCast, le_sup_iff, zero_le_one, true_or, pow_nonneg]
     · simp only [zpow_natCast]
-      sorry
+      apply one_le_mul_of_one_le_of_one_le
+      · sorry
+      · sorry
     · simp only [zero_le_one]
     · simp only [Real.rpow_natCast, Nat.reduceDiv, zero_mul, pow_zero, mul_one]
       unfold c₄
@@ -1503,10 +1541,10 @@ lemma use6and8 :
   · sorry
   · sorry
 
-def c₁₅ : ℝ := c₁₄*c₅
+def c₁₅ : ℝ := c₁₄ * c₅ K α' β' γ' q
 
 include α β σ hq0 h2mq hd hirr htriv K σ α' β' γ' habc h2mq t in
-theorem main : ∃ r ≥ n K q, r ^ ((r - 3 * (h K)) / 2) ≥ c₁₅ ^ r := by
+theorem main : ∃ r ≥ n K q, r ^ ((r - 3 * (h K)) / 2) ≥ c₁₅ K α' β' γ' q ^ r := by
 
   use r α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
   constructor
@@ -1519,12 +1557,12 @@ lemma use5 :
   let l₀ := l₀ α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
   let S := S α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
 
-  r^(r/2 - 3* h K /2) < c₁₅^r := by
+  r^(r/2 - 3* h K /2) < c₁₅ K α' β' γ' q ^r := by
 
   intros r l₀ S
 
-  calc _ < c₁₄^r * c₅^r := ?_
-       _ = c₁₅^r := ?_
+  calc _ < c₁₄^r * c₅ K α' β' γ' q ^r := ?_
+       _ = c₁₅ K α' β' γ' q ^r := ?_
   · sorry
   · rw [← mul_pow]
     simp only [c₁₅]
