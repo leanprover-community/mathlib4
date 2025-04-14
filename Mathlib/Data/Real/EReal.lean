@@ -5,6 +5,4 @@ Authors: Kevin Buzzard
 -/
 import Mathlib.Data.EReal.Basic
 
-set_option linter.style.header false
-
 deprecated_module (since "2025-04-13")

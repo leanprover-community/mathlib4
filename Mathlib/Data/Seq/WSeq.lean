@@ -8,6 +8,4 @@ import Mathlib.Data.WSeq.Defs
 import Mathlib.Data.WSeq.Productive
 import Mathlib.Data.WSeq.Relation
 
-set_option linter.style.header false
-
 deprecated_module (since "2025-04-13")
