@@ -1356,7 +1356,6 @@ lemma abs_R :
     apply mul_le_mul
     · have :=  fromlemma82_bound α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
       unfold c₄
-      simp only [Real.rpow_natCast, Nat.reduceDiv, zero_mul, pow_zero, mul_one, ge_iff_le]
       sorry
     · have : ∀ i, ‖cexp (_root_.ρ α β q i * z)‖ ≤
          (Real.exp ((q+q*(norm β))* m K *(1+r/q))*(norm α)) := sorry
@@ -1374,7 +1373,14 @@ lemma abs_R :
       · simp only [le_refl]
       · sorry
       · apply mul_nonneg
-        · sorry
+        · trans
+          · apply zero_le_one
+          · simp only [Real.one_le_exp_iff]
+            apply mul_nonneg
+            · apply mul_nonneg
+              · sorry
+              · simp only [Nat.cast_nonneg]
+            · sorry
         · apply norm_nonneg
       · unfold c₄
         unfold _root_.c₄
@@ -1384,7 +1390,14 @@ lemma abs_R :
         unfold _root_.c₄
         simp only [Real.rpow_natCast, le_sup_iff, zero_le_one, true_or, pow_nonneg]
       · apply mul_nonneg
-        · sorry
+        · trans
+          · apply zero_le_one
+          · simp only [Real.one_le_exp_iff]
+            apply mul_nonneg
+            · apply mul_nonneg
+              · sorry
+              · simp only [Nat.cast_nonneg]
+            · sorry
         · apply norm_nonneg
     · apply mul_nonneg
       · simp only [Nat.cast_nonneg]
@@ -1510,7 +1523,9 @@ lemma blah :
       _ ≤ r.factorial * (c₁₀)^r * r^((r+3)/2) * (c₁₁)^r * (q/r)^(m K *r) := ?_
 
       _ ≤ (c₁₂)^r*((3-m K)/2 + 3 /2) := ?_
-  · sorry
+  · unfold S
+    unfold _root_.S
+
   · sorry
   · sorry
   · sorry
@@ -1619,6 +1634,138 @@ theorem hilbert7 (α β : ℂ) (hα : IsAlgebraic ℚ α) (hβ : IsAlgebraic ℚ
 
   --have hq0 : 0 < q := sorry
     -- only now you define t
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 --   -- let ρ : (Fin q × Fin q) → (Fin m × Fin r) → K := fun (a,b) (l₀,k) =>
 --   --   algebraMap (𝓞 K) K (η (a, b))
