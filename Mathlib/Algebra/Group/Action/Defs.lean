@@ -311,12 +311,6 @@ lemma smul_mul_smul_comm [Mul α] [Mul β] [SMul α β] [IsScalarTower α β β]
 @[to_additive]
 alias smul_mul_smul := smul_mul_smul_comm
 
--- `alias` doesn't add the deprecation suggestion to the `to_additive` version
--- see https://github.com/leanprover-community/mathlib4/issues/19424
-attribute [deprecated smul_mul_smul_comm (since := "2024-08-29")] smul_mul_smul
-attribute [deprecated vadd_add_vadd_comm (since := "2024-08-29")] vadd_add_vadd
-
-
 /-- Note that the `IsScalarTower α β β` and `SMulCommClass α β β` typeclass arguments are usually
 satisfied by `Algebra α β`. -/
 @[to_additive]

@@ -7,6 +7,7 @@ import Mathlib.Algebra.Quotient
 import Mathlib.Algebra.Group.Action.Opposite
 import Mathlib.Algebra.Group.Subgroup.MulOpposite
 import Mathlib.GroupTheory.GroupAction.Defs
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Cosets
@@ -170,12 +171,6 @@ instance : Coe α (α ⧸ s) :=
 
 @[to_additive] alias induction_on' := induction_on
 
--- `alias` doesn't add the deprecation suggestion to the `to_additive` version
--- see https://github.com/leanprover-community/mathlib4/issues/19424
-attribute [deprecated induction_on (since := "2024-08-04")] induction_on'
-attribute [deprecated QuotientAddGroup.induction_on (since := "2024-08-04")]
-QuotientAddGroup.induction_on'
-
 @[to_additive (attr := simp)]
 theorem quotient_liftOn_mk {β} (f : α → β) (h) (x : α) : Quotient.liftOn' (x : α ⧸ s) f h = f x :=
   rfl
@@ -197,9 +192,6 @@ protected theorem eq {a b : α} : (a : α ⧸ s) = b ↔ a⁻¹ * b ∈ s :=
   calc
     _ ↔ leftRel s a b := Quotient.eq''
     _ ↔ _ := by rw [leftRel_apply]
-
-@[to_additive (attr := deprecated "No deprecation message was provided." (since := "2024-08-04"))]
-alias eq' := QuotientGroup.eq
 
 @[to_additive]
 theorem out_eq' (a : α ⧸ s) : mk a.out = a :=

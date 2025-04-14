@@ -68,8 +68,6 @@ instance (α : Type u) : Repr (Erased α) :=
 instance (α : Type u) : ToString (Erased α) :=
   ⟨fun _ => "Erased"⟩
 
--- Porting note: Deleted `has_to_format`
-
 /-- Computably produce an erased value from a proof of nonemptiness. -/
 def choice {α} (h : Nonempty α) : Erased α :=
   mk (Classical.choice h)
@@ -129,7 +127,6 @@ theorem bind_def {α β} : ((· >>= ·) : Erased α → (α → Erased β) → E
 theorem map_def {α β} : ((· <$> ·) : (α → β) → Erased α → Erased β) = @map _ _ :=
   rfl
 
--- Porting note: Old proof `by refine' { .. } <;> intros <;> ext <;> simp`
 protected instance instLawfulMonad : LawfulMonad Erased :=
   { id_map := by intros; ext; simp
     map_const := by intros; ext; simp [Functor.mapConst]

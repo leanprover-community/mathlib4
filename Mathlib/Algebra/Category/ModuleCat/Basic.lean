@@ -59,11 +59,6 @@ structure ModuleCat where
 
 attribute [instance] ModuleCat.isAddCommGroup ModuleCat.isModule
 
-/-- An alias for `ModuleCat.{max u₁ u₂}`, to deal around unification issues.
-Since the universe the ring lives in can be inferred, we put that last. -/
-@[nolint checkUnivs]
-abbrev ModuleCatMax.{v₁, v₂, u₁} (R : Type u₁) [Ring R] := ModuleCat.{max v₁ v₂, u₁} R
-
 namespace ModuleCat
 
 instance : CoeSort (ModuleCat.{v} R) (Type v) :=
@@ -156,8 +151,6 @@ lemma hom_injective {M N : ModuleCat.{v} R} :
 lemma hom_surjective {M N : ModuleCat.{v} R} :
     Function.Surjective (Hom.hom : (M ⟶ N) → (M →ₗ[R] N)) :=
   hom_bijective.surjective
-
-@[deprecated (since := "2024-10-06")] alias asHom := ModuleCat.ofHom
 
 @[simp]
 lemma hom_ofHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y]
@@ -262,8 +255,6 @@ open ModuleCat
 
 /-- Reinterpreting a linear map in the category of `R`-modules -/
 scoped[ModuleCat] notation "↟" f:1024 => ModuleCat.ofHom f
-
-@[deprecated (since := "2024-10-06")] alias ModuleCat.asHom_apply := ModuleCat.ofHom_apply
 
 -- Since `of` and the coercion now roundtrip reducibly, we don't need to distinguish in which place
 -- we need to add `of` when coercing from linear maps to morphisms.
@@ -482,8 +473,8 @@ a morphism of rings from `R` to the endomorphisms of the underlying abelian grou
 def smul : R →+* End ((forget₂ (ModuleCat R) AddCommGrp).obj M) where
   toFun r := AddCommGrp.ofHom
     { toFun := fun (m : M) => r • m
-      map_zero' := by dsimp; rw [smul_zero]
-      map_add' := fun x y => by dsimp; rw [smul_add] }
+      map_zero' := by rw [smul_zero]
+      map_add' := fun x y => by rw [smul_add] }
   map_one' := AddCommGrp.ext (fun x => by simp)
   map_zero' := AddCommGrp.ext (fun x => by simp)
   map_mul' r s := AddCommGrp.ext (fun (x : M) => (smul_smul r s x).symm)
@@ -540,8 +531,6 @@ instance : Module R (mkOfSMul' φ) where
 given by `R`. -/
 abbrev mkOfSMul := ModuleCat.of R (mkOfSMul' φ)
 
--- This lemma has always been bad, but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
-@[simp, nolint simpNF]
 lemma mkOfSMul_smul (r : R) : (mkOfSMul φ).smul r = φ r := rfl
 
 end

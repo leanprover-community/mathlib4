@@ -3,6 +3,8 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+import Mathlib.Algebra.Group.Action.Opposite
+import Mathlib.Algebra.Group.Action.Units
 import Mathlib.Algebra.Group.Invertible.Defs
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Regular.Basic
@@ -545,8 +547,12 @@ instance [Mul R] [StarMul R] : StarMul Rᵐᵒᵖ where
 instance [AddMonoid R] [StarAddMonoid R] : StarAddMonoid Rᵐᵒᵖ where
   star_add x y := unop_injective (star_add x.unop y.unop)
 
-instance [Semiring R] [StarRing R] : StarRing Rᵐᵒᵖ where
+instance [NonUnitalSemiring R] [StarRing R] : StarRing Rᵐᵒᵖ where
   star_add x y := unop_injective (star_add x.unop y.unop)
+
+instance {M : Type*} [Star R] [Star M] [SMul R M] [StarModule R M] :
+    StarModule R Mᵐᵒᵖ where
+  star_smul r x := unop_injective (star_smul r x.unop)
 
 end MulOpposite
 

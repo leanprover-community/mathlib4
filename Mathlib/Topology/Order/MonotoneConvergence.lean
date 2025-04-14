@@ -167,10 +167,7 @@ instance Prod.supConvergenceClass
     tendsto_atTop_isLUB (monotone_fst.restrict s) h.1
   have B : Tendsto (fun x : s => (x : α × β).2) atTop (𝓝 b) :=
     tendsto_atTop_isLUB (monotone_snd.restrict s) h.2
-  convert A.prod_mk_nhds B
-  -- Porting note: previously required below to close
-  -- ext1 ⟨⟨x, y⟩, h⟩
-  -- rfl
+  exact A.prodMk_nhds B
 
 instance [Preorder α] [Preorder β] [TopologicalSpace α] [TopologicalSpace β] [InfConvergenceClass α]
     [InfConvergenceClass β] : InfConvergenceClass (α × β) :=

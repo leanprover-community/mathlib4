@@ -45,7 +45,7 @@ def fintypeDiagram : DiscreteQuotient X ⥤ FintypeCat where
   map f := DiscreteQuotient.ofLE f.le
   -- Porting note: `map_comp` used to be proved by default by `aesop_cat`.
   -- once `aesop_cat` can prove this again, remove the entire `map_comp` here.
-  map_comp _ _ := by ext; simp
+  map_comp _ _ := by funext; aesop_cat
 
 /-- An abbreviation for `X.fintypeDiagram ⋙ FintypeCat.toProfinite`. -/
 abbrev diagram : DiscreteQuotient X ⥤ Profinite :=

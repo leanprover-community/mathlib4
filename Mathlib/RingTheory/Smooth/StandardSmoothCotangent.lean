@@ -136,7 +136,15 @@ instance subsingleton_h1Cotangent : Subsingleton P.toExtension.H1Cotangent := by
 /-- The classes of `P.relation i` form a basis of `I ⧸ I ^ 2`. -/
 @[stacks 00T7 "(3)"]
 noncomputable def basisCotangent : Basis P.rels S P.toExtension.Cotangent :=
-  ⟨cotangentEquiv P ≪≫ₗ (Finsupp.linearEquivFunOnFinite S S P.rels).symm⟩
+  P.basisDeriv.map P.cotangentEquiv.symm
+
+lemma basisCotangent_apply (r : P.rels) :
+    P.basisCotangent r = Extension.Cotangent.mk ⟨P.relation r, P.relation_mem_ker r⟩ := by
+  symm
+  apply P.cotangentEquiv.injective
+  ext
+  simp_rw [basisCotangent, Basis.map_apply, LinearEquiv.apply_symm_apply, basisDeriv_apply]
+  apply P.toPreSubmersivePresentation.cotangentComplexAux_apply _ _
 
 @[stacks 00T7 "(3)"]
 instance free_cotangent : Module.Free S P.toExtension.Cotangent :=

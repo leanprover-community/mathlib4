@@ -334,6 +334,21 @@ lemma Scheme.Hom.isoImage_inv_ι
     (f.isoImage U).inv ≫ U.ι ≫ f = (f ''ᵁ U).ι :=
   IsOpenImmersion.isoOfRangeEq_inv_fac _ _ _
 
+/-- If `f : X ⟶ Y` is an open immersion, then `X` is isomorphic to its image in `Y`. -/
+def Scheme.Hom.isoOpensRange {X Y : Scheme.{u}} (f : X.Hom Y) [IsOpenImmersion f] :
+    X ≅ f.opensRange :=
+  IsOpenImmersion.isoOfRangeEq f f.opensRange.ι (by simp)
+
+@[reassoc (attr := simp)]
+lemma Scheme.Hom.isoOpensRange_hom_ι {X Y : Scheme.{u}} (f : X.Hom Y) [IsOpenImmersion f] :
+    f.isoOpensRange.hom ≫ f.opensRange.ι = f := by
+  simp [isoOpensRange]
+
+@[reassoc (attr := simp)]
+lemma Scheme.Hom.isoOpensRange_inv_comp {X Y : Scheme.{u}} (f : X.Hom Y) [IsOpenImmersion f] :
+    f.isoOpensRange.inv ≫ f = f.opensRange.ι := by
+  simp [isoOpensRange]
+
 @[deprecated (since := "2024-10-20")]
 alias Scheme.restrictRestrict := Scheme.Hom.isoImage
 @[deprecated (since := "2024-10-20")]
@@ -474,8 +489,8 @@ theorem isPullback_morphismRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Open
   refine
     (IsPullback.of_horiz_isIso ⟨?_⟩).paste_horiz
       (IsPullback.of_hasPullback f (Y.ofRestrict U.isOpenEmbedding)).flip
-  -- Porting note: changed `rw` to `erw`
-  erw [pullbackRestrictIsoRestrict_inv_fst]; rw [Category.comp_id]
+  erw [pullbackRestrictIsoRestrict_inv_fst]
+  rw [Category.comp_id]
 
 lemma isPullback_opens_inf_le {X : Scheme} {U V W : X.Opens} (hU : U ≤ W) (hV : V ≤ W) :
     IsPullback (X.homOfLE inf_le_left) (X.homOfLE inf_le_right) (X.homOfLE hU) (X.homOfLE hV) := by

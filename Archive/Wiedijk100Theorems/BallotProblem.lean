@@ -96,7 +96,7 @@ theorem length_of_mem_countedSequence {p q} {l : List ℤ} (hl : l ∈ countedSe
 
 theorem counted_eq_nil_iff {p q : ℕ} {l : List ℤ} (hl : l ∈ countedSequence p q) :
     l = [] ↔ p = 0 ∧ q = 0 :=
-  List.length_eq_zero.symm.trans <| by simp [length_of_mem_countedSequence hl]
+  List.length_eq_zero_iff.symm.trans <| by simp [length_of_mem_countedSequence hl]
 
 theorem counted_ne_nil_left {p q : ℕ} (hp : p ≠ 0) {l : List ℤ} (hl : l ∈ countedSequence p q) :
     l ≠ [] := by simp [counted_eq_nil_iff hl, hp]
@@ -115,13 +115,13 @@ theorem counted_succ_succ (p q : ℕ) :
     obtain ⟨hl₀, hl₁, hl₂⟩ := hl
     obtain hlast | hlast := hl₂ (l.head hlnil) (List.head_mem hlnil)
     · refine Or.inl ⟨l.tail, ⟨?_, ?_, ?_⟩, ?_⟩
-      · rw [List.count_tail l 1 hlnil, hl₀, hlast, beq_self_eq_true, if_pos rfl, Nat.add_sub_cancel]
-      · rw [List.count_tail l (-1) hlnil, hl₁, hlast, if_neg (by decide), Nat.sub_zero]
+      · rw [List.count_tail hlnil, hl₀, hlast, beq_self_eq_true, if_pos rfl, Nat.add_sub_cancel]
+      · rw [List.count_tail hlnil, hl₁, hlast, if_neg (by decide), Nat.sub_zero]
       · exact fun x hx => hl₂ x (List.mem_of_mem_tail hx)
       · rw [← hlast, List.head_cons_tail]
     · refine Or.inr ⟨l.tail, ⟨?_, ?_, ?_⟩, ?_⟩
-      · rw [List.count_tail l 1 hlnil, hl₀, hlast, if_neg (by decide), Nat.sub_zero]
-      · rw [List.count_tail l (-1) hlnil, hl₁, hlast, beq_self_eq_true, if_pos rfl,
+      · rw [List.count_tail hlnil, hl₀, hlast, if_neg (by decide), Nat.sub_zero]
+      · rw [List.count_tail hlnil, hl₁, hlast, beq_self_eq_true, if_pos rfl,
           Nat.add_sub_cancel]
       · exact fun x hx => hl₂ x (List.mem_of_mem_tail hx)
       · rw [← hlast, List.head_cons_tail]
@@ -225,7 +225,7 @@ theorem first_vote_pos :
 
 theorem headI_mem_of_nonempty {α : Type*} [Inhabited α] : ∀ {l : List α} (_ : l ≠ []), l.headI ∈ l
   | [], h => (h rfl).elim
-  | x::l, _ => List.mem_cons_self x l
+  | _::_, _ => List.mem_cons_self
 
 theorem first_vote_neg (p q : ℕ) (h : 0 < p + q) :
     uniformOn (countedSequence p q) {l | l.headI = 1}ᶜ = q / (p + q) := by
@@ -316,7 +316,7 @@ theorem ballot_problem' :
     simp
   · intro p
     rw [ballot_edge]
-    simp only [ENNReal.one_toReal, Nat.cast_add, Nat.cast_one, Nat.cast_zero, sub_zero, add_zero]
+    simp only [ENNReal.toReal_one, Nat.cast_add, Nat.cast_one, Nat.cast_zero, sub_zero, add_zero]
     rw [div_self]
     exact Nat.cast_add_one_ne_zero p
   · intro q p qp h₁ h₂

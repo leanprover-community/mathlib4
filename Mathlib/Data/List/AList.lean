@@ -98,7 +98,7 @@ instance : Inhabited (AList β) :=
 
 @[simp]
 theorem not_mem_empty (a : α) : a ∉ (∅ : AList β) :=
-  not_mem_nil a
+  not_mem_nil
 
 @[simp]
 theorem empty_entries : (∅ : AList β).entries = [] :=
@@ -413,7 +413,7 @@ theorem lookup_union_left {a} {s₁ s₂ : AList β} : a ∈ s₁ → lookup a (
 theorem lookup_union_right {a} {s₁ s₂ : AList β} : a ∉ s₁ → lookup a (s₁ ∪ s₂) = lookup a s₂ :=
   dlookup_kunion_right
 
--- Porting note: removing simp, LHS not in SNF, new theorem added instead.
+-- The corresponding lemma in `simp`-normal form is `lookup_union_eq_some`.
 theorem mem_lookup_union {a} {b : β a} {s₁ s₂ : AList β} :
     b ∈ lookup a (s₁ ∪ s₂) ↔ b ∈ lookup a s₁ ∨ a ∉ s₁ ∧ b ∈ lookup a s₂ :=
   mem_dlookup_kunion

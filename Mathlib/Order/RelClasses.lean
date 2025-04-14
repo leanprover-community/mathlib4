@@ -124,6 +124,15 @@ instance (priority := 100) isStrictOrderConnected_of_isStrictTotalOrder [IsStric
   ⟨fun _ _ _ h ↦ (trichotomous _ _).imp_right
     fun o ↦ o.elim (fun e ↦ e ▸ h) fun h' ↦ _root_.trans h' h⟩
 
+/-! ### Inverse Image -/
+
+theorem InvImage.isTrichotomous [IsTrichotomous α r] {f : β → α} (h : Function.Injective f) :
+    IsTrichotomous β (InvImage r f)  where
+  trichotomous a b := trichotomous (f a) (f b) |>.imp3 id (h ·) id
+
+instance InvImage.isAsymm [IsAsymm α r] (f : β → α) : IsAsymm β (InvImage r f) where
+  asymm a b h h2 := IsAsymm.asymm (f a) (f b) h h2
+
 /-! ### Well-order -/
 
 
@@ -244,8 +253,8 @@ theorem wellFoundedLT_dual_iff (α : Type*) [LT α] : WellFoundedLT αᵒᵈ ↔
   ⟨fun h => ⟨h.wf⟩, fun h => ⟨h.wf⟩⟩
 
 /-- A well order is a well-founded linear order. -/
-class IsWellOrder (α : Type u) (r : α → α → Prop) extends
-  IsTrichotomous α r, IsTrans α r, IsWellFounded α r : Prop
+class IsWellOrder (α : Type u) (r : α → α → Prop) : Prop
+    extends IsTrichotomous α r, IsTrans α r, IsWellFounded α r
 
 -- see Note [lower instance priority]
 instance (priority := 100) {α} (r : α → α → Prop) [IsWellOrder α r] :

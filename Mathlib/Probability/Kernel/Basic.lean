@@ -188,10 +188,7 @@ lemma const_add (β : Type*) [MeasurableSpace β] (μ ν : Measure α) :
     const β (μ + ν) = const β μ + const β ν := by ext; simp
 
 lemma sum_const [Countable ι] (μ : ι → Measure β) :
-    Kernel.sum (fun n ↦ const α (μ n)) = const α (Measure.sum μ) := by
-  ext x s hs
-  rw [const_apply, Measure.sum_apply _ hs, Kernel.sum_apply' _ _ hs]
-  simp only [const_apply]
+    Kernel.sum (fun n ↦ const α (μ n)) = const α (Measure.sum μ) := rfl
 
 instance const.instIsFiniteKernel {μβ : Measure β} [IsFiniteMeasure μβ] :
     IsFiniteKernel (const α μβ) :=

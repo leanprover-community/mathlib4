@@ -5,7 +5,8 @@ Authors: Kim Morrison, Bhavik Mehta, Adam Topaz
 -/
 import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.Functor.FullyFaithful
-import Mathlib.CategoryTheory.Functor.ReflectsIso
+import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
 
 /-!
 # Monads

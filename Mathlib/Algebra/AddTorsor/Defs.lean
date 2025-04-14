@@ -37,6 +37,8 @@ multiplicative group actions).
 
 -/
 
+assert_not_exists MonoidWithZero
+
 /-- An `AddTorsor G P` gives a structure to the nonempty type `P`,
 acted on by an `AddGroup G` with a transitive and free action given
 by the `+ᵥ` operation and a corresponding subtraction given by the

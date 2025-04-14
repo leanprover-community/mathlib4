@@ -176,7 +176,7 @@ variable (W : MorphismProperty C)
 any right fraction can be turned into a left fraction and that two morphisms
 that can be equalized by precomposition with a morphism in `W` can also
 be equalized by postcomposition with a morphism in `W`. -/
-class HasLeftCalculusOfFractions extends W.IsMultiplicative : Prop where
+class HasLeftCalculusOfFractions : Prop extends W.IsMultiplicative where
   exists_leftFraction ⦃X Y : C⦄ (φ : W.RightFraction X Y) :
     ∃ (ψ : W.LeftFraction X Y), φ.f ≫ ψ.s = φ.s ≫ ψ.f
   ext : ∀ ⦃X' X Y : C⦄ (f₁ f₂ : X ⟶ Y) (s : X' ⟶ X) (_ : W s)
@@ -186,7 +186,7 @@ class HasLeftCalculusOfFractions extends W.IsMultiplicative : Prop where
 any left fraction can be turned into a right fraction and that two morphisms
 that can be equalized by postcomposition with a morphism in `W` can also
 be equalized by precomposition with a morphism in `W`. -/
-class HasRightCalculusOfFractions extends W.IsMultiplicative : Prop where
+class HasRightCalculusOfFractions : Prop extends W.IsMultiplicative where
   exists_rightFraction ⦃X Y : C⦄ (φ : W.LeftFraction X Y) :
     ∃ (ψ : W.RightFraction X Y), ψ.s ≫ φ.f = ψ.f ≫ φ.s
   ext : ∀ ⦃X Y Y' : C⦄ (f₁ f₂ : X ⟶ Y) (s : Y ⟶ Y') (_ : W s)
@@ -578,7 +578,6 @@ noncomputable def lift (F : C ⥤ E) (hF : W.IsInvertedBy F) :
   map {_ _ : C} f := f.map F hF
   map_id := by
     intro (X : C)
-    dsimp
     change (Hom.mk (ofHom W (𝟙 X))).map F hF = _
     rw [Hom.map_mk, map_ofHom, F.map_id]
   map_comp := by

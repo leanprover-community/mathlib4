@@ -125,6 +125,22 @@ lemma hasFPowerSeriesAt_mgf (hv : v ∈ interior (integrableExpSet X μ)) :
 lemma differentiableAt_mgf (ht : t ∈ interior (integrableExpSet X μ)) :
     DifferentiableAt ℝ (mgf X μ) t := (analyticAt_mgf ht).differentiableAt
 
+lemma differentiableOn_mgf : DifferentiableOn ℝ (mgf X μ) (interior (integrableExpSet X μ)) :=
+  fun _ hx ↦ (differentiableAt_mgf hx).differentiableWithinAt
+
+-- todo: this should be extended to `integrableExpSet X μ`, not only its interior
+lemma continuousOn_mgf : ContinuousOn (mgf X μ) (interior (integrableExpSet X μ)) :=
+  differentiableOn_mgf.continuousOn
+
+lemma continuous_mgf (h : ∀ t, Integrable (fun ω ↦ exp (t * X ω)) μ) :
+    Continuous (mgf X μ) := by
+  rw [continuous_iff_continuousOn_univ]
+  convert continuousOn_mgf
+  symm
+  rw [interior_eq_univ]
+  ext t
+  simpa using h t
+
 lemma analyticOnNhd_iteratedDeriv_mgf (n : ℕ) :
     AnalyticOnNhd ℝ (iteratedDeriv n (mgf X μ)) (interior (integrableExpSet X μ)) := by
   rw [iteratedDeriv_eq_iterate]
@@ -184,8 +200,7 @@ lemma iteratedDeriv_two_cgf (h : v ∈ interior (integrableExpSet X μ)) :
       = μ[fun ω ↦ (X ω)^2 * exp (v * X ω)] / mgf X μ v - deriv (cgf X μ) v ^ 2 := by
   rw [iteratedDeriv_succ, iteratedDeriv_one]
   by_cases hμ : μ = 0
-  · have : deriv (0 : ℝ → ℝ) = 0 := by ext; exact deriv_const _ 0
-    simp [hμ, this]
+  · simp [hμ]
   have h_mem : ∀ᶠ y in 𝓝 v, y ∈ interior (integrableExpSet X μ) :=
     isOpen_interior.eventually_mem h
   have h_d_cgf : deriv (cgf X μ) =ᶠ[𝓝 v] fun u ↦ μ[fun ω ↦ X ω * exp (u * X ω)] / mgf X μ u := by
@@ -220,8 +235,7 @@ lemma iteratedDeriv_two_cgf_eq_integral (h : v ∈ interior (integrableExpSet X 
     iteratedDeriv 2 (cgf X μ) v
       = μ[fun ω ↦ (X ω - deriv (cgf X μ) v)^2 * exp (v * X ω)] / mgf X μ v := by
   by_cases hμ : μ = 0
-  · have : deriv (0 : ℝ → ℝ) = 0 := by ext; exact deriv_const _ 0
-    simp [hμ, this, iteratedDeriv_succ]
+  · simp [hμ, iteratedDeriv_succ]
   rw [iteratedDeriv_two_cgf h]
   calc (∫ ω, (X ω) ^ 2 * exp (v * X ω) ∂μ) / mgf X μ v - deriv (cgf X μ) v ^ 2
   _ = (∫ ω, (X ω) ^ 2 * exp (v * X ω) ∂μ - 2 * (∫ ω, X ω * exp (v * X ω) ∂μ) * deriv (cgf X μ) v

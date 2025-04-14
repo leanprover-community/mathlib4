@@ -62,7 +62,8 @@ private theorem norm_neg' (z : ℂ) : ‖-z‖ = ‖z‖ := by
 
 instance instNormedAddCommGroup : NormedAddCommGroup ℂ :=
   AddGroupNorm.toNormedAddCommGroup
-  { map_zero' := norm_map_zero'
+  { toFun := norm
+    map_zero' := norm_map_zero'
     add_le' := norm_add_le'
     neg' := norm_neg'
     eq_zero_of_map_eq_zero' := fun _ ↦ norm_eq_zero_iff.mp }
@@ -163,10 +164,6 @@ lemma nnnorm_ratCast (q : ℚ) : ‖(q : ℂ)‖₊ = ‖(q : ℝ)‖₊ := nnno
 @[simp 1100, norm_cast]
 lemma nnnorm_nnratCast (q : ℚ≥0) : ‖(q : ℂ)‖₊ = q := by simp [nnnorm]
 
-@[deprecated (since := "2024-08-25")] alias norm_nat := norm_natCast
-@[deprecated (since := "2024-08-25")] alias norm_int := norm_intCast
-@[deprecated (since := "2024-08-25")] alias norm_rat := norm_ratCast
-@[deprecated (since := "2024-08-25")] alias nnnorm_nat := nnnorm_natCast
 @[deprecated (since := "2025-02-16")] alias abs_intCast := norm_intCast
 
 lemma normSq_eq_norm_sq (z : ℂ) : normSq z = ‖z‖ ^ 2 := by
