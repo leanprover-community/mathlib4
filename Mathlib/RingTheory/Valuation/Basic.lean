@@ -395,14 +395,14 @@ variable [Ring R] [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation R Γ₀)
 /-- A valuation on a ring is nontrivial if there exists an element with valuation
 not equal to `0` or `1`. -/
 class IsNontrivial : Prop where
-  exists_val_ne_one : ∃ x : R, v x ≠ 1 ∧ v x ≠ 0
+  exists_val_nontrivial : ∃ x : R, v x ≠ 0 ∧ v x ≠ 1
 
 /-- For fields, being nontrivial is equivalent to the existence of a unit with valuation
 not equal to `1`. -/
 lemma isNontrivial_iff_exists_unit {K : Type*} [Field K] {w : Valuation K Γ₀} :
     w.IsNontrivial ↔ ∃ x : Kˣ, w x ≠ 1 :=
-  ⟨fun ⟨x, hx1, hx0⟩ ↦ ⟨Units.mk0 x (w.ne_zero_iff.mp hx0), hx1⟩,
-    fun ⟨x, hx⟩ ↦ ⟨x, hx, w.ne_zero_iff.mpr (Units.ne_zero x)⟩⟩
+  ⟨fun ⟨x, hx0, hx1⟩ ↦ ⟨Units.mk0 x (w.ne_zero_iff.mp hx0), hx1⟩,
+    fun ⟨x, hx⟩ ↦ ⟨x, w.ne_zero_iff.mpr (Units.ne_zero x), hx⟩⟩
 
 end IsNontrivial
 
