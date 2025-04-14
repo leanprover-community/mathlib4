@@ -483,9 +483,10 @@ theorem pathIntegral_segment (ω : E → E →L[ℝ] F) (a b : E) :
   rw [uIcc_of_le zero_le_one] at ht
   exact pathIntegralFun_segment ω a b ht
 
-theorem hasFDerivWithinAt_pathIntegral_segment_target_source [CompleteSpace F]
-    {ω : E → E →L[ℝ] F} {s : Set E} (hs : Convex ℝ s) (hω : ContinuousOn ω s) (ha : a ∈ s) :
-    HasFDerivWithinAt (pathIntegral ω <| .segment a ·) (ω a) s a := by
+theorem hasFDerivWithinAt_pathIntegral_segment_target_source {𝕜 : Type*} [RCLike 𝕜]
+    [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] [CompleteSpace F]
+    {ω : E → E →L[𝕜] F} {s : Set E} (hs : Convex ℝ s) (hω : ContinuousOn ω s) (ha : a ∈ s) :
+    HasFDerivWithinAt (pathIntegral (ω · |>.restrictScalars ℝ) <| .segment a ·) (ω a) s a := by
   simp only [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleO, Path.segment_same,
     pathIntegral_refl, sub_zero]
   rw [Asymptotics.isLittleO_iff]
@@ -512,6 +513,7 @@ theorem hasFDerivWithinAt_pathIntegral_segment_target_source [CompleteSpace F]
   · apply ContinuousOn.intervalIntegrable
     rw [uIcc_of_le zero_le_one]
     refine ContinuousOn.clm_apply ?_ continuousOn_const
+    apply (ContinuousLinearMap.continuous_restrictScalars _).comp_continuousOn
     refine hω.comp ?_ ?_
     · simp only [AffineMap.coe_lineMap]
       fun_prop
