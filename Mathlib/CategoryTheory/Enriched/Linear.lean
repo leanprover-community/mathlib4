@@ -11,6 +11,13 @@ import Mathlib.Tactic.CategoryTheory.Coherence
 /-!
 # Linear categories as `ModuleCat R`-enriched categories
 
+Makes the statement "`R`-linear categories are categories enriched over `ModuleCat R`" concrete by
+deriving an `EnrichedOrdinaryCategory (ModuleCat R) C` from `Linear R C` and, conversely, an
+instance of `Linear R C` from `EnrichedOrdinaryCategory (ModuleCat R) C`.
+
+Ideally this construction should be extended to an equivalence of suitable bicategories in the
+future.
+
 -/
 
 universe w v v' u u'
@@ -35,7 +42,10 @@ lemma lift_comp_lift_comp_rTensor_eq {W X Y Z : C} (f : ((W ⟶ X) ⊗[R] (X ⟶
 
 open ModuleCat Hom
 
-noncomputable instance : EnrichedOrdinaryCategory (ModuleCat R) C where
+/-- The `ModuleCat R`-enriched category induced by the structure of an `R`-linear category on a
+category `C`. -/
+noncomputable abbrev enrichedOrdinaryCategoryModuleCat :
+    EnrichedOrdinaryCategory (ModuleCat R) C where
   Hom X Y := .of R (X ⟶ Y)
   id X := ModuleCat.ofHom <| (LinearMap.ringLmapEquivSelf R R (X ⟶ X)).symm (𝟙 X)
   comp X Y Z := ModuleCat.ofHom <| lift (Linear.comp X Y Z)
