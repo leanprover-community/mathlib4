@@ -350,7 +350,7 @@ lemma IsBlock.preimage {H Y : Type*} [Group H] [MulAction H Y]
 
 @[to_additive]
 theorem IsBlock.image {H Y : Type*} [MulOneClass H] [SMul H Y]
-    {φ : G →* H} (j : X →ₑ[φ] Y)
+    {φ : G → H} (j : X →ₑ[φ] Y)
     (hφ : Function.Surjective φ) (hj : Function.Injective j)
     (hB : IsBlock G B) :
     IsBlock H (j '' B) := by
