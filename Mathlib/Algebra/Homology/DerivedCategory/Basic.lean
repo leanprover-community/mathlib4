@@ -274,4 +274,8 @@ lemma singleFunctorsPostcompQIso_inv_hom (n : ℤ) :
   erw [Category.id_comp, Category.id_comp]
   rfl
 
+lemma isIso_Q_map_iff_quasiIso {K L : CochainComplex C ℤ} (φ : K ⟶ L) :
+    IsIso (Q.map φ) ↔ QuasiIso φ := by
+  apply HomologicalComplexUpToQuasiIso.isIso_Q_map_iff_mem_quasiIso
+
 end DerivedCategory

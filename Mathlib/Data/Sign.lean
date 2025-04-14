@@ -370,7 +370,7 @@ end LinearOrder
 
 section OrderedSemiring
 
-variable [OrderedSemiring α] [DecidableLT α] [Nontrivial α]
+variable [Semiring α] [PartialOrder α] [IsOrderedRing α] [DecidableLT α] [Nontrivial α]
 
 theorem sign_one : sign (1 : α) = 1 :=
   sign_pos zero_lt_one
@@ -380,7 +380,8 @@ end OrderedSemiring
 section OrderedRing
 
 @[simp]
-lemma sign_intCast {α : Type*} [OrderedRing α] [Nontrivial α] [DecidableLT α] (n : ℤ) :
+lemma sign_intCast {α : Type*} [Ring α] [PartialOrder α] [IsOrderedRing α]
+    [Nontrivial α] [DecidableLT α] (n : ℤ) :
     sign (n : α) = sign n := by
   simp only [sign_apply, Int.cast_pos, Int.cast_lt_zero]
 
@@ -388,7 +389,7 @@ end OrderedRing
 
 section LinearOrderedRing
 
-variable [LinearOrderedRing α]
+variable [Ring α] [LinearOrder α] [IsStrictOrderedRing α]
 
 theorem sign_mul (x y : α) : sign (x * y) = sign x * sign y := by
   rcases lt_trichotomy x 0 with (hx | hx | hx) <;> rcases lt_trichotomy y 0 with (hy | hy | hy) <;>
@@ -448,12 +449,7 @@ end AddGroup
 
 section LinearOrderedAddCommGroup
 
-variable [LinearOrderedAddCommGroup α]
-
-/- I'm not sure why this is necessary, see
-https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Decidable.20vs.20decidable_rel
--/
-attribute [local instance] LinearOrderedAddCommGroup.decidableLT
+variable [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
 
 theorem sign_sum {ι : Type*} {s : Finset ι} {f : ι → α} (hs : s.Nonempty) (t : SignType)
     (h : ∀ i ∈ s, sign (f i) = t) : sign (∑ i ∈ s, f i) = t := by
