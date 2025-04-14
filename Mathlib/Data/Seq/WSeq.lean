@@ -8,4 +8,4 @@ import Mathlib.Data.WSeq.Defs
 import Mathlib.Data.WSeq.Productive
 import Mathlib.Data.WSeq.Relation
 
-deprecated_module (since "2025-04-13")
+deprecated_module (since := "2025-04-13")
