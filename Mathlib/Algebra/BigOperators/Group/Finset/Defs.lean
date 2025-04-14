@@ -26,6 +26,11 @@ Let `s` be a `Finset α`, and `f : α → β` a function.
   (assuming `α` is a `Fintype` and `β` is a `CommMonoid`)
 * `∑ x, f x` is notation for `Finset.sum Finset.univ f`
   (assuming `α` is a `Fintype` and `β` is an `AddCommMonoid`)
+* `∏ x ∈ s with p x, f x` is notation for `Finset.prod (Finset.filter p s) f`.
+* `∑ x ∈ s with p x, f x` is notation for `Finset.sum (Finset.filter p s) f`.
+* `∏ (x ∈ s) (y ∈ t), f x y` is notation for `Finset.prod (s ×ˢ t) (fun ⟨x, y⟩ ↦ f x y)`.
+* `∑ (x ∈ s) (y ∈ t), f x y` is notation for `Finset.sum (s ×ˢ t) (fun ⟨x, y⟩ ↦ f x y)`.
+* Other supported binders: `x < n`, `x > n`, `x ≤ n`, `x ≥ n`, `x ≠ n`, `x ∉ s`, `x + y = n`
 
 ## Implementation Notes
 
@@ -119,6 +124,8 @@ def processBigOpBinder (processed : (Array (Term × Term)))
       | _ => return processed |>.push (x, ← ``(Finset.univ))
     | `(bigOpBinder| $x : $t) => return processed |>.push (x, ← ``((Finset.univ : Finset $t)))
     | `(bigOpBinder| $x ∈ $s) => return processed |>.push (x, ← `(finset% $s))
+    | `(bigOpBinder| $x ∉ $s) => return processed |>.push (x, ← `(finset% $sᶜ))
+    | `(bigOpBinder| $x ≠ $n) => return processed |>.push (x, ← `(Finset.univ.erase $n))
     | `(bigOpBinder| $x < $n) => return processed |>.push (x, ← `(Finset.Iio $n))
     | `(bigOpBinder| $x ≤ $n) => return processed |>.push (x, ← `(Finset.Iic $n))
     | `(bigOpBinder| $x > $n) => return processed |>.push (x, ← `(Finset.Ioi $n))
