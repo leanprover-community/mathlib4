@@ -410,6 +410,9 @@ theorem top_adj : (⊤ : MyGraph V).Adj a b ↔ a ≠ b :=
 theorem top_verts : (⊤ : MyGraph V).verts = Set.univ :=
   rfl
 
+instance top_verts_nonempty [Nonempty V] : Nonempty (⊤ : MyGraph V).verts :=
+  Set.univ.nonempty
+
 @[simp]
 theorem completeGraph_eq_top (V : Type*) : completeGraph V = ⊤ :=
   rfl

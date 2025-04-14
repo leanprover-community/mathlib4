@@ -1101,68 +1101,66 @@ end Walk
 namespace Walk
 
 variable {G G' G''}
-#check Set.InjOn
 /-- Given a graph homomorphism, map walks to walks. -/
-protected def map {f : G →g G'} (hf : Set.MapsTo f G.verts G'.verts) {u v : V} :
+protected def map (f : G →g G') {u v : V} :
     G.Walk u v → G'.Walk (f u) (f v)
-  | nil h => nil (hf h)
-  | cons h p => cons (f.map_adj h) (p.map hf)
+  | nil h => nil (f.2 h)
+  | cons h p => cons (f.map_adj h) (p.map f)
 
 variable (f : G →g G') (f' : G' →g G'') {u v u' v' : V} (p : G.Walk u v)
-variable (hf : Set.MapsTo f G.verts G'.verts) (hf' : Set.MapsTo f' G'.verts G''.verts)
 @[simp]
-theorem map_nil (hu : u ∈ G.verts) : (nil hu : G.Walk u u).map hf = nil (hf hu) := rfl
+theorem map_nil (hu : u ∈ G.verts) : (nil hu : G.Walk u u).map f = nil (f.2 hu) := rfl
 
 @[simp]
-theorem map_cons {w : V} (h : G.Adj w u) : (cons h p).map hf = cons (f.map_adj h) (p.map hf) := rfl
+theorem map_cons {w : V} (h : G.Adj w u) : (cons h p).map f = cons (f.map_adj h) (p.map f) := rfl
 
 @[simp]
 theorem map_copy (hu : u = u') (hv : v = v') :
-    (p.copy hu hv).map hf = (p.map hf).copy (hu ▸ rfl) (hv ▸ rfl) := by
+    (p.copy hu hv).map f = (p.map f).copy (hu ▸ rfl) (hv ▸ rfl) := by
   subst_vars
   rfl
 
 @[simp]
-theorem map_id (p : G.Walk u v) : p.map (f:=Hom.id) (fun _ a ↦ a) = p := by
+theorem map_id (p : G.Walk u v) : p.map Hom.id = p := by
   induction p with
   | nil => rfl
   | cons _ p' ih => simp [ih]
 
 @[simp]
-theorem map_map : (p.map hf).map hf' = p.map (f := f'.comp f) (fun _ ha ↦ hf'<| hf ha) := by
+theorem map_map : (p.map f).map f' = p.map (f'.comp f)  := by
   induction p with
   | nil => rfl
   | cons _ _ ih => simp [ih]
 
 /-- Unlike categories, for graphs vertex equality is an important notion, so needing to be able to
 work with equality of graph homomorphisms is a necessary evil. -/
-theorem map_eq_of_eq {f : G →g G'} {f' : G →g G'} (hf : Set.MapsTo f G.verts G'.verts)
-    (h : f = f') : p.map hf = (p.map (h ▸ hf)).copy (h ▸ rfl) (h ▸ rfl) := by
+theorem map_eq_of_eq {f : G →g G'} {f' : G →g G'}
+    (h : f = f') : p.map f = (p.map f').copy (h ▸ rfl) (h ▸ rfl) := by
   subst_vars
   rfl
 
 @[simp]
 theorem map_eq_nil_iff {p : G.Walk u u} (hu : u ∈ G.verts) :
-    p.map hf = nil (hf hu) ↔ p = nil hu := by cases p <;> simp
+    p.map f = nil (f.2 hu) ↔ p = nil hu := by cases p <;> simp [hu]
 
 @[simp]
-theorem length_map : (p.map hf).length = p.length := by induction p <;> simp [*]
+theorem length_map : (p.map f).length = p.length := by induction p <;> simp [*]
 
 theorem map_append {u v w : V} (p : G.Walk u v) (q : G.Walk v w) :
-    (p.append q).map hf = (p.map hf).append (q.map hf) := by induction p <;> simp [*]
+    (p.append q).map f = (p.map f).append (q.map f) := by induction p <;> simp [*]
 
 @[simp]
-theorem reverse_map : (p.map hf).reverse = p.reverse.map hf :=
+theorem reverse_map : (p.map f).reverse = p.reverse.map f :=
   by induction p <;> simp [map_append, *]
 
 @[simp]
-theorem support_map : (p.map hf).support = p.support.map f := by induction p <;> simp [*]
+theorem support_map : (p.map f).support = p.support.map f := by induction p <;> simp [*]
 
 @[simp]
-theorem darts_map : (p.map hf).darts = p.darts.map f.mapDart := by induction p <;> simp [*]
+theorem darts_map : (p.map f).darts = p.darts.map f.mapDart := by induction p <;> simp [*]
 
 @[simp]
-theorem edges_map : (p.map hf).edges = p.edges.map (Sym2.map f) := by
+theorem edges_map : (p.map f).edges = p.edges.map (Sym2.map f) := by
   induction p with
   | nil _ => rfl
   | cons _ _ ih =>
@@ -1170,7 +1168,7 @@ theorem edges_map : (p.map hf).edges = p.edges.map (Sym2.map f) := by
       true_and, ih]
 
 theorem map_injective_of_injective (hinj : Function.Injective f) (u v : V) :
-    Function.Injective (Walk.map hf : G.Walk u v → G'.Walk (f u) (f v)) := by
+    Function.Injective (Walk.map f : G.Walk u v → G'.Walk (f u) (f v)) := by
   intro p p' h
   induction p with
   | nil =>
@@ -1189,7 +1187,7 @@ theorem map_injective_of_injective (hinj : Function.Injective f) (u v : V) :
 
 /-- The specialization of `MyGraph.Walk.map` for mapping walks to supergraphs. -/
 abbrev mapLe {G G' : MyGraph V} (h : G ≤ G') {u v : V} (p : G.Walk u v) : G'.Walk u v :=
-  p.map (f :=.ofLE h) (by intro x hx ; simp [h.1 hx])
+  p.map (.ofLE h)
 
 /-! ### Transferring between graphs -/
 
@@ -1213,7 +1211,7 @@ theorem transfer_self : p.transfer G p.start_mem_verts p.edges_subset_edgeSet = 
 variable {H : MyGraph V}
 
 theorem transfer_eq_map_ofLE (hu) (hp) (GH : G ≤ H) :
-  p.transfer H hu hp = p.map (f:=.ofLE GH) GH.1 := by
+  p.transfer H hu hp = p.map (.ofLE GH) := by
   induction p <;> simp [*]
 
 @[deprecated (since := "2025-03-17")] alias transfer_eq_map_of_le := transfer_eq_map_ofLE
@@ -1295,7 +1293,7 @@ abbrev toDeleteEdge (e : Sym2 V) (p : G.Walk v w) (hp : e ∉ p.edges) :
 
 @[simp]
 theorem map_toDeleteEdges_eq (s : Set (Sym2 V)) {p : G.Walk v w} (hp) :
-    Walk.map (f:=.ofLE (G.deleteEdges_le s)) (G.deleteEdges_le s).1 (p.toDeleteEdges s hp) = p := by
+    Walk.map (.ofLE (G.deleteEdges_le s)) (p.toDeleteEdges s hp) = p := by
   rw [← transfer_eq_map_ofLE, transfer_transfer, transfer_self]
   intros e
   rw [edges_transfer]

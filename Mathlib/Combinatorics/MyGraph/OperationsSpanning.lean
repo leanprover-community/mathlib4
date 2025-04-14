@@ -30,7 +30,7 @@ variable {V : Type*} (G : SpanningGraph V) (s t : V)
 
 namespace MyGraph.Iso
 
-variable {G} {W : Type*} {G' : SpanningGraph W} (f : G.toMyGraph ≃g G'.toMyGraph)
+variable {G} {W : Type*} {G' : SpanningGraph W} (f : G ≃g G')
 
 include f in
 theorem card_edgeFinset_eq [Fintype G.edgeSet] [Fintype G'.edgeSet] :

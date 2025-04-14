@@ -232,25 +232,51 @@ theorem spanningCoe_eq_self {G : MyGraph V} (h : G.IsSpanning) : G.spanningCoe =
 
 /-- A graph homomorphism is a map on vertex sets that respects adjacency relations.
 
-The notation `G →g G'` represents the type of graph homomorphisms. -/
-abbrev Hom :=
-  RelHom G.Adj G'.Adj
+-/
+-- abbrev Hom :=
+--   RelHom G.Adj G'.Adj
+@[ext]
+structure Hom extends RelHom G.Adj G'.Adj where
+  mapsTo : Set.MapsTo (toFun) G.verts G'.verts
 
+instance : Coe (Hom G G') (RelHom G.Adj G'.Adj) := ⟨Hom.toRelHom⟩
 
+instance : FunLike (Hom G G') V W where
+  coe := fun F ↦ F.toFun
+  coe_injective' := fun _ _ h ↦ Hom.ext h
+
+variable (f : Hom G G')
 
 /-- A graph embedding is an embedding `f` such that for vertices `v w : V`,
 `G'.Adj (f v) (f w) ↔ G.Adj v w`. Its image is an induced subgraph of G'.
 
 The notation `G ↪g G'` represents the type of graph embeddings. -/
-abbrev Embedding :=
-  RelEmbedding G.Adj G'.Adj
+@[ext]
+structure Embedding extends RelEmbedding G.Adj G'.Adj where
+  mapsTo : Set.MapsTo (toFun) G.verts G'.verts
+
+instance : Coe (Embedding G G') (RelEmbedding G.Adj G'.Adj) := ⟨Embedding.toRelEmbedding⟩
+
+instance : FunLike (Embedding G G') V W where
+  coe := fun F ↦ F.toFun
+  coe_injective' := fun _ _ h ↦ Embedding.ext h
 
 /-- A graph isomorphism is a bijective map on vertex sets that respects adjacency relations.
 
 The notation `G ≃g G'` represents the type of graph isomorphisms.
 -/
-abbrev Iso :=
-  RelIso G.Adj G'.Adj
+@[ext]
+structure Iso extends RelIso G.Adj G'.Adj where
+  mapsTo_iff : Set.MapsTo (toFun) G.verts G'.verts ∧ Set.MapsTo (invFun) G'.verts G.verts
+
+
+
+
+instance : Coe (Iso G G') (RelIso G.Adj G'.Adj) := ⟨Iso.toRelIso⟩
+
+instance : FunLike (Iso G G') V W where
+  coe := fun F ↦ F.toFun
+  coe_injective' := fun _ _ h ↦ Iso.ext h (congrArg Equiv.invFun <| Equiv.coe_inj.mp h)
 
 @[inherit_doc] infixl:50 " →g " => Hom
 @[inherit_doc] infixl:50 " ↪g " => Embedding
@@ -261,15 +287,18 @@ namespace Hom
 variable {G G'} {G₁ G₂ : MyGraph V} {H : MyGraph W} (f : G →g G')
 
 /-- The identity homomorphism from a graph to itself. -/
-protected abbrev id : G →g G :=
-  RelHom.id _
+protected abbrev id : G →g G where
+  toFun := fun x ↦ x
+  map_rel' := fun h ↦ h
+  mapsTo := fun _ hv ↦ hv
 
-@[simp, norm_cast] lemma coe_id : ⇑(Hom.id : G →g G) = id := rfl
+@[simp] lemma coe_id : ⇑(Hom.id : G →g G) = (id : V → V):= rfl
 
 instance [Subsingleton (V → W)] : Subsingleton (G →g H) := DFunLike.coe_injective.subsingleton
 
 instance [IsEmpty V] : Unique (G →g H) where
-  default := ⟨isEmptyElim, fun {a} ↦ isEmptyElim a⟩
+  default := {toFun := isEmptyElim,
+              map_rel' :=fun {a} ↦ isEmptyElim a, mapsTo:= fun {a} ↦ isEmptyElim a}
   uniq _ := Subsingleton.elim _ _
 
 instance [Finite V] [Finite W] : Finite (G →g H) := DFunLike.finite _
@@ -303,7 +332,12 @@ theorem mapDart_apply (d : G.Dart) : f.mapDart d = ⟨d.1.map f f, f.map_adj d.2
   rfl
 
 /-- The graph homomorphism from a smaller graph to a bigger one. -/
-def ofLE (h : G₁ ≤ G₂) : G₁ →g G₂ := ⟨id, @h.2⟩
+def ofLE (h : G₁ ≤ G₂) : G₁ →g G₂ := ⟨⟨id, @h.2⟩, @h.1⟩
+
+@[simp]
+lemma mapsTo_of_HomLE  (h : G₁ ≤ G₂) : Set.MapsTo (Hom.ofLE h) G₁.verts G₂.verts :=
+    fun _ hv ↦ h.1 hv
+
 
 @[simp, norm_cast] lemma coe_ofLE (h : G₁ ≤ G₂) : ⇑(ofLE h) = id := rfl
 
@@ -314,6 +348,7 @@ lemma ofLE_apply (h : G₁ ≤ G₂) (v : V) : ofLE h v = v := rfl
 def mapSpanningSubgraphs {G G' : MyGraph V} (h : G ≤ G') : G →g G' where
   toFun x := x
   map_rel' ha := h.2 ha
+  mapsTo := fun _ hv ↦ h.1 hv
 
 @[deprecated "This is true by simp" (since := "2025-03-17")]
 lemma mapSpanningSubgraphs_inj {G G' : MyGraph V} {v w : V} (h : G ≤ G') :
@@ -342,15 +377,26 @@ When the function is injective, this is an embedding (see `MyGraph.Embedding.com
 protected def comap (f : V → W) (G : MyGraph W) : G.comap f →g G where
   toFun := f
   map_rel' := by simp
+  mapsTo := fun _ hv ↦ hv
 
 variable {G'' : MyGraph X}
 
 /-- Composition of graph homomorphisms. -/
 abbrev comp (f' : G' →g G'') (f : G →g G') : G →g G'' :=
-  RelHom.comp f' f
+  ⟨f'.toRelHom.comp f.toRelHom, fun _ hv ↦ f'.mapsTo <| f.mapsTo hv⟩
+
+
+lemma comp_apply (f' : G' →g G'') (f : G →g G') (a : V) : (f'.comp f) a = f' (f a) :=
+  rfl
+
 
 @[simp]
-theorem coe_comp (f' : G' →g G'') (f : G →g G') : ⇑(f'.comp f) = f' ∘ f :=
+theorem coe_toRelHom_comp (f' : G' →g G'') (f : G →g G') :
+    (f'.comp f).toRelHom = f'.toRelHom.comp f.toRelHom :=
+  rfl
+
+@[simp]
+theorem coe_toFun_comp (f' : G' →g G'') (f : G →g G') : ⇑(f'.comp f) = f' ∘ f :=
   rfl
 
 end Hom
@@ -361,13 +407,15 @@ variable {G G'} {H : MyGraph W} (f : G ↪g G')
 
 /-- The identity embedding from a graph to itself. -/
 abbrev refl : G ↪g G :=
-  RelEmbedding.refl _
+  ⟨RelEmbedding.refl _, fun _ hv ↦ hv⟩
 
 /-- An embedding of graphs gives rise to a homomorphism of graphs. -/
 abbrev toHom : G →g G' :=
-  f.toRelHom
+  ⟨f.toRelEmbedding.toRelHom, f.mapsTo⟩
 
 @[simp] lemma coe_toHom (f : G ↪g H) : ⇑f.toHom = f := rfl
+
+@[simp] lemma coe_toEmbedding (f : G ↪g H) : ⇑f.toEmbedding = f := rfl
 
 @[simp] theorem map_adj_iff {v w : V} : G'.Adj (f v) (f w) ↔ G.Adj v w :=
   f.map_rel_iff
@@ -381,8 +429,8 @@ theorem apply_mem_neighborSet_iff {v w : V} : f w ∈ G'.neighborSet (f v) ↔ w
 /-- A graph embedding induces an embedding of edge sets. -/
 @[simps]
 def mapEdgeSet : G.edgeSet ↪ G'.edgeSet where
-  toFun := Hom.mapEdgeSet f
-  inj' := Hom.mapEdgeSet.injective f.toRelHom f.injective
+  toFun := Hom.mapEdgeSet f.toHom
+  inj' := Hom.mapEdgeSet.injective f.toHom f.injective
 
 /-- A graph embedding induces an embedding of neighbor sets. -/
 @[simps]
@@ -398,17 +446,15 @@ graph. -/
 -- Porting note: @[simps] does not work here since `f` is not a constructor application.
 -- `@[simps toEmbedding]` could work, but Floris suggested writing `comap_apply` for now.
 protected def comap (f : V ↪ W) (G : MyGraph W) : G.comap f ↪g G :=
-  { f with map_rel_iff' := by simp }
+  ⟨⟨f, by simp⟩, fun _ hv ↦ hv⟩
 
 @[simp]
 theorem comap_apply (f : V ↪ W) (G : MyGraph W) (v : V) :
     MyGraph.Embedding.comap f G v = f v := rfl
 
 /-- Given an injective function, there is an embedding from a graph into the mapped graph. -/
--- Porting note: @[simps] does not work here since `f` is not a constructor application.
--- `@[simps toEmbedding]` could work, but Floris suggested writing `map_apply` for now.
 protected def map (f : V ↪ W) (G : MyGraph V) : G ↪g G.map f :=
-  { f with map_rel_iff' := by simp }
+  ⟨⟨f, by simp⟩, fun _ hv ↦ by simpa using hv⟩
 
 @[simp]
 theorem map_apply (f : V ↪ W) (G : MyGraph V) (v : V) :
@@ -429,7 +475,7 @@ theorem map_apply (f : V ↪ W) (G : MyGraph V) (v : V) :
 /-- Embeddings of types induce embeddings of complete graphs on those types. -/
 protected def completeGraph {α β : Type*} (f : α ↪ β) :
     (⊤ : MyGraph α) ↪g (⊤ : MyGraph β) :=
-  { f with map_rel_iff' := by simp }
+  ⟨⟨f, by simp⟩, fun _ hv ↦ hv⟩
 
 @[simp] lemma coe_completeGraph {α β : Type*} (f : α ↪ β) : ⇑(Embedding.completeGraph f) = f := rfl
 
@@ -437,7 +483,14 @@ variable {G'' : MyGraph X}
 
 /-- Composition of graph embeddings. -/
 abbrev comp (f' : G' ↪g G'') (f : G ↪g G') : G ↪g G'' :=
-  f.trans f'
+    ⟨f.1.trans f'.1, fun _ hv ↦ f'.mapsTo <| f.mapsTo hv⟩
+  --  ⟨⟨f.1.1.trans f'.1.1, by simp [f.map_rel_iff, f'.map_rel_iff]⟩,
+  --     fun _ hv ↦ f'.mapsTo <| f.mapsTo hv⟩
+
+
+lemma comp_apply (f' : G' ↪g G'') (f : G ↪g G') (a : V) : (f'.comp f) a = f' (f a) :=
+  rfl
+
 
 @[simp]
 theorem coe_comp (f' : G' ↪g G'') (f : G ↪g G') : ⇑(f'.comp f) = f' ∘ f :=
@@ -457,24 +510,37 @@ end Embedding
 
 namespace Iso
 
-variable {G G'} (f : G ≃g G')
+variable {G G'} (f : G ≃g G') {X : Type*} {H : MyGraph X}
 
 /-- The identity isomorphism of a graph with itself. -/
 abbrev refl : G ≃g G :=
-  RelIso.refl _
+  ⟨RelIso.refl _, fun _ h ↦ h, fun _ h ↦ h⟩
 
 
 /-- An isomorphism of graphs gives rise to an embedding of graphs. -/
 abbrev toEmbedding : G ↪g G' :=
-  f.toRelEmbedding
+  ⟨f.toRelEmbedding, f.2.1⟩
 
 /-- An isomorphism of graphs gives rise to a homomorphism of graphs. -/
 abbrev toHom : G →g G' :=
   f.toEmbedding.toHom
 
+/-- An isomorphism of graphs gives rise to a homomorphism of graphs. -/
+abbrev toRelHom : G.Adj →r G'.Adj :=
+  f.toEmbedding.toHom.toRelHom
+
+
 /-- The inverse of a graph isomorphism. -/
 abbrev symm : G' ≃g G :=
-  RelIso.symm f
+  ⟨RelIso.symm f, ⟨by simpa using f.2.2, by simpa using f.2.1⟩⟩
+
+@[simp] lemma coe_toHom (f : G ≃g H) : ⇑f.toHom = f := rfl
+
+@[simp] lemma apply_symm_apply (x : W) : f (f.symm x) = x := f.right_inv x
+@[simp] lemma symm_apply_apply (x : V) : f.symm (f x) = x := f.left_inv x
+
+@[simp] lemma symm_comp_self  : f.symm ∘ f = id := funext f.symm_apply_apply
+@[simp] lemma self_comp_symm  : f ∘ f.symm = id := funext f.apply_symm_apply
 
 theorem map_adj_iff {v w : V} : G'.Adj (f v) (f w) ↔ G.Adj v w :=
   f.map_rel_iff
@@ -485,23 +551,49 @@ theorem map_mem_edgeSet_iff {e : Sym2 V} : e.map f ∈ G'.edgeSet ↔ e ∈ G.ed
 theorem apply_mem_neighborSet_iff {v w : V} : f w ∈ G'.neighborSet (f v) ↔ w ∈ G.neighborSet v :=
   map_adj_iff f
 
-@[simp]
-theorem symm_toHom_comp_toHom : f.symm.toHom.comp f.toHom = Hom.id := by
-  ext v
-  simp only [RelHom.comp_apply, RelEmbedding.coe_toRelHom, RelIso.coe_toRelEmbedding,
-    RelIso.symm_apply_apply, RelHom.id_apply]
+
+-- @[simp]
+-- theorem toEmbedding_comp_symm_toEmbedding :
+--     f.toEmbedding.comp f.symm.toEmbedding = refl.toEmbedding := by
+--   ext v; simp
+
+-- @[simp]
+-- theorem symm_toEmbedding_comp_toEmbedding :
+--     f.symm.toEmbedding.comp f.toEmbedding = refl.toEmbedding := by
+--   ext v
+--   simp
 
 @[simp]
 theorem toHom_comp_symm_toHom : f.toHom.comp f.symm.toHom = Hom.id := by
+  ext v; simp
+
+@[simp]
+theorem symm_toHom_comp_toHom : f.symm.toHom.comp f.toHom = Hom.id := by
   ext v
-  simp only [RelHom.comp_apply, RelEmbedding.coe_toRelHom, RelIso.coe_toRelEmbedding,
-    RelIso.apply_symm_apply, RelHom.id_apply]
+  simp
+
+@[simp]
+theorem toHom_apply_symm_toHom_apply {w : W} : f.toHom (f.symm.toHom w) = w := by
+  rw [←  Hom.comp_apply]
+  simp
+
+
+@[simp]
+theorem toHom_eq_coeFun {v : V} : f.toHom v = ⇑f v := by
+  rfl
+
+
+@[simp]
+theorem symm_toHom_apply_toHom_apply {v : V} : f.symm.toHom (f.toHom v) = v := by
+  rw [←  Hom.comp_apply]
+  simp
+
 
 /-- An isomorphism of graphs induces an equivalence of edge sets. -/
 @[simps]
 def mapEdgeSet : G.edgeSet ≃ G'.edgeSet where
-  toFun := Hom.mapEdgeSet f
-  invFun := Hom.mapEdgeSet f.symm
+  toFun := Hom.mapEdgeSet f.toHom
+  invFun := Hom.mapEdgeSet f.symm.toHom
   left_inv := by
     rintro ⟨e, h⟩
     simp only [Hom.mapEdgeSet, RelEmbedding.toRelHom, Embedding.toFun_eq_coe,
@@ -528,8 +620,7 @@ def mapNeighborSet (v : V) : G.neighborSet v ≃ G'.neighborSet (f v) where
   right_inv w := by simp
 
 
-include f in
-theorem card_eq [Fintype V] [Fintype W] : Fintype.card V = Fintype.card W := by
+theorem card_eq [Fintype V] [Fintype W] (f : G ≃g G'): Fintype.card V = Fintype.card W := by
   rw [← Fintype.ofEquiv_card f.toEquiv]
   convert rfl
 
@@ -538,7 +629,8 @@ graph. -/
 -- Porting note: `@[simps]` does not work here anymore since `f` is not a constructor application.
 -- `@[simps toEmbedding]` could work, but Floris suggested writing `comap_apply` for now.
 protected def comap (f : V ≃ W) (G : MyGraph W) : G.comap f.toEmbedding ≃g G :=
-  { f with map_rel_iff' := by simp }
+    ⟨⟨f, by simp⟩, ⟨fun _ h ↦ h, fun _ h ↦ by rw [comap_verts]; simpa using h⟩⟩
+ -- { f with map_rel_iff' := by simp }
 
 @[simp]
 lemma comap_apply (f : V ≃ W) (G : MyGraph W) (v : V) :
@@ -549,10 +641,8 @@ lemma comap_symm_apply (f : V ≃ W) (G : MyGraph W) (w : W) :
     (MyGraph.Iso.comap f G).symm w = f.symm w := rfl
 
 /-- Given an injective function, there is an embedding from a graph into the mapped graph. -/
--- Porting note: `@[simps]` does not work here anymore since `f` is not a constructor application.
--- `@[simps toEmbedding]` could work, but Floris suggested writing `map_apply` for now.
 protected def map (f : V ≃ W) (G : MyGraph V) : G ≃g G.map f.toEmbedding :=
-  { f with map_rel_iff' := by simp }
+   ⟨⟨f, by simp⟩, ⟨fun _ h ↦  by simpa using h, fun _ h ↦ by simpa using h⟩⟩
 
 @[simp]
 lemma map_apply (f : V ≃ W) (G : MyGraph V) (v : V) :
@@ -565,7 +655,7 @@ lemma map_symm_apply (f : V ≃ W) (G : MyGraph V) (w : W) :
 /-- Equivalences of types induce isomorphisms of complete graphs on those types. -/
 protected def completeGraph {α β : Type*} (f : α ≃ β) :
     (⊤ : MyGraph α) ≃g (⊤ : MyGraph β) :=
-  { f with map_rel_iff' := by simp }
+  ⟨⟨f, by simp⟩, ⟨fun _ h ↦ h, fun _ h ↦ h⟩⟩
 
 theorem toEmbedding_completeGraph {α β : Type*} (f : α ≃ β) :
     (Iso.completeGraph f).toEmbedding = Embedding.completeGraph f.toEmbedding :=
@@ -574,11 +664,14 @@ theorem toEmbedding_completeGraph {α β : Type*} (f : α ≃ β) :
 variable {G'' : MyGraph X}
 
 /-- Composition of graph isomorphisms. -/
-abbrev comp (f' : G' ≃g G'') (f : G ≃g G') : G ≃g G'' :=
-  f.trans f'
+abbrev comp  (f : G ≃g G') (f' : G' ≃g G'') : G ≃g G'' :=
+  ⟨f.toRelIso.trans f'.toRelIso,
+    ⟨fun _ hv ↦ f'.2.1 <| f.2.1 hv, fun _ hv ↦ f.symm.2.1 <| f'.symm.2.1 hv⟩⟩
 
+@[simp] lemma symm_trans_apply (f : G ≃g G') (f' : G' ≃g G'')  (a : X) :
+    (f.comp f').symm a = f.symm (f'.symm a) := rfl
 @[simp]
-theorem coe_comp (f' : G' ≃g G'') (f : G ≃g G') : ⇑(f'.comp f) = f' ∘ f :=
+theorem coe_comp (f' : G' ≃g G'') (f : G ≃g G') : ⇑(f.comp f') = f' ∘ f :=
   rfl
 
 end Iso
@@ -594,20 +687,19 @@ end Iso
 
 section Finite
 
-variable [Fintype V] {n : ℕ}
-
-/-- Given a graph over a finite vertex type `V` and a proof `hc` that `Fintype.card V = n`,
-`G.overFin n` is an isomorphic (as shown in `overFinIso`) graph over `Fin n`. -/
-def overFin (hc : Fintype.card V = n) : MyGraph (Fin n) where
+variable [Fintype G.verts] {n : ℕ}
+-- /-- Given a graph over a finite vertex type `V` and a proof `hc` that `Fintype.card V = n`,
+-- `G.overFin n` is an isomorphic (as shown in `overFinIso`) graph over `Fin n`. -/
+def overFin (hc : Fintype.card G.verts = n) : MyGraph (Fin n) where
   verts := Set.univ
   Adj x y := G.Adj ((Fintype.equivFinOfCardEq hc).symm x) ((Fintype.equivFinOfCardEq hc).symm y)
   edge_vert _ := by trivial
   symm x y := by simp_rw [adj_comm, imp_self]
   loopless := fun _ h ↦ G.loopless _ h
 
-/-- The isomorphism between `G` and `G.overFin hc`. -/
-noncomputable def overFinIso (hc : Fintype.card V = n) : G ≃g G.overFin hc := by
-  use Fintype.equivFinOfCardEq hc; simp [overFin]
+/-- The embedding of  `G.overFin hc` into `G`. -/
+noncomputable def overFinIso (hc : Fintype.card G.verts  = n) : G.overFin hc ↪g G:= by
+  sorry--use ⟨Fintype.embeddingFinOfCardEq hc.le, by simp [overFin]⟩
 
 end Finite
 

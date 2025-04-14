@@ -90,7 +90,7 @@ theorem turanGraph_cliqueFree (hr : 0 < r) : (turanGraph n r).CliqueFree (r + 1)
   rw [cliqueFree_iff]
   by_contra h
   rw [not_isEmpty_iff] at h
-  obtain ⟨f, ha⟩ := h
+  obtain ⟨⟨f, ha⟩,_⟩ := h
   simp only [turanGraph, top_adj] at ha
   obtain ⟨x, y, d, c⟩ := Fintype.exists_ne_map_eq_of_card_lt (fun x ↦
     (⟨(f x).1 % r, Nat.mod_lt _ hr⟩ : Fin r)) (by simp)
@@ -274,17 +274,18 @@ theorem nonempty_iso_turanGraph :
     Nonempty (G ≃g (turanGraph (Fintype.card V) r)) := by
   classical
   obtain ⟨zm, zp⟩ := h.isEquipartition.exists_partPreservingEquiv
-  use (Equiv.subtypeUnivEquiv mem_univ).symm.trans zm
+  refine ⟨⟨(Equiv.subtypeUnivEquiv mem_univ).symm.trans zm,?_⟩,by simp⟩
+  simp_rw [turanGraph, Equiv.trans_apply, Equiv.subtypeUnivEquiv_symm_apply, mk'_Adj]
   intro a b
-  simp_rw [turanGraph, Equiv.trans_apply, Equiv.subtypeUnivEquiv_symm_apply]
   have := zp ⟨a, mem_univ a⟩ ⟨b, mem_univ b⟩
   rw [← h.not_adj_iff_part_eq] at this
-  rw [← not_iff_not, mk'_Adj, not_ne_iff, this, card_parts]
+  rw [← not_iff_not, not_not, card_parts] at this
+  rw [this, ←not_ne_iff]
   rcases le_or_lt r (Fintype.card V) with c | c
-  · rw [min_eq_right c]; rfl
+  · rw [min_eq_right c, not_not]; rfl
   · have lc : ∀ x, zm ⟨x, _⟩ < Fintype.card V := fun x ↦ (zm ⟨x, mem_univ x⟩).2
     rw [min_eq_left c.le, Nat.mod_eq_of_lt (lc a), Nat.mod_eq_of_lt (lc b),
-      ← Nat.mod_eq_of_lt ((lc a).trans c), ← Nat.mod_eq_of_lt ((lc b).trans c)]; rfl
+      ← Nat.mod_eq_of_lt ((lc a).trans c), ← Nat.mod_eq_of_lt ((lc b).trans c), not_not]; rfl
 
 end IsTuranMaximal
 
@@ -296,13 +297,14 @@ theorem isTuranMaximal_of_iso (f : G ≃g (turanGraph n r)) (hr : 0 < r) :
   obtain ⟨J, _, j⟩ := exists_isTuranMaximal (V := V) hr
   obtain ⟨g⟩ := j.nonempty_iso_turanGraph
   rw [f.card_eq, Fintype.card_fin] at g
-  use (turanGraph_cliqueFree (n := n) hr).comap f,
-    fun H _ cf ↦ (f.symm.comp g).card_edgeFinset_eq ▸ j.2 H cf
+  have ht :=(turanGraph_cliqueFree (n := n) hr)
+  have := SpanningGraph.cliqueFree_comap ⟨f.toRelEmbedding, by simp⟩ ht
+  use this, fun H _ cf ↦ (g.comp f.symm).card_edgeFinset_eq ▸ j.2 H cf
 
 /-- Turán-maximality with `0 < r` transfers across graph isomorphisms. -/
 theorem IsTuranMaximal.iso {W : Type*} [Fintype W] {H : SpanningGraph W}
     [DecidableRel H.Adj] (h : G.IsTuranMaximal r) (f : G ≃g H) (hr : 0 < r) :
-    H.IsTuranMaximal r := isTuranMaximal_of_iso (h.nonempty_iso_turanGraph.some.comp f.symm) hr
+    H.IsTuranMaximal r := isTuranMaximal_of_iso (f.symm.comp h.nonempty_iso_turanGraph.some) hr
 
 /-- For `0 < r`, `turanGraph n r` is Turán-maximal. -/
 theorem isTuranMaximal_turanGraph (hr : 0 < r) : (turanGraph n r).IsTuranMaximal r :=

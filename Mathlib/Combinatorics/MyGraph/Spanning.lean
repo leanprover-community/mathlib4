@@ -61,6 +61,13 @@ lemma mem_verts {G : SpanningGraph V} (v : V) : v ∈ G.verts := by simp
 lemma eq_verts (G H : SpanningGraph V) : G.verts = H.verts  := by
   rw [G.isSpanning, H.isSpanning]
 
+
+lemma eq_iff_coe_eq {G H : SpanningGraph V} : G = H ↔ (G : MyGraph V) = (H : MyGraph V) := by
+  constructor <;> intro h
+  · subst h
+    rfl
+  · exact coe_injective h
+    
 instance : LE (SpanningGraph V) := ⟨fun G₁ G₂ => G₁.toMyGraph ≤ G₂⟩
 
 lemma le_iff {G H : SpanningGraph V} : G ≤ H ↔ G.Adj ≤ H.Adj := by
@@ -372,7 +379,9 @@ theorem deleteEdges_empty : G'.deleteEdges ∅ = G' := by
 
 -- @[simp]
 -- theorem deleteEdges_disjoint (h : Disjoint s G'.edgeSet) : G'.deleteEdges s = G' := by
+--   rw [coe_deleteEdges, MyGraph.deleteEdges_disjoint]
 --   ext x y
+--   simp
 --   simp only [deleteEdges_adj, and_iff_left_iff_imp]
 --   intro h' hf
 --   apply h.not_mem_of_mem_left hf h'
@@ -612,7 +621,10 @@ section maps
 variable {V W X : Type*} {G : SpanningGraph V}
 
 /-! ## Map and comap -/
-
+@[simp]
+lemma surjOn_iff_surjective {G : SpanningGraph V} {H : SpanningGraph W} {f : G →g H} :
+  Function.Surjective f ↔ Set.SurjOn f G.verts H.verts := by
+  simp [coe_verts, Set.surjective_iff_surjOn_univ]
 
 protected def map (f : V ↪ W) (G : SpanningGraph V) :
   SpanningGraph W := ⟨toSpanning (G.toMyGraph.map f), by simp⟩
@@ -668,6 +680,12 @@ lemma comap_symm (G : SpanningGraph V) (e : V ≃ W) :
 
 lemma map_symm (G : SpanningGraph W) (e : V ≃ W) :
     G.map e.symm.toEmbedding = G.comap e.toEmbedding := by rw [← comap_symm, e.symm_symm]
+
+
+/-- The identity isomorphism of a graph with itself. -/
+abbrev Iso.refl : G ≃g G :=
+  ⟨RelIso.refl _, fun _ h ↦ h, fun _ h ↦ h⟩
+
 
 end maps
 

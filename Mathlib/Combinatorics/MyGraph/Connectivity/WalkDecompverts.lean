@@ -218,32 +218,39 @@ lemma length_takeUntil_lt {u v w : V} {p : G.Walk v w} (h : u ∈ p.support) (hu
   exact fun hl ↦ huw (by simpa using (hl ▸ getVert_takeUntil h (by rfl) :
     (p.takeUntil u h).getVert (p.takeUntil u h).length = p.getVert p.length))
 
-lemma takeUntil_takeUntil {w x : V} (p : G.Walk u v) (hw : w ∈ p.support)
+
+
+variable {x : V}
+lemma takeUntil_append_of_mem_left (p : G.Walk u v) (q : G.Walk v w) (hx : x ∈ p.support) :
+    (p.append q).takeUntil x (subset_support_append_left _ _ hx) = p.takeUntil _ hx  := by
+  induction p with
+  | nil => rw [mem_support_nil_iff] at hx; subst_vars; simp
+  | @cons u _ _ _ p ih =>
+    rw [support_cons] at hx
+    by_cases hxu : u = x
+    · subst_vars; simp
+    · have := List.mem_of_ne_of_mem (fun hf ↦ hxu hf.symm) hx
+      simp_rw [takeUntil_cons this hxu, cons_append]
+      rw [takeUntil_cons (subset_support_append_left _ _ this) hxu]
+      simpa using ih _ this
+
+lemma takeUntil_append_of_mem_right (p : G.Walk u v) (q : G.Walk v w) (hxn : x ∉ p.support)
+    (hx : x ∈ q.support) :
+    (p.append q).takeUntil x (subset_support_append_right _ _ hx) =
+    p.append (q.takeUntil _ hx) := by
+  induction p with
+  | nil => simp
+  | @cons u _ _ _ p ih =>
+    simp_rw [cons_append]
+    rw [support_cons] at hxn
+    rw [takeUntil_cons (subset_support_append_right _ _ hx) (List.ne_of_not_mem_cons hxn).symm]
+    simpa using ih _ (List.not_mem_of_not_mem_cons hxn) hx
+
+lemma takeUntil_takeUntil (p : G.Walk u v) (hw : w ∈ p.support)
     (hx : x ∈ (p.takeUntil w hw).support) :
     (p.takeUntil w hw).takeUntil x hx = p.takeUntil x (p.support_takeUntil_subset hw hx) := by
-  induction p, w, hw using takeUntil.induct with
-  | case1 u v h =>
-    #adaptation_note
-    /-- Prior to `nightly-2025-02-24` this was just `aesop`. -/
-    simp at h
-    subst h
-    simp
-  | case2 _ _ q _ hadj hu' =>
-    simp only [takeUntil_first, support_nil, List.mem_singleton] at hx
-    subst hx
-    simp
-  | case3 a w' v' hadj q u' hu' hau' ih =>
-    rw [← Ne.eq_def] at hau'
-    simp only [support_cons, List.mem_cons, hau'.symm, false_or] at hu'
-    simp only [takeUntil_cons hu' hau' hadj, support_cons, List.mem_cons] at hx
-    by_cases hx' : x = a
-    · aesop
-    · replace hx : x ∈ (q.takeUntil u' hu').support := by simpa [hx'] using hx
-      push_neg at hx'
-      conv_lhs =>
-        enter [1]
-        rw [takeUntil_cons hu' hau' hadj]
-      rw [takeUntil_cons hx hx'.symm hadj, ih _, takeUntil_cons _ hx'.symm]
+  rw [← takeUntil_append_of_mem_left _ (p.dropUntil w hw) hx]
+  simp_rw [take_spec]
 
 lemma not_mem_support_takeUntil_takeUntil {p : G.Walk u v} {w x : V} (h : x ≠ w)
     (hw : w ∈ p.support) (hx : x ∈ (p.takeUntil w hw).support) :

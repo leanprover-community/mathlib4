@@ -873,7 +873,7 @@ theorem Iso.reachable_iff {G : MyGraph V} {G' : MyGraph V'} {φ : G ≃g G'} {u 
 
 theorem Iso.symm_apply_reachable {G : MyGraph V} {G' : MyGraph V'} {φ : G ≃g G'} {u : V}
     {v : V'} : G.Reachable (φ.symm v) u ↔ G'.Reachable v (φ u) := by
-  rw [← Iso.reachable_iff, RelIso.apply_symm_apply]
+  rw [← Iso.reachable_iff, Iso.apply_symm_apply]
 
 lemma Reachable.mem_subgraphVerts {u v} {H : MyGraph V} (hr : G.Reachable u v)
     (h : ∀ v ∈ H.verts, ∀ w, G.Adj v w → H.Adj v w)
