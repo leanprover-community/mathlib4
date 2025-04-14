@@ -24,24 +24,25 @@ open Measure
 open scoped ENNReal
 --open Measure
 
-variable {G : Type*} [Group G] [MeasurableSpace G]
+variable {G : Type*} [MeasurableSpace G] [Mul G] [Inv G]
 
 /-- Multiplicative convolution of functions -/
 @[to_additive lconvolution "Additive convolution of functions"]
-noncomputable def mlconvolution (f : G → ℝ≥0∞) (g : G → ℝ≥0∞) (μ : Measure G := by volume_tac):
+noncomputable def mlconvolution (f : G → ℝ≥0∞) (g : G → ℝ≥0∞) (μ : Measure G):
     G → ℝ≥0∞ := fun x ↦ ∫⁻ y, (f y) * (g (y⁻¹ * x)) ∂μ
 
 /-- Scoped notation for the multiplicative convolution of functions with respect to a measure `μ` -/
 scoped[MeasureTheory] notation:66 f " ⋆ₗ["μ:67"] " g:67  => MeasureTheory.mlconvolution f g μ
 
 /-- Scoped notation for the multiplicative convolution of functions with respect to volume -/
-scoped[MeasureTheory] notation:66 f " ⋆ₗ " g:67  => MeasureTheory.mlconvolution f g
+scoped[MeasureTheory] notation:66 f " ⋆ₗ " g:67  => MeasureTheory.mlconvolution f g volume
 
 /-- Scoped notation for the additive convolution of functions with respect to a measure `μ` -/
 scoped[MeasureTheory] notation:66 f " ⋆ₗ["μ:67"]" g:67  => MeasureTheory.lconvolution f g μ
 
 /-- Scoped notation for the additive convolution of functions with respect to volume -/
-scoped[MeasureTheory] notation:66 f " ⋆ₗ " g:67  => MeasureTheory.lconvolution f g
+scoped[MeasureTheory] notation:66 f " ⋆ₗ " g:67  => MeasureTheory.lconvolution f g volume
+
 
 /- The definition of multiplicative convolution of functions -/
 @[to_additive lconvolution_def "The definition of additive convolution of functions"]
