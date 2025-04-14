@@ -77,6 +77,8 @@ seminorm which satisfies the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
 structure NonUnitalSeminormedCommRing (α : Type*)
     extends NonUnitalSeminormedRing α, NonUnitalCommRing α where
 
+attribute [nolint docBlame] NonUnitalSeminormedCommRing.toNonUnitalCommRing
+
 set_option linter.deprecated false in
 /-- A non-unital normed commutative ring is a non-unital commutative ring endowed with a
 norm which satisfies the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
@@ -84,6 +86,8 @@ norm which satisfies the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
   (since := "2025-04-14")]
 structure NonUnitalNormedCommRing (α : Type*) extends
     NonUnitalNormedRing α, NonUnitalCommRing α where
+
+attribute [nolint docBlame] NonUnitalNormedCommRing.toNonUnitalCommRing
 
 /-- A seminormed commutative ring is a commutative ring endowed with a seminorm which satisfies
 the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/

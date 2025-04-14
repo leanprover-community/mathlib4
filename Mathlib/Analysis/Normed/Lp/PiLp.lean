@@ -985,7 +985,7 @@ end Basis
 open Matrix
 
 nonrec theorem basis_toMatrix_basisFun_mul [Fintype ι]
-    {𝕜} [CommRing 𝕜] [SeminormedRing 𝕜] (b : Basis ι 𝕜 (PiLp p fun _ : ι => 𝕜))
+    {𝕜} [CommRing 𝕜] (b : Basis ι 𝕜 (PiLp p fun _ : ι => 𝕜))
     (A : Matrix ι ι 𝕜) :
     b.toMatrix (PiLp.basisFun _ _ _) * A =
       Matrix.of fun i j => b.repr ((WithLp.equiv _ _).symm (Aᵀ j)) i := by

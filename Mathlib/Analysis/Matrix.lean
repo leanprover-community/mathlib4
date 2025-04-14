@@ -363,7 +363,7 @@ protected noncomputable alias linftyOpSemiNormedRing := Matrix.linftyOpSeminorme
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[local instance]
-protected def linftyOpNormedRing [Ring α] [NormedRing α] [DecidableEq n] :
+protected def linftyOpNormedRing [Ring α] [NormedRing α] :
     NormedRing (Matrix n n α) :=
   { Matrix.linftyOpSeminormedRing with
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
@@ -620,7 +620,7 @@ theorem frobenius_norm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B‖
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[local instance]
-def frobeniusNormedRing [DecidableEq m] : NormedRing (Matrix m m α) :=
+def frobeniusNormedRing : NormedRing (Matrix m m α) :=
   { Matrix.frobeniusSeminormedAddGroup with
     norm := Norm.norm
     norm_mul_le := frobenius_norm_mul
