@@ -117,15 +117,15 @@ theorem IsIsotypic.linearEquiv_fun [Module.Finite R M] [Nontrivial M] (h : IsIso
 
 end Finsupp
 
-/-- If `N` is a submodule of `M`, `N.IsEndInvariant` means that `N` is mapped into itself by all
+/-- If `N` is a submodule of `M`, `N.IsFullyInvariant` means that `N` is mapped into itself by all
 endomorphisms of `M`.
 
 TODO: If `M` is semisimple, this is equivalent to `N` being a sum of isotypic components of `M`. -/
-def Submodule.IsEndInvariant (N : Submodule R M) : Prop :=
+def Submodule.IsFullyInvariant (N : Submodule R M) : Prop :=
   ∀ f : Module.End R M, N ≤ N.comap f
 
-theorem isEndInvariant_iff_isTwoSided {I : Ideal R} : I.IsEndInvariant ↔ I.IsTwoSided := by
-  simpa only [Submodule.IsEndInvariant, ← MulOpposite.opEquiv.trans (RingEquiv.moduleEndSelf R
+theorem isFullyInvariant_iff_isTwoSided {I : Ideal R} : I.IsFullyInvariant ↔ I.IsTwoSided := by
+  simpa only [Submodule.IsFullyInvariant, ← MulOpposite.opEquiv.trans (RingEquiv.moduleEndSelf R
     |>.toEquiv) |>.forall_congr_right, SetLike.le_def, I.isTwoSided_iff] using forall_comm
 
 variable (R M S)
@@ -222,7 +222,7 @@ theorem isotypicComponent_eq_top_iff [IsSemisimpleModule R M] :
     (IsSemisimpleModule.sSup_simples_eq_top R M).ge.trans (sSup_le_sSup @h)⟩
 
 variable (R M S) in
-theorem isEndInvariant_isotypicComponent : (isotypicComponent R M S).IsEndInvariant :=
+theorem isFullyInvariant_isotypicComponent : (isotypicComponent R M S).IsFullyInvariant :=
   fun f ↦ sSup_le fun m ⟨e⟩ ↦ Submodule.map_le_iff_le_comap.mp <| by
     have := IsSimpleModule.congr e
     rw [← m.range_subtype, ← LinearMap.range_comp]
@@ -233,13 +233,13 @@ theorem isEndInvariant_isotypicComponent : (isotypicComponent R M S).IsEndInvari
 end IsSimpleModule
 
 open IsSemisimpleModule in
-theorem isIsotypic_iff_isEndInvariant_imp_bot_or_top [IsSemisimpleModule R M] :
-    IsIsotypic R M ↔ ∀ N : Submodule R M, N.IsEndInvariant → N = ⊥ ∨ N = ⊤ := by
+theorem isIsotypic_iff_isFullyInvariant_imp_bot_or_top [IsSemisimpleModule R M] :
+    IsIsotypic R M ↔ ∀ N : Submodule R M, N.IsFullyInvariant → N = ⊥ ∨ N = ⊤ := by
   refine ⟨fun h N hN ↦ (eq_bot_or_exists_simple_le N).imp_right fun ⟨S, le, _⟩ ↦ top_unique <|
     sSup_simples_eq_top R M ▸ sSup_le fun S' (_ : IsSimpleModule R S') ↦ ?_, fun h ↦ ?_⟩
   · nontriviality M
     have ⟨S, _⟩ := exists_simple_submodule R M
-    have eq := (h _ (isEndInvariant_isotypicComponent R M S)).resolve_left
+    have eq := (h _ (isFullyInvariant_isotypicComponent R M S)).resolve_left
       (bot_lt_isotypicComponent R M S).ne'
     exact .of_injective (.isotypicComponent R M S) _
       ((LinearEquiv.ofEq _ _ eq).trans Submodule.topEquiv).symm.injective
