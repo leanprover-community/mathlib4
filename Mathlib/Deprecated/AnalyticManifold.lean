@@ -19,7 +19,7 @@ This file is deprecated: one should use `IsManifold I ω M` instead
 
 noncomputable section
 
-/- Desactivate the linter as we don't want to change the statements inside the file, only warn
+/- Deactivate the linter as we don't want to change the statements inside the file, only warn
 the user that the definitions they are using are deprecated. -/
 set_option linter.deprecated false
 

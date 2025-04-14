@@ -5,7 +5,6 @@ Authors: Michael Lee, Geoffrey Irving
 -/
 import Mathlib.Deprecated.AnalyticManifold
 
-set_option linter.style.header false
 set_option linter.directoryDependency false
 
 deprecated_module "Analytic manifolds are deprecated, use `IsManifold I ω M`" (since "2025-04-13")
