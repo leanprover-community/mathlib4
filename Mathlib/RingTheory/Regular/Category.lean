@@ -10,30 +10,7 @@ import Mathlib.RingTheory.QuotSMulTop
 # The categorical constructions for IsSMulRegular
 -/
 
-universe u
-
-namespace CategoryTheory
-
-theorem subsingleton_of_subsingleton_subsingleton {C : ShortComplex AddCommGrp.{u}} (h : C.Exact)
-    (h0 : Subsingleton C.X₁) (h2 : Subsingleton C.X₃) : Subsingleton C.X₂ := by
-  rw [CategoryTheory.ShortComplex.ab_exact_iff] at h
-  suffices h : ∀ a : C.X₂, a = 0 from subsingleton_of_forall_eq 0 h
-  intro a
-  obtain ⟨b, hb⟩ := h a (@Subsingleton.elim _ h2 _ 0)
-  rw [show b = 0 from (@Subsingleton.elim _ h0 _ 0), map_zero] at hb
-  exact hb.symm
-
-lemma ComposableArrows.Exact.isIso_map' {C : Type*} [Category C] [Preadditive C]
-    [Balanced C] {n : ℕ} {S : ComposableArrows C n} (hS : S.Exact) (k : ℕ) (hk : k + 3 ≤ n)
-    (h₀ : S.map' k (k + 1) = 0) (h₁ : S.map' (k + 2) (k + 3) = 0) :
-    IsIso (S.map' (k + 1) (k + 2)) := by
-  have := (hS.exact k).mono_g h₀
-  have := (hS.exact (k + 1)).epi_f h₁
-  apply isIso_of_mono_of_epi
-
-end CategoryTheory
-
-universe v w
+universe u v w
 
 variable {R : Type u} [CommRing R] (M : ModuleCat.{v} R)
 
