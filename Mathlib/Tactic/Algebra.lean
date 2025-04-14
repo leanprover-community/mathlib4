@@ -54,6 +54,14 @@ def ExSum.toString {v: Lean.Level} {A : Q(Type v)} (sA : Q(CommSemiring $A)) (a 
 
 instance {v : Level} {A : Expr} {sA : Expr} {a : Expr} : ToString (@ExSum v A sA a) where
   toString := ExSum.toString sA a
+
+-- def ExSum.cmps {v: Lean.Level} {A : Q(Type v)} {sA : Q(CommSemiring $A)} {a : Q($A)} :
+--   ExSum q($sA) a → List Ordering
+--   | .add _ _ va (.add s vr vb vt) =>
+--     va.cmp vb :: (ExSum.add s vr vb vt).cmps
+--   | _ => []
+
+-- #exit
 -- unsafe def _root_.Mathlib.Tactic.Ring.ExBase.cast {u : Level} {A₁ : Q(Type u)} {A₂ : Q(Type u)} {sA₁ : _} (sA₂ : _) (hdef : $A₁ =Q $A₂) {a₁ : Q($A₁)}
 --   (vr₁ : Ring.ExBase sA₁ q($a₁)) : (a₂ : Q($A₂)) × Ring.ExBase sA₂ q($a₂) := match vr₁ with
 --   | .atom (e := e) id =>
@@ -210,8 +218,14 @@ partial def _root_.Mathlib.Tactic.Ring.ExProd.extractConst {u : Level} {A : Q(Ty
     let ⟨n, b', vb', pb'⟩ ← vb.extractConst
     return ⟨n, _, .mul va ve vb', q(sorry)⟩
 
+-- TODO: decide if this is a good idea globally in
+-- https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/.60MonadLift.20Option.20.28OptionT.20m.29.60/near/469097834
+private local instance {m : Type* → Type*} [Pure m] : MonadLift Option (OptionT m) where
+  monadLift f := .mk <| pure f
+
 mutual
--- TODO: for now, we'll assume all constants are natural numbers. Generally these can be arbitrary rational numbers
+-- TODO: for now, we'll assume all constants are natural numbers. Generally these can be arbitrary
+-- rational numbers
 -- Supporting negative numbers is a bit annoying, since we can't guarantee that $R$ has negation.
 -- In this case we'd have to assume $R = ℕ$ and lift to ℤ
 partial def _root_.Mathlib.Tactic.Ring.ExProd.moveConst {u v : Level} {A : Q(Type u)} {R : Q(Type v)}
@@ -228,57 +242,71 @@ partial def _root_.Mathlib.Tactic.Ring.ExProd.moveConst {u v : Level} {A : Q(Typ
   let ⟨r, vr, pr⟩ ← evalMul_exProd sR (.const (e := q($n : $R)) n) vr
   return ⟨r, a, vr, va, q(sorry)⟩
 
+
 partial def evalAddExProd {u v w : Level} {A : Q(Type u)} {R₁ : Q(Type v)} {R₂ : Q(Type w)}
     {sA : Q(CommSemiring $A)} {sR₁ : Q(CommSemiring $R₁)} (sRA₁ : Q(Algebra $R₁ $A))
     {sR₂ : Q(CommSemiring $R₂)} (sRA₂ : Q(Algebra $R₂ $A))
     {r₁ : Q($R₁)}  {r₂ : Q($R₂)}
     {a₁ a₂ : Q($A)}
-    (vr₁ : ExSum q($sR₁) r₁)
-    (vr₂ : ExSum q($sR₂) r₂)
     (va₁ : Ring.ExProd q($sA) a₁)
-    (va₂ : Ring.ExProd q($sA) a₂) : MetaM <|
+    (va₂ : Ring.ExProd q($sA) a₂) :
+    ExSum q($sR₁) r₁ →
+    ExSum q($sR₂) r₂ →
+    MetaM (
       Σ u' : Level, Σ R : Q(Type u'), Σ sR : Q(CommSemiring $R), Σ sRA : Q(Algebra $R $A),
         Σ r : Q($R), Σ a : Q($A),
-      (ExSum q($sR) r × Ring.ExProd q($sA) a × Q($r₁ • $a₁ + $r₂ • $a₂ = $r • $a)) := do
-  dbg_trace s!"Executing evalAddExProd with ring $A$ = {A}, R₁ = {R₁}, R₂ = {R₂}"
-  let ⟨r₁, a₁, vr₁, va₁, pra₁⟩ ← va₁.moveConst sRA₁ vr₁
-  let ⟨r₂, a₂, vr₂, va₂, pra₂⟩ ← va₁.moveConst sRA₂ vr₂
-  have : $a₁ =Q $a₂ := ⟨⟩
-  if ← withReducible <| isDefEq R₁ R₂ then
-    have : v =QL w := ⟨⟩
-    have : $R₁ =Q $R₂ :=  ⟨⟩
-    let ⟨r₁', vr₁'⟩ := vr₁.cast sR₂
-    -- have : $r₁' =Q $r₁ := ⟨⟩
-    -- throwError s!"calling evalAdd recursively on {vr₁'}, {vr₂}"
-    let ⟨r, vr, pr⟩ ← evalAdd sR₂ vr₁' vr₂
-    -- sorry
-    pure ⟨w, R₂, sR₂, sRA₂, r, a₂, ⟨vr, va₂, q(sorry)⟩⟩
-  -- otherwise the "smaller" of the two rings must be commutative
-  else try
-    -- first try to exhibit `R₂` as an `R₁`-algebra
-    let _i₃ ← synthInstanceQ q(Algebra $R₁ $R₂)
-    IO.println s!"synthed algebra instance {R₁} {R₂}"
-    let _i₄ ← synthInstanceQ q(IsScalarTower $R₁ $R₂ $A)
-    IO.println s!"synthed IsScalarTower instance {R₁} {R₂} {A}"
-    assumeInstancesCommute
-    let ⟨r, vr, pr⟩ ← evalAdd sR₂ (.add _i₃ vr₁ (.const (e := q(1:$R₂)) 1) .zero) vr₂
-    -- let ⟨r, vr, pr⟩ ← evalSMul iR₂ iR₁ _i₃ vr₁ vr₂
-    pure ⟨w, R₂, sR₂, sRA₂, r, a₂, vr, va₂, q(sorry)⟩
-    -- pure ⟨u₂, R₂, iR₂, iRA₂, r, vr, q($pr ▸ (smul_assoc $r₁ $r₂ $a).symm)⟩
-  catch _ => try
-    -- then if that fails, try to exhibit `R₁` as an `R₂`-algebra
-    let _i₃ ← synthInstanceQ q(Algebra $R₂ $R₁)
-    IO.println s!"synthed algebra instance {R₂} {R₁}"
-    let _i₄ ← synthInstanceQ q(IsScalarTower $R₂ $R₁ $A)
-    assumeInstancesCommute
-    let ⟨r, vr, pr⟩ ← evalAdd sR₁ (.add _i₃ vr₂ (.const (e := q(1:$R₁)) 1) .zero) vr₁
-    -- let ⟨r, vr, pr⟩ ← evalSMul iR₂ iR₁ _i₃ vr₁ vr₂
-    pure ⟨v, R₁, sR₁, sRA₁, r, a₁, vr, va₁, q(sorry)⟩
-    -- pure ⟨u₁, R₁, iR₁, iRA₁, r, vr,
-    --   q($pr ▸ smul_algebra_smul_comm $r₂ $r₁ $a ▸ (smul_assoc $r₂ $r₁ $a).symm)⟩
-  catch _ =>
-    -- throw o
-    throwError "algebra failed: {R₁} is not an {R₂}-algebra and {R₂} is not an {R₁}-algebra"
+      (ExSum q($sR) r × Ring.ExProd q($sA) a × Q($r₁ • $a₁ + $r₂ • $a₂ = $r • $a)))
+  | .one, .one => do
+    let res ← (OptionT.run (Ring.evalAddOverlap sA va₁ va₂) : CoreM _)
+    match ← (OptionT.run (Ring.evalAddOverlap sA va₁ va₂) : CoreM _) with
+    | .none =>
+      /- This should be inaccessible -/
+      throwError "evalAddExProd not implemented"
+    | .some (.zero pf_isNat_zero) =>
+        --TODO: reorder code such that this term can be removed.
+        return ⟨_, R₁, sR₁, sRA₁, _, _, .one, .const (e := q(0:$A)) 0, q(sorry)⟩
+    | .some (.nonzero ⟨_, va, pa⟩) =>
+        return ⟨_, R₁, sR₁, sRA₁, _, _, .one, va, q(sorry)⟩
+  | vr₁, vr₂ => do
+    dbg_trace s!"Executing evalAddExProd with ring $A$ = {A}, R₁ = {R₁}, R₂ = {R₂}"
+    let ⟨r₁, a₁, vr₁, va₁, pra₁⟩ ← va₁.moveConst sRA₁ vr₁
+    let ⟨r₂, a₂, vr₂, va₂, pra₂⟩ ← va₂.moveConst sRA₂ vr₂
+    have : $a₁ =Q $a₂ := ⟨⟩
+    if ← withReducible <| isDefEq R₁ R₂ then
+      have : v =QL w := ⟨⟩
+      have : $R₁ =Q $R₂ :=  ⟨⟩
+      let ⟨r₁', vr₁'⟩ := vr₁.cast sR₂
+      -- have : $r₁' =Q $r₁ := ⟨⟩
+      -- throwError s!"calling evalAdd recursively on {vr₁'}, {vr₂}"
+      let ⟨r, vr, pr⟩ ← evalAdd sR₂ vr₁' vr₂
+      -- sorry
+      pure ⟨w, R₂, sR₂, sRA₂, r, a₂, ⟨vr, va₂, q(sorry)⟩⟩
+    -- otherwise the "smaller" of the two rings must be commutative
+    else try
+      -- first try to exhibit `R₂` as an `R₁`-algebra
+      let _i₃ ← synthInstanceQ q(Algebra $R₁ $R₂)
+      IO.println s!"synthed algebra instance {R₁} {R₂}"
+      let _i₄ ← synthInstanceQ q(IsScalarTower $R₁ $R₂ $A)
+      IO.println s!"synthed IsScalarTower instance {R₁} {R₂} {A}"
+      assumeInstancesCommute
+      let ⟨r, vr, pr⟩ ← evalAdd sR₂ (.add _i₃ vr₁ (.const (e := q(1:$R₂)) 1) .zero) vr₂
+      -- let ⟨r, vr, pr⟩ ← evalSMul iR₂ iR₁ _i₃ vr₁ vr₂
+      pure ⟨w, R₂, sR₂, sRA₂, r, a₂, vr, va₂, q(sorry)⟩
+      -- pure ⟨u₂, R₂, iR₂, iRA₂, r, vr, q($pr ▸ (smul_assoc $r₁ $r₂ $a).symm)⟩
+    catch _ => try
+      -- then if that fails, try to exhibit `R₁` as an `R₂`-algebra
+      let _i₃ ← synthInstanceQ q(Algebra $R₂ $R₁)
+      IO.println s!"synthed algebra instance {R₂} {R₁}"
+      let _i₄ ← synthInstanceQ q(IsScalarTower $R₂ $R₁ $A)
+      assumeInstancesCommute
+      let ⟨r, vr, pr⟩ ← evalAdd sR₁ (.add _i₃ vr₂ (.const (e := q(1:$R₁)) 1) .zero) vr₁
+      -- let ⟨r, vr, pr⟩ ← evalSMul iR₂ iR₁ _i₃ vr₁ vr₂
+      pure ⟨v, R₁, sR₁, sRA₁, r, a₁, vr, va₁, q(sorry)⟩
+      -- pure ⟨u₁, R₁, iR₁, iRA₁, r, vr,
+      --   q($pr ▸ smul_algebra_smul_comm $r₂ $r₁ $a ▸ (smul_assoc $r₂ $r₁ $a).symm)⟩
+    catch _ =>
+      -- throw o
+      throwError "algebra failed: {R₁} is not an {R₂}-algebra and {R₂} is not an {R₁}-algebra"
 
 
 partial def evalAdd {u : Level} {A : Q(Type u)}
@@ -320,7 +348,7 @@ partial def evalAdd {u : Level} {A : Q(Type u)}
     | .eq =>
       IO.println s!"Comparison was eq"
       let ⟨_, vt, pt⟩ ← evalAdd sA vt₁ vt₂
-      let ⟨u, R, sR, sRA, r, a, vr, va, par⟩ ← evalAddExProd sRA₁ sRA₂ vr₁ vr₂ va₁ va₂
+      let ⟨u, R, sR, sRA, r, a, vr, va, par⟩ ← evalAddExProd sRA₁ sRA₂ va₁ va₂ vr₁ vr₂
       return ⟨_, .add sRA vr va vt, q(sorry)⟩
     -- sorry
 
@@ -591,7 +619,13 @@ example (x : ℚ) : x = 1 := by
 
 -- BUG: ExProd.one doesn't match with the empty product in sums.
 example (x : ℚ) : x + x + x  = 3 * x := by
+  -- algebra
+  sorry
+
+-- BUG: infinite loop
+example (x : ℚ) : (x + x) + (x + x)  = 4 * x := by
   algebra
+  -- simp
   sorry
 
 -- BUG: the x*y terms are not being combined.
@@ -605,3 +639,19 @@ example (x y : ℚ) : (x + y)*(x+y) = 1 := by
   sorry
 
   -- match_scalars <;> simp
+
+example (x y : ℚ) : (x+y)*x = 1 := by
+  -- simp_rw [← SMul.smul_eq_hSMul]
+  algebra
+  simp only [show Nat.rawCast 1 = 1 by rfl]
+  simp only [pow_one, Nat.rawCast, Nat.cast_one, mul_one, one_smul, Nat.cast_ofNat, Nat.cast_zero,
+    add_zero]
+  sorry
+
+example (x y : ℚ) : x * x + (x+y)*y  = 1 := by
+  -- simp_rw [← SMul.smul_eq_hSMul]
+  algebra
+  simp only [show Nat.rawCast 1 = 1 by rfl]
+  simp only [pow_one, Nat.rawCast, Nat.cast_one, mul_one, one_smul, Nat.cast_ofNat, Nat.cast_zero,
+    add_zero]
+  sorry
