@@ -44,13 +44,11 @@ commutative group, this is a negative generator of the subgroup."]
 protected noncomputable def genLTOne : G := H.exists_generator_lt_one.choose
 
 @[to_additive negGen_neg]
-lemma genLTOne_lt_one {G : Type*} [CommGroup G] [LinearOrder G] [IsOrderedMonoid G] [IsCyclic G]
-    (H : Subgroup G) [Nontrivial H] : H.genLTOne < 1 :=
+lemma genLTOne_lt_one (H : Subgroup G) [Nontrivial H] : H.genLTOne < 1 :=
   H.exists_generator_lt_one.choose_spec.1
 
 @[to_additive (attr := simp) negGen_zmultiples_eq_top]
-lemma genLTOne_zpowers_eq_top {G : Type*} [CommGroup G] [LinearOrder G] [IsOrderedMonoid G]
-    [IsCyclic G] (H : Subgroup G) [Nontrivial H]  : Subgroup.zpowers H.genLTOne = H :=
+lemma genLTOne_zpowers_eq_top (H : Subgroup G) [Nontrivial H] : Subgroup.zpowers H.genLTOne = H :=
   H.exists_generator_lt_one.choose_spec.2
 
 end Subgroup
