@@ -3,8 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Topology.Separation.Hausdorff
-import Mathlib.Topology.Clopen
+import Mathlib.Topology.Connected.Separation
 
 /-!
 # Priestley spaces
@@ -65,6 +64,13 @@ theorem exists_isClopen_upper_or_lower_of_ne (h : x ≠ y) :
   · exact (exists_isClopen_upper_of_not_le h).imp fun _ ↦ And.imp_right <| And.imp_left Or.inl
   · obtain ⟨U, hU, hU', hy, hx⟩ := exists_isClopen_lower_of_not_le h
     exact ⟨U, hU, Or.inr hU', hx, hy⟩
+
+-- See note [lower instance priority]
+instance (priority := 100) PriestleySpace.toTotallySeparatedSpace : TotallySeparatedSpace α where
+  isTotallySeparated_univ _ _ _ _ h :=
+    (exists_isClopen_upper_or_lower_of_ne h).elim fun U ⟨hU, _, hx, hy⟩ =>
+      ⟨U, Uᶜ, hU.isOpen, hU.compl.isOpen, hx, hy,
+        union_compl_self U ▸ subset_rfl, disjoint_compl_right⟩
 
 -- See note [lower instance priority]
 instance (priority := 100) PriestleySpace.toT2Space : T2Space α :=
