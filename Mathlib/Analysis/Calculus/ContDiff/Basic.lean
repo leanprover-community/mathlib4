@@ -79,15 +79,19 @@ theorem contDiff_zero_fun : ContDiff 𝕜 n fun _ : E => (0 : F) :=
   analyticOnNhd_const.contDiff
 
 /-- Constants are `C^∞`. -/
+@[fun_prop]
 theorem contDiff_const {c : F} : ContDiff 𝕜 n fun _ : E => c :=
   analyticOnNhd_const.contDiff
 
+@[fun_prop]
 theorem contDiffOn_const {c : F} {s : Set E} : ContDiffOn 𝕜 n (fun _ : E => c) s :=
   contDiff_const.contDiffOn
 
+@[fun_prop]
 theorem contDiffAt_const {c : F} : ContDiffAt 𝕜 n (fun _ : E => c) x :=
   contDiff_const.contDiffAt
 
+@[fun_prop]
 theorem contDiffWithinAt_const {c : F} : ContDiffWithinAt 𝕜 n (fun _ : E => c) s x :=
   contDiffAt_const.contDiffWithinAt
 
@@ -133,15 +137,19 @@ section linear
 theorem IsBoundedLinearMap.contDiff (hf : IsBoundedLinearMap 𝕜 f) : ContDiff 𝕜 n f :=
   (ContinuousLinearMap.analyticOnNhd hf.toContinuousLinearMap univ).contDiff
 
+@[fun_prop]
 theorem ContinuousLinearMap.contDiff (f : E →L[𝕜] F) : ContDiff 𝕜 n f :=
   f.isBoundedLinearMap.contDiff
 
+@[fun_prop]
 theorem ContinuousLinearEquiv.contDiff (f : E ≃L[𝕜] F) : ContDiff 𝕜 n f :=
   (f : E →L[𝕜] F).contDiff
 
+@[fun_prop]
 theorem LinearIsometry.contDiff (f : E →ₗᵢ[𝕜] F) : ContDiff 𝕜 n f :=
   f.toContinuousLinearMap.contDiff
 
+@[fun_prop]
 theorem LinearIsometryEquiv.contDiff (f : E ≃ₗᵢ[𝕜] F) : ContDiff 𝕜 n f :=
   (f : E →L[𝕜] F).contDiff
 
@@ -149,13 +157,29 @@ theorem LinearIsometryEquiv.contDiff (f : E ≃ₗᵢ[𝕜] F) : ContDiff 𝕜 n
 theorem contDiff_id : ContDiff 𝕜 n (id : E → E) :=
   IsBoundedLinearMap.id.contDiff
 
+@[fun_prop]
+theorem contDiff_id' : ContDiff 𝕜 n (fun x : E => x) :=
+  IsBoundedLinearMap.id.contDiff
+
 theorem contDiffWithinAt_id {s x} : ContDiffWithinAt 𝕜 n (id : E → E) s x :=
+  contDiff_id.contDiffWithinAt
+
+@[fun_prop]
+theorem contDiffWithinAt_id' {s x} : ContDiffWithinAt 𝕜 n (fun x : E => x) s x :=
   contDiff_id.contDiffWithinAt
 
 theorem contDiffAt_id {x} : ContDiffAt 𝕜 n (id : E → E) x :=
   contDiff_id.contDiffAt
 
+@[fun_prop]
+theorem contDiffAt_id' {x} : ContDiffAt 𝕜 n (fun x : E => x) x :=
+  contDiff_id.contDiffAt
+
 theorem contDiffOn_id {s} : ContDiffOn 𝕜 n (id : E → E) s :=
+  contDiff_id.contDiffOn
+
+@[fun_prop]
+theorem contDiffOn_id' {s} : ContDiffOn 𝕜 n (fun x : E => x) s :=
   contDiff_id.contDiffOn
 
 /-- Bilinear functions are `C^n`. -/
@@ -489,6 +513,7 @@ theorem HasFTaylorSeriesUpToOn.prodMk {n : WithTop ℕ∞}
 alias HasFTaylorSeriesUpToOn.prod := HasFTaylorSeriesUpToOn.prodMk
 
 /-- The cartesian product of `C^n` functions at a point in a domain is `C^n`. -/
+@[fun_prop]
 theorem ContDiffWithinAt.prodMk {s : Set E} {f : E → F} {g : E → G}
     (hf : ContDiffWithinAt 𝕜 n f s x) (hg : ContDiffWithinAt 𝕜 n g s x) :
     ContDiffWithinAt 𝕜 n (fun x : E => (f x, g x)) s x := by
@@ -512,6 +537,7 @@ theorem ContDiffWithinAt.prodMk {s : Set E} {f : E → F} {g : E → G}
 alias ContDiffWithinAt.prod := ContDiffWithinAt.prodMk
 
 /-- The cartesian product of `C^n` functions on domains is `C^n`. -/
+@[fun_prop]
 theorem ContDiffOn.prodMk {s : Set E} {f : E → F} {g : E → G} (hf : ContDiffOn 𝕜 n f s)
     (hg : ContDiffOn 𝕜 n g s) : ContDiffOn 𝕜 n (fun x : E => (f x, g x)) s := fun x hx =>
   (hf x hx).prodMk (hg x hx)
@@ -520,6 +546,7 @@ theorem ContDiffOn.prodMk {s : Set E} {f : E → F} {g : E → G} (hf : ContDiff
 alias ContDiffOn.prod := ContDiffOn.prodMk
 
 /-- The cartesian product of `C^n` functions at a point is `C^n`. -/
+@[fun_prop]
 theorem ContDiffAt.prodMk {f : E → F} {g : E → G} (hf : ContDiffAt 𝕜 n f x)
     (hg : ContDiffAt 𝕜 n g x) : ContDiffAt 𝕜 n (fun x : E => (f x, g x)) x :=
   contDiffWithinAt_univ.1 <| hf.contDiffWithinAt.prodMk hg.contDiffWithinAt
@@ -528,6 +555,7 @@ theorem ContDiffAt.prodMk {f : E → F} {g : E → G} (hf : ContDiffAt 𝕜 n f 
 alias ContDiffAt.prod := ContDiffAt.prodMk
 
 /-- The cartesian product of `C^n` functions is `C^n`. -/
+@[fun_prop]
 theorem ContDiff.prodMk {f : E → F} {g : E → G} (hf : ContDiff 𝕜 n f) (hg : ContDiff 𝕜 n g) :
     ContDiff 𝕜 n fun x : E => (f x, g x) :=
   contDiffOn_univ.1 <| hf.contDiffOn.prodMk hg.contDiffOn
@@ -630,6 +658,11 @@ theorem ContDiff.comp_contDiffOn {s : Set E} {g : F → G} {f : E → F} (hg : C
     (hf : ContDiffOn 𝕜 n f s) : ContDiffOn 𝕜 n (g ∘ f) s :=
   (contDiffOn_univ.2 hg).comp hf (mapsTo_univ _ _)
 
+@[fun_prop]
+theorem ContDiff.comp_contDiffOn' {s : Set E} {g : F → G} {f : E → F} (hg : ContDiff 𝕜 n g)
+    (hf : ContDiffOn 𝕜 n f s) : ContDiffOn 𝕜 n (fun x => g (f x)) s :=
+  (contDiffOn_univ.2 hg).comp hf (mapsTo_univ _ _)
+
 theorem ContDiffOn.comp_contDiff {s : Set F} {g : F → G} {f : E → F} (hg : ContDiffOn 𝕜 n g s)
     (hf : ContDiff 𝕜 n f) (hs : ∀ x, f x ∈ s) : ContDiff 𝕜 n (g ∘ f) := by
   rw [← contDiffOn_univ] at *
@@ -643,6 +676,10 @@ theorem ContDiffOn.image_comp_contDiff {s : Set E} {g : F → G} {f : E → F}
 theorem ContDiff.comp {g : F → G} {f : E → F} (hg : ContDiff 𝕜 n g) (hf : ContDiff 𝕜 n f) :
     ContDiff 𝕜 n (g ∘ f) :=
   contDiffOn_univ.1 <| ContDiffOn.comp (contDiffOn_univ.2 hg) (contDiffOn_univ.2 hf) (subset_univ _)
+
+@[fun_prop]
+theorem ContDiff.comp' {g : F → G} {f : E → F} (hg : ContDiff 𝕜 n g) (hf : ContDiff 𝕜 n f) :
+    ContDiff 𝕜 n (fun x => g (f x)) := hg.comp hf
 
 /-- The composition of `C^n` functions at points in domains is `C^n`. -/
 theorem ContDiffWithinAt.comp_of_eq {s : Set E} {t : Set F} {g : F → G} {f : E → F} {y : F} (x : E)
@@ -714,6 +751,10 @@ nonrec theorem ContDiffAt.comp (x : E) (hg : ContDiffAt 𝕜 n g (f x)) (hf : Co
     ContDiffAt 𝕜 n (g ∘ f) x :=
   hg.comp x hf (mapsTo_univ _ _)
 
+@[fun_prop]
+theorem ContDiffAt.comp' (x : E) (hg : ContDiffAt 𝕜 n g (f x)) (hf : ContDiffAt 𝕜 n f x) :
+    ContDiffAt 𝕜 n (fun x => g (f x)) x := hg.comp x hf
+
 theorem ContDiff.comp_contDiffWithinAt {g : F → G} {f : E → F} (h : ContDiff 𝕜 n g)
     (hf : ContDiffWithinAt 𝕜 n f t x) : ContDiffWithinAt 𝕜 n (g ∘ f) t x :=
   haveI : ContDiffWithinAt 𝕜 n g univ (f x) := h.contDiffAt.contDiffWithinAt
@@ -769,10 +810,12 @@ end comp
 -/
 
 /-- The first projection in a product is `C^∞`. -/
+@[fun_prop]
 theorem contDiff_fst : ContDiff 𝕜 n (Prod.fst : E × F → E) :=
   IsBoundedLinearMap.contDiff IsBoundedLinearMap.fst
 
 /-- Postcomposing `f` with `Prod.fst` is `C^n` -/
+@[fun_prop]
 theorem ContDiff.fst {f : E → F × G} (hf : ContDiff 𝕜 n f) : ContDiff 𝕜 n fun x => (f x).1 :=
   contDiff_fst.comp hf
 
@@ -781,18 +824,22 @@ theorem ContDiff.fst' {f : E → G} (hf : ContDiff 𝕜 n f) : ContDiff 𝕜 n f
   hf.comp contDiff_fst
 
 /-- The first projection on a domain in a product is `C^∞`. -/
+@[fun_prop]
 theorem contDiffOn_fst {s : Set (E × F)} : ContDiffOn 𝕜 n (Prod.fst : E × F → E) s :=
   ContDiff.contDiffOn contDiff_fst
 
+@[fun_prop]
 theorem ContDiffOn.fst {f : E → F × G} {s : Set E} (hf : ContDiffOn 𝕜 n f s) :
     ContDiffOn 𝕜 n (fun x => (f x).1) s :=
   contDiff_fst.comp_contDiffOn hf
 
 /-- The first projection at a point in a product is `C^∞`. -/
+@[fun_prop]
 theorem contDiffAt_fst {p : E × F} : ContDiffAt 𝕜 n (Prod.fst : E × F → E) p :=
   contDiff_fst.contDiffAt
 
 /-- Postcomposing `f` with `Prod.fst` is `C^n` at `(x, y)` -/
+@[fun_prop]
 theorem ContDiffAt.fst {f : E → F × G} {x : E} (hf : ContDiffAt 𝕜 n f x) :
     ContDiffAt 𝕜 n (fun x => (f x).1) x :=
   contDiffAt_fst.comp x hf
@@ -808,15 +855,18 @@ theorem ContDiffAt.fst'' {f : E → G} {x : E × F} (hf : ContDiffAt 𝕜 n f x.
   hf.comp x contDiffAt_fst
 
 /-- The first projection within a domain at a point in a product is `C^∞`. -/
+@[fun_prop]
 theorem contDiffWithinAt_fst {s : Set (E × F)} {p : E × F} :
     ContDiffWithinAt 𝕜 n (Prod.fst : E × F → E) s p :=
   contDiff_fst.contDiffWithinAt
 
 /-- The second projection in a product is `C^∞`. -/
+@[fun_prop]
 theorem contDiff_snd : ContDiff 𝕜 n (Prod.snd : E × F → F) :=
   IsBoundedLinearMap.contDiff IsBoundedLinearMap.snd
 
 /-- Postcomposing `f` with `Prod.snd` is `C^n` -/
+@[fun_prop]
 theorem ContDiff.snd {f : E → F × G} (hf : ContDiff 𝕜 n f) : ContDiff 𝕜 n fun x => (f x).2 :=
   contDiff_snd.comp hf
 
@@ -825,18 +875,22 @@ theorem ContDiff.snd' {f : F → G} (hf : ContDiff 𝕜 n f) : ContDiff 𝕜 n f
   hf.comp contDiff_snd
 
 /-- The second projection on a domain in a product is `C^∞`. -/
+@[fun_prop]
 theorem contDiffOn_snd {s : Set (E × F)} : ContDiffOn 𝕜 n (Prod.snd : E × F → F) s :=
   ContDiff.contDiffOn contDiff_snd
 
+@[fun_prop]
 theorem ContDiffOn.snd {f : E → F × G} {s : Set E} (hf : ContDiffOn 𝕜 n f s) :
     ContDiffOn 𝕜 n (fun x => (f x).2) s :=
   contDiff_snd.comp_contDiffOn hf
 
 /-- The second projection at a point in a product is `C^∞`. -/
+@[fun_prop]
 theorem contDiffAt_snd {p : E × F} : ContDiffAt 𝕜 n (Prod.snd : E × F → F) p :=
   contDiff_snd.contDiffAt
 
 /-- Postcomposing `f` with `Prod.snd` is `C^n` at `x` -/
+@[fun_prop]
 theorem ContDiffAt.snd {f : E → F × G} {x : E} (hf : ContDiffAt 𝕜 n f x) :
     ContDiffAt 𝕜 n (fun x => (f x).2) x :=
   contDiffAt_snd.comp x hf
@@ -852,6 +906,7 @@ theorem ContDiffAt.snd'' {f : F → G} {x : E × F} (hf : ContDiffAt 𝕜 n f x.
   hf.comp x contDiffAt_snd
 
 /-- The second projection within a domain at a point in a product is `C^∞`. -/
+@[fun_prop]
 theorem contDiffWithinAt_snd {s : Set (E × F)} {p : E × F} :
     ContDiffWithinAt 𝕜 n (Prod.snd : E × F → F) s p :=
   contDiff_snd.contDiffWithinAt
@@ -923,54 +978,66 @@ end NAry
 
 section SpecificBilinearMaps
 
+@[fun_prop]
 theorem ContDiff.clm_comp {g : X → F →L[𝕜] G} {f : X → E →L[𝕜] F} (hg : ContDiff 𝕜 n g)
     (hf : ContDiff 𝕜 n f) : ContDiff 𝕜 n fun x => (g x).comp (f x) :=
   isBoundedBilinearMap_comp.contDiff.comp₂ (g := fun p => p.1.comp p.2) hg hf
 
+@[fun_prop]
 theorem ContDiffOn.clm_comp {g : X → F →L[𝕜] G} {f : X → E →L[𝕜] F} {s : Set X}
     (hg : ContDiffOn 𝕜 n g s) (hf : ContDiffOn 𝕜 n f s) :
     ContDiffOn 𝕜 n (fun x => (g x).comp (f x)) s :=
   (isBoundedBilinearMap_comp (E := E) (F := F) (G := G)).contDiff.comp₂_contDiffOn hg hf
 
+@[fun_prop]
 theorem ContDiffAt.clm_comp {g : X → F →L[𝕜] G} {f : X → E →L[𝕜] F} {x : X}
     (hg : ContDiffAt 𝕜 n g x) (hf : ContDiffAt 𝕜 n f x) :
     ContDiffAt 𝕜 n (fun x => (g x).comp (f x)) x :=
   (isBoundedBilinearMap_comp (E := E) (G := G)).contDiff.comp₂_contDiffAt hg hf
 
+@[fun_prop]
 theorem ContDiffWithinAt.clm_comp {g : X → F →L[𝕜] G} {f : X → E →L[𝕜] F} {s : Set X} {x : X}
     (hg : ContDiffWithinAt 𝕜 n g s x) (hf : ContDiffWithinAt 𝕜 n f s x) :
     ContDiffWithinAt 𝕜 n (fun x => (g x).comp (f x)) s x :=
   (isBoundedBilinearMap_comp (E := E) (G := G)).contDiff.comp₂_contDiffWithinAt hg hf
 
+@[fun_prop]
 theorem ContDiff.clm_apply {f : E → F →L[𝕜] G} {g : E → F} (hf : ContDiff 𝕜 n f)
     (hg : ContDiff 𝕜 n g) : ContDiff 𝕜 n fun x => (f x) (g x) :=
   isBoundedBilinearMap_apply.contDiff.comp₂ hf hg
 
+@[fun_prop]
 theorem ContDiffOn.clm_apply {f : E → F →L[𝕜] G} {g : E → F} (hf : ContDiffOn 𝕜 n f s)
     (hg : ContDiffOn 𝕜 n g s) : ContDiffOn 𝕜 n (fun x => (f x) (g x)) s :=
   isBoundedBilinearMap_apply.contDiff.comp₂_contDiffOn hf hg
 
+@[fun_prop]
 theorem ContDiffAt.clm_apply {f : E → F →L[𝕜] G} {g : E → F} (hf : ContDiffAt 𝕜 n f x)
     (hg : ContDiffAt 𝕜 n g x) : ContDiffAt 𝕜 n (fun x => (f x) (g x)) x :=
   isBoundedBilinearMap_apply.contDiff.comp₂_contDiffAt hf hg
 
+@[fun_prop]
 theorem ContDiffWithinAt.clm_apply {f : E → F →L[𝕜] G} {g : E → F}
     (hf : ContDiffWithinAt 𝕜 n f s x) (hg : ContDiffWithinAt 𝕜 n g s x) :
     ContDiffWithinAt 𝕜 n (fun x => (f x) (g x)) s x :=
   isBoundedBilinearMap_apply.contDiff.comp₂_contDiffWithinAt hf hg
 
+@[fun_prop]
 theorem ContDiff.smulRight {f : E → F →L[𝕜] 𝕜} {g : E → G} (hf : ContDiff 𝕜 n f)
     (hg : ContDiff 𝕜 n g) : ContDiff 𝕜 n fun x => (f x).smulRight (g x) :=
   isBoundedBilinearMap_smulRight.contDiff.comp₂ (g := fun p => p.1.smulRight p.2) hf hg
 
+@[fun_prop]
 theorem ContDiffOn.smulRight {f : E → F →L[𝕜] 𝕜} {g : E → G} (hf : ContDiffOn 𝕜 n f s)
     (hg : ContDiffOn 𝕜 n g s) : ContDiffOn 𝕜 n (fun x => (f x).smulRight (g x)) s :=
   (isBoundedBilinearMap_smulRight (E := F)).contDiff.comp₂_contDiffOn hf hg
 
+@[fun_prop]
 theorem ContDiffAt.smulRight {f : E → F →L[𝕜] 𝕜} {g : E → G} (hf : ContDiffAt 𝕜 n f x)
     (hg : ContDiffAt 𝕜 n g x) : ContDiffAt 𝕜 n (fun x => (f x).smulRight (g x)) x :=
   (isBoundedBilinearMap_smulRight (E := F)).contDiff.comp₂_contDiffAt hf hg
 
+@[fun_prop]
 theorem ContDiffWithinAt.smulRight {f : E → F →L[𝕜] 𝕜} {g : E → G}
     (hf : ContDiffWithinAt 𝕜 n f s x) (hg : ContDiffWithinAt 𝕜 n g s x) :
     ContDiffWithinAt 𝕜 n (fun x => (f x).smulRight (g x)) s x :=
@@ -1180,6 +1247,10 @@ theorem ContDiffAt.fderiv_right (hf : ContDiffAt 𝕜 n f x₀) (hmn : m + 1 ≤
     ContDiffAt 𝕜 m (fderiv 𝕜 f) x₀ :=
   ContDiffAt.fderiv (ContDiffAt.comp (x₀, x₀) hf contDiffAt_snd) contDiffAt_id hmn
 
+theorem ContDiffAt.fderiv_right_succ (hf : ContDiffAt 𝕜 (n+1) f x₀) :
+    ContDiffAt 𝕜 n (fderiv 𝕜 f) x₀ :=
+  ContDiffAt.fderiv (ContDiffAt.comp (x₀, x₀) hf contDiffAt_snd) contDiffAt_id (le_refl (n+1))
+
 theorem ContDiffAt.iteratedFDeriv_right {i : ℕ} (hf : ContDiffAt 𝕜 n f x₀)
     (hmn : m + i ≤ n) : ContDiffAt 𝕜 m (iteratedFDeriv 𝕜 i f) x₀ := by
   rw [← iteratedFDerivWithin_univ, ← contDiffWithinAt_univ] at *
@@ -1190,6 +1261,12 @@ protected theorem ContDiff.fderiv {f : E → F → G} {g : E → F}
     (hf : ContDiff 𝕜 m <| Function.uncurry f) (hg : ContDiff 𝕜 n g) (hnm : n + 1 ≤ m) :
     ContDiff 𝕜 n fun x => fderiv 𝕜 (f x) (g x) :=
   contDiff_iff_contDiffAt.mpr fun _ => hf.contDiffAt.fderiv hg.contDiffAt hnm
+
+@[fun_prop]
+protected theorem ContDiff.fderiv_succ {f : E → F → G} {g : E → F}
+    (hf : ContDiff 𝕜 (n+1) <| Function.uncurry f) (hg : ContDiff 𝕜 n g)  :
+    ContDiff 𝕜 n fun x => fderiv 𝕜 (f x) (g x) :=
+  contDiff_iff_contDiffAt.mpr fun _ => hf.contDiffAt.fderiv hg.contDiffAt (le_refl (n+1))
 
 /-- `fderiv 𝕜 f` is smooth. -/
 theorem ContDiff.fderiv_right (hf : ContDiff 𝕜 n f) (hmn : m + 1 ≤ n) :
@@ -1205,6 +1282,20 @@ theorem Continuous.fderiv {f : E → F → G} {g : E → F}
     (hf : ContDiff 𝕜 n <| Function.uncurry f) (hg : Continuous g) (hn : 1 ≤ n) :
     Continuous fun x => fderiv 𝕜 (f x) (g x) :=
   (hf.fderiv (contDiff_zero.mpr hg) hn).continuous
+
+@[fun_prop]
+theorem Continuous.fderiv' {f : E → F → G} {g : E → F}
+    (hf : ContDiff 𝕜 1 <| Function.uncurry f) (hg : Continuous g) :
+    Continuous fun x => _root_.fderiv 𝕜 (f x) (g x) :=
+  (hf.fderiv (contDiff_zero.mpr hg) (le_refl 1)).continuous
+
+@[fun_prop]
+protected theorem Differentiable.fderiv {f : E → F → G} {g : E → F}
+    (hf : ContDiff 𝕜 2 <| Function.uncurry f) (hg : ContDiff 𝕜 1 g)  :
+    Differentiable 𝕜 fun x => fderiv 𝕜 (f x) (g x) :=
+  ContDiff.differentiable
+    (contDiff_iff_contDiffAt.mpr fun _ => hf.contDiffAt.fderiv hg.contDiffAt (le_refl 2))
+    (le_refl 1)
 
 /-- `x ↦ fderiv 𝕜 (f x) (g x) (k x)` is smooth. -/
 theorem ContDiff.fderiv_apply {f : E → F → G} {g k : E → F}
@@ -1338,15 +1429,18 @@ theorem contDiff_infty_iff_deriv :
 
 @[deprecated (since := "2024-11-27")] alias contDiff_top_iff_deriv := contDiff_infty_iff_deriv
 
+@[fun_prop]
 theorem ContDiff.continuous_deriv (h : ContDiff 𝕜 n f₂) (hn : 1 ≤ n) : Continuous (deriv f₂) := by
   rw [show (1 : WithTop ℕ∞) = 0 + 1 from rfl] at hn
   exact (contDiff_succ_iff_deriv.mp (h.of_le hn)).2.2.continuous
 
+@[fun_prop]
 theorem ContDiff.iterate_deriv :
     ∀ (n : ℕ) {f₂ : 𝕜 → F}, ContDiff 𝕜 ∞ f₂ → ContDiff 𝕜 ∞ (deriv^[n] f₂)
   | 0,     _, hf => hf
   | n + 1, _, hf => ContDiff.iterate_deriv n (contDiff_infty_iff_deriv.mp hf).2
 
+@[fun_prop]
 theorem ContDiff.iterate_deriv' (n : ℕ) :
     ∀ (k : ℕ) {f₂ : 𝕜 → F}, ContDiff 𝕜 (n + k : ℕ) f₂ → ContDiff 𝕜 n (deriv^[k] f₂)
   | 0,     _, hf => hf

@@ -121,6 +121,7 @@ is not complete, but it is equivalent when the space is complete.
 For instance, a real function which is `C^m` on `(-1/m, 1/m)` for each natural `m`, but not
 better, is `C^∞` at `0` within `univ`.
 -/
+@[fun_prop]
 def ContDiffWithinAt (n : WithTop ℕ∞) (f : E → F) (s : Set E) (x : E) : Prop :=
   match n with
   | ω => ∃ u ∈ 𝓝[insert x s] x, ∃ p : E → FormalMultilinearSeries 𝕜 E F,
@@ -170,6 +171,7 @@ lemma contDiffWithinAt_iff_of_ne_infty (hn : n ≠ ∞) :
   | ∞ => simp at hn
   | (n : ℕ) => simp [contDiffWithinAt_nat]
 
+@[fun_prop]
 theorem ContDiffWithinAt.of_le (h : ContDiffWithinAt 𝕜 n f s x) (hmn : m ≤ n) :
     ContDiffWithinAt 𝕜 m f s x := by
   match n with
@@ -464,6 +466,7 @@ admits continuous derivatives up to order `n` on a neighborhood of `x` in `s`.
 For `n = ∞`, we only require that this holds up to any finite order (where the neighborhood may
 depend on the finite order we consider).
 -/
+@[fun_prop]
 def ContDiffOn (n : WithTop ℕ∞) (f : E → F) (s : Set E) : Prop :=
   ∀ x ∈ s, ContDiffWithinAt 𝕜 n f s x
 
@@ -478,6 +481,7 @@ theorem ContDiffOn.contDiffWithinAt (h : ContDiffOn 𝕜 n f s) (hx : x ∈ s) :
     ContDiffWithinAt 𝕜 n f s x :=
   h x hx
 
+@[fun_prop]
 theorem ContDiffOn.of_le (h : ContDiffOn 𝕜 n f s) (hmn : m ≤ n) : ContDiffOn 𝕜 m f s := fun x hx =>
   (h x hx).of_le hmn
 
@@ -553,6 +557,7 @@ theorem contDiffOn_all_iff_nat :
   rintro H (_ | n)
   exacts [contDiffOn_infty.2 H, H n]
 
+@[fun_prop]
 theorem ContDiffOn.continuousOn (h : ContDiffOn 𝕜 n f s) : ContinuousOn f s := fun x hx =>
   (h x hx).continuousWithinAt
 
@@ -570,6 +575,7 @@ theorem ContDiffOn.congr_mono (hf : ContDiffOn 𝕜 n f s) (h₁ : ∀ x ∈ s�
   (hf.mono hs).congr h₁
 
 /-- If a function is `C^n` on a set with `n ≥ 1`, then it is differentiable there. -/
+@[fun_prop]
 theorem ContDiffOn.differentiableOn (h : ContDiffOn 𝕜 n f s) (hn : 1 ≤ n) :
     DifferentiableOn 𝕜 f s := fun x hx => (h x hx).differentiableWithinAt hn
 
@@ -924,6 +930,7 @@ variable (𝕜) in
 /-- A function is continuously differentiable up to `n` at a point `x` if, for any integer `k ≤ n`,
 there is a neighborhood of `x` where `f` admits derivatives up to order `n`, which are continuous.
 -/
+@[fun_prop]
 def ContDiffAt (n : WithTop ℕ∞) (f : E → F) (x : E) : Prop :=
   ContDiffWithinAt 𝕜 n f univ x
 
@@ -935,9 +942,11 @@ theorem contDiffAt_infty : ContDiffAt 𝕜 ∞ f x ↔ ∀ n : ℕ, ContDiffAt �
 
 @[deprecated (since := "2024-11-27")] alias contDiffAt_top := contDiffAt_infty
 
+@[fun_prop]
 theorem ContDiffAt.contDiffWithinAt (h : ContDiffAt 𝕜 n f x) : ContDiffWithinAt 𝕜 n f s x :=
   h.mono (subset_univ _)
 
+@[fun_prop]
 theorem ContDiffWithinAt.contDiffAt (h : ContDiffWithinAt 𝕜 n f s x) (hx : s ∈ 𝓝 x) :
     ContDiffAt 𝕜 n f x := by rwa [ContDiffAt, ← contDiffWithinAt_inter hx, univ_inter]
 
@@ -949,6 +958,7 @@ theorem IsOpen.contDiffOn_iff (hs : IsOpen s) :
     ContDiffOn 𝕜 n f s ↔ ∀ ⦃a⦄, a ∈ s → ContDiffAt 𝕜 n f a :=
   forall₂_congr fun _ => contDiffWithinAt_iff_contDiffAt ∘ hs.mem_nhds
 
+@[fun_prop]
 theorem ContDiffOn.contDiffAt (h : ContDiffOn 𝕜 n f s) (hx : s ∈ 𝓝 x) :
     ContDiffAt 𝕜 n f x :=
   (h _ (mem_of_mem_nhds hx)).contDiffAt hx
@@ -960,6 +970,7 @@ theorem ContDiffAt.congr_of_eventuallyEq (h : ContDiffAt 𝕜 n f x) (hg : f₁ 
 theorem ContDiffAt.of_le (h : ContDiffAt 𝕜 n f x) (hmn : m ≤ n) : ContDiffAt 𝕜 m f x :=
   ContDiffWithinAt.of_le h hmn
 
+@[fun_prop]
 theorem ContDiffAt.continuousAt (h : ContDiffAt 𝕜 n f x) : ContinuousAt f x := by
   simpa [continuousWithinAt_univ] using h.continuousWithinAt
 
@@ -983,6 +994,7 @@ theorem contDiffWithinAt_compl_self :
   rw [compl_eq_univ_diff, contDiffWithinAt_diff_singleton, contDiffWithinAt_univ]
 
 /-- If a function is `C^n` with `n ≥ 1` at a point, then it is differentiable there. -/
+@[fun_prop]
 theorem ContDiffAt.differentiableAt (h : ContDiffAt 𝕜 n f x) (hn : 1 ≤ n) :
     DifferentiableAt 𝕜 f x := by
   simpa [hn, differentiableWithinAt_univ] using h.differentiableWithinAt
@@ -1034,6 +1046,7 @@ variable (𝕜) in
 order `n`, which are continuous. Contrary to the case of definitions in domains (where derivatives
 might not be unique) we do not need to localize the definition in space or time.
 -/
+@[fun_prop]
 def ContDiff (n : WithTop ℕ∞) (f : E → F) : Prop :=
   match n with
   | ω => ∃ p : E → FormalMultilinearSeries 𝕜 E F, HasFTaylorSeriesUpTo ⊤ f p
@@ -1071,9 +1084,11 @@ theorem contDiffOn_univ : ContDiffOn 𝕜 n f univ ↔ ContDiff 𝕜 n f := by
 theorem contDiff_iff_contDiffAt : ContDiff 𝕜 n f ↔ ∀ x, ContDiffAt 𝕜 n f x := by
   simp [← contDiffOn_univ, ContDiffOn, ContDiffAt]
 
+@[fun_prop]
 theorem ContDiff.contDiffAt (h : ContDiff 𝕜 n f) : ContDiffAt 𝕜 n f x :=
   contDiff_iff_contDiffAt.1 h x
 
+@[fun_prop]
 theorem ContDiff.contDiffWithinAt (h : ContDiff 𝕜 n f) : ContDiffWithinAt 𝕜 n f s x :=
   h.contDiffAt.contDiffWithinAt
 
@@ -1087,6 +1102,7 @@ theorem contDiff_infty : ContDiff 𝕜 ∞ f ↔ ∀ n : ℕ, ContDiff 𝕜 n f 
 theorem contDiff_all_iff_nat : (∀ n : ℕ∞, ContDiff 𝕜 n f) ↔ ∀ n : ℕ, ContDiff 𝕜 n f := by
   simp only [← contDiffOn_univ, contDiffOn_all_iff_nat]
 
+@[fun_prop]
 theorem ContDiff.contDiffOn (h : ContDiff 𝕜 n f) : ContDiffOn 𝕜 n f s :=
   (contDiffOn_univ.2 h).mono (subset_univ _)
 
@@ -1105,6 +1121,7 @@ theorem contDiffAt_one_iff :
   simp_rw [contDiffAt_succ_iff_hasFDerivAt, show ((0 : ℕ) : WithTop ℕ∞) = 0 from rfl,
     contDiffAt_zero, exists_mem_and_iff antitone_bforall antitone_continuousOn, and_comm]
 
+@[fun_prop]
 theorem ContDiff.of_le (h : ContDiff 𝕜 n f) (hmn : m ≤ n) : ContDiff 𝕜 m f :=
   contDiffOn_univ.1 <| (contDiffOn_univ.2 h).of_le hmn
 
@@ -1114,10 +1131,12 @@ theorem ContDiff.of_succ (h : ContDiff 𝕜 (n + 1) f) : ContDiff 𝕜 n f :=
 theorem ContDiff.one_of_succ (h : ContDiff 𝕜 (n + 1) f) : ContDiff 𝕜 1 f := by
   apply h.of_le le_add_self
 
+@[fun_prop]
 theorem ContDiff.continuous (h : ContDiff 𝕜 n f) : Continuous f :=
   contDiff_zero.1 (h.of_le bot_le)
 
 /-- If a function is `C^n` with `n ≥ 1`, then it is differentiable. -/
+@[fun_prop]
 theorem ContDiff.differentiable (h : ContDiff 𝕜 n f) (hn : 1 ≤ n) : Differentiable 𝕜 f :=
   differentiableOn_univ.1 <| (contDiffOn_univ.2 h).differentiableOn hn
 
@@ -1188,11 +1207,13 @@ theorem contDiff_nat_iff_continuous_differentiable {n : ℕ} :
   simp
 
 /-- If `f` is `C^n` then its `m`-times iterated derivative is continuous for `m ≤ n`. -/
+@[fun_prop]
 theorem ContDiff.continuous_iteratedFDeriv {m : ℕ} (hm : m ≤ n) (hf : ContDiff 𝕜 n f) :
     Continuous fun x => iteratedFDeriv 𝕜 m f x :=
   (contDiff_iff_continuous_differentiable.mp (hf.of_le hm)).1 m le_rfl
 
 /-- If `f` is `C^n` then its `m`-times iterated derivative is differentiable for `m < n`. -/
+@[fun_prop]
 theorem ContDiff.differentiable_iteratedFDeriv {m : ℕ} (hm : m < n) (hf : ContDiff 𝕜 n f) :
     Differentiable 𝕜 fun x => iteratedFDeriv 𝕜 m f x :=
   (contDiff_iff_continuous_differentiable.mp
