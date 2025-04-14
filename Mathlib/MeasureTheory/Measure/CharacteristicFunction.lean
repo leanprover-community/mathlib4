@@ -120,7 +120,7 @@ lemma charFun_neg (t : E) : charFun μ (-t) = conj (charFun μ t) := by
 lemma charFun_eq_integral_innerProbChar : charFun μ t = ∫ v, innerProbChar t v ∂μ := by
   simp [charFun_apply, innerProbChar_apply]
 
-lemma charFun_eq_integral_probChar (y : E) : charFun μ y = ∫ x, (probChar ⟪x, y⟫ : ℂ) ∂μ := by
+lemma charFun_eq_integral_probChar (t : E) : charFun μ t = ∫ x, (probChar ⟪x, t⟫ : ℂ) ∂μ := by
   simp [charFun_apply, probChar_apply]
 
 /-- `charFun` is a Fourier integral for the inner product and the character `probChar`. -/
