@@ -34,6 +34,10 @@ and the fact that power series over a local ring form a local ring;
 and application to the fact that power series over an integral domain
 form an integral domain.
 
+##  Instance
+
+If `R` has `NoZeroDivisors`, then so does `R⟦X⟧`.
+
 ## Implementation notes
 
 Because of its definition,
@@ -536,27 +540,24 @@ instance [NoZeroDivisors R] : NoZeroDivisors R⟦X⟧ where
       contrapose! H
       exact ext H
     let m := Nat.find ex
-    have hm₁ : coeff R m φ ≠ 0 := Nat.find_spec ex
-    have hm₂ : ∀ k < m, ¬coeff R k φ ≠ 0 := fun k => Nat.find_min ex
-    simp only [ne_eq, Decidable.not_not] at hm₂
     ext n
     rw [(coeff R n).map_zero]
     induction' n using Nat.strong_induction_on with n ih
     replace h := congr_arg (coeff R (m + n)) h
     rw [LinearMap.map_zero, coeff_mul, Finset.sum_eq_single (m, n)] at h
-    · replace h := NoZeroDivisors.eq_zero_or_eq_zero_of_mul_eq_zero h
-      rw [or_iff_not_imp_left] at h
-      exact h hm₁
+    · simp only [mul_eq_zero] at h
+      exact Or.resolve_left h (Nat.find_spec ex)
     · rintro ⟨i, j⟩ hij hne
       rw [mem_antidiagonal] at hij
       rcases trichotomy_of_add_eq_add hij with h_eq | hi_lt | hj_lt
       · apply False.elim (hne ?_)
         simpa using h_eq
-      · rw [hm₂ i hi_lt, zero_mul]
+      · suffices coeff  R i φ = 0 by -- have := Nat.find_min ex hi_lt
+          rw [this, zero_mul]
+        by_contra h;
+          exact Nat.find_min ex hi_lt h
       · rw [ih j hj_lt, mul_zero]
-    · contrapose!
-      intro
-      rw [mem_antidiagonal]
+    · simp
 
 end Semiring
 
