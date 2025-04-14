@@ -57,6 +57,7 @@ points `e 0`, ..., `e N`. If more than one point are at the same distance from `
 noncomputable def nearestPtInd (e : ℕ → α) : ℕ → α →ₛ ℕ
   | 0 => const α 0
   | N + 1 =>
+    open scoped Classical in
     piecewise (⋂ k ≤ N, { x | edist (e (N + 1)) x < edist (e k) x })
       (MeasurableSet.iInter fun _ =>
         MeasurableSet.iInter fun _ =>
@@ -187,6 +188,7 @@ lemma HasCompactSupport.exists_simpleFunc_approx_of_prod [PseudoMetricSpace α]
     {f : X × Y → α} (hf : Continuous f) (h'f : HasCompactSupport f)
     {ε : ℝ} (hε : 0 < ε) :
     ∃ (g : SimpleFunc (X × Y) α), ∀ x, dist (f x) (g x) < ε := by
+  classical
   have M : ∀ (K : Set (X × Y)), IsCompact K →
       ∃ (g : SimpleFunc (X × Y) α), ∃ (s : Set (X × Y)), MeasurableSet s ∧ K ⊆ s ∧
       ∀ x ∈ s, dist (f x) (g x) < ε := by

@@ -280,8 +280,9 @@ theorem lintegral_le_of_forall_fin_meas_le [MeasurableSpace α] {μ : Measure α
 theorem SimpleFunc.exists_lt_lintegral_simpleFunc_of_lt_lintegral {m : MeasurableSpace α}
     {μ : Measure α} [SigmaFinite μ] {f : α →ₛ ℝ≥0} {L : ℝ≥0∞} (hL : L < ∫⁻ x, f x ∂μ) :
     ∃ g : α →ₛ ℝ≥0, (∀ x, g x ≤ f x) ∧ ∫⁻ x, g x ∂μ < ∞ ∧ L < ∫⁻ x, g x ∂μ := by
+  classical
   induction f using MeasureTheory.SimpleFunc.induction generalizing L with
-  | @const c s hs =>
+  | @const c s _ hs =>
     simp only [hs, const_zero, coe_piecewise, coe_const, SimpleFunc.coe_zero, univ_inter,
       piecewise_eq_indicator, lintegral_indicator, lintegral_const, Measure.restrict_apply',
       ENNReal.coe_indicator, Function.const_apply] at hL
