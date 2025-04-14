@@ -125,6 +125,26 @@ abbrev preadditiveEnrichedModuleCat : Preadditive C where
     apply (eHomEquiv (ModuleCat R)).injective
     simp [Equiv.add_def, eHomEquiv_comp, MonoidalPreadditive.tensor_add]
 
+variable {R}
+
+example : MonoidalLinear R (ModuleCat R) := inferInstance
+
+instance linearEnrichedModuleCat :
+    letI : Preadditive C := preadditiveEnrichedModuleCat R
+    Linear R C :=
+  letI : Preadditive C := preadditiveEnrichedModuleCat R
+  { smul_comp X Y Z r f g := by
+      apply (eHomEquiv (ModuleCat R)).injective
+      simp only [Equiv.smul_def]
+      rw [eHomEquiv_comp, ← eHomEquiv, ← eHomEquiv]
+      simp [eHomEquiv_comp]
+    comp_smul X Y Z f r g := by
+      apply (eHomEquiv (ModuleCat R)).injective
+      simp only [Equiv.smul_def]
+      rw [eHomEquiv_comp, ← eHomEquiv, ← eHomEquiv]
+      simp [eHomEquiv_comp] }
+
+
 end LinearOfEnriched
 
 end CategoryTheory
