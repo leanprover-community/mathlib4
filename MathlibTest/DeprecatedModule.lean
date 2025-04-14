@@ -17,6 +17,7 @@ with no message
 -- Deprecating the current module is possible and allows to add more deprecation information.
 deprecated_module "We can also give more details about the deprecation" (since := "2025-04-10")
 
+
 /--
 info: Deprecated modules
 
