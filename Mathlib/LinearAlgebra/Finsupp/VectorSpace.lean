@@ -62,8 +62,8 @@ lemma linearIndependent_single_one : LinearIndependent R fun i : ι ↦ single i
   exact linearIndependent_single (f := fun (_ : ι) (_ : Unit) ↦ (1 : R)) <| by
     simp +contextual [Fintype.linearIndependent_iff]
 
-lemma linearIndependent_single_of_ne_zero [NoZeroSMulDivisors R M] [DecidableEq ι] {v : ι → M}
-    (hv : ∀ i, v i ≠ 0) : LinearIndependent R fun i : ι ↦ single i (v i) := by
+lemma linearIndependent_single_of_ne_zero [NoZeroSMulDivisors R M] {v : ι → M} (hv : ∀ i, v i ≠ 0) :
+    LinearIndependent R fun i : ι ↦ single i (v i) := by
   rw [← linearIndependent_equiv (Equiv.sigmaPUnit ι)]
   exact linearIndependent_single (f := fun i (_ : Unit) ↦ v i) <| by
     simp +contextual [Fintype.linearIndependent_iff, hv]
