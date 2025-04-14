@@ -19,7 +19,8 @@ variable {α : Type*}
 
 section OrderedCancelCommMonoid
 
-variable [OrderedCancelCommMonoid α] {s : Submonoid α} {a₁ b₁ : α} {a₂ b₂ : s}
+variable [CommMonoid α] [PartialOrder α] [IsOrderedCancelMonoid α] {s : Submonoid α}
+  {a₁ b₁ : α} {a₂ b₂ : s}
 
 @[to_additive]
 instance le : LE (Localization s) :=
@@ -79,7 +80,7 @@ instance partialOrder : PartialOrder (Localization s) where
   lt_iff_le_not_le a b := Localization.induction_on₂ a b fun _ _ => lt_iff_le_not_le
 
 @[to_additive]
-instance orderedCancelCommMonoid : OrderedCancelCommMonoid (Localization s) where
+instance isOrderedCancelMonoid : IsOrderedCancelMonoid (Localization s) where
   mul_le_mul_left := fun a b =>
     Localization.induction_on₂ a b fun a b hab c =>
       Localization.induction_on c fun c => by
@@ -109,10 +110,9 @@ def mkOrderEmbedding (b : s) : α ↪o Localization s where
 end OrderedCancelCommMonoid
 
 @[to_additive]
-instance [LinearOrderedCancelCommMonoid α] {s : Submonoid α} :
-    LinearOrderedCancelCommMonoid (Localization s) :=
-  { Localization.orderedCancelCommMonoid with
-    le_total := fun a b =>
+instance [CommMonoid α] [LinearOrder α] [IsOrderedCancelMonoid α] {s : Submonoid α} :
+    LinearOrder (Localization s) :=
+  { le_total := fun a b =>
       Localization.induction_on₂ a b fun _ _ => by
         simp_rw [mk_le_mk]
         exact le_total _ _

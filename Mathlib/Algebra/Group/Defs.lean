@@ -58,6 +58,12 @@ def leftMul : G → G → G := fun g : G ↦ fun x : G ↦ g * x
 @[to_additive "`rightAdd g` denotes right addition by `g`"]
 def rightMul : G → G → G := fun g : G ↦ fun x : G ↦ x * g
 
+attribute [deprecated HMul.hMul "Use (g * ·) instead" (since := "2025-04-08")] leftMul
+attribute [deprecated HAdd.hAdd "Use (g + ·) instead" (since := "2025-04-08")] leftAdd
+
+attribute [deprecated HMul.hMul "Use (· * g) instead" (since := "2025-04-08")] rightMul
+attribute [deprecated HAdd.hAdd "Use (· + g) instead" (since := "2025-04-08")] rightAdd
+
 /-- A mixin for left cancellative multiplication. -/
 class IsLeftCancelMul (G : Type u) [Mul G] : Prop where
   /-- Multiplication is left cancellative. -/
@@ -1157,6 +1163,29 @@ lemma mul_inv_cancel_comm (a b : G) : a * b * a⁻¹ = b := by rw [mul_comm, inv
   rw [mul_comm, inv_mul_cancel_right]
 
 end CommGroup
+
+section IsCommutative
+
+/-- A Prop stating that the addition is commutative. -/
+class IsAddCommutative (M : Type*) [Add M] : Prop where
+  is_comm : Std.Commutative (α := M) (· + ·)
+
+/-- A Prop stating that the multiplication is commutative. -/
+@[to_additive]
+class IsMulCommutative (M : Type*) [Mul M] : Prop where
+  is_comm : Std.Commutative (α := M) (· * ·)
+
+@[to_additive]
+instance (priority := 100) CommMonoid.ofIsMulCommutative {M : Type*} [Monoid M]
+    [IsMulCommutative M] :
+    CommMonoid M where
+  mul_comm := IsMulCommutative.is_comm.comm
+
+@[to_additive]
+instance (priority := 100) CommGroup.ofIsMulCommutative {G : Type*} [Group G] [IsMulCommutative G] :
+    CommGroup G where
+
+end IsCommutative
 
 /-! We initialize all projections for `@[simps]` here, so that we don't have to do it in later
 files.

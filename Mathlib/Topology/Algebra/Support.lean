@@ -90,7 +90,7 @@ theorem tsupport_smul_subset_right {M α} [TopologicalSpace X] [Zero α] [SMulZe
   closure_mono <| support_smul_subset_right f g
 
 @[to_additive]
-theorem mulTSupport_mul [TopologicalSpace X] [Monoid α] {f g : X → α} :
+theorem mulTSupport_mul [TopologicalSpace X] [MulOneClass α] {f g : X → α} :
     (mulTSupport fun x ↦ f x * g x) ⊆ mulTSupport f ∪ mulTSupport g :=
   closure_minimal
     ((mulSupport_mul f g).trans (union_subset_union (subset_mulTSupport _) (subset_mulTSupport _)))
@@ -112,6 +112,12 @@ theorem continuous_of_mulTSupport [TopologicalSpace β] {f : α → β}
     (hf : ∀ x ∈ mulTSupport f, ContinuousAt f x) : Continuous f :=
   continuous_iff_continuousAt.2 fun x => (em _).elim (hf x) fun hx =>
     (@continuousAt_const _ _ _ _ _ 1).congr (not_mem_mulTSupport_iff_eventuallyEq.mp hx).symm
+
+@[to_additive]
+lemma ContinuousOn.continuous_of_mulTSupport_subset [TopologicalSpace β] {f : α → β}
+    {s : Set α} (hs : ContinuousOn f s) (h's : IsOpen s) (h''s : mulTSupport f ⊆ s) :
+    Continuous f :=
+  continuous_of_mulTSupport fun _ hx ↦ h's.continuousOn_iff.mp hs <| h''s hx
 
 end
 
@@ -411,7 +417,7 @@ theorem LocallyFinite.exists_finset_nhd_mulSupport_subset {U : ι → Set X} [On
       exact ⟨z, ⟨hi, hzn⟩⟩
 
 @[to_additive]
-theorem locallyFinite_mulSupport_iff [CommMonoid M] {f : ι → X → M} :
+theorem locallyFinite_mulSupport_iff [One M] {f : ι → X → M} :
     (LocallyFinite fun i ↦ mulSupport <| f i) ↔ LocallyFinite fun i ↦ mulTSupport <| f i :=
   ⟨LocallyFinite.closure, fun H ↦ H.subset fun _ ↦ subset_closure⟩
 

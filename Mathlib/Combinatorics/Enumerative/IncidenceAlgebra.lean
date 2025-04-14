@@ -314,8 +314,8 @@ instance algebraRight [PartialOrder α] [LocallyFiniteOrder α] [DecidableEq α]
             MulZeroClass.mul_zero, smul_zero, Algebra.smul_mul_assoc, if_pos rfl, if_neg h]
           refine (sum_eq_zero fun x _ ↦ ?_).symm
           exact if_neg fun hx ↦ h <| hx.2.trans hx.1
-    map_zero' := by dsimp; rw [map_zero, zero_smul]
-    map_add' c d := by dsimp; rw [map_add, add_smul] }
+    map_zero' := by rw [map_zero, zero_smul]
+    map_add' c d := by rw [map_add, add_smul] }
   commutes' c f := by classical ext a b hab; simp [if_pos hab, constSMul_apply, mul_comm]
   smul_def' c f := by classical ext a b hab; simp [if_pos hab, constSMul_apply, Algebra.smul_def]
 
