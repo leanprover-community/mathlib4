@@ -67,8 +67,8 @@ lemma le {L : List ℕ} (hL : IsAdmissible m L) : ∀ (k : ℕ), (h : k < L.leng
 lemma head_lt (a : ℕ) (L : List ℕ) (hl : IsAdmissible m (a :: L)) :
     ∀ a' ∈ L, a < a' := fun i hi ↦ (List.sorted_cons.mp hl.sorted).left i hi
 
-/-- If `L` is a `(m + 1)`-admissible list, and `a` is natural number such that a ≤ m and a < L[0], then
-  `a::L` is `m`-admissible -/
+/-- If `L` is a `(m + 1)`-admissible list, and `a` is natural number such that a ≤ m and a < L[0],
+then `a::L` is `m`-admissible -/
 lemma cons (L : List ℕ) (hL : IsAdmissible (m + 1) L) (a : ℕ) (ha : a ≤ m)
     (ha' : (_ : 0 < L.length) → a < L[0]) : IsAdmissible m (a :: L) := by
   cases L with
@@ -96,45 +96,6 @@ lemma tail (a : ℕ) (l : List ℕ) (h : IsAdmissible m (a::l)) :
   refine ⟨(List.sorted_cons.mp h.sorted).right, ?_⟩
   intro k _
   simpa [Nat.add_assoc, Nat.add_comm 1] using h.le (k + 1) (by simpa)
-
-/-- Since they are strictly sorted, two admissible lists with same elements are equal -/
-lemma ext (L₁ : List ℕ) (L₂ : List ℕ)
-    (hL₁ : IsAdmissible m L₁) (hL₂ : IsAdmissible m L₂)
-    (h : ∀ x : ℕ, x ∈ L₁ ↔ x ∈ L₂) : L₁ = L₂ := by
-  obtain ⟨⟨hL₁, -⟩, ⟨hL₂, -⟩⟩ := hL₁, hL₂
-  induction L₁ generalizing L₂ with
-  | nil =>
-    simp only [List.nil_eq, List.eq_nil_iff_forall_not_mem]
-    intro a ha
-    exact List.not_mem_nil _ <| (h a).mpr ha
-  | cons a L₁ h_rec =>
-    cases L₂ with
-    | nil =>
-      simp only [List.nil_eq, List.eq_nil_iff_forall_not_mem]
-      intro a ha
-      exact List.not_mem_nil _ <| (h a).mp ha
-    | cons b L₂ =>
-      rw [List.cons_eq_cons]
-      simp only [List.mem_cons] at h
-      simp only [List.sorted_cons] at hL₁ hL₂
-      obtain rfl : a = b := by
-        haveI := h b
-        simp only [true_or, iff_true] at this
-        obtain rfl | bL₁ := this
-        · rfl
-        · have ha := h a
-          simp only [true_or, true_iff] at ha
-          obtain rfl | aL₂ := ha
-          · rfl
-          · exact False.elim <| lt_irrefl _ <| lt_trans (hL₁.1 _ bL₁) (hL₂.1 _ aL₂)
-      refine ⟨rfl, ?_⟩
-      apply h_rec L₂ _ hL₁.2 hL₂.2
-      intro x
-      obtain rfl | hax := eq_or_ne x a
-      · constructor <;> intro h₁
-        · exact False.elim <| lt_irrefl x <| hL₁.1 x h₁
-        · exact False.elim <| lt_irrefl x <| hL₂.1 x h₁
-      · simpa [hax] using h x
 
 /-- An element of a `m`-admissible list, as an element of the appropriate `Fin` -/
 @[simps]
