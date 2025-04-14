@@ -12,7 +12,7 @@ import Mathlib.RingTheory.Spectrum.Maximal.Basic
 
 # Non-local rings
 
-This file we gather some results about non-local rings.
+This file gathers some results about non-local rings.
 
 ## Main results
 
