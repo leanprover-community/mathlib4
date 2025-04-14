@@ -27,7 +27,8 @@ namespace CFC
 
 section nonunital
 
-variable {A : Type*} [NonUnitalNormedRing A] [StarRing A] [NormedSpace ℝ A] [IsScalarTower ℝ A A]
+variable {A : Type*} [NonUnitalRing A] [NormedRing A] [StarRing A]
+  [NormedSpace ℝ A] [IsScalarTower ℝ A A]
   [SMulCommClass ℝ A A] [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A]
   [NonUnitalIsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 
@@ -50,7 +51,7 @@ end nonunital
 
 section unital
 
-variable {A : Type*} [NormedRing A] [StarRing A] [NormedAlgebra ℝ A]
+variable {A : Type*} [Ring A] [NormedRing A] [StarRing A] [NormedAlgebra ℝ A]
   [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A]
   [IsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 

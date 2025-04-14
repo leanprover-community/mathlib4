@@ -53,7 +53,8 @@ theorem contraction_of_isPowMul_of_boundedWrt {F : Type*} {α : outParam (Type*)
 
 /-- Given a bounded `f : α →+* β` between seminormed rings, is the seminorm on `β` is
   power-multiplicative, then `f` is a contraction. -/
-theorem contraction_of_isPowMul {α β : Type*} [SeminormedRing α] [SeminormedRing β]
+theorem contraction_of_isPowMul {α β : Type*}
+    [Ring α] [SeminormedRing α] [Ring β] [SeminormedRing β]
     (hβ : IsPowMul (norm : β → ℝ)) {f : α →+* β} (hf : f.IsBounded) (x : α) : norm (f x) ≤ norm x :=
   contraction_of_isPowMul_of_boundedWrt (SeminormedRing.toRingSeminorm α) hβ hf x
 
@@ -72,7 +73,7 @@ theorem eq_seminorms {F : Type*} {α : outParam (Type*)} [Ring α] [FunLike F α
   exact le_antisymm (contraction_of_isPowMul_of_boundedWrt g hfpm hge x)
     (contraction_of_isPowMul_of_boundedWrt f hgpm hle x)
 
-variable {R S : Type*} [NormedCommRing R] [CommRing S] [Algebra R S]
+variable {R S : Type*} [CommRing R] [NormedRing R] [CommRing S] [Algebra R S]
 
 /-- If `R` is a normed commutative ring and `f₁` and `f₂` are two power-multiplicative `R`-algebra
   norms on `S`, then if `f₁` and `f₂` are equivalent on every  subring `R[y]` for `y : S`, it

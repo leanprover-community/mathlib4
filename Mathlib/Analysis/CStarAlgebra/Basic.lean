@@ -67,14 +67,14 @@ instance (priority := 100) NormedStarGroup.to_continuousStar : ContinuousStar E 
 
 end NormedStarGroup
 
-instance RingHomIsometric.starRingEnd [NormedCommRing E] [StarRing E] [NormedStarGroup E] :
+instance RingHomIsometric.starRingEnd [CommRing E] [NormedRing E] [StarRing E] [NormedStarGroup E] :
     RingHomIsometric (starRingEnd E) :=
   ⟨norm_star _⟩
 
 /-- A C*-ring is a normed star ring that satisfies the stronger condition `‖x‖ ^ 2 ≤ ‖x⋆ * x‖`
 for every `x`. Note that this condition actually implies equality, as is shown in
 `norm_star_mul_self` below. -/
-class CStarRing (E : Type*) [NonUnitalNormedRing E] [StarRing E] : Prop where
+class CStarRing (E : Type*) [NonUnitalRing E] [NormedRing E] [StarRing E] : Prop where
   norm_mul_self_le : ∀ x : E, ‖x‖ * ‖x‖ ≤ ‖x⋆ * x‖
 
 instance : CStarRing ℝ where
@@ -86,7 +86,7 @@ namespace CStarRing
 section NonUnital
 
 lemma of_le_norm_mul_star_self
-    [NonUnitalNormedRing E] [StarRing E]
+    [NonUnitalRing E] [NormedRing E] [StarRing E]
     (h : ∀ x : E, ‖x‖ * ‖x‖ ≤ ‖x * x⋆‖) : CStarRing E :=
   have : NormedStarGroup E :=
     { norm_star_le x := by
@@ -96,7 +96,7 @@ lemma of_le_norm_mul_star_self
           simpa [sq, mul_comm ‖x⋆‖] using h x⋆ |>.trans <| norm_mul_le _ _ }
   ⟨star_involutive.surjective.forall.mpr <| by simpa⟩
 
-variable [NonUnitalNormedRing E] [StarRing E] [CStarRing E]
+variable [NonUnitalRing E] [NormedRing E] [StarRing E] [CStarRing E]
 
 -- see Note [lower instance priority]
 /-- In a C*-ring, star preserves the norm. -/
@@ -132,7 +132,7 @@ theorem star_mul_self_ne_zero_iff (x : E) : x⋆ * x ≠ 0 ↔ x ≠ 0 := by
 
 @[simp]
 theorem mul_star_self_eq_zero_iff (x : E) : x * x⋆ = 0 ↔ x = 0 := by
-  simpa only [star_eq_zero, star_star] using @star_mul_self_eq_zero_iff _ _ _ _ (star x)
+  simpa only [star_eq_zero, star_star] using star_mul_self_eq_zero_iff (star x)
 
 theorem mul_star_self_ne_zero_iff (x : E) : x * x⋆ ≠ 0 ↔ x ≠ 0 := by
   simp only [Ne, mul_star_self_eq_zero_iff]
@@ -142,9 +142,9 @@ end NonUnital
 section ProdPi
 
 variable {ι R₁ R₂ : Type*} {R : ι → Type*}
-variable [NonUnitalNormedRing R₁] [StarRing R₁] [CStarRing R₁]
-variable [NonUnitalNormedRing R₂] [StarRing R₂] [CStarRing R₂]
-variable [∀ i, NonUnitalNormedRing (R i)] [∀ i, StarRing (R i)]
+variable [NonUnitalRing R₁] [NormedRing R₁] [StarRing R₁] [CStarRing R₁]
+variable [NonUnitalRing R₂] [NormedRing R₂] [StarRing R₂] [CStarRing R₂]
+variable [∀ i, NonUnitalRing (R i)] [∀ i, NormedRing (R i)] [∀ i, StarRing (R i)]
 
 /-- This instance exists to short circuit type class resolution because of problems with
 inference involving Π-types. -/
@@ -176,7 +176,8 @@ end ProdPi
 
 namespace MulOpposite
 
-instance {E : Type*} [NonUnitalNormedRing E] [StarRing E] [CStarRing E] : CStarRing Eᵐᵒᵖ where
+instance {E : Type*} [NonUnitalRing E] [NormedRing E] [StarRing E] [CStarRing E] :
+    CStarRing Eᵐᵒᵖ where
   norm_mul_self_le x := CStarRing.norm_self_mul_star (x := MulOpposite.unop x) |>.symm.le
 
 end MulOpposite
@@ -184,7 +185,7 @@ end MulOpposite
 section Unital
 
 
-variable [NormedRing E] [StarRing E] [CStarRing E]
+variable [Ring E] [NormedRing E] [StarRing E] [CStarRing E]
 
 theorem norm_one [Nontrivial E] : ‖(1 : E)‖ = 1 := by
   have : 0 < ‖(1 : E)‖ := norm_pos_iff.mpr one_ne_zero
@@ -238,7 +239,7 @@ end Unital
 
 end CStarRing
 
-theorem IsSelfAdjoint.nnnorm_pow_two_pow [NormedRing E] [StarRing E] [CStarRing E] {x : E}
+theorem IsSelfAdjoint.nnnorm_pow_two_pow [Ring E] [NormedRing E] [StarRing E] [CStarRing E] {x : E}
     (hx : IsSelfAdjoint x) (n : ℕ) : ‖x ^ 2 ^ n‖₊ = ‖x‖₊ ^ 2 ^ n := by
   induction' n with k hk
   · simp only [pow_zero, pow_one]
@@ -246,7 +247,8 @@ theorem IsSelfAdjoint.nnnorm_pow_two_pow [NormedRing E] [StarRing E] [CStarRing 
     nth_rw 1 [← selfAdjoint.mem_iff.mp hx]
     rw [← star_pow, CStarRing.nnnorm_star_mul_self, ← sq, hk, pow_mul']
 
-theorem selfAdjoint.nnnorm_pow_two_pow [NormedRing E] [StarRing E] [CStarRing E] (x : selfAdjoint E)
+theorem selfAdjoint.nnnorm_pow_two_pow [Ring E] [NormedRing E] [StarRing E] [CStarRing E]
+    (x : selfAdjoint E)
     (n : ℕ) : ‖x ^ 2 ^ n‖₊ = ‖x‖₊ ^ 2 ^ n :=
   x.prop.nnnorm_pow_two_pow _
 
@@ -279,12 +281,14 @@ end starₗᵢ
 
 namespace StarSubalgebra
 
-instance toNormedAlgebra {𝕜 A : Type*} [NormedField 𝕜] [StarRing 𝕜] [SeminormedRing A] [StarRing A]
+instance toNormedAlgebra {𝕜 A : Type*} [NormedField 𝕜]
+    [StarRing 𝕜] [Ring A] [SeminormedRing A] [StarRing A]
     [NormedAlgebra 𝕜 A] [StarModule 𝕜 A] (S : StarSubalgebra 𝕜 A) : NormedAlgebra 𝕜 S :=
   NormedAlgebra.induced 𝕜 S A S.subtype
 
-instance to_cstarRing {R A} [CommRing R] [StarRing R] [NormedRing A] [StarRing A] [CStarRing A]
+instance to_cstarRing {R A} [CommRing R] [StarRing R]
+    [Ring A] [NormedRing A] [StarRing A] [CStarRing A]
     [Algebra R A] [StarModule R A] (S : StarSubalgebra R A) : CStarRing S where
-  norm_mul_self_le x := @CStarRing.norm_mul_self_le A _ _ _ x
+  norm_mul_self_le x := CStarRing.norm_mul_self_le (E := A) x
 
 end StarSubalgebra

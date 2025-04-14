@@ -37,7 +37,7 @@ section unital
 
 variable {X : Type*} {𝕜 : Type*} {A : Type*} {p : A → Prop} [RCLike 𝕜]
   [MeasurableSpace X] {μ : Measure X}
-  [NormedRing A] [StarRing A] [NormedAlgebra 𝕜 A] [NormedAlgebra ℝ A] [CompleteSpace A]
+  [Ring A] [NormedRing A] [StarRing A] [NormedAlgebra 𝕜 A] [NormedAlgebra ℝ A] [CompleteSpace A]
   [ContinuousFunctionalCalculus 𝕜 A p]
 
 lemma cfcL_integral (a : A) (f : X → C(spectrum 𝕜 a, 𝕜)) (hf₁ : Integrable f μ)
@@ -90,7 +90,8 @@ end unital
 section nonunital
 
 variable {X : Type*} {𝕜 : Type*} {A : Type*} {p : A → Prop} [RCLike 𝕜]
-  [MeasurableSpace X] {μ : Measure X} [NonUnitalNormedRing A] [StarRing A] [CompleteSpace A]
+  [MeasurableSpace X] {μ : Measure X}
+  [NonUnitalRing A] [NormedRing A] [StarRing A] [CompleteSpace A]
   [NormedSpace 𝕜 A] [NormedSpace ℝ A] [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A]
   [NonUnitalContinuousFunctionalCalculus 𝕜 A p]
 

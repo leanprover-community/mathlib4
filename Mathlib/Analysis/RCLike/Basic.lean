@@ -1146,9 +1146,9 @@ noncomputable def RCLike.copy_of_normedField {𝕜 : Type*} (h : RCLike 𝕜) (h
   star_mul := by subst h''; exact h.star_mul
   star_add := by subst h''; exact h.star_add
   -- algebra fields
-  smul := (@Algebra.toSMul _ _ _ (_) (@NormedAlgebra.toAlgebra _ _ _ (_) h.toNormedAlgebra)).smul
+  smul := (@Algebra.toSMul _ _ _ (_) (@NormedAlgebra.toAlgebra _ _ _ _ (_) h.toNormedAlgebra)).smul
   algebraMap :=
-  { toFun := @Algebra.algebraMap _ _ _ (_) (@NormedAlgebra.toAlgebra _ _ _ (_) h.toNormedAlgebra)
+  { toFun := @Algebra.algebraMap _ _ _ (_) (@NormedAlgebra.toAlgebra _ _ _ _ (_) h.toNormedAlgebra)
     map_one' := by subst h''; exact h.algebraMap.map_one'
     map_mul' := by subst h''; exact h.algebraMap.map_mul'
     map_zero' := by subst h''; exact h.algebraMap.map_zero'

@@ -135,7 +135,7 @@ def l2OpNormedAddGroupAux : NormedAddGroup (Matrix m n 𝕜) :=
 provided by `Matrix.instMetricSpaceL2Op` and `Matrix.instNormedRingL2Op`. -/
 def l2OpNormedRingAux : NormedRing (Matrix n n 𝕜) :=
   @NormedRing.induced ((Matrix n n 𝕜) ≃⋆ₐ[𝕜] (EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n)) _
-    _ _ _ ContinuousLinearMap.toNormedRing _ _ toEuclideanCLM.injective
+    _ _ _ _ ContinuousLinearMap.toNormedRing _ _ toEuclideanCLM.injective
 
 open Bornology Filter
 open scoped Topology Uniformity

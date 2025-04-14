@@ -54,7 +54,7 @@ section SeminormedRing
 section Zero
 
 variable (𝕜)
-variable [SeminormedRing 𝕜] [SMul 𝕜 E] [Zero E]
+variable [Ring 𝕜] [SeminormedRing 𝕜] [SMul 𝕜 E] [Zero E]
 variable [TopologicalSpace E]
 
 /-- A set `s` is von Neumann bounded if every neighborhood of 0 absorbs `s`. -/
@@ -118,7 +118,7 @@ end Zero
 
 section ContinuousAdd
 
-variable [SeminormedRing 𝕜] [AddZeroClass E] [TopologicalSpace E] [ContinuousAdd E]
+variable [Ring 𝕜] [SeminormedRing 𝕜] [AddZeroClass E] [TopologicalSpace E] [ContinuousAdd E]
   [DistribSMul 𝕜 E] {s t : Set E}
 
 protected theorem IsVonNBounded.add (hs : IsVonNBounded 𝕜 s) (ht : IsVonNBounded 𝕜 t) :
@@ -130,7 +130,7 @@ end ContinuousAdd
 
 section IsTopologicalAddGroup
 
-variable [SeminormedRing 𝕜] [AddGroup E] [TopologicalSpace E] [IsTopologicalAddGroup E]
+variable [Ring 𝕜] [SeminormedRing 𝕜] [AddGroup E] [TopologicalSpace E] [IsTopologicalAddGroup E]
   [DistribMulAction 𝕜 E] {s t : Set E}
 
 protected theorem IsVonNBounded.neg (hs : IsVonNBounded 𝕜 s) : IsVonNBounded 𝕜 (-s) := fun U hU ↦ by
@@ -154,12 +154,12 @@ end SeminormedRing
 
 section MultipleTopologies
 
-variable [SeminormedRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable [Ring 𝕜] [SeminormedRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
 
 /-- If a topology `t'` is coarser than `t`, then any set `s` that is bounded with respect to
 `t` is bounded with respect to `t'`. -/
 theorem IsVonNBounded.of_topologicalSpace_le {t t' : TopologicalSpace E} (h : t ≤ t') {s : Set E}
-    (hs : @IsVonNBounded 𝕜 E _ _ _ t s) : @IsVonNBounded 𝕜 E _ _ _ t' s := fun _ hV =>
+    (hs : @IsVonNBounded 𝕜 E _ _ _ _ t s) : @IsVonNBounded 𝕜 E _ _ _ _ t' s := fun _ hV =>
   hs <| (le_iff_nhds t t').mp h 0 hV
 
 end MultipleTopologies
@@ -404,7 +404,7 @@ theorem Filter.Tendsto.isVonNBounded_range [NormedField 𝕜] [AddCommGroup E] [
 
 variable (𝕜) in
 protected theorem Bornology.IsVonNBounded.restrict_scalars_of_nontrivial
-    [NormedField 𝕜] [NormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜'] [Nontrivial 𝕜']
+    [NormedField 𝕜] [Ring 𝕜'] [NormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜'] [Nontrivial 𝕜']
     [Zero E] [TopologicalSpace E]
     [SMul 𝕜 E] [MulAction 𝕜' E] [IsScalarTower 𝕜 𝕜' E] {s : Set E}
     (h : IsVonNBounded 𝕜' s) : IsVonNBounded 𝕜 s := by
@@ -416,7 +416,7 @@ protected theorem Bornology.IsVonNBounded.restrict_scalars_of_nontrivial
 
 variable (𝕜) in
 protected theorem Bornology.IsVonNBounded.restrict_scalars
-    [NormedField 𝕜] [NormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜']
+    [NormedField 𝕜] [Ring 𝕜'] [NormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜']
     [Zero E] [TopologicalSpace E]
     [SMul 𝕜 E] [MulActionWithZero 𝕜' E] [IsScalarTower 𝕜 𝕜' E] {s : Set E}
     (h : IsVonNBounded 𝕜' s) : IsVonNBounded 𝕜 s :=

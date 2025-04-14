@@ -175,6 +175,14 @@ end Module
 
 section Algebra
 
+instance [I : NonUnitalSemiring A] : NonUnitalSemiring (RestrictScalars R S A) := I
+
+instance [I : NonUnitalRing A] : NonUnitalRing (RestrictScalars R S A) := I
+
+instance [I : NonUnitalCommSemiring A] : NonUnitalCommSemiring (RestrictScalars R S A) := I
+
+instance [I : NonUnitalCommRing A] : NonUnitalCommRing (RestrictScalars R S A) := I
+
 instance [I : Semiring A] : Semiring (RestrictScalars R S A) := I
 
 instance [I : Ring A] : Ring (RestrictScalars R S A) := I

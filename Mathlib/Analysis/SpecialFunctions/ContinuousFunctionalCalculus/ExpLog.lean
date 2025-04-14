@@ -57,7 +57,7 @@ end general_exponential
 namespace CFC
 section RCLikeNormed
 
-variable {𝕜 : Type*} {A : Type*} [RCLike 𝕜] {p : A → Prop} [NormedRing A]
+variable {𝕜 : Type*} {A : Type*} [RCLike 𝕜] {p : A → Prop} [Ring A] [NormedRing A]
   [StarRing A] [IsTopologicalRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
   [ContinuousFunctionalCalculus 𝕜 A p]
 
@@ -75,7 +75,7 @@ end RCLikeNormed
 
 section RealNormed
 
-variable {A : Type*} [NormedRing A] [StarRing A]
+variable {A : Type*} [Ring A] [NormedRing A] [StarRing A]
   [IsTopologicalRing A] [NormedAlgebra ℝ A] [CompleteSpace A]
   [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 
@@ -94,7 +94,7 @@ end RealNormed
 
 section ComplexNormed
 
-variable {A : Type*} {p : A → Prop} [NormedRing A] [StarRing A]
+variable {A : Type*} {p : A → Prop} [Ring A] [NormedRing A] [StarRing A]
   [NormedAlgebra ℂ A] [CompleteSpace A] [ContinuousFunctionalCalculus ℂ A p]
 
 lemma complex_exp_eq_normedSpace_exp {a : A} (ha : p a := by cfc_tac) :
@@ -108,7 +108,7 @@ section real_log
 
 open scoped ComplexOrder
 
-variable {A : Type*} [NormedRing A] [StarRing A] [NormedAlgebra ℝ A]
+variable {A : Type*} [Ring A] [NormedRing A] [StarRing A] [NormedAlgebra ℝ A]
   [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 
 /-- The real logarithm, defined via the continuous functional calculus. This can be used on

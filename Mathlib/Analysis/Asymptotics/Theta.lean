@@ -29,7 +29,7 @@ variable [Norm E] [Norm F] [Norm G]
 variable [AddCommGroup E'] [SeminormedAddGroup E'] [AddCommGroup F'] [SeminormedAddGroup F']
   [AddCommGroup G'] [SeminormedAddGroup G'] [AddCommGroup E''] [NormedAddGroup E'']
   [AddCommGroup F''] [NormedAddGroup F''] [AddCommGroup G''] [NormedAddGroup G'']
-  [SeminormedRing R] [SeminormedRing R']
+  [Ring R] [SeminormedRing R] [Ring R'] [SeminormedRing R']
 
 variable [NormedField 𝕜] [NormedField 𝕜']
 variable {c c' c₁ c₂ : ℝ} {f : α → E} {g : α → F} {k : α → G}

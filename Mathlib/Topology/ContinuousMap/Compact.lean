@@ -225,38 +225,13 @@ section
 
 variable {R : Type*}
 
-instance [NonUnitalSeminormedRing R] : NonUnitalSeminormedRing C(α, R) where
+instance [NonUnitalRing R] [SeminormedRing R] : SeminormedRing C(α, R) where
   __ : SeminormedAddGroup C(α, R) := inferInstance
-  __ : NonUnitalRing C(α, R) := inferInstance
   norm_mul_le f g := norm_mul_le (mkOfCompact f) (mkOfCompact g)
 
-instance [NonUnitalSeminormedCommRing R] : NonUnitalSeminormedCommRing C(α, R) where
-  __ : NonUnitalSeminormedRing C(α, R) := inferInstance
-  __ : NonUnitalCommRing C(α, R) := inferInstance
-
-instance [SeminormedRing R] : SeminormedRing C(α, R) where
-  __ : NonUnitalSeminormedRing C(α, R) := inferInstance
-  __ : Ring C(α, R) := inferInstance
-
-instance [SeminormedCommRing R] : SeminormedCommRing C(α, R) where
-  __ : SeminormedRing C(α, R) := inferInstance
-  __ : CommRing C(α, R) := inferInstance
-
-instance [NonUnitalNormedRing R] : NonUnitalNormedRing C(α, R) where
-  __ : NormedAddGroup C(α, R) := inferInstance
-  __ : NonUnitalSeminormedRing C(α, R) := inferInstance
-
-instance [NonUnitalNormedCommRing R] : NonUnitalNormedCommRing C(α, R) where
-  __ : NonUnitalNormedRing C(α, R) := inferInstance
-  __ : NonUnitalCommRing C(α, R) := inferInstance
-
-instance [NormedRing R] : NormedRing C(α, R) where
+instance [NonUnitalRing R] [NormedRing R] : NormedRing C(α, R) where
   __ : NormedAddGroup C(α, R) := inferInstance
   __ : SeminormedRing C(α, R) := inferInstance
-
-instance [NormedCommRing R] : NormedCommRing C(α, R) where
-  __ : NormedRing C(α, R) := inferInstance
-  __ : CommRing C(α, R) := inferInstance
 
 end
 
@@ -328,7 +303,7 @@ end
 
 section
 
-variable {𝕜 : Type*} {γ : Type*} [NormedField 𝕜] [SeminormedRing γ] [NormedAlgebra 𝕜 γ]
+variable {𝕜 : Type*} {γ : Type*} [NormedField 𝕜] [Ring γ] [SeminormedRing γ] [NormedAlgebra 𝕜 γ]
 
 instance : NormedAlgebra 𝕜 C(α, γ) :=
   { ContinuousMap.normedSpace, ContinuousMap.algebra with }
@@ -466,7 +441,7 @@ section CStarRing
 variable {α : Type*} {β : Type*}
 variable [TopologicalSpace α] [CompactSpace α]
 
-instance [NonUnitalNormedRing β] [StarRing β] [CStarRing β] : CStarRing C(α, β) where
+instance [NonUnitalRing β] [NormedRing β] [StarRing β] [CStarRing β] : CStarRing C(α, β) where
   norm_mul_self_le f := by
     rw [← sq, ← Real.le_sqrt (norm_nonneg _) (norm_nonneg _),
       ContinuousMap.norm_le _ (Real.sqrt_nonneg _)]

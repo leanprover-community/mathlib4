@@ -337,7 +337,8 @@ section Mul
 /-! ### Derivative of the product of two functions -/
 
 
-variable {𝔸 𝔸' : Type*} [NormedRing 𝔸] [NormedCommRing 𝔸'] [NormedAlgebra 𝕜 𝔸] [NormedAlgebra 𝕜 𝔸']
+variable {𝔸 𝔸' : Type*} [Ring 𝔸] [NormedRing 𝔸] [CommRing 𝔸'] [NormedRing 𝔸']
+  [NormedAlgebra 𝕜 𝔸] [NormedAlgebra 𝕜 𝔸']
   {a b : E → 𝔸} {a' b' : E →L[𝕜] 𝔸} {c d : E → 𝔸'} {c' d' : E →L[𝕜] 𝔸'}
 
 @[fun_prop]
@@ -561,7 +562,8 @@ section Prod
 
 /-! ### Derivative of a finite product of functions -/
 
-variable {ι : Type*} {𝔸 𝔸' : Type*} [NormedRing 𝔸] [NormedCommRing 𝔸'] [NormedAlgebra 𝕜 𝔸]
+variable {ι : Type*} {𝔸 𝔸' : Type*} [Ring 𝔸] [NormedRing 𝔸] [CommRing 𝔸']
+  [NormedRing 𝔸'] [NormedAlgebra 𝕜 𝔸]
   [NormedAlgebra 𝕜 𝔸'] {u : Finset ι} {f : ι → E → 𝔸} {f' : ι → E →L[𝕜] 𝔸} {g : ι → E → 𝔸'}
   {g' : ι → E →L[𝕜] 𝔸'}
 
@@ -799,7 +801,7 @@ end Prod
 
 section AlgebraInverse
 
-variable {R : Type*} [NormedRing R] [HasSummableGeomSeries R] [NormedAlgebra 𝕜 R]
+variable {R : Type*} [Ring R] [NormedRing R] [HasSummableGeomSeries R] [NormedAlgebra 𝕜 R]
 
 open NormedRing ContinuousLinearMap Ring
 

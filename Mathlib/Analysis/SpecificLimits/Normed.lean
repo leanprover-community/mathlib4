@@ -112,7 +112,7 @@ theorem TFAE_exists_lt_isLittleO_pow (f : ℕ → ℝ) (R : ℝ) :
   tfae_finish
 
 /-- For any natural `k` and a real `r > 1` we have `n ^ k = o(r ^ n)` as `n → ∞`. -/
-theorem isLittleO_pow_const_const_pow_of_one_lt {R : Type*} [NormedRing R] (k : ℕ) {r : ℝ}
+theorem isLittleO_pow_const_const_pow_of_one_lt {R : Type*} [Ring R] [NormedRing R] (k : ℕ) {r : ℝ}
     (hr : 1 < r) : (fun n ↦ (n : R) ^ k : ℕ → R) =o[atTop] fun n ↦ r ^ n := by
   have : Tendsto (fun x : ℝ ↦ x ^ k) (𝓝[>] 1) (𝓝 1) :=
     ((continuous_id.pow k).tendsto' (1 : ℝ) 1 (one_pow _)).mono_left inf_le_left
@@ -130,13 +130,13 @@ theorem isLittleO_pow_const_const_pow_of_one_lt {R : Type*} [NormedRing R] (k : 
   simpa [_root_.div_eq_inv_mul, Real.norm_eq_abs, abs_of_nonneg h0] using n.cast_le_pow_div_sub h1
 
 /-- For a real `r > 1` we have `n = o(r ^ n)` as `n → ∞`. -/
-theorem isLittleO_coe_const_pow_of_one_lt {R : Type*} [NormedRing R] {r : ℝ} (hr : 1 < r) :
+theorem isLittleO_coe_const_pow_of_one_lt {R : Type*} [Ring R] [NormedRing R] {r : ℝ} (hr : 1 < r) :
     ((↑) : ℕ → R) =o[atTop] fun n ↦ r ^ n := by
-  simpa only [pow_one] using @isLittleO_pow_const_const_pow_of_one_lt R _ 1 _ hr
+  simpa only [pow_one] using isLittleO_pow_const_const_pow_of_one_lt 1 hr
 
 /-- If `‖r₁‖ < r₂`, then for any natural `k` we have `n ^ k r₁ ^ n = o (r₂ ^ n)` as `n → ∞`. -/
-theorem isLittleO_pow_const_mul_const_pow_const_pow_of_norm_lt {R : Type*} [NormedRing R] (k : ℕ)
-    {r₁ : R} {r₂ : ℝ} (h : ‖r₁‖ < r₂) :
+theorem isLittleO_pow_const_mul_const_pow_const_pow_of_norm_lt {R : Type*} [Ring R] [NormedRing R]
+    (k : ℕ) {r₁ : R} {r₂ : ℝ} (h : ‖r₁‖ < r₂) :
     (fun n ↦ (n : R) ^ k * r₁ ^ n : ℕ → R) =o[atTop] fun n ↦ r₂ ^ n := by
   by_cases h0 : r₁ = 0
   · refine (isLittleO_zero _ _).congr' (mem_atTop_sets.2 <| ⟨1, fun n hn ↦ ?_⟩) EventuallyEq.rfl
@@ -187,7 +187,7 @@ theorem tendsto_self_mul_const_pow_of_lt_one {r : ℝ} (hr : 0 ≤ r) (h'r : r <
   simpa only [pow_one] using tendsto_pow_const_mul_const_pow_of_lt_one 1 hr h'r
 
 /-- In a normed ring, the powers of an element x with `‖x‖ < 1` tend to zero. -/
-theorem tendsto_pow_atTop_nhds_zero_of_norm_lt_one {R : Type*} [NormedRing R] {x : R}
+theorem tendsto_pow_atTop_nhds_zero_of_norm_lt_one {R : Type*} [Ring R] [NormedRing R] {x : R}
     (h : ‖x‖ < 1) :
     Tendsto (fun n : ℕ ↦ x ^ n) atTop (𝓝 0) := by
   apply squeeze_zero_norm' (eventually_norm_pow_le x)
@@ -202,14 +202,15 @@ theorem tendsto_pow_atTop_nhds_zero_of_abs_lt_one {r : ℝ} (h : |r| < 1) :
 /-- A normed ring has summable geometric series if, for all `ξ` of norm `< 1`, the geometric series
 `∑ ξ ^ n` converges. This holds both in complete normed rings and in normed fields, providing a
 convenient abstraction of these two classes to avoid repeating the same proofs. -/
-class HasSummableGeomSeries (K : Type*) [NormedRing K] : Prop where
+class HasSummableGeomSeries (K : Type*) [Ring K] [NormedRing K] : Prop where
   summable_geometric_of_norm_lt_one : ∀ (ξ : K), ‖ξ‖ < 1 → Summable (fun n ↦ ξ ^ n)
 
-lemma summable_geometric_of_norm_lt_one {K : Type*} [NormedRing K] [HasSummableGeomSeries K]
+lemma summable_geometric_of_norm_lt_one {K : Type*}
+    [Ring K] [NormedRing K] [HasSummableGeomSeries K]
     {x : K} (h : ‖x‖ < 1) : Summable (fun n ↦ x ^ n) :=
   HasSummableGeomSeries.summable_geometric_of_norm_lt_one x h
 
-instance {R : Type*} [NormedRing R] [CompleteSpace R] : HasSummableGeomSeries R := by
+instance {R : Type*} [Ring R] [NormedRing R] [CompleteSpace R] : HasSummableGeomSeries R := by
   constructor
   intro x hx
   have h1 : Summable fun n : ℕ ↦ ‖x‖ ^ n := summable_geometric_of_lt_one (norm_nonneg _) hx
@@ -217,7 +218,7 @@ instance {R : Type*} [NormedRing R] [CompleteSpace R] : HasSummableGeomSeries R 
 
 section HasSummableGeometricSeries
 
-variable {R : Type*} [NormedRing R]
+variable {R : Type*} [Ring R] [NormedRing R]
 
 open NormedSpace
 
@@ -340,7 +341,7 @@ end Geometric
 
 section MulGeometric
 
-variable {R : Type*} [NormedRing R] {𝕜 : Type*} [NormedDivisionRing 𝕜]
+variable {R : Type*} [Ring R] [NormedRing R] {𝕜 : Type*} [NormedDivisionRing 𝕜]
 
 theorem summable_norm_mul_geometric_of_norm_lt_one {k : ℕ} {r : R}
     (hr : ‖r‖ < 1) {u : ℕ → ℕ} (hu : (fun n ↦ (u n : ℝ)) =O[atTop] (fun n ↦ (↑(n ^ k) : ℝ))) :

@@ -330,7 +330,7 @@ theorem opNorm_comp_le (f : E →SL[σ₁₂] F) : ‖h.comp f‖ ≤ ‖h‖ * 
 
 /-- Continuous linear maps form a seminormed ring with respect to the operator norm. -/
 instance toSeminormedRing : SeminormedRing (E →L[𝕜] E) :=
-  { toSeminormedAddGroup, ring with norm_mul_le := opNorm_comp_le }
+  { toSeminormedAddGroup with norm_mul_le := opNorm_comp_le }
 
 /-- For a normed space `E`, continuous linear endomorphisms form a normed algebra with
 respect to the operator norm. -/

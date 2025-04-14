@@ -206,7 +206,7 @@ section Normed
 section AnyFieldAnyAlgebra
 
 variable {𝕂 𝔸 𝔹 : Type*} [NontriviallyNormedField 𝕂]
-variable [NormedRing 𝔸] [NormedRing 𝔹] [NormedAlgebra 𝕂 𝔸] [NormedAlgebra 𝕂 𝔹]
+variable [Ring 𝔸] [NormedRing 𝔸] [Ring 𝔹] [NormedRing 𝔹] [NormedAlgebra 𝕂 𝔸] [NormedAlgebra 𝕂 𝔹]
 
 theorem norm_expSeries_summable_of_mem_ball (x : 𝔸)
     (hx : x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) :
@@ -361,7 +361,7 @@ end AnyFieldDivisionAlgebra
 
 section AnyFieldCommAlgebra
 
-variable {𝕂 𝔸 : Type*} [NontriviallyNormedField 𝕂] [NormedCommRing 𝔸] [NormedAlgebra 𝕂 𝔸]
+variable {𝕂 𝔸 : Type*} [NontriviallyNormedField 𝕂] [CommRing 𝔸] [NormedRing 𝔸] [NormedAlgebra 𝕂 𝔸]
   [CompleteSpace 𝔸]
 
 /-- In a commutative Banach-algebra `𝔸` over a normed field `𝕂` of characteristic zero,
@@ -378,8 +378,8 @@ section RCLike
 
 section AnyAlgebra
 
-variable (𝕂 𝔸 𝔹 : Type*) [RCLike 𝕂] [NormedRing 𝔸] [NormedAlgebra 𝕂 𝔸]
-variable [NormedRing 𝔹] [NormedAlgebra 𝕂 𝔹]
+variable (𝕂 𝔸 𝔹 : Type*) [RCLike 𝕂] [Ring 𝔸] [NormedRing 𝔸] [NormedAlgebra 𝕂 𝔸]
+variable [Ring 𝔹] [NormedRing 𝔹] [NormedAlgebra 𝕂 𝔹]
 
 /-- In a normed algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ`, the series defining the exponential map
 has an infinite radius of convergence. -/
@@ -521,19 +521,22 @@ theorem _root_.Prod.snd_exp [CompleteSpace 𝔹] (x : 𝔸 × 𝔹) : (exp 𝕂 
   map_exp _ (RingHom.snd 𝔸 𝔹) continuous_snd x
 
 @[simp]
-theorem _root_.Pi.coe_exp {ι : Type*} {𝔸 : ι → Type*} [Finite ι] [∀ i, NormedRing (𝔸 i)]
+theorem _root_.Pi.coe_exp {ι : Type*} {𝔸 : ι → Type*} [Finite ι]
+    [∀ i, Ring (𝔸 i)] [∀ i, NormedRing (𝔸 i)]
     [∀ i, NormedAlgebra 𝕂 (𝔸 i)] [∀ i, CompleteSpace (𝔸 i)] (x : ∀ i, 𝔸 i) (i : ι) :
     exp 𝕂 x i = exp 𝕂 (x i) :=
   let ⟨_⟩ := nonempty_fintype ι
   map_exp _ (Pi.evalRingHom 𝔸 i) (continuous_apply _) x
 
-theorem _root_.Pi.exp_def {ι : Type*} {𝔸 : ι → Type*} [Finite ι] [∀ i, NormedRing (𝔸 i)]
+theorem _root_.Pi.exp_def {ι : Type*} {𝔸 : ι → Type*} [Finite ι]
+    [∀ i, Ring (𝔸 i)] [∀ i, NormedRing (𝔸 i)]
     [∀ i, NormedAlgebra 𝕂 (𝔸 i)] [∀ i, CompleteSpace (𝔸 i)] (x : ∀ i, 𝔸 i) :
     exp 𝕂 x = fun i => exp 𝕂 (x i) :=
   funext <| Pi.coe_exp 𝕂 x
 
 theorem _root_.Function.update_exp {ι : Type*} {𝔸 : ι → Type*} [Finite ι] [DecidableEq ι]
-    [∀ i, NormedRing (𝔸 i)] [∀ i, NormedAlgebra 𝕂 (𝔸 i)] [∀ i, CompleteSpace (𝔸 i)] (x : ∀ i, 𝔸 i)
+    [∀ i, Ring (𝔸 i)] [∀ i, NormedRing (𝔸 i)]
+    [∀ i, NormedAlgebra 𝕂 (𝔸 i)] [∀ i, CompleteSpace (𝔸 i)] (x : ∀ i, 𝔸 i)
     (j : ι) (xj : 𝔸 j) :
     Function.update (exp 𝕂 x) j (exp 𝕂 xj) = exp 𝕂 (Function.update x j xj) := by
   ext i
@@ -585,7 +588,7 @@ end DivisionAlgebra
 
 section CommAlgebra
 
-variable {𝕂 𝔸 : Type*} [RCLike 𝕂] [NormedCommRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
+variable {𝕂 𝔸 : Type*} [RCLike 𝕂] [CommRing 𝔸] [NormedRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
 
 /-- In a commutative Banach-algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ`,
 `NormedSpace.exp 𝕂 (x+y) = (NormedSpace.exp 𝕂 x) * (NormedSpace.exp 𝕂 y)`. -/

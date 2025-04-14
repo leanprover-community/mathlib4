@@ -29,7 +29,8 @@ variable {a b : ℝ}
 
 section Parts
 
-variable {A : Type*} [NormedRing A] [NormedAlgebra ℝ A] [CompleteSpace A] {u v u' v' : ℝ → A}
+variable {A : Type*} [Ring A] [NormedRing A] [NormedAlgebra ℝ A] [CompleteSpace A]
+  {u v u' v' : ℝ → A}
 
 /-- The integral of the derivative of a product of two maps.
 For improper integrals, see `MeasureTheory.integral_deriv_mul_eq_sub`,

@@ -127,7 +127,7 @@ end
 end SeminormedAddCommGroup
 
 section SeminormedBounded
-variable [SeminormedRing 𝕜] [Ring 𝕜₂] [AddCommGroup E] [SeminormedAddGroup E]
+variable [Ring 𝕜] [SeminormedRing 𝕜] [Ring 𝕜₂] [AddCommGroup E] [SeminormedAddGroup E]
 variable [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 /-- Reinterpret a linear map `𝕜 →ₗ[𝕜] E` as a continuous linear map. This construction

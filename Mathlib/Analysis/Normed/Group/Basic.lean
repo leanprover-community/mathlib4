@@ -199,7 +199,7 @@ structure NormedCommGroup (E : Type*) extends Norm E, CommGroup E, MetricSpace E
 
 -- See note [lower instance priority]
 @[to_additive]
-instance (priority := 100) NormedGroup.toSeminormedGroup [Group E] [NormedGroup E] :
+instance (priority := 200) NormedGroup.toSeminormedGroup [Group E] [NormedGroup E] :
     SeminormedGroup E :=
   { ‹NormedGroup E› with }
 

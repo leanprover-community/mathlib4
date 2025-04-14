@@ -64,7 +64,7 @@ In this section we consider multiplicative (on coprime arguments) functions `f :
 where `R` is a complete normed commutative ring. The main result is `EulerProduct.eulerProduct`.
 -/
 
-variable {R : Type*} [NormedCommRing R] {f : ℕ → R}
+variable {R : Type*} [CommRing R] [NormedRing R] {f : ℕ → R}
 
 -- local instance to speed up typeclass search
 @[local instance] private lemma instT0Space : T0Space R := MetricSpace.instT0Space

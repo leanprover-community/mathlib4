@@ -33,7 +33,7 @@ variable {E F G H : Type*}
   [AddCommGroup H] [NormedAddGroup H] [NormedSpace 𝕜 H]
 
 variable {𝕝 : Type*} [NontriviallyNormedField 𝕝] [NormedAlgebra 𝕜 𝕝]
-variable {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A]
+variable {A : Type*} [Ring A] [NormedRing A] [NormedAlgebra 𝕜 A]
 
 /-!
 ### Constants are analytic
@@ -828,7 +828,7 @@ end
 
 section Geometric
 
-variable (𝕜 A : Type*) [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A]
+variable (𝕜 A : Type*) [NontriviallyNormedField 𝕜] [Ring A] [NormedRing A] [NormedAlgebra 𝕜 A]
 
 /-- The geometric series `1 + x + x ^ 2 + ...` as a `FormalMultilinearSeries`. -/
 def formalMultilinearSeries_geometric : FormalMultilinearSeries 𝕜 A A :=
@@ -852,21 +852,21 @@ lemma formalMultilinearSeries_geometric_apply_norm [NormOneClass A] (n : ℕ) :
 end Geometric
 
 lemma one_le_formalMultilinearSeries_geometric_radius (𝕜 : Type*) [NontriviallyNormedField 𝕜]
-    (A : Type*) [NormedRing A] [NormedAlgebra 𝕜 A] :
+    (A : Type*) [Ring A] [NormedRing A] [NormedAlgebra 𝕜 A] :
     1 ≤ (formalMultilinearSeries_geometric 𝕜 A).radius := by
   convert formalMultilinearSeries_geometric_eq_ofScalars 𝕜 A ▸
     FormalMultilinearSeries.ofScalars_radius_ge_inv_of_tendsto A _ one_ne_zero (by simp) |>.le
   simp
 
 lemma formalMultilinearSeries_geometric_radius (𝕜 : Type*) [NontriviallyNormedField 𝕜]
-    (A : Type*) [NormedRing A] [NormOneClass A] [NormedAlgebra 𝕜 A] :
+    (A : Type*) [Ring A] [NormedRing A] [NormOneClass A] [NormedAlgebra 𝕜 A] :
     (formalMultilinearSeries_geometric 𝕜 A).radius = 1 :=
   formalMultilinearSeries_geometric_eq_ofScalars 𝕜 A ▸
     FormalMultilinearSeries.ofScalars_radius_eq_of_tendsto A _ one_ne_zero (by simp)
 
 lemma hasFPowerSeriesOnBall_inverse_one_sub
     (𝕜 : Type*) [NontriviallyNormedField 𝕜]
-    (A : Type*) [NormedRing A] [NormedAlgebra 𝕜 A] [HasSummableGeomSeries A] :
+    (A : Type*) [Ring A] [NormedRing A] [NormedAlgebra 𝕜 A] [HasSummableGeomSeries A] :
     HasFPowerSeriesOnBall (fun x : A ↦ Ring.inverse (1 - x))
       (formalMultilinearSeries_geometric 𝕜 A) 0 1 := by
   constructor
@@ -881,7 +881,7 @@ lemma hasFPowerSeriesOnBall_inverse_one_sub
 
 @[fun_prop]
 lemma analyticAt_inverse_one_sub (𝕜 : Type*) [NontriviallyNormedField 𝕜]
-    (A : Type*) [NormedRing A] [NormedAlgebra 𝕜 A] [HasSummableGeomSeries A] :
+    (A : Type*) [Ring A] [NormedRing A] [NormedAlgebra 𝕜 A] [HasSummableGeomSeries A] :
     AnalyticAt 𝕜 (fun x : A ↦ Ring.inverse (1 - x)) 0 :=
   ⟨_, ⟨_, hasFPowerSeriesOnBall_inverse_one_sub 𝕜 A⟩⟩
 
@@ -889,7 +889,7 @@ lemma analyticAt_inverse_one_sub (𝕜 : Type*) [NontriviallyNormedField 𝕜]
 analytic at any unit. -/
 @[fun_prop]
 lemma analyticAt_inverse {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-    {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A] [HasSummableGeomSeries A] (z : Aˣ) :
+    {A : Type*} [Ring A] [NormedRing A] [NormedAlgebra 𝕜 A] [HasSummableGeomSeries A] (z : Aˣ) :
     AnalyticAt 𝕜 Ring.inverse (z : A) := by
   rcases subsingleton_or_nontrivial A with hA|hA
   · convert analyticAt_const (v := (0 : A))
@@ -917,7 +917,7 @@ lemma analyticAt_inverse {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     · exact analyticAt_const.sub (analyticAt_const.mul analyticAt_id)
 
 lemma analyticOnNhd_inverse {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-    {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A] [HasSummableGeomSeries A] :
+    {A : Type*} [Ring A] [NormedRing A] [NormedAlgebra 𝕜 A] [HasSummableGeomSeries A] :
     AnalyticOnNhd 𝕜 Ring.inverse {x : A | IsUnit x} :=
   fun _ hx ↦ analyticAt_inverse (IsUnit.unit hx)
 
@@ -1163,7 +1163,7 @@ theorem Finset.analyticOnNhd_sum {f : α → E → F} {s : Set E}
   fun z zs ↦ N.analyticAt_sum (fun n m ↦ h n m z zs)
 
 /-- Finite products of analytic functions are analytic -/
-theorem Finset.analyticWithinAt_prod {A : Type*} [NormedCommRing A] [NormedAlgebra 𝕜 A]
+theorem Finset.analyticWithinAt_prod {A : Type*} [CommRing A] [NormedRing A] [NormedAlgebra 𝕜 A]
     {f : α → E → A} {c : E} {s : Set E} (N : Finset α) (h : ∀ n ∈ N, AnalyticWithinAt 𝕜 (f n) s c) :
     AnalyticWithinAt 𝕜 (fun z ↦ ∏ n ∈ N, f n z) s c := by
   classical
@@ -1176,20 +1176,20 @@ theorem Finset.analyticWithinAt_prod {A : Type*} [NormedCommRing A] [NormedAlgeb
 
 /-- Finite products of analytic functions are analytic -/
 @[fun_prop]
-theorem Finset.analyticAt_prod {A : Type*} [NormedCommRing A] [NormedAlgebra 𝕜 A]
+theorem Finset.analyticAt_prod {A : Type*} [CommRing A] [NormedRing A] [NormedAlgebra 𝕜 A]
     {f : α → E → A} {c : E} (N : Finset α) (h : ∀ n ∈ N, AnalyticAt 𝕜 (f n) c) :
     AnalyticAt 𝕜 (fun z ↦ ∏ n ∈ N, f n z) c := by
   simp_rw [← analyticWithinAt_univ] at h ⊢
   exact N.analyticWithinAt_prod h
 
 /-- Finite products of analytic functions are analytic -/
-theorem Finset.analyticOn_prod {A : Type*} [NormedCommRing A] [NormedAlgebra 𝕜 A]
+theorem Finset.analyticOn_prod {A : Type*} [CommRing A] [NormedRing A] [NormedAlgebra 𝕜 A]
     {f : α → E → A} {s : Set E} (N : Finset α) (h : ∀ n ∈ N, AnalyticOn 𝕜 (f n) s) :
     AnalyticOn 𝕜 (fun z ↦ ∏ n ∈ N, f n z) s :=
   fun z zs ↦ N.analyticWithinAt_prod (fun n m ↦ h n m z zs)
 
 /-- Finite products of analytic functions are analytic -/
-theorem Finset.analyticOnNhd_prod {A : Type*} [NormedCommRing A] [NormedAlgebra 𝕜 A]
+theorem Finset.analyticOnNhd_prod {A : Type*} [CommRing A] [NormedRing A] [NormedAlgebra 𝕜 A]
     {f : α → E → A} {s : Set E} (N : Finset α) (h : ∀ n ∈ N, AnalyticOnNhd 𝕜 (f n) s) :
     AnalyticOnNhd 𝕜 (fun z ↦ ∏ n ∈ N, f n z) s :=
   fun z zs ↦ N.analyticAt_prod (fun n m ↦ h n m z zs)

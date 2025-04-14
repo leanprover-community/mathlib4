@@ -468,7 +468,7 @@ theorem Integrable.essSup_smul {𝕜 : Type*} [NormedField 𝕜] [NormedSpace �
 
 /-- Hölder's inequality for integrable functions: the scalar multiplication of an integrable
 scalar-valued function by a vector-value function with finite essential supremum is integrable. -/
-theorem Integrable.smul_essSup {𝕜 : Type*} [NormedRing 𝕜] [MulActionWithZero 𝕜 β]
+theorem Integrable.smul_essSup {𝕜 : Type*} [Ring 𝕜] [NormedRing 𝕜] [MulActionWithZero 𝕜 β]
     [IsBoundedSMul 𝕜 β] {f : α → 𝕜} (hf : Integrable f μ) {g : α → β}
     (g_aestronglyMeasurable : AEStronglyMeasurable g μ) (ess_sup_g : essSup (‖g ·‖ₑ) μ ≠ ∞) :
     Integrable (fun x : α => f x • g x) μ := by
@@ -827,7 +827,7 @@ theorem Integrable.smul [AddCommGroup 𝕜] [NormedAddGroup 𝕜]
     {f : α → β} (hf : Integrable f μ) : Integrable (c • f) μ :=
   ⟨hf.aestronglyMeasurable.const_smul c, hf.hasFiniteIntegral.smul c⟩
 
-theorem _root_.IsUnit.integrable_smul_iff [NormedRing 𝕜] [MulActionWithZero 𝕜 β]
+theorem _root_.IsUnit.integrable_smul_iff [Ring 𝕜] [NormedRing 𝕜] [MulActionWithZero 𝕜 β]
     [IsBoundedSMul 𝕜 β] {c : 𝕜} (hc : IsUnit c) (f : α → β) :
     Integrable (c • f) μ ↔ Integrable f μ :=
   and_congr hc.aestronglyMeasurable_const_smul_iff (hasFiniteIntegral_smul_iff hc f)
@@ -842,7 +842,7 @@ theorem integrable_fun_smul_iff [NormedDivisionRing 𝕜] [MulActionWithZero �
     Integrable (fun x ↦ c • f x) μ ↔ Integrable f μ :=
   integrable_smul_iff hc f
 
-variable [NormedRing 𝕜] [Module 𝕜 β] [IsBoundedSMul 𝕜 β]
+variable [Ring 𝕜] [NormedRing 𝕜] [Module 𝕜 β] [IsBoundedSMul 𝕜 β]
 
 theorem Integrable.smul_of_top_right {f : α → β} {φ : α → 𝕜} (hf : Integrable f μ)
     (hφ : MemLp φ ∞ μ) : Integrable (φ • f) μ := by
@@ -878,7 +878,7 @@ end NormedSpaceOverCompleteField
 
 section NormedRing
 
-variable {𝕜 : Type*} [NormedRing 𝕜] {f : α → 𝕜}
+variable {𝕜 : Type*} [Ring 𝕜] [NormedRing 𝕜] {f : α → 𝕜}
 
 @[fun_prop]
 theorem Integrable.const_mul {f : α → 𝕜} (h : Integrable f μ) (c : 𝕜) :

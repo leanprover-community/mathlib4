@@ -331,8 +331,9 @@ theorem iteratedFDeriv_sum {ι : Type*} {f : ι → E → F} {u : Finset ι} {i 
 
 section MulProd
 
-variable {𝔸 𝔸' ι 𝕜' : Type*} [NormedRing 𝔸] [NormedAlgebra 𝕜 𝔸] [NormedCommRing 𝔸']
-  [NormedAlgebra 𝕜 𝔸'] [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
+variable {𝔸 𝔸' ι 𝕜' : Type*} [Ring 𝔸] [NormedRing 𝔸] [NormedAlgebra 𝕜 𝔸]
+  [CommRing 𝔸'] [NormedRing 𝔸'] [NormedAlgebra 𝕜 𝔸']
+  [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
 
 -- The product is smooth.
 theorem contDiff_mul : ContDiff 𝕜 n fun p : 𝔸 × 𝔸 => p.1 * p.2 :=
@@ -595,7 +596,7 @@ end prodMap
 section AlgebraInverse
 
 variable (𝕜)
-variable {R : Type*} [NormedRing R] [NormedAlgebra 𝕜 R]
+variable {R : Type*} [Ring R] [NormedRing R] [NormedAlgebra 𝕜 R]
 
 open NormedRing ContinuousLinearMap Ring
 

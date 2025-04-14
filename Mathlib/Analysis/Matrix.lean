@@ -188,7 +188,7 @@ section NormedSpace
 attribute [local instance] Matrix.seminormedAddGroup
 
 /-- This applies to the sup norm of sup norm. -/
-protected theorem isBoundedSMul [SeminormedRing R]
+protected theorem isBoundedSMul [Ring R] [SeminormedRing R]
     [AddCommGroup α] [SeminormedAddGroup α] [Module R α]
     [IsBoundedSMul R α] : IsBoundedSMul R (Matrix m n α) :=
   Pi.instIsBoundedSMul
@@ -237,7 +237,8 @@ protected def linftyOpNormedAddGroup [AddCommGroup α] [NormedAddGroup α] :
 /-- This applies to the sup norm of L1 norm. -/
 @[local instance]
 protected theorem linftyOpIsBoundedSMul
-    [SeminormedRing R] [AddCommGroup α] [SeminormedAddGroup α] [Module R α] [IsBoundedSMul R α] :
+    [Ring R] [SeminormedRing R] [AddCommGroup α] [SeminormedAddGroup α]
+    [Module R α] [IsBoundedSMul R α] :
     IsBoundedSMul R (Matrix m n α) :=
   (by infer_instance : IsBoundedSMul R (m → PiLp 1 fun j : n => α))
 
@@ -305,7 +306,7 @@ end SeminormedAddCommGroup
 
 section NonUnitalSeminormedRing
 
-variable [NonUnitalSeminormedRing α]
+variable [NonUnitalRing α] [SeminormedRing α]
 
 theorem linfty_opNNNorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B‖₊ ≤ ‖A‖₊ * ‖B‖₊ := by
   simp_rw [linfty_opNNNorm_def, Matrix.mul_apply]
@@ -341,46 +342,40 @@ end NonUnitalSeminormedRing
 non-unital ring. Not declared as an instance because there are several natural choices for defining
 the norm of a matrix. -/
 @[local instance]
-protected def linftyOpNonUnitalSemiNormedRing [NonUnitalSeminormedRing α] :
-    NonUnitalSeminormedRing (Matrix n n α) :=
-  { Matrix.linftyOpSeminormedAddGroup, Matrix.instNonUnitalRing with
+protected def linftyOpSeminormedRing [NonUnitalRing α] [SeminormedRing α] :
+    SeminormedRing (Matrix n n α) :=
+  { Matrix.linftyOpSeminormedAddGroup with
     norm_mul_le := linfty_opNorm_mul }
+
+@[deprecated (since := "2025-04-14")]
+protected noncomputable alias linftyOpNonUnitalSemiNormedRing := Matrix.linftyOpSeminormedRing
 
 /-- The `L₁-L∞` norm preserves one on non-empty matrices. Note this is safe as an instance, as it
 carries no data. -/
-instance linfty_opNormOneClass [SeminormedRing α] [NormOneClass α] [DecidableEq n] [Nonempty n] :
+instance linfty_opNormOneClass [Ring α] [SeminormedRing α] [NormOneClass α]
+    [DecidableEq n] [Nonempty n] :
     NormOneClass (Matrix n n α) where norm_one := (linfty_opNorm_diagonal _).trans norm_one
 
-/-- Seminormed ring instance (using sup norm of L1 norm) for matrices over a semi normed ring.  Not
-declared as an instance because there are several natural choices for defining the norm of a
-matrix. -/
-@[local instance]
-protected def linftyOpSemiNormedRing [SeminormedRing α] [DecidableEq n] :
-    SeminormedRing (Matrix n n α) :=
-  { Matrix.linftyOpNonUnitalSemiNormedRing, Matrix.instRing with }
-
-/-- Normed non-unital ring instance (using sup norm of L1 norm) for matrices over a normed
-non-unital ring. Not declared as an instance because there are several natural choices for defining
-the norm of a matrix. -/
-@[local instance]
-protected def linftyOpNonUnitalNormedRing [NonUnitalNormedRing α] :
-    NonUnitalNormedRing (Matrix n n α) :=
-  { Matrix.linftyOpNonUnitalSemiNormedRing with
-    eq_of_dist_eq_zero := eq_of_dist_eq_zero }
+@[deprecated (since := "2025-04-14")]
+protected noncomputable alias linftyOpSemiNormedRing := Matrix.linftyOpSeminormedRing
 
 /-- Normed ring instance (using sup norm of L1 norm) for matrices over a normed ring.  Not
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[local instance]
-protected def linftyOpNormedRing [NormedRing α] [DecidableEq n] : NormedRing (Matrix n n α) :=
-  { Matrix.linftyOpSemiNormedRing with
+protected def linftyOpNormedRing [Ring α] [NormedRing α] [DecidableEq n] :
+    NormedRing (Matrix n n α) :=
+  { Matrix.linftyOpSeminormedRing with
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
+
+@[deprecated (since := "2025-04-14")]
+protected noncomputable alias linftyOpNonUnitalNormedRing := Matrix.linftyOpSeminormedRing
 
 /-- Normed algebra instance (using sup norm of L1 norm) for matrices over a normed algebra. Not
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[local instance]
-protected def linftyOpNormedAlgebra [NormedField R] [SeminormedRing α] [NormedAlgebra R α]
+protected def linftyOpNormedAlgebra [NormedField R] [Ring α] [SeminormedRing α] [NormedAlgebra R α]
     [DecidableEq n] : NormedAlgebra R (Matrix n n α) :=
   { Matrix.linftyOpNormedSpace, Matrix.instAlgebra with }
 
@@ -479,7 +474,7 @@ def frobeniusNormedAddGroup [AddCommGroup α] [NormedAddGroup α] : NormedAddGro
 
 /-- This applies to the frobenius norm. -/
 @[local instance]
-theorem frobeniusIsBoundedSMul [SeminormedRing R]
+theorem frobeniusIsBoundedSMul [Ring R] [SeminormedRing R]
     [AddCommGroup α] [SeminormedAddGroup α] [Module R α] [IsBoundedSMul R α] :
     IsBoundedSMul R (Matrix m n α) :=
   (by infer_instance : IsBoundedSMul R (PiLp 2 fun i : m => PiLp 2 fun j : n => α))
@@ -626,7 +621,7 @@ declared as an instance because there are several natural choices for defining t
 matrix. -/
 @[local instance]
 def frobeniusNormedRing [DecidableEq m] : NormedRing (Matrix m m α) :=
-  { Matrix.frobeniusSeminormedAddGroup, Matrix.instRing with
+  { Matrix.frobeniusSeminormedAddGroup with
     norm := Norm.norm
     norm_mul_le := frobenius_norm_mul
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }

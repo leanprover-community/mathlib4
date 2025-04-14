@@ -45,7 +45,7 @@ section balancedHull
 
 section SeminormedRing
 
-variable [SeminormedRing 𝕜]
+variable [Ring 𝕜] [SeminormedRing 𝕜]
 
 section SMul
 

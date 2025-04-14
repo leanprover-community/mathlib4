@@ -502,8 +502,8 @@ nonrec theorem Submodule.Quotient.norm_mk_lt {S : Submodule R M} (x : M ⧸ S) {
 theorem Submodule.Quotient.norm_mk_le (m : M) : ‖(Submodule.Quotient.mk m : M ⧸ S)‖ ≤ ‖m‖ :=
   norm_mk_le_norm
 
-instance Submodule.Quotient.instIsBoundedSMul (𝕜 : Type*)
-    [SeminormedCommRing 𝕜] [Module 𝕜 M] [IsBoundedSMul 𝕜 M] [SMul 𝕜 R] [IsScalarTower 𝕜 R M] :
+instance Submodule.Quotient.instIsBoundedSMul (𝕜 : Type*) [CommRing 𝕜] [SeminormedRing 𝕜]
+    [Module 𝕜 M] [IsBoundedSMul 𝕜 M] [SMul 𝕜 R] [IsScalarTower 𝕜 R M] :
     IsBoundedSMul 𝕜 (M ⧸ S) :=
   .of_norm_smul_le fun k x =>
     -- Porting note: this is `QuotientAddGroup.norm_lift_apply_le` for `f : M → M ⧸ S` given by
@@ -527,7 +527,7 @@ end Submodule
 
 section Ideal
 
-variable {R : Type*} [SeminormedCommRing R] (I : Ideal R)
+variable {R : Type*} [CommRing R] [SeminormedRing R] (I : Ideal R)
 
 nonrec theorem Ideal.Quotient.norm_mk_lt {I : Ideal R} (x : R ⧸ I) {ε : ℝ} (hε : 0 < ε) :
     ∃ r : R, Ideal.Quotient.mk I r = x ∧ ‖r‖ < ‖x‖ + ε :=
@@ -535,9 +535,8 @@ nonrec theorem Ideal.Quotient.norm_mk_lt {I : Ideal R} (x : R ⧸ I) {ε : ℝ} 
 
 theorem Ideal.Quotient.norm_mk_le (r : R) : ‖Ideal.Quotient.mk I r‖ ≤ ‖r‖ := norm_mk_le_norm
 
-instance Ideal.Quotient.semiNormedCommRing : SeminormedCommRing (R ⧸ I) where
+instance Ideal.Quotient.seminormedRing : SeminormedRing (R ⧸ I) where
   dist_eq := dist_eq_norm
-  mul_comm := _root_.mul_comm
   norm_mul_le x y := le_of_forall_pos_le_add fun ε hε => by
     have := ((nhds_basis_ball.prod_nhds nhds_basis_ball).tendsto_iff nhds_basis_ball).mp
       (continuous_mul.tendsto (‖x‖, ‖y‖)) ε hε
@@ -552,8 +551,8 @@ instance Ideal.Quotient.semiNormedCommRing : SeminormedCommRing (R ⧸ I) where
       _ ≤ ‖a‖ * ‖b‖ := (Ideal.Quotient.norm_mk_le I (a * b)).trans (norm_mul_le a b)
       _ ≤ _ := (sub_lt_iff_lt_add'.mp h.1).le
 
-instance Ideal.Quotient.normedCommRing [IsClosed (I : Set R)] : NormedCommRing (R ⧸ I) :=
-  { Ideal.Quotient.semiNormedCommRing I, Submodule.Quotient.normedAddGroup I with }
+instance Ideal.Quotient.normedRing [IsClosed (I : Set R)] : NormedRing (R ⧸ I) :=
+  { Ideal.Quotient.seminormedRing I, Submodule.Quotient.normedAddGroup I with }
 
 variable (𝕜 : Type*) [NormedField 𝕜]
 

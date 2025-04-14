@@ -265,7 +265,7 @@ theorem isBigO_atTop_natCast_rpow_of_tendsto_div_rpow {𝕜 : Type*} [RCLike �
     simp [Real.rpow_eq_zero_iff_of_nonneg, h]
   · exact hlim.norm.congr fun n ↦ by simp [abs_of_nonneg, show 0 ≤ (n : ℝ) ^ r by positivity]
 
-variable {E : Type*} [SeminormedRing E] (a b c : ℝ)
+variable {E : Type*} [Ring E] [SeminormedRing E] (a b c : ℝ)
 
 theorem IsBigO.mul_atTop_rpow_of_isBigO_rpow {f g : ℝ → E}
     (hf : f =O[atTop] fun t ↦ (t : ℝ) ^ a) (hg : g =O[atTop] fun t ↦ (t : ℝ) ^ b)

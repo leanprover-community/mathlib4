@@ -234,7 +234,7 @@ theorem eventually_nhds_zero_mapsTo [TopologicalSpace F] [IsTopologicalAddGroup 
   apply_rules [mem_iInf_of_mem, mem_principal_self]
 
 variable {σ F} in
-theorem isVonNBounded_image2_apply {R : Type*} [SeminormedRing R]
+theorem isVonNBounded_image2_apply {R : Type*} [Ring R] [SeminormedRing R]
     [TopologicalSpace F] [IsTopologicalAddGroup F]
     [DistribMulAction R F] [ContinuousConstSMul R F] [SMulCommClass 𝕜₂ R F]
     {𝔖 : Set (Set E)} {S : Set (UniformConvergenceCLM σ F 𝔖)} (hS : IsVonNBounded R S)
@@ -425,7 +425,7 @@ and `s` is a von Neumann bounded set in the domain,
 then the set `{f x | (f ∈ S) (x ∈ s)}` is von Neumann bounded.
 
 See also `isVonNBounded_iff` for an `Iff` version with stronger typeclass assumptions. -/
-theorem isVonNBounded_image2_apply {R : Type*} [SeminormedRing R]
+theorem isVonNBounded_image2_apply {R : Type*} [Ring R] [SeminormedRing R]
     [TopologicalSpace F] [IsTopologicalAddGroup F]
     [DistribMulAction R F] [ContinuousConstSMul R F] [SMulCommClass 𝕜₂ R F]
     {S : Set (E →SL[σ] F)} (hS : IsVonNBounded R S) {s : Set E} (hs : IsVonNBounded 𝕜₁ s) :

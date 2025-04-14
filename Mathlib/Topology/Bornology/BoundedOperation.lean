@@ -171,7 +171,7 @@ section NonUnitalSeminormedRing
 ### Bounded operations in non-unital seminormed rings
 -/
 
-variable {R : Type*} [NonUnitalSeminormedRing R]
+variable {R : Type*} [NonUnitalRing R] [SeminormedRing R]
 
 instance : BoundedMul R where
   isBounded_mul {s t} hs ht := by

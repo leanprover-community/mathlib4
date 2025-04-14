@@ -70,7 +70,8 @@ instance (priority := 900) _root_.NormedSpace.complexToReal : NormedSpace ℝ E 
 
 -- see Note [lower instance priority]
 /-- The algebra structure from `Algebra.complexToReal` is a normed algebra. -/
-instance (priority := 900) _root_.NormedAlgebra.complexToReal {A : Type*} [SeminormedRing A]
+instance (priority := 900) _root_.NormedAlgebra.complexToReal {A : Type*}
+    [Ring A] [SeminormedRing A]
     [NormedAlgebra ℂ A] : NormedAlgebra ℝ A :=
   NormedAlgebra.restrictScalars ℝ ℂ A
 

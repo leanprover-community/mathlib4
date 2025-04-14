@@ -266,8 +266,8 @@ end
 
 section
 
-variable {ι : Type*} {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A] {A' : Type*} [NormedCommRing A']
-  [NormedAlgebra 𝕜 A']
+variable {ι : Type*} {A : Type*} [Ring A] [NormedRing A] [NormedAlgebra 𝕜 A]
+  {A' : Type*} [CommRing A'] [NormedRing A'] [NormedAlgebra 𝕜 A']
 
 theorem norm_iteratedFDerivWithin_mul_le {f : E → A} {g : E → A} {N : WithTop ℕ∞}
     (hf : ContDiffOn 𝕜 N f s) (hg : ContDiffOn 𝕜 N g s) (hs : UniqueDiffOn 𝕜 s)

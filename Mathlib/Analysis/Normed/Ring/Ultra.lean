@@ -41,7 +41,7 @@ namespace IsUltrametricDist
 
 section NormOneClass
 
-variable {R : Type*} [SeminormedRing R] [NormOneClass R] [IsUltrametricDist R]
+variable {R : Type*} [Ring R] [SeminormedRing R] [NormOneClass R] [IsUltrametricDist R]
 
 lemma norm_add_one_le_max_norm_one (x : R) :
     ‖x + 1‖ ≤ max ‖x‖ 1 := by

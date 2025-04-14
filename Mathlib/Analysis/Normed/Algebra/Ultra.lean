@@ -22,7 +22,8 @@ Let `K` be a normed field. If a seminormed ring `L` is a normed `K`-algebra, and
 then `K` is ultrametric (i.e. the norm on `L` is nonarchimedean) if `F` is.
 This can be further generalized to the case where `‖1‖ ≠ 0` in `L`.
 -/
-theorem IsUltrametricDist.of_normedAlgebra' [SeminormedRing L] [NormOneClass L] [NormedAlgebra K L]
+theorem IsUltrametricDist.of_normedAlgebra' [Ring L] [SeminormedRing L] [NormOneClass L]
+    [NormedAlgebra K L]
     [h : IsUltrametricDist L] : IsUltrametricDist K :=
   ⟨fun x y z => by
     simpa using h.dist_triangle_max (algebraMap K L x) (algebraMap K L y) (algebraMap K L z)⟩

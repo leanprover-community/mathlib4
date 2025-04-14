@@ -269,7 +269,8 @@ theorem Lp.norm_const_le : ‖Lp.const p μ c‖ ≤ ‖c‖ * (μ Set.univ).toR
   exact norm_indicatorConstLp_le
 
 /-- `MeasureTheory.Lp.const` as a `LinearMap`. -/
-@[simps] protected def Lp.constₗ (𝕜 : Type*) [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E] :
+@[simps] protected def Lp.constₗ (𝕜 : Type*) [Ring 𝕜] [NormedRing 𝕜]
+    [Module 𝕜 E] [IsBoundedSMul 𝕜 E] :
     E →ₗ[𝕜] Lp E p μ where
   toFun := Lp.const p μ
   map_add' := map_add _

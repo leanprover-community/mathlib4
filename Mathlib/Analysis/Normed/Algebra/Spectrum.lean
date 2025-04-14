@@ -65,7 +65,7 @@ section SpectrumCompact
 
 open Filter
 
-variable [NormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A]
+variable [NormedField 𝕜] [Ring A] [NormedRing A] [NormedAlgebra 𝕜 A]
 
 local notation "σ" => spectrum 𝕜
 local notation "ρ" => resolventSet 𝕜
@@ -127,7 +127,7 @@ protected theorem isCompact [ProperSpace 𝕜] (a : A) : IsCompact (σ a) :=
 instance instCompactSpace [ProperSpace 𝕜] (a : A) : CompactSpace (spectrum 𝕜 a) :=
   isCompact_iff_compactSpace.mp <| spectrum.isCompact a
 
-instance instCompactSpaceNNReal {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
+instance instCompactSpaceNNReal {A : Type*} [Ring A] [NormedRing A] [NormedAlgebra ℝ A]
     (a : A) [CompactSpace (spectrum ℝ a)] : CompactSpace (spectrum ℝ≥0 a) := by
   rw [← isCompact_iff_compactSpace] at *
   rw [← preimage_algebraMap ℝ]
@@ -135,7 +135,7 @@ instance instCompactSpaceNNReal {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
 
 section QuasispectrumCompact
 
-variable {B : Type*} [NonUnitalNormedRing B] [NormedSpace 𝕜 B] [CompleteSpace B]
+variable {B : Type*} [NonUnitalRing B] [NormedRing B] [NormedSpace 𝕜 B] [CompleteSpace B]
 variable [IsScalarTower 𝕜 B B] [SMulCommClass 𝕜 B B] [ProperSpace 𝕜]
 
 theorem _root_.quasispectrum.isCompact (a : B) : IsCompact (quasispectrum 𝕜 a) := by
@@ -160,7 +160,7 @@ section NNReal
 
 open NNReal
 
-variable {A : Type*} [NormedRing A] [NormedAlgebra ℝ A] [CompleteSpace A] [NormOneClass A]
+variable {A : Type*} [Ring A] [NormedRing A] [NormedAlgebra ℝ A] [CompleteSpace A] [NormOneClass A]
 
 theorem le_nnnorm_of_mem {a : A} {r : ℝ≥0} (hr : r ∈ spectrum ℝ≥0 a) :
     r ≤ ‖a‖₊ := calc
@@ -235,7 +235,7 @@ section resolvent
 
 open Filter Asymptotics Bornology Topology
 
-variable [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
+variable [NontriviallyNormedField 𝕜] [Ring A] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
 
 local notation "ρ" => resolventSet 𝕜
 local notation "↑ₐ" => algebraMap 𝕜 A
@@ -277,7 +277,7 @@ open ContinuousMultilinearMap ENNReal FormalMultilinearSeries
 
 open scoped NNReal ENNReal
 
-variable [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A]
+variable [NontriviallyNormedField 𝕜] [Ring A] [NormedRing A] [NormedAlgebra 𝕜 A]
 
 variable (𝕜) in
 /-- In a Banach algebra `A` over a nontrivially normed field `𝕜`, for any `a : A` the
@@ -345,7 +345,7 @@ open Filter ENNReal ContinuousMultilinearMap
 
 open scoped Topology
 
-variable [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A]
+variable [Ring A] [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A]
 
 /-- The `limsup` relationship for the spectral radius used to prove `spectrum.gelfand_formula`. -/
 theorem limsup_pow_nnnorm_pow_one_div_le_spectralRadius (a : A) :
@@ -388,7 +388,7 @@ end GelfandFormula
 
 section NonemptySpectrum
 
-variable [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [Nontrivial A] (a : A)
+variable [Ring A] [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [Nontrivial A] (a : A)
 
 /-- In a (nontrivial) complex Banach algebra, every element has nonempty spectrum. -/
 protected theorem nonempty : (spectrum ℂ a).Nonempty := by
@@ -434,7 +434,7 @@ end NonemptySpectrum
 
 section GelfandMazurIsomorphism
 
-variable [NormedRing A] [NormedAlgebra ℂ A] (hA : ∀ {a : A}, IsUnit a ↔ a ≠ 0)
+variable [Ring A] [NormedRing A] [NormedAlgebra ℂ A] (hA : ∀ {a : A}, IsUnit a ↔ a ≠ 0)
 include hA
 
 local notation "σ" => spectrum ℂ
@@ -456,11 +456,11 @@ noncomputable def _root_.NormedRing.algEquivComplexOfComplete [CompleteSpace A] 
   let nt : Nontrivial A := ⟨⟨1, 0, hA.mp ⟨⟨1, 1, mul_one _, mul_one _⟩, rfl⟩⟩⟩
   { Algebra.ofId ℂ A with
     toFun := algebraMap ℂ A
-    invFun := fun a => (@spectrum.nonempty _ _ _ _ nt a).some
+    invFun := fun a => (spectrum.nonempty a).some
     left_inv := fun z => by
-      simpa only [@scalar_eq _ _ _ _ _ nt _] using
-        (@spectrum.nonempty _ _ _ _ nt <| algebraMap ℂ A z).some_mem
-    right_inv := fun a => algebraMap_eq_of_mem (@hA) (@spectrum.nonempty _ _ _ _ nt a).some_mem }
+      simpa only [scalar_eq] using
+        (spectrum.nonempty <| algebraMap ℂ A z).some_mem
+    right_inv := fun a => algebraMap_eq_of_mem hA (spectrum.nonempty a).some_mem }
 
 end GelfandMazurIsomorphism
 
@@ -469,7 +469,7 @@ section ExpMapping
 local notation "↑ₐ" => algebraMap 𝕜 A
 
 /-- For `𝕜 = ℝ` or `𝕜 = ℂ`, `exp 𝕜` maps the spectrum of `a` into the spectrum of `exp 𝕜 a`. -/
-theorem exp_mem_exp [RCLike 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A] (a : A)
+theorem exp_mem_exp [RCLike 𝕜] [Ring A] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A] (a : A)
     {z : 𝕜} (hz : z ∈ spectrum 𝕜 a) : exp 𝕜 z ∈ spectrum 𝕜 (exp 𝕜 a) := by
   have hexpmul : exp 𝕜 a = exp 𝕜 (a - ↑ₐ z) * ↑ₐ (exp 𝕜 z) := by
     rw [algebraMap_exp_comm z, ← exp_add_of_commute (Algebra.commutes z (a - ↑ₐ z)).symm,
@@ -503,7 +503,7 @@ namespace AlgHom
 
 section NormedField
 
-variable {F : Type*} [NormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
+variable {F : Type*} [NormedField 𝕜] [Ring A] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
 
 local notation "↑ₐ" => algebraMap 𝕜 A
 
@@ -535,7 +535,7 @@ end NormedField
 
 section NontriviallyNormedField
 
-variable [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
+variable [NontriviallyNormedField 𝕜] [Ring A] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
 
 local notation "↑ₐ" => algebraMap 𝕜 A
 
@@ -554,7 +554,7 @@ namespace WeakDual
 
 namespace CharacterSpace
 
-variable [NontriviallyNormedField 𝕜] [NormedRing A] [CompleteSpace A]
+variable [NontriviallyNormedField 𝕜] [Ring A] [NormedRing A] [CompleteSpace A]
 variable [NormedAlgebra 𝕜 A]
 
 /-- The equivalence between characters and algebra homomorphisms into the base field. -/
@@ -582,7 +582,8 @@ section BoundarySpectrum
 
 local notation "σ" => spectrum
 
-variable {𝕜 A SA : Type*} [NormedRing A] [CompleteSpace A] [SetLike SA A] [SubringClass SA A]
+variable {𝕜 A SA : Type*} [Ring A] [NormedRing A] [CompleteSpace A]
+  [SetLike SA A] [SubringClass SA A]
 
 open Topology Filter Set
 
@@ -715,7 +716,7 @@ open NNReal ENNReal
 is an element whose `𝕜₂` spectrum restricts to `𝕜₁`, then the spectral radii over each scalar
 field coincide. -/
 lemma spectralRadius_eq {𝕜₁ 𝕜₂ A : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂]
-    [NormedRing A] [NormedAlgebra 𝕜₁ A] [NormedAlgebra 𝕜₂ A] [NormedAlgebra 𝕜₁ 𝕜₂]
+    [Ring A] [NormedRing A] [NormedAlgebra 𝕜₁ A] [NormedAlgebra 𝕜₂ A] [NormedAlgebra 𝕜₁ 𝕜₂]
     [IsScalarTower 𝕜₁ 𝕜₂ A] {f : 𝕜₂ → 𝕜₁} {a : A} (h : SpectrumRestricts a f) :
     spectralRadius 𝕜₁ a = spectralRadius 𝕜₂ a := by
   rw [spectralRadius, spectralRadius]
@@ -791,7 +792,8 @@ lemma nnreal_iff_spectralRadius_le [Algebra ℝ A] {a : A} {t : ℝ≥0} (ht : s
     rw [← NNReal.coe_le_coe, coe_nnnorm, Real.norm_eq_abs, abs_le] at h_le
     linarith [h_le.2]
 
-lemma _root_.NNReal.spectralRadius_mem_spectrum {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
+lemma _root_.NNReal.spectralRadius_mem_spectrum {A : Type*}
+    [Ring A] [NormedRing A] [NormedAlgebra ℝ A]
     [CompleteSpace A] {a : A} (ha : (spectrum ℝ a).Nonempty)
     (ha' : SpectrumRestricts a ContinuousMap.realToNNReal) :
     (spectralRadius ℝ a).toNNReal ∈ spectrum ℝ≥0 a := by
@@ -801,13 +803,15 @@ lemma _root_.NNReal.spectralRadius_mem_spectrum {A : Type*} [NormedRing A] [Norm
   convert hx₁
   simpa
 
-lemma _root_.Real.spectralRadius_mem_spectrum {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
+lemma _root_.Real.spectralRadius_mem_spectrum {A : Type*}
+    [Ring A] [NormedRing A] [NormedAlgebra ℝ A]
     [CompleteSpace A] {a : A} (ha : (spectrum ℝ a).Nonempty)
     (ha' : SpectrumRestricts a ContinuousMap.realToNNReal) :
     (spectralRadius ℝ a).toReal ∈ spectrum ℝ a :=
   NNReal.spectralRadius_mem_spectrum ha ha'
 
-lemma _root_.Real.spectralRadius_mem_spectrum_or {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
+lemma _root_.Real.spectralRadius_mem_spectrum_or {A : Type*}
+    [Ring A] [NormedRing A] [NormedAlgebra ℝ A]
     [CompleteSpace A] {a : A} (ha : (spectrum ℝ a).Nonempty) :
     (spectralRadius ℝ a).toReal ∈ spectrum ℝ a ∨ -(spectralRadius ℝ a).toReal ∈ spectrum ℝ a := by
   obtain ⟨x, hx₁, hx₂⟩ := spectrum.exists_nnnorm_eq_spectralRadius_of_nonempty ha

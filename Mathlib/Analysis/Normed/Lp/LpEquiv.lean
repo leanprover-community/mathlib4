@@ -121,8 +121,8 @@ open BoundedContinuousFunction
 
 -- note: `R` and `A` are explicit because otherwise Lean has elaboration problems
 variable {α E : Type*} (R A 𝕜 : Type*) [TopologicalSpace α] [DiscreteTopology α]
-variable [NormedRing A] [NormOneClass A] [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 A]
-variable [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E] [NonUnitalNormedRing R]
+variable [Ring A] [NormedRing A] [NormOneClass A] [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 A]
+variable [AddCommGroup E] [NormedAddGroup E] [NormedSpace 𝕜 E] [NonUnitalRing R] [NormedRing R]
 
 section NormedAddCommGroup
 

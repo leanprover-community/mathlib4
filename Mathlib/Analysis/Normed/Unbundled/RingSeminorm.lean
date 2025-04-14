@@ -186,7 +186,7 @@ theorem map_pow_le_pow' {F α : Type*} [Ring α] [FunLike F α ℝ] [RingSeminor
       (mul_le_mul_of_nonneg_right (map_pow_le_pow' hf1 _ n) (apply_nonneg f a))
 
 /-- The norm of a `NonUnitalSeminormedRing` as a `RingSeminorm`. -/
-def normRingSeminorm (R : Type*) [NonUnitalSeminormedRing R] : RingSeminorm R :=
+def normRingSeminorm (R : Type*) [NonUnitalRing R] [SeminormedRing R] : RingSeminorm R :=
   { normAddGroupSeminorm R with
     toFun := norm
     mul_le' := norm_mul_le }
@@ -446,7 +446,7 @@ def RingSeminorm.toRingNorm {K : Type*} [Field K] (f : RingSeminorm K) (hnt : f 
 
 /-- The norm of a `NonUnitalNormedRing` as a `RingNorm`. -/
 @[simps!]
-def normRingNorm (R : Type*) [NonUnitalNormedRing R] : RingNorm R :=
+def normRingNorm (R : Type*) [NonUnitalRing R] [NormedRing R] : RingNorm R :=
   { normAddGroupNorm R, normRingSeminorm R with }
 
 
@@ -472,7 +472,7 @@ lemma MulRingNorm.apply_natAbs_eq {R : Type*} [Ring R] (x : ℤ) (f : MulRingNor
   simp only [natAbs_neg, natAbs_ofNat, cast_neg, cast_natCast, map_neg_eq_map]
 
 /-- The seminorm on a `SeminormedRing`, as a `RingSeminorm`. -/
-def SeminormedRing.toRingSeminorm (R : Type*) [SeminormedRing R] : RingSeminorm R where
+def SeminormedRing.toRingSeminorm (R : Type*) [Ring R] [SeminormedRing R] : RingSeminorm R where
   toFun     := norm
   map_zero' := norm_zero
   add_le'   := norm_add_le
@@ -481,7 +481,7 @@ def SeminormedRing.toRingSeminorm (R : Type*) [SeminormedRing R] : RingSeminorm 
 
 /-- The norm on a `NormedRing`, as a `RingNorm`. -/
 @[simps]
-def NormedRing.toRingNorm (R : Type*) [NormedRing R] : RingNorm R where
+def NormedRing.toRingNorm (R : Type*) [Ring R] [NormedRing R] : RingNorm R where
   toFun     := norm
   map_zero' := norm_zero
   add_le'   := norm_add_le
@@ -490,7 +490,7 @@ def NormedRing.toRingNorm (R : Type*) [NormedRing R] : RingNorm R where
   eq_zero_of_map_eq_zero' x hx := by rw [← norm_eq_zero]; exact hx
 
 @[simp]
-theorem NormedRing.toRingNorm_apply (R : Type*) [NormedRing R] (x : R) :
+theorem NormedRing.toRingNorm_apply (R : Type*) [Ring R] [NormedRing R] (x : R) :
     (NormedRing.toRingNorm R) x = ‖x‖ :=
   rfl
 

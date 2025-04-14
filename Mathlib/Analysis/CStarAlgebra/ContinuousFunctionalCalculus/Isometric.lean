@@ -48,7 +48,7 @@ section NormedRing
 open scoped ContinuousFunctionalCalculus
 
 variable {𝕜 A : Type*} {p : outParam (A → Prop)}
-variable [RCLike 𝕜] [NormedRing A] [StarRing A] [NormedAlgebra 𝕜 A]
+variable [RCLike 𝕜] [Ring A] [NormedRing A] [StarRing A] [NormedAlgebra 𝕜 A]
 variable [IsometricContinuousFunctionalCalculus 𝕜 A p]
 
 lemma norm_cfcHom (a : A) (f : C(σ 𝕜 a, 𝕜)) (ha : p a := by cfc_tac) :
@@ -235,7 +235,8 @@ end MetricSpace
 section NormedRing
 
 variable {𝕜 A : Type*} {p : outParam (A → Prop)}
-variable [RCLike 𝕜] [NonUnitalNormedRing A] [StarRing A] [NormedSpace 𝕜 A] [IsScalarTower 𝕜 A A]
+variable [RCLike 𝕜] [NonUnitalRing A] [NormedRing A] [StarRing A]
+  [NormedSpace 𝕜 A] [IsScalarTower 𝕜 A A]
 variable [SMulCommClass 𝕜 A A]
 variable [NonUnitalIsometricContinuousFunctionalCalculus 𝕜 A p]
 
@@ -405,7 +406,7 @@ section Instances
 
 section Unital
 
-variable {A : Type*} [NormedRing A] [PartialOrder A] [StarRing A] [StarOrderedRing A]
+variable {A : Type*} [Ring A] [NormedRing A] [PartialOrder A] [StarRing A] [StarOrderedRing A]
 variable [NormedAlgebra ℝ A] [IsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 variable [NonnegSpectrumClass ℝ A]
 
@@ -419,7 +420,8 @@ end Unital
 
 section NonUnital
 
-variable {A : Type*} [NonUnitalNormedRing A] [PartialOrder A] [StarRing A] [StarOrderedRing A]
+variable {A : Type*} [NonUnitalRing A] [NormedRing A]
+  [PartialOrder A] [StarRing A] [StarOrderedRing A]
 variable [NormedSpace ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A]
 variable [NonUnitalIsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 variable [NonnegSpectrumClass ℝ A]
@@ -442,7 +444,7 @@ open NNReal
 
 section Unital
 
-variable {A : Type*} [NormedRing A] [StarRing A] [NormedAlgebra ℝ A] [PartialOrder A]
+variable {A : Type*} [Ring A] [NormedRing A] [StarRing A] [NormedAlgebra ℝ A] [PartialOrder A]
 variable [StarOrderedRing A] [IsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 variable [NonnegSpectrumClass ℝ A]
 
@@ -519,7 +521,7 @@ end Unital
 
 section NonUnital
 
-variable {A : Type*} [NonUnitalNormedRing A] [StarRing A] [NormedSpace ℝ A]
+variable {A : Type*} [NonUnitalRing A] [NormedRing A] [StarRing A] [NormedSpace ℝ A]
 variable [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] [PartialOrder A]
 variable [StarOrderedRing A] [NonUnitalIsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 variable [NonnegSpectrumClass ℝ A]
@@ -597,7 +599,7 @@ end NNReal
 namespace IsometricContinuousFunctionalCalculus
 
 variable {𝕜 A : Type*} {p : outParam (A → Prop)}
-variable [RCLike 𝕜] [NormedRing A] [StarRing A] [NormedAlgebra 𝕜 A]
+variable [RCLike 𝕜] [Ring A] [NormedRing A] [StarRing A] [NormedAlgebra 𝕜 A]
 variable [IsometricContinuousFunctionalCalculus 𝕜 A p]
 
 open scoped ContinuousFunctionalCalculus in

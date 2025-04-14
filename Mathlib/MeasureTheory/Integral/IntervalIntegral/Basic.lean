@@ -241,7 +241,7 @@ protected theorem aestronglyMeasurable' (h : IntervalIntegrable f μ a b) :
 
 end
 
-variable [NormedRing A] {f g : ℝ → E} {a b : ℝ} {μ : Measure ℝ}
+variable [Ring A] [NormedRing A] {f g : ℝ → E} {a b : ℝ} {μ : Measure ℝ}
 
 theorem smul [NormedField 𝕜] [NormedSpace 𝕜 E] {f : ℝ → E} {a b : ℝ} {μ : Measure ℝ}
     (h : IntervalIntegrable f μ a b) (r : 𝕜) : IntervalIntegrable (r • f) μ a b :=

@@ -1227,7 +1227,7 @@ end IntegrationByPartsBilinear
 
 section IntegrationByPartsAlgebra
 
-variable {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
+variable {A : Type*} [Ring A] [NormedRing A] [NormedAlgebra ℝ A]
   {a : ℝ} {a' b' : A} {u : ℝ → A} {v : ℝ → A} {u' : ℝ → A} {v' : ℝ → A}
 
 /-- For finite intervals, see: `intervalIntegral.integral_deriv_mul_eq_sub`. -/

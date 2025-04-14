@@ -357,7 +357,8 @@ theorem HasFiniteIntegral.smul [AddCommGroup 𝕜] [NormedAddGroup 𝕜]
       rw [lintegral_const_mul']
       exacts [mul_lt_top coe_lt_top hfi, coe_ne_top]
 
-theorem hasFiniteIntegral_smul_iff [NormedRing 𝕜] [MulActionWithZero 𝕜 β] [IsBoundedSMul 𝕜 β]
+theorem hasFiniteIntegral_smul_iff [Ring 𝕜] [NormedRing 𝕜]
+    [MulActionWithZero 𝕜 β] [IsBoundedSMul 𝕜 β]
     {c : 𝕜} (hc : IsUnit c) (f : α → β) :
     HasFiniteIntegral (c • f) μ ↔ HasFiniteIntegral f μ := by
   obtain ⟨c, rfl⟩ := hc
@@ -366,11 +367,13 @@ theorem hasFiniteIntegral_smul_iff [NormedRing 𝕜] [MulActionWithZero 𝕜 β]
     simpa only [smul_smul, Units.inv_mul, one_smul] using h.smul ((c⁻¹ : 𝕜ˣ) : 𝕜)
   exact HasFiniteIntegral.smul _
 
-theorem HasFiniteIntegral.const_mul [NormedRing 𝕜] {f : α → 𝕜} (h : HasFiniteIntegral f μ) (c : 𝕜) :
+theorem HasFiniteIntegral.const_mul [Ring 𝕜] [NormedRing 𝕜] {f : α → 𝕜}
+    (h : HasFiniteIntegral f μ) (c : 𝕜) :
     HasFiniteIntegral (fun x => c * f x) μ :=
   h.smul c
 
-theorem HasFiniteIntegral.mul_const [NormedRing 𝕜] {f : α → 𝕜} (h : HasFiniteIntegral f μ) (c : 𝕜) :
+theorem HasFiniteIntegral.mul_const [Ring 𝕜] [NormedRing 𝕜] {f : α → 𝕜}
+    (h : HasFiniteIntegral f μ) (c : 𝕜) :
     HasFiniteIntegral (fun x => f x * c) μ :=
   h.smul (MulOpposite.op c)
 

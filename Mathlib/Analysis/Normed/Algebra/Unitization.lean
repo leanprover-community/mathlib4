@@ -60,7 +60,7 @@ bornology.
 
 suppress_compilation
 
-variable (𝕜 A : Type*) [NontriviallyNormedField 𝕜] [NonUnitalNormedRing A]
+variable (𝕜 A : Type*) [NontriviallyNormedField 𝕜] [NonUnitalRing A] [NormedRing A]
 variable [NormedSpace 𝕜 A] [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A]
 
 open ContinuousLinearMap

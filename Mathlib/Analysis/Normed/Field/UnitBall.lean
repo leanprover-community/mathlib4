@@ -21,83 +21,88 @@ open Set Metric
 variable {𝕜 : Type*}
 
 /-- Unit ball in a non-unital seminormed ring as a bundled `Subsemigroup`. -/
-def Subsemigroup.unitBall (𝕜 : Type*) [NonUnitalSeminormedRing 𝕜] : Subsemigroup 𝕜 where
+def Subsemigroup.unitBall (𝕜 : Type*) [NonUnitalRing 𝕜] [SeminormedRing 𝕜] : Subsemigroup 𝕜 where
   carrier := ball (0 : 𝕜) 1
   mul_mem' hx hy := by
     rw [mem_ball_zero_iff] at *
     exact (norm_mul_le _ _).trans_lt (mul_lt_one_of_nonneg_of_lt_one_left (norm_nonneg _) hx hy.le)
 
-instance Metric.unitBall.semigroup [NonUnitalSeminormedRing 𝕜] : Semigroup (ball (0 : 𝕜) 1) :=
+instance Metric.unitBall.semigroup [NonUnitalRing 𝕜] [SeminormedRing 𝕜] :
+    Semigroup (ball (0 : 𝕜) 1) :=
   MulMemClass.toSemigroup (Subsemigroup.unitBall 𝕜)
 
-instance Metric.unitBall.continuousMul [NonUnitalSeminormedRing 𝕜] :
+instance Metric.unitBall.continuousMul [NonUnitalRing 𝕜] [SeminormedRing 𝕜] :
     ContinuousMul (ball (0 : 𝕜) 1) :=
   (Subsemigroup.unitBall 𝕜).continuousMul
 
-instance Metric.unitBall.commSemigroup [SeminormedCommRing 𝕜] : CommSemigroup (ball (0 : 𝕜) 1) :=
+instance Metric.unitBall.commSemigroup [CommRing 𝕜] [SeminormedRing 𝕜] :
+    CommSemigroup (ball (0 : 𝕜) 1) :=
   MulMemClass.toCommSemigroup (Subsemigroup.unitBall 𝕜)
 
-instance Metric.unitBall.hasDistribNeg [NonUnitalSeminormedRing 𝕜] :
+instance Metric.unitBall.hasDistribNeg [NonUnitalRing 𝕜] [SeminormedRing 𝕜] :
     HasDistribNeg (ball (0 : 𝕜) 1) :=
   Subtype.coe_injective.hasDistribNeg ((↑) : ball (0 : 𝕜) 1 → 𝕜) (fun _ => rfl) fun _ _ => rfl
 
 @[simp, norm_cast]
-theorem coe_mul_unitBall [NonUnitalSeminormedRing 𝕜] (x y : ball (0 : 𝕜) 1) :
+theorem coe_mul_unitBall [NonUnitalRing 𝕜] [SeminormedRing 𝕜] (x y : ball (0 : 𝕜) 1) :
     ↑(x * y) = (x * y : 𝕜) :=
   rfl
 
 /-- Closed unit ball in a non-unital seminormed ring as a bundled `Subsemigroup`. -/
-def Subsemigroup.unitClosedBall (𝕜 : Type*) [NonUnitalSeminormedRing 𝕜] : Subsemigroup 𝕜 where
+def Subsemigroup.unitClosedBall (𝕜 : Type*) [NonUnitalRing 𝕜] [SeminormedRing 𝕜] :
+    Subsemigroup 𝕜 where
   carrier := closedBall 0 1
   mul_mem' hx hy := by
     rw [mem_closedBall_zero_iff] at *
     exact (norm_mul_le _ _).trans (mul_le_one₀ hx (norm_nonneg _) hy)
 
-instance Metric.unitClosedBall.semigroup [NonUnitalSeminormedRing 𝕜] :
+instance Metric.unitClosedBall.semigroup [NonUnitalRing 𝕜] [SeminormedRing 𝕜] :
     Semigroup (closedBall (0 : 𝕜) 1) :=
   MulMemClass.toSemigroup (Subsemigroup.unitClosedBall 𝕜)
 
-instance Metric.unitClosedBall.hasDistribNeg [NonUnitalSeminormedRing 𝕜] :
+instance Metric.unitClosedBall.hasDistribNeg [NonUnitalRing 𝕜] [SeminormedRing 𝕜] :
     HasDistribNeg (closedBall (0 : 𝕜) 1) :=
   Subtype.coe_injective.hasDistribNeg ((↑) : closedBall (0 : 𝕜) 1 → 𝕜) (fun _ => rfl) fun _ _ => rfl
 
-instance Metric.unitClosedBall.continuousMul [NonUnitalSeminormedRing 𝕜] :
+instance Metric.unitClosedBall.continuousMul [NonUnitalRing 𝕜] [SeminormedRing 𝕜] :
     ContinuousMul (closedBall (0 : 𝕜) 1) :=
   (Subsemigroup.unitClosedBall 𝕜).continuousMul
 
 @[simp, norm_cast]
-theorem coe_mul_unitClosedBall [NonUnitalSeminormedRing 𝕜] (x y : closedBall (0 : 𝕜) 1) :
+theorem coe_mul_unitClosedBall [NonUnitalRing 𝕜] [SeminormedRing 𝕜] (x y : closedBall (0 : 𝕜) 1) :
     ↑(x * y) = (x * y : 𝕜) :=
   rfl
 
 /-- Closed unit ball in a seminormed ring as a bundled `Submonoid`. -/
-def Submonoid.unitClosedBall (𝕜 : Type*) [SeminormedRing 𝕜] [NormOneClass 𝕜] : Submonoid 𝕜 :=
+def Submonoid.unitClosedBall (𝕜 : Type*) [Ring 𝕜] [SeminormedRing 𝕜] [NormOneClass 𝕜] :
+    Submonoid 𝕜 :=
   { Subsemigroup.unitClosedBall 𝕜 with
     carrier := closedBall 0 1
     one_mem' := mem_closedBall_zero_iff.2 norm_one.le }
 
-instance Metric.unitClosedBall.monoid [SeminormedRing 𝕜] [NormOneClass 𝕜] :
+instance Metric.unitClosedBall.monoid [Ring 𝕜] [SeminormedRing 𝕜] [NormOneClass 𝕜] :
     Monoid (closedBall (0 : 𝕜) 1) :=
   SubmonoidClass.toMonoid (Submonoid.unitClosedBall 𝕜)
 
-instance Metric.unitClosedBall.commMonoid [SeminormedCommRing 𝕜] [NormOneClass 𝕜] :
+instance Metric.unitClosedBall.commMonoid [CommRing 𝕜] [SeminormedRing 𝕜] [NormOneClass 𝕜] :
     CommMonoid (closedBall (0 : 𝕜) 1) :=
   SubmonoidClass.toCommMonoid (Submonoid.unitClosedBall 𝕜)
 
 @[simp, norm_cast]
-theorem coe_one_unitClosedBall [SeminormedRing 𝕜] [NormOneClass 𝕜] :
+theorem coe_one_unitClosedBall [Ring 𝕜] [SeminormedRing 𝕜] [NormOneClass 𝕜] :
     ((1 : closedBall (0 : 𝕜) 1) : 𝕜) = 1 :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_pow_unitClosedBall [SeminormedRing 𝕜] [NormOneClass 𝕜] (x : closedBall (0 : 𝕜) 1)
+theorem coe_pow_unitClosedBall [Ring 𝕜] [SeminormedRing 𝕜] [NormOneClass 𝕜]
+    (x : closedBall (0 : 𝕜) 1)
     (n : ℕ) : ↑(x ^ n) = (x : 𝕜) ^ n :=
   rfl
 
 /-- Unit sphere in a seminormed ring (with strictly multiplicative norm) as a bundled
 `Submonoid`. -/
 @[simps]
-def Submonoid.unitSphere (𝕜 : Type*) [SeminormedRing 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜] :
+def Submonoid.unitSphere (𝕜 : Type*) [Ring 𝕜] [SeminormedRing 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜] :
     Submonoid 𝕜 where
   carrier := sphere (0 : 𝕜) 1
   mul_mem' hx hy := by
@@ -137,27 +142,28 @@ theorem coe_zpow_unitSphere [NormedDivisionRing 𝕜] (x : sphere (0 : 𝕜) 1) 
     ↑(x ^ n) = (x : 𝕜) ^ n :=
   rfl
 
-instance Metric.unitSphere.monoid [SeminormedRing 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜] :
+instance Metric.unitSphere.monoid [Ring 𝕜] [SeminormedRing 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜] :
     Monoid (sphere (0 : 𝕜) 1) :=
   SubmonoidClass.toMonoid (Submonoid.unitSphere 𝕜)
 
-instance Metric.unitSphere.commMonoid [SeminormedCommRing 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜] :
+instance Metric.unitSphere.commMonoid [CommRing 𝕜] [SeminormedRing 𝕜]
+    [NormMulClass 𝕜] [NormOneClass 𝕜] :
     CommMonoid (sphere (0 : 𝕜) 1) :=
   SubmonoidClass.toCommMonoid (Submonoid.unitSphere 𝕜)
 
 @[simp, norm_cast]
-theorem coe_one_unitSphere [SeminormedRing 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜] :
+theorem coe_one_unitSphere [Ring 𝕜] [SeminormedRing 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜] :
     ((1 : sphere (0 : 𝕜) 1) : 𝕜) = 1 :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_mul_unitSphere [SeminormedRing 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜]
+theorem coe_mul_unitSphere [Ring 𝕜] [SeminormedRing 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜]
     (x y : sphere (0 : 𝕜) 1) :
     ↑(x * y) = (x * y : 𝕜) :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_pow_unitSphere [SeminormedRing 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜]
+theorem coe_pow_unitSphere [Ring 𝕜] [SeminormedRing 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜]
     (x : sphere (0 : 𝕜) 1) (n : ℕ) :
     ↑(x ^ n) = (x : 𝕜) ^ n :=
   rfl
@@ -183,11 +189,11 @@ instance Metric.sphere.group [NormedDivisionRing 𝕜] : Group (sphere (0 : 𝕜
     (fun x n => Units.ext (Units.val_pow_eq_pow_val (unitSphereToUnits 𝕜 x) n).symm) fun x n =>
     Units.ext (Units.val_zpow_eq_zpow_val (unitSphereToUnits 𝕜 x) n).symm
 
-instance Metric.sphere.hasDistribNeg [SeminormedRing 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜] :
+instance Metric.sphere.hasDistribNeg [Ring 𝕜] [SeminormedRing 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜] :
     HasDistribNeg (sphere (0 : 𝕜) 1) :=
   Subtype.coe_injective.hasDistribNeg ((↑) : sphere (0 : 𝕜) 1 → 𝕜) (fun _ => rfl) fun _ _ => rfl
 
-instance Metric.sphere.continuousMul [SeminormedRing 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜] :
+instance Metric.sphere.continuousMul [Ring 𝕜] [SeminormedRing 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜] :
     ContinuousMul (sphere (0 : 𝕜) 1) :=
   (Submonoid.unitSphere 𝕜).continuousMul
 

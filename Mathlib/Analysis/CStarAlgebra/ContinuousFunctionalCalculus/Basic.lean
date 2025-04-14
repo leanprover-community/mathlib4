@@ -58,16 +58,12 @@ variable {A : Type*} [CStarAlgebra A]
 
 namespace StarAlgebra.elemental
 
-instance {R A : Type*} [CommRing R] [StarRing R] [NormedRing A] [Algebra R A] [StarRing A]
+instance {R A : Type*} [CommRing R] [StarRing R] [Ring A] [NormedRing A] [Algebra R A] [StarRing A]
     [ContinuousStar A] [StarModule R A] (a : A) [IsStarNormal a] :
-    NormedCommRing (elemental R a) :=
-  { SubringClass.toNormedRing (elemental R a) with
-    mul_comm := mul_comm }
+    NormedRing (elemental R a) :=
+  { SubringClass.toNormedRing (elemental R a) with }
 
-#adaptation_note /-- 2025-03-29 for lean4#7717 had to add `norm_mul_self_le` field. -/
 noncomputable instance (a : A) [IsStarNormal a] : CommCStarAlgebra (elemental ℂ a) where
-  mul_comm := mul_comm
-  norm_mul_self_le := CStarRing.norm_mul_self_le
 
 variable (a : A) [IsStarNormal a]
 

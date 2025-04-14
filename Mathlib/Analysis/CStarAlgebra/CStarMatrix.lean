@@ -608,8 +608,8 @@ noncomputable instance instNormedAddGroup :
 instance instNormedSpace : NormedSpace ℂ (CStarMatrix m n A) :=
   .ofCore CStarMatrix.normedSpaceCore
 
-noncomputable instance instNonUnitalNormedRing :
-    NonUnitalNormedRing (CStarMatrix n n A) where
+noncomputable instance instNormedRing :
+    NormedRing (CStarMatrix n n A) where
   __ : NormedAddGroup (CStarMatrix n n A) := inferInstance
   norm_mul_le _ _ := by simpa only [norm_def', map_mul] using norm_mul_le _ _
 
@@ -663,10 +663,6 @@ section unital
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
 variable {n : Type*} [Fintype n] [DecidableEq n]
-
-noncomputable instance instNormedRing : NormedRing (CStarMatrix n n A) where
-  dist_eq _ _ := rfl
-  norm_mul_le := norm_mul_le
 
 noncomputable instance instNormedAlgebra : NormedAlgebra ℂ (CStarMatrix n n A) where
   norm_smul_le r M := by simpa only [norm_def, map_smul] using (toCLM M).opNorm_smul_le r

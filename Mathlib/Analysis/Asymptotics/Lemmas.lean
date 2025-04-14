@@ -27,9 +27,10 @@ variable {α : Type*} {β : Type*} {E : Type*} {F : Type*} {G : Type*} {E' : Typ
 variable [Norm E] [Norm F] [Norm G]
 variable [AddCommGroup E'] [SeminormedAddGroup E'] [AddCommGroup F'] [SeminormedAddGroup F']
   [AddCommGroup G'] [SeminormedAddGroup G'] [AddCommGroup E''] [NormedAddGroup E'']
-  [AddCommGroup F''] [NormedAddGroup F''] [AddCommGroup G''] [NormedAddGroup G''] [SeminormedRing R]
+  [AddCommGroup F''] [NormedAddGroup F''] [AddCommGroup G''] [NormedAddGroup G'']
+  [Ring R] [SeminormedRing R]
   [AddGroup E'''] [SeminormedAddGroup E''']
-  [SeminormedRing R']
+  [Ring R'] [SeminormedRing R']
 
 variable [NormedDivisionRing 𝕜] [NormedDivisionRing 𝕜']
 variable {c c' c₁ c₂ : ℝ} {f : α → E} {g : α → F} {k : α → G}
@@ -190,7 +191,7 @@ theorem IsLittleO.trans_tendsto (hfg : f'' =o[l] g'') (hg : Tendsto g'' l (𝓝 
 lemma isLittleO_id_one [One F''] [NeZero (1 : F'')] : (fun x : E'' => x) =o[𝓝 0] (1 : E'' → F'') :=
   isLittleO_id_const one_ne_zero
 
-theorem continuousAt_iff_isLittleO {α : Type*} {E : Type*} [NormedRing E] [NormOneClass E]
+theorem continuousAt_iff_isLittleO {α : Type*} {E : Type*} [Ring E] [NormedRing E] [NormOneClass E]
     [TopologicalSpace α] {f : α → E} {x : α} :
     (ContinuousAt f x) ↔ (fun (y : α) ↦ f y - f x) =o[𝓝 x] (fun (_ : α) ↦ (1 : E)) := by
   simp [ContinuousAt, ← tendsto_sub_nhds_zero_iff]
@@ -310,13 +311,13 @@ theorem IsBigO.listProd {L : List ι} {f : ι → α → R} {g : ι → α → �
     simp only [List.map_cons, List.prod_cons, List.forall_mem_cons] at hf ⊢
     exact hf.1.mul (ihL hf.2)
 
-theorem IsBigO.multisetProd {R 𝕜 : Type*} [SeminormedCommRing R] [NormedField 𝕜]
+theorem IsBigO.multisetProd {R 𝕜 : Type*} [CommRing R] [SeminormedRing R] [NormedField 𝕜]
     {s : Multiset ι} {f : ι → α → R} {g : ι → α → 𝕜} (hf : ∀ i ∈ s, f i =O[l] g i) :
     (fun x ↦ (s.map (f · x)).prod) =O[l] (fun x ↦ (s.map (g · x)).prod) := by
   obtain ⟨l, rfl⟩ : ∃ l : List ι, ↑l = s := Quotient.mk_surjective s
   exact mod_cast IsBigO.listProd hf
 
-theorem IsBigO.finsetProd {R 𝕜 : Type*} [SeminormedCommRing R] [NormedField 𝕜]
+theorem IsBigO.finsetProd {R 𝕜 : Type*} [CommRing R] [SeminormedRing R] [NormedField 𝕜]
     {s : Finset ι} {f : ι → α → R} {g : ι → α → 𝕜}
     (hf : ∀ i ∈ s, f i =O[l] g i) : (∏ i ∈ s, f i ·) =O[l] (∏ i ∈ s, g i ·) :=
   .multisetProd hf
@@ -333,14 +334,14 @@ theorem IsLittleO.listProd {L : List ι} {f : ι → α → R} {g : ι → α �
     | inl hi => exact hi.mul_isBigO <| .listProd h₁.2
     | inr hL => exact h₁.1.mul_isLittleO <| ihL h₁.2 hL
 
-theorem IsLittleO.multisetProd {R 𝕜 : Type*} [SeminormedCommRing R] [NormedField 𝕜]
+theorem IsLittleO.multisetProd {R 𝕜 : Type*} [CommRing R] [SeminormedRing R] [NormedField 𝕜]
     {s : Multiset ι} {f : ι → α → R} {g : ι → α → 𝕜} (h₁ : ∀ i ∈ s, f i =O[l] g i)
     (h₂ : ∃ i ∈ s, f i =o[l] g i) :
     (fun x ↦ (s.map (f · x)).prod) =o[l] (fun x ↦ (s.map (g · x)).prod) := by
   obtain ⟨l, rfl⟩ : ∃ l : List ι, ↑l = s := Quotient.mk_surjective s
   exact mod_cast IsLittleO.listProd h₁ h₂
 
-theorem IsLittleO.finsetProd {R 𝕜 : Type*} [SeminormedCommRing R] [NormedField 𝕜]
+theorem IsLittleO.finsetProd {R 𝕜 : Type*} [CommRing R] [SeminormedRing R] [NormedField 𝕜]
     {s : Finset ι} {f : ι → α → R} {g : ι → α → 𝕜} (h₁ : ∀ i ∈ s, f i =O[l] g i)
     (h₂ : ∃ i ∈ s, f i =o[l] g i) : (∏ i ∈ s, f i ·) =o[l] (∏ i ∈ s, g i ·) :=
   .multisetProd h₁ h₂

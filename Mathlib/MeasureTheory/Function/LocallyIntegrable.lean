@@ -593,7 +593,7 @@ variable [OpensMeasurableSpace X] {A K : Set X}
 
 section Mul
 
-variable [NormedRing R] [SecondCountableTopologyEither X R] {g g' : X → R}
+variable [Ring R] [NormedRing R] [SecondCountableTopologyEither X R] {g g' : X → R}
 
 theorem IntegrableOn.mul_continuousOn_of_subset (hg : IntegrableOn g A μ) (hg' : ContinuousOn g' K)
     (hA : MeasurableSet A) (hK : IsCompact K) (hAK : A ⊆ K) :
@@ -658,14 +658,14 @@ end SMul
 
 namespace LocallyIntegrableOn
 
-theorem continuousOn_mul [LocallyCompactSpace X] [T2Space X] [NormedRing R]
+theorem continuousOn_mul [LocallyCompactSpace X] [T2Space X] [Ring R] [NormedRing R]
     [SecondCountableTopologyEither X R] {f g : X → R} {s : Set X} (hf : LocallyIntegrableOn f s μ)
     (hg : ContinuousOn g s) (hs : IsLocallyClosed s) :
     LocallyIntegrableOn (fun x => g x * f x) s μ := by
   rw [MeasureTheory.locallyIntegrableOn_iff hs] at hf ⊢
   exact fun k hk_sub hk_c => (hf k hk_sub hk_c).continuousOn_mul (hg.mono hk_sub) hk_c
 
-theorem mul_continuousOn [LocallyCompactSpace X] [T2Space X] [NormedRing R]
+theorem mul_continuousOn [LocallyCompactSpace X] [T2Space X] [Ring R] [NormedRing R]
     [SecondCountableTopologyEither X R] {f g : X → R} {s : Set X} (hf : LocallyIntegrableOn f s μ)
     (hg : ContinuousOn g s) (hs : IsLocallyClosed s) :
     LocallyIntegrableOn (fun x => f x * g x) s μ := by

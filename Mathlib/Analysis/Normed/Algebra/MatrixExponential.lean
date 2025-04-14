@@ -115,11 +115,11 @@ end Topological
 section Normed
 
 variable [RCLike 𝕂] [Fintype m] [DecidableEq m]
-  [NormedRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
+  [Ring 𝔸] [NormedRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
 
 nonrec theorem exp_add_of_commute (A B : Matrix m m 𝔸) (h : Commute A B) :
     exp 𝕂 (A + B) = exp 𝕂 A * exp 𝕂 B := by
-  letI : SeminormedRing (Matrix m m 𝔸) := Matrix.linftyOpSemiNormedRing
+  letI : SeminormedRing (Matrix m m 𝔸) := Matrix.linftyOpSeminormedRing
   letI : NormedRing (Matrix m m 𝔸) := Matrix.linftyOpNormedRing
   letI : NormedAlgebra 𝕂 (Matrix m m 𝔸) := Matrix.linftyOpNormedAlgebra
   exact exp_add_of_commute h
@@ -129,26 +129,26 @@ nonrec theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → Matrix m m �
     (h : (s : Set ι).Pairwise (Commute on f)) :
     exp 𝕂 (∑ i ∈ s, f i) =
       s.noncommProd (fun i => exp 𝕂 (f i)) fun _ hi _ hj _ => (h.of_refl hi hj).exp 𝕂 := by
-  letI : SeminormedRing (Matrix m m 𝔸) := Matrix.linftyOpSemiNormedRing
+  letI : SeminormedRing (Matrix m m 𝔸) := Matrix.linftyOpSeminormedRing
   letI : NormedRing (Matrix m m 𝔸) := Matrix.linftyOpNormedRing
   letI : NormedAlgebra 𝕂 (Matrix m m 𝔸) := Matrix.linftyOpNormedAlgebra
   exact exp_sum_of_commute s f h
 
 nonrec theorem exp_nsmul (n : ℕ) (A : Matrix m m 𝔸) : exp 𝕂 (n • A) = exp 𝕂 A ^ n := by
-  letI : SeminormedRing (Matrix m m 𝔸) := Matrix.linftyOpSemiNormedRing
+  letI : SeminormedRing (Matrix m m 𝔸) := Matrix.linftyOpSeminormedRing
   letI : NormedRing (Matrix m m 𝔸) := Matrix.linftyOpNormedRing
   letI : NormedAlgebra 𝕂 (Matrix m m 𝔸) := Matrix.linftyOpNormedAlgebra
   exact exp_nsmul n A
 
 nonrec theorem isUnit_exp (A : Matrix m m 𝔸) : IsUnit (exp 𝕂 A) := by
-  letI : SeminormedRing (Matrix m m 𝔸) := Matrix.linftyOpSemiNormedRing
+  letI : SeminormedRing (Matrix m m 𝔸) := Matrix.linftyOpSeminormedRing
   letI : NormedRing (Matrix m m 𝔸) := Matrix.linftyOpNormedRing
   letI : NormedAlgebra 𝕂 (Matrix m m 𝔸) := Matrix.linftyOpNormedAlgebra
   exact isUnit_exp _ A
 
 nonrec theorem exp_units_conj (U : (Matrix m m 𝔸)ˣ) (A : Matrix m m 𝔸) :
     exp 𝕂 (U * A * U⁻¹) = U * exp 𝕂 A * U⁻¹ := by
-  letI : SeminormedRing (Matrix m m 𝔸) := Matrix.linftyOpSemiNormedRing
+  letI : SeminormedRing (Matrix m m 𝔸) := Matrix.linftyOpSeminormedRing
   letI : NormedRing (Matrix m m 𝔸) := Matrix.linftyOpNormedRing
   letI : NormedAlgebra 𝕂 (Matrix m m 𝔸) := Matrix.linftyOpNormedAlgebra
   exact exp_units_conj _ U A
@@ -162,11 +162,11 @@ end Normed
 section NormedComm
 
 variable [RCLike 𝕂] [Fintype m] [DecidableEq m]
-  [NormedCommRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
+  [CommRing 𝔸] [NormedRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
 
 theorem exp_neg (A : Matrix m m 𝔸) : exp 𝕂 (-A) = (exp 𝕂 A)⁻¹ := by
   rw [nonsing_inv_eq_ring_inverse]
-  letI : SeminormedRing (Matrix m m 𝔸) := Matrix.linftyOpSemiNormedRing
+  letI : SeminormedRing (Matrix m m 𝔸) := Matrix.linftyOpSeminormedRing
   letI : NormedRing (Matrix m m 𝔸) := Matrix.linftyOpNormedRing
   letI : NormedAlgebra 𝕂 (Matrix m m 𝔸) := Matrix.linftyOpNormedAlgebra
   exact (Ring.inverse_exp _ A).symm

@@ -42,7 +42,7 @@ namespace LinearMap
 
 section NormedRing
 
-variable [NormedCommRing 𝕜] [AddCommMonoid E] [AddCommMonoid F]
+variable [CommRing 𝕜] [NormedRing 𝕜] [AddCommMonoid E] [AddCommMonoid F]
 variable [Module 𝕜 E] [Module 𝕜 F]
 
 

@@ -294,7 +294,7 @@ end Bilinear
 
 section IsBoundedSMul
 
-variable {𝕜 α E F : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedRing 𝕜]
+variable {𝕜 α E F : Type*} {m : MeasurableSpace α} {μ : Measure α} [Ring 𝕜] [NormedRing 𝕜]
   [AddCommGroup E] [NormedAddGroup E] [MulActionWithZero 𝕜 E] [IsBoundedSMul 𝕜 E]
   [AddCommGroup F] [NormedAddGroup F] [MulActionWithZero 𝕜 F] [IsBoundedSMul 𝕜 F] {f : α → E}
 
@@ -338,7 +338,7 @@ end IsBoundedSMul
 
 section Mul
 
-variable {α : Type*} {_ : MeasurableSpace α} {𝕜 : Type*} [NormedRing 𝕜] {μ : Measure α}
+variable {α : Type*} {_ : MeasurableSpace α} {𝕜 : Type*} [Ring 𝕜] [NormedRing 𝕜] {μ : Measure α}
   {p q r : ℝ≥0∞} {f : α → 𝕜} {φ : α → 𝕜}
 
 theorem MemLp.mul (hf : MemLp f q μ) (hφ : MemLp φ p μ) [hpqr : HolderTriple p q r] :
@@ -365,8 +365,8 @@ alias Memℒp.mul' := MemLp.mul'
 end Mul
 
 section Prod
-variable {ι α 𝕜 : Type*} {_ : MeasurableSpace α} [NormedCommRing 𝕜] {μ : Measure α} {f : ι → α → 𝕜}
-  {p : ι → ℝ≥0∞} {s : Finset ι}
+variable {ι α 𝕜 : Type*} {_ : MeasurableSpace α} [CommRing 𝕜] [NormedRing 𝕜]
+  {μ : Measure α} {f : ι → α → 𝕜} {p : ι → ℝ≥0∞} {s : Finset ι}
 
 open Finset in
 /-- See `MemLp.prod'` for the applied version. -/

@@ -32,7 +32,7 @@ noncomputable section
 
 open Topology
 
-variable {R : Type*} [NormedRing R] [HasSummableGeomSeries R]
+variable {R : Type*} [Ring R] [NormedRing R] [HasSummableGeomSeries R]
 
 namespace Units
 

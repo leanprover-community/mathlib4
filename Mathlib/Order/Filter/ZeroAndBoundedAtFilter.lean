@@ -90,12 +90,12 @@ theorem BoundedAtFilter.neg [AddCommGroup β] [SeminormedAddGroup β] {l : Filte
     (hf : BoundedAtFilter l f) : BoundedAtFilter l (-f) :=
   hf.neg_left
 
-theorem BoundedAtFilter.smul
-    [SeminormedRing 𝕜] [AddCommGroup β] [SeminormedAddGroup β] [Module 𝕜 β] [IsBoundedSMul 𝕜 β]
+theorem BoundedAtFilter.smul [Ring 𝕜] [SeminormedRing 𝕜]
+    [AddCommGroup β] [SeminormedAddGroup β] [Module 𝕜 β] [IsBoundedSMul 𝕜 β]
     {l : Filter α} {f : α → β} (c : 𝕜) (hf : BoundedAtFilter l f) : BoundedAtFilter l (c • f) :=
   hf.const_smul_left c
 
-nonrec theorem BoundedAtFilter.mul [SeminormedRing β] {l : Filter α} {f g : α → β}
+nonrec theorem BoundedAtFilter.mul [Ring β] [SeminormedRing β] {l : Filter α} {f g : α → β}
     (hf : BoundedAtFilter l f) (hg : BoundedAtFilter l g) : BoundedAtFilter l (f * g) := by
   refine (hf.mul hg).trans ?_
   convert Asymptotics.isBigO_refl (E := ℝ) _ l
@@ -104,7 +104,7 @@ nonrec theorem BoundedAtFilter.mul [SeminormedRing β] {l : Filter α} {f g : α
 variable (𝕜) in
 /-- The submodule of functions that are bounded along a filter `l`. -/
 def boundedFilterSubmodule
-    [SeminormedRing 𝕜] [AddCommGroup β] [SeminormedAddGroup β]
+    [Ring 𝕜] [SeminormedRing 𝕜] [AddCommGroup β] [SeminormedAddGroup β]
     [Module 𝕜 β] [IsBoundedSMul 𝕜 β] (l : Filter α) :
     Submodule 𝕜 (α → β) where
   carrier := BoundedAtFilter l
@@ -115,7 +115,8 @@ def boundedFilterSubmodule
 variable (𝕜) in
 /-- The subalgebra of functions that are bounded along a filter `l`. -/
 def boundedFilterSubalgebra
-    [SeminormedCommRing 𝕜] [SeminormedRing β] [Algebra 𝕜 β] [IsBoundedSMul 𝕜 β] (l : Filter α) :
+    [CommRing 𝕜] [SeminormedRing 𝕜] [Ring β] [SeminormedRing β] [Algebra 𝕜 β] [IsBoundedSMul 𝕜 β]
+    (l : Filter α) :
     Subalgebra 𝕜 (α → β) :=
   Submodule.toSubalgebra
     (boundedFilterSubmodule 𝕜 l)

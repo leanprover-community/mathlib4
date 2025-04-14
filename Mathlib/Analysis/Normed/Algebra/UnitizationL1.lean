@@ -23,7 +23,7 @@ One application of this is a straightforward proof that the quasispectrum of an 
 non-unital Banach algebra is compact, which can be established by passing to the unitization.
 -/
 
-variable (𝕜 A : Type*) [NormedField 𝕜] [NonUnitalNormedRing A]
+variable (𝕜 A : Type*) [NormedField 𝕜] [NonUnitalRing A] [NormedRing A]
 variable [NormedSpace 𝕜 A]
 
 namespace WithLp

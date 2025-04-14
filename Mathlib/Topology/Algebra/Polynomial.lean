@@ -122,7 +122,7 @@ theorem tendsto_abv_aeval_atTop {R A k α : Type*} [CommSemiring R] [Ring A] [Al
     (hz : Tendsto (abv ∘ z) l atTop) : Tendsto (fun x => abv (aeval (z x) p)) l atTop :=
   tendsto_abv_eval₂_atTop _ abv p hd h₀ hz
 
-variable {α R : Type*} [NormedRing R] [IsAbsoluteValue (norm : R → ℝ)]
+variable {α R : Type*} [Ring R] [NormedRing R] [IsAbsoluteValue (norm : R → ℝ)]
 
 theorem tendsto_norm_atTop (p : R[X]) (h : 0 < degree p) {l : Filter α} {z : α → R}
     (hz : Tendsto (fun x => ‖z x‖) l atTop) : Tendsto (fun x => ‖p.eval (z x)‖) l atTop :=

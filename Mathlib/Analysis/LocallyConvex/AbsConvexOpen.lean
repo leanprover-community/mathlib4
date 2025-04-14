@@ -36,7 +36,7 @@ variable {𝕜 E : Type*}
 
 section AbsolutelyConvexSets
 
-variable [TopologicalSpace E] [AddCommMonoid E] [Zero E] [SeminormedRing 𝕜]
+variable [TopologicalSpace E] [AddCommMonoid E] [Zero E] [Ring 𝕜] [SeminormedRing 𝕜]
 variable [SMul 𝕜 E] [SMul ℝ E]
 variable (𝕜 E)
 

@@ -26,7 +26,7 @@ open scoped Topology NNReal Pointwise
 
 section NonUnitalSeminormedRing
 
-variable [NonUnitalSeminormedRing α]
+variable [NonUnitalRing α] [SeminormedRing α]
 
 theorem Filter.Tendsto.zero_mul_isBoundedUnder_le {f g : ι → α} {l : Filter ι}
     (hf : Tendsto f l (𝓝 0)) (hg : IsBoundedUnder (· ≤ ·) l ((‖·‖) ∘ g)) :
@@ -42,9 +42,9 @@ theorem Filter.isBoundedUnder_le_mul_tendsto_zero {f g : ι → α} {l : Filter 
 open Finset in
 /-- Non-unital seminormed ring structure on the product of finitely many non-unital seminormed
 rings, using the sup norm. -/
-instance Pi.nonUnitalSeminormedRing {R : ι → Type*} [Fintype ι]
-    [∀ i, NonUnitalSeminormedRing (R i)] : NonUnitalSeminormedRing (∀ i, R i) :=
-  { seminormedAddGroup, nonUnitalRing with
+instance Pi.seminormedRing {R : ι → Type*} [Fintype ι]
+    [∀ i, NonUnitalRing (R i)] [∀ i, SeminormedRing (R i)] : SeminormedRing (∀ i, R i) :=
+  { seminormedAddGroup with
     norm_mul_le x y := NNReal.coe_mono <| calc
       (univ.sup fun i ↦ ‖x i * y i‖₊) ≤ univ.sup ((‖x ·‖₊) * (‖y ·‖₊)) :=
         sup_mono_fun fun _ _ ↦ nnnorm_mul_le _ _
@@ -53,91 +53,22 @@ instance Pi.nonUnitalSeminormedRing {R : ι → Type*} [Fintype ι]
 
 end NonUnitalSeminormedRing
 
-section SeminormedRing
-
-variable [SeminormedRing α]
-
-/-- Seminormed ring structure on the product of finitely many seminormed rings,
-  using the sup norm. -/
-instance Pi.seminormedRing {R : ι → Type*} [Fintype ι] [∀ i, SeminormedRing (R i)] :
-    SeminormedRing (∀ i, R i) :=
-  { Pi.nonUnitalSeminormedRing, Pi.ring with }
-
-end SeminormedRing
-
 section NonUnitalNormedRing
 
-variable [NonUnitalNormedRing α]
+variable [NonUnitalRing α] [NormedRing α]
 
 /-- Normed ring structure on the product of finitely many non-unital normed rings, using the sup
 norm. -/
-instance Pi.nonUnitalNormedRing {R : ι → Type*} [Fintype ι] [∀ i, NonUnitalNormedRing (R i)] :
-    NonUnitalNormedRing (∀ i, R i) :=
-  { Pi.nonUnitalSeminormedRing, Pi.normedAddGroup with }
-
-end NonUnitalNormedRing
-
-section NormedRing
-
-variable [NormedRing α]
-
-/-- Normed ring structure on the product of finitely many normed rings, using the sup norm. -/
-instance Pi.normedRing {R : ι → Type*} [Fintype ι] [∀ i, NormedRing (R i)] :
+instance Pi.normedRing {R : ι → Type*} [Fintype ι]
+    [∀ i, NonUnitalRing (R i)] [∀ i, NormedRing (R i)] :
     NormedRing (∀ i, R i) :=
   { Pi.seminormedRing, Pi.normedAddGroup with }
 
-end NormedRing
-
-section NonUnitalSeminormedCommRing
-
-variable [NonUnitalSeminormedCommRing α]
-
-/-- Non-unital seminormed commutative ring structure on the product of finitely many non-unital
-seminormed commutative rings, using the sup norm. -/
-instance Pi.nonUnitalSeminormedCommRing {R : ι → Type*} [Fintype ι]
-    [∀ i, NonUnitalSeminormedCommRing (R i)] : NonUnitalSeminormedCommRing (∀ i, R i) :=
-  { Pi.nonUnitalSeminormedRing, Pi.nonUnitalCommRing with }
-
-end NonUnitalSeminormedCommRing
-
-section NonUnitalNormedCommRing
-
-variable [NonUnitalNormedCommRing α]
-
-/-- Normed commutative ring structure on the product of finitely many non-unital normed
-commutative rings, using the sup norm. -/
-instance Pi.nonUnitalNormedCommRing {R : ι → Type*} [Fintype ι]
-    [∀ i, NonUnitalNormedCommRing (R i)] : NonUnitalNormedCommRing (∀ i, R i) :=
-  { Pi.nonUnitalSeminormedCommRing, Pi.normedAddGroup with }
-
-end NonUnitalNormedCommRing
-
-section SeminormedCommRing
-
-variable [SeminormedCommRing α]
-
-/-- Seminormed commutative ring structure on the product of finitely many seminormed commutative
-rings, using the sup norm. -/
-instance Pi.seminormedCommRing {R : ι → Type*} [Fintype ι] [∀ i, SeminormedCommRing (R i)] :
-    SeminormedCommRing (∀ i, R i) :=
-  { Pi.nonUnitalSeminormedCommRing, Pi.ring with }
-
-end SeminormedCommRing
-
-section NormedCommRing
-
-variable [NormedCommRing α]
-
-/-- Normed commutative ring structure on the product of finitely many normed commutative rings,
-using the sup norm. -/
-instance Pi.normedCommutativeRing {R : ι → Type*} [Fintype ι] [∀ i, NormedCommRing (R i)] :
-    NormedCommRing (∀ i, R i) :=
-  { Pi.seminormedCommRing, Pi.normedAddGroup with }
-
-end NormedCommRing
+end NonUnitalNormedRing
 
 -- see Note [lower instance priority]
-instance (priority := 100) NonUnitalSeminormedRing.toContinuousMul [NonUnitalSeminormedRing α] :
+instance (priority := 100) SeminormedRing.toContinuousMul
+    [NonUnitalRing α] [SeminormedRing α] :
     ContinuousMul α :=
   ⟨continuous_iff_continuousAt.2 fun x =>
       tendsto_iff_norm_sub_tendsto_zero.2 <| by
@@ -162,24 +93,16 @@ instance (priority := 100) NonUnitalSeminormedRing.toContinuousMul [NonUnitalSem
 
 -- see Note [lower instance priority]
 /-- A seminormed ring is a topological ring. -/
-instance (priority := 100) NonUnitalSeminormedRing.toIsTopologicalRing [NonUnitalSeminormedRing α] :
+instance (priority := 100) SeminormedRing.toIsTopologicalRing [NonUnitalRing α] [SeminormedRing α] :
     IsTopologicalRing α where
 
 namespace SeparationQuotient
 
-instance [NonUnitalSeminormedRing α] : NonUnitalNormedRing (SeparationQuotient α) where
+instance [NonUnitalRing α] [SeminormedRing α] : NormedRing (SeparationQuotient α) where
   __ : NormedAddGroup (SeparationQuotient α) := inferInstance
   norm_mul_le := Quotient.ind₂ norm_mul_le
 
-instance [NonUnitalSeminormedCommRing α] : NonUnitalNormedCommRing (SeparationQuotient α) where
-  __ : NormedAddGroup (SeparationQuotient α) := inferInstance
-  norm_mul_le := Quotient.ind₂ norm_mul_le
-
-instance [SeminormedRing α] : NormedRing (SeparationQuotient α) where
-  __ : NormedAddGroup (SeparationQuotient α) := inferInstance
-  norm_mul_le := Quotient.ind₂ norm_mul_le
-
-instance [SeminormedCommRing α] : NormedCommRing (SeparationQuotient α) where
+instance [Ring α] [SeminormedRing α] : NormedRing (SeparationQuotient α) where
   __ : NormedAddGroup (SeparationQuotient α) := inferInstance
   norm_mul_le := Quotient.ind₂ norm_mul_le
 
@@ -201,7 +124,7 @@ lemma lipschitzWith_sub : LipschitzWith 2 (fun (p : ℝ≥0 × ℝ≥0) ↦ p.1 
 
 end NNReal
 
-instance Int.instNormedCommRing : NormedCommRing ℤ where
+instance Int.instNormedRing : NormedRing ℤ where
   __ := instNormedAddGroup
   norm_mul_le m n := by simp only [norm, Int.cast_mul, abs_mul, le_rfl]
 
@@ -212,7 +135,7 @@ instance Int.instNormMulClass : NormMulClass ℤ :=
   ⟨fun a b ↦ by simp [← Int.norm_cast_real, abs_mul]⟩
 
 section NonUnitalNormedRing
-variable [NonUnitalNormedRing α] [NormMulClass α] {a : α}
+variable [NonUnitalRing α] [NormedRing α] [NormMulClass α] {a : α}
 
 lemma antilipschitzWith_mul_left {a : α} (ha : a ≠ 0) : AntilipschitzWith (‖a‖₊⁻¹) (a * ·) :=
   AntilipschitzWith.of_le_mul_dist fun _ _ ↦ by simp [dist_eq_norm, ← mul_sub, ha]
@@ -253,7 +176,7 @@ end Filter
 end NonUnitalNormedRing
 
 section NormedRing
-variable [NormedRing α] [NormMulClass α] [NormOneClass α] {a : α}
+variable [Ring α] [NormedRing α] [NormMulClass α] [NormOneClass α] {a : α}
 
 protected lemma IsOfFinOrder.norm_eq_one (ha : IsOfFinOrder a) : ‖a‖ = 1 :=
   ((normHom : α →*₀ ℝ).toMonoidHom.isOfFinOrder ha).eq_one <| norm_nonneg _

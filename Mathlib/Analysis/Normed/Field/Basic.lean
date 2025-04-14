@@ -184,10 +184,6 @@ variable [NormedField α]
 instance (priority := 100) NormedField.toNormedDivisionRing : NormedDivisionRing α :=
   { ‹NormedField α› with }
 
--- see Note [lower instance priority]
-instance (priority := 100) NormedField.toNormedCommRing : NormedCommRing α :=
-  { ‹NormedField α› with norm_mul_le a b := (norm_mul a b).le }
-
 end NormedField
 
 namespace NormedField

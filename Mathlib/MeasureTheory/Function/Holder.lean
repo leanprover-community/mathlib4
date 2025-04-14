@@ -153,7 +153,7 @@ variable {α 𝕜' 𝕜 E : Type*} {m : MeasurableSpace α} {μ : Measure α}
 
 section MulActionWithZero
 
-variable [NormedRing 𝕜] [AddCommGroup E] [NormedAddGroup E]
+variable [Ring 𝕜] [NormedRing 𝕜] [AddCommGroup E] [NormedAddGroup E]
   [MulActionWithZero 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 /-- Heterogeneous scalar multiplication of `MeasureTheory.Lp` functions by `MeasureTheory.Lp`
@@ -182,7 +182,8 @@ end MulActionWithZero
 
 section Module
 
-variable [NormedRing 𝕜] [AddCommGroup E] [NormedAddGroup E] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
+variable [Ring 𝕜] [NormedRing 𝕜]
+  [AddCommGroup E] [NormedAddGroup E] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 protected lemma smul_add (f₁ f₂ : Lp 𝕜 p μ) (g : Lp E q μ) :
     (f₁ + f₂) • g = f₁ • g + f₂ • g := by
@@ -232,7 +233,8 @@ protected lemma neg_smul_neg (f : Lp 𝕜 p μ) (g : Lp E q μ) :
     -f • -g = f • g := by
   simp
 
-variable [NormedRing 𝕜'] [Module 𝕜' E] [Module 𝕜' 𝕜] [IsBoundedSMul 𝕜' E] [IsBoundedSMul 𝕜' 𝕜]
+variable [Ring 𝕜'] [NormedRing 𝕜']
+  [Module 𝕜' E] [Module 𝕜' 𝕜] [IsBoundedSMul 𝕜' E] [IsBoundedSMul 𝕜' 𝕜]
 
 protected lemma smul_assoc [IsScalarTower 𝕜' 𝕜 E]
     (c : 𝕜') (f : Lp 𝕜 p μ) (g : Lp E q μ) :

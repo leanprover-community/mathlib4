@@ -70,7 +70,7 @@ section ComplexBanachAlgebra
 
 open Ideal
 
-variable {A : Type*} [NormedCommRing A] [NormedAlgebra ℂ A] [CompleteSpace A] (I : Ideal A)
+variable {A : Type*} [CommRing A] [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] (I : Ideal A)
   [Ideal.IsMaximal I]
 
 /-- Every maximal ideal in a commutative complex Banach algebra gives rise to a character on that
@@ -198,9 +198,9 @@ namespace WeakDual
 namespace CharacterSpace
 
 variable {A B C 𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A] [StarRing A]
-variable [NormedRing B] [NormedAlgebra 𝕜 B] [CompleteSpace B] [StarRing B]
-variable [NormedRing C] [NormedAlgebra 𝕜 C] [CompleteSpace C] [StarRing C]
+variable [Ring A] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A] [StarRing A]
+variable [Ring B] [NormedRing B] [NormedAlgebra 𝕜 B] [CompleteSpace B] [StarRing B]
+variable [Ring C] [NormedRing C] [NormedAlgebra 𝕜 C] [CompleteSpace C] [StarRing C]
 
 /-- The functorial map taking `ψ : A →⋆ₐ[ℂ] B` to a continuous function
 `characterSpace ℂ B → characterSpace ℂ A` obtained by pre-composition with `ψ`. -/

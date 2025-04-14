@@ -449,7 +449,7 @@ end Real
 end NormedAddCommGroup
 
 section NormedRing
-variable {R : Type*} [NormedRing R] [NormedSpace ℝ R] [CompleteSpace R]
+variable {R : Type*} [Ring R] [NormedRing R] [NormedSpace ℝ R] [CompleteSpace R]
 
 @[simp]
 lemma condExp_ofNat (n : ℕ) [n.AtLeastTwo] (f : α → R) :

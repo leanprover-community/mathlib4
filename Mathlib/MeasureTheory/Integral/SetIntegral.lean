@@ -1167,7 +1167,7 @@ lemma ContinuousMap.integral_apply [NormedSpace ℝ E] [CompleteSpace E] {f : X 
     _ = _ := rfl
 
 open scoped ContinuousMapZero in
-theorem ContinuousMapZero.integral_apply {R : Type*} [NormedCommRing R] [Zero Y]
+theorem ContinuousMapZero.integral_apply {R : Type*} [CommRing R] [NormedRing R] [Zero Y]
     [NormedAlgebra ℝ R] [CompleteSpace R] {f : X → C(Y, R)₀}
     (hf : MeasureTheory.Integrable f μ) (y : Y) :
     (∫ (x : X), f x ∂μ) y = ∫ (x : X), (f x) y ∂μ := by

@@ -149,7 +149,7 @@ section Seminormed
 open Filter ENNReal
 open scoped Topology NNReal
 
-variable {𝕜 : Type*} (E : Type*) [NontriviallyNormedField 𝕜] [SeminormedRing E]
+variable {𝕜 : Type*} (E : Type*) [NontriviallyNormedField 𝕜] [Ring E] [SeminormedRing E]
     [NormedAlgebra 𝕜 E] (c : ℕ → 𝕜) (n : ℕ)
 
 theorem ofScalars_norm_eq_mul :
@@ -172,7 +172,7 @@ section Normed
 open Filter ENNReal
 open scoped Topology NNReal
 
-variable {𝕜 : Type*} (E : Type*) [NontriviallyNormedField 𝕜] [NormedRing E]
+variable {𝕜 : Type*} (E : Type*) [NontriviallyNormedField 𝕜] [Ring E] [NormedRing E]
     [NormedAlgebra 𝕜 E] (c : ℕ → 𝕜) (n : ℕ)
 
 private theorem tendsto_succ_norm_div_norm {r r' : ℝ≥0} (hr' : r' ≠ 0)

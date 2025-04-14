@@ -33,7 +33,7 @@ namespace WeakDual
 
 namespace CharacterSpace
 
-variable [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
+variable [NontriviallyNormedField 𝕜] [Ring A] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
 
 theorem norm_le_norm_one (φ : characterSpace 𝕜 A) : ‖toNormedDual (φ : WeakDual 𝕜 A)‖ ≤ ‖(1 : A)‖ :=
   ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg (1 : A)) fun a =>

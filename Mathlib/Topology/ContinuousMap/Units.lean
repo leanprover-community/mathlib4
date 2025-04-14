@@ -60,7 +60,7 @@ end Monoid
 
 section NormedRing
 
-variable [NormedRing R] [CompleteSpace R]
+variable [Ring R] [NormedRing R] [CompleteSpace R]
 
 theorem continuous_isUnit_unit {f : C(X, R)} (h : ∀ x, IsUnit (f x)) :
     Continuous fun x => (h x).unit := by

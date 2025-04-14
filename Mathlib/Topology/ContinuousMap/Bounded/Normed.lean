@@ -288,38 +288,33 @@ section NonUnital
 
 section Seminormed
 
-variable [NonUnitalSeminormedRing R]
+variable [NonUnitalRing R] [SeminormedRing R]
 
 instance instNonUnitalRing : NonUnitalRing (α →ᵇ R) :=
   DFunLike.coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub
     (fun _ _ => coe_nsmul _ _) fun _ _ => coe_zsmul _ _
 
-instance instNonUnitalSeminormedRing : NonUnitalSeminormedRing (α →ᵇ R) where
+instance instSeminormedRing : SeminormedRing (α →ᵇ R) where
   __ := instSeminormedAddGroup
-  __ := instNonUnitalRing
   norm_mul_le f g := norm_ofNormedAddCommGroup_le _ (by positivity)
     (fun x ↦ (norm_mul_le _ _).trans <| mul_le_mul
       (norm_coe_le_norm f x) (norm_coe_le_norm g x) (norm_nonneg _) (norm_nonneg _))
 
 end Seminormed
 
-instance instNonUnitalSeminormedCommRing [NonUnitalSeminormedCommRing R] :
-    NonUnitalSeminormedCommRing (α →ᵇ R) where
+instance instNonUnitalCommRing [NonUnitalCommRing R] [SeminormedRing R] :
+    NonUnitalCommRing (α →ᵇ R) where
   mul_comm _ _ := ext fun _ ↦ mul_comm ..
 
-instance instNonUnitalNormedRing [NonUnitalNormedRing R] : NonUnitalNormedRing (α →ᵇ R) where
-  __ := instNonUnitalSeminormedRing
+instance instNormedRing [NonUnitalRing R] [NormedRing R] : NormedRing (α →ᵇ R) where
+  __ := instSeminormedRing
   __ := instNormedAddGroup
-
-instance instNonUnitalNormedCommRing [NonUnitalNormedCommRing R] :
-    NonUnitalNormedCommRing (α →ᵇ R) where
-  mul_comm := mul_comm
 
 end NonUnital
 
 section Seminormed
 
-variable [SeminormedRing R]
+variable [Ring R] [SeminormedRing R]
 
 @[simp]
 theorem coe_npowRec (f : α →ᵇ R) : ∀ n, ⇑(npowRec n f) = (⇑f) ^ n
@@ -353,24 +348,16 @@ instance instRing : Ring (α →ᵇ R) :=
     (fun _ _ => coe_nsmul _ _) (fun _ _ => coe_zsmul _ _) (fun _ _ => coe_pow _ _) coe_natCast
     coe_intCast
 
-instance instSeminormedRing : SeminormedRing (α →ᵇ R) where
-  __ := instRing
-  __ := instNonUnitalSeminormedRing
-
 /-- Composition on the left by a (lipschitz-continuous) homomorphism of topological semirings, as a
 `RingHom`. Similar to `RingHom.compLeftContinuous`. -/
 @[simps!]
 protected def _root_.RingHom.compLeftContinuousBounded (α : Type*)
-    [TopologicalSpace α] [SeminormedRing β] [SeminormedRing γ]
+    [TopologicalSpace α] [Ring β] [SeminormedRing β] [Ring γ] [SeminormedRing γ]
     (g : β →+* γ) {C : NNReal} (hg : LipschitzWith C g) : (α →ᵇ β) →+* (α →ᵇ γ) :=
   { g.toMonoidHom.compLeftContinuousBounded α hg,
     g.toAddMonoidHom.compLeftContinuousBounded α hg with }
 
 end Seminormed
-
-instance instNormedRing [NormedRing R] : NormedRing (α →ᵇ R) where
-  __ := instRing
-  __ := instNonUnitalNormedRing
 
 end NormedRing
 
@@ -378,23 +365,15 @@ section NormedCommRing
 
 variable [TopologicalSpace α] {R : Type*}
 
-instance instCommRing [SeminormedCommRing R] : CommRing (α →ᵇ R) where
+instance instCommRing [CommRing R] [SeminormedRing R] : CommRing (α →ᵇ R) where
   mul_comm _ _ := ext fun _ ↦ mul_comm _ _
-
-instance instSeminormedCommRing [SeminormedCommRing R] : SeminormedCommRing (α →ᵇ R) where
-  __ := instCommRing
-  __ := instNonUnitalSeminormedRing
-
-instance instNormedCommRing [NormedCommRing R] : NormedCommRing (α →ᵇ R) where
-  __ := instSeminormedCommRing
-  __ := instNormedAddGroup
 
 end NormedCommRing
 
 section NonUnitalAlgebra
 
 -- these hypotheses could be generalized if we generalize `IsBoundedSMul` to `Bornology`.
-variable {𝕜 : Type*} [PseudoMetricSpace 𝕜] [TopologicalSpace α] [NonUnitalSeminormedRing β]
+variable {𝕜 : Type*} [PseudoMetricSpace 𝕜] [TopologicalSpace α] [NonUnitalRing β] [SeminormedRing β]
 variable [Zero 𝕜] [SMul 𝕜 β] [IsBoundedSMul 𝕜 β]
 
 instance [IsScalarTower 𝕜 β β] : IsScalarTower 𝕜 (α →ᵇ β) (α →ᵇ β) where
@@ -412,7 +391,7 @@ section NormedAlgebra
 
 variable {𝕜 : Type*} [NormedField 𝕜]
 variable [TopologicalSpace α] [AddCommGroup β] [SeminormedAddGroup β] [NormedSpace 𝕜 β]
-variable [NormedRing γ] [NormedAlgebra 𝕜 γ]
+variable [Ring γ] [NormedRing γ] [NormedAlgebra 𝕜 γ]
 variable {f g : α →ᵇ γ} {x : α} {c : 𝕜}
 
 /-- `BoundedContinuousFunction.const` as a `RingHom`. -/
@@ -442,7 +421,7 @@ variable (𝕜)
 as an `AlgHom`. Similar to `AlgHom.compLeftContinuous`. -/
 @[simps!]
 protected def AlgHom.compLeftContinuousBounded
-    [NormedRing β] [NormedAlgebra 𝕜 β][NormedRing γ] [NormedAlgebra 𝕜 γ]
+    [Ring β] [NormedRing β] [NormedAlgebra 𝕜 β] [NormedAlgebra 𝕜 γ]
     (g : β →ₐ[𝕜] γ) {C : NNReal} (hg : LipschitzWith C g) : (α →ᵇ β) →ₐ[𝕜] (α →ᵇ γ) :=
   { g.toRingHom.compLeftContinuousBounded α hg with
     commutes' := fun _ => DFunLike.ext _ _ fun _ => g.commutes' _ }

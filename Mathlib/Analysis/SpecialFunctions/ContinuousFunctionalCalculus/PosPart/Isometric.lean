@@ -19,7 +19,7 @@ C⋆-algebra that involve the norm.
   respectively.
 -/
 
-variable {A : Type*} [NonUnitalNormedRing A] [NormedSpace ℝ A] [SMulCommClass ℝ A A]
+variable {A : Type*} [NonUnitalRing A] [NormedRing A] [NormedSpace ℝ A] [SMulCommClass ℝ A A]
   [IsScalarTower ℝ A A] [StarRing A]
   [NonUnitalIsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 

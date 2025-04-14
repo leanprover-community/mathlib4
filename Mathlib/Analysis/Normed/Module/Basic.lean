@@ -222,18 +222,18 @@ section NormedAlgebra
 See the implementation notes for `Algebra` for a discussion about non-unital algebras. Following
 the strategy there, a non-unital *normed* algebra can be written as:
 ```lean
-variable [NormedField 𝕜] [NonUnitalSeminormedRing 𝕜']
+variable [NormedField 𝕜] [NonUnitalRing 𝕜'] [SeminormedRing 𝕜']
 variable [NormedSpace 𝕜 𝕜'] [SMulCommClass 𝕜 𝕜' 𝕜'] [IsScalarTower 𝕜 𝕜' 𝕜']
 ```
 -/
-class NormedAlgebra (𝕜 : Type*) (𝕜' : Type*) [NormedField 𝕜] [SeminormedRing 𝕜'] extends
+class NormedAlgebra (𝕜 : Type*) (𝕜' : Type*) [NormedField 𝕜] [Ring 𝕜'] [SeminormedRing 𝕜'] extends
   Algebra 𝕜 𝕜' where
   norm_smul_le : ∀ (r : 𝕜) (x : 𝕜'), ‖r • x‖ ≤ ‖r‖ * ‖x‖
 
 attribute [inherit_doc NormedAlgebra] NormedAlgebra.norm_smul_le
 
 variable (𝕜')
-variable [NormedField 𝕜] [SeminormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜']
+variable [NormedField 𝕜] [Ring 𝕜'] [SeminormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜']
 
 instance (priority := 100) NormedAlgebra.toNormedSpace : NormedSpace 𝕜 𝕜' :=
   { NormedAlgebra.toAlgebra.toModule with
@@ -308,22 +308,23 @@ instance : NormedAlgebra 𝕜 (ULift 𝕜') :=
   { ULift.normedSpace, ULift.algebra with }
 
 /-- The product of two normed algebras is a normed algebra, with the sup norm. -/
-instance Prod.normedAlgebra {E F : Type*} [SeminormedRing E] [SeminormedRing F] [NormedAlgebra 𝕜 E]
-    [NormedAlgebra 𝕜 F] : NormedAlgebra 𝕜 (E × F) :=
+instance Prod.normedAlgebra {E F : Type*} [Ring E] [SeminormedRing E] [Ring F] [SeminormedRing F]
+    [NormedAlgebra 𝕜 E] [NormedAlgebra 𝕜 F] : NormedAlgebra 𝕜 (E × F) :=
   { Prod.normedSpace, Prod.algebra 𝕜 E F with }
 
 /-- The product of finitely many normed algebras is a normed algebra, with the sup norm. -/
-instance Pi.normedAlgebra {ι : Type*} {E : ι → Type*} [Fintype ι] [∀ i, SeminormedRing (E i)]
+instance Pi.normedAlgebra {ι : Type*} {E : ι → Type*} [Fintype ι]
+    [∀ i, Ring (E i)] [∀ i, SeminormedRing (E i)]
     [∀ i, NormedAlgebra 𝕜 (E i)] : NormedAlgebra 𝕜 (∀ i, E i) :=
   { Pi.normedSpace, Pi.algebra _ E with }
 
-variable [SeminormedRing E] [NormedAlgebra 𝕜 E]
+variable [Ring E] [SeminormedRing E] [NormedAlgebra 𝕜 E]
 
 instance SeparationQuotient.instNormedAlgebra : NormedAlgebra 𝕜 (SeparationQuotient E) where
   __ : NormedSpace 𝕜 (SeparationQuotient E) := inferInstance
   __ : Algebra 𝕜 (SeparationQuotient E) := inferInstance
 
-instance MulOpposite.instNormedAlgebra {E : Type*} [SeminormedRing E] [NormedAlgebra 𝕜 E] :
+instance MulOpposite.instNormedAlgebra {E : Type*} [Ring E] [SeminormedRing E] [NormedAlgebra 𝕜 E] :
     NormedAlgebra 𝕜 Eᵐᵒᵖ where
   __ := instAlgebra
   __ := instNormedSpace
@@ -335,19 +336,19 @@ end NormedAlgebra
 
 See note [reducible non-instances] -/
 abbrev NormedAlgebra.induced {F : Type*} (𝕜 R S : Type*) [NormedField 𝕜] [Ring R] [Algebra 𝕜 R]
-    [SeminormedRing S] [NormedAlgebra 𝕜 S] [FunLike F R S] [NonUnitalAlgHomClass F 𝕜 R S]
+    [Ring S] [SeminormedRing S] [NormedAlgebra 𝕜 S] [FunLike F R S] [NonUnitalAlgHomClass F 𝕜 R S]
     (f : F) :
-    @NormedAlgebra 𝕜 R _ (SeminormedRing.induced R S f) :=
+    @NormedAlgebra 𝕜 R _ _ (SeminormedRing.induced R S f) :=
   letI := SeminormedRing.induced R S f
   ⟨fun a b ↦ show ‖f (a • b)‖ ≤ ‖a‖ * ‖f b‖ from (map_smul f a b).symm ▸ norm_smul_le a (f b)⟩
 
-instance Subalgebra.toNormedAlgebra {𝕜 A : Type*} [SeminormedRing A] [NormedField 𝕜]
+instance Subalgebra.toNormedAlgebra {𝕜 A : Type*} [Ring A] [SeminormedRing A] [NormedField 𝕜]
     [NormedAlgebra 𝕜 A] (S : Subalgebra 𝕜 A) : NormedAlgebra 𝕜 S :=
   NormedAlgebra.induced 𝕜 S A S.val
 
 section SubalgebraClass
 
-variable {S 𝕜 E : Type*} [NormedField 𝕜] [SeminormedRing E] [NormedAlgebra 𝕜 E]
+variable {S 𝕜 E : Type*} [NormedField 𝕜] [Ring E] [SeminormedRing E] [NormedAlgebra 𝕜 E]
 variable [SetLike S E] [SubringClass S E] [SMulMemClass S 𝕜 E] (s : S)
 
 instance (priority := 75) SubalgebraClass.toNormedAlgebra : NormedAlgebra 𝕜 s where
@@ -367,36 +368,12 @@ instance [AddCommGroup E] [I : NormedAddGroup E] :
     NormedAddGroup (RestrictScalars 𝕜 𝕜' E) :=
   I
 
-instance [I : NonUnitalSeminormedRing E] :
-    NonUnitalSeminormedRing (RestrictScalars 𝕜 𝕜' E) :=
-  I
-
-instance [I : NonUnitalNormedRing E] :
-    NonUnitalNormedRing (RestrictScalars 𝕜 𝕜' E) :=
-  I
-
-instance [I : SeminormedRing E] :
+instance [NonUnitalRing E] [I : SeminormedRing E] :
     SeminormedRing (RestrictScalars 𝕜 𝕜' E) :=
   I
 
-instance [I : NormedRing E] :
+instance [NonUnitalRing E] [I : NormedRing E] :
     NormedRing (RestrictScalars 𝕜 𝕜' E) :=
-  I
-
-instance [I : NonUnitalSeminormedCommRing E] :
-    NonUnitalSeminormedCommRing (RestrictScalars 𝕜 𝕜' E) :=
-  I
-
-instance [I : NonUnitalNormedCommRing E] :
-    NonUnitalNormedCommRing (RestrictScalars 𝕜 𝕜' E) :=
-  I
-
-instance [I : SeminormedCommRing E] :
-    SeminormedCommRing (RestrictScalars 𝕜 𝕜' E) :=
-  I
-
-instance [I : NormedCommRing E] :
-    NormedCommRing (RestrictScalars 𝕜 𝕜' E) :=
   I
 
 end NormInstances
@@ -442,7 +419,7 @@ section NormedAlgebra
 
 variable (𝕜 𝕜' E)
 variable [NormedField 𝕜] [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
-  [SeminormedRing E] [NormedAlgebra 𝕜' E]
+  [Ring E] [SeminormedRing E] [NormedAlgebra 𝕜' E]
 
 /-- If `E` is a normed algebra over `𝕜'` and `𝕜` is a normed algebra over `𝕜'`, then
 `RestrictScalars.module` is additionally a `NormedAlgebra`. -/
@@ -456,7 +433,8 @@ instance RestrictScalars.normedAlgebra : NormedAlgebra 𝕜 (RestrictScalars �
 This is not an instance as it would be contrary to the purpose of `RestrictScalars`.
 -/
 def Module.RestrictScalars.normedAlgebraOrig {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [NormedField 𝕜']
-    [SeminormedRing E] [I : NormedAlgebra 𝕜' E] : NormedAlgebra 𝕜' (RestrictScalars 𝕜 𝕜' E) :=
+    [Ring E] [SeminormedRing E] [I : NormedAlgebra 𝕜' E] :
+    NormedAlgebra 𝕜' (RestrictScalars 𝕜 𝕜' E) :=
   I
 
 /-- Warning: This declaration should be used judiciously.

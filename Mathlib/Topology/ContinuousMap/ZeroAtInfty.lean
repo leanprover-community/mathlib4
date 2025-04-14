@@ -473,22 +473,14 @@ end NormedSpace
 
 section NormedRing
 
-noncomputable instance instNonUnitalSeminormedRing [NonUnitalSeminormedRing β] :
-    NonUnitalSeminormedRing C₀(α, β) :=
-  { instNonUnitalRing, instSeminormedAddGroup with
+noncomputable instance instSeminormedRing [NonUnitalRing β] [SeminormedRing β] :
+    SeminormedRing C₀(α, β) :=
+  {  instSeminormedAddGroup with
     norm_mul_le f g := norm_mul_le f.toBCF g.toBCF }
 
-noncomputable instance instNonUnitalNormedRing [NonUnitalNormedRing β] :
-    NonUnitalNormedRing C₀(α, β) :=
-  { instNonUnitalSeminormedRing, instNormedAddGroup with }
-
-noncomputable instance instNonUnitalSeminormedCommRing [NonUnitalSeminormedCommRing β] :
-    NonUnitalSeminormedCommRing C₀(α, β) :=
-  { instNonUnitalSeminormedRing, instNonUnitalCommRing with }
-
-noncomputable instance instNonUnitalNormedCommRing [NonUnitalNormedCommRing β] :
-    NonUnitalNormedCommRing C₀(α, β) :=
-  { instNonUnitalNormedRing, instNonUnitalCommRing with }
+noncomputable instance instNormedRing [NonUnitalRing β] [NormedRing β] :
+    NormedRing C₀(α, β) :=
+  { instSeminormedRing, instNormedAddGroup with }
 
 end NormedRing
 
@@ -561,7 +553,8 @@ end StarRing
 
 section CStarRing
 
-instance instCStarRing [NonUnitalNormedRing β] [StarRing β] [CStarRing β] : CStarRing C₀(α, β) where
+instance instCStarRing [NonUnitalRing β] [NormedRing β] [StarRing β] [CStarRing β] :
+    CStarRing C₀(α, β) where
   norm_mul_self_le f := CStarRing.norm_mul_self_le (x := f.toBCF)
 
 end CStarRing

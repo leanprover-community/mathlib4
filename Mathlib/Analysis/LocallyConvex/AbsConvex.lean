@@ -50,7 +50,7 @@ variable {𝕜 E : Type*}
 
 section AbsolutelyConvex
 
-variable (𝕜) [SeminormedRing 𝕜] [SMul 𝕜 E] [SMul ℝ E] [AddCommMonoid E]
+variable (𝕜) [Ring 𝕜] [SeminormedRing 𝕜] [SMul 𝕜 E] [SMul ℝ E] [AddCommMonoid E]
 /-- A set is absolutely convex if it is balanced and convex. Mathlib's definition of `Convex`
 requires the scalars to be an `OrderedSemiring` whereas the definition of `Balanced` requires the
 scalars to be a `SeminormedRing`. Mathlib doesn't currently have a concept of a semi-normed ordered
