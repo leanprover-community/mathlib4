@@ -220,6 +220,13 @@ theorem integral_fourierIntegral_smul_eq_flip
 
 end Fubini
 
+lemma fourierIntegral_probChar {V W : Type*} {_ : MeasurableSpace V}
+    [AddCommGroup V] [Module ℝ V] [AddCommGroup W] [Module ℝ W]
+    (L : V →ₗ[ℝ] W →ₗ[ℝ] ℝ) (μ : Measure V) (f : V → E) (w : W) :
+    fourierIntegral Real.probChar μ L f w =
+      ∫ v : V, Complex.exp (- L v w * Complex.I) • f v ∂μ := by
+  simp_rw [fourierIntegral, Circle.smul_def, Real.probChar_apply, Complex.ofReal_neg]
+
 end VectorFourier
 
 namespace VectorFourier
