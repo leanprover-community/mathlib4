@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chriara Cimino, Christian Krause
 -/
 import Mathlib.Order.Closure
-import Mathlib.Order.Hom.Bounded
 import Mathlib.Order.Hom.CompleteLattice
+import Mathlib.Tactic.MinImports
 
 /-!
 # Nucleus
@@ -21,7 +21,7 @@ https://ncatlab.org/nlab/show/sublocale
 https://ncatlab.org/nlab/show/nucleus
 -/
 
-open Order InfHom
+open Order InfHom Set
 
 variable {X : Type*}
 
@@ -196,56 +196,39 @@ instance : Order.Frame (Nucleus X) where
    __ := Nucleus.instHeytingAlgebra
    __ := Nucleus.instCompleteLattice
 
-end Frame
-open Set
+lemma mem_range : x ∈ range n ↔ n x = x where
+  mp := by rintro ⟨x, rfl⟩; exact idempotent
+  mpr h := ⟨x, h⟩
 
-variable [Order.Frame X] {n : Nucleus X}
+/-- See `Nucleus.giRestrict` for the public-facing version. -/
+private def giAux (n : Nucleus X) : GaloisInsertion (Set.rangeFactorization n) Subtype.val where
+  choice x hx := ⟨x, mem_range.2 <| hx.antisymm n.le_apply⟩
+  gc x y := ClosureOperator.IsClosed.closure_le_iff (c := n.toClosureOperator) <| mem_range.1 y.2
+  le_l_u x := le_apply
+  choice_eq x hx := by ext; exact le_apply.antisymm hx
 
-/--
-Restrict the Nucleus to its image.
--/
-abbrev restrict (n : Nucleus X) := codRestrict n (range n) (by simp)
+instance : CompleteLattice (range n) := n.giAux.liftCompleteLattice
 
-lemma mem_range_iff (n : Nucleus X) (x : X) : x ∈ range n ↔ n x = x := by
-  apply Iff.intro
-  · simp only [mem_range, forall_exists_index]
-    intro y h
-    rw [← h, idempotent]
-  · aesop
-
-lemma coe_range_fixpoint (n : Nucleus X) (x : range n) : n x = x :=
-  (n.mem_range_iff x).mp x.coe_prop
-/--
-The Nucleus restricted to its image together with the canoncial map backwards form a
-GaloisInsertion.
--/
-def gi (n : Nucleus X) : GaloisInsertion (n.restrict) Subtype.val :=
-  GaloisInsertion.monotoneIntro
-  (fun ⦃a b⦄ a ↦ a)
-  (by simpa [Monotone, ← Subtype.coe_le_coe] using n.monotone)
-  (fun a ↦ n.le_apply)
-  (by simp [Subtype.ext_iff, n.idempotent])
-
-instance : CompleteLattice (range n) := n.gi.liftCompleteLattice
-
-instance range_instMinAx : Order.Frame.MinimalAxioms (range n) where
+instance range.instFrameMinimalAxioms : Frame.MinimalAxioms (range n) where
   inf_sSup_le_iSup_inf a s := by
-    simp_rw [← Subtype.coe_le_coe, iSup_subtype', iSup, sSup, n.gi.gc.u_inf]
-    rw [val_codRestrict_apply, ← coe_range_fixpoint n a, ← map_inf]
+    simp_rw [← Subtype.coe_le_coe, iSup_subtype', iSup, sSup, n.giAux.gc.u_inf]
+    rw [rangeFactorization_coe, ← mem_range.1 a.prop, ← map_inf]
     apply n.monotone
-    simp_rw [inf_sSup_eq, sSup_image, iSup_range, iSup_image, iSup_subtype', n.gi.gc.u_inf, le_refl]
+    simp_rw [inf_sSup_eq, sSup_image, iSup_range, iSup_image, iSup_subtype', n.giAux.gc.u_inf,
+      le_rfl]
 
-instance : Order.Frame (range n) := Order.Frame.ofMinimalAxioms range_instMinAx
+instance : Frame (range n) := .ofMinimalAxioms range.instFrameMinimalAxioms
 
-/--
-A Nucleus is a morphism of frames from the frame it lives in to the range of the nucleus.
--/
-def frameHom (n : Nucleus X) : FrameHom X (range n) where
-  toFun := n.restrict
-  map_inf' a b := by
-    ext
-    simp [n.gi.gc.u_inf]
-  map_top' := n.gi.l_top
-  map_sSup' s := by rw [n.gi.gc.l_sSup, sSup_image]
+/-- Restrict a nucleus to its range. -/
+@[simps] def restrict (n : Nucleus X) : FrameHom X (range n) where
+  toFun := Set.rangeFactorization n
+  map_inf' a b := by ext; exact map_inf
+  map_top' := by ext; exact map_top n
+  map_sSup' s := by rw [n.giAux.gc.l_sSup, sSup_image]
 
+/-- The restriction of a nucleus to its range forms a Galois insertion with the forgetful map from
+the range to the original frame. -/
+def giRestrict (n : Nucleus X) : GaloisInsertion (Set.rangeFactorization n) Subtype.val := n.giAux
+
+end Frame
 end Nucleus
