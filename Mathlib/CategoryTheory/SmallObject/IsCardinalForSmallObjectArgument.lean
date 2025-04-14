@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.SmallObject.TransfiniteIteration
 import Mathlib.CategoryTheory.SmallObject.TransfiniteCompositionLifting
 import Mathlib.CategoryTheory.MorphismProperty.IsSmall
 import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
-import Mathlib.SetTheory.Cardinal.Cofinality
+import Mathlib.SetTheory.Cardinal.Regular
 
 /-!
 # Cardinals that are suitable for the small object argument

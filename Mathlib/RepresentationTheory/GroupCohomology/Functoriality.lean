@@ -33,7 +33,7 @@ variable {k G H : Type u} [CommRing k] [Group G] [Group H]
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is the chain map sending `x : Hⁿ → A` to `(g : Gⁿ) ↦ φ (x (f ∘ g))`. -/
-@[simps! (config := .lemmasOnly) f f_hom]
+@[simps! -isSimp f f_hom]
 noncomputable def cochainsMap :
     inhomogeneousCochains A ⟶ inhomogeneousCochains B where
   f i := ModuleCat.ofHom <|

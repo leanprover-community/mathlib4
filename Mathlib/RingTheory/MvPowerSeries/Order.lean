@@ -300,14 +300,14 @@ variable {R : Type*} [Ring R] {f g : MvPowerSeries σ R}
 theorem coeff_mul_left_one_sub_of_lt_weightedOrder
     {d : σ →₀ ℕ} (h : (weight w d) < g.weightedOrder w) :
     coeff R d (f * (1 - g)) = coeff R d f := by
-  simp only [mul_sub, mul_one, _root_.map_sub, sub_eq_self]
+  simp only [mul_sub, mul_one, map_sub, sub_eq_self]
   apply coeff_eq_zero_of_lt_weightedOrder w
   exact lt_of_lt_of_le (lt_of_lt_of_le h le_add_self) (le_weightedOrder_mul w)
 
 theorem coeff_mul_right_one_sub_of_lt_weightedOrder
     {d : σ →₀ ℕ} (h : (weight w d) < g.weightedOrder w) :
     coeff R d ((1 - g) * f) = coeff R d f := by
-  simp only [sub_mul, one_mul, _root_.map_sub, sub_eq_self]
+  simp only [sub_mul, one_mul, map_sub, sub_eq_self]
   apply coeff_eq_zero_of_lt_weightedOrder w
   apply lt_of_lt_of_le (lt_of_lt_of_le h le_self_add) (le_weightedOrder_mul w)
 
@@ -457,8 +457,7 @@ section HomogeneousComponent
 variable (w : σ → ℕ)
 
 /-- The weighted homogeneous components of an `MvPowerSeries f`. -/
-def weightedHomogeneousComponent (p : ℕ) : MvPowerSeries σ R →ₗ[R] MvPowerSeries σ R
-    where
+def weightedHomogeneousComponent (p : ℕ) : MvPowerSeries σ R →ₗ[R] MvPowerSeries σ R where
   toFun f d := if weight w d = p then coeff R d f else 0
   map_add' f g := by
     ext d

@@ -66,13 +66,12 @@ def ιPaths (X : C) : Paths (LocQuiver W) :=
 
 /-- The morphism in the path category associated to a morphism in the original category. -/
 @[simp]
-def ψ₁ {X Y : C} (f : X ⟶ Y) : ιPaths W X ⟶ ιPaths W Y :=
-  Paths.of.map (Sum.inl f)
+def ψ₁ {X Y : C} (f : X ⟶ Y) : ιPaths W X ⟶ ιPaths W Y := (Paths.of _).map (Sum.inl f)
 
 /-- The morphism in the path category corresponding to a formal inverse. -/
 @[simp]
 def ψ₂ {X Y : C} (w : X ⟶ Y) (hw : W w) : ιPaths W Y ⟶ ιPaths W X :=
-  Paths.of.map (Sum.inr ⟨w, hw⟩)
+  (Paths.of _).map (Sum.inr ⟨w, hw⟩)
 
 /-- The relations by which we take the quotient in order to get the localized category. -/
 inductive relations : HomRel (Paths (LocQuiver W))
@@ -100,7 +99,7 @@ instance : Category (Localization W) := by
 
 /-- The obvious functor `C ⥤ W.Localization` -/
 def Q : C ⥤ W.Localization where
-  obj X := (Quotient.functor _).obj (Paths.of.obj ⟨X⟩)
+  obj X := (Quotient.functor _).obj ((Paths.of _).obj ⟨X⟩)
   map f := (Quotient.functor _).map (ψ₁ W f)
   map_id X := Quotient.sound _ (relations.id X)
   map_comp f g := Quotient.sound _ (relations.comp f g)
@@ -115,7 +114,7 @@ variable {W}
 /-- The isomorphism in `W.Localization` associated to a morphism `w` in W -/
 def wIso {X Y : C} (w : X ⟶ Y) (hw : W w) : Iso (W.Q.obj X) (W.Q.obj Y) where
   hom := W.Q.map w
-  inv := (Quotient.functor _).map (by dsimp; exact Paths.of.map (Sum.inr ⟨w, hw⟩))
+  inv := (Quotient.functor _).map (by dsimp; exact (Paths.of _).map (Sum.inr ⟨w, hw⟩))
   hom_inv_id := Quotient.sound _ (relations.Winv₁ w hw)
   inv_hom_id := Quotient.sound _ (relations.Winv₂ w hw)
 
@@ -218,9 +217,10 @@ theorem morphismProperty_is_top (P : MorphismProperty W.Localization)
       rcases Y with ⟨⟨Y⟩⟩
       simpa only [Functor.map_preimage] using this _ _ (G.preimage f)
     intros X₁ X₂ p
-    induction' p with X₂ X₃ p g hp
-    · simpa only [Functor.map_id] using hP₁ (𝟙 X₁.obj)
-    · let p' : X₁ ⟶X₂ := p
+    induction p with
+    | nil => simpa only [Functor.map_id] using hP₁ (𝟙 X₁.obj)
+    | @cons X₂ X₃ p g hp =>
+      let p' : X₁ ⟶X₂ := p
       rw [show p'.cons g = p' ≫ Quiver.Hom.toPath g by rfl, G.map_comp]
       refine P.comp_mem _ _ hp ?_
       rcases g with (g | ⟨g, hg⟩)
@@ -271,6 +271,9 @@ def natTransExtension {F₁ F₂ : W.Localization ⥤ D} (τ : W.Q ⋙ F₁ ⟶ 
     simpa only [NatTransExtension.app_eq] using τ.naturality f
 
 @[simp]
+theorem whiskerLeft_natTransExtension {F G : W.Localization ⥤ D} (τ : W.Q ⋙ F ⟶ W.Q ⋙ G) :
+    whiskerLeft W.Q (natTransExtension τ) = τ := by aesop_cat
+
 theorem natTransExtension_hcomp {F G : W.Localization ⥤ D} (τ : W.Q ⋙ F ⟶ W.Q ⋙ G) :
     𝟙 W.Q ◫ natTransExtension τ = τ := by aesop_cat
 

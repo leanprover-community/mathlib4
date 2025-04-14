@@ -114,7 +114,7 @@ lemma measurable_densityProcess_countableFiltration_aux (κ : Kernel α (γ × �
     · refine measurable_from_prod_countable ?_
       rintro ⟨t, ht⟩
       exact Kernel.measurable_coe _ (measurableSet_countablePartition _ ht)
-  refine h1.comp (measurable_fst.prod_mk ?_)
+  refine h1.comp (measurable_fst.prodMk ?_)
   change @Measurable (α × γ) (countablePartition γ n) (mα.prod (countableFiltration γ n)) ⊤
     ((fun c ↦ ⟨countablePartitionSet n c, countablePartitionSet_mem n c⟩) ∘ (fun p : α × γ ↦ p.2))
   exact (measurable_countablePartitionSet_subtype n ⊤).comp measurable_snd
@@ -135,18 +135,18 @@ lemma measurable_densityProcess (κ : Kernel α (γ × β)) (ν : Kernel α γ) 
 lemma measurable_densityProcess_left (κ : Kernel α (γ × β)) (ν : Kernel α γ) (n : ℕ)
     (x : γ) {s : Set β} (hs : MeasurableSet s) :
     Measurable (fun a ↦ densityProcess κ ν n a x s) :=
-  ((measurable_densityProcess κ ν n hs).comp (measurable_id.prod_mk measurable_const):)
+  ((measurable_densityProcess κ ν n hs).comp (measurable_id.prodMk measurable_const):)
 
 lemma measurable_densityProcess_right (κ : Kernel α (γ × β)) (ν : Kernel α γ) (n : ℕ)
     {s : Set β} (a : α) (hs : MeasurableSet s) :
     Measurable (fun x ↦ densityProcess κ ν n a x s) :=
-  ((measurable_densityProcess κ ν n hs).comp (measurable_const.prod_mk measurable_id):)
+  ((measurable_densityProcess κ ν n hs).comp (measurable_const.prodMk measurable_id):)
 
 lemma measurable_countableFiltration_densityProcess (κ : Kernel α (γ × β)) (ν : Kernel α γ) (n : ℕ)
     (a : α) {s : Set β} (hs : MeasurableSet s) :
     Measurable[countableFiltration γ n] (fun x ↦ densityProcess κ ν n a x s) := by
   refine @Measurable.ennreal_toReal _ (countableFiltration γ n) _ ?_
-  exact (measurable_densityProcess_countableFiltration_aux κ ν n hs).comp measurable_prod_mk_left
+  exact (measurable_densityProcess_countableFiltration_aux κ ν n hs).comp measurable_prodMk_left
 
 lemma stronglyMeasurable_countableFiltration_densityProcess (κ : Kernel α (γ × β)) (ν : Kernel α γ)
     (n : ℕ) (a : α) {s : Set β} (hs : MeasurableSet s) :
@@ -207,7 +207,7 @@ lemma setIntegral_densityProcess_of_mem (hκν : fst κ ≤ ν) [hν : IsFiniteK
   · refine Measurable.aemeasurable ?_
     change Measurable ((fun (p : α × _) ↦ κ p.1 (countablePartitionSet n p.2 ×ˢ s)
       / ν p.1 (countablePartitionSet n p.2)) ∘ (fun x ↦ (a, x)))
-    exact (measurable_densityProcess_aux κ ν n hs).comp measurable_prod_mk_left
+    exact (measurable_densityProcess_aux κ ν n hs).comp measurable_prodMk_left
   · refine ae_of_all _ (fun x ↦ ?_)
     by_cases h0 : ν a (countablePartitionSet n x) = 0
     · suffices κ a (countablePartitionSet n x ×ˢ s) = 0 by simp [h0, this]
@@ -452,13 +452,13 @@ lemma measurable_density_left (κ : Kernel α (γ × β)) (ν : Kernel α γ) (x
     {s : Set β} (hs : MeasurableSet s) :
     Measurable (fun a ↦ density κ ν a x s) := by
   change Measurable ((fun (p : α × γ) ↦ density κ ν p.1 p.2 s) ∘ (fun a ↦ (a, x)))
-  exact (measurable_density κ ν hs).comp measurable_prod_mk_right
+  exact (measurable_density κ ν hs).comp measurable_prodMk_right
 
 lemma measurable_density_right (κ : Kernel α (γ × β)) (ν : Kernel α γ)
     {s : Set β} (hs : MeasurableSet s) (a : α) :
     Measurable (fun x ↦ density κ ν a x s) := by
   change Measurable ((fun (p : α × γ) ↦ density κ ν p.1 p.2 s) ∘ (fun x ↦ (a, x)))
-  exact (measurable_density κ ν hs).comp measurable_prod_mk_left
+  exact (measurable_density κ ν hs).comp measurable_prodMk_left
 
 lemma density_mono_set (hκν : fst κ ≤ ν) (a : α) (x : γ) {s s' : Set β} (h : s ⊆ s') :
     density κ ν a x s ≤ density κ ν a x s' := by
@@ -610,7 +610,7 @@ lemma tendsto_integral_density_of_antitone (hκν : fst κ ≤ ν) [IsFiniteKern
     Tendsto (fun m ↦ ∫ x, density κ ν a x (seq m) ∂(ν a)) atTop (𝓝 0) := by
   have : IsFiniteKernel κ := isFiniteKernel_of_isFiniteKernel_fst (h := isFiniteKernel_of_le hκν)
   simp_rw [integral_density hκν a (hseq_meas _)]
-  rw [← ENNReal.zero_toReal]
+  rw [← ENNReal.toReal_zero]
   have h_cont := ENNReal.continuousAt_toReal ENNReal.zero_ne_top
   refine h_cont.tendsto.comp ?_
   have h : Tendsto (fun m ↦ κ a (univ ×ˢ seq m)) atTop

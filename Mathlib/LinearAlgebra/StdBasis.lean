@@ -3,8 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.LinearAlgebra.Basis.Defs
 import Mathlib.LinearAlgebra.Finsupp.SumProd
+import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 import Mathlib.LinearAlgebra.Pi
 
@@ -72,6 +72,18 @@ theorem linearIndependent_single [Ring R] [∀ i, AddCommGroup (Ms i)] [∀ i, M
   have h₃ : Disjoint (fun i : η => i ∈ ({j} : Set _)) J := by
     convert Set.disjoint_singleton_left.2 hiJ using 0
   exact (disjoint_single_single _ _ _ _ h₃).mono h₁ h₂
+
+theorem linearIndependent_single_one (ι R : Type*) [Ring R] [DecidableEq ι] :
+    LinearIndependent R (fun i : ι ↦ Pi.single i (1 : R)) := by
+  rw [← linearIndependent_equiv (Equiv.sigmaPUnit ι)]
+  exact Pi.linearIndependent_single (fun (_ : ι) (_ : Unit) ↦ (1 : R))
+    <| by simp +contextual [Fintype.linearIndependent_iff]
+
+theorem linearIndependent_single_ne_zero {ι R : Type*} [Ring R] [NoZeroDivisors R] [DecidableEq ι]
+    {v : ι → R} (hv : ∀ i, v i ≠ 0) : LinearIndependent R (fun i : ι ↦ Pi.single i (v i)) := by
+  rw [← linearIndependent_equiv (Equiv.sigmaPUnit ι)]
+  exact Pi.linearIndependent_single (fun i (_ : Unit) ↦ v i)
+    <| by simp +contextual [Fintype.linearIndependent_iff, hv]
 
 variable [Semiring R] [∀ i, AddCommMonoid (Ms i)] [∀ i, Module R (Ms i)]
 
@@ -174,3 +186,21 @@ lemma piEquiv_apply_apply (ι R M : Type*) [Fintype ι] [CommSemiring R]
   rw [← LinearMap.range_eq_top, range_piEquiv]
 
 end Module
+
+namespace Module.Free
+
+variable {ι : Type*} (R : Type*) (M : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
+
+/-- The product of finitely many free modules is free. -/
+instance _root_.Module.Free.pi (M : ι → Type*) [Finite ι] [∀ i : ι, AddCommMonoid (M i)]
+    [∀ i : ι, Module R (M i)] [∀ i : ι, Module.Free R (M i)] : Module.Free R (∀ i, M i) :=
+  let ⟨_⟩ := nonempty_fintype ι
+  .of_basis <| Pi.basis fun i => Module.Free.chooseBasis R (M i)
+
+variable (ι) in
+/-- The product of finitely many free modules is free (non-dependent version to help with typeclass
+search). -/
+instance _root_.Module.Free.function [Finite ι] [Module.Free R M] : Module.Free R (ι → M) :=
+  Free.pi _ _
+
+end Module.Free

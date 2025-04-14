@@ -134,6 +134,14 @@ end Finite
 
 end Module
 
+instance AddMonoid.FG.to_moduleFinite_nat {M : Type*} [AddCommMonoid M] [FG M] :
+    Module.Finite ℕ M :=
+  Module.Finite.iff_addMonoid_fg.mpr ‹_›
+
+instance AddMonoid.FG.to_moduleFinite_int {G : Type*} [AddCommGroup G] [FG G] :
+    Module.Finite ℤ G :=
+  Module.Finite.iff_addGroup_fg.mpr <| AddGroup.fg_iff_addMonoid_fg.mpr ‹_›
+
 end ModuleAndAlgebra
 
 namespace RingHom

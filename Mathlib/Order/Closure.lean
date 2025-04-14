@@ -3,7 +3,7 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Yaël Dillies
 -/
-import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.BooleanAlgebra
 import Mathlib.Data.SetLike.Basic
 import Mathlib.Order.Hom.Basic
 

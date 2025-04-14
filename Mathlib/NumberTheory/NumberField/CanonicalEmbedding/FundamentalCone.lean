@@ -90,11 +90,10 @@ open NumberField.Units NumberField.Units.dirichletUnitTheorem Module
 variable [NumberField K] {K}
 
 open Classical in
-/-- The map from the mixed space to `{w : InfinitePlace K // w ≠ w₀} → ℝ` (with `w₀` the fixed
-place from the proof of Dirichlet Unit Theorem) defined in such way that: 1) it factors the map
+/-- The map from the mixed space to `logSpace K` defined in such way that: 1) it factors the map
 `logEmbedding`, see `logMap_eq_logEmbedding`; 2) it is constant on the sets
 `{c • x | c ∈ ℝ, c ≠ 0}` if `norm x ≠ 0`, see `logMap_real_smul`. -/
-def logMap (x : mixedSpace K) : {w : InfinitePlace K // w ≠ w₀} → ℝ := fun w ↦
+def logMap (x : mixedSpace K) : logSpace K := fun w ↦
   mult w.val * (Real.log (normAtPlace w.val x) -
     Real.log (mixedEmbedding.norm x) * (finrank ℚ K : ℝ)⁻¹)
 

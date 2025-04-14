@@ -17,6 +17,10 @@ variable {α β γ : Type*}
 
 namespace List
 
+@[simp]
+theorem setOf_mem_eq_empty_iff {l : List α} : { x | x ∈ l } = ∅ ↔ l = [] :=
+  Set.eq_empty_iff_forall_not_mem.trans eq_nil_iff_forall_not_mem.symm
+
 set_option linter.deprecated false in
 @[simp, deprecated "No deprecation message was provided." (since := "2024-10-17")]
 lemma Nat.sum_eq_listSum (l : List ℕ) : Nat.sum l = l.sum := rfl
@@ -24,7 +28,7 @@ lemma Nat.sum_eq_listSum (l : List ℕ) : Nat.sum l = l.sum := rfl
 @[deprecated (since := "2024-12-10")] alias tail_reverse_eq_reverse_dropLast := tail_reverse
 
 theorem injOn_insertIdx_index_of_not_mem (l : List α) (x : α) (hx : x ∉ l) :
-    Set.InjOn (fun k => insertIdx k x l) { n | n ≤ l.length } := by
+    Set.InjOn (fun k => l.insertIdx k x) { n | n ≤ l.length } := by
   induction' l with hd tl IH
   · intro n hn m hm _
     simp_all [Set.mem_singleton_iff, Set.setOf_eq_eq_singleton, length]
@@ -58,13 +62,9 @@ theorem foldl_range_subset_of_range_subset {f : α → β → α} {g : α → γ
     (hfg : (Set.range fun a c => f c a) ⊆ Set.range fun b c => g c b) (a : α) :
     Set.range (foldl f a) ⊆ Set.range (foldl g a) := by
   change (Set.range fun l => _) ⊆ Set.range fun l => _
-  -- Porting note: This was simply `simp_rw [← foldr_reverse]`
-  simp_rw [← foldr_reverse _ (fun z w => g w z), ← foldr_reverse _ (fun z w => f w z)]
-  -- Porting note: This `change` was not necessary in mathlib3
-  change (Set.range (foldr (fun z w => f w z) a ∘ reverse)) ⊆
-    Set.range (foldr (fun z w => g w z) a ∘ reverse)
-  simp_rw [Set.range_comp _ reverse, reverse_involutive.bijective.surjective.range_eq,
-    Set.image_univ]
+  -- Porting note: have to write `(foldr_reverse)` instead of `foldr_reverse`.
+  simp_rw [← (foldr_reverse), Set.range_comp' _ reverse,
+    reverse_involutive.bijective.surjective.range_eq, Set.image_univ]
   exact foldr_range_subset_of_range_subset hfg a
 
 theorem foldr_range_eq_of_range_eq {f : β → α → α} {g : γ → α → α} (hfg : Set.range f = Set.range g)

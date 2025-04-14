@@ -46,7 +46,7 @@ is done to ensure that the definitions of both `WeierstrassCurve.Projective.dblX
 `WeierstrassCurve.Projective.addXYZ` are homogeneous of degree `4`.
 
 Whenever possible, all changes to documentation and naming of definitions and theorems should be
-mirrored in `Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian.lean`.
+mirrored in `Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian/Formula.lean`.
 
 ## References
 

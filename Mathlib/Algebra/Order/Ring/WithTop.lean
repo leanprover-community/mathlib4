@@ -103,7 +103,7 @@ instance instMulZeroOneClass [MulZeroOneClass α] [Nontrivial α] : MulZeroOneCl
     | (a : α) => by rw [← coe_one, ← coe_mul, mul_one]
 
 /-- A version of `WithTop.map` for `MonoidWithZeroHom`s. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 protected def _root_.MonoidWithZeroHom.withTopMap {R S : Type*} [MulZeroOneClass R] [DecidableEq R]
     [Nontrivial R] [MulZeroOneClass S] [DecidableEq S] [Nontrivial S] (f : R →*₀ S)
     (hf : Function.Injective f) : WithTop R →*₀ WithTop S :=
@@ -205,12 +205,12 @@ instance instCommSemiring [CommSemiring α] [PartialOrder α] [CanonicallyOrdere
   toSemiring := WithTop.instSemiring
   __ := WithTop.instCommMonoidWithZero
 
-instance instOrderedCommSemiring [CommSemiring α] [PartialOrder α] [CanonicallyOrderedAdd α]
-    [NoZeroDivisors α] [Nontrivial α] : OrderedCommSemiring (WithTop α) :=
-  CanonicallyOrderedAdd.toOrderedCommSemiring
+instance instIsOrderedRing [CommSemiring α] [PartialOrder α] [CanonicallyOrderedAdd α]
+    [NoZeroDivisors α] [Nontrivial α] : IsOrderedRing (WithTop α) :=
+  CanonicallyOrderedAdd.toIsOrderedRing
 
 /-- A version of `WithTop.map` for `RingHom`s. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 protected def _root_.RingHom.withTopMap {R S : Type*}
     [NonAssocSemiring R] [PartialOrder R] [CanonicallyOrderedAdd R]
     [DecidableEq R] [Nontrivial R]
@@ -465,13 +465,10 @@ instance [MulZeroClass α] [Preorder α] [MulPosReflectLE α] : MulPosReflectLE 
     norm_cast at x0
     exact le_of_mul_le_mul_right h x0
 
-instance instOrderedCommSemiring [OrderedCommSemiring α] [CanonicallyOrderedAdd α]
-    [NoZeroDivisors α] [Nontrivial α] :
-    OrderedCommSemiring (WithBot α) where
-  __ := WithBot.instCommSemiring
-  __ := WithBot.zeroLEOneClass
-  __ := WithBot.orderedAddCommMonoid
-  mul_le_mul_of_nonneg_left  := fun _ _ _ => mul_le_mul_of_nonneg_left
-  mul_le_mul_of_nonneg_right := fun _ _ _ => mul_le_mul_of_nonneg_right
+instance instIsOrderedRing [CommSemiring α] [PartialOrder α] [IsOrderedRing α]
+    [CanonicallyOrderedAdd α] [NoZeroDivisors α] [Nontrivial α] :
+    IsOrderedRing (WithBot α) where
+  mul_le_mul_of_nonneg_left  _ _ _ := mul_le_mul_of_nonneg_left
+  mul_le_mul_of_nonneg_right _ _ _ := mul_le_mul_of_nonneg_right
 
 end WithBot
