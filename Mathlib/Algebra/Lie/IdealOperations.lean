@@ -84,7 +84,7 @@ theorem lieIdeal_oper_eq_linear_span [LieModule R L M] :
     have aux : ∀ (y : L), ∀ m' ∈ Submodule.span R s, ⁅y, m'⁆ ∈ Submodule.span R s := by
       intro y m' hm'
       refine Submodule.span_induction (R := R) (M := M) (s := s)
-        (p := fun m' _ ↦ ⁅y, m'⁆ ∈ Submodule.span R s) ?_ ?_ ?_ ?_ hm'
+        (motive := fun m' _ ↦ ⁅y, m'⁆ ∈ Submodule.span R s) ?_ ?_ ?_ ?_ hm'
       · rintro m'' ⟨x, n, hm''⟩; rw [← hm'', leibniz_lie]
         refine Submodule.add_mem _ ?_ ?_ <;> apply Submodule.subset_span
         · use ⟨⁅y, ↑x⁆, I.lie_mem x.property⟩, n
