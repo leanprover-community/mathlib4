@@ -550,13 +550,14 @@ end RankOne
 namespace Module
 variable {ι : Type*}
 
-@[simp] lemma finite_finsupp :
+@[simp] lemma finite_finsupp_iff :
     Module.Finite R (ι →₀ M) ↔ IsEmpty ι ∨ Subsingleton M ∨ Module.Finite R M ∧ Finite ι where
   mp h := by
     classical
     simp only [or_iff_not_imp_left, not_subsingleton_iff_nontrivial, not_isEmpty_iff,
       Nonempty.forall]
-    refine fun i _ ↦ ⟨.of_surjective _ (Finsupp.lapply_surjective (R := R) (M := M) i), ?_⟩
+    rintro i
+    exact ⟨.of_surjective (Finsupp.lapply (R := R) (M := M) i) (Finsupp.apply_surjective i), ?_⟩
     obtain ⟨s, hs⟩ := h
     suffices (s.sup fun f ↦ f.support).toSet = .univ by
       exact .of_finite_univ <| this ▸ Finset.finite_toSet _
@@ -577,8 +578,8 @@ variable {ι : Type*}
   | .inr <| .inr h => by cases h; infer_instance
 
 @[simp high]
-lemma finite_finsupp_self : Module.Finite R (ι →₀ R) ↔ Subsingleton R ∨ Finite ι := by
-  simp only [finite_finsupp, Finite.self, true_and, or_iff_right_iff_imp]
+lemma finite_finsupp_self_iff : Module.Finite R (ι →₀ R) ↔ Subsingleton R ∨ Finite ι := by
+  simp only [finite_finsupp_iff, Finite.self, true_and, or_iff_right_iff_imp]
   exact fun _ ↦ .inr inferInstance
 
 end Module
