@@ -1136,9 +1136,12 @@ theorem ContDiff.continuous (h : ContDiff 𝕜 n f) : Continuous f :=
   contDiff_zero.1 (h.of_le bot_le)
 
 /-- If a function is `C^n` with `n ≥ 1`, then it is differentiable. -/
-@[fun_prop]
 theorem ContDiff.differentiable (h : ContDiff 𝕜 n f) (hn : 1 ≤ n) : Differentiable 𝕜 f :=
   differentiableOn_univ.1 <| (contDiffOn_univ.2 h).differentiableOn hn
+
+@[fun_prop]
+theorem ContDiff.differentiable' (h : ContDiff 𝕜 1 f) : Differentiable 𝕜 f :=
+  differentiableOn_univ.1 <| (contDiffOn_univ.2 h).differentiableOn (le_refl 1)
 
 theorem contDiff_iff_forall_nat_le {n : ℕ∞} :
     ContDiff 𝕜 n f ↔ ∀ m : ℕ, ↑m ≤ n → ContDiff 𝕜 m f := by

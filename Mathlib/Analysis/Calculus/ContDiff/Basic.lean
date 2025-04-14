@@ -1429,10 +1429,21 @@ theorem contDiff_infty_iff_deriv :
 
 @[deprecated (since := "2024-11-27")] alias contDiff_top_iff_deriv := contDiff_infty_iff_deriv
 
-@[fun_prop]
 theorem ContDiff.continuous_deriv (h : ContDiff 𝕜 n f₂) (hn : 1 ≤ n) : Continuous (deriv f₂) := by
   rw [show (1 : WithTop ℕ∞) = 0 + 1 from rfl] at hn
   exact (contDiff_succ_iff_deriv.mp (h.of_le hn)).2.2.continuous
+
+@[fun_prop]
+theorem ContDiff.continuous_deriv' (h : ContDiff 𝕜 1 f₂) : Continuous (deriv f₂) :=
+  ContDiff.continuous_deriv h (le_refl 1)
+
+@[fun_prop]
+theorem ContDiff.differentiable_deriv' (h : ContDiff 𝕜 2 f₂) : Differentiable 𝕜 (deriv f₂) := by
+  unfold deriv; fun_prop
+
+@[fun_prop]
+theorem ContDiff.deriv' (h : ContDiff 𝕜 (n+1) f₂) : ContDiff 𝕜 n (deriv f₂) := by
+  unfold deriv; fun_prop
 
 @[fun_prop]
 theorem ContDiff.iterate_deriv :
