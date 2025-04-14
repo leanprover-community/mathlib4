@@ -30,7 +30,8 @@ jobs:
           output="$(./scripts/parse_lake_manifest_changes.py)"
           echo "Dependency changes:"
           echo "$output"
-          echo "changes=$output" >> $GITHUB_OUTPUT
+          delimiter="EOF"
+          printf 'changes<<%s\n%s\n%s' "$delimiter" "${message}" "$delimiter"
 
       - name: Construct message
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
@@ -95,7 +96,8 @@ jobs:
           output="$(./scripts/parse_lake_manifest_changes.py)"
           echo "Dependency changes:"
           echo "$output"
-          echo "changes=$output" >> $GITHUB_OUTPUT
+          delimiter="EOF"
+          printf 'changes<<%s\n%s\n%s' "$delimiter" "${message}" "$delimiter"
 
       - name: Construct success message
         id: construct_message

@@ -124,9 +124,9 @@ lemma pi_prod_map_IocProdIoc {a b c : ℕ} (hab : a ≤ b) (hbc : b ≤ c) :
   nth_rw 1 [Eq.comm, ← Ioc_union_Ioc_eq_Ioc hab hbc, prod_union (Ioc_disjoint_Ioc_of_le le_rfl)]
   congr 1 <;> refine prod_congr rfl fun x hx ↦ ?_
   · rw [Function.extend_val_apply hx, Function.extend_val_apply (Ioc_subset_Ioc_right hbc hx),
-    restrict₂]
+      restrict₂]
   · rw [Function.extend_val_apply hx, Function.extend_val_apply (Ioc_subset_Ioc_left hab hx),
-    restrict₂]
+      restrict₂]
 
 /-- Let `μ : (i : Iic b) → Measure (X i)` be a family of measures. Up to an equivalence,
 `(⨂ i : Iic a, μ i) ⊗ (⨂ i : Ioc a b, μ i) = ⨂ i : Iic b, μ i`, where `⊗` denotes the
@@ -141,9 +141,9 @@ lemma pi_prod_map_IicProdIoc {a b : ℕ} :
     nth_rw 1 [Eq.comm, ← Iic_union_Ioc_eq_Iic hab, prod_union (Iic_disjoint_Ioc le_rfl)]
     congr 1 <;> refine prod_congr rfl fun x hx ↦ ?_
     · rw [Function.extend_val_apply hx, Function.extend_val_apply (Iic_subset_Iic.2 hab hx),
-      frestrictLe₂, restrict₂]
+        frestrictLe₂, restrict₂]
     · rw [Function.extend_val_apply hx, Function.extend_val_apply (Ioc_subset_Iic_self hx),
-      restrict₂]
+        restrict₂]
   · rw [IicProdIoc_le hba, ← Measure.map_map, ← Measure.fst, Measure.fst_prod]
     · exact isProjectiveMeasureFamily_pi μ (Iic a) (Iic b) (Iic_subset_Iic.2 hba) |>.symm
     all_goals fun_prop
@@ -247,8 +247,8 @@ lemma Measure.infinitePiNat_map_piCongrLeft (e : ℕ ≃ ι) {s : Set (Π i, X i
   rw [map_apply _ hS.cylinder, cylinder, ← Set.preimage_comp, coe_piCongrLeft,
     restrict_comp_piCongrLeft, Set.preimage_comp, ← map_apply,
     infinitePiNat_map_restrict (fun n ↦ μ (e n)), ← cylinder, piContent_cylinder μ hS,
-    ← pi_map_piCongrLeft (e.restrictPreimageFinset I), map_apply _ hS]
-  · rfl
+    ← pi_map_piCongrLeft (e.restrictPreimageFinset I), map_apply _ hS, coe_piCongrLeft]
+  · simp
   any_goals fun_prop
   exact hS.preimage (by fun_prop)
 
@@ -294,7 +294,7 @@ theorem piContent_tendsto_zero {A : ℕ → Set (Π i, X i)} (A_mem : ∀ n, A n
   let B n := f ⁻¹' (A n)
   -- `Tₙ` is the same as `Sₙ` but in the product indexed by `u`
   let T n := (g n) ⁻¹' (S n)
-  -- We now tranfer the properties of `Aₙ` and `Sₙ` to `Bₙ` and `Tₙ`
+  -- We now transfer the properties of `Aₙ` and `Sₙ` to `Bₙ` and `Tₙ`
   have B_eq n : B n = cylinder (t n) (T n) := by
     simp_rw [B, A_eq, cylinder, ← Set.preimage_comp, r_comp_f]; rfl
   have mT n : MeasurableSet (T n) := (mS n).preimage (by fun_prop)

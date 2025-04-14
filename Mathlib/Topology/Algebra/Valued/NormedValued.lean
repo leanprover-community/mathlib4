@@ -121,7 +121,7 @@ def toNormedField : NormedField L :=
         refine ⟨fun ⟨ε, hε⟩ => ?_, fun ⟨r, hr_pos, hr⟩ => ?_⟩
         · set δ : ℝ≥0 := hv.hom ε with hδ
           have hδ_pos : 0 < δ := by
-            rw [hδ, ← _root_.map_zero hv.hom]
+            rw [hδ, ← map_zero hv.hom]
             exact hv.strictMono _ (Units.zero_lt ε)
           use δ, hδ_pos
           apply subset_trans _ hε

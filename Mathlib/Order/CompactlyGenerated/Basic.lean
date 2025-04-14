@@ -511,29 +511,6 @@ theorem isCompactlyGenerated_of_wellFoundedGT [h : WellFoundedGT α] :
   -- x is the join of the set of compact elements {x}
   exact ⟨fun x => ⟨{x}, ⟨fun x _ => h x, sSup_singleton⟩⟩⟩
 
-@[deprecated (since := "2024-10-07")]
-alias WellFounded.isSupFiniteCompact := WellFoundedGT.isSupFiniteCompact
-@[deprecated (since := "2024-10-07")]
-alias IsSupClosedCompact.wellFounded := IsSupClosedCompact.wellFoundedGT
-@[deprecated (since := "2024-10-07")]
-alias wellFounded_characterisations := wellFoundedGT_characterisations
-@[deprecated (since := "2024-10-07")]
-alias wellFounded_iff_isSupFiniteCompact := wellFoundedGT_iff_isSupFiniteCompact
-@[deprecated (since := "2024-10-07")]
-alias isSupClosedCompact_iff_wellFounded := isSupClosedCompact_iff_wellFoundedGT
-@[deprecated (since := "2024-10-07")]
-alias IsSupFiniteCompact.wellFounded := IsSupFiniteCompact.wellFoundedGT
-@[deprecated (since := "2024-10-07")]
-alias _root_.WellFounded.isSupClosedCompact := WellFoundedGT.isSupClosedCompact
-@[deprecated (since := "2024-10-07")]
-alias WellFounded.finite_of_setIndependent := WellFoundedGT.finite_of_sSupIndep
-@[deprecated (since := "2024-10-07")]
-alias WellFounded.finite_ne_bot_of_independent := WellFoundedGT.finite_ne_bot_of_iSupIndep
-@[deprecated (since := "2024-10-07")]
-alias WellFounded.finite_of_independent := WellFoundedGT.finite_of_iSupIndep
-@[deprecated (since := "2024-10-07")]
-alias isCompactlyGenerated_of_wellFounded := isCompactlyGenerated_of_wellFoundedGT
-
 /-- A compact element `k` has the property that any `b < k` lies below a "maximal element below
 `k`", which is to say `[⊥, k]` is coatomic. -/
 theorem Iic_coatomic_of_compact_element {k : α} (h : IsCompactElement k) :
