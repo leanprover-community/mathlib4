@@ -58,7 +58,6 @@ theorem _root_.Submodule.eq_top_of_finrank_eq [FiniteDimensional K V] {S : Submo
     simpa [bS] using bS.linearIndependent.linearIndepOn_id.image
       (f := Submodule.subtype S) (by simp)
   set b := Basis.extend this with b_eq
-  -- Porting note: `letI` now uses `this` so we need to give different names
   letI i1 : Fintype (this.extend _) :=
     (LinearIndependent.set_finite_of_isNoetherian (by simpa [b] using b.linearIndependent)).fintype
   letI i2 : Fintype (((↑) : S → V) '' Basis.ofVectorSpaceIndex K S) :=
@@ -81,7 +80,7 @@ section
 
 open Finset
 
-variable {L : Type*} [LinearOrderedField L]
+variable {L : Type*} [Field L] [LinearOrder L] [IsStrictOrderedRing L]
 variable {W : Type v} [AddCommGroup W] [Module L W]
 
 /-- A slight strengthening of `exists_nontrivial_relation_sum_zero_of_rank_succ_lt_card`
@@ -517,9 +516,7 @@ theorem finrank_eq_one_iff_of_nonzero (v : V) (nz : v ≠ 0) :
   ⟨fun h => by simpa using (basisSingleton Unit h v nz).span_eq, fun s =>
     finrank_eq_card_basis
       (Basis.mk (LinearIndepOn.id_singleton _ nz)
-        (by
-          convert s.ge  -- Porting note: added `.ge` to make things easier for `convert`
-          simp))⟩
+        (by simp [← s]))⟩
 
 /-- A module with a nonzero vector `v` has dimension 1 iff every vector is a multiple of `v`.
 -/

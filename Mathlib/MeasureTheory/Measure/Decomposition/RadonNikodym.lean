@@ -3,8 +3,8 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Rémy Degenne
 -/
-import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Lebesgue
-import Mathlib.MeasureTheory.VectorMeasure.WithDensity
+import Mathlib.MeasureTheory.Integral.SetIntegral
+import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
 
 /-!
 # Radon-Nikodym theorem
@@ -40,6 +40,8 @@ The file also contains properties of `rnDeriv` that use the Radon-Nikodym theore
 Radon-Nikodym theorem
 -/
 
+assert_not_exists InnerProductSpace
+assert_not_exists MeasureTheory.VectorMeasure
 
 noncomputable section
 
@@ -55,13 +57,7 @@ theorem withDensity_rnDeriv_eq (μ ν : Measure α) [HaveLebesgueDecomposition �
     ν.withDensity (rnDeriv μ ν) = μ := by
   suffices μ.singularPart ν = 0 by
     conv_rhs => rw [haveLebesgueDecomposition_add μ ν, this, zero_add]
-  suffices μ.singularPart ν Set.univ = 0 by simpa using this
-  have h_sing := mutuallySingular_singularPart μ ν
-  rw [← measure_add_measure_compl h_sing.measurableSet_nullSet]
-  simp only [MutuallySingular.measure_nullSet, zero_add]
-  refine le_antisymm ?_ (zero_le _)
-  refine (singularPart_le μ ν ?_ ).trans_eq ?_
-  exact h h_sing.measure_compl_nullSet
+  exact (singularPart_eq_zero μ ν).mpr h
 
 variable {μ ν : Measure α}
 
@@ -471,34 +467,6 @@ end MeasurableEmbedding
 
 end Measure
 
-namespace SignedMeasure
-
-open Measure VectorMeasure
-
-theorem withDensityᵥ_rnDeriv_eq (s : SignedMeasure α) (μ : Measure α) [SigmaFinite μ]
-    (h : s ≪ᵥ μ.toENNRealVectorMeasure) : μ.withDensityᵥ (s.rnDeriv μ) = s := by
-  rw [absolutelyContinuous_ennreal_iff, (_ : μ.toENNRealVectorMeasure.ennrealToMeasure = μ),
-    totalVariation_absolutelyContinuous_iff] at h
-  · ext1 i hi
-    rw [withDensityᵥ_apply (integrable_rnDeriv _ _) hi, rnDeriv_def, integral_sub,
-      setIntegral_toReal_rnDeriv h.1 i, setIntegral_toReal_rnDeriv h.2 i]
-    · conv_rhs => rw [← s.toSignedMeasure_toJordanDecomposition]
-      erw [VectorMeasure.sub_apply]
-      rw [toSignedMeasure_apply_measurable hi, toSignedMeasure_apply_measurable hi]
-    all_goals
-      refine Integrable.integrableOn ?_
-      refine ⟨?_, hasFiniteIntegral_toReal_of_lintegral_ne_top ?_⟩
-      · apply Measurable.aestronglyMeasurable (by fun_prop)
-      · exact (lintegral_rnDeriv_lt_top _ _).ne
-  · exact equivMeasure.right_inv μ
-
-/-- The Radon-Nikodym theorem for signed measures. -/
-theorem absolutelyContinuous_iff_withDensityᵥ_rnDeriv_eq (s : SignedMeasure α) (μ : Measure α)
-    [SigmaFinite μ] : s ≪ᵥ μ.toENNRealVectorMeasure ↔ μ.withDensityᵥ (s.rnDeriv μ) = s :=
-  ⟨withDensityᵥ_rnDeriv_eq s μ, fun h => h ▸ withDensityᵥ_absolutelyContinuous _ _⟩
-
-end SignedMeasure
-
 section IntegralRNDerivMul
 
 open Measure
@@ -527,23 +495,25 @@ theorem integrable_rnDeriv_smul_iff (hμν : μ ≪ ν) :
   rw [← integrable_withDensity_iff_integrable_smul' (E := E)
     (measurable_rnDeriv μ ν) (rnDeriv_lt_top μ ν)]
 
-theorem withDensityᵥ_rnDeriv_smul (hμν : μ ≪ ν) (hf : Integrable f μ) :
-    ν.withDensityᵥ (fun x ↦ (rnDeriv μ ν x).toReal • f x) = μ.withDensityᵥ f := by
-  rw [withDensityᵥ_smul_eq_withDensityᵥ_withDensity' (measurable_rnDeriv μ ν).aemeasurable
-    (rnDeriv_lt_top μ ν) ((integrable_rnDeriv_smul_iff hμν).mpr hf), withDensity_rnDeriv_eq μ ν hμν]
-
 theorem integral_rnDeriv_smul (hμν : μ ≪ ν) :
     ∫ x, (μ.rnDeriv ν x).toReal • f x ∂ν = ∫ x, f x ∂μ := by
-  by_cases hf : Integrable f μ
-  · rw [← setIntegral_univ, ← withDensityᵥ_apply ((integrable_rnDeriv_smul_iff hμν).mpr hf) .univ,
-      ← setIntegral_univ, ← withDensityᵥ_apply hf .univ, withDensityᵥ_rnDeriv_smul hμν hf]
-  · rw [integral_undef hf, integral_undef]
-    contrapose! hf
-    exact (integrable_rnDeriv_smul_iff hμν).mp hf
+  rw [← integral_withDensity_eq_integral_toReal_smul (measurable_rnDeriv _ _) (rnDeriv_lt_top _ _),
+    withDensity_rnDeriv_eq _ _ hμν]
 
+/-- See also `setIntegral_rnDeriv_smul'` for a version that requires both measures to be σ-finite,
+but doesn't require `s` to be a measurable set. -/
 lemma setIntegral_rnDeriv_smul (hμν : μ ≪ ν) {s : Set α} (hs : MeasurableSet s) :
     ∫ x in s, (μ.rnDeriv ν x).toReal • f x ∂ν = ∫ x in s, f x ∂μ := by
-  simp_rw [← integral_indicator hs, Set.indicator_smul, integral_rnDeriv_smul hμν]
+  rw [← setIntegral_withDensity_eq_setIntegral_toReal_smul, withDensity_rnDeriv_eq _ _ hμν]
+  exacts [measurable_rnDeriv _ _, ae_restrict_of_ae (rnDeriv_lt_top _ _), hs]
+
+omit [HaveLebesgueDecomposition μ ν] in
+/-- A version of `setIntegral_rnDeriv_smul` that requires both measures to be σ-finite,
+but doesn't require `s` to be a measurable set. -/
+lemma setIntegral_rnDeriv_smul' [SigmaFinite ν] (hμν : μ ≪ ν) (s : Set α) :
+    ∫ x in s, (μ.rnDeriv ν x).toReal • f x ∂ν = ∫ x in s, f x ∂μ := by
+  rw [← setIntegral_withDensity_eq_setIntegral_toReal_smul', withDensity_rnDeriv_eq _ _ hμν]
+  exacts [measurable_rnDeriv _ _, ae_restrict_of_ae (rnDeriv_lt_top _ _)]
 
 end IntegralRNDerivMul
 
