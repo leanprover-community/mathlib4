@@ -65,13 +65,13 @@ theorem map₂_coe_right (f : α → β → γ) (a : Option α) (b : β) :
     map₂ f a b = a.map fun a => f a b := by cases a <;> rfl
 
 theorem mem_map₂_iff {c : γ} : c ∈ map₂ f a b ↔ ∃ a' b', a' ∈ a ∧ b' ∈ b ∧ f a' b' = c := by
-  simp [map₂, bind_eq_some]
+  simp [map₂, bind_eq_some_iff]
 
 /-- `simp`-normal form of `mem_map₂_iff`. -/
 @[simp]
 theorem map₂_eq_some_iff {c : γ} :
     map₂ f a b = some c ↔ ∃ a' b', a' ∈ a ∧ b' ∈ b ∧ f a' b' = c := by
-  simp [map₂, bind_eq_some]
+  simp [map₂, bind_eq_some_iff]
 
 @[simp]
 theorem map₂_eq_none_iff : map₂ f a b = none ↔ a = none ∨ b = none := by
