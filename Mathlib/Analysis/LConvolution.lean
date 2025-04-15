@@ -22,7 +22,6 @@ using the lebesgue integral.
 namespace MeasureTheory
 open Measure
 open scoped ENNReal
---open Measure
 
 variable {G : Type*} {mG : MeasurableSpace G} [Mul G] [Inv G]
 
