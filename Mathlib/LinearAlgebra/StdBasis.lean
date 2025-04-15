@@ -186,6 +186,8 @@ lemma AlgHom.eq_piEvalAlgHom {k G : Type*} [CommSemiring k] [NoZeroDivisors k] [
   refine AlgHom.toLinearMap_injective ((Pi.basisFun k G).ext fun t ↦ ?_)
   by_cases t = s <;> simp_all
 
+@[deprecated (since := "2025-04-15")] alias eval_of_algHom := AlgHom.eq_piEvalAlgHom
+
 namespace Module
 
 variable (ι R M N : Type*) [Finite ι] [CommSemiring R]
