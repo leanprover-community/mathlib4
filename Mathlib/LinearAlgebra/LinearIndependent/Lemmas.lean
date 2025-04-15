@@ -313,9 +313,23 @@ private lemma LinearIndependent.pair_add_smul_add_smul_iff_aux (h : a * d ≠ b 
       _ = (b * c) • t := ?_
     · rw [mul_smul, neg_eq_iff_add_eq_zero, smul_comm a b, ← smul_add, h₁, smul_zero]
 
-@[simp] lemma LinearIndependent.pair_add_smul_add_smul_iff (h : a * d ≠ b * c) :
-    LinearIndependent R ![a • x + b • y, c • x + d • y] ↔ LinearIndependent R ![x, y] := by
-  refine ⟨fun h' ↦ ?_, pair_add_smul_add_smul_iff_aux a b c d h⟩
+@[simp] lemma LinearIndependent.pair_add_smul_add_smul_iff [Nontrivial R] :
+    LinearIndependent R ![a • x + b • y, c • x + d • y] ↔
+      LinearIndependent R ![x, y] ∧ a * d ≠ b * c := by
+  rcases eq_or_ne (a * d) (b * c) with h | h
+  · suffices ¬ LinearIndependent R ![a • x + b • y, c • x + d • y] by simpa [h]
+    rw [pair_iff]
+    push_neg
+    by_cases hbd : b = 0 ∧ d = 0
+    · simp only [hbd.1, hbd.2, zero_smul, add_zero]
+      by_cases hac : a = 0 ∧ c = 0; · exact ⟨1, 0, by simp [hac.1, hac.2], by simp⟩
+      refine ⟨c • 1, -a • 1, ?_, by aesop⟩
+      simp only [smul_assoc, one_smul, neg_smul]
+      module
+    refine ⟨d • 1, -b • 1, ?_, by contrapose! hbd; aesop⟩
+    simp only [smul_add, smul_assoc, one_smul, smul_smul, mul_comm d, h]
+    module
+  refine ⟨fun h' ↦ ⟨?_, h⟩, fun ⟨h₁, h₂⟩ ↦ pair_add_smul_add_smul_iff_aux _ _ _ _ h₂ h₁⟩
   suffices LinearIndependent R ![(a * d - b * c) • x, (a * d - b * c) • y] by
     rwa [pair_smul_iff (sub_ne_zero_of_ne h)] at this
   convert pair_add_smul_add_smul_iff_aux d (-b) (-c) a (by simpa [mul_comm d a]) h' using 1
@@ -328,12 +342,14 @@ alias LinearIndependent.h.linear_combination_pair_of_det_ne_zero :=
 @[simp] lemma LinearIndependent.pair_add_smul_right_iff :
     LinearIndependent R ![x, c • x + y] ↔ LinearIndependent R ![x, y] := by
   rcases subsingleton_or_nontrivial S with hS | hS; · simp [hS.elim c 0]
-  simp [← pair_add_smul_add_smul_iff (x := x) (y := y) 1 0 c 1 (by simp)]
+  nontriviality R
+  simpa using pair_add_smul_add_smul_iff (x := x) (y := y) 1 0 c 1
 
 @[simp] lemma LinearIndependent.pair_add_smul_left_iff :
     LinearIndependent R ![x + b • y, y] ↔ LinearIndependent R ![x, y] := by
   rcases subsingleton_or_nontrivial S with hS | hS; · simp [hS.elim b 0]
-  simp [← pair_add_smul_add_smul_iff (x := x) (y := y) 1 b 0 1 (by simp)]
+  nontriviality R
+  simpa using pair_add_smul_add_smul_iff (x := x) (y := y) 1 b 0 1
 
 end Pair
 
