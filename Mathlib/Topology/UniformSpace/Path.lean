@@ -62,4 +62,8 @@ theorem uniformContinuous_trans :
       ⟨(U, U), ⟨hU, hU⟩, fun ⟨_, _⟩ ⟨_, _⟩ ⟨h₁, h₂⟩ t ↦ by
         by_cases ht : (t : ℝ) ≤ 2⁻¹ <;> simp [Path.trans_apply, ht, h₁ _, h₂ _]⟩
 
+instance instCompleteSpace [CompleteSpace X] : CompleteSpace (Path x y) :=
+  isUniformEmbedding_coe.completeSpace <| by simpa [Set.EqOn, range_coe]
+    using ContinuousMap.isComplete_setOf_eqOn (Function.update (fun _ : I ↦ y) 0 x) {0, 1}
+
 end Path
