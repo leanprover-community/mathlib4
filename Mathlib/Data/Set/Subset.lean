@@ -51,14 +51,14 @@ lemma preimage_val_eq_univ_of_subset (h : A ⊆ B) : A ↓∩ B = univ := by
   exact h
 
 lemma preimage_val_sUnion : A ↓∩ (⋃₀ S) = ⋃₀ { (A ↓∩ B) | B ∈ S } := by
-  erw [sUnion_image]
+  rw [← Set.image, sUnion_image]
   simp_rw [sUnion_eq_biUnion, preimage_iUnion]
 
 @[simp]
 lemma preimage_val_iInter : A ↓∩ (⋂ i, s i) = ⋂ i, A ↓∩ s i := preimage_iInter
 
 lemma preimage_val_sInter : A ↓∩ (⋂₀ S) = ⋂₀ { (A ↓∩ B) | B ∈ S } := by
-  erw [sInter_image]
+  rw [← Set.image, sInter_image]
   simp_rw [sInter_eq_biInter, preimage_iInter]
 
 lemma preimage_val_sInter_eq_sInter : A ↓∩ (⋂₀ S) = ⋂₀ ((A ↓∩ ·) '' S) := by
@@ -96,8 +96,7 @@ lemma image_val_iUnion : ↑(⋃ i, t i) = ⋃ i, (t i : Set α) := image_iUnion
 
 @[simp]
 lemma image_val_sInter (hT : T.Nonempty) : (↑(⋂₀ T) : Set α) = ⋂₀ { (↑B : Set α) | B ∈ T } := by
-  erw [sInter_image]
-  rw [sInter_eq_biInter, Subtype.val_injective.injOn.image_biInter_eq hT]
+  rw [← Set.image, sInter_image, sInter_eq_biInter, Subtype.val_injective.injOn.image_biInter_eq hT]
 
 @[simp]
 lemma image_val_iInter [Nonempty ι] : (↑(⋂ i, t i) : Set α) = ⋂ i, (↑(t i) : Set α) :=
@@ -112,8 +111,10 @@ lemma image_val_union_self_left_eq : ↑D ∪ A = A :=
   union_eq_right.2 image_val_subset
 
 @[simp]
-lemma cou_inter_self_right_eq_coe : A ∩ ↑D = ↑D :=
+lemma image_val_inter_self_right_eq_coe : A ∩ ↑D = ↑D :=
   inter_eq_right.2 image_val_subset
+@[deprecated (since := "2024-10-25")]
+alias cou_inter_self_right_eq_coe := image_val_inter_self_right_eq_coe
 
 @[simp]
 lemma image_val_inter_self_left_eq_coe : ↑D ∩ A = ↑D :=

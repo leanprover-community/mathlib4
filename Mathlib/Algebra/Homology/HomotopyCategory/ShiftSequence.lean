@@ -19,6 +19,8 @@ and `HomotopyCategory` namespaces.
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 open CategoryTheory Category ComplexShape Limits
 
 variable (C : Type*) [Category C] [Preadditive C]
@@ -29,7 +31,6 @@ open HomologicalComplex
 
 attribute [local simp] XIsoOfEq_hom_naturality smul_smul
 
-set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 /-- The natural isomorphism `(K⟦n⟧).sc' i j k ≅ K.sc' i' j' k'` when `n + i = i'`,
 `n + j = j'` and `n + k = k'`. -/
 @[simps!]
@@ -37,11 +38,11 @@ def shiftShortComplexFunctor' (n i j k i' j' k' : ℤ)
     (hi : n + i = i') (hj : n + j = j') (hk : n + k = k') :
     (CategoryTheory.shiftFunctor (CochainComplex C ℤ) n) ⋙ shortComplexFunctor' C _ i j k ≅
       shortComplexFunctor' C _ i' j' k' :=
-  NatIso.ofComponents (fun K => by
-    dsimp [shortComplexFunctor']
-    exact ShortComplex.isoMk
+  NatIso.ofComponents (fun K => ShortComplex.isoMk
       (n.negOnePow • ((shiftEval C n i i' hi).app K))
-      ((shiftEval C n j j' hj).app K) (n.negOnePow • ((shiftEval C n k k' hk).app K)))
+      ((shiftEval C n j j' hj).app K) (n.negOnePow • ((shiftEval C n k k' hk).app K))
+      (by dsimp; simp) (by dsimp; simp))
+      (fun f ↦ by ext <;> dsimp <;> simp)
 
 /-- The natural isomorphism `(K⟦n⟧).sc i ≅ K.sc i'` when `n + i = i'`. -/
 @[simps!]
@@ -89,13 +90,22 @@ lemma shiftIso_hom_app (n a a' : ℤ) (ha' : n + a = a') (K : CochainComplex C �
     (shiftIso C n a a' ha').hom.app K =
       ShortComplex.homologyMap ((shiftShortComplexFunctorIso C n a a' ha').hom.app K) := by
   dsimp [shiftIso]
-  erw [id_comp, id_comp, comp_id]
+  rw [id_comp, id_comp]
+  -- This `erw` is required to bridge the gap between
+  -- `((shortComplexFunctor C (up ℤ) a').obj K).homology`
+  -- (the target of the first morphism)
+  -- and
+  -- `homology K a'`
+  -- (the source of the identity morphism).
+  erw [comp_id]
 
 lemma shiftIso_inv_app (n a a' : ℤ) (ha' : n + a = a') (K : CochainComplex C ℤ) :
     (shiftIso C n a a' ha').inv.app K =
       ShortComplex.homologyMap ((shiftShortComplexFunctorIso C n a a' ha').inv.app K) := by
   dsimp [shiftIso]
-  erw [id_comp, comp_id, comp_id]
+  rw [id_comp, comp_id]
+  -- This `erw` is required as above in `shiftIso_hom_app`.
+  erw [comp_id]
 
 end ShiftSequence
 

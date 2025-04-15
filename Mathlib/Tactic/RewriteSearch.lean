@@ -1,13 +1,14 @@
 /-
 Copyright (c) 2023 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Lean.Meta.Tactic.Rewrites
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Data.List.EditDistance.Estimator
 import Mathlib.Data.MLList.BestFirst
 import Mathlib.Order.Interval.Finset.Nat
+import Batteries.Data.MLList.Heartbeats
 
 /-!
 # The `rw_search` tactic
@@ -43,8 +44,6 @@ but will not use local hypotheses to discharge side conditions.
 This limitation would need to be resolved in the `rw?` tactic first.
 
 -/
-
-set_option autoImplicit true
 
 namespace Mathlib.Tactic.RewriteSearch
 
@@ -86,7 +85,7 @@ Tokenize a string at whitespace, and then pull off delimiters.
 -- this makes it "cheap" to change one identifier for another.
 def tokenize (e : Expr) : MetaM (List String) := do
   let s := (← ppExpr e).pretty
-  return s.splitOn.map splitDelimiters |>.join
+  return s.splitOn.map splitDelimiters |>.flatten
 
 /--
 Data structure containing the history of a rewrite search.
@@ -329,6 +328,4 @@ elab_rules : tactic |
 
 end RewriteSearch
 
-end Tactic
-
-end Mathlib
+end Mathlib.Tactic

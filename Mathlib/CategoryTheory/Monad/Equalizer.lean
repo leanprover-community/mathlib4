@@ -47,7 +47,8 @@ def CofreeEqualizer.topMap :  (Comonad.cofree T).obj X.A ⟶ (Comonad.cofree T).
 
 /-- The bottom map in the equalizer diagram we will construct. -/
 @[simps]
-def CofreeEqualizer.bottomMap : (Comonad.cofree T).obj X.A ⟶ (Comonad.cofree T).obj (T.obj X.A) where
+def CofreeEqualizer.bottomMap :
+    (Comonad.cofree T).obj X.A ⟶ (Comonad.cofree T).obj (T.obj X.A) where
   f := T.δ.app X.A
   h := T.coassoc X.A
 
@@ -60,7 +61,7 @@ def CofreeEqualizer.ι : X ⟶ (Comonad.cofree T).obj X.A where
 theorem CofreeEqualizer.condition :
     CofreeEqualizer.ι X ≫ CofreeEqualizer.topMap X =
       CofreeEqualizer.ι X ≫ CofreeEqualizer.bottomMap X :=
-  Coalgebra.Hom.ext _ _ X.coassoc.symm
+  Coalgebra.Hom.ext X.coassoc.symm
 
 instance : IsCoreflexivePair (CofreeEqualizer.topMap X) (CofreeEqualizer.bottomMap X) := by
   apply IsCoreflexivePair.mk' _ _ _

@@ -3,10 +3,9 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
-import Mathlib.LinearAlgebra.Dual
+import Mathlib.LinearAlgebra.DFinsupp
+import Mathlib.LinearAlgebra.Dual.Basis
 import Mathlib.LinearAlgebra.Matrix.ToLin
-
-#align_import linear_algebra.matrix.dual from "leanprover-community/mathlib"@"738c19f572805cff525a93aa4ffbdf232df05aa8"
 
 /-!
 # Dual space, linear maps and matrices.
@@ -35,13 +34,11 @@ theorem LinearMap.toMatrix_transpose (u : V₁ →ₗ[K] V₂) :
   ext i j
   simp only [LinearMap.toMatrix_apply, Module.Dual.transpose_apply, B₁.dualBasis_repr,
     B₂.dualBasis_apply, Matrix.transpose_apply, LinearMap.comp_apply]
-#align linear_map.to_matrix_transpose LinearMap.toMatrix_transpose
 
 @[simp]
 theorem Matrix.toLin_transpose (M : Matrix ι₁ ι₂ K) : Matrix.toLin B₁.dualBasis B₂.dualBasis Mᵀ =
     Module.Dual.transpose (R := K) (Matrix.toLin B₂ B₁ M) := by
   apply (LinearMap.toMatrix B₁.dualBasis B₂.dualBasis).injective
   rw [LinearMap.toMatrix_toLin, LinearMap.toMatrix_transpose, LinearMap.toMatrix_toLin]
-#align matrix.to_lin_transpose Matrix.toLin_transpose
 
 end Transpose

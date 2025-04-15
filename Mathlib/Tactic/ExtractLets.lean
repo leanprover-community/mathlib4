@@ -5,6 +5,7 @@ Authors: Kyle Miller
 -/
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Tactic.Basic
+import Batteries.Tactic.Lint.Misc
 
 /-!
 # The `extract_lets at` tactic
@@ -89,7 +90,7 @@ where
     if let some ids := ids? then
       return ids.map getNameOfIdent'
     else
-      return Array.mkArray (← instantiateMVars ty).cleanupAnnotations.letDepth `_
+      return Array.replicate (← instantiateMVars ty).cleanupAnnotations.letDepth `_
   @[nolint docBlame]
   doExtract (ids? : Option (TSyntaxArray [`ident, `Lean.Parser.Term.hole]))
       (loc? : Option <| TSyntax `Lean.Parser.Tactic.location) :

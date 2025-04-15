@@ -39,8 +39,8 @@ section MonoidHomCompTriple
 namespace MonoidHom
 
 /-- Class of composing triples -/
-class CompTriple  {M N P : Type*} [Monoid M] [Monoid N] [Monoid P]
-  (φ : M →* N) (ψ : N →* P) (χ : outParam (M →* P)) : Prop where
+class CompTriple {M N P : Type*} [Monoid M] [Monoid N] [Monoid P]
+    (φ : M →* N) (ψ : N →* P) (χ : outParam (M →* P)) : Prop where
   /-- The maps form a commuting triangle -/
   comp_eq : ψ.comp φ = χ
 
@@ -48,7 +48,6 @@ attribute [simp] CompTriple.comp_eq
 
 namespace CompTriple
 
-variable {M' : Type*} [Monoid M']
 variable {M N P : Type*} [Monoid M] [Monoid N] [Monoid P]
 
 /-- Class of Id maps -/
@@ -59,7 +58,7 @@ instance instIsId {M : Type*} [Monoid M] : IsId (MonoidHom.id M) where
   eq_id := rfl
 
 instance {σ : M →* M} [h : _root_.CompTriple.IsId σ] : IsId σ  where
-  eq_id := by ext; exact _root_.congr_fun h.eq_id _
+  eq_id := by ext; exact congr_fun h.eq_id _
 
 instance instComp_id {N P : Type*} [Monoid N] [Monoid P]
     {φ : N →* N} [IsId φ] {ψ : N →* P} :
@@ -74,17 +73,15 @@ instance instId_comp {M N : Type*} [Monoid M] [Monoid N]
 lemma comp_inv {φ : M →* N} {ψ : N →* M} (h : Function.RightInverse φ ψ)
     {χ : M →* M} [IsId χ] :
     CompTriple φ ψ χ where
-  comp_eq := by
-    simp only [IsId.eq_id, ← DFunLike.coe_fn_eq, coe_comp, h.id]
-    rfl
+  comp_eq := by simp only [IsId.eq_id, ← DFunLike.coe_fn_eq, coe_comp, h.id, coe_id]
 
-instance instRootCompTriple {φ : M →* N} {ψ : N  →* P} {χ : M →* P} [κ : CompTriple φ ψ χ] :
+instance instRootCompTriple {φ : M →* N} {ψ : N →* P} {χ : M →* P} [κ : CompTriple φ ψ χ] :
     _root_.CompTriple φ ψ χ where
   comp_eq := by rw [← MonoidHom.coe_comp, κ.comp_eq]
 
 /-- `φ`, `ψ` and `ψ.comp φ` form a `MonoidHom.CompTriple`
 
-  (to be used with care, because no simplification is done)-/
+  (to be used with care, because no simplification is done) -/
 theorem comp {φ : M →* N} {ψ : N →* P} :
     CompTriple φ ψ (ψ.comp φ) where
   comp_eq := rfl
@@ -94,7 +91,6 @@ lemma comp_apply
     ψ (φ x) = χ x := by
   rw [← h.comp_eq, MonoidHom.comp_apply]
 
-@[simp]
 theorem comp_assoc {Q : Type*} [Monoid Q]
     {φ₁ : M →* N} {φ₂ : N →* P} {φ₁₂ : M →* P}
     (κ : CompTriple φ₁ φ₂ φ₁₂)
@@ -106,3 +102,5 @@ theorem comp_assoc {Q : Type*} [Monoid Q]
     exact ⟨by simp only [← κ.comp_eq, ← h, ← κ'.comp_eq, MonoidHom.comp_assoc]⟩
 
 end MonoidHom.CompTriple
+
+end MonoidHomCompTriple

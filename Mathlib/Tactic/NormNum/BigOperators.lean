@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Floris van Doorn
 -/
 import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Data.List.FinRange
-
-#align_import algebra.big_operators.norm_num from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # `norm_num` plugin for big operators
@@ -38,13 +36,13 @@ In particular, we can't use the plugin on sums containing variables.
    normalization?)
 -/
 
-set_option autoImplicit true
-
 namespace Mathlib.Meta
 
-open Lean hiding Rat mkRat
+open Lean
 open Meta
 open Qq
+
+variable {u v : Level}
 
 /-- This represents the result of trying to determine whether the given expression `n : Q(ℕ)`
 is either `zero` or `succ`. -/
@@ -109,7 +107,7 @@ set_option linter.unusedVariables false in
 
 Fails if we cannot determine which of the alternatives apply to the expression.
 -/
-partial def List.proveNilOrCons {α : Q(Type u)} (s : Q(List $α)) :
+partial def List.proveNilOrCons {u : Level} {α : Q(Type u)} (s : Q(List $α)) :
     MetaM (List.ProveNilOrConsResult s) :=
   s.withApp fun e a =>
   match (e, e.constName, a) with
@@ -141,7 +139,7 @@ partial def List.proveNilOrCons {α : Q(Type u)} (s : Q(List $α)) :
     return match ← List.proveNilOrCons xxs with
     | .nil pf => .nil q(($pf ▸ List.map_nil : List.map _ _ = _))
     | .cons x xs pf => .cons q($f $x) q(($xs).map $f)
-      q(($pf ▸ List.map_cons $f $x $xs : List.map _ _ = _))
+      q(($pf ▸ List.map_cons : List.map _ _ = _))
   | (_, fn, args) =>
     throwError "List.proveNilOrCons: unsupported List expression {s} ({fn}, {args})"
 
@@ -348,6 +346,7 @@ partial def evalFinsetBigop {α : Q(Type u)} {β : Q(Type v)}
       let eq : Q($op $s $f = $op (Finset.cons $a $s' $h) $f) := q(congr_fun (congr_arg _ $pf) _)
       pure (res.eq_trans eq)
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- `norm_num` plugin for evaluating products of finsets.
 
 If your finset is not supported, you can add it to the match in `Finset.proveEmptyOrCons`.
@@ -377,6 +376,7 @@ partial def evalFinsetProd : NormNumExt where eval {u β} e := do
       pure <| res.eq_trans eq)
     s
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- `norm_num` plugin for evaluating sums of finsets.
 
 If your finset is not supported, you can add it to the match in `Finset.proveEmptyOrCons`.

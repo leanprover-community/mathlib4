@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.BoxIntegral.Basic
-import Mathlib.MeasureTheory.Integral.SetIntegral
+import Mathlib.MeasureTheory.Integral.Bochner.Set
 import Mathlib.Tactic.Generalize
-
-#align_import analysis.box_integral.integrability from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
 /-!
 # McShane integrability vs Bochner integrability
@@ -23,8 +21,7 @@ We deduce that the same is true for the Riemann integral for continuous function
 integral, McShane integral, Bochner integral
 -/
 
-
-open scoped Classical NNReal ENNReal Topology
+open scoped NNReal ENNReal Topology
 
 universe u v
 
@@ -65,6 +62,7 @@ theorem hasIntegralIndicatorConst (l : IntegrationParams) (hl : l.bRiemann = fal
       nhds_basis_closedBall.mem_iff.1 (hFc.isOpen_compl.mem_nhds fun hx' => hx.2 (hFs hx').1)
     exact ⟨⟨r, hr₀⟩, hr⟩
   choose! rs' hrs'F using this
+  classical
   set r : (ι → ℝ) → Ioi (0 : ℝ) := s.piecewise rs rs'
   refine ⟨fun _ => r, fun c => l.rCond_of_bRiemann_eq_false hl, fun c π hπ hπp => ?_⟩; rw [mul_comm]
   /- Then the union of boxes `J ∈ π` such that `π.tag ∈ s` includes `F` and is included by `U`,
@@ -97,7 +95,6 @@ theorem hasIntegralIndicatorConst (l : IntegrationParams) (hl : l.bRiemann = fal
     contrapose hxF
     refine hrs'F _ ⟨π.tag_mem_Icc J, hxF⟩ ?_
     simpa only [r, s.piecewise_eq_of_not_mem _ _ hxF] using hπ.1 J hJπ (Box.coe_subset_Icc hxJ)
-#align box_integral.has_integral_indicator_const BoxIntegral.hasIntegralIndicatorConst
 
 /-- If `f` is a.e. equal to zero on a rectangular box, then it has McShane integral zero on this
 box. -/
@@ -115,8 +112,8 @@ theorem HasIntegral.of_aeEq_zero {l : IntegrationParams} {I : Box ι} {f : (ι �
   have N0 : ∀ {x}, N x = 0 ↔ f x = 0 := by simp [N]
   have : ∀ n, ∃ U, N ⁻¹' {n} ⊆ U ∧ IsOpen U ∧ μ.restrict I U < δ n / n := fun n ↦ by
     refine (N ⁻¹' {n}).exists_isOpen_lt_of_lt _ ?_
-    cases' n with n
-    · simpa [ENNReal.div_zero (ENNReal.coe_pos.2 (δ0 _)).ne'] using measure_lt_top (μ.restrict I) _
+    rcases n with - | n
+    · simp [ENNReal.div_zero (ENNReal.coe_pos.2 (δ0 _)).ne']
     · refine (measure_mono_null ?_ hf).le.trans_lt ?_
       · exact fun x hxN hxf => n.succ_ne_zero ((Eq.symm hxN).trans <| N0.2 hxf)
       · simp [(δ0 _).ne']
@@ -153,17 +150,15 @@ theorem HasIntegral.of_aeEq_zero {l : IntegrationParams} {I : Box ι} {f : (ι �
   rw [ENNReal.coe_toReal, ← NNReal.coe_natCast, ← NNReal.coe_mul, NNReal.coe_le_coe, ←
     ENNReal.coe_le_coe, ENNReal.coe_mul, ENNReal.coe_natCast, mul_comm]
   exact (mul_le_mul_left' this.le _).trans ENNReal.mul_div_le
-#align box_integral.has_integral_zero_of_ae_eq_zero BoxIntegral.HasIntegral.of_aeEq_zero
 
 /-- If `f` has integral `y` on a box `I` with respect to a locally finite measure `μ` and `g` is
-a.e. equal to `f` on `I`, then `g` has the same integral on `I`.  -/
+a.e. equal to `f` on `I`, then `g` has the same integral on `I`. -/
 theorem HasIntegral.congr_ae {l : IntegrationParams} {I : Box ι} {y : E} {f g : (ι → ℝ) → E}
     {μ : Measure (ι → ℝ)} [IsLocallyFiniteMeasure μ]
     (hf : HasIntegral.{u, v, v} I l f μ.toBoxAdditive.toSMul y) (hfg : f =ᵐ[μ.restrict I] g)
     (hl : l.bRiemann = false) : HasIntegral.{u, v, v} I l g μ.toBoxAdditive.toSMul y := by
   have : g - f =ᵐ[μ.restrict I] 0 := hfg.mono fun x hx => sub_eq_zero.2 hx.symm
   simpa using hf.add (HasIntegral.of_aeEq_zero this hl)
-#align box_integral.has_integral.congr_ae BoxIntegral.HasIntegral.congr_ae
 
 end BoxIntegral
 
@@ -175,15 +170,16 @@ namespace SimpleFunc
 theorem hasBoxIntegral (f : SimpleFunc (ι → ℝ) E) (μ : Measure (ι → ℝ)) [IsLocallyFiniteMeasure μ]
     (I : Box ι) (l : IntegrationParams) (hl : l.bRiemann = false) :
     HasIntegral.{u, v, v} I l f μ.toBoxAdditive.toSMul (f.integral (μ.restrict I)) := by
-  induction' f using MeasureTheory.SimpleFunc.induction with y s hs f g _ hfi hgi
-  · simpa only [Measure.restrict_apply hs, const_zero, integral_piecewise_zero, integral_const,
+  induction f using MeasureTheory.SimpleFunc.induction with
+  | @const y s hs =>
+    simpa only [Measure.restrict_apply hs, const_zero, integral_piecewise_zero, integral_const,
       Measure.restrict_apply, MeasurableSet.univ, Set.univ_inter] using
       BoxIntegral.hasIntegralIndicatorConst l hl hs I y μ
-  · borelize E; haveI := Fact.mk (I.measure_coe_lt_top μ)
+  | @add f g _ hfi hgi =>
+    borelize E; haveI := Fact.mk (I.measure_coe_lt_top μ)
     rw [integral_add]
     exacts [hfi.add hgi, integrable_iff.2 fun _ _ => measure_lt_top _ _,
       integrable_iff.2 fun _ _ => measure_lt_top _ _]
-#align measure_theory.simple_func.has_box_integral MeasureTheory.SimpleFunc.hasBoxIntegral
 
 /-- For a simple function, its McShane (or Henstock, or `⊥`) box integral is equal to its
 integral in the sense of `MeasureTheory.SimpleFunc.integral`. -/
@@ -191,14 +187,13 @@ theorem box_integral_eq_integral (f : SimpleFunc (ι → ℝ) E) (μ : Measure (
     [IsLocallyFiniteMeasure μ] (I : Box ι) (l : IntegrationParams) (hl : l.bRiemann = false) :
     BoxIntegral.integral.{u, v, v} I l f μ.toBoxAdditive.toSMul = f.integral (μ.restrict I) :=
   (f.hasBoxIntegral μ I l hl).integral_eq
-#align measure_theory.simple_func.box_integral_eq_integral MeasureTheory.SimpleFunc.box_integral_eq_integral
 
 end SimpleFunc
 
 open TopologicalSpace
 
 /-- If `f : ℝⁿ → E` is Bochner integrable w.r.t. a locally finite measure `μ` on a rectangular box
-`I`, then it is McShane integrable on `I` with the same integral.  -/
+`I`, then it is McShane integrable on `I` with the same integral. -/
 theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {μ : Measure (ι → ℝ)}
     [IsLocallyFiniteMeasure μ] {I : Box ι} (hf : IntegrableOn f I μ) (l : IntegrationParams)
     (hl : l.bRiemann = false) :
@@ -230,7 +225,7 @@ theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {
   -- Choose `N` such that the integral of `‖f N x - g x‖` is less than or equal to `ε`.
   obtain ⟨N₀, hN₀⟩ : ∃ N : ℕ, ∫ x in I, ‖f N x - g x‖ ∂μ ≤ ε := by
     have : Tendsto (fun n => ∫⁻ x in I, ‖f n x - g x‖₊ ∂μ) atTop (𝓝 0) :=
-      SimpleFunc.tendsto_approxOn_range_L1_nnnorm hg.measurable hgi
+      SimpleFunc.tendsto_approxOn_range_L1_enorm hg.measurable hgi
     refine (this.eventually (ge_mem_nhds ε0')).exists.imp fun N hN => ?_
     exact integral_coe_le_of_lintegral_coe_le hN
   -- For each `x`, we choose `Nx x ≥ N₀` such that `dist (f Nx x) (g x) ≤ ε`.
@@ -301,9 +296,8 @@ theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {
       integral_finset_biUnion π.boxes (fun J _ => J.measurableSet_coe) π.pairwiseDisjoint (hfgi _)]
     refine dist_sum_sum_le_of_le _ fun J hJ => ?_
     rw [dist_eq_norm, ← integral_sub (hfi _ J hJ) (hgi J hJ)]
-    refine norm_integral_le_of_norm_le (hfgi _ J hJ) (eventually_of_forall fun x => ?_)
+    refine norm_integral_le_of_norm_le (hfgi _ J hJ) (Eventually.of_forall fun x => ?_)
     exact hfg_mono x (hNx (π.tag J))
-#align measure_theory.integrable_on.has_box_integral MeasureTheory.IntegrableOn.hasBoxIntegral
 
 /-- If `f : ℝⁿ → E` is continuous on a rectangular box `I`, then it is Box integrable on `I`
 w.r.t. a locally finite measure `μ` with the same integral. -/
@@ -329,7 +323,8 @@ theorem AEContinuous.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} (
   constructor
   · let v := {x : (ι → ℝ) | ContinuousAt f x}
     have : AEStronglyMeasurable f (μ.restrict v) :=
-      (ContinuousAt.continuousOn fun _ h ↦ h).aestronglyMeasurable (measurableSet_of_continuousAt f)
+      (continuousOn_of_forall_continuousAt fun _ h ↦ h).aestronglyMeasurable
+      (measurableSet_of_continuousAt f)
     refine this.mono_measure (Measure.le_iff.2 fun s hs ↦ ?_)
     repeat rw [μ.restrict_apply hs]
     apply le_of_le_of_eq <| μ.mono s.inter_subset_left

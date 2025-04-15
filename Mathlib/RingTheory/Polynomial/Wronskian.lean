@@ -1,11 +1,12 @@
 /-
-Copyright (c) 2024 Jineon Back and Seewoo Lee. All rights reserved.
+Copyright (c) 2024 Jineon Baek and Seewoo Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jineon Baek, Seewoo Lee
 -/
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Derivative
 import Mathlib.LinearAlgebra.SesquilinearForm
+import Mathlib.RingTheory.Coprime.Basic
 
 /-!
 # Wronskian of a pair of polynomial
@@ -87,16 +88,16 @@ theorem degree_wronskian_lt_add {a b : R[X]} (ha : a ≠ 0) (hb : b ≠ 0) :
       constructor
       case left =>
         apply lt_of_le_of_lt
-        exact degree_mul_le a (derivative b)
-        rw [← Polynomial.degree_ne_bot] at ha
-        rw [WithBot.add_lt_add_iff_left ha]
-        exact Polynomial.degree_derivative_lt hb
+        · exact degree_mul_le a (derivative b)
+        · rw [← Polynomial.degree_ne_bot] at ha
+          rw [WithBot.add_lt_add_iff_left ha]
+          exact Polynomial.degree_derivative_lt hb
       case right =>
         apply lt_of_le_of_lt
-        exact degree_mul_le (derivative a) b
-        rw [← Polynomial.degree_ne_bot] at hb
-        rw [WithBot.add_lt_add_iff_right hb]
-        exact Polynomial.degree_derivative_lt ha
+        · exact degree_mul_le (derivative a) b
+        · rw [← Polynomial.degree_ne_bot] at hb
+          rw [WithBot.add_lt_add_iff_right hb]
+          exact Polynomial.degree_derivative_lt ha
 
 /--
 `natDegree` version of the above theorem.
@@ -112,5 +113,29 @@ theorem natDegree_wronskian_lt_add {a b : R[X]} (hw : wronskian a b ≠ 0) :
   · exact Polynomial.degree_eq_natDegree hw
   · exact Polynomial.degree_eq_natDegree ha
   · exact Polynomial.degree_eq_natDegree hb
+
+/--
+For coprime polynomials `a` and `b`, their Wronskian is zero
+if and only if their derivatives are zeros.
+-/
+theorem _root_.IsCoprime.wronskian_eq_zero_iff
+    [NoZeroDivisors R] {a b : R[X]} (hc : IsCoprime a b) :
+    wronskian a b = 0 ↔ derivative a = 0 ∧ derivative b = 0 where
+  mp hw := by
+    rw [wronskian, sub_eq_iff_eq_add, zero_add] at hw
+    constructor
+    · rw [← dvd_derivative_iff]
+      apply hc.dvd_of_dvd_mul_right
+      rw [← hw]; exact dvd_mul_right _ _
+    · rw [← dvd_derivative_iff]
+      apply hc.symm.dvd_of_dvd_mul_left
+      rw [hw]; exact dvd_mul_left _ _
+  mpr hdab := by
+    obtain ⟨hda, hdb⟩ := hdab
+    rw [wronskian]
+    rw [hda, hdb]; simp only [MulZeroClass.mul_zero, MulZeroClass.zero_mul, sub_self]
+
+@[deprecated (since := "2024-11-06")]
+alias IsCoprime.wronskian_eq_zero_iff := IsCoprime.wronskian_eq_zero_iff
 
 end Polynomial

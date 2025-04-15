@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 
 import Mathlib.CategoryTheory.Localization.LocalizerMorphism
-import Mathlib.CategoryTheory.Conj
+import Mathlib.CategoryTheory.HomCongr
 
 /-!
 # Bijections between morphisms in two localized categories
@@ -113,7 +113,7 @@ variable (W : MorphismProperty C) (L₁ : C ⥤ D₁) [L₁.IsLocalization W]
 
 /-- Bijection between types of morphisms in two localized categories
 for the same class of morphisms `W`. -/
-@[simps (config := .lemmasOnly) apply]
+@[simps -isSimp apply]
 noncomputable def homEquiv :
     (L₁.obj X ⟶ L₁.obj Y) ≃ (L₂.obj X ⟶ L₂.obj Y) where
   toFun := (LocalizerMorphism.id W).homMap L₁ L₂

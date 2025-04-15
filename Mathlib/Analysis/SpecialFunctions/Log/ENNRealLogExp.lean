@@ -12,7 +12,7 @@ import Mathlib.Topology.MetricSpace.Polish
 # Properties of the extended logarithm and exponential
 
 We prove that `log` and `exp` define order isomorphisms between `ℝ≥0∞` and `EReal`.
-## Main Definitions
+## Main DefinitionsP
 - `ENNReal.logOrderIso`: The order isomorphism between `ℝ≥0∞` and `EReal` defined by `log`
 and `exp`.
 - `EReal.expOrderIso`: The order isomorphism between `EReal` and `ℝ≥0∞` defined by `exp`
@@ -30,7 +30,7 @@ and `exp (x * y) = (exp x) ^ y`.
 ENNReal, EReal, logarithm, exponential
 -/
 
-open EReal ENNReal
+open EReal ENNReal Topology
 section LogExp
 
 @[simp] lemma EReal.log_exp (x : EReal) : log (exp x) = x := by
@@ -54,7 +54,6 @@ namespace EReal
 
 lemma exp_nmul (x : EReal) (n : ℕ) : exp (n * x) = (exp x) ^ n := by
   simp_rw [← log_eq_iff, log_pow, log_exp]
-  norm_cast
 
 lemma exp_mul (x : EReal) (y : ℝ) : exp (x * y) = (exp x) ^ y := by
   rw [← log_eq_iff, log_rpow, log_exp, log_exp, mul_comm]
@@ -135,6 +134,4 @@ end Measurability
 
 end ENNReal
 
-instance : PolishSpace EReal :=
-  ClosedEmbedding.polishSpace ⟨ENNReal.logOrderIso.symm.toHomeomorph.embedding,
-    ENNReal.logOrderIso.symm.toHomeomorph.range_coe ▸ isClosed_univ⟩
+instance : PolishSpace EReal := ENNReal.logOrderIso.symm.toHomeomorph.isClosedEmbedding.polishSpace
