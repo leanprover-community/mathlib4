@@ -1897,6 +1897,7 @@ import Mathlib.CategoryTheory.ChosenFiniteProducts
 import Mathlib.CategoryTheory.ChosenFiniteProducts.Cat
 import Mathlib.CategoryTheory.ChosenFiniteProducts.FunctorCategory
 import Mathlib.CategoryTheory.ChosenFiniteProducts.InfSemilattice
+import Mathlib.CategoryTheory.ChosenFiniteProducts.Over
 import Mathlib.CategoryTheory.Closed.Cartesian
 import Mathlib.CategoryTheory.Closed.Enrichment
 import Mathlib.CategoryTheory.Closed.Functor
@@ -2136,6 +2137,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Biproducts
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Images
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Multiequalizer
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Preorder
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
@@ -4155,7 +4157,10 @@ import Mathlib.MeasureTheory.Integral.Asymptotics
 import Mathlib.MeasureTheory.Integral.Average
 import Mathlib.MeasureTheory.Integral.Bochner
 import Mathlib.MeasureTheory.Integral.Bochner.Basic
+import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
+import Mathlib.MeasureTheory.Integral.Bochner.FundThmCalculus
 import Mathlib.MeasureTheory.Integral.Bochner.L1
+import Mathlib.MeasureTheory.Integral.Bochner.Set
 import Mathlib.MeasureTheory.Integral.Bochner.VitaliCaratheodory
 import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
 import Mathlib.MeasureTheory.Integral.CircleIntegral
@@ -4163,6 +4168,7 @@ import Mathlib.MeasureTheory.Integral.CircleTransform
 import Mathlib.MeasureTheory.Integral.DivergenceTheorem
 import Mathlib.MeasureTheory.Integral.DominatedConvergence
 import Mathlib.MeasureTheory.Integral.ExpDecay
+import Mathlib.MeasureTheory.Integral.FinMeasAdditive
 import Mathlib.MeasureTheory.Integral.Gamma
 import Mathlib.MeasureTheory.Integral.Indicator
 import Mathlib.MeasureTheory.Integral.IntegrableOn
@@ -4175,10 +4181,15 @@ import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
 import Mathlib.MeasureTheory.Integral.Layercake
 import Mathlib.MeasureTheory.Integral.Lebesgue
+import Mathlib.MeasureTheory.Integral.Lebesgue.Add
 import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
 import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
+import Mathlib.MeasureTheory.Integral.Lebesgue.DominatedConvergence
+import Mathlib.MeasureTheory.Integral.Lebesgue.Map
+import Mathlib.MeasureTheory.Integral.Lebesgue.Markov
 import Mathlib.MeasureTheory.Integral.Lebesgue.MeasurePreserving
 import Mathlib.MeasureTheory.Integral.Lebesgue.Norm
+import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
 import Mathlib.MeasureTheory.Integral.LebesgueNormedSpace
 import Mathlib.MeasureTheory.Integral.Marginal
 import Mathlib.MeasureTheory.Integral.MeanInequalities
@@ -4662,6 +4673,7 @@ import Mathlib.Order.Interval.Set.LinearOrder
 import Mathlib.Order.Interval.Set.Monotone
 import Mathlib.Order.Interval.Set.OrdConnected
 import Mathlib.Order.Interval.Set.OrdConnectedComponent
+import Mathlib.Order.Interval.Set.OrdConnectedLinear
 import Mathlib.Order.Interval.Set.OrderEmbedding
 import Mathlib.Order.Interval.Set.OrderIso
 import Mathlib.Order.Interval.Set.Pi
@@ -5076,6 +5088,7 @@ import Mathlib.RingTheory.LocalRing.LocalSubring
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Defs
 import Mathlib.RingTheory.LocalRing.Module
+import Mathlib.RingTheory.LocalRing.NonLocalRing
 import Mathlib.RingTheory.LocalRing.Quotient
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Defs
