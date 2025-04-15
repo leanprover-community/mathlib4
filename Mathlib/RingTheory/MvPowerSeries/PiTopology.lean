@@ -132,7 +132,7 @@ theorem tendsto_trunc'_atTop [CommSemiring R] (f : MvPowerSeries σ R) :
   intro d
   exact tendsto_atTop_of_eventually_const fun n (hdn : d ≤ n) ↦ (by simp [coeff_trunc', hdn])
 
-theorem trunc_tendsto [CommSemiring R] [Nonempty σ] (f : MvPowerSeries σ R) :
+theorem tendsto_trunc_atTop [CommSemiring R] [Nonempty σ] (f : MvPowerSeries σ R) :
     Tendsto (fun d ↦ (trunc R d f : MvPowerSeries σ R)) atTop (𝓝 f) := by
   rw [tendsto_iff_coeff_tendsto]
   intro d
