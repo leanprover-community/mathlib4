@@ -132,7 +132,7 @@ initialize_simps_projections BialgHom (toFun → apply)
     (map_comp_comul : map f.toLinearMap f.toLinearMap ∘ₗ comul = comul ∘ₗ f.toLinearMap) :
     A →ₐc[R] B where
   __ := f
-  map_smul' := by simp
+  map_smul' := map_smul f
   counit_comp := counit_comp
   map_comp_comul := map_comp_comul
 
