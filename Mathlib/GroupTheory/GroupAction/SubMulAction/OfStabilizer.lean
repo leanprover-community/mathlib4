@@ -106,58 +106,82 @@ variable {G}
 /-- Conjugation induces an equivariant map between the SubAddAction of
 the stabilizer of a point and that of its translate -/
 def _root_.SubAddAction.ofStabilizer.conjMap {G : Type*} [AddGroup G] {α : Type*} [AddAction G α]
-    {g : G} {a b : α} (hg : g +ᵥ b = a) :
-    AddActionHom (AddAction.stabilizerEquivStabilizer hg)
-      (SubAddAction.ofStabilizer G b) (SubAddAction.ofStabilizer G a) where
-  toFun x := ⟨g +ᵥ x.val, fun hy ↦ by
-      simp only [← hg, Set.mem_singleton_iff, vadd_left_cancel_iff] at hy
-      exact x.prop  hy⟩
-  map_vadd' _ _ := by
-    rw [← SetLike.coe_eq_coe]
-    simp [SubAddAction.val_vadd_of_tower, AddAction.addSubgroup_vadd_def,
-       AddAction.stabilizerEquivStabilizer_apply, ← vadd_assoc, AddAut.conj_apply]
+    {g : G} {a b : α} (hg : b = g +ᵥ a) :
+    AddActionHom (AddAction.stabilizerEquivStabilizer hg).symm
+      (SubAddAction.ofStabilizer G a) (SubAddAction.ofStabilizer G b) where
+  toFun x := ⟨g +ᵥ x.val, fun hy ↦ x.prop (by simpa [hg] using hy)⟩
+  map_vadd' := fun ⟨k, hk⟩ x ↦ by
+    simp [← SetLike.coe_eq_coe, AddAction.stabilizerEquivStabilizer, ← vadd_assoc]
 
 /-- Conjugation induces an equivariant map between the SubMulAction of
 the stabilizer of a point and that of its translate -/
 @[to_additive existing]
-def ofStabilizer.conjMap {g : G} {a b : α} (hg : g • b = a) :
-    MulActionHom (stabilizerEquivStabilizer hg) (ofStabilizer G b) (ofStabilizer G a) where
+def ofStabilizer.conjMap {g : G} {a b : α} (hg : b = g • a) :
+    MulActionHom (stabilizerEquivStabilizer hg).symm (ofStabilizer G a) (ofStabilizer G b) where
     -- stabilizerEquivStabilizer hg] ofStabilizer G a where
-  toFun x := ⟨g • x.val, fun hy ↦ by
-      simp only [← hg, Set.mem_singleton_iff, smul_left_cancel_iff] at hy
-      exact x.prop hy⟩
-  map_smul' _ _ := by
-    rw [← SetLike.coe_eq_coe]
-    simp [SubMulAction.val_smul_of_tower, subgroup_smul_def,
-       stabilizerEquivStabilizer_apply, ← smul_assoc, MulAut.conj_apply]
+  toFun x := ⟨g • x.val, fun hy ↦ x.prop (by simpa [hg] using hy)⟩
+  map_smul' := fun ⟨k, hk⟩ ↦ by
+    simp [← SetLike.coe_eq_coe, stabilizerEquivStabilizer, ← smul_assoc]
 
 variable {g  h k: G} {a b c: α}
-variable (hg : g • b = a) (hh : h • c = b) (hk : k • c = a)
+variable (hg : b = g • a) (hh : c = h • b) (hk : c = k • a)
 
 @[to_additive]
 theorem ofStabilizer.conjMap_apply (x : ofStabilizer G a) :
     (conjMap hg x : α) = g • x := rfl
 
-theorem ofStabilizer.conjMap_coe_comp {g h : G} {a : α} (x : ofStabilizer G a) :
-    (conjMap h (g • a) (conjMap g a x) : α) = conjMap (h * g) a x := by
-  simp [conjMap_apply, mul_smul]
+theorem _root_.AddAction.stabilizerEquivStabilizer_compTriple
+    {G : Type*} [AddGroup G] {α : Type*} [AddAction G α]
+    {g h k : G} {a b c : α} {hg : b = g +ᵥ a} {hh : c = h +ᵥ b} {hk : c = k +ᵥ a} (H : k = h + g) :
+    CompTriple (AddAction.stabilizerEquivStabilizer hg).symm
+      (AddAction.stabilizerEquivStabilizer hh).symm
+      (AddAction.stabilizerEquivStabilizer hk).symm where
+  comp_eq := by
+    ext
+    simp [AddAction.stabilizerEquivStabilizer, H, AddAut.inv_def, AddAut.conj, ← add_assoc]
 
-theorem ofStabilizer.conjMap_coe_comp' {g h : G} {a : α} (x : ofStabilizer G (g⁻¹ • a)) :
-    (conjMap h a) (conjMap g (g⁻¹ • a) x : α) = conjMap (h * g) a x := by
-  simp [conjMap_apply, mul_smul]
+variable {hg hh hk} in
+@[to_additive existing]
+theorem _root_.MulAction.stabilizerEquivStabilizer_compTriple (H : k = h * g) :
+    CompTriple (stabilizerEquivStabilizer hg).symm
+      (stabilizerEquivStabilizer hh).symm
+      (stabilizerEquivStabilizer hk).symm where
+  comp_eq := by
+    ext
+    simp [stabilizerEquivStabilizer, H, MulAut.inv_def, MulAut.conj, ← mul_assoc]
+
+variable {hg hh hk} in
+@[to_additive]
+theorem ofStabilizer.conjMap_comp_apply (H : k = h * g) (x : ofStabilizer G a) :
+    conjMap hh (conjMap hg x) = conjMap hk x := by
+  simp [← Subtype.coe_inj, conjMap_apply, H, mul_smul]
 
 @[to_additive]
-theorem ofStabilizer.conjMap_bijective :
-    Function.Bijective (conjMap g a) := by
+theorem ofStabilizer.conjMap_comp_inv_apply (x : ofStabilizer G a) :
+    (conjMap (eq_inv_smul_iff.mpr hg.symm)) (conjMap hg x) = x := by
+  simp [← Subtype.coe_inj, conjMap_apply]
+
+@[to_additive]
+theorem ofStabilizer.inv_conjMap_comp_apply (x : ofStabilizer G b) :
+    conjMap hg (conjMap (eq_inv_smul_iff.mpr hg.symm) x) = x := by
+  simp [← Subtype.coe_inj, conjMap_apply]
+
+@[to_additive]
+theorem ofStabilizer.conjMap_comp (H : k = h * g) :
+    (conjMap hh).comp (conjMap hg) (κ := stabilizerEquivStabilizer_compTriple H) = conjMap hk := by
+  ext x
+  simp only [MulActionHom.comp_apply, SetLike.coe_eq_coe]
+  exact conjMap_comp_apply H x
+
+@[to_additive]
+theorem ofStabilizer.conjMap_bijective : Function.Bijective (conjMap hg) := by
   constructor
   · rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
     simp only [Subtype.mk_eq_mk]
     apply (MulAction.injective g)
     rwa [← SetLike.coe_eq_coe, conjMap_apply] at hxy
-  · rintro ⟨x, hx⟩
-    use conjMap g⁻¹
-    use ofStabilizer.conjMap ?_ (g • a) ⟨x, hx⟩
-    simp [← SetLike.coe_eq_coe, conjMap_apply]
+  · intro x
+    refine ⟨conjMap _ x, inv_conjMap_comp_apply _ x⟩
 
 /-- Append `a` to `x : Fin n ↪ ofStabilizer G a`  to get an element of `Fin n.succ ↪ α` -/
 @[to_additive
@@ -200,32 +224,31 @@ lemma exists_smul_of_last_eq [IsPretransitive G α] {n : ℕ} (a : α) (x : Fin 
     hgx⟩
 
 @[to_additive]
-theorem ofStabilizer.isPretransitive_iff_of_conj {a b : α} {g : G} (hg : g • b = a) :
-    IsPretransitive (stabilizer G b) (ofStabilizer G b) ↔
-      IsPretransitive (stabilizer G a) (ofStabilizer G a) :=
+theorem ofStabilizer.isPretransitive_iff_of_conj {a b : α} {g : G} (hg : b = g • a) :
+  IsPretransitive (stabilizer G a) (ofStabilizer G a) ↔
+    IsPretransitive (stabilizer G b) (ofStabilizer G b) :=
   isPretransitive_congr (MulEquiv.surjective _) (ofStabilizer.conjMap_bijective hg)
 
 @[to_additive]
 theorem ofStabilizer.isPretransitive_iff [IsPretransitive G α] {a b : α} :
-    IsPretransitive (stabilizer G b) (ofStabilizer G b) ↔
-      IsPretransitive (stabilizer G a) (ofStabilizer G a) := by
-  obtain ⟨g, hg⟩ := exists_smul_eq G b a
-  exact isPretransitive_congr (MulEquiv.surjective _) (ofStabilizer.conjMap_bijective hg)
+    IsPretransitive (stabilizer G a) (ofStabilizer G a) ↔
+      IsPretransitive (stabilizer G b) (ofStabilizer G b) :=
+  let ⟨_, hg⟩ := exists_smul_eq G a b
+  isPretransitive_iff_of_conj hg.symm
 
 @[to_additive]
 theorem ofStabilizer.isMultiplyPretransitive_iff_of_conj
-    {n : ℕ} {a b : α} {g : G} (hg : g • b = a) :
-    IsMultiplyPretransitive (stabilizer G b) (ofStabilizer G b) n ↔
-      IsMultiplyPretransitive (stabilizer G a) (ofStabilizer G a) n :=
+    {n : ℕ} {a b : α} {g : G} (hg : b = g • a) :
+    IsMultiplyPretransitive (stabilizer G a) (ofStabilizer G a) n ↔
+      IsMultiplyPretransitive (stabilizer G b) (ofStabilizer G b) n :=
   IsPretransitive.of_embedding_congr (MulEquiv.surjective _) (ofStabilizer.conjMap_bijective hg)
 
 @[to_additive]
 theorem ofStabilizer.isMultiplyPretransitive_iff [IsPretransitive G α] {n : ℕ} {a b : α} :
-    IsMultiplyPretransitive (stabilizer G b) (ofStabilizer G b) n ↔
-      IsMultiplyPretransitive (stabilizer G a) (ofStabilizer G a) n := by
-  obtain ⟨g, hg⟩ := exists_smul_eq G b a
-  exact IsPretransitive.of_embedding_congr (MulEquiv.surjective _)
-    (ofStabilizer.conjMap_bijective hg)
+    IsMultiplyPretransitive (stabilizer G a) (ofStabilizer G a) n ↔
+      IsMultiplyPretransitive (stabilizer G b) (ofStabilizer G b) n :=
+  let ⟨_, hg⟩ := exists_smul_eq G a b
+  isMultiplyPretransitive_iff_of_conj hg.symm
 
 /-- Multiple transitivity of a pretransitive action
   is equivalent to one less transitivity of stabilizer of a point
