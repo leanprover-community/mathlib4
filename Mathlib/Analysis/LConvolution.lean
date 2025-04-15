@@ -6,7 +6,7 @@ Authors: David Ledvinka
 import Mathlib.MeasureTheory.Measure.Prod
 
 /-!
-# Convolution of functions using the Lebesgue Integral
+# Convolution of functions using the Lebesgue integral
 
 In this file we define and prove properties about the convolution of two functions on a group
 using the lebesgue integral.
