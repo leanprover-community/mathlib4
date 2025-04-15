@@ -21,11 +21,12 @@ assert_not_exists MonoidWithZero OrderedCommMonoid Multiset
 
 variable {M : Type*}
 
-/-- `AddIrreducible p` states that `p` is non-unit and only factors into units. -/
+/-- `AddIrreducible p` states that `p` is not an additive unit and cannot be written as a sum of
+additive non-units. -/
 structure AddIrreducible [AddMonoid M] (p : M) : Prop where
-  /-- An irreducible element is not a unit. -/
+  /-- An irreducible element is not an additive unit. -/
   not_isAddUnit : ¬IsAddUnit p
-  /-- If an irreducible element factors, then one factor is a unit. -/
+  /-- If an irreducible element can be written as a sum, then one term is an additive unit. -/
   isAddUnit_or_isAddUnit ⦃a b⦄ : p = a + b → IsAddUnit a ∨ IsAddUnit b
 
 section Monoid
