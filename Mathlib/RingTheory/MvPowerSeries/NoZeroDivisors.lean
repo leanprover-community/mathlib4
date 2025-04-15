@@ -111,19 +111,14 @@ theorem weightedOrder_mul (w : σ → ℕ) (f g : MvPowerSeries σ R) :
           intro x hx
           rw [mem_antidiagonal] at hx
           rw [← hx, map_add] at hn
-          suffices (weight w x.1 = (f.weightedOrder w).toNat ∧
-              weight w x.2 = (g.weightedOrder w).toNat) ∨
-            weight w x.1 < (f.weightedOrder w).toNat ∨
-            weight w x.2 < (g.weightedOrder w).toNat by
-              rcases this with h | h | h
-              · rw [if_pos h.1, if_pos h.2]
-              · suffices ↑(weight w x.1) < weightedOrder w f by
-                  simp [if_neg (ne_of_lt h), f.coeff_eq_zero_of_lt_weightedOrder w this, zero_mul]
-                rwa [← ENat.coe_toNat (LT.lt.ne_top hf), ENat.coe_lt_coe]
-              · suffices ↑(weight w x.2) < weightedOrder w g by
-                  simp [if_neg (ne_of_lt h), g.coeff_eq_zero_of_lt_weightedOrder w this, mul_zero]
-                rwa [← ENat.coe_toNat (LT.lt.ne_top hg), ENat.coe_lt_coe]
-          sorry
+          rcases trichotomy_of_add_eq_add hn with h | h | h
+          · rw [if_pos h.1, if_pos h.2]
+          · suffices ↑(weight w x.1) < weightedOrder w f by
+            simp [if_neg (ne_of_lt h), f.coeff_eq_zero_of_lt_weightedOrder w this, zero_mul]
+            rwa [← ENat.coe_toNat (LT.lt.ne_top hf), ENat.coe_lt_coe]
+          · suffices ↑(weight w x.2) < weightedOrder w g by
+            simp [if_neg (ne_of_lt h), g.coeff_eq_zero_of_lt_weightedOrder w this, mul_zero]
+            rwa [← ENat.coe_toNat (LT.lt.ne_top hg), ENat.coe_lt_coe]
         · apply Finset.sum_eq_zero
           intro x hx
           rw [mem_antidiagonal] at hx
