@@ -966,6 +966,11 @@ theorem eLpNorm_eq_zero_of_ae_zero {f : α → ε} (hf : f =ᵐ[μ] 0) : eLpNorm
   rw [← eLpNorm_zero (p := p) (μ := μ) (α := α) (ε := ε)]
   exact eLpNorm_congr_ae hf
 
+theorem eLpNorm'_eq_zero_of_ae_eq_zero {f : α → ε} {p : ℝ} (hp : 0 < p)
+    (hf : ∀ᵐ (x : α) ∂μ, ‖f x‖ₑ = 0) : eLpNorm' f p μ = 0 := by
+  rw [← eLpNorm'_zero hp (μ := μ) (ε := ε), eLpNorm'_congr_enorm_ae]
+  simp only [hf, Pi.zero_apply, enorm_zero]
+
 theorem ae_le_eLpNormEssSup {f : α → ε} : ∀ᵐ y ∂μ, ‖f y‖ₑ ≤ eLpNormEssSup f μ :=
   ae_le_essSup
 
@@ -1127,11 +1132,8 @@ theorem eLpNorm'_le_mul_eLpNorm'_of_ae_le_mul {f : α → ε} {c : ℝ≥0∞} {
         simp [eLpNorm'_eq_lintegral_enorm, hp', hp] at hg'
         rw [MeasureTheory.lintegral_eq_zero_iff' (by fun_prop)] at hg'
         exact hg'.mono fun x hx ↦ by simpa [hp, hp'] using hx
-      have : ∀ᵐ (x : α) ∂μ, ‖f x‖ₑ = 0 := (this.and h).mono fun x ⟨h, h'⟩ ↦  by simp_all
-      simp only [hg', mul_zero, nonpos_iff_eq_zero]
-      -- Should this be a lemma? enorm a.e. 0 means eLpNorm' = 0?
-      rw [← eLpNorm'_zero hp (μ := μ) (ε := ε), eLpNorm'_congr_enorm_ae]
-      simp only [this, Pi.zero_apply, enorm_zero]
+      have : ∀ᵐ (x : α) ∂μ, ‖f x‖ₑ = 0 := (this.and h).mono fun x ⟨h, h'⟩ ↦ by simp_all
+      simpa only [hg', mul_zero, nonpos_iff_eq_zero] using eLpNorm'_eq_zero_of_ae_eq_zero hp this
     · simp_all
   have : c ^ p ≠ ⊤ := by simp [hp.le, hc]
   simp_rw [eLpNorm'_eq_lintegral_enorm]
