@@ -123,9 +123,9 @@ lemma div_lt_iff_lt_mul' (hb : 0 < b) : a / b < c ↔ a < c * b := div_lt_iff_lt
 
 lemma eq_zero_of_le_half (h : n ≤ n / 2) : n = 0 := eq_zero_of_le_div_two h
 
-lemma le_half_of_half_lt_sub (h : a / 2 < a - b) : b ≤ a / 2 := le_div_two_of_div_two_lt_sub
+lemma le_half_of_half_lt_sub (h : a / 2 < a - b) : b ≤ a / 2 := le_div_two_of_div_two_lt_sub h
 
-lemma half_le_of_sub_le_half (h : a - b ≤ a / 2) : a / 2 ≤ b := div_two_le_of_sub_le_div_two
+lemma half_le_of_sub_le_half (h : a - b ≤ a / 2) : a / 2 ≤ b := div_two_le_of_sub_le_div_two h
 
 protected lemma div_le_of_le_mul' (h : m ≤ k * n) : m / k ≤ n := Nat.div_le_of_le_mul h
 
