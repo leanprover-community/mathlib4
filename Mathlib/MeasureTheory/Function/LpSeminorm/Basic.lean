@@ -1222,7 +1222,7 @@ theorem eLpNorm_le_mul_eLpNorm_of_ae_le_mul' {f : α → ε} {g : α → ε'} {c
 variable {ε'' : Type*} [TopologicalSpace ε''] [ContinuousENorm ε''] in
 /-- If `‖f x‖ₑ ≤ c * ‖g x‖ₑ`, then `eLpNorm f p μ ≤ c * eLpNorm g p μ`.
 
-This version allows `c=⊤`, but requires `g` to be a.e. strongly measurable. -/
+This version allows `c = ∞`, but requires `g` to be a.e. strongly measurable. -/
 theorem eLpNorm_le_mul_eLpNorm_of_ae_le_mul'' {f : α → ε} {c : ℝ≥0∞} {g : α → ε''} (p : ℝ≥0∞)
     (hg : AEStronglyMeasurable g μ) (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) :
     eLpNorm f p μ ≤ c * eLpNorm g p μ := by
