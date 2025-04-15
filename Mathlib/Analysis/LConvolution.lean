@@ -14,9 +14,9 @@ using the lebesgue integral.
 # Main Definitions
 
 * `MeasureTheory.mlconvolution f g μ x = (f ⋆ₗ[μ] g) x = ∫⁻ y, (f y) * (g (y⁻¹ * x)) ∂μ`
-  is multiplicative convolution of `f` and `g` w.r.t to the measure `μ`
+  is the multiplicative convolution of `f` and `g` w.r.t. the measure `μ`.
 * `MeasureTheory.lconvolution f g μ x = (f ⋆ₗ[μ] g) x = ∫⁻ y, (f y) * (g (-y + x)) ∂μ`
-  is additive convolution of `f` and `g` w.r.t to the measure `μ`
+  is the additive convolution of `f` and `g` w.r.t. the measure `μ`.
 -/
 
 namespace MeasureTheory
