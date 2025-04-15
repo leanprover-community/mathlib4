@@ -71,10 +71,9 @@ theorem mlconvolution_zero (f : G → ℝ≥0∞) (μ : Measure G) : f ⋆ₗ[μ
 
 /-- The convolution of measurable functions is measurable. -/
 @[to_additive lconvolution_measurable, measurability, fun_prop]
-theorem  [MeasurableMul₂ G] [MeasurableInv G]
+theorem measurable_mlconvolution [MeasurableMul₂ G] [MeasurableInv G]
     {f g : G → ℝ≥0∞} (μ : Measure G) [SFinite μ]
     (hf : Measurable f) (hg : Measurable g) : Measurable (f ⋆ₗ[μ] g) := by
-  unfold mlconvolution
   apply Measurable.lintegral_prod_right
   fun_prop
 
