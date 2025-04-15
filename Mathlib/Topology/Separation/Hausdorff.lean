@@ -679,7 +679,7 @@ theorem isPreirreducible_iff_forall_subset_closure_singleton [R1Space X] {S : Se
   constructor
   · intro h x hx y hy
     by_contra e
-    obtain ⟨U, V, hU, hV, hxU, hyV, h'⟩ := r1_separation (mt specializes_iff_mem_closure.mp e)
+    obtain ⟨U, V, hU, hV, hxU, hyV, h'⟩ := r1_separation fun h => e h.specializes.mem_closure
     exact ((h U V hU hV ⟨x, hx, hxU⟩ ⟨y, hy, hyV⟩).mono inter_subset_right).not_disjoint h'
   · intro h u v hu hv ⟨x, hxs, hxu⟩ ⟨y, hys, hyv⟩
     use x, hxs, hxu
