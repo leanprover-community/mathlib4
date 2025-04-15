@@ -98,15 +98,15 @@ lemma sup'_add' (s : Finset ι) (f : ι → M) (a : M) (hs : s.Nonempty) :
 lemma add_sup'' (hs : s.Nonempty) (f : ι → M) (a : M) :
     a + s.sup' hs f = s.sup' hs fun i ↦ a + f i := by simp_rw [add_comm a, Finset.sup'_add']
 
-protected lemma sup_add (hs : s.Nonempty) (f : ι → M) (a : M) :
+protected lemma sup_add [OrderBot M] (hs : s.Nonempty) (f : ι → M) (a : M) :
     s.sup f + a = s.sup fun i ↦ f i + a := by
   rw [← Finset.sup'_eq_sup hs, ← Finset.sup'_eq_sup hs, sup'_add']
 
-protected lemma add_sup (hs : s.Nonempty) (f : ι → M) (a : M) :
+protected lemma add_sup [OrderBot M] (hs : s.Nonempty) (f : ι → M) (a : M) :
     a + s.sup f = s.sup fun i ↦ a + f i := by
   rw [← Finset.sup'_eq_sup hs, ← Finset.sup'_eq_sup hs, add_sup'']
 
-lemma sup_add_sup (hs : s.Nonempty) (ht : t.Nonempty) (f : ι → M) (g : κ → M) :
+lemma sup_add_sup [OrderBot M] (hs : s.Nonempty) (ht : t.Nonempty) (f : ι → M) (g : κ → M) :
     s.sup f + t.sup g = (s ×ˢ t).sup fun ij ↦ f ij.1 + g ij.2 := by
   simp only [Finset.sup_add hs, Finset.add_sup ht, Finset.sup_product_left]
 

@@ -223,7 +223,7 @@ variable [CommSemiring α] [PartialOrder α] [CanonicallyOrderedAdd α] [PosMulS
   {a a₁ a₂ b₁ b₂ : WithTop α}
 
 @[gcongr]
-protected lemma mul_lt_mul (ha : a₁ < a₂) (hb : b₁ < b₂) : a₁ * b₁ < a₂ * b₂ := by
+protected lemma mul_lt_mul [OrderBot α] (ha : a₁ < a₂) (hb : b₁ < b₂) : a₁ * b₁ < a₂ * b₂ := by
   have := posMulStrictMono_iff_mulPosStrictMono.1 ‹_›
   lift a₁ to α using ha.lt_top.ne
   lift b₁ to α using hb.lt_top.ne
@@ -243,14 +243,16 @@ protected lemma mul_lt_mul (ha : a₁ < a₂) (hb : b₁ < b₂) : a₁ * b₁ <
 
 variable [NoZeroDivisors α] [Nontrivial α] {a b : WithTop α}
 
-protected lemma pow_right_strictMono : ∀ {n : ℕ}, n ≠ 0 → StrictMono fun a : WithTop α ↦ a ^ n
+protected lemma pow_right_strictMono [OrderBot α] :
+    ∀ {n : ℕ}, n ≠ 0 → StrictMono fun a : WithTop α ↦ a ^ n
   | 0, h => absurd rfl h
   | 1, _ => by simpa only [pow_one] using strictMono_id
   | n + 2, _ => fun x y h ↦ by
     simp_rw [pow_succ _ (n + 1)]
     exact WithTop.mul_lt_mul (WithTop.pow_right_strictMono n.succ_ne_zero h) h
 
-@[gcongr] protected lemma pow_lt_pow_left (hab : a < b) {n : ℕ} (hn : n ≠ 0) : a ^ n < b ^ n :=
+@[gcongr] protected lemma pow_lt_pow_left [OrderBot α] (hab : a < b) {n : ℕ} (hn : n ≠ 0) :
+    a ^ n < b ^ n :=
   WithTop.pow_right_strictMono hn hab
 
 end WithTop
