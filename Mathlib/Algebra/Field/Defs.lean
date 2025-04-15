@@ -161,7 +161,7 @@ itself). See also note [forgetful inheritance].
 
 If the semifield has positive characteristic `p`, our division by zero convention forces
 `nnratCast (1 / p) = 1 / 0 = 0`. -/
-class Semifield (K : Type*) extends CommSemiring K, DivisionSemiring K, CommGroupWithZero K
+class Semifield (K : Type*) extends DivisionSemiring K, CommSemiring K, CommGroupWithZero K
 
 /-- A `Field` is a `CommRing` with multiplicative inverses for nonzero elements.
 
@@ -173,7 +173,7 @@ See also note [forgetful inheritance].
 If the field has positive characteristic `p`, our division by zero convention forces
 `ratCast (1 / p) = 1 / 0 = 0`. -/
 @[stacks 09FD "first part"]
-class Field (K : Type u) extends CommRing K, DivisionRing K
+class Field (K : Type u) extends DivisionRing K, CommRing K
 
 -- see Note [lower instance priority]
 instance (priority := 100) Field.toSemifield [Field K] : Semifield K := { ‹Field K› with }
