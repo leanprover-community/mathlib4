@@ -11,7 +11,7 @@ set -x
 curl https://elan.lean-lang.org/elan-init.sh -sSf | sh
 
 # Load the new elan PATH
-source ~/.profile
+source ~/.elan/env
 
 # Set the default Lean version to the latest stable release
 elan toolchain install stable
