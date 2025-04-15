@@ -234,6 +234,9 @@ theorem coeff_mul_prod_one_sub_of_lt_order {R ι : Type*} [CommRing R] (k : ℕ)
 def divXPowOrder (f : R⟦X⟧) : R⟦X⟧ :=
   .mk fun n ↦ coeff R (n + f.order.toNat) f
 
+@[deprecated (since := "2025-04-15")]
+noncomputable alias divided_by_X_pow_order := divXPowOrder
+
 @[simp]
 lemma coeff_divXPowOrder {f : R⟦X⟧} {n : ℕ} :
     coeff R n (divXPowOrder f) = coeff R (n + f.order.toNat) f :=
@@ -263,6 +266,9 @@ theorem self_eq_X_pow_order_mul_divXPowOrder {f : R⟦X⟧} :
   · simp [h]
   · push_neg at h
     rw [coeff_of_lt_order_toNat _ h]
+
+@[deprecated (since := "2025-04-15")]
+alias self_eq_X_pow_order_mul_divided_by_X_pow_order := self_eq_X_pow_order_mul_divXPowOrder
 
 theorem X_pow_order_dvd : X ^ φ.order.toNat ∣ φ := by
   simp [X_pow_dvd_iff]
@@ -329,6 +335,8 @@ theorem divXPowOrder_X :
   ext n
   simp [coeff_X]
 
+@[deprecated (since := "2025-04-15")] alias divided_by_X_pow_order_of_X_eq_one := divXPowOrder_X
+
 end OrderZeroNeOne
 
 section OrderIsDomain
@@ -363,6 +371,8 @@ theorem divXPowOrder_mul {f g : R⟦X⟧} :
         simp [self_eq_X_pow_order_mul_divXPowOrder]
     _ = X ^ (f.order.toNat + g.order.toNat) * (f * g).divXPowOrder := by
         rw [order_mul, ENat.toNat_add (order_eq_top.not.mpr h.1) (order_eq_top.not.mpr h.2)]
+
+@[deprecated (since := "2025-04-15")] alias divided_by_X_pow_orderMul := divXPowOrder_mul
 
 end OrderIsDomain
 
