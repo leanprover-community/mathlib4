@@ -25,7 +25,7 @@ where `μ ≥ ν` and `ν ≥ μ`, and the measure difference behaves like a sig
 * `sub_toSignedMeasure_eq_toSignedMeasure_sub`:
   The signed measure `μ.toSignedMeasure - ν.toSignedMeasure` equals
   `(μ - ν).toSignedMeasure - (ν - μ).toSignedMeasure`.
-* `setWhereGe_iff_setWhereGeSignedMeasure`:
+* `setWhereLe_iff_setWhereLeSignedMeasure`:
   The set-theoretic condition for `μ ≥ ν` is equivalent to its reformulation using signed measures.
 -/
 
@@ -41,33 +41,33 @@ variable {μ ν : Measure X} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
 
 namespace Measure
 
-/-- The set where `μ ≥ ν`, defined via measurable set and measure restriction comparisons. -/
-class SetWhereGe (μ ν : Measure X) (s : Set X) : Prop where
+/-- The set where `μ ≤ ν`, defined via measurable set and measure restriction comparisons. -/
+class SetWhereLe (μ ν : Measure X) (s : Set X) : Prop where
   measurable : MeasurableSet s
-  ge_on : ν.restrict s ≤ μ.restrict s
-  ge_on_compl : μ.restrict sᶜ ≤ ν.restrict sᶜ
+  le_on : μ.restrict s ≤ ν.restrict s
+  ge_on_compl : ν.restrict sᶜ ≤ μ.restrict sᶜ
 
-instance SetWhereGe.compl_symm {μ ν : Measure X} {s : Set X}
-    [h : SetWhereGe μ ν s] : SetWhereGe ν μ sᶜ where
+instance SetWhereLe.compl_symm {μ ν : Measure X} {s : Set X}
+    [h : SetWhereLe μ ν s] : SetWhereLe ν μ sᶜ where
   measurable := h.measurable.compl
-  ge_on := h.ge_on_compl
-  ge_on_compl := by rw [compl_compl]; exact h.ge_on
+  le_on := h.ge_on_compl
+  ge_on_compl := by rw [compl_compl]; exact h.le_on
   
 end Measure
 
 namespace SignedMeasure
 
 /-- The set where `μ ≥ ν`, reformulated via nonnegativity of signed measure differences. -/
-class SetWhereGe (μ ν : Measure X) [IsFiniteMeasure μ] [IsFiniteMeasure ν] (s : Set X) : Prop where
+class SetWhereLe (μ ν : Measure X) [IsFiniteMeasure μ] [IsFiniteMeasure ν] (s : Set X) : Prop where
   measurable : MeasurableSet s
-  ge_on : ν.toSignedMeasure.restrict s ≤  μ.toSignedMeasure.restrict s
-  ge_on_compl : μ.toSignedMeasure.restrict sᶜ ≤  ν.toSignedMeasure.restrict sᶜ
+  le_on : μ.toSignedMeasure.restrict s ≤  ν.toSignedMeasure.restrict s
+  ge_on_compl : ν.toSignedMeasure.restrict sᶜ ≤  μ.toSignedMeasure.restrict sᶜ
 
-instance SetWhereGe.compl_symm {μ ν : Measure X} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
-    {s : Set X} [h : SetWhereGe μ ν s] : SetWhereGe ν μ sᶜ where
+instance SetWhereLe.compl_symm {μ ν : Measure X} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+    {s : Set X} [h : SetWhereLe μ ν s] : SetWhereLe ν μ sᶜ where
   measurable := h.measurable.compl
-  ge_on := h.ge_on_compl
-  ge_on_compl := by rw [compl_compl]; exact h.ge_on
+  le_on := h.ge_on_compl
+  ge_on_compl := by rw [compl_compl]; exact h.le_on
 
 end SignedMeasure
 
@@ -102,9 +102,9 @@ theorem restrict_add_restrict_compl (μ : VectorMeasure X ℝ) {s : Set X} (hs :
 
 end VectorMeasure
 
-lemma exists_SetWhereGeSignedMeasure (μ ν : Measure X) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
-    ∃ s : Set X, SignedMeasure.SetWhereGe μ ν s := by
-  obtain ⟨s, hs, h₂, h₃⟩ := (μ.toSignedMeasure - ν.toSignedMeasure).exists_compl_positive_negative
+lemma exists_SetWhereLeSignedMeasure (μ ν : Measure X) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
+    ∃ s : Set X, SignedMeasure.SetWhereLe μ ν s := by
+  obtain ⟨s, hs, h₂, h₃⟩ := (ν.toSignedMeasure - μ.toSignedMeasure).exists_compl_positive_negative
   simp at h₂ h₃
   exact ⟨s, hs, h₂, h₃⟩
 
@@ -139,8 +139,8 @@ theorem sub_zero {μ : Measure X} : μ - 0 = μ := by
   · simp only [add_zero]; exact sInf_le (by simp)
   · simp [add_zero]
 
-lemma sub_eq_zero_of_ge_on {μ ν : Measure X} (hs : SetWhereGe μ ν s) : (ν - μ) s = 0 := by
-  have : ν.restrict s ≤ μ.restrict s + 0 := by simp [hs.ge_on]
+lemma sub_eq_zero_of_ge_on {μ ν : Measure X} (hs : SetWhereLe μ ν s) : (μ - ν) s = 0 := by
+  have : μ.restrict s ≤ ν.restrict s + 0 := by simp [hs.le_on]
   replace this := Measure.sub_le_of_le_add this
   simp only [sub_zero] at this
   replace this := sub_eq_zero_of_le this
@@ -148,54 +148,54 @@ lemma sub_eq_zero_of_ge_on {μ ν : Measure X} (hs : SetWhereGe μ ν s) : (ν -
   simp only [restrict_eq_zero] at this
   exact this
 
-lemma ofSignedMeasure_setWhereGe (hs : SignedMeasure.SetWhereGe μ ν s) : SetWhereGe μ ν s := by
+lemma ofSignedMeasure_setWhereLe (hs : SignedMeasure.SetWhereLe μ ν s) : SetWhereLe μ ν s := by
   constructor
   · exact hs.measurable
   · rw [toSignedMeasure_le_iff.symm, ← sub_nonneg,
         ← toSignedMeasure_restrict_eq_restrict_toSigned hs.measurable,
         ← toSignedMeasure_restrict_eq_restrict_toSigned hs.measurable]
-    simp [hs.ge_on]
+    simp [hs.le_on]
   · rw [toSignedMeasure_le_iff.symm, ← sub_nonneg,
         ← toSignedMeasure_restrict_eq_restrict_toSigned hs.measurable.compl,
         ← toSignedMeasure_restrict_eq_restrict_toSigned hs.measurable.compl]
     simp [hs.ge_on_compl]
 
-lemma toSignedMeasure_setWhereGe (hs : SetWhereGe μ ν s) : SignedMeasure.SetWhereGe μ ν s := by
+lemma toSignedMeasure_setWhereLe (hs : SetWhereLe μ ν s) : SignedMeasure.SetWhereLe μ ν s := by
   constructor
   · exact hs.measurable
   · rw [toSignedMeasure_restrict_eq_restrict_toSigned hs.measurable,
         toSignedMeasure_restrict_eq_restrict_toSigned hs.measurable]
-    exact toSignedMeasure_le_iff.mpr hs.ge_on
+    exact toSignedMeasure_le_iff.mpr hs.le_on
   · rw [toSignedMeasure_restrict_eq_restrict_toSigned hs.measurable.compl,
         toSignedMeasure_restrict_eq_restrict_toSigned hs.measurable.compl]
     exact toSignedMeasure_le_iff.mpr hs.ge_on_compl
 
 @[simp]
-theorem setWhereGe_iff_setWhereGeSignedMeasure :
-    SetWhereGe μ ν s ↔ SignedMeasure.SetWhereGe μ ν s :=
-      ⟨toSignedMeasure_setWhereGe, ofSignedMeasure_setWhereGe⟩
+theorem setWhereLe_iff_setWhereLeSignedMeasure :
+    SetWhereLe μ ν s ↔ SignedMeasure.SetWhereLe μ ν s :=
+      ⟨toSignedMeasure_setWhereLe, ofSignedMeasure_setWhereLe⟩
 
-lemma sub_eq_zero_of_ge_on' (hs : SignedMeasure.SetWhereGe μ ν s) : (ν - μ) s = 0 :=
-  sub_eq_zero_of_ge_on (ofSignedMeasure_setWhereGe hs)
+lemma sub_eq_zero_of_ge_on' (hs : SignedMeasure.SetWhereLe μ ν s) : (μ - ν) s = 0 :=
+  sub_eq_zero_of_ge_on (ofSignedMeasure_setWhereLe hs)
 
 theorem mutually_singular_measure_sub :
     (μ - ν).MutuallySingular (ν - μ) := by
-  obtain ⟨s, hs⟩ := exists_SetWhereGeSignedMeasure ν μ
+  obtain ⟨s, hs⟩ := exists_SetWhereLeSignedMeasure μ ν
   exact ⟨s, hs.measurable,
     sub_eq_zero_of_ge_on' hs,
     sub_eq_zero_of_ge_on' inferInstance⟩
 
-lemma toSignedMeasure_restrict_sub (hs : SignedMeasure.SetWhereGe μ ν s) :
-    ((μ - ν).restrict s).toSignedMeasure =
-      μ.toSignedMeasure.restrict s - ν.toSignedMeasure.restrict s := by
+lemma toSignedMeasure_restrict_sub (hs : SignedMeasure.SetWhereLe μ ν s) :
+    ((ν - μ).restrict s).toSignedMeasure =
+      ν.toSignedMeasure.restrict s - μ.toSignedMeasure.restrict s := by
   have hmeas := hs.measurable
-  have hle : ν.restrict s ≤ μ.restrict s := by
+  have hle : μ.restrict s ≤ ν.restrict s := by
     rw [toSignedMeasure_le_iff.symm]
     rw [← toSignedMeasure_restrict_eq_restrict_toSigned hmeas,
         ← toSignedMeasure_restrict_eq_restrict_toSigned hmeas]
-    exact hs.ge_on
+    exact hs.le_on
   rw [eq_sub_iff_add_eq, toSignedMeasure_restrict_eq_restrict_toSigned hmeas, ← toSignedMeasure_add]
-  have h_restrict := @restrict_sub_eq_restrict_sub_restrict _ _ μ ν s hmeas
+  have h_restrict := @restrict_sub_eq_restrict_sub_restrict _ _ ν μ s hmeas
   simp only [h_restrict]
   simp only [sub_add_cancel_of_le hle]
   exact (toSignedMeasure_restrict_eq_restrict_toSigned hmeas).symm
@@ -203,16 +203,16 @@ lemma toSignedMeasure_restrict_sub (hs : SignedMeasure.SetWhereGe μ ν s) :
 theorem sub_toSignedMeasure_eq_toSignedMeasure_sub :
     μ.toSignedMeasure - ν.toSignedMeasure =
       (μ - ν).toSignedMeasure - (ν - μ).toSignedMeasure := by
-  obtain ⟨s, hs⟩ := exists_SetWhereGeSignedMeasure ν μ
-  let hsc : SignedMeasure.SetWhereGe μ ν sᶜ := inferInstance
+  obtain ⟨s, hs⟩ := exists_SetWhereLeSignedMeasure μ ν
+  let hsc : SignedMeasure.SetWhereLe ν μ sᶜ := inferInstance
 
   have h₁ := toSignedMeasure_restrict_sub hs
   have h₂ := toSignedMeasure_restrict_sub hsc
 
   have h₁' := toSignedMeasure_congr <|restrict_eq_zero.mpr <|sub_eq_zero_of_ge_on
-    <|ofSignedMeasure_setWhereGe hs
+    <|ofSignedMeasure_setWhereLe hs
   have h₂' := toSignedMeasure_congr <|restrict_eq_zero.mpr <|sub_eq_zero_of_ge_on
-    <|ofSignedMeasure_setWhereGe hsc
+    <|ofSignedMeasure_setWhereLe hsc
 
   have partition₁ := VectorMeasure.restrict_add_restrict_compl (μ - ν).toSignedMeasure hs.measurable
   have partition₂ := VectorMeasure.restrict_add_restrict_compl (ν - μ).toSignedMeasure hs.measurable
