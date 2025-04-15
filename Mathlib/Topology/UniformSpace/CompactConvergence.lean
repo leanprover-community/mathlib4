@@ -304,6 +304,13 @@ theorem hasBasis_compactConvergenceUniformity_of_compact :
     (fun p hp => ⟨p.2, hp.2, fun _fg hfg x _hx => hfg x⟩) fun V hV =>
     ⟨⟨univ, V⟩, ⟨isCompact_univ, hV⟩, fun _fg hfg x => hfg x (mem_univ x)⟩
 
+theorem _root_.Filter.HasBasis.compactConvergenceUniformity_of_compactSpace
+    {ι : Sort*} {p : ι → Prop} {s : ι → Set (β × β)} (h : (𝓤 β).HasBasis p s) :
+    HasBasis (𝓤 C(α, β)) p fun i ↦ { fg : C(α, β) × C(α, β) | ∀ x, (fg.1 x, fg.2 x) ∈ s i } :=
+  hasBasis_compactConvergenceUniformity_of_compact.to_hasBasis
+    (fun _U hU ↦ (h.mem_iff.mp hU).imp fun _i hi ↦ ⟨hi.1, fun _f hf x ↦ hi.2 <| hf x⟩)
+    (fun i hi ↦ ⟨s i, h.mem_of_mem hi, Subset.rfl⟩)
+
 /-- Convergence in the compact-open topology is the same as uniform convergence for sequences of
 continuous functions on a compact space. -/
 theorem tendsto_iff_tendstoUniformly :
