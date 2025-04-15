@@ -98,7 +98,7 @@ theorem tendsto_iff_coeff_tendsto [Semiring R] {ι : Type*}
   · ext _; congr; ext; simp
   · ext; simp
 
-theorem trunc_tendsto [CommSemiring R] (f : R⟦X⟧) :
+theorem tendsto_trunc_atTop [CommSemiring R] (f : R⟦X⟧) :
     Tendsto (fun d ↦ (trunc d f : R⟦X⟧)) atTop (𝓝 f) := by
   rw [tendsto_iff_coeff_tendsto]
   intro d
