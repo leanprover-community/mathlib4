@@ -18,10 +18,13 @@ that `Data.PNat.Defs` can have very few imports.
 -/
 
 deriving instance AddLeftCancelSemigroup, AddRightCancelSemigroup, AddCommSemigroup,
-  LinearOrderedCancelCommMonoid, Add, Mul, Distrib for PNat
+  Add, Mul, Distrib for PNat
 
 namespace PNat
 
+instance instCommMonoid : CommMonoid ℕ+ := Positive.commMonoid
+instance instIsOrderedCancelMonoid : IsOrderedCancelMonoid ℕ+ := Positive.isOrderedCancelMonoid
+instance instCancelCommMonoid : CancelCommMonoid ℕ+ := ⟨fun _ _ _ ↦ mul_left_cancel⟩
 instance instWellFoundedLT : WellFoundedLT ℕ+ := WellFoundedRelation.isWellFounded
 
 @[simp]
