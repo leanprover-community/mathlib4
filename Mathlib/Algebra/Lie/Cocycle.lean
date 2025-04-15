@@ -352,7 +352,6 @@ def coboundary_first_summand {n : ℕ} (f : MultilinearMap R (fun _ : Fin n => L
         MultilinearMap.removeNth_map_update_add f (Ne.symm hij) x y g]
   map_update_smul' {inst} g j r x := by
     cases Subsingleton.elim inst (instDecidableEqFin (n + 1))
-    simp only
     rw [smul_comm]
     congr 1
     by_cases hij : i = j
@@ -470,42 +469,37 @@ def coboundary_second_summand_multilinear (n : ℕ) (f : L [⋀^Fin (n + 1)]→�
     simp only [coboundary_second_aux]
     rw [smul_comm r (Int.negOnePow (i.val + j.val)) _]
     congr 1
-    by_cases hki : k ≤ i
-    · simp only [Function.update_of_ne (ne_of_lt (lt_of_le_of_lt hki h)).symm]
-      by_cases hki : k < i
-      · simp only [Fin.removeNth_update_of_gt (hki.trans h)]
-        have : k.castPred (Fin.ne_last_of_lt hki) < i.castPred (Fin.ne_last_of_lt h) := hki
-        simp_rw [Fin.removeNth_update_of_gt this]
-        have (z : L) : Function.update g k z i = g i := by
-          exact Function.update_of_ne (ne_of_lt hki).symm _ _
-        simp [this]
-      · have hki : k = i := by omega
-        simp only [Fin.removeNth_update_of_gt (lt_of_eq_of_lt hki h)]
-        simp_rw [show ∀ (z : L), Function.update g k z i = z by
-        intros; rw [hki, Function.update_self]]
-        have : k.castPred (Fin.ne_last_of_lt (lt_of_eq_of_lt hki h)) =
-            i.castPred (Fin.ne_last_of_lt h) := Fin.castPred_inj.mpr hki
-        simp_rw [this, Fin.removeNth_update]
-        rw [Fin.cons_eq_update_cons 0 ⁅r • x, g j⁆, Fin.cons_eq_update_cons 0 ⁅x, g j⁆]
+    obtain hki | hki | hki := lt_trichotomy k i
+    · simp only [Function.update_of_ne (ne_of_lt (hki.trans h)).symm]
+      simp only [Fin.removeNth_update_of_gt (hki.trans h)]
+      have : k.castPred (Fin.ne_last_of_lt hki) < i.castPred (Fin.ne_last_of_lt h) := hki
+      simp_rw [Fin.removeNth_update_of_gt this]
+      have (z : L) : Function.update g k z i = g i := by
+        exact Function.update_of_ne (ne_of_lt hki).symm _ _
+      simp [this]
+    · simp only [Function.update_of_ne (ne_of_lt (lt_of_eq_of_lt hki h)).symm]
+      simp only [Fin.removeNth_update_of_gt (lt_of_eq_of_lt hki h)]
+      simp_rw [show ∀ (z : L), Function.update g k z i = z by
+      intros; rw [hki, Function.update_self]]
+      have : k.castPred (Fin.ne_last_of_lt (lt_of_eq_of_lt hki h)) =
+          i.castPred (Fin.ne_last_of_lt h) := Fin.castPred_inj.mpr hki
+      simp_rw [this, Fin.removeNth_update]
+      rw [Fin.cons_eq_update_cons 0 ⁅r • x, g j⁆, Fin.cons_eq_update_cons 0 ⁅x, g j⁆]
+      simp
+    · simp_rw [Function.update_of_ne (ne_of_lt hki)]
+      obtain hkj | hkj | hkj := lt_trichotomy k j
+      · simp_rw [Function.update_of_ne (Fin.ne_of_lt hkj).symm]
+        have : i.castPred (Fin.ne_last_of_lt hki) < k.castPred (Fin.ne_last_of_lt hkj) := hki
+        simp [Fin.removeNth_update_of_gt hkj, Fin.removeNth_update_of_lt this]
+      · have (z : L) : j.removeNth (Function.update g k z) = j.removeNth g := by
+          rw [hkj.symm]
+          convert Fin.removeNth_update k _ g
+        simp_rw [this]
+        have (z : L) : Function.update g k z j = z := by rw [hkj.symm, Function.update_self]
+        rw [this, Fin.cons_eq_update_cons 0 ⁅g i, r • x⁆, this,
+          Fin.cons_eq_update_cons 0 ⁅g i, x⁆]
         simp
-    · have hki : i < k := by omega
-      simp_rw [Function.update_of_ne (ne_of_lt hki)]
-      by_cases hkj : k ≤ j
-      · by_cases hjk : j = k
-        · have (z : L) : j.removeNth (Function.update g k z) = j.removeNth g := by
-            rw [hjk]
-            convert Fin.removeNth_update k _ g
-          simp_rw [this]
-          have (z : L) : Function.update g k z j = z := by rw [hjk, Function.update_self]
-          rw [this, Fin.cons_eq_update_cons 0 ⁅g i, r • x⁆, this,
-            Fin.cons_eq_update_cons 0 ⁅g i, x⁆]
-          simp
-        · simp_rw [Function.update_of_ne hjk]
-          have hkj : k < j := lt_of_le_of_ne hkj fun a ↦ hjk a.symm
-          have : i.castPred (Fin.ne_last_of_lt hki) < k.castPred (Fin.ne_last_of_lt hkj) := hki
-          simp [Fin.removeNth_update_of_gt hkj, Fin.removeNth_update_of_lt this]
-      · have hkj : j < k := Fin.not_le.mp hkj
-        simp_rw [Function.update_of_ne (ne_of_lt hkj), Fin.removeNth_update_of_lt hkj]
+      · simp_rw [Function.update_of_ne (ne_of_lt hkj), Fin.removeNth_update_of_lt hkj]
         have : i.castPred (Fin.ne_last_of_lt hki) < k.pred (Fin.ne_zero_of_lt hkj) := by
           refine (Fin.lt_pred_iff (Fin.ne_zero_of_lt hkj)).mpr ?_
           rw [Fin.succ_castPred_eq_add_one]

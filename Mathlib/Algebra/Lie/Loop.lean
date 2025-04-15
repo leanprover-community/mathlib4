@@ -53,7 +53,7 @@ variable [CommRing R] [LieRing L] [LieAlgebra R L]
 as a Lie algebra over `R`. -/
 abbrev LoopAlgebra := RestrictScalars R (LaurentPolynomial R) (LaurentPolynomial R ⊗[R] L)
 
-namespace Loop
+namespace LoopAlgebra
 
 instance instLieRing : LieRing (LoopAlgebra R L) :=
   ExtendScalars.instLieRing R (LaurentPolynomial R) L
@@ -77,6 +77,54 @@ lemma addEquiv_monomial (n : ℤ) (x : L) :
     (RestrictScalars.addEquiv R (LaurentPolynomial R) (LaurentPolynomial R ⊗[R] L))
       (monomial R L n x) = (LaurentPolynomial.T n ⊗ₜ x) :=
   rfl
+
+lemma monomial_smul (r : R) (n : ℤ) (x : L) : monomial R L n (r • x) = r • (monomial R L n x) :=
+  LinearMap.CompatibleSMul.map_smul (monomial R L n) r x
+
+/-!
+lemma monomial_eq_iff (n : ℤ) (x : L) : monomial R L n x = 0 ↔ x = 0 := by
+  simp only [monomial, LinearMap.coe_mk, AddHom.coe_mk, EmbeddingLike.map_eq_zero_iff]
+  constructor
+  · cases subsingleton_or_nontrivial R
+    · have : Subsingleton L := Module.subsingleton R L
+      exact fun a ↦ Subsingleton.eq_zero x
+    intro h
+    rw [LaurentPolynomial.T] at h
+    have : Finsupp.single n 1 ≠ 0 := by
+      intro h'
+      rw [Finsupp.single_eq_zero] at h'
+      apply Nat.one_ne_zero h'
+    --rw [← TensorProduct.zero_tmul (LaurentPolynomial R) x] at h
+
+
+
+    sorry
+  · intro h
+    simp [h]
+-/
+/-- Construct an element of the loop algebra from a finitely supported function. -/
+def ofFinsupp : Finsupp ℤ L →ₗ[R] LoopAlgebra R L where
+  toFun f := ∑ n ∈ f.support, monomial R L n (f n)
+  map_add' x y := by
+    simp only [Finsupp.coe_add, Pi.add_apply, map_add]
+    have hxy : x.support ⊆ x.support ∪ y.support := Finset.subset_union_left
+    have hyx : y.support ⊆ x.support ∪ y.support := Finset.subset_union_right
+    rw [Finset.sum_subset Finsupp.support_add, Finset.sum_add_distrib, Finset.sum_subset hxy,
+      Finset.sum_subset hyx]
+    · intro _ _ h
+      rw [Finsupp.not_mem_support_iff] at h
+      simp [h]
+    · intro _ _ h
+      rw [Finsupp.not_mem_support_iff] at h
+      simp [h]
+    · intro n hn h
+      rw [Finsupp.not_mem_support_iff, Finsupp.add_apply, add_eq_zero_iff_eq_neg] at h
+      simp [h]
+  map_smul' r x := by
+    rw [Finset.sum_subset Finsupp.support_smul
+      (fun _ _ hs ↦ by rw [Finsupp.not_mem_support_iff] at hs; simp [hs]),
+      Finset.smul_sum, RingHom.id_apply]
+    exact Finset.sum_congr rfl fun _ _ ↦ by simp
 
 -- I need a way to construct linear maps out of LoopAlgebra, by specifying the map on
 -- `x ⊗ T ^ n` for `x ∈ L`.  Maybe first a lemma saying LoopAlgebra is spanned by such things.
@@ -128,6 +176,6 @@ def twoCocycle_of_Bilinear (Φ : LinearMap.BilinForm R L)
 
 end CentralExt
 
-end Loop
+end LoopAlgebra
 
 end LieAlgebra

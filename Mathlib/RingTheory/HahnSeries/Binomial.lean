@@ -131,21 +131,26 @@ theorem binomialPow_add {g g' : Γ} (r r' : R) :
   simp only [binomialPow, PowerSeries.binomialSeries_add, PowerSeries.heval_mul, add_smul]
   rw [mul_left_comm, ← mul_assoc, ← mul_assoc, single_mul_single, mul_one, add_comm, ← mul_assoc]
 
+theorem binomialPow_one {g g' : Γ} (h : g < g') :
+    binomialPow g g' (Nat.cast (R := R) 1) = ((single g) (1 : A) - (single g') 1) := by
+  rw [binomialPow_apply, PowerSeries.binomialSeries_nat 1, pow_one, map_add,
+        PowerSeries.heval_X _ (pos_orderTop_single_sub h (-1)),
+        ← RingHom.map_one (f := PowerSeries.C A),
+        PowerSeries.heval_C _ (pos_orderTop_single_sub h (-1)), one_smul, mul_add, mul_one,
+        single_mul_single, one_mul, single_neg, Nat.cast_one, one_smul, add_sub_cancel,
+        sub_eq_add_neg]
+
 theorem binomialPow_nat {g g' : Γ} (h : g < g') (n : ℕ) :
     binomialPow g g' (n : R) = ((single g (1 : A)) - single g' 1) ^ n := by
   induction n with
   | zero => simp [PowerSeries.binomialSeries_zero, map_one]
   | succ n ih =>
-    rw [Nat.cast_add, ← binomialPow_add, pow_add, ih]
-    have : binomialPow g g' (Nat.cast (R := R) 1) = ((single g) (1 : A) - (single g') 1) := by
-      simp only [Nat.cast_one, binomialPow_apply, one_smul]
-      rw [← Nat.cast_one (R := R), PowerSeries.binomialSeries_nat 1, pow_one, map_add,
-        PowerSeries.heval_X, ← RingHom.map_one (f := PowerSeries.C A), PowerSeries.heval_C,
-        one_smul, mul_add, mul_one, single_mul_single, one_mul, single_neg, add_sub_cancel,
-        sub_eq_add_neg]
-      · exact pos_orderTop_single_sub h (-1)
-      · exact pos_orderTop_single_sub h (-1)
-    rw [this, pow_one]
+    rw [Nat.cast_add, ← binomialPow_add, pow_add, ih, binomialPow_one h, pow_one]
+
+theorem binomialPow_one_add {g₀ g₁ g₂ : Γ} (h₀₁ : g₀ < g₁) (h₁₂ : g₁ < g₂) :
+    binomialPow (A := A) g₀ g₁ (Nat.cast (R := R) 1) + binomialPow g₁ g₂ (Nat.cast (R := R) 1) =
+      binomialPow g₀ g₂ (Nat.cast (R := R) 1) := by
+  rw [binomialPow_one h₀₁, binomialPow_one h₁₂, binomialPow_one (h₀₁.trans h₁₂), sub_add_sub_cancel]
 
 end BinomialPow
 
