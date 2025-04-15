@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Mathlib.Algebra.BigOperators.Ring.Nat
-import Mathlib.Combinatorics.MyGraph.Path
+import Mathlib.Combinatorics.MyGraph.Pathverts
 import Mathlib.Data.Finite.Card
 import Mathlib.Data.Set.Card
 import Mathlib.Data.Set.Finite.Lattice
@@ -36,7 +36,8 @@ variable {V : Type u} (G : MyGraph V)
 
 section WalkCounting
 
-theorem set_walk_self_length_zero_eq (u : V) : {p : G.Walk u u | p.length = 0} = {Walk.nil} := by
+theorem set_walk_self_length_zero_eq {u : V} (hu : u ∈ G.verts) :
+  {p : G.Walk u u | p.length = 0} = {Walk.nil hu} := by
   ext p
   simp
 
@@ -64,17 +65,17 @@ theorem set_walk_length_succ_eq (u v : V) (n : ℕ) :
 /-- Walks of length two from `u` to `v` correspond bijectively to common neighbours of `u` and `v`.
 Note that `u` and `v` may be the same. -/
 @[simps]
-def walkLengthTwoEquivCommonNeighbors (u v : V) :
+def walkLengthTwoEquivCommonNeighbors {u v : V} :
     {p : G.Walk u v // p.length = 2} ≃ G.commonNeighbors u v where
   toFun p := ⟨p.val.snd, match p with
-    | ⟨.cons _ (.cons _ .nil), _⟩ => ⟨‹G.Adj u _›, ‹G.Adj _ v›.symm⟩⟩
+    | ⟨.cons _ (.cons _ (.nil _)), _⟩ => ⟨‹G.Adj u _›, ‹G.Adj _ v›.symm⟩⟩
   invFun w := ⟨w.prop.1.toWalk.concat w.prop.2.symm, rfl⟩
-  left_inv | ⟨.cons _ (.cons _ .nil), hp⟩ => by rfl
+  left_inv | ⟨.cons _ (.cons _ (.nil _)), hp⟩ => by rfl
   right_inv _ := rfl
 
 section LocallyFinite
 
-variable [DecidableEq V] [LocallyFinite G]
+variable [DecidableEq V] [LocallyFinite G] [DecidablePred (· ∈ G.verts)]
 
 /-- The `Finset` of length-`n` walks from `u` to `v`.
 This is used to give `{p : G.walk u v | p.length = n}` a `Fintype` instance, and it
@@ -85,19 +86,25 @@ the set of length-`n` walks. -/
 def finsetWalkLength (n : ℕ) (u v : V) : Finset (G.Walk u v) :=
   match n with
   | 0 =>
-    if h : u = v then by
-      subst u
-      exact {Walk.nil}
+    if h : u = v ∧ u ∈ G.verts then by
+      rw [← h.1]
+      exact {Walk.nil h.2}
     else ∅
   | n + 1 =>
     Finset.univ.biUnion fun (w : G.neighborSet u) =>
-      (finsetWalkLength n w v).map ⟨fun p => Walk.cons w.property p, fun _ _ => by simp⟩
+      (finsetWalkLength n w v).map
+        ⟨fun p => Walk.cons w.property p, fun _ _ => by simp⟩
 
-theorem coe_finsetWalkLength_eq (n : ℕ) (u v : V) :
-    (G.finsetWalkLength n u v : Set (G.Walk u v)) = {p : G.Walk u v | p.length = n} := by
+theorem coe_finsetWalkLength_eq (n : ℕ) (u v : V)  :
+    (G.finsetWalkLength n u v  : Set (G.Walk u v)) = {p : G.Walk u v | p.length = n} := by
   induction n generalizing u v with
   | zero =>
     obtain rfl | huv := eq_or_ne u v <;> simp [finsetWalkLength, set_walk_length_zero_eq_of_ne, *]
+    split_ifs with h
+    · simp only [coe_singleton]
+      rfl
+    · simp only [coe_empty]
+      ext x; simpa using h x.start_mem_verts
   | succ n ih =>
     simp only [finsetWalkLength, set_walk_length_succ_eq, Finset.coe_biUnion, Finset.mem_coe,
       Finset.mem_univ, Set.iUnion_true]
@@ -105,8 +112,8 @@ theorem coe_finsetWalkLength_eq (n : ℕ) (u v : V) :
     simp only [mem_neighborSet, Finset.coe_map, Embedding.coeFn_mk, Set.iUnion_coe_set,
       Set.mem_iUnion, Set.mem_image, Finset.mem_coe, Set.mem_setOf_eq]
     congr!
-    rename_i w _ q
-    have := Set.ext_iff.mp (ih w v) q
+    rename_i w h q
+    have := Set.ext_iff.mp (ih w v ) q
     simp only [Finset.mem_coe, Set.mem_setOf_eq] at this
     rw [← this]
 
@@ -136,12 +143,13 @@ theorem mem_finsetWalkLengthLT_iff {n : ℕ} {u v : V} {p : G.Walk u v} :
     p ∈ G.finsetWalkLengthLT n u v ↔ p.length < n :=
   Set.ext_iff.mp (G.coe_finsetWalkLengthLT_eq n u v) p
 
-instance fintypeSetWalkLength (u v : V) (n : ℕ) : Fintype {p : G.Walk u v | p.length = n} :=
+instance fintypeSetWalkLength (u v : V) (n : ℕ) :
+    Fintype {p : G.Walk u v | p.length = n} :=
   Fintype.ofFinset (G.finsetWalkLength n u v) fun p => by
     rw [← Finset.mem_coe, coe_finsetWalkLength_eq]
 
-instance fintypeSubtypeWalkLength (u v : V) (n : ℕ) : Fintype {p : G.Walk u v // p.length = n} :=
-  fintypeSetWalkLength G u v n
+instance fintypeSubtypeWalkLength (u v : V) (n : ℕ) :
+    Fintype {p : G.Walk u v // p.length = n} := fintypeSetWalkLength G u v n
 
 theorem set_walk_length_toFinset_eq (n : ℕ) (u v : V) :
     {p : G.Walk u v | p.length = n}.toFinset = G.finsetWalkLength n u v := by
@@ -182,11 +190,11 @@ instance fintypeSubtypePathLengthLT (u v : V) (n : ℕ) :
 
 end LocallyFinite
 
-instance [Finite V] : Finite G.ConnectedComponent := Quot.finite _
+-- instance [Finite V] : Finite G.ConnectedComponent := Quot.finite _
 
 section Fintype
 
-variable [DecidableEq V] [Fintype V] [DecidableRel G.Adj]
+variable [DecidableEq V] [Fintype V] [DecidableRel G.Adj] [DecidablePred (· ∈ G.verts)]
 
 theorem reachable_iff_exists_finsetWalkLength_nonempty (u v : V) :
     G.Reachable u v ↔ ∃ n : Fin (Fintype.card V), (G.finsetWalkLength n u v).Nonempty := by
@@ -201,15 +209,16 @@ theorem reachable_iff_exists_finsetWalkLength_nonempty (u v : V) :
 instance : DecidableRel G.Reachable := fun u v =>
   decidable_of_iff' _ (reachable_iff_exists_finsetWalkLength_nonempty G u v)
 
-instance : Fintype G.ConnectedComponent :=
-  @Quotient.fintype _ _ G.reachableSetoid (inferInstance : DecidableRel G.Reachable)
+
+-- instance : Fintype G.ConnectedComponent :=
+--   @Quotient.fintype _ _ G.reachableSetoid (inferInstance : DecidableRel G.Reachable)
 
 instance : Decidable G.Preconnected :=
   inferInstanceAs <| Decidable (∀ u v, G.Reachable u v)
 
-instance : Decidable G.Connected :=
-  decidable_of_iff (G.Preconnected ∧ (Finset.univ : Finset V).Nonempty) <| by
-    rw [connected_iff, ← Finset.univ_nonempty_iff]
+-- instance : Decidable G.Connected :=
+--   decidable_of_iff (G.Preconnected ∧ (Finset.univ : Finset V).Nonempty) <| by
+--     rw [connected_iff, ← Finset.univ_nonempty_iff]
 
 instance Path.instFintype {u v : V} : Fintype (G.Path u v) where
   elems := (univ (α := { p : G.Walk u v | p.IsPath ∧ p.length < Fintype.card V })).map

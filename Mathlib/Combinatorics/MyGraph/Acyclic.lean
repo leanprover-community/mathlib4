@@ -3,7 +3,7 @@ Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Combinatorics.MyGraph.Path
+import Mathlib.Combinatorics.MyGraph.Pathverts
 import Mathlib.Data.Fintype.Order
 import Mathlib.SetTheory.Cardinal.Finite
 import Mathlib.Tactic.Linarith
@@ -41,21 +41,21 @@ acyclic graphs, trees
 
 
 universe u v
-
+variable {V : Type u}
 namespace MyGraph
 
 open Walk
 
-variable {V : Type u} (G : MyGraph V)
+variable (G : MyGraph V)
 
 /-- A graph is *acyclic* (or a *forest*) if it has no cycles. -/
 def IsAcyclic : Prop := ∀ ⦃v : V⦄ (c : G.Walk v v), ¬c.IsCycle
 
-/-- A *tree* is a connected acyclic graph. -/
+/-- A *tree* is a preconnected acyclic graph. -/
 @[mk_iff]
 structure IsTree : Prop where
   /-- Graph is connected. -/
-  protected isConnected : G.Connected
+  protected isPreconnected : G.Preconnected
   /-- Graph is acyclic. -/
   protected IsAcyclic : G.IsAcyclic
 
@@ -87,9 +87,8 @@ theorem IsAcyclic.path_unique {G : MyGraph V} (h : G.IsAcyclic) {v w : V} (p q :
   obtain ⟨q, hq⟩ := q
   rw [Subtype.mk.injEq]
   induction p with
-  | nil =>
-    cases (Walk.isPath_iff_eq_nil _).mp hq
-    rfl
+  | nil hu =>
+    rw [(Walk.isPath_iff_eq_nil _).mp hq]
   | cons ph p ih =>
     rw [isAcyclic_iff_forall_adj_isBridge] at h
     specialize h ph
@@ -125,30 +124,151 @@ theorem isAcyclic_iff_path_unique : G.IsAcyclic ↔ ∀ ⦃v w : V⦄ (p q : G.P
   ⟨IsAcyclic.path_unique, isAcyclic_of_path_unique⟩
 
 theorem isTree_iff_existsUnique_path :
-    G.IsTree ↔ Nonempty V ∧ ∀ v w : V, ∃! p : G.Walk v w, p.IsPath := by
+    G.IsTree ↔  ∀ {v w : V}, v ∈ G.verts → w ∈ G.verts → ∃! p : G.Walk v w, p.IsPath := by
   classical
   rw [isTree_iff, isAcyclic_iff_path_unique]
   constructor
   · rintro ⟨hc, hu⟩
-    refine ⟨hc.nonempty, ?_⟩
-    intro v w
-    let q := (hc v w).some.toPath
+    intro v w hv hw
+    let q := (hc hv hw).some.toPath
     use q
     simp only [true_and, Path.isPath]
     intro p hp
     specialize hu ⟨p, hp⟩ q
     exact Subtype.ext_iff.mp hu
-  · rintro ⟨hV, h⟩
-    refine ⟨Connected.mk ?_, ?_⟩
-    · intro v w
-      obtain ⟨p, _⟩ := h v w
+  · intro h
+    refine ⟨?_, ?_⟩
+    · intro v w hv hw
+      obtain ⟨p, _⟩ := h hv hw
       exact p.reachable
     · rintro v w ⟨p, hp⟩ ⟨q, hq⟩
-      simp only [ExistsUnique.unique (h v w) hp hq]
+      simp only [ExistsUnique.unique (h p.start_mem_verts p.end_mem_verts) hp hq]
 
-lemma IsTree.existsUnique_path (hG : G.IsTree) : ∀ v w, ∃! p : G.Walk v w, p.IsPath :=
-  (isTree_iff_existsUnique_path.1 hG).2
+lemma IsTree.existsUnique_path (hG : G.IsTree) :
+    ∀ {v w}, v ∈ G.verts → w ∈ G.verts → ∃! p : G.Walk v w, p.IsPath := by
+  intro v w hv hw; exact isTree_iff_existsUnique_path.1 hG hv hw
 
+open Finset
+lemma IsTree.card_edgeFinset [DecidableEq V] [Fintype G.verts] [Fintype G.edgeSet] {v : V}
+    (hG : G.IsTree) (hv : v ∈ G.verts) :
+      #G.edgeFinset + 1 = #G.vertsFinset := by
+  have : #(G.vertsFinset.erase v) + 1 =  #G.vertsFinset := by
+    rw [Finset.card_erase_of_mem (by simpa using hv),  Nat.sub_add_cancel ]
+    exact Finset.card_pos.2  (by simpa using ⟨v, hv⟩)
+  rw [← this, add_left_inj]
+  choose f hf hf' using (@hG.existsUnique_path _ _ · v )
+  have hm {x : V} : x ∈ G.verts.toFinset.erase v → x ∈ G.verts := by simp
+  have hm'{x : V} : x ∈ G.verts.toFinset.erase v → x ≠ v := by rintro h rfl; simp at h
+  refine Eq.symm <| Finset.card_bij
+          (fun w hw => ((f w  (hm hw) hv).firstDart <| ?notNil).edge)
+          (fun a ha => ?memEdges) ?inj ?surj
+  case notNil => exact not_nil_of_ne (hm' hw)
+  case memEdges => simp
+  case inj =>
+    intros a ha b hb h
+    wlog h' : (f a (hm ha) hv).length ≤ (f b (hm hb) hv).length generalizing a b
+    · exact Eq.symm (this _ hb _ ha h.symm (le_of_not_le h'))
+    rw [dart_edge_eq_iff] at h
+    obtain (h | h) := h
+    · exact (congrArg (·.fst) h)
+    · have h1 : ((f a (hm ha) hv).firstDart <| not_nil_of_ne (hm' ha)).snd = b :=
+        congrArg (·.snd) h
+      have h3 := congrArg length (hf' _ (hm hb) hv ((f _ (hm ha) hv).tail.copy h1 rfl) ?_)
+      · rw [length_copy, ← add_left_inj 1,
+          length_tail_add_one (not_nil_of_ne (hm' ha))] at h3
+        omega
+      · simp only [ne_eq, eq_mp_eq_cast, id_eq, isPath_copy]
+        exact (hf a (hm ha) hv).tail
+  case surj =>
+    simp only [Set.mem_toFinset, Finset.mem_erase, ne_eq, Sym2.forall, mem_edgeSet]
+    intros x y h
+    wlog h' : (f x h.mem_verts hv).length ≤ (f y h.mem_verts' hv).length generalizing x y
+    · rw [Sym2.eq_swap]
+      exact this y x h.symm (le_of_not_le h')
+    refine ⟨y, ⟨?_, h.mem_verts'⟩, dart_edge_eq_mk'_iff.2 <| Or.inr ?_⟩
+    · rintro rfl
+      rw [← hf' _ h.mem_verts' hv (nil hv) (IsPath.nil hv), length_nil,
+          ← hf' _ h.mem_verts hv (.cons h (.nil hv)) ((IsPath.nil hv).cons <| by simpa using h.ne),
+          length_cons, length_nil] at h'
+      simp [Nat.le_zero, Nat.one_ne_zero] at h'
+    rw [← hf' _ h.mem_verts' hv (.cons h.symm (f x h.mem_verts hv)) ((cons_isPath_iff _ _).2
+      ⟨hf _ h.mem_verts hv, fun hy => ?contra⟩)]
+    · simp only [firstDart_toProd, getVert_cons_succ, getVert_zero, Prod.swap_prod_mk]
+    case contra =>
+      suffices (f _ h.mem_verts hv).takeUntil y hy = .cons h (.nil (h.mem_verts')) by
+        rw [← take_spec _ hy, hf' _ h.mem_verts' hv _ ((hf _ h.mem_verts hv).dropUntil hy)] at h'
+        simp [this] at h'
+      exact (hG.existsUnique_path h.mem_verts h.mem_verts').unique
+                    ((hf _ _ hv).takeUntil _) (by simp [h.ne])
+
+/-- A minimally connected graph is a tree. -/
+lemma isTree_of_minimal_preconnected (h : Minimal Preconnected G) : IsTree G := by
+  rw [isTree_iff]
+  constructor
+  · exact h.prop
+  · rw [ isAcyclic_iff_forall_adj_isBridge]
+    intro x y hxy
+    by_contra! hbr
+    exact h.not_prop_of_lt (G.deleteEdges_lt hxy (by simp))
+        <| G.preconnected_delete_edge_of_not_isBridge h.prop hbr
+
+/-- Every preconnected graph has a spanning tree. -/
+lemma Preconnected.exists_isTree_le [Finite V] (h : G.Preconnected) : ∃ T ≤ G, IsTree T := by
+  obtain ⟨T, hTG, hmin⟩ := {H : MyGraph V | H.Preconnected}.toFinite.exists_minimal_le h
+  exact ⟨T, hTG, isTree_of_minimal_preconnected hmin⟩
+
+/-- Every preconnected graph has a spanning tree. -/
+lemma Preconnected.exists_isTree_le' [Finite G.verts] (h : G.Preconnected) : ∃ T ≤ G, IsTree T := by
+  haveI hf : Finite {H : MyGraph V | H ≤ G} := by sorry
+  haveI : Finite {H : MyGraph V | H ≤ G ∧ H.Preconnected} := Set.Finite.subset hf (fun _ h' ↦ h'.1)
+  have : G ≤ G ∧ G.Preconnected := ⟨le_refl _, h⟩
+  obtain ⟨T, hTG, hmin⟩ := {H : MyGraph V | H ≤ G ∧ H.Preconnected}.toFinite.exists_minimal_le this
+  have hmin' : Minimal Preconnected T := by
+    constructor
+    · exact hmin.prop.2
+    · intro H hH hle
+      exact hmin.2 ⟨hle.trans hTG, hH⟩ hle
+  exact ⟨T, hTG, isTree_of_minimal_preconnected hmin'⟩
+
+
+-- /-- Every connected graph on `n` vertices has at least `n-1` edges. -/
+-- lemma Preconnected.card_vert_le_card_edgeSet_add_one (h : G.Preconnected) :
+--     Nat.card G.verts ≤ Nat.card G.edgeSet + 1 := by
+--   obtain hV | hV := (finite_or_infinite G.verts).symm
+--   · simp
+--   have := Fintype.ofFinite
+--   obtain ⟨T, hle, hT⟩ := h.exists_isTree_le
+--   rw [Nat.card_eq_fintype_card, ← hT.card_edgeFinset, add_le_add_iff_right,
+--     Nat.card_eq_fintype_card, ← edgeFinset_card]
+--   exact Finset.card_mono <| by simpa
+
+
+
+end MyGraph
+namespace SpanningGraph
+open MyGraph
+variable (G : SpanningGraph V)
+
+/-- A *tree* is a connected acyclic graph. -/
+@[mk_iff]
+structure IsTree : Prop where
+  /-- Graph is connected. -/
+  protected isConnected : G.Connected
+  /-- Graph is acyclic. -/
+  protected IsAcyclic : G.IsAcyclic
+
+variable {G}
+lemma isTree_coe (hG : G.IsTree) : (G : MyGraph V).IsTree :=
+    ⟨hG.isConnected.preconnected, hG.IsAcyclic⟩
+
+lemma IsTree.existsUnique_path (hG : G.IsTree) : ∀ v w,
+  ∃! p : G.Walk v w, p.IsPath := by
+    intro v w;
+    have hG':= isTree_coe hG
+    apply isTree_iff_existsUnique_path.1 hG' (by simp) (by simp)
+
+
+open Walk Path
 lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
     Finset.card G.edgeFinset + 1 = Fintype.card V := by
   have := hG.isConnected.nonempty
@@ -172,7 +292,7 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
     · exact (congrArg (·.fst) h)
     · have h1 : ((f a).firstDart <| not_nil_of_ne (by simpa using ha)).snd = b :=
         congrArg (·.snd) h
-      have h3 := congrArg length (hf' _ ((f _).tail.copy h1 rfl) ?_)
+      have h3 := congrArg length (hf' b ((f a).tail.copy h1 rfl) ?_)
       · rw [length_copy, ← add_left_inj 1,
           length_tail_add_one (not_nil_of_ne (by simpa using ha))] at h3
         omega
@@ -186,52 +306,42 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
       exact this y x h.symm (le_of_not_le h')
     refine ⟨y, ?_, dart_edge_eq_mk'_iff.2 <| Or.inr ?_⟩
     · rintro rfl
-      rw [← hf' _ nil IsPath.nil, length_nil,
-          ← hf' _ (.cons h .nil) (IsPath.nil.cons <| by simpa using h.ne),
+      have hd : default ∈ G.verts := by simp
+      rw [← hf' _ (nil hd) (IsPath.nil hd), length_nil,
+          ← hf' _ (.cons h (.nil hd)) ((IsPath.nil hd).cons <| by simpa using h.ne),
           length_cons, length_nil] at h'
       simp [Nat.le_zero, Nat.one_ne_zero] at h'
+
     rw [← hf' _ (.cons h.symm (f x)) ((cons_isPath_iff _ _).2 ⟨hf _, fun hy => ?contra⟩)]
     · simp only [firstDart_toProd, getVert_cons_succ, getVert_zero, Prod.swap_prod_mk]
     case contra =>
-      suffices (f x).takeUntil y hy = .cons h .nil by
+      suffices (f x).takeUntil y hy = .cons h (.nil (h.mem_verts'))by
         rw [← take_spec _ hy] at h'
         simp [this, hf' _ _ ((hf _).dropUntil hy)] at h'
       refine (hG.existsUnique_path _ _).unique ((hf _).takeUntil _) ?_
       simp [h.ne]
 
-/-- A minimally connected graph is a tree. -/
-lemma isTree_of_minimal_connected (h : Minimal Connected G) : IsTree G := by
-  rw [isTree_iff, and_iff_right h.prop, isAcyclic_iff_forall_adj_isBridge]
-  exact fun _ _ _↦ by_contra fun hbr ↦ h.not_prop_of_lt
-    (by simpa [deleteEdges, ← edgeSet_ssubset_edgeSet])
-    <| h.prop.connected_delete_edge_of_not_isBridge hbr
+-- /-- Every connected graph on `n` vertices has at least `n-1` edges. -/
+-- lemma Preconnected.card_vert_le_card_edgeSet_add_one (h : G.Preconnected) :
+--     Nat.card V ≤ Nat.card G.edgeSet + 1 := by
+--   obtain hV | hV := (finite_or_infinite V).symm
+--   · simp
+--   have := Fintype.ofFinite
+--   obtain ⟨T, hle, hT⟩ := h.exists_isTree_le
+--   rw [Nat.card_eq_fintype_card, ← hT.card_edgeFinset, add_le_add_iff_right,
+--     Nat.card_eq_fintype_card, ← edgeFinset_card]
+--   exact Finset.card_mono <| by simpa
 
-/-- Every connected graph has a spanning tree. -/
-lemma Connected.exists_isTree_le [Finite V] (h : G.Connected) : ∃ T ≤ G, IsTree T := by
-  obtain ⟨T, hTG, hmin⟩ := {H : MyGraph V | H.Connected}.toFinite.exists_minimal_le h
-  exact ⟨T, hTG, isTree_of_minimal_connected hmin⟩
+-- lemma isTree_iff_connected_and_card [Finite V] :
+--     G.IsTree ↔ G.Preconnected ∧ Nat.card G.edgeSet + 1 = Nat.card V := by
+--   have := Fintype.ofFinite V
+--   classical
+--   refine ⟨fun h ↦ ⟨h.isPreconnected, by simpa using h.card_edgeFinset⟩, fun ⟨h₁, h₂⟩ ↦ ⟨h₁, ?_⟩⟩
+--   simp_rw [isAcyclic_iff_forall_adj_isBridge]
+--   refine fun x y h ↦ by_contra fun hbr ↦
+--     (h₁.connected_delete_edge_of_not_isBridge hbr).card_vert_le_card_edgeSet_add_one.not_lt ?_
+--   rw [Nat.card_eq_fintype_card, ← edgeFinset_card, ← h₂, Nat.card_eq_fintype_card,
+--     ← edgeFinset_card, add_lt_add_iff_right]
+--   exact Finset.card_lt_card <| by simpa [deleteEdges]
 
-/-- Every connected graph on `n` vertices has at least `n-1` edges. -/
-lemma Connected.card_vert_le_card_edgeSet_add_one (h : G.Connected) :
-    Nat.card V ≤ Nat.card G.edgeSet + 1 := by
-  obtain hV | hV := (finite_or_infinite V).symm
-  · simp
-  have := Fintype.ofFinite
-  obtain ⟨T, hle, hT⟩ := h.exists_isTree_le
-  rw [Nat.card_eq_fintype_card, ← hT.card_edgeFinset, add_le_add_iff_right,
-    Nat.card_eq_fintype_card, ← edgeFinset_card]
-  exact Finset.card_mono <| by simpa
-
-lemma isTree_iff_connected_and_card [Finite V] :
-    G.IsTree ↔ G.Connected ∧ Nat.card G.edgeSet + 1 = Nat.card V := by
-  have := Fintype.ofFinite V
-  classical
-  refine ⟨fun h ↦ ⟨h.isConnected, by simpa using h.card_edgeFinset⟩, fun ⟨h₁, h₂⟩ ↦ ⟨h₁, ?_⟩⟩
-  simp_rw [isAcyclic_iff_forall_adj_isBridge]
-  refine fun x y h ↦ by_contra fun hbr ↦
-    (h₁.connected_delete_edge_of_not_isBridge hbr).card_vert_le_card_edgeSet_add_one.not_lt ?_
-  rw [Nat.card_eq_fintype_card, ← edgeFinset_card, ← h₂, Nat.card_eq_fintype_card,
-    ← edgeFinset_card, add_lt_add_iff_right]
-  exact Finset.card_lt_card <| by simpa [deleteEdges]
-
-end MyGraph
+end SpanningGraph

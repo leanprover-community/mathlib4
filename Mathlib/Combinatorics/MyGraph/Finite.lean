@@ -44,7 +44,97 @@ open Finset Function
 
 namespace MyGraph
 
-variable {V : Type*} (G : MyGraph V) {e : Sym2 V}
+variable {V : Type*} (G : MyGraph V) {e : Sym2 V} {G₁ G₂ : MyGraph V}
+section Verts
+/-- The `verts` of the graph as a `Finset`. -/
+abbrev vertsFinset [Fintype G.verts]: Finset V :=
+  Set.toFinset G.verts
+
+
+@[norm_cast]
+theorem coe_vertsFinset [Fintype G.verts] : (G.vertsFinset : Set V) = G.verts :=
+  Set.coe_toFinset _
+
+variable {G}
+
+
+theorem mem_vertsFinset [Fintype G.verts] {v : V}: v ∈ G.vertsFinset ↔ v ∈ G.verts :=
+  Set.mem_toFinset
+
+
+@[gcongr]
+theorem vertsFinset_mono [Fintype G₁.verts] [Fintype G₂.verts] (h : G₁ ≤ G₂) :
+  G₁.vertsFinset ⊆ G₂.vertsFinset  := by simp [h.1]
+
+end Verts
+
+
+instance [DecidableEq V] [Fintype G.verts] [DecidableRel G.Adj] [DecidablePred (· ∈ G.verts)]  :
+  Fintype {H : Finset G.verts × (G.verts → G.verts → Bool) //
+    (∀ a b, H.2 a b → (G.Adj a.1 b.1) ∧ (a ∈ H.1 ∧ b ∈ H.1)) ∧ (∀ a b, H.2 a b → H.2 b a)} :=
+    inferInstance
+
+section Subgraph
+
+variable (G : MyGraph V) [DecidableEq V] [Fintype G.verts] [DecidableRel G.Adj]
+
+abbrev Subgraph G := {H : MyGraph V // H ≤ G}
+
+variable [DecidablePred (· ∈ G.verts)]
+@[simps]
+def subgraph (H : {H : Finset G.verts × (G.verts → G.verts → Bool) //
+    (∀ a b, H.2 a b → (G.Adj a.1 b.1) ∧ (a ∈ H.1 ∧ b ∈ H.1)) ∧ (∀ a b, H.2 a b → H.2 b a)}) :
+    MyGraph V where
+  verts := H.1.1.map (⟨fun x ↦ x.val, Subtype.val_injective⟩ )
+  Adj := fun a b ↦ if h : a ∈ G.verts ∧ b ∈ G.verts then (H.1.2 ⟨a, h.1⟩ ⟨b, h.2⟩) else False
+  edge_vert := by
+    intro a b h
+    split_ifs at h with h1
+    · have := (H.2.1 _ _ h).2.1
+      simp only [coe_map, Embedding.coeFn_mk, Set.mem_image, mem_coe, Subtype.exists,
+        exists_and_right, exists_eq_right]
+      use h1.1
+    · contradiction
+  symm := by
+    intro a b ; simp only [decide_false]
+    split_ifs with h1 h2 h3
+    · intro h; exact H.2.2 _ _ h
+    · rw [and_comm] at h1; exact (h2 h1).elim
+    · intro; contradiction
+    · intro; contradiction
+  loopless := by
+    intro a h;
+    split_ifs at h
+    · apply G.loopless _ <| (H.2.1 _ _ h).1
+    · contradiction
+
+lemma subgraph_isSubgraph (H : {H : Finset G.verts × (G.verts → G.verts → Bool) //
+    (∀ a b, H.2 a b → (G.Adj a.1 b.1) ∧ (a ∈ H.1 ∧ b ∈ H.1)) ∧ (∀ a b, H.2 a b → H.2 b a)}) :
+    G.subgraph H ≤ G := by
+  constructor
+  · intro v
+    simp only [subgraph, coe_image, decide_false, Set.mem_image, mem_coe, Subtype.exists,
+      exists_and_right, exists_eq_right, forall_exists_index]
+    intro h ; simp only [mem_map, Embedding.coeFn_mk, Subtype.exists, exists_and_right,
+      exists_eq_right] at h
+    obtain ⟨x, hx⟩ := h
+    exact x
+  · intro a b h;
+    simp only [subgraph, coe_image, decide_false] at h
+    split_ifs at h
+    exact (H.2.1 _ _ h).1
+
+
+instance fintypeSubgraph_vertsFinset : Fintype (Subgraph G) := by
+  apply Fintype.ofBijective
+    (α := {H : Finset G.verts × (G.verts → G.verts → Bool) //
+    (∀ a b, H.2 a b → (G.Adj a.1 b.1) ∧ (a ∈ H.1 ∧ b ∈ H.1)) ∧ (∀ a b, H.2 a b → H.2 b a)})
+    (fun H ↦ ⟨_,G.subgraph_isSubgraph H⟩)
+  · sorry
+
+
+end Subgraph
+
 
 section EdgeFinset
 

@@ -664,14 +664,14 @@ theorem toEmbedding_completeGraph {α β : Type*} (f : α ≃ β) :
 variable {G'' : MyGraph X}
 
 /-- Composition of graph isomorphisms. -/
-abbrev comp  (f : G ≃g G') (f' : G' ≃g G'') : G ≃g G'' :=
+abbrev comp  (f' : G' ≃g G'') (f : G ≃g G')  : G ≃g G'' :=
   ⟨f.toRelIso.trans f'.toRelIso,
     ⟨fun _ hv ↦ f'.2.1 <| f.2.1 hv, fun _ hv ↦ f.symm.2.1 <| f'.symm.2.1 hv⟩⟩
 
-@[simp] lemma symm_trans_apply (f : G ≃g G') (f' : G' ≃g G'')  (a : X) :
-    (f.comp f').symm a = f.symm (f'.symm a) := rfl
+@[simp] lemma symm_trans_apply  (f' : G' ≃g G'') (f : G ≃g G')  (a : X) :
+    (f'.comp f).symm a = f.symm (f'.symm a) := rfl
 @[simp]
-theorem coe_comp (f' : G' ≃g G'') (f : G ≃g G') : ⇑(f.comp f') = f' ∘ f :=
+theorem coe_comp (f' : G' ≃g G'') (f : G ≃g G') : ⇑(f'.comp f) = f' ∘ f :=
   rfl
 
 end Iso

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 JereSpanning Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: JereSpanning Tan
+Authors: Jeremy Tan
 -/
 import Mathlib.Combinatorics.MyGraph.Clique
 import Mathlib.Combinatorics.MyGraph.Spanning
@@ -299,12 +299,12 @@ theorem isTuranMaximal_of_iso (f : G ≃g (turanGraph n r)) (hr : 0 < r) :
   rw [f.card_eq, Fintype.card_fin] at g
   have ht :=(turanGraph_cliqueFree (n := n) hr)
   have := SpanningGraph.cliqueFree_comap ⟨f.toRelEmbedding, by simp⟩ ht
-  use this, fun H _ cf ↦ (g.comp f.symm).card_edgeFinset_eq ▸ j.2 H cf
+  use this, fun H _ cf ↦ (f.symm.comp g).card_edgeFinset_eq ▸ j.2 H cf
 
 /-- Turán-maximality with `0 < r` transfers across graph isomorphisms. -/
 theorem IsTuranMaximal.iso {W : Type*} [Fintype W] {H : SpanningGraph W}
     [DecidableRel H.Adj] (h : G.IsTuranMaximal r) (f : G ≃g H) (hr : 0 < r) :
-    H.IsTuranMaximal r := isTuranMaximal_of_iso (f.symm.comp h.nonempty_iso_turanGraph.some) hr
+    H.IsTuranMaximal r := isTuranMaximal_of_iso (h.nonempty_iso_turanGraph.some.comp f.symm) hr
 
 /-- For `0 < r`, `turanGraph n r` is Turán-maximal. -/
 theorem isTuranMaximal_turanGraph (hr : 0 < r) : (turanGraph n r).IsTuranMaximal r :=

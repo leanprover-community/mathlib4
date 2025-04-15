@@ -79,6 +79,11 @@ theorem adj_congr_of_sym2 {H : MyGraph V} {u v w x : V} (h2 : s(u, v) = s(w, x))
   · rw [hl.1, hl.2]
   · rw [hr.1, hr.2, MyGraph.adj_comm]
 
+lemma not_adj_of_not_mem_verts {u v : V} {G : MyGraph V} (h : u ∉ G.verts) : ¬ G.Adj u v := by
+  contrapose! h
+  exact h.mem_verts
+
+
 /-- A MyGraph is called a *spanning MyGraph* if it contains all the vertices of `G`. -/
 def IsSpanning (G : MyGraph V) : Prop :=
   G.verts = Set.univ
@@ -118,7 +123,8 @@ theorem mem_support (H : MyGraph V) {v : V} : v ∈ H.support ↔ ∃ w, H.Adj v
 theorem support_subset_verts (H : MyGraph V) : H.support ⊆ H.verts :=
   fun _ ⟨_, h⟩ ↦ H.edge_vert h
 
-/-- `G.neighborSet v` is the set of vertices adjacent to `v` in `G`. -/
+/-- `G.neighborSet v` is the set of vertices adjacent to `v` in `G`.
+We don't restrict to `v ∈ G.verts` since for any `v ∉ G.verts` this set is empty -/
 def neighborSet (G : MyGraph V) (v : V) : Set V := {w | G.Adj v w}
 
 instance neighborSet.memDecidable (v : V) [DecidableRel G.Adj] :
@@ -560,6 +566,10 @@ theorem edgeSet_subset_edgeSet_of_le (h : G₁ ≤ G₂) : edgeSet G₁ ⊆ edge
 
 lemma verts_monotone : Monotone (verts : MyGraph V → Set V) := fun _ _ h ↦ h.1
 
+
+
+
+
 @[simps]
 instance MyGraphInhabited : Inhabited (MyGraph V) := ⟨⊥⟩
 
@@ -663,6 +673,7 @@ instance [DecidableEq V] [Fintype V] : Fintype (MyGraph V) := by
     exact ⟨⟨(H.verts.toFinset, fun a b ↦ H.Adj a b), fun a b ↦
         by simpa using H.edge_vert, by simp [H.adj_comm]⟩, by simp⟩
 
+
 instance [Finite V] : Finite (MyGraph V) := by classical cases nonempty_fintype V; infer_instance
 
 theorem neighborSet_subset_of_subgraph {x y : MyGraph V} (h : x ≤ y) (v : V) :
@@ -707,9 +718,7 @@ instance fintypeEdgeSetSdiff [DecidableEq V] [Fintype G₁.edgeSet] [Fintype G�
 /-! ### Edge deletion -/
 
 /-- Given a graph `G'` and a set of vertex pairs, remove all of the corresponding edges
-from its edge set, if present. Vertices are unchanged.
-
-See also: `FullGraph.deleteEdges`. -/
+from its edge set, if present. Vertices are unchanged. -/
 def deleteEdges (G' : MyGraph V) (s : Set (Sym2 V)) : MyGraph V where
   verts := G'.verts
   Adj := G'.Adj \ Sym2.ToRel s
@@ -763,6 +772,16 @@ theorem deleteEdges_disjoint (h : Disjoint s G'.edgeSet) : G'.deleteEdges s = G'
 theorem deleteEdges_le (s : Set (Sym2 V)) : G'.deleteEdges s ≤ G' := by
   constructor <;> simp +contextual [subset_rfl]
 
+@[simp]
+theorem deleteEdges_lt {s : Set (Sym2 V)} {u v : V} (h : G.Adj u v) (hs : s(u,v) ∈ s) :
+  G.deleteEdges s < G := by
+  constructor
+  · simp
+  · intro h'
+    have := h'.2 h
+    rw [deleteEdges_adj] at this
+    exact this.2 hs
+
 theorem deleteEdges_le_of_le {s s' : Set (Sym2 V)} (h : s ⊆ s') :
     G'.deleteEdges s' ≤ G'.deleteEdges s := by
   constructor <;> simp +contextual only [deleteEdges_verts, deleteEdges_adj,
@@ -787,6 +806,7 @@ theorem deleteEdges_inter_edgeSet_right_eq :
 -- theorem deleteEdges_sdiff_eq_of_le {H : MyGraph V} (h : H ≤ G) :
 --     G.deleteEdges (G.edgeSet \ H.edgeSet) = H := by
 --   rw [← edgeSet_sdiff, deleteEdges_edgeSet, sdiff_sdiff_eq_self h]
+
 
 
 end DeleteEdges
@@ -1024,17 +1044,17 @@ theorem deleteEdges_eq_sdiff_fromEdgeSet (s : Set (Sym2 V)) :
 
 
 
---??
-@[simp] lemma disjoint_fromEdgeSet (h : Disjoint G (fromEdgeSet s)) : Disjoint G.edgeSet s := by
-  rw [Set.disjoint_left]
-  intro e he hf
+-- --??
+-- @[simp] lemma disjoint_fromEdgeSet (h : Disjoint G (fromEdgeSet s)) : Disjoint G.edgeSet s := by
+--   rw [Set.disjoint_left]
+--   intro e he hf
 
 
 
-  sorry
+--   sorry
 
-@[simp] lemma fromEdgeSet_disjoint : Disjoint (fromEdgeSet s) G ↔ Disjoint s G.edgeSet := by
-  sorry
+-- @[simp] lemma fromEdgeSet_disjoint : Disjoint (fromEdgeSet s) G ↔ Disjoint s G.edgeSet := by
+--   sorry
 
 instance [DecidableEq V] [Fintype s] : Fintype (fromEdgeSet s).edgeSet := by
   rw [edgeSet_fromEdgeSet s]

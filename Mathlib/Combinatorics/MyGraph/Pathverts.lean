@@ -957,6 +957,13 @@ protected lemma Preconnected.mono  {G G' : MyGraph V} (h : G ≤ G') (h' : G'.ve
   intro u v hu hv
   exact (hG (h' hu) (h' hv)).mono h
 
+lemma preconnected_iff_forall_reachable_of_mem_verts {x : V} (hx : x ∈ G.verts) :
+  G.Preconnected ↔ ∀ v, v ∈ G.verts → G.Reachable x v := by
+  constructor <;> intro h
+  · intro _ hv; exact h hx hv
+  · intro _ _ hu hv
+    exact (h _ hu).symm.trans (h _ hv)
+
 -- lemma bot_preconnected_iff_subsingleton : (⊥ : MyGraph V).Preconnected ↔ Subsingleton V := by
 --   refine ⟨fun h ↦ ?_, fun h ↦ by simpa [subsingleton_iff, ← reachable_bot] using h⟩
 --   contrapose h
@@ -1233,7 +1240,7 @@ theorem connectedComponentEquiv_symm (φ : G ≃g G') :
 
 @[simp]
 theorem connectedComponentEquiv_trans (φ : G ≃g G') (φ' : G' ≃g G'') :
-    connectedComponentEquiv (φ.comp φ') =
+    connectedComponentEquiv (φ'.comp φ) =
     φ.connectedComponentEquiv.trans φ'.connectedComponentEquiv := by
   ext ⟨_⟩
   rfl
@@ -1469,6 +1476,25 @@ theorem isBridge_iff_adj_and_forall_cycle_not_mem {v w : V} : G.IsBridge s(v, w)
 theorem isBridge_iff_mem_and_forall_cycle_not_mem {e : Sym2 V} :
     G.IsBridge e ↔ e ∈ G.edgeSet ∧ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → e ∉ p.edges :=
   Sym2.ind (fun _ _ => G.isBridge_iff_adj_and_forall_cycle_not_mem) e
+
+lemma preconnected_delete_edge_of_not_isBridge (hG : G.Preconnected) {x y : V}
+    (h : ¬ G.IsBridge s(x, y)) : (G.deleteEdges {s(x, y)}).Preconnected := by
+  classical
+  simp only [isBridge_iff, not_and, not_not] at h
+  obtain hxy | hxy := em' <| G.Adj x y
+  · rwa [deleteEdges_disjoint (by simpa using hxy)]
+  apply (preconnected_iff_forall_reachable_of_mem_verts _ (by simpa using hxy.mem_verts)).2
+  intro w hw
+  obtain ⟨P, hP⟩ := hG.exists_isPath (by simpa using hw) (by simpa using hxy.mem_verts)
+  obtain heP | heP := em' <| s(x,y) ∈ P.edges
+  · exact ⟨(P.toDeleteEdges {s(x,y)} (by aesop)).reverse⟩
+  have hyP := P.snd_mem_support_of_mem_edges heP
+  let P₁ := P.takeUntil y hyP
+  have hxP₁ := Walk.endpoint_not_mem_support_takeUntil hP hyP hxy.ne
+  have heP₁ : s(x,y) ∉ P₁.edges := fun h ↦ hxP₁ <| P₁.fst_mem_support_of_mem_edges h
+  rw [← deleteEdges_eq_sdiff_fromEdgeSet] at h
+  apply (h hxy).trans (Reachable.symm ⟨P₁.toDeleteEdges {s(x,y)} (by aesop)⟩)
+
 
 
 end BridgeEdges
