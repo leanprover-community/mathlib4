@@ -266,7 +266,7 @@ theorem resolvent_isBigO_inv (a : A) : resolvent a =O[cobounded 𝕜] Inv.inv :=
       lift z to 𝕜ˣ using Ne.isUnit hz
       simpa [Units.smul_def] using congr(z⁻¹ • $(units_smul_resolvent_self (r := z) (a := a)))
     _ =O[cobounded 𝕜] (· ⁻¹) := .of_norm_right <| by
-      simpa using (isBigO_refl (· ⁻¹) (cobounded 𝕜)).norm_right.smul (R := 𝕜) h
+      simpa using (isBigO_refl (· ⁻¹) (cobounded 𝕜)).norm_right.smul h
 
 theorem resolvent_tendsto_cobounded (a : A) : Tendsto (resolvent a) (cobounded 𝕜) (𝓝 0) :=
   resolvent_isBigO_inv a |>.trans_tendsto tendsto_inv₀_cobounded

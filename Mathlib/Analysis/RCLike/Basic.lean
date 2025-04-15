@@ -1005,7 +1005,7 @@ def conjAe : K ≃ₐ[ℝ] K :=
     commutes' := conj_ofReal }
 
 @[simp, rclike_simps]
-theorem conjAe_coe : (conjAe (K := K) : K → K) = conj :=
+theorem conjAe_coe : (conjAe : K → K) = conj :=
   rfl
 
 /-- Conjugate as a linear isometry -/
@@ -1040,7 +1040,7 @@ noncomputable def ofRealAm : ℝ →ₐ[ℝ] K :=
   Algebra.ofId ℝ K
 
 @[simp, rclike_simps]
-theorem ofRealAm_coe : (ofRealAm (K := K) : ℝ → K) = ofReal :=
+theorem ofRealAm_coe : (ofRealAm : ℝ → K) = ofReal :=
   rfl
 
 /-- The ℝ → K coercion, as a linear isometry -/
