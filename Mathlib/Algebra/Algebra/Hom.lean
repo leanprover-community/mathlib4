@@ -236,7 +236,7 @@ end
 theorem id_apply (p : A) : AlgHom.id R A p = p :=
   rfl
 
-/-- Composition of algebra homeomorphisms. -/
+/-- Composition of algebra homomorphisms. -/
 def comp (φ₁ : B →ₐ[R] C) (φ₂ : A →ₐ[R] B) : A →ₐ[R] C :=
   { φ₁.toRingHom.comp ↑φ₂ with
     commutes' := fun r : R => by rw [← φ₁.commutes, ← φ₂.commutes]; rfl }
