@@ -359,4 +359,82 @@ theorem over_hasTerminal (B : C) : HasTerminal (Over B) where
             dsimp at this
             rwa [Category.comp_id, Category.comp_id] at this } }
 
+section BinaryProduct
+
+variable {X : C} (Y Z : Over X)
+
+/--
+Binary fans in the over category is equivalent to pullback cones.
+Also see `CategoryTheory.Over.ConstructProducts.conesEquiv` for the wide pullback version.
+-/
+-- One could have used the following but it gives worse defeqs.
+-- `(Cones.postcomposeEquivalence (diagramIsoCospan _).symm).trans (conesEquiv _ (pair Y Z))`
+def pullbackConeEquivBinaryFan : PullbackCone Y.hom Z.hom ≌ BinaryFan Y Z where
+  functor :=
+  { obj c := BinaryFan.mk (Over.homMk (U := Over.mk (c.fst ≫ Y.hom)) (V := Y) c.fst rfl)
+      (Over.homMk (V := Z) c.snd c.condition.symm)
+    map {c1 c2} a := { hom := Over.homMk a.hom, w := by rintro (_|_) <;> aesop_cat } }
+  inverse :=
+  { obj c := PullbackCone.mk c.fst.left c.snd.left (c.fst.w.trans c.snd.w.symm)
+    map {c1 c2} a := { hom := a.hom.left, w := by rintro (_|_|_) <;> simp [← Over.comp_left] } }
+  unitIso := NatIso.ofComponents (fun c ↦ c.eta) (by intros; ext; dsimp; simp)
+  counitIso := NatIso.ofComponents (fun X ↦ Limits.BinaryFan.ext (Over.isoMk (Iso.refl _)
+    (by dsimp; simp)) (by ext; dsimp; simp) (by ext; dsimp; simp))
+    (by intros; ext; dsimp; simp [BinaryFan.ext])
+  functor_unitIso_comp c := by ext; dsimp; simp [BinaryFan.ext]
+
+/-- Binary products in the over category are given by pullbacks. -/
+-- `IsLimit.ofConeEquiv` isn't used here because the lift it defines is `𝟙 _ ≫ pullback.lift`.
+def isLimitPullbackConeEquivBinaryFanFunctorObj
+    (c : PullbackCone Y.hom Z.hom) (hc : IsLimit c) :
+    IsLimit ((pullbackConeEquivBinaryFan Y Z).functor.obj c) :=
+  BinaryFan.isLimitMk
+    (fun s ↦ Over.homMk
+        (hc.lift (PullbackCone.mk s.fst.left s.snd.left (s.fst.w.trans s.snd.w.symm)))
+      ((hc.fac_assoc _ _ _).trans (s.fst.w.trans (Category.comp_id _))))
+    (fun s ↦ Over.OverMorphism.ext (hc.fac _ _))
+    (fun s ↦ Over.OverMorphism.ext (hc.fac _ _)) fun s m e₁ e₂ ↦ by
+    ext1
+    apply Limits.PullbackCone.IsLimit.hom_ext hc
+    · simpa using congr(($e₁).left)
+    · simpa using congr(($e₂).left)
+
+open Limits
+
+variable {Y Z}
+
+lemma isPullback_of_binaryFan_isLimit (c : BinaryFan Y Z) (hc : IsLimit c) :
+    IsPullback c.fst.left c.snd.left Y.hom Z.hom :=
+  ⟨by simp, ⟨(IsLimit.ofConeEquiv (pullbackConeEquivBinaryFan Y Z).symm).symm hc⟩⟩
+
+variable (Y Z) [HasPullback Y.hom Z.hom] [HasBinaryProduct Y Z]
+
+/-- The product of `Y` and `Z` in `Over X` is isomorpic to `Y ×ₓ Z`. -/
+noncomputable
+def prodLeftIsoPullback :
+    (Y ⨯ Z).left ≅ pullback Y.hom Z.hom :=
+  (Over.isPullback_of_binaryFan_isLimit _ (prodIsProd Y Z)).isoPullback
+
+@[reassoc (attr := simp)]
+lemma prodLeftIsoPullback_hom_fst :
+    (prodLeftIsoPullback Y Z).hom ≫ pullback.fst _ _ = (prod.fst (X := Y)).left :=
+  IsPullback.isoPullback_hom_fst _
+
+@[reassoc (attr := simp)]
+lemma prodLeftIsoPullback_hom_snd :
+    (prodLeftIsoPullback Y Z).hom ≫ pullback.snd _ _ = (prod.snd (X := Y)).left :=
+  IsPullback.isoPullback_hom_snd _
+
+@[reassoc (attr := simp)]
+lemma prodLeftIsoPullback_inv_fst :
+    (prodLeftIsoPullback Y Z).inv ≫ (prod.fst (X := Y)).left = pullback.fst _ _ :=
+  IsPullback.isoPullback_inv_fst _
+
+@[reassoc (attr := simp)]
+lemma prodLeftIsoPullback_inv_snd :
+    (prodLeftIsoPullback Y Z).inv ≫ (prod.snd (X := Y)).left = pullback.snd _ _ :=
+  IsPullback.isoPullback_inv_snd _
+
+end BinaryProduct
+
 end CategoryTheory.Over
