@@ -525,7 +525,7 @@ variable {X : δ → Type*} [MeasurableSpace α]
 instance MeasurableSpace.pi [m : ∀ a, MeasurableSpace (X a)] : MeasurableSpace (∀ a, X a) :=
   ⨆ a, (m a).comap fun b => b a
 
-variable [∀ a, MeasurableSpace (X a)] [MeasurableSpace γ]
+variable [m : ∀ a, MeasurableSpace (X a)] [MeasurableSpace γ]
 
 theorem measurable_pi_iff {g : α → ∀ a, X a} : Measurable g ↔ ∀ a, Measurable fun x => g x a := by
   simp_rw [measurable_iff_comap_le, MeasurableSpace.pi, MeasurableSpace.comap_iSup,
@@ -652,6 +652,13 @@ protected theorem MeasurableSet.pi {s : Set δ} {t : ∀ i : δ, Set (X i)} (hs 
     (ht : ∀ i ∈ s, MeasurableSet (t i)) : MeasurableSet (s.pi t) := by
   rw [pi_def]
   exact MeasurableSet.biInter hs fun i hi => measurable_pi_apply _ (ht i hi)
+
+@[measurability]
+theorem measurableSet_pi_of_single {A : Set (∀ a, X a)} {a : δ}
+    (h : @MeasurableSet _ ((m a).comap (fun b => b a)) A) : MeasurableSet A := by
+  unfold MeasurableSpace.pi
+  rw [MeasurableSpace.measurableSpace_iSup_eq _]
+  exact MeasurableSpace.measurableSet_generateFrom ⟨a, h⟩
 
 protected theorem MeasurableSet.univ_pi [Countable δ] {t : ∀ i : δ, Set (X i)}
     (ht : ∀ i, MeasurableSet (t i)) : MeasurableSet (pi univ t) :=
