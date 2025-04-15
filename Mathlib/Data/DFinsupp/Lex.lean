@@ -102,9 +102,9 @@ irreducible_def Lex.decidableLT : DecidableLT (Lex (Π₀ i, α i)) :=
 instance Lex.linearOrder : LinearOrder (Lex (Π₀ i, α i)) where
   __ := Lex.partialOrder
   le_total := lt_trichotomy_rec (fun h ↦ Or.inl h.le) (fun h ↦ Or.inl h.le) fun h ↦ Or.inr h.le
-  decidableLT := decidableLT
-  decidableLE := decidableLE
-  decidableEq := inferInstance
+  toDecidableLT := decidableLT
+  toDecidableLE := decidableLE
+  toDecidableEq := inferInstance
 
 end LinearOrder
 

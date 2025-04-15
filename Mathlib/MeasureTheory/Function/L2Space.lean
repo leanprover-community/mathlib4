@@ -6,7 +6,7 @@ Authors: Rémy Degenne
 import Mathlib.Analysis.InnerProductSpace.LinearMap
 import Mathlib.MeasureTheory.Function.LpSpace.ContinuousFunctions
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Inner
-import Mathlib.MeasureTheory.Integral.SetIntegral
+import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 
 /-! # `L^2` space
 

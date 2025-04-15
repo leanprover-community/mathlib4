@@ -802,7 +802,8 @@ instance linearOrder : LinearOrder (ℤ√d) :=
   { Zsqrtd.preorder with
     le_antisymm := fun _ _ => Zsqrtd.le_antisymm
     le_total := Zsqrtd.le_total
-    decidableLE := Zsqrtd.decidableLE }
+    toDecidableLE := Zsqrtd.decidableLE
+    toDecidableEq := inferInstance }
 
 protected theorem eq_zero_or_eq_zero_of_mul_eq_zero : ∀ {a b : ℤ√d}, a * b = 0 → a = 0 ∨ b = 0
   | ⟨x, y⟩, ⟨z, w⟩, h => by
