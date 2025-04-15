@@ -35,4 +35,5 @@ info: {1, 2, 3} : List ℕ
 /-- info: {0 • -1, 1 • -1, 2 • -1, 3 • -1} : Finset ℤ -/
 #guard_msgs in
 #check by_elab return mkSetLiteralQ q(Finset ℤ) (List.range 4 |>.map fun n : ℕ ↦ q($n • (-1 : ℤ)))
+
 end mkSetLiteralQ
