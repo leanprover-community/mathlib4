@@ -155,6 +155,7 @@ lemma sorted_divisorsAntidiagonalList_snd {n : ℕ} :
 lemma nodup_divisorsAntidiagonalList {n : ℕ} : n.divisorsAntidiagonalList.Nodup :=
   have : IsIrrefl (ℕ × ℕ) (·.fst < ·.fst) := ⟨by simp⟩
   sorted_divisorsAntidiagonalList_fst.nodup
+
 /-- The `Finset` and `List` versions agree by definition. -/
 @[simp]
 theorem val_divisorsAntidiagonal (n : ℕ) :
