@@ -8,7 +8,7 @@ import Mathlib.Algebra.Polynomial.RingDivision
 import Mathlib.Data.Set.Finite.Lemmas
 import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.SetTheory.Cardinal.Order
 
 /-!
 # Theory of univariate polynomials
@@ -329,7 +329,7 @@ theorem mem_nthRootsFinset {n : ℕ} (h : 0 < n) {x : R} :
 theorem nthRootsFinset_zero : nthRootsFinset 0 R = ∅ := by classical simp [nthRootsFinset_def]
 
 theorem map_mem_nthRootsFinset {S F : Type*} [CommRing S] [IsDomain S] [FunLike F R S]
-    [RingHomClass F R S] {x : R} (hx : x ∈ nthRootsFinset n R) (f : F) :
+    [MonoidHomClass F R S] {x : R} (hx : x ∈ nthRootsFinset n R) (f : F) :
     f x ∈ nthRootsFinset n S := by
   by_cases hn : n = 0
   · simp [hn] at hx
@@ -654,7 +654,7 @@ theorem exists_prod_multiset_X_sub_C_mul (p : R[X]) :
     rw [monic_prod_multiset_X_sub_C.natDegree_mul' hq, natDegree_multiset_prod_X_sub_C_eq_card]
   · replace he := congr_arg roots he.symm
     rw [roots_mul, roots_multiset_prod_X_sub_C] at he
-    exacts [add_right_eq_self.1 he, mul_ne_zero monic_prod_multiset_X_sub_C.ne_zero hq]
+    exacts [add_eq_left.1 he, mul_ne_zero monic_prod_multiset_X_sub_C.ne_zero hq]
 
 /-- A polynomial `p` that has as many roots as its degree
 can be written `p = p.leadingCoeff * ∏(X - a)`, for `a` in `p.roots`. -/

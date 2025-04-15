@@ -239,11 +239,9 @@ theorem finsuppLequivDFinsupp_symm_apply [DecidableEq ι] [Semiring R] [AddCommM
     ↑(LinearEquiv.symm (finsuppLequivDFinsupp (ι := ι) (M := M) R)) = DFinsupp.toFinsupp :=
   rfl
 
--- Porting note: moved noncomputable declaration into section begin
 noncomputable section Sigma
 
 /-! ### Stronger versions of `Finsupp.split` -/
---noncomputable section
 
 variable {η : ι → Type*} {N : Type*} [Semiring R]
 
@@ -332,13 +330,7 @@ attribute [-instance] Finsupp.instAddMonoid
 @[simps]
 def sigmaFinsuppLequivDFinsupp [AddCommMonoid N] [Module R N] :
     ((Σ i, η i) →₀ N) ≃ₗ[R] Π₀ i, η i →₀ N :=
-    -- Porting note: was
-    -- sigmaFinsuppAddEquivDFinsupp with map_smul' := sigmaFinsuppEquivDFinsupp_smul
-    -- but times out
-  { sigmaFinsuppEquivDFinsupp with
-    toFun := sigmaFinsuppEquivDFinsupp
-    invFun := sigmaFinsuppEquivDFinsupp.symm
-    map_add' := sigmaFinsuppEquivDFinsupp_add
+  { sigmaFinsuppAddEquivDFinsupp with
     map_smul' := sigmaFinsuppEquivDFinsupp_smul }
 
 end Sigma

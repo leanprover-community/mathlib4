@@ -3,6 +3,7 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.LinearAlgebra.RootSystem.RootPositive
 import Mathlib.LinearAlgebra.RootSystem.WeylGroup
 import Mathlib.RepresentationTheory.Submodule
 
@@ -21,7 +22,9 @@ This file contains basic definitions and results about irreducible root systems.
 -/
 
 open Function Set
-open Submodule (span)
+open Submodule (span span_le)
+open LinearMap (ker)
+open MulAction (orbit mem_orbit_self mem_orbit_iff)
 open Module.End (invtSubmodule)
 
 variable {ι R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
@@ -102,11 +105,37 @@ lemma IsIrreducible.mk' {K : Type*} [Field K] [Module K M] [Module K N] [Nontriv
     replace ne_bot : q.dualAnnihilator ≠ ⊤ := by simpa
     simpa using h ne_bot
 
-lemma span_orbit_eq_top [NeZero (2 : R)] [P.IsIrreducible] (i : ι) :
-    span R (MulAction.orbit P.weylGroup (P.root i)) = ⊤ := by
+variable [NeZero (2 : R)] [P.IsIrreducible]
+
+lemma span_orbit_eq_top (i : ι) :
+    span R (orbit P.weylGroup (P.root i)) = ⊤ := by
   refine IsIrreducible.eq_top_of_invtSubmodule_reflection (P := P) _ (fun j ↦ ?_) ?_
   · let g : P.weylGroup := ⟨Equiv.reflection P j, P.reflection_mem_weylGroup j⟩
     exact Module.End.span_orbit_mem_invtSubmodule R (P.root i) g
-  · simpa using ⟨P.root i, MulAction.mem_orbit_self _, P.ne_zero i⟩
+  · simpa using ⟨P.root i, mem_orbit_self _, P.ne_zero i⟩
+
+lemma exists_form_eq_form_and_form_ne_zero (B : P.InvariantForm) (i j : ι) :
+    ∃ k, B.form (P.root k) (P.root k) = B.form (P.root j) (P.root j) ∧
+         B.form (P.root i) (P.root k) ≠ 0 := by
+  by_contra! contra
+  suffices span R (orbit P.weylGroup (P.root j)) ≤ ker (B.form (P.root i)) from
+    B.apply_root_ne_zero i <| by simpa [span_orbit_eq_top] using this
+  refine span_le.mpr fun v hv ↦ ?_
+  obtain ⟨g, rfl⟩ := mem_orbit_iff.mp hv
+  simp only [P.weylGroup_apply_root, SetLike.mem_coe, LinearMap.mem_ker]
+  apply contra
+  simp [← Subgroup.smul_def g]
+
+lemma span_root_image_eq_top_of_forall_orthogonal (s : Set ι)
+    (hne : s.Nonempty) (h : ∀ j, P.root j ∉ span R (P.root '' s) → ∀ i ∈ s, P.IsOrthogonal j i) :
+    span R (P.root '' s) = ⊤ := by
+  have hq (j : ι) : span R (P.root '' s) ∈ Module.End.invtSubmodule (P.reflection j) := by
+    by_cases hj : P.root j ∈ span R (P.root '' s)
+    · exact Submodule.mem_invtSubmodule_reflection_of_mem _ _ hj
+    · refine (Module.End.mem_invtSubmodule _).mpr fun x hx ↦ ?_
+      rwa [Submodule.mem_comap, LinearEquiv.coe_coe,
+        (isFixedPt_reflection_of_isOrthogonal (h _ hj) hx).eq]
+  apply IsIrreducible.eq_top_of_invtSubmodule_reflection _ hq
+  simpa using ⟨hne.choose, hne.choose_spec, P.ne_zero _⟩
 
 end RootPairing

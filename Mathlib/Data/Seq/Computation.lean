@@ -207,11 +207,6 @@ def rmap (f : β → γ) : α ⊕ β → α ⊕ γ
 
 attribute [simp] lmap rmap
 
--- Porting note: this was far less painful in mathlib3. There seem to be two issues;
--- firstly, in mathlib3 we have `corec.F._match_1` and it's the obvious map α ⊕ β → option α.
--- In mathlib4 we have `Corec.f.match_1` and it's something completely different.
--- Secondly, the proof that `Stream'.corec' (Corec.f f) (Sum.inr b) 0` is this function
--- evaluated at `f b`, used to be `rfl` and now is `cases, rfl`.
 @[simp]
 theorem corec_eq (f : β → α ⊕ β) (b : β) : destruct (corec f b) = rmap (corec f) (f b) := by
   dsimp [corec, destruct]
@@ -900,12 +895,7 @@ theorem LiftRel.trans (R : α → α → Prop) (H : Transitive R) : Transitive (
     ⟨a, a1, H ab bc⟩⟩
 
 theorem LiftRel.equiv (R : α → α → Prop) : Equivalence R → Equivalence (LiftRel R)
-  | ⟨refl, symm, trans⟩ => ⟨LiftRel.refl R refl, by apply LiftRel.symm; apply symm,
-    by apply LiftRel.trans; apply trans⟩
-  -- Porting note: The code above was:
-  -- | ⟨refl, symm, trans⟩ => ⟨LiftRel.refl R refl, LiftRel.symm R symm, LiftRel.trans R trans⟩
-  --
-  -- The code fails to identify `symm` as being symmetric.
+  | ⟨refl, symm, trans⟩ => ⟨LiftRel.refl R refl, @LiftRel.symm _ R @symm, @LiftRel.trans _ R @trans⟩
 
 theorem LiftRel.imp {R S : α → β → Prop} (H : ∀ {a b}, R a b → S a b) (s t) :
     LiftRel R s t → LiftRel S s t
@@ -1017,7 +1007,7 @@ theorem liftRel_congr {R : α → β → Prop} {ca ca' : Computation α} {cb cb'
 theorem liftRel_map {δ} (R : α → β → Prop) (S : γ → δ → Prop) {s1 : Computation α}
     {s2 : Computation β} {f1 : α → γ} {f2 : β → δ} (h1 : LiftRel R s1 s2)
     (h2 : ∀ {a b}, R a b → S (f1 a) (f2 b)) : LiftRel S (map f1 s1) (map f2 s2) := by
-  rw [← bind_pure, ← bind_pure]; apply liftRel_bind _ _ h1; simp; exact @h2
+  rw [← bind_pure, ← bind_pure]; apply liftRel_bind _ _ h1; simpa
 
 theorem map_congr {s1 s2 : Computation α} {f : α → β}
     (h1 : s1 ~ s2) : map f s1 ~ map f s2 := by

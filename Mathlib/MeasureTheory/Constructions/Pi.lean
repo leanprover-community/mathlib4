@@ -159,8 +159,8 @@ theorem tprod_tprod (l : List δ) (μ : ∀ i, Measure (X i)) [∀ i, SigmaFinit
   | nil => simp
   | cons a l ih =>
     rw [tprod_cons, Set.tprod]
-    erw [prod_prod] -- TODO: why `rw` fails?
-    rw [map_cons, prod_cons, ih]
+    dsimp only [foldr_cons, map_cons, prod_cons]
+    rw [prod_prod, ih]
 
 end Tprod
 
