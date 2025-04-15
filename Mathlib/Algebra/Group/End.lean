@@ -662,6 +662,14 @@ theorem inv_def (e₁ : MulAut M) : e₁⁻¹ = e₁.symm :=
   rfl
 
 @[simp]
+theorem mul_apply (e₁ e₂ : MulAut M) (m : M) : (e₁ * e₂) m = e₁ (e₂ m) :=
+  rfl
+
+@[simp]
+theorem one_apply (m : M) : (1 : MulAut M) m = m :=
+  rfl
+
+@[simp]
 theorem coe_inv (e : MulAut M) : ⇑e⁻¹ = e.symm := rfl
 
 @[simp]
@@ -673,14 +681,6 @@ theorem symm_inv (e : MulAut M) : e.symm⁻¹ = e := rfl
 @[simp]
 theorem inv_apply (e : MulAut M) (m : M) : e⁻¹ m = e.symm m := by
   rw [inv_def]
-
-@[simp]
-theorem mul_apply (e₁ e₂ : MulAut M) (m : M) : (e₁ * e₂) m = e₁ (e₂ m) :=
-  rfl
-
-@[simp]
-theorem one_apply (m : M) : (1 : MulAut M) m = m :=
-  rfl
 
 @[simp]
 theorem apply_inv_self (e : MulAut M) (m : M) : e (e⁻¹ m) = m :=
@@ -773,6 +773,14 @@ theorem inv_def (e₁ : AddAut A) : e₁⁻¹ = e₁.symm :=
   rfl
 
 @[simp]
+theorem mul_apply (e₁ e₂ : AddAut A) (a : A) : (e₁ * e₂) a = e₁ (e₂ a) :=
+  rfl
+
+@[simp]
+theorem one_apply (a : A) : (1 : AddAut A) a = a :=
+  rfl
+
+@[simp]
 theorem coe_inv (e : AddAut A) : ⇑e⁻¹ = e.symm := rfl
 
 @[simp]
@@ -783,14 +791,6 @@ theorem symm_inv (e : AddAut A) : e.symm⁻¹ = e := rfl
 
 @[simp]
 theorem inv_apply (e : AddAut A) (a : A) : e⁻¹ a = e.symm a := rfl
-
-@[simp]
-theorem mul_apply (e₁ e₂ : AddAut A) (a : A) : (e₁ * e₂) a = e₁ (e₂ a) :=
-  rfl
-
-@[simp]
-theorem one_apply (a : A) : (1 : AddAut A) a = a :=
-  rfl
 
 theorem apply_inv_self (e : AddAut A) (a : A) : e⁻¹ (e a) = a :=
   AddEquiv.apply_symm_apply _ _
