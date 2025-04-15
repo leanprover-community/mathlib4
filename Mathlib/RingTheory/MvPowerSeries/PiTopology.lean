@@ -145,8 +145,8 @@ theorem trunc_tendsto [CommSemiring R] [Nonempty σ] (f : MvPowerSeries σ R) :
   refine ⟨zero_le _, ⟨s, by simp⟩⟩
 
 /-- The inclusion of polynomials into power series has dense image -/
-theorem toMvPowerSeries_denseRange [CommSemiring R] :
-    DenseRange (MvPolynomial.toMvPowerSeries (R := R) (σ := σ)) := fun f =>
+theorem denseRange_toMvPowerSeries [CommSemiring R] :
+    DenseRange (toMvPowerSeries (R := R) (σ := σ)) := fun f =>
   mem_closure_of_tendsto (trunc'_tendsto f) <| .of_forall fun _ ↦ Set.mem_range_self _
 
 variable (σ R)
