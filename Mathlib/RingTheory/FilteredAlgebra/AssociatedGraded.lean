@@ -464,7 +464,7 @@ In this section we define the associated graded module to a filtered module.
 
 section GradedModule
 
-variable {R ι σ : Type*} [AddCommMonoid ι] [PartialOrder ι] [Ring R] [SetLike σ R]
+variable {R ι σ : Type*} [AddMonoid ι] [PartialOrder ι] [Ring R] [SetLike σ R]
 
 variable (F : ι → σ) (F_lt : outParam <| ι → σ)
 
