@@ -126,13 +126,13 @@ theorem tendsto_iff_coeff_tendsto [Semiring R] {ι : Type*}
   rw [nhds_pi, tendsto_pi]
   exact forall_congr' (fun d => Iff.rfl)
 
-theorem tendsto_trunc'_atTop [CommSemiring R] (f : MvPowerSeries σ R) :
+theorem tendsto_trunc'_atTop [DecidableEq σ] [CommSemiring R] (f : MvPowerSeries σ R) :
     Tendsto (fun d ↦ (trunc' R d f : MvPowerSeries σ R)) atTop (𝓝 f) := by
   rw [tendsto_iff_coeff_tendsto]
   intro d
   exact tendsto_atTop_of_eventually_const fun n (hdn : d ≤ n) ↦ (by simp [coeff_trunc', hdn])
 
-theorem tendsto_trunc_atTop [CommSemiring R] [Nonempty σ] (f : MvPowerSeries σ R) :
+theorem tendsto_trunc_atTop [DecidableEq σ] [CommSemiring R] [Nonempty σ] (f : MvPowerSeries σ R) :
     Tendsto (fun d ↦ (trunc R d f : MvPowerSeries σ R)) atTop (𝓝 f) := by
   rw [tendsto_iff_coeff_tendsto]
   intro d
@@ -146,8 +146,9 @@ theorem tendsto_trunc_atTop [CommSemiring R] [Nonempty σ] (f : MvPowerSeries σ
 
 /-- The inclusion of polynomials into power series has dense image -/
 theorem denseRange_toMvPowerSeries [CommSemiring R] :
-    DenseRange (toMvPowerSeries (R := R) (σ := σ)) := fun f =>
-  mem_closure_of_tendsto (trunc'_tendsto f) <| .of_forall fun _ ↦ Set.mem_range_self _
+    DenseRange (MvPolynomial.toMvPowerSeries (R := R) (σ := σ)) := fun f ↦ by
+  classical
+  exact mem_closure_of_tendsto (tendsto_trunc'_atTop f) <| .of_forall fun _ ↦ Set.mem_range_self _
 
 variable (σ R)
 
