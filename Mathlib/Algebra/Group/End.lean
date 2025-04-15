@@ -682,11 +682,9 @@ theorem symm_inv (e : MulAut M) : e.symm⁻¹ = e := rfl
 theorem inv_apply (e : MulAut M) (m : M) : e⁻¹ m = e.symm m := by
   rw [inv_def]
 
-@[simp]
 theorem apply_inv_self (e : MulAut M) (m : M) : e (e⁻¹ m) = m :=
   MulEquiv.apply_symm_apply _ _
 
-@[simp]
 theorem inv_apply_self (e : MulAut M) (m : M) : e⁻¹ (e m) = m :=
   MulEquiv.apply_symm_apply _ _
 
