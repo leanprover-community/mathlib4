@@ -162,31 +162,31 @@ theorem fixingSubgroup_map_conj_eq (hg : g • t = s) :
   simp only [MulEquiv.toMonoidHom_eq_coe, Subgroup.mem_map, MonoidHom.coe_coe]
   constructor
   · rintro ⟨n, hn, rfl⟩
-    exact Set.conj_mem_fixingSubgroup hg hn
+    exact Set.conj_mem_fixingSubgroup _ _ hg hn
   · intro hk
     use MulAut.conj g⁻¹ k
     constructor
-    · apply Set.conj_mem_fixingSubgroup _ hk
-      ext; simp [← hg]
+    · apply Set.conj_mem_fixingSubgroup _ _ _ hk
+      rw [inv_smul_eq_iff, hg]
     · simp [MulAut.conj]; group
 
 variable (g s) in
 /-- If the fixing_subgroup of `s` is `G`, then the fixing_subgroup of `g • s` is `gGg⁻¹`. -/
 theorem fixingSubgroup_smul_eq_fixingSubgroup_map_conj :
     fixingSubgroup M (g • s) = (fixingSubgroup M s).map (MulAut.conj g).toMonoidHom :=
-  (fixingSubgroup_map_conj_eq rfl).symm
+  (fixingSubgroup_map_conj_eq _ _ rfl).symm
 
 /-- The equivalence of `fixingSubgroup M t` with `fixingSubgroup M s`
   when `t` is a translate of `g` -/
 def fixingSubgroupEquivFixingSubgroup (hg : g • t = s) :
     fixingSubgroup M t ≃* fixingSubgroup M s :=
   ((MulAut.conj g).subgroupMap (fixingSubgroup M t)).trans
-    (MulEquiv.subgroupCongr (fixingSubgroup_map_conj_eq hg))
+    (MulEquiv.subgroupCongr (fixingSubgroup_map_conj_eq _ _ hg))
 
 /-- Conjugation induces an equivariant map between the sub_mul_action of
 the fixing subgroup of a subset and that of a translate -/
 def conjMap_ofFixingSubgroup (hg : g • t = s) :
-    ofFixingSubgroup M t →ₑ[fixingSubgroupEquivFixingSubgroup hg] ofFixingSubgroup M s where
+    ofFixingSubgroup M t →ₑ[fixingSubgroupEquivFixingSubgroup M α hg] ofFixingSubgroup M s where
   toFun := fun ⟨x, hx⟩ =>
     ⟨g • x, by
       intro hgxt; apply hx
@@ -199,21 +199,20 @@ def conjMap_ofFixingSubgroup (hg : g • t = s) :
 
 @[simp]
 theorem conjMap_ofFixingSubgroup_apply {hg : g • t = s} (x : ofFixingSubgroup M t) :
-    ↑(conjMap_ofFixingSubgroup hg x) = g • (x : α) := rfl
+    ↑(conjMap_ofFixingSubgroup _ _ hg x) = g • (x : α) := rfl
 
 theorem conjMap_ofFixingSubgroup_bijective {s t : Set α} {g : M} (hst : g • s = t) :
-    Function.Bijective (conjMap_ofFixingSubgroup hst) := by
+    Function.Bijective (conjMap_ofFixingSubgroup M α hst) := by
   constructor
-  · rintro  _ _ hxy
+  · rintro  x y hxy
     simpa [← SetLike.coe_eq_coe] using hxy
   · rintro ⟨x, hx⟩
     rw [eq_comm, ← inv_smul_eq_iff] at hst
-    use (SubMulAction.conjMap_ofFixingSubgroup hst) ⟨x, hx⟩
+    use (SubMulAction.conjMap_ofFixingSubgroup _ _ hst) ⟨x, hx⟩
     simp [← SetLike.coe_eq_coe]
 
 end FixingSubgroupConj
 
-variable (M) in
 /-- The identity between the iterated sub_mul_action
   of the fixing_subgroups and the sub_mul_action of the fixing_subgroup
   of the union, as an equivariant map -/
@@ -243,11 +242,11 @@ def map_ofFixingSubgroupUnion (s t : Set α) :
 
 theorem map_ofFixingSubgroupUnion_def (s t : Set α)
     (x : SubMulAction.ofFixingSubgroup M (s ∪ t)) :
-    ((SubMulAction.map_ofFixingSubgroupUnion M s t) x : α) = x :=
+    ((SubMulAction.map_ofFixingSubgroupUnion M _ s t) x : α) = x :=
   rfl
 
 theorem map_ofFixingSubgroupUnion_bijective (s t : Set α) :
-    Function.Bijective (map_ofFixingSubgroupUnion M s t) := by
+    Function.Bijective (map_ofFixingSubgroupUnion M _ s t) := by
   constructor
   · intro a b h
     simp only [← SetLike.coe_eq_coe] at h ⊢
@@ -262,7 +261,6 @@ theorem map_ofFixingSubgroupUnion_bijective (s t : Set α) :
       simp only [Set.mem_preimage]
       exact h
 
-variable (M) in
 /-- The equivariant map on sub_mul_action.of_fixing_subgroup given a set inclusion -/
 def ofFixingSubgroup_of_inclusion {s t : Set α} (hst : t ⊆ s) :
     ofFixingSubgroup M s
@@ -272,12 +270,11 @@ def ofFixingSubgroup_of_inclusion {s t : Set α} (hst : t ⊆ s) :
   map_smul' _ _ := rfl
 
 lemma ofFixingSubgroup_of_inclusion_injective {s t : Set α} (hst : t ⊆ s) :
-    Function.Injective (ofFixingSubgroup_of_inclusion M hst) := by
+    Function.Injective (ofFixingSubgroup_of_inclusion M _ hst) := by
   rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
   rw [← SetLike.coe_eq_coe] at hxy ⊢
   exact hxy
 
-variable (M) in
 /-- The equivariant map between sub_mul_action.of_stabilizer
   and .of_fixing_subgroup of the singleton -/
 def ofFixingSubgroup_of_singleton (a : α) :
@@ -288,10 +285,9 @@ def ofFixingSubgroup_of_singleton (a : α) :
   map_smul' _ _ := rfl
 
 theorem ofFixingSubgroup_of_singleton_bijective (a : α) :
-    Function.Bijective (ofFixingSubgroup_of_singleton M a) :=
+    Function.Bijective (ofFixingSubgroup_of_singleton M _ a) :=
   ⟨fun _ _ ↦ id, fun x ↦ ⟨x, rfl⟩⟩
 
-variable (M) in
 /-- The identity between the sub_mul_action of fixing_subgroups
 of equal sets, as an equivariant map -/
 def ofFixingSubgroup_of_eq {s t : Set α} (hst : s = t) :
@@ -304,10 +300,10 @@ def ofFixingSubgroup_of_eq {s t : Set α} (hst : s = t) :
 @[simp]
 theorem ofFixingSubgroup_of_eq_apply {s t : Set α} (hst : s = t)
     (x : ofFixingSubgroup M s) :
-    ((ofFixingSubgroup_of_eq M hst x) : α) = x := rfl
+    ((ofFixingSubgroup_of_eq M _ hst x) : α) = x := rfl
 
 theorem ofFixingSubgroup_of_eq_bijective {s t : Set α} (hst : s = t) :
-    Function.Bijective (ofFixingSubgroup_of_eq M hst) :=
+    Function.Bijective (ofFixingSubgroup_of_eq M _ hst) :=
   ⟨fun _ _ hxy ↦ by simpa [← SetLike.coe_eq_coe] using hxy,
     fun ⟨x, hxt⟩ ↦ ⟨⟨x, by rwa [hst]⟩, by simp [← SetLike.coe_eq_coe]⟩⟩
 
