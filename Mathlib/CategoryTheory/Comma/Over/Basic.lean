@@ -48,10 +48,6 @@ namespace Over
 
 variable {X : T}
 
-/-- The structure map of a object of `Over X`. -/
--- `Comma.hom` gives `Y.left ⟶ (𝟭 T).obj X` instead so we redefine it here.
-abbrev hom {X : T} (Y : Over X) : Y.left ⟶ X := Comma.hom Y
-
 @[ext]
 theorem OverMorphism.ext {X : T} {U V : Over X} {f g : U ⟶ V} (h : f.left = g.left) : f = g := by
   let ⟨_,b,_⟩ := f
@@ -74,11 +70,9 @@ theorem comp_left (a b c : Over X) (f : a ⟶ b) (g : b ⟶ c) : (f ≫ g).left 
 theorem w {A B : Over X} (f : A ⟶ B) : f.left ≫ B.hom = A.hom := by have := f.w; aesop_cat
 
 /-- To give an object in the over category, it suffices to give a morphism with codomain `X`. -/
-@[simps! left]
+@[simps! left hom]
 def mk {X Y : T} (f : Y ⟶ X) : Over X :=
   CostructuredArrow.mk f
-
-@[simp] lemma mk_hom {X Y : T} (f : Y ⟶ X) : (mk f).hom = f := rfl
 
 /-- We can set up a coercion from arrows with codomain `X` to `over X`. This most likely should not
     be a global instance, but it is sometimes useful. -/
@@ -379,7 +373,7 @@ instance [F.Faithful] : (Over.post (X := X) F).Faithful where
 instance [F.Faithful] [F.Full] : (Over.post (X := X) F).Full where
   map_surjective {A B} f := by
     obtain ⟨a, ha⟩ := F.map_surjective f.left
-    have w : a ≫ B.hom = A.hom := F.map_injective <| by simpa [ha] using Over.w f
+    have w : a ≫ B.hom = A.hom := F.map_injective <| by simpa [ha] using Over.w _
     exact ⟨Over.homMk a, by ext; simpa⟩
 
 instance [F.Full] [F.EssSurj] : (Over.post (X := X) F).EssSurj where
