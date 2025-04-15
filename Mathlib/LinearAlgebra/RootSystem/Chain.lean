@@ -283,9 +283,7 @@ lemma chainCoeff_chainTopIdx_aux :
     rw [P.root_chainTopIdx, add_comm (P.root j), ← natCast_zsmul,
       LinearIndependent.pair_add_smul_right_iff]
   by_cases h : LinearIndependent R ![P.root i, P.root j]
-  swap;
-  · have h' : ¬ LinearIndependent R ![P.root i, P.root (P.chainTopIdx i j)] := by rwa [← aux]
-    simp [chainTopCoeff_of_not_linInd, chainBotCoeff_of_not_linInd, h, h']
+  swap; · simp [chainTopCoeff_of_not_linInd, chainBotCoeff_of_not_linInd, h]
   have h' : LinearIndependent R ![P.root i, P.root (P.chainTopIdx i j)] := by rwa [← aux]
   set S₁ : Set ℤ := {z | P.root j + z • P.root i ∈ range P.root} with S₁_def
   set S₂ : Set ℤ := {z | P.root (P.chainTopIdx i j) + z • P.root i ∈ range P.root} with S₂_def
