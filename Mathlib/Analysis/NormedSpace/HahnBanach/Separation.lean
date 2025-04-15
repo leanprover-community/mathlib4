@@ -225,9 +225,9 @@ noncomputable def extendTo𝕜'ₗ [ContinuousConstSMul 𝕜 E]: (E →L[ℝ] �
     map_smul' := by intros; ext; simp [h, real_smul_eq_coe_mul]; ring }
 
 @[simp]
-lemma re_extendTo𝕜'ₗ [ContinuousConstSMul 𝕜 E] (g : E →L[ℝ] ℝ) (x : E) : re ((extendTo𝕜'ₗ g) x : 𝕜)
-    = g x := by
-  have h g (x : E) : extendTo𝕜'ₗ g x = ((g x : 𝕜) - (I : 𝕜) * (g ((I : 𝕜) • x) : 𝕜)) := rfl
+lemma re_extendTo𝕜'ₗ [ContinuousConstSMul 𝕜 E] (g : E →L[ℝ] ℝ) (x : E) :
+    re (extendTo𝕜'ₗ (𝕜 := 𝕜) g x) = g x := by
+  have h g (x : E) : extendTo𝕜'ₗ (𝕜 := 𝕜) g x = ((g x : 𝕜) - (I : 𝕜) * (g ((I : 𝕜) • x) : 𝕜)) := rfl
   simp only [h , map_sub, ofReal_re, mul_re, I_re, zero_mul, ofReal_im, mul_zero,
     sub_self, sub_zero]
 
@@ -238,7 +238,7 @@ theorem separate_convex_open_set {s : Set E}
     ∃ f : E →L[𝕜] 𝕜, re (f x₀) = 1 ∧ ∀ x ∈ s, re (f x) < 1 := by
   have := IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
   obtain ⟨g, hg⟩ := _root_.separate_convex_open_set hs₀ hs₁ hs₂ hx₀
-  use extendTo𝕜'ₗ g
+  use extendTo𝕜'ₗ (𝕜 := 𝕜) g
   simp only [re_extendTo𝕜'ₗ]
   exact hg
 
@@ -247,7 +247,7 @@ theorem geometric_hahn_banach_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) (ht
     ∀ b ∈ t, u ≤ re (f b) := by
   have := IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
   obtain ⟨f, u, h⟩ := _root_.geometric_hahn_banach_open hs₁ hs₂ ht disj
-  use extendTo𝕜'ₗ f
+  use extendTo𝕜'ₗ (𝕜 := 𝕜) f
   simp only [re_extendTo𝕜'ₗ]
   exact Exists.intro u h
 
@@ -255,7 +255,7 @@ theorem geometric_hahn_banach_open_point (hs₁ : Convex ℝ s) (hs₂ : IsOpen 
     ∃ f : E →L[𝕜] 𝕜, ∀ a ∈ s, re (f a) < re (f x) := by
   have := IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
   obtain ⟨f, h⟩ := _root_.geometric_hahn_banach_open_point hs₁ hs₂ disj
-  use extendTo𝕜'ₗ f
+  use extendTo𝕜'ₗ (𝕜 := 𝕜) f
   simp only [re_extendTo𝕜'ₗ]
   exact fun a a_1 ↦ h a a_1
 
@@ -269,7 +269,7 @@ theorem geometric_hahn_banach_open_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s
     ∃ (f : E →L[𝕜] 𝕜) (u : ℝ), (∀ a ∈ s, re (f a) < u) ∧ ∀ b ∈ t, u < re (f b) := by
   have := IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
   obtain ⟨f, u, h⟩ := _root_.geometric_hahn_banach_open_open hs₁ hs₂ ht₁ ht₃ disj
-  use extendTo𝕜'ₗ f
+  use extendTo𝕜'ₗ (𝕜 := 𝕜) f
   simp only [re_extendTo𝕜'ₗ]
   exact Exists.intro u h
 
@@ -280,7 +280,7 @@ theorem geometric_hahn_banach_compact_closed (hs₁ : Convex ℝ s) (hs₂ : IsC
     ∃ (f : E →L[𝕜] 𝕜) (u v : ℝ), (∀ a ∈ s, re (f a) < u) ∧ u < v ∧ ∀ b ∈ t, v < re (f b) := by
   have := IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
   obtain ⟨g, u, v, h1⟩ := _root_.geometric_hahn_banach_compact_closed hs₁ hs₂ ht₁ ht₂ disj
-  use extendTo𝕜'ₗ g
+  use extendTo𝕜'ₗ (𝕜 := 𝕜) g
   simp only [re_extendTo𝕜'ₗ, exists_and_left]
   exact ⟨u, h1.1, v, h1.2⟩
 
