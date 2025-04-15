@@ -9,7 +9,19 @@ import Mathlib.Order.Interval.Set.OrdConnectedLinear
 /-!
 # Chains of roots
 
-TODO: Aka "root strings" etc.
+Given roots `α` and `β`, the `α`-chain through `β` is the set of roots of the form `α + z • β`
+for an integer `z`. This is known as a "root chain" and also a "root string". For linearly
+independent roots in finite crystallographic root pairings, these chains are always unbroken, i.e.,
+of the form: `β - q • α, ..., β - α, β, β + α, ..., β + p • α` for natural numbers `p`, `q`, and the
+length, `p + q` is at most 3.
+
+## Main definitions / results:
+ * `RootPairing.chainTopCoeff`: the natural number `p` in the chain
+   `β - q • α, ..., β - α, β, β + α, ..., β + p • α`
+ * `RootPairing.chainTopCoeff`: the natural number `q` in the chain
+   `β - q • α, ..., β - α, β, β + α, ..., β + p • α`
+ * `RootPairing.root_add_zsmul_mem_range_iff`: every chain is an interval (aka unbroken).
+ * `RootPairing.chainBotCoeff_add_chainTopCoeff_le`: every chain has length at most three.
 
 -/
 
