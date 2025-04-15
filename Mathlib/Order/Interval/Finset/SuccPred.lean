@@ -78,9 +78,9 @@ alias insert_Ico_right_eq_Ico_succ_right_of_not_isMax := insert_Ico_right_eq_Ico
 lemma insert_Ico_succ_left_eq_Ico (h : a < b) : insert a (Ico (succ a) b) = Ico a b :=
   coe_injective <| by simpa using Set.insert_Ico_succ_left_eq_Ico h
 
-lemma insert_Ioc_eq_Ioc_succ_right_of_not_isMax (h : a ≤ b) (hb : ¬ IsMax b) :
+lemma insert_Ioc_right_eq_Ioc_succ_of_not_isMax (h : a ≤ b) (hb : ¬ IsMax b) :
     insert (succ b) (Ioc a b) = Ioc a (succ b) :=
-  coe_injective <| by simpa using Set.insert_Ioc_eq_Ioc_succ_right_of_not_isMax h hb
+  coe_injective <| by simpa using Set.insert_Ioc_right_eq_Ioc_succ_of_not_isMax h hb
 
 lemma insert_Ioc_succ_left_eq_Ioc (h : a < b) : insert (succ a) (Ioc (succ a) b) = Ioc a b :=
   coe_injective <| by simpa using Set.insert_Ioc_succ_left_eq_Ioc h
@@ -106,8 +106,8 @@ lemma insert_Ico_right_eq_Ico_succ (h : a ≤ b) : insert b (Ico a b) = Ico a (s
 @[deprecated (since := "2025-04-14")]
 alias insert_Ico_right_eq_Ico_succ_right := insert_Ico_right_eq_Ico_succ
 
-lemma insert_Ioc_eq_Ioc_succ_right (h : a ≤ b) : insert (succ b) (Ioc a b) = Ioc a (succ b) :=
-  coe_injective <| by simpa using Set.insert_Ioc_eq_Ioc_succ_right h
+lemma insert_Ioc_right_eq_Ioc_succ (h : a ≤ b) : insert (succ b) (Ioc a b) = Ioc a (succ b) :=
+  coe_injective <| by simpa using Set.insert_Ioc_right_eq_Ioc_succ h
 
 end SuccOrder
 

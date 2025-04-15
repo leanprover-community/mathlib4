@@ -79,7 +79,7 @@ alias insert_Ico_right_eq_Ico_succ_right_of_not_isMax := insert_Ico_right_eq_Ico
 lemma insert_Ico_succ_left_eq_Ico (h : a < b) : insert a (Ico (succ a) b) = Ico a b := by
   rw [Ico_succ_left_of_not_isMax h.not_isMax, ← Ioo_insert_left h]
 
-lemma insert_Ioc_eq_Ioc_succ_right_of_not_isMax (h : a ≤ b) (hb : ¬ IsMax b) :
+lemma insert_Ioc_right_eq_Ioc_succ_of_not_isMax (h : a ≤ b) (hb : ¬ IsMax b) :
     insert (succ b) (Ioc a b) = Ioc a (succ b) := by
   ext x; simp +contextual [or_and_left, le_succ_iff_eq_or_le, lt_succ_of_le_of_not_isMax h hb]
 
@@ -114,8 +114,8 @@ lemma insert_Ico_right_eq_Ico_succ (h : a ≤ b) : insert b (Ico a b) = Ico a (s
 @[deprecated (since := "2025-04-14")]
 alias insert_Ico_right_eq_Ico_succ_right := insert_Ico_right_eq_Ico_succ
 
-lemma insert_Ioc_eq_Ioc_succ_right (h : a ≤ b) : insert (succ b) (Ioc a b) = Ioc a (succ b) :=
-  insert_Ioc_eq_Ioc_succ_right_of_not_isMax h (not_isMax _)
+lemma insert_Ioc_right_eq_Ioc_succ (h : a ≤ b) : insert (succ b) (Ioc a b) = Ioc a (succ b) :=
+  insert_Ioc_right_eq_Ioc_succ_of_not_isMax h (not_isMax _)
 
 end SuccOrder
 

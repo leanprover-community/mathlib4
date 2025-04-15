@@ -83,7 +83,7 @@ lemma insert_Ico_add_one_left_eq_Ico (h : a < b) : insert a (Ico (a + 1) b) = Ic
 
 lemma insert_Ioc_right_eq_Ioc_add_one_of_not_isMax (h : a ≤ b) (hb : ¬ IsMax b) :
     insert (b + 1) (Ioc a b) = Ioc a (b + 1) := by
-  simpa [succ_eq_add_one] using insert_Ioc_eq_Ioc_succ_right_of_not_isMax h hb
+  simpa [succ_eq_add_one] using insert_Ioc_right_eq_Ioc_succ_of_not_isMax h hb
 
 lemma insert_Ioc_add_one_left_eq_Ioc (h : a < b) : insert (a + 1) (Ioc (a + 1) b) = Ioc a b := by
   simpa [succ_eq_add_one] using insert_Ioc_succ_left_eq_Ioc h
