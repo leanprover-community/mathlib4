@@ -18,11 +18,43 @@ linear algebra, vector space, module
 
 -/
 
-variable {R : Type*} {M : Type*} [Semiring R]
+variable {R : Type*} {M M₂ M₃ : Type*} [Semiring R]
+  [AddCommMonoid M] [Module R M]
+  [AddCommMonoid M₂] [Module R M₂]
+  [AddCommMonoid M₃] [Module R M₃]
 
 namespace IsLinearMap
 
-theorem isLinearMap_add [AddCommMonoid M] [Module R M] :
+@[fun_prop]
+theorem isLinearMap_prodMk {f : M → M₂} {g : M → M₃}
+    (hf : IsLinearMap R f) (hg : IsLinearMap R g)  :
+    IsLinearMap R fun x : M => (f x, g x) := by
+  apply IsLinearMap.mk
+  · intro x y
+    simp [hf.1,hg.1,Prod.add_def]
+  · intro x y
+    simp [hf.2,hg.2,Prod.smul_def]
+
+@[fun_prop]
+theorem isLinearMap_fst {f : M → M₂×M₃} (hf : IsLinearMap R f)  :
+    IsLinearMap R fun x : M => (f x).1 := by
+  apply IsLinearMap.mk
+  · intro x y
+    simp [hf.1]
+  · intro x y
+    simp [hf.2]
+
+@[fun_prop]
+theorem isLinearMap_snd {f : M → M₂×M₃} (hf : IsLinearMap R f)  :
+    IsLinearMap R fun x : M => (f x).2 := by
+  apply IsLinearMap.mk
+  · intro x y
+    simp [hf.1]
+  · intro x y
+    simp [hf.2]
+
+@[fun_prop]
+theorem isLinearMap_add :
     IsLinearMap R fun x : M × M => x.1 + x.2 := by
   apply IsLinearMap.mk
   · intro x y
@@ -31,7 +63,8 @@ theorem isLinearMap_add [AddCommMonoid M] [Module R M] :
   · intro x y
     simp [smul_add]
 
-theorem isLinearMap_sub [AddCommGroup M] [Module R M] :
+@[fun_prop]
+theorem isLinearMap_sub {M : Type*} [AddCommGroup M] [Module R M] :
     IsLinearMap R fun x : M × M => x.1 - x.2 := by
   apply IsLinearMap.mk
   · intro x y

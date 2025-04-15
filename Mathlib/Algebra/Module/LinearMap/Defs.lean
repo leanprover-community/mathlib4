@@ -10,6 +10,8 @@ import Mathlib.Algebra.Module.RingHom
 import Mathlib.Algebra.Ring.CompTypeclasses
 import Mathlib.GroupTheory.GroupAction.Hom
 
+import Mathlib.Tactic.FunProp
+
 /-!
 # (Semi)linear maps
 
@@ -63,6 +65,7 @@ variable {R R₁ R₂ R₃ S S₃ T M M₁ M₂ M₃ N₂ N₃ : Type*}
 `f (x + y) = f x + f y` and `f (c • x) = c • f x`. The predicate `IsLinearMap R f` asserts this
 property. A bundled version is available with `LinearMap`, and should be favored over
 `IsLinearMap` most of the time. -/
+@[fun_prop]
 structure IsLinearMap (R : Type u) {M : Type v} {M₂ : Type w} [Semiring R] [AddCommMonoid M]
   [AddCommMonoid M₂] [Module R M] [Module R M₂] (f : M → M₂) : Prop where
   /-- A linear map preserves addition. -/
@@ -390,6 +393,7 @@ theorem isScalarTower_of_injective [SMul R S] [CompatibleSMul M M₂ R S] [IsSca
 end
 
 variable (R) in
+@[fun_prop]
 theorem isLinearMap_of_compatibleSMul [Module S M] [Module S M₂] [CompatibleSMul M M₂ R S]
     (f : M →ₗ[S] M₂) : IsLinearMap R f where
   map_add := map_add f
@@ -643,8 +647,8 @@ namespace IsLinearMap
 
 section AddCommMonoid
 
-variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂]
-variable [Module R M] [Module R M₂]
+variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
+variable [Module R M] [Module R M₂] [Module R M₃]
 
 /-- Convert an `IsLinearMap` predicate to a `LinearMap` -/
 def mk' (f : M → M₂) (lin : IsLinearMap R f) : M →ₗ[R] M₂ where
@@ -656,12 +660,14 @@ def mk' (f : M → M₂) (lin : IsLinearMap R f) : M →ₗ[R] M₂ where
 theorem mk'_apply {f : M → M₂} (lin : IsLinearMap R f) (x : M) : mk' f lin x = f x :=
   rfl
 
+@[fun_prop]
 theorem isLinearMap_smul {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] (c : R) :
     IsLinearMap R fun z : M ↦ c • z := by
   refine IsLinearMap.mk (smul_add c) ?_
   intro _ _
   simp only [smul_smul, mul_comm]
 
+@[fun_prop]
 theorem isLinearMap_smul' {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] (a : M) :
     IsLinearMap R fun c : R ↦ c • a :=
   IsLinearMap.mk (fun x y ↦ add_smul x y a) fun x y ↦ mul_smul x y a
@@ -676,6 +682,7 @@ section AddCommGroup
 variable [Semiring R] [AddCommGroup M] [AddCommGroup M₂]
 variable [Module R M] [Module R M₂]
 
+@[fun_prop]
 theorem isLinearMap_neg : IsLinearMap R fun z : M ↦ -z :=
   IsLinearMap.mk neg_add fun x y ↦ (smul_neg x y).symm
 
@@ -981,3 +988,41 @@ def restrictScalarsₗ : (M →ₗ[S] N) →ₗ[R₁] M →ₗ[R] N where
 end RestrictScalarsAsLinearMap
 
 end LinearMap
+
+namespace IsLinearMap
+
+variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
+variable [Module R M] [Module R M₂] [Module R M₃]
+variable {ι : Type*}
+
+variable (R)
+abbrev mk'' (f : M → M₂) (lin : IsLinearMap R f) : M →ₗ[R] M₂ := mk' f lin
+
+open Lean.Parser.Term in
+macro:max "fun " x:funBinder " ↦ₗ[" R:term "] " b:term : term =>
+  `(IsLinearMap.mk'' $R (fun $x => $b) (by fun_prop))
+
+open Lean.Parser.Term in
+macro:max "fun " x:funBinder " =>ₗ[" R:term "] " b:term : term =>
+  `(fun $x ↦ₗ[$R] $b)
+
+@[app_unexpander IsLinearMap.mk''] def unexpandIsLinearMapMk' : Lean.PrettyPrinter.Unexpander
+  | `($(_) $R $f:term $_:term) =>
+    match f with
+    | `(fun $x:funBinder ↦ $b:term) => `(fun $x ↦ₗ[$R] $b)
+    | _ => throw ()
+  | _  => throw ()
+
+@[fun_prop]
+theorem isLinearMap_id : IsLinearMap R (fun x : M => x) := LinearMap.id.isLinear
+
+@[fun_prop]
+theorem isLinearMap_const_zero : IsLinearMap R (fun _ : M => (0 : M₂)) := (0 : M →ₗ[R] M₂).isLinear
+
+@[fun_prop]
+theorem isLinearMap_comp {f : M₂ → M₃} {g : M → M₂}
+    (hf : IsLinearMap R f) (hg : IsLinearMap R g) :
+    IsLinearMap R (fun x : M ↦ f (g x)) :=
+  ((fun x ↦ₗ[R] f x).comp (fun x ↦ₗ[R] g x)).isLinear
+
+end IsLinearMap
