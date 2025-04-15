@@ -127,33 +127,15 @@ theorem eq_of_perm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (hp : l₁ 
       simp [iff_true_intro this, or_comm]
 
 theorem Sorted.eq_of_mem_iff [IsAntisymm α r] [IsIrrefl α r] {l₁ l₂ : List α}
-    (h₁ : Sorted r l₁) (h₂ : Sorted r l₂) (h : ∀ a : α, a ∈ l₁ ↔ a ∈ l₂) : l₁ = l₂ := by
-  induction h₂ generalizing l₁ with
-  | nil => simpa [List.eq_nil_iff_forall_not_mem] using h
-  | @cons a l₂ hr hs₁ IH =>
-    cases l₁ with
-    | nil => simpa using h a
-    | cons b l₁ =>
-      suffices h : b = a by
-        subst h
-        simp only [cons.injEq, true_and]
-        apply IH (sorted_cons.mp h₁).2
-        intro x
-        haveI : x = b ∨ x ∈ l₁ ↔ x = b ∨ x ∈ l₂ := by simpa using h x
-        constructor
-        · intro hxl₁
-          obtain rfl | _ := this.mp (Or.inr hxl₁)
-          · exact (IsIrrefl.irrefl x <| (sorted_cons.mp h₁).1 x hxl₁).elim
-          · assumption
-        · intro hxl₂
-          obtain rfl | _ := this.mpr (Or.inr hxl₂)
-          · exact (IsIrrefl.irrefl x <| hr x hxl₂).elim
-          · assumption
-      obtain rfl | hbl₂ : b = a ∨ b ∈ l₂ := by simpa using h b
-      · rfl
-      · obtain rfl | hal₁ : a = b ∨ a ∈ l₁ := by simpa using h a
-        · rfl
-        · exact IsAntisymm.antisymm b a ((sorted_cons.mp h₁).1 _ hal₁) (hr _ hbl₂)
+    (h₁ : Sorted r l₁) (h₂ : Sorted r l₂) (h : ∀ a : α, a ∈ l₁ ↔ a ∈ l₂) : l₁ = l₂ :=
+  letI : DecidableEq α := Classical.decEq α
+  eq_of_perm_of_sorted (r := r)
+    (List.perm_iff_count.mpr (fun a ↦ by
+      rw [List.count_eq_of_nodup h₁.nodup, List.count_eq_of_nodup h₂.nodup]
+      by_cases ha : a ∈ l₁
+      · simpa [(h a).mp ha]
+      · simpa [(h a).not.mp ha]))
+    h₁ h₂
 
 theorem sublist_of_subperm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (hp : l₁ <+~ l₂)
     (hs₁ : l₁.Sorted r) (hs₂ : l₂.Sorted r) : l₁ <+ l₂ := by
