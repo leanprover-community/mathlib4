@@ -46,7 +46,7 @@ theorem max_insert {a : α} {s : Finset α} : (insert a s).max = max ↑a s.max 
 
 @[simp]
 theorem max_singleton {a : α} : Finset.max {a} = (a : WithBot α) := by
-  rw [← insert_emptyc_eq]
+  rw [← insert_empty_eq]
   exact max_insert
 
 theorem max_of_mem {s : Finset α} {a : α} (h : a ∈ s) : ∃ b : α, s.max = b := by
@@ -124,7 +124,7 @@ theorem min_insert {a : α} {s : Finset α} : (insert a s).min = min (↑a) s.mi
 
 @[simp]
 theorem min_singleton {a : α} : Finset.min {a} = (a : WithTop α) := by
-  rw [← insert_emptyc_eq]
+  rw [← insert_empty_eq]
   exact min_insert
 
 theorem min_of_mem {s : Finset α} {a : α} (h : a ∈ s) : ∃ b : α, s.min = b := by

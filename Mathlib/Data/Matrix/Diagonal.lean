@@ -184,7 +184,7 @@ theorem one_apply_ne' {i j} : j ≠ i → (1 : Matrix n n α) i j = 0 :=
   diagonal_apply_ne' _
 
 @[simp]
-theorem map_one [Zero β] [One β] (f : α → β) (h₀ : f 0 = 0) (h₁ : f 1 = 1) :
+protected theorem map_one [Zero β] [One β] (f : α → β) (h₀ : f 0 = 0) (h₁ : f 1 = 1) :
     (1 : Matrix n n α).map f = (1 : Matrix n n β) := by
   ext
   simp only [one_apply, map_apply]

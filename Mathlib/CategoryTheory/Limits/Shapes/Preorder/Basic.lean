@@ -19,7 +19,7 @@ universe v v' u u' w
 
 open CategoryTheory Limits
 
-variable (J : Type w) [Preorder J] (C : Type u) [Category.{v} C]
+variable (C : Type u) [Category.{v} C] (J : Type w) [Preorder J]
 
 namespace Preorder
 
