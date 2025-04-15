@@ -861,7 +861,7 @@ theorem Inseparable.of_nhds_neBot {x y : X} (h : NeBot (𝓝 x ⊓ 𝓝 y)) :
 theorem r1_separation {x y : X} (h : ¬Inseparable x y) :
     ∃ u v : Set X, IsOpen u ∧ IsOpen v ∧ x ∈ u ∧ y ∈ v ∧ Disjoint u v := by
   rw [← disjoint_nhds_nhds_iff_not_inseparable,
-    (nhds_basis_opens _).disjoint_iff (nhds_basis_opens _)] at h
+    (nhds_basis_opens x).disjoint_iff (nhds_basis_opens y)] at h
   obtain ⟨u, ⟨hxu, hu⟩, v, ⟨hyv, hv⟩, huv⟩ := h
   exact ⟨u, v, hu, hv, hxu, hyv, huv⟩
 
