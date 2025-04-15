@@ -56,6 +56,6 @@ theorem fdiv_fdiv_eq_fdiv_mul (m : Int) {n k : Int} (hn : 0 ≤ n) (hk : 0 ≤ k
 /-! ### `emod` -/
 
 theorem emod_eq_sub_self_emod {a b : Int} : a % b = (a - b) % b :=
-  (emod_sub_cancel a b).symm
+  (sub_emod_right a b).symm
 
 end Int
