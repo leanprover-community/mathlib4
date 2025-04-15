@@ -163,6 +163,9 @@ If the semifield has positive characteristic `p`, our division by zero conventio
 `nnratCast (1 / p) = 1 / 0 = 0`. -/
 class Semifield (K : Type*) extends DivisionSemiring K, CommSemiring K, CommGroupWithZero K
 
+-- see Note [lower instance priority]
+attribute [instance 100] Semifield.toCommSemiring
+
 /-- A `Field` is a `CommRing` with multiplicative inverses for nonzero elements.
 
 An instance of `Field K` includes maps `ratCast : ℚ → K` and `qsmul : ℚ → K → K`.
@@ -174,6 +177,9 @@ If the field has positive characteristic `p`, our division by zero convention fo
 `ratCast (1 / p) = 1 / 0 = 0`. -/
 @[stacks 09FD "first part"]
 class Field (K : Type u) extends DivisionRing K, CommRing K
+
+-- see Note [lower instance priority]
+attribute [instance 100] Field.toCommRing
 
 -- see Note [lower instance priority]
 instance (priority := 100) Field.toSemifield [Field K] : Semifield K := { ‹Field K› with }
