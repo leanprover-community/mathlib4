@@ -13,7 +13,7 @@ import Mathlib.NumberTheory.NumberField.Units.Regulator
 In this file, we study the subset `NormLeOne` of the `fundamentalCone` of elements `x` with
 `mixedEmbedding.norm x ≤ 1`.
 
-Mainly, we prove that this is bounded, its frontier has volume zero and compute its volume.
+Mainly, we prove that it is bounded, its frontier has volume zero and compute its volume.
 
 ## Strategy of proof
 
@@ -636,24 +636,15 @@ open ENNReal MeasureTheory
 theorem setLIntegral_paramSet_exp {n : ℕ} (hn : 0 < n) :
     ∫⁻ (x : realSpace K) in paramSet K, .ofReal (Real.exp (x w₀ * n)) = (n : ℝ≥0∞)⁻¹ := by
   classical
+  have hn : 0 < (n : ℝ) := Nat.cast_pos.mpr hn
   rw [volume_pi, paramSet, Measure.restrict_pi_pi, lintegral_eq_lmarginal_univ 0,
     lmarginal_erase' _ (by fun_prop) (Finset.mem_univ w₀), if_pos rfl]
   simp_rw [Function.update_self, lmarginal, lintegral_const, Measure.pi_univ, if_neg
     (Finset.ne_of_mem_erase (Subtype.prop _)), Measure.restrict_apply_univ, Real.volume_Ico,
-    sub_zero, ofReal_one, prod_const_one, mul_one]
-  suffices ∫⁻ (x : ℝ) in Set.Ici 0, ENNReal.ofReal (Real.exp (-(x * n))) = (n : ℝ≥0∞)⁻¹ by
-    rw [← (Measure.measurePreserving_neg _).setLIntegral_comp_preimage
-      measurableSet_Iic (by fun_prop), Set.neg_preimage, Set.neg_Iic, neg_zero]
-    simpa [neg_mul]
-  rw [← ofReal_integral_eq_lintegral_ofReal]
-  · rw [← setIntegral_congr_set Ioi_ae_eq_Ici, integral_comp_mul_right_Ioi (fun x ↦ Real.exp (-x))
-      _ (Nat.cast_pos.mpr hn), zero_mul, integral_exp_neg_Ioi, neg_zero, Real.exp_zero, smul_eq_mul,
-      mul_one, ofReal_inv_of_pos (Nat.cast_pos.mpr hn), ofReal_natCast]
-  · rw [← IntegrableOn, integrableOn_Ici_iff_integrableOn_Ioi, integrableOn_Ioi_comp_mul_right_iff
-      (fun x ↦ Real.exp (-x)) _ (Nat.cast_pos.mpr hn), zero_mul,
-      ← integrableOn_Ici_iff_integrableOn_Ioi]
-    exact integrableOn_exp_neg_Ici 0
-  · filter_upwards with _ using Real.exp_nonneg _
+    sub_zero, ofReal_one, prod_const_one, mul_one, mul_comm _ (n : ℝ)]
+  rw [← ofReal_integral_eq_lintegral_ofReal (integrableOn_exp_mul_Iic hn _), integral_exp_mul_Iic
+    hn, mul_zero, Real.exp_zero, ofReal_div_of_pos hn, ofReal_one, ofReal_natCast, one_div]
+  filter_upwards with _ using Real.exp_nonneg _
 
 end paramSet
 
