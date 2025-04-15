@@ -126,7 +126,7 @@ theorem tendsto_iff_coeff_tendsto [Semiring R] {ι : Type*}
   rw [nhds_pi, tendsto_pi]
   exact forall_congr' (fun d => Iff.rfl)
 
-theorem trunc'_tendsto [CommSemiring R] (f : MvPowerSeries σ R) :
+theorem tendsto_trunc'_atTop [CommSemiring R] (f : MvPowerSeries σ R) :
     Tendsto (fun d ↦ (trunc' R d f : MvPowerSeries σ R)) atTop (𝓝 f) := by
   rw [tendsto_iff_coeff_tendsto]
   intro d
