@@ -548,9 +548,14 @@ theorem compl_singleton_mem_nhds [T1Space X] {x y : X} (h : y ≠ x) : {x}ᶜ �
 theorem closure_singleton [T1Space X] {x : X} : closure ({x} : Set X) = {x} :=
   isClosed_singleton.closure_eq
 
+lemma Set.Subsingleton.isClosed [T1Space X] {s : Set X} (hs : s.Subsingleton) : IsClosed s := by
+  rcases hs.eq_empty_or_singleton with rfl | ⟨x, rfl⟩
+  · exact isClosed_empty
+  · exact isClosed_singleton
+
 theorem Set.Subsingleton.closure_eq [T1Space X] {s : Set X} (hs : s.Subsingleton) :
-    closure s = s := by
-  rcases hs.eq_empty_or_singleton with rfl | ⟨x, rfl⟩ <;> simp
+    closure s = s :=
+  hs.isClosed.closure_eq
 
 theorem Set.Subsingleton.closure [T1Space X] {s : Set X} (hs : s.Subsingleton) :
     (closure s).Subsingleton := by
@@ -754,11 +759,6 @@ theorem SeparationQuotient.t1Space_iff : T1Space (SeparationQuotient X) ↔ R0Sp
     have yspecx : y ⤳ x := h xspecy
     rw [mk_eq_mk, inseparable_iff_specializes_and]
     exact ⟨xspecy, yspecx⟩
-
-lemma Set.Subsingleton.isClosed [T1Space X] {A : Set X} (h : A.Subsingleton) : IsClosed A := by
-  rcases h.eq_empty_or_singleton with rfl | ⟨x, rfl⟩
-  · exact isClosed_empty
-  · exact isClosed_singleton
 
 lemma isClosed_inter_singleton [T1Space X] {A : Set X} {a : X} : IsClosed (A ∩ {a}) :=
   Subsingleton.inter_singleton.isClosed
