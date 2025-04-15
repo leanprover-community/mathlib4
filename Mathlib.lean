@@ -4181,6 +4181,7 @@ import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
 import Mathlib.MeasureTheory.Integral.Lebesgue.DominatedConvergence
 import Mathlib.MeasureTheory.Integral.Lebesgue.Map
 import Mathlib.MeasureTheory.Integral.Lebesgue.Markov
+import Mathlib.MeasureTheory.Integral.Lebesgue.MeasurePreserving
 import Mathlib.MeasureTheory.Integral.Lebesgue.Norm
 import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
 import Mathlib.MeasureTheory.Integral.LebesgueNormedSpace
