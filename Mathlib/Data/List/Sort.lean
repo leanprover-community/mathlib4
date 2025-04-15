@@ -128,14 +128,7 @@ theorem eq_of_perm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (hp : l₁ 
 
 theorem Sorted.eq_of_mem_iff [IsAntisymm α r] [IsIrrefl α r] {l₁ l₂ : List α}
     (h₁ : Sorted r l₁) (h₂ : Sorted r l₂) (h : ∀ a : α, a ∈ l₁ ↔ a ∈ l₂) : l₁ = l₂ :=
-  letI : DecidableEq α := Classical.decEq α
-  eq_of_perm_of_sorted (r := r)
-    (List.perm_iff_count.mpr (fun a ↦ by
-      rw [List.count_eq_of_nodup h₁.nodup, List.count_eq_of_nodup h₂.nodup]
-      by_cases ha : a ∈ l₁
-      · simpa [(h a).mp ha]
-      · simpa [(h a).not.mp ha]))
-    h₁ h₂
+  eq_of_perm_of_sorted ((perm_ext_iff_of_nodup h₁.nodup h₂.nodup).2 h) h₁ h₂ 
 
 theorem sublist_of_subperm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (hp : l₁ <+~ l₂)
     (hs₁ : l₁.Sorted r) (hs₂ : l₂.Sorted r) : l₁ <+ l₂ := by
