@@ -603,7 +603,9 @@ See also `Fin.natAddEmb` and `Fin.addNatEmb`. -/
 def castAddEmb (m) : Fin n ↪ Fin (n + m) := castLEEmb (le_add_right n m)
 
 @[simp]
-lemma castAddEmb_apply (m) : (castAddEmb m : Fin n → Fin (n + m)) = castAdd m := rfl
+lemma coe_castAddEmb (m) : (castAddEmb m : Fin n → Fin (n + m)) = castAdd m := rfl
+
+lemma castAddEmb_apply (m) (i : Fin n) : castAddEmb m i = castAdd m i := rfl
 
 /-- `Fin.castSucc` as an `Embedding`, `castSuccEmb i` embeds `i : Fin n` in `Fin (n+1)`. -/
 def castSuccEmb : Fin n ↪ Fin (n + 1) := castAddEmb _
