@@ -451,7 +451,7 @@ lemma GradedPieceHom_comp (i : ι) : Grₐ(i)[g].comp Grₐ(i)[f] = Grₐ(i)[g.c
   ext x
   exact GradedPieceHom_comp_apply g f i x
 
-variable [AddCommMonoid ι] [PartialOrder ι] [hasGMul FA FA_lt] [hasGMul FB FB_lt] [hasGMul FC FC_lt]
+variable [AddMonoid ι] [PartialOrder ι] [hasGMul FA FA_lt] [hasGMul FB FB_lt] [hasGMul FC FC_lt]
 
 open FilteredAddGroupHom in
 /-- The induced graded algebra morphism between associated graded algebras,
