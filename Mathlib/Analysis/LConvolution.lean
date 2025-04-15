@@ -24,7 +24,7 @@ open Measure
 open scoped ENNReal
 --open Measure
 
-variable {G : Type*} [MeasurableSpace G] [Mul G] [Inv G]
+variable {G : Type*} {mG : MeasurableSpace G} [Mul G] [Inv G]
 
 /-- Multiplicative convolution of functions -/
 @[to_additive lconvolution "Additive convolution of functions"]
