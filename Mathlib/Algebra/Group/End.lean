@@ -672,6 +672,7 @@ theorem one_apply (m : M) : (1 : MulAut M) m = m :=
 theorem apply_inv_self (e : MulAut M) (m : M) : e (e⁻¹ m) = m :=
   MulEquiv.apply_symm_apply _ _
 
+@[simp]
 theorem inv_apply_self (e : MulAut M) (m : M) : e⁻¹ (e m) = m :=
   MulEquiv.apply_symm_apply _ _
 
