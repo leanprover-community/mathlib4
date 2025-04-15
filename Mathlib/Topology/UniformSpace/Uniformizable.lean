@@ -8,7 +8,7 @@ import Mathlib.Topology.Separation.CompletelyRegular
 /-!
 # Uniformizable Spaces
 
-Proves a topological space is uniformizable (there exists a uniformity that
+A topological space is uniformizable (there exists a uniformity that
 generates the same topology) if it is completely regular.
 
 TODO: Prove the reverse implication too.
