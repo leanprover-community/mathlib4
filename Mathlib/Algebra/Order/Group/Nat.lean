@@ -30,6 +30,10 @@ instance instCanonicallyOrderedAdd : CanonicallyOrderedAdd ℕ where
   le_self_add := Nat.le_add_right
   exists_add_of_le := Nat.exists_eq_add_of_le
 
+instance orderBot : OrderBot ℕ where
+  bot := 0
+  bot_le := zero_le
+
 instance instOrderedSub : OrderedSub ℕ := by
   refine ⟨fun m n k ↦ ?_⟩
   induction n generalizing k with
