@@ -31,6 +31,7 @@ This file defines the following linters:
 - the `lambdaSyntax` linter checks for uses of the `λ` symbol for anonymous functions,
   instead of the `fun` keyword: mathlib prefers the latter for reasons of readability
 - the `longFile` linter checks for files which have more than 1500 lines
+- the `longFileHard` linter serves the same function as `longFile` but is non-overridable
 - the `longLine` linter checks for lines which have more than 100 characters
 - the `openClassical` linter checks for `open (scoped) Classical` statements which are not
   scoped to a single declaration
@@ -400,6 +401,54 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
 initialize addLinter longFileLinter
 
 end Style.longFile
+
+/-!
+# The `longFileHard` linter
+
+The `longFileHard` linter serves the same purpose as the `longFile` linter, but unlike `longFile`
+it cannot be overridden: `set_option linter.style.longFileHard` will give an error.
+-/
+
+/--
+The `longFileHard` linter emits a warning on files which are longer than a certain number of lines,
+and an error on attempts to change the limit.
+If this option is set to `N` lines, the linter warns once a file has more than `N` lines.
+A value of `0` silences the linter entirely.
+-/
+register_option linter.style.longFileHard : Nat := {
+  defValue := 0
+  descr := "enable the longFileHard linter"
+}
+
+namespace Style.longFileHard
+
+@[inherit_doc Mathlib.Linter.linter.style.longFileHard]
+def longFileHardLinter : Linter where run := withSetOptionIn fun stx ↦ do
+  if let some head := stx.find? setOption.isSetOption then
+    if let some name := setOption.parseSetOption head then
+      if name.components.contains `longFileHard then
+        logErrorAt stx <| .tagged linter.style.longFileHard.name
+          "It is forbidden to set the `longFileHard` option."
+  let linterBound := linter.style.longFileHard.get (← getOptions)
+  if linterBound == 0 then
+    return
+  -- `Parser.isTerminalCommand` allows `stx` to be `#exit`: this is useful for tests.
+  unless Parser.isTerminalCommand stx do return
+  -- We exclude `Mathlib.lean` from the linter: it exceeds linter's default number of allowed
+  -- lines, and it is an auto-generated import-only file.
+  -- TODO: if there are more such files, revise the implementation.
+  if (← getMainModule) == `Mathlib then return
+  if let some init := stx.getTailPos? then
+    -- the last line: we subtract 1, since the last line is expected to be empty
+    let lastLine := ((← getFileMap).toPosition init).line
+    if linterBound < lastLine then
+      logWarningAt stx <| .tagged linter.style.longFileHard.name
+        m!"This file is {lastLine} lines long, but the limit is {linterBound}.\n\
+          Please split this file."
+
+initialize addLinter longFileHardLinter
+
+end Style.longFileHard
 
 /-! # The "longLine linter" -/
 
