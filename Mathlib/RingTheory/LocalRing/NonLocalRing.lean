@@ -16,7 +16,7 @@ This file gathers some results about non-local rings.
 
 ## Main results
 
-- `not_isLocalRing_of_nontrivial_pi`: for an index type `ι` with least two elements and
+- `not_isLocalRing_of_nontrivial_pi`: for an index type `ι` with at least two elements and
   an indexed family of (semi)rings `R : ι → Type*`, the indexed product (semi)ring
   `Π i, R i` is not local.
 - `not_isLocalRing_of_prod_of_nontrivial`: the product of two nontrivial (semi)rings is not
