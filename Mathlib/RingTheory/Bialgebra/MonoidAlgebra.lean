@@ -51,19 +51,16 @@ instance instBialgebra : Bialgebra R (MonoidAlgebra A M) where
 variable (R) in
 /-- If `f : M → N` is a monoid hom, then `MonoidAlgebra.mapDomain f` is a bialgebra hom between
 their monoid algebras. -/
-@[simps]
-noncomputable def mapDomainBialgHom (f : M →* N) : MonoidAlgebra R M →ₐc[R] MonoidAlgebra R N where
-  __ := mapDomainAlgHom R R f
-  map_smul' m x := by simp
-  counit_comp := by ext; simp
-  map_comp_comul := by ext; simp
+@[simps!]
+noncomputable def mapDomainBialgHom (f : M →* N) : MonoidAlgebra R M →ₐc[R] MonoidAlgebra R N :=
+  .ofAlgHom (mapDomainAlgHom R R f) (by ext; simp) (by ext; simp)
 
 @[simp] lemma mapDomainBialgHom_id : mapDomainBialgHom R (.id M) = .id _ _ := by ext; simp
 
 @[simp]
 lemma mapDomainBialgHom_comp (f : N →* O) (g : M →* N) :
     mapDomainBialgHom R (f.comp g) = (mapDomainBialgHom R f).comp (mapDomainBialgHom R g) := by
-  ext; simp
+  ext; simp [Finsupp.mapDomain_comp]
 
 lemma mapDomainBialgHom_mapDomainBialgHom (f : N →* O) (g : M →* N) (x : MonoidAlgebra R M) :
     mapDomainBialgHom R f (mapDomainBialgHom R g x) = mapDomainBialgHom R (f.comp g) x := by
