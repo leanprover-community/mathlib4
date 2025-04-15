@@ -5,7 +5,6 @@ Authors: Rémy Degenne
 -/
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.MeasureTheory.Measure.Tight
-import Mathlib.Order.CompletePartialOrder
 
 /-!
 # Tight sets of measures in normed spaces

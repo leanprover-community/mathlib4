@@ -94,8 +94,7 @@ variable {α : Type*}
 
 /-- The extended nonnegative real numbers. This is usually denoted [0, ∞],
   and is relevant as the codomain of a measure. -/
-def ENNReal := WithTop ℝ≥0
-  deriving Zero, Top, AddCommMonoidWithOne, SemilatticeSup, DistribLattice, Nontrivial
+abbrev ENNReal := WithTop ℝ≥0
 
 @[inherit_doc]
 scoped[ENNReal] notation "ℝ≥0∞" => ENNReal
@@ -104,48 +103,6 @@ scoped[ENNReal] notation "ℝ≥0∞" => ENNReal
 scoped[ENNReal] notation "∞" => (⊤ : ENNReal)
 
 namespace ENNReal
-
-instance : OrderBot ℝ≥0∞ := inferInstanceAs (OrderBot (WithTop ℝ≥0))
-instance : OrderTop ℝ≥0∞ := inferInstanceAs (OrderTop (WithTop ℝ≥0))
-instance : BoundedOrder ℝ≥0∞ := inferInstanceAs (BoundedOrder (WithTop ℝ≥0))
-instance : CharZero ℝ≥0∞ := inferInstanceAs (CharZero (WithTop ℝ≥0))
-instance : Min ℝ≥0∞ := SemilatticeInf.toMin
-instance : Max ℝ≥0∞ := SemilatticeSup.toMax
-
-noncomputable instance : CommSemiring ℝ≥0∞ :=
-  inferInstanceAs (CommSemiring (WithTop ℝ≥0))
-
-instance : PartialOrder ℝ≥0∞ :=
-  inferInstanceAs (PartialOrder (WithTop ℝ≥0))
-
-instance : IsOrderedRing ℝ≥0∞ :=
-  inferInstanceAs (IsOrderedRing (WithTop ℝ≥0))
-
-instance : CanonicallyOrderedAdd ℝ≥0∞ :=
-  inferInstanceAs (CanonicallyOrderedAdd (WithTop ℝ≥0))
-
-instance : NoZeroDivisors ℝ≥0∞ :=
-  inferInstanceAs (NoZeroDivisors (WithTop ℝ≥0))
-
-noncomputable instance : CompleteLinearOrder ℝ≥0∞ :=
-  inferInstanceAs (CompleteLinearOrder (WithTop ℝ≥0))
-
-instance : DenselyOrdered ℝ≥0∞ := inferInstanceAs (DenselyOrdered (WithTop ℝ≥0))
-
-instance : AddCommMonoid ℝ≥0∞ :=
-  inferInstanceAs (AddCommMonoid (WithTop ℝ≥0))
-
-noncomputable instance : LinearOrder ℝ≥0∞ :=
-  inferInstanceAs (LinearOrder (WithTop ℝ≥0))
-
-instance : IsOrderedAddMonoid ℝ≥0∞ :=
-  inferInstanceAs (IsOrderedAddMonoid (WithTop ℝ≥0))
-
-instance instSub : Sub ℝ≥0∞ := inferInstanceAs (Sub (WithTop ℝ≥0))
-instance : OrderedSub ℝ≥0∞ := inferInstanceAs (OrderedSub (WithTop ℝ≥0))
-
-noncomputable instance : LinearOrderedAddCommMonoidWithTop ℝ≥0∞ :=
-  inferInstanceAs (LinearOrderedAddCommMonoidWithTop (WithTop ℝ≥0))
 
 -- RFC: redefine using pattern matching?
 noncomputable instance : Inv ℝ≥0∞ := ⟨fun a => sInf { b | 1 ≤ a * b }⟩
@@ -171,7 +128,7 @@ instance : Inhabited ℝ≥0∞ := ⟨0⟩
 /-- Coercion from `ℝ≥0` to `ℝ≥0∞`. -/
 @[coe, match_pattern] def ofNNReal : ℝ≥0 → ℝ≥0∞ := WithTop.some
 
-instance : Coe ℝ≥0 ℝ≥0∞ := ⟨ofNNReal⟩
+instance (priority := high) : CoeTC ℝ≥0 ℝ≥0∞ := ⟨ofNNReal⟩
 
 /-- A version of `WithTop.recTopCoe` that uses `ENNReal.ofNNReal`. -/
 @[elab_as_elim, induction_eliminator, cases_eliminator]
@@ -351,15 +308,15 @@ theorem toReal_ofReal_eq_iff {a : ℝ} : (ENNReal.ofReal a).toReal = a ↔ 0 ≤
     rw [← h]
     exact toReal_nonneg, toReal_ofReal⟩
 
-@[simp, aesop (rule_sets := [finiteness]) safe apply] theorem zero_ne_top : 0 ≠ ∞ := coe_ne_top
+@[aesop (rule_sets := [finiteness]) safe apply] theorem zero_ne_top : 0 ≠ ∞ := coe_ne_top
 
-@[simp] theorem top_ne_zero : ∞ ≠ 0 := top_ne_coe
+theorem top_ne_zero : ∞ ≠ 0 := top_ne_coe
 
-@[simp, aesop (rule_sets := [finiteness]) safe apply] theorem one_ne_top : 1 ≠ ∞ := coe_ne_top
+@[aesop (rule_sets := [finiteness]) safe apply] theorem one_ne_top : 1 ≠ ∞ := coe_ne_top
 
-@[simp] theorem top_ne_one : ∞ ≠ 1 := top_ne_coe
+theorem top_ne_one : ∞ ≠ 1 := top_ne_coe
 
-@[simp] theorem zero_lt_top : 0 < ∞ := coe_lt_top
+theorem zero_lt_top : 0 < ∞ := coe_lt_top
 
 @[simp, norm_cast] theorem coe_le_coe : (↑r : ℝ≥0∞) ≤ ↑q ↔ r ≤ q := WithTop.coe_le_coe
 
@@ -502,26 +459,26 @@ theorem coe_natCast (n : ℕ) : ((n : ℝ≥0) : ℝ≥0∞) = n := rfl
 @[simp] theorem ofReal_ofNat (n : ℕ) [n.AtLeastTwo] : ENNReal.ofReal ofNat(n) = ofNat(n) :=
   ofReal_natCast n
 
-@[simp, aesop (rule_sets := [finiteness]) safe apply]
+@[aesop (rule_sets := [finiteness]) safe apply]
 theorem natCast_ne_top (n : ℕ) : (n : ℝ≥0∞) ≠ ∞ := WithTop.natCast_ne_top n
 
-@[simp] theorem natCast_lt_top (n : ℕ) : (n : ℝ≥0∞) < ∞ := WithTop.natCast_lt_top n
+theorem natCast_lt_top (n : ℕ) : (n : ℝ≥0∞) < ∞ := WithTop.natCast_lt_top n
 
-@[simp, aesop (rule_sets := [finiteness]) safe apply]
+@[aesop (rule_sets := [finiteness]) safe apply]
 lemma ofNat_ne_top {n : ℕ} [Nat.AtLeastTwo n] : ofNat(n) ≠ ∞ := natCast_ne_top n
 
 @[simp]
 lemma ofNat_lt_top {n : ℕ} [Nat.AtLeastTwo n] : ofNat(n) < ∞ := natCast_lt_top n
 
-@[simp] theorem top_ne_natCast (n : ℕ) : ∞ ≠ n := WithTop.top_ne_natCast n
+theorem top_ne_natCast (n : ℕ) : ∞ ≠ n := WithTop.top_ne_natCast n
 
-@[simp] theorem top_ne_ofNat {n : ℕ} [n.AtLeastTwo] : ∞ ≠ ofNat(n) :=
+theorem top_ne_ofNat {n : ℕ} [n.AtLeastTwo] : ∞ ≠ ofNat(n) :=
   ofNat_ne_top.symm
 
 @[deprecated ofNat_ne_top (since := "2025-01-21")] lemma two_ne_top : (2 : ℝ≥0∞) ≠ ∞ := coe_ne_top
 @[deprecated ofNat_lt_top (since := "2025-01-21")] lemma two_lt_top : (2 : ℝ≥0∞) < ∞ := coe_lt_top
 
-@[simp] theorem one_lt_top : 1 < ∞ := coe_lt_top
+theorem one_lt_top : 1 < ∞ := coe_lt_top
 
 @[simp, norm_cast]
 theorem toNNReal_natCast (n : ℕ) : (n : ℝ≥0∞).toNNReal = n := by
