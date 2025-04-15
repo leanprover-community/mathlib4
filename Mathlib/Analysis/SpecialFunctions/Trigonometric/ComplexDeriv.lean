@@ -37,7 +37,7 @@ theorem tendsto_norm_tan_of_cos_eq_zero {x : ℂ} (hx : cos x = 0) :
   have A : sin x ≠ 0 := fun h => by simpa [*, sq] using sin_sq_add_cos_sq x
   have B : Tendsto cos (𝓝[≠] x) (𝓝[≠] 0) :=
     hx ▸ (hasDerivAt_cos x).tendsto_nhdsNE (neg_ne_zero.2 A)
-  exact continuous_sin.continuousWithinAt.norm.mul_atTop (norm_pos_iff.2 A)
+  exact continuous_sin.continuousWithinAt.norm.pos_mul_atTop (norm_pos_iff.2 A)
     (tendsto_norm_nhdsNE_zero.comp B).inv_tendsto_nhdsGT_zero
 
 theorem tendsto_norm_tan_atTop (k : ℤ) :

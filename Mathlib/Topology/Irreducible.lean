@@ -3,16 +3,16 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Topology.ContinuousOn
 import Mathlib.Order.Minimal
 import Mathlib.Order.Zorn
+import Mathlib.Topology.ContinuousOn
 /-!
 # Irreducibility in topological spaces
 
 ## Main definitions
 
-* `IrreducibleSpace`: a typeclass applying to topological spaces, stating that the space is not the
-  union of a nontrivial pair of disjoint opens.
+* `IrreducibleSpace`: a typeclass applying to topological spaces, stating that the space
+  is nonempty and does not admit a nontrivial pair of disjoint opens.
 * `IsIrreducible`: for a nonempty set in a topological space, the property that the set is an
   irreducible space in the subspace topology.
 

@@ -58,7 +58,7 @@ theorem compRel_swap (r : α → α → Prop) : CompRel (swap r) = CompRel r :=
 theorem compRel_swap_apply (r : α → α → Prop) : CompRel (swap r) a b ↔ CompRel r a b :=
   or_comm
 
-@[refl]
+@[simp, refl]
 theorem CompRel.refl (r : α → α → Prop) [IsRefl α r] (a : α) : CompRel r a a :=
   .of_rel (_root_.refl _)
 
@@ -149,10 +149,13 @@ theorem AntisymmRel.compRel_congr_right (h : AntisymmRel (· ≤ ·) b c) :
 end Preorder
 
 /-- A partial order where any two elements are comparable is a linear order. -/
-def linearOrderOfComprel [PartialOrder α] [dec : DecidableLE α]
+def linearOrderOfComprel [PartialOrder α]
+    [decLE : DecidableLE α] [decLT : DecidableLT α] [decEq : DecidableEq α]
     (h : ∀ a b : α, CompRel (· ≤ ·) a b) : LinearOrder α where
   le_total := h
-  decidableLE := dec
+  toDecidableLE := decLE
+  toDecidableEq := decEq
+  toDecidableLT := decLT
 
 /-! ### Incomparability relation -/
 
@@ -185,7 +188,7 @@ theorem incompRel_swap : IncompRel (swap r) = IncompRel r :=
 theorem incompRel_swap_apply : IncompRel (swap r) a b ↔ IncompRel r a b :=
   antisymmRel_swap_apply rᶜ
 
-@[refl]
+@[simp, refl]
 theorem IncompRel.refl [IsIrrefl α r] (a : α) : IncompRel r a a :=
   AntisymmRel.refl rᶜ a
 

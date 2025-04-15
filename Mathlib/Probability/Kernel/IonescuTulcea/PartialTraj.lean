@@ -87,7 +87,7 @@ variable (κ) in
 /-- Given a family of kernels `κ n` from `X 0 × ... × X n` to `X (n + 1)` for all `n`,
 construct a kernel from `X 0 × ... × X a` to `X 0 × ... × X b` by iterating `κ`.
 
-The idea is that the input is some trajectory up to time `a`, and the ouptut is the distribution
+The idea is that the input is some trajectory up to time `a`, and the output is the distribution
 of the trajectory up to time `b`. In particular if `b ≤ a`, this is just a deterministic kernel
 (see `partialTraj_le`). The name `partialTraj` stands for "partial trajectory".
 
@@ -194,8 +194,8 @@ private lemma fst_prod_comp_id_prod {X Y Z : Type*} {mX : MeasurableSpace X}
   ext x s ms
   simp_rw [comp_apply' _ _ _ ms, lintegral_id_prod (Kernel.measurable_coe _ ms),
     deterministic_prod_apply' _ _ _ ms, id_prod_apply' _ _ ms,
-    comp_apply' _ _ _ (measurable_prod_mk_left ms),
-    lintegral_id_prod (η.measurable_coe (measurable_prod_mk_left ms))]
+    comp_apply' _ _ _ (measurable_prodMk_left ms),
+    lintegral_id_prod (η.measurable_coe (measurable_prodMk_left ms))]
 
 /-- This is a technical lemma saying that `partialTraj κ a b` consists of two independent parts, the
 first one being the identity. It allows to compute integrals. -/

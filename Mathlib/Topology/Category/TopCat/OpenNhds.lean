@@ -43,8 +43,8 @@ variable {x : X} {U V W : OpenNhds x}
 
 instance partialOrder (x : X) : PartialOrder (OpenNhds x) where
   le U V := U.1 ≤ V.1
-  le_refl _ := by dsimp [LE.le]; exact le_rfl
-  le_trans _ _ _ := by dsimp [LE.le]; exact le_trans
+  le_refl _ := le_rfl
+  le_trans _ _ _ := le_trans
   le_antisymm _ _ i j := FullSubcategory.ext <| le_antisymm i j
 
 instance (x : X) : Lattice (OpenNhds x) :=
@@ -109,7 +109,6 @@ def map (x : X) : OpenNhds (f x) ⥤ OpenNhds x where
   obj U := ⟨(Opens.map f).obj U.1, U.2⟩
   map i := (Opens.map f).map i
 
--- Porting note: Changed `⟨(Opens.map f).obj U, by tidy⟩` to `⟨(Opens.map f).obj U, q⟩`
 @[simp]
 theorem map_obj (x : X) (U) (q) : (map f x).obj ⟨U, q⟩ = ⟨(Opens.map f).obj U, q⟩ :=
   rfl

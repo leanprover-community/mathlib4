@@ -5,6 +5,7 @@ Authors: Floris van Doorn, Yaël Dillies
 -/
 import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
@@ -146,8 +147,8 @@ theorem pairwiseDisjoint_smul_iff {s : Set α} {t : Finset α} :
 end IsLeftCancelMul
 
 @[to_additive]
-theorem image_smul_distrib [DecidableEq α] [DecidableEq β] [Monoid α] [Monoid β] [FunLike F α β]
-    [MonoidHomClass F α β] (f : F) (a : α) (s : Finset α) : (a • s).image f = f a • s.image f :=
+theorem image_smul_distrib [DecidableEq α] [DecidableEq β] [Mul α] [Mul β] [FunLike F α β]
+    [MulHomClass F α β] (f : F) (a : α) (s : Finset α) : (a • s).image f = f a • s.image f :=
   image_comm <| map_mul _ _
 
 section Group
@@ -208,9 +209,6 @@ theorem smul_univ [Fintype β] {s : Finset α} (hs : s.Nonempty) : s • (univ :
 @[to_additive (attr := simp)]
 theorem card_smul_finset (a : α) (s : Finset β) : (a • s).card = s.card :=
   card_image_of_injective _ <| MulAction.injective _
-
-@[to_additive (attr := simp)]
-lemma dens_smul_finset [Fintype β] (a : α) (s : Finset β) : (a • s).dens = s.dens := by simp [dens]
 
 /-- If the left cosets of `t` by elements of `s` are disjoint (but not necessarily distinct!), then
 the size of `t` divides the size of `s • t`. -/

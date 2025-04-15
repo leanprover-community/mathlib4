@@ -177,11 +177,12 @@ def vPullbackCone (i j : D.J) : PullbackCone (D.ι i) (D.ι j) :=
   PullbackCone.mk (D.f i j) (D.t i j ≫ D.f j i) (by simp)
 
 /-- The following diagram is a pullback, i.e. `Vᵢⱼ` is the intersection of `Uᵢ` and `Uⱼ` in `X`.
-
+```
 Vᵢⱼ ⟶ Uᵢ
  |      |
  ↓      ↓
  Uⱼ ⟶ X
+```
 -/
 def vPullbackConeIsLimit (i j : D.J) : IsLimit (D.vPullbackCone i j) :=
   𝖣.vPullbackConeIsLimitOfMap forgetToLocallyRingedSpace i j
@@ -238,7 +239,7 @@ theorem isOpen_iff (U : Set D.glued.carrier) : IsOpen U ↔ ∀ i, IsOpen ((D.ι
   rfl
 
 /-- The open cover of the glued space given by the glue data. -/
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp]
 def openCover (D : Scheme.GlueData) : OpenCover D.glued where
   J := D.J
   obj := D.U

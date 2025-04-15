@@ -497,14 +497,14 @@ def sumLexMap (f : r ↪r s) (g : t ↪r u) : Sum.Lex r t ↪r Sum.Lex s u where
 @[simps]
 def prodLexMkLeft (s : β → β → Prop) {a : α} (h : ¬r a a) : s ↪r Prod.Lex r s where
   toFun := Prod.mk a
-  inj' := Prod.mk.inj_left a
+  inj' := Prod.mk_right_injective a
   map_rel_iff' := by simp [Prod.lex_def, h]
 
 /-- `fun a ↦ Prod.mk a b` as a relation embedding. -/
 @[simps]
 def prodLexMkRight (r : α → α → Prop) {b : β} (h : ¬s b b) : r ↪r Prod.Lex r s where
   toFun a := (a, b)
-  inj' := Prod.mk.inj_right b
+  inj' := Prod.mk_left_injective b
   map_rel_iff' := by simp [Prod.lex_def, h]
 
 /-- `Prod.map` as a relation embedding. -/
@@ -614,6 +614,41 @@ instance (r : α → α → Prop) : Inhabited (r ≃r r) :=
 theorem default_def (r : α → α → Prop) : default = RelIso.refl r :=
   rfl
 
+@[simp] lemma apply_symm_apply (e : r ≃r s) (x : β) : e (e.symm x) = x := e.right_inv x
+@[simp] lemma symm_apply_apply (e : r ≃r s) (x : α) : e.symm (e x) = x := e.left_inv x
+
+@[simp] lemma symm_comp_self (e : r ≃r s) : e.symm ∘ e = id := funext e.symm_apply_apply
+@[simp] lemma self_comp_symm (e : r ≃r s) : e ∘ e.symm = id := funext e.apply_symm_apply
+
+@[simp] lemma symm_trans_apply (f : r ≃r s) (g : s ≃r t) (a : γ) :
+    (f.trans g).symm a = f.symm (g.symm a) := rfl
+
+lemma symm_symm_apply (f : r ≃r s) (b : α) : f.symm.symm b = f b := rfl
+
+lemma apply_eq_iff_eq (f : r ≃r s) {x y : α} : f x = f y ↔ x = y := EquivLike.apply_eq_iff_eq f
+
+lemma apply_eq_iff_eq_symm_apply {x : α} {y : β} (f : r ≃r s) : f x = y ↔ x = f.symm y := by
+  conv_lhs => rw [← apply_symm_apply f y]
+  rw [apply_eq_iff_eq]
+
+lemma symm_apply_eq (e : r ≃r s) {x y} : e.symm x = y ↔ x = e y := e.toEquiv.symm_apply_eq
+lemma eq_symm_apply (e : r ≃r s) {x y} : y = e.symm x ↔ e y = x := e.toEquiv.eq_symm_apply
+
+@[simp] lemma symm_symm (e : r ≃r s) : e.symm.symm = e := rfl
+
+lemma symm_bijective : Bijective (.symm : (r ≃r s) → s ≃r r) :=
+  bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
+@[simp] lemma refl_symm : (RelIso.refl r).symm = .refl _ := rfl
+@[simp] lemma trans_refl (e : r ≃r s) : e.trans (.refl _) = e := rfl
+@[simp] lemma refl_trans (e : r ≃r s) : .trans (.refl _) e = e := rfl
+
+@[simp] lemma symm_trans_self (e : r ≃r s) : e.symm.trans e = .refl _ := ext <| by simp
+@[simp] lemma self_trans_symm (e : r ≃r s) : e.trans e.symm = .refl _ := ext <| by simp
+
+lemma trans_assoc {δ : Type*} {u : δ → δ → Prop} (ab : r ≃r s) (bc : s ≃r t) (cd : t ≃r u) :
+    (ab.trans bc).trans cd = ab.trans (bc.trans cd) := rfl
+
 /-- A relation isomorphism between equal relations on equal types. -/
 @[simps! toEquiv apply]
 protected def cast {α β : Type u} {r : α → α → Prop} {s : β → β → Prop} (h₁ : α = β)
@@ -652,27 +687,11 @@ protected def compl (f : r ≃r s) : rᶜ ≃r sᶜ :=
 theorem coe_fn_symm_mk (f o) : ((@RelIso.mk _ _ r s f @o).symm : β → α) = f.symm :=
   rfl
 
-@[simp]
-theorem apply_symm_apply (e : r ≃r s) (x : β) : e (e.symm x) = x :=
-  e.toEquiv.apply_symm_apply x
-
-@[simp]
-theorem symm_apply_apply (e : r ≃r s) (x : α) : e.symm (e x) = x :=
-  e.toEquiv.symm_apply_apply x
-
 theorem rel_symm_apply (e : r ≃r s) {x y} : r x (e.symm y) ↔ s (e x) y := by
   rw [← e.map_rel_iff, e.apply_symm_apply]
 
 theorem symm_apply_rel (e : r ≃r s) {x y} : r (e.symm x) y ↔ s x (e y) := by
   rw [← e.map_rel_iff, e.apply_symm_apply]
-
-@[simp]
-theorem self_trans_symm (e : r ≃r s) : e.trans e.symm = RelIso.refl r :=
-  ext e.symm_apply_apply
-
-@[simp]
-theorem symm_trans_self (e : r ≃r s) : e.symm.trans e = RelIso.refl s :=
-  ext e.apply_symm_apply
 
 protected theorem bijective (e : r ≃r s) : Bijective e :=
   e.toEquiv.bijective

@@ -219,7 +219,7 @@ lemma cycles_left_exact (S : ShortComplex (HomologicalComplex C c)) (hS : S.Exac
         iCycles_d, comp_zero]
     · rw [← cancel_mono (S.X₂.iCycles i), liftCycles_comp_cyclesMap, liftCycles_i, H.2])
 
-variable  {S : ShortComplex (HomologicalComplex C c)}
+variable {S : ShortComplex (HomologicalComplex C c)}
   (hS : S.ShortExact) (i j : ι) (hij : c.Rel i j)
 
 namespace HomologySequence

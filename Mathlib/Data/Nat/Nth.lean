@@ -9,6 +9,8 @@ import Mathlib.Data.Nat.SuccPred
 import Mathlib.Order.Interval.Set.Monotone
 import Mathlib.Order.OrderIsoNat
 import Mathlib.Order.WellFounded
+import Mathlib.Order.OmegaCompletePartialOrder
+import Mathlib.Data.Finset.Sort
 
 /-!
 # The `n`th Number Satisfying a Predicate
@@ -147,7 +149,6 @@ theorem nth_le_nth (hf : (setOf p).Infinite) {k n} : nth p k ≤ nth p n ↔ k �
 theorem range_nth_of_infinite (hf : (setOf p).Infinite) : Set.range (nth p) = setOf p := by
   rw [nth_eq_orderIsoOfNat hf]
   haveI := hf.to_subtype
-  -- Porting note: added `classical`; probably, Lean 3 found instance by unification
   classical exact Nat.Subtype.coe_comp_ofNat_range
 
 theorem nth_mem_of_infinite (hf : (setOf p).Infinite) (n : ℕ) : p (nth p n) :=
