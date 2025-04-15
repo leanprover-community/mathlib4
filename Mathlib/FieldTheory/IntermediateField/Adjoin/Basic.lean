@@ -476,8 +476,9 @@ variable {F} in
 theorem exists_lt_finrank_of_infinite_dimensional
     [Algebra.IsAlgebraic F E] (hnfd : ¬ FiniteDimensional F E) (n : ℕ) :
     ∃ L : IntermediateField F E, FiniteDimensional F L ∧ n < finrank F L := by
-  induction' n with n ih
-  · exact ⟨⊥, Subalgebra.finite_bot, finrank_pos⟩
+  induction n with
+  | zero => exact ⟨⊥, Subalgebra.finite_bot, finrank_pos⟩
+  | succ n ih => ?_
   obtain ⟨L, fin, hn⟩ := ih
   obtain ⟨x, hx⟩ : ∃ x : E, x ∉ L := by
     contrapose! hnfd

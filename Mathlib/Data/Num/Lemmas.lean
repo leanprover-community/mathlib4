@@ -817,8 +817,9 @@ theorem castNum_shiftLeft (m : Num) (n : Nat) : ↑(m <<< n) = (m : ℕ) <<< (n 
   · symm
     apply Nat.zero_shiftLeft
   simp only [cast_pos]
-  induction' n with n IH
-  · rfl
+  induction n with
+  | zero => rfl
+  | succ n IH => ?_
   simp [PosNum.shiftl_succ_eq_bit0_shiftl, Nat.shiftLeft_succ, IH, pow_succ, ← mul_assoc, mul_comm,
         -shiftl_eq_shiftLeft, -PosNum.shiftl_eq_shiftLeft, shiftl, mul_two]
 
@@ -827,8 +828,9 @@ theorem castNum_shiftRight (m : Num) (n : Nat) : ↑(m >>> n) = (m : ℕ) >>> (n
   obtain - | m := m <;> dsimp only [← shiftr_eq_shiftRight, shiftr]
   · symm
     apply Nat.zero_shiftRight
-  induction' n with n IH generalizing m
-  · cases m <;> rfl
+  induction n generalizing m with
+  | zero => cases m <;> rfl
+  | succ n IH => ?_
   have hdiv2 : ∀ m, Nat.div2 (m + m) = m := by intro; rw [Nat.div2_val]; omega
   obtain - | m | m := m <;> dsimp only [PosNum.shiftr, ← PosNum.shiftr_eq_shiftRight]
   · rw [Nat.shiftRight_eq_div_pow]

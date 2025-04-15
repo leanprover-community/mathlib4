@@ -207,8 +207,9 @@ theorem norm_image_sub_le_of_bound' [DecidableEq ι] (f : MultilinearMap 𝕜 E 
       ‖f m₁ - f (s.piecewise m₂ m₁)‖ ≤
         C * ∑ i ∈ s, ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖ := by
     intro s
-    induction' s using Finset.induction with i s his Hrec
-    · simp
+    induction s using Finset.induction with
+    | empty => simp
+    | @insert i s his Hrec => ?_
     have I :
       ‖f (s.piecewise m₂ m₁) - f ((insert i s).piecewise m₂ m₁)‖ ≤
         C * ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖ := by

@@ -227,8 +227,9 @@ theorem adjMatrix_pow_mod_p_of_regular {p : ℕ} (dmod : (d : ZMod p) = 1)
   match k with
   | 0 | 1 => exfalso; linarith
   | k + 2 =>
-    induction' k with k hind
-    · exact adjMatrix_sq_mod_p_of_regular hG dmod hd
+    induction k with
+    | zero => exact adjMatrix_sq_mod_p_of_regular hG dmod hd
+    | succ k hind => ?_
     rw [pow_succ', hind (Nat.le_add_left 2 k)]
     exact adjMatrix_mul_const_one_mod_p_of_regular dmod hd
 

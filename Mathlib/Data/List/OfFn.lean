@@ -48,20 +48,24 @@ theorem ofFn_congr {m n : ℕ} (h : m = n) (f : Fin m → α) :
 
 theorem ofFn_succ' {n} (f : Fin (succ n) → α) :
     ofFn f = (ofFn fun i => f (Fin.castSucc i)).concat (f (Fin.last _)) := by
-  induction' n with n IH
-  · rw [ofFn_zero, concat_nil, ofFn_succ, ofFn_zero]
+  induction n with
+  | zero =>
+    rw [ofFn_zero, concat_nil, ofFn_succ, ofFn_zero]
     rfl
-  · rw [ofFn_succ, IH, ofFn_succ, concat_cons, Fin.castSucc_zero]
+  | succ n IH =>
+    rw [ofFn_succ, IH, ofFn_succ, concat_cons, Fin.castSucc_zero]
     congr
 
 /-- Note this matches the convention of `List.ofFn_succ'`, putting the `Fin m` elements first. -/
 theorem ofFn_add {m n} (f : Fin (m + n) → α) :
     List.ofFn f =
       (List.ofFn fun i => f (Fin.castAdd n i)) ++ List.ofFn fun j => f (Fin.natAdd m j) := by
-  induction' n with n IH
-  · rw [ofFn_zero, append_nil, Fin.castAdd_zero, Fin.cast_refl]
+  induction n with
+  | zero =>
+    rw [ofFn_zero, append_nil, Fin.castAdd_zero, Fin.cast_refl]
     rfl
-  · rw [ofFn_succ', ofFn_succ', IH, append_concat]
+  | succ n IH =>
+    rw [ofFn_succ', ofFn_succ', IH, append_concat]
     rfl
 
 @[simp]
@@ -76,9 +80,10 @@ theorem ofFn_mul {m n} (f : Fin (m * n) → α) :
       ↑i * n + j < (i + 1) * n :=
         (Nat.add_lt_add_left j.prop _).trans_eq (by rw [Nat.add_mul, Nat.one_mul])
       _ ≤ _ := Nat.mul_le_mul_right _ i.prop⟩) := by
-  induction' m with m IH
-  · simp [ofFn_zero, Nat.zero_mul, ofFn_zero, flatten]
-  · simp_rw [ofFn_succ', succ_mul]
+  induction m with
+  | zero => simp [ofFn_zero, Nat.zero_mul, ofFn_zero, flatten]
+  | succ m IH =>
+    simp_rw [ofFn_succ', succ_mul]
     simp [flatten_concat, ofFn_add, IH]
     rfl
 

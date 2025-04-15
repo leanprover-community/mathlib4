@@ -68,9 +68,10 @@ theorem formPerm_disjoint_iff (hl : Nodup l) (hl' : Nodup l') (hn : 2 ≤ l.leng
 theorem isCycle_formPerm (hl : Nodup l) (hn : 2 ≤ l.length) : IsCycle (formPerm l) := by
   rcases l with - | ⟨x, l⟩
   · norm_num at hn
-  induction' l with y l generalizing x
-  · norm_num at hn
-  · use x
+  induction l generalizing x with
+  | nil => norm_num at hn
+  | cons y l =>
+    use x
     constructor
     · rwa [formPerm_apply_mem_ne_self_iff _ hl _ mem_cons_self]
     · intro w hw

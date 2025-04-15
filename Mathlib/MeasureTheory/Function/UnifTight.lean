@@ -163,9 +163,11 @@ all sequences indexed by a finite type. -/
 private theorem unifTight_fin (hp_top : p ≠ ∞) {n : ℕ} {f : Fin n → α → β}
     (hf : ∀ i, MemLp (f i) p μ) : UnifTight f p μ := by
   revert f
-  induction' n with n h
-  · intro f hf
+  induction n with
+  | zero =>
+    intro f hf
     exact unifTight_of_subsingleton hp_top hf
+  | succ n h => ?_
   intro f hfLp ε hε
   by_cases hε_top : ε = ∞
   · exact ⟨∅, (by measurability), fun _ => hε_top.symm ▸ le_top⟩

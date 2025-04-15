@@ -79,9 +79,10 @@ theorem principal_one_iff : Principal op 1 ↔ op 0 0 = 0 := by
   · rwa [lt_one_iff_zero, ha, hb] at *
 
 theorem Principal.iterate_lt (hao : a < o) (ho : Principal op o) (n : ℕ) : (op a)^[n] a < o := by
-  induction' n with n hn
-  · rwa [Function.iterate_zero]
-  · rw [Function.iterate_succ']
+  induction n with
+  | zero => rwa [Function.iterate_zero]
+  | succ n hn =>
+    rw [Function.iterate_succ']
     exact ho hao hn
 
 theorem op_eq_self_of_principal (hao : a < o) (H : IsNormal (op a))
@@ -236,9 +237,9 @@ theorem principal_add_iff_zero_or_omega0_opow :
     apply not_lt_of_le
     suffices e : ω ^ log ω o * n + o = o by
       simpa only [e] using le_add_right (ω ^ log ω o * ↑n) o
-    induction' n with n IH
-    · simp [Nat.cast_zero, mul_zero, zero_add]
-    · simp only [Nat.cast_succ, mul_add_one, add_assoc, this, IH]
+    induction n with
+    | zero => simp [Nat.cast_zero, mul_zero, zero_add]
+    | succ n IH => simp only [Nat.cast_succ, mul_add_one, add_assoc, this, IH]
 
 theorem principal_add_opow_of_principal_add {a} (ha : Principal (· + ·) a) (b : Ordinal) :
     Principal (· + ·) (a ^ b) := by

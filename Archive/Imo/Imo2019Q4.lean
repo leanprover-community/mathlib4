@@ -61,8 +61,9 @@ theorem upper_bound {k n : ℕ} (hk : k > 0)
     _ < (∑ i ∈ range n, i)! := ?_
     _ ≤ k ! := by gcongr
   clear h h2
-  induction' n, hn using Nat.le_induction with n' hn' IH
-  · decide
+  induction n, hn using Nat.le_induction with
+  | base => decide
+  | succ n' hn' IH => ?_
   let A := ∑ i ∈ range n', i
   have le_sum : ∑ i ∈ range 6, i ≤ A := by
     apply sum_le_sum_of_subset

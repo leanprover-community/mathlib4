@@ -712,9 +712,9 @@ open List
 variable {X : δ → Type*} [∀ i, MeasurableSpace (X i)]
 
 theorem measurable_tProd_mk (l : List δ) : Measurable (@TProd.mk δ X l) := by
-  induction' l with i l ih
-  · exact measurable_const
-  · exact (measurable_pi_apply i).prodMk ih
+  induction l with
+  | nil => exact measurable_const
+  | cons i l ih => exact (measurable_pi_apply i).prodMk ih
 
 theorem measurable_tProd_elim [DecidableEq δ] :
     ∀ {l : List δ} {i : δ} (hi : i ∈ l), Measurable fun v : TProd X l => v.elim hi
@@ -732,9 +732,9 @@ theorem measurable_tProd_elim' [DecidableEq δ] {l : List δ} (h : ∀ i, i ∈ 
 
 theorem MeasurableSet.tProd (l : List δ) {s : ∀ i, Set (X i)} (hs : ∀ i, MeasurableSet (s i)) :
     MeasurableSet (Set.tprod l s) := by
-  induction' l with i l ih
-  · exact MeasurableSet.univ
-  · exact (hs i).prod ih
+  induction l with
+  | nil => exact MeasurableSet.univ
+  | cons i l ih => exact (hs i).prod ih
 
 end TProd
 

@@ -266,11 +266,13 @@ theorem induction_with_natDegree_le (P : R[X] → Prop) (N : ℕ) (P_0 : P 0)
   intro f df
   generalize hd : #f.support = c
   revert f
-  induction' c with c hc
-  · intro f _ f0
+  induction c with
+  | zero =>
+    intro f _ f0
     convert P_0
     simpa [support_eq_empty, card_eq_zero] using f0
-  · intro f df f0
+  | succ c hc =>
+    intro f df f0
     rw [← eraseLead_add_C_mul_X_pow f]
     cases c
     · convert P_C_mul_pow f.natDegree f.leadingCoeff ?_ df using 1

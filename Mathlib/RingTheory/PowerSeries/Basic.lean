@@ -694,7 +694,8 @@ theorem eq_zero_or_eq_zero_of_mul_eq_zero [NoZeroDivisors R] (φ ψ : R⟦X⟧) 
   have hm₂ : ∀ k < m, ¬coeff R k φ ≠ 0 := fun k => Nat.find_min ex
   ext n
   rw [(coeff R n).map_zero]
-  induction' n using Nat.strong_induction_on with n ih
+  induction n using Nat.strong_induction_on with
+  | h n ih => ?_
   replace h := congr_arg (coeff R (m + n)) h
   rw [LinearMap.map_zero, coeff_mul, Finset.sum_eq_single (m, n)] at h
   · replace h := NoZeroDivisors.eq_zero_or_eq_zero_of_mul_eq_zero h

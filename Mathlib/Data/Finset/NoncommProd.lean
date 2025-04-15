@@ -111,9 +111,10 @@ def noncommProd (s : Multiset α) (comm : { x | x ∈ s }.Pairwise Commute) : α
 theorem noncommProd_coe (l : List α) (comm) : noncommProd (l : Multiset α) comm = l.prod := by
   rw [noncommProd]
   simp only [noncommFold_coe]
-  induction' l with hd tl hl
-  · simp
-  · rw [List.prod_cons, List.foldr, hl]
+  induction l with
+  | nil => simp
+  | cons hd tl hl =>
+    rw [List.prod_cons, List.foldr, hl]
     intro x hx y hy
     exact comm (List.mem_cons_of_mem _ hx) (List.mem_cons_of_mem _ hy)
 
@@ -132,9 +133,10 @@ theorem noncommProd_cons' (s : Multiset α) (a : α) (comm) :
     noncommProd (a ::ₘ s) comm = noncommProd s (comm.mono fun _ => mem_cons_of_mem) * a := by
   induction' s using Quotient.inductionOn with s
   simp only [quot_mk_to_coe, cons_coe, noncommProd_coe, List.prod_cons]
-  induction' s with hd tl IH
-  · simp
-  · rw [List.prod_cons, mul_assoc, ← IH, ← mul_assoc, ← mul_assoc]
+  induction s with
+  | nil => simp
+  | cons hd tl IH =>
+    rw [List.prod_cons, mul_assoc, ← IH, ← mul_assoc, ← mul_assoc]
     · congr 1
       apply comm.of_refl <;> simp
     · intro x hx y hy

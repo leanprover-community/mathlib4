@@ -720,8 +720,9 @@ noncomputable def schroederBernstein {f : α → β} {g : β → α} (hf : Measu
   refine ⟨iInter X, ?_, ?_⟩
   · apply MeasurableSet.iInter
     intro n
-    induction' n with n ih
-    · exact MeasurableSet.univ
+    induction n with
+    | zero => exact MeasurableSet.univ
+    | succ n ih => ?_
     rw [Function.iterate_succ', Function.comp_apply]
     exact (hg.measurableSet_image' (hf.measurableSet_image' ih).compl).compl
   apply subset_antisymm
