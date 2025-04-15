@@ -261,7 +261,7 @@ theorem map_ofFixingSubgroupUnion_bijective (s t : Set α) :
       simp only [Set.mem_preimage]
       exact h
 
-/-- The equivariant map on sub_mul_action.of_fixing_subgroup given a set inclusion -/
+/-- The equivariant map on `SUbMulAction.ofFixingSubgroup` given a set inclusion -/
 def ofFixingSubgroup_of_inclusion {s t : Set α} (hst : t ⊆ s) :
     ofFixingSubgroup M s
       →ₑ[Subgroup.inclusion (fixingSubgroup_antitone M α hst)]
@@ -275,8 +275,8 @@ lemma ofFixingSubgroup_of_inclusion_injective {s t : Set α} (hst : t ⊆ s) :
   rw [← SetLike.coe_eq_coe] at hxy ⊢
   exact hxy
 
-/-- The equivariant map between sub_mul_action.of_stabilizer
-  and .of_fixing_subgroup of the singleton -/
+/-- The equivariant map between `SubMulAction.ofStabilizer M a`
+and `ofFixingSubgroup M {a}` -/
 def ofFixingSubgroup_of_singleton (a : α) :
     let φ : fixingSubgroup M ({a} : Set α) → stabilizer M a := fun ⟨m, hm⟩ =>
       ⟨m, ((mem_fixingSubgroup_iff M).mp hm) a (Set.mem_singleton a)⟩
@@ -288,7 +288,7 @@ theorem ofFixingSubgroup_of_singleton_bijective (a : α) :
     Function.Bijective (ofFixingSubgroup_of_singleton M _ a) :=
   ⟨fun _ _ ↦ id, fun x ↦ ⟨x, rfl⟩⟩
 
-/-- The identity between the sub_mul_action of fixing_subgroups
+/-- The identity between the `SubMulAction`s of `fixingSubgroup`s
 of equal sets, as an equivariant map -/
 def ofFixingSubgroup_of_eq {s t : Set α} (hst : s = t) :
     let φ : fixingSubgroup M s ≃* fixingSubgroup M t :=
@@ -310,9 +310,6 @@ theorem ofFixingSubgroup_of_eq_bijective {s t : Set α} (hst : s = t) :
 end Comparisons
 
 section Transitivity
-
-noncomputable example (n : ℕ) (s : Set α) [Finite s] (hs : s.ncard = n) :
-    s ≃ Fin n := Finite.equivFinOfCardEq hs
 
 open Function.Embedding Fin.Embedding
 
@@ -417,6 +414,8 @@ theorem ofFixingSubgroup.isMultiplyPretransitive {m n : ℕ} [IsMultiplyPretrans
         simpa [Set.Nat.card_coe_set_eq] using i.prop),
       Fin.eta, i] using hg
 
+/-- The fixator of a subset of cardinal d in a k-transitive action
+acts (k-d) transitively on the remaining -/
 theorem ofFixingSubgroup.isMultiplyPretransitive' {m n : ℕ} [IsMultiplyPretransitive M α n]
     (s : Set α) [Finite s] (hmn : s.ncard + m ≤ n) (hn : (n : ENat) ≤ ENat.card α) :
     IsMultiplyPretransitive (fixingSubgroup M s) (SubMulAction.ofFixingSubgroup M s) m :=
