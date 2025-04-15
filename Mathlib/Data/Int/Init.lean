@@ -26,32 +26,6 @@ open Nat
 namespace Int
 variable {a b c d m n : ℤ}
 
-section Order
-
-protected lemma le_rfl : a ≤ a := a.le_refl
-protected lemma lt_or_lt_of_ne : a ≠ b → a < b ∨ b < a := Int.lt_or_gt_of_ne
-protected lemma lt_or_le (a b : ℤ) : a < b ∨ b ≤ a := by rw [← Int.not_lt]; exact Decidable.em _
-protected lemma le_or_lt (a b : ℤ) : a ≤ b ∨ b < a := (b.lt_or_le a).symm
-protected lemma lt_asymm : a < b → ¬ b < a := by rw [Int.not_lt]; exact Int.le_of_lt
-protected lemma le_of_eq (hab : a = b) : a ≤ b := by rw [hab]; exact Int.le_rfl
-protected lemma ge_of_eq (hab : a = b) : b ≤ a := Int.le_of_eq hab.symm
-protected lemma le_antisymm_iff : a = b ↔ a ≤ b ∧ b ≤ a :=
-  ⟨fun h ↦ ⟨Int.le_of_eq h, Int.ge_of_eq h⟩, fun h ↦ Int.le_antisymm h.1 h.2⟩
-protected lemma le_iff_eq_or_lt : a ≤ b ↔ a = b ∨ a < b := by omega
-
-protected lemma le_iff_lt_or_eq : a ≤ b ↔ a < b ∨ a = b := by rw [Int.le_iff_eq_or_lt, or_comm]
-
-end Order
-
--- TODO: Tag in Lean
-attribute [simp] natAbs_pos
-
-protected lemma one_pos : 0 < (1 : Int) := Int.zero_lt_one
-
-protected lemma one_ne_zero : (1 : ℤ) ≠ 0 := by decide
-
-protected lemma one_nonneg : 0 ≤ (1 : ℤ) := Int.le_of_lt Int.zero_lt_one
-
 protected theorem neg_eq_neg {a b : ℤ} (h : -a = -b) : a = b := Int.neg_inj.1 h
 
 @[simp high]
