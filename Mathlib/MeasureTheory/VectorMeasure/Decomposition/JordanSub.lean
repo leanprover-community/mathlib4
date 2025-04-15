@@ -139,7 +139,7 @@ theorem sub_zero {μ : Measure X} : μ - 0 = μ := by
   · simp only [add_zero]; exact sInf_le (by simp)
   · simp [add_zero]
 
-lemma sub_eq_zero_of_ge_on {μ ν : Measure X} (hs : SetWhereLe μ ν s) : (μ - ν) s = 0 := by
+lemma sub_eq_zero_of_le_on {μ ν : Measure X} (hs : SetWhereLe μ ν s) : (μ - ν) s = 0 := by
   have : μ.restrict s ≤ ν.restrict s + 0 := by simp [hs.le_on]
   replace this := Measure.sub_le_of_le_add this
   simp only [sub_zero] at this
@@ -175,15 +175,15 @@ theorem setWhereLe_iff_setWhereLeSignedMeasure :
     SetWhereLe μ ν s ↔ SignedMeasure.SetWhereLe μ ν s :=
       ⟨toSignedMeasure_setWhereLe, ofSignedMeasure_setWhereLe⟩
 
-lemma sub_eq_zero_of_ge_on' (hs : SignedMeasure.SetWhereLe μ ν s) : (μ - ν) s = 0 :=
-  sub_eq_zero_of_ge_on (ofSignedMeasure_setWhereLe hs)
+lemma sub_eq_zero_of_le_on' (hs : SignedMeasure.SetWhereLe μ ν s) : (μ - ν) s = 0 :=
+  sub_eq_zero_of_le_on (ofSignedMeasure_setWhereLe hs)
 
 theorem mutually_singular_measure_sub :
     (μ - ν).MutuallySingular (ν - μ) := by
   obtain ⟨s, hs⟩ := exists_SetWhereLeSignedMeasure μ ν
   exact ⟨s, hs.measurable,
-    sub_eq_zero_of_ge_on' hs,
-    sub_eq_zero_of_ge_on' inferInstance⟩
+    sub_eq_zero_of_le_on' hs,
+    sub_eq_zero_of_le_on' inferInstance⟩
 
 lemma toSignedMeasure_restrict_sub (hs : SignedMeasure.SetWhereLe μ ν s) :
     ((ν - μ).restrict s).toSignedMeasure =
@@ -209,9 +209,9 @@ theorem sub_toSignedMeasure_eq_toSignedMeasure_sub :
   have h₁ := toSignedMeasure_restrict_sub hs
   have h₂ := toSignedMeasure_restrict_sub hsc
 
-  have h₁' := toSignedMeasure_congr <|restrict_eq_zero.mpr <|sub_eq_zero_of_ge_on
+  have h₁' := toSignedMeasure_congr <|restrict_eq_zero.mpr <|sub_eq_zero_of_le_on
     <|ofSignedMeasure_setWhereLe hs
-  have h₂' := toSignedMeasure_congr <|restrict_eq_zero.mpr <|sub_eq_zero_of_ge_on
+  have h₂' := toSignedMeasure_congr <|restrict_eq_zero.mpr <|sub_eq_zero_of_le_on
     <|ofSignedMeasure_setWhereLe hsc
 
   have partition₁ := VectorMeasure.restrict_add_restrict_compl (μ - ν).toSignedMeasure hs.measurable
