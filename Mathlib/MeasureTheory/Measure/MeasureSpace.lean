@@ -213,7 +213,8 @@ theorem sum_measure_preimage_singleton (s : Finset β) {f : α → β}
 
 @[simp] lemma sum_measure_singleton {s : Finset α} [MeasurableSingletonClass α] :
     ∑ x ∈ s, μ {x} = μ s := by
-  change ∑ x ∈ s, μ (id ⁻¹' {x}) = μ s
+  trans ∑ x ∈ s, μ (id ⁻¹' {x})
+  · simp
   rw [sum_measure_preimage_singleton]
   · simp
   · simp
