@@ -336,7 +336,7 @@ private lemma LinearIndependent.pair_add_smul_add_smul_iff_aux (h : a * d ≠ b 
   ext i; fin_cases i <;> simp <;> module
 
 @[deprecated (since := "2025-04-15")]
-alias LinearIndependent.h.linear_combination_pair_of_det_ne_zero :=
+alias LinearIndependent.linear_combination_pair_of_det_ne_zero :=
   LinearIndependent.pair_add_smul_add_smul_iff
 
 @[simp] lemma LinearIndependent.pair_add_smul_right_iff :
