@@ -78,7 +78,7 @@ For instance, you can allow the `done` and `skip` tactics using
 #allow_unused_tactic Lean.Parser.Tactic.done Lean.Parser.Tactic.skip
 ```
 
-This change is file-local.  If you want a *persistent* change, then use the `!`-flag:
+This change is file-local. If you want a *persistent* change, then use the `!`-flag:
 the command `#allow_unused_tactic! ids` makes the change the linter continues to ignore these
 tactics also in files importing a file where this command is issued.
 

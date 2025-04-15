@@ -11,8 +11,8 @@ import Mathlib.Geometry.Manifold.IsManifold.Basic
 
 An analytic manifold is a manifold modelled on a normed vector space, or a subset like a
 half-space (to get manifolds with boundaries) for which changes of coordinates are analytic
-everywhere.  The definition mirrors `IsManifold`, but using an `analyticGroupoid` in
-place of `contDiffGroupoid`.  All analytic manifolds are smooth manifolds.
+everywhere. The definition mirrors `IsManifold`, but using an `analyticGroupoid` in
+place of `contDiffGroupoid`. All analytic manifolds are smooth manifolds.
 
 TODO: deprecate the whole file: one should use `IsManifold I ω M` instead
 -/
@@ -32,7 +32,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*}
 ## `analyticGroupoid`
 
 `f ∈ PartialHomeomorph H H` is in `analyticGroupoid I` if `f` and `f.symm` are smooth everywhere,
-analytic on the interior, and map the interior to itself.  This allows us to define
+analytic on the interior, and map the interior to itself. This allows us to define
 `AnalyticManifold` including in cases with boundary.
 -/
 
@@ -40,7 +40,7 @@ section analyticGroupoid
 
 variable (I) in
 /-- Given a model with corners `(E, H)`, we define the pregroupoid of analytic transformations of
-`H` as the maps that are `AnalyticOn` when read in `E` through `I`.  Using `AnalyticOn`
+`H` as the maps that are `AnalyticOn` when read in `E` through `I`. Using `AnalyticOn`
 rather than `AnalyticOnNhd` gives us meaningful definitions at boundary points. -/
 def analyticPregroupoid : Pregroupoid H where
   property f s := AnalyticOn 𝕜 (I ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ range I)
@@ -74,7 +74,7 @@ def analyticPregroupoid : Pregroupoid H where
 
 variable (I) in
 /-- Given a model with corners `(E, H)`, we define the groupoid of analytic transformations of
-`H` as the maps that are `AnalyticOn` when read in `E` through `I`.  Using `AnalyticOn`
+`H` as the maps that are `AnalyticOn` when read in `E` through `I`. Using `AnalyticOn`
 rather than `AnalyticOnNhd` gives us meaningful definitions at boundary points. -/
 def analyticGroupoid : StructureGroupoid H :=
   (analyticPregroupoid I).groupoid

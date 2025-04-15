@@ -14,7 +14,7 @@ import Mathlib.Topology.UniformSpace.CompactConvergence
 This file defines a generic API for the *continuous functional calculus* in *non-unital* algebras
 which is suitable in a wide range of settings. The design is intended to match as closely as
 possible that for unital algebras in
-`Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital`.  Changes to either file should
+`Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital`. Changes to either file should
 be mirrored in its counterpart whenever possible. The underlying reasons for the design decisions in
 the unital case apply equally in the non-unital case. See the module documentation in that file for
 more information.
@@ -205,7 +205,7 @@ section CFCn
 
 open Classical in
 /-- This is the *continuous functional calculus* of an element `a : A` in a non-unital algebra
-applied to bare functions.  When either `a` does not satisfy the predicate `p` (i.e., `a` is not
+applied to bare functions. When either `a` does not satisfy the predicate `p` (i.e., `a` is not
 `IsStarNormal`, `IsSelfAdjoint`, or `0 ≤ a` when `R` is `ℂ`, `ℝ`, or `ℝ≥0`, respectively), or when
 `f : R → R` is not continuous on the quasispectrum of `a` or `f 0 ≠ 0`, then `cfcₙ f a` returns the
 junk value `0`.

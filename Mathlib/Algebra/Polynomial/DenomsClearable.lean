@@ -10,7 +10,7 @@ import Mathlib.Algebra.Polynomial.EraseLead
 /-!
 # Denominators of evaluation of polynomials at ratios
 
-Let `i : R → K` be a homomorphism of semirings.  Assume that `K` is commutative.  If `a` and
+Let `i : R → K` be a homomorphism of semirings. Assume that `K` is commutative. If `a` and
 `b` are elements of `R` such that `i b ∈ K` is invertible, then for any polynomial
 `f ∈ R[X]` the "mathematical" expression `b ^ f.natDegree * f (a / b) ∈ K` is in
 the image of the homomorphism `i`.
@@ -75,7 +75,7 @@ end DenomsClearable
 open RingHom
 
 /-- Evaluating a polynomial with integer coefficients at a rational number and clearing
-denominators, yields a number greater than or equal to one.  The target can be any
+denominators, yields a number greater than or equal to one. The target can be any
 `LinearOrderedField K`.
 The assumption on `K` could be weakened to `LinearOrderedCommRing` assuming that the
 image of the denominator is invertible in `K`. -/

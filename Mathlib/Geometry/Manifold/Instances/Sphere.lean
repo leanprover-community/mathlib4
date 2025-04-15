@@ -52,9 +52,9 @@ map `fun t ↦ exp (t * I)` from `ℝ` to `Circle`) is analytic.
 ## Implementation notes
 
 The model space for the charted space instance is `EuclideanSpace ℝ (Fin n)`, where `n` is a
-natural number satisfying the typeclass assumption `[Fact (finrank ℝ E = n + 1)]`.  This may seem a
+natural number satisfying the typeclass assumption `[Fact (finrank ℝ E = n + 1)]`. This may seem a
 little awkward, but it is designed to circumvent the problem that the literal expression for the
-dimension of the model space (up to definitional equality) determines the type.  If one used the
+dimension of the model space (up to definitional equality) determines the type. If one used the
 naive expression `EuclideanSpace ℝ (Fin (finrank ℝ E - 1))` for the model space, then the sphere in
 `ℂ` would be a manifold with model space `EuclideanSpace ℝ (Fin (2 - 1))` but not with model space
 `EuclideanSpace ℝ (Fin 1)`.
@@ -82,7 +82,7 @@ variable (v : E)
 
 /-- Stereographic projection, forward direction. This is a map from an inner product space `E` to
 the orthogonal complement of an element `v` of `E`. It is smooth away from the affine hyperplane
-through `v` parallel to the orthogonal complement.  It restricts on the sphere to the stereographic
+through `v` parallel to the orthogonal complement. It restricts on the sphere to the stereographic
 projection. -/
 def stereoToFun (x : E) : (ℝ ∙ v)ᗮ :=
   (2 / ((1 : ℝ) - innerSL ℝ v x)) • orthogonalProjection (ℝ ∙ v)ᗮ x
@@ -108,7 +108,7 @@ theorem continuousOn_stereoToFun :
 
 variable (v) in
 /-- Auxiliary function for the construction of the reverse direction of the stereographic
-projection.  This is a map from the orthogonal complement of a unit vector `v` in an inner product
+projection. This is a map from the orthogonal complement of a unit vector `v` in an inner product
 space `E` to `E`; we will later prove that it takes values in the unit sphere.
 
 For most purposes, use `stereoInvFun`, not `stereoInvFunAux`. -/
@@ -167,7 +167,7 @@ theorem contDiff_stereoInvFunAux {m : WithTop ℕ∞} : ContDiff ℝ m (stereoIn
     exact (h₀.sub contDiff_const).smul contDiff_const
   exact (h₁.smul h₂).of_le le_top
 
-/-- Stereographic projection, reverse direction.  This is a map from the orthogonal complement of a
+/-- Stereographic projection, reverse direction. This is a map from the orthogonal complement of a
 unit vector `v` in an inner product space `E` to the unit sphere in `E`. -/
 def stereoInvFun (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : sphere (0 : E) 1 :=
   ⟨stereoInvFunAux v (w : E), stereoInvFunAux_mem hv w.2⟩
@@ -303,14 +303,14 @@ In this section we construct a charted space structure on the unit sphere in a f
 real inner product space `E`; that is, we show that it is locally homeomorphic to the Euclidean
 space of dimension one less than `E`.
 
-The restriction to finite dimension is for convenience.  The most natural `ChartedSpace`
+The restriction to finite dimension is for convenience. The most natural `ChartedSpace`
 structure for the sphere uses the stereographic projection from the antipodes of a point as the
-canonical chart at this point.  However, the codomain of the stereographic projection constructed
+canonical chart at this point. However, the codomain of the stereographic projection constructed
 in the previous section is `(ℝ ∙ v)ᗮ`, the orthogonal complement of the vector `v` in `E` which is
 the "north pole" of the projection, so a priori these charts all have different codomains.
 
 So it is necessary to prove that these codomains are all continuously linearly equivalent to a
-fixed normed space.  This could be proved in general by a simple case of Gram-Schmidt
+fixed normed space. This could be proved in general by a simple case of Gram-Schmidt
 orthogonalization, but in the finite-dimensional case it follows more easily by dimension-counting.
 -/
 
@@ -319,7 +319,7 @@ private theorem findim (n : ℕ) [Fact (finrank ℝ E = n + 1)] : FiniteDimensio
   .of_fact_finrank_eq_succ n
 
 /-- Variant of the stereographic projection, for the sphere in an `n + 1`-dimensional inner product
-space `E`.  This version has codomain the Euclidean space of dimension `n`, and is obtained by
+space `E`. This version has codomain the Euclidean space of dimension `n`, and is obtained by
 composing the original sterographic projection (`stereographic`) with an arbitrary linear isometry
 from `(ℝ ∙ v)ᗮ` to the Euclidean space. -/
 def stereographic' (n : ℕ) [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
@@ -466,7 +466,7 @@ private lemma stereographic'_neg {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : s
   apply stereographic_neg_apply
 
 /-- Consider the differential of the inclusion of the sphere in `E` at the point `v` as a continuous
-linear map from `TangentSpace (𝓡 n) v` to `E`.  The range of this map is the orthogonal complement
+linear map from `TangentSpace (𝓡 n) v` to `E`. The range of this map is the orthogonal complement
 of `v` in `E`.
 
 Note that there is an abuse here of the defeq between `E` and the tangent space to `E` at `(v:E`).
@@ -509,7 +509,7 @@ theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : s
     exact Submodule.mem_span_singleton_self (v : E)
 
 /-- Consider the differential of the inclusion of the sphere in `E` at the point `v` as a continuous
-linear map from `TangentSpace (𝓡 n) v` to `E`.  This map is injective. -/
+linear map from `TangentSpace (𝓡 n) v` to `E`. This map is injective. -/
 theorem mfderiv_coe_sphere_injective {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
     Injective (mfderiv (𝓡 n) 𝓘(ℝ, E) ((↑) : sphere (0 : E) 1 → E) v) := by
   rw [((contMDiff_coe_sphere v).mdifferentiableAt le_top).mfderiv]
@@ -542,7 +542,7 @@ theorem finrank_real_complex_fact' : Fact (finrank ℝ ℂ = 1 + 1) :=
 
 attribute [local instance] finrank_real_complex_fact'
 
-/-- The unit circle in `ℂ` is a charted space modelled on `EuclideanSpace ℝ (Fin 1)`.  This
+/-- The unit circle in `ℂ` is a charted space modelled on `EuclideanSpace ℝ (Fin 1)`. This
 follows by definition from the corresponding result for `Metric.Sphere`. -/
 instance : ChartedSpace (EuclideanSpace ℝ (Fin 1)) Circle :=
   EuclideanSpace.instChartedSpaceSphere

@@ -11,7 +11,7 @@ An example of a `LinearOrderedCommMonoidWithZero` in which the product of two po
 elements vanishes.
 
 This is the monoid with 3 elements `0, ε, 1` where `ε ^ 2 = 0` and everything else is forced.
-The order is `0 < ε < 1`.  Since `ε ^ 2 = 0`, the product of strictly positive elements can vanish.
+The order is `0 < ε < 1`. Since `ε ^ 2 = 0`, the product of strictly positive elements can vanish.
 
 Relevant Zulip chat:
 https://leanprover.zulipchat.com/#narrow/stream/116395-maths/topic/mul_pos

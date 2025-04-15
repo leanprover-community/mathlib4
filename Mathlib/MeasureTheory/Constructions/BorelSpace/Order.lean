@@ -337,7 +337,7 @@ theorem borel_eq_generateFrom_Ioc (α : Type*) [TopologicalSpace α] [SecondCoun
 
 namespace MeasureTheory.Measure
 
-/-- Two finite measures on a Borel space are equal if they agree on all closed-open intervals.  If
+/-- Two finite measures on a Borel space are equal if they agree on all closed-open intervals. If
 `α` is a conditionally complete linear order with no top element,
 `MeasureTheory.Measure.ext_of_Ico` is an extensionality lemma with weaker assumptions on `μ` and
 `ν`. -/
@@ -351,7 +351,7 @@ theorem ext_of_Ico_finite {α : Type*} [TopologicalSpace α] {m : MeasurableSpac
   rintro - ⟨a, b, hlt, rfl⟩
   exact h hlt
 
-/-- Two finite measures on a Borel space are equal if they agree on all open-closed intervals.  If
+/-- Two finite measures on a Borel space are equal if they agree on all open-closed intervals. If
 `α` is a conditionally complete linear order with no top element,
 `MeasureTheory.Measure.ext_of_Ioc` is an extensionality lemma with weaker assumptions on `μ` and
 `ν`. -/

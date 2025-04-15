@@ -21,7 +21,7 @@ It comes with a canonical bilinear map
 
 Given any bilinear map `f : M →ₗ[R] N →ₗ[R] P`, there is a unique linear map
 `TensorProduct.lift f : TensorProduct R M N →ₗ[R] P` whose composition with the canonical bilinear
-map `TensorProduct.mk` is the given bilinear map `f`.  Uniqueness is shown in the theorem
+map `TensorProduct.mk` is the given bilinear map `f`. Uniqueness is shown in the theorem
 `TensorProduct.lift.unique`.
 
 

@@ -10,7 +10,7 @@ import Mathlib.Algebra.MonoidAlgebra.Defs
 # Variations on non-zero divisors in `AddMonoidAlgebra`s
 
 This file studies the interaction between typeclass assumptions on two Types `R` and `A` and
-whether `R[A]` has non-zero zero-divisors.  For some background on related
+whether `R[A]` has non-zero zero-divisors. For some background on related
 questions, see [Kaplansky's Conjectures](https://en.wikipedia.org/wiki/Kaplansky%27s_conjectures),
 especially the *zero divisor conjecture*.
 
@@ -51,7 +51,7 @@ The conditions on `A` imposed in `NoZeroDivisors.of_left_ordered` are sometimes 
 The conditions on `A` imposed in `NoZeroDivisors.of_right_ordered` are sometimes referred to as
 `right-ordered`.
 
-These conditions are sufficient, but not necessary.  As mentioned above, *Kaplansky's Conjecture*
+These conditions are sufficient, but not necessary. As mentioned above, *Kaplansky's Conjecture*
 asserts that `A` being torsion-free may be enough.
 -/
 

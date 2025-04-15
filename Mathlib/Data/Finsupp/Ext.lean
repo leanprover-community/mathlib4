@@ -44,7 +44,7 @@ theorem addHom_ext [AddZeroClass N] ⦃f g : (α →₀ M) →+ N⦄
 then they are equal.
 
 We formulate this using equality of `AddMonoidHom`s so that `ext` tactic can apply a type-specific
-extensionality lemma after this one.  E.g., if the fiber `M` is `ℕ` or `ℤ`, then it suffices to
+extensionality lemma after this one. E.g., if the fiber `M` is `ℕ` or `ℤ`, then it suffices to
 verify `f (single a 1) = g (single a 1)`. -/
 @[ext high]
 theorem addHom_ext' [AddZeroClass N] ⦃f g : (α →₀ M) →+ N⦄

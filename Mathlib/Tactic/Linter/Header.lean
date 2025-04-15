@@ -87,7 +87,7 @@ It returns a syntax node of kind `Lean.Parser.Module.module`.
 The option of appending a final string to the text gives more control to avoid syntax errors,
 for instance in the presence of `#guard_msgs in` or `set_option ... in`.
 
-Note that this parsing will *not* be successful on every file.  However, if the linter is
+Note that this parsing will *not* be successful on every file. However, if the linter is
 parsing the file linearly, it will only need to parse
 * the imports (that are always parseable) and
 * the first non-import command that is supposed to be a module doc-string (so again always
@@ -151,7 +151,7 @@ The linter checks that
 -/
 def copyrightHeaderChecks (copyright : String) : Array (Syntax × String) := Id.run do
   -- First, we merge lines ending in `,`: two spaces after the line-break are ok,
-  -- but so is only one or none.  We take care of *not* adding more consecutive spaces, though.
+  -- but so is only one or none. We take care of *not* adding more consecutive spaces, though.
   -- This is to allow the copyright or authors' lines to span several lines.
   let preprocessCopyright := (copyright.replace ",\n  " ", ").replace ",\n" ","
   -- Filter out everything after the first isolated `-/`.

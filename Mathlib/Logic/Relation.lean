@@ -111,7 +111,7 @@ section Comp
 
 variable {r : α → β → Prop} {p : β → γ → Prop} {q : γ → δ → Prop}
 
-/-- The composition of two relations, yielding a new relation.  The result
+/-- The composition of two relations, yielding a new relation. The result
 relates a term of `α` and a term of `γ` if there is an intermediate
 term of `β` related to both.
 -/
@@ -195,7 +195,7 @@ section Map
 variable {r : α → β → Prop} {f : α → γ} {g : β → δ} {c : γ} {d : δ}
 
 /-- The map of a relation `r` through a pair of functions pushes the
-relation to the codomains of the functions.  The resulting relation is
+relation to the codomains of the functions. The resulting relation is
 defined by having pairs of terms related if they have preimages
 related by `r`.
 -/
@@ -630,7 +630,7 @@ end EqvGen
 
 /-- The join of a relation on a single type is a new relation for which
 pairs of terms are related if there is a third term they are both
-related to.  For example, if `r` is a relation representing rewrites
+related to. For example, if `r` is a relation representing rewrites
 in a term rewriting system, then *confluence* is the property that if
 `a` rewrites to both `b` and `c`, then `join r` relates `b` and `c`
 (see `Relation.church_rosser`).

@@ -320,7 +320,7 @@ noncomputable def reprx : F.obj (op F.reprX) :=
   F.representableBy.homEquiv (𝟙 _)
 
 /-- An isomorphism between a representable `F` and a functor of the
-form `C(-, F.reprX)`.  Note the components `F.reprW.app X`
+form `C(-, F.reprX)`. Note the components `F.reprW.app X`
 definitionally have type `(X.unop ⟶ F.reprX) ≅ F.obj X`.
 -/
 noncomputable def reprW (F : Cᵒᵖ ⥤ Type v₁) [F.IsRepresentable] :

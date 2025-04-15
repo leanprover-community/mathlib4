@@ -18,7 +18,7 @@ about this type.
 
 ## Implementation details
 
-There are two natural coercions from `ℕ` to `WithTop ℕ = ENat`: `WithTop.some` and `Nat.cast`.  In
+There are two natural coercions from `ℕ` to `WithTop ℕ = ENat`: `WithTop.some` and `Nat.cast`. In
 Lean 3, this difference was hidden in typeclass instances. Since these instances were definitionally
 equal, we did not duplicate generic lemmas about `WithTop α` and `WithTop.some` coercion for `ENat`
 and `Nat.cast` coercion. If you need to apply a lemma about `WithTop`, you may either rewrite back

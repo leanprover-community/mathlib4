@@ -61,7 +61,7 @@ For instance, `Nat.Nat.foo` and `One.two.two` trigger a warning, while `Nat.One.
 -/
 
 /--
-The `dupNamespace` linter is set on by default.  Lean emits a warning on any declaration that
+The `dupNamespace` linter is set on by default. Lean emits a warning on any declaration that
 contains the same namespace at least twice consecutively.
 
 For instance, `Nat.Nat.foo` and `One.two.two` trigger a warning, while `Nat.One.Nat` does not.

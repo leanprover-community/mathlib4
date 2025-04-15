@@ -197,7 +197,7 @@ ha : a = 1
 example (a : ℚ) (ha : a = 1) : a = 2 := by linear_combination' ha
 
 -- This should fail because the second coefficient has a different type than
---   the equations it is being combined with.  This was a design choice for the
+--   the equations it is being combined with. This was a design choice for the
 --   sake of simplicity, but the tactic could potentially be modified to allow
 --   this behavior.
 /--

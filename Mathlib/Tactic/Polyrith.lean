@@ -9,7 +9,7 @@ import Mathlib.Tactic.LinearCombination
 
 # polyrith Tactic
 
-In this file, the `polyrith` tactic is created.  This tactic, which
+In this file, the `polyrith` tactic is created. This tactic, which
 works over `Field`s, attempts to prove a multivariate polynomial target over said
 field by using multivariable polynomial hypotheses/proof terms over the same field.
 Used as is, the tactic makes use of those hypotheses in the local context that are

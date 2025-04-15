@@ -12,7 +12,7 @@ import Mathlib.Data.Finsupp.PWO
 # Comparison between Hahn series and power series
 If `Γ` is ordered and `R` has zero, then `HahnSeries Γ R` consists of formal series over `Γ` with
 coefficients in `R`, whose supports are partially well-ordered. With further structure on `R` and
-`Γ`, we can add further structure on `HahnSeries Γ R`.  When `R` is a semiring and `Γ = ℕ`, then
+`Γ`, we can add further structure on `HahnSeries Γ R`. When `R` is a semiring and `Γ = ℕ`, then
 we get the more familiar semiring of formal power series with coefficients in `R`.
 
 ## Main Definitions

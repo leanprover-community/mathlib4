@@ -33,7 +33,7 @@ The `simp` normal form tries to normalize `⅟a` to `a ⁻¹`. Otherwise, it pus
 
 Since `Invertible a` is not a `Prop` (but it is a `Subsingleton`), we have to be careful about
 coherence issues: we should avoid having multiple non-defeq instances for `Invertible a` in the
-same context.  This file plays it safe and uses `def` rather than `instance` for most definitions,
+same context. This file plays it safe and uses `def` rather than `instance` for most definitions,
 users can choose which instances to use at the point of use.
 
 For example, here's how you can use an `Invertible 1` instance:

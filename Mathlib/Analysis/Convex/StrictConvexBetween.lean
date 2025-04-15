@@ -128,7 +128,7 @@ lemma eq_midpoint_of_dist_eq_half (hx : dist x y = dist x z / 2) (hy : dist y z 
 namespace Isometry
 
 /-- An isometry of `NormedAddTorsor`s for real normed spaces, strictly convex in the case of the
-codomain, is an affine isometry.  Unlike Mazur-Ulam, this does not require the isometry to be
+codomain, is an affine isometry. Unlike Mazur-Ulam, this does not require the isometry to be
 surjective. -/
 noncomputable def affineIsometryOfStrictConvexSpace (hi : Isometry f) : PF →ᵃⁱ[ℝ] PE :=
   { AffineMap.ofMapMidpoint f

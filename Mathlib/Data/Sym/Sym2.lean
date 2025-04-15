@@ -13,7 +13,7 @@ import Mathlib.Data.Sym.Sym2.Init
 # The symmetric square
 
 This file defines the symmetric square, which is `α × α` modulo
-swapping.  This is also known as the type of unordered pairs.
+swapping. This is also known as the type of unordered pairs.
 
 More generally, the symmetric square is the second symmetric power
 (see `Data.Sym.Basic`). The equivalence is `Sym2.equivSym`.
@@ -21,8 +21,8 @@ More generally, the symmetric square is the second symmetric power
 From the point of view that an unordered pair is equivalent to a
 multiset of cardinality two (see `Sym2.equivMultiset`), there is a
 `Mem` instance `Sym2.Mem`, which is a `Prop`-valued membership
-test.  Given `h : a ∈ z` for `z : Sym2 α`, then `Mem.other h` is the other
-element of the pair, defined using `Classical.choice`.  If `α` has
+test. Given `h : a ∈ z` for `z : Sym2 α`, then `Mem.other h` is the other
+element of the pair, defined using `Classical.choice`. If `α` has
 decidable equality, then `h.other'` computably gives the other element.
 
 The universal property of `Sym2` is provided as `Sym2.lift`, which
@@ -283,7 +283,7 @@ section Membership
 
 
 /-- This is a predicate that determines whether a given term is a member of a term of the
-symmetric square.  From this point of view, the symmetric square is the subtype of
+symmetric square. From this point of view, the symmetric square is the subtype of
 cardinality-two multisets on `α`.
 -/
 protected def Mem (x : α) (z : Sym2 α) : Prop :=
@@ -686,7 +686,7 @@ instance [DecidableEq α] : DecidableEq (Sym2 α) :=
 
 
 /--
-A function that gives the other element of a pair given one of the elements.  Used in `Mem.other'`.
+A function that gives the other element of a pair given one of the elements. Used in `Mem.other'`.
 -/
 @[aesop norm unfold (rule_sets := [Sym2])]
 private def pairOther [DecidableEq α] (a : α) (z : α × α) : α :=

@@ -552,7 +552,7 @@ abbrev PseudoMetricSpace.ofSeminormedAddCommGroupCoreReplaceAll {𝕜 E : Type*}
 
 /-- Produces a `SeminormedAddCommGroup E` instance from a `SeminormedAddCommGroup.Core`. Note that
 if this is used to define an instance on a type, it also provides a new distance measure from the
-norm.  it must therefore not be used on a type with a preexisting distance measure or topology.
+norm. it must therefore not be used on a type with a preexisting distance measure or topology.
 See note [reducible non-instances]. -/
 abbrev SeminormedAddCommGroup.ofCore {𝕜 : Type*} {E : Type*} [NormedField 𝕜] [AddCommGroup E]
     [Norm E] [Module 𝕜 E] (core : SeminormedAddCommGroup.Core 𝕜 E) : SeminormedAddCommGroup E :=

@@ -14,7 +14,7 @@ A general version of this statement is given in `hasFDerivWithinAt_closure_of_te
 
 One-dimensional versions, in which one wants to obtain differentiability at the left endpoint or
 the right endpoint of an interval, are given in `hasDerivWithinAt_Ici_of_tendsto_deriv` and
-`hasDerivWithinAt_Iic_of_tendsto_deriv`.  These versions are formulated in terms of the
+`hasDerivWithinAt_Iic_of_tendsto_deriv`. These versions are formulated in terms of the
 one-dimensional derivative `deriv ℝ f`.
 -/
 

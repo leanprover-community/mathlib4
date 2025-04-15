@@ -20,7 +20,7 @@ First, if an order isomorphism `fa : α → α` is semiconjugate to an order emb
 
 Second, consider two actions `f₁ f₂ : G → α → α` of a group on a complete lattice by order
 isomorphisms. Then the map `x ↦ ⨆ g : G, (f₁ g)⁻¹ (f₂ g x)` semiconjugates each `f₁ g'` to `f₂ g'`,
-see `Function.sSup_div_semiconj`.  In the case of a conditionally complete lattice, a similar
+see `Function.sSup_div_semiconj`. In the case of a conditionally complete lattice, a similar
 statement holds true under an additional assumption that each set `{(f₁ g)⁻¹ (f₂ g x) | g : G}` is
 bounded above, see `Function.csSup_div_semiconj`.
 

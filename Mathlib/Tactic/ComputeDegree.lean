@@ -31,7 +31,7 @@ See the doc-strings for more details.
 
 ##  Future work
 
-* Currently, `compute_degree` does not deal correctly with some edge cases.  For instance,
+* Currently, `compute_degree` does not deal correctly with some edge cases. For instance,
   ```lean
   example [Semiring R] : natDegree (C 0 : R[X]) = 0 := by
     compute_degree
@@ -373,7 +373,7 @@ def try_rfl (mvs : List MVarId) : MetaM (List MVarId) := do
   return (assignable.flatten ++ tried_rfl.flatten)
 
 /--
-`splitApply mvs static` takes two lists of `MVarId`s.  The first list, `mvs`,
+`splitApply mvs static` takes two lists of `MVarId`s. The first list, `mvs`,
 corresponds to goals that are potentially within the scope of `compute_degree`:
 namely, goals of the form
 `natDegree f ≤ d`, `degree f ≤ d`, `natDegree f = d`, `degree f = d`, `coeff f d = r`.
@@ -486,7 +486,7 @@ elab_rules : tactic | `(tactic| compute_degree $[!%$bang]?) => focus <| withMain
           let errors := miscomputedDegree? deg (← false_goals.mapM (MVarId.getType'' ·)).toList
           unless errors.isEmpty do
             throwError Lean.MessageData.joinSep
-              (m!"The given degree is '{deg}'.  However,\n" :: errors) "\n"
+              (m!"The given degree is '{deg}'. However,\n" :: errors) "\n"
 
 /-- `monicity` tries to solve a goal of the form `Monic f`.
 It converts the goal into a goal of the form `natDegree f ≤ n` and one of the form `f.coeff n = 1`

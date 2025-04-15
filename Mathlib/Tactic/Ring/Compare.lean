@@ -40,7 +40,7 @@ open Lean Qq Meta
 
 /-! Rather than having the metaprograms `Mathlib.Tactic.Ring.evalLE` and
 `Mathlib.Tactic.Ring.evalLT` perform all type class inference at the point of use, we record in
-advance, as `abbrev`s, a few type class deductions which will certainly be necessary.  They add no
+advance, as `abbrev`s, a few type class deductions which will certainly be necessary. They add no
 new information (they can already be proved by `inferInstance`).
 
 This helps in speeding up the metaprograms in this file substantially -- about a 50% reduction in
@@ -61,7 +61,7 @@ abbrev lt_of_po (α : Type*) [PartialOrder α] : LT α := inferInstance
 end Typeclass
 
 /-! The lemmas like `add_le_add_right` in the root namespace are stated under minimal type classes,
-typically just `[AddRightMono α]` or similar.  Here we restate these
+typically just `[AddRightMono α]` or similar. Here we restate these
 lemmas under stronger type class assumptions (`[OrderedCommSemiring α]` or similar), which helps in
 speeding up the metaprograms in this file (`Mathlib.Tactic.Ring.proveLT` and
 `Mathlib.Tactic.Ring.proveLE`) substantially -- about a 50% reduction in heartbeat count in

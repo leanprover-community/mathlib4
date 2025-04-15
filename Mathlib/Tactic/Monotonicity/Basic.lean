@@ -12,14 +12,14 @@ The tactic `mono` applies monotonicity rules (collected through the library by b
 `@[mono]`).
 
 The version of the tactic here is a cheap partial port of the `mono` tactic from Lean 3, which had
-many more options and features.  It is implemented as a wrapper on top of `solve_by_elim`.
+many more options and features. It is implemented as a wrapper on top of `solve_by_elim`.
 
 Temporary syntax change: Lean 3 `mono` applied a single monotonicity rule, then applied local
-hypotheses and the `rfl` tactic as many times as it could.  This is hard to implement on top of
+hypotheses and the `rfl` tactic as many times as it could. This is hard to implement on top of
 `solve_by_elim` because the counting system used in the `maxDepth` field of its configuration would
 count these as separate steps, throwing off the count in the desired configuration
-`maxDepth := 1`.  So instead we just implement a version of `mono` in which monotonicity rules,
-local hypotheses and `rfl` are all applied repeatedly until nothing more is applicable.  The syntax
+`maxDepth := 1`. So instead we just implement a version of `mono` in which monotonicity rules,
+local hypotheses and `rfl` are all applied repeatedly until nothing more is applicable. The syntax
 for this in Lean 3 was `mono*`. Both `mono` and `mono*` implement this behavior for now.
 -/
 
@@ -29,7 +29,7 @@ open Tactic SolveByElim
 namespace Mathlib.Tactic.Monotonicity
 
 /--
-`mono` applies monotonicity rules and local hypotheses repetitively.  For example,
+`mono` applies monotonicity rules and local hypotheses repetitively. For example,
 ```lean
 example (x y z k : ℤ)
     (h : 3 ≤ (4 : ℤ))

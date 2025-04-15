@@ -799,7 +799,7 @@ theorem prod_trans {η : Type*} {ε : Type*} (e : PartialEquiv α β) (f : Parti
 end Prod
 
 /-- Combine two `PartialEquiv`s using `Set.piecewise`. The source of the new `PartialEquiv` is
-`s.ite e.source e'.source = e.source ∩ s ∪ e'.source \ s`, and similarly for target.  The function
+`s.ite e.source e'.source = e.source ∩ s ∪ e'.source \ s`, and similarly for target. The function
 sends `e.source ∩ s` to `e.target ∩ t` using `e` and `e'.source \ s` to `e'.target \ t` using `e'`,
 and similarly for the inverse function. The definition assumes `e.isImage s t` and
 `e'.isImage s t`. -/

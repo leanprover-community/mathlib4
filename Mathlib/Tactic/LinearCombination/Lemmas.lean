@@ -219,7 +219,7 @@ protected inductive WithStrictness : Type
   | le : Ineq.WithStrictness
   | lt (strict : Bool) : Ineq.WithStrictness
 
-/-- Given an (in)equality, look up the lemma to left-multiply it by a constant.  If relevant, also
+/-- Given an (in)equality, look up the lemma to left-multiply it by a constant. If relevant, also
 take into account the degree of positivity which can be proved of the constant: strict or
 non-strict. -/
 def mulRelConstData : Ineq.WithStrictness → Name
@@ -228,7 +228,7 @@ def mulRelConstData : Ineq.WithStrictness → Name
   | .lt true => ``mul_lt_const
   | .lt false => ``mul_lt_const_weak
 
-/-- Given an (in)equality, look up the lemma to right-multiply it by a constant.  If relevant, also
+/-- Given an (in)equality, look up the lemma to right-multiply it by a constant. If relevant, also
 take into account the degree of positivity which can be proved of the constant: strict or
 non-strict. -/
 def mulConstRelData : Ineq.WithStrictness → Name
@@ -255,7 +255,7 @@ def smulConstRelData : Ineq.WithStrictness → Name
   | .lt true => ``smul_const_lt
   | .lt false => ``smul_const_lt_weak
 
-/-- Given an (in)equality, look up the lemma to divide it by a constant.  If relevant, also take
+/-- Given an (in)equality, look up the lemma to divide it by a constant. If relevant, also take
 into account the degree of positivity which can be proved of the constant: strict or non-strict. -/
 def divRelConstData : Ineq.WithStrictness → Name
   | .eq => ``div_eq_const

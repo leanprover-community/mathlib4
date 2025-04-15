@@ -60,14 +60,14 @@ def HasGradientWithinAt (f : F → 𝕜) (f' : F) (s : Set F) (x : F) :=
 def HasGradientAt (f : F → 𝕜) (f' x : F) :=
   HasGradientAtFilter f f' x (𝓝 x)
 
-/-- Gradient of `f` at the point `x` within the set `s`, if it exists.  Zero otherwise.
+/-- Gradient of `f` at the point `x` within the set `s`, if it exists. Zero otherwise.
 
 If the derivative exists (i.e., `∃ f', HasGradientWithinAt f f' s x`), then
 `f x' = f x + ⟨f', x' - x⟩ + o (x' - x)` where `x'` converges to `x` inside `s`. -/
 def gradientWithin (f : F → 𝕜) (s : Set F) (x : F) : F :=
   (toDual 𝕜 F).symm (fderivWithin 𝕜 f s x)
 
-/-- Gradient of `f` at the point `x`, if it exists.  Zero otherwise.
+/-- Gradient of `f` at the point `x`, if it exists. Zero otherwise.
 Denoted as `∇` within the Gradient namespace.
 
 If the derivative exists (i.e., `∃ f', HasGradientAt f f' x`), then

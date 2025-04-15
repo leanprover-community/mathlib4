@@ -71,7 +71,7 @@ computeDiff () {
 # ...
 # summarizing technical debts in Mathlib.
 # The script uses the fact that a line represents a technical debt if and only if the text before
-# the first `|` is a number.  This is then used for comparison and formatting.
+# the first `|` is a number. This is then used for comparison and formatting.
 tdc () {
 # We perform word-splitting "by hand" in the "middle" entries.
 # See also the comment on the `read` line in the for-loop that follows the definition of this array.

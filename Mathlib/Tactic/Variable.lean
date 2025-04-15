@@ -51,9 +51,9 @@ check that earlier variables aren't implied by later ones.
 Unlike `variable`, the `variable?` command does not support changing variable binder types.
 
 The `variable?` command will give a suggestion to replace itself with a command of the form
-`variable? ...binders... => ...binders...`.  The binders after the `=>` are the completed
+`variable? ...binders... => ...binders...`. The binders after the `=>` are the completed
 list of binders. When this `=>` clause is present, the command verifies that the expanded
-binders match the post-`=>` binders.  The purpose of this is to help keep code that uses
+binders match the post-`=>` binders. The purpose of this is to help keep code that uses
 `variable?` resilient against changes to the typeclass hierarchy, at least in the sense
 that this additional information can be used to debug issues that might arise.
 One can also replace `variable? ...binders... =>` with `variable`.

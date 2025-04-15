@@ -15,7 +15,7 @@ Throughout this file, `P` is at least a preorder, but some sections require more
 structure, such as a bottom element, a top element, or a join-semilattice structure.
 
 - `Order.Ideal.PrimePair`: A pair of an `Order.Ideal` and an `Order.PFilter` which form a partition
-  of `P`.  This is useful as giving the data of a prime ideal is the same as giving the data of a
+  of `P`. This is useful as giving the data of a prime ideal is the same as giving the data of a
   prime filter.
 - `Order.Ideal.IsPrime`: a predicate for prime ideals. Dual to the notion of a prime filter.
 - `Order.PFilter.IsPrime`: a predicate for prime filters. Dual to the notion of a prime ideal.

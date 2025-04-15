@@ -74,7 +74,7 @@ namespace Ring
 
 open Classical in
 /-- Introduce a function `inverse` on a monoid with zero `M₀`, which sends `x` to `x⁻¹` if `x` is
-invertible and to `0` otherwise.  This definition is somewhat ad hoc, but one needs a fully (rather
+invertible and to `0` otherwise. This definition is somewhat ad hoc, but one needs a fully (rather
 than partially) defined inverse function for some purposes, including for calculus.
 
 Note that while this is in the `Ring` namespace for brevity, it requires the weaker assumption

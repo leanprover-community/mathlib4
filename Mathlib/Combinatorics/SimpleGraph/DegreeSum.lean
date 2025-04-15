@@ -12,7 +12,7 @@ import Mathlib.Data.ZMod.Basic
 # Degree-sum formula and handshaking lemma
 
 The degree-sum formula is that the sum of the degrees of the vertices in
-a finite graph is equal to twice the number of edges.  The handshaking lemma,
+a finite graph is equal to twice the number of edges. The handshaking lemma,
 a corollary, is that the number of odd-degree vertices is even.
 
 ## Main definitions
@@ -93,7 +93,7 @@ theorem dart_card_eq_twice_card_edges : Fintype.card G.Dart = 2 * #G.edgeFinset 
   apply G.dart_edge_fiber_card e
   rwa [← mem_edgeFinset]
 
-/-- The degree-sum formula.  This is also known as the handshaking lemma, which might
+/-- The degree-sum formula. This is also known as the handshaking lemma, which might
 more specifically refer to `SimpleGraph.even_card_odd_degree_vertices`. -/
 theorem sum_degrees_eq_twice_card_edges : ∑ v, G.degree v = 2 * #G.edgeFinset :=
   G.dart_card_eq_sum_degrees.symm.trans G.dart_card_eq_twice_card_edges
@@ -119,7 +119,7 @@ theorem sum_degrees_support_eq_twice_card_edges :
 
 end DegreeSum
 
-/-- The handshaking lemma.  See also `SimpleGraph.sum_degrees_eq_twice_card_edges`. -/
+/-- The handshaking lemma. See also `SimpleGraph.sum_degrees_eq_twice_card_edges`. -/
 theorem even_card_odd_degree_vertices [Fintype V] [DecidableRel G.Adj] :
     Even #{v | Odd (G.degree v)} := by
   classical

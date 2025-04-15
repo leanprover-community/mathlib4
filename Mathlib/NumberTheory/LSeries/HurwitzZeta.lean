@@ -106,7 +106,7 @@ lemma differentiable_hurwitzZeta_sub_hurwitzZeta (a b : UnitAddCircle) :
 ## The exponential zeta function
 -/
 
-/-- Meromorphic continuation of the series `∑' (n : ℕ), exp (2 * π * I * a * n) / n ^ s`.  See
+/-- Meromorphic continuation of the series `∑' (n : ℕ), exp (2 * π * I * a * n) / n ^ s`. See
 `hasSum_expZeta_of_one_lt_re` for the relation to the Dirichlet series. -/
 noncomputable def expZeta (a : UnitAddCircle) (s : ℂ) :=
   cosZeta a s + I * sinZeta a s

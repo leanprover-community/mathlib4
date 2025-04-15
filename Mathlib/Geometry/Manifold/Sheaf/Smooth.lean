@@ -14,9 +14,9 @@ import Mathlib.Geometry.Manifold.Sheaf.Basic
 
 The sheaf of `𝕜`-smooth functions from a manifold `M` to a manifold `N` can be defined as a sheaf of
 types using the construction `StructureGroupoid.LocalInvariantProp.sheaf` from the file
-`Mathlib.Geometry.Manifold.Sheaf.Basic`.  In this file we write that down (a one-liner), then do the
+`Mathlib.Geometry.Manifold.Sheaf.Basic`. In this file we write that down (a one-liner), then do the
 work of upgrading this to a sheaf of [groups]/[abelian groups]/[rings]/[commutative rings] when `N`
-carries more algebraic structure.  For example, if `N` is `𝕜` then the sheaf of smooth functions
+carries more algebraic structure. For example, if `N` is `𝕜` then the sheaf of smooth functions
 from `M` to `𝕜` is a sheaf of commutative rings, the *structure sheaf* of `M`.
 
 ## Main definitions
@@ -50,10 +50,10 @@ Similarly, there are variants of `smoothSheafCommRing.forgetStalk` and `smoothSh
 for `Grp`, `CommGrp` and `RingCat` which can be added as needed.
 
 Currently there is a universe restriction: one can consider the sheaf of smooth functions from `M`
-to `N` only if `M` and `N` are in the same universe.  For example, since `ℂ` is in `Type`, we can
+to `N` only if `M` and `N` are in the same universe. For example, since `ℂ` is in `Type`, we can
 only consider the structure sheaf of complex manifolds in `Type`, which is unsatisfactory. The
 obstacle here is in the underlying category theory constructions, which are not sufficiently
-universe polymorphic.  A direct attempt to generalize the universes worked in Lean 3 but was
+universe polymorphic. A direct attempt to generalize the universes worked in Lean 3 but was
 reverted because it was hard to port to Lean 4, see
 https://github.com/leanprover-community/mathlib/pull/19230
 The current (Oct 2023) proposal to permit these generalizations is to use the new `UnivLE`
@@ -94,7 +94,7 @@ instance smoothSheaf.coeFun (U : (Opens (TopCat.of M))ᵒᵖ) :
 
 open Manifold in
 /-- The object of `smoothSheaf IM I M N` for the open set `U` in `M` is
-`C^∞⟮IM, (unop U : Opens M); I, N⟯`, the `(IM, I)`-smooth functions from `U` to `N`.  This is not
+`C^∞⟮IM, (unop U : Opens M); I, N⟯`, the `(IM, I)`-smooth functions from `U` to `N`. This is not
 just a "moral" equality but a literal and definitional equality! -/
 lemma smoothSheaf.obj_eq (U : (Opens (TopCat.of M))ᵒᵖ) :
     (smoothSheaf IM I M N).presheaf.obj U = C^∞⟮IM, (unop U : Opens M); I, N⟯ := rfl

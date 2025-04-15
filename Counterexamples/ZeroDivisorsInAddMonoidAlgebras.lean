@@ -29,14 +29,14 @@ Besides this example, we also address a comment in `Data.Finsupp.Lex` to the eff
 that addition is monotone on `α →₀ N` uses that it is *strictly* monotone on `N`.
 
 The specific statement is about `Finsupp.Lex.addLeftStrictMono` and its analogue
-`Finsupp.Lex.addRightStrictMono`.  We do not need two separate counterexamples, since the
+`Finsupp.Lex.addRightStrictMono`. We do not need two separate counterexamples, since the
 operation is commutative.
 
-The example is very simple.  Let `F = {0, 1}` with order determined by `0 < 1` and absorbing
-addition (which is the same as `max` in this case).  We denote a function `f : F → F` (which is
-automatically finitely supported!) by `[f 0, f 1]`, listing its values.  Recall that the order on
-finitely supported function is lexicographic, matching the list notation.  The inequality
-`[0, 1] ≤ [1, 0]` holds.  However, adding `[1, 0]` to both sides yields the *reversed* inequality
+The example is very simple. Let `F = {0, 1}` with order determined by `0 < 1` and absorbing
+addition (which is the same as `max` in this case). We denote a function `f : F → F` (which is
+automatically finitely supported!) by `[f 0, f 1]`, listing its values. Recall that the order on
+finitely supported function is lexicographic, matching the list notation. The inequality
+`[0, 1] ≤ [1, 0]` holds. However, adding `[1, 0]` to both sides yields the *reversed* inequality
 `[1, 1] > [1, 0]`.
 -/
 
@@ -49,11 +49,11 @@ namespace Counterexample
 
 /-- This is a simple example showing that if `R` is a non-trivial ring and `A` is an additive
 monoid with an element `a` satisfying `n • a = a` and `(n - 1) • a ≠ a`, for some `2 ≤ n`,
-then `R[A]` contains non-zero zero-divisors.  The elements are easy to write down:
+then `R[A]` contains non-zero zero-divisors. The elements are easy to write down:
 `[a]` and `[a] ^ (n - 1) - 1` are non-zero elements of `R[A]` whose product
 is zero.
 
-Observe that such an element `a` *cannot* be invertible.  In particular, this lemma never applies
+Observe that such an element `a` *cannot* be invertible. In particular, this lemma never applies
 if `A` is a group. -/
 theorem zero_divisors_of_periodic {R A} [Nontrivial R] [Ring R] [AddMonoid A] {n : ℕ} (a : A)
     (n2 : 2 ≤ n) (na : n • a = a) (na1 : (n - 1) • a ≠ 0) :
@@ -69,7 +69,7 @@ theorem single_zero_one {R A} [Semiring R] [Zero A] :
 
 /-- This is a simple example showing that if `R` is a non-trivial ring and `A` is an additive
 monoid with a non-zero element `a` of finite order `oa`, then `R[A]` contains
-non-zero zero-divisors.  The elements are easy to write down:
+non-zero zero-divisors. The elements are easy to write down:
 `∑ i ∈ Finset.range oa, [a] ^ i` and `[a] - 1` are non-zero elements of `R[A]`
 whose product is zero.
 
@@ -106,7 +106,7 @@ example {R} [Ring R] [Nontrivial R] (n : ℕ) (n0 : 2 ≤ n) :
     ∃ f g : AddMonoidAlgebra R (ZMod n), f ≠ 0 ∧ g ≠ 0 ∧ f * g = 0 :=
   zero_divisors_of_torsion (1 : ZMod n) (n0.trans_eq (ZMod.addOrderOf_one _).symm)
 
-/-- `F` is the type with two elements `zero` and `one`.  We define the "obvious" linear order and
+/-- `F` is the type with two elements `zero` and `one`. We define the "obvious" linear order and
 absorbing addition on it to generate our counterexample. -/
 inductive F
   | zero
@@ -114,7 +114,7 @@ inductive F
   deriving DecidableEq, Inhabited
 
 /-- The same as `List.getRest`, except that we take the "rest" from the first match, rather than
-from the beginning, returning `[]` if there is no match.  For instance,
+from the beginning, returning `[]` if there is no match. For instance,
 ```lean
 #eval dropUntil [1,2] [3,1,2,4,1,2]  -- [4, 1, 2]
 ```
@@ -173,7 +173,7 @@ theorem z01 : (0 : F) < 1 := by decide
 instance : Add F where
   add := max
 
-/-- `F` would be a `CommSemiring`, using `min` as multiplication.  Again, we do not need this. -/
+/-- `F` would be a `CommSemiring`, using `min` as multiplication. Again, we do not need this. -/
 instance : AddCommMonoid F where
   add_assoc := by boom
   zero := 0
@@ -219,7 +219,7 @@ theorem f110 : ofLex (Finsupp.single (1 : F) (1 : F)) 0 = 0 :=
   single_apply_eq_zero.mpr fun h => h.symm
 
 /-- Here we see that (not-necessarily strict) monotonicity of addition on `Lex (F →₀ F)` is not
-a consequence of monotonicity of addition on `F`.  Strict monotonicity of addition on `F` is
+a consequence of monotonicity of addition on `F`. Strict monotonicity of addition on `F` is
 enough and is the content of `Finsupp.Lex.addLeftStrictMono`. -/
 example : ¬AddLeftMono (Lex (F →₀ F)) := by
   rintro ⟨h⟩

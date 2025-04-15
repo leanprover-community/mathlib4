@@ -103,7 +103,7 @@ instance hallMatchingsOn.finite {ι : Type u} {α : Type v} (t : ι → Finset �
     simpa [g] using h a
 
 /-- This is the version of **Hall's Marriage Theorem** in terms of indexed
-families of finite sets `t : ι → Finset α`.  It states that there is a
+families of finite sets `t : ι → Finset α`. It states that there is a
 set of distinct representatives if and only if every union of `k` of the
 sets has at least `k` elements.
 
@@ -167,7 +167,7 @@ instance {α : Type u} {β : Type v} [DecidableEq β] (r : α → β → Prop)
 /-- This is a version of **Hall's Marriage Theorem** in terms of a relation
 between types `α` and `β` such that `α` is finite and the image of
 each `x : α` is finite (it suffices for `β` to be finite; see
-`Fintype.all_card_le_filter_rel_iff_exists_injective`).  There is
+`Fintype.all_card_le_filter_rel_iff_exists_injective`). There is
 a transversal of the relation (an injective function `α → β` whose graph is
 a subrelation of the relation) iff every subset of
 `k` terms of `α` is related to at least `k` terms of `β`.

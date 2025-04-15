@@ -715,7 +715,7 @@ theorem independent_iSup_genEigenspace [NoZeroSMulDivisors R M] (f : End R M) :
   simp_rw [iSup_genEigenspace_eq]
   apply independent_maxGenEigenspace
 
-/-- The eigenspaces of a linear operator form an independent family of subspaces of `M`.  That is,
+/-- The eigenspaces of a linear operator form an independent family of subspaces of `M`. That is,
 any eigenspace has trivial intersection with the span of all the other eigenspaces. -/
 theorem eigenspaces_iSupIndep [NoZeroSMulDivisors R M] (f : End R M) :
     iSupIndep f.eigenspace :=

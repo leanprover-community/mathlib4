@@ -72,7 +72,7 @@ theorem Finite.exists_ne_map_eq_of_infinite {α β} [Infinite α] [Finite β] (f
   simpa [Injective, and_comm] using not_injective_infinite_finite f
 
 /-- The strong pigeonhole principle for infinitely many pigeons in
-finitely many pigeonholes.  If there are infinitely many pigeons in
+finitely many pigeonholes. If there are infinitely many pigeons in
 finitely many pigeonholes, then there is a pigeonhole with infinitely
 many pigeons.
 

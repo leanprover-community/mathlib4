@@ -42,7 +42,7 @@ same trivializations can underlie an object's structure as (say) a vector bundle
 vector bundle over `ℝ`, as well as its structure simply as a fiber bundle.
 
 This might be a little surprising, given the general trend of the library to ever-increased
-bundling.  But in this case the typical motivation for more bundling does not apply: there is no
+bundling. But in this case the typical motivation for more bundling does not apply: there is no
 algebraic or order structure on the whole type of linear (say) trivializations of a bundle.
 Indeed, since trivializations only have meaning on their base sets (taking junk values outside), the
 type of linear trivializations is not even particularly well-behaved.

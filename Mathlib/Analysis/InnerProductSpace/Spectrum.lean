@@ -22,12 +22,12 @@ compactness of the operator or finite-dimensionality of the underlying space, no
 The second part of the file covers properties of self-adjoint operators in finite dimension.
 Letting `T` be a self-adjoint operator on a finite-dimensional inner product space `T`,
 * The definition `LinearMap.IsSymmetric.diagonalization` provides a linear isometry equivalence `E`
-  to the direct sum of the eigenspaces of `T`.  The theorem
+  to the direct sum of the eigenspaces of `T`. The theorem
   `LinearMap.IsSymmetric.diagonalization_apply_self_apply` states that, when `T` is transferred via
   this equivalence to an operator on the direct sum, it acts diagonally.
 * The definition `LinearMap.IsSymmetric.eigenvectorBasis` provides an orthonormal basis for `E`
   consisting of eigenvectors of `T`, with `LinearMap.IsSymmetric.eigenvalues` giving the
-  corresponding list of eigenvalues, as real numbers.  The definition
+  corresponding list of eigenvalues, as real numbers. The definition
   `LinearMap.IsSymmetric.eigenvectorBasis` gives the associated linear isometry equivalence
   from `E` to Euclidean space, and the theorem
   `LinearMap.IsSymmetric.eigenvectorBasis_apply_self_apply` states that, when `T` is

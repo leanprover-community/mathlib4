@@ -14,7 +14,7 @@ Prove that `(a + 2b + 3c + 4d) a^a b^b c^c d^d < 1`.
 A solution is to eliminate the powers using weighted AM-GM and replace
 `1` by `(a+b+c+d)^3`, leaving a homogeneous inequality that can be
 proved in many ways by expanding, rearranging and comparing individual
-terms.  The version here using factors such as `a+3b+3c+3d` is from
+terms. The version here using factors such as `a+3b+3c+3d` is from
 the official solutions.
 -/
 

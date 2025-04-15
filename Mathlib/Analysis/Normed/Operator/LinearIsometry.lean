@@ -16,7 +16,7 @@ import Mathlib.Topology.Algebra.Module.Equiv
 
 In this file we define `LinearIsometry σ₁₂ E E₂` (notation: `E →ₛₗᵢ[σ₁₂] E₂`) to be a semilinear
 isometric embedding of `E` into `E₂` and `LinearIsometryEquiv` (notation: `E ≃ₛₗᵢ[σ₁₂] E₂`) to be
-a semilinear isometric equivalence between `E` and `E₂`.  The notation for the associated purely
+a semilinear isometric equivalence between `E` and `E₂`. The notation for the associated purely
 linear concepts is `E →ₗᵢ[R] E₂`, `E ≃ₗᵢ[R] E₂`, and `E →ₗᵢ⋆[R] E₂`, `E ≃ₗᵢ⋆[R] E₂` for
 the star-linear versions.
 

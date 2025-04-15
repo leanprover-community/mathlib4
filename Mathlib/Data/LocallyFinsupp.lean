@@ -28,7 +28,7 @@ variable
 ## Definition, coercion to functions and basic extensionality lemmas
 
 A function with locally finite support within `U` is a function `X → Y` whose support is locally
-finite within `U` and entirely contained in `U`.  For T1-spaces, the theorem
+finite within `U` and entirely contained in `U`. For T1-spaces, the theorem
 `supportDiscreteWithin_iff_locallyFiniteWithin` shows that the first condition is equivalent to the
 condition that the support `f` is discrete within `U`.
 -/

@@ -57,7 +57,7 @@ section LE
 
 variable [LE α]
 
-/- The prime on this lemma is present only on the multiplicative version.  The unprimed version
+/- The prime on this lemma is present only on the multiplicative version. The unprimed version
 is taken by the analogous lemma for semiring, with an extra non-negativity assumption. -/
 @[to_additive (attr := gcongr) add_le_add_left]
 theorem mul_le_mul_left' [MulLeftMono α] {b c : α} (bc : b ≤ c) (a : α) :
@@ -70,7 +70,7 @@ theorem le_of_mul_le_mul_left' [MulLeftReflectLE α] {a b c : α}
     b ≤ c :=
   ContravariantClass.elim _ bc
 
-/- The prime on this lemma is present only on the multiplicative version.  The unprimed version
+/- The prime on this lemma is present only on the multiplicative version. The unprimed version
 is taken by the analogous lemma for semiring, with an extra non-negativity assumption. -/
 @[to_additive (attr := gcongr) add_le_add_right]
 theorem mul_le_mul_right' [i : MulRightMono α] {b c : α} (bc : b ≤ c)

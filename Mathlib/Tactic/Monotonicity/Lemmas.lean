@@ -11,8 +11,8 @@ import Mathlib.Tactic.Monotonicity.Attr
 
 /-! # Lemmas for the `mono` tactic
 
-The `mono` tactic works by throwing all lemmas tagged with the attribute `@[mono]` at the goal.  In
-this file we tag a few foundational lemmas with the mono attribute.  Lemmas in more advanced files
+The `mono` tactic works by throwing all lemmas tagged with the attribute `@[mono]` at the goal. In
+this file we tag a few foundational lemmas with the mono attribute. Lemmas in more advanced files
 are tagged in place.
 -/
 

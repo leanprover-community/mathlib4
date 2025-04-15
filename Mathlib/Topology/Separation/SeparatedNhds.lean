@@ -34,7 +34,7 @@ variable {X : Type*} {Y : Type*} [TopologicalSpace X]
 section Separation
 
 /--
-`SeparatedNhds` is a predicate on pairs of sub`Set`s of a topological space.  It holds if the two
+`SeparatedNhds` is a predicate on pairs of sub`Set`s of a topological space. It holds if the two
 sub`Set`s are contained in disjoint open sets.
 -/
 def SeparatedNhds : Set X → Set X → Prop := fun s t : Set X =>

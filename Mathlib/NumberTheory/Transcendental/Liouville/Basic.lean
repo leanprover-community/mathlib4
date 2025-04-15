@@ -17,8 +17,8 @@ This file contains a proof of Liouville's theorem stating that all Liouville num
 transcendental.
 
 To obtain this result, there is first a proof that Liouville numbers are irrational and two
-technical lemmas.  These lemmas exploit the fact that a polynomial with integer coefficients
-takes integer values at integers.  When evaluating at a rational number, we can clear denominators
+technical lemmas. These lemmas exploit the fact that a polynomial with integer coefficients
+takes integer values at integers. When evaluating at a rational number, we can clear denominators
 and obtain precise inequalities that ultimately allow us to prove transcendence of
 Liouville numbers.
 -/
@@ -57,7 +57,7 @@ protected theorem irrational {x : ℝ} (h : Liouville x) : Irrational x := by
   -- Actually, `q` is a natural number
   lift q to ℕ using (zero_lt_one.trans q1).le
   -- Looks innocuous, but we now have an integer with non-zero absolute value: this is at
-  -- least one away from zero.  The gain here is what gets the proof going.
+  -- least one away from zero. The gain here is what gets the proof going.
   have ap : 0 < |a * ↑q - ↑b * p| := abs_pos.mpr a0
   -- Actually, the absolute value of an integer is a natural number
   -- FIXME: This `lift` call duplicates the hypotheses `a1` and `ap`
@@ -72,11 +72,11 @@ open Polynomial Metric Set Real RingHom
 open scoped Polynomial
 
 /-- Let `Z, N` be types, let `R` be a metric space, let `α : R` be a point and let
-`j : Z → N → R` be a function.  We aim to estimate how close we can get to `α`, while staying
-in the image of `j`.  The points `j z a` of `R` in the image of `j` come with a "cost" equal to
-`d a`.  As we get closer to `α` while staying in the image of `j`, we are interested in bounding
+`j : Z → N → R` be a function. e aim to estimate how close we can get to `α`, while staying
+in the image of `j`. The points `j z a` of `R` in the image of `j` come with a "cost" equal to
+`d a`. As we get closer to `α` while staying in the image of `j`, we are interested in bounding
 the quantity `d a * dist α (j z a)` from below by a strictly positive amount `1 / A`: the intuition
-is that approximating well `α` with the points in the image of `j` should come at a high cost.  The
+is that approximating well `α` with the points in the image of `j` should come at a high cost. The
 hypotheses on the function `f : R → R` provide us with sufficient conditions to ensure our goal.
 The first hypothesis is that `f` is Lipschitz at `α`: this yields a bound on the distance.
 The second hypothesis is specific to the Liouville argument and provides the missing bound
@@ -156,8 +156,8 @@ theorem exists_pos_real_of_irrational_root {α : ℝ} (ha : Irrational α) {f : 
   · show 1 ≤ (a + 1 : ℝ) ^ f.natDegree * |eval α fR - eval ((z : ℝ) / (a + 1)) fR|
     rw [fa, zero_sub, abs_neg]
     rw [show (a + 1 : ℝ) = ((a + 1 : ℕ) : ℤ) by norm_cast] at hq ⊢
-    -- key observation: the right-hand side of the inequality is an *integer*.  Therefore,
-    -- if its absolute value is not at least one, then it vanishes.  Proceed by contradiction
+    -- key observation: the right-hand side of the inequality is an *integer*. Therefore,
+    -- if its absolute value is not at least one, then it vanishes. Proceed by contradiction
     refine one_le_pow_mul_abs_eval_div (Int.natCast_succ_pos a) fun hy => ?_
     -- As the evaluation of the polynomial vanishes, we found a root of `fR` that is rational.
     -- We know that `α` is the only root of `fR` in our interval, and `α` is irrational:
@@ -176,7 +176,7 @@ protected theorem transcendental {x : ℝ} (lx : Liouville x) : Transcendental �
   replace ef0 : (f.map (algebraMap ℤ ℝ)).eval x = 0 := by
     rwa [aeval_def, ← eval_map] at ef0
   -- There is a "large" real number `A` such that `(b + 1) ^ (deg f) * |f (x - a / (b + 1))| * A`
-  -- is at least one.  This is obtained from lemma `exists_pos_real_of_irrational_root`.
+  -- is at least one. This is obtained from lemma `exists_pos_real_of_irrational_root`.
   obtain ⟨A, hA, h⟩ : ∃ A : ℝ, 0 < A ∧ ∀ (a : ℤ) (b : ℕ),
       (1 : ℝ) ≤ ((b : ℝ) + 1) ^ f.natDegree * (|x - a / (b + 1)| * A) :=
     exists_pos_real_of_irrational_root lx.irrational f0 ef0

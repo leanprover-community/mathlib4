@@ -170,7 +170,7 @@ instance (priority := 100) CompleteLattice.toBoundedOrder [CompleteLattice α] :
 
 /-- Create a `CompleteLattice` from a `PartialOrder` and `InfSet`
 that returns the greatest lower bound of a set. Usually this constructor provides
-poor definitional equalities.  If other fields are known explicitly, they should be
+poor definitional equalities. If other fields are known explicitly, they should be
 provided; for example, if `inf` is known explicitly, construct the `CompleteLattice`
 instance as
 ```
@@ -217,7 +217,7 @@ def completeLatticeOfCompleteSemilatticeInf (α : Type*) [CompleteSemilatticeInf
 
 /-- Create a `CompleteLattice` from a `PartialOrder` and `SupSet`
 that returns the least upper bound of a set. Usually this constructor provides
-poor definitional equalities.  If other fields are known explicitly, they should be
+poor definitional equalities. If other fields are known explicitly, they should be
 provided; for example, if `inf` is known explicitly, construct the `CompleteLattice`
 instance as
 ```

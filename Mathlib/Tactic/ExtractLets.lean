@@ -60,7 +60,7 @@ def Lean.MVarId.extractLets (mvarId : MVarId) (names : Array Name) :
 namespace Mathlib
 
 /-- The `extract_lets at h` tactic takes a local hypothesis of the form `h : let x := v; b`
-and introduces a new local definition `x := v` while changing `h` to be `h : b`.  It can be thought
+and introduces a new local definition `x := v` while changing `h` to be `h : b`. It can be thought
 of as being a `cases` tactic for `let` expressions. It can also be thought of as being like
 `intros at h` for `let` expressions.
 

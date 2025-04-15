@@ -58,7 +58,7 @@ theorem exists_coeff_ne_zero_mem_comap_of_non_zero_divisor_root_mem {r : S}
     · simp [hi, mem]
     · simpa [hi] using mem
 
-/-- Let `P` be an ideal in `R[x]`.  The map
+/-- Let `P` be an ideal in `R[x]`. The map
 `R[x]/P → (R / (P ∩ R))[x] / (P / (P ∩ R))`
 is injective.
 -/
@@ -82,7 +82,7 @@ theorem injective_quotient_le_comap_map (P : Ideal R[X]) :
     ↓          ↓
 R[x] / P → (R / (P ∩ R))[x] / (P / (P ∩ R))
 ```
-commutes.  It is used, for instance, in the proof of `quotient_mk_comp_C_is_integral_of_jacobson`,
+commutes. It is used, for instance, in the proof of `quotient_mk_comp_C_is_integral_of_jacobson`,
 in the file `Mathlib.RingTheory.Jacobson.Polynomial`.
 -/
 theorem quotient_mk_maps_eq (P : Ideal R[X]) :
@@ -96,7 +96,7 @@ theorem quotient_mk_maps_eq (P : Ideal R[X]) :
   rw [quotientMap_mk, coe_mapRingHom, map_C]
 
 /-- This technical lemma asserts the existence of a polynomial `p` in an ideal `P ⊂ R[x]`
-that is non-zero in the quotient `R / (P ∩ R) [x]`.  The assumptions are equivalent to
+that is non-zero in the quotient `R / (P ∩ R) [x]`. The assumptions are equivalent to
 `P ≠ 0` and `P ∩ R = (0)`.
 -/
 theorem exists_nonzero_mem_of_ne_bot {P : Ideal R[X]} (Pb : P ≠ ⊥) (hP : ∀ x : R, C x ∈ P → x = 0) :

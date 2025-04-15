@@ -64,7 +64,7 @@ lemma Orthonormal.enorm_eq_one {v : ι → E} (h : Orthonormal 𝕜 v) (i : ι) 
 lemma Orthonormal.inner_eq_zero {v : ι → E} {i j : ι} (h : Orthonormal 𝕜 v) (hij : i ≠ j) :
     ⟪v i, v j⟫ = 0 := h.2 hij
 
-/-- `if ... then ... else` characterization of an indexed set of vectors being orthonormal.  (Inner
+/-- `if ... then ... else` characterization of an indexed set of vectors being orthonormal. (Inner
 product equals Kronecker delta.) -/
 theorem orthonormal_iff_ite [DecidableEq ι] {v : ι → E} :
     Orthonormal 𝕜 v ↔ ∀ i j, ⟪v i, v j⟫ = if i = j then (1 : 𝕜) else (0 : 𝕜) := by
@@ -83,7 +83,7 @@ theorem orthonormal_iff_ite [DecidableEq ι] {v : ι → E} :
     · intro i j hij
       simpa [hij] using h i j
 
-/-- `if ... then ... else` characterization of a set of vectors being orthonormal.  (Inner product
+/-- `if ... then ... else` characterization of a set of vectors being orthonormal. (Inner product
 equals Kronecker delta.) -/
 theorem orthonormal_subtype_iff_ite [DecidableEq E] {s : Set E} :
     Orthonormal 𝕜 (Subtype.val : s → E) ↔ ∀ v ∈ s, ∀ w ∈ s, ⟪v, w⟫ = if v = w then 1 else 0 := by
@@ -220,7 +220,7 @@ theorem Orthonormal.orthonormal_of_forall_eq_or_eq_neg {v w : ι → E} (hv : Or
       neg_eq_zero] using hv
 
 /- The material that follows, culminating in the existence of a maximal orthonormal subset, is
-adapted from the corresponding development of the theory of linearly independents sets.  See
+adapted from the corresponding development of the theory of linearly independents sets. See
 `exists_linearIndependent` in particular. -/
 variable (𝕜 E)
 

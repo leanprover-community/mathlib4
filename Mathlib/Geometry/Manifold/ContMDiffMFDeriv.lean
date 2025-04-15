@@ -349,7 +349,7 @@ Note that, as currently framed, this is a statement in coordinates, thus reliant
 of the coordinate system we use on the tangent bundle.
 
 However, the result itself is coordinate-dependent only to the extent that the coordinates
-determine a splitting of the tangent bundle.  Moreover, there is a canonical splitting at each
+determine a splitting of the tangent bundle. Moreover, there is a canonical splitting at each
 point of the zero section (since there is a canonical horizontal space there, the tangent space
 to the zero section, in addition to the canonical vertical space which is the kernel of the
 derivative of the projection), and this canonical splitting is also the one that comes from the

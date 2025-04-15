@@ -59,7 +59,7 @@ theorem Filter.Tendsto.integral_sub_linear_isLittleO_ae
 /-- Fundamental theorem of calculus for set integrals, `nhdsWithin` version: if `μ` is a locally
 finite measure and `f` is an almost everywhere measurable function that is continuous at a point `a`
 within a measurable set `t`, then `∫ x in s i, f x ∂μ = μ (s i) • f a + o(μ (s i))` at a filter `li`
-provided that `s i` tends to `(𝓝[t] a).smallSets` along `li`.  Since `μ (s i)` is an `ℝ≥0∞`
+provided that `s i` tends to `(𝓝[t] a).smallSets` along `li`. Since `μ (s i)` is an `ℝ≥0∞`
 number, we use `(μ (s i)).toReal` in the actual statement.
 
 Often there is a good formula for `(μ (s i)).toReal`, so the formalization can take an optional

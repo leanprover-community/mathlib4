@@ -15,8 +15,8 @@ import Mathlib.Data.Finsupp.Defs
 
 A group `G` has *unique products* if for any two non-empty finite subsets `A, B ⊆ G`, there is an
 element `g ∈ A * B` that can be written uniquely as a product of an element of `A` and an element
-of `B`.  We call the formalization this property `UniqueProds`.  Since the condition requires no
-property of the group operation, we define it for a Type simply satisfying `Mul`.  We also
+of `B`. We call the formalization this property `UniqueProds`. Since the condition requires no
+property of the group operation, we define it for a Type simply satisfying `Mul`. We also
 introduce the analogous "additive" companion, `UniqueSums`, and link the two so that `to_additive`
 converts `UniqueProds` into `UniqueSums`.
 
@@ -53,11 +53,11 @@ assert_not_exists Cardinal Subsemiring Algebra Submodule StarModule FreeMonoid O
 open Finset
 
 /-- Let `G` be a Type with multiplication, let `A B : Finset G` be finite subsets and
-let `a0 b0 : G` be two elements.  `UniqueMul A B a0 b0` asserts `a0 * b0` can be written in at
+let `a0 b0 : G` be two elements. `UniqueMul A B a0 b0` asserts `a0 * b0` can be written in at
 most one way as a product of an element of `A` and an element of `B`. -/
 @[to_additive
       "Let `G` be a Type with addition, let `A B : Finset G` be finite subsets and
-let `a0 b0 : G` be two elements.  `UniqueAdd A B a0 b0` asserts `a0 + b0` can be written in at
+let `a0 b0 : G` be two elements. `UniqueAdd A B a0 b0` asserts `a0 + b0` can be written in at
 most one way as a sum of an element from `A` and an element from `B`."]
 def UniqueMul {G} [Mul G] (A B : Finset G) (a0 b0 : G) : Prop :=
   ∀ ⦃a b⦄, a ∈ A → b ∈ B → a * b = a0 * b0 → a = a0 ∧ b = b0
@@ -209,7 +209,7 @@ theorem of_image_filter [DecidableEq H]
 
 end UniqueMul
 
-/-- Let `G` be a Type with addition.  `UniqueSums G` asserts that any two non-empty
+/-- Let `G` be a Type with addition. `UniqueSums G` asserts that any two non-empty
 finite subsets of `G` have the `UniqueAdd` property, with respect to some element of their
 sum `A + B`. -/
 class UniqueSums (G) [Add G] : Prop where
@@ -218,7 +218,7 @@ class UniqueSums (G) [Add G] : Prop where
   uniqueAdd_of_nonempty :
     ∀ {A B : Finset G}, A.Nonempty → B.Nonempty → ∃ a0 ∈ A, ∃ b0 ∈ B, UniqueAdd A B a0 b0
 
-/-- Let `G` be a Type with multiplication.  `UniqueProds G` asserts that any two non-empty
+/-- Let `G` be a Type with multiplication. `UniqueProds G` asserts that any two non-empty
 finite subsets of `G` have the `UniqueMul` property, with respect to some element of their
 product `A * B`. -/
 class UniqueProds (G) [Mul G] : Prop where

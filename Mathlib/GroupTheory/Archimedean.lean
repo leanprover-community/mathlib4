@@ -21,8 +21,8 @@ The main result is `AddSubgroup.cyclic_of_min`:  a subgroup of a decidable archi
 group is cyclic, if its set of positive elements has a minimal element.
 
 This result is used in this file to deduce `Int.subgroup_cyclic`, proving that every subgroup of `ℤ`
-is cyclic.  (There are several other methods one could use to prove this fact, including more purely
-algebraic methods, but none seem to exist in mathlib as of writing.  The closest is
+is cyclic. (There are several other methods one could use to prove this fact, including more purely
+algebraic methods, but none seem to exist in mathlib as of writing. The closest is
 `Subgroup.is_cyclic`, but that has not been transferred to `AddSubgroup`.)
 
 The file also supports multiplicative groups via `MulArchimedean`.

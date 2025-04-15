@@ -16,7 +16,7 @@ import Mathlib.Topology.Instances.ZMultiples
 
 We define the additive circle `AddCircle p` as the quotient `𝕜 ⧸ (ℤ ∙ p)` for some period `p : 𝕜`.
 
-See also `Circle` and `Real.angle`.  For the normed group structure on `AddCircle`, see
+See also `Circle` and `Real.angle`. For the normed group structure on `AddCircle`, see
 `AddCircle.NormedAddCommGroup` in a later file.
 
 ## Main definitions and results:

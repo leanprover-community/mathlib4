@@ -53,7 +53,7 @@ variable {ι R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommG
 namespace RootPairing
 
 /-- A morphism of root pairings is a pair of mutually transposed maps of weight and coweight spaces
-that preserves roots and coroots.  We make the map of indexing sets explicit. -/
+that preserves roots and coroots. We make the map of indexing sets explicit. -/
 @[ext]
 structure Hom {ι₂ M₂ N₂ : Type*}
     [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]

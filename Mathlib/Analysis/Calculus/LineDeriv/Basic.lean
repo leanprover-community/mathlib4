@@ -96,7 +96,7 @@ If the line derivative exists (i.e., `∃ f', HasLineDerivWithinAt 𝕜 f f' s x
 def lineDerivWithin (f : E → F) (s : Set E) (x : E) (v : E) : F :=
   derivWithin (fun t ↦ f (x + t • v)) ((fun t ↦ x + t • v) ⁻¹' s) (0 : 𝕜)
 
-/-- Line derivative of `f` at the point `x` in the direction `v`, if it exists.  Zero otherwise.
+/-- Line derivative of `f` at the point `x` in the direction `v`, if it exists. Zero otherwise.
 
 If the line derivative exists (i.e., `∃ f', HasLineDerivAt 𝕜 f f' x v`), then
 `f (x + t v) = f x + t lineDeriv 𝕜 f x v + o (t)` when `t` tends to `0`.

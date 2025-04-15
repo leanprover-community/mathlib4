@@ -165,7 +165,7 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff_aux {f : PartialHomeomorph M 
   refine ⟨s, (f.trans c').open_source.inter ((c.trans e).trans c'.symm).open_source, ?_, ?_⟩
   · simp only [s, mfld_simps]
     rw [← he'] <;> simp only [c, c', hx, hex, mfld_simps]
-  -- We need to show `f` is `ContMDiffOn` the domain `s ∩ f.source`.  We show this in two
+  -- We need to show `f` is `ContMDiffOn` the domain `s ∩ f.source`. We show this in two
   -- steps: `f` is equal to `c'.symm ∘ e ∘ c` on that domain and that function is
   -- `ContMDiffOn` it.
   have H₁ : ContMDiffOn I I n (c'.symm ∘ e ∘ c) s := by
@@ -188,7 +188,7 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff_aux {f : PartialHomeomorph M 
   refine (H₁.congr H₂).mono ?_
   mfld_set_tac
 
-/-- Let `M` and `M'` be manifolds with the same model-with-corners, `I`.  Then `f : M → M'`
+/-- Let `M` and `M'` be manifolds with the same model-with-corners, `I`. Then `f : M → M'`
 is a local structomorphism for `I`, if and only if it is manifold-`C^n` on the domain of definition
 in both directions. -/
 theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : PartialHomeomorph M M') :
@@ -241,7 +241,7 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : PartialHomeomorph M M') 
     refine ⟨e.symm, StructureGroupoid.symm _ he, h3e, ?_⟩
     rw [h2X]; exact e.mapsTo hex
   · -- We now show the converse: a partial homeomorphism `f : M → M'` which is `C^n` in both
-    -- directions is a local structomorphism.  We do this by proposing
+    -- directions is a local structomorphism. We do this by proposing
     -- `((chart_at H x).symm.trans f).trans (chart_at H (f x))` as a candidate for a structomorphism
     -- of `H`.
     rintro ⟨h₁, h₂⟩ x hx

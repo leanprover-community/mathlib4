@@ -164,7 +164,7 @@ to every other element is `0`; i.e., for all nonzero `m` in `M`, there exists `n
 
 Note that for general (neither symmetric nor antisymmetric) bilinear forms this definition has a
 chirality; in addition to this "left" nondegeneracy condition one could define a "right"
-nondegeneracy condition that in the situation described, `B n m ≠ 0`.  This variant definition is
+nondegeneracy condition that in the situation described, `B n m ≠ 0`. This variant definition is
 not currently provided in mathlib. In finite dimension either definition implies the other. -/
 def Nondegenerate (B : BilinForm R M) : Prop :=
   ∀ m : M, (∀ n : M, B m n = 0) → m = 0

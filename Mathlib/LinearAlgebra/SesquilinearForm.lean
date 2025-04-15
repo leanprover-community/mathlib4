@@ -315,7 +315,7 @@ elements `x` which are orthogonal to all elements of `N`; i.e., for all `y` in `
 
 Note that for general (neither symmetric nor antisymmetric) bilinear maps this definition has a
 chirality; in addition to this "left" orthogonal complement one could define a "right" orthogonal
-complement for which, for all `y` in `N`, `B y x = 0`.  This variant definition is not currently
+complement for which, for all `y` in `N`, `B y x = 0`. This variant definition is not currently
 provided in mathlib. -/
 def orthogonalBilin (N : Submodule R₁ M₁) (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M) : Submodule R₁ M₁ where
   carrier := { m | ∀ n ∈ N, B.IsOrtho n m }

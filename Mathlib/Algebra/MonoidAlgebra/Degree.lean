@@ -56,7 +56,7 @@ Next, the general lemmas get specialized twice:
 * once for `supDegree` (essentially a simple application) and
 * once for `infDegree` (a simple application, via `OrderDual`).
 
-These final lemmas are the ones that likely get used the most.  The generic lemmas about
+These final lemmas are the ones that likely get used the most. The generic lemmas about
 `Finset.support.sup` may not be used directly much outside of this file.
 To see this in action, you can look at the triple
 `(sup_support_mul_le, maxDegree_mul_le, le_minDegree_mul)`.

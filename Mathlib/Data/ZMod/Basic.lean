@@ -111,7 +111,7 @@ instance charP (n : ℕ) : CharP (ZMod n) n where
 theorem addOrderOf_one (n : ℕ) : addOrderOf (1 : ZMod n) = n :=
   CharP.eq _ (CharP.addOrderOf_one _) (ZMod.charP n)
 
-/-- This lemma works in the case in which `ZMod n` is not infinite, i.e. `n ≠ 0`.  The version
+/-- This lemma works in the case in which `ZMod n` is not infinite, i.e. `n ≠ 0`. The version
 where `a ≠ 0` is `addOrderOf_coe'`. -/
 @[simp]
 theorem addOrderOf_coe (a : ℕ) {n : ℕ} (n0 : n ≠ 0) : addOrderOf (a : ZMod n) = n / n.gcd a := by
@@ -120,7 +120,7 @@ theorem addOrderOf_coe (a : ℕ) {n : ℕ} (n0 : n ≠ 0) : addOrderOf (a : ZMod
       Nat.pos_of_ne_zero n0, Nat.div_self]
   rw [← Nat.smul_one_eq_cast, addOrderOf_nsmul' _ a.succ_ne_zero, ZMod.addOrderOf_one]
 
-/-- This lemma works in the case in which `a ≠ 0`.  The version where
+/-- This lemma works in the case in which `a ≠ 0`. The version where
  `ZMod n` is not infinite, i.e. `n ≠ 0`, is `addOrderOf_coe`. -/
 @[simp]
 theorem addOrderOf_coe' {a : ℕ} (n : ℕ) (a0 : a ≠ 0) : addOrderOf (a : ZMod n) = n / n.gcd a := by

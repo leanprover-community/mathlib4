@@ -17,7 +17,7 @@ type synonym for `fun x ↦ E₁ x →SL[σ] E₂ x`. If the `E₁` and `E₂` a
 fibers `F₁` and `F₂`, then this will be a vector bundle with fiber `F₁ →SL[σ] F₂`.
 
 The topology on the total space is constructed from the trivializations for `E₁` and `E₂` and the
-norm-topology on the model fiber `F₁ →SL[𝕜] F₂` using the `VectorPrebundle` construction.  This is
+norm-topology on the model fiber `F₁ →SL[𝕜] F₂` using the `VectorPrebundle` construction. This is
 a bit awkward because it introduces a dependence on the normed space structure of the model fibers,
 rather than just their topological vector space structure; it is not clear whether this is
 necessary.

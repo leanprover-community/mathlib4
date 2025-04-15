@@ -20,7 +20,7 @@ from category theory to monoids and groups.
 ## Main definitions
 
 Given a type `M` with a monoid structure, `SingleObj M` is `Unit` type with `Category` structure
-such that `End (SingleObj M).star` is the monoid `M`.  This can be extended to a functor
+such that `End (SingleObj M).star` is the monoid `M`. This can be extended to a functor
 `MonCat ⥤ Cat`.
 
 If `M` is a group, then `SingleObj M` is a groupoid.

@@ -12,7 +12,7 @@ import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 # Multiplier Algebra of a C⋆-algebra
 
 Define the multiplier algebra of a C⋆-algebra as the algebra (over `𝕜`) of double centralizers,
-for which we provide the localized notation `𝓜(𝕜, A)`.  A double centralizer is a pair of
+for which we provide the localized notation `𝓜(𝕜, A)`. A double centralizer is a pair of
 continuous linear maps `L R : A →L[𝕜] A` satisfying the intertwining condition `R x * y = x * L y`.
 
 There is a natural embedding `A → 𝓜(𝕜, A)` which sends `a : A` to the continuous linear maps

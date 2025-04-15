@@ -52,7 +52,7 @@ private def binder := leading_parser ppSpace >> binderIdent >> " : "
 /- See `haveIdLhs`.
 
 We omit `many (ppSpace >> letIdBinder)`, as it makes no sense to add extra arguments to a
-`tfae_have` decl.  -/
+`tfae_have` decl. -/
 private def tfaeHaveIdLhs := leading_parser
   (binder <|> hygieneInfo)  >> tfaeType
 /- See `haveIdDecl`. E.g. `h : 1 → 3 := term`. -/

@@ -64,7 +64,7 @@ jobs:
           git config user.name "leanprover-community-bot"
 
           # By default, github actions overrides the credentials used to access any
-          # github url so that it uses the github-actions[bot] user.  We want to access
+          # github url so that it uses the github-actions[bot] user. We want to access
           # github using a different username.
           git config --unset http.https://github.com/.extraheader
 

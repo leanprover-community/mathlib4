@@ -17,7 +17,7 @@ In this file we define `AffineIsometry 𝕜 P P₂` to be an affine isometric em
 add-torsors `P` into `P₂` over normed `𝕜`-spaces and `AffineIsometryEquiv` to be an affine
 isometric equivalence between `P` and `P₂`.
 
-We also prove basic lemmas and provide convenience constructors.  The choice of these lemmas and
+We also prove basic lemmas and provide convenience constructors. The choice of these lemmas and
 constructors is closely modelled on those for the `LinearIsometry` and `AffineMap` theories.
 
 Since many elementary properties don't require `‖x‖ = 0 → x = 0` we initially set up the theory for
@@ -26,8 +26,8 @@ Since many elementary properties don't require `‖x‖ = 0 → x = 0` we initia
 ## Notation
 
 We introduce the notation `P →ᵃⁱ[𝕜] P₂` for `AffineIsometry 𝕜 P P₂`, and `P ≃ᵃⁱ[𝕜] P₂` for
-`AffineIsometryEquiv 𝕜 P P₂`.  In contrast with the notation `→ₗᵢ` for linear isometries, `≃ᵢ`
-for isometric equivalences, etc., the "i" here is a superscript.  This is for aesthetic reasons to
+`AffineIsometryEquiv 𝕜 P P₂`. In contrast with the notation `→ₗᵢ` for linear isometries, `≃ᵢ`
+for isometric equivalences, etc., the "i" here is a superscript. This is for aesthetic reasons to
 match the superscript "a" (note that in mathlib `→ᵃ` is an affine map, since `→ₐ` has been taken by
 algebra-homomorphisms.)
 

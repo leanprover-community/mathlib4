@@ -772,7 +772,7 @@ theorem PartialHomeomorph.contDiffAt_symm_deriv [CompleteSpace 𝕜] (f : Partia
   f.contDiffAt_symm ha (hf₀'.hasFDerivAt_equiv h₀) hf
 
 /-- Let `f` be an `n` times continuously differentiable homeomorphism of a nontrivially normed
-field.  Suppose that the derivative of `f` is never equal to zero. Then `f.symm` is `n` times
+field. Suppose that the derivative of `f` is never equal to zero. Then `f.symm` is `n` times
 continuously differentiable.
 
 This is one of the easy parts of the inverse function theorem: it assumes that we already have

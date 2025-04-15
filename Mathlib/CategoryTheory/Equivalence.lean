@@ -417,13 +417,13 @@ section
 -- There's of course a monoid structure on `C ≌ C`,
 -- but let's not encourage using it.
 -- The power structure is nevertheless useful.
-/-- Natural number powers of an auto-equivalence.  Use `(^)` instead. -/
+/-- Natural number powers of an auto-equivalence. Use `(^)` instead. -/
 def powNat (e : C ≌ C) : ℕ → (C ≌ C)
   | 0 => Equivalence.refl
   | 1 => e
   | n + 2 => e.trans (powNat e (n + 1))
 
-/-- Powers of an auto-equivalence.  Use `(^)` instead. -/
+/-- Powers of an auto-equivalence. Use `(^)` instead. -/
 def pow (e : C ≌ C) : ℤ → (C ≌ C)
   | Int.ofNat n => e.powNat n
   | Int.negSucc n => e.symm.powNat (n + 1)

@@ -79,7 +79,7 @@ class ConditionallyCompleteLinearOrder (α : Type*)
 
 /-- A conditionally complete linear order with `Bot` is a linear order with least element, in which
 every nonempty subset which is bounded above has a supremum, and every nonempty subset (necessarily
-bounded below) has an infimum.  A typical example is the natural numbers.
+bounded below) has an infimum. A typical example is the natural numbers.
 
 To differentiate the statements from the corresponding statements in (unconditional)
 complete linear orders, we prefix `sInf` and `sSup` by a `c` everywhere. The same statements should
@@ -129,7 +129,7 @@ end OrderDual
 
 /-- Create a `ConditionallyCompleteLattice` from a `PartialOrder` and `sup` function
 that returns the least upper bound of a nonempty set which is bounded above. Usually this
-constructor provides poor definitional equalities.  If other fields are known explicitly, they
+constructor provides poor definitional equalities. If other fields are known explicitly, they
 should be provided; for example, if `inf` is known explicitly, construct the
 `ConditionallyCompleteLattice` instance as
 ```
@@ -180,7 +180,7 @@ def conditionallyCompleteLatticeOfsSup (α : Type*) [H1 : PartialOrder α] [H2 :
 
 /-- Create a `ConditionallyCompleteLattice` from a `PartialOrder` and `inf` function
 that returns the greatest lower bound of a nonempty set which is bounded below. Usually this
-constructor provides poor definitional equalities.  If other fields are known explicitly, they
+constructor provides poor definitional equalities. If other fields are known explicitly, they
 should be provided; for example, if `inf` is known explicitly, construct the
 `ConditionallyCompleteLattice` instance as
 ```

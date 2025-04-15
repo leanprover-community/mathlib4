@@ -46,9 +46,9 @@ namespace HahnSeries
 
 section
 
-/-- A family of Hahn series whose formal coefficient-wise sum is a Hahn series.  For each
+/-- A family of Hahn series whose formal coefficient-wise sum is a Hahn series. For each
 coefficient of the sum to be well-defined, we require that only finitely many series are nonzero at
-any given coefficient.  For the formal sum to be a Hahn series, we require that the union of the
+any given coefficient. For the formal sum to be a Hahn series, we require that the union of the
 supports of the constituent series is partially well-ordered. -/
 structure SummableFamily (Γ) (R) [PartialOrder Γ] [AddCommMonoid R] (α : Type*) where
   /-- A parametrized family of Hahn series. -/

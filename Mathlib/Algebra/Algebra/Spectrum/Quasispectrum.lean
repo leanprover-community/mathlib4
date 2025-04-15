@@ -22,7 +22,7 @@ the subgroup of `Unitization R A` whose scalar part is `1`, whenever `A` is a no
 `R`-algebra, and moreover this isomorphism is implemented by the map
 `(x : A) ↦ (1 + x : Unitization R A)`. It is because of this isomorphism, and the associated ties
 with multiplicative invertibility, that we choose a `Monoid` (as opposed to an `AddMonoid`)
-structure on `PreQuasiregular`.  In addition, in unital rings, we even have
+structure on `PreQuasiregular`. In addition, in unital rings, we even have
 `IsQuasiregular x ↔ IsUnit (1 + x)`.
 
 The *quasispectrum* of `a : A` (with respect to `R`) is defined in terms of quasiregularity, and

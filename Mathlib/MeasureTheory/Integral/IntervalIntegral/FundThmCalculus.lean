@@ -156,8 +156,8 @@ w.r.t. any measure. Many theorems are formulated for one or two pairs of filters
 `intervalIntegral.FTCFilter a l l'`. This typeclass has exactly four “real” instances:
 `(a, pure a, ⊥)`, `(a, 𝓝[≥] a, 𝓝[>] a)`, `(a, 𝓝[≤] a, 𝓝[≤] a)`, `(a, 𝓝 a, 𝓝 a)`, and two instances
 that are equal to the first and last “real” instances: `(a, 𝓝[{a}] a, ⊥)` and
-`(a, 𝓝[univ] a, 𝓝[univ] a)`.  We use this approach to avoid repeating arguments in many very similar
-cases.  Lean can automatically find both `a` and `l'` based on `l`.
+`(a, 𝓝[univ] a, 𝓝[univ] a)`. We use this approach to avoid repeating arguments in many very similar
+cases. Lean can automatically find both `a` and `l'` based on `l`.
 
 The most general theorem `measure_integral_sub_integral_sub_linear_isLittleO_of_tendsto_ae` can be
 seen as a generalization of lemma `integral_hasStrictFDerivAt` below which states strict
@@ -170,7 +170,7 @@ only that `f` has finite limits almost surely at `a` and `b`.
 Namely, let `f` be a measurable function integrable on `a..b`. Let `(la, la')` be a pair of
 `intervalIntegral.FTCFilter`s around `a`; let `(lb, lb')` be a pair of `intervalIntegral.FTCFilter`s
 around `b`. Suppose that `f` has finite limits `ca` and `cb` at `la' ⊓ ae μ` and `lb' ⊓ ae μ`,
-respectively.  Then
+respectively. Then
 `∫ x in va..vb, f x ∂μ - ∫ x in ua..ub, f x ∂μ = ∫ x in ub..vb, cb ∂μ - ∫ x in ua..va, ca ∂μ +
   o(‖∫ x in ua..va, (1:ℝ) ∂μ‖ + ‖∫ x in ub..vb, (1:ℝ) ∂μ‖)`
 as `ua` and `va` tend to `la` while `ub` and `vb` tend to `lb`.
@@ -243,7 +243,7 @@ finite at `l'`, then `∫ x in u..v, f x ∂μ = ∫ x in u..v, c ∂μ + o(∫ 
 
 See also `measure_integral_sub_linear_isLittleO_of_tendsto_ae` for a version assuming
 `[intervalIntegral.FTCFilter a l l']` and `[MeasureTheory.IsLocallyFiniteMeasure μ]`. If `l` is one
-of `𝓝[≥] a`, `𝓝[≤] a`, `𝓝 a`, then it's easier to apply the non-primed version.  The primed version
+of `𝓝[≥] a`, `𝓝[≤] a`, `𝓝 a`, then it's easier to apply the non-primed version. The primed version
 also works, e.g., for `l = l' = atTop`.
 
 We use integrals of constants instead of measures because this way it is easier to formulate
@@ -273,7 +273,7 @@ finite at `l`, then `∫ x in u..v, f x ∂μ = μ (Ioc u v) • c + o(μ(Ioc u 
 
 See also `measure_integral_sub_linear_isLittleO_of_tendsto_ae_of_le` for a version assuming
 `[intervalIntegral.FTCFilter a l l']` and `[MeasureTheory.IsLocallyFiniteMeasure μ]`. If `l` is one
-of `𝓝[≥] a`, `𝓝[≤] a`, `𝓝 a`, then it's easier to apply the non-primed version.  The primed version
+of `𝓝[≥] a`, `𝓝[≤] a`, `𝓝 a`, then it's easier to apply the non-primed version. The primed version
 also works, e.g., for `l = l' = Filter.atTop`. -/
 theorem measure_integral_sub_linear_isLittleO_of_tendsto_ae_of_le'
     [CompleteSpace E] [IsMeasurablyGenerated l']
@@ -316,7 +316,7 @@ variable [FTCFilter a la la'] [FTCFilter b lb lb']
 /-- **Fundamental theorem of calculus-1**, local version for any measure.
 
 Let filters `l` and `l'` be related by `[intervalIntegral.FTCFilter a l l']`; let `μ` be a locally
-finite measure.  If `f` has a finite limit `c` at `l' ⊓ ae μ`, then
+finite measure. If `f` has a finite limit `c` at `l' ⊓ ae μ`, then
 `∫ x in u..v, f x ∂μ = ∫ x in u..v, c ∂μ + o(∫ x in u..v, 1 ∂μ)` as both `u` and `v` tend to `l`.
 
 See also `measure_integral_sub_linear_isLittleO_of_tendsto_ae'` for a version that also works, e.g.,
@@ -335,7 +335,7 @@ theorem measure_integral_sub_linear_isLittleO_of_tendsto_ae [FTCFilter a l l']
 /-- **Fundamental theorem of calculus-1**, local version for any measure.
 
 Let filters `l` and `l'` be related by `[intervalIntegral.FTCFilter a l l']`; let `μ` be a locally
-finite measure.  If `f` has a finite limit `c` at `l' ⊓ ae μ`, then
+finite measure. If `f` has a finite limit `c` at `l' ⊓ ae μ`, then
 `∫ x in u..v, f x ∂μ = μ (Ioc u v) • c + o(μ(Ioc u v))` as both `u` and `v` tend to `l`.
 
 See also `measure_integral_sub_linear_isLittleO_of_tendsto_ae_of_le'` for a version that also works,
@@ -353,7 +353,7 @@ theorem measure_integral_sub_linear_isLittleO_of_tendsto_ae_of_le
 /-- **Fundamental theorem of calculus-1**, local version for any measure.
 
 Let filters `l` and `l'` be related by `[intervalIntegral.FTCFilter a l l']`; let `μ` be a locally
-finite measure.  If `f` has a finite limit `c` at `l' ⊓ ae μ`, then
+finite measure. If `f` has a finite limit `c` at `l' ⊓ ae μ`, then
 `∫ x in u..v, f x ∂μ = -μ (Set.Ioc v u) • c + o(μ(Set.Ioc v u))` as both `u` and `v` tend to `l`.
 
 See also `measure_integral_sub_linear_isLittleO_of_tendsto_ae_of_ge'` for a version that also works,

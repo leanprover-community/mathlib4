@@ -10,15 +10,15 @@ import Mathlib.Algebra.Order.Monoid.Defs
 # Ordered scalar multiplication and vector addition
 This file defines ordered scalar multiplication and vector addition, and proves some properties.
 In the additive case, a motivating example is given by the additive action of `ℤ` on subsets of
-reals that are closed under integer translation.  The order compatibility allows for a treatment of
+reals that are closed under integer translation. The order compatibility allows for a treatment of
 the `R((z))`-module structure on `(z ^ s) V((z))` for an `R`-module `V`, using the formalism of Hahn
-series.  In the multiplicative case, a standard example is the action of non-negative rationals on
+series. In the multiplicative case, a standard example is the action of non-negative rationals on
 an ordered field.
 
 ## Implementation notes
 * Because these classes mix the algebra and order hierarchies, we write them as `Prop`-valued
   mixins.
-* Despite the file name, Ordered AddTorsors are not defined as a separate class.  To implement them,
+* Despite the file name, Ordered AddTorsors are not defined as a separate class. To implement them,
   combine `[AddTorsor G P]` with `[IsOrderedCancelVAdd G P]`
 
 ## Definitions

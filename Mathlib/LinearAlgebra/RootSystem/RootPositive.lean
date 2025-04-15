@@ -11,11 +11,11 @@ import Mathlib.LinearAlgebra.RootSystem.WeylGroup
 
 This file contains basic results on Weyl-invariant inner products for root systems and root data.
 Given a root pairing we define a structure which contains a bilinear form together with axioms for
-reflection-invariance, symmetry, and strict positivity on all roots.  We show that root-positive
+reflection-invariance, symmetry, and strict positivity on all roots. We show that root-positive
 forms display the same sign behavior as the canonical pairing between roots and coroots.
 
 Root-positive forms show up naturally as the invariant forms for symmetrizable Kac-Moody Lie
-algebras.  In the finite case, the canonical polarization yields a root-positive form that is
+algebras. In the finite case, the canonical polarization yields a root-positive form that is
 positive semi-definite on weight space and positive-definite on the span of roots.
 
 ## Main definitions / results:

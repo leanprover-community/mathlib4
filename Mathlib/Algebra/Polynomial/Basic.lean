@@ -37,7 +37,7 @@ the polynomials. For instance,
 
 Polynomials are defined using `R[ℕ]`, where `R` is a semiring.
 The variable `X` commutes with every polynomial `p`: lemma `X_mul` proves the identity
-`X * p = p * X`.  The relationship to `R[ℕ]` is through a structure
+`X * p = p * X`. The relationship to `R[ℕ]` is through a structure
 to make polynomials irreducible from the point of view of the kernel. Most operations
 are irreducible since Lean can not compute anyway with `AddMonoidAlgebra`. There are two
 exceptions that we make semireducible:

@@ -12,17 +12,17 @@ import Mathlib.Data.Set.Basic
 
 The `Membership` typeclass is used to let terms of a type have elements.
 Many instances of `Membership` have a set-like extensionality property:
-things are equal iff they have the same elements.  The `SetLike`
+things are equal iff they have the same elements. The `SetLike`
 typeclass provides a unified interface to define a `Membership` that is
 extensional in this way.
 
 The main use of `SetLike` is for algebraic subobjects (such as
 `Submonoid` and `Submodule`), whose non-proof data consists only of a
-carrier set.  In such a situation, the projection to the carrier set
+carrier set. In such a situation, the projection to the carrier set
 is injective.
 
 In general, a type `A` is `SetLike` with elements of type `B` if it
-has an injective map to `Set B`.  This module provides standard
+has an injective map to `Set B`. This module provides standard
 boilerplate for every `SetLike`: a `coe_sort`, a `coe` to set, a
 `PartialOrder`, and various extensionality and simp lemmas.
 

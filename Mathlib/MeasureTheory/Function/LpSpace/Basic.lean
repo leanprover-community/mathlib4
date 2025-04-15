@@ -418,7 +418,7 @@ theorem const_smul_mem_Lp (c : 𝕜) (f : Lp E p μ) : c • (f : α →ₘ[μ] 
 
 variable (𝕜 E p μ)
 
-/-- The `𝕜`-submodule of elements of `α →ₘ[μ] E` whose `Lp` norm is finite.  This is `Lp E p μ`,
+/-- The `𝕜`-submodule of elements of `α →ₘ[μ] E` whose `Lp` norm is finite. This is `Lp E p μ`,
 with extra structure. -/
 def LpSubmodule : Submodule 𝕜 (α →ₘ[μ] E) :=
   { Lp E p μ with smul_mem' := fun c f hf => by simpa using const_smul_mem_Lp c ⟨f, hf⟩ }

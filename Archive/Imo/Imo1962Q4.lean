@@ -89,7 +89,7 @@ theorem imo1962_q4 {x : ℝ} : ProblemEquation x ↔ x ∈ solutionSet := by
 namespace Imo1962Q4
 
 /-
-We now present a second solution.  The key to this solution is that, when the identity is
+We now present a second solution. The key to this solution is that, when the identity is
 converted to an identity which is polynomial in `a` := `cos x`, it can be rewritten as a product of
 terms, `a ^ 2 * (2 * a ^ 2 - 1) * (4 * a ^ 2 - 3)`, being equal to zero.
 -/

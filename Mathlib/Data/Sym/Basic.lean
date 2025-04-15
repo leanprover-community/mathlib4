@@ -12,7 +12,7 @@ import Mathlib.Tactic.ApplyFun
 /-!
 # Symmetric powers
 
-This file defines symmetric powers of a type.  The nth symmetric power
+This file defines symmetric powers of a type. The nth symmetric power
 consists of homogeneous n-tuples modulo permutations by the symmetric
 group.
 
@@ -32,9 +32,9 @@ assert_not_exists MonoidWithZero
 open List (Vector)
 open Function
 
-/-- The nth symmetric power is n-tuples up to permutation.  We define it
+/-- The nth symmetric power is n-tuples up to permutation. We define it
 as a subtype of `Multiset` since these are well developed in the
-library.  We also give a definition `Sym.sym'` in terms of vectors, and we
+library. We also give a definition `Sym.sym'` in terms of vectors, and we
 show these are equivalent in `Sym.symEquivSym'`.
 -/
 def Sym (α : Type*) (n : ℕ) :=

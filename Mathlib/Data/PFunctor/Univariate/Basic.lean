@@ -9,7 +9,7 @@ import Mathlib.Data.W.Basic
 # Polynomial functors
 
 This file defines polynomial functors and the W-type construction as a
-polynomial functor.  (For the M-type construction, see
+polynomial functor. (For the M-type construction, see
 pfunctor/M.lean.)
 -/
 

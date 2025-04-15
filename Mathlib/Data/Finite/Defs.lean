@@ -16,7 +16,7 @@ is equivalent to `Fin n` for some `n`. We also define `Infinite α` as a typecla
 `¬Finite α`.
 
 The `Finite` predicate has no computational relevance and, being `Prop`-valued, gets to enjoy proof
-irrelevance -- it represents the mere fact that the type is finite.  While the `Finite` class also
+irrelevance -- it represents the mere fact that the type is finite. While the `Finite` class also
 represents finiteness of a type, a key difference is that a `Fintype` instance represents finiteness
 in a computable way: it gives a concrete algorithm to produce a `Finset` whose elements enumerate
 the terms of the given type. As such, one generally relies on congruence lemmas when rewriting

@@ -54,7 +54,7 @@ abbrev Module.compHom [Semiring S] (f : S →+* R) : Module S M :=
   { MulActionWithZero.compHom M f.toMonoidWithZeroHom, DistribMulAction.compHom M (f : S →* R) with
     -- Porting note: the `show f (r + s) • x = f r • x + f s • x` wasn't needed in mathlib3.
     -- Somehow, now that `SMul` is heterogeneous, it can't unfold earlier fields of a definition for
-    -- use in later fields.  See
+    -- use in later fields. See
     -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Heterogeneous.20scalar.20multiplication
     -- TODO(jmc): there should be a rw-lemma `smul_comp` close to `SMulZeroClass.compFun`
     add_smul := fun r s x => show f (r + s) • x = f r • x + f s • x by simp [add_smul] }

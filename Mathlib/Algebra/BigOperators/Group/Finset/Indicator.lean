@@ -17,11 +17,11 @@ variable {ι κ α β : Type*} [CommMonoid β]
 
 open Set
 
-/-- Consider a product of `g i (f i)` over a finset.  Suppose `g` is a function such as
+/-- Consider a product of `g i (f i)` over a finset. Suppose `g` is a function such as
 `n ↦ (· ^ n)`, which maps a second argument of `1` to `1`. Then if `f` is replaced by the
 corresponding multiplicative indicator function, the finset may be replaced by a possibly larger
 finset without changing the value of the product. -/
-@[to_additive "Consider a sum of `g i (f i)` over a finset.  Suppose `g` is a function such as
+@[to_additive "Consider a sum of `g i (f i)` over a finset. Suppose `g` is a function such as
 `n ↦ (n • ·)`, which maps a second argument of `0` to `0` (or a weighted sum of `f i * h i` or
 `f i • h i`, where `f` gives the weights that are multiplied by some other function `h`). Then if
 `f` is replaced by the corresponding indicator function, the finset may be replaced by a possibly

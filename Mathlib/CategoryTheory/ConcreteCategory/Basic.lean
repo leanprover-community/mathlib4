@@ -19,7 +19,7 @@ has the identity forgetful functor.
 
 We say that a concrete category `C` admits a *forgetful functor* to a concrete category `D`, if it
 has a functor `forget₂ C D : C ⥤ D` such that `(forget₂ C D) ⋙ (forget D) = forget C`, see
-`class HasForget₂`.  Due to `Faithful.div_comp`, it suffices to verify that `forget₂.obj` and
+`class HasForget₂`. Due to `Faithful.div_comp`, it suffices to verify that `forget₂.obj` and
 `forget₂.map` agree with the equality above; then `forget₂` will satisfy the functor laws
 automatically, see `HasForget₂.mk'`.
 

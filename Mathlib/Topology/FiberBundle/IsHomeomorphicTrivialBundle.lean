@@ -10,7 +10,7 @@ import Mathlib.Topology.Constructions.SumProd
 
 This file contains the definition `IsHomeomorphicTrivialFiberBundle F p`, a Prop saying that a
 map `p : Z → B` between topological spaces is a "trivial fiber bundle" in the sense that there
-exists a homeomorphism `h : Z ≃ₜ B × F` such that `proj x = (h x).1`.  This is an abstraction which
+exists a homeomorphism `h : Z ≃ₜ B × F` such that `proj x = (h x).1`. This is an abstraction which
 is occasionally convenient in showing that a map is open, a quotient map, etc.
 
 This material was formerly linked to the main definition of fiber bundles, but after a series of

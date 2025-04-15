@@ -49,7 +49,7 @@ def traverse {m : Type* → Type*} [Applicative m] {α β} (f : α → m β) : T
   | .nil => pure nil
   | .node a l r => .node <$> f a <*> traverse f l <*> traverse f r
 
-/-- Apply a function to each value in the tree.  This is the `map` function for the `Tree` functor.
+/-- Apply a function to each value in the tree. This is the `map` function for the `Tree` functor.
 -/
 def map {β} (f : α → β) : Tree α → Tree β
   | nil => nil

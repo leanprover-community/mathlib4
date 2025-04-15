@@ -130,7 +130,7 @@ def HasStrictDerivAt (f : 𝕜 → F) (f' : F) (x : 𝕜) :=
   HasStrictFDerivAt f (smulRight (1 : 𝕜 →L[𝕜] 𝕜) f') x
 
 end
-/-- Derivative of `f` at the point `x` within the set `s`, if it exists.  Zero otherwise.
+/-- Derivative of `f` at the point `x` within the set `s`, if it exists. Zero otherwise.
 
 If the derivative exists (i.e., `∃ f', HasDerivWithinAt f f' s x`), then
 `f x' = f x + (x' - x) • derivWithin f s x + o(x' - x)` where `x'` converges to `x` inside `s`.
@@ -138,7 +138,7 @@ If the derivative exists (i.e., `∃ f', HasDerivWithinAt f f' s x`), then
 def derivWithin (f : 𝕜 → F) (s : Set 𝕜) (x : 𝕜) :=
   fderivWithin 𝕜 f s x 1
 
-/-- Derivative of `f` at the point `x`, if it exists.  Zero otherwise.
+/-- Derivative of `f` at the point `x`, if it exists. Zero otherwise.
 
 If the derivative exists (i.e., `∃ f', HasDerivAt f f' x`), then
 `f x' = f x + (x' - x) • deriv f x + o(x' - x)` where `x'` converges to `x`.

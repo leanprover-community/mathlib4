@@ -874,10 +874,10 @@ variable (S) [CommSemiring S] [Algebra S R] [Module S N] [IsScalarTower S R N]
 variable [Invertible (2 : Module.End R N)]
 
 /-- `associatedHom` is the map that sends a quadratic map on a module `M` over `R` to its
-associated symmetric bilinear map.  As provided here, this has the structure of an `S`-linear map
+associated symmetric bilinear map. As provided here, this has the structure of an `S`-linear map
 where `S` is a commutative ring and `R` is an `S`-algebra.
 
-Over a commutative ring, use `QuadraticMap.associated`, which gives an `R`-linear map.  Over a
+Over a commutative ring, use `QuadraticMap.associated`, which gives an `R`-linear map. Over a
 general ring with no nontrivial distinguished commutative subring, use `QuadraticMap.associated'`,
 which gives an additive homomorphism (or more precisely a `ℤ`-linear map.) -/
 def associatedHom : QuadraticMap R M N →ₗ[S] (BilinMap R M N) where

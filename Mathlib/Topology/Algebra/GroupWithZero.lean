@@ -209,9 +209,9 @@ theorem ContinuousOn.div₀ (hf : ContinuousOn f s) (hg : ContinuousOn g s) (h�
     ContinuousOn (fun x => f x / g x) s := ContinuousOn.div hf hg h₀
 
 /-- The function `f x / g x` is discontinuous when `g x = 0`. However, under appropriate
-conditions, `h x (f x / g x)` is still continuous.  The condition is that if `g a = 0` then `h x y`
+conditions, `h x (f x / g x)` is still continuous. The condition is that if `g a = 0` then `h x y`
 must tend to `h a 0` when `x` tends to `a`, with no information about `y`. This is represented by
-the `⊤` filter.  Note: `tendsto_prod_top_iff` characterizes this convergence in uniform spaces.  See
+the `⊤` filter. Note: `tendsto_prod_top_iff` characterizes this convergence in uniform spaces. See
 also `Filter.prod_top` and `Filter.mem_prod_top`. -/
 theorem ContinuousAt.comp_div_cases {f g : α → G₀} (h : α → G₀ → β) (hf : ContinuousAt f a)
     (hg : ContinuousAt g a) (hh : g a ≠ 0 → ContinuousAt (↿h) (a, f a / g a))

@@ -21,7 +21,7 @@ a monad. Consider for instance a functor `invite : email → IO response`
 that takes an email address, sends an email and waits for a
 response. If we have a list `guests : List email`, using calling
 `invite` using `map` gives us the following:
-`map invite guests : List (IO response)`.  It is not what we need. We need something of
+`map invite guests : List (IO response)`. It is not what we need. We need something of
 type `IO (List response)`. Instead of using `map`, we can use `traverse` to
 send all the invites: `traverse invite guests : IO (List response)`.
 `traverse` applies `invite` to every element of `guests` and combines
@@ -64,7 +64,7 @@ section ApplicativeTransformation
 variable (F : Type u → Type v) [Applicative F]
 variable (G : Type u → Type w) [Applicative G]
 
-/-- A transformation between applicative functors.  It is a natural
+/-- A transformation between applicative functors. It is a natural
 transformation such that `app` preserves the `Pure.pure` and
 `Functor.map` (`<*>`) operations. See
 `ApplicativeTransformation.preserves_map` for naturality. -/
@@ -189,7 +189,7 @@ end ApplicativeTransformation
 open ApplicativeTransformation
 
 /-- A traversable functor is a functor along with a way to commute
-with all applicative functors (see `sequence`).  For example, if `t`
+with all applicative functors (see `sequence`). For example, if `t`
 is the traversable functor `List` and `m` is the applicative functor
 `IO`, then given a function `f : α → IO β`, the function `Functor.map f` is
 `List α → List (IO β)`, but `traverse f` is `List α → IO (List β)`. -/
@@ -214,7 +214,7 @@ def sequence [Traversable t] : t (f α) → f (t α) :=
 end Functions
 
 /-- A traversable functor is lawful if its `traverse` satisfies a
-number of additional properties.  It must send `pure : α → Id α` to `pure`,
+number of additional properties. It must send `pure : α → Id α` to `pure`,
 send the composition of applicative functors to the composition of the
 `traverse` of each, send each function `f` to `fun x ↦ f <$> x`, and
 satisfy a naturality condition with respect to applicative

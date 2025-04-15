@@ -13,12 +13,12 @@ import Mathlib.Topology.MetricSpace.Lipschitz
 
 In this file we define mixin typeclasses `LipschitzMul`, `LipschitzAdd`,
 `IsBoundedSMul` expressing compatibility of multiplication, addition and scalar-multiplication
-operations with an underlying metric space structure.  The intended use case is to abstract certain
+operations with an underlying metric space structure. The intended use case is to abstract certain
 properties shared by normed groups and by `R≥0`.
 
 ## Implementation notes
 
-We deduce a `ContinuousMul` instance from `LipschitzMul`, etc.  In principle there should
+We deduce a `ContinuousMul` instance from `LipschitzMul`, etc. In principle there should
 be an intermediate typeclass for uniform spaces, but the algebraic hierarchy there (see
 `IsUniformGroup`) is structured differently.
 

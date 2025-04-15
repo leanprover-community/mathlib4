@@ -24,7 +24,7 @@ to enter tactic mode and try `rw [mul_comm]`. But this transforms the goal
 into `b * c * a = a * (c * b)`, after commuting the very first
 multiplication appearing in the term. There are several ways to fix this
 issue, and one way is to use a more precise tool: the
-conversion mode.  The following code block shows the current target after
+conversion mode. The following code block shows the current target after
 each line. Note that the target is prefixed by `|` where normal tactic mode
 shows a goal prefixed by `⊢`. Both cases are still called "goals" though.
 

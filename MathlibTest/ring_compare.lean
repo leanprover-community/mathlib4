@@ -57,7 +57,7 @@ example : x + y - 3 < y + x := by ring_lt
 example : x + y - x + 1 < y + (4:K) := by ring_lt
 
 /- The speed of `Mathlib.Tactic.Ring.proveLE` is very sensitive to how much typeclass inference is
-demanded by the lemmas it orchestrates.  This example took 1112 heartbeats (and 40 ms on a good
+demanded by the lemmas it orchestrates. This example took 1112 heartbeats (and 40 ms on a good
 laptop) on an implementation with "minimal" typeclasses everywhere, e.g. lots of
 `CovariantClass`/`ContravariantClass`, and takes 662 heartbeats (28 ms on a good laptop) on the
 implementation at the time of joining Mathlib (October 2024). -/
@@ -65,7 +65,7 @@ set_option maxHeartbeats 750 in
 example : x + y - x + 1 ≤ y + (4:K) := by ring_le
 
 /- The speed of `Mathlib.Tactic.Ring.proveLT` is very sensitive to how much typeclass inference is
-demanded by the lemmas it orchestrates.  This example took 1410 heartbeats (and 48 ms on a good
+demanded by the lemmas it orchestrates. This example took 1410 heartbeats (and 48 ms on a good
 laptop) on an implementation with "minimal" typeclasses everywhere, e.g. lots of
 `CovariantClass`/`ContravariantClass`, and takes 676 heartbeats (28 ms on a good laptop) on the
 implementation at the time of joining Mathlib (October 2024). -/

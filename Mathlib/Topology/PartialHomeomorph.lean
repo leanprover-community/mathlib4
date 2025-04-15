@@ -963,7 +963,7 @@ section Piecewise
 
 /-- Combine two `PartialHomeomorph`s using `Set.piecewise`. The source of the new
 `PartialHomeomorph` is `s.ite e.source e'.source = e.source ∩ s ∪ e'.source \ s`, and similarly for
-target.  The function sends `e.source ∩ s` to `e.target ∩ t` using `e` and
+target. The function sends `e.source ∩ s` to `e.target ∩ t` using `e` and
 `e'.source \ s` to `e'.target \ t` using `e'`, and similarly for the inverse function.
 To ensure the maps `toFun` and `invFun` are inverse of each other on the new `source` and `target`,
 the definition assumes that the sets `s` and `t` are related both by `e.is_image` and `e'.is_image`.

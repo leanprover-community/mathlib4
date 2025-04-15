@@ -124,7 +124,7 @@ theorem single_ne_zero {a : G} {b : k} : single a b ≠ 0 ↔ b ≠ 0 := Finsupp
 /-- A non-commutative version of `MonoidAlgebra.lift`: given an additive homomorphism `f : k →+ R`
 and a homomorphism `g : G → R`, returns the additive homomorphism from
 `MonoidAlgebra k G` such that `liftNC f g (single a b) = f b * g a`. If `f` is a ring homomorphism
-and the range of either `f` or `g` is in center of `R`, then the result is a ring homomorphism.  If
+and the range of either `f` or `g` is in center of `R`, then the result is a ring homomorphism. If
 `R` is a `k`-algebra and `f = algebraMap k R`, then the result is an algebra homomorphism called
 `MonoidAlgebra.lift`. -/
 def liftNC (f : k →+ R) (g : G → R) : MonoidAlgebra k G →+ R :=
@@ -874,7 +874,7 @@ theorem single_ne_zero {a : G} {b : k} : single a b ≠ 0 ↔ b ≠ 0 := Finsupp
 `f : k →+ R` and a map `g : Multiplicative G → R`, returns the additive
 homomorphism from `k[G]` such that `liftNC f g (single a b) = f b * g a`. If `f`
 is a ring homomorphism and the range of either `f` or `g` is in center of `R`, then the result is a
-ring homomorphism.  If `R` is a `k`-algebra and `f = algebraMap k R`, then the result is an algebra
+ring homomorphism. If `R` is a `k`-algebra and `f = algebraMap k R`, then the result is an algebra
 homomorphism called `AddMonoidAlgebra.lift`. -/
 def liftNC (f : k →+ R) (g : Multiplicative G → R) : k[G] →+ R :=
   liftAddHom fun x : G => (AddMonoidHom.mulRight (g <| Multiplicative.ofAdd x)).comp f

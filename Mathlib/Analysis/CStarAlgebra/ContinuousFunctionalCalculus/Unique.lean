@@ -450,7 +450,7 @@ lemma NonUnitalStarAlgHomClass.map_cfcₙ (φ : F) (f : R → R) (a : A)
     fun_prop
 
 /-- Non-unital star algebra homomorphisms commute with the non-unital continuous functional
-calculus.  This version is specialized to `A →⋆ₙₐ[S] B` to allow for dot notation. -/
+calculus. This version is specialized to `A →⋆ₙₐ[S] B` to allow for dot notation. -/
 lemma NonUnitalStarAlgHom.map_cfcₙ (φ : A →⋆ₙₐ[S] B) (f : R → R) (a : A)
     (hf : ContinuousOn f (quasispectrum R a) := by cfc_cont_tac)
     (hf₀ : f 0 = 0 := by cfc_zero_tac) (hφ : Continuous φ := by fun_prop) (ha : p a := by cfc_tac)

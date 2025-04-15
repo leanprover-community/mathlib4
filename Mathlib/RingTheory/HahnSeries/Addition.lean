@@ -12,7 +12,7 @@ import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 # Additive properties of Hahn series
 If `Γ` is ordered and `R` has zero, then `HahnSeries Γ R` consists of formal series over `Γ` with
 coefficients in `R`, whose supports are partially well-ordered. With further structure on `R` and
-`Γ`, we can add further structure on `HahnSeries Γ R`.  When `R` has an addition operation,
+`Γ`, we can add further structure on `HahnSeries Γ R`. When `R` has an addition operation,
 `HahnSeries Γ R` also has addition by adding coefficients.
 
 ## Main Definitions

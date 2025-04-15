@@ -10,9 +10,9 @@ import Mathlib.Algebra.Polynomial.Eval.SMul
 /-!
 # Scalar-multiple polynomial evaluation
 
-This file defines polynomial evaluation via scalar multiplication.  Our polynomials have
+This file defines polynomial evaluation via scalar multiplication. Our polynomials have
 coefficients in a semiring `R`, and we evaluate at a weak form of `R`-algebra, namely an additive
-commutative monoid with an action of `R` and a notion of natural number power.  This
+commutative monoid with an action of `R` and a notion of natural number power. This
 is a generalization of `Algebra.Polynomial.Eval`.
 
 ## Main definitions
@@ -173,7 +173,7 @@ section NatPowAssoc
 In the module docstring for algebras at `Mathlib.Algebra.Algebra.Basic`, we see that
 `[CommSemiring R] [Semiring S] [Module R S] [IsScalarTower R S S] [SMulCommClass R S S]` is an
 equivalent way to express `[CommSemiring R] [Semiring S] [Algebra R S]` that allows one to relax
-the defining structures independently.  For non-associative power-associative algebras (e.g.,
+the defining structures independently. For non-associative power-associative algebras (e.g.,
 octonions), we replace the `[Semiring S]` with `[NonAssocSemiring S] [Pow S ℕ] [NatPowAssoc S]`.
 -/
 

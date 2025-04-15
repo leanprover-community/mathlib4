@@ -13,7 +13,7 @@ import Mathlib.Analysis.InnerProductSpace.PiL2
 Given a family `(G : ι → Type*) [Π i, InnerProductSpace 𝕜 (G i)]` of inner product spaces, this
 file equips `lp G 2` with an inner product space structure, where `lp G 2` consists of those
 dependent functions `f : Π i, G i` for which `∑' i, ‖f i‖ ^ 2`, the sum of the norms-squared, is
-summable.  This construction is sometimes called the *Hilbert sum* of the family `G`.  By choosing
+summable. This construction is sometimes called the *Hilbert sum* of the family `G`. By choosing
 `G` to be `ι → 𝕜`, the Hilbert space `ℓ²(ι, 𝕜)` may be seen as a special case of this construction.
 
 We also define a *predicate* `IsHilbertSum 𝕜 G V`, where `V : Π i, G i →ₗᵢ[𝕜] E`, expressing that
@@ -37,17 +37,17 @@ We also define a *predicate* `IsHilbertSum 𝕜 G V`, where `V : Π i, G i →�
 
 * `HilbertBasis`: We define a *Hilbert basis* of a Hilbert space `E` to be a structure whose single
   field `HilbertBasis.repr` is an isometric isomorphism of `E` with `ℓ²(ι, 𝕜)` (i.e., the Hilbert
-  sum of `ι` copies of `𝕜`).  This parallels the definition of `Basis`, in `LinearAlgebra.Basis`,
+  sum of `ι` copies of `𝕜`). This parallels the definition of `Basis`, in `LinearAlgebra.Basis`,
   as an isomorphism of an `R`-module with `ι →₀ R`.
 
 * `HilbertBasis.instCoeFun`: More conventionally a Hilbert basis is thought of as a family
-  `ι → E` of vectors in `E` satisfying certain properties (orthonormality, completeness).  We obtain
+  `ι → E` of vectors in `E` satisfying certain properties (orthonormality, completeness). We obtain
   this interpretation of a Hilbert basis `b` by defining `⇑b`, of type `ι → E`, to be the image
-  under `b.repr` of `lp.single 2 i (1:𝕜)`.  This parallels the definition `Basis.coeFun` in
+  under `b.repr` of `lp.single 2 i (1:𝕜)`. This parallels the definition `Basis.coeFun` in
   `LinearAlgebra.Basis`.
 
 * `HilbertBasis.mk`: Make a Hilbert basis of `E` from an orthonormal family `v : ι → E` of vectors
-  in `E` whose span is dense.  This parallels the definition `Basis.mk` in `LinearAlgebra.Basis`.
+  in `E` whose span is dense. This parallels the definition `Basis.mk` in `LinearAlgebra.Basis`.
 
 * `HilbertBasis.mkOfOrthogonalEqBot`: Make a Hilbert basis of `E` from an orthonormal family
   `v : ι → E` of vectors in `E` whose span has trivial orthogonal complement.

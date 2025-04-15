@@ -10,12 +10,12 @@ import Mathlib.RingTheory.Localization.Away.Basic
 
 /-!  # Laurent polynomials
 
-We introduce Laurent polynomials over a semiring `R`.  Mathematically, they are expressions of the
+We introduce Laurent polynomials over a semiring `R`. Mathematically, they are expressions of the
 form
 $$
 \sum_{i \in \mathbb{Z}} a_i T ^ i
 $$
-where the sum extends over a finite subset of `ℤ`.  Thus, negative exponents are allowed.  The
+where the sum extends over a finite subset of `ℤ`. Thus, negative exponents are allowed. The
 coefficients come from the semiring `R` and the variable `T` commutes with everything.
 
 Since we are going to convert back and forth between polynomials and Laurent polynomials, we
@@ -23,7 +23,7 @@ decided to maintain some distinction by using the symbol `T`, rather than `X`, a
 Laurent polynomials.
 
 ## Notation
-The symbol `R[T;T⁻¹]` stands for `LaurentPolynomial R`.  We also define
+The symbol `R[T;T⁻¹]` stands for `LaurentPolynomial R`. We also define
 
 * `C : R →+* R[T;T⁻¹]` the inclusion of constant polynomials, analogous to the one for `R[X]`;
 * `T : ℤ → R[T;T⁻¹]` the sequence of powers of the variable `T`.
@@ -33,13 +33,13 @@ The symbol `R[T;T⁻¹]` stands for `LaurentPolynomial R`.  We also define
 We define Laurent polynomials as `AddMonoidAlgebra R ℤ`.
 Thus, they are essentially `Finsupp`s `ℤ →₀ R`.
 This choice differs from the current irreducible design of `Polynomial`, that instead shields away
-the implementation via `Finsupp`s.  It is closer to the original definition of polynomials.
+the implementation via `Finsupp`s. It is closer to the original definition of polynomials.
 
 As a consequence, `LaurentPolynomial` plays well with polynomials, but there is a little roughness
 in establishing the API, since the `Finsupp` implementation of `R[X]` is well-shielded.
 
 Unlike the case of polynomials, I felt that the exponent notation was not too easy to use, as only
-natural exponents would be allowed.  Moreover, in the end, it seems likely that we should aim to
+natural exponents would be allowed. Moreover, in the end, it seems likely that we should aim to
 perform computations on exponents in `ℤ` anyway and separating this via the symbol `T` seems
 convenient.
 
@@ -49,7 +49,7 @@ Any comments or suggestions for improvements is greatly appreciated!
 ##  Future work
 Lots is missing!
 -- (Riccardo) add inclusion into Laurent series.
--- A "better" definition of `trunc` would be as an `R`-linear map.  This works:
+-- A "better" definition of `trunc` would be as an `R`-linear map. This works:
 --  ```
 --  def trunc : R[T;T⁻¹] →[R] R[X] :=
 --    refine (?_ : R[ℕ] →[R] R[X]).comp ?_
@@ -147,7 +147,7 @@ theorem single_eq_C (r : R) : Finsupp.single 0 r = C r := rfl
 /-- The function `n ↦ T ^ n`, implemented as a sequence `ℤ → R[T;T⁻¹]`.
 
 Using directly `T ^ n` does not work, since we want the exponents to be of Type `ℤ` and there
-is no `ℤ`-power defined on `R[T;T⁻¹]`.  Using that `T` is a unit introduces extra coercions.
+is no `ℤ`-power defined on `R[T;T⁻¹]`. Using that `T` is a unit introduces extra coercions.
 For these reasons, the definition of `T` is as a sequence. -/
 def T (n : ℤ) : R[T;T⁻¹] :=
   Finsupp.single n 1
@@ -289,7 +289,7 @@ theorem smul_eq_C_mul (r : R) (f : R[T;T⁻¹]) : r • f = C r * f := by
       Finsupp.smul_single', single_eq_C]
 
 /-- `trunc : R[T;T⁻¹] →+ R[X]` maps a Laurent polynomial `f` to the polynomial whose terms of
-nonnegative degree coincide with the ones of `f`.  The terms of negative degree of `f` "vanish".
+nonnegative degree coincide with the ones of `f`. The terms of negative degree of `f` "vanish".
 `trunc` is a left-inverse to `Polynomial.toLaurent`. -/
 def trunc : R[T;T⁻¹] →+ R[X] :=
   (toFinsuppIso R).symm.toAddMonoidHom.comp <| comapDomain.addMonoidHom fun _ _ => Int.ofNat.inj
@@ -383,7 +383,7 @@ theorem support_C_mul_T_of_ne_zero {a : R} (a0 : a ≠ 0) (n : ℤ) :
   rw [← single_eq_C_mul_T]
   exact support_single_ne_zero _ a0
 
-/-- The support of a polynomial `f` is a finset in `ℕ`.  The lemma `toLaurent_support f`
+/-- The support of a polynomial `f` is a finset in `ℕ`. The lemma `toLaurent_support f`
 shows that the support of `f.toLaurent` is the same finset, but viewed in `ℤ` under the natural
 inclusion `ℕ ↪ ℤ`. -/
 theorem toLaurent_support (f : R[X]) : f.toLaurent.support = f.support.map Nat.castEmbedding := by

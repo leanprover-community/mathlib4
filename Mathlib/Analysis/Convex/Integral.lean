@@ -187,7 +187,7 @@ theorem ConcaveOn.le_map_set_average (hg : ConcaveOn ℝ s g) (hgc : ContinuousO
   (hg.set_average_mem_hypograph hgc hsc h0 ht hfs hfi hgi).2
 
 /-- **Jensen's inequality**: if a function `g : E → ℝ` is convex and continuous on a convex closed
-set `s`, `μ` is a probability measure on `α`, and `f : α → E` is a function sending `μ`-a.e.  points
+set `s`, `μ` is a probability measure on `α`, and `f : α → E` is a function sending `μ`-a.e. points
 to `s`, then the value of `g` at the expected value of `f` is less than or equal to the expected
 value of `g ∘ f` provided that both `f` and `g ∘ f` are integrable. See also
 `ConvexOn.map_centerMass_le` for a finite sum version of this lemma. -/
@@ -197,7 +197,7 @@ theorem ConvexOn.map_integral_le [IsProbabilityMeasure μ] (hg : ConvexOn ℝ s 
   simpa only [average_eq_integral] using hg.map_average_le hgc hsc hfs hfi hgi
 
 /-- **Jensen's inequality**: if a function `g : E → ℝ` is concave and continuous on a convex closed
-set `s`, `μ` is a probability measure on `α`, and `f : α → E` is a function sending `μ`-a.e.  points
+set `s`, `μ` is a probability measure on `α`, and `f : α → E` is a function sending `μ`-a.e. points
 to `s`, then the expected value of `g ∘ f` is less than or equal to the value of `g` at the expected
 value of `f` provided that both `f` and `g ∘ f` are integrable. -/
 theorem ConcaveOn.le_map_integral [IsProbabilityMeasure μ] (hg : ConcaveOn ℝ s g)

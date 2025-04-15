@@ -825,7 +825,7 @@ theorem continuous_totalSpaceMk (b : B) :
 def toFiberBundle : @FiberBundle B F _ _ _ a.totalSpaceTopology _ :=
   a.toFiberPrebundle.toFiberBundle
 
-/-- Make a `VectorBundle` from a `VectorPrebundle`.  Concretely this means
+/-- Make a `VectorBundle` from a `VectorPrebundle`. Concretely this means
 that, given a `VectorPrebundle` structure for a sigma-type `E` -- which consists of a
 number of "pretrivializations" identifying parts of `E` with product spaces `U × F` -- one
 establishes that for the topology constructed on the sigma-type using

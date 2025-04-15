@@ -76,7 +76,7 @@ Sobolev inequality.
 
 For a finite dependent product `Π i : ι, A i` of sigma-finite measure spaces, a finite set `s` of
 indices from `ι`, and a (later assumed nonnegative) real number `p`, this operation acts on a
-function `f` from `Π i, A i` into the extended nonnegative reals.  The operation is to partially
+function `f` from `Π i, A i` into the extended nonnegative reals. The operation is to partially
 integrate, in the `s` co-ordinates, the function whose value at `x : Π i, A i` is obtained by
 multiplying a certain power of `f` with the product, for each co-ordinate `i` in `s`, of a certain
 power of the integral of `f` along the "grid line" in the `i` direction through `x`.
@@ -209,10 +209,10 @@ theorem T_insert_le_T_lmarginal_singleton [∀ i, SigmaFinite (μ i)] (hp₀ : 0
                   simp only [Finset.mem_insert, Finset.mem_compl] at hj
                   exact fun h ↦ hi (h ▸ hj)
 
-/-- Auxiliary result for the grid-lines lemma.  Given a nonnegative function on a finitary product
+/-- Auxiliary result for the grid-lines lemma. Given a nonnegative function on a finitary product
 type indexed by `ι`, and a set `s` in `ι`, consider partially integrating over the variables in
 `sᶜ` and performing the "grid-lines operation" (see `GridLines.T`) to the resulting function in the
-variables `s`.  This theorem states that this operation decreases as the number of grid-lines taken
+variables `s`. This theorem states that this operation decreases as the number of grid-lines taken
 increases. -/
 theorem T_lmarginal_antitone [Fintype ι] [∀ i, SigmaFinite (μ i)]
     (hp₀ : 0 ≤ p) (hp : (#ι - 1 : ℝ) * p ≤ 1) {f : (∀ i, A i) → ℝ≥0∞} (hf : Measurable f) :
@@ -242,12 +242,12 @@ theorem T_lmarginal_antitone [Fintype ι] [∀ i, SigmaFinite (μ i)]
 end GridLines
 
 /-- The "grid-lines lemma" (not a standard name), stated with a general parameter `p` as the
-exponent.  Compare with `lintegral_prod_lintegral_pow_le`.
+exponent. Compare with `lintegral_prod_lintegral_pow_le`.
 
 For any finite dependent product `Π i : ι, A i` of sigma-finite measure spaces, for any
 nonnegative real number `p` such that `(#ι - 1) * p ≤ 1`, for any function `f` from `Π i, A i` into
 the extended nonnegative reals, we consider an associated "grid-lines quantity", the integral of an
-associated function from `Π i, A i` into the extended nonnegative reals.  The value of this function
+associated function from `Π i, A i` into the extended nonnegative reals. The value of this function
 at `x : Π i, A i` is obtained by multiplying a certain power of `f` with the product, for each
 co-ordinate `i`, of a certain power of the integral of `f` along the "grid line" in the `i`
 direction through `x`.
@@ -289,8 +289,8 @@ end DecidableEq
 
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
 
-/-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
-compactly-supported function `u` on `ℝⁿ`, for `n ≥ 2`.  (More literally we encode `ℝⁿ` as
+/-- The **Gagliardo-Nirenberg-Sobolev inequality**. Let `u` be a continuously differentiable
+compactly-supported function `u` on `ℝⁿ`, for `n ≥ 2`. (More literally we encode `ℝⁿ` as
 `ι → ℝ` where `n := #ι` is finite and at least 2.)  Then the Lebesgue integral of the pointwise
 expression `|u x| ^ (n / (n - 1))` is bounded above by the `n / (n - 1)`-th power of the Lebesgue
 integral of the Fréchet derivative of `u`.
@@ -364,7 +364,7 @@ irreducible_def lintegralPowLePowLIntegralFDerivConst (p : ℝ) : ℝ≥0 := by
   let c := addHaarScalarFactor μ ((volume : Measure (ι → ℝ)).map e.symm)
   exact (c * ‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊ ^ p) * (c ^ p)⁻¹
 
-/-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
+/-- The **Gagliardo-Nirenberg-Sobolev inequality**. Let `u` be a continuously differentiable
 compactly-supported function `u` on a normed space `E` of finite dimension `n ≥ 2`, equipped
 with Haar measure. Then the Lebesgue integral of the pointwise expression
 `|u x| ^ (n / (n - 1))` is bounded above by a constant times the `n / (n - 1)`-th power of the
@@ -437,7 +437,7 @@ It only depends on `E`, `μ` and `p`. -/
 irreducible_def eLpNormLESNormFDerivOneConst (p : ℝ) : ℝ≥0 :=
   lintegralPowLePowLIntegralFDerivConst μ p ^ p⁻¹
 
-/-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
+/-- The **Gagliardo-Nirenberg-Sobolev inequality**. Let `u` be a continuously differentiable
 compactly-supported function `u` on a normed space `E` of finite dimension `n ≥ 2`, equipped
 with Haar measure. Then the `Lᵖ` norm of `u`, where `p := n / (n - 1)`, is bounded above by
 a constant times the `L¹` norm of the Fréchet derivative of `u`. -/
@@ -460,7 +460,7 @@ def eLpNormLESNormFDerivOfEqInnerConst (p : ℝ) : ℝ≥0 :=
 
 variable {F' : Type*} [NormedAddCommGroup F'] [InnerProductSpace ℝ F'] [CompleteSpace F']
 
-/-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
+/-- The **Gagliardo-Nirenberg-Sobolev inequality**. Let `u` be a continuously differentiable
 compactly-supported function `u` on a normed space `E` of finite dimension `n`, equipped
 with Haar measure, let `1 ≤ p < n` and let `p'⁻¹ := p⁻¹ - n⁻¹`.
 Then the `Lᵖ'` norm of `u` is bounded above by a constant times the `Lᵖ` norm of
@@ -595,7 +595,7 @@ irreducible_def SNormLESNormFDerivOfEqConst [FiniteDimensional ℝ F] (p : ℝ) 
   let e : F ≃L[ℝ] F' := toEuclidean
   ‖(e.symm : F' →L[ℝ] F)‖₊ * eLpNormLESNormFDerivOfEqInnerConst μ p * ‖(e : F →L[ℝ] F')‖₊
 
-/-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
+/-- The **Gagliardo-Nirenberg-Sobolev inequality**. Let `u` be a continuously differentiable
 compactly-supported function `u` on a normed space `E` of finite dimension `n`, equipped
 with Haar measure, let `1 < p < n` and let `p'⁻¹ := p⁻¹ - n⁻¹`.
 Then the `Lᵖ'` norm of `u` is bounded above by a constant times the `Lᵖ` norm of
@@ -651,7 +651,7 @@ irreducible_def eLpNormLESNormFDerivOfLeConst [FiniteDimensional ℝ F] (s : Set
   (μ s).toNNReal ^ (1 / q - 1 / p' : ℝ) * SNormLESNormFDerivOfEqConst F μ p
 
 
-/-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
+/-- The **Gagliardo-Nirenberg-Sobolev inequality**. Let `u` be a continuously differentiable
 function `u` supported in a bounded set `s` in a normed space `E` of finite dimension
 `n`, equipped with Haar measure, and let `1 < p < n` and `0 < q ≤ (p⁻¹ - (finrank ℝ E : ℝ)⁻¹)⁻¹`.
 Then the `L^q` norm of `u` is bounded above by a constant times the `Lᵖ` norm of
@@ -709,7 +709,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_le [FiniteDimensional ℝ F]
     _ = eLpNormLESNormFDerivOfLeConst F μ s p q * eLpNorm (fderiv ℝ u) p μ := by
       simp_rw [eLpNormLESNormFDerivOfLeConst, ENNReal.coe_mul]; ring
 
-/-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
+/-- The **Gagliardo-Nirenberg-Sobolev inequality**. Let `u` be a continuously differentiable
 function `u` supported in a bounded set `s` in a normed space `E` of finite dimension
 `n`, equipped with Haar measure, and let `1 < p < n`.
 Then the `Lᵖ` norm of `u` is bounded above by a constant times the `Lᵖ` norm of

@@ -25,7 +25,7 @@ variable {R : Type*} [CommRing R] {f : R[X]}
 
 
 /-- Given a polynomial `f ∈ R[x]`, `imageOfDf` is the subset of `Spec R` where at least one
-of the coefficients of `f` does not vanish.  Lemma `imageOfDf_eq_comap_C_compl_zeroLocus`
+of the coefficients of `f` does not vanish. Lemma `imageOfDf_eq_comap_C_compl_zeroLocus`
 proves that `imageOfDf` is the image of `(zeroLocus {f})ᶜ` under the morphism
 `comap C : Spec R[x] → Spec R`. -/
 def imageOfDf (f : R[X]) : Set (PrimeSpectrum R) :=

@@ -12,9 +12,9 @@ import Mathlib.Algebra.Ring.Int.Defs
 # IMO 2011 Q5
 
 Let `f` be a function from the set of integers to the set
-of positive integers.  Suppose that, for any two integers
+of positive integers. Suppose that, for any two integers
 `m` and `n`, the difference `f m - f n` is divisible by
-`f (m - n)`.  Prove that, for all integers `m` and `n` with
+`f (m - n)`. Prove that, for all integers `m` and `n` with
 `f m ≤ f n`, the number `f n` is divisible by `f m`.
 -/
 

@@ -13,7 +13,7 @@ import Mathlib.Topology.Instances.EReal.Lemmas
 /-!
 # A collection of specific limit computations
 
-This file, by design, is independent of `NormedSpace` in the import hierarchy.  It contains
+This file, by design, is independent of `NormedSpace` in the import hierarchy. It contains
 important specific limit computations in metric spaces, in ordered rings/fields, and in specific
 instances of these such as `ℝ`, `ℝ≥0` and `ℝ≥0∞`.
 -/

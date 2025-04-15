@@ -284,7 +284,7 @@ def initialUnopOfTerminal {X : Cᵒᵖ} (t : IsTerminal X) : IsInitial X.unop wh
   uniq _ _ _ := Quiver.Hom.op_inj (t.hom_ext _ _)
 
 /-- A category is an `InitialMonoClass` if the canonical morphism of an initial object is a
-monomorphism.  In practice, this is most useful when given an arbitrary morphism out of the chosen
+monomorphism. In practice, this is most useful when given an arbitrary morphism out of the chosen
 initial object, see `initial.mono_from`.
 Given a terminal object, this is equivalent to the assumption that the unique morphism from initial
 to terminal is a monomorphism, which is the second of Freyd's axioms for an AT category.

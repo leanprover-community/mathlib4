@@ -892,7 +892,7 @@ open DirectSum
 variable {n : ℕ} (hn : finrank 𝕜 E = n) [DecidableEq ι] {V : ι → Submodule 𝕜 E} (hV : IsInternal V)
 
 /-- Exhibit a bijection between `Fin n` and the index set of a certain basis of an `n`-dimensional
-inner product space `E`.  This should not be accessed directly, but only via the subsequent API. -/
+inner product space `E`. This should not be accessed directly, but only via the subsequent API. -/
 irreducible_def DirectSum.IsInternal.sigmaOrthonormalBasisIndexEquiv
     (hV' : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) :
     (Σ i, Fin (finrank 𝕜 (V i))) ≃ Fin n :=
@@ -944,7 +944,7 @@ variable {S : Submodule 𝕜 V} {L : S →ₗᵢ[𝕜] V}
 
 open Module
 
-/-- Let `S` be a subspace of a finite-dimensional complex inner product space `V`.  A linear
+/-- Let `S` be a subspace of a finite-dimensional complex inner product space `V`. A linear
 isometry mapping `S` into `V` can be extended to a full isometry of `V`.
 
 TODO:  The case when `S` is a finite-dimensional subspace of an infinite-dimensional `V`. -/

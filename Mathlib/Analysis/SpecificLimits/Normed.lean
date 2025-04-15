@@ -271,7 +271,7 @@ theorem geom_series_mul_one_add (x : R) (h : ‖x‖ < 1) :
   rw [add_mul, one_mul, geom_series_mul_shift x h, geom_series_succ x h, two_mul, add_sub_assoc]
 
 /-- In a normed ring with summable geometric series, a perturbation of `1` by an element `t`
-of distance less than `1` from `1` is a unit.  Here we construct its `Units` structure. -/
+of distance less than `1` from `1` is a unit. Here we construct its `Units` structure. -/
 @[simps val]
 def Units.oneSub (t : R) (h : ‖t‖ < 1) : Rˣ where
   val := 1 - t

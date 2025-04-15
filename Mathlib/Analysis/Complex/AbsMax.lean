@@ -54,7 +54,7 @@ prove `f w = f c` instead of `‖f w‖ = ‖f c‖`, see
 ### Values on the frontier
 
 Finally, we prove some corollaries that relate the (norm of the) values of a function on a set to
-its values on the frontier of the set. All these lemmas assume that `E` is a nontrivial space.  In
+its values on the frontier of the set. All these lemmas assume that `E` is a nontrivial space. In
 this section `f g : E → F` are functions that are complex differentiable on a bounded set `s` and
 are continuous on its closure. We prove the following theorems.
 
@@ -240,7 +240,7 @@ theorem norm_eqOn_of_isPreconnected_of_isMaxOn {f : E → F} {U : Set E} {c : E}
   exact hc.subset_left_of_subset_union hVo hWo hdVW hUVW hVne
 
 /-- **Maximum modulus principle** on a connected set. Let `U` be a (pre)connected open set in a
-complex normed space.  Let `f : E → F` be a function that is complex differentiable on `U` and is
+complex normed space. Let `f : E → F` be a function that is complex differentiable on `U` and is
 continuous on its closure. Suppose that `‖f x‖` takes its maximum value on `U` at `c ∈ U`. Then
 `‖f x‖ = ‖f c‖` for all `x ∈ closure U`. -/
 theorem norm_eqOn_closure_of_isPreconnected_of_isMaxOn {f : E → F} {U : Set E} {c : E}
@@ -258,7 +258,7 @@ If the codomain `F` is a strictly convex space, then we can claim equalities lik
 instead of `‖f w‖ = ‖f z‖`.
 
 Instead of repeating the proof starting with lemmas about integrals, we apply a corresponding lemma
-above twice: for `f` and for `(f · + f c)`.  Then we have `‖f w‖ = ‖f z‖` and
+above twice: for `f` and for `(f · + f c)`. Then we have `‖f w‖ = ‖f z‖` and
 `‖f w + f z‖ = ‖f z + f z‖`, thus `‖f w + f z‖ = ‖f w‖ + ‖f z‖`. This is only possible if
 `f w = f z`, see `eq_of_norm_eq_of_norm_add_eq`.
 -/
@@ -266,7 +266,7 @@ above twice: for `f` and for `(f · + f c)`.  Then we have `‖f w‖ = ‖f z�
 variable [StrictConvexSpace ℝ F]
 
 /-- **Maximum modulus principle** on a connected set. Let `U` be a (pre)connected open set in a
-complex normed space.  Let `f : E → F` be a function that is complex differentiable on `U`. Suppose
+complex normed space. Let `f : E → F` be a function that is complex differentiable on `U`. Suppose
 that `‖f x‖` takes its maximum value on `U` at `c ∈ U`. Then `f x = f c` for all `x ∈ U`.
 
 TODO: change assumption from `IsMaxOn` to `IsLocalMax`. -/
@@ -279,7 +279,7 @@ theorem eqOn_of_isPreconnected_of_isMaxOn_norm {f : E → F} {U : Set E} {c : E}
   eq_of_norm_eq_of_norm_add_eq H₁ <| by simp only [H₂, SameRay.rfl.norm_add, H₁, Function.const]
 
 /-- **Maximum modulus principle** on a connected set. Let `U` be a (pre)connected open set in a
-complex normed space.  Let `f : E → F` be a function that is complex differentiable on `U` and is
+complex normed space. Let `f : E → F` be a function that is complex differentiable on `U` and is
 continuous on its closure. Suppose that `‖f x‖` takes its maximum value on `U` at `c ∈ U`. Then
 `f x = f c` for all `x ∈ closure U`. -/
 theorem eqOn_closure_of_isPreconnected_of_isMaxOn_norm {f : E → F} {U : Set E} {c : E}

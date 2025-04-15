@@ -162,8 +162,8 @@ termination_by n.1
 
 /-- We define `m % k` and `m / k` in the same way as for `ℕ`
   except that when `m = n * k` we take `m % k = k` and
-  `m / k = n - 1`.  This ensures that `m % k` is always positive
-  and `m = (m % k) + k * (m / k)` in all cases.  Later we
+  `m / k = n - 1`. This ensures that `m % k` is always positive
+  and `m = (m % k) + k * (m / k)` in all cases. Later we
   define a function `div_exact` which gives the usual `m / k`
   in the case where `k` divides `m`.
 -/
@@ -174,8 +174,8 @@ def modDivAux : ℕ+ → ℕ → ℕ → ℕ+ × ℕ
 /-- `mod_div m k = (m % k, m / k)`.
   We define `m % k` and `m / k` in the same way as for `ℕ`
   except that when `m = n * k` we take `m % k = k` and
-  `m / k = n - 1`.  This ensures that `m % k` is always positive
-  and `m = (m % k) + k * (m / k)` in all cases.  Later we
+  `m / k = n - 1`. This ensures that `m % k` is always positive
+  and `m = (m % k) + k * (m / k)` in all cases. Later we
   define a function `div_exact` which gives the usual `m / k`
   in the case where `k` divides `m`.
 -/

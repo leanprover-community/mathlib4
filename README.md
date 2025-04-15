@@ -44,7 +44,7 @@ of mathlib consists of:
 
 Much of the discussion surrounding mathlib occurs in a [Zulip chat
 room](https://leanprover.zulipchat.com/), and you are welcome to join, or read
-along without signing up.  Questions from users at all levels of expertise are
+along without signing up. Questions from users at all levels of expertise are
 welcome!  We also provide an [archive of the public
 discussions](https://leanprover-community.github.io/archive/), which is useful
 for quick reference.

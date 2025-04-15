@@ -71,8 +71,8 @@ the library.
 
 * `BoxIntegral.IntegrationParams.GP = ⊥` (`bRiemann = false`, `bHenstock = true`,
   `bDistortion = true`): this is the least integration theory in our list, i.e., all functions
-  integrable in any other theory is integrable in this one as well.  This is a non-standard
-  generalization of the Henstock-Kurzweil integral to higher dimension.  In dimension one, it
+  integrable in any other theory is integrable in this one as well. This is a non-standard
+  generalization of the Henstock-Kurzweil integral to higher dimension. In dimension one, it
   generates the same filter as `Henstock`. In higher dimension, this generalization defines an
   integration theory such that the divergence of any Fréchet differentiable function `f` is
   integrable, and its integral is equal to the sum of integrals of `f` over the faces of the box,

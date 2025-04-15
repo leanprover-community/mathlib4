@@ -10,13 +10,13 @@ import Mathlib.Algebra.Group.Semiconj.Defs
 
 We define the predicate `Commute a b := a * b = b * a` and provide some operations on terms
 `(h : Commute a b)`. E.g., if `a`, `b`, and c are elements of a semiring, and that
-`hb : Commute a b` and `hc : Commute a c`.  Then `hb.pow_left 5` proves `Commute (a ^ 5) b` and
+`hb : Commute a b` and `hc : Commute a c`. Then `hb.pow_left 5` proves `Commute (a ^ 5) b` and
 `(hb.pow_right 2).add_right (hb.mul_right hc)` proves `Commute a (b ^ 2 + b * c)`.
 
 Lean does not immediately recognise these terms as equations, so for rewriting we need syntax like
 `rw [(hb.pow_left 5).eq]` rather than just `rw [hb.pow_left 5]`.
 
-This file defines only a few operations (`mul_left`, `inv_right`, etc).  Other operations
+This file defines only a few operations (`mul_left`, `inv_right`, etc). Other operations
 (`pow_right`, field inverse etc) are in the files that define corresponding notions.
 
 ## Implementation details

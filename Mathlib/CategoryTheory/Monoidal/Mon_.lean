@@ -13,7 +13,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 # The category of monoids in a monoidal category.
 
 We define monoids in a monoidal category `C` and show that the category of monoids is equivalent to
-the category of lax monoidal functors from the unit monoidal category to `C`.  We also show that if
+the category of lax monoidal functors from the unit monoidal category to `C`. We also show that if
 `C` is braided, then the category of monoids is naturally monoidal.
 
 -/

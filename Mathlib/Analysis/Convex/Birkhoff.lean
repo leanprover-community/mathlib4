@@ -157,9 +157,9 @@ lemma exists_eq_sum_perm_of_mem_doublyStochastic (hM : M ∈ doublyStochastic R 
 
 /--
 **Birkhoff's theorem**
-The set of doubly stochastic matrices is the convex hull of the permutation matrices.  Note
+The set of doubly stochastic matrices is the convex hull of the permutation matrices. Note
 `exists_eq_sum_perm_of_mem_doublyStochastic` gives a convex weighting of each permutation matrix
-directly.  To show `doublyStochastic n` is convex, use `convex_doublyStochastic`.
+directly. To show `doublyStochastic n` is convex, use `convex_doublyStochastic`.
 -/
 theorem doublyStochastic_eq_convexHull_permMatrix :
     doublyStochastic R n = convexHull R {σ.permMatrix R | σ : Equiv.Perm n} := by

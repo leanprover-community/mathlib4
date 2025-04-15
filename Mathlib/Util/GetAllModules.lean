@@ -12,7 +12,7 @@ import Lean.Util.Path
 
 TODO:
 `getLeanLibs` contains a hard-coded choice of which dependencies should be built and which ones
-should not.  Could this be made more structural and robust, possibly with extra `Lake` support?
+should not. Could this be made more structural and robust, possibly with extra `Lake` support?
 
 -/
 

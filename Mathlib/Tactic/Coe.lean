@@ -37,7 +37,7 @@ def elabPartiallyAppliedCoe (sym : String) (expectedType : Expr)
     mkLambdaFVars #[x] (← mkCoe b x)
   return f.etaExpanded?.getD f
 
-/-- Partially applied coercion.  Equivalent to the η-reduction of `(↑ ·)` -/
+/-- Partially applied coercion. Equivalent to the η-reduction of `(↑ ·)` -/
 elab "(" "↑" ")" : term <= expectedType =>
   elabPartiallyAppliedCoe "↑" expectedType fun b x => do
     if b.hasExprMVar then tryPostpone
@@ -46,7 +46,7 @@ elab "(" "↑" ")" : term <= expectedType =>
     else
       throwError "cannot coerce{indentExpr x}\nto type{indentExpr b}"
 
-/-- Partially applied function coercion.  Equivalent to the η-reduction of `(⇑ ·)` -/
+/-- Partially applied function coercion. Equivalent to the η-reduction of `(⇑ ·)` -/
 elab "(" "⇑" ")" : term <= expectedType =>
   elabPartiallyAppliedCoe "⇑" expectedType fun b x => do
     if let some ty ← coerceToFunction? x then
@@ -54,7 +54,7 @@ elab "(" "⇑" ")" : term <= expectedType =>
     else
       throwError "cannot coerce to function{indentExpr x}"
 
-/-- Partially applied type coercion.  Equivalent to the η-reduction of `(↥ ·)` -/
+/-- Partially applied type coercion. Equivalent to the η-reduction of `(↥ ·)` -/
 elab "(" "↥" ")" : term <= expectedType =>
   elabPartiallyAppliedCoe "↥" expectedType fun b x => do
     if let some ty ← coerceToSort? x then

@@ -256,7 +256,7 @@ theorem nextCoeff_eq_zero_of_eraseLead_eq_zero (h : f.eraseLead = 0) : f.nextCoe
 end EraseLead
 
 /-- An induction lemma for polynomials. It takes a natural number `N` as a parameter, that is
-required to be at least as big as the `nat_degree` of the polynomial.  This is useful to prove
+required to be at least as big as the `nat_degree` of the polynomial. This is useful to prove
 results where you want to change each term in a polynomial to something else depending on the
 `nat_degree` of the polynomial itself and not on the specific `nat_degree` of each term. -/
 theorem induction_with_natDegree_le (P : R[X] → Prop) (N : ℕ) (P_0 : P 0)
@@ -291,7 +291,7 @@ theorem induction_with_natDegree_le (P : R[X] → Prop) (N : ℕ) (P_0 : P 0)
       exact Nat.succ_ne_zero _
 
 /-- Let `φ : R[x] → S[x]` be an additive map, `k : ℕ` a bound, and `fu : ℕ → ℕ` a
-"sufficiently monotone" map.  Assume also that
+"sufficiently monotone" map. Assume also that
 * `φ` maps to `0` all monomials of degree less than `k`,
 * `φ` maps each monomial `m` in `R[x]` to a polynomial `φ m` of degree `fu (deg m)`.
 Then, `φ` maps each polynomial `p` in `R[x]` to a polynomial of degree `fu (deg p)`. -/

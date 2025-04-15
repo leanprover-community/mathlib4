@@ -66,7 +66,7 @@ h: a = a + b
 ⊢ a + a + (a + b) + a + a = 0
 -/
 ```
-This new instance of `a` also turns out to be the third _occurrence_ of `a`.  Therefore,
+This new instance of `a` also turns out to be the third _occurrence_ of `a`. Therefore,
 the next `nth_rewrite` with `h` rewrites this `a`.
 -/
 syntax (name := nthRewriteSeq) "nth_rewrite" optConfig ppSpace num+ rwRuleSeq (location)? : tactic
@@ -133,7 +133,7 @@ h: a = a + b
 ⊢ a + a + (a + b) + a + a = 0
 -/
 ```
-This new instance of `a` also turns out to be the third _occurrence_ of `a`.  Therefore,
+This new instance of `a` also turns out to be the third _occurrence_ of `a`. Therefore,
 the next `nth_rw` with `h` rewrites this `a`.
 
 Further, `nth_rw` will close the remaining goal with `rfl` if possible.

@@ -74,7 +74,7 @@ theorem exists_dist_eq_iff_exists_dist_orthogonalProjection_eq {s : AffineSubspa
   exact h
 
 /-- The induction step for the existence and uniqueness of the
-circumcenter.  Given a nonempty set of points in a nonempty affine
+circumcenter. Given a nonempty set of points in a nonempty affine
 subspace whose direction is complete, such that there is a unique
 (circumcenter, circumradius) pair for those points in that subspace,
 and a point `p` not in that subspace, there is a unique (circumcenter,
@@ -475,7 +475,7 @@ theorem circumcenter_eq_of_range_eq {n : ℕ} {s₁ s₂ : Simplex ℝ P n}
 
 /-- An index type for the vertices of a simplex plus its circumcenter.
 This is for use in calculations where it is convenient to work with
-affine combinations of vertices together with the circumcenter.  (An
+affine combinations of vertices together with the circumcenter. (An
 equivalent form sometimes used in the literature is placing the
 circumcenter at the origin and working with vectors for the vertices.) -/
 inductive PointsWithCircumcenterIndex (n : ℕ)
@@ -615,7 +615,7 @@ theorem circumcenter_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ} (s
   rintro ⟨i⟩ _ hn <;> tauto
 
 /-- The weights for the reflection of the circumcenter in an edge of a
-simplex.  This definition is only valid with `i₁ ≠ i₂`. -/
+simplex. This definition is only valid with `i₁ ≠ i₂`. -/
 def reflectionCircumcenterWeightsWithCircumcenter {n : ℕ} (i₁ i₂ : Fin (n + 1)) :
     PointsWithCircumcenterIndex n → ℝ
   | pointIndex i => if i = i₁ ∨ i = i₂ then 1 else 0
@@ -829,7 +829,7 @@ theorem circumsphere_eq_of_cospherical {ps : Set P} {n : ℕ} [FiniteDimensional
 
 /-- Suppose all distances from `p₁` and `p₂` to the points of a
 simplex are equal, and that `p₁` and `p₂` lie in the affine span of
-`p` with the vertices of that simplex.  Then `p₁` and `p₂` are equal
+`p` with the vertices of that simplex. Then `p₁` and `p₂` are equal
 or reflections of each other in the affine span of the vertices of the
 simplex. -/
 theorem eq_or_eq_reflection_of_dist_eq {n : ℕ} {s : Simplex ℝ P n} {p p₁ p₂ : P} {r : ℝ}

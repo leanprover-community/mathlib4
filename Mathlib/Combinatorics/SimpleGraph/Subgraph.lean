@@ -52,7 +52,7 @@ universe u v
 namespace SimpleGraph
 
 /-- A subgraph of a `SimpleGraph` is a subset of vertices along with a restriction of the adjacency
-relation that is symmetric and is supported by the vertex subset.  They also form a bounded lattice.
+relation that is symmetric and is supported by the vertex subset. They also form a bounded lattice.
 
 Thinking of `V → V → Prop` as `Set (V × V)`, a set of darts (i.e., half-edges), then
 `Subgraph.adj_sub` is that the darts of a subgraph are a subset of the darts of `G`. -/
@@ -155,7 +155,7 @@ theorem isSpanning_iff {G' : Subgraph G} : G'.IsSpanning ↔ G'.verts = Set.univ
 
 protected alias ⟨IsSpanning.verts_eq_univ, _⟩ := isSpanning_iff
 
-/-- Coercion from `Subgraph G` to `SimpleGraph V`.  If `G'` is a spanning
+/-- Coercion from `Subgraph G` to `SimpleGraph V`. If `G'` is a spanning
 subgraph, then `G'.spanningCoe` yields an isomorphic graph.
 In general, this adds in all vertices from `V` as isolated vertices. -/
 @[simps]

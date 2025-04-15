@@ -310,7 +310,7 @@ ha : a = 1
 example (a : ℚ) (ha : a = 1) : a = 2 := by linear_combination ha
 
 -- This should fail because the second coefficient has a different type than
---   the equations it is being combined with.  This was a design choice for the
+--   the equations it is being combined with. This was a design choice for the
 --   sake of simplicity, but the tactic could potentially be modified to allow
 --   this behavior.
 /--
@@ -522,7 +522,7 @@ example (K : Type*) [Field K] [CharZero K] {x y z p q : K}
   exact test_sorry
 
 /- When `linear_combination` is used to prove inequalities, its speed is very sensitive to how much
-typeclass inference is demanded by the lemmas it orchestrates.  This example took 2146 heartbeats
+typeclass inference is demanded by the lemmas it orchestrates. This example took 2146 heartbeats
 (and 73 ms on a good laptop) on an implementation with "minimal" typeclasses everywhere, e.g. lots of
 `CovariantClass`/`ContravariantClass`, and takes 206 heartbeats (10 ms on a good laptop) on the
 implementation at the time of joining Mathlib (November 2024). -/

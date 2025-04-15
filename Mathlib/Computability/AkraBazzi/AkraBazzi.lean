@@ -17,7 +17,7 @@ function where `‖r_i(n) - b_i n‖ ∈ o(n / (log n)^2)` for every `i`, the `a
 coefficients, and the `b_i`'s are reals `∈ (0,1)`. (Note that this can be improved to
 `O(n / (log n)^(1+ε))`, this is left as future work.) These recurrences arise mainly in the
 analysis of divide-and-conquer algorithms such as mergesort or Strassen's algorithm for matrix
-multiplication.  This class of algorithms works by dividing an instance of the problem of size `n`,
+multiplication. This class of algorithms works by dividing an instance of the problem of size `n`,
 into `k` smaller instances, where the `i`'th instance is of size roughly `b_i n`, and calling itself
 recursively on those smaller instances. `T(n)` then represents the running time of the algorithm,
 and `g(n)` represents the running time required to actually divide up the instance and process the
@@ -506,7 +506,7 @@ lemma isTheta_smoothingFn_sub_self (i : α) :
 #### Akra-Bazzi exponent `p`
 
 Every Akra-Bazzi recurrence has an associated exponent, denoted by `p : ℝ`, such that
-`∑ a_i b_i^p = 1`.  This section shows the existence and uniqueness of this exponent `p` for any
+`∑ a_i b_i^p = 1`. This section shows the existence and uniqueness of this exponent `p` for any
 `R : AkraBazziRecurrence`, and defines `R.asympBound` to be the asymptotic bound satisfied by `R`,
 namely `n^p (1 + ∑_{u < n} g(u) / u^(p+1))`. -/
 

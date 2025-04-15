@@ -40,7 +40,7 @@ def Module.toAddMonoidEnd : R →+* AddMonoid.End M :=
   { DistribMulAction.toAddMonoidEnd R M with
     -- Porting note: the two `show`s weren't needed in mathlib3.
     -- Somehow, now that `SMul` is heterogeneous, it can't unfold earlier fields of a definition for
-    -- use in later fields.  See
+    -- use in later fields. See
     -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Heterogeneous.20scalar.20multiplication
     -- TODO(jmc): there should be a rw-lemma `smul_comp` close to `SMulZeroClass.compFun`
     map_zero' := AddMonoidHom.ext fun r => show (0 : R) • r = 0 by simp

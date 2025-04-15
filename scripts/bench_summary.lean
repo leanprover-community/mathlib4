@@ -144,7 +144,7 @@ def benchOutput (jsonInput : String) : IO String := do
 
 open Lean Elab Command in
 /-- `addBenchSummaryComment PR repo tempFile` adds a summary of benchmarking results
-as a comment to a pull request.  It takes as input
+as a comment to a pull request. It takes as input
 * the number `PR` and the name `repo` as a `String` containing the relevant pull-request
   (it reads and posts comments there)
 * the optional `jobID` numeral for reporting the action that produced the output

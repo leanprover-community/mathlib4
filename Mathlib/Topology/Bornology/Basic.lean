@@ -10,7 +10,7 @@ import Mathlib.Order.Filter.Cofinite
 
 We develop the basic theory of bornologies. Instead of axiomatizing bounded sets and defining
 bornologies in terms of those, we recognize that the cobounded sets form a filter and define a
-bornology as a filter of cobounded sets which contains the cofinite filter.  This allows us to make
+bornology as a filter of cobounded sets which contains the cofinite filter. This allows us to make
 use of the extensive library for filters, but we also provide the relevant connecting results for
 bounded sets.
 

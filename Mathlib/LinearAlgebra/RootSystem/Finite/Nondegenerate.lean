@@ -16,8 +16,8 @@ import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
 We show that if the base ring of a finite root pairing is linearly ordered, then the canonical
 bilinear form is root-positive and positive-definite on the span of roots.
 From these facts, it is easy to show that Coxeter weights in a finite root pairing are bounded
-above by 4.  Thus, the pairings of roots and coroots in a root pairing are restricted to the
-interval `[-4, 4]`.  Furthermore, a linearly independent pair of roots cannot have Coxeter weight 4.
+above by 4. Thus, the pairings of roots and coroots in a root pairing are restricted to the
+interval `[-4, 4]`. Furthermore, a linearly independent pair of roots cannot have Coxeter weight 4.
 For the case of crystallographic root pairings, we are thus reduced to a finite set of possible
 options for each pair.
 Another application is to the faithfulness of the Weyl group action on roots, and finiteness of the

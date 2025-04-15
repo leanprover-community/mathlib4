@@ -43,10 +43,10 @@ compact assumption and give only approximation by a bounded continuous function.
 Note that for `p = ∞` this result is not true:  the characteristic function of the set `[0, ∞)` in
 `ℝ` cannot be continuously approximated in `L∞`.
 
-The proof is in three steps.  First, since simple functions are dense in `Lp`, it suffices to prove
+The proof is in three steps. First, since simple functions are dense in `Lp`, it suffices to prove
 the result for a scalar multiple of a characteristic function of a measurable set `s`. Secondly,
 since the measure `μ` is weakly regular, the set `s` can be approximated above by an open set and
-below by a closed set.  Finally, since the domain `α` is normal, we use Urysohn's lemma to find a
+below by a closed set. Finally, since the domain `α` is normal, we use Urysohn's lemma to find a
 continuous function interpolating between these two sets.
 
 ## Related results

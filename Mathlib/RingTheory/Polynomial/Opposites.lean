@@ -8,7 +8,7 @@ import Mathlib.Algebra.Polynomial.Degree.Support
 /-!  #  Interactions between `R[X]` and `Rᵐᵒᵖ[X]`
 
 This file contains the basic API for "pushing through" the isomorphism
-`opRingEquiv : R[X]ᵐᵒᵖ ≃+* Rᵐᵒᵖ[X]`.  It allows going back and forth between a polynomial ring
+`opRingEquiv : R[X]ᵐᵒᵖ ≃+* Rᵐᵒᵖ[X]`. It allows going back and forth between a polynomial ring
 over a semiring and the polynomial ring over the opposite semiring. -/
 
 

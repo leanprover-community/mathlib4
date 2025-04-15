@@ -359,7 +359,7 @@ theorem Trident.IsLimit.homIso_natural [Nonempty J] {t : Trident f} (ht : IsLimi
 
 /-- Given a colimit cocone for the family `f : J → (X ⟶ Y)`, for any `Z`, morphisms from the cocone
 point to `Z` are in bijection with morphisms `h : Z ⟶ X` such that
-`∀ j₁ j₂, f j₁ ≫ h = f j₂ ≫ h`.  Further, this bijection is natural in `Z`: see
+`∀ j₁ j₂, f j₁ ≫ h = f j₂ ≫ h`. Further, this bijection is natural in `Z`: see
 `Cotrident.IsColimit.homIso_natural`.
 -/
 @[simps]

@@ -14,7 +14,7 @@ import Mathlib.Algebra.DirectSum.Decomposition
 # The orthogonal projection
 
 Given a nonempty complete subspace `K` of an inner product space `E`, this file constructs
-`orthogonalProjection K : E →L[𝕜] K`, the orthogonal projection of `E` onto `K`.  This map
+`orthogonalProjection K : E →L[𝕜] K`, the orthogonal projection of `E` onto `K`. This map
 satisfies: for any point `u` in `E`, the point `v = orthogonalProjection K u` in `K` minimizes the
 distance `‖u - v‖` to `u`.
 
@@ -388,7 +388,7 @@ section orthogonalProjection
 variable [HasOrthogonalProjection K]
 
 /-- The orthogonal projection onto a complete subspace, as an
-unbundled function.  This definition is only intended for use in
+unbundled function. This definition is only intended for use in
 setting up the bundled version `orthogonalProjection` and should not
 be used once that is defined. -/
 def orthogonalProjectionFn (v : E) :=
@@ -402,7 +402,7 @@ and should not be used once that is defined. -/
 theorem orthogonalProjectionFn_mem (v : E) : orthogonalProjectionFn K v ∈ K :=
   (HasOrthogonalProjection.exists_orthogonal (K := K) v).choose_spec.left
 
-/-- The characterization of the unbundled orthogonal projection.  This
+/-- The characterization of the unbundled orthogonal projection. This
 lemma is only intended for use in setting up the bundled version
 and should not be used once that is defined. -/
 theorem orthogonalProjectionFn_inner_eq_zero (v : E) :
@@ -410,7 +410,7 @@ theorem orthogonalProjectionFn_inner_eq_zero (v : E) :
   (K.mem_orthogonal' _).1 (HasOrthogonalProjection.exists_orthogonal (K := K) v).choose_spec.right
 
 /-- The unbundled orthogonal projection is the unique point in `K`
-with the orthogonality property.  This lemma is only intended for use
+with the orthogonality property. This lemma is only intended for use
 in setting up the bundled version and should not be used once that is
 defined. -/
 theorem eq_orthogonalProjectionFn_of_mem_of_inner_eq_zero {u v : E} (hvm : v ∈ K)
@@ -627,9 +627,9 @@ def reflectionLinearEquiv : E ≃ₗ[𝕜] E :=
     (2 • (K.subtype.comp (orthogonalProjection K).toLinearMap) - LinearMap.id) fun x => by
     simp [two_smul]
 
-/-- Reflection in a complete subspace of an inner product space.  The word "reflection" is
+/-- Reflection in a complete subspace of an inner product space. The word "reflection" is
 sometimes understood to mean specifically reflection in a codimension-one subspace, and sometimes
-more generally to cover operations such as reflection in a point.  The definition here, of
+more generally to cover operations such as reflection in a point. The definition here, of
 reflection in a subspace, is a more general sense of the word that includes both those common
 cases. -/
 def reflection : E ≃ₗᵢ[𝕜] E :=
@@ -1120,7 +1120,7 @@ theorem LinearIsometryEquiv.reflections_generate_dim_aux [FiniteDimensional ℝ 
     have := LinearMap.congr_fun (LinearMap.ker_eq_top.mp this) x
     simpa only [sub_eq_zero, ContinuousLinearMap.coe_sub, LinearMap.sub_apply,
       LinearMap.zero_apply] using this
-  · -- Inductive step.  Let `W` be the fixed subspace of `φ`.  We suppose its complement to have
+  · -- Inductive step. Let `W` be the fixed subspace of `φ`. We suppose its complement to have
     -- dimension at most n + 1.
     let W := ker (ContinuousLinearMap.id ℝ F - φ)
     have hW : ∀ w ∈ W, φ w = w := fun w hw => (sub_eq_zero.mp hw).symm

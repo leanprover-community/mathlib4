@@ -15,9 +15,9 @@ construction of the direct sum using the universal property and proves its uniqu
 (`DirectSum.toModule.unique`).
 
 The second part of the file covers the special case of direct sums of submodules of a fixed module
-`M`.  There is a canonical linear map from this direct sum to `M` (`DirectSum.coeLinearMap`), and
+`M`. There is a canonical linear map from this direct sum to `M` (`DirectSum.coeLinearMap`), and
 the construction is of particular importance when this linear map is an equivalence; that is, when
-the submodules provide an internal decomposition of `M`.  The property is defined more generally
+the submodules provide an internal decomposition of `M`. The property is defined more generally
 elsewhere as `DirectSum.IsInternal`, but its basic consequences on `Submodule`s are established
 in this file.
 

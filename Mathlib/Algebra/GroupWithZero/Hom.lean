@@ -22,8 +22,8 @@ pointwise multiplication and pointwise inversion.
 
 ## Implementation notes
 
-Implicit `{}` brackets are often used instead of type class `[]` brackets.  This is done when the
-instances can be inferred because they are implicit arguments to the type `MonoidHom`.  When they
+Implicit `{}` brackets are often used instead of type class `[]` brackets. This is done when the
+instances can be inferred because they are implicit arguments to the type `MonoidHom`. When they
 can be inferred from the type it is faster to use this method than to use type class inference.
 
 ## Tags

@@ -157,7 +157,7 @@ For example, `{ (m, n) : ℕ × ℕ | m * n = 12 }` denotes the set of all order
 natural numbers whose product is 12.
 
 Note that if the type ascription is left out and `p` can be interpreted as an extended binder,
-then the extended binder interpretation will be used.  For example, `{ n + 1 | n < 3 }` will
+then the extended binder interpretation will be used. For example, `{ n + 1 | n < 3 }` will
 be interpreted as `{ x : Nat | ∃ n < 3, n + 1 = x }` rather than using pattern matching.
 -/
 macro (name := macroPattSetBuilder) (priority := low-1)

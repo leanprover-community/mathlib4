@@ -70,7 +70,7 @@ def IsSupFiniteCompact : Prop :=
   ∀ s : Set α, ∃ t : Finset α, ↑t ⊆ s ∧ sSup s = t.sup id
 
 /-- An element `k` of a complete lattice is said to be compact if any set with `sSup`
-above `k` has a finite subset with `sSup` above `k`.  Such an element is also called
+above `k` has a finite subset with `sSup` above `k`. Such an element is also called
 "finite" or "S-compact". -/
 def IsCompactElement {α : Type*} [CompleteLattice α] (k : α) :=
   ∀ s : Set α, k ≤ sSup s → ∃ t : Finset α, ↑t ⊆ s ∧ k ≤ t.sup id

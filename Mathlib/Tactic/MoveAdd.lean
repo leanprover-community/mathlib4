@@ -203,7 +203,7 @@ def reorderUsing (toReorder : List α) (instructions : List (α × Bool)) : List
 
 end reorder
 
-/-- `prepareOp sum` takes an `Expr`ession as input.  It assumes that `sum` is a well-formed
+/-- `prepareOp sum` takes an `Expr`ession as input. It assumes that `sum` is a well-formed
 term representing a repeated application of a binary operation and that the summands are the
 last two arguments passed to the operation.
 It returns the expression consisting of the operation with all its arguments already applied,

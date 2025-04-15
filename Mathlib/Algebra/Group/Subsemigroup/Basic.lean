@@ -277,7 +277,7 @@ def ofDense {M N} [Semigroup M] [Semigroup N] {s : Set M} (f : M → N) (hs : cl
       (fun y₁ y₂ h₁ h₂ x => by simp only [← mul_assoc, h₁, h₂]) y x
 
 /-- Let `s` be a subset of an additive semigroup `M` such that the closure of `s` is the whole
-semigroup.  Then `AddHom.ofDense` defines an additive homomorphism from `M` asking for a proof
+semigroup. Then `AddHom.ofDense` defines an additive homomorphism from `M` asking for a proof
 of `f (x + y) = f x + f y` only for `y ∈ s`. -/
 add_decl_doc AddHom.ofDense
 

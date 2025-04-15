@@ -21,8 +21,8 @@ In a simple graph,
   same and whose vertices except for the first appear no more than once.
 
 **Warning:** graph theorists mean something different by "path" than
-do homotopy theorists.  A "walk" in graph theory is a "path" in
-homotopy theory.  Another warning: some graph theorists use "path" and
+do homotopy theorists. A "walk" in graph theory is a "path" in
+homotopy theory. Another warning: some graph theorists use "path" and
 "simple path" for "walk" and "path."
 
 Some definitions and theorems have inspiration from multigraph
@@ -506,7 +506,7 @@ def singleton {u v : V} (h : G.Adj u v) : G.Path u v :=
 theorem mk'_mem_edges_singleton {u v : V} (h : G.Adj u v) :
     s(u, v) ∈ (singleton h : G.Walk u v).edges := by simp [singleton]
 
-/-- The reverse of a path is another path.  See also `SimpleGraph.Walk.reverse`. -/
+/-- The reverse of a path is another path. See also `SimpleGraph.Walk.reverse`. -/
 @[symm, simps]
 def reverse {u v : V} (p : G.Path u v) : G.Path v u :=
   ⟨Walk.reverse p, p.property.reverse⟩

@@ -17,7 +17,7 @@ This file defines affine maps.
 
 ## Main definitions
 
-* `AffineMap` is the type of affine maps between two affine spaces with the same ring `k`.  Various
+* `AffineMap` is the type of affine maps between two affine spaces with the same ring `k`. Various
   basic examples of affine maps are defined, including `const`, `id`, `lineMap` and `homothety`.
 
 ## Notations
@@ -724,7 +724,7 @@ theorem pi_ext_zero (h : ∀ i x, f (Pi.single i x) = g (Pi.single i x)) (h₂ :
   · exact h₂
 
 /-- Two affine maps from a Pi-type of modules `(i : ι) → φv i` are equal if they are equal in their
-  operation on `Pi.single` and `ι` is nonempty.  Analogous to `LinearMap.pi_ext`. See also
+  operation on `Pi.single` and `ι` is nonempty. Analogous to `LinearMap.pi_ext`. See also
   `pi_ext_zero`, which instead of `Nonempty ι` requires agreement at 0. -/
 theorem pi_ext_nonempty [Nonempty ι] (h : ∀ i x, f (Pi.single i x) = g (Pi.single i x)) :
     f = g := by

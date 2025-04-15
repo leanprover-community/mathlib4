@@ -20,7 +20,7 @@ ideal `I` of `R`, where `R` is a commutative ring, as the direct limit of Ext mo
 
 Given a collection of ideals cofinal with the powers of `I`, consider the directed system of
 quotients of `R` by these ideals, and take the direct limit of the system induced on the `i`-th
-Ext into `M`.  One can, of course, take the collection to simply be the integral powers of `I`.
+Ext into `M`. One can, of course, take the collection to simply be the integral powers of `I`.
 
 ## References
 

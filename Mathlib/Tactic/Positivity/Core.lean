@@ -422,9 +422,9 @@ namespace Tactic.Positivity
 
 open Lean Elab Tactic
 
-/-- Tactic solving goals of the form `0 ≤ x`, `0 < x` and `x ≠ 0`.  The tactic works recursively
+/-- Tactic solving goals of the form `0 ≤ x`, `0 < x` and `x ≠ 0`. The tactic works recursively
 according to the syntax of the expression `x`, if the atoms composing the expression all have
-numeric lower bounds which can be proved positive/nonnegative/nonzero by `norm_num`.  This tactic
+numeric lower bounds which can be proved positive/nonnegative/nonzero by `norm_num`. This tactic
 either closes the goal or fails.
 
 Examples:

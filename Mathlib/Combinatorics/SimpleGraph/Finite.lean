@@ -172,7 +172,7 @@ section FiniteAt
 ## Finiteness at a vertex
 
 This section contains definitions and lemmas concerning vertices that
-have finitely many adjacent vertices.  We denote this condition by
+have finitely many adjacent vertices. We denote this condition by
 `Fintype (G.neighborSet v)`.
 
 We define `G.neighborFinset v` to be the `Finset` version of `G.neighborSet v`.

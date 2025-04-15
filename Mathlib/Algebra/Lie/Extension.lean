@@ -40,7 +40,7 @@ class IsExtension (i : N →ₗ⁅R⁆ L) (p : L →ₗ⁅R⁆ M) : Prop where
   exact : i.range = p.ker
 
 variable (R N M) in
-/-- The type of all Lie extensions of `M` by `N`.  That is, short exact sequences of `R`-Lie algebra
+/-- The type of all Lie extensions of `M` by `N`. That is, short exact sequences of `R`-Lie algebra
 homomorphisms `0 → N → L → M → 0` where `R`, `M`, and `N` are fixed. -/
 structure Extension where
   /-- The middle object in the sequence. -/

@@ -112,7 +112,7 @@ please do not add new entries to these files. PRs removing (the need for) entrie
   (delegated, or sent to bors, or merged) and it will post an emoji reaction
   `:peace_sign:`, or `:bors:`, or `:merge:` respectively to the message.
 - `late_importers.sh` is the main script used by the `latest_import.yml` action: it formats
-  the `linter.minImports` output, summarizing the data in a table.  See the module docs of
+  the `linter.minImports` output, summarizing the data in a table. See the module docs of
   `late_importers.sh` for further details.
 - `maintainer_merge_message.sh` contains a shell script that produces the Zulip message for a
   `maintainer merge`/`maintainer delegate` comment.

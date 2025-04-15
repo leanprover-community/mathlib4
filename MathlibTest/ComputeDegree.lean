@@ -67,7 +67,7 @@ example [Ring R] (h : (0 : R) = 6) : coeff (1 : R[X]) 1 = 6 := by compute_degree
 /-! Test error messages -/
 
 /--
-error: The given degree is '0'.  However,
+error: The given degree is '0'. However,
 
 * the coefficient of degree 0 may be zero
 * there is at least one term of naïve degree 2

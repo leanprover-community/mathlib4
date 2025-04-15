@@ -23,7 +23,7 @@ now, this file contains just two (closely related) such results:
 
 ## TODO
 
-There is a whole theory to develop here.  Maybe a next step would be to develop a theory of
+There is a whole theory to develop here. Maybe a next step would be to develop a theory of
 holomorphic vector/line bundles, including:
 * the finite-dimensionality of the space of sections of a holomorphic vector bundle
 * Siegel's theorem: for any `n + 1` formal ratios `g 0 / h 0`, `g 1 / h 1`, .... `g n / h n` of
@@ -101,7 +101,7 @@ theorem norm_eqOn_of_isPreconnected_of_isMaxOn {f : M → F} {U : Set M} {c : M}
   exact hc.subset_left_of_subset_union hVo hWo hdVW hUVW hVne
 
 /-- **Maximum modulus principle** on a connected set. Let `U` be a (pre)connected open set in a
-complex normed space.  Let `f : E → F` be a function that is complex differentiable on `U`. Suppose
+complex normed space. Let `f : E → F` be a function that is complex differentiable on `U`. Suppose
 that `‖f x‖` takes its maximum value on `U` at `c ∈ U`. Then `f x = f c` for all `x ∈ U`.
 
 TODO: change assumption from `IsMaxOn` to `IsLocalMax`. -/

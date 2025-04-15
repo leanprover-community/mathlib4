@@ -215,7 +215,7 @@ variable {E}
 
 /-- Given a type `E` equipped with a fiber bundle structure, this is a `Prop` typeclass
 for trivializations of `E`, expressing that a trivialization is in the designated atlas for the
-bundle.  This is needed because lemmas about the linearity of trivializations or the continuity (as
+bundle. This is needed because lemmas about the linearity of trivializations or the continuity (as
 functions to `F →L[R] F`, where `F` is the model fiber) of the transition functions are only
 expected to hold for trivializations in the designated atlas. -/
 @[mk_iff]
@@ -348,7 +348,7 @@ theorem FiberBundle.exists_trivialization_Icc_subset [ConditionallyCompleteLinea
     obtain ⟨d, ⟨hdab, ead, had⟩, hd⟩ : ∃ d ∈ s, d ∈ Ioc c' c := hsc.exists_between hc'.2
     refine ⟨ead.piecewiseLe ec d (had ⟨hdab.1, le_rfl⟩) (hc'e hd), subset_ite.2 ?_⟩
     exact ⟨fun x hx => had ⟨hx.1.1, hx.2⟩, fun x hx => hc'e ⟨hd.1.trans (not_le.1 hx.2), hx.1.2⟩⟩
-  /- So, `c ∈ s`. Let `ec` be a trivialization of `proj` over `[a, c]`.  If `c = b`, then we are
+  /- So, `c ∈ s`. Let `ec` be a trivialization of `proj` over `[a, c]`. If `c = b`, then we are
     done. Otherwise we show that `proj` can be trivialized over a larger interval `[a, d]`,
     `d ∈ (c, b]`, hence `c` is not an upper bound of `s`. -/
   rcases hc.2.eq_or_lt with heq | hlt
@@ -809,7 +809,7 @@ theorem inducing_totalSpaceMk_of_inducing_comp (b : B)
     (a.trivializationOfMemPretrivializationAtlas (a.pretrivialization_mem_atlas b)).continuousOn)
   exact (a.continuous_totalSpaceMk b).codRestrict (a.mem_pretrivializationAt_source b)
 
-/-- Make a `FiberBundle` from a `FiberPrebundle`.  Concretely this means
+/-- Make a `FiberBundle` from a `FiberPrebundle`. Concretely this means
 that, given a `FiberPrebundle` structure for a sigma-type `E` -- which consists of a
 number of "pretrivializations" identifying parts of `E` with product spaces `U × F` -- one
 establishes that for the topology constructed on the sigma-type using

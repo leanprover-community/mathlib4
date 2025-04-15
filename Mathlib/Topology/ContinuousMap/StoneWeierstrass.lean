@@ -401,7 +401,7 @@ theorem ContinuousMap.starSubalgebra_topologicalClosure_eq_top_of_separatesPoint
   -- in the closure of `A`
   have key : LinearMap.range I ≤ (A.toSubmodule.restrictScalars ℝ).topologicalClosure := by
     -- Let `A₀` be the subalgebra of `C(X, ℝ)` consisting of `A`'s purely real elements; it is the
-    -- preimage of `A` under `I`.  In this argument we only need its submodule structure.
+    -- preimage of `A` under `I`. In this argument we only need its submodule structure.
     let A₀ : Submodule ℝ C(X, ℝ) := (A.toSubmodule.restrictScalars ℝ).comap I
     -- By `Subalgebra.SeparatesPoints.rclike_to_real`, this subalgebra also separates points, so
     -- we may apply the real Stone-Weierstrass result to it.

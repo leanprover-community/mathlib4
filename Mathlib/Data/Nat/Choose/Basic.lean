@@ -30,7 +30,7 @@ The fact that this is indeed the correct counting function for multisets is prov
 * `Nat.multichoose_eq` : a proof that `multichoose n k = (n + k - 1).choose k`.
 This is central to the "stars and bars" technique in informal mathematics, where we switch between
 counting multisets of size `k` over an alphabet of size `n` to counting strings of `k` elements
-("stars") separated by `n-1` dividers ("bars").  See `Data.Sym.Card` for more detail.
+("stars") separated by `n-1` dividers ("bars"). See `Data.Sym.Card` for more detail.
 
 ## Tags
 

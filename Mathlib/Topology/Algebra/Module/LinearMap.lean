@@ -42,8 +42,8 @@ notation:25 M " →SL[" σ "] " M₂ => ContinuousLinearMap σ M M₂
 notation:25 M " →L[" R "] " M₂ => ContinuousLinearMap (RingHom.id R) M M₂
 
 /-- `ContinuousSemilinearMapClass F σ M M₂` asserts `F` is a type of bundled continuous
-`σ`-semilinear maps `M → M₂`.  See also `ContinuousLinearMapClass F R M M₂` for the case where
-`σ` is the identity map on `R`.  A map `f` between an `R`-module and an `S`-module over a ring
+`σ`-semilinear maps `M → M₂`. See also `ContinuousLinearMapClass F R M M₂` for the case where
+`σ` is the identity map on `R`. A map `f` between an `R`-module and an `S`-module over a ring
 homomorphism `σ : R →+* S` is semilinear if it satisfies the two properties `f (x + y) = f x + f y`
 and `f (c • x) = (σ c) • f x`. -/
 class ContinuousSemilinearMapClass (F : Type*) {R S : outParam Type*} [Semiring R] [Semiring S]
@@ -53,7 +53,7 @@ class ContinuousSemilinearMapClass (F : Type*) {R S : outParam Type*} [Semiring 
     extends SemilinearMapClass F σ M M₂, ContinuousMapClass F M M₂
 
 /-- `ContinuousLinearMapClass F R M M₂` asserts `F` is a type of bundled continuous
-`R`-linear maps `M → M₂`.  This is an abbreviation for
+`R`-linear maps `M → M₂`. This is an abbreviation for
 `ContinuousSemilinearMapClass F (RingHom.id R) M M₂`. -/
 abbrev ContinuousLinearMapClass (F : Type*) (R : outParam Type*) [Semiring R]
     (M : outParam Type*) [TopologicalSpace M] [AddCommMonoid M] (M₂ : outParam Type*)
@@ -215,7 +215,7 @@ theorem _root_.Submodule.topologicalClosure_map [RingHomSurjective σ₁₂] [To
   image_closure_subset_closure_image f.continuous
 
 /-- Under a dense continuous linear map, a submodule whose `TopologicalClosure` is `⊤` is sent to
-another such submodule.  That is, the image of a dense set under a map with dense range is dense.
+another such submodule. That is, the image of a dense set under a map with dense range is dense.
 -/
 theorem _root_.DenseRange.topologicalClosure_map_submodule [RingHomSurjective σ₁₂]
     [TopologicalSpace R₁] [TopologicalSpace R₂] [ContinuousSMul R₁ M₁] [ContinuousAdd M₁]
@@ -649,7 +649,7 @@ section
 variable {R S : Type*} [Semiring R] [Semiring S] [Module R M₁] [Module R M₂] [Module R S]
   [Module S M₂] [IsScalarTower R S M₂] [TopologicalSpace S] [ContinuousSMul S M₂]
 
-/-- The linear map `fun x => c x • f`.  Associates to a scalar-valued linear map and an element of
+/-- The linear map `fun x => c x • f`. Associates to a scalar-valued linear map and an element of
 `M₂` the `M₂`-valued linear map obtained by multiplying the two (a.k.a. tensoring by `M₂`).
 See also `ContinuousLinearMap.smulRightₗ` and `ContinuousLinearMap.smulRightL`. -/
 def smulRight (c : M₁ →L[R] S) (f : M₂) : M₁ →L[R] M₂ :=

@@ -11,7 +11,7 @@ import Mathlib.Tactic.Ring.Compare
 /-!
 # linear_combination Tactic
 
-In this file, the `linear_combination` tactic is created.  This tactic, which
+In this file, the `linear_combination` tactic is created. This tactic, which
 works over `CommRing`s, attempts to simplify the target by creating a linear combination
 of a list of equalities and subtracting it from the target. A `Syntax.Tactic`
 object can also be passed into the tactic, allowing the user to specify a
@@ -23,9 +23,9 @@ inequalities is also supported.
 ## Implementation Notes
 
 This tactic works by creating a weighted sum of the given equations with the
-given coefficients.  Then, it subtracts the right side of the weighted sum
+given coefficients. Then, it subtracts the right side of the weighted sum
 from the left side so that the right side equals 0, and it does the same with
-the target.  Afterwards, it sets the goal to be the equality between the
+the target. Afterwards, it sets the goal to be the equality between the
 lefthand side of the new goal and the lefthand side of the new weighted sum.
 Lastly, calls a normalization tactic on this target.
 
@@ -262,7 +262,7 @@ The expressions can be arbitrary proof terms proving (in)equalities;
 most commonly they are hypothesis names `h1`, `h2`, ....
 
 The left and right sides of all the (in)equalities should have the same type `α`, and the
-coefficients should also have type `α`.  For full functionality `α` should be a commutative ring --
+coefficients should also have type `α`. For full functionality `α` should be a commutative ring --
 strictly speaking, a commutative semiring with "cancellative" addition (in the semiring case,
 negation and subtraction will be handled "formally" as if operating in the enveloping ring). If a
 nonstandard normalization is used (for example `abel` or `skip`), the tactic will work over types
@@ -285,7 +285,7 @@ The variant `linear_combination (norm := tac) e` specifies explicitly the "norma
 The variant `linear_combination (exp := n) e` will take the goal to the `n`th power before
 subtracting the combination `e`. In other words, if the goal is `t1 = t2`,
 `linear_combination (exp := n) e` will change the goal to `(t1 - t2)^n = 0` before proceeding as
-above.  This variant is implemented only for linear combinations of equalities (i.e., not for
+above. This variant is implemented only for linear combinations of equalities (i.e., not for
 inequalities).
 -/
 syntax (name := linearCombination) "linear_combination"

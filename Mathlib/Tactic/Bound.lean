@@ -14,17 +14,17 @@ import Mathlib.Tactic.NormNum.Core
 ## The `bound` tactic
 
 `bound` is an `aesop` wrapper that proves inequalities by straightforward recursion on structure,
-assuming that intermediate terms are nonnegative or positive as needed.  It also has some support
+assuming that intermediate terms are nonnegative or positive as needed. It also has some support
 for guessing where it is unclear where to recurse, such as which side of a `min` or `max` to use
 as the bound or whether to assume a power is less than or greater than one.
 
 The functionality of `bound` overlaps with `positivity` and `gcongr`, but can jump back and forth
-between `0 ≤ x` and `x ≤ y`-type inequalities.  For example, `bound` proves
+between `0 ≤ x` and `x ≤ y`-type inequalities. For example, `bound` proves
   `0 ≤ c → b ≤ a → 0 ≤ a * c - b * c`
-by turning the goal into `b * c ≤ a * c`, then using `mul_le_mul_of_nonneg_right`.  `bound` also
+by turning the goal into `b * c ≤ a * c`, then using `mul_le_mul_of_nonneg_right`. `bound` also
 uses specialized lemmas for goals of the form `1 ≤ x, 1 < x, x ≤ 1, x < 1`.
 
-Additional hypotheses can be passed as `bound [h0, h1 n, ...]`.  This is equivalent to declaring
+Additional hypotheses can be passed as `bound [h0, h1 n, ...]`. This is equivalent to declaring
 them via `have` before calling `bound`.
 
 See `MathlibTest/Bound/bound.lean` for tests.
@@ -32,7 +32,7 @@ See `MathlibTest/Bound/bound.lean` for tests.
 ### Calc usage
 
 Since `bound` requires the inequality proof to exactly match the structure of the expression, it is
-often useful to iterate between `bound` and `rw / simp` using `calc`.  Here is an example:
+often useful to iterate between `bound` and `rw / simp` using `calc`. Here is an example:
 
 ```
 -- Calc example: A weak lower bound for `z ↦ z^2 + c`
@@ -47,8 +47,8 @@ lemma le_sqr_add {c z : ℂ} (cz : abs c ≤ abs z) (z3 : 3 ≤ abs z) :
 
 ### Aesop rules
 
-`bound` uses threes types of aesop rules: `apply`, `forward`, and closing `tactic`s.  To register a
-lemma as an `apply` rule, tag it with `@[bound]`.  It will be automatically converted into either a
+`bound` uses threes types of aesop rules: `apply`, `forward`, and closing `tactic`s. To register a
+lemma as an `apply` rule, tag it with `@[bound]`. It will be automatically converted into either a
 `norm apply` or `safe apply` rule depending on the number and type of its hypotheses:
 
 1. Nonnegativity/positivity/nonpositivity/negativity hypotheses get score 1 (those involving `0`).
@@ -56,24 +56,24 @@ lemma as an `apply` rule, tag it with `@[bound]`.  It will be automatically conv
 3. Disjunctions `a ∨ b` get score 100, plus the score of `a` and `b`.
 
 Score `0` lemmas turn into `norm apply` rules, and score `0 < s` lemmas turn into `safe apply s`
-rules.  The score is roughly lexicographic ordering on the counts of the three type (guessing,
+rules. The score is roughly lexicographic ordering on the counts of the three type (guessing,
 general, involving-zero), and tries to minimize the complexity of hypotheses we have to prove.
 See `Mathlib.Tactic.Bound.Attribute` for the full algorithm.
 
-To register a lemma as a `forward` rule, tag it with `@[bound_forward]`.  The most important
+To register a lemma as a `forward` rule, tag it with `@[bound_forward]`. The most important
 builtin forward rule is `le_of_lt`, so that strict inequalities can be used to prove weak
-inequalities.  Another example is `HasFPowerSeriesOnBall.r_pos`, so that `bound` knows that any
-power series present in the context have positive radius of convergence.  Custom `@[bound_forward]`
+inequalities. Another example is `HasFPowerSeriesOnBall.r_pos`, so that `bound` knows that any
+power series present in the context have positive radius of convergence. Custom `@[bound_forward]`
 rules that similarly expose inequalities inside structures are often useful.
 
 ### Guessing apply rules
 
 There are several cases where there are two standard ways to recurse down an inequality, and it is
-not obvious which is correct without more information.  For example, `a ≤ min b c` is registered as
-a `safe apply 4` rule, since we always need to prove `a ≤ b ∧ a ≤ c`.  But if we see `min a b ≤ c`,
+not obvious which is correct without more information. For example, `a ≤ min b c` is registered as
+a `safe apply 4` rule, since we always need to prove `a ≤ b ∧ a ≤ c`. But if we see `min a b ≤ c`,
 either `a ≤ c` or `b ≤ c` suffices, and we don't know which.
 
-In these cases we declare a new lemma with an `∨` hypotheses that covers the two cases.  Tagging
+In these cases we declare a new lemma with an `∨` hypotheses that covers the two cases. Tagging
 it as `@[bound]` will add a +100 penalty to the score, so that it will be used only if necessary.
 Aesop will then try both ways by splitting on the resulting `∨` hypothesis.
 
@@ -238,10 +238,10 @@ lemma le_sqr_add (c z : ℝ) (cz : ‖c‖ ≤ ‖z‖) (z3 : 3 ≤ ‖z‖) :
    context as if by `have := hᵢ`.
 
 The functionality of `bound` overlaps with `positivity` and `gcongr`, but can jump back and forth
-between `0 ≤ x` and `x ≤ y`-type inequalities.  For example, `bound` proves
+between `0 ≤ x` and `x ≤ y`-type inequalities. For example, `bound` proves
   `0 ≤ c → b ≤ a → 0 ≤ a * c - b * c`
-by turning the goal into `b * c ≤ a * c`, then using `mul_le_mul_of_nonneg_right`.  `bound` also
-contains lemmas for goals of the form `1 ≤ x, 1 < x, x ≤ 1, x < 1`.  Conversely, `gcongr` can prove
+by turning the goal into `b * c ≤ a * c`, then using `mul_le_mul_of_nonneg_right`. `bound` also
+contains lemmas for goals of the form `1 ≤ x, 1 < x, x ≤ 1, x < 1`. Conversely, `gcongr` can prove
 inequalities for more types of relations, supports all `positivity` functionality, and is likely
 faster since it is more specialized (not built atop `aesop`). -/
 syntax "bound " (" [" term,* "]")? : tactic

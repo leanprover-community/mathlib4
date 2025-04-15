@@ -41,7 +41,7 @@ This file contains basic results on Fourier series for functions on the additive
 ## Main statements
 
 The theorem `span_fourier_closure_eq_top` states that the span of the monomials `fourier n` is
-dense in `C(AddCircle T, ℂ)`, i.e. that its `Submodule.topologicalClosure` is `⊤`.  This follows
+dense in `C(AddCircle T, ℂ)`, i.e. that its `Submodule.topologicalClosure` is `⊤`. This follows
 from the Stone-Weierstrass theorem after checking that the span is a subalgebra, is closed under
 conjugation, and separates points.
 

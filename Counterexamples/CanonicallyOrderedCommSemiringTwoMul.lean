@@ -9,14 +9,14 @@ import Mathlib.Data.ZMod.Basic
 /-!
 
 A canonically ordered commutative semiring with two different elements `a` and `b` such that
-`a ≠ b` and `2 * a = 2 * b`.  Thus, multiplication by a fixed non-zero element of a canonically
-ordered semiring need not be injective.  In particular, multiplying by a strictly positive element
+`a ≠ b` and `2 * a = 2 * b`. Thus, multiplication by a fixed non-zero element of a canonically
+ordered semiring need not be injective. In particular, multiplying by a strictly positive element
 need not be strictly monotone.
 
 Recall that a canonically ordered commutative semiring is a commutative semiring with a partial
 ordering that is "canonical" in the sense that the inequality `a ≤ b` holds if and only if there is
-a `c` such that `a + c = b`.  There are several compatibility conditions among
-addition/multiplication and the order relation.  The point of the counterexample is to show that
+a `c` such that `a + c = b`. There are several compatibility conditions among
+addition/multiplication and the order relation. The point of the counterexample is to show that
 monotonicity of multiplication cannot be strengthened to **strict** monotonicity.
 
 Reference:

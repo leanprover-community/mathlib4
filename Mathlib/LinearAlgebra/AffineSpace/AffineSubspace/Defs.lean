@@ -165,7 +165,7 @@ theorem mem_coe (p : P) (s : AffineSubspace k P) : p ∈ (s : Set P) ↔ p ∈ s
 variable {k P}
 
 /-- The direction of an affine subspace is the submodule spanned by
-the pairwise differences of points.  (Except in the case of an empty
+the pairwise differences of points. (Except in the case of an empty
 affine subspace, where the direction is the zero submodule, every
 vector in the direction is the difference of two points in the affine
 subspace.) -/

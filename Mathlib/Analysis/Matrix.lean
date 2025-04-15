@@ -177,7 +177,7 @@ instance [Nonempty n] [DecidableEq n] [One α] [NormOneClass α] : NormOneClass 
 
 end SeminormedAddCommGroup
 
-/-- Normed group instance (using sup norm of sup norm) for matrices over a normed group.  Not
+/-- Normed group instance (using sup norm of sup norm) for matrices over a normed group. Not
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 protected def normedAddCommGroup [NormedAddCommGroup α] : NormedAddCommGroup (Matrix m n α) :=
@@ -196,7 +196,7 @@ protected theorem isBoundedSMul [SeminormedRing R] [SeminormedAddCommGroup α] [
 
 variable [NormedField R] [SeminormedAddCommGroup α] [NormedSpace R α]
 
-/-- Normed space instance (using sup norm of sup norm) for matrices over a normed space.  Not
+/-- Normed space instance (using sup norm of sup norm) for matrices over a normed space. Not
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 protected def normedSpace : NormedSpace R (Matrix m n α) :=
@@ -225,7 +225,7 @@ protected def linftyOpSeminormedAddCommGroup [SeminormedAddCommGroup α] :
     SeminormedAddCommGroup (Matrix m n α) :=
   (by infer_instance : SeminormedAddCommGroup (m → PiLp 1 fun j : n => α))
 
-/-- Normed group instance (using sup norm of L1 norm) for matrices over a normed ring.  Not
+/-- Normed group instance (using sup norm of L1 norm) for matrices over a normed ring. Not
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[local instance]
@@ -240,7 +240,7 @@ protected theorem linftyOpIsBoundedSMul
     IsBoundedSMul R (Matrix m n α) :=
   (by infer_instance : IsBoundedSMul R (m → PiLp 1 fun j : n => α))
 
-/-- Normed space instance (using sup norm of L1 norm) for matrices over a normed space.  Not
+/-- Normed space instance (using sup norm of L1 norm) for matrices over a normed space. Not
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[local instance]
@@ -349,7 +349,7 @@ carries no data. -/
 instance linfty_opNormOneClass [SeminormedRing α] [NormOneClass α] [DecidableEq n] [Nonempty n] :
     NormOneClass (Matrix n n α) where norm_one := (linfty_opNorm_diagonal _).trans norm_one
 
-/-- Seminormed ring instance (using sup norm of L1 norm) for matrices over a semi normed ring.  Not
+/-- Seminormed ring instance (using sup norm of L1 norm) for matrices over a semi normed ring. Not
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[local instance]
@@ -366,7 +366,7 @@ protected def linftyOpNonUnitalNormedRing [NonUnitalNormedRing α] :
   { Matrix.linftyOpNonUnitalSemiNormedRing with
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
-/-- Normed ring instance (using sup norm of L1 norm) for matrices over a normed ring.  Not
+/-- Normed ring instance (using sup norm of L1 norm) for matrices over a normed ring. Not
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[local instance]
@@ -468,7 +468,7 @@ def frobeniusSeminormedAddCommGroup [SeminormedAddCommGroup α] :
     SeminormedAddCommGroup (Matrix m n α) :=
   inferInstanceAs (SeminormedAddCommGroup (PiLp 2 fun _i : m => PiLp 2 fun _j : n => α))
 
-/-- Normed group instance (using frobenius norm) for matrices over a normed group.  Not
+/-- Normed group instance (using frobenius norm) for matrices over a normed group. Not
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[local instance]
@@ -484,7 +484,7 @@ theorem frobeniusIsBoundedSMul [SeminormedRing R] [SeminormedAddCommGroup α] [M
 
 @[deprecated (since := "2025-03-10")] alias frobeniusBoundedSMul := frobeniusIsBoundedSMul
 
-/-- Normed space instance (using frobenius norm) for matrices over a normed space.  Not
+/-- Normed space instance (using frobenius norm) for matrices over a normed space. Not
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[local instance]
@@ -619,7 +619,7 @@ theorem frobenius_nnnorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B�
 theorem frobenius_norm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B‖ ≤ ‖A‖ * ‖B‖ :=
   frobenius_nnnorm_mul A B
 
-/-- Normed ring instance (using frobenius norm) for matrices over `ℝ` or `ℂ`.  Not
+/-- Normed ring instance (using frobenius norm) for matrices over `ℝ` or `ℂ`. Not
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[local instance]
@@ -629,7 +629,7 @@ def frobeniusNormedRing [DecidableEq m] : NormedRing (Matrix m m α) :=
     norm_mul_le := frobenius_norm_mul
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
-/-- Normed algebra instance (using frobenius norm) for matrices over `ℝ` or `ℂ`.  Not
+/-- Normed algebra instance (using frobenius norm) for matrices over `ℝ` or `ℂ`. Not
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[local instance]

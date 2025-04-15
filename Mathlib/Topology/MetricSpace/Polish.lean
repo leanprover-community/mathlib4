@@ -169,7 +169,7 @@ def CompleteCopy {α : Type*} [MetricSpace α] (s : Opens α) : Type _ := s
 
 namespace CompleteCopy
 
-/-- A distance on an open subset `s` of a metric space, designed to make it complete.  It is given
+/-- A distance on an open subset `s` of a metric space, designed to make it complete. It is given
 by `dist' x y = dist x y + |1 / dist x sᶜ - 1 / dist y sᶜ|`, where the second term blows up close to
 the boundary to ensure that Cauchy sequences for `dist'` remain well inside `s`. -/
 instance instDist : Dist (CompleteCopy s) where

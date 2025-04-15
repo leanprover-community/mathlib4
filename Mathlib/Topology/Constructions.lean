@@ -477,7 +477,7 @@ protected lemma Topology.IsClosedEmbedding.inclusion (hst : s ⊆ t) (hs : IsClo
 @[deprecated (since := "2024-10-26")]
 alias embedding_inclusion := IsEmbedding.inclusion
 
-/-- Let `s, t ⊆ X` be two subsets of a topological space `X`.  If `t ⊆ s` and the topology induced
+/-- Let `s, t ⊆ X` be two subsets of a topological space `X`. If `t ⊆ s` and the topology induced
 by `X`on `s` is discrete, then also the topology induces on `t` is discrete. -/
 theorem DiscreteTopology.of_subset {X : Type*} [TopologicalSpace X] {s t : Set X}
     (_ : DiscreteTopology s) (ts : t ⊆ s) : DiscreteTopology t :=

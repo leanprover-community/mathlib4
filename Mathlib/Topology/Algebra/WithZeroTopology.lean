@@ -11,10 +11,10 @@ import Mathlib.Topology.Separation.Regular
 /-!
 # The topology on linearly ordered commutative groups with zero
 
-Let `Γ₀` be a linearly ordered commutative group to which we have adjoined a zero element.  Then
+Let `Γ₀` be a linearly ordered commutative group to which we have adjoined a zero element. Then
 `Γ₀` may naturally be endowed with a topology that turns `Γ₀` into a topological monoid.
 Neighborhoods of zero are sets containing `{ γ | γ < γ₀ }` for some invertible element `γ₀` and
-every invertible element is open.  In particular the topology is the following: "a subset `U ⊆ Γ₀`
+every invertible element is open. In particular the topology is the following: "a subset `U ⊆ Γ₀`
 is open if `0 ∉ U` or if there is an invertible `γ₀ ∈ Γ₀` such that `{ γ | γ < γ₀ } ⊆ U`", see
 `WithZeroTopology.isOpen_iff`.
 

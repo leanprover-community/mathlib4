@@ -275,7 +275,7 @@ theorem nhds_basis_tsupport :
     fun f _ => f.tsupport_mem_nhds
 
 /-- Given `s ∈ 𝓝 c`, the supports of smooth bump functions `f : SmoothBumpFunction I c` such that
-`tsupport f ⊆ s` form a basis of `𝓝 c`.  In other words, each of these supports is a
+`tsupport f ⊆ s` form a basis of `𝓝 c`. In other words, each of these supports is a
 neighborhood of `c` and each neighborhood of `c` includes `support f` for some
 `f : SmoothBumpFunction I c` such that `tsupport f ⊆ s`. -/
 theorem nhds_basis_support {s : Set M} (hs : s ∈ 𝓝 c) :

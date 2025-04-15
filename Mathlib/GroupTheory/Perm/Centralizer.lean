@@ -65,13 +65,13 @@ This is shown by constructing a right inverse
 * `Equiv.Perm.OnCycleFactors.mem_ker_toPermHom_iff` proves that
   `k : Subgroup.centralizer {g}` belongs to the kernel of
   `Equiv.Perm.OnCycleFactors.toPermHom g` if and only if it commutes with
-  each cycle of `g`.  This is equivalent to the conjunction of two properties:
+  each cycle of `g`. This is equivalent to the conjunction of two properties:
   * `k` preserves the set of fixed points of `g`;
   * on each cycle `c`, `k` acts as a power of that cycle.
 
 This allows to give a description of the kernel of
 `Equiv.Perm.OnCycleFactors.toPermHom g` as the product of a
-symmetric group and of a product of cyclic groups.  This analysis
+symmetric group and of a product of cyclic groups. This analysis
 starts with the morphism `Equiv.Perm.OnCycleFactors.kerParam`, its
 injectivity `Equiv.Perm.OnCycleFactors.kerParam_injective`, its range
 `Equiv.Perm.OnCycleFactors.kerParam_range_eq`, and its cardinality

@@ -9,7 +9,7 @@ import Mathlib.Algebra.Polynomial.EraseLead
 /-!
 # Reverse of a univariate polynomial
 
-The main definition is `reverse`.  Applying `reverse` to a polynomial `f : R[X]` produces
+The main definition is `reverse`. Applying `reverse` to a polynomial `f : R[X]` produces
 the polynomial with a reversed list of coefficients, equivalent to `X^f.natDegree * f(1/X)`.
 
 The main result is that `reverse (f * g) = reverse f * reverse g`, provided the leading

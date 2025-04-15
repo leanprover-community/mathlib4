@@ -10,7 +10,7 @@ import Mathlib.Topology.ContinuousMap.Compact
 # Continuous maps sending zero to zero
 
 This is the type of continuous maps from `X` to `R` such that `(0 : X) ↦ (0 : R)` for which we
-provide the scoped notation `C(X, R)₀`.  We provide this as a dedicated type solely for the
+provide the scoped notation `C(X, R)₀`. We provide this as a dedicated type solely for the
 non-unital continuous functional calculus, as using various terms of type `Ideal C(X, R)` were
 overly burdensome on type class synthesis.
 

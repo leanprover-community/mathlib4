@@ -11,7 +11,7 @@ import Aesop
 # The `bound` attribute
 
 Any lemma tagged with `@[bound]` is registered as an apply rule for the `bound` tactic, by
-converting it to either `norm apply` or `safe apply <priority>`.  The classification is based
+converting it to either `norm apply` or `safe apply <priority>`. The classification is based
 on the number and types of the lemma's hypotheses.
 -/
 
@@ -106,9 +106,9 @@ and the `aesop` implementation chooses lemmas with lower scores first:
 3. Disjuctions `a ∨ b` add `100` plus the sum of the scores of `a` and `b`.
 
 The functionality of `bound` overlaps with `positivity` and `gcongr`, but can jump back and forth
-between `0 ≤ x` and `x ≤ y`-type inequalities.  For example, `bound` proves
+between `0 ≤ x` and `x ≤ y`-type inequalities. For example, `bound` proves
   `0 ≤ c → b ≤ a → 0 ≤ a * c - b * c`
-by turning the goal into `b * c ≤ a * c`, then using `mul_le_mul_of_nonneg_right`.  `bound` also
+by turning the goal into `b * c ≤ a * c`, then using `mul_le_mul_of_nonneg_right`. `bound` also
 uses specialized lemmas for goals of the form `1 ≤ x, 1 < x, x ≤ 1, x < 1`.
 
 See also `@[bound_forward]` which marks a lemma as a forward rule for `bound`: these lemmas are

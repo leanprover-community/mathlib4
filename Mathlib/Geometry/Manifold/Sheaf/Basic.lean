@@ -47,7 +47,7 @@ instance TopCat.of.hasGroupoid [HasGroupoid M G] : HasGroupoid (TopCat.of M) G :
   (inferInstance : HasGroupoid M G)
 
 /-- Let `P` be a `LocalInvariantProp` for functions between spaces with the groupoids `G`, `G'`
-and let `M`, `M'` be charted spaces modelled on the model spaces of those groupoids.  Then there is
+and let `M`, `M'` be charted spaces modelled on the model spaces of those groupoids. Then there is
 an induced `LocalPredicate` on the functions from `M` to `M'`, given by `LiftProp P`. -/
 def StructureGroupoid.LocalInvariantProp.localPredicate (hG : LocalInvariantProp G G' P) :
     TopCat.LocalPredicate fun _ : TopCat.of M => M' where
@@ -69,7 +69,7 @@ def StructureGroupoid.LocalInvariantProp.localPredicate (hG : LocalInvariantProp
     convert this
 
 /-- Let `P` be a `LocalInvariantProp` for functions between spaces with the groupoids `G`, `G'`
-and let `M`, `M'` be charted spaces modelled on the model spaces of those groupoids.  Then there is
+and let `M`, `M'` be charted spaces modelled on the model spaces of those groupoids. Then there is
 a sheaf of types on `M` which, to each open set `U` in `M`, associates the type of bundled
 functions from `U` to `M'` satisfying the lift of `P`. -/
 def StructureGroupoid.LocalInvariantProp.sheaf (hG : LocalInvariantProp G G' P) :

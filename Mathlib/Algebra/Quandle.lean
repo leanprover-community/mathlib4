@@ -12,7 +12,7 @@ import Mathlib.Tactic.Ring
 
 This file defines racks and quandles, algebraic structures for sets
 that bijectively act on themselves with a self-distributivity
-property.  If `R` is a rack and `act : R → (R ≃ R)` is the self-action,
+property. If `R` is a rack and `act : R → (R ≃ R)` is the self-action,
 then the self-distributivity is, equivalently, that
 ```
 act (act x y) = act x * act y * (act x)⁻¹
@@ -24,11 +24,11 @@ One example of a quandle (not yet in mathlib) is the action of a Lie
 algebra on itself, defined by `act x y = Ad (exp x) y`.
 
 Quandles and racks were independently developed by multiple
-mathematicians.  David Joyce introduced quandles in his thesis
+mathematicians. David Joyce introduced quandles in his thesis
 [Joyce1982] to define an algebraic invariant of knot and link
 complements that is analogous to the fundamental group of the
 exterior, and he showed that the quandle associated to an oriented
-knot is invariant up to orientation-reversed mirror image.  Racks were
+knot is invariant up to orientation-reversed mirror image. Racks were
 used by Fenn and Rourke for framed codimension-2 knots and
 links in [FennRourke1992]. Unital shelves are discussed in [crans2017].
 
@@ -73,7 +73,7 @@ Use `open quandles` to use these.
 * Alexander quandle with `a ◃ b = t * b + (1 - t) * b`, with `a` and `b` elements
   of a module over `Z[t,t⁻¹]`.
 * If `G` is a group, `H` a subgroup, and `z` in `H`, then there is a quandle `(G/H;z)` defined by
-  `yH ◃ xH = yzy⁻¹xH`.  Every homogeneous quandle (i.e., a quandle `Q` whose automorphism group acts
+  `yH ◃ xH = yzy⁻¹xH`. Every homogeneous quandle (i.e., a quandle `Q` whose automorphism group acts
   transitively on `Q` as a set) is isomorphic to such a quandle.
   There is a generalization to this arbitrary quandles in [Joyce's paper (Theorem 7.2)][Joyce1982].
 
@@ -115,7 +115,7 @@ structure ShelfHom (S₁ : Type*) (S₂ : Type*) [Shelf S₁] [Shelf S₂] where
   map_act' : ∀ {x y : S₁}, toFun (Shelf.act x y) = Shelf.act (toFun x) (toFun y)
 
 /-- A *rack* is an automorphic set (a set with an action on itself by
-bijections) that is self-distributive.  It is a shelf such that each
+bijections) that is self-distributive. It is a shelf such that each
 element's action is invertible.
 
 The notations `x ◃ y` and `x ◃⁻¹ y` denote the action and the
@@ -147,7 +147,7 @@ variable {S : Type*} [UnitalShelf S]
 
 /--
 A monoid is *graphic* if, for all `x` and `y`, the *graphic identity*
-`(x * y) * x = x * y` holds.  For a unital shelf, this graphic
+`(x * y) * x = x * y` holds. For a unital shelf, this graphic
 identity holds.
 -/
 lemma act_act_self_eq (x y : S) : (x ◃ y) ◃ x = x ◃ y := by
@@ -283,7 +283,7 @@ theorem self_invAct_eq_iff_eq {x y : R} : x ◃⁻¹ x = y ◃⁻¹ y ↔ x = y 
   have h := @self_act_eq_iff_eq _ _ (op x) (op y)
   simpa using h
 
-/-- The map `x ↦ x ◃ x` is a bijection.  (This has applications for the
+/-- The map `x ↦ x ◃ x` is a bijection. (This has applications for the
 regular isotopy version of the Reidemeister I move for knot diagrams.)
 -/
 def selfApplyEquiv (R : Type*) [Rack R] : R ≃ R where
@@ -372,7 +372,7 @@ instance oppositeQuandle : Quandle Qᵐᵒᵖ where
     induction x
     simp
 
-/-- The conjugation quandle of a group.  Each element of the group acts by
+/-- The conjugation quandle of a group. Each element of the group acts by
 the corresponding inner automorphism. -/
 abbrev Conj (G : Type*) := G
 
@@ -410,7 +410,7 @@ Used for Fox n-colorings of knots. -/
 def Dihedral (n : ℕ) :=
   ZMod n
 
-/-- The operation for the dihedral quandle.  It does not need to be an equivalence
+/-- The operation for the dihedral quandle. It does not need to be an equivalence
 because it is an involution (see `dihedralAct.inv`). -/
 def dihedralAct (n : ℕ) (a : ZMod n) : ZMod n → ZMod n := fun b => 2 * a - b
 
@@ -458,15 +458,15 @@ For quandles, Joyce called this group `AdConj R`.
 The `EnvelGroup` functor is left adjoint to the `Conj` forgetful
 functor, and the way we construct the enveloping group is via a
 technique that should work for left adjoints of forgetful functors in
-general.  It involves thinking a little about 2-categories, but the
+general. It involves thinking a little about 2-categories, but the
 payoff is that the map `EnvelGroup R →* G` has a nice description.
 
-Let's think of a group as being a one-object category.  The first step
+Let's think of a group as being a one-object category. The first step
 is to define `PreEnvelGroup`, which gives formal expressions for all
 the 1-morphisms and includes the unit element, elements of `R`,
-multiplication, and inverses.  To introduce relations, the second step
+multiplication, and inverses. To introduce relations, the second step
 is to define `PreEnvelGroupRel'`, which gives formal expressions
-for all 2-morphisms between the 1-morphisms.  The 2-morphisms include
+for all 2-morphisms between the 1-morphisms. The 2-morphisms include
 associativity, multiplication by the unit, multiplication by inverses,
 compatibility with multiplication and inverses (`congr_mul` and
 `congr_inv`), the axioms for an equivalence relation, and,
@@ -474,10 +474,10 @@ importantly, the relationship between conjugation and the rack action
 (see `Rack.ad_conj`).
 
 None of this forms a 2-category yet, for example due to lack of
-associativity of `trans`.  The `PreEnvelGroupRel` relation is a
+associativity of `trans`. The `PreEnvelGroupRel` relation is a
 `Prop`-valued version of `PreEnvelGroupRel'`, and making it
 `Prop`-valued essentially introduces enough 3-isomorphisms so that
-every pair of compatible 2-morphisms is isomorphic.  Now, while
+every pair of compatible 2-morphisms is isomorphic. Now, while
 composition in `PreEnvelGroup` does not strictly satisfy the category
 axioms, `PreEnvelGroup` and `PreEnvelGroupRel'` do form a weak
 2-category.
@@ -489,18 +489,18 @@ group `EnvelGroup`.
 For a homomorphism `f : R →◃ Conj G`, how does
 `EnvelGroup.map f : EnvelGroup R →* G` work?  Let's think of `G` as
 being a 2-category with one object, a 1-morphism per element of `G`,
-and a single 2-morphism called `Eq.refl` for each 1-morphism.  We
+and a single 2-morphism called `Eq.refl` for each 1-morphism. We
 define the map using a "higher `Quotient.lift`" -- not only do we
 evaluate elements of `PreEnvelGroup` as expressions in `G` (this is
 `toEnvelGroup.mapAux`), but we evaluate elements of
 `PreEnvelGroup'` as expressions of 2-morphisms of `G` (this is
-`toEnvelGroup.mapAux.well_def`).  That is to say,
+`toEnvelGroup.mapAux.well_def`). That is to say,
 `toEnvelGroup.mapAux.well_def` recursively evaluates formal
-expressions of 2-morphisms as equality proofs in `G`.  Now that all
+expressions of 2-morphisms as equality proofs in `G`. Now that all
 morphisms are accounted for, the map descends to a homomorphism
 `EnvelGroup R →* G`.
 
-Note: `Type`-valued relations are not common.  The fact it is
+Note: `Type`-valued relations are not common. The fact it is
 `Type`-valued is what makes `toEnvelGroup.mapAux.well_def` have
 well-founded recursion.
 -/
@@ -521,7 +521,7 @@ open PreEnvelGroup
 
 /-- Relations for the enveloping group. This is a type-valued relation because
 `toEnvelGroup.mapAux.well_def` inducts on it to show `toEnvelGroup.map`
-is well-defined.  The relation `PreEnvelGroupRel` is the `Prop`-valued version,
+is well-defined. The relation `PreEnvelGroupRel` is the `Prop`-valued version,
 which is used to define `EnvelGroup` itself.
 -/
 inductive PreEnvelGroupRel' (R : Type u) [Rack R] : PreEnvelGroup R → PreEnvelGroup R → Type u
@@ -545,7 +545,7 @@ instance PreEnvelGroupRel'.inhabited (R : Type u) [Rack R] :
   ⟨PreEnvelGroupRel'.refl⟩
 
 /--
-The `PreEnvelGroupRel` relation as a `Prop`.  Used as the relation for `PreEnvelGroup.setoid`.
+The `PreEnvelGroupRel` relation as a `Prop`. Used as the relation for `PreEnvelGroup.setoid`.
 -/
 inductive PreEnvelGroupRel (R : Type u) [Rack R] : PreEnvelGroup R → PreEnvelGroup R → Prop
   | rel {a b : PreEnvelGroup R} (r : PreEnvelGroupRel' R a b) : PreEnvelGroupRel R a b

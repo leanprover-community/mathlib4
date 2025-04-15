@@ -23,7 +23,7 @@ The first main result is `Units.isOpen`: the group of units of a normed ring wit
 geometric series is an open subset of the ring.
 
 The function `Ring.inverse` (defined elsewhere), for a ring `R`, sends `a : R` to `a⁻¹` if `a` is a
-unit and `0` if not.  The other major results of this file (notably `NormedRing.inverse_add`,
+unit and `0` if not. The other major results of this file (notably `NormedRing.inverse_add`,
 `NormedRing.inverse_add_norm` and `NormedRing.inverse_add_norm_diff_nth_order`) cover the asymptotic
 properties of `Ring.inverse (x + t)` as `t → 0`.
 -/

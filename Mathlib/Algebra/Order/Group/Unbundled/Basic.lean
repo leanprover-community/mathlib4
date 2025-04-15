@@ -726,7 +726,7 @@ theorem le_iff_forall_one_lt_lt_mul : a ≤ b ↔ ∀ ε, 1 < ε → a < b * ε 
   ⟨fun h _ => lt_mul_of_le_of_one_lt h, le_of_forall_one_lt_lt_mul⟩
 
 /-  I (DT) introduced this lemma to prove (the additive version `sub_le_sub_flip` of)
-`div_le_div_flip` below.  Now I wonder what is the point of either of these lemmas... -/
+`div_le_div_flip` below. Now I wonder what is the point of either of these lemmas... -/
 @[to_additive]
 theorem div_le_inv_mul_iff [MulRightMono α] :
     a / b ≤ a⁻¹ * b ↔ a ≤ b := by

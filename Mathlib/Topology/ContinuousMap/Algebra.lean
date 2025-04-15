@@ -465,7 +465,7 @@ instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [
     [NonUnitalRing β] [IsTopologicalRing β] : IsTopologicalRing C(α, β) where
 
 /-- Composition on the left by a (continuous) homomorphism of topological semirings, as a
-`RingHom`.  Similar to `RingHom.compLeft`. -/
+`RingHom`. Similar to `RingHom.compLeft`. -/
 @[simps!]
 protected def _root_.RingHom.compLeftContinuous (α : Type*) {β : Type*} {γ : Type*}
     [TopologicalSpace α]

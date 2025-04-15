@@ -511,7 +511,7 @@ theorem map_const_principal_coprod_map_id_principal {α β ι : Type*} (a : α) 
 
 /-- Characterization of the `Filter.map` of the coproduct of two principal filters `𝓟 {a}` and
 `𝓟 {i}`, under the `Prod.map` of two functions, respectively the constant function `fun a => b` and
-the identity function.  Together with the previous lemma,
+the identity function. Together with the previous lemma,
 `map_const_principal_coprod_map_id_principal`, this provides an example showing that the inequality
 in the lemma `map_prodMap_coprod_le` can be strict. -/
 theorem map_prodMap_const_id_principal_coprod_principal {α β ι : Type*} (a : α) (b : β) (i : ι) :

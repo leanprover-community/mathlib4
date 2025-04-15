@@ -9,7 +9,7 @@ import Mathlib.GroupTheory.GroupAction.Hom
 /-!
 # Action of regular elements on a module
 
-We introduce `M`-regular elements, in the context of an `R`-module `M`.  The corresponding
+We introduce `M`-regular elements, in the context of an `R`-module `M`. The corresponding
 predicate is called `IsSMulRegular`.
 
 There are very limited typeclass assumptions on `R` and `M`, but the "mathematical" case of interest
@@ -21,7 +21,7 @@ The defining property is that an element `a ∈ R` is `M`-regular if the smultip
 `M → M`, defined by `m ↦ a • m`, is injective.
 
 This property is the direct generalization to modules of the property `IsLeftRegular` defined in
-`Algebra/Regular`.  Lemma `isLeftRegular_iff` shows that indeed the two notions
+`Algebra/Regular`. Lemma `isLeftRegular_iff` shows that indeed the two notions
 coincide.
 -/
 

@@ -30,13 +30,13 @@ open Function OrderDual Set
 -/
 
 
-/-- A function `f` between preorders is left order continuous if it preserves all suprema.  We
+/-- A function `f` between preorders is left order continuous if it preserves all suprema. We
 define it using `IsLUB` instead of `sSup` so that the proof works both for complete lattices and
 conditionally complete lattices. -/
 def LeftOrdContinuous [Preorder α] [Preorder β] (f : α → β) :=
   ∀ ⦃s : Set α⦄ ⦃x⦄, IsLUB s x → IsLUB (f '' s) (f x)
 
-/-- A function `f` between preorders is right order continuous if it preserves all infima.  We
+/-- A function `f` between preorders is right order continuous if it preserves all infima. We
 define it using `IsGLB` instead of `sInf` so that the proof works both for complete lattices and
 conditionally complete lattices. -/
 def RightOrdContinuous [Preorder α] [Preorder β] (f : α → β) :=

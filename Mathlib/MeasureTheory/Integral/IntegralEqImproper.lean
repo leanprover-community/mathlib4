@@ -86,8 +86,8 @@ variable {α ι : Type*} [MeasurableSpace α] (μ : Measure α) (l : Filter ι)
 
 /-- A sequence `φ` of subsets of `α` is a `MeasureTheory.AECover` w.r.t. a measure `μ` and a filter
     `l` if almost every point (w.r.t. `μ`) of `α` eventually belongs to `φ n` (w.r.t. `l`), and if
-    each `φ n` is measurable.  This definition is a technical way to avoid duplicating a lot of
-    proofs.  It should be thought of as a sufficient condition for being able to interpret
+    each `φ n` is measurable. This definition is a technical way to avoid duplicating a lot of
+    proofs. It should be thought of as a sufficient condition for being able to interpret
     `∫ x, f x ∂μ` (if it exists) as the limit of `∫ x in φ n, f x ∂μ` as `n` tends to `l`.
 
     See for example `MeasureTheory.AECover.lintegral_tendsto_of_countably_generated`,

@@ -25,7 +25,7 @@ A description of this formalization is in [Gusakov2021].
 ## Main statements
 
 * `Finset.all_card_le_biUnion_card_iff_existsInjective'` is Hall's theorem with
-  a finite index set.  This is elsewhere generalized to
+  a finite index set. This is elsewhere generalized to
   `Finset.all_card_le_biUnion_card_iff_existsInjective`.
 
 ## Tags

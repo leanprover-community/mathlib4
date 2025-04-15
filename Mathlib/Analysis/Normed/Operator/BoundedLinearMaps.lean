@@ -33,7 +33,7 @@ is normed) that `‖f x‖` is bounded by a multiple of `‖x‖`. Hence the "bo
 
 * `IsBoundedBilinearMap.continuous`: A bounded bilinear map is continuous.
 * `ContinuousLinearEquiv.isOpen`: The continuous linear equivalences are an open subset of the
-  set of continuous linear maps between a pair of Banach spaces.  Placed in this file because its
+  set of continuous linear maps between a pair of Banach spaces. Placed in this file because its
   proof uses `IsBoundedBilinearMap.continuous`.
 
 ## Notes

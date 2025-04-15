@@ -101,7 +101,7 @@ lemma IsOpen.analyticOn_iff_analyticOnNhd {f : E → F} {s : Set E} (hs : IsOpen
 ### Equivalence to analyticity of a local extension
 
 We show that `HasFPowerSeriesWithinOnBall`, `HasFPowerSeriesWithinAt`, and `AnalyticWithinAt` are
-equivalent to the existence of a local extension with full analyticity.  We do not yet show a
+equivalent to the existence of a local extension with full analyticity. We do not yet show a
 result for `AnalyticOn`, as this requires a bit more work to show that local extensions can
 be stitched together.
 -/

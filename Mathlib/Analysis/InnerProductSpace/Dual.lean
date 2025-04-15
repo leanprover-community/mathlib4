@@ -16,7 +16,7 @@ We consider an inner product space `E` over `𝕜`, which is either `ℝ` or `�
 
 Under the hypothesis of completeness (i.e., for Hilbert spaces), we upgrade this to `toDual`, a
 conjugate-linear isometric *equivalence* of `E` onto its dual; that is, we establish the
-surjectivity of `toDualMap`.  This is the Fréchet-Riesz representation theorem: every element of
+surjectivity of `toDualMap`. This is the Fréchet-Riesz representation theorem: every element of
 the dual of a Hilbert space `E` has the form `fun u => ⟪x, u⟫` for some `x : E`.
 
 For a bounded sesquilinear form `B : E →L⋆[𝕜] E →L[𝕜] 𝕜`,

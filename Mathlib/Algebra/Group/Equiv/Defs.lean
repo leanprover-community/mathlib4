@@ -550,11 +550,11 @@ def MulHom.toMulEquiv [Mul M] [Mul N] (f : M →ₙ* N) (g : N →ₙ* M) (h₁ 
   map_mul' := f.map_mul
 
 /-- Given a pair of monoid homomorphisms `f`, `g` such that `g.comp f = id` and `f.comp g = id`,
-returns a multiplicative equivalence with `toFun = f` and `invFun = g`.  This constructor is
+returns a multiplicative equivalence with `toFun = f` and `invFun = g`. This constructor is
 useful if the underlying type(s) have specialized `ext` lemmas for monoid homomorphisms. -/
 @[to_additive (attr := simps -fullyApplied)
   "Given a pair of additive monoid homomorphisms `f`, `g` such that `g.comp f = id`
-  and `f.comp g = id`, returns an additive equivalence with `toFun = f` and `invFun = g`.  This
+  and `f.comp g = id`, returns an additive equivalence with `toFun = f` and `invFun = g`. This
   constructor is useful if the underlying type(s) have specialized `ext` lemmas for additive
   monoid homomorphisms."]
 def MonoidHom.toMulEquiv [MulOneClass M] [MulOneClass N] (f : M →* N) (g : N →* M)

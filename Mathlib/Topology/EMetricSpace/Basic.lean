@@ -300,7 +300,7 @@ theorem IsSeparable.exists_countable_dense_subset
   exact subset_countable_closure_of_almost_dense_set _ this
 
 /-- If a set `s` is separable, then the corresponding subtype is separable in a (pseudo extended)
-metric space.  This is not obvious, as the countable set whose closure covers `s` does not need in
+metric space. This is not obvious, as the countable set whose closure covers `s` does not need in
 general to be contained in `s`. -/
 theorem IsSeparable.separableSpace {s : Set α} (hs : IsSeparable s) :
     SeparableSpace s := by

@@ -15,8 +15,8 @@ We formalise the standard computation of (regular) continued fractions for linea
 fields. The algorithm is rather simple. Here is an outline of the procedure adapted from Wikipedia:
 
 Take a value `v`. We call `⌊v⌋` the *integer part* of `v` and `v - ⌊v⌋` the *fractional part* of
-`v`.  A continued fraction representation of `v` can then be given by `[⌊v⌋; b₀, b₁, b₂,...]`, where
-`[b₀; b₁, b₂,...]` recursively is the continued fraction representation of `1 / (v - ⌊v⌋)`.  This
+`v`. A continued fraction representation of `v` can then be given by `[⌊v⌋; b₀, b₁, b₂,...]`, where
+`[b₀; b₁, b₂,...]` recursively is the continued fraction representation of `1 / (v - ⌊v⌋)`. This
 process stops when the fractional part hits 0.
 
 In other words: to calculate a continued fraction representation of a number `v`, write down the

@@ -439,7 +439,7 @@ theorem exists_finite_intersection (hC : IsChain (· ≤ ·) C) :
       simp only [add_le_add_iff_right]
       exact Nat.sInf_le ⟨_, ⟨hxy.1, by simp⟩, by simp⟩
 
-/-!  In this section we define spinal maps, and prove important properties about them.  -/
+/-!  In this section we define spinal maps, and prove important properties about them. -/
 section SpinalMap
 
 variable {α : Type*} [PartialOrder α] {C : Set α}
@@ -818,7 +818,7 @@ variable {n : ℕ}
 lemma R_subset_level : R n C ⊆ level n := Set.sep_subset (level n) _
 
 /--
-A helper lemma to show `square_subset_R`.  In particular shows that if `C ∩ level n` is finite, the
+A helper lemma to show `square_subset_R`. In particular shows that if `C ∩ level n` is finite, the
 set of points `x` such that `x` is at least as large as every element of `C ∩ level n` contains an
 "infinite square", i.e. a set of the form `{(x, y, n) | x ≥ a ∧ y ≥ a}`.
 The precise statement here is stronger in two ways:

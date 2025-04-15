@@ -33,7 +33,7 @@ variable {α : Type*}
 namespace Nodup
 
 /-- If `l` lists all the elements of `α` without duplicates, then `List.get` defines
-a bijection `Fin l.length → α`.  See `List.Nodup.getEquivOfForallMemList`
+a bijection `Fin l.length → α`. See `List.Nodup.getEquivOfForallMemList`
 for a version giving an equivalence when there is decidable equality. -/
 @[simps]
 def getBijectionOfForallMemList (l : List α) (nd : l.Nodup) (h : ∀ x : α, x ∈ l) :

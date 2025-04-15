@@ -200,7 +200,7 @@ lemma empty_consecutive_apply_ge_M : {i | M a N ≤ a i ∧ M a N ≤ a (i + 1)}
   -- Let i be the first index where both `a i` and `a (i + 1)` are at least M.
   rintro ⟨hi1, hi2⟩
   have hi : ∀ j < i, M a N ≤ a j → a (j + 1) < M a N := by simp_all
-  -- t is the set of indices before an appearance of the integer (a i).  For each j ∈ t, (a j)
+  -- t is the set of indices before an appearance of the integer (a i). For each j ∈ t, (a j)
   -- is the (a i)th appearance of that value, so each such value before index i appears at least
   -- M times before that index; since (a i) is the (at least) Mth appearance of that value, there
   -- are at least M positive integers appearing M times before (a i), a contradiction because one of

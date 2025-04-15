@@ -45,8 +45,8 @@ as `map_mul`; a separate constructor `MonoidHom.mk'` will construct
 group homs (i.e. monoid homs between groups) given only a proof
 that multiplication is preserved,
 
-Implicit `{}` brackets are often used instead of type class `[]` brackets.  This is done when the
-instances can be inferred because they are implicit arguments to the type `MonoidHom`.  When they
+Implicit `{}` brackets are often used instead of type class `[]` brackets. This is done when the
+instances can be inferred because they are implicit arguments to the type `MonoidHom`. When they
 can be inferred from the type it is faster to use this method than to use type class inference.
 
 Historically this file also included definitions of unbundled homomorphism classes; they were
