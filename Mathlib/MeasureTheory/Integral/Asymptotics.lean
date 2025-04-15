@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lawrence Wu
 -/
 import Mathlib.MeasureTheory.Group.Measure
-import Mathlib.MeasureTheory.Integral.IntegrableOn
-import Mathlib.MeasureTheory.Integral.SetIntegral
-import Mathlib.MeasureTheory.Function.LocallyIntegrable
+import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 
 /-!
 # Bounding of integrals by asymptotics

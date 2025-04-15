@@ -364,10 +364,10 @@ theorem exists_nonempty_inter_of_measureReal_univ_lt_sum_measureReal [IsFiniteMe
     ∃ i ∈ s, ∃ j ∈ s, ∃ _h : i ≠ j, (t i ∩ t j).Nonempty := by
   apply exists_nonempty_inter_of_measure_univ_lt_sum_measure μ
     (fun i mi ↦ (h i mi).nullMeasurableSet)
+  simp only [Measure.real] at H
   apply (ENNReal.toReal_lt_toReal (measure_ne_top _ _) _).1
   · convert H
     rw [ENNReal.toReal_sum (fun i hi ↦ measure_ne_top _ _)]
-    rfl
   · exact (ENNReal.sum_lt_top.mpr (fun i hi ↦ measure_lt_top ..)).ne
 
 /-- If two sets `s` and `t` are included in a set `u` of finite measure,

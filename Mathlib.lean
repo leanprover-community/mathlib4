@@ -4155,7 +4155,10 @@ import Mathlib.MeasureTheory.Integral.Asymptotics
 import Mathlib.MeasureTheory.Integral.Average
 import Mathlib.MeasureTheory.Integral.Bochner
 import Mathlib.MeasureTheory.Integral.Bochner.Basic
+import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
+import Mathlib.MeasureTheory.Integral.Bochner.FundThmCalculus
 import Mathlib.MeasureTheory.Integral.Bochner.L1
+import Mathlib.MeasureTheory.Integral.Bochner.Set
 import Mathlib.MeasureTheory.Integral.Bochner.VitaliCaratheodory
 import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
 import Mathlib.MeasureTheory.Integral.CircleIntegral
@@ -4175,10 +4178,15 @@ import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
 import Mathlib.MeasureTheory.Integral.Layercake
 import Mathlib.MeasureTheory.Integral.Lebesgue
+import Mathlib.MeasureTheory.Integral.Lebesgue.Add
 import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
 import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
+import Mathlib.MeasureTheory.Integral.Lebesgue.DominatedConvergence
+import Mathlib.MeasureTheory.Integral.Lebesgue.Map
+import Mathlib.MeasureTheory.Integral.Lebesgue.Markov
 import Mathlib.MeasureTheory.Integral.Lebesgue.MeasurePreserving
 import Mathlib.MeasureTheory.Integral.Lebesgue.Norm
+import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
 import Mathlib.MeasureTheory.Integral.LebesgueNormedSpace
 import Mathlib.MeasureTheory.Integral.Marginal
 import Mathlib.MeasureTheory.Integral.MeanInequalities
@@ -5076,6 +5084,7 @@ import Mathlib.RingTheory.LocalRing.LocalSubring
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Defs
 import Mathlib.RingTheory.LocalRing.Module
+import Mathlib.RingTheory.LocalRing.NonLocalRing
 import Mathlib.RingTheory.LocalRing.Quotient
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Defs
