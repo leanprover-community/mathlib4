@@ -7,6 +7,4 @@ import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 
-set_option linter.style.header false
-
-deprecated_module (since "2025-04-13")
+deprecated_module (since := "2025-04-13")

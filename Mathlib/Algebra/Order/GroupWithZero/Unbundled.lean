@@ -7,6 +7,4 @@ import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Defs
 import Mathlib.Tactic.Linter.DeprecatedModule
 
-set_option linter.style.header false
-
-deprecated_module (since "2025-04-13")
+deprecated_module (since := "2025-04-13")

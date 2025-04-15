@@ -47,7 +47,7 @@ protected theorem le_self_add [Add α] [LE α] [CanonicallyOrderedAdd α]
   induction y
   · simp
   · rw [← WithBot.coe_add, WithBot.coe_le_coe]
-    exact _root_.le_self_add (α := α)
+    exact le_self_add
 
 protected theorem le_add_self [AddCommMagma α] [LE α] [CanonicallyOrderedAdd α]
     {x : WithBot α} (hx : x ≠ ⊥) (y : WithBot α) :
@@ -57,6 +57,6 @@ protected theorem le_add_self [AddCommMagma α] [LE α] [CanonicallyOrderedAdd �
   induction y
   · simp
   · rw [← WithBot.coe_add, WithBot.coe_le_coe]
-    exact _root_.le_add_self (α := α)
+    exact le_add_self
 
 end WithBot

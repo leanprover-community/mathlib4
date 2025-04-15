@@ -7,6 +7,4 @@ import Mathlib.Algebra.Order.Floor.Defs
 import Mathlib.Algebra.Order.Floor.Ring
 import Mathlib.Algebra.Order.Floor.Semiring
 
-set_option linter.style.header false
-
-deprecated_module (since "2025-04-13")
+deprecated_module (since := "2025-04-13")

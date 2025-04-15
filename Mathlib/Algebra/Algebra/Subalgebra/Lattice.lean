@@ -426,6 +426,9 @@ theorem subset_adjoin : s ⊆ adjoin R s :=
 theorem adjoin_le {S : Subalgebra R A} (H : s ⊆ S) : adjoin R s ≤ S :=
   Algebra.gc.l_le H
 
+theorem adjoin_singleton_le {S : Subalgebra R A} {a : A} (H : a ∈ S) : adjoin R {a} ≤ S :=
+  adjoin_le (Set.singleton_subset_iff.mpr H)
+
 theorem adjoin_eq_sInf : adjoin R s = sInf { p : Subalgebra R A | s ⊆ p } :=
   le_antisymm (le_sInf fun _ h => adjoin_le h) (sInf_le subset_adjoin)
 
@@ -530,7 +533,7 @@ theorem adjoin_univ : adjoin R (Set.univ : Set A) = ⊤ := Algebra.gi.l_top
 variable {R} in
 @[simp]
 theorem adjoin_singleton_algebraMap (x : R) : adjoin R {algebraMap R A x} = ⊥ :=
-  bot_unique <| adjoin_le <| Set.singleton_subset_iff.mpr <| Subalgebra.algebraMap_mem _ _
+  bot_unique <| adjoin_singleton_le <| Subalgebra.algebraMap_mem _ _
 
 @[simp]
 theorem adjoin_singleton_natCast (n : ℕ) : adjoin R {(n : A)} = ⊥ := by

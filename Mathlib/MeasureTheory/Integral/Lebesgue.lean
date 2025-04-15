@@ -8,6 +8,4 @@ import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
 import Mathlib.MeasureTheory.Integral.Lebesgue.MeasurePreserving
 import Mathlib.MeasureTheory.Integral.Lebesgue.Norm
 
-set_option linter.style.header false
-
-deprecated_module (since "2025-04-13")
+deprecated_module (since := "2025-04-13")
