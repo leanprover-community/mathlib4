@@ -179,7 +179,7 @@ theorem abs_discr_ge_of_isTotallyComplex [IsTotallyComplex K] :
   rwa [← IsTotallyComplex.finrank] at this
 
 theorem abs_discr_rpow_ge_of_isTotallyComplex [IsTotallyComplex K] :
-    (finrank ℚ K) ^ 2 / ((4 / π) * (finrank ℚ K).factorial ^ (2 *(finrank ℚ K : ℝ)⁻¹)) ≤
+    (finrank ℚ K) ^ 2 / ((4 / π) * (finrank ℚ K).factorial ^ (2 * (finrank ℚ K : ℝ)⁻¹)) ≤
         |discr K| ^ (finrank ℚ K : ℝ)⁻¹ := by
   have h : 0 < (finrank ℚ K : ℝ) := Nat.cast_pos.mpr finrank_pos
   rw [← Real.rpow_le_rpow_iff (z := finrank ℚ K) (by positivity) (by positivity) h, Real.div_rpow
