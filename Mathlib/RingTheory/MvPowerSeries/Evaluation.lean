@@ -151,6 +151,7 @@ theorem _root_.MvPolynomial.toMvPowerSeries_uniformContinuous
     [IsUniformAddGroup R] [IsUniformAddGroup S] [IsLinearTopology S S]
     (hφ : Continuous φ) (ha : HasEval a) :
     UniformContinuous (MvPolynomial.eval₂Hom φ a) := by
+  classical
   apply uniformContinuous_of_continuousAt_zero
   rw [ContinuousAt, map_zero, IsLinearTopology.hasBasis_ideal.tendsto_right_iff]
   intro I hI

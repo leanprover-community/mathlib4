@@ -244,7 +244,7 @@ open Mon_Class in
 @[reassoc]
 lemma _root_.IsMon_Hom.inv_hom {X Y : C} [Grp_Class X] [Grp_Class Y] (f : X ⟶ Y) [IsMon_Hom f] :
     ι ≫ f = f ≫ ι :=
-  Grp_.inv_hom (A := .mk' X) (B := .mk' Y) (f := ⟨f, IsMon_Hom.one_hom, IsMon_Hom.mul_hom⟩)
+  Grp_.inv_hom (A := .mk' X) (B := .mk' Y) (f := ⟨f, IsMon_Hom.one_hom _, IsMon_Hom.mul_hom _⟩)
 
 lemma _root_.Grp_Class.toMon_Class_injective {X : C} :
     Function.Injective (@Grp_Class.toMon_Class C ‹_› ‹_› X) := by
