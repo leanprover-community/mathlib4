@@ -50,9 +50,10 @@ theorem not_mem_of_mem_ofFixingSubgroup {s : Set α}
 
 section Comparisons
 
+variable (M α)
+
 section Empty
 
-variable (M α) in
 /-- The identity map of the sub_mul_action of the fixing_subgroup
 of the empty set into the ambient set, as an equivariant map -/
 def ofFixingSubgroupEmpty_equivariantMap :
@@ -60,7 +61,6 @@ def ofFixingSubgroupEmpty_equivariantMap :
   toFun x := x
   map_smul' _ _ := rfl
 
-variable (α) in
 theorem ofFixingSubgroupEmpty_equivariantMap_bijective :
     Function.Bijective (ofFixingSubgroupEmpty_equivariantMap M α) := by
   constructor
@@ -77,97 +77,68 @@ theorem of_fixingSubgroupEmpty_mapScalars_surjective :
 end Empty
 
 
-section InsertStabilizer
+section FixingSubgroupInsert
 
+variable {α}
+
+variable {M} in
 theorem mem_fixingSubgroup_insert_iff {a : α} {s : Set α} {m : M} :
     m ∈ fixingSubgroup M (insert a s) ↔ m • a = a ∧ m ∈ fixingSubgroup M s := by
   simp [mem_fixingSubgroup_iff]
 
+variable {M} in
 theorem fixingSubgroup_of_insert (a : α) (s : Set (ofStabilizer M a)) :
     fixingSubgroup M (insert a ((fun x ↦ x.val) '' s)) =
       (fixingSubgroup (↥(stabilizer M a)) s).map (stabilizer M a).subtype := by
   ext m
-  simp only [Subgroup.mem_map, mem_fixingSubgroup_iff]
-  constructor
-  · intro hm
-    use ⟨m, mem_stabilizer_iff.mpr (hm _ (Set.mem_insert a _))⟩
-    simp only [Subgroup.coe_subtype, and_true, mem_fixingSubgroup_iff]
-    rintro ⟨y, hy⟩ hy'
-    simp only [SetLike.mk_smul_mk, Subtype.mk.injEq]
-    exact hm y (Set.mem_insert_of_mem a ⟨⟨y, hy⟩, ⟨hy', rfl⟩⟩)
-  · rintro ⟨⟨n, hn'⟩, hn, rfl⟩
-    simp only [Subgroup.coe_subtype, SetLike.mem_coe, mem_fixingSubgroup_iff] at hn ⊢
-    intro x hx
-    rw [Set.mem_insert_iff] at hx
-    rcases hx with hx | hx
-    · simpa [hx] using hn'
-    · simp only [Set.mem_image] at hx
-      rcases hx with ⟨y, hy, rfl⟩
-      conv_rhs => rw [← hn y hy, SubMulAction.val_smul, subgroup_smul_def]
+  simp [mem_fixingSubgroup_iff, mem_ofStabilizer_iff, and_comm]
 
-end InsertStabilizer
-
-section FixingSubgroupInsert
+variable {M} in
+theorem mem_ofFixingSubgroup_insert_iff {a : α} {s : Set (ofStabilizer M a)} {x : α} :
+    x ∈ ofFixingSubgroup M (insert a ((fun x ↦ x.val) '' s)) ↔
+      ∃ (hx : x ∈ ofStabilizer M a),
+        (⟨x, hx⟩ : ofStabilizer M a) ∈ ofFixingSubgroup (stabilizer M a) s := by
+  simp_rw [mem_ofFixingSubgroup_iff, mem_ofStabilizer_iff]
+  aesop
 
 /-- The natural group morphism between fixing subgroups -/
-def fixingSubgroupMap_insert (a : α) (s : Set (ofStabilizer M a)) :
-    fixingSubgroup M (insert a (Subtype.val '' s)) →* fixingSubgroup (stabilizer M a) s where
+def fixingSubgroupInsertEquiv (a : α) (s : Set (ofStabilizer M a)) :
+    fixingSubgroup M (insert a (Subtype.val '' s)) ≃* fixingSubgroup (stabilizer M a) s where
   toFun m := ⟨⟨(m : M), (mem_fixingSubgroup_iff M).mp m.prop a (Set.mem_insert _ _)⟩,
       fun ⟨x, hx⟩ => by
         simp only [← SetLike.coe_eq_coe]
         refine (mem_fixingSubgroup_iff M).mp m.prop _ (Set.mem_insert_of_mem a ?_)
         exact ⟨⟨x, (SubMulAction.mem_ofStabilizer_iff  M a).mp x.prop⟩, hx, rfl⟩⟩
-  map_one' := by simp
   map_mul' _ _ := by simp [← Subtype.coe_inj]
-
-theorem fixingSubgroupMap_insert_bijective (a : α) (s : Set (ofStabilizer M a)) :
-    Function.Bijective (fixingSubgroupMap_insert a s) := by
-  constructor
-  · rintro _ _ hmn
-    simpa [← SetLike.coe_eq_coe] using hmn
-  · rintro ⟨⟨m, hm⟩, hm'⟩
-    refine ⟨⟨m, ?_⟩, rfl⟩
-    rw [mem_fixingSubgroup_iff]
-    intro x hx
-    rcases Set.mem_insert_iff.mp hx with ⟨rfl⟩ | ⟨y, hy, rfl⟩
-    · exact mem_stabilizer_iff.mp hm
-    · rw [mem_fixingSubgroup_iff] at hm'
-      simpa [← SetLike.coe_eq_coe] using hm' y hy
+  invFun m := ⟨m, by simp [fixingSubgroup_of_insert]⟩
+  left_inv _ := by simp
+  right_inv _ := by simp
 
 /-- The identity map of fixing subgroup of stabilizer
 into the fixing subgroup of the extended set, as an equivariant map -/
-def equivariantMap_ofFixingSubgroup_to_ofStabilizer (a : α) (s : Set (ofStabilizer M a)) :
+def ofFixingSubgroup_insert_map (a : α) (s : Set (ofStabilizer M a)) :
     ofFixingSubgroup M (insert a (Subtype.val '' s))
-      →ₑ[fixingSubgroupMap_insert a s] (ofFixingSubgroup (stabilizer M a) s) where
-  toFun x := ⟨⟨x, fun h ↦ (mem_ofFixingSubgroup_iff M).mp x.prop (by
-      rw [h]
-      apply Set.mem_insert)⟩,
-    fun h ↦ (mem_ofFixingSubgroup_iff M).mp x.prop <|
-      Set.mem_insert_of_mem _ ⟨⟨(x : α), _⟩, ⟨h, rfl⟩⟩⟩
+      →ₑ[fixingSubgroupInsertEquiv M a s] (ofFixingSubgroup (stabilizer M a) s) where
+  toFun x := by
+    choose hx hx' using (mem_ofFixingSubgroup_insert_iff.mp x.prop)
+    exact ⟨_, hx'⟩
   map_smul' _ _ := rfl
 
+variable {M} in
 @[simp]
-theorem equivariantMap_ofFixingSubgroup_to_ofStabilizer_coe {a : α} {s : Set (ofStabilizer M a)}
+theorem ofFixingSubgroup_insert_map_apply {a : α} {s : Set (ofStabilizer M a)}
     {x : α} (hx : x ∈ ofFixingSubgroup M (insert a (Subtype.val '' s))) :
-    ↑((equivariantMap_ofFixingSubgroup_to_ofStabilizer a s) ⟨x, hx⟩) = x :=
+    ↑((ofFixingSubgroup_insert_map M a s) ⟨x, hx⟩) = x :=
   rfl
 
-theorem equivariantMap_ofFixingSubgroup_to_ofStabilizer_bijective
+theorem ofFixingSubgroup_insert_map_bijective
     (a : α) (s : Set (ofStabilizer M a)) :
-    Function.Bijective (equivariantMap_ofFixingSubgroup_to_ofStabilizer a s) := by
+    Function.Bijective (ofFixingSubgroup_insert_map M a s) := by
   constructor
   · rintro ⟨x, hx⟩ ⟨y, hy⟩ h
-    simp only [Subtype.mk_eq_mk]
-    rw [← equivariantMap_ofFixingSubgroup_to_ofStabilizer_coe hx,
-      ← equivariantMap_ofFixingSubgroup_to_ofStabilizer_coe hy, h]
+    simpa only [← Subtype.coe_inj, ofFixingSubgroup_insert_map_apply] using h
   · rintro ⟨⟨x, hx1⟩, hx2⟩
-    refine ⟨⟨x, ?_⟩, rfl⟩
-    rw [mem_ofFixingSubgroup_iff]
-    intro h
-    rcases Set.mem_insert_iff.mp h with  h' | h'
-    · exact (mem_ofStabilizer_iff _ _).mp hx1 h'
-    · obtain ⟨x1, hx1', rfl⟩ := h'
-      exact (mem_ofFixingSubgroup_iff _).mp hx2 hx1'
+    exact ⟨⟨x, mem_ofFixingSubgroup_insert_iff.mpr ⟨hx1, hx2⟩⟩, rfl⟩
 
 end FixingSubgroupInsert
 
