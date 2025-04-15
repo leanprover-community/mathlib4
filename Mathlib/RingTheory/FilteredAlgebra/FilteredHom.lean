@@ -469,8 +469,8 @@ lemma GradedPieceHom_comp (i : ιM) : Grₛₗ(i)[g].comp Grₛₗ(i)[f] = Grₛ
   FilteredAddGroupHom.GradedPieceHom_comp g.1 f.1 i
 
 variable [AddSubgroupClass σR R] [AddSubgroupClass σS S] [AddSubgroupClass σT T]
-variable [OrderedAddCommMonoid ι] [hasGMul FR FR_lt] [hasGMul FS FS_lt] [hasGMul FT FT_lt]
-variable [OrderedAddCommMonoid ιM] [AddAction ι ιM]
+variable [AddCommMonoid ι] [PartialOrder ι] [hasGMul FR FR_lt] [hasGMul FS FS_lt] [hasGMul FT FT_lt]
+variable [PartialOrder ιM] [AddAction ι ιM]
 variable [hasGSMul FR FR_lt FM FM_lt] [hasGSMul FS FS_lt FN FN_lt] [hasGSMul FT FT_lt FL FL_lt]
 
 open DirectSum FilteredRingHom in
