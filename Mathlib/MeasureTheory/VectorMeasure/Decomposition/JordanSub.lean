@@ -52,7 +52,7 @@ instance SetWhereLe.compl_symm {μ ν : Measure X} {s : Set X}
   measurable := h.measurable.compl
   le_on := h.ge_on_compl
   ge_on_compl := by rw [compl_compl]; exact h.le_on
-  
+
 end Measure
 
 namespace SignedMeasure
