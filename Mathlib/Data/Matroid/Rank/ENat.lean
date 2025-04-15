@@ -123,9 +123,6 @@ lemma eRk_inter_ground (M : Matroid α) (X : Set α) : M.eRk (X ∩ M.E) = M.eRk
 lemma eRk_ground_inter (M : Matroid α) (X : Set α) : M.eRk (M.E ∩ X) = M.eRk X := by
   rw [inter_comm, eRk_inter_ground]
 
-lemma eRk_eq_eRank (hX : M.E ⊆ X) : M.eRk X = M.eRank := by
-  rw [← eRk_inter_ground, inter_eq_self_of_subset_right hX, eRank_def]
-
 @[simp]
 lemma eRk_union_ground (M : Matroid α) (X : Set α) : M.eRk (X ∪ M.E) = M.eRank := by
   rw [← eRk_inter_ground, inter_eq_self_of_subset_right subset_union_right, eRank_def]
@@ -136,6 +133,9 @@ lemma eRk_ground_union (M : Matroid α) (X : Set α) : M.eRk (M.E ∪ X) = M.eRa
 
 lemma eRk_insert_of_not_mem_ground (X : Set α) (he : e ∉ M.E) : M.eRk (insert e X) = M.eRk X := by
   rw [← eRk_inter_ground, insert_inter_of_not_mem he, eRk_inter_ground]
+
+lemma eRk_eq_eRank (hX : M.E ⊆ X) : M.eRk X = M.eRank := by
+  rw [← eRk_inter_ground, inter_eq_self_of_subset_right hX, eRank_def]
 
 lemma eRk_compl_union_of_disjoint (M : Matroid α) (hXY : Disjoint X Y) :
     M.eRk (M.E \ X ∪ Y) = M.eRk (M.E \ X) := by
@@ -353,7 +353,7 @@ lemma IsRkFinite.eRk_lt_top (h : M.IsRkFinite X) : M.eRk X < ⊤ :=
 /-! ### Constructions -/
 
 @[simp]
-lemma eRank_map {β : Type*} (M : Matroid α) (f : α → β) (hf : InjOn f M.E) :
+lemma eRank_map {β : Type*} {f : α → β} (M : Matroid α) (hf : InjOn f M.E) :
     (M.map f hf).eRank = M.eRank := by
   obtain ⟨B, hB⟩ := M.exists_isBase
   rw [← (hB.map hf).encard_eq_eRank, ← hB.encard_eq_eRank, (hf.mono hB.subset_ground).encard_image]
