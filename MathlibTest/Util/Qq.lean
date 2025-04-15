@@ -1,6 +1,5 @@
 import Mathlib.Util.Qq
 import Mathlib.Data.Finset.Basic
-import Mathlib.Data.Real.Basic
 
 
 open Qq Lean Elab Meta
