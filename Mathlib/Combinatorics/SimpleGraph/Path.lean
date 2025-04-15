@@ -674,7 +674,7 @@ protected theorem IsPath.of_map {f : G →g G'} (hp : (p.map f).IsPath) : p.IsPa
     obtain ⟨hp1, hp2⟩ := hp
     refine ⟨ih hp1, ?_⟩
     contrapose! hp2
-    exact List.mem_map_of_mem f hp2
+    exact List.mem_map_of_mem hp2
 
 theorem map_isPath_iff_of_injective (hinj : Function.Injective f) : (p.map f).IsPath ↔ p.IsPath :=
   ⟨IsPath.of_map, map_isPath_of_injective hinj⟩
@@ -1202,7 +1202,7 @@ def isoEquivSupp (φ : G ≃g G') (C : G.ConnectedComponent) :
 
 lemma mem_coe_supp_of_adj {v w : V} {H : Subgraph G} {c : ConnectedComponent H.coe}
     (hv : v ∈ (↑) '' (c : Set H.verts)) (hw : w ∈ H.verts)
-    (hadj : H.Adj v w) : w ∈ (↑) '' (c : Set H.verts):= by
+    (hadj : H.Adj v w) : w ∈ (↑) '' (c : Set H.verts) := by
   obtain ⟨_, h⟩ := hv
   use ⟨w, hw⟩
   rw [← (mem_supp_iff _ _).mp h.1]

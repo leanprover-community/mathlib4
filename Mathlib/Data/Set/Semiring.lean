@@ -197,8 +197,8 @@ instance : CanonicallyOrderedAdd (SetSemiring α) where
   exists_add_of_le {_ b} ab := ⟨b, (union_eq_right.2 ab).symm⟩
   le_self_add _ _ := subset_union_left
 
-instance [CommMonoid α] : OrderedCommSemiring (SetSemiring α) :=
-  CanonicallyOrderedAdd.toOrderedCommSemiring
+instance [CommMonoid α] : IsOrderedRing (SetSemiring α) :=
+  CanonicallyOrderedAdd.toIsOrderedRing
 
 /-- The image of a set under a multiplicative homomorphism is a ring homomorphism
 with respect to the pointwise operations on sets. -/
@@ -206,7 +206,6 @@ def imageHom [MulOneClass α] [MulOneClass β] (f : α →* β) : SetSemiring α
   toFun s := (image f s.down).up
   map_zero' := image_empty _
   map_one' := by
-    dsimp only
     rw [down_one, image_one, map_one, singleton_one, up_one]
   map_add' := image_union _
   map_mul' _ _ := image_mul f

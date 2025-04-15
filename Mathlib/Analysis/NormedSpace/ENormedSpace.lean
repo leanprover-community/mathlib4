@@ -34,9 +34,6 @@ normed space, extended norm
 
 noncomputable section
 
-attribute [local instance] Classical.propDecidable
-set_option linter.deprecated false
-
 open ENNReal
 
 /-- Extended norm on a vector space. As in the case of normed spaces, we require only
@@ -119,14 +116,12 @@ instance partialOrder : PartialOrder (ENormedSpace 𝕜 V) where
 
 /-- The `ENormedSpace` sending each non-zero vector to infinity. -/
 noncomputable instance : Top (ENormedSpace 𝕜 V) :=
-  ⟨{  toFun := fun x => if x = 0 then 0 else ⊤
-      eq_zero' := fun x => by simp only; split_ifs <;> simp [*]
+  ⟨{  toFun := fun x => open scoped Classical in if x = 0 then 0 else ⊤
+      eq_zero' := fun x => by split_ifs <;> simp [*]
       map_add_le' := fun x y => by
-        simp only
         split_ifs with hxy hx hy hy hx hy hy <;> try simp [*]
         simp [hx, hy] at hxy
       map_smul_le' := fun c x => by
-        simp only
         split_ifs with hcx hx hx <;> simp only [smul_eq_zero, not_or] at hcx
         · simp only [mul_zero, le_refl]
         · have : c = 0 := by tauto
@@ -142,7 +137,7 @@ theorem top_map {x : V} (hx : x ≠ 0) : (⊤ : ENormedSpace 𝕜 V) x = ⊤ :=
 
 noncomputable instance : OrderTop (ENormedSpace 𝕜 V) where
   top := ⊤
-  le_top e x := if h : x = 0 then by simp [h] else by simp [top_map h]
+  le_top e x := by obtain h | h := eq_or_ne x 0 <;> simp [top_map, h]
 
 noncomputable instance : SemilatticeSup (ENormedSpace 𝕜 V) :=
   { ENormedSpace.partialOrder with
