@@ -1242,6 +1242,12 @@ protected theorem ContDiffAt.fderiv {f : E → F → G} {g : E → F}
     hmn (mem_univ x₀) ?_).contDiffAt univ_mem
   rw [preimage_univ]
 
+@[fun_prop]
+protected theorem ContDiffAt.fderiv' {f : E → F → G} {g : E → F}
+    (hf : ContDiffAt 𝕜 (m+1) (Function.uncurry f) (x₀, g x₀)) (hg : ContDiffAt 𝕜 m g x₀) :
+    ContDiffAt 𝕜 m (fun x => fderiv 𝕜 (f x) (g x)) x₀ :=
+  ContDiffAt.fderiv hf hg (le_refl _)
+
 /-- `fderiv 𝕜 f` is smooth at `x₀`. -/
 theorem ContDiffAt.fderiv_right (hf : ContDiffAt 𝕜 n f x₀) (hmn : m + 1 ≤ n) :
     ContDiffAt 𝕜 m (fderiv 𝕜 f) x₀ :=
@@ -1263,7 +1269,7 @@ protected theorem ContDiff.fderiv {f : E → F → G} {g : E → F}
   contDiff_iff_contDiffAt.mpr fun _ => hf.contDiffAt.fderiv hg.contDiffAt hnm
 
 @[fun_prop]
-protected theorem ContDiff.fderiv_succ {f : E → F → G} {g : E → F}
+protected theorem ContDiff.fderiv' {f : E → F → G} {g : E → F}
     (hf : ContDiff 𝕜 (n+1) <| Function.uncurry f) (hg : ContDiff 𝕜 n g)  :
     ContDiff 𝕜 n fun x => fderiv 𝕜 (f x) (g x) :=
   contDiff_iff_contDiffAt.mpr fun _ => hf.contDiffAt.fderiv hg.contDiffAt (le_refl (n+1))
@@ -1276,6 +1282,11 @@ theorem ContDiff.fderiv_right (hf : ContDiff 𝕜 n f) (hmn : m + 1 ≤ n) :
 theorem ContDiff.iteratedFDeriv_right {i : ℕ} (hf : ContDiff 𝕜 n f)
     (hmn : m + i ≤ n) : ContDiff 𝕜 m (iteratedFDeriv 𝕜 i f) :=
   contDiff_iff_contDiffAt.mpr fun _x => hf.contDiffAt.iteratedFDeriv_right hmn
+
+@[fun_prop]
+theorem ContDiff.iteratedFDeriv_right' {i : ℕ} (hf : ContDiff 𝕜 (m+i) f) :
+    ContDiff 𝕜 m (iteratedFDeriv 𝕜 i f) :=
+  contDiff_iff_contDiffAt.mpr fun _x => hf.contDiffAt.iteratedFDeriv_right (le_refl _)
 
 /-- `x ↦ fderiv 𝕜 (f x) (g x)` is continuous. -/
 theorem Continuous.fderiv {f : E → F → G} {g : E → F}
@@ -1290,7 +1301,7 @@ theorem Continuous.fderiv' {f : E → F → G} {g : E → F}
   (hf.fderiv (contDiff_zero.mpr hg) (le_refl 1)).continuous
 
 @[fun_prop]
-protected theorem Differentiable.fderiv {f : E → F → G} {g : E → F}
+protected theorem Differentiable.fderiv' {f : E → F → G} {g : E → F}
     (hf : ContDiff 𝕜 2 <| Function.uncurry f) (hg : ContDiff 𝕜 1 g)  :
     Differentiable 𝕜 fun x => fderiv 𝕜 (f x) (g x) :=
   ContDiff.differentiable
