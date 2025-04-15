@@ -24,7 +24,6 @@ info: {1, 2, 3} : Set ℕ
 #guard_msgs in
 #check by_elab return mkSetLiteralQ q(Set ℕ) [q(1), q(2), q(3)]
 
-
 /--
 info: {1, 2, 3} : List ℕ
 -/
