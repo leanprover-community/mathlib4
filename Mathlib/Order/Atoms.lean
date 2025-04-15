@@ -685,14 +685,16 @@ This is not an instance to prevent loops. -/
 protected def IsSimpleOrder.linearOrder [DecidableEq α] : LinearOrder α :=
   { (inferInstance : PartialOrder α) with
     le_total := fun a b => by rcases eq_bot_or_eq_top a with (rfl | rfl) <;> simp
-    decidableLE := fun a b =>
+    -- Note from #23976: do we want this inlined or should this be a separate definition?
+    toDecidableLE := fun a b =>
       if ha : a = ⊥ then isTrue (ha.le.trans bot_le)
       else
         if hb : b = ⊤ then isTrue (le_top.trans hb.ge)
         else
           isFalse fun H =>
             hb (top_unique (le_trans (top_le_iff.mpr (Or.resolve_left
-              (eq_bot_or_eq_top a) ha)) H)) }
+              (eq_bot_or_eq_top a) ha)) H))
+    toDecidableEq := ‹_› }
 
 @[simp]
 theorem isAtom_top : IsAtom (⊤ : α) :=
