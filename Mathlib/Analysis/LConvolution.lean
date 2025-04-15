@@ -58,9 +58,7 @@ theorem zero_mlconvolution (f : G → ℝ≥0∞) (μ : Measure G) : 0 ⋆ₗ[μ
 /-- Convolution with the zero function with a function returns the zero function -/
 @[to_additive lconvolution_zero]
 theorem mlconvolution_zero (f : G → ℝ≥0∞) (μ : Measure G) : f ⋆ₗ[μ] 0 = 0 := by
-  unfold mlconvolution
-  simp
-  rfl
+  ext; simp [mlconvolution]
 
 /-- The convolution of measurable functions is measurable -/
 @[to_additive lconvolution_measurable]
