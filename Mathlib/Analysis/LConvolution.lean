@@ -27,7 +27,7 @@ variable {G : Type*} {mG : MeasurableSpace G} [Mul G] [Inv G]
 
 /-- Multiplicative convolution of functions -/
 @[to_additive lconvolution "Additive convolution of functions"]
-noncomputable def mlconvolution (f : G → ℝ≥0∞) (g : G → ℝ≥0∞) (μ : Measure G):
+noncomputable def mlconvolution (f g : G → ℝ≥0∞) (μ : Measure G) :
     G → ℝ≥0∞ := fun x ↦ ∫⁻ y, (f y) * (g (y⁻¹ * x)) ∂μ
 
 /-- Scoped notation for the multiplicative convolution of functions with respect to a measure `μ` -/
