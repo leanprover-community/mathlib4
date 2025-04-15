@@ -54,18 +54,17 @@ theorem convolution_eq_right [HasContDiffBump G] {x₀ : G} (hg : ∀ x ∈ ball
     (φ ⋆[lsmul ℝ ℝ, μ] g : G → E') x₀ = integral μ φ • g x₀ := by
   simp_rw [convolution_eq_right' _ φ.support_eq.subset hg, lsmul_apply, integral_smul_const]
 
-variable [BorelSpace G]
-variable [IsLocallyFiniteMeasure μ] [μ.IsOpenPosMeasure]
-variable [FiniteDimensional ℝ G]
+variable [BorelSpace G] [FiniteDimensional ℝ G]
 
 /-- If `φ` is a normed bump function, compute `φ ⋆ g`
 if `g` is constant on `Metric.ball x₀ φ.rOut`. -/
-theorem normed_convolution_eq_right {x₀ : G} (hg : ∀ x ∈ ball x₀ φ.rOut, g x = g x₀) :
+theorem normed_convolution_eq_right [IsLocallyFiniteMeasure μ] [μ.IsOpenPosMeasure] {x₀ : G}
+    (hg : ∀ x ∈ ball x₀ φ.rOut, g x = g x₀) :
     (φ.normed μ ⋆[lsmul ℝ ℝ, μ] g : G → E') x₀ = g x₀ := by
   rw [convolution_eq_right' _ φ.support_normed_eq.subset hg]
   exact integral_normed_smul φ μ (g x₀)
 
-variable [μ.IsAddLeftInvariant]
+variable [μ.IsAddHaarMeasure]
 
 /-- If `φ` is a normed bump function, approximate `(φ ⋆ g) x₀`
 if `g` is near `g x₀` on a ball with radius `φ.rOut` around `x₀`. -/
@@ -106,7 +105,6 @@ theorem ae_convolution_tendsto_right_of_locallyIntegrable
     (hφ : Tendsto (fun i ↦ (φ i).rOut) l (𝓝 0))
     (h'φ : ∀ᶠ i in l, (φ i).rOut ≤ K * (φ i).rIn) (hg : LocallyIntegrable g μ) : ∀ᵐ x₀ ∂μ,
     Tendsto (fun i ↦ ((φ i).normed μ ⋆[lsmul ℝ ℝ, μ] g) x₀) l (𝓝 (g x₀)) := by
-  have : IsAddHaarMeasure μ := ⟨⟩
   -- By Lebesgue differentiation theorem, the average of `g` on a small ball converges
   -- almost everywhere to the value of `g` as the radius shrinks to zero.
   -- We will see that this set of points satisfies the desired conclusion.
