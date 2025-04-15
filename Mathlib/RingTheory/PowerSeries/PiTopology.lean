@@ -106,8 +106,8 @@ theorem tendsto_trunc_atTop [CommSemiring R] (f : R⟦X⟧) :
 
 /-- The inclusion of polynomials into power series has dense image -/
 theorem denseRange_toPowerSeries [CommSemiring R] :
-    DenseRange (toPowerSeries (R := R)) := fun f =>
-  mem_closure_of_tendsto (trunc_tendsto R f) <| .of_forall fun _ ↦ Set.mem_range_self _
+    DenseRange (Polynomial.toPowerSeries (R := R)) := fun f =>
+  mem_closure_of_tendsto (tendsto_trunc_atTop R f) <| .of_forall fun _ ↦ Set.mem_range_self _
 
 /-- The semiring topology on `PowerSeries` of a topological semiring -/
 @[scoped instance]

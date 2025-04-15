@@ -141,7 +141,7 @@ theorem _root_.MvPolynomial.toMvPowerSeries_isUniformInducing :
 
 theorem _root_.MvPolynomial.toMvPowerSeries_isDenseInducing :
     IsDenseInducing (toMvPowerSeries (σ := σ) (R := R)) :=
-  toMvPowerSeries_isUniformInducing.isDenseInducing toMvPowerSeries_denseRange
+  toMvPowerSeries_isUniformInducing.isDenseInducing denseRange_toMvPowerSeries
 
 variable {a : σ → S}
 
@@ -222,7 +222,7 @@ noncomputable def eval₂Hom (hφ : Continuous φ) (ha : HasEval a) :
     MvPowerSeries σ R →+* S :=
   IsDenseInducing.extendRingHom (i := coeToMvPowerSeries.ringHom)
     toMvPowerSeries_isUniformInducing
-    toMvPowerSeries_denseRange
+    denseRange_toMvPowerSeries
     (toMvPowerSeries_uniformContinuous hφ ha)
 
 theorem eval₂Hom_eq_extend (hφ : Continuous φ) (ha : HasEval a) (f : MvPowerSeries σ R) :
@@ -249,7 +249,7 @@ theorem uniformContinuous_eval₂ (hφ : Continuous φ) (ha : HasEval a) :
   rw [← coe_eval₂Hom hφ ha]
   exact uniformContinuous_uniformly_extend
     toMvPowerSeries_isUniformInducing
-    toMvPowerSeries_denseRange
+    denseRange_toMvPowerSeries
     (toMvPowerSeries_uniformContinuous hφ ha)
 
 theorem continuous_eval₂ (hφ : Continuous φ) (ha : HasEval a) :
