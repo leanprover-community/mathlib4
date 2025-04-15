@@ -494,7 +494,7 @@ instance [AddCommMonoid ι] [PartialOrder ι] [IsOrderedCancelAddMonoid ι] [IsR
     exact IsFiltration.is_sup S j (fun k hk z hz ↦
       IsFiltration.is_le (add_lt_add_left hk i) (IsRingFiltration.toGradedMonoid.mul_mem hx hz)) hy
 
-variable [AddCommMonoid ι] [PartialOrder ι]
+variable [AddMonoid ι] [PartialOrder ι]
 
 /-- The `algebraMap` for associated graded algebra. -/
 def GradedPiece.algebraMap [IsRingFiltration F F_lt] : R →+ GradedPiece F F_lt 0 where
@@ -519,7 +519,7 @@ lemma GradedPiece.algebraMap.commutes [hasGMul F F_lt] (r : R) (i : ι) (a : Gra
   induction' a using GradedPiece.induction_on with ra
   simp only [mk_mul]
   have : (r • (1 : A)) * ra.1 = ra.1 * (r • (1 : A)) := by simp
-  exact HEq_eq_mk_coe_eq F F_lt _ _ (add_comm 0 i) this rfl rfl
+  exact HEq_eq_mk_coe_eq F F_lt _ _ (by simp) this rfl rfl
 
 lemma GradedPiece.algebraMap.smul_def [hasGMul F F_lt] (r : R) (i : ι) (a : GradedPiece F F_lt i) :
     HEq (r • a) ((mk F F_lt (r • (1 : F 0))) * a) := by
@@ -535,7 +535,7 @@ instance [hasGMul F F_lt] : DirectSum.GAlgebra R (GradedPiece F F_lt) where
       ZeroHom.coe_mk, one_smul]
     rfl
   map_mul r s := GradedPiece.algebraMap.map_mul F F_lt r s
-  commutes r := fun ⟨i, a⟩ ↦ Sigma.ext (by simp [add_comm])
+  commutes r := fun ⟨i, a⟩ ↦ Sigma.ext (by simp [GradedMonoid.mk])
     (GradedPiece.algebraMap.commutes F F_lt r i a)
   smul_def r := fun ⟨i, a⟩ ↦ Sigma.ext (by
     --note : this hints some missing simp lemma
