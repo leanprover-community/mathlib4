@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov
 -/
 import Mathlib.Analysis.NormedSpace.HahnBanach.SeparatingDual
-import Mathlib.MeasureTheory.Integral.SetIntegral
+import Mathlib.MeasureTheory.Integral.Bochner.Set
 import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 
 /-!
