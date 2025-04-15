@@ -78,19 +78,13 @@ variable [EquivLike F M N] [MulEquivClass F M N] (f : F)
 lemma MulEquiv.irreducible_iff : Irreducible (f x) ↔ Irreducible x := by
   simp [_root_.irreducible_iff, (EquivLike.surjective f).forall, ← map_mul, -isUnit_map_iff]
 
-/--
-Irreducibility is preserved by multiplicative equivalences.
+/-- Irreducibility is preserved by multiplicative equivalences.
+
 Note that surjective + local hom is not enough. Consider the additive monoids `M = ℕ ⊕ ℕ`, `N = ℕ`,
 with x surjective local (additive) hom `f : M →+ N` sending `(m, n)` to `2m + n`.
 It is local because the only add unit in `N` is `0`, with preimage `{(0, 0)}` also an add unit.
-Then `x = (1, 0)` is irreducible in `M`, but `f x = 2 = 1 + 1` is not irreducible in `N`.
--/
-@[to_additive
-"Irreducibility is preserved by additive equivalences.
-Note that surjective + local hom is not enough. Consider the additive monoids `M = ℕ ⊕ ℕ`, `N = ℕ`,
-with x surjective local (additive) hom `f : M →+ N` sending `(m, n)` to `2m + n`.
-It is local because the only add unit in `N` is `0`, with preimage `{(0, 0)}` also an add unit.
-Then `x = (1, 0)` is irreducible in `M`, but `f x = 2 = 1 + 1` is not irreducible in `N`."]
+Then `x = (1, 0)` is irreducible in `M`, but `f x = 2 = 1 + 1` is not irreducible in `N`. -/
+@[to_additive "Irreducibility is preserved by additive equivalences."]
 alias ⟨_, Irreducible.map⟩ := MulEquiv.irreducible_iff
 
 end MulEquivClass

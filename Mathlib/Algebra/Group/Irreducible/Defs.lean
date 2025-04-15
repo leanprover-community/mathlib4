@@ -25,7 +25,7 @@ variable {M : Type*}
 structure AddIrreducible [AddMonoid M] (p : M) : Prop where
   /-- An irreducible element is not a unit. -/
   not_isAddUnit : ¬IsAddUnit p
-  /-- If an irreducible elements factors, then one factor is a unit. -/
+  /-- If an irreducible element factors, then one factor is a unit. -/
   isAddUnit_or_isAddUnit ⦃a b⦄ : p = a + b → IsAddUnit a ∨ IsAddUnit b
 
 section Monoid
@@ -39,7 +39,7 @@ monoid allows us to reuse irreducible for associated elements. -/
 structure Irreducible (p : M) : Prop where
   /-- An irreducible element is not a unit. -/
   not_isUnit : ¬IsUnit p
-  /-- If an irreducible elements factors, then one factor is a unit. -/
+  /-- If an irreducible element factors, then one factor is a unit. -/
   isUnit_or_isUnit ⦃a b⦄ : p = a * b → IsUnit a ∨ IsUnit b
 
 namespace Irreducible
