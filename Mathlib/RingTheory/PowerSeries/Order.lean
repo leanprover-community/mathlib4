@@ -323,7 +323,7 @@ theorem order_X_pow (n : ℕ) : order ((X : R⟦X⟧) ^ n) = n := by
   rw [X_pow_eq, order_monomial_of_ne_zero]
   exact one_ne_zero
 
--- Dividing `X` by the maximal power of `X` dividing it leaves `1`.
+/-- Dividing `X` by the maximal power of `X` dividing it leaves `1`. -/
 @[simp]
 theorem divXPowOrder_X :
     divXPowOrder X = (1 : R⟦X⟧) := by
@@ -344,6 +344,8 @@ theorem order_mul (φ ψ : R⟦X⟧) : order (φ * ψ) = order φ + order ψ := 
   simp only [order_eq_emultiplicity_X]
   exact emultiplicity_mul X_prime
 
+/-- The operation of dividing a power series by the largest possible power of `X`
+preserves multiplication. -/
 theorem divXPowOrder_mul {f g : R⟦X⟧} :
     divXPowOrder f * divXPowOrder g = divXPowOrder (f * g) := by
   by_cases h : f = 0 ∨ g = 0
