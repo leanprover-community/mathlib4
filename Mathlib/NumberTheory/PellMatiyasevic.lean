@@ -223,20 +223,8 @@ theorem xn_ge_a_pow : ∀ n : ℕ, a ^ n ≤ xn a1 n
     simp only [_root_.pow_succ, xn_succ]
     exact le_trans (Nat.mul_le_mul_right _ (xn_ge_a_pow n)) (Nat.le_add_right _ _)
 
-include a1 in
-theorem n_lt_a_pow : ∀ n : ℕ, n < a ^ n
-  | 0 => Nat.le_refl 1
-  | n + 1 => by
-    have IH := n_lt_a_pow n
-    have : a ^ n + a ^ n ≤ a ^ n * a := by
-      rw [← mul_two]
-      exact Nat.mul_le_mul_left _ a1
-    simp only [_root_.pow_succ, gt_iff_lt]
-    refine lt_of_lt_of_le ?_ this
-    exact add_lt_add_of_lt_of_le IH (lt_of_le_of_lt (Nat.zero_le _) IH)
-
 theorem n_lt_xn (n) : n < xn a1 n :=
-  lt_of_lt_of_le (n_lt_a_pow a1 n) (xn_ge_a_pow a1 n)
+  lt_of_lt_of_le (Nat.lt_pow_self a1) (xn_ge_a_pow a1 n)
 
 theorem x_pos (n) : 0 < xn a1 n :=
   lt_of_le_of_lt (Nat.zero_le n) (n_lt_xn a1 n)
