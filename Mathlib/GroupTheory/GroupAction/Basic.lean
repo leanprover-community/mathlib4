@@ -244,6 +244,7 @@ theorem stabilizer_smul_eq_stabilizer_map_conj (g : G) (a : α) :
   rw [mem_stabilizer_iff, ← smul_left_cancel_iff g⁻¹, smul_smul, smul_smul, smul_smul,
     inv_mul_cancel, one_smul, ← mem_stabilizer_iff, Subgroup.mem_map_equiv, MulAut.conj_symm_apply]
 
+/-- If the stabilizer of `a` is `S`, then the stabilizer of `g • a` is `gSg⁻¹`. -/
 theorem stabilizer_smul_eq_stabilizer_map_conj' (g : G) (a : α) :
     stabilizer G (g • a) = (stabilizer G a).map (MulAut.conj g) :=
   stabilizer_smul_eq_stabilizer_map_conj _ _
@@ -265,8 +266,6 @@ theorem MulAut.inv_apply {M : Type*} [Mul M] (e : MulAut M) (x : M) :
       e⁻¹ x = e.symm x := by
   rw [MulAut.inv_def]
 
-example {M N : Type*} [Mul M] [Mul N] (e : M ≃* N) : e⁻¹.symm = e := by sorry
-
 @[simp]
 theorem MulAut.symm_inv_apply {M : Type*} [Mul M] (e : MulAut M) (x : M) :
       (e⁻¹).symm x = e x := by
@@ -280,10 +279,11 @@ theorem stabilizerEquivStabilizer_symm_apply (hg : b = g • a) (x : stabilizer 
     (stabilizerEquivStabilizer hg).symm x = MulAut.conj g x := by
   simp [stabilizerEquivStabilizer]
 
-theorem stabilizerEquivStabilizer_trans {hg : b = g • a} {hh : c = h • b} :
-    (stabilizerEquivStabilizer hh).trans (stabilizerEquivStabilizer hg)
-      = (stabilizerEquivStabilizer (by rw [hh, hg, ← smul_smul])) := by
-  ext; simp [stabilizerEquivStabilizer_apply]
+theorem stabilizerEquivStabilizer_trans {hg : b = g • a} {hh : c = h • b} {hk : c = k • a}
+    (H : k = h * g) :
+    (stabilizerEquivStabilizer hh).trans (stabilizerEquivStabilizer hg) =
+      (stabilizerEquivStabilizer hk) := by
+  ext; simp [stabilizerEquivStabilizer_apply, H]
 
 theorem stabilizerEquivStabilizer_one :
     stabilizerEquivStabilizer (one_smul G a).symm = MulEquiv.refl (stabilizer G a) := by
@@ -291,18 +291,18 @@ theorem stabilizerEquivStabilizer_one :
 
 theorem stabilizerEquivStabilizer_symm (hg : b = g • a) :
     (stabilizerEquivStabilizer hg).symm =
-      (stabilizerEquivStabilizer (g := g⁻¹) (eq_inv_smul_iff.mpr (id (Eq.symm hg)))) := by
+      (stabilizerEquivStabilizer (eq_inv_smul_iff.mpr hg.symm)) := by
   ext x; simp [stabilizerEquivStabilizer]
 
-theorem stabilizerEquivStabilizer_inv (hg : b = g • a) :
-    stabilizerEquivStabilizer (inv_smul_eq_iff.2 hg.symm) =
-      (stabilizerEquivStabilizer hg).symm := by
+theorem stabilizerEquivStabilizer_inv (hg : b = g⁻¹ • a) :
+    stabilizerEquivStabilizer hg
+       = (stabilizerEquivStabilizer (inv_smul_eq_iff.mp hg.symm)).symm := by
   ext; simp [stabilizerEquivStabilizer]
 
 /-- A bijection between the stabilizers of two elements in the same orbit. -/
 noncomputable def stabilizerEquivStabilizerOfOrbitRel (h : orbitRel G α a b) :
     stabilizer G a ≃* stabilizer G b :=
-  (stabilizerEquivStabilizer (Classical.choose_spec h)).symm
+  (stabilizerEquivStabilizer (Classical.choose_spec h).symm)
 
 end Stabilizer
 
@@ -311,6 +311,7 @@ end MulAction
 namespace AddAction
 variable {G α : Type*} [AddGroup G] [AddAction G α]
 
+variable {g h k : G} {a b c : α}
 /-- If the stabilizer of `x` is `S`, then the stabilizer of `g +ᵥ x` is `g + S + (-g)`. -/
 theorem stabilizer_vadd_eq_stabilizer_map_conj (g : G) (a : α) :
     stabilizer G (g +ᵥ a) = (stabilizer G a).map (AddAut.conj g).toMul.toAddMonoidHom := by
@@ -319,13 +320,18 @@ theorem stabilizer_vadd_eq_stabilizer_map_conj (g : G) (a : α) :
     neg_add_cancel, zero_vadd, ← mem_stabilizer_iff, AddSubgroup.mem_map_equiv,
     AddAut.conj_symm_apply]
 
+/-- If the stabilizer of `x` is `S`, then the stabilizer of `g +ᵥ x` is `g + S + (-g)`. -/
+theorem stabilizer_vadd_eq_stabilizer_map_conj' (g : G) (a : α) :
+    stabilizer G (g +ᵥ a) = (stabilizer G a).map (AddAut.conj g).toMul :=
+  stabilizer_vadd_eq_stabilizer_map_conj g a
+
 variable {g h k : G} {a b c : α}
 
 /-- The natural group equivalence between the stabilizers of two elements in the same orbit. -/
-def stabilizerEquivStabilizer (hg : g +ᵥ a = b) : stabilizer G a ≃+ stabilizer G b := by
-  exact ((AddAut.conj g).toMul.addSubgroupMap (stabilizer G a)).trans
+def stabilizerEquivStabilizer (hg : b = g +ᵥ a) : stabilizer G b ≃+ stabilizer G a :=
+  AddEquiv.trans ((AddAut.conj (-g)).toMul.addSubgroupMap _)
     (AddEquiv.addSubgroupCongr (by
-      simp [← hg, stabilizer_vadd_eq_stabilizer_map_conj]))
+      rw [hg, ← stabilizer_vadd_eq_stabilizer_map_conj' (-g) _, neg_vadd_vadd]))
 
 theorem stabilizerEquivStabilizer_apply (hg : g +ᵥ b = a) (x : stabilizer G b) :
     stabilizerEquivStabilizer hg x = (AddAut.conj g).toMul x := by
