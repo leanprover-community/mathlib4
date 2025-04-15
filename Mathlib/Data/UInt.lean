@@ -3,13 +3,17 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Init
+
+-- Much of the content of this file was removed after
+-- https://github.com/leanprover/lean4/pull/7886
+-- If anyone needs to restore this functionality, please do so in a PR,
+-- but otherwise we will delete the commented out parts of this file soon.
+
 -- import Mathlib.Algebra.Ring.InjSurj
 -- import Mathlib.Data.ZMod.Defs
 -- import Mathlib.Data.BitVec
 
--- Removed after https://github.com/leanprover/lean4/pull/7886
--- If anyone needs to restore this functionality, please do so in a PR,
--- but otherwise we will delete the commented out parts of this file soon.
 
 /-!
 # Adds Mathlib specific instances to the `UIntX` data types.
