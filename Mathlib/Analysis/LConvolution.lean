@@ -11,6 +11,17 @@ import Mathlib.MeasureTheory.Measure.Prod
 In this file we define and prove properties about the convolution of two functions
 using the Lebesgue integral.
 
+# Design Decisions
+
+We define the convolution of two functions using the Lebesgue integral (in the additive case)
+by the formula `(f ⋆ₗ[μ] g) x = ∫⁻ y, (f y) * (g (-y + x)) ∂μ`. This does not agree with the
+formula used by MeasureTheory.convolution for convolution of two functions, however it does agree
+when the domain of `f` and `g` is a commutative group. The main reason for this is so that
+(under sufficient conditions) if `{μ ν π : Measure G} {f g : G → ℝ≥0∞}` such that
+`μ = π.withDensity f`, `ν = π.withDensity g` where `π` is left multiplication invariant then
+`(μ ∗ ν) = π.withDensity (f ⋆ₗ[π] g)`. If the formula in MeasureTheory.convolution was used
+the order of the densities would be flipped.
+
 # Main Definitions
 
 * `MeasureTheory.mlconvolution f g μ x = (f ⋆ₗ[μ] g) x = ∫⁻ y, (f y) * (g (y⁻¹ * x)) ∂μ`
@@ -60,7 +71,7 @@ theorem mlconvolution_zero (f : G → ℝ≥0∞) (μ : Measure G) : f ⋆ₗ[μ
 
 /-- The convolution of measurable functions is measurable. -/
 @[to_additive lconvolution_measurable, measurability, fun_prop]
-theorem mlconvolution_measurable [MeasurableMul₂ G] [MeasurableInv G]
+theorem  [MeasurableMul₂ G] [MeasurableInv G]
     {f g : G → ℝ≥0∞} (μ : Measure G) [SFinite μ]
     (hf : Measurable f) (hg : Measurable g) : Measurable (f ⋆ₗ[μ] g) := by
   unfold mlconvolution
