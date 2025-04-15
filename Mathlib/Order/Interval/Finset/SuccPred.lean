@@ -154,9 +154,9 @@ alias insert_Ioc_left_eq_Ioc_pred_left_of_not_isMin := insert_Ioc_left_eq_Ioc_pr
 lemma insert_Ioc_pred_right_eq_Ioc (h : a < b) : insert b (Ioc a (pred b)) = Ioc a b :=
   coe_injective <| by simpa using Set.insert_Ioc_pred_right_eq_Ioc h
 
-lemma insert_Ico_eq_Ico_pred_left_of_not_isMin (h : a ≤ b) (ha : ¬ IsMin a) :
+lemma insert_Ico_left_eq_Ico_pred_of_not_isMin (h : a ≤ b) (ha : ¬ IsMin a) :
     insert (pred a) (Ico a b) = Ico (pred a) b :=
-  coe_injective <| by simpa using Set.insert_Ico_eq_Ico_pred_left_of_not_isMin h ha
+  coe_injective <| by simpa using Set.insert_Ico_left_eq_Ico_pred_of_not_isMin h ha
 
 lemma insert_Ico_pred_right_eq_Ico (h : a < b) : insert (pred b) (Ico a (pred b)) = Ico a b :=
   coe_injective <| by simpa using Set.insert_Ico_pred_right_eq_Ico h
@@ -182,8 +182,8 @@ lemma insert_Ioc_left_eq_Ioc_pred (h : a ≤ b) : insert a (Ioc a b) = Ioc (pred
 @[deprecated (since := "2025-04-14")]
 alias insert_Ioc_left_eq_Ioc_pred_left := insert_Ioc_left_eq_Ioc_pred
 
-lemma insert_Ico_eq_Ico_pred_left (h : a ≤ b) : insert (pred a) (Ico a b) = Ico (pred a) b :=
-  insert_Ico_eq_Ico_pred_left_of_not_isMin h (not_isMin _)
+lemma insert_Ico_left_eq_Ico_pred (h : a ≤ b) : insert (pred a) (Ico a b) = Ico (pred a) b :=
+  insert_Ico_left_eq_Ico_pred_of_not_isMin h (not_isMin _)
 
 end PredOrder
 
