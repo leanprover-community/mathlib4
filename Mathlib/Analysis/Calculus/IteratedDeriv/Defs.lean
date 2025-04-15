@@ -267,7 +267,7 @@ theorem ContDiff.continuous_iteratedDeriv {n : WithTop ℕ∞} (m : ℕ) (h : Co
   (contDiff_iff_iteratedDeriv.1 (h.of_le hmn)).1 m le_rfl
 
 @[fun_prop]
-theorem ContDiff.continuous_iteratedDeriv' {n : WithTop ℕ∞} (m : ℕ) (h : ContDiff 𝕜 m f) :
+theorem ContDiff.continuous_iteratedDeriv' (m : ℕ) (h : ContDiff 𝕜 m f) :
     Continuous (iteratedDeriv m f) :=
   ContDiff.continuous_iteratedDeriv m h (le_refl _)
 
@@ -277,7 +277,7 @@ theorem ContDiff.differentiable_iteratedDeriv {n : WithTop ℕ∞} (m : ℕ) (h 
     (mod_cast (lt_add_one m))
 
 @[fun_prop]
-theorem ContDiff.differentiable_iteratedDeriv' {n : WithTop ℕ∞} (m : ℕ) (h : ContDiff 𝕜 (m+1) f) :
+theorem ContDiff.differentiable_iteratedDeriv' (m : ℕ) (h : ContDiff 𝕜 (m+1) f) :
     Differentiable 𝕜 (iteratedDeriv m f) :=
   h.differentiable_iteratedDeriv m (Nat.cast_lt.mpr m.lt_succ_self)
 
