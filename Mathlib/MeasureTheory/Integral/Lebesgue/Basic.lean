@@ -271,7 +271,7 @@ section
 
 /-- The Lebesgue integral is zero iff the function is a.e. zero.
 
-The measurability assumption is necessary, otherwise are counterexamples: for instance, the
+The measurability assumption is necessary, otherwise there are counterexamples: for instance, the
 conclusion fails if `f` is the characteristic function of a Vitali set. -/
 @[simp]
 theorem lintegral_eq_zero_iff' {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) :
@@ -297,14 +297,14 @@ theorem lintegral_eq_zero_iff' {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) 
   have res := measure_iUnion_null_iff.mpr fun n ↦ meas_levels_0 _ (bu n).1
   rwa [← u_union] at res
 
-/-- The measurability assumption is necessary, otherwise are counterexamples: for instance, the
-conclusion fails if `f` is the characteristic function of a Vitali set. -/
+/-- The measurability assumption is necessary, otherwise there are counterexamples: for instance,
+the conclusion fails if `f` is the characteristic function of a Vitali set. -/
 @[simp]
 theorem lintegral_eq_zero_iff {f : α → ℝ≥0∞} (hf : Measurable f) : ∫⁻ a, f a ∂μ = 0 ↔ f =ᵐ[μ] 0 :=
   lintegral_eq_zero_iff' hf.aemeasurable
 
-/-- The measurability assumption is necessary, otherwise are counterexamples: for instance, the
-conclusion fails if `s = univ` and `f` is the characteristic function of a Vitali set. -/
+/-- The measurability assumption is necessary, otherwise there are counterexamples: for instance,
+the conclusion fails if `s = univ` and `f` is the characteristic function of a Vitali set. -/
 theorem setLIntegral_eq_zero_iff' {s : Set α} (hs : MeasurableSet s)
     {f : α → ℝ≥0∞} (hf : AEMeasurable f (μ.restrict s)) :
     ∫⁻ a in s, f a ∂μ = 0 ↔ ∀ᵐ x ∂μ, x ∈ s → f x = 0 :=
