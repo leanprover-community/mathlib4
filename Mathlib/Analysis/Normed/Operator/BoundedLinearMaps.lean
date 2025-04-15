@@ -104,6 +104,10 @@ def toContinuousLinearMap {f : E → F} (hf : IsBoundedLinearMap 𝕜 f) : E →
       let ⟨C, _, hC⟩ := hf.bound
       AddMonoidHomClass.continuous_of_bound (toLinearMap f hf) C hC }
 
+@[simp]
+theorem toContinuousLinearMap_apply {f : E → F} (hf : IsBoundedLinearMap 𝕜 f) (x : E) :
+   hf.toContinuousLinearMap x = f x := rfl
+
 @[fun_prop]
 theorem zero : IsBoundedLinearMap 𝕜 fun _ : E => (0 : F) :=
   (0 : E →ₗ[𝕜] F).isLinear.with_bound 0 <| by simp [le_refl]
@@ -283,16 +287,28 @@ theorem ContinuousLinearMap.mk'_isBoundedLinearMap (f : E → F → G)
     (hfy : ∀ x, IsBoundedLinearMap 𝕜 (f x ·))
     (hfx : ∀ y, IsBoundedLinearMap 𝕜 (f · y))
     (hf : Continuous ↿f) :
-    IsBoundedLinearMap 𝕜 (fun x => fun y =>L[𝕜] f x y) := sorry
+    IsBoundedLinearMap 𝕜 (fun x => fun y =>L[𝕜] f x y) := by
+  apply (IsBoundedLinearMap.isLinearMap_and_continuous_iff_isBoundedLinearMap _).1
+  constructor
+  · constructor
+    · intro x y; ext z; simp[(hfx z).1.1]
+    · intro x y; ext z; simp[(hfx z).1.2]
+  · sorry
+
 
 @[fun_prop]
 theorem ContinuousLinearMap.isBoundedLinearMap_apply (f : E → F →L[𝕜] G) (y : F)
     (hf : IsBoundedLinearMap 𝕜 f) :
     IsBoundedLinearMap 𝕜 (fun x : E => f x y) := by
-  have ⟨bf,_,hbf⟩ := hf.2
-  have h := (fun x ↦ₗ[𝕜] f x y).isLinear.with_bound bf fun x => sorry
-  simp at h
-
+  constructor
+  · constructor
+    · intro x z; simp[hf.1.1]
+    · intro x z; simp[hf.1.2]
+  · have ⟨bf,_,hbf⟩ := hf.2
+    use bf
+    constructor
+    · assumption
+    · intro x; apply le_trans (b:=‖f x‖) sorry (hbf x)
 
 end
 

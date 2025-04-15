@@ -40,7 +40,4 @@ theorem isLinearMap_apply {i : ι} :
     IsLinearMap R fun f : ι → M => f i := by
   apply IsLinearMap.mk <;> simp
 
-
-#check fun (x : M) ↦ₗ[R] 3 • x + x
-
 end IsLinearMap
