@@ -943,12 +943,10 @@ def mkContinuousLinear (f : G →ₗ[𝕜] MultilinearMap 𝕜 E G') (C : ℝ)
     { toFun := fun x => (f x).mkContinuous (C * ‖x‖) <| H x
       map_add' := fun x y => by
         ext1
-        simp only [map_add]
-        rfl
+        simp
       map_smul' := fun c x => by
         ext1
-        simp only [map_smul]
-        rfl }
+        simp }
     (max C 0) fun x => by
       simpa using ((f x).mkContinuous_norm_le' _).trans_eq <| by
         rw [max_mul_of_nonneg _ _ (norm_nonneg x), zero_mul]
