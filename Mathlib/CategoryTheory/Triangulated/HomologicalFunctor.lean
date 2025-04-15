@@ -68,7 +68,7 @@ variable [HasZeroObject C] [Preadditive C] [∀ (n : ℤ), (CategoryTheory.shift
 
 /-- A functor from a pretriangulated category to an abelian category is an homological functor
 if it sends distinguished triangles to exact sequences. -/
-class IsHomological extends F.PreservesZeroMorphisms : Prop where
+class IsHomological : Prop extends F.PreservesZeroMorphisms where
   exact (T : Triangle C) (hT : T ∈ distTriang C) :
     ((shortComplexOfDistTriangle T hT).map F).Exact
 

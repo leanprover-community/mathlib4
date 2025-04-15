@@ -203,7 +203,7 @@ theorem succ_le_iff_of_not_isMax (ha : ¬IsMax a) : succ a ≤ b ↔ a < b :=
 lemma succ_lt_succ_of_not_isMax (h : a < b) (hb : ¬ IsMax b) : succ a < succ b :=
   lt_succ_of_le_of_not_isMax (succ_le_of_lt h) hb
 
-@[simp, mono]
+@[simp, mono, gcongr]
 theorem succ_le_succ (h : a ≤ b) : succ a ≤ succ b := by
   by_cases hb : IsMax b
   · by_cases hba : b ≤ a
@@ -286,9 +286,7 @@ theorem succ_strictMono : StrictMono (succ : α → α) := fun _ _ => succ_lt_su
 theorem covBy_succ (a : α) : a ⋖ succ a :=
   covBy_succ_of_not_isMax <| not_isMax a
 
-@[simp]
-theorem Iic_subset_Iio_succ (a : α) : Iic a ⊆ Iio (succ a) :=
-  Iic_subset_Iio_succ_of_not_isMax <| not_isMax _
+theorem Iic_subset_Iio_succ (a : α) : Iic a ⊆ Iio (succ a) := by simp
 
 @[simp]
 theorem Ici_succ (a : α) : Ici (succ a) = Ioi a :=
@@ -323,6 +321,11 @@ theorem succ_eq_iff_isMax : succ a = a ↔ IsMax a :=
   ⟨fun h => max_of_succ_le h.le, fun h => h.eq_of_ge <| le_succ _⟩
 
 alias ⟨_, _root_.IsMax.succ_eq⟩ := succ_eq_iff_isMax
+
+lemma le_iff_eq_or_succ_le : a ≤ b ↔ a = b ∨ succ a ≤ b := by
+  by_cases ha : IsMax a
+  · simpa [ha.succ_eq] using le_of_eq
+  · rw [succ_le_iff_of_not_isMax ha, le_iff_eq_or_lt]
 
 theorem le_le_succ_iff : a ≤ b ∧ b ≤ succ a ↔ b = a ∨ b = succ a := by
   refine
@@ -595,7 +598,7 @@ theorem pred_le_pred_of_not_isMin_of_le (ha : ¬IsMin a) (hb : ¬IsMin b) :
   rw [le_pred_iff_of_not_isMin hb]
   apply pred_lt_of_not_isMin_of_le ha
 
-@[simp, mono]
+@[simp, mono, gcongr]
 theorem pred_le_pred {a b : α} (h : a ≤ b) : pred a ≤ pred b :=
   succ_le_succ h.dual
 
@@ -668,9 +671,7 @@ theorem pred_strictMono : StrictMono (pred : α → α) := fun _ _ => pred_lt_pr
 theorem pred_covBy (a : α) : pred a ⋖ a :=
   pred_covBy_of_not_isMin <| not_isMin a
 
-@[simp]
-theorem Ici_subset_Ioi_pred (a : α) : Ici a ⊆ Ioi (pred a) :=
-  Ici_subset_Ioi_pred_of_not_isMin <| not_isMin a
+theorem Ici_subset_Ioi_pred (a : α) : Ici a ⊆ Ioi (pred a) := by simp
 
 @[simp]
 theorem Iic_pred (a : α) : Iic (pred a) = Iio a :=
@@ -705,6 +706,11 @@ theorem pred_eq_iff_isMin : pred a = a ↔ IsMin a :=
   ⟨fun h => min_of_le_pred h.ge, fun h => h.eq_of_le <| pred_le _⟩
 
 alias ⟨_, _root_.IsMin.pred_eq⟩ := pred_eq_iff_isMin
+
+lemma le_iff_eq_or_le_pred : a ≤ b ↔ a = b ∨ a ≤ pred b := by
+  by_cases hb : IsMin b
+  · simpa [hb.pred_eq] using le_of_eq
+  · rw [le_pred_iff_of_not_isMin hb, le_iff_eq_or_lt]
 
 theorem pred_le_le_iff {a b : α} : pred a ≤ b ∧ b ≤ a ↔ b = a ∨ b = pred a := by
   refine

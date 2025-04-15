@@ -84,20 +84,30 @@ def map {D : Type*} [Category D] {X : SimplicialObject.Augmented C} (ed : ExtraD
   s n := F.map (ed.s n)
   s'_comp_ε := by
     dsimp
-    erw [comp_id, ← F.map_comp, ed.s'_comp_ε, F.map_id]
+    rw [comp_id, ← F.map_comp, ed.s'_comp_ε]
+    dsimp only [point_obj]
+    rw [F.map_id]
   s₀_comp_δ₁ := by
     dsimp
-    erw [comp_id, ← F.map_comp, ← F.map_comp, ed.s₀_comp_δ₁]
+    rw [comp_id, ← F.map_comp]
+    dsimp [SimplicialObject.whiskering, SimplicialObject.δ]
+    rw [← F.map_comp]
+    erw [ed.s₀_comp_δ₁]
   s_comp_δ₀ n := by
+    dsimp [SimplicialObject.δ]
+    rw [← F.map_comp]
+    erw [ed.s_comp_δ₀]
     dsimp
-    erw [← F.map_comp, ed.s_comp_δ₀, F.map_id]
+    rw [F.map_id]
   s_comp_δ n i := by
-    dsimp
-    erw [← F.map_comp, ← F.map_comp, ed.s_comp_δ]
+    dsimp [SimplicialObject.δ]
+    rw [← F.map_comp, ← F.map_comp]
+    erw [ed.s_comp_δ]
     rfl
   s_comp_σ n i := by
-    dsimp
-    erw [← F.map_comp, ← F.map_comp, ed.s_comp_σ]
+    dsimp [SimplicialObject.whiskering, SimplicialObject.σ]
+    rw [← F.map_comp, ← F.map_comp]
+    erw [ed.s_comp_σ]
     rfl
 
 /-- If `X` and `Y` are isomorphic augmented simplicial objects, then an extra
@@ -184,21 +194,20 @@ open SSet.stdSimplex in
 protected noncomputable def extraDegeneracy (Δ : SimplexCategory) :
     SimplicialObject.Augmented.ExtraDegeneracy (stdSimplex.obj Δ) where
   s' _ := objMk (OrderHom.const _ 0)
-  s  _ f := (objEquiv _ _).symm
-    (shift (objEquiv _ _ f))
+  s _ f := objEquiv.symm (shift (objEquiv f))
   s'_comp_ε := by
     dsimp
     subsingleton
   s₀_comp_δ₁ := by
     dsimp
     ext1 x
-    apply (objEquiv _ _).injective
+    apply objEquiv.injective
     ext j
     fin_cases j
     rfl
   s_comp_δ₀ n := by
     ext1 φ
-    apply (objEquiv _ _).injective
+    apply objEquiv.injective
     apply SimplexCategory.Hom.ext
     ext i : 2
     dsimp [SimplicialObject.δ, SimplexCategory.δ, SSet.stdSimplex,
@@ -206,7 +215,7 @@ protected noncomputable def extraDegeneracy (Δ : SimplexCategory) :
     simp only [shiftFun_succ]
   s_comp_δ n i := by
     ext1 φ
-    apply (objEquiv _ _).injective
+    apply objEquiv.injective
     apply SimplexCategory.Hom.ext
     ext j : 2
     dsimp [SimplicialObject.δ, SimplexCategory.δ, SSet.stdSimplex,
@@ -219,7 +228,7 @@ protected noncomputable def extraDegeneracy (Δ : SimplexCategory) :
         Fin.succAboveOrderEmb_apply]
   s_comp_σ n i := by
     ext1 φ
-    apply (objEquiv _ _).injective
+    apply objEquiv.injective
     apply SimplexCategory.Hom.ext
     ext j : 2
     dsimp [SimplicialObject.σ, SimplexCategory.σ, SSet.stdSimplex,
@@ -270,13 +279,14 @@ noncomputable def ExtraDegeneracy.s (n : ℕ) :
       · simp only [WidePullback.π_arrow]
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] removed as the linter complains the LHS is not in normal form
+-- The problem is that the type of `ExtraDegeneracy.s` is not in normal form, this causes the `erw`
+-- in the proofs below.
 theorem ExtraDegeneracy.s_comp_π_0 (n : ℕ) :
     ExtraDegeneracy.s f S n ≫ WidePullback.π _ 0 =
       @WidePullback.base _ _ _ f.right (fun _ : Fin (n + 1) => f.left) (fun _ => f.hom) _ ≫
         S.section_ := by
   dsimp [ExtraDegeneracy.s]
-  simp only [WidePullback.lift_π]
-  rfl
+  simp [WidePullback.lift_π]
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] removed as the linter complains the LHS is not in normal form
 theorem ExtraDegeneracy.s_comp_π_succ (n : ℕ) (i : Fin (n + 1)) :
@@ -314,12 +324,13 @@ noncomputable def extraDegeneracy :
     · simpa only [assoc, WidePullback.lift_π, id_comp] using ExtraDegeneracy.s_comp_π_succ f S n j
     · simpa only [assoc, WidePullback.lift_base, id_comp] using ExtraDegeneracy.s_comp_base f S n
   s_comp_δ n i := by
-    dsimp [cechNerve, SimplicialObject.δ, SimplexCategory.δ]
+    dsimp [SimplicialObject.δ, SimplexCategory.δ]
     ext j
     · simp only [assoc, WidePullback.lift_π]
       by_cases h : j = 0
       · subst h
-        erw [Fin.succ_succAbove_zero, ExtraDegeneracy.s_comp_π_0, ExtraDegeneracy.s_comp_π_0]
+        rw [Fin.succ_succAbove_zero]
+        erw [ExtraDegeneracy.s_comp_π_0, ExtraDegeneracy.s_comp_π_0]
         dsimp
         simp only [WidePullback.lift_base_assoc]
       · obtain ⟨k, hk⟩ := Fin.eq_succ_of_ne_zero h

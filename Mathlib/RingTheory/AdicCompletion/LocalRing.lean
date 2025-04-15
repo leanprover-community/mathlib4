@@ -42,7 +42,7 @@ lemma isUnit_iff_nmem_of_isAdicComplete_maximal [IsAdicComplete m R] (r : R) :
       Ideal.Quotient.mk_surjective <| invSeries' ⟨n, (Nat.zero_lt_of_ne_zero h)⟩
     have invSeries_spec {n : ℕ} (npos : 0 < n): (Ideal.Quotient.mk (m ^ n)) (invSeries n) =
       invSeries' ⟨n, npos⟩ := by
-      simpa only [Nat.not_eq_zero_of_lt npos, invSeries]
+      simpa only [Nat.ne_zero_of_lt npos, invSeries]
       using Classical.choose_spec (Ideal.Quotient.mk_surjective (invSeries' ⟨n, npos⟩))
     have mod {a b : ℕ} (le : a ≤ b) :
       invSeries a ≡ invSeries b [SMOD m ^ a • (⊤ : Submodule R R)] := by
@@ -52,7 +52,7 @@ lemma isUnit_iff_nmem_of_isAdicComplete_maximal [IsAdicComplete m R] (r : R) :
           mul_zero, mul_sub]
         nth_rw 3 [← factor_mk (pow_le_pow_right le), ← factor_mk (pow_le_pow_right le)]
         simp only [invSeries_spec apos, invSeries_spec (Nat.lt_of_lt_of_le apos le)]
-        rw [← _root_.map_mul, mul_comm, invSeries_spec', mul_comm, invSeries_spec',
+        rw [← map_mul, mul_comm, invSeries_spec', mul_comm, invSeries_spec',
           map_one, sub_self]
       · simp [Nat.eq_zero_of_not_pos apos]
     rcases IsAdicComplete.toIsPrecomplete.prec mod with ⟨inv, hinv⟩
@@ -60,7 +60,7 @@ lemma isUnit_iff_nmem_of_isAdicComplete_maximal [IsAdicComplete m R] (r : R) :
       by_cases npos : 0 < n
       · apply SModEq.sub_mem.mpr
         simp only [smul_eq_mul, Ideal.mul_top, sub_zero, ← eq_zero_iff_mem]
-        rw [map_sub, map_one, _root_.map_mul, ← sub_add_cancel inv (invSeries n), map_add]
+        rw [map_sub, map_one, map_mul, ← sub_add_cancel inv (invSeries n), map_add]
         have := SModEq.sub_mem.mp (hinv n).symm
         simp only [smul_eq_mul, Ideal.mul_top] at this
         simp [Ideal.Quotient.eq_zero_iff_mem.mpr this, invSeries_spec npos, invSeries_spec']

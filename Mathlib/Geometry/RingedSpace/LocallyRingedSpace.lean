@@ -72,8 +72,8 @@ def 𝒪 : Sheaf CommRingCat X.toTopCat :=
 /-- A morphism of locally ringed spaces is a morphism of ringed spaces
  such that the morphisms induced on stalks are local ring homomorphisms. -/
 @[ext]
-structure Hom (X Y : LocallyRingedSpace.{u})
-    extends X.toPresheafedSpace.Hom Y.toPresheafedSpace : Type _ where
+structure Hom (X Y : LocallyRingedSpace.{u}) : Type _
+    extends X.toPresheafedSpace.Hom Y.toPresheafedSpace where
   /-- the underlying morphism induces a local ring homomorphism on stalks -/
   prop : ∀ x, IsLocalHom (toHom.stalkMap x).hom
 
@@ -115,9 +115,6 @@ theorem isLocalHomStalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) 
 theorem isLocalHomValStalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
     IsLocalHom (f.toShHom.stalkMap x).hom :=
   f.2 x
-
-@[deprecated (since := "2024-10-10")]
-alias isLocalRingHomValStalkMap := isLocalHomValStalkMap
 
 /-- The identity morphism on a locally ringed space. -/
 @[simps! toShHom]

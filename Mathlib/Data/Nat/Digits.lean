@@ -96,7 +96,7 @@ theorem digits_zero_succ' : ∀ {n : ℕ}, n ≠ 0 → digits 0 n = [n]
 theorem digits_one (n : ℕ) : digits 1 n = List.replicate n 1 :=
   rfl
 
--- @[simp] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10685): dsimp can prove this
+-- no `@[simp]`: dsimp can prove this
 theorem digits_one_succ (n : ℕ) : digits 1 (n + 1) = 1 :: digits 1 n :=
   rfl
 
@@ -222,7 +222,7 @@ theorem digits_ofDigits (b : ℕ) (h : 1 < b) (L : List ℕ) (w₁ : ∀ l ∈ L
       · intro h
         rw [List.getLast_cons h] at w₂
         convert w₂
-    · exact w₁ d (List.mem_cons_self _ _)
+    · exact w₁ d List.mem_cons_self
     · by_cases h' : L = []
       · rcases h' with rfl
         left
@@ -237,8 +237,7 @@ theorem ofDigits_digits (b n : ℕ) : ofDigits b (digits b n) = n := by
   rcases b with - | b
   · rcases n with - | n
     · rfl
-    · change ofDigits 0 [n + 1] = n + 1
-      dsimp [ofDigits]
+    · simp
   · rcases b with - | b
     · induction' n with n ih
       · rfl
@@ -346,14 +345,14 @@ lemma ofDigits_inj_of_len_eq {b : ℕ} (hb : 1 < b) {L1 L2 : List ℕ}
     (h : ofDigits b L1 = ofDigits b L2) : L1 = L2 := by
   induction' L1 with D L ih generalizing L2
   · simp only [List.length_nil] at len
-    exact (List.length_eq_zero.mp len.symm).symm
+    exact (List.length_eq_zero_iff.mp len.symm).symm
   obtain ⟨d, l, rfl⟩ := List.exists_cons_of_length_eq_add_one len.symm
   simp only [List.length_cons, add_left_inj] at len
   simp only [ofDigits_cons] at h
   have eqd : D = d := by
     have H : (D + b * ofDigits b L) % b = (d + b * ofDigits b l) % b := by rw [h]
-    simpa [mod_eq_of_lt (w2 d <| List.mem_cons_self d l),
-      mod_eq_of_lt (w1 D <| List.mem_cons_self D L)] using H
+    simpa [mod_eq_of_lt (w2 d List.mem_cons_self),
+      mod_eq_of_lt (w1 D List.mem_cons_self)] using H
   simp only [eqd, add_right_inj, mul_left_cancel_iff_of_pos (zero_lt_of_lt hb)] at h
   have := ih len (fun a ha ↦ w1 a <| List.mem_cons_of_mem D ha)
     (fun a ha ↦ w2 a <| List.mem_cons_of_mem d ha) h
@@ -364,7 +363,7 @@ theorem ofDigits_add_ofDigits_eq_ofDigits_zipWith_of_length_eq {b : ℕ} {l1 l2 
     (h : l1.length = l2.length) :
     ofDigits b l1 + ofDigits b l2 = ofDigits b (l1.zipWith (· + ·) l2) := by
   induction l1 generalizing l2 with
-  | nil => simp_all [eq_comm, List.length_eq_zero, ofDigits]
+  | nil => simp_all [eq_comm, List.length_eq_zero_iff, ofDigits]
   | cons hd₁ tl₁ ih₁ =>
     induction l2 generalizing tl₁ with
     | nil => simp_all
@@ -384,9 +383,7 @@ theorem digits_lt_base' {b m : ℕ} : ∀ {d}, d ∈ digits (b + 2) m → d < b 
   -- base b+2 expansion of 0 has no digits
   rw [digits_add_two_add_one] at hd
   cases hd
-  · exact n.succ.mod_lt (by simp)
-  -- Porting note: Previous code (single line) contained linarith.
-  -- . exact IH _ (Nat.div_lt_self (Nat.succ_pos _) (by linarith)) hd
+  · exact n.succ.mod_lt (by linarith)
   · apply IH ((n + 1) / (b + 2))
     · apply Nat.div_lt_self <;> omega
     · assumption
@@ -406,7 +403,7 @@ theorem ofDigits_lt_base_pow_length' {b : ℕ} {l : List ℕ} (hl : ∀ x ∈ l,
       mul_le_mul (IH fun x hx => hl _ (List.mem_cons_of_mem _ hx)) (by rfl) (by simp only [zero_le])
         (Nat.zero_le _)
     suffices ↑hd < b + 2 by linarith
-    exact hl hd (List.mem_cons_self _ _)
+    exact hl hd List.mem_cons_self
 
 /-- an n-digit number in base b is less than b^n if b > 1 -/
 theorem ofDigits_lt_base_pow_length {b : ℕ} {l : List ℕ} (hb : 1 < b) (hl : ∀ x ∈ l, x < b) :
@@ -432,7 +429,7 @@ theorem digits_base_pow_mul {b k m : ℕ} (hb : 1 < b) (hm : 0 < m) :
     have hmb : 0 < m * b := lt_mul_of_lt_of_one_lt' hm hb
     let h1 := digits_def' hb hmb
     have h2 : m = m * b / b :=
-      Nat.eq_div_of_mul_eq_left (not_eq_zero_of_lt hb) rfl
+      Nat.eq_div_of_mul_eq_left (ne_zero_of_lt hb) rfl
     simp only [mul_mod_left, ← h2] at h1
     rw [List.replicate_succ', List.append_assoc, List.singleton_append, ← h1, ← ih hmb]
     ring_nf
@@ -466,7 +463,7 @@ theorem digits_len_le_digits_len_succ (b n : ℕ) :
   rcases Decidable.eq_or_ne n 0 with (rfl | hn)
   · simp
   rcases le_or_lt b 1 with hb | hb
-  · interval_cases b <;> simp_arith [digits_zero_succ', hn]
+  · interval_cases b <;> simp +arith [digits_zero_succ', hn]
   simpa [digits_len, hb, hn] using log_mono_right (le_succ _)
 
 theorem le_digits_len_le (b n m : ℕ) (h : n ≤ m) : (digits b n).length ≤ (digits b m).length :=
@@ -528,7 +525,7 @@ lemma ofDigits_div_eq_ofDigits_tail {p : ℕ} (hpos : 0 < p) (digits : List ℕ)
   induction' digits with hd tl
   · simp [ofDigits]
   · refine Eq.trans (add_mul_div_left hd _ hpos) ?_
-    rw [Nat.div_eq_of_lt <| w₁ _ <| List.mem_cons_self _ _, zero_add]
+    rw [Nat.div_eq_of_lt <| w₁ _ List.mem_cons_self, zero_add]
     rfl
 
 /-- Interpreting as a base `p` number and dividing by `p^i` is the same as dropping `i`.
@@ -572,7 +569,7 @@ theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits {p : ℕ}
           ← Nat.one_add] at ih
         have := sum_singleton (fun x ↦ ofDigits p <| tl.drop x) tl.length
         rw [← Ico_succ_singleton, List.drop_length, ofDigits] at this
-        have h₁ : 1 ≤ tl.length := List.length_pos.mpr h'
+        have h₁ : 1 ≤ tl.length := List.length_pos_iff.mpr h'
         rw [← sum_range_add_sum_Ico _ <| h₁, ← add_zero (∑ x ∈ Ico _ _, ofDigits p (tl.drop x)),
             ← this, sum_Ico_consecutive _  h₁ <| (le_add_right tl.length 1),
             ← sum_Ico_add _ 0 tl.length 1,

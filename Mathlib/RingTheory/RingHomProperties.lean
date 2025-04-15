@@ -53,9 +53,10 @@ theorem RespectsIso.cancel_right_isIso (hP : RespectsIso @P) {R S T : CommRingCa
     (g : S ⟶ T) [IsIso g] : P (g.hom.comp f.hom) ↔ P f.hom :=
   ⟨fun H => by
     convert hP.1 (f ≫ g).hom (asIso g).symm.commRingCatIsoToRingEquiv H
-    simp [← CommRingCat.hom_comp], hP.1 f.hom (asIso g).commRingCatIsoToRingEquiv⟩
+    simp [← CommRingCat.hom_comp],
+   hP.1 f.hom (asIso g).commRingCatIsoToRingEquiv⟩
 
-theorem RespectsIso.is_localization_away_iff (hP : RingHom.RespectsIso @P) {R S : Type u}
+theorem RespectsIso.isLocalization_away_iff (hP : RingHom.RespectsIso @P) {R S : Type u}
     (R' S' : Type u) [CommRing R] [CommRing S] [CommRing R'] [CommRing S'] [Algebra R R']
     [Algebra S S'] (f : R →+* S) (r : R) [IsLocalization.Away r R'] [IsLocalization.Away (f r) S'] :
     P (Localization.awayMap f r) ↔ P (IsLocalization.Away.map R' S' f r) := by
@@ -82,6 +83,9 @@ theorem RespectsIso.is_localization_away_iff (hP : RingHom.RespectsIso @P) {R S 
   ext1 x
   dsimp [e, e₁, e₂, IsLocalization.Away.map]
   simp only [IsLocalization.map_eq, id_apply, RingHomCompTriple.comp_apply]
+
+@[deprecated (since := "2025-03-01")]
+alias RespectsIso.is_localization_away_iff := RespectsIso.isLocalization_away_iff
 
 end RespectsIso
 

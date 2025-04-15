@@ -393,7 +393,7 @@ This is a dependent version of `(l.map fA).prod`.
 For a list `l : List α`, this computes the product of `fA a` over `a`, where each `fA` is of type
 `A (fι a)`. -/
 def List.dProd (l : List α) (fι : α → ι) (fA : ∀ a, A (fι a)) : A (l.dProdIndex fι) :=
-  l.foldrRecOn _ _ GradedMonoid.GOne.one fun _ x a _ => GradedMonoid.GMul.mul (fA a) x
+  l.foldrRecOn _ GradedMonoid.GOne.one fun _ x a _ => GradedMonoid.GMul.mul (fA a) x
 
 @[simp]
 theorem List.dProd_nil (fι : α → ι) (fA : ∀ a, A (fι a)) :
@@ -520,8 +520,8 @@ theorem SetLike.coe_gMul {S : Type*} [SetLike S R] [Mul R] [Add ι] (A : ι → 
   rfl
 
 /-- A version of `GradedMonoid.GMonoid` for internally graded objects. -/
-class SetLike.GradedMonoid {S : Type*} [SetLike S R] [Monoid R] [AddMonoid ι] (A : ι → S) extends
-  SetLike.GradedOne A, SetLike.GradedMul A : Prop
+class SetLike.GradedMonoid {S : Type*} [SetLike S R] [Monoid R] [AddMonoid ι] (A : ι → S) : Prop
+    extends SetLike.GradedOne A, SetLike.GradedMul A
 
 namespace SetLike
 
@@ -576,7 +576,7 @@ theorem list_prod_map_mem_graded {ι'} (l : List ι') (i : ι' → ι) (r : ι' 
   | head::tail =>
     rw [List.map_cons, List.map_cons, List.prod_cons, List.sum_cons]
     exact
-      mul_mem_graded (h _ <| List.mem_cons_self _ _)
+      mul_mem_graded (h _ List.mem_cons_self)
         (list_prod_map_mem_graded tail _ _ fun j hj => h _ <| List.mem_cons_of_mem _ hj)
 
 theorem list_prod_ofFn_mem_graded {n} (i : Fin n → ι) (r : Fin n → R) (h : ∀ j, r j ∈ A (i j)) :

@@ -242,9 +242,6 @@ section map
 protected theorem map_mul (f : M ≃* N) : ∀ x y, f (x * y) = f x * f y :=
   map_mul f
 
-attribute [deprecated map_mul (since := "2024-08-08")] MulEquiv.map_mul
-attribute [deprecated map_add (since := "2024-08-08")] AddEquiv.map_add
-
 end map
 
 section bijective
@@ -539,7 +536,7 @@ end MulEquiv
 `f.comp g = id`, returns a multiplicative equivalence with `toFun = f` and `invFun = g`. This
 constructor is useful if the underlying type(s) have specialized `ext` lemmas for multiplicative
 homomorphisms. -/
-@[to_additive (attr := simps (config := .asFn))
+@[to_additive (attr := simps -fullyApplied)
   "Given a pair of additive homomorphisms `f`, `g` such that `g.comp f = id` and
   `f.comp g = id`, returns an additive equivalence with `toFun = f` and `invFun = g`. This
   constructor is useful if the underlying type(s) have specialized `ext` lemmas for additive
@@ -555,7 +552,7 @@ def MulHom.toMulEquiv [Mul M] [Mul N] (f : M →ₙ* N) (g : N →ₙ* M) (h₁ 
 /-- Given a pair of monoid homomorphisms `f`, `g` such that `g.comp f = id` and `f.comp g = id`,
 returns a multiplicative equivalence with `toFun = f` and `invFun = g`.  This constructor is
 useful if the underlying type(s) have specialized `ext` lemmas for monoid homomorphisms. -/
-@[to_additive (attr := simps (config := .asFn))
+@[to_additive (attr := simps -fullyApplied)
   "Given a pair of additive monoid homomorphisms `f`, `g` such that `g.comp f = id`
   and `f.comp g = id`, returns an additive equivalence with `toFun = f` and `invFun = g`.  This
   constructor is useful if the underlying type(s) have specialized `ext` lemmas for additive

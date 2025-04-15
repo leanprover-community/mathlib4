@@ -132,6 +132,26 @@ theorem Equivalence_mk'_counitInv (functor inverse unit_iso counit_iso f) :
     (⟨functor, inverse, unit_iso, counit_iso, f⟩ : C ≌ D).counitInv = counit_iso.inv :=
   rfl
 
+@[reassoc]
+theorem counit_naturality (e : C ≌ D) {X Y : D} (f : X ⟶ Y) :
+    e.functor.map (e.inverse.map f) ≫ e.counit.app Y = e.counit.app X ≫ f :=
+  e.counit.naturality f
+
+@[reassoc]
+theorem unit_naturality (e : C ≌ D) {X Y : C} (f : X ⟶ Y) :
+    e.unit.app X ≫ e.inverse.map (e.functor.map f) = f ≫ e.unit.app Y :=
+  (e.unit.naturality f).symm
+
+@[reassoc]
+theorem counitInv_naturality (e : C ≌ D) {X Y : D} (f : X ⟶ Y) :
+    e.counitInv.app X ≫ e.functor.map (e.inverse.map f) = f ≫ e.counitInv.app Y :=
+  (e.counitInv.naturality f).symm
+
+@[reassoc]
+theorem unitInv_naturality (e : C ≌ D) {X Y : C} (f : X ⟶ Y) :
+    e.inverse.map (e.functor.map f) ≫ e.unitInv.app Y = e.unitInv.app X ≫ f :=
+  e.unitInv.naturality f
+
 @[reassoc (attr := simp)]
 theorem functor_unit_comp (e : C ≌ D) (X : C) :
     e.functor.map (e.unit.app X) ≫ e.counit.app (e.functor.obj X) = 𝟙 (e.functor.obj X) :=
@@ -140,20 +160,19 @@ theorem functor_unit_comp (e : C ≌ D) (X : C) :
 @[reassoc (attr := simp)]
 theorem counitInv_functor_comp (e : C ≌ D) (X : C) :
     e.counitInv.app (e.functor.obj X) ≫ e.functor.map (e.unitInv.app X) = 𝟙 (e.functor.obj X) := by
-  erw [Iso.inv_eq_inv (e.functor.mapIso (e.unitIso.app X) ≪≫ e.counitIso.app (e.functor.obj X))
-      (Iso.refl _)]
-  exact e.functor_unit_comp X
+  simpa using Iso.inv_eq_inv
+    (e.functor.mapIso (e.unitIso.app X) ≪≫ e.counitIso.app (e.functor.obj X)) (Iso.refl _)
 
 theorem counitInv_app_functor (e : C ≌ D) (X : C) :
     e.counitInv.app (e.functor.obj X) = e.functor.map (e.unit.app X) := by
   symm
-  erw [← Iso.comp_hom_eq_id (e.counitIso.app _), functor_unit_comp]
+  simp only [id_obj, comp_obj, counitInv]
+  rw [← Iso.app_inv, ← Iso.comp_hom_eq_id (e.counitIso.app _), Iso.app_hom, functor_unit_comp]
   rfl
 
 theorem counit_app_functor (e : C ≌ D) (X : C) :
     e.counit.app (e.functor.obj X) = e.functor.map (e.unitInv.app X) := by
-  erw [← Iso.hom_comp_eq_id (e.functor.mapIso (e.unitIso.app X)), functor_unit_comp]
-  rfl
+  simpa using Iso.hom_comp_eq_id (e.functor.mapIso (e.unitIso.app X)) (f := e.counit.app _)
 
 /-- The other triangle equality. The proof follows the following proof in Globular:
   http://globular.science/1905.001 -/
@@ -162,42 +181,49 @@ theorem unit_inverse_comp (e : C ≌ D) (Y : D) :
     e.unit.app (e.inverse.obj Y) ≫ e.inverse.map (e.counit.app Y) = 𝟙 (e.inverse.obj Y) := by
   rw [← id_comp (e.inverse.map _), ← map_id e.inverse, ← counitInv_functor_comp, map_comp]
   dsimp
-  rw [← Iso.hom_inv_id_assoc (e.unitIso.app _) (e.inverse.map (e.functor.map _)), app_hom, app_inv]
-  slice_lhs 2 3 => erw [e.unit.naturality]
-  slice_lhs 1 2 => erw [e.unit.naturality]
+  rw [← Iso.hom_inv_id_assoc (e.unitIso.app _) (e.inverse.map (e.functor.map _)), Iso.app_hom,
+    Iso.app_inv]
+  slice_lhs 2 3 => rw [← e.unit_naturality]
+  slice_lhs 1 2 => rw [← e.unit_naturality]
   slice_lhs 4 4 =>
     rw [← Iso.hom_inv_id_assoc (e.inverse.mapIso (e.counitIso.app _)) (e.unitInv.app _)]
   slice_lhs 3 4 =>
-    erw [← map_comp e.inverse, e.counit.naturality]
-    erw [(e.counitIso.app _).hom_inv_id, map_id]
-  erw [id_comp]
-  slice_lhs 2 3 => erw [← map_comp e.inverse, e.counitIso.inv.naturality, map_comp]
-  slice_lhs 3 4 => erw [e.unitInv.naturality]
-  slice_lhs 4 5 => erw [← map_comp (e.functor ⋙ e.inverse), (e.unitIso.app _).hom_inv_id, map_id]
-  erw [id_comp]
-  slice_lhs 3 4 => erw [← e.unitInv.naturality]
+    dsimp only [Functor.mapIso_hom, Iso.app_hom]
+    rw [← map_comp e.inverse, e.counit_naturality, e.counitIso.hom_inv_id_app]
+    dsimp only [Functor.comp_obj]
+    rw [map_id]
+  dsimp only [comp_obj, id_obj]
+  rw [id_comp]
   slice_lhs 2 3 =>
-    erw [← map_comp e.inverse, ← e.counitIso.inv.naturality, (e.counitIso.app _).hom_inv_id,
-      map_id]
+    dsimp only [Functor.mapIso_inv, Iso.app_inv]
+    rw [← map_comp e.inverse, ← e.counitInv_naturality, map_comp]
+  slice_lhs 3 4 => rw [e.unitInv_naturality]
+  slice_lhs 4 5 =>
+    rw [← map_comp e.inverse, ← map_comp e.functor, e.unitIso.hom_inv_id_app]
+    dsimp only [Functor.id_obj]
+    rw [map_id, map_id]
+  dsimp only [comp_obj, id_obj]
+  rw [id_comp]
+  slice_lhs 3 4 => rw [← e.unitInv_naturality]
+  slice_lhs 2 3 =>
+    rw [← map_comp e.inverse, e.counitInv_naturality, e.counitIso.hom_inv_id_app]
+  dsimp only [Functor.comp_obj]
   simp
 
 @[reassoc (attr := simp)]
 theorem inverse_counitInv_comp (e : C ≌ D) (Y : D) :
     e.inverse.map (e.counitInv.app Y) ≫ e.unitInv.app (e.inverse.obj Y) = 𝟙 (e.inverse.obj Y) := by
-  erw [Iso.inv_eq_inv (e.unitIso.app (e.inverse.obj Y) ≪≫ e.inverse.mapIso (e.counitIso.app Y))
-      (Iso.refl _)]
-  exact e.unit_inverse_comp Y
+  simpa using Iso.inv_eq_inv
+    (e.unitIso.app (e.inverse.obj Y) ≪≫ e.inverse.mapIso (e.counitIso.app Y)) (Iso.refl _)
 
 theorem unit_app_inverse (e : C ≌ D) (Y : D) :
     e.unit.app (e.inverse.obj Y) = e.inverse.map (e.counitInv.app Y) := by
-  erw [← Iso.comp_hom_eq_id (e.inverse.mapIso (e.counitIso.app Y)), unit_inverse_comp]
-  dsimp
+  simpa using Iso.comp_hom_eq_id (e.inverse.mapIso (e.counitIso.app Y)) (f := e.unit.app _)
 
 theorem unitInv_app_inverse (e : C ≌ D) (Y : D) :
     e.unitInv.app (e.inverse.obj Y) = e.inverse.map (e.counit.app Y) := by
-  symm
-  erw [← Iso.hom_comp_eq_id (e.unitIso.app _), unit_inverse_comp]
-  rfl
+  rw [← Iso.app_inv, ← Iso.app_hom, ← mapIso_hom, Eq.comm, ← Iso.hom_eq_inv]
+  simpa using unit_app_inverse e Y
 
 @[reassoc, simp]
 theorem fun_inv_map (e : C ≌ D) (X Y : D) (f : X ⟶ Y) :
@@ -553,14 +579,12 @@ namespace Functor
 @[simp]
 theorem fun_inv_map (F : C ⥤ D) [IsEquivalence F] (X Y : D) (f : X ⟶ Y) :
     F.map (F.inv.map f) = F.asEquivalence.counit.app X ≫ f ≫ F.asEquivalence.counitInv.app Y := by
-  erw [NatIso.naturality_2]
-  rfl
+  simpa using (NatIso.naturality_2 (α := F.asEquivalence.counitIso) (f := f)).symm
 
 @[simp]
 theorem inv_fun_map (F : C ⥤ D) [IsEquivalence F] (X Y : C) (f : X ⟶ Y) :
     F.inv.map (F.map f) = F.asEquivalence.unitInv.app X ≫ f ≫ F.asEquivalence.unit.app Y := by
-  erw [NatIso.naturality_1]
-  rfl
+  simpa using (NatIso.naturality_1 (α := F.asEquivalence.unitIso) (f := f)).symm
 
 lemma isEquivalence_of_iso {F G : C ⥤ D} (e : F ≅ G) [F.IsEquivalence] : G.IsEquivalence :=
   ((asEquivalence F).changeFunctor e).isEquivalence_functor

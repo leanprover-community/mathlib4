@@ -386,11 +386,11 @@ instance HasBinaryBiproduct.hasColimit_pair [HasBinaryBiproduct P Q] : HasColimi
 
 instance (priority := 100) hasBinaryProducts_of_hasBinaryBiproducts [HasBinaryBiproducts C] :
     HasBinaryProducts C where
-  has_limit F := hasLimitOfIso (diagramIsoPair F).symm
+  has_limit F := hasLimit_of_iso (diagramIsoPair F).symm
 
 instance (priority := 100) hasBinaryCoproducts_of_hasBinaryBiproducts [HasBinaryBiproducts C] :
     HasBinaryCoproducts C where
-  has_colimit F := hasColimitOfIso (diagramIsoPair F)
+  has_colimit F := hasColimit_of_iso (diagramIsoPair F)
 
 /-- The isomorphism between the specified binary product and the specified binary coproduct for
 a pair for a binary biproduct. -/

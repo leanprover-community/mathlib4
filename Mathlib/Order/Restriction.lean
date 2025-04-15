@@ -3,8 +3,7 @@ Copyright (c) 2024 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.Data.Finset.Pi
-import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Data.Finset.Update
 import Mathlib.Order.Interval.Finset.Basic
 
 /-!
@@ -82,6 +81,33 @@ theorem frestrictLe₂_comp_frestrictLe {a b : α} (hab : a ≤ b) :
 
 theorem frestrictLe₂_comp_frestrictLe₂ {a b c : α} (hab : a ≤ b) (hbc : b ≤ c) :
     (frestrictLe₂ (π := π) hab) ∘ (frestrictLe₂ hbc) = frestrictLe₂ (hab.trans hbc) := rfl
+
+theorem piCongrLeft_comp_restrictLe {a : α} :
+    ((Equiv.IicFinsetSet a).symm.piCongrLeft (fun i : Iic a ↦ π i)) ∘ (restrictLe a) =
+    frestrictLe a := rfl
+
+theorem piCongrLeft_comp_frestrictLe {a : α} :
+    ((Equiv.IicFinsetSet a).piCongrLeft (fun i : Set.Iic a ↦ π i)) ∘ (frestrictLe a) =
+    restrictLe a := rfl
+
+section updateFinset
+
+open Function
+
+variable [DecidableEq α]
+
+lemma frestrictLe_updateFinset_of_le {a b : α} (hab : a ≤ b) (x : Π c, π c) (y : Π c : Iic b, π c) :
+    frestrictLe a (updateFinset x _ y) = frestrictLe₂ hab y :=
+  restrict_updateFinset_of_subset (Iic_subset_Iic.2 hab) ..
+
+lemma frestrictLe_updateFinset {a : α} (x : Π a, π a) (y : Π b : Iic a, π b) :
+    frestrictLe a (updateFinset x _ y) = y := restrict_updateFinset ..
+
+@[simp]
+lemma updateFinset_frestrictLe (a : α) (x : Π a, π a) : updateFinset x _ (frestrictLe a x) = x := by
+  simp [frestrictLe]
+
+end updateFinset
 
 lemma dependsOn_frestrictLe (a : α) : DependsOn (frestrictLe (π := π) a) (Set.Iic a) :=
   coe_Iic a ▸ (Finset.Iic a).dependsOn_restrict
