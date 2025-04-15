@@ -416,8 +416,14 @@ alias Memℒp.condExpL2_ae_eq_condExp := MemLp.condExpL2_ae_eq_condExp
 
 end RCLike
 
+end NormedAddCommGroup
+
+section NormedAddCommGroup
+
+variable {α β E 𝕜 : Type*} [RCLike 𝕜] {m m₀ : MeasurableSpace α} {μ : Measure α}
+  {f g : α → E} {s : Set α} [NormedAddCommGroup E] [CompleteSpace E] [InnerProductSpace ℝ E]
+
 section Real
-variable [InnerProductSpace ℝ E]
 
 -- TODO: Generalize via the conditional Jensen inequality
 lemma eLpNorm_condExp_le : eLpNorm (μ[f | m]) 2 μ ≤ eLpNorm f 2 μ := by
