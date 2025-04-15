@@ -216,12 +216,12 @@ def Inv_divided_by_X_pow_order {f : k⟦X⟧} (hf : f ≠ 0) : k⟦X⟧ :=
 
 @[simp]
 theorem Inv_divided_by_X_pow_order_rightInv {f : k⟦X⟧} (hf : f ≠ 0) :
-    (divXPowOrder f) * Inv_divided_by_X_pow_order hf = 1 :=
+    divXPowOrder f * Inv_divided_by_X_pow_order hf = 1 :=
   mul_invOfUnit (divXPowOrder f) (firstUnitCoeff hf) rfl
 
 @[simp]
 theorem Inv_divided_by_X_pow_order_leftInv {f : k⟦X⟧} (hf : f ≠ 0) :
-    (Inv_divided_by_X_pow_order hf) * (divXPowOrder f) = 1 := by
+    Inv_divided_by_X_pow_order hf * divXPowOrder f = 1 := by
   rw [mul_comm]
   exact mul_invOfUnit (divXPowOrder f) (firstUnitCoeff hf) rfl
 

@@ -162,9 +162,8 @@ private theorem order_add_of_order_eq.aux (φ ψ : R⟦X⟧)
 theorem order_add_of_order_eq (φ ψ : R⟦X⟧) (h : order φ ≠ order ψ) :
     order (φ + ψ) = order φ ⊓ order ψ := by
   refine le_antisymm ?_ (min_order_le_order_add _ _)
-  rcases lt_trichotomy φ.order ψ.order with (φ_lt_ψ | φ_eq_ψ | ψ_lt_φ)
+  rcases h.lt_or_lt with (φ_lt_ψ | ψ_lt_φ)
   · apply order_add_of_order_eq.aux _ _ φ_lt_ψ
-  · exfalso; exact h φ_eq_ψ
   · simpa only [add_comm, inf_comm] using order_add_of_order_eq.aux _ _ ψ_lt_φ
 
 /-- The order of the product of two formal power series
@@ -259,7 +258,7 @@ lemma constantCoeff_divXPowOrder_eq_zero_iff {f : R⟦X⟧} :
 theorem self_eq_X_pow_order_mul_divXPowOrder {f : R⟦X⟧} :
     X ^ f.order.toNat * divXPowOrder f = f := by
   ext n
-  simp [coeff_X_pow_mul']
+  rw [coeff_X_pow_mul']
   split_ifs with h
   · simp [h]
   · push_neg at h
