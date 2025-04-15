@@ -421,7 +421,7 @@ variable (𝕜)
 /-- Composition on the left by a (lipschitz-continuous) homomorphism of topological `R`-algebras,
 as an `AlgHom`. Similar to `AlgHom.compLeftContinuous`. -/
 @[simps!]
-protected def AlgHom.compLeftContinuousBounded
+protected def AlgHom.compLeftContinuousBounded {β}
     [Ring β] [NormedRing β] [NormedAlgebra 𝕜 β] [NormedAlgebra 𝕜 γ]
     (g : β →ₐ[𝕜] γ) {C : NNReal} (hg : LipschitzWith C g) : (α →ᵇ β) →ₐ[𝕜] (α →ᵇ γ) :=
   { g.toRingHom.compLeftContinuousBounded α hg with
