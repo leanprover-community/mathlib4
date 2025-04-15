@@ -473,7 +473,8 @@ instance (i : ι) : Module R (GradedPiece F F_lt i) :=
 lemma GradedPiece.mk_smul (r : R) {i : ι} (x : F i) :
   r • (GradedPiece.mk F F_lt x) = GradedPiece.mk F F_lt (r • x) := rfl
 
-instance [OrderedCancelAddCommMonoid ι] [IsRingFiltration F F_lt] : hasGMul F F_lt where
+instance [AddCommMonoid ι] [PartialOrder ι] [IsOrderedCancelAddMonoid ι] [IsRingFiltration F F_lt] :
+    hasGMul F F_lt where
   F_lt_mul_mem := by
     intro i j x y hx hy
     let S : Submodule R A := {
@@ -493,7 +494,7 @@ instance [OrderedCancelAddCommMonoid ι] [IsRingFiltration F F_lt] : hasGMul F F
     exact IsFiltration.is_sup S j (fun k hk z hz ↦
       IsFiltration.is_le (add_lt_add_left hk i) (IsRingFiltration.toGradedMonoid.mul_mem hx hz)) hy
 
-variable [OrderedAddCommMonoid ι]
+variable [AddCommMonoid ι] [PartialOrder ι]
 
 /-- The `algebraMap` for associated graded algebra. -/
 def GradedPiece.algebraMap [IsRingFiltration F F_lt] : R →+ GradedPiece F F_lt 0 where
