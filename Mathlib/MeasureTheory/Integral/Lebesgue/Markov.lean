@@ -9,7 +9,7 @@ import Mathlib.MeasureTheory.Integral.Lebesgue.Add
 # Markov's inequality
 
 The classical form of Markov's inequality states that for a nonnegative random variable `X` and
-real number `ε > 0`, `P(X ≥ ε) ≤ E(X) / ε`. Multiplying both sides by the measure of any set gives
+real number `ε > 0`, `P(X ≥ ε) ≤ E(X) / ε`. Multiplying both sides by the measure of the space gives
 the measure-theoretic form:
 ```
 μ { x | ε ≤ f x } ≤ (∫⁻ a, f a ∂μ) / ε
