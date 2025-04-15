@@ -110,7 +110,6 @@ lemma Indep.subset_finite_isBasis_of_subset_of_isRkFinite (hI : M.Indep I) (hIX 
 lemma isRkFinite_singleton : M.IsRkFinite {e} := by
   simp
 
-@[simp]
 lemma IsRkFinite.empty (M : Matroid α) : M.IsRkFinite ∅ :=
   isRkFinite_of_finite M finite_empty
 
