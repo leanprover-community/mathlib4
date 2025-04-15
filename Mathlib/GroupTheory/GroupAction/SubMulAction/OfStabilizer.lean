@@ -101,15 +101,15 @@ lemma nat_card_ofStabilizer_eq [Finite α] (a : α) :
   simp only [Cardinal.mk_fintype, Fintype.card_unique, Nat.cast_one, map_one, add_tsub_cancel_left]
   congr
 
-variable {a b : α} {g : G} (hg : g • b = a)
+variable (g : G) (a : α)
 variable {G}
 
 /-- Conjugation induces an equivariant map between the SubAddAction of
 the stabilizer of a point and that of its translate -/
 def _root_.SubAddAction.ofStabilizer.conjMap {G : Type*} [AddGroup G] {α : Type*} [AddAction G α]
-    {a b : α} {g : G} (hg : g +ᵥ b = a) :
-    AddActionHom (AddAction.stabilizerEquivStabilizer hg)
-      (SubAddAction.ofStabilizer G b) (SubAddAction.ofStabilizer G a) where
+    (g : G) (a : α) :
+    AddActionHom (AddAction.stabilizerEquivStabilizer g a)
+      (SubAddAction.ofStabilizer G a) (SubAddAction.ofStabilizer G (g +ᵥ a)) where
   toFun := fun ⟨x, hx⟩ =>
     ⟨g +ᵥ x, fun hy ↦ by
       simp only [← hg, Set.mem_singleton_iff, vadd_left_cancel_iff] at hy
@@ -123,11 +123,11 @@ def _root_.SubAddAction.ofStabilizer.conjMap {G : Type*} [AddGroup G] {α : Type
 the stabilizer of a point and that of its translate -/
 @[to_additive existing]
 def ofStabilizer.conjMap :
-    MulActionHom (stabilizerEquivStabilizer hg) (ofStabilizer G b) (ofStabilizer G a) where
+    MulActionHom (stabilizerEquivStabilizer g a) (ofStabilizer G a) (ofStabilizer G (g • a)) where
     -- stabilizerEquivStabilizer hg] ofStabilizer G a where
   toFun x :=
     ⟨g • x.val, fun hy ↦ by
-      simp only [← hg, Set.mem_singleton_iff, smul_left_cancel_iff] at hy
+      simp only [Set.mem_singleton_iff, smul_left_cancel_iff] at hy
       exact x.prop hy⟩
   map_smul' _ _ := by
     rw [← SetLike.coe_eq_coe]
@@ -135,19 +135,19 @@ def ofStabilizer.conjMap :
        stabilizerEquivStabilizer_apply, ← smul_assoc, MulAut.conj_apply]
 
 @[to_additive]
-theorem ofStabilizer.conjMap_apply (x : ofStabilizer G b) :
-    (conjMap hg x : α) = g • x := rfl
+theorem ofStabilizer.conjMap_apply (x : ofStabilizer G a) :
+    (conjMap g a x : α) = g • x := rfl
 
 @[to_additive]
 theorem ofStabilizer.conjMap_bijective :
-    Function.Bijective (conjMap hg) := by
+    Function.Bijective (conjMap g a) := by
   constructor
   · rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
     simp only [Subtype.mk_eq_mk]
     apply (MulAction.injective g)
     rwa [← SetLike.coe_eq_coe, conjMap_apply] at hxy
   · rintro ⟨x, hx⟩
-    use (ofStabilizer.conjMap (inv_smul_eq_iff.mpr hg.symm)) ⟨x, hx⟩
+    use ofStabilizer.conjMap _ (g • a) ⟨x, hx⟩
     simp [← SetLike.coe_eq_coe, conjMap_apply]
 
 /-- Append `a` to `x : Fin n ↪ ofStabilizer G a`  to get an element of `Fin n.succ ↪ α` -/
