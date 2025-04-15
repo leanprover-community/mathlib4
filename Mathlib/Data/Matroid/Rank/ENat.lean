@@ -220,7 +220,7 @@ lemma eRk_mono (M : Matroid α) : Monotone M.eRk := by
 lemma eRk_le_eRank (M : Matroid α) (X : Set α) : M.eRk X ≤ M.eRank := by
   rw [eRank_def, ← eRk_inter_ground]; exact M.eRk_mono inter_subset_right
 
-lemma eRk_eq_eRk_of_subset_le (hXY : X ⊆ Y) (hYX : M.eRk Y ≤ M.eRk X) : M.eRk X = M.eRk Y :=
+lemma eRk_eq_eRk_of_subset_of_le (hXY : X ⊆ Y) (hYX : M.eRk Y ≤ M.eRk X) : M.eRk X = M.eRk Y :=
   (M.eRk_mono hXY).antisymm hYX
 
 lemma le_eRk_iff : n ≤ M.eRk X ↔ ∃ I, I ⊆ X ∧ M.Indep I ∧ I.encard = n := by
@@ -261,22 +261,25 @@ lemma eRk_inter_add_eRk_union_le (M : Matroid α) (X Y : Set α) :
 
 alias eRk_submod := eRk_inter_add_eRk_union_le
 
-lemma eRk_submod_insert (M : Matroid α) (X Y : Set α) :
+/-- A version of submodularity applied to the insertion of some `e` into two sets. -/
+lemma eRk_insert_inter_add_eRk_insert_union_le (M : Matroid α) (X Y : Set α) :
     M.eRk (insert e (X ∩ Y)) + M.eRk (insert e (X ∪ Y))
       ≤ M.eRk (insert e X) + M.eRk (insert e Y) := by
   rw [insert_inter_distrib, insert_union_distrib]
   apply M.eRk_submod
 
-lemma eRk_submod_compl (M : Matroid α) (X Y : Set α) :
+/-- A version of submodularity applied to the complements of two sets. -/
+lemma eRk_compl_union_add_eRk_compl_inter_le (M : Matroid α) (X Y : Set α) :
     M.eRk (M.E \ (X ∪ Y)) + M.eRk (M.E \ (X ∩ Y)) ≤ M.eRk (M.E \ X) + M.eRk (M.E \ Y) := by
   rw [← diff_inter_diff, diff_inter]
   apply M.eRk_submod
 
-lemma eRk_submod_insert_compl (M : Matroid α) (X Y : Set α) :
+/-- A version of submodularity applied to the complements of two insertions. -/
+lemma eRk_compl_insert_union_add_eRk_compl_insert_inter_le (M : Matroid α) (X Y : Set α) :
     M.eRk (M.E \ insert e (X ∪ Y)) + M.eRk (M.E \ insert e (X ∩ Y)) ≤
       M.eRk (M.E \ insert e X) + M.eRk (M.E \ insert e Y) := by
   rw [insert_union_distrib, insert_inter_distrib]
-  exact M.eRk_submod_compl (insert e X) (insert e Y)
+  exact M.eRk_compl_union_add_eRk_compl_inter_le (insert e X) (insert e Y)
 
 lemma eRk_union_le_eRk_add_eRk (M : Matroid α) (X Y : Set α) : M.eRk (X ∪ Y) ≤ M.eRk X + M.eRk Y :=
   le_add_self.trans (M.eRk_submod X Y)
@@ -313,7 +316,6 @@ end Basic
 
 /-! ### Finiteness -/
 
-@[simp]
 lemma eRank_ne_top_iff (M : Matroid α) : M.eRank ≠ ⊤ ↔ M.RankFinite := by
   obtain ⟨B, hB⟩ := M.exists_isBase
   rw [← hB.encard_eq_eRank, encard_ne_top_iff]
@@ -321,6 +323,7 @@ lemma eRank_ne_top_iff (M : Matroid α) : M.eRank ≠ ⊤ ↔ M.RankFinite := by
 
 @[deprecated (since := "2025-04-13")] alias rankFinite_iff_eRk_ne_top := eRank_ne_top_iff
 
+@[simp]
 lemma eRank_eq_top_iff (M : Matroid α) : M.eRank = ⊤ ↔ M.RankInfinite := by
   rw [← not_rankFinite_iff, ← eRank_ne_top_iff, not_not]
 
@@ -347,9 +350,6 @@ lemma IsRkFinite.eRk_lt_top (h : M.IsRkFinite X) : M.eRk X < ⊤ :=
 
 @[deprecated (since := "2025-04-13")] alias eRk_lt_top_of_finite := IsRkFinite.eRk_lt_top
 
-lemma IsRkFinite.eRk_ne_top (h : M.IsRkFinite X) : M.eRk X ≠ ⊤ :=
-  h.eRk_lt_top.ne
-
 /-! ### Constructions -/
 
 @[simp]
@@ -359,29 +359,29 @@ lemma eRank_map {β : Type*} (M : Matroid α) (f : α → β) (hf : InjOn f M.E)
   rw [← (hB.map hf).encard_eq_eRank, ← hB.encard_eq_eRank, (hf.mono hB.subset_ground).encard_image]
 
 @[simp]
-lemma eRk_map_eq {β : Type*} {f : α → β} (M : Matroid α) (hf : InjOn f M.E)
+lemma eRk_map {β : Type*} {f : α → β} (M : Matroid α) (hf : InjOn f M.E)
     (hX : X ⊆ M.E := by aesop_mat) : (M.map f hf).eRk (f '' X) = M.eRk X := by
   obtain ⟨I, hI⟩ := M.exists_isBasis X
   rw [hI.eRk_eq_encard, (hI.map hf).eRk_eq_encard, (hf.mono hI.indep.subset_ground).encard_image]
 
 @[simp]
-lemma eRk_comap_eq {β : Type*} {f : α → β} (M : Matroid β) (X : Set α) :
+lemma eRk_comap {β : Type*} {f : α → β} (M : Matroid β) (X : Set α) :
     (M.comap f).eRk X = M.eRk (f '' X) := by
   obtain ⟨I, hI⟩ := (M.comap f).exists_isBasis' X
   obtain ⟨hI', hinj, -⟩ := comap_isBasis'_iff.1 hI
   rw [← hI.encard_eq_eRk, ← hI'.encard_eq_eRk, hinj.encard_image]
 
 @[simp]
-lemma loopyOn_eRk_eq (X Y : Set α) : (loopyOn Y).eRk X = 0 := by
+lemma eRk_loopyOn (X Y : Set α) : (loopyOn Y).eRk X = 0 := by
   obtain ⟨I, hI⟩ := (loopyOn Y).exists_isBasis' X
   rw [hI.eRk_eq_encard, loopyOn_indep_iff.1 hI.indep, encard_empty]
 
 @[simp]
-lemma loopyOn_eRank_eq (X : Set α) : (loopyOn X).eRank = 0 := by
-  rw [eRank_def, loopyOn_eRk_eq]
+lemma eRank_loopyOn (X : Set α) : (loopyOn X).eRank = 0 := by
+  rw [eRank_def, eRk_loopyOn]
 
 lemma eRank_eq_zero_iff : M.eRank = 0 ↔ M = loopyOn M.E := by
-  refine ⟨fun h ↦ closure_empty_eq_ground_iff.1 ?_, fun h ↦ by rw [h, loopyOn_eRank_eq]⟩
+  refine ⟨fun h ↦ closure_empty_eq_ground_iff.1 ?_, fun h ↦ by rw [h, eRank_loopyOn]⟩
   obtain ⟨B, hB⟩ := M.exists_isBase
   rw [← hB.encard_eq_eRank, encard_eq_zero] at h
   rw [← h, hB.closure_eq]
@@ -389,23 +389,23 @@ lemma eRank_eq_zero_iff : M.eRank = 0 ↔ M = loopyOn M.E := by
 lemma exists_of_eRank_eq_zero (h : M.eRank = 0) : ∃ X, M = loopyOn X :=
   ⟨M.E, by simpa [eRank_eq_zero_iff] using h⟩
 
-@[simp] lemma eRank_loopyOn_eq_zero (α : Type*) : (emptyOn α).eRank = 0 := by
+@[simp] lemma eRank_emptyOn (α : Type*) : (emptyOn α).eRank = 0 := by
   rw [eRank_eq_zero_iff, emptyOn_ground, loopyOn_empty]
 
 lemma eq_loopyOn_iff_eRank : M = loopyOn X ↔ M.eRank = 0 ∧ M.E = X :=
   ⟨fun h ↦ by rw [h]; simp, fun ⟨h,h'⟩ ↦ by rw [← h', ← eRank_eq_zero_iff, h]⟩
 
-@[simp] lemma freeOn_eRank_eq (X : Set α) : (freeOn X).eRank = X.encard := by
+@[simp] lemma eRank_freeOn (X : Set α) : (freeOn X).eRank = X.encard := by
   rw [eRank_def, freeOn_ground, (freeOn_indep_iff.2 rfl.subset).eRk_eq_encard]
 
-lemma freeOn_eRk_eq (hXY : X ⊆ Y) : (freeOn Y).eRk X = X.encard := by
+lemma eRk_freeOn (hXY : X ⊆ Y) : (freeOn Y).eRk X = X.encard := by
   obtain ⟨I, hI⟩ := (freeOn Y).exists_isBasis X
   rw [hI.eRk_eq_encard, (freeOn_indep hXY).eq_of_isBasis hI]
 
 /-! ### Duality -/
 
 /-- A subtraction-free formula for the rank of a set in the dual matroid. -/
-lemma dual_eRk_add_eRank (M : Matroid α) (X : Set α) (hX : X ⊆ M.E := by aesop_mat) :
+lemma eRk_dual_add_eRank (M : Matroid α) (X : Set α) (hX : X ⊆ M.E := by aesop_mat) :
     M✶.eRk X + M.eRank = M.eRk (M.E \ X) + X.encard := by
   obtain ⟨I, hI⟩ := M✶.exists_isBasis X
   obtain ⟨B, hB, rfl⟩ := hI.exists_isBasis_inter_eq_of_superset hX
@@ -417,12 +417,12 @@ lemma dual_eRk_add_eRank (M : Matroid α) (X : Set α) (hX : X ⊆ M.E := by aes
   exact congr_arg _ (by tauto_set)
 
 /-- A version of `Matroid.dual_eRk_add_eRank` for non-subsets of the ground set. -/
-lemma dual_eRk_add_eRank' (M : Matroid α) (X : Set α) :
+lemma eRk_dual_add_eRank' (M : Matroid α) (X : Set α) :
     M✶.eRk X + M.eRank = M.eRk (M.E \ X) + (X ∩ M.E).encard := by
-  rw [← diff_inter_self_eq_diff, ← dual_eRk_add_eRank .., ← dual_ground, eRk_inter_ground]
+  rw [← diff_inter_self_eq_diff, ← eRk_dual_add_eRank .., ← dual_ground, eRk_inter_ground]
 
 @[simp]
-lemma eRank_add_dual_eRank (M : Matroid α) : M.eRank + M✶.eRank = M.E.encard := by
+lemma eRank_add_eRank_dual (M : Matroid α) : M.eRank + M✶.eRank = M.E.encard := by
   obtain ⟨B, hB⟩ := M.exists_isBase
   rw [← hB.encard_eq_eRank, ← hB.compl_isBase_dual.encard_eq_eRank,
     ← encard_union_eq disjoint_sdiff_right, union_diff_cancel hB.subset_ground]
