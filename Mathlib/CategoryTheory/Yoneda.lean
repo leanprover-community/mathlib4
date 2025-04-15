@@ -80,7 +80,7 @@ instance yoneda_faithful : (yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁).Faithful :=
 /-- Extensionality via Yoneda. The typical usage would be
 ```
 -- Goal is `X ≅ Y`
-apply Yoneda.ext,
+apply Yoneda.ext
 -- Goals are now functions `(Z ⟶ X) → (Z ⟶ Y)`, `(Z ⟶ Y) → (Z ⟶ X)`, and the fact that these
 -- functions are inverses and natural in `Z`.
 ```
@@ -129,7 +129,7 @@ instance coyoneda_faithful : (coyoneda : Cᵒᵖ ⥤ C ⥤ Type v₁).Faithful :
 /-- Extensionality via Coyoneda. The typical usage would be
 ```
 -- Goal is `X ≅ Y`
-apply Coyoneda.ext,
+apply Coyoneda.ext
 -- Goals are now functions `(X ⟶ Z) → (Y ⟶ Z)`, `(Y ⟶ Z) → (X ⟶ Z)`, and the fact that these
 -- functions are inverses and natural in `Z`.
 ```
@@ -137,7 +137,7 @@ apply Coyoneda.ext,
 def ext (X Y : C) (p : ∀ {Z : C}, (X ⟶ Z) → (Y ⟶ Z))
     (q : ∀ {Z : C}, (Y ⟶ Z) → (X ⟶ Z))
     (h₁ : ∀ {Z : C} (f : X ⟶ Z), q (p f) = f) (h₂ : ∀ {Z : C} (f : Y ⟶ Z), p (q f) = f)
-    (n : ∀ {Z Z' : C} (f : Y ⟶ Z)(g : Z ⟶ Z'), q (f ≫ g) = q f ≫ g) : X ≅ Y :=
+    (n : ∀ {Z Z' : C} (f : Y ⟶ Z) (g : Z ⟶ Z'), q (f ≫ g) = q f ≫ g) : X ≅ Y :=
   fullyFaithful.preimageIso
     (NatIso.ofComponents (fun Z =>
       { hom := q
