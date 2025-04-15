@@ -37,40 +37,40 @@ open scoped ENNReal
 variable {G : Type*} {mG : MeasurableSpace G} [Mul G] [Inv G]
 
 /-- Multiplicative convolution of functions. -/
-@[to_additive lconvolution "Additive convolution of functions"]
+@[to_additive "Additive convolution of functions"]
 noncomputable def mlconvolution (f g : G → ℝ≥0∞) (μ : Measure G) :
     G → ℝ≥0∞ := fun x ↦ ∫⁻ y, (f y) * (g (y⁻¹ * x)) ∂μ
 
 /-- Scoped notation for the multiplicative convolution of functions with respect to a measure `μ`.
 -/
-scoped[MeasureTheory] notation:66 f " ⋆ₗ["μ:67"] " g:67  => MeasureTheory.mlconvolution f g μ
+scoped[MeasureTheory] notation:67 f " ⋆ₗ["μ:67"] " g:66  => MeasureTheory.mlconvolution f g μ
 
 /-- Scoped notation for the multiplicative convolution of functions with respect to volume. -/
-scoped[MeasureTheory] notation:66 f " ⋆ₗ " g:67  => MeasureTheory.mlconvolution f g volume
+scoped[MeasureTheory] notation:67 f " ⋆ₗ " g:66  => MeasureTheory.mlconvolution f g volume
 
 /-- Scoped notation for the additive convolution of functions with respect to a measure `μ`. -/
-scoped[MeasureTheory] notation:66 f " ⋆ₗ["μ:67"] " g:67  => MeasureTheory.lconvolution f g μ
+scoped[MeasureTheory] notation:67 f " ⋆ₗ["μ:67"] " g:66  => MeasureTheory.lconvolution f g μ
 
 /-- Scoped notation for the additive convolution of functions with respect to volume. -/
-scoped[MeasureTheory] notation:66 f " ⋆ₗ " g:67  => MeasureTheory.lconvolution f g volume
+scoped[MeasureTheory] notation:67 f " ⋆ₗ " g:66  => MeasureTheory.lconvolution f g volume
 
 /- The definition of multiplicative convolution of functions. -/
-@[to_additive lconvolution_def "The definition of additive convolution of functions"]
+@[to_additive "The definition of additive convolution of functions"]
 theorem mlconvolution_def {f g : G → ℝ≥0∞} {μ : Measure G} {x : G}:
     (f ⋆ₗ[μ] g) x = ∫⁻ y, (f y) * (g (y⁻¹ * x)) ∂μ := by rfl
 
 /-- Convolution of the zero function with a function returns the zero function. -/
-@[to_additive zero_lconvolution, simp]
+@[to_additive (attr := simp)]
 theorem zero_mlconvolution (f : G → ℝ≥0∞) (μ : Measure G) : 0 ⋆ₗ[μ] f = 0 := by
   ext; simp [mlconvolution]
 
 /-- Convolution with the zero function with a function returns the zero function. -/
-@[to_additive lconvolution_zero, simp]
+@[to_additive (attr := simp)]
 theorem mlconvolution_zero (f : G → ℝ≥0∞) (μ : Measure G) : f ⋆ₗ[μ] 0 = 0 := by
   ext; simp [mlconvolution]
 
 /-- The convolution of measurable functions is measurable. -/
-@[to_additive lconvolution_measurable, measurability, fun_prop]
+@[to_additive (attr := measurability, fun_prop)]
 theorem measurable_mlconvolution [MeasurableMul₂ G] [MeasurableInv G]
     {f g : G → ℝ≥0∞} (μ : Measure G) [SFinite μ]
     (hf : Measurable f) (hg : Measurable g) : Measurable (f ⋆ₗ[μ] g) := by
