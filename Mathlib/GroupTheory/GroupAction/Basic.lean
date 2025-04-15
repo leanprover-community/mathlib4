@@ -254,17 +254,16 @@ def stabilizerEquivStabilizer (hg : g • b = a) : stabilizer G b ≃* stabilize
 
 theorem stabilizerEquivStabilizer_apply (hg : g • b = a) (x : stabilizer G b) :
     stabilizerEquivStabilizer hg x = MulAut.conj g x := by
-  simp only [stabilizerEquivStabilizer, MulEquiv.trans_apply, MulEquiv.subgroupCongr_apply,
-    MulEquiv.coe_subgroupMap_apply, MulAut.conj_apply]
+  simp [stabilizerEquivStabilizer]
 
 theorem stabilizerEquivStabilizer_symm_apply (hg : g • b = a) (x : stabilizer G a) :
     (stabilizerEquivStabilizer hg).symm x = MulAut.conj g⁻¹ x := by
   simp [stabilizerEquivStabilizer]
 
-theorem stabilizerEquivStabilizer_trans {hg : g • b = a} {hh : h • c = b} (H : k = g * h) :
+theorem stabilizerEquivStabilizer_trans {hg : g • b = a} {hh : h • c = b} :
     (stabilizerEquivStabilizer hh).trans (stabilizerEquivStabilizer hg)
       = (stabilizerEquivStabilizer (by rw [← hg, ←hh, ← smul_smul])) := by
-  ext x; simp [stabilizerEquivStabilizer_apply, H]
+  ext x; simp [stabilizerEquivStabilizer_apply]
 
 theorem stabilizerEquivStabilizer_one :
     stabilizerEquivStabilizer (one_smul G a) = MulEquiv.refl (stabilizer G a) := by
@@ -273,7 +272,7 @@ theorem stabilizerEquivStabilizer_one :
 theorem stabilizerEquivStabilizer_inv (hg : g • b = a) :
     stabilizerEquivStabilizer (inv_smul_eq_iff.2 hg.symm) =
       (stabilizerEquivStabilizer hg).symm := by
-  ext; simp [stabilizerEquivStabilizer_apply, stabilizerEquivStabilizer_symm_apply]
+  ext; simp [stabilizerEquivStabilizer]
 
 /-- A bijection between the stabilizers of two elements in the same orbit. -/
 noncomputable def stabilizerEquivStabilizerOfOrbitRel (h : orbitRel G α a b) :
@@ -311,10 +310,10 @@ theorem stabilizerEquivStabilizer_symm_apply (hg : g +ᵥ b = a) (x : stabilizer
     (stabilizerEquivStabilizer hg).symm x = (AddAut.conj (-g)).toMul x := by
   simp [stabilizerEquivStabilizer]
 
-theorem stabilizerEquivStabilizer_trans {hg : g +ᵥ b = a} {hh : h +ᵥ c = b} (H : k = g + h) :
+theorem stabilizerEquivStabilizer_trans {hg : g +ᵥ b = a} {hh : h +ᵥ c = b} :
     (stabilizerEquivStabilizer hh).trans (stabilizerEquivStabilizer hg)
       = (stabilizerEquivStabilizer (by rw [← hg, ←hh, ← vadd_vadd])) := by
-  ext x; simp [stabilizerEquivStabilizer_apply, H]
+  ext; simp [stabilizerEquivStabilizer]
 
 theorem stabilizerEquivStabilizer_zero :
     stabilizerEquivStabilizer (zero_vadd G a) = AddEquiv.refl (stabilizer G a) := by
@@ -323,7 +322,7 @@ theorem stabilizerEquivStabilizer_zero :
 theorem stabilizerEquivStabilizer_neg (hg : g +ᵥ b = a) :
     stabilizerEquivStabilizer (neg_vadd_eq_iff.2 hg.symm) =
       (stabilizerEquivStabilizer hg).symm := by
-  ext; simp [stabilizerEquivStabilizer_apply, stabilizerEquivStabilizer_symm_apply]
+  ext; simp [stabilizerEquivStabilizer]
 
 
 /-- A bijection between the stabilizers of two elements in the same orbit. -/
