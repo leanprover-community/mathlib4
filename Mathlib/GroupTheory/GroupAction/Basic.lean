@@ -244,32 +244,57 @@ theorem stabilizer_smul_eq_stabilizer_map_conj (g : G) (a : α) :
   rw [mem_stabilizer_iff, ← smul_left_cancel_iff g⁻¹, smul_smul, smul_smul, smul_smul,
     inv_mul_cancel, one_smul, ← mem_stabilizer_iff, Subgroup.mem_map_equiv, MulAut.conj_symm_apply]
 
+theorem stabilizer_smul_eq_stabilizer_map_conj' (g : G) (a : α) :
+    stabilizer G (g • a) = (stabilizer G a).map (MulAut.conj g) :=
+  stabilizer_smul_eq_stabilizer_map_conj _ _
+
 variable {g h k : G} {a b c : α}
 
 /-- The natural group equivalence between the stabilizers of two elements in the same orbit. -/
-def stabilizerEquivStabilizer (hg : g • b = a) : stabilizer G b ≃* stabilizer G a :=
-  ((MulAut.conj g).subgroupMap (stabilizer G b)).trans
+def stabilizerEquivStabilizer (hg : b = g • a) : stabilizer G b ≃* stabilizer G a :=
+  MulEquiv.trans ((MulAut.conj g⁻¹).subgroupMap _)
     (MulEquiv.subgroupCongr (by
-      simp [← hg, stabilizer_smul_eq_stabilizer_map_conj]))
+      rw [hg, ← stabilizer_smul_eq_stabilizer_map_conj' (g⁻¹) (g • a), inv_smul_smul]))
 
-theorem stabilizerEquivStabilizer_apply (hg : g • b = a) (x : stabilizer G b) :
-    stabilizerEquivStabilizer hg x = MulAut.conj g x := by
+/-   ((MulAut.conj g).subgroupMap (stabilizer G a)).trans
+    (MulEquiv.subgroupCongr (by
+      simp [← hg, stabilizer_smul_eq_stabilizer_map_conj])) -/
+
+@[simp]
+theorem MulAut.inv_apply {M : Type*} [Mul M] (e : MulAut M) (x : M) :
+      e⁻¹ x = e.symm x := by
+  rw [MulAut.inv_def]
+
+example {M N : Type*} [Mul M] [Mul N] (e : M ≃* N) : e⁻¹.symm = e := by sorry
+
+@[simp]
+theorem MulAut.symm_inv_apply {M : Type*} [Mul M] (e : MulAut M) (x : M) :
+      (e⁻¹).symm x = e x := by
+  simp only [MulAut.inv_def, MulEquiv.symm_symm]
+
+theorem stabilizerEquivStabilizer_apply (hg : b = g • a) (x : stabilizer G b) :
+    stabilizerEquivStabilizer hg x = MulAut.conj g⁻¹ x := by
   simp [stabilizerEquivStabilizer]
 
-theorem stabilizerEquivStabilizer_symm_apply (hg : g • b = a) (x : stabilizer G a) :
-    (stabilizerEquivStabilizer hg).symm x = MulAut.conj g⁻¹ x := by
+theorem stabilizerEquivStabilizer_symm_apply (hg : b = g • a) (x : stabilizer G a) :
+    (stabilizerEquivStabilizer hg).symm x = MulAut.conj g x := by
   simp [stabilizerEquivStabilizer]
 
-theorem stabilizerEquivStabilizer_trans {hg : g • b = a} {hh : h • c = b} :
+theorem stabilizerEquivStabilizer_trans {hg : b = g • a} {hh : c = h • b} :
     (stabilizerEquivStabilizer hh).trans (stabilizerEquivStabilizer hg)
-      = (stabilizerEquivStabilizer (by rw [← hg, ←hh, ← smul_smul])) := by
-  ext x; simp [stabilizerEquivStabilizer_apply]
-
-theorem stabilizerEquivStabilizer_one :
-    stabilizerEquivStabilizer (one_smul G a) = MulEquiv.refl (stabilizer G a) := by
+      = (stabilizerEquivStabilizer (by rw [hh, hg, ← smul_smul])) := by
   ext; simp [stabilizerEquivStabilizer_apply]
 
-theorem stabilizerEquivStabilizer_inv (hg : g • b = a) :
+theorem stabilizerEquivStabilizer_one :
+    stabilizerEquivStabilizer (one_smul G a).symm = MulEquiv.refl (stabilizer G a) := by
+  ext; simp [stabilizerEquivStabilizer_apply]
+
+theorem stabilizerEquivStabilizer_symm (hg : b = g • a) :
+    (stabilizerEquivStabilizer hg).symm =
+      (stabilizerEquivStabilizer (g := g⁻¹) (eq_inv_smul_iff.mpr (id (Eq.symm hg)))) := by
+  ext x; simp [stabilizerEquivStabilizer]
+
+theorem stabilizerEquivStabilizer_inv (hg : b = g • a) :
     stabilizerEquivStabilizer (inv_smul_eq_iff.2 hg.symm) =
       (stabilizerEquivStabilizer hg).symm := by
   ext; simp [stabilizerEquivStabilizer]
@@ -297,8 +322,8 @@ theorem stabilizer_vadd_eq_stabilizer_map_conj (g : G) (a : α) :
 variable {g h k : G} {a b c : α}
 
 /-- The natural group equivalence between the stabilizers of two elements in the same orbit. -/
-def stabilizerEquivStabilizer (hg : g +ᵥ b = a) : stabilizer G b ≃+ stabilizer G a := by
-  exact ((AddAut.conj g).toMul.addSubgroupMap (stabilizer G b)).trans
+def stabilizerEquivStabilizer (hg : g +ᵥ a = b) : stabilizer G a ≃+ stabilizer G b := by
+  exact ((AddAut.conj g).toMul.addSubgroupMap (stabilizer G a)).trans
     (AddEquiv.addSubgroupCongr (by
       simp [← hg, stabilizer_vadd_eq_stabilizer_map_conj]))
 

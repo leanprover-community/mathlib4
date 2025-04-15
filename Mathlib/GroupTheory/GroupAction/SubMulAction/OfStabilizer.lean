@@ -101,19 +101,17 @@ lemma nat_card_ofStabilizer_eq [Finite α] (a : α) :
   simp only [Cardinal.mk_fintype, Fintype.card_unique, Nat.cast_one, map_one, add_tsub_cancel_left]
   congr
 
-variable (g : G) (a : α)
 variable {G}
 
 /-- Conjugation induces an equivariant map between the SubAddAction of
 the stabilizer of a point and that of its translate -/
 def _root_.SubAddAction.ofStabilizer.conjMap {G : Type*} [AddGroup G] {α : Type*} [AddAction G α]
-    (g : G) (a : α) :
-    AddActionHom (AddAction.stabilizerEquivStabilizer g a)
-      (SubAddAction.ofStabilizer G a) (SubAddAction.ofStabilizer G (g +ᵥ a)) where
-  toFun := fun ⟨x, hx⟩ =>
-    ⟨g +ᵥ x, fun hy ↦ by
+    {g : G} {a b : α} (hg : g +ᵥ b = a) :
+    AddActionHom (AddAction.stabilizerEquivStabilizer hg)
+      (SubAddAction.ofStabilizer G b) (SubAddAction.ofStabilizer G a) where
+  toFun x := ⟨g +ᵥ x.val, fun hy ↦ by
       simp only [← hg, Set.mem_singleton_iff, vadd_left_cancel_iff] at hy
-      exact hx  hy⟩
+      exact x.prop  hy⟩
   map_vadd' _ _ := by
     rw [← SetLike.coe_eq_coe]
     simp [SubAddAction.val_vadd_of_tower, AddAction.addSubgroup_vadd_def,
@@ -122,21 +120,31 @@ def _root_.SubAddAction.ofStabilizer.conjMap {G : Type*} [AddGroup G] {α : Type
 /-- Conjugation induces an equivariant map between the SubMulAction of
 the stabilizer of a point and that of its translate -/
 @[to_additive existing]
-def ofStabilizer.conjMap :
-    MulActionHom (stabilizerEquivStabilizer g a) (ofStabilizer G a) (ofStabilizer G (g • a)) where
+def ofStabilizer.conjMap {g : G} {a b : α} (hg : g • b = a) :
+    MulActionHom (stabilizerEquivStabilizer hg) (ofStabilizer G b) (ofStabilizer G a) where
     -- stabilizerEquivStabilizer hg] ofStabilizer G a where
-  toFun x :=
-    ⟨g • x.val, fun hy ↦ by
-      simp only [Set.mem_singleton_iff, smul_left_cancel_iff] at hy
+  toFun x := ⟨g • x.val, fun hy ↦ by
+      simp only [← hg, Set.mem_singleton_iff, smul_left_cancel_iff] at hy
       exact x.prop hy⟩
   map_smul' _ _ := by
     rw [← SetLike.coe_eq_coe]
     simp [SubMulAction.val_smul_of_tower, subgroup_smul_def,
        stabilizerEquivStabilizer_apply, ← smul_assoc, MulAut.conj_apply]
 
+variable {g  h k: G} {a b c: α}
+variable (hg : g • b = a) (hh : h • c = b) (hk : k • c = a)
+
 @[to_additive]
 theorem ofStabilizer.conjMap_apply (x : ofStabilizer G a) :
-    (conjMap g a x : α) = g • x := rfl
+    (conjMap hg x : α) = g • x := rfl
+
+theorem ofStabilizer.conjMap_coe_comp {g h : G} {a : α} (x : ofStabilizer G a) :
+    (conjMap h (g • a) (conjMap g a x) : α) = conjMap (h * g) a x := by
+  simp [conjMap_apply, mul_smul]
+
+theorem ofStabilizer.conjMap_coe_comp' {g h : G} {a : α} (x : ofStabilizer G (g⁻¹ • a)) :
+    (conjMap h a) (conjMap g (g⁻¹ • a) x : α) = conjMap (h * g) a x := by
+  simp [conjMap_apply, mul_smul]
 
 @[to_additive]
 theorem ofStabilizer.conjMap_bijective :
@@ -147,7 +155,8 @@ theorem ofStabilizer.conjMap_bijective :
     apply (MulAction.injective g)
     rwa [← SetLike.coe_eq_coe, conjMap_apply] at hxy
   · rintro ⟨x, hx⟩
-    use ofStabilizer.conjMap _ (g • a) ⟨x, hx⟩
+    use conjMap g⁻¹
+    use ofStabilizer.conjMap ?_ (g • a) ⟨x, hx⟩
     simp [← SetLike.coe_eq_coe, conjMap_apply]
 
 /-- Append `a` to `x : Fin n ↪ ofStabilizer G a`  to get an element of `Fin n.succ ↪ α` -/
