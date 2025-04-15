@@ -1170,7 +1170,6 @@ variable {K : Type*} [Field K] [NumberField K]
 
 theorem nrComplexPlaces_eq_zero_iff :
     nrComplexPlaces K = 0 ↔ IsTotallyReal K := by
-  classical
   simp [Fintype.card_eq_zero_iff, isEmpty_subtype, isTotallyReal_iff]
 
 variable (K)
@@ -1209,7 +1208,6 @@ variable {K : Type*} [Field K] [NumberField K]
 
 theorem nrRealPlaces_eq_zero_iff :
     nrRealPlaces K = 0 ↔ IsTotallyComplex K := by
-  classical
   simp [Fintype.card_eq_zero_iff, isEmpty_subtype, isTotallyComplex_iff]
 
 variable (K)
