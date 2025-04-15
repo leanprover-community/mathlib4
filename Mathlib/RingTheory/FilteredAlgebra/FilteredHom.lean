@@ -316,7 +316,7 @@ lemma GradedPieceHom_comp (i : ι) : Gr+*(i)[g].comp Gr+*(i)[f] = Gr+*(i)[g.comp
 
 open DirectSum
 
-variable [OrderedAddCommMonoid ι] [hasGMul FR FR_lt] [hasGMul FS FS_lt] [hasGMul FT FT_lt]
+variable [AddCommMonoid ι] [PartialOrder ι] [hasGMul FR FR_lt] [hasGMul FS FS_lt] [hasGMul FT FT_lt]
 
 /-- The induced graded ring morphism between associated graded rings,
 obtained from the `AssociatedGradedAddMonoidHom` of a filtered ring morphism. -/
