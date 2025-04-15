@@ -154,7 +154,8 @@ def charPoly (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2) 
 lemma mem_charPoly (f : V →ᵇ ℂ) :
     f ∈ charPoly he hL
       ↔ ∃ w : AddMonoidAlgebra ℂ W, f = fun x ↦ ∑ a ∈ w.support, w a * (e (L x a) : ℂ) := by
-  change f ∈ (charAlgHom he hL).range ↔ _
+  simp only [charPoly]
+  change f ∈ (charAlgHom he hL).range ↔ _ -- TODO missing mem_mk lemma?
   simp [BoundedContinuousFunction.ext_iff, funext_iff, eq_comm]
 
 lemma char_mem_charPoly (w : W) : char he hL w ∈ charPoly he hL := by
