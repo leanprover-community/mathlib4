@@ -146,7 +146,7 @@ def ListBlank.mk {Γ} [Inhabited Γ] : List Γ → ListBlank Γ :=
 @[elab_as_elim]
 protected theorem ListBlank.induction_on {Γ} [Inhabited Γ] {p : ListBlank Γ → Prop}
     (q : ListBlank Γ) (h : ∀ a, p (ListBlank.mk a)) : p q :=
-  Quotient.inductionOn' q h
+  Quotient.inductionOn q h
 
 /-- The head of a `ListBlank` is well defined. -/
 def ListBlank.head {Γ} [Inhabited Γ] (l : ListBlank Γ) : Γ := by
@@ -188,17 +188,17 @@ theorem ListBlank.cons_mk {Γ} [Inhabited Γ] (a : Γ) (l : List Γ) :
 
 @[simp]
 theorem ListBlank.head_cons {Γ} [Inhabited Γ] (a : Γ) : ∀ l : ListBlank Γ, (l.cons a).head = a :=
-  Quotient.ind' fun _ ↦ rfl
+  Quotient.ind fun _ ↦ rfl
 
 @[simp]
 theorem ListBlank.tail_cons {Γ} [Inhabited Γ] (a : Γ) : ∀ l : ListBlank Γ, (l.cons a).tail = l :=
-  Quotient.ind' fun _ ↦ rfl
+  Quotient.ind fun _ ↦ rfl
 
 /-- The `cons` and `head`/`tail` functions are mutually inverse, unlike in the case of `List` where
 this only holds for nonempty lists. -/
 @[simp]
 theorem ListBlank.cons_head_tail {Γ} [Inhabited Γ] : ∀ l : ListBlank Γ, l.tail.cons l.head = l := by
-  apply Quotient.ind'
+  apply Quotient.ind
   refine fun l ↦ Quotient.sound' (Or.inr ?_)
   cases l
   · exact ⟨1, rfl⟩
@@ -229,13 +229,13 @@ theorem ListBlank.nth_mk {Γ} [Inhabited Γ] (l : List Γ) (n : ℕ) :
 @[simp]
 theorem ListBlank.nth_zero {Γ} [Inhabited Γ] (l : ListBlank Γ) : l.nth 0 = l.head := by
   conv => lhs; rw [← ListBlank.cons_head_tail l]
-  exact Quotient.inductionOn' l.tail fun l ↦ rfl
+  exact Quotient.inductionOn l.tail fun l ↦ rfl
 
 @[simp]
 theorem ListBlank.nth_succ {Γ} [Inhabited Γ] (l : ListBlank Γ) (n : ℕ) :
     l.nth (n + 1) = l.tail.nth n := by
   conv => lhs; rw [← ListBlank.cons_head_tail l]
-  exact Quotient.inductionOn' l.tail fun l ↦ rfl
+  exact Quotient.inductionOn l.tail fun l ↦ rfl
 
 @[ext]
 theorem ListBlank.ext {Γ} [i : Inhabited Γ] {L₁ L₂ : ListBlank Γ} :
@@ -315,13 +315,13 @@ theorem ListBlank.map_mk {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap
 theorem ListBlank.head_map {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap Γ Γ')
     (l : ListBlank Γ) : (l.map f).head = f l.head := by
   conv => lhs; rw [← ListBlank.cons_head_tail l]
-  exact Quotient.inductionOn' l fun a ↦ rfl
+  exact Quotient.inductionOn l fun a ↦ rfl
 
 @[simp]
 theorem ListBlank.tail_map {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap Γ Γ')
     (l : ListBlank Γ) : (l.map f).tail = l.tail.map f := by
   conv => lhs; rw [← ListBlank.cons_head_tail l]
-  exact Quotient.inductionOn' l fun a ↦ rfl
+  exact Quotient.inductionOn l fun a ↦ rfl
 
 @[simp]
 theorem ListBlank.map_cons {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap Γ Γ')

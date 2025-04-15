@@ -171,10 +171,10 @@ def preordToPartOrd : Preord.{u} ⥤ PartOrd where
   map f := PartOrd.ofHom f.hom.antisymmetrization
   map_id X := by
     ext x
-    exact Quotient.inductionOn' x fun x => Quotient.map'_mk'' _ (fun a b => id) _
+    exact Quotient.inductionOn x fun x => Quotient.map'_mk'' _ (fun a b => id) _
   map_comp f g := by
     ext x
-    exact Quotient.inductionOn' x fun x => OrderHom.antisymmetrization_apply_mk _ _
+    exact Quotient.inductionOn x fun x => OrderHom.antisymmetrization_apply_mk _ _
 
 /-- `preordToPartOrd` is left adjoint to the forgetful functor, meaning it is the free
 functor from `Preord` to `PartOrd`. -/
@@ -186,11 +186,11 @@ def preordToPartOrdForgetAdjunction :
             ⟨f ∘ toAntisymmetrization (· ≤ ·), f.hom.mono.comp toAntisymmetrization_mono⟩
           invFun f := PartOrd.ofHom
             ⟨fun a => Quotient.liftOn' a f (fun _ _ h => (AntisymmRel.image h f.hom.mono).eq),
-              fun a b => Quotient.inductionOn₂' a b fun _ _ h => f.hom.mono h⟩
-          left_inv _ := PartOrd.ext fun x => Quotient.inductionOn' x fun _ => rfl
+              fun a b => Quotient.inductionOn₂ a b fun _ _ h => f.hom.mono h⟩
+          left_inv _ := PartOrd.ext fun x => Quotient.inductionOn x fun _ => rfl
           right_inv _ := Preord.ext fun _ => rfl }
       homEquiv_naturality_left_symm _ _ :=
-        PartOrd.ext fun x => Quotient.inductionOn' x fun _ => rfl }
+        PartOrd.ext fun x => Quotient.inductionOn x fun _ => rfl }
 
 -- The `simpNF` linter would complain as `Functor.comp_obj`, `Preord.dual_obj` both apply to LHS
 -- of `preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd_hom_app_coe`
@@ -199,7 +199,7 @@ def preordToPartOrdForgetAdjunction :
 def preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd :
     preordToPartOrd.{u} ⋙ PartOrd.dual ≅ Preord.dual ⋙ preordToPartOrd :=
   NatIso.ofComponents (fun _ => PartOrd.Iso.mk <| OrderIso.dualAntisymmetrization _)
-    (fun _ => PartOrd.ext fun x => Quotient.inductionOn' x fun _ => rfl)
+    (fun _ => PartOrd.ext fun x => Quotient.inductionOn x fun _ => rfl)
 
 -- `simp`-normal form for `preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd_inv_app_hom_coe`
 @[simp]

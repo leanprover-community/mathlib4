@@ -57,19 +57,22 @@ def mk {p : Submodule R M} : M → M ⧸ p :=
   Quotient.mk''
 
 theorem mk'_eq_mk' {p : Submodule R M} (x : M) :
-    @Quotient.mk' _ (quotientRel p) x = mk x :=
+    @Quotient.mk' _ (quotientRel p) x = (mk : M → M ⧸ p) x :=
   rfl
 
-theorem mk''_eq_mk {p : Submodule R M} (x : M) : (Quotient.mk'' x : M ⧸ p) = mk x :=
+theorem mk_eq_mk {p : Submodule R M} : (_root_.Quotient.mk _ : M → M ⧸ p) = (mk : M → M ⧸ p) :=
   rfl
 
-theorem quot_mk_eq_mk {p : Submodule R M} (x : M) : (Quot.mk _ x : M ⧸ p) = mk x :=
+theorem mk''_eq_mk {p : Submodule R M} (x : M) : (Quotient.mk'' x : M ⧸ p) = (mk : M → M ⧸ p) x :=
   rfl
 
-protected theorem eq' {x y : M} : (mk x : M ⧸ p) = mk y ↔ -x + y ∈ p :=
+theorem quot_mk_eq_mk {p : Submodule R M} (x : M) : (Quot.mk _ x : M ⧸ p) = (mk : M → M ⧸ p) x :=
+  rfl
+
+protected theorem eq' {x y : M} : (mk x : M ⧸ p) = (mk : M → M ⧸ p) y ↔ -x + y ∈ p :=
   QuotientAddGroup.eq
 
-protected theorem eq {x y : M} : (mk x : M ⧸ p) = mk y ↔ x - y ∈ p :=
+protected theorem eq {x y : M} : (mk x : M ⧸ p) = (mk y : M ⧸ p) ↔ x - y ∈ p :=
   (Submodule.Quotient.eq' p).trans (leftRel_apply.symm.trans p.quotientRel_def)
 
 instance : Zero (M ⧸ p) where
@@ -92,15 +95,15 @@ instance addCommGroup : AddCommGroup (M ⧸ p) :=
   QuotientAddGroup.Quotient.addCommGroup p.toAddSubgroup
 
 @[simp]
-theorem mk_add : (mk (x + y) : M ⧸ p) = mk x + mk y :=
+theorem mk_add : (mk (x + y) : M ⧸ p) = (mk x : M ⧸ p) + (mk y : M ⧸ p) :=
   rfl
 
 @[simp]
-theorem mk_neg : (mk (-x) : M ⧸ p) = -(mk x) :=
+theorem mk_neg : (mk (-x) : M ⧸ p) = -(mk x : M ⧸ p) :=
   rfl
 
 @[simp]
-theorem mk_sub : (mk (x - y) : M ⧸ p) = mk x - mk y :=
+theorem mk_sub : (mk (x - y) : M ⧸ p) = (mk x : M ⧸ p) - (mk y : M ⧸ p) :=
   rfl
 
 protected nonrec lemma «forall» {P : M ⧸ p → Prop} : (∀ a, P a) ↔ ∀ a, P (mk a) := Quotient.forall
@@ -128,15 +131,15 @@ theorem mk_smul (r : S) (x : M) : (mk (r • x) : M ⧸ p) = r • mk x :=
 
 instance smulCommClass (T : Type*) [SMul T R] [SMul T M] [IsScalarTower T R M]
     [SMulCommClass S T M] : SMulCommClass S T (M ⧸ P) where
-  smul_comm _x _y := Quotient.ind' fun _z => congr_arg mk (smul_comm _ _ _)
+  smul_comm _x _y := Quotient.ind fun _z => congr_arg mk (smul_comm _ _ _)
 
 instance isScalarTower (T : Type*) [SMul T R] [SMul T M] [IsScalarTower T R M] [SMul S T]
     [IsScalarTower S T M] : IsScalarTower S T (M ⧸ P) where
-  smul_assoc _x _y := Quotient.ind' fun _z => congr_arg mk (smul_assoc _ _ _)
+  smul_assoc _x _y := Quotient.ind fun _z => congr_arg mk (smul_assoc _ _ _)
 
 instance isCentralScalar [SMul Sᵐᵒᵖ R] [SMul Sᵐᵒᵖ M] [IsScalarTower Sᵐᵒᵖ R M]
     [IsCentralScalar S M] : IsCentralScalar S (M ⧸ P) where
-  op_smul_eq_smul _x := Quotient.ind' fun _z => congr_arg mk <| op_smul_eq_smul _ _
+  op_smul_eq_smul _x := Quotient.ind fun _z => congr_arg mk <| op_smul_eq_smul _ _
 
 end SMul
 
@@ -186,7 +189,7 @@ end Module
 
 @[elab_as_elim]
 theorem induction_on {C : M ⧸ p → Prop} (x : M ⧸ p) (H : ∀ z, C (Submodule.Quotient.mk z)) :
-    C x := Quotient.inductionOn' x H
+    C x := Quotient.inductionOn x H
 
 theorem mk_surjective : Function.Surjective (@mk _ _ _ _ _ p) := by
   rintro ⟨x⟩
@@ -209,7 +212,7 @@ def mkQ : M →ₗ[R] M ⧸ p where
   map_smul' := by simp
 
 @[simp]
-theorem mkQ_apply (x : M) : p.mkQ x = Quotient.mk x :=
+theorem mkQ_apply (x : M) : p.mkQ x = (Quotient.mk x : M ⧸ p) :=
   rfl
 
 theorem mkQ_surjective : Function.Surjective p.mkQ := by
