@@ -294,7 +294,8 @@ theorem support_inf [DecidableEq ι] (f g : ι →₀ α) : (f ⊓ g).support = 
   simp only [← nonpos_iff_eq_zero, min_le_iff, not_or]
 
 @[simp]
-theorem support_sup [DecidableEq ι] (f g : ι →₀ α) : (f ⊔ g).support = f.support ∪ g.support := by
+theorem support_sup [OrderBot α] [DecidableEq ι] (f g : ι →₀ α) :
+    (f ⊔ g).support = f.support ∪ g.support := by
   ext
   simp only [Finset.mem_union, mem_support_iff, sup_apply, Ne, ← bot_eq_zero]
   rw [_root_.sup_eq_bot_iff, not_and_or]

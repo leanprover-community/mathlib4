@@ -282,7 +282,7 @@ theorem support_inf : (f ⊓ g).support = f.support ∩ g.support := by
   simp only [← nonpos_iff_eq_zero, min_le_iff, not_or]
 
 @[simp]
-theorem support_sup : (f ⊔ g).support = f.support ∪ g.support := by
+theorem support_sup [∀ i, OrderBot (α i)] : (f ⊔ g).support = f.support ∪ g.support := by
   ext
   simp only [Finset.mem_union, mem_support_iff, sup_apply, Ne, ← bot_eq_zero]
   rw [_root_.sup_eq_bot_iff, not_and_or]

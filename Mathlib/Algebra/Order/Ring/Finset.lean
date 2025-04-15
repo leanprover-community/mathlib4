@@ -29,7 +29,7 @@ lemma cast_finsetInf' (f : ι → ℕ) (hs) : (↑(s.inf' hs f) : R) = s.inf' hs
   comp_inf'_eq_inf'_comp _ _ cast_min
 
 @[simp, norm_cast]
-lemma cast_finsetSup [CanonicallyOrderedAdd R] (s : Finset ι) (f : ι → ℕ) :
+lemma cast_finsetSup [OrderBot R] [CanonicallyOrderedAdd R] (s : Finset ι) (f : ι → ℕ) :
     (↑(s.sup f) : R) = s.sup fun i ↦ (f i : R) :=
   comp_sup_eq_sup_comp _ cast_max (by simp)
 

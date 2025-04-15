@@ -184,7 +184,7 @@ section CanonicallyOrdered
 
 variable [DecidableEq ι] [∀ i, DecidableEq (α i)]
 variable [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)] [∀ i, CanonicallyOrderedAdd (α i)]
-  [∀ i, LocallyFiniteOrder (α i)]
+  [∀ i, OrderBot (α i)] [∀ i, LocallyFiniteOrder (α i)]
 variable (f : Π₀ i, α i)
 
 lemma card_Iic : #(Iic f) = ∏ i ∈ f.support, #(Iic (f i)) := by
