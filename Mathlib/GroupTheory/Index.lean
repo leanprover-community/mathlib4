@@ -508,18 +508,25 @@ variable (H K)
 
 /-- Typeclass for finite index subgroups. -/
 class FiniteIndex : Prop where
-  /-- The subgroup has finite index -/
-  finiteIndex : H.index ≠ 0
+  /-- The subgroup has finite index;
+  recall that `Subgroup.index` returns 0 when the index is infinite. -/
+  index_ne_zero : H.index ≠ 0
 
 /-- Typeclass for finite index subgroups. -/
 class _root_.AddSubgroup.FiniteIndex {G : Type*} [AddGroup G] (H : AddSubgroup G) : Prop where
-  /-- The additive subgroup has finite index -/
-  finiteIndex : H.index ≠ 0
+  /-- The additive subgroup has finite index;
+  recall that `AddSubgroup.index` returns 0 when the index is infinite. -/
+  index_ne_zero : H.index ≠ 0
+
+@[deprecated (since := "2025-04-13")]
+alias _root_AddSubgroup.FiniteIndex.finiteIndex := AddSubgroup.FiniteIndex.index_ne_zero
+
+@[deprecated (since := "2025-04-13")] alias FiniteIndex.finiteIndex := FiniteIndex.index_ne_zero
 
 /-- A finite index subgroup has finite quotient. -/
 @[to_additive "A finite index subgroup has finite quotient"]
 noncomputable def fintypeQuotientOfFiniteIndex [FiniteIndex H] : Fintype (G ⧸ H) :=
-  fintypeOfIndexNeZero FiniteIndex.finiteIndex
+  fintypeOfIndexNeZero FiniteIndex.index_ne_zero
 
 @[to_additive]
 instance finite_quotient_of_finiteIndex [FiniteIndex H] : Finite (G ⧸ H) :=
@@ -540,12 +547,12 @@ instance : FiniteIndex (⊤ : Subgroup G) :=
 
 @[to_additive]
 instance [FiniteIndex H] [FiniteIndex K] : FiniteIndex (H ⊓ K) :=
-  ⟨index_inf_ne_zero FiniteIndex.finiteIndex FiniteIndex.finiteIndex⟩
+  ⟨index_inf_ne_zero FiniteIndex.index_ne_zero FiniteIndex.index_ne_zero⟩
 
 @[to_additive]
 theorem finiteIndex_iInf {ι : Type*} [Finite ι] {f : ι → Subgroup G}
     (hf : ∀ i, (f i).FiniteIndex) : (⨅ i, f i).FiniteIndex :=
-  ⟨index_iInf_ne_zero fun i => (hf i).finiteIndex⟩
+  ⟨index_iInf_ne_zero fun i => (hf i).index_ne_zero⟩
 
 @[to_additive]
 theorem finiteIndex_iInf' {ι : Type*} {s : Finset ι}
@@ -563,15 +570,15 @@ variable {H K}
 
 @[to_additive]
 theorem finiteIndex_of_le [FiniteIndex H] (h : H ≤ K) : FiniteIndex K :=
-  ⟨ne_zero_of_dvd_ne_zero FiniteIndex.finiteIndex (index_dvd_of_le h)⟩
+  ⟨ne_zero_of_dvd_ne_zero FiniteIndex.index_ne_zero (index_dvd_of_le h)⟩
 
 @[to_additive (attr := gcongr)]
 lemma index_antitone (h : H ≤ K) [H.FiniteIndex] : K.index ≤ H.index :=
-  Nat.le_of_dvd (Nat.zero_lt_of_ne_zero FiniteIndex.finiteIndex) (index_dvd_of_le h)
+  Nat.le_of_dvd (Nat.zero_lt_of_ne_zero FiniteIndex.index_ne_zero) (index_dvd_of_le h)
 
 @[to_additive (attr := gcongr)]
 lemma index_strictAnti (h : H < K) [H.FiniteIndex] : K.index < H.index := by
-  have h0 : K.index ≠ 0 := (finiteIndex_of_le h.le).finiteIndex
+  have h0 : K.index ≠ 0 := (finiteIndex_of_le h.le).index_ne_zero
   apply lt_of_le_of_ne (index_antitone h.le)
   rw [← relindex_mul_index h.le, Ne, eq_comm, mul_eq_right₀ h0, relindex_eq_one]
   exact h.not_le
