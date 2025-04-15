@@ -67,18 +67,18 @@ lemma insert_Icc_eq_Icc_add_one_right (h : a ≤ b + 1) :
     insert (b + 1) (Icc a b) = Icc a (b + 1) := by
   simpa [← succ_eq_add_one] using insert_Icc_eq_Icc_succ_right (succ_eq_add_one b ▸ h)
 
-lemma insert_Ico_eq_Ico_add_one_right_of_not_isMax (h : a ≤ b) (hb : ¬ IsMax b) :
+lemma insert_Ico_right_eq_Ico_add_one_of_not_isMax (h : a ≤ b) (hb : ¬ IsMax b) :
     insert b (Ico a b) = Ico a (b + 1) := by
   simpa [succ_eq_add_one] using insert_Ico_right_eq_Ico_succ_of_not_isMax h hb
 
 @[deprecated (since := "2025-04-14")]
 alias insert_Ico_right_eq_Ico_add_one_right_of_not_isMax :=
-  insert_Ico_eq_Ico_add_one_right_of_not_isMax
+  insert_Ico_right_eq_Ico_add_one_of_not_isMax
 
 lemma insert_Ico_add_one_left_eq_Ico (h : a < b) : insert a (Ico (a + 1) b) = Ico a b := by
   simpa [succ_eq_add_one] using insert_Ico_succ_left_eq_Ico h
 
-lemma insert_Ioc_eq_Ioc_add_one_right_of_not_isMax (h : a ≤ b) (hb : ¬ IsMax b) :
+lemma insert_Ioc_right_eq_Ioc_add_one_of_not_isMax (h : a ≤ b) (hb : ¬ IsMax b) :
     insert (b + 1) (Ioc a b) = Ioc a (b + 1) := by
   simpa [succ_eq_add_one] using insert_Ioc_eq_Ioc_succ_right_of_not_isMax h hb
 
@@ -107,14 +107,14 @@ lemma Ico_add_one_add_one_eq_Ioc (a b : α) : Ico (a + 1) (b + 1) = Ioc a b := b
 
 /-! ##### Inserting into intervals -/
 
-lemma insert_Ico_eq_Ico_add_one_right (h : a ≤ b) : insert b (Ico a b) = Ico a (b + 1) := by
+lemma insert_Ico_right_eq_Ico_add_one (h : a ≤ b) : insert b (Ico a b) = Ico a (b + 1) := by
   simpa [succ_eq_add_one] using insert_Ico_right_eq_Ico_succ h
 
 @[deprecated (since := "2025-04-14")]
-alias insert_Ico_right_eq_Ico_add_one_right := insert_Ico_eq_Ico_add_one_right
+alias insert_Ico_right_eq_Ico_add_one_right := insert_Ico_right_eq_Ico_add_one
 
-lemma insert_Ioc_eq_Ioc_add_one_right (h : a ≤ b) : insert (b + 1) (Ioc a b) = Ioc a (b + 1) :=
-  insert_Ioc_eq_Ioc_add_one_right_of_not_isMax h (not_isMax _)
+lemma insert_Ioc_right_eq_Ioc_add_one (h : a ≤ b) : insert (b + 1) (Ioc a b) = Ioc a (b + 1) :=
+  insert_Ioc_right_eq_Ioc_add_one_of_not_isMax h (not_isMax _)
 
 end SuccAddOrder
 
