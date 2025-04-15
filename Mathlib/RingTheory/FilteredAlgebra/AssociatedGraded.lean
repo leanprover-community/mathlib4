@@ -170,7 +170,7 @@ variable {ι : Type*}
 
 variable {R : Type*} [Ring R] {σ : Type*} [SetLike σ R]
 
-instance [AddCommMonoid ι] [PartialOrder ι] [AddSubgroupClass σ R]
+instance [AddMonoid ι] [PartialOrder ι] [AddSubgroupClass σ R]
     (F : ι → σ) (F_lt : outParam <| ι → σ)
     [IsRingFiltration F F_lt] : One (GradedPiece F F_lt 0) where
   one := ⟦⟨1, IsRingFiltration.toGradedMonoid.one_mem⟩⟧
@@ -181,7 +181,7 @@ section HasGMul
 
 /-- The class of ring filtrations that can obtain a well defined `GradedMul`
 from the multiplication `F i → F j → F (i + j)`. -/
-class hasGMul [AddCommMonoid ι] [PartialOrder ι] : Prop
+class hasGMul [AddMonoid ι] [PartialOrder ι] : Prop
     extends IsRingFiltration F F_lt where
   F_lt_mul_mem {i j : ι} {x y} : x ∈ F_lt i → y ∈ F j → x * y ∈ F_lt (i + j)
   mul_F_lt_mem {i j : ι} {x y} : x ∈ F i → y ∈ F_lt j → x * y ∈ F_lt (i + j)
@@ -214,7 +214,7 @@ lemma hasGMul_AddSubgroup (F : ι → AddSubgroup R) (F_lt : outParam <| ι → 
     exact IsFiltration.is_sup S j (fun k hk z hz ↦
       IsFiltration.is_le (add_lt_add_left hk i) (IsRingFiltration.toGradedMonoid.mul_mem hx hz)) hy
 
-variable [AddCommMonoid ι] [PartialOrder ι] [AddSubgroupClass σ R]
+variable [AddMonoid ι] [PartialOrder ι] [AddSubgroupClass σ R]
 
 open AddSubgroup
 
