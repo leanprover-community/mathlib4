@@ -847,7 +847,11 @@ def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemp
   change i ≤ (l + k, n).snd at hi
   refine le_trans ?_ (one_add_le_sup_seminorm_apply le_rfl hi f x)
   rw [pow_add]
-  move_mul [(1 + ‖x‖) ^ l]
+  -- On `master`
+  -- ⊢ ‖x‖ ^ k * ‖iteratedFDeriv ℝ i f.toFun x‖ * (1 + ‖x‖) ^ l ≤ (1 + ‖x‖) ^ l * (1 + ‖x‖) ^ k * ‖iteratedFDeriv ℝ i (⇑f) x‖
+  move_mul [(1 + ‖x‖) ^ l] -- Behaviour changed around nightly-2025-04-14
+  -- On `master`:
+  -- ⊢ ‖x‖ ^ k * ‖iteratedFDeriv ℝ i f.toFun x‖ * (1 + ‖x‖) ^ l ≤ (1 + ‖x‖) ^ k * ‖iteratedFDeriv ℝ i (⇑f) x‖ * (1 + ‖x‖) ^ l
   gcongr
   simp
 
