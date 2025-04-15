@@ -17,12 +17,12 @@ section longFile
 
 /--
 warning: The default value of the `longFile` linter is 1500.
-The current value of 1500 does not exceed the allowed bound.
-Please, remove the `set_option linter.style.longFile 1500`.
+The current value of 1200 does not exceed the allowed bound.
+Please, remove the `set_option linter.style.longFile 1200`.
 -/
 #guard_msgs in
 -- Do not allow setting a `longFile` linter option if the file does not exceed the `defValue`
-set_option linter.style.longFile 1500
+set_option linter.style.longFile 1200
 
 /--
 warning: using 'exit' to interrupt Lean

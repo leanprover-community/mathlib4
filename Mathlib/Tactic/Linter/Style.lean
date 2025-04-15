@@ -30,7 +30,7 @@ This file defines the following linters:
   the `|>` symbol
 - the `lambdaSyntax` linter checks for uses of the `λ` symbol for anonymous functions,
   instead of the `fun` keyword: mathlib prefers the latter for reasons of readability
-- the `longFile` linter checks for files which have more than 1500 lines
+- the `longFile` linter checks for files which have more than 1200 lines
 - the `longLine` linter checks for lines which have more than 100 characters
 - the `openClassical` linter checks for `open (scoped) Classical` statements which are not
   scoped to a single declaration
@@ -319,7 +319,7 @@ end Style.lambdaSyntax
 #  The "longFile" linter
 
 The "longFile" linter emits a warning on files which are longer than a certain number of lines
-(1500 by default).
+(1200 by default).
 -/
 
 /--
@@ -335,7 +335,7 @@ register_option linter.style.longFile : Nat := {
 
 /-- The number of lines that the `longFile` linter considers the default. -/
 register_option linter.style.longFileDefValue : Nat := {
-  defValue := 1500
+  defValue := 1200
   descr := "a soft upper bound on the number of lines of each file"
 }
 
