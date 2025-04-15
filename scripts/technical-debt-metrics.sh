@@ -108,7 +108,7 @@ deprecs="$(git grep -c -- "set_option linter.deprecated false" -- ":^Mathlib/Dep
 
 # count the `linter.deprecated` exceptions that are themselves followed by `deprecated ...(since`
 # we subtract these from `deprecs`
-doubleDeprecs="$(git grep -A1 -- "set_option linter.deprecated false" -- ":^Mathlib/Deprecated" |
+doubleDeprecs="$(git grep -A2 -- "set_option linter.deprecated false" -- ":^Mathlib/Deprecated" |
   grep -c "deprecated .*(since")"
 
 printf '%s|disabled deprecation lints\n' "$(( deprecs - doubleDeprecs ))"
