@@ -3,9 +3,9 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Ring.InjSurj
-import Mathlib.Data.ZMod.Defs
-import Mathlib.Data.BitVec
+-- import Mathlib.Algebra.Ring.InjSurj
+-- import Mathlib.Data.ZMod.Defs
+-- import Mathlib.Data.BitVec
 
 -- Removed after https://github.com/leanprover/lean4/pull/7886
 -- If anyone needs to restore this functionality, please do so in a PR,
