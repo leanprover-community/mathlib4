@@ -269,3 +269,5 @@ def equiv [IsDomain k] : G ≃* Aut (forget k G) :=
 end FiniteGroup
 
 end TannakaDuality
+
+end

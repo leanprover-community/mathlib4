@@ -1344,7 +1344,7 @@ theorem Contravariant.MulLECancellable [Mul α] [LE α] [MulLeftReflectLE α]
   fun _ _ => le_of_mul_le_mul_left'
 
 @[to_additive (attr := simp)]
-theorem mulLECancellable_one [Monoid α] [LE α] : MulLECancellable (1 : α) := fun a b => by
+theorem mulLECancellable_one [MulOneClass α] [LE α] : MulLECancellable (1 : α) := fun a b => by
   simpa only [one_mul] using id
 
 namespace MulLECancellable
