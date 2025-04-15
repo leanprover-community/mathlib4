@@ -92,14 +92,14 @@ def downMap {F : Type max u₀ v₀ → Type u₁} {G : Type u₀ → Type v₁}
   down (Functor.map (ULift.up.{v₀} ∘ f) x : F (ULift β))
 
 /-- A version of `up` for a `PUnit` return type. -/
-abbrev up' {f : Type u₀ → Type u₁} {g : Type max u₀ v → Type v₁} [Functor g] [ULiftable f g] :
+abbrev up' {f : Type u₀ → Type u₁} {g : Type v₀ → Type v₁} [Functor g] [ULiftable f g] :
     f PUnit → g PUnit :=
-  (discard <| up ·)
+  ULiftable.congr Equiv.punitEquivPUnit
 
 /-- A version of `down` for a `PUnit` return type. -/
-abbrev down' {f : Type u₀ → Type u₁} {g : Type max u₀ v → Type v₁} [Functor g] [ULiftable f g] :
+abbrev down' {f : Type u₀ → Type u₁} {g : Type v₀ → Type v₁} [Functor g] [ULiftable f g] :
     g PUnit → f PUnit :=
-  (down <| (fun _ => ⟨⟨⟩⟩) <$> ·)
+  (ULiftable.congr Equiv.punitEquivPUnit).symm
 
 theorem up_down {f : Type u₀ → Type u₁} {g : Type max u₀ v₀ → Type v₁} [ULiftable f g] {α}
     (x : g (ULift.{v₀} α)) : up (down x : f α) = x :=
