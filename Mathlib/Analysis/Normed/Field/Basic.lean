@@ -143,14 +143,14 @@ structure NormedField (α : Type*) extends Norm α, Field α, MetricSpace α whe
 /-- A nontrivially normed field is a normed field in which there is an element of norm different
 from `0` and `1`. This makes it possible to bring any element arbitrarily close to `0` by
 multiplication by the powers of any element, and thus to relate algebra and topology. -/
-class NontriviallyNormedField (α : Type*) [Field α] extends StrictNormedRing α where
+class NontriviallyNormedField (α : Type*) [AddCommGroup α] [Mul α] extends StrictNormedRing α where
   /-- The norm attains a value exceeding 1. -/
   non_trivial : ∃ x : α, 1 < ‖x‖
 
 /-- A densely normed field is a normed field for which the image of the norm is dense in `ℝ≥0`,
 which means it is also nontrivially normed. However, not all nontrivally normed fields are densely
 normed; in particular, the `Padic`s exhibit this fact. -/
-class DenselyNormedField (α : Type*) [Field α] extends StrictNormedRing α where
+class DenselyNormedField (α : Type*) [AddCommGroup α] [Mul α] extends StrictNormedRing α where
   /-- The range of the norm is dense in the collection of nonnegative real numbers. -/
   lt_norm_lt : ∀ x y : ℝ, 0 ≤ x → x < y → ∃ a : α, x < ‖a‖ ∧ ‖a‖ < y
 

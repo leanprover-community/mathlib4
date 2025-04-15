@@ -39,7 +39,7 @@ structure NonUnitalSeminormedRing (α : Type*) extends Norm α, NonUnitalRing α
 
 /-- A seminormed ring is a ring endowed with a seminorm which satisfies the inequality
 `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
-class SeminormedRing (α : Type*) [NonUnitalRing α] extends Norm α, PseudoMetricSpace α where
+class SeminormedRing (α : Type*) [AddCommGroup α] [Mul α] extends Norm α, PseudoMetricSpace α where
   /-- The distance is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = norm (x - y)
   /-- The norm is submultiplicative. -/
@@ -55,7 +55,7 @@ structure NonUnitalNormedRing (α : Type*) extends Norm α, NonUnitalRing α, Me
   norm_mul_le : ∀ a b, norm (a * b) ≤ norm a * norm b
 
 /-- A normed ring is a ring endowed with a norm which satisfies the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
-class NormedRing (α : Type*) [NonUnitalRing α] extends Norm α, MetricSpace α where
+class NormedRing (α : Type*) [AddCommGroup α] [Mul α] extends Norm α, MetricSpace α where
   /-- The distance is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = norm (x - y)
   /-- The norm is submultiplicative. -/
@@ -63,7 +63,7 @@ class NormedRing (α : Type*) [NonUnitalRing α] extends Norm α, MetricSpace α
 
 -- see Note [lower instance priority]
 /-- A normed ring is a seminormed ring. -/
-instance (priority := 100) NormedRing.toSeminormedRing [NonUnitalRing α] [β : NormedRing α] :
+instance (priority := 100) NormedRing.toSeminormedRing [AddCommGroup α] [Mul α] [β : NormedRing α] :
     SeminormedRing α :=
   { β with }
 
@@ -96,7 +96,7 @@ the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
 structure NormedCommRing (α : Type*) extends CommRing α, NormedRing α where
 
 /-- A strictly normed ring is a ring endowed with a norm which satisfies `‖x y‖ = ‖x‖ ‖y‖`. -/
-class StrictNormedRing (α : Type*) [NonUnitalRing α] extends Norm α, MetricSpace α where
+class StrictNormedRing (α : Type*) [AddCommGroup α] [Mul α] extends Norm α, MetricSpace α where
   /-- The distance is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = norm (x - y)
   /-- The norm is multiplicative. -/
@@ -104,7 +104,8 @@ class StrictNormedRing (α : Type*) [NonUnitalRing α] extends Norm α, MetricSp
 
 -- see Note [lower instance priority]
 /-- A strictly normed ring is a normed ring. -/
-instance (priority := 100) StrictNormedRing.toNormedRing [NonUnitalRing α] [StrictNormedRing α] :
+instance (priority := 100) StrictNormedRing.toNormedRing
+    [AddCommGroup α] [Mul α] [StrictNormedRing α] :
     NormedRing α :=
   { ‹StrictNormedRing α› with norm_mul_le a b := (StrictNormedRing.norm_mul a b).le }
 
