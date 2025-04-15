@@ -719,7 +719,7 @@ lemma RingHom.finite_iff_finiteType_of_isJacobsonRing
 /-- If `K` is a jacobson noetherian ring, `A` a nontrivial `K`-algebra of finite type,
 then any `K`-subfield of `A` is finite over `K`. -/
 theorem finite_of_algHom_finiteType_of_isJacobsonRing
-    {K L A : Type*} [CommRing K] [Field L] [CommRing A]
+    {K L A : Type*} [CommRing K] [DivisionRing L] [CommRing A]
     [IsJacobsonRing K] [IsNoetherianRing K] [Nontrivial A]
     [Algebra K L] [Algebra K A]
     [Algebra.FiniteType K A] (f : L →ₐ[K] A) :

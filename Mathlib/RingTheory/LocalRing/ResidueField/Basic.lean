@@ -200,9 +200,6 @@ theorem isLocalHom_residue : IsLocalHom (IsLocalRing.residue R) := by
     at ha
   exact ha.ne_zero rfl
 
-@[deprecated (since := "2024-10-10")]
-alias isLocalRingHom_residue := isLocalHom_residue
-
 end
 
 end IsLocalRing

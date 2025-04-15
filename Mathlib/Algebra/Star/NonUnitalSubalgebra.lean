@@ -695,9 +695,6 @@ lemma adjoin_induction {s : Set A} {p : (x : A) → x ∈ adjoin R s → Prop}
   · exact mem x hx
   · simpa using star _ (NonUnitalAlgebra.subset_adjoin R (by simpa using Or.inl hx)) (mem _ hx)
 
-@[deprecated adjoin_induction (since := "2024-10-10")]
-alias adjoin_induction' := adjoin_induction
-
 variable {R}
 
 protected theorem gc : GaloisConnection (adjoin R : Set A → NonUnitalStarSubalgebra R A) (↑) := by

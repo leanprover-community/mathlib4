@@ -38,9 +38,6 @@ alias IsUniformEmbedding.toIsClosedEmbedding := IsUniformEmbedding.isClosedEmbed
 @[deprecated (since := "2024-10-20")]
 alias IsUniformEmbedding.toClosedEmbedding := IsUniformEmbedding.isClosedEmbedding
 
-@[deprecated (since := "2024-10-01")]
-alias UniformEmbedding.toIsClosedEmbedding := IsUniformEmbedding.isClosedEmbedding
-
 @[deprecated (since := "2024-10-20")]
 alias UniformEmbedding.toClosedEmbedding := IsUniformEmbedding.isClosedEmbedding
 
