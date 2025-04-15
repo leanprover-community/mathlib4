@@ -995,7 +995,7 @@ variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃
 variable [Module R M] [Module R M₂] [Module R M₃]
 variable {ι : Type*}
 
-variable (R)
+variable (R) in
 abbrev mk'' (f : M → M₂) (lin : IsLinearMap R f) : M →ₗ[R] M₂ := mk' f lin
 
 open Lean.Parser.Term in
@@ -1012,6 +1012,23 @@ macro:max "fun " x:funBinder " =>ₗ[" R:term "] " b:term : term =>
     | `(fun $x:funBinder ↦ $b:term) => `(fun $x ↦ₗ[$R] $b)
     | _ => throw ()
   | _  => throw ()
+
+@[fun_prop]
+theorem mk'_isLinearMap [SMulCommClass R R M₃] (f : M → M₂ → M₃)
+    (hfy : ∀ x, IsLinearMap R (f x ·))
+    (hfx : ∀ y, IsLinearMap R (f · y)) :
+    IsLinearMap R (fun x => fun y =>ₗ[R] f x y) := by
+  apply IsLinearMap.mk
+  · intro x y; ext z; simp[(hfx z).1]
+  · intro x y; ext z; simp[(hfx z).2]
+
+@[fun_prop]
+theorem isLinarMap_apply [SMulCommClass R R M₃] (f : M → M₂ →ₗ[R] M₃) (y : M₂)
+    (hf : IsLinearMap R f) :
+    IsLinearMap R (fun x => f x y) := by
+  apply IsLinearMap.mk
+  · intro x z; simp[hf.1]
+  · intro x z; simp[hf.2]
 
 @[fun_prop]
 theorem isLinearMap_id : IsLinearMap R (fun x : M => x) := LinearMap.id.isLinear
