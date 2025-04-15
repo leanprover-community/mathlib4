@@ -16,6 +16,11 @@ variable [CommMonoid M] [CompleteLattice M] [IsOrderedMonoid M]
 
 set_option linter.style.longLine false
 
+@[to_additive]
+lemma bot_eq_one''' {α : Type*} [CommMonoid α] [CompleteLattice α] [CanonicallyOrderedMul α] :
+  (⊥ : α) = 1 :=
+  bot_le.antisymm <| one_le _
+
 open Set Topology Function Filter
 
 /-- If a topological monoid is a canonically ordered complete lattice with well-behaved
@@ -28,24 +33,10 @@ theorem hasProd : HasProd f (⨆ s : Finset ι, ∏ i ∈ s, f i) :=
 theorem multipliable : Multipliable f :=
   hasProd.multipliable
 
-
-
---   ENNReal.tsum_eq_iSup_sum' _ fun t =>
---     let ⟨n, hn⟩ := t.exists_nat_subset_range
---     let ⟨k, _, hk⟩ := exists_le_of_tendsto_atTop hN 0 n
---     ⟨k, Finset.Subset.trans hn (Finset.range_mono hk)⟩
-
--- protected theorem tsum_eq_iSup_nat {f : ℕ → ℝ≥0∞} :
---     ∑' i : ℕ, f i = ⨆ i : ℕ, ∑ a ∈ Finset.range i, f a :=
---   ENNReal.tsum_eq_iSup_sum' _ Finset.exists_nat_subset_range
-
--- protected theorem tsum_eq_liminf_sum_nat {f : ℕ → ℝ≥0∞} :
---     ∑' i, f i = liminf (fun n => ∑ i ∈ Finset.range n, f i) atTop :=
---   ENNReal.summable.hasSum.tendsto_sum_nat.liminf_eq.symm
-
--- protected theorem tsum_eq_limsup_sum_nat {f : ℕ → ℝ≥0∞} :
---     ∑' i, f i = limsup (fun n => ∑ i ∈ Finset.range n, f i) atTop :=
---   ENNReal.summable.hasSum.tendsto_sum_nat.limsup_eq.symm
+omit [IsOrderedMonoid M] [SupConvergenceClass M] in
+@[to_additive (attr := simp)]
+theorem tprod_iSup_eq (i : ι) : (∏' b : ι, ⨆ _ : i = b, f b) = f i :=
+  (tprod_eq_mulSingle i fun _ h => by simp [h.symm, bot_eq_one''']).trans <| by simp
 
 section T2Space
 
@@ -121,7 +112,6 @@ theorem _one_lt_tprod (hi : 1 < f i) : 1 < ∏' (i : ι), f i :=
 @[to_additive (attr := simp)]
 theorem tprod_top [Nonempty M] : ∏' _ : M, ⊤ = (⊤ : M) :=
   tprod_eq_top_of_eq_top (i := Classical.arbitrary M) rfl
-
 
 section ContinuousMul
 
@@ -352,7 +342,7 @@ instance : IsQuantale R where
   mul_sSup_distrib c s := by
     rw [Monotone.map_sSup_of_continuousAt (continuous_mul_left c).continuousAt
       mul_left_mono ?_, sSup_image]
-    simp [show (⊥ : R) = 0 from bot_le.antisymm (zero_le _)]
+    simp [bot_eq_zero''']
   sSup_mul_distrib s c := by
     rw [Monotone.map_sSup_of_continuousAt (continuous_mul_right c).continuousAt
       mul_right_mono ?_, sSup_image]
@@ -369,14 +359,6 @@ theorem tsum_mul_distrib (c : R) : (∑' i, f i) * c = ∑' i, f i * c := by
 theorem tsum_const_smul {S : Type*} [SMul S R] [IsScalarTower S R R] (a : S) :
     a • ∑' i, f i = ∑' i, a • f i := by
   simpa using (mul_tsum_distrib (f := f) (a • (1 : R)))
-
-@[simp]
-theorem tsum_iSup_eq {α : Type*} (a : α) {f : α → R} : (∑' b : α, ⨆ _ : a = b, f b) = f a := by
-  rw [tsum_eq_single a]
-  simp
-  intro _ h
-  simp [h.symm, show ]
-  -- (tsum_eq_single a fun _ h => by simp [h.symm]).trans <| by simp
 
 end Ring
 
