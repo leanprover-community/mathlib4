@@ -24,9 +24,9 @@ to learn about it as well!
 
 **Analyzing Mathlib's import structure**
 - `topological_sort.py`
-  Analyzes dependencies between Lean files by finding all `.lean` files in a given directory,
+  Analyzes dependencies between Lean files by finding all `.lean` files in Mathlib/
   extracting import statements, building a dependency graph, and performing a topological sort.
-  Usage: `python scripts/topological_sort.py <directory>`
+  Usage: `python scripts/topological_sort.py`
 - `unused_in_pole.sh` (followed by an optional `<target>`, defaulting to `Mathlib`)
   calls `lake exe pole --loc --to <target>` to compute the longest
   pole to a given target module, and then feeds this into
