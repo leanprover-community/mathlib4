@@ -164,6 +164,8 @@ variable {f : ℝ → E} {a b c d : ℝ} {μ ν : Measure ℝ}
 nonrec theorem symm (h : IntervalIntegrable f μ a b) : IntervalIntegrable f μ b a :=
   h.symm
 
+theorem symm_iff : IntervalIntegrable f μ a b ↔ IntervalIntegrable f μ b a := ⟨.symm, .symm⟩
+
 @[refl, simp]
 theorem refl : IntervalIntegrable f μ a a := by constructor <;> simp
 
@@ -172,6 +174,10 @@ theorem trans {a b c : ℝ} (hab : IntervalIntegrable f μ a b) (hbc : IntervalI
     IntervalIntegrable f μ a c :=
   ⟨(hab.1.union hbc.1).mono_set Ioc_subset_Ioc_union_Ioc,
     (hbc.2.union hab.2).mono_set Ioc_subset_Ioc_union_Ioc⟩
+
+theorem trans_iff (h : b ∈ [[a, c]]) :
+    IntervalIntegrable f μ a c ↔ IntervalIntegrable f μ a b ∧ IntervalIntegrable f μ b c := by
+  simp only [intervalIntegrable_iff, ← integrableOn_union, uIoc_union_uIoc h]
 
 theorem trans_iterate_Ico {a : ℕ → ℝ} {m n : ℕ} (hmn : m ≤ n)
     (hint : ∀ k ∈ Ico m n, IntervalIntegrable f μ (a k) (a <| k + 1)) :
@@ -334,6 +340,11 @@ theorem iff_comp_neg :
 theorem comp_sub_left (hf : IntervalIntegrable f volume a b) (c : ℝ) :
     IntervalIntegrable (fun x => f (c - x)) volume (c - a) (c - b) := by
   simpa only [neg_sub, ← sub_eq_add_neg] using iff_comp_neg.mp (hf.comp_add_left c)
+
+theorem comp_sub_left_iff (c : ℝ) :
+    IntervalIntegrable (fun x => f (c - x)) volume (c - a) (c - b) ↔
+      IntervalIntegrable f volume a b :=
+  ⟨fun h ↦ by simpa using h.comp_sub_left c, (.comp_sub_left · c)⟩
 
 end IntervalIntegrable
 

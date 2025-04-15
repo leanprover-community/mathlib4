@@ -584,11 +584,11 @@ lemma PartialOrder.toPreorder_injective : Function.Injective (@PartialOrder.toPr
 lemma LinearOrder.toPartialOrder_injective : Function.Injective (@LinearOrder.toPartialOrder α) :=
   fun
   | { le := A_le, lt := A_lt,
-      decidableLE := A_decidableLE, decidableEq := A_decidableEq, decidableLT := A_decidableLT
+      toDecidableLE := A_decidableLE, toDecidableEq := A_decidableEq, toDecidableLT := A_decidableLT
       min := A_min, max := A_max, min_def := A_min_def, max_def := A_max_def,
       compare := A_compare, compare_eq_compareOfLessAndEq := A_compare_canonical, .. },
     { le := B_le, lt := B_lt,
-      decidableLE := B_decidableLE, decidableEq := B_decidableEq, decidableLT := B_decidableLT
+      toDecidableLE := B_decidableLE, toDecidableEq := B_decidableEq, toDecidableLT := B_decidableLT
       min := B_min, max := B_max, min_def := B_min_def, max_def := B_max_def,
       compare := B_compare, compare_eq_compareOfLessAndEq := B_compare_canonical, .. } => by
     rintro ⟨⟩
@@ -673,9 +673,9 @@ instance instLinearOrder (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ wh
   min := fun a b ↦ (max a b : α)
   min_def := fun a b ↦ show (max .. : α) = _ by rw [max_comm, max_def]; rfl
   max_def := fun a b ↦ show (min .. : α) = _ by rw [min_comm, min_def]; rfl
-  decidableLE := (inferInstance : DecidableRel (fun a b : α ↦ b ≤ a))
-  decidableLT := (inferInstance : DecidableRel (fun a b : α ↦ b < a))
-  decidableEq := (inferInstance : DecidableEq α)
+  toDecidableLE := (inferInstance : DecidableRel (fun a b : α ↦ b ≤ a))
+  toDecidableLT := (inferInstance : DecidableRel (fun a b : α ↦ b < a))
+  toDecidableEq := (inferInstance : DecidableEq α)
   compare_eq_compareOfLessAndEq a b := by
     simp only [compare, LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq, eq_comm]
     rfl
@@ -913,9 +913,9 @@ abbrev LinearOrder.lift [LinearOrder β] [Max α] [Min α] (f : α → β) (inj 
   letI decidableEq := fun x y ↦ decidable_of_iff (f x = f y) inj.eq_iff
   { PartialOrder.lift f inj, instOrdα with
     le_total := fun x y ↦ le_total (f x) (f y)
-    decidableLE := decidableLE
-    decidableLT := decidableLT
-    decidableEq := decidableEq
+    toDecidableLE := decidableLE
+    toDecidableLT := decidableLT
+    toDecidableEq := decidableEq
     min := (· ⊓ ·)
     max := (· ⊔ ·)
     min_def := by
@@ -957,9 +957,9 @@ abbrev LinearOrder.liftWithOrd [LinearOrder β] [Max α] [Min α] [Ord α] (f : 
   letI decidableEq := fun x y ↦ decidable_of_iff (f x = f y) inj.eq_iff
   { PartialOrder.lift f inj with
     le_total := fun x y ↦ le_total (f x) (f y)
-    decidableLE := decidableLE
-    decidableLT := decidableLT
-    decidableEq := decidableEq
+    toDecidableLE := decidableLE
+    toDecidableLT := decidableLT
+    toDecidableEq := decidableEq
     min := (· ⊓ ·)
     max := (· ⊔ ·)
     min_def := by
@@ -1244,9 +1244,9 @@ instance instLinearOrder : LinearOrder PUnit where
   lt  := fun _ _ ↦ False
   max := fun _ _ ↦ unit
   min := fun _ _ ↦ unit
-  decidableEq := inferInstance
-  decidableLE := fun _ _ ↦ Decidable.isTrue trivial
-  decidableLT := fun _ _ ↦ Decidable.isFalse id
+  toDecidableEq := inferInstance
+  toDecidableLE := fun _ _ ↦ Decidable.isTrue trivial
+  toDecidableLT := fun _ _ ↦ Decidable.isFalse id
   le_refl     := by intros; trivial
   le_trans    := by intros; trivial
   le_total    := by intros; exact Or.inl trivial
@@ -1305,4 +1305,4 @@ noncomputable instance AsLinearOrder.linearOrder [PartialOrder α] [IsTotal α (
     LinearOrder (AsLinearOrder α) where
   __ := inferInstanceAs (PartialOrder α)
   le_total := @total_of α (· ≤ ·) _
-  decidableLE := Classical.decRel _
+  toDecidableLE := Classical.decRel _

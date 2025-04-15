@@ -121,8 +121,8 @@ end Nat
 the encode/decode functions are primitive recursive.
 However, such a definition is circular.
 
-Instead, we ask that the composition of `decode : ℕ → option α` with
-`encode : option α → ℕ` is primitive recursive. Said composition is
+Instead, we ask that the composition of `decode : ℕ → Option α` with
+`encode : Option α → ℕ` is primitive recursive. Said composition is
 the identity function, restricted to the image of `encode`.
 Thus, in a way, the added requirement ensures that no predicates
 can be smuggled in through a cunning choice of the subset of `ℕ` into

@@ -135,9 +135,9 @@ abbrev IsSuccArchimedean.linearOrder [SuccOrder α] [IsSuccArchimedean α]
   le_total a b :=
     have ⟨c, ha, hb⟩ := directed_of (· ≥ ·) a b
     le_total_of_codirected ha hb
-  decidableEq := inferInstance
-  decidableLE := inferInstance
-  decidableLT := inferInstance
+  toDecidableEq := inferInstance
+  toDecidableLE := inferInstance
+  toDecidableLT := inferInstance
 
 lemma lt_or_le_of_directed [PredOrder α] [IsPredArchimedean α] {r v₁ v₂ : α} (h₁ : v₁ ≤ r)
     (h₂ : v₂ ≤ r) : v₁ < v₂ ∨ v₂ ≤ v₁ := by
