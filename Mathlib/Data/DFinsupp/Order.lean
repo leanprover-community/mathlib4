@@ -282,10 +282,10 @@ theorem support_inf : (f ⊓ g).support = f.support ∩ g.support := by
   simp only [← nonpos_iff_eq_zero, min_le_iff, not_or]
 
 @[simp]
-theorem support_sup [∀ i, OrderBot (α i)] : (f ⊔ g).support = f.support ∪ g.support := by
+theorem support_sup : (f ⊔ g).support = f.support ∪ g.support := by
   ext
-  simp only [Finset.mem_union, mem_support_iff, sup_apply, Ne, ← bot_eq_zero]
-  rw [_root_.sup_eq_bot_iff, not_and_or]
+  simp only [Finset.mem_union, mem_support_iff, sup_apply, Ne, ← nonpos_iff_eq_zero, sup_le_iff,
+    Classical.not_and_iff_not_or_not]
 
 nonrec theorem disjoint_iff : Disjoint f g ↔ Disjoint f.support g.support := by
   rw [disjoint_iff, disjoint_iff, DFinsupp.bot_eq_zero, ← DFinsupp.support_eq_empty,
