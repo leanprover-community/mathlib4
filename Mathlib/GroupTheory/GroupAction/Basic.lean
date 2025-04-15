@@ -254,8 +254,7 @@ def stabilizerEquivStabilizer (hg : g • b = a) : stabilizer G b ≃* stabilize
 
 theorem stabilizerEquivStabilizer_apply (hg : g • b = a) (x : stabilizer G b) :
     stabilizerEquivStabilizer hg x = MulAut.conj g x := by
-  simp only [stabilizerEquivStabilizer, MulEquiv.trans_apply, MulEquiv.subgroupCongr_apply,
-    MulEquiv.coe_subgroupMap_apply, MulAut.conj_apply]
+  simp [stabilizerEquivStabilizer]
 
 theorem stabilizerEquivStabilizer_symm_apply (hg : g • b = a) (x : stabilizer G a) :
     (stabilizerEquivStabilizer hg).symm x = MulAut.conj g⁻¹ x := by
@@ -314,7 +313,7 @@ theorem stabilizerEquivStabilizer_symm_apply (hg : g +ᵥ b = a) (x : stabilizer
 theorem stabilizerEquivStabilizer_trans {hg : g +ᵥ b = a} {hh : h +ᵥ c = b} (_ : k = g + h) :
     (stabilizerEquivStabilizer hh).trans (stabilizerEquivStabilizer hg)
       = (stabilizerEquivStabilizer (by rw [← hg, ←hh, ← vadd_vadd])) := by
-  ext x; simp [stabilizerEquivStabilizer_apply]
+  ext; simp [stabilizerEquivStabilizer_apply]
 
 theorem stabilizerEquivStabilizer_zero :
     stabilizerEquivStabilizer (zero_vadd G a) = AddEquiv.refl (stabilizer G a) := by
