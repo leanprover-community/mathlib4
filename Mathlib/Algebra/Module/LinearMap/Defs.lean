@@ -995,7 +995,7 @@ variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃
 variable [Module R M] [Module R M₂] [Module R M₃]
 variable {ι : Type*}
 
-variable (R)
+variable (R) in
 abbrev mk'' (f : M → M₂) (lin : IsLinearMap R f) : M →ₗ[R] M₂ := mk' f lin
 
 open Lean.Parser.Term in
