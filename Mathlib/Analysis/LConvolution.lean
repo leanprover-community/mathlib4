@@ -64,7 +64,7 @@ theorem mlconvolution_def {f g : G → ℝ≥0∞} {μ : Measure G} {x : G}:
 theorem zero_mlconvolution (f : G → ℝ≥0∞) (μ : Measure G) : 0 ⋆ₗ[μ] f = 0 := by
   ext; simp [mlconvolution]
 
-/-- Convolution with the zero function with a function returns the zero function. -/
+/-- Convolution of a function with the zero function returns the zero function. -/
 @[to_additive (attr := simp)]
 theorem mlconvolution_zero (f : G → ℝ≥0∞) (μ : Measure G) : f ⋆ₗ[μ] 0 = 0 := by
   ext; simp [mlconvolution]
