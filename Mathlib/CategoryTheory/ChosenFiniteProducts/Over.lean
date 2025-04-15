@@ -81,7 +81,7 @@ lemma associator_hom_left_snd_snd (R S T : Over X) :
   (limit.lift_π_assoc _ _ _).trans (limit.lift_π _ _)
 
 @[reassoc (attr := simp)]
-lemma associator_inv_left_fst (R S T : Over X) :
+lemma associator_inv_left_fst_fst (R S T : Over X) :
     (α_ R S T).inv.left ≫ pullback.fst (pullback.fst _ _ ≫ _) _ ≫ pullback.fst _ _ =
       pullback.fst _ _ :=
   (limit.lift_π_assoc _ _ _).trans (limit.lift_π _ _)
