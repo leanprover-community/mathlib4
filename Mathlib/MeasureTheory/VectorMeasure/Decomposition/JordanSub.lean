@@ -27,16 +27,6 @@ where `μ ≥ ν` and `ν ≥ μ`, and the measure difference behaves like a sig
   `(μ - ν).toSignedMeasure - (ν - μ).toSignedMeasure`.
 * `setWhereGe_iff_setWhereGeSignedMeasure`:
   The set-theoretic condition for `μ ≥ ν` is equivalent to its reformulation using signed measures.
-
-## Notations
-
-- `μ - ν` : Subtraction of finite measures i.e. the least measure `τ` such that `μ ≤ τ + ν`.
-
-  It is the equivalent of `(μ - ν) ⊔ 0` if `μ` and `ν` were signed measures.
-- `μ.restrict s` : Restriction of a measure `μ` to the set `s`.
-- `μ.toSignedMeasure` : Signed measure corresponding to `μ`.
-- `0 ≤[s] μ` : The signed measure `μ` is nonnegative on the set `s`.
-- `sᶜ` : Complement of a measurable set `s`.
 -/
 
 open scoped MeasureTheory ENNReal NNReal
@@ -45,34 +35,36 @@ namespace MeasureTheory
 
 noncomputable section
 
-variable {α : Type*} [m : MeasurableSpace α]
-variable {s : Set α}
-variable {μ ν : Measure α} [hμ : IsFiniteMeasure μ] [hν : IsFiniteMeasure ν]
+variable {X : Type*} {mX : MeasurableSpace X}
+variable {s : Set X}
+variable {μ ν : Measure X} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
 
 namespace Measure
+
 /-- The set where `μ ≥ ν`, defined via measurable set and measure restriction comparisons. -/
-class SetWhereGe (μ ν : Measure α) (s : Set α) : Prop where
+class SetWhereGe (μ ν : Measure X) (s : Set X) : Prop where
   measurable : MeasurableSet s
   ge_on : ν.restrict s ≤ μ.restrict s
   ge_on_compl : μ.restrict sᶜ ≤ ν.restrict sᶜ
 
-instance SetWhereGe.compl_symm {μ ν : Measure α} {s : Set α}
+instance SetWhereGe.compl_symm {μ ν : Measure X} {s : Set X}
     [h : SetWhereGe μ ν s] : SetWhereGe ν μ sᶜ where
   measurable := h.measurable.compl
   ge_on := h.ge_on_compl
   ge_on_compl := by rw [compl_compl]; exact h.ge_on
+  
 end Measure
 
 namespace SignedMeasure
 
 /-- The set where `μ ≥ ν`, reformulated via nonnegativity of signed measure differences. -/
-class SetWhereGe (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMeasure ν] (s : Set α) : Prop where
+class SetWhereGe (μ ν : Measure X) [IsFiniteMeasure μ] [IsFiniteMeasure ν] (s : Set X) : Prop where
   measurable : MeasurableSet s
   ge_on : ν.toSignedMeasure.restrict s ≤  μ.toSignedMeasure.restrict s
   ge_on_compl : μ.toSignedMeasure.restrict sᶜ ≤  ν.toSignedMeasure.restrict sᶜ
 
-instance SetWhereGe.compl_symm {μ ν : Measure α} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
-    {s : Set α} [h : SetWhereGe μ ν s] : SetWhereGe ν μ sᶜ where
+instance SetWhereGe.compl_symm {μ ν : Measure X} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+    {s : Set X} [h : SetWhereGe μ ν s] : SetWhereGe ν μ sᶜ where
   measurable := h.measurable.compl
   ge_on := h.ge_on_compl
   ge_on_compl := by rw [compl_compl]; exact h.ge_on
@@ -81,8 +73,8 @@ end SignedMeasure
 
 namespace VectorMeasure
 
-variable {α : Type*} [m : MeasurableSpace α]
-variable (μ ν : VectorMeasure α ℝ) (s : Set α)
+variable {X : Type*} [m : MeasurableSpace X]
+variable (μ ν : VectorMeasure X ℝ) (s : Set X)
 
 @[simp]
 theorem restrict_neg :
@@ -97,7 +89,7 @@ theorem restrict_sub :
   simp [sub_eq_add_neg, restrict_add]
 
 @[simp]
-theorem restrict_add_restrict_compl (μ : VectorMeasure α ℝ) {s : Set α} (hs : MeasurableSet s) :
+theorem restrict_add_restrict_compl (μ : VectorMeasure X ℝ) {s : Set X} (hs : MeasurableSet s) :
     μ.restrict s + μ.restrict sᶜ = μ := by
   ext A hA
   rw [add_apply, restrict_apply _ hs hA, restrict_apply _ hs.compl hA,
@@ -110,8 +102,8 @@ theorem restrict_add_restrict_compl (μ : VectorMeasure α ℝ) {s : Set α} (hs
 
 end VectorMeasure
 
-lemma exists_SetWhereGeSignedMeasure (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
-    ∃ s : Set α, SignedMeasure.SetWhereGe μ ν s := by
+lemma exists_SetWhereGeSignedMeasure (μ ν : Measure X) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
+    ∃ s : Set X, SignedMeasure.SetWhereGe μ ν s := by
   obtain ⟨s, hs, h₂, h₃⟩ := (μ.toSignedMeasure - ν.toSignedMeasure).exists_compl_positive_negative
   simp at h₂ h₃
   exact ⟨s, hs, h₂, h₃⟩
@@ -141,13 +133,13 @@ theorem toSignedMeasure_le_iff : μ.toSignedMeasure ≤ ν.toSignedMeasure ↔ �
     exact h A
 
 @[simp]
-theorem sub_zero {μ : Measure α} : μ - 0 = μ := by
+theorem sub_zero {μ : Measure X} : μ - 0 = μ := by
   rw [sub_def]
   apply le_antisymm
   · simp only [add_zero]; exact sInf_le (by simp)
   · simp [add_zero]
 
-lemma sub_eq_zero_of_ge_on {μ ν : Measure α} (hs : SetWhereGe μ ν s) : (ν - μ) s = 0 := by
+lemma sub_eq_zero_of_ge_on {μ ν : Measure X} (hs : SetWhereGe μ ν s) : (ν - μ) s = 0 := by
   have : ν.restrict s ≤ μ.restrict s + 0 := by simp [hs.ge_on]
   replace this := Measure.sub_le_of_le_add this
   simp only [sub_zero] at this
@@ -242,8 +234,8 @@ theorem sub_toSignedMeasure_eq_toSignedMeasure_sub :
 
 /-- The Jordan decomposition associated to the pair of mutually singular measures μ-ν and ν-μ . -/
 def jordanDecomposition_of_toSignedMeasure_sub
-    (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
-    JordanDecomposition α where
+    (μ ν : Measure X) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
+    JordanDecomposition X where
   posPart := μ - ν
   negPart := ν - μ
   mutuallySingular := mutually_singular_measure_sub
