@@ -282,16 +282,11 @@ section Prod
 
 variable [TopologicalSpace X] [TopologicalSpace Y]
 
-instance Prod.instNeBotNhdsWithinIoi [Preorder X] [Preorder Y] {x : X × Y}
-    [(𝓝[>] x.1).NeBot] [(𝓝[>] x.2).NeBot] : (𝓝[>] x).NeBot :=
-  Prod.instNeBotNhdsWithinIio (X := Xᵒᵈ) (Y := Yᵒᵈ)
-    (x := (OrderDual.toDual x.1, OrderDual.toDual x.2))
-
 theorem MapClusterPt.curry_prodMap {α β : Type*}
     {f : α → X} {g : β → Y} {la : Filter α} {lb : Filter β} {x : X} {y : Y}
     (hf : MapClusterPt x la f) (hg : MapClusterPt y lb g) :
     MapClusterPt (x, y) (la.curry lb) (.map f g) := by
-  rw [mapClusterPt_iff] at hf hg
+  rw [mapClusterPt_iff_frequently] at hf hg
   rw [((𝓝 x).basis_sets.prod_nhds (𝓝 y).basis_sets).mapClusterPt_iff_frequently]
   rintro ⟨s, t⟩ ⟨hs, ht⟩
   rw [frequently_curry_iff]
@@ -438,6 +433,18 @@ theorem Continuous.restrict {f : X → Y} {s : Set X} {t : Set Y} (h1 : MapsTo f
 theorem Continuous.restrictPreimage {f : X → Y} {s : Set Y} (h : Continuous f) :
     Continuous (s.restrictPreimage f) :=
   h.restrict _
+
+lemma Topology.IsEmbedding.restrict {f : X → Y}
+    (hf : IsEmbedding f) {s : Set X} {t : Set Y} (H : s.MapsTo f t) :
+    IsEmbedding H.restrict :=
+  .of_comp (hf.continuous.restrict H) continuous_subtype_val (hf.comp .subtypeVal)
+
+lemma Topology.IsOpenEmbedding.restrict {f : X → Y}
+    (hf : IsOpenEmbedding f) {s : Set X} {t : Set Y} (H : s.MapsTo f t) (hs : IsOpen s) :
+    IsOpenEmbedding H.restrict :=
+  ⟨hf.isEmbedding.restrict H, (by
+    rw [MapsTo.range_restrict]
+    exact continuous_subtype_val.1 _ (hf.isOpenMap _ hs))⟩
 
 theorem Topology.IsInducing.codRestrict {e : X → Y} (he : IsInducing e) {s : Set Y}
     (hs : ∀ x, e x ∈ s) : IsInducing (codRestrict e s hs) :=

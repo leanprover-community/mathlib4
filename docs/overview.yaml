@@ -443,7 +443,7 @@ Combinatorics:
     Harris-Kleitman inequality: 'IsLowerSet.le_card_inter_finset'
     # Antichains:
     Ahlswede-Zhang identity: 'AhlswedeZhang.infSum_eq_one'
-    LYM inequality: 'Finset.sum_card_slice_div_choose_le_one'
+    LYM inequality: 'Finset.lubell_yamamoto_meshalkin_inequality_sum_card_div_choose'
     Sperner's theorem: 'IsAntichain.sperner'
     # Intersecting families:
     Maximum size of an intersecting family: 'Set.Intersecting.is_max_iff_card_eq'
@@ -503,7 +503,7 @@ Data structures:
     array: 'Array'
     # buffer: 'buffer'
     difference list: 'Batteries.DList'
-    lazy list: 'LazyList'
+    lazy list: 'MLList'
     stream: 'Stream'''
     sequence: 'Stream''.Seq'
     weak sequence: 'Stream''.WSeq'
@@ -529,11 +529,27 @@ Data structures:
 
 Logic and computation:
   Computability:
-    computable function: 'Computable'
+    computable function:
+      in terms of general recursive functions: 'Computable'
+      in terms of Turing machines: 'Turing.TM2Computable'
+    primitive recursive function: 'Primrec'
+    Ackermann function: 'ack'
     Turing machine: 'Turing.TM0.Machine'
     halting problem: 'ComputablePred.halting_problem'
     Rice theorem: 'ComputablePred.rice'
     combinatorial game: 'SetTheory.Game'
+  Complexity:
+    polynomial-time computation: 'Turing.TM2ComputableInPolyTime'
+  Formal languages:
+    language: 'Language'
+    Arden's lemma: 'Language.self_eq_mul_add_iff'
+    regular language: 'Language.IsRegular'
+    DFA: 'DFA'
+    NFA: 'NFA'
+    '$\varepsilon$-NFA': 'εNFA'
+    regular expression: 'RegularExpression'
+    context-free language: 'Language.IsContextFree'
+    context-free grammar: 'ContextFreeGrammar'
   Set theory:
     ordinal: 'Ordinal'
     cardinal: 'Cardinal'

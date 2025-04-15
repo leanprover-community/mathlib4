@@ -361,7 +361,7 @@ lemma condExp_generateFrom_singleton (hs : MeasurableSet s) {f : Ω → F} (hf :
         exact ENNReal.toReal_ne_zero.2 ⟨hμs, measure_ne_top _ _⟩
       · simp only [h, integral_const, MeasurableSet.univ, Measure.restrict_apply, univ_inter,
           ((Measure.restrict_apply_eq_zero hs.compl).2 <| compl_inter_self s ▸ measure_empty),
-          ENNReal.zero_toReal, zero_smul, setIntegral_zero_measure]
+          ENNReal.toReal_zero, zero_smul, setIntegral_zero_measure]
       · simp only [h, Measure.restrict_univ, cond, integral_smul_measure, ENNReal.toReal_inv,
           integral_const, MeasurableSet.univ, Measure.restrict_apply, univ_inter,
           smul_inv_smul₀ <| ENNReal.toReal_ne_zero.2 ⟨hμs, measure_ne_top _ _⟩]

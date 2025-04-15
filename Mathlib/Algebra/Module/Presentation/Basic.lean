@@ -500,6 +500,7 @@ variable {A M}
 def Presentation.ofIsPresentation {relations : Relations.{w₀, w₁} A}
     {solution : relations.Solution M} (h : solution.IsPresentation) :
     Presentation.{w₀, w₁} A M where
+  __ := relations
   toSolution := solution
   toIsPresentation := h
 

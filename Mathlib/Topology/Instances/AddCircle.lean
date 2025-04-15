@@ -57,7 +57,8 @@ variable {𝕜 B : Type*}
 
 section Continuity
 
-variable [LinearOrderedAddCommGroup 𝕜] [Archimedean 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜]
+variable [AddCommGroup 𝕜] [LinearOrder 𝕜] [IsOrderedAddMonoid 𝕜] [Archimedean 𝕜]
+  [TopologicalSpace 𝕜] [OrderTopology 𝕜]
   {p : 𝕜} (hp : 0 < p) (a x : 𝕜)
 
 theorem continuous_right_toIcoMod : ContinuousWithinAt (toIcoMod hp a) (Ici x) x := by
@@ -111,14 +112,14 @@ theorem continuousAt_toIocMod (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a) : Continu
 end Continuity
 
 /-- The "additive circle": `𝕜 ⧸ (ℤ ∙ p)`. See also `Circle` and `Real.angle`. -/
-abbrev AddCircle [LinearOrderedAddCommGroup 𝕜] (p : 𝕜) :=
+abbrev AddCircle [AddCommGroup 𝕜] (p : 𝕜) :=
   𝕜 ⧸ zmultiples p
 
 namespace AddCircle
 
 section LinearOrderedAddCommGroup
 
-variable [LinearOrderedAddCommGroup 𝕜] (p : 𝕜)
+variable [AddCommGroup 𝕜] (p : 𝕜)
 
 theorem coe_nsmul {n : ℕ} {x : 𝕜} : (↑(n • x) : AddCircle p) = n • (x : AddCircle p) :=
   rfl
@@ -142,16 +143,6 @@ theorem coe_zero : ↑(0 : 𝕜) = (0 : AddCircle p) :=
 theorem coe_eq_zero_iff {x : 𝕜} : (x : AddCircle p) = 0 ↔ ∃ n : ℤ, n • p = x := by
   simp [AddSubgroup.mem_zmultiples_iff]
 
-theorem coe_eq_zero_of_pos_iff (hp : 0 < p) {x : 𝕜} (hx : 0 < x) :
-    (x : AddCircle p) = 0 ↔ ∃ n : ℕ, n • p = x := by
-  rw [coe_eq_zero_iff]
-  constructor <;> rintro ⟨n, rfl⟩
-  · replace hx : 0 < n := by
-      contrapose! hx
-      simpa only [← neg_nonneg, ← zsmul_neg, zsmul_neg'] using zsmul_nonneg hp.le (neg_nonneg.2 hx)
-    exact ⟨n.toNat, by rw [← natCast_zsmul, Int.toNat_of_nonneg hx.le]⟩
-  · exact ⟨(n : ℤ), by simp⟩
-
 theorem coe_period : (p : AddCircle p) = 0 :=
   (QuotientAddGroup.eq_zero_iff p).2 <| mem_zmultiples p
 
@@ -162,6 +153,18 @@ theorem coe_add_period (x : 𝕜) : ((x + p : 𝕜) : AddCircle p) = x := by
 protected theorem continuous_mk' [TopologicalSpace 𝕜] :
     Continuous (QuotientAddGroup.mk' (zmultiples p) : 𝕜 → AddCircle p) :=
   continuous_coinduced_rng
+
+variable [LinearOrder 𝕜] [IsOrderedAddMonoid 𝕜]
+
+theorem coe_eq_zero_of_pos_iff (hp : 0 < p) {x : 𝕜} (hx : 0 < x) :
+    (x : AddCircle p) = 0 ↔ ∃ n : ℕ, n • p = x := by
+  rw [coe_eq_zero_iff]
+  constructor <;> rintro ⟨n, rfl⟩
+  · replace hx : 0 < n := by
+      contrapose! hx
+      simpa only [← neg_nonneg, ← zsmul_neg, zsmul_neg'] using zsmul_nonneg hp.le (neg_nonneg.2 hx)
+    exact ⟨n.toNat, by rw [← natCast_zsmul, Int.toNat_of_nonneg hx.le]⟩
+  · exact ⟨(n : ℤ), by simp⟩
 
 variable [hp : Fact (0 < p)] (a : 𝕜) [Archimedean 𝕜]
 
@@ -305,7 +308,7 @@ end LinearOrderedAddCommGroup
 
 section LinearOrderedField
 
-variable [LinearOrderedField 𝕜] (p q : 𝕜)
+variable [Field 𝕜] (p q : 𝕜)
 
 /-- The rescaling equivalence between additive circles with different periods. -/
 def equivAddCircle (hp : p ≠ 0) (hq : q ≠ 0) : AddCircle p ≃+ AddCircle q :=
@@ -324,7 +327,7 @@ theorem equivAddCircle_symm_apply_mk (hp : p ≠ 0) (hq : q ≠ 0) (x : 𝕜) :
   rfl
 
 section
-variable [TopologicalSpace 𝕜] [OrderTopology 𝕜]
+variable [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜]
 
 /-- The rescaling homeomorphism between additive circles with different periods. -/
 def homeomorphAddCircle (hp : p ≠ 0) (hq : q ≠ 0) : AddCircle p ≃ₜ AddCircle q :=
@@ -343,7 +346,7 @@ theorem homeomorphAddCircle_symm_apply_mk (hp : p ≠ 0) (hq : q ≠ 0) (x : �
   rfl
 end
 
-variable [hp : Fact (0 < p)]
+variable [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [hp : Fact (0 < p)]
 
 section FloorRing
 
@@ -440,6 +443,20 @@ theorem exists_gcd_eq_one_of_isOfFinAddOrder {u : AddCircle p} (h : IsOfFinAddOr
   let ⟨m, hl, hg, he⟩ := (addOrderOf_eq_pos_iff h.addOrderOf_pos).1 rfl
   ⟨m, hg, hl, he⟩
 
+theorem addOrderOf_coe_eq_zero_iff_forall_rat_ne_div {a : 𝕜} :
+    addOrderOf (a : AddCircle p) = 0 ↔ ∀ q : ℚ, (q : 𝕜) ≠ a / p := by
+  simp only [ne_eq, eq_div_iff (Fact.out : 0 < p).ne']
+  constructor
+  · rintro h q rfl
+    rw [addOrderOf_coe_rat] at h
+    exact q.den_ne_zero h
+  · rw [addOrderOf_eq_zero_iff']
+    intro h n hn han
+    simp only [← coe_nsmul, coe_eq_zero_iff, nsmul_eq_mul, zsmul_eq_mul] at han
+    rcases han with ⟨m, hm⟩
+    apply h (m / n)
+    field_simp [hm]
+
 variable (p)
 
 /-- The natural bijection between points of order `n` and natural numbers less than and coprime to
@@ -483,9 +500,12 @@ theorem card_addOrderOf_eq_totient {n : ℕ} :
       n.totient_eq_card_lt_and_coprime]
     simp only [Nat.gcd_comm]
 
-theorem finite_setOf_add_order_eq {n : ℕ} (hn : 0 < n) :
-    { u : AddCircle p | addOrderOf u = n }.Finite :=
+theorem finite_setOf_addOrderOf_eq {n : ℕ} (hn : 0 < n) :
+    {u : AddCircle p | addOrderOf u = n}.Finite :=
   finite_coe_iff.mp <| Nat.finite_of_card_ne_zero <| by simp [hn.ne']
+
+@[deprecated (since := "2025-03-26")]
+alias finite_setOf_add_order_eq := finite_setOf_addOrderOf_eq
 
 end FiniteOrderPoints
 
@@ -511,7 +531,8 @@ end AddCircle
 
 section UnitAddCircle
 
-instance instZeroLTOne [StrictOrderedSemiring 𝕜] : Fact ((0 : 𝕜) < 1) := ⟨zero_lt_one⟩
+instance instZeroLTOne [Semiring 𝕜] [PartialOrder 𝕜] [IsStrictOrderedRing 𝕜] : Fact ((0 : 𝕜) < 1) :=
+  ⟨zero_lt_one⟩
 
 /-- The unit circle `ℝ ⧸ ℤ`. -/
 abbrev UnitAddCircle :=
@@ -528,7 +549,7 @@ by the equivalence relation identifying the endpoints. -/
 
 namespace AddCircle
 
-variable [LinearOrderedAddCommGroup 𝕜] (p a : 𝕜)
+variable [AddCommGroup 𝕜] [LinearOrder 𝕜] [IsOrderedAddMonoid 𝕜] (p a : 𝕜)
   [hp : Fact (0 < p)]
 
 local notation "𝕋" => AddCircle p
@@ -629,6 +650,9 @@ theorem liftIco_continuous [TopologicalSpace B] {f : 𝕜 → B} (hf : f a = f (
 theorem liftIco_zero_continuous [TopologicalSpace B] {f : 𝕜 → B} (hf : f 0 = f p)
     (hc : ContinuousOn f <| Icc 0 p) : Continuous (liftIco p 0 f) :=
   liftIco_continuous (by rwa [zero_add] : f 0 = f (0 + p)) (by rwa [zero_add])
+
+@[simp] lemma coe_fract (x : ℝ) : (↑(Int.fract x) : AddCircle (1 : ℝ)) = x := by
+  simp [← Int.self_sub_floor]
 
 end AddCircle
 

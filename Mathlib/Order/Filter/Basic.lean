@@ -392,9 +392,11 @@ theorem forall_mem_nonempty_iff_neBot {f : Filter α} :
     (∀ s : Set α, s ∈ f → s.Nonempty) ↔ NeBot f :=
   ⟨fun h => ⟨fun hf => not_nonempty_empty (h ∅ <| hf.symm ▸ mem_bot)⟩, @nonempty_of_mem _ _⟩
 
+instance instNeBotTop [Nonempty α] : NeBot (⊤ : Filter α) :=
+  forall_mem_nonempty_iff_neBot.1 fun s hs => by rwa [mem_top.1 hs, ← nonempty_iff_univ_nonempty]
+
 instance instNontrivialFilter [Nonempty α] : Nontrivial (Filter α) :=
-  ⟨⟨⊤, ⊥, NeBot.ne <| forall_mem_nonempty_iff_neBot.1
-    fun s hs => by rwa [mem_top.1 hs, ← nonempty_iff_univ_nonempty]⟩⟩
+  ⟨⟨⊤, ⊥, instNeBotTop.ne⟩⟩
 
 theorem nontrivial_iff_nonempty : Nontrivial (Filter α) ↔ Nonempty α :=
   ⟨fun _ =>

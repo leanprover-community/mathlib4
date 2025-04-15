@@ -3,9 +3,9 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+import Mathlib.LinearAlgebra.Matrix.Charpoly.LinearMap
 import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
 import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
-import Mathlib.LinearAlgebra.Matrix.Charpoly.LinearMap
 
 /-!
 # Integral closure of a subring.
@@ -56,6 +56,7 @@ instance Module.End.isIntegral {M : Type*} [AddCommGroup M] [Module R M] [Module
   ⟨LinearMap.exists_monic_and_aeval_eq_zero R⟩
 
 variable (R) in
+@[nontriviality]
 theorem IsIntegral.of_finite [Module.Finite R B] (x : B) : IsIntegral R x :=
   (isIntegral_algHom_iff (Algebra.lmul R B) Algebra.lmul_injective).mp
     (Algebra.IsIntegral.isIntegral _)

@@ -585,7 +585,7 @@ theorem uniformity_setCoe {s : Set α} [UniformSpace α] :
 
 theorem map_uniformity_set_coe {s : Set α} [UniformSpace α] :
     map (Prod.map (↑) (↑)) (𝓤 s) = 𝓤 α ⊓ 𝓟 (s ×ˢ s) := by
-  rw [uniformity_setCoe, map_comap, range_prod_map, Subtype.range_val]
+  rw [uniformity_setCoe, map_comap, range_prodMap, Subtype.range_val]
 
 theorem uniformContinuous_subtype_val {p : α → Prop} [UniformSpace α] :
     UniformContinuous (Subtype.val : { a : α // p a } → α) :=
@@ -697,6 +697,11 @@ theorem ball_entourageProd (u : Set (α × α)) (v : Set (β × β)) (x : α × 
     ball x (entourageProd u v) = ball x.1 u ×ˢ ball x.2 v := by
   ext p; simp only [ball, entourageProd, Set.mem_setOf_eq, Set.mem_prod, Set.mem_preimage]
 
+lemma IsSymmetricRel.entourageProd {u : Set (α × α)} {v : Set (β × β)}
+    (hu : IsSymmetricRel u) (hv : IsSymmetricRel v) :
+    IsSymmetricRel (entourageProd u v) :=
+  Set.ext fun _ ↦ and_congr hu.mk_mem_comm hv.mk_mem_comm
+
 theorem Filter.HasBasis.uniformity_prod {ιa ιb : Type*} [UniformSpace α] [UniformSpace β]
     {pa : ιa → Prop} {pb : ιb → Prop} {sa : ιa → Set (α × α)} {sb : ιb → Set (β × β)}
     (ha : (𝓤 α).HasBasis pa sa) (hb : (𝓤 β).HasBasis pb sb) :
@@ -753,8 +758,6 @@ alias UniformContinuous.prod_mk_right := UniformContinuous.prodMk_right
 theorem UniformContinuous.prodMap [UniformSpace δ] {f : α → γ} {g : β → δ}
     (hf : UniformContinuous f) (hg : UniformContinuous g) : UniformContinuous (Prod.map f g) :=
   (hf.comp uniformContinuous_fst).prodMk (hg.comp uniformContinuous_snd)
-
-@[deprecated (since := "2024-10-06")] alias UniformContinuous.prod_map := UniformContinuous.prodMap
 
 theorem toTopologicalSpace_prod {α} {β} [u : UniformSpace α] [v : UniformSpace β] :
     @UniformSpace.toTopologicalSpace (α × β) instUniformSpaceProd =

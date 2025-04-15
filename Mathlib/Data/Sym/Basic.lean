@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Mathlib.Algebra.Order.Group.Multiset
-import Mathlib.Data.Vector.Basic
 import Mathlib.Data.Setoid.Basic
+import Mathlib.Data.Vector.Basic
+import Mathlib.Logic.Nontrivial.Basic
 import Mathlib.Tactic.ApplyFun
 
 /-!
@@ -312,7 +313,7 @@ instance inhabitedSym [Inhabited α] (n : ℕ) : Inhabited (Sym α n) :=
   ⟨replicate n default⟩
 
 instance inhabitedSym' [Inhabited α] (n : ℕ) : Inhabited (Sym' α n) :=
-  ⟨Quotient.mk' (Vector.replicate n default)⟩
+  ⟨Quotient.mk' (List.Vector.replicate n default)⟩
 
 instance (n : ℕ) [IsEmpty α] : IsEmpty (Sym α n.succ) :=
   ⟨fun s => by
