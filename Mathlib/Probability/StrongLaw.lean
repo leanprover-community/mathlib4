@@ -673,8 +673,7 @@ lemma strong_law_ae_simpleFunc_comp (X : ℕ → Ω → E) (h' : Measurable (X 0
       simp only [Function.const_one, smul_eq_mul, ← div_eq_inv_mul]
       apply strong_law_ae_real
       · exact SimpleFunc.integrable_of_isFiniteMeasure
-          ((SimpleFunc.piecewise s hs (SimpleFunc.const _ (1 : ℝ))
-            (SimpleFunc.const _ (0 : ℝ))).comp (X 0) h')
+          ((SimpleFunc.piecewise s hs (1 : α →ₛ ℝ) (0 : α →ₛ ℝ)).comp (X 0) h')
       · exact fun i j hij ↦ IndepFun.comp (hindep hij) F_meas F_meas
       · exact fun i ↦ (hident i).comp F_meas
     filter_upwards [this] with ω hω

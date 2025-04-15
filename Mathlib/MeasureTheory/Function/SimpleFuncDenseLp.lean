@@ -359,7 +359,7 @@ theorem measure_support_lt_top_of_integrable (f : α →ₛ E) (hf : Integrable 
   f.measure_support_lt_top (integrable_iff.mp hf)
 
 theorem measure_lt_top_of_memLp_indicator (hp_pos : p ≠ 0) (hp_ne_top : p ≠ ∞) {c : E} (hc : c ≠ 0)
-    {s : Set α} (hs : MeasurableSet s) (hcs : MemLp ((const α c).piecewise s hs (const α 0)) p μ) :
+    {s : Set α} (hs : MeasurableSet s) (hcs : MemLp ((const α c).piecewise s hs 0) p μ) :
     μ s < ⊤ := by
   have : Function.support (const α c) = Set.univ := Function.support_const hc
   simpa only [memLp_iff_finMeasSupp hp_pos hp_ne_top, finMeasSupp_iff_support,
@@ -599,7 +599,7 @@ variable (p) in
 -/
 def indicatorConst {s : Set α} (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : E) :
     Lp.simpleFunc E p μ :=
-  toLp ((SimpleFunc.const _ c).piecewise s hs (SimpleFunc.const _ 0))
+  toLp ((SimpleFunc.const _ c).piecewise s hs 0)
     (memLp_indicator_const p hs c (Or.inr hμs))
 
 @[simp]
@@ -609,7 +609,7 @@ theorem coe_indicatorConst {s : Set α} (hs : MeasurableSet s) (hμs : μ s ≠ 
 
 theorem toSimpleFunc_indicatorConst {s : Set α} (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : E) :
     toSimpleFunc (indicatorConst p hs hμs c) =ᵐ[μ]
-      (SimpleFunc.const _ c).piecewise s hs (SimpleFunc.const _ 0) :=
+      (SimpleFunc.const _ c).piecewise s hs 0 :=
   Lp.simpleFunc.toSimpleFunc_toLp _ _
 
 /-- To prove something for an arbitrary `Lp` simple function, with `0 < p < ∞`, it suffices to show

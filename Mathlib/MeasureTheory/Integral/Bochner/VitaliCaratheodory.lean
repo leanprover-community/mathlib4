@@ -94,7 +94,7 @@ theorem SimpleFunc.exists_le_lowerSemicontinuous_lintegral_ge (f : α →ₛ ℝ
       (∫⁻ x, g x ∂μ) ≤ (∫⁻ x, f x ∂μ) + ε := by
   induction f using MeasureTheory.SimpleFunc.induction generalizing ε with
   | @const c s hs =>
-    let f := SimpleFunc.piecewise s hs (SimpleFunc.const α c) (SimpleFunc.const α 0)
+    let f := SimpleFunc.piecewise s hs (SimpleFunc.const α c) 0
     by_cases h : ∫⁻ x, f x ∂μ = ⊤
     · refine
         ⟨fun _ => c, fun x => ?_, lowerSemicontinuous_const, by
