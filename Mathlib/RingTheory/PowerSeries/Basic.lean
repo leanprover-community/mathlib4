@@ -211,6 +211,9 @@ def X : R⟦X⟧ :=
 theorem commute_X (φ : R⟦X⟧) : Commute φ X :=
   MvPowerSeries.commute_X _ _
 
+theorem commute_X_pow {φ : R⟦X⟧} {n : ℕ} : Commute φ (X ^ n) :=
+  Commute.pow_right (commute_X φ) n
+
 @[simp]
 theorem coeff_zero_eq_constantCoeff : ⇑(coeff R 0) = constantCoeff R := by
   rw [coeff, Finsupp.single_zero]
@@ -326,6 +329,16 @@ theorem coeff_succ_X_mul (n : ℕ) (φ : R⟦X⟧) : coeff R (n + 1) (X * φ) = 
   convert φ.coeff_add_monomial_mul (single () 1) (single () n) _
   rw [one_mul]
 
+theorem mul_X_cancel {φ ψ : R⟦X⟧} (h : φ * X = ψ * X) : φ = ψ := by
+  rw [PowerSeries.ext_iff] at h ⊢
+  intro n
+  simpa using h (n + 1)
+
+theorem X_mul_cancel {φ ψ : R⟦X⟧} (h : X * φ = X * ψ) : φ = ψ := by
+  rw [PowerSeries.ext_iff] at h ⊢
+  intro n
+  simpa using h (n + 1)
+
 @[simp]
 theorem constantCoeff_C (a : R) : constantCoeff R (C R a) = a :=
   rfl
@@ -409,6 +422,18 @@ theorem coeff_X_pow_mul' (p : R⟦X⟧) (n d : ℕ) :
     have := mem_antidiagonal.mp hx
     rw [add_comm] at this
     exact ((le_of_add_le_right this.le).trans_lt <| not_le.mp h).ne
+
+theorem mul_X_pow_cancel {k : ℕ} {φ ψ : R⟦X⟧} (h : φ * X ^ k = ψ * X ^ k) :
+    φ = ψ := by
+  rw [PowerSeries.ext_iff] at h ⊢
+  intro n
+  simpa using h (n + k)
+
+theorem X_pow_mul_cancel {k : ℕ} {φ ψ : R⟦X⟧} (h : X ^ k * φ = X ^ k * ψ) :
+    φ = ψ := by
+  rw [PowerSeries.ext_iff] at h ⊢
+  intro n
+  simpa using h (n + k)
 
 end
 

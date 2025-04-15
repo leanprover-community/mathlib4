@@ -59,18 +59,21 @@ theorem order_zero : order (0 : R⟦X⟧) = ⊤ :=
 
 theorem order_finite_iff_ne_zero : (order φ < ⊤) ↔ φ ≠ 0 := by
   simp only [order]
-  constructor
-  · split_ifs with h <;> intro H
-    · simp at H
-    · exact h
-  · intro h
-    simp [h]
+  split_ifs with h <;> simpa
+
+/-- The `0` power series is the unique power series with infinite order. -/
+@[simp]
+theorem order_eq_top {φ : R⟦X⟧} : φ.order = ⊤ ↔ φ = 0 := by
+  simpa using order_finite_iff_ne_zero.not_left
+
+theorem coe_toNat_order {f : PowerSeries R} (hf : f ≠ 0) : f.order.toNat = f.order := by
+  rw [ENat.coe_toNat_eq_self.mpr (order_eq_top.not.mpr hf)]
 
 /-- If the order of a formal power series is finite,
 then the coefficient indexed by the order is nonzero. -/
-theorem coeff_order (h : order φ < ⊤) : coeff R (φ.order.lift h) φ ≠ 0 := by
+theorem coeff_order (h : φ ≠ 0) : coeff R φ.order.toNat φ ≠ 0 := by
   classical
-  simp only [order, order_finite_iff_ne_zero.mp h, not_false_iff, dif_neg]
+  simp only [order, h, not_false_iff, dif_neg]
   generalize_proofs h
   exact Nat.find_spec h
 
@@ -88,18 +91,20 @@ theorem coeff_of_lt_order (n : ℕ) (h : ↑n < order φ) : coeff R n φ = 0 := 
   contrapose! h
   exact order_le _ h
 
-/-- The `0` power series is the unique power series with infinite order. -/
-@[simp]
-theorem order_eq_top {φ : R⟦X⟧} : φ.order = ⊤ ↔ φ = 0 := by
-  simpa using order_finite_iff_ne_zero.not_left
+theorem coeff_of_lt_order_toNat (n : ℕ) (h : n < φ.order.toNat) : coeff R n φ = 0 := by
+  by_cases h' : φ = 0
+  · simp [h']
+  · refine coeff_of_lt_order _ ?_
+    rwa [← coe_toNat_order h', ENat.coe_lt_coe]
 
 /-- The order of a formal power series is at least `n` if
 the `i`th coefficient is `0` for all `i < n`. -/
 theorem nat_le_order (φ : R⟦X⟧) (n : ℕ) (h : ∀ i < n, coeff R i φ = 0) : ↑n ≤ order φ := by
-  by_contra H; rw [not_le] at H
-  have lt_top : order φ < ⊤ := lt_top_of_lt H
-  replace H : (order φ).lift lt_top < n := by simpa
-  exact coeff_order lt_top (h _ H)
+  classical
+  simp only [order]
+  split_ifs
+  · simp
+  · simpa [Nat.le_find_iff]
 
 /-- The order of a formal power series is at least `n` if
 the `i`th coefficient is `0` for all `i < n`. -/
@@ -137,7 +142,7 @@ theorem min_order_le_order_add (φ ψ : R⟦X⟧) : min (order φ) (order ψ) �
 
 @[deprecated (since := "2024-11-12")] alias le_order_add := min_order_le_order_add
 
-private theorem order_add_of_order_eq.aux (φ ψ : R⟦X⟧) (_h : order φ ≠ order ψ)
+private theorem order_add_of_order_eq.aux (φ ψ : R⟦X⟧)
     (H : order φ < order ψ) : order (φ + ψ) ≤ order φ ⊓ order ψ := by
   suffices order (φ + ψ) = order φ by
     rw [le_inf_iff, this]
@@ -157,11 +162,10 @@ private theorem order_add_of_order_eq.aux (φ ψ : R⟦X⟧) (_h : order φ ≠ 
 theorem order_add_of_order_eq (φ ψ : R⟦X⟧) (h : order φ ≠ order ψ) :
     order (φ + ψ) = order φ ⊓ order ψ := by
   refine le_antisymm ?_ (min_order_le_order_add _ _)
-  by_cases H₁ : order φ < order ψ
-  · apply order_add_of_order_eq.aux _ _ h H₁
-  by_cases H₂ : order ψ < order φ
-  · simpa only [add_comm, inf_comm] using order_add_of_order_eq.aux _ _ h.symm H₂
-  exfalso; exact h (le_antisymm (not_lt.1 H₂) (not_lt.1 H₁))
+  rcases lt_trichotomy φ.order ψ.order with (φ_lt_ψ | φ_eq_ψ | ψ_lt_φ)
+  · apply order_add_of_order_eq.aux _ _ φ_lt_ψ
+  · exfalso; exact h φ_eq_ψ
+  · simpa only [add_comm, inf_comm] using order_add_of_order_eq.aux _ _ ψ_lt_φ
 
 /-- The order of the product of two formal power series
  is at least the sum of their orders. -/
@@ -226,18 +230,44 @@ theorem coeff_mul_prod_one_sub_of_lt_order {R ι : Type*} [CommRing R] (k : ℕ)
     rw [Finset.prod_insert ha, ← mul_assoc, mul_right_comm, coeff_mul_one_sub_of_lt_order _ t.1]
     exact ih t.2
 
--- TODO: link with `X_pow_dvd_iff`
-theorem X_pow_order_dvd (h : order φ < ⊤) : X ^ (order φ).lift h ∣ φ := by
-  refine ⟨PowerSeries.mk fun n => coeff R (n + (order φ).lift h) φ, ?_⟩
+/-- Given a non-zero power series `f`, `divXPowOrder f` is the power series obtained by
+  dividing out the largest power of X that divides `f`, that is its order -/
+def divXPowOrder (f : R⟦X⟧) : R⟦X⟧ :=
+  .mk fun n ↦ coeff R (n + f.order.toNat) f
+
+@[simp]
+lemma coeff_divXPowOrder {f : R⟦X⟧} {n : ℕ} :
+    coeff R n (divXPowOrder f) = coeff R (n + f.order.toNat) f :=
+  coeff_mk _ _
+
+@[simp]
+lemma divXPowOrder_zero :
+    divXPowOrder (0 : R⟦X⟧) = 0 := by
+  ext
+  simp
+
+lemma constantCoeff_divXPowOrder {f : R⟦X⟧} :
+    constantCoeff R (divXPowOrder f) = coeff R f.order.toNat f := by
+  simp [← coeff_zero_eq_constantCoeff]
+
+lemma constantCoeff_divXPowOrder_eq_zero_iff {f : R⟦X⟧} :
+    constantCoeff R (divXPowOrder f) = 0 ↔ f = 0 := by
+  by_cases h : f = 0
+  · simp [h]
+  · simp [constantCoeff_divXPowOrder, coeff_order h, h]
+
+theorem self_eq_X_pow_order_mul_divXPowOrder {f : R⟦X⟧} :
+    X ^ f.order.toNat * divXPowOrder f = f := by
   ext n
-  simp only [coeff_mul, coeff_X_pow, coeff_mk, boole_mul, Finset.sum_ite,
-    Finset.sum_const_zero, add_zero]
-  rw [Finset.filter_fst_eq_antidiagonal n ((order φ).lift h)]
-  split_ifs with hn
-  · simp [tsub_add_cancel_of_le hn]
-  · simp only [Finset.sum_empty]
-    refine coeff_of_lt_order _ ?_
-    simpa using hn
+  simp [coeff_X_pow_mul']
+  split_ifs with h
+  · simp [h]
+  · push_neg at h
+    rw [coeff_of_lt_order_toNat _ h]
+
+theorem X_pow_order_dvd : X ^ φ.order.toNat ∣ φ := by
+  simp [X_pow_dvd_iff]
+  exact coeff_of_lt_order_toNat
 
 theorem order_eq_emultiplicity_X {R : Type*} [Semiring R] (φ : R⟦X⟧) :
     order φ = emultiplicity X φ := by
@@ -247,7 +277,7 @@ theorem order_eq_emultiplicity_X {R : Type*} [Semiring R] (φ : R⟦X⟧) :
   cases ho : order φ with
   | top => simp [hφ] at ho
   | coe n =>
-    have hn : φ.order.lift (order_finite_iff_ne_zero.mpr hφ) = n := by simp [ho]
+    have hn : φ.order.toNat = n := by simp [ho]
     rw [← hn, eq_comm]
     apply le_antisymm _
     · apply le_emultiplicity_of_pow_dvd
@@ -257,22 +287,12 @@ theorem order_eq_emultiplicity_X {R : Type*} [Semiring R] (φ : R⟦X⟧) :
       rintro ⟨ψ, H⟩
       have := congr_arg (coeff R n) H
       rw [← (ψ.commute_X.pow_right _).eq, coeff_mul_of_lt_order, ← hn] at this
-      · exact coeff_order _ this
+      · exact coeff_order hφ this
       · rw [X_pow_eq, order_monomial]
         split_ifs
         · simp
         · rw [← hn, ENat.coe_lt_coe]
           simp
-
-/-- Given a non-zero power series `f`, `divided_by_X_pow_order f` is the power series obtained by
-  dividing out the largest power of X that divides `f`, that is its order -/
-def divided_by_X_pow_order {f : PowerSeries R} (hf : f ≠ 0) : R⟦X⟧ :=
-  (exists_eq_mul_right_of_dvd (X_pow_order_dvd (order_finite_iff_ne_zero.2 hf))).choose
-
-theorem self_eq_X_pow_order_mul_divided_by_X_pow_order {f : R⟦X⟧} (hf : f ≠ 0) :
-    X ^ f.order.lift (order_finite_iff_ne_zero.mpr hf) * divided_by_X_pow_order hf = f :=
-  haveI dvd := X_pow_order_dvd (order_finite_iff_ne_zero.mpr hf)
-  (exists_eq_mul_right_of_dvd dvd).choose_spec.symm
 
 end OrderBasic
 
@@ -303,6 +323,13 @@ theorem order_X_pow (n : ℕ) : order ((X : R⟦X⟧) ^ n) = n := by
   rw [X_pow_eq, order_monomial_of_ne_zero]
   exact one_ne_zero
 
+-- Dividing `X` by the maximal power of `X` dividing it leaves `1`.
+@[simp]
+theorem divXPowOrder_X :
+    divXPowOrder X = (1 : R⟦X⟧) := by
+  ext n
+  simp [coeff_X]
+
 end OrderZeroNeOne
 
 section OrderIsDomain
@@ -317,34 +344,24 @@ theorem order_mul (φ ψ : R⟦X⟧) : order (φ * ψ) = order φ + order ψ := 
   simp only [order_eq_emultiplicity_X]
   exact emultiplicity_mul X_prime
 
--- Dividing `X` by the maximal power of `X` dividing it leaves `1`.
-@[simp]
-theorem divided_by_X_pow_order_of_X_eq_one : divided_by_X_pow_order X_ne_zero = (1 : R⟦X⟧) := by
-  rw [← mul_eq_left₀ X_ne_zero]
-  simpa using self_eq_X_pow_order_mul_divided_by_X_pow_order (@X_ne_zero R _ _)
-
--- Dividing a power series by the maximal power of `X` dividing it, respects multiplication.
-theorem divided_by_X_pow_orderMul {f g : R⟦X⟧} (hf : f ≠ 0) (hg : g ≠ 0) :
-    divided_by_X_pow_order hf * divided_by_X_pow_order hg =
-      divided_by_X_pow_order (mul_ne_zero hf hg) := by
-  set df := f.order.lift (order_finite_iff_ne_zero.mpr hf)
-  set dg := g.order.lift (order_finite_iff_ne_zero.mpr hg)
-  set dfg := (f * g).order.lift (order_finite_iff_ne_zero.mpr (mul_ne_zero hf hg))
-  have H_add_d : df + dg = dfg := by
-    simp_all [df, dg, dfg, order_mul f g]
-  have H := self_eq_X_pow_order_mul_divided_by_X_pow_order (mul_ne_zero hf hg)
-  have : f * g = X ^ dfg * (divided_by_X_pow_order hf * divided_by_X_pow_order hg) := by
-    calc
-      f * g = X ^ df * divided_by_X_pow_order hf * (X ^ dg * divided_by_X_pow_order hg) := by
-        rw [self_eq_X_pow_order_mul_divided_by_X_pow_order,
-          self_eq_X_pow_order_mul_divided_by_X_pow_order]
-      _ = X ^ df * X ^ dg * divided_by_X_pow_order hf * divided_by_X_pow_order hg := by ring
-      _ = X ^ (df + dg) * divided_by_X_pow_order hf * divided_by_X_pow_order hg := by rw [pow_add]
-      _ = X ^ dfg * divided_by_X_pow_order hf * divided_by_X_pow_order hg := by rw [H_add_d]
-      _ = X ^ dfg * (divided_by_X_pow_order hf * divided_by_X_pow_order hg) := by rw [mul_assoc]
-  refine (IsLeftCancelMulZero.mul_left_cancel_of_ne_zero (pow_ne_zero dfg X_ne_zero) ?_).symm
-  simp only [this] at H
-  convert H
+theorem divXPowOrder_mul {f g : R⟦X⟧} :
+    divXPowOrder f * divXPowOrder g = divXPowOrder (f * g) := by
+  by_cases h : f = 0 ∨ g = 0
+  · rcases h with (h | h) <;> simp [h]
+  push_neg at h
+  apply X_pow_mul_cancel (k := f.order.toNat + g.order.toNat)
+  calc
+    X ^ (f.order.toNat + g.order.toNat) * (f.divXPowOrder * g.divXPowOrder)
+    _ = (X ^ f.order.toNat * f.divXPowOrder) * (X ^ g.order.toNat * g.divXPowOrder) := by
+        conv_rhs =>
+          rw [mul_assoc, ← commute_X_pow.eq, ← commute_X_pow.eq, ← mul_assoc, mul_assoc, ← pow_add]
+        rw [← commute_X_pow.eq, add_comm]
+    _ = f * g := by
+        simp [self_eq_X_pow_order_mul_divXPowOrder]
+    _ = X ^ ((f * g).order.toNat) * (f * g).divXPowOrder := by
+        simp [self_eq_X_pow_order_mul_divXPowOrder]
+    _ = X ^ (f.order.toNat + g.order.toNat) * (f * g).divXPowOrder := by
+        rw [order_mul, ENat.toNat_add (order_eq_top.not.mpr h.1) (order_eq_top.not.mpr h.2)]
 
 end OrderIsDomain
 
