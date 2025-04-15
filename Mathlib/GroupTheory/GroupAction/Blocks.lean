@@ -351,7 +351,7 @@ lemma IsBlock.preimage {H Y : Type*} [Group H] [MulAction H Y]
 @[to_additive]
 theorem IsBlock.image {H Y : Type*} [SMul H Y] {φ : G → H} (j : X →ₑ[φ] Y)
     (hφ : Function.Surjective φ) (hj : Function.Injective j) (hB : IsBlock G B) :
->    IsBlock H (j '' B) := by
+    IsBlock H (j '' B) := by
   simp only [IsBlock, hφ.forall, ← image_smul_setₛₗ]
   exact fun g₁ g₂ hg ↦ disjoint_image_of_injective hj <| hB <| ne_of_apply_ne _ hg
 
