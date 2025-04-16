@@ -547,6 +547,25 @@ open DirectoryDependency
 
 #guard Lean.Name.isPrefixOf `Mathlib.Util `Mathlib.Util.Basic == true
 
+/-- Check if one of the imports `imports` to `mainModule` is forbidden by `forbiddenImportDirs`;
+if so, return an error describing how the import transitively arises. -/
+def _checkBlocklist (env : Environment) (mainModule : Name) (imports : Array Name) : Option MessageData := Id.run do
+  match forbiddenImportDirs.findAny mainModule imports with
+  | some (n₁, n₂) => do
+    if let some imported := n₂.prefixToName imports then
+      if !overrideAllowedImportDirs.contains mainModule imported then
+        let mut msg := m!"Modules starting with {n₁} are not allowed to import modules starting with {n₂}. \
+        This module depends on {imported}\n"
+        for dep in env.importPath imported do
+          msg := msg ++ m!"which is imported by {dep},\n"
+        return some (msg ++ m!"which is imported by this module. \
+          (Exceptions can be added to `overrideAllowedImportDirs`.)")
+      else none
+    else
+      return some m!"Internal error in `directoryDependency` linter: this module claims to depend \
+      on a module starting with {n₂} but a module with that prefix was not found in the import graph."
+  | none => none
+
 @[inherit_doc Mathlib.Linter.linter.directoryDependency]
 def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array MessageData) := do
   unless Linter.getLinterValue linter.directoryDependency (← getOptions) do
@@ -584,20 +603,8 @@ def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array MessageDa
     if messages.size > 0 then return messages
 
   -- Otherwise, we fall back to the blocklist `forbiddenImportDirs`.
-  match forbiddenImportDirs.findAny mainModule imports with
-  | some (n₁, n₂) => do
-    if let some imported := n₂.prefixToName imports then
-      if !overrideAllowedImportDirs.contains mainModule imported then
-        let mut msg := m!"Modules starting with {n₁} are not allowed to import modules starting with {n₂}. \
-        This module depends on {imported}\n"
-        for dep in env.importPath imported do
-          msg := msg ++ m!"which is imported by {dep},\n"
-        messages := messages.push <| msg ++ m!"which is imported by this module. \
-          (Exceptions can be added to `overrideAllowedImportDirs`.)"
-    else
-      return #[m!"Internal error in `directoryDependency` linter: this module claims to depend \
-      on a module starting with {n₂} but a module with that prefix was not found in the import graph."]
-  | none => pure ()
+  if let some msg := _checkBlocklist env mainModule imports then
+    messages := messages.push msg
   return messages
 
 end Mathlib.Linter
