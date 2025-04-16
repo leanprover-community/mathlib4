@@ -195,10 +195,10 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
 
   (`Mathlib.Tactic.Linter, `Batteries),
   (`Mathlib.Tactic.Linter, `Lean),
-  (`Mathlib.Tactic.Linter.MinImports, `ImportGraph),
-  (`Mathlib.Tactic.Linter.MinImports, `Mathlib.Tactic.MinImports),
-  (`Mathlib.Tactic.Linter.UpstreamableDecl, `ImportGraph),
-  (`Mathlib.Tactic.Linter.UpstreamableDecl, `Mathlib.Tactic.MinImports),
+  -- The Mathlib.Tactic.Linter *module* imports all linters, hence requires all the imports.
+  -- For more fine-grained exceptions of the next two imports, one needs to rename that file.
+  (`Mathlib.Tactic.Linter, `ImportGraph),
+  (`Mathlib.Tactic.Linter, `Mathlib.Tactic.MinImports),
   (`Mathlib.Tactic.Linter.TextBased, `Mathlib.Data.Nat.Notation),
 
   (`Mathlib.Logic, `Batteries),
