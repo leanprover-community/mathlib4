@@ -298,7 +298,7 @@ theorem order_eq_emultiplicity_X {R : Type*} [Semiring R] (φ : R⟦X⟧) :
       rw [← not_le, ← Nat.cast_one, ← Nat.cast_add, ← pow_dvd_iff_le_emultiplicity]
       rintro ⟨ψ, H⟩
       have := congr_arg (coeff R n) H
-      rw [← (ψ.commute_X.pow_right _).eq, coeff_mul_of_lt_order, ← hn] at this
+      rw [X_pow_mul, coeff_mul_of_lt_order, ← hn] at this
       · exact coeff_order hφ this
       · rw [X_pow_eq, order_monomial]
         split_ifs
@@ -397,8 +397,8 @@ theorem divXPowOrder_mul_divXPowOrder {f g : R⟦X⟧} :
     X ^ (f.order.toNat + g.order.toNat) * (f.divXPowOrder * g.divXPowOrder)
     _ = (X ^ f.order.toNat * f.divXPowOrder) * (X ^ g.order.toNat * g.divXPowOrder) := by
         conv_rhs =>
-          rw [mul_assoc, ← commute_X_pow.eq, ← commute_X_pow.eq, ← mul_assoc, mul_assoc, ← pow_add]
-        rw [← commute_X_pow.eq, add_comm]
+          rw [mul_assoc, X_pow_mul, X_pow_mul, ← mul_assoc, mul_assoc, ← pow_add]
+        rw [X_pow_mul, add_comm]
     _ = f * g := by
         simp [X_pow_order_mul_divXPowOrder]
     _ = X ^ ((f * g).order.toNat) * (f * g).divXPowOrder := by
