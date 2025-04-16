@@ -62,6 +62,17 @@ instance {P S : Type*} [SMul P S] [SMul S R] [SMul P R] [IsScalarTower P S R] :
     IsScalarTower P S (WithVal v) :=
   ‹IsScalarTower P S R›
 
+instance {S : Type*} [Ring S] [CommRing R] [Algebra R S] :
+    Algebra (WithVal v) S := ‹Algebra R S›
+
+instance {S : Type*} [Ring S] [CommRing R] [Algebra R S] (w : Valuation S Γ₀) :
+    Algebra R (WithVal w) := ‹Algebra R S›
+
+instance {P S : Type*} [Ring S] [CommRing R] [Semiring P] [Module P R] [Module P S]
+    [Algebra R S] [IsScalarTower P R S] :
+    IsScalarTower P (WithVal v) S :=
+  ‹IsScalarTower P R S›
+
 instance (v : Valuation R Γ₀) : Valued (WithVal v) Γ₀ := Valued.mk' v
 
 /-- Canonical ring equivalence between `WithVal v` and `R`. -/

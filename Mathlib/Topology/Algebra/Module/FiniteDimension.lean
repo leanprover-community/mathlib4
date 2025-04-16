@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Anatole Dedecker
 -/
 import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
-import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
-import Mathlib.Topology.Algebra.Module.Simple
-import Mathlib.Topology.Algebra.Module.Determinant
 import Mathlib.RingTheory.LocalRing.Basic
+import Mathlib.Topology.Algebra.Module.Determinant
+import Mathlib.Topology.Algebra.Module.Simple
 
 /-!
 # Finite dimensional topological vector spaces over complete fields
@@ -191,7 +191,7 @@ variable [CompleteSpace 𝕜]
 private theorem continuous_equivFun_basis_aux [T2Space E] {ι : Type v} [Fintype ι]
     (ξ : Basis ι 𝕜 E) : Continuous ξ.equivFun := by
   letI : UniformSpace E := IsTopologicalAddGroup.toUniformSpace E
-  letI : UniformAddGroup E := uniformAddGroup_of_addCommGroup
+  letI : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
   suffices ∀ n, Fintype.card ι = n → Continuous ξ.equivFun by exact this _ rfl
   intro n hn
   induction n generalizing ι E with
@@ -204,7 +204,7 @@ private theorem continuous_equivFun_basis_aux [T2Space E] {ι : Type v} [Fintype
     -- to a standard space of dimension n, hence it is complete and therefore closed.
     have H₁ : ∀ s : Submodule 𝕜 E, finrank 𝕜 s = n → IsClosed (s : Set E) := by
       intro s s_dim
-      letI : UniformAddGroup s := s.toAddSubgroup.uniformAddGroup
+      letI : IsUniformAddGroup s := s.toAddSubgroup.isUniformAddGroup
       let b := Basis.ofVectorSpace 𝕜 s
       have U : IsUniformEmbedding b.equivFun.symm.toEquiv := by
         have : Fintype.card (Basis.ofVectorSpaceIndex 𝕜 s) = n := by
@@ -482,10 +482,10 @@ end ContinuousLinearMap
 
 end NormedField
 
-section UniformAddGroup
+section IsUniformAddGroup
 
 variable (𝕜 E : Type*) [NontriviallyNormedField 𝕜]
-  [CompleteSpace 𝕜] [AddCommGroup E] [UniformSpace E] [T2Space E] [UniformAddGroup E]
+  [CompleteSpace 𝕜] [AddCommGroup E] [UniformSpace E] [T2Space E] [IsUniformAddGroup E]
   [Module 𝕜 E] [ContinuousSMul 𝕜 E]
 
 include 𝕜 in
@@ -499,10 +499,10 @@ variable {𝕜 E}
 /-- A finite-dimensional subspace is complete. -/
 theorem Submodule.complete_of_finiteDimensional (s : Submodule 𝕜 E) [FiniteDimensional 𝕜 s] :
     IsComplete (s : Set E) :=
-  haveI : UniformAddGroup s := s.toAddSubgroup.uniformAddGroup
+  haveI : IsUniformAddGroup s := s.toAddSubgroup.isUniformAddGroup
   completeSpace_coe_iff_isComplete.1 (FiniteDimensional.complete 𝕜 s)
 
-end UniformAddGroup
+end IsUniformAddGroup
 
 variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
    [AddCommGroup E] [TopologicalSpace E] [IsTopologicalAddGroup E] [Module 𝕜 E]
@@ -515,7 +515,7 @@ theorem Submodule.closed_of_finiteDimensional
     [T2Space E] (s : Submodule 𝕜 E) [FiniteDimensional 𝕜 s] :
     IsClosed (s : Set E) :=
   letI := IsTopologicalAddGroup.toUniformSpace E
-  haveI : UniformAddGroup E := uniformAddGroup_of_addCommGroup
+  haveI : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
   s.complete_of_finiteDimensional.isClosed
 
 /-- An injective linear map with finite-dimensional domain is a closed embedding. -/

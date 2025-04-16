@@ -23,10 +23,6 @@ and apply this to prove Q6 of IMO1988.
 To illustrate the technique, we also prove a similar result.
 -/
 
-
--- open_locale classical
-attribute [local instance] Classical.propDecidable
-
 attribute [local simp] sq
 
 namespace Imo1988Q6
@@ -111,7 +107,7 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
       -- We find the other root of the equation, and Vieta's formulas.
       rcases vieta_formula_quadratic hH with ⟨c, h_root, hV₁, hV₂⟩
       -- By substitutions we find that b = 0 or b = a.
-      simp only [hB, add_right_eq_self, add_right_inj] at hV₁
+      simp only [hB, add_eq_left, add_right_inj] at hV₁
       subst hV₁
       rw [← Int.ofNat_zero] at *
       rw [← H_quad] at h_root

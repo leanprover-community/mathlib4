@@ -128,8 +128,14 @@ theorem some_dom (a : α) : (some a).Dom :=
 theorem mem_unique : ∀ {a b : α} {o : Part α}, a ∈ o → b ∈ o → a = b
   | _, _, ⟨_, _⟩, ⟨_, rfl⟩, ⟨_, rfl⟩ => rfl
 
+theorem mem_right_unique : ∀ {a : α} {o p : Part α}, a ∈ o → a ∈ p → o = p
+  | _, _, _, ⟨ho, _⟩, ⟨hp, _⟩ => ext' (iff_of_true ho hp) (by simp [*])
+
 theorem Mem.left_unique : Relator.LeftUnique ((· ∈ ·) : α → Part α → Prop) := fun _ _ _ =>
   mem_unique
+
+theorem Mem.right_unique : Relator.RightUnique ((· ∈ ·) : α → Part α → Prop) := fun _ _ _ =>
+  mem_right_unique
 
 theorem get_eq_of_mem {o : Part α} {a} (h : a ∈ o) (h') : get o h' = a :=
   mem_unique ⟨_, rfl⟩ h
@@ -239,7 +245,7 @@ theorem getOrElse_none (d : α) [Decidable (none : Part α).Dom] : getOrElse non
 theorem getOrElse_some (a : α) (d : α) [Decidable (some a).Dom] : getOrElse (some a) d = a :=
   (some a).getOrElse_of_dom (some_dom a) d
 
--- Porting note: removed `simp`
+-- `simp`-normal form is `toOption_eq_some_iff`.
 theorem mem_toOption {o : Part α} [Decidable o.Dom] {a : α} : a ∈ toOption o ↔ a ∈ o := by
   unfold toOption
   by_cases h : o.Dom <;> simp [h]
@@ -257,8 +263,7 @@ protected theorem Dom.toOption {o : Part α} [Decidable o.Dom] (h : o.Dom) : o.t
 theorem toOption_eq_none_iff {a : Part α} [Decidable a.Dom] : a.toOption = Option.none ↔ ¬a.Dom :=
   Ne.dite_eq_right_iff fun _ => Option.some_ne_none _
 
-/- Porting TODO: Removed `simp`. Maybe add `@[simp]` later if `@[simp]` is taken off definition of
-`Option.elim` -/
+@[simp]
 theorem elim_toOption {α β : Type*} (a : Part α) [Decidable a.Dom] (b : β) (f : α → β) :
     a.toOption.elim b f = if h : a.Dom then f (a.get h) else b := by
   split_ifs with h
@@ -465,7 +470,7 @@ theorem map_bind {γ} (f : α → Part β) (x : Part α) (g : β → γ) :
   rw [← bind_some_eq_map, bind_assoc]; simp [bind_some_eq_map]
 
 theorem map_map (g : β → γ) (f : α → β) (o : Part α) : map g (map f o) = map (g ∘ f) o := by
-  erw [← bind_some_eq_map, bind_map, bind_some_eq_map]
+  simp [map, Function.comp_assoc]
 
 instance : Monad Part where
   pure := @some
@@ -498,7 +503,8 @@ theorem map_id' {f : α → α} (H : ∀ x : α, f x = x) (o) : map f o = o := b
 
 @[simp]
 theorem bind_some_right (x : Part α) : x.bind some = x := by
-  erw [bind_some_eq_map]; simp [map_id']
+  rw [bind_some_eq_map]
+  simp [map_id']
 
 @[simp]
 theorem pure_eq_some (a : α) : pure a = some a :=
@@ -528,7 +534,7 @@ theorem bind_le {α} (x : Part α) (f : α → Part β) (y : Part β) :
     rcases h' with ⟨a, h₀, h₁⟩
     apply h _ h₀ _ h₁
 
--- Porting note: No MonadFail in Lean4 yet
+-- TODO: if `MonadFail` is defined, define the below instance.
 -- instance : MonadFail Part :=
 --   { Part.monad with fail := fun _ _ => none }
 

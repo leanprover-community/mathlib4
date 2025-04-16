@@ -137,8 +137,8 @@ def idealPowersDiagram (J : Ideal R) : ℕᵒᵖ ⥤ Ideal R where
 def SelfLERadical (J : Ideal R) : Type u :=
   FullSubcategory fun J' : Ideal R => J ≤ J'.radical
 
--- Porting note: `deriving Category` is not able to derive this instance
--- https://github.com/leanprover-community/mathlib4/issues/5020
+-- The `Category` instance should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 instance (J : Ideal R) : Category (SelfLERadical J) :=
   (FullSubcategory.category _)
 

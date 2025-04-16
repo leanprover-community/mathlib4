@@ -357,9 +357,6 @@ theorem ContDiffWithinAt.differentiableWithinAt' (h : ContDiffWithinAt 𝕜 n f 
   exact (differentiableWithinAt_inter (IsOpen.mem_nhds t_open xt)).1 <|
     ((H.mono tu).differentiableOn le_rfl) x ⟨mem_insert x s, xt⟩
 
-@[deprecated (since := "2024-10-10")]
-alias ContDiffWithinAt.differentiable_within_at' := ContDiffWithinAt.differentiableWithinAt'
-
 theorem ContDiffWithinAt.differentiableWithinAt (h : ContDiffWithinAt 𝕜 n f s x) (hn : 1 ≤ n) :
     DifferentiableWithinAt 𝕜 f s x :=
   (h.differentiableWithinAt' hn).mono (subset_insert x s)
@@ -380,8 +377,7 @@ theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt (hn : n ≠ ∞) :
       exact Hp.analyticOn (H'p rfl 0)
     apply (contDiffWithinAt_iff_of_ne_infty hn).2
     refine ⟨u, ?_, fun y : E => (p y).shift, ?_⟩
-    · -- Porting note: without the explicit argument Lean is not sure of the type.
-      convert @self_mem_nhdsWithin _ _ x u
+    · convert @self_mem_nhdsWithin _ _ x u
       have : x ∈ insert x s := by simp
       exact insert_eq_of_mem (mem_of_mem_nhdsWithin this hu)
     · rw [hasFTaylorSeriesUpToOn_succ_iff_right] at Hp
@@ -705,9 +701,6 @@ theorem AnalyticOn.contDiffOn (h : AnalyticOn 𝕜 f s) (hs : UniqueDiffOn 𝕜 
   refine ⟨s, ?_, p, hp⟩
   rw [insert_eq_of_mem hx]
   exact self_mem_nhdsWithin
-
-@[deprecated (since := "2024-09-26")]
-alias AnalyticWithinOn.contDiffOn := AnalyticOn.contDiffOn
 
 /-- On a set with unique differentiability, an analytic function is automatically `C^ω`, as its
 successive derivatives are also analytic. This does not require completeness of the space. See
@@ -1240,5 +1233,5 @@ theorem ContDiff.continuous_fderiv_apply (h : ContDiff 𝕜 n f) (hn : 1 ≤ n) 
     Continuous fun p : E × E => (fderiv 𝕜 f p.1 : E → F) p.2 :=
   have A : Continuous fun q : (E →L[𝕜] F) × E => q.1 q.2 := isBoundedBilinearMap_apply.continuous
   have B : Continuous fun p : E × E => (fderiv 𝕜 f p.1, p.2) :=
-    ((h.continuous_fderiv hn).comp continuous_fst).prod_mk continuous_snd
+    ((h.continuous_fderiv hn).comp continuous_fst).prodMk continuous_snd
   A.comp B

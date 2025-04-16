@@ -12,7 +12,6 @@ import Mathlib.Analysis.SpecialFunctions.Log.Basic
 Basic properties, relationship with `exp`.
 -/
 
-
 noncomputable section
 
 namespace Complex
@@ -254,7 +253,7 @@ end LogDeriv
 
 section tsum_tprod
 
-variable {α ι: Type*}
+variable {α ι : Type*}
 
 open Real
 

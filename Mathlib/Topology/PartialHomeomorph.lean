@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Logic.Equiv.PartialEquiv
+import Mathlib.Topology.Homeomorph.Lemmas
 import Mathlib.Topology.Sets.Opens
 
 /-!
@@ -187,8 +188,8 @@ end Basic
 
 /-- Interpret a `Homeomorph` as a `PartialHomeomorph` by restricting it
 to an open set `s` in the domain and to `t` in the codomain. -/
-@[simps! (config := .asFn) apply symm_apply toPartialEquiv,
-  simps! (config := .lemmasOnly) source target]
+@[simps! -fullyApplied apply symm_apply toPartialEquiv,
+  simps! -isSimp source target]
 def _root_.Homeomorph.toPartialHomeomorphOfImageEq (e : X ≃ₜ Y) (s : Set X) (hs : IsOpen s)
     (t : Set Y) (h : e '' s = t) : PartialHomeomorph X Y where
   toPartialEquiv := e.toPartialEquivOfImageEq s t h
@@ -616,7 +617,7 @@ theorem restrOpen_source (s : Set X) (hs : IsOpen s) : (e.restrOpen s hs).source
 sure that the restriction is well defined whatever the set s, since partial homeomorphisms are by
 definition defined on open sets. In applications where `s` is open, this coincides with the
 restriction of partial equivalences -/
-@[simps! (config := mfld_cfg) apply symm_apply, simps! (config := .lemmasOnly) source target]
+@[simps! (config := mfld_cfg) apply symm_apply, simps! -isSimp source target]
 protected def restr (s : Set X) : PartialHomeomorph X Y :=
   e.restrOpen (interior s) isOpen_interior
 
@@ -646,7 +647,7 @@ theorem restr_source_inter (s : Set X) : e.restr (e.source ∩ s) = e.restr s :=
   simp [e.open_source.interior_eq, ← inter_assoc]
 
 /-- The identity on the whole space as a partial homeomorphism. -/
-@[simps! (config := mfld_cfg) apply, simps! (config := .lemmasOnly) source target]
+@[simps! (config := mfld_cfg) apply, simps! -isSimp source target]
 protected def refl (X : Type*) [TopologicalSpace X] : PartialHomeomorph X X :=
   (Homeomorph.refl X).toPartialHomeomorph
 
@@ -691,7 +692,7 @@ section ofSet
 variable {s : Set X} (hs : IsOpen s)
 
 /-- The identity partial equivalence on a set `s` -/
-@[simps! (config := mfld_cfg) apply, simps! (config := .lemmasOnly) source target]
+@[simps! (config := mfld_cfg) apply, simps! -isSimp source target]
 def ofSet (s : Set X) (hs : IsOpen s) : PartialHomeomorph X X where
   toPartialEquiv := PartialEquiv.ofSet s
   open_source := hs
@@ -719,7 +720,7 @@ variable (e' : PartialHomeomorph Y Z)
 
 /-- Composition of two partial homeomorphisms when the target of the first and the source of
 the second coincide. -/
-@[simps! apply symm_apply toPartialEquiv, simps! (config := .lemmasOnly) source target]
+@[simps! apply symm_apply toPartialEquiv, simps! -isSimp source target]
 protected def trans' (h : e.target = e'.source) : PartialHomeomorph X Z where
   toPartialEquiv := PartialEquiv.trans' e.toPartialEquiv e'.toPartialEquiv h
   open_source := e.open_source
@@ -895,13 +896,13 @@ section Prod
 
 /-- The product of two partial homeomorphisms, as a partial homeomorphism on the product space. -/
 @[simps! (config := mfld_cfg) toPartialEquiv apply,
-  simps! (config := .lemmasOnly) source target symm_apply]
+  simps! -isSimp source target symm_apply]
 def prod (eX : PartialHomeomorph X X') (eY : PartialHomeomorph Y Y') :
     PartialHomeomorph (X × Y) (X' × Y') where
   open_source := eX.open_source.prod eY.open_source
   open_target := eX.open_target.prod eY.open_target
-  continuousOn_toFun := eX.continuousOn.prod_map eY.continuousOn
-  continuousOn_invFun := eX.continuousOn_symm.prod_map eY.continuousOn_symm
+  continuousOn_toFun := eX.continuousOn.prodMap eY.continuousOn
+  continuousOn_invFun := eX.continuousOn_symm.prodMap eY.continuousOn_symm
   toPartialEquiv := eX.toPartialEquiv.prod eY.toPartialEquiv
 
 @[simp, mfld_simps]
@@ -968,7 +969,7 @@ To ensure the maps `toFun` and `invFun` are inverse of each other on the new `so
 the definition assumes that the sets `s` and `t` are related both by `e.is_image` and `e'.is_image`.
 To ensure that the new maps are continuous on `source`/`target`, it also assumes that `e.source` and
 `e'.source` meet `frontier s` on the same set and `e x = e' x` on this intersection. -/
-@[simps! (config := .asFn) toPartialEquiv apply]
+@[simps! -fullyApplied toPartialEquiv apply]
 def piecewise (e e' : PartialHomeomorph X Y) (s : Set X) (t : Set Y) [∀ x, Decidable (x ∈ s)]
     [∀ y, Decidable (y ∈ t)] (H : e.IsImage s t) (H' : e'.IsImage s t)
     (Hs : e.source ∩ frontier s = e'.source ∩ frontier s)
@@ -1112,7 +1113,7 @@ theorem nhds_eq_comap_inf_principal {x} (hx : x ∈ e.source) :
 /-- If a partial homeomorphism has source and target equal to univ, then it induces a homeomorphism
 between the whole spaces, expressed in this definition. -/
 @[simps (config := mfld_cfg) apply symm_apply]
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: add a `PartialEquiv` version
+-- TODO: add a `PartialEquiv` version
 def toHomeomorphOfSourceEqUnivTargetEqUniv (h : e.source = (univ : Set X)) (h' : e.target = univ) :
     X ≃ₜ Y where
   toFun := e
@@ -1173,7 +1174,7 @@ theorem trans_toPartialHomeomorph :
 
 /-- Precompose a partial homeomorphism with a homeomorphism.
 We modify the source and target to have better definitional behavior. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def transPartialHomeomorph (e : X ≃ₜ Y) (f' : PartialHomeomorph Y Z) : PartialHomeomorph X Z where
   toPartialEquiv := e.toEquiv.transPartialEquiv f'.toPartialEquiv
   open_source := f'.open_source.preimage e.continuous
@@ -1260,7 +1261,7 @@ section transHomeomorph
 
 /-- Postcompose a partial homeomorphism with a homeomorphism.
 We modify the source and target to have better definitional behavior. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def transHomeomorph (e : PartialHomeomorph X Y) (f' : Y ≃ₜ Z) : PartialHomeomorph X Z where
   toPartialEquiv := e.toPartialEquiv.transEquiv f'.toEquiv
   open_source := e.open_source

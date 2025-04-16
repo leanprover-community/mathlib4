@@ -52,7 +52,7 @@ theorem _root_.continuous_real_toNNReal : Continuous Real.toNNReal :=
   (continuous_id.max continuous_const).subtype_mk _
 
 /-- `Real.toNNReal` bundled as a continuous map for convenience. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 noncomputable def _root_.ContinuousMap.realToNNReal : C(ℝ, ℝ≥0) :=
   .mk Real.toNNReal continuous_real_toNNReal
 
@@ -172,7 +172,7 @@ nonrec theorem hasSum_nat_add_iff {f : ℕ → ℝ≥0} (k : ℕ) {a : ℝ≥0} 
 
 theorem sum_add_tsum_nat_add {f : ℕ → ℝ≥0} (k : ℕ) (hf : Summable f) :
     ∑' i, f i = (∑ i ∈ range k, f i) + ∑' i, f (i + k) :=
-  (sum_add_tsum_nat_add' <| (summable_nat_add_iff k).2 hf).symm
+  (((summable_nat_add_iff k).2 hf).sum_add_tsum_nat_add').symm
 
 theorem iInf_real_pos_eq_iInf_nnreal_pos [CompleteLattice α] {f : ℝ → α} :
     ⨅ (n : ℝ) (_ : 0 < n), f n = ⨅ (n : ℝ≥0) (_ : 0 < n), f n :=

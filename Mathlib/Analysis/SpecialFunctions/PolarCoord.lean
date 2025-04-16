@@ -76,7 +76,7 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
       (isOpen_ne_fun continuous_snd continuous_const)
   continuousOn_invFun := by fun_prop
   continuousOn_toFun := by
-    refine .prod (by fun_prop) ?_
+    refine .prodMk (by fun_prop) ?_
     have A : MapsTo Complex.equivRealProd.symm ({q : ℝ × ℝ | 0 < q.1} ∪ {q : ℝ × ℝ | q.2 ≠ 0})
         Complex.slitPlane := by
       rintro ⟨x, y⟩ hxy; simpa only using hxy
@@ -85,9 +85,10 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
     · exact (Complex.continuousAt_arg hz).continuousWithinAt
     · exact Complex.equivRealProdCLM.symm.continuous.continuousOn
 
+@[fun_prop]
 theorem continuous_polarCoord_symm :
-    Continuous (polarCoord.symm) :=
-  Continuous.prod_mk (by fun_prop) (by fun_prop)
+    Continuous polarCoord.symm :=
+  .prodMk (by fun_prop) (by fun_prop)
 
 /-- The derivative of `polarCoord.symm`, see `hasFDerivAt_polarCoord_symm`. -/
 def fderivPolarCoordSymm (p : ℝ × ℝ) : ℝ × ℝ →L[ℝ] ℝ × ℝ :=
@@ -98,7 +99,7 @@ theorem hasFDerivAt_polarCoord_symm (p : ℝ × ℝ) :
     HasFDerivAt polarCoord.symm (fderivPolarCoordSymm p) p := by
   unfold fderivPolarCoordSymm
   rw [Matrix.toLin_finTwoProd_toContinuousLinearMap]
-  convert HasFDerivAt.prod (𝕜 := ℝ)
+  convert HasFDerivAt.prodMk (𝕜 := ℝ)
     (hasFDerivAt_fst.mul ((hasDerivAt_cos p.2).comp_hasFDerivAt p hasFDerivAt_snd))
     (hasFDerivAt_fst.mul ((hasDerivAt_sin p.2).comp_hasFDerivAt p hasFDerivAt_snd)) using 2 <;>
   simp [smul_smul, add_comm, neg_mul, smul_neg, neg_smul _ (ContinuousLinearMap.snd ℝ ℝ ℝ)]

@@ -170,3 +170,8 @@ lemma Complex.norm_eq_one_of_mem_rootsOfUnity {ζ : ℂˣ} {n : ℕ} [NeZero n]
   norm_cast
   rw [_root_.mem_rootsOfUnity] at hζ
   rw [hζ, Units.val_one]
+
+theorem Complex.conj_rootsOfUnity {ζ : ℂˣ} {n : ℕ} [NeZero n] (hζ : ζ ∈ rootsOfUnity n ℂ) :
+    (starRingEnd ℂ) ζ = ζ⁻¹ := by
+  rw [← Units.mul_eq_one_iff_eq_inv, conj_mul', norm_eq_one_of_mem_rootsOfUnity hζ, ofReal_one,
+    one_pow]

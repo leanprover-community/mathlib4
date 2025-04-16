@@ -3,7 +3,7 @@ Copyright (c) 2021 Martin Zinkevich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Zinkevich, Vincent Beffara
 -/
-import Mathlib.MeasureTheory.Integral.SetIntegral
+import Mathlib.MeasureTheory.Integral.Bochner.Set
 import Mathlib.Probability.Independence.Basic
 
 /-!
@@ -120,7 +120,7 @@ theorem lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun' (h_meas_f : AEMeas
     lintegral_congr_ae fg_ae]
   apply lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun h_meas_f.measurable_mk
       h_meas_g.measurable_mk
-  exact h_indep_fun.ae_eq h_meas_f.ae_eq_mk h_meas_g.ae_eq_mk
+  exact h_indep_fun.congr h_meas_f.ae_eq_mk h_meas_g.ae_eq_mk
 
 theorem lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'' (h_meas_f : AEMeasurable f μ)
     (h_meas_g : AEMeasurable g μ) (h_indep_fun : IndepFun f g μ) :

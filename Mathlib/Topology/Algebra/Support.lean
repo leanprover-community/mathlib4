@@ -6,7 +6,7 @@ Authors: Floris van Doorn, Patrick Massot
 import Mathlib.Algebra.GroupWithZero.Indicator
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
-import Mathlib.Topology.Homeomorph
+import Mathlib.Topology.Homeomorph.Defs
 import Mathlib.Topology.Separation.Hausdorff
 
 /-!
@@ -90,7 +90,7 @@ theorem tsupport_smul_subset_right {M α} [TopologicalSpace X] [Zero α] [SMulZe
   closure_mono <| support_smul_subset_right f g
 
 @[to_additive]
-theorem mulTSupport_mul [TopologicalSpace X] [Monoid α] {f g : X → α} :
+theorem mulTSupport_mul [TopologicalSpace X] [MulOneClass α] {f g : X → α} :
     (mulTSupport fun x ↦ f x * g x) ⊆ mulTSupport f ∪ mulTSupport g :=
   closure_minimal
     ((mulSupport_mul f g).trans (union_subset_union (subset_mulTSupport _) (subset_mulTSupport _)))
@@ -112,6 +112,12 @@ theorem continuous_of_mulTSupport [TopologicalSpace β] {f : α → β}
     (hf : ∀ x ∈ mulTSupport f, ContinuousAt f x) : Continuous f :=
   continuous_iff_continuousAt.2 fun x => (em _).elim (hf x) fun hx =>
     (@continuousAt_const _ _ _ _ _ 1).congr (not_mem_mulTSupport_iff_eventuallyEq.mp hx).symm
+
+@[to_additive]
+lemma ContinuousOn.continuous_of_mulTSupport_subset [TopologicalSpace β] {f : α → β}
+    {s : Set α} (hs : ContinuousOn f s) (h's : IsOpen s) (h''s : mulTSupport f ⊆ s) :
+    Continuous f :=
+  continuous_of_mulTSupport fun _ hx ↦ h's.continuousOn_iff.mp hs <| h''s hx
 
 end
 
@@ -373,7 +379,7 @@ section LocallyFinite
 
 variable {ι : Type*} [TopologicalSpace X]
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: reformulate for any locally finite family of sets
+-- TODO: reformulate for any locally finite family of sets
 /-- If a family of functions `f` has locally-finite multiplicative support, subordinate to a family
 of open sets, then for any point we can find a neighbourhood on which only finitely-many members of
 `f` are not equal to 1. -/
@@ -387,8 +393,8 @@ theorem LocallyFinite.exists_finset_nhd_mulSupport_subset {U : ι → Set X} [On
       ∀ z ∈ n, (mulSupport fun i => f i z) ⊆ is := by
   obtain ⟨n, hn, hnf⟩ := hlf x
   classical
-    let is := hnf.toFinset.filter fun i => x ∈ U i
-    let js := hnf.toFinset.filter fun j => x ∉ U j
+    let is := {i ∈ hnf.toFinset | x ∈ U i}
+    let js := {j ∈ hnf.toFinset | x ∉ U j}
     refine
       ⟨is, (n ∩ ⋂ j ∈ js, (mulTSupport (f j))ᶜ) ∩ ⋂ i ∈ is, U i, inter_mem (inter_mem hn ?_) ?_,
         inter_subset_right, fun z hz => ?_⟩
@@ -411,7 +417,7 @@ theorem LocallyFinite.exists_finset_nhd_mulSupport_subset {U : ι → Set X} [On
       exact ⟨z, ⟨hi, hzn⟩⟩
 
 @[to_additive]
-theorem locallyFinite_mulSupport_iff [CommMonoid M] {f : ι → X → M} :
+theorem locallyFinite_mulSupport_iff [One M] {f : ι → X → M} :
     (LocallyFinite fun i ↦ mulSupport <| f i) ↔ LocallyFinite fun i ↦ mulTSupport <| f i :=
   ⟨LocallyFinite.closure, fun H ↦ H.subset fun _ ↦ subset_closure⟩
 

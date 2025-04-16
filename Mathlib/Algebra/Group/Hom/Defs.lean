@@ -414,7 +414,7 @@ theorem map_div' [DivInvMonoid G] [DivInvMonoid H] [MulHomClass F G H]
   rw [div_eq_mul_inv, div_eq_mul_inv, map_mul, hf]
 
 @[to_additive]
-lemma map_comp_div' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H] (f : F)
+lemma map_comp_div' [DivInvMonoid G] [DivInvMonoid H] [MulHomClass F G H] (f : F)
     (hf : ∀ a, f a⁻¹ = (f a)⁻¹) (g h : ι → G) : f ∘ (g / h) = f ∘ g / f ∘ h := by
   ext; simp [map_div' f hf]
 
@@ -560,7 +560,7 @@ variable [Group G]
 variable [MulOneClass M]
 
 /-- Makes a group homomorphism from a proof that the map preserves multiplication. -/
-@[to_additive (attr := simps (config := .asFn))
+@[to_additive (attr := simps -fullyApplied)
   "Makes an additive group homomorphism from a proof that the map preserves addition."]
 def mk' (f : M → G) (map_mul : ∀ a b : M, f (a * b) = f a * f b) : M →* G where
   toFun := f

@@ -62,7 +62,7 @@ theorem IsNilpotent.isUnit_quotient_mk_iff {R : Type*} [CommRing R] {I : Ideal R
   · introv e H
     obtain ⟨y, hy⟩ := Ideal.Quotient.mk_surjective (↑H.unit⁻¹ : S ⧸ I)
     have : Ideal.Quotient.mk I (x * y) = Ideal.Quotient.mk I 1 := by
-      rw [map_one, _root_.map_mul, hy, IsUnit.mul_val_inv]
+      rw [map_one, map_mul, hy, IsUnit.mul_val_inv]
     rw [Ideal.Quotient.eq] at this
     have : (x * y - 1) ^ 2 = 0 := by
       rw [← Ideal.mem_bot, ← e]
