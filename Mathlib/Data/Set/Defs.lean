@@ -260,4 +260,8 @@ to the dot notation. -/
 protected def Nonempty (s : Set α) : Prop :=
   ∃ x, x ∈ s
 
+def Dominated [LE α] (s₁ s₂ : Set α) := ∀ a ∈ s₂, ∃ b ∈ s₁, a ≤ b
+
+def Recessed [LE α] (s₁ s₂ : Set α) := ∀ a ∈ s₂, ∃ b ∈ s₁, b ≤ a
+
 end Set

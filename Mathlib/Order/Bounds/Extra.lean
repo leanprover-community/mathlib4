@@ -37,20 +37,6 @@ namespace Monotone
 
 variable [Preorder α] [Preorder β] {f : α → β}
 
-lemma upperBounds_image_subset_of_dominated (Hf : Monotone f) {s₁ s₂ : Set α}
-    (h : Dominated s₁ s₂) : upperBounds (f '' s₁) ⊆ upperBounds (f '' s₂) :=
-  upperBounds_subset_of_dominated (fun a ha => by
-    obtain ⟨c, hc⟩ := ha
-    obtain ⟨d, hd⟩ := h c hc.1
-    exact ⟨f d, ⟨(mem_image _ _ _).mpr ⟨d, ⟨hd.1, rfl⟩⟩, le_of_eq_of_le hc.2.symm (Hf hd.2)⟩⟩)
-
-lemma lowerBounds_image_subset_of_dominated (Hf : Monotone f) {s₁ s₂ : Set α}
-    (h : Recessed s₁ s₂) : lowerBounds (f '' s₁) ⊆ lowerBounds (f '' s₂) :=
-  lowerBounds_subset_of_recessed (fun a ha => by
-    obtain ⟨c, hc⟩ := ha
-    obtain ⟨d, hd⟩ := h c hc.1
-    exact ⟨f d, ⟨(mem_image _ _ _).mpr ⟨d,⟨hd.1,rfl⟩⟩, le_of_le_of_eq (Hf hd.2) hc.2⟩⟩)
-
 lemma upperBounds_image_of_directedOn_prod {γ : Type*} [Preorder γ] {g : α × β → γ}
     (Hg : Monotone g) {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) :
     upperBounds (g '' d) = upperBounds (g '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) := le_antisymm

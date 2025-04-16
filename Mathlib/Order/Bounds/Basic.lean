@@ -26,14 +26,6 @@ variable {α : Type u} {γ : Type v}
 
 section
 
-def Dominated [LE α] (s₁ s₂ : Set α) := ∀ a ∈ s₂, ∃ b ∈ s₁, a ≤ b
-
-def Recessed [LE α] (s₁ s₂ : Set α) := ∀ a ∈ s₂, ∃ b ∈ s₁, b ≤ a
-
-end
-
-section
-
 variable [Preorder α] {s t : Set α} {a b : α}
 
 theorem mem_upperBounds : a ∈ upperBounds s ↔ ∀ x ∈ s, x ≤ a :=
@@ -945,3 +937,27 @@ theorem isGreatest_compl [HeytingAlgebra α] (a : α) :
 theorem isLeast_hnot [CoheytingAlgebra α] (a : α) :
     IsLeast {w | Codisjoint a w} (￢a) := by
   simpa only [CoheytingAlgebra.top_sdiff, codisjoint_iff_le_sup] using isLeast_sdiff ⊤ a
+
+section Monotone
+
+namespace Monotone
+
+variable [Preorder α] {β} [Preorder β] {f : α → β}
+
+lemma upperBounds_image_subset_of_dominated (Hf : Monotone f) {s₁ s₂ : Set α}
+    (h : Dominated s₁ s₂) : upperBounds (f '' s₁) ⊆ upperBounds (f '' s₂) :=
+  upperBounds_subset_of_dominated (fun a ha => by
+    obtain ⟨c, hc⟩ := ha
+    obtain ⟨d, hd⟩ := h c hc.1
+    exact ⟨f d, ⟨(mem_image _ _ _).mpr ⟨d, ⟨hd.1, rfl⟩⟩, le_of_eq_of_le hc.2.symm (Hf hd.2)⟩⟩)
+
+lemma lowerBounds_image_subset_of_dominated (Hf : Monotone f) {s₁ s₂ : Set α}
+    (h : Recessed s₁ s₂) : lowerBounds (f '' s₁) ⊆ lowerBounds (f '' s₂) :=
+  lowerBounds_subset_of_recessed (fun a ha => by
+    obtain ⟨c, hc⟩ := ha
+    obtain ⟨d, hd⟩ := h c hc.1
+    exact ⟨f d, ⟨(mem_image _ _ _).mpr ⟨d,⟨hd.1,rfl⟩⟩, le_of_le_of_eq (Hf hd.2) hc.2⟩⟩)
+
+end Monotone
+
+end Monotone
