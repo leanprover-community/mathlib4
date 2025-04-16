@@ -77,4 +77,3 @@ theorem binomialPow_one_add {g₀ g₁ g₂ : Γ} (h₀₁ : g₀ < g₁) (h₁�
 end BinomialPow
 
 end HahnSeries
-#min_imports
