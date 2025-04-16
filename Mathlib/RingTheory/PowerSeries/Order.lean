@@ -181,6 +181,14 @@ theorem le_order_mul (φ ψ : R⟦X⟧) : order φ + order ψ ≤ order (φ * ψ
   apply ne_of_lt (lt_of_lt_of_le hn <| add_le_add hi hj)
   rw [← Nat.cast_add, hij]
 
+theorem le_order_pow (φ : R⟦X⟧) (n : ℕ) : n • order φ ≤ order (φ ^ n) := by
+  induction n with
+  | zero => simp
+  | succ n hn =>
+    simp only [add_smul, one_smul, pow_succ]
+    apply le_trans _ (le_order_mul _ _)
+    exact add_le_add_right hn φ.order
+
 alias order_mul_ge := le_order_mul
 
 /-- The order of the monomial `a*X^n` is infinite if `a = 0` and `n` otherwise. -/
@@ -338,17 +346,44 @@ theorem divXPowOrder_X :
 
 end OrderZeroNeOne
 
-section OrderIsDomain
+section NoZeroDivisors
 
--- TODO: generalize to `[Semiring R] [NoZeroDivisors R]`
-variable [CommRing R] [IsDomain R]
+variable [Semiring R] [NoZeroDivisors R]
 
 /-- The order of the product of two formal power series over an integral domain
 is the sum of their orders. -/
 theorem order_mul (φ ψ : R⟦X⟧) : order (φ * ψ) = order φ + order ψ := by
-  classical
-  simp only [order_eq_emultiplicity_X]
-  exact emultiplicity_mul X_prime
+  apply le_antisymm _ (le_order_mul _ _)
+  by_cases h : φ.order = ⊤ ∨ ψ.order = ⊤
+  · rcases h with h | h <;> simp [h]
+  · simp only [not_or, ENat.ne_top_iff_exists] at h
+    obtain ⟨m, hm⟩ := h.1
+    obtain ⟨n, hn⟩ := h.2
+    rw [← hm, ← hn, ← ENat.coe_add]
+    rw [eq_comm, order_eq_nat] at hm hn
+    apply order_le
+    rw [coeff_mul, Finset.sum_eq_single ⟨m, n⟩]
+    · exact mul_ne_zero_iff.mpr ⟨hm.1, hn.1⟩
+    · intro ij hij h
+      rcases trichotomy_of_add_eq_add (mem_antidiagonal.mp hij) with h' | h' | h'
+      · exact False.elim (h (by simp [Prod.ext_iff, h'.1, h'.2]))
+      · rw [hm.2 ij.1 h', zero_mul]
+      · rw [hn.2 ij.2 h', mul_zero]
+    · intro h
+      apply False.elim (h _)
+      simp [mem_antidiagonal]
+
+theorem order_pow [Nontrivial R] (φ : R⟦X⟧) (n : ℕ) :
+    order (φ ^ n) = n • order φ := by
+  rcases subsingleton_or_nontrivial R with hR | hR
+  · simp only [Subsingleton.eq_zero φ, order_zero, nsmul_eq_mul]
+    by_cases hn : n = 0
+    · simp [hn, pow_zero]
+    · simp [zero_pow hn, ENat.mul_top', if_neg hn]
+  induction n with
+  | zero => simp
+  | succ n hn =>
+    simp only [add_smul, one_smul, pow_succ, order_mul, hn]
 
 /-- The operation of dividing a power series by the largest possible power of `X`
 preserves multiplication. -/
@@ -374,7 +409,7 @@ theorem divXPowOrder_mul_divXPowOrder {f g : R⟦X⟧} :
 @[deprecated (since := "2025-04-15")] alias divided_by_X_pow_orderMul :=
   divXPowOrder_mul_divXPowOrder
 
-end OrderIsDomain
+end NoZeroDivisors
 
 end PowerSeries
 

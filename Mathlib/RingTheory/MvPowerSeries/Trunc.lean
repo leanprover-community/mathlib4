@@ -62,7 +62,7 @@ variable {σ R S : Type*}
 
 section TruncLT
 
-variable [CommSemiring R] (n : σ →₀ ℕ)
+variable [DecidableEq σ] [CommSemiring R] (n : σ →₀ ℕ)
 
 /-- Auxiliary definition for the truncation function. -/
 def truncFun (φ : MvPowerSeries σ R) : MvPolynomial σ R :=
@@ -136,7 +136,7 @@ end TruncLT
 
 section TruncLE
 
-variable [CommSemiring R] (n : σ →₀ ℕ)
+variable [DecidableEq σ] [CommSemiring R] (n : σ →₀ ℕ)
 
 /-- Auxiliary definition for the truncation function. -/
 def truncFun' (φ : MvPowerSeries σ R) : MvPolynomial σ R :=
