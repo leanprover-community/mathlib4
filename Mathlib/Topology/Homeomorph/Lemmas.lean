@@ -29,7 +29,7 @@ variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace W] [Topolog
 
 /-- Homeomorphism given an embedding. -/
 @[simps! apply_coe]
-noncomputable def _root_.Topology.IsEmbedding.toHomeomorph (f : X → Y) (hf : IsEmbedding f) :
+noncomputable def _root_.Topology.IsEmbedding.toHomeomorph {f : X → Y} (hf : IsEmbedding f) :
     X ≃ₜ Set.range f :=
   Equiv.ofInjective f hf.injective |>.toHomeomorphOfIsInducing <|
     IsInducing.subtypeVal.of_comp_iff.mp hf.toIsInducing
