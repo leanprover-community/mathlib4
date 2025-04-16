@@ -26,6 +26,13 @@ def Lean.Name.prefixes (n : Name) : NameSet :=
     | str n' _ => n'.prefixes
     | num n' _ => n'.prefixes
 
+/-- Return the immediate prefix of `n` (if any). -/
+def Lean.Name.prefix? (n : Name) : Option Name :=
+  match n with
+    | anonymous => none
+    | str n' _ => some n'
+    | num n' _ => some n'
+
 /-- Collect all prefixes of names in `ns` into a single `NameSet`. -/
 def Lean.Name.collectPrefixes (ns : Array Name) : NameSet :=
   ns.foldl (fun ns n => ns.union n.prefixes) ∅
@@ -116,6 +123,9 @@ def findAny (r : NamePrefixRel) (n₁ : Name) (ns : Array Name) : Option (Name �
       else
         pure ()
     none
+
+/-- Does `r` contain any entries with key `n`? -/
+def containsKey (r : NamePrefixRel) (n : Name) : Bool := NameMap.contains r n
 
 /-- Is a prefix of `n₁` related to a prefix of `n₂`? -/
 def contains (r : NamePrefixRel) (n₁ n₂ : Name) : Bool := (r.find n₁ n₂).isSome
