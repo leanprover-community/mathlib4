@@ -151,6 +151,8 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Util, `Batteries),
   (`Mathlib.Util, `Mathlib.Lean),
   (`Mathlib.Util, `Mathlib.Tactic),
+  -- TODO: reduce this dependency by upstreaming `Data.String.Defs to batteries
+  (`Mathlib.Util.FormatTable, `Mathlib.Data.String.Defs),
 ]
 
 /-- `forbiddenImportDirs` relates module prefixes, specifying that modules with the first prefix
