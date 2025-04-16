@@ -30,7 +30,6 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
   ⟨`linter.docPrime, false⟩,
   ⟨`linter.hashCommand, true⟩,
   ⟨`linter.oldObtain, true⟩,
-  ⟨`linter.beqOfDecEq, true⟩,
   ⟨`linter.style.cases, true⟩,
   ⟨`linter.style.cdot, true⟩,
   ⟨`linter.style.docString, true⟩,
