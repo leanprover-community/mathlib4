@@ -18,9 +18,6 @@ open Set
 universe u v
 
 variable {α : Type u} {β : Type v}
-
-section
-
 variable [Preorder α] [Preorder β]
 
 lemma DirectedOn.fst_image_times_snd_image_subset_lowerClosure {d : Set (α × β)}
@@ -31,17 +28,9 @@ lemma DirectedOn.fst_image_times_snd_image_subset_lowerClosure {d : Set (α × �
     obtain ⟨q, ⟨hq₁, ⟨⟨hq₂, _⟩, ⟨_, hq₃⟩⟩⟩⟩ := hd (p₁, r₁) hr₁ (r₂, p₂) hr₂
     exact ⟨q, ⟨hq₁, ⟨hq₂, hq₃⟩⟩⟩
 
-end
-
-namespace Monotone
-
-variable [Preorder α] [Preorder β] {f : α → β}
-
-lemma upperBounds_image_of_directedOn_prod {γ : Type*} [Preorder γ] {g : α × β → γ}
+lemma Monotone.upperBounds_image_of_directedOn_prod {γ : Type*} [Preorder γ] {g : α × β → γ}
     (Hg : Monotone g) {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) :
     upperBounds (g '' d) = upperBounds (g '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) := le_antisymm
   (Hg.upperBounds_image_subset_of_dominated
     (fun _ ha => hd.fst_image_times_snd_image_subset_lowerClosure ha))
   (upperBounds_mono_set (image_mono subset_fst_image_prod_snd_image))
-
-end Monotone
