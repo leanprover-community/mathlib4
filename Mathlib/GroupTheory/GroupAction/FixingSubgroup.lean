@@ -52,6 +52,7 @@ def fixingSubmonoid (s : Set α) : Submonoid M where
   one_mem' _ := one_smul _ _
   mul_mem' {x y} hx hy z := by rw [mul_smul, hy z, hx z]
 
+@[to_additive]
 theorem mem_fixingSubmonoid_iff {s : Set α} {m : M} :
     m ∈ fixingSubmonoid M s ↔ ∀ y ∈ s, m • y = y :=
   ⟨fun hg y hy => hg ⟨y, hy⟩, fun h ⟨y, hy⟩ => h y hy⟩
@@ -59,11 +60,13 @@ theorem mem_fixingSubmonoid_iff {s : Set α} {m : M} :
 variable (α)
 
 /-- The Galois connection between fixing submonoids and fixed points of a monoid action -/
+@[to_additive]
 theorem fixingSubmonoid_fixedPoints_gc :
     GaloisConnection (OrderDual.toDual ∘ fixingSubmonoid M)
       ((fun P : Submonoid M => fixedPoints P α) ∘ OrderDual.ofDual) :=
   fun _s _P => ⟨fun h s hs p => h p.2 ⟨s, hs⟩, fun h p hp s => h s.2 ⟨p, hp⟩⟩
 
+@[to_additive]
 theorem fixingSubmonoid_antitone : Antitone fun s : Set α => fixingSubmonoid M s :=
   (fixingSubmonoid_fixedPoints_gc M α).monotone_l
 

@@ -27,6 +27,18 @@ namespace SubMulAction
 
 variable (M : Type*) [Group M] {α : Type*} [MulAction M α]
 
+/-- The SubAddAction of `fixingAddSubgroup M s` on the complement of `s` -/
+def ofFixingAddSubgroup (M : Type*) [AddGroup M] {α : Type*} [AddAction M α]
+  (s : Set α) : SubAddAction (fixingAddSubgroup M s) α where
+  carrier := sᶜ
+  vadd_mem' := fun ⟨c, hc⟩ x ↦ by
+    rw [← AddSubgroup.neg_mem_iff] at hc
+    simp only [Set.mem_compl_iff, not_imp_not]
+    intro hcx
+    rwa [← zero_vadd M x, ← neg_add_cancel c, add_vadd,
+      (mem_fixingAddSubgroup M).mp hc (c +ᵥ x) hcx]
+
+
 /-- The SubMulAction of `fixingSubgroup M s` on the complement of `s` -/
 def ofFixingSubgroup (s : Set α) : SubMulAction (fixingSubgroup M s) α where
   carrier := sᶜ
