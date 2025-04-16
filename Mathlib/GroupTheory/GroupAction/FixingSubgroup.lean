@@ -34,8 +34,6 @@ TODO :
 
 * Treat semigroups ?
 
-* add `to_additive` for the various lemmas
-
 -/
 
 
