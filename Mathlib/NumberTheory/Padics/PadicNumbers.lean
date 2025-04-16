@@ -559,7 +559,6 @@ theorem defn (f : PadicSeq p) {ε : ℚ} (hε : 0 < ε) :
     rw [PadicSeq.norm, dif_pos h] at hge
     exact not_lt_of_ge hge hε
   unfold PadicSeq.norm at hge; split_ifs at hge
-  · exact hge.not_lt hε -- should be fixed in #20676
   apply not_le_of_gt _ hge
   cases _root_.le_total N (stationaryPoint hne) with
   | inl hgen =>
