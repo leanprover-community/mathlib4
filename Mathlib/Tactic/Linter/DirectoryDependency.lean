@@ -205,15 +205,26 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Logic, `Batteries),
   (`Mathlib.Logic, `Lean),
   (`Mathlib.Logic, `Qq), -- via the `tauto` tactic
-  -- XXX: should this import be allowed on a more fine-grained level?
+  -- XXX: to what extend is this desirable?
+  (`Mathlib.Logic, `Mathlib.Algebra),
   (`Mathlib.Logic.Nontrivial.Basic, `Aesop),
+  (`Mathlib.Logic.Encodable, `Aesop),
   (`Mathlib.Logic.Equiv, `Aesop),
   (`Mathlib.Logic.Embedding, `Aesop),
+  (`Mathlib.Logic.Function, `Aesop),
+  (`Mathlib.Logic.Small, `Aesop),
   -- XXX: should this import be allowed on a more fine-grained level?
   (`Mathlib.Logic, `Mathlib.Control),
   (`Mathlib.Logic, `Mathlib.Lean),
   (`Mathlib.Logic, `Mathlib.Util),
   (`Mathlib.Logic, `Mathlib.Tactic),
+  -- Logic.Equiv.Fin.Rotate imports Algebra.Group.Fin.Basic, which imports Tactic.Common,
+  -- which imports Plausible.
+  (`Mathlib.Logic.Fin.Rotate, `Plausible),
+  (`Mathlib.Logic.Fin.Rotate, `Mathlib.Algebra.Group.Fin.Basic),
+  -- Also imported via Logic.Equiv.FinType...
+  (`Mathlib.Logic, `Plausible),
+  (`Mathlib.Logic, `ProofWidgets),
   -- XXX: should this import be allowed only on a more fine-grained level (or at all)?
   (`Mathlib.Logic, `Mathlib.Data),
   -- XXX: should this import be allowed only on a more fine-grained level (or at all)?
