@@ -178,7 +178,7 @@ theorem le_order_mul (φ ψ : R⟦X⟧) : order φ + order ψ ≤ order (φ * ψ
   apply ne_of_lt (lt_of_lt_of_le hn <| add_le_add hi hj)
   rw [← Nat.cast_add, hij]
 
-theorem le_order_pow (φ : R⟦X⟧) (n : ℕ) : n • (order φ) ≤ order (φ ^ n) := by
+theorem le_order_pow (φ : R⟦X⟧) (n : ℕ) : n • order φ ≤ order (φ ^ n) := by
   induction n with
   | zero => simp
   | succ n hn =>

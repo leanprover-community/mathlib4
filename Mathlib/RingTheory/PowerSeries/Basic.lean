@@ -338,10 +338,16 @@ theorem mul_X_cancel {φ ψ : R⟦X⟧} (h : φ * X = ψ * X) : φ = ψ := by
   intro n
   simpa using h (n + 1)
 
+theorem mul_X_inj {φ ψ : R⟦X⟧} : φ * X = ψ * X ↔ φ = ψ := by
+  refine ⟨mul_X_cancel, fun h ↦ congrFun (congrArg HMul.hMul h) X⟩
+
 theorem X_mul_cancel {φ ψ : R⟦X⟧} (h : X * φ = X * ψ) : φ = ψ := by
   rw [PowerSeries.ext_iff] at h ⊢
   intro n
   simpa using h (n + 1)
+
+theorem X_mul_inj {φ ψ : R⟦X⟧} : X * φ = X * ψ ↔ φ = ψ := by
+  refine ⟨X_mul_cancel, fun h ↦ congrArg (HMul.hMul X) h⟩
 
 @[simp]
 theorem constantCoeff_C (a : R) : constantCoeff R (C R a) = a :=
@@ -414,11 +420,19 @@ theorem mul_X_pow_cancel {k : ℕ} {φ ψ : R⟦X⟧} (h : φ * X ^ k = ψ * X ^
   intro n
   simpa using h (n + k)
 
+theorem mul_X_pow_inj {k : ℕ} {φ ψ : R⟦X⟧} :
+      φ * X ^ k = ψ * X ^ k ↔ φ = ψ :=
+  ⟨mul_X_pow_cancel, fun h ↦ congrFun (congrArg HMul.hMul h) (X ^ k)⟩
+
 theorem X_pow_mul_cancel {k : ℕ} {φ ψ : R⟦X⟧} (h : X ^ k * φ = X ^ k * ψ) :
     φ = ψ := by
   rw [PowerSeries.ext_iff] at h ⊢
   intro n
   simpa using h (n + k)
+
+theorem X_mul_pow_inj {k : ℕ} {φ ψ : R⟦X⟧} :
+      X ^ k * φ = X ^ k * ψ ↔ φ = ψ :=
+  ⟨X_pow_mul_cancel, fun h ↦ congrArg (HMul.hMul (X ^ k)) h⟩
 
 theorem coeff_mul_X_pow' (p : R⟦X⟧) (n d : ℕ) :
     coeff R d (p * X ^ n) = ite (n ≤ d) (coeff R (d - n) p) 0 := by
@@ -552,10 +566,8 @@ instance [NoZeroDivisors R] : NoZeroDivisors R⟦X⟧ where
       rcases trichotomy_of_add_eq_add hij with h_eq | hi_lt | hj_lt
       · apply False.elim (hne ?_)
         simpa using h_eq
-      · suffices coeff  R i φ = 0 by -- have := Nat.find_min ex hi_lt
-          rw [this, zero_mul]
-        by_contra h;
-          exact Nat.find_min ex hi_lt h
+      · suffices coeff R i φ = 0 by rw [this, zero_mul]
+        by_contra h; exact Nat.find_min ex hi_lt h
       · rw [ih j hj_lt, mul_zero]
     · simp
 
