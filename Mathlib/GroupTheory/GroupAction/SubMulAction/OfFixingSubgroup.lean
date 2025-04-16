@@ -27,19 +27,9 @@ namespace SubMulAction
 
 variable (M : Type*) [Group M] {α : Type*} [MulAction M α]
 
-/-- The SubAddAction of `fixingAddSubgroup M s` on the complement of `s` -/
-def ofFixingAddSubgroup (M : Type*) [AddGroup M] {α : Type*} [AddAction M α]
-  (s : Set α) : SubAddAction (fixingAddSubgroup M s) α where
-  carrier := sᶜ
-  vadd_mem' := fun ⟨c, hc⟩ x ↦ by
-    rw [← AddSubgroup.neg_mem_iff] at hc
-    simp only [Set.mem_compl_iff, not_imp_not]
-    intro hcx
-    rwa [← zero_vadd M x, ← neg_add_cancel c, add_vadd,
-      (mem_fixingAddSubgroup M).mp hc (c +ᵥ x) hcx]
-
-
 /-- The SubMulAction of `fixingSubgroup M s` on the complement of `s` -/
+@[to_additive
+"The SubAddAction of `fixingAddSubgroup M s` on the complement of `s`"]
 def ofFixingSubgroup (s : Set α) : SubMulAction (fixingSubgroup M s) α where
   carrier := sᶜ
   smul_mem' := fun ⟨c, hc⟩ x ↦ by
@@ -48,15 +38,18 @@ def ofFixingSubgroup (s : Set α) : SubMulAction (fixingSubgroup M s) α where
     intro hcx
     rwa [← one_smul M x, ← inv_mul_cancel c, mul_smul, (mem_fixingSubgroup_iff M).mp hc (c • x) hcx]
 
+@[to_additive]
 theorem ofFixingSubgroup_carrier {s : Set α} :
     (ofFixingSubgroup M s).carrier = sᶜ := rfl
 
+@[to_additive]
 theorem mem_ofFixingSubgroup_iff {s : Set α} {x : α} :
     x ∈ ofFixingSubgroup M s ↔ x ∉ s :=
   Iff.rfl
 
 variable {M}
 
+@[to_additive]
 theorem not_mem_of_mem_ofFixingSubgroup {s : Set α}
   (x : ofFixingSubgroup M s) : ↑x ∉ s := x.prop
 
@@ -68,11 +61,13 @@ section Empty
 
 /-- The identity map of the sub_mul_action of the fixing_subgroup
 of the empty set into the ambient set, as an equivariant map -/
+@[to_additive]
 def ofFixingSubgroupEmpty_equivariantMap :
     ofFixingSubgroup M (∅ : Set α) →ₑ[(fixingSubgroup M (∅ : Set α)).subtype] α where
   toFun x := x
   map_smul' _ _ := rfl
 
+@[to_additive]
 theorem ofFixingSubgroupEmpty_equivariantMap_bijective :
     Function.Bijective (ofFixingSubgroupEmpty_equivariantMap M α) := by
   constructor
@@ -80,6 +75,7 @@ theorem ofFixingSubgroupEmpty_equivariantMap_bijective :
     simp [Subtype.mk_eq_mk]; exact hxy
   · exact fun x ↦ ⟨⟨x, (mem_ofFixingSubgroup_iff M).mp (Set.not_mem_empty x)⟩, rfl⟩
 
+@[to_additive]
 theorem of_fixingSubgroupEmpty_mapScalars_surjective :
     Function.Surjective (fixingSubgroup M (∅ : Set α)).subtype := fun g ↦ by
   suffices g ∈ fixingSubgroup M (∅ : Set α) by
@@ -94,11 +90,13 @@ section FixingSubgroupInsert
 variable {α}
 
 variable {M} in
+@[to_additive]
 theorem mem_fixingSubgroup_insert_iff {a : α} {s : Set α} {m : M} :
     m ∈ fixingSubgroup M (insert a s) ↔ m • a = a ∧ m ∈ fixingSubgroup M s := by
   simp [mem_fixingSubgroup_iff]
 
 variable {M} in
+@[to_additive]
 theorem fixingSubgroup_of_insert (a : α) (s : Set (ofStabilizer M a)) :
     fixingSubgroup M (insert a ((fun x ↦ x.val) '' s)) =
       (fixingSubgroup (↥(stabilizer M a)) s).map (stabilizer M a).subtype := by
@@ -106,6 +104,7 @@ theorem fixingSubgroup_of_insert (a : α) (s : Set (ofStabilizer M a)) :
   simp [mem_fixingSubgroup_iff, mem_ofStabilizer_iff, and_comm]
 
 variable {M} in
+@[to_additive]
 theorem mem_ofFixingSubgroup_insert_iff {a : α} {s : Set (ofStabilizer M a)} {x : α} :
     x ∈ ofFixingSubgroup M (insert a ((fun x ↦ x.val) '' s)) ↔
       ∃ (hx : x ∈ ofStabilizer M a),
@@ -114,6 +113,7 @@ theorem mem_ofFixingSubgroup_insert_iff {a : α} {s : Set (ofStabilizer M a)} {x
   aesop
 
 /-- The natural group morphism between fixing subgroups -/
+@[to_additive]
 def fixingSubgroupInsertEquiv (a : α) (s : Set (ofStabilizer M a)) :
     fixingSubgroup M (insert a (Subtype.val '' s)) ≃* fixingSubgroup (stabilizer M a) s where
   toFun m := ⟨⟨(m : M), (mem_fixingSubgroup_iff M).mp m.prop a (Set.mem_insert _ _)⟩,
@@ -126,8 +126,11 @@ def fixingSubgroupInsertEquiv (a : α) (s : Set (ofStabilizer M a)) :
   left_inv _ := by simp
   right_inv _ := by simp
 
+#check Subgroup.instIsScalarTowerSubtypeMem
+#check AddSubgroup.instIsScalarTowerSubtypeMem
 /-- The identity map of fixing subgroup of stabilizer
 into the fixing subgroup of the extended set, as an equivariant map -/
+@[to_additive]
 def ofFixingSubgroup_insert_map (a : α) (s : Set (ofStabilizer M a)) :
     ofFixingSubgroup M (insert a (Subtype.val '' s))
       →ₑ[fixingSubgroupInsertEquiv M a s] (ofFixingSubgroup (stabilizer M a) s) where
@@ -137,7 +140,7 @@ def ofFixingSubgroup_insert_map (a : α) (s : Set (ofStabilizer M a)) :
   map_smul' _ _ := rfl
 
 variable {M} in
-@[simp]
+@[to_additive (attr := simp)]
 theorem ofFixingSubgroup_insert_map_apply {a : α} {s : Set (ofStabilizer M a)}
     {x : α} (hx : x ∈ ofFixingSubgroup M (insert a (Subtype.val '' s))) :
     ↑((ofFixingSubgroup_insert_map M a s) ⟨x, hx⟩) = x :=
