@@ -133,7 +133,7 @@ theorem isGLB_congr (h : lowerBounds s = lowerBounds t) : IsGLB s a ↔ IsGLB t 
 theorem upperBounds_mono_set ⦃s t : Set α⦄ (hst : s ⊆ t) : upperBounds t ⊆ upperBounds s :=
   fun _ hb _ h => hb <| hst h
 
-lemma upperBounds_subset_of_dominated {s₁ s₂ : Set α} (h : Dominated s₁ s₂) :
+lemma upperBounds_subset_of_dominated {s₁ s₂ : Set α} (h : Dominated (· ≤ ·) s₁ s₂) :
     upperBounds s₁ ⊆ upperBounds s₂ := fun c hc d hd => by
   obtain ⟨e, he₁, he₂⟩ := h _ hd
   exact Preorder.le_trans d e c he₂ (hc he₁)
@@ -945,7 +945,7 @@ namespace Monotone
 variable [Preorder α] {β} [Preorder β] {f : α → β}
 
 lemma upperBounds_image_subset_of_dominated (Hf : Monotone f) {s₁ s₂ : Set α}
-    (h : Dominated s₁ s₂) : upperBounds (f '' s₁) ⊆ upperBounds (f '' s₂) :=
+    (h : Dominated (· ≤ ·) s₁ s₂) : upperBounds (f '' s₁) ⊆ upperBounds (f '' s₂) :=
   upperBounds_subset_of_dominated (fun a ha => by
     obtain ⟨c, hc⟩ := ha
     obtain ⟨d, hd⟩ := h c hc.1

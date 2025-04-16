@@ -260,7 +260,12 @@ to the dot notation. -/
 protected def Nonempty (s : Set α) : Prop :=
   ∃ x, x ∈ s
 
-def Dominated [LE α] (s₁ s₂ : Set α) := ∀ a ∈ s₂, ∃ b ∈ s₁, a ≤ b
+variable (r : α → α → Prop)
+
+/-- Local notation for a relation -/
+local infixl:50 " ≼ " => r
+
+def Dominated (s₁ s₂ : Set α) := ∀ a ∈ s₂, ∃ b ∈ s₁, a ≼ b
 
 def Recessed [LE α] (s₁ s₂ : Set α) := ∀ a ∈ s₂, ∃ b ∈ s₁, b ≤ a
 
