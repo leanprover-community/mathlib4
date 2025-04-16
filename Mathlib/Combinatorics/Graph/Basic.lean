@@ -276,6 +276,6 @@ protected lemma ext {G₁ G₂ : Graph α β} (hV : G₁.V = G₂.V)
 /-- Two graphs with the same vertex set and unary incidences are equal. -/
 lemma ext_inc {G₁ G₂ : Graph α β} (hV : G₁.V = G₂.V) (h : ∀ e x, G₁.Inc e x ↔ G₂.Inc e x) :
     G₁ = G₂ :=
-  Graph.ext hV fun e x y ↦ by simp_rw [inc₂_iff_inc, h]
+  Graph.ext hV fun _ _ _ ↦ by simp_rw [inc₂_iff_inc, h]
 
 end Graph
