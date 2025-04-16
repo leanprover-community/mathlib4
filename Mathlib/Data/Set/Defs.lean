@@ -265,6 +265,9 @@ variable (r : α → α → Prop)
 /-- Local notation for a relation -/
 local infixl:50 " ≼ " => r
 
+/-- A set `s₂` is said to be dominated by a set `s₁` with respect to a relation `≼` if, for all
+`a` in `s₂` there exists `b` in `s₁` such that `a ≼ b`.
+-/
 def Dominated (s₁ s₂ : Set α) := ∀ a ∈ s₂, ∃ b ∈ s₁, a ≼ b
 
 end Set
