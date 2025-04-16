@@ -402,7 +402,7 @@ def Supports (M : Machine Γ Λ) (S : Set Λ) :=
 theorem step_supports (M : Machine Γ Λ) {S : Set Λ} (ss : Supports M S) :
     ∀ {c c' : Cfg Γ Λ}, c' ∈ step M c → c.q ∈ S → c'.q ∈ S := by
   intro ⟨q, T⟩ c' h₁ h₂
-  rcases Option.map_eq_some'.1 h₁ with ⟨⟨q', a⟩, h, rfl⟩
+  rcases Option.map_eq_some_iff.1 h₁ with ⟨⟨q', a⟩, h, rfl⟩
   exact ss.2 h h₂
 
 end
@@ -446,9 +446,9 @@ theorem Machine.map_step {S : Set Λ} (f₂₁ : Function.RightInverse f₁ f₂
     unfold step Machine.map Cfg.map
     simp only [Turing.Tape.map_fst, g₂₁ q h, f₂₁ _]
     rcases M q T.1 with (_ | ⟨q', d | a⟩); · rfl
-    · simp only [step, Cfg.map, Option.map_some', Tape.map_move f₁]
+    · simp only [step, Cfg.map, Option.map_some, Tape.map_move f₁]
       rfl
-    · simp only [step, Cfg.map, Option.map_some', Tape.map_write]
+    · simp only [step, Cfg.map, Option.map_some, Tape.map_write]
       rfl
 
 theorem map_init (g₁ : PointedMap Λ Λ') (l : List Γ) : (init l).map f₁ g₁ = init (l.map f₁) :=
@@ -1214,7 +1214,7 @@ theorem tr_respects : Respects (TM0.step M) (TM1.step (tr M)) fun a b ↦ trCfg 
     rcases e : M q T.1 with - | val
     · simp only [TM0.step, trCfg, e]; exact Eq.refl none
     obtain ⟨q', s⟩ := val
-    simp only [FRespects, TM0.step, trCfg, e, Option.isSome, cond, Option.map_some']
+    simp only [FRespects, TM0.step, trCfg, e, Option.isSome, cond, Option.map_some]
     revert e
     have : TM1.step (tr M) ⟨some (Λ'.act s q'), (), T⟩ = some ⟨some (Λ'.normal q'), (), match s with
         | TM0.Stmt.move d => T.move d
