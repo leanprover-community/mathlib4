@@ -602,7 +602,7 @@ def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array MessageDa
         but is only allowed to import modules starting with one of {allRules.toArray.qsort (·.toString < ·.toString)}.\n\
         Note: module {imported}"
         match importPath.toList with
-        | [] => msg := msg ++ "is directly imported by this module"
+        | [] => msg := msg ++ " is directly imported by this module"
         | a :: rest =>
           msg := msg ++ s!" is imported by {a},\n"
           for dep in rest do
