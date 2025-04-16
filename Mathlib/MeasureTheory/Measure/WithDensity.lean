@@ -668,10 +668,4 @@ lemma IsLocallyFiniteMeasure.withDensity_ofReal {f : α → ℝ} (hf : Continuou
     IsLocallyFiniteMeasure (μ.withDensity fun x ↦ .ofReal (f x)) :=
   .withDensity_coe <| continuous_real_toNNReal.comp hf
 
-example {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
-  {f : α → ℝ≥0∞} {g : β → ℝ≥0∞} {μ : Measure α} {ν : Measure β} [SFinite μ] [SFinite ν]
-  (hf : AEMeasurable f μ) (hg : AEMeasurable g ν) :
-    AEMeasurable (fun (x,y) ↦ f x * g y) (μ.prod ν) := by
-  fun_prop (disch:= intro s hs; simp [hs])
-
 end MeasureTheory
