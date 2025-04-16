@@ -10,18 +10,17 @@ import Mathlib.CategoryTheory.Monoidal.Mod_
 # Additional results about module objects in cartesian monoidal categories
 -/
 
-universe v₁ v₂ u₁ u₂
+open CategoryTheory MonoidalCategory ChosenFiniteProducts
 
-open CategoryTheory MonoidalCategory
-
-variable  {C : Type u₁} [Category.{v₁} C]  [ChosenFiniteProducts C]
+universe v u
+variable {C : Type u} [Category.{v} C] [ChosenFiniteProducts C]
 
 /-- Every object is a module over a monoid object via the trivial action. -/
 @[simps]
-def Mod_.trivialAction (A : Mon_ C) (X : C) : Mod_ A where
+def Mod_.trivialAction (M : Mon_ C) (X : C) : Mod_ M where
   X := X
-  act := ChosenFiniteProducts.snd A.X X
+  act := snd M.X X
 
 /-- Every object is a module over a monoid object via the trivial action. -/
-def Mon_Class.trivialAction (M : C) [Mon_Class M] (S : C) : Mod_Class_ M S where
-  smul := ChosenFiniteProducts.snd M S
+def Mon_Class.trivialAction (M : C) [Mon_Class M] (X : C) : Mod_Class M X where
+  smul := snd M X
