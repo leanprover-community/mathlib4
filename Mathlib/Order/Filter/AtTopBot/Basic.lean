@@ -3,9 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 -/
-import Mathlib.Order.Filter.Bases.Basic
 import Mathlib.Order.Filter.AtTopBot.Tendsto
-import Mathlib.Order.Nat
+import Mathlib.Order.Filter.Bases.Basic
 import Mathlib.Tactic.Subsingleton
 
 /-!

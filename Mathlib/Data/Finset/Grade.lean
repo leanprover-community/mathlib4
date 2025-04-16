@@ -6,7 +6,6 @@ Authors: Yaël Dillies
 import Mathlib.Data.Set.Finite.Basic
 import Mathlib.Order.Atoms
 import Mathlib.Order.Grade
-import Mathlib.Order.Nat
 
 /-!
 # Finsets and multisets form a graded order
