@@ -1,6 +1,7 @@
 import Mathlib.Tactic.Eval
 import Mathlib.Data.Finset.Powerset
 import Mathlib.Data.Finset.Sort
+import Mathlib.Util.Qq
 
 #guard_expr eval% 2^10 =ₛ 1024
 
@@ -37,14 +38,11 @@ open Qq Lean
 /-- `Finset α` can be converted to an expr only if there is some way to find `DecidableEq α`. -/
 unsafe nonrec instance Finset.toExpr
     {α : Type u} [ToLevel.{u}] [ToExpr α] [HasInstance (DecidableEq α)] : ToExpr (Finset α) :=
-  have u' : Level := ToLevel.toLevel.{u}
-  have α' : Q(Type u') := Lean.ToExpr.toTypeExpr α
+  haveI u' : Level := Lean.toLevel.{u}
+  haveI α' : Q(Type u') := Lean.toTypeExpr α
   letI : Q(DecidableEq $α') := HasInstance.expr (DecidableEq α)
   { toTypeExpr := q(Finset $α')
-    toExpr := fun x => show Q(Finset $α') from
-      match show List Q($α') from x.val.unquot.reverse.map toExpr with
-      | [] => q(∅)
-      | x0 :: xs => List.foldl (fun s x => q(insert $x $s)) q({$x0}) xs }
+    toExpr x := show Q(Finset $α') from mkSetLiteralQ q(Finset $α') (x.val.unquot.map toExpr) }
 
 #guard_expr
   (eval% Finset.powerset ({1, 2, 3} : Finset ℕ)) =

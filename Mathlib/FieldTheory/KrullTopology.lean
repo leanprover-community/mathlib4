@@ -40,6 +40,10 @@ all intermediate fields `E` with `E/K` finite dimensional.
 - `krullTopology_totallyDisconnected K L`. For an integral field extension `L/K`, the topology
   `krullTopology K L` is totally disconnected.
 
+- `IntermediateField.finrank_eq_fixingSubgroup_index`: given a Galois extension `K/k` and an
+  intermediate field `L`, the `[L : k]` as a natural number is equal to the index of the
+  fixing subgroup of `L`.
+
 ## Notations
 
 - In docstrings, we will write `Gal(L/E)` to denote the fixing subgroup of an intermediate field
@@ -103,6 +107,11 @@ theorem finiteDimensional_sup {K L : Type*} [Field K] [Field L] [Algebra K L]
     (E1 E2 : IntermediateField K L) (_ : FiniteDimensional K E1) (_ : FiniteDimensional K E2) :
     FiniteDimensional K (↥(E1 ⊔ E2)) :=
   IntermediateField.finiteDimensional_sup E1 E2
+
+/-- An element of `L ≃ₐ[K] L` is in `Gal(L/E)` if and only if it fixes every element of `E`. -/
+theorem IntermediateField.mem_fixingSubgroup_iff {K L : Type*} [Field K] [Field L] [Algebra K L]
+    (E : IntermediateField K L) (σ : L ≃ₐ[K] L) : σ ∈ E.fixingSubgroup ↔ ∀ x : L, x ∈ E → σ x = x :=
+  ⟨fun hσ x hx => hσ ⟨x, hx⟩, fun h ⟨x, hx⟩ => h x hx⟩
 
 /-- The map `E ↦ Gal(L/E)` is inclusion-reversing -/
 theorem IntermediateField.fixingSubgroup.antimono {K L : Type*} [Field K] [Field L] [Algebra K L]
@@ -170,6 +179,7 @@ instance krullTopology (K L : Type*) [Field K] [Field L] [Algebra K L] :
   GroupFilterBasis.topology (galGroupBasis K L)
 
 /-- For a field extension `L/K`, the Krull topology on `L ≃ₐ[K] L` makes it a topological group. -/
+@[stacks 0BMJ "We define Krull topology directly without proving the universal property"]
 instance (K L : Type*) [Field K] [Field L] [Algebra K L] : IsTopologicalGroup (L ≃ₐ[K] L) :=
   GroupFilterBasis.isTopologicalGroup (galGroupBasis K L)
 
@@ -284,12 +294,12 @@ end TotallySeparated
 @[simp] lemma IntermediateField.fixingSubgroup_top (K L : Type*) [Field K] [Field L] [Algebra K L] :
     IntermediateField.fixingSubgroup (⊤ : IntermediateField K L) = ⊥ := by
   ext
-  simp [IntermediateField.mem_fixingSubgroup_iff, DFunLike.ext_iff]
+  simp [mem_fixingSubgroup_iff, DFunLike.ext_iff]
 
 @[simp] lemma IntermediateField.fixingSubgroup_bot (K L : Type*) [Field K] [Field L] [Algebra K L] :
     IntermediateField.fixingSubgroup (⊥ : IntermediateField K L) = ⊤ := by
   ext
-  simp [IntermediateField.mem_fixingSubgroup_iff, mem_bot]
+  simp [mem_fixingSubgroup_iff, mem_bot]
 
 instance krullTopology_discreteTopology_of_finiteDimensional (K L : Type*) [Field K] [Field L]
     [Algebra K L] [FiniteDimensional K L] : DiscreteTopology (L ≃ₐ[K] L) := by
@@ -297,3 +307,68 @@ instance krullTopology_discreteTopology_of_finiteDimensional (K L : Type*) [Fiel
   change IsOpen ((⊥ : Subgroup (L ≃ₐ[K] L)) : Set (L ≃ₐ[K] L))
   rw [← IntermediateField.fixingSubgroup_top]
   exact IntermediateField.fixingSubgroup_isOpen ⊤
+
+namespace IntermediateField
+
+variable {k E : Type*} (K : Type*) [Field k] [Field E] [Field K]
+  [Algebra k E] [Algebra k K] [Algebra E K] [IsScalarTower k E K] (L : IntermediateField k E)
+
+/-- If `K / E / k` is a field extension tower with `E / k` normal,
+`L` is an intermediate field of `E / k`, then the fixing subgroup of `L` viewed as an
+intermediate field of `K / k` is equal to the preimage of the fixing subgroup of `L` viewed as an
+intermediate field of `E / k` under the natural map `Aut(K / k) → Aut(E / k)`
+(`AlgEquiv.restrictNormalHom`). -/
+theorem map_fixingSubgroup [Normal k E] :
+    (L.map (IsScalarTower.toAlgHom k E K)).fixingSubgroup =
+      L.fixingSubgroup.comap (AlgEquiv.restrictNormalHom (F := k) (K₁ := K) E) := by
+  ext f
+  simp only [Subgroup.mem_comap, mem_fixingSubgroup_iff]
+  constructor
+  · rintro h x hx
+    change f.restrictNormal E x = x
+    apply_fun _ using (algebraMap E K).injective
+    rw [AlgEquiv.restrictNormal_commutes]
+    exact h _ ⟨x, hx, rfl⟩
+  · rintro h _ ⟨x, hx, rfl⟩
+    replace h := congr(algebraMap E K $(show f.restrictNormal E x = x from h x hx))
+    rwa [AlgEquiv.restrictNormal_commutes] at h
+
+/-- If `K / E / k` is a field extension tower with `E / k` and `K / k` normal,
+`L` is an intermediate field of `E / k`, then the index of the fixing subgroup of `L` viewed as an
+intermediate field of `K / k` is equal to the index of the fixing subgroup of `L` viewed as an
+intermediate field of `E / k`. -/
+theorem map_fixingSubgroup_index [Normal k E] [Normal k K] :
+    (L.map (IsScalarTower.toAlgHom k E K)).fixingSubgroup.index = L.fixingSubgroup.index := by
+  rw [L.map_fixingSubgroup K, L.fixingSubgroup.index_comap_of_surjective
+    (AlgEquiv.restrictNormalHom_surjective _)]
+
+variable {K} in
+/-- If `K / k` is a Galois extension, `L` is an intermediate field of `K / k`, then `[L : k]`
+as a natural number is equal to the index of the fixing subgroup of `L`. -/
+theorem finrank_eq_fixingSubgroup_index (L : IntermediateField k K) [IsGalois k K] :
+    Module.finrank k L = L.fixingSubgroup.index := by
+  wlog hnfd : FiniteDimensional k L generalizing L
+  · rw [Module.finrank_of_infinite_dimensional hnfd]
+    by_contra! h
+    replace h : L.fixingSubgroup.FiniteIndex := ⟨h.symm⟩
+    obtain ⟨L', hfd, hL'⟩ :=
+      exists_lt_finrank_of_infinite_dimensional hnfd L.fixingSubgroup.index
+    let i := (liftAlgEquiv L').toLinearEquiv
+    replace hfd := i.finiteDimensional
+    rw [i.finrank_eq, this _ hfd] at hL'
+    exact (Subgroup.index_antitone <| fixingSubgroup.antimono <|
+      IntermediateField.lift_le L').not_lt hL'
+  let E := normalClosure k L K
+  have hle : L ≤ E := by simpa only [fieldRange_val] using L.val.fieldRange_le_normalClosure
+  let L' := restrict hle
+  have h := Module.finrank_mul_finrank k ↥L' ↥E
+  classical
+  rw [← IsGalois.card_fixingSubgroup_eq_finrank L', ← IsGalois.card_aut_eq_finrank k E] at h
+  nth_rw 2 [Fintype.card_eq_nat_card] at h
+  rw [← L'.fixingSubgroup.index_mul_card, Nat.card_eq_fintype_card,
+    Nat.mul_left_inj Fintype.card_ne_zero] at h
+  rw [(restrict_algEquiv hle).toLinearEquiv.finrank_eq, h, ← L'.map_fixingSubgroup_index K]
+  congr 2
+  exact lift_restrict hle
+
+end IntermediateField

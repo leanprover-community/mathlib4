@@ -86,7 +86,7 @@ theorem hasSum_integral_of_dominated_convergence {ι} [Countable ι] {F : ι →
   have hb_le_tsum : ∀ n, bound n ≤ᵐ[μ] fun a => ∑' n, bound n a := by
     intro n
     filter_upwards [hb_nonneg, bound_summable]
-      with _ ha0 ha_sum using le_tsum ha_sum _ fun i _ => ha0 i
+      with _ ha0 ha_sum using ha_sum.le_tsum _ fun i _ => ha0 i
   have hF_integrable : ∀ n, Integrable (F n) μ := by
     refine fun n => bound_integrable.mono' (hF_meas n) ?_
     exact EventuallyLE.trans (h_bound n) (hb_le_tsum n)
@@ -99,7 +99,7 @@ theorem hasSum_integral_of_dominated_convergence {ι} [Countable ι] {F : ι →
       with a hFa ha0 has
     calc
       ‖∑ n ∈ s, F n a‖ ≤ ∑ n ∈ s, bound n a := norm_sum_le_of_le _ fun n _ => hFa n
-      _ ≤ ∑' n, bound n a := sum_le_tsum _ (fun n _ => ha0 n) has
+      _ ≤ ∑' n, bound n a := has.sum_le_tsum _ (fun n _ => ha0 n)
 
 theorem integral_tsum {ι} [Countable ι] {f : ι → α → G} (hf : ∀ i, AEStronglyMeasurable (f i) μ)
     (hf' : ∑' i, ∫⁻ a : α, ‖f i a‖ₑ ∂μ ≠ ∞) :
