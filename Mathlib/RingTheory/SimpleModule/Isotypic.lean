@@ -117,8 +117,8 @@ theorem IsIsotypic.linearEquiv_fun [Module.Finite R M] [Nontrivial M] (h : IsIso
 
 end Finsupp
 
-/-- If `N` is a submodule of `M`, `N.IsFullyInvariant` means that `N` is mapped into itself by all
-endomorphisms of `M`.
+/-- A submodule `N` an `R`-module `M` is fully invariant if `N` is mapped into itself by all
+`R`-linear endomorphisms of `M`.
 
 TODO: If `M` is semisimple, this is equivalent to `N` being a sum of isotypic components of `M`. -/
 def Submodule.IsFullyInvariant (N : Submodule R M) : Prop :=
