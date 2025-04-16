@@ -100,62 +100,27 @@ theorem weightedOrder_mul (w : σ → ℕ) (f g : MvPowerSeries σ R) :
   apply le_antisymm _ (le_weightedOrder_mul w)
   by_cases hf : f.weightedOrder w < ⊤
   · by_cases hg : g.weightedOrder w < ⊤
-    · let f' := f.weightedHomogeneousComponent w (f.weightedOrder w).toNat
-      let g' := weightedHomogeneousComponent w (g.weightedOrder w).toNat g
-      have hf'g' : f' * g' = (f * g).weightedHomogeneousComponent w
-        ((f.weightedOrder w).toNat + (g.weightedOrder w).toNat) := by
-        ext n
-        simp only [f', g', coeff_mul, coeff_weightedHomogeneousComponent]
-        split_ifs with hn
-        · apply Finset.sum_congr rfl
-          intro x hx
-          rw [mem_antidiagonal] at hx
-          rw [← hx, map_add] at hn
-          rcases trichotomy_of_add_eq_add hn with h | h | h
-          · rw [if_pos h.1, if_pos h.2]
-          · suffices ↑(weight w x.1) < weightedOrder w f by
-              simp [if_neg (ne_of_lt h), f.coeff_eq_zero_of_lt_weightedOrder w this, zero_mul]
-            rwa [← ENat.coe_toNat (LT.lt.ne_top hf), ENat.coe_lt_coe]
-          · suffices ↑(weight w x.2) < weightedOrder w g by
-              simp [if_neg (ne_of_lt h), g.coeff_eq_zero_of_lt_weightedOrder w this, mul_zero]
-            rwa [← ENat.coe_toNat (LT.lt.ne_top hg), ENat.coe_lt_coe]
-        · apply Finset.sum_eq_zero
-          intro x hx
-          rw [mem_antidiagonal] at hx
-          split_ifs with h1 h2 <;>
-            all_goals {
-              try (simp only [mul_zero, zero_mul])
-              try (exfalso; apply hn; rw [← h1, ← h2, ← map_add, hx]) }
-      have f_ne_zero : f ≠ 0 := by
-         rw [ne_zero_iff_weightedOrder_finite w]
-         apply ENat.coe_toNat (LT.lt.ne_top hf)
-      have f'_ne_zero : f' ≠ 0 := by
-        simp only [ne_zero_iff_exists_coeff_ne_zero, f']
-        obtain ⟨d, h⟩ := f.exists_coeff_ne_zero_and_weightedOrder
-          w ((ne_zero_iff_weightedOrder_finite w).mp f_ne_zero)
-        use d
-        simp [← h.2, h.1, coeff_weightedHomogeneousComponent]
-      have g_ne_zero : g ≠ 0 := by
-         rw [ne_zero_iff_weightedOrder_finite w]
-         apply ENat.coe_toNat (LT.lt.ne_top hg)
-      simp only at hf hg
-      have g'_ne_zero : g' ≠ 0 := by
-        simp only [ne_zero_iff_exists_coeff_ne_zero, g']
-        obtain ⟨d, h⟩ := g.exists_coeff_ne_zero_and_weightedOrder
-          w ((ne_zero_iff_weightedOrder_finite w).mp g_ne_zero)
-        use d
-        simp [← h.2, h.1, coeff_weightedHomogeneousComponent]
-      have : f' * g' ≠ 0 := (mul_ne_zero_iff_right g'_ne_zero).mpr f'_ne_zero
-      rw [ne_zero_iff_exists_coeff_ne_zero] at this
-      obtain ⟨d, hd⟩ := this
-      simp only [hf'g', coeff_weightedHomogeneousComponent,
-        ne_eq, ite_eq_right_iff, Classical.not_imp, f', g'] at hd
-      have : weightedOrder w f + weightedOrder w g = weight w d := by
-        rw [hd.1, ← ENat.coe_toNat (LT.lt.ne_top hf), ← ENat.coe_toNat (LT.lt.ne_top hg)]
-        simp
-      rw [this]
-      apply weightedOrder_le
-      exact hd.2
+    · let p := (f.weightedOrder w).toNat
+      have hp : p = f.weightedOrder w := by
+        simpa only [p, ENat.coe_toNat_eq_self, ← lt_top_iff_ne_top]
+      let q := (g.weightedOrder w).toNat
+      have hq : q = g.weightedOrder w := by
+        simpa only [q, ENat.coe_toNat_eq_self, ← lt_top_iff_ne_top]
+      have : f.weightedHomogeneousComponent w p * g.weightedHomogeneousComponent w q ≠ 0 := by
+        simp only [ne_eq, mul_eq_zero]
+        intro H
+        rcases H with  H | H <;>
+        · exact weightedHomogeneousComponent_of_weightedOrder
+            (by simp [p, q, ENat.coe_toNat_eq_self, ← lt_top_iff_ne_top]
+                rw [← ne_eq, ne_zero_iff_weightedOrder_finite w]
+                apply ENat.coe_toNat (LT.lt.ne_top (by simpa))
+                ) H
+      rw [← weightedHomogeneousComponent_mul_of_le_weightedOrder
+          (le_of_eq hp) (le_of_eq hq)] at this
+      rw [← hp, ← hq, ← Nat.cast_add, ← not_lt]
+      intro H
+      apply this
+      apply weightedHomogeneousComponent_of_lt_weightedOrder_eq_zero H
     · rw [not_lt_top_iff] at hg
       simp [hg]
   · rw [not_lt_top_iff] at hf
