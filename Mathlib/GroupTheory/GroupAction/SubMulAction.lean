@@ -87,7 +87,7 @@ variable [SMul R M] [SetLike S M] [hS : SMulMemClass S R M] (s : S)
 instance (priority := 50) smul : SMul R s :=
   ⟨fun r x => ⟨r • x.1, smul_mem r x.2⟩⟩
 
-instance (priority := 50) [SMul T M] [SMulMemClass S T M] [SMulCommClass T R M] :
+@[to_additive] instance (priority := 50) [SMul T M] [SMulMemClass S T M] [SMulCommClass T R M] :
     SMulCommClass T R s where
   smul_comm _ _ _ := Subtype.ext (smul_comm ..)
 
