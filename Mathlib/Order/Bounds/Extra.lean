@@ -39,27 +39,23 @@ variable [Preorder α] [Preorder β] {f : α → β}
 
 lemma upperBounds_image_subset_of_dominated (Hf : Monotone f) {s₁ s₂ : Set α}
     (hs₂ : ∀ a ∈ s₂, ∃ b ∈ s₁, a ≤ b) :
-    upperBounds (f '' s₁) ⊆ upperBounds (f '' s₂) := by
-  apply upperBounds_subset_of_dominated
-  intro a ⟨c, hc⟩
-  obtain ⟨d, hd⟩ := hs₂ c hc.1
-  exact ⟨f d, ⟨(mem_image _ _ _).mpr ⟨d,⟨hd.1,rfl⟩⟩, le_of_eq_of_le hc.2.symm (Hf hd.2)⟩⟩
+    upperBounds (f '' s₁) ⊆ upperBounds (f '' s₂) := upperBounds_subset_of_dominated (fun a ha => by
+    obtain ⟨c, hc⟩ := ha
+    obtain ⟨d, hd⟩ := hs₂ c hc.1
+    exact ⟨f d, ⟨(mem_image _ _ _).mpr ⟨d,⟨hd.1,rfl⟩⟩, le_of_eq_of_le hc.2.symm (Hf hd.2)⟩⟩)
 
 lemma lowerBounds_image_congr_of_subset (Hf : Monotone f) {s₁ s₂ : Set α}
     (hs₁ : s₁ ⊆ s₂) (hs₂ : ∀ a ∈ s₂, ∃ b ∈ s₁, b ≤ a) :
-    lowerBounds (f '' s₁) = lowerBounds (f '' s₂) := by
-  apply lowerBounds_congr_of_subset (image_mono hs₁)
-  intro a ⟨c, hc⟩
-  obtain ⟨d,hd⟩ := hs₂ c hc.1
-  exact ⟨f d, ⟨(mem_image _ _ _).mpr ⟨d,⟨hd.1,rfl⟩⟩, le_of_le_of_eq (Hf hd.2) hc.2⟩⟩
+    lowerBounds (f '' s₁) = lowerBounds (f '' s₂) := lowerBounds_congr_of_subset (image_mono hs₁)
+      (fun a ⟨c, hc⟩ => by
+      obtain ⟨d,hd⟩ := hs₂ c hc.1
+      exact ⟨f d, ⟨(mem_image _ _ _).mpr ⟨d,⟨hd.1,rfl⟩⟩, le_of_le_of_eq (Hf hd.2) hc.2⟩⟩)
 
 lemma upperBounds_image_of_directedOn_prod {γ : Type*} [Preorder γ] {g : α × β → γ}
     (Hg : Monotone g) {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) :
-    upperBounds (g '' d) = upperBounds (g '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) := by
-  apply le_antisymm
-  · apply Hg.upperBounds_image_subset_of_dominated
-    intro a ha
-    exact hd.fst_image_times_snd_image_subset_lowerClosure ha
-  · exact upperBounds_mono_set (image_mono subset_fst_image_prod_snd_image)
+    upperBounds (g '' d) = upperBounds (g '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) := le_antisymm
+  (Hg.upperBounds_image_subset_of_dominated
+    (fun _ ha => hd.fst_image_times_snd_image_subset_lowerClosure ha))
+  (upperBounds_mono_set (image_mono subset_fst_image_prod_snd_image))
 
 end Monotone
