@@ -252,16 +252,6 @@ def stabilizerEquivStabilizer (hg : b = g • a) : stabilizer G a ≃* stabilize
     (MulEquiv.subgroupCongr (by
       rw [hg, stabilizer_smul_eq_stabilizer_map_conj g a, ← @MulEquiv.toMonoidHom_eq_coe]))
 
-@[simp]
-theorem MulAut.inv_apply {M : Type*} [Mul M] (e : MulAut M) (x : M) :
-      e⁻¹ x = e.symm x := by
-  rw [MulAut.inv_def]
-
-@[simp]
-theorem MulAut.symm_inv_apply {M : Type*} [Mul M] (e : MulAut M) (x : M) :
-      (e⁻¹).symm x = e x := by
-  simp only [MulAut.inv_def, MulEquiv.symm_symm]
-
 theorem stabilizerEquivStabilizer_apply (hg : b = g • a) (x : stabilizer G a) :
     stabilizerEquivStabilizer hg x = MulAut.conj g x := by
   simp [stabilizerEquivStabilizer]
@@ -312,16 +302,6 @@ theorem stabilizer_vadd_eq_stabilizer_map_conj (g : G) (a : α) :
     AddAut.conj_symm_apply]
 
 variable {g h k : G} {a b c : α}
-
-@[simp]
-theorem _root_.AddAut.inv_apply {A : Type*} [Add A] (e : AddAut A) (x : A) :
-      e⁻¹ x = e.symm x := by
-  rw [AddAut.inv_def]
-
-@[simp]
-theorem _root_.AddAut.symm_inv_apply {A : Type*} [Add A] (e : AddAut A) (x : A) :
-      (e⁻¹).symm x = e x := by
-  simp only [AddAut.inv_def, AddEquiv.symm_symm]
 
 /-- The natural group equivalence between the stabilizers of two elements in the same orbit. -/
 def stabilizerEquivStabilizer (hg : b = g +ᵥ a) : stabilizer G a ≃+ stabilizer G b :=
