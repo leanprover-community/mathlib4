@@ -199,7 +199,7 @@ lemma uniformEquicontinuousOn_univ (F : ι → β → α) :
 lemma uniformEquicontinuous_restrict_iff (F : ι → β → α) {S : Set β} :
     UniformEquicontinuous (S.restrict ∘ F) ↔ UniformEquicontinuousOn F S := by
   rw [UniformEquicontinuous, UniformEquicontinuousOn]
-  conv in _ ⊓ _ => rw [← Subtype.range_val (s := S), ← range_prod_map, ← map_comap]
+  conv in _ ⊓ _ => rw [← Subtype.range_val (s := S), ← range_prodMap, ← map_comap]
   rfl
 
 /-!

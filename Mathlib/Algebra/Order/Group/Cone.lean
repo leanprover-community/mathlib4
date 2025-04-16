@@ -114,7 +114,7 @@ abbrev LinearOrder.mkOfGroupCone
     [GroupConeClass S G] [IsMaxMulCone C] (dec : DecidablePred (· ∈ C)) : LinearOrder G where
   __ := PartialOrder.mkOfGroupCone C
   le_total a b := by simpa using mem_or_inv_mem (b / a)
-  decidableLE _ _ := dec _
+  toDecidableLE _ _ := dec _
 
 /-- Construct a partially ordered abelian group by designating a cone in an abelian group. -/
 @[to_additive
