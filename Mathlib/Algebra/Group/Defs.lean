@@ -176,11 +176,17 @@ class AddCommMagma (G : Type u) extends Add G where
   /-- Addition is commutative in an commutative additive magma. -/
   protected add_comm : ∀ a b : G, a + b = b + a
 
+-- See note [lower instance priority]
+attribute [instance 50] AddCommMagma.toAdd
+
 /-- A commutative multiplicative magma is a type with a multiplication which commutes. -/
 @[ext]
 class CommMagma (G : Type u) extends Mul G where
   /-- Multiplication is commutative in a commutative multiplicative magma. -/
   protected mul_comm : ∀ a b : G, a * b = b * a
+
+-- See note [lower instance priority]
+attribute [instance 50] CommMagma.toMul
 
 attribute [to_additive] CommMagma
 
@@ -188,9 +194,15 @@ attribute [to_additive] CommMagma
 @[ext]
 class CommSemigroup (G : Type u) extends Semigroup G, CommMagma G where
 
+-- See note [lower instance priority]
+attribute [instance 50] CommSemigroup.toSemigroup
+
 /-- A commutative additive semigroup is a type with an associative commutative `(+)`. -/
 @[ext]
 class AddCommSemigroup (G : Type u) extends AddSemigroup G, AddCommMagma G where
+
+-- See note [lower instance priority]
+attribute [instance 50] AddCommSemigroup.toAddSemigroup
 
 attribute [to_additive] CommSemigroup
 
@@ -652,9 +664,15 @@ end Monoid
 /-- An additive commutative monoid is an additive monoid with commutative `(+)`. -/
 class AddCommMonoid (M : Type u) extends AddMonoid M, AddCommSemigroup M
 
+-- See note [lower instance priority]
+attribute [instance 50] AddCommMonoid.toAddMonoid
+
 /-- A commutative monoid is a monoid with commutative `(*)`. -/
 @[to_additive]
 class CommMonoid (M : Type u) extends Monoid M, CommSemigroup M
+
+-- See note [lower instance priority]
+attribute [instance 50] CommMonoid.toMonoid
 
 section LeftCancelMonoid
 
@@ -709,6 +727,9 @@ attribute [instance 75] AddCancelCommMonoid.toAddCommMonoid -- See note [lower c
 /-- Commutative version of `CancelMonoid`. -/
 @[to_additive]
 class CancelCommMonoid (M : Type u) extends CommMonoid M, LeftCancelMonoid M
+
+-- See note [lower instance priority]
+attribute [instance 50] CancelCommMonoid.toLeftCancelMonoid
 
 attribute [instance 75] CancelCommMonoid.toCommMonoid -- See note [lower cancel priority]
 
@@ -1040,11 +1061,17 @@ end DivisionMonoid
 /-- Commutative `SubtractionMonoid`. -/
 class SubtractionCommMonoid (G : Type u) extends SubtractionMonoid G, AddCommMonoid G
 
+-- See note [lower instance priority]
+attribute [instance 50] SubtractionCommMonoid.toSubtractionMonoid
+
 /-- Commutative `DivisionMonoid`.
 
 This is the immediate common ancestor of `CommGroup` and `CommGroupWithZero`. -/
 @[to_additive SubtractionCommMonoid]
 class DivisionCommMonoid (G : Type u) extends DivisionMonoid G, CommMonoid G
+
+-- See note [lower instance priority]
+attribute [instance 50] DivisionCommMonoid.toDivisionMonoid
 
 /-- A `Group` is a `Monoid` with an operation `⁻¹` satisfying `a⁻¹ * a = 1`.
 
@@ -1132,9 +1159,15 @@ end Group
 /-- An additive commutative group is an additive group with commutative `(+)`. -/
 class AddCommGroup (G : Type u) extends AddGroup G, AddCommMonoid G
 
+-- See note [lower instance priority]
+attribute [instance 50] AddCommGroup.toAddGroup
+
 /-- A commutative group is a group with commutative `(*)`. -/
 @[to_additive]
 class CommGroup (G : Type u) extends Group G, CommMonoid G
+
+-- See note [lower instance priority]
+attribute [instance 50] CommGroup.toGroup
 
 section CommGroup
 

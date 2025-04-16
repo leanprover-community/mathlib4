@@ -117,6 +117,9 @@ class CancelMonoidWithZero (M₀ : Type*) extends MonoidWithZero M₀, IsCancelM
 element, and `0` is left and right absorbing. -/
 class CommMonoidWithZero (M₀ : Type*) extends CommMonoid M₀, MonoidWithZero M₀
 
+-- See note [lower instance priority]
+attribute [instance 50] CommMonoidWithZero.toMonoidWithZero
+
 section CancelMonoidWithZero
 
 variable [CancelMonoidWithZero M₀] {a b c : M₀}
@@ -157,6 +160,9 @@ end CommSemigroup
  `0` is left and right absorbing,
   and left/right multiplication by a non-zero element is injective. -/
 class CancelCommMonoidWithZero (M₀ : Type*) extends CommMonoidWithZero M₀, IsLeftCancelMulZero M₀
+
+-- See note [lower instance priority]
+attribute [instance 50] CancelCommMonoidWithZero.toIsLeftCancelMulZero
 
 -- See note [lower cancel priority]
 attribute [instance 75] CancelCommMonoidWithZero.toCommMonoidWithZero
@@ -218,6 +224,9 @@ if it is a commutative monoid with zero element (distinct from `1`)
 such that every nonzero element is invertible.
 The type is required to come with an “inverse” function, and the inverse of `0` must be `0`. -/
 class CommGroupWithZero (G₀ : Type*) extends CommMonoidWithZero G₀, GroupWithZero G₀
+
+-- See note [lower instance priority]
+attribute [instance 50] CommGroupWithZero.toGroupWithZero
 
 section
 variable [CancelMonoidWithZero M₀] {x : M₀}
