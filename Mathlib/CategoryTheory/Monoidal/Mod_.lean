@@ -129,34 +129,34 @@ def comap {A B : Mon_ C} (f : A ⟶ B) : Mod_ B ⥤ Mod_ A where
 -- identities, compositions, and equalities of monoid object morphisms.
 end Mod_
 
-section Mod_Class_
+section Mod_Class
 
 open CategoryTheory Mon_Class MonoidalCategory
 
 variable (M : C) [Mon_Class M]
 
-/--
-An action of a monoid object `M` on an object `S` is the data of map
-`smul : M ⊗ S ⟶ S` that satisfies "the right commutative diagrams" -/
-class Mod_Class_ (S : C) where
+/-- An action of a monoid object `M` on an object `X` is the data of a map `smul : M ⊗ X ⟶ X` that
+satisfies unitality and associativity with multiplication.
+
+See `MulAction` for the non-categorical version. -/
+class Mod_Class (X : C) where
   /-- The action map -/
-  smul : M ⊗ S ⟶ S
-  /-- The action map is compatible with the monoid's multiplication -/
-  mul_smul (S) : (μ ▷ S) ≫ smul = (α_ M M S).hom ≫ (M ◁ smul) ≫ smul := by aesop_cat
-  /-- The identity acts trivially -/
-  one_smul (S) : (η ▷ S) ≫ smul = (λ_ S).hom := by aesop_cat
+  smul : M ⊗ X ⟶ X
+  /-- The identity acts trivially. -/
+  one_smul (X) : (η ▷ X) ≫ smul = (λ_ X).hom := by aesop_cat
+  /-- The action map is compatible with multiplication. -/
+  mul_smul (X) : (μ ▷ X) ≫ smul = (α_ M M X).hom ≫ (M ◁ smul) ≫ smul := by aesop_cat
 
-attribute [reassoc (attr := simp)] Mod_Class_.mul_smul Mod_Class_.one_smul
+attribute [reassoc (attr := simp)] Mod_Class.mul_smul Mod_Class.one_smul
 
-namespace Mod_Class_
+namespace Mod_Class
 
-@[inherit_doc] notation "γ" => Mod_Class_.smul
+@[inherit_doc] scoped notation "γ" => Mod_Class.smul
 
--- See note [reducible non instances]
 /-- The action of a monoid object on itself. -/
-abbrev regular : Mod_Class_ M M where
-  smul := μ
+-- See note [reducible non instances]
+abbrev regular : Mod_Class M M where smul := μ
 
-end Mod_Class_
+end Mod_Class
 
-end Mod_Class_
+end Mod_Class
