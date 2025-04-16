@@ -363,7 +363,7 @@ to the space of linear maps `M → M₃`. -/
 def compRight (f : M₁ →ₗ[R] M₂) : (M →ₗ[R] M₁) →ₗ[S] M →ₗ[R] M₂ where
   toFun g := f.comp g
   map_add' _ _ := LinearMap.ext fun _ ↦ map_add f _ _
-  map_smul' _ _ := LinearMap.ext fun _ ↦ (f.restrictScalars S).map_smul ..
+  map_smul' _ _ := LinearMap.ext fun _ ↦ map_smul_of_tower ..
 
 @[simp]
 theorem compRight_apply (f : M₁ →ₗ[R] M₂) (g : M →ₗ[R] M₁) : compRight S f g = f.comp g :=
