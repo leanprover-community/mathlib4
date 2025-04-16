@@ -52,9 +52,6 @@ lemma isUniformEmbedding_toContinuousMultilinearMap :
   injective := toContinuousMultilinearMap_injective
   comap_uniformity := rfl
 
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_toContinuousMultilinearMap := isUniformEmbedding_toContinuousMultilinearMap
-
 lemma uniformContinuous_toContinuousMultilinearMap :
     UniformContinuous (toContinuousMultilinearMap : (E [⋀^ι]→L[𝕜] F) → _) :=
   isUniformEmbedding_toContinuousMultilinearMap.uniformContinuous
@@ -121,9 +118,6 @@ theorem isUniformEmbedding_restrictScalars :
   exact (ContinuousMultilinearMap.isUniformEmbedding_restrictScalars 𝕜').comp
     isUniformEmbedding_toContinuousMultilinearMap
 
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_restrictScalars := isUniformEmbedding_restrictScalars
-
 theorem uniformContinuous_restrictScalars :
     UniformContinuous (restrictScalars 𝕜' : E [⋀^ι]→L[𝕜] F → E [⋀^ι]→L[𝕜'] F) :=
   (isUniformEmbedding_restrictScalars 𝕜').uniformContinuous
@@ -186,12 +180,6 @@ alias closedEmbedding_toContinuousMultilinearMap := isClosedEmbedding_toContinuo
 
 instance instContinuousEvalConst : ContinuousEvalConst (E [⋀^ι]→L[𝕜] F) (ι → E) F :=
   .of_continuous_forget continuous_toContinuousMultilinearMap
-
-@[deprecated (since := "2024-10-05")]
-protected alias continuous_eval_const := continuous_eval_const
-
-@[deprecated (since := "2024-10-05")]
-protected alias continuous_coe_fun := continuous_coeFun
 
 instance instT2Space [T2Space F] : T2Space (E [⋀^ι]→L[𝕜] F) :=
   .of_injective_continuous DFunLike.coe_injective continuous_coeFun
