@@ -51,9 +51,6 @@ variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [CommRing R]
 
 section CoeFnInstance
 
--- Porting note: this instance was not the simp-normal form in mathlib3 but it is fine in mathlib4
--- because coercions get unfolded.
-/-- This instance is here for convenience, but is not the simp-normal form. -/
 instance instCoeFun : CoeFun (GL n R) fun _ => n → n → R where
   coe A := (A : Matrix n n R)
 
@@ -112,17 +109,12 @@ theorem coe_inv : ↑A⁻¹ = (↑A : Matrix n n R)⁻¹ :=
 
 @[deprecated (since := "2024-11-26")] alias toLinear := toLin
 
--- Note that without the `@` and `‹_›`, Lean infers `fun a b ↦ _inst a b` instead of `_inst` as the
--- decidability argument, which prevents `simp` from obtaining the instance by unification.
--- These `fun a b ↦ _inst a b` terms also appear in the type of `A`, but simp doesn't get confused
--- by them so for now we do not care.
 @[simp]
-theorem coe_toLin : (@toLin n ‹_› ‹_› _ _ A : (n → R) →ₗ[R] n → R) = Matrix.mulVecLin A :=
+theorem coe_toLin : (toLin A : (n → R) →ₗ[R] n → R) = Matrix.mulVecLin A :=
   rfl
 
--- Porting note: is inserting toLinearEquiv here correct?
 @[simp]
-theorem toLin_apply (v : n → R) : (toLin A).toLinearEquiv v = Matrix.mulVecLin (↑A) v :=
+theorem toLin_apply (v : n → R) : (toLin A : _ → n → R) v = Matrix.mulVecLin A v :=
   rfl
 
 end CoeLemmas

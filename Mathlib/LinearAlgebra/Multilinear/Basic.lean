@@ -3,9 +3,8 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Algebra.NoZeroSMulDivisors.Pi
 import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
-import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.NoZeroSMulDivisors.Pi
 import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Powerset
@@ -810,7 +809,7 @@ theorem add_compMultilinearMap (g₁ g₂ : M₂ →ₗ[R] M₃) (f : Multilinea
     (g₁ + g₂).compMultilinearMap f = g₁.compMultilinearMap f + g₂.compMultilinearMap f := rfl
 
 @[simp]
-theorem compMultilinearMap_smul [Monoid S] [DistribMulAction S M₂] [DistribMulAction S M₃]
+theorem compMultilinearMap_smul [DistribSMul S M₂] [DistribSMul S M₃]
     [SMulCommClass R S M₂] [SMulCommClass R S M₃] [CompatibleSMul M₂ M₃ S R]
     (g : M₂ →ₗ[R] M₃) (s : S) (f : MultilinearMap R M₁ M₂) :
     g.compMultilinearMap (s • f) = s • g.compMultilinearMap f :=

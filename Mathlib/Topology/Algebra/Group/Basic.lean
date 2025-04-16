@@ -8,6 +8,7 @@ import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Order.Filter.Bases.Finite
 import Mathlib.Topology.Algebra.Group.Defs
 import Mathlib.Topology.Algebra.Monoid
+import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 # Topological groups
