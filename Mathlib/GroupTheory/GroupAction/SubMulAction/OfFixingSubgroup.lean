@@ -77,7 +77,6 @@ theorem of_fixingSubgroupEmpty_mapScalars_surjective :
 
 end Empty
 
-
 section InsertStabilizer
 
 theorem mem_fixingSubgroup_insert_iff {a : α} {s : Set α} {m : M} :
