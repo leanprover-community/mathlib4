@@ -132,6 +132,27 @@ def contains (r : NamePrefixRel) (n₁ n₂ : Name) : Bool := (r.find n₁ n₂)
 
 end NamePrefixRel
 
+-- TODO: move the following three lists to a JSON file, for easier evolution over time!
+-- TODO: add/extend tests for this linter, to verify the change in behaviour
+
+-- TODO: migrate other directories to this list: investigate e.g. `Mathlib.Lean`, `Mathlib.Logic`,
+-- `Mathlib.Tactic.Linter` and `Mathlib.Data`
+
+-- TODO: enforce that allowed and forbidden keys are disjoint
+
+/-- `allowedImportDirs` relates module prefixes, specifying that modules with the first prefix
+are only allowed to import modules in the second directory.
+
+For directories with few imports, this is a better default than a blocklist.
+-/
+def allowedImportDirs : NamePrefixRel := .ofArray #[
+  (`Mathlib.Util, `Lean),
+  (`Mathlib.Util, `Qq),
+  (`Mathlib.Util, `Batteries),
+  (`Mathlib.Util, `Mathlib.Lean),
+  (`Mathlib.Util, `Mathlib.Tactic),
+]
+
 /-- `forbiddenImportDirs` relates module prefixes, specifying that modules with the first prefix
 should not import modules with the second prefix (except if specifically allowed in
 `overrideAllowedImportDirs`).
@@ -482,17 +503,46 @@ end DirectoryDependency
 
 open DirectoryDependency
 
+#guard Lean.Name.isPrefixOf `Mathlib.Util `Mathlib.Util.Basic == true
+
 @[inherit_doc Mathlib.Linter.linter.directoryDependency]
 def directoryDependencyCheck (mainModule : Name) : CommandElabM (Option MessageData) := do
   unless Linter.getLinterValue linter.directoryDependency (← getOptions) do
     return none
   let env ← getEnv
   let imports := env.allImportedModuleNames
+
+  -- If this module is in the allow-list, we only allow imports from directories specified there.
+  let matchingPrefixes := mainModule.prefixes.filter (fun prf ↦ allowedImportDirs.containsKey prf)
+  let mut msg := m!""
+  let mut hasErrors := false
+  for prfix in matchingPrefixes do
+    -- Get the current directory of the main module: we assume this is not a root file.
+    let some dir := mainModule.prefix? | unreachable!
+    -- We always allow imports in the same directory, and from Mathlib.Init.
+    -- We also always allow imports from `Init` and `Std`.
+    let importsToCheck := imports.filter (!(`Init).isPrefixOf ·)|>.filter (!(`Std).isPrefixOf ·)
+      |>.filter (!dir.isPrefixOf ·)|>.erase `Mathlib.Init
+    -- Allowed directories: TODO this does not take nested prefixes into account...
+    let some rules := RBMap.find? allowedImportDirs prfix | unreachable!
+    for imported in importsToCheck do
+      if !allowedImportDirs.contains mainModule imported then
+        msg := msg ++ m!"Modules starting with {prfix} are only allowed to import modules starting with one of {rules.toArray}. \
+        This module depends on {imported}\n"
+        for dep in env.importPath imported do
+          msg := msg ++ m!"which is imported by {dep},\n"
+        msg := msg ++ m!"which is imported by this module."
+        hasErrors := true
+        -- XXX: is this true? "(Exceptions can be added to `overrideAllowedImportDirs`.)"
+  if hasErrors then return some msg
+
+  -- Otherwise, we fall back to the blocklist `forbiddenImportDirs`.
+  -- XXX: this only yields up to one error, not the full list. Should this change?
   match forbiddenImportDirs.findAny mainModule imports with
   | some (n₁, n₂) => do
     if let some imported := n₂.prefixToName imports then
       if !overrideAllowedImportDirs.contains mainModule imported then
-        let mut msg := m!"Modules starting with {n₁} are not allowed to import modules starting with {n₂}. \
+        msg := m!"Modules starting with {n₁} are not allowed to import modules starting with {n₂}. \
         This module depends on {imported}\n"
         for dep in env.importPath imported do
           msg := msg ++ m!"which is imported by {dep},\n"
