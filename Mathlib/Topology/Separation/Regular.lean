@@ -269,9 +269,10 @@ lemma IsClosed.HasSeparatingCover {s t : Set X} [LindelofSpace X] [RegularSpace 
     u u_open (fun a ainh ↦ mem_iUnion.mpr ⟨a, u_nhd a ainh⟩)
   exact ⟨u ∘ f, f_cov, fun n ↦ ⟨u_open (f n), u_dis (f n)⟩⟩
 
-/-- Given two points `x ≠ y`, we can find neighbourhoods `x ∈ V₁ ⊆ U₁` and `y ∈ V₂ ⊆ U₂`,
-with the `Vₖ` closed and the `Uₖ` open, such that the `Uₖ` are disjoint. -/
-theorem disjoint_nested_nhds [RegularSpace X] {x y : X} (h : ¬Inseparable x y) :
+/-- Given two separable points `x` and `y`, we can find neighbourhoods
+`x ∈ V₁ ⊆ U₁` and `y ∈ V₂ ⊆ U₂`, with the `Vₖ` closed and the `Uₖ` open,
+such that the `Uₖ` are disjoint. -/
+theorem disjoint_nested_nhds_of_not_inseparable [RegularSpace X] {x y : X} (h : ¬Inseparable x y) :
     ∃ U₁ ∈ 𝓝 x, ∃ V₁ ∈ 𝓝 x, ∃ U₂ ∈ 𝓝 y, ∃ V₂ ∈ 𝓝 y,
       IsClosed V₁ ∧ IsClosed V₂ ∧ IsOpen U₁ ∧ IsOpen U₂ ∧ V₁ ⊆ U₁ ∧ V₂ ⊆ U₂ ∧ Disjoint U₁ U₂ := by
   rcases r1_separation h with ⟨U₁, U₂, U₁_op, U₂_op, x_in, y_in, H⟩
@@ -403,6 +404,12 @@ instance [TopologicalSpace Y] [T3Space X] [T3Space Y] : T3Space (X × Y) := ⟨�
 instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, T3Space (X i)] :
     T3Space (∀ i, X i) := ⟨⟩
 
+/-- Given two points `x ≠ y`, we can find neighbourhoods `x ∈ V₁ ⊆ U₁` and `y ∈ V₂ ⊆ U₂`,
+with the `Vₖ` closed and the `Uₖ` open, such that the `Uₖ` are disjoint. -/
+theorem disjoint_nested_nhds [T3Space X] {x y : X} (h : x ≠ y) :
+    ∃ U₁ ∈ 𝓝 x, ∃ V₁ ∈ 𝓝 x, ∃ U₂ ∈ 𝓝 y, ∃ V₂ ∈ 𝓝 y,
+      IsClosed V₁ ∧ IsClosed V₂ ∧ IsOpen U₁ ∧ IsOpen U₂ ∧ V₁ ⊆ U₁ ∧ V₂ ⊆ U₂ ∧ Disjoint U₁ U₂ :=
+  disjoint_nested_nhds_of_not_inseparable (mt Inseparable.eq h)
 
 open SeparationQuotient
 
