@@ -215,7 +215,7 @@ def X : R⟦X⟧ :=
 theorem commute_X (φ : R⟦X⟧) : Commute φ X :=
   MvPowerSeries.commute_X _ _
 
-theorem commute_X_pow {φ : R⟦X⟧} {n : ℕ} :
+theorem commute_X_pow (φ : R⟦X⟧) (n : ℕ) :
     Commute φ (X ^ n) := Commute.pow_right (commute_X φ) n
 
 @[simp]
@@ -338,16 +338,16 @@ theorem mul_X_cancel {φ ψ : R⟦X⟧} (h : φ * X = ψ * X) : φ = ψ := by
   intro n
   simpa using h (n + 1)
 
-theorem mul_X_inj {φ ψ : R⟦X⟧} : φ * X = ψ * X ↔ φ = ψ := by
-  refine ⟨mul_X_cancel, fun h ↦ congrFun (congrArg HMul.hMul h) X⟩
+theorem mul_X_inj {φ ψ : R⟦X⟧} : φ * X = ψ * X ↔ φ = ψ :=
+  ⟨mul_X_cancel, fun h ↦ congrFun (congrArg HMul.hMul h) X⟩
 
 theorem X_mul_cancel {φ ψ : R⟦X⟧} (h : X * φ = X * ψ) : φ = ψ := by
   rw [PowerSeries.ext_iff] at h ⊢
   intro n
   simpa using h (n + 1)
 
-theorem X_mul_inj {φ ψ : R⟦X⟧} : X * φ = X * ψ ↔ φ = ψ := by
-  refine ⟨X_mul_cancel, fun h ↦ congrArg (HMul.hMul X) h⟩
+theorem X_mul_inj {φ ψ : R⟦X⟧} : X * φ = X * ψ ↔ φ = ψ :=
+  ⟨X_mul_cancel, fun h ↦ congrArg (HMul.hMul X) h⟩
 
 @[simp]
 theorem constantCoeff_C (a : R) : constantCoeff R (C R a) = a :=
