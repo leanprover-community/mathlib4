@@ -134,7 +134,7 @@ theorem upperBounds_mono_set ⦃s t : Set α⦄ (hst : s ⊆ t) : upperBounds t 
   fun _ hb _ h => hb <| hst h
 
 lemma upperBounds_subset_of_dominated {s₁ s₂ : Set α} (h : Dominated (· ≤ ·) s₁ s₂) :
-    upperBounds s₁ ⊆ upperBounds s₂ := fun c hc d hd => by
+    upperBounds s₂ ⊆ upperBounds s₁ := fun c hc d hd => by
   obtain ⟨e, he₁, he₂⟩ := h _ hd
   exact Preorder.le_trans d e c he₂ (hc he₁)
 
@@ -142,7 +142,7 @@ theorem lowerBounds_mono_set ⦃s t : Set α⦄ (hst : s ⊆ t) : lowerBounds t 
   fun _ hb _ h => hb <| hst h
 
 lemma lowerBounds_subset_of_dominated {s₁ s₂ : Set α} (h : Dominated (· ≥ ·) s₁ s₂) :
-    lowerBounds s₁ ⊆ lowerBounds s₂ := fun c hc d hd => by
+    lowerBounds s₂ ⊆ lowerBounds s₁ := fun c hc d hd => by
   obtain ⟨e, he₁, he₂⟩ := h _ hd
   exact le_trans (hc he₁) he₂
 
@@ -945,14 +945,14 @@ namespace Monotone
 variable [Preorder α] {β} [Preorder β] {f : α → β}
 
 lemma upperBounds_image_subset_of_dominated (Hf : Monotone f) {s₁ s₂ : Set α}
-    (h : Dominated (· ≤ ·) s₁ s₂) : upperBounds (f '' s₁) ⊆ upperBounds (f '' s₂) :=
+    (h : Dominated (· ≤ ·) s₁ s₂) : upperBounds (f '' s₂) ⊆ upperBounds (f '' s₁) :=
   upperBounds_subset_of_dominated (fun a ha => by
     obtain ⟨c, hc⟩ := ha
     obtain ⟨d, hd⟩ := h c hc.1
     exact ⟨f d, ⟨(mem_image _ _ _).mpr ⟨d, ⟨hd.1, rfl⟩⟩, le_of_eq_of_le hc.2.symm (Hf hd.2)⟩⟩)
 
 lemma lowerBounds_image_subset_of_dominated (Hf : Monotone f) {s₁ s₂ : Set α}
-    (h : Dominated (· ≥ ·) s₁ s₂) : lowerBounds (f '' s₁) ⊆ lowerBounds (f '' s₂) :=
+    (h : Dominated (· ≥ ·) s₁ s₂) : lowerBounds (f '' s₂) ⊆ lowerBounds (f '' s₁) :=
   lowerBounds_subset_of_dominated (fun a ha => by
     obtain ⟨c, hc⟩ := ha
     obtain ⟨d, hd⟩ := h c hc.1
