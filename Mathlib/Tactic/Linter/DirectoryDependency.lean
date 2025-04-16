@@ -482,14 +482,15 @@ def directoryDependencyCheck (mainModule : Name) : CommandElabM (Option MessageD
   | some (n₁, n₂) => do
     if let some imported := n₂.prefixToName imports then
       if !overrideAllowedImportDirs.contains mainModule imported then
-        let mut msg := m!"Modules starting with {n₁} are not allowed to import modules starting with {n₂}.
-This module depends on {imported}\n"
+        let mut msg := m!"Modules starting with {n₁} are not allowed to import modules starting with {n₂}. \
+        This module depends on {imported}\n"
         for dep in env.importPath imported do
           msg := msg ++ m!"which is imported by {dep},\n"
-        return some <| msg ++ m!"which is imported by this module.
-(Exceptions can be added to `overrideAllowedImportDirs`.)"
+        return some <| msg ++ m!"which is imported by this module. \
+          (Exceptions can be added to `overrideAllowedImportDirs`.)"
     else
-      return some m!"Internal error in `directoryDependency` linter: this module claims to depend on a module starting with {n₂} but a module with that prefix was not found in the import graph."
+      return some m!"Internal error in `directoryDependency` linter: this module claims to depend \
+      on a module starting with {n₂} but a module with that prefix was not found in the import graph."
   | none => pure ()
   return none
 
