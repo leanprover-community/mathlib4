@@ -180,12 +180,10 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Algebra.Notation),
   (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Data.Notation),
   (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Data.Array),
-
   (`Mathlib.Lean.Meta.CongrTheorems, `Mathlib.Data),
   (`Mathlib.Lean.Meta.CongrTheorems, `Mathlib.Order.Defs.Unbundled),
   (`Mathlib.Lean.Meta.CongrTheorems, `Mathlib.Logic),
   (`Mathlib.Lean.Meta.CongrTheorems, `Mathlib.Tactic),
-
   (`Mathlib.Lean.Expr.ExtraRecognizers, `Mathlib.Data),
   (`Mathlib.Lean.Expr.ExtraRecognizers, `Mathlib.Order),
   (`Mathlib.Lean.Expr.ExtraRecognizers, `Mathlib.Logic),
@@ -199,17 +197,12 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Tactic.Linter.TextBased, `Mathlib.Data.Nat.Notation),
 
   (`Mathlib.Logic, `Batteries),
-  (`Mathlib.Logic, `Qq), -- via the `tauto` tactic
-  -- XXX: to what extent is this desirable?
-  (`Mathlib.Logic, `Mathlib.Algebra),
+  (`Mathlib.Logic, `Mathlib.Algebra), -- XXX: to what extent is this desirable?
   -- XXX: should this import be allowed on a more fine-grained level?
   (`Mathlib.Logic, `Mathlib.Control),
   (`Mathlib.Logic, `Mathlib.Lean),
   (`Mathlib.Logic, `Mathlib.Util),
   (`Mathlib.Logic, `Mathlib.Tactic),
-  -- Mathlib.Tactic.Common is imported via a number of different paths, e.g.
-  -- Logic.Equiv.Fin.Rotate imports Algebra.Group.Fin.Basic, which imports Tactic.Common,
-  -- or via e.g. Logic.Equiv.FinType and Logic.Function.FromTypes ...
   (`Mathlib.Logic.Fin.Rotate, `Mathlib.Algebra.Group.Fin.Basic),
   -- XXX: should this import be allowed only on a more fine-grained level (or at all)?
   (`Mathlib.Logic, `Mathlib.Data),
