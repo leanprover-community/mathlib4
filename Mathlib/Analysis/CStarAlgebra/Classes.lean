@@ -31,6 +31,8 @@ class NonUnitalCStarAlgebra (A : Type*) [NonUnitalRing A] extends
 structure NonUnitalCommCStarAlgebra (A : Type*) extends
     NonUnitalCommRing A, NormedRing A, NonUnitalCStarAlgebra A
 
+attribute [nolint docBlame] NonUnitalCommCStarAlgebra.toNonUnitalCStarAlgebra
+
 /-- The class of unital (complex) C⋆-algebras. -/
 class CStarAlgebra (A : Type*) [Ring A] extends
     NormedRing A, StarRing A, CompleteSpace A, CStarRing A,
@@ -40,6 +42,8 @@ class CStarAlgebra (A : Type*) [Ring A] extends
 @[deprecated "Use `[CommRing α] [CommCStarAlgebra α]` instead."
   (since := "2025-04-14")]
 structure CommCStarAlgebra (A : Type*) extends CommRing A, NormedRing A, CStarAlgebra A
+
+attribute [nolint docBlame] CommCStarAlgebra.toCStarAlgebra
 
 instance (priority := 100) CStarAlgebra.toNonUnitalCStarAlgebra (A : Type*)
     [Ring A] [CStarAlgebra A] :
