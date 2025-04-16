@@ -66,7 +66,7 @@ theorem order_finite_iff_ne_zero : (order φ < ⊤) ↔ φ ≠ 0 := by
 theorem order_eq_top {φ : R⟦X⟧} : φ.order = ⊤ ↔ φ = 0 := by
   simpa using order_finite_iff_ne_zero.not_left
 
-theorem coe_toNat_order {f : PowerSeries R} (hf : f ≠ 0) : f.order.toNat = f.order := by
+theorem coe_toNat_order {φ : R⟦X⟧} (hf : φ ≠ 0) : φ.order.toNat = φ.order := by
   rw [ENat.coe_toNat_eq_self.mpr (order_eq_top.not.mpr hf)]
 
 /-- If the order of a formal power series is finite,
@@ -271,8 +271,7 @@ theorem self_eq_X_pow_order_mul_divXPowOrder {f : R⟦X⟧} :
 alias self_eq_X_pow_order_mul_divided_by_X_pow_order := self_eq_X_pow_order_mul_divXPowOrder
 
 theorem X_pow_order_dvd : X ^ φ.order.toNat ∣ φ := by
-  simp [X_pow_dvd_iff]
-  exact coeff_of_lt_order_toNat
+  simpa only [X_pow_dvd_iff] using coeff_of_lt_order_toNat
 
 theorem order_eq_emultiplicity_X {R : Type*} [Semiring R] (φ : R⟦X⟧) :
     order φ = emultiplicity X φ := by
@@ -311,7 +310,7 @@ theorem order_one : order (1 : R⟦X⟧) = 0 := by
   simpa using order_monomial_of_ne_zero 0 (1 : R) one_ne_zero
 
 /-- The order of an invertible power series is `0`. -/
-theorem order_zero_of_unit {f : PowerSeries R} : IsUnit f → f.order = 0 := by
+theorem order_zero_of_unit {f : R⟦X⟧} : IsUnit f → f.order = 0 := by
   rintro ⟨⟨u, v, hu, hv⟩, hf⟩
   apply And.left
   rw [← add_eq_zero, ← hf, ← nonpos_iff_eq_zero, ← @order_one R _ _, ← hu]
@@ -353,7 +352,7 @@ theorem order_mul (φ ψ : R⟦X⟧) : order (φ * ψ) = order φ + order ψ := 
 
 /-- The operation of dividing a power series by the largest possible power of `X`
 preserves multiplication. -/
-theorem divXPowOrder_mul {f g : R⟦X⟧} :
+theorem divXPowOrder_mul_divXPowOrder {f g : R⟦X⟧} :
     divXPowOrder f * divXPowOrder g = divXPowOrder (f * g) := by
   by_cases h : f = 0 ∨ g = 0
   · rcases h with (h | h) <;> simp [h]
@@ -372,7 +371,8 @@ theorem divXPowOrder_mul {f g : R⟦X⟧} :
     _ = X ^ (f.order.toNat + g.order.toNat) * (f * g).divXPowOrder := by
         rw [order_mul, ENat.toNat_add (order_eq_top.not.mpr h.1) (order_eq_top.not.mpr h.2)]
 
-@[deprecated (since := "2025-04-15")] alias divided_by_X_pow_orderMul := divXPowOrder_mul
+@[deprecated (since := "2025-04-15")] alias divided_by_X_pow_orderMul :=
+  divXPowOrder_mul_divXPowOrder
 
 end OrderIsDomain
 
