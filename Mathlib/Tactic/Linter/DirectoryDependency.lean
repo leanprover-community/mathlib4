@@ -144,7 +144,7 @@ end NamePrefixRel
 -- TODO: move the following three lists to a JSON file, for easier evolution over time!
 -- TODO: add/extend tests for this linter, to verify the change in behaviour
 
--- TODO: migrate other directories to this list: investigate e.g. `Mathlib.Lean`, `Mathlib.Logic`,
+-- TODO: migrate other directories to this list: investigate e.g. `Mathlib.Logic`,
 -- `Mathlib.Tactic.Linter` and `Mathlib.Data`
 
 -- TODO: enforce that allowed and forbidden keys are disjoint
@@ -168,7 +168,11 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Lean, `Lean),
   (`Mathlib.Lean, `Batteries.CodeAction),
   (`Mathlib.Lean, `Batteries.Tactic.Lint),
-  -- One-off exceptions: TODO decide if these are fine, or should be scoped more finely.
+  -- TODO: decide if this is acceptable or should be split in a more fine-grained way
+  (`Mathlib.Lean, `Batteries),
+  (`Mathlib.Lean.Expr, `Mathlib.Util),
+  (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Util),
+  -- Fine-grained exceptions: TODO decide if these are fine, or should be scoped more broadly.
   (`Mathlib.Lean.CoreM, `Mathlib.Tactic.ToExpr),
   (`Mathlib.Lean.CoreM, `Mathlib.Util.WhatsNew),
   (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Tactic.Lemma),
@@ -188,11 +192,6 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Lean.Expr.ExtraRecognizers, `Mathlib.Order),
   (`Mathlib.Lean.Expr.ExtraRecognizers, `Mathlib.Logic),
   (`Mathlib.Lean.Expr.ExtraRecognizers, `Mathlib.Tactic),
-
-  -- TODO: decide if this is acceptable or should be split in a more fine-grained way
-  (`Mathlib.Lean, `Batteries),
-  (`Mathlib.Lean.Expr, `Mathlib.Util),
-  (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Util),
 ]
 
 /-- `forbiddenImportDirs` relates module prefixes, specifying that modules with the first prefix
