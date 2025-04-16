@@ -218,7 +218,7 @@ theorem commute_X (φ : R⟦X⟧) : Commute φ X :=
 theorem X_mul {φ : R⟦X⟧} : X * φ = φ * X :=
   MvPowerSeries.X_mul
 
-theorem commute_X_pow {φ : R⟦X⟧} {n : ℕ} : Commute φ (X ^ n) :=
+theorem commute_X_pow (φ : R⟦X⟧) (n : ℕ) : Commute φ (X ^ n) :=
   MvPowerSeries.commute_X_pow _ _ _
 
 theorem X_pow_mul {φ : R⟦X⟧} {n : ℕ} : X ^ n * φ = φ * X ^ n :=
@@ -425,26 +425,6 @@ theorem coeff_X_pow_mul (p : R⟦X⟧) (n d : ℕ) :
     rfl
   · rw [add_comm]
     exact fun h1 => (h1 (mem_antidiagonal.2 rfl)).elim
-
-theorem mul_X_pow_cancel {k : ℕ} {φ ψ : R⟦X⟧} (h : φ * X ^ k = ψ * X ^ k) :
-    φ = ψ := by
-  rw [PowerSeries.ext_iff] at h ⊢
-  intro n
-  simpa using h (n + k)
-
-theorem mul_X_pow_inj {k : ℕ} {φ ψ : R⟦X⟧} :
-      φ * X ^ k = ψ * X ^ k ↔ φ = ψ :=
-  ⟨mul_X_pow_cancel, fun h ↦ congrFun (congrArg HMul.hMul h) (X ^ k)⟩
-
-theorem X_pow_mul_cancel {k : ℕ} {φ ψ : R⟦X⟧} (h : X ^ k * φ = X ^ k * ψ) :
-    φ = ψ := by
-  rw [PowerSeries.ext_iff] at h ⊢
-  intro n
-  simpa using h (n + k)
-
-theorem X_mul_pow_inj {k : ℕ} {φ ψ : R⟦X⟧} :
-      X ^ k * φ = X ^ k * ψ ↔ φ = ψ :=
-  ⟨X_pow_mul_cancel, fun h ↦ congrArg (HMul.hMul (X ^ k)) h⟩
 
 theorem coeff_mul_X_pow' (p : R⟦X⟧) (n d : ℕ) :
     coeff R d (p * X ^ n) = ite (n ≤ d) (coeff R (d - n) p) 0 := by
