@@ -1,16 +1,12 @@
 /-
-Copyright (c) 20225Antoine Chambert-Loir. All rights reserved.
+Copyright (c) 2025. Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
-
 -/
 
--- import Jordan.Mathlib.Set
--- import Jordan.Primitive
--- import Jordan.IndexNormal
-
 import Mathlib.GroupTheory.GroupAction.MultiplePrimitivity
-
+import Mathlib.GroupTheory.GroupAction.Primitive
+import Mathlib.Algebra.Group.Pointwise.Set.Card
 import Mathlib.GroupTheory.Perm.Support
 import Mathlib.GroupTheory.Index
 import Mathlib.GroupTheory.SpecificGroups.Alternating
@@ -32,7 +28,7 @@ for a preprimitive action: the hypothesis is the preprimitivity
 of the sub_mul_action of `fixing_subgroup s` (Wielandt, 13.2)
 
 - `jordan_swap` proves that a primitive subgroup of a permutation group that contains a
-swap is equal to the full permutation group (Wielandt, 13.3)
+swapis equal to the full permutation group (Wielandt, 13.3)
 
 - `jordan_three_cycle` proves that a primitive subgroup of a permutation group that contains a
 3-cycle contains the alternating group (Wielandt, 13.3)
@@ -51,56 +47,69 @@ an adequate induction lemma)
 
 section PigeonHole
 
-open scoped Set BigOperators Pointwise
+namespace Set
 
-variable {α : Type*} [Fintype α]
+variable {α : Type*} {s t : Set α}
 
-theorem Set.ncard_pigeonhole {s t : Set α}
-    (h : Fintype.card α < s.ncard + t.ncard) :
-    (s ∩ t).Nonempty := by
+theorem ncard_pigeonhole [Finite α]
+    (h : Nat.card α < s.ncard + t.ncard) : (s ∩ t).Nonempty := by
   rw [← compl_ne_univ]
   intro h'
   apply not_le.mpr h
-  rw [← Set.ncard_union_add_ncard_inter]
+  rw [← ncard_union_add_ncard_inter]
   apply Nat.le_of_add_le_add_right
-  rw [add_assoc, Set.ncard_add_ncard_compl, h', Set.ncard_univ, ← Nat.card_eq_fintype_card, add_le_add_iff_right, ← Set.ncard_univ]
-  apply Set.ncard_le_ncard (subset_univ _)
+  rw [add_assoc, ncard_add_ncard_compl, h', ncard_univ, add_le_add_iff_right, ← ncard_univ]
+  apply ncard_le_ncard (subset_univ _)
 
-theorem Set.ncard_pigeonhole_compl {s t : Set α}
-    (h : s.ncard + t.ncard < Fintype.card α) :
-    (sᶜ ∩ tᶜ).Nonempty := by
-  apply Set.ncard_pigeonhole
-  apply Nat.lt_of_add_lt_add_left
-  rw [← add_assoc, Set.ncard_add_ncard_compl]
-  simp only [Nat.card_eq_fintype_card, add_comm, add_lt_add_iff_left]
-  apply Nat.lt_of_add_lt_add_left
-  rw [Set.ncard_add_ncard_compl, Nat.card_eq_fintype_card, add_comm]
-  exact h
+theorem ncard_lt (h : s.ncard < Nat.card α) : s ≠ ⊤ := fun h' ↦ by
+  apply not_le.mpr h
+  rw [h', top_eq_univ, ncard_univ]
 
-theorem Set.ncard_pigeonhole_compl' {s t : Set α}
-    (h : s.ncard + t.ncard < Fintype.card α) :
-    s ∪ t ≠ ⊤ := by
+theorem ncard_pigeonhole' [Finite α]
+    (h' : Nat.card α ≤ s.ncard + t.ncard) (h : s ∪ t ≠ ⊤) :
+    (s ∩ t).Nonempty := by
+  rw [← ncard_pos]
+  apply Nat.lt_of_add_lt_add_right
+  rw [ncard_inter_add_ncard_union, zero_add]
+  apply lt_of_lt_of_le _ h'
+  rw [← not_le]
+  intro H
+  apply h
+  rw [top_eq_univ, eq_univ_iff_ncard]
+  apply le_antisymm _ H
+  rw [← ncard_univ]
+  exact ncard_le_ncard (subset_univ _)
+
+theorem ncard_pigeonhole_compl
+    (h : s.ncard + t.ncard < Nat.card α) : (sᶜ ∩ tᶜ).Nonempty := by
+  have : Finite α := Nat.finite_of_card_ne_zero (Nat.ne_zero_of_lt h)
+  simp only [← compl_ne_univ, compl_inter, compl_compl]
+  intro H
+  apply not_le.mpr h
+  rw [← ncard_inter_add_ncard_union, H, ncard_univ]
+  exact Nat.le_add_left (Nat.card α) (s ∩ t).ncard
+
+  theorem ncard_pigeonhole_compl'
+    (h : s.ncard + t.ncard < Nat.card α) : s ∪ t ≠ ⊤ := by
   intro h'
   apply not_le.mpr h
-  rw [← Nat.card_eq_fintype_card, ← Set.ncard_univ, ← top_eq_univ, ← h']
+  rw [← ncard_univ, ← top_eq_univ, ← h']
   exact ncard_union_le s t
+
+end Set
 
 end PigeonHole
 
-open MulAction
+open MulAction SubMulAction Subgroup
 
 open scoped Pointwise
 
-instance  {α : Type _} {G : Type _} [Group G] [MulAction G α] {s : Set α} :
-    SMul (fixingSubgroup G s) (SubMulAction.ofFixingSubgroup G s) :=
-  SetLike.smul (SubMulAction.ofFixingSubgroup G s)
-
 /-- A pretransitivity criterion -/
-theorem isPretransitive_ofFixingSubgroup_inter
-    {α : Type _} {G : Type _} [Group G] [MulAction G α]
-    {s : Set α} (hs : IsPretransitive (fixingSubgroup G s) (SubMulAction.ofFixingSubgroup G s))
-    {g : G} (ha : s ∪ g • s ≠ ⊤) :  -- {a : α} (ha : a ∉ s ∪ g • s) :
-    IsPretransitive (fixingSubgroup G (s ∩ g • s)) (SubMulAction.ofFixingSubgroup G (s ∩ g • s)) := by
+theorem IsPretransitive.isPretransitive_ofFixingSubgroup_inter
+    {α : Type*} {G : Type*} [Group G] [MulAction G α] {s : Set α}
+    (hs : IsPretransitive (fixingSubgroup G s) (ofFixingSubgroup G s))
+    {g : G} (ha : s ∪ g • s ≠ ⊤) :
+    IsPretransitive (fixingSubgroup G (s ∩ g • s)) (ofFixingSubgroup G (s ∩ g • s)) := by
   rw [Ne, Set.top_eq_univ, ← Set.compl_empty_iff, ← Ne, ← Set.nonempty_iff_ne_empty] at ha
   obtain ⟨a, ha⟩ := ha
   have ha' : a ∈ (s ∩ g • s)ᶜ := by
@@ -108,14 +117,11 @@ theorem isPretransitive_ofFixingSubgroup_inter
     apply Set.mem_union_left
     rw [Set.compl_union] at ha
     apply Set.mem_of_mem_inter_left ha
-  -- For an unknown reason, rw does not work
-  apply (IsPretransitive.mk_base_iff (⟨a, ha'⟩ : SubMulAction.ofFixingSubgroup G (s ∩ g • s))).mpr
-  -- let hs_trans_eq := hs.exists_smul_eq
+  rw [isPretransitive_iff_base (⟨a, ha'⟩ : ofFixingSubgroup G (s ∩ g • s))]
   rintro ⟨x, hx⟩
-  rw [SubMulAction.mem_ofFixingSubgroup_iff, Set.mem_inter_iff, not_and_or] at hx
-  cases' hx with hx hx
-  · -- x ∉ s
-    obtain ⟨⟨k, hk⟩, hkax⟩ := hs.exists_smul_eq
+  rw [mem_ofFixingSubgroup_iff, Set.mem_inter_iff, not_and_or] at hx
+  rcases hx with hx | hx
+  · obtain ⟨⟨k, hk⟩, hkax⟩ := hs.exists_smul_eq
       ⟨a, (by intro ha'; apply ha; apply Set.mem_union_left _ ha')⟩
       ⟨x, hx⟩
     use ⟨k, (by
@@ -125,9 +131,8 @@ theorem isPretransitive_ofFixingSubgroup_inter
       apply Set.mem_of_mem_inter_left hy)⟩
     · simp only [← SetLike.coe_eq_coe] at hkax ⊢
       exact hkax
-  · -- x ∉ g • s
-    suffices hg'x : g⁻¹ • x ∈ SubMulAction.ofFixingSubgroup G s by
-      suffices hg'a : g⁻¹ • a ∈ SubMulAction.ofFixingSubgroup G s by
+  · suffices hg'x : g⁻¹ • x ∈ ofFixingSubgroup G s by
+      suffices hg'a : g⁻¹ • a ∈ ofFixingSubgroup G s by
         obtain ⟨⟨k, hk⟩, hkax⟩ := hs.exists_smul_eq ⟨g⁻¹ • a, hg'a⟩ ⟨g⁻¹ • x, hg'x⟩
         use ⟨g * k * g⁻¹, (by
           rw [mem_fixingSubgroup_iff] at hk ⊢
@@ -142,133 +147,107 @@ theorem isPretransitive_ofFixingSubgroup_inter
           change (g * k * g⁻¹) • a = x
           simp only [← smul_smul]
           exact hkax
-      rw [SubMulAction.mem_ofFixingSubgroup_iff]
+      rw [mem_ofFixingSubgroup_iff]
       rw [← Set.mem_smul_set_iff_inv_smul_mem]
       intro h
       apply ha
       apply Set.mem_union_right _ h
-    rw [SubMulAction.mem_ofFixingSubgroup_iff]
+    rw [mem_ofFixingSubgroup_iff]
     intro h
     apply hx
     rw [Set.mem_smul_set_iff_inv_smul_mem]
     exact h
 
 lemma _root_.SubMulAction.add_encard_ofStabilizer_eq
-    {G : Type _} [Group G] [MulAction G α] (a : α) :
-    1 + (SubMulAction.ofStabilizer G a).carrier.encard = ENat.card α :=  by
+    (G : Type*) {α : Type*} [Group G] [MulAction G α] (a : α) :
+    1 + (ofStabilizer G a).carrier.encard = ENat.card α :=  by
   classical
-  rw [SubMulAction.ofStabilizer_carrier]
+  rw [ofStabilizer_carrier]
   convert Set.encard_add_encard_compl {a}
   · rw [Set.encard_singleton]
   · exact (Set.encard_univ α).symm
 
-lemma _root_.SubMulAction.add_encard_ofStabilizer_eq'
-    {G : Type _} [Group G] [MulAction G α] (a : α) :
+/- lemma _root_.SubMulAction.add_encard_ofStabilizer_eq'
+    (G : Type*) {α : Type*} [Group G] [MulAction G α] (a : α) :
     1 + (SubMulAction.ofStabilizer G a).carrier.encard =
       Set.encard (Set.univ : Set α) :=  by
-  rw [SubMulAction.ofStabilizer_carrier]
-  convert Set.encard_add_encard_compl _
-  simp only [Set.encard_singleton]
+  rw [SubMulAction.add_encard_ofStabilizer_eq, Set.encard_univ] -/
 
 section Jordan
 
-variable {α : Type _}
 
-variable {G : Type _} [Group G] [MulAction G α]
+variable {G α : Type*} [Group G] [MulAction G α]
 
 /-- In a 2-pretransitive action, the normal closure of stabilizers is the full group -/
 theorem normalClosure_of_stabilizer_eq_top (hsn' : 2 < ENat.card α)
     (hG' : IsMultiplyPretransitive G α 2) {a : α} :
-    Subgroup.normalClosure ((stabilizer G a) : Set G) = ⊤ := by
+    normalClosure ((stabilizer G a) : Set G) = ⊤ := by
   have hG : IsPretransitive G α := by
-    rw [isPretransitive_iff_is_one_pretransitive]
-    apply isMultiplyPretransitive_of_higher
-    exact hG'
-    norm_num
-    rw [Nat.cast_two]
-    exact le_of_lt hsn'
+    rw [← is_one_pretransitive_iff]
+    exact isMultiplyPretransitive_of_le' (one_le_two) (le_of_lt hsn')
   have : Nontrivial α := by
     rw [← ENat.one_lt_card_iff_nontrivial]
-    refine lt_trans ?_ hsn'
-    rw [← Nat.cast_two, ← Nat.cast_one, ENat.coe_lt_coe]
-    norm_num
-  have hGa : (stabilizer G a).IsMaximal :=  by
-    rw [maximal_stabilizer_iff_preprimitive G a]
-    exact hG'.isPreprimitive_of_two
-  rw [Subgroup.isMaximal_def] at hGa
+    exact lt_trans (by norm_num) hsn'
+  have hGa : IsCoatom (stabilizer G a) :=  by
+    rw [isCoatom_stabilizer_iff_preprimitive]
+    exact isPreprimitive_of_is_two_pretransitive hG'
   apply hGa.right
   -- Remains to prove: (stabilizer G a) < Subgroup.normalClosure (stabilizer G a)
   constructor
-  · apply Subgroup.le_normalClosure
+  · apply le_normalClosure
   · intro hyp
-    have : Nontrivial (SubMulAction.ofStabilizer G a) := by
+    have : Nontrivial (ofStabilizer G a) := by
       apply Set.Nontrivial.coe_sort
       rw [← Set.one_lt_encard_iff_nontrivial]
-      rw [← not_le, ← Nat.cast_one, ← WithTop.add_one_le_coe_succ_iff, not_le]
-      rw [← Set.encard_univ] at hsn'
-      convert hsn'
-      rw [add_comm]
-      simpa using SubMulAction.add_encard_ofStabilizer_eq' a
+      rw [← not_le]
+      rw [← AddLECancellable.add_le_add_iff_left (ENat.addLECancellable_of_ne_top ENat.one_ne_top)]
+      simp only [SetLike.coe, add_encard_ofStabilizer_eq G a]
+      rwa [not_le]
     rw [nontrivial_iff] at this
     obtain ⟨b, c, hbc⟩ := this
-    have : IsPretransitive (stabilizer G a) (SubMulAction.ofStabilizer G a) := by
-      rw [isPretransitive_iff_is_one_pretransitive]
-      exact (stabilizer.isMultiplyPretransitive G α hG).mp hG'
-    -- trouver g ∈ stabilizer G a, g • b = c,
+    have : IsPretransitive (stabilizer G a) (ofStabilizer G a) := by
+      rw [← is_one_pretransitive_iff]
+      rwa [← ofStabilizer.isMultiplyPretransitive]
+    -- get g ∈ stabilizer G a, g • b = c,
     obtain ⟨⟨g, hg⟩, hgbc⟩ := exists_smul_eq (stabilizer G a) b c
     apply hbc
-    rw [← SetLike.coe_eq_coe]
-    rw [← SetLike.coe_eq_coe] at hgbc
+    rw [← SetLike.coe_eq_coe] at hgbc ⊢
     obtain ⟨h, hinvab⟩ := exists_smul_eq G (b : α) a
     rw [eq_comm, ← inv_smul_eq_iff] at hinvab
-    rw [← hgbc, SetLike.val_smul, ← hinvab]
-    rw [inv_smul_eq_iff, eq_comm]
-    change h • g • h⁻¹ • a = a
-    simp only [smul_smul, ← mul_assoc]
-    rw [← mem_stabilizer_iff]
-    apply hyp
-    apply Subgroup.normalClosure_normal.conj_mem
-    apply Subgroup.le_normalClosure
-    exact hg
+    rw [← hgbc, SetLike.val_smul, ← hinvab, inv_smul_eq_iff, eq_comm]
+    simp only [subgroup_smul_def, smul_smul, ← mul_assoc, ← mem_stabilizer_iff]
+    exact hyp (normalClosure_normal.conj_mem g (le_normalClosure hg) h)
 
-variable [Fintype α]
+variable [Finite α]
 
 /-- A primitivity criterion -/
 theorem IsPreprimitive.isPreprimitive_ofFixingSubgroup_inter
-    {G : Type _} [Group G] [MulAction G α] {s : Set α}
-    (hs : IsPreprimitive (fixingSubgroup G s) (SubMulAction.ofFixingSubgroup G s))
-    {g : G} (ha : s ∪ g • s ≠ ⊤) : -- {a : α} (ha : a ∉ s ∪ g • s) :
-    IsPreprimitive (fixingSubgroup G (s ∩ g • s))
-      (SubMulAction.ofFixingSubgroup G (s ∩ g • s)) := by
+    {G : Type*} [Group G] [MulAction G α] {s : Set α}
+    (hs : IsPreprimitive (fixingSubgroup G s) (ofFixingSubgroup G s))
+    {g : G} (ha : s ∪ g • s ≠ ⊤) :
+    IsPreprimitive (fixingSubgroup G (s ∩ g • s)) (ofFixingSubgroup G (s ∩ g • s)) := by
   classical
   have hts : s ∩ g • s ≤ s := Set.inter_subset_left
-  have this : IsPretransitive (fixingSubgroup G (s ∩ g • s))
-      (SubMulAction.ofFixingSubgroup G (s ∩ g • s)) :=
-    isPretransitive_ofFixingSubgroup_inter hs.toIsPretransitive ha
+  --  IsPretransitive (fixingSubgroup G (s ∩ g • s)) (ofFixingSubgroup G (s ∩ g • s)) :=
+  have := IsPretransitive.isPretransitive_ofFixingSubgroup_inter hs.toIsPretransitive ha
 
-  apply isPreprimitive_of_large_image (f := SubMulAction.ofFixingSubgroup.mapOfInclusion G hts) hs
+  apply IsPreprimitive.of_card_lt (f := ofFixingSubgroup_of_inclusion G hts)
 
   rw [← Set.image_univ,
-    Set.ncard_image_of_injective _ (SubMulAction.ofFixingSubgroup.mapOfInclusion_injective G _)]
+    Set.ncard_image_of_injective _ (ofFixingSubgroup_of_inclusion_injective _)]
 
   have this : Set.ncard (s ∩  g • s)ᶜ < 2 * Set.ncard (sᶜ) := by
     rw [Set.compl_inter, ← Nat.add_lt_add_iff_right, Set.ncard_union_add_ncard_inter]
     rw [← Set.compl_union, two_mul, add_assoc]
     simp only [add_lt_add_iff_left]
-    rw [← add_lt_add_iff_left, Set.ncard_add_ncard_compl]
-    rw [MulAction.smul_set_ncard_eq, ← add_assoc, Set.ncard_add_ncard_compl]
+    rw [← add_lt_add_iff_left, Set.ncard_add_ncard_compl,
+      Set.ncard_smul_set, ← add_assoc, Set.ncard_add_ncard_compl]
     simp only [lt_add_iff_pos_right]
-    rw [Set.ncard_pos]
-    rw [Set.nonempty_compl]
-    exact ha
+    rwa [Set.ncard_pos, Set.nonempty_compl]
   convert this
-  · rw [← Nat.card_eq_fintype_card, ← Set.Nat.card_coe_set_eq]
-    rfl
-  · rw [← SubMulAction.ofFixingSubgroup_carrier G]
-    rw [← Set.ncard_image_of_injective (Set.univ) (SubMulAction.ofFixingSubgroup G s).inclusion_injective]
-    rw [← SubMulAction.image_inclusion]
-    congr
-    simp only [Set.image_univ]
+  rw [← ofFixingSubgroup_carrier G,
+    ← Set.ncard_image_of_injective (Set.univ) (ofFixingSubgroup G s).inclusion_injective,
+    ← image_inclusion, Set.image_univ]
 
 -- α = Ω, s = Δ, α \ s = Γ
 -- 1 ≤ #Δ < #Ω, 1 < #Γ < #Ω
@@ -281,28 +260,31 @@ theorem strong_jordan_of_pretransitive (hG : is_preprimitive G α)
 sorry
  -/
 
+open MulAction.IsPreprimitive
+
+open scoped Pointwise
 
 /-- A criterion due to Jordan for being 2-pretransitive (Wielandt, 13.1) -/
 theorem is_two_pretransitive_weak_jordan [DecidableEq α]
     (hG : IsPreprimitive G α) {s : Set α} {n : ℕ}
-    (hsn : s.ncard = n.succ) (hsn' : 1 + n.succ < Fintype.card α)
+    (hsn : s.ncard = n.succ) (hsn' : 1 + n.succ < Nat.card α)
     (hs_trans : IsPretransitive (fixingSubgroup G s) (SubMulAction.ofFixingSubgroup G s)) :
     IsMultiplyPretransitive G α 2 := by
   revert α G
   induction' n using Nat.strong_induction_on with n hrec
-  intro α G _ _ _ _ hG s hsn hsn' hs_trans
+  intro G α _ _ _ _ hG s hsn hsn' hs_trans
 
   have hs_ne_top : s ≠ ⊤ := by
     intro hs
     rw [hs, Set.top_eq_univ, Set.ncard_univ] at hsn
-    rw [← hsn, Nat.card_eq_fintype_card, add_lt_iff_neg_right] at hsn'
+    rw [← hsn, add_lt_iff_neg_right] at hsn'
     contradiction
 
   have hs_nonempty : s.Nonempty := by
     rw [← Set.ncard_pos, hsn]
     exact Nat.succ_pos n
 
-  cases' Nat.lt_or_ge n.succ 2 with hn hn
+  rcases Nat.lt_or_ge n.succ 2 with hn | hn
 
   · -- Initialization : n = 0
     have hn : n = 0 := by
@@ -315,14 +297,15 @@ theorem is_two_pretransitive_weak_jordan [DecidableEq α]
     obtain ⟨a, hsa⟩ := hsn
     rw [hsa] at hs_trans
 
-    rw [stabilizer.isMultiplyPretransitive G α hG.toIsPretransitive]
-    rw [← isPretransitive_iff_is_one_pretransitive]
-    apply isPretransitive.of_surjective_map
-      (SubMulAction.OfFixingSubgroupOfSingleton.map_bijective G a).surjective hs_trans
+    rw [ofStabilizer.isMultiplyPretransitive (a := a)]
+    rw [is_one_pretransitive_iff]
+
+    apply IsPretransitive.of_surjective_map
+      (ofFixingSubgroup_of_singleton_bijective a).surjective hs_trans
 
   -- The result is assumed by induction for sets of ncard ≤ n
 
-  cases' Nat.lt_or_ge (2 * n.succ) (Fintype.card α) with hn1 hn2
+  rcases Nat.lt_or_ge (2 * n.succ) (Nat.card α) with hn1 | hn2
 
   · -- CASE where 2 * s.ncard < fintype.card α
     -- get a, b ∈ s, a ≠ b
@@ -330,15 +313,16 @@ theorem is_two_pretransitive_weak_jordan [DecidableEq α]
     rw [Set.one_lt_ncard] at this
     obtain ⟨a, ha, b, hb, hab⟩ := this
     -- apply Rudio's theorem to get g ∈ G such that a ∈ g • s, b ∉ g • s
-    obtain ⟨g, hga, hgb⟩ := Rudio hG s (Set.toFinite s) hs_nonempty hs_ne_top a b hab
+    classical
+    obtain ⟨g, hga, hgb⟩ := exists_mem_smul_and_not_mem_smul (G := G)
+      s.toFinite hs_nonempty hs_ne_top hab
 
     let t := s ∩ g • s
-    have ht_trans : IsPretransitive (fixingSubgroup G t)
-      (SubMulAction.ofFixingSubgroup G t) :=
-        isPretransitive_ofFixingSubgroup_inter hs_trans (by
-          apply Set.ncard_pigeonhole_compl'
-          rw [smul_set_ncard_eq, hsn, ← two_mul]
-          exact hn1)
+    have ht_trans : IsPretransitive (fixingSubgroup G t) (ofFixingSubgroup G t) :=
+      IsPretransitive.isPretransitive_ofFixingSubgroup_inter hs_trans (by
+        apply Set.ncard_pigeonhole_compl'
+        rw [Set.ncard_smul_set, hsn, ← two_mul]
+        exact hn1)
     suffices ∃ m, m < n ∧ t.ncard = Nat.succ m by
       obtain ⟨m, hmn, htm⟩ := this
       apply hrec m hmn hG htm _ ht_trans
@@ -350,47 +334,38 @@ theorem is_two_pretransitive_weak_jordan [DecidableEq α]
     use t.ncard.pred
     suffices t.ncard ≠ 0 by
       rw [← Nat.succ_lt_succ_iff, ← hsn, Nat.succ_pred this]
-      constructor
-      · apply Set.ncard_lt_ncard _ (Set.toFinite s)
-        constructor
-        apply Set.inter_subset_left
-        intro h
-        apply hgb
-        apply Set.inter_subset_right
-        apply h
-        exact hb
-      · rfl
+      refine ⟨?_, rfl⟩
+      apply Set.ncard_lt_ncard _ (Set.toFinite s)
+      exact ⟨Set.inter_subset_left, fun h ↦ hgb (Set.inter_subset_right (h hb))⟩
     apply Set.ncard_ne_zero_of_mem (a := a)
     exact ⟨ha, hga⟩
 
 
-  · -- CASE : 2 * s.ncard ≥ Fintype.card α
+  · -- CASE : 2 * s.ncard ≥ Nat.card α
     have : Set.Nontrivial sᶜ := by
-      rw [← Set.one_lt_ncard_iff_nontrivial]
-      rw [← Nat.add_lt_add_iff_left, Set.ncard_add_ncard_compl]
-      rw [Nat.card_eq_fintype_card, add_comm, hsn]
+      rw [← Set.one_lt_encard_iff_nontrivial, ← sᶜ.toFinite.cast_ncard_eq, Nat.one_lt_cast]
+      rw [← Nat.add_lt_add_iff_left, Set.ncard_add_ncard_compl, add_comm, hsn]
       exact hsn'
     -- get a, b ∈ sᶜ, a ≠ b
     obtain ⟨a, ha : a ∈ sᶜ, b, hb : b ∈ sᶜ, hab⟩ := this
 
-    obtain ⟨g, hga, hgb⟩ := Rudio hG sᶜ (Set.toFinite sᶜ)
-      (Set.nonempty_of_mem ha)
+    obtain ⟨g, hga, hgb⟩ := exists_mem_smul_and_not_mem_smul (G := G)
+      sᶜ.toFinite (Set.nonempty_of_mem ha)
       (by intro h
           simp only [Set.top_eq_univ, Set.compl_univ_iff] at h
           simp only [h, Set.not_nonempty_empty] at hs_nonempty)
-      a b hab
+      hab
     let t := s ∩ g • s
     have : a ∉ s ∪ g • s := by
       rw [Set.mem_union]
       intro h
-      cases' h with h h
-      exact ha h
-      rw [Set.mem_smul_set_iff_inv_smul_mem] at hga h
-      exact hga h
-    have ht_trans : IsPretransitive (fixingSubgroup G t)
-      (SubMulAction.ofFixingSubgroup G t) :=
-        isPretransitive_ofFixingSubgroup_inter hs_trans
-          (by intro h; apply this; rw [h]; trivial)
+      rcases h with h | h
+      · exact ha h
+      · rw [Set.smul_set_compl] at hga; exact hga h
+    have ht_trans : IsPretransitive (fixingSubgroup G t) (ofFixingSubgroup G t) :=
+        IsPretransitive.isPretransitive_ofFixingSubgroup_inter hs_trans
+          (fun h ↦ this (by rw [h]; trivial))
+
     suffices ∃ m : ℕ, m < n ∧ t.ncard = Nat.succ m by
       obtain ⟨m, hmn, htm⟩ := this
       refine hrec m hmn hG htm (by
@@ -403,34 +378,22 @@ theorem is_two_pretransitive_weak_jordan [DecidableEq α]
     use t.ncard.pred
     suffices  t.ncard ≠ 0 by
       rw [← Nat.succ_lt_succ_iff, ← hsn, Nat.succ_pred this]
-      constructor
-      · apply Set.ncard_lt_ncard _ (Set.toFinite s)
-        constructor
-        apply Set.inter_subset_left
-        intro h
-        suffices s = g • s by
-          apply hb
-          rw [this]
-          simp only [smul_compl_set, Set.mem_compl_iff, Set.not_not_mem] at hgb
-          exact hgb
-        apply Set.eq_of_subset_of_ncard_le
-        · exact subset_trans h Set.inter_subset_right
-        · rw [smul_set_ncard_eq]
-        exact Set.toFinite (g • s)
-      · rfl
-    · rw [← Nat.pos_iff_ne_zero]
+      refine ⟨?_, rfl⟩
+      apply Set.ncard_lt_ncard _ (Set.toFinite s)
+      rw [Set.ssubset_def]
+      refine ⟨Set.inter_subset_left, fun h ↦ hb ?_⟩
+      suffices s = g • s by
+        rw [this]
+        simpa only [Set.smul_set_compl, Set.mem_compl_iff, Set.not_not_mem] using hgb
+      apply Set.eq_of_subset_of_ncard_le _ _ (g • s).toFinite
+      · exact subset_trans h Set.inter_subset_right
+      · rw [Set.ncard_smul_set]
+    · rw [← Nat.pos_iff_ne_zero, Set.ncard_pos]
       -- variante de Set.ncard_pigeonhole qui utilise que la réunion n'est pas top
-      apply Nat.lt_of_add_lt_add_right
-      rw [Set.ncard_inter_add_ncard_union, zero_add, smul_set_ncard_eq,
-        hsn, ← two_mul]
-      apply lt_of_lt_of_le _ hn2
-      rw [← not_le]
-      intro h
-      apply this
-      convert Set.mem_univ a
-      apply Set.eq_of_subset_of_ncard_le (Set.subset_univ _) _ Set.finite_univ
-      simp only [Set.ncard_univ, Nat.card_eq_fintype_card]
-      exact h
+      simp only [t]
+      apply Set.ncard_pigeonhole'
+      · rw [Set.ncard_smul_set, ← two_mul, hsn]; exact hn2
+      · exact fun h ↦ this (by rw [h]; trivial)
 
 /- -- TODO : prove
 theorem strong_jordan_of_preprimitive (hG : is_preprimitive G α)
@@ -441,17 +404,17 @@ theorem strong_jordan_of_preprimitive (hG : is_preprimitive G α)
 
 theorem is_two_preprimitive_weak_jordan [DecidableEq α]
     (hG : IsPreprimitive G α) {s : Set α} {n : ℕ}
-    (hsn : s.ncard = n.succ) (hsn' : 1 + n.succ < Fintype.card α)
+    (hsn : s.ncard = n.succ) (hsn' : 1 + n.succ < Nat.card α)
     (hs_prim : IsPreprimitive (fixingSubgroup G s) (SubMulAction.ofFixingSubgroup G s)) :
     IsMultiplyPreprimitive G α 2 := by
   revert α G
   induction' n using Nat.strong_induction_on with n hrec
-  intro α G _ _ _ _ hG s hsn hsn' hs_prim
+  intro G α _ _ _ _ hG s hsn hsn' hs_prim
 
   have hs_ne_top : s ≠ ⊤ := by
     intro hs
     rw [hs, Set.top_eq_univ, Set.ncard_univ] at hsn
-    rw [← hsn, Nat.card_eq_fintype_card, add_lt_iff_neg_right] at hsn'
+    rw [← hsn, add_lt_iff_neg_right] at hsn'
     contradiction
 
   have hs_nonempty : s.Nonempty := by
@@ -460,7 +423,7 @@ theorem is_two_preprimitive_weak_jordan [DecidableEq α]
 
   -- The result is assumed by induction for sets of ncard ≤ n
 
-  cases' Nat.lt_or_ge n.succ 2 with hn hn
+  rcases Nat.lt_or_ge n.succ 2 with hn | hn
 
   · -- When n < 2 (imposes n = 0)
     have hn : n = 0 := by
@@ -473,12 +436,13 @@ theorem is_two_preprimitive_weak_jordan [DecidableEq α]
     obtain ⟨a, hsa⟩ := hsn
     rw [hsa] at hs_prim
 
-    rw [stabilizer.isMultiplyPreprimitive G α (Nat.le_refl 1) hG.toIsPretransitive]
-    rw [← isPreprimitive_iff_is_one_preprimitive]
-    apply isPreprimitive_of_surjective_map
-      (SubMulAction.OfFixingSubgroupOfSingleton.map_bijective G a).surjective hs_prim
+    rw [isMultiplyPreprimitive_succ_iff_ofStabilizer (M := G) (a := a)]
+    · rw [is_one_preprimitive_iff (stabilizer G a) (ofStabilizer G a)]
+      exact IsPreprimitive.of_surjective
+        (ofFixingSubgroup_of_singleton_bijective a).surjective
+    · norm_num
 
-  cases' Nat.lt_or_ge (2 * n.succ) (Fintype.card α) with hn1 hn2
+  rcases Nat.lt_or_ge (2 * n.succ) (Nat.card α) with hn1 | hn2
 
   · -- CASE where 2 * s.ncard < fintype.card α
     -- get a, b ∈ s, a ≠ b
@@ -486,15 +450,15 @@ theorem is_two_preprimitive_weak_jordan [DecidableEq α]
     rw [Set.one_lt_ncard] at this
     obtain ⟨a, ha, b, hb, hab⟩ := this
     -- apply rudio to get g ∈ G such that a ∈ g • s, b ∉ g • s
-    obtain ⟨g, hga, hgb⟩ := Rudio hG s (Set.toFinite s) hs_nonempty hs_ne_top a b hab
+    obtain ⟨g, hga, hgb⟩ := exists_mem_smul_and_not_mem_smul (G := G)
+      s.toFinite hs_nonempty hs_ne_top hab
 
     let t := s ∩ g • s
-    have ht_prim : IsPreprimitive (fixingSubgroup G t)
-      (SubMulAction.ofFixingSubgroup G t) :=
-        hs_prim.isPreprimitive_ofFixingSubgroup_inter (by
-          apply Set.ncard_pigeonhole_compl'
-          rw [smul_set_ncard_eq, hsn, ← two_mul]
-          exact hn1)
+    have ht_prim : IsPreprimitive (fixingSubgroup G t) (ofFixingSubgroup G t) := by
+      apply IsPreprimitive.isPreprimitive_ofFixingSubgroup_inter hs_prim
+      apply Set.ncard_pigeonhole_compl'
+      rw [Set.ncard_smul_set, hsn, ← two_mul]
+      exact hn1
     suffices ∃ m, m < n ∧ t.ncard = Nat.succ m by
       obtain ⟨m, hmn, htm⟩ := this
       apply hrec m hmn hG htm _ ht_prim
@@ -522,30 +486,27 @@ theorem is_two_preprimitive_weak_jordan [DecidableEq α]
 
   · -- CASE : 2 * s.ncard ≥ Fintype.card α
     have : Set.Nontrivial sᶜ := by
-      rw [← Set.one_lt_ncard_iff_nontrivial]
-      rw [← Nat.add_lt_add_iff_left, Set.ncard_add_ncard_compl]
-      rw [Nat.card_eq_fintype_card, add_comm, hsn]
+      rw [← Set.one_lt_encard_iff_nontrivial, ← sᶜ.toFinite.cast_ncard_eq, Nat.one_lt_cast,
+        ← Nat.add_lt_add_iff_left, Set.ncard_add_ncard_compl, add_comm, hsn]
       exact hsn'
     -- get a, b ∈ sᶜ, a ≠ b
     obtain ⟨a, ha : a ∈ sᶜ, b, hb : b ∈ sᶜ, hab⟩ := this
 
-    obtain ⟨g, hga, hgb⟩ := Rudio hG sᶜ (Set.toFinite sᶜ)
-      (Set.nonempty_of_mem ha)
+    obtain ⟨g, hga, hgb⟩ := exists_mem_smul_and_not_mem_smul (G := G)
+      sᶜ.toFinite (Set.nonempty_of_mem ha)
       (by intro h
           simp only [Set.top_eq_univ, Set.compl_univ_iff] at h
           simp only [h, Set.not_nonempty_empty] at hs_nonempty)
-      a b hab
+      hab
     let t := s ∩ g • s
     have : a ∉ s ∪ g • s := by
       rw [Set.mem_union]
       intro h
-      cases' h with h h
-      exact ha h
-      rw [Set.mem_smul_set_iff_inv_smul_mem] at hga h
-      exact hga h
-    have ht_prim : IsPreprimitive (fixingSubgroup G t)
-      (SubMulAction.ofFixingSubgroup G t) :=
-        hs_prim.isPreprimitive_ofFixingSubgroup_inter
+      rcases h with h | h
+      · exact ha h
+      · rw [Set.smul_set_compl] at hga; exact hga h
+    have ht_prim : IsPreprimitive (fixingSubgroup G t) (ofFixingSubgroup G t) :=
+        IsPreprimitive.isPreprimitive_ofFixingSubgroup_inter hs_prim
         (by intro h; apply this; rw [h]; trivial)
 
     suffices ∃ m : ℕ, m < n ∧ t.ncard = Nat.succ m by
@@ -558,36 +519,29 @@ theorem is_two_preprimitive_weak_jordan [DecidableEq α]
     -- from : t ⊆ s, a ∈ t, b ∉ t,
     -- have : 1 ≤ t.ncard < fintype.card s
     use t.ncard.pred
-    suffices t.ncard ≠ 0 by
+    suffices  t.ncard ≠ 0 by
       rw [← Nat.succ_lt_succ_iff, ← hsn, Nat.succ_pred this]
-      constructor
-      · apply Set.ncard_lt_ncard _ (Set.toFinite s)
-        constructor
-        apply Set.inter_subset_left
-        intro h
-        suffices s = g • s by
-          apply hb
-          rw [this]
-          simp only [smul_compl_set, Set.mem_compl_iff, Set.not_not_mem] at hgb
-          exact hgb
-        apply Set.eq_of_subset_of_ncard_le
-        · exact subset_trans h Set.inter_subset_right
-        · rw [smul_set_ncard_eq]
-        exact Set.toFinite (g • s)
-      · rfl
+      refine ⟨?_, rfl⟩
+      apply Set.ncard_lt_ncard _ (Set.toFinite s)
+      rw [Set.ssubset_def]
+      refine ⟨Set.inter_subset_left, fun h ↦ hb ?_⟩
+      suffices s = g • s by
+        rw [this]
+        simpa only [Set.smul_set_compl, Set.mem_compl_iff, Set.not_not_mem] using hgb
+      apply Set.eq_of_subset_of_ncard_le _ _ (g • s).toFinite
+      · exact subset_trans h Set.inter_subset_right
+      · rw [Set.ncard_smul_set]
     · rw [← Nat.pos_iff_ne_zero]
       -- variante de Set.ncard_pigeonhole qui utilise que la réunion n'est pas top
       apply Nat.lt_of_add_lt_add_right
-      rw [Set.ncard_inter_add_ncard_union, zero_add, smul_set_ncard_eq,
-        hsn, ← two_mul]
+      rw [Set.ncard_inter_add_ncard_union, zero_add, Set.ncard_smul_set, hsn, ← two_mul]
       apply lt_of_lt_of_le _ hn2
       rw [← not_le]
       intro h
       apply this
       convert Set.mem_univ a
       apply Set.eq_of_subset_of_ncard_le (Set.subset_univ _) _ Set.finite_univ
-      simp only [Set.ncard_univ, Nat.card_eq_fintype_card]
-      exact h
+      simpa only [Set.ncard_univ]
 
 /- These theorems will be deduced from the strong one
 theorem is_two_pretransitive_weak_jordan' (hG : is_preprimitive G α)
@@ -625,7 +579,7 @@ end
 /-- Jordan's multiple primitivity criterion (Wielandt, 13.3) -/
 theorem isMultiplyPreprimitive_jordan
     (hG : IsPreprimitive G α) {s : Set α} {n : ℕ}
-    (hsn : s.ncard = n.succ) (hsn' : 1 + n.succ < Fintype.card α)
+    (hsn : s.ncard = n.succ) (hsn' : 1 + n.succ < Nat.card α)
     (hprim : IsPreprimitive (fixingSubgroup G s) (SubMulAction.ofFixingSubgroup G s)) :
     IsMultiplyPreprimitive G α (1 + n.succ) := by
   classical
@@ -633,33 +587,32 @@ theorem isMultiplyPreprimitive_jordan
   induction' n with n hrec
 
   · -- case n = 0
-    intro α G _ _ _ hG s hsn _ hGs
+    intro G α _ _ _ hG s hsn _ hGs
     haveI : IsPretransitive G α := hG.toIsPretransitive
     simp only [Set.ncard_eq_one] at hsn
     obtain ⟨a, hsa⟩ := hsn
     rw [hsa] at hGs
 
     constructor
-    · rw [stabilizer.isMultiplyPretransitive]
-      rw [← isPretransitive_iff_is_one_pretransitive]
-      apply isPretransitive.of_surjective_map
-        (SubMulAction.OfFixingSubgroupOfSingleton.map_bijective G a).surjective
-        hGs.toIsPretransitive
-      exact hG.toIsPretransitive
+    · rw [ofStabilizer.isMultiplyPretransitive (a := a)]
+      rw [is_one_pretransitive_iff]
+      apply IsPretransitive.of_surjective_map
+        (ofFixingSubgroup_of_singleton_bijective a).surjective hGs.toIsPretransitive
     · intro t h
-      simp only [Nat.zero_eq, Nat.cast_add, Nat.cast_one] at h
-      rw [← Nat.cast_one, WithTop.add_eq_add_iff, Nat.cast_one] at h
+      simp only [Nat.cast_add, Nat.cast_one,
+        (ENat.add_left_injective_of_ne_top ENat.one_ne_top).eq_iff] at h
+
       obtain ⟨b, htb⟩ := Set.encard_eq_one.mp h
       obtain ⟨g, hg⟩ := exists_smul_eq G a b
       have hst : g • ({a} : Set α) = ({b} : Set α) := by
         change (fun x => g • x) '' {a} = {b}
         rw [Set.image_singleton, hg]
       rw [htb]
-      refine isPreprimitive_of_surjective_map
-        (SubMulAction.conjMap_ofFixingSubgroup_bijective G hst).surjective hGs
+      refine IsPreprimitive.of_surjective
+        (conjMap_ofFixingSubgroup_bijective hst).surjective
 
   -- Induction step
-  intro α G _ _ _ hG s hsn hα hGs
+  intro G α _ _ _ hG s hsn hα hGs
   suffices ∃ (a : α) (t : Set (SubMulAction.ofStabilizer G a)),
     a ∈ s ∧ s = insert a (Subtype.val '' t) by
     obtain ⟨a, t, _, hst⟩ := this
@@ -667,18 +620,22 @@ theorem isMultiplyPreprimitive_jordan
       intro h; rw [Set.mem_image] at h ; obtain ⟨x, hx⟩ := h
       apply x.prop; rw [hx.right]; exact Set.mem_singleton a
     have ht_prim : IsPreprimitive (stabilizer G a) (SubMulAction.ofStabilizer G a) := by
-      rw [isPreprimitive_iff_is_one_preprimitive]
-      rw [← stabilizer.isMultiplyPreprimitive G α (Nat.le_refl 1) hG.toIsPretransitive]
+      rw [← is_one_preprimitive_iff]
+      rw [← isMultiplyPreprimitive_succ_iff_ofStabilizer]
       apply is_two_preprimitive_weak_jordan hG hsn hα hGs
+      norm_num
+
+    have : IsPreprimitive ↥(fixingSubgroup G (insert a (Subtype.val '' t)))
+        (ofFixingSubgroup G (insert a (Subtype.val '' t))) :=
+      IsPreprimitive.of_surjective
+        (ofFixingSubgroup_of_eq_bijective hst).surjective
     have hGs' : IsPreprimitive (fixingSubgroup (stabilizer G a) t)
-      (SubMulAction.ofFixingSubgroup (stabilizer G a) t) :=  by
-      apply isPreprimitive_of_surjective_map
-        (SubMulAction.equivariantMap_ofFixingSubgroup_to_ofStabilizer_bijective G a t).surjective
-      apply isPreprimitive_of_surjective_map
-        (SubMulAction.OfFixingSubgroupOfEq.map_bijective G hst).surjective
-      exact hGs
+      (ofFixingSubgroup (stabilizer G a) t) :=
+      IsPreprimitive.of_surjective
+        (equivariantMap_ofFixingSubgroup_to_ofStabilizer_bijective a t).surjective
     rw [← Nat.succ_eq_one_add]
-    rw [stabilizer.isMultiplyPreprimitive G α _ hG.toIsPretransitive]
+    rw [isMultiplyPreprimitive_succ_iff_ofStabilizer (M := G) (a := a)]
+    -- stabilizer.isMultiplyPreprimitive G α _ hG.toIsPretransitive]
     suffices n + 2 = 1 + Nat.succ n by
       rw [this]
       refine hrec ht_prim ?_ ?_ hGs'
@@ -687,49 +644,28 @@ theorem isMultiplyPreprimitive_jordan
         apply Nat.add_right_cancel
         rw [← Set.ncard_insert_of_not_mem ha', ← hst, hsn]
       · -- 1 + n.succ < Fintype.card (SubMulAction.ofStabilizer G α a)
-        change _ < Fintype.card (SubMulAction.ofStabilizer G a).carrier
-        rw [← Nat.card_eq_fintype_card, Set.Nat.card_coe_set_eq]
-        rw [SubMulAction.ofStabilizer_carrier]
-        rw [← Nat.succ_eq_one_add]
+        change _ < Nat.card (ofStabilizer G a).carrier
+        rw [Set.Nat.card_coe_set_eq, ofStabilizer_carrier, ← Nat.succ_eq_one_add]
         apply Nat.lt_of_add_lt_add_left
         rw [Set.ncard_add_ncard_compl]
-        simp only [Set.ncard_singleton, Nat.card_eq_fintype_card]
-        exact hα
+        simpa only [Set.ncard_singleton]
     · exact Nat.succ_eq_one_add (n + 1)
-    · apply Nat.succ_le_succ; apply Nat.zero_le
-  -- ∃ (a : α), a ∈ s
+    · exact Nat.le_add_left 1 (n + 1)
+  -- ∃ a t, a ∈ s ∧ s = insert a (Subtype.val '' t)
   suffices s.Nonempty by
     obtain ⟨a, ha⟩ := this
-    use a
-    use Subtype.val ⁻¹' s
-    apply And.intro ha
-
---
-    rw [Set.image_preimage_eq_inter_range]
-    rw [Set.insert_eq]
-    simp only [Subtype.range_coe_subtype, Set.singleton_union, Set.mem_inter_iff, Set.mem_setOf_eq]
-    simp_rw [SubMulAction.mem_ofStabilizer_iff]
-    simp only [Ne]
+    use a, Subtype.val ⁻¹' s, ha
     ext x
-    --    apply subset_antisymm,
-    · rw [Set.mem_insert_iff]
-      simp
-      rw [or_and_left]
-      simp_rw [or_not]
-      rw [and_true]
-      constructor
-      intro hx; apply Or.intro_right _ hx
-      intro hx; cases' hx with hx hx
-      rw [hx]; exact ha
-      exact hx
-  rw [← Set.ncard_pos, hsn]
-  apply Nat.succ_pos
+    suffices x ∈ s ↔ x = a ∨ x ∈ s ∧ ¬x = a by
+      simpa [mem_ofStabilizer_iff]
+    by_cases hx : x = a <;> simp [hx, ha]
+  rw [← Set.ncard_pos, hsn]; apply Nat.succ_pos
 
 end Jordan
 
 section Subgroups
 
-variable {α : Type _} [Fintype α]
+variable {α : Type*} [Fintype α]
 
 variable {G : Subgroup (Equiv.Perm α)}
 
@@ -748,7 +684,7 @@ theorem eq_s2_of_nontrivial (hα : Fintype.card α ≤ 2) (hG : Nontrivial G) :
     rw [← Fintype.one_lt_card_iff_nontrivial] at hG
     exact hG
 
-theorem nontrivial_on_equiv_perm_two {K : Type _} [Group K] [MulAction K α]
+theorem nontrivial_on_equiv_perm_two {K : Type*} [Group K] [MulAction K α]
     (hα : Fintype.card α = 2) {g : K} {a : α} (hga : g • a ≠ a) : IsMultiplyPretransitive K α 2 := by
   classical
   let φ := MulAction.toPermHom K α
