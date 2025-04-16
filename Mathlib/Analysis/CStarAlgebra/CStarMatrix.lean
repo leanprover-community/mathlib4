@@ -338,7 +338,7 @@ lemma ofMatrix_eq_ofMatrixStarAlgEquiv [Fintype n] [SMul ℂ A] [Semiring A] [St
 
 end basic
 
-variable [Fintype m] [NonUnitalCStarAlgebra A]
+variable [Fintype m] [NonUnitalRing A] [NonUnitalCStarAlgebra A]
 
 
 
@@ -495,7 +495,7 @@ in order to show that the map `ofMatrix` is bilipschitz. We then finally registe
 namespace CStarMatrix
 
 variable {m n A : Type*} [Fintype m] [Fintype n]
-  [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
+  [NonUnitalRing A] [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
 private noncomputable def normedAddGroupAux : NormedAddGroup (CStarMatrix m n A) :=
   .ofCore CStarMatrix.normedSpaceCore
@@ -576,7 +576,8 @@ namespace CStarMatrix
 
 section non_unital
 
-variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
+variable {A : Type*}
+  [NonUnitalRing A] [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
 variable {m n : Type*} [Fintype m] [Fintype n]
 
@@ -660,7 +661,7 @@ end non_unital
 
 section unital
 
-variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
+variable {A : Type*} [Ring A] [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
 variable {n : Type*} [Fintype n] [DecidableEq n]
 
@@ -676,7 +677,7 @@ end unital
 
 section
 
-variable {m n A : Type*} [NonUnitalCStarAlgebra A]
+variable {m n A : Type*} [NonUnitalRing A] [NonUnitalCStarAlgebra A]
 
 lemma uniformEmbedding_ofMatrix :
     IsUniformEmbedding (ofMatrix : Matrix m n A → CStarMatrix m n A) where

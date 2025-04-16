@@ -8,7 +8,8 @@ import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
 
 /-! # C⋆-algebraic facts about `a⁺` and `a⁻`. -/
 
-variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
+variable {A : Type*}
+  [NonUnitalRing A] [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
 namespace CStarAlgebra
 
@@ -53,8 +54,8 @@ lemma span_nonneg_inter_unitBall :
 end SpanNonneg
 
 open Complex in
-lemma exists_sum_four_nonneg {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A]
-    [StarOrderedRing A] (a : A) :
+lemma exists_sum_four_nonneg {A : Type*}
+    [NonUnitalRing A] [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A] (a : A) :
     ∃ x : Fin 4 → A, (∀ i, 0 ≤ x i) ∧ (∀ i, ‖x i‖ ≤ ‖a‖) ∧ a = ∑ i : Fin 4, I ^ (i : ℕ) • x i := by
   use ![(realPart a)⁺, (imaginaryPart a)⁺, (realPart a)⁻, (imaginaryPart a)⁻]
   rw [← and_assoc, ← forall_and]

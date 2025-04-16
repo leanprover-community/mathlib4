@@ -125,7 +125,7 @@ end ComplexBanachAlgebra
 
 section ComplexCStarAlgebra
 
-variable {A : Type*} [CommCStarAlgebra A]
+variable {A : Type*} [CommRing A] [CStarAlgebra A]
 
 theorem gelfandTransform_map_star (a : A) :
     gelfandTransform ℂ A (star a) = star (gelfandTransform ℂ A a) :=
@@ -255,7 +255,8 @@ V                     V
 B  --- η B ---> C(characterSpace ℂ B, ℂ)
 ```
 -/
-theorem gelfandStarTransform_naturality {A B : Type*} [CommCStarAlgebra A] [CommCStarAlgebra B]
+theorem gelfandStarTransform_naturality {A B : Type*}
+    [CommRing A] [CStarAlgebra A] [CommRing B] [CStarAlgebra B]
     (φ : A →⋆ₐ[ℂ] B) :
     (gelfandStarTransform B : _ →⋆ₐ[ℂ] _).comp φ =
       (compContinuousMap φ |>.compStarAlgHom' ℂ ℂ).comp (gelfandStarTransform A : _ →⋆ₐ[ℂ] _) := by

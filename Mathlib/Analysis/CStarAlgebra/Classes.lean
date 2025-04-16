@@ -21,63 +21,54 @@ heavier imports.
 -/
 
 /-- The class of non-unital (complex) C⋆-algebras. -/
-class NonUnitalCStarAlgebra (A : Type*) extends
-    NonUnitalRing A, NormedRing A, StarRing A, CompleteSpace A,
+class NonUnitalCStarAlgebra (A : Type*) [NonUnitalRing A] extends
+    NormedRing A, StarRing A, CompleteSpace A,
     CStarRing A, NormedSpace ℂ A, IsScalarTower ℂ A A, SMulCommClass ℂ A A, StarModule ℂ A where
 
 /-- The class of non-unital commutative (complex) C⋆-algebras. -/
-class NonUnitalCommCStarAlgebra (A : Type*) extends
+@[deprecated "Use `[NonUnitalCommRing α] [NonUnitalCommCStarAlgebra α]` instead."
+  (since := "2025-04-14")]
+structure NonUnitalCommCStarAlgebra (A : Type*) extends
     NonUnitalCommRing A, NormedRing A, NonUnitalCStarAlgebra A
 
 /-- The class of unital (complex) C⋆-algebras. -/
-class CStarAlgebra (A : Type*) extends
-    Ring A, NormedRing A, StarRing A, CompleteSpace A, CStarRing A,
+class CStarAlgebra (A : Type*) [Ring A] extends
+    NormedRing A, StarRing A, CompleteSpace A, CStarRing A,
     NormedAlgebra ℂ A, StarModule ℂ A where
 
 /-- The class of unital commutative (complex) C⋆-algebras. -/
-class CommCStarAlgebra (A : Type*) extends CommRing A, NormedRing A, CStarAlgebra A
+@[deprecated "Use `[CommRing α] [CommCStarAlgebra α]` instead."
+  (since := "2025-04-14")]
+structure CommCStarAlgebra (A : Type*) extends CommRing A, NormedRing A, CStarAlgebra A
 
-instance (priority := 100) CStarAlgebra.toNonUnitalCStarAlgebra (A : Type*) [CStarAlgebra A] :
+instance (priority := 100) CStarAlgebra.toNonUnitalCStarAlgebra (A : Type*)
+    [Ring A] [CStarAlgebra A] :
     NonUnitalCStarAlgebra A where
 
-instance (priority := 100) CommCStarAlgebra.toNonUnitalCommCStarAlgebra (A : Type*)
-    [CommCStarAlgebra A] : NonUnitalCommCStarAlgebra A where
-
-noncomputable instance StarSubalgebra.cstarAlgebra {S A : Type*} [CStarAlgebra A]
+noncomputable instance StarSubalgebra.cstarAlgebra {S A : Type*} [Ring A] [CStarAlgebra A]
     [SetLike S A] [SubringClass S A] [SMulMemClass S ℂ A] [StarMemClass S A]
     (s : S) [h_closed : IsClosed (s : Set A)] : CStarAlgebra s where
   toCompleteSpace := h_closed.completeSpace_coe
   norm_mul_self_le x := CStarRing.norm_star_mul_self (x := (x : A)) |>.symm.le
 
-noncomputable instance StarSubalgebra.commCStarAlgebra {S A : Type*} [CommCStarAlgebra A]
-    [SetLike S A] [SubringClass S A] [SMulMemClass S ℂ A] [StarMemClass S A]
-    (s : S) [h_closed : IsClosed (s : Set A)] : CommCStarAlgebra s where
-  toCompleteSpace := h_closed.completeSpace_coe
-
 noncomputable instance NonUnitalStarSubalgebra.nonUnitalCStarAlgebra {S A : Type*}
-    [NonUnitalCStarAlgebra A] [SetLike S A] [NonUnitalSubringClass S A] [SMulMemClass S ℂ A]
+    [NonUnitalRing A] [NonUnitalCStarAlgebra A]
+    [SetLike S A] [NonUnitalSubringClass S A] [SMulMemClass S ℂ A]
     [StarMemClass S A] (s : S) [h_closed : IsClosed (s : Set A)] : NonUnitalCStarAlgebra s where
   toCompleteSpace := h_closed.completeSpace_coe
   norm_mul_self_le x := CStarRing.norm_star_mul_self (x := (x : A)) |>.symm.le
 
-noncomputable instance NonUnitalStarSubalgebra.nonUnitalCommCStarAlgebra {S A : Type*}
-    [NonUnitalCommCStarAlgebra A] [SetLike S A] [NonUnitalSubringClass S A] [SMulMemClass S ℂ A]
-    [StarMemClass S A] (s : S) [h_closed : IsClosed (s : Set A)] : NonUnitalCommCStarAlgebra s where
-  toCompleteSpace := h_closed.completeSpace_coe
-
-noncomputable instance : CommCStarAlgebra ℂ where
+noncomputable instance : CStarAlgebra ℂ where
 
 section Pi
 
 variable {ι : Type*} {A : ι → Type*} [Fintype ι]
 
-instance [(i : ι) → NonUnitalCStarAlgebra (A i)] : NonUnitalCStarAlgebra (Π i, A i) where
+instance [(i : ι) → NonUnitalRing (A i)] [(i : ι) → NonUnitalCStarAlgebra (A i)] :
+    NonUnitalCStarAlgebra (Π i, A i) where
 
-instance [(i : ι) → NonUnitalCommCStarAlgebra (A i)] : NonUnitalCommCStarAlgebra (Π i, A i) where
-
-noncomputable instance [(i : ι) → CStarAlgebra (A i)] : CStarAlgebra (Π i, A i) where
-
-noncomputable instance [(i : ι) → CommCStarAlgebra (A i)] : CommCStarAlgebra (Π i, A i) where
+noncomputable instance [(i : ι) → Ring (A i)] [(i : ι) → CStarAlgebra (A i)] :
+    CStarAlgebra (Π i, A i) where
 
 end Pi
 
@@ -85,14 +76,11 @@ section Prod
 
 variable {A B : Type*}
 
-instance [NonUnitalCStarAlgebra A] [NonUnitalCStarAlgebra B] : NonUnitalCStarAlgebra (A × B) where
+instance [NonUnitalRing A] [NonUnitalCStarAlgebra A] [NonUnitalRing B] [NonUnitalCStarAlgebra B] :
+    NonUnitalCStarAlgebra (A × B) where
 
-instance [NonUnitalCommCStarAlgebra A] [NonUnitalCommCStarAlgebra B] :
-    NonUnitalCommCStarAlgebra (A × B) where
-
-noncomputable instance [CStarAlgebra A] [CStarAlgebra B] : CStarAlgebra (A × B) where
-
-noncomputable instance [CommCStarAlgebra A] [CommCStarAlgebra B] : CommCStarAlgebra (A × B) where
+noncomputable instance [Ring A] [CStarAlgebra A] [Ring B] [CStarAlgebra B] :
+    CStarAlgebra (A × B) where
 
 end Prod
 
@@ -100,12 +88,8 @@ namespace MulOpposite
 
 variable {A : Type*}
 
-instance [NonUnitalCStarAlgebra A] : NonUnitalCStarAlgebra Aᵐᵒᵖ where
+instance [NonUnitalRing A] [NonUnitalCStarAlgebra A] : NonUnitalCStarAlgebra Aᵐᵒᵖ where
 
-instance [NonUnitalCommCStarAlgebra A] : NonUnitalCommCStarAlgebra Aᵐᵒᵖ where
-
-noncomputable instance [CStarAlgebra A] : CStarAlgebra Aᵐᵒᵖ where
-
-noncomputable instance [CommCStarAlgebra A] : CommCStarAlgebra Aᵐᵒᵖ where
+noncomputable instance [Ring A] [CStarAlgebra A] : CStarAlgebra Aᵐᵒᵖ where
 
 end MulOpposite

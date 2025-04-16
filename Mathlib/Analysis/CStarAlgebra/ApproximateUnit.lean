@@ -36,7 +36,7 @@ moreover, this filter is an increasing approximate unit.
 
 -/
 
-variable {A : Type*} [NonUnitalCStarAlgebra A]
+variable {A : Type*} [NonUnitalRing A] [NonUnitalCStarAlgebra A]
 
 local notation "σₙ" => quasispectrum
 local notation "σ" => spectrum
@@ -191,7 +191,8 @@ lemma hasBasis_approximateUnit :
 `z - y * z` is controlled by the norm of `star z * (1 - x) * z`, which is advantageous because the
 latter is nonnegative. This is a key step in establishing the existence of an increasing approximate
 unit in general C⋆-algebras. -/
-lemma nnnorm_sub_mul_self_le {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
+lemma nnnorm_sub_mul_self_le {A : Type*}
+    [Ring A] [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
     {x y : A} (z : A) (hx₀ : 0 ≤ x) (hy : y ∈ Set.Icc x 1) {c : ℝ≥0}
     (h : ‖star z * (1 - x) * z‖₊ ≤ c ^ 2) :
     ‖z - y * z‖₊ ≤ c := by
@@ -209,7 +210,8 @@ lemma nnnorm_sub_mul_self_le {A : Type*} [CStarAlgebra A] [PartialOrder A] [Star
     exact hy.1
 
 /-- A variant of `nnnorm_sub_mul_self_le` which uses `‖·‖` instead of `‖·‖₊`. -/
-lemma norm_sub_mul_self_le {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
+lemma norm_sub_mul_self_le {A : Type*}
+    [Ring A] [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
     {x y : A} (z : A) (hx₀ : 0 ≤ x) (hy : y ∈ Set.Icc x 1)
     {c : ℝ} (hc : 0 ≤ c) (h : ‖star z * (1 - x) * z‖ ≤ c ^ 2) :
     ‖z - y * z‖ ≤ c :=

@@ -38,7 +38,7 @@ One the other hand, not picking one means that the weak-* topology
 (which depends on a choice of predual) must be defined using the choice,
 and we may be unhappy with the resulting opaqueness of the definition.
 -/
-class WStarAlgebra (M : Type u) [CStarAlgebra M] : Prop where
+class WStarAlgebra (M : Type u) [Ring M] [CStarAlgebra M] : Prop where
   /-- There is a Banach space `X` whose dual is isometrically (conjugate-linearly) isomorphic
   to the `WStarAlgebra`. -/
   exists_predual :

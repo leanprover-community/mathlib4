@@ -49,9 +49,10 @@ section CStarAlgebra
 
 namespace PositiveLinearMap
 
-variable [NonUnitalCStarAlgebra A₁] [NonUnitalCStarAlgebra A₂] [PartialOrder A₁]
+variable [NonUnitalRing A₁] [NonUnitalCStarAlgebra A₁]
+  [NonUnitalRing A₂] [NonUnitalCStarAlgebra A₂] [PartialOrder A₁]
   [StarOrderedRing A₁] [PartialOrder A₂] [StarOrderedRing A₂]
-  [CStarAlgebra B₁] [CStarAlgebra B₂] [PartialOrder B₁] [PartialOrder B₂]
+  [Ring B₁] [CStarAlgebra B₁] [Ring B₂] [CStarAlgebra B₂] [PartialOrder B₁] [PartialOrder B₂]
   [StarOrderedRing B₁]
 
 lemma apply_le_of_isSelfAdjoint (f : B₁ →ₚ[ℂ] B₂) (x : B₁) (hx : IsSelfAdjoint x) :

@@ -90,7 +90,8 @@ end UnitarySpectrum
 section Quasispectrum
 
 open scoped NNReal in
-lemma CStarAlgebra.le_nnnorm_of_mem_quasispectrum {A : Type*} [NonUnitalCStarAlgebra A]
+lemma CStarAlgebra.le_nnnorm_of_mem_quasispectrum {A : Type*}
+    [NonUnitalRing A] [NonUnitalCStarAlgebra A]
     {a : A} {x : ℝ≥0} (hx : x ∈ quasispectrum ℝ≥0 a) : x ≤ ‖a‖₊ := by
   rw [Unitization.quasispectrum_eq_spectrum_inr' ℝ≥0 ℂ] at hx
   simpa [Unitization.nnnorm_inr] using spectrum.le_nnnorm_of_mem hx
@@ -101,7 +102,7 @@ section ComplexScalars
 
 open Complex
 
-variable {A : Type*} [CStarAlgebra A]
+variable {A : Type*} [Ring A] [CStarAlgebra A]
 
 local notation "↑ₐ" => algebraMap ℂ A
 
@@ -231,7 +232,8 @@ end ComplexScalars
 
 namespace NonUnitalStarAlgHom
 
-variable {F A B : Type*} [NonUnitalCStarAlgebra A] [NonUnitalCStarAlgebra B]
+variable {F A B : Type*} [NonUnitalRing A] [NonUnitalCStarAlgebra A]
+  [NonUnitalRing B] [NonUnitalCStarAlgebra B]
 variable [FunLike F A B] [NonUnitalAlgHomClass F ℂ A B] [StarHomClass F A B]
 
 open Unitization
@@ -268,7 +270,8 @@ end NonUnitalStarAlgHom
 
 namespace StarAlgEquiv
 
-variable {F A B : Type*} [NonUnitalCStarAlgebra A] [NonUnitalCStarAlgebra B] [EquivLike F A B]
+variable {F A B : Type*} [NonUnitalRing A] [NonUnitalCStarAlgebra A]
+  [NonUnitalRing B] [NonUnitalCStarAlgebra B] [EquivLike F A B]
 variable [NonUnitalAlgEquivClass F ℂ A B] [StarHomClass F A B]
 
 lemma nnnorm_map (φ : F) (a : A) : ‖φ a‖₊ = ‖a‖₊ :=
@@ -291,7 +294,7 @@ open ContinuousMap Complex
 
 open scoped ComplexStarModule
 
-variable {F A : Type*} [CStarAlgebra A] [FunLike F A ℂ] [hF : AlgHomClass F ℂ A ℂ]
+variable {F A : Type*} [Ring A] [CStarAlgebra A] [FunLike F A ℂ] [hF : AlgHomClass F ℂ A ℂ]
 
 /-- This instance is provided instead of `StarHomClass` to avoid type class inference loops.
 See note [lower instance priority] -/

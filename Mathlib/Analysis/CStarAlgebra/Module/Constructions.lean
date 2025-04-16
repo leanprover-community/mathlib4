@@ -60,7 +60,7 @@ open CStarModule CStarRing
 
 namespace WithCStarModule
 
-variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A]
+variable {A : Type*} [NonUnitalRing A] [NonUnitalCStarAlgebra A] [PartialOrder A]
 
 /-! ## A C⋆-algebra as a C⋆-module over itself -/
 

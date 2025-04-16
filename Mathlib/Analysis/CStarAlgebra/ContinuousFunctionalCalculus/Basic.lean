@@ -54,7 +54,7 @@ open scoped Pointwise ENNReal NNReal ComplexOrder
 
 open WeakDual WeakDual.CharacterSpace
 
-variable {A : Type*} [CStarAlgebra A]
+variable {A : Type*} [Ring A] [CStarAlgebra A]
 
 namespace StarAlgebra.elemental
 
@@ -63,7 +63,7 @@ instance {R A : Type*} [CommRing R] [StarRing R] [Ring A] [NormedRing A] [Algebr
     NormedRing (elemental R a) :=
   { SubringClass.toNormedRing (elemental R a) with }
 
-noncomputable instance (a : A) [IsStarNormal a] : CommCStarAlgebra (elemental ℂ a) where
+noncomputable instance (a : A) [IsStarNormal a] : CStarAlgebra (elemental ℂ a) where
 
 variable (a : A) [IsStarNormal a]
 
@@ -150,7 +150,7 @@ local notation "σₙ" => quasispectrum
 
 section Normal
 
-instance IsStarNormal.instContinuousFunctionalCalculus {A : Type*} [CStarAlgebra A] :
+instance IsStarNormal.instContinuousFunctionalCalculus {A : Type*} [Ring A] [CStarAlgebra A] :
     ContinuousFunctionalCalculus ℂ A IsStarNormal where
   predicate_zero := .zero
   spectrum_nonempty a _ := spectrum.nonempty a
@@ -168,7 +168,8 @@ instance IsStarNormal.instContinuousFunctionalCalculus {A : Type*} [CStarAlgebra
         AlgEquiv.spectrum_eq (continuousFunctionalCalculus a), ContinuousMap.spectrum_eq_range]
     case predicate_hom => exact fun f ↦ ⟨by rw [← map_star]; exact Commute.all (star f) f |>.map _⟩
 
-lemma cfcHom_eq_of_isStarNormal {A : Type*} [CStarAlgebra A] (a : A) [ha : IsStarNormal a] :
+lemma cfcHom_eq_of_isStarNormal {A : Type*}
+    [Ring A] [CStarAlgebra A] (a : A) [ha : IsStarNormal a] :
     cfcHom ha = (StarAlgebra.elemental ℂ a).subtype.comp (continuousFunctionalCalculus a) := by
   refine cfcHom_eq_of_continuous_of_map_id ha _ ?_ ?_
   · exact continuous_subtype_val.comp <|
@@ -176,11 +177,12 @@ lemma cfcHom_eq_of_isStarNormal {A : Type*} [CStarAlgebra A] (a : A) [ha : IsSta
   · simp [continuousFunctionalCalculus_map_id a]
 
 instance IsStarNormal.instNonUnitalContinuousFunctionalCalculus {A : Type*}
-    [NonUnitalCStarAlgebra A] : NonUnitalContinuousFunctionalCalculus ℂ A IsStarNormal :=
+    [NonUnitalRing A] [NonUnitalCStarAlgebra A] :
+    NonUnitalContinuousFunctionalCalculus ℂ A IsStarNormal :=
   RCLike.nonUnitalContinuousFunctionalCalculus Unitization.isStarNormal_inr
 
 open Unitization CStarAlgebra in
-lemma inr_comp_cfcₙHom_eq_cfcₙAux {A : Type*} [NonUnitalCStarAlgebra A] (a : A)
+lemma inr_comp_cfcₙHom_eq_cfcₙAux {A : Type*} [NonUnitalRing A] [NonUnitalCStarAlgebra A] (a : A)
     [ha : IsStarNormal a] : (inrNonUnitalStarAlgHom ℂ A).comp (cfcₙHom ha) =
       cfcₙAux (isStarNormal_inr (R := ℂ) (A := A)) a ha := by
   have h (a : A) := isStarNormal_inr (R := ℂ) (A := A) (a := a)
@@ -202,7 +204,7 @@ section SpectrumRestricts
 
 open NNReal ENNReal
 
-variable {A : Type*} [CStarAlgebra A]
+variable {A : Type*} [Ring A] [CStarAlgebra A]
 
 lemma SpectrumRestricts.nnreal_iff_nnnorm {a : A} {t : ℝ≥0} (ha : IsSelfAdjoint a) (ht : ‖a‖₊ ≤ t) :
     SpectrumRestricts a ContinuousMap.realToNNReal ↔ ‖algebraMap ℝ A t - a‖₊ ≤ t := by
@@ -309,7 +311,7 @@ end SpectrumRestricts
 
 section NonnegSpectrumClass
 
-variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
+variable {A : Type*} [Ring A] [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
 instance CStarAlgebra.instNonnegSpectrumClass : NonnegSpectrumClass ℝ A :=
   .of_spectrum_nonneg fun a ha ↦ by
@@ -338,7 +340,7 @@ end NonnegSpectrumClass
 
 section SpectralOrder
 
-variable (A : Type*) [NonUnitalCStarAlgebra A]
+variable (A : Type*) [NonUnitalRing A] [NonUnitalCStarAlgebra A]
 
 open scoped CStarAlgebra
 /-- The partial order on a C⋆-algebra defined by `x ≤ y` if and only if `y - x` is
@@ -400,7 +402,8 @@ end SpectralOrder
 
 section NonnegSpectrumClass
 
-variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
+variable {A : Type*}
+  [NonUnitalRing A] [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
 open scoped CStarAlgebra in
 instance CStarAlgebra.instNonnegSpectrumClass' : NonnegSpectrumClass ℝ A where
@@ -423,7 +426,7 @@ section cfc_inr
 
 open CStarAlgebra
 
-variable {A : Type*} [NonUnitalCStarAlgebra A]
+variable {A : Type*} [NonUnitalRing A] [NonUnitalCStarAlgebra A]
 
 open scoped NonUnitalContinuousFunctionalCalculus in
 /-- This lemma requires a lot from type class synthesis, and so one should instead favor the bespoke
@@ -462,7 +465,7 @@ end cfc_inr
 
 section Unital
 
-variable {A : Type*} [CStarAlgebra A]
+variable {A : Type*} [Ring A] [CStarAlgebra A]
 
 instance IsStarNormal.instIsometricContinuousFunctionalCalculus :
     IsometricContinuousFunctionalCalculus ℂ A IsStarNormal where
@@ -479,7 +482,7 @@ end Unital
 
 section NonUnital
 
-variable {A : Type*} [NonUnitalCStarAlgebra A]
+variable {A : Type*} [NonUnitalRing A] [NonUnitalCStarAlgebra A]
 
 open Unitization
 

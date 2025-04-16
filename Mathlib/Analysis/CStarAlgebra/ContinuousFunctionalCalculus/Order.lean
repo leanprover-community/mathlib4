@@ -78,7 +78,8 @@ theorem cfcₙ_tsub {A : Type*} [TopologicalSpace A] [NonUnitalRing A] [PartialO
 
 namespace Unitization
 
-variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
+variable {A : Type*}
+  [NonUnitalRing A] [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
 instance instPartialOrder : PartialOrder A⁺¹ :=
     CStarAlgebra.spectralOrder _
@@ -143,7 +144,7 @@ lemma CFC.exists_pos_algebraMap_le_iff {A : Type*} [TopologicalSpace A] [Ring A]
 
 section CStar_unital
 
-variable {A : Type*} [CStarAlgebra A]
+variable {A : Type*} [Ring A] [CStarAlgebra A]
 
 section StarOrderedRing
 
@@ -382,7 +383,8 @@ end CStar_unital
 
 section CStar_nonunital
 
-variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
+variable {A : Type*}
+  [NonUnitalRing A] [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
 namespace CStarAlgebra
 
@@ -481,8 +483,8 @@ section Pow
 
 namespace CStarAlgebra
 
-variable {A : Type*} {B : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
-  [NonUnitalCStarAlgebra B] [PartialOrder B] [StarOrderedRing B]
+variable {A : Type*} {B : Type*} [Ring A] [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
+  [NonUnitalRing B] [NonUnitalCStarAlgebra B] [PartialOrder B] [StarOrderedRing B]
 
 lemma pow_nonneg {a : A} (ha : 0 ≤ a := by cfc_tac) (n : ℕ) : 0 ≤ a ^ n := by
   rw [← cfc_pow_id (R := ℝ≥0) a]

@@ -17,7 +17,8 @@ Here we collect properties of C⋆-algebra homomorphisms.
 -/
 
 open CStarAlgebra in
-lemma IsSelfAdjoint.map_spectrum_real {F A B : Type*} [CStarAlgebra A] [CStarAlgebra B]
+lemma IsSelfAdjoint.map_spectrum_real {F A B : Type*}
+    [Ring A] [CStarAlgebra A] [Ring B] [CStarAlgebra B]
     [FunLike F A B] [AlgHomClass F ℂ A B] [StarHomClass F A B]
     {a : A} (ha : IsSelfAdjoint a) (φ : F) (hφ : Function.Injective φ) :
     spectrum ℝ (φ a) = spectrum ℝ a := by
@@ -44,7 +45,8 @@ lemma IsSelfAdjoint.map_spectrum_real {F A B : Type*} [CStarAlgebra A] [CStarAlg
 
 namespace NonUnitalStarAlgHom
 
-variable {F A B : Type*} [NonUnitalCStarAlgebra A] [NonUnitalCStarAlgebra B]
+variable {F A B : Type*} [NonUnitalRing A] [NonUnitalCStarAlgebra A]
+  [NonUnitalRing B] [NonUnitalCStarAlgebra B]
 variable [FunLike F A B] [NonUnitalAlgHomClass F ℂ A B] [StarHomClass F A B]
 
 open CStarAlgebra Unitization in

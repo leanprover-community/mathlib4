@@ -151,7 +151,7 @@ end general
 
 section norm
 
-variable {A E : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [AddCommGroup E]
+variable {A E : Type*} [NonUnitalRing A] [NonUnitalCStarAlgebra A] [PartialOrder A] [AddCommGroup E]
   [Module ℂ E] [SMul A E] [Norm E] [CStarModule A E]
 
 local notation "⟪" x ", " y "⟫" => inner (𝕜 := A) x y
@@ -288,7 +288,8 @@ open scoped InnerProductSpace
 `NormedAddCommGroup` and `NormedSpace` instances via `CStarModule.normedSpaceCore`, especially by
 using `NormedAddCommGroup.ofCoreReplaceAll` and `NormedSpace.ofCore`. See
 `Analysis.CStarAlgebra.Module.Constructions` for examples. -/
-variable {A E : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A] [SMul A E]
+variable {A E : Type*}
+  [NonUnitalRing A] [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A] [SMul A E]
   [AddCommGroup E] [NormedAddGroup E] [NormedSpace ℂ E] [CStarModule A E]
 
 /-- The function `⟨x, y⟩ ↦ ⟪x, y⟫` bundled as a continuous sesquilinear map. -/

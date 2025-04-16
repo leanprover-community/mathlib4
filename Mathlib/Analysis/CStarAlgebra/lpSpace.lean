@@ -17,19 +17,17 @@ noncomputable section
 
 variable {I : Type*} {A : I → Type*}
 
-instance [∀ i, NonUnitalCStarAlgebra (A i)] : NonUnitalCStarAlgebra (lp A ∞) where
-  norm_mul_self_le := CStarRing.norm_mul_self_le
+instance [∀ i, NonUnitalRing (A i)] [∀ i, NonUnitalCStarAlgebra (A i)] :
+    NonUnitalCStarAlgebra (lp A ∞) where
 
-instance [∀ i, NonUnitalCommCStarAlgebra (A i)] : NonUnitalCommCStarAlgebra (lp A ∞) where
-  mul_comm a b := mul_comm a b
+instance [∀ i, Ring (A i)] [∀ i, CStarAlgebra (A i)] : NormedRing (lp A ∞) where
+  dist_eq := dist_eq_norm
+  norm_mul_le := norm_mul_le
 
 -- it's slightly weird that we need the `Nontrivial` instance here
 -- it's because we have no way to say that `‖(1 : A i)‖` is uniformly bounded as a type class
 -- aside from `∀ i, NormOneClass (A i)`, this holds automatically for C⋆-algebras though.
-instance [∀ i, CStarAlgebra (A i)] : NormedRing (lp A ∞) where
-  dist_eq := dist_eq_norm
-  norm_mul_le := norm_mul_le
-
-instance [∀ i, Nontrivial (A i)] [∀ i, CommCStarAlgebra (A i)] : CommCStarAlgebra (lp A ∞) where
+instance [∀ i, Nontrivial (A i)] [∀ i, Ring (A i)] [∀ i, CStarAlgebra (A i)] :
+    CStarAlgebra (lp A ∞) where
 
 end
