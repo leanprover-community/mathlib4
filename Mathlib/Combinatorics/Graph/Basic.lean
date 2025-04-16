@@ -112,6 +112,11 @@ lemma Inc₂.left_eq_or_eq_of_inc₂ (h : G.Inc₂ e x y) (h' : G.Inc₂ e z w) 
 lemma Inc₂.left_eq_of_inc₂_of_ne (h : G.Inc₂ e x y) (h' : G.Inc₂ e z w) (hzx : x ≠ z) : x = w :=
   (h.left_eq_or_eq_of_inc₂ h').elim (False.elim ∘ hzx) id
 
+lemma Inc₂.eq_of_inc₂ (h : G.Inc₂ e x y) (h' : G.Inc₂ e x z) : y = z := by
+  obtain rfl | rfl := h.symm.left_eq_or_eq_of_inc₂ h'.symm
+  · rfl
+  obtain rfl | rfl := h'.symm.left_eq_or_eq_of_inc₂ h.symm <;> rfl
+
 /-! ### Edge-vertex incidence -/
 
 /-- The unary incidence predicate of `G`. `G.Inc e x` means that `x` is one of the ends of `e`. -/
