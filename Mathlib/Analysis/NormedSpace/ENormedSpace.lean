@@ -34,8 +34,6 @@ normed space, extended norm
 
 noncomputable section
 
-set_option linter.deprecated false
-
 open ENNReal
 
 /-- Extended norm on a vector space. As in the case of normed spaces, we require only
