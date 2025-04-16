@@ -99,7 +99,7 @@ lemma dist_add_dist_eq_iff : dist a b + dist b c = dist a c ↔ Wbtw ℝ a b c :
 /-- The strict triangle inequality. -/
 theorem dist_lt_dist_add_dist_iff {a b c : P} :
     dist a c < dist a b + dist b c ↔ ¬ Wbtw ℝ a b c := by
-   rw [← ne_iff_lt_iff_le.mpr (dist_triangle _ _ _), not_iff_not, eq_comm, dist_add_dist_eq_iff]
+  rw [← ne_iff_lt_iff_le.mpr (dist_triangle _ _ _), not_iff_not, eq_comm, dist_add_dist_eq_iff]
 
 /-- The strict triangle inequality for affinely independent points. -/
 theorem AffineIndependent.dist_strict_triangle {a b c : P} (hT : AffineIndependent ℝ ![a, b, c]) :
