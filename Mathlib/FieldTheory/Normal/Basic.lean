@@ -290,3 +290,7 @@ theorem normal_of_finrank_eq_two (F K : Type*) [Field F] [Field K] [Algebra F K]
     obtain h | h := le_iff_lt_or_eq.mp (h ▸ minpoly.natDegree_le x)
     · exact splits_of_natDegree_le_one _ (by rwa [Nat.le_iff_lt_add_one])
     · exact splits_of_natDegree_eq_two _ h (minpoly.aeval F x)
+
+instance (F K : Type*) [Field F] [Field K] [h : IsQuadraticExtension F K] :
+    Normal F K :=
+  normal_of_finrank_eq_two F K h.finrank_eq_two
