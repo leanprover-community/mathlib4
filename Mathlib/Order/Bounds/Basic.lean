@@ -26,6 +26,14 @@ variable {α : Type u} {γ : Type v}
 
 section
 
+def Dominated [LE α] (s₁ s₂ : Set α) := ∀ a ∈ s₂, ∃ b ∈ s₁, a ≤ b
+
+def Recessed [LE α] (s₁ s₂ : Set α) := ∀ a ∈ s₂, ∃ b ∈ s₁, b ≤ a
+
+end
+
+section
+
 variable [Preorder α] {s t : Set α} {a b : α}
 
 theorem mem_upperBounds : a ∈ upperBounds s ↔ ∀ x ∈ s, x ≤ a :=
@@ -133,17 +141,17 @@ theorem isGLB_congr (h : lowerBounds s = lowerBounds t) : IsGLB s a ↔ IsGLB t 
 theorem upperBounds_mono_set ⦃s t : Set α⦄ (hst : s ⊆ t) : upperBounds t ⊆ upperBounds s :=
   fun _ hb _ h => hb <| hst h
 
-lemma upperBounds_subset_of_dominated {s₁ s₂ : Set α} (hs₂ : ∀ a ∈ s₂, ∃ b ∈ s₁, a ≤ b) :
+lemma upperBounds_subset_of_dominated {s₁ s₂ : Set α} (h : Dominated s₁ s₂) :
     upperBounds s₁ ⊆ upperBounds s₂ := fun c hc d hd => by
-  obtain ⟨e, he₁, he₂⟩ := hs₂ _ hd
+  obtain ⟨e, he₁, he₂⟩ := h _ hd
   exact Preorder.le_trans d e c he₂ (hc he₁)
 
 theorem lowerBounds_mono_set ⦃s t : Set α⦄ (hst : s ⊆ t) : lowerBounds t ⊆ lowerBounds s :=
   fun _ hb _ h => hb <| hst h
 
-lemma lowerBounds_subset_of_dominated {s₁ s₂ : Set α} (hs₂ : ∀ a ∈ s₂, ∃ b ∈ s₁, b ≤ a) :
+lemma lowerBounds_subset_of_recessed {s₁ s₂ : Set α} (h : Recessed s₁ s₂) :
     lowerBounds s₁ ⊆ lowerBounds s₂ := fun c hc d hd => by
-  obtain ⟨e, he₁, he₂⟩ := hs₂ _ hd
+  obtain ⟨e, he₁, he₂⟩ := h _ hd
   exact le_trans (hc he₁) he₂
 
 theorem upperBounds_mono_mem ⦃a b⦄ (hab : a ≤ b) : a ∈ upperBounds s → b ∈ upperBounds s :=
