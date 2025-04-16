@@ -16,4 +16,4 @@ theorem IsSimpleRing.exists_algEquiv_matrix_of_isAlgClosed (F R) [Field F] [IsAl
   have := IsArtinianRing.of_finite F R
   have ⟨n, hn, D, _, _, _, ⟨e⟩⟩ := exists_algEquiv_matrix_divisionRing_finite F R
   ⟨n, hn, ⟨e.trans <| .mapMatrix <| .symm <| .ofBijective (Algebra.ofId F D)
-    ⟨RingHom.injective _, IsAlgClosed.algebraMap_surjective_of_isIntegral⟩⟩⟩
+    IsAlgClosed.algebraMap_bijective_of_isIntegral⟩⟩
