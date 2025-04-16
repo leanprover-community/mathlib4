@@ -197,13 +197,13 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Tactic.Linter.TextBased, `Mathlib.Data.Nat.Notation),
 
   (`Mathlib.Logic, `Batteries),
-  (`Mathlib.Logic, `Mathlib.Algebra), -- XXX: to what extent is this desirable?
   -- XXX: should this import be allowed on a more fine-grained level?
   (`Mathlib.Logic, `Mathlib.Control),
   (`Mathlib.Logic, `Mathlib.Lean),
   (`Mathlib.Logic, `Mathlib.Util),
   (`Mathlib.Logic, `Mathlib.Tactic),
   (`Mathlib.Logic.Fin.Rotate, `Mathlib.Algebra.Group.Fin.Basic),
+  (`Mathlib.Logic.Hydra, `Mathlib.GroupTheory),
   -- XXX: should this import be allowed only on a more fine-grained level (or at all)?
   (`Mathlib.Logic, `Mathlib.Data),
   -- XXX: should this import be allowed only on a more fine-grained level (or at all)?
