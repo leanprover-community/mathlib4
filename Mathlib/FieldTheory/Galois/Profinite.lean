@@ -291,7 +291,7 @@ lemma isOpen_mulEquivToLimit_image_fixingSubgroup [IsGalois k K]
     exact (isOpen_induced <| (continuous_apply (op L)).isOpen_preimage {1} trivial)
   ext x
   obtain ⟨σ, rfl⟩ := (mulEquivToLimit k K).surjective x
-  simpa using FiniteGaloisIntermediateField.mem_fixingSubgroup_iff _ _
+  simpa using FiniteGaloisIntermediateField.mem_fixingSubgroup_iff σ _
 
 lemma mulEquivToLimit_symm_continuous [IsGalois k K] : Continuous (mulEquivToLimit k K).symm := by
   apply continuous_of_continuousAt_one _ (continuousAt_def.mpr _ )
