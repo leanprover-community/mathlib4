@@ -744,19 +744,10 @@ theorem AEMeasurable.fst [SFinite ν] {f : α → γ} (hf : AEMeasurable f μ) :
     AEMeasurable (fun z : α × β => f z.1) (μ.prod ν) :=
   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_fst
 
-theorem AEMeasurable.fst' [SFinite ν] {f : α → γ} (hf : AEMeasurable f μ) :
-    AEMeasurable (fun z : α × β => f z.1) (μ.prod ν) :=
-  hf.comp_quasiMeasurePreserving quasiMeasurePreserving_fst
-
 -- TODO: make this theorem usable with `fun_prop`
 theorem AEMeasurable.snd [SFinite ν] {f : β → γ} (hf : AEMeasurable f ν) :
     AEMeasurable (fun z : α × β => f z.2) (μ.prod ν) :=
   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_snd
-
-@[fun_prop]
-theorem AEMeasurable.snd' [SFinite ν] {f : α → γ} (hf : AEMeasurable f μ) :
-    AEMeasurable (fun z : α × β => f z.1) (μ.prod ν) :=
-  hf.comp_quasiMeasurePreserving quasiMeasurePreserving_fst
 
 end
 
