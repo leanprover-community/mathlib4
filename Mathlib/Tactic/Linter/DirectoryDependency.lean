@@ -589,19 +589,22 @@ def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array MessageDa
     let importsToCheck := imports.filter (!(`Init).isPrefixOf ·)|>.filter (!(`Std).isPrefixOf ·)
       |>.filter (!dir.isPrefixOf ·)|>.filter (!initImports.contains ·)
 
-    let mut messages := #[]
+    -- Find all prefixes which are allowed for one of these directories.
+    let mut allRules := NameSet.empty
     for prfix in matchingPrefixes do
-      -- Allowed directories: TODO this does not take nested prefixes into account...
       let some rules := RBMap.find? allowedImportDirs prfix | unreachable!
-      for imported in importsToCheck do
-        if !allowedImportDirs.contains mainModule imported then
-          let mut msg := m!"Modules starting with {prfix} are only allowed to import modules starting with one of {rules.toArray}. \
-          This module depends on {imported}\n"
-          for dep in env.importPath imported do
-            msg := msg ++ m!"which is imported by {dep},\n"
-          msg :=msg ++ m!"which is imported by this module."
-          -- XXX: is this true? "(Exceptions can be added to `overrideAllowedImportDirs`.)"
-          messages := messages.push msg
+      allRules := allRules.append rules
+    -- Error about those imports which are not covered by allRules.
+    let mut messages := #[]
+    for imported in importsToCheck do
+      if !allowedImportDirs.contains mainModule imported then
+        let mut msg := m!"Module {mainModule} is only allowed to import modules starting with one of {allRules.toArray}. \
+        This module depends on {imported}\n"
+        for dep in env.importPath imported do
+          msg := msg ++ m!"which is imported by {dep},\n"
+        msg :=msg ++ m!"which is imported by this module."
+        -- XXX: is this true? "(Exceptions can be added to `overrideAllowedImportDirs`.)"
+        messages := messages.push msg
     return messages
 
 end Mathlib.Linter
