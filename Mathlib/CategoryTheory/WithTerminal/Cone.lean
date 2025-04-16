@@ -85,7 +85,7 @@ private def coneLift {X : C} {K : J ⥤ Over X} : Cone K ⥤ Cone (liftFromOver.
 /-- This is the inverse of the previous construction: a cone of an extended functor
 `liftFromOver.obj K : WithTerminal J ⥤ C` consists of an object of `C`, together
 with morphisms. This same object is a cone of the original functor `K : J ⥤ Over X`. -/
-@[simps map obj_π obj_pt obj]
+@[simps]
 private def coneBack {X : C} {K : J ⥤ Over X} : Cone (liftFromOver.obj K) ⥤ Cone K where
   obj t := {
     pt := .mk (t.π.app star)
@@ -101,24 +101,6 @@ private def coneBack {X : C} {K : J ⥤ Over X} : Cone (liftFromOver.obj K) ⥤ 
     hom := Over.homMk f.hom
   }
 
--- @[simp]
--- theorem coneBack_obj_pt {X : C} {K : J ⥤ Over X} (t : Cone (liftFromOver.obj K)) :
---     (coneBack.obj t).pt  = Over.mk (t.π.app star) := rfl
-
-/-- The isomorphism between `coneLift ⋙ coneBack` and the identity, at the level of objects. -/
-@[simps]
-private def coneLiftBack {X : C} {K : J ⥤ Over X} (t : Cone K) :
-   coneBack.obj (coneLift.obj t) ≅ t where
-  hom.hom := 𝟙 t.pt
-  inv.hom := 𝟙 t.pt
-
-/-- The isomorphism between `coneBack ⋙ coneLift` and the identity, at the level of objects. -/
-@[simps]
-private def coneBackLift {X : C} {K : J ⥤ Over X} (t : Cone (liftFromOver.obj K)) :
-    coneLift.obj (coneBack.obj t) ≅ t where
-  hom.hom := 𝟙 t.pt
-  inv.hom := 𝟙 t.pt
-
 /-- Given a functor `K : J ⥤ Over X` and its extension `liftFromOver K : WithTerminal J ⥤ C`,
 there is an obvious equivalence between cones of these two functors.
 A cone of `K` is an object of `Over X`, so it has the form `t ⟶ X`.
@@ -128,7 +110,13 @@ and we can recover the structure morphism as `π.app X : t ⟶ X`. -/
 def coneEquiv {X : C} (K : J ⥤ Over X) : Cone K ≌ Cone (liftFromOver.obj K) where
   functor := coneLift
   inverse := coneBack
-  unitIso := NatIso.ofComponents coneLiftBack
-  counitIso := NatIso.ofComponents coneBackLift
+  unitIso := NatIso.ofComponents (fun t ↦ {
+    hom.hom := 𝟙 t.pt
+    inv.hom := 𝟙 t.pt
+  })
+  counitIso := NatIso.ofComponents (fun t ↦ {
+    hom.hom := 𝟙 t.pt
+    inv.hom := 𝟙 t.pt
+  })
 
 end CategoryTheory.Limits.WithTerminal
