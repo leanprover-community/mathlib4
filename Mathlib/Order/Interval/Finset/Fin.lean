@@ -73,19 +73,19 @@ theorem attachFin_uIcc :
   rfl
 
 @[simp]
-theorem attachFin_Iic : attachFin (Iic a) (fun _x hx ↦ (mem_Iic.mp hx).trans_lt a.2) = Iic a := by
-  ext; simp
-
-@[simp]
 theorem attachFin_Ico_eq_Ici : attachFin (Ico a n) (fun _x hx ↦ (mem_Ico.mp hx).2) = Ici a := by
   ext; simp
 
 @[simp]
-theorem attachFin_Iio : attachFin (Iio a) (fun _x hx ↦ (mem_Iio.mp hx).trans a.2) = Iio a := by
+theorem attachFin_Ioo_eq_Ioi : attachFin (Ioo a n) (fun _x hx ↦ (mem_Ioo.mp hx).2) = Ioi a := by
   ext; simp
 
 @[simp]
-theorem attachFin_Ioo_eq_Ioi : attachFin (Ioo a n) (fun _x hx ↦ (mem_Ioo.mp hx).2) = Ioi a := by
+theorem attachFin_Iic : attachFin (Iic a) (fun _x hx ↦ (mem_Iic.mp hx).trans_lt a.2) = Iic a := by
+  ext; simp
+
+@[simp]
+theorem attachFin_Iio : attachFin (Iio a) (fun _x hx ↦ (mem_Iio.mp hx).trans a.2) = Iio a := by
   ext; simp
 
 section deprecated
@@ -130,6 +130,10 @@ end deprecated
 
 section val
 
+/-!
+### Images under `Fin.val`
+-/
+
 @[simp]
 theorem finsetImage_val_Icc : (Icc a b).image val = Icc (a : ℕ) b :=
   image_val_attachFin _
@@ -147,83 +151,83 @@ theorem finsetImage_val_Ioo : (Ioo a b).image val = Ioo (a : ℕ) b :=
   image_val_attachFin _
 
 @[simp]
-theorem finsetImage_val_uIcc : (uIcc a b).image val = uIcc ↑a ↑b :=
+theorem finsetImage_val_uIcc : (uIcc a b).image val = uIcc (a : ℕ) b :=
   finsetImage_val_Icc _ _
 
 @[simp]
-theorem finsetImage_val_Ici : (Ici a).image val = Ico ↑a n := by simp [← coe_inj]
+theorem finsetImage_val_Ici : (Ici a).image val = Ico (a : ℕ) n := by simp [← coe_inj]
 
 @[simp]
-theorem finsetImage_val_Ioi : (Ioi a).image val = Ioo ↑a n := by simp [← coe_inj]
+theorem finsetImage_val_Ioi : (Ioi a).image val = Ioo (a : ℕ) n := by simp [← coe_inj]
 
 @[simp]
-theorem finsetImage_val_Iic : (Iic a).image val = Iic ↑a := by simp [← coe_inj]
+theorem finsetImage_val_Iic : (Iic a).image val = Iic (a : ℕ) := by simp [← coe_inj]
 
 @[simp]
-theorem finsetImage_val_Iio : (Iio b).image val = Iio ↑b := by simp [← coe_inj]
+theorem finsetImage_val_Iio : (Iio b).image val = Iio (b : ℕ) := by simp [← coe_inj]
+
+/-!
+### `Finset.map` along `Fin.valEmbedding`
+-/
 
 @[simp]
-theorem map_valEmbedding_Icc : (Icc a b).map Fin.valEmbedding = Icc ↑a ↑b :=
+theorem map_valEmbedding_Icc : (Icc a b).map Fin.valEmbedding = Icc (a : ℕ) b :=
   map_valEmbedding_attachFin _
 
 @[simp]
-theorem map_valEmbedding_Ico : (Ico a b).map Fin.valEmbedding = Ico ↑a ↑b :=
+theorem map_valEmbedding_Ico : (Ico a b).map Fin.valEmbedding = Ico (a : ℕ) b :=
   map_valEmbedding_attachFin _
 
 @[simp]
-theorem map_valEmbedding_Ioc : (Ioc a b).map Fin.valEmbedding = Ioc ↑a ↑b :=
+theorem map_valEmbedding_Ioc : (Ioc a b).map Fin.valEmbedding = Ioc (a : ℕ) b :=
   map_valEmbedding_attachFin _
 
 @[simp]
-theorem map_valEmbedding_Ioo : (Ioo a b).map Fin.valEmbedding = Ioo ↑a ↑b :=
+theorem map_valEmbedding_Ioo : (Ioo a b).map Fin.valEmbedding = Ioo (a : ℕ) b :=
   map_valEmbedding_attachFin _
 
 @[simp]
-theorem map_valEmbedding_uIcc : (uIcc a b).map valEmbedding = uIcc ↑a ↑b :=
+theorem map_valEmbedding_uIcc : (uIcc a b).map valEmbedding = uIcc (a : ℕ) b :=
   map_valEmbedding_Icc _ _
 
 @[deprecated (since := "2025-04-08")]
 alias map_subtype_embedding_uIcc := map_valEmbedding_uIcc
 
 @[simp]
-theorem map_valEmbedding_Ici : (Ici a).map Fin.valEmbedding = Ico ↑a n := by
+theorem map_valEmbedding_Ici : (Ici a).map Fin.valEmbedding = Ico (a : ℕ) n := by
   rw [← attachFin_Ico_eq_Ici, map_valEmbedding_attachFin]
 
 @[simp]
-theorem map_valEmbedding_Ioi : (Ioi a).map Fin.valEmbedding = Ioo ↑a n := by
+theorem map_valEmbedding_Ioi : (Ioi a).map Fin.valEmbedding = Ioo (a : ℕ) n := by
   rw [← attachFin_Ioo_eq_Ioi, map_valEmbedding_attachFin]
 
 @[simp]
-theorem map_valEmbedding_Iic : (Iic b).map Fin.valEmbedding = Iic ↑b := by
+theorem map_valEmbedding_Iic : (Iic a).map Fin.valEmbedding = Iic (a : ℕ) := by
   rw [← attachFin_Iic, map_valEmbedding_attachFin]
 
 @[simp]
-theorem map_valEmbedding_Iio : (Iio b).map Fin.valEmbedding = Iio ↑b := by
+theorem map_valEmbedding_Iio : (Iio a).map Fin.valEmbedding = Iio (a : ℕ) := by
   rw [← attachFin_Iio, map_valEmbedding_attachFin]
 
 end val
 
 section castLE
 
-@[simp]
-theorem finsetImage_castLE_Iic (h : n ≤ m) :
-    (Iic a).image (castLE h) = Iic (castLE h a) := by simp [← coe_inj]
-
-@[simp]
-theorem finsetImage_castLE_Iio (h : n ≤ m) :
-    (Iio a).image (castLE h) = Iio (castLE h a) := by simp [← coe_inj]
+/-!
+### Image under `Fin.castLE`
+-/
 
 @[simp]
 theorem finsetImage_castLE_Icc (h : n ≤ m) :
     (Icc a b).image (castLE h) = Icc (castLE h a) (castLE h b) := by simp [← coe_inj]
 
 @[simp]
-theorem finsetImage_castLE_Ioc (h : n ≤ m) :
-    (Ioc a b).image (castLE h) = Ioc (castLE h a) (castLE h b) := by simp [← coe_inj]
-
-@[simp]
 theorem finsetImage_castLE_Ico (h : n ≤ m) :
     (Ico a b).image (castLE h) = Ico (castLE h a) (castLE h b) := by simp [← coe_inj]
+
+@[simp]
+theorem finsetImage_castLE_Ioc (h : n ≤ m) :
+    (Ioc a b).image (castLE h) = Ioc (castLE h a) (castLE h b) := by simp [← coe_inj]
 
 @[simp]
 theorem finsetImage_castLE_Ioo (h : n ≤ m) :
@@ -234,12 +238,16 @@ theorem finsetImage_castLE_uIcc (h : n ≤ m) :
     (uIcc a b).image (castLE h) = uIcc (castLE h a) (castLE h b) := by simp [← coe_inj]
 
 @[simp]
-theorem map_castLEEmb_Iic (h : n ≤ m) :
-    (Iic a).map (castLEEmb h) = Iic (castLE h a) := by simp [← coe_inj]
+theorem finsetImage_castLE_Iic (h : n ≤ m) :
+    (Iic a).image (castLE h) = Iic (castLE h a) := by simp [← coe_inj]
 
 @[simp]
-theorem map_castLEEmb_Iio (h : n ≤ m) :
-    (Iio a).map (castLEEmb h) = Iio (castLE h a) := by simp [← coe_inj]
+theorem finsetImage_castLE_Iio (h : n ≤ m) :
+    (Iio a).image (castLE h) = Iio (castLE h a) := by simp [← coe_inj]
+
+/-!
+### `Finset.map` along `Fin.castLEEmb`
+-/
 
 @[simp]
 theorem map_castLEEmb_Icc (h : n ≤ m) :
@@ -261,27 +269,21 @@ theorem map_castLEEmb_Ioo (h : n ≤ m) :
 theorem map_castLEEmb_uIcc (h : n ≤ m) :
     (uIcc a b).map (castLEEmb h) = uIcc (castLE h a) (castLE h b) := by simp [← coe_inj]
 
+@[simp]
+theorem map_castLEEmb_Iic (h : n ≤ m) :
+    (Iic a).map (castLEEmb h) = Iic (castLE h a) := by simp [← coe_inj]
+
+@[simp]
+theorem map_castLEEmb_Iio (h : n ≤ m) :
+    (Iio a).map (castLEEmb h) = Iio (castLE h a) := by simp [← coe_inj]
+
 end castLE
 
 section castAdd
 
-@[simp]
-theorem finsetImage_castAdd_Ici (m) [NeZero m] (i : Fin n) :
-    (Ici i).image (castAdd m) = Ico (castAdd m i) (natAdd n 0) := by
-  simp [← coe_inj]
-
-@[simp]
-theorem finsetImage_castAdd_Ioi (m) [NeZero m] (i : Fin n) :
-    (Ioi i).image (castAdd m) = Ioo (castAdd m i) (natAdd n 0) := by
-  simp [← coe_inj]
-
-@[simp]
-theorem finsetImage_castAdd_Iic (m) (i : Fin n) : (Iic i).image (castAdd m) = Iic (castAdd m i) :=
-  finsetImage_castLE_Iic i _
-
-@[simp]
-theorem finsetImage_castAdd_Iio (m) (i : Fin n) : (Iio i).image (castAdd m) = Iio (castAdd m i) :=
-  finsetImage_castLE_Iio ..
+/-!
+### Images under `Fin.castAdd`
+-/
 
 @[simp]
 theorem finsetImage_castAdd_Icc (m) (i j : Fin n) :
@@ -309,22 +311,26 @@ theorem finsetImage_castAdd_uIcc (m) (i j : Fin n) :
   finsetImage_castLE_uIcc ..
 
 @[simp]
-theorem map_castAddEmb_Ici (m) [NeZero m] (i : Fin n) :
-    (Ici i).map (castAddEmb m) = Ico (castAddEmb m i) (natAdd n 0) := by
-  simp [map_eq_image]
-
-@[simp]
-theorem map_castAddEmb_Ioi (m) [NeZero m] (i : Fin n) :
-    (Ioi i).map (castAddEmb m) = Ioo (castAddEmb m i) (natAdd n 0) := by
+theorem finsetImage_castAdd_Ici (m) [NeZero m] (i : Fin n) :
+    (Ici i).image (castAdd m) = Ico (castAdd m i) (natAdd n 0) := by
   simp [← coe_inj]
 
 @[simp]
-theorem map_castAddEmb_Iic (m) (i : Fin n) : (Iic i).map (castAddEmb m) = Iic (castAddEmb m i) :=
-  map_castLEEmb_Iic i _
+theorem finsetImage_castAdd_Ioi (m) [NeZero m] (i : Fin n) :
+    (Ioi i).image (castAdd m) = Ioo (castAdd m i) (natAdd n 0) := by
+  simp [← coe_inj]
 
 @[simp]
-theorem map_castAddEmb_Iio (m) (i : Fin n) : (Iio i).map (castAddEmb m) = Iio (castAddEmb m i) :=
-  map_castLEEmb_Iio ..
+theorem finsetImage_castAdd_Iic (m) (i : Fin n) : (Iic i).image (castAdd m) = Iic (castAdd m i) :=
+  finsetImage_castLE_Iic i _
+
+@[simp]
+theorem finsetImage_castAdd_Iio (m) (i : Fin n) : (Iio i).image (castAdd m) = Iio (castAdd m i) :=
+  finsetImage_castLE_Iio ..
+
+/-!
+### `Finset.map` along `Fin.castAddEmb`
+-/
 
 @[simp]
 theorem map_castAddEmb_Icc (m) (i j : Fin n) :
@@ -351,29 +357,31 @@ theorem map_castAddEmb_uIcc (m) (i j : Fin n) :
     (uIcc i j).map (castAddEmb m) = uIcc (castAddEmb m i) (castAddEmb m j) :=
   map_castLEEmb_uIcc ..
 
+@[simp]
+theorem map_castAddEmb_Ici (m) [NeZero m] (i : Fin n) :
+    (Ici i).map (castAddEmb m) = Ico (castAddEmb m i) (natAdd n 0) := by
+  simp [map_eq_image]
+
+@[simp]
+theorem map_castAddEmb_Ioi (m) [NeZero m] (i : Fin n) :
+    (Ioi i).map (castAddEmb m) = Ioo (castAddEmb m i) (natAdd n 0) := by
+  simp [← coe_inj]
+
+@[simp]
+theorem map_castAddEmb_Iic (m) (i : Fin n) : (Iic i).map (castAddEmb m) = Iic (castAddEmb m i) :=
+  map_castLEEmb_Iic i _
+
+@[simp]
+theorem map_castAddEmb_Iio (m) (i : Fin n) : (Iio i).map (castAddEmb m) = Iio (castAddEmb m i) :=
+  map_castLEEmb_Iio ..
+
 end castAdd
 
 section cast
 
-@[simp]
-theorem finsetImage_cast_Ici (h : n = m) (i : Fin n) :
-    (Ici i).image (.cast h) = Ici (i.cast h) := by
-  simp [← coe_inj]
-
-@[simp]
-theorem finsetImage_cast_Ioi (h : n = m) (i : Fin n) :
-    (Ioi i).image (.cast h) = Ioi (i.cast h) := by
-  simp [← coe_inj]
-
-@[simp]
-theorem finsetImage_cast_Iic (h : n = m) (i : Fin n) :
-    (Iic i).image (.cast h) = Iic (i.cast h) := by
-  simp [← coe_inj]
-
-@[simp]
-theorem finsetImage_cast_Iio (h : n = m) (i : Fin n) :
-    (Iio i).image (.cast h) = Iio (i.cast h) := by
-  simp [← coe_inj]
+/-!
+### Images under `Fin.cast`
+-/
 
 @[simp]
 theorem finsetImage_cast_Icc (h : n = m) (i j : Fin n) :
@@ -401,24 +409,28 @@ theorem finsetImage_cast_uIcc (h : n = m) (i j : Fin n) :
   simp [← coe_inj]
 
 @[simp]
-theorem map_finCongr_Ici (h : n = m) (i : Fin n) :
-    (Ici i).map (finCongr h).toEmbedding = Ici (i.cast h) := by
+theorem finsetImage_cast_Ici (h : n = m) (i : Fin n) :
+    (Ici i).image (.cast h) = Ici (i.cast h) := by
   simp [← coe_inj]
 
 @[simp]
-theorem map_finCongr_Ioi (h : n = m) (i : Fin n) :
-    (Ioi i).map (finCongr h).toEmbedding = Ioi (i.cast h) := by
+theorem finsetImage_cast_Ioi (h : n = m) (i : Fin n) :
+    (Ioi i).image (.cast h) = Ioi (i.cast h) := by
   simp [← coe_inj]
 
 @[simp]
-theorem map_finCongr_Iic (h : n = m) (i : Fin n) :
-    (Iic i).map (finCongr h).toEmbedding = Iic (i.cast h) := by
+theorem finsetImage_cast_Iic (h : n = m) (i : Fin n) :
+    (Iic i).image (.cast h) = Iic (i.cast h) := by
   simp [← coe_inj]
 
 @[simp]
-theorem map_finCongr_Iio (h : n = m) (i : Fin n) :
-    (Iio i).map (finCongr h).toEmbedding = Iio (i.cast h) := by
+theorem finsetImage_cast_Iio (h : n = m) (i : Fin n) :
+    (Iio i).image (.cast h) = Iio (i.cast h) := by
   simp [← coe_inj]
+
+/-!
+### `Finset.map` along `finCongr`
+-/
 
 @[simp]
 theorem map_finCongr_Icc (h : n = m) (i j : Fin n) :
@@ -445,25 +457,33 @@ theorem map_finCongr_uIcc (h : n = m) (i j : Fin n) :
     (uIcc i j).map (finCongr h).toEmbedding = uIcc (i.cast h) (j.cast h) := by
   simp [← coe_inj]
 
+@[simp]
+theorem map_finCongr_Ici (h : n = m) (i : Fin n) :
+    (Ici i).map (finCongr h).toEmbedding = Ici (i.cast h) := by
+  simp [← coe_inj]
+
+@[simp]
+theorem map_finCongr_Ioi (h : n = m) (i : Fin n) :
+    (Ioi i).map (finCongr h).toEmbedding = Ioi (i.cast h) := by
+  simp [← coe_inj]
+
+@[simp]
+theorem map_finCongr_Iic (h : n = m) (i : Fin n) :
+    (Iic i).map (finCongr h).toEmbedding = Iic (i.cast h) := by
+  simp [← coe_inj]
+
+@[simp]
+theorem map_finCongr_Iio (h : n = m) (i : Fin n) :
+    (Iio i).map (finCongr h).toEmbedding = Iio (i.cast h) := by
+  simp [← coe_inj]
+
 end cast
 
 section castSucc
 
-@[simp]
-theorem finsetImage_castSucc_Ici (i : Fin n) : (Ici i).image castSucc = Ico i.castSucc (.last n) :=
-  finsetImage_castAdd_Ici ..
-
-@[simp]
-theorem finsetImage_castSucc_Ioi (i : Fin n) : (Ioi i).image castSucc = Ioo i.castSucc (.last n) :=
-  finsetImage_castAdd_Ioi ..
-
-@[simp]
-theorem finsetImage_castSucc_Iic (i : Fin n) : (Iic i).image castSucc = Iic i.castSucc :=
-  finsetImage_castAdd_Iic ..
-
-@[simp]
-theorem finsetImage_castSucc_Iio (i : Fin n) : (Iio i).image castSucc = Iio i.castSucc :=
-  finsetImage_castAdd_Iio ..
+/-!
+### Images under `Fin.castSucc`
+-/
 
 @[simp]
 theorem finsetImage_castSucc_Icc (i j : Fin n) :
@@ -491,20 +511,24 @@ theorem finsetImage_castSucc_uIcc (i j : Fin n) :
   finsetImage_castAdd_uIcc ..
 
 @[simp]
-theorem map_castSuccEmb_Ici (i : Fin n) : (Ici i).map castSuccEmb = Ico i.castSucc (.last n) :=
-  map_castAddEmb_Ici ..
+theorem finsetImage_castSucc_Ici (i : Fin n) : (Ici i).image castSucc = Ico i.castSucc (.last n) :=
+  finsetImage_castAdd_Ici ..
 
 @[simp]
-theorem map_castSuccEmb_Ioi (i : Fin n) : (Ioi i).map castSuccEmb = Ioo i.castSucc (.last n) :=
-  map_castAddEmb_Ioi ..
+theorem finsetImage_castSucc_Ioi (i : Fin n) : (Ioi i).image castSucc = Ioo i.castSucc (.last n) :=
+  finsetImage_castAdd_Ioi ..
 
 @[simp]
-theorem map_castSuccEmb_Iic (i : Fin n) : (Iic i).map castSuccEmb = Iic i.castSucc :=
-  map_castAddEmb_Iic ..
+theorem finsetImage_castSucc_Iic (i : Fin n) : (Iic i).image castSucc = Iic i.castSucc :=
+  finsetImage_castAdd_Iic ..
 
 @[simp]
-theorem map_castSuccEmb_Iio (i : Fin n) : (Iio i).map castSuccEmb = Iio i.castSucc :=
-  map_castAddEmb_Iio ..
+theorem finsetImage_castSucc_Iio (i : Fin n) : (Iio i).image castSucc = Iio i.castSucc :=
+  finsetImage_castAdd_Iio ..
+
+/-!
+### `Finset.map` along `Fin.castSuccEmb`
+-/
 
 @[simp]
 theorem map_castSuccEmb_Icc (i j : Fin n) :
@@ -531,17 +555,29 @@ theorem map_castSuccEmb_uIcc (i j : Fin n) :
     (uIcc i j).map castSuccEmb = uIcc i.castSucc j.castSucc :=
   map_castAddEmb_uIcc ..
 
+@[simp]
+theorem map_castSuccEmb_Ici (i : Fin n) : (Ici i).map castSuccEmb = Ico i.castSucc (.last n) :=
+  map_castAddEmb_Ici ..
+
+@[simp]
+theorem map_castSuccEmb_Ioi (i : Fin n) : (Ioi i).map castSuccEmb = Ioo i.castSucc (.last n) :=
+  map_castAddEmb_Ioi ..
+
+@[simp]
+theorem map_castSuccEmb_Iic (i : Fin n) : (Iic i).map castSuccEmb = Iic i.castSucc :=
+  map_castAddEmb_Iic ..
+
+@[simp]
+theorem map_castSuccEmb_Iio (i : Fin n) : (Iio i).map castSuccEmb = Iio i.castSucc :=
+  map_castAddEmb_Iio ..
+
 end castSucc
 
 section natAdd
 
-@[simp]
-theorem finsetImage_natAdd_Ici (m) (i : Fin n) : (Ici i).image (natAdd m) = Ici (natAdd m i) := by
-  simp [← coe_inj]
-
-@[simp]
-theorem finsetImage_natAdd_Ioi (m) (i : Fin n) : (Ioi i).image (natAdd m) = Ioi (natAdd m i) := by
-  simp [← coe_inj]
+/-!
+### Images under `Fin.natAdd`
+-/
 
 @[simp]
 theorem finsetImage_natAdd_Icc (m) (i j : Fin n) :
@@ -569,12 +605,16 @@ theorem finsetImage_natAdd_uIcc (m) (i j : Fin n) :
   simp [← coe_inj]
 
 @[simp]
-theorem map_natAddEmb_Ici (m) (i : Fin n) : (Ici i).map (natAddEmb m) = Ici (natAdd m i) := by
+theorem finsetImage_natAdd_Ici (m) (i : Fin n) : (Ici i).image (natAdd m) = Ici (natAdd m i) := by
   simp [← coe_inj]
 
 @[simp]
-theorem map_natAddEmb_Ioi (m) (i : Fin n) : (Ioi i).map (natAddEmb m) = Ioi (natAdd m i) := by
+theorem finsetImage_natAdd_Ioi (m) (i : Fin n) : (Ioi i).image (natAdd m) = Ioi (natAdd m i) := by
   simp [← coe_inj]
+
+/-!
+### `Finset.map` along `Fin.natAddEmb`
+-/
 
 @[simp]
 theorem map_natAddEmb_Icc (m) (i j : Fin n) :
@@ -601,17 +641,21 @@ theorem map_natAddEmb_uIcc (m) (i j : Fin n) :
     (uIcc i j).map (natAddEmb m) = uIcc (natAdd m i) (natAdd m j) := by
   simp [← coe_inj]
 
+@[simp]
+theorem map_natAddEmb_Ici (m) (i : Fin n) : (Ici i).map (natAddEmb m) = Ici (natAdd m i) := by
+  simp [← coe_inj]
+
+@[simp]
+theorem map_natAddEmb_Ioi (m) (i : Fin n) : (Ioi i).map (natAddEmb m) = Ioi (natAdd m i) := by
+  simp [← coe_inj]
+
 end natAdd
 
 section addNat
 
-@[simp]
-theorem finsetImage_addNat_Ici (m) (i : Fin n) : (Ici i).image (addNat · m) = Ici (i.addNat m) := by
-  simp [← coe_inj]
-
-@[simp]
-theorem finsetImage_addNat_Ioi (m) (i : Fin n) : (Ioi i).image (addNat · m) = Ioi (i.addNat m) := by
-  simp [← coe_inj]
+/-!
+### Images under `Fin.addNat`
+-/
 
 @[simp]
 theorem finsetImage_addNat_Icc (m) (i j : Fin n) :
@@ -639,12 +683,16 @@ theorem finsetImage_addNat_uIcc (m) (i j : Fin n) :
   simp [← coe_inj]
 
 @[simp]
-theorem map_addNatEmb_Ici (m) (i : Fin n) : (Ici i).map (addNatEmb m) = Ici (i.addNat m) := by
+theorem finsetImage_addNat_Ici (m) (i : Fin n) : (Ici i).image (addNat · m) = Ici (i.addNat m) := by
   simp [← coe_inj]
 
 @[simp]
-theorem map_addNatEmb_Ioi (m) (i : Fin n) : (Ioi i).map (addNatEmb m) = Ioi (i.addNat m) := by
+theorem finsetImage_addNat_Ioi (m) (i : Fin n) : (Ioi i).image (addNat · m) = Ioi (i.addNat m) := by
   simp [← coe_inj]
+
+/-!
+### `Finset.map` along `Fin.addNatEmb`
+-/
 
 @[simp]
 theorem map_addNatEmb_Icc (m) (i j : Fin n) :
@@ -671,25 +719,21 @@ theorem map_addNatEmb_uIcc (m) (i j : Fin n) :
     (uIcc i j).map (addNatEmb m) = uIcc (i.addNat m) (j.addNat m) := by
   simp [← coe_inj]
 
+@[simp]
+theorem map_addNatEmb_Ici (m) (i : Fin n) : (Ici i).map (addNatEmb m) = Ici (i.addNat m) := by
+  simp [← coe_inj]
+
+@[simp]
+theorem map_addNatEmb_Ioi (m) (i : Fin n) : (Ioi i).map (addNatEmb m) = Ioi (i.addNat m) := by
+  simp [← coe_inj]
+
 end addNat
 
 section succ
 
-@[simp]
-theorem finsetImage_succ_Ici (i : Fin n) : (Ici i).image succ = Ici i.succ :=
-  finsetImage_addNat_Ici ..
-
-@[simp]
-theorem finsetImage_succ_Ioi (i : Fin n) : (Ioi i).image succ = Ioi i.succ :=
-  finsetImage_addNat_Ioi ..
-
-@[simp]
-theorem finsetImage_succ_Iic (i : Fin n) : (Iic i).image succ = Ioc 0 i.succ := by
-  simp [← coe_inj]
-
-@[simp]
-theorem finsetImage_succ_Iio (i : Fin n) : (Iio i).image succ = Ioo 0 i.succ := by
-  simp [← coe_inj]
+/-!
+### Images under `Fin.succ`
+-/
 
 @[simp]
 theorem finsetImage_succ_Icc (i j : Fin n) : (Icc i j).image succ = Icc i.succ j.succ :=
@@ -712,20 +756,24 @@ theorem finsetImage_succ_uIcc (i j : Fin n) : (uIcc i j).image succ = uIcc i.suc
   finsetImage_addNat_uIcc ..
 
 @[simp]
-theorem map_succEmb_Ici (i : Fin n) : (Ici i).map (succEmb n) = Ici i.succ :=
-  map_addNatEmb_Ici ..
+theorem finsetImage_succ_Ici (i : Fin n) : (Ici i).image succ = Ici i.succ :=
+  finsetImage_addNat_Ici ..
 
 @[simp]
-theorem map_succEmb_Ioi (i : Fin n) : (Ioi i).map (succEmb n) = Ioi i.succ :=
-  map_addNatEmb_Ioi ..
+theorem finsetImage_succ_Ioi (i : Fin n) : (Ioi i).image succ = Ioi i.succ :=
+  finsetImage_addNat_Ioi ..
 
 @[simp]
-theorem map_succEmb_Iic (i : Fin n) : (Iic i).map (succEmb n) = Ioc 0 i.succ := by
+theorem finsetImage_succ_Iic (i : Fin n) : (Iic i).image succ = Ioc 0 i.succ := by
   simp [← coe_inj]
 
 @[simp]
-theorem map_succEmb_Iio (i : Fin n) : (Iio i).map (succEmb n) = Ioo 0 i.succ := by
+theorem finsetImage_succ_Iio (i : Fin n) : (Iio i).image succ = Ioo 0 i.succ := by
   simp [← coe_inj]
+
+/-!
+### `Finset.map` along `Fin.succEmb`
+-/
 
 @[simp]
 theorem map_succEmb_Icc (i j : Fin n) : (Icc i j).map (succEmb n) = Icc i.succ j.succ :=
@@ -747,21 +795,29 @@ theorem map_succEmb_Ioo (i j : Fin n) : (Ioo i j).map (succEmb n) = Ioo i.succ j
 theorem map_succEmb_uIcc (i j : Fin n) : (uIcc i j).map (succEmb n) = uIcc i.succ j.succ :=
   map_addNatEmb_uIcc ..
 
+@[simp]
+theorem map_succEmb_Ici (i : Fin n) : (Ici i).map (succEmb n) = Ici i.succ :=
+  map_addNatEmb_Ici ..
+
+@[simp]
+theorem map_succEmb_Ioi (i : Fin n) : (Ioi i).map (succEmb n) = Ioi i.succ :=
+  map_addNatEmb_Ioi ..
+
+@[simp]
+theorem map_succEmb_Iic (i : Fin n) : (Iic i).map (succEmb n) = Ioc 0 i.succ := by
+  simp [← coe_inj]
+
+@[simp]
+theorem map_succEmb_Iio (i : Fin n) : (Iio i).map (succEmb n) = Ioo 0 i.succ := by
+  simp [← coe_inj]
+
 end succ
 
 section rev
 
-@[simp]
-theorem finsetImage_rev_Ici (i : Fin n) : (Ici i).image rev = Iic i.rev := by simp [← coe_inj]
-
-@[simp]
-theorem finsetImage_rev_Ioi (i : Fin n) : (Ioi i).image rev = Iio i.rev := by simp [← coe_inj]
-
-@[simp]
-theorem finsetImage_rev_Iic (i : Fin n) : (Iic i).image rev = Ici i.rev := by simp [← coe_inj]
-
-@[simp]
-theorem finsetImage_rev_Iio (i : Fin n) : (Iio i).image rev = Ioi i.rev := by simp [← coe_inj]
+/-!
+### Images under `Fin.rev`
+-/
 
 @[simp]
 theorem finsetImage_rev_Icc (i j : Fin n) : (Icc i j).image rev = Icc j.rev i.rev := by
@@ -784,20 +840,20 @@ theorem finsetImage_rev_uIcc (i j : Fin n) : (uIcc i j).image rev = uIcc i.rev j
   simp [← coe_inj]
 
 @[simp]
-theorem map_revPerm_Ici (i : Fin n) : (Ici i).map revPerm.toEmbedding = Iic i.rev := by
-  simp [← coe_inj]
+theorem finsetImage_rev_Ici (i : Fin n) : (Ici i).image rev = Iic i.rev := by simp [← coe_inj]
 
 @[simp]
-theorem map_revPerm_Ioi (i : Fin n) : (Ioi i).map revPerm.toEmbedding = Iio i.rev := by
-  simp [← coe_inj]
+theorem finsetImage_rev_Ioi (i : Fin n) : (Ioi i).image rev = Iio i.rev := by simp [← coe_inj]
 
 @[simp]
-theorem map_revPerm_Iic (i : Fin n) : (Iic i).map revPerm.toEmbedding = Ici i.rev := by
-  simp [← coe_inj]
+theorem finsetImage_rev_Iic (i : Fin n) : (Iic i).image rev = Ici i.rev := by simp [← coe_inj]
 
 @[simp]
-theorem map_revPerm_Iio (i : Fin n) : (Iio i).map revPerm.toEmbedding = Ioi i.rev := by
-  simp [← coe_inj]
+theorem finsetImage_rev_Iio (i : Fin n) : (Iio i).image rev = Ioi i.rev := by simp [← coe_inj]
+
+/-!
+### `Finset.map` along `revPerm`
+-/
 
 @[simp]
 theorem map_revPerm_Icc (i j : Fin n) : (Icc i j).map revPerm.toEmbedding = Icc j.rev i.rev := by
@@ -819,7 +875,27 @@ theorem map_revPerm_Ioo (i j : Fin n) : (Ioo i j).map revPerm.toEmbedding = Ioo 
 theorem map_revPerm_uIcc (i j : Fin n) : (uIcc i j).map revPerm.toEmbedding = uIcc i.rev j.rev := by
   simp [← coe_inj]
 
+@[simp]
+theorem map_revPerm_Ici (i : Fin n) : (Ici i).map revPerm.toEmbedding = Iic i.rev := by
+  simp [← coe_inj]
+
+@[simp]
+theorem map_revPerm_Ioi (i : Fin n) : (Ioi i).map revPerm.toEmbedding = Iio i.rev := by
+  simp [← coe_inj]
+
+@[simp]
+theorem map_revPerm_Iic (i : Fin n) : (Iic i).map revPerm.toEmbedding = Ici i.rev := by
+  simp [← coe_inj]
+
+@[simp]
+theorem map_revPerm_Iio (i : Fin n) : (Iio i).map revPerm.toEmbedding = Ioi i.rev := by
+  simp [← coe_inj]
+
 end rev
+
+/-!
+### Cardinalities of the intervals
+-/
 
 section card
 
