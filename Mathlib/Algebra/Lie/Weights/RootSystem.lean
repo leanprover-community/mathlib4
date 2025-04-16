@@ -450,27 +450,16 @@ lemma invtSubmodule_reflection:
     intro i hi
     apply hΦ₂
     exact Set.mem_image_of_mem S.root hi
-  have rr (i j : H.root) (h1 : i ∈ Φ) (h2 : j ∉ Φ) : S.root i (S.coroot j) = 0 := by
-    have t1 := hΦ₃ j h2
-    have t2 := hΦ₂' i h1
-    have : S.root i ∈ LinearMap.ker (S.coroot' j) := by
-      exact t1 t2
-    simp at this
-    exact this
-  have rr' (i j : H.root) (h1 : i ∈ Φ) (h2 : j ∉ Φ) : S.root j (S.coroot i) = 0 := by
-    have t1 := hΦ₃ j h2
-    have t2 := hΦ₂' i h1
-    have : S.root i ∈ LinearMap.ker (S.coroot' j) := by
-      exact t1 t2
-    simp at this
-    have rrr := (S.pairing_zero_iff (i := i) (j := j)).1 this
-    exact rrr
+  have s₁ (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : S.root i (S.coroot j) = 0 :=
+    (hΦ₃ j h₂) (hΦ₂' i h₁)
+  have s₁' (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : S.root j (S.coroot i) = 0 :=
+    (S.pairing_zero_iff (i := i) (j := j)).1 (s₁ i j h₁ h₂)
   have rr2 (i j : H.root) (h1 : i ∈ Φ) (h2 : j ∉ Φ) : i.1 (LieAlgebra.IsKilling.coroot j) = 0 := by
-    apply rr
+    apply s₁
     apply h1
     apply h2
   have rr2' (i j : H.root) (h1 : i ∈ Φ) (h2 : j ∉ Φ) : j.1 (LieAlgebra.IsKilling.coroot i) = 0 := by
-    apply rr'
+    apply s₁'
     apply h1
     apply h2
   have rr3 (i j : H.root) (h1 : i ∈ Φ) (h2 : j ∉ Φ) :
