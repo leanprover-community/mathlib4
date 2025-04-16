@@ -3,7 +3,7 @@ Copyright (c) 2025 Aaron Liu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Liu
 -/
-import Mathlib.Topology.UniformSpace.Basic
+import Mathlib.Topology.UniformSpace.Uniformizable
 
 /-!
 # Fine Uniformity
@@ -81,6 +81,11 @@ theorem fineUniformity_discrete [TopologicalSpace α] [DiscreteTopology α] :
     fineUniformity α = ⊥ :=
   ‹DiscreteTopology α›.eq_bot ▸ gc_fineUniformity.l_bot
 
+theorem toTopologicalSpace_fineUniformity_eq [TopologicalSpace α] [CompletelyRegularSpace α] :
+    (fineUniformity α).toTopologicalSpace = ‹TopologicalSpace α› :=
+  ((gc_fineUniformity.exists_eq_u _).mp
+    (CompletelyRegularSpace.exists_uniformity.elim fun u hu => ⟨u, hu.symm⟩)).symm
+
 theorem fineUniformity_top : @fineUniformity α ⊤ = ⊤ := by
   ext s
   rw [top_uniformity, Filter.mem_top]
@@ -115,12 +120,5 @@ theorem uniformContinuous_fineUniformity_fineUniformity
   rw [uniformContinuous_fineUniformity_iff]
   rw [continuous_iff_coinduced_le] at hf ⊢
   exact hf.trans (gc_fineUniformity.le_u_l _)
-
--- adding this would require importing Mathlib.Topology.Separation.CompletelyRegular,
--- which doesn't seem worth it since it's still a proof_wanted
-/-
-proof_wanted toTopologicalSpace_fineUniformity_eq [TopologicalSpace α] [CompletelyRegularSpace α] :
-    (fineUniformity α).toTopologicalSpace = ‹TopologicalSpace α›
--/
 
 end
