@@ -73,8 +73,7 @@ private def coneLift {X : C} {K : J ⥤ Over X} : Cone K ⥤ Cone (liftFromOver.
     | star, star, _
     | of a, star, _ => by aesop
     | star, of _, _ => by contradiction
-    | of a, of b, f => by simp [← Comma.comp_left
-    ]
+    | of a, of b, f => by simp [← Comma.comp_left]
   }
   map {t₁ t₂} f := {
     hom := f.hom.left
@@ -86,7 +85,7 @@ private def coneLift {X : C} {K : J ⥤ Over X} : Cone K ⥤ Cone (liftFromOver.
 /-- This is the inverse of the previous construction: a cone of an extended functor
 `liftFromOver.obj K : WithTerminal J ⥤ C` consists of an object of `C`, together
 with morphisms. This same object is a cone of the original functor `K : J ⥤ Over X`. -/
-@[simps]
+@[simps map obj_π obj_pt obj]
 private def coneBack {X : C} {K : J ⥤ Over X} : Cone (liftFromOver.obj K) ⥤ Cone K where
   obj t := {
     pt := .mk (t.π.app star)
