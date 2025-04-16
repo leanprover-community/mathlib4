@@ -257,7 +257,7 @@ open Lean Qq in
 def _root_.Qq.mkVecLiteralQ {u : Level} {α : Q(Type u)} (elems : List Q($α)):
     letI n : ℕ := elems.length; Q(Fin $n → $α) :=
   go elems.length elems rfl
-where go (n : ℕ) (elems : List Q($α)) (h : elems.length = n := by rfl) : Q(Fin $n → $α) :=
+where go (n : ℕ) (elems : List Q($α)) (h : elems.length = n) : Q(Fin $n → $α) :=
   match n, elems with
   | 0, [] => q(vecEmpty)
   | n + 1, x :: xs =>
