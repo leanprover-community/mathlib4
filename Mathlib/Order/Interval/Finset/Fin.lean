@@ -254,12 +254,12 @@ theorem map_castLEEmb_Icc (h : n ≤ m) :
     (Icc a b).map (castLEEmb h) = Icc (castLE h a) (castLE h b) := by simp [← coe_inj]
 
 @[simp]
-theorem map_castLEEmb_Ioc (h : n ≤ m) :
-    (Ioc a b).map (castLEEmb h) = Ioc (castLE h a) (castLE h b) := by simp [← coe_inj]
-
-@[simp]
 theorem map_castLEEmb_Ico (h : n ≤ m) :
     (Ico a b).map (castLEEmb h) = Ico (castLE h a) (castLE h b) := by simp [← coe_inj]
+
+@[simp]
+theorem map_castLEEmb_Ioc (h : n ≤ m) :
+    (Ioc a b).map (castLEEmb h) = Ioc (castLE h a) (castLE h b) := by simp [← coe_inj]
 
 @[simp]
 theorem map_castLEEmb_Ioo (h : n ≤ m) :
