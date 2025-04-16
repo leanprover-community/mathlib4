@@ -86,6 +86,7 @@ def localized'gi : GaloisInsertion (localized' S p f) (comap f <| ·.restrictSca
     rw [mem_comap, restrictScalars_mem, ← IsLocalizedModule.mk'_cancel' _ _ s,
       Submonoid.smul_def, ← algebraMap_smul S]
     exact smul_mem _ _ hn
+  choice x _ := localized' S p f x
   choice_eq _ _ := rfl
 
 /-- The localization of an `R`-submodule of `M` at `p` viewed as an `Rₚ`-submodule of `Mₚ`. -/

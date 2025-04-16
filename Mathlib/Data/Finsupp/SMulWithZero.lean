@@ -93,10 +93,7 @@ theorem smul_single [Zero M] [SMulZeroClass R M] (c : R) (a : α) (b : M) :
 theorem mapRange_smul [Zero M] [SMulZeroClass R M] [Zero N]
     [SMulZeroClass R N] {f : M → N} {hf : f 0 = 0} (c : R) (v : α →₀ M)
     (hsmul : ∀ x, f (c • x) = c • f x) : mapRange f hf (c • v) = c • mapRange f hf v := by
-  erw [← mapRange_comp]
-  · have : f ∘ (c • ·) = (c • ·) ∘ f := funext hsmul
-    simp_rw [this]
-    apply mapRange_comp
-  simp only [Function.comp_apply, smul_zero, hf]
+  ext
+  simp [hsmul]
 
 end Finsupp

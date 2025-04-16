@@ -368,7 +368,7 @@ instance {X : C} : Injective (monoMapFactorizationDataRlp (0 : X ⟶ 0)).Z := by
 /-- A Grothendieck abelian category has enough injectives. -/
 @[stacks 079H]
 instance enoughInjectives : EnoughInjectives C where
-  presentation X := ⟨{ f := (monoMapFactorizationDataRlp (0 : X ⟶ 0)).i }⟩
+  presentation X := ⟨{ J := _, f := (monoMapFactorizationDataRlp (0 : X ⟶ 0)).i }⟩
 
 end IsGrothendieckAbelian
 

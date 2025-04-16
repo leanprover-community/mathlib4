@@ -229,6 +229,19 @@ theorem mgf_const_add (α : ℝ) : mgf (fun ω => α + X ω) μ t = exp (t * α)
 theorem mgf_add_const (α : ℝ) : mgf (fun ω => X ω + α) μ t = mgf X μ t *  exp (t * α) := by
   simp only [add_comm, mgf_const_add, mul_comm]
 
+lemma mgf_add_measure {ν : Measure Ω}
+    (hμ : Integrable (fun ω ↦ exp (t * X ω)) μ) (hν : Integrable (fun ω ↦ exp (t * X ω)) ν) :
+    mgf X (μ + ν) t = mgf X μ t + mgf X ν t := by
+  rw [mgf, integral_add_measure hμ hν, mgf, mgf]
+
+lemma mgf_sum_measure {ι : Type*} {μ : ι → Measure Ω}
+    (hμ : Integrable (fun ω ↦ exp (t * X ω)) (Measure.sum μ)) :
+    mgf X (Measure.sum μ) t = ∑' i, mgf X (μ i) t := by
+  simp_rw [mgf, integral_sum_measure hμ]
+
+lemma mgf_smul_measure (c : ℝ≥0∞) : mgf X (c • μ) t = c.toReal * mgf X μ t := by
+  rw [mgf, integral_smul_measure, mgf, smul_eq_mul]
+
 /-- The moment generating function is monotone in the random variable for `t ≥ 0`. -/
 lemma mgf_mono_of_nonneg {Y : Ω → ℝ} (hXY : X ≤ᵐ[μ] Y) (ht : 0 ≤ t)
     (htY : Integrable (fun ω ↦ exp (t * Y ω)) μ) :
