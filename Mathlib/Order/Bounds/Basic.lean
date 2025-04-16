@@ -141,12 +141,10 @@ lemma upperBounds_subset_of_dominated {s₁ s₂ : Set α} (hs₂ : ∀ a ∈ s�
 theorem lowerBounds_mono_set ⦃s t : Set α⦄ (hst : s ⊆ t) : lowerBounds t ⊆ lowerBounds s :=
   fun _ hb _ h => hb <| hst h
 
-lemma lowerBounds_congr_of_subset {s₁ s₂ : Set α} (hs₁ : s₁ ⊆ s₂)
-    (hs₂ : ∀ a ∈ s₂, ∃ b ∈ s₁, b ≤ a) : lowerBounds s₁ = lowerBounds s₂ := le_antisymm
-  (fun _ hc _ hd => by
-    obtain ⟨e, ⟨he₁, he₂⟩⟩ := hs₂ _ hd
-    exact le_trans (hc he₁) he₂)
-  (lowerBounds_mono_set hs₁)
+lemma lowerBounds_subset_of_dominated {s₁ s₂ : Set α} (hs₂ : ∀ a ∈ s₂, ∃ b ∈ s₁, b ≤ a) :
+    lowerBounds s₁ ⊆ lowerBounds s₂ := fun c hc d hd => by
+  obtain ⟨e, he₁, he₂⟩ := hs₂ _ hd
+  exact le_trans (hc he₁) he₂
 
 theorem upperBounds_mono_mem ⦃a b⦄ (hab : a ≤ b) : a ∈ upperBounds s → b ∈ upperBounds s :=
   fun ha _ h => le_trans (ha h) hab
