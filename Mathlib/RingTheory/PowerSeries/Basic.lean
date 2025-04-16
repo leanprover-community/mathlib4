@@ -215,8 +215,14 @@ def X : R⟦X⟧ :=
 theorem commute_X (φ : R⟦X⟧) : Commute φ X :=
   MvPowerSeries.commute_X _ _
 
-theorem commute_X_pow (φ : R⟦X⟧) (n : ℕ) :
-    Commute φ (X ^ n) := Commute.pow_right (commute_X φ) n
+theorem X_mul {φ : R⟦X⟧} : X * φ = φ * X :=
+  MvPowerSeries.X_mul
+
+theorem commute_X_pow (φ : R⟦X⟧) (n : ℕ) : Commute φ (X ^ n) :=
+  MvPowerSeries.commute_X_pow _ _ _
+
+theorem X_pow_mul {φ : R⟦X⟧} {n : ℕ} : X ^ n * φ = φ * X ^ n :=
+  MvPowerSeries.X_pow_mul
 
 @[simp]
 theorem coeff_zero_eq_constantCoeff : ⇑(coeff R 0) = constantCoeff R := by
@@ -338,16 +344,22 @@ theorem mul_X_cancel {φ ψ : R⟦X⟧} (h : φ * X = ψ * X) : φ = ψ := by
   intro n
   simpa using h (n + 1)
 
+theorem mul_X_injective : Function.Injective (· * X : R⟦X⟧ → R⟦X⟧) :=
+  fun _ _ ↦ mul_X_cancel
+
 theorem mul_X_inj {φ ψ : R⟦X⟧} : φ * X = ψ * X ↔ φ = ψ :=
-  ⟨mul_X_cancel, fun h ↦ congrFun (congrArg HMul.hMul h) X⟩
+  mul_X_injective.eq_iff
 
 theorem X_mul_cancel {φ ψ : R⟦X⟧} (h : X * φ = X * ψ) : φ = ψ := by
   rw [PowerSeries.ext_iff] at h ⊢
   intro n
   simpa using h (n + 1)
 
+theorem X_mul_injective : Function.Injective (X * · : R⟦X⟧ → R⟦X⟧) :=
+  fun _ _ ↦ X_mul_cancel
+
 theorem X_mul_inj {φ ψ : R⟦X⟧} : X * φ = X * ψ ↔ φ = ψ :=
-  ⟨X_mul_cancel, fun h ↦ congrArg (HMul.hMul X) h⟩
+  X_mul_injective.eq_iff
 
 @[simp]
 theorem constantCoeff_C (a : R) : constantCoeff R (C R a) = a :=
@@ -420,9 +432,12 @@ theorem mul_X_pow_cancel {k : ℕ} {φ ψ : R⟦X⟧} (h : φ * X ^ k = ψ * X ^
   intro n
   simpa using h (n + k)
 
+theorem mul_X_pow_injective {k : ℕ} : Function.Injective (· * X ^ k : R⟦X⟧ → R⟦X⟧) :=
+  fun _ _ ↦ mul_X_pow_cancel
+
 theorem mul_X_pow_inj {k : ℕ} {φ ψ : R⟦X⟧} :
-      φ * X ^ k = ψ * X ^ k ↔ φ = ψ :=
-  ⟨mul_X_pow_cancel, fun h ↦ congrFun (congrArg HMul.hMul h) (X ^ k)⟩
+    φ * X ^ k = ψ * X ^ k ↔ φ = ψ :=
+  mul_X_pow_injective.eq_iff
 
 theorem X_pow_mul_cancel {k : ℕ} {φ ψ : R⟦X⟧} (h : X ^ k * φ = X ^ k * ψ) :
     φ = ψ := by
@@ -430,9 +445,12 @@ theorem X_pow_mul_cancel {k : ℕ} {φ ψ : R⟦X⟧} (h : X ^ k * φ = X ^ k * 
   intro n
   simpa using h (n + k)
 
-theorem X_mul_pow_inj {k : ℕ} {φ ψ : R⟦X⟧} :
-      X ^ k * φ = X ^ k * ψ ↔ φ = ψ :=
-  ⟨X_pow_mul_cancel, fun h ↦ congrArg (HMul.hMul (X ^ k)) h⟩
+theorem X_pow_mul_injective {k : ℕ} : Function.Injective (X ^ k * · : R⟦X⟧ → R⟦X⟧) :=
+  fun _ _ ↦ X_pow_mul_cancel
+
+theorem X_pow_mul_inj {k : ℕ} {φ ψ : R⟦X⟧} :
+    X ^ k * φ = X ^ k * ψ ↔ φ = ψ :=
+  X_pow_mul_injective.eq_iff
 
 theorem coeff_mul_X_pow' (p : R⟦X⟧) (n d : ℕ) :
     coeff R d (p * X ^ n) = ite (n ≤ d) (coeff R (d - n) p) 0 := by
