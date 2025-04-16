@@ -508,16 +508,15 @@ open DirectoryDependency
 #guard Lean.Name.isPrefixOf `Mathlib.Util `Mathlib.Util.Basic == true
 
 @[inherit_doc Mathlib.Linter.linter.directoryDependency]
-def directoryDependencyCheck (mainModule : Name) : CommandElabM (Option MessageData) := do
+def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array MessageData) := do
   unless Linter.getLinterValue linter.directoryDependency (← getOptions) do
-    return none
+    return #[]
   let env ← getEnv
   let imports := env.allImportedModuleNames
 
   -- If this module is in the allow-list, we only allow imports from directories specified there.
   let matchingPrefixes := mainModule.prefixes.filter (fun prf ↦ allowedImportDirs.containsKey prf)
-  let mut msg := m!""
-  let mut hasErrors := false
+  let mut messages := #[]
   for prfix in matchingPrefixes do
     -- Get the current directory of the main module: we assume this is not a root file.
     let some dir := mainModule.prefix? | unreachable!
@@ -529,31 +528,30 @@ def directoryDependencyCheck (mainModule : Name) : CommandElabM (Option MessageD
     let some rules := RBMap.find? allowedImportDirs prfix | unreachable!
     for imported in importsToCheck do
       if !allowedImportDirs.contains mainModule imported then
-        msg := msg ++ m!"Modules starting with {prfix} are only allowed to import modules starting with one of {rules.toArray}. \
+        let mut msg := m!"Modules starting with {prfix} are only allowed to import modules starting with one of {rules.toArray}. \
         This module depends on {imported}\n"
         for dep in env.importPath imported do
           msg := msg ++ m!"which is imported by {dep},\n"
-        msg := msg ++ m!"which is imported by this module."
-        hasErrors := true
+        msg :=msg ++ m!"which is imported by this module."
         -- XXX: is this true? "(Exceptions can be added to `overrideAllowedImportDirs`.)"
-  if hasErrors then return some msg
+        messages := messages.push msg
+  if messages.size > 0 then return messages
 
   -- Otherwise, we fall back to the blocklist `forbiddenImportDirs`.
-  -- XXX: this only yields up to one error, not the full list. Should this change?
   match forbiddenImportDirs.findAny mainModule imports with
   | some (n₁, n₂) => do
     if let some imported := n₂.prefixToName imports then
       if !overrideAllowedImportDirs.contains mainModule imported then
-        msg := m!"Modules starting with {n₁} are not allowed to import modules starting with {n₂}. \
+        let mut msg := m!"Modules starting with {n₁} are not allowed to import modules starting with {n₂}. \
         This module depends on {imported}\n"
         for dep in env.importPath imported do
           msg := msg ++ m!"which is imported by {dep},\n"
-        return some <| msg ++ m!"which is imported by this module. \
+        messages := messages.push <| msg ++ m!"which is imported by this module. \
           (Exceptions can be added to `overrideAllowedImportDirs`.)"
     else
-      return some m!"Internal error in `directoryDependency` linter: this module claims to depend \
-      on a module starting with {n₂} but a module with that prefix was not found in the import graph."
+      return #[m!"Internal error in `directoryDependency` linter: this module claims to depend \
+      on a module starting with {n₂} but a module with that prefix was not found in the import graph."]
   | none => pure ()
-  return none
+  return messages
 
 end Mathlib.Linter
