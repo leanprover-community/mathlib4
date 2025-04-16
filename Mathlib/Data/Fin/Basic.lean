@@ -184,7 +184,7 @@ theorem min_val {a : Fin n} : min (a : ℕ) n = a := by simp
 theorem max_val {a : Fin n} : max (a : ℕ) n = n := by simp
 
 /-- The inclusion map `Fin n → ℕ` is an embedding. -/
-@[simps apply]
+@[simps -fullyApplied apply]
 def valEmbedding : Fin n ↪ ℕ :=
   ⟨val, val_injective⟩
 
@@ -442,7 +442,11 @@ def succEmb (n : ℕ) : Fin n ↪ Fin (n + 1) where
   inj' := succ_injective _
 
 @[simp]
-theorem val_succEmb : ⇑(succEmb n) = Fin.succ := rfl
+theorem coe_succEmb : ⇑(succEmb n) = Fin.succ :=
+  rfl
+
+@[deprecated (since := "2025-04-12")]
+alias val_succEmb := coe_succEmb
 
 @[simp]
 theorem exists_succ_eq {x : Fin (n + 1)} : (∃ y, Fin.succ y = x) ↔ x ≠ 0 :=
@@ -497,7 +501,7 @@ lemma castAdd_injective (m n : ℕ) : Injective (@Fin.castAdd m n) := castLE_inj
 lemma castSucc_injective (n : ℕ) : Injective (@Fin.castSucc n) := castAdd_injective _ _
 
 /-- `Fin.castLE` as an `Embedding`, `castLEEmb h i` embeds `i` into a larger `Fin` type. -/
-@[simps! apply]
+@[simps apply]
 def castLEEmb (h : n ≤ m) : Fin n ↪ Fin m where
   toFun := castLE h
   inj' := castLE_injective _
@@ -596,14 +600,19 @@ theorem cast_eq_cast (h : n = m) : (Fin.cast h : Fin n → Fin m) = _root_.cast 
 
 /-- `Fin.castAdd` as an `Embedding`, `castAddEmb m i` embeds `i : Fin n` in `Fin (n+m)`.
 See also `Fin.natAddEmb` and `Fin.addNatEmb`. -/
-@[simps! apply]
 def castAddEmb (m) : Fin n ↪ Fin (n + m) := castLEEmb (le_add_right n m)
 
+@[simp]
+lemma coe_castAddEmb (m) : (castAddEmb m : Fin n → Fin (n + m)) = castAdd m := rfl
+
+lemma castAddEmb_apply (m) (i : Fin n) : castAddEmb m i = castAdd m i := rfl
+
 /-- `Fin.castSucc` as an `Embedding`, `castSuccEmb i` embeds `i : Fin n` in `Fin (n+1)`. -/
-@[simps! apply]
 def castSuccEmb : Fin n ↪ Fin (n + 1) := castAddEmb _
 
 @[simp, norm_cast] lemma coe_castSuccEmb : (castSuccEmb : Fin n → Fin (n + 1)) = Fin.castSucc := rfl
+
+lemma castSuccEmb_apply (i : Fin n) : castSuccEmb i = i.castSucc := rfl
 
 theorem castSucc_le_succ {n} (i : Fin n) : i.castSucc ≤ i.succ := Nat.le_succ i
 
@@ -720,6 +729,18 @@ def addNatEmb (m) : Fin n ↪ Fin (n + m) where
 def natAddEmb (n) {m} : Fin m ↪ Fin (n + m) where
   toFun := natAdd n
   inj' a b := by simp [Fin.ext_iff]
+
+theorem castSucc_castAdd (i : Fin n) : castSucc (castAdd m i) = castAdd (m + 1) i := rfl
+
+theorem castSucc_natAdd (i : Fin m) : castSucc (natAdd n i) = natAdd n (castSucc i) := rfl
+
+theorem succ_castAdd (i : Fin n) : succ (castAdd m i) =
+    if h : i.succ = last _ then natAdd n (0 : Fin (m + 1))
+      else castAdd (m + 1) ⟨i.1 + 1, lt_of_le_of_ne i.2 (Fin.val_ne_iff.mpr h)⟩ := by
+  split_ifs with h
+  exacts [Fin.ext (congr_arg Fin.val h :), rfl]
+
+theorem succ_natAdd (i : Fin m) : succ (natAdd n i) = natAdd n (succ i) := rfl
 
 end Succ
 
