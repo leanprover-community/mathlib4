@@ -3,7 +3,6 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.RingTheory.HahnSeries.PowerSeries
 import Mathlib.RingTheory.HahnSeries.HEval
 import Mathlib.RingTheory.PowerSeries.Binomial
 
@@ -78,3 +77,4 @@ theorem binomialPow_one_add {g₀ g₁ g₂ : Γ} (h₀₁ : g₀ < g₁) (h₁�
 end BinomialPow
 
 end HahnSeries
+#min_imports
