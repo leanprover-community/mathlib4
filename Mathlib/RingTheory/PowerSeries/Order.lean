@@ -375,7 +375,7 @@ theorem divided_by_X_pow_orderMul {f g : R⟦X⟧} (hf : f ≠ 0) (hg : g ≠ 0)
         rw [self_eq_X_pow_order_mul_divided_by_X_pow_order,
           self_eq_X_pow_order_mul_divided_by_X_pow_order]
       _ = X ^ df * X ^ dg * divided_by_X_pow_order hf * divided_by_X_pow_order hg := by
-        rw [mul_assoc, ← mul_assoc _ (X ^ dg), (commute_iff_eq _ _).mp commute_X_pow]
+        rw [mul_assoc, ← mul_assoc _ (X ^ dg), (commute_iff_eq _ _).mp (commute_X_pow _ _)];
         simp [mul_assoc]
       _ = X ^ (df + dg) * divided_by_X_pow_order hf * divided_by_X_pow_order hg := by rw [pow_add]
       _ = X ^ dfg * divided_by_X_pow_order hf * divided_by_X_pow_order hg := by rw [H_add_d]
