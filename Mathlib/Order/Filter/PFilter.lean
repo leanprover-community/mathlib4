@@ -9,17 +9,17 @@ import Mathlib.Order.PFilter
 /-!
 # Filters and Ideals
 
-This file sets up the complement equivalence between filters and ideals on a type.
+This file sets up the complement equivalence between filters and order fiters on a type.
 
 ## Main definitions
 
-* `Filter.complIdeal`
-* `Order.Ideal.complFilter`
-* `Filter.complIdealIso`
+* `Filter.toIdeal`
+* `Order.PFilter.toFilter`
+* `Filter.toPFilterOrderIso`
 
 ## Tags
 
-filter, ideal
+filter
 -/
 
 variable {α : Type*}
@@ -29,7 +29,7 @@ section
 open Order OrderDual Set
 
 /--
-The complement of a filter, as an order ideal of sets.
+Interpret a filter as an order filter of sets.
 -/
 def Filter.toPFilter (f : Filter α) : PFilter (Set α) where
   dual := {
@@ -41,11 +41,11 @@ def Filter.toPFilter (f : Filter α) : PFilter (Set α) where
   }
 
 @[simp]
-theorem Filter.mem_complIdeal (f : Filter α) (s : Set α) :
+theorem Filter.mem_toPFilter (f : Filter α) (s : Set α) :
     s ∈ f.toPFilter ↔ s ∈ f := Iff.rfl
 
 /--
-The complement of an order ideal of sets, as a filter.
+Interpret an order filter of sets as a filter.
 -/
 def Order.PFilter.toFilter (i : PFilter (Set α)) : Filter α where
   sets := i
@@ -54,14 +54,14 @@ def Order.PFilter.toFilter (i : PFilter (Set α)) : Filter α where
   inter_sets hx hy := by simpa [compl_inter] using i.inf_mem hx hy
 
 @[simp]
-theorem Order.PFilter.mem_complFilter (i : PFilter (Set α)) (s : Set α) :
+theorem Order.PFilter.mem_toFilter (i : PFilter (Set α)) (s : Set α) :
     s ∈ i.toFilter ↔ s ∈ i := Iff.rfl
 
 @[simp]
-theorem Filter.complFilter_complIdeal (f : Filter α) : f.toPFilter.toFilter = f := by
+theorem Filter.toFilter_toPFilter (f : Filter α) : f.toPFilter.toFilter = f := by
   ext; simp
 @[simp]
-theorem Order.Ideal.complFilter_complIdeal (i : PFilter (Set α)) : i.toFilter.toPFilter = i := by
+theorem Order.PFilter.toPFilter_toFilter (i : PFilter (Set α)) : i.toFilter.toPFilter = i := by
   ext; simp
 
 theorem Filter.toPFilter_anti : Antitone (@Filter.toPFilter α) :=
@@ -73,7 +73,7 @@ theorem Order.PFilter.toFilter_anti : Antitone (@Order.PFilter.toFilter α) :=
 Filters and ideals are complement to each other.
 -/
 @[simps! apply symm_apply]
-def Filter.complIdealIso : Filter α ≃o (PFilter (Set α))ᵒᵈ :=
+def Filter.toFilterOrderIso : Filter α ≃o (PFilter (Set α))ᵒᵈ :=
   OrderIso.ofHomInv
     (OrderHom.mk _ Filter.toPFilter_anti.dual_right)
     (OrderHom.mk _ PFilter.toFilter_anti.dual_left)
