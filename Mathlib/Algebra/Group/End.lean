@@ -738,8 +738,6 @@ instance group : Group (AddAut A) where
   mul_one _ := rfl
   inv_mul_cancel := AddEquiv.self_trans_symm
 
-attribute [to_additive AudAut.group] MulAut.instGroup
-
 instance : Inhabited (AddAut A) :=
   ⟨1⟩
 
