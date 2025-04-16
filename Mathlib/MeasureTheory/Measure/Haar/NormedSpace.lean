@@ -5,7 +5,7 @@ Authors: Floris van Doorn, Sébastien Gouëzel
 -/
 import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
-import Mathlib.MeasureTheory.Integral.SetIntegral
+import Mathlib.MeasureTheory.Integral.Bochner.Set
 
 /-!
 # Basic properties of Haar measures on real vector spaces

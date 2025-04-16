@@ -469,8 +469,6 @@ lemma isUniformEmbedding {E₁ E₂ : Type*} [UniformSpace E₁] [UniformSpace E
   e.toLinearEquiv.toEquiv.isUniformEmbedding e.toContinuousLinearMap.uniformContinuous
     e.symm.toContinuousLinearMap.uniformContinuous
 
-@[deprecated (since := "2024-10-01")] alias uniformEmbedding := isUniformEmbedding
-
 protected theorem _root_.LinearEquiv.isUniformEmbedding {E₁ E₂ : Type*} [UniformSpace E₁]
     [UniformSpace E₂] [AddCommGroup E₁] [AddCommGroup E₂] [Module R₁ E₁] [Module R₂ E₂]
     [IsUniformAddGroup E₁] [IsUniformAddGroup E₂] (e : E₁ ≃ₛₗ[σ₁₂] E₂)
@@ -480,9 +478,6 @@ protected theorem _root_.LinearEquiv.isUniformEmbedding {E₁ E₂ : Type*} [Uni
         continuous_toFun := h₁
         continuous_invFun := h₂ } :
       E₁ ≃SL[σ₁₂] E₂)
-
-@[deprecated (since := "2024-10-01")]
-alias _root_.LinearEquiv.uniformEmbedding := _root_.LinearEquiv.isUniformEmbedding
 
 /-- Create a `ContinuousLinearEquiv` from two `ContinuousLinearMap`s that are
 inverse of each other. See also `equivOfInverse'`. -/
@@ -996,8 +991,7 @@ lemma IsInvertible.inverse_apply_eq {f : M →L[R] M₂} {x : M} {y : M₂} (hf 
   · rcases hf with ⟨A, rfl⟩
     simp only [ContinuousLinearEquiv.comp_coe, inverse_equiv, ContinuousLinearEquiv.coe_inj]
     rfl
-  · rw [inverse_of_not_isInvertible (by simp [hf]), inverse_of_not_isInvertible hf]
-    rfl
+  · rw [inverse_of_not_isInvertible (by simp [hf]), inverse_of_not_isInvertible hf, zero_comp]
 
 @[simp] lemma inverse_comp_equiv {e : M₃ ≃L[R] M} {f : M →L[R] M₂} :
     (f ∘L e).inverse = (e.symm : M →L[R] M₃) ∘L f.inverse := by
@@ -1005,8 +999,7 @@ lemma IsInvertible.inverse_apply_eq {f : M →L[R] M₂} {x : M} {y : M₂} (hf 
   · rcases hf with ⟨A, rfl⟩
     simp only [ContinuousLinearEquiv.comp_coe, inverse_equiv, ContinuousLinearEquiv.coe_inj]
     rfl
-  · rw [inverse_of_not_isInvertible (by simp [hf]), inverse_of_not_isInvertible hf]
-    simp
+  · rw [inverse_of_not_isInvertible (by simp [hf]), inverse_of_not_isInvertible hf, comp_zero]
 
 lemma IsInvertible.inverse_comp_of_left {g : M₂ →L[R] M₃} {f : M →L[R] M₂}
     (hg : g.IsInvertible) : (g ∘L f).inverse = f.inverse ∘L g.inverse := by

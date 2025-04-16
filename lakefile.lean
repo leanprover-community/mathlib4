@@ -7,7 +7,7 @@ open Lake DSL
 ## Mathlib dependencies on upstream projects
 -/
 
-require "leanprover-community" / "batteries" @ git "nightly-testing"
+require "leanprover-community" / "batteries" @ git "main"
 require "leanprover-community" / "Qq" @ git "master"
 require "leanprover-community" / "aesop" @ git "master"
 require "leanprover-community" / "proofwidgets" @ git "v0.0.56" -- ProofWidgets should always be pinned to a specific version
@@ -17,7 +17,7 @@ require "leanprover-community" / "proofwidgets" @ git "v0.0.56" -- ProofWidgets 
     If this does not work, report your issue on the Lean Zulip."
 require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
-require "leanprover-community" / "plausible" @ git "nightly-testing"
+require "leanprover-community" / "plausible" @ git "main"
 
 /-!
 ## Options for building mathlib
@@ -38,6 +38,7 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
   ⟨`linter.style.lambdaSyntax, true⟩,
   ⟨`linter.style.longLine, true⟩,
   ⟨`linter.style.longFile, .ofNat 1500⟩,
+  ⟨`linter.style.maxHeartbeats, true⟩,
   -- `latest_import.yml` uses this comment: if you edit it, make sure that the workflow still works
   ⟨`linter.style.missingEnd, true⟩,
   ⟨`linter.style.multiGoal, true⟩,

@@ -57,7 +57,7 @@ assert_not_exists Monoid
 open Function
 
 namespace Nat
-variable {a b c d m n k : ℕ} {p : ℕ → Prop}
+variable {a b c d e m n k : ℕ} {p : ℕ → Prop}
 
 @[simp] theorem default_eq_zero : default = 0 := rfl
 
@@ -244,8 +244,8 @@ protected lemma eq_sub_of_add_eq' (h : b + c = a) : c = a - b := by omega
 
 protected lemma lt_sub_iff_add_lt : a < c - b ↔ a + b < c := ⟨add_lt_of_lt_sub, lt_sub_of_add_lt⟩
 protected lemma lt_sub_iff_add_lt' : a < c - b ↔ b + a < c := by omega
-protected lemma sub_lt_iff_lt_add (hba : b ≤ a) : a - b < c ↔ a < b + c := by omega
-protected lemma sub_lt_iff_lt_add' (hba : b ≤ a) : a - b < c ↔ a < c + b := by omega
+protected lemma sub_lt_iff_lt_add (hba : b ≤ a) : a - b < c ↔ a < c + b := by omega
+protected lemma sub_lt_iff_lt_add' (hba : b ≤ a) : a - b < c ↔ a < b + c := by omega
 
 protected lemma sub_sub_sub_cancel_right (h : c ≤ b) : a - c - (b - c) = a - b := by omega
 protected lemma add_sub_sub_cancel (h : c ≤ a) : a + b - (a - c) = b + c := by omega
@@ -324,6 +324,13 @@ lemma mul_self_le_mul_self (h : m ≤ n) : m * m ≤ n * n := Nat.mul_le_mul h h
 
 lemma mul_lt_mul'' (hac : a < c) (hbd : b < d) : a * b < c * d :=
   Nat.mul_lt_mul_of_lt_of_le hac (Nat.le_of_lt hbd) <| by omega
+
+protected lemma lt_iff_lt_of_mul_eq_mul (ha : a ≠ 0) (hbd : a = b * d) (hce : a = c * e) :
+    c < b ↔ d < e where
+  mp hcb := Nat.lt_of_not_le fun hed ↦ Nat.not_lt_of_le (Nat.le_of_eq <| hbd.symm.trans hce) <|
+    Nat.mul_lt_mul_of_lt_of_le hcb hed <| by simp [hbd, Nat.mul_eq_zero] at ha; omega
+  mpr hde := Nat.lt_of_not_le fun hbc ↦ Nat.not_lt_of_le (Nat.le_of_eq <| hce.symm.trans hbd) <|
+    Nat.mul_lt_mul_of_le_of_lt hbc hde <| by simp [hce, Nat.mul_eq_zero] at ha; omega
 
 lemma mul_self_lt_mul_self (h : m < n) : m * m < n * n := mul_lt_mul'' h h
 
@@ -565,12 +572,19 @@ theorem div_le_iff_le_mul_of_dvd (hb : b ≠ 0) (hba : b ∣ a) : a / b ≤ c �
   rw [Nat.mul_div_right _ (zero_lt_of_ne_zero hb), Nat.mul_comm]
   exact ⟨mul_le_mul_right b, fun h ↦ Nat.le_of_mul_le_mul_right h (zero_lt_of_ne_zero hb)⟩
 
+protected lemma div_lt_div_right (ha : a ≠ 0) : a ∣ b → a ∣ c → (b / a < c / a ↔ b < c) := by
+  rintro ⟨d, rfl⟩ ⟨e, rfl⟩; simp [Nat.mul_div_cancel, Nat.pos_iff_ne_zero.2 ha]
+
+protected lemma div_lt_div_left (ha : a ≠ 0) (hba : b ∣ a) (hca : c ∣ a) :
+    a / b < a / c ↔ c < b := by
+  obtain ⟨d, hd⟩ := hba
+  obtain ⟨e, he⟩ := hca
+  rw [Nat.div_eq_of_eq_mul_right _ hd, Nat.div_eq_of_eq_mul_right _ he,
+    Nat.lt_iff_lt_of_mul_eq_mul ha hd he] <;>
+    rw [Nat.pos_iff_ne_zero] <;> rintro rfl <;> simp at * <;> contradiction
+
 theorem lt_div_iff_mul_lt_of_dvd (hc : c ≠ 0) (hcb : c ∣ b) : a < b / c ↔ a * c < b := by
-  obtain ⟨x, hx⟩ := hcb
-  simp only [hx]
-  rw [Nat.mul_div_right _ (zero_lt_of_ne_zero hc), Nat.mul_comm]
-  exact ⟨fun h ↦ Nat.mul_lt_mul_of_pos_left h (zero_lt_of_ne_zero hc),
-    (Nat.mul_lt_mul_left (zero_lt_of_ne_zero hc)).mp⟩
+  simp [← Nat.div_lt_div_right _ _ hcb, hc, Nat.pos_iff_ne_zero, Nat.dvd_mul_left]
 
 /-!
 ### `pow`
@@ -1019,7 +1033,7 @@ lemma add_mod_eq_ite :
     rw [Nat.add_mod]
     by_cases h : k + 1 ≤ m % (k + 1) + n % (k + 1)
     · rw [if_pos h, Nat.mod_eq_sub_mod h, Nat.mod_eq_of_lt]
-      exact (Nat.sub_lt_iff_lt_add h).mpr (Nat.add_lt_add (m.mod_lt (zero_lt_succ _))
+      exact (Nat.sub_lt_iff_lt_add' h).mpr (Nat.add_lt_add (m.mod_lt (zero_lt_succ _))
         (n.mod_lt (zero_lt_succ _)))
     · rw [if_neg h]
       exact Nat.mod_eq_of_lt (Nat.lt_of_not_ge h)
@@ -1185,5 +1199,11 @@ instance decidableLoHiLe (lo hi : ℕ) (P : ℕ → Prop) [DecidablePred P] :
     Decidable (∀ x, lo ≤ x → x ≤ hi → P x) :=
   decidable_of_iff (∀ x, lo ≤ x → x < hi + 1 → P x) <|
     forall₂_congr fun _ _ ↦ imp_congr Nat.lt_succ_iff Iff.rfl
+
+end Nat
+
+
+namespace Nat
+variable {a b c d e : ℕ}
 
 end Nat
