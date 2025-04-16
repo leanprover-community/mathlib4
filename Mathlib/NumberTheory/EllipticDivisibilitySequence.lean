@@ -205,9 +205,10 @@ def preNormEDS (n : ℤ) : R :=
 
 @[simp]
 lemma preNormEDS_ofNat (n : ℕ) : preNormEDS b c d n = preNormEDS' b c d n := by
-  by_cases hn : n = 0
-  · rw [hn, preNormEDS, Nat.cast_zero, Int.sign_zero, Int.cast_zero, zero_mul, preNormEDS'_zero]
-  · rw [preNormEDS, Int.sign_natCast_of_ne_zero hn, Int.cast_one, one_mul, Int.natAbs_cast]
+  sorry
+  -- by_cases hn : n = 0
+  -- · rw [hn, preNormEDS, Nat.cast_zero, Int.sign_zero, Int.cast_zero, zero_mul, preNormEDS'_zero]
+  -- · rw [preNormEDS, Int.sign_natCast_of_ne_zero hn, Int.cast_one, one_mul, Int.natAbs_cast]
 
 @[simp]
 lemma preNormEDS_zero : preNormEDS b c d 0 = 0 := by

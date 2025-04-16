@@ -148,7 +148,7 @@ def associatesIntEquivNat : Associates ℤ ≃ ℕ := by
     refine Associates.mk_eq_mk_iff_associated.2 <| Associated.symm <| ⟨normUnit a, ?_⟩
     simp [Int.abs_eq_normalize, normalize_apply]
   · dsimp only [Associates.out_mk]
-    rw [← Int.abs_eq_normalize, Int.natAbs_abs, Int.natAbs_ofNat]
+    rw [← Int.abs_eq_normalize, Int.natAbs_abs, Int.natAbs_natCast]
 
 theorem Int.associated_natAbs (k : ℤ) : Associated k k.natAbs :=
   associated_of_dvd_dvd (Int.dvd_natCast.mpr dvd_rfl) (Int.natAbs_dvd.mpr dvd_rfl)
