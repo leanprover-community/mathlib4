@@ -76,9 +76,6 @@ lemma isUniformEmbedding_toUniformOnFun :
     IsUniformEmbedding (toUniformOnFun : ContinuousMultilinearMap 𝕜 E F → _) :=
   ⟨isUniformInducing_toUniformOnFun, DFunLike.coe_injective⟩
 
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_toUniformOnFun := isUniformEmbedding_toUniformOnFun
-
 lemma isEmbedding_toUniformOnFun :
     IsEmbedding (toUniformOnFun : ContinuousMultilinearMap 𝕜 E F →
       ((Π i, E i) →ᵤ[{s | IsVonNBounded 𝕜 s}] F)) :=
@@ -163,9 +160,6 @@ theorem isUniformEmbedding_restrictScalars :
   convert isUniformEmbedding_toUniformOnFun using 4 with s
   exact ⟨fun h ↦ h.extend_scalars _, fun h ↦ h.restrict_scalars _⟩
 
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_restrictScalars := isUniformEmbedding_restrictScalars
-
 theorem uniformContinuous_restrictScalars :
     UniformContinuous
       (restrictScalars 𝕜' : ContinuousMultilinearMap 𝕜 E F → ContinuousMultilinearMap 𝕜' E F) :=
@@ -223,9 +217,6 @@ instance : ContinuousEvalConst (ContinuousMultilinearMap 𝕜 E F) (Π i, E i) F
     let _ := IsTopologicalAddGroup.toUniformSpace F
     have _ := isUniformAddGroup_of_addCommGroup (G := F)
     (uniformContinuous_eval_const x).continuous
-
-@[deprecated (since := "2024-10-05")] protected alias continuous_eval_const := continuous_eval_const
-@[deprecated (since := "2024-10-05")] protected alias continuous_coe_fun := continuous_coeFun
 
 instance instT2Space [T2Space F] : T2Space (ContinuousMultilinearMap 𝕜 E F) :=
   .of_injective_continuous DFunLike.coe_injective continuous_coeFun

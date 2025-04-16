@@ -107,17 +107,19 @@ theorem aestronglyMeasurable_const {b : β} : AEStronglyMeasurable[m] (fun _ : �
 theorem aestronglyMeasurable_one [One β] : AEStronglyMeasurable[m] (1 : α → β) μ :=
   stronglyMeasurable_one.aestronglyMeasurable
 
-@[simp]
+@[simp, nontriviality]
 lemma AEStronglyMeasurable.of_subsingleton_dom [Subsingleton α] : AEStronglyMeasurable[m] f μ :=
-  (Subsingleton.stronglyMeasurable' f).aestronglyMeasurable
+  StronglyMeasurable.of_subsingleton_dom.aestronglyMeasurable
 
-@[simp]
+@[simp, nontriviality]
 lemma AEStronglyMeasurable.of_subsingleton_cod [Subsingleton β] : AEStronglyMeasurable[m] f μ :=
-  (Subsingleton.stronglyMeasurable f).aestronglyMeasurable
+  StronglyMeasurable.of_subsingleton_cod.aestronglyMeasurable
 
+@[deprecated AEStronglyMeasurable.of_subsingleton_cod (since := "2025-04-09")]
 theorem Subsingleton.aestronglyMeasurable [Subsingleton β] (f : α → β) : AEStronglyMeasurable f μ :=
   .of_subsingleton_cod
 
+@[deprecated AEStronglyMeasurable.of_subsingleton_dom (since := "2025-04-09")]
 lemma Subsingleton.aestronglyMeasurable' [Subsingleton α] (f : α → β) : AEStronglyMeasurable f μ :=
   .of_subsingleton_dom
 
@@ -134,8 +136,11 @@ theorem SimpleFunc.aestronglyMeasurable (f : α →ₛ β) : AEStronglyMeasurabl
 
 namespace AEStronglyMeasurable
 
-lemma of_finite [DiscreteMeasurableSpace α] [Finite α] : AEStronglyMeasurable f μ :=
-  ⟨_, .of_finite, ae_eq_rfl⟩
+lemma of_discrete [Countable α] [MeasurableSingletonClass α] : AEStronglyMeasurable f μ :=
+  StronglyMeasurable.of_discrete.aestronglyMeasurable
+
+@[deprecated of_discrete (since := "2025-04-09")]
+lemma of_finite [DiscreteMeasurableSpace α] [Finite α] : AEStronglyMeasurable f μ := .of_discrete
 
 section Mk
 
@@ -434,9 +439,9 @@ protected theorem nnnorm {β : Type*} [SeminormedAddCommGroup β] {f : α → β
 
 /-- The `enorm` of a strongly a.e. measurable function is a.e. measurable.
 
-Note that unlike `AEStrongMeasurable.norm` and `AEStronglyMeasurable.nnnorm`, this lemma proves
+Note that unlike `AEStronglyMeasurable.norm` and `AEStronglyMeasurable.nnnorm`, this lemma proves
 a.e. measurability, **not** a.e. strong measurability. This is an intentional decision:
-for functions taking values in ℝ≥0∞, a.e. measurability is much more useful than
+for functions taking values in `ℝ≥0∞`, a.e. measurability is much more useful than
 a.e. strong measurability. -/
 @[fun_prop, measurability]
 protected theorem enorm {β : Type*} [TopologicalSpace β] [ContinuousENorm β] {f : α → β}
