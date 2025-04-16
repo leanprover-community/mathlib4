@@ -96,17 +96,17 @@ lemma dist_add_dist_eq_iff : dist a b + dist b c = dist a c ↔ Wbtw ℝ a b c :
     at this
   rwa [(vsub_left_injective _).mem_set_image] at this
 
+/-- The strict triangle inequality. -/
+theorem dist_lt_dist_add_dist_iff {a b c : P} :
+    dist a c < dist a b + dist b c ↔ ¬ Wbtw ℝ a b c := by
+   rw [← ne_iff_lt_iff_le.mpr (dist_triangle _ _ _), not_iff_not, eq_comm, dist_add_dist_eq_iff]
+
 /-- The strict triangle inequality for affinely independent points. -/
-theorem AffineIndependent.dist_strict_triangle {Ti Tj Tk : P}
-    (hT : AffineIndependent ℝ ![Ti, Tj, Tk]) :
-    dist (Ti) (Tk) < dist (Ti) (Tj) + dist (Tj) (Tk) := by
-  refine lt_of_le_of_ne' (dist_triangle _ _ _) ?_
-  intro H
-  rw [dist_add_dist_eq_iff] at H
-  rw [affineIndependent_iff_not_collinear] at hT
-  apply hT; clear hT
-  convert H.symm.collinear using 1
-  simp [Set.image_insert_eq]
+theorem AffineIndependent.dist_strict_triangle {a b c : P} (hT : AffineIndependent ℝ ![a, b, c]) :
+    dist a c < dist a b + dist b c := by
+  rw [dist_lt_dist_add_dist_iff]
+  rw [affineIndependent_iff_not_collinear_set] at hT
+  exact mt (·.collinear) hT
 
 /-- Alternate form of the strict triangle inequality, allowing an ordered triple of
 points to be specified from a possibly larger collection `T` of affinely independent points. -/
