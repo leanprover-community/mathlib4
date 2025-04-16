@@ -120,7 +120,11 @@ private def coneBackLift {X : C} {K : J ⥤ Over X} (t : Cone (liftFromOver.obj 
   hom.hom := 𝟙 t.pt
   inv.hom := 𝟙 t.pt
 
-/-- The equivalence made up of `coneBack` and `coneLift`. -/
+/-- Given a functor `K : J ⥤ Over X` and its extension `liftFromOver K : WithTerminal J ⥤ C`,
+there is an obvious equivalence between cones of these two functors.
+A cone of `K` is an object of `Over X`, so it has the form `t ⟶ X`.
+Equivalently, a cone of `WithTerminal K` is an object `t : C`,
+and we can recover the structure morphism as `π.app X : t ⟶ X`. -/
 @[simps]
 def coneEquiv {X : C} (K : J ⥤ Over X) : Cone K ≌ Cone (liftFromOver.obj K) where
   functor := coneLift
