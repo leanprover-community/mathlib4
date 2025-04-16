@@ -70,10 +70,10 @@ private def coneLift {X : C} {K : J ⥤ Over X} : Cone K ⥤ Cone (liftFromOver.
     | of a => (t.π.app a).left
     | star => t.pt.hom
     π.naturality
-    | star , star , _
-    | of a , star , _ => by aesop
-    | star , of _ , _ => by contradiction
-    | of a , of b , f => by simp [← Comma.comp_left
+    | star, star, _
+    | of a, star, _ => by aesop
+    | star, of _, _ => by contradiction
+    | of a, of b, f => by simp [← Comma.comp_left
     ]
   }
   map {t₁ t₂} f := {
