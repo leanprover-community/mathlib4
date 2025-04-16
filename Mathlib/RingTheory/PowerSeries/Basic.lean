@@ -426,25 +426,6 @@ theorem coeff_X_pow_mul (p : R⟦X⟧) (n d : ℕ) :
   · rw [add_comm]
     exact fun h1 => (h1 (mem_antidiagonal.2 rfl)).elim
 
-theorem coeff_mul_X_pow' (p : R⟦X⟧) (n d : ℕ) :
-    coeff R d (p * X ^ n) = ite (n ≤ d) (coeff R (d - n) p) 0 := by
-  split_ifs with h
-  · rw [← tsub_add_cancel_of_le h, coeff_mul_X_pow, add_tsub_cancel_right]
-  · refine (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => ?_)
-    rw [coeff_X_pow, if_neg, mul_zero]
-    exact ((le_of_add_le_right (mem_antidiagonal.mp hx).le).trans_lt <| not_le.mp h).ne
-
-theorem coeff_X_pow_mul' (p : R⟦X⟧) (n d : ℕ) :
-    coeff R d (X ^ n * p) = ite (n ≤ d) (coeff R (d - n) p) 0 := by
-  split_ifs with h
-  · rw [← tsub_add_cancel_of_le h, coeff_X_pow_mul]
-    simp
-  · refine (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => ?_)
-    rw [coeff_X_pow, if_neg, zero_mul]
-    have := mem_antidiagonal.mp hx
-    rw [add_comm] at this
-    exact ((le_of_add_le_right this.le).trans_lt <| not_le.mp h).ne
-
 theorem mul_X_pow_cancel {k : ℕ} {φ ψ : R⟦X⟧} (h : φ * X ^ k = ψ * X ^ k) :
     φ = ψ := by
   rw [PowerSeries.ext_iff] at h ⊢
@@ -468,6 +449,25 @@ theorem X_pow_mul_injective {k : ℕ} : Function.Injective (X ^ k * · : R⟦X�
 
 theorem X_pow_mul_inj {k : ℕ} {φ ψ : R⟦X⟧} : X ^ k * φ = X ^ k * ψ ↔ φ = ψ :=
   X_pow_mul_injective.eq_iff
+
+theorem coeff_mul_X_pow' (p : R⟦X⟧) (n d : ℕ) :
+    coeff R d (p * X ^ n) = ite (n ≤ d) (coeff R (d - n) p) 0 := by
+  split_ifs with h
+  · rw [← tsub_add_cancel_of_le h, coeff_mul_X_pow, add_tsub_cancel_right]
+  · refine (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => ?_)
+    rw [coeff_X_pow, if_neg, mul_zero]
+    exact ((le_of_add_le_right (mem_antidiagonal.mp hx).le).trans_lt <| not_le.mp h).ne
+
+theorem coeff_X_pow_mul' (p : R⟦X⟧) (n d : ℕ) :
+    coeff R d (X ^ n * p) = ite (n ≤ d) (coeff R (d - n) p) 0 := by
+  split_ifs with h
+  · rw [← tsub_add_cancel_of_le h, coeff_X_pow_mul]
+    simp
+  · refine (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => ?_)
+    rw [coeff_X_pow, if_neg, zero_mul]
+    have := mem_antidiagonal.mp hx
+    rw [add_comm] at this
+    exact ((le_of_add_le_right this.le).trans_lt <| not_le.mp h).ne
 
 end
 
