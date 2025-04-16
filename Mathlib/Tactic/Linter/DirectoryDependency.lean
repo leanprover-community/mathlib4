@@ -207,6 +207,8 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Logic, `Qq), -- via the `tauto` tactic
   -- XXX: should this import be allowed on a more fine-grained level?
   (`Mathlib.Logic.Nontrivial.Basic, `Aesop),
+  (`Mathlib.Logic.Equiv, `Aesop),
+  (`Mathlib.Logic.Embedding, `Aesop),
   -- XXX: should this import be allowed on a more fine-grained level?
   (`Mathlib.Logic, `Mathlib.Control),
   (`Mathlib.Logic, `Mathlib.Lean),
