@@ -129,6 +129,7 @@ def IsPathGraph3Compl.pathGraph3ComplEmbedding {v w₁ w₂ : α} (h : G.IsPathG
     have h6 := h1.symm
     aesop
 
+/-- Embedding of `pathGraph 3` into `G` that is not complete-multipartite. -/
 noncomputable def pathGraph3ComplEmbeddingOf (h : ¬ G.IsCompleteMultipartite) :
     (pathGraph 3)ᶜ ↪g G :=
   IsPathGraph3Compl.pathGraph3ComplEmbedding
