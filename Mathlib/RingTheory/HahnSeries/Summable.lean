@@ -930,7 +930,6 @@ theorem pow_finite_co_support {x : HahnSeries Γ R} (hx : 0 < x.orderTop) (g : �
 
 /-- A summable family of powers of a Hahn series `x`. If `x` has non-positive orderTop, then we
 return the junk value zero. -/
-@[simps]
 def powers (x : HahnSeries Γ R) : SummableFamily Γ R ℕ where
   toFun n := if 0 < x.orderTop then x ^ n else 0 ^ n
   isPWO_iUnion_support' := by
@@ -946,6 +945,10 @@ def powers (x : HahnSeries Γ R) : SummableFamily Γ R ℕ where
       exact pow_finite_co_support h g
     · simp only [h, ↓reduceIte]
       exact pow_finite_co_support (orderTop_zero (R := R) (Γ := Γ) ▸ WithTop.top_pos) g
+
+theorem powers_toFun (x : HahnSeries Γ R) (n : ℕ) :
+    (powers x) n = if 0 < x.orderTop then x ^ n else 0 ^ n :=
+  rfl
 
 @[simp]
 theorem powers_of_orderTop_pos {x : HahnSeries Γ R} (hx : 0 < x.orderTop) (n : ℕ) :

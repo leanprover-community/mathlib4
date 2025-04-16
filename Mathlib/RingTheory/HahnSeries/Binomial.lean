@@ -171,8 +171,8 @@ theorem pos_addUnit_neg_add [AddMonoid Γ] [LT Γ]
 
 --#find_home pos_addUnit_neg_add --Mathlib.Algebra.Order.Group.Units
 
-theorem one_sub_single_sub_one_orderTop_pos [PartialOrder Γ] [AddCommMonoid Γ]
-    [IsOrderedAddMonoid Γ] [CommRing R] {g : Γ} (hg : 0 < g) (r : R) :
+theorem one_sub_single_sub_one_orderTop_pos [PartialOrder Γ] [AddCommMonoid Γ] [CommRing R] {g : Γ}
+    (hg : 0 < g) (r : R) :
     0 < ((1 - single g r) - 1).orderTop := by
   refine lt_of_lt_of_le (WithTop.coe_pos.mpr hg) ?_
   simp only [sub_sub_cancel_left, orderTop_neg, orderTop_single_le]

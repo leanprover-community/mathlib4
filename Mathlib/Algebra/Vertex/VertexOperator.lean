@@ -290,6 +290,12 @@ theorem isLocalToOrderLeqAdd (m n : ℕ) (h : IsLocalToOrderLeq A B n) :
       coeff_subRight_smul, ih, ih]
 
 /-!
+
+def IsLocalToOrderLeq' : Prop :=
+  ∀ (k l : ℤ), ((HahnSeries.binomialPow (Γ := ℤ ×ₗ ℤ) (toLex (0,1)) (toLex (1,0)) (n : ℤ)) •
+    (comp A B)).coeff (toLex (k, l)) = ((HahnSeries.binomialPow (Γ := ℤ ×ₗ ℤ) (toLex (0,1))
+    (toLex (1,0)) (n : ℤ)) • (comp B A)).coeff (toLex (l, k))
+
 I need to add API about permutations on the indexing set of PiLex!
 def isLocal_symm (h : IsLocalToOrderLeq R V A B n) : IsLocalToOrderLeq R V B A n := by
   intro k l

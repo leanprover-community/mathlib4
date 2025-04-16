@@ -191,7 +191,7 @@ variable {R : Type*} {V : Type*} [CommRing R] [AddCommGroupWithOne V] [Module R 
 
 /-- A field is creative with respect to the unit vector `1` if evaluating at `1` yields a regular
 series. -/
-def creative (A : VertexOperator R V) : Prop :=
+def IsCreative (A : VertexOperator R V) : Prop :=
   0 ≤ HahnSeries.order (A 1)
 
 /-- The state attached to a creative field is its `z^0`-coefficient at `1`. We omit the creative
