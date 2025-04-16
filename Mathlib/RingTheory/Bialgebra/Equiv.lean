@@ -258,5 +258,41 @@ theorem trans_toBialgHom :
 theorem coe_toEquiv_trans : (e₁₂ : A ≃ B).trans e₂₃ = (e₁₂.trans e₂₃ : A ≃ C) :=
   rfl
 
+/-- If an coalgebra morphism has an inverse, it is an coalgebra isomorphism. -/
+@[simps]
+def ofBialgHom (f : A →ₐc[R] B) (g : B →ₐc[R] A) (h₁ : f.comp g = BialgHom.id R B)
+    (h₂ : g.comp f = BialgHom.id R A) : A ≃ₐc[R] B :=
+  { f with
+    toFun := f
+    invFun := g
+    left_inv := BialgHom.ext_iff.1 h₂
+    right_inv := BialgHom.ext_iff.1 h₁ }
+
+theorem coe_bialgHom_ofBialgHom (f : A →ₐc[R] B) (g : B →ₐc[R] A) (h₁ h₂) :
+    ↑(ofBialgHom f g h₁ h₂) = f :=
+  rfl
+
+@[simp]
+theorem ofBialgHom_coe_bialgHom (f : A →ₐc[R] B) (g : B →ₐc[R] A) (h₁ h₂) :
+    ofBialgHom (↑f) g h₁ h₂ = f := by
+  ext; simp
+
+theorem ofBialgHom_symm (f : A →ₐc[R] B) (g : B →ₐc[R] A) (h₁ h₂) :
+    (ofBialgHom f g h₁ h₂).symm = ofBialgHom g f h₂ h₁ :=
+  rfl
+
+/-- Promotes a bijective coalgebra homomorphism to a coalgebra equivalence. -/
+noncomputable def ofBijective (f : A →ₐc[R] B) (hf : Function.Bijective f) : A ≃ₐc[R] B :=
+  { AlgEquiv.ofBijective (f : A →ₐ[R] B) hf, f with }
+
+@[simp]
+theorem coe_ofBijective {f : A →ₐc[R] B} {hf : Function.Bijective f} :
+    (BialgEquiv.ofBijective f hf : A → B) = f :=
+  rfl
+
+theorem ofBijective_apply {f : A →ₐc[R] B} {hf : Function.Bijective f} (a : A) :
+    (BialgEquiv.ofBijective f hf) a = f a :=
+  rfl
+
 end
 end BialgEquiv
