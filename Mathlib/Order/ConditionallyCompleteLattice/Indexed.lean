@@ -151,6 +151,10 @@ theorem ciInf_set_le {f : β → α} {s : Set β} (H : BddBelow (f '' s)) {c : �
     ⨅ i : s, f i ≤ f c :=
   le_ciSup_set (α := αᵒᵈ) H hc
 
+lemma ciInf_le_ciSup [Nonempty ι] {f : ι → α} (hf : BddBelow (range f)) (hf' : BddAbove (range f)) :
+    ⨅ i, f i ≤ ⨆ i, f i :=
+  (ciInf_le hf (Classical.arbitrary _)).trans <| le_ciSup hf' (Classical.arbitrary _)
+
 @[simp]
 theorem ciSup_const [hι : Nonempty ι] {a : α} : ⨆ _ : ι, a = a := by
   rw [iSup, range_const, csSup_singleton]

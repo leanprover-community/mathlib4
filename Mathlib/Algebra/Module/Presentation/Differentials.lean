@@ -68,8 +68,8 @@ lemma comm₂₃' : pres.toExtension.toKaehler.comp pres.cotangentSpaceBasis.rep
   dsimp
   rw [Basis.repr_symm_apply, Finsupp.linearCombination_single,
     Finsupp.linearCombination_single, one_smul, one_smul,
-    Generators.cotangentSpaceBasis_apply, mapBaseChange_tmul, one_smul]
-  simp
+    Generators.cotangentSpaceBasis_apply]
+  simp [Generators.toExtension]
 
 /-- The canonical map `(pres.rels →₀ S) →ₗ[S] pres.toExtension.Cotangent`. -/
 noncomputable def hom₁ : (pres.rels →₀ S) →ₗ[S] pres.toExtension.Cotangent :=
@@ -158,6 +158,9 @@ lemma differentialsSolution_isPresentation :
 /-- The presentation of the `S`-module `Ω[S⁄R]` deduced from a presentation
 of `S` as a `R`-algebra. -/
 noncomputable def differentials : Module.Presentation S (Ω[S⁄R]) where
+  G := pres.vars
+  R := pres.rels
+  relation := _
   toSolution := differentialsSolution pres
   toIsPresentation := pres.differentialsSolution_isPresentation
 

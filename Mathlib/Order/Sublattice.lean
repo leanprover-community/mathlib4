@@ -34,7 +34,7 @@ structure Sublattice where
 variable {α β γ}
 
 namespace Sublattice
-variable {L M : Sublattice α} {f : LatticeHom α β} {s t : Set α} {a : α}
+variable {L M : Sublattice α} {f : LatticeHom α β} {s t : Set α} {a b : α}
 
 instance instSetLike : SetLike (Sublattice α) α where
   coe L := L.carrier
@@ -52,6 +52,8 @@ lemma coe_inj : (L : Set α) = M ↔ L = M := SetLike.coe_set_eq
 
 @[simp] lemma supClosed (L : Sublattice α) : SupClosed (L : Set α) := L.supClosed'
 @[simp] lemma infClosed (L : Sublattice α) : InfClosed (L : Set α) := L.infClosed'
+lemma sup_mem (ha : a ∈ L) (hb : b ∈ L) : a ⊔ b ∈ L := L.supClosed ha hb
+lemma inf_mem (ha : a ∈ L) (hb : b ∈ L) : a ⊓ b ∈ L := L.infClosed ha hb
 @[simp] lemma isSublattice (L : Sublattice α) : IsSublattice (L : Set α) :=
   ⟨L.supClosed, L.infClosed⟩
 
@@ -154,7 +156,7 @@ instance instInfSet : InfSet (Sublattice α) where
 
 instance instInhabited : Inhabited (Sublattice α) := ⟨⊥⟩
 
-/-- The top sublattice is isomorphic to the lattice.
+/-- The top sublattice is isomorphic to the original lattice.
 
 This is the sublattice version of `Equiv.Set.univ α`. -/
 def topEquiv : (⊤ : Sublattice α) ≃o α where

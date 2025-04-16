@@ -159,7 +159,7 @@ lemma sups_subset_self : s ⊻ s ⊆ s ↔ SupClosed (s : Set α) := sups_subset
 
 @[simp] lemma univ_sups_univ [Fintype α] : (univ : Finset α) ⊻ univ = univ := by simp
 
-lemma filter_sups_le [DecidableRel (α := α) (· ≤ ·)] (s t : Finset α) (a : α) :
+lemma filter_sups_le [DecidableLE α] (s t : Finset α) (a : α) :
     {b ∈ s ⊻ t | b ≤ a} = {b ∈ s | b ≤ a} ⊻ {b ∈ t | b ≤ a} := by
   simp only [← coe_inj, coe_filter, coe_sups, ← mem_coe, Set.sep_sups_le]
 
@@ -169,7 +169,6 @@ lemma biUnion_image_sup_left : s.biUnion (fun a ↦ t.image (a ⊔ ·)) = s ⊻ 
 
 lemma biUnion_image_sup_right : t.biUnion (fun b ↦ s.image (· ⊔ b)) = s ⊻ t := biUnion_image_right
 
--- Porting note: simpNF linter doesn't like @[simp]
 theorem image_sup_product (s t : Finset α) : (s ×ˢ t).image (uncurry (· ⊔ ·)) = s ⊻ t :=
   image_uncurry_product _ _ _
 
@@ -304,7 +303,7 @@ lemma infs_self_subset : s ⊼ s ⊆ s ↔ InfClosed (s : Set α) := infs_subset
 
 @[simp] lemma univ_infs_univ [Fintype α] : (univ : Finset α) ⊼ univ = univ := by simp
 
-lemma filter_infs_le [DecidableRel (α := α) (· ≤ ·)] (s t : Finset α) (a : α) :
+lemma filter_infs_le [DecidableLE α] (s t : Finset α) (a : α) :
     {b ∈ s ⊼ t | a ≤ b} = {b ∈ s | a ≤ b} ⊼ {b ∈ t | a ≤ b} := by
   simp only [← coe_inj, coe_filter, coe_infs, ← mem_coe, Set.sep_infs_le]
 
@@ -314,7 +313,6 @@ lemma biUnion_image_inf_left : s.biUnion (fun a ↦ t.image (a ⊓ ·)) = s ⊼ 
 
 lemma biUnion_image_inf_right : t.biUnion (fun b ↦ s.image (· ⊓ b)) = s ⊼ t := biUnion_image_right
 
--- Porting note: simpNF linter doesn't like @[simp]
 theorem image_inf_product (s t : Finset α) : (s ×ˢ t).image (uncurry (· ⊓ ·)) = s ⊼ t :=
   image_uncurry_product _ _ _
 
@@ -469,14 +467,7 @@ theorem disjSups_inter_subset_right : s ○ (t₁ ∩ t₂) ⊆ s ○ t₁ ∩ s
 variable (s t)
 
 theorem disjSups_comm : s ○ t = t ○ s := by
-  ext
-  rw [mem_disjSups, mem_disjSups]
-  -- Porting note: `exists₂_comm` no longer works with `∃ _ ∈ _, ∃ _ ∈ _, _`
-  constructor <;>
-  · rintro ⟨a, ha, b, hb, hd, hs⟩
-    rw [disjoint_comm] at hd
-    rw [sup_comm] at hs
-    exact ⟨b, hb, a, ha, hd, hs⟩
+  aesop (add simp disjoint_comm, simp sup_comm)
 
 instance : @Std.Commutative (Finset α) (· ○ ·) := ⟨disjSups_comm⟩
 

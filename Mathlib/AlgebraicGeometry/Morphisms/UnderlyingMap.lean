@@ -17,6 +17,7 @@ of the underlying map of topological spaces, including
 - `Surjective`
 - `IsOpenMap`
 - `IsClosedMap`
+- `GeneralizingMap`
 - `IsEmbedding`
 - `IsOpenEmbedding`
 - `IsClosedEmbedding`
@@ -24,11 +25,11 @@ of the underlying map of topological spaces, including
 
 -/
 
-open CategoryTheory Topology
+open CategoryTheory Topology TopologicalSpace
 
 namespace AlgebraicGeometry
 
-universe u
+universe u v
 
 section Injective
 
@@ -95,6 +96,20 @@ lemma range_eq_range_of_surjective {S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) 
 lemma mem_range_iff_of_surjective {S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) (e : X ⟶ Y)
     [Surjective e] (hge : e ≫ g = f) (s : S) : s ∈ Set.range f.base ↔ s ∈ Set.range g.base := by
   rw [range_eq_range_of_surjective f g e hge]
+
+lemma Surjective.sigmaDesc_of_union_range_eq_univ {X : Scheme.{u}}
+    {ι : Type v} [Small.{u} ι] {Y : ι → Scheme.{u}} {f : ∀ i, Y i ⟶ X}
+    (H : ⋃ i, Set.range (f i).base = Set.univ) : Surjective (Limits.Sigma.desc f) := by
+  refine ⟨fun x ↦ ?_⟩
+  simp_rw [Set.eq_univ_iff_forall, Set.mem_iUnion] at H
+  obtain ⟨i, x, rfl⟩ := H x
+  use (Limits.Sigma.ι (fun i ↦ Y i) i).base x
+  rw [← Scheme.comp_base_apply, Limits.Sigma.ι_desc]
+
+instance {X : Scheme.{u}} {P : MorphismProperty Scheme.{u}} (𝒰 : X.Cover P) :
+    Surjective (Limits.Sigma.desc fun i ↦ 𝒰.map i) :=
+  Surjective.sigmaDesc_of_union_range_eq_univ 𝒰.iUnion_range
+
 end Surjective
 
 section Injective
@@ -111,7 +126,10 @@ instance : (topologically IsOpenMap).RespectsIso :=
   topologically_respectsIso _ (fun e ↦ e.isOpenMap) (fun _ _ hf hg ↦ hg.comp hf)
 
 instance isOpenMap_isLocalAtTarget : IsLocalAtTarget (topologically IsOpenMap) :=
-  topologically_isLocalAtTarget' _ fun _ _ _ hU _ ↦ isOpenMap_iff_isOpenMap_of_iSup_eq_top hU
+  topologically_isLocalAtTarget' _ fun _ _ _ hU _ ↦ hU.isOpenMap_iff_restrictPreimage
+
+instance : IsLocalAtSource (topologically IsOpenMap) :=
+  topologically_isLocalAtSource' (fun _ ↦ _) fun _ _ _ hU _ ↦ hU.isOpenMap_iff_comp
 
 end IsOpenMap
 
@@ -121,7 +139,7 @@ instance : (topologically IsClosedMap).RespectsIso :=
   topologically_respectsIso _ (fun e ↦ e.isClosedMap) (fun _ _ hf hg ↦ hg.comp hf)
 
 instance isClosedMap_isLocalAtTarget : IsLocalAtTarget (topologically IsClosedMap) :=
-  topologically_isLocalAtTarget' _ fun _ _ _ hU _ ↦ isClosedMap_iff_isClosedMap_of_iSup_eq_top hU
+  topologically_isLocalAtTarget' _ fun _ _ _ hU _ ↦ hU.isClosedMap_iff_restrictPreimage
 
 end IsClosedMap
 
@@ -131,7 +149,7 @@ instance : (topologically IsEmbedding).RespectsIso :=
   topologically_respectsIso _ (fun e ↦ e.isEmbedding) (fun _ _ hf hg ↦ hg.comp hf)
 
 instance isEmbedding_isLocalAtTarget : IsLocalAtTarget (topologically IsEmbedding) :=
-  topologically_isLocalAtTarget' _ fun _ _ _ ↦ isEmbedding_iff_of_iSup_eq_top
+  topologically_isLocalAtTarget' _ fun _ _ _ hU ↦ hU.isEmbedding_iff_restrictPreimage
 
 end IsEmbedding
 
@@ -141,7 +159,7 @@ instance : (topologically IsOpenEmbedding).RespectsIso :=
   topologically_respectsIso _ (fun e ↦ e.isOpenEmbedding) (fun _ _ hf hg ↦ hg.comp hf)
 
 instance isOpenEmbedding_isLocalAtTarget : IsLocalAtTarget (topologically IsOpenEmbedding) :=
-  topologically_isLocalAtTarget' _ fun _ _ _ ↦ isOpenEmbedding_iff_isOpenEmbedding_of_iSup_eq_top
+  topologically_isLocalAtTarget' _ fun _ _ _ hU ↦ hU.isOpenEmbedding_iff_restrictPreimage
 
 end IsOpenEmbedding
 
@@ -151,8 +169,7 @@ instance : (topologically IsClosedEmbedding).RespectsIso :=
   topologically_respectsIso _ (fun e ↦ e.isClosedEmbedding) (fun _ _ hf hg ↦ hg.comp hf)
 
 instance isClosedEmbedding_isLocalAtTarget : IsLocalAtTarget (topologically IsClosedEmbedding) :=
-  topologically_isLocalAtTarget' _
-    fun _ _ _ ↦ isClosedEmbedding_iff_isClosedEmbedding_of_iSup_eq_top
+  topologically_isLocalAtTarget' _ fun _ _ _ hU ↦ hU.isClosedEmbedding_iff_restrictPreimage
 
 end IsClosedEmbedding
 
@@ -174,7 +191,7 @@ lemma Scheme.Hom.denseRange (f : X.Hom Y) [IsDominant f] : DenseRange f.base :=
 instance (priority := 100) [Surjective f] : IsDominant f := ⟨f.surjective.denseRange⟩
 
 instance [IsDominant f] [IsDominant g] : IsDominant (f ≫ g) :=
-  ⟨g.denseRange.comp f.denseRange g.base.2⟩
+  ⟨g.denseRange.comp f.denseRange g.base.hom.2⟩
 
 instance : MorphismProperty.IsMultiplicative @IsDominant where
   id_mem := fun _ ↦ inferInstance
@@ -194,7 +211,7 @@ instance IsDominant.isLocalAtTarget : IsLocalAtTarget @IsDominant :=
   have : MorphismProperty.RespectsIso (topologically DenseRange) :=
     dominant_eq_topologically ▸ IsDominant.respectsIso
   dominant_eq_topologically ▸ topologically_isLocalAtTarget' DenseRange
-    fun _ _ _ hU _ ↦ denseRange_iff_denseRange_of_iSup_eq_top hU
+    fun _ _ _ hU _ ↦ hU.denseRange_iff_restrictPreimage
 
 lemma surjective_of_isDominant_of_isClosed_range (f : X ⟶ Y) [IsDominant f]
     (hf : IsClosed (Set.range f.base)) :
@@ -234,7 +251,7 @@ instance specializingMap_isLocalAtTarget : IsLocalAtTarget (topologically @Speci
   · introv hU _ hsp
     simp_rw [specializingMap_iff_closure_singleton_subset] at hsp ⊢
     intro x y hy
-    have : ∃ i, y ∈ U i := Opens.mem_iSup.mp (hU ▸ trivial)
+    have : ∃ i, y ∈ U i := Opens.mem_iSup.mp (hU ▸ Opens.mem_top _)
     obtain ⟨i, hi⟩ := this
     rw [← specializes_iff_mem_closure] at hy
     have hfx : f x ∈ U i := (U i).2.stableUnderGeneralization hy hi
@@ -249,5 +266,20 @@ instance specializingMap_isLocalAtTarget : IsLocalAtTarget (topologically @Speci
     use a.val, ha, hay
 
 end SpecializingMap
+
+section GeneralizingMap
+
+instance : (topologically GeneralizingMap).RespectsIso :=
+  topologically_respectsIso _ (fun f ↦ f.isOpenEmbedding.generalizingMap
+    f.isOpenEmbedding.isOpen_range.stableUnderGeneralization) (fun _ _ hf hg ↦ hf.comp hg)
+
+instance : IsLocalAtSource (topologically GeneralizingMap) :=
+  topologically_isLocalAtSource' (fun _ ↦ _) fun _ _ _ hU _ ↦ hU.generalizingMap_iff_comp
+
+instance : IsLocalAtTarget (topologically GeneralizingMap) :=
+  topologically_isLocalAtTarget' (fun _ ↦ _) fun _ _ _ hU _ ↦
+    hU.generalizingMap_iff_restrictPreimage
+
+end GeneralizingMap
 
 end AlgebraicGeometry

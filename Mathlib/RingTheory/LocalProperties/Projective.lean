@@ -34,7 +34,7 @@ theorem Module.free_of_isLocalizedModule {Rₛ Mₛ} [AddCommGroup Mₛ] [Module
     [CommRing Rₛ] [Algebra R Rₛ] [Module Rₛ Mₛ] [IsScalarTower R Rₛ Mₛ]
     (S) (f : M →ₗ[R] Mₛ) [IsLocalization S Rₛ] [IsLocalizedModule S f] [Module.Free R M] :
     Module.Free Rₛ Mₛ :=
-    Free.of_equiv (IsLocalizedModule.isBaseChange S Rₛ f).equiv
+  Free.of_equiv (IsLocalizedModule.isBaseChange S Rₛ f).equiv
 
 universe uR' uM' in
 /--
@@ -121,7 +121,7 @@ theorem Module.projective_of_localization_maximal (H : ∀ (I : Ideal R) (_ : I.
     Module.Projective (Localization.AtPrime I) (LocalizedModule I.primeCompl M))
     [Module.FinitePresentation R M] : Module.Projective R M := by
   have : Module.Finite R M := by infer_instance
-  have : (⊤ : Submodule R M).FG := this.out
+  have : (⊤ : Submodule R M).FG := this.fg_top
   have : ∃ (s : Finset M), _ := this
   obtain ⟨s, hs⟩ := this
   let N := s →₀ R

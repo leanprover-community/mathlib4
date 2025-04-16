@@ -196,10 +196,10 @@ lemma weightHom_injective (P : RootPairing ι R M N) : Injective (weightHom P) :
   intro f g hfg
   ext x
   · exact LinearMap.congr_fun hfg x
-  · refine (LinearEquiv.injective P.toDualRight) ?_
+  · refine LinearEquiv.injective P.toDualRight ?_
     simp_rw [← weight_coweight_transpose_apply]
     exact congrFun (congrArg DFunLike.coe (congrArg LinearMap.dualMap hfg)) (P.toDualRight x)
-  · refine (Embedding.injective P.root) ?_
+  · refine Embedding.injective P.root ?_
     simp_rw [← root_weightMap_apply]
     exact congrFun (congrArg DFunLike.coe hfg) (P.root x)
 
@@ -644,15 +644,37 @@ lemma reflection_inv (P : RootPairing ι R M N) (i : ι) :
   · exact LinearMap.ext_iff.mpr (fun x => by simp [← coweightEquiv_apply])
   · exact _root_.Equiv.ext (fun j => by simp only [← indexHom_apply, map_inv]; simp)
 
-instance : MulAction P.Aut M where
-  smul w v := Equiv.weightHom P w v
+instance : DistribMulAction P.Aut M where
+  smul w x := weightHom P w x
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
+  smul_zero w := show weightHom P w 0 = 0 by simp
+  smul_add w x y := show weightHom P w (x + y) = weightHom P w x + weightHom P w y by simp
 
-instance : MulAction (P.Aut)ᵐᵒᵖ N where
-  smul w v := (MulOpposite.unop (Equiv.coweightHom P (MulOpposite.unop w))) v
+@[simp] lemma reflection_smul (i : ι) (x : M) : Equiv.reflection P i • x = P.reflection i x := rfl
+
+@[simp] lemma root_indexEquiv_eq_smul (i : ι) (g : P.Aut) :
+    P.root (g.indexEquiv i) = g • P.root i := by
+  simpa using (congr_fun g.root_weightMap i).symm
+
+open MulOpposite in
+instance : DistribMulAction P.Autᵐᵒᵖ N where
+  smul w x := unop (coweightHom P (unop w)) x
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
+  smul_zero w := show unop (coweightHom P (unop w)) 0 = 0 by simp
+  smul_add w x y := by
+    change unop (coweightHom P _) (x + y) = unop (coweightHom P _) x + unop (coweightHom P _) y
+    simp
+
+instance : SMulCommClass P.Aut R M where
+  smul_comm w t x := show weightHom P w (t • x) = t • weightHom P w x by simp
+
+open MulOpposite in
+instance : SMulCommClass P.Autᵐᵒᵖ R N where
+  smul_comm w t x := by
+    change unop (coweightHom P (unop w)) (t • x) = t • unop (coweightHom P (unop w)) x
+    simp
 
 instance : MulAction P.Aut ι where
   smul w i := Equiv.indexHom P w i

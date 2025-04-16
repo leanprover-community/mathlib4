@@ -26,7 +26,7 @@ theorem IsLUB.frequently_mem {a : α} {s : Set α} (ha : IsLUB s a) (hs : s.None
   intro h
   rcases (ha.1 ha').eq_or_lt with (rfl | ha'a)
   · exact h.self_of_nhdsWithin le_rfl ha'
-  · rcases (mem_nhdsWithin_Iic_iff_exists_Ioc_subset' ha'a).1 h with ⟨b, hba, hb⟩
+  · rcases (mem_nhdsLE_iff_exists_Ioc_subset' ha'a).1 h with ⟨b, hba, hb⟩
     rcases ha.exists_between hba with ⟨b', hb's, hb'⟩
     exact hb hb' hb's
 
@@ -205,8 +205,7 @@ theorem IsGLB.exists_seq_antitone_tendsto {t : Set α} {x : α} [IsCountablyGene
 
 theorem exists_seq_strictAnti_tendsto' [DenselyOrdered α] [FirstCountableTopology α] {x y : α}
     (hy : x < y) : ∃ u : ℕ → α, StrictAnti u ∧ (∀ n, u n ∈ Ioo x y) ∧ Tendsto u atTop (𝓝 x) := by
-  simpa only [dual_Ioo]
-    using exists_seq_strictMono_tendsto' (α := αᵒᵈ) (OrderDual.toDual_lt_toDual.2 hy)
+  simpa using exists_seq_strictMono_tendsto' (α := αᵒᵈ) (OrderDual.toDual_lt_toDual.2 hy)
 
 theorem exists_seq_strictAnti_tendsto [DenselyOrdered α] [NoMaxOrder α] [FirstCountableTopology α]
     (x : α) : ∃ u : ℕ → α, StrictAnti u ∧ (∀ n, x < u n) ∧ Tendsto u atTop (𝓝 x) :=

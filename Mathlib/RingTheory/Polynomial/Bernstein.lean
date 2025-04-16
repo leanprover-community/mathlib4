@@ -8,7 +8,7 @@ import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Derivative
 import Mathlib.Algebra.Polynomial.Eval.SMul
 import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.LinearAlgebra.LinearIndependent
+import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 import Mathlib.RingTheory.Polynomial.Pochhammer
 
 /-!
@@ -134,7 +134,7 @@ theorem derivative_zero (n : ℕ) :
 
 theorem iterate_derivative_at_0_eq_zero_of_lt (n : ℕ) {ν k : ℕ} :
     k < ν → (Polynomial.derivative^[k] (bernsteinPolynomial R n ν)).eval 0 = 0 := by
-  cases' ν with ν
+  rcases ν with - | ν
   · rintro ⟨⟩
   · rw [Nat.lt_succ_iff]
     induction' k with k ih generalizing n ν
@@ -170,9 +170,7 @@ theorem iterate_derivative_at_0 (n ν : ℕ) :
         eval_natCast, Function.comp_apply, Function.iterate_succ, ascPochhammer_succ_left]
       obtain rfl | h'' := ν.eq_zero_or_pos
       · simp
-      · have : n - 1 - (ν - 1) = n - ν := by
-          rw [gt_iff_lt, ← Nat.succ_le_iff] at h''
-          rw [← tsub_add_eq_tsub_tsub, add_comm, tsub_add_cancel_of_le h'']
+      · have : n - 1 - (ν - 1) = n - ν := by omega
         rw [this, ascPochhammer_eval_succ]
         rw_mod_cast [tsub_add_cancel_of_le (h'.trans n.pred_le)]
   · simp only [not_le] at h

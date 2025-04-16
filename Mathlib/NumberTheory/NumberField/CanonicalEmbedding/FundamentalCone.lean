@@ -90,11 +90,10 @@ open NumberField.Units NumberField.Units.dirichletUnitTheorem Module
 variable [NumberField K] {K}
 
 open Classical in
-/-- The map from the mixed space to `{w : InfinitePlace K // w ≠ w₀} → ℝ` (with `w₀` the fixed
-place from the proof of Dirichlet Unit Theorem) defined in such way that: 1) it factors the map
+/-- The map from the mixed space to `logSpace K` defined in such way that: 1) it factors the map
 `logEmbedding`, see `logMap_eq_logEmbedding`; 2) it is constant on the sets
 `{c • x | c ∈ ℝ, c ≠ 0}` if `norm x ≠ 0`, see `logMap_real_smul`. -/
-def logMap (x : mixedSpace K) : {w : InfinitePlace K // w ≠ w₀} → ℝ := fun w ↦
+def logMap (x : mixedSpace K) : logSpace K := fun w ↦
   mult w.val * (Real.log (normAtPlace w.val x) -
     Real.log (mixedEmbedding.norm x) * (finrank ℚ K : ℝ)⁻¹)
 
@@ -256,11 +255,14 @@ theorem mem_integerSet {a : mixedSpace K} :
 
 /-- If `a` is in `integerSet`, then there is a *unique* algebraic integer in `𝓞 K` such
 that `mixedEmbedding K x = a`. -/
-theorem exists_unique_preimage_of_mem_integerSet {a : mixedSpace K} (ha : a ∈ integerSet K) :
+theorem existsUnique_preimage_of_mem_integerSet {a : mixedSpace K} (ha : a ∈ integerSet K) :
     ∃! x : 𝓞 K, mixedEmbedding K x = a := by
   obtain ⟨_, ⟨x, rfl⟩⟩ := mem_integerSet.mp ha
   refine Function.Injective.existsUnique_of_mem_range ?_ (Set.mem_range_self x)
   exact (mixedEmbedding_injective K).comp RingOfIntegers.coe_injective
+
+@[deprecated (since := "2024-12-17")]
+alias exists_unique_preimage_of_mem_integerSet := existsUnique_preimage_of_mem_integerSet
 
 theorem ne_zero_of_mem_integerSet (a : integerSet K) : (a : mixedSpace K) ≠ 0 := by
   by_contra!

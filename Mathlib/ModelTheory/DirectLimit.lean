@@ -42,16 +42,8 @@ variable (f : ∀ i j, i ≤ j → G i ↪[L] G j)
 
 namespace DirectedSystem
 
-/-- A copy of `DirectedSystem.map_self` specialized to `L`-embeddings, as otherwise the
-`fun i j h ↦ f i j h` can confuse the simplifier. -/
-nonrec theorem map_self [DirectedSystem G fun i j h => f i j h] (i x h) : f i i h x = x :=
-  DirectedSystem.map_self (f := (f · · ·)) x
-
-/-- A copy of `DirectedSystem.map_map` specialized to `L`-embeddings, as otherwise the
-`fun i j h ↦ f i j h` can confuse the simplifier. -/
-nonrec theorem map_map [DirectedSystem G fun i j h => f i j h] {i j k} (hij hjk x) :
-    f j k hjk (f i j hij x) = f i k (le_trans hij hjk) x :=
-  DirectedSystem.map_map (f := (f · · ·)) hij hjk x
+alias map_self := DirectedSystem.map_self'
+alias map_map := DirectedSystem.map_map'
 
 variable {G' : ℕ → Type w} [∀ i, L.Structure (G' i)] (f' : ∀ n : ℕ, G' n ↪[L] G' (n + 1))
 
@@ -78,17 +70,18 @@ instance natLERec.directedSystem : DirectedSystem G' fun i j h => natLERec f' i 
 
 end DirectedSystem
 
--- Porting note: Instead of `Σ i, G i`, we use the alias `Language.Structure.Sigma`
--- which depends on `f`. This way, Lean can infer what `L` and `f` are in the `Setoid` instance.
--- Otherwise we have a "cannot find synthesization order" error. See the discussion at
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/local.20instance.20cannot.20find.20synthesization.20order.20in.20porting
-
 set_option linter.unusedVariables false in
-/-- Alias for `Σ i, G i`. -/
+/-- Alias for `Σ i, G i`.
+
+Instead of `Σ i, G i`, we use the alias `Language.Structure.Sigma` which depends on `f`.
+This way, Lean can infer what `L` and `f` are in the `Setoid` instance.
+Otherwise we have a "cannot find synthesization order" error.
+See also the discussion at
+https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/local.20instance.20cannot.20find.20synthesization.20order.20in.20porting
+-/
 @[nolint unusedArguments]
 protected abbrev Structure.Sigma (f : ∀ i j, i ≤ j → G i ↪[L] G j) := Σ i, G i
 
--- Porting note: Setting up notation for `Language.Structure.Sigma`: add a little asterisk to `Σ`
 local notation "Σˣ" => Structure.Sigma
 
 /-- Constructor for `FirstOrder.Language.Structure.Sigma` alias. -/
@@ -140,7 +133,7 @@ def setoid [DirectedSystem G fun i j h => f i j h] [IsDirected ι (· ≤ ·)] :
         assumption⟩
 
 /-- The structure on the `Σ`-type which becomes the structure on the direct limit after quotienting.
- -/
+-/
 noncomputable def sigmaStructure [IsDirected ι (· ≤ ·)] [Nonempty ι] : L.Structure (Σˣ f) where
   funMap F x :=
     ⟨_,
@@ -158,11 +151,7 @@ end DirectLimit
 def DirectLimit [DirectedSystem G fun i j h => f i j h] [IsDirected ι (· ≤ ·)] :=
   Quotient (DirectLimit.setoid G f)
 
-attribute [local instance] DirectLimit.setoid
-
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): Added local instance
-attribute [local instance] DirectLimit.sigmaStructure
-
+attribute [local instance] DirectLimit.setoid DirectLimit.sigmaStructure
 
 instance [DirectedSystem G fun i j h => f i j h] [IsDirected ι (· ≤ ·)] [Inhabited ι]
     [Inhabited (G default)] : Inhabited (DirectLimit G f) :=
@@ -280,7 +269,6 @@ def of (i : ι) : G i ↪[L] DirectLimit G f where
     obtain ⟨j, h1, _, h3⟩ := h
     exact (f i j h1).injective h3
   map_fun' F x := by
-    simp only
     rw [← funMap_quotient_mk'_sigma_mk']
     rfl
   map_rel' := by
@@ -296,8 +284,8 @@ variable {L ι G f}
 theorem of_apply {i : ι} {x : G i} : of L ι G f i x = ⟦.mk f i x⟧ :=
   rfl
 
--- Porting note: removed the `@[simp]`, it is not in simp-normal form, but the simp-normal version
--- of this theorem would not be useful.
+-- This is not a simp-lemma because it is not in simp-normal form,
+-- but the simp-normal version of this theorem would not be useful.
 theorem of_f {i j : ι} {hij : i ≤ j} {x : G i} : of L ι G f j (f i j hij x) = of L ι G f i x := by
   rw [of_apply, of_apply, Quotient.eq]
   refine Setoid.symm ⟨j, hij, refl j, ?_⟩

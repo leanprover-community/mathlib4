@@ -58,11 +58,6 @@ theorem finrank_eq_finrank_subalgebra : finrank K F.toSubalgebra = finrank K F :
 
 variable {F} {E}
 
-@[simp]
-theorem toSubalgebra_eq_iff : F.toSubalgebra = E.toSubalgebra ↔ F = E := by
-  rw [SetLike.ext_iff, SetLike.ext'_iff, Set.ext_iff]
-  rfl
-
 /-- If `F ≤ E` are two intermediate fields of `L / K` such that `[E : K] ≤ [F : K]` are finite,
 then `F = E`. -/
 theorem eq_of_le_of_finrank_le [hfin : FiniteDimensional K E] (h_le : F ≤ E)

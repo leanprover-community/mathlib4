@@ -38,14 +38,14 @@ theorem mulAntidiagonal_mono_right (h : t₁ ⊆ t₂) :
 
 end Mul
 
--- Porting note: Removed simp attribute, simpnf linter can simplify lhs. Added aux version below
+-- The left hand side is not in simp normal form, see variant below.
 @[to_additive]
-theorem swap_mem_mulAntidiagonal [CommSemigroup α] {s t : Set α} {a : α} {x : α × α} :
+theorem swap_mem_mulAntidiagonal [CommMagma α] {s t : Set α} {a : α} {x : α × α} :
     x.swap ∈ Set.mulAntidiagonal s t a ↔ x ∈ Set.mulAntidiagonal t s a := by
   simp [mul_comm, and_left_comm]
 
 @[to_additive (attr := simp)]
-theorem swap_mem_mulAntidiagonal_aux [CommSemigroup α] {s t : Set α} {a : α} {x : α × α} :
+theorem swap_mem_mulAntidiagonal_aux [CommMagma α] {s t : Set α} {a : α} {x : α × α} :
     x.snd ∈ s ∧ x.fst ∈ t ∧ x.snd * x.fst = a
       ↔ x ∈ Set.mulAntidiagonal t s a := by
   simp [mul_comm, and_left_comm]
@@ -55,9 +55,10 @@ namespace MulAntidiagonal
 
 section CancelCommMonoid
 
-variable [CancelCommMonoid α] {s t : Set α} {a : α} {x y : mulAntidiagonal s t a}
+variable [CommMonoid α] [IsCancelMul α] {s t : Set α} {a : α} {x y : mulAntidiagonal s t a}
 
--- Porting note: to_additive cannot translate the "Mul" in "MulAntidiagonal" by itself here
+-- We have to translate the names manually because the namespace name `MulAntidiagonal`
+-- does not match the declaration `mulAntidiagonal` that has the `to_additive` attribute.
 @[to_additive Set.AddAntidiagonal.fst_eq_fst_iff_snd_eq_snd]
 theorem fst_eq_fst_iff_snd_eq_snd : (x : α × α).1 = (y : α × α).1 ↔ (x : α × α).2 = (y : α × α).2 :=
   ⟨fun h =>
@@ -83,7 +84,7 @@ end CancelCommMonoid
 
 section OrderedCancelCommMonoid
 
-variable [CancelCommMonoid α] [PartialOrder α] [MulLeftMono α] [MulRightStrictMono α]
+variable [CommMonoid α] [PartialOrder α] [IsCancelMul α] [MulLeftMono α] [MulRightStrictMono α]
   (s t : Set α) (a : α) {x y : mulAntidiagonal s t a}
 
 @[to_additive Set.AddAntidiagonal.eq_of_fst_le_fst_of_snd_le_snd]
@@ -99,13 +100,13 @@ variable {s t}
 @[to_additive Set.AddAntidiagonal.finite_of_isPWO]
 theorem finite_of_isPWO (hs : s.IsPWO) (ht : t.IsPWO) (a) : (mulAntidiagonal s t a).Finite := by
   refine not_infinite.1 fun h => ?_
-  have h1 : (mulAntidiagonal s t a).PartiallyWellOrderedOn (Prod.fst ⁻¹'o (· ≤ ·)) := fun f hf =>
-    hs (Prod.fst ∘ f) fun n => (mem_mulAntidiagonal.1 (hf n)).1
-  have h2 : (mulAntidiagonal s t a).PartiallyWellOrderedOn (Prod.snd ⁻¹'o (· ≤ ·)) := fun f hf =>
-    ht (Prod.snd ∘ f) fun n => (mem_mulAntidiagonal.1 (hf n)).2.1
+  have h1 : (mulAntidiagonal s t a).PartiallyWellOrderedOn (Prod.fst ⁻¹'o (· ≤ ·)) :=
+    fun f ↦ hs fun n ↦ ⟨_, (mem_mulAntidiagonal.1 (f n).2).1⟩
+  have h2 : (mulAntidiagonal s t a).PartiallyWellOrderedOn (Prod.snd ⁻¹'o (· ≤ ·)) :=
+    fun f ↦ ht fun n ↦ ⟨_, (mem_mulAntidiagonal.1 (f n).2).2.1⟩
   obtain ⟨g, hg⟩ :=
-    h1.exists_monotone_subseq (fun n => h.natEmbedding _ n) fun n => (h.natEmbedding _ n).2
-  obtain ⟨m, n, mn, h2'⟩ := h2 (fun x => (h.natEmbedding _) (g x)) fun n => (h.natEmbedding _ _).2
+    h1.exists_monotone_subseq fun n ↦ (h.natEmbedding _ n).2
+  obtain ⟨m, n, mn, h2'⟩ := h2 fun n ↦ h.natEmbedding _ _
   refine mn.ne (g.injective <| (h.natEmbedding _).injective ?_)
   exact eq_of_fst_le_fst_of_snd_le_snd _ _ _ (hg _ _ mn.le) h2'
 

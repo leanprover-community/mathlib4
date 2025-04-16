@@ -5,7 +5,7 @@ Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Lie.Abelian
 import Mathlib.Algebra.Lie.Solvable
-import Mathlib.LinearAlgebra.Dual
+import Mathlib.LinearAlgebra.Dual.Defs
 
 /-!
 # Characters of Lie algebras
@@ -37,7 +37,6 @@ abbrev LieCharacter :=
 
 variable {R L}
 
--- @[simp] -- Porting note: simp normal form is the LHS of `lieCharacter_apply_lie'`
 theorem lieCharacter_apply_lie (χ : LieCharacter R L) (x y : L) : χ ⁅x, y⁆ = 0 := by
   rw [LieHom.map_lie, LieRing.of_associative_ring_bracket, mul_comm, sub_self]
 
@@ -48,7 +47,7 @@ theorem lieCharacter_apply_lie' (χ : LieCharacter R L) (x y : L) : ⁅χ x, χ 
 theorem lieCharacter_apply_of_mem_derived (χ : LieCharacter R L) {x : L}
     (h : x ∈ derivedSeries R L 1) : χ x = 0 := by
   rw [derivedSeries_def, derivedSeriesOfIdeal_succ, derivedSeriesOfIdeal_zero, ←
-    LieSubmodule.mem_coeSubmodule, LieSubmodule.lieIdeal_oper_eq_linear_span] at h
+    LieSubmodule.mem_toSubmodule, LieSubmodule.lieIdeal_oper_eq_linear_span] at h
   refine Submodule.span_induction ?_ ?_ ?_ ?_ h
   · rintro y ⟨⟨z, hz⟩, ⟨⟨w, hw⟩, rfl⟩⟩; apply lieCharacter_apply_lie
   · exact χ.map_zero

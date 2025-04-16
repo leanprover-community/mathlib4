@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
+import Mathlib.Order.Filter.AtTopBot.Finset
 import Mathlib.Topology.Algebra.InfiniteSum.Group
 import Mathlib.Topology.Algebra.Star
 
@@ -43,12 +44,12 @@ theorem tprod_pi_single [DecidableEq β] (b : β) (a : α) : ∏' b', Pi.mulSing
 @[to_additive tsum_setProd_singleton_left]
 lemma tprod_setProd_singleton_left (b : β) (t : Set γ) (f : β × γ → α) :
     (∏' x : {b} ×ˢ t, f x) = ∏' c : t, f (b, c) := by
-  rw [tprod_congr_set_coe _ Set.singleton_prod, tprod_image _ (Prod.mk.inj_left b).injOn]
+  rw [tprod_congr_set_coe _ Set.singleton_prod, tprod_image _ (Prod.mk_right_injective b).injOn]
 
 @[to_additive tsum_setProd_singleton_right]
 lemma tprod_setProd_singleton_right (s : Set β) (c : γ) (f : β × γ → α) :
     (∏' x : s ×ˢ {c}, f x) = ∏' b : s, f (b, c) := by
-  rw [tprod_congr_set_coe _ Set.prod_singleton, tprod_image _ (Prod.mk.inj_right c).injOn]
+  rw [tprod_congr_set_coe _ Set.prod_singleton, tprod_image _ (Prod.mk_left_injective c).injOn]
 
 @[to_additive Summable.prod_symm]
 theorem Multipliable.prod_symm {f : β × γ → α} (hf : Multipliable f) :
@@ -61,16 +62,54 @@ section ProdCodomain
 
 variable [CommMonoid α] [TopologicalSpace α] [CommMonoid γ] [TopologicalSpace γ]
 
-@[to_additive HasSum.prod_mk]
-theorem HasProd.prod_mk {f : β → α} {g : β → γ} {a : α} {b : γ}
-    (hf : HasProd f a) (hg : HasProd g b) : HasProd (fun x ↦ (⟨f x, g x⟩ : α × γ)) ⟨a, b⟩ := by
-  simp [HasProd, ← prod_mk_prod, Filter.Tendsto.prod_mk_nhds hf hg]
+@[to_additive HasSum.prodMk]
+theorem HasProd.prodMk {f : β → α} {g : β → γ} {a : α} {b : γ} (hf : HasProd f a)
+    (hg : HasProd g b) : HasProd (fun x ↦ (⟨f x, g x⟩ : α × γ)) ⟨a, b⟩ := by
+  simp [HasProd, ← prod_mk_prod, Filter.Tendsto.prodMk_nhds hf hg]
+
+@[deprecated (since := "2025-03-10")]
+alias HasSum.prod_mk := HasSum.prodMk
+
+@[to_additive existing HasSum.prodMk, deprecated (since := "2025-03-10")]
+alias HasProd.prod_mk := HasProd.prodMk
 
 end ProdCodomain
 
 section ContinuousMul
 
 variable [CommMonoid α] [TopologicalSpace α] [ContinuousMul α]
+
+section Sum
+
+@[to_additive]
+lemma HasProd.sum {α β M : Type*} [CommMonoid M] [TopologicalSpace M] [ContinuousMul M]
+    {f : α ⊕ β → M} {a b : M}
+    (h₁ : HasProd (f ∘ Sum.inl) a) (h₂ : HasProd (f ∘ Sum.inr) b) : HasProd f (a * b) := by
+  have : Tendsto ((∏ b ∈ ·, f b) ∘ sumEquiv.symm) (atTop.map sumEquiv) (nhds (a * b)) := by
+    rw [Finset.sumEquiv.map_atTop, ← prod_atTop_atTop_eq]
+    convert (tendsto_mul.comp (nhds_prod_eq (x := a) (y := b) ▸ Tendsto.prodMap h₁ h₂))
+    ext s
+    simp
+  simpa [Tendsto, ← Filter.map_map] using this
+
+@[to_additive "For the statement that `tsum` commutes with `Finset.sum`,
+  see `Summable.tsum_finsetSum`."]
+protected lemma Multipliable.tprod_sum {α β M : Type*} [CommMonoid M] [TopologicalSpace M]
+    [ContinuousMul M] [T2Space M] {f : α ⊕ β → M} (h₁ : Multipliable (f ∘ .inl))
+    (h₂ : Multipliable (f ∘ .inr)) : ∏' i, f i = (∏' i, f (.inl i)) * (∏' i, f (.inr i)) :=
+  (h₁.hasProd.sum h₂.hasProd).tprod_eq
+
+@[deprecated (since := "2025-04-12")] alias tsum_sum := Summable.tsum_sum
+@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_sum :=
+  Multipliable.tprod_sum
+
+@[to_additive]
+lemma Multipliable.sum {α β M : Type*} [CommMonoid M] [TopologicalSpace M] [ContinuousMul M]
+    (f : α ⊕ β → M) (h₁ : Multipliable (f ∘ Sum.inl)) (h₂ : Multipliable (f ∘ Sum.inr)) :
+    Multipliable f :=
+  ⟨_, .sum h₁.hasProd h₂.hasProd⟩
+
+end Sum
 
 section RegularSpace
 
@@ -86,7 +125,7 @@ theorem HasProd.sigma {γ : β → Type*} {f : (Σ b : β, γ b) → α} {g : β
   use u.image Sigma.fst, trivial
   intro bs hbs
   simp only [Set.mem_preimage, Finset.le_iff_subset] at hu
-  have : Tendsto (fun t : Finset (Σb, γ b) ↦ ∏ p ∈ t with p.1 ∈ bs, f p) atTop
+  have : Tendsto (fun t : Finset (Σ b, γ b) ↦ ∏ p ∈ t with p.1 ∈ bs, f p) atTop
       (𝓝 <| ∏ b ∈ bs, g b) := by
     simp only [← sigma_preimage_mk, prod_sigma]
     refine tendsto_finset_prod _ fun b _ ↦ ?_
@@ -105,7 +144,7 @@ theorem HasProd.prod_fiberwise {f : β × γ → α} {g : β → α} {a : α} (h
   HasProd.sigma ((Equiv.sigmaEquivProd β γ).hasProd_iff.2 ha) hf
 
 @[to_additive]
-theorem Multipliable.sigma' {γ : β → Type*} {f : (Σb : β, γ b) → α} (ha : Multipliable f)
+theorem Multipliable.sigma' {γ : β → Type*} {f : (Σ b : β, γ b) → α} (ha : Multipliable f)
     (hf : ∀ b, Multipliable fun c ↦ f ⟨b, c⟩) : Multipliable fun b ↦ ∏' c, f ⟨b, c⟩ :=
   (ha.hasProd.sigma fun b ↦ (hf b).hasProd).multipliable
 
@@ -116,29 +155,52 @@ section T3Space
 variable [T3Space α]
 
 @[to_additive]
-theorem HasProd.sigma_of_hasProd {γ : β → Type*} {f : (Σb : β, γ b) → α} {g : β → α}
+theorem HasProd.sigma_of_hasProd {γ : β → Type*} {f : (Σ b : β, γ b) → α} {g : β → α}
     {a : α} (ha : HasProd g a) (hf : ∀ b, HasProd (fun c ↦ f ⟨b, c⟩) (g b)) (hf' : Multipliable f) :
     HasProd f a := by simpa [(hf'.hasProd.sigma hf).unique ha] using hf'.hasProd
 
 @[to_additive]
-theorem tprod_sigma' {γ : β → Type*} {f : (Σb : β, γ b) → α}
+protected theorem Multipliable.tprod_sigma' {γ : β → Type*} {f : (Σ b : β, γ b) → α}
     (h₁ : ∀ b, Multipliable fun c ↦ f ⟨b, c⟩) (h₂ : Multipliable f) :
     ∏' p, f p = ∏' (b) (c), f ⟨b, c⟩ :=
   (h₂.hasProd.sigma fun b ↦ (h₁ b).hasProd).tprod_eq.symm
 
-@[to_additive tsum_prod']
-theorem tprod_prod' {f : β × γ → α} (h : Multipliable f)
+@[deprecated (since := "2025-04-12")] alias tsum_sigma' := Summable.tsum_sigma'
+@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_sigma' :=
+  Multipliable.tprod_sigma'
+
+@[to_additive Summable.tsum_prod']
+protected theorem Multipliable.tprod_prod' {f : β × γ → α} (h : Multipliable f)
     (h₁ : ∀ b, Multipliable fun c ↦ f (b, c)) :
     ∏' p, f p = ∏' (b) (c), f (b, c) :=
   (h.hasProd.prod_fiberwise fun b ↦ (h₁ b).hasProd).tprod_eq.symm
 
+@[deprecated (since := "2025-04-12")] alias tsum_prod' := Summable.tsum_prod'
+@[to_additive existing Summable.tsum_prod', deprecated (since := "2025-04-12")] alias tprod_prod' :=
+  Multipliable.tprod_prod'
+
+@[to_additive Summable.tsum_prod_uncurry]
+protected theorem Multipliable.tprod_prod_uncurry {f : β → γ → α}
+    (h : Multipliable (Function.uncurry f)) (h₁ : ∀ b, Multipliable fun c ↦ f b c) :
+    ∏' p : β × γ, uncurry f p = ∏' (b) (c), f b c :=
+  (h.hasProd.prod_fiberwise fun b ↦ (h₁ b).hasProd).tprod_eq.symm
+
+@[deprecated (since := "2025-04-12")] alias tsum_prod_uncurry :=
+  Summable.tsum_prod_uncurry
+@[to_additive existing Summable.tsum_prod_uncurry, deprecated (since := "2025-04-12")] alias
+  tprod_prod_uncurry := Multipliable.tprod_prod_uncurry
+
 @[to_additive]
-theorem tprod_comm' {f : β → γ → α} (h : Multipliable (Function.uncurry f))
+protected theorem Multipliable.tprod_comm' {f : β → γ → α} (h : Multipliable (Function.uncurry f))
     (h₁ : ∀ b, Multipliable (f b)) (h₂ : ∀ c, Multipliable fun b ↦ f b c) :
     ∏' (c) (b), f b c = ∏' (b) (c), f b c := by
-  erw [← tprod_prod' h h₁, ← tprod_prod' h.prod_symm h₂,
-      ← (Equiv.prodComm γ β).tprod_eq (uncurry f)]
+  rw [← h.tprod_prod_uncurry h₁, ← h.prod_symm.tprod_prod_uncurry h₂,
+    ← (Equiv.prodComm γ β).tprod_eq (uncurry f)]
   rfl
+
+@[deprecated (since := "2025-04-12")] alias tsum_comm':= Summable.tsum_comm'
+@[to_additive existing, deprecated (since := "2025-04-12")] alias
+  tprod_comm' := Multipliable.tprod_comm'
 
 end T3Space
 
@@ -146,7 +208,7 @@ end ContinuousMul
 
 section CompleteSpace
 
-variable [CommGroup α] [UniformSpace α] [UniformGroup α]
+variable [CommGroup α] [UniformSpace α] [IsUniformGroup α]
 
 @[to_additive]
 theorem HasProd.of_sigma {γ : β → Type*} {f : (Σ b : β, γ b) → α} {g : β → α} {a : α}
@@ -155,13 +217,14 @@ theorem HasProd.of_sigma {γ : β → Type*} {f : (Σ b : β, γ b) → α} {g :
     HasProd f a := by
   classical
   apply le_nhds_of_cauchy_adhp h
-  simp only [← mapClusterPt_def, mapClusterPt_iff, frequently_atTop, ge_iff_le, le_eq_subset]
+  simp only [← mapClusterPt_def, mapClusterPt_iff_frequently, frequently_atTop, ge_iff_le,
+    le_eq_subset]
   intro u hu s
   rcases mem_nhds_iff.1 hu with ⟨v, vu, v_open, hv⟩
   obtain ⟨t0, st0, ht0⟩ : ∃ t0, ∏ i ∈ t0, g i ∈ v ∧ s.image Sigma.fst ⊆ t0 := by
     have A : ∀ᶠ t0 in (atTop : Filter (Finset β)), ∏ i ∈ t0, g i ∈ v := hg (v_open.mem_nhds hv)
     exact (A.and (Ici_mem_atTop _)).exists
-  have L : Tendsto (fun t : Finset (Σb, γ b) ↦ ∏ p ∈ t with p.1 ∈ t0, f p) atTop
+  have L : Tendsto (fun t : Finset (Σ b, γ b) ↦ ∏ p ∈ t with p.1 ∈ t0, f p) atTop
       (𝓝 <| ∏ b ∈ t0, g b) := by
     simp only [← sigma_preimage_mk, prod_sigma]
     refine tendsto_finset_prod _ fun b _ ↦ ?_
@@ -177,13 +240,13 @@ theorem HasProd.of_sigma {γ : β → Type*} {f : (Σ b : β, γ b) → α} {g :
 variable [CompleteSpace α]
 
 @[to_additive]
-theorem Multipliable.sigma_factor {γ : β → Type*} {f : (Σb : β, γ b) → α}
+theorem Multipliable.sigma_factor {γ : β → Type*} {f : (Σ b : β, γ b) → α}
     (ha : Multipliable f) (b : β) :
     Multipliable fun c ↦ f ⟨b, c⟩ :=
   ha.comp_injective sigma_mk_injective
 
 @[to_additive]
-theorem Multipliable.sigma {γ : β → Type*} {f : (Σb : β, γ b) → α} (ha : Multipliable f) :
+theorem Multipliable.sigma {γ : β → Type*} {f : (Σ b : β, γ b) → α} (ha : Multipliable f) :
     Multipliable fun b ↦ ∏' c, f ⟨b, c⟩ :=
   ha.sigma' fun b ↦ ha.sigma_factor b
 
@@ -208,19 +271,31 @@ section CompleteT0Space
 variable [T0Space α]
 
 @[to_additive]
-theorem tprod_sigma {γ : β → Type*} {f : (Σb : β, γ b) → α} (ha : Multipliable f) :
-    ∏' p, f p = ∏' (b) (c), f ⟨b, c⟩ :=
-  tprod_sigma' (fun b ↦ ha.sigma_factor b) ha
+protected theorem Multipliable.tprod_sigma {γ : β → Type*} {f : (Σ b : β, γ b) → α}
+    (ha : Multipliable f) : ∏' p, f p = ∏' (b) (c), f ⟨b, c⟩ :=
+  Multipliable.tprod_sigma' (fun b ↦ ha.sigma_factor b) ha
 
-@[to_additive tsum_prod]
-theorem tprod_prod {f : β × γ → α} (h : Multipliable f) :
+@[deprecated (since := "2025-04-12")] alias tsum_sigma := Summable.tsum_sigma
+@[to_additive existing, deprecated (since := "2025-04-12")] alias
+  tprod_sigma := Multipliable.tprod_sigma
+
+@[to_additive Summable.tsum_prod]
+protected theorem Multipliable.tprod_prod {f : β × γ → α} (h : Multipliable f) :
     ∏' p, f p = ∏' (b) (c), f ⟨b, c⟩ :=
-  tprod_prod' h h.prod_factor
+  h.tprod_prod' h.prod_factor
+
+@[deprecated (since := "2025-04-12")] alias tsum_prod := Summable.tsum_prod
+@[to_additive existing tsum_prod, deprecated (since := "2025-04-12")]
+  alias tprod_prod := Multipliable.tprod_prod
 
 @[to_additive]
-theorem tprod_comm {f : β → γ → α} (h : Multipliable (Function.uncurry f)) :
+protected theorem Multipliable.tprod_comm {f : β → γ → α} (h : Multipliable (Function.uncurry f)) :
     ∏' (c) (b), f b c = ∏' (b) (c), f b c :=
-  tprod_comm' h h.prod_factor h.prod_symm.prod_factor
+  h.tprod_comm' h.prod_factor h.prod_symm.prod_factor
+
+@[deprecated (since := "2025-04-12")] alias tsum_comm := Summable.tsum_comm
+@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_comm :=
+  Multipliable.tprod_comm
 
 end CompleteT0Space
 
@@ -256,14 +331,14 @@ open MulOpposite
 variable [AddCommMonoid α] [TopologicalSpace α] {f : β → α} {a : α}
 
 theorem HasSum.op (hf : HasSum f a) : HasSum (fun a ↦ op (f a)) (op a) :=
-  (hf.map (@opAddEquiv α _) continuous_op : _)
+  (hf.map (@opAddEquiv α _) continuous_op :)
 
 theorem Summable.op (hf : Summable f) : Summable (op ∘ f) :=
   hf.hasSum.op.summable
 
 theorem HasSum.unop {f : β → αᵐᵒᵖ} {a : αᵐᵒᵖ} (hf : HasSum f a) :
     HasSum (fun a ↦ unop (f a)) (unop a) :=
-  (hf.map (@opAddEquiv α _).symm continuous_unop : _)
+  (hf.map (@opAddEquiv α _).symm continuous_unop :)
 
 theorem Summable.unop {f : β → αᵐᵒᵖ} (hf : Summable f) : Summable (unop ∘ f) :=
   hf.hasSum.unop.summable
@@ -281,8 +356,6 @@ theorem hasSum_unop {f : β → αᵐᵒᵖ} {a : αᵐᵒᵖ} :
 theorem summable_op : (Summable fun a ↦ op (f a)) ↔ Summable f :=
   ⟨Summable.unop, Summable.op⟩
 
--- Porting note: This theorem causes a loop easily in Lean 4, so the priority should be `low`.
-@[simp low]
 theorem summable_unop {f : β → αᵐᵒᵖ} : (Summable fun a ↦ unop (f a)) ↔ Summable f :=
   ⟨Summable.op, Summable.unop⟩
 

@@ -5,7 +5,8 @@ Authors: Nicolò Cavalleri
 -/
 import Mathlib.Data.Set.UnionLift
 import Mathlib.Topology.ContinuousMap.Defs
-import Mathlib.Topology.Homeomorph
+import Mathlib.Topology.Homeomorph.Defs
+import Mathlib.Topology.Separation.Hausdorff
 
 /-!
 # Continuous bundled maps
@@ -71,7 +72,7 @@ variable (α)
 protected def id : C(α, α) where
   toFun := id
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(ContinuousMap.id α) = id :=
   rfl
 
@@ -84,7 +85,7 @@ theorem coe_const (b : β) : ⇑(const α b) = Function.const α b :=
   rfl
 
 /-- `Function.const α b` as a bundled continuous function of `b`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def constPi : C(β, α → β) where
   toFun b := Function.const α b
 
@@ -154,12 +155,12 @@ variable {α₁ α₂ β₁ β₂ : Type*} [TopologicalSpace α₁] [Topological
   [TopologicalSpace β₂]
 
 /-- `Prod.fst : (x, y) ↦ x` as a bundled continuous map. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def fst : C(α × β, α) where
   toFun := Prod.fst
 
 /-- `Prod.snd : (x, y) ↦ y` as a bundled continuous map. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def snd : C(α × β, β) where
   toFun := Prod.snd
 
@@ -227,7 +228,7 @@ theorem pi_eval (f : ∀ i, C(A, X i)) (a : A) : (pi f) a = fun i : I => (f i) a
   rfl
 
 /-- Evaluation at point as a bundled continuous map. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def eval (i : I) : C(∀ j, X j, X i) where
   toFun := Function.eval i
 
@@ -325,13 +326,10 @@ variable (A : Set (Set α)) (F : ∀ s ∈ A, C(s, β))
 /-- A family `F s` of continuous maps `C(s, β)`, where (1) the domains `s` are taken from a set `A`
 of sets in `α` which contain a neighbourhood of each point in `α` and (2) the functions `F s` agree
 pairwise on intersections, can be glued to construct a continuous map in `C(α, β)`. -/
-noncomputable def liftCover' : C(α, β) := by
-  let S : A → Set α := (↑)
+noncomputable def liftCover' : C(α, β) :=
   let F : ∀ i : A, C(i, β) := fun i => F i i.prop
-  refine liftCover S F (fun i j => hF i i.prop j j.prop) ?_
-  intro x
-  obtain ⟨s, hs, hsx⟩ := hA x
-  exact ⟨⟨s, hs⟩, hsx⟩
+  liftCover ((↑) : A → Set α) F (fun i j => hF i i.prop j j.prop)
+    fun x => let ⟨s, hs, hsx⟩ := hA x; ⟨⟨s, hs⟩, hsx⟩
 
 variable {A F hF hA}
 
@@ -341,9 +339,8 @@ variable {A F hF hA}
 @[simp]
 theorem liftCover_coe' {s : Set α} {hs : s ∈ A} (x : s) : liftCover' A F hF hA x = F s hs x :=
   let x' : ((↑) : A → Set α) ⟨s, hs⟩ := x
-  by delta liftCover'; exact liftCover_coe x'
+  by delta liftCover'; exact ContinuousMap.liftCover_coe x'
 
--- Porting note: porting program suggested `ext <| liftCover_coe'`
 @[simp]
 theorem liftCover_restrict' {s : Set α} {hs : s ∈ A} :
     (liftCover' A F hF hA).restrict s = F s hs := ext <| liftCover_coe' (hF := hF) (hA := hA)

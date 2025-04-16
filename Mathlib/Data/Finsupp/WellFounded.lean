@@ -49,7 +49,8 @@ theorem Lex.wellFounded' (hbot : ∀ ⦃n⦄, ¬s n 0) (hs : WellFounded s)
     InvImage.wf _ (DFinsupp.Lex.wellFounded' (fun _ => hbot) (fun _ => hs) hr)
 
 instance Lex.wellFoundedLT {α N} [LT α] [IsTrichotomous α (· < ·)] [hα : WellFoundedGT α]
-    [CanonicallyOrderedAddCommMonoid N] [hN : WellFoundedLT N] : WellFoundedLT (Lex (α →₀ N)) :=
+    [AddMonoid N] [PartialOrder N] [CanonicallyOrderedAdd N]
+    [hN : WellFoundedLT N] : WellFoundedLT (Lex (α →₀ N)) :=
   ⟨Lex.wellFounded' (fun n => (zero_le n).not_lt) hN.wf hα.wf⟩
 
 variable (r)
@@ -66,7 +67,8 @@ protected theorem wellFoundedLT [Preorder N] [WellFoundedLT N] (hbot : ∀ n : N
     WellFoundedLT (α →₀ N) :=
   ⟨InvImage.wf toDFinsupp (DFinsupp.wellFoundedLT fun _ a => hbot a).wf⟩
 
-instance wellFoundedLT' {N} [CanonicallyOrderedAddCommMonoid N] [WellFoundedLT N] :
+instance wellFoundedLT' {N}
+    [AddMonoid N] [PartialOrder N] [CanonicallyOrderedAdd N] [WellFoundedLT N] :
     WellFoundedLT (α →₀ N) :=
   Finsupp.wellFoundedLT fun a => (zero_le a).not_lt
 

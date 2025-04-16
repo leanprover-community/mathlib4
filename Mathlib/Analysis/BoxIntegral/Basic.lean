@@ -207,7 +207,7 @@ theorem integrable_iff_cauchy_basis [CompleteSpace F] : Integrable I l f vol ↔
   rw [integrable_iff_cauchy, cauchy_map_iff',
     (l.hasBasis_toFilteriUnion_top _).prod_self.tendsto_iff uniformity_basis_dist_le]
   refine forall₂_congr fun ε _ => exists_congr fun r => ?_
-  simp only [exists_prop, Prod.forall, Set.mem_iUnion, exists_imp, prod_mk_mem_set_prod_eq, and_imp,
+  simp only [exists_prop, Prod.forall, Set.mem_iUnion, exists_imp, prodMk_mem_set_prod_eq, and_imp,
     mem_inter_iff, mem_setOf_eq]
   exact
     and_congr Iff.rfl
@@ -711,7 +711,7 @@ theorem integrable_of_bounded_and_ae_continuousWithinAt [CompleteSpace E] {I : B
         exact hC _ (TaggedPrepartition.tag_mem_Icc _ J)
     apply (norm_sum_le_of_le B' this).trans
     simp_rw [← sum_mul, μ.toBoxAdditive_apply, ← toReal_sum (fun J hJ ↦ μJ_ne_top J (hB' hJ))]
-    suffices (∑ J in B', μ J).toReal ≤ ε₂ by
+    suffices (∑ J ∈ B', μ J).toReal ≤ ε₂ by
       linarith [mul_le_mul_of_nonneg_right this <| (mul_nonneg_iff_of_pos_left two_pos).2 C0]
     rw [← toReal_ofReal (le_of_lt ε₂0)]
     refine toReal_mono ofReal_ne_top (le_trans ?_ (le_of_lt hU))
@@ -745,7 +745,7 @@ theorem integrable_of_continuousOn [CompleteSpace E] {I : Box ι} {f : ℝⁿ �
   · obtain ⟨C, hC⟩ := (NormedSpace.isBounded_iff_subset_smul_closedBall ℝ).1
                         (I.isCompact_Icc.image_of_continuousOn hc).isBounded
     use ‖C‖, fun x hx ↦ by
-      simpa only [smul_closedUnitBall, mem_closedBall_zero_iff] using hC (Set.mem_image_of_mem f hx)
+      simpa only [smul_unitClosedBall, mem_closedBall_zero_iff] using hC (Set.mem_image_of_mem f hx)
   · refine eventually_of_mem ?_ (fun x hx ↦ hc.continuousWithinAt hx)
     rw [mem_ae_iff, μ.restrict_apply] <;> simp [MeasurableSet.compl_iff.2 I.measurableSet_Icc]
 
@@ -797,7 +797,7 @@ theorem HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (hl : l.bRiemann = 
     specialize hlH hsne
     have : ∀ J ∈ {J ∈ π.boxes | π.tag J ∈ s},
         dist (vol J (f <| π.tag J)) (g J) ≤ εs (π.tag J) := fun J hJ ↦ by
-      rw [Finset.mem_filter] at hJ; cases' hJ with hJ hJs
+      rw [Finset.mem_filter] at hJ; obtain ⟨hJ, hJs⟩ := hJ
       refine Hδ₁ c _ ⟨π.tag_mem_Icc _, hJs⟩ _ (hεs0 _) _ (π.le_of_mem' _ hJ) ?_
         (hπδ.2 hlH J hJ) fun hD => (Finset.le_sup hJ).trans (hπδ.3 hD)
       convert hπδ.1 J hJ using 3; exact (if_pos hJs).symm
@@ -813,12 +813,11 @@ theorem HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (hl : l.bRiemann = 
       exact fun J hJ => (Finset.mem_filter.1 hJ).2
   /- Now we deal with boxes such that `π.tag J ∉ s`.
     In this case the estimate is straightforward. -/
-  -- Porting note: avoided strange elaboration issues by rewriting using `calc`
   calc
     dist (∑ J ∈ π.boxes with ¬tag π J ∈ s, vol J (f (tag π J)))
       (∑ J ∈ π.boxes with ¬tag π J ∈ s, g J)
       ≤ ∑ J ∈ π.boxes with ¬tag π J ∈ s, ε' * B J := dist_sum_sum_le_of_le _ fun J hJ ↦ by
-      rw [Finset.mem_filter] at hJ; cases' hJ with hJ hJs
+      rw [Finset.mem_filter] at hJ; obtain ⟨hJ, hJs⟩ := hJ
       refine Hδ₂ c _ ⟨π.tag_mem_Icc _, hJs⟩ _ ε'0 _ (π.le_of_mem' _ hJ) ?_ (fun hH => hπδ.2 hH J hJ)
         fun hD => (Finset.le_sup hJ).trans (hπδ.3 hD)
       convert hπδ.1 J hJ using 3; exact (if_neg hJs).symm

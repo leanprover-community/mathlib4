@@ -4,23 +4,24 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Lee, Geoffrey Irving
 -/
 import Mathlib.Analysis.Analytic.Constructions
-import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
+import Mathlib.Geometry.Manifold.IsManifold.Basic
 
 /-!
 # Analytic manifolds (possibly with boundary or corners)
 
 An analytic manifold is a manifold modelled on a normed vector space, or a subset like a
-half-space (to get manifolds with boundaries) for which changes of coordinates are analytic in the
-interior and smooth everywhere (including at the boundary).  The definition mirrors
-`SmoothManifoldWithCorners`, but using an `analyticGroupoid` in place of `contDiffGroupoid`.  All
-analytic manifolds are smooth manifolds.
+half-space (to get manifolds with boundaries) for which changes of coordinates are analytic
+everywhere.  The definition mirrors `IsManifold`, but using an `analyticGroupoid` in
+place of `contDiffGroupoid`.  All analytic manifolds are smooth manifolds.
+
+TODO: deprecate the whole file: one should use `IsManifold I ω M` instead
 -/
 
 noncomputable section
 
 open Set Filter Function
 
-open scoped Manifold Filter Topology
+open scoped Manifold Filter Topology ContDiff
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
@@ -143,7 +144,7 @@ section AnalyticManifold
 /-- An analytic manifold w.r.t. a model `I : ModelWithCorners 𝕜 E H` is a charted space over `H`
 s.t. all extended chart conversion maps are analytic. -/
 class AnalyticManifold (I : ModelWithCorners 𝕜 E H) (M : Type*) [TopologicalSpace M]
-  [ChartedSpace H M] extends HasGroupoid M (analyticGroupoid I) : Prop
+  [ChartedSpace H M] : Prop extends HasGroupoid M (analyticGroupoid I)
 
 /-- Normed spaces are analytic manifolds over themselves. -/
 instance AnalyticManifold.self : AnalyticManifold 𝓘(𝕜, E) E where
@@ -162,9 +163,9 @@ instance AnalyticManifold.prod {E A : Type} [NormedAddCommGroup E] [NormedSpace 
       (n.toHasGroupoid.compatible hf2 hg2)
 
 /-- Analytic manifolds are smooth manifolds. -/
-instance AnalyticManifold.smoothManifoldWithCorners [ChartedSpace H M]
+instance AnalyticManifold.isManifold [ChartedSpace H M]
     [cm : AnalyticManifold I M] :
-    SmoothManifoldWithCorners I M where
+    IsManifold I ∞ M where
   compatible hf hg := ⟨(cm.compatible hf hg).1.contDiffOn I.uniqueDiffOn_preimage_source,
     (cm.compatible hg hf).1.contDiffOn I.uniqueDiffOn_preimage_source⟩
 

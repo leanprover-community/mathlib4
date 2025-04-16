@@ -126,5 +126,5 @@ theorem imo2021_q1 :
   rcases hC with ⟨a, ha, b, hb, hab⟩
   simp only [Finset.subset_iff, Finset.mem_inter] at hCA
   -- Now we split into the two cases C ⊆ [n, 2n] \ A and C ⊆ A, which can be dealt with identically.
-  cases' hCA with hCA hCA <;> [right; left] <;>
+  rcases hCA with hCA | hCA <;> [right; left] <;>
     exact ⟨a, (hCA ha).2, b, (hCA hb).2, hab, h₁ a (hCA ha).1 b (hCA hb).1 hab⟩

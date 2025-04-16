@@ -47,8 +47,6 @@ universe u
 
 variable {G : Type u}
 
-open scoped Classical
-
 namespace Monoid
 
 section Monoid
@@ -63,6 +61,7 @@ variable (G) [Monoid G]
 def ExponentExists :=
   ∃ n, 0 < n ∧ ∀ g : G, g ^ n = 1
 
+open scoped Classical in
 /-- The exponent of a group is the smallest positive integer `n` such that `g ^ n = 1` for all
   `g ∈ G` if it exists, otherwise it is zero by convention. -/
 @[to_additive
@@ -132,6 +131,7 @@ theorem exponent_eq_zero_iff_forall : exponent G = 0 ↔ ∀ n > 0, ∃ g : G, g
 
 @[to_additive exponent_nsmul_eq_zero]
 theorem pow_exponent_eq_one (g : G) : g ^ exponent G = 1 := by
+  classical
   by_cases h : ExponentExists G
   · simp_rw [exponent, dif_pos h]
     exact (Nat.find_spec h).2 g
@@ -150,6 +150,7 @@ theorem exponent_pos_of_exists (n : ℕ) (hpos : 0 < n) (hG : ∀ g : G, g ^ n =
 
 @[to_additive]
 theorem exponent_min' (n : ℕ) (hpos : 0 < n) (hG : ∀ g : G, g ^ n = 1) : exponent G ≤ n := by
+  classical
   rw [exponent, dif_pos]
   · apply Nat.find_min'
     exact ⟨hpos, hG⟩
@@ -467,6 +468,7 @@ theorem exponent_eq_iSup_orderOf (h : ∀ g : G, 0 < orderOf g) :
     simp_rw [Set.mem_range, exists_exists_eq_and]
     exact ⟨g, hx⟩
 
+open scoped Classical in
 @[to_additive]
 theorem exponent_eq_iSup_orderOf' :
     exponent G = if ∃ g : G, orderOf g = 0 then 0 else ⨆ g : G, orderOf g := by
@@ -495,11 +497,6 @@ end Monoid
 section Group
 
 variable [Group G] {n m : ℤ}
-
-@[to_additive (attr := deprecated Monoid.one_lt_exponent (since := "2024-02-17"))
-  AddGroup.one_lt_exponent]
-lemma Group.one_lt_exponent [Finite G] [Nontrivial G] : 1 < Monoid.exponent G :=
-  Monoid.one_lt_exponent
 
 @[to_additive]
 theorem Group.exponent_dvd_card [Fintype G] : Monoid.exponent G ∣ Fintype.card G :=
@@ -541,6 +538,7 @@ open Finset Monoid
 @[to_additive]
 theorem Monoid.exponent_pi_eq_zero {ι : Type*} {M : ι → Type*} [∀ i, Monoid (M i)] {j : ι}
     (hj : exponent (M j) = 0) : exponent ((i : ι) → M i) = 0 := by
+  classical
   rw [@exponent_eq_zero_iff, ExponentExists] at hj ⊢
   push_neg at hj ⊢
   peel hj with n hn _
@@ -608,11 +606,13 @@ theorem Commute.of_orderOf_dvd_two [IsCancelMul G] (h : ∀ g : G, orderOf g ∣
     Commute a b := by
   simp_rw [orderOf_dvd_iff_pow_eq_one] at h
   rw [commute_iff_eq, ← mul_right_inj a, ← mul_left_inj b]
+  -- We avoid `group` here to minimize imports while low in the hierarchy;
+  -- typically it would be better to invoke the tactic.
   calc
-    a * (a * b) * b = a ^ 2 * b ^ 2 := by simp only [pow_two]; group
+    a * (a * b) * b = a ^ 2 * b ^ 2 := by simp [pow_two, mul_assoc]
     _ = 1 := by rw [h, h, mul_one]
     _ = (a * b) ^ 2 := by rw [h]
-    _ = a * (b * a) * b := by simp only [pow_two]; group
+    _ = a * (b * a) * b := by simp [pow_two, mul_assoc]
 
 /-- In a cancellative monoid of exponent two, all elements commute. -/
 @[to_additive]
@@ -642,18 +642,10 @@ lemma inv_eq_self_of_orderOf_eq_two {x : G} (hx : orderOf x = 2) :
     x⁻¹ = x :=
   inv_eq_of_mul_eq_one_left <| pow_two (a := x) ▸ hx ▸ pow_orderOf_eq_one x
 
--- TODO: delete
-/-- Any group of exponent two is abelian. -/
-@[to_additive (attr := reducible,
-  deprecated "No deprecation message was provided." (since := "2024-02-17"))
-  "Any additive group of exponent two is abelian."]
-def instCommGroupOfExponentTwo (hG : Monoid.exponent G = 2) : CommGroup G where
-  mul_comm := mul_comm_of_exponent_two hG
-
 @[to_additive]
 lemma mul_not_mem_of_orderOf_eq_two {x y : G} (hx : orderOf x = 2)
     (hy : orderOf y = 2) (hxy : x ≠ y) : x * y ∉ ({x, y, 1} : Set G) := by
-  simp only [Set.mem_singleton_iff, Set.mem_insert_iff, mul_right_eq_self, mul_left_eq_self,
+  simp only [Set.mem_singleton_iff, Set.mem_insert_iff, mul_eq_left, mul_eq_right,
     mul_eq_one_iff_eq_inv, inv_eq_self_of_orderOf_eq_two hy, not_or]
   aesop
 

@@ -3,6 +3,7 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
+import Mathlib.LinearAlgebra.Basis.Submodule
 import Mathlib.LinearAlgebra.Matrix.Reindex
 import Mathlib.LinearAlgebra.Matrix.ToLin
 
@@ -80,8 +81,8 @@ theorem toMatrix_update [DecidableEq ι'] (x : M) :
   ext i' k
   rw [Basis.toMatrix, Matrix.updateCol_apply, e.toMatrix_apply]
   split_ifs with h
-  · rw [h, update_same j x v]
-  · rw [update_noteq h]
+  · rw [h, update_self j x v]
+  · rw [update_of_ne h]
 
 /-- The basis constructed by `unitsSMul` has vectors given by a diagonal matrix. -/
 @[simp]
@@ -105,14 +106,14 @@ theorem toMatrix_smul_left {G} [Group G] [DistribMulAction G M] [SMulCommClass G
 theorem sum_toMatrix_smul_self [Fintype ι] : ∑ i : ι, e.toMatrix v i j • e i = v j := by
   simp_rw [e.toMatrix_apply, e.sum_repr]
 
-theorem toMatrix_smul {R₁ S : Type*} [CommRing R₁] [Ring S] [Algebra R₁ S] [Fintype ι]
+theorem toMatrix_smul {R₁ S : Type*} [CommSemiring R₁] [Semiring S] [Algebra R₁ S] [Fintype ι]
     [DecidableEq ι] (x : S) (b : Basis ι R₁ S) (w : ι → S) :
     (b.toMatrix (x • w)) = (Algebra.leftMulMatrix b x) * (b.toMatrix w) := by
   ext
   rw [Basis.toMatrix_apply, Pi.smul_apply, smul_eq_mul, ← Algebra.leftMulMatrix_mulVec_repr]
   rfl
 
-theorem toMatrix_map_vecMul {S : Type*} [Ring S] [Algebra R S] [Fintype ι] (b : Basis ι R S)
+theorem toMatrix_map_vecMul {S : Type*} [Semiring S] [Algebra R S] [Fintype ι] (b : Basis ι R S)
     (v : ι' → S) : b ᵥ* ((b.toMatrix v).map <| algebraMap R S) = v := by
   ext i
   simp_rw [vecMul, dotProduct, Matrix.map_apply, ← Algebra.commutes, ← Algebra.smul_def,
@@ -230,10 +231,12 @@ theorem Basis.toMatrix_reindex' [DecidableEq ι] [DecidableEq ι'] (b : Basis ι
     Matrix.reindex_apply, Matrix.submatrix_apply, Function.comp_apply, e.apply_symm_apply,
     Finsupp.mapDomain_equiv_apply]
 
+omit [Fintype ι'] in
 @[simp]
-lemma Basis.toMatrix_mulVec_repr (m : M) :
+lemma Basis.toMatrix_mulVec_repr [Finite ι'] (m : M) :
     b'.toMatrix b *ᵥ b.repr m = b'.repr m := by
   classical
+  cases nonempty_fintype ι'
   simp [← LinearMap.toMatrix_id_eq_basis_toMatrix, LinearMap.toMatrix_mulVec_repr]
 
 end Fintype

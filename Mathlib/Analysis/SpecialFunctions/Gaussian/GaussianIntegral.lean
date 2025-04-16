@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
 import Mathlib.Analysis.SpecialFunctions.PolarCoord
 import Mathlib.Analysis.Complex.Convex
+import Mathlib.Data.Nat.Factorial.DoubleFactorial
 
 /-!
 # Gaussian integral
@@ -36,7 +37,7 @@ theorem exp_neg_mul_rpow_isLittleO_exp_neg {p b : ℝ} (hb : 0 < b) (hp : 1 < p)
     rw [rpow_sub_one hx.ne']
     field_simp [hx.ne']
     ring
-  apply Tendsto.atTop_mul_atTop tendsto_id
+  apply tendsto_id.atTop_mul_atTop₀
   refine tendsto_atTop_add_const_right atTop (-1 : ℝ) ?_
   exact Tendsto.const_mul_atTop hb (tendsto_rpow_atTop (by linarith))
 
@@ -146,8 +147,7 @@ theorem integrable_mul_exp_neg_mul_sq {b : ℝ} (hb : 0 < b) :
 
 theorem norm_cexp_neg_mul_sq (b : ℂ) (x : ℝ) :
     ‖Complex.exp (-b * (x : ℂ) ^ 2)‖ = exp (-b.re * x ^ 2) := by
-  rw [Complex.norm_eq_abs, Complex.abs_exp, ← ofReal_pow, mul_comm (-b) _, re_ofReal_mul, neg_re,
-    mul_comm]
+  rw [norm_exp, ← ofReal_pow, mul_comm (-b) _, re_ofReal_mul, neg_re, mul_comm]
 
 theorem integrable_cexp_neg_mul_sq {b : ℂ} (hb : 0 < b.re) :
     Integrable fun x : ℝ => cexp (-b * (x : ℂ) ^ 2) := by
@@ -164,8 +164,7 @@ theorem integrable_mul_cexp_neg_mul_sq {b : ℂ} (hb : 0 < b.re) :
   have := (integrable_mul_exp_neg_mul_sq hb).hasFiniteIntegral
   rw [← hasFiniteIntegral_norm_iff] at this ⊢
   convert this
-  rw [norm_mul, norm_mul, norm_cexp_neg_mul_sq b, Complex.norm_eq_abs, abs_ofReal, Real.norm_eq_abs,
-    norm_of_nonneg (exp_pos _).le]
+  rw [norm_mul, norm_mul, norm_cexp_neg_mul_sq b, norm_real, norm_of_nonneg (exp_pos _).le]
 
 theorem integral_mul_cexp_neg_mul_sq {b : ℂ} (hb : 0 < b.re) :
     ∫ r : ℝ in Ioi 0, (r : ℂ) * cexp (-b * (r : ℂ) ^ 2) = (2 * b)⁻¹ := by
@@ -351,3 +350,24 @@ theorem Complex.Gamma_one_half_eq : Complex.Gamma (1 / 2) = (π : ℂ) ^ (1 / 2 
   convert congr_arg ((↑) : ℝ → ℂ) Real.Gamma_one_half_eq
   · simpa only [one_div, ofReal_inv, ofReal_ofNat] using Gamma_ofReal (1 / 2)
   · rw [sqrt_eq_rpow, ofReal_cpow pi_pos.le, ofReal_div, ofReal_ofNat, ofReal_one]
+
+open scoped Nat in
+/-- The special-value formula `Γ(k + 1 + 1/2) = (2 * k + 1)‼ * √π / (2 ^ (k + 1))` for half-integer
+values of the gamma function in terms of `Nat.doubleFactorial`. -/
+lemma Real.Gamma_nat_add_one_add_half (k : ℕ) :
+    Gamma (k + 1 + 1 / 2) = (2 * k + 1 : ℕ)‼ * √π / (2 ^ (k + 1)) := by
+  induction k with
+  | zero => simp [-one_div, add_comm (1 : ℝ), Gamma_add_one, Gamma_one_half_eq]; ring
+  | succ k ih =>
+    rw [add_right_comm, Gamma_add_one (by positivity), Nat.cast_add, Nat.cast_one, ih, Nat.mul_add]
+    field_simp
+    ring
+
+open scoped Nat in
+/-- The special-value formula `Γ(k + 1/2) = (2 * k - 1)‼ * √π / (2 ^ k))` for half-integer
+values of the gamma function in terms of `Nat.doubleFactorial`. -/
+lemma Real.Gamma_nat_add_half (k : ℕ) :
+    Gamma (k + 1 / 2) = (2 * k - 1 : ℕ)‼ * √π / (2 ^ k) := by
+  cases k with
+  | zero => simp [- one_div, Gamma_one_half_eq]
+  | succ k => simpa [-one_div, mul_add] using Gamma_nat_add_one_add_half k

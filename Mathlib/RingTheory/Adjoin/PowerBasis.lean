@@ -33,9 +33,7 @@ noncomputable def adjoin.powerBasisAux {x : S} (hx : IsIntegral K x) :
     IsIntegral K (⟨x, subset_adjoin (Set.mem_singleton x)⟩ : adjoin K ({x} : Set S)) := by
     apply (isIntegral_algebraMap_iff hST).mp
     convert hx
-  apply
-    @Basis.mk (Fin (minpoly K x).natDegree) _ (adjoin K {x}) fun i =>
-      ⟨x, subset_adjoin (Set.mem_singleton x)⟩ ^ (i : ℕ)
+  apply Basis.mk (v := fun i : Fin _ ↦ ⟨x, subset_adjoin (Set.mem_singleton x)⟩ ^ (i : ℕ))
   · have : LinearIndependent K _ := linearIndependent_pow
       (⟨x, self_mem_adjoin_singleton _ _⟩ : adjoin K {x})
     rwa [← minpoly.algebraMap_eq hST] at this
@@ -87,10 +85,11 @@ variable [IsScalarTower R S A] {B : PowerBasis S A}
 `IsIntegral R (B.basis.repr (B.gen ^ n) i)` for all `i` if
 `minpoly S B.gen = (minpoly R B.gen).map (algebraMap R S)`. This is the case if `R` is a GCD domain
 and `S` is its fraction ring. -/
-theorem repr_gen_pow_isIntegral (hB : IsIntegral R B.gen) [IsDomain S]
+theorem repr_gen_pow_isIntegral (hB : IsIntegral R B.gen)
     (hmin : minpoly S B.gen = (minpoly R B.gen).map (algebraMap R S)) (n : ℕ) :
     ∀ i, IsIntegral R (B.basis.repr (B.gen ^ n) i) := by
   intro i
+  nontriviality S
   let Q := X ^ n %ₘ minpoly R B.gen
   have : B.gen ^ n = aeval B.gen Q := by
     rw [← @aeval_X_pow R _ _ _ _ B.gen, ← modByMonic_add_div (X ^ n) (minpoly.monic hB)]
@@ -119,7 +118,7 @@ theorem repr_gen_pow_isIntegral (hB : IsIntegral R B.gen) [IsDomain S]
 integral coordinates in the base `B.basis`. Then `IsIntegral R ((B.basis.repr (x * y) i)` for all
 `i` if `minpoly S B.gen = (minpoly R B.gen).map (algebraMap R S)`. This is the case if `R` is a GCD
 domain and `S` is its fraction ring. -/
-theorem repr_mul_isIntegral (hB : IsIntegral R B.gen) [IsDomain S] {x y : A}
+theorem repr_mul_isIntegral (hB : IsIntegral R B.gen) {x y : A}
     (hx : ∀ i, IsIntegral R (B.basis.repr x i)) (hy : ∀ i, IsIntegral R (B.basis.repr y i))
     (hmin : minpoly S B.gen = (minpoly R B.gen).map (algebraMap R S)) :
     ∀ i, IsIntegral R (B.basis.repr (x * y) i) := by
@@ -137,7 +136,7 @@ theorem repr_mul_isIntegral (hB : IsIntegral R B.gen) [IsDomain S] {x y : A}
 with integral coordinates in the base `B.basis`. Then `IsIntegral R ((B.basis.repr (x ^ n) i)` for
 all `i` and all `n` if `minpoly S B.gen = (minpoly R B.gen).map (algebraMap R S)`. This is the case
 if `R` is a GCD domain and `S` is its fraction ring. -/
-theorem repr_pow_isIntegral [IsDomain S] (hB : IsIntegral R B.gen) {x : A}
+theorem repr_pow_isIntegral (hB : IsIntegral R B.gen) {x : A}
     (hx : ∀ i, IsIntegral R (B.basis.repr x i))
     (hmin : minpoly S B.gen = (minpoly R B.gen).map (algebraMap R S)) (n : ℕ) :
     ∀ i, IsIntegral R (B.basis.repr (x ^ n) i) := by

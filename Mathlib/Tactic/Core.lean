@@ -25,7 +25,7 @@ open Elab Meta
 Return the modifiers of declaration `nm` with (optional) docstring `newDoc`.
 Currently, recursive or partial definitions are not supported, and no attributes are provided.
 -/
-def toModifiers (nm : Name) (newDoc : Option String := none) :
+def toModifiers (nm : Name) (newDoc : Option (TSyntax `Lean.Parser.Command.docComment) := none) :
     CoreM Modifiers := do
   let env ← getEnv
   let d ← getConstInfo nm
@@ -50,7 +50,8 @@ You can provide a new type, value and (optional) docstring, but the remaining in
 from `nm`.
 Currently only implemented for definitions and theorems. Also see docstring of `toModifiers`
 -/
-def toPreDefinition (nm newNm : Name) (newType newValue : Expr) (newDoc : Option String := none) :
+def toPreDefinition (nm newNm : Name) (newType newValue : Expr)
+    (newDoc : Option (TSyntax `Lean.Parser.Command.docComment) := none) :
     CoreM PreDefinition := do
   let d ← getConstInfo nm
   let mods ← toModifiers nm newDoc
@@ -190,8 +191,8 @@ def allGoals (tac : TacticM Unit) : TacticM Unit := do
           throw ex
   setGoals mvarIdsNew.toList
 
-/-- Simulates the `<;>` tactic combinator. First runs `tac1` and then runs
-    `tac2` on all newly-generated subgoals.
+/-- Simulates the `<;>` tactic combinator.
+First runs `tac1` and then runs `tac2` on all newly-generated subgoals.
 -/
 def andThenOnSubgoals (tac1 : TacticM Unit) (tac2 : TacticM Unit) : TacticM Unit :=
   focus do tac1; allGoals tac2

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz, Yongle Hu, Jingting Wang
 -/
 import Mathlib.FieldTheory.Fixed
-import Mathlib.FieldTheory.NormalClosure
+import Mathlib.FieldTheory.Normal.Closure
 import Mathlib.FieldTheory.PrimitiveElement
 import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 
@@ -35,7 +35,7 @@ Together, these two results prove the Galois correspondence.
 
 open scoped Polynomial IntermediateField
 
-open Module AlgEquiv
+open Module AlgEquiv IntermediateField
 
 section
 
@@ -99,7 +99,7 @@ $|\text{Aut}(E/F)| = [E : F]$. -/
 @[stacks 09I1 "'only if' part"]
 theorem card_aut_eq_finrank [FiniteDimensional F E] [IsGalois F E] :
     Fintype.card (E ≃ₐ[F] E) = finrank F E := by
-  cases' Field.exists_primitive_element F E with α hα
+  obtain ⟨α, hα⟩ := Field.exists_primitive_element F E
   let iso : F⟮α⟯ ≃ₐ[F] E :=
     { toFun := fun e => e.val
       invFun := fun e => ⟨e, by rw [hα]; exact IntermediateField.mem_top⟩
@@ -184,6 +184,11 @@ namespace IntermediateField
 def fixedField : IntermediateField F E :=
   FixedPoints.intermediateField H
 
+theorem mem_fixedField_iff (x) :
+    x ∈ fixedField H ↔ ∀ f ∈ H, f x = x := by
+  show x ∈ MulAction.fixedPoints H E ↔ _
+  simp only [MulAction.mem_fixedPoints, Subtype.forall, Subgroup.mk_smul, AlgEquiv.smul_def]
+
 theorem finrank_fixedField_eq_card [FiniteDimensional F E] [DecidablePred (· ∈ H)] :
     finrank (fixedField H) E = Fintype.card H :=
   FixedPoints.finrank_eq_card H E
@@ -194,6 +199,11 @@ nonrec def fixingSubgroup : Subgroup (E ≃ₐ[F] E) :=
 
 theorem le_iff_le : K ≤ fixedField H ↔ H ≤ fixingSubgroup K :=
   ⟨fun h g hg x => h (Subtype.mem x) ⟨g, hg⟩, fun h x hx g => h (Subtype.mem g) ⟨x, hx⟩⟩
+
+lemma fixingSubgroup_anti : Antitone (IntermediateField.fixingSubgroup (F := F) (E := E)) := by
+  intro K K' h
+  rw [← le_iff_le]
+  exact le_trans h ((le_iff_le _ _).mpr (le_refl K'.fixingSubgroup))
 
 /-- The fixing subgroup of `K : IntermediateField F E` is isomorphic to `E ≃ₐ[K] E` -/
 def fixingSubgroupEquiv : fixingSubgroup K ≃* E ≃ₐ[K] E where
@@ -215,17 +225,17 @@ theorem fixingSubgroup_fixedField [FiniteDimensional F E] : fixingSubgroup (fixe
   refine (algEquivEquivAlgHom (fixedField H) E).toEquiv.symm.trans ?_
   exact (fixingSubgroupEquiv (fixedField H)).toEquiv.symm
 
--- Porting note: added `fixedField.smul` for `fixedField.isScalarTower`
 instance fixedField.smul : SMul K (fixedField (fixingSubgroup K)) where
   smul x y := ⟨x * y, fun ϕ => by
     rw [smul_mul', show ϕ • (x : E) = ↑x from ϕ.2 x, show ϕ • (y : E) = ↑y from y.2 ϕ]⟩
 
 instance fixedField.algebra : Algebra K (fixedField (fixingSubgroup K)) where
-  toFun x := ⟨x, fun ϕ => Subtype.mem ϕ x⟩
-  map_zero' := rfl
-  map_add' _ _ := rfl
-  map_one' := rfl
-  map_mul' _ _ := rfl
+  algebraMap :=
+  { toFun x := ⟨x, fun ϕ => Subtype.mem ϕ x⟩
+    map_zero' := rfl
+    map_add' _ _ := rfl
+    map_one' := rfl
+    map_mul' _ _ := rfl }
   commutes' _ _ := mul_comm _ _
   smul_def' _ _ := rfl
 
@@ -281,18 +291,15 @@ def galoisCoinsertionIntermediateFieldSubgroup [FiniteDimensional F E] [IsGalois
     GaloisCoinsertion (OrderDual.toDual ∘
       (IntermediateField.fixingSubgroup : IntermediateField F E → Subgroup (E ≃ₐ[F] E)))
       ((IntermediateField.fixedField : Subgroup (E ≃ₐ[F] E) → IntermediateField F E) ∘
-        OrderDual.toDual) where
-  choice H _ := IntermediateField.fixedField H
-  gc K H := (IntermediateField.le_iff_le H K).symm
-  u_l_le K := le_of_eq (fixedField_fixingSubgroup K)
-  choice_eq _ _ := rfl
+        OrderDual.toDual) :=
+  OrderIso.toGaloisCoinsertion intermediateFieldEquivSubgroup
 
 end IsGalois
 
 section
 
 /-In this section we prove that the normal subgroups correspond to the Galois subextensions
-in the Galois correspondence and its related results.-/
+in the Galois correspondence and its related results. -/
 
 variable {K L : Type*} [Field K] [Field L] [Algebra K L]
 
@@ -365,7 +372,7 @@ namespace IsGalois
 
 theorem is_separable_splitting_field [FiniteDimensional F E] [IsGalois F E] :
     ∃ p : F[X], p.Separable ∧ p.IsSplittingField F E := by
-  cases' Field.exists_primitive_element F E with α h1
+  obtain ⟨α, h1⟩ := Field.exists_primitive_element F E
   use minpoly F α, separable F α, IsGalois.splits F α
   rw [eq_top_iff, ← IntermediateField.top_toSubalgebra, ← h1]
   rw [IntermediateField.adjoin_simple_toSubalgebra_of_integral (integral F α)]

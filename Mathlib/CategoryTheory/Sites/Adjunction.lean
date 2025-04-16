@@ -28,7 +28,7 @@ variable {F : D ⥤ E} {G : E ⥤ D}
 
 /-- The forgetful functor from `Sheaf J D` to sheaves of types, for a concrete category `D`
 whose forgetful functor preserves the correct limits. -/
-abbrev sheafForget [ConcreteCategory D] [HasSheafCompose J (forget D)] :
+abbrev sheafForget [HasForget D] [HasSheafCompose J (forget D)] :
     Sheaf J D ⥤ Sheaf J (Type _) :=
   sheafCompose J (forget D)
 
@@ -96,7 +96,7 @@ instance [G.IsLeftAdjoint] : J.PreservesSheafification G :=
 
 section ForgetToType
 
-variable [HasWeakSheafify J D] [ConcreteCategory D] [HasSheafCompose J (forget D)]
+variable [HasWeakSheafify J D] [HasForget D] [HasSheafCompose J (forget D)]
 
 @[deprecated (since := "2024-11-26")] alias composeAndSheafifyFromTypes := composeAndSheafify
 

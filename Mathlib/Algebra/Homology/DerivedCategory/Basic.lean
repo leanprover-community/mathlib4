@@ -60,6 +60,8 @@ or enough injectives).
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 universe w v u
 
 open CategoryTheory Limits Pretriangulated
@@ -73,7 +75,7 @@ of acyclic complexes. -/
 def subcategoryAcyclic : Triangulated.Subcategory (HomotopyCategory C (ComplexShape.up ℤ)) :=
   (homologyFunctor C (ComplexShape.up ℤ) 0).homologicalKernel
 
-instance : ClosedUnderIsomorphisms (subcategoryAcyclic C).P := by
+instance : (subcategoryAcyclic C).P.IsClosedUnderIsomorphisms := by
   dsimp [subcategoryAcyclic]
   infer_instance
 
@@ -271,5 +273,9 @@ lemma singleFunctorsPostcompQIso_inv_hom (n : ℤ) :
   rw [SingleFunctors.id_hom, NatTrans.id_app]
   erw [Category.id_comp, Category.id_comp]
   rfl
+
+lemma isIso_Q_map_iff_quasiIso {K L : CochainComplex C ℤ} (φ : K ⟶ L) :
+    IsIso (Q.map φ) ↔ QuasiIso φ := by
+  apply HomologicalComplexUpToQuasiIso.isIso_Q_map_iff_mem_quasiIso
 
 end DerivedCategory

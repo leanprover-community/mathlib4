@@ -19,7 +19,8 @@ This allows us to use the intermediate steps of a Levenshtein distance calculati
 to produce lower bounds on the final result.
 -/
 
-variable {α β δ : Type*} {C : Levenshtein.Cost α β δ} [CanonicallyLinearOrderedAddCommMonoid δ]
+variable {α β δ : Type*} {C : Levenshtein.Cost α β δ}
+  [AddCommMonoid δ] [LinearOrder δ] [CanonicallyOrderedAdd δ]
 
 theorem suffixLevenshtein_minimum_le_levenshtein_cons (xs : List α) (y ys) :
     (suffixLevenshtein C xs ys).1.minimum ≤ levenshtein C xs (y :: ys) := by

@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Convex.Topology
 import Mathlib.Analysis.Normed.Module.Basic
+import Mathlib.Analysis.Seminorm
 import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
@@ -69,15 +70,17 @@ def UniqueDiffOn (s : Set E) : Prop :=
 
 end TangentCone
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G]
-variable {𝕜} {x y : E} {s t : Set E}
+variable {𝕜}
+variable {E F G : Type*}
 
 section TangentCone
 
 -- This section is devoted to the properties of the tangent cone.
+
 open NormedField
+section TVS
+variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+variable {x y : E} {s t : Set E}
 
 theorem mem_tangentConeAt_of_pow_smul {r : 𝕜} (hr₀ : r ≠ 0) (hr : ‖r‖ < 1)
     (hs : ∀ᶠ n : ℕ in atTop, x + r ^ n • y ∈ s) : y ∈ tangentConeAt 𝕜 s x := by
@@ -94,6 +97,14 @@ theorem tangentCone_univ : tangentConeAt 𝕜 univ x = univ :=
 theorem tangentCone_mono (h : s ⊆ t) : tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 t x := by
   rintro y ⟨c, d, ds, ctop, clim⟩
   exact ⟨c, d, mem_of_superset ds fun n hn => h hn, ctop, clim⟩
+
+end TVS
+
+section Normed
+variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable [NormedAddCommGroup G] [NormedSpace ℝ G]
+variable {x y : E} {s t : Set E}
 
 /-- Auxiliary lemma ensuring that, under the assumptions defining the tangent cone,
 the sequence `d` tends to 0 at infinity. -/
@@ -144,7 +155,7 @@ theorem subset_tangentCone_prod_left {t : Set F} {y : F} (ht : y ∈ closure t) 
   · show ∀ᶠ n in atTop, (x, y) + (d n, d' n) ∈ s ×ˢ t
     filter_upwards [hd] with n hn
     simp [hn, (hd' n).1]
-  · apply Tendsto.prod_mk_nhds hy _
+  · apply Tendsto.prodMk_nhds hy _
     refine squeeze_zero_norm (fun n => (hd' n).2.le) ?_
     exact tendsto_pow_atTop_nhds_zero_of_lt_one one_half_pos.le one_half_lt_one
 
@@ -163,7 +174,7 @@ theorem subset_tangentCone_prod_right {t : Set F} {y : F} (hs : x ∈ closure s)
   · show ∀ᶠ n in atTop, (x, y) + (d' n, d n) ∈ s ×ˢ t
     filter_upwards [hd] with n hn
     simp [hn, (hd' n).1]
-  · apply Tendsto.prod_mk_nhds _ hy
+  · apply Tendsto.prodMk_nhds _ hy
     refine squeeze_zero_norm (fun n => (hd' n).2.le) ?_
     exact tendsto_pow_atTop_nhds_zero_of_lt_one one_half_pos.le one_half_lt_one
 
@@ -207,6 +218,137 @@ theorem mem_tangentCone_of_segment_subset {s : Set G} {x y : G} (h : segment ℝ
     y - x ∈ tangentConeAt ℝ s x :=
   mem_tangentCone_of_openSegment_subset ((openSegment_subset_segment ℝ x y).trans h)
 
+/-- The tangent cone at a non-isolated point contains `0`. -/
+theorem zero_mem_tangentCone {s : Set E} {x : E} (hx : (𝓝[s \ {x}] x).NeBot) :
+    0 ∈ tangentConeAt 𝕜 s x := by
+  /- Take a sequence `d n` tending to `0` such that `x + d n ∈ s`. Taking `c n` of the order
+  of `1 / (d n) ^ (1/2)`, then `c n` tends to infinity, but `c n • d n` tends to `0`. By definition,
+  this shows that `0` belongs to the tangent cone. -/
+  obtain ⟨u, -, u_pos, u_lim⟩ :
+      ∃ u, StrictAnti u ∧ (∀ (n : ℕ), 0 < u n) ∧ Tendsto u atTop (𝓝 (0 : ℝ)) :=
+    exists_seq_strictAnti_tendsto (0 : ℝ)
+  have A n : ((s \ {x}) ∩ Metric.ball x (u n * u n)).Nonempty :=
+    NeBot.nonempty_of_mem hx (inter_mem_nhdsWithin _
+      (Metric.ball_mem_nhds _ (mul_pos (u_pos n) (u_pos n))))
+  choose v hv using A
+  let d n := v n - x
+  have M n : x + d n ∈ s \ {x} := by simpa [d] using (hv n).1
+  let ⟨r, hr⟩ := exists_one_lt_norm 𝕜
+  have W n := rescale_to_shell hr (u_pos n) (x := d n) (by simpa using (M n).2)
+  choose c c_ne c_le le_c hc using W
+  have c_lim : Tendsto (fun n ↦ ‖c n‖) atTop atTop := by
+    suffices Tendsto (fun n ↦ ‖c n‖⁻¹ ⁻¹) atTop atTop by simpa
+    apply tendsto_inv_nhdsGT_zero.comp
+    simp only [nhdsWithin, tendsto_inf, tendsto_principal, mem_Ioi, norm_pos_iff, ne_eq,
+      eventually_atTop, ge_iff_le]
+    have B (n : ℕ) : ‖c n‖⁻¹ ≤ ‖r‖ * u n := calc
+      ‖c n‖⁻¹
+      _ ≤ (u n)⁻¹ * ‖r‖ * ‖d n‖ := hc n
+      _ ≤ (u n)⁻¹ * ‖r‖ * (u n * u n) := by
+        gcongr
+        · exact mul_nonneg (by simp [(u_pos n).le]) (norm_nonneg _)
+        · specialize hv n
+          simp only [mem_inter_iff, mem_diff, mem_singleton_iff, Metric.mem_ball, dist_eq_norm]
+            at hv
+          simpa using hv.2.le
+      _ = ‖r‖ * u n := by field_simp [(u_pos n).ne']; ring
+    refine ⟨?_, 0, fun n hn ↦ by simpa using c_ne n⟩
+    apply squeeze_zero (fun n ↦ by positivity) B
+    simpa using u_lim.const_mul _
+  refine ⟨c, d, Eventually.of_forall (fun n ↦ by simpa [d] using (hv n).1.1), c_lim, ?_⟩
+  rw [tendsto_zero_iff_norm_tendsto_zero]
+  exact squeeze_zero (fun n ↦ by positivity) (fun n ↦ (c_le n).le) u_lim
+
+/-- In a proper space, the tangent cone at a non-isolated point is nontrivial. -/
+theorem tangentCone_nonempty_of_properSpace [ProperSpace E]
+    {s : Set E} {x : E} (hx : (𝓝[s \ {x}] x).NeBot) :
+    (tangentConeAt 𝕜 s x ∩ {0}ᶜ).Nonempty := by
+  /- Take a sequence `d n` tending to `0` such that `x + d n ∈ s`. Taking `c n` of the order
+  of `1 / d n`. Then `c n • d n` belongs to a fixed annulus. By compactness, one can extract
+  a subsequence converging to a limit `l`. Then `l` is nonzero, and by definition it belongs to
+  the tangent cone. -/
+  obtain ⟨u, -, u_pos, u_lim⟩ :
+      ∃ u, StrictAnti u ∧ (∀ (n : ℕ), 0 < u n) ∧ Tendsto u atTop (𝓝 (0 : ℝ)) :=
+    exists_seq_strictAnti_tendsto (0 : ℝ)
+  have A n : ((s \ {x}) ∩ Metric.ball x (u n)).Nonempty := by
+    apply NeBot.nonempty_of_mem hx (inter_mem_nhdsWithin _ (Metric.ball_mem_nhds _ (u_pos n)))
+  choose v hv using A
+  let d := fun n ↦ v n - x
+  have M n : x + d n ∈ s \ {x} := by simpa [d] using (hv n).1
+  let ⟨r, hr⟩ := exists_one_lt_norm 𝕜
+  have W n := rescale_to_shell hr zero_lt_one (x := d n) (by simpa using (M n).2)
+  choose c c_ne c_le le_c hc using W
+  have c_lim : Tendsto (fun n ↦ ‖c n‖) atTop atTop := by
+    suffices Tendsto (fun n ↦ ‖c n‖⁻¹ ⁻¹ ) atTop atTop by simpa
+    apply tendsto_inv_nhdsGT_zero.comp
+    simp only [nhdsWithin, tendsto_inf, tendsto_principal, mem_Ioi, norm_pos_iff, ne_eq,
+      eventually_atTop, ge_iff_le]
+    have B (n : ℕ) : ‖c n‖⁻¹ ≤ 1⁻¹ * ‖r‖ * u n := by
+      apply (hc n).trans
+      gcongr
+      specialize hv n
+      simp only [mem_inter_iff, mem_diff, mem_singleton_iff, Metric.mem_ball, dist_eq_norm] at hv
+      simpa using hv.2.le
+    refine ⟨?_, 0, fun n hn ↦ by simpa using c_ne n⟩
+    apply squeeze_zero (fun n ↦ by positivity) B
+    simpa using u_lim.const_mul _
+  obtain ⟨l, l_mem, φ, φ_strict, hφ⟩ :
+      ∃ l ∈ Metric.closedBall (0 : E) 1 \ Metric.ball (0 : E) (1 / ‖r‖),
+      ∃ (φ : ℕ → ℕ), StrictMono φ ∧ Tendsto ((fun n ↦ c n • d n) ∘ φ) atTop (𝓝 l) := by
+    apply IsCompact.tendsto_subseq _ (fun n ↦ ?_)
+    · exact (isCompact_closedBall 0 1).diff Metric.isOpen_ball
+    simp only [mem_diff, Metric.mem_closedBall, dist_zero_right, (c_le n).le,
+      Metric.mem_ball, not_lt, true_and, le_c n]
+  refine ⟨l, ?_, ?_⟩; swap
+  · simp only [mem_compl_iff, mem_singleton_iff]
+    contrapose! l_mem
+    simp only [one_div, l_mem, mem_diff, Metric.mem_closedBall, dist_self, zero_le_one,
+      Metric.mem_ball, inv_pos, norm_pos_iff, ne_eq, not_not, true_and]
+    contrapose! hr
+    simp [hr]
+  refine ⟨c ∘ φ, d ∘ φ, ?_, ?_, hφ⟩
+  · exact Eventually.of_forall (fun n ↦ by simpa [d] using (hv (φ n)).1.1)
+  · exact c_lim.comp φ_strict.tendsto_atTop
+
+/-- The tangent cone at a non-isolated point in dimension 1 is the whole space. -/
+theorem tangentCone_eq_univ {s : Set 𝕜} {x : 𝕜} (hx : (𝓝[s \ {x}] x).NeBot) :
+    tangentConeAt 𝕜 s x = univ := by
+  apply eq_univ_iff_forall.2 (fun y ↦ ?_)
+  -- first deal with the case of `0`, which has to be handled separately.
+  rcases eq_or_ne y 0 with rfl | hy
+  · exact zero_mem_tangentCone hx
+  /- Assume now `y` is a fixed nonzero scalar. Take a sequence `d n` tending to `0` such
+  that `x + d n ∈ s`. Let `c n = y / d n`. Then `‖c n‖` tends to infinity, and `c n • d n`
+  converges to `y` (as it is equal to `y`). By definition, this shows that `y` belongs to the
+  tangent cone. -/
+  obtain ⟨u, -, u_pos, u_lim⟩ :
+      ∃ u, StrictAnti u ∧ (∀ (n : ℕ), 0 < u n) ∧ Tendsto u atTop (𝓝 (0 : ℝ)) :=
+    exists_seq_strictAnti_tendsto (0 : ℝ)
+  have A n : ((s \ {x}) ∩ Metric.ball x (u n)).Nonempty := by
+    apply NeBot.nonempty_of_mem hx (inter_mem_nhdsWithin _ (Metric.ball_mem_nhds _ (u_pos n)))
+  choose v hv using A
+  let d := fun n ↦ v n - x
+  have d_ne n : d n ≠ 0 := by
+    simp only [mem_inter_iff, mem_diff, mem_singleton_iff, Metric.mem_ball, d] at hv
+    simpa [d, sub_ne_zero] using (hv n).1.2
+  refine ⟨fun n ↦ y * (d n)⁻¹, d, ?_, ?_, ?_⟩
+  · exact Eventually.of_forall (fun n ↦ by simpa [d] using (hv n).1.1)
+  · simp only [norm_mul, norm_inv]
+    apply (tendsto_const_mul_atTop_of_pos (by simpa using hy)).2
+    apply tendsto_inv_nhdsGT_zero.comp
+    simp only [nhdsWithin, tendsto_inf, tendsto_principal, mem_Ioi, norm_pos_iff, ne_eq,
+      eventually_atTop, ge_iff_le]
+    have B (n : ℕ) : ‖d n‖ ≤ u n := by
+      specialize hv n
+      simp only [mem_inter_iff, mem_diff, mem_singleton_iff, Metric.mem_ball, dist_eq_norm] at hv
+      simpa using hv.2.le
+    refine ⟨?_, 0, fun n hn ↦ by simpa using d_ne n⟩
+    exact squeeze_zero (fun n ↦ by positivity) B u_lim
+  · convert tendsto_const_nhds (α := ℕ) (x := y) with n
+    simp [mul_assoc, inv_mul_cancel₀ (d_ne n)]
+
+end Normed
+
 end TangentCone
 
 section UniqueDiff
@@ -216,6 +358,9 @@ section UniqueDiff
 
 This section is devoted to properties of the predicates `UniqueDiffWithinAt` and `UniqueDiffOn`. -/
 
+section TVS
+variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+variable {x y : E} {s t : Set E}
 
 theorem UniqueDiffOn.uniqueDiffWithinAt {s : Set E} {x} (hs : UniqueDiffOn 𝕜 s) (h : x ∈ s) :
     UniqueDiffWithinAt 𝕜 s x :=
@@ -233,6 +378,13 @@ theorem uniqueDiffOn_empty : UniqueDiffOn 𝕜 (∅ : Set E) :=
 
 theorem UniqueDiffWithinAt.congr_pt (h : UniqueDiffWithinAt 𝕜 s x) (hy : x = y) :
     UniqueDiffWithinAt 𝕜 s y := hy ▸ h
+
+end TVS
+
+section Normed
+variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {x y : E} {s t : Set E}
 
 theorem UniqueDiffWithinAt.mono_nhds (h : UniqueDiffWithinAt 𝕜 s x) (st : 𝓝[s] x ≤ 𝓝[t] x) :
     UniqueDiffWithinAt 𝕜 t x := by
@@ -327,6 +479,11 @@ theorem UniqueDiffOn.univ_pi (ι : Type*) [Finite ι] (E : ι → Type*)
     (h : ∀ i, UniqueDiffOn 𝕜 (s i)) : UniqueDiffOn 𝕜 (Set.pi univ s) :=
   UniqueDiffOn.pi _ _ _ _ fun i _ => h i
 
+end Normed
+
+section RealNormed
+variable [NormedAddCommGroup G] [NormedSpace ℝ G]
+
 /-- In a real vector space, a convex set with nonempty interior is a set of unique
 differentiability at every point of its closure. -/
 theorem uniqueDiffWithinAt_convex {s : Set G} (conv : Convex ℝ s) (hs : (interior s).Nonempty)
@@ -348,6 +505,10 @@ differentiability. -/
 theorem uniqueDiffOn_convex {s : Set G} (conv : Convex ℝ s) (hs : (interior s).Nonempty) :
     UniqueDiffOn ℝ s :=
   fun _ xs => uniqueDiffWithinAt_convex conv hs (subset_closure xs)
+
+end RealNormed
+
+section Real
 
 theorem uniqueDiffOn_Ici (a : ℝ) : UniqueDiffOn ℝ (Ici a) :=
   uniqueDiffOn_convex (convex_Ici a) <| by simp only [interior_Ici, nonempty_Ioi]
@@ -390,5 +551,18 @@ theorem uniqueDiffWithinAt_Ioi (a : ℝ) : UniqueDiffWithinAt ℝ (Ioi a) a :=
 
 theorem uniqueDiffWithinAt_Iio (a : ℝ) : UniqueDiffWithinAt ℝ (Iio a) a :=
   uniqueDiffWithinAt_convex (convex_Iio a) (by simp) (by simp)
+
+/-- In one dimension, every point is either a point of unique differentiability, or isolated. -/
+theorem uniqueDiffWithinAt_or_nhdsWithin_eq_bot (s : Set 𝕜) (x : 𝕜) :
+    UniqueDiffWithinAt 𝕜 s x ∨ 𝓝[s \ {x}] x = ⊥ := by
+  rcases eq_or_neBot (𝓝[s \ {x}] x) with h | h
+  · exact Or.inr h
+  refine Or.inl ⟨?_, ?_⟩
+  · simp [tangentCone_eq_univ h]
+  · simp only [mem_closure_iff_nhdsWithin_neBot]
+    apply neBot_of_le (hf := h)
+    exact nhdsWithin_mono _ diff_subset
+
+end Real
 
 end UniqueDiff

@@ -14,7 +14,7 @@ When there is a terminal object `X : C`, then `J.CoversTop Y`
 holds iff `Sieve.ofObjects Y X` is covering for `J`.
 
 We introduce a notion of compatible family of elements on objects `Y`
-and obtain `Presheaf.FamilyOfElementsOnObjects.IsCompatible.exists_unique_section`
+and obtain `Presheaf.FamilyOfElementsOnObjects.IsCompatible.existsUnique_section`
 which asserts that if a presheaf of types is a sheaf, then any compatible
 family of elements on objects `Y` which cover the final object extends as
 a section of this presheaf.
@@ -121,10 +121,10 @@ lemma familyOfElements_isCompatible (hx : x.IsCompatible) (X : C) :
 
 variable {J}
 
-lemma exists_unique_section (hx : x.IsCompatible) (hY : J.CoversTop Y) (hF : IsSheaf J F) :
+lemma existsUnique_section (hx : x.IsCompatible) (hY : J.CoversTop Y) (hF : IsSheaf J F) :
     ∃! (s : F.sections), ∀ (i : I), s.1 (Opposite.op (Y i)) = x i := by
   have H := (isSheaf_iff_isSheaf_of_type _ _).1 hF
-  apply exists_unique_of_exists_of_unique
+  apply existsUnique_of_exists_of_unique
   · let s := fun (X : C) => (H _ (hY X)).amalgamate _
       (hx.familyOfElements_isCompatible X)
     have hs : ∀ {X : C} (i : I) (f : X ⟶ Y i), s X = F.map f.op (x i) := fun {X} i f => by
@@ -147,15 +147,17 @@ lemma exists_unique_section (hx : x.IsCompatible) (hY : J.CoversTop Y) (hF : IsS
   · intro y₁ y₂ hy₁ hy₂
     exact hY.sections_ext ⟨F, hF⟩ (fun i => by rw [hy₁, hy₂])
 
+@[deprecated (since := "2024-12-17")] alias exists_unique_section := existsUnique_section
+
 variable (hx : x.IsCompatible) (hY : J.CoversTop Y) (hF : IsSheaf J F)
 
 /-- The section of a sheaf of types which lifts a compatible family of elements indexed
 by objects which cover the terminal object. -/
-noncomputable def section_ : F.sections := (hx.exists_unique_section hY hF).choose
+noncomputable def section_ : F.sections := (hx.existsUnique_section hY hF).choose
 
 @[simp]
 lemma section_apply (i : I) : (hx.section_ hY hF).1 (Opposite.op (Y i)) = x i :=
-  (hx.exists_unique_section hY hF).choose_spec.1 i
+  (hx.existsUnique_section hY hF).choose_spec.1 i
 
 end IsCompatible
 

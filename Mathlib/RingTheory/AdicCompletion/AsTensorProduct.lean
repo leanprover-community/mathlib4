@@ -256,10 +256,10 @@ private def secondRow : ComposableArrows (ModuleCat (AdicCompletion I R)) 4 :=
 include hf
 
 private lemma firstRow_exact : (firstRow I M f).Exact where
-  zero k _ := match k with
-    | 0 => ModuleCat.hom_ext (tens_exact I M f hf).linearMap_comp_eq_zero
-    | 1 => ModuleCat.hom_ext (LinearMap.zero_comp _)
-    | 2 => ModuleCat.hom_ext (LinearMap.zero_comp 0)
+  zero
+    | 0, _ => ModuleCat.hom_ext (tens_exact I M f hf).linearMap_comp_eq_zero
+    | 1, _ => ModuleCat.hom_ext (LinearMap.zero_comp _)
+    | 2, _ => ModuleCat.hom_ext (LinearMap.zero_comp 0)
   exact k _ := by
     rw [ShortComplex.moduleCat_exact_iff]
     match k with
@@ -268,10 +268,10 @@ private lemma firstRow_exact : (firstRow I M f).Exact where
     | 2 => intro _ _; exact ⟨0, rfl⟩
 
 private lemma secondRow_exact [Fintype ι] [IsNoetherianRing R] : (secondRow I M f).Exact where
-  zero k _ := match k with
-    | 0 => ModuleCat.hom_ext (adic_exact I M f hf).linearMap_comp_eq_zero
-    | 1 => ModuleCat.hom_ext (LinearMap.zero_comp (map I f))
-    | 2 => ModuleCat.hom_ext (LinearMap.zero_comp 0)
+  zero
+    | 0, _ => ModuleCat.hom_ext (adic_exact I M f hf).linearMap_comp_eq_zero
+    | 1, _ => ModuleCat.hom_ext (LinearMap.zero_comp (map I f))
+    | 2, _ => ModuleCat.hom_ext (LinearMap.zero_comp 0)
   exact k _ := by
     rw [ShortComplex.moduleCat_exact_iff]
     match k with
@@ -333,6 +333,10 @@ def ofTensorProductEquivOfFiniteNoetherian [Module.Finite R M] :
   LinearEquiv.ofBijective (ofTensorProduct I M)
     (ofTensorProduct_bijective_of_finite_of_isNoetherian I M)
 
+lemma coe_ofTensorProductEquivOfFiniteNoetherian [Module.Finite R M] :
+    ofTensorProductEquivOfFiniteNoetherian I M = ofTensorProduct I M :=
+  rfl
+
 @[simp]
 lemma ofTensorProductEquivOfFiniteNoetherian_apply [Module.Finite R M]
     (x : AdicCompletion I R ⊗[R] M) :
@@ -358,7 +362,7 @@ lemma tensor_map_id_left_eq_map :
       (ofTensorProductEquivOfFiniteNoetherian I N).symm.toLinearMap ∘ₗ
       map I f ∘ₗ
       (ofTensorProductEquivOfFiniteNoetherian I M).toLinearMap := by
-  erw [ofTensorProduct_naturality I f]
+  rw [coe_ofTensorProductEquivOfFiniteNoetherian, ofTensorProduct_naturality I f]
   ext x
   simp
 
@@ -376,7 +380,7 @@ end
 
 /-- Adic completion of a Noetherian ring `R` is flat over `R`. -/
 instance flat_of_isNoetherian [IsNoetherianRing R] : Module.Flat R (AdicCompletion I R) :=
-  (Module.Flat.iff_lTensor_injective' R (AdicCompletion I R)).mpr fun J ↦
+  Module.Flat.iff_lTensor_injective'.mpr fun J ↦
     tensor_map_id_left_injective_of_injective I (Submodule.injective_subtype J)
 
 end Noetherian

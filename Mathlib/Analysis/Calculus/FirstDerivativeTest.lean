@@ -38,16 +38,16 @@ derivative test, calculus
 open Set Topology
 
 
- /-- The First-Derivative Test from calculus, maxima version.
-  Suppose `a < b < c`, `f : ℝ → ℝ` is continuous at `b`,
-  the derivative `f'` is nonnegative on `(a,b)`, and
-  the derivative `f'` is nonpositive on `(b,c)`. Then `f` has a local maximum at `a`. -/
+/-- The First-Derivative Test from calculus, maxima version.
+Suppose `a < b < c`, `f : ℝ → ℝ` is continuous at `b`,
+the derivative `f'` is nonnegative on `(a,b)`, and
+the derivative `f'` is nonpositive on `(b,c)`. Then `f` has a local maximum at `a`. -/
 lemma isLocalMax_of_deriv_Ioo {f : ℝ → ℝ} {a b c : ℝ} (g₀ : a < b) (g₁ : b < c)
     (h : ContinuousAt f b)
     (hd₀ : DifferentiableOn ℝ f (Ioo a b))
     (hd₁ : DifferentiableOn ℝ f (Ioo b c))
-    (h₀ :  ∀ x ∈ Ioo a b, 0 ≤ deriv f x)
-    (h₁ :  ∀ x ∈ Ioo b c, deriv f x ≤ 0) : IsLocalMax f b :=
+    (h₀ : ∀ x ∈ Ioo a b, 0 ≤ deriv f x)
+    (h₁ : ∀ x ∈ Ioo b c, deriv f x ≤ 0) : IsLocalMax f b :=
   have hIoc : ContinuousOn f (Ioc a b) :=
     Ioo_union_right g₀ ▸ hd₀.continuousOn.union_continuousAt (isOpen_Ioo (a := a) (b := b))
       (by simp_all)
@@ -65,33 +65,33 @@ lemma isLocalMin_of_deriv_Ioo {f : ℝ → ℝ} {a b c : ℝ}
     (hd₀ : DifferentiableOn ℝ f (Ioo a b)) (hd₁ : DifferentiableOn ℝ f (Ioo b c))
     (h₀ : ∀ x ∈ Ioo a b, deriv f x ≤ 0)
     (h₁ : ∀ x ∈ Ioo b c, 0 ≤ deriv f x) : IsLocalMin f b := by
-    have := isLocalMax_of_deriv_Ioo (f := -f) g₀ g₁
-      (by simp_all) hd₀.neg hd₁.neg
-      (fun x hx => deriv.neg (f := f) ▸ Left.nonneg_neg_iff.mpr <|h₀ x hx)
-      (fun x hx => deriv.neg (f := f) ▸ Left.neg_nonpos_iff.mpr <|h₁ x hx)
-    exact (neg_neg f) ▸ IsLocalMax.neg this
+  have := isLocalMax_of_deriv_Ioo (f := -f) g₀ g₁
+    (by simp_all) hd₀.neg hd₁.neg
+    (fun x hx => deriv.neg (f := f) ▸ Left.nonneg_neg_iff.mpr <|h₀ x hx)
+    (fun x hx => deriv.neg (f := f) ▸ Left.neg_nonpos_iff.mpr <|h₁ x hx)
+  exact (neg_neg f) ▸ IsLocalMax.neg this
 
- /-- The First-Derivative Test from calculus, maxima version,
- expressed in terms of left and right filters. -/
+/-- The First-Derivative Test from calculus, maxima version,
+expressed in terms of left and right filters. -/
 lemma isLocalMax_of_deriv' {f : ℝ → ℝ} {b : ℝ} (h : ContinuousAt f b)
     (hd₀ : ∀ᶠ x in 𝓝[<] b, DifferentiableAt ℝ f x) (hd₁ : ∀ᶠ x in 𝓝[>] b, DifferentiableAt ℝ f x)
-    (h₀  : ∀ᶠ x in 𝓝[<] b, 0 ≤ deriv f x) (h₁  : ∀ᶠ x in 𝓝[>] b, deriv f x ≤ 0) :
+    (h₀ : ∀ᶠ x in 𝓝[<] b, 0 ≤ deriv f x) (h₁ : ∀ᶠ x in 𝓝[>] b, deriv f x ≤ 0) :
     IsLocalMax f b := by
-  obtain ⟨a,ha⟩ := (nhdsWithin_Iio_basis' ⟨b - 1, sub_one_lt b⟩).eventually_iff.mp <| hd₀.and h₀
-  obtain ⟨c,hc⟩ := (nhdsWithin_Ioi_basis' ⟨b + 1, lt_add_one b⟩).eventually_iff.mp <| hd₁.and h₁
+  obtain ⟨a, ha⟩ := (nhdsLT_basis b).eventually_iff.mp <| hd₀.and h₀
+  obtain ⟨c, hc⟩ := (nhdsGT_basis b).eventually_iff.mp <| hd₁.and h₁
   exact isLocalMax_of_deriv_Ioo ha.1 hc.1 h
     (fun _ hx => (ha.2 hx).1.differentiableWithinAt)
     (fun _ hx => (hc.2 hx).1.differentiableWithinAt)
     (fun _ hx => (ha.2 hx).2) (fun x hx => (hc.2 hx).2)
 
- /-- The First-Derivative Test from calculus, minima version,
- expressed in terms of left and right filters. -/
+/-- The First-Derivative Test from calculus, minima version,
+expressed in terms of left and right filters. -/
 lemma isLocalMin_of_deriv' {f : ℝ → ℝ} {b : ℝ} (h : ContinuousAt f b)
     (hd₀ : ∀ᶠ x in 𝓝[<] b, DifferentiableAt ℝ f x) (hd₁ : ∀ᶠ x in 𝓝[>] b, DifferentiableAt ℝ f x)
-    (h₀  : ∀ᶠ x in 𝓝[<] b, deriv f x ≤ 0) (h₁  : ∀ᶠ x in 𝓝[>] b, deriv f x ≥ 0) :
+    (h₀ : ∀ᶠ x in 𝓝[<] b, deriv f x ≤ 0) (h₁ : ∀ᶠ x in 𝓝[>] b, deriv f x ≥ 0) :
     IsLocalMin f b := by
-  obtain ⟨a,ha⟩ := (nhdsWithin_Iio_basis' ⟨b - 1, sub_one_lt b⟩).eventually_iff.mp <| hd₀.and h₀
-  obtain ⟨c,hc⟩ := (nhdsWithin_Ioi_basis' ⟨b + 1, lt_add_one b⟩).eventually_iff.mp <| hd₁.and h₁
+  obtain ⟨a, ha⟩ := (nhdsLT_basis b).eventually_iff.mp <| hd₀.and h₀
+  obtain ⟨c, hc⟩ := (nhdsGT_basis b).eventually_iff.mp <| hd₁.and h₁
   exact isLocalMin_of_deriv_Ioo ha.1 hc.1 h
     (fun _ hx => (ha.2 hx).1.differentiableWithinAt)
     (fun _ hx => (hc.2 hx).1.differentiableWithinAt)
@@ -100,15 +100,13 @@ lemma isLocalMin_of_deriv' {f : ℝ → ℝ} {b : ℝ} (h : ContinuousAt f b)
 /-- The First Derivative test, maximum version. -/
 theorem isLocalMax_of_deriv {f : ℝ → ℝ} {b : ℝ} (h : ContinuousAt f b)
     (hd : ∀ᶠ x in 𝓝[≠] b, DifferentiableAt ℝ f x)
-    (h₀  : ∀ᶠ x in 𝓝[<] b, 0 ≤ deriv f x) (h₁  : ∀ᶠ x in 𝓝[>] b, deriv f x ≤ 0) :
+    (h₀ : ∀ᶠ x in 𝓝[<] b, 0 ≤ deriv f x) (h₁ : ∀ᶠ x in 𝓝[>] b, deriv f x ≤ 0) :
     IsLocalMax f b :=
-  isLocalMax_of_deriv' h
-    (nhds_left'_le_nhds_ne _ (by tauto)) (nhds_right'_le_nhds_ne _ (by tauto)) h₀ h₁
+  isLocalMax_of_deriv' h (nhdsLT_le_nhdsNE _ (by tauto)) (nhdsGT_le_nhdsNE _ (by tauto)) h₀ h₁
 
 /-- The First Derivative test, minimum version. -/
 theorem isLocalMin_of_deriv {f : ℝ → ℝ} {b : ℝ} (h : ContinuousAt f b)
     (hd : ∀ᶠ x in 𝓝[≠] b, DifferentiableAt ℝ f x)
-    (h₀  : ∀ᶠ x in 𝓝[<] b, deriv f x ≤ 0) (h₁  : ∀ᶠ x in 𝓝[>] b, 0 ≤ deriv f x) :
+    (h₀ : ∀ᶠ x in 𝓝[<] b, deriv f x ≤ 0) (h₁ : ∀ᶠ x in 𝓝[>] b, 0 ≤ deriv f x) :
     IsLocalMin f b :=
-  isLocalMin_of_deriv' h
-    (nhds_left'_le_nhds_ne _ (by tauto)) (nhds_right'_le_nhds_ne _ (by tauto)) h₀ h₁
+  isLocalMin_of_deriv' h (nhdsLT_le_nhdsNE _ (by tauto)) (nhdsGT_le_nhdsNE _ (by tauto)) h₀ h₁

@@ -40,8 +40,6 @@ for closed monoidal categories, and these could be generalised.
 
 universe v v₂ u u₂
 
-noncomputable section
-
 namespace CategoryTheory
 
 open Category Limits MonoidalCategory
@@ -58,6 +56,7 @@ abbrev Exponentiable {C : Type u} [Category.{v} C] [ChosenFiniteProducts C] (X :
 abbrev Exponentiable.mk {C : Type u} [Category.{v} C] [ChosenFiniteProducts C] (X : C)
     (exp : C ⥤ C) (adj : MonoidalCategory.tensorLeft X ⊣ exp) :
     Exponentiable X where
+  rightAdj := exp
   adj := adj
 
 /-- If `X` and `Y` are exponentiable then `X ⨯ Y` is.
@@ -117,7 +116,7 @@ notation:20 A " ⟹ " B:19 => (exp A).obj B
 
 open Lean PrettyPrinter.Delaborator SubExpr in
 /-- Delaborator for `Prefunctor.obj` -/
-@[delab app.Prefunctor.obj]
+@[app_delab Prefunctor.obj]
 def delabPrefunctorObjExp : Delab := whenPPOption getPPNotation <| withOverApp 6 <| do
   let e ← getExpr
   guard <| e.isAppOfArity' ``Prefunctor.obj 6
@@ -163,13 +162,9 @@ def curry : (A ⊗ Y ⟶ X) → (Y ⟶ A ⟹ X) :=
 def uncurry : (Y ⟶ A ⟹ X) → (A ⊗ Y ⟶ X) :=
   ((exp.adjunction A).homEquiv _ _).symm
 
--- This lemma has always been bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644.
-@[simp, nolint simpNF]
 theorem homEquiv_apply_eq (f : A ⊗ Y ⟶ X) : (exp.adjunction A).homEquiv _ _ f = curry f :=
   rfl
 
--- This lemma has always been bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644.
-@[simp, nolint simpNF]
 theorem homEquiv_symm_apply_eq (f : Y ⟶ A ⟹ X) :
     ((exp.adjunction A).homEquiv _ _).symm f = uncurry f :=
   rfl
@@ -202,11 +197,9 @@ theorem uncurry_curry (f : A ⊗ X ⟶ Y) : uncurry (curry f) = f :=
 theorem curry_uncurry (f : X ⟶ A ⟹ Y) : curry (uncurry f) = f :=
   (Closed.adj.homEquiv _ _).right_inv f
 
--- Porting note: extra `(exp.adjunction A)` argument was needed for elaboration to succeed.
 theorem curry_eq_iff (f : A ⊗ Y ⟶ X) (g : Y ⟶ A ⟹ X) : curry f = g ↔ f = uncurry g :=
   Adjunction.homEquiv_apply_eq (exp.adjunction A) f g
 
--- Porting note: extra `(exp.adjunction A)` argument was needed for elaboration to succeed.
 theorem eq_curry_iff (f : A ⊗ Y ⟶ X) (g : Y ⟶ A ⟹ X) : g = curry f ↔ uncurry g = f :=
   Adjunction.eq_homEquiv_apply (exp.adjunction A) f g
 
@@ -234,17 +227,17 @@ end CartesianClosed
 open CartesianClosed
 
 /-- The exponential with the terminal object is naturally isomorphic to the identity. The typeclass
-argument is explicit: any instance can be used.-/
+argument is explicit: any instance can be used. -/
 def expUnitNatIso [Exponentiable (𝟙_ C)] : 𝟭 C ≅ exp (𝟙_ C) :=
   MonoidalClosed.unitNatIso (C := C)
 
 /-- The exponential of any object with the terminal object is isomorphic to itself, i.e. `X^1 ≅ X`.
-The typeclass argument is explicit: any instance can be used.-/
+The typeclass argument is explicit: any instance can be used. -/
 def expUnitIsoSelf [Exponentiable (𝟙_ C)] : (𝟙_ C) ⟹ X ≅ X :=
   (expUnitNatIso.app X).symm
 
 /-- The internal element which points at the given morphism. -/
-def internalizeHom (f : A ⟶ Y) : ⊤_ C ⟶ A ⟹ Y :=
+def internalizeHom (f : A ⟶ Y) : 𝟙_ C ⟶ A ⟹ Y :=
   CartesianClosed.curry (ChosenFiniteProducts.fst _ _ ≫ f)
 
 section Pre
@@ -305,7 +298,7 @@ def mulZero {I : C} (t : IsInitial I) : I ⊗ A ≅ I :=
   β_ _ _ ≪≫ zeroMul t
 
 /-- If an initial object `0` exists in a CCC then `0^B ≅ 1` for any `B`. -/
-def powZero {I : C} (t : IsInitial I) [CartesianClosed C] : I ⟹ B ≅ ⊤_ C where
+def powZero {I : C} (t : IsInitial I) [CartesianClosed C] : I ⟹ B ≅ 𝟙_ C where
   hom := default
   inv := CartesianClosed.curry ((mulZero t).hom ≫ t.to _)
   hom_inv_id := by
@@ -315,7 +308,7 @@ def powZero {I : C} (t : IsInitial I) [CartesianClosed C] : I ⟹ B ≅ ⊤_ C w
 -- TODO: Generalise the below to its commuted variants.
 -- TODO: Define a distributive category, so that zero_mul and friends can be derived from this.
 /-- In a CCC with binary coproducts, the distribution morphism is an isomorphism. -/
-def prodCoprodDistrib [HasBinaryCoproducts C] [CartesianClosed C] (X Y Z : C) :
+noncomputable def prodCoprodDistrib [HasBinaryCoproducts C] [CartesianClosed C] (X Y Z : C) :
     (Z ⊗ X) ⨿ Z ⊗ Y ≅ Z ⊗ (X ⨿ Y) where
   hom := coprod.desc (_ ◁ coprod.inl) (_ ◁ coprod.inr)
   inv :=
@@ -369,12 +362,10 @@ variable [ChosenFiniteProducts D]
 Note we didn't require any coherence between the choice of finite products here, since we transport
 along the `prodComparison` isomorphism.
 -/
-def cartesianClosedOfEquiv (e : C ≌ D) [CartesianClosed C] : CartesianClosed D :=
+noncomputable def cartesianClosedOfEquiv (e : C ≌ D) [CartesianClosed C] : CartesianClosed D :=
   letI := e.inverse.monoidalOfChosenFiniteProducts
   MonoidalClosed.ofEquiv (e.inverse) e.symm.toAdjunction
 
 end Functor
 
-attribute [nolint simpNF] CategoryTheory.CartesianClosed.homEquiv_apply_eq
-  CategoryTheory.CartesianClosed.homEquiv_symm_apply_eq
 end CategoryTheory

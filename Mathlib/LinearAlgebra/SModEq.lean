@@ -26,7 +26,7 @@ variable {N : Type*} [AddCommGroup N] [Module R N] (V V₁ V₂ : Submodule R N)
 def SModEq (x y : M) : Prop :=
   (Submodule.Quotient.mk x : M ⧸ U) = Submodule.Quotient.mk y
 
-notation:50 x " ≡ " y " [SMOD " N "]" => SModEq N x y
+@[inherit_doc] notation:50 x " ≡ " y " [SMOD " N "]" => SModEq N x y
 
 variable {U U₁ U₂}
 
@@ -105,6 +105,9 @@ lemma sub (hxy₁ : x₁ ≡ y₁ [SMOD U]) (hxy₂ : x₂ ≡ y₂ [SMOD U]) : 
   simp_rw [Quotient.mk_sub, hxy₁, hxy₂]
 
 theorem zero : x ≡ 0 [SMOD U] ↔ x ∈ U := by rw [SModEq.def, Submodule.Quotient.eq, sub_zero]
+
+theorem _root_.sub_smodEq_zero : x - y ≡ 0 [SMOD U] ↔ x ≡ y [SMOD U] := by
+  simp only [SModEq.sub_mem, sub_zero]
 
 theorem map (hxy : x ≡ y [SMOD U]) (f : M →ₗ[R] N) : f x ≡ f y [SMOD U.map f] :=
   (Submodule.Quotient.eq _).2 <| f.map_sub x y ▸ mem_map_of_mem <| (Submodule.Quotient.eq _).1 hxy

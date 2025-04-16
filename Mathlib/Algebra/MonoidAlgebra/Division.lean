@@ -41,10 +41,10 @@ namespace AddMonoidAlgebra
 
 section
 
-variable [AddCancelCommMonoid G]
+variable [AddCommMonoid G]
 
 /-- Divide by `of' k G g`, discarding terms not divisible by this. -/
-noncomputable def divOf (x : k[G]) (g : G) : k[G] :=
+noncomputable def divOf [IsCancelAdd G] (x : k[G]) (g : G) : k[G] :=
   -- note: comapping by `+ g` has the effect of subtracting `g` from every element in
   -- the support, and discarding the elements of the support from which `g` can't be subtracted.
   -- If `G` is an additive group, such as `ℤ` when used for `LaurentPolynomial`,
@@ -52,6 +52,9 @@ noncomputable def divOf (x : k[G]) (g : G) : k[G] :=
   @Finsupp.comapDomain.addMonoidHom _ _ _ _ (g + ·) (add_right_injective g) x
 
 local infixl:70 " /ᵒᶠ " => divOf
+
+section divOf
+variable [IsCancelAdd G]
 
 @[simp]
 theorem divOf_apply (g : G) (x : k[G]) (g' : G) : (x /ᵒᶠ g) g' = x (g + g') :=
@@ -69,14 +72,14 @@ theorem zero_divOf (g : G) : (0 : k[G]) /ᵒᶠ g = 0 :=
 
 @[simp]
 theorem divOf_zero (x : k[G]) : x /ᵒᶠ 0 = x := by
-  refine Finsupp.ext fun _ => ?_  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` doesn't work
+  ext
   simp only [AddMonoidAlgebra.divOf_apply, zero_add]
 
 theorem add_divOf (x y : k[G]) (g : G) : (x + y) /ᵒᶠ g = x /ᵒᶠ g + y /ᵒᶠ g :=
   map_add (Finsupp.comapDomain.addMonoidHom _) _ _
 
 theorem divOf_add (x : k[G]) (a b : G) : x /ᵒᶠ (a + b) = x /ᵒᶠ a /ᵒᶠ b := by
-  refine Finsupp.ext fun _ => ?_  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` doesn't work
+  ext
   simp only [AddMonoidAlgebra.divOf_apply, add_assoc]
 
 /-- A bundled version of `AddMonoidAlgebra.divOf`. -/
@@ -93,20 +96,22 @@ noncomputable def divOfHom : Multiplicative G →* AddMonoid.End k[G] where
         (divOf_add _ _ _)
 
 theorem of'_mul_divOf (a : G) (x : k[G]) : of' k G a * x /ᵒᶠ a = x := by
-  refine Finsupp.ext fun _ => ?_  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` doesn't work
+  ext
   rw [AddMonoidAlgebra.divOf_apply, of'_apply, single_mul_apply_aux, one_mul]
-  intro c
+  intro c hc
   exact add_right_inj _
 
 theorem mul_of'_divOf (x : k[G]) (a : G) : x * of' k G a /ᵒᶠ a = x := by
-  refine Finsupp.ext fun _ => ?_  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` doesn't work
+  ext
   rw [AddMonoidAlgebra.divOf_apply, of'_apply, mul_single_apply_aux, mul_one]
-  intro c
+  intro c hc
   rw [add_comm]
   exact add_right_inj _
 
 theorem of'_divOf (a : G) : of' k G a /ᵒᶠ a = 1 := by
   simpa only [one_mul] using mul_of'_divOf (1 : k[G]) a
+
+end divOf
 
 /-- The remainder upon division by `of' k G g`. -/
 noncomputable def modOf (x : k[G]) (g : G) : k[G] :=
@@ -133,14 +138,14 @@ theorem modOf_apply_self_add (x : k[G]) (g : G) (d : G) : (x %ᵒᶠ g) (g + d) 
   modOf_apply_of_exists_add _ _ _ ⟨_, rfl⟩
 
 theorem of'_mul_modOf (g : G) (x : k[G]) : of' k G g * x %ᵒᶠ g = 0 := by
-  refine Finsupp.ext fun g' => ?_  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext g'` doesn't work
+  ext g'
   rw [Finsupp.zero_apply]
   obtain ⟨d, rfl⟩ | h := em (∃ d, g' = g + d)
   · rw [modOf_apply_self_add]
   · rw [modOf_apply_of_not_exists_add _ _ _ h, of'_apply, single_mul_apply_of_not_exists_add _ _ h]
 
 theorem mul_of'_modOf (x : k[G]) (g : G) : x * of' k G g %ᵒᶠ g = 0 := by
-  refine Finsupp.ext fun g' => ?_  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext g'` doesn't work
+  ext g'
   rw [Finsupp.zero_apply]
   obtain ⟨d, rfl⟩ | h := em (∃ d, g' = g + d)
   · rw [modOf_apply_self_add]
@@ -150,9 +155,9 @@ theorem mul_of'_modOf (x : k[G]) (g : G) : x * of' k G g %ᵒᶠ g = 0 := by
 theorem of'_modOf (g : G) : of' k G g %ᵒᶠ g = 0 := by
   simpa only [one_mul] using mul_of'_modOf (1 : k[G]) g
 
-theorem divOf_add_modOf (x : k[G]) (g : G) :
+theorem divOf_add_modOf [IsCancelAdd G] (x : k[G]) (g : G) :
     of' k G g * (x /ᵒᶠ g) + x %ᵒᶠ g = x := by
-  refine Finsupp.ext fun g' => ?_  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` doesn't work
+  ext g'
   rw [Finsupp.add_apply] -- Porting note: changed from `simp_rw` which can't see through the type
   obtain ⟨d, rfl⟩ | h := em (∃ d, g' = g + d)
   swap
@@ -160,13 +165,14 @@ theorem divOf_add_modOf (x : k[G]) (g : G) :
       zero_add]
   · rw [modOf_apply_self_add, add_zero]
     rw [of'_apply, single_mul_apply_aux _ _ _, one_mul, divOf_apply]
-    intro a
+    intro a ha
     exact add_right_inj _
 
-theorem modOf_add_divOf (x : k[G]) (g : G) : x %ᵒᶠ g + of' k G g * (x /ᵒᶠ g) = x := by
+theorem modOf_add_divOf [IsCancelAdd G] (x : k[G]) (g : G) :
+    x %ᵒᶠ g + of' k G g * (x /ᵒᶠ g) = x := by
   rw [add_comm, divOf_add_modOf]
 
-theorem of'_dvd_iff_modOf_eq_zero {x : k[G]} {g : G} :
+theorem of'_dvd_iff_modOf_eq_zero [IsCancelAdd G] {x : k[G]} {g : G} :
     of' k G g ∣ x ↔ x %ᵒᶠ g = 0 := by
   constructor
   · rintro ⟨x, rfl⟩

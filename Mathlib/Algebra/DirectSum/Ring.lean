@@ -235,7 +235,7 @@ private theorem mul_assoc (a b c : ⨁ i, A i) : a * b * c = a * (b * c) := by
       simpa only [coe_comp, Function.comp_apply, AddMonoidHom.compHom_apply_apply, flip_apply,
         AddMonoidHom.flipHom_apply]
         using DFunLike.congr_fun (DFunLike.congr_fun (DFunLike.congr_fun this a) b) c
-  ext ai ax bi bx ci cx
+  ext ai ax bi bx ci cx : 6
   dsimp only [coe_comp, Function.comp_apply, AddMonoidHom.compHom_apply_apply, flip_apply,
     AddMonoidHom.flipHom_apply]
   simp_rw [mulHom_of_of]
@@ -279,7 +279,7 @@ theorem list_prod_ofFn_of_eq_dProd (n : ℕ) (fι : Fin n → ι) (fA : ∀ a, A
     (List.ofFn fun a => of A (fι a) (fA a)).prod = of A _ ((List.finRange n).dProd fι fA) := by
   rw [List.ofFn_eq_map, ofList_dProd]
 
-theorem mul_eq_dfinsupp_sum [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (a a' : ⨁ i, A i) :
+theorem mul_eq_dfinsuppSum [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (a a' : ⨁ i, A i) :
     a * a'
       = a.sum fun _ ai => a'.sum fun _ aj => DirectSum.of _ _ <| GradedMonoid.GMul.mul ai aj := by
   change mulHom _ a a' = _
@@ -287,22 +287,24 @@ theorem mul_eq_dfinsupp_sum [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (a a' 
   -- simpa only [mul_hom, to_add_monoid, dfinsupp.lift_add_hom_apply, dfinsupp.sum_add_hom_apply,
   -- add_monoid_hom.dfinsupp_sum_apply, flip_apply, add_monoid_hom.dfinsupp_sum_add_hom_apply],
   rw [mulHom, toAddMonoid, DFinsupp.liftAddHom_apply]
+  dsimp only [DirectSum]
+  rw [DFinsupp.sumAddHom_apply, AddMonoidHom.dfinsuppSum_apply]
+  apply congrArg _
+  simp_rw [flip_apply]
+  funext x
   -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
   erw [DFinsupp.sumAddHom_apply]
-  rw [AddMonoidHom.dfinsupp_sum_apply]
-  apply congrArg _
-  funext x
-  simp_rw [flip_apply]
-  erw [DFinsupp.sumAddHom_apply]
-  simp only [gMulHom, AddMonoidHom.dfinsupp_sum_apply, flip_apply, coe_comp, AddMonoidHom.coe_mk,
-  ZeroHom.coe_mk, Function.comp_apply, AddMonoidHom.compHom_apply_apply]
+  simp only [gMulHom, AddMonoidHom.dfinsuppSum_apply, flip_apply, coe_comp, AddMonoidHom.coe_mk,
+    ZeroHom.coe_mk, Function.comp_apply, AddMonoidHom.compHom_apply_apply]
+
+@[deprecated (since := "2025-04-06")] alias mul_eq_dfinsupp_sum := mul_eq_dfinsuppSum
 
 /-- A heavily unfolded version of the definition of multiplication -/
 theorem mul_eq_sum_support_ghas_mul [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (a a' : ⨁ i, A i) :
     a * a' =
       ∑ ij ∈ DFinsupp.support a ×ˢ DFinsupp.support a',
         DirectSum.of _ _ (GradedMonoid.GMul.mul (a ij.fst) (a' ij.snd)) := by
-  simp only [mul_eq_dfinsupp_sum, DFinsupp.sum, Finset.sum_product]
+  simp only [mul_eq_dfinsuppSum, DFinsupp.sum, Finset.sum_product]
 
 end Semiring
 
@@ -424,9 +426,8 @@ instance : NatCast (A 0) :=
 theorem of_natCast (n : ℕ) : of A 0 n = n :=
   rfl
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem of_zero_ofNat (n : ℕ) [n.AtLeastTwo] : of A 0 (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
+theorem of_zero_ofNat (n : ℕ) [n.AtLeastTwo] : of A 0 ofNat(n) = ofNat(n) :=
   of_natCast A n
 
 /-- The `Semiring` structure derived from `GSemiring A`. -/
