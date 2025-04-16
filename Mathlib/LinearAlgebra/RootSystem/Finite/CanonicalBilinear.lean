@@ -58,8 +58,8 @@ lemma torsion_free_of_reflexive [CommRing R] [IsDomain R] [AddCommGroup M] [Modu
   rw [← LinearMap.map_smul_of_tower, h, LinearMap.map_zero]
 --#find_home! torsion_free_of_reflexive -- [Mathlib.LinearAlgebra.Dual]
 
-lemma injective_smul_pos_of_reflexive [LinearOrderedCommRing R] [AddCommGroup M] [Module R M]
-    [IsReflexive R M] {r : R} (hr : 0 < r) : Injective fun (x : M) => r • x := by
+lemma injective_smul_pos_of_reflexive [LinearOrder R] [CommRing R] [IsDomain R] [AddCommGroup M]
+    [Module R M] [IsReflexive R M] {r : R} (hr : 0 < r) : Injective fun (x : M) => r • x := by
   intro x y hxy
   simp only at hxy
   have hrxy : r • (x - y) = 0 := by rw [smul_sub, hxy, sub_eq_zero]
@@ -299,11 +299,12 @@ variable (S : Type*) [CommRing S] [LinearOrder S] [IsStrictOrderedRing S]
 def PolarizationIn : span S (range P.root) →ₗ[S] N :=
   ∑ i : ι, LinearMap.toSpanSingleton S N (P.coroot i) ∘ₗ P.coroot'In S i
 
-omit [IsScalarTower S R N] in
+omit [IsScalarTower S R N] [LinearOrder S] [IsStrictOrderedRing S] in
 lemma PolarizationIn_apply (x : span S (range P.root)) :
     P.PolarizationIn S x = ∑ i, P.coroot'In S i x • P.coroot i := by
   simp [PolarizationIn]
 
+omit [LinearOrder S] [IsStrictOrderedRing S] in
 lemma PolarizationIn_eq (x : span S (range P.root)) :
     P.PolarizationIn S x = P.Polarization x := by
   simp only [PolarizationIn, LinearMap.coeFn_sum, LinearMap.coe_comp, Finset.sum_apply, comp_apply,
@@ -317,11 +318,12 @@ lemma PolarizationIn_eq (x : span S (range P.root)) :
 def CoPolarizationIn : span S (range P.coroot) →ₗ[S] M :=
   ∑ i, LinearMap.toSpanSingleton S M (P.root i) ∘ₗ P.root'In S i
 
-omit [IsScalarTower S R M] in
+omit [IsScalarTower S R M] [LinearOrder S] [IsStrictOrderedRing S] in
 lemma CoPolarizationIn_apply (x : span S (range P.coroot)) :
     P.CoPolarizationIn S x = ∑ i, P.root'In S i x • P.root i := by
   simp [CoPolarizationIn]
 
+omit [LinearOrder S] [IsStrictOrderedRing S] in
 lemma CoPolarizationIn_eq (x : span S (range P.coroot)) :
     P.CoPolarizationIn S x = P.CoPolarization x := by
   simp [CoPolarizationIn]
@@ -377,13 +379,14 @@ lemma toPerfectPairing_apply_PolarizationIn (x y : span S (range P.root)) :
   rw [PolarizationIn_eq, algebraMap_posRootForm_posForm]
   exact toPerfectPairing_apply_apply_Polarization P x y
 
-omit [IsScalarTower S R N] in
+omit [IsScalarTower S R N] [LinearOrder S] [IsStrictOrderedRing S] in
 lemma range_polarizationIn_le_span_coroot :
     LinearMap.range (P.PolarizationIn S) ≤ span S (range P.coroot) := by
   intro x hx
   obtain ⟨y, hy⟩ := hx
   rw [PolarizationIn_apply] at hy
-  exact (mem_span_range_iff_exists_fun S).mpr (Exists.intro (fun i ↦ (P.coroot'In S i) y) hy)
+  exact (Submodule.mem_span_range_iff_exists_fun S).mpr
+    (Exists.intro (fun i ↦ (P.coroot'In S i) y) hy)
 
 /-- A version of SGA3 XXI Lemma 1.2.1 (10), adapted to change of rings. -/
 lemma posRootForm_posForm_self_smul_coroot (i : ι) :

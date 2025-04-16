@@ -180,6 +180,7 @@ lemma isSymm_posForm :
 
 end
 
+omit [IsStrictOrderedRing S] in
 lemma two_mul_posForm_apply_root_root :
     2 * B.posForm (P.rootSpanMem S i) (P.rootSpanMem S j) =
       P.pairingIn S i j * B.posForm (P.rootSpanMem S j) (P.rootSpanMem S j) := by
@@ -230,7 +231,7 @@ private def refl_coeff : ℕ → R × R
   | n + 1 => (((refl_coeff n).1 + (refl_coeff n).2) * P.coxeterWeight i j - (refl_coeff n).1,
     -(refl_coeff n).1 - (refl_coeff n).2)
 
-omit [LinearOrderedCommRing S] [Algebra S R] B [FaithfulSMul S R]
+omit [LinearOrder S] [CommRing S] [Algebra S R] B [FaithfulSMul S R]
  [P.IsValuedIn S] in
 lemma refl_coeff_rec (n : ℕ) : ((P.reflection i) ∘ (P.reflection j))
     ((P.refl_coeff i j n).1 • P.root i + (P.refl_coeff i j n).2 • P.pairing i j • P.root j) =
@@ -244,7 +245,7 @@ lemma refl_coeff_rec (n : ℕ) : ((P.reflection i) ∘ (P.reflection j))
   abel_nf
   simp
 
-omit [LinearOrderedCommRing S] [Algebra S R] B [FaithfulSMul S R]
+omit [LinearOrder S] [CommRing S] [Algebra S R] B [FaithfulSMul S R]
 [P.IsValuedIn S] in
 lemma refl_coeff_eq (n : ℕ) : (P.refl_coeff i j n).1 • P.root i +
     (P.refl_coeff i j n).2 • P.pairing i j • P.root j =

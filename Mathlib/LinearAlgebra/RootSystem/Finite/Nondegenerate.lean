@@ -269,8 +269,8 @@ end LinearOrderedCommRing
 section LinearOrderedCommRingAlg
 
 variable [CommRing R] [Module R M] [Module R N] (P : RootPairing ι R M N)
-(S : Type*) [LinearOrderedCommRing S] [Algebra S R] [FaithfulSMul S R] [P.IsValuedIn S]
-[Module S M] [IsScalarTower S R M] [Module S N] [IsScalarTower S R N]
+(S : Type*) [LinearOrder S] [CommRing S] [IsStrictOrderedRing S] [Algebra S R] [FaithfulSMul S R]
+[P.IsValuedIn S] [Module S M] [IsScalarTower S R M] [Module S N] [IsScalarTower S R N]
 
 instance [Finite ι] : Module.Finite S (span S (range P.root)) :=
   .span_of_finite S <| finite_range P.root
@@ -290,7 +290,7 @@ lemma finrank_range_polarization_eq_finrank_span_coroot [NoZeroSMulDivisors S N]
     (LinearMap.range (M₂ := N) (P.PolarizationIn S))
     (smul_right_injective N h_ne) ?_
   intro _ hx
-  obtain ⟨c, hc⟩ := (mem_span_range_iff_exists_fun S).mp hx
+  obtain ⟨c, hc⟩ := (Submodule.mem_span_range_iff_exists_fun S).mp hx
   rw [← hc, Finset.smul_sum]
   simp_rw [smul_smul, mul_comm, ← smul_smul]
   refine Submodule.sum_smul_mem (LinearMap.range (P.PolarizationIn S)) c

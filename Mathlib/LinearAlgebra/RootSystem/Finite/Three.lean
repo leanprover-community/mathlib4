@@ -37,7 +37,7 @@ variable {P : RootPairing ι R M N} [P.IsValuedIn ℤ] (b : P.Base)
 
 open Base
 
-lemma pairingIn_neg_one_of_neg_three [Finite ι] [NoZeroDivisors R] (i j : b.support)
+lemma pairingIn_neg_one_of_neg_three [Finite ι] [IsDomain R] (i j : b.support)
     (h3 : P.pairingIn ℤ i j = -3) :
     P.pairingIn ℤ j i = -1 := by
   have hcW := P.coxeterWeightIn_mem_set_of_isCrystallographic i j
@@ -50,7 +50,7 @@ lemma pairingIn_neg_one_of_neg_three [Finite ι] [NoZeroDivisors R] (i j : b.sup
   simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hcW
   omega
 
-lemma pairingIn_neg_one_of_neg_three' [Finite ι] [NoZeroDivisors R] (i j : b.support)
+lemma pairingIn_neg_one_of_neg_three' [Finite ι] [IsDomain R] (i j : b.support)
     (h3 : b.cartanMatrixIn ℤ i j = -3) :
     P.pairingIn ℤ j i = -1 := by
   rw [cartanMatrixIn] at h3
@@ -64,7 +64,7 @@ lemma three_mul_posRootForm_posForm_apply_self [Fintype ι] [NoZeroDivisors R] (
   have h3' : 3 = - P.pairingIn ℤ i j := by rwa [Int.eq_neg_comm] at h3
   rw [h3', Int.neg_mul, ← RootPositiveForm.two_mul_posForm_apply_root_root, Int.neg_mul_eq_neg_mul]
 
-lemma three_mul_posRootForm_posForm [Fintype ι] [NoZeroDivisors R] (i j : b.support)
+lemma three_mul_posRootForm_posForm [Fintype ι] [IsDomain R] (i j : b.support)
     (h3 : b.cartanMatrixIn ℤ i j = -3) :
     3 * (P.posRootForm ℤ).posForm (P.rootSpanMem ℤ j) (P.rootSpanMem ℤ j) =
       (P.posRootForm ℤ).posForm (P.rootSpanMem ℤ i) (P.rootSpanMem ℤ i) := by
