@@ -204,7 +204,7 @@ variable (cov : IsCoveringMap p)
 include cov
 
 section path_lifting
-variable (γ : C(I,X)) (e : E) (γ_0 : γ 0 = p e)
+variable (γ : C(I, X)) (e : E) (γ_0 : γ 0 = p e)
 include γ_0
 
 /-- The path lifting property (existence) for covering maps. -/

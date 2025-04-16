@@ -1058,45 +1058,41 @@ open Opposite
 
 variable (X : T)
 
-/-- The canonical functor by reversing structure arrows. -/
-@[simps]
-def Over.opToOpUnder : Over (op X) ⥤ (Under X)ᵒᵖ where
-  obj Y := ⟨Under.mk Y.hom.unop⟩
-  map {Z Y} f := ⟨Under.homMk (f.left.unop) (by dsimp; rw [← unop_comp, Over.w])⟩
-
-/-- The canonical functor by reversing structure arrows. -/
-@[simps]
-def Under.opToOverOp : (Under X)ᵒᵖ ⥤ Over (op X) where
-  obj Y := Over.mk (Y.unop.hom.op)
-  map {Z Y} f := Over.homMk f.unop.right.op <| by dsimp; rw [← Under.w f.unop, op_comp]
-
-/-- `Over.opToOpUnder` is an equivalence of categories. -/
+/-- The canonical equivalence between over and under categories by reversing structure arrows. -/
 @[simps]
 def Over.opEquivOpUnder : Over (op X) ≌ (Under X)ᵒᵖ where
-  functor := Over.opToOpUnder X
-  inverse := Under.opToOverOp X
+  functor.obj Y := ⟨Under.mk Y.hom.unop⟩
+  functor.map {Z Y} f := ⟨Under.homMk (f.left.unop) (by dsimp; rw [← unop_comp, Over.w])⟩
+  inverse.obj Y := Over.mk (Y.unop.hom.op)
+  inverse.map {Z Y} f := Over.homMk f.unop.right.op <| by dsimp; rw [← Under.w f.unop, op_comp]
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
-/-- The canonical functor by reversing structure arrows. -/
-@[simps]
-def Under.opToOpOver : Under (op X) ⥤ (Over X)ᵒᵖ where
-  obj Y := ⟨Over.mk Y.hom.unop⟩
-  map {Z Y} f := ⟨Over.homMk (f.right.unop) (by dsimp; rw [← unop_comp, Under.w])⟩
-
-/-- The canonical functor by reversing structure arrows. -/
-@[simps]
-def Over.opToUnderOp : (Over X)ᵒᵖ ⥤ Under (op X) where
-  obj Y := Under.mk (Y.unop.hom.op)
-  map {Z Y} f := Under.homMk f.unop.left.op <| by dsimp; rw [← Over.w f.unop, op_comp]
-
-/-- `Under.opToOpOver` is an equivalence of categories. -/
+/-- The canonical equivalence between under and over categories by reversing structure arrows. -/
 @[simps]
 def Under.opEquivOpOver : Under (op X) ≌ (Over X)ᵒᵖ where
-  functor := Under.opToOpOver X
-  inverse := Over.opToUnderOp X
+  functor.obj Y := ⟨Over.mk Y.hom.unop⟩
+  functor.map {Z Y} f := ⟨Over.homMk (f.right.unop) (by dsimp; rw [← unop_comp, Under.w])⟩
+  inverse.obj Y := Under.mk (Y.unop.hom.op)
+  inverse.map {Z Y} f := Under.homMk f.unop.left.op <| by dsimp; rw [← Over.w f.unop, op_comp]
   unitIso := Iso.refl _
   counitIso := Iso.refl _
+
+/-- The canonical functor by reversing structure arrows. -/
+@[deprecated Over.opEquivOpUnder (since := "2025-04-08")]
+def Over.opToOpUnder : Over (op X) ⥤ (Under X)ᵒᵖ := (Over.opEquivOpUnder X).functor
+
+/-- The canonical functor by reversing structure arrows. -/
+@[deprecated Over.opEquivOpUnder (since := "2025-04-08")]
+def Under.opToOverOp : (Under X)ᵒᵖ ⥤ Over (op X) := (Over.opEquivOpUnder X).inverse
+
+/-- The canonical functor by reversing structure arrows. -/
+@[deprecated Under.opEquivOpOver (since := "2025-04-08")]
+def Under.opToOpOver : Under (op X) ⥤ (Over X)ᵒᵖ := (Under.opEquivOpOver X).functor
+
+/-- The canonical functor by reversing structure arrows. -/
+@[deprecated Under.opEquivOpOver (since := "2025-04-08")]
+def Over.opToUnderOp : (Over X)ᵒᵖ ⥤ Under (op X) := (Under.opEquivOpOver X).inverse
 
 end Opposite
 

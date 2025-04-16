@@ -23,11 +23,6 @@ jobs:
           ## fetch the whole repository, as we want to push to it later
           fetch-depth: 0
 
-      - name: print lean and lake versions
-        run: |
-          lean --version
-          lake --version
-
       - name: prune ProofWidgets .lake
         run: |
           # The ProofWidgets release contains not just the `.js` (which we need in order to build)
@@ -42,12 +37,12 @@ jobs:
         with:
           auto-config: false
           use-github-cache: false
-          use-mathlib-cache: false
+          use-mathlib-cache: true
 
-      - name: get cache
+      - name: print lean and lake versions
         run: |
-          lake exe cache clean
-          lake exe cache get
+          lean --version
+          lake --version
 
       - name: build mathlib
         id: build

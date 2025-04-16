@@ -47,6 +47,7 @@ namespace GenContFract
 
 open GenContFract (of)
 
+-- `compExactValue_correctness_of_stream_eq_some` does not trivially generalize to `DivisionRing`
 variable {K : Type*} [Field K] [LinearOrder K] {v : K} {n : ℕ}
 
 /-- Given two continuants `pconts` and `conts` and a value `fr`, this function returns

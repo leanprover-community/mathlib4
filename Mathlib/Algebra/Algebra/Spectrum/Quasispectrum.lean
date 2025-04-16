@@ -3,7 +3,7 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Algebra.Spectrum
+import Mathlib.Algebra.Algebra.Spectrum.Basic
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.Algebra.Unitization
 
@@ -197,6 +197,10 @@ lemma isQuasiregular_iff {x : R} :
     all_goals
       apply equiv.symm.injective
       assumption
+
+lemma isQuasiregular_iff' {x : R} : IsQuasiregular x ↔ IsUnit (PreQuasiregular.equiv x) := by
+  simp only [IsQuasiregular, IsUnit, Equiv.apply_symm_apply,
+    ← PreQuasiregular.equiv (R := R).injective.eq_iff]
 
 end PreQuasiregular
 
