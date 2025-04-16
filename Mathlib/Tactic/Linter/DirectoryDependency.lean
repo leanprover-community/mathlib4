@@ -144,8 +144,7 @@ end NamePrefixRel
 -- TODO: move the following three lists to a JSON file, for easier evolution over time!
 -- TODO: add/extend tests for this linter, to verify the change in behaviour
 
--- TODO: migrate other directories to this list: investigate e.g. `Mathlib.Logic`,
--- `Mathlib.Tactic.Linter` and `Mathlib.Data`
+-- TODO: migrate other directories to this list: investigate e.g. `Mathlib.Logic` and `Mathlib.Data`
 
 -- TODO: enforce that allowed and forbidden keys are disjoint
 
@@ -192,6 +191,14 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Lean.Expr.ExtraRecognizers, `Mathlib.Order),
   (`Mathlib.Lean.Expr.ExtraRecognizers, `Mathlib.Logic),
   (`Mathlib.Lean.Expr.ExtraRecognizers, `Mathlib.Tactic),
+
+  (`Mathlib.Tactic.Linter, `Batteries),
+  (`Mathlib.Tactic.Linter, `Lean),
+  (`Mathlib.Tactic.Linter.MinImports, `ImportGraph),
+  (`Mathlib.Tactic.Linter.MinImports, `Mathlib.Tactic.MinImports),
+  (`Mathlib.Tactic.Linter.UpstreamableDecl, `ImportGraph),
+  (`Mathlib.Tactic.Linter.UpstreamableDecl, `Mathlib.Tactic.MinImports),
+  (`Mathlib.Tactic.Linter.TextBased, `Mathlib.Data.Nat.Notation),
 ]
 
 /-- `forbiddenImportDirs` relates module prefixes, specifying that modules with the first prefix
