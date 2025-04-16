@@ -498,7 +498,7 @@ instance addCommMonoid : AddCommMonoid (LieSubalgebra R L) where
   add_comm := sup_comm
   nsmul := nsmulRec
 
-instance : OrderedAddCommMonoid (LieSubalgebra R L) where
+instance : IsOrderedAddMonoid (LieSubalgebra R L) where
   add_le_add_left _ _ := sup_le_sup_left
 
 instance : CanonicallyOrderedAdd (LieSubalgebra R L) where

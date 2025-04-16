@@ -360,9 +360,6 @@ theorem closure_induction {p : (g : G) → g ∈ closure k → Prop}
       inv_mem' := fun ⟨_, hb⟩ ↦ ⟨_, inv _ _ hb⟩ }
   closure_le (K := K) |>.mpr (fun y hy ↦ ⟨subset_closure hy, mem y hy⟩) hx |>.elim fun _ ↦ id
 
-@[deprecated closure_induction (since := "2024-10-10")]
-alias closure_induction' := closure_induction
-
 /-- An induction principle for closure membership for predicates with two arguments. -/
 @[to_additive (attr := elab_as_elim)
       "An induction principle for additive closure membership, for

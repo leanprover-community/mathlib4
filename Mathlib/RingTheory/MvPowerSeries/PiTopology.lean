@@ -54,7 +54,7 @@ TODO: add the similar result for the series of homogeneous components.
 In `Mathlib.RingTheory.MvPowerSeries.LinearTopology`, we generalize the criterion for topological
 nilpotency by proving that, if the base ring is equipped with a *linear* topology, then
 a power series is topologically nilpotent if and only if its constant coefficient is.
-This is lemma `MvPowerSeries.LinearToplogy.isTopologicallyNilpotent_iff_constantCoeff`.
+This is lemma `MvPowerSeries.LinearTopology.isTopologicallyNilpotent_iff_constantCoeff`.
 
 Mathematically, everything proven in this files follows from that general statement. However,
 formalizing this yields a few (minor) annoyances:

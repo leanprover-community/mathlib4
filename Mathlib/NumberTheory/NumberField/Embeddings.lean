@@ -1148,23 +1148,79 @@ lemma isReal_infinitePlace : InfinitePlace.IsReal (infinitePlace) :=
 
 end Rat
 
+namespace NumberField
+
+open InfinitePlace Module
+
+section TotallyRealField
+
 /-
 
 ## Totally real number fields
 
 -/
 
-namespace NumberField
-
 /-- A number field `K` is totally real if all of its infinite places
 are real. In other words, the image of every ring homomorphism `K → ℂ`
 is a subset of `ℝ`. -/
-class IsTotallyReal (K : Type*) [Field K] [NumberField K] where
+@[mk_iff] class IsTotallyReal (K : Type*) [Field K] [NumberField K] where
   isReal : ∀ v : InfinitePlace K, v.IsReal
+
+variable {K : Type*} [Field K] [NumberField K]
+
+theorem nrComplexPlaces_eq_zero_iff :
+    nrComplexPlaces K = 0 ↔ IsTotallyReal K := by
+  simp [Fintype.card_eq_zero_iff, isEmpty_subtype, isTotallyReal_iff]
+
+variable (K)
+
+@[simp]
+theorem IsTotallyReal.nrComplexPlaces_eq_zero [h : IsTotallyReal K] :
+    nrComplexPlaces K = 0 :=
+  nrComplexPlaces_eq_zero_iff.mpr h
+
+protected theorem IsTotallyReal.finrank [h : IsTotallyReal K] :
+    finrank ℚ K = nrRealPlaces K := by
+  rw [← card_add_two_mul_card_eq_rank, nrComplexPlaces_eq_zero_iff.mpr h, mul_zero, add_zero]
 
 instance : IsTotallyReal ℚ where
   isReal v := by
     rw [Subsingleton.elim v Rat.infinitePlace]
     exact Rat.isReal_infinitePlace
+
+end TotallyRealField
+
+section TotallyComplexField
+
+/-
+## Totally complex number fields
+-/
+
+open InfinitePlace
+
+/--
+A number field `K` is totally complex if all of its infinite places are complex.
+-/
+@[mk_iff] class IsTotallyComplex (K : Type*) [Field K] [NumberField K] where
+  isComplex : ∀ v : InfinitePlace K, v.IsComplex
+
+variable {K : Type*} [Field K] [NumberField K]
+
+theorem nrRealPlaces_eq_zero_iff :
+    nrRealPlaces K = 0 ↔ IsTotallyComplex K := by
+  simp [Fintype.card_eq_zero_iff, isEmpty_subtype, isTotallyComplex_iff]
+
+variable (K)
+
+@[simp]
+theorem IsTotallyComplex.nrRealPlaces_eq_zero [h : IsTotallyComplex K] :
+    nrRealPlaces K = 0 :=
+  nrRealPlaces_eq_zero_iff.mpr h
+
+protected theorem IsTotallyComplex.finrank [h : IsTotallyComplex K] :
+    finrank ℚ K = 2 * nrComplexPlaces K := by
+  rw [← card_add_two_mul_card_eq_rank, nrRealPlaces_eq_zero_iff.mpr h, zero_add]
+
+end TotallyComplexField
 
 end NumberField

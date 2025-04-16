@@ -289,11 +289,9 @@ lemma segment_inter_eq_endpoint_of_linearIndependent_of_ne
   simp only [add_sub_add_left_eq_sub]
   suffices H : LinearIndependent 𝕜 ![(-1 : 𝕜) • x + t • y, (-1 : 𝕜) • x + s • y] by
     convert H using 1; simp only [neg_smul, one_smul]; abel_nf
-  apply h.linear_combination_pair_of_det_ne_zero
-  contrapose! hs
-  apply Eq.symm
-  simpa [neg_mul, one_mul, mul_neg, mul_one, sub_neg_eq_add, add_comm _ t,
-    ← sub_eq_add_neg, sub_eq_zero] using hs
+  nontriviality 𝕜
+  rw [LinearIndependent.pair_add_smul_add_smul_iff]
+  aesop
 
 section LinearOrderedRing
 

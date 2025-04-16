@@ -166,7 +166,6 @@ noncomputable def mapCommGrp : CommGrp_ C ⥤ CommGrp_ D where
         rw [← Functor.LaxBraided.braided_assoc, ← Functor.map_comp, A.mul_comm] }
   map f := F.mapMon.map f
 
-attribute [local instance] NatTrans.monoidal_of_preservesFiniteProducts in
 /-- `mapGrp` is functorial in the left-exact functor. -/
 @[simps]
 noncomputable def mapCommGrpFunctor : (C ⥤ₗ D) ⥤ CommGrp_ C ⥤ CommGrp_ D where

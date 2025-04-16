@@ -5,7 +5,7 @@ Authors: Patrick Massot
 -/
 import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.MeasureTheory.Integral.DominatedConvergence
-import Mathlib.MeasureTheory.Integral.SetIntegral
+import Mathlib.MeasureTheory.Integral.Bochner.Set
 import Mathlib.Analysis.NormedSpace.HahnBanach.SeparatingDual
 
 /-!
