@@ -348,9 +348,9 @@ theorem order_mul (φ ψ : R⟦X⟧) : order (φ * ψ) = order φ + order ψ := 
       simp [mem_antidiagonal]
 
 theorem order_pow [Nontrivial R] (φ : R⟦X⟧) (n : ℕ) :
-    order (φ ^ n) = n • (order φ) := by
+    order (φ ^ n) = n • order φ := by
   rcases subsingleton_or_nontrivial R with hR | hR
-  · simp [Subsingleton.eq_zero φ]
+  · simp only [Subsingleton.eq_zero φ, order_zero, nsmul_eq_mul]
     by_cases hn : n = 0
     · simp [hn, pow_zero]
     · simp [zero_pow hn, ENat.mul_top', if_neg hn]
