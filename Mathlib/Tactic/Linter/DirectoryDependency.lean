@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Lean.Elab.Command
+import Lean.Elab.ParseImportsFast
 
 /-! # The `directoryDependency` linter
 
@@ -11,6 +12,14 @@ The `directoryDependency` linter detects imports between directories that are su
 independent. By specifying that one directory does not import from another, we can improve the
 modularity of Mathlib.
 -/
+
+-- XXX: this PR is copy-pasted from lint-style.lean; can I centralise this?
+/-- Parse all imports in a text file at `path` and return just their names:
+this is just a thin wrapper around `Lean.parseImports'`.
+Omit `Init (which is part of the prelude). -/
+def findImports (path : System.FilePath) : IO (Array Lean.Name) := do
+  return (← Lean.parseImports' (← IO.FS.readFile path) path.toString)
+    |>.map (fun imp ↦ imp.module) |>.erase `Init
 
 /-- Find the longest prefix of `n` such that `f` returns `some` (or return `none` otherwise). -/
 def Lean.Name.findPrefix {α} (f : Name → Option α) (n : Name) : Option α := do
@@ -142,8 +151,10 @@ end NamePrefixRel
 
 /-- `allowedImportDirs` relates module prefixes, specifying that modules with the first prefix
 are only allowed to import modules in the second directory.
+For directories which are low in the import hierarchy, this opt-out approach is both more ergonomic
+(fewer updates needed) and needs less configuration.
 
-For directories with few imports, this is a better default than a blocklist.
+We always allow imports of `Init, `Std and `Mathlib.Init (as well as its transitive dependencies.)
 -/
 def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Util, `Lean),
@@ -520,10 +531,13 @@ def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array MessageDa
   for prfix in matchingPrefixes do
     -- Get the current directory of the main module: we assume this is not a root file.
     let some dir := mainModule.prefix? | unreachable!
-    -- We always allow imports in the same directory, and from Mathlib.Init.
-    -- We also always allow imports from `Init` and `Std`.
+    -- We always allow imports in the same directory, and from `Init` and `Std`.
+    -- We also allow the direct (and transitive) imports of Mathlib.Init, as well as Mathlib.Init.
+    let initImports ← findImports ("Mathlib" / "Init.lean")
+    let initImports2 := initImports.append #[`Mathlib.Init, `Mathlib.Tactic.DeclarationNames]
+
     let importsToCheck := imports.filter (!(`Init).isPrefixOf ·)|>.filter (!(`Std).isPrefixOf ·)
-      |>.filter (!dir.isPrefixOf ·)|>.erase `Mathlib.Init
+      |>.filter (!dir.isPrefixOf ·)|>.filter (!initImports2.contains ·)
     -- Allowed directories: TODO this does not take nested prefixes into account...
     let some rules := RBMap.find? allowedImportDirs prfix | unreachable!
     for imported in importsToCheck do
