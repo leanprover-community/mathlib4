@@ -16,7 +16,7 @@ modularity of Mathlib.
 -- XXX: this PR is copy-pasted from lint-style.lean; can I centralise this?
 /-- Parse all imports in a text file at `path` and return just their names:
 this is just a thin wrapper around `Lean.parseImports'`.
-Omit `Init (which is part of the prelude). -/
+Omit `Init` (which is part of the prelude). -/
 def findImports (path : System.FilePath) : IO (Array Lean.Name) := do
   return (← Lean.parseImports' (← IO.FS.readFile path) path.toString)
     |>.map (fun imp ↦ imp.module) |>.erase `Init
