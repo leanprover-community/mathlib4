@@ -167,7 +167,7 @@ lemma allRoots_eq_map_allCoeffs :
 
 lemma allRoots_nodup : (allRoots P).Nodup := by
   have hli : Injective (Fintype.linearCombination ℤ ![shortRoot P, longRoot P]) := by
-    rw [← Fintype.linearIndependent_iff_injective]
+    rw [← linearIndependent_iff_injective_fintypeLinearCombination]
     exact (linearIndependent_short_long P).restrict_scalars' ℤ
   rw [allRoots_eq_map_allCoeffs, nodup_map_iff hli]
   decide
@@ -397,7 +397,7 @@ variable [P.IsIrreducible]
 @[simp] lemma span_eq_top :
     span R {longRoot P, shortRoot P} = ⊤ := by
   have := P.span_root_image_eq_top_of_forall_orthogonal {long P, short P} (by simp)
-  rw [show P.root '' {long P, short P} = {longRoot P, shortRoot P} from by aesop] at this
+  rw [show P.root '' {long P, short P} = {longRoot P, shortRoot P} by aesop] at this
   refine this fun k hk ij hij ↦ ?_
   replace hk : P.root k ∉ allRoots P :=
     fun contra ↦ hk <| span_subset_span ℤ _ _ <| mem_span_of_mem_allRoots P contra

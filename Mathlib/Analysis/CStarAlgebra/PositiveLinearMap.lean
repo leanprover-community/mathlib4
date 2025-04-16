@@ -122,7 +122,7 @@ lemma exists_norm_apply_le (f : A₁ →ₚ[ℂ] A₂) : ∃ C : ℝ≥0, ∀ a,
   · have (m : ℕ) : 0 ≤ ((2 : ℝ) ^ (-(m : ℤ)) • x m) := smul_nonneg (by positivity) (hx_nonneg m)
     refine CStarAlgebra.norm_le_norm_of_nonneg_of_le (f.map_nonneg (this n)) ?_
     gcongr
-    exact le_tsum x_summable n fun m _ ↦ this m
+    exact x_summable.le_tsum n fun m _ ↦ this m
 
 instance {F : Type*} [FunLike F A₁ A₂] [PositiveLinearMapClass F ℂ A₁ A₂] :
     ContinuousLinearMapClass F ℂ A₁ A₂ where
