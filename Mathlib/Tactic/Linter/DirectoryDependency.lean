@@ -164,6 +164,35 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Util, `Mathlib.Tactic),
   -- TODO: reduce this dependency by upstreaming `Data.String.Defs to batteries
   (`Mathlib.Util.FormatTable, `Mathlib.Data.String.Defs),
+
+  (`Mathlib.Lean, `Lean),
+  (`Mathlib.Lean, `Batteries.CodeAction),
+  (`Mathlib.Lean, `Batteries.Tactic.Lint),
+  -- One-off exceptions: TODO decide if these are fine, or should be scoped more finely.
+  (`Mathlib.Lean.CoreM, `Mathlib.Tactic.ToExpr),
+  (`Mathlib.Lean.CoreM, `Mathlib.Util.WhatsNew),
+  (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Tactic.Lemma),
+  (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Tactic.TypeStar),
+  (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Tactic.ToAdditive),
+  (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Tactic), -- split this up further?
+  (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Data), -- split this up further?
+  (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Algebra.Notation),
+  (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Data.Notation),
+  (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Data.Array),
+
+  (`Mathlib.Lean.Meta.CongrTheorems, `Mathlib.Data),
+  (`Mathlib.Lean.Meta.CongrTheorems, `Mathlib.Logic),
+  (`Mathlib.Lean.Meta.CongrTheorems, `Mathlib.Tactic),
+
+  (`Mathlib.Lean.Expr.ExtraRecognizers, `Mathlib.Data),
+  (`Mathlib.Lean.Expr.ExtraRecognizers, `Mathlib.Order),
+  (`Mathlib.Lean.Expr.ExtraRecognizers, `Mathlib.Logic),
+  (`Mathlib.Lean.Expr.ExtraRecognizers, `Mathlib.Tactic),
+
+  -- TODO: decide if this is acceptable or should be split in a more fine-grained way
+  (`Mathlib.Lean, `Batteries),
+  (`Mathlib.Lean.Expr, `Mathlib.Util),
+  (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Util),
 ]
 
 /-- `forbiddenImportDirs` relates module prefixes, specifying that modules with the first prefix
