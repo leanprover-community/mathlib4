@@ -82,7 +82,7 @@ instance isAddCyclic_additive [Group α] [IsCyclic α] : IsAddCyclic (Additive �
   isAddCyclic_additive_iff.mpr inferInstance
 
 @[to_additive]
-instance IsCyclic.commutative [Group α] [IsCyclic α] :
+instance (priority := 100) IsCyclic.commutative [Group α] [IsCyclic α] :
     IsMulCommutative α where
   is_comm.comm x y :=
     let ⟨_, hg⟩ := IsCyclic.exists_generator (α := α)
