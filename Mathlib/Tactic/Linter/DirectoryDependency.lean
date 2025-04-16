@@ -13,7 +13,7 @@ independent. By specifying that one directory does not import from another, we c
 modularity of Mathlib.
 -/
 
--- XXX: this PR is copy-pasted from lint-style.lean; can I centralise this?
+-- XXX: is there a better long-time place for this
 /-- Parse all imports in a text file at `path` and return just their names:
 this is just a thin wrapper around `Lean.parseImports'`.
 Omit `Init` (which is part of the prelude). -/
@@ -144,7 +144,8 @@ end NamePrefixRel
 -- TODO: move the following three lists to a JSON file, for easier evolution over time!
 -- TODO: add/extend tests for this linter, to verify the change in behaviour
 
--- TODO: migrate other directories to this list: investigate e.g. `Mathlib.Logic` and `Mathlib.Data`
+-- Future: investigate moving further directories to this allow-list, such as
+-- `Mathlib.Testing`, `Mathlib.Control` and `Mathlib.Data`
 
 -- TODO: enforce that allowed and forbidden keys are disjoint
 
