@@ -705,7 +705,7 @@ theorem setLIntegral_paramSet_exp {n : ℕ} (hn : 0 < n) :
     lmarginal_erase' _ (by fun_prop) (Finset.mem_univ w₀), if_pos rfl]
   simp_rw [Function.update_self, lmarginal, lintegral_const, Measure.pi_univ, if_neg
     (Finset.ne_of_mem_erase (Subtype.prop _)), Measure.restrict_apply_univ, Real.volume_Ico,
-        sub_zero, ofReal_one, prod_const_one, mul_one, mul_comm _ (n : ℝ)]
+    sub_zero, ofReal_one, prod_const_one, mul_one, mul_comm _ (n : ℝ)]
   rw [← ofReal_integral_eq_lintegral_ofReal (integrableOn_exp_mul_Iic hn _), integral_exp_mul_Iic
     hn, mul_zero, Real.exp_zero, ofReal_div_of_pos hn, ofReal_one, ofReal_natCast, one_div]
   filter_upwards with _ using Real.exp_nonneg _
@@ -721,7 +721,7 @@ open Pointwise
 open scoped Classical in
 /--
 A compact set that contains `expMapBasis '' closure (paramSet K)` and furthermore is almost
-equal to it.
+equal to it, see `compactSet_eq_union`.
 -/
 abbrev compactSet : Set (realSpace K) :=
   (Set.Icc (0 : ℝ) 1) • (expMapBasis '' Set.univ.pi fun w ↦ if w = w₀ then {0} else Set.Icc 0 1)
