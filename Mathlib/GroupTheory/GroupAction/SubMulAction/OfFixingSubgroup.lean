@@ -126,8 +126,6 @@ def fixingSubgroupInsertEquiv (a : α) (s : Set (ofStabilizer M a)) :
   left_inv _ := by simp
   right_inv _ := by simp
 
-#check Subgroup.instIsScalarTowerSubtypeMem
-#check AddSubgroup.instIsScalarTowerSubtypeMem
 /-- The identity map of fixing subgroup of stabilizer
 into the fixing subgroup of the extended set, as an equivariant map -/
 @[to_additive]
