@@ -97,25 +97,17 @@ lemma dist_add_dist_eq_iff : dist a b + dist b c = dist a c ↔ Wbtw ℝ a b c :
   rwa [(vsub_left_injective _).mem_set_image] at this
 
 /-- The strict triangle inequality for affinely independent points. -/
-theorem AffineIndependent.dist_strict_triangle {Ti Tj Tk : P}
-    (hT : AffineIndependent ℝ ![Ti, Tj, Tk]) :
-    dist (Ti) (Tk) < dist (Ti) (Tj) + dist (Tj) (Tk) := by
+theorem AffineIndependent.dist_strict_triangle {ι} (i j k : ι)
+    (h : Function.Injective ![i, j, k]) (T : ι → P) (hT : AffineIndependent ℝ T) :
+    dist (T i) (T k) < dist (T i) (T j) + dist (T j) (T k) := by
   refine lt_of_le_of_ne' (dist_triangle _ _ _) ?_
   intro H
   rw [dist_add_dist_eq_iff] at H
-  rw [affineIndependent_iff_not_collinear] at hT
+  replace hT := hT.comp_embedding ⟨_, h⟩
+  rw [affineIndependent_iff_not_collinear, Set.range_comp] at hT
   apply hT; clear hT
   convert H.symm.collinear using 1
   simp [Set.image_insert_eq]
-
-/-- Alternate form of the strict triangle inequality, allowing an ordered triple of
-points to be specified from a possibly larger collection `T` of affinely independent points. -/
-theorem AffineIndependent.dist_strict_triangle' {ι} (i j k : ι)
-    (h : Function.Injective ![i, j, k]) (T : ι → P) (hT : AffineIndependent ℝ T) :
-    dist (T i) (T k) < dist (T i) (T j) + dist (T j) (T k) := by
-  refine AffineIndependent.dist_strict_triangle ?_
-  convert hT.comp_embedding ⟨_, h⟩ using 1
-  exact FinVec.map_eq _ ![i, j, k]
 
 end MetricSpace
 
