@@ -61,11 +61,6 @@ open CategoryTheory.Abelian.Ext DerivedCategory
 
 variable {C : Type u} [Category.{v} C] [Abelian C] [HasExt.{w} C] (X Y : C)
 
-@[simps! symm_apply]
-noncomputable def homEquiv₀_hom : Ext X Y 0 ≃+ (X ⟶ Y) where
-  __ := homEquiv₀
-  map_add' := sorry
-
 namespace Ext
 
 variable {C : Type u} [Category.{v} C] [Abelian C] [HasExt.{w} C]
@@ -77,7 +72,7 @@ variable (R : Type*) [Ring R] [Linear R C]
 instance {X Y : C} (n : ℕ): Module R (Ext.{w} X Y n) := sorry
 
 noncomputable def homEquiv₀_linearHom {X Y : C} : Ext X Y 0 ≃ₗ[R] (X ⟶ Y) where
-  __ := homEquiv₀_hom X Y
+  __ := addEquiv₀
   map_smul' := sorry
 
 end Ring
@@ -90,9 +85,11 @@ noncomputable def bilinearCompOfLinear [Linear R C] (X Y Z : C) (a b c : ℕ) (h
     Ext.{w} X Y a →ₗ[R] Ext.{w} Y Z b →ₗ[R] Ext.{w} X Z c where
   toFun α :=
     { toFun := fun β ↦ α.comp β h
-      map_add' := sorry
+      map_add' x y := by simp
       map_smul' := sorry }
-  map_add' := sorry
+  map_add' α β := by
+    ext
+    simp
   map_smul' := sorry
 
 noncomputable def postcompOfLinear [Linear R C] {Y Z : C} {a b n : ℕ} (f : Ext.{w} Y Z n) (X : C)
@@ -122,15 +119,13 @@ variable {R : Type u} [CommRing R] [Small.{v} R] {M N : ModuleCat.{v} R} {n : �
 local instance : CategoryTheory.HasExt.{w} (ModuleCat.{v} R) :=
   CategoryTheory.hasExt_of_enoughProjectives.{w} (ModuleCat.{v} R)
 
-set_option maxHeartbeats 400000 in
-set_option synthInstance.maxHeartbeats 40000 in
 lemma ext_hom_eq_zero_of_mem_ann {r : R} (mem_ann : r ∈ Module.annihilator R N) (n : ℕ) :
     (AddCommGrp.ofHom <| ((Ext.mk₀ <| r • (𝟙 M))).postcomp N (add_zero n)) = 0 := by
   apply congrArg AddCommGrp.ofHom <| AddMonoidHom.ext fun h ↦ ?_
   show (((Ext.homEquiv₀_linearHom R).symm (r • 𝟙 M)).postcompOfLinear R N _) h = 0
   simp only [Ext.postcompOfLinear, Ext.bilinearCompOfLinear, Ext.homEquiv₀_linearHom,
     AddEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe, Equiv.invFun_as_coe,
-    AddEquiv.coe_toEquiv_symm, map_smul, LinearEquiv.coe_symm_mk, homEquiv₀_hom_symm_apply,
+    AddEquiv.coe_toEquiv_symm, map_smul, LinearEquiv.coe_symm_mk, Ext.addEquiv₀_symm_apply,
     LinearMap.smul_apply, LinearMap.flip_apply, LinearMap.coe_mk, AddHom.coe_mk, Ext.comp_mk₀_id]
   rw [← Ext.mk₀_id_comp h]
   show r • (Ext.bilinearCompOfLinear R N N M 0 n n (zero_add n)).flip
