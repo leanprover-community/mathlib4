@@ -1098,9 +1098,9 @@ theorem setIntegral_dirac [MeasurableSpace α] [MeasurableSingletonClass α] (f 
 
 /-- **Markov's inequality** also known as **Chebyshev's first inequality**. -/
 theorem mul_meas_ge_le_integral_of_nonneg {f : α → ℝ} (hf_nonneg : 0 ≤ᵐ[μ] f)
-    (hf_int : Integrable f μ) (ε : ℝ) : ε * (μ { x | ε ≤ f x }).toReal ≤ ∫ x, f x ∂μ := by
+    (hf_int : Integrable f μ) (ε : ℝ) : ε * μ.real { x | ε ≤ f x } ≤ ∫ x, f x ∂μ := by
   rcases eq_top_or_lt_top (μ {x | ε ≤ f x}) with hμ | hμ
-  · simpa [hμ] using integral_nonneg_of_ae hf_nonneg
+  · simpa [measureReal_def, hμ] using integral_nonneg_of_ae hf_nonneg
   · have := Fact.mk hμ
     calc
       ε * μ.real { x | ε ≤ f x } = ∫ _ in {x | ε ≤ f x}, ε ∂μ := by simp [mul_comm]
@@ -1180,23 +1180,24 @@ theorem integral_mul_le_Lp_mul_Lq_of_nonneg {p q : ℝ} (hpq : p.HolderConjugate
 
 theorem integral_countable' [Countable α] [MeasurableSingletonClass α] {μ : Measure α}
     {f : α → E} (hf : Integrable f μ) :
-    ∫ a, f a ∂μ = ∑' a, (μ {a}).toReal • f a := by
+    ∫ a, f a ∂μ = ∑' a, μ.real {a} • f a := by
   rw [← Measure.sum_smul_dirac μ] at hf
   rw [← Measure.sum_smul_dirac μ, integral_sum_measure hf]
   congr 1 with a : 1
-  rw [integral_smul_measure, integral_dirac, Measure.sum_smul_dirac]
+  rw [integral_smul_measure, integral_dirac, Measure.sum_smul_dirac, measureReal_def]
 
 theorem integral_singleton' {μ : Measure α} {f : α → E} (hf : StronglyMeasurable f) (a : α) :
-    ∫ a in {a}, f a ∂μ = (μ {a}).toReal • f a := by
-  simp only [Measure.restrict_singleton, integral_smul_measure, integral_dirac' f a hf]
+    ∫ a in {a}, f a ∂μ = μ.real {a} • f a := by
+  simp only [Measure.restrict_singleton, integral_smul_measure, integral_dirac' f a hf,
+    measureReal_def]
 
 theorem integral_singleton [MeasurableSingletonClass α] {μ : Measure α} (f : α → E) (a : α) :
-    ∫ a in {a}, f a ∂μ = (μ {a}).toReal • f a := by
-  simp only [Measure.restrict_singleton, integral_smul_measure, integral_dirac]
+    ∫ a in {a}, f a ∂μ = μ.real {a} • f a := by
+  simp only [Measure.restrict_singleton, integral_smul_measure, integral_dirac, measureReal_def]
 
 theorem integral_countable [MeasurableSingletonClass α] (f : α → E) {s : Set α} (hs : s.Countable)
     (hf : IntegrableOn f s μ) :
-    ∫ a in s, f a ∂μ = ∑' a : s, (μ {(a : α)}).toReal • f a := by
+    ∫ a in s, f a ∂μ = ∑' a : s, μ.real {(a : α)} • f a := by
   have hi : Countable { x // x ∈ s } := Iff.mpr countable_coe_iff hs
   have hf' : Integrable (fun (x : s) => f x) (Measure.comap Subtype.val μ) := by
     rw [IntegrableOn, ← map_comap_subtype_coe, integrable_map_measure] at hf
@@ -1206,27 +1207,27 @@ theorem integral_countable [MeasurableSingletonClass α] (f : α → E) {s : Set
     · exact Countable.measurableSet hs
   rw [← integral_subtype_comap hs.measurableSet, integral_countable' hf']
   congr 1 with a : 1
-  rw [Measure.comap_apply Subtype.val Subtype.coe_injective
+  rw [measureReal_def, Measure.comap_apply Subtype.val Subtype.coe_injective
     (fun s' hs' => MeasurableSet.subtype_image (Countable.measurableSet hs) hs') _
     (MeasurableSet.singleton a)]
-  simp
+  simp [measureReal_def]
 
 theorem integral_finset [MeasurableSingletonClass α] (s : Finset α) (f : α → E)
     (hf : IntegrableOn f s μ) :
-    ∫ x in s, f x ∂μ = ∑ x ∈ s, (μ {x}).toReal • f x := by
+    ∫ x in s, f x ∂μ = ∑ x ∈ s, μ.real {x} • f x := by
   rw [integral_countable _ s.countable_toSet hf, ← Finset.tsum_subtype']
 
 theorem integral_fintype [MeasurableSingletonClass α] [Fintype α] (f : α → E)
     (hf : Integrable f μ) :
-    ∫ x, f x ∂μ = ∑ x, (μ {x}).toReal • f x := by
+    ∫ x, f x ∂μ = ∑ x, μ.real {x} • f x := by
   -- NB: Integrable f does not follow from Fintype, because the measure itself could be non-finite
   rw [← integral_finset .univ, Finset.coe_univ, Measure.restrict_univ]
   simp [Finset.coe_univ, Measure.restrict_univ, hf]
 
-theorem integral_unique [Unique α] (f : α → E) : ∫ x, f x ∂μ = (μ univ).toReal • f default :=
+theorem integral_unique [Unique α] (f : α → E) : ∫ x, f x ∂μ = μ.real univ • f default :=
   calc
     ∫ x, f x ∂μ = ∫ _, f default ∂μ := by congr with x; congr; exact Unique.uniq _ x
-    _ = (μ univ).toReal • f default := by rw [integral_const]
+    _ = μ.real univ • f default := by rw [integral_const]
 
 theorem integral_pos_of_integrable_nonneg_nonzero [TopologicalSpace α] [Measure.IsOpenPosMeasure μ]
     {f : α → ℝ} {x : α} (f_cont : Continuous f) (f_int : Integrable f μ) (f_nonneg : 0 ≤ f)
@@ -1337,7 +1338,7 @@ theorem eLpNorm_one_le_of_le {r : ℝ≥0} (hfint : Integrable f μ) (hfint' : 0
     · norm_num
   haveI := hμ
   rw [integral_eq_integral_pos_part_sub_integral_neg_part hfint, sub_nonneg] at hfint'
-  have hposbdd : ∫ ω, max (f ω) 0 ∂μ ≤ (μ Set.univ).toReal • (r : ℝ) := by
+  have hposbdd : ∫ ω, max (f ω) 0 ∂μ ≤ μ.real Set.univ • (r : ℝ) := by
     rw [← integral_const]
     refine integral_mono_ae hfint.real_toNNReal (integrable_const (r : ℝ)) ?_
     filter_upwards [hf] with ω hω using Real.toNNReal_le_iff_le_coe.2 hω

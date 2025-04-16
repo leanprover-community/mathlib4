@@ -365,6 +365,15 @@ theorem sum_measureReal_le_measureReal_univ [IsFiniteMeasure μ] {s : Finset ι}
   apply ENNReal.toReal_mono (measure_ne_top _ _)
   exact sum_measure_le_measure_univ (fun i mi ↦ (h i mi).nullMeasurableSet) H.aedisjoint
 
+@[simp]
+theorem measureReal_count_singleton' {a : α} (ha : MeasurableSet ({a} : Set α)) :
+    count.real ({a} : Set α) = 1 := by
+  rw [measureReal_def, count_singleton' ha, ENNReal.toReal_one]
+
+theorem measureReal_count_singleton [MeasurableSingletonClass α] (a : α) :
+    count.real ({a} : Set α) = 1 :=
+  measureReal_count_singleton' (measurableSet_singleton a)
+
 /-- Pigeonhole principle for measure spaces: if `s` is a `Finset` and
 `∑ i ∈ s, μ.real (t i) > μ.real univ`, then one of the intersections `t i ∩ t j` is not empty. -/
 theorem exists_nonempty_inter_of_measureReal_univ_lt_sum_measureReal [IsFiniteMeasure μ]
