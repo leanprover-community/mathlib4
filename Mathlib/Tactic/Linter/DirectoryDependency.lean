@@ -576,9 +576,10 @@ def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array MessageDa
   -- If this module is in the allow-list, we only allow imports from directories specified there.
   -- Collect all prefixes which have a matching entry.
   let matchingPrefixes := mainModule.prefixes.filter (fun prf ↦ allowedImportDirs.containsKey prf)
-
-  let mut messages := #[]
-  if !matchingPrefixes.isEmpty then
+  if matchingPrefixes.isEmpty then
+    -- Otherwise, we fall back to the blocklist `forbiddenImportDirs`.
+    if let some msg := _checkBlocklist env mainModule imports then return #[msg] else return #[]
+  else
     -- Get the current directory of the main module: we assume `mainModule` is not a root file.
     let some dir := mainModule.prefix? | unreachable!
     -- We always allow imports in the same directory, and from `Init` and `Std`.
@@ -588,6 +589,7 @@ def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array MessageDa
     let importsToCheck := imports.filter (!(`Init).isPrefixOf ·)|>.filter (!(`Std).isPrefixOf ·)
       |>.filter (!dir.isPrefixOf ·)|>.filter (!initImports.contains ·)
 
+    let mut messages := #[]
     for prfix in matchingPrefixes do
       -- Allowed directories: TODO this does not take nested prefixes into account...
       let some rules := RBMap.find? allowedImportDirs prfix | unreachable!
@@ -600,11 +602,6 @@ def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array MessageDa
           msg :=msg ++ m!"which is imported by this module."
           -- XXX: is this true? "(Exceptions can be added to `overrideAllowedImportDirs`.)"
           messages := messages.push msg
-    if messages.size > 0 then return messages
-
-  -- Otherwise, we fall back to the blocklist `forbiddenImportDirs`.
-  if let some msg := _checkBlocklist env mainModule imports then
-    messages := messages.push msg
-  return messages
+    return messages
 
 end Mathlib.Linter
