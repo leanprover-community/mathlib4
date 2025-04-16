@@ -68,6 +68,10 @@ instance : FunLike (SummableFamily Γ R α) α (HahnSeries Γ R) where
   coe := toFun
   coe_injective' | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
 
+theorem eq_toFun {s : SummableFamily Γ R α} (a : α) :
+    s a = s.toFun a :=
+  rfl
+
 theorem isPWO_iUnion_support (s : SummableFamily Γ R α) : Set.IsPWO (⋃ a : α, (s a).support) :=
   s.isPWO_iUnion_support'
 
