@@ -580,14 +580,14 @@ def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array MessageDa
     -- Otherwise, we fall back to the blocklist `forbiddenImportDirs`.
     if let some msg := _checkBlocklist env mainModule imports then return #[msg] else return #[]
   else
-    -- Get the current directory of the main module: we assume `mainModule` is not a root file.
-    let some dir := mainModule.prefix? | unreachable!
-    -- We always allow imports in the same directory, and from `Init` and `Std`.
+    -- We always allow imports in the same directory (for each matching prefix),
+    -- and from `Init` and `Std`.
     -- We also allow transitive imports of Mathlib.Init, as well as Mathlib.Init itself.
     let initImports := (← findImports ("Mathlib" / "Init.lean")).append
       #[`Mathlib.Init, `Mathlib.Tactic.DeclarationNames]
-    let importsToCheck := imports.filter (!(`Init).isPrefixOf ·)|>.filter (!(`Std).isPrefixOf ·)
-      |>.filter (!dir.isPrefixOf ·)|>.filter (!initImports.contains ·)
+    let importsToCheck := imports.filter (fun imp ↦ !(`Init).isPrefixOf imp && !(`Std).isPrefixOf imp)
+      |>.filter (fun imp ↦ !matchingPrefixes.any (·.isPrefixOf imp))
+      |>.filter (!initImports.contains ·)
 
     -- Find all prefixes which are allowed for one of these directories.
     let mut allRules := NameSet.empty
