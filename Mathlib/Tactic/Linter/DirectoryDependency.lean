@@ -157,15 +157,12 @@ For directories which are low in the import hierarchy, this opt-out approach is 
 We always allow imports of `Init`, `Std` and `Mathlib.Init` (as well as their transitive dependencies.)
 -/
 def allowedImportDirs : NamePrefixRel := .ofArray #[
-  (`Mathlib.Util, `Lean),
-  (`Mathlib.Util, `Qq),
   (`Mathlib.Util, `Batteries),
   (`Mathlib.Util, `Mathlib.Lean),
   (`Mathlib.Util, `Mathlib.Tactic),
   -- TODO: reduce this dependency by upstreaming `Data.String.Defs to batteries
   (`Mathlib.Util.FormatTable, `Mathlib.Data.String.Defs),
 
-  (`Mathlib.Lean, `Lean),
   (`Mathlib.Lean, `Batteries.CodeAction),
   (`Mathlib.Lean, `Batteries.Tactic.Lint),
   -- TODO: decide if this is acceptable or should be split in a more fine-grained way
@@ -195,7 +192,6 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Lean.Expr.ExtraRecognizers, `Mathlib.Tactic),
 
   (`Mathlib.Tactic.Linter, `Batteries),
-  (`Mathlib.Tactic.Linter, `Lean),
   -- The Mathlib.Tactic.Linter *module* imports all linters, hence requires all the imports.
   -- For more fine-grained exceptions of the next two imports, one needs to rename that file.
   (`Mathlib.Tactic.Linter, `ImportGraph),
@@ -203,7 +199,6 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Tactic.Linter.TextBased, `Mathlib.Data.Nat.Notation),
 
   (`Mathlib.Logic, `Batteries),
-  (`Mathlib.Logic, `Lean),
   (`Mathlib.Logic, `Qq), -- via the `tauto` tactic
   -- XXX: to what extent is this desirable?
   (`Mathlib.Logic, `Mathlib.Algebra),
@@ -212,16 +207,10 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Logic, `Mathlib.Lean),
   (`Mathlib.Logic, `Mathlib.Util),
   (`Mathlib.Logic, `Mathlib.Tactic),
+  -- Mathlib.Tactic.Common is imported via a number of different paths, e.g.
   -- Logic.Equiv.Fin.Rotate imports Algebra.Group.Fin.Basic, which imports Tactic.Common,
-  -- which imports Plausible.
-  (`Mathlib.Logic.Fin.Rotate, `Plausible),
+  -- or via e.g. Logic.Equiv.FinType and Logic.Function.FromTypes ...
   (`Mathlib.Logic.Fin.Rotate, `Mathlib.Algebra.Group.Fin.Basic),
-  -- Also imported via e.g. Logic.Equiv.FinType and Logic.Function.FromTypes ...
-  (`Mathlib.Logic, `Aesop),
-  (`Mathlib.Logic, `ImportGraph),
-  (`Mathlib.Logic, `LeanSearchClient),
-  (`Mathlib.Logic, `Plausible),
-  (`Mathlib.Logic, `ProofWidgets),
   -- XXX: should this import be allowed only on a more fine-grained level (or at all)?
   (`Mathlib.Logic, `Mathlib.Data),
   -- XXX: should this import be allowed only on a more fine-grained level (or at all)?
@@ -517,27 +506,6 @@ def forbiddenImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.SetTheory, `Mathlib.Probability),
   (`Mathlib.SetTheory, `Mathlib.RepresentationTheory),
   (`Mathlib.SetTheory, `Mathlib.Testing),
-  (`Mathlib.Testing, `Mathlib.AlgebraicGeometry),
-  (`Mathlib.Testing, `Mathlib.AlgebraicTopology),
-  (`Mathlib.Testing, `Mathlib.Analysis),
-  (`Mathlib.Testing, `Mathlib.CategoryTheory),
-  (`Mathlib.Testing, `Mathlib.Combinatorics),
-  (`Mathlib.Testing, `Mathlib.Computability),
-  (`Mathlib.Testing, `Mathlib.Condensed),
-  (`Mathlib.Testing, `Mathlib.Dynamics),
-  (`Mathlib.Testing, `Mathlib.FieldTheory),
-  (`Mathlib.Testing, `Mathlib.Geometry),
-  (`Mathlib.Testing, `Mathlib.InformationTheory),
-  (`Mathlib.Testing, `Mathlib.LinearAlgebra),
-  (`Mathlib.Testing, `Mathlib.MeasureTheory),
-  (`Mathlib.Testing, `Mathlib.ModelTheory),
-  (`Mathlib.Testing, `Mathlib.NumberTheory),
-  (`Mathlib.Testing, `Mathlib.Probability),
-  (`Mathlib.Testing, `Mathlib.RepresentationTheory),
-  (`Mathlib.Testing, `Mathlib.RingTheory),
-  (`Mathlib.Testing, `Mathlib.SetTheory),
-  (`Mathlib.Testing, `Mathlib.Testing),
-  (`Mathlib.Testing, `Mathlib.Topology),
   (`Mathlib.Topology, `Mathlib.AlgebraicGeometry),
   (`Mathlib.Topology, `Mathlib.Computability),
   (`Mathlib.Topology, `Mathlib.Condensed),
@@ -605,11 +573,16 @@ def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array MessageDa
     if let some msg := _checkBlocklist env mainModule imports then return #[msg] else return #[]
   else
     -- We always allow imports in the same directory (for each matching prefix),
-    -- and from `Init` and `Std`.
+    -- from `Init`, `Lean` and `Std`, as well as imports in `Aesop`, `Qq`, `Plausible`,
+    -- `ImportGraph`, `ProofWidgets` or `LeanSearchClient` (as these are imported in Tactic.Common).
     -- We also allow transitive imports of Mathlib.Init, as well as Mathlib.Init itself.
     let initImports := (← findImports ("Mathlib" / "Init.lean")).append
       #[`Mathlib.Init, `Mathlib.Tactic.DeclarationNames]
-    let importsToCheck := imports.filter (fun imp ↦ !(`Init).isPrefixOf imp && !(`Std).isPrefixOf imp)
+    let exclude := [
+      `Init, `Std, `Lean,
+      `Aesop, `Qq, `Plausible, `ImportGraph, `ProofWidgets, `LeanSearchClient
+    ]
+    let importsToCheck := imports.filter (fun imp ↦ exclude.any (·.isPrefixOf imp))
       |>.filter (fun imp ↦ !matchingPrefixes.any (·.isPrefixOf imp))
       |>.filter (!initImports.contains ·)
 
