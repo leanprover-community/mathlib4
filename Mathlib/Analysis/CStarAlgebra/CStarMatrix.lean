@@ -383,7 +383,9 @@ noncomputable def toCLMNonUnitalAlgHom [Fintype n] :
     map_zero' := by simp
     map_mul' := by
       intros
-      simp [← MulOpposite.op_mul]
+      simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearMap.coe_comp,
+        LinearEquiv.coe_coe, MulOpposite.coe_opLinearEquiv, Function.comp_apply,
+        ← MulOpposite.op_mul, MulOpposite.op_inj]
       ext
       simp [toCLM] }
 

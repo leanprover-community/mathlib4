@@ -747,12 +747,12 @@ theorem singletonMonoidHom_apply (a : α) : singletonMonoidHom a = {a} :=
 /-- The coercion from `Finset` to `Set` as a `MonoidHom`. -/
 @[to_additive "The coercion from `Finset` to `set` as an `AddMonoidHom`."]
 noncomputable def coeMonoidHom : Finset α →* Set α where
-  toFun := CoeTC.coe
+  toFun := (↑)
   map_one' := coe_one
   map_mul' := coe_mul
 
 @[to_additive (attr := simp)]
-theorem coe_coeMonoidHom : (coeMonoidHom : Finset α → Set α) = CoeTC.coe :=
+theorem coe_coeMonoidHom : (coeMonoidHom : Finset α → Set α) = (↑) :=
   rfl
 
 @[to_additive (attr := simp)]
@@ -778,6 +778,12 @@ theorem coe_pow (s : Finset α) (n : ℕ) : ↑(s ^ n) = (s : Set α) ^ n := by
   · rw [npowRec, pow_zero, coe_one]
   · rw [npowRec, pow_succ, coe_mul, ih]
 
+#adaptation_note /-- nightly-2025-04-07
+This now needs to be marked as noncomputable because of its dependence on `Set.monoid`.
+We should either find a way to rewrite this definition to avoid this,
+or request via @kim-em and @zwarich that changes in https://github.com/leanprover/lean4/pull/7824
+be revisited to avoid needing as many `noncomputable`s.
+-/
 /-- `Finset α` is a `Monoid` under pointwise operations if `α` is. -/
 @[to_additive "`Finset α` is an `AddMonoid` under pointwise operations if `α` is. "]
 protected noncomputable def monoid : Monoid (Finset α) :=

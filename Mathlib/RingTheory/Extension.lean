@@ -329,7 +329,7 @@ instance {R₀} [CommRing R₀] [Algebra R₀ S] : Module R₀ P.Cotangent :=
 
 instance {R₁ R₂} [CommRing R₁] [CommRing R₂] [Algebra R₁ S] [Algebra R₂ S] [Algebra R₁ R₂]
     [IsScalarTower R₁ R₂ S] :
-  IsScalarTower R₁ R₂ P.Cotangent := by
+    IsScalarTower R₁ R₂ P.Cotangent := by
   constructor
   intros r s m
   show algebraMap R₂ S (r • s) • m = (algebraMap _ S r) • (algebraMap _ S s) • m
