@@ -54,11 +54,6 @@ instance [SMul α β] [MulAction G α] [MulAction G β] [IsScalarTower G α β] 
 instance [MulAction G α] [FaithfulSMul G α] (S : Subgroup G) : FaithfulSMul S α :=
   inferInstanceAs (FaithfulSMul S.toSubmonoid α)
 
-/- #check DistribMulAction
-#where
-instance {G α : Type*} [AddGroup G] [AddMonoid α] [DistribAddAction G α] (S : Subgroup G) : DistribMulAction S α :=
--/
-
 /-- The action by a subgroup is the action by the underlying group. -/
 instance [AddMonoid α] [DistribMulAction G α] (S : Subgroup G) : DistribMulAction S α :=
   inferInstanceAs (DistribMulAction S.toSubmonoid α)
