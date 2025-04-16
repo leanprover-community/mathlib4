@@ -107,21 +107,21 @@ variable {G}
 the stabilizer of a point and that of its translate -/
 def _root_.SubAddAction.ofStabilizer.conjMap {G : Type*} [AddGroup G] {α : Type*} [AddAction G α]
     {g : G} {a b : α} (hg : b = g +ᵥ a) :
-    AddActionHom (AddAction.stabilizerEquivStabilizer hg).symm
+    AddActionHom (AddAction.stabilizerEquivStabilizer hg)
       (SubAddAction.ofStabilizer G a) (SubAddAction.ofStabilizer G b) where
   toFun x := ⟨g +ᵥ x.val, fun hy ↦ x.prop (by simpa [hg] using hy)⟩
   map_vadd' := fun ⟨k, hk⟩ x ↦ by
-    simp [← SetLike.coe_eq_coe, AddAction.stabilizerEquivStabilizer, ← vadd_assoc]
+    simp [← SetLike.coe_eq_coe, AddAction.addSubgroup_vadd_def,
+      AddAction.stabilizerEquivStabilizer_apply, ← vadd_assoc]
 
 /-- Conjugation induces an equivariant map between the SubMulAction of
 the stabilizer of a point and that of its translate -/
 @[to_additive existing]
 def ofStabilizer.conjMap {g : G} {a b : α} (hg : b = g • a) :
-    MulActionHom (stabilizerEquivStabilizer hg).symm (ofStabilizer G a) (ofStabilizer G b) where
-    -- stabilizerEquivStabilizer hg] ofStabilizer G a where
+    MulActionHom (stabilizerEquivStabilizer hg) (ofStabilizer G a) (ofStabilizer G b) where
   toFun x := ⟨g • x.val, fun hy ↦ x.prop (by simpa [hg] using hy)⟩
   map_smul' := fun ⟨k, hk⟩ ↦ by
-    simp [← SetLike.coe_eq_coe, stabilizerEquivStabilizer, ← smul_assoc]
+    simp [← SetLike.coe_eq_coe, subgroup_smul_def, stabilizerEquivStabilizer, ← smul_assoc]
 
 variable {g  h k: G} {a b c: α}
 variable (hg : b = g • a) (hh : c = h • b) (hk : c = k • a)
@@ -133,9 +133,8 @@ theorem ofStabilizer.conjMap_apply (x : ofStabilizer G a) :
 theorem _root_.AddAction.stabilizerEquivStabilizer_compTriple
     {G : Type*} [AddGroup G] {α : Type*} [AddAction G α]
     {g h k : G} {a b c : α} {hg : b = g +ᵥ a} {hh : c = h +ᵥ b} {hk : c = k +ᵥ a} (H : k = h + g) :
-    CompTriple (AddAction.stabilizerEquivStabilizer hg).symm
-      (AddAction.stabilizerEquivStabilizer hh).symm
-      (AddAction.stabilizerEquivStabilizer hk).symm where
+    CompTriple (AddAction.stabilizerEquivStabilizer hg)
+      (AddAction.stabilizerEquivStabilizer hh) (AddAction.stabilizerEquivStabilizer hk) where
   comp_eq := by
     ext
     simp [AddAction.stabilizerEquivStabilizer, H, AddAut.inv_def, AddAut.conj, ← add_assoc]
@@ -143,9 +142,8 @@ theorem _root_.AddAction.stabilizerEquivStabilizer_compTriple
 variable {hg hh hk} in
 @[to_additive existing]
 theorem _root_.MulAction.stabilizerEquivStabilizer_compTriple (H : k = h * g) :
-    CompTriple (stabilizerEquivStabilizer hg).symm
-      (stabilizerEquivStabilizer hh).symm
-      (stabilizerEquivStabilizer hk).symm where
+    CompTriple (stabilizerEquivStabilizer hg)
+      (stabilizerEquivStabilizer hh) (stabilizerEquivStabilizer hk) where
   comp_eq := by
     ext
     simp [stabilizerEquivStabilizer, H, MulAut.inv_def, MulAut.conj, ← mul_assoc]
