@@ -52,7 +52,7 @@ def merge {m n p : ℕ} (h : m + n = p)
     if hi : i < m
     then x ⟨i, hi⟩
     else y ⟨i - m, by
-      rw [Nat.sub_lt_iff_lt_add (not_lt.mp hi), h]
+      rw [Nat.sub_lt_iff_lt_add (not_lt.mp hi), add_comm, h]
       exact i.prop⟩
   inj' i j h := by
     by_cases hi : i < m
@@ -77,7 +77,7 @@ theorem merge_apply {m n p : ℕ} (h : m + n = p)
     (x : Fin m ↪ α) (y : Fin n ↪ α) (hxy : Disjoint (range x) (range y)) (i : Fin p) :
     Fin.Embedding.merge h x y hxy i =
     if hi : i < m then x ⟨i, hi⟩ else y ⟨i - m, by
-      rw [Nat.sub_lt_iff_lt_add (not_lt.mp hi), h]
+      rw [Nat.sub_lt_iff_lt_add (not_lt.mp hi), add_comm, h]
       exact i.prop⟩ :=
   rfl
 
