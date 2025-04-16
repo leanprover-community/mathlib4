@@ -84,6 +84,15 @@ theorem map_measureReal_apply [MeasurableSpace β] {f : α → β} (hf : Measura
     μ.real s₁ ≤ μ.real s₂ :=
   ENNReal.toReal_mono h₂ (measure_mono h)
 
+theorem measureReal_restrict_apply₀ (ht : NullMeasurableSet t (μ.restrict s)) :
+    (μ.restrict s).real t = μ.real (t ∩ s) := by
+  simp only [measureReal_def, restrict_apply₀ ht]
+
+@[simp]
+theorem measureReal_restrict_apply (ht : MeasurableSet t) :
+    (μ.restrict s).real t = μ.real (t ∩ s) := by
+  simp only [measureReal_def, restrict_apply ht]
+
 theorem measureReal_mono_null (h : s₁ ⊆ s₂) (h₂ : μ.real s₂ = 0) (h'₂ : μ s₂ ≠ ∞ := by finiteness) :
     μ.real s₁ = 0 := by
   rw [measureReal_eq_zero_iff h'₂] at h₂

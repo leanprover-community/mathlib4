@@ -7,6 +7,7 @@ import Mathlib.MeasureTheory.Group.MeasurableEquiv
 import Mathlib.MeasureTheory.Integral.Bochner.L1
 import Mathlib.MeasureTheory.Integral.IntegrableOn
 import Mathlib.MeasureTheory.Measure.OpenPos
+import Mathlib.MeasureTheory.Measure.Real
 
 /-!
 # Bochner integral
@@ -834,23 +835,23 @@ theorem SimpleFunc.integral_eq_sum (f : α →ₛ E) (hfi : Integrable f μ) :
   rw [← f.integral_eq_integral hfi, SimpleFunc.integral, ← SimpleFunc.integral_eq]; rfl
 
 @[simp]
-theorem integral_const (c : E) : ∫ _ : α, c ∂μ = (μ univ).toReal • c := by
+theorem integral_const (c : E) : ∫ _ : α, c ∂μ = μ.real univ • c := by
   by_cases hμ : IsFiniteMeasure μ
   · simp only [integral, hE, L1.integral]
     exact setToFun_const (dominatedFinMeasAdditive_weightedSMul _) _
   by_cases hc : c = 0
   · simp [hc, integral_zero]
-  · simp [(integrable_const_iff_isFiniteMeasure hc).not.2 hμ,
+  · simp [measureReal_def, (integrable_const_iff_isFiniteMeasure hc).not.2 hμ,
       integral_undef, MeasureTheory.not_isFiniteMeasure_iff.mp hμ]
 
 lemma integral_eq_const [IsProbabilityMeasure μ] {f : α → E} {c : E} (hf : ∀ᵐ x ∂μ, f x = c) :
     ∫ x, f x ∂μ = c := by simp [integral_congr_ae hf]
 
 theorem norm_integral_le_of_norm_le_const [IsFiniteMeasure μ] {f : α → G} {C : ℝ}
-    (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) : ‖∫ x, f x ∂μ‖ ≤ C * (μ univ).toReal :=
+    (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) : ‖∫ x, f x ∂μ‖ ≤ C * μ.real univ :=
   calc
     ‖∫ x, f x ∂μ‖ ≤ ∫ _, C ∂μ := norm_integral_le_of_norm_le (integrable_const C) h
-    _ = C * (μ univ).toReal := by rw [integral_const, smul_eq_mul, mul_comm]
+    _ = C * μ.real univ := by rw [integral_const, smul_eq_mul, mul_comm]
 
 theorem tendsto_integral_approxOn_of_measurable [MeasurableSpace E] [BorelSpace E] {f : α → E}
     {s : Set E} [SeparableSpace s] (hfi : Integrable f μ) (hfm : Measurable f)
@@ -1102,7 +1103,7 @@ theorem mul_meas_ge_le_integral_of_nonneg {f : α → ℝ} (hf_nonneg : 0 ≤ᵐ
   · simpa [hμ] using integral_nonneg_of_ae hf_nonneg
   · have := Fact.mk hμ
     calc
-      ε * (μ { x | ε ≤ f x }).toReal = ∫ _ in {x | ε ≤ f x}, ε ∂μ := by simp [mul_comm]
+      ε * μ.real { x | ε ≤ f x } = ∫ _ in {x | ε ≤ f x}, ε ∂μ := by simp [mul_comm]
       _ ≤ ∫ x in {x | ε ≤ f x}, f x ∂μ :=
         integral_mono_ae (integrable_const _) (hf_int.mono_measure μ.restrict_le_self) <|
           ae_restrict_mem₀ <| hf_int.aemeasurable.nullMeasurable measurableSet_Ici
