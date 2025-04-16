@@ -48,8 +48,6 @@ to add a `(h : ¬ IsField A)` assumption whenever this is explicitly needed.
 dedekind domain, dedekind ring
 -/
 
-set_option linter.style.longFile 1700
-
 variable (R A K : Type*) [CommRing R] [CommRing A] [Field K]
 
 open scoped nonZeroDivisors Polynomial
@@ -1502,3 +1500,5 @@ theorem one_le_primesOver_ncard : 1 ≤ (primesOver p B).ncard :=
   Nat.one_le_iff_ne_zero.mpr (primesOver_ncard_ne_zero p B)
 
 end primesOverFinset
+
+set_option linter.style.longFile 1700
