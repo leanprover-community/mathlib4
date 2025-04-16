@@ -439,33 +439,27 @@ lemma invtSubmodule_reflection:
   have _i := LieModule.nontrivial_of_isIrreducible K L L
   let S := (LieAlgebra.IsKilling.rootSystem H)
   by_contra!
-  obtain ⟨q, hq1, hq2, hq3⟩ := this
-  --obtain ⟨Φ, b, c⟩ := RootPairing.root_subset_characterization q S.toRootPairing hq1
-  have := (RootSystem.invtsubmodule_to_root_subset (LieAlgebra.IsKilling.rootSystem H) q hq2 hq1)
-  suffices key : ∀ Φ, Φ.Nonempty → S.root '' Φ ⊆ q → (∀ i ∉ Φ, q ≤ LinearMap.ker (S.coroot' i)) →
+  obtain ⟨q, h₀, h₁, h₃⟩ := this
+  suffices h₂ : ∀ Φ, Φ.Nonempty → S.root '' Φ ⊆ q → (∀ i ∉ Φ, q ≤ LinearMap.ker (S.coroot' i)) →
       Φ = Set.univ by
-    have rrmm := this key
-    contradiction
-  intro Φ hhh4 hhh1 hhh2
-  by_contra hhh3
-  have hhh1' : ∀ i ∈ Φ, (S.root i) ∈ q := by
+    have := (S.invtsubmodule_to_root_subset q h₁ h₀) h₂
+    apply False.elim (h₃ this)
+  intro Φ hΦ₁ hΦ₂ hΦ₃
+  by_contra hc
+  have hΦ₂' : ∀ i ∈ Φ, (S.root i) ∈ q := by
     intro i hi
-      --simp at hhh1
-    apply hhh1
-    exact Set.mem_image_of_mem (⇑S.root) hi
---obtain ⟨Φ, hhh1, hhh2, hhh3, hhh4⟩ := this
+    apply hΦ₂
+    exact Set.mem_image_of_mem S.root hi
   have rr (i j : H.root) (h1 : i ∈ Φ) (h2 : j ∉ Φ) : S.root i (S.coroot j) = 0 := by
-    have t1 := hhh2 j h2
-    have t2 := hhh1' i h1
+    have t1 := hΦ₃ j h2
+    have t2 := hΦ₂' i h1
     have : S.root i ∈ LinearMap.ker (S.coroot' j) := by
       exact t1 t2
     simp at this
     exact this
   have rr' (i j : H.root) (h1 : i ∈ Φ) (h2 : j ∉ Φ) : S.root j (S.coroot i) = 0 := by
-    --obtain ⟨i1, i2⟩ := i
-    --obtain ⟨j1, j2⟩ := j
-    have t1 := hhh2 j h2
-    have t2 := hhh1' i h1
+    have t1 := hΦ₃ j h2
+    have t2 := hΦ₂' i h1
     have : S.root i ∈ LinearMap.ker (S.coroot' j) := by
       exact t1 t2
     simp at this
@@ -567,7 +561,7 @@ lemma invtSubmodule_reflection:
   let I := LieSubalgebra.lieSpan K L gg
   have rr5 : I ≠ ⊤ := by
     have : ∃ (j : H.root), j ∉ Φ := by
-      exact (Set.ne_univ_iff_exists_not_mem Φ).mp hhh3
+      exact (Set.ne_univ_iff_exists_not_mem Φ).mp hc
     obtain ⟨j, hj⟩ := this
     --rrrr : { x // x ∈ LieSubalgebra.root }
     obtain ⟨z, hz1, hz2⟩ := LieModule.Weight.exists_ne_zero (R := K) (L := H) (M := L) j
@@ -604,7 +598,7 @@ lemma invtSubmodule_reflection:
   have rr6 : I ≠ ⊥ := by
     have : ∃ (rrrr : H.root), rrrr ∈ Φ := by
       refine Set.nonempty_def.mp ?_
-      exact hhh4
+      exact hΦ₁
     obtain ⟨rrrr, rrrr1⟩ := this
     obtain ⟨x, hx1, hx2⟩ := LieModule.Weight.exists_ne_zero (R := K) (L := H) (M := L) rrrr
     have : x ∈ gg := by
