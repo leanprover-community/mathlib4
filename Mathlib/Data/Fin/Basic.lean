@@ -1025,6 +1025,7 @@ lemma succAbove_right_injective : Injective p.succAbove := by
   · exact succ_injective _ hij
 
 /-- Given a fixed pivot `p : Fin (n + 1)`, `p.succAbove` is injective. -/
+@[simp]
 lemma succAbove_right_inj : p.succAbove i = p.succAbove j ↔ i = j :=
   succAbove_right_injective.eq_iff
 
