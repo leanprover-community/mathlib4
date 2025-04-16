@@ -185,6 +185,7 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Data.Array),
 
   (`Mathlib.Lean.Meta.CongrTheorems, `Mathlib.Data),
+  (`Mathlib.Lean.Meta.CongrTheorems, `Mathlib.Order.Defs.Unbundled),
   (`Mathlib.Lean.Meta.CongrTheorems, `Mathlib.Logic),
   (`Mathlib.Lean.Meta.CongrTheorems, `Mathlib.Tactic),
 
@@ -203,11 +204,18 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
 
   (`Mathlib.Logic, `Batteries),
   (`Mathlib.Logic, `Lean),
+  (`Mathlib.Logic, `Qq), -- via the `tauto` tactic
+  -- XXX: should this import be allowed on a more fine-grained level?
+  (`Mathlib.Logic.Nontrivial.Basic, `Aesop),
+  -- XXX: should this import be allowed on a more fine-grained level?
+  (`Mathlib.Logic, `Mathlib.Control),
   (`Mathlib.Logic, `Mathlib.Lean),
   (`Mathlib.Logic, `Mathlib.Util),
   (`Mathlib.Logic, `Mathlib.Tactic),
+  -- XXX: should this import be allowed only on a more fine-grained level (or at all)?
   (`Mathlib.Logic, `Mathlib.Data),
-  (`Mathlib.Logic, `Mathlib.Order), -- XXX: is this desirable? if not, scope more finely!
+  -- XXX: should this import be allowed only on a more fine-grained level (or at all)?
+  (`Mathlib.Logic, `Mathlib.Order),
 ]
 
 /-- `forbiddenImportDirs` relates module prefixes, specifying that modules with the first prefix
@@ -597,7 +605,7 @@ def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array MessageDa
         but is only allowed to import modules starting with one of {allRules.toArray.qsort (·.toString < ·.toString)}.\n\
         Note: module {imported}"
         match importPath.toList with
-        | [] => msg := msg ++ " is directly imported by this module"
+        | [] => msg := msg ++ " is directly imported by this module."
         | a :: rest =>
           msg := msg ++ s!" is imported by {a},\n"
           for dep in rest do
