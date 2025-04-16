@@ -154,7 +154,7 @@ are only allowed to import modules in the second directory.
 For directories which are low in the import hierarchy, this opt-out approach is both more ergonomic
 (fewer updates needed) and needs less configuration.
 
-We always allow imports of `Init, `Std and `Mathlib.Init (as well as its transitive dependencies.)
+We always allow imports of `Init`, `Std` and `Mathlib.Init` (as well as their transitive dependencies.)
 -/
 def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Util, `Lean),
@@ -598,12 +598,18 @@ def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array MessageDa
     let mut messages := #[]
     for imported in importsToCheck do
       if !allowedImportDirs.contains mainModule imported then
-        let mut msg := m!"Module {mainModule} is only allowed to import modules starting with one of {allRules.toArray}. \
-        This module depends on {imported}\n"
-        for dep in env.importPath imported do
-          msg := msg ++ m!"which is imported by {dep},\n"
-        msg :=msg ++ m!"which is imported by this module."
-        -- XXX: is this true? "(Exceptions can be added to `overrideAllowedImportDirs`.)"
+        let importPath := env.importPath imported
+        let mut msg := m!"Module {mainModule} depends on {imported},\n\
+        but is only allowed to import modules starting with one of {allRules.toArray.qsort (·.toString < ·.toString)}.\n\
+        Note: module {imported}"
+        match importPath.toList with
+        | [] => msg := msg ++ "is directly imported by this module"
+        | a :: rest =>
+          msg := msg ++ s!" is imported by {a},\n"
+          for dep in rest do
+            msg := msg ++ m!"which is imported by {dep},\n"
+          msg :=msg ++ m!"which is imported by this module."
+          -- XXX: is this true? "(Exceptions can be added to `overrideAllowedImportDirs`.)"
         messages := messages.push msg
     return messages
 
