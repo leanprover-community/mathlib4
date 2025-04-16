@@ -555,30 +555,33 @@ def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array MessageDa
   let imports := env.allImportedModuleNames
 
   -- If this module is in the allow-list, we only allow imports from directories specified there.
+  -- Collect all prefixes which have a matching entry.
   let matchingPrefixes := mainModule.prefixes.filter (fun prf ↦ allowedImportDirs.containsKey prf)
+
   let mut messages := #[]
-  for prfix in matchingPrefixes do
-    -- Get the current directory of the main module: we assume this is not a root file.
+  if !matchingPrefixes.isEmpty then
+    -- Get the current directory of the main module: we assume `mainModule` is not a root file.
     let some dir := mainModule.prefix? | unreachable!
     -- We always allow imports in the same directory, and from `Init` and `Std`.
-    -- We also allow the direct (and transitive) imports of Mathlib.Init, as well as Mathlib.Init.
-    let initImports ← findImports ("Mathlib" / "Init.lean")
-    let initImports2 := initImports.append #[`Mathlib.Init, `Mathlib.Tactic.DeclarationNames]
-
+    -- We also allow transitive imports of Mathlib.Init, as well as Mathlib.Init itself.
+    let initImports := (← findImports ("Mathlib" / "Init.lean")).append
+      #[`Mathlib.Init, `Mathlib.Tactic.DeclarationNames]
     let importsToCheck := imports.filter (!(`Init).isPrefixOf ·)|>.filter (!(`Std).isPrefixOf ·)
-      |>.filter (!dir.isPrefixOf ·)|>.filter (!initImports2.contains ·)
-    -- Allowed directories: TODO this does not take nested prefixes into account...
-    let some rules := RBMap.find? allowedImportDirs prfix | unreachable!
-    for imported in importsToCheck do
-      if !allowedImportDirs.contains mainModule imported then
-        let mut msg := m!"Modules starting with {prfix} are only allowed to import modules starting with one of {rules.toArray}. \
-        This module depends on {imported}\n"
-        for dep in env.importPath imported do
-          msg := msg ++ m!"which is imported by {dep},\n"
-        msg :=msg ++ m!"which is imported by this module."
-        -- XXX: is this true? "(Exceptions can be added to `overrideAllowedImportDirs`.)"
-        messages := messages.push msg
-  if messages.size > 0 then return messages
+      |>.filter (!dir.isPrefixOf ·)|>.filter (!initImports.contains ·)
+
+    for prfix in matchingPrefixes do
+      -- Allowed directories: TODO this does not take nested prefixes into account...
+      let some rules := RBMap.find? allowedImportDirs prfix | unreachable!
+      for imported in importsToCheck do
+        if !allowedImportDirs.contains mainModule imported then
+          let mut msg := m!"Modules starting with {prfix} are only allowed to import modules starting with one of {rules.toArray}. \
+          This module depends on {imported}\n"
+          for dep in env.importPath imported do
+            msg := msg ++ m!"which is imported by {dep},\n"
+          msg :=msg ++ m!"which is imported by this module."
+          -- XXX: is this true? "(Exceptions can be added to `overrideAllowedImportDirs`.)"
+          messages := messages.push msg
+    if messages.size > 0 then return messages
 
   -- Otherwise, we fall back to the blocklist `forbiddenImportDirs`.
   match forbiddenImportDirs.findAny mainModule imports with
