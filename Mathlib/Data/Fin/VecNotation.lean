@@ -253,25 +253,23 @@ theorem cons_fin_one (x : α) (u : Fin 0 → α) : vecCons x u = fun _ => x :=
   funext (cons_val_fin_one x u)
 
 open Lean Qq in
+/-- `mkVecLiteralQ [x, y, z]` produces the term `q(![$x, $y, $z])`. -/
+def _root_.Qq.mkVecLiteralQ {u : Level} {α : Q(Type u)} (elems : List Q($α)):
+    letI n : ℕ := elems.length; Q(Fin $n → $α) :=
+  go elems.length elems rfl
+where go (n : ℕ) (elems : List Q($α)) (h : elems.length = n := by rfl) : Q(Fin $n → $α) :=
+  match n, elems with
+  | 0, [] => q(vecEmpty)
+  | n + 1, x :: xs =>
+    let xs := go n xs (by simpa using h)
+    q(vecCons $x $xs)
+
+open Lean Qq in
 protected instance _root_.PiFin.toExpr [ToLevel.{u}] [ToExpr α] (n : ℕ) : ToExpr (Fin n → α) :=
   have lu := toLevel.{u}
   have eα : Q(Type $lu) := toTypeExpr α
-  have toTypeExpr := q(Fin $n → $eα)
-  match n with
-  | 0 => { toTypeExpr, toExpr := fun _ => q(@vecEmpty $eα) }
-  | n + 1 =>
-    { toTypeExpr, toExpr := fun v =>
-      have := PiFin.toExpr n
-      have eh : Q($eα) := toExpr (vecHead v)
-      have et : Q(Fin $n → $eα) := toExpr (vecTail v)
-      q(vecCons $eh $et) }
-
--- TODO(eric-wieser): the next decl is commented out.
-
--- /-- Convert a vector of pexprs to the pexpr constructing that vector. -/
--- unsafe def _root_.pi_fin.to_pexpr : ∀ {n}, (Fin n → pexpr) → pexpr
---   | 0, v => ``(![])
---   | n + 1, v => ``(vecCons $(v 0) $(_root_.pi_fin.to_pexpr <| vecTail v))
+  let toTypeExpr := q(Fin $n → $eα)
+  { toTypeExpr, toExpr v := Qq.mkVecLiteralQ <| List.ofFn fun i => show Q($eα) from toExpr (v i) }
 
 /-! ### `bit0` and `bit1` indices
 The following definitions and `simp` lemmas are used to allow
