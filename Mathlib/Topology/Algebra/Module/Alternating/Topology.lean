@@ -189,7 +189,7 @@ instance instT3Space [T2Space F] : T3Space (E [⋀^ι]→L[𝕜] F) :=
 
 /-- The inclusion of *alternating* continuous multi-linear maps into continuous multi-linear maps
 as a continuous linear map. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def toContinuousMultilinearMapCLM
     (R : Type*) [Semiring R] [Module R F] [ContinuousConstSMul R F] [SMulCommClass 𝕜 R F] :
     E [⋀^ι]→L[𝕜] F →L[R] ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) F :=
