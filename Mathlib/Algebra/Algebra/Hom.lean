@@ -237,7 +237,7 @@ theorem id_apply (p : A) : AlgHom.id R A p = p :=
   rfl
 
 /-- If `φ₁` and `φ₂` are `R`-algebra homomorphisms with the
-domain of `φ₁` equalling the codomain of `φ₂`, then
+domain of `φ₁` equal to the codomain of `φ₂`, then
 `φ₁.comp φ₂` is the algebra homomorphism `x ↦ φ₁ (φ₂ x)`.
 -/
 def comp (φ₁ : B →ₐ[R] C) (φ₂ : A →ₐ[R] B) : A →ₐ[R] C :=
