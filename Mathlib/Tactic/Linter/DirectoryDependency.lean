@@ -205,14 +205,8 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Logic, `Batteries),
   (`Mathlib.Logic, `Lean),
   (`Mathlib.Logic, `Qq), -- via the `tauto` tactic
-  -- XXX: to what extend is this desirable?
+  -- XXX: to what extent is this desirable?
   (`Mathlib.Logic, `Mathlib.Algebra),
-  (`Mathlib.Logic.Nontrivial.Basic, `Aesop),
-  (`Mathlib.Logic.Encodable, `Aesop),
-  (`Mathlib.Logic.Equiv, `Aesop),
-  (`Mathlib.Logic.Embedding, `Aesop),
-  (`Mathlib.Logic.Function, `Aesop),
-  (`Mathlib.Logic.Small, `Aesop),
   -- XXX: should this import be allowed on a more fine-grained level?
   (`Mathlib.Logic, `Mathlib.Control),
   (`Mathlib.Logic, `Mathlib.Lean),
@@ -222,13 +216,28 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   -- which imports Plausible.
   (`Mathlib.Logic.Fin.Rotate, `Plausible),
   (`Mathlib.Logic.Fin.Rotate, `Mathlib.Algebra.Group.Fin.Basic),
-  -- Also imported via Logic.Equiv.FinType...
+  -- Also imported via e.g. Logic.Equiv.FinType and Logic.Function.FromTypes ...
+  (`Mathlib.Logic, `Aesop),
+  (`Mathlib.Logic, `ImportGraph),
+  (`Mathlib.Logic, `LeanSearchClient),
   (`Mathlib.Logic, `Plausible),
   (`Mathlib.Logic, `ProofWidgets),
   -- XXX: should this import be allowed only on a more fine-grained level (or at all)?
   (`Mathlib.Logic, `Mathlib.Data),
   -- XXX: should this import be allowed only on a more fine-grained level (or at all)?
   (`Mathlib.Logic, `Mathlib.Order),
+
+  -- XXX: is this intended? just a single transitive import
+  (`Mathlib.Testing, `Mathlib.GroupTheory),
+  -- XXX: is this intended? just a handful of transitive imports
+  (`Mathlib.Testing, `Mathlib.Control),
+  (`Mathlib.Testing, `Mathlib.Algebra),
+  (`Mathlib.Testing, `Mathlib.Data),
+  (`Mathlib.Testing, `Mathlib.Logic),
+  (`Mathlib.Testing, `Mathlib.Order),
+  (`Mathlib.Testing, `Mathlib.Lean),
+  (`Mathlib.Testing, `Mathlib.Tactic),
+  (`Mathlib.Testing, `Mathlib.Util),
 ]
 
 /-- `forbiddenImportDirs` relates module prefixes, specifying that modules with the first prefix
