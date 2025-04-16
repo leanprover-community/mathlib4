@@ -70,7 +70,9 @@ export AddMemClass (add_mem)
 
 attribute [to_additive] MulMemClass
 
-attribute [aesop safe apply (rule_sets := [SetLike])] mul_mem add_mem
+-- `mul_mem` is not the only way to prove `a * b ∈ s` (counterexample: `Ideal.mul_mem_left`)
+-- so we have to add a `unsafe apply` attribute for `aesop`.
+attribute [aesop unsafe apply (rule_sets := [SetLike])] mul_mem add_mem
 
 /-- A subsemigroup of a magma `M` is a subset closed under multiplication. -/
 structure Subsemigroup (M : Type*) [Mul M] where

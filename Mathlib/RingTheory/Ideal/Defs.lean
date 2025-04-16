@@ -54,9 +54,11 @@ protected theorem add_mem : a ∈ I → b ∈ I → a + b ∈ I :=
 
 variable (a)
 
+@[aesop unsafe apply (rule_sets := [SetLike])]
 theorem mul_mem_left : b ∈ I → a * b ∈ I :=
   Submodule.smul_mem I a
 
+@[aesop unsafe apply (rule_sets := [SetLike])]
 theorem mul_mem_right {α} {a : α} (b : α) [Semiring α] (I : Ideal α) [I.IsTwoSided]
     (h : a ∈ I) : a * b ∈ I :=
   IsTwoSided.mul_mem_of_left b h
