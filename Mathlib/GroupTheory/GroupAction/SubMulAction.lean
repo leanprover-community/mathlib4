@@ -134,8 +134,7 @@ variable {N α : Type*} [SetLike S α] [SMul M N] [SMul M α] [Monoid N]
 /-- A subset closed under the scalar action inherits that action. -/
 @[to_additive "A subset closed under the additive action inherits that action."]
 instance (priority := 50) smul' : SMul M s :=
-  have := SMulMemClass.ofIsScalarTower S M N α
-  inferInstance
+  smul r x := ⟨r • x.1, have := SMulMemClass.ofIsScalarTower S M N α; smul_mem _ x.2⟩
 
 @[to_additive (attr := simp, norm_cast)]
 protected theorem val_smul_of_tower (r : M) (x : s) : (↑(r • x) : α) = r • (x : α) :=
