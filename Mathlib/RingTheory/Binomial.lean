@@ -6,7 +6,6 @@ Authors: Scott Carnahan
 import Mathlib.Algebra.Polynomial.Smeval
 import Mathlib.Algebra.Ring.NegOnePow
 import Mathlib.Data.Nat.Choose.Multinomial
-import Mathlib.Data.NNRat.Order
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.RingTheory.Polynomial.Pochhammer
 

@@ -244,8 +244,7 @@ end Binomial
 
 section Local
 
-variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V]
-    (A B : VertexOperator R V) (n : ℕ)
+variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V] (A B : VertexOperator R V)
 
 open HVertexOperator
 
@@ -276,7 +275,7 @@ lemma commute_symm : Commute A B ↔ Commute B A := by
 /-- Locality to order `≤ n` means `(x-y)^n[A(x),B(y)] = 0`.  We write this condition as
 vanishing of the `x^k y^l` term, for all integers `k` and `l`, but we have to switch coordinates,
 since `BA` takes values in the opposite-order Hahn series. -/
-def IsLocalToOrderLeq : Prop :=
+def IsLocalToOrderLeq (n : ℕ) : Prop :=
   ∀ (k l : ℤ), ((subLeft R)^n • (comp A B)).coeff (toLex (k, l)) =
     ((subRight R)^n • (comp B A)).coeff (toLex (l, k))
 
@@ -289,12 +288,25 @@ theorem isLocalToOrderLeqAdd (m n : ℕ) (h : IsLocalToOrderLeq A B n) :
     rw [← add_assoc, pow_succ', mul_smul, subLeft_smul_eq, coeff_subLeft_smul, pow_succ', mul_smul,
       coeff_subRight_smul, ih, ih]
 
-/-!
+/-- Locality to order `≤ n` means `(x-y)^n[A(x),B(y)] = 0`.  We write this condition as
+vanishing of the `x^k y^l` term, for all integers `k` and `l`, but we have to switch coordinates,
+since `B(y)A(x)` takes values in the opposite-lex-order Hahn series. -/
+def IsLocalToOrderLeq' (n : ℕ) : Prop :=
+  ∀ (k l : ℤ), ((HahnSeries.binomialPow (Γ := ℤ ×ₗ ℤ) (A := R) (toLex (0, 1)) (toLex (1, 0))
+    (n : ℤ)) • (comp A B)).coeff (toLex (k, l)) =
+    Int.negOnePow n • ((HahnSeries.binomialPow (Γ := ℤ ×ₗ ℤ) (A := R) (toLex (1, 0)) (toLex (0, 1))
+    (n : ℤ)) • (comp B A)).coeff (toLex (l, k))
 
-def IsLocalToOrderLeq' : Prop :=
-  ∀ (k l : ℤ), ((HahnSeries.binomialPow (Γ := ℤ ×ₗ ℤ) (toLex (0,1)) (toLex (1,0)) (n : ℤ)) •
-    (comp A B)).coeff (toLex (k, l)) = ((HahnSeries.binomialPow (Γ := ℤ ×ₗ ℤ) (toLex (0,1))
-    (toLex (1,0)) (n : ℤ)) • (comp B A)).coeff (toLex (l, k))
+/-!
+theorem isLocalToOrderLeq_add (m n : ℕ) (h : IsLocalToOrderLeq' A B n) :
+    IsLocalToOrderLeq' A B (n + m) := by
+  induction m with
+  | zero => exact h
+  | succ m ih =>
+    intro k l
+    rw [← add_assoc, add_comm, Nat.cast_add, ← HahnSeries.binomialPow_add (Nat.cast (R := ℤ) 1),
+      mul_smul, subLeft_smul_eq, coeff_subLeft_smul, pow_succ', mul_smul,
+      coeff_subRight_smul, ih, ih]
 
 I need to add API about permutations on the indexing set of PiLex!
 def isLocal_symm (h : IsLocalToOrderLeq R V A B n) : IsLocalToOrderLeq R V B A n := by

@@ -120,8 +120,8 @@ end Coeff
 section Module
 
 variable [PartialOrder Γ] [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] [PartialOrder Γ₁]
-  [AddAction Γ Γ₁] [IsOrderedCancelVAdd Γ Γ₁] {R : Type*} [CommRing R] {V W : Type*}
-  [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W]
+  [AddAction Γ Γ₁] [IsOrderedCancelVAdd Γ Γ₁] [CommRing R] [AddCommGroup V] [Module R V]
+  [AddCommGroup W] [Module R W]
 
 /-- The scalar multiplication of Hahn series on heterogeneous vertex operators. -/
 def HahnSMul (x : HahnSeries Γ R) (A : HVertexOperator Γ₁ R V W) :
@@ -389,6 +389,22 @@ theorem lex_basis_lt : (toLex (0,1) : ℤ ×ₗ ℤ) < (toLex (1,0) : ℤ ×ₗ 
 
 end PiLex
 
+section binomialPow
+
+variable [LinearOrder Γ] [AddCommGroup Γ] [IsOrderedCancelAddMonoid Γ] [CommRing R]
+  [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W]
+
+/-!
+theorem binomialPow_mul_coeff {g g' g'' : Γ} (h : g < g') (n : ℤ) (A : HVertexOperator Γ R V W)
+    (v : V) :
+    (HahnSeries.binomialPow (A := R) g g' n • A v).coeff g'' =
+      ∑ᶠ m : ℕ, Ring.choose n m • (A v).coeff (g'' - (n • g) + (m • (g' - g))) := by
+  simp only [HahnSeries.binomialPow_apply, HahnSeries.single_neg, PowerSeries.heval_apply]
+  sorry
+-/
+
+end binomialPow
+
 section Binomial -- delete this. Important adaptations go to VertexOperator.lean
 
 theorem toLex_vAdd_of_sub (k l m n : ℤ) :
@@ -397,11 +413,11 @@ theorem toLex_vAdd_of_sub (k l m n : ℤ) :
     Int.sub_add_cancel]
 --#find_home! toLex_vAdd_of_sub --[Mathlib.RingTheory.HahnSeries.Multiplication]
 
-variable [PartialOrder Γ] [AddCommMonoid Γ] {R : Type*} {V W : Type*} [CommRing R]
+variable [PartialOrder Γ] [AddCommMonoid Γ] [CommRing R]
   [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W]
 
 /-- `-Y + X` as a unit of `R((X))((Y))` -/
-def subLeft (R : Type*) [CommRing R] : (HahnSeries (ℤ ×ₗ ℤ) R)ˣ :=
+def subLeft (R) [CommRing R] : (HahnSeries (ℤ ×ₗ ℤ) R)ˣ :=
   HahnSeries.UnitBinomial (AddGroup.isAddUnit (toLex (0,1))) lex_basis_lt (isUnit_neg_one (α := R))
     (1 : R)
 
