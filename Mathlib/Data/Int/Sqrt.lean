@@ -5,7 +5,6 @@ Authors: Kenny Lau
 -/
 import Mathlib.Data.Nat.Sqrt
 import Mathlib.Tactic.Common
-import Mathlib.Data.Int.Init
 
 /-!
 # Square root of integers
