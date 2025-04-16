@@ -63,7 +63,7 @@ def extendCompose {X : C} (K : J ⥤ Over X) (F : C ⥤ D) :
 with morphisms. This same object is a cone of the extended functor
 `liftFromOver.obj K : WithTerminal J ⥤ C`. -/
 @[simps]
-def coneLift {X : C} {K : J ⥤ Over X} : Cone K ⥤ Cone (liftFromOver.obj K) where
+private def coneLift {X : C} {K : J ⥤ Over X} : Cone K ⥤ Cone (liftFromOver.obj K) where
   obj t := {
     pt := t.pt.left
     π.app
@@ -87,7 +87,7 @@ def coneLift {X : C} {K : J ⥤ Over X} : Cone K ⥤ Cone (liftFromOver.obj K) w
 `liftFromOver.obj K : WithTerminal J ⥤ C` consists of an object of `C`, together
 with morphisms. This same object is a cone of the original functor `K : J ⥤ Over X`. -/
 @[simps]
-def coneBack {X : C} {K : J ⥤ Over X} : Cone (liftFromOver.obj K) ⥤ Cone K where
+private def coneBack {X : C} {K : J ⥤ Over X} : Cone (liftFromOver.obj K) ⥤ Cone K where
   obj t := {
     pt := .mk (t.π.app star)
     π.app a := {
@@ -108,13 +108,14 @@ def coneBack {X : C} {K : J ⥤ Over X} : Cone (liftFromOver.obj K) ⥤ Cone K w
 
 /-- The isomorphism between `coneLift ⋙ coneBack` and the identity, at the level of objects. -/
 @[simps]
-def coneLiftBack {X : C} {K : J ⥤ Over X} (t : Cone K) : coneBack.obj (coneLift.obj t) ≅ t where
+private def coneLiftBack {X : C} {K : J ⥤ Over X} (t : Cone K) :
+   coneBack.obj (coneLift.obj t) ≅ t where
   hom.hom := 𝟙 t.pt
   inv.hom := 𝟙 t.pt
 
 /-- The isomorphism between `coneBack ⋙ coneLift` and the identity, at the level of objects. -/
 @[simps]
-def coneBackLift {X : C} {K : J ⥤ Over X} (t : Cone (liftFromOver.obj K)) :
+private def coneBackLift {X : C} {K : J ⥤ Over X} (t : Cone (liftFromOver.obj K)) :
     coneLift.obj (coneBack.obj t) ≅ t where
   hom.hom := 𝟙 t.pt
   inv.hom := 𝟙 t.pt
