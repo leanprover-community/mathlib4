@@ -52,9 +52,6 @@ theorem isUniformEmbedding_translate_mul (a : α) : IsUniformEmbedding fun x : �
       simp only [Prod.mk.injEq, mul_left_inj, imp_self]
     injective := mul_left_injective a }
 
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_translate_mul := isUniformEmbedding_translate_mul
-
 section Cauchy
 
 namespace IsUniformGroup
@@ -98,10 +95,6 @@ lemma IsUniformInducing.isUniformGroup {γ : Type*} [Group γ] [UniformSpace γ]
     simp_rw [hf.uniformContinuous_iff, Function.comp_def, map_div]
     exact uniformContinuous_div.comp (hf.uniformContinuous.prodMap hf.uniformContinuous)
 
-@[deprecated (since := "2024-10-05")]
-alias UniformInducing.uniformAddGroup := IsUniformInducing.isUniformAddGroup
-@[to_additive existing, deprecated (since := "2024-10-05")]
-alias UniformInducing.uniformGroup := IsUniformInducing.isUniformGroup
 @[deprecated (since := "2025-03-30")]
 alias IsUniformInducing.uniformAddGroup := IsUniformInducing.isUniformAddGroup
 @[to_additive existing, deprecated (since := "2025-03-30")]
