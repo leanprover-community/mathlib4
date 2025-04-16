@@ -802,7 +802,8 @@ instance linearOrder : LinearOrder (ℤ√d) :=
   { Zsqrtd.preorder with
     le_antisymm := fun _ _ => Zsqrtd.le_antisymm
     le_total := Zsqrtd.le_total
-    decidableLE := Zsqrtd.decidableLE }
+    toDecidableLE := Zsqrtd.decidableLE
+    toDecidableEq := inferInstance }
 
 protected theorem eq_zero_or_eq_zero_of_mul_eq_zero : ∀ {a b : ℤ√d}, a * b = 0 → a = 0 ∨ b = 0
   | ⟨x, y⟩, ⟨z, w⟩, h => by
@@ -845,15 +846,14 @@ protected theorem mul_pos (a b : ℤ√d) (a0 : 0 < a) (b0 : 0 < b) : 0 < a * b 
       (le_antisymm ab (Zsqrtd.mul_nonneg _ _ (le_of_lt a0) (le_of_lt b0))))
     (fun e => ne_of_gt a0 e) fun e => ne_of_gt b0 e
 
-instance : LinearOrderedCommRing (ℤ√d) :=
-  { Zsqrtd.commRing, Zsqrtd.linearOrder, Zsqrtd.nontrivial with
-    add_le_add_left := Zsqrtd.add_le_add_left
-    mul_pos := Zsqrtd.mul_pos
-    zero_le_one := by trivial }
+instance : ZeroLEOneClass (ℤ√d) :=
+  { zero_le_one := by trivial }
 
-instance : LinearOrderedRing (ℤ√d) := by infer_instance
+instance : IsOrderedAddMonoid (ℤ√d) :=
+  { add_le_add_left := Zsqrtd.add_le_add_left }
 
-instance : OrderedRing (ℤ√d) := by infer_instance
+instance : IsStrictOrderedRing (ℤ√d) :=
+  .of_mul_pos Zsqrtd.mul_pos
 
 end
 
