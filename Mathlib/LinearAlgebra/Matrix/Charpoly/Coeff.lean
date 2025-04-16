@@ -141,7 +141,7 @@ theorem trace_eq_neg_charpoly_coeff [Nonempty n] (M : Matrix n n R) :
     prod_X_sub_C_coeff_card_pred univ (fun i : n => M i i) Fintype.card_pos, neg_neg, trace]
   simp_rw [diag_apply]
 
-theorem matPolyEquiv_symm_map_eval (M : (Matrix n n R)[X]) (r : R) :
+theorem matPolyEquiv_symm_map_eval {R} [CommSemiring R] (M : (Matrix n n R)[X]) (r : R) :
     (matPolyEquiv.symm M).map (eval r) = M.eval (scalar n r) := by
   suffices ((aeval r).mapMatrix.comp matPolyEquiv.symm.toAlgHom : (Matrix n n R)[X] →ₐ[R] _) =
       (eval₂AlgHom' (AlgHom.id R _) (scalar n r)

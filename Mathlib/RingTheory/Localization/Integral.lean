@@ -24,14 +24,14 @@ commutative ring, field of fractions
 -/
 
 
-variable {R : Type*} [CommRing R] (M : Submonoid R) {S : Type*} [CommRing S]
-variable [Algebra R S]
-
 open Polynomial
 
 namespace IsLocalization
 
 section IntegerNormalization
+
+variable {R : Type*} [CommSemiring R] (M : Submonoid R) {S : Type*} [CommSemiring S]
+variable [Algebra R S]
 
 open Polynomial
 
@@ -90,7 +90,7 @@ theorem integerNormalization_map_to_map (p : S[X]) :
       rw [coeff_map, coeff_smul]
       exact hb i⟩
 
-variable {R' : Type*} [CommRing R']
+variable {R' : Type*} [CommSemiring R']
 
 theorem integerNormalization_eval₂_eq_zero (g : S →+* R') (p : S[X]) {x : R'}
     (hx : eval₂ g x p = 0) : eval₂ (g.comp (algebraMap R S)) x (integerNormalization M p) = 0 :=
@@ -106,6 +106,9 @@ theorem integerNormalization_aeval_eq_zero [Algebra R R'] [Algebra S R'] [IsScal
 end IntegerNormalization
 
 end IsLocalization
+
+variable {R : Type*} [CommRing R] (M : Submonoid R) {S : Type*} [CommRing S]
+variable [Algebra R S]
 
 namespace IsFractionRing
 

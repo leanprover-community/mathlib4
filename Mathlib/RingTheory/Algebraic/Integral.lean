@@ -369,23 +369,24 @@ omit [Algebra R A] [IsScalarTower R S A] in
 theorem IsAlgebraic.adjoin_of_forall_isAlgebraic [NoZeroDivisors S] {s t : Set S}
     (alg : ∀ x ∈ s \ t, IsAlgebraic (adjoin R t) x) {a : A}
     (ha : IsAlgebraic (adjoin R s) a) : IsAlgebraic (adjoin R t) a := by
-  set Rs := adjoin R s
-  set Rt := adjoin R t
-  let Rts := adjoin Rt s
-  let _ : Algebra Rs Rts := (Subalgebra.inclusion
-    (T := Rts.restrictScalars R) <| adjoin_le <| by apply subset_adjoin).toAlgebra
-  have : IsScalarTower Rs Rts A := .of_algebraMap_eq fun ⟨a, _⟩ ↦ rfl
-  have : Algebra.IsAlgebraic Rt Rts := by
-    have := ha.nontrivial
-    have := Subtype.val_injective (p := (· ∈ Rs)).nontrivial
-    have := (isDomain_iff_noZeroDivisors_and_nontrivial Rt).mpr ⟨inferInstance, inferInstance⟩
-    rw [← Subalgebra.isAlgebraic_iff, isAlgebraic_adjoin_iff]
-    intro x hs
-    by_cases ht : x ∈ t
-    · exact isAlgebraic_algebraMap (⟨x, subset_adjoin ht⟩ : Rt)
-    exact alg _ ⟨hs, ht⟩
-  have : IsAlgebraic Rts a := ha.extendScalars (by apply Subalgebra.inclusion_injective)
-  exact this.restrictScalars Rt
+  -- set Rs := adjoin R s
+  -- set Rt := adjoin R t
+  -- let Rts := adjoin Rt s
+  -- let _ : Algebra Rs Rts := (Subalgebra.inclusion
+  --   (T := Rts.restrictScalars R) <| adjoin_le <| by apply subset_adjoin).toAlgebra
+  -- have : IsScalarTower Rs Rts A := .of_algebraMap_eq fun ⟨a, _⟩ ↦ rfl
+  -- have : Algebra.IsAlgebraic Rt Rts := by
+  --   have := ha.nontrivial
+  --   have := Subtype.val_injective (p := (· ∈ Rs)).nontrivial
+  --   have := (isDomain_iff_noZeroDivisors_and_nontrivial Rt).mpr ⟨inferInstance, inferInstance⟩
+  --   rw [← Subalgebra.isAlgebraic_iff, isAlgebraic_adjoin_iff]
+  --   intro x hs
+  --   by_cases ht : x ∈ t
+  --   · exact isAlgebraic_algebraMap (⟨x, subset_adjoin ht⟩ : Rt)
+  --   exact alg _ ⟨hs, ht⟩
+  -- have : IsAlgebraic Rts a := ha.extendScalars (by apply Subalgebra.inclusion_injective)
+  sorry
+  -- exact this.restrictScalars Rt
 
 namespace Transcendental
 

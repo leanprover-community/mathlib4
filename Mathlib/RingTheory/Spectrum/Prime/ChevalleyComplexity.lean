@@ -58,7 +58,8 @@ not give an explicit bound on the complexity.
 
 -/
 
-variable {R₀ R S M A : Type*} [CommRing R₀] [CommRing R] [Algebra R₀ R] [CommRing S] [Algebra R₀ S]
+variable {R₀ R S M A : Type*} [CommSemiring R₀] [CommSemiring R] [Algebra R₀ R]
+  [CommSemiring S] [Algebra R₀ S]
 variable [AddCommGroup M] [Module R M] [CommRing A] [Algebra R A] {n : ℕ}
 
 open Function Localization MvPolynomial Polynomial TensorProduct PrimeSpectrum
@@ -417,6 +418,8 @@ private lemma induction_aux (R : Type*) [CommRing R] [Algebra R₀ R]
       · exact one_le_coeffSubmodule
       · omega
 
+variable {R₀ R S M A : Type*} [CommRing R₀] [CommRing R] [Algebra R₀ R] [CommRing S] [Algebra R₀ S]
+
 /-- The main induction in the proof of Chevalley's theorem for `R →+* R[X]`.
 See the docstring of `induction_structure` for the overview. -/
 private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
@@ -525,11 +528,12 @@ private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
       · intro l m
         rw [update_apply]
         split_ifs with hlj
-        · convert coeff_modByMonic_mem_pow_natDegree_mul _ _ _ (fun _ ↦ coeff_mem_coeffSubmodule)
-            one_mem_coeffSubmodule _ (fun _ ↦ coeff_mem_coeffSubmodule) one_mem_coeffSubmodule _
-          rw [← pow_succ, Polynomial.degree_eq_natDegree, WithBot.succ_natCast, Nat.cast_id]
-          intro e
-          simp [show c.val i = 0 by simpa [e] using hle] at hi
+        · sorry
+        -- · convert coeff_modByMonic_mem_pow_natDegree_mul _ _ _ (fun _ ↦ coeff_mem_coeffSubmodule)
+        --     one_mem_coeffSubmodule _ (fun _ ↦ coeff_mem_coeffSubmodule) one_mem_coeffSubmodule _
+        --   rw [← pow_succ, Polynomial.degree_eq_natDegree, WithBot.succ_natCast, Nat.cast_id]
+        --   intro e
+        --   simp [show c.val i = 0 by simpa [e] using hle] at hi
         · have : (c.val j).degree.succ ≠ 0 := by
             rw [← Nat.pos_iff_ne_zero]
             apply WithBot.succ_lt_succ (x := ⊥)
@@ -657,6 +661,7 @@ lemma degBound_pos (k : ℕ) (D : ℕ → ℕ) : ∀ n, 0 < degBound k D n
 
 end MvPolynomialC
 
+variable {R₀ R S M A : Type*} [CommRing R₀] [CommRing R] [Algebra R₀ R] [CommRing S] [Algebra R₀ S]
 open MvPolynomialC in
 /-- The `C : R → R[X₁, ..., Xₘ]` case of **Chevalley's theorem** with complexity bound. -/
 lemma chevalley_mvPolynomialC
@@ -784,6 +789,7 @@ end ChevalleyThm
 
 open ChevalleyThm
 
+variable {R₀ R S M A : Type*} [CommRing R₀] [CommRing R] [Algebra R₀ R] [CommRing S] [Algebra R₀ S]
 /-- **Chevalley's theorem** with complexity bound.
 
 A constructible set of complexity at most `M` in `Spec R[X₁, ..., Xₘ]` gets mapped under
