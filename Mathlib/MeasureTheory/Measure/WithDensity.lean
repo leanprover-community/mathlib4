@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
 import Mathlib.MeasureTheory.Measure.Decomposition.Exhaustion
+import Mathlib.MeasureTheory.Measure.Prod
 
 /-!
 # Measure with a given density with respect to another measure
@@ -643,5 +644,30 @@ lemma IsLocallyFiniteMeasure.withDensity_coe {f : α → ℝ≥0} (hf : Continuo
 lemma IsLocallyFiniteMeasure.withDensity_ofReal {f : α → ℝ} (hf : Continuous f) :
     IsLocallyFiniteMeasure (μ.withDensity fun x ↦ .ofReal (f x)) :=
   .withDensity_coe <| continuous_real_toNNReal.comp hf
+
+lemma withDensity_prod₀ {β : Type*} {mβ : MeasurableSpace β}
+    {μ : Measure α} {ν : Measure β} [SFinite μ] [SFinite ν] {f : α → ℝ≥0∞} {g : β → ℝ≥0∞}
+    (hf : AEMeasurable f μ) (hg : AEMeasurable g ν) : (μ.withDensity f).prod (ν.withDensity g)
+    = (μ.prod ν).withDensity (fun (x,y) ↦ f x * g y) := by
+  apply ext_of_lintegral
+  intro φ hφ
+  rw [lintegral_prod _ hφ.aemeasurable, lintegral_withDensity_eq_lintegral_mul₀ hf _,
+      lintegral_withDensity_eq_lintegral_mul₀ _ hφ.aemeasurable,
+      lintegral_prod _ _]
+  · refine lintegral_congr (fun x ↦ ?_)
+    rw[Pi.mul_apply, lintegral_withDensity_eq_lintegral_mul₀ hg (by fun_prop),
+       ← lintegral_const_mul'' _ (by fun_prop)]
+    refine lintegral_congr (fun x ↦ ?_)
+    simp
+    ring
+  · sorry
+  · sorry
+  · sorry
+
+lemma withDensity_prod {β : Type*} {mβ : MeasurableSpace β}
+    {μ : Measure α} {ν : Measure β} [SFinite μ] [SFinite ν] {f : α → ℝ≥0∞} {g : β → ℝ≥0∞}
+    (hf : Measurable f) (hg : Measurable g) : (μ.withDensity f).prod (ν.withDensity g)
+    = (μ.prod ν).withDensity (fun (x,y) ↦ f x * g y) := by
+  apply withDensity_prod₀ hf.aemeasurable hg.aemeasurable
 
 end MeasureTheory

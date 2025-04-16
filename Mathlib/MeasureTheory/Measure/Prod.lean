@@ -744,10 +744,19 @@ theorem AEMeasurable.fst [SFinite ν] {f : α → γ} (hf : AEMeasurable f μ) :
     AEMeasurable (fun z : α × β => f z.1) (μ.prod ν) :=
   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_fst
 
+theorem AEMeasurable.fst' [SFinite ν] {f : α → γ} (hf : AEMeasurable f μ) :
+    AEMeasurable (fun z : α × β => f z.1) (μ.prod ν) :=
+  hf.comp_quasiMeasurePreserving quasiMeasurePreserving_fst
+
 -- TODO: make this theorem usable with `fun_prop`
 theorem AEMeasurable.snd [SFinite ν] {f : β → γ} (hf : AEMeasurable f ν) :
     AEMeasurable (fun z : α × β => f z.2) (μ.prod ν) :=
   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_snd
+
+@[fun_prop]
+theorem AEMeasurable.snd' [SFinite ν] {f : α → γ} (hf : AEMeasurable f μ) :
+    AEMeasurable (fun z : α × β => f z.1) (μ.prod ν) :=
+  hf.comp_quasiMeasurePreserving quasiMeasurePreserving_fst
 
 end
 
@@ -757,6 +766,22 @@ namespace MeasureTheory
 
 
 variable [SFinite ν]
+
+theorem AEMeasurable.lintegral_prod_right'₀ [SFinite ν] [SFinite μ] {f : α × β → ℝ≥0∞}
+    (hf : AEMeasurable f (μ.prod ν)) : Measurable fun x => ∫⁻ y, f (x, y) ∂ν := by
+  sorry
+
+theorem AEMeasurable.lintegral_prod_right₀ [SFinite ν] [SFinite μ] {f : α → β → ℝ≥0∞}
+    (hf : AEMeasurable (uncurry f) (μ.prod ν)) : Measurable fun x => ∫⁻ y, f x y ∂ν :=
+  sorry
+
+theorem AEMeasurable.lintegral_prod_left'₀ [SFinite ν] [SFinite μ] {f : α × β → ℝ≥0∞}
+    (hf : AEMeasurable f (μ.prod ν)) : Measurable fun y => ∫⁻ x, f (x, y) ∂μ :=
+  sorry
+
+theorem AEMeasurable.lintegral_prod_left₀ [SFinite ν] [SFinite μ] {f : α → β → ℝ≥0∞}
+    (hf : AEMeasurable (uncurry f) (μ.prod ν)) : Measurable fun y => ∫⁻ x, f x y ∂μ :=
+  sorry
 
 theorem lintegral_prod_swap [SFinite μ] (f : α × β → ℝ≥0∞) :
     ∫⁻ z, f z.swap ∂ν.prod μ = ∫⁻ z, f z ∂μ.prod ν :=
