@@ -172,7 +172,7 @@ nonrec theorem hasSum_nat_add_iff {f : ℕ → ℝ≥0} (k : ℕ) {a : ℝ≥0} 
 
 theorem sum_add_tsum_nat_add {f : ℕ → ℝ≥0} (k : ℕ) (hf : Summable f) :
     ∑' i, f i = (∑ i ∈ range k, f i) + ∑' i, f (i + k) :=
-  (sum_add_tsum_nat_add' <| (summable_nat_add_iff k).2 hf).symm
+  (((summable_nat_add_iff k).2 hf).sum_add_tsum_nat_add').symm
 
 theorem iInf_real_pos_eq_iInf_nnreal_pos [CompleteLattice α] {f : ℝ → α} :
     ⨅ (n : ℝ) (_ : 0 < n), f n = ⨅ (n : ℝ≥0) (_ : 0 < n), f n :=
