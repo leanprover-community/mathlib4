@@ -1076,7 +1076,7 @@ section Preorder
 
 variable [Preorder α] [Preorder β] {a a₁ a₂ : α} {b b₁ b₂ : β} {x y : α × β}
 
-instance (α β : Type*) [Preorder α] [Preorder β] : Preorder (α × β) where
+instance : Preorder (α × β) where
   __ := inferInstanceAs (LE (α × β))
   le_refl := fun ⟨a, b⟩ ↦ ⟨le_refl a, le_refl b⟩
   le_trans := fun ⟨_, _⟩ ⟨_, _⟩ ⟨_, _⟩ ⟨hac, hbd⟩ ⟨hce, hdf⟩ ↦ ⟨le_trans hac hce, le_trans hbd hdf⟩
