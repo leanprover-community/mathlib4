@@ -385,7 +385,7 @@ theorem ofFixingSubgroup.merge'_apply₂
 -/
 
 /-- The fixator of a subset of cardinal d in a k-transitive action
-acts (k-d) transitively on the remaining -/
+acts (k-d) transitively on the complement. -/
 theorem ofFixingSubgroup.isMultiplyPretransitive {m n : ℕ} [IsMultiplyPretransitive M α n]
     (s : Set α) [Finite s] (hmn : s.ncard + m = n) :
     IsMultiplyPretransitive (fixingSubgroup M s) (ofFixingSubgroup M s) m where
@@ -415,7 +415,10 @@ theorem ofFixingSubgroup.isMultiplyPretransitive {m n : ℕ} [IsMultiplyPretrans
       Fin.eta, i] using hg
 
 /-- The fixator of a subset of cardinal d in a k-transitive action
-acts (k-d) transitively on the remaining -/
+acts (k-d) transitively on the complement.
+
+This version allows the ambient type to be infinite.
+If it is finite, use `SubMulAction.ofFixingSubgroup.isMultiplyPretransitive`. -/
 theorem ofFixingSubgroup.isMultiplyPretransitive' {m n : ℕ} [IsMultiplyPretransitive M α n]
     (s : Set α) [Finite s] (hmn : s.ncard + m ≤ n) (hn : (n : ENat) ≤ ENat.card α) :
     IsMultiplyPretransitive (fixingSubgroup M s) (SubMulAction.ofFixingSubgroup M s) m :=
