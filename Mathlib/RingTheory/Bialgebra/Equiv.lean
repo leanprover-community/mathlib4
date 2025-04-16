@@ -259,7 +259,6 @@ theorem coe_toEquiv_trans : (e₁₂ : A ≃ B).trans e₂₃ = (e₁₂.trans e
   rfl
 
 /-- If an coalgebra morphism has an inverse, it is an coalgebra isomorphism. -/
-@[simps]
 def ofBialgHom (f : A →ₐc[R] B) (g : B →ₐc[R] A) (h₁ : f.comp g = BialgHom.id R B)
     (h₂ : g.comp f = BialgHom.id R A) : A ≃ₐc[R] B :=
   { f with
@@ -268,6 +267,7 @@ def ofBialgHom (f : A →ₐc[R] B) (g : B →ₐc[R] A) (h₁ : f.comp g = Bial
     left_inv := BialgHom.ext_iff.1 h₂
     right_inv := BialgHom.ext_iff.1 h₁ }
 
+@[simp]
 theorem coe_bialgHom_ofBialgHom (f : A →ₐc[R] B) (g : B →ₐc[R] A) (h₁ h₂) :
     ↑(ofBialgHom f g h₁ h₂) = f :=
   rfl
