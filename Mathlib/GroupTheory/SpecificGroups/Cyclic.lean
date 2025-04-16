@@ -83,23 +83,24 @@ instance isAddCyclic_additive [Group α] [IsCyclic α] : IsAddCyclic (Additive �
 
 @[to_additive]
 instance IsCyclic.commutative [Group α] [IsCyclic α] :
-    Std.Commutative (· * · : α → α → α) where
-  comm x y :=
+    IsMulCommutative α where
+--    Std.Commutative (· * · : α → α → α) where
+  is_comm.comm x y :=
     let ⟨_, hg⟩ := IsCyclic.exists_generator (α := α)
     let ⟨_, hx⟩ := hg x
     let ⟨_, hy⟩ := hg y
     hy ▸ hx ▸ zpow_mul_comm _ _ _
 
-/-- A cyclic group is always commutative. This is not an `instance` because often we have a better
-proof of `CommGroup`. -/
-@[to_additive
-      "A cyclic group is always commutative. This is not an `instance` because often we have
-      a better proof of `AddCommGroup`."]
-def IsCyclic.commGroup [hg : Group α] [IsCyclic α] : CommGroup α :=
-  { hg with mul_comm := commutative.comm }
+-- /-- A cyclic group is always commutative. This is not an `instance` because often we have a better
+-- proof of `CommGroup`. -/
+-- @[to_additive
+--       "A cyclic group is always commutative. This is not an `instance` because often we have
+--       a better proof of `AddCommGroup`."]
+-- def IsCyclic.commGroup [hg : Group α] [IsCyclic α] : CommGroup α :=
+--   { hg with mul_comm := commutative.comm }
 
-instance [Group G] (H : Subgroup G) [IsCyclic H] : IsMulCommutative H :=
-  ⟨IsCyclic.commutative⟩
+-- instance [Group G] (H : Subgroup G) [IsCyclic H] : IsMulCommutative H :=
+--   ⟨IsCyclic.commutative⟩
 
 variable [Group α] [Group G] [Group G']
 
