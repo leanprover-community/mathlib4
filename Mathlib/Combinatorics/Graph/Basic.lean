@@ -268,7 +268,9 @@ lemma mk'_eq_self (G : Graph α β) : Graph.mk' G.V G.Inc₂ (fun _ _ _ ↦ Inc�
   have h := G.edgeSet_eq_setOf_exists_inc₂
   cases G with | mk V E Inc₂ _ _ _ => simpa [Graph.mk'] using h.symm
 
-/-- Two graphs with the same vertex set and binary incidences are equal. -/
+/-- Two graphs with the same vertex set and binary incidences are equal.
+(We use this as the default extensionality lemma rather than adding `@[ext]`
+to the definition, so it doesn't require equality of the edge sets.) -/
 @[ext]
 protected lemma ext {G₁ G₂ : Graph α β} (hV : G₁.V = G₂.V)
     (h : ∀ e x y, G₁.Inc₂ e x y ↔ G₂.Inc₂ e x y) : G₁ = G₂ := by
