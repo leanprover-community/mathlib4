@@ -239,7 +239,7 @@ theorem TopologicalSpace.isOpen_top_iff {α} (U : Set α) : IsOpen[⊤] U ↔ U 
   its topology equals the discrete topology `⊥`. -/
 class DiscreteTopology (α : Type*) [t : TopologicalSpace α] : Prop where
   /-- The `TopologicalSpace` structure on a type with discrete topology is equal to `⊥`. -/
-  eq_bot : t = ⊥
+  eq_bot (α) : t = ⊥
 
 theorem discreteTopology_bot (α : Type*) : @DiscreteTopology α ⊥ :=
   @DiscreteTopology.mk α ⊥ rfl
@@ -249,7 +249,7 @@ section DiscreteTopology
 variable [TopologicalSpace α] [DiscreteTopology α] {β : Type*}
 
 @[simp]
-theorem isOpen_discrete (s : Set α) : IsOpen s := (@DiscreteTopology.eq_bot α _).symm ▸ trivial
+theorem isOpen_discrete (s : Set α) : IsOpen s := (DiscreteTopology.eq_bot α).symm ▸ trivial
 
 @[simp] theorem isClosed_discrete (s : Set α) : IsClosed s := ⟨isOpen_discrete _⟩
 

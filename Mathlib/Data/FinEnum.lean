@@ -26,7 +26,7 @@ class FinEnum (α : Sort*) where
   card : ℕ
   /-- `FinEnum.Equiv` states that type `α` is in bijection with `Fin card`,
     the size of the `FinEnum` -/
-  equiv : α ≃ Fin card
+  equiv (α) : α ≃ Fin card
   [decEq : DecidableEq α]
 
 attribute [instance 100] FinEnum.decEq
@@ -38,8 +38,8 @@ variable {α : Type u} {β : α → Type v}
 /-- transport a `FinEnum` instance across an equivalence -/
 def ofEquiv (α) {β} [FinEnum α] (h : β ≃ α) : FinEnum β where
   card := card α
-  equiv := h.trans (equiv)
-  decEq := (h.trans (equiv)).decidableEq
+  equiv := h.trans (equiv α)
+  decEq := (h.trans (equiv α)).decidableEq
 
 /-- create a `FinEnum` instance from an exhaustive list without duplicates -/
 def ofNodupList [DecidableEq α] (xs : List α) (h : ∀ x : α, x ∈ xs) (h' : List.Nodup xs) :
@@ -55,13 +55,13 @@ def ofList [DecidableEq α] (xs : List α) (h : ∀ x : α, x ∈ xs) : FinEnum 
 
 /-- create an exhaustive list of the values of a given type -/
 def toList (α) [FinEnum α] : List α :=
-  (List.finRange (card α)).map (equiv).symm
+  (List.finRange (card α)).map (equiv α).symm
 
 open Function
 
 @[simp]
 theorem mem_toList [FinEnum α] (x : α) : x ∈ toList α := by
-  simp [toList]; exists equiv x; simp
+  simp [toList]; exists equiv α x; simp
 
 @[simp]
 theorem nodup_toList [FinEnum α] : List.Nodup (toList α) := by
@@ -82,19 +82,19 @@ noncomputable def ofInjective {α β} (f : α → β) [DecidableEq α] [FinEnum 
       simp only [h, Function.partialInv_left])
 
 instance _root_.ULift.instFinEnum [FinEnum α] : FinEnum (ULift α) :=
-  ⟨card α, Equiv.ulift.trans equiv⟩
+  ⟨card α, Equiv.ulift.trans <| equiv α⟩
 
 @[simp]
 theorem card_ulift [FinEnum (ULift α)] [FinEnum α] : card (ULift α) = card α :=
-  Fin.equiv_iff_eq.mp ⟨equiv.symm.trans Equiv.ulift |>.trans equiv⟩
+  Fin.equiv_iff_eq.mp ⟨(equiv _).symm.trans Equiv.ulift |>.trans (equiv _)⟩
 
 section ULift
 variable [FinEnum α] (a : α) (a' : ULift α) (i : Fin (card α))
 
-@[simp] lemma equiv_up : equiv (ULift.up a) = equiv a := rfl
-@[simp] lemma equiv_down : equiv a'.down = equiv a' := rfl
-@[simp] lemma up_equiv_symm : ULift.up (equiv.symm i) = (equiv (α := ULift α)).symm i := rfl
-@[simp] lemma down_equiv_symm : ((equiv (α := ULift α)).symm i).down = equiv.symm i := rfl
+@[simp] lemma equiv_up : equiv _ (ULift.up a) = equiv _ a := rfl
+@[simp] lemma equiv_down : equiv _ a'.down = equiv _ a' := rfl
+@[simp] lemma up_equiv_symm : ULift.up ((equiv _).symm i) = (equiv (ULift α)).symm i := rfl
+@[simp] lemma down_equiv_symm : ((equiv (ULift α)).symm i).down = (equiv _).symm i := rfl
 
 end ULift
 
@@ -117,7 +117,7 @@ instance fin {n} : FinEnum (Fin n) :=
   ofList (List.finRange _) (by simp)
 
 @[simp]
-theorem card_fin {n} [FinEnum (Fin n)] : card (Fin n) = n := Fin.equiv_iff_eq.mp ⟨equiv.symm⟩
+theorem card_fin {n} [FinEnum (Fin n)] : card (Fin n) = n := Fin.equiv_iff_eq.mp ⟨(equiv _).symm⟩
 
 instance Quotient.enum [FinEnum α] (s : Setoid α) [DecidableRel ((· ≈ ·) : α → α → Prop)] :
     FinEnum (Quotient s) :=
@@ -174,12 +174,12 @@ instance PSigma.finEnumPropProp {α : Prop} {β : α → Prop} [Decidable α] [�
 instance [DecidableEq α] (xs : List α) : FinEnum { x : α // x ∈ xs } := ofList xs.attach (by simp)
 
 instance (priority := 100) [FinEnum α] : Fintype α where
-  elems := univ.map (equiv).symm.toEmbedding
+  elems := univ.map (equiv α).symm.toEmbedding
   complete := by intros; simp
 
 /-- The enumeration merely adds an ordering, leaving the cardinality as is. -/
 theorem card_eq_fintypeCard {α : Type u} [FinEnum α] [Fintype α] : card α = Fintype.card α :=
-  Fintype.truncEquivFin α |>.inductionOn (fun h ↦ Fin.equiv_iff_eq.mp ⟨equiv.symm.trans h⟩)
+  Fintype.truncEquivFin α |>.inductionOn (fun h ↦ Fin.equiv_iff_eq.mp ⟨(equiv _).symm.trans h⟩)
 
 /-- Any two enumerations of the same type have the same length. -/
 theorem card_unique {α : Type u} (e₁ e₂ : FinEnum α) : e₁.card = e₂.card :=
