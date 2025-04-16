@@ -109,7 +109,7 @@ protected def trans (f : α ≃. β) (g : β ≃. γ) :
     α ≃. γ where
   toFun a := (f a).bind g
   invFun a := (g.symm a).bind f.symm
-  inv a b := by simp_all [and_comm, eq_some_iff f, eq_some_iff g, bind_eq_some]
+  inv a b := by simp_all [and_comm, eq_some_iff f, eq_some_iff g, bind_eq_some_iff]
 
 @[simp]
 theorem refl_apply (a : α) : PEquiv.refl α a = some a :=
@@ -134,11 +134,11 @@ theorem trans_assoc (f : α ≃. β) (g : β ≃. γ) (h : γ ≃. δ) :
 
 theorem mem_trans (f : α ≃. β) (g : β ≃. γ) (a : α) (c : γ) :
     c ∈ f.trans g a ↔ ∃ b, b ∈ f a ∧ c ∈ g b :=
-  Option.bind_eq_some'
+  Option.bind_eq_some_iff
 
 theorem trans_eq_some (f : α ≃. β) (g : β ≃. γ) (a : α) (c : γ) :
     f.trans g a = some c ↔ ∃ b, f a = some b ∧ g b = some c :=
-  Option.bind_eq_some'
+  Option.bind_eq_some_iff
 
 theorem trans_eq_none (f : α ≃. β) (g : β ≃. γ) (a : α) :
     f.trans g a = none ↔ ∀ b c, b ∉ f a ∨ c ∉ g b := by
@@ -240,7 +240,7 @@ theorem symm_trans_rev (f : α ≃. β) (g : β ≃. γ) : (f.trans g).symm = g.
 theorem self_trans_symm (f : α ≃. β) : f.trans f.symm = ofSet { a | (f a).isSome } := by
   ext
   dsimp [PEquiv.trans]
-  simp only [eq_some_iff f, Option.isSome_iff_exists, Option.mem_def, bind_eq_some',
+  simp only [eq_some_iff f, Option.isSome_iff_exists, Option.mem_def, bind_eq_some_iff,
     ofSet_eq_some_iff]
   constructor
   · rintro ⟨b, hb₁, hb₂⟩
@@ -343,7 +343,7 @@ theorem trans_single_of_eq_none {b : β} (c : γ) {f : δ ≃. β} (h : f.symm b
   ext
   simp only [eq_none_iff_forall_not_mem, Option.mem_def, f.eq_some_iff] at h
   dsimp [PEquiv.trans, single]
-  simp only [mem_def, bind_eq_some, iff_false, not_exists, not_and, reduceCtorEq]
+  simp only [mem_def, bind_eq_some_iff, iff_false, not_exists, not_and, reduceCtorEq]
   intros
   split_ifs <;> simp_all
 

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johan Commelin
 -/
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Data.Option.Defs
 import Mathlib.Logic.Nontrivial.Basic
 import Mathlib.Tactic.Common
 
@@ -155,8 +154,8 @@ protected theorem cases_on {P : WithOne α → Prop} : ∀ x : WithOne α, P 1 �
 instance instMulOneClass [Mul α] : MulOneClass (WithOne α) where
   mul := (· * ·)
   one := 1
-  one_mul := (Option.merge_isId _).left_id
-  mul_one := (Option.merge_isId _).right_id
+  one_mul := (Option.lawfulIdentity_merge _).left_id
+  mul_one := (Option.lawfulIdentity_merge _).right_id
 
 @[to_additive (attr := simp, norm_cast)]
 lemma coe_mul [Mul α] (a b : α) : (↑(a * b) : WithOne α) = a * b := rfl

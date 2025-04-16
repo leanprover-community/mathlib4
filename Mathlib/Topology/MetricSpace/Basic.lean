@@ -38,9 +38,6 @@ theorem isUniformEmbedding_iff' [PseudoMetricSpace β] {f : γ → β} :
         ∀ δ > 0, ∃ ε > 0, ∀ {a b : γ}, dist (f a) (f b) < ε → dist a b < δ := by
   rw [isUniformEmbedding_iff_isUniformInducing, isUniformInducing_iff, uniformContinuous_iff]
 
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_iff' := isUniformEmbedding_iff'
-
 /-- If a `PseudoMetricSpace` is a T₀ space, then it is a `MetricSpace`. -/
 abbrev _root_.MetricSpace.ofT0PseudoMetricSpace (α : Type*) [PseudoMetricSpace α] [T0Space α] :
     MetricSpace α where
@@ -70,9 +67,6 @@ theorem isUniformEmbedding_bot_of_pairwise_le_dist {β : Type*} {ε : ℝ} (hε 
     (hf : Pairwise fun x y => ε ≤ dist (f x) (f y)) :
     @IsUniformEmbedding _ _ ⊥ (by infer_instance) f :=
   isUniformEmbedding_of_spaced_out (dist_mem_uniformity hε) <| by simpa using hf
-
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_bot_of_pairwise_le_dist := isUniformEmbedding_bot_of_pairwise_le_dist
 
 end Metric
 
@@ -106,9 +100,6 @@ abbrev MetricSpace.induced {γ β} (f : γ → β) (hf : Function.Injective f) (
 abbrev IsUniformEmbedding.comapMetricSpace {α β} [UniformSpace α] [m : MetricSpace β] (f : α → β)
     (h : IsUniformEmbedding f) : MetricSpace α :=
   .replaceUniformity (.induced f h.injective m) h.comap_uniformity.symm
-
-@[deprecated (since := "2024-10-03")]
-alias UniformEmbedding.comapMetricSpace := IsUniformEmbedding.comapMetricSpace
 
 /-- Pull back a metric space structure by an embedding. This is a version of
 `MetricSpace.induced` useful in case if the domain already has a `TopologicalSpace` structure. -/

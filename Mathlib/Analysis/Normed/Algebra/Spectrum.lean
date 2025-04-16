@@ -428,7 +428,10 @@ theorem map_polynomial_aeval (p : ℂ[X]) :
 to monic monomials. -/
 protected theorem map_pow (n : ℕ) :
     spectrum ℂ (a ^ n) = (· ^ n) '' spectrum ℂ a := by
-  simpa only [aeval_X_pow, eval_pow, eval_X] using map_polynomial_aeval a (X ^ n)
+  #adaptation_note /-- 2025-04-14. Had to move `using` expression to `have`,
+    otherwise it doesn't simplify. -/
+  have := map_polynomial_aeval a (X ^ n)
+  simpa only [aeval_X_pow, eval_pow, eval_X] using this
 
 end NonemptySpectrum
 
@@ -487,7 +490,7 @@ theorem exp_mem_exp [RCLike 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [Complet
     simpa only [pow_succ, Algebra.smul_mul_assoc] using hb.tsum_mul_right (a - ↑ₐ z)
   have h₃ : exp 𝕜 (a - ↑ₐ z) = 1 + (a - ↑ₐ z) * b := by
     rw [exp_eq_tsum]
-    convert tsum_eq_zero_add (expSeries_summable' (𝕂 := 𝕜) (a - ↑ₐ z))
+    convert (expSeries_summable' (𝕂 := 𝕜) (a - ↑ₐ z)).tsum_eq_zero_add
     · simp only [Nat.factorial_zero, Nat.cast_one, inv_one, pow_zero, one_smul]
     · exact h₀.symm
   rw [spectrum.mem_iff, IsUnit.sub_iff, ← one_mul (↑ₐ (exp 𝕜 z)), hexpmul, ← _root_.sub_mul,
