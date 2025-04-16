@@ -435,7 +435,8 @@ theorem mul_X_pow_cancel {k : ℕ} {φ ψ : R⟦X⟧} (h : φ * X ^ k = ψ * X ^
 theorem mul_X_pow_injective {k : ℕ} : Function.Injective (· * X ^ k : R⟦X⟧ → R⟦X⟧) :=
   fun _ _ ↦ mul_X_pow_cancel
 
-theorem mul_X_pow_inj {k : ℕ} {φ ψ : R⟦X⟧} : φ * X ^ k = ψ * X ^ k ↔ φ = ψ :=
+theorem mul_X_pow_inj {k : ℕ} {φ ψ : R⟦X⟧} :
+    φ * X ^ k = ψ * X ^ k ↔ φ = ψ :=
   mul_X_pow_injective.eq_iff
 
 theorem X_pow_mul_cancel {k : ℕ} {φ ψ : R⟦X⟧} (h : X ^ k * φ = X ^ k * ψ) :
@@ -447,7 +448,8 @@ theorem X_pow_mul_cancel {k : ℕ} {φ ψ : R⟦X⟧} (h : X ^ k * φ = X ^ k * 
 theorem X_pow_mul_injective {k : ℕ} : Function.Injective (X ^ k * · : R⟦X⟧ → R⟦X⟧) :=
   fun _ _ ↦ X_pow_mul_cancel
 
-theorem X_pow_mul_inj {k : ℕ} {φ ψ : R⟦X⟧} : X ^ k * φ = X ^ k * ψ ↔ φ = ψ :=
+theorem X_pow_mul_inj {k : ℕ} {φ ψ : R⟦X⟧} :
+    X ^ k * φ = X ^ k * ψ ↔ φ = ψ :=
   X_pow_mul_injective.eq_iff
 
 theorem coeff_mul_X_pow' (p : R⟦X⟧) (n d : ℕ) :
