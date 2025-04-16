@@ -35,6 +35,8 @@ class CStarAlgebra (A : Type*) extends NormedRing A, StarRing A, CompleteSpace A
 /-- The class of unital commutative (complex) C⋆-algebras. -/
 class CommCStarAlgebra (A : Type*) extends NormedCommRing A, CStarAlgebra A
 
+attribute [instance high] CommCStarAlgebra.toCStarAlgebra
+
 #adaptation_note /-- 2025-03-29 for lean4#7717 had to add `norm_mul_self_le` field. -/
 instance (priority := 100) CStarAlgebra.toNonUnitalCStarAlgebra (A : Type*) [CStarAlgebra A] :
     NonUnitalCStarAlgebra A where
