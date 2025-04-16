@@ -141,7 +141,7 @@ lemma upperBounds_subset_of_dominated {s₁ s₂ : Set α} (h : Dominated (· �
 theorem lowerBounds_mono_set ⦃s t : Set α⦄ (hst : s ⊆ t) : lowerBounds t ⊆ lowerBounds s :=
   fun _ hb _ h => hb <| hst h
 
-lemma lowerBounds_subset_of_recessed {s₁ s₂ : Set α} (h : Recessed s₁ s₂) :
+lemma lowerBounds_subset_of_dominated {s₁ s₂ : Set α} (h : Dominated (· ≥ ·) s₁ s₂) :
     lowerBounds s₁ ⊆ lowerBounds s₂ := fun c hc d hd => by
   obtain ⟨e, he₁, he₂⟩ := h _ hd
   exact le_trans (hc he₁) he₂
@@ -952,8 +952,8 @@ lemma upperBounds_image_subset_of_dominated (Hf : Monotone f) {s₁ s₂ : Set �
     exact ⟨f d, ⟨(mem_image _ _ _).mpr ⟨d, ⟨hd.1, rfl⟩⟩, le_of_eq_of_le hc.2.symm (Hf hd.2)⟩⟩)
 
 lemma lowerBounds_image_subset_of_dominated (Hf : Monotone f) {s₁ s₂ : Set α}
-    (h : Recessed s₁ s₂) : lowerBounds (f '' s₁) ⊆ lowerBounds (f '' s₂) :=
-  lowerBounds_subset_of_recessed (fun a ha => by
+    (h : Dominated (· ≥ ·) s₁ s₂) : lowerBounds (f '' s₁) ⊆ lowerBounds (f '' s₂) :=
+  lowerBounds_subset_of_dominated (fun a ha => by
     obtain ⟨c, hc⟩ := ha
     obtain ⟨d, hd⟩ := h c hc.1
     exact ⟨f d, ⟨(mem_image _ _ _).mpr ⟨d,⟨hd.1,rfl⟩⟩, le_of_le_of_eq (Hf hd.2) hc.2⟩⟩)
