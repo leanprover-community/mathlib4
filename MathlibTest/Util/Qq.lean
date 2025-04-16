@@ -32,6 +32,6 @@ info: {1, 2, 3} : List ℕ
 
 /-- info: {0 ^ 2, 1 ^ 2, 2 ^ 2, 3 ^ 2} : Finset ℕ -/
 #guard_msgs in
-#check by_elab return mkSetLiteralQ q(Finset ℤ) (List.range 4 |>.map fun n : ℕ ↦ q($n^2))
+#check by_elab return mkSetLiteralQ q(Finset ℕ) (List.range 4 |>.map fun n : ℕ ↦ q($n^2))
 
 end mkSetLiteralQ
