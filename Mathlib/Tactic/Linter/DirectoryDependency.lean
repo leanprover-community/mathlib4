@@ -209,6 +209,7 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   -- XXX: should this import be allowed only on a more fine-grained level (or at all)?
   (`Mathlib.Logic, `Mathlib.Order),
 
+  (`Mathlib.Testing, `Batteries),
   -- XXX: is this intended? just a single transitive import
   (`Mathlib.Testing, `Mathlib.GroupTheory),
   -- XXX: is this intended? just a handful of transitive imports
