@@ -254,7 +254,7 @@ theorem eq_divided_by_X_pow_order_Iff_Unit {f : k⟦X⟧} (hf : f ≠ 0) :
   ⟨fun h ↦ by rw [h]; exact isUnit_divided_by_X_pow_order hf, fun h ↦ by
     have : f.order = 0 := by
       simp [order_zero_of_unit h]
-    conv_lhs => rw [← self_eq_X_pow_order_mul_divXPowOrder (f := f), this, ENat.toNat_zero,
+    conv_lhs => rw [← X_pow_order_mul_divXPowOrder (f := f), this, ENat.toNat_zero,
       pow_zero, one_mul]⟩
 
 end Field
@@ -289,7 +289,7 @@ theorem hasUnitMulPowIrreducibleFactorization :
         use f.order.toNat
         use Unit_of_divided_by_X_pow_order f
         simp only [Unit_of_divided_by_X_pow_order_nonzero hf]
-        exact self_eq_X_pow_order_mul_divXPowOrder)⟩
+        exact X_pow_order_mul_divXPowOrder)⟩
 
 instance : UniqueFactorizationMonoid k⟦X⟧ :=
   hasUnitMulPowIrreducibleFactorization.toUniqueFactorizationMonoid

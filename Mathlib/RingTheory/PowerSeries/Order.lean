@@ -135,7 +135,7 @@ theorem order_eq {φ : R⟦X⟧} {n : ℕ∞} :
 
 
 /-- The order of the sum of two formal power series
- is at least the minimum of their orders. -/
+is at least the minimum of their orders. -/
 theorem min_order_le_order_add (φ ψ : R⟦X⟧) : min (order φ) (order ψ) ≤ order (φ + ψ) := by
   refine le_order _ _ ?_
   simp +contextual [coeff_of_lt_order]
@@ -158,7 +158,7 @@ private theorem order_add_of_order_eq.aux (φ ψ : R⟦X⟧)
       zero_add]
 
 /-- The order of the sum of two formal power series
- is the minimum of their orders if their orders differ. -/
+is the minimum of their orders if their orders differ. -/
 theorem order_add_of_order_eq (φ ψ : R⟦X⟧) (h : order φ ≠ order ψ) :
     order (φ + ψ) = order φ ⊓ order ψ := by
   refine le_antisymm ?_ (min_order_le_order_add _ _)
@@ -167,7 +167,7 @@ theorem order_add_of_order_eq (φ ψ : R⟦X⟧) (h : order φ ≠ order ψ) :
   · simpa only [add_comm, inf_comm] using order_add_of_order_eq.aux _ _ ψ_lt_φ
 
 /-- The order of the product of two formal power series
- is at least the sum of their orders. -/
+is at least the sum of their orders. -/
 theorem le_order_mul (φ ψ : R⟦X⟧) : order φ + order ψ ≤ order (φ * ψ) := by
   apply le_order
   intro n hn; rw [coeff_mul, Finset.sum_eq_zero]
@@ -230,7 +230,7 @@ theorem coeff_mul_prod_one_sub_of_lt_order {R ι : Type*} [CommRing R] (k : ℕ)
     exact ih t.2
 
 /-- Given a non-zero power series `f`, `divXPowOrder f` is the power series obtained by
-  dividing out the largest power of X that divides `f`, that is its order -/
+dividing out the largest power of X that divides `f`, that is its order -/
 def divXPowOrder (f : R⟦X⟧) : R⟦X⟧ :=
   .mk fun n ↦ coeff R (n + f.order.toNat) f
 
@@ -258,7 +258,7 @@ lemma constantCoeff_divXPowOrder_eq_zero_iff {f : R⟦X⟧} :
   · simp [h]
   · simp [constantCoeff_divXPowOrder, coeff_order h, h]
 
-theorem self_eq_X_pow_order_mul_divXPowOrder {f : R⟦X⟧} :
+theorem X_pow_order_mul_divXPowOrder {f : R⟦X⟧} :
     X ^ f.order.toNat * divXPowOrder f = f := by
   ext n
   rw [coeff_X_pow_mul']
@@ -268,7 +268,7 @@ theorem self_eq_X_pow_order_mul_divXPowOrder {f : R⟦X⟧} :
     rw [coeff_of_lt_order_toNat _ h]
 
 @[deprecated (since := "2025-04-15")]
-alias self_eq_X_pow_order_mul_divided_by_X_pow_order := self_eq_X_pow_order_mul_divXPowOrder
+alias self_eq_X_pow_order_mul_divided_by_X_pow_order := X_pow_order_mul_divXPowOrder
 
 theorem X_pow_order_dvd : X ^ φ.order.toNat ∣ φ := by
   simpa only [X_pow_dvd_iff] using coeff_of_lt_order_toNat
@@ -344,7 +344,7 @@ section OrderIsDomain
 variable [CommRing R] [IsDomain R]
 
 /-- The order of the product of two formal power series over an integral domain
- is the sum of their orders. -/
+is the sum of their orders. -/
 theorem order_mul (φ ψ : R⟦X⟧) : order (φ * ψ) = order φ + order ψ := by
   classical
   simp only [order_eq_emultiplicity_X]
@@ -365,9 +365,9 @@ theorem divXPowOrder_mul_divXPowOrder {f g : R⟦X⟧} :
           rw [mul_assoc, ← commute_X_pow.eq, ← commute_X_pow.eq, ← mul_assoc, mul_assoc, ← pow_add]
         rw [← commute_X_pow.eq, add_comm]
     _ = f * g := by
-        simp [self_eq_X_pow_order_mul_divXPowOrder]
+        simp [X_pow_order_mul_divXPowOrder]
     _ = X ^ ((f * g).order.toNat) * (f * g).divXPowOrder := by
-        simp [self_eq_X_pow_order_mul_divXPowOrder]
+        simp [X_pow_order_mul_divXPowOrder]
     _ = X ^ (f.order.toNat + g.order.toNat) * (f * g).divXPowOrder := by
         rw [order_mul, ENat.toNat_add (order_eq_top.not.mpr h.1) (order_eq_top.not.mpr h.2)]
 
