@@ -1018,17 +1018,7 @@ theorem mk'_isLinearMap [SMulCommClass R R M₃] (f : M → M₂ → M₃)
     (hfy : ∀ x, IsLinearMap R (f x ·))
     (hfx : ∀ y, IsLinearMap R (f · y)) :
     IsLinearMap R (fun x => fun y =>ₗ[R] f x y) := by
-  apply IsLinearMap.mk
-  · intro x y; ext z; simp[(hfx z).1]
-  · intro x y; ext z; simp[(hfx z).2]
-
-@[fun_prop]
-theorem isLinarMap_apply [SMulCommClass R R M₃] (f : M → M₂ →ₗ[R] M₃) (y : M₂)
-    (hf : IsLinearMap R f) :
-    IsLinearMap R (fun x => f x y) := by
-  apply IsLinearMap.mk
-  · intro x z; simp[hf.1]
-  · intro x z; simp[hf.2]
+  apply IsLinearMap.mk <;> (intro x y; ext z; simp[(hfx z).1, (hfx z).2])
 
 @[fun_prop]
 theorem isLinearMap_id : IsLinearMap R (fun x : M => x) := LinearMap.id.isLinear
