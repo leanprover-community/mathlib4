@@ -7,7 +7,7 @@ import Mathlib.Analysis.InnerProductSpace.Continuous
 import Mathlib.Analysis.Normed.Module.Dual
 import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
-import Mathlib.MeasureTheory.Integral.SetIntegral
+import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 import Mathlib.Order.Filter.Ring
 
 /-! # From equality of integrals to equality of functions

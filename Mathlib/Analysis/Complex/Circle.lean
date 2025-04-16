@@ -212,7 +212,7 @@ theorem fourierChar_ne_one : fourierChar ≠ 1 := by
   rw [mul_comm, ← mul_assoc, inv_mul_cancel₀ (by positivity), one_mul]
   exact Circle.exp_pi_ne_one
 
-/-- The additive character from `ℝ` onto the circle, given by `fun x ↦ exp (2 * I)`. This uses the
+/-- The additive character from `ℝ` onto the circle, given by `fun x ↦ exp (x * I)`. This uses the
 probabilist convention that there is no `2 * π` in the exponent. -/
 def probChar : AddChar ℝ Circle where
   toFun := Circle.exp

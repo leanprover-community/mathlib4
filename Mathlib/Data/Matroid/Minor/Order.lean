@@ -8,8 +8,8 @@ import Mathlib.Data.Matroid.Minor.Contract
 /-!
 # Matroid Minors
 
-A matroid `N = M ／ C ＼ D` obtained from a matroid `M` by a deletion then a contraction,
-(or equivalently, by any number of deletions/contractions in any order) is a *minor* of `M`.
+A matroid `N = M ／ C ＼ D` obtained from a matroid `M` by a contraction then a delete,
+(or equivalently, by any number of contractions/deletions in any order) is a *minor* of `M`.
 This gives a partial order on `Matroid α` that is ubiquitous in matroid theory,
 and interacts nicely with duality and linear representations.
 

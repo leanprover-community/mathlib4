@@ -270,8 +270,8 @@ instance [DecidableLE α] [DecidableLT α] [IsTotal α (· ≤ ·)] :
     LinearOrder (Antisymmetrization α (· ≤ ·)) :=
   { instPartialOrderAntisymmetrization with
     le_total := fun a b => Quotient.inductionOn₂' a b <| total_of (· ≤ ·),
-    decidableLE := fun _ _ => show Decidable (Quotient.liftOn₂' _ _ _ _) from inferInstance,
-    decidableLT := fun _ _ => show Decidable (Quotient.liftOn₂' _ _ _ _) from inferInstance }
+    toDecidableLE := fun _ _ => show Decidable (Quotient.liftOn₂' _ _ _ _) from inferInstance,
+    toDecidableLT := fun _ _ => show Decidable (Quotient.liftOn₂' _ _ _ _) from inferInstance }
 
 @[simp]
 theorem toAntisymmetrization_le_toAntisymmetrization_iff :
