@@ -319,7 +319,7 @@ theorem ae_eq_const_or_norm_average_lt_of_norm_le_const [StrictConvexSpace ℝ E
 
 /-- If `E` is a strictly convex normed space and `f : α → E` is a function such that `‖f x‖ ≤ C`
 a.e., then either this function is a.e. equal to its average value, or the norm of its integral is
-strictly less than `(μ univ).toReal * C`. -/
+strictly less than `μ.real univ * C`. -/
 theorem ae_eq_const_or_norm_integral_lt_of_norm_le_const [StrictConvexSpace ℝ E] [IsFiniteMeasure μ]
     (h_le : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) :
     f =ᵐ[μ] const α (⨍ x, f x ∂μ) ∨ ‖∫ x, f x ∂μ‖ < μ.real univ * C := by
@@ -332,10 +332,10 @@ theorem ae_eq_const_or_norm_integral_lt_of_norm_le_const [StrictConvexSpace ℝ 
 
 /-- If `E` is a strictly convex normed space and `f : α → E` is a function such that `‖f x‖ ≤ C`
 a.e. on a set `t` of finite measure, then either this function is a.e. equal to its average value on
-`t`, or the norm of its integral over `t` is strictly less than `(μ t).toReal * C`. -/
+`t`, or the norm of its integral over `t` is strictly less than `μ.real t * C`. -/
 theorem ae_eq_const_or_norm_setIntegral_lt_of_norm_le_const [StrictConvexSpace ℝ E] (ht : μ t ≠ ∞)
     (h_le : ∀ᵐ x ∂μ.restrict t, ‖f x‖ ≤ C) :
-    f =ᵐ[μ.restrict t] const α (⨍ x in t, f x ∂μ) ∨ ‖∫ x in t, f x ∂μ‖ < (μ t).toReal * C := by
+    f =ᵐ[μ.restrict t] const α (⨍ x in t, f x ∂μ) ∨ ‖∫ x in t, f x ∂μ‖ < μ.real t * C := by
   haveI := Fact.mk ht.lt_top
-  rw [← restrict_apply_univ]
+  rw [← measureReal_restrict_apply_univ]
   exact ae_eq_const_or_norm_integral_lt_of_norm_le_const h_le
