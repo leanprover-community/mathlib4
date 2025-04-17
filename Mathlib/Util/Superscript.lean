@@ -234,15 +234,15 @@ def scriptParser.formatter (name : String) (m : Mapping) (k : SyntaxNodeKind) (p
 /-- Returns true if every character in `stx : Syntax` can be superscripted
 (or subscripted). -/
 private partial def isValid (m : Mapping) : Syntax → Bool
-  | .node _ kind args => if scripted kind then false else args.all (isValid m)
+  | .node _ kind args => !(scripted kind) && args.all (isValid m)
   | .atom _ s => valid s
   | .ident _ _ s _ => valid s.toString
   | _ => false
 where
   valid (s : String) : Bool :=
-    s.toList.all fun x ↦ x == ' ' || m.toSpecial.contains x
-  scripted (kind : SyntaxNodeKind) : Bool :=
-    kind == subscriptKind || kind == superscriptKind
+    s.all ((m.toSpecial.insert ' ' ' ').contains ·)
+  scripted : SyntaxNodeKind → Bool :=
+    #[subscriptKind, superscriptKind].contains
 
 end Superscript
 
