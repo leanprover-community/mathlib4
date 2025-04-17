@@ -121,7 +121,7 @@ lemma Ideal.height_le_spanRank_toENat_of_mem_minimal_primes
     subst hs'
     cases n with
     | zero =>
-      rw [CharP.cast_eq_zero, nonpos_iff_eq_zero, @Ideal.height_eq_primeHeight _ _ p hp.1.1,
+      rw [CharP.cast_eq_zero, nonpos_iff_eq_zero, Ideal.height_eq_primeHeight p,
         Ideal.primeHeight_eq_zero_iff, minimalPrimes]
       simp_all
     | succ n =>
