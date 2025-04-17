@@ -496,7 +496,7 @@ theorem eq_top_if_isMultiplyPretransitive {G : Subgroup (Equiv.Perm α)}
     · obtain ⟨j, hxj : (k • x) j = (g • x) i⟩ := hx (k • x) ((g • x) i)
       rcases lt_or_eq_of_le (le_sub_one_of_lt j.prop) with hj | hj
       · exfalso
-        suffices i = j by rw [← this, ← hi] at hj ; refine lt_irrefl _ hj
+        suffices i = j by rw [← this, ← hi] at hj; refine lt_irrefl _ hj
         apply EmbeddingLike.injective (g • x)
         rw [hgk' j hj]; rw [hxj]
       · rw [← hxj]
