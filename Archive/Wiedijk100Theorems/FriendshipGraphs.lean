@@ -198,7 +198,7 @@ theorem card_mod_p_of_regular {p : ℕ} (dmod : (d : ZMod p) = 1) (hd : G.IsRegu
     (Fintype.card V : ZMod p) = 1 := by
   have hpos : 0 < Fintype.card V := Fintype.card_pos_iff.mpr inferInstance
   rw [← Nat.succ_pred_eq_of_pos hpos, Nat.succ_eq_add_one, Nat.pred_eq_sub_one]
-  simp only [add_left_eq_self, Nat.cast_add, Nat.cast_one]
+  simp only [add_eq_right, Nat.cast_add, Nat.cast_one]
   have h := congr_arg (fun n : ℕ => (n : ZMod p)) (card_of_regular hG hd)
   revert h; simp [dmod]
 
@@ -251,7 +251,7 @@ theorem false_of_three_le_degree (hd : G.IsRegularOfDegree d) (h : 3 ≤ d) : Fa
   have hp2 : 2 ≤ p := (Fact.out (p := p.Prime)).two_le
   have dmod : (d : ZMod p) = 1 := by
     rw [← Nat.succ_pred_eq_of_pos dpos, Nat.succ_eq_add_one, Nat.pred_eq_sub_one]
-    simp only [add_left_eq_self, Nat.cast_add, Nat.cast_one]
+    simp only [add_eq_right, Nat.cast_add, Nat.cast_one]
     exact p_dvd_d_pred
   have Vmod := card_mod_p_of_regular hG dmod hd
   -- now we reduce to a trace calculation
@@ -334,7 +334,7 @@ include hG in
 theorem friendship_theorem [Nonempty V] : ExistsPolitician G := by
   by_contra npG
   rcases hG.isRegularOf_not_existsPolitician npG with ⟨d, dreg⟩
-  cases' lt_or_le d 3 with dle2 dge3
+  rcases lt_or_le d 3 with dle2 | dge3
   · exact npG (hG.existsPolitician_of_degree_le_two dreg (Nat.lt_succ_iff.mp dle2))
   · exact hG.false_of_three_le_degree dreg dge3
 

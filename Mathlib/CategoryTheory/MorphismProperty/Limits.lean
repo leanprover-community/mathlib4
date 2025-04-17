@@ -88,6 +88,16 @@ instance : P.pullbacks.RespectsIso :=
     exact ⟨X, Y, p, e.inv.left ≫ f, e.inv.right ≫ g, hp,
       IsPullback.paste_horiz (IsPullback.of_horiz_isIso ⟨e.inv.w⟩) h⟩)
 
+/-- If `P : MorphismPropety C` is such that any object in `C` maps to the
+target of some morphism in `P`, then `P.pushouts` contains the isomorphisms. -/
+lemma isomorphisms_le_pushouts
+    (h : ∀ (X : C), ∃ (A B : C) (p : A ⟶ B) (_ : P p) (_ : B ⟶ X), IsIso p) :
+    isomorphisms C ≤ P.pushouts := by
+  intro X Y f (_ : IsIso f)
+  obtain ⟨A, B, p, hp, g, _⟩ := h X
+  exact ⟨A, B, p, p ≫ g, g ≫ f, hp, (IsPushout.of_id_snd (f := p ≫ g)).of_iso
+    (Iso.refl _) (Iso.refl _) (asIso p) (asIso f) (by simp) (by simp) (by simp) (by simp)⟩
+
 /-- A morphism property is `IsStableUnderBaseChange` if the base change of such a morphism
 still falls in the class. -/
 class IsStableUnderBaseChange : Prop where
@@ -125,6 +135,9 @@ lemma isStableUnderBaseChange_iff_pullbacks_le :
     constructor
     intro _ _ _ _ _ _ _ _ h₁ h₂
     exact h _ ⟨_, _, _, _, _, h₂, h₁⟩
+
+lemma pullbacks_le [P.IsStableUnderBaseChange] : P.pullbacks ≤ P := by
+  rwa [← isStableUnderBaseChange_iff_pullbacks_le]
 
 variable {P} in
 /-- Alternative constructor for `IsStableUnderBaseChange`. -/
@@ -245,6 +258,17 @@ lemma isStableUnderCobaseChange_iff_pushouts_le :
     intro _ _ _ _ _ _ _ _ h₁ h₂
     exact h _ ⟨_, _, _, _, _, h₂, h₁⟩
 
+lemma pushouts_le [P.IsStableUnderCobaseChange] : P.pushouts ≤ P := by
+  rwa [← isStableUnderCobaseChange_iff_pushouts_le]
+
+@[simp]
+lemma pushouts_le_iff {P Q : MorphismProperty C} [Q.IsStableUnderCobaseChange] :
+    P.pushouts ≤ Q ↔ P ≤ Q := by
+  constructor
+  · exact le_trans P.le_pushouts
+  · intro h
+    exact le_trans (pushouts_monotone h) pushouts_le
+
 /-- An alternative constructor for `IsStableUnderCobaseChange`. -/
 theorem IsStableUnderCobaseChange.mk' [RespectsIso P]
     (hP₂ : ∀ (A B A' : C) (f : A ⟶ A') (g : A ⟶ B) [HasPushout f g] (_ : P f),
@@ -339,6 +363,12 @@ inductive limitsOfShape : MorphismProperty C
   | mk (X₁ X₂ : J ⥤ C) (c₁ : Cone X₁) (c₂ : Cone X₂)
     (_ : IsLimit c₁) (h₂ : IsLimit c₂) (f : X₁ ⟶ X₂) (_ : W.functorCategory J f) :
       limitsOfShape (h₂.lift (Cone.mk _ (c₁.π ≫ f)))
+
+lemma limitsOfShape_monotone {W₁ W₂ : MorphismProperty C} (h : W₁ ≤ W₂)
+    (J : Type*) [Category J] :
+    W₁.limitsOfShape J ≤ W₂.limitsOfShape J := by
+  rintro _ _ _ ⟨_, _, _, _, h₁, _, f, hf⟩
+  exact ⟨_, _, _, _, h₁, _, f, fun j ↦ h _ (hf j)⟩
 
 instance : (W.limitsOfShape J).RespectsIso :=
   RespectsIso.of_respects_arrow_iso _ (by
@@ -497,6 +527,7 @@ variable (W : MorphismProperty C)
 
 /-- Given `W : MorphismProperty C`, this is class of morphisms that are
 isomorphic to a coproduct of a family (indexed by some `J : Type w`) of maps in `W`. -/
+@[pp_with_univ]
 def coproducts : MorphismProperty C := ⨆ (J : Type w), W.colimitsOfShape (Discrete J)
 
 lemma colimitsOfShape_le_coproducts (J : Type w) :
@@ -533,6 +564,13 @@ lemma le_coproducts : W ≤ coproducts.{w} W :=
   (le_colimitsOfShape_punit.{w} W).trans
     (colimitsOfShape_le_coproducts W PUnit.{w + 1})
 
+lemma coproducts_monotone : Monotone (coproducts.{w} (C := C)) := by
+  rintro W₁ W₂ h X Y f hf
+  rw [coproducts_iff] at hf
+  obtain ⟨J, hf⟩ := hf
+  exact W₂.colimitsOfShape_le_coproducts J _
+    (colimitsOfShape_monotone h _ _ hf)
+
 end Coproducts
 
 section Products
@@ -554,9 +592,9 @@ lemma IsStableUnderProductsOfShape.mk (J : Type*) [W.RespectsIso]
   have : HasLimit X₁ := ⟨c₁, hc₁⟩
   have : HasLimit X₂ := ⟨c₂, hc₂⟩
   have : HasProduct fun j ↦ X₁.obj (Discrete.mk j) :=
-    hasLimitOfIso (Discrete.natIso (fun j ↦ Iso.refl (X₁.obj j)))
+    hasLimit_of_iso (Discrete.natIso (fun j ↦ Iso.refl (X₁.obj j)))
   have : HasProduct fun j ↦ X₂.obj (Discrete.mk j) :=
-    hasLimitOfIso (Discrete.natIso (fun j ↦ Iso.refl (X₂.obj j)))
+    hasLimit_of_iso (Discrete.natIso (fun j ↦ Iso.refl (X₂.obj j)))
   have hf' := hW _ _ φ (fun j => hf (Discrete.mk j))
   refine (W.arrow_mk_iso_iff ?_).2 hf'
   refine Arrow.isoMk
@@ -575,9 +613,9 @@ lemma IsStableUnderCoproductsOfShape.mk (J : Type*) [W.RespectsIso]
   have : HasColimit X₁ := ⟨c₁, hc₁⟩
   have : HasColimit X₂ := ⟨c₂, hc₂⟩
   have : HasCoproduct fun j ↦ X₁.obj (Discrete.mk j) :=
-    hasColimitOfIso (Discrete.natIso (fun j ↦ Iso.refl (X₁.obj j)))
+    hasColimit_of_iso (Discrete.natIso (fun j ↦ Iso.refl (X₁.obj j)))
   have : HasCoproduct fun j ↦ X₂.obj (Discrete.mk j) :=
-    hasColimitOfIso (Discrete.natIso (fun j ↦ Iso.refl (X₂.obj j)))
+    hasColimit_of_iso (Discrete.natIso (fun j ↦ Iso.refl (X₂.obj j)))
   have hf' := hW _ _ φ (fun j => hf (Discrete.mk j))
   refine (W.arrow_mk_iso_iff ?_).1 hf'
   refine Arrow.isoMk
@@ -604,6 +642,36 @@ lemma isStableUnderCoproductsOfShape_of_isStableUnderFiniteCoproducts
     (J : Type) [Finite J] [W.IsStableUnderFiniteCoproducts] :
     W.IsStableUnderCoproductsOfShape J :=
   IsStableUnderFiniteCoproducts.isStableUnderCoproductsOfShape J
+
+/-- The condition that a property of morphisms is stable by coproducts. -/
+@[pp_with_univ]
+class IsStableUnderCoproducts : Prop where
+  isStableUnderCoproductsOfShape (J : Type w) : W.IsStableUnderCoproductsOfShape J
+
+lemma isStableUnderCoproductsOfShape_of_isStableUnderCoproducts
+    [IsStableUnderCoproducts.{w} W] (J : Type w) :
+    W.IsStableUnderCoproductsOfShape J :=
+  IsStableUnderCoproducts.isStableUnderCoproductsOfShape _
+
+lemma coproducts_le [IsStableUnderCoproducts.{w} W] :
+    coproducts.{w} W ≤ W := by
+  intro X Y f hf
+  rw [coproducts_iff] at hf
+  obtain ⟨J, hf⟩ := hf
+  exact (isStableUnderCoproductsOfShape_of_isStableUnderCoproducts W J).colimitsOfShape_le _ hf
+
+@[simp]
+lemma coproducts_eq_self [IsStableUnderCoproducts.{w} W] :
+    coproducts.{w} W = W :=
+  le_antisymm W.coproducts_le W.le_coproducts
+
+@[simp]
+lemma coproducts_le_iff {P Q : MorphismProperty C} [IsStableUnderCoproducts.{w} Q] :
+    coproducts.{w} P ≤ Q ↔ P ≤ Q := by
+  constructor
+  · exact le_trans P.le_coproducts
+  · intro h
+    exact le_trans (coproducts_monotone h) Q.coproducts_le
 
 end Products
 
@@ -717,6 +785,14 @@ theorem IsStableUnderBaseChange.universally_eq {P : MorphismProperty C}
 
 theorem universally_mono : Monotone (universally : MorphismProperty C → MorphismProperty C) :=
   fun _ _ h _ _ _ h₁ _ _ _ _ _ H => h _ (h₁ _ _ _ H)
+
+lemma universally_mk' (P : MorphismProperty C) [P.RespectsIso] {X Y : C} (g : X ⟶ Y)
+    (H : ∀ {T : C} (f : T ⟶ Y) [HasPullback f g], P (pullback.fst f g)) :
+    universally P g := by
+  introv X' h
+  have := h.hasPullback
+  rw [← h.isoPullback_hom_fst, P.cancel_left_of_respectsIso]
+  exact H ..
 
 end Universally
 

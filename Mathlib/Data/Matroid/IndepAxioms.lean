@@ -149,7 +149,7 @@ namespace IndepMatroid
     exact ⟨B, hB.1⟩
   isBase_exchange B B' hB hB' e he := by
     have hnotmax : ¬ Maximal M.Indep (B \ {e}) :=
-      fun h ↦ h.not_prop_of_ssuperset (diff_singleton_sSubset.2 he.1) hB.prop
+      fun h ↦ h.not_prop_of_ssuperset (diff_singleton_ssubset.2 he.1) hB.prop
     obtain ⟨f, hf, hfB⟩ := M.indep_aug (M.indep_subset hB.prop diff_subset) hnotmax hB'
     replace hf := show f ∈ B' \ B by simpa [show f ≠ e by rintro rfl; exact he.2 hf.1] using hf
     refine ⟨f, hf, by_contra fun hnot ↦ ?_⟩
@@ -515,7 +515,7 @@ namespace Matroid
     obtain ⟨B, hB, hfin⟩ := exists_finite_base
     refine fun X _ ↦ Matroid.existsMaximalSubsetProperty_of_bdd
       ⟨B.ncard, fun Y ⟨B', hB', hYB'⟩ ↦ ?_⟩ X
-    rw [hfin.cast_ncard_eq, isBase_exchange.encard_base_eq hB hB']
+    rw [hfin.cast_ncard_eq, isBase_exchange.encard_isBase_eq hB hB']
     exact encard_mono hYB')
   (subset_ground := subset_ground)
 

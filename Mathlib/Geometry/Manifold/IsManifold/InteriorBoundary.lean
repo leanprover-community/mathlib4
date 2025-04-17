@@ -131,7 +131,7 @@ lemma _root_.range_mem_nhds_isInteriorPoint {x : M} (h : I.IsInteriorPoint x) :
   exact ⟨interior (range I), interior_subset, isOpen_interior, h⟩
 
 /-- Type class for manifold without boundary. This differs from `ModelWithCorners.Boundaryless`,
-  which states that the `ModelWithCorners` maps to the whole model vector space. -/
+which states that the `ModelWithCorners` maps to the whole model vector space. -/
 class _root_.BoundarylessManifold {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
@@ -201,7 +201,7 @@ lemma interior_prod :
     (I.prod J).interior (M × N) = (I.interior M) ×ˢ (J.interior N) := by
   ext p
   have aux : (interior (range ↑I)) ×ˢ (interior (range J)) = interior (range (I.prod J)) := by
-    rw [← interior_prod_eq, ← Set.range_prod_map, modelWithCorners_prod_coe]
+    rw [← interior_prod_eq, ← range_prodMap, modelWithCorners_prod_coe]
   constructor <;> intro hp
   · replace hp : (I.prod J).IsInteriorPoint p := hp
     rw [IsInteriorPoint, ← aux] at hp

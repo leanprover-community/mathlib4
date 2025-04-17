@@ -3,7 +3,7 @@ Copyright (c) 2020 Aaron Anderson, Jalex Stark, Kyle Miller. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Alena Gusakov
 -/
-import Mathlib.Algebra.Order.Ring.Defs
+import Mathlib.Algebra.Ring.Defs
 import Mathlib.Combinatorics.SimpleGraph.Maps
 import Mathlib.Data.Finset.Max
 import Mathlib.Data.Sym.Card
@@ -136,7 +136,7 @@ theorem edgeFinset_deleteEdges [DecidableEq V] [Fintype G.edgeSet] (s : Finset (
 
 section DeleteFar
 
-variable {𝕜 : Type*} [OrderedRing 𝕜]
+variable {𝕜 : Type*} [Ring 𝕜] [PartialOrder 𝕜]
   [Fintype G.edgeSet] {p : SimpleGraph V → Prop} {r r₁ r₂ : 𝕜}
 
 /-- A graph is `r`-*delete-far* from a property `p` if we must delete at least `r` edges from it to
@@ -214,6 +214,12 @@ theorem card_neighborSet_eq_degree : Fintype.card (G.neighborSet v) = G.degree v
 theorem degree_pos_iff_exists_adj : 0 < G.degree v ↔ ∃ w, G.Adj v w := by
   simp only [degree, card_pos, Finset.Nonempty, mem_neighborFinset]
 
+theorem degree_pos_iff_mem_support : 0 < G.degree v ↔ v ∈ G.support := by
+  rw [G.degree_pos_iff_exists_adj v, mem_support]
+
+theorem degree_eq_zero_iff_not_mem_support : G.degree v = 0 ↔ v ∉ G.support := by
+  rw [← G.degree_pos_iff_mem_support v, Nat.pos_iff_ne_zero, not_ne_iff]
+
 theorem degree_compl [Fintype (Gᶜ.neighborSet v)] [Fintype V] :
     Gᶜ.degree v = Fintype.card V - 1 - G.degree v := by
   classical
@@ -248,6 +254,14 @@ theorem incidenceFinset_eq_filter [DecidableEq V] [Fintype G.edgeSet] :
   ext e
   induction e
   simp [mk'_mem_incidenceSet_iff]
+
+variable {G v}
+
+/-- If `G ≤ H` then `G.degree v ≤ H.degree v` for any vertex `v`. -/
+lemma degree_le_of_le {H : SimpleGraph V} [Fintype (H.neighborSet v)] (hle : G ≤ H) :
+    G.degree v ≤ H.degree v := by
+  simp_rw [← card_neighborSet_eq_degree]
+  exact Set.card_le_card fun v hv => hle hv
 
 end FiniteAt
 
@@ -297,10 +311,11 @@ theorem neighborFinset_compl [DecidableEq V] [DecidableRel G.Adj] (v : V) :
 @[simp]
 theorem complete_graph_degree [DecidableEq V] (v : V) :
     (⊤ : SimpleGraph V).degree v = Fintype.card V - 1 := by
-  erw [degree, neighborFinset_eq_filter, filter_ne, card_erase_of_mem (mem_univ v), card_univ]
+  simp_rw [degree, neighborFinset_eq_filter, top_adj, filter_ne]
+  rw [card_erase_of_mem (mem_univ v), card_univ]
 
 theorem bot_degree (v : V) : (⊥ : SimpleGraph V).degree v = 0 := by
-  erw [degree, neighborFinset_eq_filter, filter_False]
+  simp_rw [degree, neighborFinset_eq_filter, bot_adj, filter_False]
   exact Finset.card_empty
 
 theorem IsRegularOfDegree.top [DecidableEq V] :
@@ -336,6 +351,22 @@ theorem le_minDegree_of_forall_le_degree [DecidableRel G.Adj] [Nonempty V] (k : 
   rcases G.exists_minimal_degree_vertex with ⟨v, hv⟩
   rw [hv]
   apply h
+
+/-- If there are no vertices then the `minDegree` is zero. -/
+@[simp]
+lemma minDegree_of_isEmpty [DecidableRel G.Adj] [IsEmpty V] : G.minDegree = 0 := by
+  rw [minDegree, WithTop.untopD_eq_self_iff]
+  simp
+
+variable {G} in
+/-- If `G` is a subgraph of `H` then `G.minDegree ≤ H.minDegree`. -/
+lemma minDegree_le_minDegree {H : SimpleGraph V} [DecidableRel G.Adj] [DecidableRel H.Adj]
+    (hle : G ≤ H) : G.minDegree ≤ H.minDegree := by
+  by_cases hne : Nonempty V
+  · apply le_minDegree_of_forall_le_degree
+    exact fun v ↦ (G.minDegree_le_degree v).trans (G.degree_le_of_le hle)
+  · rw [not_nonempty_iff] at hne
+    simp
 
 /-- The maximum degree of all vertices (and `0` if there are no vertices).
 The key properties of this are given in `exists_maximal_degree_vertex`, `degree_le_maxDegree`

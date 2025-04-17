@@ -21,8 +21,8 @@ This is an abbreviation for `M✶.Indep X`, but has its own name for the sake of
 
 ## Main Definitions
 
-* `M.Dual`, written `M✶`, is the matroid in which a set `B` is a base if and only if `B ⊆ M.E`
-  and `M.E \ B` is a base for `M`.
+* `M.Dual`, written `M✶`, is the matroid on `M.E` which a set `B ⊆ M.E` is a base if and only if
+  `M.E \ B` is a base for `M`.
 
 * `M.Coindep X` means `M✶.Indep X`, or equivalently that `X` is contained in `M.E \ B` for some
   base `B` of `M`.
@@ -112,7 +112,7 @@ section dual
 def dual (M : Matroid α) : Matroid α := M.dualIndepMatroid.matroid
 
 /-- The `✶` symbol, which denotes matroid duality.
-  (This is distinct from the usual `*` symbol for multiplication, due to precedence issues. )-/
+  (This is distinct from the usual `*` symbol for multiplication, due to precedence issues.) -/
 postfix:max "✶" => Matroid.dual
 
 theorem dual_indep_iff_exists' : (M✶.Indep I) ↔ I ⊆ M.E ∧ (∃ B, M.IsBase B ∧ Disjoint I B) :=

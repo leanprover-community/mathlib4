@@ -64,16 +64,13 @@ local notation3 "at " x =>
 
 namespace ProjectiveSpectrum.StructureSheaf
 
-variable {𝒜}
-
+variable {𝒜} in
 /-- The predicate saying that a dependent function on an open `U` is realised as a fixed fraction
 `r / s` of *same grading* in each of the stalks (which are localizations at various prime ideals).
 -/
 def IsFraction {U : Opens (ProjectiveSpectrum.top 𝒜)} (f : ∀ x : U, at x.1) : Prop :=
   ∃ (i : ℕ) (r s : 𝒜 i) (s_nin : ∀ x : U, s.1 ∉ x.1.asHomogeneousIdeal),
     ∀ x : U, f x = .mk ⟨i, r, s, s_nin x⟩
-variable (𝒜)
-
 /--
 The predicate `IsFraction` is "prelocal", in the sense that if it holds on `U` it holds on any open
 subset `V` of `U`.
@@ -224,7 +221,7 @@ theorem Proj.res_apply (x) : ((Proj.structureSheaf 𝒜).1.map i s).1 x = s.1 (i
 
 end
 
-/-- `Proj` of a graded ring as a `SheafedSpace`-/
+/-- `Proj` of a graded ring as a `SheafedSpace` -/
 def Proj.toSheafedSpace : SheafedSpace CommRingCat where
   carrier := TopCat.of (ProjectiveSpectrum 𝒜)
   presheaf := (Proj.structureSheaf 𝒜).1
@@ -274,7 +271,7 @@ theorem mem_basicOpen_den (x : ProjectiveSpectrum.top 𝒜)
 
 /-- Given a point `x` corresponding to a homogeneous prime ideal, there is a (dependent) function
 such that, for any `f` in the homogeneous localization at `x`, it returns the obvious section in the
-basic open set `D(f.den)`-/
+basic open set `D(f.den)`. -/
 def sectionInBasicOpen (x : ProjectiveSpectrum.top 𝒜) :
     ∀ f : HomogeneousLocalization.NumDenSameDeg 𝒜 x.asHomogeneousIdeal.toIdeal.primeCompl,
     (Proj.structureSheaf 𝒜).1.obj (op (ProjectiveSpectrum.basicOpen 𝒜 f.den)) :=
@@ -353,7 +350,7 @@ theorem Proj.stalkIso'_symm_mk (x) (f) :
     (Proj.stalkIso' 𝒜 x).symm (.mk f) = (Proj.structureSheaf 𝒜).presheaf.germ _
       x (mem_basicOpen_den _ x f) (sectionInBasicOpen _ x f) := rfl
 
-/-- `Proj` of a graded ring as a `LocallyRingedSpace`-/
+/-- `Proj` of a graded ring as a `LocallyRingedSpace` -/
 def Proj.toLocallyRingedSpace : LocallyRingedSpace :=
   { Proj.toSheafedSpace 𝒜 with
     isLocalRing := fun x =>

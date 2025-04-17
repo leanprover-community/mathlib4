@@ -61,10 +61,13 @@ variation, and is therefore ae differentiable, together with a Fubini argument.
 -/
 
 
-theorem memℒp_lineDeriv (hf : LipschitzWith C f) (v : E) :
-    Memℒp (fun x ↦ lineDeriv ℝ f x v) ∞ μ :=
-  memℒp_top_of_bound (aestronglyMeasurable_lineDeriv hf.continuous μ)
+theorem memLp_lineDeriv (hf : LipschitzWith C f) (v : E) :
+    MemLp (fun x ↦ lineDeriv ℝ f x v) ∞ μ :=
+  memLp_top_of_bound (aestronglyMeasurable_lineDeriv hf.continuous μ)
     (C * ‖v‖) (.of_forall fun _x ↦ norm_lineDeriv_le_of_lipschitz ℝ hf)
+
+@[deprecated (since := "2025-02-21")]
+alias memℒp_lineDeriv := memLp_lineDeriv
 
 variable [FiniteDimensional ℝ E] [IsAddHaarMeasure μ]
 
@@ -87,7 +90,7 @@ theorem ae_lineDifferentiableAt
 
 theorem locallyIntegrable_lineDeriv (hf : LipschitzWith C f) (v : E) :
     LocallyIntegrable (fun x ↦ lineDeriv ℝ f x v) μ :=
-  (hf.memℒp_lineDeriv v).locallyIntegrable le_top
+  (hf.memLp_lineDeriv v).locallyIntegrable le_top
 
 /-!
 ### Step 2: the ae line derivative is linear
@@ -212,7 +215,7 @@ theorem ae_lineDeriv_sum_eq
   simp_rw [Finset.smul_sum]
   have A : ∀ i ∈ s, Integrable (fun x ↦ g x • (a i • fun x ↦ lineDeriv ℝ f x (v i)) x) μ :=
     fun i hi ↦ (g_smooth.continuous.integrable_of_hasCompactSupport g_comp).smul_of_top_left
-      ((hf.memℒp_lineDeriv (v i)).const_smul (a i))
+      ((hf.memLp_lineDeriv (v i)).const_smul (a i))
   rw [integral_finset_sum _ A]
   suffices S1 : ∫ x, lineDeriv ℝ f x (∑ i ∈ s, a i • v i) * g x ∂μ
       = ∑ i ∈ s, a i * ∫ x, lineDeriv ℝ f x (v i) * g x ∂μ by
@@ -224,7 +227,7 @@ theorem ae_lineDeriv_sum_eq
       ContDiff.lipschitzWith_of_hasCompactSupport g_comp g_smooth (mod_cast le_top)
     simp_rw [integral_lineDeriv_mul_eq hf g_lip g_comp]
     simp_rw [(g_smooth.differentiable (mod_cast le_top)).differentiableAt.lineDeriv_eq_fderiv]
-    simp only [map_neg, _root_.map_sum, _root_.map_smul, smul_eq_mul, neg_mul]
+    simp only [map_neg, _root_.map_sum, map_smul, smul_eq_mul, neg_mul]
     simp only [integral_neg, mul_neg, Finset.sum_neg_distrib, neg_inj]
     exact S2
   suffices B : ∀ i ∈ s, Integrable (fun x ↦ a i * (fderiv ℝ g x (v i) * f x)) μ by

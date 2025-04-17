@@ -266,7 +266,7 @@ theorem sup_vanishingIdeal_le (t t' : Set (ProjectiveSpectrum 𝒜)) :
   rw [← HomogeneousIdeal.mem_iff, HomogeneousIdeal.toIdeal_sup, mem_vanishingIdeal,
     Submodule.mem_sup]
   rintro ⟨f, hf, g, hg, rfl⟩ x ⟨hxt, hxt'⟩
-  erw [mem_vanishingIdeal] at hf hg
+  rw [HomogeneousIdeal.mem_iff, mem_vanishingIdeal] at hf hg
   apply Submodule.add_mem <;> solve_by_elim
 
 theorem mem_compl_zeroLocus_iff_not_mem {f : A} {I : ProjectiveSpectrum 𝒜} :
@@ -316,9 +316,9 @@ theorem zeroLocus_vanishingIdeal_eq_closure (t : Set (ProjectiveSpectrum 𝒜)) 
 
 theorem vanishingIdeal_closure (t : Set (ProjectiveSpectrum 𝒜)) :
     vanishingIdeal (closure t) = vanishingIdeal t := by
-  have := (gc_ideal 𝒜).u_l_u_eq_u t
+  have : (vanishingIdeal (zeroLocus 𝒜 (vanishingIdeal t))).toIdeal = _ := (gc_ideal 𝒜).u_l_u_eq_u t
   ext1
-  erw [zeroLocus_vanishingIdeal_eq_closure 𝒜 t] at this
+  rw [zeroLocus_vanishingIdeal_eq_closure 𝒜 t] at this
   exact this
 
 section BasicOpen
@@ -372,7 +372,7 @@ theorem basicOpen_eq_union_of_projection (f : A) :
     basicOpen 𝒜 f = ⨆ i : ℕ, basicOpen 𝒜 (GradedAlgebra.proj 𝒜 i f) :=
   TopologicalSpace.Opens.ext <|
     Set.ext fun z => by
-      erw [mem_coe_basicOpen, TopologicalSpace.Opens.mem_sSup]
+      rw [mem_coe_basicOpen, mem_coe, iSup, TopologicalSpace.Opens.mem_sSup]
       constructor <;> intro hz
       · rcases show ∃ i, GradedAlgebra.proj 𝒜 i f ∉ z.asHomogeneousIdeal by
           contrapose! hz with H

@@ -102,8 +102,8 @@ lemma fixedField_bot [IsGalois k K] :
   rw [← IntermediateField.fixingSubgroup_bot, fixedField_fixingSubgroup]
 
 open IntermediateField in
-/--For a subgroup `H` of `Gal(K/k)`, the fixed field of the image of `H` under the restriction to
-a normal intermediate field `E` is equal to the fixed field of `H` in `K` intersecting with `E`.-/
+/-- For a subgroup `H` of `Gal(K/k)`, the fixed field of the image of `H` under the restriction to
+a normal intermediate field `E` is equal to the fixed field of `H` in `K` intersecting with `E`. -/
 lemma restrict_fixedField (H : Subgroup (K ≃ₐ[k] K)) (L : IntermediateField k K) [Normal k L] :
     fixedField H ⊓ L = lift (fixedField (Subgroup.map (restrictNormalHom L) H)) := by
   apply SetLike.ext'

@@ -40,6 +40,11 @@ end DivisionSemiring
 section DivisionRing
 variable [DivisionRing K] [CharZero K]
 
+theorem cast_choose_eq_descPochhammer_div (a b : ℕ) :
+    (a.choose b : K) = (descPochhammer K b).eval ↑a / b ! := by
+  rw [eq_div_iff_mul_eq (cast_ne_zero.2 b.factorial_ne_zero : (b ! : K) ≠ 0), ← cast_mul,
+    mul_comm, ← descFactorial_eq_factorial_mul_choose, descPochhammer_eval_eq_descFactorial]
+
 theorem cast_choose_two (a : ℕ) : (a.choose 2 : K) = a * (a - 1) / 2 := by
   rw [← cast_descFactorial_two, descFactorial_eq_factorial_mul_choose, factorial_two, mul_comm,
     cast_mul, cast_two, eq_div_iff_mul_eq (two_ne_zero : (2 : K) ≠ 0)]

@@ -6,9 +6,12 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.ComposableArrows
 import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
 import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Fin
+import Mathlib.CategoryTheory.Limits.Final
+import Mathlib.CategoryTheory.Filtered.Final
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Preorder
 import Mathlib.Data.Fin.SuccPred
 import Mathlib.Order.LatticeIntervals
+import Mathlib.Order.Interval.Set.Final
 
 /-!
 # A structure to describe transfinite compositions
@@ -75,6 +78,7 @@ def ofComposableArrows {n : ℕ} (G : ComposableArrows C n) :
     TransfiniteCompositionOfShape (Fin (n + 1)) G.hom where
   F := G
   isoBot := Iso.refl _
+  incl := _
   isColimit := colimitOfDiagramTerminal (Fin.isTerminalLast n) G
   fac := Category.id_comp _
 
@@ -105,6 +109,7 @@ noncomputable def map (F : C ⥤ D) [PreservesWellOrderContinuousOfShape J F]
 
 /-- A transfinite composition of shape `J` induces a transfinite composition
 of shape `Set.Iic j` for any `j : J`. -/
+@[simps]
 def iic (j : J) :
     TransfiniteCompositionOfShape (Set.Iic j) (c.F.map (homOfLE bot_le : ⊥ ⟶ j)) where
   F := (Set.initialSegIic j).monotone.functor ⋙ c.F
@@ -116,6 +121,18 @@ def iic (j : J) :
         rw [← Functor.map_comp, Category.comp_id]
         rfl }
   isColimit := colimitOfDiagramTerminal isTerminalTop _
+
+/-- A transfinite composition of shape `J` induces a transfinite composition
+of shape `Set.Ici j` for any `j : J`. -/
+@[simps]
+noncomputable def ici (j : J) :
+    TransfiniteCompositionOfShape (Set.Ici j) (c.incl.app j) where
+  F := (Subtype.mono_coe (Set.Ici j)).functor ⋙ c.F
+  isWellOrderContinuous := Functor.IsWellOrderContinuous.restriction_setIci _
+  isoBot := Iso.refl _
+  incl := whiskerLeft _ c.incl
+  isColimit := (Functor.Final.isColimitWhiskerEquiv
+    ((Subtype.mono_coe (Set.Ici j)).functor) _).2 c.isColimit
 
 end TransfiniteCompositionOfShape
 
