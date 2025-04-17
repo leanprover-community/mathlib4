@@ -356,22 +356,25 @@ lemma condExp_generateFrom_singleton (hs : MeasurableSet s) {f : Ω → F} (hf :
     · rintro t ht -
       obtain (h | h | h | h) := measurableSet_generateFrom_singleton_iff.1 ht
       · simp [h]
-      · simp [h, cond, integral_smul_measure, ENNReal.toReal_inv, integral_const,
-          MeasurableSet.univ, measureReal_restrict_apply, univ_inter, measureReal_restrict_apply_self]
+      · simp only [h, cond, integral_smul_measure, ENNReal.toReal_inv, integral_const,
+        MeasurableSet.univ, measureReal_restrict_apply, univ_inter, measureReal_restrict_apply_self,
+        ← measureReal_def]
         rw [smul_inv_smul₀, Measure.restrict_restrict hs, inter_self]
         exact ENNReal.toReal_ne_zero.2 ⟨hμs, measure_ne_top _ _⟩
-      · simp only [h, integral_const, MeasurableSet.univ, Measure.restrict_apply, univ_inter,
+      · simp only [h, integral_const, MeasurableSet.univ, measureReal_restrict_apply, univ_inter,
+          measureReal_restrict_apply hs.compl, compl_inter_self, measureReal_empty, zero_smul,
           ((Measure.restrict_apply_eq_zero hs.compl).2 <| compl_inter_self s ▸ measure_empty),
-          ENNReal.toReal_zero, zero_smul, setIntegral_zero_measure]
-      · simp only [h, Measure.restrict_univ, cond, integral_smul_measure, ENNReal.toReal_inv,
-          integral_const, MeasurableSet.univ, Measure.restrict_apply, univ_inter,
-          smul_inv_smul₀ <| ENNReal.toReal_ne_zero.2 ⟨hμs, measure_ne_top _ _⟩]
+          setIntegral_zero_measure]
+      · simp only [h, Measure.restrict_univ, cond, integral_smul_measure, ENNReal.toReal_inv, ←
+        measureReal_def, integral_const, MeasurableSet.univ, measureReal_restrict_apply, univ_inter]
+        rw [smul_inv_smul₀]
+        exact (measureReal_ne_zero_iff (by finiteness)).2 hμs
 
 @[deprecated (since := "2025-01-21")]
 alias condexp_generateFrom_singleton := condExp_generateFrom_singleton
 
 lemma condExp_set_generateFrom_singleton (hs : MeasurableSet s) (ht : MeasurableSet t) :
-    μ⟦t | generateFrom {s}⟧ =ᵐ[μ.restrict s] fun _ ↦ (μ[t|s]).toReal := by
+    μ⟦t | generateFrom {s}⟧ =ᵐ[μ.restrict s] fun _ ↦ μ[|s].real t := by
   rw [← integral_indicator_one ht]
   exact condExp_generateFrom_singleton hs <| Integrable.indicator (integrable_const 1) ht
 
@@ -382,12 +385,13 @@ lemma condExpKernel_singleton_ae_eq_cond [StandardBorelSpace Ω] (hs : Measurabl
     (ht : MeasurableSet t) :
     ∀ᵐ ω ∂μ.restrict s,
       condExpKernel μ (generateFrom {s}) ω t = μ[t|s] := by
-  have : (fun ω ↦ (condExpKernel μ (generateFrom {s}) ω t).toReal) =ᵐ[μ.restrict s]
+  have : (fun ω ↦ (condExpKernel μ (generateFrom {s}) ω).real t) =ᵐ[μ.restrict s]
       μ⟦t | generateFrom {s}⟧ :=
     ae_restrict_le <| condExpKernel_ae_eq_condExp
       (generateFrom_singleton_le hs) ht
   filter_upwards [condExp_set_generateFrom_singleton hs ht, this] with ω hω₁ hω₂
-  rwa [hω₁, ENNReal.toReal_eq_toReal (measure_ne_top _ t) (measure_ne_top _ t)] at hω₂
+  rwa [hω₁, measureReal_def, measureReal_def,
+    ENNReal.toReal_eq_toReal (measure_ne_top _ t) (measure_ne_top _ t)] at hω₂
 
 @[deprecated (since := "2025-01-21")]
 alias condexpKernel_singleton_ae_eq_cond := condExpKernel_singleton_ae_eq_cond
