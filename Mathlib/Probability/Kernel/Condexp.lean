@@ -241,7 +241,7 @@ alias _root_.MeasureTheory.Integrable.integral_condexpKernel :=
   _root_.MeasureTheory.Integrable.integral_condExpKernel
 
 theorem integrable_toReal_condExpKernel {s : Set Ω} (hs : MeasurableSet s) :
-    Integrable (fun ω => (condExpKernel μ m ω s).toReal) μ := by
+    Integrable (fun ω => (condExpKernel μ m ω).real s) μ := by
   nontriviality Ω
   rw [condExpKernel_eq]
   exact integrable_toReal_condDistrib (aemeasurable_id'' μ (inf_le_right : m ⊓ mΩ ≤ mΩ)) hs
@@ -252,7 +252,7 @@ alias integrable_toReal_condexpKernel := integrable_toReal_condExpKernel
 end Integrability
 
 lemma condExpKernel_ae_eq_condExp' {s : Set Ω} (hs : MeasurableSet s) :
-    (fun ω ↦ (condExpKernel μ m ω s).toReal) =ᵐ[μ] μ⟦s | m ⊓ mΩ⟧ := by
+    (fun ω ↦ (condExpKernel μ m ω).real s) =ᵐ[μ] μ⟦s | m ⊓ mΩ⟧ := by
   rcases isEmpty_or_nonempty Ω with h | h
   · have : μ = 0 := Measure.eq_zero_of_isEmpty μ
     simpa [this] using trivial
@@ -267,7 +267,7 @@ alias condexpKernel_ae_eq_condexp' := condExpKernel_ae_eq_condExp'
 
 lemma condExpKernel_ae_eq_condExp
     (hm : m ≤ mΩ) {s : Set Ω} (hs : MeasurableSet s) :
-    (fun ω ↦ (condExpKernel μ m ω s).toReal) =ᵐ[μ] μ⟦s | m⟧ :=
+    (fun ω ↦ (condExpKernel μ m ω).real s) =ᵐ[μ] μ⟦s | m⟧ :=
   (condExpKernel_ae_eq_condExp' hs).trans (by rw [inf_of_le_left hm])
 
 @[deprecated (since := "2025-01-21")]
@@ -275,7 +275,8 @@ alias condexpKernel_ae_eq_condexp := condExpKernel_ae_eq_condExp
 
 lemma condExpKernel_ae_eq_trim_condExp
     (hm : m ≤ mΩ) {s : Set Ω} (hs : MeasurableSet s) :
-    (fun ω ↦ (condExpKernel μ m ω s).toReal) =ᵐ[μ.trim hm] μ⟦s | m⟧ := by
+    (fun ω ↦ (condExpKernel μ m ω).real s) =ᵐ[μ.trim hm] μ⟦s | m⟧ := by
+  simp_rw [measureReal_def]
   rw [(measurable_condExpKernel hs).ennreal_toReal.stronglyMeasurable.ae_eq_trim_iff hm
     stronglyMeasurable_condExp]
   exact condExpKernel_ae_eq_condExp hm hs
@@ -355,8 +356,8 @@ lemma condExp_generateFrom_singleton (hs : MeasurableSet s) {f : Ω → F} (hf :
     · rintro t ht -
       obtain (h | h | h | h) := measurableSet_generateFrom_singleton_iff.1 ht
       · simp [h]
-      · simp only [h, cond, integral_smul_measure, ENNReal.toReal_inv, integral_const,
-          MeasurableSet.univ, Measure.restrict_apply, univ_inter, Measure.restrict_apply_self]
+      · simp [h, cond, integral_smul_measure, ENNReal.toReal_inv, integral_const,
+          MeasurableSet.univ, measureReal_restrict_apply, univ_inter, measureReal_restrict_apply_self]
         rw [smul_inv_smul₀, Measure.restrict_restrict hs, inter_self]
         exact ENNReal.toReal_ne_zero.2 ⟨hμs, measure_ne_top _ _⟩
       · simp only [h, integral_const, MeasurableSet.univ, Measure.restrict_apply, univ_inter,

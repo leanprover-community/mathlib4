@@ -109,6 +109,10 @@ theorem measureReal_restrict_apply' (hs : MeasurableSet s) :
 theorem measureReal_restrict_apply₀' (hs : NullMeasurableSet s μ) : μ.restrict s t = μ (t ∩ s) := by
   simp only [measureReal_def, restrict_apply₀' hs]
 
+@[simp]
+theorem measureReal_restrict_apply_self (s : Set α) : (μ.restrict s).real s = μ.real s := by
+  simp [measureReal_def]
+
 theorem measureReal_mono_null (h : s₁ ⊆ s₂) (h₂ : μ.real s₂ = 0) (h'₂ : μ s₂ ≠ ∞ := by finiteness) :
     μ.real s₁ = 0 := by
   rw [measureReal_eq_zero_iff h'₂] at h₂
