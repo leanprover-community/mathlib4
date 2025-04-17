@@ -71,9 +71,7 @@ lemma Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes_of_isLocalRing
   · rw [IsLocalRing.jacobson_eq_maximalIdeal, Localization.AtPrime.map_eq_maximalIdeal]
     exact bot_ne_top
   rw [smul_eq_mul, ← pow_succ',
-    ← IsLocalization.map_comap q.primeCompl (Localization.AtPrime q) (q.map f ^ n),
-    ← IsLocalization.map_comap q.primeCompl (Localization.AtPrime q) (q.map f ^ (n + 1))]
-  apply Ideal.map_mono
+    ← (IsLocalization.orderEmbedding q.primeCompl (Localization.AtPrime q)).map_rel_iff]
   refine Submodule.le_of_le_smul_of_le_jacobson_bot (I := I) (IsNoetherian.noetherian _) ?_ ?_
   · rw [IsLocalRing.jacobson_eq_maximalIdeal]
     exacts [hp.1.2, bot_ne_top]
