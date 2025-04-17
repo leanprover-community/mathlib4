@@ -394,3 +394,111 @@ theorem isMultiplyPretransitive_of_le {m n : ℕ} [IsMultiplyPretransitive G α 
 end Higher
 
 end MulAction
+
+namespace Equiv.Perm
+
+variable {α : Type*} [Fintype α]
+
+-- Move?
+/-- The permutation group of `α` acts transitively on `α`. -/
+instance : IsPretransitive (Perm α) α where
+  exists_smul_eq x y := by
+    classical
+    use Equiv.swap x y
+    simp only [Equiv.Perm.smul_def, Equiv.swap_apply_left x y]
+
+/-- The permutation group of `α` acts 2-pretransitively on `α`. -/
+theorem is_two_pretransitive (α : Type*) :
+    IsMultiplyPretransitive (Perm α) α 2 := by
+  rw [is_two_pretransitive_iff]
+  classical
+  intro a b c d hab hcd
+  let k := Equiv.swap a c
+  have hc : c = k • a := by simp [k]
+  simp only [show c = k • a from by simp [k]]
+  suffices ∃ g, g • a = a ∧ g • b = k⁻¹ • d by
+    obtain ⟨g, h1, h2⟩ := this
+    use k * g
+    simp [mul_smul, h1, h2]
+  use swap b (k⁻¹ • d)
+  refine ⟨?_, by simp⟩
+  apply Equiv.swap_apply_of_ne_of_ne hab
+  intro ha'
+  apply hcd
+  have hd : d = k • a := by simp [ha']
+  rw [hc, hd]
+
+/-- The action of the permutation group of `α` on `α` is preprimitive -/
+instance {α : Type*} : IsPreprimitive (Equiv.Perm α) α := by
+  cases subsingleton_or_nontrivial α
+  · exact IsPreprimitive.of_subsingleton
+  · exact isPreprimitive_of_is_two_pretransitive (is_two_pretransitive α)
+
+-- TODO : generalize when `α` is infinite. This simplifies a proof above
+variable (α) in
+/-- The permutation group of a finite type `α` acts `n`-pretransitively on `a`, for all `n`,
+for a trivial reason when `Nat.card α < n`. -/
+theorem isMultiplyPretransitive (n : ℕ) : IsMultiplyPretransitive (Perm  α) α n := by
+  by_cases hα : n ≤ Nat.card α
+  · suffices IsMultiplyPretransitive (Perm α) α (Nat.card α) by
+      apply isMultiplyPretransitive_of_le hα (le_rfl)
+    exact {
+      exists_smul_eq x y := by
+        suffices h : Function.Bijective x ∧ Function.Bijective y by
+          use (Equiv.ofBijective x h.1).symm.trans (Equiv.ofBijective y h.2)
+          ext; simp
+        constructor
+        all_goals
+          simp only [Fintype.bijective_iff_injective_and_card, card_eq_fintype_card,
+            Fintype.card_fin, and_true, EmbeddingLike.injective] }
+  · suffices IsEmpty (Fin n ↪ α) by
+      infer_instance
+    exact {
+      false x := by
+        apply hα (le_of_eq_of_le _ (Finite.card_le_of_embedding x))
+        simp only [card_eq_fintype_card, Fintype.card_fin] }
+
+-- This is optimal, `AlternatingGroup α` is `Nat.card α - 2`-pretransitive.
+/-- A subgroup of `Perm α` is `⊤` if(f) it is `(Nat.card α - 1)`-pretransitive. -/
+theorem eq_top_if_isMultiplyPretransitive {G : Subgroup (Equiv.Perm α)}
+    (hmt : IsMultiplyPretransitive G α (Nat.card α - 1)) : G = ⊤ := by
+  simp only [Nat.card_eq_fintype_card] at hmt
+  let j : Fin (Fintype.card α - 1) ↪ Fin (Fintype.card α) :=
+    (Fin.castLEEmb ((Fintype.card α).sub_le 1))
+  rw [eq_top_iff]; intro k _
+  let x : Fin (Fintype.card α) ↪ α :=
+    (Fintype.equivFinOfCardEq rfl).symm.toEmbedding
+  let x' := j.trans x
+  obtain ⟨g, hg'⟩ := exists_smul_eq G x' (k • x')
+  suffices k = g by rw [this]; exact SetLike.coe_mem g
+  have hx : ∀ x : Fin (Fintype.card α) ↪ α, Function.Surjective x.toFun := by
+    intro x
+    apply Function.Bijective.surjective
+    rw [Fintype.bijective_iff_injective_and_card]
+    exact ⟨EmbeddingLike.injective x, Fintype.card_fin (Fintype.card α)⟩
+  have hgk' : ∀ (i : Fin (Fintype.card α)) (_ : i.val < Fintype.card α - 1),
+    (g • x) i = (k • x) i := by
+    intro i hi
+    exact Function.Embedding.ext_iff.mp hg' ⟨i.val, hi⟩
+  have hgk : ∀ i : Fin (Fintype.card α), (g • x) i = (k • x) i := by
+    intro i
+    rcases lt_or_eq_of_le (le_sub_one_of_lt i.prop) with hi | hi
+    · exact hgk' i hi
+    · obtain ⟨j, hxj : (k • x) j = (g • x) i⟩ := hx (k • x) ((g • x) i)
+      rcases lt_or_eq_of_le (le_sub_one_of_lt j.prop) with hj | hj
+      · exfalso
+        suffices i = j by rw [← this, ← hi] at hj ; refine lt_irrefl _ hj
+        apply EmbeddingLike.injective (g • x)
+        rw [hgk' j hj]; rw [hxj]
+      · rw [← hxj]
+        apply congr_arg
+        rw [Fin.ext_iff, hi, hj]
+  apply Equiv.Perm.ext; intro a
+  obtain ⟨i, rfl⟩ := (hx x) a
+  let zi := hgk i
+  simp only [Function.Embedding.smul_apply, Equiv.Perm.smul_def] at zi
+  simp only [Function.Embedding.toFun_eq_coe]
+  rw [← zi]
+  rfl
+
+end Equiv.Perm
