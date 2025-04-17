@@ -671,7 +671,7 @@ theorem isCycle_shortcircuit {u : V} (p : G.Walk u u) (h : p.IsCircuit) :
     suffices s(u, v) ∈ p.edges by simp [isCircuit_def, this]
     have : s(u, v) ∈ p.bypass.edges := by
       simpa [shortcircuit, cons_isCycle_iff, bypass_isPath] using h
-    exact (edges_bypass_subset p) this
+    exact edges_bypass_subset p this
 
 /-- Given a closed walk that is a circuit, produces a cycle with the same initial & final
 vertex using `SimpleGraph.Walk.shortcircuit`. -/
