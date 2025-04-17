@@ -131,9 +131,26 @@ theorem pi_principal [Finite ι] (s : (i : ι) → Set (α i)) :
     pi (fun i ↦ 𝓟 (s i)) = 𝓟 (univ.pi s) := by
   simp [Filter.pi, Set.pi_def]
 
+theorem mem_pi_principal {t : Set ((i : ι) → α i)} :
+    t ∈ pi (fun i ↦ 𝓟 (s i)) ↔ ∃ I : Set ι, I.Finite ∧ I.pi s ⊆ t :=
+  (hasBasis_pi (fun i ↦ hasBasis_principal _)).mem_iff.trans <| by simp
+
+theorem hasBasis_pi_principal (s : (i : ι) → Set (α i)) :
+    HasBasis (pi fun i ↦ 𝓟 (s i)) Set.Finite (Set.pi · s) :=
+  ⟨fun _ ↦ mem_pi_principal⟩
+
 @[simp]
 theorem pi_pure [Finite ι] (f : (i : ι) → α i) : pi (pure <| f ·) = pure f := by
   simp only [← principal_singleton, pi_principal, univ_pi_singleton]
+
+theorem mem_pi_pure {f : (i : ι) → α i} {s : Set ((i : ι) → α i)} :
+    s ∈ pi (fun i ↦ pure (f i)) ↔ ∃ I : Set ι, I.Finite ∧ ∀ g, (∀ i ∈ I, g i = f i) → g ∈ s := by
+  simp only [← principal_singleton, mem_pi_principal]
+  simp [subset_def]
+
+theorem hasBasis_pi_pure (f : (i : ι) → α i) :
+    HasBasis (pi fun i ↦ pure (f i)) Set.Finite (fun I ↦ {g | ∀ i ∈ I, g i = f i}) :=
+  ⟨fun _ ↦ mem_pi_pure⟩
 
 @[simp]
 theorem pi_inf_principal_univ_pi_eq_bot :
