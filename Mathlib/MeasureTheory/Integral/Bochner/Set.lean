@@ -507,8 +507,7 @@ theorem norm_setIntegral_le_of_norm_le_const_ae {C : ℝ} (hs : μ s < ∞)
   exact norm_integral_le_of_norm_le_const hC
 
 theorem norm_setIntegral_le_of_norm_le_const_ae' {C : ℝ} (hs : μ s < ∞)
-    (hC : ∀ᵐ x ∂μ, x ∈ s → ‖f x‖ ≤ C) :
-    ‖∫ x in s, f x ∂μ‖ ≤ C * (μ s).toReal := by
+    (hC : ∀ᵐ x ∂μ, x ∈ s → ‖f x‖ ≤ C) : ‖∫ x in s, f x ∂μ‖ ≤ C * (μ s).toReal := by
   by_cases hfm : AEStronglyMeasurable f (μ.restrict s)
   · apply norm_setIntegral_le_of_norm_le_const_ae hs
     have A : ∀ᵐ x : X ∂μ, x ∈ s → ‖AEStronglyMeasurable.mk f hfm x‖ ≤ C := by
@@ -528,11 +527,6 @@ theorem norm_setIntegral_le_of_norm_le_const_ae' {C : ℝ} (hs : μ s < ∞)
     have : 0 ≤ C := (norm_nonneg _).trans (h'x hx)
     simp only [norm_zero, ge_iff_le]
     positivity
-
-theorem norm_setIntegral_le_of_norm_le_const_ae'' {C : ℝ} (hs : μ s < ∞) (hsm : MeasurableSet s)
-    (hC : ∀ᵐ x ∂μ, x ∈ s → ‖f x‖ ≤ C) : ‖∫ x in s, f x ∂μ‖ ≤ C * (μ s).toReal :=
-  norm_setIntegral_le_of_norm_le_const_ae hs <| by
-    rwa [ae_restrict_eq hsm, eventually_inf_principal]
 
 theorem norm_setIntegral_le_of_norm_le_const {C : ℝ} (hs : μ s < ∞) (hC : ∀ x ∈ s, ‖f x‖ ≤ C) :
     ‖∫ x in s, f x ∂μ‖ ≤ C * (μ s).toReal :=
