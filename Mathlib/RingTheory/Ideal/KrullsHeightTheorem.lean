@@ -165,7 +165,7 @@ lemma Ideal.height_le_spanRank_toENat_of_mem_minimal_primes
         rintro ⟨z, hzs⟩
         dsimp [Ideal.radical] at h
         simp only [Submodule.mem_sup, Ideal.mem_span_singleton'] at h
-        obtain ⟨m, y, hyq, _, ⟨a, rfl⟩, hy⟩ := h z hzs
+        obtain ⟨m, y, hyq, _, ⟨a, rfl⟩, hy⟩ := h hzs
         exact ⟨m, y, hyq, a, hy⟩
       choose m y hyq a hy using h
       let I' := Ideal.span (Set.range y)
