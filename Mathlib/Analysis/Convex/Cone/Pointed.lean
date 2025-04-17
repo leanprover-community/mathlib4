@@ -3,9 +3,8 @@ Copyright (c) 2023 Apurva Nakade. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Apurva Nakade
 -/
-import Mathlib.Analysis.Convex.Cone.InnerDual
 import Mathlib.Algebra.Order.Nonneg.Module
-import Mathlib.Algebra.Module.Submodule.Basic
+import Mathlib.Analysis.Convex.Cone.Basic
 
 /-!
 # Pointed cones
@@ -175,23 +174,4 @@ theorem toConvexCone_positive : ↑(positive 𝕜 E) = ConvexCone.positive 𝕜 
   rfl
 
 end PositiveCone
-section Dual
-
-variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
-
-/-- The inner dual cone of a pointed cone is a pointed cone. -/
-def dual (S : PointedCone ℝ E) : PointedCone ℝ E :=
-  ((S : Set E).innerDualCone).toPointedCone <| pointed_innerDualCone (S : Set E)
-
-@[simp, norm_cast]
-theorem toConvexCone_dual (S : PointedCone ℝ E) : ↑(dual S) = (S : Set E).innerDualCone :=
-  rfl
-
-open scoped InnerProductSpace in
-@[simp]
-theorem mem_dual {S : PointedCone ℝ E} {y : E} : y ∈ dual S ↔ ∀ ⦃x⦄, x ∈ S → 0 ≤ ⟪x, y⟫_ℝ := by
-  rfl
-
-end Dual
-
 end PointedCone

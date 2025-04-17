@@ -3,20 +3,20 @@ Copyright (c) 2021 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
 -/
-import Mathlib.Analysis.Convex.Cone.Basic
+import Mathlib.Analysis.Convex.Cone.Pointed
 import Mathlib.Analysis.InnerProductSpace.Projection
 
 /-!
 # Convex cones in inner product spaces
 
-We define `Set.innerDualCone` to be the cone consisting of all points `y` such that for
+We define `PointedCone.innerDual` to be the cone consisting of all points `y` such that for
 all points `x` in a given set `0 ≤ ⟪ x, y ⟫`.
 
 ## Main statements
 
 We prove the following theorems:
-* `ConvexCone.innerDualCone_of_innerDualCone_eq_self`:
-  The `innerDualCone` of the `innerDualCone` of a nonempty, closed, convex cone is itself.
+* `ConvexCone.innerDual_of_innerDual_eq_self`:
+  The `innerDual` of the `innerDual` of a nonempty, closed, convex cone is itself.
 * `ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_nmem`:
   This variant of the
   [hyperplane separation theorem](https://en.wikipedia.org/wiki/Hyperplane_separation_theorem)
@@ -34,89 +34,69 @@ open Set LinearMap Pointwise
 
 section Dual
 
-variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℝ H] (s t : Set H)
+variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℝ H] {s t : Set H} {y : H}
 
 open RealInnerProductSpace
 
-/-- The dual cone is the cone consisting of all points `y` such that for
-all points `x` in a given set `0 ≤ ⟪ x, y ⟫`. -/
-def Set.innerDualCone (s : Set H) : ConvexCone ℝ H where
-  carrier := { y | ∀ x ∈ s, 0 ≤ ⟪x, y⟫ }
-  smul_mem' c hc y hy x hx := by
-    rw [real_inner_smul_right]
-    exact mul_nonneg hc.le (hy x hx)
-  add_mem' u hu v hv x hx := by
-    rw [inner_add_right]
-    exact add_nonneg (hu x hx) (hv x hx)
+namespace PointedCone
 
-@[simp]
-theorem mem_innerDualCone (y : H) (s : Set H) : y ∈ s.innerDualCone ↔ ∀ x ∈ s, 0 ≤ ⟪x, y⟫ :=
-  Iff.rfl
+/-- The dual cone of a set `s` is the cone consisting of all points `y` such that for all points
+`x ∈ s` we have `0 ≤ ⟪x, y⟫`. -/
+def innerDual (s : Set H) : PointedCone ℝ H where
+  carrier := {y | ∀ ⦃x⦄, x ∈ s → 0 ≤ ⟪x, y⟫}
+  zero_mem' := by simp
+  add_mem' {u v} hu hv x hx := by rw [inner_add_right]; exact add_nonneg (hu hx) (hv hx)
+  smul_mem' c y hy x hx := by
+    rw [← Nonneg.coe_smul, real_inner_smul_right]; exact mul_nonneg c.2 (hy hx)
 
-@[simp]
-theorem innerDualCone_empty : (∅ : Set H).innerDualCone = ⊤ :=
-  eq_top_iff.mpr fun _ _ _ => False.elim
+@[simp] lemma mem_innerDual : y ∈ innerDual s ↔ ∀ ⦃x⦄, x ∈ s → 0 ≤ ⟪x, y⟫ := .rfl
+
+@[simp] lemma innerDual_empty : innerDual (∅ : Set H) = ⊤ := by ext; simp
 
 /-- Dual cone of the convex cone {0} is the total space. -/
-@[simp]
-theorem innerDualCone_zero : (0 : Set H).innerDualCone = ⊤ :=
-  eq_top_iff.mpr fun _ _ y (hy : y = 0) => hy.symm ▸ (inner_zero_left _).ge
+@[simp] lemma innerDual_zero : innerDual (0 : Set H) = ⊤ := by ext; simp
 
 /-- Dual cone of the total space is the convex cone {0}. -/
 @[simp]
-theorem innerDualCone_univ : (univ : Set H).innerDualCone = 0 := by
-  suffices ∀ x : H, x ∈ (univ : Set H).innerDualCone → x = 0 by
-    apply SetLike.coe_injective
-    exact eq_singleton_iff_unique_mem.mpr ⟨fun x _ => (inner_zero_right _).ge, this⟩
-  exact fun x hx => by simpa [← real_inner_self_nonpos] using hx (-x) (mem_univ _)
+theorem innerDual_univ : innerDual (univ : Set H) = 0 :=
+  le_antisymm (fun x hx ↦ by simpa [← real_inner_self_nonpos] using hx (mem_univ (-x))) (by simp)
 
-variable {s t} in
-@[gcongr]
-theorem innerDualCone_le_innerDualCone (h : t ⊆ s) : s.innerDualCone ≤ t.innerDualCone :=
-  fun _ hy x hx => hy x (h hx)
-
-theorem pointed_innerDualCone : s.innerDualCone.Pointed := fun x _ => by rw [inner_zero_right]
+@[gcongr] lemma innerDual_le_innerDual (h : t ⊆ s) : innerDual s ≤ innerDual t :=
+  fun _y hy _x hx ↦ hy (h hx)
 
 /-- The inner dual cone of a singleton is given by the preimage of the positive cone under the
 linear map `fun y ↦ ⟪x, y⟫`. -/
-theorem innerDualCone_singleton (x : H) :
-    ({x} : Set H).innerDualCone = (ConvexCone.positive ℝ ℝ).comap (innerₛₗ ℝ x) :=
-  ConvexCone.ext fun _ => forall_eq
+lemma innerDual_singleton (x : H) :
+    innerDual ({x} : Set H) = (positive ℝ ℝ).comap (innerₛₗ ℝ x) := by ext; simp
 
-theorem innerDualCone_union (s t : Set H) :
-    (s ∪ t).innerDualCone = s.innerDualCone ⊓ t.innerDualCone :=
-  le_antisymm (le_inf (fun _ hx _ hy => hx _ <| Or.inl hy) fun _ hx _ hy => hx _ <| Or.inr hy)
-    fun _ hx _ => Or.rec (hx.1 _) (hx.2 _)
+theorem innerDual_union (s t : Set H) : innerDual (s ∪ t) = innerDual s ⊓ innerDual t :=
+  le_antisymm (le_inf (fun _ hx _ hy ↦ hx <| .inl hy) fun _ hx _ hy ↦ hx <| .inr hy)
+    fun _ hx _ => Or.rec (fun h ↦ hx.1 h) (fun h ↦ hx.2 h)
 
-theorem innerDualCone_insert (x : H) (s : Set H) :
-    (insert x s).innerDualCone = Set.innerDualCone {x} ⊓ s.innerDualCone := by
-  rw [insert_eq, innerDualCone_union]
+theorem innerDual_insert (x : H) (s : Set H) :
+    innerDual (insert x s) = innerDual {x} ⊓ innerDual s := by
+  rw [insert_eq, innerDual_union]
 
-theorem innerDualCone_iUnion {ι : Sort*} (f : ι → Set H) :
-    (⋃ i, f i).innerDualCone = ⨅ i, (f i).innerDualCone := by
-  refine le_antisymm (le_iInf fun i x hx y hy => hx _ <| mem_iUnion_of_mem _ hy) ?_
-  intro x hx y hy
-  rw [ConvexCone.mem_iInf] at hx
-  obtain ⟨j, hj⟩ := mem_iUnion.mp hy
-  exact hx _ _ hj
+theorem innerDual_iUnion {ι : Sort*} (f : ι → Set H) :
+    innerDual (⋃ i, f i) = ⨅ i, innerDual (f i) := by
+  ext; simp [forall_swap (α := H)]
 
-theorem innerDualCone_sUnion (S : Set (Set H)) :
-    (⋃₀ S).innerDualCone = sInf (Set.innerDualCone '' S) := by
-  simp_rw [sInf_image, sUnion_eq_biUnion, innerDualCone_iUnion]
+theorem innerDual_sUnion (S : Set (Set H)) : innerDual (⋃₀ S) = sInf (innerDual '' S) := by
+  ext; simp [forall_swap (α := H)]
 
 /-- The dual cone of `s` equals the intersection of dual cones of the points in `s`. -/
-theorem innerDualCone_eq_iInter_innerDualCone_singleton :
-    (s.innerDualCone : Set H) = ⋂ i : s, (({↑i} : Set H).innerDualCone : Set H) := by
-  rw [← ConvexCone.coe_iInf, ← innerDualCone_iUnion, iUnion_of_singleton_coe]
+theorem innerDual_eq_iInter_innerDual_singleton :
+    innerDual s = ⋂ i : s, (innerDual {i.val} : Set H) := by
+  ext; simp [forall_swap (α := H)]
 
-theorem isClosed_innerDualCone : IsClosed (s.innerDualCone : Set H) := by
+theorem isClosed_innerDual : IsClosed (innerDual s : Set H) := by
   -- reduce the problem to showing that dual cone of a singleton `{x}` is closed
-  rw [innerDualCone_eq_iInter_innerDualCone_singleton]
+  rw [innerDual_eq_iInter_innerDual_singleton]
   apply isClosed_iInter
   intro x
   -- the dual cone of a singleton `{x}` is the preimage of `[0, ∞)` under `inner x`
-  have h : ({↑x} : Set H).innerDualCone = (inner x : H → ℝ) ⁻¹' Set.Ici 0 := by
-    rw [innerDualCone_singleton, ConvexCone.coe_comap, ConvexCone.coe_positive, innerₛₗ_apply_coe]
+  have h : innerDual ({↑x} : Set H) = (inner x : H → ℝ) ⁻¹' Set.Ici 0 := by
+    rw [innerDual_singleton, ConvexCone.coe_comap, ConvexCone.coe_positive, innerₛₗ_apply_coe]
   -- the preimage is closed as `inner x` is continuous and `[0, ∞)` is closed
   rw [h]
   exact isClosed_Ici.preimage (continuous_const.inner continuous_id')
@@ -180,12 +160,12 @@ theorem ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_nmem (K : Co
       _ = ⟪b - z, b⟫_ℝ := by rw [sub_add_cancel]
 
 /-- The inner dual of inner dual of a non-empty, closed convex cone is itself. -/
-theorem ConvexCone.innerDualCone_of_innerDualCone_eq_self (K : ConvexCone ℝ H)
+theorem ConvexCone.innerDual_of_innerDual_eq_self (K : ConvexCone ℝ H)
     (ne : (K : Set H).Nonempty) (hc : IsClosed (K : Set H)) :
-    ((K : Set H).innerDualCone : Set H).innerDualCone = K := by
+    ((K : Set H).innerDual : Set H).innerDual = K := by
   ext x
   constructor
-  · rw [mem_innerDualCone, ← SetLike.mem_coe]
+  · rw [mem_innerDual, ← SetLike.mem_coe]
     contrapose!
     exact K.hyperplane_separation_of_nonempty_of_isClosed_of_nmem ne hc
   · rintro hxK y h
@@ -193,5 +173,23 @@ theorem ConvexCone.innerDualCone_of_innerDualCone_eq_self (K : ConvexCone ℝ H)
     rwa [real_inner_comm]
 
 end CompleteSpace
+
+end Dual
+
+
+variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+
+/-- The inner dual cone of a pointed cone is a pointed cone. -/
+def dual (S : PointedCone ℝ E) : PointedCone ℝ E :=
+  ((S : Set E).innerDual).toPointedCone <| pointed_innerDual (S : Set E)
+
+@[simp, norm_cast]
+theorem toConvexCone_dual (S : PointedCone ℝ E) : ↑(dual S) = (S : Set E).innerDual :=
+  rfl
+
+open scoped InnerProductSpace in
+@[simp]
+theorem mem_dual {S : PointedCone ℝ E} {y : E} : y ∈ dual S ↔ ∀ ⦃x⦄, x ∈ S → 0 ≤ ⟪x, y⟫_ℝ := by
+  rfl
 
 end Dual
