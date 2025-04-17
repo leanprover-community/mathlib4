@@ -370,12 +370,7 @@ open Submodule LinearMap
 variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
 
 @[simp]
-theorem dualCoannihilator_top (W : Subspace K V) :
-    (⊤ : Subspace K (Module.Dual K W)).dualCoannihilator = ⊥ := by
-  rw [dualCoannihilator, dualAnnihilator_top, comap_bot, Module.eval_ker]
-
-@[simp]
-theorem dualCoannihilator_top' : (⊤ : Submodule K (Module.Dual K V)).dualCoannihilator = ⊥ := by
+theorem dualCoannihilator_top : (⊤ : Submodule K (Module.Dual K V)).dualCoannihilator = ⊥ := by
   rw [dualCoannihilator, dualAnnihilator_top, comap_bot, Module.eval_ker]
 
 @[simp]
