@@ -596,7 +596,7 @@ lemma dvd_comp_X_add_C_iff (p q : R[X]) (a : R) :
 
 lemma dvd_comp_neg_X_iff (p q : R[X]) : p ∣ q.comp (-X) ↔ p.comp (-X) ∣ q := by
   let _ := invertibleOne (α := R)
-  let _ := invertibleNeg (α := R) 1
+  let _ := invertibleNeg (R := R) 1
   simpa using dvd_comp_C_mul_X_add_C_iff p q (-1) 0
 
 variable [IsDomain R]

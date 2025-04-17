@@ -34,6 +34,10 @@ and the fact that power series over a local ring form a local ring;
 and application to the fact that power series over an integral domain
 form an integral domain.
 
+##  Instance
+
+If `R` has `NoZeroDivisors`, then so does `R⟦X⟧`.
+
 ## Implementation notes
 
 Because of its definition,
@@ -211,6 +215,15 @@ def X : R⟦X⟧ :=
 theorem commute_X (φ : R⟦X⟧) : Commute φ X :=
   MvPowerSeries.commute_X _ _
 
+theorem X_mul {φ : R⟦X⟧} : X * φ = φ * X :=
+  MvPowerSeries.X_mul
+
+theorem commute_X_pow (φ : R⟦X⟧) (n : ℕ) : Commute φ (X ^ n) :=
+  MvPowerSeries.commute_X_pow _ _ _
+
+theorem X_pow_mul {φ : R⟦X⟧} {n : ℕ} : X ^ n * φ = φ * X ^ n :=
+  MvPowerSeries.X_pow_mul
+
 @[simp]
 theorem coeff_zero_eq_constantCoeff : ⇑(coeff R 0) = constantCoeff R := by
   rw [coeff, Finsupp.single_zero]
@@ -326,6 +339,28 @@ theorem coeff_succ_X_mul (n : ℕ) (φ : R⟦X⟧) : coeff R (n + 1) (X * φ) = 
   convert φ.coeff_add_monomial_mul (single () 1) (single () n) _
   rw [one_mul]
 
+theorem mul_X_cancel {φ ψ : R⟦X⟧} (h : φ * X = ψ * X) : φ = ψ := by
+  rw [PowerSeries.ext_iff] at h ⊢
+  intro n
+  simpa using h (n + 1)
+
+theorem mul_X_injective : Function.Injective (· * X : R⟦X⟧ → R⟦X⟧) :=
+  fun _ _ ↦ mul_X_cancel
+
+theorem mul_X_inj {φ ψ : R⟦X⟧} : φ * X = ψ * X ↔ φ = ψ :=
+  mul_X_injective.eq_iff
+
+theorem X_mul_cancel {φ ψ : R⟦X⟧} (h : X * φ = X * ψ) : φ = ψ := by
+  rw [PowerSeries.ext_iff] at h ⊢
+  intro n
+  simpa using h (n + 1)
+
+theorem X_mul_injective : Function.Injective (X * · : R⟦X⟧ → R⟦X⟧) :=
+  fun _ _ ↦ X_mul_cancel
+
+theorem X_mul_inj {φ ψ : R⟦X⟧} : X * φ = X * ψ ↔ φ = ψ :=
+  X_mul_injective.eq_iff
+
 @[simp]
 theorem constantCoeff_C (a : R) : constantCoeff R (C R a) = a :=
   rfl
@@ -390,6 +425,32 @@ theorem coeff_X_pow_mul (p : R⟦X⟧) (n d : ℕ) :
     rfl
   · rw [add_comm]
     exact fun h1 => (h1 (mem_antidiagonal.2 rfl)).elim
+
+theorem mul_X_pow_cancel {k : ℕ} {φ ψ : R⟦X⟧} (h : φ * X ^ k = ψ * X ^ k) :
+    φ = ψ := by
+  rw [PowerSeries.ext_iff] at h ⊢
+  intro n
+  simpa using h (n + k)
+
+theorem mul_X_pow_injective {k : ℕ} : Function.Injective (· * X ^ k : R⟦X⟧ → R⟦X⟧) :=
+  fun _ _ ↦ mul_X_pow_cancel
+
+theorem mul_X_pow_inj {k : ℕ} {φ ψ : R⟦X⟧} :
+    φ * X ^ k = ψ * X ^ k ↔ φ = ψ :=
+  mul_X_pow_injective.eq_iff
+
+theorem X_pow_mul_cancel {k : ℕ} {φ ψ : R⟦X⟧} (h : X ^ k * φ = X ^ k * ψ) :
+    φ = ψ := by
+  rw [PowerSeries.ext_iff] at h ⊢
+  intro n
+  simpa using h (n + k)
+
+theorem X_pow_mul_injective {k : ℕ} : Function.Injective (X ^ k * · : R⟦X⟧ → R⟦X⟧) :=
+  fun _ _ ↦ X_pow_mul_cancel
+
+theorem X_pow_mul_inj {k : ℕ} {φ ψ : R⟦X⟧} :
+    X ^ k * φ = X ^ k * ψ ↔ φ = ψ :=
+  X_pow_mul_injective.eq_iff
 
 theorem coeff_mul_X_pow' (p : R⟦X⟧) (n d : ℕ) :
     coeff R d (p * X ^ n) = ite (n ≤ d) (coeff R (d - n) p) 0 := by
@@ -501,6 +562,32 @@ theorem X_dvd_iff {φ : R⟦X⟧} : (X : R⟦X⟧) ∣ φ ↔ constantCoeff R φ
   · exact h 0 zero_lt_one
   · intro m hm
     rwa [Nat.eq_zero_of_le_zero (Nat.le_of_succ_le_succ hm)]
+
+instance [NoZeroDivisors R] : NoZeroDivisors R⟦X⟧ where
+  eq_zero_or_eq_zero_of_mul_eq_zero {φ ψ} h := by
+    classical
+    rw [or_iff_not_imp_left]
+    intro H
+    have ex : ∃ m, coeff R m φ ≠ 0 := by
+      contrapose! H
+      exact ext H
+    let m := Nat.find ex
+    ext n
+    rw [(coeff R n).map_zero]
+    induction' n using Nat.strong_induction_on with n ih
+    replace h := congr_arg (coeff R (m + n)) h
+    rw [LinearMap.map_zero, coeff_mul, Finset.sum_eq_single (m, n)] at h
+    · simp only [mul_eq_zero] at h
+      exact Or.resolve_left h (Nat.find_spec ex)
+    · rintro ⟨i, j⟩ hij hne
+      rw [mem_antidiagonal] at hij
+      rcases trichotomy_of_add_eq_add hij with h_eq | hi_lt | hj_lt
+      · apply False.elim (hne ?_)
+        simpa using h_eq
+      · suffices coeff R i φ = 0 by rw [this, zero_mul]
+        by_contra h; exact Nat.find_min ex hi_lt h
+      · rw [ih j hj_lt, mul_zero]
+    · simp
 
 end Semiring
 
@@ -677,58 +764,10 @@ theorem evalNegHom_X : evalNegHom (X : A⟦X⟧) = -X :=
 
 end CommRing
 
-section Domain
-
-variable [Ring R]
-
-theorem eq_zero_or_eq_zero_of_mul_eq_zero [NoZeroDivisors R] (φ ψ : R⟦X⟧) (h : φ * ψ = 0) :
-    φ = 0 ∨ ψ = 0 := by
-  classical
-  rw [or_iff_not_imp_left]
-  intro H
-  have ex : ∃ m, coeff R m φ ≠ 0 := by
-    contrapose! H
-    exact ext H
-  let m := Nat.find ex
-  have hm₁ : coeff R m φ ≠ 0 := Nat.find_spec ex
-  have hm₂ : ∀ k < m, ¬coeff R k φ ≠ 0 := fun k => Nat.find_min ex
-  ext n
-  rw [(coeff R n).map_zero]
-  induction' n using Nat.strong_induction_on with n ih
-  replace h := congr_arg (coeff R (m + n)) h
-  rw [LinearMap.map_zero, coeff_mul, Finset.sum_eq_single (m, n)] at h
-  · replace h := NoZeroDivisors.eq_zero_or_eq_zero_of_mul_eq_zero h
-    rw [or_iff_not_imp_left] at h
-    exact h hm₁
-  · rintro ⟨i, j⟩ hij hne
-    by_cases hj : j < n
-    · rw [ih j hj, mul_zero]
-    by_cases hi : i < m
-    · specialize hm₂ _ hi
-      push_neg at hm₂
-      rw [hm₂, zero_mul]
-    rw [mem_antidiagonal] at hij
-    push_neg at hi hj
-    suffices m < i by
-      have : m + n < i + j := add_lt_add_of_lt_of_le this hj
-      exfalso
-      exact ne_of_lt this hij.symm
-    contrapose! hne
-    obtain rfl := le_antisymm hi hne
-    simpa [Ne, Prod.mk_inj] using (add_right_inj m).mp hij
-  · contrapose!
-    intro
-    rw [mem_antidiagonal]
-
-instance [NoZeroDivisors R] : NoZeroDivisors R⟦X⟧ where
-  eq_zero_or_eq_zero_of_mul_eq_zero := eq_zero_or_eq_zero_of_mul_eq_zero _ _
-
-instance [IsDomain R] : IsDomain R⟦X⟧ :=
-  NoZeroDivisors.to_isDomain _
-
-end Domain
-
 section IsDomain
+
+instance [Ring R] [IsDomain R] : IsDomain R⟦X⟧ :=
+  NoZeroDivisors.to_isDomain _
 
 variable [CommRing R] [IsDomain R]
 

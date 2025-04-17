@@ -41,7 +41,7 @@ theorem isLocalHom_of_comp (f : R →+* S) (g : S →+* T) [IsLocalHom (g.comp f
   ⟨fun _ ha => (isUnit_map_iff (g.comp f) _).mp (g.isUnit_map ha)⟩
 
 /-- If `f : R →+* S` is a local ring hom, then `R` is a local ring if `S` is. -/
-theorem RingHom.domain_isLocalRing {R S : Type*} [CommSemiring R] [CommSemiring S] [IsLocalRing S]
+theorem RingHom.domain_isLocalRing {R S : Type*} [Semiring R] [CommSemiring S] [IsLocalRing S]
     (f : R →+* S) [IsLocalHom f] : IsLocalRing R := by
   haveI : Nontrivial R := f.domain_nontrivial
   apply IsLocalRing.of_nonunits_add
@@ -93,7 +93,7 @@ theorem local_hom_TFAE (f : R →+* S) :
 
 end
 
-theorem of_surjective [CommSemiring R] [IsLocalRing R] [CommSemiring S] [Nontrivial S] (f : R →+* S)
+theorem of_surjective [CommSemiring R] [IsLocalRing R] [Semiring S] [Nontrivial S] (f : R →+* S)
     [IsLocalHom f] (hf : Function.Surjective f) : IsLocalRing S :=
   of_isUnit_or_isUnit_of_isUnit_add (by
     intro a b hab
@@ -141,7 +141,7 @@ alias LocalRing.surjective_units_map_of_local_ringHom :=
 
 namespace RingEquiv
 
-protected theorem isLocalRing {A B : Type*} [CommSemiring A] [IsLocalRing A] [CommSemiring B]
+protected theorem isLocalRing {A B : Type*} [CommSemiring A] [IsLocalRing A] [Semiring B]
     (e : A ≃+* B) : IsLocalRing B :=
   haveI := e.symm.toEquiv.nontrivial
   IsLocalRing.of_surjective (e : A →+* B) e.surjective
