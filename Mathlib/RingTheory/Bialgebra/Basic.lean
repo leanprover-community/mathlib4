@@ -192,13 +192,11 @@ end Bialgebra
 
 namespace Bialgebra
 
-variable (R : Type u) (A : Type v)
-variable [CommSemiring R] [Semiring A] [Bialgebra R A] [Nontrivial R]
-
 /--
 A bialgebra over a nontrivial ring is nontrivial.
 -/
-def nontrivial : Nontrivial A where
+lemma nontrivial (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Bialgebra R A]
+    [Nontrivial R] : Nontrivial A where
   exists_pair_ne := by
     refine ⟨0, 1, fun eq ↦ ?_⟩
     apply_fun Coalgebra.counit (R := R) (A := A) at eq
