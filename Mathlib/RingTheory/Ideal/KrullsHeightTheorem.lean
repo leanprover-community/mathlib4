@@ -36,7 +36,7 @@ In this file, we proved Krull's principal ideal theorem and Krull's height theor
 variable {R : Type*} [CommRing R] [IsNoetherianRing R]
 
 lemma Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes_of_isLocalRing
-    [IsLocalRing R] (I : Ideal R) (hI : I.IsPrincipal)
+    [IsLocalRing R] (I : Ideal R) [I.IsPrincipal]
     (hp : (IsLocalRing.maximalIdeal R) ∈ I.minimalPrimes) :
     (IsLocalRing.maximalIdeal R).height ≤ 1 := by
   rw [← ENat.coe_one, Ideal.height_le_iff]
