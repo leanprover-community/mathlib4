@@ -646,9 +646,17 @@ lemma rootSpan_dualAnnihilator_map_eq_iInf_ker_root' :
       simp
   exact LinearEquiv.symm_apply_apply P.toDualRight x
 
+lemma corootSpan_dualAnnihilator_map_eq_iInf_ker_coroot' :
+    P.corootSpan.dualAnnihilator.map P.toDualLeft.symm = ⨅ i, LinearMap.ker (P.coroot' i) :=
+  P.flip.rootSpan_dualAnnihilator_map_eq_iInf_ker_root'
+
 lemma iInf_ker_root'_eq :
     ⨅ i, LinearMap.ker (P.root' i) = (span R (range P.root')).dualCoannihilator := by
   rw [← rootSpan_dualAnnihilator_map_eq, rootSpan_dualAnnihilator_map_eq_iInf_ker_root']
+
+lemma iInf_ker_coroot'_eq :
+    ⨅ i, LinearMap.ker (P.coroot' i) = (span R (range P.coroot')).dualCoannihilator :=
+  P.flip.iInf_ker_root'_eq
 
 lemma mem_range_root_of_mem_range_reflection_of_mem_range_root
     {r : M ≃ₗ[R] M} {α : M} (hr : r ∈ range P.reflection) (hα : α ∈ range P.root) :
