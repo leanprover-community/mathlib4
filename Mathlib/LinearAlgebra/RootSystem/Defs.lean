@@ -595,6 +595,41 @@ lemma coe_rootSpan_dualAnnihilator_map :
   rw [← Equiv.setOf_apply_symm_eq_image_setOf, Equiv.symm_symm]
   simp [Set.range_subset_iff]
 
+lemma rootSpan_dualAnnihilator_map_eq_iInf_ker_root' :
+    P.rootSpan.dualAnnihilator.map P.toDualRight.symm = ⨅ i, LinearMap.ker (P.root' i) := by
+  ext x
+  constructor
+  · intro a
+    simp_all
+    intro i
+    obtain ⟨a1, a2, a3⟩ := a
+    rw [← a3]
+    simp
+    have := a2 (P.root i)
+    have : P.root i ∈ P.rootSpan := Submodule.subset_span (mem_range_self i)
+    exact a2 (P.root i) this
+  intro a
+  simp_all
+  use (P.toDualRight x)
+  constructor
+  · simp
+    rw [rootSpan]
+    intro w w1
+    refine Submodule.span_induction ?_ ?_ ?_ ?_ w1
+    · simp
+      intro aa
+      exact a aa
+    · simp
+    · intro a b c d e f
+      simp
+      rw [e, f]
+      simp
+    · intro a b c d
+      simp
+      rw [d]
+      simp
+  exact LinearEquiv.symm_apply_apply P.toDualRight x
+
 lemma coe_corootSpan_dualAnnihilator_map :
     P.corootSpan.dualAnnihilator.map P.toDualLeft.symm = {x | ∀ i, P.coroot' i x = 0} :=
   P.flip.coe_rootSpan_dualAnnihilator_map
