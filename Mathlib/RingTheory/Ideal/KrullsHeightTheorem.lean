@@ -65,7 +65,7 @@ lemma Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes_of_isLocalRing
     { toFun n := ((q.map f ^ n).comap f).map (Ideal.Quotient.mk I)
       monotone' i j e := Ideal.map_mono (Ideal.comap_mono (Ideal.pow_le_pow_right e)) }
   obtain ⟨n, hn⟩ := IsArtinian.monotone_stabilizes qs
-  refine ⟨n, (?_ : q.map f ^ n = 0)⟩
+  refine ⟨n, ?_⟩
   apply Submodule.eq_bot_of_le_smul_of_le_jacobson_bot (q.map f) _ (IsNoetherian.noetherian _)
   rotate_left
   · rw [IsLocalRing.jacobson_eq_maximalIdeal, Localization.AtPrime.map_eq_maximalIdeal]
