@@ -63,10 +63,9 @@ theorem cycleRange_of_le'' {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h : k > j)
 theorem cycleRange_of {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h1 : i <= k) (h2 : k <= j) [NeZero n]:
     (cycleRange' i j hij) k = if k = j then i else k + 1 := by
   have kin : k ∈ Set.range ⇑(natAdd_castLEEmb n (cycleRange'._proof_4 i)) := by simp; omega
-  simp only [cycleRange',
+  simp [cycleRange',
     Perm.extendDomain_apply_subtype ((j - i).castLT (cycleRange'._proof_3 i j hij)).cycleRange
-      (natAdd_castLEEmb n _).toEquivRange kin,
-    Function.Embedding.toEquivRange_apply, natAdd_castLEEmb_apply]
+      (natAdd_castLEEmb n _).toEquivRange kin]
   have : NeZero (n - i.1) := by
     refine NeZero.of_pos ?_
     omega
@@ -86,8 +85,8 @@ theorem cycleRange_of {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h1 : i <= k) (h
           ((j - i).castLT (cycleRange'._proof_3 i j hij)):= by
         simp [subNat]
         refine eq_of_val_eq ?_
-        simp [sub_val_of_le hij]
-      rw [cycleRange_of_eq (h), Fin.ext_iff]
+        rw [coe_castLT, sub_val_of_le hij]
+      rw [cycleRange_of_eq h, Fin.ext_iff]
       simp
     simp only [h3, natAdd_castLEEmb, this]
     refine eq_of_val_eq ?_
