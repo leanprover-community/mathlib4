@@ -47,6 +47,10 @@ theorem measureReal_eq_zero_iff (h : μ s ≠ ∞ := by finiteness) :
   rw [Measure.real, ENNReal.toReal_eq_zero_iff]
   exact or_iff_left h
 
+theorem measureReal_ne_zero_iff (h : μ s ≠ ∞ := by finiteness) :
+    μ.real s ≠ 0 ↔ μ s ≠ 0 := by
+  simp [measureReal_eq_zero_iff, h]
+
 @[simp] theorem measureReal_zero : (0 : Measure α).real = 0 := rfl
 
 theorem measureReal_zero_apply (s : Set α) : (0 : Measure α).real s = 0 := rfl
