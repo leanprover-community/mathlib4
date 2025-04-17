@@ -587,30 +587,6 @@ lemma corootSpan_mem_invtSubmodule_coreflection (i : ι) :
     P.corootSpan ∈ Module.End.invtSubmodule (P.coreflection i) :=
   P.flip.rootSpan_mem_invtSubmodule_reflection i
 
-lemma coe_rootSpan_dualAnnihilator_map :
-    P.rootSpan.dualAnnihilator.map P.toDualRight.symm = {x | ∀ i, P.root' i x = 0} := by
-  ext x
-  rw [rootSpan, Submodule.map_coe, Submodule.coe_dualAnnihilator_span]
-  change x ∈ P.toDualRight.toEquiv.symm '' _ ↔ _
-  rw [← Equiv.setOf_apply_symm_eq_image_setOf, Equiv.symm_symm]
-  simp [Set.range_subset_iff]
-
-lemma coe_corootSpan_dualAnnihilator_map :
-    P.corootSpan.dualAnnihilator.map P.toDualLeft.symm = {x | ∀ i, P.coroot' i x = 0} :=
-  P.flip.coe_rootSpan_dualAnnihilator_map
-
-lemma rootSpan_dualAnnihilator_map_eq :
-    P.rootSpan.dualAnnihilator.map P.toDualRight.symm =
-      (span R (range P.root')).dualCoannihilator := by
-  apply SetLike.coe_injective
-  rw [Submodule.coe_dualCoannihilator_span, coe_rootSpan_dualAnnihilator_map]
-  simp
-
-lemma corootSpan_dualAnnihilator_map_eq :
-    P.corootSpan.dualAnnihilator.map P.toDualLeft.symm =
-      (span R (range P.coroot')).dualCoannihilator :=
-  P.flip.rootSpan_dualAnnihilator_map_eq
-
 lemma rootSpan_dualAnnihilator_map_eq_iInf_ker_root' :
     P.rootSpan.dualAnnihilator.map P.toDualRight.symm = ⨅ i, LinearMap.ker (P.root' i) := by
   ext x
@@ -641,6 +617,20 @@ lemma rootSpan_dualAnnihilator_map_eq_iInf_ker_root' :
 lemma corootSpan_dualAnnihilator_map_eq_iInf_ker_coroot' :
     P.corootSpan.dualAnnihilator.map P.toDualLeft.symm = ⨅ i, LinearMap.ker (P.coroot' i) :=
   P.flip.rootSpan_dualAnnihilator_map_eq_iInf_ker_root'
+
+lemma rootSpan_dualAnnihilator_map_eq :
+    P.rootSpan.dualAnnihilator.map P.toDualRight.symm =
+      (span R (range P.root')).dualCoannihilator := by
+  apply SetLike.coe_injective
+  rw [Submodule.coe_dualCoannihilator_span, P.rootSpan_dualAnnihilator_map_eq_iInf_ker_root']
+  ext x
+  simp only [Submodule.iInf_coe, mem_iInter, SetLike.mem_coe, LinearMap.mem_ker, mem_range,
+    forall_exists_index, forall_apply_eq_imp_iff, mem_setOf_eq]
+
+lemma corootSpan_dualAnnihilator_map_eq :
+    P.corootSpan.dualAnnihilator.map P.toDualLeft.symm =
+      (span R (range P.coroot')).dualCoannihilator :=
+  P.flip.rootSpan_dualAnnihilator_map_eq
 
 lemma iInf_ker_root'_eq :
     ⨅ i, LinearMap.ker (P.root' i) = (span R (range P.root')).dualCoannihilator := by
