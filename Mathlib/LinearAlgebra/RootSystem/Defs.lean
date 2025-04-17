@@ -682,21 +682,25 @@ lemma _root_.RootSystem.reflection_perm_eq_reflection_perm_iff (P : RootSystem �
   ext x
   exact (P.reflection_perm_eq_reflection_perm_iff_of_span i j).mp h x <| by simp
 
-lemma span_coroot_eq_top' (P : RootSystem ι R M N) : span R (range P.coroot') = ⊤ := by
-  have key (d : Module.Dual R M) :
-      d ∈ span R (range fun i ↦ P.flip.toDualLeft (P.flip.root i)) := by
-    simp only [PerfectPairing.toDualLeft_apply]
-    rw [range_comp' P.flip.toPerfectPairing P.flip.root]
-    have h₁ := Submodule.apply_mem_span_image_iff_mem_span (s := (range fun i ↦ (P.flip.root i)))
-      (x := (P.flip.toDualLeft.invFun d)) P.flip.toDualLeft.injective
-    have h₂: P.flip.toDualLeft.symm d ∈ span R (range fun i ↦ (P.flip.root i)) := by
-      simp only [Submodule.mem_top, RootSystem.span_root_eq_top]
-    have h₃ : P.flip.toDualLeft (P.flip.toDualLeft.invFun d) = d := by
-      exact (LinearEquiv.eq_symm_apply P.flip.toDualLeft).mp rfl
-    have := h₁.mpr h₂
-    rw [h₃] at this
-    exact this
-  exact Submodule.eq_top_iff'.mpr key
+@[simp] lemma toDualLeft_comp_root : P.toDualLeft ∘ P.root = P.root' := rfl
+
+@[simp] lemma toDualRight_comp_root : P.toDualRight ∘ P.coroot = P.coroot' := rfl
+
+@[simp] lemma rootSpan_map_toDualLeft :
+    P.rootSpan.map P.toDualLeft = span R (range P.root') := by
+  rw [rootSpan, Submodule.map_span, ← image_univ, ← image_comp, image_univ, toDualLeft_comp_root]
+
+@[simp] lemma corootSpan_map_toDualRight :
+    P.corootSpan.map P.toDualRight = span R (range P.coroot') :=
+  P.flip.rootSpan_map_toDualLeft
+
+@[simp] lemma span_root'_eq_top (P : RootSystem ι R M N) :
+    span R (range P.root') = ⊤ := by
+  simp [← rootSpan_map_toDualLeft]
+
+@[simp] lemma span_coroot'_eq_top (P : RootSystem ι R M N) :
+    span R (range P.coroot') = ⊤ :=
+  span_root'_eq_top P.flip
 
 lemma dual_vanish_aux (P : RootSystem ι R M N) (v : M)
     (h₁ : ∀ (i : ι), v ∈ LinearMap.ker (P.coroot' i)) (d : Module.Dual R M) : d v = 0 := by
