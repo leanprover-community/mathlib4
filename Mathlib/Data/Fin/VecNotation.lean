@@ -263,6 +263,7 @@ where
       loop (i + 1) h q(vecCons $(elems (Fin.rev ⟨i, h⟩)) $rest)
     else
       rest
+attribute [nolint docBlame] Qq.mkVecLiteralQ.loop
 
 open Lean Qq in
 protected instance _root_.PiFin.toExpr [ToLevel.{u}] [ToExpr α] (n : ℕ) : ToExpr (Fin n → α) :=
