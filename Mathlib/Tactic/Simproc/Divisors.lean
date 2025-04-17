@@ -1,15 +1,27 @@
+/-
+Copyright (c) 2025 Paul Lezeau. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Paul Lezeau, Bhavik Mehta
+-/
 import Mathlib.NumberTheory.Divisors
-import Mathlib.Lean.ToExpr
+import Mathlib.Util.Qq
 import Mathlib.Data.Finset.Sort
-import Lean
 
-open Lean Meta
+/-! # Divisor Simprocs
+
+This file implements simprocs to compute various objects related to divisors:
+- `Nat.divisorsEq`: computes `Nat.divisors n` for explicit values of `n`
+- `Nat.properDivisorsEq`: computes `Nat.properDivisors n` for explicit values of `n`
+
+-/
+
+open Lean Meta Qq
 
 simproc_decl Nat.divisorsEq (Nat.divisors _) := fun e => do
   unless e.isAppOfArity `Nat.divisors 1 do return .continue
   let some n ← fromExpr? e.appArg! | return .continue
-  --TODO: do we want to define `Nat.divisorsList` and use this instead of `n.divisors.sort (· ≤ ·)`?
-  let rhs ← (n.divisors.sort (· ≤ ·)).toFinsetExpr (α := ℕ)
+  let rhsListQ : List Q(ℕ) := (n.divisors.sort (· ≤ ·)).map fun n => (Lean.toExpr n : Q(ℕ))
+  let rhs := mkSetLiteralQ q(Finset ℕ) rhsListQ
   /- The last two lines can be replace by `return .done {expr := rhs }` since the proof is `rfl`.
   Not sure what's best here. -/
   let pf ← Meta.mkDecideProof (← mkEq e rhs)
@@ -19,9 +31,10 @@ simproc_decl Nat.divisorsEq (Nat.divisors _) := fun e => do
 simproc_decl Nat.properDivisorsEq (Nat.properDivisors _) := fun e => do
   unless e.isAppOfArity `Nat.properDivisors 1 do return .continue
   let some n ← fromExpr? e.appArg! | return .continue
-  let rhs ← (n.properDivisors.sort (· ≤ ·)).toFinsetExpr (α := ℕ)
+  let rhsListQ : List Q(ℕ) := (n.properDivisors.sort (· ≤ ·)).map fun n => (Lean.toExpr n : Q(ℕ))
+  let rhs := mkSetLiteralQ q(Finset ℕ) rhsListQ
   /- The last two lines can be replace by `return .done {expr := rhs }` since the proof is `rfl`.
-  Not sure what's best here.-/
+  Not sure what's best here. -/
   let pf ← Meta.mkDecideProof (← mkEq e rhs)
   return .done {expr := rhs, proof? := pf }
 
