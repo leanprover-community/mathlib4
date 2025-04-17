@@ -36,7 +36,9 @@ section DivisionRing
 variable [DivisionRing K] [AddCommGroup V] [Module K V]
 
 /-- The dimension of a strict submodule is strictly bounded by the dimension of the ambient
-space. -/
+space.
+
+See also `Submodule.length_lt`. -/
 theorem finrank_lt [FiniteDimensional K V] {s : Submodule K V} (h : s < ⊤) :
     finrank K s < finrank K V := by
   rw [← s.finrank_quotient_add_finrank, add_comm]
