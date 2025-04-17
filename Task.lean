@@ -66,9 +66,7 @@ theorem cycleRange_of {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h1 : i <= k) (h
   simp [cycleRange',
     Perm.extendDomain_apply_subtype ((j - i).castLT (cycleRange'._proof_3 i j hij)).cycleRange
       (natAdd_castLEEmb n _).toEquivRange kin]
-  have : NeZero (n - i.1) := by
-    refine NeZero.of_pos ?_
-    omega
+  have : NeZero (n - i.1) := NeZero.of_pos (by omega)
   by_cases h3 : k = j
   · rw [h3] at kin
     have : (((j - i).castLT (cycleRange'._proof_3 i j hij)).cycleRange
@@ -80,21 +78,18 @@ theorem cycleRange_of {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h1 : i <= k) (h
         refine eq_of_val_eq ?_
         simp
         omega
-      rw [this]
       have h : (subNat (n := n - i) (i.1) (Fin.cast (by omega) j) (by simp[hij])) =
           ((j - i).castLT (cycleRange'._proof_3 i j hij)):= by
-        simp [subNat]
         refine eq_of_val_eq ?_
-        rw [coe_castLT, sub_val_of_le hij]
-      rw [cycleRange_of_eq h, Fin.ext_iff]
-      simp
+        simp [subNat, coe_castLT, sub_val_of_le hij]
+      simp [this, cycleRange_of_eq h, Fin.ext_iff]
     simp only [h3, natAdd_castLEEmb, this]
     refine eq_of_val_eq ?_
     simp
     omega
   · have imp : (k + 1).1 = k.1 + 1 := by
-      simp [add_def]
-      refine Nat.mod_eq_of_lt ?_
+      simp only [add_def, val_one', Nat.add_mod_mod]
+      rw [Nat.mod_eq_of_lt]
       omega
     have : (((j - i).castLT (cycleRange'._proof_3 i j hij)).cycleRange
         (((addNatEmb (n - (n - i.1))).trans (finCongr _).toEmbedding).toEquivRange.symm ⟨k, kin⟩)) =
@@ -112,9 +107,7 @@ theorem cycleRange_of {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h1 : i <= k) (h
         omega
       have : (k.1 + 1) % n = k.1 + 1 := Nat.mod_eq_of_lt (by omega)
       simp [cycleRange_of_lt h]
-      simp [subNat, add_def, this]
-      have : k.1 + 1 - i.1 = k.1 - i.1 + 1:= by omega
-      rw [this]
+      simp [subNat, add_def, this, Nat.sub_add_comm h1]
       refine Nat.mod_eq_of_lt ?_
       omega
     simp only [natAdd_castLEEmb, this]
