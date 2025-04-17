@@ -434,8 +434,8 @@ lemma exists_mem_support_forall_mem_support_imp_eq (s : Finset V)
   obtain ⟨x, hxs, hx, h⟩ := p.exists_mem_support_mem_erase_mem_support_takeUntil_eq_empty s h
   use x, hxs, hx
   suffices {t ∈ s | t ∈ (p.takeUntil x hx).support} ⊆ {x} by simpa [Finset.subset_iff] using this
-  rwa [Finset.filter_erase, ← Finset.subset_empty, ← Finset.subset_insert_iff, insert_emptyc_eq]
-    at h
+  rwa [Finset.filter_erase, ← Finset.subset_empty, ← Finset.subset_insert_iff,
+    LawfulSingleton.insert_empty_eq] at h
 
 end Walk
 

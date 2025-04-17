@@ -367,7 +367,7 @@ lemma exists_length_eq_one_iff {u v : V} : (∃ (p : G.Walk u v), p.length = 1) 
   induction p with
   | nil => simp only [Walk.length_nil, zero_ne_one] at hp
   | cons h p' =>
-    simp only [Walk.length_cons, add_left_eq_self] at hp
+    simp only [Walk.length_cons, add_eq_right] at hp
     exact (p'.eq_of_length_eq_zero hp) ▸ h
 
 @[simp]
