@@ -8,4 +8,4 @@ import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
 import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
 import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
 
-deprecated_module (since "2025-04-13")
+deprecated_module (since := "2025-04-13")
