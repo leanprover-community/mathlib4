@@ -95,7 +95,7 @@ lemma Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes_of_isLocalRing
 /-- **Krull's Hauptidealsatz**: In a commutative Noetherian ring `R`,
   any prime ideal that is minimal over a principal ideal has height at most 1. -/
 lemma Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes
-    (I : Ideal R) (hI : I.IsPrincipal) (p : Ideal R) (hp : p ∈ I.minimalPrimes) : p.height ≤ 1 := by
+    (I : Ideal R) [I.IsPrincipal] (p : Ideal R) (hp : p ∈ I.minimalPrimes) : p.height ≤ 1 := by
   have := hp.1.1
   let f := algebraMap R (Localization.AtPrime p)
   have := Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes_of_isLocalRing
