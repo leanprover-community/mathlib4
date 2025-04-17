@@ -174,7 +174,7 @@ lemma Ideal.height_le_spanRank_toENat_of_mem_minimal_primes
       let I' := Ideal.span (Set.range y)
       let f := Ideal.Quotient.mk I'
       have hf : Function.Surjective f := Ideal.Quotient.mk_surjective
-      have hf' : ∀ z, f (y z) = 0 := fun z ↦ by
+      have hf' (z) : f (y z) = 0 := by
         rw [← RingHom.mem_ker, Ideal.mk_ker]
         exact Ideal.subset_span ⟨z, rfl⟩
       have hI'q : I' ≤ q := by
