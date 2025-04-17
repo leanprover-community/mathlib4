@@ -58,13 +58,13 @@ The proof is loosely based on the strategy given in [D. Marcus, *Number Fields*]
   in passing that `normLeOne K` is bounded.) For that we prove that
   `volume (interior (normLeOne K)) = volume (closure (normLeOne K))`, see
   `volume_interior_eq_volume_closure`. Since we now that the volume of `interior (normLeOne K)` is
-  finite since it is bounded by the volumeo of `normLeOne K`, the result follows, see
+  finite since it is bounded by the volume of `normLeOne K`, the result follows, see
   `volume_frontier_normLeOne`. We proceed in several steps.
 
   7.1. We prove first that
     `normAtAllPlaces⁻¹' (expMapBasis '' interior (paramSet K)) ⊆ interior (normLeOne K)`, see
     `subset_interior_normLeOne` (Note that here again we identify `realSpace K` with its image
-    in `mixedSpace K`). The main argument is that `expMapBasis` is partial homeomorphism
+    in `mixedSpace K`). The main argument is that `expMapBasis` is a partial homeomorphism
     and that `interior (paramSet K)` is a subset of its source, so its image by `expMapBasis`
     is still open.
 
@@ -721,7 +721,7 @@ open Pointwise
 open scoped Classical in
 /--
 A compact set that contains `expMapBasis '' closure (paramSet K)` and furthermore is almost
-equal to it, see `compactSet_eq_union`.
+equal to it, see `compactSet_ae`.
 -/
 abbrev compactSet : Set (realSpace K) :=
   (Set.Icc (0 : ℝ) 1) • (expMapBasis '' Set.univ.pi fun w ↦ if w = w₀ then {0} else Set.Icc 0 1)
