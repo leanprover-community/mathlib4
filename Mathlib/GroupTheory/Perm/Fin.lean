@@ -276,6 +276,10 @@ theorem cycleType_cycleRange {n : ℕ} [NeZero n] {i : Fin n} (h0 : i ≠ 0) :
 theorem isThreeCycle_cycleRange_two {n : ℕ} : IsThreeCycle (cycleRange 2 : Perm (Fin (n + 3))) := by
   rw [IsThreeCycle, cycleType_cycleRange] <;> simp [Fin.ext_iff]
 
+def task'' {n m: ℕ} (i : Fin n) (hmn : n ≤ m): Perm (Fin m) :=
+  -- have : Fin n ≃ Set.range (Fin.addNatEmb (n := n) m) := (Fin.addNatEmb m).toEquivRange
+  Equiv.Perm.extendDomain (Fin.cycleRange i) (natAdd_castLEEmb m hmn).toEquivRange
+
 end Fin
 
 end CycleRange

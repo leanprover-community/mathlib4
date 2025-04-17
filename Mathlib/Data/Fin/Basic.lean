@@ -800,6 +800,13 @@ theorem castSucc_pred_lt {a : Fin (n + 1)} (ha : a ≠ 0) :
 
 end Pred
 
+section natAdd_castLEEmb
+
+def natAdd_castLEEmb {n : ℕ} (m : ℕ) (hmn : n ≤ m): Fin n ↪ Fin (m) :=
+  (Fin.addNatEmb (m - n)).trans (finCongr (Nat.add_sub_of_le hmn)).toEmbedding
+
+end natAdd_castLEEmb
+
 section CastPred
 
 /-- `castPred i` sends `i : Fin (n + 1)` to `Fin n` as long as i ≠ last n. -/
