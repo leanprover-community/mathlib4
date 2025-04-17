@@ -202,12 +202,21 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Logic, `Mathlib.Lean),
   (`Mathlib.Logic, `Mathlib.Util),
   (`Mathlib.Logic, `Mathlib.Tactic),
-  (`Mathlib.Logic.Fin.Rotate, `Mathlib.Algebra.Group.Fin.Basic),
-  (`Mathlib.Logic.Hydra, `Mathlib.GroupTheory),
+  (`Mathlib.Logic, `Mathlib.Algebra.Notation),
+  (`Mathlib.Logic, `Mathlib.Algebra.NeZero),
   -- XXX: should this import be allowed only on a more fine-grained level (or at all)?
   (`Mathlib.Logic, `Mathlib.Data),
   -- XXX: should this import be allowed only on a more fine-grained level (or at all)?
   (`Mathlib.Logic, `Mathlib.Order),
+  -- Particular modules with larger imports.
+  (`Mathlib.Logic.Hydra, `Mathlib.GroupTheory),
+  (`Mathlib.Logic.Hydra, `Mathlib.Algebra),
+  (`Mathlib.Logic.Encodable.Pi, `Mathlib.Algebra),
+  (`Mathlib.Logic.Equiv.Fin.Rotate, `Mathlib.Algebra.Group),
+  (`Mathlib.Logic.Equiv.Array, `Mathlib.Algebra),
+  (`Mathlib.Logic.Equiv.Finset, `Mathlib.Algebra),
+  (`Mathlib.Logic.Godel.GodelBetaFunction, `Mathlib.Algebra),
+  (`Mathlib.Logic.Small.List, `Mathlib.Algebra),
 
   (`Mathlib.Testing, `Batteries),
   -- XXX: is this intended? just a single transitive import
