@@ -156,6 +156,7 @@ noncomputable def lift [Algebra k K] [Algebra.IsAlgebraic k K] (φ : k →+* ℂ
   letI := φ.toAlgebra
   exact (IsAlgClosed.lift (R := k)).toRingHom
 
+variable (K) in
 @[simp]
 theorem lift_comp_algebraMap [Algebra k K] [Algebra.IsAlgebraic k K] (φ : k →+* ℂ) :
     (lift K φ).comp (algebraMap k K) = φ := by

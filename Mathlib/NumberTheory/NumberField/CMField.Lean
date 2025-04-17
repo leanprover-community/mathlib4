@@ -43,13 +43,8 @@ instance isTotallyReal_maximalRealSubfield :
     IsTotallyReal (maximalRealSubfield K) where
   isReal w := by
     rw [InfinitePlace.isReal_iff, ComplexEmbedding.isReal_iff]
-    letI := w.embedding.toAlgebra
-    -- We provide some hints to Lean otherwise elaboration takes quite a long time
-    let φ : K →+* ℂ := (@IsAlgClosed.lift ℂ _ _ (maximalRealSubfield K) _ K _ _ _ _
-      NoZeroSMulDivisors.instOfFaithfulSMul NoZeroSMulDivisors.instOfFaithfulSMul).toRingHom
-    have hφ {x} : w.embedding x = φ x :=
-      (RingHom.congr_fun (AlgHom.comp_algebraMap_of_tower (maximalRealSubfield K)
-        IsAlgClosed.lift) x).symm
+    have hφ {x} : w.embedding x = lift K w.embedding x :=
+      (RingHom.congr_fun (lift_comp_algebraMap K w.embedding) x).symm
     ext x
     rw [RingHom.star_apply, hφ, x.prop]
 
