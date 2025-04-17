@@ -125,7 +125,7 @@ lemma Ideal.height_le_spanRank_toENat_of_mem_minimal_primes
         Ideal.primeHeight_eq_zero_iff, minimalPrimes]
       simp_all
     | succ n =>
-      rw [← @Localization.AtPrime.comap_maximalIdeal _ _ p,
+      rw [← Localization.AtPrime.comap_maximalIdeal (I := p),
         IsLocalization.height_comap p.primeCompl]
       rw [← Localization.AtPrime.comap_maximalIdeal (I := p), ← Set.mem_preimage,
         ← IsLocalization.minimalPrimes_map p.primeCompl, ← Ideal.span, Ideal.map_span] at hp
