@@ -56,6 +56,8 @@ noncomputable section
 
 variable {ι : Type*}
 
+open scoped Topology
+
 section hasIntegralVertices
 
 open Bornology
@@ -418,7 +420,7 @@ special case of `tendsto_card_div_pow` with `F = 1`. -/
 theorem _root_.tendsto_card_div_pow_atTop_volume (hs₁ : IsBounded s)
     (hs₂ : MeasurableSet s) (hs₃ : volume (frontier s) = 0) :
     Tendsto (fun n : ℕ ↦ (Nat.card ↑(s ∩ (n : ℝ)⁻¹ • L) : ℝ) / n ^ card ι)
-      atTop (nhds (volume s).toReal) := by
+      atTop (𝓝 (volume.real s)) := by
   convert tendsto_tsum_div_pow_atTop_integral s (fun _ ↦ 1) continuous_const hs₁ hs₂ hs₃
   · rw [tsum_const, nsmul_eq_mul, mul_one, Nat.cast_inj]
   · rw [setIntegral_const, smul_eq_mul, mul_one]
@@ -474,8 +476,8 @@ theorem _root_.tendsto_card_div_pow_atTop_volume' (hs₁ : IsBounded s)
     (hs₂ : MeasurableSet s) (hs₃ : volume (frontier s) = 0)
     (hs₄ : ∀ ⦃x y : ℝ⦄, 0 < x → x ≤ y → x • s ⊆ y • s) :
     Tendsto (fun x : ℝ ↦ (Nat.card ↑(s ∩ x⁻¹ • L) : ℝ) / x ^ card ι)
-      atTop (nhds (volume s).toReal) := by
-  rw [show (volume s).toReal = (volume s).toReal * 1 ^ card ι by ring]
+      atTop (𝓝 (volume.real s)) := by
+  rw [show volume.real s = volume.real s * 1 ^ card ι by ring]
   refine tendsto_of_tendsto_of_tendsto_of_le_of_le' ?_ ?_
     (tendsto_card_div_pow₃ s hs₁ hs₄) (tendsto_card_div_pow₄ s hs₁ hs₄)
   · refine Tendsto.congr' (tendsto_card_div_pow₅ s) (Tendsto.mul ?_ (Tendsto.pow ?_ _))

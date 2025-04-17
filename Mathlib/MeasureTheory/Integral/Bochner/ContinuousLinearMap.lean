@@ -227,7 +227,8 @@ theorem integral_withDensity_eq_integral_smul {f : X → ℝ≥0} (f_meas : Meas
   · intro c s s_meas hs
     rw [integral_indicator s_meas]
     simp_rw [← Set.indicator_smul_apply, integral_indicator s_meas]
-    simp only [s_meas, integral_const, measureReal_restrict_apply', Set.univ_inter, withDensity_apply]
+    simp only [s_meas, integral_const, Measure.restrict_apply', Set.univ_inter, withDensity_apply,
+      measureReal_def]
     rw [lintegral_coe_eq_integral, ENNReal.toReal_ofReal, ← integral_smul_const]
     · rfl
     · exact integral_nonneg fun x => NNReal.coe_nonneg _
