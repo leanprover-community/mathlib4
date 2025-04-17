@@ -308,10 +308,8 @@ instance [Lattice Y] [Zero Y] : Lattice (locallyFinsuppWithin U Y) where
 /--
 Functions with locally finite support within `U` form an ordered commutative group.
 -/
-instance [LinearOrderedAddCommGroup Y] :
-    OrderedAddCommGroup (locallyFinsuppWithin U Y) where
-  __ := inferInstanceAs (AddCommGroup (locallyFinsuppWithin U Y))
-  __ := inferInstanceAs (Lattice (locallyFinsuppWithin U Y))
+instance [AddCommGroup Y] [LinearOrder Y] [IsOrderedAddMonoid Y]:
+    IsOrderedAddMonoid (locallyFinsuppWithin U Y) where
   add_le_add_left := fun _ _ _ _ ↦ by simpa [le_def]
 
 /-!
