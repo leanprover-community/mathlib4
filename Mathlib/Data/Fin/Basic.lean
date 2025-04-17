@@ -802,8 +802,21 @@ end Pred
 
 section natAdd_castLEEmb
 
+/-- `Fin.natAdd_castLEEmb` as an `Embedding` from `Fin n` to `Fin m`, `natAdd_castLEEmb m hmn i`
+adds `m - n` to `i`, generalizes `addNatEmb`.
+-/
+@[simps apply]
 def natAdd_castLEEmb {n : ℕ} (m : ℕ) (hmn : n ≤ m): Fin n ↪ Fin (m) :=
-  (Fin.addNatEmb (m - n)).trans (finCongr (Nat.add_sub_of_le hmn)).toEmbedding
+  (addNatEmb (m - n)).trans (finCongr (by omega)).toEmbedding
+
+@[simp]
+lemma range_natAdd_castLEEmb {n : ℕ} (m : ℕ) (hmn : n ≤ m) :
+    Set.range (natAdd_castLEEmb m hmn) = {i | m - n ≤ i.1} := by
+  simp [natAdd_castLEEmb]
+  ext y
+  exact ⟨fun ⟨x, hx⟩ ↦ by simp [← hx]; omega,
+    fun xin ↦ ⟨subNat (m := m - n) (Fin.cast (Nat.add_sub_of_le hmn).symm y)
+    (Nat.sub_le_of_le_add xin), by simp⟩⟩
 
 end natAdd_castLEEmb
 
