@@ -1233,7 +1233,8 @@ lemma reachable_induce_supp {v w} {c : ConnectedComponent G} (hv : v ∈ c.supp)
   | @cons u v w h p ih =>
     have : v ∈ c.supp := (c.mem_supp_congr_adj h).mp hv
     obtain ⟨q⟩ := ih this hw
-    use q.cons h
+    have hadj : (G.induce c.supp).Adj ⟨u, hv⟩ ⟨v, this⟩ := h
+    use q.cons hadj
 
 lemma connected_induce_supp (c : ConnectedComponent G) : (G.induce c.supp).Connected := by
   rw [connected_iff_exists_forall_reachable]

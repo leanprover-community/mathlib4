@@ -438,26 +438,6 @@ lemma exists_mem_support_forall_mem_support_imp_eq (s : Finset V)
   rwa [Finset.filter_erase, ← Finset.subset_empty, ← Finset.subset_insert_iff, insert_emptyc_eq]
     at h
 
-lemma exists_mem_support_forall_not_adj_toSubgraph_takeUntil (s : Finset V)
-    (h : {x ∈ s | x ∈ p.support}.Nonempty) :
-    ∃ x ∈ s, ∃ (hx : x ∈ p.support),
-      ∀ t ∈ s, ∀ w ∈ s, ¬(p.takeUntil x hx).toSubgraph.Adj t w := by
-  obtain ⟨x, hxs, hx, h⟩ := p.exists_mem_support_forall_mem_support_imp_eq s h
-  use x, hxs, hx
-  intro t ht w hw h'
-  apply h'.ne
-  simp only [← mem_verts_toSubgraph] at h
-  rw [h t ht (Subgraph.edge_vert _ h'), h w hw (Subgraph.edge_vert _ h'.symm)]
-
-lemma exists_mem_support_forall_not_adj_toSubgraph_takeUntil' {s : Set V} (hs : s.Finite)
-    (h : {x ∈ s | x ∈ p.support}.Nonempty) :
-    ∃ x ∈ s, ∃ (hx : x ∈ p.support),
-      ∀ t ∈ s, ∀ w ∈ s, ¬(p.takeUntil x hx).toSubgraph.Adj t w := by
-  have : (filter (fun x ↦ x ∈ p.support) hs.toFinset).Nonempty := by
-    obtain ⟨x, hxs, hxp⟩ := h
-    use x, by simpa [hxs] using hxp
-  simpa using p.exists_mem_support_forall_not_adj_toSubgraph_takeUntil hs.toFinset this
-
 end Walk
 
 namespace Subgraph
