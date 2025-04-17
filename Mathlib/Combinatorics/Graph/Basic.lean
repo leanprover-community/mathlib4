@@ -81,7 +81,7 @@ structure Graph (α β : Type*) where
 
 namespace Graph
 
-variable {G H : Graph α β}
+variable {G : Graph α β}
 
 /-! ### Edge-vertex-vertex incidence -/
 
