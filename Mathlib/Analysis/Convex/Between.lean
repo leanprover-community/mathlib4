@@ -815,7 +815,7 @@ theorem AffineIndependent.not_wbtw {a b c : P} (hT : AffineIndependent R ![a, b,
   rw [affineIndependent_iff_not_collinear_set] at hT
   exact mt (·.collinear) hT
 
-theorem AffineIndependent.not_wbtw_of_inj {ι} (i j k : ι)
+theorem AffineIndependent.not_wbtw_of_injective {ι} (i j k : ι)
     (h : Function.Injective ![i, j, k]) {T : ι → P} (hT : AffineIndependent R T) :
     ¬ Wbtw R (T i) (T j) (T k) := by
   refine AffineIndependent.not_wbtw ?_
