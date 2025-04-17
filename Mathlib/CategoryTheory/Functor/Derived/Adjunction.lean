@@ -25,7 +25,7 @@ that `F' ⋙ G'` is the right derived functor of `F ⋙ L₁ ⋙ G'`).
 ## References
 
 * [Georges Maltsiniotis, *Le théorème de Quillen, d'adjonction des
-foncteurs dérivés, revisité de dérivabilité*][Maltsiniotis2007]
+foncteurs dérivés, revisité*][Maltsiniotis2007]
 
 -/
 
