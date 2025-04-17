@@ -615,15 +615,12 @@ lemma rootSpan_dualAnnihilator_map_eq_iInf_ker_root' :
     P.rootSpan.dualAnnihilator.map P.toDualRight.symm = ⨅ i, LinearMap.ker (P.root' i) := by
   ext x
   constructor
-  · intro a
-    simp_all
-    intro i
+  · simp only [Submodule.mem_iInf, LinearMap.mem_ker, PerfectPairing.apply_apply_toDualRight_symm]
+    intro a i
+    simp only [Submodule.mem_map, Submodule.mem_dualAnnihilator] at a
     obtain ⟨a1, a2, a3⟩ := a
-    rw [← a3]
-    simp
-    have := a2 (P.root i)
-    have : P.root i ∈ P.rootSpan := Submodule.subset_span (mem_range_self i)
-    exact a2 (P.root i) this
+    rw [← a3, PerfectPairing.apply_apply_toDualRight_symm]
+    exact a2 (P.root i) (Submodule.subset_span (mem_range_self i))
   intro a
   simp_all
   use (P.toDualRight x)
