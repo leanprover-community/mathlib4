@@ -192,14 +192,17 @@ end Bialgebra
 
 namespace Bialgebra
 
+variable (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Bialgebra R A]
+
+lemma algebraMap_injective : Function.Injective (algebraMap R A) :=
+  fun a b eq  ↦ by rw [← counit_algebraMap (A := A) a, ← counit_algebraMap (A := A) b, eq]
+
+include R in
 /--
 A bialgebra over a nontrivial ring is nontrivial.
 -/
-lemma nontrivial (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Bialgebra R A]
-    [Nontrivial R] : Nontrivial A where
-  exists_pair_ne := by
-    refine ⟨0, 1, fun eq ↦ ?_⟩
-    apply_fun Coalgebra.counit (R := R) (A := A) at eq
-    simp only [map_zero, counit_one, zero_ne_one] at eq
+lemma nontrivial [Nontrivial R] : Nontrivial A :=
+  Set.nontrivial_of_nontrivial (s := (algebraMap R A) '' ⊤) ((Set.image_nontrivial
+  (algebraMap_injective R A)).mpr Set.nontrivial_univ)
 
 end Bialgebra
