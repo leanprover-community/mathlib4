@@ -157,7 +157,7 @@ lemma Ideal.height_le_spanRank_toENat_of_mem_minimal_primes
           (lt_of_le_not_le (IsLocalRing.le_maximalIdeal hJ'.ne_top) h)
         rintro rfl
         exact hxq <| hJ <| Ideal.mem_sup_right <| Submodule.mem_span_singleton_self _
-      have h : ∀ z ∈ s, z ∈ (q ⊔ Ideal.span {x}).radical := by
+      have h : s ⊆ (q ⊔ Ideal.span {x}).radical := by
         have := hp.1.2.trans this
         rw [Ideal.span_le, Set.insert_subset_iff] at this
         exact this.2
