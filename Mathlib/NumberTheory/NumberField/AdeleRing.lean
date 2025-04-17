@@ -23,7 +23,7 @@ direct product of the infinite adele ring and the finite adele ring.
  - `NumberField.AdeleRing.principalSubgroup K` is the subgroup of principal adeles `(x)ᵥ`.
 
 ## Main results
- - `NumberField.InfiniteAdeleRing.locallyCompactSpace` : the infinite adele ring is a
+ - `NumberField.InfiniteAdeleRing.locallyCompactSpace`: the infinite adele ring is a
    locally compact space.
 
 ## References
