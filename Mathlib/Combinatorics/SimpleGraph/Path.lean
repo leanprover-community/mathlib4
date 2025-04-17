@@ -659,7 +659,7 @@ through the use of the bypass definition.
 If the walk provided is a circuit, this results in a cycle, as
 seen in `SimpleGraph.Walk.isCycle_shortcircuit`
 This idea is packaged up in `SimpleGraph.Walk.ToCycle`. -/
-def shortcircuit {u : V} : G.Walk u u → G.Walk u u
+def shortCircuit {u : V} : G.Walk u u → G.Walk u u
   | nil => nil
   | cons ha p => cons ha p.bypass
 
