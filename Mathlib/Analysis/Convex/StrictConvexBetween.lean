@@ -101,22 +101,6 @@ theorem dist_lt_dist_add_dist_iff {a b c : P} :
     dist a c < dist a b + dist b c ↔ ¬ Wbtw ℝ a b c := by
   rw [← ne_iff_lt_iff_le.mpr (dist_triangle _ _ _), not_iff_not, eq_comm, dist_add_dist_eq_iff]
 
-/-- The strict triangle inequality for affinely independent points. -/
-theorem AffineIndependent.dist_strict_triangle {a b c : P} (hT : AffineIndependent ℝ ![a, b, c]) :
-    dist a c < dist a b + dist b c := by
-  rw [dist_lt_dist_add_dist_iff]
-  rw [affineIndependent_iff_not_collinear_set] at hT
-  exact mt (·.collinear) hT
-
-/-- Alternate form of the strict triangle inequality, allowing an ordered triple of
-points to be specified from a possibly larger collection `T` of affinely independent points. -/
-theorem AffineIndependent.dist_strict_triangle' {ι} (i j k : ι)
-    (h : Function.Injective ![i, j, k]) (T : ι → P) (hT : AffineIndependent ℝ T) :
-    dist (T i) (T k) < dist (T i) (T j) + dist (T j) (T k) := by
-  refine AffineIndependent.dist_strict_triangle ?_
-  convert hT.comp_embedding ⟨_, h⟩ using 1
-  exact FinVec.map_eq _ ![i, j, k]
-
 end MetricSpace
 
 variable {E F PE PF : Type*} [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E]
