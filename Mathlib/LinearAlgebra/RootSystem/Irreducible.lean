@@ -197,7 +197,7 @@ lemma invtsubmodule_to_root_subset {K : Type*} [Field K] [Module K M] [Module K 
           (⊤ : Submodule K (Module.Dual K M)).dualCoannihilator := by
         simp only [RootPairing.span_coroot'_eq_top, le_refl]
       exact fun _ a ↦ h₂ (this a)
-    rw [Subspace.dualCoannihilator_top (K := K) (V := M)] at h₁
+    rw [Submodule.dualCoannihilator_top (K := K) (M := M)] at h₁
     exact False.elim (h₀ ((Submodule.eq_bot_iff q).mpr h₁))
   have hu := h₂ Φ (Set.nonempty_iff_ne_empty.mpr hΦ) (image_subset_iff.mpr b) c
   subst hu
