@@ -245,10 +245,10 @@ theorem Function.Injective.tendsto_cofinite {f : α → β} (hf : Injective f) :
 
 /-- For a function with finite fibres, inverse images of finite sets are finite. -/
 theorem Filter.Tendsto.cofinite_of_finite_preimage_singleton {f : α → β}
-    (hf : ∀ b, Finite (f ⁻¹' {b})) : Filter.Tendsto f Filter.cofinite Filter.cofinite := by
+    (hf : ∀ b, Finite (f ⁻¹' {b})) : Tendsto f cofinite cofinite := by
   intro t ht
-  rw [Filter.mem_map, Filter.mem_cofinite, ← Set.preimage_compl]
-  exact Set.Finite.preimage' ht fun b a => hf b
+  rw [mem_map, mem_cofinite, ← Set.preimage_compl]
+  exact ht.preimage' fun b _ ↦ hf b
 
 /-- The pullback of the `Filter.cofinite` under an injective function is equal to `Filter.cofinite`.
 See also `Filter.comap_cofinite_le` and `Function.Injective.tendsto_cofinite`. -/
