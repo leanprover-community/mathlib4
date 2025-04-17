@@ -187,21 +187,18 @@ lemma invtsubmodule_to_root_subset {K : Type*} [Field K] [Module K M] [Module K 
   by_cases hΦ : Φ = ∅
   · subst hΦ
     simp only [mem_empty_iff_false, not_false_eq_true, forall_const] at c
-    have aaa : q ≤ Submodule.dualCoannihilator ⊤ := by
+    have h₁ : q ≤ Submodule.dualCoannihilator ⊤ := by
       have : q ≤ ⨅ i, LinearMap.ker (P.coroot' i) := by
         intro v hv
-        simp
+        rw [Submodule.mem_iInf]
         exact fun i ↦ c i hv
       rw [RootPairing.iInf_ker_coroot'_eq] at this
-      have qq : (span K (range P.coroot')).dualCoannihilator ≤
+      have h₂ : (span K (range P.coroot')).dualCoannihilator ≤
           (⊤ : Submodule K (Module.Dual K M)).dualCoannihilator := by
-        simp
-      exact fun ⦃x⦄ a ↦ qq (this a)
-    have := Subspace.dualCoannihilator_top' (K := K) (V := M)
-    rw [this] at aaa
-    have : q = ⊥ := by
-      exact (Submodule.eq_bot_iff q).mpr aaa
-    exact False.elim (h₀ this)
+        simp only [RootPairing.span_coroot'_eq_top, le_refl]
+      exact fun _ a ↦ h₂ (this a)
+    rw [Subspace.dualCoannihilator_top' (K := K) (V := M)] at h₁
+    exact False.elim (h₀ ((Submodule.eq_bot_iff q).mpr h₁))
   have hu := h₂ Φ (Set.nonempty_iff_ne_empty.mpr hΦ) (image_subset_iff.mpr b) c
   subst hu
   rw [eq_top_mono (span_le.mpr (image_subset_iff.mpr b))
