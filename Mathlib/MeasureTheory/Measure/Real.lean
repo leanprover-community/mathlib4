@@ -97,6 +97,14 @@ theorem measureReal_restrict_apply (ht : MeasurableSet t) :
 theorem measureReal_restrict_apply_univ (s : Set α) : (μ.restrict s).real univ = μ.real s := by
   rw [measureReal_restrict_apply MeasurableSet.univ, Set.univ_inter]
 
+@[simp]
+theorem measureReal_restrict_apply' (hs : MeasurableSet s) :
+    (μ.restrict s).real t = μ.real (t ∩ s) := by
+  simp only [measureReal_def, restrict_apply' hs]
+
+theorem measureReal_restrict_apply₀' (hs : NullMeasurableSet s μ) : μ.restrict s t = μ (t ∩ s) := by
+  simp only [measureReal_def, restrict_apply₀' hs]
+
 theorem measureReal_mono_null (h : s₁ ⊆ s₂) (h₂ : μ.real s₂ = 0) (h'₂ : μ s₂ ≠ ∞ := by finiteness) :
     μ.real s₁ = 0 := by
   rw [measureReal_eq_zero_iff h'₂] at h₂
