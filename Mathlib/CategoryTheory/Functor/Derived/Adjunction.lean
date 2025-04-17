@@ -14,7 +14,7 @@ adjunction `adj : G ⊣ F`, that we have localization
 functors `L₁ : C₁ ⥤ D₁` and `L₂ : C₂ ⥤ D₂` with respect to
 classes of morphisms `W₁` and `W₂`, and that `G` admits
 a left derived functor `G' : D₁ ⥤ D₂` and `F` a right derived
-functor `F' : D₂ ⥤ D₁`, we show that there is an adjunction
+functor `F' : D₂ ⥤ D₁`. We show that there is an adjunction
 `G' ⊣ F'` under the additional assumption that `F'` and `G'`
 are *absolute* derived functors, i.e. they remain derived
 functors after the post-composition with any functor
