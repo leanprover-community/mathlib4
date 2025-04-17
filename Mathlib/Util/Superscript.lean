@@ -241,8 +241,8 @@ private partial def isValid (m : Mapping) : Syntax → Bool
 where
   valid (s : String) : Bool :=
     s.all ((m.toSpecial.insert ' ' ' ').contains ·)
-  scripted (kind : SyntaxNodeKind) : Bool :=
-    kind == subscriptKind || kind == superscriptKind
+  scripted : SyntaxNodeKind → Bool :=
+    #[subscriptKind, superscriptKind].contains
 
 end Superscript
 
