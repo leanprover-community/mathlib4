@@ -119,7 +119,7 @@ end Localization
 
 end IsArtinianRing
 
-lemma isArtinianRing_iff_isNilpotent_maximalIdeal (R) [CommRing R] [IsNoetherianRing R]
+lemma isArtinianRing_iff_isNilpotent_maximalIdeal (R : Type*) [CommRing R] [IsNoetherianRing R]
     [IsLocalRing R] : IsArtinianRing R ↔ IsNilpotent (IsLocalRing.maximalIdeal R) := by
   rw [isArtinianRing_iff_krullDimLE_zero,
     Ideal.isNilpotent_iff_le_nilradical (IsNoetherian.noetherian _),
