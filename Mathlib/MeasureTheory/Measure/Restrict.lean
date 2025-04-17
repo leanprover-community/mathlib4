@@ -133,6 +133,7 @@ theorem restrict_apply_self (s : Set α) : (μ.restrict s) s = μ s :=
 
 variable {μ}
 
+@[simp]
 theorem restrict_apply_univ (s : Set α) : μ.restrict s univ = μ s := by
   rw [restrict_apply MeasurableSet.univ, Set.univ_inter]
 
