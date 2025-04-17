@@ -121,18 +121,9 @@ end IsArtinianRing
 
 lemma isArtinianRing_iff_isNilpotent_maximalIdeal (R) [CommRing R] [IsNoetherianRing R]
     [IsLocalRing R] : IsArtinianRing R ↔ IsNilpotent (IsLocalRing.maximalIdeal R) := by
-  constructor
-  · intro h
-    rw [← Ring.KrullDimLE.radical_eq_maximalIdeal (⊥ : Ideal R) bot_ne_top]
-    exact IsArtinianRing.isNilpotent_nilradical
-  · rintro ⟨n, hn⟩
-    rcases eq_or_ne n 0 with (rfl|hn')
-    · rw [pow_zero] at hn
-      exact (one_ne_zero hn).elim
-    · rw [isArtinianRing_iff_krullDimLE_zero]
-      refine Ring.KrullDimLE.mk₀ (fun I hI ↦ ?_)
-      suffices IsLocalRing.maximalIdeal R ≤ I by
-        rw [← (IsLocalRing.maximalIdeal.isMaximal R).eq_of_le hI.ne_top this]
-        infer_instance
-      rw [← hI.pow_le_iff hn', hn]
-      exact bot_le
+  rw [isArtinianRing_iff_krullDimLE_zero,
+    Ideal.isNilpotent_iff_le_nilradical (IsNoetherian.noetherian _),
+    ← and_iff_left (a := Ring.KrullDimLE 0 R) ‹IsLocalRing R›,
+    (Ring.krullDimLE_zero_and_isLocalRing_tfae R).out 0 3 rfl rfl,
+    IsLocalRing.isMaximal_iff, le_antisymm_iff, and_iff_right]
+  exact IsLocalRing.le_maximalIdeal (by simp [nilradical, Ideal.radical_eq_top])
