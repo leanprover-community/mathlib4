@@ -130,7 +130,7 @@ lemma Ideal.height_le_spanRank_toENat_of_mem_minimal_primes
     | succ n =>
       rw [← @Localization.AtPrime.comap_maximalIdeal _ _ p,
         IsLocalization.height_comap p.primeCompl]
-      rw [← @Localization.AtPrime.comap_maximalIdeal _ _ p, ← Set.mem_preimage,
+      rw [← Localization.AtPrime.comap_maximalIdeal (I := p), ← Set.mem_preimage,
         ← IsLocalization.minimalPrimes_map p.primeCompl, ← Ideal.span, Ideal.map_span] at hp
       let A' := Localization p.primeCompl
       let p' := IsLocalRing.maximalIdeal A'
