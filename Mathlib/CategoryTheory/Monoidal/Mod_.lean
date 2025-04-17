@@ -149,11 +149,7 @@ class Mod_Class (X : C) where
 
 attribute [reassoc (attr := simp)] Mod_Class.mul_smul Mod_Class.one_smul
 
-namespace Mon_Class
-
-@[inherit_doc] scoped notation "γ" => Mod_Class.smul
-
-end Mon_Class
+@[inherit_doc] scoped[Mon_Class] notation "γ" => Mod_Class.smul
 
 namespace Mod_Class
 
