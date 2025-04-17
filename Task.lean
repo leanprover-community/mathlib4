@@ -35,12 +35,12 @@ theorem cycleRange_of_gt'' {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h : k < i)
   simp
   omega
 
-theorem cycleRange_of_le'' {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h : k > j) :
+theorem cycleRange_of_le'' {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h : j < k) :
     (cycleRange' i j hij) k = k := by
   have kin : k ∈ Set.range ⇑(natAdd_castLEEmb n (cycleRange'._proof_4 i)) := by simp; omega
   simp [cycleRange',
-    Perm.extendDomain_apply_subtype ((j - i).castLT (cycleRange'._proof_3 i j hij)).cycleRange
-      (natAdd_castLEEmb n _).toEquivRange kin]
+    ((j - i).castLT (cycleRange'._proof_3 i j hij)).cycleRange.extendDomain_apply_subtype
+    (natAdd_castLEEmb n _).toEquivRange kin]
   have : (((j - i).castLT (cycleRange'._proof_3 i j hij)).cycleRange
       (((addNatEmb (n - (n - i.1))).trans (finCongr _).toEmbedding).toEquivRange.symm ⟨k, kin⟩)) =
       subNat (m := i) (Fin.cast (by omega) k) (by simp[le_of_lt (lt_of_le_of_lt hij h)]) := by
@@ -115,11 +115,10 @@ theorem cycleRange_of {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h1 : i <= k) (h
     simp [h3]
     omega
 
-
 theorem cycleRange_of_lt'' {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h1 : i <= k) (h2 : k < j) [NeZero n] :
     (cycleRange' i j hij) k = k + 1 := by
-  sorry
+  simp [cycleRange_of hij h1 (Fin.le_of_lt h2), Fin.ne_of_lt h2]
 
 theorem cycleRange_of_eq'' {n : ℕ} {i j : Fin n} (hij : i ≤ j) [NeZero n] :
     (cycleRange' i j hij) j = i := by
-  sorry
+  simp [cycleRange_of hij hij (Fin.ge_of_eq rfl)]
