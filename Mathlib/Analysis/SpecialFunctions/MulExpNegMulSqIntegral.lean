@@ -142,11 +142,9 @@ theorem abs_setIntegral_mulExpNegMulSq_comp_sub_le_mul_measure {K : Set E} (hK :
     |∫ x in K, mulExpNegMulSq ε (g x) ∂P - ∫ x in K, mulExpNegMulSq ε (f x) ∂P|
       ≤ δ * (P K).toReal := by
   rw [← (integral_sub (integrable_mulExpNegMulSq_comp_restrict_of_isCompact hK hKmeas g)
-      (integrable_mulExpNegMulSq_comp_restrict_of_isCompact hK hKmeas f))]
-  apply norm_setIntegral_le_of_norm_le_const hK.measure_lt_top
+      (integrable_mulExpNegMulSq_comp_restrict_of_isCompact hK hKmeas f)), ← norm_eq_abs]
+  exact norm_setIntegral_le_of_norm_le_const hK.measure_lt_top
     (fun x hxK => le_trans (dist_mulExpNegMulSq_le_dist hε) (hfg x hxK).le)
-    (StronglyMeasurable.aestronglyMeasurable (Continuous.stronglyMeasurable
-    (Continuous.sub g.continuous.mulExpNegMulSq f.continuous.mulExpNegMulSq)))
 
 variable {E : Type*} [MeasurableSpace E] [PseudoEMetricSpace E] [BorelSpace E] [CompleteSpace E]
     [SecondCountableTopology E]
