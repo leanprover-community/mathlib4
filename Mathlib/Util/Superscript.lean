@@ -240,7 +240,7 @@ private partial def isValid (m : Mapping) : Syntax → Bool
   | _ => false
 where
   valid (s : String) : Bool :=
-    s.toList.all fun x ↦ x == ' ' || m.toSpecial.contains x
+    s.all ((m.toSpecial.insert ' ' ' ').contains ·)
   scripted (kind : SyntaxNodeKind) : Bool :=
     kind == subscriptKind || kind == superscriptKind
 
