@@ -254,7 +254,7 @@ theorem cons_fin_one (x : α) (u : Fin 0 → α) : vecCons x u = fun _ => x :=
 
 open Lean Qq in
 /-- `mkVecLiteralQ ![x, y, z]` produces the term `q(![$x, $y, $z])`. -/
-def _root_.Qq.mkVecLiteralQ {u : Level} {α : Q(Type u)} {n : ℕ} (elems : Fin n → Q($α)):
+def _root_.Qq.mkVecLiteralQ {u : Level} {α : Q(Type u)} {n : ℕ} (elems : Fin n → Q($α)) :
     Q(Fin $n → $α) :=
   loop 0 (Nat.zero_le _) q(vecEmpty)
 where
