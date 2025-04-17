@@ -19,7 +19,7 @@ open Equiv Fin Equiv.Perm
 /-- `Fin.natAdd_castLEEmb` as an `Embedding` from `Fin n` to `Fin m`, `natAdd_castLEEmb m hmn i`
 adds `m - n` to `i`, generalizes `addNatEmb`.
 -/
-@[simps apply]
+@[simps!]
 def natAdd_castLEEmb {n : ℕ} (m : ℕ) (hmn : n ≤ m): Fin n ↪ Fin (m) :=
   (addNatEmb (m - n)).trans (finCongr (by omega)).toEmbedding
 
