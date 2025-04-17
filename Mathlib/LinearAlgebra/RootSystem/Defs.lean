@@ -616,31 +616,26 @@ lemma rootSpan_dualAnnihilator_map_eq_iInf_ker_root' :
   ext x
   constructor
   · simp only [Submodule.mem_iInf, LinearMap.mem_ker, PerfectPairing.apply_apply_toDualRight_symm]
-    intro a i
-    simp only [Submodule.mem_map, Submodule.mem_dualAnnihilator] at a
-    obtain ⟨a1, a2, a3⟩ := a
-    rw [← a3, PerfectPairing.apply_apply_toDualRight_symm]
-    exact a2 (P.root i) (Submodule.subset_span (mem_range_self i))
-  intro a
-  simp_all
+    intro h₁ i
+    simp only [Submodule.mem_map, Submodule.mem_dualAnnihilator] at h₁
+    obtain ⟨_, h₂, h₃⟩ := h₁
+    rw [← h₃, PerfectPairing.apply_apply_toDualRight_symm]
+    exact h₂ (P.root i) (Submodule.subset_span (mem_range_self i))
+  intro h₁
+  simp only [Submodule.mem_iInf, LinearMap.mem_ker] at h₁
+  simp only [Submodule.mem_map, Submodule.mem_dualAnnihilator]
   use (P.toDualRight x)
   constructor
-  · simp
-    rw [rootSpan]
-    intro w w1
-    refine Submodule.span_induction ?_ ?_ ?_ ?_ w1
-    · simp
-      intro aa
-      exact a aa
-    · simp
-    · intro a b c d e f
-      simp
-      rw [e, f]
-      simp
-    · intro a b c d
-      simp
-      rw [d]
-      simp
+  · simp only [PerfectPairing.toDualRight_apply, PerfectPairing.flip_apply_apply]
+    intro _ w
+    refine Submodule.span_induction ?_ ?_ ?_ ?_ w
+    · simp only [mem_range, forall_exists_index, forall_apply_eq_imp_iff]
+      exact fun h₂ => h₁ h₂
+    · simp only [map_zero, LinearMap.zero_apply]
+    · intro _ _ _ _ e f
+      rw [map_add, LinearMap.add_apply, e, f, add_zero]
+    · intro _ _ _ d
+      rw [map_smul, LinearMap.smul_apply, smul_eq_mul, d, mul_zero]
   exact LinearEquiv.symm_apply_apply P.toDualRight x
 
 lemma corootSpan_dualAnnihilator_map_eq_iInf_ker_coroot' :
