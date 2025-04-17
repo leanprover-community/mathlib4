@@ -359,14 +359,13 @@ theorem order_mul (φ ψ : R⟦X⟧) : order (φ * ψ) = order φ + order ψ := 
   · push_neg at h
     rw [← coe_toNat_order h.1, ← coe_toNat_order h.2, ← ENat.coe_add]
     apply order_le
-    rw [coeff_mul, Finset.sum_eq_single ⟨φ.order.toNat, ψ.order.toNat⟩]
+    rw [coeff_mul, Finset.sum_eq_single_of_mem ⟨φ.order.toNat, ψ.order.toNat⟩ (by simp)]
     · exact mul_ne_zero (coeff_order h.1) (coeff_order h.2)
     · intro ij hij h
       rcases trichotomy_of_add_eq_add (mem_antidiagonal.mp hij) with h' | h' | h'
       · exact False.elim (h (by simp [Prod.ext_iff, h'.1, h'.2]))
       · rw [coeff_of_lt_order_toNat ij.1 h', zero_mul]
       · rw [coeff_of_lt_order_toNat ij.2 h', mul_zero]
-    · simp [mem_antidiagonal]
 
 theorem order_pow [Nontrivial R] (φ : R⟦X⟧) (n : ℕ) :
     order (φ ^ n) = n • order φ := by
