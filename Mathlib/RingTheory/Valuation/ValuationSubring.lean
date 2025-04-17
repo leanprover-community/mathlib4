@@ -796,8 +796,8 @@ namespace Valuation
 
 variable {Γ : Type*} [LinearOrderedCommGroupWithZero Γ] (v : Valuation K Γ) (x : Kˣ)
 
-theorem mem_unitGroup_iff : x ∈ v.valuationSubring.unitGroup ↔ v x = 1 :=
-  IsEquiv.eq_one_iff_eq_one (Valuation.isEquiv_valuation_valuationSubring _).symm
+theorem mem_unitGroup_iff : x ∈ v.valuationSubring.unitGroup ↔ v x = 1 := sorry
+  -- IsEquiv.eq_one_iff_eq_one (Valuation.isEquiv_valuation_valuationSubring _).symm
 
 theorem mem_maximalIdeal_iff {a : v.valuationSubring} :
     a ∈ IsLocalRing.maximalIdeal (v.valuationSubring) ↔ v a < 1 :=

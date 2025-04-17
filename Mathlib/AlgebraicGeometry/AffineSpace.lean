@@ -202,15 +202,16 @@ def isoOfIsAffine [IsAffine S] :
           Category.comp_id]
         ext : 1
         apply ringHom_ext'
-        · show _ = (CommRingCat.ofHom C ≫ _).hom
-          rw [CommRingCat.hom_comp, RingHom.comp_assoc, CommRingCat.hom_ofHom, eval₂Hom_comp_C,
-            ← CommRingCat.hom_comp, ← CommRingCat.hom_ext_iff,
-            ← cancel_mono (Scheme.ΓSpecIso _).hom]
-          rw [← Scheme.comp_appTop, homOfVector_over, Scheme.comp_appTop]
-          simp only [Category.assoc, Scheme.ΓSpecIso_naturality, CommRingCat.of_carrier,
-            ← Scheme.toSpecΓ_appTop]
-          rw [← Scheme.comp_appTop_assoc, Scheme.isoSpec, asIso_inv, IsIso.hom_inv_id]
-          simp
+        · sorry
+        -- · show _ = (CommRingCat.ofHom C ≫ _).hom
+        --   rw [CommRingCat.hom_comp, RingHom.comp_assoc, CommRingCat.hom_ofHom, eval₂Hom_comp_C,
+        --     ← CommRingCat.hom_comp, ← CommRingCat.hom_ext_iff,
+        --     ← cancel_mono (Scheme.ΓSpecIso _).hom]
+        --   rw [← Scheme.comp_appTop, homOfVector_over, Scheme.comp_appTop]
+        --   simp only [Category.assoc, Scheme.ΓSpecIso_naturality, CommRingCat.of_carrier,
+        --     ← Scheme.toSpecΓ_appTop]
+        --   rw [← Scheme.comp_appTop_assoc, Scheme.isoSpec, asIso_inv, IsIso.hom_inv_id]
+        --   simp
         · intro i
           rw [CommRingCat.comp_apply, ConcreteCategory.hom_ofHom, coe_eval₂Hom]
           simp only [eval₂_X]

@@ -218,12 +218,12 @@ class CommSemiring (R : Type u) extends Semiring R, CommMonoid R
 attribute [instance 50] CommSemiring.toSemiring
 
 -- see Note [lower instance priority]
-instance (priority := 100) CommSemiring.toNonUnitalCommSemiring [CommSemiring α] :
+instance (priority := 10) CommSemiring.toNonUnitalCommSemiring [CommSemiring α] :
     NonUnitalCommSemiring α :=
   { inferInstanceAs (CommMonoid α), inferInstanceAs (CommSemiring α) with }
 
 -- see Note [lower instance priority]
-instance (priority := 100) CommSemiring.toCommMonoidWithZero [CommSemiring α] :
+instance (priority := 10) CommSemiring.toCommMonoidWithZero [CommSemiring α] :
     CommMonoidWithZero α :=
   { inferInstanceAs (CommMonoid α), inferInstanceAs (CommSemiring α) with }
 
@@ -379,7 +379,7 @@ class NonUnitalCommRing (α : Type u) extends NonUnitalRing α, NonUnitalNonAsso
 attribute [instance 50] NonUnitalCommRing.toNonUnitalRing
 
 -- see Note [lower instance priority]
-instance (priority := 100) NonUnitalCommRing.toNonUnitalCommSemiring [s : NonUnitalCommRing α] :
+instance (priority := 10) NonUnitalCommRing.toNonUnitalCommSemiring [s : NonUnitalCommRing α] :
     NonUnitalCommSemiring α :=
   { s with }
 
@@ -389,15 +389,15 @@ class CommRing (α : Type u) extends Ring α, CommMonoid α
 -- See note [lower instance priority]
 attribute [instance 50] CommRing.toRing
 
-instance (priority := 100) CommRing.toCommSemiring [s : CommRing α] : CommSemiring α :=
+instance (priority := 10) CommRing.toCommSemiring [s : CommRing α] : CommSemiring α :=
   { s with }
 
 -- see Note [lower instance priority]
-instance (priority := 100) CommRing.toNonUnitalCommRing [s : CommRing α] : NonUnitalCommRing α :=
+instance (priority := 10) CommRing.toNonUnitalCommRing [s : CommRing α] : NonUnitalCommRing α :=
   { s with }
 
 -- see Note [lower instance priority]
-instance (priority := 100) CommRing.toAddCommGroupWithOne [s : CommRing α] :
+instance (priority := 10) CommRing.toAddCommGroupWithOne [s : CommRing α] :
     AddCommGroupWithOne α :=
   { s with }
 
