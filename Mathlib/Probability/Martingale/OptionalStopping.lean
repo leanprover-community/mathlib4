@@ -26,6 +26,7 @@ This file also contains Doob's maximal inequality: given a non-negative submarti
 
 
 open scoped NNReal ENNReal MeasureTheory ProbabilityTheory
+open Finset
 
 namespace MeasureTheory
 
@@ -100,8 +101,6 @@ protected theorem Submartingale.stoppedProcess [IsFiniteMeasure μ] (h : Submart
       h.integrable_stoppedValue ((isStoppingTime_const _ i).min hτ) fun ω => min_le_left _ _
 
 section Maximal
-
-open Finset
 
 theorem smul_le_stoppedValue_hitting [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) {ε : ℝ≥0}
     (n : ℕ) : ε • μ {ω | (ε : ℝ) ≤ (range (n + 1)).sup' nonempty_range_succ fun k => f k ω} ≤
