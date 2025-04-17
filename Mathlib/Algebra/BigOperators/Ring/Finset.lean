@@ -27,7 +27,7 @@ variable {ι ι' α β γ : Type*} {κ : ι → Type*} {s s₁ s₂ : Finset ι}
 namespace Finset
 
 @[simp]
-lemma prod_neg [CommMonoid α] [HasDistribNeg α] : ∏ x ∈ s, (-f x) = (-1) ^ #s * ∏ x ∈ s, f x := by
+lemma prod_neg [CommMonoid α] [HasDistribNeg α] : ∏ x ∈ s, -f x = (-1) ^ #s * ∏ x ∈ s, f x := by
   simpa using (s.1.map f).prod_map_neg
 
 section AddCommMonoidWithOne
