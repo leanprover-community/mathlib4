@@ -292,7 +292,6 @@ instance : CategoryTheory.Groupoid (FundamentalGroupoid X) where
     Quotient.lift (fun l : Path x.as y.as => ⟦l.symm⟧)
       (by
         rintro a b ⟨h⟩
-        simp only
         rw [Quotient.eq]
         exact ⟨h.symm₂⟩)
       p

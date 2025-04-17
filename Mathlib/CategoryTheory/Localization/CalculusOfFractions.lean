@@ -552,7 +552,6 @@ noncomputable def Hom.map {X Y : C} (f : Hom W X Y) (F : C ⥤ E) (hF : W.IsInve
     F.obj X ⟶ F.obj Y :=
   Quot.lift (fun f => f.map F hF) (by
     intro a₁ a₂ ⟨Z, t₁, t₂, hst, hft, h⟩
-    dsimp
     have := hF _ h
     rw [← cancel_mono (F.map (a₁.s ≫ t₁)), F.map_comp, map_comp_map_s_assoc,
       ← F.map_comp, ← F.map_comp, hst, hft, F.map_comp,

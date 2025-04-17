@@ -234,7 +234,6 @@ theorem exists_frobenius_solution_fractionRing_aux (m n : ℕ) (r' q' : 𝕎 k) 
       (p : 𝕎 k) ^ m * b * ((p : 𝕎 k) ^ n * q') := by
     have H := congr_arg (fun x : 𝕎 k => x * (p : 𝕎 k) ^ m * (p : 𝕎 k) ^ n)
       (frobenius_frobeniusRotation p hr' hq')
-    dsimp at H
     refine (Eq.trans ?_ H).trans ?_ <;> ring
   have hq'' : algebraMap (𝕎 k) (FractionRing (𝕎 k)) q' ≠ 0 := by
     have hq''' : q' ≠ 0 := fun h => hq' (by simp [h])

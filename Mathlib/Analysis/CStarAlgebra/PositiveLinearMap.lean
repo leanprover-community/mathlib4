@@ -87,7 +87,6 @@ lemma exists_norm_apply_le (f : A₁ →ₚ[ℂ] A₂) : ∃ C : ℝ≥0, ∀ a,
     simp only [norm_smul, norm_pow, norm_I, one_pow, one_mul]
     apply Finset.sum_le_sum (g := fun _ ↦ C * ‖x‖) (fun i _ ↦ ?_) |>.trans <| by simp [mul_assoc]
     apply hmain _ (hy_nonneg i) |>.trans
-    simp only
     gcongr
     exact hy_norm i
   -- Let's proceed by contradiction

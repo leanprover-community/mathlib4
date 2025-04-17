@@ -243,7 +243,6 @@ instance (priority := 100) WellFoundedLT.toIsPredArchimedean [h : WellFoundedLT 
     · exact ⟨0, rfl⟩
     rcases eq_or_lt_of_le (pred_le b) with hb | hb
     · cases (min_of_le_pred hb.ge).not_lt hab
-    dsimp at ih
     obtain ⟨k, hk⟩ := ih (pred b) hb (le_pred_of_lt hab)
     refine ⟨k + 1, ?_⟩
     rw [iterate_add_apply, iterate_one, hk]⟩

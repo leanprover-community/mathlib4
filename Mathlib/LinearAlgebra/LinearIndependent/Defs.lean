@@ -549,7 +549,6 @@ theorem LinearIndependent.maximal_iff {ι : Type w} {R : Type u} [Semiring R] [N
           ext
           simp)
     have q := congr_arg (fun s => ((↑) : w → M) '' s) p.range_eq
-    dsimp at q
     rw [← image_univ, image_image] at q
     simpa using q
 

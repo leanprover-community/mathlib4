@@ -145,7 +145,6 @@ lemma hasDerivAt_integral_pow_mul_exp (hz : z.re ∈ interior (integrableExpSet 
     · positivity
     · exact lt_of_lt_of_le (by simp [ht]) (le_abs_self _)
   · refine ae_of_all _ fun ω ε hε ↦ ?_
-    simp only
     simp_rw [pow_succ, mul_assoc]
     refine HasDerivAt.const_mul _ ?_
     simp_rw [← smul_eq_mul, Complex.exp_eq_exp_ℂ]

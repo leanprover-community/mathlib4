@@ -108,9 +108,9 @@ theorem isCompact_basicOpen (X : Scheme) {U : X.Opens} (hU : IsCompact (U : Set 
   · intro i hi
     -- Porting note: had to make explicit the first given parameter to `Set.subset_iUnion₂`
     exact Set.Subset.trans (Set.Subset.rfl : _ ≤ g ⟨i, hi⟩)
-      (@Set.subset_iUnion₂ _ _ _
-        (fun (i : X.affineOpens) (_ : i ∈ Set.range g) => (i : Set X.toPresheafedSpace)) _
-        (Set.mem_range_self ⟨i, hi⟩))
+      (Set.subset_iUnion₂
+        (s := fun (i : X.affineOpens) (_ : i ∈ Set.range g) => (i : Set X.toPresheafedSpace))
+        _ (Set.mem_range_self (⟨i, hi⟩ : s)))
   · rintro ⟨i, hi⟩ ⟨⟨j, hj⟩, hj'⟩
     rw [← hj']
     refine Set.Subset.trans ?_ (Set.subset_iUnion₂ j hj)

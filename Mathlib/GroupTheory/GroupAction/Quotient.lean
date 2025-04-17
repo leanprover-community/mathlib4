@@ -409,7 +409,6 @@ noncomputable def equivSubgroupOrbitsQuotientGroup [IsPretransitive α β]
   invFun := fun q ↦ q.liftOn' (fun g ↦ ⟦g⁻¹ • x⟧) (by
     intro g₁ g₂ h
     rw [leftRel_eq] at h
-    simp only
     rw [← @Quotient.mk''_eq_mk, Quotient.eq'', orbitRel_apply]
     exact ⟨⟨_, h⟩, by simp [mul_smul]⟩)
   left_inv := fun y ↦ by

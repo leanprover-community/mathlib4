@@ -702,7 +702,6 @@ theorem trCfg_init (k) (L : List (Γ k)) : TrCfg (TM2.init k L)
     have : ((proj k').f ∘ fun a => update (β := fun k => Option (Γ k)) default k (some a))
       = fun a => (proj k').f (update (β := fun k => Option (Γ k)) default k (some a)) := rfl
     rw [this, List.getElem?_map, proj, PointedMap.mk_val]
-    simp only []
     by_cases h : k' = k
     · subst k'
       simp only [Function.update_self]

@@ -27,7 +27,6 @@ def binomial (p : ℝ≥0∞) (h : p ≤ 1) (n : ℕ) : PMF (Fin (n + 1)) :=
       -- Using `toNNReal` here makes this computable
       ↑(p.toNNReal^(i : ℕ) * (1-p.toNNReal)^((Fin.last n - i) : ℕ) * (n.choose i : ℕ))) (by
     lift p to ℝ≥0 using ne_top_of_lt <| h.trans_lt one_lt_top
-    dsimp only
     norm_cast
     convert (add_pow p (1-p) n).symm
     · rw [Finset.sum_fin_eq_sum_range]

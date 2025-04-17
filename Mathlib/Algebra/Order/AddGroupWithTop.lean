@@ -136,7 +136,6 @@ lemma add_eq_top : a + b = ⊤ ↔ a = ⊤ ∨ b = ⊤ := by
     by_contra nh
     rw [not_or] at nh
     replace h := congrArg (-a + ·) h
-    dsimp only at h
     rw [add_top, ← add_assoc, add_comm (-a), add_neg_cancel_of_ne_top,
       zero_add] at h
     · exact nh.2 h
@@ -189,7 +188,6 @@ instance (priority := 100) toSubtractionMonoid : SubtractionMonoid α where
       simp [ha, hb]
   neg_eq_of_add a b h := by
     have oh := congrArg (-a + ·) h
-    dsimp only at oh
     rw [add_zero, ← add_assoc, add_comm (-a), add_neg_cancel_of_ne_top, zero_add] at oh
     · exact oh.symm
     intro v
