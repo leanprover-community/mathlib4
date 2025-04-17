@@ -386,6 +386,11 @@ theorem measureReal_count_singleton [MeasurableSingletonClass α] (a : α) :
     count.real ({a} : Set α) = 1 :=
   measureReal_count_singleton' (measurableSet_singleton a)
 
+theorem measureReal_add_apply (μ₁ μ₂ : Measure α) (s : Set α) (h₁ : μ₁ s ≠ ∞ := by finiteness)
+    (h₂ : μ₂ s ≠ ∞ := by finiteness) :
+    (μ₁ + μ₂).real s = μ₁.real s + μ₂.real s := by
+  simp only [measureReal_def, add_apply, ENNReal.toReal_add h₁ h₂]
+
 /-- Pigeonhole principle for measure spaces: if `s` is a `Finset` and
 `∑ i ∈ s, μ.real (t i) > μ.real univ`, then one of the intersections `t i ∩ t j` is not empty. -/
 theorem exists_nonempty_inter_of_measureReal_univ_lt_sum_measureReal [IsFiniteMeasure μ]

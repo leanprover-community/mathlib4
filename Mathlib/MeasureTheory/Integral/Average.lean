@@ -237,7 +237,7 @@ variable {f g : α → E}
 
 /-- Average value of a function `f` w.r.t. a measure `μ`, denoted `⨍ x, f x ∂μ`.
 
-It is equal to `(μ univ).toReal⁻¹ • ∫ x, f x ∂μ`, so it takes value zero if `f` is not integrable or
+It is equal to `(μ.real univ)⁻¹ • ∫ x, f x ∂μ`, so it takes value zero if `f` is not integrable or
 if `μ` is an infinite measure. If `μ` is a probability measure, then the average of any function is
 equal to its integral.
 
@@ -248,7 +248,7 @@ noncomputable def average (f : α → E) :=
 
 /-- Average value of a function `f` w.r.t. a measure `μ`.
 
-It is equal to `(μ univ).toReal⁻¹ • ∫ x, f x ∂μ`, so it takes value zero if `f` is not integrable or
+It is equal to `(μ.real univ)⁻¹ • ∫ x, f x ∂μ`, so it takes value zero if `f` is not integrable or
 if `μ` is an infinite measure. If `μ` is a probability measure, then the average of any function is
 equal to its integral.
 
@@ -258,7 +258,7 @@ notation3 "⨍ "(...)", "r:60:(scoped f => f)" ∂"μ:70 => average μ r
 
 /-- Average value of a function `f` w.r.t. to the standard measure.
 
-It is equal to `(volume univ).toReal⁻¹ * ∫ x, f x`, so it takes value zero if `f` is not integrable
+It is equal to `(volume.real univ)⁻¹ * ∫ x, f x`, so it takes value zero if `f` is not integrable
 or if the space has infinite measure. In a probability space, the average of any function is equal
 to its integral.
 
@@ -267,7 +267,7 @@ notation3 "⨍ "(...)", "r:60:(scoped f => average volume f) => r
 
 /-- Average value of a function `f` w.r.t. a measure `μ` on a set `s`.
 
-It is equal to `(μ s).toReal⁻¹ * ∫ x, f x ∂μ`, so it takes value zero if `f` is not integrable on
+It is equal to `(μ.real s)⁻¹ * ∫ x, f x ∂μ`, so it takes value zero if `f` is not integrable on
 `s` or if `s` has infinite measure. If `s` has measure `1`, then the average of any function is
 equal to its integral.
 
@@ -276,7 +276,7 @@ notation3 "⨍ "(...)" in "s", "r:60:(scoped f => f)" ∂"μ:70 => average (Meas
 
 /-- Average value of a function `f` w.r.t. to the standard measure on a set `s`.
 
-It is equal to `(volume s).toReal⁻¹ * ∫ x, f x`, so it takes value zero `f` is not integrable on `s`
+It is equal to `(volume.real s)⁻¹ * ∫ x, f x`, so it takes value zero `f` is not integrable on `s`
 or if `s` has infinite measure. If `s` has measure `1`, then the average of any function is equal to
 its integral. -/
 notation3 "⨍ "(...)" in "s", "r:60:(scoped f => average (Measure.restrict volume s) f) => r
@@ -295,15 +295,15 @@ theorem average_neg (f : α → E) : ⨍ x, -f x ∂μ = -⨍ x, f x ∂μ :=
 theorem average_eq' (f : α → E) : ⨍ x, f x ∂μ = ∫ x, f x ∂(μ univ)⁻¹ • μ :=
   rfl
 
-theorem average_eq (f : α → E) : ⨍ x, f x ∂μ = (μ univ).toReal⁻¹ • ∫ x, f x ∂μ := by
-  rw [average_eq', integral_smul_measure, ENNReal.toReal_inv]
+theorem average_eq (f : α → E) : ⨍ x, f x ∂μ = (μ.real univ)⁻¹ • ∫ x, f x ∂μ := by
+  rw [average_eq', integral_smul_measure, ENNReal.toReal_inv, measureReal_def]
 
 theorem average_eq_integral [IsProbabilityMeasure μ] (f : α → E) : ⨍ x, f x ∂μ = ∫ x, f x ∂μ := by
   rw [average, measure_univ, inv_one, one_smul]
 
 @[simp]
 theorem measure_smul_average [IsFiniteMeasure μ] (f : α → E) :
-    (μ univ).toReal • ⨍ x, f x ∂μ = ∫ x, f x ∂μ := by
+    μ.real univ • ⨍ x, f x ∂μ = ∫ x, f x ∂μ := by
   rcases eq_or_ne μ 0 with hμ | hμ
   · rw [hμ, integral_zero_measure, average_zero_measure, smul_zero]
   · rw [average_eq, smul_inv_smul₀]
@@ -311,7 +311,8 @@ theorem measure_smul_average [IsFiniteMeasure μ] (f : α → E) :
     rwa [Ne, measure_univ_eq_zero]
 
 theorem setAverage_eq (f : α → E) (s : Set α) :
-    ⨍ x in s, f x ∂μ = (μ s).toReal⁻¹ • ∫ x in s, f x ∂μ := by rw [average_eq, restrict_apply_univ]
+    ⨍ x in s, f x ∂μ = (μ.real s)⁻¹ • ∫ x in s, f x ∂μ := by
+  rw [average_eq, measureReal_restrict_apply_univ]
 
 theorem setAverage_eq' (f : α → E) (s : Set α) :
     ⨍ x in s, f x ∂μ = ∫ x, f x ∂(μ s)⁻¹ • μ.restrict s := by
@@ -323,7 +324,7 @@ theorem average_congr {f g : α → E} (h : f =ᵐ[μ] g) : ⨍ x, f x ∂μ = �
   simp only [average_eq, integral_congr_ae h]
 
 theorem setAverage_congr (h : s =ᵐ[μ] t) : ⨍ x in s, f x ∂μ = ⨍ x in t, f x ∂μ := by
-  simp only [setAverage_eq, setIntegral_congr_set h, measure_congr h]
+  simp only [setAverage_eq, setIntegral_congr_set h, measureReal_congr h]
 
 theorem setAverage_congr_fun (hs : MeasurableSet s) (h : ∀ᵐ x ∂μ, x ∈ s → f x = g x) :
     ⨍ x in s, f x ∂μ = ⨍ x in s, g x ∂μ := by simp only [average_eq, setIntegral_congr_ae hs h]
@@ -331,11 +332,11 @@ theorem setAverage_congr_fun (hs : MeasurableSet s) (h : ∀ᵐ x ∂μ, x ∈ s
 theorem average_add_measure [IsFiniteMeasure μ] {ν : Measure α} [IsFiniteMeasure ν] {f : α → E}
     (hμ : Integrable f μ) (hν : Integrable f ν) :
     ⨍ x, f x ∂(μ + ν) =
-      ((μ univ).toReal / ((μ univ).toReal + (ν univ).toReal)) • ⨍ x, f x ∂μ +
-        ((ν univ).toReal / ((μ univ).toReal + (ν univ).toReal)) • ⨍ x, f x ∂ν := by
+      (μ.real univ / (μ.real univ + ν.real univ)) • ⨍ x, f x ∂μ +
+        (ν.real univ / (μ.real univ + ν.real univ)) • ⨍ x, f x ∂ν := by
   simp only [div_eq_inv_mul, mul_smul, measure_smul_average, ← smul_add,
     ← integral_add_measure hμ hν, ← ENNReal.toReal_add (measure_ne_top μ _) (measure_ne_top ν _)]
-  rw [average_eq, Measure.add_apply]
+  rw [average_eq, measureReal_add_apply]
 
 theorem average_pair [CompleteSpace E]
     {f : α → E} {g : α → F} (hfi : Integrable f μ) (hgi : Integrable g μ) :
@@ -392,14 +393,16 @@ variable [CompleteSpace E]
 @[simp]
 theorem average_const (μ : Measure α) [IsFiniteMeasure μ] [h : NeZero μ] (c : E) :
     ⨍ _x, c ∂μ = c := by
-  rw [average, integral_const, measure_univ, ENNReal.toReal_one, one_smul]
+  rw [average, integral_const, measureReal_def, measure_univ, ENNReal.toReal_one, one_smul]
 
 theorem setAverage_const {s : Set α} (hs₀ : μ s ≠ 0) (hs : μ s ≠ ∞) (c : E) :
     ⨍ _ in s, c ∂μ = c :=
   have := NeZero.mk hs₀; have := Fact.mk hs.lt_top; average_const _ _
 
 theorem integral_average (μ : Measure α) [IsFiniteMeasure μ] (f : α → E) :
-    ∫ _, ⨍ a, f a ∂μ ∂μ = ∫ x, f x ∂μ := by simp
+    ∫ _, ⨍ a, f a ∂μ ∂μ = ∫ x, f x ∂μ := by
+  simp
+
 
 theorem setIntegral_setAverage (μ : Measure α) [IsFiniteMeasure μ] (f : α → E) (s : Set α) :
     ∫ _ in s, ⨍ a in s, f a ∂μ ∂μ = ∫ x in s, f x ∂μ :=
