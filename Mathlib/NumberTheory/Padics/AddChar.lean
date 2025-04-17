@@ -8,9 +8,9 @@ import Mathlib.NumberTheory.Padics.MahlerBasis
 /-!
 # Additive characters of `ℤ_[p]`
 
-We show that for any normed `ℤ_[p]`-algebra `R`, there is a canonical bijection between additive
-characters `ℤ_[p] → R` and topologically nilpotent elements of `R`, given by sending `κ` to the
-element `κ 1 - 1`. This is used to define the Mahler transform for `p`-adic measures.
+We show that for any normed `ℤ_[p]`-algebra `R`, there is a canonical bijection between continuous
+additive characters `ℤ_[p] → R` and topologically nilpotent elements of `R`, given by sending `κ`
+to the element `κ 1 - 1`. This is used to define the Mahler transform for `p`-adic measures.
 
 Note that if the norm on `R` is not strictly multiplicative, then the condition that `κ 1 - 1` be
 topologically nilpotent is strictly weaker than assuming `‖κ 1 - 1‖ < 1`, although they are of
