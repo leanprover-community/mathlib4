@@ -131,7 +131,7 @@ lemma Submodule.height_lt_top [IsArtinian R M] [IsNoetherian R M] (N : Submodule
   simpa only [← Module.length_submodule] using Module.length_ne_top.lt_top
 
 lemma Submodule.height_strictMono [IsArtinian R M] [IsNoetherian R M] :
-    StrictMono fun N : Submodule R M ↦ Order.height N :=
+    StrictMono (Order.height : Submodule R M → ℕ∞) :=
   fun N _ h ↦ Order.height_strictMono h N.height_lt_top
 
 lemma Submodule.length_lt [IsArtinian R M] [IsNoetherian R M] {N : Submodule R M} (h : N ≠ ⊤) :
