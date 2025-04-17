@@ -7,6 +7,8 @@ Authors: Antoine Chambert-Loir
 import Mathlib.GroupTheory.GroupAction.Embedding
 import Mathlib.GroupTheory.GroupAction.Primitive
 import Mathlib.GroupTheory.GroupAction.Transitive
+import Mathlib.GroupTheory.SpecificGroups.Alternating
+import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 
 /-! # Multiple transitivity
 
@@ -402,9 +404,10 @@ theorem isMultiplyPretransitive_of_le {m n : ℕ} [IsMultiplyPretransitive G α 
 
 end Higher
 
-end MulAction
+open Equiv MulAction
 
 namespace Equiv.Perm
+
 
 variable {α : Type*} [Fintype α]
 
@@ -469,7 +472,7 @@ theorem isMultiplyPretransitive (n : ℕ) : IsMultiplyPretransitive (Perm  α) �
 
 -- This is optimal, `AlternatingGroup α` is `Nat.card α - 2`-pretransitive.
 /-- A subgroup of `Perm α` is `⊤` if(f) it is `(Nat.card α - 1)`-pretransitive. -/
-theorem eq_top_if_isMultiplyPretransitive {G : Subgroup (Equiv.Perm α)}
+theorem eq_top_of_isMultiplyPretransitive {G : Subgroup (Equiv.Perm α)}
     (hmt : IsMultiplyPretransitive G α (Nat.card α - 1)) : G = ⊤ := by
   simp only [Nat.card_eq_fintype_card] at hmt
   let j : Fin (Fintype.card α - 1) ↪ Fin (Fintype.card α) :=
@@ -511,3 +514,189 @@ theorem eq_top_if_isMultiplyPretransitive {G : Subgroup (Equiv.Perm α)}
   rfl
 
 end Equiv.Perm
+
+namespace MulAction.IsMultiplyPretransitive
+
+variable (α : Type*) [Fintype α]
+
+/-- The `alternatingGroup` on α is (Fintype.card α - 2)-pretransitive -/
+theorem alternatingGroup_of_sub_two [DecidableEq α] :
+    IsMultiplyPretransitive (alternatingGroup α) α (Nat.card α - 2) := by
+  rcases lt_or_ge (Nat.card α) 2 with h2 | h2
+  · rw [Nat.sub_eq_zero_of_le (le_of_lt h2)]
+    apply is_zero_pretransitive
+  have h2' : Nat.card α - 2 ≤ Nat.card α := sub_le (Nat.card α) 2
+  exact {
+    exists_smul_eq x y := by
+      have : IsMultiplyPretransitive (Equiv.Perm α) α (Nat.card α) :=
+        Equiv.Perm.isMultiplyPretransitive α (Nat.card α)
+      obtain ⟨x' : Fin (Nat.card α) ↪ α, hx'⟩ :=
+        Fin.Embedding.restrictSurjective_of_le_natCard h2' (le_refl _) x
+      obtain ⟨y' : Fin (Nat.card α) ↪ α, hy'⟩ :=
+        Fin.Embedding.restrictSurjective_of_le_natCard h2' (le_refl _) y
+      obtain ⟨g , hg⟩ := exists_smul_eq (Equiv.Perm α) x' y'
+      rcases Int.units_eq_one_or (Equiv.Perm.sign g) with h | h
+      · use ⟨g, h⟩
+        ext i
+        simp only [← hx', subgroup_smul_def, smul_apply, trans_apply, castLEEmb_apply, ← hy']
+        simp only [← smul_apply, hg]
+      · let u : Fin (Nat.card α) :=
+          ⟨Nat.card α - 1, by exact sub_one_lt_of_lt h2⟩
+        let v : Fin (Nat.card α) :=
+          ⟨Nat.card α - 2, Nat.sub_lt (zero_lt_of_lt h2) (Nat.zero_lt_two)⟩
+        refine ⟨⟨g * (Equiv.swap (x' u) (x' v)), ?_⟩, ?_⟩
+        · suffices u ≠ v by
+            simp [h, this]
+          exact ne_of_val_ne (Nat.ne_of_gt (sub_succ_lt_self (Nat.card α) 1 h2))
+        · ext i
+          suffices (Equiv.swap (x' u) (x' v)) • (x' (castLE h2' i)) = x' (castLE h2' i) by
+            simp only [← hx', Subgroup.mk_smul, smul_apply, trans_apply, castLEEmb_apply,
+              Equiv.Perm.coe_mul, Function.comp_apply, this, ← hy', mul_smul, this, hg]
+            simp only [← smul_apply, hg]
+          have hiv : (i : ℕ) < v := (lt_of_lt_of_le i.prop (le_of_eq rfl))
+          have hiu : (i : ℕ) < u := by
+            apply lt_trans hiv
+            simp only [u, v, ← one_add_one_eq_two, ← Nat.sub_sub]
+            apply Nat.sub_lt_self Nat.zero_lt_one (le_sub_one_of_lt h2)
+          apply Equiv.swap_apply_of_ne_of_ne <;>
+            simp [ne_eq, EmbeddingLike.apply_eq_iff_eq, ← val_inj,
+              coe_castLE, Nat.ne_of_lt hiu, Nat.ne_of_lt hiv] }
+
+
+variable {α}
+
+/-- A subgroup of `Equiv.Perm α` which is (Fintype.card α - 2)-pretransitive
+  contains `alternatingGroup α` -/
+theorem alternatingGroup_le [DecidableEq α] (G : Subgroup (Equiv.Perm α))
+    (hmt : IsMultiplyPretransitive G α (Nat.card α - 2)) :
+    alternatingGroup α ≤ G := by
+  classical
+  rcases Nat.lt_or_ge (Nat.card α) 2 with hα1 | hα
+  · -- Nat.card α  < 2
+    rw [Nat.lt_succ_iff] at hα1
+    suffices alternatingGroup α = ⊥ by
+      rw [this]; exact bot_le
+    refine alternatingGroup.eq_bot_of_card_le_two ?_
+    rw [← Nat.card_eq_fintype_card]
+    exact le_succ_of_le hα1
+  apply Equiv.Perm.alternatingGroup_le_of_index_le_two
+
+  -- rw [Fintype.card_equiv (Equiv.refl _)]
+  obtain ⟨s, _, hs⟩ :=
+    Set.exists_subset_card_eq (s := (Set.univ : Set α)) (n := Nat.card α - 2)
+      (by rw [Set.ncard_univ]; exact sub_le (Nat.card α) 2)
+  rw [← hs] at hmt
+
+  rw [← hmt.index_of_fixingSubgroup G α s, hs, Nat.sub_sub_self hα,
+    Nat.factorial_two, mul_comm]
+  apply Nat.mul_le_mul_left
+  have : Nonempty G := One.instNonempty
+  apply Nat.le_of_dvd (Fintype.card_pos)
+  rw [← Nat.card_eq_fintype_card]
+  apply Subgroup.index_dvd_card
+
+/-- The alternating group on 3 letters or more acts transitively -/
+theorem alternatingGroup.isPretransitive [DecidableEq α] (h : 3 ≤ Fintype.card α) :
+    IsPretransitive (alternatingGroup α) α := by
+  rw [isPretransitive_iff_is_one_pretransitive]
+  apply isMultiplyPretransitive_of_higher
+  apply IsMultiplyPretransitive.alternatingGroup_of_sub_two
+  apply le_trans _ (Nat.sub_le_sub_right h 2)
+  norm_num
+  simp only [ge_iff_le, ENat.card_eq_coe_fintype_card, ENat.coe_le_coe,
+    tsub_le_iff_right, le_add_iff_nonneg_right]
+  norm_num
+
+/- This lemma proves the trivial blocks property for the alternating group.
+  This holds even when `Fintype.card α ≤ 2`
+  — then the action is not preprimitive  because it is not pretransitive -/
+theorem alternatingGroup.has_trivial_blocks [DecidableEq α]
+    (B : Set α) (hB : IsBlock (alternatingGroup α) B) :
+    IsTrivialBlock B := by
+  classical
+  cases' le_or_lt (Fintype.card α) 2 with h2 h2
+  · exact IsTrivialBlock.of_card_le_2 h2 B
+  cases' le_or_lt (Fintype.card α) 3 with h3 h4
+  · have h3' : Fintype.card α = 3 := le_antisymm h3 h2
+    cases' le_or_lt (Fintype.card B) 1 with h1 h2
+    · apply Or.intro_left
+      rw [← Set.subsingleton_coe, ← Fintype.card_le_one_iff_subsingleton]
+      exact h1
+    · apply Or.intro_right
+      rw [Fintype.one_lt_card_iff] at h2
+      -- using h2, get a ≠ b in B
+      obtain ⟨⟨a, ha⟩, ⟨b, hb⟩, hab⟩ := h2
+      simp only [Ne, Subtype.mk_eq_mk] at hab
+      -- using h3', get c ≠ a, b
+      have : ∃ c : α, c ∉ ({a, b}  : Finset α) := by
+        by_contra h
+        push_neg at h
+        have : ({a, b} : Finset α) = Finset.univ := by
+          ext c
+          constructor
+          · intro _; exact Finset.mem_univ c
+          · intro _; exact h c
+        rw [lt_iff_not_ge] at h2 ; apply h2; rw [ge_iff_le]
+        rw [← Finset.card_eq_iff_eq_univ] at this
+        rw [← this]
+        rw [Finset.card_pair hab]
+      obtain ⟨c, hc⟩ := this
+      simp only [Finset.mem_insert, Finset.mem_singleton, not_or] at hc
+      suffices ({a, b, c} : Finset α) = Finset.univ by
+        rw [eq_top_iff]
+        rw [Set.top_eq_univ, ← Finset.coe_univ, ← this]
+        intro x hx
+        simp only [Finset.coe_insert, Finset.coe_singleton, Set.mem_insert_iff,
+          Set.mem_singleton_iff] at hx
+        cases' hx with hxa hx
+        rw [hxa]; exact ha
+        cases' hx with hxb hxc
+        rw [hxb]; exact hb
+        rw [hxc]
+        -- get a three_cycle g = c[a,b,c]
+        let g : alternatingGroup α :=
+          ⟨Equiv.swap a b * Equiv.swap c b,-- cycle [a,b,c]
+          by  rw [Equiv.Perm.mem_alternatingGroup]
+              rw [Equiv.Perm.sign_mul]
+              rw [Equiv.Perm.sign_swap hab]
+              rw [Equiv.Perm.sign_swap hc.right]
+              simp only [Int.units_mul_self]⟩
+        suffices g • B = B by
+          rw [← this]
+          use b
+          apply And.intro hb
+          change (Equiv.swap a b * Equiv.swap c b) • b = c
+          simp only [Equiv.Perm.smul_def, Equiv.Perm.coe_mul, Function.comp_apply]
+          rw [Equiv.swap_apply_right]
+          rw [Equiv.swap_apply_of_ne_of_ne hc.left hc.right]
+        -- g • B = B
+        apply hB.def_mem ha
+        change (Equiv.swap a b * Equiv.swap c b) • a ∈ B
+        simp only [Equiv.Perm.smul_def, Equiv.Perm.coe_mul, Function.comp_apply]
+        rw [Equiv.swap_apply_of_ne_of_ne (ne_comm.mp hc.left) hab]
+        rw [Equiv.swap_apply_left]
+        exact hb
+      -- {a, b, c} = Finset.univ
+      rw [← Finset.card_eq_iff_eq_univ, h3']
+      rw [Finset.card_insert_of_not_mem]
+      rw [Finset.card_pair (ne_comm.mp hc.right)]
+      simp only [Finset.mem_insert, Finset.mem_singleton, not_or]
+      apply And.intro hab
+      exact ne_comm.mp hc.left
+  -- IsTrivialBlock hB
+  apply IsPreprimitive.has_trivial_blocks ?_ hB
+  apply IsMultiplyPretransitive.isPreprimitive_of_two
+  apply isMultiplyPretransitive_of_higher
+  apply IsMultiplyPretransitive.alternatingGroup_of_sub_two
+  apply le_trans _ (Nat.sub_le_sub_right h4 2); norm_num
+  simp only [ENat.card_eq_coe_fintype_card, cast_le, tsub_le_iff_right, le_add_iff_nonneg_right,
+    _root_.zero_le]
+
+/-- The alternating group on 3 letters or more acts primitively -/
+theorem AlternatingGroup.isPreprimitive [DecidableEq α] (h : 3 ≤ Fintype.card α) :
+    IsPreprimitive (alternatingGroup α) α := by
+  have := alternatingGroup.isPretransitive h
+  apply IsPreprimitive.mk
+  apply alternatingGroup.has_trivial_blocks
+
+

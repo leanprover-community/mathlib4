@@ -685,35 +685,33 @@ theorem eq_s2_of_nontrivial (hα : Fintype.card α ≤ 2) (hG : Nontrivial G) :
     exact hG
 
 theorem nontrivial_on_equiv_perm_two {K : Type*} [Group K] [MulAction K α]
-    (hα : Nat.card α = 2) {g : K} {a : α} (hga : g • a ≠ a) :
+    (hα : Nat.card α = 2) (hK : fixedPoints K α ≠ Set.univ) :
+    -- {g : K} {a : α} (hga : g • a ≠ a) :
     IsMultiplyPretransitive K α 2 := by
   classical
   let φ := MulAction.toPermHom K α
   let f : α →ₑ[φ] α :=
     { toFun := id
       map_smul' := fun k x => rfl }
-  have := Equiv.Perm.isMultiplyPretransitive
   have hf : Function.Bijective f := Function.bijective_id
   suffices Function.Surjective φ by
-    apply IsPretransitive.of_embedding (σ := φ) this.surjective
-    apply IsPretransitive.of_embedding_congr (f := f) this -- hf
-    rw [← hα]
+    unfold IsMultiplyPretransitive
+    rw [IsPretransitive.of_embedding_congr this hf (n := Fin 2), ← hα]
     apply Equiv.Perm.isMultiplyPretransitive
-
   rw [← MonoidHom.range_eq_top]
   apply Subgroup.eq_top_of_card_eq
-  apply le_antisymm
-  · rw [Nat.card_eq_fintype_card, Nat.card_eq_fintype_card]
-    apply Fintype.card_subtype_le
-  suffices hg : toPerm g ∈ φ.range by
-    rw [Nat.card_eq_fintype_card, Nat.card_eq_fintype_card]
-    rw [Fintype.card_perm, hα, Nat.factorial_two, Nat.succ_le_iff,
-      ← Nat.card_eq_fintype_card, Subgroup.one_lt_card_iff_ne_bot]
-    intro h; apply hga
-    rw [h, Subgroup.mem_bot] at hg
-    rw [← MulAction.toPerm_apply, hg, Equiv.Perm.coe_one, id_eq]
-  use g
-  rfl
+  apply le_antisymm (card_le_card_group φ.range)
+  simp only [Nat.card_perm, hα, Nat.factorial_two]
+  by_contra H
+  simp only [not_le, Nat.lt_succ, Finite.card_le_one_iff_subsingleton] at H
+  apply hK
+  apply Set.eq_univ_of_univ_subset
+  intro a _ g
+  suffices φ g = φ 1 by
+    conv_rhs => rw [← one_smul K a]
+    simp only [← toPerm_apply, ← toPermHom_apply K α g]
+    exact congrFun (congrArg DFunLike.coe this) a
+  simpa [← Subtype.coe_inj] using H.elim ⟨_, ⟨g, rfl⟩⟩ ⟨_, ⟨1, rfl⟩⟩
 
 theorem isPretransitive_of_cycle [DecidableEq α] {g : Equiv.Perm α}
     (hg : g ∈ G) (hgc : g.IsCycle) :
@@ -749,57 +747,50 @@ theorem isPretransitive_of_cycle [DecidableEq α] {g : Equiv.Perm α}
 
 theorem Equiv.Perm.IsSwap.cycleType [DecidableEq α] {σ : Equiv.Perm α} (h : σ.IsSwap) :
     σ.cycleType = {2} := by
-  simp only [h.isCycle.cycleType, Equiv.Perm.card_support_eq_two.mpr h]
-  simp only [Multiset.coe_singleton]
+  simpa [h.isCycle.cycleType, Equiv.Perm.card_support_eq_two] using h
 
 theorem Equiv.Perm.IsSwap.orderOf [DecidableEq α] {σ : Equiv.Perm α} (h : σ.IsSwap) :
     orderOf σ = 2 := by
   rw [← Equiv.Perm.lcm_cycleType, h.cycleType, Multiset.lcm_singleton, normalize_eq]
 
-/-- A primitive permutation group that contains a swap is the full permutation group (Jordan)-/
+/-- A primitive permutation group that contains a swap is the full permutation group (Jordan) -/
 theorem jordan_swap [DecidableEq α] (hG : IsPreprimitive G α) (g : Equiv.Perm α)
     (h2g : Equiv.Perm.IsSwap g) (hg : g ∈ G) : G = ⊤ := by
   classical
-  cases' Nat.lt_or_ge (Fintype.card α) 3 with hα3 hα3
-  · -- trivial case : Fintype.card α ≤ 2
+  rcases Nat.lt_or_ge (Nat.card α) 3 with hα3 | hα3
+  · -- trivial case : Nat.card α ≤ 2
     rw [Nat.lt_succ_iff] at hα3
     apply Subgroup.eq_top_of_card_eq
-    rw [Nat.card_eq_fintype_card, Nat.card_eq_fintype_card]
+    simp only [Nat.card_eq_fintype_card]
     apply le_antisymm (Fintype.card_subtype_le _)
-    rw [Fintype.card_equiv (Equiv.cast rfl)]
+    rw [← Nat.card_eq_fintype_card, Nat.card_perm]
     refine le_trans (Nat.factorial_le hα3) ?_
     rw [Nat.factorial_two]
     have : Nonempty G := One.instNonempty
     apply Nat.le_of_dvd Fintype.card_pos
     rw [← h2g.orderOf, orderOf_submonoid ⟨g, hg⟩]
     exact orderOf_dvd_card
-  -- important case : Fintype.card α ≥ 3
-  obtain ⟨n, hn⟩ := Nat.exists_eq_add_of_le hα3
-  rw [add_comm] at hn
+  -- important case : Nat.card α ≥ 3
+  obtain ⟨n, hn⟩ := Nat.exists_eq_add_of_le' hα3
   -- let s := (g.support : Set α)
   have hsc : Set.ncard ((g.support)ᶜ : Set α) = n.succ := by
     apply Nat.add_left_cancel
-    rw [Set.ncard_add_ncard_compl, Nat.card_eq_fintype_card, Set.ncard_coe_Finset, Equiv.Perm.card_support_eq_two.mpr h2g, add_comm, hn]
-  apply IsMultiplyPretransitive.eq_top_of_is_full_minus_one_pretransitive
-  apply IsMultiplyPreprimitive.toIsMultiplyPretransitive
-  have hn' : Fintype.card α - 1 = 1 + n.succ := by
-    rw [hn, add_comm 1]
-    simp only [ge_iff_le, Nat.succ_sub_succ_eq_sub, nonpos_iff_eq_zero, add_eq_zero, and_false, tsub_zero]
-  rw [hn']
-  refine isMultiplyPreprimitive_jordan hG hsc ?_ ?_
-  · rw [← hn']
-    apply Nat.sub_lt _ (by norm_num)
-    apply lt_of_lt_of_le (by norm_num) hα3
+    rw [Set.ncard_add_ncard_compl, Set.ncard_coe_Finset,
+      Equiv.Perm.card_support_eq_two.mpr h2g, add_comm, hn]
+  apply Equiv.Perm.eq_top_if_isMultiplyPretransitive
+  suffices IsMultiplyPreprimitive G α (Nat.card α - 1) by
+    apply IsMultiplyPreprimitive.isMultiplyPretransitive
+  rw [show Nat.card α - 1 = 1 + n.succ by
+    rw [add_comm, ← Nat.add_one_inj, Nat.sub_one_add_one (Nat.ne_zero_of_lt hα3),
+      hn]]
+  apply isMultiplyPreprimitive_jordan hG hsc
+  · rw [add_comm, hn]
+    exact Nat.lt_add_one (n.succ + 1)
   have : IsPretransitive _ _ := isPretransitive_of_cycle hg <| Equiv.Perm.IsSwap.isCycle h2g
-  apply isPreprimitive_of_prime
+  apply IsPreprimitive.of_prime_card
   convert Nat.prime_two
-  rw [Fintype.card_subtype]
-  rw [← Equiv.Perm.card_support_eq_two.mpr h2g]
-  apply congr_arg
-  ext x
-  simp only [SubMulAction.mem_ofFixingSubgroup_iff, Set.mem_compl_iff, Finset.mem_coe,
-    Equiv.Perm.mem_support, ne_eq, not_not, Finset.mem_univ, forall_true_left,
-    Finset.mem_filter, true_and]
+  rw [Nat.card_eq_fintype_card, Fintype.card_subtype, ← Equiv.Perm.card_support_eq_two.mpr h2g]
+  simp [SubMulAction.mem_ofFixingSubgroup_iff, Equiv.Perm.support]
 
 /-- A primitive permutation that contains a 3-cycle contains the alternating group (Jordan) -/
 theorem jordan_three_cycle [DecidableEq α]
@@ -807,23 +798,22 @@ theorem jordan_three_cycle [DecidableEq α]
     (h3g : Equiv.Perm.IsThreeCycle g) (hg : g ∈ G) :
     alternatingGroup α ≤ G := by
   classical
-  cases' Nat.lt_or_ge (Fintype.card α) 4 with hα4 hα4
+  rcases Nat.lt_or_ge (Nat.card α) 4 with hα4 | hα4
   · -- trivial case : Fintype.card α ≤ 3
     rw [Nat.lt_succ_iff] at hα4
-    apply large_subgroup_of_perm_contains_alternating
-    rw [Fintype.card_perm]
+    apply Equiv.Perm.alternatingGroup_le_of_index_le_two
+    rw [← Nat.mul_le_mul_right_iff (k:= Nat.card G) (Nat.card_pos),
+      Subgroup.index_mul_card, Nat.card_perm]
     apply le_trans (Nat.factorial_le hα4)
-    change 2 * 3 ≤ _
-    simp only [mul_le_mul_left, Nat.succ_pos']
-    have : Nonempty G := One.instNonempty
-    apply Nat.le_of_dvd Fintype.card_pos
+    rw [show Nat.factorial 3 = 2 * 3 by simp [Nat.factorial]]
+    simp only [mul_le_mul_left, Nat.succ_pos]
+    apply Nat.le_of_dvd Nat.card_pos
     suffices 3 = orderOf (⟨g, hg⟩ : G) by
-      rw [this]
+      rw [this, Nat.card_eq_fintype_card]
       exact orderOf_dvd_card
-    rw [← Equiv.Perm.IsThreeCycle.orderOf h3g]
-    convert orderOf_submonoid _
-    rfl
-  obtain ⟨n, hn⟩ := Nat.exists_eq_add_of_le hα4; rw [add_comm] at hn
+    simp only [orderOf_mk, Equiv.Perm.IsThreeCycle.orderOf h3g]
+    -- important case : Nat.card α ≥ 4
+  obtain ⟨n, hn⟩ := Nat.exists_eq_add_of_le' hα4
   --  refine is_full_minus_two_pretransitive_iff α _,
   apply IsMultiplyPretransitive.alternatingGroup_le_of_sub_two
   apply IsMultiplyPreprimitive.toIsMultiplyPretransitive

@@ -518,4 +518,111 @@ end Transitivity
 
 end SubMulAction
 
+namespace MulAction.IsMultiplyPretransitive
+
+ /-- For a multiply pretransitive action,
+  computes the index of the fixing_subgroup of a subset of adequate cardinality -/
+private theorem index_of_fixing_subgroup_aux
+    [Fintype α]
+    {k : ℕ} [IsMultiplyPretransitive G α k]
+    {s : Set α} (hs : s.ncard = k) :
+    (fixingSubgroup G s).index * (Fintype.card α - s.ncard).factorial =
+      (Fintype.card α).factorial := by
+  classical
+  revert G α
+  induction k with
+  | zero =>
+    intro G α _ _ _ _ s hs
+    simp only [hs, zero_eq, ge_iff_le, nonpos_iff_eq_zero, tsub_zero, ne_eq]
+    rw [Set.ncard_eq_zero] at hs
+    simp only [hs]
+    suffices fixingSubgroup G ∅ = ⊤ by
+      rw [this, Subgroup.index_top, one_mul]
+    exact GaloisConnection.l_bot (fixingSubgroup_fixedPoints_gc G α)
+  | succ k hrec =>
+    intro G α _ _ _ hmk s hs
+    have hGX : IsPretransitive G α := by
+      rw [← is_one_pretransitive_iff]
+      apply isMultiplyPretransitive_of_le (n := k + 1)
+      · rw [Nat.succ_le_succ_iff]; apply Nat.zero_le
+      · rw [← hs, ← Set.ncard_univ]
+        exact ncard_le_ncard s.subset_univ finite_univ
+    have : s.Nonempty := by
+      rw [← Set.ncard_pos, hs]
+      exact succ_pos k
+    obtain ⟨a, has⟩ := this
+    let t : Set (SubMulAction.ofStabilizer M a) := Subtype.val ⁻¹' s
+    have hat : Subtype.val '' t = s \ {a} := by
+      rw [Set.image_preimage_eq_inter_range]
+      simp only [Subtype.range_coe_subtype]
+      rw [Set.diff_eq_compl_inter, Set.inter_comm]
+      congr
+    have hat' : s = insert a (Subtype.val '' t) := by
+      rw [hat, Set.insert_diff_singleton, Set.insert_eq_of_mem has]
+    have hfs : fixingSubgroup M s = ?_ := by
+      rw [hat']
+      exact fixingSubgroup_of_insert M a t
+    rw [hfs]
+    rw [Subgroup.index_map]
+    rw [(MonoidHom.ker_eq_bot_iff (stabilizer M a).subtype).mpr
+        (by simp only [Subgroup.coeSubtype, Subtype.coe_injective])]
+    simp only [sup_bot_eq, Subgroup.range_subtype]
+    have hscard : s.ncard = 1 + t.ncard := by
+      rw [hat']
+      suffices ¬ a ∈ (Subtype.val '' t) by
+        rw [add_comm]
+        convert Set.ncard_insert_of_not_mem this ?_
+        rw [Set.ncard_image_of_injective _ Subtype.coe_injective]
+        apply Set.toFinite
+      intro h
+      obtain ⟨⟨b, hb⟩, _, hb'⟩ := h
+      apply hb
+      simp only [Set.mem_singleton_iff]
+      rw [← hb']
+    have htcard : t.ncard = k := by
+      rw [← Nat.succ_inj', Nat.succ_eq_add_one, Nat.succ_eq_add_one, ← hs, hscard, add_comm]
+
+    suffices (fixingSubgroup (stabilizer M a) t).index *
+      (Fintype.card α - 1 - t.ncard).factorial =
+        (Fintype.card α - 1).factorial by
+      · rw [mul_comm] at this
+        rw [hscard, mul_comm, ← mul_assoc, mul_comm, Nat.sub_add_eq, this]
+        rw [stabilizer_index_of_pretransitive M hGX a]
+        rw [Nat.card_eq_fintype_card]
+        apply Nat.mul_factorial_pred
+        rw [Fintype.card_pos_iff]
+        use a
+    · rw [add_comm] at hscard
+      have := Nat.sub_eq_of_eq_add hscard
+      simp only [hs, Nat.pred_succ] at this
+      convert hrec (stabilizer M a) (SubMulAction.ofStabilizer M a)
+        ((stabilizer.isMultiplyPretransitive M α hGX).mp hmk) htcard
+      all_goals {
+        apply symm
+        convert Fintype.card_compl_set _
+        exact setFintype {a}ᶜ }
+
+ /-- For a multiply pretransitive action,
+  computes the index of the fixing_subgroup of a subset of adequate cardinality -/
+theorem IsMultiplyPretransitive.index_of_fixingSubgroup
+    [Fintype α] (s : Set α)
+    (hMk : IsMultiplyPretransitive M α s.ncard) :
+    (fixingSubgroup M s).index * (Fintype.card α - s.ncard).factorial =
+      (Fintype.card α).factorial :=
+  hMk.index_of_fixing_subgroup_aux M α s.ncard rfl
+
+ /-- For a multiply pretransitive action,
+  computes the index of the fixing_subgroup of a subset of adequate cardinality -/
+theorem IsMultiplyPretransitive.index_of_fixingSubgroup'
+    [Fintype α] (s : Set α)
+    (hMk : IsMultiplyPretransitive M α s.ncard) :
+    (fixingSubgroup M s).index =
+      Nat.choose (Fintype.card α) s.ncard * s.ncard.factorial := by
+  apply Nat.eq_of_mul_eq_mul_right (Nat.factorial_pos _)
+  rw [IsMultiplyPretransitive.index_of_fixingSubgroup M α s hMk]
+  rw [Nat.choose_mul_factorial_mul_factorial]
+  apply Set.ncard_le_fintype_card
+
+
+end MulAction.IsMultiplyPretransitive
 
