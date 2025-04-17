@@ -189,3 +189,19 @@ abbrev ofAlgHom (comul : A →ₐ[R] (A ⊗[R] A)) (counit : A →ₐ[R] R)
   .mk' _ _ (map_one counit) (map_mul counit _ _) (map_one comul) (map_mul comul _ _)
 
 end Bialgebra
+
+namespace Bialgebra
+
+variable (R : Type u) (A : Type v)
+variable [CommSemiring R] [Semiring A] [Bialgebra R A] [Nontrivial R]
+
+/--
+A bialgebra over a nontrivial ring is nontrivial.
+-/
+def nontrivial : Nontrivial A where
+  exists_pair_ne := by
+    refine ⟨0, 1, fun eq ↦ ?_⟩
+    apply_fun Coalgebra.counit (R := R) (A := A) at eq
+    simp only [map_zero, counit_one, zero_ne_one] at eq
+
+end Bialgebra
