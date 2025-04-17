@@ -276,6 +276,9 @@ theorem cycleType_cycleRange {n : ℕ} [NeZero n] {i : Fin n} (h0 : i ≠ 0) :
 theorem isThreeCycle_cycleRange_two {n : ℕ} : IsThreeCycle (cycleRange 2 : Perm (Fin (n + 3))) := by
   rw [IsThreeCycle, cycleType_cycleRange] <;> simp [Fin.ext_iff]
 
+end Fin
+
+/-
 /-- `cycleRange' i j hij` is the cycle `(i i+1 .... j)` leaving `(0 ... i-1)` and `(j+1 ... n-1)`
 unchanged.
 -/
@@ -324,7 +327,8 @@ theorem cycleRange_of {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h1 : i <= k) (h
     have : (((j - i).castLT (cycleRange'._proof_3 i j hij)).cycleRange
       (((addNatEmb (n - (n - i.1))).trans (finCongr _).toEmbedding).toEquivRange.symm ⟨j, kin⟩)) =
       subNat (m := i) (Fin.cast (by omega) i) (by simp[hij]) := by
-      have : (((addNatEmb (n - (n - i.1))).trans (finCongr _).toEmbedding).toEquivRange.symm ⟨j, kin⟩)
+      have : (((addNatEmb (n - (n - i.1))).trans (finCongr _).toEmbedding).toEquivRange.symm
+       ⟨j, kin⟩)
         = subNat (m := i) (Fin.cast (by omega) (j)) (by simp[hij]) := by
         simp [symm_apply_eq]
         refine eq_of_val_eq ?_
@@ -343,7 +347,8 @@ theorem cycleRange_of {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h1 : i <= k) (h
     have : (((j - i).castLT (cycleRange'._proof_3 i j hij)).cycleRange
         (((addNatEmb (n - (n - i.1))).trans (finCongr _).toEmbedding).toEquivRange.symm ⟨k, kin⟩)) =
         subNat (m := i) (Fin.cast (by omega) (k + 1)) (by simp[le_iff_val_le_val, imp]; omega) := by
-      have : (((addNatEmb (n - (n - i.1))).trans (finCongr _).toEmbedding).toEquivRange.symm ⟨k, kin⟩)
+      have : (((addNatEmb (n - (n - i.1))).trans (finCongr _).toEmbedding).toEquivRange.symm
+      ⟨k, kin⟩)
         = subNat (m := i) (Fin.cast (by omega) (k)) (by simp[h1]) := by
         simp [symm_apply_eq]
         refine eq_of_val_eq ?_
@@ -361,16 +366,15 @@ theorem cycleRange_of {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h1 : i <= k) (h
     refine eq_of_val_eq ?_
     simp [h3]; omega
 
-theorem cycleRange_of_lt'' {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h1 : i <= k) (h2 : k < j) [NeZero n] :
+theorem cycleRange_of_lt'' {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h1 : i <= k) (h2 : k < j)
+[NeZero n] :
     (cycleRange' i j hij) k = k + 1 := by
   simp [cycleRange_of hij h1 (Fin.le_of_lt h2), Fin.ne_of_lt h2]
 
 theorem cycleRange_of_eq'' {n : ℕ} {i j : Fin n} (hij : i ≤ j) [NeZero n] :
     (cycleRange' i j hij) j = i := by
   simp [cycleRange_of hij hij (Fin.ge_of_eq rfl)]
-
-
-end Fin
+-/
 
 end CycleRange
 
