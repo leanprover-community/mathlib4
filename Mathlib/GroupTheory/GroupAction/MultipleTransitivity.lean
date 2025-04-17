@@ -30,6 +30,15 @@ import Mathlib.GroupTheory.GroupAction.Transitive
   If an action is `n`-pretransitive, then it is `m`-pretransitive for all `m ≤ n`,
   provided `α` has at least `n` elements.
 
+## Results for permutation groups
+
+* The permutation group is pretransitive, is multiply pretransitive,
+and is preprimitive (for its natural action)
+
+* `Equiv.Perm.eq_top_if_isMultiplyPretransitive`:
+a subgroup of `Equiv.Perm α` which is `Nat.card α - 1` pretransitive
+is equal to `⊤`.
+
 ## Remarks on implementation
 
 These results are results about actions on types `n ↪ α` induced by an action
