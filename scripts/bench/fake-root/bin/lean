@@ -6,7 +6,7 @@ if [[ "$@" == "--print-prefix" ]]; then echo "$DIR/.."; exit; fi
 if [[ "$@" == "--githash" ]]; then exec lean "$@"; fi
 
 for arg in "$@"; do
-    if [[ "$arg" =~ .*\./\./(.*)\.lean ]]; then
+    if [[ "$arg" =~ $DIR/(.*)\.lean ]]; then
         mod=${BASH_REMATCH[1]//\//.}
     fi
 done
