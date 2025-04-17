@@ -705,7 +705,8 @@ lemma _root_.RootSystem.reflection_perm_eq_reflection_perm_iff (P : RootSystem �
 lemma dual_vanish_aux (P : RootSystem ι R M N) (v : M)
     (h₁ : ∀ (i : ι), v ∈ LinearMap.ker (P.coroot' i)) (d : Module.Dual R M) : d v = 0 := by
   have : d ∈ span R (range P.coroot') := by
-    simp only [Submodule.mem_top, span_coroot_eq_top' P]
+    simp only [span_coroot'_eq_top]
+    exact trivial
   induction this using Submodule.span_induction with
   | mem x hx' =>
     rcases hx' with ⟨w, h⟩
