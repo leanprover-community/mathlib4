@@ -220,10 +220,11 @@ theorem ae_eq_const_or_exists_average_ne_compl [IsFiniteMeasure μ] (hfi : Integ
   refine hfi.ae_eq_of_forall_setIntegral_eq _ _ (integrable_const _) fun t ht ht' => ?_; clear ht'
   simp only [const_apply, setIntegral_const]
   by_cases h₀ : μ t = 0
-  · rw [restrict_eq_zero.2 h₀, integral_zero_measure, h₀, ENNReal.toReal_zero, zero_smul]
+  · rw [restrict_eq_zero.2 h₀, integral_zero_measure, measureReal_def, h₀,
+      ENNReal.toReal_zero, zero_smul]
   by_cases h₀' : μ tᶜ = 0
   · rw [← ae_eq_univ] at h₀'
-    rw [restrict_congr_set h₀', restrict_univ, measure_congr h₀', measure_smul_average]
+    rw [restrict_congr_set h₀', restrict_univ, measureReal_congr h₀', measure_smul_average]
   have := average_mem_openSegment_compl_self ht.nullMeasurableSet h₀ h₀' hfi
   rw [← H t ht h₀ h₀', openSegment_same, mem_singleton_iff] at this
   rw [this, measure_smul_setAverage _ (measure_ne_top μ _)]
@@ -308,7 +309,8 @@ theorem ae_eq_const_or_norm_average_lt_of_norm_le_const [StrictConvexSpace ℝ E
     exact Or.inl this
   by_cases hfi : Integrable f μ; swap
   · simp [average_eq, integral_undef hfi, hC0, ENNReal.toReal_pos_iff]
-  rcases (le_top : μ univ ≤ ∞).eq_or_lt with hμt | hμt; · simp [average_eq, hμt, hC0]
+  rcases (le_top : μ univ ≤ ∞).eq_or_lt with hμt | hμt
+  · simp [average_eq, measureReal_def, hμt, hC0]
   haveI : IsFiniteMeasure μ := ⟨hμt⟩
   replace h_le : ∀ᵐ x ∂μ, f x ∈ closedBall (0 : E) C := by simpa only [mem_closedBall_zero_iff]
   simpa only [interior_closedBall _ hC0.ne', mem_ball_zero_iff] using
@@ -320,10 +322,10 @@ a.e., then either this function is a.e. equal to its average value, or the norm 
 strictly less than `(μ univ).toReal * C`. -/
 theorem ae_eq_const_or_norm_integral_lt_of_norm_le_const [StrictConvexSpace ℝ E] [IsFiniteMeasure μ]
     (h_le : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) :
-    f =ᵐ[μ] const α (⨍ x, f x ∂μ) ∨ ‖∫ x, f x ∂μ‖ < (μ univ).toReal * C := by
+    f =ᵐ[μ] const α (⨍ x, f x ∂μ) ∨ ‖∫ x, f x ∂μ‖ < μ.real univ * C := by
   rcases eq_or_ne μ 0 with h₀ | h₀; · left; simp [h₀, EventuallyEq]
-  have hμ : 0 < (μ univ).toReal := by
-    simp [ENNReal.toReal_pos_iff, pos_iff_ne_zero, h₀, measure_lt_top]
+  have hμ : 0 < μ.real univ := by
+    simp [measureReal_def, ENNReal.toReal_pos_iff, pos_iff_ne_zero, h₀, measure_lt_top]
   refine (ae_eq_const_or_norm_average_lt_of_norm_le_const h_le).imp_right fun H => ?_
   rwa [average_eq, norm_smul, norm_inv, Real.norm_eq_abs, abs_of_pos hμ, ← div_eq_inv_mul,
     div_lt_iff₀' hμ] at H

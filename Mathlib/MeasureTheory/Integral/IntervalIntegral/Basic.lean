@@ -606,7 +606,7 @@ theorem norm_integral_le_of_norm_le_const_ae {a b C : ℝ} {f : ℝ → E}
     (h : ∀ᵐ x, x ∈ Ι a b → ‖f x‖ ≤ C) : ‖∫ x in a..b, f x‖ ≤ C * |b - a| := by
   rw [norm_integral_eq_norm_integral_Ioc]
   convert norm_setIntegral_le_of_norm_le_const_ae'' _ measurableSet_Ioc h using 1
-  · rw [Real.volume_real_Ioc, max_sub_min_eq_abs, ENNReal.toReal_ofReal (abs_nonneg _)]
+  · rw [Real.volume_real_Ioc inf_le_sup, max_sub_min_eq_abs]
   · simp only [Real.volume_Ioc, ENNReal.ofReal_lt_top]
 
 theorem norm_integral_le_of_norm_le_const {a b C : ℝ} {f : ℝ → E} (h : ∀ x ∈ Ι a b, ‖f x‖ ≤ C) :
@@ -661,13 +661,13 @@ theorem integral_div {𝕜 : Type*} [RCLike 𝕜] (r : 𝕜) (f : ℝ → 𝕜) 
   simpa only [div_eq_mul_inv] using integral_mul_const r⁻¹ f
 
 theorem integral_const' [CompleteSpace E] (c : E) :
-    ∫ _ in a..b, c ∂μ = ((μ <| Ioc a b).toReal - (μ <| Ioc b a).toReal) • c := by
-  simp only [intervalIntegral, setIntegral_const, sub_smul]
+    ∫ _ in a..b, c ∂μ = (μ.real (Ioc a b) - μ.real (Ioc b a)) • c := by
+  simp only [measureReal_def, intervalIntegral, setIntegral_const, sub_smul]
 
 @[simp]
 theorem integral_const [CompleteSpace E] (c : E) : ∫ _ in a..b, c = (b - a) • c := by
   simp only [integral_const', Real.volume_Ioc, ENNReal.toReal_ofReal', ← neg_sub b,
-    max_zero_sub_eq_self]
+    max_zero_sub_eq_self, measureReal_def]
 
 nonrec theorem integral_smul_measure (c : ℝ≥0∞) :
     ∫ x in a..b, f x ∂c • μ = c.toReal • ∫ x in a..b, f x ∂μ := by
@@ -967,7 +967,7 @@ theorem integral_Iio_add_Ici (h_left : IntegrableOn f (Iio b) μ)
 
 /-- If `μ` is a finite measure then `∫ x in a..b, c ∂μ = (μ (Iic b) - μ (Iic a)) • c`. -/
 theorem integral_const_of_cdf [CompleteSpace E] [IsFiniteMeasure μ] (c : E) :
-    ∫ _ in a..b, c ∂μ = ((μ (Iic b)).toReal - (μ (Iic a)).toReal) • c := by
+    ∫ _ in a..b, c ∂μ = (μ.real (Iic b) - μ.real (Iic a)) • c := by
   simp only [sub_smul, ← setIntegral_const]
   refine (integral_Iic_sub_Iic ?_ ?_).symm <;>
     simp only [integrableOn_const, measure_lt_top, or_true]
