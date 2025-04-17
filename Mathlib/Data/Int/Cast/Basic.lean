@@ -45,6 +45,8 @@ namespace Int
 
 variable {R : Type u} [AddGroupWithOne R]
 
+-- TODO: I don't like that `norm_cast` is used here, because it results in `norm_cast`
+-- introducing the "implementation detail" `Int.negSucc`.
 @[simp, norm_cast squash]
 theorem cast_negSucc (n : ℕ) : (-[n+1] : R) = -(n + 1 : ℕ) :=
   AddGroupWithOne.intCast_negSucc n
@@ -68,14 +70,14 @@ theorem cast_ofNat (n : ℕ) [n.AtLeastTwo] :
 
 @[simp, norm_cast]
 theorem cast_one : ((1 : ℤ) : R) = 1 := by
-  erw [cast_natCast, Nat.cast_one]
+  rw [← Int.natCast_one, cast_natCast, Nat.cast_one]
 -- type had `HasLiftT`
 
 @[simp, norm_cast]
 theorem cast_neg : ∀ n, ((-n : ℤ) : R) = -n
   | (0 : ℕ) => by simp
-  | (n + 1 : ℕ) => by erw [cast_natCast, cast_negSucc]
-  | -[n+1] => by erw [cast_natCast, cast_negSucc, neg_neg]
+  | (n + 1 : ℕ) => by rw [cast_natCast, neg_ofNat_succ]; simp
+  | -[n+1] => by rw [Int.neg_negSucc, cast_natCast]; simp
 -- type had `HasLiftT`
 
 @[simp, norm_cast]
@@ -95,7 +97,10 @@ theorem cast_add : ∀ m n, ((m + n : ℤ) : R) = m + n
   | (m : ℕ), (n : ℕ) => by simp [-Int.natCast_add, ← Int.ofNat_add]
   | (m : ℕ), -[n+1] => by erw [cast_subNatNat, cast_natCast, cast_negSucc, sub_eq_add_neg]
   | -[m+1], (n : ℕ) => by
-    erw [cast_subNatNat, cast_natCast, cast_negSucc, sub_eq_iff_eq_add, add_assoc,
+    #adaptation_note
+    /-- `_root_` can be removed again after
+    https://github.com/leanprover/lean4/pull/7359 lands in nightly-2025-03-06. -/
+    erw [cast_subNatNat, cast_natCast, cast_negSucc, _root_.sub_eq_iff_eq_add, add_assoc,
       eq_neg_add_iff_add_eq, ← Nat.cast_add, ← Nat.cast_add, Nat.add_comm]
   | -[m+1], -[n+1] =>
     show (-[m + n + 1+1] : R) = _ by
@@ -113,12 +118,6 @@ theorem cast_two : ((2 : ℤ) : R) = 2 := cast_ofNat _
 theorem cast_three : ((3 : ℤ) : R) = 3 := cast_ofNat _
 
 theorem cast_four : ((4 : ℤ) : R) = 4 := cast_ofNat _
-
-/-! ### `toNat` -/
-
-theorem toNat_of_nonpos : ∀ {z : ℤ}, z ≤ 0 → z.toNat = 0
-  | 0, _ => rfl
-  | -[_+1], _ => rfl
 
 end Int
 

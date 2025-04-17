@@ -379,7 +379,7 @@ theorem condExpInd_of_measurable (hs : MeasurableSet[m] s) (hμs : μ s ≠ ∞)
   refine EventuallyEq.trans ?_ indicatorConstLp_coeFn.symm
   refine (condExpInd_ae_eq_condExpIndSMul hm (hm s hs) hμs c).trans ?_
   refine (condExpIndSMul_ae_eq_smul hm (hm s hs) hμs c).trans ?_
-  rw [lpMeas_coe, condExpL2_indicator_of_measurable hm hs hμs (1 : ℝ)]
+  rw [condExpL2_indicator_of_measurable hm hs hμs (1 : ℝ)]
   refine (@indicatorConstLp_coeFn α _ _ 2 μ _ s (hm s hs) hμs (1 : ℝ)).mono fun x hx => ?_
   dsimp only
   rw [hx]
@@ -387,7 +387,7 @@ theorem condExpInd_of_measurable (hs : MeasurableSet[m] s) (hμs : μ s ≠ ∞)
 
 @[deprecated (since := "2025-01-21")] alias condexpInd_of_measurable := condExpInd_of_measurable
 
-theorem condExpInd_nonneg {E} [NormedLatticeAddCommGroup E] [NormedSpace ℝ E] [OrderedSMul ℝ E]
+theorem condExpInd_nonneg {E} [NormedAddCommGroup E] [Lattice E] [NormedSpace ℝ E] [OrderedSMul ℝ E]
     (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : E) (hx : 0 ≤ x) : 0 ≤ condExpInd E hm μ s x := by
   rw [← coeFn_le]
   refine EventuallyLE.trans_eq ?_ (condExpInd_ae_eq_condExpIndSMul hm hs hμs x).symm
@@ -512,7 +512,7 @@ theorem aestronglyMeasurable_condExpL1CLM (f : α →₁[μ] F') :
         condExpL1CLM F' hm μ ⁻¹' {f | AEStronglyMeasurable[m] f μ} := rfl
     rw [this]
     refine IsClosed.preimage (condExpL1CLM F' hm μ).continuous ?_
-    exact isClosed_aeStronglyMeasurable' hm
+    exact isClosed_aestronglyMeasurable hm
 
 @[deprecated (since := "2025-01-24")]
 alias aestronglyMeasurable'_condExpL1CLM := aestronglyMeasurable_condExpL1CLM
@@ -656,7 +656,9 @@ theorem condExpL1_of_aestronglyMeasurable' (hfm : AEStronglyMeasurable[m] f μ)
 @[deprecated (since := "2025-01-21")]
 alias condexpL1_of_aestronglyMeasurable' := condExpL1_of_aestronglyMeasurable'
 
-theorem condExpL1_mono {E} [NormedLatticeAddCommGroup E] [CompleteSpace E] [NormedSpace ℝ E]
+theorem condExpL1_mono {E}
+    [NormedAddCommGroup E] [Lattice E] [HasSolidNorm E] [IsOrderedAddMonoid E]
+    [CompleteSpace E] [NormedSpace ℝ E]
     [OrderedSMul ℝ E] {f g : α → E} (hf : Integrable f μ) (hg : Integrable g μ) (hfg : f ≤ᵐ[μ] g) :
     condExpL1 hm μ f ≤ᵐ[μ] condExpL1 hm μ g := by
   rw [coeFn_le]

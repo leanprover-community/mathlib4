@@ -149,9 +149,7 @@ end DirectSum
 /-! ### Concrete instances -/
 
 
-/-- A direct sum of copies of an `Algebra` inherits the algebra structure.
-
--/
+/-- A direct sum of copies of an `Algebra` inherits the algebra structure. -/
 @[simps]
 instance Algebra.directSumGAlgebra {R A : Type*} [AddMonoid ι] [CommSemiring R]
     [Semiring A] [Algebra R A] : DirectSum.GAlgebra R fun _ : ι => A where

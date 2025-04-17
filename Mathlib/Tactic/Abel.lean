@@ -35,6 +35,7 @@ Tactic for evaluating equations in the language of
   * In tactic mode, `abel_nf at h` can be used to rewrite in a hypothesis.
   * `abel_nf (config := cfg)` allows for additional configuration:
     * `red`: the reducibility setting (overridden by `!`)
+    * `zetaDelta`: if true, local let variables can be unfolded (overridden by `!`)
     * `recursive`: if true, `abel_nf` will also recurse into atoms
 * `abel!`, `abel1!`, `abel_nf!` will use a more aggressive reducibility setting to identify atoms.
 
@@ -47,12 +48,11 @@ example [AddCommGroup α] (a : α) : (3 : ℤ) • a = a + (2 : ℤ) • a := by
 
 ## Future work
 
-* In mathlib 3, `abel` accepted addtional optional arguments:
+* In mathlib 3, `abel` accepted additional optional arguments:
   ```
   syntax "abel" (&" raw" <|> &" term")? (location)? : tactic
   ```
   It is undecided whether these features should be restored eventually.
-
 -/
 syntax (name := abel) "abel" "!"? : tactic
 
@@ -439,6 +439,8 @@ inductive AbelMode where
 structure AbelNF.Config where
   /-- the reducibility setting to use when comparing atoms for defeq -/
   red := TransparencyMode.reducible
+  /-- if true, local let variables can be unfolded -/
+  zetaDelta := false
   /-- if true, atoms inside ring expressions will be reduced recursively -/
   recursive := true
   /-- The normalization style. -/
@@ -457,16 +459,18 @@ The core of `abel_nf`, which rewrites the expression `e` into `abel` normal form
 -/
 partial def abelNFCore
     (s : IO.Ref AtomM.State) (cfg : AbelNF.Config) (e : Expr) : MetaM Simp.Result := do
-  let ctx ← Simp.mkContext
-    (simpTheorems := #[← Elab.Tactic.simpOnlyBuiltins.foldlM (·.addConst ·) {}])
-    (congrTheorems := ← getSimpCongrTheorems)
   let simp ← match cfg.mode with
   | .raw => pure pure
   | .term =>
     let thms := [``term_eq, ``termg_eq, ``add_zero, ``one_nsmul, ``one_zsmul, ``zsmul_zero]
-    let ctx' := ctx.setSimpTheorems #[← thms.foldlM (·.addConst ·) {:_}]
+    let ctx ← Simp.mkContext (config := { zetaDelta := cfg.zetaDelta })
+      (simpTheorems := #[← thms.foldlM (·.addConst ·) {}])
+      (congrTheorems := ← getSimpCongrTheorems)
     pure fun r' : Simp.Result ↦ do
-      r'.mkEqTrans (← Simp.main r'.expr ctx' (methods := ← Lean.Meta.Simp.mkDefaultMethods)).1
+      r'.mkEqTrans (← Simp.main r'.expr ctx (methods := ← Lean.Meta.Simp.mkDefaultMethods)).1
+  let ctx ← Simp.mkContext (config := { zetaDelta := cfg.zetaDelta, singlePass := true })
+    (simpTheorems := #[← Elab.Tactic.simpOnlyBuiltins.foldlM (·.addConst ·) {}])
+    (congrTheorems := ← getSimpCongrTheorems)
   let rec
     /-- The recursive case of `abelNF`.
     * `root`: true when the function is called directly from `abelNFCore`
@@ -483,7 +487,7 @@ partial def abelNFCore
           guard e.isApp -- all interesting group expressions are applications
           let (a, pa) ← eval e (← mkContext e) { red := cfg.red, evalAtom } s
           guard !a.isAtom
-          let r ← simp { expr := a, proof? := pa }
+          let r ← liftMetaM <| simp { expr := a, proof? := pa }
           if ← withReducible <| isDefEq r.expr e then return .done { expr := r.expr }
           pure (.done r)
         catch _ => pure <| .continue
@@ -492,7 +496,7 @@ partial def abelNFCore
     /-- The `evalAtom` implementation passed to `eval` calls `go` if `cfg.recursive` is true,
     and does nothing otherwise. -/
     evalAtom := if cfg.recursive then go false else fun e ↦ pure { expr := e }
-  go true e
+  withConfig ({ · with zetaDelta := cfg.zetaDelta }) <| go true e
 
 open Elab.Tactic Parser.Tactic
 /-- Use `abel_nf` to rewrite the main goal. -/
@@ -521,7 +525,7 @@ def abelNFLocalDecl (s : IO.Ref AtomM.State) (cfg : AbelNF.Config) (fvarId : FVa
 @[tactic_alt abel]
 elab (name := abelNF) "abel_nf" tk:"!"? cfg:optConfig loc:(location)? : tactic => do
   let mut cfg ← elabAbelNFConfig cfg
-  if tk.isSome then cfg := { cfg with red := .default }
+  if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   let s ← IO.mkRef {}
   withLocation loc (abelNFLocalDecl s cfg) (abelNFTarget s cfg)
@@ -539,7 +543,7 @@ syntax (name := abelNFConv) "abel_nf" "!"? optConfig : conv
 def elabAbelNFConv : Tactic := fun stx ↦ match stx with
   | `(conv| abel_nf $[!%$tk]? $cfg:optConfig) => withMainContext do
     let mut cfg ← elabAbelNFConfig cfg
-    if tk.isSome then cfg := { cfg with red := .default }
+    if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
     Conv.applySimpResult (← abelNFCore (← IO.mkRef {}) cfg (← instantiateMVars (← Conv.getLhs)))
   | _ => Elab.throwUnsupportedSyntax
 

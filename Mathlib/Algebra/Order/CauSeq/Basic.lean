@@ -39,7 +39,8 @@ open IsAbsoluteValue
 
 section
 
-variable [LinearOrderedField α] [Ring β] (abv : β → α) [IsAbsoluteValue abv]
+variable [Field α] [LinearOrder α] [IsStrictOrderedRing α] [Ring β]
+  (abv : β → α) [IsAbsoluteValue abv]
 
 theorem rat_add_continuous_lemma {ε : α} (ε0 : 0 < ε) :
     ∃ δ > 0, ∀ {a₁ a₂ b₁ b₂ : β}, abv (a₁ - b₁) < δ → abv (a₂ - b₂) < δ →
@@ -79,13 +80,16 @@ theorem rat_inv_continuous_lemma {β : Type*} [DivisionRing β] (abv : β → α
 end
 
 /-- A sequence is Cauchy if the distance between its entries tends to zero. -/
-def IsCauSeq {α : Type*} [LinearOrderedField α] {β : Type*} [Ring β] (abv : β → α) (f : ℕ → β) :
+@[nolint unusedArguments]
+def IsCauSeq {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+    {β : Type*} [Ring β] (abv : β → α) (f : ℕ → β) :
     Prop :=
   ∀ ε > 0, ∃ i, ∀ j ≥ i, abv (f j - f i) < ε
 
 namespace IsCauSeq
 
-variable [LinearOrderedField α] [Ring β] {abv : β → α} [IsAbsoluteValue abv] {f g : ℕ → β}
+variable [Field α] [LinearOrder α] [IsStrictOrderedRing α] [Ring β]
+  {abv : β → α} [IsAbsoluteValue abv] {f g : ℕ → β}
 
 -- see Note [nolint_ge]
 --@[nolint ge_or_gt] -- Porting note: restore attribute
@@ -147,12 +151,13 @@ end IsCauSeq
 
 /-- `CauSeq β abv` is the type of `β`-valued Cauchy sequences, with respect to the absolute value
 function `abv`. -/
-def CauSeq {α : Type*} [LinearOrderedField α] (β : Type*) [Ring β] (abv : β → α) : Type _ :=
+def CauSeq {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+    (β : Type*) [Ring β] (abv : β → α) : Type _ :=
   { f : ℕ → β // IsCauSeq abv f }
 
 namespace CauSeq
 
-variable [LinearOrderedField α]
+variable [Field α] [LinearOrder α] [IsStrictOrderedRing α]
 
 section Ring
 
@@ -200,12 +205,9 @@ theorem coe_add (f g : CauSeq β abv) : ⇑(f + g) = (f : ℕ → β) + g :=
 theorem add_apply (f g : CauSeq β abv) (i : ℕ) : (f + g) i = f i + g i :=
   rfl
 
-variable (abv)
-
+variable (abv) in
 /-- The constant Cauchy sequence. -/
 def const (x : β) : CauSeq β abv := ⟨fun _ ↦ x, IsCauSeq.const _⟩
-
-variable {abv}
 
 /-- The constant Cauchy sequence -/
 local notation "const" => const abv

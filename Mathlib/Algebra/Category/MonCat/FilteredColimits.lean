@@ -3,10 +3,10 @@ Copyright (c) 2021 Justus Springer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justus Springer
 -/
-import Mathlib.Algebra.Category.MonCat.Limits
 import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
-import Mathlib.CategoryTheory.Limits.TypesFiltered
+import Mathlib.CategoryTheory.Limits.Types.Filtered
+import Mathlib.Algebra.Category.MonCat.Basic
 
 /-!
 # The forgetful functor from (commutative) (additive) monoids preserves filtered colimits.
@@ -36,7 +36,7 @@ section
 
 -- Porting note: mathlib 3 used `parameters` here, mainly so we can have the abbreviations `M` and
 -- `M.mk` below, without passing around `F` all the time.
-variable {J : Type v} [SmallCategory J] (F : J ⥤ MonCatMax.{v, u})
+variable {J : Type v} [SmallCategory J] (F : J ⥤ MonCat.{max v u})
 
 /-- The colimit of `F ⋙ forget MonCat` in the category of types.
 In the following, we will construct a monoid structure on `M`.
@@ -259,11 +259,8 @@ def colimitDesc (t : Cocone F) : colimit.{v, u} F ⟶ t.pt :=
       rw [colimit_mul_mk_eq F ⟨i, x⟩ ⟨j, y⟩ (max' i j) (IsFiltered.leftToMax i j)
         (IsFiltered.rightToMax i j)]
       dsimp [Types.TypeMax.colimitCoconeIsColimit]
-      rw [MonoidHom.map_mul]
-      -- Porting note: `rw` can't see through coercion is actually forgetful functor,
-      -- so can't rewrite `t.w_apply`
-      congr 1 <;>
-      exact t.w_apply _ _ }
+      rw [MonoidHom.map_mul, t.w_apply, t.w_apply]
+      rfl }
 
 /-- The proposed colimit cocone is a colimit in `MonCat`. -/
 @[to_additive "The proposed colimit cocone is a colimit in `AddMonCat`."]

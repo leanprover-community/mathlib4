@@ -21,12 +21,12 @@ namespace Rat
 
 variable {α : Type*} [DivisionRing α]
 
+-- Note that this is more general than `(Rat.castHom α).map_pow`.
 @[simp, norm_cast]
 lemma cast_pow (p : ℚ) (n : ℕ) : ↑(p ^ n) = (p ^ n : α) := by
   rw [cast_def, cast_def, den_pow, num_pow, Nat.cast_pow, Int.cast_pow, div_eq_mul_inv, ← inv_pow,
     ← (Int.cast_commute _ _).mul_pow, ← div_eq_mul_inv]
 
--- Porting note: rewrote proof
 @[simp]
 theorem cast_inv_nat (n : ℕ) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ := by
   rcases n with - | n
@@ -34,7 +34,6 @@ theorem cast_inv_nat (n : ℕ) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ := by
   rw [cast_def, inv_natCast_num, inv_natCast_den, if_neg n.succ_ne_zero,
     Int.sign_eq_one_of_pos (Int.ofNat_succ_pos n), Int.cast_one, one_div]
 
--- Porting note: proof got a lot easier - is this still the intended statement?
 @[simp]
 theorem cast_inv_int (n : ℤ) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ := by
   rcases n with n | n
@@ -76,7 +75,8 @@ theorem cast_zpow_of_ne_zero {K} [DivisionSemiring K] (q : ℚ≥0) (z : ℤ) (h
     rw [cast_inv_of_ne_zero hq]
 
 open OfScientific in
-theorem Nonneg.coe_ofScientific {K} [LinearOrderedField K] (m : ℕ) (s : Bool) (e : ℕ) :
+theorem Nonneg.coe_ofScientific {K} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
+    (m : ℕ) (s : Bool) (e : ℕ) :
     (ofScientific m s e : {x : K // 0 ≤ x}).val = ofScientific m s e := rfl
 
 end NNRat

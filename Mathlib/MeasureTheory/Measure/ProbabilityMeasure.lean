@@ -5,6 +5,7 @@ Authors: Kalle Kytölä
 -/
 import Mathlib.MeasureTheory.Measure.FiniteMeasure
 import Mathlib.MeasureTheory.Integral.Average
+import Mathlib.MeasureTheory.Measure.Prod
 
 /-!
 # Probability measures
@@ -180,6 +181,14 @@ theorem apply_mono (μ : ProbabilityMeasure Ω) {s₁ s₂ : Set Ω} (h : s₁ �
   rw [← coeFn_comp_toFiniteMeasure_eq_coeFn]
   exact MeasureTheory.FiniteMeasure.apply_mono _ h
 
+/-- Continuity from below: the measure of the union of a sequence of (not necessarily measurable)
+sets is the limit of the measures of the partial unions. -/
+protected lemma tendsto_measure_iUnion_accumulate {ι : Type*} [Preorder ι]
+    [IsCountablyGenerated (atTop : Filter ι)] {μ : ProbabilityMeasure Ω} {f : ι → Set Ω} :
+    Tendsto (fun i ↦ μ (Accumulate f i)) atTop (𝓝 (μ (⋃ i, f i))) := by
+  simpa [← ennreal_coeFn_eq_coeFn_toMeasure, ENNReal.tendsto_coe]
+    using tendsto_measure_iUnion_accumulate (μ := μ.toMeasure)
+
 @[simp] theorem apply_le_one (μ : ProbabilityMeasure Ω) (s : Set Ω) : μ s ≤ 1 := by
   simpa using apply_mono μ (subset_univ s)
 
@@ -208,6 +217,32 @@ theorem mass_toFiniteMeasure (μ : ProbabilityMeasure Ω) : μ.toFiniteMeasure.m
 
 theorem toFiniteMeasure_nonzero (μ : ProbabilityMeasure Ω) : μ.toFiniteMeasure ≠ 0 := by
   simp [← FiniteMeasure.mass_nonzero_iff]
+
+/-- The type of probability measures is a measurable space when equipped with the Giry monad. -/
+instance : MeasurableSpace (ProbabilityMeasure Ω) := Subtype.instMeasurableSpace
+
+lemma measurableSet_isProbabilityMeasure :
+    MeasurableSet { μ : Measure Ω | IsProbabilityMeasure μ } := by
+  suffices { μ : Measure Ω | IsProbabilityMeasure μ } = (fun μ => μ univ) ⁻¹' {1} by
+    rw [this]
+    exact Measure.measurable_coe MeasurableSet.univ (measurableSet_singleton 1)
+  ext _
+  apply isProbabilityMeasure_iff
+
+/-- The monoidal product is a measurable function from the product of probability spaces over
+`α` and `β` into the type of probability spaces over `α × β`. Lemma 4.1 of [A synthetic approach to
+Markov kernels, conditional independence and theorems on sufficient statistics][fritz2020]. -/
+theorem measurable_prod {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
+    Measurable (fun (μ : ProbabilityMeasure α × ProbabilityMeasure β)
+      ↦ μ.1.toMeasure.prod μ.2.toMeasure) := by
+  apply Measurable.measure_of_isPiSystem_of_isProbabilityMeasure generateFrom_prod.symm
+    isPiSystem_prod _
+  simp only [mem_image2, mem_setOf_eq, forall_exists_index, and_imp]
+  intros _ u Hu v Hv Heq
+  simp_rw [← Heq, Measure.prod_prod]
+  apply Measurable.mul
+  · exact (Measure.measurable_coe Hu).comp (measurable_subtype_coe.comp measurable_fst)
+  · exact (Measure.measurable_coe Hv).comp (measurable_subtype_coe.comp measurable_snd)
 
 section convergence_in_distribution
 

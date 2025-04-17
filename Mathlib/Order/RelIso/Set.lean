@@ -48,9 +48,7 @@ end RelHomClass
 
 namespace RelIso
 
-@[simp]
-theorem range_eq (e : r ≃r s) : Set.range e = Set.univ :=
-  e.surjective.range_eq
+theorem range_eq (e : r ≃r s) : Set.range e = Set.univ := by simp
 
 end RelIso
 

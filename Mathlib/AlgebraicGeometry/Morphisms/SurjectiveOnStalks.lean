@@ -89,6 +89,14 @@ instance stableUnderBaseChange :
   intros R S T _ _ _ _ _ H
   exact H.baseChange
 
+variable {f} in
+lemma mono_of_injective [SurjectiveOnStalks f] (hf : Function.Injective f.base) : Mono f := by
+  refine (Scheme.forgetToLocallyRingedSpace ⋙
+    LocallyRingedSpace.forgetToSheafedSpace).mono_of_mono_map ?_
+  apply SheafedSpace.mono_of_base_injective_of_stalk_epi
+  · exact hf
+  · exact fun x ↦ ConcreteCategory.epi_of_surjective _ (f.stalkMap_surjective x)
+
 /-- If `Y ⟶ S` is surjective on stalks, then for every `X ⟶ S`, `X ×ₛ Y` is a subset of
 `X × Y` (cartesian product as topological spaces) with the induced topology. -/
 lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [SurjectiveOnStalks g] :

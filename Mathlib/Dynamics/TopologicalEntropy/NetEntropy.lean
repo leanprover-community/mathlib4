@@ -83,7 +83,7 @@ lemma isDynNetIn_singleton (T : X → X) {F : Set X} (U : Set (X × X)) (n : ℕ
   a dynamical cover. This lemma is the first of two key results to compare two versions of
   topological entropy: with cover and with nets, the second being `coverMincard_le_netMaxcard`. -/
 lemma IsDynNetIn.card_le_card_of_isDynCoverOf {T : X → X} {F : Set X} {U : Set (X × X)}
-    (U_symm : SymmetricRel U) {n : ℕ} {s t : Finset X} (hs : IsDynNetIn T F U n s)
+    (U_symm : IsSymmetricRel U) {n : ℕ} {s t : Finset X} (hs : IsDynNetIn T F U n s)
     (ht : IsDynCoverOf T F U n t) :
     s.card ≤ t.card := by
   have (x : X) (x_s : x ∈ s) : ∃ z ∈ t, x ∈ ball z (dynEntourage T U n) := by
@@ -202,15 +202,15 @@ lemma netMaxcard_infinite_iff (T : X → X) (F : Set X) (U : Set (X × X)) (n : 
     simp only [Nat.cast_lt, Subtype.exists, exists_prop] at h
     rcases h with ⟨s, s_net, s_k⟩
     exact ⟨s, ⟨s_net, s_k.le⟩⟩
-  · refine WithTop.forall_gt_iff_eq_top.1 fun k ↦ ?_
+  · refine WithTop.eq_top_iff_forall_gt.2 fun k ↦ ?_
     specialize h (k + 1)
     rcases h with ⟨s, s_net, s_card⟩
     apply s_net.card_le_netMaxcard.trans_lt'
     rw [ENat.some_eq_coe, Nat.cast_lt]
     exact (lt_add_one k).trans_le s_card
 
-lemma netMaxcard_le_coverMincard (T : X → X) (F : Set X) {U : Set (X × X)} (U_symm : SymmetricRel U)
-    (n : ℕ) :
+lemma netMaxcard_le_coverMincard (T : X → X) (F : Set X) {U : Set (X × X)}
+    (U_symm : IsSymmetricRel U) (n : ℕ) :
     netMaxcard T F U n ≤ coverMincard T F U n := by
   rcases eq_top_or_lt_top (coverMincard T F U n) with h | h
   · exact h ▸ le_top
@@ -222,7 +222,7 @@ lemma netMaxcard_le_coverMincard (T : X → X) (F : Set X) {U : Set (X × X)} (U
   cardinality than a maximal dynamical net by `U`. This lemma is the second of two key results to
   compare two versions topological entropy: with cover and with nets. -/
 lemma coverMincard_le_netMaxcard (T : X → X) (F : Set X) {U : Set (X × X)} (U_rfl : idRel ⊆ U)
-    (U_symm : SymmetricRel U) (n : ℕ) :
+    (U_symm : IsSymmetricRel U) (n : ℕ) :
     coverMincard T F (U ○ U) n ≤ netMaxcard T F U n := by
   classical
   -- WLOG, there exists a maximal dynamical net `s`.
@@ -317,27 +317,27 @@ lemma netEntropyEntourage_univ (T : X → X) {F : Set X} (h : F.Nonempty) :
     netEntropyEntourage T F univ = 0 := by simp [netEntropyEntourage, netMaxcard_univ T h]
 
 lemma netEntropyInfEntourage_le_coverEntropyInfEntourage (T : X → X) (F : Set X) {U : Set (X × X)}
-    (U_symm : SymmetricRel U) :
+    (U_symm : IsSymmetricRel U) :
     netEntropyInfEntourage T F U ≤ coverEntropyInfEntourage T F U :=
   (liminf_le_liminf) (Eventually.of_forall fun n ↦ (div_le_div_right_of_nonneg (Nat.cast_nonneg' n)
     (log_monotone (ENat.toENNReal_le.2 (netMaxcard_le_coverMincard T F U_symm n)))))
 
 lemma coverEntropyInfEntourage_le_netEntropyInfEntourage (T : X → X) (F : Set X) {U : Set (X × X)}
-    (U_rfl : idRel ⊆ U) (U_symm : SymmetricRel U) :
+    (U_rfl : idRel ⊆ U) (U_symm : IsSymmetricRel U) :
     coverEntropyInfEntourage T F (U ○ U) ≤ netEntropyInfEntourage T F U := by
   refine (liminf_le_liminf) (Eventually.of_forall fun n ↦ ?_)
   apply div_le_div_right_of_nonneg (Nat.cast_nonneg' n) (log_monotone _)
   exact ENat.toENNReal_le.2 (coverMincard_le_netMaxcard T F U_rfl U_symm n)
 
 lemma netEntropyEntourage_le_coverEntropyEntourage (T : X → X) (F : Set X) {U : Set (X × X)}
-    (U_symm : SymmetricRel U) :
+    (U_symm : IsSymmetricRel U) :
     netEntropyEntourage T F U ≤ coverEntropyEntourage T F U := by
   refine (limsup_le_limsup) (Eventually.of_forall fun n ↦ ?_)
   apply div_le_div_right_of_nonneg (Nat.cast_nonneg' n) (log_monotone _)
   exact ENat.toENNReal_le.2 (netMaxcard_le_coverMincard T F U_symm n)
 
 lemma coverEntropyEntourage_le_netEntropyEntourage (T : X → X) (F : Set X) {U : Set (X × X)}
-    (U_rfl : idRel ⊆ U) (U_symm : SymmetricRel U) :
+    (U_rfl : idRel ⊆ U) (U_symm : IsSymmetricRel U) :
     coverEntropyEntourage T F (U ○ U) ≤ netEntropyEntourage T F U := by
   refine (limsup_le_limsup) (Eventually.of_forall fun n ↦ ?_)
   apply div_le_div_right_of_nonneg (Nat.cast_nonneg' n) (log_monotone _)
