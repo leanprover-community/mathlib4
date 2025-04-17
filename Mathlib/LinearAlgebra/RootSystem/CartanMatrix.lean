@@ -60,14 +60,14 @@ lemma cartanMatrix_apply_same (i : b.support) :
   b.cartanMatrixIn_apply_same ℤ i
 
 lemma cartanMatrix_le_zero_of_ne [Finite ι] [IsDomain R]
-    [NoZeroSMulDivisors R M] [NoZeroSMulDivisors R N]
     (i j : b.support) (h : i ≠ j) :
     b.cartanMatrix i j ≤ 0 :=
   b.pairingIn_le_zero_of_ne (by rwa [ne_eq, ← Subtype.ext_iff]) i.property j.property
 
-lemma cartanMatrix_mem_of_ne [Finite ι] [IsDomain R] [NoZeroSMulDivisors R M]
-    [NoZeroSMulDivisors R N] {i j : b.support} (hij : i ≠ j) :
+lemma cartanMatrix_mem_of_ne [Finite ι] [IsDomain R] {i j : b.support} (hij : i ≠ j) :
     b.cartanMatrix i j ∈ ({-3, -2, -1, 0} : Set ℤ) := by
+  have := P.reflexive_left
+  have := P.reflexive_right
   simp only [cartanMatrix, cartanMatrixIn_def]
   have h₁ := P.pairingIn_pairingIn_mem_set_of_isCrystallographic i j
   have h₂ : P.pairingIn ℤ i j ≤ 0 := b.cartanMatrix_le_zero_of_ne i j hij
