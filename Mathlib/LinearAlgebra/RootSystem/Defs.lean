@@ -749,20 +749,6 @@ lemma _root_.RootSystem.reflection_perm_eq_reflection_perm_iff (P : RootSystem �
     span R (range P.coroot') = ⊤ :=
   span_root'_eq_top P.flip
 
-lemma dual_vanish_aux (P : RootSystem ι R M N) (v : M)
-    (h₁ : ∀ (i : ι), v ∈ LinearMap.ker (P.coroot' i)) (d : Module.Dual R M) : d v = 0 := by
-  have : d ∈ span R (range P.coroot') := by
-    simp only [span_coroot'_eq_top]
-    exact trivial
-  induction this using Submodule.span_induction with
-  | mem x hx' =>
-    rcases hx' with ⟨w, h⟩
-    subst h
-    exact h₁ w
-  | zero => simp only [Submodule.mem_top, LinearMap.zero_apply]
-  | add _ _ _ _ a₁ a₂ => rw [LinearMap.add_apply, a₁, a₂, add_zero]
-  | smul _ _ _ m => rw [LinearMap.smul_apply, smul_eq_mul, m, mul_zero]
-
 /-- The Coxeter Weight of a pair gives the weight of an edge in a Coxeter diagram, when it is
 finite.  It is `4 cos² θ`, where `θ` describes the dihedral angle between hyperplanes. -/
 def coxeterWeight : R := pairing P i j * pairing P j i
