@@ -74,33 +74,41 @@ protected lemma symm : q.HolderTriple p r where
   left_pos := h.right_pos
   right_pos := h.left_pos
 
-theorem pos : 0 < p := h.left_pos
-theorem nonneg : 0 ≤ p := h.pos.le
-theorem ne_zero : p ≠ 0 := h.pos.ne'
-protected lemma inv_pos : 0 < p⁻¹ := inv_pos.2 h.pos
-protected lemma inv_nonneg : 0 ≤ p⁻¹ := h.inv_pos.le
-protected lemma inv_ne_zero : p⁻¹ ≠ 0 := h.inv_pos.ne'
-theorem one_div_pos : 0 < 1 / p := _root_.one_div_pos.2 h.pos
-theorem one_div_nonneg : 0 ≤ 1 / p := le_of_lt h.one_div_pos
-theorem one_div_ne_zero : 1 / p ≠ 0 := ne_of_gt h.one_div_pos
+lemma left_nonneg : 0 ≤ p := h.left_pos.le
+lemma right_nonneg : 0 ≤ q := h.right_pos.le
+lemma left_ne_zero : p ≠ 0 := h.left_pos.ne'
+lemma right_ne_zero : q ≠ 0 := h.right_pos.ne'
 
-/-- For `r`, instead of `p` -/
-theorem pos' : 0 < r := inv_pos.mp <| h.inv_add_inv_eq_inv ▸ add_pos h.inv_pos h.symm.inv_pos
-/-- For `r`, instead of `p` -/
-theorem nonneg' : 0 ≤ r := h.pos'.le
-/-- For `r`, instead of `p` -/
-theorem ne_zero' : r ≠ 0 := h.pos'.ne'
-/-- For `r`, instead of `p` -/
-protected lemma inv_pos' : 0 < r⁻¹ := inv_pos.2 h.pos'
-/-- For `r`, instead of `p` -/
-protected lemma inv_nonneg' : 0 ≤ r⁻¹ := h.inv_pos'.le
-/-- For `r`, instead of `p` -/
-protected lemma inv_ne_zero' : r⁻¹ ≠ 0 := h.inv_pos'.ne'
-/-- For `r`, instead of `p` -/
-theorem one_div_pos' : 0 < 1 / r := _root_.one_div_pos.2 h.pos'
-/-- For `r`, instead of `p` -/
-theorem one_div_nonneg' : 0 ≤ 1 / r := le_of_lt h.one_div_pos'
-/-- For `r`, instead of `p` -/
+lemma left_inv_pos : 0 < p⁻¹ := inv_pos.2 h.left_pos
+lemma right_inv_pos : 0 < q⁻¹ := inv_pos.2 h.right_pos
+lemma left_inv_nonneg : 0 ≤ p⁻¹ := h.left_inv_pos.le
+lemma right_inv_nonneg : 0 ≤ q⁻¹ := h.right_inv_pos.le
+lemma left_inv_ne_zero : p⁻¹ ≠ 0 := h.left_inv_pos.ne'
+lemma right_inv_ne_zero : q⁻¹ ≠ 0 := h.right_inv_pos.ne'
+
+@[deprecated left_inv_pos (since := "2025-04-09")]
+theorem one_div_pos : 0 < 1 / p := by simpa using h.left_inv_pos
+
+@[deprecated left_inv_nonneg (since := "2025-04-09")]
+theorem one_div_nonneg : 0 ≤ 1 / p := by simpa using h.left_inv_nonneg
+
+@[deprecated left_inv_ne_zero (since := "2025-04-09")]
+theorem one_div_ne_zero : 1 / p ≠ 0 := by simpa using h.left_inv_ne_zero
+
+lemma pos : 0 < r := by rw [← inv_pos.mp <| h.inv_add_inv_eq_inv ▸ add_pos h.left_inv_pos h.symm.left_inv_pos
+lemma nonneg : 0 ≤ r := h.pos.le
+lemma ne_zero : r ≠ 0 := h.pos.ne
+protected lemma inv_pos : 0 < r⁻¹ := inv_pos.2 h.pos
+protected lemma inv_nonneg : 0 ≤ r⁻¹ := h.inv_pos.le
+protected lemma inv_ne_zero : r⁻¹ ≠ 0 := h.inv_pos.ne
+
+@[deprecated HolderTriple.inv_pos (since := "2025-04-09")]
+theorem one_div_pos' : 0 < 1 / r := _root_.one_div_pos.2 h.pos
+
+@[deprecated HolderTriple.inv_nonneg (since := "2025-04-09")]
+theorem one_div_nonneg' : 0 ≤ 1 / r := le_of_lt h.one_div_pos
+
+@[deprecated HolderTriple.inv_ne_zero (since := "2025-04-09")]
 theorem one_div_ne_zero' : 1 / r ≠ 0 := ne_of_gt h.one_div_pos'
 
 lemma inv_eq : r⁻¹ = p⁻¹ + q⁻¹ := h.inv_add_inv_eq_inv.symm
@@ -112,7 +120,9 @@ protected lemma inv_lt_inv : p⁻¹ < r⁻¹ := calc
   p⁻¹ = p⁻¹ + 0 := add_zero _ |>.symm
   _ < p⁻¹ + q⁻¹ := by gcongr; exact h.symm.inv_pos
   _ = r⁻¹ := h.inv_add_inv_eq_inv
-lemma lt : r < p := by simpa using inv_strictAnti₀ h.inv_pos h.inv_lt_inv
+
+lemma lt_left : r < p := by simpa using inv_strictAnti₀ h.inv_pos h.inv_lt_inv
+lemma lt_right : r < q := by simpa using inv_strictAnti₀ h.inv_pos h.inv_lt_inv
 lemma inv_sub_inv_eq_inv : r⁻¹ - q⁻¹ = p⁻¹ := sub_eq_of_eq_add h.inv_eq
 
 lemma holderConjugate_div_div : (p / r).HolderConjugate (q / r) where

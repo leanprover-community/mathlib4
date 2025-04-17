@@ -71,31 +71,40 @@ lemma inv_eq : r⁻¹ = p⁻¹ + q⁻¹ := (inv_add_inv_eq_inv ..).symm
 lemma unique (r' : ℝ≥0∞) [hr' : HolderTriple p q r'] : r = r' := by
   rw [← inv_inj, inv_eq p q r, inv_eq p q r']
 
+@[deprecated inv_add_inv_eq_inv (since := "2025-04-09")]
 lemma one_div_add_one_div : 1 / p + 1 / q = 1 / r := by simpa using inv_add_inv_eq_inv ..
 
-lemma one_div_eq : 1 / r = 1 / p + 1 / q :=
-  one_div_add_one_div p q r |>.symm
+@[deprecated inv_eq (since := "2025-04-09")]
+lemma one_div_eq : 1 / r = 1 / p + 1 / q := by simpa using inv_eq p q r
 
 lemma inv_inv_add_inv : (p⁻¹ + q⁻¹)⁻¹ = r := by
   simp [inv_add_inv_eq_inv p q r]
 
-include q in
-lemma le : r ≤ p := by
-  simp [← ENNReal.inv_le_inv, ← @inv_inv_add_inv p q r, inv_inv]
+include q in lemma left_inv_le_inv : p⁻¹ ≤ r⁻¹ := by simp [inv_eq p q r]
+include p in lemma right_inv_le_inv : q⁻¹ ≤ r⁻¹ := by simp [inv_eq p q r]
 
-include q in
-protected lemma inv_le_inv : p⁻¹ ≤ r⁻¹ := by
-  simp [ENNReal.inv_le_inv, le p q r]
+include q in lemma le_left : r ≤ p := by simpa using left_inv_le_inv p q r
+include p in lemma le_right : r ≤ q := by simpa using right_inv_le_inv p q r
 
 variable {r} in
-lemma inv_sub_inv_eq_inv (hr : r ≠ 0) : r⁻¹ - q⁻¹ = p⁻¹ := by
+/-- See also `ENNReal.HolderTriple.inv_sub_right_inv_eq_left_inv'` for a version that assumes
+`q ≠ 0` instead of `r ≠ 0`. -/
+lemma inv_sub_right_inv_eq_left_inv (hr : r ≠ 0) : r⁻¹ - q⁻¹ = p⁻¹ := by
   apply ENNReal.sub_eq_of_eq_add (ne_of_lt ?_) (inv_eq p q r)
   calc
-    q⁻¹ ≤ r⁻¹ := HolderTriple.inv_le_inv q p r
+    q⁻¹ ≤ r⁻¹ := HolderTriple.left_inv_le_inv q p r
     _ < ∞ := by simpa using pos_iff_ne_zero.mpr hr
 
-/-- assumes `q ≠ 0` instead of `r ≠ 0`. -/
-lemma inv_sub_inv_eq_inv' (hq : q ≠ 0) : r⁻¹ - q⁻¹ = p⁻¹ := by
+variable {r} in
+/-- See also `ENNReal.HolderTriple.inv_sub_left_inv_eq_right_inv'` for a version that assumes
+`p ≠ 0` instead of `r ≠ 0`. -/
+lemma inv_sub_left_inv_eq_right_inv (hr : r ≠ 0) : r⁻¹ - p⁻¹ = q⁻¹ :=
+  inv_sub_right_inv_eq_left_inv q p hr
+
+variable {q} in
+/-- See also `ENNReal.HolderTriple.inv_sub_right_inv_eq_left_inv` for a version that assumes
+`r ≠ 0` instead of `q ≠ 0`. -/
+lemma inv_sub_right_inv_eq_left_inv' (hq : q ≠ 0) : r⁻¹ - q⁻¹ = p⁻¹ := by
   obtain (rfl | hr) := eq_zero_or_pos r
   · suffices p = 0 by simpa [this]
     by_contra! hp
@@ -104,11 +113,26 @@ lemma inv_sub_inv_eq_inv' (hq : q ≠ 0) : r⁻¹ - q⁻¹ = p⁻¹ := by
       _ < ⊤ + ⊤ := by simp [hp, hq, pos_iff_ne_zero]
       _ = ⊤ := by simp
     simp_all
-  · exact inv_sub_inv_eq_inv p q hr.ne'
+  · exact inv_sub_right_inv_eq_left_inv p q hr.ne'
+
+variable {p} in
+/-- See also `ENNReal.HolderTriple.inv_sub_left_inv_eq_right_inv` for a version that assumes
+`r ≠ 0` instead of `p ≠ 0`. -/
+lemma inv_sub_left_inv_eq_right_inv' (hp : p ≠ 0) : r⁻¹ - p⁻¹ = q⁻¹ :=
+  inv_sub_right_inv_eq_left_inv' _ _ hp
 
 variable {r} in
-lemma unique_of_ne_zero (q' : ℝ≥0∞) (hr : r ≠ 0) [HolderTriple p q' r] : q = q' := by
-  rw [← inv_inj, ← inv_sub_inv_eq_inv q p hr, ← inv_sub_inv_eq_inv q' p hr]
+lemma right_unique_of_ne_zero (q' : ℝ≥0∞) (hr : r ≠ 0) [HolderTriple p q' r] : q = q' := by
+  rw [← inv_inj, ← inv_sub_right_inv_eq_left_inv q p hr, ← inv_sub_right_inv_eq_left_inv q' p hr]
+
+variable {r} in
+lemma left_unique_of_ne_zero (p' : ℝ≥0∞) (hr : r ≠ 0) [HolderTriple p' q r] : p = p' :=
+  right_unique_of_ne_zero q p p' hr
+
+lemma holderConjugate_div_div (hr₀ : r ≠ 0) (hr : r ≠ ∞) : HolderConjugate (p / r) (q / r) where
+  inv_add_inv_eq_inv := by
+    rw [ENNReal.inv_div (.inl hr) (.inl hr₀), ENNReal.inv_div (.inl hr) (.inl hr₀), div_eq_mul_inv,
+      div_eq_mul_inv, ← mul_add, inv_add_inv_eq_inv p q r, ENNReal.mul_inv_cancel hr₀ hr, inv_one]
 
 lemma holderConjugate_div_div (hr₀ : r ≠ 0) (hr : r ≠ ∞) : HolderConjugate (p / r) (q / r) where
   inv_add_inv_eq_inv := by
@@ -136,43 +160,52 @@ instance instOneInfty : HolderConjugate 1 ∞ := inferInstance
 
 variable (p q : ℝ≥0∞) [HolderConjugate p q]
 
-include q in
-lemma one_le : 1 ≤ p := HolderTriple.le p q 1
+include q in lemma one_le_left : 1 ≤ p := HolderTriple.le_left p q 1
+include p in lemma one_le_right : 1 ≤ q := HolderTriple.le_right p q 1
 
-include q in
-lemma pos : 0 < p := zero_lt_one.trans_le (one_le p q)
+include q in lemma left_pos : 0 < p := zero_lt_one.trans_le (one_le_left p q)
+include p in lemma right_pos : 0 < q := zero_lt_one.trans_le (one_le_right p q)
 
-include q in
-lemma ne_zero : p ≠ 0 := pos p q |>.ne'
+include q in lemma left_ne_zero : p ≠ 0 := left_pos p q |>.ne'
+include p in lemma right_ne_zero : q ≠ 0 := right_pos p q |>.ne'
 
 lemma inv_add_inv_eq_one : p⁻¹ + q⁻¹ = 1 := @inv_one ℝ≥0∞ _ ▸ HolderTriple.inv_add_inv_eq_inv p q 1
 
-lemma one_sub_inv : 1 - p⁻¹ = q⁻¹ :=
-  @inv_one ℝ≥0∞ _ ▸ HolderTriple.inv_sub_inv_eq_inv q p one_ne_zero
+lemma one_sub_left_inv : 1 - p⁻¹ = q⁻¹ := by
+  simpa using HolderTriple.inv_sub_left_inv_eq_right_inv p q one_ne_zero
 
-lemma unique (q' : ℝ≥0∞) [hq' : HolderConjugate p q'] : q = q' :=
-  HolderTriple.unique_of_ne_zero p q q' one_ne_zero
+lemma one_sub_right_inv : 1 - q⁻¹ = p⁻¹ := by
+  simpa using HolderTriple.inv_sub_right_inv_eq_left_inv p q one_ne_zero
 
-lemma eq_top_iff_eq_one : p = ∞ ↔ q = 1 := by
-  constructor
-  · rintro rfl
-    rw [← inv_inv q, ← one_sub_inv ∞ q]
-    simp
-  · rintro rfl
-    rw [← inv_inv p, ← one_sub_inv 1 p]
-    simp
+lemma left_unique (p' : ℝ≥0∞) [HolderConjugate p' q] : p = p' :=
+  HolderTriple.left_unique_of_ne_zero _ q _ one_ne_zero
 
-lemma ne_top_iff_ne_one : p ≠ ∞ ↔ q ≠ 1 := by
-  rw [not_iff_not, eq_top_iff_eq_one p q]
+lemma right_unique (q' : ℝ≥0∞) [HolderConjugate p q'] : q = q' := left_unique _ p _
 
-lemma lt_top_iff_one_lt : p < ∞ ↔ 1 < q := by
-  rw [lt_top_iff_ne_top, ne_top_iff_ne_one _ q, ne_comm, lt_iff_le_and_ne]
-  simp [one_le q p]
+lemma left_eq_top_iff_right_eq_one : p = ∞ ↔ q = 1 where
+  mp := by rintro rfl; rw [← inv_inv q, ← one_sub_left_inv ∞ q]; simp
+  mpr := by rintro rfl; rw [← inv_inv p, ← one_sub_right_inv p 1]; simp
 
-lemma sub_one_mul_inv (hp : p ≠ ⊤) : (p - 1) * p⁻¹ = q⁻¹ := by
-  have := pos p q |>.ne'
+lemma right_eq_top_iff_left_eq_one : q = ∞ ↔ p = 1 := left_eq_top_iff_right_eq_one q p
+
+lemma left_ne_top_iff_right_ne_one : p ≠ ∞ ↔ q ≠ 1 := (left_eq_top_iff_right_eq_one _ _).ne
+lemma right_ne_top_iff_left_ne_one : q ≠ ∞ ↔ p ≠ 1 := (left_eq_top_iff_right_eq_one _ _).ne
+
+lemma left_lt_top_iff_one_lt_right : p < ∞ ↔ 1 < q := by
+  rw [lt_top_iff_ne_top, left_ne_top_iff_right_ne_one _ q, ne_comm, lt_iff_le_and_ne]
+  simp [one_le_right p q]
+
+lemma right_lt_top_iff_one_lt_left : q < ∞ ↔ 1 < p := left_lt_top_iff_one_lt_right q p
+
+variable {p} in
+lemma left_sub_one_mul_left_inv (hp : p ≠ ⊤) : (p - 1) * p⁻¹ = q⁻¹ := by
+  have := left_pos p q |>.ne'
   rw [ENNReal.sub_mul (by aesop), ENNReal.mul_inv_cancel this (by aesop)]
-  simp [one_sub_inv p q]
+  simp [one_sub_left_inv p q]
+
+variable {q} in
+lemma right_sub_one_mul_right_inv (hq : q ≠ ⊤) : (q - 1) * q⁻¹ = p⁻¹ :=
+  left_sub_one_mul_left_inv _ hq
 
 end HolderConjugate
 
