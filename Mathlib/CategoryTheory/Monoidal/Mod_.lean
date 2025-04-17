@@ -149,13 +149,29 @@ class Mod_Class (X : C) where
 
 attribute [reassoc (attr := simp)] Mod_Class.mul_smul Mod_Class.one_smul
 
-namespace Mod_Class
+namespace Mon_Class
 
 @[inherit_doc] scoped notation "γ" => Mod_Class.smul
+
+end Mon_Class
+
+namespace Mod_Class
 
 /-- The action of a monoid object on itself. -/
 -- See note [reducible non instances]
 abbrev regular : Mod_Class M M where smul := μ
+
+/-- Construct an object of `Mod_ (Mon_.mk' M)` from an object `X : C` and a
+`Mod_Class M X` instance. -/
+@[simps]
+def mk' (X : C) [Mod_Class M X] : Mod_ (.mk' M) where
+  X := X
+  act := (Mod_Class.smul : M ⊗ X ⟶ X)
+
+instance {A : Mon_ C} (M : Mod_ A) : Mod_Class A.X M.X where
+  smul := M.act
+  one_smul := M.one_act
+  mul_smul := M.assoc
 
 end Mod_Class
 
