@@ -254,7 +254,7 @@ theorem cons_fin_one (x : α) (u : Fin 0 → α) : vecCons x u = fun _ => x :=
 
 open Lean Qq in
 /-- `mkVecLiteralQ ![x, y, z]` produces the term `q(![$x, $y, $z])`. -/
-def _root_.Qq.mkVecLiteralQ {u : Level} {α : Q(Type u)} {n : ℕ} (elems : Fin n → Q($α)) :
+def _root_.PiFin.mkLiteralQ {u : Level} {α : Q(Type u)} {n : ℕ} (elems : Fin n → Q($α)) :
     Q(Fin $n → $α) :=
   loop 0 (Nat.zero_le _) q(vecEmpty)
 where
@@ -263,14 +263,14 @@ where
       loop (i + 1) h q(vecCons $(elems (Fin.rev ⟨i, h⟩)) $rest)
     else
       rest
-attribute [nolint docBlame] Qq.mkVecLiteralQ.loop
+attribute [nolint docBlame] _root_.PiFin.mkLiteralQ.loop
 
 open Lean Qq in
 protected instance _root_.PiFin.toExpr [ToLevel.{u}] [ToExpr α] (n : ℕ) : ToExpr (Fin n → α) :=
   have lu := toLevel.{u}
   have eα : Q(Type $lu) := toTypeExpr α
   let toTypeExpr := q(Fin $n → $eα)
-  { toTypeExpr, toExpr v := Qq.mkVecLiteralQ fun i => show Q($eα) from toExpr (v i) }
+  { toTypeExpr, toExpr v := PiFin.mkLiteralQ fun i => show Q($eα) from toExpr (v i) }
 
 /-! ### `bit0` and `bit1` indices
 The following definitions and `simp` lemmas are used to allow
