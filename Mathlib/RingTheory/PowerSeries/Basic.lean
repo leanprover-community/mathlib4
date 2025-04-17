@@ -34,10 +34,6 @@ and the fact that power series over a local ring form a local ring;
 and application to the fact that power series over an integral domain
 form an integral domain.
 
-##  Instance
-
-If `R` has `NoZeroDivisors`, then so does `R⟦X⟧`.
-
 ## Implementation notes
 
 Because of its definition,

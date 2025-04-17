@@ -5,6 +5,21 @@ Authors: Johan Commelin, Kenny Lau
 -/
 import Mathlib.RingTheory.PowerSeries.Order
 
+/-!
+# Power series over rings with no zero divisors
+
+This file proves, using the properties of orders of power series,
+that `R⟦X⟧` is an integral domain when `R` is.
+
+We then state various results about `R⟦X⟧` with `R` an integral domain.
+
+##  Instance
+
+If `R` has `NoZeroDivisors`, then so does `R⟦X⟧`.
+
+-/
+
+
 variable {R : Type*}
 
 namespace PowerSeries
