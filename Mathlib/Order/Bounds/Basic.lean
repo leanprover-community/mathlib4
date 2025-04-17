@@ -952,16 +952,21 @@ lemma dominated (Hf : Monotone f) {s₁ s₂ : Set α} (h : Dominated (· ≤ ·
   rw [← hcfa]
   exact ⟨d, ⟨hdd, Hf hcd⟩⟩
 
+lemma dominated_geq (Hf : Monotone f) {s₁ s₂ : Set α} (h : Dominated (· ≥ ·) s₁ s₂) :
+    Dominated (· ≥ ·) (f '' s₁) (f '' s₂) := fun a ha => by
+  obtain ⟨c, hcs, hcfa⟩ := ha
+  obtain ⟨d, hdd, hcd⟩ := h c hcs
+  simp only [mem_image, exists_exists_and_eq_and]
+  rw [← hcfa]
+  exact ⟨d, ⟨hdd, Hf hcd⟩⟩
+
 lemma upperBounds_image_subset_of_dominated (Hf : Monotone f) {s₁ s₂ : Set α}
     (h : Dominated (· ≤ ·) s₁ s₂) : upperBounds (f '' s₂) ⊆ upperBounds (f '' s₁) :=
   upperBounds_subset_of_dominated (Hf.dominated h)
 
 lemma lowerBounds_image_subset_of_dominated (Hf : Monotone f) {s₁ s₂ : Set α}
     (h : Dominated (· ≥ ·) s₁ s₂) : lowerBounds (f '' s₂) ⊆ lowerBounds (f '' s₁) :=
-  lowerBounds_subset_of_dominated (fun a ha => by
-    obtain ⟨c, hc⟩ := ha
-    obtain ⟨d, hd⟩ := h c hc.1
-    exact ⟨f d, ⟨(mem_image _ _ _).mpr ⟨d,⟨hd.1,rfl⟩⟩, le_of_le_of_eq (Hf hd.2) hc.2⟩⟩)
+  lowerBounds_subset_of_dominated (Hf.dominated_geq h)
 
 end Monotone
 

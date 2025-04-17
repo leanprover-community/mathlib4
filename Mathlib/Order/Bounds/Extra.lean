@@ -28,6 +28,8 @@ lemma DirectedOn.dominated_fst_image_times_snd_image {d : Set (α × β)}
     obtain ⟨q, ⟨hq₁, ⟨⟨hq₂, _⟩, ⟨_, hq₃⟩⟩⟩⟩ := hd (p₁, r₁) hr₁ (r₂, p₂) hr₂
     exact ⟨q, ⟨hq₁, ⟨hq₂, hq₃⟩⟩⟩
 
+#find_home DirectedOn.dominated_fst_image_times_snd_image 
+
 lemma Monotone.upperBounds_image_of_directedOn_prod {γ : Type*} [Preorder γ] {g : α × β → γ}
     (Hg : Monotone g) {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) :
     upperBounds (g '' d) = upperBounds (g '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) := le_antisymm
