@@ -134,9 +134,9 @@ lemma Submodule.height_strictMono [IsArtinian R M] [IsNoetherian R M] :
     StrictMono fun N : Submodule R M ↦ Order.height N :=
   fun N _ h ↦ Order.height_strictMono h N.height_lt_top
 
-lemma Submodule.length_lt [IsArtinian R M] [IsNoetherian R M] {N : Submodule R M} (h : N < ⊤) :
+lemma Submodule.length_lt [IsArtinian R M] [IsNoetherian R M] {N : Submodule R M} (h : N ≠ ⊤) :
     Module.length R N < Module.length R M := by
-  simpa only [← Module.length_top (M := M), Module.length_submodule] using height_strictMono h
+  simpa [← Module.length_top (M := M), Module.length_submodule] using height_strictMono h.lt_top
 
 variable {N P : Type*} [AddCommGroup N] [AddCommGroup P] [Module R N] [Module R P]
 variable (f : N →ₗ[R] M) (g : M →ₗ[R] P) (hf : Function.Injective f) (hg : Function.Surjective g)
