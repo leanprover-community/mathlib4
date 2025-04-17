@@ -187,12 +187,6 @@ theorem StrictAnti.range_inj [WellFoundedGT β] {f g : β → γ}
     (hf : StrictAnti f) (hg : StrictAnti g) : Set.range f = Set.range g ↔ f = g :=
   Set.range_injOn_strictAnti.eq_iff hf hg
 
-@[deprecated StrictMono.range_inj (since := "2024-09-11")]
-theorem WellFounded.eq_strictMono_iff_eq_range (h : WellFounded ((· < ·) : β → β → Prop))
-    {f g : β → γ} (hf : StrictMono f) (hg : StrictMono g) :
-    Set.range f = Set.range g ↔ f = g :=
-  @StrictMono.range_inj β γ _ _ ⟨h⟩ f g hf hg
-
 /-- A strictly monotone function `f` on a well-order satisfies `x ≤ f x` for all `x`. -/
 theorem StrictMono.id_le [WellFoundedLT β] {f : β → β} (hf : StrictMono f) : id ≤ f := by
   rw [Pi.le_def]
@@ -209,13 +203,6 @@ theorem StrictMono.le_id [WellFoundedGT β] {f : β → β} (hf : StrictMono f) 
 
 theorem StrictMono.apply_le [WellFoundedGT β] {f : β → β} (hf : StrictMono f) {x} : f x ≤ x :=
   StrictMono.le_apply (β := βᵒᵈ) hf.dual
-
-@[deprecated StrictMono.le_apply (since := "2024-09-11")]
-theorem WellFounded.self_le_of_strictMono (h : WellFounded ((· < ·) : β → β → Prop))
-    {f : β → β} (hf : StrictMono f) : ∀ n, n ≤ f n := by
-  by_contra! h₁
-  have h₂ := h.min_mem _ h₁
-  exact h.not_lt_min _ h₁ (hf h₂) h₂
 
 theorem StrictMono.not_bddAbove_range_of_wellFoundedLT {f : β → β} [WellFoundedLT β] [NoMaxOrder β]
     (hf : StrictMono f) : ¬ BddAbove (Set.range f) := by

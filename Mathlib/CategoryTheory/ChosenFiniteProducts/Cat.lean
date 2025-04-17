@@ -38,8 +38,8 @@ def isLimitProdCone (X Y : Cat) : IsLimit (prodCone X Y) := BinaryFan.isLimitMk
       (fun _ _ _ ↦ by dsimp; rw [← h1, ← h2]; rfl))
 
 instance : ChosenFiniteProducts Cat where
-  product (X Y : Cat) := { isLimit := isLimitProdCone X Y }
-  terminal  := { isLimit := chosenTerminalIsTerminal }
+  product (X Y : Cat) := { cone := X.prodCone Y, isLimit := isLimitProdCone X Y }
+  terminal  := { cone := asEmptyCone chosenTerminal, isLimit := chosenTerminalIsTerminal }
 
 /-- A monoidal instance for Cat is provided through monoidalOfChosenFiniteProducts -/
 example : MonoidalCategory Cat := by infer_instance

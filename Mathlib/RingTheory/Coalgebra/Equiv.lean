@@ -86,6 +86,7 @@ theorem toCoalgHom_injective : Function.Injective (toCoalgHom : (A ≃ₗc[R] B)
   fun _ _ H => toEquiv_injective <| Equiv.ext <| CoalgHom.congr_fun H
 
 instance : EquivLike (A ≃ₗc[R] B) A B where
+  coe e := e.toFun
   inv := CoalgEquiv.invFun
   coe_injective' _ _ h _ := toCoalgHom_injective (DFunLike.coe_injective h)
   left_inv := CoalgEquiv.left_inv

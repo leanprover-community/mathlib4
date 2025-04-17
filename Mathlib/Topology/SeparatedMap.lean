@@ -5,6 +5,7 @@ Authors: Junyan Xu
 -/
 import Mathlib.Topology.Connected.Basic
 import Mathlib.Topology.Separation.Hausdorff
+import Mathlib.Topology.Connected.Clopen
 /-!
 # Separated maps and locally injective maps out of a topological space.
 
@@ -53,8 +54,8 @@ lemma Continuous.mapPullback {X₁ X₂ Y₁ Y₂ Z₁ Z₂}
     {mapZ : Z₁ → Z₂} (contZ : Continuous mapZ)
     {commX : f₂ ∘ mapX = mapY ∘ f₁} {commZ : g₂ ∘ mapZ = mapY ∘ g₁} :
     Continuous (Function.mapPullback mapX mapY mapZ commX commZ) := by
-  refine continuous_induced_rng.mpr (continuous_prod_mk.mpr ⟨?_, ?_⟩) <;>
-  apply_rules [continuous_fst, continuous_snd, continuous_subtype_val, Continuous.comp]
+  refine continuous_induced_rng.mpr (.prodMk ?_ ?_) <;>
+    apply_rules [continuous_fst, continuous_snd, continuous_subtype_val, Continuous.comp]
 
 /-- A function from a topological space `X` to a type `Y` is a separated map if any two distinct
   points in `X` with the same image in `Y` can be separated by open neighborhoods. -/

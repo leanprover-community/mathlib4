@@ -122,18 +122,16 @@ end Zero
 
 /-! ### Algebraic order structures -/
 
+instance (α : ι → Type*) [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)]
+    [∀ i, IsOrderedAddMonoid (α i)] : IsOrderedAddMonoid (Π₀ i, α i) :=
+  { add_le_add_left := fun _ _ h c i ↦ add_le_add_left (h i) (c i) }
 
-instance (α : ι → Type*) [∀ i, OrderedAddCommMonoid (α i)] : OrderedAddCommMonoid (Π₀ i, α i) :=
-  { (inferInstance : AddCommMonoid (DFinsupp α)),
-    (inferInstance : PartialOrder (DFinsupp α)) with
-    add_le_add_left := fun _ _ h c i ↦ add_le_add_left (h i) (c i) }
+instance (α : ι → Type*) [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)]
+    [∀ i, IsOrderedCancelAddMonoid (α i)] :
+    IsOrderedCancelAddMonoid (Π₀ i, α i) :=
+  { le_of_add_le_add_left := fun _ _ _ H i ↦ le_of_add_le_add_left (H i) }
 
-instance (α : ι → Type*) [∀ i, OrderedCancelAddCommMonoid (α i)] :
-    OrderedCancelAddCommMonoid (Π₀ i, α i) :=
-  { (inferInstance : OrderedAddCommMonoid (DFinsupp α)) with
-    le_of_add_le_add_left := fun _ _ _ H i ↦ le_of_add_le_add_left (H i) }
-
-instance [∀ i, OrderedAddCommMonoid (α i)] [∀ i, AddLeftReflectLE (α i)] :
+instance [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)] [∀ i, AddLeftReflectLE (α i)] :
     AddLeftReflectLE (Π₀ i, α i) :=
   ⟨fun _ _ _ H i ↦ le_of_add_le_add_left (H i)⟩
 
@@ -211,7 +209,7 @@ lemma support_monotone : Monotone (support (ι := ι) (β := α)) :=
 lemma support_mono (hfg : f ≤ g) : f.support ⊆ g.support := support_monotone hfg
 
 variable (α) in
-instance decidableLE [∀ i, DecidableRel (@LE.le (α i) _)] : DecidableRel (@LE.le (Π₀ i, α i) _) :=
+instance decidableLE [∀ i, DecidableLE (α i)] : DecidableLE (Π₀ i, α i) :=
   fun _ _ ↦ decidable_of_iff _ le_iff.symm
 
 end
