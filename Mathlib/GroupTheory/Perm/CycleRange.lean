@@ -5,6 +5,11 @@ Authors: Yi.Yuan
 -/
 import Mathlib.GroupTheory.Perm.Fin
 
+/-
+Module for handling cycle ranges in group theory.
+This file contains definitions and theorems related to the `cycleRange` function and its properties.
+-/
+
 open Equiv Fin Equiv.Perm
 
 /-- `Fin.natAdd_castLEEmb` as an `Embedding` from `Fin n` to `Fin m`, `natAdd_castLEEmb m hmn i`
