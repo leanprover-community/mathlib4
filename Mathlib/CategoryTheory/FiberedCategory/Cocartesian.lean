@@ -356,7 +356,7 @@ noncomputable def codomainIsoOfBaseIso {R S S' : 𝒮} {a b b' : 𝒳} {f : R �
     [IsStronglyCocartesian p f' φ'] : b ≅ b' where
   hom := map p f φ h φ'
   inv := @map _ _ _ _ p _ _ _ _ f' φ' _ _ _ _ _ (congrArg (· ≫ g.inv) h.symm) φ
-    (by simp; infer_instance)
+    (by simpa using by infer_instance)
 
 end IsStronglyCocartesian
 

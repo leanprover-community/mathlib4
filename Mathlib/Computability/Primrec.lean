@@ -795,7 +795,8 @@ instance list : Primcodable (List α) :=
       (encode_iff.2 this).of_eq fun n => by
         rw [List.foldl_reverse]
         apply Nat.case_strong_induction_on n; · simp
-        intro n IH; simp
+        intro n IH; simp only [decode_eq_ofNat, list_ofNat_succ, ofNat_nat, Option.some.injEq,
+          ofNat_of_decode, List.foldr_cons, decode_list_succ, Option.map_eq_map]
         rcases @decode α _ n.unpair.1 with - | a; · rfl
         simp only [decode_eq_ofNat, Option.some.injEq, Option.some_bind, Option.map_some']
         suffices ∀ (o : Option (List ℕ)) (p), encode o = encode p →
@@ -1317,7 +1318,10 @@ theorem sub : @Primrec' 2 fun v => v.head - v.tail.head := by
 
 theorem mul : @Primrec' 2 fun v => v.head * v.tail.head :=
   (prec (const 0) (tail (add.comp₂ _ (tail head) head))).of_eq fun v => by
-    simp; induction v.head <;> simp [*, Nat.succ_mul]; rw [add_comm]
+    simp only [succ_eq_add_one, reduceAdd, tail_cons, head_cons]
+    induction v.head
+    · simp
+    · simp only [succ_mul, *]; rw [add_comm]
 
 theorem if_lt {n a b f g} (ha : @Primrec' n a) (hb : @Primrec' n b) (hf : @Primrec' n f)
     (hg : @Primrec' n g) : @Primrec' n fun v => if a v < b v then f v else g v :=
