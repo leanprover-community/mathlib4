@@ -337,7 +337,7 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let mut msgs := ""
     for msg in errors do
       msgs := msgs ++ "\n\n" ++ (← msg.toString)
-    Linter.logLint linter.directoryDependency stx msgs
+    Linter.logLint linter.directoryDependency stx msgs.trimLeft
   let afterImports := firstNonImport? upToStx
   if afterImports.isNone then return
   let copyright := match upToStx.getHeadInfo with
