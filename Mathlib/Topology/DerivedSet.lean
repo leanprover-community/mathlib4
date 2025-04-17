@@ -64,6 +64,10 @@ lemma isClosed_iff_derivedSet_subset (A : Set X) : IsClosed A ↔ derivedSet A �
     rw [this, ← acc_principal_iff_cluster] at ha
     exact nh (h ha)
 
+lemma closure_eq_self_union_derivedSet (A : Set X) : closure A = A ∪ derivedSet A := by
+  show _ = {a | a ∈ A ∨ a ∈ derivedSet A}
+  simp [closure_eq_cluster_pts, clusterPt_principal]
+
 /-- In a `T1Space`, the `derivedSet` of the closure of a set is equal to the derived set of the
 set itself.
 
