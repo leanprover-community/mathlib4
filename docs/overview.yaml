@@ -428,6 +428,7 @@ Geometry:
     # corollary for compact manifolds PRed in #22254
     uniqueness of integral curves: 'isIntegralCurveOn_Ioo_eqOn_of_contMDiff_boundaryless'
     Lie group: 'LieGroup'
+    Lie algebra of a Lie group: 'GroupLieAlgebra'
     sphere: 'EuclideanSpace.instIsManifoldSphere'
 
   Smooth vector and fiber bundles:
