@@ -179,10 +179,8 @@ lemma Ideal.height_le_spanRank_toENat_of_mem_minimal_primes
         rintro _ ⟨z, rfl⟩
         exact hyq _
       have hI'p' : I' ≤ p' := hI'q.trans hpq.le
-      have h :=
-        @Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes _ _ _
-          ((Ideal.span {x}).map f) ⟨⟨algebraMap _ _ x,
-            by rw [Ideal.map_span, Set.image_singleton]; rfl⟩⟩ (p'.map f) ?_
+      have h := Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes 
+        ((Ideal.span {x}).map f) (p'.map f) ?_
       swap
       · have : (p'.map f).IsPrime := Ideal.map_isPrime_of_surjective hf (by rwa [Ideal.mk_ker])
         obtain ⟨p'', h₁, h₂⟩ := Ideal.exists_minimalPrimes_le
