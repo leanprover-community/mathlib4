@@ -628,14 +628,14 @@ lemma rootSpan_dualAnnihilator_map_eq_iInf_ker_root' :
   constructor
   · simp only [PerfectPairing.toDualRight_apply, PerfectPairing.flip_apply_apply]
     intro _ w
-    refine Submodule.span_induction ?_ ?_ ?_ ?_ w
-    · simp only [mem_range, forall_exists_index, forall_apply_eq_imp_iff]
-      exact fun h₂ => h₁ h₂
-    · simp only [map_zero, LinearMap.zero_apply]
-    · intro _ _ _ _ e f
-      rw [map_add, LinearMap.add_apply, e, f, add_zero]
-    · intro _ _ _ d
-      rw [map_smul, LinearMap.smul_apply, smul_eq_mul, d, mul_zero]
+    induction w using Submodule.span_induction with
+    | mem _ h₂ =>
+      simp only [mem_range] at h₂
+      obtain ⟨y, hy⟩ := h₂
+      rw [← hy, h₁ y]
+    | zero => simp only [map_zero, LinearMap.zero_apply]
+    | add _ _ _ _ e f => rw [map_add, LinearMap.add_apply, e, f, add_zero]
+    | smul _ _ _ d => rw [map_smul, LinearMap.smul_apply, smul_eq_mul, d, mul_zero]
   exact LinearEquiv.symm_apply_apply P.toDualRight x
 
 lemma corootSpan_dualAnnihilator_map_eq_iInf_ker_coroot' :
