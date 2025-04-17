@@ -97,9 +97,8 @@ theorem measureReal_restrict_apply (ht : MeasurableSet t) :
     (μ.restrict s).real t = μ.real (t ∩ s) := by
   simp only [measureReal_def, restrict_apply ht]
 
-@[simp]
 theorem measureReal_restrict_apply_univ (s : Set α) : (μ.restrict s).real univ = μ.real s := by
-  rw [measureReal_restrict_apply MeasurableSet.univ, Set.univ_inter]
+  simp
 
 @[simp]
 theorem measureReal_restrict_apply' (hs : MeasurableSet s) :
