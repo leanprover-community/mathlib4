@@ -93,8 +93,7 @@ theorem cycleRange_of {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h1 : i <= k) (h
       rw [this]
       have h : (subNat (n := n - i) (i.1) (Fin.cast (by omega) k) (by simp[h1])) <
           ((j - i).castLT (cycleRange'._proof_3 i j hij)):= by
-        simp [subNat, lt_iff_val_lt_val, sub_val_of_le hij]
-        omega
+        simp [subNat, lt_iff_val_lt_val, sub_val_of_le hij]; omega
       have : (k.1 + 1) % n = k.1 + 1 := Nat.mod_eq_of_lt (by omega)
       simp [cycleRange_of_lt h]
       simp [subNat, add_def, this, Nat.sub_add_comm h1]
@@ -102,8 +101,7 @@ theorem cycleRange_of {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h1 : i <= k) (h
       omega
     simp only [natAdd_castLEEmb, this]
     refine eq_of_val_eq ?_
-    simp [h3]
-    omega
+    simp [h3]; omega
 
 theorem cycleRange_of_lt'' {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h1 : i <= k) (h2 : k < j) [NeZero n] :
     (cycleRange' i j hij) k = k + 1 := by
