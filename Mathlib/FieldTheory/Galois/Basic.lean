@@ -30,6 +30,12 @@ In this file we define Galois extensions as extensions which are both separable 
 Together, these two results prove the Galois correspondence.
 
 - `IsGalois.tfae` : Equivalent characterizations of a Galois extension of finite degree
+
+## Additional results
+
+- Instances for `IsQuadraticExtension`: a quadratic extension is Galois (if separable) with cyclic
+  and thus abelian Galois group.
+
 -/
 
 
@@ -512,9 +518,15 @@ end IsAlgClosure
 
 section IsQuadraticExtension
 
+/--
+A quadratic separable extension is Galois.
+-/
 instance (F K : Type*) [Field F] [Field K] [IsQuadraticExtension F K] [Algebra.IsSeparable F K] :
     IsGalois F K where
 
+/--
+A quadratic extension has cyclic Galois group.
+-/
 instance (F K : Type*) [Field F] [Field K] [h : IsQuadraticExtension F K] :
     IsCyclic (K ≃ₐ[F] K) := by
   have := h.finrank_eq_two ▸ AlgEquiv.card_le
@@ -524,6 +536,9 @@ instance (F K : Type*) [Field F] [Field K] [h : IsQuadraticExtension F K] :
   · rw [← Nat.card_eq_fintype_card] at h
     exact isCyclic_of_prime_card h
 
+/--
+A quadratic extension has abelian Galois group.
+-/
 instance (F K : Type*) [Field F] [Field K] [IsQuadraticExtension F K] :
     IsMulCommutative (K ≃ₐ[F] K) := ⟨IsCyclic.commutative⟩
 

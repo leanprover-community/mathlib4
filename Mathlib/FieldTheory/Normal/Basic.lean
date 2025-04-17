@@ -15,6 +15,11 @@ In this file we prove that for a finite extension, being normal
 is the same as being a splitting field (`Normal.of_isSplittingField` and
 `Normal.exists_isSplittingField`).
 
+## Additional Results
+
+* `IsQuadraticExtension.Normal`: a quadratic extension, given as a class
+  `IsQuadraticExtension`, is normal.
+
 -/
 
 
