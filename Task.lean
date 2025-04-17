@@ -42,9 +42,9 @@ theorem cycleRange_of_le'' {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h : k > j)
     Perm.extendDomain_apply_subtype ((j - i).castLT (cycleRange'._proof_3 i j hij)).cycleRange
       (natAdd_castLEEmb n _).toEquivRange kin]
   have : (((j - i).castLT (cycleRange'._proof_3 i j hij)).cycleRange
-      (((addNatEmb (n - (n - ↑i))).trans (finCongr _).toEmbedding).toEquivRange.symm ⟨k, kin⟩)) =
+      (((addNatEmb (n - (n - i.1))).trans (finCongr _).toEmbedding).toEquivRange.symm ⟨k, kin⟩)) =
       subNat (m := i) (Fin.cast (by omega) k) (by simp[le_of_lt (lt_of_le_of_lt hij h)]) := by
-    have : (((addNatEmb (n - (n - ↑i))).trans (finCongr _).toEmbedding).toEquivRange.symm ⟨k, kin⟩)
+    have : (((addNatEmb (n - (n - i.1))).trans (finCongr _).toEmbedding).toEquivRange.symm ⟨k, kin⟩)
       = subNat (m := i) (Fin.cast (by omega) k) (by simp[le_of_lt (lt_of_le_of_lt hij h)]) := by
       simp [symm_apply_eq]
       refine eq_of_val_eq ?_
@@ -59,77 +59,75 @@ theorem cycleRange_of_le'' {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h : k > j)
   simp
   omega
 
-theorem cycleRange_of_lt'' {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h1 : i <= k) (h2 : k < j) [NeZero n] :
-    (cycleRange' i j hij) k = k + 1 := by
+@[simp]
+theorem cycleRange_of {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h1 : i <= k) (h2 : k <= j) [NeZero n]:
+    (cycleRange' i j hij) k = if k = j then i else k + 1 := by
   have kin : k ∈ Set.range ⇑(natAdd_castLEEmb n (cycleRange'._proof_4 i)) := by simp; omega
   simp only [cycleRange',
     Perm.extendDomain_apply_subtype ((j - i).castLT (cycleRange'._proof_3 i j hij)).cycleRange
       (natAdd_castLEEmb n _).toEquivRange kin,
     Function.Embedding.toEquivRange_apply, natAdd_castLEEmb_apply]
-  have imp : (k + 1).1 = k.1 + 1 := by
-    simp [add_def]
-    refine Nat.mod_eq_of_lt ?_
+  have : NeZero (n - i.1) := by
+    refine NeZero.of_pos ?_
     omega
-  have res2: i ≤ k + 1 := by
-    rw [@le_iff_val_le_val, imp]
+  by_cases h3 : k = j
+  · rw [h3] at kin
+    have : (((j - i).castLT (cycleRange'._proof_3 i j hij)).cycleRange
+      (((addNatEmb (n - (n - i.1))).trans (finCongr _).toEmbedding).toEquivRange.symm ⟨j, kin⟩)) =
+      subNat (m := i) (Fin.cast (by omega) i) (by simp[hij]) := by
+      have : (((addNatEmb (n - (n - i.1))).trans (finCongr _).toEmbedding).toEquivRange.symm ⟨j, kin⟩)
+        = subNat (m := i) (Fin.cast (by omega) (j)) (by simp[hij]) := by
+        simp [symm_apply_eq]
+        refine eq_of_val_eq ?_
+        simp
+        omega
+      rw [this]
+      have h : (subNat (n := n - i) (i.1) (Fin.cast (by omega) j) (by simp[hij])) =
+          ((j - i).castLT (cycleRange'._proof_3 i j hij)):= by
+        simp [subNat]
+        refine eq_of_val_eq ?_
+        simp [sub_val_of_le hij]
+      rw [cycleRange_of_eq (h), Fin.ext_iff]
+      simp
+    simp only [h3, natAdd_castLEEmb, this]
+    refine eq_of_val_eq ?_
+    simp
     omega
-  have : (((j - i).castLT (cycleRange'._proof_3 i j hij)).cycleRange
-      (((addNatEmb (n - (n - ↑i))).trans (finCongr _).toEmbedding).toEquivRange.symm ⟨k, kin⟩)) =
-      subNat (m := i) (Fin.cast (by omega) (k + 1)) (by simp[res2]) := by
-    have : (((addNatEmb (n - (n - ↑i))).trans (finCongr _).toEmbedding).toEquivRange.symm ⟨k, kin⟩)
-      = subNat (m := i) (Fin.cast (by omega) (k)) (by simp[h1]) := by
-      simp [symm_apply_eq]
-      refine eq_of_val_eq ?_
-      simp [imp]
+  · have imp : (k + 1).1 = k.1 + 1 := by
+      simp [add_def]
+      refine Nat.mod_eq_of_lt ?_
       omega
-    rw [this]
-    have h : (subNat (n := n - i) (↑i) (Fin.cast (by omega) k) (by simp[h1])) <
-        ((j - i).castLT (cycleRange'._proof_3 i j hij)):= by
-      simp [subNat, lt_iff_val_lt_val, sub_val_of_le hij]
+    have : (((j - i).castLT (cycleRange'._proof_3 i j hij)).cycleRange
+        (((addNatEmb (n - (n - i.1))).trans (finCongr _).toEmbedding).toEquivRange.symm ⟨k, kin⟩)) =
+        subNat (m := i) (Fin.cast (by omega) (k + 1)) (by simp[le_iff_val_le_val, imp]; omega) := by
+      have : (((addNatEmb (n - (n - i.1))).trans (finCongr _).toEmbedding).toEquivRange.symm ⟨k, kin⟩)
+        = subNat (m := i) (Fin.cast (by omega) (k)) (by simp[h1]) := by
+        simp [symm_apply_eq]
+        refine eq_of_val_eq ?_
+        simp [imp]
+        omega
+      rw [this]
+      have h : (subNat (n := n - i) (i.1) (Fin.cast (by omega) k) (by simp[h1])) <
+          ((j - i).castLT (cycleRange'._proof_3 i j hij)):= by
+        simp [subNat, lt_iff_val_lt_val, sub_val_of_le hij]
+        omega
+      have : (k.1 + 1) % n = k.1 + 1 := Nat.mod_eq_of_lt (by omega)
+      simp [cycleRange_of_lt h]
+      simp [subNat, add_def, this]
+      have : k.1 + 1 - i.1 = k.1 - i.1 + 1:= by omega
+      rw [this]
+      refine Nat.mod_eq_of_lt ?_
       omega
-    have : NeZero (n - ↑i) := by
-      refine NeZero.of_pos ?_
-      omega
-    have : (↑k + 1) % n = k.1 + 1 := Nat.mod_eq_of_lt (by omega)
-    simp [cycleRange_of_lt h]
-    simp [subNat, add_def, this]
-    have : ↑k + 1 - ↑i = k.1 - i.1 + 1:= by omega
-    rw [this]
-    refine Nat.mod_eq_of_lt ?_
+    simp only [natAdd_castLEEmb, this]
+    refine eq_of_val_eq ?_
+    simp [h3]
     omega
-  simp only [natAdd_castLEEmb, this]
-  refine eq_of_val_eq ?_
-  simp
-  omega
+
+
+theorem cycleRange_of_lt'' {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h1 : i <= k) (h2 : k < j) [NeZero n] :
+    (cycleRange' i j hij) k = k + 1 := by
+  sorry
 
 theorem cycleRange_of_eq'' {n : ℕ} {i j : Fin n} (hij : i ≤ j) [NeZero n] :
     (cycleRange' i j hij) j = i := by
-  have kin : j ∈ Set.range ⇑(natAdd_castLEEmb n (cycleRange'._proof_4 i)) := by simp; omega
-  simp only [cycleRange',
-    Perm.extendDomain_apply_subtype ((j - i).castLT (cycleRange'._proof_3 i j hij)).cycleRange
-      (natAdd_castLEEmb n _).toEquivRange kin,
-    Function.Embedding.toEquivRange_apply, natAdd_castLEEmb_apply]
-  have : (((j - i).castLT (cycleRange'._proof_3 i j hij)).cycleRange
-      (((addNatEmb (n - (n - ↑i))).trans (finCongr _).toEmbedding).toEquivRange.symm ⟨j, kin⟩)) =
-      subNat (m := i) (Fin.cast (by omega) i) (by simp[hij]) := by
-    have : (((addNatEmb (n - (n - ↑i))).trans (finCongr _).toEmbedding).toEquivRange.symm ⟨j, kin⟩)
-      = subNat (m := i) (Fin.cast (by omega) (j)) (by simp[hij]) := by
-      simp [symm_apply_eq]
-      refine eq_of_val_eq ?_
-      simp
-      omega
-    rw [this]
-    have h : (subNat (n := n - i) (↑i) (Fin.cast (by omega) j) (by simp[hij])) =
-        ((j - i).castLT (cycleRange'._proof_3 i j hij)):= by
-      simp [subNat]
-      refine eq_of_val_eq ?_
-      simp [sub_val_of_le hij]
-    have : NeZero (n - ↑i) := by
-      refine NeZero.of_pos ?_
-      omega
-    rw [cycleRange_of_eq (h), Fin.ext_iff]
-    simp
-  simp only [natAdd_castLEEmb, this]
-  refine eq_of_val_eq ?_
-  simp
-  omega
+  sorry
