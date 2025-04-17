@@ -71,7 +71,7 @@ structure Graph (α β : Type*) where
   /-- The binary incidence predicate, stating that `x` and `y` are the ends of an edge `e` -/
   Inc₂ : β → α → α → Prop
   /-- If `e` goes from `x` to `y`, it goes from `y` to `x`. -/
-  inc₂_symm : ∀ ⦃e x y⦄, Inc₂ e x y → Inc₂ e y x
+  inc₂_symm : ∀ e, Symmetric <| Inc₂ e
   /-- An edge is incident with at most one pair of vertices. -/
   eq_or_eq_of_inc₂_of_inc₂ : ∀ ⦃e x y v w⦄, Inc₂ e x y → Inc₂ e v w → x = v ∨ x = w
   /-- An edge `e` is incident to something if and only if `e` is in the edge set -/
@@ -86,7 +86,7 @@ variable {G H : Graph α β}
 /-! ### Edge-vertex-vertex incidence -/
 
 lemma Inc₂.symm (h : G.Inc₂ e x y) : G.Inc₂ e y x :=
-  G.inc₂_symm h
+  G.inc₂_symm e h
 
 lemma inc₂_comm : G.Inc₂ e x y ↔ G.Inc₂ e y x :=
   ⟨Inc₂.symm, Inc₂.symm⟩
@@ -270,7 +270,7 @@ lemma mk'_eq_self (G : Graph α β) : Graph.mk' G.V G.Inc₂ (fun _ _ _ ↦ Inc�
 
 /-- Two graphs with the same vertex set and binary incidences are equal.
 (We use this as the default extensionality lemma rather than adding `@[ext]`
-to the definition, so it doesn't require equality of the edge sets.) -/
+to the definition of `Graph`, so it doesn't require equality of the edge sets.) -/
 @[ext]
 protected lemma ext {G₁ G₂ : Graph α β} (hV : G₁.V = G₂.V)
     (h : ∀ e x y, G₁.Inc₂ e x y ↔ G₂.Inc₂ e x y) : G₁ = G₂ := by
@@ -281,6 +281,7 @@ protected lemma ext {G₁ G₂ : Graph α β} (hV : G₁.V = G₂.V)
   rw [h]
 
 /-- Two graphs with the same vertex set and unary incidences are equal. -/
+@[ext]
 lemma ext_inc {G₁ G₂ : Graph α β} (hV : G₁.V = G₂.V) (h : ∀ e x, G₁.Inc e x ↔ G₂.Inc e x) :
     G₁ = G₂ :=
   Graph.ext hV fun _ _ _ ↦ by simp_rw [inc₂_iff_inc, h]
