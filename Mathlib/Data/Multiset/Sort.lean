@@ -84,7 +84,10 @@ unsafe instance {α : Type u} [Lean.ToLevel.{u}] [Lean.ToExpr α] :
   haveI α' : Q(Type u') := Lean.toTypeExpr α
   { toTypeExpr := q(Multiset $α')
     toExpr s := show Q(Multiset $α') from
-      mkSetLiteralQ (α := q($α')) q(Multiset $α') (s.unquot.map Lean.toExpr)}
+      if Multiset.card s = 0 then
+        q(0)
+      else
+        mkSetLiteralQ (α := q($α')) q(Multiset $α') (s.unquot.map Lean.toExpr)}
 
 -- TODO: use a sort order if available, gh-18166
 unsafe instance [Repr α] : Repr (Multiset α) where
