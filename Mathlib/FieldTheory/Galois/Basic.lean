@@ -517,7 +517,7 @@ instance (F K : Type*) [Field F] [Field K] [IsQuadraticExtension F K] [Algebra.I
 
 instance (F K : Type*) [Field F] [Field K] [h : IsQuadraticExtension F K] :
     IsCyclic (K ≃ₐ[F] K) := by
-  have := h.finrank_eq_two ▸ AlgEquiv.card_le F K
+  have := h.finrank_eq_two ▸ AlgEquiv.card_le
   interval_cases h : Fintype.card (K ≃ₐ[F] K)
   · simp_all
   · exact @isCyclic_of_subsingleton _ _ (Fintype.card_le_one_iff_subsingleton.mp h.le)
