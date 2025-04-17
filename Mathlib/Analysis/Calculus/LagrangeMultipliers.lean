@@ -64,7 +64,7 @@ theorem IsLocalExtrOn.exists_linear_map_of_hasStrictFDerivAt
       (lt_top_iff_ne_top.2 <| hextr.range_ne_top_of_hasStrictFDerivAt hf' hφ') with
     ⟨Λ', h0, hΛ'⟩
   set e : ((F →ₗ[ℝ] ℝ) × ℝ) ≃ₗ[ℝ] F × ℝ →ₗ[ℝ] ℝ :=
-    ((LinearEquiv.refl ℝ (F →ₗ[ℝ] ℝ)).prod (LinearMap.ringLmapEquivSelf ℝ ℝ ℝ).symm).trans
+    ((LinearEquiv.refl ℝ (F →ₗ[ℝ] ℝ)).prodCongr (LinearMap.ringLmapEquivSelf ℝ ℝ ℝ).symm).trans
       (LinearMap.coprodEquiv ℝ)
   rcases e.surjective Λ' with ⟨⟨Λ, Λ₀⟩, rfl⟩
   refine ⟨Λ, Λ₀, e.map_ne_zero_iff.1 h0, fun x => ?_⟩

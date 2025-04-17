@@ -707,20 +707,20 @@ variable {module_M₃ : Module R M₃} {module_M₄ : Module R M₄}
 variable (e₁ : M ≃ₗ[R] M₂) (e₂ : M₃ ≃ₗ[R] M₄)
 
 /-- Product of linear equivalences; the maps come from `Equiv.prodCongr`. -/
-protected def prod : (M × M₃) ≃ₗ[R] M₂ × M₄ :=
+protected def prodCongr : (M × M₃) ≃ₗ[R] M₂ × M₄ :=
   { e₁.toAddEquiv.prodCongr e₂.toAddEquiv with
     map_smul' := fun c _x => Prod.ext (e₁.map_smulₛₗ c _) (e₂.map_smulₛₗ c _) }
 
-theorem prod_symm : (e₁.prod e₂).symm = e₁.symm.prod e₂.symm :=
+theorem prodCongr_symm : (e₁.prodCongr e₂).symm = e₁.symm.prodCongr e₂.symm :=
   rfl
 
 @[simp]
-theorem prod_apply (p) : e₁.prod e₂ p = (e₁ p.1, e₂ p.2) :=
+theorem prodCongr_apply (p) : e₁.prodCongr e₂ p = (e₁ p.1, e₂ p.2) :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_prod :
-    (e₁.prod e₂ : M × M₃ →ₗ[R] M₂ × M₄) = (e₁ : M →ₗ[R] M₂).prodMap (e₂ : M₃ →ₗ[R] M₄) :=
+theorem coe_prodCongr :
+    (e₁.prodCongr e₂ : M × M₃ →ₗ[R] M₂ × M₄) = (e₁ : M →ₗ[R] M₂).prodMap (e₂ : M₃ →ₗ[R] M₄) :=
   rfl
 
 end

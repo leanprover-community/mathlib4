@@ -38,7 +38,7 @@ variable (b' : Basis ι' R M')
 to an `ι ⊕ ι'`-index basis for `M × M'`.
 For the specific case of `R × R`, see also `Basis.finTwoProd`. -/
 protected def prod : Basis (ι ⊕ ι') R (M × M') :=
-  ofRepr ((b.repr.prod b'.repr).trans (Finsupp.sumFinsuppLEquivProdFinsupp R).symm)
+  ofRepr ((b.repr.prodCongr b'.repr).trans (Finsupp.sumFinsuppLEquivProdFinsupp R).symm)
 
 @[simp]
 theorem prod_repr_inl (x) (i) : (b.prod b').repr x (Sum.inl i) = b.repr x.1 i :=
