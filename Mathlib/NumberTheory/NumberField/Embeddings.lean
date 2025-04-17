@@ -149,6 +149,9 @@ open scoped ComplexConjugate
 variable {K : Type*} [Field K] {k : Type*} [Field k]
 
 variable (K) in
+/--
+A (random) lift of the complex embedding `φ : k →+* ℂ` to an extension `K` of `k`.
+-/
 noncomputable def lift [Algebra k K] [Algebra.IsAlgebraic k K] (φ : k →+* ℂ) : K →+* ℂ := by
   letI := φ.toAlgebra
   exact (IsAlgClosed.lift (R := k)).toRingHom
