@@ -50,10 +50,10 @@ section toExpr
 open Lean Qq
 
 open Qq in
-/-- `Matrix.mkLiteralQ #v[#v[a, b], #v[c, d]]` produces the term `q(!![$a, $b; $c, $d])`. -/
-def mkLiteralQ {u : Level} {α : Q(Type u)} {m n : Nat} (elems : Vector (Vector Q($α) n) m) :
+/-- `Matrix.mkLiteralQ ![![a, b], ![c, d]]` produces the term `q(!![$a, $b; $c, $d])`. -/
+def mkLiteralQ {u : Level} {α : Q(Type u)} {m n : Nat} (elems : Fin m → Fin n → Q($α)) :
     Q(Matrix (Fin $m) (Fin $n) $α) :=
-  let elems := Qq.mkVecLiteralQ (α := q(Fin $n → $α)) (elems.map fun row => Qq.mkVecLiteralQ row)
+  let elems := Qq.mkVecLiteralQ (α := q(Fin $n → $α)) fun i => Qq.mkVecLiteralQ fun j => elems i j
   q(Matrix.of $elems)
 
 /-- Matrices can be reflected whenever their entries can. We insert a `Matrix.of` to

@@ -253,23 +253,23 @@ theorem cons_fin_one (x : α) (u : Fin 0 → α) : vecCons x u = fun _ => x :=
   funext (cons_val_fin_one x u)
 
 open Lean Qq in
-/-- `mkVecLiteralQ v[x, y, z]` produces the term `q(![$x, $y, $z])`. -/
-def _root_.Qq.mkVecLiteralQ {u : Level} {α : Q(Type u)} {n : ℕ} (elems : Vector Q($α) n):
+/-- `mkVecLiteralQ ![x, y, z]` produces the term `q(![$x, $y, $z])`. -/
+def _root_.Qq.mkVecLiteralQ {u : Level} {α : Q(Type u)} {n : ℕ} (elems : Fin n → Q($α)):
     Q(Fin $n → $α) :=
-  go n elems.toList (elems.size_toArray)
-where go (n : ℕ) (elems : List Q($α)) (h : elems.length = n) : Q(Fin $n → $α) :=
-  match n, elems with
-  | 0, [] => q(vecEmpty)
-  | n + 1, x :: xs =>
-    let xs := go n xs (by simpa using h)
-    q(vecCons $x $xs)
+  loop 0 (Nat.zero_le _) q(vecEmpty)
+where
+  loop (i : ℕ) (hi : i ≤ n) (rest : Q(Fin $i → $α)) : let i' : Nat := i + 1; Q(Fin $(i') → $α) :=
+    if h : i < n then
+      loop (i + 1) h q(vecCons $(elems (Fin.rev ⟨i, h⟩)) $rest)
+    else
+      rest
 
 open Lean Qq in
 protected instance _root_.PiFin.toExpr [ToLevel.{u}] [ToExpr α] (n : ℕ) : ToExpr (Fin n → α) :=
   have lu := toLevel.{u}
   have eα : Q(Type $lu) := toTypeExpr α
   let toTypeExpr := q(Fin $n → $eα)
-  { toTypeExpr, toExpr v := Qq.mkVecLiteralQ <| Vector.ofFn fun i => show Q($eα) from toExpr (v i) }
+  { toTypeExpr, toExpr v := Qq.mkVecLiteralQ fun i => show Q($eα) from toExpr (v i) }
 
 /-! ### `bit0` and `bit1` indices
 The following definitions and `simp` lemmas are used to allow
