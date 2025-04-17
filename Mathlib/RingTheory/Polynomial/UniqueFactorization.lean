@@ -40,7 +40,6 @@ instance (priority := 100) wfDvdMonoid : WfDvdMonoid R[X] where
             DvdNotUnit →r Prod.Lex (· < ·) DvdNotUnit)
           (wellFounded_lt.prod_lex ‹WfDvdMonoid R›.wf)
       rintro a b ⟨ane0, ⟨c, ⟨not_unit_c, rfl⟩⟩⟩
-      dsimp
       rw [Polynomial.degree_mul, if_neg ane0]
       split_ifs with hac
       · rw [hac, Polynomial.leadingCoeff_zero]

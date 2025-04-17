@@ -51,7 +51,7 @@ in order to get this shift and the (pre)triangulated structure on `Cᵒᵖ`. -/
 
 private abbrev OppositeShiftAux :=
   PullbackShift (OppositeShift C ℤ)
-    (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; dsimp; omega))
+    (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by omega))
 
 /-- The category `Cᵒᵖ` is equipped with the shift such that the shift by `n` on `Cᵒᵖ`
 corresponds to the shift by `-n` on `C`. -/

@@ -255,7 +255,6 @@ theorem GammaSeq_eq_approx_Gamma_integral {s : ℂ} (hs : 0 < re s) {n : ℕ} (h
   rw [GammaSeq_eq_betaIntegral_of_re_pos hs]
   have := intervalIntegral.integral_comp_div (a := 0) (b := n)
     (fun x => ↑((1 - x) ^ n) * ↑(x * ↑n) ^ (s - 1) : ℝ → ℂ) (Nat.cast_ne_zero.mpr hn)
-  dsimp only at this
   rw [betaIntegral, this, real_smul, zero_div, div_self, add_sub_cancel_right,
     ← intervalIntegral.integral_const_mul, ← intervalIntegral.integral_const_mul]
   swap; · exact Nat.cast_ne_zero.mpr hn

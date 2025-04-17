@@ -48,7 +48,6 @@ noncomputable def iSupLift (dir : Directed (· ≤ ·) K) (f : ∀ i, K i →ₐ
   { toFun := Set.iUnionLift (fun i => ↑(K i)) (fun i x => f i x)
         (fun i j x hxi hxj => by
           let ⟨k, hik, hjk⟩ := dir i j
-          dsimp
           rw [hf i k hik, hf j k hjk]
           rfl)
         (T : Set A) (by rw [hT, coe_iSup_of_directed dir])
