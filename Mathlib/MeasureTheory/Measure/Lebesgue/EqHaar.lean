@@ -461,6 +461,10 @@ theorem addHaar_closedBall' (x : E) {r : ℝ} (hr : 0 ≤ r) :
     μ (closedBall x r) = ENNReal.ofReal (r ^ finrank ℝ E) * μ (closedBall 0 1) := by
   rw [← addHaar_closedBall_mul μ x hr zero_le_one, mul_one]
 
+theorem addHaar_real_closedBall' (x : E) {r : ℝ} (hr : 0 ≤ r) :
+    μ.real (closedBall x r) = r ^ finrank ℝ E * μ.real (closedBall 0 1) := by
+  rw [← addHaar_closedBall_mul μ x hr zero_le_one, mul_one]
+
 theorem addHaar_unitClosedBall_eq_addHaar_unitBall :
     μ (closedBall (0 : E) 1) = μ (ball 0 1) := by
   apply le_antisymm _ (measure_mono ball_subset_closedBall)
@@ -482,12 +486,20 @@ theorem addHaar_closedBall (x : E) {r : ℝ} (hr : 0 ≤ r) :
     μ (closedBall x r) = ENNReal.ofReal (r ^ finrank ℝ E) * μ (ball 0 1) := by
   rw [addHaar_closedBall' μ x hr, addHaar_unitClosedBall_eq_addHaar_unitBall]
 
+theorem addHaar_real_closedBall (x : E) {r : ℝ} (hr : 0 ≤ r) :
+    μ.real (closedBall x r) = r ^ finrank ℝ E * μ.real (ball 0 1) := by
+  rw [addHaar_closedBall' μ x hr, addHaar_unitClosedBall_eq_addHaar_unitBall]
+
 theorem addHaar_closedBall_eq_addHaar_ball [Nontrivial E] (x : E) (r : ℝ) :
     μ (closedBall x r) = μ (ball x r) := by
   by_cases h : r < 0
   · rw [Metric.closedBall_eq_empty.mpr h, Metric.ball_eq_empty.mpr h.le]
   push_neg at h
   rw [addHaar_closedBall μ x h, addHaar_ball μ x h]
+
+theorem addHaar_real_closedBall_eq_addHaar_real_ball [Nontrivial E] (x : E) (r : ℝ) :
+    μ.real (closedBall x r) = μ.real (ball x r) := by
+  simp [measureReal_def, addHaar_closedBall_eq_addHaar_ball x r]
 
 theorem addHaar_sphere_of_ne_zero (x : E) {r : ℝ} (hr : r ≠ 0) : μ (sphere x r) = 0 := by
   rcases hr.lt_or_lt with (h | h)
