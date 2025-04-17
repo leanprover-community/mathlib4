@@ -84,7 +84,8 @@ lemma Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes_of_isLocalRing
     obtain ⟨z, rfl⟩ := (Submodule.IsPrincipal.mem_iff_eq_smul_generator I).mp hz
     rw [smul_eq_mul, smul_eq_mul, mul_comm]
     refine Ideal.mul_mem_mul ?_ (Submodule.IsPrincipal.generator_mem _)
-    rwa [Ideal.mem_comap, f.map_add, smul_eq_mul, f.map_mul, Ideal.add_mem_iff_right _
+    dsimp [IsLocalization.orderEmbedding] at hx
+    rwa [Ideal.mem_comap, f.map_add, f.map_mul, Ideal.add_mem_iff_right _
       (Ideal.pow_le_pow_right n.le_succ hy), mul_comm, Ideal.unit_mul_mem_iff_mem] at hx
     refine IsLocalization.map_units _ ⟨_,
       show Submodule.IsPrincipal.generator I ∈ q.primeCompl from ?_⟩
