@@ -5,4 +5,4 @@ Authors: Yury Kudryashov, Alex Kontorovich, Heather Macbeth
 -/
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
 
-deprecated_module (since "2025-04-13")
+deprecated_module (since := "2025-04-13")
