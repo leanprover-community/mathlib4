@@ -685,15 +685,18 @@ theorem eq_s2_of_nontrivial (hα : Fintype.card α ≤ 2) (hG : Nontrivial G) :
     exact hG
 
 theorem nontrivial_on_equiv_perm_two {K : Type*} [Group K] [MulAction K α]
-    (hα : Fintype.card α = 2) {g : K} {a : α} (hga : g • a ≠ a) : IsMultiplyPretransitive K α 2 := by
+    (hα : Nat.card α = 2) {g : K} {a : α} (hga : g • a ≠ a) :
+    IsMultiplyPretransitive K α 2 := by
   classical
   let φ := MulAction.toPermHom K α
   let f : α →ₑ[φ] α :=
     { toFun := id
       map_smul' := fun k x => rfl }
+  have := Equiv.Perm.isMultiplyPretransitive
   have hf : Function.Bijective f := Function.bijective_id
   suffices Function.Surjective φ by
-    rw [isMultiplyPretransitive_of_bijective_map_iff this hf]
+    apply IsPretransitive.of_embedding (σ := φ) this.surjective
+    apply IsPretransitive.of_embedding_congr (f := f) this -- hf
     rw [← hα]
     apply Equiv.Perm.isMultiplyPretransitive
 
