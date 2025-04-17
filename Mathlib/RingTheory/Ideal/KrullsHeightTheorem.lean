@@ -39,7 +39,7 @@ lemma Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes_of_isLocalRing
     [IsLocalRing R] (I : Ideal R) (hI : I.IsPrincipal)
     (hp : (IsLocalRing.maximalIdeal R) ∈ I.minimalPrimes) :
     (IsLocalRing.maximalIdeal R).height ≤ 1 := by
-  erw [Ideal.height_le_iff]
+  rw [← ENat.coe_one, Ideal.height_le_iff]
   intro q h₁ h₂
   suffices q.primeHeight = 0 by rw [Ideal.height_eq_primeHeight, this]; exact zero_lt_one
   rw [← Ideal.height_eq_primeHeight, ← WithBot.coe_inj,
