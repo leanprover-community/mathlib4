@@ -51,7 +51,7 @@ the vertex or edge set. This is an issue, but is likely amenable to automation.
 
 ## Notation
 
-Relecting written mathematics, we use the compact notations `G.V` and `G.E` to describe
+Reflecting written mathematics, we use the compact notations `G.V` and `G.E` to describe
 vertex and edge sets formally, but use the longer terms `vxSet` and `edgeSet` within
 lemma names to refer to the same objects.
 
