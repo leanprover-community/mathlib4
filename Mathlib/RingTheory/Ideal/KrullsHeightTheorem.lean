@@ -75,8 +75,7 @@ lemma Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes_of_isLocalRing
   refine Submodule.le_of_le_smul_of_le_jacobson_bot (I := I) (IsNoetherian.noetherian _) ?_ ?_
   · rw [IsLocalRing.jacobson_eq_maximalIdeal]
     exacts [hp.1.2, bot_ne_top]
-  · specialize hn _ n.le_succ
-    apply_fun Ideal.comap (Ideal.Quotient.mk (I := I)) at hn
+  · replace hn := congr(Ideal.comap (Ideal.Quotient.mk I) $(hn _ n.le_succ))
     simp only [qs, OrderHom.coe_mk, ← RingHom.ker_eq_comap_bot, Ideal.mk_ker,
       Ideal.comap_map_of_surjective (Ideal.Quotient.mk (I := I)) Ideal.Quotient.mk_surjective] at hn
     intro x hx
