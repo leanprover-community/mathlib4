@@ -18,7 +18,7 @@ open Fin
 
 namespace Fin
 
-variable {n : ℕ}
+variable {n : ℕ} {k : Fin n}
 
 theorem neg_one_pow_succAbove_add_predAbove {R : Type*} [Monoid R] [HasDistribNeg R]
     (i : Fin (n + 2)) (j : Fin (n + 1)) :
