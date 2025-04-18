@@ -11,17 +11,16 @@ import Mathlib.Analysis.InnerProductSpace.PiL2
 
 Given an `InnerProductSpace ℝ E`, this file defines two canonical tensors.
 
-* `InnerProductSpace.canonicalContravariantTensor E : E ⊗[ℝ] E →ₗ[ℝ] ℝ`. This is
-  the element corresponding to the inner product.
+* `InnerProductSpace.canonicalContravariantTensor E : E ⊗[ℝ] E →ₗ[ℝ] ℝ`. This is the element
+  corresponding to the inner product.
 
-* If `E` is finite-dimensional, then `E ⊗[ℝ] E` is canonically isomorphic to its
-  dual. Accordingly, there exists an element
-  `InnerProductSpace.canonicalCovariantTensor E : E ⊗[ℝ] E` that corresponds to
-  `InnerProductSpace.canonicalContravariantTensor E` under this identification.
+* If `E` is finite-dimensional, then `E ⊗[ℝ] E` is canonically isomorphic to its dual. Accordingly,
+  there exists an element `InnerProductSpace.canonicalCovariantTensor E : E ⊗[ℝ] E` that
+  corresponds to `InnerProductSpace.canonicalContravariantTensor E` under this identification.
 
-The theorem `InnerProductSpace.canonicalCovariantTensorRepresentation` shows
-that `InnerProductSpace.canonicalCovariantTensor E` can be computed from any
-orthonormal basis `v` as `∑ i, (v i) ⊗ₜ[ℝ] (v i)`.
+The theorem `canonicalCovariantTensor_eq_sum` shows that
+`InnerProductSpace.canonicalCovariantTensor E` can be computed from any orthonormal basis `v` as
+`∑ i, (v i) ⊗ₜ[ℝ] (v i)`.
 -/
 
 open InnerProductSpace TensorProduct
@@ -32,8 +31,10 @@ variable (E : Type*) [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 noncomputable def InnerProductSpace.canonicalContravariantTensor :
     E ⊗[ℝ] E →ₗ[ℝ] ℝ := lift bilinFormOfRealInner
 
-/-- The canonical covariant tensor corresponding to `InnerProductSpace.canonicalContravariantTensor`
-under the identification of `E` with its dual -/
+/--
+The canonical covariant tensor corresponding to `InnerProductSpace.canonicalContravariantTensor`
+under the identification of `E` with its dual.
+-/
 noncomputable def InnerProductSpace.canonicalCovariantTensor [FiniteDimensional ℝ E] :
     E ⊗[ℝ] E := ∑ i, ((stdOrthonormalBasis ℝ E) i) ⊗ₜ[ℝ] ((stdOrthonormalBasis ℝ E) i)
 
