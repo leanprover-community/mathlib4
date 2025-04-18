@@ -100,7 +100,7 @@ The canonical map from `K` to the finite adeles of `K`.
 The content of the existence of this map is the fact that an element `k` of `K` is integral at
 all but finitely many places, which is `IsDedekindDomain.HeightOneSpectrum.Support.finite R k`.
 -/
-def algebraMap : K →+* FiniteAdeleRing R K where
+protected def algebraMap : K →+* FiniteAdeleRing R K where
   toFun k := ⟨fun i ↦ k, by
     simp only [Filter.eventually_cofinite, SetLike.mem_coe, mem_adicCompletionIntegers R K,
      adicCompletion, Valued.valuedCompletion_apply, not_le]
@@ -114,7 +114,7 @@ def algebraMap : K →+* FiniteAdeleRing R K where
 
 instance : Algebra K (FiniteAdeleRing R K) := (FiniteAdeleRing.algebraMap R K).toAlgebra
 
-instance : Algebra R (FiniteAdeleRing R K) := Algebra.compHom _ (_root_.algebraMap R K)
+instance : Algebra R (FiniteAdeleRing R K) := Algebra.compHom _ (algebraMap R K)
 
 instance : IsScalarTower R K (FiniteAdeleRing R K) :=
   IsScalarTower.of_algebraMap_eq' rfl
