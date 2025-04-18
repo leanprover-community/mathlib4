@@ -8,7 +8,7 @@ if [[ "$@" == "--githash" ]]; then exec lean "$@"; fi
 for arg in "$@"; do
     # assume the module name is the filename part with capital letters
     if [[ "$arg" =~ (/[.a-z][^/]*)+/(.*)\.lean ]]; then
-        mod=${BASH_REMATCH[1]//\//.}
+        mod=${BASH_REMATCH[2]//\//.}
     fi
 done
 [ -n "$mod" ] || (echo "module name not detected"; exit 1)
