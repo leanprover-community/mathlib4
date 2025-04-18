@@ -62,6 +62,16 @@ theorem init_snoc {n : ℕ} (x : Fin n ↪ α) {a : α} (ha : a ∉ range x) :
   apply coe_injective
   simp [snoc, init, init_snoc]
 
+theorem snoc_castSucc {n : ℕ} {x : Fin n ↪ α}
+    {a : α} {ha : a ∉ range ⇑x} {i : Fin n} :
+    snoc x ha i.castSucc  = x i := by
+  rw [coe_snoc, Fin.snoc_castSucc]
+
+theorem snoc_last {n : ℕ} {x : Fin n ↪ α}
+    {a : α} {ha : a ∉ range ⇑x} :
+    snoc x ha (last n) = a := by
+  rw [coe_snoc, Fin.snoc_last]
+
 -- Mathlib.Data.Fin.Basic
 theorem _root_.Fin.exists_eq_castAdd_or_exists_eq_natAdd {m n : ℕ} (i : Fin (m + n)) :
     (∃ i' : Fin m, i = castAdd n i') ∨ ∃ i', i = natAdd m i' := by
