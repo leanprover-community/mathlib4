@@ -20,7 +20,7 @@ This file implements simprocs to compute various objects related to divisors:
 open Lean Meta Qq
 
 /-- The `Nat.divisorsEq` computes the finset `Nat.divisors n` when `n` is a natural number
-litteral. -/
+literal. -/
 simproc_decl Nat.divisorsEq (Nat.divisors _) := fun e => do
   unless e.isAppOfArity `Nat.divisors 1 do return .continue
   let some n ← fromExpr? e.appArg! | return .continue
@@ -30,7 +30,7 @@ simproc_decl Nat.divisorsEq (Nat.divisors _) := fun e => do
   return .done {expr := rhs, proof? := pf }
 
 /-- The `Nat.properDivisorsEq ` computes the finset `Nat.properDivisorsEq  n` when `n` is a natural
-number litteral. -/
+number literal. -/
 simproc_decl Nat.properDivisorsEq (Nat.properDivisors _) := fun e => do
   unless e.isAppOfArity `Nat.properDivisors 1 do return .continue
   let some n ← fromExpr? e.appArg! | return .continue
