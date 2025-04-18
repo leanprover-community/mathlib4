@@ -31,7 +31,7 @@ if the graph decomposes into cliques, there exists a matching that covers
 everything except some universal vertices.
 
 This lemma is marked private, because
-it is strictly weaker than `IsPerfectMatching.exists_of_isClique_supp` -/
+it is strictly weaker than `IsPerfectMatching.exists_of_isClique_supp`. -/
 private lemma Subgraph.IsMatching.exists_verts_compl_subset_universalVerts
     (h : ¬IsTutteViolator G G.universalVerts)
     (h' : ∀ (K : G.deleteUniversalVerts.coe.ConnectedComponent),
