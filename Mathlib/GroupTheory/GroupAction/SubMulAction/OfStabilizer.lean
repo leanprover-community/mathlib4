@@ -4,14 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 
-import Mathlib.GroupTheory.GroupAction.MultipleTransitivity
-
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.GroupTheory.GroupAction.Basic
+import Mathlib.GroupTheory.GroupAction.Embedding
 import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.Tactic.Group
 import Mathlib.SetTheory.Cardinal.Finite
 import Mathlib.Data.Finite.Card
+import Mathlib.Data.Fin.Tuple.Embedding
 
 /-! # The SubMulAction of the stabilizer of a point on the complement of that point
 
@@ -101,169 +101,127 @@ lemma nat_card_ofStabilizer_eq [Finite α] (a : α) :
   simp only [Cardinal.mk_fintype, Fintype.card_unique, Nat.cast_one, map_one, add_tsub_cancel_left]
   congr
 
-variable {a b : α} {g : G} (hg : g • b = a)
 variable {G}
 
 /-- Conjugation induces an equivariant map between the SubAddAction of
 the stabilizer of a point and that of its translate -/
 def _root_.SubAddAction.ofStabilizer.conjMap {G : Type*} [AddGroup G] {α : Type*} [AddAction G α]
-    {a b : α} {g : G} (hg : g +ᵥ b = a) :
+    {g : G} {a b : α} (hg : b = g +ᵥ a) :
     AddActionHom (AddAction.stabilizerEquivStabilizer hg)
-      (SubAddAction.ofStabilizer G b) (SubAddAction.ofStabilizer G a) where
-  toFun := fun ⟨x, hx⟩ =>
-    ⟨g +ᵥ x, fun hy ↦ by
-      simp only [← hg, Set.mem_singleton_iff, vadd_left_cancel_iff] at hy
-      exact hx  hy⟩
-  map_vadd' _ _ := by
-    rw [← SetLike.coe_eq_coe]
-    simp [SubAddAction.val_vadd_of_tower, AddAction.addSubgroup_vadd_def,
-       AddAction.stabilizerEquivStabilizer_apply, ← vadd_assoc, AddAut.conj_apply]
+      (SubAddAction.ofStabilizer G a) (SubAddAction.ofStabilizer G b) where
+  toFun x := ⟨g +ᵥ x.val, fun hy ↦ x.prop (by simpa [hg] using hy)⟩
+  map_vadd' := fun ⟨k, hk⟩ x ↦ by
+    simp [← SetLike.coe_eq_coe, AddAction.addSubgroup_vadd_def,
+      AddAction.stabilizerEquivStabilizer_apply, ← vadd_assoc]
 
 /-- Conjugation induces an equivariant map between the SubMulAction of
 the stabilizer of a point and that of its translate -/
 @[to_additive existing]
-def ofStabilizer.conjMap :
-    MulActionHom (stabilizerEquivStabilizer hg) (ofStabilizer G b) (ofStabilizer G a) where
-    -- stabilizerEquivStabilizer hg] ofStabilizer G a where
-  toFun x :=
-    ⟨g • x.val, fun hy ↦ by
-      simp only [← hg, Set.mem_singleton_iff, smul_left_cancel_iff] at hy
-      exact x.prop hy⟩
-  map_smul' _ _ := by
-    rw [← SetLike.coe_eq_coe]
-    simp [SubMulAction.val_smul_of_tower, subgroup_smul_def,
-       stabilizerEquivStabilizer_apply, ← smul_assoc, MulAut.conj_apply]
+def ofStabilizer.conjMap {g : G} {a b : α} (hg : b = g • a) :
+    MulActionHom (stabilizerEquivStabilizer hg) (ofStabilizer G a) (ofStabilizer G b) where
+  toFun x := ⟨g • x.val, fun hy ↦ x.prop (by simpa [hg] using hy)⟩
+  map_smul' := fun ⟨k, hk⟩ ↦ by
+    simp [← SetLike.coe_eq_coe, subgroup_smul_def, stabilizerEquivStabilizer, ← smul_assoc]
+
+variable {g  h k: G} {a b c: α}
+variable (hg : b = g • a) (hh : c = h • b) (hk : c = k • a)
 
 @[to_additive]
-theorem ofStabilizer.conjMap_apply (x : ofStabilizer G b) :
+theorem ofStabilizer.conjMap_apply (x : ofStabilizer G a) :
     (conjMap hg x : α) = g • x := rfl
 
+theorem _root_.AddAction.stabilizerEquivStabilizer_compTriple
+    {G : Type*} [AddGroup G] {α : Type*} [AddAction G α]
+    {g h k : G} {a b c : α} {hg : b = g +ᵥ a} {hh : c = h +ᵥ b} {hk : c = k +ᵥ a} (H : k = h + g) :
+    CompTriple (AddAction.stabilizerEquivStabilizer hg)
+      (AddAction.stabilizerEquivStabilizer hh) (AddAction.stabilizerEquivStabilizer hk) where
+  comp_eq := by
+    ext
+    simp [AddAction.stabilizerEquivStabilizer, H, AddAut.inv_def, AddAut.conj, ← add_assoc]
+
+variable {hg hh hk} in
+@[to_additive existing]
+theorem _root_.MulAction.stabilizerEquivStabilizer_compTriple (H : k = h * g) :
+    CompTriple (stabilizerEquivStabilizer hg)
+      (stabilizerEquivStabilizer hh) (stabilizerEquivStabilizer hk) where
+  comp_eq := by
+    ext
+    simp [stabilizerEquivStabilizer, H, MulAut.inv_def, MulAut.conj, ← mul_assoc]
+
+variable {hg hh hk} in
 @[to_additive]
-theorem ofStabilizer.conjMap_bijective :
-    Function.Bijective (conjMap hg) := by
+theorem ofStabilizer.conjMap_comp_apply (H : k = h * g) (x : ofStabilizer G a) :
+    conjMap hh (conjMap hg x) = conjMap hk x := by
+  simp [← Subtype.coe_inj, conjMap_apply, H, mul_smul]
+
+@[to_additive]
+theorem ofStabilizer.conjMap_comp_inv_apply (x : ofStabilizer G a) :
+    (conjMap (eq_inv_smul_iff.mpr hg.symm)) (conjMap hg x) = x := by
+  simp [← Subtype.coe_inj, conjMap_apply]
+
+@[to_additive]
+theorem ofStabilizer.inv_conjMap_comp_apply (x : ofStabilizer G b) :
+    conjMap hg (conjMap (eq_inv_smul_iff.mpr hg.symm) x) = x := by
+  simp [← Subtype.coe_inj, conjMap_apply]
+
+@[to_additive]
+theorem ofStabilizer.conjMap_comp (H : k = h * g) :
+    (conjMap hh).comp (conjMap hg) (κ := stabilizerEquivStabilizer_compTriple H) = conjMap hk := by
+  ext x
+  simp only [MulActionHom.comp_apply, SetLike.coe_eq_coe]
+  exact conjMap_comp_apply H x
+
+@[to_additive]
+theorem ofStabilizer.conjMap_bijective : Function.Bijective (conjMap hg) := by
   constructor
   · rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
     simp only [Subtype.mk_eq_mk]
     apply (MulAction.injective g)
     rwa [← SetLike.coe_eq_coe, conjMap_apply] at hxy
-  · rintro ⟨x, hx⟩
-    use (ofStabilizer.conjMap (inv_smul_eq_iff.mpr hg.symm)) ⟨x, hx⟩
-    simp [← SetLike.coe_eq_coe, conjMap_apply]
+  · intro x
+    refine ⟨conjMap _ x, inv_conjMap_comp_apply _ x⟩
 
 /-- Append `a` to `x : Fin n ↪ ofStabilizer G a`  to get an element of `Fin n.succ ↪ α` -/
 @[to_additive
   "Append `a` to `x : Fin n ↪ ofStabilizer G a`  to get an element of `Fin n.succ ↪ α`"]
-def ofStabilizer.append {n : ℕ} (x : Fin n ↪ ofStabilizer G a) :
-    Fin n.succ ↪ α := by
-  let j : ofStabilizer G a ↪ α := {
-    toFun := fun u => id u
-    inj' := fun x y hxy => by simpa using hxy }
-  apply Fin.Embedding.append (x.trans j) (a := a)
-  simp [Set.mem_range, trans_apply, not_exists, j]
-  exact fun i ↦ (x i).prop
+def ofStabilizer.snoc {n : ℕ} (x : Fin n ↪ ofStabilizer G a) :
+    Fin n.succ ↪ α :=
+  Fin.Embedding.snoc (x.trans (subtype _)) (a := a) (by
+    simp [Set.mem_range, trans_apply, not_exists]
+    exact fun i ↦ (x i).prop)
 
 @[to_additive]
-theorem ofStabilizer.append_apply_of_lt {n : ℕ} (x : Fin n ↪ ofStabilizer G a)
-    {i : Fin n.succ} (hi : i.val < n) :
-    append x i = (x ⟨i, hi⟩ : α) := by
-  simp [append, Fin.Embedding.append_apply_of_lt hi]
+theorem ofStabilizer.snoc_castSucc {n : ℕ} (x : Fin n ↪ ofStabilizer G a) (i : Fin n) :
+    snoc x i.castSucc = x i := by
+  simp [snoc, trans_apply, Fin.Embedding.snoc_castSucc]
 
 @[to_additive]
-theorem ofStabilizer.append_apply_last {n : ℕ} (x : Fin n ↪ ofStabilizer G a) :
-    append x (Fin.last n) = a := by
-  simp [append, Fin.Embedding.append_apply_last]
+theorem ofStabilizer.snoc_last {n : ℕ} (x : Fin n ↪ ofStabilizer G a) :
+    snoc x (Fin.last n) = a := by
+  simp [snoc, trans_apply, Fin.Embedding.snoc_last]
 
 variable (G) in
 @[to_additive]
 lemma exists_smul_of_last_eq [IsPretransitive G α] {n : ℕ} (a : α) (x : Fin n.succ ↪ α) :
-    ∃ (g : G) (y : Fin n ↪ ofStabilizer G a),
-      Fin.castSuccEmb.trans (g • x) = trans y (subtype _) ∧
-        g • x (Fin.last n) = a := by
+    ∃ (g : G) (y : Fin n ↪ ofStabilizer G a), g • x = ofStabilizer.snoc y := by
   obtain ⟨g, hgx⟩ := exists_smul_eq G (x (Fin.last n)) a
-  exact ⟨g,
-    (Fin.castSuccEmb.trans (g • x)).codRestrict (ofStabilizer G a)
-      (fun i ↦ by
-        simp only [trans_apply, Fin.castSuccEmb_apply, smul_apply,
-          SetLike.mem_coe, mem_ofStabilizer_iff, ← hgx, ne_eq, smul_left_cancel_iff,
-          EmbeddingLike.apply_eq_iff_eq]
-        refine Fin.lt_last_iff_ne_last.mp i.prop),
-    by ext; simp; rfl,
-    hgx⟩
-
-@[to_additive]
-theorem ofStabilizer.isPretransitive_iff_of_conj {a b : α} {g : G} (hg : g • b = a) :
-    IsPretransitive (stabilizer G b) (ofStabilizer G b) ↔
-      IsPretransitive (stabilizer G a) (ofStabilizer G a) :=
-  isPretransitive_congr (MulEquiv.surjective _) (ofStabilizer.conjMap_bijective hg)
-
-@[to_additive]
-theorem ofStabilizer.isPretransitive_iff [IsPretransitive G α] {a b : α} :
-    IsPretransitive (stabilizer G b) (ofStabilizer G b) ↔
-      IsPretransitive (stabilizer G a) (ofStabilizer G a) := by
-  obtain ⟨g, hg⟩ := exists_smul_eq G b a
-  exact isPretransitive_congr (MulEquiv.surjective _) (ofStabilizer.conjMap_bijective hg)
-
-@[to_additive]
-theorem ofStabilizer.isMultiplyPretransitive_iff_of_conj
-    {n : ℕ} {a b : α} {g : G} (hg : g • b = a) :
-    IsMultiplyPretransitive (stabilizer G b) (ofStabilizer G b) n ↔
-      IsMultiplyPretransitive (stabilizer G a) (ofStabilizer G a) n :=
-  IsPretransitive.of_embedding_congr (MulEquiv.surjective _) (ofStabilizer.conjMap_bijective hg)
-
-@[to_additive]
-theorem ofStabilizer.isMultiplyPretransitive_iff [IsPretransitive G α] {n : ℕ} {a b : α} :
-    IsMultiplyPretransitive (stabilizer G b) (ofStabilizer G b) n ↔
-      IsMultiplyPretransitive (stabilizer G a) (ofStabilizer G a) n := by
-  obtain ⟨g, hg⟩ := exists_smul_eq G b a
-  exact IsPretransitive.of_embedding_congr (MulEquiv.surjective _)
-    (ofStabilizer.conjMap_bijective hg)
-
-/-- Multiple transitivity of a pretransitive action
-  is equivalent to one less transitivity of stabilizer of a point
-  (Wielandt, th. 9.1, 1st part) -/
-@[to_additive
-  "Multiple transitivity of a pretransitive action
-  is equivalent to one less transitivity of stabilizer of a point
-  (Wielandt, th. 9.1, 1st part)"]
-theorem ofStabilizer.isMultiplyPretransitive [IsPretransitive G α] {n : ℕ} {a : α} :
-    IsMultiplyPretransitive G α n.succ ↔
-      IsMultiplyPretransitive (stabilizer G a) (SubMulAction.ofStabilizer G a) n := by
-  constructor
-  · exact fun hn ↦ {
-      exists_smul_eq x y := by
-        obtain ⟨g, hgxy⟩ := exists_smul_eq G (append x) (append y)
-        have hg : g ∈ stabilizer G a := by
-          rw [mem_stabilizer_iff]
-          nth_rewrite 1 [← append_apply_last x, ← Function.Embedding.smul_apply,
-            hgxy, append_apply_last y]
-          rfl
-        use ⟨g, hg⟩
-        ext ⟨i, hi⟩
-        simp only [Function.Embedding.smul_apply, SubMulAction.val_smul_of_tower]
-        simp only [subgroup_smul_def]
-        rw [← append_apply_of_lt x (i := ⟨i, Nat.lt_succ_of_lt hi⟩),
-          ← Function.Embedding.smul_apply, hgxy, append_apply_of_lt y] }
-  · exact fun hn ↦ {
-      exists_smul_eq x y := by
-        -- gx • x = x1 :: a
-        obtain ⟨gx, x1, hgx, hga⟩ := exists_smul_of_last_eq G a x
-        -- gy • y = y1 :: a
-        obtain ⟨gy, y1, hgy, hgb⟩ := exists_smul_of_last_eq G a y
-        -- g • x1 = y1,
-        obtain ⟨g, hg⟩ := hn.exists_smul_eq x1 y1
-        use gy⁻¹ * g * gx
-        ext i
-        simp only [mul_smul, smul_apply]
-        rcases Fin.eq_castSucc_or_eq_last i with hi | hi
-        · rw [Function.Embedding.ext_iff] at hgx hgy hg
-          obtain ⟨j, hj⟩ := hi
-          have : i = Fin.castSuccEmb j := by rw [hj]; rfl
-          specialize hgx j; specialize hgy j; specialize hg j
-          simp only [Nat.succ_eq_add_one, trans_apply, ← this, smul_apply] at hgx hgy
-          rw [← Subtype.coe_inj] at hg
-          rwa [inv_smul_eq_iff, hgy, hgx]
-        · rw [hi, hga, inv_smul_eq_iff, hgb, g.prop] }
+  use g
+  use (Fin.Embedding.init (g • x)).codRestrict (ofStabilizer G a) (fun i ↦ by
+    simp only [SetLike.mem_coe, mem_ofStabilizer_iff]
+    simp only [Nat.succ_eq_add_one, ← hgx, ← smul_apply, ne_eq]
+    suffices Fin.Embedding.init (g • x) i = (g • x) i.castSucc by
+      rw [this]
+      simp only [Nat.succ_eq_add_one, smul_apply, smul_left_cancel_iff,
+        EmbeddingLike.apply_eq_iff_eq, ne_eq]
+      exact Fin.lt_last_iff_ne_last.mp (Fin.castSucc_lt_last i)
+    simp only [Fin.Embedding.init, coeFn_mk, Fin.init_def])
+  ext i
+  rcases Fin.eq_castSucc_or_eq_last i with ⟨i, rfl⟩ | ⟨rfl⟩
+  · simp only [smul_apply, ofStabilizer.snoc, Fin.Embedding.snoc_castSucc]
+    -- rfl works here, what follows uses `erw`
+    simp only [trans_apply,  Function.Embedding.subtype_apply]
+    erw [Function.Embedding.codRestrict_apply] -- erw!
+    simp [Fin.Embedding.init, coeFn_mk, Fin.init_def]
+  · simpa only [smul_apply, ofStabilizer.snoc, Fin.Embedding.snoc_last]
 
 end SubMulAction
-
-
