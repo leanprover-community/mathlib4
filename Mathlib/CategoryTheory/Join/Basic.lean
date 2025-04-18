@@ -71,14 +71,10 @@ def id : ∀ (X : C ⋆ D), Hom X X
 
 /-- Composition in `C ⋆ D` is inherited from the compositions in `C` and `D`. -/
 def comp : ∀ {x y z : C ⋆ D}, Hom x y → Hom y z → Hom x z
-  | .left _x, .left _y, .left _z => fun f g ↦ ULift.up (ULift.down f ≫ ULift.down g)
-  | .left _x, .left _y, .right _z => fun _ _ ↦ PUnit.unit
-  | .left _x, .right _y, .left _z => fun _ g ↦ PEmpty.elim g
-  | .left _x, .right _y, .right _z => fun _ _ ↦ PUnit.unit
-  | .right _x, .left _y, .left _z => fun f _ ↦ PEmpty.elim f
-  | .right _x, .left _y, .right _z => fun f _ ↦ PEmpty.elim f
-  | .right _x, .right _y, .left _z => fun _ g ↦ PEmpty.elim g
-  | .right _x, .right _y, .right _z => fun f g ↦ ULift.up (ULift.down f ≫ ULift.down g)
+  | .left _x, .left _y, .left _z, f, g => ULift.up (ULift.down f ≫ ULift.down g)
+  | .left _x, .left _y, .right _z, _, _ => PUnit.unit
+  | .left _x, .right _y, .right _z, _, _ =>  PUnit.unit
+  | .right _x, .right _y, .right _z, f, g => ULift.up (ULift.down f ≫ ULift.down g)
 
 instance : Category.{max v₁ v₂} (C ⋆ D) where
   Hom X Y := Hom X Y
@@ -108,13 +104,19 @@ end CategoryStructure
 
 section Inclusions
 
-/-- The canonical inclusion from C to `C ⋆ D`. -/
+/-- The canonical inclusion from C to `C ⋆ D`.
+Terms of the form `(inclLeft C D).map f`should be treated as primitive when working with joins
+and one should avoid trying to reduce them. For this reason, there is no `inclLeft_map` simp
+lemma. -/
 @[simps! obj]
 def inclLeft : C ⥤ C ⋆ D where
   obj := left
   map := ULift.up
 
-/-- The canonical inclusion from D to `C ⋆ D`. -/
+/-- The canonical inclusion from D to `C ⋆ D`.
+Terms of the form `(inclRight C D).map f`should be treated as primitive when working with joins
+and one should avoid trying to reduce them. For this reason, there is no `inclRight_map` simp
+lemma. -/
 @[simps! obj]
 def inclRight : D ⥤ C ⋆ D where
   obj := right
