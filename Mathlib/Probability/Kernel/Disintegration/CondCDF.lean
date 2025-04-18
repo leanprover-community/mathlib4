@@ -179,7 +179,7 @@ lemma setIntegral_preCDF_fst (ρ : Measure (α × ℝ)) (r : ℚ) {s : Set α} (
     [IsFiniteMeasure ρ] :
     ∫ x in s, (preCDF ρ r x).toReal ∂ρ.fst = (ρ.IicSnd r).real s := by
   rw [integral_toReal]
-  · rw [setLIntegral_preCDF_fst _ _ hs]
+  · rw [setLIntegral_preCDF_fst _ _ hs, measureReal_def]
   · exact measurable_preCDF.aemeasurable
   · refine ae_restrict_of_ae ?_
     filter_upwards [preCDF_le_one ρ] with a ha
@@ -226,7 +226,7 @@ lemma isRatCondKernelCDFAux_preCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure �
     exact h0.comp (h.comp hs_tendsto)
   integrable _ q := integrable_preCDF ρ q
   setIntegral a s hs q := by rw [Kernel.const_apply, Kernel.const_apply,
-    setIntegral_preCDF_fst _ _ hs, Measure.IicSnd_apply _ _ hs]
+    setIntegral_preCDF_fst _ _ hs, measureReal_def, measureReal_def, Measure.IicSnd_apply _ _ hs]
 
 lemma isRatCondKernelCDF_preCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] :
     IsRatCondKernelCDF (fun p r ↦ (preCDF ρ r p.2).toReal)
