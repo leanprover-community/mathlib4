@@ -154,7 +154,7 @@ theorem Measure.MeasureDense.indicatorConstLp_subset_closure (h𝒜 : μ.Measure
           rw [_root_.mul_lt_mul_left (norm_pos_iff.2 hc)]
           refine Real.rpow_lt_rpow (by simp) ?_
             (one_div_pos.2 <| toReal_pos p_pos.ne.symm p_ne_top.elim)
-          rwa [toReal_lt_toReal (measure_symmDiff_ne_top hμs hμt) ofReal_ne_top]
+          rwa [measureReal_def, toReal_lt_toReal (measure_symmDiff_ne_top hμs hμt) ofReal_ne_top]
       _ = ε := by
         rw [toReal_ofReal (rpow_nonneg (div_nonneg hε.le (norm_nonneg _)) _),
           one_div, Real.rpow_rpow_inv (div_nonneg hε.le (norm_nonneg _))
@@ -244,7 +244,7 @@ theorem Measure.MeasureDense.of_generateFrom_isSetAlgebra_finite [IsFiniteMeasur
                       ≤ μ.real (⋃ n ∈ (Finset.range (N + 1)), f n ∆ g n) :=
                           toReal_mono (measure_ne_top _ _) (measure_mono biSup_symmDiff_biSup_le)
                     _ ≤ ∑ n ∈ Finset.range (N + 1), μ.real (f n ∆ g n) := by
-                          rw [← toReal_sum (fun _ _ ↦ measure_ne_top _ _)]
+                          simp_rw [measureReal_def, ← toReal_sum (fun _ _ ↦ measure_ne_top _ _)]
                           exact toReal_mono (ne_of_lt <| sum_lt_top.2 fun _ _ ↦ measure_lt_top μ _)
                             (measure_biUnion_finset_le _ _)
                     _ < ∑ n ∈ Finset.range (N + 1), (ε / (2 * (N + 1))) :=

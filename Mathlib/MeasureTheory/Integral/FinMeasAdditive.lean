@@ -149,7 +149,7 @@ theorem eq_zero_of_measure_zero {β : Type*} [NormedAddCommGroup β] {T : Set α
     T s = 0 := by
   refine norm_eq_zero.mp ?_
   refine ((hT.2 s hs (by simp [hs_zero])).trans (le_of_eq ?_)).antisymm (norm_nonneg _)
-  rw [hs_zero, ENNReal.toReal_zero, mul_zero]
+  rw [measureReal_def, hs_zero, ENNReal.toReal_zero, mul_zero]
 
 theorem eq_zero {β : Type*} [NormedAddCommGroup β] {T : Set α → β} {C : ℝ} {_ : MeasurableSpace α}
     (hT : DominatedFinMeasAdditive (0 : Measure α) T C) {s : Set α} (hs : MeasurableSet s) :
@@ -176,7 +176,10 @@ theorem of_measure_le {μ' : Measure α} (h : μ ≤ μ') (hT : DominatedFinMeas
   have hμs : μ s < ∞ := (h s).trans_lt hμ's
   calc
     ‖T s‖ ≤ C * μ.real s := hT.2 s hs hμs
-    _ ≤ C * μ'.real s := by gcongr; exacts [hμ's.ne, h _]
+    _ ≤ C * μ'.real s := by
+      simp only [measureReal_def]
+      gcongr
+      exacts [hμ's.ne, h s]
 
 theorem add_measure_right {_ : MeasurableSpace α} (μ ν : Measure α)
     (hT : DominatedFinMeasAdditive μ T C) (hC : 0 ≤ C) : DominatedFinMeasAdditive (μ + ν) T C :=
@@ -196,8 +199,8 @@ theorem of_smul_measure {c : ℝ≥0∞} (hc_ne_top : c ≠ ∞) (hT : Dominated
   refine ⟨hT.1.of_eq_top_imp_eq_top (μ := c • μ) h, fun s hs hμs => ?_⟩
   have hcμs : c • μ s ≠ ∞ := mt (h s hs) hμs.ne
   rw [smul_eq_mul] at hcμs
-  simp_rw [DominatedFinMeasAdditive, Measure.smul_apply, smul_eq_mul, toReal_mul] at hT
   refine (hT.2 s hs hcμs.lt_top).trans (le_of_eq ?_)
+  simp
   ring
 
 theorem of_measure_le_smul {μ' : Measure α} {c : ℝ≥0∞} (hc : c ≠ ∞) (h : μ ≤ c • μ')
