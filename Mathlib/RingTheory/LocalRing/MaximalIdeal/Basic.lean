@@ -58,6 +58,14 @@ instance : Unique (MaximalSpectrum R) where
   default := ⟨maximalIdeal R, maximalIdeal.isMaximal R⟩
   uniq := fun I ↦ MaximalSpectrum.ext_iff.mpr <| eq_maximalIdeal I.isMaximal
 
+omit [IsLocalRing R] in
+/-- If the maximal spectrum of a ring is a singleton, then the ring is local. -/
+theorem of_singleton_maximalSpectrum [Subsingleton (MaximalSpectrum R)]
+    [Nonempty (MaximalSpectrum R)] : IsLocalRing R :=
+  let m := Classical.arbitrary (MaximalSpectrum R)
+  .of_unique_max_ideal ⟨m.asIdeal, m.isMaximal,
+    fun I hI ↦ MaximalSpectrum.mk.inj <| Subsingleton.elim ⟨I, hI⟩ m⟩
+
 theorem le_maximalIdeal {J : Ideal R} (hJ : J ≠ ⊤) : J ≤ maximalIdeal R := by
   rcases Ideal.exists_le_maximal J hJ with ⟨M, hM1, hM2⟩
   rwa [← eq_maximalIdeal hM1]
