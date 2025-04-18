@@ -70,7 +70,7 @@ lemma aeval_eq_zero_of_eval_eq_zero {p : ℤ[X]} {r : ℚ}
     p.aeval r = 0 := by
   rw [<- eval_map_algebraMap, algebraMap_int_eq]; exact H
 
-/-- **Rational root theorem**, part 1 --/
+/-- **Rational root theorem**, part 1 -/
 theorem den_dvd_of_is_root_standard_case {p : ℤ[X]} {r : ℚ}
     (H : r ∈ (p.map (Int.castRingHom ℚ)).roots) :
     r.den ∣ p.leadingCoeff.natAbs := by
@@ -79,7 +79,7 @@ theorem den_dvd_of_is_root_standard_case {p : ℤ[X]} {r : ℚ}
   rw [H1, Int.natAbs_mul, (rat_num_abs_and_den_in_fraction_ring r).2]
   apply dvd_mul_right
 
-/-- **Rational root theorem**, part 2 --/
+/-- **Rational root theorem**, part 2 -/
 theorem num_dvd_of_is_root_standard_case {p : ℤ[X]} {r : ℚ}
     (H : r ∈ (p.map (Int.castRingHom ℚ)).roots) :
     r.num.natAbs ∣ (p.coeff 0).natAbs := by
@@ -96,7 +96,7 @@ theorem num_dvd_of_is_root_standard_case {p : ℤ[X]} {r : ℚ}
   . simp only [Rat.num_eq_zero] at H2; subst r; simp
   . simp [Int.sign_eq_one_iff_pos.mpr H2]
 
-/-- **Integral root theorem** --/
+/-- **Integral root theorem** -/
 theorem root_dvd_of_is_root_of_monic_standard_case {p : ℤ[X]} {n: ℤ}
     (H : p.Monic) (H0 : n ∈ p.roots) :
     n.natAbs ∣ (p.coeff 0).natAbs := by
