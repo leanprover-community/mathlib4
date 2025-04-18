@@ -32,6 +32,8 @@ lemma range_natAdd_castLEEmb {n m : ℕ} (hmn : n ≤ m) :
     fun xin ↦ ⟨subNat (m := m - n) (Fin.cast (Nat.add_sub_of_le hmn).symm y)
     (Nat.sub_le_of_le_add xin), by simp⟩⟩
 
+namespace Fin
+
 /-- `cycleIcc i j hij` is the cycle `(i i+1 .... j)` leaving `(0 ... i-1)` and `(j+1 ... n-1)`
 unchanged.
 -/
@@ -87,11 +89,11 @@ theorem cycleIcc_of {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h1 : i <= k) (h2 
     rw [Nat.mod_eq_of_lt (by omega)]
     omega
 
-theorem cycleRange_of_lt {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h1 : i <= k) (h2 : k < j)
+theorem cycleIcc_of_lt {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h1 : i <= k) (h2 : k < j)
     [NeZero n] : (cycleIcc hij) k = k + 1 := by
   simp [cycleIcc_of hij h1 (Fin.le_of_lt h2), Fin.ne_of_lt h2]
 
-theorem cycleRange_of_eq {n : ℕ} {i j : Fin n} (hij : i ≤ j) [NeZero n] :
+theorem cycleIcc_of_eq {n : ℕ} {i j : Fin n} (hij : i ≤ j) [NeZero n] :
     (cycleIcc hij) j = i := by
   simp [cycleIcc_of hij hij (Fin.ge_of_eq rfl)]
 
@@ -107,9 +109,11 @@ private lemma nezero_simp_lemma {n : ℕ} {i j : Fin n} (hij : i < j) :
 
 theorem isCycle_cycleIcc {n : ℕ} {i j : Fin n} (hij : i < j) :
     (cycleIcc (Fin.le_of_lt hij)).IsCycle := Equiv.Perm.IsCycle.extendDomain
-  (natAdd_castLEEmb n _).toEquivRange (isCycle_cycleRange (Nezero_simp_lemma hij))
+  (natAdd_castLEEmb n _).toEquivRange (isCycle_cycleRange (nezero_simp_lemma hij))
 
 theorem cycleType_cycleIcc {n : ℕ} {i j : Fin n} (hij : i < j) :
     Perm.cycleType (cycleIcc (Fin.le_of_lt hij)) = {(j - i + 1: ℕ)} := by
-  simpa [cycleIcc, cycleType_cycleRange (Nezero_simp_lemma hij)] using sub_val_of_le
+  simpa [cycleIcc, cycleType_cycleRange (nezero_simp_lemma hij)] using sub_val_of_le
     (Fin.le_of_lt hij)
+
+end Fin
