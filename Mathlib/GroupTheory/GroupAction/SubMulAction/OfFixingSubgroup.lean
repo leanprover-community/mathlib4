@@ -11,13 +11,13 @@ import Mathlib.Data.Set.Card
 
 
 /-!
-# Sub_mul_actions on complements of invariant subsets
+# SubMulActions on complements of invariant subsets
 
-- We define sub_mul_action of an invariant subset in various contexts,
-especially stabilizers and fixing subgroups : `sub_mul_action_of_compl`,
-`sub_mul_action_of_stabilizer`, `sub_mul_action_of_fixing_subgroup`.
+- We define SubMulAction of an invariant subset in various contexts,
+especially stabilizers and fixing subgroups : `SubMulAction_of_compl`,
+`SubMulAction_of_stabilizer`, `SubMulAction_of_fixingSubgroup`.
 
-- We define equivariant maps that relate various of these sub_mul_actions
+- We define equivariant maps that relate various of these SubMulActions
 and permit to manipulate them in a relatively smooth way.
 -/
 
@@ -61,9 +61,11 @@ variable (M α)
 
 section Empty
 
-/-- The identity map of the sub_mul_action of the fixing_subgroup
+/-- The identity map of the SubMulAction of the fixingSubgroup
 of the empty set into the ambient set, as an equivariant map -/
-@[to_additive]
+@[to_additive
+"The identity map of the SubAddAction of the fixingAddSubgroup
+of the empty set into the ambient set, as an equivariant map."]
 def ofFixingSubgroupEmpty_equivariantMap :
     ofFixingSubgroup M (∅ : Set α) →ₑ[(fixingSubgroup M (∅ : Set α)).subtype] α where
   toFun x := x
@@ -115,7 +117,7 @@ theorem mem_ofFixingSubgroup_insert_iff {a : α} {s : Set (ofStabilizer M a)} {x
   aesop
 
 /-- The natural group morphism between fixing subgroups -/
-@[to_additive]
+@[to_additive "The natural group morphism between fixing additive subgroups"]
 def fixingSubgroupInsertEquiv (a : α) (s : Set (ofStabilizer M a)) :
     fixingSubgroup M (insert a (Subtype.val '' s)) ≃* fixingSubgroup (stabilizer M a) s where
   toFun m := ⟨⟨(m : M), (mem_fixingSubgroup_iff M).mp m.prop a (Set.mem_insert _ _)⟩,
@@ -129,8 +131,9 @@ def fixingSubgroupInsertEquiv (a : α) (s : Set (ofStabilizer M a)) :
   right_inv _ := by simp
 
 /-- The identity map of fixing subgroup of stabilizer
-into the fixing subgroup of the extended set, as an equivariant map -/
-@[to_additive]
+into the fixing subgroup of the extended set, as an equivariant map. -/
+@[to_additive "The identity map of fixing additive subgroup of stabilizer
+into the fixing additive subgroup of the extended set, as an equivariant map."]
 def ofFixingSubgroup_insert_map (a : α) (s : Set (ofStabilizer M a)) :
     ofFixingSubgroup M (insert a (Subtype.val '' s))
       →ₑ[fixingSubgroupInsertEquiv M a s] (ofFixingSubgroup (stabilizer M a) s) where
@@ -189,23 +192,27 @@ theorem fixingSubgroup_map_conj_eq (hg : g • t = s) :
     · simp [MulAut.conj]; group
 
 variable (g s) in
-/-- If the fixing_subgroup of `s` is `G`, then the fixing_subgroup of `g • s` is `gGg⁻¹`. -/
+/-- If the fixingSubgroup of `s` is `G`, then the fixingSubgroup of `g • s` is `gGg⁻¹`. -/
 @[to_additive]
 theorem fixingSubgroup_smul_eq_fixingSubgroup_map_conj :
     fixingSubgroup M (g • s) = (fixingSubgroup M s).map (MulAut.conj g).toMonoidHom :=
   (fixingSubgroup_map_conj_eq _ _ rfl).symm
 
 /-- The equivalence of `fixingSubgroup M t` with `fixingSubgroup M s`
-  when `t` is a translate of `g` -/
-@[to_additive]
+  when `s` is a translate of `t` -/
+@[to_additive
+"The equivalence of `fixingSubgroup M t` with `fixingSubgroup M s`
+  when `s` is a translate of `t`"]
 def fixingSubgroupEquivFixingSubgroup (hg : g • t = s) :
     fixingSubgroup M t ≃* fixingSubgroup M s :=
   ((MulAut.conj g).subgroupMap (fixingSubgroup M t)).trans
     (MulEquiv.subgroupCongr (fixingSubgroup_map_conj_eq _ _ hg))
 
-/-- Conjugation induces an equivariant map between the sub_mul_action of
-the fixing subgroup of a subset and that of a translate -/
-@[to_additive]
+/-- Conjugation induces an equivariant map between the SubMulAction of
+the fixing subgroup of a subset and that of a translate. -/
+@[to_additive
+"Conjugation induces an equivariant map between the SubAddAction of
+the fixing subgroup of a subset and that of a translate."]
 def conjMap_ofFixingSubgroup (hg : g • t = s) :
     ofFixingSubgroup M t →ₑ[fixingSubgroupEquivFixingSubgroup M α hg] ofFixingSubgroup M s where
   toFun := fun ⟨x, hx⟩ =>
@@ -235,10 +242,12 @@ theorem conjMap_ofFixingSubgroup_bijective {s t : Set α} {g : M} (hst : g • s
 
 end FixingSubgroupConj
 
-/-- The identity between the iterated sub_mul_action
-  of the fixing_subgroups and the sub_mul_action of the fixing_subgroup
+/-- The identity between the iterated SubMulAction
+  of the fixingSubgroup and the SubMulAction of the fixingSubgroup
   of the union, as an equivariant map -/
-@[to_additive]
+@[to_additive "The identity between the iterated SubAddAction
+  of the fixingAddSubgroup and the SubAddAction of the fixingAddSubgroup
+  of the union, as an equivariant map."]
 def map_ofFixingSubgroupUnion (s t : Set α) :
     let ψ : fixingSubgroup M (s ∪ t) →
       fixingSubgroup (fixingSubgroup M s) (Subtype.val ⁻¹' t : Set (ofFixingSubgroup M s)) :=
@@ -286,8 +295,9 @@ theorem map_ofFixingSubgroupUnion_bijective (s t : Set α) :
       simp only [Set.mem_preimage]
       exact h
 
-/-- The equivariant map on `SUbMulAction.ofFixingSubgroup` given a set inclusion -/
-@[to_additive]
+/-- The equivariant map on `SubMulAction.ofFixingSubgroup` given a set inclusion -/
+@[to_additive
+"The equivariant map on `SubAddAction.ofFixingAddSubgroup` given a set inclusion."]
 def ofFixingSubgroup_of_inclusion {s t : Set α} (hst : t ⊆ s) :
     ofFixingSubgroup M s
       →ₑ[Subgroup.inclusion (fixingSubgroup_antitone M α hst)]
@@ -304,7 +314,8 @@ lemma ofFixingSubgroup_of_inclusion_injective {s t : Set α} (hst : t ⊆ s) :
 
 /-- The equivariant map between `SubMulAction.ofStabilizer M a`
 and `ofFixingSubgroup M {a}` -/
-@[to_additive]
+@[to_additive "The equivariant map between `SubAddAction.ofStabilizer M a`
+and `ofFixingAddSubgroup M {a}`"]
 def ofFixingSubgroup_of_singleton (a : α) :
     let φ : fixingSubgroup M ({a} : Set α) → stabilizer M a := fun ⟨m, hm⟩ =>
       ⟨m, ((mem_fixingSubgroup_iff M).mp hm) a (Set.mem_singleton a)⟩
@@ -319,7 +330,8 @@ theorem ofFixingSubgroup_of_singleton_bijective (a : α) :
 
 /-- The identity between the `SubMulAction`s of `fixingSubgroup`s
 of equal sets, as an equivariant map -/
-@[to_additive]
+@[to_additive "The identity between the `SubAddAction`s of `fixingAddSubgroup`s
+of equal sets, as an equivariant map."]
 def ofFixingSubgroup_of_eq {s t : Set α} (hst : s = t) :
     let φ : fixingSubgroup M s ≃* fixingSubgroup M t :=
       MulEquiv.subgroupCongr (congrArg₂ _ rfl hst)
@@ -345,7 +357,8 @@ section Construction
 open Function.Embedding Fin.Embedding
 
 /-- Append `Fin m ↪ ofFixingSubgroup M s` at the end of an enumeration of `s` -/
-@[to_additive]
+@[to_additive
+"Append `Fin m ↪ ofFixingSubgroup M s` at the end of an enumeration of `s`"]
 noncomputable def ofFixingSubgroup.append
     {n : ℕ} {s : Set α} [Finite s] (x : Fin n ↪ ofFixingSubgroup M s) :
     Fin (s.ncard + n) ↪ α := by
