@@ -28,6 +28,7 @@ variable (F : Type*) (Γ : outParam <| Subgroup SL(2, ℤ)) (k : outParam ℤ)
 
 /-- Functions `ℍ → ℂ` that are invariant under the `SlashAction`. -/
 structure SlashInvariantForm where
+  /-- The underlying function of this form -/
   toFun : ℍ → ℂ
   slash_action_eq' : ∀ γ ∈ Γ, toFun ∣[k] γ = toFun
 

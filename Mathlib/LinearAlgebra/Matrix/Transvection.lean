@@ -137,8 +137,13 @@ variable (R n)
 This structure is easier to manipulate than transvections as one has a direct access to all the
 relevant fields. -/
 structure TransvectionStruct where
-  (i j : n)
+  /-- `i` is the index of the target row (source column) when multiplying on the left (right). -/
+  i : n
+  /-- `j` is the index of the source row (target column) when multiplying on the left (right). -/
+  j : n
+  /-- A row or column cannot be added to itself. -/
   hij : i ≠ j
+  /-- `c` is the multiplier for the source row (column) when added to the target row (column). -/
   c : R
 
 instance [Nontrivial n] : Nonempty (TransvectionStruct n R) := by
