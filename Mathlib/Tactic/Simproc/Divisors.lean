@@ -17,6 +17,8 @@ This file implements simprocs to compute various objects related to divisors:
 
 open Lean Meta Qq
 
+/-- The `Nat.divisorsEq` computes the finset `Nat.divisors n` when `n` is a natural number
+litteral. -/
 simproc_decl Nat.divisorsEq (Nat.divisors _) := fun e => do
   unless e.isAppOfArity `Nat.divisors 1 do return .continue
   let some n ← fromExpr? e.appArg! | return .continue
@@ -27,7 +29,8 @@ simproc_decl Nat.divisorsEq (Nat.divisors _) := fun e => do
   let pf ← Meta.mkDecideProof (← mkEq e rhs)
   return .done {expr := rhs, proof? := pf }
 
-
+/-- The `Nat.properDivisorsEq ` computes the finset `Nat.properDivisorsEq  n` when `n` is a natural
+number litteral. -/
 simproc_decl Nat.properDivisorsEq (Nat.properDivisors _) := fun e => do
   unless e.isAppOfArity `Nat.properDivisors 1 do return .continue
   let some n ← fromExpr? e.appArg! | return .continue
@@ -38,8 +41,7 @@ simproc_decl Nat.properDivisorsEq (Nat.properDivisors _) := fun e => do
   let pf ← Meta.mkDecideProof (← mkEq e rhs)
   return .done {expr := rhs, proof? := pf }
 
-example :
-    Nat.divisors 1710 = {1, 2, 3, 5, 6, 9, 10, 15, 18, 19, 30, 38, 45, 57,
+example : Nat.divisors 1710 = {1, 2, 3, 5, 6, 9, 10, 15, 18, 19, 30, 38, 45, 57,
       90, 95, 114, 171, 190, 285, 342, 570, 855, 1710} := by
   simp only [Nat.divisorsEq]
 
