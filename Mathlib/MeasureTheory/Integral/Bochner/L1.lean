@@ -92,30 +92,27 @@ theorem weightedSMul_add_measure {m : MeasurableSpace α} (μ ν : Measure α) {
   ext1 x
   push_cast
   simp_rw [Pi.add_apply, weightedSMul_apply]
-  push_cast
-  rw [Pi.add_apply, ENNReal.toReal_add hμs hνs, add_smul]
+  rw [measureReal_add_apply, add_smul]
 
 theorem weightedSMul_smul_measure {m : MeasurableSpace α} (μ : Measure α) (c : ℝ≥0∞) {s : Set α} :
     (weightedSMul (c • μ) s : F →L[ℝ] F) = c.toReal • weightedSMul μ s := by
   ext1 x
   push_cast
   simp_rw [Pi.smul_apply, weightedSMul_apply]
-  push_cast
-  simp_rw [Pi.smul_apply, smul_eq_mul, toReal_mul, smul_smul]
+  simp [smul_smul]
 
 theorem weightedSMul_congr (s t : Set α) (hst : μ s = μ t) :
     (weightedSMul μ s : F →L[ℝ] F) = weightedSMul μ t := by
-  ext1 x; simp_rw [weightedSMul_apply]; congr 2
+  ext1 x; simp_rw [weightedSMul_apply, measureReal_def]; congr 2
 
 theorem weightedSMul_null {s : Set α} (h_zero : μ s = 0) : (weightedSMul μ s : F →L[ℝ] F) = 0 := by
-  ext1 x; rw [weightedSMul_apply, h_zero]; simp
+  ext1 x; rw [weightedSMul_apply, measureReal_def, h_zero]; simp
 
 theorem weightedSMul_union' (s t : Set α) (ht : MeasurableSet t) (hs_finite : μ s ≠ ∞)
     (ht_finite : μ t ≠ ∞) (hdisj : Disjoint s t) :
     (weightedSMul μ (s ∪ t) : F →L[ℝ] F) = weightedSMul μ s + weightedSMul μ t := by
   ext1 x
-  simp_rw [add_apply, weightedSMul_apply, measure_union hdisj ht,
-    ENNReal.toReal_add hs_finite ht_finite, add_smul]
+  simp_rw [add_apply, weightedSMul_apply, measureReal_union hdisj ht,add_smul]
 
 @[nolint unusedArguments]
 theorem weightedSMul_union (s t : Set α) (_hs : MeasurableSet s) (ht : MeasurableSet t)
@@ -130,7 +127,7 @@ theorem weightedSMul_smul [SMul 𝕜 F] [SMulCommClass ℝ 𝕜 F] (c : 𝕜)
 theorem norm_weightedSMul_le (s : Set α) : ‖(weightedSMul μ s : F →L[ℝ] F)‖ ≤ μ.real s :=
   calc
     ‖(weightedSMul μ s : F →L[ℝ] F)‖ = ‖μ.real s‖ * ‖ContinuousLinearMap.id ℝ F‖ :=
-      norm_smul μ.real s (ContinuousLinearMap.id ℝ F)
+      norm_smul (μ.real s) (ContinuousLinearMap.id ℝ F)
     _ ≤ ‖μ.real s‖ :=
       ((mul_le_mul_of_nonneg_left norm_id_le (norm_nonneg _)).trans (mul_one _).le)
     _ = abs μ.real s := Real.norm_eq_abs _
@@ -241,13 +238,13 @@ theorem integral_piecewise_zero {m : MeasurableSpace α} (f : α →ₛ F) (μ :
     exacts [(h₀ rfl).elim, ⟨Set.mem_range_self _, h₀⟩]
   · dsimp
     rw [Set.piecewise_eq_indicator, indicator_preimage_of_not_mem,
-      Measure.restrict_apply (f.measurableSet_preimage _)]
+      measureReal_restrict_apply (f.measurableSet_preimage _)]
     exact fun h₀ => (mem_filter.1 hy).2 (Eq.symm h₀)
 
 /-- Calculate the integral of `g ∘ f : α →ₛ F`, where `f` is an integrable function from `α` to `E`
     and `g` is a function from `E` to `F`. We require `g 0 = 0` so that `g ∘ f` is integrable. -/
 theorem map_integral (f : α →ₛ E) (g : E → F) (hf : Integrable f μ) (hg : g 0 = 0) :
-    (f.map g).integral μ = ∑ x ∈ f.range, ENNReal.toReal (μ (f ⁻¹' {x})) • g x :=
+    (f.map g).integral μ = ∑ x ∈ f.range, (μ.real (f ⁻¹' {x})) • g x :=
   map_setToSimpleFunc _ weightedSMul_union hf hg
 
 /-- `SimpleFunc.integral` and `SimpleFunc.lintegral` agree when the integrand has type
@@ -260,7 +257,7 @@ theorem integral_eq_lintegral' {f : α →ₛ E} {g : E → ℝ≥0∞} (hf : In
   simp only [← map_apply g f, lintegral_eq_lintegral]
   rw [map_integral f _ hf, map_lintegral, ENNReal.toReal_sum]
   · refine Finset.sum_congr rfl fun b _ => ?_
-    rw [smul_eq_mul, toReal_mul, mul_comm, Function.comp_apply]
+    rw [smul_eq_mul, toReal_mul, mul_comm, Function.comp_apply, measureReal_def]
   · rintro a -
     by_cases a0 : a = 0
     · rw [a0, hg0, zero_mul]; exact WithTop.zero_ne_top
@@ -301,7 +298,7 @@ theorem norm_setToSimpleFunc_le_integral_norm (T : Set α → E →L[ℝ] F) {C 
     (hT_norm : ∀ s, MeasurableSet s → μ s < ∞ → ‖T s‖ ≤ C * μ.real s) {f : α →ₛ E}
     (hf : Integrable f μ) : ‖f.setToSimpleFunc T‖ ≤ C * (f.map norm).integral μ :=
   calc
-    ‖f.setToSimpleFunc T‖ ≤ C * ∑ x ∈ f.range, ENNReal.toReal (μ (f ⁻¹' {x})) * ‖x‖ :=
+    ‖f.setToSimpleFunc T‖ ≤ C * ∑ x ∈ f.range, μ.real (f ⁻¹' {x}) * ‖x‖ :=
       norm_setToSimpleFunc_le_sum_mul_norm_of_integrable T hT_norm f hf
     _ = C * (f.map norm).integral μ := by
       rw [map_integral f norm hf norm_zero]; simp_rw [smul_eq_mul]
