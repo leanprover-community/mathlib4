@@ -153,10 +153,13 @@ theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le_mul_sqrt_discr :
   simp_rw [Units.val_one, FractionalIdeal.absNorm_one, Rat.cast_one, one_mul] at h_nm
   exact h_nm
 
-variable {K}
-
-theorem abs_discr_ge (h : 1 < finrank ℚ K) :
-    (4 / 9 : ℝ) * (3 * π / 4) ^ finrank ℚ K ≤ |discr K| := by
+/--
+The Minkowski lower bound `n^{2n}/((4/pi)^{2r_2}*n!^2)` for the absolute value of the discriminant
+of a number field of degree n.
+-/
+theorem abs_discr_ge' :
+    (finrank ℚ K) ^ (2 * finrank ℚ K) / ((4 / π) ^ (2 * nrComplexPlaces K) *
+      (finrank ℚ K).factorial ^ 2) ≤ |discr K| := by
   -- We use `exists_ne_zero_mem_ringOfIntegers_of_norm_le_mul_sqrt_discr` to get a nonzero
   -- algebraic integer `x` of small norm and the fact that `1 ≤ |Norm x|` to get a lower bound
   -- on `sqrt |discr K|`.
@@ -165,11 +168,35 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
     rw [← Algebra.coe_norm_int, ← Int.cast_one, ← Int.cast_abs, Rat.cast_intCast, Int.cast_le]
     exact Int.one_le_abs (Algebra.norm_ne_zero_iff.mpr h_nz)
   replace h_bd := le_trans h_nm h_bd
-  rw [← inv_mul_le_iff₀ (by positivity), inv_div, mul_one, Real.le_sqrt (by positivity)
-    (by positivity), ← Int.cast_abs, div_pow, mul_pow, ← pow_mul, ← pow_mul] at h_bd
-  refine le_trans ?_ h_bd
+  rwa [← inv_mul_le_iff₀, inv_div, mul_one, Real.le_sqrt (by positivity) (by positivity),
+    ← Int.cast_abs, div_pow, mul_pow, ← pow_mul, mul_comm _ 2, ← pow_mul, mul_comm _ 2] at h_bd
+  exact div_pos (by positivity) <| pow_pos (Nat.cast_pos.mpr finrank_pos) (finrank ℚ K)
+
+theorem abs_discr_ge_of_isTotallyComplex [IsTotallyComplex K] :
+    (finrank ℚ K) ^ (2 * finrank ℚ K) / ((4 / π) ^ (finrank ℚ K) *
+      (finrank ℚ K).factorial ^ 2) ≤ |discr K| := by
+  have := abs_discr_ge' K
+  rwa [← IsTotallyComplex.finrank] at this
+
+theorem abs_discr_rpow_ge_of_isTotallyComplex [IsTotallyComplex K] :
+    (finrank ℚ K) ^ 2 / ((4 / π) * (finrank ℚ K).factorial ^ (2 * (finrank ℚ K : ℝ)⁻¹)) ≤
+        |discr K| ^ (finrank ℚ K : ℝ)⁻¹ := by
+  have h : 0 < (finrank ℚ K : ℝ) := Nat.cast_pos.mpr finrank_pos
+  rw [← Real.rpow_le_rpow_iff (z := finrank ℚ K) (by positivity) (by positivity) h, Real.div_rpow
+    (by positivity) (by positivity), ← Real.rpow_mul (by positivity), inv_mul_cancel₀ h.ne',
+    Real.rpow_one, Real.mul_rpow (by positivity) (by positivity), Real.rpow_natCast,
+    Real.rpow_natCast, ← pow_mul, ← Real.rpow_mul (by positivity),
+    inv_mul_cancel_right₀ h.ne', Real.rpow_two]
+  exact abs_discr_ge_of_isTotallyComplex K
+
+variable {K}
+
+theorem abs_discr_ge (h : 1 < finrank ℚ K) :
+    (4 / 9 : ℝ) * (3 * π / 4) ^ finrank ℚ K ≤ |discr K| := by
+  refine le_trans ?_ (abs_discr_ge' K)
   -- The sequence `a n` is a lower bound for `|discr K|`. We prove below by induction an uniform
   -- lower bound for this sequence from which we deduce the result.
+  rw [mul_comm 2 _]
   let a : ℕ → ℝ := fun n => (n : ℝ) ^ (n * 2) / ((4 / π) ^ n * (n.factorial : ℝ) ^ 2)
   suffices ∀ n, 2 ≤ n → (4 / 9 : ℝ) * (3 * π / 4) ^ n ≤ a n by
     refine le_trans (this (finrank ℚ K) h) ?_
