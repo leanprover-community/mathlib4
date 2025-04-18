@@ -244,8 +244,8 @@ protected lemma eq_sub_of_add_eq' (h : b + c = a) : c = a - b := by omega
 
 protected lemma lt_sub_iff_add_lt : a < c - b ↔ a + b < c := ⟨add_lt_of_lt_sub, lt_sub_of_add_lt⟩
 protected lemma lt_sub_iff_add_lt' : a < c - b ↔ b + a < c := by omega
-protected lemma sub_lt_iff_lt_add (hba : b ≤ a) : a - b < c ↔ a < b + c := by omega
-protected lemma sub_lt_iff_lt_add' (hba : b ≤ a) : a - b < c ↔ a < c + b := by omega
+protected lemma sub_lt_iff_lt_add (hba : b ≤ a) : a - b < c ↔ a < c + b := by omega
+protected lemma sub_lt_iff_lt_add' (hba : b ≤ a) : a - b < c ↔ a < b + c := by omega
 
 protected lemma sub_sub_sub_cancel_right (h : c ≤ b) : a - c - (b - c) = a - b := by omega
 protected lemma add_sub_sub_cancel (h : c ≤ a) : a + b - (a - c) = b + c := by omega
@@ -1033,7 +1033,7 @@ lemma add_mod_eq_ite :
     rw [Nat.add_mod]
     by_cases h : k + 1 ≤ m % (k + 1) + n % (k + 1)
     · rw [if_pos h, Nat.mod_eq_sub_mod h, Nat.mod_eq_of_lt]
-      exact (Nat.sub_lt_iff_lt_add h).mpr (Nat.add_lt_add (m.mod_lt (zero_lt_succ _))
+      exact (Nat.sub_lt_iff_lt_add' h).mpr (Nat.add_lt_add (m.mod_lt (zero_lt_succ _))
         (n.mod_lt (zero_lt_succ _)))
     · rw [if_neg h]
       exact Nat.mod_eq_of_lt (Nat.lt_of_not_ge h)
