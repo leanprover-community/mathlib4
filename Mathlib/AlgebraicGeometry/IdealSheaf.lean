@@ -264,7 +264,7 @@ lemma support_inter (I : IdealSheafData X) (U : X.affineOpens) :
   · simp [hxU]
 
 lemma isClosed_support (I : IdealSheafData X) : IsClosed I.support := by
-  rw [isClosed_iff_coe_preimage_of_iSup_eq_top (iSup_affineOpens_eq_top X)]
+  rw [TopologicalSpace.IsOpenCover.isClosed_iff_coe_preimage (iSup_affineOpens_eq_top X)]
   intro U
   refine ⟨(X.zeroLocus (U := U.1) (I.ideal U))ᶜ, (X.zeroLocus_isClosed _).isOpen_compl, ?_⟩
   simp only [Set.preimage_compl, compl_inj_iff]
@@ -715,7 +715,7 @@ lemma glueDataObjMap_glueDataObjι {U V : X.affineOpens} (h : U ≤ V) :
     Ideal.quotientMap_comp_mk, CommRingCat.ofHom_comp, Spec.map_comp_assoc, glueDataObjι,
     Category.assoc]
   congr 1
-  rw [Iso.eq_inv_comp, IsAffineOpen.isoSpec_hom]
+  rw [Iso.eq_inv_comp, IsAffineOpen.isoSpec_hom, CommRingCat.ofHom_hom]
   erw [Scheme.Opens.toSpecΓ_SpecMap_map_assoc U.1 V.1 h]
   rw [← IsAffineOpen.isoSpec_hom, Iso.hom_inv_id, Category.comp_id]
 

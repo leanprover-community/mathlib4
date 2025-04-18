@@ -61,13 +61,13 @@ variable {E ι : Type*}
 
 section NormedLatticeField
 
-variable {K : Type*} [NormedLinearOrderedField K]
+variable {K : Type*} [NormedField K]
 variable [NormedAddCommGroup E] [NormedSpace K E]
 variable (b : Basis ι K E)
 
 theorem span_top : span K (span ℤ (Set.range b) : Set E) = ⊤ := by simp [span_span_of_tower]
 
-theorem map {F : Type*} [NormedAddCommGroup F] [NormedSpace K F] (f : E ≃ₗ[K] F) :
+theorem map {F : Type*} [AddCommGroup F] [Module K F] (f : E ≃ₗ[K] F) :
     Submodule.map (f.restrictScalars ℤ) (span ℤ (Set.range b)) = span ℤ (Set.range (b.map f)) := by
   simp_rw [Submodule.map_span, LinearEquiv.restrictScalars_apply, Basis.coe_map, Set.range_comp]
 
@@ -77,6 +77,8 @@ theorem smul {c : K} (hc : c ≠ 0) :
   rw [smul_span, Set.smul_set_range]
   congr!
   rw [Basis.isUnitSMul_apply]
+
+variable [LinearOrder K]
 
 /-- The fundamental domain of the ℤ-lattice spanned by `b`. See `ZSpan.isAddFundamentalDomain`
 for the proof that it is a fundamental domain. -/
@@ -100,6 +102,8 @@ theorem fundamentalDomain_reindex {ι' : Type*} (e : ι ≃ ι') :
   simp_rw [mem_fundamentalDomain, Basis.repr_reindex_apply]
   rw [Equiv.forall_congr' e]
   simp_rw [implies_true]
+
+variable [IsStrictOrderedRing K]
 
 lemma fundamentalDomain_pi_basisFun [Fintype ι] :
     fundamentalDomain (Pi.basisFun ℝ ι) = Set.pi Set.univ fun _ : ι ↦ Set.Ico (0 : ℝ) 1 := by
@@ -178,13 +182,10 @@ theorem fract_zSpan_add (m : E) {v : E} (h : v ∈ span ℤ (Set.range b)) :
 theorem fract_add_ZSpan (m : E) {v : E} (h : v ∈ span ℤ (Set.range b)) :
     fract b (m + v) = fract b m := by rw [add_comm, fract_zSpan_add b m h]
 
-variable {b}
-
+variable {b} in
 theorem fract_eq_self {x : E} : fract b x = x ↔ x ∈ fundamentalDomain b := by
   classical simp only [Basis.ext_elem_iff b, repr_fract_apply, Int.fract_eq_self,
     mem_fundamentalDomain, Set.mem_Ico]
-
-variable (b)
 
 theorem fract_mem_fundamentalDomain (x : E) : fract b x ∈ fundamentalDomain b :=
   fract_eq_self.mp (fract_fract b _)
@@ -324,7 +325,7 @@ theorem setFinite_inter [ProperSpace E] [Finite ι] {s : Set E} (hs : Bornology.
     Set.Finite (s ∩ span ℤ (Set.range b)) := by
   have : DiscreteTopology (span ℤ (Set.range b)) := inferInstance
   refine Metric.finite_isBounded_inter_isClosed hs ?_
-  change IsClosed ((span ℤ (Set.range b)).toAddSubgroup : Set E)
+  rw [← coe_toAddSubgroup]
   exact AddSubgroup.isClosed_of_discrete
 
 @[measurability]
@@ -421,14 +422,15 @@ class IsZLattice (K : Type*) [NormedField K] {E : Type*} [NormedAddCommGroup E] 
   /-- `L` spans the full space `E` over `K`. -/
   span_top : span K (L : Set E) = ⊤
 
-theorem _root_.ZSpan.isZLattice {E ι : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+instance instIsZLatticeRealSpan {E ι : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [Finite ι] (b : Basis ι ℝ E) :
     IsZLattice ℝ (span ℤ (Set.range b)) where
   span_top := ZSpan.span_top b
 
 section NormedLinearOrderedField
 
-variable (K : Type*) [NormedLinearOrderedField K] [HasSolidNorm K] [FloorRing K]
+variable (K : Type*) [NormedField K] [LinearOrder K] [IsStrictOrderedRing K]
+  [HasSolidNorm K] [FloorRing K]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E] [FiniteDimensional K E]
 variable [ProperSpace E] (L : Submodule ℤ E) [DiscreteTopology L]
 
@@ -715,10 +717,11 @@ end comap
 
 section NormedLinearOrderedField_comap
 
-variable (K : Type*) [NormedLinearOrderedField K] [HasSolidNorm K] [FloorRing K]
+variable (K : Type*) [NormedField K] [LinearOrder K] [IsStrictOrderedRing K] [HasSolidNorm K]
+  [FloorRing K]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E] [FiniteDimensional K E]
   [ProperSpace E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace K F]  [FiniteDimensional K F]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace K F] [FiniteDimensional K F]
   [ProperSpace F]
 variable (L : Submodule ℤ E) [DiscreteTopology L] [IsZLattice K L]
 

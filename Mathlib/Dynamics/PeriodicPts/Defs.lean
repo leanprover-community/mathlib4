@@ -4,12 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Batteries.Data.Nat.Gcd
+import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.Sub.Basic
+import Mathlib.Data.Int.Basic
 import Mathlib.Data.List.Cycle
 import Mathlib.Data.PNat.Notation
 import Mathlib.Dynamics.FixedPoints.Basic
-import Mathlib.Data.Int.Basic
 
 /-!
 # Periodic points
@@ -197,6 +198,15 @@ theorem mk_mem_periodicPts (hn : 0 < n) (hx : IsPeriodicPt f n x) : x ∈ period
 
 theorem mem_periodicPts : x ∈ periodicPts f ↔ ∃ n > 0, IsPeriodicPt f n x :=
   Iff.rfl
+
+theorem periodicPts_subset_image : periodicPts f ⊆ range f := by
+  intro x h
+  rw [mem_periodicPts] at h
+  rcases h with ⟨n, _, h⟩
+  use f^[n - 1] x
+  nth_rw 1 [← iterate_one f]
+  rw [← iterate_add_apply, Nat.add_sub_cancel' (by omega)]
+  exact h
 
 theorem isPeriodicPt_of_mem_periodicPts_of_isPeriodicPt_iterate (hx : x ∈ periodicPts f)
     (hm : IsPeriodicPt f m (f^[n] x)) : IsPeriodicPt f m x := by
@@ -425,7 +435,7 @@ theorem self_mem_periodicOrbit (hx : x ∈ periodicPts f) : x ∈ periodicOrbit 
   iterate_mem_periodicOrbit hx 0
 
 theorem nodup_periodicOrbit : (periodicOrbit f x).Nodup := by
-  rw [periodicOrbit, Cycle.nodup_coe_iff, List.nodup_map_iff_inj_on (List.nodup_range _)]
+  rw [periodicOrbit, Cycle.nodup_coe_iff, List.nodup_map_iff_inj_on List.nodup_range]
   intro m hm n hn hmn
   rw [List.mem_range] at hm hn
   rwa [iterate_eq_iterate_iff_of_lt_minimalPeriod hm hn] at hmn
@@ -535,10 +545,11 @@ theorem pow_smul_eq_iff_period_dvd {n : ℕ} {m : M} {a : α} :
 @[to_additive]
 theorem zpow_smul_eq_iff_period_dvd {j : ℤ} {g : G} {a : α} :
     g ^ j • a = a ↔ (period g a : ℤ) ∣ j := by
-  rcases j with n | n
-  · rw [Int.ofNat_eq_coe, zpow_natCast, Int.natCast_dvd_natCast, pow_smul_eq_iff_period_dvd]
-  · rw [Int.negSucc_coe, zpow_neg, zpow_natCast, inv_smul_eq_iff, eq_comm, Int.dvd_neg,
-      Int.natCast_dvd_natCast, pow_smul_eq_iff_period_dvd]
+  match j with
+  | (n : ℕ) => rw [zpow_natCast, Int.natCast_dvd_natCast, pow_smul_eq_iff_period_dvd]
+  | -(n + 1 : ℕ) =>
+    rw [zpow_neg, zpow_natCast, inv_smul_eq_iff, eq_comm, Int.dvd_neg, Int.natCast_dvd_natCast,
+      pow_smul_eq_iff_period_dvd]
 
 @[to_additive (attr := simp)]
 theorem pow_mod_period_smul (n : ℕ) {m : M} {a : α} :

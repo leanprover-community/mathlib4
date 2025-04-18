@@ -40,14 +40,11 @@ open HopfAlgebra
 instance : CoeSort (HopfAlgebraCat.{v} R) (Type v) :=
   ⟨(·.carrier)⟩
 
-variable (R)
-
+variable (R) in
 /-- The object in the category of `R`-Hopf algebras associated to an `R`-Hopf algebra. -/
 abbrev of (X : Type v) [Ring X] [HopfAlgebra R X] :
     HopfAlgebraCat R where
   carrier := X
-
-variable {R}
 
 @[simp]
 lemma of_comul {X : Type v} [Ring X] [HopfAlgebra R X] :

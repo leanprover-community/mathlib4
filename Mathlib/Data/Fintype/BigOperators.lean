@@ -3,12 +3,14 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
+import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
+import Mathlib.Algebra.BigOperators.Option
 import Mathlib.Data.Fintype.Option
+import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Sigma
 import Mathlib.Data.Fintype.Sum
-import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Vector
-import Mathlib.Algebra.BigOperators.Option
 
 /-!
 Results about "big operations" over a `Fintype`, and consequent
@@ -95,6 +97,12 @@ variable {M : Type*} [Fintype α] [CommMonoid M]
 @[to_additive (attr := simp)]
 theorem Fintype.prod_option (f : Option α → M) : ∏ i, f i = f none * ∏ i, f (some i) :=
   Finset.prod_insertNone f univ
+
+@[to_additive]
+theorem Fintype.prod_eq_mul_prod_subtype_ne [DecidableEq α] (f : α → M) (a : α) :
+    ∏ i, f i = f a * ∏ i : {i // i ≠ a}, f i.1 := by
+  simp_rw [← (Equiv.optionSubtypeNe a).prod_comp, prod_option, Equiv.optionSubtypeNe_none,
+    Equiv.optionSubtypeNe_some]
 
 end
 

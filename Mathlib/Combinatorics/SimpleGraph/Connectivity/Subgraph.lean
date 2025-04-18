@@ -105,8 +105,8 @@ protected lemma Connected.sup {H K : G.Subgraph}
   · exact Reachable.map (Subgraph.inclusion (le_sup_right : K ≤ H ⊔ K)) (hK ⟨u, hu'⟩ ⟨v, hv⟩)
 
 /--
-  This lemma establishes a condition under which a subgraph is the same as a connected component.
-  Note the asymmetry in the hypothesis `h`: `v` is in `H.verts`, but `w` is not required to be.
+This lemma establishes a condition under which a subgraph is the same as a connected component.
+Note the asymmetry in the hypothesis `h`: `v` is in `H.verts`, but `w` is not required to be.
 -/
 lemma Connected.exists_verts_eq_connectedComponentSupp {H : Subgraph G}
     (hc : H.Connected) (h : ∀ v ∈ H.verts, ∀ w, G.Adj v w → H.Adj v w) :
@@ -192,9 +192,8 @@ theorem toSubgraph_map (f : G →g G') (p : G.Walk u v) :
 lemma adj_toSubgraph_mapLe {G' : SimpleGraph V} {w x : V} {p : G.Walk u v} (h : G ≤ G') :
     (p.mapLe h).toSubgraph.Adj w x ↔ p.toSubgraph.Adj w x := by
   simp only [toSubgraph_map, Subgraph.map_adj]
-  nth_rewrite 1 [← Hom.mapSpanningSubgraphs_apply h w, ← Hom.mapSpanningSubgraphs_apply h x]
-  rw [Relation.map_apply_apply (Hom.mapSpanningSubgraphs_injective h)
-    (Hom.mapSpanningSubgraphs_injective h)]
+  nth_rewrite 1 [← Hom.ofLE_apply h w, ← Hom.ofLE_apply h x]
+  simp
 
 @[simp]
 theorem finite_neighborSet_toSubgraph (p : G.Walk u v) : (p.toSubgraph.neighborSet w).Finite := by
@@ -397,55 +396,46 @@ lemma exists_isCycle_snd_verts_eq {p : G.Walk v v} (h : p.IsCycle) (hadj : p.toS
 
 end IsCycle
 
-/-- This lemma considers the `SimpleGraph.Walk` until any vertex in a given set. You could
-interpret this as being `takeUntilSet`, but defining this is slightly involved due to not
-knowing what the final vertex is. This could be done by defining a function to obtain
-the first encountered vertex and then use that to define `takeUntilSet`. That direction
-could be worthwhile if this concept is used a lot more widely. -/
-lemma exists_mem_support_forall_not_adj_toSubgraph_takeUntil {u v} [DecidableEq V] {p : G.Walk u v}
-    {s : Set V} (hs : s.Finite) (h : (s ∩ p.support.toFinset).Nonempty) :
+open Finset
+
+variable [DecidableEq V] {u v : V} {p : G.Walk u v}
+
+/-- This lemma states that given some finite set of vertices, of which at least one is in the
+support of a given walk, one of them is the first to be encountered. This consequence is encoded
+as the set of vertices, restricted to those in the support, execept for the first, being empty.
+You could interpret this as being `takeUntilSet`, but defining this is slightly involved due to
+not knowing what the final vertex is. This could be done by defining a function to obtain the
+first encountered vertex and then use that to define `takeUntilSet`. That direction could be
+worthwhile if this concept is used more widely. -/
+lemma exists_mem_support_mem_erase_mem_support_takeUntil_eq_empty (s : Finset V)
+    (h : {x ∈ s | x ∈ p.support}.Nonempty) :
+    ∃ x ∈ s, ∃ hx : x ∈ p.support, {t ∈ s.erase x | t ∈ (p.takeUntil x hx).support} = ∅ := by
+  simp only [← Finset.subset_empty]
+  induction' hp : p.length + #s using Nat.strong_induction_on with n ih generalizing s v
+  simp only [Finset.Nonempty, mem_filter] at h
+  obtain ⟨x, hxs, hx⟩ := h
+  obtain h | h := Finset.eq_empty_or_nonempty {t ∈ s.erase x | t ∈ (p.takeUntil x hx).support}
+  · use x, hxs, hx, h.le
+  have : (p.takeUntil x hx).length + #(s.erase x) < n := by
+    rw [← card_erase_add_one hxs] at hp
+    have := p.length_takeUntil_le hx
+    omega
+  obtain ⟨y, hys, hyp, h⟩ := ih _ this (s.erase x) h rfl
+  use y, mem_of_mem_erase hys, support_takeUntil_subset p hx hyp
+  rwa [takeUntil_takeUntil, erase_right_comm, filter_erase, erase_eq_of_not_mem] at h
+  simp only [mem_filter, mem_erase, ne_eq, not_and, and_imp]
+  rintro hxy -
+  exact not_mem_support_takeUntil_support_takeUntil_subset (Ne.symm hxy) hx hyp
+
+lemma exists_mem_support_forall_mem_support_imp_eq (s : Finset V)
+    (h : {x ∈ s | x ∈ p.support}.Nonempty) :
     ∃ x ∈ s, ∃ (hx : x ∈ p.support),
-      ∀ t ∈ s, ∀ w ∈ s, ¬(p.takeUntil x hx).toSubgraph.Adj t w := by
-  classical
-  obtain ⟨x, hx⟩ := h
-  simp only [List.coe_toFinset, Set.mem_inter_iff, Set.mem_setOf_eq] at hx
-  by_cases hxe : ((s \ {x}) ∩ (p.takeUntil x hx.2).support.toFinset).Nonempty
-  · have := p.length_takeUntil_le hx.2
-    have : 0 < s.ncard := (Set.ncard_pos hs).mpr ⟨x, hx.1⟩
-    obtain ⟨x', hx', hx'p, h⟩ :=
-      (p.takeUntil x hx.2).exists_mem_support_forall_not_adj_toSubgraph_takeUntil hs.diff hxe
-    use x', hx'.1, (p.support_takeUntil_subset _ hx'p)
-    simp only [takeUntil_takeUntil, Set.mem_diff] at h
-    intro t ht r hr
-    by_cases htrx : t = x ∨ r = x
-    · have : x ∉ (p.takeUntil x' (p.support_takeUntil_subset _ hx'p)).support := by
-        rw [← takeUntil_takeUntil]
-        exact not_mem_support_takeUntil_takeUntil hx'.2 hx.2 hx'p
-      intro htr
-      have := mem_support_of_adj_toSubgraph htr
-      have := mem_support_of_adj_toSubgraph htr.symm
-      aesop
-    push_neg at htrx
-    exact h t ⟨ht, by simp [htrx.1]⟩ r ⟨hr, by simp [htrx.2]⟩
-  use x, hx.1, hx.2
-  intro t ht r hr
-  by_cases htrx : t = x ∧ r = x
-  · exact fun hadj ↦ hadj.ne (htrx.2 ▸ htrx.1)
-  by_cases htx : t = x
-  · subst htx
-    have : r ∈ s \ {t} := by simp [not_and.mp htrx rfl, hr]
-    simp only [List.coe_toFinset,Set.not_nonempty_iff_eq_empty,
-      ← Set.disjoint_iff_inter_eq_empty] at hxe
-    exact fun hadj ↦ Set.disjoint_left.mp hxe this (mem_support_of_adj_toSubgraph hadj.symm)
-  have : t ∈ s \ {x} := by simp [htx, ht]
-  simp only [List.coe_toFinset,Set.not_nonempty_iff_eq_empty,
-    ← Set.disjoint_iff_inter_eq_empty] at hxe
-  exact fun hadj ↦ Set.disjoint_left.mp hxe this (mem_support_of_adj_toSubgraph hadj)
-termination_by p.length + s.ncard
-decreasing_by
-  simp_wf
-  simp only [Set.ncard_diff (by simp [hx.1] : {x} ⊆ s), Set.ncard_singleton, gt_iff_lt]
-  omega
+      ∀ t ∈ s, t ∈ (p.takeUntil x hx).support → t = x := by
+  obtain ⟨x, hxs, hx, h⟩ := p.exists_mem_support_mem_erase_mem_support_takeUntil_eq_empty s h
+  use x, hxs, hx
+  suffices {t ∈ s | t ∈ (p.takeUntil x hx).support} ⊆ {x} by simpa [Finset.subset_iff] using this
+  rwa [Finset.filter_erase, ← Finset.subset_empty, ← Finset.subset_insert_iff,
+    LawfulSingleton.insert_empty_eq] at h
 
 end Walk
 

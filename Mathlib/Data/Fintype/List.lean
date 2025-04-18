@@ -27,8 +27,7 @@ open List
 
 namespace Multiset
 
-/--  Given a `m : Multiset α`, we form the `Multiset` of `l : List α` with the property `⟦l⟧ = m`.
--/
+/-- Given a `m : Multiset α`, we form the `Multiset` of `l : List α` with the property `⟦l⟧ = m`. -/
 def lists : Multiset α → Multiset (List α) := fun s =>
   Quotient.liftOn s (fun l => l.permutations) fun l l' (h : l ~ l') => by
     simp only [mem_permutations, List.mem_toFinset]

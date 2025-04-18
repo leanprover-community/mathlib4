@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.List.Dedup
-import Mathlib.Data.Multiset.Nodup
+import Mathlib.Data.Multiset.UnionInter
 
 /-!
 # Erasing duplicates in a multiset.

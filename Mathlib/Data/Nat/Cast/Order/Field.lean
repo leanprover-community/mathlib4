@@ -18,7 +18,7 @@ This file concerns the canonical homomorphism `ℕ → F`, where `F` is a `Linea
 
 namespace Nat
 
-variable {α : Type*} [LinearOrderedSemifield α]
+variable {α : Type*} [Semifield α] [LinearOrder α] [IsStrictOrderedRing α]
 
 lemma cast_inv_le_one : ∀ n : ℕ, (n⁻¹ : α) ≤ 1
   | 0 => by simp
