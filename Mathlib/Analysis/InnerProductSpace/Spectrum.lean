@@ -232,14 +232,9 @@ noncomputable irreducible_def eigenvectorBasis : OrthonormalBasis (Fin n) 𝕜 E
       (Tuple.sort (hT.unsortedEigenvalues hn)).symm
 
 theorem hasEigenvector_eigenvectorBasis (i : Fin n) :
-  HasEigenvector T (hT.eigenvalues hn i) (hT.eigenvectorBasis hn i) := by
-    let p : Equiv.Perm (Fin n) :=  Tuple.sort (hT.unsortedEigenvalues hn)
-    have h1 : hT.eigenvalues hn i = (hT.unsortedEigenvalues hn) (p i) := by
-      rw[eigenvalues_def]; rfl
-    have h2 : hT.eigenvectorBasis hn i = (hT.unsortedEigenvectorBasis hn) (p i) := by
-      rw[eigenvectorBasis_def, OrthonormalBasis.reindex_apply]; rfl
-    rw[h1, h2]
-    apply hasEigenvector_eigenvectorBasis_helper
+    HasEigenvector T (hT.eigenvalues hn i) (hT.eigenvectorBasis hn i) := by
+  rw [eigenvalues_def, eigenvectorBasis_def, OrthonormalBasis.reindex_apply]
+  apply hasEigenvector_eigenvectorBasis_helper
 
 /--
 Eigenvalues are sorted in increasing order. -/
