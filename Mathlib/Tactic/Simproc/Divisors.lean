@@ -15,6 +15,8 @@ This file implements simprocs to compute various objects related to divisors:
 
 -/
 
+--TODO: these simprocs can probably be made a lot more efficient. See the discussion in #23026.
+
 open Lean Meta Qq
 
 /-- The `Nat.divisorsEq` computes the finset `Nat.divisors n` when `n` is a natural number
@@ -24,8 +26,6 @@ simproc_decl Nat.divisorsEq (Nat.divisors _) := fun e => do
   let some n ← fromExpr? e.appArg! | return .continue
   let rhsListQ : List Q(ℕ) := (n.divisors.sort (· ≤ ·)).map fun n => (Lean.toExpr n : Q(ℕ))
   let rhs := mkSetLiteralQ q(Finset ℕ) rhsListQ
-  /- The last two lines can be replace by `return .done {expr := rhs }` since the proof is `rfl`.
-  Not sure what's best here. -/
   let pf ← Meta.mkDecideProof (← mkEq e rhs)
   return .done {expr := rhs, proof? := pf }
 
@@ -36,8 +36,6 @@ simproc_decl Nat.properDivisorsEq (Nat.properDivisors _) := fun e => do
   let some n ← fromExpr? e.appArg! | return .continue
   let rhsListQ : List Q(ℕ) := (n.properDivisors.sort (· ≤ ·)).map fun n => (Lean.toExpr n : Q(ℕ))
   let rhs := mkSetLiteralQ q(Finset ℕ) rhsListQ
-  /- The last two lines can be replace by `return .done {expr := rhs }` since the proof is `rfl`.
-  Not sure what's best here. -/
   let pf ← Meta.mkDecideProof (← mkEq e rhs)
   return .done {expr := rhs, proof? := pf }
 
@@ -50,6 +48,11 @@ example : Nat.divisors 57 = {1, 3, 19, 57} := by
 
 example : 2 ≤ Finset.card (Nat.divisors 3) := by
   simp [Nat.divisorsEq]
+
+/-- error: simp made no progress -/
+#guard_msgs in
+example (n : ℕ) (hn : n ≠ 0) : 1 ≤ Finset.card (Nat.divisors n) := by
+  simp only [Nat.divisorsEq]
 
 example :
     Nat.properDivisors 1710 = {1, 2, 3, 5, 6, 9, 10, 15, 18, 19, 30, 38, 45, 57,
