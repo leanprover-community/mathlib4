@@ -1,6 +1,6 @@
 /-
 This is the `Linter`s file: it imports files defining linters.
-All syntax linters enabled by default are imported in `Mathlib.Init`;
+Most syntax linters, in particular the ones enabled by default, are imported in `Mathlib.Init`;
 this file contains all linters not imported in that file.
 
 This file is ignored by `shake`:
