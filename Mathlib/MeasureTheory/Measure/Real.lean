@@ -10,8 +10,8 @@ import Mathlib.Tactic.Finiteness
 /-!
 # Measures as real-valued functions
 
-Given a measure `μ`, we define `μ.real` as the function sending a set `s` to `μ.real s`, and
-develop a basic API around this.
+Given a measure `μ`, we have defined `μ.real` as the function sending a set `s` to `μ.real s`. In
+this file, we develop a basic API around this notion.
 
 We essentially copy relevant lemmas from the files `MeasureSpaceDef.lean`, `NullMeasurable.lean` and
 `MeasureSpace.lean`, and adapt them by replacing in their name `measure` with `measureReal`.
@@ -33,10 +33,6 @@ open scoped ENNReal NNReal Function symmDiff
 namespace MeasureTheory
 
 variable {α β ι : Type*} {_ : MeasurableSpace α} {μ : Measure α} {s s₁ s₂ s₃ t t₁ t₂ u : Set α}
-
-theorem measureReal_def (s : Set α) : μ.real s = (μ s).toReal := rfl
-
-alias Measure.real_def := measureReal_def
 
 theorem measureReal_eq_zero_iff (h : μ s ≠ ∞ := by finiteness) :
     μ.real s = 0 ↔ μ s = 0 := by

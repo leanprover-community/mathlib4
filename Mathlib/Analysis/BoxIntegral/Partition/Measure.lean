@@ -75,6 +75,7 @@ end Box
 theorem Prepartition.measure_iUnion_toReal [Finite ι] {I : Box ι} (π : Prepartition I)
     (μ : Measure (ι → ℝ)) [IsLocallyFiniteMeasure μ] :
     μ.real π.iUnion = ∑ J ∈ π.boxes, μ.real J := by
+  simp only [measureReal_def]
   rw [← ENNReal.toReal_sum (fun J _ => (J.measure_coe_lt_top μ).ne), π.iUnion_def]
   simp only [← mem_boxes]
   rw [measure_biUnion_finset π.pairwiseDisjoint]
@@ -111,7 +112,8 @@ variable [Fintype ι]
 -- See `volume_apply'` for the relevant `simp` lemma.
 theorem volume_apply (I : Box ι) :
     (volume : Measure (ι → ℝ)).toBoxAdditive I = ∏ i, (I.upper i - I.lower i) := by
-  rw [Measure.toBoxAdditive_apply, coe_eq_pi, Real.volume_pi_Ioc_toReal I.lower_le_upper]
+  rw [Measure.toBoxAdditive_apply, coe_eq_pi, measureReal_def,
+    Real.volume_pi_Ioc_toReal I.lower_le_upper]
 
 @[simp]
 theorem volume_apply' (I : Box ι) :

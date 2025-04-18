@@ -116,8 +116,8 @@ theorem indicatorConstLp_coeFn_nmem : ∀ᵐ x : α ∂μ, x ∉ s → indicator
 theorem norm_indicatorConstLp (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
     ‖indicatorConstLp p hs hμs c‖ = ‖c‖ * μ.real s ^ (1 / p.toReal) := by
   rw [Lp.norm_def, eLpNorm_congr_ae indicatorConstLp_coeFn,
-    eLpNorm_indicator_const hs hp_ne_zero hp_ne_top, ENNReal.toReal_mul, ENNReal.toReal_rpow,
-    toReal_enorm]
+    eLpNorm_indicator_const hs hp_ne_zero hp_ne_top, ENNReal.toReal_mul, measureReal_def,
+    ENNReal.toReal_rpow, toReal_enorm]
 
 theorem norm_indicatorConstLp_top (hμs_ne_zero : μ s ≠ 0) :
     ‖indicatorConstLp ∞ hs hμs c‖ = ‖c‖ := by
@@ -137,7 +137,8 @@ theorem norm_indicatorConstLp_le :
   rw [indicatorConstLp, Lp.norm_toLp]
   refine ENNReal.toReal_le_of_le_ofReal (by positivity) ?_
   refine (eLpNorm_indicator_const_le _ _).trans_eq ?_
-  rw [ENNReal.ofReal_mul (norm_nonneg _), ofReal_norm, ENNReal.toReal_rpow, ENNReal.ofReal_toReal]
+  rw [ENNReal.ofReal_mul (norm_nonneg _), ofReal_norm, measureReal_def,
+    ENNReal.toReal_rpow, ENNReal.ofReal_toReal]
   exact ENNReal.rpow_ne_top_of_nonneg (by positivity) hμs
 
 theorem nnnorm_indicatorConstLp_le :
@@ -256,12 +257,12 @@ theorem Lp.norm_const [NeZero μ] (hp_zero : p ≠ 0) :
     ‖Lp.const p μ c‖ = ‖c‖ * μ.real Set.univ ^ (1 / p.toReal) := by
   have := NeZero.ne μ
   rw [← MemLp.toLp_const, Lp.norm_toLp, eLpNorm_const] <;> try assumption
-  rw [ENNReal.toReal_mul, toReal_enorm, ← ENNReal.toReal_rpow]
+  rw [measureReal_def, ENNReal.toReal_mul, toReal_enorm, ← ENNReal.toReal_rpow]
 
 theorem Lp.norm_const' (hp_zero : p ≠ 0) (hp_top : p ≠ ∞) :
     ‖Lp.const p μ c‖ = ‖c‖ * μ.real Set.univ ^ (1 / p.toReal) := by
   rw [← MemLp.toLp_const, Lp.norm_toLp, eLpNorm_const'] <;> try assumption
-  rw [ENNReal.toReal_mul, toReal_enorm, ← ENNReal.toReal_rpow]
+  rw [measureReal_def, ENNReal.toReal_mul, toReal_enorm, ← ENNReal.toReal_rpow]
 
 theorem Lp.norm_const_le : ‖Lp.const p μ c‖ ≤ ‖c‖ * μ.real Set.univ ^ (1 / p.toReal) := by
   rw [← indicatorConstLp_univ]
