@@ -3,7 +3,7 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Chris Hughes, Michael Howes
 -/
-import Mathlib.Algebra.Group.Aut
+import Mathlib.Algebra.Group.End
 import Mathlib.Algebra.Group.Semiconj.Units
 
 /-!
@@ -12,7 +12,7 @@ import Mathlib.Algebra.Group.Semiconj.Units
 See also `MulAut.conj` and `Quandle.conj`.
 -/
 
-assert_not_exists MonoidWithZero Multiset
+assert_not_exists MonoidWithZero Multiset MulAction
 
 universe u v
 
@@ -41,6 +41,9 @@ theorem isConj_comm {g h : α} : IsConj g h ↔ IsConj h g :=
 theorem IsConj.trans {a b c : α} : IsConj a b → IsConj b c → IsConj a c
   | ⟨c₁, hc₁⟩, ⟨c₂, hc₂⟩ => ⟨c₂ * c₁, hc₂.mul_left hc₁⟩
 
+theorem IsConj.pow {a b : α} (n : ℕ) : IsConj a b → IsConj (a^n) (b^n)
+  | ⟨c, hc⟩ => ⟨c, hc.pow_right n⟩
+
 @[simp]
 theorem isConj_iff_eq {α : Type*} [CommMonoid α] {a b : α} : IsConj a b ↔ a = b :=
   ⟨fun ⟨c, hc⟩ => by
@@ -50,19 +53,11 @@ theorem isConj_iff_eq {α : Type*} [CommMonoid α] {a b : α} : IsConj a b ↔ a
 protected theorem MonoidHom.map_isConj (f : α →* β) {a b : α} : IsConj a b → IsConj (f a) (f b)
   | ⟨c, hc⟩ => ⟨Units.map f c, by rw [Units.coe_map, SemiconjBy, ← f.map_mul, hc.eq, f.map_mul]⟩
 
-end Monoid
-
-section CancelMonoid
-
-variable [CancelMonoid α]
-
--- These lemmas hold for `RightCancelMonoid` with the current proofs, but for the sake of
--- not duplicating code (these lemmas also hold for `LeftCancelMonoids`) we leave these
--- not generalised.
 @[simp]
-theorem isConj_one_right {a : α} : IsConj 1 a ↔ a = 1 :=
-  ⟨fun ⟨_, hc⟩ => mul_right_cancel (hc.symm.trans ((mul_one _).trans (one_mul _).symm)), fun h => by
-    rw [h]⟩
+theorem isConj_one_right {a : α} : IsConj 1 a ↔ a = 1 := by
+  refine ⟨fun ⟨c, h⟩ => ?_, fun h => by rw [h]⟩
+  rw [SemiconjBy, mul_one] at h
+  exact c.isUnit.mul_eq_right.mp h.symm
 
 @[simp]
 theorem isConj_one_left {a : α} : IsConj a 1 ↔ a = 1 :=
@@ -70,7 +65,7 @@ theorem isConj_one_left {a : α} : IsConj a 1 ↔ a = 1 :=
     IsConj a 1 ↔ IsConj 1 a := ⟨IsConj.symm, IsConj.symm⟩
     _ ↔ a = 1 := isConj_one_right
 
-end CancelMonoid
+end Monoid
 
 section Group
 

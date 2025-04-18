@@ -63,6 +63,22 @@ theorem ringKrullDim_eq_of_ringEquiv (e : R ≃+* S) :
 
 alias RingEquiv.ringKrullDim := ringKrullDim_eq_of_ringEquiv
 
+/-- A ring has finite Krull dimension if its `PrimeSpectrum` is
+finite-dimensional (and non-empty). -/
+abbrev FiniteRingKrullDim (R : Type*) [CommSemiring R] :=
+  FiniteDimensionalOrder (PrimeSpectrum R)
+
+lemma ringKrullDim_ne_top [FiniteRingKrullDim R] :
+    ringKrullDim R ≠ ⊤ :=
+  (Order.finiteDimensionalOrder_iff_krullDim_ne_bot_and_top.mp ‹_›).2
+
+lemma ringKrullDim_lt_top [FiniteRingKrullDim R] :
+    ringKrullDim R < ⊤ := ringKrullDim_ne_top.lt_top
+
+lemma finiteRingKrullDim_iff_ne_bot_and_top :
+    FiniteRingKrullDim R ↔ (ringKrullDim R ≠ ⊥ ∧ ringKrullDim R ≠ ⊤) :=
+  (Order.finiteDimensionalOrder_iff_krullDim_ne_bot_and_top (α := PrimeSpectrum R))
+
 proof_wanted Polynomial.ringKrullDim_le :
     ringKrullDim (Polynomial R) ≤ 2 * (ringKrullDim R) + 1
 
@@ -72,7 +88,7 @@ proof_wanted MvPolynomial.fin_ringKrullDim_eq_add_of_isNoetherianRing
 
 section Zero
 
-instance [Subsingleton R] : Ring.KrullDimLE 0 R := ⟨krullDim_eq_bot.trans_le bot_le⟩
+-- See `Mathlib/RingTheory/KrullDimension/Zero.lean` for further results.
 
 lemma Ring.krullDimLE_zero_iff : Ring.KrullDimLE 0 R ↔ ∀ I : Ideal R, I.IsPrime → I.IsMaximal := by
   simp_rw [Ring.KrullDimLE, Order.krullDimLE_iff, Nat.cast_zero,
@@ -85,6 +101,10 @@ lemma Ring.KrullDimLE.mk₀ (H : ∀ I : Ideal R, I.IsPrime → I.IsMaximal) : R
 
 lemma Ideal.isMaximal_of_isPrime [Ring.KrullDimLE 0 R] (I : Ideal R) [I.IsPrime] : I.IsMaximal :=
   Ring.krullDimLE_zero_iff.mp ‹_› I ‹_›
+
+/-- Also see `Ideal.IsPrime.isMaximal` for the analogous statement for dedekind domains. -/
+lemma Ideal.IsPrime.isMaximal' [Ring.KrullDimLE 0 R] {I : Ideal R} (hI : I.IsPrime) : I.IsMaximal :=
+  I.isMaximal_of_isPrime
 
 instance (priority := 100) (I : Ideal R) [I.IsPrime] [Ring.KrullDimLE 0 R] : I.IsMaximal :=
   I.isMaximal_of_isPrime
@@ -101,11 +121,13 @@ lemma Ideal.mem_minimalPrimes_iff_isPrime [Ring.KrullDimLE 0 R] {I : Ideal R} :
     I ∈ minimalPrimes R ↔ I.IsPrime :=
   ⟨(·.1.1), fun _ ↦ I.mem_minimalPrimes_of_krullDimLE_zero⟩
 
+theorem nilradical_le_jacobson (R) [CommRing R] : nilradical R ≤ Ring.jacobson R :=
+  nilradical_eq_sInf R ▸ le_sInf fun _I hI ↦ sInf_le (Ideal.IsMaximal.isPrime ⟨hI⟩)
+
 theorem Ring.jacobson_eq_nilradical_of_krullDimLE_zero (R) [CommRing R] [KrullDimLE 0 R] :
     jacobson R = nilradical R := by
-  refine nilradical_eq_sInf R ▸ (le_sInf fun I hI ↦ sInf_le ?_).antisymm
-    (le_sInf fun _I hI ↦ sInf_le <| Ideal.IsMaximal.isPrime ⟨hI⟩)
-  change I.IsPrime at hI
+  refine (nilradical_le_jacobson R).antisymm' (nilradical_eq_sInf R ▸ le_sInf fun I hI ↦ sInf_le ?_)
+  rw [Set.mem_def, Set.setOf_app_iff] at hI
   exact Ideal.IsMaximal.out
 
 end Zero

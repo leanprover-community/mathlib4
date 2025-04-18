@@ -121,7 +121,7 @@ theorem toTopCat_map (X : TopCat.{u}) {U V : Opens X} {f : U ⟶ V} {x} {h} :
 
 /-- The inclusion map from an open subset to the whole space, as a morphism in `TopCat`.
 -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def inclusion' {X : TopCat.{u}} (U : Opens X) : (toTopCat X).obj U ⟶ X :=
   TopCat.ofHom
   { toFun := _
@@ -405,7 +405,6 @@ theorem functor_obj_map_obj {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) (U :
   · rintro ⟨⟨x, -, rfl⟩, hx⟩
     exact ⟨x, hx, rfl⟩
 
--- Porting note: added to ease the proof of `functor_map_eq_inf`
 lemma set_range_inclusion' {X : TopCat} (U : Opens X) :
     Set.range (inclusion' U) = (U : Set X) := by
   ext x
@@ -414,7 +413,6 @@ lemma set_range_inclusion' {X : TopCat} (U : Opens X) :
     exact x.2
   · intro h
     exact ⟨⟨x, h⟩, rfl⟩
-@[deprecated (since := "2024-09-07")] alias set_range_forget_map_inclusion' := set_range_inclusion'
 
 @[simp]
 theorem functor_map_eq_inf {X : TopCat} (U V : Opens X) :

@@ -20,7 +20,7 @@ open Set Metric
 
 variable {𝕜 : Type*}
 
-/-- Unit ball in a non unital semi normed ring as a bundled `Subsemigroup`. -/
+/-- Unit ball in a non-unital seminormed ring as a bundled `Subsemigroup`. -/
 def Subsemigroup.unitBall (𝕜 : Type*) [NonUnitalSeminormedRing 𝕜] : Subsemigroup 𝕜 where
   carrier := ball (0 : 𝕜) 1
   mul_mem' hx hy := by
@@ -46,7 +46,7 @@ theorem coe_mul_unitBall [NonUnitalSeminormedRing 𝕜] (x y : ball (0 : 𝕜) 1
     ↑(x * y) = (x * y : 𝕜) :=
   rfl
 
-/-- Closed unit ball in a non unital semi normed ring as a bundled `Subsemigroup`. -/
+/-- Closed unit ball in a non-unital seminormed ring as a bundled `Subsemigroup`. -/
 def Subsemigroup.unitClosedBall (𝕜 : Type*) [NonUnitalSeminormedRing 𝕜] : Subsemigroup 𝕜 where
   carrier := closedBall 0 1
   mul_mem' hx hy := by
@@ -70,7 +70,7 @@ theorem coe_mul_unitClosedBall [NonUnitalSeminormedRing 𝕜] (x y : closedBall 
     ↑(x * y) = (x * y : 𝕜) :=
   rfl
 
-/-- Closed unit ball in a semi normed ring as a bundled `Submonoid`. -/
+/-- Closed unit ball in a seminormed ring as a bundled `Submonoid`. -/
 def Submonoid.unitClosedBall (𝕜 : Type*) [SeminormedRing 𝕜] [NormOneClass 𝕜] : Submonoid 𝕜 :=
   { Subsemigroup.unitClosedBall 𝕜 with
     carrier := closedBall 0 1
@@ -94,9 +94,11 @@ theorem coe_pow_unitClosedBall [SeminormedRing 𝕜] [NormOneClass 𝕜] (x : cl
     (n : ℕ) : ↑(x ^ n) = (x : 𝕜) ^ n :=
   rfl
 
-/-- Unit sphere in a normed division ring as a bundled `Submonoid`. -/
+/-- Unit sphere in a seminormed ring (with strictly multiplicative norm) as a bundled
+`Submonoid`. -/
 @[simps]
-def Submonoid.unitSphere (𝕜 : Type*) [NormedDivisionRing 𝕜] : Submonoid 𝕜 where
+def Submonoid.unitSphere (𝕜 : Type*) [SeminormedRing 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜] :
+    Submonoid 𝕜 where
   carrier := sphere (0 : 𝕜) 1
   mul_mem' hx hy := by
     rw [mem_sphere_zero_iff_norm] at *
@@ -135,24 +137,32 @@ theorem coe_zpow_unitSphere [NormedDivisionRing 𝕜] (x : sphere (0 : 𝕜) 1) 
     ↑(x ^ n) = (x : 𝕜) ^ n :=
   rfl
 
-instance Metric.unitSphere.monoid [NormedDivisionRing 𝕜] : Monoid (sphere (0 : 𝕜) 1) :=
+instance Metric.unitSphere.monoid [SeminormedRing 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜] :
+    Monoid (sphere (0 : 𝕜) 1) :=
   SubmonoidClass.toMonoid (Submonoid.unitSphere 𝕜)
 
+instance Metric.unitSphere.commMonoid [SeminormedCommRing 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜] :
+    CommMonoid (sphere (0 : 𝕜) 1) :=
+  SubmonoidClass.toCommMonoid (Submonoid.unitSphere 𝕜)
+
 @[simp, norm_cast]
-theorem coe_one_unitSphere [NormedDivisionRing 𝕜] : ((1 : sphere (0 : 𝕜) 1) : 𝕜) = 1 :=
+theorem coe_one_unitSphere [SeminormedRing 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜] :
+    ((1 : sphere (0 : 𝕜) 1) : 𝕜) = 1 :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_mul_unitSphere [NormedDivisionRing 𝕜] (x y : sphere (0 : 𝕜) 1) :
+theorem coe_mul_unitSphere [SeminormedRing 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜]
+    (x y : sphere (0 : 𝕜) 1) :
     ↑(x * y) = (x * y : 𝕜) :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_pow_unitSphere [NormedDivisionRing 𝕜] (x : sphere (0 : 𝕜) 1) (n : ℕ) :
+theorem coe_pow_unitSphere [SeminormedRing 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜]
+    (x : sphere (0 : 𝕜) 1) (n : ℕ) :
     ↑(x ^ n) = (x : 𝕜) ^ n :=
   rfl
 
-/-- Monoid homomorphism from the unit sphere to the group of units. -/
+/-- Monoid homomorphism from the unit sphere in a normed division ring to the group of units. -/
 def unitSphereToUnits (𝕜 : Type*) [NormedDivisionRing 𝕜] : sphere (0 : 𝕜) 1 →* Units 𝕜 :=
   Units.liftRight (Submonoid.unitSphere 𝕜).subtype
     (fun x => Units.mk0 x <| ne_zero_of_mem_unit_sphere _) fun _x => rfl
@@ -173,15 +183,18 @@ instance Metric.sphere.group [NormedDivisionRing 𝕜] : Group (sphere (0 : 𝕜
     (fun x n => Units.ext (Units.val_pow_eq_pow_val (unitSphereToUnits 𝕜 x) n).symm) fun x n =>
     Units.ext (Units.val_zpow_eq_zpow_val (unitSphereToUnits 𝕜 x) n).symm
 
-instance Metric.sphere.hasDistribNeg [NormedDivisionRing 𝕜] : HasDistribNeg (sphere (0 : 𝕜) 1) :=
+instance Metric.sphere.hasDistribNeg [SeminormedRing 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜] :
+    HasDistribNeg (sphere (0 : 𝕜) 1) :=
   Subtype.coe_injective.hasDistribNeg ((↑) : sphere (0 : 𝕜) 1 → 𝕜) (fun _ => rfl) fun _ _ => rfl
+
+instance Metric.sphere.continuousMul [SeminormedRing 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜] :
+    ContinuousMul (sphere (0 : 𝕜) 1) :=
+  (Submonoid.unitSphere 𝕜).continuousMul
 
 instance Metric.sphere.topologicalGroup [NormedDivisionRing 𝕜] :
     IsTopologicalGroup (sphere (0 : 𝕜) 1) where
-  toContinuousMul := (Submonoid.unitSphere 𝕜).continuousMul
   continuous_inv := (continuous_subtype_val.inv₀ ne_zero_of_mem_unit_sphere).subtype_mk _
 
 instance Metric.sphere.commGroup [NormedField 𝕜] : CommGroup (sphere (0 : 𝕜) 1) :=
   { Metric.sphere.group,
     Subtype.coe_injective.commMonoid _ rfl (fun _ _ => rfl) (fun _ _ => rfl) with }
-  -- Porting note: Lean couldn't see past the type synonym into the subtype.

@@ -43,15 +43,11 @@ general limits can be used.
 * [F. Borceux, *Handbook of Categorical Algebra 1*][borceux-vol1]
 -/
 
-/- Porting note: removed global noncomputable since there are things that might be
-computable value like WalkingPair -/
 section
 
 open CategoryTheory Opposite
 
 namespace CategoryTheory.Limits
-
--- attribute [local tidy] tactic.case_bash -- Porting note: no tidy nor cases_bash
 
 universe v v₂ u u₂
 
@@ -1032,12 +1028,12 @@ abbrev HasCoequalizers :=
 /-- If `C` has all limits of diagrams `parallelPair f g`, then it has all equalizers -/
 theorem hasEqualizers_of_hasLimit_parallelPair
     [∀ {X Y : C} {f g : X ⟶ Y}, HasLimit (parallelPair f g)] : HasEqualizers C :=
-  { has_limit := fun F => hasLimitOfIso (diagramIsoParallelPair F).symm }
+  { has_limit := fun F => hasLimit_of_iso (diagramIsoParallelPair F).symm }
 
 /-- If `C` has all colimits of diagrams `parallelPair f g`, then it has all coequalizers -/
 theorem hasCoequalizers_of_hasColimit_parallelPair
     [∀ {X Y : C} {f g : X ⟶ Y}, HasColimit (parallelPair f g)] : HasCoequalizers C :=
-  { has_colimit := fun F => hasColimitOfIso (diagramIsoParallelPair F) }
+  { has_colimit := fun F => hasColimit_of_iso (diagramIsoParallelPair F) }
 
 section
 
