@@ -66,7 +66,11 @@ namespace MeasureTheory
 
 /-- A measure is defined to be an outer measure that is countably additive on
 measurable sets, with the additional assumption that the outer measure is the canonical
-extension of the restricted measure. -/
+extension of the restricted measure.
+
+The measure of a set `s`, denoted `μ s`, is an extended nonnegative real. The real-valued version
+is written `μ.real s`.
+-/
 structure Measure (α : Type*) [MeasurableSpace α] extends OuterMeasure α where
   m_iUnion ⦃f : ℕ → Set α⦄ : (∀ i, MeasurableSet (f i)) → Pairwise (Disjoint on f) →
     toOuterMeasure (⋃ i, f i) = ∑' i, toOuterMeasure (f i)

@@ -366,7 +366,7 @@ section Prod
 variable {ι α 𝕜 : Type*} {_ : MeasurableSpace α} [NormedCommRing 𝕜] {μ : Measure α} {f : ι → α → 𝕜}
   {p : ι → ℝ≥0∞} {s : Finset ι}
 
-open Finset in
+open _root_.Finset in
 /-- See `MemLp.prod'` for the applied version. -/
 protected lemma MemLp.prod (hf : ∀ i ∈ s, MemLp (f i) (p i) μ) :
     MemLp (∏ i ∈ s, f i) (∑ i ∈ s, (p i)⁻¹)⁻¹ μ := by
