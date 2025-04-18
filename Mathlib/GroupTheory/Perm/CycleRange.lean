@@ -111,7 +111,7 @@ theorem sign_cycleIcc {n : ℕ} {i j : Fin n} (hij : i ≤ j) :
   Perm.sign (cycleIcc hij) = (-1) ^ (j - i : ℕ) := by
   simp [cycleIcc, sub_val_of_le hij]
 
-theorem isCycle_cycleIcc {n : ℕ} [NeZero n] {i j : Fin n} (hij : i < j) :
+theorem isCycle_cycleIcc {n : ℕ} {i j : Fin n} (hij : i < j) :
     (cycleIcc (Fin.le_of_lt hij)).IsCycle :=
   have : ((j - i).castLT (cycleIcc._proof_3 (Fin.le_of_lt hij))).cycleRange.IsCycle :=
     have : NeZero (n - i.1) := NeZero.of_pos (by omega)
