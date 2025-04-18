@@ -125,7 +125,7 @@ def inclRight : D ⥤ C ⋆ D where
 variable {C D}
 
 /-- An induction principle for morphisms in a join of category: a morphism is either of the form
-`(inclLeft _ _).map _`, `(inclRight _ _).map _)`, or is `edge _ _`. -/
+`(inclLeft _ _).map _`, `(inclRight _ _).map _`, or is `edge _ _`. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 def homInduction {P : {x y : C ⋆ D} → (x ⟶ y) → Sort*}
     (left : ∀ x y : C, (f : x ⟶ y) → P ((inclLeft C D).map f))
