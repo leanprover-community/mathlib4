@@ -18,7 +18,7 @@ In this file, we define the height of a prime ideal and the height of an ideal.
  via `Order.height`.
 
 * `Ideal.height` : The height of an ideal. We defined it as the infimum of the `primeHeight` of the
-minimal prime ideals of I.
+  minimal prime ideals of I.
 
 -/
 

@@ -21,10 +21,10 @@ This file defines the embeddings of a number field into an algebraic closed fiel
   all of norm one is a root of unity.
 * `NumberField.InfinitePlace`: the type of infinite places of a number field `K`.
 * `NumberField.InfinitePlace.mk_eq_iff`: two complex embeddings define the same infinite place iff
-they are equal or complex conjugates.
+  they are equal or complex conjugates.
 * `NumberField.InfinitePlace.prod_eq_abs_norm`: the infinite part of the product formula, that is
-for `x ∈ K`, we have `Π_w ‖x‖_w = |norm(x)|` where the product is over the infinite place `w` and
-`‖·‖_w` is the normalized absolute value for `w`.
+  for `x ∈ K`, we have `Π_w ‖x‖_w = |norm(x)|` where the product is over the infinite place `w` and
+  `‖·‖_w` is the normalized absolute value for `w`.
 
 ## Tags
 number field, embeddings, places, infinite places

@@ -19,7 +19,7 @@ orthogonal projection on the subspace of almost everywhere `m`-measurable functi
 ## Main definitions
 
 * `condExpL2`: Conditional expectation of a function in L2 with respect to a sigma-algebra: it is
-the orthogonal projection on the subspace `lpMeas`.
+  the orthogonal projection on the subspace `lpMeas`.
 
 ## Implementation notes
 

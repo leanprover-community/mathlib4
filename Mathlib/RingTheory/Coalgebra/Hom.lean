@@ -15,7 +15,7 @@ This file defines bundled homomorphisms of `R`-coalgebras. We largely mimic
 
 * `CoalgHom R A B`: the type of `R`-coalgebra morphisms from `A` to `B`.
 * `Coalgebra.counitCoalgHom R A : A →ₗc[R] R`: the counit of a coalgebra as a coalgebra
-homomorphism.
+  homomorphism.
 
 ## Notations
 

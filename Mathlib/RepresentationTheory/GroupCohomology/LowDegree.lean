@@ -35,13 +35,13 @@ The file also contains an identification between the definitions in
 
 * `groupCohomology.H0 A`: the invariants `Aᴳ` of the `G`-representation on `A`.
 * `groupCohomology.H1 A`: 1-cocycles (i.e. `Z¹(G, A) := Ker(d¹ : Fun(G, A) → Fun(G², A)`) modulo
-1-coboundaries (i.e. `B¹(G, A) := Im(d⁰: A → Fun(G, A))`).
+  1-coboundaries (i.e. `B¹(G, A) := Im(d⁰: A → Fun(G, A))`).
 * `groupCohomology.H2 A`: 2-cocycles (i.e. `Z²(G, A) := Ker(d² : Fun(G², A) → Fun(G³, A)`) modulo
-2-coboundaries (i.e. `B²(G, A) := Im(d¹: Fun(G, A) → Fun(G², A))`).
+  2-coboundaries (i.e. `B²(G, A) := Im(d¹: Fun(G, A) → Fun(G², A))`).
 * `groupCohomology.H1LequivOfIsTrivial`: the isomorphism `H¹(G, A) ≃ Hom(G, A)` when the
-representation on `A` is trivial.
+  representation on `A` is trivial.
 * `groupCohomology.isoHn` for `n = 0, 1, 2`: an isomorphism
-`groupCohomology A n ≅ groupCohomology.Hn A`.
+  `groupCohomology A n ≅ groupCohomology.Hn A`.
 
 ## TODO
 

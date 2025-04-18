@@ -23,7 +23,7 @@ field `K` and its torsion subgroup.
 `|norm ℚ x| = 1`.
 
 * `NumberField.Units.mem_torsion`: a unit `x : (𝓞 K)ˣ` is torsion iff `w x = 1` for all infinite
-places `w` of `K`.
+  places `w` of `K`.
 
 ## Tags
 number field, units

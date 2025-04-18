@@ -20,16 +20,16 @@ subgroup is a free `ℤ`-module of rank `card (InfinitePlace K) - 1`.
 * `NumberField.Units.fundSystem`: a fundamental system of units of `K`.
 
 * `NumberField.Units.basisModTorsion`: a `ℤ`-basis of `(𝓞 K)ˣ ⧸ (torsion K)`
-as an additive `ℤ`-module.
+  as an additive `ℤ`-module.
 
 ## Main results
 
 * `NumberField.Units.rank_modTorsion`: the `ℤ`-rank of `(𝓞 K)ˣ ⧸ (torsion K)` is equal to
-`card (InfinitePlace K) - 1`.
+  `card (InfinitePlace K) - 1`.
 
 * `NumberField.Units.exist_unique_eq_mul_prod`: **Dirichlet Unit Theorem**. Any unit of `𝓞 K`
-can be written uniquely as the product of a root of unity and powers of the units of the
-fundamental system `fundSystem`.
+  can be written uniquely as the product of a root of unity and powers of the units of the
+  fundamental system `fundSystem`.
 
 ## Tags
 number field, units, Dirichlet unit theorem
