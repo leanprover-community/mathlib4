@@ -1173,6 +1173,11 @@ theorem toMeasureOfLEZero_apply (hi : s ≤[i] 0) (hi₁ : MeasurableSet i) (hj�
   · simp
   · assumption
 
+theorem toMeasureOfLEZero_real_apply (hi : s ≤[i] 0) (hi₁ : MeasurableSet i)
+    (hj₁ : MeasurableSet j) :
+    (s.toMeasureOfLEZero i hi₁ hi).real j = -s (i ∩ j) := by
+  simp [measureReal_def, toMeasureOfLEZero_apply _ hi hi₁ hj₁]
+
 /-- `SignedMeasure.toMeasureOfZeroLE` is a finite measure. -/
 instance toMeasureOfZeroLE_finite (hi : 0 ≤[i] s) (hi₁ : MeasurableSet i) :
     IsFiniteMeasure (s.toMeasureOfZeroLE i hi₁ hi) where

@@ -215,7 +215,7 @@ theorem integral_gaussian_sq_complex {b : ℂ} (hb : 0 < b.re) :
       have : 0 ≤ π + π := by positivity
       simp only [neg_mul, integral_const, MeasurableSet.univ, measureReal_restrict_apply,
         univ_inter, real_smul, mul_one, ← neg_mul, integral_mul_cexp_neg_mul_sq hb]
-      rw [volume_real_Ioo (a := -π) (b := π) (by linarith [pi_nonneg])]
+      rw [volume_real_Ioo_of_le (a := -π) (b := π) (by linarith [pi_nonneg])]
       field_simp [(by contrapose! hb; rw [hb, zero_re] : b ≠ 0)]
       ring
 
