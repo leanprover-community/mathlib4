@@ -194,7 +194,7 @@ lemma id_right (d : D) : 𝟙 (right d) = (inclRight C D).map (𝟙 d) := rfl
 into the data of a natural transformation. -/
 @[simps!]
 def edgeTransform :
-    (Prod.fst C D) ⋙ inclLeft C D ⟶ (Prod.snd C D) ⋙ inclRight C D where
+    Prod.fst C D ⋙ inclLeft C D ⟶ Prod.snd C D ⋙ inclRight C D where
   app := fun (c, d) ↦ edge c d
 
 end Inclusions
