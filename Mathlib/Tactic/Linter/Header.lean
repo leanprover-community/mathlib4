@@ -76,7 +76,7 @@ partial
 def getImportIds (s : Syntax) : Array Syntax :=
   let rest : Array Syntax := (s.getArgs.map getImportIds).flatten
   if s.isOfKind ``Lean.Parser.Module.import then
-    rest.push (s.getArgs.getD 2 default)
+    rest.push s[1]
   else
     rest
 
