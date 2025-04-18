@@ -80,10 +80,11 @@ theorem cycleIcc_of_le {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h : j < k) :
     exact lt_def.mpr (by simp [sub_val_of_le hij]; omega)
   simpa only [natAdd_castLEEmb, this] using eq_of_val_eq (by simp; omega)
 
+instance {n : ℕ} {i: Fin n} : NeZero (n - i.1) := NeZero.of_pos (by omega)
+
 theorem cycleIcc_of {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h1 : i <= k) (h2 : k <= j) [NeZero n]:
     (cycleIcc hij) k = if k = j then i else k + 1 := by
   have kin : k ∈ Set.range ⇑(natAdd_castLEEmb n (cycleIcc._proof_4 (i := i))) := by simp; omega
-  have : NeZero (n - i.1) := NeZero.of_pos (by omega)
   simp [cycleIcc_case hij h1 kin, natAdd_castLEEmb, cycleIcc_simp_lemma h1]
   refine eq_of_val_eq ?_
   split_ifs with h3
@@ -111,12 +112,16 @@ theorem sign_cycleIcc {n : ℕ} {i j : Fin n} (hij : i ≤ j) :
   Perm.sign (cycleIcc hij) = (-1) ^ (j - i : ℕ) := by
   simp [cycleIcc, sub_val_of_le hij]
 
+private lemma Nezero_simp_lemma {n : ℕ} {i j : Fin n} (hij : i < j) :
+    (j - i).castLT (cycleIcc._proof_3 (Fin.le_of_lt hij)) ≠ 0 := by
+  refine Ne.symm (ne_of_val_ne ?_)
+  simpa [coe_sub_iff_le.mpr (Fin.le_of_lt hij)] using by omega
+
 theorem isCycle_cycleIcc {n : ℕ} {i j : Fin n} (hij : i < j) :
-    (cycleIcc (Fin.le_of_lt hij)).IsCycle :=
-  have : ((j - i).castLT (cycleIcc._proof_3 (Fin.le_of_lt hij))).cycleRange.IsCycle :=
-    have : NeZero (n - i.1) := NeZero.of_pos (by omega)
-    have : (j - i).castLT (cycleIcc._proof_3 (Fin.le_of_lt hij)) ≠ 0 := by
-      refine Ne.symm (ne_of_val_ne ?_)
-      simpa [coe_sub_iff_le.mpr (Fin.le_of_lt hij)] using by omega
-    isCycle_cycleRange this
-  Equiv.Perm.IsCycle.extendDomain (natAdd_castLEEmb n _).toEquivRange this
+    (cycleIcc (Fin.le_of_lt hij)).IsCycle := Equiv.Perm.IsCycle.extendDomain
+  (natAdd_castLEEmb n _).toEquivRange (isCycle_cycleRange (Nezero_simp_lemma hij))
+
+theorem cycleType_cycleIcc {n : ℕ} {i j : Fin n} (hij : i < j) :
+    Perm.cycleType (cycleIcc (Fin.le_of_lt hij)) = {(j - i + 1: ℕ)} := by
+  simpa [cycleIcc, cycleType_cycleRange (Nezero_simp_lemma hij)] using sub_val_of_le
+    (Fin.le_of_lt hij)
