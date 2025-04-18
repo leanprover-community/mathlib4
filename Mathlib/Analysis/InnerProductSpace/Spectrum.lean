@@ -218,8 +218,8 @@ private theorem hasEigenvector_eigenvectorBasis_helper (i : Fin n) :
     exact hT.conj_eigenvalue_eq_self (hasEigenvalue_of_hasEigenvector key)
   simpa [re_μ] using key
 
-/-- A choice of orthonormal basis of eigenvectors for self-adjoint operator `T` on a
-finite-dimensional inner product space `E`. -/
+/-- The eigenvalues for a self-adjoint operator `T` on a
+finite-dimensional inner product space `E`, sorted in increasing order. -/
 noncomputable irreducible_def eigenvalues : Fin n → ℝ :=
   (hT.unsortedEigenvalues hn) ∘ (Tuple.sort (hT.unsortedEigenvalues hn))
 
