@@ -14,10 +14,10 @@ This file defines the finite set of `d`-tuples of natural numbers with a fixed p
 `Nat.finMulAntidiag`.
 
 ## Main Results
-* There are `d^(ω n)` ways to write `n` as a product of `d` natural numbers, when `n` is squarefree
-(`card_finMulAntidiag_of_squarefree`)
-* There are `3^(ω n)` pairs of natural numbers whose `lcm` is `n`, when `n` is squarefree
-(`card_pair_lcm_eq`)
+* `card_finMulAntidiag_of_squarefree`: there are `d^(ω n)` ways to write `n` as a product of `d`
+  natural numbers, when `n` is squarefree
+* `card_pair_lcm_eq`: there are `3^(ω n)` pairs of natural numbers whose `lcm` is `n`,
+  when `n` is squarefree
 -/
 
 open Finset

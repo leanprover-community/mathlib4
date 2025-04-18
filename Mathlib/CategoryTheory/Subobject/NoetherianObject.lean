@@ -20,8 +20,7 @@ closed under subobjects.
 
 ## Future works
 
-* show that `isNoetherian` is a Serre class when `C` is an abelian category
-(TODO @joelriou)
+* show that `isNoetherian` is a Serre class when `C` is an abelian category (TODO @joelriou)
 
 -/
 

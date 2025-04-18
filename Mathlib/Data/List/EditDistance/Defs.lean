@@ -151,6 +151,7 @@ The first element of this list is the Levenshtein distance from `xs` to `ys`.
 Note that if the cost functions do not satisfy the inequalities
 * `C.delete a + C.insert b ≥ C.substitute a b`
 * `C.substitute a b + C.substitute b c ≥ C.substitute a c`
+
 (or if any values are negative)
 then the edit distances calculated here may not agree with the general
 geodesic distance on the edit graph.
@@ -191,6 +192,7 @@ from the list `xs` to the list `ys`.
 Note that if the cost functions do not satisfy the inequalities
 * `C.delete a + C.insert b ≥ C.substitute a b`
 * `C.substitute a b + C.substitute b c ≥ C.substitute a c`
+
 (or if any values are negative)
 then the edit distance calculated here may not agree with the general
 geodesic distance on the edit graph.
