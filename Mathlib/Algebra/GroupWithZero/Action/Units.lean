@@ -70,9 +70,6 @@ namespace Units
 
 /-! ### Action of the units of `M` on a type `α` -/
 
-@[to_additive]
-instance [Monoid M] [SMul M α] : SMul Mˣ α where smul m a := (m : M) • a
-
 instance instSMulZeroClass [Monoid M] [Zero α] [SMulZeroClass M α] : SMulZeroClass Mˣ α where
   smul := (· • ·)
   smul_zero m := smul_zero (m : M)

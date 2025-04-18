@@ -3,8 +3,7 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Etienne Marion
 -/
-import Mathlib.Probability.Kernel.Composition.CompProd
-import Mathlib.Probability.Kernel.Composition.Comp
+import Mathlib.Probability.Kernel.Composition.MeasureComp
 import Mathlib.Probability.Kernel.MeasurableIntegral
 
 /-!
@@ -447,3 +446,68 @@ end Kernel
 end comp
 
 end ProbabilityTheory
+
+namespace MeasureTheory
+
+namespace Measure
+
+variable {α β E : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
+  [NormedAddCommGroup E] {a : α} {κ : Kernel α β} {μ : Measure α} {f : β → E}
+
+section Integral
+
+lemma _root_.MeasureTheory.AEStronglyMeasurable.ae_of_compProd [SFinite μ] [IsSFiniteKernel κ]
+    {E : Type*} [NormedAddCommGroup E] {f : α → β → E}
+    (hf : AEStronglyMeasurable f.uncurry (μ ⊗ₘ κ)) :
+    ∀ᵐ x ∂μ, AEStronglyMeasurable (f x) (κ x) := by
+  simpa using hf.compProd_mk_left
+
+lemma integrable_compProd_iff [SFinite μ] [IsSFiniteKernel κ] {E : Type*} [NormedAddCommGroup E]
+    {f : α × β → E} (hf : AEStronglyMeasurable f (μ ⊗ₘ κ)) :
+    Integrable f (μ ⊗ₘ κ) ↔
+      (∀ᵐ x ∂μ, Integrable (fun y => f (x, y)) (κ x)) ∧
+        Integrable (fun x => ∫ y, ‖f (x, y)‖ ∂(κ x)) μ := by
+  simp_rw [Measure.compProd, ProbabilityTheory.integrable_compProd_iff hf, Kernel.prodMkLeft_apply,
+    Kernel.const_apply]
+
+lemma integral_compProd [SFinite μ] [IsSFiniteKernel κ] {E : Type*}
+    [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {f : α × β → E} (hf : Integrable f (μ ⊗ₘ κ)) :
+    ∫ x, f x ∂(μ ⊗ₘ κ) = ∫ a, ∫ b, f (a, b) ∂(κ a) ∂μ := by
+  rw [Measure.compProd, ProbabilityTheory.integral_compProd hf]
+  simp
+
+lemma setIntegral_compProd [SFinite μ] [IsSFiniteKernel κ] {E : Type*}
+    [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {s : Set α} (hs : MeasurableSet s) {t : Set β} (ht : MeasurableSet t)
+    {f : α × β → E} (hf : IntegrableOn f (s ×ˢ t) (μ ⊗ₘ κ))  :
+    ∫ x in s ×ˢ t, f x ∂(μ ⊗ₘ κ) = ∫ a in s, ∫ b in t, f (a, b) ∂(κ a) ∂μ := by
+  rw [Measure.compProd, ProbabilityTheory.setIntegral_compProd hs ht hf]
+  simp
+
+end Integral
+
+section Integrable
+
+lemma integrable_compProd_snd_iff [SFinite μ] [IsSFiniteKernel κ]
+    (hf : AEStronglyMeasurable f (κ ∘ₘ μ)) :
+    Integrable (fun p ↦ f p.2) (μ ⊗ₘ κ) ↔ Integrable f (κ ∘ₘ μ) := by
+  rw [← Measure.snd_compProd, Measure.snd, integrable_map_measure _ measurable_snd.aemeasurable,
+    Function.comp_def]
+  rwa [← Measure.snd, Measure.snd_compProd]
+
+lemma ae_integrable_of_integrable_comp (h_int : Integrable f (κ ∘ₘ μ)) :
+    ∀ᵐ x ∂μ, Integrable f (κ x) := by
+  rw [Measure.comp_eq_comp_const_apply, integrable_comp_iff h_int.1] at h_int
+  exact h_int.1
+
+lemma integrable_integral_norm_of_integrable_comp (h_int : Integrable f (κ ∘ₘ μ)) :
+    Integrable (fun x ↦ ∫ y, ‖f y‖ ∂κ x) μ := by
+  rw [Measure.comp_eq_comp_const_apply, integrable_comp_iff h_int.1] at h_int
+  exact h_int.2
+
+end Integrable
+
+end Measure
+
+end MeasureTheory

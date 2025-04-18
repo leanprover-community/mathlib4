@@ -53,14 +53,14 @@ private lemma tendsto_nat_rpow_inv :
   exact Tendsto.comp tendsto_rpow_div tendsto_natCast_atTop_atTop
 
 -- Multiplication by a constant moves in a List.sum
-private lemma list_mul_sum {R : Type*} [CommSemiring R] {T : Type*} (l : List T) (y : R) (x : R) :
+private lemma list_mul_sum {R : Type*} [Semiring R] {T : Type*} (l : List T) (y : R) (x : R) :
     (l.mapIdx fun i _ => x * y ^ i).sum = x * (l.mapIdx fun i _ => y ^ i).sum := by
   simp_rw [← smul_eq_mul, List.smul_sum, List.mapIdx_eq_zipIdx_map]
   congr 1
   simp
 
 -- Geometric sum for lists
-private lemma list_geom {T : Type*} {F : Type*} [Field F] (l : List T) {y : F} (hy : y ≠ 1) :
+private lemma list_geom {T : Type*} {F : Type*} [DivisionRing F] (l : List T) {y : F} (hy : y ≠ 1) :
     (l.mapIdx fun i _ => y ^ i).sum = (y ^ l.length - 1) / (y - 1) := by
   rw [← geom_sum_eq hy l.length, List.mapIdx_eq_zipIdx_map, Finset.sum_range, ← Fin.sum_univ_get']
   simp only [List.getElem_zipIdx, Function.uncurry_apply_pair]
@@ -110,7 +110,7 @@ def padic (p : ℕ) [Fact p.Prime] : AbsoluteValue ℚ ℝ where
   eq_zero' x :=
     ⟨fun H ↦ padicNorm.zero_of_padicNorm_eq_zero <| cast_eq_zero.mp H,
       fun H ↦ cast_eq_zero.mpr <| H ▸ padicNorm.zero (p := p)⟩
-  add_le' x y := by simp only; exact_mod_cast padicNorm.triangle_ineq x y
+  add_le' x y := by exact_mod_cast padicNorm.triangle_ineq x y
 
 @[simp] lemma padic_eq_padicNorm (p : ℕ) [Fact p.Prime] (r : ℚ) :
     padic p r = padicNorm p r := rfl

@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Adjunction.Restrict
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 
 /-!
 # Monomorphisms over a fixed object
@@ -24,6 +25,7 @@ We provide
 * `def pullback [HasPullbacks C] (f : X ⟶ Y) : MonoOver Y ⥤ MonoOver X`
 * `def map (f : X ⟶ Y) [Mono f] : MonoOver X ⥤ MonoOver Y`
 * `def «exists» [HasImages C] (f : X ⟶ Y) : MonoOver X ⥤ MonoOver Y`
+
 and prove their basic properties and relationships.
 
 ## Notes
@@ -398,6 +400,7 @@ instance : (forget X).IsRightAdjoint :=
   ⟨_, ⟨imageForgetAdj⟩⟩
 
 instance reflective : Reflective (forget X) where
+  L := image
   adj := imageForgetAdj
 
 /-- Forgetting that a monomorphism over `X` is a monomorphism, then taking its image,
