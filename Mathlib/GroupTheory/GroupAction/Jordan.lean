@@ -4,14 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 
-import Mathlib.GroupTheory.GroupAction.MultiplePrimitivity
-import Mathlib.GroupTheory.GroupAction.Primitive
 import Mathlib.Algebra.Group.Pointwise.Set.Card
-import Mathlib.GroupTheory.Perm.Support
-import Mathlib.GroupTheory.Index
-import Mathlib.GroupTheory.SpecificGroups.Alternating
-import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.Data.Set.Card
+import Mathlib.GroupTheory.GroupAction.MultiplePrimitivity
 
 /-! # Theorems of Jordan
 
@@ -846,4 +841,3 @@ theorem jordan_prime_cycle [decidable_eq α] (hG : is_preprimitive G α)
  -/
 end Subgroups
 
-#lint
