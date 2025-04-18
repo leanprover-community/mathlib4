@@ -269,7 +269,7 @@ lemma range_le_ker_of_exact_rTensor [fl : FaithfullyFlat R M]
     ext x
     simp only [Submodule.mem_top, Submodule.mem_bot, true_iff]
     have mem : x ∈ (⊤ : Submodule R _) := ⟨⟩
-    rw [← TensorProduct.span_tmul_eq_top, mem_span_set] at mem
+    rw [← TensorProduct.span_tmul_eq_top, Submodule.mem_span_set] at mem
     obtain ⟨c, hc, rfl⟩ := mem
     choose b a hy using hc
     let r :  ⦃a : E ⊗[R] M⦄ → a ∈ ↑c.support → R := fun a ha =>
@@ -530,6 +530,34 @@ theorem trans : FaithfullyFlat R M := by
 
 end trans
 
+/-- Faithful flatness is preserved by arbitrary base change. -/
+instance (S : Type*) [CommRing S] [Algebra R S] [Module.FaithfullyFlat R M] :
+    Module.FaithfullyFlat S (S ⊗[R] M) := by
+  rw [Module.FaithfullyFlat.iff_flat_and_rTensor_reflects_triviality]
+  refine ⟨inferInstance, fun N _ _ hN ↦ ?_⟩
+  let _ : Module R N := Module.compHom N (algebraMap R S)
+  have : IsScalarTower R S N := IsScalarTower.of_algebraMap_smul fun r ↦ congrFun rfl
+  have := (AlgebraTensorModule.cancelBaseChange R S S N M).symm.subsingleton
+  exact FaithfullyFlat.rTensor_reflects_triviality R M N
+
 end FaithfullyFlat
+
+/-- Flat descends along faithfully flat ring maps. -/
+lemma Flat.of_flat_tensorProduct (S : Type*) [CommRing S] [Algebra R S]
+    [Module.FaithfullyFlat R S] [Module.Flat S (S ⊗[R] M)] : Module.Flat R M := by
+  rw [Module.Flat.iff_lTensor_preserves_injective_linearMap]
+  intro N P _ _ _ _ f hf
+  have : Flat R (S ⊗[R] M) := Flat.trans _ S _
+  rw [← FaithfullyFlat.lTensor_injective_iff_injective R S]
+  have : LinearMap.lTensor S (LinearMap.lTensor M f) =
+      (TensorProduct.assoc _ _ _ _).toLinearMap ∘ₗ LinearMap.lTensor (S ⊗[R] M) f ∘ₗ
+        (TensorProduct.assoc _ _ _ _).symm.toLinearMap := by
+    ext
+    simp
+  simpa [this] using Flat.lTensor_preserves_injective_linearMap f hf
+
+lemma Flat.iff_flat_tensorProduct (S : Type*) [CommRing S] [Algebra R S]
+    [Module.FaithfullyFlat R S] : Module.Flat S (S ⊗[R] M) ↔ Module.Flat R M :=
+  ⟨fun _ ↦ .of_flat_tensorProduct R M S, fun _ ↦ inferInstance⟩
 
 end Module

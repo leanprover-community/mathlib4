@@ -42,7 +42,7 @@ lemma mem_subfield_of_mul_eq_one_of_mem_subfield_right
   suffices (B'.submatrix e.symm id).map K.subtype = B by simp [← this]
   replace hB : A * (B'.submatrix e.symm id).map K.subtype = 1 := by
     replace hB := congr_arg (fun C ↦ C.map K.subtype) hB
-    simp_rw [map_mul] at hB
+    simp_rw [Matrix.map_mul] at hB
     rw [hA', ← e.symm_symm, ← submatrix_id_mul_left] at hB
     simpa using hB
   classical

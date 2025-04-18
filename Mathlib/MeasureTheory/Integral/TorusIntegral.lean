@@ -6,6 +6,7 @@ Authors: Cuma Kökmen, Yury Kudryashov
 import Mathlib.MeasureTheory.Integral.CircleIntegral
 import Mathlib.MeasureTheory.Integral.Prod
 import Mathlib.Order.Fin.Tuple
+import Mathlib.Util.Superscript
 
 /-!
 # Integral over a torus in `ℂⁿ`
@@ -61,13 +62,12 @@ variable {E : Type*} [NormedAddCommGroup E]
 noncomputable section
 
 open Complex Set MeasureTheory Function Filter TopologicalSpace
+open Mathlib.Tactic (superscriptTerm)
 
 open scoped Real
 
-local macro:arg t:term:max noWs "ⁿ⁺¹" : term => `(Fin (n + 1) → $t)
-local macro:arg t:term:max noWs "ⁿ" : term => `(Fin n → $t)
-local macro:arg t:term:max noWs "⁰" : term => `(Fin 0 → $t)
-local macro:arg t:term:max noWs "¹" : term => `(Fin 1 → $t)
+local syntax:arg term:max noWs superscriptTerm : term
+local macro_rules | `($t:term$n:superscript) => `(Fin $n → $t)
 
 /-!
 ### `torusMap`, a parametrization of a torus
@@ -99,8 +99,7 @@ def TorusIntegrable (f : ℂⁿ → E) (c : ℂⁿ) (R : ℝⁿ) : Prop :=
 
 namespace TorusIntegrable
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: restore notation; `neg`, `add` etc fail if I use notation here
-variable {f g : (Fin n → ℂ) → E} {c : Fin n → ℂ} {R : Fin n → ℝ}
+variable {f g : ℂⁿ → E} {c : ℂⁿ} {R : ℝⁿ}
 
 /-- Constant functions are torus integrable -/
 theorem torusIntegrable_const (a : E) (c : ℂⁿ) (R : ℝⁿ) : TorusIntegrable (fun _ => a) c R := by
@@ -133,7 +132,7 @@ theorem function_integrable [NormedSpace ℂ E] (hf : TorusIntegrable f c R) :
 
 end TorusIntegrable
 
-variable [NormedSpace ℂ E] {f g : (Fin n → ℂ) → E} {c : Fin n → ℂ} {R : Fin n → ℝ}
+variable [NormedSpace ℂ E] {f g : ℂⁿ → E} {c : ℂⁿ} {R : ℝⁿ}
 
 /-- The integral over a generalized torus with center `c ∈ ℂⁿ` and radius `R ∈ ℝⁿ`, defined
 as the `•`-product of the derivative of `torusMap` and `f (torusMap c R θ)` -/

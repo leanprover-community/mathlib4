@@ -42,7 +42,7 @@ def addEdge (g : Graph) (edge : Edge) : Graph :=
 
 /-- Constructs a directed `Graph` using `≤` facts. -/
 def constructLeGraph (nVertexes : Nat) (facts : Array AtomicFact) : MetaM Graph := do
-  let mut res : Graph := Array.mkArray nVertexes #[]
+  let mut res : Graph := Array.replicate nVertexes #[]
   for fact in facts do
     if let .le lhs rhs proof := fact then
       res := res.addEdge ⟨lhs, rhs, proof⟩
@@ -71,7 +71,7 @@ partial def buildTransitiveLeProofDFS (g : Graph) (v t : Nat) (tExpr : Expr) :
 /-- Given a `≤`-graph `g`, finds a proof of `s ≤ t` using transitivity. -/
 def buildTransitiveLeProof (g : Graph) (idxToAtom : Std.HashMap Nat Expr) (s t : Nat) :
     MetaM (Option Expr) := do
-  let state : DFSState := ⟨mkArray g.size false⟩
+  let state : DFSState := ⟨.replicate g.size false⟩
   (buildTransitiveLeProofDFS g s t (idxToAtom.get! t)).run' state
 
 end Graph
