@@ -45,46 +45,36 @@ namespace Fin.Embedding
 
 variable {α : Type*}
 
--- append -> snoc, merge -> append
-
-theorem snoc_castSucc {n : ℕ} {x : Fin n ↪ α}
-    {a : α} {ha : a ∉ range ⇑x} {i : Fin n} :
-    snoc x ha i.castSucc  = x i := by
-  rw [coe_snoc, Fin.snoc_castSucc]
-
-theorem snoc_last {n : ℕ} {x : Fin n ↪ α}
-    {a : α} {ha : a ∉ range ⇑x} :
-    snoc x ha (last n) = a := by
-  rw [coe_snoc, Fin.snoc_last]
-
-def append_compl {m n : ℕ} (x : Fin m ↪ α) (y : Fin n ↪ ((Set.range x)ᶜ : Set α)) :
-    Fin (m + n) ↪ α := append (x := x) (y := y.trans (subtype _)) (by
-  rw [Set.disjoint_right]
-  rintro _ ⟨i, rfl⟩
-  simp only [trans_apply, subtype_apply, ← mem_compl_iff]
-  exact Subtype.coe_prop (y i))
+theorem exists_embedding_disjoint_range_of_add_le_ENat_card
+    {s : Set α} [Finite s] {n : ℕ} (hs : s.ncard + n ≤ ENat.card α) :
+    ∃ y : Fin n ↪ α, Disjoint s (range y) := by
+  suffices Nonempty (Fin n ↪ (sᶜ : Set α)) by
+    obtain ⟨y⟩ := this
+    use y.trans (subtype _)
+    rw [Set.disjoint_right]
+    rintro _ ⟨i, rfl⟩
+    simp only [trans_apply, subtype_apply, ← mem_compl_iff]
+    exact Subtype.coe_prop (y i)
+  rcases finite_or_infinite α with hα | hα
+  · have _ : Fintype α := Fintype.ofFinite α
+    classical
+    apply Function.Embedding.nonempty_of_card_le
+    rwa [Fintype.card_fin, ← add_le_add_iff_left s.ncard,
+      ← Nat.card_eq_fintype_card, Set.Nat.card_coe_set_eq,
+        Set.ncard_add_ncard_compl, ← ENat.coe_le_coe,
+        ← ENat.card_eq_coe_natCard, ENat.coe_add]
+  · exact ⟨valEmbedding.trans s.toFinite.infinite_compl.to_subtype.natEmbedding⟩
 
 theorem restrictSurjective_of_add_le_ENatCard
     {m n : ℕ} (hn : m + n ≤ ENat.card α) :
     Function.Surjective (fun (x : Fin (m + n) ↪ α) ↦ (Fin.castAddEmb n).trans x) := by
   intro x
-  have : Nonempty ((Fin n) ↪ ((Set.range x)ᶜ : Set α)) := by
-    rcases finite_or_infinite α with hα | hα
-    · have _ : Fintype α := Fintype.ofFinite α
-      classical
-      apply Function.Embedding.nonempty_of_card_le
-      rw [Fintype.card_fin, ← add_le_add_iff_left (range x).ncard,
-        ← Nat.card_eq_fintype_card, Set.Nat.card_coe_set_eq,
-          Set.ncard_add_ncard_compl, ← ENat.coe_le_coe,
-          ← ENat.card_eq_coe_natCard]
-      apply le_of_eq_of_le _ hn
-      rw [← Set.Nat.card_coe_set_eq, Nat.card_range_of_injective x.injective,
-        Nat.card_eq_fintype_card, Fintype.card_fin, ENat.coe_add]
-    · exact ⟨valEmbedding.trans (finite_range x).infinite_compl.to_subtype.natEmbedding⟩
-  obtain ⟨y⟩ := this
-  use append_compl x y
+  obtain ⟨y : Fin n ↪ α, hxy⟩ :=
+    exists_embedding_disjoint_range_of_add_le_ENat_card (s := range x)
+      (by simpa [← Set.Nat.card_coe_set_eq, Nat.card_range_of_injective x.injective])
+  use append hxy
   ext i
-  simp [trans_apply, coe_castAddEmb, append_compl, append]
+  simp [trans_apply, coe_castAddEmb, append]
 
 theorem restrictSurjective_of_add_le_natCard
     {m n : ℕ} [Finite α] (hn : m + n ≤ Nat.card α) :
