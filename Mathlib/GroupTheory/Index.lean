@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
 import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
+import Mathlib.Algebra.GroupWithZero.Subgroup
 import Mathlib.Data.Finite.Card
 import Mathlib.Data.Finite.Prod
 import Mathlib.Data.Set.Card
@@ -37,9 +38,11 @@ Several theorems proved in this file are known as Lagrange's theorem.
 
 assert_not_exists Field
 
+open scoped Pointwise
+
 namespace Subgroup
 
-open Cardinal
+open Cardinal Function
 
 variable {G G' : Type*} [Group G] [Group G'] (H K L : Subgroup G)
 
@@ -175,7 +178,7 @@ theorem mul_self_mem_of_index_two (h : H.index = 2) (a : G) : a * a ∈ H := by
 theorem sq_mem_of_index_two (h : H.index = 2) (a : G) : a ^ 2 ∈ H :=
   (pow_two a).symm ▸ mul_self_mem_of_index_two h a
 
-variable (H K)
+variable (H K) {f : G →* G'}
 
 @[to_additive (attr := simp)]
 theorem index_top : (⊤ : Subgroup G).index = 1 :=
@@ -248,9 +251,12 @@ theorem dvd_index_map {f : G →* G'} (hf : f.ker ≤ H) :
   apply dvd_mul_right
 
 @[to_additive]
-theorem index_map_eq {f : G →* G'} (hf1 : Function.Surjective f)
-    (hf2 : f.ker ≤ H) : (H.map f).index = H.index :=
+theorem index_map_eq (hf1 : Surjective f) (hf2 : f.ker ≤ H) : (H.map f).index = H.index :=
   Nat.dvd_antisymm (H.index_map_dvd hf1) (H.dvd_index_map hf2)
+
+@[to_additive]
+lemma index_map_of_bijective (hf : Bijective f) (H : Subgroup G) : (H.map f).index = H.index :=
+  index_map_eq _ hf.2 (by rw [f.ker_eq_bot_iff.2 hf.1]; exact bot_le)
 
 @[to_additive]
 theorem index_map_of_injective {f : G →* G'} (hf : Function.Injective f) :
@@ -644,3 +650,12 @@ lemma card_fiber_eq_of_mem_range (f : F) {x y : M} (hx : x ∈ Set.range f) (hy 
   rw [← f'.coe_toHomUnits y⁻¹, map_inv, Units.mul_inv_eq_iff_eq_mul, f'.coe_toHomUnits]
 
 end MonoidHom
+
+namespace AddSubgroup
+variable {G A : Type*} [Group G] [AddGroup A] [DistribMulAction G A]
+
+@[simp]
+lemma index_smul (a : G) (S : AddSubgroup A) : (a • S).index = S.index :=
+  index_map_of_bijective (MulAction.bijective _) _
+
+end AddSubgroup

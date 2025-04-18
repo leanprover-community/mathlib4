@@ -1409,6 +1409,9 @@ theorem eq_zero (n : Fin 1) : n = 0 := Subsingleton.elim _ _
 lemma eq_one_of_neq_zero (i : Fin 2) (hi : i ≠ 0) : i = 1 := by
   fin_omega
 
+lemma eq_zero_or_one (i : Fin 2) : i = 0 ∨ i = 1 := by
+  fin_omega
+
 @[simp]
 theorem coe_neg_one : ↑(-1 : Fin (n + 1)) = n := by
   cases n
