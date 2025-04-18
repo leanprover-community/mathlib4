@@ -35,10 +35,14 @@ open Set LinearMap
 
 namespace Finsupp
 
-variable {α : Type*} {M : Type*} {N : Type*} {P : Type*} {R : Type*} {S : Type*}
-variable [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M]
-variable [AddCommMonoid N] [Module R N]
-variable [AddCommMonoid P] [Module R P]
+variable {α : Type*} {M : Type*} {N : Type*} {P : Type*} {R R₂ R₃ : Type*} {S : Type*}
+variable [Semiring R] [Semiring R₂] [Semiring R₃] [Semiring S] [AddCommMonoid M] [Module R M]
+variable [AddCommMonoid N] [Module R₂ N]
+variable [AddCommMonoid P] [Module R₃ P]
+variable {σ : R →+* R₂} {σ_inv : R₂ →+* R} [RingHomInvPair σ σ_inv] [RingHomInvPair σ_inv σ]
+variable {τ : R₂ →+* R₃} {τ_inv : R₃ →+* R₂} [RingHomInvPair τ τ_inv] [RingHomInvPair τ_inv τ]
+variable {στ : R →+* R₃} {στ_inv : R₃ →+* R} [RingHomInvPair στ στ_inv] [RingHomInvPair στ_inv στ]
+variable [RingHomCompTriple σ τ στ] [RingHomCompTriple τ_inv σ_inv στ_inv]
 
 section LinearEquivFunOnFinite
 
@@ -75,7 +79,7 @@ def lsingle (a : α) : M →ₗ[R] α →₀ M :=
   { Finsupp.singleAddHom a with map_smul' := fun _ _ => (smul_single _ _ _).symm }
 
 /-- Two `R`-linear maps from `Finsupp X M` which agree on each `single x y` agree everywhere. -/
-theorem lhom_ext ⦃φ ψ : (α →₀ M) →ₗ[R] N⦄ (h : ∀ a b, φ (single a b) = ψ (single a b)) : φ = ψ :=
+theorem lhom_ext ⦃φ ψ : (α →₀ M) →ₛₗ[σ] N⦄ (h : ∀ a b, φ (single a b) = ψ (single a b)) : φ = ψ :=
   LinearMap.toAddMonoidHom_injective <| addHom_ext h
 
 /-- Two `R`-linear maps from `Finsupp X M` which agree on each `single x y` agree everywhere.
@@ -85,7 +89,7 @@ so that the `ext` tactic can apply a type-specific extensionality lemma to prove
 maps. E.g., if `M = R`, then it suffices to verify `φ (single a 1) = ψ (single a 1)`. -/
 -- Porting note: The priority should be higher than `LinearMap.ext`.
 @[ext high]
-theorem lhom_ext' ⦃φ ψ : (α →₀ M) →ₗ[R] N⦄ (h : ∀ a, φ.comp (lsingle a) = ψ.comp (lsingle a)) :
+theorem lhom_ext' ⦃φ ψ : (α →₀ M) →ₛₗ[σ] N⦄ (h : ∀ a, φ.comp (lsingle a) = ψ.comp (lsingle a)) :
     φ = ψ :=
   lhom_ext fun a => LinearMap.congr_fun (h a)
 
@@ -171,30 +175,30 @@ end LComapDomain
 
 /-- `Finsupp.mapRange` as a `LinearMap`. -/
 @[simps apply]
-def mapRange.linearMap (f : M →ₗ[R] N) : (α →₀ M) →ₗ[R] α →₀ N :=
+def mapRange.linearMap (f : M →ₛₗ[σ] N) : (α →₀ M) →ₛₗ[σ] α →₀ N :=
   { mapRange.addMonoidHom f.toAddMonoidHom with
     toFun := (mapRange f f.map_zero : (α →₀ M) → α →₀ N)
-    map_smul' := fun c v => mapRange_smul c v (f.map_smul c) }
+    map_smul' := fun c v => mapRange_smul' c (σ c) v (f.map_smulₛₗ c) }
 
 @[simp]
 theorem mapRange.linearMap_id :
     mapRange.linearMap LinearMap.id = (LinearMap.id : (α →₀ M) →ₗ[R] _) :=
   LinearMap.ext mapRange_id
 
-theorem mapRange.linearMap_comp (f : N →ₗ[R] P) (f₂ : M →ₗ[R] N) :
-    (mapRange.linearMap (f.comp f₂) : (α →₀ _) →ₗ[R] _) =
+theorem mapRange.linearMap_comp (f : N →ₛₗ[τ] P) (f₂ : M →ₛₗ[σ] N) :
+    (mapRange.linearMap (f.comp f₂) : (α →₀ _) →ₛₗ[στ] _) =
       (mapRange.linearMap f).comp (mapRange.linearMap f₂) :=
   LinearMap.ext <| mapRange_comp f f.map_zero f₂ f₂.map_zero (comp f f₂).map_zero
 
 @[simp]
-theorem mapRange.linearMap_toAddMonoidHom (f : M →ₗ[R] N) :
+theorem mapRange.linearMap_toAddMonoidHom (f : M →ₛₗ[σ] N) :
     (mapRange.linearMap f).toAddMonoidHom =
       (mapRange.addMonoidHom f.toAddMonoidHom : (α →₀ M) →+ _) :=
   AddMonoidHom.ext fun _ => rfl
 
 /-- `Finsupp.mapRange` as a `LinearEquiv`. -/
 @[simps apply]
-def mapRange.linearEquiv (e : M ≃ₗ[R] N) : (α →₀ M) ≃ₗ[R] α →₀ N :=
+def mapRange.linearEquiv (e : M ≃ₛₗ[σ] N) : (α →₀ M) ≃ₛₗ[σ] α →₀ N :=
   { mapRange.linearMap e.toLinearMap,
     mapRange.addEquiv e.toAddEquiv with
     toFun := mapRange e e.map_zero
@@ -205,25 +209,25 @@ theorem mapRange.linearEquiv_refl :
     mapRange.linearEquiv (LinearEquiv.refl R M) = LinearEquiv.refl R (α →₀ M) :=
   LinearEquiv.ext mapRange_id
 
-theorem mapRange.linearEquiv_trans (f : M ≃ₗ[R] N) (f₂ : N ≃ₗ[R] P) :
-    (mapRange.linearEquiv (f.trans f₂) : (α →₀ _) ≃ₗ[R] _) =
+theorem mapRange.linearEquiv_trans (f : M ≃ₛₗ[σ] N) (f₂ : N ≃ₛₗ[τ] P) :
+    (mapRange.linearEquiv (f.trans f₂) : (α →₀ _) ≃ₛₗ[στ] _) =
       (mapRange.linearEquiv f).trans (mapRange.linearEquiv f₂) :=
   LinearEquiv.ext <| mapRange_comp f₂ f₂.map_zero f f.map_zero (f.trans f₂).map_zero
 
 @[simp]
-theorem mapRange.linearEquiv_symm (f : M ≃ₗ[R] N) :
-    ((mapRange.linearEquiv f).symm : (α →₀ _) ≃ₗ[R] _) = mapRange.linearEquiv f.symm :=
+theorem mapRange.linearEquiv_symm (f : M ≃ₛₗ[σ] N) :
+    ((mapRange.linearEquiv f).symm : (α →₀ _) ≃ₛₗ[σ_inv] _) = mapRange.linearEquiv f.symm :=
   LinearEquiv.ext fun _x => rfl
 
 -- Porting note: This priority should be higher than `LinearEquiv.coe_toAddEquiv`.
 @[simp 1500]
-theorem mapRange.linearEquiv_toAddEquiv (f : M ≃ₗ[R] N) :
+theorem mapRange.linearEquiv_toAddEquiv (f : M ≃ₛₗ[σ] N) :
     (mapRange.linearEquiv f).toAddEquiv = (mapRange.addEquiv f.toAddEquiv : (α →₀ M) ≃+ _) :=
   AddEquiv.ext fun _ => rfl
 
 @[simp]
-theorem mapRange.linearEquiv_toLinearMap (f : M ≃ₗ[R] N) :
-    (mapRange.linearEquiv f).toLinearMap = (mapRange.linearMap f.toLinearMap : (α →₀ M) →ₗ[R] _) :=
+theorem mapRange.linearEquiv_toLinearMap (f : M ≃ₛₗ[σ] N) :
+    (mapRange.linearEquiv f).toLinearMap = (mapRange.linearMap f.toLinearMap : (α →₀ M) →ₛₗ[σ] _) :=
   LinearMap.ext fun _ => rfl
 
 section Prod
