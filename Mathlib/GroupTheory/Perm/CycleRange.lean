@@ -69,7 +69,6 @@ theorem cycleIcc_of_le {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h : j < k) :
     simp [sub_val_of_le hij]; omega
   simpa only [natAdd_castLEEmb, this] using eq_of_val_eq (by simp; omega)
 
-@[simp]
 theorem cycleIcc_of {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h1 : i <= k) (h2 : k <= j) [NeZero n]:
     (cycleIcc hij) k = if k = j then i else k + 1 := by
   have kin : k ∈ Set.range ⇑(natAdd_castLEEmb n (cycleIcc._proof_4 (i := i))) := by simp; omega
