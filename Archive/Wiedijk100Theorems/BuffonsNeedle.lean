@@ -257,8 +257,6 @@ Buffon's Needle, the short case (`l ≤ d`). The probability of the needle cross
 equals `(2 * l) / (d * π)`.
 -/
 theorem buffon_short (h : l ≤ d) : ℙ[N l B] = (2 * l) * (d * π)⁻¹ := by
-  --have : 0 ≤ sin θ * l / 2 := by
-  --  sorry
   simp_rw [buffon_integral d l hd B hBₘ hB, short_needle_inter_eq d l hl h _,
     MeasureTheory.setIntegral_const, MeasureTheory.measureReal_def,
     Real.volume_Icc, smul_eq_mul, mul_one, mul_comm (d * π)⁻¹ _,

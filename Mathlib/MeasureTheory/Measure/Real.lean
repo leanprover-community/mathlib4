@@ -64,11 +64,16 @@ theorem measureReal_zero_apply (s : Set α) : (0 : Measure α).real s = 0 := rfl
     μ.real Set.univ = 1 := by
   simp [Measure.real]
 
+@[simp]
 theorem measureReal_univ_pos [IsFiniteMeasure μ] [NeZero μ] : 0 < μ.real Set.univ :=
   ENNReal.toReal_pos (NeZero.ne (μ Set.univ)) (measure_ne_top μ univ)
 
 theorem measureReal_univ_ne_zero [IsFiniteMeasure μ] [NeZero μ] : μ.real Set.univ ≠ 0 :=
   measureReal_univ_pos.ne'
+
+@[simp]
+theorem ofReal_measureReal (h : μ s ≠ ∞ := by finiteness) : ENNReal.ofReal (μ.real s) = μ s := by
+  simp [measureReal_def, h]
 
 theorem nonempty_of_measureReal_ne_zero (h : μ.real s ≠ 0) : s.Nonempty :=
   nonempty_iff_ne_empty.2 fun h' ↦ h <| h'.symm ▸ measureReal_empty
