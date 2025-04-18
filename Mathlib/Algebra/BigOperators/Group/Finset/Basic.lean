@@ -78,10 +78,17 @@ theorem prod_congr (h : s₁ = s₂) : (∀ x ∈ s₂, f x = g x) → s₁.prod
   rw [h]; exact fold_congr
 
 @[to_additive]
-theorem prod_eq_one {f : ι → M} {s : Finset ι} (h : ∀ x ∈ s, f x = 1) : ∏ x ∈ s, f x = 1 :=
-  calc
-    ∏ x ∈ s, f x = ∏ _x ∈ s, 1 := Finset.prod_congr rfl h
-    _ = 1 := Finset.prod_const_one
+theorem prod_eq_one (h : ∀ x ∈ s, f x = 1) : ∏ x ∈ s, f x = 1 := calc
+  ∏ x ∈ s, f x = ∏ _x ∈ s, 1 := prod_congr rfl h
+  _ = 1 := prod_const_one
+
+/-- In a monoid whose only unit is `1`, a product is equal to `1` iff all factors are `1`. -/
+@[to_additive (attr := simp)
+"In a monoid whose only unit is `0`, a sum is equal to `0` iff all terms are `0`."]
+lemma prod_eq_one_iff [Subsingleton Mˣ] : ∏ i ∈ s, f i = 1 ↔ ∀ i ∈ s, f i = 1 := by
+  induction' s using Finset.cons_induction with i s hi ih <;> simp [*]
+
+@[deprecated (since := "2025-03-31")] alias prod_eq_one_iff' := prod_eq_one_iff
 
 @[to_additive]
 theorem prod_disjUnion (h) :
