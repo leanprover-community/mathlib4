@@ -70,9 +70,9 @@ fact in `T'` is satisfied:
 * `x = y` is satisfied because `x` and `y` must be in the same component in the `=`-graph.
 * `x ≤ y` is satisfied by the construction of the `≤`-graph.
 * `x ≠ y` is satisfied because otherwise, `x` and `y` would belong to the same component in
-the `=`-graph, contradicting our initial assumption.
+  the `=`-graph, contradicting our initial assumption.
 * `¬(x < y)` is satisfied because otherwise `¬[y] R [x]`, meaning there is a path from `x` to `y`,
-which would have caused an edge `(y, x)` to be added at step 5, leading to a contradiction.
+  which would have caused an edge `(y, x)` to be added at step 5, leading to a contradiction.
 
 ### Partial Order
 3. **Preprocessing**.
@@ -97,9 +97,9 @@ from `C₁`. Each variable `x` is interpreted as its component `[x]`. This forms
 we verify that each fact in `T'` is satisfied:
 * `x ≤ y` is satisfied because it directly implies `[x] R [y]`.
 * `x ≠ y` is satisfied because otherwise, `x` and `y` would belong to the same component, leading to
-a contradiction at step 6.
+  a contradiction at step 6.
 * `¬(x < y)` is satisfied because otherwise `[x] ≠ [y]` and there is a path from `x` to `y`, which
-would have merged them into the same component at step 5.
+  would have merged them into the same component at step 5.
 
 ### Linear Order
 3. **Preprocessing**.

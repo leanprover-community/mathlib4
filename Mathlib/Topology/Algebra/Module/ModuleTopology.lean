@@ -85,11 +85,11 @@ Now say `φ : A →ₗ[R] B` is an `R`-linear map between `R`-modules equipped w
 the module topology.
 
 * `IsModuleTopology.continuous_of_linearMap φ` is the proof that `φ` is automatically
-continuous.
+  continuous.
 * `IsModuleTopology.isQuotientMap_of_surjective (hφ : Function.Surjective φ)`
-is the proof that if furthermore `φ` is surjective then it is a quotient map,
-that is, the module topology on `B` is the pushforward of the module topology
-on `A`.
+  is the proof that if furthermore `φ` is surjective then it is a quotient map,
+  that is, the module topology on `B` is the pushforward of the module topology
+  on `A`.
 
 Now say `ψ : A →ₗ[R] B →ₗ[R] C` is an `R`-bilinear map between `R`-modules equipped with
 the module topology.
