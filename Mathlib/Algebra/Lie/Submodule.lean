@@ -1087,6 +1087,3 @@ theorem LieSubalgebra.topEquiv_apply (x : (⊤ : LieSubalgebra R L)) : LieSubalg
   rfl
 
 end TopEquiv
-
--- Pushed over the limits by deprecations
-set_option linter.style.longFile 1700
