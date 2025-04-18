@@ -163,13 +163,11 @@ lemma homInduction_edge {P : {x y : C ⋆ D} → (x ⟶ y) → Sort*}
 
 variable (C D)
 
-/-- The left inclusion is fully faithful. This definition is the intended way to
-deconstruct a morphism `left x ⟶ left y` in `C ⋆ D` to a morphism in `C` if needed. -/
+/-- The left inclusion is fully faithful. -/
 def inclLeftFullyFaithful: (inclLeft C D).FullyFaithful where
   preimage f := f.down
 
-/-- The right inclusion is fully faithful. This definition is the intended way to
-deconstruct a morphism `right x ⟶ right y` in `C ⋆ D` to a morphism in `D` if needed. -/
+/-- The right inclusion is fully faithful. -/
 def inclRightFullyFaithful: (inclRight C D).FullyFaithful where
   preimage f := f.down
 
