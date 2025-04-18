@@ -34,7 +34,7 @@ namespace MeasureTheory
 
 variable {α β ι : Type*} {_ : MeasurableSpace α} {μ : Measure α} {s s₁ s₂ s₃ t t₁ t₂ u : Set α}
 
-theorem measureReal_def (s : Set α) : μ.real s = μ.real s := rfl
+theorem measureReal_def (s : Set α) : μ.real s = (μ s).toReal := rfl
 
 alias Measure.real_def := measureReal_def
 
