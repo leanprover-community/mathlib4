@@ -36,7 +36,8 @@ open Set LinearMap
 namespace Finsupp
 
 variable {α : Type*} {M : Type*} {N : Type*} {P : Type*} {R R₂ R₃ : Type*} {S : Type*}
-variable [Semiring R] [Semiring R₂] [Semiring R₃] [Semiring S] [AddCommMonoid M] [Module R M]
+variable [Semiring R] [Semiring R₂] [Semiring R₃] [Semiring S]
+variable [AddCommMonoid M] [Module R M]
 variable [AddCommMonoid N] [Module R₂ N]
 variable [AddCommMonoid P] [Module R₃ P]
 variable {σ : R →+* R₂} {σ_inv : R₂ →+* R} [RingHomInvPair σ σ_inv] [RingHomInvPair σ_inv σ]
