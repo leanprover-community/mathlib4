@@ -17,7 +17,7 @@ This file contains results about the continuous functional calculus on (indexed)
 + `cfc_map_pi` and `cfcₙ_map_pi`: given `a : ∀ i, A i`, then `cfc f a = fun i => cfc f (a i)`
   (and likewise for the non-unital version)
 + `cfc_map_prod` and `cfcₙ_map_prod`: given `a : A` and `b : B`, then
-  `cfc f ⟨a, b⟩ = ⟨cfc f a, cfc f b⟩` (and likewise for the non-unital version)
+  `cfc f (a, b) = (cfc f a, cfc f b)` (and likewise for the non-unital version)
 -/
 
 section nonunital_pi
@@ -68,17 +68,17 @@ variable {A B R S : Type*} [CommSemiring R] [CommRing S] [Nontrivial R] [StarRin
 include S in
 lemma cfcₙ_map_prod (f : R → R) (a : A) (b : B)
     (hf : ContinuousOn f (quasispectrum R a ∪ quasispectrum R b) := by cfc_cont_tac)
-    (hab : pab ⟨a, b⟩ := by cfc_tac) (ha : pa a := by cfc_tac) (hb : pb b := by cfc_tac) :
-    cfcₙ f (⟨a, b⟩ : A × B) = ⟨cfcₙ f a, cfcₙ f b⟩ := by
+    (hab : pab (a, b) := by cfc_tac) (ha : pa a := by cfc_tac) (hb : pb b := by cfc_tac) :
+    cfcₙ f (a, b) = (cfcₙ f a, cfcₙ f b) := by
   by_cases hf₀ : f 0 = 0
   case pos =>
     ext
     case fst =>
       let φ := NonUnitalStarAlgHom.fst S A B
-      exact φ.map_cfcₙ f ⟨a, b⟩ (by rwa [Prod.quasispectrum_eq]) hf₀ continuous_fst hab ha
+      exact φ.map_cfcₙ f (a, b) (by rwa [Prod.quasispectrum_eq]) hf₀ continuous_fst hab ha
     case snd =>
       let φ := NonUnitalStarAlgHom.snd S A B
-      exact φ.map_cfcₙ f ⟨a, b⟩ (by rwa [Prod.quasispectrum_eq]) hf₀ continuous_snd hab hb
+      exact φ.map_cfcₙ f (a, b) (by rwa [Prod.quasispectrum_eq]) hf₀ continuous_snd hab hb
   case neg =>
     simp [cfcₙ_apply_of_not_map_zero _ hf₀]
 
@@ -122,14 +122,14 @@ variable {A B R S : Type*} [CommSemiring R] [StarRing R] [MetricSpace R]
 include S in
 lemma cfc_map_prod (f : R → R) (a : A) (b : B)
     (hf : ContinuousOn f (spectrum R a ∪ spectrum R b) := by cfc_cont_tac)
-    (hab : pab ⟨a, b⟩ := by cfc_tac) (ha : pa a := by cfc_tac) (hb : pb b := by cfc_tac) :
-    cfc f (⟨a, b⟩ : A × B) = ⟨cfc f a, cfc f b⟩ := by
+    (hab : pab (a, b) := by cfc_tac) (ha : pa a := by cfc_tac) (hb : pb b := by cfc_tac) :
+    cfc f (a, b) = (cfc f a, cfc f b) := by
   ext
   case fst =>
     let φ := StarAlgHom.fst S A B
-    exact φ.map_cfc f ⟨a, b⟩ (by rwa [Prod.spectrum_eq]) continuous_fst hab ha
+    exact φ.map_cfc f (a, b) (by rwa [Prod.spectrum_eq]) continuous_fst hab ha
   case snd =>
     let φ := StarAlgHom.snd S A B
-    exact φ.map_cfc f ⟨a, b⟩ (by rwa [Prod.spectrum_eq]) continuous_snd hab hb
+    exact φ.map_cfc f (a, b) (by rwa [Prod.spectrum_eq]) continuous_snd hab hb
 
 end unital_prod
