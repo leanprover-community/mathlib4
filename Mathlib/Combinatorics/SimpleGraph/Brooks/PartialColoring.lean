@@ -1,9 +1,16 @@
 import Mathlib.Combinatorics.SimpleGraph.Coloring
 import Mathlib.Combinatorics.SimpleGraph.Path
+
+import Mathlib.Combinatorics.SimpleGraph.Subgraph
 set_option linter.style.header false
 
+
 namespace SimpleGraph
-variable {α : Type*} (G : SimpleGraph α)
+variable {α β : Type*} (G : SimpleGraph α) {s : Set α} {u v : α}
+
+variable  (C : ((⊤ : Subgraph G).induce s).spanningCoe.Coloring β)
+variable {h : G.Adj u v}
+#check @C.valid _ _ _ u v
 open Finset
 
 section degreeOn
@@ -45,6 +52,64 @@ lemma degreeOn_lt_degree {a v : α} {s : Finset α} (hv : v ∈ G.neighborFinset
 
 end degreeOn
 
+
+--abbrev PartialCol (β : Type*) (s : Set α) := ((⊤ : Subgraph G).induce s).spanningCoe.Coloring β
+
+abbrev PartColorable (n : ℕ) (s : Set α) := ((⊤ : Subgraph G).induce s).spanningCoe.Colorable n
+
+
+variable {β : Type*} {n : ℕ}
+
+
+-- lemma PartialCol.valid  (hu : u ∈ s) (hv : v ∈ s) (h : G.Adj u v) :
+--     C u ≠ C v := by
+--   unfold PartialCol at C
+--   have : ((⊤ : Subgraph G).induce s).spanningCoe.Adj u v := by  simpa using ⟨hu, hv, h⟩
+--   exact C.valid this
+variable {G}
+lemma PartColorable.succ_ofNotAdj  {s : Set α} (h : ∀ u v, u ∈ s → v ∈ s → ¬ G.Adj u v) :
+    G.PartColorable (n + 1) s := ⟨⊥, by simpa⟩
+
+lemma  PartColorable.union {s t : Set α} (hs : G.PartColorable n s) (ht : G.PartColorable n t)
+  (h : ∀ u v, u ∈ s → v ∈ t → ¬ G.Adj u v) : G.PartColorable n (s ∪ t) := by
+  classical
+  obtain ⟨C₁⟩ := hs
+  obtain ⟨C₂⟩ := ht
+  exact ⟨(fun v ↦ ite (v ∈ s) (C₁ v) (C₂ v)), by
+      simp only [mem_union, ne_eq]
+      intro v w hadj hf
+      simp only [Subgraph.spanningCoe_adj, Subgraph.induce_adj, Set.mem_union,
+        Subgraph.top_adj] at hadj
+      cases hadj.1 with
+      | inl hv =>
+        cases hadj.2.1 with
+        | inl hw =>
+          rw [if_pos hv, if_pos hw] at hf;
+          exact C₁.valid (by simpa using ⟨hv, hw, hadj.2.2⟩) hf
+        | inr hw => exact h _  _ hv hw hadj.2.2
+      | inr hv =>
+        cases hadj.2.1 with
+        | inl hw => exact h _ _  hw hv hadj.2.2.symm
+        | inr hw =>
+          split_ifs at hf with h1 h2 h3
+          · exact h _  _ h1 hw hadj.2.2
+          · exact h _  _ h1 hw hadj.2.2
+          · exact h _  _ h3 hv hadj.2.2.symm
+          · exact C₂.valid (by simpa using ⟨hv, hw, hadj.2.2⟩) hf⟩
+
+
+lemma  PartColorable.insertNotAdj {b : α} {hs : G.PartColorable (n + 1) s}
+    (h : ∀ v, v ∈ s → ¬ G.Adj b v) : G.PartColorable (n + 1) (insert b s) := by
+  rw [Set.insert_eq]
+  apply PartColorable.union _ hs
+  · intro u v hu hv hadj
+    rw [Set.mem_singleton_iff] at hu
+    exact h v hv (hu ▸ hadj)
+  · exact ⟨⊥, by simp⟩
+
+    
+variable (G)
+
 @[ext]
 structure PartialColoring (s : Finset α) where
 col : α → ℕ
@@ -72,14 +137,13 @@ def partialColoringOfNotAdj [DecidableEq α] {u v : α} (h : ¬ G.Adj u v) :
 namespace PartialColoring
 
 variable {G} in
-
 abbrev IsPartialKColoring {s : Finset α} (C : G.PartialColoring s) (k : ℕ) := ∀ v, C v < k
+
 
 @[simp]
 lemma ofEmpty_eq : ∀ v, G.partialColoringOfEmpty v = 0 := fun _ ↦ rfl
 
 variable {G}
-
 @[simp]
 lemma ofNotAdj_eq [DecidableEq α] {u v : α} (h : ¬ G.Adj u v) :
     ∀ w, (G.partialColoringOfNotAdj h) w = 0 :=
