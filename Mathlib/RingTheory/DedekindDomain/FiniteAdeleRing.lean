@@ -94,24 +94,17 @@ abbrev FiniteAdeleRing : Type _ :=
 
 namespace FiniteAdeleRing
 
-variable {K} in
 /--
-The canonical map from `K` to the finite adeles of `K`. The content of the existence
-of this map is the fact that an element of `K` is integral at all but finitely
-many places, which is `IsDedekindDomain.HeightOneSpectrum.Support.finite R k`.
-For the ring homomorphism, see `DedekindDomain.FiniteAdeleRing.algebraMap`.
+The canonical map from `K` to the finite adeles of `K`.
+
+The content of the existence of this map is the fact that an element `k` of `K` is integral at
+all but finitely many places, which is `IsDedekindDomain.HeightOneSpectrum.Support.finite R k`.
 -/
-def algebraMap.toFun (k : K) : FiniteAdeleRing R K :=
-  ⟨fun i ↦ k, by
+def algebraMap : K →+* FiniteAdeleRing R K where
+  toFun k := ⟨fun i ↦ k, by
     simp only [Filter.eventually_cofinite, SetLike.mem_coe, mem_adicCompletionIntegers R K,
      adicCompletion, Valued.valuedCompletion_apply, not_le]
     exact HeightOneSpectrum.Support.finite R k⟩
-
-/--
-The canonical ring homomorphism from `K` to the finite adeles of `K`.
--/
-protected def algebraMap : K →+* FiniteAdeleRing R K where
-  toFun := algebraMap.toFun R
   map_one' := rfl
   map_mul' x y := Subtype.eq <| funext (fun v ↦
     UniformSpace.Completion.coe_mul ((WithVal.equiv (valuation K v)).symm x) y)
