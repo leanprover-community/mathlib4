@@ -221,12 +221,12 @@ theorem integral_eq_sum_of_subset [DecidablePred fun x : F => x ≠ 0] {f : α �
 
 @[simp]
 theorem integral_const {m : MeasurableSpace α} (μ : Measure α) (y : F) :
-    (const α y).integral μ = (μ univ).toReal • y := by
+    (const α y).integral μ = μ.real univ • y := by
   classical
   calc
     (const α y).integral μ = ∑ z ∈ {y}, (μ (const α y ⁻¹' {z})).toReal • z :=
       integral_eq_sum_of_subset <| (filter_subset _ _).trans (range_const_subset _ _)
-    _ = (μ univ).toReal • y := by simp [Set.preimage]
+    _ = μ.real univ • y := by simp [Set.preimage]
 
 @[simp]
 theorem integral_piecewise_zero {m : MeasurableSpace α} (f : α →ₛ F) (μ : Measure α) {s : Set α}
