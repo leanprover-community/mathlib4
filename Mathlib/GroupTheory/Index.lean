@@ -525,20 +525,20 @@ variable (H) in
 /-- Typeclass for a subgroup `H` to have finite index in a subgroup `K`. -/
 class _root_.AddSubgroup.IsFiniteRelIndex {G : Type*} [AddGroup G] (H K : AddSubgroup G) :
     Prop where
-  protected relIndex_ne_zero : H.relindex K ≠ 0
+  protected relindex_ne_zero  : H.relindex K ≠ 0
 
 variable (H K) in
 /-- Typeclass for a subgroup `H` to have finite index in a subgroup `K`. -/
 @[to_additive] class IsFiniteRelIndex : Prop where
-  protected relIndex_ne_zero : H.relindex K ≠ 0
+  protected relindex_ne_zero  : H.relindex K ≠ 0
 
-@[to_additive] lemma relIndex_ne_zero [H.IsFiniteRelIndex K] : H.relindex K ≠ 0 :=
-  IsFiniteRelIndex.relIndex_ne_zero
+@[to_additive] lemma relindex_ne_zero  [H.IsFiniteRelIndex K] : H.relindex K ≠ 0 :=
+  IsFiniteRelIndex.relindex_ne_zero
 
 @[to_additive]
 instance IsFiniteRelIndex.to_finiteIndex_subgroupOf [H.IsFiniteRelIndex K] :
     (H.subgroupOf K).FiniteIndex where
-  index_ne_zero := relIndex_ne_zero
+  index_ne_zero := relindex_ne_zero
 
 /-- A finite index subgroup has finite quotient. -/
 @[to_additive "A finite index subgroup has finite quotient"]
