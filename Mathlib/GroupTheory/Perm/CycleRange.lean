@@ -93,9 +93,6 @@ theorem cycleIcc_of {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h1 : i <= k) (h2 
     omega
   · have h : subNat i.1 (Fin.cast (by omega) k) (by simp [h1]) < (j - i).castLT
         (cycleIcc._proof_3 hij) := by simp [subNat, lt_iff_val_lt_val, sub_val_of_le hij]; omega
-    have imp : (k + 1).1 = k.1 + 1 := by
-      simp only [add_def, val_one', Nat.add_mod_mod]
-      rw [Nat.mod_eq_of_lt]; omega
     have : (k.1 + 1) % n = k.1 + 1 := Nat.mod_eq_of_lt (by omega)
     rw [cycleRange_of_lt h, subNat]
     simp only [coe_cast, add_def, val_one', Nat.add_mod_mod, addNat_mk, cast_mk, this]
