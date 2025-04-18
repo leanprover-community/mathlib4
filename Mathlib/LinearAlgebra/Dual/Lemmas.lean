@@ -289,12 +289,12 @@ namespace Submodule
 
 open Module
 
-@[simp]
-theorem dualCoannihilator_top {K M : Type*} [Field K] [AddCommGroup M] [Module K M] :
-    (⊤ : Submodule K (Module.Dual K M)).dualCoannihilator = ⊥ := by
-  rw [dualCoannihilator, dualAnnihilator_top, comap_bot, Module.eval_ker]
-
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] {p : Submodule R M}
+
+@[simp]
+theorem dualCoannihilator_top [Projective R M] :
+    (⊤ : Submodule R (Module.Dual R M)).dualCoannihilator = ⊥ := by
+  rw [dualCoannihilator, dualAnnihilator_top, comap_bot, Module.eval_ker]
 
 theorem exists_dual_map_eq_bot_of_nmem {x : M} (hx : x ∉ p) (hp' : Free R (M ⧸ p)) :
     ∃ f : Dual R M, f x ≠ 0 ∧ p.map f = ⊥ := by
