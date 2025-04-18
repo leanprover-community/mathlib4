@@ -11,7 +11,7 @@ import Mathlib.Combinatorics.SimpleGraph.UniversalVerts
 import Mathlib.Data.Fintype.Card
 
 /-!
-# Tutte's theorem (work in progress)
+# Tutte's theorem
 
 ## Main definitions
 * `SimpleGraph.TutteViolator G u` is a set of vertices `u` such that the amount of
