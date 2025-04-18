@@ -1154,6 +1154,11 @@ theorem toMeasureOfZeroLE_apply (hi : 0 ≤[i] s) (hi₁ : MeasurableSet i) (hj�
   simp_rw [toMeasureOfZeroLE, Measure.ofMeasurable_apply _ hj₁, toMeasureOfZeroLE',
     s.restrict_apply hi₁ hj₁, Set.inter_comm]
 
+theorem toMeasureOfZeroLE_real_apply (hi : 0 ≤[i] s) (hi₁ : MeasurableSet i)
+    (hj₁ : MeasurableSet j) :
+    (s.toMeasureOfZeroLE i hi₁ hi).real j = s (i ∩ j) := by
+  simp [measureReal_def, toMeasureOfZeroLE_apply, hj₁]
+
 /-- Given a signed measure `s` and a negative measurable set `i`, `toMeasureOfLEZero`
 provides the measure, mapping measurable sets `j` to `-s (i ∩ j)`. -/
 def toMeasureOfLEZero (s : SignedMeasure α) (i : Set α) (hi₁ : MeasurableSet i) (hi₂ : s ≤[i] 0) :

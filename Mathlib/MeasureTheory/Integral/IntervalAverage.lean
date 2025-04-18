@@ -41,8 +41,9 @@ theorem interval_average_symm (f : ℝ → E) (a b : ℝ) : (⨍ x in a..b, f x)
 theorem interval_average_eq (f : ℝ → E) (a b : ℝ) :
     (⨍ x in a..b, f x) = (b - a)⁻¹ • ∫ x in a..b, f x := by
   rcases le_or_lt a b with h | h
-  · rw [setAverage_eq, uIoc_of_le h, Real.volume_real_Ioc h, intervalIntegral.integral_of_le h]
-  · rw [setAverage_eq, uIoc_of_ge h.le, Real.volume_real_Ioc h.le,
+  · rw [setAverage_eq, uIoc_of_le h, Real.volume_real_Ioc_of_le h,
+      intervalIntegral.integral_of_le h]
+  · rw [setAverage_eq, uIoc_of_ge h.le, Real.volume_real_Ioc_of_le h.le,
       intervalIntegral.integral_of_ge h.le, smul_neg, ← neg_smul, ← inv_neg, neg_sub]
 
 theorem interval_average_eq_div (f : ℝ → ℝ) (a b : ℝ) :

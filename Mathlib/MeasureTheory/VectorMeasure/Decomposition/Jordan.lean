@@ -159,8 +159,8 @@ theorem toSignedMeasure_smul (r : ℝ≥0) : (r • j).toSignedMeasure = r • j
   ext1 i hi
   rw [VectorMeasure.smul_apply, toSignedMeasure, toSignedMeasure,
     toSignedMeasure_sub_apply hi, toSignedMeasure_sub_apply hi, smul_sub, smul_posPart,
-    smul_negPart, ← ENNReal.toReal_smul, ← ENNReal.toReal_smul, Measure.smul_apply,
-    Measure.smul_apply]
+    smul_negPart, measureReal_nnreal_smul_apply, measureReal_nnreal_smul_apply]
+  rfl
 
 /-- A Jordan decomposition provides a Hahn decomposition. -/
 theorem exists_compl_positive_negative :
@@ -171,12 +171,12 @@ theorem exists_compl_positive_negative :
   obtain ⟨S, hS₁, hS₂, hS₃⟩ := j.mutuallySingular
   refine ⟨S, hS₁, ?_, ?_, hS₂, hS₃⟩
   · refine restrict_le_restrict_of_subset_le _ _ fun A hA hA₁ => ?_
-    rw [toSignedMeasure, toSignedMeasure_sub_apply hA,
+    rw [toSignedMeasure, toSignedMeasure_sub_apply hA, measureReal_def,
       show j.posPart A = 0 from nonpos_iff_eq_zero.1 (hS₂ ▸ measure_mono hA₁), ENNReal.toReal_zero,
       zero_sub, neg_le, zero_apply, neg_zero]
     exact ENNReal.toReal_nonneg
   · refine restrict_le_restrict_of_subset_le _ _ fun A hA hA₁ => ?_
-    rw [toSignedMeasure, toSignedMeasure_sub_apply hA,
+    rw [toSignedMeasure, toSignedMeasure_sub_apply hA, measureReal_def (μ := j.negPart),
       show j.negPart A = 0 from nonpos_iff_eq_zero.1 (hS₃ ▸ measure_mono hA₁), ENNReal.toReal_zero,
       sub_zero]
     exact ENNReal.toReal_nonneg
@@ -227,8 +227,8 @@ theorem toSignedMeasure_toJordanDecomposition (s : SignedMeasure α) :
   obtain ⟨i, hi₁, hi₂, hi₃, hμ, hν⟩ := s.toJordanDecomposition_spec
   simp only [JordanDecomposition.toSignedMeasure, hμ, hν]
   ext k hk
-  rw [toSignedMeasure_sub_apply hk, toMeasureOfZeroLE_apply _ hi₂ hi₁ hk,
-    toMeasureOfLEZero_apply _ hi₃ hi₁.compl hk]
+  rw [toSignedMeasure_sub_apply hk, toMeasureOfZeroLE_real_apply _ hi₂ hi₁ hk,
+    toMeasureOfLEZero_real_apply _ hi₃ hi₁.compl hk]
   simp only [ENNReal.coe_toReal, NNReal.coe_mk, ENNReal.some_eq_coe, sub_neg_eq_add]
   rw [← of_union _ (MeasurableSet.inter hi₁ hk) (MeasurableSet.inter hi₁.compl hk),
     Set.inter_comm i, Set.inter_comm iᶜ, Set.inter_union_compl _ _]

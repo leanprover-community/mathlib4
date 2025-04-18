@@ -994,7 +994,7 @@ theorem sub_le_integral_of_hasDeriv_right_of_le_Ico (hab : a ≤ b)
       calc
         (u - t) * y = ∫ _ in Icc t u, y := by
           simp only [MeasureTheory.integral_const, MeasurableSet.univ, measureReal_restrict_apply,
-            univ_inter, hu.left.le, Real.volume_real_Icc, smul_eq_mul, s]
+            univ_inter, hu.left.le, Real.volume_real_Icc_of_le, smul_eq_mul, s]
         _ ≤ ∫ w in t..u, (G' w).toReal := by
           rw [intervalIntegral.integral_of_le hu.1.le, ← integral_Icc_eq_integral_Ioc]
           apply setIntegral_mono_ae_restrict
