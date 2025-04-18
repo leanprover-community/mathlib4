@@ -23,8 +23,7 @@ between `Fin (n + 1)` and the finite set `{i}ᶜ`. -/
 noncomputable def Fin.succAboveOrderIso {n : ℕ} (i : Fin (n + 2)) :
     Fin (n + 1) ≃o ({i}ᶜ : Finset (Fin (n + 2))) where
   toEquiv :=
-    Equiv.ofBijective (f := fun a ↦ ⟨Fin.succAboveOrderEmb i a,
-        by simpa using Fin.succAbove_ne i a⟩) (by
+    Equiv.ofBijective (f := fun a ↦ ⟨Fin.succAboveOrderEmb i a, by simp⟩) (by
       constructor
       · intro a b h
         exact (Fin.succAboveOrderEmb i).injective (by simpa using h)
