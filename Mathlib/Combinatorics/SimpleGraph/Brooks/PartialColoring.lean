@@ -8,24 +8,75 @@ set_option linter.style.header false
 namespace SimpleGraph
 variable {α β : Type*} (G : SimpleGraph α) {s : Set α} {u v : α}
 
-variable  (C : ((⊤ : Subgraph G).induce s).spanningCoe.Coloring β)
-variable {h : G.Adj u v}
-#check @C.valid _ _ _ u v
 open Finset
 
 section degreeOn
 open Finset
 
-variable [DecidableEq α] [LocallyFinite G]
+--variable [DecidableEq α]
 
 section withDecRel
-variable [DecidableRel G.Adj]
+variable [DecidableRel G.Adj] [DecidablePred (· ∈ s)] [LocallyFinite G]
 
+#synth DecidableRel ((⊤ : Subgraph G).induce s).Adj
+
+/-- If a graph is locally finite at a vertex, then so is a spanningCoe of a
+subgraph of that graph. -/
+instance finiteAtspanningCoe {G' : Subgraph G} (v : α) [DecidableRel G'.Adj]
+    [Fintype (G.neighborSet v)] : Fintype (G'.spanningCoe.neighborSet v) := by
+  convert Set.fintypeSubset (G.neighborSet v) (G'.neighborSet_subset v)
+
+
+
+abbrev degreeIn (s : Set α) [DecidablePred (· ∈ s)] (a : α) :=
+  ((⊤ : Subgraph G).induce s).spanningCoe.degree a
+
+
+variable {s t : Set α} [DecidablePred (· ∈ s)] [DecidablePred (· ∈ t)]
+
+lemma degreeIn.mono {a : α} (h : s ⊆ t) : G.degreeIn s a ≤ G.degreeIn t a := by
+  apply card_le_card
+  intro v hv
+  simp only [mem_neighborFinset, Subgraph.spanningCoe_adj, Subgraph.induce_adj,
+    Subgraph.top_adj] at hv ⊢
+  exact ⟨h hv.1, h hv.2.1, hv.2.2⟩
+
+
+lemma degreeIn_le_degree (a : α) : G.degreeIn s a ≤ G.degree a := by
+  apply card_le_card
+  intro m hm
+  simp only [mem_neighborFinset, Subgraph.spanningCoe_adj, Subgraph.induce_adj,
+    Subgraph.top_adj] at *
+  exact hm.2.2
+
+lemma degree_le_degreeIn_iff {a : α} (ha : a ∈ s) :
+    G.degree a ≤ G.degreeIn s a ↔ (G.neighborFinset a : Set α) ⊆ s := by
+  constructor <;> simp_rw [degree]
+  · intro heq v hx
+    have :=  eq_of_subset_of_card_le (by intro v; simp) heq
+    apply ((⊤ : Subgraph G).induce s).neighborSet_subset_verts a
+    rw [← this] at hx
+    simpa using hx
+  · intro hs
+    apply card_le_card --fun _ hx ↦ mem_inter.2 ⟨hx, hs hx⟩
+    intro x hx
+    simp only [mem_neighborFinset, Subgraph.spanningCoe_adj, Subgraph.induce_adj,
+      Subgraph.top_adj] at hx ⊢
+    refine ⟨ha, ?_, hx⟩
+    apply hs; simpa using hx
+
+lemma degreeIn_lt_degree {a v : α} (ha : a ∈ s) (hv : v ∈ G.neighborFinset a ∧ v ∉ s) :
+    G.degreeIn s a < G.degree a :=
+  lt_of_le_of_ne (G.degreeIn_le_degree a)
+    fun hf ↦ hv.2 ((degree_le_degreeIn_iff _ ha).1 hf.symm.le hv.1)
+
+variable [DecidableEq α]
 /-- `G.degreeOn s a` is the number of neighbors of `a` in `s` -/
 abbrev degreeOn (s : Finset α) (a : α) : ℕ := #(G.neighborFinset a ∩ s)
 
-end withDecRel
 
+end withDecRel
+variable [DecidableEq α] [G.LocallyFinite]
 variable {G}
 lemma degreeOn.mono {s t : Finset α} {a : α} (h : s ⊆ t) : G.degreeOn s a ≤ G.degreeOn t a :=
     card_le_card fun _ hv ↦ mem_inter.2 ⟨(mem_inter.1 hv).1, h (mem_inter.1 hv).2⟩
@@ -107,7 +158,7 @@ lemma  PartColorable.insertNotAdj {b : α} {hs : G.PartColorable (n + 1) s}
     exact h v hv (hu ▸ hadj)
   · exact ⟨⊥, by simp⟩
 
-    
+
 variable (G)
 
 @[ext]
@@ -260,6 +311,7 @@ def toColoring [Fintype α] (C : G.PartialColoring univ) : G.Coloring ℕ :=
 def toKColoring {k : ℕ} [Fintype α] {C : G.PartialColoring univ} (h : C.IsPartialKColoring k) :
   G.Coloring (Fin k) := ⟨fun v ↦ ⟨C v, h v⟩,
   fun hab heq ↦ C.valid (mem_univ _) (mem_univ _) hab (by simpa using heq)⟩
+
 
 lemma unused (C : G.PartialColoring s) (a : α) :
     (range (G.degreeOn s a + 1) \ (((G.neighborFinset a) ∩ s).image C)).Nonempty := by
