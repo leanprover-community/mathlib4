@@ -51,8 +51,7 @@ def cycleIcc {n : ℕ} {i j : Fin n} (hij : i ≤ j): Perm (Fin n) :=
   (cycleRange (Fin.castLT (n := n - i.1) (j - i) this)).extendDomain
     (natAdd_castLEEmb n (by simp)).toEquivRange
 
-theorem cycleIcc_of_gt {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h : k < i) :
-    (cycleIcc hij) k = k :=
+theorem cycleIcc_of_gt {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h : k < i) : (cycleIcc hij) k = k :=
   Perm.extendDomain_apply_not_subtype ((j - i).castLT _).cycleRange
     (natAdd_castLEEmb n _).toEquivRange (by simp; omega)
 
@@ -89,9 +88,9 @@ theorem cycleIcc_of {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h1 : i <= k) (h2 
       (((addNatEmb (n - (n - i.1))).trans (finCongr _).toEmbedding).toEquivRange.symm ⟨j, kin⟩)) =
       subNat (m := i) (Fin.cast (by omega) i) (by simp [hij]) := by
       have : (((addNatEmb (n - (n - i.1))).trans (finCongr _).toEmbedding).toEquivRange.symm
-        ⟨j, kin⟩) = subNat (m := i) (Fin.cast (by omega) j) (by simp [hij]) := by
+        ⟨j, kin⟩) = subNat i.1 (Fin.cast (by omega) j) (by simp [hij]) := by
         simpa [symm_apply_eq] using eq_of_val_eq (by simp; omega)
-      have h : (subNat (n := n - i) (i.1) (Fin.cast (by omega) j) (by simp [hij])) =
+      have h : (subNat i.1 (Fin.cast (by omega) j) (by simp [hij])) =
           ((j - i).castLT (cycleIcc._proof_3 hij)):=
         eq_of_val_eq (by simp [subNat, coe_castLT, sub_val_of_le hij])
       simp [this, cycleRange_of_eq h, Fin.ext_iff]
@@ -103,10 +102,10 @@ theorem cycleIcc_of {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h1 : i <= k) (h2 
         (finCongr _).toEmbedding).toEquivRange.symm ⟨k, kin⟩)) = subNat (m := i)
         (Fin.cast (by omega) (k + 1)) (by simp [le_iff_val_le_val, imp]; omega) := by
       have : (((addNatEmb (n - (n - i.1))).trans (finCongr _).toEmbedding).toEquivRange.symm
-        ⟨k, kin⟩) = subNat (m := i) (Fin.cast (by omega) (k)) (by simp [h1]) := by
+        ⟨k, kin⟩) = subNat i.1 (Fin.cast (by omega) (k)) (by simp [h1]) := by
         simpa [symm_apply_eq] using eq_of_val_eq (by simp [imp]; omega)
-      have h : (subNat (n := n - i) (i.1) (Fin.cast (by omega) k) (by simp [h1])) <
-          ((j - i).castLT (cycleIcc._proof_3 hij)):= by
+      have h : (subNat i.1 (Fin.cast (by omega) k) (by simp [h1])) <
+          ((j - i).castLT (cycleIcc._proof_3 hij)) := by
         simp [subNat, lt_iff_val_lt_val, sub_val_of_le hij]; omega
       rw [this, cycleRange_of_lt h]
       have : (k.1 + 1) % n = k.1 + 1 := Nat.mod_eq_of_lt (by omega)
