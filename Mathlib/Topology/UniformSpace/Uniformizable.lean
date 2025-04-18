@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Liu
 -/
 import Mathlib.Topology.Separation.CompletelyRegular
-import Mathlib.Topology.UrysohnsLemma
 
 /-!
 # Uniformizable Spaces
