@@ -30,11 +30,11 @@ def natAdd_castLEEmb {n : ℕ} (m : ℕ) (hmn : n ≤ m): Fin n ↪ Fin (m) :=
   (addNatEmb (m - n)).trans (finCongr (by omega)).toEmbedding
 
 @[simp]
-lemma natAdd_castLEEmb_apply {n : ℕ} (m : ℕ) (hmn : n ≤ m) (k : Fin n) :
+lemma natAdd_castLEEmb_apply {n m : ℕ} (hmn : n ≤ m) (k : Fin n) :
     ((natAdd_castLEEmb m hmn) k).1 = k.1 + (m - n) := by simp
 
 @[simp]
-lemma range_natAdd_castLEEmb {n : ℕ} (m : ℕ) (hmn : n ≤ m) :
+lemma range_natAdd_castLEEmb {n m : ℕ} (hmn : n ≤ m) :
     Set.range (natAdd_castLEEmb m hmn) = {i | m - n ≤ i.1} := by
   simp [natAdd_castLEEmb]
   ext y
@@ -48,7 +48,7 @@ unchanged.
 @[simps!]
 def cycleIcc {n : ℕ} {i j : Fin n} (hij : i ≤ j): Perm (Fin n) :=
   have : (j - i).1 < n - i.1 := by simp [sub_val_of_le hij, Nat.sub_lt_sub_right hij j.isLt]
-  (cycleRange (Fin.castLT (n := n - i.1) (j - i) this)).extendDomain
+  (cycleRange (Fin.castLT (j - i) this)).extendDomain
     (natAdd_castLEEmb n (by simp)).toEquivRange
 
 theorem cycleIcc_of_gt {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h : k < i) : (cycleIcc hij) k = k :=
@@ -111,7 +111,12 @@ theorem sign_cycleIcc {n : ℕ} {i j : Fin n} (hij : i ≤ j) :
   Perm.sign (cycleIcc hij) = (-1) ^ (j - i : ℕ) := by
   simp [cycleIcc, sub_val_of_le hij]
 
-theorem isCycle_cycleIcc {n : ℕ} [NeZero n] {i j : Fin n} (hij : i ≤ j) (h' : i < j):
-    Perm.IsCycle (cycleIcc hij) := by
-
-  sorry
+theorem isCycle_cycleIcc {n : ℕ} [NeZero n] {i j : Fin n} (hij : i < j) :
+    (cycleIcc (Fin.le_of_lt hij)).IsCycle :=
+  have : ((j - i).castLT (cycleIcc._proof_3 (Fin.le_of_lt hij))).cycleRange.IsCycle :=
+    have : NeZero (n - i.1) := NeZero.of_pos (by omega)
+    have : (j - i).castLT (cycleIcc._proof_3 (Fin.le_of_lt hij)) ≠ 0 := by
+      refine Ne.symm (ne_of_val_ne ?_)
+      simpa [coe_sub_iff_le.mpr (Fin.le_of_lt hij)] using by omega
+    isCycle_cycleRange this
+  Equiv.Perm.IsCycle.extendDomain (natAdd_castLEEmb n _).toEquivRange this
