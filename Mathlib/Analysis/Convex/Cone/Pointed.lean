@@ -51,6 +51,8 @@ theorem toConvexCone_injective : Injective ((↑) : PointedCone 𝕜 E → Conve
 theorem toConvexCone_pointed (S : PointedCone 𝕜 E) : (S : ConvexCone 𝕜 E).Pointed := by
   simp [toConvexCone, ConvexCone.Pointed]
 
+@[simp] lemma mem_toConvexCone {S : PointedCone 𝕜 E} {x : E} : x ∈ S.toConvexCone ↔ x ∈ S := .rfl
+
 @[ext]
 theorem ext {S T : PointedCone 𝕜 E} (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T :=
   SetLike.ext h
