@@ -12,7 +12,7 @@ import Mathlib.Algebra.Order.Group.Defs
 
 section LinearOrderedAddCommGroup
 
-variable {α : Type*} [LinearOrderedAddCommGroup α] {s : Set α} {a ε : α}
+variable {α : Type*} [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α] {s : Set α} {a ε : α}
 
 theorem IsGLB.exists_between_self_add (h : IsGLB s a) (hε : 0 < ε) : ∃ b ∈ s, a ≤ b ∧ b < a + ε :=
   h.exists_between <| lt_add_of_pos_right _ hε

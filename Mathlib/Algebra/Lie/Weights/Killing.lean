@@ -127,12 +127,12 @@ lemma mem_ker_killingForm_of_mem_rootSpace_of_forall_rootSpace_neg
   ext y
   have hy : y ∈ ⨆ β, rootSpace H β := by simp [iSup_genWeightSpace_eq_top K H L]
   induction hy using LieSubmodule.iSup_induction' with
-  | hN β y hy =>
+  | mem β y hy =>
     by_cases hαβ : α + β = 0
     · exact hx' _ (add_eq_zero_iff_neg_eq.mp hαβ ▸ hy)
     · exact killingForm_apply_eq_zero_of_mem_rootSpace_of_add_ne_zero K L H hx hy hαβ
-  | h0 => simp
-  | hadd => simp_all
+  | zero => simp
+  | add => simp_all
 end
 
 namespace IsKilling
@@ -281,13 +281,13 @@ lemma isSemisimple_ad_of_mem_isCartanSubalgebra {x : L} (hx : x ∈ H) :
     have hy : y ∈ ⨆ α : H → K, rootSpace H α := by simp [iSup_genWeightSpace_eq_top]
     have hz : z ∈ ⨆ α : H → K, rootSpace H α := by simp [iSup_genWeightSpace_eq_top]
     induction hy using LieSubmodule.iSup_induction' with
-    | hN α y hy =>
+    | mem α y hy =>
       induction hz using LieSubmodule.iSup_induction' with
-      | hN β z hz => exact h_der y z α β hy hz
-      | h0 => simp
-      | hadd _ _ _ _ h h' => simp only [lie_add, map_add, h, h']; abel
-    | h0 => simp
-    | hadd _ _ _ _ h h' => simp only [add_lie, map_add, h, h']; abel
+      | mem β z hz => exact h_der y z α β hy hz
+      | zero => simp
+      | add _ _ _ _ h h' => simp only [lie_add, map_add, h, h']; abel
+    | zero => simp
+    | add _ _ _ _ h h' => simp only [add_lie, map_add, h, h']; abel
   /- An equivalent form of the derivation axiom used in `LieDerivation`. -/
   replace h_der : ∀ y z : L, S ⁅y, z⁆ = ⁅y, S z⁆ - ⁅z, S y⁆ := by
     simp_rw [← lie_skew (S _) _, add_comm, ← sub_eq_add_neg] at h_der; assumption

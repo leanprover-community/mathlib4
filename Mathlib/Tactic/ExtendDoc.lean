@@ -38,6 +38,6 @@ elab_rules : command
     let bef := if bef.isNone then "" else (bef.get!).getString ++ "\n\n"
     let aft := if aft.isNone then "" else "\n\n" ++ (aft.get!).getString
     let oldDoc := (← findDocString? (← getEnv) declName).getD ""
-    addDocString declName <| bef ++ oldDoc ++ aft
+    addDocStringCore declName <| bef ++ oldDoc ++ aft
 
 end Mathlib.Tactic.ExtendDocs

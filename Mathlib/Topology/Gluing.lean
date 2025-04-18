@@ -286,9 +286,13 @@ such that
 We can then glue the topological spaces `U i` together by identifying `V i j` with `V j i`.
 -/
 structure MkCore where
+  /-- The index type `J` -/
   {J : Type u}
+  /-- For each `i : J`, a bundled topological space `U i` -/
   U : J → TopCat.{u}
+  /-- For each `i j : J`, an open set `V i j ⊆ U i` -/
   V : ∀ i, J → Opens (U i)
+  /-- For each `i j : ι`, a transition map `t i j : V i j ⟶ V j i` -/
   t : ∀ i j, (Opens.toTopCat _).obj (V i j) ⟶ (Opens.toTopCat _).obj (V j i)
   V_id : ∀ i, V i i = ⊤
   t_id : ∀ i, ⇑(t i i) = id
@@ -327,10 +331,7 @@ def mk' (h : MkCore.{u}) : TopCat.GlueData where
   U := h.U
   V i := (Opens.toTopCat _).obj (h.V i.1 i.2)
   f i j := (h.V i j).inclusion'
-  f_id i := by
-    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
-    beta_reduce
-    exact (h.V_id i).symm ▸ (Opens.inclusionTopIso (h.U i)).isIso_hom
+  f_id i := (h.V_id i).symm ▸ (Opens.inclusionTopIso (h.U i)).isIso_hom
   f_open := fun i j : h.J => (h.V i j).isOpenEmbedding
   t := h.t
   t_id i := by ext; rw [h.t_id]; rfl

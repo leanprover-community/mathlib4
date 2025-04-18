@@ -126,4 +126,16 @@ lemma exists_form_eq_form_and_form_ne_zero (B : P.InvariantForm) (i j : ι) :
   apply contra
   simp [← Subgroup.smul_def g]
 
+lemma span_root_image_eq_top_of_forall_orthogonal (s : Set ι)
+    (hne : s.Nonempty) (h : ∀ j, P.root j ∉ span R (P.root '' s) → ∀ i ∈ s, P.IsOrthogonal j i) :
+    span R (P.root '' s) = ⊤ := by
+  have hq (j : ι) : span R (P.root '' s) ∈ Module.End.invtSubmodule (P.reflection j) := by
+    by_cases hj : P.root j ∈ span R (P.root '' s)
+    · exact Submodule.mem_invtSubmodule_reflection_of_mem _ _ hj
+    · refine (Module.End.mem_invtSubmodule _).mpr fun x hx ↦ ?_
+      rwa [Submodule.mem_comap, LinearEquiv.coe_coe,
+        (isFixedPt_reflection_of_isOrthogonal (h _ hj) hx).eq]
+  apply IsIrreducible.eq_top_of_invtSubmodule_reflection _ hq
+  simpa using ⟨hne.choose, hne.choose_spec, P.ne_zero _⟩
+
 end RootPairing
