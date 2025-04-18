@@ -590,29 +590,13 @@ lemma corootSpan_mem_invtSubmodule_coreflection (i : ι) :
 lemma rootSpan_dualAnnihilator_map_eq_iInf_ker_root' :
     P.rootSpan.dualAnnihilator.map P.toDualRight.symm = ⨅ i, LinearMap.ker (P.root' i) := by
   ext x
-  constructor
-  · simp only [Submodule.mem_iInf, LinearMap.mem_ker, PerfectPairing.apply_apply_toDualRight_symm]
-    intro h₁ i
-    simp only [Submodule.mem_map, Submodule.mem_dualAnnihilator] at h₁
-    obtain ⟨_, h₂, h₃⟩ := h₁
-    rw [← h₃, PerfectPairing.apply_apply_toDualRight_symm]
-    exact h₂ (P.root i) (Submodule.subset_span (mem_range_self i))
-  intro h₁
-  simp only [Submodule.mem_iInf, LinearMap.mem_ker] at h₁
-  simp only [Submodule.mem_map, Submodule.mem_dualAnnihilator]
-  use (P.toDualRight x)
-  constructor
-  · simp only [PerfectPairing.toDualRight_apply, PerfectPairing.flip_apply_apply]
-    intro _ w
-    induction w using Submodule.span_induction with
-    | mem _ h₂ =>
-      simp only [mem_range] at h₂
-      obtain ⟨y, hy⟩ := h₂
-      rw [← hy, h₁ y]
-    | zero => simp only [map_zero, LinearMap.zero_apply]
-    | add _ _ _ _ e f => rw [map_add, LinearMap.add_apply, e, f, add_zero]
-    | smul _ _ _ d => rw [map_smul, LinearMap.smul_apply, smul_eq_mul, d, mul_zero]
-  exact LinearEquiv.symm_apply_apply P.toDualRight x
+  suffices P.rootSpan.dualAnnihilator.map P.toDualRight.symm = {x | ∀ i, P.root' i x = 0} from
+    SetLike.coe_injective <| by ext; simp [this]
+  ext x
+  rw [rootSpan, Submodule.map_coe, Submodule.coe_dualAnnihilator_span]
+  change x ∈ P.toDualRight.toEquiv.symm '' _ ↔ _
+  rw [← Equiv.setOf_apply_symm_eq_image_setOf, Equiv.symm_symm]
+  simp [Set.range_subset_iff]
 
 lemma corootSpan_dualAnnihilator_map_eq_iInf_ker_coroot' :
     P.corootSpan.dualAnnihilator.map P.toDualLeft.symm = ⨅ i, LinearMap.ker (P.coroot' i) :=
