@@ -238,7 +238,7 @@ theorem hasEigenvector_eigenvectorBasis (i : Fin n) :
 
 /--
 Eigenvalues are sorted in increasing order. -/
-theorem monotoneEigenvalues : Monotone (hT.eigenvalues hn) := by
+theorem eigenvalues_monotone : Monotone (hT.eigenvalues hn) := by
   rw[eigenvalues_def]
   apply Tuple.monotone_sort
 
