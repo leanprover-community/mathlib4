@@ -829,6 +829,14 @@ lemma forall_coe_le_iff_le [NoMaxOrder α] {x y : WithTop α} : (∀ a : α, a �
 
 end Preorder
 
+section PartialOrder
+variable [PartialOrder α] [NoMaxOrder α] {x y : WithTop α}
+
+lemma eq_of_forall_coe_le_iff (h : ∀ a : α, a ≤ x ↔ a ≤ y) : x = y :=
+  le_antisymm (forall_coe_le_iff_le.mp fun a ↦ (h a).1) (forall_coe_le_iff_le.mp fun a ↦ (h a).2)
+
+end PartialOrder
+
 instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (WithTop α) where
   inf
     -- note this is `Option.liftOrGet`, but with the right defeq when unfolding
