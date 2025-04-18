@@ -97,6 +97,7 @@ private def hasLinearOrder (u : Level) (α : Q(Type u)) (cls : Q(Type u → Type
     (toCls : Q((α : Type u) → $(linearOrderExpr u) α → $cls α)) (inst : Q($cls $α)) :
     MetaM Bool := do
   try
+    withNewMCtxDepth do
     -- `isDefEq` may call type class search to instantiate `mvar`, so we need the local instances
     withLocalInstances (← getLCtx).decls.toList.reduceOption do
       let mvar ← mkFreshExprMVarQ q($(linearOrderExpr u) $α) (kind := .synthetic)
