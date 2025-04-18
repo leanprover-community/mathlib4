@@ -26,14 +26,16 @@ Let `L` be a `ℤ`-lattice `L` defined as a discrete `ℤ`-submodule of `E` that
 
 * `ZLattice.covolume.tendsto_card_div_pow`: Let `s` be a bounded measurable set of `ι → ℝ`, then
   the number of points in `s ∩ n⁻¹ • L` divided by `n ^ card ι` tends to `volume s / covolume L`
-  when `n : ℕ` tends to infinity. See also `ZLattice.covolume.tendsto_card_div_pow'` for a version
-  for `InnerProductSpace ℝ E` and `ZLattice.covolume.tendsto_card_div_pow''` for the general version.
+  when `n : ℕ` tends to infinity.
+  See also `ZLattice.covolume.tendsto_card_div_pow'` for a version for `InnerProductSpace ℝ E` and
+  `ZLattice.covolume.tendsto_card_div_pow''` for the general version.
 
 * `ZLattice.covolume.tendsto_card_le_div`: Let `X` be a cone in `ι → ℝ` and let `F : (ι → ℝ) → ℝ`
-  be a function such that `F (c • x) = c ^ card ι * F x`. Then the number of points `x ∈ X` such that
-  `F x ≤ c` divided by `c` tends to `volume {x ∈ X | F x ≤ 1} / covolume L` when `c : ℝ` tends to
-  infinity. See also `ZLattice.covolume.tendsto_card_le_div'` for a version for
-  `InnerProductSpace ℝ E` and `ZLattice.covolume.tendsto_card_le_div''` for the general version.
+  be a function such that `F (c • x) = c ^ card ι * F x`. Then the number of points `x ∈ X` such
+  thatb`F x ≤ c` divided by `c` tends to `volume {x ∈ X | F x ≤ 1} / covolume L`
+  when `c : ℝ` tends to infinity.
+  See also `ZLattice.covolume.tendsto_card_le_div'` for a version for `InnerProductSpace ℝ E` and
+  `ZLattice.covolume.tendsto_card_le_div''` for the general version.
 
 ## Naming convention
 

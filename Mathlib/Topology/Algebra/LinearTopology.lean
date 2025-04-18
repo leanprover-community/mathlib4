@@ -34,9 +34,9 @@ hence our definition agrees with [N. Bourbaki, *Algebra II*, chapter 4, §2, n°
   See also `IsLinearTopology.mk_of_hasBasis'`.
 * The discrete topology on `M` is `R`-linear (declared as an `instance`).
 * `IsLinearTopology.hasBasis_subbimodule`: assume that `M` is an `(R, R')`-bimodule,
-  and that its topology is both `R`-linear and `R'`-linear. Then there exists a basis of neighborhoods
-  of 0 made of `(R, R')`-subbimodules. Note that this is not trivial, since the bases witnessing
-  `R`-linearity and `R'`-linearity may have nothing to do with each other
+  and that its topology is both `R`-linear and `R'`-linear. Then there exists a basis of
+  neighborhoods of 0 made of `(R, R')`-subbimodules. Note that this is not trivial, since the bases
+  witnessing `R`-linearity and `R'`-linearity may have nothing to do with each other
 * `IsLinearTopology.tendsto_smul_zero`: assume that the topology on `M` is linear.
   For `m : ι → M` such that `m i` tends to 0, `r i • m i` still tends to 0 for any `r : ι → R`.
 

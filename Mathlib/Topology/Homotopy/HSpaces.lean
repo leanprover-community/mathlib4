@@ -28,8 +28,8 @@ Some notable properties of `H-spaces` are
 * Every topological group `G` is an `H-space` using its operation `* : G → G → G` (this is already
   true if `G` has an instance of a `MulOneClass` and `ContinuousMul`);
 * Given two `H-spaces` `X` and `Y`, their product is again an `H`-space. We show in an example that
-  starting with two topological groups `G, G'`, the `H`-space structure on `G × G'` is definitionally
-  equal to the product of `H-space` structures on `G` and `G'`.
+  starting with two topological groups `G, G'`, the `H`-space structure on `G × G'` is
+  definitionally equal to the product of `H-space` structures on `G` and `G'`.
 * The loop space based at every `x : X` carries a structure of an `H-spaces`.
 
 ## To Do

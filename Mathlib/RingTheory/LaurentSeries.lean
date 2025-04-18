@@ -59,21 +59,21 @@ type with a zero. They are denoted `R⸨X⸩`.
   `X`-adic valuation on `K⸨X⸩`.
 * The two declarations `LaurentSeries.mem_integers_of_powerSeries` and
   `LaurentSeries.exists_powerSeries_of_memIntegers` show that an element in the completion of
-  `RatFunc K` is in the unit ball if and only if it comes from a power series through the isomorphism
-  `LaurentSeriesRingEquiv`.
+  `RatFunc K` is in the unit ball if and only if it comes from a power series through the
+  isomorphism `LaurentSeriesRingEquiv`.
 * `LaurentSeries.powerSeriesAlgEquiv` is the `K`-algebra isomorphism between `K⟦X⟧`
   and the unit ball inside the `X`-adic completion of `RatFunc K`.
 
 ## Implementation details
 
 * Since `LaurentSeries` is just an abbreviation of `HahnSeries ℤ R`, the definition of the
-  coefficients is given in terms of `HahnSeries.coeff` and this forces sometimes to go back-and-forth
-  from `X : R⸨X⸩` to `single 1 1 : HahnSeries ℤ R`.
+  coefficients is given in terms of `HahnSeries.coeff` and this forces sometimes to go
+  back-and-forth from `X : R⸨X⸩` to `single 1 1 : HahnSeries ℤ R`.
 * To prove the isomorphism between the `X`-adic completion of `RatFunc K` and `K⸨X⸩` we construct
   two completions of `RatFunc K`: the first (`LaurentSeries.ratfuncAdicComplPkg`) is its abstract
   uniform completion; the second (`LaurentSeries.LaurentSeriesPkg`) is simply `K⸨X⸩`, once we prove
-  that it is complete and contains `RatFunc K` as a dense subspace. The isomorphism is the comparison
-  equivalence, expressing the mathematical idea that the completion "is unique". It is
+  that it is complete and contains `RatFunc K` as a dense subspace. The isomorphism is the
+  comparison equivalence, expressing the mathematical idea that the completion "is unique". It is
   `LaurentSeries.comparePkg`.
 * For applications to `K⟦X⟧` it is actually more handy to use the *inverse* of the above
   equivalence: `LaurentSeries.LaurentSeriesAlgEquiv` is the *topological, algebra equivalence*
