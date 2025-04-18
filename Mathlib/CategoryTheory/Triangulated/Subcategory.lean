@@ -20,7 +20,7 @@ has both calculus of left and right fractions.
 
 * obtain (pre)triangulated instances on the localized category with respect to `S.W`
 * define the type `S.category` as `Fullsubcategory S.set` and show that it
-is a pretriangulated category.
+  is a pretriangulated category.
 
 ## Implementation notes
 

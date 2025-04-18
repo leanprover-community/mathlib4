@@ -16,9 +16,9 @@ Then, a cover-preserving and compatible-preserving functor is continuous.
 ## Main definitions
 
 * `CategoryTheory.CoverPreserving`: a functor between sites is cover-preserving if it
-pushes covering sieves to covering sieves
+  pushes covering sieves to covering sieves
 * `CategoryTheory.CompatiblePreserving`: a functor between sites is compatible-preserving
-if it pushes compatible families of elements to compatible families.
+  if it pushes compatible families of elements to compatible families.
 
 ## Main results
 
