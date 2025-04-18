@@ -265,6 +265,10 @@ lemma zero_lt_pairingIn_iff' [Finite ι] :
   let _i : Fintype ι := Fintype.ofFinite ι
   zero_lt_pairingIn_iff (P.posRootForm S) i j
 
+lemma pairingIn_lt_zero_iff [Finite ι] :
+    P.pairingIn S i j < 0 ↔ P.pairingIn S j i < 0 := by
+  simpa using P.zero_lt_pairingIn_iff' S (i := i) (j := P.reflection_perm j j)
+
 end IsValuedInOrdered
 
 end RootPairing

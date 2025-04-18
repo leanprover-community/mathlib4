@@ -175,6 +175,12 @@ lemma ne_zero [NeZero (2 : R)] : (P.root i : M) ≠ 0 :=
 lemma ne_zero' [NeZero (2 : R)] : (P.coroot i : N) ≠ 0 :=
   P.flip.ne_zero i
 
+lemma zero_nmem_range_root [NeZero (2 : R)] : 0 ∉ range P.root := by
+  simpa only [mem_range, not_exists] using fun i ↦ P.ne_zero i
+
+lemma zero_nmem_range_coroot [NeZero (2 : R)] : 0 ∉ range P.coroot :=
+  P.flip.zero_nmem_range_root
+
 lemma exists_ne_zero [Nonempty ι] [NeZero (2 : R)] : ∃ i, P.root i ≠ 0 := by
   obtain ⟨i⟩ := inferInstanceAs (Nonempty ι)
   exact ⟨i, P.ne_zero i⟩
@@ -811,6 +817,12 @@ lemma pairing_zero_iff' [NeZero (2 : R)] [IsDomain R] :
     P.pairing i j = 0 ↔ P.pairing j i = 0 := by
   have := P.reflexive_left
   exact pairing_zero_iff
+
+lemma pairingIn_zero_iff {S : Type*} [CommRing S] [Algebra S R] [FaithfulSMul S R]
+    [P.IsValuedIn S] [IsDomain R] [NeZero (2 : R)] {i j : ι} :
+    P.pairingIn S i j = 0 ↔ P.pairingIn S j i = 0 := by
+  simp only [← FaithfulSMul.algebraMap_eq_zero_iff S R, algebraMap_pairingIn,
+    P.pairing_zero_iff' (i := i) (j := j)]
 
 lemma coxeterWeight_zero_iff_isOrthogonal [NeZero (2 : R)] [IsDomain R] :
     P.coxeterWeight i j = 0 ↔ P.IsOrthogonal i j := by
