@@ -114,7 +114,7 @@ def algebraMap : K →+* FiniteAdeleRing R K where
 
 instance : Algebra K (FiniteAdeleRing R K) := (FiniteAdeleRing.algebraMap R K).toAlgebra
 
-instance : Algebra R (FiniteAdeleRing R K) := Algebra.compHom _ (algebraMap R K)
+instance : Algebra R (FiniteAdeleRing R K) := Algebra.compHom _ (_root_.algebraMap R K)
 
 instance : IsScalarTower R K (FiniteAdeleRing R K) :=
   IsScalarTower.of_algebraMap_eq' rfl
