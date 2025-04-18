@@ -93,6 +93,10 @@ instance Measure.instOuterMeasureClass [MeasurableSpace α] : OuterMeasureClass 
   measure_iUnion_nat_le m := m.iUnion_nat
   measure_mono m := m.mono
 
+/-- The real-valued version of a measure. Maps infinite measure sets to zero. Use as `μ.real s`. -/
+protected def Measure.real {α : Type*} {m : MeasurableSpace α} (μ : Measure α) (s : Set α) : ℝ :=
+  (μ s).toReal
+
 section
 
 variable [MeasurableSpace α] {μ μ₁ μ₂ : Measure α} {s s₁ s₂ t : Set α}

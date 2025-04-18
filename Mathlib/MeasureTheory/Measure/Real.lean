@@ -34,11 +34,6 @@ namespace MeasureTheory
 
 variable {α β ι : Type*} {_ : MeasurableSpace α} {μ : Measure α} {s s₁ s₂ s₃ t t₁ t₂ u : Set α}
 
-variable (μ) in
-/-- The real-valued version of a measure. Maps infinite measure sets to zero. Use as `μ.real s`. -/
-protected def Measure.real (s : Set α) : ℝ :=
-  μ.real s
-
 theorem measureReal_def (s : Set α) : μ.real s = μ.real s := rfl
 
 alias Measure.real_def := measureReal_def
