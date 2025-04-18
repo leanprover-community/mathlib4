@@ -34,13 +34,13 @@ variable {α : Type*}
 def tail {n : ℕ} (x : Fin (n + 1) ↪ α) : Fin n ↪ α :=
   ⟨Fin.tail x, fun i j h ↦ by rw [← succ_inj, x.inj' h]⟩
 
-def coe_tail {n : ℕ} (x : Fin (n + 1) ↪ α) : ↑(tail x) = Fin.tail x := rfl
+theorem coe_tail {n : ℕ} (x : Fin (n + 1) ↪ α) : ↑(tail x) = Fin.tail x := rfl
 
 /-- Adding a new element at the beginning of an injective n-tuple, to get an injective n+1-tuple. -/
 def cons {n : ℕ} (x : Fin n ↪ α) {a : α} (ha : a ∉ range x) : Fin (n + 1) ↪ α :=
   ⟨Fin.cons a x, cons_injective_iff.mpr ⟨ha, x.inj'⟩⟩
 
-def coe_cons {n : ℕ} (x : Fin n ↪ α) {a : α} (ha : a ∉ range x) :
+theorem coe_cons {n : ℕ} (x : Fin n ↪ α) {a : α} (ha : a ∉ range x) :
     ↑(cons x ha) = Fin.cons a x := rfl
 
 theorem tail_cons {n : ℕ} (x : Fin n ↪ α) {a : α} (ha : a ∉ range x) :
