@@ -33,7 +33,7 @@ with finite measure. Its value on other sets is ignored.
 
 noncomputable section
 
-open Set Filter ENNReal
+open Set Filter ENNReal Finset
 
 namespace MeasureTheory
 
@@ -42,8 +42,6 @@ variable {α E F F' G 𝕜 : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup G] {m : MeasurableSpace α} {μ : Measure α}
 
 local infixr:25 " →ₛ " => SimpleFunc
-
-open Finset
 
 section FinMeasAdditive
 
