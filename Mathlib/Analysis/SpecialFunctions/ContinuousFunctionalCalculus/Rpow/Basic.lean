@@ -74,17 +74,6 @@ variable {A : Type*} [PartialOrder A] [NonUnitalRing A] [TopologicalSpace A] [St
   [Module ℝ A] [SMulCommClass ℝ A A] [IsScalarTower ℝ A A]
   [NonUnitalContinuousFunctionalCalculus ℝ≥0 A (0 ≤ ·)]
 
-variable {B : Type*} [PartialOrder B] [NonUnitalRing B] [TopologicalSpace B] [StarRing B]
-  [Module ℝ B] [SMulCommClass ℝ B B] [IsScalarTower ℝ B B]
-  [NonUnitalContinuousFunctionalCalculus ℝ≥0 B (0 ≤ ·)]
-  [NonUnitalContinuousFunctionalCalculus ℝ≥0 (A × B) (0 ≤ ·)]
-
-variable {ι : Type*} {C : ι → Type*} [∀ i, PartialOrder (C i)] [∀ i, NonUnitalRing (C i)]
-  [∀ i, TopologicalSpace (C i)] [∀ i, StarRing (C i)]
-  [∀ i, Module ℝ (C i)] [∀ i, SMulCommClass ℝ (C i) (C i)] [∀ i, IsScalarTower ℝ (C i) (C i)]
-  [∀ i, NonUnitalContinuousFunctionalCalculus ℝ≥0 (C i) (0 ≤ ·)]
-  [NonUnitalContinuousFunctionalCalculus ℝ≥0 (∀ i, C i) (0 ≤ ·)]
-  [∀ i, IsTopologicalRing (C i)] [∀ i, T2Space (C i)]
 
 /- ## `nnrpow` -/
 
@@ -135,7 +124,7 @@ lemma zero_nnrpow {x : ℝ≥0} : (0 : A) ^ x = 0 := by simp [nnrpow_def]
 
 section Unique
 
-variable [IsTopologicalRing A] [T2Space A] [IsTopologicalRing B] [T2Space B]
+variable [IsTopologicalRing A] [T2Space A]
 
 @[simp]
 lemma nnrpow_nnrpow {a : A} {x y : ℝ≥0} : (a ^ x) ^ y = a ^ (x * y) := by
@@ -164,6 +153,14 @@ lemma nnrpow_inv_eq (a b : A) {x : ℝ≥0} (hx : x ≠ 0) (ha : 0 ≤ a := by c
   ⟨fun h ↦ nnrpow_inv_nnrpow a hx ▸ congr($(h) ^ x).symm,
     fun h ↦ nnrpow_nnrpow_inv b hx ▸ congr($(h) ^ x⁻¹).symm⟩
 
+section prod
+
+variable {B : Type*} [PartialOrder B] [NonUnitalRing B] [TopologicalSpace B] [StarRing B]
+  [Module ℝ B] [SMulCommClass ℝ B B] [IsScalarTower ℝ B B]
+  [NonUnitalContinuousFunctionalCalculus ℝ≥0 B (0 ≤ ·)]
+  [NonUnitalContinuousFunctionalCalculus ℝ≥0 (A × B) (0 ≤ ·)]
+  [IsTopologicalRing B] [T2Space B]
+
 /- Note that there is higher-priority instance of `Pow (A × B) ℝ≥0` coming from the `Pow` instance
 for products, hence the direct use of `nnrpow` here. -/
 lemma nnrpow_map_prod {a : A} {b : B} {x : ℝ≥0}
@@ -175,6 +172,17 @@ lemma nnrpow_map_prod {a : A} {b : B} {x : ℝ≥0}
   rw [Prod.le_def]
   constructor <;> simp [ha, hb]
 
+end prod
+
+section pi
+
+variable {ι : Type*} {C : ι → Type*} [∀ i, PartialOrder (C i)] [∀ i, NonUnitalRing (C i)]
+  [∀ i, TopologicalSpace (C i)] [∀ i, StarRing (C i)]
+  [∀ i, Module ℝ (C i)] [∀ i, SMulCommClass ℝ (C i) (C i)] [∀ i, IsScalarTower ℝ (C i) (C i)]
+  [∀ i, NonUnitalContinuousFunctionalCalculus ℝ≥0 (C i) (0 ≤ ·)]
+  [NonUnitalContinuousFunctionalCalculus ℝ≥0 (∀ i, C i) (0 ≤ ·)]
+  [∀ i, IsTopologicalRing (C i)] [∀ i, T2Space (C i)]
+
 /- Note that there is higher-priority instance of `Pow (∀ i, C i) ℝ≥0` coming from the `Pow`
 instance for pi types, hence the direct use of `nnrpow` here. -/
 lemma nnrpow_map_pi {c : ∀ i, C i} {x : ℝ≥0} (hc : ∀ i, 0 ≤ c i := by cfc_tac) :
@@ -182,6 +190,8 @@ lemma nnrpow_map_pi {c : ∀ i, C i} {x : ℝ≥0} (hc : ∀ i, 0 ≤ c i := by 
   simp only [nnrpow_def]
   unfold nnrpow
   exact cfcₙ_map_pi (S := ℝ) _ c
+
+end pi
 
 end Unique
 
@@ -204,7 +214,7 @@ lemma sqrt_eq_nnrpow {a : A} : sqrt a = a ^ (1 / 2 : ℝ≥0) := by
 @[simp]
 lemma sqrt_zero : sqrt (0 : A) = 0 := by simp [sqrt]
 
-variable [IsTopologicalRing A] [T2Space A] [IsTopologicalRing B] [T2Space B]
+variable [IsTopologicalRing A] [T2Space A]
 
 @[simp]
 lemma nnrpow_sqrt {a : A} {x : ℝ≥0} : (sqrt a) ^ x = a ^ (x / 2) := by
@@ -243,15 +253,36 @@ lemma sqrt_eq_iff (a b : A) (ha : 0 ≤ a := by cfc_tac) (hb : 0 ≤ b := by cfc
 lemma sqrt_eq_zero_iff (a : A) (ha : 0 ≤ a := by cfc_tac) : sqrt a = 0 ↔ a = 0 := by
   rw [sqrt_eq_iff a _, mul_zero, eq_comm]
 
+section prod
+
+variable {B : Type*} [PartialOrder B] [NonUnitalRing B] [TopologicalSpace B] [StarRing B]
+  [Module ℝ B] [SMulCommClass ℝ B B] [IsScalarTower ℝ B B]
+  [NonUnitalContinuousFunctionalCalculus ℝ≥0 B (0 ≤ ·)]
+  [NonUnitalContinuousFunctionalCalculus ℝ≥0 (A × B) (0 ≤ ·)]
+  [IsTopologicalRing B] [T2Space B]
+
 lemma sqrt_map_prod {a : A} {b : B} (ha : 0 ≤ a := by cfc_tac) (hb : 0 ≤ b := by cfc_tac) :
     sqrt (⟨a, b⟩ : A × B) = ⟨sqrt a, sqrt b⟩ := by
   simp only [sqrt_eq_nnrpow]
   exact nnrpow_map_prod
 
+end prod
+
+section pi
+
+variable {ι : Type*} {C : ι → Type*} [∀ i, PartialOrder (C i)] [∀ i, NonUnitalRing (C i)]
+  [∀ i, TopologicalSpace (C i)] [∀ i, StarRing (C i)]
+  [∀ i, Module ℝ (C i)] [∀ i, SMulCommClass ℝ (C i) (C i)] [∀ i, IsScalarTower ℝ (C i) (C i)]
+  [∀ i, NonUnitalContinuousFunctionalCalculus ℝ≥0 (C i) (0 ≤ ·)]
+  [NonUnitalContinuousFunctionalCalculus ℝ≥0 (∀ i, C i) (0 ≤ ·)]
+  [∀ i, IsTopologicalRing (C i)] [∀ i, T2Space (C i)]
+
 lemma sqrt_map_pi {c : ∀ i, C i} (hc : ∀ i, 0 ≤ c i := by cfc_tac) :
     sqrt c = fun i => sqrt (c i) := by
   simp only [sqrt_eq_nnrpow]
   exact nnrpow_map_pi
+
+end pi
 
 end sqrt
 
@@ -261,15 +292,6 @@ section Unital
 
 variable {A : Type*} [PartialOrder A] [Ring A] [StarRing A] [TopologicalSpace A]
   [Algebra ℝ A] [ContinuousFunctionalCalculus ℝ≥0 A (0 ≤ ·)]
-
-variable {B : Type*} [PartialOrder B] [Ring B] [StarRing B] [TopologicalSpace B]
-  [Algebra ℝ B] [ContinuousFunctionalCalculus ℝ≥0 B (0 ≤ ·)]
-  [ContinuousFunctionalCalculus ℝ≥0 (A × B) (0 ≤ ·)]
-
-variable {ι : Type*} {C : ι → Type*} [∀ i, PartialOrder (C i)] [∀ i, Ring (C i)]
-  [∀ i, StarRing (C i)] [∀ i, TopologicalSpace (C i)]
-  [∀ i, Algebra ℝ (C i)] [∀ i, ContinuousFunctionalCalculus ℝ≥0 (C i) (0 ≤ ·)]
-  [ContinuousFunctionalCalculus ℝ≥0 (∀ i, C i) (0 ≤ ·)]
 
 /- ## `rpow` -/
 
@@ -370,10 +392,13 @@ lemma rpow_intCast (a : Aˣ) (n : ℤ) (ha : (0 : A) ≤ a := by cfc_tac) :
   refine cfc_congr fun _ _ => ?_
   simp
 
-section prod_pi
+section prod
 
-variable [IsTopologicalRing A] [T2Space A] [IsTopologicalRing B] [T2Space B]
-  [∀ i, IsTopologicalRing (C i)] [∀ i, T2Space (C i)]
+variable [IsTopologicalRing A] [T2Space A]
+variable {B : Type*} [PartialOrder B] [Ring B] [StarRing B] [TopologicalSpace B]
+  [Algebra ℝ B] [ContinuousFunctionalCalculus ℝ≥0 B (0 ≤ ·)]
+  [ContinuousFunctionalCalculus ℝ≥0 (A × B) (0 ≤ ·)]
+  [IsTopologicalRing B] [T2Space B]
 
 /- Note that there is higher-priority instance of `Pow (A × B) ℝ` coming from the `Pow` instance for
 products, hence the direct use of `rpow` here. -/
@@ -386,6 +411,17 @@ lemma rpow_map_prod {a : A} {b : B} {x : ℝ} (ha : 0 ∉ spectrum ℝ≥0 a) (h
   rw [Prod.le_def]
   constructor <;> simp [ha', hb']
 
+end prod
+
+section pi
+
+variable [IsTopologicalRing A] [T2Space A]
+variable {ι : Type*} {C : ι → Type*} [∀ i, PartialOrder (C i)] [∀ i, Ring (C i)]
+  [∀ i, StarRing (C i)] [∀ i, TopologicalSpace (C i)]
+  [∀ i, Algebra ℝ (C i)] [∀ i, ContinuousFunctionalCalculus ℝ≥0 (C i) (0 ≤ ·)]
+  [ContinuousFunctionalCalculus ℝ≥0 (∀ i, C i) (0 ≤ ·)]
+  [∀ i, IsTopologicalRing (C i)] [∀ i, T2Space (C i)]
+
 /- Note that there is a higher-priority instance of `Pow (∀ i, B i) ℝ` coming from the `Pow`
 instance for pi types, hence the direct use of `rpow` here. -/
 lemma rpow_map_pi {c : ∀ i, C i} {x : ℝ} (hc : ∀ i, 0 ∉ spectrum ℝ≥0 (c i))
@@ -395,7 +431,7 @@ lemma rpow_map_pi {c : ∀ i, C i} {x : ℝ} (hc : ∀ i, 0 ∉ spectrum ℝ≥0
   unfold rpow
   exact cfc_map_pi (S := ℝ) _ c
 
-end prod_pi
+end pi
 
 section unital_vs_nonunital
 
