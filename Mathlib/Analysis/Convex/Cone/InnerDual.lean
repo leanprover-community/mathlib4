@@ -131,7 +131,7 @@ theorem isClosed_innerDual : IsClosed (innerDual s : Set H) := by
   exact isClosed_Ici.preimage (continuous_const.inner continuous_id')
 
 /-- The inner dual of inner dual of a non-empty, closed convex cone is itself. -/
-theorem _root_.ConvexCone.innerDual_of_innerDual_eq_self [CompleteSpace H] (K : ConvexCone ℝ H)
+theorem _root_.ConvexCone.innerDual_innerDual [CompleteSpace H] (K : ConvexCone ℝ H)
     (ne : (K : Set H).Nonempty) (hc : IsClosed (K : Set H)) :
     (PointedCone.innerDual <| innerDual (K : Set H)).toConvexCone = K := by
   ext x
