@@ -17,9 +17,9 @@ TODO: Explain proofs
 ## Main Results
 
 * `UniformSpace.completelyRegularSpace`: Uniform spaces are completely regular
-* `CompletelyRegularSpace.exists_uniformity`: Completely regular spaces are uniformizable
-* `CompletelyRegularSpace.of_exists_uniformity`: Uniformizable spaces are completely regular
-* `completelyRegularSpace_iff_exists_uniformity`: A space is completely regular
+* `CompletelyRegularSpace.exists_uniformSpace`: Completely regular spaces are uniformizable
+* `CompletelyRegularSpace.of_exists_uniformSpace`: Uniformizable spaces are completely regular
+* `completelyRegularSpace_iff_exists_uniformSpace`: A space is completely regular
   iff it is uniformizable
 
 ## Implementation Details
@@ -308,21 +308,21 @@ private theorem u_l_le :
     by_contra has
     norm_num [hf0, hf1 has] at ha
 
-theorem CompletelyRegularSpace.exists_uniformity :
+theorem CompletelyRegularSpace.exists_uniformSpace :
     ∃ (u : UniformSpace α), u.toTopologicalSpace = ‹TopologicalSpace α› :=
   ⟨inducedUniformity α, u_l_le.antisymm le_u_l⟩
 
 end CompletelyRegularSpace
 
-theorem CompletelyRegularSpace.of_exists_uniformity
+theorem CompletelyRegularSpace.of_exists_uniformSpace
     (h : ∃ (u : UniformSpace α), u.toTopologicalSpace = ‹TopologicalSpace α›) :
     CompletelyRegularSpace α := by
   obtain ⟨u, rfl⟩ := h
   infer_instance
 
-theorem completelyRegularSpace_iff_exists_uniformity :
+theorem completelyRegularSpace_iff_exists_uniformSpace :
     CompletelyRegularSpace α ↔
     ∃ (u : UniformSpace α), u.toTopologicalSpace = ‹TopologicalSpace α› :=
-  ⟨@CompletelyRegularSpace.exists_uniformity α _, CompletelyRegularSpace.of_exists_uniformity⟩
+  ⟨@CompletelyRegularSpace.exists_uniformSpace α _, CompletelyRegularSpace.of_exists_uniformSpace⟩
 
 end TopologicalSpace
