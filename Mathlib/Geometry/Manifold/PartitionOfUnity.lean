@@ -23,6 +23,7 @@ Given a real manifold `M` and its subset `s`, a `SmoothBumpCovering ι I M s` is
 * the center of each `f i` belongs to `s`;
 * the family of sets `support (f i)` is locally finite;
 * for each `x ∈ s`, there exists `i : ι` such that `f i =ᶠ[𝓝 x] 1`.
+
 In the same settings, a `SmoothPartitionOfUnity ι I M s` is a collection of smooth nonnegative
 functions `f i : C^∞⟮I, M; 𝓘(ℝ), ℝ⟯`, `i : ι`, such that
 
