@@ -61,8 +61,7 @@ private lemma cycleIcc_case {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h : i <= 
     (cycleIcc._proof_4 (i := i))) (((j - i).castLT (cycleIcc._proof_3 hij)).cycleRange
     ((natAdd_castLEEmb n (cycleIcc._proof_4 (i := i))).toEquivRange.symm ⟨k, kin⟩)) := by
   have kin : k ∈ Set.range ⇑(natAdd_castLEEmb n (cycleIcc._proof_4 (i := i))) := by simp; omega
-  simp [cycleIcc,
-    ((j - i).castLT (cycleIcc._proof_3 hij)).cycleRange.extendDomain_apply_subtype
+  simp [cycleIcc, ((j - i).castLT (cycleIcc._proof_3 hij)).cycleRange.extendDomain_apply_subtype
     (natAdd_castLEEmb n _).toEquivRange kin]
 
 theorem cycleIcc_of_le {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h : j < k) :
@@ -71,9 +70,9 @@ theorem cycleIcc_of_le {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h : j < k) :
   rw [cycleIcc_case hij (Fin.le_of_lt (Fin.lt_of_le_of_lt hij h)) kin]
   have : (((j - i).castLT (cycleIcc._proof_3 hij)).cycleRange
       (((addNatEmb (n - (n - i.1))).trans (finCongr _).toEmbedding).toEquivRange.symm ⟨k, kin⟩)) =
-      subNat (m := i) (Fin.cast (by omega) k) (by simp [le_of_lt (lt_of_le_of_lt hij h)]) := by
+      subNat i.1 (Fin.cast (by omega) k) (by simp [le_of_lt (lt_of_le_of_lt hij h)]) := by
     have : (((addNatEmb (n - (n - i.1))).trans (finCongr _).toEmbedding).toEquivRange.symm ⟨k, kin⟩)
-        = subNat (m := i) (Fin.cast (by omega) k) (by simp [le_of_lt (lt_of_le_of_lt hij h)]) := by
+        = subNat i.1 (Fin.cast (by omega) k) (by simp [le_of_lt (lt_of_le_of_lt hij h)]) := by
       simpa [symm_apply_eq] using eq_of_val_eq (by simp; omega)
     rw [this, cycleRange_of_gt]
     exact lt_def.mpr (by simp [sub_val_of_le hij]; omega)
@@ -126,6 +125,7 @@ theorem cycleRange_of_eq {n : ℕ} {i j : Fin n} (hij : i ≤ j) [NeZero n] :
 theorem sign_cycleIcc {n : ℕ} {i j : Fin n} (hij : i ≤ j) :
   Perm.sign (cycleIcc hij) = (-1) ^ (j - i : ℕ) := by
   simp [cycleIcc, sub_val_of_le hij]
+
 /-
 theorem isCycle_cycleIcc {n : ℕ} [NeZero n] {i j : Fin n} (hij : i ≤ j) (h' : i < j):
     Perm.IsCycle (cycleIcc hij) := by
