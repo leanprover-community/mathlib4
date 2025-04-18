@@ -10,12 +10,26 @@ import Mathlib.Topology.UrysohnsLemma
 # Uniformizable Spaces
 
 A topological space is uniformizable (there exists a uniformity that
-generates the same topology) if it is completely regular.
+generates the same topology) iff it is completely regular.
 
-TODO: Prove the reverse implication too.
+TODO: Explain proofs
+
+## Main Results
+
+* `UniformSpace.completelyRegularSpace`: Uniform spaces are completely regular
+* `CompletelyRegularSpace.exists_uniformity`: Completely regular spaces are uniformizable
+* `CompletelyRegularSpace.of_exists_uniformity`: Uniformizable spaces are completely regular
+* `completelyRegularSpace_iff_exists_uniformity`: A space is completely regular
+  iff it is uniformizable
+
+## Implementation Details
+
+Urysohn's lemma is reused in the proof of `UniformSpace.completelyRegularSpace`.
 
 ## References
 
+-- how do I cite this
+* <https://www.math.wm.edu/~vinroot/PadicGroups/519probset1.pdf>
 * [S. Willard, *General Topology*][Wil04]
 -/
 
@@ -124,7 +138,10 @@ private noncomputable def descent_spec {c u : Set α}
         (right_subset_compRel (refl_le_uniformity (descent_mem_uniformity s (n + 1)))))
   constructor
   · exact ⟨x, ⟨uc, huc, symmuc, ucu, rfl⟩, ⟨_, ho, rfl⟩, s, ⟨n + 1, subset_rfl⟩⟩
-  · refine ⟨x, ⟨_, ho, sorry, hucd, rfl⟩, ⟨uu, huu, rfl⟩, s, ⟨n + 1, ?_⟩⟩
+  · have hos : IsSymmetricRel (compRel (descent s (n + 1)) (compRel uc (descent s (n + 1)))) := by
+      simp [IsSymmetricRel, compRel_assoc, prodSwap_preimage_compRel,
+        symmuc.eq, (descent_symm s (n + 1)).eq]
+    refine ⟨x, ⟨_, ho, hos, hucd, rfl⟩, ⟨uu, huu, rfl⟩, s, ⟨n + 1, ?_⟩⟩
     rw [compRel_assoc]
     apply hn.trans'
     rw [← compRel_assoc]
@@ -296,5 +313,16 @@ theorem CompletelyRegularSpace.exists_uniformity :
   ⟨inducedUniformity α, u_l_le.antisymm le_u_l⟩
 
 end CompletelyRegularSpace
+
+theorem CompletelyRegularSpace.of_exists_uniformity
+    (h : ∃ (u : UniformSpace α), u.toTopologicalSpace = ‹TopologicalSpace α›) :
+    CompletelyRegularSpace α := by
+  obtain ⟨u, rfl⟩ := h
+  infer_instance
+
+theorem completelyRegularSpace_iff_exists_uniformity :
+    CompletelyRegularSpace α ↔
+    ∃ (u : UniformSpace α), u.toTopologicalSpace = ‹TopologicalSpace α› :=
+  ⟨@CompletelyRegularSpace.exists_uniformity α _, CompletelyRegularSpace.of_exists_uniformity⟩
 
 end TopologicalSpace

@@ -207,6 +207,10 @@ theorem subset_iterate_compRel {s t : Set (α × α)} (h : idRel ⊆ s) (n : ℕ
   | zero => exact Subset.rfl
   | succ n ihn => exact (right_subset_compRel h).trans ihn
 
+theorem prodSwap_preimage_compRel (s t : Set (α × α)) :
+    Prod.swap ⁻¹' (s ○ t) = Prod.swap ⁻¹' t ○ Prod.swap ⁻¹' s := by
+  aesop
+
 variable {s₁ s₂ t₁ t₂ : Set α}
 
 lemma prod_compRel_prod_of_inter_nonempty (hst : (s₂ ∩ t₁).Nonempty) :
