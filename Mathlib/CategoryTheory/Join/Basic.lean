@@ -535,7 +535,7 @@ lemma mapIsoWhiskerLeft_hom (H : C ⥤ E) {Fᵣ : D ⥤ E'} {Gᵣ : D ⥤ E'} (�
     (mapIsoWhiskerLeft H α).hom = mapWhiskerLeft H α.hom := rfl
 
 lemma mapIsoWhiskerLeft_inv (H : C ⥤ E) {Fᵣ : D ⥤ E'} {Gᵣ : D ⥤ E'} (α : Fᵣ ≅ Gᵣ) :
-    (mapIsoWhiskerLeft H α).inv = mapWhiskerLeft H α.inv:= by
+    (mapIsoWhiskerLeft H α).inv = mapWhiskerLeft H α.inv := by
   ext x
   cases x <;> simp [mapIsoWhiskerLeft]
 
