@@ -14,8 +14,8 @@ the dual statements between pushouts and epimorphisms.
 
 ## Main results
 * Monomorphisms are stable under pullback. This is available using the `PullbackCone` API as
-`mono_fst_of_is_pullback_of_mono` and `mono_snd_of_is_pullback_of_mono`, and using the `pullback`
-API as `pullback.fst_of_mono` and `pullback.snd_of_mono`.
+  `mono_fst_of_is_pullback_of_mono` and `mono_snd_of_is_pullback_of_mono`, and using the `pullback`
+  API as `pullback.fst_of_mono` and `pullback.snd_of_mono`.
 
 * A pullback cone is a limit iff its composition with a monomorphism is a limit. This is available
   as `IsLimitOfCompMono` and `pullbackIsPullbackOfCompMono` respectively.

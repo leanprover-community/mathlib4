@@ -45,8 +45,8 @@ by taking `[Fact p.Prime]` as a type class argument.
   the same result but stated in the language of prime multiplicity.
 
 * `sub_one_mul_padicValNat_choose_eq_sub_sum_digits`: Kummer's Theorem. Taking (`p - 1`) times the
-`p`-adic valuation of the binomial `n` over `k` equals the sum of the digits of `k` plus the sum of
-the digits of `n - k` minus the sum of digits of `n`, all base `p`.
+  `p`-adic valuation of the binomial `n` over `k` equals the sum of the digits of `k` plus the sum of
+  the digits of `n - k` minus the sum of digits of `n`, all base `p`.
 
 ## References
 

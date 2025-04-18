@@ -17,7 +17,7 @@ mixed space that is a fundamental domain for the action of `(𝓞 K)ˣ` modulo t
 ## Main definitions and results
 
 * `NumberField.mixedEmbedding.unitSMul`: the action of `(𝓞 K)ˣ` on the mixed space defined, for
-`u : (𝓞 K)ˣ`, by multiplication component by component with `mixedEmbedding K u`.
+  `u : (𝓞 K)ˣ`, by multiplication component by component with `mixedEmbedding K u`.
 
 * `NumberField.mixedEmbedding.fundamentalCone`: a cone in the mixed space, ie. a subset stable
   by multiplication by a nonzero real number, see `smul_mem_of_mem`, that is also a fundamental
