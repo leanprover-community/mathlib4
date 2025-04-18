@@ -63,7 +63,7 @@ private lemma cycleIcc_case {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h : i <= 
   simp [cycleIcc, ((j - i).castLT (cycleIcc._proof_3 hij)).cycleRange.extendDomain_apply_subtype
     (natAdd_castLEEmb n _).toEquivRange kin]
 
-lemma simp_lemma {n : ℕ} {i k : Fin n} (h : i <= k)
+private lemma cycleIcc_simp_lemma {n : ℕ} {i k : Fin n} (h : i <= k)
     (kin : k ∈ Set.range ⇑(natAdd_castLEEmb n (cycleIcc._proof_4 (i := i)))) :
     (((addNatEmb (n - (n - i.1))).trans (finCongr _).toEmbedding).toEquivRange.symm
  ⟨k, kin⟩) = subNat i.1 (Fin.cast (by omega) k) (by simp [h]) := by
@@ -76,7 +76,7 @@ theorem cycleIcc_of_le {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h : j < k) :
   have : (((j - i).castLT (cycleIcc._proof_3 hij)).cycleRange
       (((addNatEmb (n - (n - i.1))).trans (finCongr _).toEmbedding).toEquivRange.symm ⟨k, kin⟩)) =
       subNat i.1 (Fin.cast (by omega) k) (by simp [le_of_lt (lt_of_le_of_lt hij h)]) := by
-    rw [simp_lemma (Fin.le_of_lt (Fin.lt_of_le_of_lt hij h)), cycleRange_of_gt]
+    rw [cycleIcc_simp_lemma (Fin.le_of_lt (Fin.lt_of_le_of_lt hij h)), cycleRange_of_gt]
     exact lt_def.mpr (by simp [sub_val_of_le hij]; omega)
   simpa only [natAdd_castLEEmb, this] using eq_of_val_eq (by simp; omega)
 
@@ -84,13 +84,12 @@ theorem cycleIcc_of {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h1 : i <= k) (h2 
     (cycleIcc hij) k = if k = j then i else k + 1 := by
   have kin : k ∈ Set.range ⇑(natAdd_castLEEmb n (cycleIcc._proof_4 (i := i))) := by simp; omega
   have : NeZero (n - i.1) := NeZero.of_pos (by omega)
-  simp [cycleIcc_case hij h1 kin, natAdd_castLEEmb, simp_lemma h1]
+  simp [cycleIcc_case hij h1 kin, natAdd_castLEEmb, cycleIcc_simp_lemma h1]
   refine eq_of_val_eq ?_
   split_ifs with h3
   · have h : subNat i.1 (Fin.cast (by omega) j) (by simp [hij]) = (j - i).castLT
         (cycleIcc._proof_3 hij) := eq_of_val_eq (by simp [subNat, coe_castLT, sub_val_of_le hij])
-    simp [h3, cycleRange_of_eq h]
-    omega
+    simpa [h3, cycleRange_of_eq h] using by omega
   · have h : subNat i.1 (Fin.cast (by omega) k) (by simp [h1]) < (j - i).castLT
         (cycleIcc._proof_3 hij) := by simp [subNat, lt_iff_val_lt_val, sub_val_of_le hij]; omega
     have : (k.1 + 1) % n = k.1 + 1 := Nat.mod_eq_of_lt (by omega)
@@ -112,8 +111,7 @@ theorem sign_cycleIcc {n : ℕ} {i j : Fin n} (hij : i ≤ j) :
   Perm.sign (cycleIcc hij) = (-1) ^ (j - i : ℕ) := by
   simp [cycleIcc, sub_val_of_le hij]
 
-/-
 theorem isCycle_cycleIcc {n : ℕ} [NeZero n] {i j : Fin n} (hij : i ≤ j) (h' : i < j):
     Perm.IsCycle (cycleIcc hij) := by
+
   sorry
--/
