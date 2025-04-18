@@ -3624,10 +3624,7 @@ import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 import Mathlib.GroupTheory.GroupAction.Hom
 import Mathlib.GroupTheory.GroupAction.IterateAct
 import Mathlib.GroupTheory.GroupAction.Iwasawa
-<<<<<<< HEAD
 import Mathlib.GroupTheory.GroupAction.MultiplePrimitivity
-=======
->>>>>>> ACL-J/SubMulACtion-ofFixingSubgroup
 import Mathlib.GroupTheory.GroupAction.MultipleTransitivity
 import Mathlib.GroupTheory.GroupAction.Period
 import Mathlib.GroupTheory.GroupAction.Pointwise
