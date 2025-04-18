@@ -38,9 +38,15 @@ instance Pi.instStarOrderedRing
   le_iff f g := by
     have h₁ :
         closure (Set.range fun s : (∀ i, κ i) ↦ star s * s) =
-          AddSubmonoid.pi (Set.univ : Set ι)
+          AddSubmonoid.pi univ
             (fun i => closure <| Set.range fun s : κ i => star s * s) := by
-      sorry
+      ext x
+      refine ⟨?mp, ?mpr⟩
+      case mp =>
+        intro hx
+        sorry
+      case mpr =>
+        sorry
     refine ⟨?mp, ?mpr⟩
     case mp =>
       intro hfg
