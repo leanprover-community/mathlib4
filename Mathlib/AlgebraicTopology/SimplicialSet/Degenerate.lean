@@ -132,8 +132,7 @@ section
 variable {X} {x : X _⦋n⦌}
   {m₁ m₂ : ℕ} {f₁ : ⦋n⦌ ⟶ ⦋m₁⦌} (hf₁ : SplitEpi f₁)
   (y₁ : X.nonDegenerate m₁) (hy₁ : x = X.map f₁.op y₁)
-  (f₂ : ⦋n⦌ ⟶ ⦋m₂⦌)
-  (y₂ : X _⦋m₂⦌) (hy₂ : x = X.map f₂.op y₂)
+  (f₂ : ⦋n⦌ ⟶ ⦋m₂⦌) (y₂ : X _⦋m₂⦌) (hy₂ : x = X.map f₂.op y₂)
 
 /-- The composition of a section of `f₁` and `f₂`. It is proven below that it
 is the identity, see `g_eq_id`. -/
@@ -186,29 +185,26 @@ The following lemmas `unique_nonDegenerate₁`, `unique_nonDegenerate₂` and
 obtained in the lemma `exists_nonDegenerate`.
 -/
 
-lemma unique_nonDegenerate₁ (x : X _⦋n⦌)
-    {m₁ m₂ : ℕ} (f₁ : ⦋n⦌ ⟶ ⦋m₁⦌) [Epi f₁]
-    (y₁ : X.nonDegenerate m₁) (hy₁ : x = X.map f₁.op y₁)
-    (f₂ : ⦋n⦌ ⟶ ⦋m₂⦌) [Epi f₂]
-    (y₂ : X.nonDegenerate m₂) (hy₂ : x = X.map f₂.op y₂) : m₁ = m₂ := by
+lemma unique_nonDegenerate₁ (x : X _⦋n⦌) {m₁ m₂ : ℕ}
+    (f₁ : ⦋n⦌ ⟶ ⦋m₁⦌) [Epi f₁] (y₁ : X.nonDegenerate m₁) (hy₁ : x = X.map f₁.op y₁)
+    (f₂ : ⦋n⦌ ⟶ ⦋m₂⦌) [Epi f₂] (y₂ : X.nonDegenerate m₂) (hy₂ : x = X.map f₂.op y₂) :
+    m₁ = m₂ := by
   obtain ⟨⟨hf₁⟩⟩ := isSplitEpi_of_epi f₁
   obtain ⟨⟨hf₂⟩⟩ := isSplitEpi_of_epi f₂
   exact le_antisymm (le hf₁ hy₁ hy₂) (le hf₂ hy₂ hy₁)
 
-lemma unique_nonDegenerate₂ (x : X _⦋n⦌)
-    {m : ℕ} (f₁ : ⦋n⦌ ⟶ ⦋m⦌) [Epi f₁]
-    (y₁ : X.nonDegenerate m) (hy₁ : x = X.map f₁.op y₁)
-    (f₂ : ⦋n⦌ ⟶ ⦋m⦌)
-    (y₂ : X.nonDegenerate m) (hy₂ : x = X.map f₂.op y₂) : y₁ = y₂ := by
+lemma unique_nonDegenerate₂ (x : X _⦋n⦌) {m : ℕ}
+    (f₁ : ⦋n⦌ ⟶ ⦋m⦌) [Epi f₁] (y₁ : X.nonDegenerate m) (hy₁ : x = X.map f₁.op y₁)
+    (f₂ : ⦋n⦌ ⟶ ⦋m⦌) (y₂ : X.nonDegenerate m) (hy₂ : x = X.map f₂.op y₂) :
+    y₁ = y₂ := by
   obtain ⟨⟨hf₁⟩⟩ := isSplitEpi_of_epi f₁
   ext
   simpa [g_eq_id hy₁ hy₂ hf₁] using (map_g_op_y₂ hf₁ hy₁ hy₂).symm
 
-lemma unique_nonDegenerate₃ (x : X _⦋n⦌)
-    {m : ℕ} (f₁ : ⦋n⦌ ⟶ ⦋m⦌) [Epi f₁]
-    (y₁ : X.nonDegenerate m) (hy₁ : x = X.map f₁.op y₁)
-    (f₂ : ⦋n⦌ ⟶ ⦋m⦌)
-    (y₂ : X.nonDegenerate m) (hy₂ : x = X.map f₂.op y₂) : f₁ = f₂ := by
+lemma unique_nonDegenerate₃ (x : X _⦋n⦌) {m : ℕ}
+    (f₁ : ⦋n⦌ ⟶ ⦋m⦌) [Epi f₁] (y₁ : X.nonDegenerate m) (hy₁ : x = X.map f₁.op y₁)
+    (f₂ : ⦋n⦌ ⟶ ⦋m⦌) (y₂ : X.nonDegenerate m) (hy₂ : x = X.map f₂.op y₂) :
+    f₁ = f₂ := by
   ext x : 3
   suffices ∃ (hf₁ : SplitEpi f₁), hf₁.section_.toOrderHom (f₁.toOrderHom x) = x by
     obtain ⟨hf₁, hf₁'⟩ := this
