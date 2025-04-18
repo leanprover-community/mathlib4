@@ -4,13 +4,15 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 
+import Mathlib.Data.Fin.Tuple.Embedding
 import Mathlib.GroupTheory.GroupAction.Embedding
 import Mathlib.GroupTheory.GroupAction.Primitive
-import Mathlib.GroupTheory.GroupAction.Transitive
 import Mathlib.GroupTheory.SpecificGroups.Alternating
 import Mathlib.GroupTheory.GroupAction.FixingSubgroup
-
-import Mathlib.Data.Fin.Embedding
+import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
+import Mathlib.Data.Finite.Card
+import Mathlib.Data.Set.Card
+import Mathlib.SetTheory.Cardinal.Finite
 
 /-! # Multiple transitivity
 
@@ -51,6 +53,49 @@ on `α`, and some results are developed in this context.
 -/
 
 open MulAction MulActionHom Function.Embedding Fin Set Nat
+
+namespace Fin.Embedding
+
+variable {α : Type*}
+
+theorem exists_embedding_disjoint_range_of_add_le_ENat_card
+    {s : Set α} [Finite s] {n : ℕ} (hs : s.ncard + n ≤ ENat.card α) :
+    ∃ y : Fin n ↪ α, Disjoint s (range y) := by
+  suffices Nonempty (Fin n ↪ (sᶜ : Set α)) by
+    obtain ⟨y⟩ := this
+    use y.trans (subtype _)
+    rw [Set.disjoint_right]
+    rintro _ ⟨i, rfl⟩
+    simp only [trans_apply, subtype_apply, ← mem_compl_iff]
+    exact Subtype.coe_prop (y i)
+  rcases finite_or_infinite α with hα | hα
+  · have _ : Fintype α := Fintype.ofFinite α
+    classical
+    apply Function.Embedding.nonempty_of_card_le
+    rwa [Fintype.card_fin, ← add_le_add_iff_left s.ncard,
+      ← Nat.card_eq_fintype_card, Set.Nat.card_coe_set_eq,
+        Set.ncard_add_ncard_compl, ← ENat.coe_le_coe,
+        ← ENat.card_eq_coe_natCard, ENat.coe_add]
+  · exact ⟨valEmbedding.trans s.toFinite.infinite_compl.to_subtype.natEmbedding⟩
+
+theorem restrictSurjective_of_add_le_ENatCard
+    {m n : ℕ} (hn : m + n ≤ ENat.card α) :
+    Function.Surjective (fun (x : Fin (m + n) ↪ α) ↦ (Fin.castAddEmb n).trans x) := by
+  intro x
+  obtain ⟨y : Fin n ↪ α, hxy⟩ :=
+    exists_embedding_disjoint_range_of_add_le_ENat_card (s := range x)
+      (by simpa [← Set.Nat.card_coe_set_eq, Nat.card_range_of_injective x.injective])
+  use append hxy
+  ext i
+  simp [trans_apply, coe_castAddEmb, append]
+
+theorem restrictSurjective_of_add_le_natCard
+    {m n : ℕ} [Finite α] (hn : m + n ≤ Nat.card α) :
+    Function.Surjective (fun x : Fin (m + n) ↪ α ↦ (Fin.castAddEmb n).trans x) := by
+  apply Fin.Embedding.restrictSurjective_of_add_le_ENatCard
+  rwa [← ENat.coe_add, ENat.card_eq_coe_natCard, ENat.coe_le_coe]
+
+end Fin.Embedding
 
 section Functoriality
 
@@ -271,11 +316,13 @@ end Two
 
 section Higher
 
+variable (G α) in
 /-- The natural equivariant map from `n ↪ α` to `m ↪ α` given by an embedding
 `e : m ↪ n`. -/
 @[to_additive
 "The natural equivariant map from `n ↪ α` to `m ↪ α` given by an embedding `e : m ↪ n`."]
-def embMap {m n : Type*} (e : m ↪ n) : (n ↪ α) →[G]  (m ↪ α) where
+def _root_.MulActionHom.embMap {m n : Type*} (e : m ↪ n) :
+    (n ↪ α) →[G]  (m ↪ α) where
   toFun i := e.trans i
   map_smul' _ _ := rfl
 
@@ -292,17 +339,27 @@ This version allows `α` to be infinite and uses `ENat.card`.
 For `Finite α`, use `AddAction.isMultiplyPretransitive_of_le`."]
 theorem isMultiplyPretransitive_of_le' {m n : ℕ} [IsMultiplyPretransitive G α n]
     (hmn : m ≤ n) (hα : n ≤ ENat.card α) :
-    IsMultiplyPretransitive G α m :=
-  IsPretransitive.of_surjective_map (f := embMap (castLEEmb hmn))
-    (Fin.Embedding.restrictSurjective_of_le_ENatCard hmn hα) inferInstance
+    IsMultiplyPretransitive G α m := by
+  obtain ⟨p, rfl⟩ := Nat.exists_eq_add_of_le hmn
+  exact IsPretransitive.of_surjective_map
+    (f := embMap G α (castAddEmb p))
+    (Fin.Embedding.restrictSurjective_of_add_le_ENatCard hα) inferInstance
 
-/-- An n-pretransitive action is m-pretransitive for any m ≤ n -/
-@[to_additive]
+/-- If α has at least n elements, then an n-pretransitive action
+is m-pretransitive for any m ≤ n.
+
+For an infinite `α`, use `MulAction.isMultiplyPretransitive_of_le'`. -/
+@[to_additive
+"If α has at least n elements, then an n-pretransitive action
+is m-pretransitive for any m ≤ n.
+
+For an infinite `α`, use `MulAction.isMultiplyPretransitive_of_le'`."]
 theorem isMultiplyPretransitive_of_le {m n : ℕ} [IsMultiplyPretransitive G α n]
     (hmn : m ≤ n) (hα : n ≤ Nat.card α) [Finite α] :
-    IsMultiplyPretransitive G α m :=
-  IsPretransitive.of_surjective_map (f := embMap (castLEEmb hmn))
-    (Fin.Embedding.restrictSurjective_of_le_natCard hmn hα) inferInstance
+    IsMultiplyPretransitive G α m := by
+  obtain ⟨p, rfl⟩ := Nat.exists_eq_add_of_le hmn
+  exact IsPretransitive.of_surjective_map (f := embMap G α (castAddEmb p))
+    (Fin.Embedding.restrictSurjective_of_add_le_natCard hα) inferInstance
 
 end Higher
 
@@ -604,3 +661,120 @@ theorem AlternatingGroup.isPreprimitive [DecidableEq α] (h : 3 ≤ Fintype.card
   apply alternatingGroup.has_trivial_blocks
 
 
+section Stabilizer
+
+variable {G α : Type*} [Group G] [MulAction G α]
+
+namespace SubMulAction.ofStabilizer
+
+open scoped BigOperators Pointwise Cardinal
+
+open MulAction Function.Embedding
+
+@[to_additive]
+theorem isMultiplyPretransitive_iff_of_conj
+    {n : ℕ} {a b : α} {g : G} (hg : b = g • a) :
+    IsMultiplyPretransitive (stabilizer G a) (ofStabilizer G a) n ↔
+      IsMultiplyPretransitive (stabilizer G b) (ofStabilizer G b) n :=
+  IsPretransitive.of_embedding_congr (MulEquiv.surjective _) (ofStabilizer.conjMap_bijective hg)
+
+@[to_additive]
+theorem isMultiplyPretransitive_iff [IsPretransitive G α] {n : ℕ} {a b : α} :
+    IsMultiplyPretransitive (stabilizer G a) (ofStabilizer G a) n ↔
+      IsMultiplyPretransitive (stabilizer G b) (ofStabilizer G b) n :=
+  let ⟨_, hg⟩ := exists_smul_eq G a b
+  isMultiplyPretransitive_iff_of_conj hg.symm
+
+/-- Multiple transitivity of a pretransitive action
+  is equivalent to one less transitivity of stabilizer of a point
+  (Wielandt, th. 9.1, 1st part) -/
+@[to_additive
+  "Multiple transitivity of a pretransitive action
+  is equivalent to one less transitivity of stabilizer of a point
+  (Wielandt, th. 9.1, 1st part)"]
+theorem isMultiplyPretransitive [IsPretransitive G α] {n : ℕ} {a : α} :
+    IsMultiplyPretransitive G α n.succ ↔
+      IsMultiplyPretransitive (stabilizer G a) (SubMulAction.ofStabilizer G a) n := by
+  constructor
+  · exact fun hn ↦ {
+      exists_smul_eq x y := by
+        obtain ⟨g, hgxy⟩ := exists_smul_eq G (snoc x) (snoc y)
+        have hg : g ∈ stabilizer G a := by
+          rw [mem_stabilizer_iff]
+          rw [DFunLike.ext_iff] at hgxy
+          convert hgxy (last n) <;> simp [smul_apply, snoc_last]
+        use ⟨g, hg⟩
+        ext i
+        simp only [smul_apply, SubMulAction.val_smul_of_tower, subgroup_smul_def]
+        rw [← snoc_castSucc x, ← smul_apply, hgxy, snoc_castSucc] }
+  · exact fun hn ↦ {
+      exists_smul_eq x y := by
+        -- gx • x = x1 :: a
+        obtain ⟨gx, x1, hgx⟩ := exists_smul_of_last_eq G a x
+        -- gy • y = y1 :: a
+        obtain ⟨gy, y1, hgy⟩ := exists_smul_of_last_eq G a y
+        -- g • x1 = y1,
+        obtain ⟨g, hg⟩ := hn.exists_smul_eq x1 y1
+        use gy⁻¹ * g * gx
+        ext i
+        simp only [mul_smul, smul_apply, inv_smul_eq_iff]
+        simp only [← smul_apply _ _ i, hgy, hgx]
+        simp only [smul_apply]
+        rcases Fin.eq_castSucc_or_eq_last i with ⟨i, rfl⟩ | ⟨rfl⟩
+        · -- rw [Function.Embedding.ext_iff] at hgx hgy hg
+          simp [snoc_castSucc, ← hg, SetLike.val_smul, subgroup_smul_def]
+        · simp only [snoc_last, ← hg, subgroup_smul_def]
+          exact g.prop }
+
+end SubMulAction.ofStabilizer
+
+end Stabilizer
+
+section FixingSubgroup
+
+variable {G α : Type*} [Group G] [MulAction G α]
+
+namespace SubMulAction.ofFixingSubgroup
+
+/-- The fixator of a finite subset of cardinal d in an n-transitive action
+acts (n-d) transitively on the complement. -/
+@[to_additive
+"The fixator of a finite subset of cardinal d in an n-transitive additive action
+acts (n-d) transitively on the complement."]
+theorem isMultiplyPretransitive {m n : ℕ} [Hn : IsMultiplyPretransitive G α n]
+    (s : Set α) [Finite s] (hmn : s.ncard + m = n) :
+    IsMultiplyPretransitive (fixingSubgroup G s) (ofFixingSubgroup G s) m :=
+  let _ : IsMultiplyPretransitive G α (s.ncard + m) := by rw [hmn]; infer_instance
+  let Hs : Nonempty (Fin (s.ncard) ≃ s) :=
+      Finite.card_eq.mp (by simp [Set.Nat.card_coe_set_eq])
+  { exists_smul_eq x y := by
+      set x' := ofFixingSubgroup.append x with hx
+      set y' := ofFixingSubgroup.append y with hy
+      obtain ⟨g, hg⟩ := exists_smul_eq G x' y'
+      suffices g ∈ fixingSubgroup G s by
+        use ⟨g, this⟩
+        ext i
+        simp only [smul_apply, SetLike.val_smul, Subgroup.mk_smul]
+        simp only [← ofFixingSubgroup.append_right, ← smul_apply, ← hx, ← hy, hg]
+      intro a
+      set i := (Classical.choice Hs).symm a
+      have ha : (Classical.choice Hs) i = a := by simp [i]
+      rw [← ha]
+      nth_rewrite 1 [← ofFixingSubgroup.append_left x i]
+      rw [← ofFixingSubgroup.append_left y i, ← hy, ← hg, smul_apply, ← hx] }
+
+/-- The fixator of a finite subset of cardinal d in an n-transitive action
+acts m transitively on the complement if d + m ≤ n. -/
+@[to_additive
+"The fixator of a finite subset of cardinal d in an n-transitive additive action
+acts m transitively on the complement if d + m ≤ n."]
+theorem isMultiplyPretransitive'
+    {m n : ℕ} [IsMultiplyPretransitive G α n]
+    (s : Set α) [Finite s] (hmn : s.ncard + m ≤ n) (hn : (n : ENat) ≤ ENat.card α) :
+    IsMultiplyPretransitive (fixingSubgroup G s) (SubMulAction.ofFixingSubgroup G s) m :=
+  letI : IsMultiplyPretransitive G α (s.ncard + m) := isMultiplyPretransitive_of_le' hmn hn
+  isMultiplyPretransitive s rfl
+
+end SubMulAction.ofFixingSubgroup
+
+end FixingSubgroup

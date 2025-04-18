@@ -669,11 +669,9 @@ theorem mul_apply (e₁ e₂ : MulAut M) (m : M) : (e₁ * e₂) m = e₁ (e₂ 
 theorem one_apply (m : M) : (1 : MulAut M) m = m :=
   rfl
 
-@[simp]
 theorem apply_inv_self (e : MulAut M) (m : M) : e (e⁻¹ m) = m :=
   MulEquiv.apply_symm_apply _ _
 
-@[simp]
 theorem inv_apply_self (e : MulAut M) (m : M) : e⁻¹ (e m) = m :=
   MulEquiv.apply_symm_apply _ _
 
@@ -740,6 +738,8 @@ instance group : Group (AddAut A) where
   mul_one _ := rfl
   inv_mul_cancel := AddEquiv.self_trans_symm
 
+attribute [to_additive AudAut.group] MulAut.instGroup
+
 instance : Inhabited (AddAut A) :=
   ⟨1⟩
 
@@ -768,11 +768,9 @@ theorem mul_apply (e₁ e₂ : AddAut A) (a : A) : (e₁ * e₂) a = e₁ (e₂ 
 theorem one_apply (a : A) : (1 : AddAut A) a = a :=
   rfl
 
-@[simp]
 theorem apply_inv_self (e : AddAut A) (a : A) : e⁻¹ (e a) = a :=
   AddEquiv.apply_symm_apply _ _
 
-@[simp]
 theorem inv_apply_self (e : AddAut A) (a : A) : e (e⁻¹ a) = a :=
   AddEquiv.apply_symm_apply _ _
 
