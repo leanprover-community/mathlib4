@@ -193,7 +193,7 @@ theorem ofNat_ne_top (a : ℕ) [a.AtLeastTwo] : (ofNat(a) : ℕ∞) ≠ ⊤ :=
   nofun
 
 /-- Version of `WithTop.forall_coe_le_iff_le` using `Nat.cast` rather than `WithTop.some`. -/
-lemma forall_coe_le_iff_le {m m' : ℕ∞} : (∀ n : ℕ, n ≤ m → n ≤ m') ↔ m ≤ m' :=
+lemma forall_natCast_le_iff_le {m m' : ℕ∞} : (∀ n : ℕ, n ≤ m → n ≤ m') ↔ m ≤ m' :=
   WithTop.forall_coe_le_iff_le
 
 /-- Version of `WithTop.eq_of_forall_coe_le_iff` using `Nat.cast` rather than `WithTop.some`. -/
