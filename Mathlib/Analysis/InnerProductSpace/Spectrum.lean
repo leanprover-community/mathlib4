@@ -9,7 +9,6 @@ import Mathlib.Algebra.DirectSum.Decomposition
 import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 import Mathlib.Data.Fin.Tuple.Sort
 
-
 /-! # Spectral theory of self-adjoint operators
 
 This file covers the spectral theory of self-adjoint operators on an inner product space.
