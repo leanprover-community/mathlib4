@@ -105,7 +105,7 @@ theorem sign_cycleIcc {n : ℕ} {i j : Fin n} (hij : i ≤ j) :
   Perm.sign (cycleIcc hij) = (-1) ^ (j - i : ℕ) := by
   simp [cycleIcc, sub_val_of_le hij]
 
-private lemma Nezero_simp_lemma {n : ℕ} {i j : Fin n} (hij : i < j) :
+private lemma nezero_simp_lemma {n : ℕ} {i j : Fin n} (hij : i < j) :
     (j - i).castLT (cycleIcc._proof_3 (Fin.le_of_lt hij)) ≠ 0 := by
   refine Ne.symm (ne_of_val_ne ?_)
   simpa [coe_sub_iff_le.mpr (Fin.le_of_lt hij)] using by omega
