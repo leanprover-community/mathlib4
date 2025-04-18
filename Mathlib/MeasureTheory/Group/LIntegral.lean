@@ -22,6 +22,21 @@ open scoped ENNReal
 
 variable {G : Type*} [MeasurableSpace G] {μ : Measure G}
 
+section MeasurableInv
+
+variable [InvolutiveInv G] [MeasurableInv G]
+
+/-- The Lebesgue integral of a function with respect to an inverse invariant measure is
+invariant under the change of variables x ↦ x⁻¹. -/
+@[to_additive
+      "The Lebesgue integral of a function with respect to an inverse invariant measure is
+invariant under the change of variables x ↦ -x."]
+theorem lintegral_inv_eq_self [IsInvInvariant μ] (f : G → ℝ≥0∞) :
+   ∫⁻ x, f x⁻¹ ∂μ = ∫⁻ x, f x ∂μ := by
+ simpa using (lintegral_map_equiv f (μ := μ) <| MeasurableEquiv.inv G).symm
+
+end MeasurableInv
+
 section MeasurableMul
 
 variable [Group G] [MeasurableMul G]
@@ -51,7 +66,13 @@ theorem lintegral_div_right_eq_self [IsMulRightInvariant μ] (f : G → ℝ≥0�
     (∫⁻ x, f (x / g) ∂μ) = ∫⁻ x, f x ∂μ := by
   simp_rw [div_eq_mul_inv, lintegral_mul_right_eq_self f g⁻¹]
 
+@[to_additive]
+theorem lintegral_div_left_eq_self [IsMulLeftInvariant μ] [MeasurableInv G] [IsInvInvariant μ]
+    (f : G → ℝ≥0∞) (g : G) : (∫⁻ x, f (g / x) ∂μ) = ∫⁻ x, f x ∂μ := by
+  simp_rw [div_eq_mul_inv, lintegral_inv_eq_self (f <| g * ·), lintegral_mul_left_eq_self]
+
 end MeasurableMul
+
 
 section IsTopologicalGroup
 

@@ -285,10 +285,7 @@ theorem changeOrigin_eval (h : (‖x‖₊ + ‖y‖₊ : ℝ≥0∞) < p.radius
   refine hf.unique (changeOriginIndexEquiv.symm.hasSum_iff.1 ?_)
   refine HasSum.sigma_of_hasSum
     (p.hasSum x_add_y_mem_ball) (fun n => ?_) (changeOriginIndexEquiv.symm.summable_iff.2 hsf)
-  -- We use a type ascription here to convert the sum of two constant functions into
-  -- a single constant function. Can this be done by an explicit rewrite?
-  have : (p n) (fun _ => x + y) = _ := (p n).map_add_univ (fun _ => x) fun _ => y
-  rw [this]
+  rw [← Pi.add_def, (p n).map_add_univ (fun _ => x) fun _ => y]
   simp_rw [← changeOriginSeriesTerm_changeOriginIndexEquiv_symm]
   exact hasSum_fintype (fun c => f (changeOriginIndexEquiv.symm ⟨n, c⟩))
 
@@ -366,9 +363,6 @@ theorem HasFPowerSeriesOnBall.analyticOnNhd (hf : HasFPowerSeriesOnBall f p x r)
     AnalyticOnNhd 𝕜 f (EMetric.ball x r) :=
   fun _y hy => hf.analyticAt_of_mem hy
 
-@[deprecated (since := "2024-09-26")]
-alias HasFPowerSeriesOnBall.analyticOn := HasFPowerSeriesOnBall.analyticOnNhd
-
 variable (𝕜 f) in
 /-- For any function `f` from a normed vector space to a Banach space, the set of points `x` such
 that `f` is analytic at `x` is open. -/
@@ -385,15 +379,9 @@ theorem AnalyticAt.exists_mem_nhds_analyticOnNhd (h : AnalyticAt 𝕜 f x) :
     ∃ s ∈ 𝓝 x, AnalyticOnNhd 𝕜 f s :=
   h.eventually_analyticAt.exists_mem
 
-@[deprecated (since := "2024-09-26")]
-alias AnalyticAt.exists_mem_nhds_analyticOn := AnalyticAt.exists_mem_nhds_analyticOnNhd
-
 /-- If we're analytic at a point, we're analytic in a nonempty ball -/
 theorem AnalyticAt.exists_ball_analyticOnNhd (h : AnalyticAt 𝕜 f x) :
     ∃ r : ℝ, 0 < r ∧ AnalyticOnNhd 𝕜 f (Metric.ball x r) :=
   Metric.isOpen_iff.mp (isOpen_analyticAt _ _) _ h
-
-@[deprecated (since := "2024-09-26")]
-alias AnalyticAt.exists_ball_analyticOn := AnalyticAt.exists_ball_analyticOnNhd
 
 end

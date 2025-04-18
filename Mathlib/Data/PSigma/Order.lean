@@ -97,8 +97,8 @@ instance linearOrder [LinearOrder ι] [∀ i, LinearOrder (α i)] : LinearOrder 
         · exact Or.inl (Lex.right _ hab)
         · exact Or.inr (Lex.right _ hba)
       · exact Or.inr (Lex.left _ _ hji),
-    decidableEq := PSigma.decidableEq, decidableLE := Lex.decidable _ _,
-    decidableLT := Lex.decidable _ _ }
+    toDecidableEq := PSigma.decidableEq, toDecidableLE := Lex.decidable _ _,
+    toDecidableLT := Lex.decidable _ _ }
 
 /-- The lexicographical linear order on a sigma type. -/
 instance orderBot [PartialOrder ι] [OrderBot ι] [∀ i, Preorder (α i)] [OrderBot (α ⊥)] :

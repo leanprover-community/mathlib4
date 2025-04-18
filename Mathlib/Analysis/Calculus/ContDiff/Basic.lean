@@ -52,6 +52,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {g : F → G} {x x₀ : E} {b : E × F → G} {m n : WithTop ℕ∞} {p : E → FormalMultilinearSeries 𝕜 E F}
 
 /-! ### Constants -/
+section constants
 
 theorem iteratedFDerivWithin_succ_const (n : ℕ) (c : F) :
     iteratedFDerivWithin 𝕜 (n + 1) (fun _ : E ↦ c) s = 0 := by
@@ -77,8 +78,7 @@ theorem iteratedFDeriv_zero_fun {n : ℕ} : (iteratedFDeriv 𝕜 n fun _ : E ↦
 theorem contDiff_zero_fun : ContDiff 𝕜 n fun _ : E => (0 : F) :=
   analyticOnNhd_const.contDiff
 
-/-- Constants are `C^∞`.
--/
+/-- Constants are `C^∞`. -/
 theorem contDiff_const {c : F} : ContDiff 𝕜 n fun _ : E => c :=
   analyticOnNhd_const.contDiff
 
@@ -124,10 +124,12 @@ theorem iteratedFDeriv_succ_const (n : ℕ) (c : F) :
 theorem contDiffWithinAt_singleton : ContDiffWithinAt 𝕜 n f {x} x :=
   (contDiffWithinAt_const (c := f x)).congr (by simp) rfl
 
-/-! ### Smoothness of linear functions -/
+end constants
 
-/-- Unbundled bounded linear functions are `C^n`.
--/
+/-! ### Smoothness of linear functions -/
+section linear
+
+/-- Unbundled bounded linear functions are `C^n`. -/
 theorem IsBoundedLinearMap.contDiff (hf : IsBoundedLinearMap 𝕜 f) : ContDiff 𝕜 n f :=
   (ContinuousLinearMap.analyticOnNhd hf.toContinuousLinearMap univ).contDiff
 
@@ -143,8 +145,7 @@ theorem LinearIsometry.contDiff (f : E →ₗᵢ[𝕜] F) : ContDiff 𝕜 n f :=
 theorem LinearIsometryEquiv.contDiff (f : E ≃ₗᵢ[𝕜] F) : ContDiff 𝕜 n f :=
   (f : E →L[𝕜] F).contDiff
 
-/-- The identity is `C^n`.
--/
+/-- The identity is `C^n`. -/
 theorem contDiff_id : ContDiff 𝕜 n (id : E → E) :=
   IsBoundedLinearMap.id.contDiff
 
@@ -157,8 +158,7 @@ theorem contDiffAt_id {x} : ContDiffAt 𝕜 n (id : E → E) x :=
 theorem contDiffOn_id {s} : ContDiffOn 𝕜 n (id : E → E) s :=
   contDiff_id.contDiffOn
 
-/-- Bilinear functions are `C^n`.
--/
+/-- Bilinear functions are `C^n`. -/
 theorem IsBoundedBilinearMap.contDiff (hb : IsBoundedBilinearMap 𝕜 b) : ContDiff 𝕜 n b :=
   (hb.toContinuousLinearMap.analyticOnNhd_bilinear _).contDiff
 
@@ -465,6 +465,11 @@ theorem ContinuousLinearEquiv.contDiff_comp_iff (e : G ≃L[𝕜] E) :
   rw [← contDiffOn_univ, ← contDiffOn_univ, ← preimage_univ]
   exact e.contDiffOn_comp_iff
 
+end linear
+
+/-! ### The Cartesian product of two C^n functions is C^n. -/
+section prod
+
 /-- If two functions `f` and `g` admit Taylor series `p` and `q` in a set `s`, then the cartesian
 product of `f` and `g` admits the cartesian product of `p` and `q` as a Taylor series. -/
 theorem HasFTaylorSeriesUpToOn.prodMk {n : WithTop ℕ∞}
@@ -529,6 +534,10 @@ theorem ContDiff.prodMk {f : E → F} {g : E → G} (hf : ContDiff 𝕜 n f) (hg
 
 @[deprecated (since := "2025-03-09")]
 alias ContDiff.prod := ContDiff.prodMk
+
+end prod
+
+section comp
 
 /-!
 ### Composition of `C^n` functions
@@ -753,6 +762,8 @@ theorem iteratedFDeriv_comp (hg : ContDiffAt 𝕜 n g (f x)) (hf : ContDiffAt �
   exact iteratedFDerivWithin_comp hg.contDiffWithinAt hf.contDiffWithinAt
     uniqueDiffOn_univ uniqueDiffOn_univ (mem_univ _) (mapsTo_univ _ _) hi
 
+end comp
+
 /-!
 ### Smoothness of projections
 -/
@@ -892,8 +903,6 @@ theorem ContDiff.comp₂_contDiffOn {g : E₁ × E₂ → G} {f₁ : F → E₁}
     ContDiffOn 𝕜 n (fun x => g (f₁ x, f₂ x)) s :=
   hg.comp_contDiffOn <| hf₁.prodMk hf₂
 
-@[deprecated (since := "2024-10-10")] alias ContDiff.comp_contDiff_on₂ := ContDiff.comp₂_contDiffOn
-
 @[deprecated (since := "2024-10-30")]
 alias ContDiff.comp_contDiffOn₂ := ContDiff.comp₂_contDiffOn
 
@@ -906,8 +915,6 @@ theorem ContDiff.comp₃_contDiffOn {g : E₁ × E₂ × E₃ → G} {f₁ : F �
     {s : Set F} (hg : ContDiff 𝕜 n g) (hf₁ : ContDiffOn 𝕜 n f₁ s) (hf₂ : ContDiffOn 𝕜 n f₂ s)
     (hf₃ : ContDiffOn 𝕜 n f₃ s) : ContDiffOn 𝕜 n (fun x => g (f₁ x, f₂ x, f₃ x)) s :=
   hg.comp₂_contDiffOn hf₁ <| hf₂.prodMk hf₃
-
-@[deprecated (since := "2024-10-10")] alias ContDiff.comp_contDiff_on₃ := ContDiff.comp₃_contDiffOn
 
 @[deprecated (since := "2024-10-30")]
 alias ContDiff.comp_contDiffOn₃ := ContDiff.comp₃_contDiffOn
@@ -1022,6 +1029,7 @@ theorem contDiff_prodAssoc_symm {n : WithTop ℕ∞} : ContDiff 𝕜 n <| (Equiv
   (LinearIsometryEquiv.prodAssoc 𝕜 E F G).symm.contDiff
 
 /-! ### Bundled derivatives are smooth -/
+section bundled
 
 /-- One direction of `contDiffWithinAt_succ_iff_hasFDerivWithinAt`, but where all derivatives are
 taken within the same set. Version for partial derivatives / functions with parameters. If `f x` is
@@ -1224,6 +1232,8 @@ theorem ContDiff.contDiff_fderiv_apply {f : E → F} (hf : ContDiff 𝕜 n f) (h
   rw [← contDiffOn_univ] at hf ⊢
   rw [← fderivWithin_univ, ← univ_prod_univ]
   exact contDiffOn_fderivWithin_apply hf uniqueDiffOn_univ hmn
+
+end bundled
 
 section deriv
 

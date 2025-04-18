@@ -29,7 +29,7 @@ assert_not_exists AddChar comap_norm_atTop DilationEquiv Finset.sup_mul_le_mul_s
 variable {G α β ι : Type*}
 
 open Filter
-open scoped Topology NNReal
+open scoped Topology NNReal ENNReal
 
 /-- A normed division ring is a division ring endowed with a seminorm which satisfies the equality
 `‖x y‖ = ‖x‖ ‖y‖`. -/
@@ -45,56 +45,18 @@ instance (priority := 100) NormedDivisionRing.toNormedRing [β : NormedDivisionR
     NormedRing α :=
   { β with norm_mul_le a b := (NormedDivisionRing.norm_mul a b).le }
 
+-- see Note [lower instance priority]
+/-- The norm on a normed division ring is strictly multiplicative. -/
+instance (priority := 100) NormedDivisionRing.toNormMulClass [NormedDivisionRing α] :
+    NormMulClass α where
+  norm_mul := NormedDivisionRing.norm_mul
+
 section NormedDivisionRing
 
 variable [NormedDivisionRing α] {a b : α}
 
-@[simp]
-theorem norm_mul (a b : α) : ‖a * b‖ = ‖a‖ * ‖b‖ := NormedDivisionRing.norm_mul a b
-
 instance (priority := 900) NormedDivisionRing.to_normOneClass : NormOneClass α :=
   ⟨mul_left_cancel₀ (mt norm_eq_zero.1 (one_ne_zero' α)) <| by rw [← norm_mul, mul_one, mul_one]⟩
-
-instance isAbsoluteValue_norm : IsAbsoluteValue (norm : α → ℝ) where
-  abv_nonneg' := norm_nonneg
-  abv_eq_zero' := norm_eq_zero
-  abv_add' := norm_add_le
-  abv_mul' := norm_mul
-
-@[simp] lemma nnnorm_mul (a b : α) : ‖a * b‖₊ = ‖a‖₊ * ‖b‖₊ := NNReal.eq <| norm_mul a b
-@[simp] lemma enorm_mul (a b : α) : ‖a * b‖ₑ = ‖a‖ₑ * ‖b‖ₑ := by simp [enorm]
-
-/-- `norm` as a `MonoidWithZeroHom`. -/
-@[simps]
-def normHom : α →*₀ ℝ where
-  toFun := (‖·‖)
-  map_zero' := norm_zero
-  map_one' := norm_one
-  map_mul' := norm_mul
-
-/-- `nnnorm` as a `MonoidWithZeroHom`. -/
-@[simps]
-def nnnormHom : α →*₀ ℝ≥0 where
-  toFun := (‖·‖₊)
-  map_zero' := nnnorm_zero
-  map_one' := nnnorm_one
-  map_mul' := nnnorm_mul
-
-@[simp]
-theorem norm_pow (a : α) : ∀ n : ℕ, ‖a ^ n‖ = ‖a‖ ^ n :=
-  (normHom.toMonoidHom : α →* ℝ).map_pow a
-
-@[simp]
-theorem nnnorm_pow (a : α) (n : ℕ) : ‖a ^ n‖₊ = ‖a‖₊ ^ n :=
-  (nnnormHom.toMonoidHom : α →* ℝ≥0).map_pow a n
-
-@[simp] lemma enorm_pow (a : α) (n : ℕ) : ‖a ^ n‖ₑ = ‖a‖ₑ ^ n := by simp [enorm]
-
-protected theorem List.norm_prod (l : List α) : ‖l.prod‖ = (l.map norm).prod :=
-  map_list_prod (normHom.toMonoidHom : α →* ℝ) _
-
-protected theorem List.nnnorm_prod (l : List α) : ‖l.prod‖₊ = (l.map nnnorm).prod :=
-  map_list_prod (nnnormHom.toMonoidHom : α →* ℝ≥0) _
 
 @[simp]
 theorem norm_div (a b : α) : ‖a / b‖ = ‖a‖ / ‖b‖ :=
@@ -226,14 +188,6 @@ instance (priority := 100) NormedField.toNormedDivisionRing : NormedDivisionRing
 instance (priority := 100) NormedField.toNormedCommRing : NormedCommRing α :=
   { ‹NormedField α› with norm_mul_le a b := (norm_mul a b).le }
 
-@[simp]
-theorem norm_prod (s : Finset β) (f : β → α) : ‖∏ b ∈ s, f b‖ = ∏ b ∈ s, ‖f b‖ :=
-  map_prod normHom.toMonoidHom f s
-
-@[simp]
-theorem nnnorm_prod (s : Finset β) (f : β → α) : ‖∏ b ∈ s, f b‖₊ = ∏ b ∈ s, ‖f b‖₊ :=
-  map_prod nnnormHom.toMonoidHom f s
-
 end NormedField
 
 namespace NormedField
@@ -245,17 +199,42 @@ variable (α) [NontriviallyNormedField α]
 theorem exists_one_lt_norm : ∃ x : α, 1 < ‖x‖ :=
   ‹NontriviallyNormedField α›.non_trivial
 
+theorem exists_one_lt_nnnorm : ∃ x : α, 1 < ‖x‖₊ := exists_one_lt_norm α
+
+theorem exists_one_lt_enorm : ∃ x : α, 1 < ‖x‖ₑ :=
+  exists_one_lt_nnnorm α |>.imp fun _ => ENNReal.coe_lt_coe.mpr
+
 theorem exists_lt_norm (r : ℝ) : ∃ x : α, r < ‖x‖ :=
   let ⟨w, hw⟩ := exists_one_lt_norm α
   let ⟨n, hn⟩ := pow_unbounded_of_one_lt r hw
   ⟨w ^ n, by rwa [norm_pow]⟩
 
+theorem exists_lt_nnnorm (r : ℝ≥0) : ∃ x : α, r < ‖x‖₊ := exists_lt_norm α r
+
+theorem exists_lt_enorm {r : ℝ≥0∞} (hr : r ≠ ∞) : ∃ x : α, r < ‖x‖ₑ := by
+  lift r to ℝ≥0 using hr
+  exact mod_cast exists_lt_nnnorm α r
+
 theorem exists_norm_lt {r : ℝ} (hr : 0 < r) : ∃ x : α, 0 < ‖x‖ ∧ ‖x‖ < r :=
   let ⟨w, hw⟩ := exists_lt_norm α r⁻¹
   ⟨w⁻¹, by rwa [← Set.mem_Ioo, norm_inv, ← Set.mem_inv, Set.inv_Ioo_0_left hr]⟩
 
+theorem exists_nnnorm_lt {r : ℝ≥0} (hr : 0 < r) : ∃ x : α, 0 < ‖x‖₊ ∧ ‖x‖₊ < r :=
+  exists_norm_lt α hr
+
+/-- TODO: merge with `_root_.exists_enorm_lt`. -/
+theorem exists_enorm_lt {r : ℝ≥0∞} (hr : 0 < r) : ∃ x : α, 0 < ‖x‖ₑ ∧ ‖x‖ₑ < r :=
+  match r with
+  | ∞ => exists_one_lt_enorm α |>.imp fun _ hx => ⟨zero_le_one.trans_lt hx, ENNReal.coe_lt_top⟩
+  | (r : ℝ≥0) => exists_nnnorm_lt α (ENNReal.coe_pos.mp hr) |>.imp fun _ =>
+    And.imp ENNReal.coe_pos.mpr ENNReal.coe_lt_coe.mpr
+
 theorem exists_norm_lt_one : ∃ x : α, 0 < ‖x‖ ∧ ‖x‖ < 1 :=
   exists_norm_lt α one_pos
+
+theorem exists_nnnorm_lt_one : ∃ x : α, 0 < ‖x‖₊ ∧ ‖x‖₊ < 1 := exists_norm_lt_one _
+
+theorem exists_enorm_lt_one : ∃ x : α, 0 < ‖x‖ₑ ∧ ‖x‖ₑ < 1 := exists_enorm_lt _ one_pos
 
 variable {α}
 

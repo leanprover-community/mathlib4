@@ -407,8 +407,8 @@ end
 
 section
 
-variable {ι : Type*} {γ : Type*} [LinearOrderedAddCommMonoid γ] [TopologicalSpace γ]
-  [OrderTopology γ]
+variable {ι : Type*} {γ : Type*} [AddCommMonoid γ] [LinearOrder γ] [IsOrderedAddMonoid γ]
+  [TopologicalSpace γ] [OrderTopology γ]
 
 /-- The sum of two lower semicontinuous functions is lower semicontinuous. Formulated with an
 explicit continuity assumption on addition, for application to `EReal`. The unprimed version of
@@ -904,8 +904,8 @@ end
 
 section
 
-variable {ι : Type*} {γ : Type*} [LinearOrderedAddCommMonoid γ] [TopologicalSpace γ]
-  [OrderTopology γ]
+variable {ι : Type*} {γ : Type*} [AddCommMonoid γ] [LinearOrder γ] [IsOrderedAddMonoid γ]
+  [TopologicalSpace γ] [OrderTopology γ]
 
 /-- The sum of two upper semicontinuous functions is upper semicontinuous. Formulated with an
 explicit continuity assumption on addition, for application to `EReal`. The unprimed version of
@@ -914,7 +914,7 @@ theorem UpperSemicontinuousWithinAt.add' {f g : α → γ} (hf : UpperSemicontin
     (hg : UpperSemicontinuousWithinAt g s x)
     (hcont : ContinuousAt (fun p : γ × γ => p.1 + p.2) (f x, g x)) :
     UpperSemicontinuousWithinAt (fun z => f z + g z) s x :=
-  @LowerSemicontinuousWithinAt.add' α _ x s γᵒᵈ _ _ _ _ _ hf hg hcont
+  LowerSemicontinuousWithinAt.add' (γ := γᵒᵈ) hf hg hcont
 
 /-- The sum of two upper semicontinuous functions is upper semicontinuous. Formulated with an
 explicit continuity assumption on addition, for application to `EReal`. The unprimed version of
@@ -977,7 +977,7 @@ theorem UpperSemicontinuous.add {f g : α → γ} (hf : UpperSemicontinuous f)
 theorem upperSemicontinuousWithinAt_sum {f : ι → α → γ} {a : Finset ι}
     (ha : ∀ i ∈ a, UpperSemicontinuousWithinAt (f i) s x) :
     UpperSemicontinuousWithinAt (fun z => ∑ i ∈ a, f i z) s x :=
-  @lowerSemicontinuousWithinAt_sum α _ x s ι γᵒᵈ _ _ _ _ f a ha
+  lowerSemicontinuousWithinAt_sum (γ := γᵒᵈ) ha
 
 theorem upperSemicontinuousAt_sum {f : ι → α → γ} {a : Finset ι}
     (ha : ∀ i ∈ a, UpperSemicontinuousAt (f i) x) :

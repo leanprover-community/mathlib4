@@ -15,7 +15,7 @@ and prove basic properties of this measure.
 -/
 
 open Set
-open scoped ENNReal
+open scoped ENNReal Finset
 
 variable {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] {s : Set α}
 
@@ -43,27 +43,27 @@ theorem count_empty : count (∅ : Set α) = 0 := measure_empty
 
 @[simp]
 theorem count_apply_finset' {s : Finset α} (hs : MeasurableSet (s : Set α)) :
-    count (↑s : Set α) = s.card := by simp [count_apply hs]
+    count (↑s : Set α) = #s := by simp [count_apply hs]
 
 @[simp]
 theorem count_apply_finset [MeasurableSingletonClass α] (s : Finset α) :
-    count (↑s : Set α) = s.card :=
+    count (↑s : Set α) = #s :=
   count_apply_finset' s.measurableSet
 
 theorem count_apply_finite' {s : Set α} (s_fin : s.Finite) (s_mble : MeasurableSet s) :
-    count s = s_fin.toFinset.card := by
+    count s = #s_fin.toFinset := by
   simp [←
     @count_apply_finset' _ _ s_fin.toFinset (by simpa only [Finite.coe_toFinset] using s_mble)]
 
 theorem count_apply_finite [MeasurableSingletonClass α] (s : Set α) (hs : s.Finite) :
-    count s = hs.toFinset.card := by rw [← count_apply_finset, Finite.coe_toFinset]
+    count s = #hs.toFinset := by rw [← count_apply_finset, Finite.coe_toFinset]
 
 /-- `count` measure evaluates to infinity at infinite sets. -/
 theorem count_apply_infinite (hs : s.Infinite) : count s = ∞ := by
   refine top_unique (le_of_tendsto' ENNReal.tendsto_nat_nhds_top fun n => ?_)
   rcases hs.exists_subset_card_eq n with ⟨t, ht, rfl⟩
   calc
-    (t.card : ℝ≥0∞) = ∑ i ∈ t, 1 := by simp
+    (#t : ℝ≥0∞) = ∑ i ∈ t, 1 := by simp
     _ = ∑' i : (t : Set α), 1 := (t.tsum_subtype 1).symm
     _ ≤ count (t : Set α) := le_count_apply
     _ ≤ count s := measure_mono ht
@@ -113,6 +113,13 @@ alias ⟨_, count_ne_zero⟩ := count_ne_zero_iff
 @[deprecated (since := "2024-11-20")] alias count_ne_zero' := count_ne_zero
 
 @[simp]
+lemma ae_count_iff {p : α → Prop} : (∀ᵐ x ∂count, p x) ↔ ∀ x, p x := by
+  refine ⟨fun h x ↦ ?_, ae_of_all _⟩
+  rw [ae_iff, count_eq_zero_iff] at h
+  by_contra hx
+  rwa [← mem_empty_iff_false x, ← h]
+
+@[simp]
 theorem count_singleton' {a : α} (ha : MeasurableSet ({a} : Set α)) : count ({a} : Set α) = 1 := by
   rw [count_apply_finite' (Set.finite_singleton a) ha, Set.Finite.toFinset]
   simp [@toFinset_card _ _ (Set.finite_singleton a).fintype,
@@ -140,6 +147,9 @@ theorem count_injective_image [MeasurableSingletonClass α] [MeasurableSingleton
   rw [count_apply_infinite hs]
   rw [← finite_image_iff hf.injOn] at hs
   rw [count_apply_infinite hs]
+
+instance count.instSigmaFinite [MeasurableSingletonClass α] [Countable α] :
+    SigmaFinite (count : Measure α) := by simp [sigmaFinite_iff_measure_singleton_lt_top]
 
 instance count.isFiniteMeasure [Finite α] :
     IsFiniteMeasure (Measure.count : Measure α) :=

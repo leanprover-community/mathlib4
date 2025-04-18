@@ -82,7 +82,7 @@ theorem centralMoment_one [IsZeroOrProbabilityMeasure μ] : centralMoment X 1 μ
   · simp [centralMoment]
   by_cases h_int : Integrable X μ
   · rw [centralMoment_one' h_int]
-    simp only [measure_univ, ENNReal.one_toReal, sub_self, zero_mul]
+    simp only [measure_univ, ENNReal.toReal_one, sub_self, zero_mul]
   · simp only [centralMoment, Pi.sub_apply, pow_one]
     have : ¬Integrable (fun x => X x - integral μ X) μ := by
       refine fun h_sub => h_int ?_
@@ -124,7 +124,7 @@ theorem mgf_const' (c : ℝ) : mgf (fun _ => c) μ t = (μ Set.univ).toReal * ex
   simp only [mgf, integral_const, smul_eq_mul]
 
 theorem mgf_const (c : ℝ) [IsProbabilityMeasure μ] : mgf (fun _ => c) μ t = exp (t * c) := by
-  simp only [mgf_const', measure_univ, ENNReal.one_toReal, one_mul]
+  simp only [mgf_const', measure_univ, ENNReal.toReal_one, one_mul]
 
 @[simp]
 theorem cgf_const' [IsFiniteMeasure μ] (hμ : μ ≠ 0) (c : ℝ) :
@@ -144,7 +144,7 @@ theorem mgf_zero' : mgf X μ 0 = (μ Set.univ).toReal := by
   simp only [mgf, zero_mul, exp_zero, integral_const, smul_eq_mul, mul_one]
 
 theorem mgf_zero [IsProbabilityMeasure μ] : mgf X μ 0 = 1 := by
-  simp only [mgf_zero', measure_univ, ENNReal.one_toReal]
+  simp only [mgf_zero', measure_univ, ENNReal.toReal_one]
 
 theorem cgf_zero' : cgf X μ 0 = log (μ Set.univ).toReal := by simp only [cgf, mgf_zero']
 
@@ -228,6 +228,19 @@ theorem mgf_const_add (α : ℝ) : mgf (fun ω => α + X ω) μ t = exp (t * α)
 
 theorem mgf_add_const (α : ℝ) : mgf (fun ω => X ω + α) μ t = mgf X μ t *  exp (t * α) := by
   simp only [add_comm, mgf_const_add, mul_comm]
+
+lemma mgf_add_measure {ν : Measure Ω}
+    (hμ : Integrable (fun ω ↦ exp (t * X ω)) μ) (hν : Integrable (fun ω ↦ exp (t * X ω)) ν) :
+    mgf X (μ + ν) t = mgf X μ t + mgf X ν t := by
+  rw [mgf, integral_add_measure hμ hν, mgf, mgf]
+
+lemma mgf_sum_measure {ι : Type*} {μ : ι → Measure Ω}
+    (hμ : Integrable (fun ω ↦ exp (t * X ω)) (Measure.sum μ)) :
+    mgf X (Measure.sum μ) t = ∑' i, mgf X (μ i) t := by
+  simp_rw [mgf, integral_sum_measure hμ]
+
+lemma mgf_smul_measure (c : ℝ≥0∞) : mgf X (c • μ) t = c.toReal * mgf X μ t := by
+  rw [mgf, integral_smul_measure, mgf, smul_eq_mul]
 
 /-- The moment generating function is monotone in the random variable for `t ≥ 0`. -/
 lemma mgf_mono_of_nonneg {Y : Ω → ℝ} (hXY : X ≤ᵐ[μ] Y) (ht : 0 ≤ t)
@@ -333,7 +346,7 @@ theorem iIndepFun.mgf_sum {X : ι → Ω → ℝ}
   have : IsProbabilityMeasure μ := h_indep.isProbabilityMeasure
   classical
   induction' s using Finset.induction_on with i s hi_notin_s h_rec h_int
-  · simp only [sum_empty, mgf_zero_fun, measure_univ, ENNReal.one_toReal, prod_empty]
+  · simp only [sum_empty, mgf_zero_fun, measure_univ, ENNReal.toReal_one, prod_empty]
   · have h_int' : ∀ i : ι, AEStronglyMeasurable (fun ω : Ω => exp (t * X i ω)) μ := fun i =>
       ((h_meas i).const_mul t).exp.aestronglyMeasurable
     rw [sum_insert hi_notin_s,
@@ -426,6 +439,10 @@ lemma mgf_dirac {x : ℝ} (hX : μ.map X = .dirac x) (t : ℝ) : mgf X μ t = ex
   have : IsProbabilityMeasure (μ.map X) := by rw [hX]; infer_instance
   rw [← mgf_id_map (.of_map_ne_zero <| IsProbabilityMeasure.ne_zero _), mgf, hX, integral_dirac,
     mul_comm, id_def]
+
+lemma mgf_dirac' [MeasurableSingletonClass Ω] {ω : Ω} :
+    mgf X (Measure.dirac ω) t = exp (t * X ω) := by
+  rw [mgf, integral_dirac]
 
 end MomentGeneratingFunction
 

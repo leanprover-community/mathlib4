@@ -181,6 +181,14 @@ theorem apply_mono (μ : ProbabilityMeasure Ω) {s₁ s₂ : Set Ω} (h : s₁ �
   rw [← coeFn_comp_toFiniteMeasure_eq_coeFn]
   exact MeasureTheory.FiniteMeasure.apply_mono _ h
 
+/-- Continuity from below: the measure of the union of a sequence of (not necessarily measurable)
+sets is the limit of the measures of the partial unions. -/
+protected lemma tendsto_measure_iUnion_accumulate {ι : Type*} [Preorder ι]
+    [IsCountablyGenerated (atTop : Filter ι)] {μ : ProbabilityMeasure Ω} {f : ι → Set Ω} :
+    Tendsto (fun i ↦ μ (Accumulate f i)) atTop (𝓝 (μ (⋃ i, f i))) := by
+  simpa [← ennreal_coeFn_eq_coeFn_toMeasure, ENNReal.tendsto_coe]
+    using tendsto_measure_iUnion_accumulate (μ := μ.toMeasure)
+
 @[simp] theorem apply_le_one (μ : ProbabilityMeasure Ω) (s : Set Ω) : μ s ≤ 1 := by
   simpa using apply_mono μ (subset_univ s)
 
@@ -222,8 +230,8 @@ lemma measurableSet_isProbabilityMeasure :
   apply isProbabilityMeasure_iff
 
 /-- The monoidal product is a measurable function from the product of probability spaces over
-`α` and `β` into the type of probability spaces over `α × β`. Lemma 4.1 of
-https://doi.org/10.1016/j.aim.2020.107239. -/
+`α` and `β` into the type of probability spaces over `α × β`. Lemma 4.1 of [A synthetic approach to
+Markov kernels, conditional independence and theorems on sufficient statistics][fritz2020]. -/
 theorem measurable_prod {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
     Measurable (fun (μ : ProbabilityMeasure α × ProbabilityMeasure β)
       ↦ μ.1.toMeasure.prod μ.2.toMeasure) := by
