@@ -95,6 +95,12 @@ theorem restrictSurjective_of_add_le_natCard
   apply Fin.Embedding.restrictSurjective_of_add_le_ENatCard
   rwa [← ENat.coe_add, ENat.card_eq_coe_natCard, ENat.coe_le_coe]
 
+theorem restrictSurjective_of_le_natCard
+    {m n : ℕ} [Finite α] (hmn : m ≤ n) (hn : n ≤ Nat.card α) :
+    Function.Surjective (fun x : Fin n ↪ α ↦ (Fin.castLEEmb hmn).trans x) := by
+  obtain ⟨p, rfl⟩ := Nat.exists_eq_add_of_le hmn
+  exact Fin.Embedding.restrictSurjective_of_add_le_natCard hn
+
 end Fin.Embedding
 
 section Functoriality
@@ -486,20 +492,22 @@ theorem alternatingGroup_of_sub_two [DecidableEq α] :
   rcases lt_or_ge (Nat.card α) 2 with h2 | h2
   · rw [Nat.sub_eq_zero_of_le (le_of_lt h2)]
     apply is_zero_pretransitive
-  have h2' : Nat.card α - 2 ≤ Nat.card α := sub_le (Nat.card α) 2
+  have h2eq : Nat.card α - 2 + 2 = Nat.card α := Nat.sub_add_cancel h2
+  have h2le : Nat.card α - 2 ≤ Nat.card α := sub_le (Nat.card α) 2
   exact {
     exists_smul_eq x y := by
       have : IsMultiplyPretransitive (Equiv.Perm α) α (Nat.card α) :=
-        Equiv.Perm.isMultiplyPretransitive α (Nat.card α)
-      obtain ⟨x' : Fin (Nat.card α) ↪ α, hx'⟩ :=
-        Fin.Embedding.restrictSurjective_of_le_natCard h2' (le_refl _) x
+        Equiv.Perm.isMultiplyPretransitive α _
+      obtain ⟨x', hx'⟩ :=
+        Fin.Embedding.restrictSurjective_of_le_natCard h2le (le_refl _) x
       obtain ⟨y' : Fin (Nat.card α) ↪ α, hy'⟩ :=
-        Fin.Embedding.restrictSurjective_of_le_natCard h2' (le_refl _) y
+        Fin.Embedding.restrictSurjective_of_le_natCard h2le (le_refl _) y
       obtain ⟨g , hg⟩ := exists_smul_eq (Equiv.Perm α) x' y'
       rcases Int.units_eq_one_or (Equiv.Perm.sign g) with h | h
       · use ⟨g, h⟩
         ext i
-        simp only [← hx', subgroup_smul_def, smul_apply, trans_apply, castLEEmb_apply, ← hy']
+        simp only [← hx', subgroup_smul_def, smul_apply,
+          Function.Embedding.trans_apply, castLEEmb_apply, ← hy']
         simp only [← smul_apply, hg]
       · let u : Fin (Nat.card α) :=
           ⟨Nat.card α - 1, by exact sub_one_lt_of_lt h2⟩
@@ -510,8 +518,9 @@ theorem alternatingGroup_of_sub_two [DecidableEq α] :
             simp [h, this]
           exact ne_of_val_ne (Nat.ne_of_gt (sub_succ_lt_self (Nat.card α) 1 h2))
         · ext i
-          suffices (Equiv.swap (x' u) (x' v)) • (x' (castLE h2' i)) = x' (castLE h2' i) by
-            simp only [← hx', Subgroup.mk_smul, smul_apply, trans_apply, castLEEmb_apply,
+          suffices (Equiv.swap (x' u) (x' v)) • (x' (castLE h2le i)) = x' (castLE h2le i) by
+            simp only [← hx', Subgroup.mk_smul, smul_apply,
+              Function.Embedding.trans_apply, castLEEmb_apply,
               Equiv.Perm.coe_mul, Function.comp_apply, this, ← hy', mul_smul, this, hg]
             simp only [← smul_apply, hg]
           have hiv : (i : ℕ) < v := (lt_of_lt_of_le i.prop (le_of_eq rfl))
@@ -522,8 +531,6 @@ theorem alternatingGroup_of_sub_two [DecidableEq α] :
           apply Equiv.swap_apply_of_ne_of_ne <;>
             simp [ne_eq, EmbeddingLike.apply_eq_iff_eq, ← val_inj,
               coe_castLE, Nat.ne_of_lt hiu, Nat.ne_of_lt hiv] }
-
-
 variable {α}
 
 /-- A subgroup of `Equiv.Perm α` which is (Fintype.card α - 2)-pretransitive
