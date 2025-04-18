@@ -7,6 +7,8 @@ import Mathlib.Analysis.InnerProductSpace.Rayleigh
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Algebra.DirectSum.Decomposition
 import Mathlib.LinearAlgebra.Eigenspace.Minpoly
+import Mathlib.Data.Fin.Tuple.Sort
+
 
 /-! # Spectral theory of self-adjoint operators
 
@@ -189,37 +191,68 @@ finite-dimensional inner product space `E`.
 
 TODO Postcompose with a permutation so that these eigenvectors are listed in increasing order of
 eigenvalue. -/
-noncomputable irreducible_def eigenvectorBasis : OrthonormalBasis (Fin n) 𝕜 E :=
+
+-- The sequence of real eigenvalues associated to the standard orthonormal basis of eigenvectors
+--for a self-adjoint operator `T` on `E`.
+
+--TODO Postcompose with a permutation so that these eigenvalues are listed in increasing order. -/
+
+private noncomputable def unsortedEigenvalues (i : Fin n) : ℝ :=
+  @RCLike.re 𝕜 _ <|
+    (hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
+      hT.orthogonalFamily_eigenspaces').val
+
+private noncomputable def unsortedEigenvectorBasis : OrthonormalBasis (Fin n) 𝕜 E :=
   hT.direct_sum_isInternal.subordinateOrthonormalBasis hn hT.orthogonalFamily_eigenspaces'
 
-/-- The sequence of real eigenvalues associated to the standard orthonormal basis of eigenvectors
-for a self-adjoint operator `T` on `E`.
+private noncomputable def eigenvaluePerm : Equiv.Perm (Fin n) :=
+  Tuple.sort (hT.unsortedEigenvalues hn)
 
-TODO Postcompose with a permutation so that these eigenvalues are listed in increasing order. -/
-noncomputable irreducible_def eigenvalues (i : Fin n) : ℝ :=
-  @RCLike.re 𝕜 _ <| (hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
-    hT.orthogonalFamily_eigenspaces').val
+--make irreducible
+noncomputable def eigenvalues : Fin n → ℝ :=
+  (hT.unsortedEigenvalues hn) ∘ (hT.eigenvaluePerm hn)
 
-theorem hasEigenvector_eigenvectorBasis (i : Fin n) :
-    HasEigenvector T (hT.eigenvalues hn i) (hT.eigenvectorBasis hn i) := by
-  let v : E := hT.eigenvectorBasis hn i
+noncomputable def eigenvectorBasis : OrthonormalBasis (Fin n) 𝕜 E :=
+  (hT.direct_sum_isInternal.subordinateOrthonormalBasis
+    hn hT.orthogonalFamily_eigenspaces').reindex (hT.eigenvaluePerm hn).symm
+
+--variable (i : Fin n)
+--#check (hT.direct_sum_isInternal.subordinateOrthonormalBasis hn hT.orthogonalFamily_eigenspaces')
+
+theorem monotoneEigenvalues : Monotone (hT.eigenvalues hn) := by
+  apply Tuple.monotone_sort
+
+theorem hasEigenvector_eigenvectorBasis_helper (i : Fin n) :
+    HasEigenvector T (hT.unsortedEigenvalues hn i) (hT.unsortedEigenvectorBasis hn i) := by
+  let v : E := hT.unsortedEigenvectorBasis hn i
   let μ : 𝕜 :=
     (hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
       hT.orthogonalFamily_eigenspaces').val
-  simp_rw [eigenvalues]
+  simp_rw [unsortedEigenvalues]
   change HasEigenvector T (RCLike.re μ) v
   have key : HasEigenvector T μ v := by
     have H₁ : v ∈ eigenspace T μ := by
-      simp_rw [v, eigenvectorBasis]
+      simp_rw [v, unsortedEigenvectorBasis]
       exact
         hT.direct_sum_isInternal.subordinateOrthonormalBasis_subordinate hn i
           hT.orthogonalFamily_eigenspaces'
-    have H₂ : v ≠ 0 := by simpa using (hT.eigenvectorBasis hn).toBasis.ne_zero i
+    have H₂ : v ≠ 0 := by simpa using (hT.unsortedEigenvectorBasis hn).toBasis.ne_zero i
     exact ⟨H₁, H₂⟩
   have re_μ : ↑(RCLike.re μ) = μ := by
     rw [← RCLike.conj_eq_iff_re]
     exact hT.conj_eigenvalue_eq_self (hasEigenvalue_of_hasEigenvector key)
   simpa [re_μ] using key
+
+theorem hasEigenvector_eigenvectorBasis (i : Fin n) :
+  HasEigenvector T (hT.eigenvalues hn i) (hT.eigenvectorBasis hn i) := by
+    let p : Equiv.Perm (Fin n) := hT.eigenvaluePerm hn
+    have h1 : hT.eigenvalues hn i = (hT.unsortedEigenvalues hn) (p i) := by trivial
+    have h2 : hT.eigenvectorBasis hn i = (hT.unsortedEigenvectorBasis hn) (p i) := by
+      dsimp[eigenvectorBasis]
+      rw[OrthonormalBasis.reindex_apply]
+      dsimp[unsortedEigenvectorBasis]
+    rw[h1, h2]
+    apply hasEigenvector_eigenvectorBasis_helper
 
 theorem hasEigenvalue_eigenvalues (i : Fin n) : HasEigenvalue T (hT.eigenvalues hn i) :=
   Module.End.hasEigenvalue_of_hasEigenvector (hT.hasEigenvector_eigenvectorBasis hn i)
