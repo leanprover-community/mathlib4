@@ -47,7 +47,6 @@ theorem sum_smul_index_semilinearMap' [Semiring R] [Semiring R₂] [AddCommMonoi
   · intro i
     exact (h i).map_zero
 
-@[simp]
 theorem sum_smul_index_linearMap' [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid M₂]
     [Module R M₂] {v : α →₀ M} {c : R} {h : α → M →ₗ[R] M₂} :
     ((c • v).sum fun a => h a) = c • v.sum fun a => h a :=
