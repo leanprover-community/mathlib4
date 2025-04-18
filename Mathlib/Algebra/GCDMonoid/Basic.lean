@@ -26,8 +26,8 @@ For the `NormalizedGCDMonoid` instances on `ℕ` and `ℤ`, see `Mathlib.Algebra
 ## Implementation Notes
 
 * `NormalizationMonoid` is defined by assigning to each element a `normUnit` such that multiplying
-by that unit normalizes the monoid, and `normalize` is an idempotent monoid homomorphism. This
-definition as currently implemented does casework on `0`.
+  by that unit normalizes the monoid, and `normalize` is an idempotent monoid homomorphism. This
+  definition as currently implemented does casework on `0`.
 
 * `GCDMonoid` contains the definitions of `gcd` and `lcm` with the usual properties. They are
   both determined up to a unit.
