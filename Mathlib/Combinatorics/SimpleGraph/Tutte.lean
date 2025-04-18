@@ -86,7 +86,7 @@ theorem Subgraph.IsPerfectMatching.exists_of_isClique_supp
     (h' : ∀ (K : G.deleteUniversalVerts.coe.ConnectedComponent),
     G.deleteUniversalVerts.coe.IsClique K.supp) : ∃ (M : Subgraph G), M.IsPerfectMatching := by
   classical
-  obtain ⟨M, ⟨hM, hsub⟩⟩ := IsMatching.exists_verts_compl_subset_universalVerts h h'
+  obtain ⟨M, hM, hsub⟩ := IsMatching.exists_verts_compl_subset_universalVerts h h'
   obtain ⟨M', hM'⟩ := ((G.isClique_universalVerts.subset hsub).even_iff_exists_isMatching
     (Set.toFinite _)).mp (by simpa [Set.even_ncard_compl_iff hveven, -Set.toFinset_card,
       ← Set.ncard_eq_toFinset_card'] using hM.even_card)
