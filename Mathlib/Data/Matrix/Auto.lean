@@ -160,8 +160,8 @@ do
           withLocalDeclDQ ((`a).appendAfter (nameSuffix i j)) _
       let b : Matrix (Fin m) (Fin n) Q($α) ← Matrix.mapM <| fun i j =>
           withLocalDeclDQ ((`b).appendAfter (nameSuffix i j)) _
-      let a_flat := (List.finRange l).flatMap <| fun i => (List.finRange m).map <| fun j => a i j
-      let b_flat := (List.finRange m).flatMap <| fun i => (List.finRange n).map <| fun j => b i j
+      let a_flat := (List.finRange l).flatMap <| fun i : Fin l => List.ofFn fun j => a i j
+      let b_flat := (List.finRange m).flatMap <| fun i : Fin m => List.ofFn fun j => b i j
       let args := (#[α, instMulα, instAddCommMonoidα] : Array Expr) ++
         (show Array Expr from a_flat.toArray ++ b_flat.toArray : Array Expr)
 
