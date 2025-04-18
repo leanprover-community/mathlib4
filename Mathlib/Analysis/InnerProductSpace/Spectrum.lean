@@ -186,16 +186,8 @@ section Version2
 
 variable {n : ℕ} (hn : Module.finrank 𝕜 E = n)
 
-/-- A choice of orthonormal basis of eigenvectors for self-adjoint operator `T` on a
-finite-dimensional inner product space `E`.
-
-TODO Postcompose with a permutation so that these eigenvectors are listed in increasing order of
-eigenvalue. -/
-
--- The sequence of real eigenvalues associated to the standard orthonormal basis of eigenvectors
---for a self-adjoint operator `T` on `E`.
-
---TODO Postcompose with a permutation so that these eigenvalues are listed in increasing order. -/
+/--
+Unsorted eigenvalues and eigenvectors.  These are composed with a permutation below. -/
 
 private noncomputable def unsortedEigenvalues (i : Fin n) : ℝ :=
   @RCLike.re 𝕜 _ <|
@@ -205,24 +197,7 @@ private noncomputable def unsortedEigenvalues (i : Fin n) : ℝ :=
 private noncomputable def unsortedEigenvectorBasis : OrthonormalBasis (Fin n) 𝕜 E :=
   hT.direct_sum_isInternal.subordinateOrthonormalBasis hn hT.orthogonalFamily_eigenspaces'
 
-private noncomputable def eigenvaluePerm : Equiv.Perm (Fin n) :=
-  Tuple.sort (hT.unsortedEigenvalues hn)
-
---make irreducible
-noncomputable def eigenvalues : Fin n → ℝ :=
-  (hT.unsortedEigenvalues hn) ∘ (hT.eigenvaluePerm hn)
-
-noncomputable def eigenvectorBasis : OrthonormalBasis (Fin n) 𝕜 E :=
-  (hT.direct_sum_isInternal.subordinateOrthonormalBasis
-    hn hT.orthogonalFamily_eigenspaces').reindex (hT.eigenvaluePerm hn).symm
-
---variable (i : Fin n)
---#check (hT.direct_sum_isInternal.subordinateOrthonormalBasis hn hT.orthogonalFamily_eigenspaces')
-
-theorem monotoneEigenvalues : Monotone (hT.eigenvalues hn) := by
-  apply Tuple.monotone_sort
-
-theorem hasEigenvector_eigenvectorBasis_helper (i : Fin n) :
+private theorem hasEigenvector_eigenvectorBasis_helper (i : Fin n) :
     HasEigenvector T (hT.unsortedEigenvalues hn i) (hT.unsortedEigenvectorBasis hn i) := by
   let v : E := hT.unsortedEigenvectorBasis hn i
   let μ : 𝕜 :=
@@ -243,16 +218,34 @@ theorem hasEigenvector_eigenvectorBasis_helper (i : Fin n) :
     exact hT.conj_eigenvalue_eq_self (hasEigenvalue_of_hasEigenvector key)
   simpa [re_μ] using key
 
+/-- A choice of orthonormal basis of eigenvectors for self-adjoint operator `T` on a
+finite-dimensional inner product space `E`. -/
+noncomputable irreducible_def eigenvalues : Fin n → ℝ :=
+  (hT.unsortedEigenvalues hn) ∘ (Tuple.sort (hT.unsortedEigenvalues hn))
+
+/-- A choice of orthonormal basis of eigenvectors for self-adjoint operator `T` on a
+finite-dimensional inner product space `E`.  Eigenvectors are sorted in increasing
+order of their eigenvalues. -/
+noncomputable irreducible_def eigenvectorBasis : OrthonormalBasis (Fin n) 𝕜 E :=
+  (hT.direct_sum_isInternal.subordinateOrthonormalBasis
+    hn hT.orthogonalFamily_eigenspaces').reindex
+      (Tuple.sort (hT.unsortedEigenvalues hn)).symm
+
 theorem hasEigenvector_eigenvectorBasis (i : Fin n) :
   HasEigenvector T (hT.eigenvalues hn i) (hT.eigenvectorBasis hn i) := by
-    let p : Equiv.Perm (Fin n) := hT.eigenvaluePerm hn
-    have h1 : hT.eigenvalues hn i = (hT.unsortedEigenvalues hn) (p i) := by trivial
+    let p : Equiv.Perm (Fin n) :=  Tuple.sort (hT.unsortedEigenvalues hn)
+    have h1 : hT.eigenvalues hn i = (hT.unsortedEigenvalues hn) (p i) := by
+      rw[eigenvalues_def]; rfl
     have h2 : hT.eigenvectorBasis hn i = (hT.unsortedEigenvectorBasis hn) (p i) := by
-      dsimp[eigenvectorBasis]
-      rw[OrthonormalBasis.reindex_apply]
-      dsimp[unsortedEigenvectorBasis]
+      rw[eigenvectorBasis_def, OrthonormalBasis.reindex_apply]; rfl
     rw[h1, h2]
     apply hasEigenvector_eigenvectorBasis_helper
+
+/--
+Eigenvalues are sorted in increasing order. -/
+theorem monotoneEigenvalues : Monotone (hT.eigenvalues hn) := by
+  rw[eigenvalues_def]
+  apply Tuple.monotone_sort
 
 theorem hasEigenvalue_eigenvalues (i : Fin n) : HasEigenvalue T (hT.eigenvalues hn i) :=
   Module.End.hasEigenvalue_of_hasEigenvector (hT.hasEigenvector_eigenvectorBasis hn i)
