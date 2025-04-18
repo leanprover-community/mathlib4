@@ -93,8 +93,9 @@ instance [NonUnitalCommRing β] : NonUnitalCommRing (α →₀ β) :=
     (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 -- TODO(Paul-Lez): add a `DFinsupp` version of this.
---Note: this creates an instance diamond with `SMul (α → β) (α →₀ (α → β))`
-instance pointwiseScalar {M : Type*} [Zero M] [SMulZeroClass β M] : SMul (α → β) (α →₀ M) where
+-- Note: this creates an instance diamond with `SMul (α → β) (α →₀ (α → β))`, so this is an
+-- abbrev rather than an instance.
+abbrev pointwiseScalar {M : Type*} [Zero M] [SMulZeroClass β M] : SMul (α → β) (α →₀ M) where
   smul f g :=
     Finsupp.ofSupportFinite (fun a ↦ f a • g a) (by
       apply Set.Finite.subset g.finite_support
@@ -103,6 +104,8 @@ instance pointwiseScalar {M : Type*} [Zero M] [SMulZeroClass β M] : SMul (α �
       intro x hx h
       apply hx
       rw [h, smul_zero])
+
+instance pointwiseScalarSemiring [Semiring β] : SMul (α → β) (α →₀ β) := pointwiseScalar
 
 @[simp]
 theorem coe_pointwise_smul [Semiring β] (f : α → β) (g : α →₀ β) : ⇑(f • g) = f • ⇑g :=
