@@ -11,13 +11,6 @@ import Mathlib.GroupTheory.Perm.Fin
 adds `m - n` to `i`, generalizes `addNatEmb`.
 * `cycleIcc i j hij` is the cycle `(i i+1 .... j)` leaving `(0 ... i-1)` and `(j+1 ... n-1)`
 unchanged.
-* `range_natAdd_castLEEmb`
-* `cycleIcc_of_gt`
-* `cycleIcc_of_le`
-* `cycleIcc_of`
-* `cycleRange_of_lt`
-* `cycleRange_of_eq`
-* `sign_cycleIcc`
 -/
 
 open Equiv Fin
