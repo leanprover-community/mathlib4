@@ -3,8 +3,10 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.Vector
 import Mathlib.Control.Monad.Cont
+import Mathlib.Data.Matrix.Reflection
+import Mathlib.Algebra.Expr
+import Qq
 
 /-! # Automatically generated lemmas for working with concrete matrices
 
@@ -13,7 +15,7 @@ This file contains "magic" lemmas which autogenerate to the correct size of matr
 ```lean
 example {α} [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁₁ b₁₂ b₂₁ b₂₂ : α) :
   !![a₁₁, a₁₂;
-     a₂₁, a₂₂] ⬝ !![b₁₁, b₁₂;
+     a₂₁, a₂₂] * !![b₁₁, b₁₂;
                     b₂₁, b₂₂] = !![a₁₁ * b₁₁ + a₁₂ * b₂₁, a₁₁ * b₁₂ + a₁₂ * b₂₂;
                                    a₂₁ * b₁₁ + a₂₂ * b₂₁, a₂₁ * b₁₂ + a₂₂ * b₂₂] := by
   rw [of_mul_of_fin% 2 2 2]
@@ -29,17 +31,12 @@ example {α} [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁�
 
 open Lean Lean.Meta Elab Qq
 
+universe u v
+
 /-- Like `List.mapM` but for a tuple. -/
 def PiFin.mapM {α : Type u} {n : ℕ} {m : Type u → Type v} [Monad m] (f : Fin n → m α) :
     m (Fin n → α) :=
-  Vector.get <$> Vector.mmap f ⟨List.finRange n, List.length_finRange _⟩
-
-/-- Convert a vector of Exprs to the Expr constructing that vector.-/
-def PiFin.toExprQ {u : Level} {α : Q(Type u)} :
-    ∀ {n : ℕ}, (Fin n → Q($α)) → Q(Fin $n → $α)
-  | 0, _v => q(![])
-  | _n + 1, v => q(Matrix.vecCons $(v 0) $(PiFin.toExprQ <| Matrix.vecTail v))
-
+  Vector.get <$> Vector.mapM f (Vector.ofFn id)
 
 namespace Matrix
 
@@ -48,11 +45,6 @@ def mapM {α : Type u} {n o : ℕ} {m : Type u → Type v} [Monad m]
     (f : Matrix (Fin n) (Fin o) (m α)) :
     m (Matrix (Fin n) (Fin o) α) :=
   Matrix.of <$> (PiFin.mapM <| fun i => PiFin.mapM <| fun j => f i j)
-
-/-- `PiFin.toExprQ` but for matrices -/
-def toExprQ {u : Level} {m n : ℕ} {α : Q(Type u)} (A : Matrix (Fin m) (Fin n) Q($α)) :
-  Q(Matrix (Fin $m) (Fin $n) $α) :=
-q(Matrix.of $(PiFin.toExprQ (u := u) fun i : Fin m => PiFin.toExprQ fun j : Fin n => A i j))
 
 namespace fin_eta
 
@@ -64,10 +56,9 @@ def prove (m n : ℕ) : MetaM Expr := do
   -- Note: Qq seems to need type ascriptions on `fun` binders even though
   -- the type is easily inferred. Is there a metavariable instantiation bug?
   withLocalDeclQ `α .implicit q(Type u) fun (α : Q(Type u)) =>
-  withLocalDeclDQ `A q(Matrix (Fin $m) (Fin $n) $α) fun A => do
-    let entry_vals : Q(Fin $m → Fin $n → $α) :=
-      PiFin.toExprQ (u := u) (fun i : Fin m => PiFin.toExprQ (fun j : Fin n => q($A $i $j)))
-    let A_eta : Q(Matrix (Fin $m) (Fin $n) $α) := q(Matrix.of $entry_vals)
+  withLocalDeclDQ `A q(Matrix (Fin $m) (Fin $n) $α) fun (A : Q(Matrix (Fin $m) (Fin $n) $α)) => do
+    have A_eta : Q(Matrix (Fin $m) (Fin $n) $α) :=
+      Matrix.mkLiteralQ (Matrix.of fun (i : Fin m) (j : Fin n) => q($A $i $j))
     let forall_A_eq : Q(Prop) ← mkForallFVars #[α, A] q($A = $A_eta)
     let heq : Q(Matrix.etaExpand $A = $A_eta) := (q(Eq.refl $A_eta) : Expr)
     let some pf ← checkTypeQ (ty := forall_A_eq) <| ← mkLambdaFVars #[α, A]
@@ -143,7 +134,7 @@ private def nameSuffix {m n : ℕ} : Fin m → Fin n → String :=
 /-- Prove a statement of the form
 ```
 ∀ α [has_mul α] [add_comm_monoid α] (a₁₁ ... aₗₘ b₁₁ ... bₘₙ : α),
-   !![a₁₁ ⋱ aₗₘ] ⬝ !![b₁₁ ⋱ bₘₙ] = !![⋱]
+   !![a₁₁ ⋱ aₗₘ] * !![b₁₁ ⋱ bₘₙ] = !![⋱]
 ```
 Returns the type of this statement and its proof. -/
 def prove (l m n : ℕ) : MetaM Expr :=
@@ -153,7 +144,8 @@ do
   -- the type is easily inferred. Is there a metavariable instantiation bug?
   withLocalDeclQ `α .implicit q(Type u) fun (α : Q(Type u)) => do
   withLocalDeclQ `inst_1 .instImplicit q(Mul $α) fun (instMulα : Q(Mul $α)) => do
-  withLocalDeclQ `inst_2 .instImplicit q(AddCommMonoid $α) fun (instAddCommMonoidα : Q(AddCommMonoid $α)) => do
+  withLocalDeclQ `inst_2 .instImplicit q(AddCommMonoid $α)
+      fun (instAddCommMonoidα : Q(AddCommMonoid $α)) => do
     -- trick: create algebraic instances on `Expr` so that we can use `Matrix.mul` or
     -- `Matrix.mulᵣ` to build the expression we want to end up with. It doesn't matter which we
     -- pick but the typeclasses are easier to create for the latter.
@@ -168,20 +160,20 @@ do
           withLocalDeclDQ ((`a).appendAfter (nameSuffix i j)) _
       let b : Matrix (Fin m) (Fin n) Q($α) ← Matrix.mapM <| fun i j =>
           withLocalDeclDQ ((`b).appendAfter (nameSuffix i j)) _
-      let a_flat := (List.finRange l).bind <| fun i => (List.finRange m).map <| fun j => a i j
-      let b_flat := (List.finRange m).bind <| fun i => (List.finRange n).map <| fun j => b i j
+      let a_flat := (List.finRange l).flatMap <| fun i => (List.finRange m).map <| fun j => a i j
+      let b_flat := (List.finRange m).flatMap <| fun i => (List.finRange n).map <| fun j => b i j
       let args := (#[α, instMulα, instAddCommMonoidα] : Array Expr) ++
         (show Array Expr from a_flat.toArray ++ b_flat.toArray : Array Expr)
 
       -- build the matrices out of the coefficients
-      let A := Matrix.toExprQ a
-      let B := Matrix.toExprQ b
-      let AB := Matrix.toExprQ (Matrix.mulᵣ a b)
+      let A := Matrix.mkLiteralQ a
+      let B := Matrix.mkLiteralQ b
+      let AB := Matrix.mkLiteralQ (Matrix.mulᵣ a b)
 
       -- State and prove the equality, noting the RHS is defeq to `mulᵣ A B`.
-      let forall_A_eq : Q(Prop) ← mkForallFVars args q($A ⬝ $B = $AB)
+      let forall_A_eq : Q(Prop) ← mkForallFVars args q($A * $B = $AB)
       let pf' ← mkLambdaFVars args <|
-        (show Q($A ⬝ $B = $AB) from (q((Matrix.mulᵣ_eq $A $B).symm) : Expr))
+        (show Q($A * $B = $AB) from (q((Matrix.mulᵣ_eq $A $B).symm) : Expr))
       let some pf ← checkTypeQ (ty := forall_A_eq) <| pf'
             | throwError "(internal error) of_mul_of_fin% generated proof with incorrect type."
       mkExpectedTypeHint pf forall_A_eq
