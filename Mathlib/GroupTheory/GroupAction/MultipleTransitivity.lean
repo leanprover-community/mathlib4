@@ -8,7 +8,7 @@ import Mathlib.Data.Fin.Tuple.Embedding
 import Mathlib.GroupTheory.GroupAction.Embedding
 import Mathlib.GroupTheory.GroupAction.Primitive
 
-import Mathlib.GroupTheory.GroupAction.SubMulAction.ofStabilizer
+import Mathlib.GroupTheory.GroupAction.SubMulAction.OfStabilizer
 import Mathlib.Data.Finite.Card
 import Mathlib.Data.Set.Card
 import Mathlib.SetTheory.Cardinal.Finite
