@@ -2061,6 +2061,7 @@ import Mathlib.CategoryTheory.Idempotents.SimplicialObject
 import Mathlib.CategoryTheory.IsConnected
 import Mathlib.CategoryTheory.Iso
 import Mathlib.CategoryTheory.IsomorphismClasses
+import Mathlib.CategoryTheory.Join.Basic
 import Mathlib.CategoryTheory.LiftingProperties.Adjunction
 import Mathlib.CategoryTheory.LiftingProperties.Basic
 import Mathlib.CategoryTheory.LiftingProperties.Limits
@@ -2608,6 +2609,7 @@ import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkDecomp
 import Mathlib.Combinatorics.SimpleGraph.Copy
 import Mathlib.Combinatorics.SimpleGraph.Dart
 import Mathlib.Combinatorics.SimpleGraph.DegreeSum
+import Mathlib.Combinatorics.SimpleGraph.DeleteEdges
 import Mathlib.Combinatorics.SimpleGraph.Density
 import Mathlib.Combinatorics.SimpleGraph.Diam
 import Mathlib.Combinatorics.SimpleGraph.Ends.Defs

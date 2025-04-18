@@ -351,6 +351,12 @@ theorem gcd_eq_zero_iff [GCDMonoid α] (a b : α) : gcd a b = 0 ↔ a = 0 ∧ b 
     rw [ha, hb, ← zero_dvd_iff]
     apply dvd_gcd <;> rfl
 
+theorem gcd_ne_zero_of_left [GCDMonoid α] {a b : α} (ha : a ≠ 0) : gcd a b ≠ 0 := by
+  simp_all
+
+theorem gcd_ne_zero_of_right [GCDMonoid α] {a b : α} (hb : b ≠ 0) : gcd a b ≠ 0 := by
+  simp_all
+
 @[simp]
 theorem gcd_one_left [NormalizedGCDMonoid α] (a : α) : gcd 1 a = 1 :=
   dvd_antisymm_of_normalize_eq (normalize_gcd _ _) normalize_one (gcd_dvd_left _ _) (one_dvd _)
