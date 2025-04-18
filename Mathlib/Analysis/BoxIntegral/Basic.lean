@@ -352,7 +352,7 @@ theorem norm_integral_le_of_norm_le {g : ℝⁿ → ℝ} (hle : ∀ x ∈ Box.Ic
 
 theorem norm_integral_le_of_le_const {c : ℝ}
     (hc : ∀ x ∈ Box.Icc I, ‖f x‖ ≤ c) (μ : Measure ℝⁿ) [IsLocallyFiniteMeasure μ] :
-    ‖(integral I l f μ.toBoxAdditive.toSMul : E)‖ ≤ (μ I).toReal * c := by
+    ‖(integral I l f μ.toBoxAdditive.toSMul : E)‖ ≤ μ.real I * c := by
   simpa only [integral_const] using norm_integral_le_of_norm_le hc μ (integrable_const c)
 
 /-!

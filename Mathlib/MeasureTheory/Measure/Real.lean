@@ -10,7 +10,7 @@ import Mathlib.Tactic.Finiteness
 /-!
 # Measures as real-valued functions
 
-Given a measure `μ`, we define `μ.real` as the function sending a set `s` to `(μ s).toReal`, and
+Given a measure `μ`, we define `μ.real` as the function sending a set `s` to `μ.real s`, and
 develop a basic API around this.
 
 We essentially copy relevant lemmas from the files `MeasureSpaceDef.lean`, `NullMeasurable.lean` and
@@ -37,9 +37,9 @@ variable {α β ι : Type*} {_ : MeasurableSpace α} {μ : Measure α} {s s₁ s
 variable (μ) in
 /-- The real-valued version of a measure. Maps infinite measure sets to zero. Use as `μ.real s`. -/
 protected def Measure.real (s : Set α) : ℝ :=
-  (μ s).toReal
+  μ.real s
 
-theorem measureReal_def (s : Set α) : μ.real s = (μ s).toReal := rfl
+theorem measureReal_def (s : Set α) : μ.real s = μ.real s := rfl
 
 alias Measure.real_def := measureReal_def
 

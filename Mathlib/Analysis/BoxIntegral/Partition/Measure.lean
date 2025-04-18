@@ -13,7 +13,7 @@ In this file we prove a few simple facts about rectangular boxes, partitions, an
 
 - given a box `I : Box ι`, its coercion to `Set (ι → ℝ)` and `I.Icc` are measurable sets;
 - if `μ` is a locally finite measure, then `(I : Set (ι → ℝ))` and `I.Icc` have finite measure;
-- if `μ` is a locally finite measure, then `fun J ↦ (μ J).toReal` is a box additive function.
+- if `μ` is a locally finite measure, then `fun J ↦ μ.real J` is a box additive function.
 
 For the last statement, we both prove it as a proposition and define a bundled
 `BoxIntegral.BoxAdditiveMap` function.
@@ -74,7 +74,7 @@ end Box
 
 theorem Prepartition.measure_iUnion_toReal [Finite ι] {I : Box ι} (π : Prepartition I)
     (μ : Measure (ι → ℝ)) [IsLocallyFiniteMeasure μ] :
-    (μ π.iUnion).toReal = ∑ J ∈ π.boxes, (μ J).toReal := by
+    μ.real π.iUnion = ∑ J ∈ π.boxes, μ.real J := by
   rw [← ENNReal.toReal_sum (fun J _ => (J.measure_coe_lt_top μ).ne), π.iUnion_def]
   simp only [← mem_boxes]
   rw [measure_biUnion_finset π.pairwiseDisjoint]
@@ -88,11 +88,11 @@ namespace MeasureTheory
 
 namespace Measure
 
-/-- If `μ` is a locally finite measure on `ℝⁿ`, then `fun J ↦ (μ J).toReal` is a box-additive
+/-- If `μ` is a locally finite measure on `ℝⁿ`, then `fun J ↦ μ.real J` is a box-additive
 function. -/
 @[simps]
 def toBoxAdditive [Finite ι] (μ : Measure (ι → ℝ)) [IsLocallyFiniteMeasure μ] : ι →ᵇᵃ[⊤] ℝ where
-  toFun J := (μ J).toReal
+  toFun J := μ.real J
   sum_partition_boxes' J _ π hπ := by rw [← π.measure_iUnion_toReal, hπ.iUnion_eq]
 
 end Measure

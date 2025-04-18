@@ -37,7 +37,7 @@ theorem hasIntegralIndicatorConst (l : IntegrationParams) (hl : l.bRiemann = fal
     {s : Set (ι → ℝ)} (hs : MeasurableSet s) (I : Box ι) (y : E) (μ : Measure (ι → ℝ))
     [IsLocallyFiniteMeasure μ] :
     HasIntegral.{u, v, v} I l (s.indicator fun _ => y) μ.toBoxAdditive.toSMul
-      ((μ (s ∩ I)).toReal • y) := by
+      (μ.real (s ∩ I) • y) := by
   refine HasIntegral.of_mul ‖y‖ fun ε ε0 => ?_
   lift ε to ℝ≥0 using ε0.le; rw [NNReal.coe_pos] at ε0
   /- First we choose a closed set `F ⊆ s ∩ I.Icc` and an open set `U ⊇ s` such that
@@ -73,7 +73,7 @@ theorem hasIntegralIndicatorConst (l : IntegrationParams) (hl : l.bRiemann = fal
     Prepartition.filter_boxes, ← Prepartition.measure_iUnion_toReal]
   gcongr
   set t := (π.filter (π.tag · ∈ s)).iUnion
-  change abs ((μ t).toReal - (μ (s ∩ I)).toReal) ≤ ε
+  change abs (μ.real t - μ.real (s ∩ I)) ≤ ε
   have htU : t ⊆ U ∩ I := by
     simp only [t, TaggedPrepartition.iUnion_def, iUnion_subset_iff, TaggedPrepartition.mem_filter,
       and_imp]
@@ -130,7 +130,7 @@ theorem HasIntegral.of_aeEq_zero {l : IntegrationParams} {I : Box ι} {f : (ι �
   rintro n -
   dsimp [integralSum]
   have : ∀ J ∈ π.filter fun J => N (π.tag J) = n,
-      ‖(μ ↑J).toReal • f (π.tag J)‖ ≤ (μ J).toReal * n := fun J hJ ↦ by
+      ‖μ.real ↑J • f (π.tag J)‖ ≤ μ.real J * n := fun J hJ ↦ by
     rw [TaggedPrepartition.mem_filter] at hJ
     rw [norm_smul, Real.norm_eq_abs, abs_of_nonneg ENNReal.toReal_nonneg]
     gcongr
@@ -220,7 +220,7 @@ theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {
     exact SimpleFunc.edist_approxOn_mono hg.measurable _ x hmn
   /- Now consider `ε > 0`. We need to find `r` such that for any tagged partition subordinate
     to `r`, the integral sum is `(μ I + 1 + 1) * ε`-close to the Bochner integral. -/
-  refine HasIntegral.of_mul ((μ I).toReal + 1 + 1) fun ε ε0 => ?_
+  refine HasIntegral.of_mul (μ.real I + 1 + 1) fun ε ε0 => ?_
   lift ε to ℝ≥0 using ε0.le; rw [NNReal.coe_pos] at ε0; have ε0' := ENNReal.coe_pos.2 ε0
   -- Choose `N` such that the integral of `‖f N x - g x‖` is less than or equal to `ε`.
   obtain ⟨N₀, hN₀⟩ : ∃ N : ℕ, ∫ x in I, ‖f N x - g x‖ ∂μ ≤ ε := by
@@ -246,7 +246,7 @@ theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {
     integral sum by `f (Nx x)`; then we replace each `μ J • f (Nx (π.tag J)) (π.tag J)`
     by the Bochner integral of `f (Nx (π.tag J)) x` over `J`, then we jump to the Bochner
     integral of `g`. -/
-  refine (dist_triangle4 _ (∑ J ∈ π.boxes, (μ J).toReal • f (Nx <| π.tag J) (π.tag J))
+  refine (dist_triangle4 _ (∑ J ∈ π.boxes, μ.real J • f (Nx <| π.tag J) (π.tag J))
     (∑ J ∈ π.boxes, ∫ x in J, f (Nx <| π.tag J) x ∂μ) _).trans ?_
   rw [add_mul, add_mul, one_mul]
   refine add_le_add_three ?_ ?_ ?_

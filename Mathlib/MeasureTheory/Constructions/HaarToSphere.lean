@@ -132,7 +132,7 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
   [Nontrivial E] (μ : Measure E) [FiniteDimensional ℝ E] [BorelSpace E] [μ.IsAddHaarMeasure]
 
 lemma integral_fun_norm_addHaar (f : ℝ → F) :
-    ∫ x, f (‖x‖) ∂μ = dim E • (μ (ball 0 1)).toReal • ∫ y in Ioi (0 : ℝ), y ^ (dim E - 1) • f y :=
+    ∫ x, f (‖x‖) ∂μ = dim E • μ.real (ball 0 1) • ∫ y in Ioi (0 : ℝ), y ^ (dim E - 1) • f y :=
   calc
     ∫ x, f (‖x‖) ∂μ = ∫ x : ({(0)}ᶜ : Set E), f (‖x.1‖) ∂(μ.comap (↑)) := by
       rw [integral_subtype_comap (measurableSet_singleton _).compl fun x ↦ f (‖x‖),
@@ -140,7 +140,7 @@ lemma integral_fun_norm_addHaar (f : ℝ → F) :
     _ = ∫ x : sphere (0 : E) 1 × Ioi (0 : ℝ), f x.2 ∂μ.toSphere.prod (.volumeIoiPow (dim E - 1)) :=
       μ.measurePreserving_homeomorphUnitSphereProd.integral_comp (Homeomorph.measurableEmbedding _)
         (f ∘ Subtype.val ∘ Prod.snd)
-    _ = (μ.toSphere univ).toReal • ∫ x : Ioi (0 : ℝ), f x ∂.volumeIoiPow (dim E - 1) :=
+    _ = μ.toSphere.real univ • ∫ x : Ioi (0 : ℝ), f x ∂.volumeIoiPow (dim E - 1) :=
       integral_fun_snd (f ∘ Subtype.val)
     _ = _ := by
       simp only [Measure.volumeIoiPow, ENNReal.ofReal]

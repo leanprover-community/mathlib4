@@ -18,7 +18,7 @@ for L1 functions by extending the integral on simple functions. See the file
 The Bochner integral is defined through the extension process described in the file
 `Mathlib.MeasureTheory.Integral.SetToL1`, which follows these steps:
 
-1. Define the integral of the indicator of a set. This is `weightedSMul μ s x = (μ s).toReal * x`.
+1. Define the integral of the indicator of a set. This is `weightedSMul μ s x = μ.real s * x`.
   `weightedSMul μ` is shown to be linear in the value `x` and `DominatedFinMeasAdditive`
   (defined in the file `Mathlib.MeasureTheory.Integral.SetToL1`) with respect to the set `s`.
 
@@ -70,13 +70,13 @@ open ContinuousLinearMap
 
 variable [NormedAddCommGroup F] [NormedSpace ℝ F] {m : MeasurableSpace α} {μ : Measure α}
 
-/-- Given a set `s`, return the continuous linear map `fun x => (μ s).toReal • x`. The extension
+/-- Given a set `s`, return the continuous linear map `fun x => μ.real s • x`. The extension
 of that set function through `setToL1` gives the Bochner integral of L1 functions. -/
 def weightedSMul {_ : MeasurableSpace α} (μ : Measure α) (s : Set α) : F →L[ℝ] F :=
-  (μ s).toReal • ContinuousLinearMap.id ℝ F
+  μ.real s • ContinuousLinearMap.id ℝ F
 
 theorem weightedSMul_apply {m : MeasurableSpace α} (μ : Measure α) (s : Set α) (x : F) :
-    weightedSMul μ s x = (μ s).toReal • x := by simp [weightedSMul]
+    weightedSMul μ s x = μ.real s • x := by simp [weightedSMul]
 
 @[simp]
 theorem weightedSMul_zero_measure {m : MeasurableSpace α} :
@@ -127,14 +127,14 @@ theorem weightedSMul_smul [SMul 𝕜 F] [SMulCommClass ℝ 𝕜 F] (c : 𝕜)
     (s : Set α) (x : F) : weightedSMul μ s (c • x) = c • weightedSMul μ s x := by
   simp_rw [weightedSMul_apply, smul_comm]
 
-theorem norm_weightedSMul_le (s : Set α) : ‖(weightedSMul μ s : F →L[ℝ] F)‖ ≤ (μ s).toReal :=
+theorem norm_weightedSMul_le (s : Set α) : ‖(weightedSMul μ s : F →L[ℝ] F)‖ ≤ μ.real s :=
   calc
-    ‖(weightedSMul μ s : F →L[ℝ] F)‖ = ‖(μ s).toReal‖ * ‖ContinuousLinearMap.id ℝ F‖ :=
-      norm_smul (μ s).toReal (ContinuousLinearMap.id ℝ F)
-    _ ≤ ‖(μ s).toReal‖ :=
+    ‖(weightedSMul μ s : F →L[ℝ] F)‖ = ‖μ.real s‖ * ‖ContinuousLinearMap.id ℝ F‖ :=
+      norm_smul μ.real s (ContinuousLinearMap.id ℝ F)
+    _ ≤ ‖μ.real s‖ :=
       ((mul_le_mul_of_nonneg_left norm_id_le (norm_nonneg _)).trans (mul_one _).le)
-    _ = abs (μ s).toReal := Real.norm_eq_abs _
-    _ = (μ s).toReal := abs_eq_self.mpr ENNReal.toReal_nonneg
+    _ = abs μ.real s := Real.norm_eq_abs _
+    _ = μ.real s := abs_eq_self.mpr ENNReal.toReal_nonneg
 
 theorem dominatedFinMeasAdditive_weightedSMul {_ : MeasurableSpace α} (μ : Measure α) :
     DominatedFinMeasAdditive μ (weightedSMul μ : Set α → F →L[ℝ] F) 1 :=
@@ -192,7 +192,7 @@ variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ F]
   {m : MeasurableSpace α} {μ : Measure α}
 
 /-- Bochner integral of simple functions whose codomain is a real `NormedSpace`.
-This is equal to `∑ x ∈ f.range, (μ (f ⁻¹' {x})).toReal • x` (see `integral_eq`). -/
+This is equal to `∑ x ∈ f.range, μ.real (f ⁻¹' {x}) • x` (see `integral_eq`). -/
 def integral {_ : MeasurableSpace α} (μ : Measure α) (f : α →ₛ F) : F :=
   f.setToSimpleFunc (weightedSMul μ)
 
@@ -200,18 +200,18 @@ theorem integral_def {_ : MeasurableSpace α} (μ : Measure α) (f : α →ₛ F
     f.integral μ = f.setToSimpleFunc (weightedSMul μ) := rfl
 
 theorem integral_eq {m : MeasurableSpace α} (μ : Measure α) (f : α →ₛ F) :
-    f.integral μ = ∑ x ∈ f.range, (μ (f ⁻¹' {x})).toReal • x := by
+    f.integral μ = ∑ x ∈ f.range, μ.real (f ⁻¹' {x}) • x := by
   simp [integral, setToSimpleFunc, weightedSMul_apply]
 
 theorem integral_eq_sum_filter [DecidablePred fun x : F => x ≠ 0] {m : MeasurableSpace α}
     (f : α →ₛ F) (μ : Measure α) :
-    f.integral μ = ∑ x ∈ {x ∈ f.range | x ≠ 0}, (μ (f ⁻¹' {x})).toReal • x := by
+    f.integral μ = ∑ x ∈ {x ∈ f.range | x ≠ 0}, μ.real (f ⁻¹' {x}) • x := by
   simp_rw [integral_def, setToSimpleFunc_eq_sum_filter, weightedSMul_apply]
 
 /-- The Bochner integral is equal to a sum over any set that includes `f.range` (except `0`). -/
 theorem integral_eq_sum_of_subset [DecidablePred fun x : F => x ≠ 0] {f : α →ₛ F} {s : Finset F}
     (hs : {x ∈ f.range | x ≠ 0} ⊆ s) :
-    f.integral μ = ∑ x ∈ s, (μ (f ⁻¹' {x})).toReal • x := by
+    f.integral μ = ∑ x ∈ s, μ.real (f ⁻¹' {x}) • x := by
   rw [SimpleFunc.integral_eq_sum_filter, Finset.sum_subset hs]
   rintro x - hx; rw [Finset.mem_filter, not_and_or, Ne, Classical.not_not] at hx
   rcases hx.symm with (rfl | hx)
@@ -224,7 +224,7 @@ theorem integral_const {m : MeasurableSpace α} (μ : Measure α) (y : F) :
     (const α y).integral μ = μ.real univ • y := by
   classical
   calc
-    (const α y).integral μ = ∑ z ∈ {y}, (μ (const α y ⁻¹' {z})).toReal • z :=
+    (const α y).integral μ = ∑ z ∈ {y}, μ.real (const α y ⁻¹' {z}) • z :=
       integral_eq_sum_of_subset <| (filter_subset _ _).trans (range_const_subset _ _)
     _ = μ.real univ • y := by simp [Set.preimage]
 
@@ -298,7 +298,7 @@ theorem integral_smul (c : 𝕜) {f : α →ₛ E} (hf : Integrable f μ) :
   setToSimpleFunc_smul _ weightedSMul_union weightedSMul_smul c hf
 
 theorem norm_setToSimpleFunc_le_integral_norm (T : Set α → E →L[ℝ] F) {C : ℝ}
-    (hT_norm : ∀ s, MeasurableSet s → μ s < ∞ → ‖T s‖ ≤ C * (μ s).toReal) {f : α →ₛ E}
+    (hT_norm : ∀ s, MeasurableSet s → μ s < ∞ → ‖T s‖ ≤ C * μ.real s) {f : α →ₛ E}
     (hf : Integrable f μ) : ‖f.setToSimpleFunc T‖ ≤ C * (f.map norm).integral μ :=
   calc
     ‖f.setToSimpleFunc T‖ ≤ C * ∑ x ∈ f.range, ENNReal.toReal (μ (f ⁻¹' {x})) * ‖x‖ :=
