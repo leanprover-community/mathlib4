@@ -11,7 +11,13 @@ import Mathlib.GroupTheory.Perm.Fin
 adds `m - n` to `i`, generalizes `addNatEmb`.
 * `cycleIcc i j hij` is the cycle `(i i+1 .... j)` leaving `(0 ... i-1)` and `(j+1 ... n-1)`
 unchanged.
-This file contains definitions and theorems related to the `cycleRange` function and its properties.
+* `range_natAdd_castLEEmb`
+* `cycleIcc_of_gt`
+* `cycleIcc_of_le`
+* `cycleIcc_of`
+* `cycleRange_of_lt`
+* `cycleRange_of_eq`
+* `sign_cycleIcc`
 -/
 
 open Equiv Fin
@@ -56,7 +62,7 @@ theorem cycleIcc_of_le {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h : j < k) :
       (((addNatEmb (n - (n - i.1))).trans (finCongr _).toEmbedding).toEquivRange.symm ⟨k, kin⟩)) =
       subNat (m := i) (Fin.cast (by omega) k) (by simp [le_of_lt (lt_of_le_of_lt hij h)]) := by
     have : (((addNatEmb (n - (n - i.1))).trans (finCongr _).toEmbedding).toEquivRange.symm ⟨k, kin⟩)
-      = subNat (m := i) (Fin.cast (by omega) k) (by simp [le_of_lt (lt_of_le_of_lt hij h)]) := by
+        = subNat (m := i) (Fin.cast (by omega) k) (by simp [le_of_lt (lt_of_le_of_lt hij h)]) := by
       simpa [symm_apply_eq] using eq_of_val_eq (by simp; omega)
     rw [this, cycleRange_of_gt]
     refine lt_def.mpr ?_
@@ -87,9 +93,9 @@ theorem cycleIcc_of {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h1 : i <= k) (h2 
   · have imp : (k + 1).1 = k.1 + 1 := by
       simp only [add_def, val_one', Nat.add_mod_mod]
       rw [Nat.mod_eq_of_lt]; omega
-    have : (((j - i).castLT (cycleIcc._proof_3 hij)).cycleRange
-        (((addNatEmb (n - (n - i.1))).trans (finCongr _).toEmbedding).toEquivRange.symm ⟨k, kin⟩)) =
-        subNat (m := i) (Fin.cast (by omega) (k + 1)) (by simp [le_iff_val_le_val, imp]; omega) :=by
+    have : (((j - i).castLT (cycleIcc._proof_3 hij)).cycleRange (((addNatEmb (n - (n - i.1))).trans
+        (finCongr _).toEmbedding).toEquivRange.symm ⟨k, kin⟩)) = subNat (m := i)
+        (Fin.cast (by omega) (k + 1)) (by simp [le_iff_val_le_val, imp]; omega) := by
       have : (((addNatEmb (n - (n - i.1))).trans (finCongr _).toEmbedding).toEquivRange.symm
         ⟨k, kin⟩) = subNat (m := i) (Fin.cast (by omega) (k)) (by simp [h1]) := by
         simpa [symm_apply_eq] using eq_of_val_eq (by simp [imp]; omega)
@@ -97,8 +103,8 @@ theorem cycleIcc_of {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h1 : i <= k) (h2 
       have h : (subNat (n := n - i) (i.1) (Fin.cast (by omega) k) (by simp [h1])) <
           ((j - i).castLT (cycleIcc._proof_3 hij)):= by
         simp [subNat, lt_iff_val_lt_val, sub_val_of_le hij]; omega
+      rw [cycleRange_of_lt h]
       have : (k.1 + 1) % n = k.1 + 1 := Nat.mod_eq_of_lt (by omega)
-      simp [cycleRange_of_lt h]
       simpa [subNat, add_def, this, Nat.sub_add_comm h1] using Nat.mod_eq_of_lt (by omega)
     simpa only [natAdd_castLEEmb, this] using eq_of_val_eq (by simp [h3]; omega)
 
@@ -111,6 +117,6 @@ theorem cycleRange_of_eq {n : ℕ} {i j : Fin n} (hij : i ≤ j) [NeZero n] :
   simp [cycleIcc_of hij hij (Fin.ge_of_eq rfl)]
 
 @[simp]
-theorem sign_cycleRange'' {n : ℕ} {i j : Fin n} (hij : i ≤ j) :
+theorem sign_cycleIcc {n : ℕ} {i j : Fin n} (hij : i ≤ j) :
   Perm.sign (cycleIcc hij) = (-1) ^ (j - i : ℕ) := by
   simp [cycleIcc, sub_val_of_le hij]
