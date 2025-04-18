@@ -98,11 +98,9 @@ private noncomputable def descent_spec {c u : Set α}
     (Pcu : P c u) (hcu : c ⊆ u) :
     (v : Set α) ×' IsOpen v ×' c ⊆ v ×' closure v ⊆ u ×' P c v ×' P (closure v) u := by
   obtain ⟨x, ⟨uc, huc, symmuc, ucu, rfl⟩, ⟨uu, huu, rfl⟩, s, ⟨n, hn⟩⟩ := Pcu
-  use Prod.mk x ⁻¹' compRel uc (descent s (n + 1))
   have ho : IsOpen (compRel uc (descent s (n + 1))) := by
     sorry
-  constructor
-  · exact ho.preimage (Continuous.prodMk_right x)
+  use Prod.mk x ⁻¹' compRel uc (descent s (n + 1)), ho.preimage (Continuous.prodMk_right x)
   constructor
   · apply ((Continuous.prodMk_right x).closure_preimage_subset _).trans
     apply preimage_mono
