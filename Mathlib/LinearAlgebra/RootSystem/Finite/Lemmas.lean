@@ -100,24 +100,63 @@ lemma pairingIn_pairingIn_mem_set_of_isCrystallographic :
     (P.coxeterWeightIn_mem_set_of_isCrystallographic i j)
   simpa [← P.algebraMap_pairingIn ℤ] using P.pairing_zero_iff' (i := i) (j := j)
 
-lemma pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed
-    [P.IsReduced] [NoZeroSMulDivisors R M] :
+lemma pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed [P.IsReduced] :
     (P.pairingIn ℤ i j, P.pairingIn ℤ j i) ∈
       ({(0, 0), (1, 1), (-1, -1), (1, 2), (2, 1), (-1, -2), (-2, -1), (1, 3), (3, 1), (-1, -3),
         (-3, -1), (2, 2), (-2, -2)} : Set (ℤ × ℤ)) := by
+  have := P.reflexive_left
   rcases eq_or_ne i j with rfl | h₁; · simp
   rcases eq_or_ne (P.root i) (-P.root j) with h₂ | h₂; · aesop
   have aux₁ := P.pairingIn_pairingIn_mem_set_of_isCrystallographic i j
   have aux₂ : P.pairingIn ℤ i j * P.pairingIn ℤ j i ≠ 4 := P.coxeterWeightIn_ne_four ℤ h₁ h₂
   aesop
 
-lemma pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed'
-    [P.IsReduced] [NoZeroSMulDivisors R M]
+lemma pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed' [P.IsReduced]
     (hij : P.root i ≠ P.root j) (hij' : P.root i ≠ - P.root j) :
     (P.pairingIn ℤ i j, P.pairingIn ℤ j i) ∈
       ({(0, 0), (1, 1), (-1, -1), (1, 2), (2, 1), (-1, -2), (-2, -1), (1, 3), (3, 1), (-1, -3),
         (-3, -1)} : Set (ℤ × ℤ)) := by
+  have := P.reflexive_left
   have := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed i j
+  aesop
+
+variable {P} in
+lemma RootPositiveForm.rootLenIn_le_of_pairingIn_eq_neg_one (B : P.RootPositiveForm ℤ) {i j : ι}
+    (hij : P.pairingIn ℤ i j = -1) :
+    B.rootLenIn i ≤ B.rootLenIn j := by
+  have aux₁ : P.pairingIn ℤ j i = -1 ∨ P.pairingIn ℤ j i = -2 ∨ P.pairingIn ℤ j i = -3 ∨
+      P.pairingIn ℤ j i = -4 := by
+    simpa [hij] using P.pairingIn_pairingIn_mem_set_of_isCrystallographic i j
+  have aux₂ : P.pairingIn ℤ j i * B.rootLenIn i = P.pairingIn ℤ i j * B.rootLenIn j := by
+    simpa only [← (algebraMap_injective ℤ R).eq_iff, algebraMap_pairingIn, map_mul,
+      B.algebraMap_rootLenIn] using B.toInvariantForm.pairing_mul_eq_pairing_mul_swap i j
+  have hi := B.rootLenIn_pos i
+  rcases aux₁ with hji | hji | hji | hji <;> rw [hij, hji] at aux₂ <;> omega
+
+-- TODO Drop `[P.IsReduced]` assumption
+variable {P} in
+lemma RootPositiveForm.rootLenIn_lt_of_pairingIn_eq_neg_one [P.IsReduced]
+    (B : P.RootPositiveForm ℤ) {i j : ι}
+    (hne : P.root i ≠ P.root j) (hne' : P.root i ≠ - P.root j)
+    (hij : P.pairingIn ℤ i j ∉ ({-1, 0, 1} : Set ℤ)) :
+    B.rootLenIn j < B.rootLenIn i := by
+  have hij' : P.pairingIn ℤ i j = -3 ∨ P.pairingIn ℤ i j = -2 ∨ P.pairingIn ℤ i j = 2 ∨
+      P.pairingIn ℤ i j = 3 := by
+    have := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed' i j hne hne'; aesop
+  have aux₁ : P.pairingIn ℤ j i = -1 ∨ P.pairingIn ℤ j i = 1 := by
+    have := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed' i j hne hne'; aesop
+  have aux₂ : P.pairingIn ℤ j i * B.rootLenIn i = P.pairingIn ℤ i j * B.rootLenIn j := by
+    -- TODO Also appears in lemma above: missing upstream API.
+    simpa only [← (algebraMap_injective ℤ R).eq_iff, algebraMap_pairingIn, map_mul,
+      B.algebraMap_rootLenIn] using B.toInvariantForm.pairing_mul_eq_pairing_mul_swap i j
+  have hi := B.rootLenIn_pos i
+  have hj := B.rootLenIn_pos j
+  rcases aux₁ with hji | hji <;> rcases hij' with hij' | hij' | hij' | hij' <;>
+  rw [hji, hij'] at aux₂ <;> omega
+
+lemma pairingIn_le_zero_iff_swap :
+    P.pairingIn ℤ i j ≤ 0 ↔ P.pairingIn ℤ j i ≤ 0 := by
+  have := P.pairingIn_pairingIn_mem_set_of_isCrystallographic i j
   aesop
 
 variable {i j} in
@@ -132,10 +171,11 @@ lemma pairingIn_pairingIn_mem_set_of_length_eq {B : P.InvariantForm}
   aesop
 
 variable {i j} in
-lemma pairingIn_pairingIn_mem_set_of_length_eq_of_ne [NoZeroSMulDivisors R M] {B : P.InvariantForm}
+lemma pairingIn_pairingIn_mem_set_of_length_eq_of_ne {B : P.InvariantForm}
     (len_eq : B.form (P.root i) (P.root i) = B.form (P.root j) (P.root j))
     (ne : i ≠ j) (ne' : P.root i ≠ -P.root j) :
     (P.pairingIn ℤ i j, P.pairingIn ℤ j i) ∈ ({(0, 0), (1, 1), (-1, -1)} : Set (ℤ × ℤ)) := by
+  have := P.reflexive_left
   have := P.pairingIn_pairingIn_mem_set_of_length_eq len_eq
   aesop
 
@@ -280,6 +320,48 @@ lemma apply_eq_or_of_apply_ne
   aesop
 
 end InvariantForm
+
+lemma forall_pairing_eq_swap_or [P.IsReduced] [P.IsIrreducible] :
+    (∀ i j, P.pairing i j = P.pairing j i ∨
+            P.pairing i j = 2 * P.pairing j i ∨
+            P.pairing j i = 2 * P.pairing i j) ∨
+    (∀ i j, P.pairing i j = P.pairing j i ∨
+            P.pairing i j = 3 * P.pairing j i ∨
+            P.pairing j i = 3 * P.pairing i j) := by
+  have : Fintype ι := Fintype.ofFinite ι
+  have B := (P.posRootForm ℤ).toInvariantForm
+  by_cases h : ∀ i j, B.form (P.root i) (P.root i) = B.form (P.root j) (P.root j)
+  · refine Or.inl fun i j ↦ Or.inl ?_
+    have := B.pairing_mul_eq_pairing_mul_swap j i
+    rwa [h i j, mul_left_inj' (B.ne_zero j)] at this
+  push_neg at h
+  obtain ⟨i, j, hij⟩ := h
+  have key := B.apply_eq_or_of_apply_ne hij
+  set li := B.form (P.root i) (P.root i)
+  set lj := B.form (P.root j) (P.root j)
+  have : (li = 2 * lj ∨ lj = 2 * li) ∨ (li = 3 * lj ∨ lj = 3 * li) := by
+    have := B.apply_eq_or i j; tauto
+  rcases this with this | this
+  · refine Or.inl fun k₁ k₂ ↦ ?_
+    have hk := B.pairing_mul_eq_pairing_mul_swap k₁ k₂
+    rcases this with h₀ | h₀ <;> rcases key k₁ with h₁ | h₁ <;> rcases key k₂ with h₂ | h₂ <;>
+    simp only [h₁, h₂, h₀, ← mul_assoc, mul_comm, mul_eq_mul_right_iff] at hk <;>
+    aesop
+  · refine Or.inr fun k₁ k₂ ↦ ?_
+    have hk := B.pairing_mul_eq_pairing_mul_swap k₁ k₂
+    rcases this with h₀ | h₀ <;> rcases key k₁ with h₁ | h₁ <;> rcases key k₂ with h₂ | h₂ <;>
+    simp only [h₁, h₂, h₀, ← mul_assoc, mul_comm, mul_eq_mul_right_iff] at hk <;>
+    aesop
+
+lemma forall_pairingIn_eq_swap_or [P.IsReduced] [P.IsIrreducible] :
+    (∀ i j, P.pairingIn ℤ i j = P.pairingIn ℤ j i ∨
+            P.pairingIn ℤ i j = 2 * P.pairingIn ℤ j i ∨
+            P.pairingIn ℤ j i = 2 * P.pairingIn ℤ i j) ∨
+    (∀ i j, P.pairingIn ℤ i j = P.pairingIn ℤ j i ∨
+            P.pairingIn ℤ i j = 3 * P.pairingIn ℤ j i ∨
+            P.pairingIn ℤ j i = 3 * P.pairingIn ℤ i j) := by
+  simpa only [← P.algebraMap_pairingIn ℤ, eq_intCast, ← Int.cast_mul, Int.cast_inj,
+    ← map_ofNat (algebraMap ℤ R)] using P.forall_pairing_eq_swap_or
 
 namespace Base
 

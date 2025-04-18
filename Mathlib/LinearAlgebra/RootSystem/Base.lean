@@ -71,10 +71,22 @@ variable {P : RootPairing ι R M N} (b : P.Base)
 @[simps] protected def flip :
     P.flip.Base where
   support := b.support
-  linInd_root := b.linInd_coroot
-  linInd_coroot := b.linInd_root
+  linInd_root := b.linInd_coroot -- TODO Change to `LinearIndepOn R (fun i ↦ P.root i) b.support`?
+  linInd_coroot := b.linInd_root -- TODO Change to `LinearIndepOn R (fun i ↦ P.coroot i) b.support`?
   root_mem_or_neg_mem := b.coroot_mem_or_neg_mem
   coroot_mem_or_neg_mem := b.root_mem_or_neg_mem
+
+include b in
+lemma root_ne_neg_of_ne [Nontrivial R] {i j : ι}
+    (hi : i ∈ b.support) (hj : j ∈ b.support) (hij : i ≠ j) :
+    P.root i ≠ - P.root j := by
+  classical
+  have : LinearIndepOn R (fun i ↦ P.root i) b.support := b.linInd_root
+  rw [linearIndepOn_iff'] at this
+  intro contra
+  specialize this ({i, j} : Finset ι) 1 (by simp [Set.insert_subset_iff, hi, hj])
+    (by simp [Finset.sum_pair hij, contra])
+  aesop
 
 lemma root_mem_span_int (i : ι) :
     P.root i ∈ span ℤ (P.root '' b.support) := by
