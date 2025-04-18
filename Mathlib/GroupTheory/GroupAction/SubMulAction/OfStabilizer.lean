@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 
-import Mathlib.GroupTheory.GroupAction.MultipleTransitivity
+-- import Mathlib.GroupTheory.GroupAction.MultipleTransitivity
 
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.GroupTheory.GroupAction.Basic
