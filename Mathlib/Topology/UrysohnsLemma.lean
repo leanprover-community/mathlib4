@@ -111,7 +111,7 @@ structure CU {X : Type*} [TopologicalSpace X] (P : Set X → Set X → Sort*) wh
 
 namespace CU
 
-variable {P : Set X → Set X → Prop}
+variable {P : Set X → Set X → Sort*}
 
 /-- By assumption, for each `c : CU P` there exists an open set `u`
 such that `c.C ⊆ u` and `closure u ⊆ c.U`. `c.left` is the pair `(c.C, u)`. -/
