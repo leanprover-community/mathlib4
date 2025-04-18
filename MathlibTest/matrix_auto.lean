@@ -23,6 +23,14 @@ example : true := by
   have : B = B := by rw [this]
   trivial
 
+/--
+info: ∀ {α : Type u_1} [inst_1 : Mul α] [inst_2 : AddCommMonoid α] (a₀₀ a₀₁ a₁₀ a₁₁ b₀₀ b₀₁ b₁₀ b₁₁ : α),
+  !![a₀₀, a₀₁; a₁₀, a₁₁] * !![b₀₀, b₀₁; b₁₀, b₁₁] =
+    !![a₀₀ * b₀₀ + a₀₁ * b₁₀, a₀₀ * b₀₁ + a₀₁ * b₁₁; a₁₀ * b₀₀ + a₁₁ * b₁₀, a₁₀ * b₀₁ + a₁₁ * b₁₁] : Prop
+-/
+#guard_msgs in
+#check type_of% (of_mul_of_fin% 2 2 2)
+
 example {α} [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁₁ b₁₂ b₂₁ b₂₂ : α) :
     !![a₁₁, a₁₂;
       a₂₁, a₂₂] * !![b₁₁, b₁₂;
