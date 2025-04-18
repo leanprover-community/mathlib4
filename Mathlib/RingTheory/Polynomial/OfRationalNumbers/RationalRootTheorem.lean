@@ -37,32 +37,32 @@ lemma rat_eq_divInt_of_relprimes_aux {r : ℚ} {a b : ℤ}
     (Hb : 0 < b) (H : IsRelPrime a b) (H0 : r = Rat.divInt a b) :
     r.num = a ∧ (r.den : ℤ) = b := by
   apply Rat.div_int_inj (Int.ofNat_lt.mpr (Rat.den_pos r)) Hb r.reduced
-  . rw [Nat.Coprime, <- Int.gcd_eq_natAbs]
+  · rw [Nat.Coprime, <- Int.gcd_eq_natAbs]
     rw [<- gcd_isUnit_iff_isRelPrime, Int.isUnit_iff] at H
     simp only [Int.reduceNeg, reduceCtorEq, or_false] at H
     exact (Int.ofNat_inj.mp H)
-  . rw [Int.cast_natCast, H0, Rat.num_div_den, Rat.intCast_div_eq_divInt]
+  · rw [Int.cast_natCast, H0, Rat.num_div_den, Rat.intCast_div_eq_divInt]
 
 lemma nonzero_rat_eq_divInt_of_relprimes {r : ℚ} {a b : ℤ}
     (Hr : r ≠ 0) (H : IsRelPrime a b) (H0 : r = Rat.divInt a b) :
     r.num.natAbs = a.natAbs ∧ r.den = b.natAbs := by
   obtain H1 | H1 | H1 := Int.lt_trichotomy b 0
-  . have H2 : r = Rat.divInt (-a) (-b) := by rw [Rat.divInt_neg, neg_neg]; exact H0
+  · have H2 : r = Rat.divInt (-a) (-b) := by rw [Rat.divInt_neg, neg_neg]; exact H0
     have H3 := rat_eq_divInt_of_relprimes_aux (Int.neg_pos_of_neg H1) (IsRelPrime.neg_neg H) H2
     omega
-  . subst b; simp only [Rat.divInt_zero] at H0; exact (Hr H0).elim
-  . have H2 := rat_eq_divInt_of_relprimes_aux H1 H H0
+  · subst b; simp only [Rat.divInt_zero] at H0; exact (Hr H0).elim
+  · have H2 := rat_eq_divInt_of_relprimes_aux H1 H H0
     omega
 
 lemma rat_num_abs_and_den_in_fraction_ring (r : ℚ) :
     r.num.natAbs = (IsFractionRing.num ℤ r : ℤ).natAbs ∧
     r.den = (IsFractionRing.den ℤ r : ℤ).natAbs := by
   obtain H | H := eq_or_ne r 0
-  . subst r
+  · subst r
     simp only [Rat.num_ofNat, Int.natAbs_zero, IsFractionRing.num_zero, Rat.den_ofNat, true_and]
     have H0 := IsFractionRing.isUnit_den_zero (A := ℤ) (K := ℚ)
     obtain H0 | H0 := Int.isUnit_iff.mp H0 <;> simp [H0]
-  . exact (nonzero_rat_eq_divInt_of_relprimes H
+  · exact (nonzero_rat_eq_divInt_of_relprimes H
            (IsFractionRing.num_den_reduced ℤ r) (rat_as_divInt_in_fraction_ring r))
 
 lemma aeval_eq_zero_of_eval_eq_zero {p : ℤ[X]} {r : ℚ}
@@ -92,9 +92,9 @@ theorem num_dvd_of_is_root_standard_case {p : ℤ[X]} {r : ℚ}
   use (d * (IsFractionRing.num ℤ r).sign * r.num.sign)
   ring_nf
   obtain H2 | H2 | H2 := Int.lt_trichotomy r.num 0
-  . simp [Int.sign_eq_neg_one_iff_neg.mpr H2]
-  . simp only [Rat.num_eq_zero] at H2; subst r; simp
-  . simp [Int.sign_eq_one_iff_pos.mpr H2]
+  · simp [Int.sign_eq_neg_one_iff_neg.mpr H2]
+  · simp only [Rat.num_eq_zero] at H2; subst r; simp
+  · simp [Int.sign_eq_one_iff_pos.mpr H2]
 
 /-- **Integral root theorem** -/
 theorem root_dvd_of_is_root_of_monic_standard_case {p : ℤ[X]} {n: ℤ}
@@ -116,7 +116,7 @@ example (r : ℚ) (H : r ∈ (2 * X ^ 3 + 3 * X ^ 2 - 3 : ℚ[X]).roots) :
             (2 * X ^ 3 + 3 * X ^ 2 - 3 : ℤ[X]).map (Int.castRingHom ℚ) := by simp
   have H1 : (2 * X ^ 3 + 3 * X ^ 2 - 3: ℤ[X]).natDegree = 3 := by compute_degree!
   rw [H0] at H; constructor
-  . apply den_dvd_of_is_root_standard_case at H
+  · apply den_dvd_of_is_root_standard_case at H
     unfold leadingCoeff at H; rw [H1] at H; simp at H; exact H
-  . apply num_dvd_of_is_root_standard_case at H
+  · apply num_dvd_of_is_root_standard_case at H
     simp at H; exact H
