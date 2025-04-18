@@ -18,7 +18,7 @@ there is a unique morphism `c ⟶ d` in `C ⋆ D`.
 
 * `Join.edge c d`: the unique map from `c` to `d`.
 * `Join.inclLeft : C ⥤ C ⋆ D`, the left inclusion. Its action on morphism is the main entry point
-to constructs maps in `C ⋆ D` between objects coming from `C`.
+  to constructs maps in `C ⋆ D` between objects coming from `C`.
 * `Join.inclRight : D ⥤ C ⋆ D`, the left inclusion. Its action on morphism is the main entry point
 to constructs maps in `C ⋆ D` between object coming from `D`.
 * `Join.mkFunctor`, A constructor for functors out of a join of categories.
