@@ -432,6 +432,7 @@ Geometry:
     Lie algebra of a Lie group: 'GroupLieAlgebra'
     sphere: 'EuclideanSpace.instIsManifoldSphere'
     closed interval: 'instIsManifoldIcc'
+    general linear group as a Lie group: 'Units.instLieGroupModelWithCornersSelf'
 
   Smooth vector and fiber bundles:
     (topological) fiber bundle: 'FiberBundle'
