@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Jeremy Avigad
 -/
 import Mathlib.Data.Set.Finite.Lattice
 import Mathlib.Order.Filter.Basic
-import Mathlib.Tactic.Peel
 
 /-!
 # Results filters related to finiteness.
