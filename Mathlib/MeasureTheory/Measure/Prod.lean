@@ -228,6 +228,11 @@ theorem prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν 
       _ = μ.prod ν ST := (prod_apply hSTm).symm
       _ = μ.prod ν (s ×ˢ t) := measure_toMeasurable _
 
+@[simp]
+theorem _root_.MeasureTheory.measureReal_prod_prod (s : Set α) (t : Set β) :
+    (μ.prod ν).real (s ×ˢ t) = μ.real s * ν.real t := by
+  simp only [measureReal_def, prod_prod, ENNReal.toReal_mul]
+
 @[simp] lemma map_fst_prod : Measure.map Prod.fst (μ.prod ν) = (ν univ) • μ := by
   ext s hs
   simp [Measure.map_apply measurable_fst hs, ← prod_univ, mul_comm]
