@@ -8,9 +8,15 @@ This file is ignored by `shake`:
 * it is in `ignoreImport`, meaning that where it is imported, it is considered necessary.
 -/
 
+import Mathlib.Tactic.Linter.DependentTypeclass
 import Mathlib.Tactic.Linter.DeprecatedModule
 import Mathlib.Tactic.Linter.FlexibleLinter
+import Mathlib.Tactic.Linter.GlobalAttributeIn
+import Mathlib.Tactic.Linter.HashCommandLinter
 import Mathlib.Tactic.Linter.HaveLetLinter
+import Mathlib.Tactic.Linter.Lint
 import Mathlib.Tactic.Linter.MinImports
 import Mathlib.Tactic.Linter.PPRoundtrip
+import Mathlib.Tactic.Linter.Style
+import Mathlib.Tactic.Linter.UnusedTactic
 import Mathlib.Tactic.Linter.UpstreamableDecl
