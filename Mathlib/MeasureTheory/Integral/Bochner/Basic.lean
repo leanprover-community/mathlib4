@@ -904,8 +904,8 @@ theorem integral_add_measure {f : α → G} (hμ : Integrable f μ) (hν : Integ
     ← setToFun_congr_measure_of_add_left hν_dfma (dominatedFinMeasAdditive_weightedSMul ν) f hfi]
   refine setToFun_add_left' _ _ _ (fun s _ hμνs => ?_) f
   rw [Measure.coe_add, Pi.add_apply, add_lt_top] at hμνs
-  rw [weightedSMul, weightedSMul, weightedSMul, ← add_smul, Measure.coe_add, Pi.add_apply,
-    toReal_add hμνs.1.ne hμνs.2.ne]
+  rw [weightedSMul, weightedSMul, weightedSMul, ← add_smul,
+    measureReal_add_apply hμνs.1.ne hμνs.2.ne]
 
 @[simp]
 theorem integral_zero_measure {m : MeasurableSpace α} (f : α → G) :
@@ -999,8 +999,8 @@ theorem integral_map_of_stronglyMeasurable {β} [MeasurableSpace β] {φ : α �
     ((integrable_map_measure hfm.aestronglyMeasurable hφ.aemeasurable).1 hfi) (range f ∪ {0})
     (union_subset_union_left {0} (range_comp_subset_range φ f)) using 1
   ext1 i
-  simp only [SimpleFunc.approxOn_comp, SimpleFunc.integral_eq, Measure.map_apply, hφ,
-    SimpleFunc.measurableSet_preimage, ← preimage_comp, SimpleFunc.coe_comp]
+  simp only [SimpleFunc.integral_eq, hφ, SimpleFunc.measurableSet_preimage, map_measureReal_apply,
+    ← preimage_comp]
   refine (Finset.sum_subset (SimpleFunc.range_comp_subset_range _ hφ) fun y _ hy => ?_).symm
   rw [SimpleFunc.mem_range, ← Set.preimage_singleton_eq_empty, SimpleFunc.coe_comp] at hy
   rw [hy]
@@ -1267,6 +1267,7 @@ theorem integral_trim_simpleFunc (hm : m ≤ m0) (f : @SimpleFunc β m F) (hf_in
   rw [integral_simpleFunc_larger_space (le_refl m) f hf_int_m,
     integral_simpleFunc_larger_space hm f hf_int]
   congr with x
+  simp only [measureReal_def]
   congr 2
   exact (trim_measurableSet_eq hm (@SimpleFunc.measurableSet_fiber β F m f x)).symm
 
