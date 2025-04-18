@@ -104,8 +104,7 @@ lemma setLIntegral_stieltjesOfMeasurableRat_rat [IsFiniteKernel κ] (hf : IsRatC
     ∫⁻ b in s, ENNReal.ofReal (stieltjesOfMeasurableRat f hf.measurable (a, b) q) ∂(ν a)
       = κ a (s ×ˢ Iic (q : ℝ)) := by
   rw [← ofReal_integral_eq_lintegral_ofReal]
-  · rw [setIntegral_stieltjesOfMeasurableRat_rat hf a q hs, ENNReal.ofReal_toReal]
-    exact measure_ne_top _ _
+  · rw [setIntegral_stieltjesOfMeasurableRat_rat hf a q hs, ofReal_measureReal]
   · refine Integrable.restrict ?_
     rw [integrable_congr (stieltjesOfMeasurableRat_ae_eq hf a q)]
     exact hf.integrable a q
@@ -126,7 +125,7 @@ lemma setLIntegral_stieltjesOfMeasurableRat [IsFiniteKernel κ] (hf : IsRatCondK
       simp only [mem_prod, mem_Iic, and_imp]
       exact fun h1 h2 ↦ ⟨h1, h2.trans hq.le⟩
     suffices (κ a).real (s ×ˢ Iic (q : ℝ)) = 0 by
-      rw [ENNReal.toReal_eq_zero_iff] at this
+      rw [measureReal_eq_zero_iff] at this
       simpa [measure_ne_top] using this
     rw [← hf.setIntegral a hs q]
     simp [hρ_zero]
@@ -195,9 +194,8 @@ lemma setIntegral_stieltjesOfMeasurableRat [IsFiniteKernel κ] (hf : IsRatCondKe
     (a : α) (x : ℝ) {s : Set β} (hs : MeasurableSet s) :
     ∫ b in s, stieltjesOfMeasurableRat f hf.measurable (a, b) x ∂(ν a)
       = (κ a).real (s ×ˢ Iic x) := by
-  rw [← ENNReal.ofReal_eq_ofReal_iff, ENNReal.ofReal_toReal]
+  rw [← ENNReal.ofReal_eq_ofReal_iff, ofReal_measureReal]
   rotate_left
-  · exact measure_ne_top _ _
   · exact setIntegral_nonneg hs (fun _ _ ↦ stieltjesOfMeasurableRat_nonneg _ _ _)
   · exact ENNReal.toReal_nonneg
   rw [ofReal_integral_eq_lintegral_ofReal, setLIntegral_stieltjesOfMeasurableRat hf _ _ hs]
@@ -360,7 +358,7 @@ lemma IsRatCondKernelCDFAux.setIntegral_iInf_rat_gt (hf : IsRatCondKernelCDFAux 
     calc ∫ t in A, ⨅ r : Ioi q, f (a, t) r ∂(ν a)
       ≤ ⨅ r : Ioi q, (κ a).real (A ×ˢ Iic (r : ℝ)) := le_ciInf h
     _ = (κ a).real (A ×ˢ Iic (q : ℝ)) := by
-        rw [← Measure.iInf_rat_gt_prod_Iic hA q]
+        rw [measureReal_def, ← Measure.iInf_rat_gt_prod_Iic hA q]
         exact (ENNReal.toReal_iInf (fun r ↦ measure_ne_top _ _)).symm
   · rw [← hf.setIntegral a hA]
     refine setIntegral_mono_ae ?_ ?_ ?_
@@ -428,8 +426,7 @@ lemma IsCondKernelCDF.setLIntegral [IsFiniteKernel κ]
     (a : α) {s : Set β} (hs : MeasurableSet s) (x : ℝ) :
     ∫⁻ b in s, ENNReal.ofReal (f (a, b) x) ∂(ν a) = κ a (s ×ˢ Iic x) := by
   rw [← ofReal_integral_eq_lintegral_ofReal (hf.integrable a x).restrict
-    (ae_of_all _ (fun _ ↦ hf.nonneg _ _)), hf.setIntegral a hs x, ENNReal.ofReal_toReal]
-  exact measure_ne_top _ _
+    (ae_of_all _ (fun _ ↦ hf.nonneg _ _)), hf.setIntegral a hs x, ofReal_measureReal]
 
 lemma IsCondKernelCDF.lintegral [IsFiniteKernel κ]
     {f : α × β → StieltjesFunction} (hf : IsCondKernelCDF f κ ν) (a : α) (x : ℝ) :

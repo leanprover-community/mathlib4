@@ -69,7 +69,8 @@ theorem Convex.integral_mem [IsProbabilityMeasure μ] (hs : Convex ℝ s) (hsc :
     tendsto_integral_approxOn_of_measurable hfi _ hg _ (integrable_const _)
   refine hsc.mem_of_tendsto this (Eventually.of_forall fun n => hs.sum_mem ?_ ?_ ?_)
   · exact fun _ _ => ENNReal.toReal_nonneg
-  · rw [← ENNReal.toReal_sum, (G n).sum_range_measure_preimage_singleton, measure_univ,
+  · simp_rw [measureReal_def]
+    rw [← ENNReal.toReal_sum, (G n).sum_range_measure_preimage_singleton, measure_univ,
       ENNReal.toReal_one]
     exact fun _ _ => measure_ne_top _ _
   · simp only [SimpleFunc.mem_range, forall_mem_range]

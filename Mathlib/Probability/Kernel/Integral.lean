@@ -26,7 +26,7 @@ lemma IsFiniteKernel.integrable (μ : Measure α) [IsFiniteMeasure μ]
   refine Integrable.mono' (integrable_const (IsFiniteKernel.bound κ).toReal)
     ((κ.measurable_coe hs).ennreal_toReal.aestronglyMeasurable)
     (ae_of_all μ fun x ↦ ?_)
-  rw [Real.norm_eq_abs, abs_of_nonneg ENNReal.toReal_nonneg]
+  rw [Real.norm_eq_abs, abs_of_nonneg measureReal_nonneg]
   exact ENNReal.toReal_mono (IsFiniteKernel.bound_ne_top _) (Kernel.measure_le_bound _ _ _)
 
 lemma IsMarkovKernel.integrable (μ : Measure α) [IsFiniteMeasure μ]

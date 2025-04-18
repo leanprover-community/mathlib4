@@ -501,7 +501,7 @@ lemma measure_preimage_isMulLeftInvariant_eq_smul_of_hasCompactSupport
     simpa only [this, mf, integral_indicator_const, smul_eq_mul, mul_one, Pi.smul_apply,
       nnreal_smul_coe_apply, ENNReal.toReal_mul, ENNReal.coe_toReal] using J1
   have C : IsCompact (f ⁻¹' {1}) := h'f.isCompact_preimage hf isClosed_singleton (by simp)
-  rw [ENNReal.toReal_eq_toReal C.measure_lt_top.ne C.measure_lt_top.ne] at J2
+  rw [measureReal_eq_measureReal_iff C.measure_lt_top.ne C.measure_lt_top.ne] at J2
   simpa using J2
 
 /-- If an invariant measure is inner regular, then it gives less mass to sets with compact closure

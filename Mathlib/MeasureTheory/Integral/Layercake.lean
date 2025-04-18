@@ -528,7 +528,7 @@ theorem Integrable.integral_eq_integral_meas_lt
       congr 1
       apply setLIntegral_congr_fun measurableSet_Ioi (Eventually.of_forall _)
       exact fun t t_pos ↦ ENNReal.ofReal_toReal (rhs_integrand_finite t t_pos).ne
-    · exact Eventually.of_forall (fun x ↦ by simp only [Pi.zero_apply, ENNReal.toReal_nonneg])
+    · exact Eventually.of_forall (fun x ↦ by positivity)
     · apply Measurable.aestronglyMeasurable
       refine Measurable.ennreal_toReal ?_
       exact Antitone.measurable (fun _ _ hst ↦ measure_mono (fun _ h ↦ lt_of_le_of_lt hst h))
@@ -552,7 +552,7 @@ lemma Integrable.integral_eq_integral_Ioc_meas_le {f : α → ℝ} {M : ℝ}
   have obs : μ {a | M < f a} = 0 := by
     rw [measure_zero_iff_ae_nmem]
     filter_upwards [f_bdd] with a ha using not_lt.mpr ha
-  rw [ENNReal.toReal_eq_zero_iff]
+  rw [measureReal_def, ENNReal.toReal_eq_zero_iff]
   exact Or.inl <| measure_mono_null (fun a ha ↦ lt_of_lt_of_le htM ha) obs
 
 end LayercakeIntegral

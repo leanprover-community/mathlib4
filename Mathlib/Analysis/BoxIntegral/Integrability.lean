@@ -132,7 +132,7 @@ theorem HasIntegral.of_aeEq_zero {l : IntegrationParams} {I : Box ι} {f : (ι �
   have : ∀ J ∈ π.filter fun J => N (π.tag J) = n,
       ‖μ.real ↑J • f (π.tag J)‖ ≤ μ.real J * n := fun J hJ ↦ by
     rw [TaggedPrepartition.mem_filter] at hJ
-    rw [norm_smul, Real.norm_eq_abs, abs_of_nonneg ENNReal.toReal_nonneg]
+    rw [norm_smul, Real.norm_eq_abs, abs_of_nonneg measureReal_nonneg]
     gcongr
     exact hJ.2 ▸ Nat.le_ceil _
   refine (norm_sum_le_of_le _ this).trans ?_; clear this
@@ -172,9 +172,7 @@ theorem hasBoxIntegral (f : SimpleFunc (ι → ℝ) E) (μ : Measure (ι → ℝ
     HasIntegral.{u, v, v} I l f μ.toBoxAdditive.toSMul (f.integral (μ.restrict I)) := by
   induction f using MeasureTheory.SimpleFunc.induction with
   | @const y s hs =>
-    simpa only [Measure.restrict_apply hs, const_zero, integral_piecewise_zero, integral_const,
-      Measure.restrict_apply, MeasurableSet.univ, Set.univ_inter] using
-      BoxIntegral.hasIntegralIndicatorConst l hl hs I y μ
+    simpa [hs] using BoxIntegral.hasIntegralIndicatorConst l hl hs I y μ
   | @add f g _ hfi hgi =>
     borelize E; haveI := Fact.mk (I.measure_coe_lt_top μ)
     rw [integral_add]
@@ -254,7 +252,7 @@ theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {
         the former in the formula for the integral sum changes the sum at most by `μ I * ε`. -/
     rw [← hπp.iUnion_eq, π.measure_iUnion_toReal, sum_mul, integralSum]
     refine dist_sum_sum_le_of_le _ fun J _ => ?_; dsimp
-    rw [dist_eq_norm, ← smul_sub, norm_smul, Real.norm_eq_abs, abs_of_nonneg ENNReal.toReal_nonneg]
+    rw [dist_eq_norm, ← smul_sub, norm_smul, Real.norm_eq_abs, abs_of_nonneg measureReal_nonneg]
     gcongr
     rw [← dist_eq_norm']; exact hNxε _
   · /- We group the terms of both sums by the values of `Nx (π.tag J)`.

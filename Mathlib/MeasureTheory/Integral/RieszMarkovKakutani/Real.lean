@@ -285,7 +285,8 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
     simp_rw [mul_add, this]
     have : ∑ i, μ.real (E i) = μ.real K := by
       suffices h : μ K = ∑ i, (μ (E i)) by
-        rw [h]; exact Eq.symm <| ENNReal.toReal_sum <| fun n _ ↦ hE' n
+        simp only [measureReal_def, h]
+        exact Eq.symm <| ENNReal.toReal_sum <| fun n _ ↦ hE' n
       dsimp [K]; rw [hE.1]
       rw [measure_iUnion (fun m n hmn ↦ hE.2.1 trivial trivial hmn) hE.2.2.2]
       exact tsum_fintype fun b ↦ μ (E b)

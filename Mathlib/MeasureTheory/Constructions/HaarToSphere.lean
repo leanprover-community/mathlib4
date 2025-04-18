@@ -71,6 +71,10 @@ theorem toSphere_apply_univ : μ.toSphere univ = dim E * μ (ball 0 1) := by
   nontriviality E
   rw [toSphere_apply_univ', measure_diff_null (measure_singleton _)]
 
+@[simp]
+theorem toSphere_real_apply_univ : μ.toSphere.real univ = dim E * μ.real (ball 0 1) := by
+  simp [measureReal_def]
+
 instance : IsFiniteMeasure μ.toSphere where
   measure_univ_lt_top := by
     rw [toSphere_apply_univ']
@@ -144,8 +148,8 @@ lemma integral_fun_norm_addHaar (f : ℝ → F) :
       integral_fun_snd (f ∘ Subtype.val)
     _ = _ := by
       simp only [Measure.volumeIoiPow, ENNReal.ofReal]
-      rw [integral_withDensity_eq_integral_smul, μ.toSphere_apply_univ,
-        ENNReal.toReal_mul, ENNReal.toReal_natCast, ← nsmul_eq_mul, smul_assoc,
+      rw [integral_withDensity_eq_integral_smul, μ.toSphere_real_apply_univ,
+        ← nsmul_eq_mul, smul_assoc,
         integral_subtype_comap measurableSet_Ioi fun a ↦ Real.toNNReal (a ^ (dim E - 1)) • f a,
         setIntegral_congr_fun measurableSet_Ioi fun x hx ↦ ?_]
       · rw [NNReal.smul_def, Real.coe_toNNReal _ (pow_nonneg hx.out.le _)]
