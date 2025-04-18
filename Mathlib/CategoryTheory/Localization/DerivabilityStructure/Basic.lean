@@ -41,13 +41,13 @@ not depend of the choice of the localization functors.
 * Construct derived functors using derivability structures
 * Define the notion of left derivability structures
 * Construct the injective derivability structure in order to derive functor from
-the bounded below homotopy category in an abelian category with enough injectives
+  the bounded below homotopy category in an abelian category with enough injectives
 * Construct the projective derivability structure in order to derive functor from
-the bounded above homotopy category in an abelian category with enough projectives
+  the bounded above homotopy category in an abelian category with enough projectives
 * Construct the flat derivability structure on the bounded above homotopy category
-of categories of modules (and categories of sheaves of modules)
+  of categories of modules (and categories of sheaves of modules)
 * Define the product derivability structure and formalize derived functors of
-functors in several variables
+  functors in several variables
 
 
 ## References
