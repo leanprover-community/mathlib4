@@ -65,7 +65,7 @@ def Hom : C ⋆ D → C ⋆ D → Type (max v₁ v₂)
   | .right _, .left _ => PEmpty
 
 /-- Identity morphisms in `C ⋆ D` are inherited from those in `C` and `D`. -/
-def id : ∀ (X : C ⋆ D), Hom X X
+def id : ∀ X : C ⋆ D, Hom X X
   | .left x => ULift.up (𝟙 x)
   | .right x => ULift.up (𝟙 x)
 
@@ -206,12 +206,12 @@ variable {C D} {E : Type u₃} [Category.{v₃} E] {E' : Type u₄} [Category.{v
 /-- A pair of functor `F : C ⥤ E, G : D ⥤ E` as well as a natural transformation
 `α : (Prod.fst C D) ⋙ F ⟶ (Prod.snd C D) ⋙ G`. defines a functor out of `C ⋆ D`.
 This is the main entry point to define functors out of a join of categories. -/
-def mkFunctor (F : C ⥤ E) (G : D ⥤ E) (α : (Prod.fst C D) ⋙ F ⟶ (Prod.snd C D) ⋙ G) :
+def mkFunctor (F : C ⥤ E) (G : D ⥤ E) (α : Prod.fst C D ⋙ F ⟶ Prod.snd C D ⋙ G) :
     C ⋆ D ⥤ E where
   obj X :=
     match X with
-    | .left x => (F.obj x)
-    | .right x => (G.obj x)
+    | .left x => F.obj x
+    | .right x => G.obj x
   map f :=
     homInduction
       (left := fun _ _ f ↦ F.map f)
@@ -233,7 +233,7 @@ def mkFunctor (F : C ⥤ E) (G : D ⥤ E) (α : (Prod.fst C D) ⋙ F ⟶ (Prod.s
 
 section
 
-variable (F : C ⥤ E) (G : D ⥤ E) (α : (Prod.fst C D) ⋙ F ⟶ (Prod.snd C D) ⋙ G)
+variable (F : C ⥤ E) (G : D ⥤ E) (α : Prod.fst C D ⋙ F ⟶ Prod.snd C D ⋙ G)
 
 -- As these equality of objects are definitional, they should be fine.
 @[simp]
@@ -249,11 +249,11 @@ lemma mkFunctor_map_inclLeft {c c' : C} (f : c ⟶ c') :
 
 /-- Precomposing `mkFunctor F G α` with the left inclusion gives back `F`. -/
 @[simps!]
-def mkFunctorLeft : inclLeft C D ⋙ (mkFunctor F G α) ≅ F := Iso.refl _
+def mkFunctorLeft : inclLeft C D ⋙ mkFunctor F G α ≅ F := Iso.refl _
 
 /-- Precomposing `mkFunctor F G α` with the right inclusion gives back `G`. -/
 @[simps!]
-def mkFunctorRight : inclRight C D ⋙ (mkFunctor F G α) ≅ G := Iso.refl _
+def mkFunctorRight : inclRight C D ⋙ mkFunctor F G α ≅ G := Iso.refl _
 
 @[simp]
 lemma mkFunctor_map_inclRight {d d' : D} (f : d ⟶ d') :
@@ -365,7 +365,7 @@ def mkNatIso {F : C ⋆ D ⥤ E} {G : C ⋆ D ⥤ E}
     Iso.inv_comp_eq, ← Category.assoc, Eq.comm, Iso.comp_inv_eq, h])
 
 /-- A pair of functors ((C ⥤ E), (D ⥤ E')) induces a functor (C ⋆ D ⥤ E ⋆ E'). -/
-def mapPair (Fₗ : C ⥤ E) (Fᵣ : D ⥤ E') : (C ⋆ D) ⥤ (E ⋆ E') :=
+def mapPair (Fₗ : C ⥤ E) (Fᵣ : D ⥤ E') : C ⋆ D ⥤ E ⋆ E' :=
   mkFunctor (Fₗ ⋙ inclLeft _ _) (Fᵣ ⋙ inclRight _ _) { app := fun _ ↦ edge _ _ }
 
 section mapPair
@@ -388,11 +388,11 @@ lemma mapPair_map_inclRight {d d' : D} (f : d ⟶ d') :
 
 /-- Characterizing `mapPair` on left morphisms. -/
 @[simps! hom_app inv_app]
-def mapPairLeft : inclLeft _ _ ⋙ (mapPair Fₗ Fᵣ) ≅ (Fₗ ⋙ inclLeft _ _) := mkFunctorLeft _ _ _
+def mapPairLeft : inclLeft _ _ ⋙ mapPair Fₗ Fᵣ ≅ Fₗ ⋙ inclLeft _ _ := mkFunctorLeft _ _ _
 
 /-- Characterizing `mapPair` on right morphisms. -/
 @[simps! hom_app inv_app]
-def mapPairRight : inclRight _ _ ⋙ (mapPair Fₗ Fᵣ) ≅ (Fᵣ ⋙ inclRight _ _) := mkFunctorRight _ _ _
+def mapPairRight : inclRight _ _ ⋙ mapPair Fₗ Fᵣ ≅ Fᵣ ⋙ inclRight _ _ := mkFunctorRight _ _ _
 
 end mapPair
 
@@ -511,7 +511,7 @@ lemma mapWhisker_exchange (Fₗ : C ⥤ E) (Gₗ : C ⥤ E) (Fᵣ : D ⥤ E') (G
 def mapIsoWhiskerLeft (H : C ⥤ E) {Fᵣ : D ⥤ E'} {Gᵣ : D ⥤ E'} (α : Fᵣ ≅ Gᵣ) :
     mapPair H Fᵣ ≅ mapPair H Gᵣ :=
   mkNatIso
-    ((mapPairLeft H Fᵣ) ≪≫ isoWhiskerRight (Iso.refl H) (inclLeft _ _) ≪≫ (mapPairLeft H Gᵣ).symm)
+    (mapPairLeft H Fᵣ ≪≫ isoWhiskerRight (Iso.refl H) (inclLeft _ _) ≪≫ (mapPairLeft H Gᵣ).symm)
     (mapPairRight H Fᵣ ≪≫ isoWhiskerRight α (inclRight E E') ≪≫ (mapPairRight H Gᵣ).symm)
 
 /-- A natural isomorphism `Fᵣ ≅ Gᵣ` induces a natural isomorphism
