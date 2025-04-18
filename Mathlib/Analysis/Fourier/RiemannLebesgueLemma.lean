@@ -8,7 +8,7 @@ import Mathlib.Analysis.InnerProductSpace.Dual
 import Mathlib.Analysis.InnerProductSpace.EuclideanDist
 import Mathlib.MeasureTheory.Function.ContinuousMapDense
 import Mathlib.MeasureTheory.Group.Integral
-import Mathlib.MeasureTheory.Integral.SetIntegral
+import Mathlib.MeasureTheory.Integral.Bochner.Set
 import Mathlib.Topology.EMetricSpace.Paracompact
 import Mathlib.MeasureTheory.Measure.Haar.Unique
 import Mathlib.Topology.Algebra.Module.WeakDual
