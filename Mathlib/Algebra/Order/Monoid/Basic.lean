@@ -2,11 +2,6 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
-
-! This file was ported from Lean 3 source module algebra.order.monoid.basic
-! leanprover-community/mathlib commit 9b2660e1b25419042c8da10bf411aa3c67f14383
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Group.InjSurj
@@ -23,36 +18,53 @@ open Function
 
 universe u
 
-variable {α : Type u} {β : Type _}
+variable {α : Type u} {β : Type*} [CommMonoid α] [PartialOrder α]
 
-/-- Pullback an `OrderedCommMonoid` under an injective map.
-See note [reducible non-instances]. -/
-@[to_additive (attr := reducible) "Pullback an `OrderedAddCommMonoid` under an injective map."]
-def Function.Injective.orderedCommMonoid [OrderedCommMonoid α] {β : Type _} [One β] [Mul β]
+/-- Pullback an `IsOrderedMonoid` under an injective map. -/
+@[to_additive "Pullback an `IsOrderedAddMonoid` under an injective map."]
+lemma Function.Injective.isOrderedMonoid [IsOrderedMonoid α] [One β] [Mul β]
     [Pow β ℕ] (f : β → α) (hf : Function.Injective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
-    OrderedCommMonoid β :=
-  { PartialOrder.lift f hf,
-    hf.commMonoid f one mul npow with
-    mul_le_mul_left := fun a b ab c =>
-      show f (c * a) ≤ f (c * b) by
-        rw [mul, mul]
-        apply mul_le_mul_left'
-        exact ab }
-#align function.injective.ordered_comm_monoid Function.Injective.orderedCommMonoid
-#align function.injective.ordered_add_comm_monoid Function.Injective.orderedAddCommMonoid
+    let _ : CommMonoid β := hf.commMonoid f one mul npow
+    let _ : PartialOrder β := PartialOrder.lift f hf
+    IsOrderedMonoid β :=
+  let _ : CommMonoid β := hf.commMonoid f one mul npow
+  let _ : PartialOrder β := PartialOrder.lift f hf
+  { mul_le_mul_left a b ab c := show f (c * a) ≤ f (c * b) by
+      rw [mul, mul]; apply mul_le_mul_left'; exact ab }
 
-/-- Pullback a `LinearOrderedCommMonoid` under an injective map.
-See note [reducible non-instances]. -/
-@[to_additive (attr := reducible) "Pullback an `OrderedAddCommMonoid` under an injective map."]
-def Function.Injective.linearOrderedCommMonoid [LinearOrderedCommMonoid α] {β : Type _} [One β]
-    [Mul β] [Pow β ℕ] [Sup β] [Inf β] (f : β → α) (hf : Function.Injective f) (one : f 1 = 1)
-    (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
-    (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y)) (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) :
-    LinearOrderedCommMonoid β :=
-  { hf.orderedCommMonoid f one mul npow, LinearOrder.lift f hf hsup hinf with }
-#align function.injective.linear_ordered_comm_monoid Function.Injective.linearOrderedCommMonoid
-#align function.injective.linear_ordered_add_comm_monoid Function.Injective.linearOrderedAddCommMonoid
+/-- Pullback an `IsOrderedCancelMonoid` under an injective map. -/
+@[to_additive Function.Injective.isOrderedCancelAddMonoid
+    "Pullback an `IsOrderedCancelAddMonoid` under an injective map."]
+lemma Function.Injective.isOrderedCancelMonoid [IsOrderedCancelMonoid α] [One β] [Mul β]
+    [Pow β ℕ] (f : β → α) (hf : Injective f) (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y)
+    (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
+    let _ : CommMonoid β := hf.commMonoid f one mul npow
+    let _ : PartialOrder β := PartialOrder.lift f hf
+    IsOrderedCancelMonoid β :=
+  let _ : CommMonoid β := hf.commMonoid f one mul npow
+  let _ : PartialOrder β := PartialOrder.lift f hf
+  { __ := hf.isOrderedMonoid f one mul npow
+    le_of_mul_le_mul_left a b c (bc : f (a * b) ≤ f (a * c)) :=
+      (mul_le_mul_iff_left (f a)).1 (by rwa [← mul, ← mul]) }
+
+@[deprecated (since := "2025-04-10")]
+alias Function.Injective.orderedCommMonoid := Function.Injective.isOrderedMonoid
+@[deprecated (since := "2025-04-10")]
+alias Function.Injective.orderedAddCommMonoid := Function.Injective.isOrderedAddMonoid
+@[deprecated (since := "2025-04-10")]
+alias Function.Injective.orderedCancelCommMonoid := Function.Injective.isOrderedCancelMonoid
+@[deprecated (since := "2025-04-10")]
+alias Function.Injective.orderedCancelAddCommMonoid := Function.Injective.isOrderedCancelAddMonoid
+@[deprecated (since := "2025-04-10")]
+alias Function.Injective.linearOrderedCommMonoid := Function.Injective.isOrderedMonoid
+@[deprecated (since := "2025-04-10")]
+alias Function.Injective.linearOrderedAddCommMonoid := Function.Injective.isOrderedAddMonoid
+@[deprecated (since := "2025-04-10")]
+alias Function.Injective.linearOrderedCancelCommMonoid := Function.Injective.isOrderedCancelMonoid
+@[deprecated (since := "2025-04-10")]
+alias Function.Injective.linearOrderedCancelAddCommMonoid :=
+  Function.Injective.isOrderedCancelAddMonoid
 
 -- TODO find a better home for the next two constructions.
 /-- The order embedding sending `b` to `a * b`, for some fixed `a`.
@@ -60,23 +72,15 @@ See also `OrderIso.mulLeft` when working in an ordered group. -/
 @[to_additive (attr := simps!)
       "The order embedding sending `b` to `a + b`, for some fixed `a`.
        See also `OrderIso.addLeft` when working in an additive ordered group."]
-def OrderEmbedding.mulLeft {α : Type _} [Mul α] [LinearOrder α]
-    [CovariantClass α α (· * ·) (· < ·)] (m : α) : α ↪o α :=
+def OrderEmbedding.mulLeft {α : Type*} [Mul α] [LinearOrder α]
+    [MulLeftStrictMono α] (m : α) : α ↪o α :=
   OrderEmbedding.ofStrictMono (fun n => m * n) fun _ _ w => mul_lt_mul_left' w m
-#align order_embedding.mul_left OrderEmbedding.mulLeft
-#align order_embedding.add_left OrderEmbedding.addLeft
-#align order_embedding.mul_left_apply OrderEmbedding.mulLeft_apply
-#align order_embedding.add_left_apply OrderEmbedding.addLeft_apply
 
 /-- The order embedding sending `b` to `b * a`, for some fixed `a`.
 See also `OrderIso.mulRight` when working in an ordered group. -/
 @[to_additive (attr := simps!)
       "The order embedding sending `b` to `b + a`, for some fixed `a`.
        See also `OrderIso.addRight` when working in an additive ordered group."]
-def OrderEmbedding.mulRight {α : Type _} [Mul α] [LinearOrder α]
-    [CovariantClass α α (swap (· * ·)) (· < ·)] (m : α) : α ↪o α :=
+def OrderEmbedding.mulRight {α : Type*} [Mul α] [LinearOrder α]
+    [MulRightStrictMono α] (m : α) : α ↪o α :=
   OrderEmbedding.ofStrictMono (fun n => n * m) fun _ _ w => mul_lt_mul_right' w m
-#align order_embedding.mul_right OrderEmbedding.mulRight
-#align order_embedding.add_right OrderEmbedding.addRight
-#align order_embedding.mul_right_apply OrderEmbedding.mulRight_apply
-#align order_embedding.add_right_apply OrderEmbedding.addRight_apply

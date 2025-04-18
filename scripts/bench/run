@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+set -euxo pipefail
+
+temci exec --config ./scripts/bench/temci-config.yml >2
+temci report --reporter codespeed2 |\
+  sed 's/instructions:u/instructions/g' |\
+  jq '(.build | to_entries | group_by(.key | test("~")) | map(from_entries)) as $groups | .build = $groups[0] | . + ($groups[1] | map_values({instructions: .}))'
+  # sed: preserve old metric names
+  # jq: move file metrics starting with "~" from "build" to toplevel and assign them the "instructions" metric
