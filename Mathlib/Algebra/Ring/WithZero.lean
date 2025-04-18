@@ -31,7 +31,6 @@ instance instDistrib [Distrib α] : Distrib (WithZero α) where
   left_distrib := left_distrib
   right_distrib := right_distrib
 
-instance instSemiring [Semiring α] : Semiring (WithZero α) :=
-  { addMonoidWithOne, addCommMonoid, mulZeroClass, monoidWithZero, instDistrib with }
+instance instSemiring [Semiring α] : Semiring (WithZero α) where
 
 end WithZero
