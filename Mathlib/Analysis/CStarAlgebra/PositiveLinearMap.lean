@@ -21,7 +21,7 @@ This file develops the API for positive linear maps over C⋆-algebras.
 ## References
 
 * The proof that positive maps are bounded was taken from
-https://math.stackexchange.com/questions/426487/why-is-every-positive-linear-map-between-c-algebras-bounded
+  https://math.stackexchange.com/questions/426487/why-is-every-positive-linear-map-between-c-algebras-bounded
 -/
 
 open scoped NNReal

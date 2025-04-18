@@ -31,7 +31,7 @@ Schwartz space into a locally convex topological vector space.
 ## Main definitions
 
 * `SchwartzMap`: The Schwartz space is the space of smooth functions such that all derivatives
-decay faster than any power of `‖x‖`.
+  decay faster than any power of `‖x‖`.
 * `SchwartzMap.seminorm`: The family of seminorms as described above
 * `SchwartzMap.compCLM`: Composition with a function on the right as a continuous linear map
 `𝓢(E, F) →L[𝕜] 𝓢(D, F)`, provided that the function is temperate and grows polynomially near
@@ -45,9 +45,9 @@ infinity
 ## Main statements
 
 * `SchwartzMap.instIsUniformAddGroup` and `SchwartzMap.instLocallyConvexSpace`: The Schwartz space
-is a locally convex topological vector space.
+  is a locally convex topological vector space.
 * `SchwartzMap.one_add_le_sup_seminorm_apply`: For a Schwartz function `f` there is a uniform bound
-on `(1 + ‖x‖) ^ k * ‖iteratedFDeriv ℝ n f x‖`.
+  on `(1 + ‖x‖) ^ k * ‖iteratedFDeriv ℝ n f x‖`.
 
 ## Implementation details
 
