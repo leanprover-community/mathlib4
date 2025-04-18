@@ -30,6 +30,10 @@ def natAdd_castLEEmb {n : ℕ} (m : ℕ) (hmn : n ≤ m): Fin n ↪ Fin (m) :=
   (addNatEmb (m - n)).trans (finCongr (by omega)).toEmbedding
 
 @[simp]
+lemma natAdd_castLEEmb_apply {n : ℕ} (m : ℕ) (hmn : n ≤ m) (k : Fin n) :
+    ((natAdd_castLEEmb m hmn) k).1 = k.1 + (m - n) := by simp
+
+@[simp]
 lemma range_natAdd_castLEEmb {n : ℕ} (m : ℕ) (hmn : n ≤ m) :
     Set.range (natAdd_castLEEmb m hmn) = {i | m - n ≤ i.1} := by
   simp [natAdd_castLEEmb]
