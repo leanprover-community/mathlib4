@@ -97,6 +97,11 @@ instance Measure.instOuterMeasureClass [MeasurableSpace α] : OuterMeasureClass 
 protected def Measure.real {α : Type*} {m : MeasurableSpace α} (μ : Measure α) (s : Set α) : ℝ :=
   (μ s).toReal
 
+theorem measureReal_def {α : Type*} {m : MeasurableSpace α} (μ : Measure α) (s : Set α) :
+    μ.real s = (μ s).toReal := rfl
+
+alias Measure.real_def := measureReal_def
+
 section
 
 variable [MeasurableSpace α] {μ μ₁ μ₂ : Measure α} {s s₁ s₂ t : Set α}
