@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau
 -/
 import Mathlib.RingTheory.PowerSeries.Order
+import Mathlib.RingTheory.Ideal.Maps
 
 /-!
 # Power series over rings with no zero divisors
