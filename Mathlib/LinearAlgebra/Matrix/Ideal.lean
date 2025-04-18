@@ -217,7 +217,6 @@ theorem matrix_ofMatrix [DecidableEq n] (c : RingCon (Matrix n n R)) :
     simpa using c.mul (c.mul (c.refl <| stdBasisMatrix i i' 1) h) (c.refl <| stdBasisMatrix j' j 1)
 
 /-- A version of `ofMatrix_rel` for a single matrix index, rather than all indices. -/
-@[simp]
 theorem ofMatrix_rel' [DecidableEq n] {c : RingCon (Matrix n n R)} {x y : R} (i j : n) :
     ofMatrix c x y ↔ c (stdBasisMatrix i j x) (stdBasisMatrix i j y) := by
   refine ⟨fun h ↦ h i j, fun h i' j' ↦ ?_⟩
