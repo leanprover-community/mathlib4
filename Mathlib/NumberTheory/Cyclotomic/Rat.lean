@@ -6,6 +6,7 @@ Authors: Riccardo Brasca
 import Mathlib.NumberTheory.Cyclotomic.Discriminant
 import Mathlib.RingTheory.Polynomial.Eisenstein.IsIntegral
 import Mathlib.RingTheory.Ideal.Norm.AbsNorm
+import Mathlib.RingTheory.Prime
 
 /-!
 # Ring of integers of `p ^ n`-th cyclotomic fields

@@ -26,9 +26,10 @@ namespace Ultrafilter
 
 variable {f : Ultrafilter α} {s : Set α}
 
-theorem finite_sUnion_mem_iff {s : Set (Set α)} (hs : s.Finite) : ⋃₀ s ∈ f ↔ ∃ t ∈ s, t ∈ f :=
-  Finite.induction_on _ hs (by simp) fun _ _ his => by
-    simp [union_mem_iff, his, or_and_right, exists_or]
+theorem finite_sUnion_mem_iff {s : Set (Set α)} (hs : s.Finite) : ⋃₀ s ∈ f ↔ ∃ t ∈ s, t ∈ f := by
+  induction s, hs using Set.Finite.induction_on with
+  | empty => simp
+  | insert _ _ his => simp [union_mem_iff, his, or_and_right, exists_or]
 
 theorem finite_biUnion_mem_iff {is : Set β} {s : β → Set α} (his : is.Finite) :
     (⋃ i ∈ is, s i) ∈ f ↔ ∃ i ∈ is, s i ∈ f := by
@@ -72,14 +73,11 @@ namespace Filter
 
 open Ultrafilter
 
-lemma atTop_eq_pure_of_isTop [LinearOrder α] {x : α} (hx : IsTop x) :
-    (atTop : Filter α) = pure x := by
-  have : Nonempty α := ⟨x⟩
-  apply atTop_neBot.eq_pure_iff.2
-  convert Ici_mem_atTop x using 1
-  exact (Ici_eq_singleton_iff_isTop.2 hx).symm
+lemma atTop_eq_pure_of_isTop [PartialOrder α] {x : α} (hx : IsTop x) :
+    (atTop : Filter α) = pure x :=
+  {top := x, le_top := hx : OrderTop α}.atTop_eq
 
-lemma atBot_eq_pure_of_isBot [LinearOrder α] {x : α} (hx : IsBot x) :
+lemma atBot_eq_pure_of_isBot [PartialOrder α] {x : α} (hx : IsBot x) :
     (atBot : Filter α) = pure x :=
   @atTop_eq_pure_of_isTop αᵒᵈ _ _ hx
 

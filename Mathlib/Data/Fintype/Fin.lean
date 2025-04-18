@@ -35,23 +35,9 @@ theorem Ioi_zero_eq_map : Ioi (0 : Fin n.succ) = univ.map (Fin.succEmb _) :=
 theorem Iio_last_eq_map : Iio (Fin.last n) = Finset.univ.map Fin.castSuccEmb :=
   coe_injective <| by ext; simp [lt_def]
 
-@[simp]
-theorem Ioi_succ (i : Fin n) : Ioi i.succ = (Ioi i).map (Fin.succEmb _) := by
-  ext i
-  simp only [mem_filter, mem_Ioi, mem_map, mem_univ, Function.Embedding.coeFn_mk, exists_true_left]
-  constructor
-  · refine cases ?_ ?_ i
-    · rintro ⟨⟨⟩⟩
-    · intro i hi
-      exact ⟨i, succ_lt_succ_iff.mp hi, rfl⟩
-  · rintro ⟨i, hi, rfl⟩
-    simpa
+theorem Ioi_succ (i : Fin n) : Ioi i.succ = (Ioi i).map (Fin.succEmb _) := by simp
 
-@[simp]
-theorem Iio_castSucc (i : Fin n) : Iio (castSucc i) = (Iio i).map Fin.castSuccEmb := by
-  apply Finset.map_injective Fin.valEmbedding
-  rw [Finset.map_map, Fin.map_valEmbedding_Iio]
-  exact (Fin.map_valEmbedding_Iio i).symm
+theorem Iio_castSucc (i : Fin n) : Iio (castSucc i) = (Iio i).map Fin.castSuccEmb := by simp
 
 theorem card_filter_univ_succ (p : Fin (n + 1) → Prop) [DecidablePred p] :
     #{x | p x} = if p 0 then #{x | p (.succ x)} + 1 else #{x | p (.succ x)} := by

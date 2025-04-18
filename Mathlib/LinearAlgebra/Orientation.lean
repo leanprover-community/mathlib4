@@ -36,7 +36,7 @@ noncomputable section
 
 section OrderedCommSemiring
 
-variable (R : Type*) [StrictOrderedCommSemiring R]
+variable (R : Type*) [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R]
 variable (M : Type*) [AddCommMonoid M] [Module R M]
 variable {N : Type*} [AddCommMonoid N] [Module R N]
 variable (ι ι' : Type*)
@@ -122,7 +122,7 @@ end OrderedCommSemiring
 
 section OrderedCommRing
 
-variable {R : Type*} [StrictOrderedCommRing R]
+variable {R : Type*} [CommRing R] [PartialOrder R] [IsStrictOrderedRing R]
 variable {M N : Type*} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
 
 @[simp]
@@ -190,7 +190,7 @@ end OrderedCommRing
 
 section LinearOrderedCommRing
 
-variable {R : Type*} [LinearOrderedCommRing R]
+variable {R : Type*} [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
 variable {M : Type*} [AddCommGroup M] [Module R M]
 variable {ι : Type*}
 
@@ -318,7 +318,7 @@ end LinearOrderedCommRing
 
 section LinearOrderedField
 
-variable {R : Type*} [LinearOrderedField R]
+variable {R : Type*} [Field R] [LinearOrder R] [IsStrictOrderedRing R]
 variable {M : Type*} [AddCommGroup M] [Module R M]
 variable {ι : Type*}
 
@@ -334,11 +334,8 @@ theorem eq_or_eq_neg [FiniteDimensional R M] (x₁ x₂ : Orientation R M ι)
     (h : Fintype.card ι = finrank R M) : x₁ = x₂ ∨ x₁ = -x₂ := by
   have e := (finBasis R M).reindex (Fintype.equivFinOfCardEq h).symm
   letI := Classical.decEq ι
-  -- Porting note: this needs to be made explicit for the simp below
-  have orientation_neg_neg :
-      ∀ f : Basis ι R M, - -Basis.orientation f = Basis.orientation f := by simp
   rcases e.orientation_eq_or_eq_neg x₁ with (h₁ | h₁) <;>
-    rcases e.orientation_eq_or_eq_neg x₂ with (h₂ | h₂) <;> simp [h₁, h₂, orientation_neg_neg]
+    rcases e.orientation_eq_or_eq_neg x₂ with (h₂ | h₂) <;> simp [h₁, h₂]
 
 /-- If the index type has cardinality equal to the finite dimension, an orientation equals the
 negation of another orientation if and only if they are not equal. -/
