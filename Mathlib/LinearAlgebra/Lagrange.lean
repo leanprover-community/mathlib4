@@ -21,8 +21,8 @@ import Mathlib.RingTheory.Polynomial.Basic
 * `Lagrange.basis v i` with `i : ι`: the Lagrange basis polynomial that evaluates to `1` at `v i`
   and `0` at `v j` for `i ≠ j`.
 * `Lagrange.interpolate v r` where `r : ι → F` is a function from the fintype to the field: the
-Lagrange interpolant that evaluates to `r i` at `x i` for all `i : ι`. The `r i` are the _values_
-associated with the _nodes_`x i`.
+  Lagrange interpolant that evaluates to `r i` at `x i` for all `i : ι`. The `r i` are the _values_
+  associated with the _nodes_`x i`.
 -/
 
 

@@ -41,8 +41,8 @@ Let `v` be such a Vitali family.
 
 ## References
 
-* [Herbert Federer, Geometric Measure Theory, Chapter 2.8][Federer1996] (Vitali families are called
-Vitali relations there)
+* [Herbert Federer, Geometric Measure Theory, Chapter 2.8][Federer1996]
+  (Vitali families are called Vitali relations there)
 -/
 
 

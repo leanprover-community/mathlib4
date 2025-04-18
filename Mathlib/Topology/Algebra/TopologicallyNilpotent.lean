@@ -15,8 +15,8 @@ Let `M` be a monoid with zero `M`, endowed with a topology.
   i.e., its powers converge to zero.
 
 * `IsTopologicallyNilpotent.map`:
-The image of a topologically nilpotent element under a continuous morphism of
-monoids with zero endowed with a topology is topologically nilpotent.
+  The image of a topologically nilpotent element under a continuous morphism of
+  monoids with zero endowed with a topology is topologically nilpotent.
 
 * `IsTopologicallyNilpotent.zero`: `0` is topologically nilpotent.
 

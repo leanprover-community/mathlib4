@@ -18,7 +18,7 @@ convex and we explicitly give a neighborhood basis in terms of the family of sem
 
 * `LinearMap.toSeminorm`: turn a linear form `f : E →ₗ[𝕜] 𝕜` into a seminorm `fun x => ‖f x‖`.
 * `LinearMap.toSeminormFamily`: turn a bilinear form `B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜` into a map
-`F → Seminorm 𝕜 E`.
+  `F → Seminorm 𝕜 E`.
 
 ## Main statements
 

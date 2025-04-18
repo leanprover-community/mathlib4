@@ -18,7 +18,7 @@ Given any indexed type `ι`, we define `overlap ι`,
 a category with objects corresponding to
 * individual open sets, `single i`, and
 * intersections of pairs of open sets, `pair i j`,
-with morphisms from `pair i j` to both `single i` and `single j`.
+  with morphisms from `pair i j` to both `single i` and `single j`.
 
 Any open cover `U : ι → Opens X` provides a functor `diagram U : overlap ι ⥤ (Opens X)ᵒᵖ`.
 

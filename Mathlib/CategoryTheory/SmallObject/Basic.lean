@@ -31,7 +31,7 @@ obtained in this file are:
   by a suitable well ordered type `J`) of pushouts of coproducts of
   morphisms in `I`;
 * morphisms in `C` have a functorial factorization as a morphism in
-`I.rlp.llp` followed by a morphism in `I.rlp`.
+  `I.rlp.llp` followed by a morphism in `I.rlp`.
 
 In the context of model categories, these results are known as Quillen's small object
 argument (originally for `J := ℕ`). Actually, the more general construction by

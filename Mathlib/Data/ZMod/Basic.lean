@@ -26,7 +26,7 @@ Definition of the integers mod n, and the field structure on the integers mod p.
   - for `a : ZMod n` with `0 < n` it is the least natural number in the equivalence class
 
 * A coercion `cast` is defined from `ZMod n` into any ring.
-This is a ring hom if the ring has characteristic dividing `n`
+  This is a ring hom if the ring has characteristic dividing `n`
 
 -/
 
