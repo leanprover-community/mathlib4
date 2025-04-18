@@ -38,7 +38,7 @@ noncomputable def InnerProductSpace.canonicalCovariantTensor [FiniteDimensional 
     E ⊗[ℝ] E := ∑ i, ((stdOrthonormalBasis ℝ E) i) ⊗ₜ[ℝ] ((stdOrthonormalBasis ℝ E) i)
 
 /-- Representation of the canonical covariant tensor in terms of an orthonormal basis. -/
-theorem InnerProductSpace.canonicalCovariantTensorRepresentation [FiniteDimensional ℝ E]
+theorem InnerProductSpace.canonicalCovariantTensor_eq_sum [FiniteDimensional ℝ E]
     {ι : Type*} [Fintype ι] (v : OrthonormalBasis ι ℝ E) :
     InnerProductSpace.canonicalCovariantTensor E = ∑ i, (v i) ⊗ₜ[ℝ] (v i) := by
   let w := stdOrthonormalBasis ℝ E
