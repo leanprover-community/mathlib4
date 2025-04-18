@@ -102,10 +102,12 @@ structure CU {X : Type*} [TopologicalSpace X] (P : Set X → Set X → Sort*) wh
   protected C : Set X
   /-- The outer set in the inductive construction towards Urysohn's lemma -/
   protected U : Set X
+  /-- The proof that `C` and `U` satisfy the property `P C U` -/
   protected P_C_U : P C U
   protected closed_C : IsClosed C
   protected open_U : IsOpen U
   protected subset : C ⊆ U
+  /-- The proof that we can divide `CU` pairs in half -/
   protected hP : ∀ {c u : Set X}, IsClosed c → P c u → IsOpen u → c ⊆ u →
     (v : Set X) ×' IsOpen v ×' c ⊆ v ×' closure v ⊆ u ×' P c v ×' P (closure v) u
 
