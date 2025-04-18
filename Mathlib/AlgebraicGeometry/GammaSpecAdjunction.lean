@@ -569,9 +569,11 @@ instance : Scheme.Spec.IsRightAdjoint :=
   (ΓSpec.adjunction).isRightAdjoint
 
 instance : Reflective Spec.toLocallyRingedSpace where
+  L := Γ.rightOp
   adj := ΓSpec.locallyRingedSpaceAdjunction
 
 instance Spec.reflective : Reflective Scheme.Spec where
+  L := Scheme.Γ.rightOp
   adj := ΓSpec.adjunction
 
 end AlgebraicGeometry

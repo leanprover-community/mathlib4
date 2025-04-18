@@ -130,7 +130,7 @@ instance instInnerProductSpace : InnerProductSpace 𝕜 (lp G 2) :=
         _ = ∑' i, ⟪(f₁ + f₂) i, g i⟫ := ?_
         _ = ∑' i, (⟪f₁ i, g i⟫ + ⟪f₂ i, g i⟫) := by
           simp only [inner_add_left, Pi.add_apply, coeFn_add]
-        _ = (∑' i, ⟪f₁ i, g i⟫) + ∑' i, ⟪f₂ i, g i⟫ := tsum_add ?_ ?_
+        _ = (∑' i, ⟪f₁ i, g i⟫) + ∑' i, ⟪f₂ i, g i⟫ := Summable.tsum_add ?_ ?_
         _ = _ := by congr
       · congr
       · exact summable_inner f₁ g
@@ -186,11 +186,11 @@ subspaces into `E`. -/
 protected def linearIsometry (hV : OrthogonalFamily 𝕜 G V) : lp G 2 →ₗᵢ[𝕜] E where
   toFun f := ∑' i, V i (f i)
   map_add' f g := by
-    simp only [tsum_add (hV.summable_of_lp f) (hV.summable_of_lp g), lp.coeFn_add, Pi.add_apply,
+    simp only [(hV.summable_of_lp f).tsum_add (hV.summable_of_lp g), lp.coeFn_add, Pi.add_apply,
       LinearIsometry.map_add]
   map_smul' c f := by
     simpa only [LinearIsometry.map_smul, Pi.smul_apply, lp.coeFn_smul] using
-      tsum_const_smul c (hV.summable_of_lp f)
+      (hV.summable_of_lp f).tsum_const_smul c
   norm_map' f := by
     classical
       -- needed for lattice instance on `Finset ι`, for `Filter.atTop_neBot`
@@ -322,7 +322,7 @@ elements of `E`. -/
 protected theorem IsHilbertSum.linearIsometryEquiv_symm_apply_dfinsupp_sum_single
     [DecidableEq ι] [∀ i, DecidableEq (G i)] (hV : IsHilbertSum 𝕜 G V) (W₀ : Π₀ i : ι, G i) :
     hV.linearIsometryEquiv.symm (W₀.sum (lp.single 2)) = W₀.sum fun i => V i := by
-  simp only [map_dfinsupp_sum, IsHilbertSum.linearIsometryEquiv_symm_apply_single]
+  simp only [map_dfinsuppSum, IsHilbertSum.linearIsometryEquiv_symm_apply_single]
 
 /-- In the canonical isometric isomorphism between a Hilbert sum `E` of `G : ι → Type*` and
 `lp G 2`, a finitely-supported vector in `lp G 2` is the image of the associated finite sum of
@@ -331,7 +331,7 @@ elements of `E`. -/
 protected theorem IsHilbertSum.linearIsometryEquiv_apply_dfinsupp_sum_single
     [DecidableEq ι] [∀ i, DecidableEq (G i)] (hV : IsHilbertSum 𝕜 G V) (W₀ : Π₀ i : ι, G i) :
     ((W₀.sum (γ := lp G 2) fun a b ↦ hV.linearIsometryEquiv (V a b)) : ∀ i, G i) = W₀ := by
-  rw [← map_dfinsupp_sum]
+  rw [← map_dfinsuppSum]
   rw [← hV.linearIsometryEquiv_symm_apply_dfinsupp_sum_single]
   rw [LinearIsometryEquiv.apply_symm_apply]
   ext i

@@ -243,8 +243,7 @@ theorem IsDedekindDomain.isPrincipalIdealRing_localization_over_prime [IsDomain 
   refine
     IsPrincipalIdealRing.of_finite_primes
       (Set.Finite.ofFinset
-        (Finset.filter (fun P => P.IsPrime)
-          ({⊥} ∪ (normalizedFactors (Ideal.map (algebraMap R Sₚ) p)).toFinset))
+        {P ∈ {⊥} ∪ (normalizedFactors (Ideal.map (algebraMap R Sₚ) p)).toFinset | P.IsPrime}
         fun P => ?_)
   rw [Finset.mem_filter, Finset.mem_union, Finset.mem_singleton, Set.mem_setOf,
     Multiset.mem_toFinset]

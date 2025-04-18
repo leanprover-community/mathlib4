@@ -206,14 +206,14 @@ Used mostly through the notation `𝑳`.
 Lemmas involving `smoothLeftMul` with the notation `𝑳` usually use `L` instead of `𝑳` in the
 names. -/
 def smoothLeftMul : C^∞⟮I, G; I, G⟯ :=
-  ⟨leftMul g, contMDiff_mul_left⟩
+  ⟨(g * ·), contMDiff_mul_left⟩
 
 /-- Right multiplication by `g`. It is meant to mimic the usual notation in Lie groups.
 Used mostly through the notation `𝑹`.
 Lemmas involving `smoothRightMul` with the notation `𝑹` usually use `R` instead of `𝑹` in the
 names. -/
 def smoothRightMul : C^∞⟮I, G; I, G⟯ :=
-  ⟨rightMul g, contMDiff_mul_right⟩
+  ⟨(· * g), contMDiff_mul_right⟩
 
 -- Left multiplication. The abbreviation is `MIL`.
 @[inherit_doc] scoped[LieGroup] notation "𝑳" => smoothLeftMul

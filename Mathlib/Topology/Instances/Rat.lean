@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Data.NNRat.Order
 import Mathlib.Topology.Algebra.Order.Archimedean
 import Mathlib.Topology.Algebra.Ring.Real
 import Mathlib.Topology.Instances.Nat
@@ -32,14 +33,8 @@ theorem uniformContinuous_coe_real : UniformContinuous ((↑) : ℚ → ℝ) :=
 theorem isUniformEmbedding_coe_real : IsUniformEmbedding ((↑) : ℚ → ℝ) :=
   isUniformEmbedding_comap Rat.cast_injective
 
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_coe_real := isUniformEmbedding_coe_real
-
 theorem isDenseEmbedding_coe_real : IsDenseEmbedding ((↑) : ℚ → ℝ) :=
   isUniformEmbedding_coe_real.isDenseEmbedding Rat.denseRange_cast
-
-@[deprecated (since := "2024-09-30")]
-alias denseEmbedding_coe_real := isDenseEmbedding_coe_real
 
 theorem isEmbedding_coe_real : IsEmbedding ((↑) : ℚ → ℝ) :=
   isDenseEmbedding_coe_real.isEmbedding
@@ -59,9 +54,6 @@ theorem Nat.dist_cast_rat (x y : ℕ) : dist (x : ℚ) y = dist x y := by
 theorem Nat.isUniformEmbedding_coe_rat : IsUniformEmbedding ((↑) : ℕ → ℚ) :=
   isUniformEmbedding_bot_of_pairwise_le_dist zero_lt_one <| by simpa using Nat.pairwise_one_le_dist
 
-@[deprecated (since := "2024-10-01")]
-alias Nat.uniformEmbedding_coe_rat := Nat.isUniformEmbedding_coe_rat
-
 theorem Nat.isClosedEmbedding_coe_rat : IsClosedEmbedding ((↑) : ℕ → ℚ) :=
   isClosedEmbedding_of_pairwise_le_dist zero_lt_one <| by simpa using Nat.pairwise_one_le_dist
 
@@ -74,9 +66,6 @@ theorem Int.dist_cast_rat (x y : ℤ) : dist (x : ℚ) y = dist x y := by
 
 theorem Int.isUniformEmbedding_coe_rat : IsUniformEmbedding ((↑) : ℤ → ℚ) :=
   isUniformEmbedding_bot_of_pairwise_le_dist zero_lt_one <| by simpa using Int.pairwise_one_le_dist
-
-@[deprecated (since := "2024-10-01")]
-alias Int.uniformEmbedding_coe_rat := Int.isUniformEmbedding_coe_rat
 
 theorem Int.isClosedEmbedding_coe_rat : IsClosedEmbedding ((↑) : ℤ → ℚ) :=
   isClosedEmbedding_of_pairwise_le_dist zero_lt_one <| by simpa using Int.pairwise_one_le_dist
@@ -98,8 +87,8 @@ theorem uniformContinuous_neg : UniformContinuous (@Neg.neg ℚ _) :=
   Metric.uniformContinuous_iff.2 fun ε ε0 =>
     ⟨_, ε0, fun _ _ h => by simpa only [abs_sub_comm, dist_eq, cast_neg, neg_sub_neg] using h⟩
 
-instance : UniformAddGroup ℚ :=
-  UniformAddGroup.mk' Rat.uniformContinuous_add Rat.uniformContinuous_neg
+instance : IsUniformAddGroup ℚ :=
+  IsUniformAddGroup.mk' Rat.uniformContinuous_add Rat.uniformContinuous_neg
 
 instance : IsTopologicalAddGroup ℚ := inferInstance
 
