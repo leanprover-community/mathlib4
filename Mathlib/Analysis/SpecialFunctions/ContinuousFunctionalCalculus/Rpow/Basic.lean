@@ -5,6 +5,7 @@ Authors: Frédéric Dupuis
 -/
 
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Pi
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
@@ -177,11 +178,14 @@ end prod
 section pi
 
 variable {ι : Type*} {C : ι → Type*} [∀ i, PartialOrder (C i)] [∀ i, NonUnitalRing (C i)]
-  [∀ i, TopologicalSpace (C i)] [∀ i, StarRing (C i)]
+  [∀ i, TopologicalSpace (C i)] [∀ i, StarRing (C i)] [∀ i, StarOrderedRing (C i)]
+  [StarOrderedRing (∀ i, C i)]
   [∀ i, Module ℝ (C i)] [∀ i, SMulCommClass ℝ (C i) (C i)] [∀ i, IsScalarTower ℝ (C i) (C i)]
-  [∀ i, NonUnitalContinuousFunctionalCalculus ℝ≥0 (C i) (0 ≤ ·)]
-  [NonUnitalContinuousFunctionalCalculus ℝ≥0 (∀ i, C i) (0 ≤ ·)]
+  [∀ i, NonUnitalContinuousFunctionalCalculus ℝ (C i) IsSelfAdjoint]
+  [NonUnitalContinuousFunctionalCalculus ℝ (∀ i, C i) IsSelfAdjoint]
   [∀ i, IsTopologicalRing (C i)] [∀ i, T2Space (C i)]
+  [∀ i, NonnegSpectrumClass ℝ (C i)]
+  [NonnegSpectrumClass ℝ (∀ i, C i)]
 
 /- Note that there is higher-priority instance of `Pow (∀ i, C i) ℝ≥0` coming from the `Pow`
 instance for pi types, hence the direct use of `nnrpow` here. -/
