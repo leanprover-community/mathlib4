@@ -4,13 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.GroupAction.Embedding
 import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.Tactic.Group
 import Mathlib.SetTheory.Cardinal.Finite
-import Mathlib.Data.Finite.Card
 import Mathlib.Data.Fin.Tuple.Embedding
 
 /-! # The SubMulAction of the stabilizer of a point on the complement of that point
