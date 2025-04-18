@@ -62,7 +62,7 @@ variable [Fintype V]
 lemma IsTutteViolator.mono {u : Set V} (h : G ≤ G') (ht : G'.IsTutteViolator u) :
     G.IsTutteViolator u := by
   simp only [IsTutteViolator, Subgraph.induce_verts, Subgraph.verts_top] at *
-  have := ncard_odd_components_mono _ (Subgraph.deleteVerts_mono' (G := G) (G' := G') u h)
+  have := ncard_oddComponents_mono _ (Subgraph.deleteVerts_mono' (G := G) (G' := G') u h)
   simp only [oddComponents] at *
   omega
 
@@ -140,7 +140,7 @@ theorem isTutteViolator_empty (hodd : Odd (Fintype.card V)) : G.IsTutteViolator 
   classical
   have ⟨c, hc⟩ := Classical.inhabited_of_nonempty
     (Finite.card_pos_iff.mp <| Odd.pos <|
-    (odd_card_iff_odd_components ((⊤ : Subgraph G).deleteVerts ∅).coe).mp (by
+    (odd_ncard_oddComponents ((⊤ : Subgraph G).deleteVerts ∅).coe).mpr (by
     simpa [Fintype.card_congr (Equiv.Set.univ V)] using hodd))
   rw [IsTutteViolator, Set.ncard_empty, Set.ncard_pos]
   use c
@@ -149,11 +149,11 @@ theorem isTutteViolator_empty (hodd : Odd (Fintype.card V)) : G.IsTutteViolator 
 lemma not_IsTutteViolator {M : Subgraph G} (hM : M.IsPerfectMatching) (u : Set V) :
     ¬G.IsTutteViolator u := by
   simpa [IsTutteViolator, Set.Nat.card_coe_set_eq] using Finite.card_le_of_injective
-      (fun c => ⟨(c.1.odd_matches_node_outside hM c.2).choose,
-        (c.1.odd_matches_node_outside hM c.2).choose_spec.1⟩) (by
+      (fun c => ⟨(ConnectedComponent.odd_matches_node_outside hM c).choose,
+        (ConnectedComponent.odd_matches_node_outside hM c).choose_spec.1⟩) (by
     intro x y hxy
-    obtain ⟨v, hv⟩ := (x.1.odd_matches_node_outside hM x.2).choose_spec.2
-    obtain ⟨w, hw⟩ := (y.1.odd_matches_node_outside hM y.2).choose_spec.2
+    obtain ⟨v, hv⟩ := (ConnectedComponent.odd_matches_node_outside hM x).choose_spec.2
+    obtain ⟨w, hw⟩ := (ConnectedComponent.odd_matches_node_outside hM y).choose_spec.2
     obtain ⟨v', hv'⟩ := (M.isPerfectMatching_iff).mp hM _
     rw [Subtype.mk_eq_mk.mp hxy,
       (Subtype.val_injective (hv'.2 _ hw.1.symm ▸ hv'.2 _ hv.1.symm) : v = w)] at hv
@@ -224,26 +224,31 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
     rw [M2.adj_comm]
     exact hM2.1.not_adj_left_of_ne h.symm hM2ac
   -- Else we construct a path that contain the edge `a c`, but not the edge `x b`
-  have : ∃ x' ∈ ({x, b} : Set V), ∃ (p : cycles.Walk a x'), p.IsPath ∧
+  have : ∃ x' ∈ ({x, b} : Finset V), ∃ (p : cycles.Walk a x'), p.IsPath ∧
     p.toSubgraph.Adj a c ∧ ¬ p.toSubgraph.Adj x b := by
       obtain ⟨p, hp⟩ := hcycles.exists_cycle_toSubgraph_verts_eq_connectedComponentSupp hacc
         (Set.nonempty_of_mem hcac)
       obtain ⟨p', hp'⟩ := hp.1.exists_isCycle_snd_verts_eq (by
         rwa [hp.1.adj_toSubgraph_iff_of_isCycles hcycles (hp.2 ▸ hacc)])
-      obtain ⟨x', hx', hx'p, htw⟩ := Walk.exists_mem_support_forall_not_adj_toSubgraph_takeUntil
-        (Set.toFinite {x, b}) (by
+      obtain ⟨x', hx', hx'p, htw⟩ :=
+        Walk.exists_mem_support_forall_mem_support_imp_eq {x, b} (by
         use x
-        simp only [List.coe_toFinset, Set.mem_inter_iff, Set.mem_insert_iff, Set.mem_singleton_iff,
-          true_or, Set.mem_setOf_eq, true_and, cycles]
+        simp only [Finset.mem_filter, Finset.mem_insert, Finset.mem_singleton, true_or, true_and,
+          cycles]
         rwa [← @Walk.mem_verts_toSubgraph, hp'.2.2, hp.2])
       use x', hx', p'.takeUntil x' hx'p
-      refine ⟨hp'.1.isPath_takeUntil hx'p, ?_,
-        htw _ (by simp : x ∈ {x, b}) _ (by simp : b ∈ {x, b})⟩
+      refine ⟨hp'.1.isPath_takeUntil hx'p, ?_, (fun h ↦ by
+        simp [htw _ (by simp) (Walk.mem_support_of_adj_toSubgraph h.symm),
+          htw _ (by simp) (Walk.mem_support_of_adj_toSubgraph h)] at hnxb)⟩
       have : (p'.takeUntil x' hx'p).toSubgraph.Adj a (p'.takeUntil x' hx'p).snd := by
         apply SimpleGraph.Walk.toSubgraph_adj_snd
         rw [Walk.nil_takeUntil]
         aesop
-      rwa [Walk.snd_takeUntil (by aesop), hp'.2.1] at this
+      rwa [Walk.snd_takeUntil (by
+        simp only [Finset.mem_insert, Finset.mem_singleton, cycles] at hx'
+        obtain h1 | h2 := hx'
+        · subst h1; exact hxa.ne
+        · subst h2; exact hab.ne.symm), hp'.2.1] at this
   -- We show this path satisfies all requirements
   obtain ⟨x', hx', p, hp, hpac, hnpxb⟩ := this
   have hle : p.toSubgraph.spanningCoe ≤ G ⊔ edge a c := by
@@ -262,7 +267,7 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
     · exfalso
       obtain ⟨w, hw⟩ := hM1.1 (hM1.2 x')
       apply hnpxb
-      cases' hx' with h1 h2
+      obtain h1 | h2 := hx'
       · subst h1
         rw [hw.2 _ hM1xb, ← hw.2 _ hl.symm]
         exact hadj.symm
@@ -270,7 +275,8 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
         rw [hw.2 _ hM1xb.symm, ← hw.2 _ hl.symm]
         exact hadj
     · exact hr
-  cases' hx' with hl hl <;> subst hl
+  simp only [Finset.mem_insert, Finset.mem_singleton, cycles] at hx'
+  obtain hl | hl := hx' <;> subst hl
   · exact tutte_exists_IsAlternating_IsCycles hM2 p hp hcalt (hnM2 x' hnxc) hpac hnpxb hM2ac
       hxa hnxc hab.ne hle (aux (by simp))
   · conv =>
