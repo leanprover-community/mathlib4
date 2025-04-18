@@ -336,7 +336,7 @@ theorem average_add_measure [IsFiniteMeasure μ] {ν : Measure α} [IsFiniteMeas
         (ν.real univ / (μ.real univ + ν.real univ)) • ⨍ x, f x ∂ν := by
   simp only [div_eq_inv_mul, mul_smul, measure_smul_average, ← smul_add,
     ← integral_add_measure hμ hν, ← ENNReal.toReal_add (measure_ne_top μ _) (measure_ne_top ν _)]
-  rw [average_eq, measureReal_add_apply μ ν]
+  rw [average_eq, measureReal_add_apply]
 
 theorem average_pair [CompleteSpace E]
     {f : α → E} {g : α → F} (hfi : Integrable f μ) (hgi : Integrable g μ) :

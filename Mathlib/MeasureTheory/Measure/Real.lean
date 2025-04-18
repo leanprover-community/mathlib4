@@ -398,7 +398,7 @@ theorem measureReal_count_singleton [MeasurableSingletonClass α] (a : α) :
     count.real ({a} : Set α) = 1 :=
   measureReal_count_singleton' (measurableSet_singleton a)
 
-theorem measureReal_add_apply (μ₁ μ₂ : Measure α) (s : Set α) (h₁ : μ₁ s ≠ ∞ := by finiteness)
+theorem measureReal_add_apply {μ₁ μ₂ : Measure α} (s : Set α) (h₁ : μ₁ s ≠ ∞ := by finiteness)
     (h₂ : μ₂ s ≠ ∞ := by finiteness) :
     (μ₁ + μ₂).real s = μ₁.real s + μ₂.real s := by
   simp only [measureReal_def, add_apply, ENNReal.toReal_add h₁ h₂]
