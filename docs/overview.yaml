@@ -47,9 +47,9 @@ General algebra:
     nilpotent group: 'Group.IsNilpotent'
     permutation group of a type: 'Equiv.Perm'
     structure of finitely generated abelian groups: 'AddCommGroup.equiv_free_prod_directSum_zmod'
-    first Sylow theorem: Sylow.exists_subgroup_card_pow_prime
-    second Sylow theorem: Sylow.isPretransitive_of_finite
-    third Sylow theorem: card_sylow_modEq_one
+    first Sylow theorem: 'Sylow.exists_subgroup_card_pow_prime'
+    second Sylow theorem: 'Sylow.isPretransitive_of_finite'
+    third Sylow theorem: 'card_sylow_modEq_one'
 
   Rings:
     ring: 'Ring'
@@ -420,12 +420,12 @@ Geometry:
     boundary of a manifold: 'ModelWithCorners.boundary'
     tangent bundle: 'TangentBundle'
     tangent map: 'tangentMap'
-    pullback of vector fields: VectorField.mpullback
-    Lie bracket of vector field: VectorField.mlieBracket
-    Jacobi/Leibniz identity: VectorField.leibniz_identity_mlieBracket
+    pullback of vector fields: 'VectorField.mpullback'
+    Lie bracket of vector field: 'VectorField.mlieBracket'
+    Jacobi/Leibniz identity: 'VectorField.leibniz_identity_mlieBracket'
     integral curves: 'IsIntegralCurve'
-    local existence of integral curves: exists_isIntegralCurveAt_of_contMDiffAt_boundaryless
-    uniform time existence: exists_isIntegralCurve_of_isIntegralCurveOn
+    local existence of integral curves: 'exists_isIntegralCurveAt_of_contMDiffAt_boundaryless'
+    uniform time existence: 'exists_isIntegralCurve_of_isIntegralCurveOn'
     # corollary for compact manifolds PRed in #22254
     uniqueness of integral curves: 'isIntegralCurveOn_Ioo_eqOn_of_contMDiff_boundaryless'
     Lie group: 'LieGroup'
@@ -434,22 +434,22 @@ Geometry:
     closed interval: 'instIsManifoldIcc'
 
   Smooth vector and fiber bundles:
-    (topological) fiber bundle: FiberBundle
+    (topological) fiber bundle: 'FiberBundle'
     vector bundle:
-      topological: VectorBundle
-      smooth: ContMDiffVectorBundle
+      topological: 'VectorBundle'
+      smooth: 'ContMDiffVectorBundle'
     trivial vector bundle:
-      topological: Bundle.Trivial.vectorBundle
-      smooth: Bundle.Trivial.contMDiffVectorBundle
+      topological: 'Bundle.Trivial.vectorBundle'
+      smooth: 'Bundle.Trivial.contMDiffVectorBundle'
     direct sum:
-      topological: VectorBundle.prod
-      smooth: Bundle.Prod.contMDiffVectorBundle
+      topological: 'VectorBundle.prod'
+      smooth: 'Bundle.Prod.contMDiffVectorBundle'
     pullback bundle:
-      topological: VectorBundle.pullback
-      smooth: ContMDiffVectorBundle.pullback
+      topological: 'VectorBundle.pullback'
+      smooth: 'ContMDiffVectorBundle.pullback'
     Hom bundle:
-      topological: Bundle.ContinuousLinearMap.vectorBundle
-      smooth: ContMDiffVectorBundle.continuousLinearMap
+      topological: 'Bundle.ContinuousLinearMap.vectorBundle'
+      smooth: 'ContMDiffVectorBundle.continuousLinearMap'
 
   Algebraic geometry:
     prime spectrum: 'PrimeSpectrum'
