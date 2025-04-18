@@ -157,18 +157,18 @@ namespace Mod_Class
 -- See note [reducible non instances]
 abbrev regular : Mod_Class M M where smul := μ
 
-/-- Construct an object of `Mod_ (Mon_.mk' M)` from an object `X : C` and a
-`Mod_Class M X` instance. -/
-@[simps]
-def mk' (X : C) [Mod_Class M X] : Mod_ (.mk' M) where
-  X := X
-  act := (Mod_Class.smul : M ⊗ X ⟶ X)
-
 instance {A : Mon_ C} (M : Mod_ A) : Mod_Class A.X M.X where
   smul := M.act
   one_smul := M.one_act
   mul_smul := M.assoc
 
 end Mod_Class
+
+/-- Construct an object of `Mod_ (Mon_.mk' M)` from an object `X : C` and a
+`Mod_Class M X` instance. -/
+@[simps]
+def Mod_.mk' (X : C) [Mod_Class M X] : Mod_ (.mk' M) where
+  X := X
+  act := (Mod_Class.smul : M ⊗ X ⟶ X)
 
 end Mod_Class
