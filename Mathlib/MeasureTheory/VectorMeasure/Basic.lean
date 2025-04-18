@@ -3,6 +3,7 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
+import Mathlib.MeasureTheory.Measure.Real
 import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 
@@ -328,16 +329,16 @@ open Classical in
 /-- A finite measure coerced into a real function is a signed measure. -/
 @[simps]
 def toSignedMeasure (μ : Measure α) [hμ : IsFiniteMeasure μ] : SignedMeasure α where
-  measureOf' := fun s : Set α => if MeasurableSet s then (μ s).toReal else 0
+  measureOf' := fun s : Set α => if MeasurableSet s then μ.real s else 0
   empty' := by simp [μ.empty]
   not_measurable' _ hi := if_neg hi
   m_iUnion' f hf₁ hf₂ := by
-    simp only [*, MeasurableSet.iUnion hf₁, if_true, measure_iUnion hf₂ hf₁]
+    simp only [*, MeasurableSet.iUnion hf₁, if_true, measure_iUnion hf₂ hf₁, measureReal_def]
     rw [ENNReal.tsum_toReal_eq]
     exacts [(summable_measure_toReal hf₁ hf₂).hasSum, fun _ ↦ measure_ne_top _ _]
 
 theorem toSignedMeasure_apply_measurable {μ : Measure α} [IsFiniteMeasure μ] {i : Set α}
-    (hi : MeasurableSet i) : μ.toSignedMeasure i = (μ i).toReal :=
+    (hi : MeasurableSet i) : μ.toSignedMeasure i = μ.real i :=
   if_pos hi
 
 -- Without this lemma, `singularPart_neg` in `Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue`
@@ -352,8 +353,7 @@ theorem toSignedMeasure_eq_toSignedMeasure_iff {μ ν : Measure α} [IsFiniteMea
   · ext1 i hi
     have : μ.toSignedMeasure i = ν.toSignedMeasure i := by rw [h]
     rwa [toSignedMeasure_apply_measurable hi, toSignedMeasure_apply_measurable hi,
-        ENNReal.toReal_eq_toReal] at this
-      <;> exact measure_ne_top _ _
+        measureReal_eq_measureReal_iff] at this
   · congr
 
 @[simp]

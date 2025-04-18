@@ -76,29 +76,41 @@ theorem volume_val (s) : volume s = StieltjesFunction.id.measure s := by
 theorem volume_Ico {a b : ℝ} : volume (Ico a b) = ofReal (b - a) := by simp [volume_val]
 
 @[simp]
-theorem volume_real_Ico {a b : ℝ} (hab : a ≤ b) : volume.real (Ico a b) = b - a := by
-  simp [measureReal_def, volume_val, hab]
+theorem volume_real_Ico {a b : ℝ} : volume.real (Ico a b) = max (b - a) 0 := by
+  simp [measureReal_def, ENNReal.toReal_ofReal']
+
+theorem volume_real_Ico_of_le {a b : ℝ} (hab : a ≤ b) : volume.real (Ico a b) = b - a := by
+  simp [hab]
 
 @[simp]
 theorem volume_Icc {a b : ℝ} : volume (Icc a b) = ofReal (b - a) := by simp [volume_val]
 
 @[simp]
-theorem volume_real_Icc {a b : ℝ} (hab : a ≤ b) : volume.real (Icc a b) = b - a := by
-  simp [measureReal_def, volume_val, hab]
+theorem volume_real_Icc {a b : ℝ} : volume.real (Icc a b) = max (b - a) 0 := by
+  simp [measureReal_def, ENNReal.toReal_ofReal']
+
+theorem volume_real_Icc_of_le {a b : ℝ} (hab : a ≤ b) : volume.real (Icc a b) = b - a := by
+  simp [hab]
 
 @[simp]
 theorem volume_Ioo {a b : ℝ} : volume (Ioo a b) = ofReal (b - a) := by simp [volume_val]
 
 @[simp]
-theorem volume_real_Ioo {a b : ℝ} (hab : a ≤ b) : volume.real (Ioo a b) = b - a := by
-  simp [measureReal_def, volume_val, hab]
+theorem volume_real_Ioo {a b : ℝ} : volume.real (Ioo a b) = max (b - a) 0 := by
+  simp [measureReal_def, ENNReal.toReal_ofReal']
+
+theorem volume_real_Ioo_of_le {a b : ℝ} (hab : a ≤ b) : volume.real (Ioo a b) = b - a := by
+  simp [hab]
 
 @[simp]
 theorem volume_Ioc {a b : ℝ} : volume (Ioc a b) = ofReal (b - a) := by simp [volume_val]
 
 @[simp]
-theorem volume_real_Ioc {a b : ℝ} (hab : a ≤ b) : volume.real (Ioc a b) = b - a := by
-  simp [measureReal_def, volume_val, hab]
+theorem volume_real_Ioc {a b : ℝ} : volume.real (Ioc a b) = max (b - a) 0 := by
+  simp [measureReal_def, ENNReal.toReal_ofReal']
+
+theorem volume_real_Ioc_of_le {a b : ℝ} (hab : a ≤ b) : volume.real (Ioc a b) = b - a := by
+  simp [hab]
 
 theorem volume_singleton {a : ℝ} : volume ({a} : Set ℝ) = 0 := by simp [volume_val]
 
