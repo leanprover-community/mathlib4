@@ -18,58 +18,6 @@ open Finset
 section withDecRel
 variable [DecidableRel G.Adj] [DecidablePred (· ∈ s)] [LocallyFinite G]
 
-#synth DecidableRel ((⊤ : Subgraph G).induce s).Adj
-
-/-- If a graph is locally finite at a vertex, then so is a spanningCoe of a
-subgraph of that graph. -/
-instance finiteAtspanningCoe {G' : Subgraph G} (v : α) [DecidableRel G'.Adj]
-    [Fintype (G.neighborSet v)] : Fintype (G'.spanningCoe.neighborSet v) := by
-  convert Set.fintypeSubset (G.neighborSet v) (G'.neighborSet_subset v)
-
-
-
-abbrev degreeIn (s : Set α) [DecidablePred (· ∈ s)] (a : α) :=
-  ((⊤ : Subgraph G).induce s).spanningCoe.degree a
-
-
-variable {s t : Set α} [DecidablePred (· ∈ s)] [DecidablePred (· ∈ t)]
-
-lemma degreeIn.mono {a : α} (h : s ⊆ t) : G.degreeIn s a ≤ G.degreeIn t a := by
-  apply card_le_card
-  intro v hv
-  simp only [mem_neighborFinset, Subgraph.spanningCoe_adj, Subgraph.induce_adj,
-    Subgraph.top_adj] at hv ⊢
-  exact ⟨h hv.1, h hv.2.1, hv.2.2⟩
-
-
-lemma degreeIn_le_degree (a : α) : G.degreeIn s a ≤ G.degree a := by
-  apply card_le_card
-  intro m hm
-  simp only [mem_neighborFinset, Subgraph.spanningCoe_adj, Subgraph.induce_adj,
-    Subgraph.top_adj] at *
-  exact hm.2.2
-
-lemma degree_le_degreeIn_iff {a : α} (ha : a ∈ s) :
-    G.degree a ≤ G.degreeIn s a ↔ (G.neighborFinset a : Set α) ⊆ s := by
-  constructor <;> simp_rw [degree]
-  · intro heq v hx
-    have :=  eq_of_subset_of_card_le (by intro v; simp) heq
-    apply ((⊤ : Subgraph G).induce s).neighborSet_subset_verts a
-    rw [← this] at hx
-    simpa using hx
-  · intro hs
-    apply card_le_card --fun _ hx ↦ mem_inter.2 ⟨hx, hs hx⟩
-    intro x hx
-    simp only [mem_neighborFinset, Subgraph.spanningCoe_adj, Subgraph.induce_adj,
-      Subgraph.top_adj] at hx ⊢
-    refine ⟨ha, ?_, hx⟩
-    apply hs; simpa using hx
-
-lemma degreeIn_lt_degree {a v : α} (ha : a ∈ s) (hv : v ∈ G.neighborFinset a ∧ v ∉ s) :
-    G.degreeIn s a < G.degree a :=
-  lt_of_le_of_ne (G.degreeIn_le_degree a)
-    fun hf ↦ hv.2 ((degree_le_degreeIn_iff _ ha).1 hf.symm.le hv.1)
-
 variable [DecidableEq α]
 /-- `G.degreeOn s a` is the number of neighbors of `a` in `s` -/
 abbrev degreeOn (s : Finset α) (a : α) : ℕ := #(G.neighborFinset a ∩ s)
@@ -104,62 +52,6 @@ lemma degreeOn_lt_degree {a v : α} {s : Finset α} (hv : v ∈ G.neighborFinset
 end degreeOn
 
 
---abbrev PartialCol (β : Type*) (s : Set α) := ((⊤ : Subgraph G).induce s).spanningCoe.Coloring β
-
-abbrev PartColorable (n : ℕ) (s : Set α) := ((⊤ : Subgraph G).induce s).spanningCoe.Colorable n
-
-
-variable {β : Type*} {n : ℕ}
-
-
--- lemma PartialCol.valid  (hu : u ∈ s) (hv : v ∈ s) (h : G.Adj u v) :
---     C u ≠ C v := by
---   unfold PartialCol at C
---   have : ((⊤ : Subgraph G).induce s).spanningCoe.Adj u v := by  simpa using ⟨hu, hv, h⟩
---   exact C.valid this
-variable {G}
-lemma PartColorable.succ_ofNotAdj  {s : Set α} (h : ∀ u v, u ∈ s → v ∈ s → ¬ G.Adj u v) :
-    G.PartColorable (n + 1) s := ⟨⊥, by simpa⟩
-
-lemma  PartColorable.union {s t : Set α} (hs : G.PartColorable n s) (ht : G.PartColorable n t)
-  (h : ∀ u v, u ∈ s → v ∈ t → ¬ G.Adj u v) : G.PartColorable n (s ∪ t) := by
-  classical
-  obtain ⟨C₁⟩ := hs
-  obtain ⟨C₂⟩ := ht
-  exact ⟨(fun v ↦ ite (v ∈ s) (C₁ v) (C₂ v)), by
-      simp only [mem_union, ne_eq]
-      intro v w hadj hf
-      simp only [Subgraph.spanningCoe_adj, Subgraph.induce_adj, Set.mem_union,
-        Subgraph.top_adj] at hadj
-      cases hadj.1 with
-      | inl hv =>
-        cases hadj.2.1 with
-        | inl hw =>
-          rw [if_pos hv, if_pos hw] at hf;
-          exact C₁.valid (by simpa using ⟨hv, hw, hadj.2.2⟩) hf
-        | inr hw => exact h _  _ hv hw hadj.2.2
-      | inr hv =>
-        cases hadj.2.1 with
-        | inl hw => exact h _ _  hw hv hadj.2.2.symm
-        | inr hw =>
-          split_ifs at hf with h1 h2 h3
-          · exact h _  _ h1 hw hadj.2.2
-          · exact h _  _ h1 hw hadj.2.2
-          · exact h _  _ h3 hv hadj.2.2.symm
-          · exact C₂.valid (by simpa using ⟨hv, hw, hadj.2.2⟩) hf⟩
-
-
-lemma  PartColorable.insertNotAdj {b : α} {hs : G.PartColorable (n + 1) s}
-    (h : ∀ v, v ∈ s → ¬ G.Adj b v) : G.PartColorable (n + 1) (insert b s) := by
-  rw [Set.insert_eq]
-  apply PartColorable.union _ hs
-  · intro u v hu hv hadj
-    rw [Set.mem_singleton_iff] at hu
-    exact h v hv (hu ▸ hadj)
-  · exact ⟨⊥, by simp⟩
-
-
-variable (G)
 
 @[ext]
 structure PartialColoring (s : Finset α) where
@@ -204,14 +96,14 @@ protected def copy {s t} (C : G.PartialColoring s) (h : s = t) : G.PartialColori
   col := C.col
   valid := fun _ _ hv hw hadj => C.valid (h ▸ hv) (h ▸ hw) hadj
 
-@[simp]
-theorem copy_rfl {s} (C : G.PartialColoring s)  : C.copy rfl = C := rfl
+-- @[simp]
+-- theorem copy_rfl {s} (C : G.PartialColoring s)  : C.copy rfl = C := rfl
 
-@[simp]
-theorem copy_copy {s t u} (C : G.PartialColoring s) (hs : s = t) (ht : t = u) :
-    (C.copy hs).copy ht = C.copy (hs.trans ht) := by
-  subst_vars
-  rfl
+-- @[simp]
+-- theorem copy_copy {s t u} (C : G.PartialColoring s) (hs : s = t) (ht : t = u) :
+--     (C.copy hs).copy ht = C.copy (hs.trans ht) := by
+--   subst_vars
+--   rfl
 
 @[simp]
 lemma copy_eq {s t} (C : G.PartialColoring s) (hs : s = t) : ⇑(C.copy hs) = C  := rfl

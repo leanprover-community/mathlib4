@@ -59,43 +59,4 @@ theorem colorable_iff_forall_induced_connected :
     obtain ⟨C⟩ := h
     exact ⟨fun v ↦ (C v.1), fun a ↦ Hom.map_adj C a⟩
 
-section PartialColorings
-
-variable {s t : Set α} {G' : Subgraph G}
-namespace Subgraph
-
-/-- A `β coloring` of a subgraph `G'` is `C : α → β` that sends adjacent vertices in `G'` to
-different colors. -/
-abbrev Coloring (G' : G.Subgraph) (β : Type*) := G'.Adj →r (⊤ : SimpleGraph β).Adj
-
-variable {C : G'.Coloring β} {a : α}
-theorem Coloring.valid {v w : α} (h : G'.Adj v w) : C v ≠ C w :=
-  C.map_rel h
-
-def Coloring.mk (color : α → β) (valid : ∀ {v w : α}, G'.Adj v w → color v ≠ color w) :
-    G'.Coloring β :=
-  ⟨color, valid⟩
-
-def Coloring.mk' (color : α → β)
-    (valid' : ∀ {v w : α}, v ∈ G'.verts → w ∈ G'.verts → G'.Adj v w → color v ≠ color w) :
-    G'.Coloring β :=
-  ⟨color, by intro a b h1; apply valid' h1.fst_mem h1.snd_mem h1⟩
-
-instance : Coe (G'.Coloring β) (G'.spanningCoe.Coloring β) where
-  coe := fun C ↦ ⟨C, by intro _ _ ; simpa using C.valid⟩
-
-instance : Coe (G'.Coloring β) (G'.coe.Coloring β) where
-  coe := fun C ↦ ⟨fun a ↦ C a.1, by intro _ _ ; simpa using C.valid⟩
-
-
-end Subgraph
-abbrev PartialColoring (G : SimpleGraph α) (s : Set α) (β : Type*) :=
-    (G.induce s).Coloring β
-
-@[simp]
-def ofCongr (C : G.PartialColoring s β) (h : s = t) : G.PartialColoring t β := by
-  unfold PartialColoring at *
-  rwa [← h]
-
-end PartialColorings
 end SimpleGraph
