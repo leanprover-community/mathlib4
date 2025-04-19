@@ -539,3 +539,17 @@ theorem isLUB_mem [LinearOrder α] {i : α} (s : Finset α) (his : IsLUB (s : Se
   @isGLB_mem αᵒᵈ _ i s his hs
 
 end Finset
+
+theorem Multiset.exists_max {α R : Type*} [DecidableEq α] [DecidableEq R] [LinearOrder R]
+    (f : α → R) {s : Multiset α} (hs : s.toFinset.Nonempty) :
+    ∃ y : α, y ∈ s ∧ ∀ z : α, z ∈ s → f z ≤ f y := by
+  have hsf : (map f s).toFinset.Nonempty := by
+    obtain ⟨x, hx⟩ := hs.exists_mem
+    exact ⟨f x, mem_toFinset.mpr (mem_map.mpr ⟨x, mem_toFinset.mp hx, rfl⟩)⟩
+  have h := (s.map f).toFinset.max'_mem hsf
+  rw [mem_toFinset, mem_map] at h
+  obtain ⟨y, hys, hymax⟩ := h
+  use y, hys
+  intro z hz
+  rw [hymax]
+  exact Finset.le_max' _ _ (mem_toFinset.mpr (mem_map.mpr ⟨z, hz, rfl⟩))
