@@ -1006,18 +1006,6 @@ def declUnfoldAuxLemmas (decl : ConstantInfo) : MetaM ConstantInfo := do
     decl := .opaqueInfo { info with value := ← unfoldAuxLemmas info.value }
   return decl
 
-/-- Unfold auxlemmas in the type and value. -/
-def declUnfoldAuxLemmas (decl : ConstantInfo) : MetaM ConstantInfo := do
-  let mut decl := decl
-  decl := decl.updateType <| ← unfoldAuxLemmas decl.type
-  if let some v := decl.value? then
-    trace[to_additive] "value before unfold:{indentExpr v}"
-    decl := decl.updateValue <| ← unfoldAuxLemmas v
-    trace[to_additive] "value after unfold:{indentExpr decl.value!}"
-  else if let .opaqueInfo info := decl then -- not covered by `value?`
-    decl := .opaqueInfo { info with value := ← unfoldAuxLemmas info.value }
-  return decl
-
 /-- Run applyReplacementFun on the given `srcDecl` to make a new declaration with name `tgt` -/
 def updateDecl (b : BundledExtensions)
     (tgt : Name) (srcDecl : ConstantInfo) (reorder : List (List Nat) := []) :
@@ -1351,24 +1339,6 @@ def orderDualDict : String → List String
   | x             => [x]
 
 /--
-Dictionary used by `guessName` to autogenerate names.
-
-Note: `guessName` capitalizes first element of the output according to
-capitalization of the input. Input and first element should therefore be lower-case,
-2nd element should be capitalized properly.
--/
-def orderDualDict : String → List String
-  | "top"         => ["bot"]
-  | "bot"         => ["top"]
-  | "inf"         => ["sup"]
-  | "sup"         => ["inf"]
-  | "min"         => ["max"]
-  | "max"         => ["min"]
-  | "untop"         => ["unbot"]
-  | "unbot"         => ["untop"]
-  | x             => [x]
-
-/--
 Turn each element to lower-case, apply the `nameDict` and
 capitalize the output like the input.
 -/
@@ -1466,16 +1436,6 @@ def additiveFixAbbreviation : List String → List String
                                       => "subNegZeroMonoid" :: additiveFixAbbreviation s
   | "modular" :: "Character" :: s => "addModularCharacter" :: additiveFixAbbreviation s
   | "Modular" :: "Character" :: s => "AddModularCharacter" :: additiveFixAbbreviation s
-  | x :: s                            => x :: additiveFixAbbreviation s
-  | []                                => []
-
-/--
-There are a few abbreviations we use.
-Note: The input to this function is case sensitive!
-Todo: A lot of abbreviations here are manual fixes and there might be room to
-      improve the naming logic to reduce the size of `fixAbbreviation`.
--/
-def orderDualFixAbbreviation : List String → List String
   | x :: s                            => x :: additiveFixAbbreviation s
   | []                                => []
 
