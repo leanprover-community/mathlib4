@@ -32,16 +32,12 @@ The exactness of this long exact sequence is given by three lemmas
 If `F` is a homological functor, we define the strictly full triangulated subcategory
 `F.homologicalKernel`: it consists of objects `X : C` such that for all `n : ℤ`,
 `(F.shift n).obj X` (or `F.obj (X⟦n⟧)`) is zero. We show that a morphism `f` in `C`
-belongs to `F.homologicalKernel.W` (i.e. the cone of `f` is in this kernel) iff
+belongs to `F.homologicalKernel.trW` (i.e. the cone of `f` is in this kernel) iff
 `(F.shift n).map f` is an isomorphism for all `n : ℤ`.
 
 Note: depending on the sources, homological functors are sometimes
 called cohomological functors, while certain authors use "cohomological functors"
 for "contravariant" functors (i.e. functors `Cᵒᵖ ⥤ A`).
-
-## TODO
-
-* The long exact sequence in homology attached to an homological functor.
 
 ## References
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
@@ -60,6 +56,17 @@ variable {C D A : Type*} [Category C] [HasShift C ℤ]
 namespace Functor
 
 variable (F : C ⥤ A)
+
+/-- The kernel of a homological functor `F : C ⥤ A` is the strictly full
+triangulated subcategory consisting of objects `X` such that
+for all `n : ℤ`, `F.obj (X⟦n⟧)` is zero. -/
+def homologicalKernel : ObjectProperty C :=
+  fun X ↦ ∀ (n : ℤ), IsZero (F.obj (X⟦n⟧))
+
+lemma mem_homologicalKernel_iff [F.ShiftSequence ℤ] (X : C) :
+    F.homologicalKernel X ↔ ∀ (n : ℤ), IsZero ((F.shift n).obj X) := by
+  simp only [← fun (n : ℤ) => Iso.isZero_iff ((F.isoShift n).app X)]
+  rfl
 
 section Pretriangulated
 
@@ -96,12 +103,6 @@ lemma IsHomological.of_iso {F₁ F₂ : C ⥤ A} [F₁.IsHomological] (e : F₁ 
   ⟨fun T hT => ShortComplex.exact_of_iso (ShortComplex.mapNatIso _ e)
     (F₁.map_distinguished_exact T hT)⟩
 
-/-- The kernel of a homological functor `F : C ⥤ A` is the strictly full
-triangulated subcategory consisting of objects `X` such that
-for all `n : ℤ`, `F.obj (X⟦n⟧)` is zero. -/
-def homologicalKernel [F.IsHomological] : ObjectProperty C :=
-  fun X ↦ ∀ (n : ℤ), IsZero (F.obj (X⟦n⟧))
-
 section
 
 variable [F.IsHomological]
@@ -121,11 +122,6 @@ instance : F.homologicalKernel.IsTriangulated where
           ((h₁ n).eq_of_src _ _) ((h₃ n).eq_of_tgt _ _))
 
 end
-
-lemma mem_homologicalKernel_iff [F.IsHomological] [F.ShiftSequence ℤ] (X : C) :
-    F.homologicalKernel X ↔ ∀ (n : ℤ), IsZero ((F.shift n).obj X) := by
-  simp only [← fun (n : ℤ) => Iso.isZero_iff ((F.isoShift n).app X)]
-  rfl
 
 noncomputable instance (priority := 100) [F.IsHomological] :
     PreservesLimitsOfShape (Discrete WalkingPair) F := by

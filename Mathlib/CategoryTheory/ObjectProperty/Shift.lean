@@ -74,7 +74,6 @@ attribute [instance] IsStableUnderShift.isStableUnderShiftBy
 instance [P.IsStableUnderShift A] :
     P.isoClosure.IsStableUnderShift A where
 
-@[simp]
 lemma prop_shift_iff_of_isStableUnderShift {G : Type*} [AddGroup G] [HasShift C G]
     [P.IsStableUnderShift G] [P.IsClosedUnderIsomorphisms] (X : C) (g : G) :
     P (X⟦g⟧) ↔ P X := by
