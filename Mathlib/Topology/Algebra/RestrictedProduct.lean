@@ -282,27 +282,27 @@ instance [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)] :
 
 end Algebra
 
-section projection
+section eval
 
 variable {S : ι → Type*}
 variable [Π i, SetLike (S i) (R i)]
 variable {B : Π i, S i}
 
-def projection (j : ι) (x : Πʳ i, [R i, B i]_[𝓕]) : R j := x j
+def eval (j : ι) (x : Πʳ i, [R i, B i]_[𝓕]) : R j := x j
 
 @[to_additive]
-def projectionMonoidHom (j : ι) [Π i, Monoid (R i)] [∀ i, SubmonoidClass (S i) (R i)] :
+def evalMonoidHom (j : ι) [Π i, Monoid (R i)] [∀ i, SubmonoidClass (S i) (R i)] :
     (Πʳ i, [R i, B i]_[𝓕]) →* R j where
-      toFun := projection R j
+      toFun := eval R j
       map_one' := rfl
       map_mul' _ _ := rfl
 
-def projectionRingHom (j : ι) [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)] :
+def evalRingHom (j : ι) [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)] :
     (Πʳ i, [R i, B i]_[𝓕]) →+* R j where
-      __ := projectionMonoidHom R j
-      __ := projectionAddMonoidHom R j
+      __ := evalMonoidHom R j
+      __ := evalAddMonoidHom R j
 
-end projection
+end eval
 
 section map
 
