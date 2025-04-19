@@ -28,8 +28,8 @@ lemma Dominated.image (Hf : Monotone f) {s₁ s₂ : Set α} (h : Dominated s₁
   rw [← hcfa]
   exact ⟨d, ⟨hdd, Hf hcd⟩⟩
 
-lemma Monotone.dominated_geq (Hf : Monotone f) {s₁ s₂ : Set α} (h : Dominated (· ≥ ·) s₁ s₂) :
-    Dominated (· ≥ ·) (f '' s₁) (f '' s₂) := fun a ha => by
+lemma Codominated.image (Hf : Monotone f) {s₁ s₂ : Set α} (h : Codominated s₁ s₂) :
+    Codominated (f '' s₁) (f '' s₂) := fun a ha => by
   obtain ⟨c, hcs, hcfa⟩ := ha
   obtain ⟨d, hdd, hcd⟩ := h c hcs
   simp only [mem_image, exists_exists_and_eq_and]
