@@ -328,7 +328,7 @@ lemma integral_nonneg {f : α →ₛ F} (hf : 0 ≤ᵐ[μ] f) :
   intro y
   by_cases hy : 0 ≤ f y
   · positivity
-  · suffices μ (f ⁻¹' {f y}) = 0 by simp [this]
+  · suffices μ (f ⁻¹' {f y}) = 0 by simp [this, measureReal_def]
     rw [← nonpos_iff_eq_zero]
     refine le_of_le_of_eq (measure_mono fun x hx ↦ ?_) (ae_iff.mp hf)
     simp only [Set.mem_preimage, mem_singleton_iff, mem_setOf_eq] at hx ⊢
@@ -349,12 +349,13 @@ lemma integral_mono_measure {ν} {f : α →ₛ F} (hf : 0 ≤ᵐ[ν] f) (hμν 
   by_cases hx : 0 ≤ f x
   · obtain (hx | hx) := hx.eq_or_lt
     · simp [← hx]
+    simp only [measureReal_def]
     gcongr
     · exact integrable_iff.mp hfν (f x) hx.ne' |>.ne
     · exact hμν _
   · suffices ν (f ⁻¹' {f x}) = 0 by
-      have : μ (f ⁻¹' {f x}) = 0 := by simpa using (hμν _ |>.trans_eq this)
-      simp_all
+      have A : μ (f ⁻¹' {f x}) = 0 := by simpa using (hμν _ |>.trans_eq this)
+      simp [measureReal_def, A, this]
     rw [← nonpos_iff_eq_zero]
     refine le_of_le_of_eq (measure_mono fun y hy ↦ ?_) (ae_iff.mp hf)
     simp only [Set.mem_preimage, mem_singleton_iff, mem_setOf_eq] at hy ⊢
