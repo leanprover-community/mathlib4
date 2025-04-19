@@ -18,7 +18,7 @@ by the formula `(f ⋆ₗ[μ] g) x = ∫⁻ y, (f y) * (g (-y + x)) ∂μ`. This
 formula used by MeasureTheory.convolution for convolution of two functions, however it does agree
 when the domain of `f` and `g` is a commutative group. The main reason for this is so that
 (under sufficient conditions) if `{μ ν π : Measure G} {f g : G → ℝ≥0∞}` are such that
-`μ = π.withDensity f`, `ν = π.withDensity g` where `π` is left multiplication invariant then
+`μ = π.withDensity f`, `ν = π.withDensity g` where `π` is left-invariant then
 `(μ ∗ ν) = π.withDensity (f ⋆ₗ[π] g)`. If the formula in MeasureTheory.convolution was used
 the order of the densities would be flipped.
 
