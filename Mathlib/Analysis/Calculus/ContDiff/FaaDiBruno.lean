@@ -113,7 +113,8 @@ namespace OrderedFinpartition
 /-! ### Basic API for ordered finpartitions -/
 
 /-- The ordered finpartition of `Fin n` into singletons. -/
-@[simps] def atomic (n : ℕ) : OrderedFinpartition n where
+@[simps -fullyApplied]
+def atomic (n : ℕ) : OrderedFinpartition n where
   length := n
   partSize _ :=  1
   partSize_pos _ := _root_.zero_lt_one
@@ -223,7 +224,7 @@ instance instUniqueOne : Unique (OrderedFinpartition 1) where
     have h₁ : c.length = 1 := le_antisymm c.length_le (c.length_pos Nat.zero_lt_one)
     have h₂ (i) : c.partSize i = 1 := le_antisymm (c.partSize_le _) (c.partSize_pos _)
     have h₃ (i j) : c.emb i j = 0 := Subsingleton.elim _ _
-    cases' c with length partSize _ emb _ _ _ _
+    rcases c with ⟨length, partSize, _, emb, _, _, _, _⟩
     subst h₁
     obtain rfl : partSize = fun _ ↦ 1 := funext h₂
     simpa [OrderedFinpartition.ext_iff, funext_iff, Fin.forall_fin_one] using h₃ _ _
@@ -282,6 +283,7 @@ called `OrderedFinPartition.extendEquiv`.
 -/
 
 /-- Extend an ordered partition of `n` entries, by adding a new singleton part to the left. -/
+@[simps -fullyApplied length partSize]
 def extendLeft (c : OrderedFinpartition n) : OrderedFinpartition (n + 1) where
   length := c.length + 1
   partSize := Fin.cons 1 c.partSize
@@ -332,8 +334,22 @@ def extendLeft (c : OrderedFinpartition n) : OrderedFinpartition (n + 1) where
   simp [extendLeft]
   apply @range_const _ _ (by simp; infer_instance)
 
+lemma _root_.Fin.cons_const {α : Type*} (a : α) (n : ℕ) :
+    (Fin.cons a fun _ ↦ a : Fin (n + 1) → α) = fun _ ↦ a :=
+  funext <| Fin.forall_fin_succ.mpr ⟨rfl, fun _ ↦ rfl⟩
+
+@[simp]
+lemma extendLeft_atomic : (atomic n).extendLeft = atomic (n + 1) := by
+  simp only [extendLeft, atomic, comp_def, mk.injEq, Nat.add_left_inj, cons_const, heq_eq_eq,
+    true_and]
+  refine hfunext rfl fun i ↦ ?_
+  simp only [heq_eq_eq, forall_eq']
+  refine .symm <| Fin.heq_fun_iff (by simp [cons_const]) |>.mpr <| forall_fin_one.mpr ?_
+  cases i using Fin.cases <;> simp
+
 /-- Extend an ordered partition of `n` entries, by adding to the `i`-th part a new point to the
 left. -/
+@[simps -fullyApplied length partSize]
 def extendMiddle (c : OrderedFinpartition n) (k : Fin c.length) : OrderedFinpartition (n + 1) where
   length := c.length
   partSize := update c.partSize k (c.partSize k + 1)
@@ -451,6 +467,12 @@ def extend (c : OrderedFinpartition n) (i : Option (Fin c.length)) : OrderedFinp
   match i with
   | none => c.extendLeft
   | some i => c.extendMiddle i
+
+@[simp] lemma extend_none (c : OrderedFinpartition n) : c.extend none = c.extendLeft := rfl
+
+@[simp]
+lemma extend_some (c : OrderedFinpartition n) (i : Fin c.length) : c.extend i = c.extendMiddle i :=
+  rfl
 
 /-- Given an ordered finpartition of `n+1`, with a leftmost atom equal to `{0}`, remove this
 atom to form an ordered finpartition of `n`. -/
@@ -611,6 +633,7 @@ def eraseMiddle (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) ≠ {0})
 open Classical in
 /-- Extending the ordered partitions of `Fin n` bijects with the ordered partitions
 of `Fin (n+1)`. -/
+@[simps apply]
 def extendEquiv (n : ℕ) :
     ((c : OrderedFinpartition n) × Option (Fin c.length)) ≃ OrderedFinpartition (n + 1) where
   toFun c := c.1.extend c.2
