@@ -14,10 +14,6 @@ This file defines unoriented angles in real inner product spaces.
 ## Main definitions
 
 * `InnerProductGeometry.angle` is the undirected angle between two vectors.
-
-## TODO
-
-Prove the triangle inequality for the angle.
 -/
 
 
@@ -26,8 +22,6 @@ assert_not_exists HasFDerivAt ConformalAt
 noncomputable section
 
 open Real Set
-
-open Real
 
 open RealInnerProductSpace
 
@@ -98,8 +92,6 @@ theorem angle_neg_right (x y : V) : angle x (-y) = π - angle x y := by
 /-- The angle between the negation of a vector and another vector. -/
 theorem angle_neg_left (x y : V) : angle (-x) y = π - angle x y := by
   rw [← angle_neg_neg, neg_neg, angle_neg_right]
-
-proof_wanted angle_triangle (x y z : V) : angle x z ≤ angle x y + angle y z
 
 /-- The angle between the zero vector and a vector. -/
 @[simp]
