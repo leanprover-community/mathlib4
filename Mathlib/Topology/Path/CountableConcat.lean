@@ -93,9 +93,14 @@ lemma countableConcatFun_eqOn (γ : (n : ℕ) → Path (s n) (s (n + 1))) {x : X
     simp [hn, pow_succ]
     linarith
 
-/-- The concatenation of countably many paths leading up to some point `x`. -/
-def countableConcat (γ : (n : ℕ) → Path (s n) (s (n + 1))) (x : X) {b : ℕ → Set X}
-    (hb : (𝓝 x).HasAntitoneBasis b) (hγ : ∀ n t, γ n t ∈ b n) : Path (s 0) x where
+lemma countableConcatFun_one {γ : (n : ℕ) → Path (s n) (s (n + 1))} {x : X} :
+    countableConcatFun γ x 1 = x := by
+  simp [countableConcatFun]
+
+/-- The concatenation of countably many paths `γ n` leading up to some point `x`. The condition
+`hγx` is the precise condition needed in order for the concatenation to be continuous at `1`. -/
+def countableConcat (γ : (n : ℕ) → Path (s n) (s (n + 1))) (x : X)
+    (hγx : ∀ u ∈ 𝓝 x, ∃ n : ℕ, ∀ m, n ≤ m → ∀ t, γ m t ∈ u) : Path (s 0) x where
   toFun := countableConcatFun γ x
   continuous_toFun := by
     refine continuous_iff_continuousAt.2 fun t ↦ ?_
@@ -138,28 +143,29 @@ def countableConcat (γ : (n : ℕ) → Path (s n) (s (n + 1))) (x : X) {b : ℕ
             exact h.trans_eq <| by simp
     · rw [unitInterval.lt_one_iff_ne_one, not_ne_iff] at ht; rw [ht]
       unfold ContinuousAt
-      convert hb.1.tendsto_right_iff.2 fun n _ ↦ ?_ using 1
-      · simp [countableConcatFun]
-      rw [eventually_nhds_iff]
+      intro u hu
+      rw [countableConcatFun_one] at hu
+      let ⟨n, hn⟩ := hγx u hu
+      rw [Filter.mem_map, mem_nhds_iff]
       use Set.Ioi ⟨1 - (2 ^ n)⁻¹, by rw [sub_nonneg, inv_le_one₀] <;> simp [one_le_pow₀], by simp⟩
       refine ⟨fun t ht ↦ ?_, isOpen_Ioi, by simp [← coe_lt_one]⟩
       by_cases ht' : t < 1
       · have ht'' := symm_one ▸ symm_lt_symm.2 ht'; have ht''' := coe_pos.2 ht''
-        simp only [countableConcatFun, ht', reduceDIte]
-        convert hb.2 _ <| hγ (Nat.log 2 _) _ using 1
+        simp only [mem_preimage, countableConcatFun, ht', reduceDIte]
+        refine hn _ ?_ _
         rw [← Nat.pow_le_iff_le_log one_lt_two (Nat.floor_pos.2 <| (one_le_inv₀ ht''').2
           (σ t).2.2).ne', Nat.le_floor_iff (inv_pos.2 ht''').le, le_inv_comm₀ (by simp) ht''',
           coe_symm_eq, sub_le_comm]
         apply le_of_lt; simpa using ht
       · rw [unitInterval.lt_one_iff_ne_one, not_ne_iff] at ht'; rw [ht']
-        simp [countableConcatFun, mem_of_mem_nhds <| hb.1.mem_of_mem trivial]
+        rw [mem_preimage, countableConcatFun_one]; exact mem_of_mem_nhds hu
   source' := by simp [countableConcatFun]
   target' := by simp [countableConcatFun]
 
 /-- Evaluating `Path.countableConcat` at 1-(1-t/2)/2^n yields `γ n t`. -/
-lemma countableConcat_applyAt {γ : (n : ℕ) → Path (s n) (s (n + 1))} {x : X} {b : ℕ → Set X}
-    {hb : (𝓝 x).HasAntitoneBasis b} {hγ : ∀ n t, γ n t ∈ b n} (n : ℕ) (t : I) :
-    countableConcat γ x hb hγ (σ ⟨(1 - t / 2) / 2 ^ n,
+lemma countableConcat_applyAt {γ : (n : ℕ) → Path (s n) (s (n + 1))} {x : X}
+    (hγx : ∀ u ∈ 𝓝 x, ∃ n : ℕ, ∀ m, n ≤ m → ∀ t, γ m t ∈ u) (n : ℕ) (t : I) :
+    countableConcat γ x hγx (σ ⟨(1 - t / 2) / 2 ^ n,
       div_nonneg (by linarith [t.2.2]) (by simp),
       (div_le_one₀ (by simp)).2 <| by
         linarith [one_le_pow₀ (M₀ := ℝ) one_le_two (n := n), t.2.1]⟩) =
@@ -174,10 +180,10 @@ lemma countableConcat_applyAt {γ : (n : ℕ) → Path (s n) (s (n + 1))} {x : X
 
 /-- The concatenation of a sequence of paths is the same as the concatenation of the first path
 with the concatenation of the remaining paths. -/
-lemma countableConcat_eq_trans {γ : (n : ℕ) → Path (s n) (s (n + 1))} {x : X} {b : ℕ → Set X}
-    {hb : (𝓝 x).HasAntitoneBasis b} {hγ : ∀ n t, γ n t ∈ b n} :
-    countableConcat γ x hb hγ = (γ 0).trans
-      (countableConcat (fun n ↦ γ (n + 1)) x hb fun n t ↦ hb.2 n.le_succ <| hγ (n + 1) t) := by
+lemma countableConcat_eq_trans {γ : (n : ℕ) → Path (s n) (s (n + 1))} {x : X}
+    (hγx : ∀ u ∈ 𝓝 x, ∃ n : ℕ, ∀ m, n ≤ m → ∀ t, γ m t ∈ u) :
+    countableConcat γ x hγx = (γ 0).trans (countableConcat (fun n ↦ γ (n + 1)) x fun u hu ↦
+      ⟨_, fun m hm t ↦ (hγx u hu).choose_spec _ (hm.trans m.le_succ) t⟩) := by
   ext t
   by_cases ht : (t : ℝ) ≤ 1 / 2 <;> dsimp [trans, countableConcat] <;> simp only [ht, ↓reduceIte]
   · refine (countableConcatFun_eqOn γ 0 ?_).trans <| by simp
