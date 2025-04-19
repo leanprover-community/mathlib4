@@ -188,7 +188,7 @@ theorem sum_mongePointVSubFaceCentroidWeightsWithCircumcenter {n : ℕ} {i₁ i�
 n-dimensional face, in terms of `pointsWithCircumcenter`. -/
 theorem mongePoint_vsub_face_centroid_eq_weightedVSub_of_pointsWithCircumcenter {n : ℕ}
     (s : Simplex ℝ P (n + 2)) {i₁ i₂ : Fin (n + 3)} (h : i₁ ≠ i₂) :
-    s.mongePoint -ᵥ ({i₁, i₂}ᶜ : Finset (Fin (n + 3))).centroid ℝ s.points =
+    s.mongePoint -ᵥ ({i₁, i₂}ᶜ : Finset _).centroid ℝ s.points =
       (univ : Finset (PointsWithCircumcenterIndex (n + 2))).weightedVSub s.pointsWithCircumcenter
         (mongePointVSubFaceCentroidWeightsWithCircumcenter i₁ i₂) := by
   simp_rw [mongePoint_eq_affineCombination_of_pointsWithCircumcenter,
@@ -200,7 +200,7 @@ n-dimensional face, is orthogonal to the difference of the two
 vertices not in that face. -/
 theorem inner_mongePoint_vsub_face_centroid_vsub {n : ℕ} (s : Simplex ℝ P (n + 2))
     {i₁ i₂ : Fin (n + 3)} :
-    ⟪s.mongePoint -ᵥ ({i₁, i₂}ᶜ : Finset (Fin (n + 3))).centroid ℝ s.points,
+    ⟪s.mongePoint -ᵥ ({i₁, i₂}ᶜ : Finset _).centroid ℝ s.points,
         s.points i₁ -ᵥ s.points i₂⟫ =
       0 := by
   by_cases h : i₁ = i₂
@@ -236,14 +236,13 @@ the centroid of an n-dimensional face and is orthogonal to the
 opposite edge (in 2 dimensions, this is the same as an altitude).
 This definition is only intended to be used when `i₁ ≠ i₂`. -/
 def mongePlane {n : ℕ} (s : Simplex ℝ P (n + 2)) (i₁ i₂ : Fin (n + 3)) : AffineSubspace ℝ P :=
-  mk' (({i₁, i₂}ᶜ : Finset (Fin (n + 3))).centroid ℝ s.points) (ℝ ∙ s.points i₁ -ᵥ s.points i₂)ᗮ ⊓
+  (ℝ ∙ s.points i₁ -ᵥ s.points i₂)ᗮ.shift (({i₁, i₂}ᶜ : Finset _).centroid ℝ s.points) ⊓
     affineSpan ℝ (Set.range s.points)
 
 /-- The definition of a Monge plane. -/
 theorem mongePlane_def {n : ℕ} (s : Simplex ℝ P (n + 2)) (i₁ i₂ : Fin (n + 3)) :
     s.mongePlane i₁ i₂ =
-      mk' (({i₁, i₂}ᶜ : Finset (Fin (n + 3))).centroid ℝ s.points)
-          (ℝ ∙ s.points i₁ -ᵥ s.points i₂)ᗮ ⊓
+      (ℝ ∙ s.points i₁ -ᵥ s.points i₂)ᗮ.shift (({i₁, i₂}ᶜ : Finset _).centroid ℝ s.points) ⊓
         affineSpan ℝ (Set.range s.points) :=
   rfl
 
@@ -263,8 +262,9 @@ theorem mongePlane_comm {n : ℕ} (s : Simplex ℝ P (n + 2)) (i₁ i₂ : Fin (
 /-- The Monge point lies in the Monge planes. -/
 theorem mongePoint_mem_mongePlane {n : ℕ} (s : Simplex ℝ P (n + 2)) {i₁ i₂ : Fin (n + 3)} :
     s.mongePoint ∈ s.mongePlane i₁ i₂ := by
-  rw [mongePlane_def, mem_inf_iff, ← vsub_right_mem_direction_iff_mem (self_mem_mk' _ _),
-    direction_mk', Submodule.mem_orthogonal']
+  rw [mongePlane_def, mem_inf_iff,
+    ← vsub_right_mem_direction_iff_mem (Submodule.self_mem_shift _ _),
+    Submodule.direction_shift, Submodule.mem_orthogonal']
   refine ⟨?_, s.mongePoint_mem_affineSpan⟩
   intro v hv
   rcases Submodule.mem_span_singleton.mp hv with ⟨r, rfl⟩
@@ -274,8 +274,8 @@ theorem mongePoint_mem_mongePlane {n : ℕ} (s : Simplex ℝ P (n + 2)) {i₁ i�
 theorem direction_mongePlane {n : ℕ} (s : Simplex ℝ P (n + 2)) {i₁ i₂ : Fin (n + 3)} :
     (s.mongePlane i₁ i₂).direction =
       (ℝ ∙ s.points i₁ -ᵥ s.points i₂)ᗮ ⊓ vectorSpan ℝ (Set.range s.points) := by
-  rw [mongePlane_def, direction_inf_of_mem_inf s.mongePoint_mem_mongePlane, direction_mk',
-    direction_affineSpan]
+  rw [mongePlane_def, direction_inf_of_mem_inf s.mongePoint_mem_mongePlane,
+    Submodule.direction_shift, direction_affineSpan]
 
 /-- The Monge point is the only point in all the Monge planes from any
 one vertex. -/
@@ -313,28 +313,29 @@ theorem eq_mongePoint_of_forall_mem_mongePlane {n : ℕ} {s : Simplex ℝ P (n +
 /-- An altitude of a simplex is the line that passes through a vertex
 and is orthogonal to the opposite face. -/
 def altitude {n : ℕ} (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) : AffineSubspace ℝ P :=
-  mk' (s.points i) (affineSpan ℝ (s.points '' ↑(univ.erase i))).directionᗮ ⊓
+  (affineSpan ℝ (s.points '' ↑(univ.erase i))).directionᗮ.shift (s.points i) ⊓
     affineSpan ℝ (Set.range s.points)
 
 /-- The definition of an altitude. -/
 theorem altitude_def {n : ℕ} (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) :
     s.altitude i =
-      mk' (s.points i) (affineSpan ℝ (s.points '' ↑(univ.erase i))).directionᗮ ⊓
+      (affineSpan ℝ (s.points '' ↑(univ.erase i))).directionᗮ.shift (s.points i) ⊓
         affineSpan ℝ (Set.range s.points) :=
   rfl
 
 /-- A vertex lies in the corresponding altitude. -/
 theorem mem_altitude {n : ℕ} (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) :
     s.points i ∈ s.altitude i :=
-  (mem_inf_iff _ _ _).2 ⟨self_mem_mk' _ _, mem_affineSpan ℝ (Set.mem_range_self _)⟩
+  (mem_inf_iff _ _ _).2 ⟨Submodule.self_mem_shift _ _, mem_affineSpan ℝ (Set.mem_range_self _)⟩
 
 /-- The direction of an altitude. -/
 theorem direction_altitude {n : ℕ} (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) :
     (s.altitude i).direction =
       (vectorSpan ℝ (s.points '' ↑(Finset.univ.erase i)))ᗮ ⊓ vectorSpan ℝ (Set.range s.points) := by
   rw [altitude_def,
-    direction_inf_of_mem (self_mem_mk' (s.points i) _) (mem_affineSpan ℝ (Set.mem_range_self _)),
-    direction_mk', direction_affineSpan, direction_affineSpan]
+    direction_inf_of_mem (Submodule.self_mem_shift (s.points i) _)
+      (mem_affineSpan ℝ (Set.mem_range_self _)),
+    Submodule.direction_shift, direction_affineSpan, direction_affineSpan]
 
 /-- The vector span of the opposite face lies in the direction
 orthogonal to an altitude. -/
@@ -440,7 +441,7 @@ theorem orthocenter_eq_of_range_eq {t₁ t₂ : Triangle ℝ P}
 planes. -/
 theorem altitude_eq_mongePlane (t : Triangle ℝ P) {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃)
     (h₂₃ : i₂ ≠ i₃) : t.altitude i₁ = t.mongePlane i₂ i₃ := by
-  have hs : ({i₂, i₃}ᶜ : Finset (Fin 3)) = {i₁} := by decide +revert
+  have hs : ({i₂, i₃}ᶜ : Finset _) = {i₁} := by decide +revert
   have he : univ.erase i₁ = {i₂, i₃} := by decide +revert
   rw [mongePlane_def, altitude_def, direction_affineSpan, hs, he, centroid_singleton, coe_insert,
     coe_singleton, vectorSpan_image_eq_span_vsub_set_left_ne ℝ _ (Set.mem_insert i₂ _)]
