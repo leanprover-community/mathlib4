@@ -29,10 +29,11 @@ open Topology unitInterval Set
 
 namespace Path
 
+variable {X : Type*} [TopologicalSpace X] {s : ℕ → X}
+
 /-- The concatenation of countably many paths leading up to some point `x` as a function. The
 corresponding path is defined separately because continuity takes some effort to prove. -/
-def countableConcatFun {X : Type*} [TopologicalSpace X] {s : ℕ → X}
-    (γ : (n : ℕ) → Path (s n) (s n.succ)) (x : X) : I → X := fun t ↦ by
+def countableConcatFun (γ : (n : ℕ) → Path (s n) (s (n + 1))) (x : X) : I → X := fun t ↦ by
   let n := Nat.log 2 ⌊(σ t).1⁻¹⌋₊
   refine if ht : t < 1 then γ n ⟨2 * (1 - σ t * (2 ^ n : ℕ)), ?_, ?_⟩ else x
   <;> have ht' := symm_one ▸ symm_lt_symm.2 ht <;> have ht'' := coe_pos.2 ht'
@@ -52,8 +53,7 @@ def countableConcatFun {X : Type*} [TopologicalSpace X] {s : ℕ → X}
 
 /-- On closed intervals [1 - 2 ^ n, 1 - 2 ^ (n + 1)], `countableConcatFun γ x` agrees with a
 reparametrisation of `γ n`. -/
-lemma countableConcatFun_eqOn {X : Type*} [TopologicalSpace X] {s : ℕ → X}
-    (γ : (n : ℕ) → Path (s n) (s n.succ)) {x : X} (n : ℕ) :
+lemma countableConcatFun_eqOn (γ : (n : ℕ) → Path (s n) (s (n + 1))) {x : X} (n : ℕ) :
     Set.EqOn (countableConcatFun γ x) (fun t ↦ (γ n).extend (2 * (1 - (1 - t) * (2 ^ n))))
     (Set.Icc (σ ⟨(2 ^ n)⁻¹, by simp [inv_le_one₀, one_le_pow₀]⟩)
       (σ ⟨(2 ^ (n+1))⁻¹, by simp [inv_le_one₀, one_le_pow₀]⟩)) := fun t ht ↦ by
@@ -94,9 +94,8 @@ lemma countableConcatFun_eqOn {X : Type*} [TopologicalSpace X] {s : ℕ → X}
     linarith
 
 /-- The concatenation of countably many paths leading up to some point `x`. -/
-def countableConcat {X : Type*} [TopologicalSpace X] {s : ℕ → X}
-    (γ : (n : ℕ) → Path (s n) (s n.succ)) (x : X) {b : ℕ → Set X} (hb : (𝓝 x).HasAntitoneBasis b)
-    (hγ : ∀ n t, γ n t ∈ b n) : Path (s 0) x where
+def countableConcat (γ : (n : ℕ) → Path (s n) (s (n + 1))) (x : X) {b : ℕ → Set X}
+    (hb : (𝓝 x).HasAntitoneBasis b) (hγ : ∀ n t, γ n t ∈ b n) : Path (s 0) x where
   toFun := countableConcatFun γ x
   continuous_toFun := by
     refine continuous_iff_continuousAt.2 fun t ↦ ?_
@@ -158,9 +157,8 @@ def countableConcat {X : Type*} [TopologicalSpace X] {s : ℕ → X}
   target' := by simp [countableConcatFun]
 
 /-- Evaluating `Path.countableConcat` at 1-(1-t/2)/2^n yields `γ n t`. -/
-lemma countableConcat_applyAt {X : Type*} [TopologicalSpace X] {s : ℕ → X}
-    {γ : (n : ℕ) → Path (s n) (s n.succ)} {x : X} {b : ℕ → Set X} {hb : (𝓝 x).HasAntitoneBasis b}
-    {hγ : ∀ n t, γ n t ∈ b n} (n : ℕ) (t : I) :
+lemma countableConcat_applyAt {γ : (n : ℕ) → Path (s n) (s (n + 1))} {x : X} {b : ℕ → Set X}
+    {hb : (𝓝 x).HasAntitoneBasis b} {hγ : ∀ n t, γ n t ∈ b n} (n : ℕ) (t : I) :
     countableConcat γ x hb hγ (σ ⟨(1 - t / 2) / 2 ^ n,
       div_nonneg (by linarith [t.2.2]) (by simp),
       (div_le_one₀ (by simp)).2 <| by
@@ -176,9 +174,9 @@ lemma countableConcat_applyAt {X : Type*} [TopologicalSpace X] {s : ℕ → X}
 
 /-- The concatenation of a sequence of paths is the same as the concatenation of the first path
 with the concatenation of the remaining paths. -/
-lemma countableConcat_eq_trans {X : Type*} [TopologicalSpace X] {s : ℕ → X}
-    {γ : (n : ℕ) → Path (s n) (s n.succ)} {x : X} {b : ℕ → Set X} {hb : (𝓝 x).HasAntitoneBasis b}
-    {hγ : ∀ n t, γ n t ∈ b n} : countableConcat γ x hb hγ = (γ 0).trans
+lemma countableConcat_eq_trans {γ : (n : ℕ) → Path (s n) (s (n + 1))} {x : X} {b : ℕ → Set X}
+    {hb : (𝓝 x).HasAntitoneBasis b} {hγ : ∀ n t, γ n t ∈ b n} :
+    countableConcat γ x hb hγ = (γ 0).trans
       (countableConcat (fun n ↦ γ (n + 1)) x hb fun n t ↦ hb.2 n.le_succ <| hγ (n + 1) t) := by
   ext t
   by_cases ht : (t : ℝ) ≤ 1 / 2 <;> dsimp [trans, countableConcat] <;> simp only [ht, ↓reduceIte]
