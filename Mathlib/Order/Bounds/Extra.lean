@@ -20,7 +20,7 @@ universe u v
 variable {α : Type u} {β : Type v}
 variable [Preorder α] [Preorder β] {f : α → β}
 
-lemma Dominated.image (Hf : Monotone f) {s₁ s₂ : Set α} (h : Dominated s₁ s₂) :
+lemma Dominated.image_of_monotone {s₁ s₂ : Set α} (h : Dominated s₁ s₂) (Hf : Monotone f) :
     Dominated (f '' s₁) (f '' s₂) := fun a ha => by
   obtain ⟨c, hcs, hcfa⟩ := ha
   obtain ⟨d, hdd, hcd⟩ := h c hcs
@@ -28,7 +28,7 @@ lemma Dominated.image (Hf : Monotone f) {s₁ s₂ : Set α} (h : Dominated s₁
   rw [← hcfa]
   exact ⟨d, ⟨hdd, Hf hcd⟩⟩
 
-lemma Codominated.image (Hf : Monotone f) {s₁ s₂ : Set α} (h : Codominated s₁ s₂) :
+lemma Codominated.image_of_monotone {s₁ s₂ : Set α} (h : Codominated s₁ s₂) (Hf : Monotone f) :
     Codominated (f '' s₁) (f '' s₂) := fun a ha => by
   obtain ⟨c, hcs, hcfa⟩ := ha
   obtain ⟨d, hdd, hcd⟩ := h c hcs
@@ -37,7 +37,7 @@ lemma Codominated.image (Hf : Monotone f) {s₁ s₂ : Set α} (h : Codominated 
   exact ⟨d, ⟨hdd, Hf hcd⟩⟩
 
 lemma DirectedOn.dominated_fst_image_times_snd_image {d : Set (α × β)}
-    (hd : DirectedOn (· ≤ ·) d) : Dominated (· ≤ ·) ((Prod.fst '' d) ×ˢ (Prod.snd '' d)) d :=
+    (hd : DirectedOn (· ≤ ·) d) : Dominated ((Prod.fst '' d) ×ˢ (Prod.snd '' d)) d :=
   fun ⟨p₁, p₂⟩ hp => by
     simp at hp
     obtain ⟨⟨r₁, hr₁⟩, ⟨r₂, hr₂⟩⟩ := hp
@@ -48,5 +48,5 @@ lemma Monotone.upperBounds_image_of_directedOn_prod {γ : Type*} [Preorder γ] {
     (Hg : Monotone g) {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) :
     upperBounds (g '' d) = upperBounds (g '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) := le_antisymm
   (upperBounds_mono_of_dominated
-    (Hg.dominated (fun _ ha => hd.dominated_fst_image_times_snd_image _ ha)))
+    (fun _ ha => (Dominated.image_of_monotone hd.dominated_fst_image_times_snd_image Hg) _ ha))
   (upperBounds_mono_set (image_mono subset_fst_image_prod_snd_image))

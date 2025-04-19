@@ -260,14 +260,14 @@ to the dot notation. -/
 protected def Nonempty (s : Set α) : Prop :=
   ∃ x, x ∈ s
 
-variable (r : α → α → Prop)
-
-/-- Local notation for a relation -/
-local infixl:50 " ≼ " => r
-
-/-- A set `s₁` is said to be dominated by a set `s₂` with respect to a relation `≼` if, for all
-`a` in `s₁` there exists `b` in `s₂` such that `a ≼ b`.
+/-- A set `s₁` is said to be dominated by a set `s₂` if, for all `a` in `s₁` there exists `b` in
+`s₂` such that `a ≤ b`.
 -/
-def Dominated (s₁ s₂ : Set α) := ∀ a ∈ s₁, ∃ b ∈ s₂, a ≼ b
+def Dominated [LE α] (s₁ s₂ : Set α) := ∀ a ∈ s₁, ∃ b ∈ s₂, a ≤ b
+
+/-- A set `s₁` is said to be dominated by a set `s₂` if, for all `a` in `s₁` there exists `b` in
+`s₂` such that `a ≥ b`.
+-/
+def Codominated [LE α] (s₁ s₂ : Set α) := ∀ a ∈ s₁, ∃ b ∈ s₂, a ≥ b
 
 end Set
