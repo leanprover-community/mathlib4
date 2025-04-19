@@ -288,15 +288,27 @@ variable {S : ι → Type*}
 variable [Π i, SetLike (S i) (R i)]
 variable {B : Π i, S i}
 
+/-- `RestrictedProduct.eval j` is the function from the restricted
+product `Πʳ i, [R i, B i]_[𝓕]` to the
+component `R j`. See also `evalMonoidHom`, `evalAddMonoidHom` and `evalRingHom` for
+evaluation as a monoid or ring homomorphism when `R i` is a monoid or ring.
+-/
 def eval (j : ι) (x : Πʳ i, [R i, B i]_[𝓕]) : R j := x j
 
-@[to_additive]
+/-- `RestrictedProduct.evalMonoidHom j` is the monoid homomorphism from the restricted
+product `Πʳ i, [R i, B i]_[𝓕]` to the component `R j`.
+-/
+@[to_additive "`RestrictedProduct.evalAddMonoidHom j` is the monoid homomorphism from the restricted
+product `Πʳ i, [R i, B i]_[𝓕]` to the component `R j`."]
 def evalMonoidHom (j : ι) [Π i, Monoid (R i)] [∀ i, SubmonoidClass (S i) (R i)] :
     (Πʳ i, [R i, B i]_[𝓕]) →* R j where
       toFun := eval R j
       map_one' := rfl
       map_mul' _ _ := rfl
 
+/-- `RestrictedProduct.evalRingHom j` is the ring homomorphism from the restricted
+product `Πʳ i, [R i, B i]_[𝓕]` to the component `R j`.
+-/
 def evalRingHom (j : ι) [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)] :
     (Πʳ i, [R i, B i]_[𝓕]) →+* R j where
       __ := evalMonoidHom R j
@@ -309,6 +321,7 @@ section map
 variable {ι₁ ι₂ : Type*}
 variable (R₁ : ι₁ → Type*) (R₂ : ι₂ → Type*)
 variable {𝓕₁ : Filter ι₁} {𝓕₂ : Filter ι₂}
+variable {A₁ : (i : ι₁) → Set (R₁ i)} {A₂ : (i : ι₂) → Set (R₂ i)}
 variable {S₁ : ι₁ → Type*} {S₂ : ι₂ → Type*}
 variable [Π i, SetLike (S₁ i) (R₁ i)] [Π j, SetLike (S₂ j) (R₂ j)]
 variable {B₁ : Π i, S₁ i} {B₂ : Π j, S₂ j}
@@ -316,11 +329,19 @@ variable (f : ι₂ → ι₁) (hf : 𝓕₂.Tendsto f 𝓕₁)
 
 section set
 
-variable (φ : ∀ j, R₁ (f j) → R₂ j) (hφ : ∀ᶠ j in 𝓕₂, φ j '' B₁ (f j) ⊆ B₂ j)
+variable (φ : ∀ j, R₁ (f j) → R₂ j) (hφ : ∀ᶠ j in 𝓕₂, A₁ (f j) ⊆ φ j ⁻¹' A₂ j)
 
-def map (x : Πʳ i, [R₁ i, B₁ i]_[𝓕₁]) : Πʳ j, [R₂ j, B₂ j]_[𝓕₂] := ⟨fun j ↦ φ j (x (f j)), by
+/--
+Given two restricted products `Πʳ (i : ι₁), [R₁ i, B₁ i]_[𝓕₁]` and `Πʳ (j : ι₂), [R₂ j, B₂ j]_[𝓕₂]`,
+`RestrictedProduct.map` gives a function between them. The data needed is a function `f : ι₂ → ι₁`
+such that `𝓕₂` tends to `𝓕₁` along `f`, and functions `φ j : R₁ (f j) → R₂ j`
+sending `A₁ (f j)` into `A₂ j` for an `𝓕₂`-large set of `j`'s.
+
+See also `mapMonoidHom`, `mapAddMonoidHom` and `mapRingHom` for variants.
+-/
+def map (x : Πʳ i, [R₁ i, A₁ i]_[𝓕₁]) : Πʳ j, [R₂ j, A₂ j]_[𝓕₂] := ⟨fun j ↦ φ j (x (f j)), by
   apply mem_of_superset (𝓕₂.inter_mem hφ (hf x.2))
-  simp only [image_subset_iff, SetLike.mem_coe, preimage_setOf_eq]
+  simp only [SetLike.mem_coe, preimage_setOf_eq]
   rintro _ ⟨h1, h2⟩
   exact h1 h2
   ⟩
@@ -330,9 +351,20 @@ section monoid
 
 variable [Π i, Monoid (R₁ i)] [Π i, Monoid (R₂ i)] [∀ i, SubmonoidClass (S₁ i) (R₁ i)]
     [∀ i, SubmonoidClass (S₂ i) (R₂ i)] (φ : ∀ j, R₁ (f j) →* R₂ j)
-    (hφ : ∀ᶠ j in 𝓕₂, (φ j) '' (B₁ (f j)) ≤ B₂ j)
+    (hφ : ∀ᶠ j in 𝓕₂, B₁ (f j) ≤ φ j ⁻¹' B₂ j)
 
-@[to_additive]
+/--
+Given two restricted products `Πʳ (i : ι₁), [R₁ i, B₁ i]_[𝓕₁]` and `Πʳ (j : ι₂), [R₂ j, B₂ j]_[𝓕₂]`,
+`RestrictedProduct.mapMonoidHom` gives a monoid homomorphism between them. The data needed is a
+function `f : ι₂ → ι₁` such that `𝓕₂` tends to `𝓕₁` along `f`, and functions `φ j : R₁ (f j) → R₂ j`
+sending `A₁ (f j)` into `A₂ j` for an `𝓕₂`-large set of `j`'s.
+-/
+@[to_additive "
+Given two restricted products `Πʳ (i : ι₁), [R₁ i, B₁ i]_[𝓕₁]` and `Πʳ (j : ι₂), [R₂ j, B₂ j]_[𝓕₂]`,
+`RestrictedProduct.mapAddMonoidHom` gives a additive monoid homomorphism between them. The data
+needed is a function `f : ι₂ → ι₁` such that `𝓕₂` tends to `𝓕₁` along `f`, and
+functions `φ j : R₁ (f j) → R₂ j` sending `A₁ (f j)` into `A₂ j` for an `𝓕₂`-large set of `j`'s.
+"]
 def mapMonoidHom : Πʳ i, [R₁ i, B₁ i]_[𝓕₁] →* Πʳ j, [R₂ j, B₂ j]_[𝓕₂] where
   toFun := map R₁ R₂ f hf (fun j r ↦ φ j r) hφ
   map_one' := by
@@ -348,8 +380,14 @@ section ring
 
 variable [Π i, Ring (R₁ i)] [Π i, Ring (R₂ i)] [∀ i, SubringClass (S₁ i) (R₁ i)]
     [∀ i, SubringClass (S₂ i) (R₂ i)] (φ : ∀ j, R₁ (f j) →+* R₂ j)
-    (hφ : ∀ᶠ j in 𝓕₂, (φ j) '' (B₁ (f j)) ≤ B₂ j)
+    (hφ : ∀ᶠ j in 𝓕₂, B₁ (f j) ≤ φ j ⁻¹' B₂ j)
 
+/--
+Given two restricted products `Πʳ (i : ι₁), [R₁ i, B₁ i]_[𝓕₁]` and `Πʳ (j : ι₂), [R₂ j, B₂ j]_[𝓕₂]`,
+`RestrictedProduct.mapRingHom` gives a ring homomorphism between them. The data needed is a
+function `f : ι₂ → ι₁` such that `𝓕₂` tends to `𝓕₁` along `f`, and functions `φ j : R₁ (f j) → R₂ j`
+sending `A₁ (f j)` into `A₂ j` for an `𝓕₂`-large set of `j`'s.
+-/
 def mapRingHom : Πʳ i, [R₁ i, B₁ i]_[𝓕₁] →+* Πʳ j, [R₂ j, B₂ j]_[𝓕₂] where
   __ := mapMonoidHom R₁ R₂ f hf (fun j ↦ φ j) hφ
   __ := mapAddMonoidHom R₁ R₂ f hf (fun j ↦ φ j) hφ
