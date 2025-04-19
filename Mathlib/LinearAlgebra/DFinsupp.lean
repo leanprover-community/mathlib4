@@ -102,6 +102,23 @@ theorem lapply_comp_lsingle_of_ne [DecidableEq ι] (i i' : ι) (h : i ≠ i') :
 
 section Lsum
 
+-- Porting note: Unclear how true these docstrings are in lean 4
+/-- Typeclass inference can't find `DFinsupp.addCommMonoid` without help for this case.
+This instance allows it to be found where it is needed on the LHS of the colon in
+`DFinsupp.moduleOfLinearMap`. -/
+instance addCommMonoidOfLinearMap : AddCommMonoid (Π₀ i : ι, M i →ₗ[R] N) :=
+  inferInstance
+
+/-- Typeclass inference can't find `DFinsupp.module` without help for this case.
+This is needed to define `DFinsupp.lsum` below.
+
+The cause seems to be an inability to unify the `∀ i, AddCommMonoid (M i →ₗ[R] N)` instance that
+we have with the `∀ i, Zero (M i →ₗ[R] N)` instance which appears as a parameter to the
+`DFinsupp` type. -/
+instance moduleOfLinearMap [Semiring S] [Module S N] [SMulCommClass R S N] :
+    Module S (Π₀ i : ι, M i →ₗ[R] N) :=
+  DFinsupp.module
+
 variable (S)
 variable [DecidableEq ι]
 
@@ -583,6 +600,18 @@ alias iSupIndep_iff_dfinsupp_sumAddHom_injective := iSupIndep_iff_dfinsuppSumAdd
 
 @[deprecated (since := "2024-11-24")]
 alias independent_iff_dfinsupp_sumAddHom_injective := iSupIndep_iff_dfinsuppSumAddHom_injective
+
+/-- If `(pᵢ)ᵢ` is a family of independent submodules that generates the whole module `N`, then
+`N` is isomorphic to the direct sum of the submodules. -/
+@[simps! apply] noncomputable def iSupIndep.linearEquiv {p : ι → Submodule R N} (ind : iSupIndep p)
+    (iSup_top : ⨆ i, p i = ⊤) : (Π₀ i, p i) ≃ₗ[R] N  :=
+  .ofBijective _ ⟨ind.dfinsupp_lsum_injective, by
+    rwa [← LinearMap.range_eq_top, ← Submodule.iSup_eq_range_dfinsupp_lsum]⟩
+
+theorem iSupIndep.linearEquiv_symm_apply {p : ι → Submodule R N} (ind : iSupIndep p)
+    (iSup_top : ⨆ i, p i = ⊤) {i : ι} {x : N} (h : x ∈ p i) :
+    (ind.linearEquiv iSup_top).symm x = .single i ⟨x, h⟩ := by
+  simp [← LinearEquiv.eq_symm_apply, iSupIndep.linearEquiv]
 
 /-- If a family of submodules is independent, then a choice of nonzero vector from each submodule
 forms a linearly independent family.
