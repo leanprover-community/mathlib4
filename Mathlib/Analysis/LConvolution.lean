@@ -60,17 +60,20 @@ theorem mlconvolution_def {f g : G → ℝ≥0∞} {μ : Measure G} {x : G}:
     (f ⋆ₗ[μ] g) x = ∫⁻ y, (f y) * (g (y⁻¹ * x)) ∂μ := rfl
 
 /-- Convolution of the zero function with a function returns the zero function. -/
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp)
+"Convolution of the zero function with a function returns the zero function."]
 theorem zero_mlconvolution (f : G → ℝ≥0∞) (μ : Measure G) : 0 ⋆ₗ[μ] f = 0 := by
   ext; simp [mlconvolution]
 
 /-- Convolution of a function with the zero function returns the zero function. -/
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp)
+"Convolution of a function with the zero function returns the zero function."]
 theorem mlconvolution_zero (f : G → ℝ≥0∞) (μ : Measure G) : f ⋆ₗ[μ] 0 = 0 := by
   ext; simp [mlconvolution]
 
 /-- The convolution of measurable functions is measurable. -/
-@[to_additive (attr := measurability, fun_prop)]
+@[to_additive (attr := measurability, fun_prop)
+"The convolution of measurable functions is measurable."]
 theorem measurable_mlconvolution [MeasurableMul₂ G] [MeasurableInv G]
     {f g : G → ℝ≥0∞} (μ : Measure G) [SFinite μ]
     (hf : Measurable f) (hg : Measurable g) : Measurable (f ⋆ₗ[μ] g) := by
