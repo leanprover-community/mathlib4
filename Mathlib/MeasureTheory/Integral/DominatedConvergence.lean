@@ -584,8 +584,8 @@ theorem continuous_parametric_primitive_of_continuous
       · rw [integral_sub (J _ _ _) (J _ _ _)]
   _ ≤ ∫ t in Ι b₀ s, ‖f p t‖ ∂μ + ∫ t in Ι a₀ b₀, ‖f p t - f q t‖ ∂μ := by
       gcongr
-      · exact norm_integral_le_integral_norm_Ioc
-      · exact norm_integral_le_integral_norm_Ioc
+      · exact norm_integral_le_integral_norm_uIoc
+      · exact norm_integral_le_integral_norm_uIoc
   _ ≤ ∫ t in Icc (b₀ - δ) (b₀ + δ), ‖f p t‖ ∂μ + ∫ t in Icc a b, ‖f p t - f q t‖ ∂μ := by
       gcongr
       · apply setIntegral_mono_set
