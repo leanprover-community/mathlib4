@@ -148,6 +148,22 @@ open scoped ComplexConjugate
 
 variable {K : Type*} [Field K] {k : Type*} [Field k]
 
+variable (K) in
+/--
+A (random) lift of the complex embedding `φ : k →+* ℂ` to an extension `K` of `k`.
+-/
+noncomputable def lift [Algebra k K] [Algebra.IsAlgebraic k K] (φ : k →+* ℂ) : K →+* ℂ := by
+  letI := φ.toAlgebra
+  exact (IsAlgClosed.lift (R := k)).toRingHom
+
+variable (K) in
+@[simp]
+theorem lift_comp_algebraMap [Algebra k K] [Algebra.IsAlgebraic k K] (φ : k →+* ℂ) :
+    (lift K φ).comp (algebraMap k K) = φ := by
+  unfold lift
+  letI := φ.toAlgebra
+  rw [AlgHom.toRingHom_eq_coe, AlgHom.comp_algebraMap_of_tower, RingHom.algebraMap_toAlgebra']
+
 /-- The conjugate of a complex embedding as a complex embedding. -/
 abbrev conjugate (φ : K →+* ℂ) : K →+* ℂ := star φ
 
@@ -668,6 +684,9 @@ lemma comap_id (w : InfinitePlace K) : w.comap (RingHom.id K) = w := rfl
 lemma comap_comp (w : InfinitePlace K) (f : F →+* K) (g : k →+* F) :
     w.comap (f.comp g) = (w.comap f).comap g := rfl
 
+lemma comap_mk_lift [Algebra k K] [Algebra.IsAlgebraic k K] (φ : k →+* ℂ) :
+    (mk (ComplexEmbedding.lift K φ)).comap (algebraMap k K) = mk φ := by simp
+
 lemma IsReal.comap (f : k →+* K) {w : InfinitePlace K} (hφ : IsReal w) :
     IsReal (w.comap f) := by
   rw [← mk_embedding w, comap_mk, isReal_mk_iff]
@@ -678,11 +697,14 @@ lemma isReal_comap_iff (f : k ≃+* K) {w : InfinitePlace K} :
     IsReal (w.comap (f : k →+* K)) ↔ IsReal w := by
   rw [← mk_embedding w, comap_mk, isReal_mk_iff, isReal_mk_iff, ComplexEmbedding.isReal_comp_iff]
 
+lemma isComplex_comap_iff (f : k ≃+* K) {w : InfinitePlace K} :
+    IsComplex (w.comap (f : k →+* K)) ↔ IsComplex w := by
+   rw [← mk_embedding w, comap_mk, isComplex_mk_iff, isComplex_mk_iff,
+     ComplexEmbedding.isReal_comp_iff]
+
 lemma comap_surjective [Algebra k K] [Algebra.IsAlgebraic k K] :
     Function.Surjective (comap · (algebraMap k K)) := fun w ↦
-  letI := w.embedding.toAlgebra
-  ⟨mk (IsAlgClosed.lift (M := ℂ) (R := k)).toRingHom,
-    by simp [this, comap_mk, RingHom.algebraMap_toAlgebra]⟩
+  ⟨(mk (ComplexEmbedding.lift K  w.embedding)), by simp⟩
 
 lemma mult_comap_le (f : k →+* K) (w : InfinitePlace K) : mult (w.comap f) ≤ mult w := by
   rw [mult, mult]
@@ -1166,11 +1188,30 @@ is a subset of `ℝ`. -/
 @[mk_iff] class IsTotallyReal (K : Type*) [Field K] [NumberField K] where
   isReal : ∀ v : InfinitePlace K, v.IsReal
 
-variable {K : Type*} [Field K] [NumberField K]
+variable (F : Type*) [Field F] [NumberField F] {K : Type*} [Field K] [NumberField K]
 
 theorem nrComplexPlaces_eq_zero_iff :
     nrComplexPlaces K = 0 ↔ IsTotallyReal K := by
   simp [Fintype.card_eq_zero_iff, isEmpty_subtype, isTotallyReal_iff]
+
+variable {F} in
+theorem IsTotallyReal.ofRingEquiv [IsTotallyReal F]
+     (f : F ≃+* K) :
+     IsTotallyReal K where
+   isReal _ := (isReal_comap_iff f).mp <| IsTotallyReal.isReal _
+
+variable (K) in
+theorem IsTotally.of_algebra [IsTotallyReal K] [Algebra F K]  :
+    IsTotallyReal F where
+  isReal w := by
+    obtain ⟨W, rfl⟩ : ∃ W : InfinitePlace K, W.comap (algebraMap F K) = w := comap_surjective w
+    exact IsReal.comap _ (IsTotallyReal.isReal W)
+
+instance [IsTotallyReal K] (F : IntermediateField ℚ K)  :
+    IsTotallyReal F := IsTotally.of_algebra F K
+
+ instance [IsTotallyReal K] (F : Subfield K) :
+    IsTotallyReal F := IsTotally.of_algebra F K
 
 variable (K)
 
@@ -1188,6 +1229,56 @@ instance : IsTotallyReal ℚ where
     rw [Subsingleton.elim v Rat.infinitePlace]
     exact Rat.isReal_infinitePlace
 
+section maximalRealSubfield
+
+open ComplexEmbedding
+
+/--
+The maximal real subfield of `K`. It is totally real, see `isTotallyReal_maximalRealSubfield`, and
+contains all the other totally real subfields of `K`, see `IsTotallyReal.le_maximalRealSubfield`.
+-/
+def maximalRealSubfield : Subfield K where
+  carrier := {x | ∀ φ : K →+* ℂ, star (φ x) = φ x}
+  mul_mem' hx hy _ := by rw [map_mul, star_mul, hx, hy, mul_comm]
+  one_mem' := by simp
+  add_mem' hx hy _ := by rw [map_add, star_add, hx, hy]
+  zero_mem' := by simp
+  neg_mem' := by simp
+  inv_mem' := by simp
+
+instance isTotallyReal_maximalRealSubfield :
+    IsTotallyReal (maximalRealSubfield K) where
+  isReal w := by
+    rw [InfinitePlace.isReal_iff, ComplexEmbedding.isReal_iff]
+    have hφ {x} : w.embedding x = lift K w.embedding x :=
+      (RingHom.congr_fun (lift_comp_algebraMap K w.embedding) x).symm
+    ext x
+    rw [RingHom.star_apply, hφ, x.prop]
+
+variable {K}
+
+theorem IsTotallyReal.le_maximalRealSubfield (E : Subfield K) [h : IsTotallyReal E] :
+    E ≤ maximalRealSubfield K := by
+  intro x hx φ
+  rw [show φ x = (φ.comp E.subtype) ⟨x, hx⟩ by rfl, RCLike.star_def, ← conjugate_coe_eq]
+  refine RingHom.congr_fun ?_ _
+  exact ComplexEmbedding.isReal_iff.mp  <|isReal_mk_iff.mp <| isReal _
+
+theorem isTotallyReal_iff_le_maximalRealSubfield {E : Subfield K} :
+    IsTotallyReal E ↔ E ≤ maximalRealSubfield K :=
+  ⟨fun h ↦ h.le_maximalRealSubfield, fun h ↦ IsTotallyReal.ofRingEquiv
+    (RingEquiv.ofBijective _ (Subfield.inclusion h).rangeRestrictField_bijective).symm⟩
+
+instance isTotallyReal_sup {E F : Subfield K} [hE : IsTotallyReal E] [hF : IsTotallyReal F] :
+    IsTotallyReal (E ⊔ F : Subfield K) := by
+  simp_all [isTotallyReal_iff_le_maximalRealSubfield]
+
+instance isTotallyReal_iSup {ι : Type*} {k : ι → Subfield K} [h : ∀ i, IsTotallyReal (k i)] :
+    IsTotallyReal (⨆ i, k i : Subfield K) := by
+  simp_all [isTotallyReal_iff_le_maximalRealSubfield]
+
+end maximalRealSubfield
+
 end TotallyRealField
 
 section TotallyComplexField
@@ -1204,7 +1295,11 @@ A number field `K` is totally complex if all of its infinite places are complex.
 @[mk_iff] class IsTotallyComplex (K : Type*) [Field K] [NumberField K] where
   isComplex : ∀ v : InfinitePlace K, v.IsComplex
 
-variable {K : Type*} [Field K] [NumberField K]
+variable {F : Type*} [Field F] [NumberField F] {K : Type*} [Field K] [NumberField K]
+
+theorem IsTotallyComplex.ofRingEquiv [IsTotallyComplex F] (f : F ≃+* K) :
+     IsTotallyComplex K where
+   isComplex _ := (isComplex_comap_iff f).mp <| IsTotallyComplex.isComplex _
 
 theorem nrRealPlaces_eq_zero_iff :
     nrRealPlaces K = 0 ↔ IsTotallyComplex K := by
