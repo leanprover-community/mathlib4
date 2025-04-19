@@ -627,7 +627,7 @@ where /-- Implementation of `applyReplacementFun`. -/
           let gfAdditive :=
             if h : relevantArgId < gAllArgs.size ∧ gf.isConst then
               if let some fxd :=
-                additiveTest env b gAllArgs[relevantArgId]! then
+                additiveTest env b gAllArgs[relevantArgId] then
                 Id.run <| do
                   if trace then
                     dbg_trace s!"The application of {nm} contains the fixed type \
