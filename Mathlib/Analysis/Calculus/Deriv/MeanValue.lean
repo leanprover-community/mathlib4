@@ -36,6 +36,29 @@ see `strictMonoOn_of_deriv_pos` and nearby theorems for other types of monotonic
 We also prove that a real function whose derivative tends to infinity from the right at a point
 is not differentiable on the right at that point, and similarly differentiability on the left.
 
+## Main results
+
+
+* `exists_ratio_hasDerivAt_eq_ratio_slope` and `exists_ratio_deriv_eq_ratio_slope` :
+  Cauchy's Mean Value Theorem.
+
+* `exists_hasDerivAt_eq_slope` and `exists_deriv_eq_slope` : Lagrange's Mean Value Theorem.
+
+* `domain_mvt` : Lagrange's Mean Value Theorem, applied to a segment in a convex domain.
+
+* `Convex.image_sub_lt_mul_sub_of_deriv_lt`, `Convex.mul_sub_lt_image_sub_of_lt_deriv`,
+  `Convex.image_sub_le_mul_sub_of_deriv_le`, `Convex.mul_sub_le_image_sub_of_le_deriv`,
+  if `∀ x, C (</≤/>/≥) (f' x)`, then `C * (y - x) (</≤/>/≥) (f y - f x)` whenever `x < y`.
+
+* `monotoneOn_of_deriv_nonneg`, `antitoneOn_of_deriv_nonpos`,
+  `strictMono_of_deriv_pos`, `strictAnti_of_deriv_neg` :
+  if the derivative of a function is non-negative/non-positive/positive/negative, then
+  the function is monotone/antitone/strictly monotone/strictly monotonically
+  decreasing.
+
+* `convexOn_of_deriv`, `convexOn_of_deriv2_nonneg` : if the derivative of a function
+  is increasing or its second derivative is nonnegative, then the original function is convex.
+
 -/
 
 open Set Function Filter
