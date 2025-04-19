@@ -65,7 +65,7 @@ lemma Ico_succ_succ_eq_Ioc_of_not_isMax (hb : ¬ IsMax b) (a : α) :
 lemma insert_Icc_succ_left_eq_Icc (h : a ≤ b) : insert a (Icc (succ a) b) = Icc a b := by
   ext x; simp [or_and_left, eq_comm, ← le_iff_eq_or_succ_le]; aesop
 
-lemma insert_Icc_eq_Icc_succ_right (h : a ≤ succ b) :
+lemma insert_Icc_right_eq_Icc_succ (h : a ≤ succ b) :
     insert (succ b) (Icc a b) = Icc a (succ b) := by
   ext x; simp [or_and_left, le_succ_iff_eq_or_le]; aesop
 
@@ -152,7 +152,7 @@ lemma Ioc_pred_pred_eq_Ico_of_not_isMin (ha : ¬ IsMin a) (b : α) :
 lemma insert_Icc_pred_right_eq_Icc (h : a ≤ b) : insert b (Icc a (pred b)) = Icc a b := by
   ext x; simp [or_and_left, eq_comm (a := b), ← le_iff_eq_or_le_pred]; aesop
 
-lemma insert_Icc_eq_Icc_pred_left (h : pred a ≤ b) :
+lemma insert_Icc_left_eq_Icc_pred (h : pred a ≤ b) :
     insert (pred a) (Icc a b) = Icc (pred a) b := by
   ext x; simp [or_and_left, pred_le_iff_eq_or_le]; aesop
 

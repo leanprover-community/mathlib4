@@ -65,8 +65,8 @@ lemma Ico_succ_succ_eq_Ioc_of_not_isMax (hb : ¬ IsMax b) (a : α) :
 lemma insert_Icc_succ_left_eq_Icc (h : a ≤ b) : insert a (Icc (succ a) b) = Icc a b :=
   coe_injective <| by simpa using Set.insert_Icc_succ_left_eq_Icc h
 
-lemma insert_Icc_eq_Icc_succ_right (h : a ≤ succ b) : insert (succ b) (Icc a b) = Icc a (succ b) :=
-  coe_injective <| by simpa using Set.insert_Icc_eq_Icc_succ_right h
+lemma insert_Icc_right_eq_Icc_succ (h : a ≤ succ b) : insert (succ b) (Icc a b) = Icc a (succ b) :=
+  coe_injective <| by simpa using Set.insert_Icc_right_eq_Icc_succ h
 
 lemma insert_Ico_right_eq_Ico_succ_of_not_isMax (h : a ≤ b) (hb : ¬ IsMax b) :
     insert b (Ico a b) = Ico a (succ b) :=
@@ -141,8 +141,8 @@ lemma Ioc_pred_pred_eq_Ico_of_not_isMin (ha : ¬ IsMin a) (b : α) :
 lemma insert_Icc_pred_right_eq_Icc (h : a ≤ b) : insert b (Icc a (pred b)) = Icc a b :=
   coe_injective <| by simpa using Set.insert_Icc_pred_right_eq_Icc h
 
-lemma insert_Icc_eq_Icc_pred_left (h : pred a ≤ b) : insert (pred a) (Icc a b) = Icc (pred a) b :=
-  coe_injective <| by simpa using Set.insert_Icc_eq_Icc_pred_left h
+lemma insert_Icc_left_eq_Icc_pred (h : pred a ≤ b) : insert (pred a) (Icc a b) = Icc (pred a) b :=
+  coe_injective <| by simpa using Set.insert_Icc_left_eq_Icc_pred h
 
 lemma insert_Ioc_left_eq_Ioc_pred_of_not_isMin (h : a ≤ b) (ha : ¬ IsMin a) :
     insert a (Ioc a b) = Ioc (pred a) b :=
