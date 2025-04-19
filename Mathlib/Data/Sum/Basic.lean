@@ -21,6 +21,14 @@ lemma not_isLeft_and_isRight {x : α ⊕ β} : ¬(x.isLeft ∧ x.isRight) := by 
 
 namespace Sum
 
+@[simp]
+theorem elim_swap {α β γ : Type*} {f : α → γ} {g : β → γ} :
+    Sum.elim f g ∘ Sum.swap = Sum.elim g f := by
+  ext x
+  cases x with
+  | inl x => simp
+  | inr x => simp
+
 -- Lean has removed the `@[simp]` attribute on these. For now Mathlib adds it back.
 attribute [simp] Sum.forall Sum.exists
 
