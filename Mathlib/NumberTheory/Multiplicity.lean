@@ -277,7 +277,7 @@ theorem Int.sq_mod_four_eq_one_of_odd {x : ℤ} : Odd x → x ^ 2 % 4 = 1 := by
   unfold Odd at hx
   rcases hx with ⟨_, rfl⟩
   ring_nf
-  rw [add_assoc, ← add_mul, Int.add_mul_emod_self]
+  rw [add_assoc, ← add_mul, Int.add_mul_emod_self_right]
   decide
 
 theorem Int.two_pow_two_pow_add_two_pow_two_pow {x y : ℤ} (hx : ¬2 ∣ x) (hxy : 4 ∣ x - y) (i : ℕ) :
