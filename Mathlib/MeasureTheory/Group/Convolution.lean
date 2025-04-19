@@ -120,7 +120,7 @@ theorem mconv_assoc [MeasurableMul₂ M] (μ ν ρ : Measure M)
   apply ext_of_lintegral
   intro f hf
   repeat
-    rw [lintegral_mconv (by first | fun_prop | apply Measurable.lintegral_prod_right; fun_prop)]
+    rw [lintegral_mconv (by fun_prop)]
   refine lintegral_congr fun x ↦ ?_
   rw [lintegral_mconv (by fun_prop)]
   repeat refine lintegral_congr fun x ↦ ?_
