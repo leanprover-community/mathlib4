@@ -744,26 +744,6 @@ theorem succ_castAdd (i : Fin n) : succ (castAdd m i) =
 
 theorem succ_natAdd (i : Fin m) : succ (natAdd n i) = natAdd n (succ i) := rfl
 
-/-- `Fin.natAdd_castLEEmb` as an `Embedding` from `Fin n` to `Fin m`, `natAdd_castLEEmb m hmn i`
-adds `m - n` to `i`, generalizes `addNatEmb`.
--/
-@[simps!]
-def natAdd_castLEEmb {n : ℕ} (m : ℕ) (hmn : n ≤ m): Fin n ↪ Fin (m) :=
-  (addNatEmb (m - n)).trans (finCongr (by omega)).toEmbedding
-
-@[simp]
-lemma natAdd_castLEEmb_apply {n m : ℕ} (hmn : n ≤ m) (k : Fin n) :
-    ((natAdd_castLEEmb m hmn) k).1 = k.1 + (m - n) := by simp
-
-@[simp]
-lemma range_natAdd_castLEEmb {n m : ℕ} (hmn : n ≤ m) :
-    Set.range (natAdd_castLEEmb m hmn) = {i | m - n ≤ i.1} := by
-  simp [natAdd_castLEEmb]
-  ext y
-  exact ⟨fun ⟨x, hx⟩ ↦ by simp [← hx]; omega,
-    fun xin ↦ ⟨subNat (m := m - n) (Fin.cast (Nat.add_sub_of_le hmn).symm y)
-    (Nat.sub_le_of_le_add xin), by simp⟩⟩
-
 end Succ
 
 section Pred
@@ -1437,8 +1417,6 @@ theorem coe_neg_one : ↑(-1 : Fin (n + 1)) = n := by
   · simp
   rw [Fin.coe_neg, Fin.val_one, Nat.add_one_sub_one, Nat.mod_eq_of_lt]
   constructor
-
-instance {n : ℕ} {i: Fin n} : NeZero (n - i.1) := NeZero.of_pos (by omega)
 
 theorem last_sub (i : Fin (n + 1)) : last n - i = Fin.rev i :=
   Fin.ext <| by rw [coe_sub_iff_le.2 i.le_last, val_last, val_rev, Nat.succ_sub_succ_eq_sub]

@@ -275,6 +275,26 @@ theorem cycleType_cycleRange {n : ℕ} [NeZero n] {i : Fin n} (h0 : i ≠ 0) :
 theorem isThreeCycle_cycleRange_two {n : ℕ} : IsThreeCycle (cycleRange 2 : Perm (Fin (n + 3))) := by
   rw [IsThreeCycle, cycleType_cycleRange] <;> simp [Fin.ext_iff]
 
+/-- `Fin.natAdd_castLEEmb` as an `Embedding` from `Fin n` to `Fin m`, `natAdd_castLEEmb m hmn i`
+adds `m - n` to `i`, generalizes `addNatEmb`.
+-/
+@[simps!]
+def natAdd_castLEEmb {n : ℕ} (m : ℕ) (hmn : n ≤ m): Fin n ↪ Fin (m) :=
+  (addNatEmb (m - n)).trans (finCongr (by omega)).toEmbedding
+
+@[simp]
+lemma natAdd_castLEEmb_apply {n m : ℕ} (hmn : n ≤ m) (k : Fin n) :
+    ((natAdd_castLEEmb m hmn) k).1 = k.1 + (m - n) := by simp
+
+@[simp]
+lemma range_natAdd_castLEEmb {n m : ℕ} (hmn : n ≤ m) :
+    Set.range (natAdd_castLEEmb m hmn) = {i | m - n ≤ i.1} := by
+  simp [natAdd_castLEEmb]
+  ext y
+  exact ⟨fun ⟨x, hx⟩ ↦ by simp [← hx]; omega,
+    fun xin ↦ ⟨subNat (m := m - n) (Fin.cast (Nat.add_sub_of_le hmn).symm y)
+    (Nat.sub_le_of_le_add xin), by simp⟩⟩
+
 /-- `cycleIcc i j hij` is the cycle `(i i+1 .... j)` leaving `(0 ... i-1)` and `(j+1 ... n-1)`
 unchanged.
 -/
