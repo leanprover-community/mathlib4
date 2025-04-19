@@ -319,7 +319,7 @@ lemma LSeriesSummable.le_const_mul_rpow {f : ℕ → ℂ} {s : ℂ} (h : LSeries
   replace h := h.norm
   by_contra! H
   obtain ⟨n, hn₀, hn⟩ := H (tsum fun n ↦ ‖term f s n‖)
-  have := le_tsum h n fun _ _ ↦ norm_nonneg _
+  have := h.le_tsum n fun _ _ ↦ norm_nonneg _
   rw [norm_term_eq, if_neg hn₀,
     div_le_iff₀ <| Real.rpow_pos_of_pos (Nat.cast_pos.mpr <| Nat.pos_of_ne_zero hn₀) _] at this
   exact (this.trans_lt hn).false.elim
