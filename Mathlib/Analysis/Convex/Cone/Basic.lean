@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Frédéric Dupuis
 -/
 import Mathlib.Analysis.Convex.Hull
+import Mathlib.Topology.Algebra.MulAction
+import Mathlib.Topology.Order.DenselyOrdered
 
 /-!
 # Convex cones
@@ -544,6 +546,29 @@ theorem blunt_strictlyPositive : Blunt (strictlyPositive 𝕜 E) :=
   lt_irrefl 0
 
 end PositiveCone
+
+section ContinuousSMul
+variable [TopologicalSpace 𝕜] [Field 𝕜] [LinearOrder 𝕜] [IsOrderedRing 𝕜] [OrderTopology 𝕜]
+  [DenselyOrdered 𝕜] [AddCommGroup E] [TopologicalSpace E] [Module 𝕜 E] [ContinuousSMul 𝕜 E]
+  {S : ConvexCone 𝕜 E}
+
+lemma Pointed.of_nonempty_of_isClosed (hS : (S : Set E).Nonempty) (hSclos : IsClosed (S : Set E)) :
+    S.Pointed := by
+  obtain ⟨x, hx⟩ := hS
+  let f : 𝕜 → E := (· • x)
+  -- The closure of `f (0, ∞)` is a subset of `K`
+  have hfS : closure (f '' Set.Ioi 0) ⊆ S :=
+    hSclos.closure_subset_iff.2 <| by rintro _ ⟨_, h, rfl⟩; exact S.smul_mem h hx
+  -- `f` is continuous at `0` from the right
+  have fc : ContinuousWithinAt f (Set.Ioi (0 : 𝕜)) 0 :=
+    (continuous_id.smul continuous_const).continuousWithinAt
+  -- `0 ∈ closure f (0, ∞) ⊆ K, 0 ∈ K`
+  simpa [f, Pointed, ← SetLike.mem_coe] using hfS <| fc.mem_closure_image <| by simp
+
+@[deprecated (since := "2025-04-18")]
+alias pointed_of_nonempty_of_isClosed := Pointed.of_nonempty_of_isClosed
+
+end ContinuousSMul
 
 end ConvexCone
 
