@@ -12,7 +12,6 @@ import Mathlib.Analysis.Normed.Module.Convex
 import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Topology.Instances.RealVectorSpace
 import Mathlib.Topology.LocallyConstant.Basic
-import Mathlib.Analysis.Calculus.Deriv.MeanValue
 
 /-!
 # The mean value inequality and equalities
