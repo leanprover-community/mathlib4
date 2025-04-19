@@ -226,6 +226,12 @@ lemma mapComp_id_right_inv (f : a ⟶ b) : (F.mapComp f (𝟙 b)).inv =
     F.map f ◁ (F.mapId b).hom ≫ (ρ_ (F.map f)).hom ≫ F.map₂ (ρ_ f).inv := by
   simp [mapComp_id_right]
 
+lemma mapComp_congr {a b c : B} {f f' : a ⟶ b} {g g' : b ⟶ c}
+      (hff' : f = f') (hgg' : g = g') :
+    F.mapComp f g =
+      eqToIso (by rw [hgg', hff']) ≪≫ F.mapComp f' g' ≪≫ eqToIso (by rw [hgg', hff']) := by
+  aesop_cat
+
 lemma whiskerLeftIso_mapId (f : a ⟶ b) : whiskerLeftIso (F.map f) (F.mapId b) =
     (F.mapComp f (𝟙 b)).symm ≪≫ F.map₂Iso (ρ_ f) ≪≫ (ρ_ (F.map f)).symm := by
   simp [mapComp_id_right]
