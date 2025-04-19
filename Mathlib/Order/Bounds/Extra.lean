@@ -20,8 +20,8 @@ universe u v
 variable {α : Type u} {β : Type v}
 variable [Preorder α] [Preorder β] {f : α → β}
 
-lemma Monotone.dominated (Hf : Monotone f) {s₁ s₂ : Set α} (h : Dominated (· ≤ ·) s₁ s₂) :
-    Dominated (· ≤ ·) (f '' s₁) (f '' s₂) := fun a ha => by
+lemma Dominated.image (Hf : Monotone f) {s₁ s₂ : Set α} (h : Dominated s₁ s₂) :
+    Dominated (f '' s₁) (f '' s₂) := fun a ha => by
   obtain ⟨c, hcs, hcfa⟩ := ha
   obtain ⟨d, hdd, hcd⟩ := h c hcs
   simp only [mem_image, exists_exists_and_eq_and]
