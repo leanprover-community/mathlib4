@@ -147,6 +147,50 @@ def algHomOfRightFDRepComp (η : Aut (forget k G)) : (G → k) →ₐ[k] (G → 
   apply_fun (fun x ↦ (x.hom.app rightFDRep).hom (1 : G → k)) at this
   exact this
 
+/-- For `v : X` and `G` a finite group, the `G`-equivariant linear map from the right
+regular representation `rightFDRep` to `X` sending `1` to `v`. -/
+@[simps]
+def sumSMulInv {X : FDRep k G} (v : X) : (G → k) →ₗ[k] X where
+  toFun f := ∑ s : G, (f s) • (X.ρ s⁻¹ v)
+  map_add' _ _ := by
+    simp only [add_apply, add_smul, sum_add_distrib]
+  map_smul' _ _ := by
+    simp only [smul_apply, smul_eq_mul, RingHom.id_apply, smul_sum, smul_smul]
+
+@[simp]
+lemma sumSMulInv_single_id [DecidableEq G] {X : FDRep k G} (v : X) :
+    ∑ s : G, (single 1 1 : G → k) s • (X.ρ s⁻¹) v = v := by
+  calc
+    _ = ∑ s ∈ {1}ᶜ, single 1 1 s • (X.ρ s⁻¹) v + single 1 1 1 • (X.ρ 1⁻¹) v :=
+      Fintype.sum_eq_sum_compl_add 1 _
+    _ = (single 1 1 : G → k) 1 • (X.ρ 1⁻¹) v := by
+      apply add_eq_right.mpr
+      apply sum_eq_zero
+      simp_all
+    _ = v := by
+      simp
+
+/-- For `v : X` and `G` a finite group, the representation morphism from the right
+regular representation `rightFDRep` to `X` sending `1` to `v`. -/
+@[simps]
+def ofRightFDRep (X : FDRep k G) (v : X) : rightFDRep ⟶ X where
+  hom := ofHom (sumSMulInv v)
+  comm t := by
+    ext f
+    let φ_term (X : FDRep k G) (f : G → k) v s := (f s) • (X.ρ s⁻¹ v)
+    have := sum_map univ (mulRightEmbedding t⁻¹) (φ_term X (rightRegular t f) v)
+    simpa [φ_term] using this
+
+lemma toRightFDRepComp_inj (η₁ η₂ : Aut (forget k G))
+    (h : η₁.hom.hom.app rightFDRep = η₂.hom.hom.app rightFDRep) : η₁ = η₂ := by
+  classical
+  ext X v
+  have h1 := η₁.hom.hom.naturality (ofRightFDRep X v)
+  have h2 := η₂.hom.hom.naturality (ofRightFDRep X v)
+  rw [h, ← h2] at h1
+  apply_fun (Hom.hom · (single 1 1)) at h1
+  simpa using h1
+
 end FiniteGroup
 
 end TannakaDuality
