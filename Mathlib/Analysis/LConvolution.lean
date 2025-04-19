@@ -22,7 +22,7 @@ when the domain of `f` and `g` is a commutative group. The main reason for this 
 `(μ ∗ ν) = π.withDensity (f ⋆ₗ[π] g)`. If the formula in MeasureTheory.convolution was used
 the order of the densities would be flipped.
 
-# Main Definitions
+## Main Definitions
 
 * `MeasureTheory.mlconvolution f g μ x = (f ⋆ₗ[μ] g) x = ∫⁻ y, (f y) * (g (y⁻¹ * x)) ∂μ`
   is the multiplicative convolution of `f` and `g` w.r.t. the measure `μ`.
