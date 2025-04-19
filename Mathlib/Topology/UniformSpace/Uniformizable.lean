@@ -27,9 +27,8 @@ Urysohn's lemma is reused in the proof of `UniformSpace.completelyRegularSpace`.
 
 ## References
 
--- how do I cite this
 * <https://www.math.wm.edu/~vinroot/PadicGroups/519probset1.pdf>
-* [S. Willard, *General Topology*][Wil04]
+* [S. Willard, *General Topology*][zbMATH02107988]
 -/
 
 variable {α : Type*}
