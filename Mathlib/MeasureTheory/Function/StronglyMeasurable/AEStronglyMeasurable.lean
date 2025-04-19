@@ -633,8 +633,8 @@ theorem _root_.exists_stronglyMeasurable_limit_of_tendsto_ae [PseudoMetrizableSp
   rwa [h'x] at hx
 
 /-- If `f` is almost everywhere strongly measurable and its range is almost everywhere contained
-in a nonempty measurable set `s`, then there is a strongly measurable representive `g` of `f` whose
-range is contained in `s`. -/
+in a nonempty measurable set `s`, then there is a strongly measurable representative `g` of `f`
+whose range is contained in `s`. -/
 lemma exists_stronglyMeasurable_range_subset {α β : Type*}
     [TopologicalSpace β] [PseudoMetrizableSpace β] [mb : MeasurableSpace β] [BorelSpace β]
     [m : MeasurableSpace α] {μ : Measure α} {f : α → β} (hf : AEStronglyMeasurable f μ)
