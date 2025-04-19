@@ -26,8 +26,7 @@ simproc_decl Nat.divisorsEq (Nat.divisors _) := fun e => do
   let some n ← fromExpr? e.appArg! | return .continue
   let rhsListQ : List Q(ℕ) := (n.divisors.sort (· ≤ ·)).map fun n => (Lean.toExpr n : Q(ℕ))
   let rhs := mkSetLiteralQ q(Finset ℕ) rhsListQ
-  let pf ← Meta.mkDecideProof (← mkEq e rhs)
-  return .done {expr := rhs, proof? := pf }
+  return .done {expr := rhs }
 
 /-- The `Nat.properDivisorsEq ` computes the finset `Nat.properDivisorsEq  n` when `n` is a natural
 number literal. -/
@@ -36,5 +35,4 @@ simproc_decl Nat.properDivisorsEq (Nat.properDivisors _) := fun e => do
   let some n ← fromExpr? e.appArg! | return .continue
   let rhsListQ : List Q(ℕ) := (n.properDivisors.sort (· ≤ ·)).map fun n => (Lean.toExpr n : Q(ℕ))
   let rhs := mkSetLiteralQ q(Finset ℕ) rhsListQ
-  let pf ← Meta.mkDecideProof (← mkEq e rhs)
-  return .done {expr := rhs, proof? := pf }
+  return .done {expr := rhs }
