@@ -133,6 +133,7 @@ theorem isGLB_congr (h : lowerBounds s = lowerBounds t) : IsGLB s a ↔ IsGLB t 
 theorem upperBounds_mono_set ⦃s t : Set α⦄ (hst : s ⊆ t) : upperBounds t ⊆ upperBounds s :=
   fun _ hb _ h => hb <| hst h
 
+@[gcongr]
 lemma upperBounds_mono_of_dominated {s₁ s₂ : Set α} (h : Dominated s₁ s₂) :
     upperBounds s₂ ⊆ upperBounds s₁ := fun c hc d hd => by
   obtain ⟨e, he₁, he₂⟩ := h _ hd
@@ -141,7 +142,8 @@ lemma upperBounds_mono_of_dominated {s₁ s₂ : Set α} (h : Dominated s₁ s�
 theorem lowerBounds_mono_set ⦃s t : Set α⦄ (hst : s ⊆ t) : lowerBounds t ⊆ lowerBounds s :=
   fun _ hb _ h => hb <| hst h
 
-lemma lowerBounds_subset_of_dominated {s₁ s₂ : Set α} (h : Codominated s₁ s₂) :
+@[gcongr]
+lemma lowerBounds_mono_of_dominated {s₁ s₂ : Set α} (h : Codominated s₁ s₂) :
     lowerBounds s₂ ⊆ lowerBounds s₁ := fun c hc d hd => by
   obtain ⟨e, he₁, he₂⟩ := h _ hd
   exact le_trans (hc he₁) he₂
