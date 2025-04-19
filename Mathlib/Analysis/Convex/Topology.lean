@@ -480,3 +480,22 @@ theorem isPathConnected_compl_of_isPathConnected_compl_zero [ContinuousSMul ℝ 
     exact mt (Submodule.eq_zero_of_coe_mem_of_disjoint hpq.disjoint) (hγ₁ t)
 
 end ComplementsConnected
+
+section LinearOrderedField
+
+variable {𝕜 : Type*} [LinearOrderedField 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜]
+
+theorem Convex.nontrivial_iff_nonempty_interior {s : Set 𝕜} (hs : Convex 𝕜 s) :
+    s.Nontrivial ↔ (interior s).Nonempty := by
+  constructor
+  · rintro ⟨x, hx, y, hy, h⟩
+    have hs' := Nonempty.mono <| interior_mono <| hs.segment_subset hx hy
+    rw [segment_eq_Icc', interior_Icc, nonempty_Ioo, inf_lt_sup] at hs'
+    exact hs' h
+  · rintro ⟨x, hx⟩
+    rcases eq_singleton_or_nontrivial (interior_subset hx) with rfl | h
+    · rw [interior_singleton] at hx
+      exact hx.elim
+    · exact h
+
+end LinearOrderedField
