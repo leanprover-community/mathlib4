@@ -401,8 +401,7 @@ theorem setAverage_const {s : Set α} (hs₀ : μ s ≠ 0) (hs : μ s ≠ ∞) (
   have := NeZero.mk hs₀; have := Fact.mk hs.lt_top; average_const _ _
 
 theorem integral_average (μ : Measure α) [IsFiniteMeasure μ] (f : α → E) :
-    ∫ _, ⨍ a, f a ∂μ ∂μ = ∫ x, f x ∂μ := by
-  simp
+    ∫ _, ⨍ a, f a ∂μ ∂μ = ∫ x, f x ∂μ := by simp
 
 
 theorem setIntegral_setAverage (μ : Measure α) [IsFiniteMeasure μ] (f : α → E) (s : Set α) :
