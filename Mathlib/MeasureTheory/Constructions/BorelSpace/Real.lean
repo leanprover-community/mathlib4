@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 import Mathlib.MeasureTheory.MeasurableSpace.Prod
+import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
 import Mathlib.Topology.Instances.Real.Lemmas
 
 /-!
@@ -480,7 +481,7 @@ variable {α β γ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β
 lemma measurable_of_real_prod {f : EReal × β → γ}
     (h_real : Measurable fun p : ℝ × β ↦ f (p.1, p.2))
     (h_bot : Measurable fun x ↦ f (⊥, x)) (h_top : Measurable fun x ↦ f (⊤, x)) : Measurable f :=
-  .of_union₃_range_cover (measurableEmbedding_prod_mk_left _) (measurableEmbedding_prod_mk_left _)
+  .of_union₃_range_cover (measurableEmbedding_prodMk_left _) (measurableEmbedding_prodMk_left _)
     (measurableEmbedding_coe.prodMap .id) (by simp [-univ_subset_iff, subset_def, EReal.forall])
     h_bot h_top h_real
 
@@ -511,9 +512,9 @@ private lemma measurable_const_mul (c : EReal) : Measurable fun (x : EReal) ↦ 
     refine Measurable.piecewise (measurableSet_singleton _) measurable_const ?_
     exact Measurable.piecewise measurableSet_Iio measurable_const measurable_const
   induction c with
-  | h_bot => rwa [h1]
-  | h_real c => exact (measurable_id.const_mul _).coe_real_ereal
-  | h_top =>
+  | bot => rwa [h1]
+  | coe c => exact (measurable_id.const_mul _).coe_real_ereal
+  | top =>
     simp_rw [← neg_bot, neg_mul]
     apply Measurable.neg
     rwa [h1]

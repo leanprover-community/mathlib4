@@ -105,6 +105,12 @@ lemma homOfEq_injective {X X' Y Y' : V} (hX : X = X') (hY : Y = Y')
 @[simp]
 lemma homOfEq_rfl {X Y : V} (f : X ⟶ Y) : Quiver.homOfEq f rfl rfl = f := rfl
 
+lemma heq_of_homOfEq_ext {X Y X' Y' : V} (hX : X = X') (hY : Y = Y') {f : X ⟶ Y} {f' : X' ⟶ Y'}
+    (e : Quiver.homOfEq f hX hY = f') : HEq f f' := by
+  subst hX hY
+  rw [Quiver.homOfEq_rfl] at e
+  rw [e]
+
 end
 
 end Quiver

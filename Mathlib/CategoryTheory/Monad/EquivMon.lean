@@ -43,15 +43,12 @@ def toMon (M : Monad C) : Mon_ (C ⥤ C) where
   mul := M.μ
   mul_assoc := by ext; simp [M.assoc]
 
-variable (C)
-
+variable (C) in
 /-- Passing from `Monad C` to `Mon_ (C ⥤ C)` is functorial. -/
 @[simps]
 def monadToMon : Monad C ⥤ Mon_ (C ⥤ C) where
   obj := toMon
   map f := { hom := f.toNatTrans }
-
-variable {C}
 
 /-- To every monoid object in `C ⥤ C` we associate a `Monad C`. -/
 @[simps η μ]

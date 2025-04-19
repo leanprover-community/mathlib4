@@ -128,7 +128,8 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : Highe
       rw [Fin.le_iff_val_le_val]
       dsimp
       omega
-    erw [δ_comp_σ_of_le X hia, add_eq_zero_iff_eq_neg, ← neg_zsmul]
+    rw [← Fin.succ_mk, ← Fin.castSucc_mk _ i, δ_comp_σ_of_le X hia, add_eq_zero_iff_eq_neg,
+      ← neg_zsmul]
     congr 2
     ring
 
@@ -146,7 +147,8 @@ theorem comp_Hσ_eq_zero {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : Hi
         Fin.cast_mk, Fin.castSucc_mk]
       simp only [Fin.mk_zero, Fin.val_zero, pow_zero, one_zsmul, Fin.mk_one, Fin.val_one, pow_one,
         neg_smul, comp_neg]
-      erw [δ_comp_σ_self, δ_comp_σ_succ, add_neg_cancel]
+      rw [← Fin.castSucc_zero (n := n + 1), δ_comp_σ_self, ← Fin.succ_zero_eq_one, δ_comp_σ_succ,
+        add_neg_cancel]
     · intro j
       dsimp [Fin.cast, Fin.castLE, Fin.castLT]
       rw [comp_zsmul, comp_zsmul, δ_comp_σ_of_gt', v.comp_δ_eq_zero_assoc, zero_comp, zsmul_zero]
@@ -168,9 +170,9 @@ theorem induction {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : HigherFac
   by_cases hqn : n < q
   · rw [v.comp_Hσ_eq_zero hqn, zero_comp, add_zero, v j (by omega)]
   -- we now assume that n≥q, and write n=a+q
-  cases' Nat.le.dest (not_lt.mp hqn) with a ha
+  obtain ⟨a, ha⟩ := Nat.le.dest (not_lt.mp hqn)
   rw [v.comp_Hσ_eq (show n = a + q by omega), neg_comp, add_neg_eq_zero, assoc, assoc]
-  cases' n with m hm
+  rcases n with - | m
   -- the boundary case n=0
   · simp only [Nat.eq_zero_of_add_eq_zero_left ha, Fin.eq_zero j, Fin.mk_zero, Fin.mk_one,
       δ_comp_σ_succ, comp_id]

@@ -35,20 +35,14 @@ theorem one_le_pow_of_le (ha : 1 ≤ a) : ∀ n : ℕ, 1 ≤ a ^ n
     rw [pow_succ]
     exact one_le_mul (one_le_pow_of_le ha k) ha
 
-@[deprecated (since := "2024-09-21")] alias pow_nonneg := nsmul_nonneg
-
 @[to_additive nsmul_nonpos]
 theorem pow_le_one_of_le (ha : a ≤ 1) (n : ℕ) : a ^ n ≤ 1 := one_le_pow_of_le (M := Mᵒᵈ) ha n
-
-@[deprecated (since := "2024-09-21")] alias pow_nonpos := nsmul_nonpos
 
 @[to_additive nsmul_neg]
 theorem pow_lt_one_of_lt {a : M} {n : ℕ} (h : a < 1) (hn : n ≠ 0) : a ^ n < 1 := by
   rcases Nat.exists_eq_succ_of_ne_zero hn with ⟨k, rfl⟩
   rw [pow_succ']
   exact mul_lt_one_of_lt_of_le h (pow_le_one_of_le h.le _)
-
-@[deprecated (since := "2024-09-21")] alias pow_neg := nsmul_neg
 
 end Left
 
@@ -107,21 +101,15 @@ theorem Right.one_le_pow_of_le (hx : 1 ≤ x) : ∀ {n : ℕ}, 1 ≤ x ^ n
     rw [pow_succ]
     exact Right.one_le_mul (Right.one_le_pow_of_le hx) hx
 
-@[deprecated (since := "2024-09-21")] alias Right.pow_nonneg := Right.nsmul_nonneg
-
 @[to_additive Right.nsmul_nonpos]
 theorem Right.pow_le_one_of_le (hx : x ≤ 1) {n : ℕ} : x ^ n ≤ 1 :=
   Right.one_le_pow_of_le (M := Mᵒᵈ) hx
-
-@[deprecated (since := "2024-09-21")] alias Right.pow_nonpos := Right.nsmul_nonpos
 
 @[to_additive Right.nsmul_neg]
 theorem Right.pow_lt_one_of_lt {n : ℕ} {x : M} (hn : 0 < n) (h : x < 1) : x ^ n < 1 := by
   rcases Nat.exists_eq_succ_of_ne_zero hn.ne' with ⟨k, rfl⟩
   rw [pow_succ]
   exact mul_lt_one_of_le_of_lt (pow_le_one_of_le h.le) h
-
-@[deprecated (since := "2024-09-21")] alias Right.pow_neg := Right.nsmul_neg
 
 /-- This lemma is useful in non-cancellative monoids, like sets under pointwise operations. -/
 @[to_additive
@@ -151,7 +139,7 @@ theorem StrictMono.pow_const (hf : StrictMono f) : ∀ {n : ℕ}, n ≠ 0 → St
     simpa only [pow_succ] using (hf.pow_const n.succ_ne_zero).mul' hf
 
 /-- See also `pow_left_strictMonoOn₀`. -/
-@[to_additive nsmul_right_strictMono]  -- Porting note: nolint to_additive_doc
+@[to_additive nsmul_right_strictMono]
 theorem pow_left_strictMono (hn : n ≠ 0) : StrictMono (· ^ n : M → M) := strictMono_id.pow_const hn
 
 @[to_additive (attr := mono, gcongr) nsmul_lt_nsmul_right]

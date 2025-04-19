@@ -30,13 +30,11 @@ section LinearOrder
 attribute [order_dual existing] Min
 
 /-- Default definition of `max`. -/
-def maxDefault [LE α] [DecidableRel ((· ≤ ·) : α → α → Prop)] (a b : α) :=
+def maxDefault [LE α] [DecidableLE α] (a b : α) :=
   if a ≤ b then b else a
 
 /-- Default definition of `min`. -/
-/- The definitions don't match up so we apply the attribute manually and hope for the best. -/
-@[order_dual existing]
-def minDefault [LE α] [DecidableRel ((· ≤ ·) : α → α → Prop)] (a b : α) :=
+def minDefault [LE α] [DecidableLE α] (a b : α) :=
   if a ≤ b then a else b
 
 /-- This attempts to prove that a given instance of `compare` is equal to `compareOfLessAndEq` by
@@ -59,12 +57,11 @@ class LinearOrder (α : Type*) extends PartialOrder α, Min α, Max α, Ord α w
   /-- A linear order is total. -/
   le_total (a b : α) : a ≤ b ∨ b ≤ a
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
-  decidableLE : DecidableRel (· ≤ · : α → α → Prop)
+  toDecidableLE : DecidableLE α
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
-  decidableEq : DecidableEq α := @decidableEqOfDecidableLE _ _ decidableLE
+  toDecidableEq : DecidableEq α := @decidableEqOfDecidableLE _ _ toDecidableLE
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
-  decidableLT : DecidableRel (· < · : α → α → Prop) :=
-    @decidableLTOfDecidableLE _ _ decidableLE
+  toDecidableLT : DecidableLT α := @decidableLTOfDecidableLE _ _ toDecidableLE
   min := fun a b => if a ≤ b then a else b
   -- max := fun a b => if b ≤ a then b else a
   max := fun a b => if a ≤ b then b else a
@@ -87,7 +84,9 @@ attribute [order_dual existing] LinearOrder.min_def
 
 variable [LinearOrder α] {a b c : α}
 
-attribute [local instance] LinearOrder.decidableLE
+attribute [instance 900] LinearOrder.toDecidableLT
+attribute [instance 900] LinearOrder.toDecidableLE
+attribute [instance 900] LinearOrder.toDecidableEq
 
 @[order_dual self (reorder := 3 4)]
 lemma le_total : ∀ a b : α, a ≤ b ∨ b ≤ a := LinearOrder.le_total
@@ -139,19 +138,8 @@ lemma ne_iff_lt_or_gt : a ≠ b ↔ a < b ∨ a > b := ⟨lt_or_gt_of_ne, (Or.el
 @[order_dual self (reorder := 3 4)]
 lemma lt_iff_not_ge (x y : α) : x < y ↔ ¬x ≥ y := ⟨not_le_of_gt, lt_of_not_ge⟩
 
-@[order_dual self (attr := simp) (reorder := 3 4)]
-lemma not_lt : ¬a < b ↔ b ≤ a := ⟨le_of_not_gt, not_lt_of_ge⟩
-@[order_dual self (attr := simp) (reorder := 3 4)]
-lemma not_le : ¬a ≤ b ↔ b < a := (lt_iff_not_ge _ _).symm
-
--- TODO: names??
-@[order_dual self (reorder := 3 4)]
-instance (priority := 900) LOdecidableLT (a b : α) : Decidable (a < b) :=
-LinearOrder.decidableLT a b
-@[order_dual self (reorder := 3 4)]
-instance (priority := 900) LOdecidableLE (a b : α) : Decidable (a ≤ b) :=
-LinearOrder.decidableLE a b
-instance (priority := 900) (a b : α) : Decidable (a = b) := LinearOrder.decidableEq a b
+@[simp] lemma not_lt : ¬a < b ↔ b ≤ a := ⟨le_of_not_gt, not_lt_of_ge⟩
+@[simp] lemma not_le : ¬a ≤ b ↔ b < a := (lt_iff_not_ge _ _).symm
 
 @[order_dual eq_or_lt_of_not_ltOD]
 lemma eq_or_lt_of_not_lt (h : ¬a < b) : a = b ∨ b < a :=
@@ -163,23 +151,6 @@ def ltByCases (x y : α) {P : Sort*} (h₁ : x < y → P) (h₂ : x = y → P) (
   if h : x < y then h₁ h
   else if h' : y < x then h₃ h' else h₂ (le_antisymm (le_of_not_gt h') (le_of_not_gt h))
 
-namespace Nat
-
-/-! Deprecated properties of inequality on `Nat` -/
-
-@[deprecated "No deprecation message was provided." (since := "2024-08-23")]
-protected def ltGeByCases {a b : Nat} {C : Sort*} (h₁ : a < b → C) (h₂ : b ≤ a → C) : C :=
-  Decidable.byCases h₁ fun h => h₂ (Or.elim (Nat.lt_or_ge a b) (fun a => absurd a h) fun a => a)
-
-set_option linter.deprecated false in
-@[deprecated ltByCases (since := "2024-08-23")]
-protected def ltByCases {a b : Nat} {C : Sort*} (h₁ : a < b → C) (h₂ : a = b → C)
-    (h₃ : b < a → C) : C :=
-  Nat.ltGeByCases h₁ fun h₁ => Nat.ltGeByCases h₃ fun h => h₂ (Nat.le_antisymm h h₁)
-
-end Nat
-
-@[order_dual self (reorder := 5 6, 7 8)]
 theorem le_imp_le_of_lt_imp_lt {α β} [Preorder α] [LinearOrder β] {a b : α} {c d : β}
     (H : d < c → b < a) (h : a ≤ b) : c ≤ d :=
   le_of_not_lt fun h' => not_le_of_gt (H h') h

@@ -42,8 +42,8 @@ notation:50 A " ≃ₐc[" R "] " B => BialgEquiv R A B
 from `A` to `B`. -/
 class BialgEquivClass (F : Type*) (R A B : outParam Type*) [CommSemiring R]
     [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
-    [CoalgebraStruct R A] [CoalgebraStruct R B] [EquivLike F A B]
-    extends CoalgEquivClass F R A B, MulEquivClass F A B : Prop
+    [CoalgebraStruct R A] [CoalgebraStruct R B] [EquivLike F A B] : Prop
+    extends CoalgEquivClass F R A B, MulEquivClass F A B
 
 namespace BialgEquivClass
 
@@ -112,6 +112,7 @@ theorem toBialgHom_injective : Function.Injective (toBialgHom : (A ≃ₐc[R] B)
   fun _ _ H => toEquiv_injective <| Equiv.ext <| BialgHom.congr_fun H
 
 instance : EquivLike (A ≃ₐc[R] B) A B where
+  coe f := f.toFun
   inv := fun f => f.invFun
   coe_injective' _ _ h _ := toBialgHom_injective (DFunLike.coe_injective h)
   left_inv := fun f => f.left_inv
@@ -144,14 +145,6 @@ variable [Semiring A] [Semiring B] [Semiring C] [Algebra R A] [Algebra R B]
   [Algebra R C] [CoalgebraStruct R A] [CoalgebraStruct R B] [CoalgebraStruct R C]
 
 variable (e e' : A ≃ₐc[R] B)
-
-/-- See Note [custom simps projection] -/
-def Simps.apply {R : Type u} [CommSemiring R] {α : Type v} {β : Type w}
-    [Semiring α] [Semiring β] [Algebra R α]
-    [Algebra R β] [CoalgebraStruct R α] [CoalgebraStruct R β]
-    (f : α ≃ₐc[R] β) : α → β := f
-
-initialize_simps_projections BialgEquiv (toFun → apply)
 
 @[simp, norm_cast]
 theorem coe_coe : ⇑(e : A →ₐc[R] B) = e :=
@@ -202,16 +195,26 @@ protected theorem congr_fun (h : e = e') (x : A) : e x = e' x :=
 
 end
 
-section
+/-- See Note [custom simps projection] -/
+def Simps.apply {R : Type u} [CommSemiring R] {α : Type v} {β : Type w}
+    [Semiring α] [Semiring β] [Algebra R α]
+    [Algebra R β] [CoalgebraStruct R α] [CoalgebraStruct R β]
+    (f : α ≃ₐc[R] β) : α → β := f
 
-variable (A R)
+/-- See Note [custom simps projection] -/
+def Simps.symm_apply {R : Type*} [CommSemiring R]
+    {A : Type*} {B : Type*} [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+    [CoalgebraStruct R A] [CoalgebraStruct R B]
+    (e : A ≃ₐc[R] B) : B → A :=
+  e.symm
 
+initialize_simps_projections BialgEquiv (toFun → apply, invFun → symm_apply)
+
+variable (A R) in
 /-- The identity map is a bialgebra equivalence. -/
 @[refl, simps!]
 def refl : A ≃ₐc[R] A :=
   { CoalgEquiv.refl R A, BialgHom.id R A with }
-
-end
 
 @[simp]
 theorem refl_toCoalgEquiv : refl R A = CoalgEquiv.refl R A := rfl
@@ -228,15 +231,6 @@ def symm (e : A ≃ₐc[R] B) : B ≃ₐc[R] A :=
 @[simp]
 theorem symm_toCoalgEquiv (e : A ≃ₐc[R] B) :
     e.symm = (e : A ≃ₗc[R] B).symm := rfl
-
-/-- See Note [custom simps projection] -/
-def Simps.symm_apply {R : Type*} [CommSemiring R]
-    {A : Type*} {B : Type*} [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
-    [CoalgebraStruct R A] [CoalgebraStruct R B]
-    (e : A ≃ₐc[R] B) : B → A :=
-  e.symm
-
-initialize_simps_projections BialgEquiv (invFun → symm_apply)
 
 theorem invFun_eq_symm : e.invFun = e.symm :=
   rfl

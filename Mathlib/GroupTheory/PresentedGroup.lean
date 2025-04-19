@@ -40,7 +40,7 @@ instance (rels : Set (FreeGroup α)) : Group (PresentedGroup rels) :=
   QuotientGroup.Quotient.group _
 
 /-- The canonical map from the free group on `α` to a presented group with generators `x : α`,
-where `x` is mapped to its equivalence class under the given set of relations `rels`-/
+where `x` is mapped to its equivalence class under the given set of relations `rels` -/
 def mk (rels : Set (FreeGroup α)) : FreeGroup α →* PresentedGroup rels :=
   ⟨⟨QuotientGroup.mk, rfl⟩, fun _ _ => rfl⟩
 

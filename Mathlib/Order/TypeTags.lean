@@ -33,8 +33,6 @@ instance [Repr α] : Repr (WithBot α) :=
 @[order_dual (attr := coe, match_pattern)] def some : α → WithBot α :=
   Option.some
 
--- Porting note: changed this from `CoeTC` to `Coe` but I am not 100% confident that's correct.
-@[order_dual]
 instance coe : Coe α (WithBot α) :=
   ⟨some⟩
 

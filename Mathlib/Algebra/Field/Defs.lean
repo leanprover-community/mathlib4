@@ -48,9 +48,9 @@ assert_not_imported Mathlib.Tactic.Common
 -- `NeZero` theory should not be needed in the basic algebraic hierarchy
 assert_not_imported Mathlib.Algebra.NeZero
 
-assert_not_exists MonoidHom
+assert_not_exists MonoidHom Set
 
-open Function Set
+open Function
 
 universe u
 
