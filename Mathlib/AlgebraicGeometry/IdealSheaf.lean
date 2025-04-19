@@ -20,11 +20,11 @@ We define ideal sheaves of schemes and provide various constructors for it.
   The largest ideal sheaf contained in a family of ideals.
 * `AlgebraicGeometry.Scheme.IdealSheafData.equivOfIsAffine`:
   Over affine schemes, ideal sheaves are in bijection with ideals of the global sections.
-* `AlgebraicGeometry.Scheme.IdealSheafData.support`:
-  The support of an ideal sheaf.
-* `AlgebraicGeometry.Scheme.IdealSheafData.vanishingIdeal`:
-  The vanishing ideal of a set.
+* `AlgebraicGeometry.Scheme.IdealSheafData.support`: The support of an ideal sheaf.
+* `AlgebraicGeometry.Scheme.IdealSheafData.vanishingIdeal`: The vanishing ideal of a set.
 * `AlgebraicGeometry.Scheme.Hom.ker`: The kernel of a morphism.
+* `AlgebraicGeometry.Scheme.IdealSheafData.subscheme`: The subscheme associated to an ideal sheaf.
+* `AlgebraicGeometry.Scheme.IdealSheafData.subschemeι`: The inclusion from the subscheme.
 
 ## Main results
 * `AlgebraicGeometry.Scheme.IdealSheafData.gc`:
@@ -42,7 +42,7 @@ into mathlib.
 
 -/
 
-open CategoryTheory
+open CategoryTheory TopologicalSpace
 
 universe u
 
@@ -54,8 +54,8 @@ variable {X : Scheme.{u}}
 A structure that contains the data to uniquely define an ideal sheaf, consisting of
 1. an ideal `I(U) ≤ Γ(X, U)` for every affine open `U`
 2. a proof that `I(D(f)) = I(U)_f` for every affine open `U` and every section `f : Γ(X, U)`.
+3. a subset of `X` equal to the support
 -/
-@[ext]
 structure IdealSheafData (X : Scheme.{u}) : Type u where
   /-- The component of an ideal sheaf at an affine open. -/
   ideal : ∀ U : X.affineOpens, Ideal Γ(X, U)
@@ -63,8 +63,27 @@ structure IdealSheafData (X : Scheme.{u}) : Type u where
   map_ideal_basicOpen : ∀ (U : X.affineOpens) (f : Γ(X, U)),
     (ideal U).map (X.presheaf.map (homOfLE <| X.basicOpen_le f).op).hom =
       ideal (X.affineBasicOpen f)
+  /-- The support of an ideal sheaf. Also see `IdealSheafData.mem_support_iff_of_mem`. -/
+  supportSet : Set X := ⋂ U, X.zeroLocus (U := U.1) (ideal U)
+  supportSet_eq_iInter_zeroLocus : supportSet = ⋂ U, X.zeroLocus (U := U.1) (ideal U) := by rfl
 
 namespace IdealSheafData
+
+@[ext]
+protected lemma ext {I J : X.IdealSheafData} (h : I.ideal = J.ideal) : I = J := by
+  obtain ⟨i, _, s, hs⟩ := I
+  obtain ⟨j, _, t, ht⟩ := J
+  subst h
+  congr
+  rw [hs, ht]
+
+@[reducible]
+def copy {I : X.IdealSheafData} (I' : ∀ U : X.affineOpens, Ideal Γ(X, U)) (hI' : I' = I.ideal)
+    (s : Set X) (hs : s = I.supportSet) : X.IdealSheafData where
+  ideal := I'
+  map_ideal_basicOpen := hI' ▸ I.map_ideal_basicOpen
+  supportSet := s
+  supportSet_eq_iInter_zeroLocus := hs ▸ hI' ▸ I.supportSet_eq_iInter_zeroLocus
 
 section Order
 
@@ -73,11 +92,13 @@ instance : PartialOrder (IdealSheafData X) := PartialOrder.lift ideal fun _ _ �
 lemma le_def {I J : IdealSheafData X} : I ≤ J ↔ ∀ U, I.ideal U ≤ J.ideal U := .rfl
 
 instance : CompleteSemilatticeSup (IdealSheafData X) where
-  sSup s := ⟨sSup (ideal '' s), by
-    have : sSup (ideal '' s) = ⨆ i : s, ideal i.1 := by
-      conv_lhs => rw [← Subtype.range_val (s := s), ← Set.range_comp]
-      rfl
-    simp only [this, iSup_apply, Ideal.map_iSup, map_ideal_basicOpen, implies_true]⟩
+  sSup s :=
+  { ideal := sSup (ideal '' s),
+    map_ideal_basicOpen := by
+      have : sSup (ideal '' s) = ⨆ i : s, ideal i.1 := by
+        conv_lhs => rw [← Subtype.range_val (s := s), ← Set.range_comp]
+        rfl
+      simp only [this, iSup_apply, Ideal.map_iSup, map_ideal_basicOpen, implies_true] }
   le_sSup s x hxs := le_sSup (s := ideal '' s) ⟨_, hxs, rfl⟩
   sSup_le s i hi := sSup_le (s := ideal '' s) (Set.forall_mem_image.mpr hi)
 
@@ -91,8 +112,10 @@ lemma ideal_ofIdeals_le (I : ∀ U : X.affineOpens, Ideal Γ(X, U)) :
 
 /-- The galois coinsertion between ideal sheaves and arbitrary families of ideals. -/
 protected def gci : GaloisCoinsertion ideal (ofIdeals (X := X)) where
-  choice I hI := ⟨I, fun U f ↦
-    (ideal_ofIdeals_le I).antisymm hI ▸ (ofIdeals I).map_ideal_basicOpen U f⟩
+  choice I hI :=
+  { ideal := I
+    map_ideal_basicOpen U f :=
+      (ideal_ofIdeals_le I).antisymm hI ▸ (ofIdeals I).map_ideal_basicOpen U f }
   gc _ _ := ⟨(le_sSup ·), (le_trans · (ideal_ofIdeals_le _))⟩
   u_l_le _ := sSup_le fun _ ↦ id
   choice_eq I hI := IdealSheafData.ext (hI.antisymm (ideal_ofIdeals_le I))
@@ -104,13 +127,52 @@ lemma ofIdeals_ideal (I : IdealSheafData X) : ofIdeals I.ideal = I := IdealSheaf
 lemma le_ofIdeals_iff {I : IdealSheafData X} {J} : I ≤ ofIdeals J ↔ I.ideal ≤ J :=
   IdealSheafData.gci.gc.le_iff_le.symm
 
+instance : OrderTop (IdealSheafData X) where
+  top.ideal := ⊤
+  top.map_ideal_basicOpen := by simp [Ideal.map_top]
+  top.supportSet := ⊥
+  top.supportSet_eq_iInter_zeroLocus := by
+    ext x
+    simpa using (isBasis_affine_open X).exists_subset_of_mem_open (Set.mem_univ x) isOpen_univ
+  le_top I U := le_top
+
+instance : OrderBot (IdealSheafData X) where
+  bot.ideal := ⊥
+  bot.map_ideal_basicOpen := by simp [Ideal.map_top]
+  bot.supportSet := ⊤
+  bot.supportSet_eq_iInter_zeroLocus := by ext; simp
+  bot_le I U := bot_le
+
+instance : SemilatticeInf (IdealSheafData X) where
+  inf I J :=
+  { ideal := I.ideal ⊓ J.ideal
+    map_ideal_basicOpen U f := by
+      dsimp
+      have : (X.presheaf.map (homOfLE (X.basicOpen_le f)).op).hom = algebraMap _ _ := rfl
+      have inst := U.2.isLocalization_basicOpen f
+      rw [← I.map_ideal_basicOpen U f, ← J.map_ideal_basicOpen U f, this]
+      ext x
+      obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective (.powers f) x
+      simp only [IsLocalization.mk'_mem_map_algebraMap_iff, Submonoid.mem_powers_iff, Ideal.mem_inf,
+        exists_exists_eq_and]
+      refine ⟨fun ⟨n, h₁, h₂⟩ ↦ ⟨⟨n, h₁⟩, ⟨n, h₂⟩⟩, ?_⟩
+      rintro ⟨⟨n₁, h₁⟩, ⟨n₂, h₂⟩⟩
+      refine ⟨n₁ + n₂, ?_, ?_⟩
+      · rw [add_comm, pow_add, mul_assoc]; exact Ideal.mul_mem_left _ _ h₁
+      · rw [pow_add, mul_assoc]; exact Ideal.mul_mem_left _ _ h₂ }
+  inf_le_left I J U := inf_le_left
+  inf_le_right I J U := inf_le_right
+  le_inf I J K hIJ hIK U := le_inf (hIJ U) (hIK U)
+
 instance : CompleteLattice (IdealSheafData X) where
+  __ := inferInstanceAs (OrderTop (IdealSheafData X))
+  __ := inferInstanceAs (OrderBot (IdealSheafData X))
+  __ := inferInstanceAs (SemilatticeInf (IdealSheafData X))
   __ := inferInstanceAs (CompleteSemilatticeSup (IdealSheafData X))
   __ := IdealSheafData.gci.liftCompleteLattice
 
 @[simp]
-lemma ideal_top : ideal (X := X) ⊤ = ⊤ :=
-  top_le_iff.mp (ideal_mono (le_top (a := ⟨⊤, by simp [Ideal.map_top]⟩)))
+lemma ideal_top : ideal (X := X) ⊤ = ⊤ := rfl
 
 @[simp]
 lemma ideal_bot : ideal (X := X) ⊥ = ⊥ := rfl
@@ -126,24 +188,7 @@ lemma ideal_iSup {ι : Type*} {I : ι → IdealSheafData X} : (iSup I).ideal = �
   rw [← sSup_range, ← sSup_range, ideal_sSup, ← Set.range_comp, Function.comp_def]
 
 @[simp]
-lemma ideal_inf {I J : IdealSheafData X} : (I ⊓ J).ideal = I.ideal ⊓ J.ideal := by
-  let K : IdealSheafData X := ⟨I.ideal ⊓ J.ideal, by
-    intro U f
-    dsimp
-    have : (X.presheaf.map (homOfLE (X.basicOpen_le f)).op).hom = algebraMap _ _ := rfl
-    have inst := U.2.isLocalization_basicOpen f
-    rw [← I.map_ideal_basicOpen U f, ← J.map_ideal_basicOpen U f, this]
-    ext x
-    obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective (.powers f) x
-    simp only [IsLocalization.mk'_mem_map_algebraMap_iff, Submonoid.mem_powers_iff, Ideal.mem_inf,
-      exists_exists_eq_and]
-    refine ⟨fun ⟨n, h₁, h₂⟩ ↦ ⟨⟨n, h₁⟩, ⟨n, h₂⟩⟩, ?_⟩
-    rintro ⟨⟨n₁, h₁⟩, ⟨n₂, h₂⟩⟩
-    refine ⟨n₁ + n₂, ?_, ?_⟩
-    · rw [add_comm, pow_add, mul_assoc]; exact Ideal.mul_mem_left _ _ h₁
-    · rw [pow_add, mul_assoc]; exact Ideal.mul_mem_left _ _ h₂⟩
-  exact (le_inf (ideal_mono inf_le_left) (ideal_mono inf_le_right)).antisymm
-    ((le_ofIdeals_iff (I := K)).mpr le_rfl)
+lemma ideal_inf {I J : IdealSheafData X} : (I ⊓ J).ideal = I.ideal ⊓ J.ideal := rfl
 
 @[simp]
 lemma ideal_biInf {ι : Type*} (I : ι → IdealSheafData X) {s : Set ι} (hs : s.Finite) :
@@ -193,48 +238,19 @@ lemma ideal_le_comap_ideal {U V : X.affineOpens} (h : U ≤ V) :
 
 end map_ideal
 
-section IsAffine
-
-/-- The ideal sheaf induced by an ideal of the global sections. -/
-@[simps]
-def ofIdealTop (I : Ideal Γ(X, ⊤)) : IdealSheafData X where
-  ideal U := I.map (X.presheaf.map (homOfLE le_top).op).hom
-  map_ideal_basicOpen U f := by rw [Ideal.map_map, ← CommRingCat.hom_comp, ← Functor.map_comp]; rfl
-
-lemma le_of_isAffine [IsAffine X] {I J : IdealSheafData X}
-    (H : I.ideal ⟨⊤, isAffineOpen_top X⟩ ≤ J.ideal ⟨⊤, isAffineOpen_top X⟩) : I ≤ J := by
-  intro U
-  rw [← map_ideal (U := U) (V := ⟨⊤, isAffineOpen_top X⟩) I (le_top (a := U.1)),
-    ← map_ideal (U := U) (V := ⟨⊤, isAffineOpen_top X⟩) J (le_top (a := U.1))]
-  exact Ideal.map_mono H
-
-lemma ext_of_isAffine [IsAffine X] {I J : IdealSheafData X}
-    (H : I.ideal ⟨⊤, isAffineOpen_top X⟩ = J.ideal ⟨⊤, isAffineOpen_top X⟩) : I = J :=
-  (le_of_isAffine H.le).antisymm (le_of_isAffine H.ge)
-
-/-- Over affine schemes, ideal sheaves are in bijection with ideals of the global sections. -/
-@[simps]
-def equivOfIsAffine [IsAffine X] : IdealSheafData X ≃ Ideal Γ(X, ⊤) where
-  toFun := (ideal · ⟨⊤, isAffineOpen_top X⟩)
-  invFun := ofIdealTop
-  left_inv I := ext_of_isAffine (by simp)
-  right_inv I := by simp
-
-end IsAffine
-
 section support
 
-/-- The support of an ideal sheaf. Also see `IdealSheafData.mem_support_iff_of_mem`. -/
-def support (I : IdealSheafData X) : Set X := ⋂ U, X.zeroLocus (U := U.1) (I.ideal U)
+lemma mem_supportSet_iff {I : IdealSheafData X} {x} :
+    x ∈ I.supportSet ↔ ∀ U, x ∈ X.zeroLocus (U := U.1) (I.ideal U) :=
+  (Set.ext_iff.mp I.supportSet_eq_iInter_zeroLocus _).trans Set.mem_iInter
 
-lemma mem_support_iff {I : IdealSheafData X} {x} :
-    x ∈ I.support ↔ ∀ U, x ∈ X.zeroLocus (U := U.1) (I.ideal U) := Set.mem_iInter
+lemma supportSet_subset_zeroLocus (I : IdealSheafData X) (U : X.affineOpens) :
+    I.supportSet ⊆ X.zeroLocus (U := U.1) (I.ideal U) :=
+  I.supportSet_eq_iInter_zeroLocus.trans_subset (Set.iInter_subset _ _)
 
-lemma support_subset_zeroLocus (I : IdealSheafData X) (U : X.affineOpens) :
-    I.support ⊆ X.zeroLocus (U := U.1) (I.ideal U) := Set.iInter_subset _ _
-
-lemma zeroLocus_inter_subset_support (I : IdealSheafData X) (U : X.affineOpens) :
-    X.zeroLocus (U := U.1) (I.ideal U) ∩ U ⊆ I.support := by
+lemma zeroLocus_inter_subset_supportSet (I : IdealSheafData X) (U : X.affineOpens) :
+    X.zeroLocus (U := U.1) (I.ideal U) ∩ U ⊆ I.supportSet := by
+  rw [I.supportSet_eq_iInter_zeroLocus]
   refine Set.subset_iInter fun V ↦ ?_
   apply (X.codisjoint_zeroLocus (U := V) (I.ideal V)).symm.left_le_of_le_inf_right
   rintro x ⟨⟨hx, hxU⟩, hxV⟩
@@ -252,76 +268,166 @@ lemma zeroLocus_inter_subset_support (I : IdealSheafData X) (U : X.affineOpens) 
   cases n <;>
     simpa [RingHom.algebraMap_toAlgebra, ← hfg, hxf, hxs, Scheme.basicOpen_pow] using hs'
 
-lemma mem_support_iff_of_mem {I : IdealSheafData X} {x} {U : X.affineOpens} (hxU : x ∈ U.1) :
-    x ∈ I.support ↔ x ∈ X.zeroLocus (U := U.1) (I.ideal U) :=
-  ⟨fun h ↦ Set.iInter_subset _ U h, fun h ↦ I.zeroLocus_inter_subset_support U ⟨h, hxU⟩⟩
+lemma mem_supportSet_iff_of_mem {I : IdealSheafData X} {x} {U : X.affineOpens} (hxU : x ∈ U.1) :
+    x ∈ I.supportSet ↔ x ∈ X.zeroLocus (U := U.1) (I.ideal U) :=
+  ⟨I.supportSet_eq_iInter_zeroLocus ▸ fun h ↦ Set.iInter_subset _ U h,
+    fun h ↦ I.zeroLocus_inter_subset_supportSet U ⟨h, hxU⟩⟩
 
-lemma support_inter (I : IdealSheafData X) (U : X.affineOpens) :
-    I.support ∩ U = X.zeroLocus (U := U.1) (I.ideal U) ∩ U := by
+lemma supportSet_inter (I : IdealSheafData X) (U : X.affineOpens) :
+    I.supportSet ∩ U = X.zeroLocus (U := U.1) (I.ideal U) ∩ U := by
   ext x
   by_cases hxU : x ∈ U.1
-  · simp [hxU, mem_support_iff_of_mem hxU]
+  · simp [hxU, mem_supportSet_iff_of_mem hxU]
   · simp [hxU]
 
-lemma isClosed_support (I : IdealSheafData X) : IsClosed I.support := by
+lemma isClosed_supportSet (I : IdealSheafData X) : IsClosed I.supportSet := by
   rw [TopologicalSpace.IsOpenCover.isClosed_iff_coe_preimage (iSup_affineOpens_eq_top X)]
   intro U
   refine ⟨(X.zeroLocus (U := U.1) (I.ideal U))ᶜ, (X.zeroLocus_isClosed _).isOpen_compl, ?_⟩
   simp only [Set.preimage_compl, compl_inj_iff]
   apply Subtype.val_injective.image_injective
-  simp [Set.image_preimage_eq_inter_range, I.support_inter]
+  simp [Set.image_preimage_eq_inter_range, I.supportSet_inter]
 
-@[simp]
-lemma support_top : support (X := X) ⊤ = ∅ := by
-  ext x
-  obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ :=
-    (isBasis_affine_open X).exists_subset_of_mem_open (Set.mem_univ x) isOpen_univ
-  simpa [support] using ⟨U, hU, hxU⟩
+/-- The support of an ideal sheaf. Also see `IdealSheafData.mem_support_iff_of_mem`. -/
+def support : Closeds X := ⟨I.supportSet, I.isClosed_supportSet⟩
 
-@[simp]
-lemma support_bot : support (X := X) ⊥ = Set.univ := by ext; simp [support]
+lemma coe_support_eq_eq_iInter_zeroLocus :
+    (I.support : Set X) = ⋂ U, X.zeroLocus (U := U.1) (I.ideal U) :=
+  I.supportSet_eq_iInter_zeroLocus
 
-lemma support_antitone : Antitone (support (X := X)) :=
-  fun _ _ h ↦ Set.iInter_mono fun U ↦ X.zeroLocus_mono (h U)
+lemma mem_support_iff {I : IdealSheafData X} {x} :
+    x ∈ I.support ↔ ∀ U, x ∈ X.zeroLocus (U := U.1) (I.ideal U) :=
+  (Set.ext_iff.mp I.supportSet_eq_iInter_zeroLocus _).trans Set.mem_iInter
 
-lemma support_ofIdealTop (I : Ideal Γ(X, ⊤)) : (ofIdealTop I).support = X.zeroLocus (U := ⊤) I := by
-  suffices ∀ U : X.affineOpens, (ofIdealTop I).support ∩ U = X.zeroLocus (U := ⊤) I ∩ U by
+lemma mem_support_iff_of_mem {I : IdealSheafData X} {x : X} {U : X.affineOpens} (h : x ∈ U.1) :
+    x ∈ I.support ↔ x ∈ X.zeroLocus (U := U.1) (I.ideal U) := by
+  simpa [-mem_zeroLocus_iff, h] using congr(x ∈ $(I.supportSet_inter U))
+
+lemma coe_support_inter (I : IdealSheafData X) (U : X.affineOpens) :
+    (I.support : Set X) ∩ U = X.zeroLocus (U := U.1) (I.ideal U) ∩ U :=
+  I.supportSet_inter U
+
+def Simps.coe_support : Set X := I.support
+
+initialize_simps_projections IdealSheafData (supportSet → coe_support, as_prefix coe_support)
+
+@[simps ideal coe_support]
+def mkOfMemSupportIff
+    (ideal : ∀ U : X.affineOpens, Ideal Γ(X, U))
+    (map_ideal_basicOpen : ∀ (U : X.affineOpens) (f : Γ(X, U)),
+      (ideal U).map (X.presheaf.map (homOfLE <| X.basicOpen_le f).op).hom =
+        ideal (X.affineBasicOpen f))
+    (supportSet : Set X)
+    (supportSet_inter :
+      ∀ U : X.affineOpens, ∀ x ∈ U.1, x ∈ supportSet ↔ x ∈ X.zeroLocus (U := U.1) (ideal U)) :
+    X.IdealSheafData where
+  ideal := ideal
+  map_ideal_basicOpen := map_ideal_basicOpen
+  supportSet := supportSet
+  supportSet_eq_iInter_zeroLocus := by
+    let I' : X.IdealSheafData := { ideal := ideal, map_ideal_basicOpen := map_ideal_basicOpen }
+    show supportSet = I'.supportSet
     ext x
     obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ :=
       (isBasis_affine_open X).exists_subset_of_mem_open (Set.mem_univ x) isOpen_univ
-    simpa [hxU] using congr(x ∈ $(this ⟨U, hU⟩))
-  intro U
-  rw [support_inter, ofIdealTop_ideal, Ideal.map, zeroLocus_span, zeroLocus_map,
-    Set.union_inter_distrib_right, Set.compl_inter_self, Set.union_empty]
+    exact (supportSet_inter ⟨U, hU⟩ x hxU).trans
+      (I'.mem_support_iff_of_mem (U := ⟨U, hU⟩) hxU).symm
 
 @[simp]
-lemma support_eq_empty_iff : support I = ∅ ↔ I = ⊤ := by
+lemma support_top : support (X := X) ⊤ = ⊥ := rfl
+
+@[simp]
+lemma support_bot : support (X := X) ⊥ = ⊤ := rfl
+
+lemma support_antitone : Antitone (support (X := X)) := by
+  intro I J h
+  rw [← SetLike.coe_subset_coe, I.coe_support_eq_eq_iInter_zeroLocus,
+    J.coe_support_eq_eq_iInter_zeroLocus]
+  exact Set.iInter_mono fun U ↦ X.zeroLocus_mono (h U)
+
+@[simp]
+lemma support_eq_bot_iff : support I = ⊥ ↔ I = ⊤ := by
   refine ⟨fun H ↦ top_le_iff.mp fun U ↦ ?_, by simp +contextual⟩
   have := (U.2.fromSpec_image_zeroLocus _).trans_subset
-    ((zeroLocus_inter_subset_support I U).trans_eq H)
-  simp only [Set.subset_empty_iff, Set.image_eq_empty] at this
+    ((zeroLocus_inter_subset_supportSet I U).trans H.le)
+  simp only [Set.subset_empty_iff, Set.image_eq_empty, Closeds.coe_bot] at this
   simp [PrimeSpectrum.zeroLocus_empty_iff_eq_top.mp this]
 
 end support
+
+section IsAffine
+
+/-- The ideal sheaf induced by an ideal of the global sections. -/
+@[simps! ideal coe_support]
+def ofIdealTop (I : Ideal Γ(X, ⊤)) : IdealSheafData X :=
+  mkOfMemSupportIff
+    (fun U ↦ I.map (X.presheaf.map (homOfLE le_top).op).hom)
+    (fun U f ↦ by rw [Ideal.map_map, ← CommRingCat.hom_comp, ← Functor.map_comp]; rfl)
+    (X.zeroLocus (U := ⊤) I)
+    (fun U x hxU ↦ by
+      simp only [Ideal.map, zeroLocus_span, zeroLocus_map, Set.mem_union, Set.mem_compl_iff,
+        SetLike.mem_coe, hxU, not_true_eq_false, iff_self_or, IsEmpty.forall_iff])
+
+lemma le_of_isAffine [IsAffine X] {I J : IdealSheafData X}
+    (H : I.ideal ⟨⊤, isAffineOpen_top X⟩ ≤ J.ideal ⟨⊤, isAffineOpen_top X⟩) : I ≤ J := by
+  intro U
+  rw [← map_ideal (U := U) (V := ⟨⊤, isAffineOpen_top X⟩) I (le_top (a := U.1)),
+    ← map_ideal (U := U) (V := ⟨⊤, isAffineOpen_top X⟩) J (le_top (a := U.1))]
+  exact Ideal.map_mono H
+
+lemma ext_of_isAffine [IsAffine X] {I J : IdealSheafData X}
+    (H : I.ideal ⟨⊤, isAffineOpen_top X⟩ = J.ideal ⟨⊤, isAffineOpen_top X⟩) : I = J :=
+  (le_of_isAffine H.le).antisymm (le_of_isAffine H.ge)
+
+/-- Over affine schemes, ideal sheaves are in bijection with ideals of the global sections. -/
+@[simps]
+def equivOfIsAffine [IsAffine X] : IdealSheafData X ≃o Ideal Γ(X, ⊤) where
+  toFun := (ideal · ⟨⊤, isAffineOpen_top X⟩)
+  invFun := ofIdealTop
+  left_inv I := ext_of_isAffine (by simp)
+  right_inv I := by simp
+  map_rel_iff' {I J} := ⟨le_of_isAffine, (· _)⟩
+
+end IsAffine
 
 section ofIsClosed
 
 open _root_.PrimeSpectrum TopologicalSpace
 
+lemma Scheme.zeroLocus_radical {U : X.Opens} (I : Ideal Γ(X, U)) :
+    X.zeroLocus (U := U) I.radical = X.zeroLocus (U := U) I := by
+  refine (X.zeroLocus_mono I.le_radical).antisymm ?_
+  simp only [Set.subset_def, mem_zeroLocus_iff, SetLike.mem_coe]
+  rintro x H f ⟨n, hn⟩ hx
+  rcases n.eq_zero_or_pos with rfl | hn'
+  · exact H f (by simpa using I.mul_mem_left f hn) hx
+  · exact H _ hn (X.basicOpen_pow f hn' ▸ hx)
+
 /-- The radical of a ideal sheaf. -/
-@[simps]
-def radical (I : IdealSheafData X) : IdealSheafData X where
-  ideal U := (I.ideal U).radical
-  map_ideal_basicOpen U f :=
+@[simps! ideal]
+def radical (I : IdealSheafData X) : IdealSheafData X :=
+  mkOfMemSupportIff
+  (fun U ↦ (I.ideal U).radical)
+  (fun U f ↦
     letI : Algebra Γ(X, U) Γ(X, X.affineBasicOpen f) :=
       (X.presheaf.map (homOfLE (X.basicOpen_le f)).op).hom.toAlgebra
     have : IsLocalization.Away f Γ(X, X.basicOpen f) := U.2.isLocalization_of_eq_basicOpen _ _ rfl
     (IsLocalization.map_radical (.powers f) Γ(X, X.basicOpen f) (I.ideal U)).trans
-      congr($(I.map_ideal_basicOpen U f).radical)
+      congr($(I.map_ideal_basicOpen U f).radical))
+  I.supportSet
+  (fun U x hx ↦ by
+    simp only [mem_supportSet_iff_of_mem hx, SetLike.mem_coe, Scheme.zeroLocus_radical])
+
+@[simp]
+lemma support_radical (I : IdealSheafData X) : I.radical.support = I.support := rfl
 
 /-- The nilradical of a scheme. -/
 def _root_.AlgebraicGeometry.Scheme.nilradical (X : Scheme.{u}) : IdealSheafData X :=
   .radical ⊥
+
+@[simp]
+lemma _root_.AlgebraicGeometry.Scheme.support_nilradical (X : Scheme.{u}) :
+    X.nilradical.support = ⊤ := rfl
 
 lemma le_radical : I ≤ I.radical := fun _ ↦ Ideal.le_radical
 
@@ -344,75 +450,72 @@ lemma radical_inf {I J : IdealSheafData X} :
 /-- The vanishing ideal sheaf of a set,
 which is the largest ideal sheaf whose support contains a subset.
 When the set `Z` is closed, the reduced induced scheme structure is the quotient of this ideal. -/
-@[simps]
-nonrec def vanishingIdeal (Z : Set X) : IdealSheafData X where
-  ideal U := vanishingIdeal (U.2.fromSpec.base ⁻¹' Z)
-  map_ideal_basicOpen U f := by
-    let F := X.presheaf.map (homOfLE (X.basicOpen_le f)).op
-    apply le_antisymm
-    · rw [Ideal.map_le_iff_le_comap]
-      intro x hx
-      suffices ∀ p, (X.affineBasicOpen f).2.fromSpec.base p ∈ Z → F.hom x ∈ p.asIdeal by
-        simpa [PrimeSpectrum.mem_vanishingIdeal] using this
-      intro x hxZ
-      refine (PrimeSpectrum.mem_vanishingIdeal _ _).mp hx
-        ((Spec.map (X.presheaf.map (homOfLE _).op)).base x) ?_
-      rwa [Set.mem_preimage, ← Scheme.comp_base_apply,
-        IsAffineOpen.map_fromSpec _ (X.affineBasicOpen f).2]
-    · letI : Algebra Γ(X, U) Γ(X, X.affineBasicOpen f) := F.hom.toAlgebra
-      have : IsLocalization.Away f Γ(X, X.basicOpen f) :=
-        U.2.isLocalization_of_eq_basicOpen _ _ rfl
-      intro x hx
-      dsimp only at hx ⊢
-      have : Topology.IsOpenEmbedding (Spec.map F).base :=
-        localization_away_isOpenEmbedding Γ(X, X.basicOpen f) f
-      rw [← U.2.map_fromSpec (X.affineBasicOpen f).2 (homOfLE (X.basicOpen_le f)).op,
-        Scheme.comp_base, TopCat.coe_comp, Set.preimage_comp] at hx
-      generalize U.2.fromSpec.base ⁻¹' Z = Z' at hx ⊢
-      replace hx : x ∈ vanishingIdeal ((Spec.map F).base ⁻¹' Z') := hx
-      obtain ⟨I, hI, e⟩ := (isClosed_iff_zeroLocus_radical_ideal _).mp (isClosed_closure (s := Z'))
-      rw [← vanishingIdeal_closure,
-        ← this.isOpenMap.preimage_closure_eq_closure_preimage this.continuous, e] at hx
-      rw [← vanishingIdeal_closure, e]
-      erw [preimage_comap_zeroLocus] at hx
-      rwa [← PrimeSpectrum.zeroLocus_span, ← Ideal.map, vanishingIdeal_zeroLocus_eq_radical,
-        ← RingHom.algebraMap_toAlgebra (X.presheaf.map _).hom,
-        ← IsLocalization.map_radical (.powers f), ← vanishingIdeal_zeroLocus_eq_radical] at hx
+@[simps! ideal coe_support]
+nonrec def vanishingIdeal (Z : Closeds X) : IdealSheafData X :=
+  mkOfMemSupportIff
+    (fun U ↦ vanishingIdeal (U.2.fromSpec.base ⁻¹' Z))
+    (fun U f ↦ by
+      let F := X.presheaf.map (homOfLE (X.basicOpen_le f)).op
+      apply le_antisymm
+      · rw [Ideal.map_le_iff_le_comap]
+        intro x hx
+        suffices ∀ p, (X.affineBasicOpen f).2.fromSpec.base p ∈ Z → F.hom x ∈ p.asIdeal by
+          simpa [PrimeSpectrum.mem_vanishingIdeal] using this
+        intro x hxZ
+        refine (PrimeSpectrum.mem_vanishingIdeal _ _).mp hx
+          ((Spec.map (X.presheaf.map (homOfLE _).op)).base x) ?_
+        rwa [Set.mem_preimage, ← Scheme.comp_base_apply,
+          IsAffineOpen.map_fromSpec _ (X.affineBasicOpen f).2]
+      · letI : Algebra Γ(X, U) Γ(X, X.affineBasicOpen f) := F.hom.toAlgebra
+        have : IsLocalization.Away f Γ(X, X.basicOpen f) :=
+          U.2.isLocalization_of_eq_basicOpen _ _ rfl
+        intro x hx
+        dsimp only at hx ⊢
+        have : Topology.IsOpenEmbedding (Spec.map F).base :=
+          localization_away_isOpenEmbedding Γ(X, X.basicOpen f) f
+        rw [← U.2.map_fromSpec (X.affineBasicOpen f).2 (homOfLE (X.basicOpen_le f)).op,
+          Scheme.comp_base, TopCat.coe_comp, Set.preimage_comp] at hx
+        generalize U.2.fromSpec.base ⁻¹' Z = Z' at hx ⊢
+        replace hx : x ∈ vanishingIdeal ((Spec.map F).base ⁻¹' Z') := hx
+        obtain ⟨I, hI, e⟩ :=
+          (isClosed_iff_zeroLocus_radical_ideal _).mp (isClosed_closure (s := Z'))
+        rw [← vanishingIdeal_closure,
+          ← this.isOpenMap.preimage_closure_eq_closure_preimage this.continuous, e] at hx
+        rw [← vanishingIdeal_closure, e]
+        erw [preimage_comap_zeroLocus] at hx
+        rwa [← PrimeSpectrum.zeroLocus_span, ← Ideal.map, vanishingIdeal_zeroLocus_eq_radical,
+          ← RingHom.algebraMap_toAlgebra (X.presheaf.map _).hom,
+          ← IsLocalization.map_radical (.powers f), ← vanishingIdeal_zeroLocus_eq_radical] at hx)
+    Z
+    (fun U x hxU ↦ by
+      trans x ∈ X.zeroLocus (U := U.1) (vanishingIdeal (U.2.fromSpec.base.hom ⁻¹' Z)) ∩ U.1
+      · rw [← U.2.fromSpec_image_zeroLocus, zeroLocus_vanishingIdeal_eq_closure,
+          ← U.2.fromSpec.isOpenEmbedding.isOpenMap.preimage_closure_eq_closure_preimage
+            U.2.fromSpec.base.1.2,
+          Set.image_preimage_eq_inter_range, Z.closed.closure_eq, IsAffineOpen.range_fromSpec]
+        simp [hxU]
+      · simp [hxU])
 
-lemma subset_support_iff_le_vanishingIdeal {I : X.IdealSheafData} {Z : Set X} :
-    Z ⊆ I.support ↔ I ≤ vanishingIdeal Z := by
+lemma subset_support_iff_le_vanishingIdeal {I : X.IdealSheafData} {Z : Closeds X} :
+    (Z : Set X) ⊆ I.support ↔ I ≤ vanishingIdeal Z := by
   simp only [le_def, vanishingIdeal_ideal, ← PrimeSpectrum.subset_zeroLocus_iff_le_vanishingIdeal]
-  trans ∀ U : X.affineOpens, Z ∩ U ⊆ I.support ∩ U
+  trans ∀ U : X.affineOpens, (Z : Set X) ∩ U ⊆ I.support ∩ U
   · refine ⟨fun H U x hx ↦ ⟨H hx.1, hx.2⟩, fun H x hx ↦ ?_⟩
     obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ :=
       (isBasis_affine_open X).exists_subset_of_mem_open (Set.mem_univ x) isOpen_univ
     exact (H ⟨U, hU⟩ ⟨hx, hxU⟩).1
   refine forall_congr' fun U ↦ ?_
-  rw [support_inter, ← Set.image_subset_image_iff U.2.fromSpec.isOpenEmbedding.injective,
+  rw [coe_support_inter, ← Set.image_subset_image_iff U.2.fromSpec.isOpenEmbedding.injective,
     Set.image_preimage_eq_inter_range, IsAffineOpen.fromSpec_image_zeroLocus,
     IsAffineOpen.range_fromSpec]
 
 /-- `support` and `vanishingIdeal` forms a galois connection.
 This is the global version of `PrimeSpectrum.gc`. -/
-lemma gc : @GaloisConnection X.IdealSheafData (Set X)ᵒᵈ _ _ (support ·) (vanishingIdeal ·) :=
+lemma gc : @GaloisConnection X.IdealSheafData (Closeds X)ᵒᵈ _ _ (support ·) (vanishingIdeal ·) :=
   fun _ _ ↦ subset_support_iff_le_vanishingIdeal
 
-lemma vanishingIdeal_antimono {S T : Set X} (h : S ⊆ T) : vanishingIdeal T ≤ vanishingIdeal S :=
+lemma vanishingIdeal_antimono {S T : Closeds X} (h : S ≤ T) : vanishingIdeal T ≤ vanishingIdeal S :=
   gc.monotone_u h
-
-lemma support_vanishingIdeal {Z : Set X} :
-    (vanishingIdeal Z).support = closure Z := by
-  ext x
-  obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ :=
-    (isBasis_affine_open X).exists_subset_of_mem_open (Set.mem_univ x) isOpen_univ
-  trans x ∈ (vanishingIdeal Z).support ∩ U
-  · simp [hxU]
-  rw [(vanishingIdeal Z).support_inter ⟨U, hU⟩, ← hU.fromSpec_image_zeroLocus,
-    vanishingIdeal, zeroLocus_vanishingIdeal_eq_closure,
-      ← hU.fromSpec.isOpenEmbedding.isOpenMap.preimage_closure_eq_closure_preimage
-        hU.fromSpec.base.1.2,
-      Set.image_preimage_eq_inter_range]
-  simp [hxU]
 
 lemma vanishingIdeal_support {I : IdealSheafData X} :
     vanishingIdeal I.support = I.radical := by
@@ -422,7 +525,7 @@ lemma vanishingIdeal_support {I : IdealSheafData X} :
   congr 1
   apply U.2.fromSpec.isOpenEmbedding.injective.image_injective
   rw [Set.image_preimage_eq_inter_range, IsAffineOpen.range_fromSpec,
-    IsAffineOpen.fromSpec_image_zeroLocus, support_inter]
+    IsAffineOpen.fromSpec_image_zeroLocus, coe_support_inter]
 
 end ofIsClosed
 
@@ -443,7 +546,7 @@ def Hom.ker (f : X.Hom Y) : IdealSheafData Y :=
 @[simp]
 lemma Hom.ker_apply (f : X.Hom Y) [QuasiCompact f] (U : Y.affineOpens) :
     f.ker.ideal U = RingHom.ker (f.app U).hom := by
-  let I : IdealSheafData Y := ⟨fun U ↦ RingHom.ker (f.app U).hom, ?_⟩
+  let I : IdealSheafData Y := ⟨fun U ↦ RingHom.ker (f.app U).hom, ?_, _, rfl⟩
   · exact congr($(ofIdeals_ideal I).ideal U)
   intro U s
   apply le_antisymm
@@ -492,7 +595,7 @@ lemma Hom.range_subset_ker_support (f : X.Hom Y) :
   rintro _ ⟨x, rfl⟩
   obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ :=
     (isBasis_affine_open Y).exists_subset_of_mem_open (Set.mem_univ (f.base x)) isOpen_univ
-  refine ((support_inter f.ker ⟨U, hU⟩).ge ⟨?_, hxU⟩).1
+  refine ((coe_support_inter f.ker ⟨U, hU⟩).ge ⟨?_, hxU⟩).1
   simp only [Scheme.mem_zeroLocus_iff, SetLike.mem_coe]
   intro s hs hxs
   have : x ∈ f ⁻¹ᵁ Y.basicOpen s := hxs
@@ -527,17 +630,18 @@ lemma Hom.iInf_ker_openCover_map_comp (f : X ⟶ Y) [QuasiCompact f] (𝒰 : X.O
 
 lemma Hom.iUnion_support_ker_openCover_map_comp
     (f : X.Hom Y) [QuasiCompact f] (𝒰 : X.OpenCover) [Finite 𝒰.J] :
-    ⋃ i, (𝒰.map i ≫ f).ker.support = f.ker.support := by
+    ⋃ i, ((𝒰.map i ≫ f).ker.support : Set Y) = f.ker.support := by
   cases isEmpty_or_nonempty 𝒰.J
   · have : IsEmpty X := Function.isEmpty 𝒰.f
     simp [ker_eq_top_of_isEmpty]
-  suffices ∀ U : Y.affineOpens, (⋃ i, (𝒰.map i ≫ f).ker.support) ∩ U = f.ker.support ∩ U by
+  suffices ∀ U : Y.affineOpens,
+      (⋃ i, (𝒰.map i ≫ f).ker.support) ∩ U = (f.ker.support ∩ U : Set Y) by
     ext x
     obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ :=
       (isBasis_affine_open Y).exists_subset_of_mem_open (Set.mem_univ x) isOpen_univ
     simpa [hxU] using congr(x ∈ $(this ⟨U, hU⟩))
   intro U
-  simp only [Set.iUnion_inter, support_inter, ← f.iInf_ker_openCover_map_comp_apply 𝒰,
+  simp only [Set.iUnion_inter, coe_support_inter, ← f.iInf_ker_openCover_map_comp_apply 𝒰,
     Scheme.zeroLocus_iInf_of_nonempty]
 
 lemma ker_morphismRestrict_ideal (f : X.Hom Y) [QuasiCompact f]
@@ -580,7 +684,7 @@ lemma Hom.support_ker (f : X.Hom Y) [QuasiCompact f] :
       have inst : QuasiCompact (𝒰.pullbackHom f i) :=
         MorphismProperty.pullback_snd _ _ inferInstance
       have := this (𝒰.pullbackHom f i) ⟨_, rfl⟩
-        ((support_inter _ ⟨⊤, isAffineOpen_top _⟩).ge ⟨?_, Set.mem_univ x⟩).1
+        ((coe_support_inter _ ⟨⊤, isAffineOpen_top _⟩).ge ⟨?_, Set.mem_univ x⟩).1
       · have := image_closure_subset_closure_image (f := (𝒰.map i).base)
           (𝒰.map i).base.1.2 (Set.mem_image_of_mem _ this)
         rw [← Set.range_comp, ← TopCat.coe_comp, ← Scheme.comp_base, 𝒰.pullbackHom_map] at this
@@ -589,7 +693,7 @@ lemma Hom.support_ker (f : X.Hom Y) [QuasiCompact f] :
           ker_ideal_of_isPullback_of_isOpenImmersion f (𝒰.pullbackHom f i)
             ((𝒰.pullbackCover f).map i) (𝒰.map i) (IsPullback.of_hasPullback _ _).flip,
           Ideal.coe_comap, Set.image_preimage_eq]
-        · exact ⟨((support_inter _ _).le ⟨hx, by simp⟩).1, ⟨_, rfl⟩⟩
+        · exact ⟨((coe_support_inter _ _).le ⟨hx, by simp⟩).1, ⟨_, rfl⟩⟩
         · exact (ConcreteCategory.bijective_of_isIso ((𝒰.map i).appIso ⊤).inv).2
     obtain ⟨S, rfl⟩ := hY
     wlog hX : ∃ R, X = Spec R generalizing X S
@@ -602,18 +706,26 @@ lemma Hom.support_ker (f : X.Hom Y) [QuasiCompact f] :
       exact closure_mono (Set.range_comp_subset_range _ _) (this S (𝒰.map i ≫ f) ⟨_, rfl⟩ hx)
     obtain ⟨R, rfl⟩ := hX
     obtain ⟨φ, rfl⟩ := Spec.map_surjective f
-    rw [ker_of_isAffine, support_ofIdealTop, Spec_zeroLocus, ← Ideal.coe_comap,
+    rw [ker_of_isAffine, coe_support_ofIdealTop, Spec_zeroLocus, ← Ideal.coe_comap,
       RingHom.comap_ker, ← PrimeSpectrum.closure_range_comap, ← CommRingCat.hom_comp,
       ← Scheme.ΓSpecIso_inv_naturality]
     simp only [CommRingCat.hom_comp, PrimeSpectrum.comap_comp, ContinuousMap.coe_comp]
     exact closure_mono (Set.range_comp_subset_range _ (Spec.map φ).base)
-  · rw [(isClosed_support _).closure_subset_iff]
+  · rw [(support _).closed.closure_subset_iff]
     exact f.range_subset_ker_support
+
+/-- The functor taking a morphism into `Y` to its kernel as an ideal sheaf on `Y`. -/
+@[simps]
+def kerFunctor (Y : Scheme.{u}) : (Over Y)ᵒᵖ ⥤ IdealSheafData Y where
+  obj f := f.unop.hom.ker
+  map {f g} hfg := homOfLE <| by simpa only [Functor.id_obj, Functor.const_obj_obj,
+    OrderDual.toDual_le_toDual, ← Over.w hfg.unop] using f.unop.hom.le_ker_comp _
+  map_id _ := Subsingleton.elim _ _
+  map_comp _ _ := Subsingleton.elim _ _
 
 end ker
 
 section subscheme
-
 namespace IdealSheafData
 
 open _root_.PrimeSpectrum Limits
@@ -669,6 +781,13 @@ lemma range_glueDataObjι_ι (U : X.affineOpens) :
   simp only [Scheme.comp_coeBase, TopCat.coe_comp, Set.range_comp, range_glueDataObjι]
   rw [← Set.image_comp, ← TopCat.coe_comp, ← Scheme.comp_base, IsAffineOpen.isoSpec_inv_ι,
     IsAffineOpen.fromSpec_image_zeroLocus]
+
+/-- The underlying space of `Spec (𝒪ₓ(U)/I(U))` is homeomorphic to its image in `X`. -/
+noncomputable
+def glueDataObjEquiv (U : X.affineOpens) :
+    (I.glueDataObj U).carrier ≅ TopCat.of ↑(X.zeroLocus (U := U) (I.ideal U) ∩ U) :=
+  TopCat.isoOfHomeo ((Homeomorph.ofIsEmbedding _ (I.glueDataObjι U ≫ U.1.ι).isEmbedding).trans
+    (Homeomorph.setCongr (I.range_glueDataObjι_ι U)))
 
 /-- The open immersion `Spec Γ(𝒪ₓ/I, U) ⟶ Spec Γ(𝒪ₓ/I, V)` if `U ≤ V`. -/
 noncomputable
@@ -751,13 +870,13 @@ lemma ideal_le_ker_glueDataObjι (U V : X.affineOpens) :
   exact I.ideal_le_comap_ideal (U := X.affineBasicOpen f) (V := V)
     (hfg.trans_le (X.basicOpen_le g)) hx
 
-/-- The intersections `Spec Γ(𝒪ₓ/I, U) ∩ V` useful for gluing. -/
-noncomputable
+/-- (Implementation) The intersections `Spec Γ(𝒪ₓ/I, U) ∩ V` useful for gluing. -/
+private noncomputable
 abbrev glueDataObjPullback (U V : X.affineOpens) : Scheme :=
   pullback (I.glueDataObjι U) (X.homOfLE (U := U.1 ⊓ V.1) inf_le_left)
 
 /-- (Implementation) Transition maps in the glue data for `𝒪ₓ/I`. -/
-noncomputable
+private noncomputable
 def glueDataT (U V : X.affineOpens) :
     I.glueDataObjPullback U V ⟶ I.glueDataObjPullback V U := by
   letI F := pullback.snd (I.glueDataObjι U) (X.homOfLE (inf_le_left (b := V.1)))
@@ -790,12 +909,12 @@ def glueDataT (U V : X.affineOpens) :
       Category.comp_id, Category.assoc, X.homOfLE_homOfLE]
 
 @[reassoc (attr := simp)]
-lemma glueDataT_snd (U V : X.affineOpens) :
+private lemma glueDataT_snd (U V : X.affineOpens) :
     I.glueDataT U V ≫ pullback.snd _ _ = pullback.snd _ _ ≫ X.homOfLE (by simp) :=
   pullback.lift_snd _ _ _
 
 @[reassoc (attr := simp)]
-lemma glueDataT_fst (U V : X.affineOpens) :
+private lemma glueDataT_fst (U V : X.affineOpens) :
     I.glueDataT U V ≫ pullback.fst _ _ ≫ glueDataObjι _ _ =
       pullback.snd _ _ ≫ X.homOfLE inf_le_right := by
   refine (pullback.lift_fst_assoc _ _ _ _).trans ?_
@@ -804,7 +923,7 @@ lemma glueDataT_fst (U V : X.affineOpens) :
     Category.comp_id]
 
 /-- (Implementation) `t'` in the glue data for `𝒪ₓ/I`. -/
-noncomputable
+private noncomputable
 def glueDataT'Aux (U V W U₀ : X.affineOpens) (hU₀ : U.1 ⊓ W ≤ U₀) :
     pullback
       (pullback.fst _ _ : I.glueDataObjPullback U V ⟶ _)
@@ -825,19 +944,19 @@ def glueDataT'Aux (U V W U₀ : X.affineOpens) (hU₀ : U.1 ⊓ W ≤ U₀) :
       simp [pullback.condition_assoc])
 
 @[reassoc (attr := simp)]
-lemma glueDataT'Aux_fst (U V W U₀ : X.affineOpens) (hU₀ : U.1 ⊓ W ≤ U₀) :
+private lemma glueDataT'Aux_fst (U V W U₀ : X.affineOpens) (hU₀ : U.1 ⊓ W ≤ U₀) :
     I.glueDataT'Aux U V W U₀ hU₀ ≫ pullback.fst _ _ =
       pullback.fst _ _ ≫ I.glueDataT U V ≫ pullback.fst _ _ := pullback.lift_fst _ _ _
 
 @[reassoc (attr := simp)]
-lemma glueDataT'Aux_snd_ι (U V W U₀ : X.affineOpens) (hU₀ : U.1 ⊓ W ≤ U₀) :
+private lemma glueDataT'Aux_snd_ι (U V W U₀ : X.affineOpens) (hU₀ : U.1 ⊓ W ≤ U₀) :
     I.glueDataT'Aux U V W U₀ hU₀ ≫ pullback.snd _ _ ≫ (V.1 ⊓ U₀.1).ι =
       pullback.fst _ _ ≫ pullback.fst _ _ ≫ I.glueDataObjι U ≫ U.1.ι :=
   (pullback.lift_snd_assoc _ _ _ _).trans (IsOpenImmersion.lift_fac _ _ _)
 
 /-- (Implementation) The glue data for `𝒪ₓ/I`. -/
 @[simps]
-noncomputable
+private noncomputable
 def glueData : Scheme.GlueData where
   J := X.affineOpens
   U := I.glueDataObj
@@ -887,8 +1006,303 @@ def glueData : Scheme.GlueData where
         rw [pullback.condition_assoc, pullback.condition_assoc, X.homOfLE_ι]
   f_open i j := inferInstance
 
+/-- (Implementation) The map from `Spec(𝒪ₓ/I)` to `X`. See `IdealSheafData.subschemeι` instead. -/
+private noncomputable
+def gluedTo : I.glueData.glued ⟶ X :=
+  Multicoequalizer.desc _ _ (fun i ↦ I.glueDataObjι i ≫ i.1.ι)
+    (by simp [GlueData.diagram, pullback.condition_assoc])
+
+@[reassoc (attr := simp)]
+private lemma ι_gluedTo (U : X.affineOpens) :
+    I.glueData.ι U ≫ I.gluedTo = I.glueDataObjι U ≫ U.1.ι :=
+  Multicoequalizer.π_desc _ _ _ _ _
+
+@[reassoc (attr := simp)]
+private lemma glueDataObjMap_ι (U V : X.affineOpens) (h : U ≤ V) :
+    I.glueDataObjMap h ≫ I.glueData.ι V = I.glueData.ι U := by
+  have : IsIso (X.homOfLE inf_le_left : (U.1 ⊓ V.1).toScheme ⟶ U) :=
+    ⟨X.homOfLE (by simpa), by simp, by simp⟩
+  have H : inv (X.homOfLE inf_le_left : (U.1 ⊓ V.1).toScheme ⟶ U) = X.homOfLE (by simpa) := by
+    rw [eq_comm, ← hom_comp_eq_id]; simp
+  have := I.glueData.glue_condition U V
+  simp only [glueData_J, glueData_V, glueData_t, glueData_U, glueData_f] at this
+  rw [← IsIso.inv_comp_eq] at this
+  rw [← Category.id_comp (I.glueData.ι U), ← this]
+  simp_rw [← Category.assoc]
+  congr 1
+  rw [← cancel_mono (glueDataObjι _ _)]
+  simp [pullback_inv_fst_snd_of_right_isIso_assoc, H]
+
+private lemma gluedTo_injective :
+    Function.Injective I.gluedTo.base := by
+  intro a b e
+  obtain ⟨ia, a : I.glueDataObj ia, rfl⟩ :=
+    I.glueData.toGlueData.ι_jointly_surjective (Scheme.forgetToTop ⋙ forget _) a
+  obtain ⟨ib, b : I.glueDataObj ib, rfl⟩ :=
+    I.glueData.toGlueData.ι_jointly_surjective (Scheme.forgetToTop ⋙ forget _) b
+  show (I.glueData.ι ia).base a = (I.glueData.ι ib).base b
+  have : ((I.glueDataObjι ia).base a).1 = ((I.glueDataObjι ib).base b).1 := by
+    have : (I.glueData.ι ia ≫ I.gluedTo).base a =
+      (I.glueData.ι ib ≫ I.gluedTo).base b := e
+    rwa [ι_gluedTo, ι_gluedTo] at this
+  obtain ⟨f, g, hfg, H⟩ := exists_basicOpen_le_affine_inter ia.2 ib.2
+    ((I.glueDataObjι ia).base a).1
+      ⟨((I.glueDataObjι ia).base a).2, this ▸ ((I.glueDataObjι ib).base b).2⟩
+  have hmem (W) (hW : W = X.affineBasicOpen g) :
+      b ∈ Set.range (I.glueDataObjMap (hW.trans_le (X.affineBasicOpen_le g))).base := by
+    subst hW
+    refine (I.opensRange_glueDataObjMap g).ge ?_
+    show ((I.glueDataObjι ib).base b).1 ∈ X.basicOpen g
+    rwa [← this, ← hfg]
+  obtain ⟨a, rfl⟩ := (I.opensRange_glueDataObjMap f).ge H
+  obtain ⟨b, rfl⟩ := hmem (X.affineBasicOpen f) (Subtype.ext hfg)
+  simp only [glueData_U, ← Scheme.comp_base_apply, glueDataObjMap_glueDataObjι] at this ⊢
+  simp only [Scheme.affineBasicOpen_coe, Scheme.comp_coeBase, TopCat.comp_app,
+    Scheme.homOfLE_apply, SetLike.coe_eq_coe] at this
+  obtain rfl := (I.glueDataObjι (X.affineBasicOpen f)).isEmbedding.injective this
+  simp only [glueDataObjMap_ι]
+
+lemma range_glueDataObjι_ι_eq_support_inter (U : X.affineOpens) :
+    Set.range (I.glueDataObjι U ≫ U.1.ι).base = (I.support : Set X) ∩ U :=
+  (I.range_glueDataObjι_ι U).trans (I.coe_support_inter U).symm
+
+private lemma range_gluedTo :
+    Set.range I.gluedTo.base = I.support := by
+  refine subset_antisymm (Set.range_subset_iff.mpr fun x ↦ ?_) ?_
+  · obtain ⟨ix, x : I.glueDataObj ix, rfl⟩ :=
+      I.glueData.toGlueData.ι_jointly_surjective (Scheme.forgetToTop ⋙ forget _) x
+    show (I.glueData.ι _ ≫ I.gluedTo).base x ∈ I.support
+    rw [ι_gluedTo]
+    exact ((I.range_glueDataObjι_ι_eq_support_inter ix).le ⟨_, rfl⟩).1
+  · intro x hx
+    obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ :=
+      (isBasis_affine_open X).exists_subset_of_mem_open (Set.mem_univ x) isOpen_univ
+    obtain ⟨y, rfl⟩ := (I.range_glueDataObjι_ι_eq_support_inter ⟨U, hU⟩).ge ⟨hx, hxU⟩
+    rw [← ι_gluedTo]
+    exact ⟨_, rfl⟩
+
+private lemma range_glueData_ι (U : X.affineOpens) :
+    Set.range (Scheme.Hom.toLRSHom' (X := I.glueDataObj U) <|
+      I.glueData.ι U).base = (I.gluedTo ⁻¹ᵁ U : Set I.glueData.glued) := by
+  simp only [Scheme.Opens.range_ι, TopologicalSpace.Opens.map_coe, glueData_U]
+  apply I.gluedTo_injective.image_injective
+  rw [← Set.range_comp, ← TopCat.coe_comp, ← Scheme.comp_base, ι_gluedTo,
+    range_glueDataObjι_ι, Set.image_preimage_eq_inter_range, range_gluedTo,
+    ← coe_support_inter, Set.inter_comm]
+
+/-- (Implementation) identifying `Spec(Γ(X, U)/U)` with its image in `Spec(𝒪ₓ/I)`. -/
+private noncomputable
+def glueDataObjIso (U : X.affineOpens) :
+    I.glueDataObj U ≅ I.gluedTo ⁻¹ᵁ U :=
+  IsOpenImmersion.isoOfRangeEq (I.glueData.ι U) (Scheme.Opens.ι _) (by
+    simp only [Scheme.Opens.range_ι, TopologicalSpace.Opens.map_coe, glueData_U, range_glueData_ι])
+
+@[reassoc (attr := simp)]
+private lemma glueDataObjIso_hom_ι (U : X.affineOpens) :
+    (I.glueDataObjIso U).hom ≫ (I.gluedTo ⁻¹ᵁ U).ι = I.glueData.ι U :=
+  IsOpenImmersion.isoOfRangeEq_hom_fac _ _ _
+
+private lemma glueDataObjIso_hom_restrict (U : X.affineOpens) :
+    (I.glueDataObjIso U).hom ≫ I.gluedTo ∣_ ↑U = I.glueDataObjι U := by
+  rw [← cancel_mono U.1.ι]; simp
+
+private instance : IsPreimmersion I.gluedTo := by
+  rw [IsLocalAtTarget.iff_of_iSup_eq_top (P := @IsPreimmersion) _ (iSup_affineOpens_eq_top X)]
+  intro U
+  rw [← MorphismProperty.cancel_left_of_respectsIso @IsPreimmersion (I.glueDataObjIso U).hom,
+    glueDataObjIso_hom_restrict]
+  infer_instance
+
+private instance : QuasiCompact I.gluedTo :=
+  ⟨fun _ _ ↦ (Topology.IsClosedEmbedding.isProperMap
+    ⟨I.gluedTo.isEmbedding, I.range_gluedTo ▸ I.support.closed⟩).isCompact_preimage⟩
+
+/-- (Implementation) The underlying space of `Spec(𝒪ₓ/I)` is homeomorphic to the support of `I`. -/
+private noncomputable
+def gluedHomeo : I.glueData.glued ≃ₜ I.support :=
+  .trans (.ofIsEmbedding _ I.gluedTo.isEmbedding) (.setCongr I.range_gluedTo)
+
+/-- The subscheme associated to an ideal sheaf. -/
+noncomputable
+def subscheme : Scheme :=
+  I.glueData.glued.restrict
+    (f := TopCat.ofHom (toContinuousMap I.gluedHomeo.symm))
+    I.gluedHomeo.symm.isOpenEmbedding
+
+/-- (Implementation) The isomorphism between the subscheme and the glued scheme. -/
+private noncomputable
+def subschemeIso : I.subscheme ≅ I.glueData.glued :=
+  letI F := I.glueData.glued.ofRestrict (f := TopCat.ofHom (toContinuousMap I.gluedHomeo.symm))
+    I.gluedHomeo.symm.isOpenEmbedding
+  have : Epi F.base := ConcreteCategory.epi_of_surjective _ I.gluedHomeo.symm.surjective
+  letI := IsOpenImmersion.to_iso F
+  asIso F
+
+/-- The inclusion from the subscheme associated to an ideal sheaf. -/
+noncomputable
+def subschemeι : I.subscheme ⟶ X :=
+    (I.subschemeIso.hom ≫ I.gluedTo).copyBase Subtype.val <| by
+  ext x
+  show (I.gluedHomeo (I.gluedHomeo.symm x)).1 = x.1
+  rw [I.gluedHomeo.apply_symm_apply]
+
+lemma subschemeι_apply (x : I.subscheme) : I.subschemeι.base x = x.1 := rfl
+
+private lemma subschemeι_def : I.subschemeι = I.subschemeIso.hom ≫ I.gluedTo :=
+  Scheme.Hom.copyBase_eq _ _ _
+
+/-- See `AlgebraicGeometry.Morphisms.ClosedImmersion` for the closed immersion version. -/
+instance : IsPreimmersion I.subschemeι := by
+  rw [subschemeι_def]
+  infer_instance
+
+instance : QuasiCompact I.subschemeι := by
+  rw [subschemeι_def]
+  infer_instance
+
+@[simp]
+lemma range_subschemeι : Set.range I.subschemeι.base = I.support := by
+  simp [← range_gluedTo, I.subschemeι_def, Set.range_comp,
+    Set.range_eq_univ.mpr I.subschemeIso.hom.homeomorph.surjective]
+
+@[simp]
+lemma _root_.AlgebraicGeometry.Scheme.coe_homeoOfIso {X Y : Scheme.{u}} (e : X ≅ Y) :
+    ⇑(homeoOfIso e) = e.hom.base := rfl
+
+@[simp]
+lemma _root_.AlgebraicGeometry.Scheme.coe_homeoOfIso_symm {X Y : Scheme.{u}} (e : X ≅ Y) :
+    ⇑(homeoOfIso e.symm) = e.inv.base := rfl
+
+private lemma opensRange_glueData_ι_subschemeIso_inv (U : X.affineOpens) :
+    (I.glueData.ι U ≫ I.subschemeIso.inv).opensRange = I.subschemeι ⁻¹ᵁ U := by
+  ext1
+  simp [Set.range_comp, I.range_glueData_ι, subschemeι_def, Set.preimage_comp, coe_homeoOfIso,
+    ← coe_homeoOfIso_symm, ← homeoOfIso_symm, ← Homeomorph.coe_symm_toEquiv,
+    ← Set.preimage_equiv_eq_image_symm]
+
+/-- The subscheme associated to an ideal sheaf `I` is covered by `Spec(Γ(X, U)/I)`. -/
+noncomputable
+def subschemeCover : I.subscheme.AffineOpenCover where
+  J := X.affineOpens
+  obj U := .of <| Γ(X, U) ⧸ I.ideal U
+  map U := I.glueData.ι U ≫ I.subschemeIso.inv
+  f x := (X.openCoverOfISupEqTop _ (iSup_affineOpens_eq_top X)).f x.1
+  covers x := by
+    let U := (X.openCoverOfISupEqTop _ (iSup_affineOpens_eq_top X)).f x.1
+    obtain ⟨⟨y, hy : y ∈ U.1⟩, rfl : y = x.1⟩ :=
+      (X.openCoverOfISupEqTop _ (iSup_affineOpens_eq_top X)).covers x.1
+    exact (I.opensRange_glueData_ι_subschemeIso_inv U).ge hy
+
+@[simp]
+lemma opensRange_subschemeCover_map (U : X.affineOpens) :
+    (I.subschemeCover.map U).opensRange = I.subschemeι ⁻¹ᵁ U :=
+  I.opensRange_glueData_ι_subschemeIso_inv U
+
+@[simp]
+lemma subschemeCover_map_subschemeι (U : X.affineOpens) :
+    I.subschemeCover.map U ≫ I.subschemeι = I.glueDataObjι U ≫ U.1.ι := by
+  simp [subschemeCover, subschemeι_def]
+
+/-- Γ() -/
+noncomputable
+def subschemeObjIso (U : X.affineOpens) :
+    Γ(I.subscheme, I.subschemeι ⁻¹ᵁ U) ≅ .of (Γ(X, U) ⧸ I.ideal U) :=
+  I.subscheme.presheaf.mapIso (eqToIso (by simp)).op ≪≫
+    (I.subschemeCover.map U).appIso _ ≪≫ Scheme.ΓSpecIso (.of (Γ(X, U) ⧸ I.ideal U))
+
+lemma subschemeι_app (U : X.affineOpens) : I.subschemeι.app U =
+    CommRingCat.ofHom (Ideal.Quotient.mk (I.ideal U)) ≫
+    (I.subschemeObjIso U).inv := by
+  have := I.subschemeCover_map_subschemeι U
+  simp only [glueDataObjι, Category.assoc, IsAffineOpen.isoSpec_inv_ι] at this
+  replace this := Scheme.congr_app this U
+  simp only [comp_coeBase, TopologicalSpace.Opens.map_comp_obj, comp_app,
+    IsAffineOpen.fromSpec_app_self, eqToHom_op, Category.assoc, Hom.naturality_assoc,
+    TopologicalSpace.Opens.map_top, ← ΓSpecIso_inv_naturality_assoc] at this
+  simp_rw [← Category.assoc, ← IsIso.comp_inv_eq] at this
+  simp only [← this, ← Functor.map_inv, inv_eqToHom, Category.assoc, eqToHom_unop,
+    ← Functor.map_comp, IsIso.Iso.inv_inv, subschemeObjIso, Iso.trans_inv, Functor.mapIso_inv,
+    Iso.op_inv, eqToIso.inv, eqToHom_op, Iso.hom_inv_id_assoc, Hom.appIso_inv_naturality_assoc,
+    Functor.op_obj, Functor.op_map, unop_comp, unop_inv, Quiver.Hom.unop_op,
+    Hom.app_appIso_inv_assoc, TopologicalSpace.Opens.carrier_eq_coe, TopologicalSpace.Opens.map_coe,
+    homOfLE_leOfHom]
+  convert (Category.comp_id _).symm
+  exact CategoryTheory.Functor.map_id _ _
+
+lemma ker_subschemeι_app (U : X.affineOpens) :
+    RingHom.ker (I.subschemeι.app U).hom = I.ideal U := by
+  rw [subschemeι_app]
+  let e : CommRingCat.of (Γ(X, U) ⧸ I.ideal U) ≅ Γ(I.subscheme, I.subschemeι ⁻¹ᵁ U) :=
+    (Scheme.ΓSpecIso _).symm ≪≫ ((I.subschemeCover.map U).appIso _).symm ≪≫
+      I.subscheme.presheaf.mapIso (eqToIso (by simp)).op
+  show RingHom.ker (e.commRingCatIsoToRingEquiv.toRingHom.comp
+    (Ideal.Quotient.mk (I.ideal U))) = _
+  rw [RingHom.ker_equiv_comp, Ideal.mk_ker]
+
+@[simp]
+lemma ker_subschemeι : I.subschemeι.ker = I := by
+  ext; simp [ker_subschemeι_app]
+
+/-- Given `I ≤ J`, this is the map `Spec(Γ(X, U)/J(U)) ⟶ Spec(Γ(X, U)/I(U))`. -/
+noncomputable
+def glueDataObjHom {I J : IdealSheafData X} (h : I ≤ J) (U) :
+    J.glueDataObj U ⟶ I.glueDataObj U :=
+  Spec.map (CommRingCat.ofHom (Ideal.Quotient.factor (h U)))
+
+@[reassoc (attr := simp)]
+lemma glueDataObjHom_ι {I J : IdealSheafData X} (h : I ≤ J) (U) :
+    glueDataObjHom h U ≫ I.glueDataObjι U = J.glueDataObjι U := by
+  rw [glueDataObjHom, glueDataObjι, glueDataObjι, ← Spec.map_comp_assoc, ← CommRingCat.ofHom_comp,
+    Ideal.Quotient.factor_comp_mk]
+
+@[simp]
+lemma glueDataObjHom_id {I : IdealSheafData X} (U) :
+    glueDataObjHom (le_refl I) U = 𝟙 _ := by
+  rw [← cancel_mono (I.glueDataObjι U)]
+  simp
+
+@[reassoc (attr := simp)]
+lemma glueDataObjHom_comp {I J K : IdealSheafData X} (hIJ : I ≤ J) (hJK : J ≤ K) (U) :
+    glueDataObjHom hJK U ≫ glueDataObjHom hIJ U = glueDataObjHom (hIJ.trans hJK) U := by
+  rw [← cancel_mono (I.glueDataObjι U)]
+  simp
+
+/-- The inclusion of ideal sheaf induces an inclusion of subschemes -/
+noncomputable
+def inclusion {I J : IdealSheafData X} (h : I ≤ J) :
+    J.subscheme ⟶ I.subscheme :=
+  J.subschemeCover.openCover.glueMorphisms (fun U ↦ glueDataObjHom h U ≫ I.subschemeCover.map U)
+  (by
+    intro U V
+    rw [← cancel_mono I.subschemeι]
+    simp only [← cancel_mono I.subschemeι, AffineOpenCover.openCover_obj, glueDataObjHom_ι_assoc,
+      AffineOpenCover.openCover_map, Category.assoc, subschemeCover_map_subschemeι]
+    rw [← subschemeCover_map_subschemeι, pullback.condition_assoc, subschemeCover_map_subschemeι])
+
+@[reassoc (attr := simp)]
+lemma subSchemeCover_map_inclusion {I J : IdealSheafData X} (h : I ≤ J) (U) :
+    J.subschemeCover.map U ≫ inclusion h = glueDataObjHom h U ≫ I.subschemeCover.map U :=
+  J.subschemeCover.openCover.ι_glueMorphisms _ _ _
+
+@[reassoc (attr := simp)]
+lemma inclusion_subschemeι {I J : IdealSheafData X} (h : I ≤ J) :
+    inclusion h ≫ I.subschemeι = J.subschemeι :=
+  J.subschemeCover.openCover.hom_ext _ _ fun _ ↦ by simp
+
+@[simp, reassoc]
+lemma inclusion_id (I : IdealSheafData X) :
+    inclusion le_rfl = 𝟙 I.subscheme :=
+  I.subschemeCover.openCover.hom_ext _ _ fun _ ↦ by simp
+
+@[reassoc (attr := simp)]
+lemma inclusion_comp {I J K : IdealSheafData X} (h₁ : I ≤ J) (h₂ : J ≤ K) :
+    inclusion h₂ ≫ inclusion h₁ = inclusion (h₁.trans h₂) :=
+  K.subschemeCover.openCover.hom_ext _ _ fun _ ↦ by simp
+
 end IdealSheafData
 
 end subscheme
 
-end AlgebraicGeometry.Scheme
+end Scheme
+
+end AlgebraicGeometry
