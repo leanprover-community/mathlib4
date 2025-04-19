@@ -835,6 +835,18 @@ theorem Icc_inter_Icc_eq_singleton (hab : a ≤ b) (hbc : b ≤ c) : Icc a b ∩
   rw [← Ici_inter_Iic, ← Iic_inter_Ici, inter_inter_inter_comm, Iic_inter_Ici]
   simp [hab, hbc]
 
+lemma Icc_eq_Icc_iff {d : α} (h : a ≤ b) :
+    Icc a b = Icc c d ↔ a = c ∧ b = d := by
+  refine ⟨fun heq ↦ ?_, by rintro ⟨rfl, rfl⟩; rfl⟩
+  have h' : c ≤ d := by
+    by_contra contra; rw [Icc_eq_empty_iff.mpr contra, Icc_eq_empty_iff] at heq; contradiction
+  simp only [Set.ext_iff, mem_Icc] at heq
+  obtain ⟨-, h₁⟩ := (heq b).mp ⟨h, le_refl _⟩
+  obtain ⟨h₂, -⟩ := (heq a).mp ⟨le_refl _, h⟩
+  obtain ⟨h₃, -⟩ := (heq c).mpr ⟨le_refl _, h'⟩
+  obtain ⟨-, h₄⟩ := (heq d).mpr ⟨h', le_refl _⟩
+  exact ⟨le_antisymm h₃ h₂, le_antisymm h₁ h₄⟩
+
 end PartialOrder
 
 section OrderTop

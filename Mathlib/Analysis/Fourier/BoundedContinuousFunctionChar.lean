@@ -83,7 +83,7 @@ theorem ext_of_char_eq (he : Continuous e) (he' : e ≠ 1)
   obtain ⟨a, ha⟩ := DFunLike.ne_iff.mp he'
   use (a / (L (v - v') w)) • w
   simp only [map_sub, LinearMap.sub_apply, char_apply, ne_eq]
-  rw [← div_eq_one_iff_eq (Circle.coe_ne_zero _), div_eq_inv_mul, ← coe_inv_unitSphere,
+  rw [← div_eq_one_iff_eq (Circle.coe_ne_zero _), div_eq_inv_mul, ← Metric.unitSphere.coe_inv,
     ← e.map_neg_eq_inv, ← Submonoid.coe_mul, ← e.map_add_eq_mul, OneMemClass.coe_eq_one]
   calc e (- L v' ((a / (L v w - L v' w)) • w) + L v ((a / (L v w - L v' w)) • w))
   _ = e (- (a / (L v w - L v' w)) • L v' w + (a / (L v w - L v' w)) • L v w) := by
