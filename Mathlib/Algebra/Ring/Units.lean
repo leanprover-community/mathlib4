@@ -47,14 +47,28 @@ theorem neg_divp (a : α) (u : αˣ) : -(a /ₚ u) = -a /ₚ u := by simp only [
 
 end HasDistribNeg
 
-section Ring
+section Semiring
 
-variable [Ring α]
+variable [Semiring α]
 
 -- Needs to have higher simp priority than divp_add_divp. 1000 is the default priority.
 @[field_simps 1010]
 theorem divp_add_divp_same (a b : α) (u : αˣ) : a /ₚ u + b /ₚ u = (a + b) /ₚ u := by
   simp only [divp, add_mul]
+
+@[field_simps]
+theorem add_divp (a b : α) (u : αˣ) : a + b /ₚ u = (a * u + b) /ₚ u := by
+  simp only [divp, add_mul, Units.mul_inv_cancel_right]
+
+@[field_simps]
+theorem divp_add (a b : α) (u : αˣ) : a /ₚ u + b = (a + b * u) /ₚ u := by
+  simp only [divp, add_mul, Units.mul_inv_cancel_right]
+
+end Semiring
+
+section Ring
+
+variable [Ring α]
 
 -- Needs to have higher simp priority than divp_sub_divp. 1000 is the default priority.
 @[field_simps 1010]
@@ -62,16 +76,8 @@ theorem divp_sub_divp_same (a b : α) (u : αˣ) : a /ₚ u - b /ₚ u = (a - b)
   rw [sub_eq_add_neg, sub_eq_add_neg, neg_divp, divp_add_divp_same]
 
 @[field_simps]
-theorem add_divp (a b : α) (u : αˣ) : a + b /ₚ u = (a * u + b) /ₚ u := by
-  simp only [divp, add_mul, Units.mul_inv_cancel_right]
-
-@[field_simps]
 theorem sub_divp (a b : α) (u : αˣ) : a - b /ₚ u = (a * u - b) /ₚ u := by
   simp only [divp, sub_mul, Units.mul_inv_cancel_right]
-
-@[field_simps]
-theorem divp_add (a b : α) (u : αˣ) : a /ₚ u + b = (a + b * u) /ₚ u := by
-  simp only [divp, add_mul, Units.mul_inv_cancel_right]
 
 @[field_simps]
 theorem divp_sub (a b : α) (u : αˣ) : a /ₚ u - b = (a - b * u) /ₚ u := by
