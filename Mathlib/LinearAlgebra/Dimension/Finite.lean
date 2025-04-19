@@ -546,3 +546,12 @@ theorem finrank_le_one (v : M) (h : ∀ w : M, ∃ c : R, c • v = w) : finrank
   · exact (finrank_eq_one v hn h).le
 
 end RankOne
+
+namespace Module
+variable {ι : Type*}
+
+@[simp] lemma finite_finsupp [StrongRankCondition R] : Module.Finite R (ι →₀ R) ↔ Finite ι where
+  mp _ := (Finsupp.linearIndependent_single_one R ι).finite
+  mpr _ := inferInstance
+
+end Module
