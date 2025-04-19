@@ -21,6 +21,8 @@ through some convergent sequence of points.
 * `Path.countableConcat_eq_trans`: the recurrence relation fulfilled by `Path.countableConcat`,
   showing that `Path.countableConcat γ x hb hγ` is the concatenation of `γ 0` with the countable
   concatenation with the remaining paths.
+* `Path.map_countableConcat`: countable concatenation commutes with `Path.map`, i.e. the image of a
+  countable concatenation of paths is the concatenation of the images.
 -/
 
 noncomputable section
@@ -29,7 +31,7 @@ open Topology unitInterval Set Filter
 
 namespace Path
 
-variable {X : Type*} [TopologicalSpace X] {s : ℕ → X}
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {s : ℕ → X}
 
 /-- The concatenation of countably many paths leading up to some point `x` as a function. The
 corresponding path is defined separately because continuity takes some effort to prove. -/
@@ -215,5 +217,13 @@ lemma countableConcat_eq_trans {γ : (n : ℕ) → Path (s n) (s (n + 1))} {x : 
           exact le_inv_of_le_inv₀ ht'' <| by linarith
     · rw [show t = 1 by simpa [unitInterval.lt_one_iff_ne_one] using ht']
       simp [show (2 - 1 : ℝ) = 1 by ring, countableConcatFun]
+
+/-- The image of a countable concatenation of paths is the concatenation of the images. -/
+lemma map_countableConcat {γ : (n : ℕ) → Path (s n) (s (n + 1))} {x : X}
+    {hγx : Tendsto (fun x : ℕ × I ↦ γ x.1 x.2) (atTop ×ˢ ⊤) (𝓝 x)} {f : X → Y} (hf : Continuous f) :
+    (countableConcat γ x hγx).map hf =
+      countableConcat (fun n ↦ (γ n).map hf) (f x) ((hf.tendsto x).comp hγx) := by
+  ext t
+  by_cases ht : t < 1 <;> simp [countableConcat, countableConcatFun, ht]
 
 end Path
