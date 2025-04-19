@@ -1,6 +1,9 @@
 import Mathlib.Tactic.Says
 import Aesop
 
+-- removing changes to the `simp` set after this test was created
+attribute [-simp] Nat.add_left_cancel_iff Nat.add_right_cancel_iff
+
 set_option autoImplicit true
 /--
 info: Try this: (show_term exact 37) says exact 37

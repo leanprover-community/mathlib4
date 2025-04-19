@@ -50,7 +50,8 @@ lemma valMinAbs_mul_two_eq_iff (a : ZMod n) : a.valMinAbs * 2 = n ↔ 2 * a.val 
   · simp
   by_cases h : a.val ≤ n.succ / 2
   · dsimp [valMinAbs]
-    rw [if_pos h, ← Int.natCast_inj, Nat.cast_mul, Nat.cast_two, mul_comm]
+    rw [if_pos h, ← Int.natCast_inj, Nat.cast_mul, Nat.cast_two, mul_comm, Int.natCast_add,
+      Nat.cast_one]
   apply iff_of_false _ (mt _ h)
   · intro he
     rw [← a.valMinAbs_nonneg_iff, ← mul_nonneg_iff_left_nonneg_of_pos, he] at h
@@ -106,7 +107,7 @@ lemma natCast_natAbs_valMinAbs [NeZero n] (a : ZMod n) :
     exact a.val_le
   rw [valMinAbs_def_pos]
   split_ifs
-  · rw [Int.natAbs_ofNat, natCast_zmod_val]
+  · rw [Int.natAbs_natCast, natCast_zmod_val]
   · rw [← Int.cast_natCast, Int.ofNat_natAbs_of_nonpos this, Int.cast_neg, Int.cast_sub,
       Int.cast_natCast, Int.cast_natCast, natCast_self, sub_zero, natCast_zmod_val]
 
@@ -159,7 +160,7 @@ lemma valMinAbs_natCast_of_half_lt (ha : n / 2 < a) (ha' : a < n) :
 @[simp]
 lemma valMinAbs_natCast_eq_self [NeZero n] : (a : ZMod n).valMinAbs = a ↔ a ≤ n / 2 := by
   refine ⟨fun ha => ?_, valMinAbs_natCast_of_le_half⟩
-  rw [← Int.natAbs_ofNat a, ← ha]
+  rw [← Int.natAbs_natCast a, ← ha]
   exact natAbs_valMinAbs_le (n := n) a
 
 lemma natAbs_valMinAbs_add_le (a b : ZMod n) :
