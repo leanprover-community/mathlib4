@@ -454,7 +454,8 @@ theorem Nat.geom_sum_Ico_le {b : ℕ} (hb : 2 ≤ b) (a n : ℕ) :
     (a + ∑ i ∈ Ico 1 n.succ, a / b ^ i) = a / b ^ 0 + ∑ i ∈ Ico 1 n.succ, a / b ^ i := by
       rw [pow_zero, Nat.div_one]
     _ = ∑ i ∈ range n.succ, a / b ^ i := by
-      rw [range_eq_Ico, ← Nat.Ico_insert_succ_left (Nat.succ_pos _), sum_insert]
+      rw [range_eq_Ico, ← Finset.insert_Ico_add_one_left_eq_Ico (Nat.succ_pos _), sum_insert]
+      · rfl
       exact fun h => zero_lt_one.not_le (mem_Ico.1 h).1
     _ ≤ a * b / (b - 1) := Nat.geom_sum_le hb a _
     _ = (a * 1 + a * (b - 1)) / (b - 1) := by
