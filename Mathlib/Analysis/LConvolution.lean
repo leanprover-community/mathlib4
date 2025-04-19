@@ -51,7 +51,7 @@ scoped[MeasureTheory] notation:67 f " ⋆ₗ " g:66 => MeasureTheory.mlconvoluti
 /-- Scoped notation for the additive convolution of functions with respect to a measure `μ`. -/
 scoped[MeasureTheory] notation:67 f " ⋆ₗ["μ:67"] " g:66 => MeasureTheory.lconvolution f g μ
 
-/-- Scoped notation for the additive convolution of functions with respect to volume. -/
+/-- Scoped notation for the additive convolution of functions with respect to `volume`. -/
 scoped[MeasureTheory] notation:67 f " ⋆ₗ " g:66 => MeasureTheory.lconvolution f g volume
 
 /- The definition of multiplicative convolution of functions. -/
