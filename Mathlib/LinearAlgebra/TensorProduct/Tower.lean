@@ -475,7 +475,7 @@ def rightComm : (M ⊗[A] P) ⊗[R] Q ≃ₗ[A] (M ⊗[R] Q) ⊗[A] P :=
     (lift <| TensorProduct.lift <| LinearMap.flip <|
       lcurry R A A M Q ((M ⊗[R] Q) ⊗[A] P) ∘ₗ (mk A A (M ⊗[R] Q) P).flip)
     (TensorProduct.lift <| lift <| LinearMap.flip <|
-      (TensorProduct.lcurry A M P ((M ⊗[A] P) ⊗[R] Q)).restrictScalars R
+      (TensorProduct.lcurry M P ((M ⊗[A] P) ⊗[R] Q) (.id A)).restrictScalars R
         ∘ₗ (mk R A (M ⊗[A] P) Q).flip)
     -- explicit `Eq.refl`s here help with performance, but also make it clear that the `ext` are
     -- letting us prove the result as an equality of pure tensors.
