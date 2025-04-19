@@ -757,6 +757,9 @@ This is not made an instance because it would create a diamond for the monoidal 
 the identity and composition of functors. -/
 noncomputable def ofChosenFiniteProducts : F.Monoidal := .ofOplaxMonoidal F
 
+omit [F.Monoidal] in
+instance : Subsingleton F.Monoidal := (toOplaxMonoidal_injective F).subsingleton
+
 end Monoidal
 
 namespace Braided
