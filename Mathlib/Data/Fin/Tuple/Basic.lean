@@ -748,6 +748,30 @@ def snocInduction {α : Sort*}
   | 0, x => by convert h0
   | _ + 1, x => snocCases (fun _ _ ↦ h _ _ <| snocInduction h0 h _) x
 
+theorem snoc_injective_of_injective {α} {x₀ : α} {x : Fin n → α}
+    (hx : Function.Injective x) (hx₀ : x₀ ∉ Set.range x) :
+    Function.Injective (snoc x x₀ : Fin n.succ → α) := fun i j h ↦ by
+  rcases Fin.eq_castSucc_or_eq_last i with ⟨i, rfl⟩ | hi
+  · rcases Fin.eq_castSucc_or_eq_last j with ⟨j, rfl⟩ | hj
+    · simpa only [castSucc_inj, ← Injective.eq_iff hx, snoc_castSucc] using h
+    · simp only [snoc_castSucc, hj, snoc_last] at h
+      rw [← h] at hx₀
+      apply hx₀.elim (Set.mem_range_self i)
+  · rcases Fin.eq_castSucc_or_eq_last j with ⟨j, rfl⟩ | hj
+    · simp only [snoc_castSucc, hi, snoc_last] at h
+      rw [h] at hx₀
+      apply hx₀.elim (Set.mem_range_self j)
+    · simp only [hi, hj]
+
+theorem snoc_injective_iff {α} {x₀ : α} {x : Fin n → α} :
+    Function.Injective (snoc x x₀ : Fin n.succ → α) ↔ Function.Injective x ∧ x₀ ∉ Set.range x := by
+  refine ⟨fun h ↦ ⟨?_, ?_⟩, fun h ↦ snoc_injective_of_injective h.1 h.2⟩
+  · simpa [Function.comp] using h.comp (Fin.castSucc_injective _)
+  · rintro ⟨i, hi⟩
+    rw [← @snoc_last n (fun i ↦ α) x₀ x, ← @snoc_castSucc n (fun i ↦ α) x₀ x i,
+      h.eq_iff] at hi
+    exact ne_last_of_lt i.castSucc_lt_last hi
+
 end TupleRight
 
 section InsertNth
