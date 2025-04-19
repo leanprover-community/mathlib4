@@ -259,6 +259,39 @@ variable {s t : 𝕜 → 𝕜} {f g : 𝕜 → E} {U : Set 𝕜}
   (hs : MeromorphicOn s U) (ht : MeromorphicOn t U)
   (hf : MeromorphicOn f U) (hg : MeromorphicOn g U)
 
+/--
+If `f` is meromorphic on `U`, if `g` agrees with `f` on a codiscrete subset of `U` and outside of
+`U`, then `g` is also meromorphic on `U`.
+-/
+theorem congr_codiscreteWithin (hf : MeromorphicOn f U) (h₁ : f =ᶠ[codiscreteWithin U] g)
+    (h₂ : Set.EqOn f g Uᶜ) :
+    MeromorphicOn g U := by
+  intro x hx
+  apply (hf x hx).congr
+  simp_rw [EventuallyEq, Filter.Eventually, mem_codiscreteWithin,
+    disjoint_principal_right] at h₁
+  filter_upwards [h₁ x hx] with a ha
+  simp at ha
+  tauto
+
+/--
+If `f` is meromorphic on an open set `U`, if `g` agrees with `f` on a codiscrete subset of `U`, then
+`g` is also meromorphic on `U`.
+-/
+theorem congr_codiscreteWithin_open (hf : MeromorphicOn f U) (h₁ : f =ᶠ[codiscreteWithin U] g)
+    (h₂ : IsOpen U) :
+    MeromorphicOn g U := by
+  intro x hx
+  apply (hf x hx).congr
+  simp_rw [EventuallyEq, Filter.Eventually, mem_codiscreteWithin,
+    disjoint_principal_right] at h₁
+  have : U ∈ 𝓝[≠] x := by
+    apply mem_nhdsWithin.mpr
+    use U, h₂, hx, Set.inter_subset_left
+  filter_upwards [this, h₁ x hx] with a h₁a h₂a
+  simp only [Set.mem_compl_iff, Set.mem_diff, Set.mem_setOf_eq, not_and, Decidable.not_not] at h₂a
+  tauto
+
 lemma id {U : Set 𝕜} : MeromorphicOn id U := fun x _ ↦ .id x
 
 lemma const (e : E) {U : Set 𝕜} : MeromorphicOn (fun _ ↦ e) U :=
