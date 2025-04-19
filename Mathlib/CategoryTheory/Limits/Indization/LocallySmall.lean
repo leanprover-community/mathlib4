@@ -65,7 +65,7 @@ instance : Small.{v} (colimit (F ⋙ yoneda) ⟶ G) where
 
 end
 
-instance : LocallySmall.{v} (FullSubcategory (IsIndObject (C := C))) where
+instance : LocallySmall.{v} (ObjectProperty.FullSubcategory (IsIndObject (C := C))) where
   hom_small X Y := by
     obtain ⟨⟨P⟩⟩ := X.2
     obtain ⟨⟨Q⟩⟩ := Y.2

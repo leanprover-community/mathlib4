@@ -142,8 +142,8 @@ theorem FinallySmall.exists_small_weakly_terminal_set [FinallySmall.{w} J] :
 variable {J} in
 theorem finallySmall_of_small_weakly_terminal_set [IsFilteredOrEmpty J] (s : Set J) [Small.{v} s]
     (hs : ∀ i, ∃ j ∈ s, Nonempty (i ⟶ j)) : FinallySmall.{v} J := by
-  suffices Functor.Final (fullSubcategoryInclusion (· ∈ s)) from
-    finallySmall_of_final_of_essentiallySmall (fullSubcategoryInclusion (· ∈ s))
+  suffices Functor.Final (ObjectProperty.ι (· ∈ s)) from
+    finallySmall_of_final_of_essentiallySmall (ObjectProperty.ι (· ∈ s))
   refine Functor.final_of_exists_of_isFiltered_of_fullyFaithful _ (fun i => ?_)
   obtain ⟨j, hj₁, hj₂⟩ := hs i
   exact ⟨⟨j, hj₁⟩, hj₂⟩
@@ -170,8 +170,8 @@ theorem InitiallySmall.exists_small_weakly_initial_set [InitiallySmall.{w} J] :
 variable {J} in
 theorem initiallySmall_of_small_weakly_initial_set [IsCofilteredOrEmpty J] (s : Set J) [Small.{v} s]
     (hs : ∀ i, ∃ j ∈ s, Nonempty (j ⟶ i)) : InitiallySmall.{v} J := by
-  suffices Functor.Initial (fullSubcategoryInclusion (· ∈ s)) from
-    initiallySmall_of_initial_of_essentiallySmall (fullSubcategoryInclusion (· ∈ s))
+  suffices Functor.Initial (ObjectProperty.ι (· ∈ s)) from
+    initiallySmall_of_initial_of_essentiallySmall (ObjectProperty.ι (· ∈ s))
   refine Functor.initial_of_exists_of_isCofiltered_of_fullyFaithful _ (fun i => ?_)
   obtain ⟨j, hj₁, hj₂⟩ := hs i
   exact ⟨⟨j, hj₁⟩, hj₂⟩
