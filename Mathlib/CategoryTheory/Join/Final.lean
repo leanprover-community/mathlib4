@@ -25,7 +25,7 @@ def CostructuredArrowEquiv (d : D) : CostructuredArrow (inclLeft C D) (right d) 
   inverse :=
     { obj c := .mk (edge c d)
       map f := CostructuredArrow.homMk _ }
-  unitIso := NatIso.ofComponents (fun _ ↦ CostructuredArrow.isoMk _)
+  unitIso := NatIso.ofComponents (fun _ ↦ CostructuredArrow.isoMk (Iso.refl _))
   counitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
 /-- The category of `inclRight C D`-structured arrows with source `left c` is equivalent to D. -/
@@ -34,7 +34,7 @@ def StructuredArrowEquiv (c : C) : StructuredArrow (left c) (inclRight C D) ≌ 
   inverse :=
     { obj d := .mk (edge c d)
       map f := StructuredArrow.homMk _ }
-  unitIso := NatIso.ofComponents (fun _ ↦ StructuredArrow.isoMk _)
+  unitIso := NatIso.ofComponents (fun _ ↦ StructuredArrow.isoMk (Iso.refl _))
   counitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
 instance [IsConnected C] : (inclLeft C D).Initial where
