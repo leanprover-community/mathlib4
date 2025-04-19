@@ -211,7 +211,7 @@ theorem cycleRange_mk_zero {n : ℕ} (h : 0 < n) : cycleRange ⟨0, h⟩ = 1 :=
   have : NeZero n := .of_pos h
   cycleRange_zero n
 
-@[deprecated (since := "2027-01-28")]
+@[deprecated (since := "2025-01-28")]
 alias cycleRange_zero' := cycleRange_mk_zero
 
 @[simp]
