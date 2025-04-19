@@ -54,10 +54,6 @@ structure AffineMap (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*} (P2 : Typ
   /-- The linear map between the corresponding vector spaces `V1` and `V2`.
   This represents how differences of points under the affine map act. -/
   linear : V1 →ₗ[k] V2
-  /-- The key property that makes this an affine map: translating a point `p` by a vector `v`
-  and then applying the map is the same as applying the map to `p` and translating by
-  the image of `v` under the linear map. In other words, this shows that the map preserves
-  the affine space structure. -/
   map_vadd' : ∀ (p : P1) (v : V1), toFun (v +ᵥ p) = linear v +ᵥ toFun p
 
 /-- An `AffineMap k P1 P2` (notation: `P1 →ᵃ[k] P2`) is a map from `P1` to `P2` that
