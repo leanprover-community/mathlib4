@@ -265,7 +265,7 @@ theorem eq_of_frequently_eq [ConnectedSpace 𝕜] (hf : AnalyticOnNhd 𝕜 f uni
 
 section Mul
 /-!
-### Vanishing of products of analytic functions
+### Vanishing of products of analytic functions
 -/
 
 variable {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A]
@@ -307,7 +307,7 @@ end Mul
 end AnalyticOnNhd
 
 /-!
-### Preimages of codiscrete sets
+### Preimages of codiscrete sets
 -/
 
 section PreimgCodiscrete
