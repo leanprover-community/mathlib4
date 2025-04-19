@@ -5,7 +5,6 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.LinearAlgebra.Basis.Defs
 import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.LinearAlgebra.Finsupp.Span
 import Mathlib.LinearAlgebra.FreeModule.Basic
 
 /-!
