@@ -26,7 +26,7 @@ universe u v w
 
 namespace Matrix
 
-section CommSemiring -- Porting note: generalized from `CommRing`
+section CommSemiring
 
 variable {n : Type*} [Fintype n] [DecidableEq n] {R : Type v} [CommSemiring R]
 
