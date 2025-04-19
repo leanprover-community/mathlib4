@@ -27,9 +27,9 @@ variable {α : Type*}
 
 section Disjoint
 
-section PartialOrderBot
+section PreorderBot
 
-variable [PartialOrder α] [OrderBot α] {a b c d : α}
+variable [Preorder α] [OrderBot α] {a b c d : α}
 
 /-- Two elements of a lattice are disjoint if their inf is the bottom element.
   (This generalizes disjoint sets, viewed as members of the subset lattice.)
@@ -70,8 +70,23 @@ theorem Disjoint.mono_right : b ≤ c → Disjoint a c → Disjoint a b :=
   Disjoint.mono le_rfl
 
 @[simp]
-theorem disjoint_self : Disjoint a a ↔ a = ⊥ :=
-  ⟨fun hd ↦ bot_unique <| hd le_rfl le_rfl, fun h _ ha _ ↦ ha.trans_eq h⟩
+theorem disjoint_self_iff_le_bot : Disjoint a a ↔ a ≤ ⊥ :=
+  ⟨fun hd ↦ hd le_rfl le_rfl, fun h _ ha _ ↦ ha.trans h⟩
+
+theorem Disjoint.le_bot_of_le (hab : Disjoint a b) (h : a ≤ b) : a ≤ ⊥ :=
+  hab le_rfl h
+
+theorem Disjoint.le_bot_of_ge (hab : Disjoint a b) : b ≤ a → b ≤ ⊥ :=
+  hab.symm.le_bot_of_le
+
+end PreorderBot
+
+section PartialOrderBot
+
+variable [PartialOrder α] [OrderBot α] {a b c d : α}
+
+theorem disjoint_self : Disjoint a a ↔ a = ⊥ := by
+  simp
 
 /- TODO: Rename `Disjoint.eq_bot` to `Disjoint.inf_eq` and `Disjoint.eq_bot_of_self` to
 `Disjoint.eq_bot` -/
@@ -193,9 +208,9 @@ end Disjoint
 
 section Codisjoint
 
-section PartialOrderTop
+section PreorderTop
 
-variable [PartialOrder α] [OrderTop α] {a b c d : α}
+variable [Preorder α] [OrderTop α] {a b c d : α}
 
 /-- Two elements of a lattice are codisjoint if their sup is the top element.
 
@@ -233,8 +248,23 @@ theorem Codisjoint.mono_right : b ≤ c → Codisjoint a b → Codisjoint a c :=
   Codisjoint.mono le_rfl
 
 @[simp]
-theorem codisjoint_self : Codisjoint a a ↔ a = ⊤ :=
-  ⟨fun hd ↦ top_unique <| hd le_rfl le_rfl, fun h _ ha _ ↦ h.symm.trans_le ha⟩
+theorem codisjoint_self_iff_top_le : Codisjoint a a ↔ ⊤ ≤ a :=
+  ⟨fun hd ↦ hd le_rfl le_rfl, fun h _ ha _ ↦ h.trans ha⟩
+
+theorem Codisjoint.top_le_of_le (hab : Codisjoint a b) (h : b ≤ a) : ⊤ ≤ a :=
+  hab le_rfl h
+
+theorem Codisjoint.top_le_of_ge (hab : Codisjoint a b) : a ≤ b → ⊤ ≤ b :=
+  hab.symm.top_le_of_le
+
+end PreorderTop
+
+section PartialOrderTop
+
+variable [PartialOrder α] [OrderTop α] {a b c d : α}
+
+theorem codisjoint_self : Codisjoint a a ↔ a = ⊤ := by
+  simp
 
 /- TODO: Rename `Codisjoint.eq_top` to `Codisjoint.sup_eq` and `Codisjoint.eq_top_of_self` to
 `Codisjoint.eq_top` -/
