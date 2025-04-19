@@ -589,7 +589,6 @@ lemma corootSpan_mem_invtSubmodule_coreflection (i : ι) :
 
 lemma rootSpan_dualAnnihilator_map_eq_iInf_ker_root' :
     P.rootSpan.dualAnnihilator.map P.toDualRight.symm = ⨅ i, LinearMap.ker (P.root' i) := by
-  ext x
   suffices P.rootSpan.dualAnnihilator.map P.toDualRight.symm = {x | ∀ i, P.root' i x = 0} from
     SetLike.coe_injective <| by ext; simp [this]
   ext x
