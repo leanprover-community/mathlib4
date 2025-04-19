@@ -218,9 +218,13 @@ variable [AddCommMonoid Mₗ] [AddCommMonoid Nₗ] [AddCommMonoid Pₗ]
 variable [AddCommMonoid Qₗ] [AddCommMonoid Qₗ']
 variable [Module R M] [Module R₂ N] [Module R₃ P] [Module R₄ Q]
 variable [Module R Mₗ] [Module R Nₗ] [Module R Pₗ] [Module R Qₗ] [Module R Qₗ']
-variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃}
+variable {σ₁₂ : R →+* R₂} {σ₁₃ : R →+* R₃} {σ₁₄ : R →+* R₄}
+variable {σ₂₃ : R₂ →+* R₃} {σ₂₄ : R₂ →+* R₄}
+variable {σ₃₄ : R₃ →+* R₄}
 variable {σ₄₂ : R₄ →+* R₂} {σ₄₃ : R₄ →+* R₃}
 variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₄₂ σ₂₃ σ₄₃]
+variable [RingHomCompTriple σ₂₃ σ₃₄ σ₂₄] [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄]
+variable [RingHomCompTriple σ₂₄ σ₄₃ σ₂₃]
 variable (R)
 
 /-- Create a bilinear map from a function that is linear in each component.
@@ -298,6 +302,27 @@ theorem llcomp_apply' (f : Nₗ →ₗ[R] Pₗ) (g : M →ₗ[R] Nₗ) : llcomp 
 
 end
 
+variable (M N P)
+
+/-- Composing linear maps as a bilinear map from `(M →ₗ[R] N) × (N →ₗ[R] P)` to `M →ₗ[R] P` -/
+def llcompₛₗ : (N →ₛₗ[σ₂₃] P) →ₗ[R₃] (M →ₛₗ[σ₁₂] N) →ₛₗ[σ₂₃] M →ₛₗ[σ₁₃] P :=
+  flip
+    { toFun := lcompₛₗ P σ₂₃
+      map_add' := fun _f _f' => ext₂ fun g _x => g.map_add _ _
+      map_smul' := fun (_c : R₂) _f => ext₂ fun g _x => g.map_smulₛₗ _ _ }
+
+variable {M N P}
+
+section
+
+@[simp]
+theorem llcompₛₗ_apply (f : N →ₛₗ[σ₂₃] P) (g : M →ₛₗ[σ₁₂] N) (x : M) :
+    llcompₛₗ M N P f g x = f (g x) := rfl
+
+theorem llcompₛₗ_apply' (f : N →ₛₗ[σ₂₃] P) (g : M →ₛₗ[σ₁₂] N) : llcompₛₗ M N P f g = f ∘ₛₗ g := rfl
+
+end
+
 /-- Composing a linear map `Q → N` and a bilinear map `M → N → P` to
 form a bilinear map `M → Q → P`. -/
 def compl₂ {R₅ : Type*} [CommSemiring R₅] [Module R₅ P] [SMulCommClass R₃ R₅ P] {σ₁₅ : R →+* R₅}
@@ -350,30 +375,33 @@ theorem compl₁₂_inj {f₁ f₂ : Mₗ →ₗ[R] Nₗ →ₗ[R] Pₗ} {g : Q�
 
 /-- Composing a linear map `P → Q` and a bilinear map `M → N → P` to
 form a bilinear map `M → N → Q`. -/
-def compr₂ (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[R] Qₗ) : M →ₗ[R] Nₗ →ₗ[R] Qₗ :=
-  llcomp R Nₗ Pₗ Qₗ g ∘ₗ f
+def compr₂ (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) (g : P →ₛₗ[σ₃₄] Q) : M →ₛₗ[σ₁₄] N →ₛₗ[σ₂₄] Q :=
+  llcompₛₗ N P Q g ∘ₛₗ f
 
 @[simp]
-theorem compr₂_apply (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[R] Qₗ) (m : M) (n : Nₗ) :
+theorem compr₂_apply (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) (g : P →ₛₗ[σ₃₄] Q) (m : M) (n : N) :
     f.compr₂ g m n = g (f m n) := rfl
 
 /-- A version of `Function.Injective.comp` for composition of a bilinear map with a linear map. -/
-theorem injective_compr₂_of_injective (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[R] Qₗ) (hf : Injective f)
-    (hg : Injective g) : Injective (f.compr₂ g) :=
+theorem injective_compr₂_of_injective (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) (g : P →ₛₗ[σ₃₄] Q)
+    (hf : Injective f) (hg : Injective g) : Injective (f.compr₂ g) :=
   hg.injective_linearMapComp_left.comp hf
 
 /-- A version of `Function.Surjective.comp` for composition of a bilinear map with a linear map. -/
-theorem surjective_compr₂_of_exists_rightInverse (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[R] Qₗ)
-    (hf : Surjective f) (hg : ∃ g' : Qₗ →ₗ[R] Pₗ, g.comp g' = LinearMap.id) :
+theorem surjective_compr₂_of_exists_rightInverse [RingHomInvPair σ₃₄ σ₄₃]
+    (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) (g : P →ₛₗ[σ₃₄] Q)
+    (hf : Surjective f) (hg : ∃ g' : Q →ₛₗ[σ₄₃] P, g.comp g' = LinearMap.id) :
     Surjective (f.compr₂ g) := (surjective_comp_left_of_exists_rightInverse hg).comp hf
 
 /-- A version of `Function.Surjective.comp` for composition of a bilinear map with a linear map. -/
-theorem surjective_compr₂_of_equiv (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Pₗ ≃ₗ[R] Qₗ) (hf : Surjective f) :
+theorem surjective_compr₂_of_equiv [RingHomInvPair σ₃₄ σ₄₃] [RingHomInvPair σ₄₃ σ₃₄]
+    (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) (g : P ≃ₛₗ[σ₃₄] Q)  (hf : Surjective f) :
     Surjective (f.compr₂ g.toLinearMap) :=
   surjective_compr₂_of_exists_rightInverse f g.toLinearMap hf ⟨g.symm, by simp⟩
 
 /-- A version of `Function.Bijective.comp` for composition of a bilinear map with a linear map. -/
-theorem bijective_compr₂_of_equiv (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Pₗ ≃ₗ[R] Qₗ) (hf : Bijective f) :
+theorem bijective_compr₂_of_equiv [RingHomInvPair σ₃₄ σ₄₃] [RingHomInvPair σ₄₃ σ₃₄]
+    (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) (g : P ≃ₛₗ[σ₃₄] Q) (hf : Bijective f) :
     Bijective (f.compr₂ g.toLinearMap) :=
   ⟨injective_compr₂_of_injective f g.toLinearMap hf.1 g.bijective.1,
   surjective_compr₂_of_equiv f g hf.2⟩
