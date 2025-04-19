@@ -188,7 +188,7 @@ lemma HasRightDerivedFunctor.mk' [RF.IsRightDerivedFunctor α W] :
 
 section
 
-variable [F.HasRightDerivedFunctor W] (L W)
+variable (F) [F.HasRightDerivedFunctor W] (L W)
 
 /-- Given a functor `F : C ⥤ H`, and a localization functor `L : D ⥤ H` for `W`,
 this is the right derived functor `D ⥤ H` of `F`, i.e. the left Kan extension
