@@ -7,6 +7,7 @@ import Mathlib.AlgebraicGeometry.Gluing
 import Mathlib.CategoryTheory.Limits.Opposites
 import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
+import Mathlib.CategoryTheory.ChosenFiniteProducts.Over
 
 /-!
 # Fibred products of schemes
@@ -688,5 +689,12 @@ lemma diagonal_Spec_map :
   · congr 1; ext x; show x = Algebra.TensorProduct.lmul' R (S := S) (1 ⊗ₜ[R] x); simp
 
 end Spec
+
+section ChosenFiniteProducts
+variable {S : Scheme}
+
+noncomputable instance : ChosenFiniteProducts (Over S) := Over.chosenFiniteProducts _
+
+end ChosenFiniteProducts
 
 end AlgebraicGeometry
