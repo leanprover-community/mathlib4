@@ -11,7 +11,7 @@ import Mathlib.MeasureTheory.Measure.Prod
 In this file we define and prove properties about the convolution of two functions
 using the Lebesgue integral.
 
-# Design Decisions
+## Design Decisions
 
 We define the convolution of two functions using the Lebesgue integral (in the additive case)
 by the formula `(f ⋆ₗ[μ] g) x = ∫⁻ y, (f y) * (g (-y + x)) ∂μ`. This does not agree with the
