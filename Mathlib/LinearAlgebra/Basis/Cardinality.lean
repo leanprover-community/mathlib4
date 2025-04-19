@@ -51,7 +51,7 @@ lemma basis_finite_of_finite_spans [Nontrivial R] {s : Set M} (hs : s.Finite)
     (hsspan : span R s = ⊤) {ι : Type w} (b : Basis ι R M) : Finite ι := by
   have := congr(($hsspan).map b.repr)
   rw [← span_image, Submodule.map_top, LinearEquivClass.range] at this
-  classical exact finite_of_span_finite_eq_top_finsupp (hs.image _) this
+  exact finite_of_span_finite_eq_top_finsupp (hs.image _) this
 
 end Semiring
 
