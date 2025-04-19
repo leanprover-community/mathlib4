@@ -31,7 +31,7 @@ binary product and `𝟙_ C` for the explicit terminal object.
 
 namespace CategoryTheory
 
-universe v v₁ v₂ u u₁ u₂
+universe v v₁ v₂ v₃ u u₁ u₂ u₃
 
 /--
 An instance of `ChosenFiniteProducts C` bundles an explicit choice of a binary
@@ -237,6 +237,9 @@ lemma lift_lift_associator_inv {X Y Z W : C} (f : X ⟶ Y) (g : X ⟶ Z) (h : X 
     lift f (lift g h) ≫ (α_ Y Z W).inv = lift (lift f g) h := by
   aesop_cat
 
+lemma leftUnitor_hom (X : C) : (λ_ X).hom = snd _ _ := rfl
+lemma rightUnitor_hom (X : C) : (ρ_ X).hom = fst _ _ := rfl
+
 @[reassoc (attr := simp)]
 lemma leftUnitor_inv_fst (X : C) :
     (λ_ X).inv ≫ fst _ _ = toUnit _ := toUnit_unique _ _
@@ -252,6 +255,14 @@ lemma rightUnitor_inv_fst (X : C) :
 @[reassoc (attr := simp)]
 lemma rightUnitor_inv_snd (X : C) :
     (ρ_ X).inv ≫ snd _ _ = toUnit _ := toUnit_unique _ _
+
+@[reassoc]
+lemma whiskerLeft_toUnit_comp_rightUnitor_hom (X Y : C) : X ◁ toUnit Y ≫ (ρ_ X).hom = fst X Y := by
+  rw [← cancel_mono (ρ_ X).inv]; aesop
+
+@[reassoc]
+lemma whiskerRight_toUnit_comp_leftUnitor_hom (X Y : C) : toUnit X ▷ Y ≫ (λ_ Y).hom = snd X Y := by
+  rw [← cancel_mono (λ_ Y).inv]; aesop
 
 @[reassoc (attr := simp)]
 lemma lift_leftUnitor_hom {X Y : C} (f : X ⟶ 𝟙_ C) (g : X ⟶ Y) :
@@ -620,20 +631,47 @@ end ChosenFiniteProducts
 
 open MonoidalCategory ChosenFiniteProducts
 
-namespace Functor
+variable
+  {C : Type u₁} [Category.{v₁} C] [ChosenFiniteProducts C]
+  {D : Type u₂} [Category.{v₂} D] [ChosenFiniteProducts D]
+  {E : Type u₃} [Category.{v₃} E] [ChosenFiniteProducts E]
+  (F : C ⥤ D) (G : D ⥤ E) {X Y Z : C}
 
-variable {C : Type u} [Category.{v} C] [ChosenFiniteProducts C]
-  {D : Type u₁} [Category.{v₁} D] [ChosenFiniteProducts D] (F : C ⥤ D)
+open Functor.LaxMonoidal Functor.OplaxMonoidal
+open Limits (PreservesFiniteProducts)
 
-open Functor.OplaxMonoidal
+namespace Functor.OplaxMonoidal
+variable [F.OplaxMonoidal]
 
-/- The definitions `oplaxMonoidalOfChosenFiniteProducts` and
-`monoidalOfChosenFiniteProducts` are not made instances because it would
-create a diamond for the (oplax) monoidal structure on a composition
-`F ⋙ G` of functors between categories with chosen finite products. -/
+lemma η_of_chosenFiniteProducts : η F = terminalComparison F := toUnit_unique ..
 
-/-- Any functor between categories with chosen finite products induces an oplax monoial functor. -/
-def oplaxMonoidalOfChosenFiniteProducts : F.OplaxMonoidal where
+lemma δ_of_chosenFiniteProducts (X Y : C) : δ F X Y = prodComparison F X Y := by
+  ext
+  · have eq₁ := δ_natural_right F X (toUnit Y) =≫ fst _ _
+    have eq₂ := OplaxMonoidal.right_unitality_hom F X
+    rw [Category.assoc, Category.assoc, whiskerLeft_fst] at eq₁
+    rw [rightUnitor_hom, whiskerLeft_fst] at eq₂
+    rw [eq₁, eq₂, prodComparison_fst, ← F.map_comp, rightUnitor_hom, whiskerLeft_fst]
+  · have eq₁ := δ_natural_left F (toUnit X) Y =≫ snd _ _
+    have eq₂ := OplaxMonoidal.left_unitality_hom F Y
+    rw [Category.assoc, Category.assoc, whiskerRight_snd] at eq₁
+    rw [leftUnitor_hom, whiskerRight_snd] at eq₂
+    rw [eq₁, eq₂, prodComparison_snd, ← F.map_comp, leftUnitor_hom, whiskerRight_snd]
+
+variable [PreservesFiniteProducts F]
+
+instance : IsIso (η F) :=
+  η_of_chosenFiniteProducts F ▸ terminalComparison_isIso_of_preservesLimits F
+
+instance (X Y : C) : IsIso (δ F X Y) :=
+  δ_of_chosenFiniteProducts F X Y ▸ isIso_prodComparison_of_preservesLimit_pair F X Y
+
+omit [F.OplaxMonoidal] in
+/-- Any functor between cartesian-monoidal categories is oplax monoidal.
+
+This is not made an instance because it would create a diamond for the oplax monoidal structure on
+the identity and composition of functors. -/
+def ofChosenFiniteProducts : F.OplaxMonoidal where
   η' := terminalComparison F
   δ' X Y := prodComparison F X Y
   δ'_natural_left f X' := by simpa using (prodComparison_natural F f (𝟙 X')).symm
@@ -653,77 +691,41 @@ def oplaxMonoidalOfChosenFiniteProducts : F.OplaxMonoidal where
         prodComparison_fst, ← F.map_comp, F.map_id]
     · exact toUnit_unique _ _
 
+omit [F.OplaxMonoidal] in
+/-- Any functor between cartesian-monoidal categories is oplax monoidal in a unique way. -/
+instance : Subsingleton F.OplaxMonoidal where
+  allEq a b := by
+    ext1
+    · exact toUnit_unique _ _
+    · ext1; ext1; rw [← δ, ← δ, δ_of_chosenFiniteProducts, δ_of_chosenFiniteProducts]
 
-attribute [local instance] oplaxMonoidalOfChosenFiniteProducts
+end OplaxMonoidal
 
-lemma η_of_chosenFiniteProducts : η F = terminalComparison F := rfl
-
-lemma δ_of_chosenFiniteProducts (X Y : C) : δ F X Y = prodComparison F X Y := rfl
-
-open Limits
-
-variable [PreservesFiniteProducts F]
-
-instance : IsIso (η F) :=
-  terminalComparison_isIso_of_preservesLimits F
-
-instance (A B : C) : IsIso (δ F A B) :=
-  isIso_prodComparison_of_preservesLimit_pair F A B
-
-/-- If `F : C ⥤ D` is a functor between categories with chosen finite products
-that preserves finite products, then it is a monoidal functor. -/
-noncomputable def monoidalOfChosenFiniteProducts : F.Monoidal :=
-  Functor.Monoidal.ofOplaxMonoidal F
-
-end Functor
-
-namespace Functor.Monoidal
-
-variable {C : Type u} [Category.{v} C] [ChosenFiniteProducts C]
-  {D : Type u₁} [Category.{v₁} D] [ChosenFiniteProducts D] (F : C ⥤ D)
-
-section
-
-attribute [local instance] oplaxMonoidalOfChosenFiniteProducts
+namespace Monoidal
+variable [F.Monoidal] [G.Monoidal]
 
 @[reassoc (attr := simp)]
-lemma δ_fst (X Y : C) : OplaxMonoidal.δ F X Y ≫ fst _ _ = F.map (fst _ _) := by
-  simp [δ_of_chosenFiniteProducts]
+lemma toUnit_ε (X : C) : toUnit (F.obj X) ≫ ε F = F.map (toUnit X) := by
+  rw [← cancel_mono (εIso F).inv]; exact toUnit_unique ..
 
 @[reassoc (attr := simp)]
-lemma δ_snd (X Y : C) : OplaxMonoidal.δ F X Y ≫ snd _ _ = F.map (snd _ _) := by
-  simp [δ_of_chosenFiniteProducts]
+lemma δ_fst (X Y : C) : δ F X Y ≫ fst _ _ = F.map (fst _ _) := by
+  rw [← whiskerLeft_toUnit_comp_rightUnitor_hom, ← whiskerLeft_toUnit_comp_rightUnitor_hom,
+    LaxMonoidal.right_unitality, ← MonoidalCategory.whiskerLeft_comp_assoc, toUnit_ε,
+    LaxMonoidal.μ_natural_right_assoc, δ_μ_assoc, map_comp]
 
 @[reassoc (attr := simp)]
-lemma lift_δ {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :
-    F.map (lift f g) ≫ OplaxMonoidal.δ F _ _ = lift (F.map f) (F.map g) := by
-  apply hom_ext <;> simp [← F.map_comp]
-
-end
-
-section
-
-open Limits
-
-variable [PreservesFiniteProducts F]
-
-attribute [local instance] monoidalOfChosenFiniteProducts
-
-open Functor.Monoidal Functor.LaxMonoidal
-
-lemma ε_of_chosenFiniteProducts : ε F = (preservesTerminalIso F).inv := by
-  change (εIso F).symm.inv = _; congr; ext; simp; rfl
-
-lemma μ_of_chosenFiniteProducts (X Y : C) : μ F X Y = (prodComparisonIso F X Y).inv := by
-  change (μIso F X Y).symm.inv = _; congr; ext : 1; rfl
+lemma δ_snd (X Y : C) : δ F X Y ≫ snd _ _ = F.map (snd _ _) := by
+  rw [← whiskerRight_toUnit_comp_leftUnitor_hom, ← whiskerRight_toUnit_comp_leftUnitor_hom,
+    LaxMonoidal.left_unitality, ← MonoidalCategory.comp_whiskerRight_assoc, toUnit_ε,
+    LaxMonoidal.μ_natural_left_assoc, δ_μ_assoc, map_comp]
 
 @[reassoc (attr := simp)]
-lemma toUnit_ε {X : C} : toUnit (F.obj X) ≫ LaxMonoidal.ε F = F.map (toUnit X) :=
-  (cancel_mono (εIso _).inv).1 (toUnit_unique _ _)
+lemma lift_δ (f : X ⟶ Y) (g : X ⟶ Z) : F.map (lift f g) ≫ δ F _ _ = lift (F.map f) (F.map g) := by
+  ext <;> simp [← map_comp]
 
 @[reassoc (attr := simp)]
-lemma lift_μ {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :
-    lift (F.map f) (F.map g) ≫ μ F _ _ = F.map (lift f g) :=
+lemma lift_μ (f : X ⟶ Y) (g : X ⟶ Z) : lift (F.map f) (F.map g) ≫ μ F _ _ = F.map (lift f g) :=
   (cancel_mono (μIso _ _ _).inv).1 (by simp)
 
 @[reassoc (attr := simp)]
@@ -734,43 +736,47 @@ lemma μ_fst (X Y : C) : μ F X Y ≫ F.map (fst X Y) = fst (F.obj X) (F.obj Y) 
 lemma μ_snd (X Y : C) : μ F X Y ≫ F.map (snd X Y) = snd (F.obj X) (F.obj Y) :=
   (cancel_epi (μIso _ _ _).inv).1 (by simp)
 
-section
-
-variable {F} {E : Type u₂} [Category.{v₂} E] [ChosenFiniteProducts E] {G : D ⥤ E}
-  [PreservesFiniteProducts G]
-
 attribute [-instance] Functor.LaxMonoidal.comp Functor.Monoidal.instComp in
 @[reassoc]
-lemma μ_comp (X Y : C) :
-    LaxMonoidal.μ (F ⋙ G) X Y = LaxMonoidal.μ G _ _ ≫ G.map (LaxMonoidal.μ F X Y) := by
-  apply (cancel_mono (μIso _ _ _).inv).1
-  apply ChosenFiniteProducts.hom_ext <;> simp [← Functor.comp_obj, ← Functor.map_comp]
+lemma μ_comp [(F ⋙ G).Monoidal] (X Y : C) : μ (F ⋙ G) X Y = μ G _ _ ≫ G.map (μ F X Y) := by
+  rw [← cancel_mono (μIso _ _ _).inv]; ext <;> simp [← Functor.comp_obj, ← Functor.map_comp]
 
-end
+variable [PreservesFiniteProducts F]
 
-end
+lemma ε_of_chosenFiniteProducts : ε F = (preservesTerminalIso F).inv := by
+  change (εIso F).symm.inv = _; congr; ext; simpa using η_of_chosenFiniteProducts F
 
-end Functor.Monoidal
+lemma μ_of_chosenFiniteProducts (X Y : C) : μ F X Y = (prodComparisonIso F X Y).inv := by
+  change (μIso F X Y).symm.inv = _; congr; ext : 1; simpa using δ_of_chosenFiniteProducts F X Y
 
-namespace Functor
+attribute [local instance] OplaxMonoidal.ofChosenFiniteProducts in
+omit [F.Monoidal] in
+/-- A finite-product-preserving functor between cartesian monoidal categories is monoidal.
 
-open Limits
+This is not made an instance because it would create a diamond for the monoidal structure on
+the identity and composition of functors. -/
+noncomputable def ofChosenFiniteProducts : F.Monoidal := .ofOplaxMonoidal F
 
-variable {C : Type u} [Category.{v} C] [ChosenFiniteProducts C]
-  {D : Type u₁} [Category.{v₁} D] [ChosenFiniteProducts D] (F : C ⥤ D) [PreservesFiniteProducts F]
+omit [F.Monoidal] in
+instance : Subsingleton F.Monoidal := (toOplaxMonoidal_injective F).subsingleton
 
-attribute [local instance] monoidalOfChosenFiniteProducts
+end Monoidal
 
-/-- A finite-product-preserving functor between categories with chosen finite products is
-braided. -/
-noncomputable def braidedOfChosenFiniteProducts : F.Braided :=
-  { monoidalOfChosenFiniteProducts F with
-    braided X Y := by
-      rw [← cancel_mono (Monoidal.μIso _ _ _).inv]
-      apply ChosenFiniteProducts.hom_ext <;> simp [← Functor.map_comp] }
+namespace Braided
+variable [PreservesFiniteProducts F]
+
+attribute [local instance] Monoidal.ofChosenFiniteProducts in
+/-- A finite-product-preserving functor between cartesian monoidal categories is braided.
+
+This is not made an instance because it would create a diamond for the braided structure on
+the identity and composition of functors. -/
+noncomputable def ofChosenFiniteProducts : F.Braided where
+  braided X Y := by rw [← cancel_mono (Monoidal.μIso _ _ _).inv]; ext <;> simp [← F.map_comp]
+
+end Braided
 
 namespace EssImageSubcategory
-variable [F.Full] [F.Faithful] {T X Y Z : F.EssImageSubcategory}
+variable [F.Full] [F.Faithful] [PreservesFiniteProducts F] {T X Y Z : F.EssImageSubcategory}
 
 @[simps!]
 noncomputable instance instChosenFiniteProducts : ChosenFiniteProducts F.EssImageSubcategory :=
@@ -797,13 +803,9 @@ lemma toUnit_def (X : F.EssImageSubcategory) : toUnit X = toUnit X.obj := toUnit
 end Functor.EssImageSubcategory
 
 namespace NatTrans
+variable (F G : C ⥤ D) [F.Monoidal] [G.Monoidal]
 
-variable {C : Type u} [Category.{v} C] [ChosenFiniteProducts C]
-  {D : Type u₁} [Category.{v₁} D] [ChosenFiniteProducts D] (F G : C ⥤ D)
-  [Limits.PreservesFiniteProducts F] [Limits.PreservesFiniteProducts G]
-
-attribute [local instance] Functor.monoidalOfChosenFiniteProducts in
-instance monoidal_of_preservesFiniteProducts (α : F ⟶ G) : NatTrans.IsMonoidal α where
+instance isMonoidal_of_chosenFiniteProducts (α : F ⟶ G) : IsMonoidal α where
   unit := (cancel_mono (Functor.Monoidal.εIso _).inv).1 (toUnit_unique _ _)
   tensor {X Y} := by
     rw [← cancel_mono (Functor.Monoidal.μIso _ _ _).inv]
