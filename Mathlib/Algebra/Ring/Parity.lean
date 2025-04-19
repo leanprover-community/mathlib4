@@ -358,6 +358,9 @@ lemma neg_one_pow_congr (h : Even m ↔ Even n) : (-1 : R) ^ m = (-1) ^ n := by
 lemma neg_one_pow_eq_one_iff_even (h : (-1 : R) ≠ 1) :
     (-1 : R) ^ n = 1 ↔ Even n := by simp [neg_one_pow_eq_ite, h]
 
+lemma neg_one_pow_eq_neg_one_iff_odd (h : (-1 : R) ≠ 1) :
+    (-1 : R) ^ n = -1 ↔ Odd n := by simp [neg_one_pow_eq_ite, h.symm]
+
 end DistribNeg
 
 section CharTwo
