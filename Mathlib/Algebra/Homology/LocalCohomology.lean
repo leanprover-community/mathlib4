@@ -69,10 +69,6 @@ def ringModIdeals (I : D ⥤ Ideal R) : D ⥤ ModuleCat.{u} R where
   obj t := ModuleCat.of R <| R ⧸ I.obj t
   map w := ModuleCat.ofHom <| Submodule.mapQ _ _ LinearMap.id (I.map w).down.down
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO:  Once this file is ported, move this instance to the right location.
-instance moduleCat_enoughProjectives' : EnoughProjectives (ModuleCat.{u} R) :=
-  ModuleCat.moduleCat_enoughProjectives.{u}
-
 /-- The diagram we will take the colimit of to define local cohomology, corresponding to the
 directed system determined by the functor `I` -/
 def diagram (I : D ⥤ Ideal R) (i : ℕ) : Dᵒᵖ ⥤ ModuleCat.{u} R ⥤ ModuleCat.{u} R :=
