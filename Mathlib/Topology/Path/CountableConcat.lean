@@ -25,7 +25,7 @@ through some convergent sequence of points.
 
 noncomputable section
 
-open Topology unitInterval Set
+open Topology unitInterval Set Filter
 
 namespace Path
 
@@ -100,7 +100,7 @@ lemma countableConcatFun_one {γ : (n : ℕ) → Path (s n) (s (n + 1))} {x : X}
 /-- The concatenation of countably many paths `γ n` leading up to some point `x`. The condition
 `hγx` is the precise condition needed in order for the concatenation to be continuous at `1`. -/
 def countableConcat (γ : (n : ℕ) → Path (s n) (s (n + 1))) (x : X)
-    (hγx : ∀ u ∈ 𝓝 x, ∃ n : ℕ, ∀ m, n ≤ m → ∀ t, γ m t ∈ u) : Path (s 0) x where
+    (hγx : Tendsto (fun x : ℕ × I ↦ γ x.1 x.2) (atTop ×ˢ ⊤) (𝓝 x)) : Path (s 0) x where
   toFun := countableConcatFun γ x
   continuous_toFun := by
     refine continuous_iff_continuousAt.2 fun t ↦ ?_
@@ -145,8 +145,9 @@ def countableConcat (γ : (n : ℕ) → Path (s n) (s (n + 1))) (x : X)
       unfold ContinuousAt
       intro u hu
       rw [countableConcatFun_one] at hu
-      let ⟨n, hn⟩ := hγx u hu
-      rw [Filter.mem_map, mem_nhds_iff]
+      let ⟨n, hn⟩ : ∃ n : ℕ, ∀ m, n ≤ m → ∀ t, γ m t ∈ u := by
+        simpa [tendsto_def, mem_prod_top] using hγx hu
+      rw [mem_map, mem_nhds_iff]
       use Set.Ioi ⟨1 - (2 ^ n)⁻¹, by rw [sub_nonneg, inv_le_one₀] <;> simp [one_le_pow₀], by simp⟩
       refine ⟨fun t ht ↦ ?_, isOpen_Ioi, by simp [← coe_lt_one]⟩
       by_cases ht' : t < 1
@@ -169,7 +170,7 @@ private lemma one_sub_half_div_two_pow_mem_unitInterval {t : I} {n : ℕ} :
 
 /-- Evaluating `Path.countableConcat` at 1-(1-t/2)/2^n yields `γ n t`. -/
 lemma countableConcat_applyAt {γ : (n : ℕ) → Path (s n) (s (n + 1))} {x : X}
-    (hγx : ∀ u ∈ 𝓝 x, ∃ n : ℕ, ∀ m, n ≤ m → ∀ t, γ m t ∈ u) (n : ℕ) (t : I) :
+    (hγx : Tendsto (fun x : ℕ × I ↦ γ x.1 x.2) (atTop ×ˢ ⊤) (𝓝 x)) (n : ℕ) (t : I) :
     countableConcat γ x hγx (σ ⟨(1 - t / 2) / 2 ^ n, one_sub_half_div_two_pow_mem_unitInterval⟩) =
     γ n t := by
   rw [countableConcat, coe_mk_mk]
@@ -183,9 +184,9 @@ lemma countableConcat_applyAt {γ : (n : ℕ) → Path (s n) (s (n + 1))} {x : X
 /-- The concatenation of a sequence of paths is the same as the concatenation of the first path
 with the concatenation of the remaining paths. -/
 lemma countableConcat_eq_trans {γ : (n : ℕ) → Path (s n) (s (n + 1))} {x : X}
-    (hγx : ∀ u ∈ 𝓝 x, ∃ n : ℕ, ∀ m, n ≤ m → ∀ t, γ m t ∈ u) :
-    countableConcat γ x hγx = (γ 0).trans (countableConcat (fun n ↦ γ (n + 1)) x fun u hu ↦
-      ⟨_, fun m hm t ↦ (hγx u hu).choose_spec _ (hm.trans m.le_succ) t⟩) := by
+    (hγx : Tendsto (fun x : ℕ × I ↦ γ x.1 x.2) (atTop ×ˢ ⊤) (𝓝 x)) :
+    countableConcat γ x hγx = (γ 0).trans (countableConcat (fun n ↦ γ (n + 1)) x <|
+      hγx.comp ((tendsto_add_atTop_nat 1).prodMap tendsto_id)) := by
   ext t
   by_cases ht : (t : ℝ) ≤ 1 / 2 <;> dsimp [trans, countableConcat] <;> simp only [ht, ↓reduceIte]
   · refine (countableConcatFun_eqOn γ 0 ?_).trans <| by simp
