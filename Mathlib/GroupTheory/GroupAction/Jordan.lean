@@ -229,7 +229,7 @@ theorem IsPreprimitive.isPreprimitive_ofFixingSubgroup_inter
   apply IsPreprimitive.of_card_lt (f := ofFixingSubgroup_of_inclusion G hts)
 
   rw [← Set.image_univ,
-    Set.ncard_image_of_injective _ (ofFixingSubgroup_of_inclusion_injective _)]
+    Set.ncard_image_of_injective _ (ofFixingSubgroup_of_inclusion_injective G _)]
 
   have this : Set.ncard (s ∩  g • s)ᶜ < 2 * Set.ncard (sᶜ) := by
     rw [Set.compl_inter, ← Nat.add_lt_add_iff_right, Set.ncard_union_add_ncard_inter]
@@ -296,7 +296,7 @@ theorem is_two_pretransitive_weak_jordan [DecidableEq α]
     rw [is_one_pretransitive_iff]
 
     apply IsPretransitive.of_surjective_map
-      (ofFixingSubgroup_of_singleton_bijective a).surjective hs_trans
+      (ofFixingSubgroup_of_singleton_bijective G a).surjective hs_trans
 
   -- The result is assumed by induction for sets of ncard ≤ n
 
@@ -434,7 +434,7 @@ theorem is_two_preprimitive_weak_jordan [DecidableEq α]
     rw [isMultiplyPreprimitive_succ_iff_ofStabilizer (M := G) (a := a)]
     · rw [is_one_preprimitive_iff (stabilizer G a) (ofStabilizer G a)]
       exact IsPreprimitive.of_surjective
-        (ofFixingSubgroup_of_singleton_bijective a).surjective
+        (ofFixingSubgroup_of_singleton_bijective G a).surjective
     · norm_num
 
   rcases Nat.lt_or_ge (2 * n.succ) (Nat.card α) with hn1 | hn2
@@ -592,7 +592,7 @@ theorem isMultiplyPreprimitive_jordan
     · rw [ofStabilizer.isMultiplyPretransitive (a := a)]
       rw [is_one_pretransitive_iff]
       apply IsPretransitive.of_surjective_map
-        (ofFixingSubgroup_of_singleton_bijective a).surjective hGs.toIsPretransitive
+        (ofFixingSubgroup_of_singleton_bijective G a).surjective hGs.toIsPretransitive
     · intro t h
       simp only [Nat.cast_add, Nat.cast_one,
         (ENat.add_left_injective_of_ne_top ENat.one_ne_top).eq_iff] at h
@@ -604,7 +604,7 @@ theorem isMultiplyPreprimitive_jordan
         rw [Set.image_singleton, hg]
       rw [htb]
       refine IsPreprimitive.of_surjective
-        (conjMap_ofFixingSubgroup_bijective hst).surjective
+        (conjMap_ofFixingSubgroup_bijective _ _ hst).surjective
 
   -- Induction step
   intro G α _ _ _ hG s hsn hα hGs
@@ -623,11 +623,11 @@ theorem isMultiplyPreprimitive_jordan
     have : IsPreprimitive ↥(fixingSubgroup G (insert a (Subtype.val '' t)))
         (ofFixingSubgroup G (insert a (Subtype.val '' t))) :=
       IsPreprimitive.of_surjective
-        (ofFixingSubgroup_of_eq_bijective hst).surjective
+        (ofFixingSubgroup_of_eq_bijective G hst).surjective
     have hGs' : IsPreprimitive (fixingSubgroup (stabilizer G a) t)
       (ofFixingSubgroup (stabilizer G a) t) :=
       IsPreprimitive.of_surjective
-        (equivariantMap_ofFixingSubgroup_to_ofStabilizer_bijective a t).surjective
+        (ofFixingSubgroup_insert_map_bijective G a t).surjective
     rw [← Nat.succ_eq_one_add]
     rw [isMultiplyPreprimitive_succ_iff_ofStabilizer (M := G) (a := a)]
     -- stabilizer.isMultiplyPreprimitive G α _ hG.toIsPretransitive]

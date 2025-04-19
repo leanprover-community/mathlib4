@@ -250,7 +250,8 @@ lemma mem_fixingSubgroup_union_iff {g : M} :
 
 /-- The group  morphism from `fixingSubgroup` of a union to the iterated `fixingSubgroup`. -/
 @[to_additive
-"The additivegroup morphism from `fixingAddSubgroup` of a union to the iterated `fixingAddSubgroup`."]
+"The additivegroup morphism from `fixingAddSubgroup` of a union
+to the iterated `fixingAddSubgroup`."]
 def fixingSubgroup_union_to_fixingSubgroup_of_fixingSubgroup :
     fixingSubgroup M (s ∪ t) →*
       fixingSubgroup (fixingSubgroup M s) (Subtype.val ⁻¹' t : Set (ofFixingSubgroup M s)) where
