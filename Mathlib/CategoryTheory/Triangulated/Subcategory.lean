@@ -103,6 +103,8 @@ lemma ext_of_isTriangulatedClosed₃
     (h₁ : P T.obj₁) (h₂ : P T.obj₂) : P T.obj₃ := by
   simpa only [isoClosure_eq_self] using P.ext_of_isTriangulatedClosed₃' T hT h₁ h₂
 
+variable {P}
+
 lemma IsTriangulatedClosed₁.mk' [P.IsClosedUnderIsomorphisms]
     (hP : ∀ (T : Triangle C) (_ : T ∈ distTriang C)
       (_ : P T.obj₂) (_ : P T.obj₃), P T.obj₁) : P.IsTriangulatedClosed₁ where
@@ -117,6 +119,8 @@ lemma IsTriangulatedClosed₃.mk' [P.IsClosedUnderIsomorphisms]
     (hP : ∀ (T : Triangle C) (_ : T ∈ distTriang C)
       (_ : P T.obj₁) (_ : P T.obj₂), P T.obj₃) : P.IsTriangulatedClosed₃ where
   ext₃' := by simpa only [isoClosure_eq_self] using hP
+
+variable (P)
 
 instance [P.IsTriangulatedClosed₂] : P.isoClosure.IsTriangulatedClosed₂ where
   ext₂' := by
