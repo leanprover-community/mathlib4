@@ -6,7 +6,7 @@ import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Inv
 import Mathlib.Data.List.Indexes
 import Mathlib.Logic.Equiv.Fin.Basic
-import Mathlib.Order.Interval.Set.Fin
+import Mathlib.Order.Interval.Finset.Fin
 
 open Set Function List
 open scoped Finset
@@ -95,47 +95,12 @@ lemma castLT_le_of_le_castLE {j : Fin m} {i : Fin n} (h₁ : m ≤ n) (h₂ : i 
     i.castLT ((le_def.mp h₂).trans_lt j.is_lt) ≤ j :=
   h₂
 
-@[simp]
-lemma image_castLE_finsetIic (i : Fin n) (h : n ≤ m) :
-    (Finset.Iic i).image (castLE h) = Finset.Iic (i.castLE h) := by
-  simp [← Finset.coe_inj]
-
-@[simp]
-lemma image_castAdd_finsetIic (m) (i : Fin n) :
-    (Finset.Iic i).image (castAdd m) = Finset.Iic (i.castAdd m) :=
-  image_castLE_finsetIic _ _
-
-@[simp]
-lemma image_castSucc_finsetIic (i : Fin n) :
-    (Finset.Iic i).image castSucc = Finset.Iic i.castSucc :=
-  image_castAdd_finsetIic _ _
-
-@[simp]
-lemma image_cast_finsetIic (i : Fin n) (h : n = m) :
-    (Finset.Iic i).image (Fin.cast h) = Finset.Iic (i.cast h) :=
-  image_castLE_finsetIic _ h.le
-
-@[simp]
-lemma map_castLEEmb_finsetIic (i : Fin n) (h : n ≤ m) :
-    (Finset.Iic i).map (Fin.castLEEmb h) = .Iic (i.castLE h) := by
-  simp [Finset.map_eq_image]
-
-@[simp]
-lemma map_castAddEmb_finsetIic (m) (i : Fin n) :
-    (Finset.Iic i).map (Fin.castAddEmb m) = .Iic (i.castAdd m) :=
-  map_castLEEmb_finsetIic _ _
-
-@[simp]
-lemma map_castSuccEmb_finsetIic (i : Fin n) :
-    (Finset.Iic i).map castSuccEmb = Finset.Iic i.castSucc :=
-  map_castAddEmb_finsetIic _ _
-
 variable {M : Type*} [CommMonoid M]
 
 @[to_additive]
 lemma prod_Iic_castLE (f : Fin m → M) (i : Fin n) (h : n ≤ m) :
     ∏ j ∈ .Iic (i.castLE h), f j = ∏ j ∈ .Iic i, f (j.castLE h) := by
-  rw [← map_castLEEmb_finsetIic, Finset.prod_map, coe_castLEEmb]
+  rw [← map_castLEEmb_Iic, Finset.prod_map, coe_castLEEmb]
 
 @[to_additive]
 lemma prod_Iic_castAdd (f : Fin (n + m) → M) (i : Fin n) :
