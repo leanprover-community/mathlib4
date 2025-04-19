@@ -47,6 +47,6 @@ lemma DirectedOn.dominated_fst_image_times_snd_image {d : Set (α × β)}
 lemma Monotone.upperBounds_image_of_directedOn_prod {γ : Type*} [Preorder γ] {g : α × β → γ}
     (Hg : Monotone g) {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) :
     upperBounds (g '' d) = upperBounds (g '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) := le_antisymm
-  (upperBounds_subset_of_dominated
+  (upperBounds_mono_of_dominated
     (Hg.dominated (fun _ ha => hd.dominated_fst_image_times_snd_image _ ha)))
   (upperBounds_mono_set (image_mono subset_fst_image_prod_snd_image))
