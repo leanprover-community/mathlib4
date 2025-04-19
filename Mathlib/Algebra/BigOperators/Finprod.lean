@@ -950,6 +950,19 @@ lemma finprod_option {f : Option α → M} (hf : (mulSupport (f ∘ some)).Finit
     exact Option.some_injective _
 
 @[to_additive]
+lemma finprod_mem_powerset_insert {f : Set α → M} {s : Set α} {a : α} (hs : s.Finite)
+    (has : a ∉ s) : ∏ᶠ t ∈ 𝒫 insert a s, f t = (∏ᶠ t ∈ 𝒫 s, f t) * ∏ᶠ t ∈ 𝒫 s, f (insert a t) := by
+  rw [Set.powerset_insert, finprod_mem_union (powerset_insert_disjoint has) hs.powerset
+  (hs.powerset.image (insert a)), finprod_mem_image (powerset_insert_injOn has)]
+
+@[to_additive]
+lemma finprod_mem_powerset_diff_elem {f : Set α → M} {s : Set α} {a : α} (hs : s.Finite)
+    (has : a ∈ s) : ∏ᶠ t ∈ 𝒫 s, f t = (∏ᶠ t ∈ 𝒫 (s \ {a}), f t)
+    * ∏ᶠ t ∈ 𝒫 (s \ {a}), f (insert a t) := by
+  nth_rw 1 2 [← Set.insert_diff_self_of_mem has] -- second appearence hidden by notation
+  exact finprod_mem_powerset_insert (hs.subset Set.diff_subset) (not_mem_diff_of_mem rfl)
+
+@[to_additive]
 theorem mul_finprod_cond_ne (a : α) (hf : (mulSupport f).Finite) :
     (f a * ∏ᶠ (i) (_ : i ≠ a), f i) = ∏ᶠ i, f i := by
   classical
@@ -1034,9 +1047,17 @@ theorem mul_finsum {R : Type*} [Semiring R] (f : α → R) (r : R) (h : (support
     (r * ∑ᶠ a : α, f a) = ∑ᶠ a : α, r * f a :=
   (AddMonoidHom.mulLeft r).map_finsum h
 
+theorem mul_finsum_mem {R : Type*} [Semiring R] {s : Set α} (f : α → R) (r : R) (hs : s.Finite) :
+    (r * ∑ᶠ a ∈ s, f a) = ∑ᶠ a ∈ s, r * f a :=
+  (AddMonoidHom.mulLeft r).map_finsum_mem f hs
+
 theorem finsum_mul {R : Type*} [Semiring R] (f : α → R) (r : R) (h : (support f).Finite) :
     (∑ᶠ a : α, f a) * r = ∑ᶠ a : α, f a * r :=
   (AddMonoidHom.mulRight r).map_finsum h
+
+theorem finsum_mem_mul {R : Type*} [Semiring R] {s : Set α} (f : α → R) (r : R) (hs : s.Finite) :
+    (∑ᶠ a ∈ s, f a) * r = ∑ᶠ a ∈ s, f a * r :=
+  (AddMonoidHom.mulRight r).map_finsum_mem f hs
 
 @[to_additive (attr := simp)]
 lemma finprod_apply {α ι : Type*} {f : ι → α → N} (hf : (mulSupport f).Finite) (a : α) :
