@@ -4,14 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Algebra.Ring.Nat
 import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 import Mathlib.Algebra.Order.Sub.Unbundled.Basic
 import Mathlib.Algebra.Order.SuccPred
+import Mathlib.Algebra.Ring.Nat
 import Mathlib.Data.Fin.Basic
-import Mathlib.Order.Nat
-import Mathlib.Order.SuccPred.Archimedean
-import Mathlib.Order.SuccPred.WithBot
 
 /-!
 # Successors and predecessors of naturals

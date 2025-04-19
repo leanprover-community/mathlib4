@@ -7,7 +7,6 @@ import Mathlib.Algebra.Order.GroupWithZero.Canonical
 import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Data.Fintype.Option
 import Mathlib.Order.InitialSeg
-import Mathlib.Order.Nat
 import Mathlib.Order.SuccPred.CompleteLinearOrder
 import Mathlib.SetTheory.Cardinal.Defs
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
