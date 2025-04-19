@@ -228,6 +228,11 @@ instance {X Y : C} (h : X = Y) : IsIso (eqToHom h) :=
 theorem inv_eqToHom {X Y : C} (h : X = Y) : inv (eqToHom h) = eqToHom h.symm := by
   aesop_cat
 
+@[simp]
+theorem eqToHom_quiverHomOfEq {X Y : C} (f : X ⟶ Y) {X' Y' : C} (hX : X = X') (hY : Y = Y') :
+    Quiver.homOfEq f hX hY = eqToHom hX.symm ≫ f ≫ eqToHom hY := by
+  subst hX hY; simp
+
 variable {D : Type u₂} [Category.{v₂} D]
 
 namespace Functor
