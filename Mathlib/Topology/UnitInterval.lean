@@ -52,10 +52,10 @@ theorem mem_iff_one_sub_mem {t : ℝ} : t ∈ I ↔ 1 - t ∈ I := by
   rw [mem_Icc, mem_Icc]
   constructor <;> intro <;> constructor <;> linarith
 
-instance hasZero : Zero I :=
+instance instZero : Zero I :=
   ⟨⟨0, zero_mem⟩⟩
 
-instance hasOne : One I :=
+instance instOne : One I :=
   ⟨⟨1, by constructor <;> norm_num⟩⟩
 
 instance : ZeroLEOneClass I := ⟨zero_le_one (α := ℝ)⟩
@@ -64,6 +64,8 @@ instance : CompleteLattice I := have : Fact ((0 : ℝ) ≤ 1) := ⟨zero_le_one�
 
 lemma univ_eq_Icc : (univ : Set I) = Icc (0 : I) (1 : I) := Icc_bot_top.symm
 
+@[simp, norm_cast] theorem coe_zero : ((0 : I) : ℝ) = 0 := rfl
+@[simp, norm_cast] theorem coe_one : ((1 : I) : ℝ) = 1 := rfl
 @[norm_cast] theorem coe_ne_zero {x : I} : (x : ℝ) ≠ 0 ↔ x ≠ 0 := coe_eq_zero.not
 @[norm_cast] theorem coe_ne_one {x : I} : (x : ℝ) ≠ 1 ↔ x ≠ 1 := coe_eq_one.not
 @[simp, norm_cast] theorem coe_pos {x : I} : (0 : ℝ) < x ↔ 0 < x := Iff.rfl
