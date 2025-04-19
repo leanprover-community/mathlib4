@@ -49,6 +49,13 @@ section toExpr
 
 open Lean Qq
 
+open Qq in
+/-- `Matrix.mkLiteralQ !![a, b; c, d]` produces the term `q(!![$a, $b; $c, $d])`. -/
+def mkLiteralQ {u : Level} {α : Q(Type u)} {m n : Nat} (elems : Matrix (Fin m) (Fin n) Q($α)) :
+    Q(Matrix (Fin $m) (Fin $n) $α) :=
+  let elems := PiFin.mkLiteralQ (α := q(Fin $n → $α)) fun i => PiFin.mkLiteralQ fun j => elems i j
+  q(Matrix.of $elems)
+
 /-- Matrices can be reflected whenever their entries can. We insert a `Matrix.of` to
 prevent immediate decay to a function. -/
 protected instance toExpr [ToLevel.{u}] [ToLevel.{uₘ}] [ToLevel.{uₙ}]
@@ -121,7 +128,7 @@ def delabMatrixNotation : Delab := whenNotPPOption getPPExplicit <| whenPPOption
     withAppArg do
       if m = 0 then
         guard <| (← getExpr).isAppOfArity ``vecEmpty 1
-        let commas := mkArray n (mkAtom ",")
+        let commas := .replicate n (mkAtom ",")
         `(!![$[,%$commas]*])
       else
         if n = 0 then
@@ -509,7 +516,8 @@ theorem vec3_dotProduct' {a₀ a₁ a₂ b₀ b₁ b₂ : α} :
   rw [cons_dotProduct_cons, cons_dotProduct_cons, cons_dotProduct_cons, dotProduct_empty,
     add_zero, add_assoc]
 
-@[simp]
+-- This is not tagged `@[simp]` because it does not mesh well with simp lemmas for
+-- dot and cross products in dimension 3.
 theorem vec3_dotProduct (v w : Fin 3 → α) : v ⬝ᵥ w = v 0 * w 0 + v 1 * w 1 + v 2 * w 2 :=
   vec3_dotProduct'
 

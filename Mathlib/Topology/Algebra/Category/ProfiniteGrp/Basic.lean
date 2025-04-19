@@ -7,6 +7,7 @@ import Mathlib.Algebra.Category.Grp.FiniteGrp
 import Mathlib.Topology.Algebra.ClosedSubgroup
 import Mathlib.Topology.Algebra.ContinuousMonoidHom
 import Mathlib.Topology.Category.Profinite.Basic
+import Mathlib.Topology.Separation.Connected
 /-!
 
 # Category of Profinite Groups

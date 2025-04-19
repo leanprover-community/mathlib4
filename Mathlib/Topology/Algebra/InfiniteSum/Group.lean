@@ -6,7 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.SetTheory.Cardinal.Finite
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
 import Mathlib.Topology.UniformSpace.Cauchy
-import Mathlib.Topology.Algebra.UniformGroup.Defs
+import Mathlib.Topology.Algebra.IsUniformGroup.Defs
 import Mathlib.Topology.Algebra.Group.Pointwise
 
 /-!
@@ -128,7 +128,12 @@ theorem hasProd_ite_div_hasProd [DecidableEq β] (hf : HasProd f a) (b : β) :
   · rw [div_mul_eq_mul_div, one_mul]
 
 /-- A more general version of `Multipliable.congr`, allowing the functions to
-disagree on a finite set. -/
+disagree on a finite set.
+
+Note that this requires the target to be a group, and hence fails for products valued
+in a ring. See `Multipliable.congr_cofinite₀` for a version applying in this case,
+with an additional non-vanishing hypothesis.
+-/
 @[to_additive "A more general version of `Summable.congr`, allowing the functions to
 disagree on a finite set."]
 theorem Multipliable.congr_cofinite (hf : Multipliable f) (hfg : f =ᶠ[cofinite] g) :
@@ -163,14 +168,22 @@ theorem tprod_inv : ∏' b, (f b)⁻¹ = (∏' b, f b)⁻¹ := by
       tprod_eq_one_of_not_multipliable (mt Multipliable.of_inv hf)]
 
 @[to_additive]
-theorem tprod_div (hf : Multipliable f) (hg : Multipliable g) :
+protected theorem Multipliable.tprod_div (hf : Multipliable f) (hg : Multipliable g) :
     ∏' b, (f b / g b) = (∏' b, f b) / ∏' b, g b :=
   (hf.hasProd.div hg.hasProd).tprod_eq
 
+@[deprecated (since := "2025-04-12")] alias tsum_sub := Summable.tsum_sub
+@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_div :=
+  Multipliable.tprod_div
+
 @[to_additive]
-theorem prod_mul_tprod_compl {s : Finset β} (hf : Multipliable f) :
+protected theorem Multipliable.prod_mul_tprod_compl {s : Finset β} (hf : Multipliable f) :
     (∏ x ∈ s, f x) * ∏' x : ↑(s : Set β)ᶜ, f x = ∏' x, f x :=
   ((s.hasProd f).mul_compl (s.multipliable_compl_iff.2 hf).hasProd).tprod_eq.symm
+
+@[deprecated (since := "2025-04-12")] alias sum_add_tsum_compl := Summable.sum_add_tsum_compl
+@[to_additive existing, deprecated (since := "2025-04-12")] alias prod_mul_tprod_compl :=
+  Multipliable.prod_mul_tprod_compl
 
 /-- Let `f : β → α` be a multipliable function and let `b ∈ β` be an index.
 Lemma `tprod_eq_mul_tprod_ite` writes `∏ n, f n` as `f b` times the product of the
@@ -178,16 +191,20 @@ remaining terms. -/
 @[to_additive "Let `f : β → α` be a summable function and let `b ∈ β` be an index.
 Lemma `tsum_eq_add_tsum_ite` writes `Σ' n, f n` as `f b` plus the sum of the
 remaining terms."]
-theorem tprod_eq_mul_tprod_ite [DecidableEq β] (hf : Multipliable f) (b : β) :
-    ∏' n, f n = f b * ∏' n, ite (n = b) 1 (f n) := by
+protected theorem Multipliable.tprod_eq_mul_tprod_ite [DecidableEq β] (hf : Multipliable f)
+    (b : β) : ∏' n, f n = f b * ∏' n, ite (n = b) 1 (f n) := by
   rw [(hasProd_ite_div_hasProd hf.hasProd b).tprod_eq]
   exact (mul_div_cancel _ _).symm
+
+@[deprecated (since := "2025-04-12")] alias tsum_eq_add_tsum_ite := Summable.tsum_eq_add_tsum_ite
+@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_eq_mul_tprod_ite :=
+  Multipliable.tprod_eq_mul_tprod_ite
 
 end tprod
 
 end IsTopologicalGroup
 
-section UniformGroup
+section IsUniformGroup
 
 variable [CommGroup α] [UniformSpace α]
 
@@ -198,7 +215,7 @@ theorem multipliable_iff_cauchySeq_finset [CompleteSpace α] {f : β → α} :
     Multipliable f ↔ CauchySeq fun s : Finset β ↦ ∏ b ∈ s, f b := by
   classical exact cauchy_map_iff_exists_tendsto.symm
 
-variable [UniformGroup α] {f g : β → α}
+variable [IsUniformGroup α] {f g : β → α}
 
 @[to_additive]
 theorem cauchySeq_finset_iff_prod_vanishing :
@@ -300,18 +317,29 @@ theorem multipliable_subtype_and_compl {s : Set β} :
   ⟨and_imp.2 Multipliable.mul_compl, fun h ↦ ⟨h.subtype s, h.subtype sᶜ⟩⟩
 
 @[to_additive]
-theorem tprod_subtype_mul_tprod_subtype_compl [T2Space α] {f : β → α} (hf : Multipliable f)
-    (s : Set β) : (∏' x : s, f x) * ∏' x : ↑sᶜ, f x = ∏' x, f x :=
+protected theorem Multipliable.tprod_subtype_mul_tprod_subtype_compl [T2Space α] {f : β → α}
+    (hf : Multipliable f) (s : Set β) : (∏' x : s, f x) * ∏' x : ↑sᶜ, f x = ∏' x, f x :=
   ((hf.subtype s).hasProd.mul_compl (hf.subtype { x | x ∉ s }).hasProd).unique hf.hasProd
 
+@[deprecated (since := "2025-04-12")] alias tsum_subtype_add_tsum_subtype_compl :=
+  Summable.tsum_subtype_add_tsum_subtype_compl
+@[to_additive existing, deprecated (since := "2025-04-12")] alias
+  tprod_subtype_mul_tprod_subtype_compl := Multipliable.tprod_subtype_mul_tprod_subtype_compl
+
 @[to_additive]
-theorem prod_mul_tprod_subtype_compl [T2Space α] {f : β → α} (hf : Multipliable f) (s : Finset β) :
+protected theorem Multipliable.prod_mul_tprod_subtype_compl [T2Space α] {f : β → α}
+    (hf : Multipliable f) (s : Finset β) :
     (∏ x ∈ s, f x) * ∏' x : { x // x ∉ s }, f x = ∏' x, f x := by
-  rw [← tprod_subtype_mul_tprod_subtype_compl hf s]
+  rw [← hf.tprod_subtype_mul_tprod_subtype_compl s]
   simp only [Finset.tprod_subtype', mul_right_inj]
   rfl
 
-end UniformGroup
+@[deprecated (since := "2025-04-12")] alias sum_add_tsum_subtype_compl :=
+  Summable.sum_add_tsum_subtype_compl
+@[to_additive existing, deprecated (since := "2025-04-12")] alias prod_mul_tprod_subtype_compl :=
+  Multipliable.prod_mul_tprod_subtype_compl
+
+end IsUniformGroup
 
 section IsTopologicalGroup
 
@@ -322,7 +350,7 @@ theorem Multipliable.vanishing (hf : Multipliable f) ⦃e : Set G⦄ (he : e ∈
     ∃ s : Finset α, ∀ t, Disjoint t s → (∏ k ∈ t, f k) ∈ e := by
   classical
   letI : UniformSpace G := IsTopologicalGroup.toUniformSpace G
-  have : UniformGroup G := uniformGroup_of_commGroup
+  have : IsUniformGroup G := isUniformGroup_of_commGroup
   exact cauchySeq_finset_iff_prod_vanishing.1 hf.hasProd.cauchySeq e he
 
 @[to_additive]
@@ -330,7 +358,7 @@ theorem Multipliable.tprod_vanishing (hf : Multipliable f) ⦃e : Set G⦄ (he :
     ∃ s : Finset α, ∀ t : Set α, Disjoint t s → (∏' b : t, f b) ∈ e := by
   classical
   letI : UniformSpace G := IsTopologicalGroup.toUniformSpace G
-  have : UniformGroup G := uniformGroup_of_commGroup
+  have : IsUniformGroup G := isUniformGroup_of_commGroup
   exact cauchySeq_finset_iff_tprod_vanishing.1 hf.hasProd.cauchySeq e he
 
 /-- The product over the complement of a finset tends to `1` when the finset grows to cover the
@@ -359,6 +387,13 @@ theorem Multipliable.tendsto_cofinite_one (hf : Multipliable f) : Tendsto f cofi
   rcases hf.vanishing he with ⟨s, hs⟩
   refine s.eventually_cofinite_nmem.mono fun x hx ↦ ?_
   · simpa using hs {x} (disjoint_singleton_left.2 hx)
+
+@[to_additive]
+theorem Multipliable.finite_mulSupport_of_discreteTopology
+    {α : Type*} [CommGroup α] [TopologicalSpace α] [DiscreteTopology α]
+    {β : Type*} (f : β → α) (h : Multipliable f) : Set.Finite f.mulSupport :=
+  haveI : IsTopologicalGroup α := ⟨⟩
+  h.tendsto_cofinite_one (discreteTopology_iff_singleton_mem_nhds.mp ‹_› 1)
 
 @[to_additive]
 theorem Multipliable.countable_mulSupport [FirstCountableTopology G] [T1Space G]
@@ -390,3 +425,51 @@ theorem tprod_const [T2Space G] (a : G) : ∏' _ : β, a = a ^ (Nat.card β) := 
       simpa [multipliable_const_iff] using ha
 
 end IsTopologicalGroup
+
+section CommGroupWithZero
+variable {K : Type*} [CommGroupWithZero K] [TopologicalSpace K] [ContinuousMul K] {f g : α → K}
+/-!
+## Groups with a zero
+
+These lemmas apply to a `CommGroupWithZero`; the most familiar case is when `K` is a field. These
+are specific to the product setting and do not have a sensible additive analogue.
+-/
+
+open Finset in
+lemma HasProd.congr_cofinite₀ {c : K} (hc : HasProd f c) {s : Finset α}
+    (hs : ∀ a ∈ s, f a ≠ 0) (hs' : ∀ a ∉ s, f a = g a) :
+    HasProd g (c * ((∏ i ∈ s, g i) / ∏ i ∈ s, f i)) := by
+  classical
+  refine (Tendsto.mul_const ((∏ i ∈ s, g i) / ∏ i ∈ s, f i) hc).congr' ?_
+  filter_upwards [eventually_ge_atTop s] with t ht
+  calc (∏ i ∈ t, f i) * ((∏ i ∈ s, g i) / ∏ i ∈ s, f i)
+  _ = ((∏ i ∈ s, f i) * ∏ i ∈ t \ s, g i) * _ := by
+    conv_lhs => rw [← union_sdiff_of_subset ht, prod_union disjoint_sdiff,
+      prod_congr rfl fun i hi ↦ hs' i (mem_sdiff.mp hi).2]
+  _ = (∏ i ∈ s, g i) * ∏ i ∈ t \ s, g i := by
+    rw [← mul_div_assoc, ← div_mul_eq_mul_div, ← div_mul_eq_mul_div, div_self, one_mul, mul_comm]
+    exact prod_ne_zero_iff.mpr hs
+  _ = ∏ i ∈ t, g i := by
+    rw [← prod_union disjoint_sdiff, union_sdiff_of_subset ht]
+
+protected lemma Multipliable.tsum_congr_cofinite₀ [T2Space K] (hc : Multipliable f) {s : Finset α}
+    (hs : ∀ a ∈ s, f a ≠ 0) (hs' : ∀ a ∉ s, f a = g a) :
+    ∏' i, g i = ((∏' i, f i) * ((∏ i ∈ s, g i) / ∏ i ∈ s, f i)) :=
+  (hc.hasProd.congr_cofinite₀ hs hs').tprod_eq
+
+@[deprecated (since := "2025-04-12")] alias tsum_congr_cofinite := Multipliable.tsum_congr_cofinite₀
+
+/--
+See also `Multipliable.congr_cofinite`, which does not have a non-vanishing condition, but instead
+requires the target to be a group under multiplication (and hence fails for infinite products in a
+ring).
+-/
+lemma Multipliable.congr_cofinite₀ (hf : Multipliable f) (hf' : ∀ a, f a ≠ 0)
+    (hfg : ∀ᶠ a in cofinite, f a = g a) :
+    Multipliable g := by
+  classical
+  obtain ⟨c, hc⟩ := hf
+  obtain ⟨s, hs⟩ : ∃ s : Finset α, ∀ i ∉ s, f i = g i := ⟨hfg.toFinset, by simp⟩
+  exact (hc.congr_cofinite₀ (fun a _ ↦ hf' a) hs).multipliable
+
+end CommGroupWithZero

@@ -38,6 +38,12 @@ variable [LocallyFiniteOrder α]
 section SuccOrder
 variable [SuccOrder α] {a b : α}
 
+/-!
+#### Orders possibly with maximal elements
+
+##### Equalities of intervals
+-/
+
 lemma Ico_succ_left_eq_Ioo (a b : α) : Ico (succ a) b = Ioo a b :=
   coe_injective <| by simpa using Set.Ico_succ_left_eq_Ioo _ _
 
@@ -54,11 +60,26 @@ lemma Ico_succ_succ_eq_Ioc_of_not_isMax (hb : ¬ IsMax b) (a : α) :
     Ico (succ a) (succ b) = Ioc a b :=
   coe_injective <| by simpa using Set.Ico_succ_succ_eq_Ioc_of_not_isMax hb _
 
+/-! ##### Inserting into intervals -/
+
 lemma insert_Icc_succ_left_eq_Icc (h : a ≤ b) : insert a (Icc (succ a) b) = Icc a b :=
   coe_injective <| by simpa using Set.insert_Icc_succ_left_eq_Icc h
 
 lemma insert_Icc_eq_Icc_succ_right (h : a ≤ succ b) : insert (succ b) (Icc a b) = Icc a (succ b) :=
   coe_injective <| by simpa using Set.insert_Icc_eq_Icc_succ_right h
+
+lemma insert_Ico_right_eq_Ico_succ_right_of_not_isMax (h : a ≤ b) (hb : ¬ IsMax b) :
+    insert b (Ico a b) = Ico a (succ b) :=
+  coe_injective <| by simpa using Set.insert_Ico_right_eq_Ico_succ_right_of_not_isMax h hb
+
+lemma insert_Ico_succ_left_eq_Ico (h : a < b) : insert a (Ico (succ a) b) = Ico a b :=
+  coe_injective <| by simpa using Set.insert_Ico_succ_left_eq_Ico h
+
+/-!
+#### Orders with no maximal elements
+
+##### Equalities of intervals
+-/
 
 variable [NoMaxOrder α]
 
@@ -67,10 +88,21 @@ lemma Ico_succ_right_eq_Icc (a b : α) : Ico a (succ b) = Icc a b := coe_injecti
 lemma Ioo_succ_right_eq_Ioc (a b : α) : Ioo a (succ b) = Ioc a b := coe_injective <| by simp
 lemma Ico_succ_succ_eq_Ioc (a b : α) : Ico (succ a) (succ b) = Ioc a b := coe_injective <| by simp
 
+/-! ##### Inserting into intervals -/
+
+lemma insert_Ico_right_eq_Ico_succ_right (h : a ≤ b) : insert b (Ico a b) = Ico a (succ b) :=
+  coe_injective <| by simpa using Set.insert_Ico_right_eq_Ico_succ_right h
+
 end SuccOrder
 
 section PredOrder
 variable [PredOrder α] {a b : α}
+
+/-!
+#### Orders possibly with minimal elements
+
+##### Equalities of intervals
+-/
 
 lemma Ioc_pred_right_eq_Ioo (a b : α) : Ioc a (pred b) = Ioo a b :=
   coe_injective <| by simpa using Set.Ioc_pred_right_eq_Ioo _ _
@@ -88,11 +120,26 @@ lemma Ioc_pred_pred_eq_Ico_of_not_isMin (ha : ¬ IsMin a) (b : α) :
     Ioc (pred a) (pred b) = Ico a b :=
   coe_injective <| by simpa using Set.Ioc_pred_pred_eq_Ico_of_not_isMin ha _
 
+/-! ##### Inserting into intervals -/
+
 lemma insert_Icc_pred_right_eq_Icc (h : a ≤ b) : insert b (Icc a (pred b)) = Icc a b :=
   coe_injective <| by simpa using Set.insert_Icc_pred_right_eq_Icc h
 
 lemma insert_Icc_eq_Icc_pred_left (h : pred a ≤ b) : insert (pred a) (Icc a b) = Icc (pred a) b :=
   coe_injective <| by simpa using Set.insert_Icc_eq_Icc_pred_left h
+
+lemma insert_Ioc_left_eq_Ioc_pred_left_of_not_isMin (h : a ≤ b) (ha : ¬ IsMin a) :
+    insert a (Ioc a b) = Ioc (pred a) b :=
+  coe_injective <| by simpa using Set.insert_Ioc_left_eq_Ioc_pred_left_of_not_isMin h ha
+
+lemma insert_Ioc_pred_right_eq_Ioc (h : a < b) : insert b (Ioc a (pred b)) = Ioc a b :=
+  coe_injective <| by simpa using Set.insert_Ioc_pred_right_eq_Ioc h
+
+/-!
+#### Orders with no minimal elements
+
+##### Equalities of intervals
+-/
 
 variable [NoMinOrder α]
 
@@ -100,6 +147,11 @@ lemma Icc_pred_right_eq_Ico (a b : α) : Icc a (pred b) = Ico a b := coe_injecti
 lemma Ioc_pred_left_eq_Icc (a b : α) : Ioc (pred a) b = Icc a b := coe_injective <| by simp
 lemma Ioo_pred_left_eq_Ioc (a b : α) : Ioo (pred a) b = Ico a b := coe_injective <| by simp
 lemma Ioc_pred_pred_eq_Ico (a b : α) : Ioc (pred a) (pred b) = Ico a b := coe_injective <| by simp
+
+/-! ##### Inserting into intervals -/
+
+lemma insert_Ioc_left_eq_Ioc_pred_left (h : a ≤ b) : insert a (Ioc a b) = Ioc (pred a) b :=
+  coe_injective <| by simpa using Set.insert_Ioc_left_eq_Ioc_pred_left h
 
 end PredOrder
 

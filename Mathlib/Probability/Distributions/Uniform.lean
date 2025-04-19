@@ -39,7 +39,7 @@ This file defines a number of uniform `PMF` distributions from various inputs,
 * Refactor the `PMF` definitions to come from a `uniformMeasure` on a `Finset`/`Fintype`/`Multiset`.
 -/
 
-open scoped MeasureTheory NNReal ENNReal
+open scoped Finset MeasureTheory NNReal ENNReal
 
 -- TODO: We can't `open ProbabilityTheory` without opening the `ProbabilityTheory` locale :(
 open TopologicalSpace MeasureTheory.Measure PMF
@@ -254,25 +254,25 @@ variable (t : Set α)
 open scoped Classical in
 @[simp]
 theorem toOuterMeasure_uniformOfFinset_apply :
-    (uniformOfFinset s hs).toOuterMeasure t = (s.filter (· ∈ t)).card / s.card :=
+    (uniformOfFinset s hs).toOuterMeasure t = #{x ∈ s | x ∈ t} / #s :=
   calc
     (uniformOfFinset s hs).toOuterMeasure t = ∑' x, if x ∈ t then uniformOfFinset s hs x else 0 :=
       toOuterMeasure_apply (uniformOfFinset s hs) t
-    _ = ∑' x, if x ∈ s ∧ x ∈ t then (s.card : ℝ≥0∞)⁻¹ else 0 :=
-      (tsum_congr fun x => by simp_rw [uniformOfFinset_apply, ← ite_and, and_comm])
-    _ = ∑ x ∈ s.filter (· ∈ t), if x ∈ s ∧ x ∈ t then (s.card : ℝ≥0∞)⁻¹ else 0 :=
-      (tsum_eq_sum fun _ hx => if_neg fun h => hx (Finset.mem_filter.2 h))
-    _ = ∑ _x ∈ s.filter (· ∈ t), (s.card : ℝ≥0∞)⁻¹ :=
-      (Finset.sum_congr rfl fun x hx => by
-        let this : x ∈ s ∧ x ∈ t := by simpa using hx
-        simp only [this, and_self_iff, if_true])
-    _ = (s.filter (· ∈ t)).card / s.card := by
+    _ = ∑' x, if x ∈ s ∧ x ∈ t then (#s : ℝ≥0∞)⁻¹ else 0 :=
+      tsum_congr fun x => by simp_rw [uniformOfFinset_apply, ← ite_and, and_comm]
+    _ = ∑ x ∈ s with x ∈ t, if x ∈ s ∧ x ∈ t then (#s : ℝ≥0∞)⁻¹ else 0 :=
+      tsum_eq_sum fun _ hx => if_neg fun h => hx (Finset.mem_filter.2 h)
+    _ = ∑ x ∈ s with x ∈ t, (#s : ℝ≥0∞)⁻¹ :=
+      Finset.sum_congr rfl fun x hx => by
+        have this : x ∈ s ∧ x ∈ t := by simpa using hx
+        simp only [this, and_self_iff, if_true]
+    _ = #{x ∈ s | x ∈ t} / #s := by
         simp only [div_eq_mul_inv, Finset.sum_const, nsmul_eq_mul]
 
 open scoped Classical in
 @[simp]
 theorem toMeasure_uniformOfFinset_apply [MeasurableSpace α] (ht : MeasurableSet t) :
-    (uniformOfFinset s hs).toMeasure t = (s.filter (· ∈ t)).card / s.card :=
+    (uniformOfFinset s hs).toMeasure t = #{x ∈ s | x ∈ t} / #s :=
   (toMeasure_apply_eq_toOuterMeasure_apply _ t ht).trans (toOuterMeasure_uniformOfFinset_apply hs t)
 
 end Measure
