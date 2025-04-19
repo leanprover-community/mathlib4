@@ -54,7 +54,7 @@ theorem Filter.Tendsto.integral_sub_linear_isLittleO_ae
   intro s hμs h_integrable hfm h_norm
   rw [← setIntegral_const, ← integral_sub h_integrable (integrableOn_const.2 <| Or.inr hμs),
     Real.norm_eq_abs, abs_of_nonneg measureReal_nonneg]
-  exact norm_setIntegral_le_of_norm_le_const_ae' hμs h_norm (hfm.sub aestronglyMeasurable_const)
+  exact norm_setIntegral_le_of_norm_le_const_ae' hμs h_norm
 
 /-- Fundamental theorem of calculus for set integrals, `nhdsWithin` version: if `μ` is a locally
 finite measure and `f` is an almost everywhere measurable function that is continuous at a point `a`

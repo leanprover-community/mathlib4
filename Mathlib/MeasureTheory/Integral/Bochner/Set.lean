@@ -507,30 +507,36 @@ theorem norm_setIntegral_le_of_norm_le_const_ae {C : ℝ} (hs : μ s < ∞)
   simpa using norm_integral_le_of_norm_le_const hC
 
 theorem norm_setIntegral_le_of_norm_le_const_ae' {C : ℝ} (hs : μ s < ∞)
-    (hC : ∀ᵐ x ∂μ, x ∈ s → ‖f x‖ ≤ C) (hfm : AEStronglyMeasurable f (μ.restrict s)) :
-    ‖∫ x in s, f x ∂μ‖ ≤ C * μ.real s := by
-  apply norm_setIntegral_le_of_norm_le_const_ae hs
-  have A : ∀ᵐ x : X ∂μ, x ∈ s → ‖AEStronglyMeasurable.mk f hfm x‖ ≤ C := by
-    filter_upwards [hC, hfm.ae_mem_imp_eq_mk] with _ h1 h2 h3
-    rw [← h2 h3]
-    exact h1 h3
-  have B : MeasurableSet {x | ‖hfm.mk f x‖ ≤ C} :=
-    hfm.stronglyMeasurable_mk.norm.measurable measurableSet_Iic
-  filter_upwards [hfm.ae_eq_mk, (ae_restrict_iff B).2 A] with _ h1 _
-  rwa [h1]
+    (hC : ∀ᵐ x ∂μ, x ∈ s → ‖f x‖ ≤ C) : ‖∫ x in s, f x ∂μ‖ ≤ C * μ.real s := by
+  by_cases hfm : AEStronglyMeasurable f (μ.restrict s)
+  · apply norm_setIntegral_le_of_norm_le_const_ae hs
+    have A : ∀ᵐ x : X ∂μ, x ∈ s → ‖AEStronglyMeasurable.mk f hfm x‖ ≤ C := by
+      filter_upwards [hC, hfm.ae_mem_imp_eq_mk] with _ h1 h2 h3
+      rw [← h2 h3]
+      exact h1 h3
+    have B : MeasurableSet {x | ‖hfm.mk f x‖ ≤ C} :=
+      hfm.stronglyMeasurable_mk.norm.measurable measurableSet_Iic
+    filter_upwards [hfm.ae_eq_mk, (ae_restrict_iff B).2 A] with _ h1 _
+    rwa [h1]
+  · rw [integral_non_aestronglyMeasurable hfm]
+    have : ∃ᵐ (x : X) ∂μ, x ∈ s := by
+      apply frequently_ae_mem_iff.mpr
+      contrapose! hfm
+      simp [Measure.restrict_eq_zero.mpr hfm]
+    rcases (this.and_eventually hC).exists with ⟨x, hx, h'x⟩
+    have : 0 ≤ C := (norm_nonneg _).trans (h'x hx)
+    simp only [norm_zero, ge_iff_le]
+    positivity
 
-theorem norm_setIntegral_le_of_norm_le_const_ae'' {C : ℝ} (hs : μ s < ∞) (hsm : MeasurableSet s)
-    (hC : ∀ᵐ x ∂μ, x ∈ s → ‖f x‖ ≤ C) : ‖∫ x in s, f x ∂μ‖ ≤ C * μ.real s :=
-  norm_setIntegral_le_of_norm_le_const_ae hs <| by
-    rwa [ae_restrict_eq hsm, eventually_inf_principal]
+@[deprecated (since := "2025-04-17")]
+alias norm_setIntegral_le_of_norm_le_const_ae'' := norm_setIntegral_le_of_norm_le_const_ae'
 
-theorem norm_setIntegral_le_of_norm_le_const {C : ℝ} (hs : μ s < ∞) (hC : ∀ x ∈ s, ‖f x‖ ≤ C)
-    (hfm : AEStronglyMeasurable f (μ.restrict s)) : ‖∫ x in s, f x ∂μ‖ ≤ C * μ.real s :=
-  norm_setIntegral_le_of_norm_le_const_ae' hs (Eventually.of_forall hC) hfm
+theorem norm_setIntegral_le_of_norm_le_const {C : ℝ} (hs : μ s < ∞) (hC : ∀ x ∈ s, ‖f x‖ ≤ C) :
+    ‖∫ x in s, f x ∂μ‖ ≤ C * μ.real s :=
+  norm_setIntegral_le_of_norm_le_const_ae' hs (Eventually.of_forall hC)
 
-theorem norm_setIntegral_le_of_norm_le_const' {C : ℝ} (hs : μ s < ∞) (hsm : MeasurableSet s)
-    (hC : ∀ x ∈ s, ‖f x‖ ≤ C) : ‖∫ x in s, f x ∂μ‖ ≤ C * μ.real s :=
-  norm_setIntegral_le_of_norm_le_const_ae'' hs hsm <| Eventually.of_forall hC
+@[deprecated (since := "2025-04-17")]
+alias norm_setIntegral_le_of_norm_le_const' := norm_setIntegral_le_of_norm_le_const
 
 theorem norm_integral_sub_setIntegral_le [IsFiniteMeasure μ] {C : ℝ}
     (hf : ∀ᵐ (x : X) ∂μ, ‖f x‖ ≤ C) {s : Set X} (hs : MeasurableSet s) (hf1 : Integrable f μ) :
@@ -775,21 +781,21 @@ section IntegrableUnion
 variable {ι : Type*} [Countable ι] {μ : Measure X} [NormedAddCommGroup E]
 
 theorem integrableOn_iUnion_of_summable_integral_norm {f : X → E} {s : ι → Set X}
-    (hs : ∀ i : ι, MeasurableSet (s i)) (hi : ∀ i : ι, IntegrableOn f (s i) μ)
+    (hi : ∀ i : ι, IntegrableOn f (s i) μ)
     (h : Summable fun i : ι => ∫ x : X in s i, ‖f x‖ ∂μ) : IntegrableOn f (iUnion s) μ := by
   refine ⟨AEStronglyMeasurable.iUnion fun i => (hi i).1, (lintegral_iUnion_le _ _).trans_lt ?_⟩
   have B := fun i => lintegral_coe_eq_integral (fun x : X => ‖f x‖₊) (hi i).norm
   simp_rw [enorm_eq_nnnorm, tsum_congr B]
   have S' :
     Summable fun i : ι =>
-      (⟨∫ x : X in s i, ‖f x‖₊ ∂μ, setIntegral_nonneg (hs i) fun x _ => NNReal.coe_nonneg _⟩ :
+      (⟨∫ x : X in s i, ‖f x‖₊ ∂μ, integral_nonneg fun x => NNReal.coe_nonneg _⟩ :
         NNReal) := by
     rw [← NNReal.summable_coe]; exact h
   have S'' := ENNReal.tsum_coe_eq S'.hasSum
   simp_rw [ENNReal.coe_nnreal_eq, NNReal.coe_mk, coe_nnnorm] at S''
   convert ENNReal.ofReal_lt_top
 
-variable [TopologicalSpace X] [BorelSpace X] [MetrizableSpace X] [IsLocallyFiniteMeasure μ]
+variable [TopologicalSpace X] [BorelSpace X] [T2Space X] [IsLocallyFiniteMeasure μ]
 
 /-- If `s` is a countable family of compact sets, `f` is a continuous function, and the sequence
 `‖f.restrict (s i)‖ * μ (s i)` is summable, then `f` is integrable on the union of the `s i`. -/
@@ -797,14 +803,13 @@ theorem integrableOn_iUnion_of_summable_norm_restrict {f : C(X, E)} {s : ι → 
     (hf : Summable fun i : ι => ‖f.restrict (s i)‖ * μ.real (s i)) :
     IntegrableOn f (⋃ i : ι, s i) μ := by
   refine
-    integrableOn_iUnion_of_summable_integral_norm (fun i => (s i).isCompact.isClosed.measurableSet)
+    integrableOn_iUnion_of_summable_integral_norm
       (fun i => (map_continuous f).continuousOn.integrableOn_compact (s i).isCompact)
       (.of_nonneg_of_le (fun ι => integral_nonneg fun x => norm_nonneg _) (fun i => ?_) hf)
   rw [← (Real.norm_of_nonneg (integral_nonneg fun x => norm_nonneg _) : ‖_‖ = ∫ x in s i, ‖f x‖ ∂μ)]
   exact
-    norm_setIntegral_le_of_norm_le_const' (s i).isCompact.measure_lt_top
-      (s i).isCompact.isClosed.measurableSet fun x hx =>
-      (norm_norm (f x)).symm ▸ (f.restrict (s i : Set X)).norm_coe_le_norm ⟨x, hx⟩
+    norm_setIntegral_le_of_norm_le_const (s i).isCompact.measure_lt_top
+      fun x hx => (norm_norm (f x)).symm ▸ (f.restrict (s i : Set X)).norm_coe_le_norm ⟨x, hx⟩
 
 /-- If `s` is a countable family of compact sets covering `X`, `f` is a continuous function, and
 the sequence `‖f.restrict (s i)‖ * μ (s i)` is summable, then `f` is integrable. -/

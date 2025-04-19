@@ -605,7 +605,7 @@ nonrec theorem norm_integral_le_of_norm_le {g : ℝ → ℝ} (h : ∀ᵐ t ∂μ
 theorem norm_integral_le_of_norm_le_const_ae {a b C : ℝ} {f : ℝ → E}
     (h : ∀ᵐ x, x ∈ Ι a b → ‖f x‖ ≤ C) : ‖∫ x in a..b, f x‖ ≤ C * |b - a| := by
   rw [norm_integral_eq_norm_integral_Ioc]
-  convert norm_setIntegral_le_of_norm_le_const_ae'' _ measurableSet_Ioc h using 1
+  convert norm_setIntegral_le_of_norm_le_const_ae' _ h using 1
   · rw [Real.volume_real_Ioc_of_le inf_le_sup, max_sub_min_eq_abs]
   · simp only [Real.volume_Ioc, ENNReal.ofReal_lt_top]
 
