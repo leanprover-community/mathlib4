@@ -6,6 +6,7 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 import Mathlib.Analysis.Complex.Asymptotics
 import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Data.Complex.Trigonometric
+import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
 
 /-!
 # Complex and real exponential

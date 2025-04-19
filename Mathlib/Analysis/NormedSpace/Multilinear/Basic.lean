@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel, Sophie Morel, Yury Kudryashov
 import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
 import Mathlib.Logic.Embedding.Basic
 import Mathlib.Data.Fintype.CardEmbedding
+import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
 import Mathlib.Topology.Algebra.Module.Multilinear.Topology
 
 /-!
