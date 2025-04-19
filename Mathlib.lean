@@ -5014,7 +5014,8 @@ import Mathlib.RingTheory.HopfAlgebra.Basic
 import Mathlib.RingTheory.HopfAlgebra.MonoidAlgebra
 import Mathlib.RingTheory.HopfAlgebra.TensorProduct
 import Mathlib.RingTheory.HopkinsLevitzki
-import Mathlib.RingTheory.Ideal.AssociatedPrime
+import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
+import Mathlib.RingTheory.Ideal.AssociatedPrime.Finiteness
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.RingTheory.Ideal.Basis
 import Mathlib.RingTheory.Ideal.BigOperators
