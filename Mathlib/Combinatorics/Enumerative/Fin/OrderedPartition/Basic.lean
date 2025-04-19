@@ -17,7 +17,7 @@ variable {α β γ : Type*}
 
 /-- A version of `modify_id` that uses `fun x => x` instead of `id`. -/
 @[simp]
-theorem modify_id' (n : ℕ) (l : List α) : modify (·) n l = l := modify_id ..
+theorem modify_id' (n : ℕ) (l : List α) : modify l n (·) = l := modify_id ..
 
 theorem subset_flatMap_of_mem {l : List α} {a : α} (ha : a ∈ l) (f : α → List β) :
     f a ⊆ l.flatMap f := fun _b hb ↦ mem_flatMap_of_mem ha hb
@@ -66,15 +66,15 @@ theorem pmap_cons' {P : α → Prop} (f : ∀ a, P a → β) (a : α) (l : List 
   pmap_cons ..
 
 theorem modify_eq_set_getElem {l : List α} {n : ℕ} (h : n < l.length) (f : α → α) :
-    l.modify f n = l.set n (f l[n]) :=
+    l.modify n f = l.set n (f l[n]) :=
   modify_eq_set_get _ _
 
 theorem modify_eq_insertIdx_eraseIdx {l : List α} {n : ℕ} (h : n < l.length) (f : α → α) :
-    l.modify f n = insertIdx n (f l[n]) (l.eraseIdx n) := by
+    l.modify n f = insertIdx (l.eraseIdx n) n (f l[n]) := by
   rw [insertIdx_eraseIdx h.ne, modify_eq_set_getElem h]
 
 theorem modify_perm_cons_eraseIdx {l : List α} {n : ℕ} (h : n < l.length) (f : α → α) :
-    l.modify f n ~ f l[n] :: l.eraseIdx n := by
+    l.modify n f ~ f l[n] :: l.eraseIdx n := by
   rw [modify_eq_set_getElem h]
   exact set_perm_cons_eraseIdx h _
 
@@ -415,7 +415,7 @@ lemma extendLeft_eraseLeft (c : OrderedPartition (n + 1)) (hc : c.head = [0]) :
 so that we can prove some `Iff` lemmas about it before we give the definition. -/
 @[irreducible]
 def extendPart.partsAux (L : List (List (Fin n))) (i : ℕ) : List (List (Fin (n + 1))) :=
-  (L.map (·.map Fin.succ)).modify (List.cons 0) i
+  (L.map (·.map Fin.succ)).modify i (List.cons 0)
 
 theorem extendPart.partsAux_sorted_le_iff {L : List (List (Fin n))} {i : ℕ} :
     (∀ l ∈ partsAux L i, l.Sorted (· ≤ ·)) ↔ ∀ l ∈ L, l.Sorted (· ≤ ·) := by
@@ -431,7 +431,7 @@ theorem extendPart.partsAux_sorted_getLast_le_iff {L : List (List (Fin n))} {i :
       getElem_map, ← map_drop, pmap_append, pmap_map, getLast_map,
       pmap_congr_prop fun _ ↦ map_eq_nil_iff.not, pmap_cons, map_eq_nil_iff, getElem_mem, h₂,
       not_false_eq_true, getLast_cons]
-  simp only [← map_pmap succ, ← map_cons succ, ← map_append, pairwise_map, succ_le_succ_iff,
+  simp only [← map_pmap, ← map_cons, ← map_append, pairwise_map, succ_le_succ_iff,
     ← pmap_cons' getLast, ← pmap_append']
   simp
 
@@ -480,7 +480,7 @@ theorem head_extendPart_ne_singleton_zero (c : OrderedPartition n) (i : Fin c.pa
 
 @[irreducible]
 def eraseMiddle.partsAux (c : OrderedPartition (n + 1)) : List (List (Fin n)) :=
-  (c.parts.modify List.tail (c.index 0)).pmap (fun l hl ↦ l.pmap Fin.pred hl) <| by
+  (c.parts.modify (c.index 0) List.tail).pmap (fun l hl ↦ l.pmap Fin.pred hl) <| by
     rintro l hl _ hl₀ rfl
     rw [(modify_perm_cons_eraseIdx (Fin.is_lt _) _).mem_iff, mem_cons,
       mem_eraseIdx_iff_getElem] at hl
