@@ -309,7 +309,7 @@ noncomputable def interpStrip' (f : ℂ → E) (l u : ℝ) (z : ℂ) : ℂ :=
     else sSupNormIm f l ^ (1 - ((z - l) / (u - l))) * sSupNormIm f u ^ ((z - l) / (u - l))
 
 /-- An auxiliary function to prove the general statement of Hadamard's three lines theorem. -/
-def scale (f : ℂ → E) (l u : ℝ) : ℂ → E := fun z ↦ f (l + z • (u - l))
+noncomputable def scale (f : ℂ → E) (l u : ℝ) : ℂ → E := fun z ↦ f (l + z • (u - l))
 
 /-- The transformation on ℂ that is used for `scale` maps the closed strip ``re ⁻¹' [l, u]``
   to the closed strip ``re ⁻¹' [0, 1]``. -/
