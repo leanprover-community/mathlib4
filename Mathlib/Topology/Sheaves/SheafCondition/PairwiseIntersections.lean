@@ -38,11 +38,11 @@ assert_not_exists OrderedCommMonoid
 
 noncomputable section
 
-universe w v u
+universe w
 
 open TopologicalSpace TopCat Opposite CategoryTheory CategoryTheory.Limits
 
-variable {C : Type u} [Category.{v} C] {X : TopCat.{w}}
+variable {C : Type*} [Category C] {X : TopCat.{w}}
 
 namespace TopCat.Presheaf
 
@@ -73,7 +73,7 @@ end
 
 namespace SheafCondition
 
-variable {ι : Type w} (U : ι → Opens X)
+variable {ι : Type*} (U : ι → Opens X)
 
 open CategoryTheory.Pairwise
 
@@ -225,7 +225,31 @@ end SheafCondition
 
 open SheafCondition
 
-variable (F : Presheaf C X)
+variable (F : Presheaf C X) {ι : Type*} (U : ι → Opens X)
+
+/-- The diagram over all `{ V : Opens X // ∃ i, V ≤ U i }` is a limit iff the diagram
+over `U i` and `U i ⊓ U j` is a limit. -/
+def isLimitOpensLeCoverEquivPairwise :
+    IsLimit (F.mapCone (opensLeCoverCocone U).op) ≃ IsLimit (F.mapCone (Pairwise.cocone U).op) :=
+  calc
+    IsLimit (F.mapCone (opensLeCoverCocone U).op) ≃
+        IsLimit ((F.mapCone (opensLeCoverCocone U).op).whisker (pairwiseToOpensLeCover U).op) :=
+      (Functor.Initial.isLimitWhiskerEquiv (pairwiseToOpensLeCover U).op _).symm
+    _ ≃ IsLimit (F.mapCone ((opensLeCoverCocone U).op.whisker (pairwiseToOpensLeCover U).op)) :=
+      (IsLimit.equivIsoLimit F.mapConeWhisker.symm)
+    _ ≃
+        IsLimit
+          ((Cones.postcomposeEquivalence _).functor.obj
+            (F.mapCone ((opensLeCoverCocone U).op.whisker (pairwiseToOpensLeCover U).op))) :=
+      (IsLimit.postcomposeHomEquiv _ _).symm
+    _ ≃
+        IsLimit
+          (F.mapCone
+            ((Cones.postcomposeEquivalence _).functor.obj
+              ((opensLeCoverCocone U).op.whisker (pairwiseToOpensLeCover U).op))) :=
+      (IsLimit.equivIsoLimit (Functor.mapConePostcomposeEquivalenceFunctor _).symm)
+    _ ≃ IsLimit (F.mapCone (Pairwise.cocone U).op) :=
+      IsLimit.equivIsoLimit ((Cones.functoriality _ _).mapIso (pairwiseCoconeIso U :).symm)
 
 /-- The sheaf condition
 in terms of a limit diagram over all `{ V : Opens X // ∃ i, V ≤ U i }`
@@ -234,34 +258,24 @@ in terms of a limit diagram over `U i` and `U i ⊓ U j`.
 -/
 theorem isSheafOpensLeCover_iff_isSheafPairwiseIntersections :
     F.IsSheafOpensLeCover ↔ F.IsSheafPairwiseIntersections :=
-  forall₂_congr fun _ U =>
-    Equiv.nonempty_congr <|
-      calc
-        IsLimit (F.mapCone (opensLeCoverCocone U).op) ≃
-            IsLimit ((F.mapCone (opensLeCoverCocone U).op).whisker (pairwiseToOpensLeCover U).op) :=
-          (Functor.Initial.isLimitWhiskerEquiv (pairwiseToOpensLeCover U).op _).symm
-        _ ≃ IsLimit (F.mapCone ((opensLeCoverCocone U).op.whisker (pairwiseToOpensLeCover U).op)) :=
-          (IsLimit.equivIsoLimit F.mapConeWhisker.symm)
-        _ ≃
-            IsLimit
-              ((Cones.postcomposeEquivalence _).functor.obj
-                (F.mapCone ((opensLeCoverCocone U).op.whisker (pairwiseToOpensLeCover U).op))) :=
-          (IsLimit.postcomposeHomEquiv _ _).symm
-        _ ≃
-            IsLimit
-              (F.mapCone
-                ((Cones.postcomposeEquivalence _).functor.obj
-                  ((opensLeCoverCocone U).op.whisker (pairwiseToOpensLeCover U).op))) :=
-          (IsLimit.equivIsoLimit (Functor.mapConePostcomposeEquivalenceFunctor _).symm)
-        _ ≃ IsLimit (F.mapCone (Pairwise.cocone U).op) :=
-          IsLimit.equivIsoLimit ((Cones.functoriality _ _).mapIso (pairwiseCoconeIso U :).symm)
+  forall₂_congr fun _ U ↦ (F.isLimitOpensLeCoverEquivPairwise U).nonempty_congr
+
+variable {F} in
+theorem IsSheaf.isSheafPairwiseIntersections (h : F.IsSheaf) :
+    Nonempty (IsLimit (F.mapCone (Pairwise.cocone U).op)) :=
+  (h.isSheafOpensLeCover U).map (F.isLimitOpensLeCoverEquivPairwise _)
 
 /-- The sheaf condition in terms of an equalizer diagram is equivalent
 to the reformulation in terms of a limit diagram over `U i` and `U i ⊓ U j`.
 -/
 theorem isSheaf_iff_isSheafPairwiseIntersections : F.IsSheaf ↔ F.IsSheafPairwiseIntersections := by
-  rw [isSheaf_iff_isSheafOpensLeCover,
-    isSheafOpensLeCover_iff_isSheafPairwiseIntersections]
+  rw [isSheaf_iff_isSheafOpensLeCover, isSheafOpensLeCover_iff_isSheafPairwiseIntersections]
+
+variable {F} in
+theorem IsSheaf.isSheafPreservesLimitPairwiseIntersections (h : F.IsSheaf) :
+    PreservesLimit (Pairwise.diagram U).op F :=
+  preservesLimit_of_preserves_limit_cone (Pairwise.coconeIsColimit U).op
+    (h.isSheafPairwiseIntersections U).some
 
 /-- The sheaf condition in terms of an equalizer diagram is equivalent
 to the reformulation in terms of the presheaf preserving the limit of the diagram
@@ -269,13 +283,10 @@ consisting of the `U i` and `U i ⊓ U j`.
 -/
 theorem isSheaf_iff_isSheafPreservesLimitPairwiseIntersections :
     F.IsSheaf ↔ F.IsSheafPreservesLimitPairwiseIntersections := by
-  rw [isSheaf_iff_isSheafPairwiseIntersections]
-  constructor
-  · intro h ι U
-    exact preservesLimit_of_preserves_limit_cone (Pairwise.coconeIsColimit U).op (h U).some
-  · intro h ι U
-    haveI := h U
-    exact ⟨isLimitOfPreserves _ (Pairwise.coconeIsColimit U).op⟩
+  refine ⟨fun h U ↦ h.isSheafPreservesLimitPairwiseIntersections,
+    fun h ↦ F.isSheaf_iff_isSheafPairwiseIntersections.mpr fun ι U ↦ ?_⟩
+  haveI := h U
+  exact ⟨isLimitOfPreserves _ (Pairwise.coconeIsColimit U).op⟩
 
 end TopCat.Presheaf
 
