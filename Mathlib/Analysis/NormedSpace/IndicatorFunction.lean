@@ -20,7 +20,8 @@ open Set
 
 section ENormedAddMonoid
 
-variable {α ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε] {s t : Set α} (f : α → ε) (a : α)
+variable {α ε : Type*} [TopologicalSpace ε] [AddMonoid ε] [ENormedAddMonoid ε]
+  {s t : Set α} (f : α → ε) (a : α)
 
 lemma enorm_indicator_eq_indicator_enorm :
     ‖indicator s f a‖ₑ = indicator s (fun a => ‖f a‖ₑ) a :=
