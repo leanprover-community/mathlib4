@@ -38,7 +38,7 @@ theorem Integrable.fin_nat_prod {n : ℕ} {E : Fin n → Type*}
       simp only [Fin.zero_succAbove, cast_eq, Function.comp_def, Fin.cons_zero, Fin.cons_succ]
       have : Integrable (fun (x : (j : Fin n) → E (Fin.succ j)) ↦ ∏ j, f (Fin.succ j) (x j)) :=
         n_ih (fun i ↦ hf _)
-      exact Integrable.prod_mul (hf 0) this
+      exact Integrable.mul_prod (hf 0) this
 
 /-- On a finite product space, a product of integrable functions depending on each coordinate is
 integrable. Version with dependent target. -/
