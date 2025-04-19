@@ -589,7 +589,7 @@ theorem ncard_prod : (s ×ˢ t).ncard = s.ncard * t.ncard := by
 theorem ncard_powerset (s : Set α) (hs : s.Finite := by toFinite_tac) :
     (𝒫 s).ncard = 2 ^ s.ncard := by
   have h := Cardinal.mk_powerset s
-  rw [← Set.cast_ncard hs.powerset, ← Set.cast_ncard hs] at h
+  rw [← cast_ncard hs.powerset, ← cast_ncard hs] at h
   norm_cast at h
 
 section InsertErase
