@@ -37,7 +37,8 @@ only makes sense for nonnegative exponents, and hence we define it such that the
 
 + We define a `Pow A ℝ` instance for `CFC.rpow`, i.e `a ^ y` with `A` an operator and `y : ℝ` works
   as expected. Likewise, we define a `Pow A ℝ≥0` instance for `CFC.nnrpow`. Note that these are
-  low-priority instances, in order to avoid overriding instances such as `Pow ℝ ℝ`.
+  low-priority instances, in order to avoid overriding instances such as `Pow ℝ ℝ`,
+  `Pow (A × B) ℝ` or `Pow (∀ i, A i) ℝ`.
 
 ## TODO
 
@@ -177,6 +178,10 @@ lemma nnrpow_map_prod {a : A} {b : B} {x : ℝ≥0}
   rw [Prod.le_def]
   constructor <;> simp [ha, hb]
 
+lemma nnrpow_eq_nnrpow_prod {a : A} {b : B} {x : ℝ≥0}
+    (ha : 0 ≤ a := by cfc_tac) (hb : 0 ≤ b := by cfc_tac) :
+    nnrpow (a, b) x = (a, b) ^ x := nnrpow_map_prod
+
 end prod
 
 section pi
@@ -197,6 +202,9 @@ lemma nnrpow_map_pi {c : ∀ i, C i} {x : ℝ≥0} (hc : ∀ i, 0 ≤ c i := by 
   simp only [nnrpow_def]
   unfold nnrpow
   exact cfcₙ_map_pi (S := ℝ) _ c
+
+lemma nnrpow_eq_nnrpow_pi {c : ∀ i, C i} {x : ℝ≥0} (hc : ∀ i, 0 ≤ c i := by cfc_tac) :
+    nnrpow c x = c ^ x := nnrpow_map_pi
 
 end pi
 
@@ -425,6 +433,10 @@ lemma rpow_map_prod {a : A} {b : B} {x : ℝ} (ha : 0 ∉ spectrum ℝ≥0 a) (h
   rw [Prod.le_def]
   constructor <;> simp [ha', hb']
 
+lemma rpow_eq_rpow_rpod {a : A} {b : B} {x : ℝ} (ha : 0 ∉ spectrum ℝ≥0 a) (hb : 0 ∉ spectrum ℝ≥0 b)
+    (ha' : 0 ≤ a := by cfc_tac) (hb' : 0 ≤ b := by cfc_tac) :
+    rpow (a, b) x = (a, b) ^ x := rpow_map_prod ha hb
+
 end prod
 
 section pi
@@ -446,6 +458,10 @@ lemma rpow_map_pi {c : ∀ i, C i} {x : ℝ} (hc : ∀ i, 0 ∉ spectrum ℝ≥0
   simp only [rpow_def]
   unfold rpow
   exact cfc_map_pi (S := ℝ) _ c
+
+lemma rpow_eq_rpow_pi {c : ∀ i, C i} {x : ℝ} (hc : ∀ i, 0 ∉ spectrum ℝ≥0 (c i))
+    (hc' : ∀ i, 0 ≤ c i := by cfc_tac) :
+    rpow c x = c ^ x := rpow_map_pi hc
 
 end pi
 
