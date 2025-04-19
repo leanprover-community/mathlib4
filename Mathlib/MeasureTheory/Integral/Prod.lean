@@ -173,11 +173,11 @@ nonrec theorem MeasureTheory.AEStronglyMeasurable.prod_swap {γ : Type*} [Topolo
   rw [← prod_swap] at hf
   exact hf.comp_measurable measurable_swap
 
-theorem MeasureTheory.AEStronglyMeasurable.fst {γ} [TopologicalSpace γ] [SFinite ν] {f : α → γ}
+theorem MeasureTheory.AEStronglyMeasurable.fst {γ} [TopologicalSpace γ] {f : α → γ}
     (hf : AEStronglyMeasurable f μ) : AEStronglyMeasurable (fun z : α × β => f z.1) (μ.prod ν) :=
   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_fst
 
-theorem MeasureTheory.AEStronglyMeasurable.snd {γ} [TopologicalSpace γ] [SFinite ν] {f : β → γ}
+theorem MeasureTheory.AEStronglyMeasurable.snd {γ} [TopologicalSpace γ] {f : β → γ}
     (hf : AEStronglyMeasurable f ν) : AEStronglyMeasurable (fun z : α × β => f z.2) (μ.prod ν) :=
   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_snd
 
@@ -284,18 +284,42 @@ theorem Integrable.integral_norm_prod_right [SFinite μ] ⦃f : α × β → E�
     (hf : Integrable f (μ.prod ν)) : Integrable (fun y => ∫ x, ‖f (x, y)‖ ∂μ) ν :=
   hf.swap.integral_norm_prod_left
 
-theorem Integrable.prod_smul {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
-    {f : α → 𝕜} {g : β → E} (hf : Integrable f μ) (hg : Integrable g ν) :
-    Integrable (fun z : α × β => f z.1 • g z.2) (μ.prod ν) := by
-  refine (integrable_prod_iff ?_).2 ⟨?_, ?_⟩
-  · exact hf.1.fst.smul hg.1.snd
-  · exact Eventually.of_forall fun x => hg.smul (f x)
-  · simpa only [norm_smul, integral_mul_left] using hf.norm.mul_const _
+omit [SFinite ν] in
+theorem Integrable.op_fst_snd {F G : Type*} [NormedAddCommGroup F] [NormedAddCommGroup G]
+    {op : E → F → G} (hop : Continuous op.uncurry) (hop_norm : ∃ C, ∀ x y, ‖op x y‖ ≤ C * ‖x‖ * ‖y‖)
+    {f : α → E} {g : β → F} (hf : Integrable f μ) (hg : Integrable g ν) :
+    Integrable (fun z ↦ op (f z.1) (g z.2)) (μ.prod ν) := by
+  use hop.comp_aestronglyMeasurable₂ hf.1.fst hg.1.snd
+  rcases hop_norm with ⟨C, hC⟩
+  calc
+    ∫⁻ z, ‖op (f z.1) (g z.2)‖ₑ ∂μ.prod ν ≤ ∫⁻ z, .ofReal C * ‖f z.1‖ₑ * ‖g z.2‖ₑ ∂μ.prod ν := by
+      gcongr with z
+      simp only [enorm_eq_nnnorm, ENNReal.ofReal, ← ENNReal.coe_mul, ENNReal.coe_le_coe,
+        ← NNReal.coe_le_coe, NNReal.coe_mul, coe_nnnorm]
+      refine (hC _ _).trans ?_
+      gcongr
+      apply le_coe_toNNReal
+    _ ≤ ∫⁻ x, ∫⁻ y, .ofReal C * ‖f x‖ₑ * ‖g y‖ₑ ∂ν ∂μ := lintegral_prod_le _
+    _ ≤ .ofReal C * (∫⁻ x, ‖f x‖ₑ ∂μ) * ∫⁻ y, ‖g y‖ₑ ∂ν := by
+      simp [lintegral_const_mul', lintegral_mul_const', hf.2.ne, hg.2.ne, mul_assoc]
+    _ < ∞ := by apply_rules [ENNReal.mul_lt_top, hf.2, hg.2, ENNReal.ofReal_lt_top]
 
-theorem Integrable.prod_mul {L : Type*} [NormedField L] {f : α → L} {g : β → L}
-    (hf : Integrable f μ) (hg : Integrable g ν) :
-    Integrable (fun z : α × β => f z.1 * g z.2) (μ.prod ν) :=
-  hf.prod_smul hg
+omit [SFinite ν] in
+theorem Integrable.smul_prod {R : Type*} [NormedRing R] [Module R E] [IsBoundedSMul R E]
+    {f : α → R} {g : β → E} (hf : Integrable f μ) (hg : Integrable g ν) :
+    Integrable (fun z : α × β => f z.1 • g z.2) (μ.prod ν) :=
+  hf.op_fst_snd continuous_smul ⟨1, by simpa using norm_smul_le⟩ hg
+
+@[deprecated (since := "2025-04-06")]
+alias Integrable.prod_smul := Integrable.smul_prod
+
+omit [SFinite ν] in
+theorem Integrable.mul_prod {L : Type*} [NormedRing L] {f : α → L} {g : β → L} (hf : Integrable f μ)
+    (hg : Integrable g ν) : Integrable (fun z : α × β => f z.1 * g z.2) (μ.prod ν) :=
+  hf.smul_prod hg
+
+@[deprecated (since := "2025-04-06")]
+alias Integrable.prod_mul := Integrable.mul_prod
 
 theorem IntegrableOn.swap [SFinite μ] {f : α × β → E} {s : Set α} {t : Set β}
     (hf : IntegrableOn f (s ×ˢ t) (μ.prod ν)) :
@@ -477,7 +501,7 @@ theorem integral_prod_smul {𝕜 : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] (f 
     simp_rw [integral_smul, integral_smul_const]
   have H : ¬Integrable f μ ∨ ¬Integrable g ν := by
     contrapose! h
-    exact h.1.prod_smul h.2
+    exact h.1.smul_prod h.2
   rcases H with H | H <;> simp [integral_undef h, integral_undef H]
 
 theorem integral_prod_mul {L : Type*} [RCLike L] (f : α → L) (g : β → L) :
