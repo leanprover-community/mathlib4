@@ -15,12 +15,6 @@ This instance is not in `Data.ENat.Basic` to avoid dependency on `Finset`s.
 We also restate some lemmas about `WithTop` for `ENat` to have versions that use `Nat.cast` instead
 of `WithTop.some`.
 
-## TODO
-
-Currently (2024-Nov-12), `shake` does not check `proof_wanted` and insist that
-`Mathlib.Algebra.Group.Action.Defs` should not be imported. Once `shake` is fixed, please remove the
-corresponding `noshake.json` entry.
-
 -/
 
 assert_not_exists Field
@@ -238,11 +232,15 @@ lemma iSup_add_iSup_of_monotone {ι : Type*} [Preorder ι] [IsDirected ι (· �
     (hf : Monotone f) (hg : Monotone g) : iSup f + iSup g = ⨆ a, f a + g a :=
   iSup_add_iSup fun i j ↦ (exists_ge_ge i j).imp fun _k ⟨hi, hj⟩ ↦ by gcongr <;> apply_rules
 
-proof_wanted smul_iSup {R} [SMul R ℕ∞] [IsScalarTower R ℕ∞ ℕ∞] (f : ι → ℕ∞) (c : R) :
-    c • ⨆ i, f i = ⨆ i, c • f i
+lemma smul_iSup {R} [SMul R ℕ∞] [IsScalarTower R ℕ∞ ℕ∞] (f : ι → ℕ∞) (c : R) :
+    c • ⨆ i, f i = ⨆ i, c • f i := by
+  have hc (n : ℕ∞) : c • n = (c • 1) * n := by rw [← smul_eq_mul, smul_assoc, one_smul]
+  rw [hc, mul_iSup]
+  simp
 
-proof_wanted smul_sSup {R} [SMul R ℕ∞] [IsScalarTower R ℕ∞ ℕ∞] (s : Set ℕ∞) (c : R) :
-    c • sSup s = ⨆ a ∈ s, c • a
+lemma smul_sSup {R} [SMul R ℕ∞] [IsScalarTower R ℕ∞ ℕ∞] (s : Set ℕ∞) (c : R) :
+    c • sSup s = ⨆ a ∈ s, c • a := by
+  simp_rw [sSup_eq_iSup, smul_iSup]
 
 lemma sub_iSup [Nonempty ι] (ha : a ≠ ⊤) : a - ⨆ i, f i = ⨅ i, a - f i := by
   obtain ⟨i, hi⟩ | h := em (∃ i, a < f i)
