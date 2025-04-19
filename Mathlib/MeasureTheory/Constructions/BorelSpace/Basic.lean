@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Group.Arithmetic
-import Mathlib.Topology.GDelta.UniformSpace
+import Mathlib.Topology.GDelta.MetrizableSpace
 import Mathlib.Topology.Instances.EReal.Lemmas
 import Mathlib.Topology.Instances.Rat
 

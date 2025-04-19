@@ -70,6 +70,36 @@ theorem Ioc_disjoint_Ioi (h : b ≤ c) : Disjoint (Ioc a b) (Ioi c) :=
 theorem Ioc_disjoint_Ioi_same : Disjoint (Ioc a b) (Ioi b) :=
   Ioc_disjoint_Ioi le_rfl
 
+theorem Ioi_disjoint_Iio_of_not_lt (h : ¬a < b) : Disjoint (Ioi a) (Iio b) :=
+  disjoint_left.mpr fun _ hx hy ↦ h (hx.trans hy)
+
+theorem Ioi_disjoint_Iio_of_le (h : a ≤ b) : Disjoint (Ioi b) (Iio a) :=
+  Ioi_disjoint_Iio_of_not_lt (not_lt_of_le h)
+
+@[simp]
+theorem Ioi_disjoint_Iio_same : Disjoint (Ioi a) (Iio a) :=
+  Ioi_disjoint_Iio_of_le le_rfl
+
+@[simp]
+theorem Ioi_disjoint_Iio_iff [DenselyOrdered α] : Disjoint (Ioi a) (Iio b) ↔ ¬a < b :=
+  ⟨fun h hab ↦ (exists_between hab).elim
+    fun _ hc ↦ h.not_mem_of_mem_left hc.left hc.right,
+    Ioi_disjoint_Iio_of_not_lt⟩
+
+theorem Iio_disjoint_Ioi_of_not_lt (h : ¬a < b) : Disjoint (Iio b) (Ioi a) :=
+  disjoint_comm.mp (Ioi_disjoint_Iio_of_not_lt h)
+
+theorem Iio_disjoint_Ioi_of_le (h : a ≤ b) : Disjoint (Iio a) (Ioi b) :=
+  disjoint_comm.mp (Ioi_disjoint_Iio_of_le h)
+
+@[simp]
+theorem Iio_disjoint_Ioi_same : Disjoint (Iio a) (Ioi a) :=
+  Iio_disjoint_Ioi_of_le le_rfl
+
+@[simp]
+theorem Iio_disjoint_Ioi_iff [DenselyOrdered α] : Disjoint (Iio a) (Ioi b) ↔ ¬b < a :=
+  disjoint_comm.trans Ioi_disjoint_Iio_iff
+
 @[simp]
 theorem iUnion_Iic : ⋃ a : α, Iic a = univ :=
   iUnion_eq_univ_iff.2 fun x => ⟨x, right_mem_Iic⟩
