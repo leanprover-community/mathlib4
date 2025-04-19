@@ -156,6 +156,9 @@ theorem single_left_injective (h : b ≠ 0) : Function.Injective fun a : α => s
 theorem single_left_inj (h : b ≠ 0) : single a b = single a' b ↔ a = a' :=
   (single_left_injective h).eq_iff
 
+lemma apply_surjective (a : α) : Surjective fun f : α →₀ M ↦ f a :=
+  RightInverse.surjective fun _ ↦ single_eq_same
+
 theorem support_single_ne_bot (i : α) (h : b ≠ 0) : (single i b).support ≠ ⊥ := by
   simpa only [support_single_ne_zero _ h] using singleton_ne_empty _
 
