@@ -372,7 +372,8 @@ theorem integralSum_eq_tsum_div {B : Box ι} (hB : hasIntegralVertices B) (hs₀
       (mem_admissibleIndex_of_mem_box n hB (hs₀ hI.2))]
     exact tag_mem_smul_span _ _
   · rw [Set.mem_toFinset] at hx
-    rw [volume_box, prepartition_tag n (mem_admissibleIndex_of_mem_box n hB (hs₀ hx.1)),
+    rw [measureReal_def, volume_box,
+      prepartition_tag n (mem_admissibleIndex_of_mem_box n hB (hs₀ hx.1)),
       tag_index_eq_self_of_mem_smul_span n hx.2, ENNReal.toReal_div,
       ENNReal.toReal_one, ENNReal.toReal_pow, ENNReal.toReal_natCast, mul_comm_div, one_mul]
 
