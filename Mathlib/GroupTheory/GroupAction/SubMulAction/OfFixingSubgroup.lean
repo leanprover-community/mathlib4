@@ -461,28 +461,6 @@ variable (M) in
   of the union, as an equivariant map -/
 def map_ofFixingSubgroupUnion (s t : Set α) :
     ofFixingSubgroup M (s ∪ t) →ₑ[fixingSubgroup_union_to_fixingSubgroup_fixingSubgroup M s t]
-
-end FixingSubgroupConj
-
-/-- The identity between the iterated sub_mul_action
-  of the fixing_subgroups and the sub_mul_action of the fixing_subgroup
-  of the union, as an equivariant map -/
-@[to_additive]
-def map_ofFixingSubgroupUnion (s t : Set α) :
-    let ψ : fixingSubgroup M (s ∪ t) →
-      fixingSubgroup (fixingSubgroup M s) (Subtype.val ⁻¹' t : Set (ofFixingSubgroup M s)) :=
-      fun m ↦ ⟨⟨m, by
-        let hm := m.prop
-        simp only [fixingSubgroup_union, Subgroup.mem_inf] at hm
-        exact hm.left⟩, by
-      let hm := m.prop
-      simp only [fixingSubgroup_union, Subgroup.mem_inf] at hm
-      rintro ⟨⟨x, hx⟩, hx'⟩
-      simp only [Set.mem_preimage] at hx'
-      simp only [← SetLike.coe_eq_coe, Subtype.coe_mk, SubMulAction.val_smul_of_tower]
-      exact hm.right ⟨x, hx'⟩⟩
-    ofFixingSubgroup M (s ∪ t) →ₑ[ψ]
->>>>>>> ACL-J/SubMulACtion-ofFixingSubgroup
       ofFixingSubgroup (fixingSubgroup M s) (Subtype.val ⁻¹' t : Set (ofFixingSubgroup M s)) where
   toFun x :=
     ⟨⟨x, fun hx => x.prop (Set.mem_union_left t hx)⟩,

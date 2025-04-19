@@ -10,6 +10,7 @@ import Mathlib.GroupTheory.GroupAction.Primitive
 import Mathlib.GroupTheory.SpecificGroups.Alternating
 import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
+import Mathlib.GroupTheory.GroupAction.SubMulAction.OfStabilizer
 import Mathlib.Data.Finite.Card
 import Mathlib.Data.Set.Card
 import Mathlib.SetTheory.Cardinal.Finite
@@ -371,10 +372,229 @@ end Higher
 
 end MulAction
 
-open Equiv MulAction
+namespace SubMulAction
+
+variable {G : Type*} [Group G] {α : Type*} [MulAction G α]
+
+open MulAction Function.Embedding SubMulAction
+
+namespace ofStabilizer
+
+open scoped BigOperators Pointwise Cardinal
+
+@[to_additive]
+theorem isMultiplyPretransitive_iff_of_conj
+    {n : ℕ} {a b : α} {g : G} (hg : b = g • a) :
+    IsMultiplyPretransitive (stabilizer G a) (ofStabilizer G a) n ↔
+      IsMultiplyPretransitive (stabilizer G b) (ofStabilizer G b) n :=
+  IsPretransitive.of_embedding_congr (MulEquiv.surjective _) (ofStabilizer.conjMap_bijective hg)
+
+@[to_additive]
+theorem isMultiplyPretransitive_iff [IsPretransitive G α] {n : ℕ} {a b : α} :
+    IsMultiplyPretransitive (stabilizer G a) (ofStabilizer G a) n ↔
+      IsMultiplyPretransitive (stabilizer G b) (ofStabilizer G b) n :=
+  let ⟨_, hg⟩ := exists_smul_eq G a b
+  isMultiplyPretransitive_iff_of_conj hg.symm
+
+/-- Multiple transitivity of a pretransitive action
+  is equivalent to one less transitivity of stabilizer of a point
+  (Wielandt, th. 9.1, 1st part) -/
+@[to_additive
+   "Multiple transitivity of a pretransitive action
+   is equivalent to one less transitivity of stabilizer of a point
+   (Wielandt, th. 9.1, 1st part)"]
+theorem isMultiplyPretransitive_iff_succ [IsPretransitive G α] {n : ℕ} {a : α} :
+    IsMultiplyPretransitive (stabilizer G a) (SubMulAction.ofStabilizer G a) n ↔
+      IsMultiplyPretransitive G α n.succ := by
+  constructor
+  · exact fun hn ↦ {
+      exists_smul_eq x y := by
+        -- gx • x = x1 :: a
+        obtain ⟨gx, x1, hgx⟩ := exists_smul_of_last_eq G a x
+        -- gy • y = y1 :: a
+        obtain ⟨gy, y1, hgy⟩ := exists_smul_of_last_eq G a y
+        -- g • x1 = y1,
+        obtain ⟨g, hg⟩ := hn.exists_smul_eq x1 y1
+        use gy⁻¹ * g * gx
+        ext i
+        simp only [mul_smul, smul_apply, inv_smul_eq_iff]
+        simp only [← smul_apply _ _ i, hgy, hgx]
+        simp only [smul_apply]
+        rcases Fin.eq_castSucc_or_eq_last i with ⟨i, rfl⟩ | ⟨rfl⟩
+        · -- rw [Function.Embedding.ext_iff] at hgx hgy hg
+          simp [ofStabilizer.snoc_castSucc, ← hg, SetLike.val_smul, subgroup_smul_def]
+        · simp only [ofStabilizer.snoc_last, ← hg, subgroup_smul_def]
+          exact g.prop }
+  · intro hn
+    exact {
+      exists_smul_eq x y := by
+        obtain ⟨g, hgxy⟩ := exists_smul_eq G (ofStabilizer.snoc x) (ofStabilizer.snoc y)
+        have hg : g ∈ stabilizer G a := by
+          rw [mem_stabilizer_iff]
+          rw [DFunLike.ext_iff] at hgxy
+          convert hgxy (last n) <;> simp [smul_apply, ofStabilizer.snoc_last]
+        use ⟨g, hg⟩
+        ext i
+        simp only [smul_apply, SubMulAction.val_smul_of_tower, subgroup_smul_def]
+        rw [← ofStabilizer.snoc_castSucc x, ← smul_apply, hgxy, ofStabilizer.snoc_castSucc] }
+
+end ofStabilizer
+
+namespace ofFixingSubgroup
+
+variable {G α : Type*} [Group G] [MulAction G α]
+
+open SubMulAction Fin.Embedding
+
+variable (G) in
+/-- The fixator of a finite subset of cardinal d in an n-transitive action
+acts (n-d) transitively on the complement. -/
+@[to_additive
+"The fixator of a finite subset of cardinal d in an n-transitive additive action
+acts (n-d) transitively on the complement."]
+theorem isMultiplyPretransitive {m n : ℕ} [Hn : IsMultiplyPretransitive G α n]
+    (s : Set α) [Finite s] (hmn : s.ncard + m = n) :
+    IsMultiplyPretransitive (fixingSubgroup G s) (ofFixingSubgroup G s) m :=
+  let _ : IsMultiplyPretransitive G α (s.ncard + m) := by rw [hmn]; infer_instance
+  let Hs : Nonempty (Fin (s.ncard) ≃ s) :=
+      Finite.card_eq.mp (by simp [Set.Nat.card_coe_set_eq])
+  { exists_smul_eq x y := by
+      set x' := SubMulAction.ofFixingSubgroup.append x with hx
+      set y' := ofFixingSubgroup.append y with hy
+      obtain ⟨g, hg⟩ := exists_smul_eq G x' y'
+      suffices g ∈ fixingSubgroup G s by
+        use ⟨g, this⟩
+        ext i
+        simp only [smul_apply, SetLike.val_smul, Subgroup.mk_smul]
+        simp only [← ofFixingSubgroup.append_right, ← smul_apply, ← hx, ← hy, hg]
+      intro a
+      set i := (Classical.choice Hs).symm a
+      have ha : (Classical.choice Hs) i = a := by simp [i]
+      rw [← ha]
+      nth_rewrite 1 [← ofFixingSubgroup.append_left x i]
+      rw [← ofFixingSubgroup.append_left y i, ← hy, ← hg, smul_apply, ← hx] }
+
+/-- The fixator of a finite subset of cardinal d in an n-transitive action
+acts m transitively on the complement if d + m ≤ n. -/
+@[to_additive
+"The fixator of a finite subset of cardinal d in an n-transitive additive action
+acts m transitively on the complement if d + m ≤ n."]
+theorem isMultiplyPretransitive'
+    {m n : ℕ} [IsMultiplyPretransitive G α n]
+    (s : Set α) [Finite s] (hmn : s.ncard + m ≤ n) (hn : (n : ENat) ≤ ENat.card α) :
+    IsMultiplyPretransitive (fixingSubgroup G s) (SubMulAction.ofFixingSubgroup G s) m :=
+  letI : IsMultiplyPretransitive G α (s.ncard + m) := isMultiplyPretransitive_of_le' hmn hn
+  isMultiplyPretransitive G s rfl
+
+end ofFixingSubgroup
+
+end SubMulAction
+
+namespace MulAction
+
+section Index
+
+open SubMulAction
+
+variable (G : Type*) [Group G] {α : Type*} [MulAction G α]
+
+/-- Cardinal vs index of stabilizers, for a pretransitive action, in nat.card -/
+theorem stabilizer_index_of_pretransitive [IsPretransitive G α] (a : α) :
+    (stabilizer G a).index = Nat.card α := by
+  rw [index_stabilizer, orbit_eq_univ, Set.ncard_univ]
+
+/-- For a multiply pretransitive action, computes the index
+of the fixing_subgroup of a subset of adequate cardinality -/
+private theorem index_of_fixingSubgroup_aux
+    [Finite α]
+    {k : ℕ} (Hk : IsMultiplyPretransitive G α k)
+    {s : Set α} (hs : s.ncard = k) :
+    (fixingSubgroup G s).index * (Nat.card α - s.ncard).factorial =
+      (Nat.card α).factorial := by
+  revert G α
+  induction k with
+  | zero =>
+    intro G _ α _ _ _ s hs
+    simp only [hs, zero_eq, ge_iff_le, nonpos_iff_eq_zero, tsub_zero, ne_eq]
+    rw [Set.ncard_eq_zero] at hs
+    simp only [hs]
+    suffices fixingSubgroup G ∅ = ⊤ by
+      rw [this, Subgroup.index_top, one_mul]
+    exact GaloisConnection.l_bot (fixingSubgroup_fixedPoints_gc G α)
+  | succ k hrec =>
+    intro G _ α _ _ hmk s hs
+    have hGX : IsPretransitive G α := by
+      rw [← is_one_pretransitive_iff]
+      apply isMultiplyPretransitive_of_le (n := k + 1)
+      · rw [Nat.succ_le_succ_iff]; apply Nat.zero_le
+      · rw [← hs, ← Set.ncard_univ]
+        exact ncard_le_ncard s.subset_univ finite_univ
+    have : s.Nonempty := by
+      rw [← Set.ncard_pos, hs]
+      exact succ_pos k
+    obtain ⟨a, has⟩ := this
+    let t : Set (SubMulAction.ofStabilizer G a) := Subtype.val ⁻¹' s
+    have hat : Subtype.val '' t = s \ {a} := by
+      rw [Set.image_preimage_eq_inter_range]
+      simp only [Subtype.range_coe_subtype]
+      rw [Set.diff_eq_compl_inter, Set.inter_comm]
+      congr
+    have hat' : s = insert a (Subtype.val '' t) := by
+      rw [hat, Set.insert_diff_singleton, Set.insert_eq_of_mem has]
+    have hfs := SubMulAction.fixingSubgroup_of_insert a t
+    rw [← hat'] at hfs
+    rw [hfs]
+    rw [Subgroup.index_map]
+    rw [(MonoidHom.ker_eq_bot_iff (stabilizer G a).subtype).mpr
+        (by simp only [Subgroup.coe_subtype, Subtype.coe_injective])]
+    simp only [sup_bot_eq, Subgroup.range_subtype]
+    have hscard : s.ncard = 1 + t.ncard := by
+      rw [hat']
+      suffices ¬ a ∈ (Subtype.val '' t) by
+        rw [add_comm]
+        convert Set.ncard_insert_of_not_mem this ?_
+        rw [Set.ncard_image_of_injective _ Subtype.coe_injective]
+        apply Set.toFinite
+      intro h
+      obtain ⟨⟨b, hb⟩, _, hb'⟩ := h
+      apply hb
+      simp only [Set.mem_singleton_iff]
+      rw [← hb']
+    have htcard : t.ncard = k := by
+      rw [← Nat.succ_inj', Nat.succ_eq_add_one, Nat.succ_eq_add_one, ← hs, hscard, add_comm]
+    suffices (fixingSubgroup (stabilizer G a) t).index *
+      (Nat.card α - 1 - t.ncard).factorial =
+        (Nat.card α - 1).factorial by
+      · rw [mul_comm] at this
+        rw [hscard, mul_comm, ← mul_assoc, mul_comm, Nat.sub_add_eq, this,
+          stabilizer_index_of_pretransitive G a]
+        exact Nat.mul_factorial_pred (card_ne_zero.mpr ⟨⟨a⟩, inferInstance⟩)
+    · rw [add_comm] at hscard
+      have := Nat.sub_eq_of_eq_add hscard
+      simp only [hs, Nat.pred_succ] at this
+      convert hrec (stabilizer G a) (α := SubMulAction.ofStabilizer G a)
+        (ofStabilizer.isMultiplyPretransitive_iff_succ.mpr hmk) htcard
+      all_goals { rw [nat_card_ofStabilizer_eq G a] }
+
+ /-- For a multiply pretransitive action,
+  computes the index of the fixing_subgroup of a subset
+  of adequate cardinality -/
+theorem index_of_fixingSubgroup_eq_of_isMultiplyPretransitive
+    [Finite α] (s : Set α) (hMk : IsMultiplyPretransitive G α s.ncard) :
+    (fixingSubgroup G s).index =
+      Nat.choose (Nat.card α) s.ncard * s.ncard.factorial := by
+  apply Nat.eq_of_mul_eq_mul_right (Nat.factorial_pos _)
+  rw [index_of_fixingSubgroup_aux G hMk rfl, Nat.choose_mul_factorial_mul_factorial]
+  rw [← ncard_univ]
+  exact ncard_le_ncard (subset_univ s)
+
+end Index
+
+end MulAction
 
 namespace Equiv.Perm
 
+open Equiv MulAction
 
 variable {α : Type*} [Fintype α]
 
@@ -482,12 +702,12 @@ theorem eq_top_of_isMultiplyPretransitive {G : Subgroup (Equiv.Perm α)}
 
 end Equiv.Perm
 
-namespace IsMultiplyPretransitive
+namespace AlternatingGroup
 
-variable (α : Type*) [Fintype α]
+variable (α : Type*) [Fintype α] [DecidableEq α]
 
 /-- The `alternatingGroup` on α is (Fintype.card α - 2)-pretransitive -/
-theorem alternatingGroup_of_sub_two [DecidableEq α] :
+theorem isMultiplyPretransitive :
     IsMultiplyPretransitive (alternatingGroup α) α (Nat.card α - 2) := by
   rcases lt_or_ge (Nat.card α) 2 with h2 | h2
   · rw [Nat.sub_eq_zero_of_le (le_of_lt h2)]
@@ -531,14 +751,13 @@ theorem alternatingGroup_of_sub_two [DecidableEq α] :
           apply Equiv.swap_apply_of_ne_of_ne <;>
             simp [ne_eq, EmbeddingLike.apply_eq_iff_eq, ← val_inj,
               coe_castLE, Nat.ne_of_lt hiu, Nat.ne_of_lt hiv] }
-variable {α}
 
 /-- A subgroup of `Equiv.Perm α` which is (Fintype.card α - 2)-pretransitive
   contains `alternatingGroup α` -/
-theorem alternatingGroup_le [DecidableEq α] (G : Subgroup (Equiv.Perm α))
+theorem _root_.IsMultiplyPretransitive.alternatingGroup_le
+    (G : Subgroup (Equiv.Perm α))
     (hmt : IsMultiplyPretransitive G α (Nat.card α - 2)) :
     alternatingGroup α ≤ G := by
-  classical
   rcases Nat.lt_or_ge (Nat.card α) 2 with hα1 | hα
   · -- Nat.card α  < 2
     rw [Nat.lt_succ_iff] at hα1
@@ -549,239 +768,106 @@ theorem alternatingGroup_le [DecidableEq α] (G : Subgroup (Equiv.Perm α))
     exact le_succ_of_le hα1
   apply Equiv.Perm.alternatingGroup_le_of_index_le_two
 
-  -- rw [Fintype.card_equiv (Equiv.refl _)]
+  -- one picks up a set of cardinality (card α - 2)
   obtain ⟨s, _, hs⟩ :=
     Set.exists_subset_card_eq (s := (Set.univ : Set α)) (n := Nat.card α - 2)
       (by rw [Set.ncard_univ]; exact sub_le (Nat.card α) 2)
   rw [← hs] at hmt
-
-  rw [← hmt.index_of_fixingSubgroup G α s, hs, Nat.sub_sub_self hα,
-    Nat.factorial_two, mul_comm]
-  apply Nat.mul_le_mul_left
-  have : Nonempty G := One.instNonempty
-  apply Nat.le_of_dvd (Fintype.card_pos)
-  rw [← Nat.card_eq_fintype_card]
-  apply Subgroup.index_dvd_card
+  -- The index of (fixingSubgroup G s) is (card α)!/2
+  have := MulAction.index_of_fixingSubgroup_eq_of_isMultiplyPretransitive G s hmt
+  rw [hs,
+    ← Nat.mul_right_cancel_iff (factorial_pos (Nat.card α - (Nat.card α - 2))),
+    Nat.choose_mul_factorial_mul_factorial (Nat.sub_le _ _),
+    Nat.sub_sub_self hα, factorial_two] at this
+  -- conclude
+  rw [← mul_le_mul_iff_of_pos_left (a := Nat.card G) card_pos,
+    Subgroup.card_mul_index, ← (fixingSubgroup G s).index_mul_card,
+    mul_assoc, mul_comm _ 2, ← mul_assoc]
+  rw [this, Nat.card_perm]
+  refine Nat.le_mul_of_pos_right (Nat.card α)! card_pos
 
 /-- The alternating group on 3 letters or more acts transitively -/
-theorem alternatingGroup.isPretransitive [DecidableEq α] (h : 3 ≤ Fintype.card α) :
+theorem isPretransitive_of_three_le_card (h : 3 ≤ Nat.card α) :
     IsPretransitive (alternatingGroup α) α := by
-  rw [isPretransitive_iff_is_one_pretransitive]
-  apply isMultiplyPretransitive_of_higher
-  apply IsMultiplyPretransitive.alternatingGroup_of_sub_two
-  apply le_trans _ (Nat.sub_le_sub_right h 2)
-  norm_num
-  simp only [ge_iff_le, ENat.card_eq_coe_fintype_card, ENat.coe_le_coe,
-    tsub_le_iff_right, le_add_iff_nonneg_right]
-  norm_num
+  rw [← is_one_pretransitive_iff]
+  letI := isMultiplyPretransitive α
+  apply isMultiplyPretransitive_of_le (n := Nat.card α - 2) _ (sub_le _ _)
+  rw [← add_le_add_iff_right 2, Nat.sub_add_cancel (le_trans (by norm_num) h)]
+  exact h
 
-/- This lemma proves the trivial blocks property for the alternating group.
-  This holds even when `Fintype.card α ≤ 2`
-  — then the action is not preprimitive  because it is not pretransitive -/
-theorem alternatingGroup.has_trivial_blocks [DecidableEq α]
-    (B : Set α) (hB : IsBlock (alternatingGroup α) B) :
+open scoped Pointwise
+
+/-- The action of the alternation group has trivial blocks.
+
+This holds for any α, even when `Nat.card α ≤ 2` and the action
+is not preprimitive, because it is not pretransitive. -/
+theorem isTrivialBlock_of_isBlock {B : Set α}
+    (hB : IsBlock (alternatingGroup α) B) :
     IsTrivialBlock B := by
   classical
-  cases' le_or_lt (Fintype.card α) 2 with h2 h2
-  · exact IsTrivialBlock.of_card_le_2 h2 B
-  cases' le_or_lt (Fintype.card α) 3 with h3 h4
-  · have h3' : Fintype.card α = 3 := le_antisymm h3 h2
-    cases' le_or_lt (Fintype.card B) 1 with h1 h2
+  rcases le_or_lt (Nat.card α) 2 with h2 | h2
+  · exact isTrivialBlock_of_card_le_two h2 B
+  rcases le_or_lt (Nat.card α) 3 with h3 | h4
+  · have h3' : Nat.card α = 3 := le_antisymm h3 h2
+    rcases le_or_lt B.ncard 1 with h1 | h2
     · apply Or.intro_left
-      rw [← Set.subsingleton_coe, ← Fintype.card_le_one_iff_subsingleton]
-      exact h1
+      rwa [← Set.ncard_le_one_iff_subsingleton]
     · apply Or.intro_right
-      rw [Fintype.one_lt_card_iff] at h2
+      rw [Set.one_lt_ncard_iff] at h2
       -- using h2, get a ≠ b in B
-      obtain ⟨⟨a, ha⟩, ⟨b, hb⟩, hab⟩ := h2
-      simp only [Ne, Subtype.mk_eq_mk] at hab
+      obtain ⟨a, b, ha, hb, hab⟩ := h2
       -- using h3', get c ≠ a, b
-      have : ∃ c : α, c ∉ ({a, b}  : Finset α) := by
-        by_contra h
-        push_neg at h
-        have : ({a, b} : Finset α) = Finset.univ := by
-          ext c
-          constructor
-          · intro _; exact Finset.mem_univ c
-          · intro _; exact h c
-        rw [lt_iff_not_ge] at h2 ; apply h2; rw [ge_iff_le]
-        rw [← Finset.card_eq_iff_eq_univ] at this
-        rw [← this]
-        rw [Finset.card_pair hab]
-      obtain ⟨c, hc⟩ := this
+      obtain ⟨c, _, hc⟩ := Finset.exists_mem_not_mem_of_card_lt_card
+          (s := {a, b}) (t := Finset.univ) (by
+            simp only [Finset.card_univ, ← Nat.card_eq_fintype_card, h3']
+            exact lt_of_le_of_lt Finset.card_le_two (by norm_num))
+      have H1 : {c, a, b} = Finset.univ := by
+        apply Finset.eq_univ_of_card
+        rw [← Nat.card_eq_fintype_card, h3', Finset.card_insert_of_not_mem hc,
+          Finset.card_insert_of_not_mem (by simpa only [Finset.mem_singleton]),
+          Finset.card_singleton]
+      suffices c ∈ B by
+        apply subset_antisymm B.subset_univ
+        rw [← Finset.coe_univ, ← H1]
+        simp only [Finset.coe_insert, Finset.coe_singleton,
+          insert_subset_iff, singleton_subset_iff]
+        exact ⟨this, ha, hb⟩
+      -- get a three_cycle g = c[a,b,c]
       simp only [Finset.mem_insert, Finset.mem_singleton, not_or] at hc
-      suffices ({a, b, c} : Finset α) = Finset.univ by
-        rw [eq_top_iff]
-        rw [Set.top_eq_univ, ← Finset.coe_univ, ← this]
-        intro x hx
-        simp only [Finset.coe_insert, Finset.coe_singleton, Set.mem_insert_iff,
-          Set.mem_singleton_iff] at hx
-        cases' hx with hxa hx
-        rw [hxa]; exact ha
-        cases' hx with hxb hxc
-        rw [hxb]; exact hb
-        rw [hxc]
-        -- get a three_cycle g = c[a,b,c]
-        let g : alternatingGroup α :=
-          ⟨Equiv.swap a b * Equiv.swap c b,-- cycle [a,b,c]
-          by  rw [Equiv.Perm.mem_alternatingGroup]
-              rw [Equiv.Perm.sign_mul]
-              rw [Equiv.Perm.sign_swap hab]
-              rw [Equiv.Perm.sign_swap hc.right]
-              simp only [Int.units_mul_self]⟩
-        suffices g • B = B by
-          rw [← this]
-          use b
-          apply And.intro hb
-          change (Equiv.swap a b * Equiv.swap c b) • b = c
-          simp only [Equiv.Perm.smul_def, Equiv.Perm.coe_mul, Function.comp_apply]
-          rw [Equiv.swap_apply_right]
-          rw [Equiv.swap_apply_of_ne_of_ne hc.left hc.right]
-        -- g • B = B
-        apply hB.def_mem ha
-        change (Equiv.swap a b * Equiv.swap c b) • a ∈ B
+      let g : alternatingGroup α := -- cycle [a, b, c]
+        ⟨Equiv.swap a b * Equiv.swap c b, by
+          rw [Equiv.Perm.mem_alternatingGroup, Equiv.Perm.sign_mul,
+            Equiv.Perm.sign_swap hab, Equiv.Perm.sign_swap hc.right,
+            Int.units_mul_self]⟩
+      suffices g • B = B by
+        rw [← this]
+        use b
+        apply And.intro hb
+        change (Equiv.swap a b * Equiv.swap c b) • b = c
         simp only [Equiv.Perm.smul_def, Equiv.Perm.coe_mul, Function.comp_apply]
-        rw [Equiv.swap_apply_of_ne_of_ne (ne_comm.mp hc.left) hab]
-        rw [Equiv.swap_apply_left]
-        exact hb
-      -- {a, b, c} = Finset.univ
-      rw [← Finset.card_eq_iff_eq_univ, h3']
-      rw [Finset.card_insert_of_not_mem]
-      rw [Finset.card_pair (ne_comm.mp hc.right)]
-      simp only [Finset.mem_insert, Finset.mem_singleton, not_or]
-      apply And.intro hab
-      exact ne_comm.mp hc.left
-  -- IsTrivialBlock hB
-  apply IsPreprimitive.has_trivial_blocks ?_ hB
-  apply IsMultiplyPretransitive.isPreprimitive_of_two
-  apply isMultiplyPretransitive_of_higher
-  apply IsMultiplyPretransitive.alternatingGroup_of_sub_two
-  apply le_trans _ (Nat.sub_le_sub_right h4 2); norm_num
-  simp only [ENat.card_eq_coe_fintype_card, cast_le, tsub_le_iff_right, le_add_iff_nonneg_right,
-    _root_.zero_le]
+        rw [Equiv.swap_apply_right]
+        rw [Equiv.swap_apply_of_ne_of_ne hc.left hc.right]
+      -- g • B = B
+      rw [isBlock_iff_smul_eq_of_mem] at hB
+      apply hB ha
+      simp only [Subgroup.mk_smul, Equiv.Perm.smul_def, Equiv.Perm.coe_mul, Function.comp_apply, g]
+      convert hb
+      rw [Equiv.swap_apply_of_ne_of_ne (Ne.symm hc.1) hab]
+      rw [Equiv.swap_apply_left]
+  -- IsTrivialBlock hB, for 4 ≤ Nat.card α
+  suffices IsPreprimitive (alternatingGroup α) α by
+    apply IsPreprimitive.isTrivialBlock_of_isBlock hB
+  apply isPreprimitive_of_is_two_pretransitive
+  letI := isMultiplyPretransitive α
+  apply isMultiplyPretransitive_of_le (n := Nat.card α - 2) _ (sub_le _ _)
+  rw [← add_le_add_iff_right 2, Nat.sub_add_cancel (le_of_lt h2)]
+  exact h4
 
 /-- The alternating group on 3 letters or more acts primitively -/
-theorem AlternatingGroup.isPreprimitive [DecidableEq α] (h : 3 ≤ Fintype.card α) :
-    IsPreprimitive (alternatingGroup α) α := by
-  have := alternatingGroup.isPretransitive h
-  apply IsPreprimitive.mk
-  apply alternatingGroup.has_trivial_blocks
+theorem isPreprimitive_of_three_le_card (h : 3 ≤ Nat.card α) :
+    IsPreprimitive (alternatingGroup α) α :=
+  letI := isPretransitive_of_three_le_card α h
+  { isTrivialBlock_of_isBlock := isTrivialBlock_of_isBlock α }
 
+end AlternatingGroup
 
-section Stabilizer
-
-variable {G α : Type*} [Group G] [MulAction G α]
-
-namespace SubMulAction.ofStabilizer
-
-open scoped BigOperators Pointwise Cardinal
-
-open MulAction Function.Embedding
-
-@[to_additive]
-theorem isMultiplyPretransitive_iff_of_conj
-    {n : ℕ} {a b : α} {g : G} (hg : b = g • a) :
-    IsMultiplyPretransitive (stabilizer G a) (ofStabilizer G a) n ↔
-      IsMultiplyPretransitive (stabilizer G b) (ofStabilizer G b) n :=
-  IsPretransitive.of_embedding_congr (MulEquiv.surjective _) (ofStabilizer.conjMap_bijective hg)
-
-@[to_additive]
-theorem isMultiplyPretransitive_iff [IsPretransitive G α] {n : ℕ} {a b : α} :
-    IsMultiplyPretransitive (stabilizer G a) (ofStabilizer G a) n ↔
-      IsMultiplyPretransitive (stabilizer G b) (ofStabilizer G b) n :=
-  let ⟨_, hg⟩ := exists_smul_eq G a b
-  isMultiplyPretransitive_iff_of_conj hg.symm
-
-/-- Multiple transitivity of a pretransitive action
-  is equivalent to one less transitivity of stabilizer of a point
-  (Wielandt, th. 9.1, 1st part) -/
-@[to_additive
-  "Multiple transitivity of a pretransitive action
-  is equivalent to one less transitivity of stabilizer of a point
-  (Wielandt, th. 9.1, 1st part)"]
-theorem isMultiplyPretransitive [IsPretransitive G α] {n : ℕ} {a : α} :
-    IsMultiplyPretransitive G α n.succ ↔
-      IsMultiplyPretransitive (stabilizer G a) (SubMulAction.ofStabilizer G a) n := by
-  constructor
-  · exact fun hn ↦ {
-      exists_smul_eq x y := by
-        obtain ⟨g, hgxy⟩ := exists_smul_eq G (snoc x) (snoc y)
-        have hg : g ∈ stabilizer G a := by
-          rw [mem_stabilizer_iff]
-          rw [DFunLike.ext_iff] at hgxy
-          convert hgxy (last n) <;> simp [smul_apply, snoc_last]
-        use ⟨g, hg⟩
-        ext i
-        simp only [smul_apply, SubMulAction.val_smul_of_tower, subgroup_smul_def]
-        rw [← snoc_castSucc x, ← smul_apply, hgxy, snoc_castSucc] }
-  · exact fun hn ↦ {
-      exists_smul_eq x y := by
-        -- gx • x = x1 :: a
-        obtain ⟨gx, x1, hgx⟩ := exists_smul_of_last_eq G a x
-        -- gy • y = y1 :: a
-        obtain ⟨gy, y1, hgy⟩ := exists_smul_of_last_eq G a y
-        -- g • x1 = y1,
-        obtain ⟨g, hg⟩ := hn.exists_smul_eq x1 y1
-        use gy⁻¹ * g * gx
-        ext i
-        simp only [mul_smul, smul_apply, inv_smul_eq_iff]
-        simp only [← smul_apply _ _ i, hgy, hgx]
-        simp only [smul_apply]
-        rcases Fin.eq_castSucc_or_eq_last i with ⟨i, rfl⟩ | ⟨rfl⟩
-        · -- rw [Function.Embedding.ext_iff] at hgx hgy hg
-          simp [snoc_castSucc, ← hg, SetLike.val_smul, subgroup_smul_def]
-        · simp only [snoc_last, ← hg, subgroup_smul_def]
-          exact g.prop }
-
-end SubMulAction.ofStabilizer
-
-end Stabilizer
-
-section FixingSubgroup
-
-variable {G α : Type*} [Group G] [MulAction G α]
-
-namespace SubMulAction.ofFixingSubgroup
-
-/-- The fixator of a finite subset of cardinal d in an n-transitive action
-acts (n-d) transitively on the complement. -/
-@[to_additive
-"The fixator of a finite subset of cardinal d in an n-transitive additive action
-acts (n-d) transitively on the complement."]
-theorem isMultiplyPretransitive {m n : ℕ} [Hn : IsMultiplyPretransitive G α n]
-    (s : Set α) [Finite s] (hmn : s.ncard + m = n) :
-    IsMultiplyPretransitive (fixingSubgroup G s) (ofFixingSubgroup G s) m :=
-  let _ : IsMultiplyPretransitive G α (s.ncard + m) := by rw [hmn]; infer_instance
-  let Hs : Nonempty (Fin (s.ncard) ≃ s) :=
-      Finite.card_eq.mp (by simp [Set.Nat.card_coe_set_eq])
-  { exists_smul_eq x y := by
-      set x' := ofFixingSubgroup.append x with hx
-      set y' := ofFixingSubgroup.append y with hy
-      obtain ⟨g, hg⟩ := exists_smul_eq G x' y'
-      suffices g ∈ fixingSubgroup G s by
-        use ⟨g, this⟩
-        ext i
-        simp only [smul_apply, SetLike.val_smul, Subgroup.mk_smul]
-        simp only [← ofFixingSubgroup.append_right, ← smul_apply, ← hx, ← hy, hg]
-      intro a
-      set i := (Classical.choice Hs).symm a
-      have ha : (Classical.choice Hs) i = a := by simp [i]
-      rw [← ha]
-      nth_rewrite 1 [← ofFixingSubgroup.append_left x i]
-      rw [← ofFixingSubgroup.append_left y i, ← hy, ← hg, smul_apply, ← hx] }
-
-/-- The fixator of a finite subset of cardinal d in an n-transitive action
-acts m transitively on the complement if d + m ≤ n. -/
-@[to_additive
-"The fixator of a finite subset of cardinal d in an n-transitive additive action
-acts m transitively on the complement if d + m ≤ n."]
-theorem isMultiplyPretransitive'
-    {m n : ℕ} [IsMultiplyPretransitive G α n]
-    (s : Set α) [Finite s] (hmn : s.ncard + m ≤ n) (hn : (n : ENat) ≤ ENat.card α) :
-    IsMultiplyPretransitive (fixingSubgroup G s) (SubMulAction.ofFixingSubgroup G s) m :=
-  letI : IsMultiplyPretransitive G α (s.ncard + m) := isMultiplyPretransitive_of_le' hmn hn
-  isMultiplyPretransitive s rfl
-
-end SubMulAction.ofFixingSubgroup
-
-end FixingSubgroup
