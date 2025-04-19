@@ -26,7 +26,7 @@ In this file the unit interval `[0, 1]` in `ℝ` is denoted by `I`, and `X` is a
   a continuous map `f : I → I` fixing `0` and `1`.
 * `Path.truncate γ t₀ t₁ : Path (γ t₀) (γ t₁)` is the path that follows `γ` from `t₀` to `t₁` and
   stays constant otherwise.
-* `Path.extend γ : ℝ → X` is the extension `γ` to `ℝ` that is constant before `0` and after `1`.
+* `Path.extend γ : C(ℝ, X)` is the extension `γ` to `ℝ` that is constant before `0` and after `1`.
 
 `Path x y` is equipped with the topology induced by the compact-open topology on `C(I,X)`, and
 several of the above constructions are shown to be continuous.
@@ -57,7 +57,7 @@ structure Path (x y : X) extends C(I, X) where
   /-- The end point of a `Path`. -/
   target' : toFun 1 = y
 
-instance Path.funLike : FunLike (Path x y) I X where
+instance Path.instFunLike : FunLike (Path x y) I X where
   coe γ := ⇑γ.toContinuousMap
   coe_injective' γ₁ γ₂ h := by
     simp only [DFunLike.coe_fn_eq] at h
@@ -73,7 +73,10 @@ protected theorem Path.ext : ∀ {γ₁ γ₂ : Path x y}, (γ₁ : I → X) = �
 
 namespace Path
 
+/-- A path constructed from a continuous map `f` has the same underlying function. -/
 @[simp]
+theorem coe_mk' (f : C(I, X)) (h₁ h₂) : ⇑(mk f h₁ h₂ : Path x y) = f := rfl
+
 theorem coe_mk_mk (f : I → X) (h₁) (h₂ : f 0 = x) (h₃ : f 1 = y) :
     ⇑(mk ⟨f, h₁⟩ h₂ h₃ : Path x y) = f :=
   rfl
@@ -103,25 +106,32 @@ initialize_simps_projections Path (toFun → simps.apply, -toContinuousMap)
 theorem coe_toContinuousMap : ⇑γ.toContinuousMap = γ :=
   rfl
 
-@[simp]
+/-- A special version of `ContinuousMap.coe_coe`.
+
+When you delete this deprecated lemma, please rename `Path.coe_mk'` to `Path.coe_mk`. -/
+@[deprecated ContinuousMap.coe_coe (since := "2025-04-15")]
 theorem coe_mk : ⇑(γ : C(I, X)) = γ :=
   rfl
 
+@[simp]
+theorem range_coe : range ((↑) : Path x y → C(I, X)) = {f | f 0 = x ∧ f 1 = y} :=
+  Subset.antisymm (range_subset_iff.mpr fun γ ↦ ⟨γ.source, γ.target⟩) fun f ⟨hf₀, hf₁⟩ ↦
+    ⟨⟨f, hf₀, hf₁⟩, rfl⟩
+
 /-- Any function `φ : Π (a : α), Path (x a) (y a)` can be seen as a function `α × I → X`. -/
-instance hasUncurryPath {X α : Type*} [TopologicalSpace X] {x y : α → X} :
+instance insHasUncurryPath {α : Type*} {x y : α → X} :
     HasUncurry (∀ a : α, Path (x a) (y a)) (α × I) X :=
   ⟨fun φ p => φ p.1 p.2⟩
 
 /-- The constant path from a point to itself -/
-@[refl, simps]
+@[refl, simps!]
 def refl (x : X) : Path x x where
-  toFun _t := x
-  continuous_toFun := continuous_const
+  toContinuousMap  := .const I x
   source' := rfl
   target' := rfl
 
 @[simp]
-theorem refl_range {a : X} : range (Path.refl a) = {a} := by simp [Path.refl, CoeFun.coe]
+theorem refl_range {a : X} : range (Path.refl a) = {a} := range_const
 
 /-- The reverse of a path from `x` to `y`, as a path from `y` to `x` -/
 @[symm, simps]
@@ -141,9 +151,7 @@ theorem symm_bijective : Function.Bijective (Path.symm : Path x y → Path y x) 
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 @[simp]
-theorem refl_symm {a : X} : (Path.refl a).symm = Path.refl a := by
-  ext
-  rfl
+theorem refl_symm {a : X} : (Path.refl a).symm = Path.refl a := rfl
 
 @[simp]
 theorem symm_range {a b : X} (γ : Path a b) : range γ.symm = range γ :=
@@ -157,7 +165,7 @@ open ContinuousMap
 /-- The following instance defines the topology on the path space to be induced from the
 compact-open topology on the space `C(I,X)` of continuous maps from `I` to `X`.
 -/
-instance topologicalSpace : TopologicalSpace (Path x y) :=
+instance instTopologicalSpace : TopologicalSpace (Path x y) :=
   TopologicalSpace.induced ((↑) : _ → C(I, X)) ContinuousMap.compactOpen
 
 instance : ContinuousEval (Path x y) I X := .of_continuous_forget continuous_induced_dom
@@ -169,29 +177,38 @@ theorem continuous_uncurry_iff {Y} [TopologicalSpace Y] {g : Y → Path x y} :
     continuous_of_continuous_uncurry (fun (y : Y) ↦ ContinuousMap.mk (g y))⟩
 
 /-- A continuous map extending a path to `ℝ`, constant before `0` and after `1`. -/
-def extend : ℝ → X :=
-  IccExtend zero_le_one γ
+def extend : C(ℝ, X) where
+  toFun := IccExtend zero_le_one γ
 
 /-- See Note [continuity lemma statement]. -/
-theorem _root_.Continuous.path_extend {γ : Y → Path x y} {f : Y → ℝ} (hγ : Continuous ↿γ)
+@[continuity, fun_prop]
+theorem _root_.Continuous.pathExtend {γ : Y → Path x y} {f : Y → ℝ} (hγ : Continuous ↿γ)
     (hf : Continuous f) : Continuous fun t => (γ t).extend (f t) :=
   Continuous.IccExtend hγ hf
 
+@[deprecated (since := "2025-04-14")]
+alias _root_.Continuous.path_extend := Continuous.pathExtend
+
 /-- A useful special case of `Continuous.path_extend`. -/
-@[continuity, fun_prop]
 theorem continuous_extend : Continuous γ.extend :=
   γ.continuous.Icc_extend'
 
-theorem _root_.Filter.Tendsto.path_extend
+theorem _root_.Filter.Tendsto.pathExtend
     {l r : Y → X} {y : Y} {l₁ : Filter ℝ} {l₂ : Filter X} {γ : ∀ y, Path (l y) (r y)}
     (hγ : Tendsto (↿γ) (𝓝 y ×ˢ l₁.map (projIcc 0 1 zero_le_one)) l₂) :
-    Tendsto (↿fun x => (γ x).extend) (𝓝 y ×ˢ l₁) l₂ :=
+    Tendsto (↿fun x => ⇑(γ x).extend) (𝓝 y ×ˢ l₁) l₂ :=
   Filter.Tendsto.IccExtend _ hγ
 
-theorem _root_.ContinuousAt.path_extend {g : Y → ℝ} {l r : Y → X} (γ : ∀ y, Path (l y) (r y))
+@[deprecated (since := "2025-04-14")]
+alias _root_.Filter.Tendsto.path_extend := Filter.Tendsto.pathExtend
+
+theorem _root_.ContinuousAt.pathExtend {g : Y → ℝ} {l r : Y → X} (γ : ∀ y, Path (l y) (r y))
     {y : Y} (hγ : ContinuousAt (↿γ) (y, projIcc 0 1 zero_le_one (g y))) (hg : ContinuousAt g y) :
     ContinuousAt (fun i => (γ i).extend (g i)) y :=
   hγ.IccExtend (fun x => γ x) hg
+
+@[deprecated (since := "2025-04-14")]
+alias _root_.ContinuousAt.path_extend := ContinuousAt.pathExtend
 
 @[simp]
 theorem extend_extends {a b : X} (γ : Path a b) {t : ℝ}
@@ -219,7 +236,7 @@ theorem extend_of_one_le {a b : X} (γ : Path a b) {t : ℝ}
   (IccExtend_of_right_le _ _ ht).trans γ.target
 
 @[simp]
-theorem refl_extend {a : X} : (Path.refl a).extend = fun _ => a :=
+theorem refl_extend {a : X} : (Path.refl a).extend = .const ℝ a :=
   rfl
 
 theorem extend_symm_apply (γ : Path x y) (t : ℝ) : γ.symm.extend t = γ.extend (1 - t) :=
@@ -284,7 +301,7 @@ theorem trans_symm (γ : Path x y) (γ' : Path y z) : (γ.trans γ').symm = γ'.
 theorem refl_trans_refl {a : X} :
     (Path.refl a).trans (Path.refl a) = Path.refl a := by
   ext
-  simp only [Path.trans, ite_self, one_div, Path.refl_extend]
+  simp only [Path.trans, ite_self, one_div, Path.refl_extend, ContinuousMap.const_apply]
   rfl
 
 theorem trans_range {a b c : X} (γ₁ : Path a b) (γ₂ : Path b c) :
@@ -399,7 +416,7 @@ theorem continuous_symm : Continuous (symm : Path x y → Path y x) :=
 @[continuity]
 theorem continuous_uncurry_extend_of_continuous_family {ι : Type*} [TopologicalSpace ι]
     {a b : ι → X} (γ : ∀ t : ι, Path (a t) (b t)) (h : Continuous ↿γ) :
-    Continuous ↿fun t => (γ t).extend := by
+    Continuous ↿fun t => ⇑(γ t).extend := by
   apply h.comp (continuous_id.prodMap continuous_projIcc)
   exact zero_le_one
 
@@ -564,9 +581,7 @@ theorem truncate_const_continuous_family {a b : X} (γ : Path a b)
 theorem truncate_self {a b : X} (γ : Path a b) (t : ℝ) :
     γ.truncate t t = (Path.refl <| γ.extend t).cast (by rw [min_self]) rfl := by
   ext x
-  rw [cast_coe]
-  simp only [truncate, DFunLike.coe, refl, min_def, max_def]
-  split_ifs with h₁ h₂ <;> congr
+  by_cases hx : x ≤ t <;> simp [truncate]
 
 theorem truncate_zero_zero {a b : X} (γ : Path a b) :
     γ.truncate 0 0 = (Path.refl a).cast (by rw [min_self, γ.extend_zero]) γ.extend_zero := by
@@ -578,7 +593,7 @@ theorem truncate_one_one {a b : X} (γ : Path a b) :
 
 @[simp]
 theorem truncate_zero_one {a b : X} (γ : Path a b) :
-    γ.truncate 0 1 = γ.cast (by simp [zero_le_one, extend_zero]) (by simp) := by
+    γ.truncate 0 1 = γ.cast (by simp) (by simp) := by
   ext x
   rw [cast_coe]
   have : ↑x ∈ (Icc 0 1 : Set ℝ) := x.2

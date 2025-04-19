@@ -304,6 +304,13 @@ theorem hasBasis_compactConvergenceUniformity_of_compact :
     (fun p hp => ⟨p.2, hp.2, fun _fg hfg x _hx => hfg x⟩) fun V hV =>
     ⟨⟨univ, V⟩, ⟨isCompact_univ, hV⟩, fun _fg hfg x => hfg x (mem_univ x)⟩
 
+theorem _root_.Filter.HasBasis.compactConvergenceUniformity_of_compactSpace
+    {ι : Sort*} {p : ι → Prop} {s : ι → Set (β × β)} (h : (𝓤 β).HasBasis p s) :
+    HasBasis (𝓤 C(α, β)) p fun i ↦ { fg : C(α, β) × C(α, β) | ∀ x, (fg.1 x, fg.2 x) ∈ s i } :=
+  hasBasis_compactConvergenceUniformity_of_compact.to_hasBasis
+    (fun _U hU ↦ (h.mem_iff.mp hU).imp fun _i hi ↦ ⟨hi.1, fun _f hf x ↦ hi.2 <| hf x⟩)
+    (fun i hi ↦ ⟨s i, h.mem_of_mem hi, Subset.rfl⟩)
+
 /-- Convergence in the compact-open topology is the same as uniform convergence for sequences of
 continuous functions on a compact space. -/
 theorem tendsto_iff_tendstoUniformly :
@@ -369,9 +376,8 @@ Sufficient conditions on `α` to satisfy this condition are (weak) local compact
 lemma completeSpace_of_isCoherentWith (h : IsCoherentWith {K : Set α | IsCompact K}) :
     CompleteSpace C(α, β) := by
   rw [completeSpace_iff_isComplete_range
-    isUniformEmbedding_toUniformOnFunIsCompact.isUniformInducing,
-    range_toUniformOnFunIsCompact, ← completeSpace_coe_iff_isComplete]
-  exact (UniformOnFun.isClosed_setOf_continuous h).completeSpace_coe
+    isUniformEmbedding_toUniformOnFunIsCompact.isUniformInducing, range_toUniformOnFunIsCompact]
+  exact (UniformOnFun.isClosed_setOf_continuous h).isComplete
 
 @[deprecated (since := "2025-04-08")]
 alias completeSpace_of_restrictGenTopology := completeSpace_of_isCoherentWith
@@ -383,5 +389,30 @@ instance instCompleteSpaceOfSequentialSpace [SequentialSpace α] :
     CompleteSpace C(α, β) := completeSpace_of_isCoherentWith .isCompact_of_seq
 
 end CompleteSpace
+
+/-- If `C(α, β)` is a complete space, then for any (possibly, discontinuous) function `f`
+and any set `s`, the set of functions `g : C(α, β)` that are equal to `f` on `s`
+is a complete set.
+
+Note that this set does not have to be a closed set.
+This lemma is useful to prove that, e.g., the space of paths between two points
+and the space of homotopies between two continuous maps are complete spaces,
+without assuming that the codomain is a Hausdorff space. -/
+theorem isComplete_setOf_eqOn [CompleteSpace C(α, β)] (f : α → β) (s : Set α) :
+    IsComplete {g : C(α, β) | EqOn g f s} := by
+  classical
+  intro l hlc hlf
+  rcases CompleteSpace.complete hlc with ⟨f', hf'⟩
+  have := hlc.1
+  have H₁ : ∀ x ∈ s, Inseparable (f x) (f' x) := fun x hx ↦ by
+    refine tendsto_nhds_unique_inseparable ?_ ((continuous_eval_const x).continuousAt.mono_left hf')
+    refine tendsto_const_nhds.congr' <| .filter_mono ?_ hlf
+    exact fun _ h ↦ (h hx).symm
+  have H₂ (x) : Inseparable (s.piecewise f f' x) (f' x) := by
+    by_cases hx : x ∈ s <;> simp [hx, H₁, Inseparable.refl]
+  set g : C(α, β) :=
+    ⟨s.piecewise f f', (continuous_congr_of_inseparable H₂).mpr <| map_continuous f'⟩
+  refine ⟨g, Set.piecewise_eqOn _ _ _, hf'.trans_eq ?_⟩
+  rwa [eq_comm, ← Inseparable, ← inseparable_coe, inseparable_pi]
 
 end ContinuousMap
