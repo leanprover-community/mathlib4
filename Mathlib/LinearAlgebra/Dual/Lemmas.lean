@@ -291,6 +291,11 @@ open Module
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] {p : Submodule R M}
 
+@[simp]
+theorem dualCoannihilator_top [Projective R M] :
+    (⊤ : Submodule R (Module.Dual R M)).dualCoannihilator = ⊥ := by
+  rw [dualCoannihilator, dualAnnihilator_top, comap_bot, Module.eval_ker]
+
 theorem exists_dual_map_eq_bot_of_nmem {x : M} (hx : x ∉ p) (hp' : Free R (M ⧸ p)) :
     ∃ f : Dual R M, f x ≠ 0 ∧ p.map f = ⊥ := by
   suffices ∃ f : Dual R (M ⧸ p), f (p.mkQ x) ≠ 0 by
@@ -368,11 +373,6 @@ open Submodule LinearMap
 
 -- We work in vector spaces because `exists_is_compl` only hold for vector spaces
 variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
-
-@[simp]
-theorem dualCoannihilator_top (W : Subspace K V) :
-    (⊤ : Subspace K (Module.Dual K W)).dualCoannihilator = ⊥ := by
-  rw [dualCoannihilator, dualAnnihilator_top, comap_bot, Module.eval_ker]
 
 @[simp]
 theorem dualAnnihilator_dualCoannihilator_eq {W : Subspace K V} :
