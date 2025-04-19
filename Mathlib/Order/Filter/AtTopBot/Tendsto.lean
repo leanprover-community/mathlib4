@@ -21,15 +21,15 @@ open Set
 
 namespace Filter
 
-theorem not_tendsto_const_atTop [Preorder α] [NoMaxOrder α] (x : α) (l : Filter β) [l.NeBot] :
+theorem not_tendsto_const_atTop [Preorder α] [NoTopOrder α] (x : α) (l : Filter β) [l.NeBot] :
     ¬Tendsto (fun _ => x) l atTop :=
   tendsto_const_pure.not_tendsto (disjoint_pure_atTop x)
 
-theorem not_tendsto_const_atBot [Preorder α] [NoMinOrder α] (x : α) (l : Filter β) [l.NeBot] :
+theorem not_tendsto_const_atBot [Preorder α] [NoBotOrder α] (x : α) (l : Filter β) [l.NeBot] :
     ¬Tendsto (fun _ => x) l atBot :=
   tendsto_const_pure.not_tendsto (disjoint_pure_atBot x)
 
-protected theorem Tendsto.eventually_gt_atTop [Preorder β] [NoMaxOrder β] {f : α → β} {l : Filter α}
+protected theorem Tendsto.eventually_gt_atTop [Preorder β] [NoTopOrder β] {f : α → β} {l : Filter α}
     (hf : Tendsto f l atTop) (c : β) : ∀ᶠ x in l, c < f x :=
   hf.eventually (eventually_gt_atTop c)
 
@@ -37,15 +37,15 @@ protected theorem Tendsto.eventually_ge_atTop [Preorder β] {f : α → β} {l :
     (hf : Tendsto f l atTop) (c : β) : ∀ᶠ x in l, c ≤ f x :=
   hf.eventually (eventually_ge_atTop c)
 
-protected theorem Tendsto.eventually_ne_atTop [Preorder β] [NoMaxOrder β] {f : α → β} {l : Filter α}
+protected theorem Tendsto.eventually_ne_atTop [Preorder β] [NoTopOrder β] {f : α → β} {l : Filter α}
     (hf : Tendsto f l atTop) (c : β) : ∀ᶠ x in l, f x ≠ c :=
   hf.eventually (eventually_ne_atTop c)
 
-protected theorem Tendsto.eventually_ne_atTop' [Preorder β] [NoMaxOrder β] {f : α → β}
+protected theorem Tendsto.eventually_ne_atTop' [Preorder β] [NoTopOrder β] {f : α → β}
     {l : Filter α} (hf : Tendsto f l atTop) (c : α) : ∀ᶠ x in l, x ≠ c :=
   (hf.eventually_ne_atTop (f c)).mono fun _ => ne_of_apply_ne f
 
-protected theorem Tendsto.eventually_lt_atBot [Preorder β] [NoMinOrder β] {f : α → β} {l : Filter α}
+protected theorem Tendsto.eventually_lt_atBot [Preorder β] [NoBotOrder β] {f : α → β} {l : Filter α}
     (hf : Tendsto f l atBot) (c : β) : ∀ᶠ x in l, f x < c :=
   hf.eventually (eventually_lt_atBot c)
 
@@ -53,7 +53,7 @@ protected theorem Tendsto.eventually_le_atBot [Preorder β] {f : α → β} {l :
     (hf : Tendsto f l atBot) (c : β) : ∀ᶠ x in l, f x ≤ c :=
   hf.eventually (eventually_le_atBot c)
 
-protected theorem Tendsto.eventually_ne_atBot [Preorder β] [NoMinOrder β] {f : α → β} {l : Filter α}
+protected theorem Tendsto.eventually_ne_atBot [Preorder β] [NoBotOrder β] {f : α → β} {l : Filter α}
     (hf : Tendsto f l atBot) (c : β) : ∀ᶠ x in l, f x ≠ c :=
   hf.eventually (eventually_ne_atBot c)
 

@@ -100,9 +100,13 @@ theorem le_cofinite_iff_compl_singleton_mem : l ≤ cofinite ↔ ∀ x, {x}ᶜ �
 theorem le_cofinite_iff_eventually_ne : l ≤ cofinite ↔ ∀ x, ∀ᶠ y in l, y ≠ x :=
   le_cofinite_iff_compl_singleton_mem
 
-/-- If `α` is a preorder with no maximal element, then `atTop ≤ cofinite`. -/
-theorem atTop_le_cofinite [Preorder α] [NoMaxOrder α] : (atTop : Filter α) ≤ cofinite :=
+/-- If `α` is a preorder with no top element, then `atTop ≤ cofinite`. -/
+theorem atTop_le_cofinite [Preorder α] [NoTopOrder α] : (atTop : Filter α) ≤ cofinite :=
   le_cofinite_iff_eventually_ne.mpr eventually_ne_atTop
+
+/-- If `α` is a preorder with no bottom element, then `atBot ≤ cofinite`. -/
+theorem atBot_le_cofinite [Preorder α] [NoBotOrder α] : (atBot : Filter α) ≤ cofinite :=
+  le_cofinite_iff_eventually_ne.mpr eventually_ne_atBot
 
 theorem comap_cofinite_le (f : α → β) : comap f cofinite ≤ cofinite :=
   le_cofinite_iff_eventually_ne.mpr fun x =>
