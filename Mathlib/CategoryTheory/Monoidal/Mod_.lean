@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison
+Authors: Kim Morrison, Paul Lezeau
 -/
 import Mathlib.CategoryTheory.Monoidal.Mon_
 
@@ -14,8 +14,7 @@ universe v₁ v₂ u₁ u₂
 
 open CategoryTheory MonoidalCategory
 
-variable (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C]
-variable {C}
+variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
 
 /-- A module object for a monoid object, all internal to some monoidal category. -/
 structure Mod_ (A : Mon_ C) where
@@ -129,3 +128,47 @@ def comap {A B : Mon_ C} (f : A ⟶ B) : Mod_ B ⥤ Mod_ A where
 -- Lots more could be said about `comap`, e.g. how it interacts with
 -- identities, compositions, and equalities of monoid object morphisms.
 end Mod_
+
+section Mod_Class
+
+open CategoryTheory Mon_Class MonoidalCategory
+
+variable (M : C) [Mon_Class M]
+
+/-- An action of a monoid object `M` on an object `X` is the data of a map `smul : M ⊗ X ⟶ X` that
+satisfies unitality and associativity with multiplication.
+
+See `MulAction` for the non-categorical version. -/
+class Mod_Class (X : C) where
+  /-- The action map -/
+  smul : M ⊗ X ⟶ X
+  /-- The identity acts trivially. -/
+  one_smul (X) : (η ▷ X) ≫ smul = (λ_ X).hom := by aesop_cat
+  /-- The action map is compatible with multiplication. -/
+  mul_smul (X) : (μ ▷ X) ≫ smul = (α_ M M X).hom ≫ (M ◁ smul) ≫ smul := by aesop_cat
+
+attribute [reassoc (attr := simp)] Mod_Class.mul_smul Mod_Class.one_smul
+
+@[inherit_doc] scoped[Mon_Class] notation "γ" => Mod_Class.smul
+
+namespace Mod_Class
+
+/-- The action of a monoid object on itself. -/
+-- See note [reducible non instances]
+abbrev regular : Mod_Class M M where smul := μ
+
+instance {A : Mon_ C} (M : Mod_ A) : Mod_Class A.X M.X where
+  smul := M.act
+  one_smul := M.one_act
+  mul_smul := M.assoc
+
+end Mod_Class
+
+/-- Construct an object of `Mod_ (Mon_.mk' M)` from an object `X : C` and a
+`Mod_Class M X` instance. -/
+@[simps]
+def Mod_.mk' (X : C) [Mod_Class M X] : Mod_ (.mk' M) where
+  X := X
+  act := (Mod_Class.smul : M ⊗ X ⟶ X)
+
+end Mod_Class
