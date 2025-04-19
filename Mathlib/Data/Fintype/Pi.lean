@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Finset.Pi
-import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Set.Finite.Basic
 
 /-!
@@ -154,10 +154,85 @@ noncomputable instance _root_.Function.Embedding.fintype {α β} [Fintype α] [F
     Fintype (α ↪ β) := by
   classical exact Fintype.ofEquiv _ (Equiv.subtypeInjectiveEquivEmbedding α β)
 
-instance RelHom.instFintype {α β} [Fintype α] [Fintype β] [DecidableEq α] {r : α → α → Prop}
-    {s : β → β → Prop} [DecidableRel r] [DecidableRel s] : Fintype (r →r s) :=
-  Fintype.ofEquiv {f : α → β // ∀ {x y}, r x y → s (f x) (f y)} <| Equiv.mk
-    (fun f ↦ ⟨f.1, f.2⟩) (fun f ↦ ⟨f.1, f.2⟩) (fun _ ↦ rfl) (fun _ ↦ rfl)
+section Fintype
+
+open Option Finset Fin Fintype Equiv Function
+
+-- We show a `Fintype` instance for a hom from `Fin n` to `Fin m`,
+-- and then transfer this to arbitrary finite types using
+-- `Fintype.truncFinBijection` and `Fintype.truncEquivFin`.
+
+-- For performance reasons, the fintype of colorings is constructed inductively
+-- instead of simply filtering all coloring for valid ones.
+private def finHomFintype {n m} {r : Fin n → Fin n → Prop} {s : Fin m → Fin m → Prop}
+    [DecidableRel r] [DecidableRel s] : Fintype (r →r s) :=
+  -- induct on the number of vertices
+  r |> match (motive :=
+    ∀ n (r : Fin n → Fin n → Prop) [DecidableRel r],
+      Fintype (r →r s)) n with
+  | 0 =>
+    -- empty rel hom
+    fun r _ ↦ ⟨{(RelEmbedding.ofIsEmpty r s).toRelHom}, by simp [RelHom.ext_iff]⟩
+  | n + 1 => fun r _ ↦ by
+    -- pair the valid homs previously obtained with all possible choices for the new target
+    refine ⟨(@univ _ (@instFintypeProd _ _ finHomFintype _)).filterMap
+      (fun p : (castSucc ⁻¹'o r →r s) × Fin m ↦ ?_) ?_, ?_⟩
+    · -- case on whether this is a valid hom
+      refine
+        if h : (r (Fin.last n) (Fin.last n) → s p.snd p.snd) ∧
+          ∀ a, (r a.castSucc (Fin.last n) → s (p.fst a) p.snd) ∧
+          (r (Fin.last n) a.castSucc → s p.snd (p.fst a)) then ?_ else ?_
+      · -- valid, so add
+        apply some
+        apply RelHom.mk (snoc p.fst p.snd)
+        intro v w hs
+        cases v using lastCases <;> cases w using lastCases
+        · simpa using h.left hs
+        · simpa using (h.right _).right hs
+        · simpa using (h.right _).left hs
+        · simpa using p.fst.map_rel hs
+      · -- not valid, so drop
+        exact none
+    · -- show this map is injective
+      intro v w _ hbv hbw
+      simp_rw [Option.mem_def, dite_none_right_eq_some] at hbv hbw
+      obtain ⟨_, hv⟩ := hbv
+      obtain ⟨_, hw⟩ := hbw
+      have hvw := hv.trans hw.symm
+      rw [some_inj] at hvw
+      ext i
+      · simpa using congr(($hvw i.castSucc).val)
+      · simpa using congr(($hvw (last n)).val)
+    · -- show this map is surjective
+      intro C
+      rw [mem_filterMap]
+      use (C.comp (.preimage castSucc r), C (last n)), @mem_univ ..
+      rw [dif_pos ⟨C.map_rel, fun _ => ⟨C.map_rel, C.map_rel⟩⟩, some_inj]
+      ext i
+      cases i using Fin.lastCases <;> simp
+
+instance RelHom.instFintype {α β} {r : α → α → Prop} {s : β → β → Prop}
+    [Fintype α] [Fintype β] [DecidableEq α] [DecidableRel r]
+    [∀ a b [Decidable (a = b)], Decidable (s a b)] :
+    Fintype (r →r s) :=
+  (truncFinBijection β).recOnSubsingleton fun ⟨b, hb⟩ ↦
+    (truncEquivFin α).recOnSubsingleton fun a ↦
+      haveI : ∀ x y, Decidable (b x = b y) := fun x y =>
+        decidable_of_iff (x = y) hb.injective.eq_iff.symm
+      haveI : DecidableRel (b ⁻¹'o s) := fun x y =>
+        inferInstanceAs (Decidable (s (b x) (b y)))
+      ⟨(@univ _ finHomFintype).map ⟨fun f ↦
+        (RelHom.preimage b s).comp
+          (f.comp (RelIso.preimage a.symm r).symm.toRelEmbedding.toRelHom),
+        fun x y hxy => RelHom.ext fun i => hb.injective (by simpa using congr($hxy (a.symm i)))⟩, by
+      intro f
+      rw [Finset.mem_map]
+      use (RelIso.preimage (Equiv.ofBijective b hb) s).symm.toRelEmbedding.toRelHom.comp
+        (f.comp (RelIso.preimage a.symm r).toRelEmbedding.toRelHom), @mem_univ ..
+      apply RelHom.ext
+      simp [ofBijective_apply_symm_apply]⟩
+
+end Fintype
 
 noncomputable instance RelEmbedding.instFintype {α β} [Fintype α] [Fintype β]
     {r : α → α → Prop} {s : β → β → Prop} : Fintype (r ↪r s) :=

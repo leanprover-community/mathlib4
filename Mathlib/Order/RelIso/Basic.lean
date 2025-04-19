@@ -114,6 +114,11 @@ protected theorem map_rel (f : r →r s) {a b} : r a b → s (f a) (f b) :=
 theorem coe_fn_toFun (f : r →r s) : f.toFun = (f : α → β) :=
   rfl
 
+@[simp]
+theorem coeFn_mk (f : α → β) (h : ∀ {a b}, r a b → s (f a) (f b)) :
+    RelHom.mk f @h = f :=
+  rfl
+
 /-- The map `coe_fn : (r →r s) → (α → β)` is injective. -/
 theorem coe_fn_injective : Injective fun (f : r →r s) => (f : α → β) :=
   DFunLike.coe_injective
@@ -137,6 +142,7 @@ protected def swap (f : r →r s) : swap r →r swap s :=
   ⟨f, f.map_rel⟩
 
 /-- A function is a relation homomorphism from the preimage relation of `s` to `s`. -/
+@[simps]
 def preimage (f : α → β) (s : β → β → Prop) : f ⁻¹'o s →r s :=
   ⟨f, id⟩
 
@@ -706,8 +712,13 @@ theorem eq_iff_eq (f : r ≃r s) {a b} : f a = f b ↔ a = b :=
   f.injective.eq_iff
 
 /-- Any equivalence lifts to a relation isomorphism between `s` and its preimage. -/
-protected def preimage (f : α ≃ β) (s : β → β → Prop) : f ⁻¹'o s ≃r s :=
-  ⟨f, Iff.rfl⟩
+@[simps]
+protected def preimage (f : α ≃ β) (s : β → β → Prop) : f ⁻¹'o s ≃r s where
+  toFun := f
+  invFun := f.symm
+  left_inv := f.left_inv'
+  right_inv := f.right_inv'
+  map_rel_iff' := Iff.rfl
 
 instance IsWellOrder.preimage {α : Type u} (r : α → α → Prop) [IsWellOrder α r] (f : β ≃ α) :
     IsWellOrder β (f ⁻¹'o r) :=
