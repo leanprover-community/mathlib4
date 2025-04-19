@@ -32,10 +32,10 @@ scoped instance : Algebra (Algebra.adjoin F S) (adjoin F S) :=
 
 scoped instance (X) [SMul X F] [SMul X E] [IsScalarTower X F E] :
     IsScalarTower X (Algebra.adjoin F S) (adjoin F S) :=
-  Subalgebra.inclusion.instIsScalarTowerSubtypeMem (algebra_adjoin_le_adjoin F S) _
+  Subalgebra.inclusion.instIsScalarTowerSubtypeMemBot (algebra_adjoin_le_adjoin F S) _
 
 scoped instance (X) [MulAction E X] : IsScalarTower (Algebra.adjoin F S) (adjoin F S) X :=
-  Subalgebra.inclusion.instIsScalarTowerSubtypeMem_1 (algebra_adjoin_le_adjoin F S) _
+  Subalgebra.inclusion.instIsScalarTowerSubtypeMemTop (algebra_adjoin_le_adjoin F S) _
 
 scoped instance : FaithfulSMul (Algebra.adjoin F S) (adjoin F S) :=
   Subalgebra.inclusion.instFaithfulSMulSubtypeMem (algebra_adjoin_le_adjoin F S)
