@@ -379,7 +379,7 @@ lemma BoundedContinuousFunction.integral_le_of_levyProkhorovEDist_lt (μ ν : Me
     · apply (Measurable.ennreal_toReal (Antitone.measurable ?_)).aestronglyMeasurable
       exact fun _ _ hst ↦ measure_mono <| thickening_subset_of_subset ε (fun _ h ↦ hst.trans h)
     · apply Eventually.of_forall <| fun t ↦ ?_
-      simp only [Real.norm_eq_abs, abs_toReal]
+      simp only [Real.norm_eq_abs, abs_of_nonneg measureReal_nonneg]
       exact ENNReal.toReal_mono (measure_ne_top _ _) <| measure_mono (subset_univ _)
   apply le_trans (setIntegral_mono (s := Ioc 0 ‖f‖) ?_ ?_ key)
   · rw [integral_add]
