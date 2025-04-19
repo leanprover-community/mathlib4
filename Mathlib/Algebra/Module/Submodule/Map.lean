@@ -259,6 +259,23 @@ theorem map_comap_le [RingHomSurjective σ₁₂] (f : F) (q : Submodule R₂ M�
 theorem le_comap_map [RingHomSurjective σ₁₂] (f : F) (p : Submodule R M) : p ≤ comap f (map f p) :=
   (gc_map_comap f).le_u_l _
 
+section submoduleOf
+
+/-- For any `R` submodules `p` and `q`, `p ⊓ q` as a submodule of `q`. -/
+def submoduleOf (p q : Submodule R M) : Submodule R q :=
+  Submodule.comap q.subtype p
+
+/-- If `p ≤ q`, then `p` as a subgroup of `q` is isomorphic to `p`. -/
+def submoduleOfEquivOfLe {q : Submodule R M} (h : p ≤ q) : p.submoduleOf q ≃ₗ[R] p where
+  toFun m := ⟨m.1, m.2⟩
+  invFun m := ⟨⟨m.1, h m.2⟩, m.2⟩
+  left_inv _ := Subtype.ext rfl
+  right_inv _ := Subtype.ext rfl
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+end submoduleOf
+
 section GaloisInsertion
 
 variable [RingHomSurjective σ₁₂] {f : F}
