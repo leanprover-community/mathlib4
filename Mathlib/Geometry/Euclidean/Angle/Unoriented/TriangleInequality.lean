@@ -17,22 +17,23 @@ variable {V : Type}
 variable [NormedAddCommGroup V]
 variable [InnerProductSpace ℝ V]
 
+/-- **Gets unit length vector from given vector** -/
 noncomputable def unit (x : V): V := ‖x‖⁻¹ • x
 
-theorem norm_of_unit {x : V} (H : x ≠ 0) : ‖unit x‖ = 1 := by
+lemma norm_of_unit {x : V} (H : x ≠ 0) : ‖unit x‖ = 1 := by
   unfold unit; rw [norm_smul];
   simp only [norm_inv, norm_norm]
   have H0: ‖x‖ ≠ 0 := by simp only [ne_eq, norm_eq_zero]; exact H
   field_simp
 
-theorem inner_product_of_units_as_cos {x y : V} (Hx : ‖x‖ = 1) (Hy : ‖y‖ = 1) :
+lemma inner_product_of_units_as_cos {x y : V} (Hx : ‖x‖ = 1) (Hy : ‖y‖ = 1) :
     inner (𝕜 := ℝ) x y = Real.cos (angle x y) := by
   rw [cos_angle, Hx, Hy]; simp
 
-theorem inner_sq_of_unit {x : V} (Hx : ‖x‖ = 1) : inner x x = (1 : ℝ) := by
+lemma inner_sq_of_unit {x : V} (Hx : ‖x‖ = 1) : inner x x = (1 : ℝ) := by
   rw [inner_eq_one_iff_of_norm_one Hx Hx]
 
-theorem angle_triangle_aux1 {x y : V} (Hx : ‖x‖ = 1) (Hy : ‖y‖ = 1) :
+lemma angle_triangle_aux1 {x y : V} (Hx : ‖x‖ = 1) (Hy : ‖y‖ = 1) :
     let u := unit (x - inner (𝕜 := ℝ) x y • y)
     inner x u ^ 2 + inner x y ^ 2 = (1 : ℝ) := by
   intro u; unfold u unit
@@ -59,7 +60,7 @@ theorem angle_triangle_aux1 {x y : V} (Hx : ‖x‖ = 1) (Hy : ‖y‖ = 1) :
       rw [inner_sq_of_unit Hx, inner_sq_of_unit Hy]
       ring
 
-theorem inner_product_with_proj_nonneg {x y : V} (Hx : ‖x‖ = 1) (Hy : ‖y‖ = 1) :
+lemma inner_product_with_proj_nonneg {x y : V} (Hx : ‖x‖ = 1) (Hy : ‖y‖ = 1) :
     (0 : ℝ) ≤ inner x (unit (x - inner (𝕜 := ℝ) x y • y)) := by
   unfold unit; rw [real_inner_smul_right]
   have H := norm_nonneg (x - inner (𝕜 := ℝ) x y • y)
@@ -70,7 +71,7 @@ theorem inner_product_with_proj_nonneg {x y : V} (Hx : ‖x‖ = 1) (Hy : ‖y�
   rw [inner_product_of_units_as_cos Hx Hy]
   exact Real.abs_cos_le_one (angle x y)
 
-theorem sin_as_inner_product {x y: V} (Hx: ‖x‖ = 1) (Hy: ‖y‖ = 1) :
+lemma sin_as_inner_product {x y: V} (Hx: ‖x‖ = 1) (Hy: ‖y‖ = 1) :
     let u := unit (x - inner (𝕜 := ℝ) x y • y)
     inner (𝕜 := ℝ) x u = Real.sin (angle x y) := by
   intro u; unfold u
@@ -84,7 +85,7 @@ theorem sin_as_inner_product {x y: V} (Hx: ‖x‖ = 1) (Hy: ‖y‖ = 1) :
   rw [abs_of_nonneg (sin_angle_nonneg x y)] at H0
   exact H0.symm
 
-theorem eq_of_inner_eq_one {x y : V} (Hx : ‖x‖ = 1) (Hy : ‖y‖ = 1) (H : inner x y = (1 : ℝ)) :
+lemma eq_of_inner_eq_one {x y : V} (Hx : ‖x‖ = 1) (Hy : ‖y‖ = 1) (H : inner x y = (1 : ℝ)) :
     x = y := by
   rw [inner_product_of_units_as_cos Hx Hy] at H
   rw [cos_eq_one_iff_angle_eq_zero] at H
@@ -96,7 +97,7 @@ theorem eq_of_inner_eq_one {x y : V} (Hx : ‖x‖ = 1) (Hy : ‖y‖ = 1) (H : 
   rw [Hy] at H1; simp only [one_smul] at H1
   exact H1.symm
 
-theorem eq_neg_of_inner_eq_neg_one {x y : V} (Hx : ‖x‖ = 1) (Hy : ‖y‖ = 1)
+lemma eq_neg_of_inner_eq_neg_one {x y : V} (Hx : ‖x‖ = 1) (Hy : ‖y‖ = 1)
     (H : inner x y = (-1 : ℝ)) :
     x = - y := by
   rw [inner_product_of_units_as_cos Hx Hy] at H
@@ -108,7 +109,7 @@ theorem eq_neg_of_inner_eq_neg_one {x y : V} (Hx : ‖x‖ = 1) (Hy : ‖y‖ = 
   rw [abs_of_neg H0, neg_eq_iff_eq_neg] at Hy
   rw [Hy] at H1; simp only [neg_smul, one_smul] at H1; rw [H1]; simp
 
-theorem angle_triangle_aux2 {x y : V} (Hx : ‖x‖ = 1) (Hy : ‖y‖ = 1) :
+lemma angle_triangle_aux2 {x y : V} (Hx : ‖x‖ = 1) (Hy : ‖y‖ = 1) :
     let u := unit (x - inner (𝕜 := ℝ) x y • y)
     x = Real.cos (angle x y) • y + Real.sin (angle x y) • u := by
   simp only
@@ -206,6 +207,7 @@ lemma angle_triangle_for_units {x y z : V} (Hx : ‖x‖ = 1) (Hy : ‖y‖ = 1)
     apply ge_of_le_cos ⟨H0, H⟩ ⟨angle_nonneg x z, angle_le_pi x z⟩ H4
   · linarith [angle_le_pi x z]
 
+/-- **Triangle inequality** for angles between vectors. -/
 theorem angle_triangle (x y z : V): angle x z ≤ angle x y + angle y z := by
   obtain H | H := em (x = 0)
   · rw [H]; simp only [angle_zero_left, le_add_iff_nonneg_right]; apply angle_nonneg
