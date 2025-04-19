@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Calculus.ContDiff.Operations
 import Mathlib.Analysis.Normed.Module.Convex
+import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Data.Bundle
 import Mathlib.Geometry.Manifold.ChartedSpace
 
@@ -135,17 +136,22 @@ open scoped Manifold Topology ContDiff
 
 /-! ### Models with corners. -/
 
-
 /-- A structure containing information on the way a space `H` embeds in a
 model vector space `E` over the field `𝕜`. This is all what is needed to
 define a `C^n` manifold with model space `H`, and model vector space `E`.
 
-We require two conditions `uniqueDiffOn'` and `target_subset_closure_interior`, which
-are satisfied in the relevant cases (where `range I = univ` or a half space or a quadrant) and
-useful for technical reasons. The former makes sure that manifold derivatives are uniquely
-defined, the latter ensures that for `C^2` maps the second derivatives are symmetric even for points
-on the boundary, as these are limit points of interior points where symmetry holds. If further
-conditions turn out to be useful, they can be added here.
+We require three conditions `uniqueDiffOn'`, `target_subset_closure_interior` and
+`convex_interior_range`, which are satisfied in the relevant cases
+(where `range I = univ` or a half space or a quadrant) and useful for technical reasons.
+The former makes sure that manifold derivatives are uniquely defined,
+the second condition ensures that for `C^2` maps the second derivatives are symmetric even for
+points on the boundary, as these are limit points of interior points where symmetry holds.
+The last condition is required for a more subtle reason: a complex model with corners should also
+be a real model; since unique differentiability over `ℂ` is stronger than over `ℝ`, asking for just
+unique differentiability is too weak for this. At the same time, condition `convex_interior_range`
+is satisfied by all examples in practice, and also implies the other two conditions over `ℝ` or `ℂ`.
+  XXX is that actually true??? I think not!
+If further conditions turn out to be useful, they can be added here.
 -/
 @[ext]
 structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
@@ -154,20 +160,39 @@ structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Ty
   source_eq : source = univ
   uniqueDiffOn' : UniqueDiffOn 𝕜 toPartialEquiv.target
   target_subset_closure_interior : toPartialEquiv.target ⊆ closure (interior toPartialEquiv.target)
+  convex_interior_range: ∀ h: IsRCLikeNormedField 𝕜,
+    letI := h.rclike 𝕜; letI : NormedSpace ℝ E := sorry;
+    Convex ℝ (interior (range toPartialEquiv))
   continuous_toFun : Continuous toFun := by continuity
   continuous_invFun : Continuous invFun := by continuity
+
+/-- If a model with corners has full range, all three technical conditions are satisfied. -/
+def ModelWithCorners.of_range_univ (𝕜 : Type*) [NontriviallyNormedField 𝕜]
+    {E : Type*} [NormedAddCommGroup E] [inst: NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
+    (φ : PartialEquiv H E) (hsource : φ.source = univ) (htarget : φ.target = univ)
+    (hcont : Continuous φ) (hcont_inv: Continuous φ.symm) : ModelWithCorners 𝕜 E H where
+  toPartialEquiv := φ
+  source_eq := hsource
+  uniqueDiffOn' := by rw [htarget]; exact uniqueDiffOn_univ
+  target_subset_closure_interior := by simp [htarget]
+  convex_interior_range := by
+    intro h
+    -- Should this be a separate lemma?
+    have : range φ = φ.target := by rw [← φ.image_source_eq_target, hsource, image_univ.symm]
+    simp [htarget, this]
+    -- have : NormedSpace ℝ E := by
+    --   have := h.rclike
+    --   -- This instance fails to be inferred: something is wrong!
+    --   --have : NormedSpace 𝕜 E := by convert inst; sorry -- diamond here?
+    --   sorry -- exact foo 𝕜 E
+    sorry -- exact convex_univ: synthesized and inferred instances are not equal
 
 attribute [simp, mfld_simps] ModelWithCorners.source_eq
 
 /-- A vector space is a model with corners, denoted as `𝓘(𝕜, E)` within the `Manifold` namespace. -/
 def modelWithCornersSelf (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] : ModelWithCorners 𝕜 E E where
-  toPartialEquiv := PartialEquiv.refl E
-  source_eq := rfl
-  uniqueDiffOn' := uniqueDiffOn_univ
-  target_subset_closure_interior := by simp
-  continuous_toFun := continuous_id
-  continuous_invFun := continuous_id
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] : ModelWithCorners 𝕜 E E :=
+  ModelWithCorners.of_range_univ 𝕜 (PartialEquiv.refl E) rfl rfl continuous_id continuous_id
 
 @[inherit_doc] scoped[Manifold] notation "𝓘(" 𝕜 ", " E ")" => modelWithCornersSelf 𝕜 E
 
@@ -210,9 +235,10 @@ initialize_simps_projections ModelWithCorners (toFun → apply, invFun → symm_
 theorem toPartialEquiv_coe : (I.toPartialEquiv : H → E) = I :=
   rfl
 
+
 @[simp, mfld_simps]
-theorem mk_coe (e : PartialEquiv H E) (a b c d d') :
-    ((ModelWithCorners.mk e a b c d d' : ModelWithCorners 𝕜 E H) : H → E) = (e : H → E) :=
+theorem mk_coe (e : PartialEquiv H E) (a b c d f f') :
+    ((ModelWithCorners.mk e a b c d f f' : ModelWithCorners 𝕜 E H) : H → E) = (e : H → E) :=
   rfl
 
 @[simp, mfld_simps]
@@ -220,8 +246,8 @@ theorem toPartialEquiv_coe_symm : (I.toPartialEquiv.symm : E → H) = I.symm :=
   rfl
 
 @[simp, mfld_simps]
-theorem mk_symm (e : PartialEquiv H E) (a b c d d') :
-    (ModelWithCorners.mk e a b c d d' : ModelWithCorners 𝕜 E H).symm = e.symm :=
+theorem mk_symm (e : PartialEquiv H E) (a b c d f f') :
+    (ModelWithCorners.mk e a b c d f f' : ModelWithCorners 𝕜 E H).symm = e.symm :=
   rfl
 
 @[continuity]
@@ -405,6 +431,12 @@ def ModelWithCorners.prod {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Ty
     target_subset_closure_interior := by
       simp only [PartialEquiv.prod_target, target_eq, interior_prod_eq, closure_prod_eq]
       exact Set.prod_mono I.range_subset_closure_interior I'.range_subset_closure_interior
+    convex_interior_range h := by
+      dsimp
+      -- the range of the inner function is the product of ranges
+      -- the interior of the product is the product of interiors
+      -- the product of convex sets is convex
+      sorry
     continuous_toFun := I.continuous_toFun.prodMap I'.continuous_toFun
     continuous_invFun := I.continuous_invFun.prodMap I'.continuous_invFun }
 
@@ -421,6 +453,7 @@ def ModelWithCorners.pi {𝕜 : Type u} [NontriviallyNormedField 𝕜] {ι : Typ
   target_subset_closure_interior := by
     simp only [PartialEquiv.pi_target, target_eq, finite_univ, interior_pi_set, closure_pi_set]
     exact Set.pi_mono (fun i _ ↦ (I i).range_subset_closure_interior)
+  convex_interior_range h := sorry
   continuous_toFun := continuous_pi fun i => (I i).continuous.comp (continuous_apply i)
   continuous_invFun := continuous_pi fun i => (I i).continuous_symm.comp (continuous_apply i)
 
