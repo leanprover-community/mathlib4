@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wanyi He, Jiedong Jiang, Jingting Wang, Andrew Yang, Shouxin Zhang
 -/
 import Mathlib.RingTheory.Ideal.Height
+import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.RingTheory.Localization.Submodule
 import Mathlib.RingTheory.Finiteness.Ideal
 import Mathlib.Order.KrullDimension
@@ -39,14 +40,12 @@ lemma Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes_of_isLocalRing
     [IsLocalRing R] (I : Ideal R) [I.IsPrincipal]
     (hp : (IsLocalRing.maximalIdeal R) ∈ I.minimalPrimes) :
     (IsLocalRing.maximalIdeal R).height ≤ 1 := by
-  rw [← ENat.coe_one, Ideal.height_le_iff]
-  intro q h₁ h₂
+  refine Ideal.height_le_iff.mpr fun q h₁ h₂ ↦ ?_
   suffices q.primeHeight = 0 by rw [Ideal.height_eq_primeHeight, this]; exact zero_lt_one
   rw [← Ideal.height_eq_primeHeight, ← WithBot.coe_inj,
     ← IsLocalization.AtPrime.ringKrullDim_eq_height q (Localization.AtPrime q),
     WithBot.coe_zero, ← ringKrullDimZero_iff_ringKrullDim_eq_zero,
-    ← isArtinianRing_iff_krullDimLE_zero,
-    isArtinianRing_iff_isNilpotent_maximalIdeal,
+    ← isArtinianRing_iff_krullDimLE_zero, isArtinianRing_iff_isNilpotent_maximalIdeal,
     ← Localization.AtPrime.map_eq_maximalIdeal]
   have hI : I ≠ ⊤ := (hp.1.2.trans_lt
     (lt_top_iff_ne_top.mpr (IsLocalRing.maximalIdeal.isMaximal _).ne_top)).ne
@@ -98,7 +97,7 @@ lemma Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes
     (I : Ideal R) [I.IsPrincipal] (p : Ideal R) (hp : p ∈ I.minimalPrimes) : p.height ≤ 1 := by
   have := hp.1.1
   let f := algebraMap R (Localization.AtPrime p)
-  have := Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes_of_isLocalRing
+  have := @Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes_of_isLocalRing _ _ _ _
     (I.map f) ⟨⟨f (Submodule.IsPrincipal.generator I), ?_⟩⟩ ?_
   · rwa [← IsLocalization.height_comap p.primeCompl,
      Localization.AtPrime.comap_maximalIdeal] at this
@@ -179,7 +178,7 @@ lemma Ideal.height_le_spanRank_toENat_of_mem_minimal_primes
         rintro _ ⟨z, rfl⟩
         exact hyq _
       have hI'p' : I' ≤ p' := hI'q.trans hpq.le
-      have h := Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes 
+      have h := Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes
         ((Ideal.span {x}).map f) (p'.map f) ?_
       swap
       · have : (p'.map f).IsPrime := Ideal.map_isPrime_of_surjective hf (by rwa [Ideal.mk_ker])
