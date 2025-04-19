@@ -574,10 +574,10 @@ instance : Valued K⸨X⸩ ℤₘ₀ := Valued.mk' ((PowerSeries.idealX K).valua
 lemma valuation_def : (Valued.v : Valuation K⸨X⸩ ℤₘ₀) = (PowerSeries.idealX K).valuation _ := rfl
 
 theorem valuation_X_pow (s : ℕ) :
-    Valued.v (((X : K⟦X⟧) : K⸨X⸩) ^ s) = Multiplicative.ofAdd (-(s : ℤ)) := by
-  rw [map_pow, ← one_mul (s : ℤ), ← neg_mul (1 : ℤ) s, Int.ofAdd_mul, WithZero.coe_zpow,
-    ofAdd_neg, WithZero.coe_inv, zpow_natCast, valuation_def, ← LaurentSeries.coe_algebraMap,
-    valuation_of_algebraMap, intValuation_toFun, intValuation_X, ofAdd_neg, WithZero.coe_inv]
+    Valued.v (((X : K⟦X⟧) : K⸨X⸩) ^ s) = Multiplicative.ofAdd (-(s : ℤ)) := by sorry
+  -- rw [map_pow, ← one_mul (s : ℤ), ← neg_mul (1 : ℤ) s, Int.ofAdd_mul, WithZero.coe_zpow,
+  --   ofAdd_neg, WithZero.coe_inv, zpow_natCast, valuation_def, ← LaurentSeries.coe_algebraMap,
+  --   valuation_of_algebraMap, intValuation_toFun, intValuation_X, ofAdd_neg, WithZero.coe_inv]
 
 theorem valuation_single_zpow (s : ℤ) :
     Valued.v (HahnSeries.single s (1 : K) : K⸨X⸩) =

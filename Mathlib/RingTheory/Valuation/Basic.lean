@@ -66,7 +66,7 @@ variable {K F R : Type*} [DivisionRing K]
 
 section
 
-variable (F R) (Γ₀ : Type*) [LinearOrderedCommMonoidWithZero Γ₀] [Ring R]
+variable (F R) (Γ₀ : Type*) [LinearOrderedCommMonoidWithZero Γ₀] [Semiring R]
 
 /-- The type of `Γ₀`-valued valuations on `R`.
 
@@ -78,7 +78,7 @@ structure Valuation extends R →*₀ Γ₀ where
 /-- `ValuationClass F α β` states that `F` is a type of valuations.
 
 You should also extend this typeclass when you extend `Valuation`. -/
-class ValuationClass (F) (R Γ₀ : outParam Type*) [LinearOrderedCommMonoidWithZero Γ₀] [Ring R]
+class ValuationClass (F) (R Γ₀ : outParam Type*) [LinearOrderedCommMonoidWithZero Γ₀] [Semiring R]
     [FunLike F R Γ₀] : Prop
   extends MonoidWithZeroHomClass F R Γ₀ where
   /-- The valuation of a a sum is less that the sum of the valuations -/
