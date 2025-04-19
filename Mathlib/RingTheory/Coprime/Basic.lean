@@ -17,9 +17,9 @@ import Mathlib.Tactic.Ring
 ## Main definition
 
 * `IsCoprime x y`: that `x` and `y` are coprime, defined to be the existence of `a` and `b` such
-that `a * x + b * y = 1`. Note that elements with no common divisors (`IsRelPrime`) are not
-necessarily coprime, e.g., the multivariate polynomials `x₁` and `x₂` are not coprime.
-The two notions are equivalent in Bézout rings, see `isRelPrime_iff_isCoprime`.
+  that `a * x + b * y = 1`. Note that elements with no common divisors (`IsRelPrime`) are not
+  necessarily coprime, e.g., the multivariate polynomials `x₁` and `x₂` are not coprime.
+  The two notions are equivalent in Bézout rings, see `isRelPrime_iff_isCoprime`.
 
 This file also contains lemmas about `IsRelPrime` parallel to `IsCoprime`.
 

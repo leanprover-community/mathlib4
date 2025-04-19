@@ -35,13 +35,13 @@ at every `x ∈ s`, and a **local diffeomorphism** iff it is a local diffeomorph
 * an injective local diffeomorphism is a diffeomorphism to its image
 * each differential of a `C^n` diffeomorphism (`n ≥ 1`) is a linear equivalence.
 * if `f` is a local diffeomorphism at `x`, the differential `mfderiv I J n f x`
-is a continuous linear isomorphism.
+  is a continuous linear isomorphism.
 * conversely, if `f` is `C^n` at `x` and `mfderiv I J n f x` is a linear isomorphism,
-`f` is a local diffeomorphism at `x`.
+  `f` is a local diffeomorphism at `x`.
 * if `f` is a local diffeomorphism, each differential `mfderiv I J n f x`
-is a continuous linear isomorphism.
+  is a continuous linear isomorphism.
 * Conversely, if `f` is `C^n` and each differential is a linear isomorphism,
-`f` is a local diffeomorphism.
+  `f` is a local diffeomorphism.
 
 ## Implementation notes
 
@@ -126,6 +126,7 @@ protected theorem mdifferentiableAt (hn : 1 ≤ n) {x : M} (hx : x ∈ Φ.source
 /- We could add lots of additional API (following `Diffeomorph` and `PartialHomeomorph`), such as
 * further continuity and differentiability lemmas
 * refl and trans instances; lemmas between them.
+
 As this declaration is meant for internal use only, we keep it simple. -/
 end PartialDiffeomorph
 end PartialDiffeomorph

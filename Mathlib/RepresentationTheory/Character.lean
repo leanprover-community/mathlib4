@@ -24,7 +24,8 @@ defined in `Mathlib.CategoryTheory.Simple`
 
 ## TODO
 * Once we have the monoidal closed structure on `FdRep k G` and a better API for the rigid
-structure, `char_dual` and `char_linHom` should probably be stated in terms of `Vᘁ` and `ihom V W`.
+  structure, `char_dual` and `char_linHom` should probably be stated
+  in terms of `Vᘁ` and `ihom V W`.
 -/
 
 

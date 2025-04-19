@@ -12,24 +12,24 @@ import Mathlib.RingTheory.Nilpotent.Defs
 Let `M` be a monoid with zero `M`, endowed with a topology.
 
 * `IsTopologicallyNilpotent a` says that `a : M` is *topologically nilpotent*,
-ie, its powers converge to zero.
+  i.e., its powers converge to zero.
 
 * `IsTopologicallyNilpotent.map`:
-The image of a topologically nilpotent element under a continuous morphism of
-monoids with zero endowed with a topology is topologically nilpotent.
+  The image of a topologically nilpotent element under a continuous morphism of
+  monoids with zero endowed with a topology is topologically nilpotent.
 
 * `IsTopologicallyNilpotent.zero`: `0` is topologically nilpotent.
 
 Let `R` be a commutative ring with a linear topology.
 
 * `IsTopologicallyNilpotent.mul_left`: if `a : R` is topologically nilpotent,
-then `a*b` is topologically nilpotent.
+  then `a*b` is topologically nilpotent.
 
 * `IsTopologicallyNilpotent.mul_right`: if `a : R` is topologically nilpotent,
-then `a * b` is topologically nilpotent.
+  then `a * b` is topologically nilpotent.
 
 * `IsTopologicallyNilpotent.add`: if `a b : R` are topologically nilpotent,
-then `a + b` is topologically nilpotent.
+  then `a + b` is topologically nilpotent.
 
 These lemmas are actually deduced from their analogues for commuting elements of rings.
 

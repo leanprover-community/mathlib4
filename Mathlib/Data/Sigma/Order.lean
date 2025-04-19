@@ -24,7 +24,7 @@ type synonym.
 ## Notation
 
 * `_root_.Lex (Sigma α)`: Sigma type equipped with the lexicographic order.
-Type synonym of `Σ i, α i`.
+  Type synonym of `Σ i, α i`.
 
 ## See also
 
