@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Manuel Candales
 -/
 import Mathlib.Analysis.InnerProductSpace.Projection
+import Mathlib.Analysis.Normed.Affine.ContinuousAffineMap
 import Mathlib.Geometry.Euclidean.PerpBisector
 import Mathlib.Algebra.QuadraticDiscriminant
 import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
@@ -249,13 +250,9 @@ theorem orthogonalProjectionFn_vsub_mem_direction_orthogonal {s : AffineSubspace
 
 attribute [local instance] AffineSubspace.toAddTorsor
 
-/-- The orthogonal projection of a point onto a nonempty affine
-subspace, whose direction is complete. The corresponding linear map
-(mapping a vector to the difference between the projections of two
-points whose difference is that vector) is the `orthogonalProjection`
-for real inner product spaces, onto the direction of the affine
-subspace being projected onto. -/
-nonrec def orthogonalProjection (s : AffineSubspace ℝ P) [Nonempty s]
+/-- Auxiliary definition for setting up the orthogonal projection. This one is a bundled affine
+map; the final `orthogonalProjection` is a continuous affine map. -/
+private nonrec def orthogonalProjectionAux (s : AffineSubspace ℝ P) [Nonempty s]
     [HasOrthogonalProjection s.direction] : P →ᵃ[ℝ] s where
   toFun p := ⟨orthogonalProjectionFn s p, orthogonalProjectionFn_mem p⟩
   linear := orthogonalProjection s.direction
@@ -281,6 +278,17 @@ nonrec def orthogonalProjection (s : AffineSubspace ℝ P) [Nonempty s]
     ext
     exact hm.symm
 
+/-- The orthogonal projection of a point onto a nonempty affine
+subspace, whose direction is complete. The corresponding linear map
+(mapping a vector to the difference between the projections of two
+points whose difference is that vector) is the `orthogonalProjection`
+for real inner product spaces, onto the direction of the affine
+subspace being projected onto. -/
+nonrec def orthogonalProjection (s : AffineSubspace ℝ P) [Nonempty s]
+    [HasOrthogonalProjection s.direction] : P →ᴬ[ℝ] s where
+  __ := orthogonalProjectionAux s
+  cont := AffineMap.continuous_linear_iff.1 (orthogonalProjection s.direction).cont
+
 @[simp]
 theorem orthogonalProjectionFn_eq {s : AffineSubspace ℝ P} [Nonempty s]
     [HasOrthogonalProjection s.direction] (p : P) :
@@ -292,6 +300,13 @@ theorem orthogonalProjectionFn_eq {s : AffineSubspace ℝ P} [Nonempty s]
 theorem orthogonalProjection_linear {s : AffineSubspace ℝ P} [Nonempty s]
     [HasOrthogonalProjection s.direction] :
     (orthogonalProjection s).linear = _root_.orthogonalProjection s.direction :=
+  rfl
+
+/-- The continuous linear map corresponding to `orthogonalProjection`. -/
+@[simp]
+theorem orthogonalProjection_contLinear {s : AffineSubspace ℝ P} [Nonempty s]
+    [HasOrthogonalProjection s.direction] :
+    (orthogonalProjection s).contLinear = _root_.orthogonalProjection s.direction :=
   rfl
 
 /-- The intersection of the subspace and the orthogonal subspace
@@ -512,8 +527,9 @@ def reflection (s : AffineSubspace ℝ P) [Nonempty s] [HasOrthogonalProjection 
         congr 1
         abel
       dsimp only
-      rwa [reflection_apply, (vsub_vadd p b).symm, AffineMap.map_vadd, orthogonalProjection_linear,
-        vadd_vsub, orthogonalProjection_mem_subspace_eq_self, two_smul])
+      rwa [reflection_apply, (vsub_vadd p b).symm, ContinuousAffineMap.map_vadd,
+        orthogonalProjection_contLinear, vadd_vsub, orthogonalProjection_mem_subspace_eq_self,
+        two_smul])
 
 /-- The result of reflecting. -/
 theorem reflection_apply (s : AffineSubspace ℝ P) [Nonempty s] [HasOrthogonalProjection s.direction]
