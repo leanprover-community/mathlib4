@@ -78,9 +78,9 @@ theorem covolume_eq_measure_fundamentalDomain {F : Set E} (h : IsAddFundamentalD
 
 theorem covolume_ne_zero : covolume L μ ≠ 0 := by
   rw [covolume_eq_measure_fundamentalDomain L μ (isAddFundamentalDomain (Free.chooseBasis ℤ L) μ),
-    ENNReal.toReal_ne_zero]
-  refine ⟨measure_fundamentalDomain_ne_zero _, ne_of_lt ?_⟩
-  exact Bornology.IsBounded.measure_lt_top (fundamentalDomain_isBounded _)
+    measureReal_ne_zero_iff (ne_of_lt _)]
+  · exact measure_fundamentalDomain_ne_zero _
+  · exact Bornology.IsBounded.measure_lt_top (fundamentalDomain_isBounded _)
 
 theorem covolume_pos : 0 < covolume L μ :=
   lt_of_le_of_ne ENNReal.toReal_nonneg (covolume_ne_zero L μ).symm
@@ -91,7 +91,7 @@ theorem covolume_comap {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [F
     covolume (ZLattice.comap ℝ L e.toLinearMap) ν = covolume L μ := by
   rw [covolume_eq_measure_fundamentalDomain _ _ (isAddFundamentalDomain (Free.chooseBasis ℤ L) μ),
     covolume_eq_measure_fundamentalDomain _ _ ((isAddFundamentalDomain
-    ((Free.chooseBasis ℤ L).ofZLatticeComap ℝ L e.toLinearEquiv) ν)), ← he.measure_preimage
+    ((Free.chooseBasis ℤ L).ofZLatticeComap ℝ L e.toLinearEquiv) ν)), ← he.measureReal_preimage
     (fundamentalDomain_measurableSet _).nullMeasurableSet, ← e.image_symm_eq_preimage,
     ← e.symm.coe_toLinearEquiv, map_fundamentalDomain]
   congr!
