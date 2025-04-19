@@ -152,7 +152,7 @@ private def coconeQuotientDiag :
     rw [← cancel_epi (u.inv), Iso.inv_hom_id_assoc]
     apply Action.hom_ext
     ext (x : Aut F ⧸ U.toSubgroup)
-    induction' m, x using Quotient.inductionOn₂ with σ μ
+    induction m, x using Quotient.inductionOn₂ with | _ σ μ => ?_
     suffices h : ⟦μ * σ⁻¹⟧ = ⟦μ⟧ by
       simp only [quotientToQuotientOfLE_hom_mk, quotientDiag_map,
         functorToAction_map_quotientToEndObjectHom V _ u]
@@ -179,7 +179,7 @@ private def coconeQuotientDiagDesc
     simp only [← h2, const_obj_obj, Action.comp_hom, FintypeCat.comp_apply]
   comm g := by
     ext (x : Aut F ⧸ V.toSubgroup)
-    induction' x using Quotient.inductionOn with σ
+    obtain ⟨σ⟩ := x
     simp only [const_obj_obj]
     show (((Aut F ⧸ₐ U.toSubgroup).ρ g ≫ u.inv.hom) ≫ (s.ι.app (SingleObj.star _)).hom) ⟦σ⟧ =
       ((s.ι.app (SingleObj.star _)).hom ≫ s.pt.ρ g) (u.inv.hom ⟦σ⟧)
@@ -197,13 +197,13 @@ private def coconeQuotientDiagIsColimit :
     apply (cancel_epi u.inv).mp
     apply Action.hom_ext
     ext (x : Aut F ⧸ U.toSubgroup)
-    induction' x using Quotient.inductionOn with σ
+    obtain ⟨σ⟩ := x
     simp
     rfl
   uniq s f hf := by
     apply Action.hom_ext
     ext (x : Aut F ⧸ V.toSubgroup)
-    induction' x using Quotient.inductionOn with σ
+    induction x using Quotient.inductionOn
     simp [← hf (SingleObj.star _)]
 
 end
@@ -224,7 +224,7 @@ lemma exists_lift_of_quotient_openSubgroup (V : OpenSubgroup (Aut F)) :
   have h1 (σ : Aut F) (σinU : σ ∈ U) : σ.hom.app A = 𝟙 (F.obj A) := by
     have hi : (Aut F ⧸ₐ MulAction.stabilizer (Aut F) a).ρ σ = 𝟙 _ := by
       refine FintypeCat.hom_ext _ _ (fun x ↦ ?_)
-      induction' x using Quotient.inductionOn with τ
+      obtain ⟨τ⟩ := x
       show ⟦σ * τ⟧ = ⟦τ⟧
       apply Quotient.sound
       apply (QuotientGroup.leftRel_apply).mpr

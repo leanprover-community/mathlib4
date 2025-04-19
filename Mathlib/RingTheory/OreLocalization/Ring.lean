@@ -31,14 +31,12 @@ variable {R : Type*} [Semiring R] {S : Submonoid R} [OreSet S]
 variable {X : Type*} [AddCommMonoid X] [Module R X]
 
 protected theorem zero_smul (x : X[S⁻¹]) : (0 : R[S⁻¹]) • x = 0 := by
-  induction' x with r s
+  cases x with | _ r s => ?_
   rw [OreLocalization.zero_def, oreDiv_smul_char 0 r 1 s 0 1 (by simp)]; simp
 
 protected theorem add_smul (y z : R[S⁻¹]) (x : X[S⁻¹]) :
     (y + z) • x = y • x + z • x := by
-  induction' x with r₁ s₁
-  induction' y with r₂ s₂
-  induction' z with r₃ s₃
+  cases x; cases y; cases z; rename_i r₁ s₁ r₂ s₂ r₃ s₃
   rcases oreDivAddChar' r₂ r₃ s₂ s₃ with ⟨ra, sa, ha, q⟩
   rw [q]
   clear q
@@ -118,7 +116,7 @@ instance {R₀} [CommSemiring R₀] [Algebra R₀ R] : Algebra R₀ R[S⁻¹] wh
   __ := inferInstanceAs (Module R₀ R[S⁻¹])
   algebraMap := numeratorRingHom.comp (algebraMap R₀ R)
   commutes' r x := by
-    induction' x using OreLocalization.ind with r₁ s₁
+    cases x with | _ r₁ s₁ => ?_
     dsimp
     rw [mul_div_one, oreDiv_mul_char _ _ _ _ (algebraMap R₀ R r) s₁ (Algebra.commutes _ _).symm,
       Algebra.commutes, mul_one]
@@ -143,8 +141,7 @@ def universalHom : R[S⁻¹] →+* T :=
       simp
     map_add' := fun x y => by
       simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe]
-      induction' x with r₁ s₁
-      induction' y with r₂ s₂
+      cases x; cases y; rename_i r₁ s₁ r₂ s₂
       rcases oreDivAddChar' r₁ r₂ s₁ s₂ with ⟨r₃, s₃, h₃, h₃'⟩
       rw [h₃']
       clear h₃'
@@ -262,7 +259,7 @@ protected theorem inv_def {r : R} {s : R⁰} :
   with_unfolding_all rfl
 
 protected theorem mul_inv_cancel (x : R[R⁰⁻¹]) (h : x ≠ 0) : x * x⁻¹ = 1 := by
-  induction' x with r s
+  cases x with | _ r s => ?_
   rw [OreLocalization.inv_def, OreLocalization.one_def]
   have hr : r ≠ 0 := by
     rintro rfl
