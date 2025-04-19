@@ -176,27 +176,21 @@ open TaggedPrepartition
 
 /-- An `IntegrationParams` is a structure holding 3 boolean values used to define a filter to be
 used in the definition of a box-integrable function.
-
-* `bRiemann`: the value `true` means that the filter corresponds to a Riemann-style integral, i.e.
-  in the definition of integrability we require a constant upper estimate `r` on the size of boxes
-  of a tagged partition; the value `false` means that the estimate may depend on the position of the
-  tag.
-
-* `bHenstock`: the value `true` means that we require that each tag belongs to its own closed box;
-  the value `false` means that we only require that tags belong to the ambient box.
-
-* `bDistortion`: the value `true` means that `r` can depend on the maximal ratio of sides of the
-  same box of a partition. Presence of this case makes quite a few proofs harder but we can prove
-  the divergence theorem only for the filter `BoxIntegral.IntegrationParams.GP = ⊥ =
-  {bRiemann := false, bHenstock := true, bDistortion := true}`.
 -/
 @[ext]
 structure IntegrationParams : Type where
-  /-- Whether to use a Riemann-style integral with constant upper estimate on box sizes -/
+  /-- `bRiemann`: the value `true` means that the filter corresponds to a Riemann-style integral,
+  i.e. in the definition of integrability we require a constant upper estimate `r` on the size of
+  boxes of a tagged partition; the value `false` means that the estimate may depend on the position
+  of the tag. -/
   (bRiemann : Bool)
-  /-- Whether to require each tag belongs to its own closed box -/
+  /-- `bHenstock`: the value `true` means that we require that each tag belongs to its own closed
+  box; the value `false` means that we only require that tags belong to the ambient box. -/
   (bHenstock : Bool)
-  /-- Whether to allow the estimate to depend on the maximal ratio of sides of boxes -/
+  /-- `bDistortion`: the value `true` means that `r` can depend on the maximal ratio of sides of the
+  same box of a partition. Presence of this case makes quite a few proofs harder but we can prove
+  the divergence theorem only for the filter `BoxIntegral.IntegrationParams.GP = ⊥ =
+  {bRiemann := false, bHenstock := true, bDistortion := true}`. -/
   (bDistortion : Bool)
 
 variable {l l₁ l₂ : IntegrationParams}
