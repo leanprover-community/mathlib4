@@ -679,6 +679,16 @@ namespace Set.PartiallyWellOrderedOn
 
 variable {r : α → α → Prop}
 
+theorem exists_nat_gt_not_mem (r : α → α → Prop) (s : Set α)
+    (hs : s.PartiallyWellOrderedOn r) (f : ℕ → α) (hf : ∀ m n : ℕ, m < n → ¬ r (f m) (f n)) :
+    ∃ k : ℕ, ∀ m, k < m → ¬ (f m) ∈ s := by
+  contrapose! hf
+  obtain ⟨φ, hφm, hφs⟩ := Nat.exists_subsequence hf
+  rw [partiallyWellOrderedOn_iff_exists_lt] at hs
+  obtain ⟨m, n, hmn, hr⟩ := hs (fun n ↦ f (φ n)) hφs
+  use (φ m), (φ n)
+  exact ⟨hφm hmn, hr⟩
+
 -- TODO: move this material to the main file on WQOs.
 
 /-- In the context of partial well-orderings, a bad sequence is a nonincreasing sequence

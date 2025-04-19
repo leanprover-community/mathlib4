@@ -91,8 +91,8 @@ namespace HahnSeries
 
 section BinomialPow
 
-variable [LinearOrder Γ] [AddCommGroup Γ] [IsOrderedAddMonoid Γ] [CommRing R] [BinomialRing R]
-[Module R Γ] [CommRing A] [Algebra R A]
+variable (A : Type*) [LinearOrder Γ] [AddCommGroup Γ] [IsOrderedCancelAddMonoid Γ] [CommRing R]
+[BinomialRing R] [Module R Γ] [CommRing A] [Algebra R A]
 
 theorem pos_orderTop_single_sub {g g' : Γ} (h : g < g') (a : A) :
     0 < (single (g' - g) a).orderTop := by
@@ -110,12 +110,12 @@ def binomialPow (g g' : Γ) (r : R) : HahnSeries Γ A :=
 
 @[simp]
 theorem binomialPow_apply (g g' : Γ) (r : R) :
-    binomialPow g g' r = single (r • g) 1 *
+    binomialPow A g g' r = single (r • g) 1 *
       (PowerSeries.heval ((single (g' - g)) (-1 : A)) (PowerSeries.binomialSeries A r)) :=
   rfl
 
 theorem binomialPow_apply_of_not_gt {g g' : Γ} (h : ¬ g < g') (r : R) :
-    binomialPow g g' r = single (r • g) (1 : A) := by
+    binomialPow A g g' r = single (r • g) (1 : A) := by
   cases subsingleton_or_nontrivial A
   · have _ : Subsingleton (HahnSeries Γ A) := instSubsingleton
     exact Subsingleton.elim _ _
@@ -126,31 +126,68 @@ theorem binomialPow_apply_of_not_gt {g g' : Γ} (h : ¬ g < g') (r : R) :
     simp
 
 theorem binomialPow_add {g g' : Γ} (r r' : R) :
-    binomialPow (A := A) g g' r * binomialPow g g' r' =
-      binomialPow g g' (r + r') := by
+    binomialPow A g g' r * binomialPow A g g' r' =
+      binomialPow A g g' (r + r') := by
   simp only [binomialPow, PowerSeries.binomialSeries_add, PowerSeries.heval_mul, add_smul]
   rw [mul_left_comm, ← mul_assoc, ← mul_assoc, single_mul_single, mul_one, add_comm, ← mul_assoc]
 
 theorem binomialPow_one {g g' : Γ} (h : g < g') :
-    binomialPow g g' (Nat.cast (R := R) 1) = ((single g) (1 : A) - (single g') 1) := by
+    binomialPow A g g' (Nat.cast (R := R) 1) = ((single g) (1 : A) - (single g') 1) := by
   rw [binomialPow_apply, PowerSeries.binomialSeries_nat 1, pow_one, map_add,
-        PowerSeries.heval_X _ (pos_orderTop_single_sub h (-1)),
+        PowerSeries.heval_X _ (pos_orderTop_single_sub A h (-1)),
         ← RingHom.map_one (f := PowerSeries.C A),
-        PowerSeries.heval_C _ (pos_orderTop_single_sub h (-1)), one_smul, mul_add, mul_one,
+        PowerSeries.heval_C _ (pos_orderTop_single_sub A h (-1)), one_smul, mul_add, mul_one,
         single_mul_single, one_mul, single_neg, Nat.cast_one, one_smul, add_sub_cancel,
         sub_eq_add_neg]
 
 theorem binomialPow_nat {g g' : Γ} (h : g < g') (n : ℕ) :
-    binomialPow g g' (n : R) = ((single g (1 : A)) - single g' 1) ^ n := by
+    binomialPow A g g' (n : R) = ((single g (1 : A)) - single g' 1) ^ n := by
   induction n with
   | zero => simp [PowerSeries.binomialSeries_zero, map_one]
   | succ n ih =>
-    rw [Nat.cast_add, ← binomialPow_add, pow_add, ih, binomialPow_one h, pow_one]
+    rw [Nat.cast_add, ← binomialPow_add, pow_add, ih, binomialPow_one A h, pow_one]
 
 theorem binomialPow_one_add {g₀ g₁ g₂ : Γ} (h₀₁ : g₀ < g₁) (h₁₂ : g₁ < g₂) :
-    binomialPow (A := A) g₀ g₁ (Nat.cast (R := R) 1) + binomialPow g₁ g₂ (Nat.cast (R := R) 1) =
-      binomialPow g₀ g₂ (Nat.cast (R := R) 1) := by
-  rw [binomialPow_one h₀₁, binomialPow_one h₁₂, binomialPow_one (h₀₁.trans h₁₂), sub_add_sub_cancel]
+    binomialPow A g₀ g₁ (Nat.cast (R := R) 1) + binomialPow A g₁ g₂ (Nat.cast (R := R) 1) =
+      binomialPow A g₀ g₂ (Nat.cast (R := R) 1) := by
+  rw [binomialPow_one A h₀₁, binomialPow_one A h₁₂, binomialPow_one A (h₀₁.trans h₁₂),
+    sub_add_sub_cancel]
+
+theorem binomialPow_coeff_eq {g g' : Γ} (h : g < g') (r : R) (n : ℕ) :
+    (binomialPow A g g' r).coeff (r • g + n • (g' - g)) =
+      Int.negOnePow n • Ring.choose r n • 1 := by
+  simp only [binomialPow_apply, PowerSeries.heval_apply]
+  rw [add_comm, HahnSeries.coeff_single_mul_add, one_mul]
+  simp only [SummableFamily.coeff_hsum, SummableFamily.smulFamily_toFun,
+    PowerSeries.binomialSeries_coeff, smul_eq_mul, mul_one, coeff_smul]
+  rw [finsum_eq_single _ n, SummableFamily.powers_of_orderTop_pos
+    (pos_orderTop_single_sub A h (-1 : A)) n, single_pow, coeff_single_same,
+    ← Int.cast_negOnePow_natCast, mul_comm, ← smul_eq_mul]
+  · norm_cast
+  · intro m hmn
+    rw [SummableFamily.powers_of_orderTop_pos (pos_orderTop_single_sub A h (-1 : A)) m, single_pow,
+      coeff_single_of_ne, mul_zero]
+    obtain h' | h' | h' := lt_trichotomy m n
+    · exact ne_of_gt <| nsmul_lt_nsmul_left (sub_pos.mpr h) h'
+    · exact (hmn h').elim
+    · exact ne_of_lt <| nsmul_lt_nsmul_left (sub_pos.mpr h) h'
+
+theorem binomialPow_coeff_eq_zero {g g' g'' : Γ} (h : g < g') (r : R)
+    (hg'' : ∀ (n : ℕ), ¬r • g + n • (g' - g) = g'') :
+    (binomialPow (A := A) g g' r).coeff g'' = 0 := by
+  simp only [binomialPow_apply, PowerSeries.heval_apply]
+  rw [← sub_add_cancel g'' (r • g), HahnSeries.coeff_single_mul_add, one_mul]
+  simp only [SummableFamily.coeff_hsum, SummableFamily.smulFamily_toFun,
+    PowerSeries.binomialSeries_coeff, smul_assoc, one_smul, coeff_smul]
+  rw [finsum_eq_zero_of_forall_eq_zero]
+  intro m
+  refine smul_eq_zero_of_right (Ring.choose r m) ?_
+  rw [SummableFamily.powers_of_orderTop_pos (pos_orderTop_single_sub A h (-1 : A)) m, single_pow,
+    coeff_single_of_ne]
+  contrapose! hg''
+  use m
+  rw [sub_eq_iff_eq_add'] at hg''
+  rw [hg'']
 
 end BinomialPow
 

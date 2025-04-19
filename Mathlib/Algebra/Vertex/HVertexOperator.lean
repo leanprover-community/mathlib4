@@ -80,8 +80,8 @@ theorem coeff_inj : Function.Injective (coeff : HVertexOperator Γ R V W → Γ 
 /-- Given a coefficient function valued in linear maps satisfying a partially well-ordered support
 condition, we produce a heterogeneous vertex operator. -/
 @[simps]
-def of_coeff (f : Γ → V →ₗ[R] W)
-    (hf : ∀ x : V , (Function.support (f · x)).IsPWO) : HVertexOperator Γ R V W where
+def of_coeff (f : Γ → V →ₗ[R] W) (hf : ∀ x : V , (Function.support (f · x)).IsPWO) :
+    HVertexOperator Γ R V W where
   toFun x := (of R) { coeff := fun g => f g x, isPWO_support' := hf x }
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
@@ -215,7 +215,7 @@ open HahnModule
 @[simps]
 def compHahnSeries (A : HVertexOperator Γ R V W) (B : HVertexOperator Γ₁ R U V) (u : U) :
     HahnSeries Γ₁ (HahnSeries Γ W) where
-  coeff g' := A (coeff B g' u)
+  coeff g' := (HahnModule.of R).symm (A (coeff B g' u))
   isPWO_support' := by
     refine Set.IsPWO.mono (((of R).symm (B u)).isPWO_support') ?_
     simp_all only [coeff_apply, Function.support_subset_iff, ne_eq, Function.mem_support]
@@ -225,15 +225,15 @@ def compHahnSeries (A : HVertexOperator Γ R V W) (B : HVertexOperator Γ₁ R U
 theorem compHahnSeries.add (A : HVertexOperator Γ R V W) (B : HVertexOperator Γ₁ R U V) (u v : U) :
     compHahnSeries A B (u + v) = compHahnSeries A B u + compHahnSeries A B v := by
   ext
-  simp only [compHahnSeries_coeff, map_add, coeff_apply, HahnSeries.coeff_add', Pi.add_apply]
-  rw [← @HahnSeries.coeff_add]
+  simp only [compHahnSeries_coeff, HahnModule.of_symm_add, map_add, coeff_apply,
+    HahnSeries.coeff_add', Pi.add_apply]
 
 @[simp]
 theorem compHahnSeries.smul (A : HVertexOperator Γ R V W) (B : HVertexOperator Γ₁ R U V) (r : R)
     (u : U) : compHahnSeries A B (r • u) = r • compHahnSeries A B u := by
   ext
   rw [HahnSeries.coeff_smul]
-  simp only [compHahnSeries_coeff, LinearMapClass.map_smul, coeff_apply]
+  simp only [compHahnSeries_coeff, HahnModule.of_symm_smul, LinearMapClass.map_smul, coeff_apply]
 
 /-- The composite of two heterogeneous vertex operators, as a heterogeneous vertex operator. -/
 @[simps]
@@ -392,16 +392,87 @@ end PiLex
 section binomialPow
 
 variable [LinearOrder Γ] [AddCommGroup Γ] [IsOrderedCancelAddMonoid Γ] [CommRing R]
-  [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W]
+  [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W] [PartialOrder Γ₁] [AddAction Γ Γ₁]
+  [IsOrderedCancelVAdd Γ Γ₁]
 
-/-!
-theorem binomialPow_mul_coeff {g g' g'' : Γ} (h : g < g') (n : ℤ) (A : HVertexOperator Γ R V W)
-    (v : V) :
-    (HahnSeries.binomialPow (A := R) g g' n • A v).coeff g'' =
-      ∑ᶠ m : ℕ, Ring.choose n m • (A v).coeff (g'' - (n • g) + (m • (g' - g))) := by
-  simp only [HahnSeries.binomialPow_apply, HahnSeries.single_neg, PowerSeries.heval_apply]
-  sorry
--/
+theorem exists_binomialPow_smul_support_bound {g g' : Γ} (g₁ : Γ₁) (h : g < g') (n : ℤ)
+    (A : HVertexOperator Γ₁ R V W) (v : V) :
+    ∃ (k : ℕ), ∀ (m : ℕ) (_ : k < m),
+      (-(n • g) - m • (g' - g)) +ᵥ g₁ ∉ ((HahnModule.of R).symm (A v)).support :=
+  Set.PartiallyWellOrderedOn.exists_nat_gt_not_mem (· ≤ ·) ((HahnModule.of R).symm (A v)).support
+    ((HahnModule.of R).symm (A v)).isPWO_support (fun k ↦ ((-(n • g) - k • (g' - g)) +ᵥ g₁))
+    fun _ _ hkl ↦ not_le_of_lt <| VAdd.vadd_lt_vadd_of_lt_of_le
+      (sub_lt_sub_left (nsmul_lt_nsmul_left (sub_pos.mpr h) hkl) (-(n • g))) <| Preorder.le_refl g₁
+
+theorem binomialPow_smul_coeff {g g' : Γ} (g₁ : Γ₁) (h : g < g') (n : ℤ)
+    (A : HVertexOperator Γ₁ R V W) (v : V) :
+    ((HahnModule.of R).symm (HahnSeries.binomialPow (A := R) g g' n • A v)).coeff g₁ =
+      ∑ᶠ m : ℕ, Int.negOnePow m • Ring.choose n m •
+        ((HahnModule.of R).symm (A v)).coeff ((- (n • g) - (m • (g' - g))) +ᵥ g₁) := by
+  let f : ℕ → Γ × Γ₁ := fun k ↦  ((n • g) + k • (g' - g), (- (n • g) - (k • (g' - g))) +ᵥ g₁)
+  let s := Finset.range <| (exists_binomialPow_smul_support_bound g₁ h n A v).choose + 1
+  rw [HahnModule.coeff_smul, finsum_eq_sum_of_support_subset (s := s)]
+  · classical
+    refine Eq.trans (b := ∑ ij ∈ (Finset.image f s),
+      (HahnSeries.binomialPow R g g' n).coeff ij.1 •
+        ((HahnModule.of R).symm (A v)).coeff ij.2) ?_ ?_
+    · refine Finset.sum_of_injOn (fun k ↦ k) (Function.Injective.injOn fun ⦃x y⦄ a ↦ a) ?_ ?_ ?_
+      · rw [Set.mapsTo', Set.image_id', Finset.coe_subset]
+        intro ij hij
+        obtain ⟨h₁, h₂, h₃⟩ := (Finset.mem_vaddAntidiagonal _ _ _).mp hij
+        rw [HahnSeries.mem_support] at h₁
+        have hij1 : ∃ k : ℕ, (n • g + k • (g' - g)) = ij.1 := by
+          contrapose! h₁
+          exact HahnSeries.binomialPow_coeff_eq_zero R h n h₁
+        obtain ⟨k, hk⟩ := hij1
+        have hij2 : ij.2 = (-(n • g) - k • (g' - g)) +ᵥ g₁ := by
+          rw [← h₃, vadd_vadd, ← hk, sub_add_add_cancel, neg_add_cancel, zero_vadd]
+        have : k ∈ s := by
+          contrapose! h₂
+          rw [Finset.mem_range_succ_iff, not_le] at h₂
+          rw [hij2]
+          exact (exists_binomialPow_smul_support_bound g₁ h n A v).choose_spec k h₂
+        exact Finset.mem_image.mpr (Exists.intro k ⟨this, by simp [f, hk, ← hij2]⟩)
+      · intro ij hij hn
+        simp only [Set.image_id', Finset.mem_coe, Finset.mem_vaddAntidiagonal, not_and] at hn
+        have : ij.1 +ᵥ ij.2 = g₁ := by
+          obtain ⟨k, hk₁, hk₂⟩ := Finset.mem_image.mp hij
+          simp only [f, Prod.eq_iff_fst_eq_snd_eq] at hk₂
+          rw [← hk₂.1, ← hk₂.2, vadd_vadd, add_add_sub_cancel, add_neg_cancel, zero_vadd]
+        by_cases h1 : (HahnSeries.binomialPow R g g' n).coeff ij.1 = 0
+        · rw [h1, zero_smul]
+        · specialize hn h1
+          by_cases h2 : ((HahnModule.of R).symm (A v)).coeff ij.2 = 0
+          · rw [h2, smul_zero]
+          · exact ((hn h2) this).elim
+      · intro ij hij
+        simp
+    · refine (Finset.sum_of_injOn
+      (fun k ↦ ((n • g) + k • (g' - g), (- (n • g) - (k • (g' - g))) +ᵥ g₁))
+      (fun k hk l hl hkl ↦ ?_) ?_ ?_ ?_).symm
+      · simp only [Prod.mk.injEq, add_right_inj] at hkl
+        obtain ⟨hkl1, hkl2⟩ := hkl
+        contrapose! hkl1
+        obtain hk | eq | hk := lt_trichotomy k l
+        · exact ne_of_lt <| nsmul_lt_nsmul_left (sub_pos.mpr h) hk
+        · exact (hkl1 eq).elim
+        · exact Ne.symm <| ne_of_lt <| nsmul_lt_nsmul_left (sub_pos.mpr h) hk
+      · intro k hk
+        exact Finset.mem_coe.mpr <| Finset.mem_image_of_mem f hk
+      · intro k hk hkn
+        rw [Finset.mem_image] at hk
+        rw [Set.mem_image] at hkn
+        exact (hkn hk).elim
+      · intro k hks
+        simp only [f]
+        rw [HahnSeries.binomialPow_coeff_eq R h n k, ← coeff_apply, Int.smul_one_eq_cast,
+          smul_assoc, Int.cast_smul_eq_zsmul]
+  · refine Function.support_subset_iff'.mpr ?_
+    intro k hk
+    rw [Finset.mem_coe, Finset.mem_range, Nat.not_lt_eq, Order.add_one_le_iff] at hk
+    have := (exists_binomialPow_smul_support_bound g₁ h n A v).choose_spec k hk
+    rw [HahnSeries.mem_support, Mathlib.Tactic.PushNeg.not_ne_eq] at this
+    rw [this, smul_zero, smul_zero]
 
 end binomialPow
 
