@@ -10,6 +10,33 @@ import Mathlib.Analysis.Calculus.Deriv.Slope
 import Mathlib.Analysis.Calculus.LocalExtr.Rolle
 import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.Analysis.RCLike.Basic
+/-!
+# Mean value theorem
+
+In this file we prove Cauchy's and Lagrange's mean value theorems, and deduce some corollaries.
+
+Cauchy's mean value theorem says that for two functions `f` and `g`
+that are continuous on `[a, b]` and are differentiable on `(a, b)`,
+there exists a point `c ∈ (a, b)` such that `f' c / g' c = (f b - f a) / (g b - g a)`.
+We formulate this theorem with both sides multiplied by the denominators,
+see `exists_ratio_hasDerivAt_eq_ratio_slope`,
+in order to avoid auxiliary conditions like `g' c ≠ 0`.
+
+Lagrange's mean value theorem, see `exists_hasDerivAt_eq_slope`,
+says that for a function `f` that is continuous on `[a, b]` and is differentiable on `(a, b)`,
+there exists a point `c ∈ (a, b)` such that `f' c = (f b - f a) / (b - a)`.
+
+Lagrange's MVT implies that `(f b - f a) / (b - a) > C`
+provided that `f' c > C` for all `c ∈ (a, b)`, see `mul_sub_lt_image_sub_of_lt_deriv`,
+and other theorems for `>` / `≥` / `<` / `≤`.
+
+In case `C = 0`, we deduce that a function with a positive derivative is strictly monotone,
+see `strictMonoOn_of_deriv_pos` and nearby theorems for other types of monotonicity.
+
+We also prove that a real function whose derivative tends to infinity from the right at a point
+is not differentiable on the right at that point, and similarly differentiability on the left.
+
+-/
 
 open Set Function Filter
 open scoped Topology
@@ -105,7 +132,7 @@ theorem exists_deriv_eq_slope' : ∃ c ∈ Ioo a b, deriv f c = slope f a b := b
   exact exists_deriv_eq_slope f hab hfc hfd
 
 /-- A real function whose derivative tends to infinity from the right at a point is not
-differentiable on the right at that point -/
+differentiable on the right at that point. -/
 theorem not_differentiableWithinAt_of_deriv_tendsto_atTop_Ioi (f : ℝ → ℝ) {a : ℝ}
     (hf : Tendsto (deriv f) (𝓝[>] a) atTop) : ¬ DifferentiableWithinAt ℝ f (Ioi a) a := by
   replace hf : Tendsto (derivWithin f (Ioi a)) (𝓝[>] a) atTop := by
