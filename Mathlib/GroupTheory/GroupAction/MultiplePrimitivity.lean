@@ -109,7 +109,7 @@ theorem is_one_preprimitive_iff :
         exact fun h ↦ by simp [h] at hs }
 
 /-- The action of `stabilizer M a` is one-less preprimitive -/
-@[to_additive]
+@[to_additive "The action of `stabilizer M a` is one-less preprimitive"]
 theorem isMultiplyPreprimitive_ofStabilizer
     [IsPretransitive M α] {n : ℕ} {a : α} [IsMultiplyPreprimitive M α n.succ] :
     IsMultiplyPreprimitive (stabilizer M a) (SubMulAction.ofStabilizer M a) n := by
@@ -119,7 +119,7 @@ theorem isMultiplyPreprimitive_ofStabilizer
     apply is_zero_preprimitive
   exact {
     isMultiplyPretransitive := by
-      rw [← ofStabilizer.isMultiplyPretransitive]
+      rw [ofStabilizer.isMultiplyPretransitive_iff_succ]
       exact IsMultiplyPreprimitive.isMultiplyPretransitive M α n.succ
     isPreprimitive_ofFixingSubgroup {s} hs  := by
       have : IsPreprimitive ↥(fixingSubgroup M (insert a (Subtype.val '' s)))
@@ -133,15 +133,15 @@ theorem isMultiplyPreprimitive_ofStabilizer
 /-- A pretransitive  action is n.succ-fold preprimitive  iff
   the action of stabilizers is n-fold preprimitive -/
 @[to_additive]
-theorem isMultiplyPreprimitive_succ_iff_ofStabilizer
+theorem _root_.SubMulAction.ofStabilizer.isMultiplyPreprimitive_iff_succ
     [IsPretransitive M α] {n : ℕ} (hn : 1 ≤ n) {a : α} :
-    IsMultiplyPreprimitive M α n.succ ↔
-      IsMultiplyPreprimitive (stabilizer M a) (SubMulAction.ofStabilizer M a) n := by
+    IsMultiplyPreprimitive (stabilizer M a) (SubMulAction.ofStabilizer M a) n ↔
+      IsMultiplyPreprimitive M α n.succ := by
   constructor
-  · apply isMultiplyPreprimitive_ofStabilizer
   · intro H
     exact {
-      isMultiplyPretransitive := ofStabilizer.isMultiplyPretransitive.mpr H.isMultiplyPretransitive
+      isMultiplyPretransitive :=
+        ofStabilizer.isMultiplyPretransitive_iff_succ.mp H.isMultiplyPretransitive
       isPreprimitive_ofFixingSubgroup {s} hs := by
         have : ∃ b : α, b ∈ s := by
           rw [← Set.nonempty_def, Set.nonempty_iff_ne_empty]
@@ -177,6 +177,7 @@ theorem isMultiplyPreprimitive_succ_iff_ofStabilizer
         rw [Set.encard_insert_of_not_mem, Subtype.coe_injective.encard_image, ENat.coe_one]
         -- a ∉ Subtype.val '' t -- make it a general lemma ?
         rintro ⟨b, hb⟩; exact b.prop (by simp [hb]) }
+  · apply isMultiplyPreprimitive_ofStabilizer
 
 /-- The fixator of a subset of cardinal d in an n-primitive action
   acts (n-d) primitively on the remaining (d ≤ n) -/
@@ -186,7 +187,7 @@ theorem ofFixingSubgroup.isMultiplyPreprimitive
     {s : Set α} [Finite s]  (hs : s.ncard + m = n) :
     IsMultiplyPreprimitive (fixingSubgroup M s) (SubMulAction.ofFixingSubgroup M s) m where
   isMultiplyPretransitive := by
-    apply ofFixingSubgroup.isMultiplyPretransitive s hs
+    apply ofFixingSubgroup.isMultiplyPretransitive _ s hs
   isPreprimitive_ofFixingSubgroup {t} ht := by
     let t' : Set α := Subtype.val '' t
     have htt' : t = Subtype.val ⁻¹' t' :=
