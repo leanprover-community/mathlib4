@@ -113,7 +113,7 @@ lemma mapRange_finsuppAntidiag_subset {e : μ ≃+ μ'} {s : Finset ι} {n : μ}
   simp only [AddEquiv.toEquiv_eq_coe, mapRange.addEquiv_toEquiv, Equiv.coe_toEmbedding,
     mapRange.equiv_apply, EquivLike.coe_coe]
   constructor
-  · rw [sum_mapRange_index (fun _ ↦ rfl), ← hsum, _root_.map_finsupp_sum]
+  · rw [sum_mapRange_index (fun _ ↦ rfl), ← hsum, _root_.map_finsuppSum]
   · exact subset_trans (support_mapRange) hsupp
 
 lemma mapRange_finsuppAntidiag_eq {e : μ ≃+ μ'} {s : Finset ι} {n : μ} :
