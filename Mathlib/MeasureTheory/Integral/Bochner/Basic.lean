@@ -509,6 +509,48 @@ theorem ofReal_integral_norm_eq_lintegral_enorm {P : Type*} [NormedAddCommGroup 
 @[deprecated (since := "2025-01-21")]
 alias ofReal_integral_norm_eq_lintegral_nnnorm := ofReal_integral_norm_eq_lintegral_enorm
 
+theorem SimpleFunc.integral_eq_integral (f : α →ₛ E) (hfi : Integrable f μ) :
+    f.integral μ = ∫ x, f x ∂μ := by
+  rw [MeasureTheory.integral_eq f hfi, ← L1.SimpleFunc.toLp_one_eq_toL1,
+    L1.SimpleFunc.integral_L1_eq_integral, L1.SimpleFunc.integral_eq_integral]
+  exact SimpleFunc.integral_congr hfi (Lp.simpleFunc.toSimpleFunc_toLp _ _).symm
+
+theorem SimpleFunc.integral_eq_sum (f : α →ₛ E) (hfi : Integrable f μ) :
+    ∫ x, f x ∂μ = ∑ x ∈ f.range, ENNReal.toReal (μ (f ⁻¹' {x})) • x := by
+  rw [← f.integral_eq_integral hfi, SimpleFunc.integral, ← SimpleFunc.integral_eq]; rfl
+
+theorem tendsto_integral_approxOn_of_measurable [MeasurableSpace E] [BorelSpace E] {f : α → E}
+    {s : Set E} [SeparableSpace s] (hfi : Integrable f μ) (hfm : Measurable f)
+    (hs : ∀ᵐ x ∂μ, f x ∈ closure s) {y₀ : E} (h₀ : y₀ ∈ s) (h₀i : Integrable (fun _ => y₀) μ) :
+    Tendsto (fun n => (SimpleFunc.approxOn f hfm s y₀ h₀ n).integral μ)
+      atTop (𝓝 <| ∫ x, f x ∂μ) := by
+  have hfi' := SimpleFunc.integrable_approxOn hfm hfi h₀ h₀i
+  simp only [SimpleFunc.integral_eq_integral _ (hfi' _), integral, hE, L1.integral]
+  exact tendsto_setToFun_approxOn_of_measurable (dominatedFinMeasAdditive_weightedSMul μ)
+    hfi hfm hs h₀ h₀i
+
+theorem tendsto_integral_approxOn_of_measurable_of_range_subset [MeasurableSpace E] [BorelSpace E]
+    {f : α → E} (fmeas : Measurable f) (hf : Integrable f μ) (s : Set E) [SeparableSpace s]
+    (hs : range f ∪ {0} ⊆ s) :
+    Tendsto (fun n => (SimpleFunc.approxOn f fmeas s 0 (hs <| by simp) n).integral μ) atTop
+      (𝓝 <| ∫ x, f x ∂μ) := by
+  apply tendsto_integral_approxOn_of_measurable hf fmeas _ _ (integrable_zero _ _ _)
+  exact Eventually.of_forall fun x => subset_closure (hs (Set.mem_union_left _ (mem_range_self _)))
+
+-- We redeclare `E` here to temporarily avoid
+-- the `[CompleteSpace E]` and `[NormedSpace ℝ E]` instances.
+theorem tendsto_integral_norm_approxOn_sub
+    {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E] {f : α → E}
+    (fmeas : Measurable f) (hf : Integrable f μ) [SeparableSpace (range f ∪ {0} : Set E)] :
+    Tendsto (fun n ↦ ∫ x, ‖SimpleFunc.approxOn f fmeas (range f ∪ {0}) 0 (by simp) n x - f x‖ ∂μ)
+      atTop (𝓝 0) := by
+  convert (tendsto_toReal zero_ne_top).comp (tendsto_approxOn_range_L1_enorm fmeas hf) with n
+  rw [integral_norm_eq_lintegral_enorm]
+  · simp
+  · apply (SimpleFunc.aestronglyMeasurable _).sub
+    apply (stronglyMeasurable_iff_measurable_separable.2 ⟨fmeas, ?_⟩).aestronglyMeasurable
+    exact .mono (.of_subtype (range f ∪ {0})) subset_union_left
+
 theorem integral_eq_integral_pos_part_sub_integral_neg_part {f : α → ℝ} (hf : Integrable f μ) :
     ∫ a, f a ∂μ = ∫ a, (Real.toNNReal (f a) : ℝ) ∂μ - ∫ a, (Real.toNNReal (-f a) : ℝ) ∂μ := by
   rw [← integral_sub hf.real_toNNReal]
@@ -823,16 +865,6 @@ theorem norm_integral_le_of_norm_le {f : α → G} {g : α → ℝ} (hg : Integr
     ‖∫ x, f x ∂μ‖ ≤ ∫ x, ‖f x‖ ∂μ := norm_integral_le_integral_norm f
     _ ≤ ∫ x, g x ∂μ := integral_mono_of_nonneg (Eventually.of_forall fun _ => norm_nonneg _) hg h
 
-theorem SimpleFunc.integral_eq_integral (f : α →ₛ E) (hfi : Integrable f μ) :
-    f.integral μ = ∫ x, f x ∂μ := by
-  rw [MeasureTheory.integral_eq f hfi, ← L1.SimpleFunc.toLp_one_eq_toL1,
-    L1.SimpleFunc.integral_L1_eq_integral, L1.SimpleFunc.integral_eq_integral]
-  exact SimpleFunc.integral_congr hfi (Lp.simpleFunc.toSimpleFunc_toLp _ _).symm
-
-theorem SimpleFunc.integral_eq_sum (f : α →ₛ E) (hfi : Integrable f μ) :
-    ∫ x, f x ∂μ = ∑ x ∈ f.range, ENNReal.toReal (μ (f ⁻¹' {x})) • x := by
-  rw [← f.integral_eq_integral hfi, SimpleFunc.integral, ← SimpleFunc.integral_eq]; rfl
-
 @[simp]
 theorem integral_const (c : E) : ∫ _ : α, c ∂μ = (μ univ).toReal • c := by
   by_cases hμ : IsFiniteMeasure μ
@@ -851,38 +883,6 @@ theorem norm_integral_le_of_norm_le_const [IsFiniteMeasure μ] {f : α → G} {C
   calc
     ‖∫ x, f x ∂μ‖ ≤ ∫ _, C ∂μ := norm_integral_le_of_norm_le (integrable_const C) h
     _ = C * (μ univ).toReal := by rw [integral_const, smul_eq_mul, mul_comm]
-
-theorem tendsto_integral_approxOn_of_measurable [MeasurableSpace E] [BorelSpace E] {f : α → E}
-    {s : Set E} [SeparableSpace s] (hfi : Integrable f μ) (hfm : Measurable f)
-    (hs : ∀ᵐ x ∂μ, f x ∈ closure s) {y₀ : E} (h₀ : y₀ ∈ s) (h₀i : Integrable (fun _ => y₀) μ) :
-    Tendsto (fun n => (SimpleFunc.approxOn f hfm s y₀ h₀ n).integral μ)
-      atTop (𝓝 <| ∫ x, f x ∂μ) := by
-  have hfi' := SimpleFunc.integrable_approxOn hfm hfi h₀ h₀i
-  simp only [SimpleFunc.integral_eq_integral _ (hfi' _), integral, hE, L1.integral]
-  exact tendsto_setToFun_approxOn_of_measurable (dominatedFinMeasAdditive_weightedSMul μ)
-    hfi hfm hs h₀ h₀i
-
-theorem tendsto_integral_approxOn_of_measurable_of_range_subset [MeasurableSpace E] [BorelSpace E]
-    {f : α → E} (fmeas : Measurable f) (hf : Integrable f μ) (s : Set E) [SeparableSpace s]
-    (hs : range f ∪ {0} ⊆ s) :
-    Tendsto (fun n => (SimpleFunc.approxOn f fmeas s 0 (hs <| by simp) n).integral μ) atTop
-      (𝓝 <| ∫ x, f x ∂μ) := by
-  apply tendsto_integral_approxOn_of_measurable hf fmeas _ _ (integrable_zero _ _ _)
-  exact Eventually.of_forall fun x => subset_closure (hs (Set.mem_union_left _ (mem_range_self _)))
-
--- We redeclare `E` here to temporarily avoid
--- the `[CompleteSpace E]` and `[NormedSpace ℝ E]` instances.
-theorem tendsto_integral_norm_approxOn_sub
-    {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E] {f : α → E}
-    (fmeas : Measurable f) (hf : Integrable f μ) [SeparableSpace (range f ∪ {0} : Set E)] :
-    Tendsto (fun n ↦ ∫ x, ‖SimpleFunc.approxOn f fmeas (range f ∪ {0}) 0 (by simp) n x - f x‖ ∂μ)
-      atTop (𝓝 0) := by
-  convert (tendsto_toReal zero_ne_top).comp (tendsto_approxOn_range_L1_enorm fmeas hf) with n
-  rw [integral_norm_eq_lintegral_enorm]
-  · simp
-  · apply (SimpleFunc.aestronglyMeasurable _).sub
-    apply (stronglyMeasurable_iff_measurable_separable.2 ⟨fmeas, ?_⟩).aestronglyMeasurable
-    exact .mono (.of_subtype (range f ∪ {0})) subset_union_left
 
 variable {ν : Measure α}
 
