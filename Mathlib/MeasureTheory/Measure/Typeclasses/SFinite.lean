@@ -20,7 +20,7 @@ namespace MeasureTheory
 open Set Filter Function Measure MeasurableSpace NNReal ENNReal
 
 variable {α β ι : Type*} {m0 : MeasurableSpace α} [MeasurableSpace β] {μ ν : Measure α}
-  {s t : Set α}
+  {s t : Set α} {a : α}
 
 section SFinite
 
@@ -187,6 +187,10 @@ theorem mem_spanningSets_of_index_le (μ : Measure α) [SigmaFinite μ] (x : α)
 theorem eventually_mem_spanningSets (μ : Measure α) [SigmaFinite μ] (x : α) :
     ∀ᶠ n in atTop, x ∈ spanningSets μ n :=
   eventually_atTop.2 ⟨spanningSetsIndex μ x, fun _ => mem_spanningSets_of_index_le μ x⟩
+
+lemma measure_singleton_lt_top [SigmaFinite μ] : μ {a} < ∞ :=
+  measure_lt_top_mono (singleton_subset_iff.2 <| mem_spanningSetsIndex ..)
+    (measure_spanningSets_lt_top _ _)
 
 theorem sum_restrict_disjointed_spanningSets (μ ν : Measure α) [SigmaFinite ν] :
     sum (fun n ↦ μ.restrict (disjointed (spanningSets ν) n)) = μ := by
@@ -537,6 +541,19 @@ end Measure
 instance (priority := 100) IsFiniteMeasure.toSigmaFinite {_m0 : MeasurableSpace α} (μ : Measure α)
     [IsFiniteMeasure μ] : SigmaFinite μ :=
   ⟨⟨⟨fun _ => univ, fun _ => trivial, fun _ => measure_lt_top μ _, iUnion_const _⟩⟩⟩
+
+/-- A measure on a countable space is sigma-finite iff it gives finite mass to every singleton.
+
+See `measure_singleton_lt_top` for the forward direction without the countability assumption. -/
+lemma Measure.sigmaFinite_iff_measure_singleton_lt_top [Countable α] :
+    SigmaFinite μ ↔ ∀ a, μ {a} < ∞ where
+  mp _ a := measure_singleton_lt_top
+  mpr hμ := by
+    cases isEmpty_or_nonempty α
+    · rw [Subsingleton.elim μ 0]
+      infer_instance
+    · obtain ⟨f, hf⟩ := exists_surjective_nat α
+      exact ⟨⟨⟨fun n ↦ {f n}, by simp, by simpa [hf.forall] using hμ, by simp [hf.range_eq]⟩⟩⟩
 
 theorem sigmaFinite_bot_iff (μ : @Measure α ⊥) : SigmaFinite μ ↔ IsFiniteMeasure μ := by
   refine

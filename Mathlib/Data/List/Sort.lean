@@ -139,8 +139,31 @@ theorem sorted_lt_range (n : ℕ) : Sorted (· < ·) (range n) := by
   rw [Sorted, pairwise_iff_get]
   simp
 
+theorem sorted_replicate (n : ℕ) (a : α) : Sorted r (replicate n a) ↔ n ≤ 1 ∨ r a a :=
+  pairwise_replicate
+
+theorem sorted_le_replicate (n : ℕ) (a : α) [Preorder α] : Sorted (· ≤ ·) (replicate n a) := by
+  simp [sorted_replicate]
+
 theorem sorted_le_range (n : ℕ) : Sorted (· ≤ ·) (range n) :=
   (sorted_lt_range n).le_of_lt
+
+lemma sorted_lt_range' (a b) {s} (hs : s ≠ 0) :
+    Sorted (· < ·) (range' a b s) := by
+  induction b generalizing a with
+  | zero => simp
+  | succ n ih =>
+    rw [List.range'_succ]
+    refine List.sorted_cons.mpr ⟨fun b hb ↦ ?_, @ih (a + s)⟩
+    exact lt_of_lt_of_le (Nat.lt_add_of_pos_right (Nat.zero_lt_of_ne_zero hs))
+      (List.left_le_of_mem_range' hb)
+
+lemma sorted_le_range' (a b s) :
+    Sorted (· ≤ ·) (range' a b s) := by
+  by_cases hs : s ≠ 0
+  · exact (sorted_lt_range' a b hs).le_of_lt
+  · rw [ne_eq, Decidable.not_not] at hs
+    simpa [hs] using sorted_le_replicate b a
 
 theorem Sorted.rel_get_of_lt {l : List α} (h : l.Sorted r) {a b : Fin l.length} (hab : a < b) :
     r (l.get a) (l.get b) :=
@@ -202,6 +225,23 @@ alias ⟨_, _root_.Monotone.ofFn_sorted⟩ := sorted_le_ofFn_iff
 alias ⟨_, _root_.Antitone.ofFn_sorted⟩ := sorted_ge_ofFn_iff
 
 end Monotone
+
+lemma Sorted.filterMap {α β : Type*} {p : α → Option β} {l : List α}
+    {r : α → α → Prop} {r' : β → β → Prop} (hl : l.Sorted r)
+    (hp : ∀ (a b : α) (c d : β), p a = some c → p b = some d → r a b → r' c d) :
+    (l.filterMap p).Sorted r' := by
+  induction l with
+  | nil => simp
+  | cons a l ih =>
+    rw [List.filterMap_cons]
+    cases ha : p a with
+    | none =>
+      exact ih (List.sorted_cons.mp hl).right
+    | some b =>
+      rw [List.sorted_cons]
+      refine ⟨fun x hx ↦ ?_, ih (List.sorted_cons.mp hl).right⟩
+      obtain ⟨u, hu, hu'⟩ := List.mem_filterMap.mp hx
+      exact hp a u b x ha hu' <| (List.sorted_cons.mp hl).left u hu
 
 end List
 

@@ -3,7 +3,7 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Algebra.Quasispectrum
+import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
 import Mathlib.Topology.ContinuousMap.Compact
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital
 import Mathlib.Topology.UniformSpace.CompactConvergence
@@ -566,7 +566,7 @@ section Order
 
 section Semiring
 
-variable {R A : Type*} {p : A → Prop} [OrderedCommSemiring R] [Nontrivial R]
+variable {R A : Type*} {p : A → Prop} [CommSemiring R] [PartialOrder R] [Nontrivial R]
 variable [StarRing R] [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R]
 variable [ContinuousSqrt R] [StarOrderedRing R] [NoZeroDivisors R]
 variable [TopologicalSpace A] [NonUnitalRing A] [StarRing A] [PartialOrder A] [StarOrderedRing A]
@@ -632,7 +632,7 @@ end Semiring
 
 section Ring
 
-variable {R A : Type*} {p : A → Prop} [OrderedCommRing R] [Nontrivial R]
+variable {R A : Type*} {p : A → Prop} [CommRing R] [PartialOrder R] [Nontrivial R]
 variable [StarRing R] [MetricSpace R] [IsTopologicalRing R] [ContinuousStar R]
 variable [ContinuousSqrt R] [StarOrderedRing R] [NoZeroDivisors R]
 variable [TopologicalSpace A] [NonUnitalRing A] [StarRing A] [PartialOrder A] [StarOrderedRing A]

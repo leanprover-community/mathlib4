@@ -434,7 +434,7 @@ theorem isRat_div {α : Type u} [DivisionRing α] : {a b : α} → {cn : ℤ} �
 
 /-- Helper function to synthesize a typed `DivisionRing α` expression. -/
 def inferDivisionRing {u : Level} (α : Q(Type u)) : MetaM Q(DivisionRing $α) :=
-  return ← synthInstanceQ (q(DivisionRing $α) : Q(Type u)) <|> throwError "not a division ring"
+  return ← synthInstanceQ q(DivisionRing $α) <|> throwError "not a division ring"
 
 attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `a / b`,

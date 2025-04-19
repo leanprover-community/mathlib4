@@ -152,7 +152,7 @@ namespace Polynomial
 `R[X]` at `S.map Polynomial.C`.
 
 See also `MvPolynomial.isLocalization` for the multivariate case. -/
-lemma isLocalization {R} [CommRing R] (S : Submonoid R) (A) [CommRing A] [Algebra R A]
+lemma isLocalization {R} [CommSemiring R] (S : Submonoid R) (A) [CommSemiring A] [Algebra R A]
     [IsLocalization S A] : letI := (mapRingHom (algebraMap R A)).toAlgebra
     IsLocalization (S.map C) A[X] :=
   letI := (mapRingHom (algebraMap R A)).toAlgebra

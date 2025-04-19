@@ -291,10 +291,6 @@ theorem coe_fn_mk (f : r ↪r s) (t o) : (@PrincipalSeg.mk _ _ r s f t o : α �
 theorem mem_range_iff_rel (f : r ≺i s) : ∀ {b : β}, b ∈ Set.range f ↔ s b f.top :=
   f.mem_range_iff_rel' _
 
-@[deprecated mem_range_iff_rel (since := "2024-10-07")]
-theorem down (f : r ≺i s) : ∀ {b : β}, s b f.top ↔ ∃ a, f a = b :=
-  f.mem_range_iff_rel.symm
-
 theorem lt_top (f : r ≺i s) (a : α) : s (f a) f.top :=
   f.mem_range_iff_rel.1 ⟨_, rfl⟩
 
@@ -441,9 +437,6 @@ theorem top_rel_top {r : α → α → Prop} {s : β → β → Prop} {t : γ �
     (f : r ≺i s) (g : s ≺i t) (h : r ≺i t) : t h.top g.top := by
   rw [Subsingleton.elim h (f.trans g)]
   apply PrincipalSeg.lt_top
-
-@[deprecated top_rel_top (since := "2024-10-10")]
-alias topLTTop := top_rel_top
 
 /-- Any element of a well order yields a principal segment. -/
 @[simps!]

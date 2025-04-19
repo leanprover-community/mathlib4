@@ -945,9 +945,9 @@ theorem IsNormal.eq_iff_zero_and_succ {f g : Ordinal.{u} → Ordinal.{u}} (hf : 
   ⟨fun h => by simp [h], fun ⟨h₁, h₂⟩ =>
     funext fun a => by
       induction a using limitRecOn with
-      | H₁ => solve_by_elim
-      | H₂ => solve_by_elim
-      | H₃ _ ho H =>
+      | zero => solve_by_elim
+      | succ => solve_by_elim
+      | isLimit _ ho H =>
         rw [← IsNormal.bsup_eq.{u, u} hf ho, ← IsNormal.bsup_eq.{u, u} hg ho]
         congr
         ext b hb

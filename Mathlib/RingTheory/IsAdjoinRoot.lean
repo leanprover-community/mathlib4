@@ -339,9 +339,7 @@ theorem modByMonicHom_map (h : IsAdjoinRootMonic S f) (g : R[X]) :
 
 @[simp]
 theorem map_modByMonicHom (h : IsAdjoinRootMonic S f) (x : S) : h.map (h.modByMonicHom x) = x := by
-  rw [modByMonicHom, LinearMap.coe_mk]
-  dsimp -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11227):added a `dsimp`
-  rw [map_modByMonic, map_repr]
+  simp [modByMonicHom, map_modByMonic, map_repr]
 
 @[simp]
 theorem modByMonicHom_root_pow (h : IsAdjoinRootMonic S f) {n : ℕ} (hdeg : n < natDegree f) :
@@ -373,12 +371,9 @@ def basis (h : IsAdjoinRootMonic S f) : Basis (Fin (natDegree f)) R S :=
         contrapose! hi
         simp only [Polynomial.toFinsupp_apply, Classical.not_not, Finsupp.mem_support_iff, Ne,
           modByMonicHom, LinearMap.coe_mk, Finset.mem_coe]
-        by_cases hx : h.toIsAdjoinRoot.repr x %ₘ f = 0
-        · simp [hx]
-        refine coeff_eq_zero_of_natDegree_lt (lt_of_lt_of_le ?_ hi)
-        dsimp -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11227):added a `dsimp`
-        rw [natDegree_lt_natDegree_iff hx]
-        exact degree_modByMonic_lt _ h.Monic
+        obtain rfl | hf := eq_or_ne f 1
+        · simp
+        · exact coeff_eq_zero_of_natDegree_lt <| (natDegree_modByMonic_lt _ h.Monic hf).trans_le hi
       right_inv := fun g => by
         nontriviality R
         ext i

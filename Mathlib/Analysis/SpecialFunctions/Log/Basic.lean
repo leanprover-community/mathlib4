@@ -382,7 +382,7 @@ theorem log_nat_eq_sum_factorization (n : ℕ) :
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp -- relies on junk values of `log` and `Nat.factorization`
   · simp only [← log_pow, ← Nat.cast_pow]
-    rw [← Finsupp.log_prod, ← Nat.cast_finsupp_prod, Nat.factorization_prod_pow_eq_self hn]
+    rw [← Finsupp.log_prod, ← Nat.cast_finsuppProd, Nat.factorization_prod_pow_eq_self hn]
     intro p hp
     rw [pow_eq_zero (Nat.cast_eq_zero.1 hp), Nat.factorization_zero_right]
 

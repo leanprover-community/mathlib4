@@ -20,6 +20,8 @@ this is the usual left or right quotient of a group by a subgroup.
 * `Doset.quotient`: The quotient of `G` by the double coset relation, i.e, `H \ G / K`.
 -/
 
+assert_not_exists MonoidWithZero
+
 variable {G : Type*} [Group G] {α : Type*} [Mul α]
 
 open MulOpposite

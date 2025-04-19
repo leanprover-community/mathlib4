@@ -167,13 +167,6 @@ instance topologicalSpace : TopologicalSpace (Path x y) :=
 
 instance : ContinuousEval (Path x y) I X := .of_continuous_forget continuous_induced_dom
 
-@[deprecated (since := "2024-10-04")] protected alias continuous_eval := continuous_eval
-
-@[deprecated Continuous.eval (since := "2024-10-04")]
-theorem _root_.Continuous.path_eval {Y} [TopologicalSpace Y] {f : Y → Path x y} {g : Y → I}
-    (hf : Continuous f) (hg : Continuous g) : Continuous fun y => f y (g y) := by
-  fun_prop
-
 theorem continuous_uncurry_iff {Y} [TopologicalSpace Y] {g : Y → Path x y} :
     Continuous ↿g ↔ Continuous g :=
   Iff.symm <| continuous_induced_rng.trans

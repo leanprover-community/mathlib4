@@ -76,15 +76,15 @@ lemma hom_ext {Z : C} {φ₁ φ₂ : Y ⟶ Z} (h₀ : f ≫ φ₁ = f ≫ φ₂)
   refine c.isColimit.hom_ext (fun j ↦ ?_)
   dsimp
   induction j using SuccOrder.limitRecOn with
-  | hm j hj =>
+  | isMin j hj =>
     obtain rfl := hj.eq_bot
     simpa [← cancel_epi c.isoBot.inv] using h₀
-  | hs j hj hj' =>
+  | succ j hj hj' =>
     apply (c.attachCells j hj).hom_ext
     · simpa using hj'
     · intro i
       simpa only [Category.assoc, Cells.ι] using h ({ hj := hj, k := i, .. })
-  | hl j hj hj' =>
+  | isSuccLimit j hj hj' =>
     exact (c.F.isColimitOfIsWellOrderContinuous j hj).hom_ext
       (fun ⟨k, hk⟩ ↦ by simpa using hj' k hk)
 

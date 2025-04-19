@@ -60,10 +60,11 @@ variable {R S : Type u} [CommRing R] [CommRing S] (M : Submonoid R) (f : R →+*
 variable (R' S' : Type u) [CommRing R'] [CommRing S']
 variable [Algebra R R'] [Algebra S S']
 
-lemma Module.Finite_of_isLocalization (R S Rₚ Sₚ) [CommSemiring R] [CommRing S] [CommRing Rₚ]
-    [CommRing Sₚ] [Algebra R S] [Algebra R Rₚ] [Algebra R Sₚ] [Algebra S Sₚ] [Algebra Rₚ Sₚ]
-    [IsScalarTower R S Sₚ] [IsScalarTower R Rₚ Sₚ] (M : Submonoid R) [IsLocalization M Rₚ]
-    [IsLocalization (Algebra.algebraMapSubmonoid S M) Sₚ] [hRS : Module.Finite R S] :
+lemma Module.Finite_of_isLocalization (R S Rₚ Sₚ) [CommSemiring R] [CommSemiring S]
+    [CommSemiring Rₚ] [CommSemiring Sₚ] [Algebra R S] [Algebra R Rₚ] [Algebra R Sₚ] [Algebra S Sₚ]
+    [Algebra Rₚ Sₚ] [IsScalarTower R S Sₚ] [IsScalarTower R Rₚ Sₚ] (M : Submonoid R)
+    [IsLocalization M Rₚ] [IsLocalization (Algebra.algebraMapSubmonoid S M) Sₚ]
+    [hRS : Module.Finite R S] :
     Module.Finite Rₚ Sₚ := by
   classical
   have : algebraMap Rₚ Sₚ = IsLocalization.map (T := Algebra.algebraMapSubmonoid S M) Sₚ

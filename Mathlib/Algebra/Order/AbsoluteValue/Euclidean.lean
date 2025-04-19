@@ -27,7 +27,7 @@ namespace AbsoluteValue
 
 section OrderedSemiring
 
-variable {R S : Type*} [EuclideanDomain R] [OrderedSemiring S]
+variable {R S : Type*} [EuclideanDomain R] [Semiring S] [PartialOrder S]
 variable (abv : AbsoluteValue R S)
 
 /-- An absolute value `abv : R → S` is Euclidean if it is compatible with the

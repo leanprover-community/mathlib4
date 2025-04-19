@@ -5,6 +5,7 @@ Authors: Reid Barton
 -/
 import Mathlib.Topology.Bases
 import Mathlib.Topology.DenseEmbedding
+import Mathlib.Topology.Connected.TotallyDisconnected
 
 /-! # Stone-Čech compactification
 

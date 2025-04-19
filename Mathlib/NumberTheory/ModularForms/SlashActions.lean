@@ -50,7 +50,7 @@ theorem SlashAction.neg_slash {β G α γ : Type*} [Group G] [AddGroup α] [SMul
     rw [← SlashAction.add_slash, neg_add_cancel, SlashAction.zero_slash]
 
 @[simp]
-theorem SlashAction.smul_slash_of_tower {R β G α : Type*} (γ : Type*) [Group G] [AddGroup α]
+theorem SlashAction.smul_slash_of_tower {R β G α : Type*} (γ : Type*) [Group G] [AddMonoid α]
     [Monoid γ] [MulAction γ α] [SMul R γ] [SMul R α] [IsScalarTower R γ α] [SlashAction β G α γ]
     (k : β) (g : G) (a : α) (r : R) : (r • a) ∣[k;γ] g = r • a ∣[k;γ] g := by
   rw [← smul_one_smul γ r a, SlashAction.smul_slash, smul_one_smul]

@@ -264,7 +264,7 @@ theorem isContained_congr (e : A ≃g B) : A ⊑ C ↔ B ⊑ C :=
 lemma IsContained.of_isEmpty [IsEmpty α] : A ⊑ B :=
   ⟨⟨isEmptyElim, fun {a} ↦ isEmptyElim a⟩, isEmptyElim⟩
 
-/-- `⊥` is contained in any simple graph having sufficently many vertices. -/
+/-- `⊥` is contained in any simple graph having sufficiently many vertices. -/
 lemma bot_isContained_iff_card_le [Fintype α] [Fintype β] :
     (⊥ : SimpleGraph α) ⊑ B ↔ Fintype.card α ≤ Fintype.card β :=
   ⟨fun ⟨f⟩ ↦ Fintype.card_le_of_embedding f.toEmbedding,

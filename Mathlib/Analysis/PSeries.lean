@@ -43,7 +43,8 @@ def SuccDiffBounded (C : ℕ) (u : ℕ → ℕ) : Prop :=
 
 namespace Finset
 
-variable {M : Type*} [OrderedAddCommMonoid M] {f : ℕ → M} {u : ℕ → ℕ}
+variable {M : Type*} [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M]
+  {f : ℕ → M} {u : ℕ → ℕ}
 
 theorem le_sum_schlomilch' (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n)
     (hu : Monotone u) (n : ℕ) :
@@ -368,7 +369,7 @@ section
 
 open Finset
 
-variable {α : Type*} [LinearOrderedField α]
+variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
 
 theorem sum_Ioc_inv_sq_le_sub {k n : ℕ} (hk : k ≠ 0) (h : k ≤ n) :
     (∑ i ∈ Ioc k n, ((i : α) ^ 2)⁻¹) ≤ (k : α)⁻¹ - (n : α)⁻¹ := by

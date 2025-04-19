@@ -3,8 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Hom.Basic
-import Mathlib.Topology.Basic
+import Mathlib.Topology.Continuous
 import Mathlib.Topology.ContinuousMap.Defs
 
 /-!

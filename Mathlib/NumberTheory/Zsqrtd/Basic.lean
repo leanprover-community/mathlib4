@@ -845,15 +845,14 @@ protected theorem mul_pos (a b : ℤ√d) (a0 : 0 < a) (b0 : 0 < b) : 0 < a * b 
       (le_antisymm ab (Zsqrtd.mul_nonneg _ _ (le_of_lt a0) (le_of_lt b0))))
     (fun e => ne_of_gt a0 e) fun e => ne_of_gt b0 e
 
-instance : LinearOrderedCommRing (ℤ√d) :=
-  { Zsqrtd.commRing, Zsqrtd.linearOrder, Zsqrtd.nontrivial with
-    add_le_add_left := Zsqrtd.add_le_add_left
-    mul_pos := Zsqrtd.mul_pos
-    zero_le_one := by trivial }
+instance : ZeroLEOneClass (ℤ√d) :=
+  { zero_le_one := by trivial }
 
-instance : LinearOrderedRing (ℤ√d) := by infer_instance
+instance : IsOrderedAddMonoid (ℤ√d) :=
+  { add_le_add_left := Zsqrtd.add_le_add_left }
 
-instance : OrderedRing (ℤ√d) := by infer_instance
+instance : IsStrictOrderedRing (ℤ√d) :=
+  .of_mul_pos Zsqrtd.mul_pos
 
 end
 
@@ -877,7 +876,7 @@ theorem norm_eq_zero {d : ℤ} (h_nonsquare : ∀ n : ℤ, d ≠ n * n) (a : ℤ
 variable {R : Type}
 
 @[ext]
-theorem hom_ext [Ring R] {d : ℤ} (f g : ℤ√d →+* R) (h : f sqrtd = g sqrtd) : f = g := by
+theorem hom_ext [NonAssocRing R] {d : ℤ} (f g : ℤ√d →+* R) (h : f sqrtd = g sqrtd) : f = g := by
   ext ⟨x_re, x_im⟩
   simp [decompose, h]
 

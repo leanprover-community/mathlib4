@@ -3,8 +3,8 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl
 -/
+import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
 import Mathlib.MeasureTheory.Measure.Decomposition.Exhaustion
-import Mathlib.MeasureTheory.Integral.Lebesgue
 
 /-!
 # Measure with a given density with respect to another measure
@@ -130,8 +130,7 @@ theorem withDensity_smul' (r : ℝ≥0∞) (f : α → ℝ≥0∞) (hr : r ≠ �
 theorem withDensity_smul_measure (r : ℝ≥0∞) (f : α → ℝ≥0∞) :
     (r • μ).withDensity f = r • μ.withDensity f := by
   ext s hs
-  rw [withDensity_apply _ hs, Measure.coe_smul, Pi.smul_apply, withDensity_apply _ hs,
-    smul_eq_mul, setLIntegral_smul_measure]
+  simp [withDensity_apply, hs]
 
 theorem isFiniteMeasure_withDensity {f : α → ℝ≥0∞} (hf : ∫⁻ a, f a ∂μ ≠ ∞) :
     IsFiniteMeasure (μ.withDensity f) :=

@@ -7,7 +7,6 @@ Authors: Frédéric Dupuis
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-import Mathlib.Data.Real.StarOrdered
 
 /-!
 # Real powers defined via the continuous functional calculus

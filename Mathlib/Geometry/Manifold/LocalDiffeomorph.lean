@@ -138,9 +138,8 @@ def IsLocalDiffeomorphAt (f : M → N) (x : M) : Prop :=
   ∃ Φ : PartialDiffeomorph I J M N n, x ∈ Φ.source ∧ EqOn f Φ Φ.source
 
 lemma PartialDiffeomorph.isLocalDiffeomorphAt (φ : PartialDiffeomorph I J M N n)
-    {x : M} (hx : x ∈ φ.source) : IsLocalDiffeomorphAt I J n φ x := by
-  use φ
-  exact ⟨hx, fun ⦃x⦄ ↦ congrFun rfl⟩
+    {x : M} (hx : x ∈ φ.source) : IsLocalDiffeomorphAt I J n φ x :=
+  ⟨φ, hx, Set.eqOn_refl _ _⟩
 
 namespace IsLocalDiffeomorphAt
 

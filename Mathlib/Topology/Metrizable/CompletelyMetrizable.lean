@@ -154,7 +154,7 @@ instance (priority := 50) discrete [TopologicalSpace X] [DiscreteTopology X] :
   · refine Metric.complete_of_cauchySeq_tendsto fun u hu ↦ ?_
     rw [Metric.cauchySeq_iff'] at hu
     obtain ⟨N, hN⟩ := hu 1 (by norm_num)
-    refine ⟨u N, @tendsto_atTop_of_eventually_const X (u N) UniformSpace.toTopologicalSpace _ _ _ N
+    refine ⟨u N, @tendsto_atTop_of_eventually_const X UniformSpace.toTopologicalSpace (u N) _ _ _ N
       fun n hn ↦ ?_⟩
     specialize hN n hn
     by_contra

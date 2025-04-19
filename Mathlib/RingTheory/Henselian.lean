@@ -79,9 +79,6 @@ theorem isLocalHom_of_le_jacobson_bot {R : Type*} [CommRing R] (I : Ideal R)
   simp? at h1 says simp only [mul_one, sub_add_cancel, IsUnit.mul_iff] at h1
   exact h1.1
 
-@[deprecated (since := "2024-10-10")]
-alias isLocalRingHom_of_le_jacobson_bot := isLocalHom_of_le_jacobson_bot
-
 /-- A ring `R` is *Henselian* at an ideal `I` if the following condition holds:
 for every polynomial `f` over `R`, with a *simple* root `a₀` over the quotient ring `R/I`,
 there exists a lift `a : R` of `a₀` that is a root of `f`.

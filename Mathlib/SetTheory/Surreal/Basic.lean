@@ -334,7 +334,7 @@ the negation of `{L | R}` is `{-R | -L}`. -/
 instance : Neg Surreal :=
   ⟨Surreal.lift (fun x ox => ⟦⟨-x, ox.neg⟩⟧) fun _ _ a => Quotient.sound (neg_equiv_neg_iff.2 a)⟩
 
-instance orderedAddCommGroup : OrderedAddCommGroup Surreal where
+instance addCommGroup : AddCommGroup Surreal where
   add := (· + ·)
   add_assoc := by rintro ⟨_⟩ ⟨_⟩ ⟨_⟩; exact Quotient.sound add_assoc_equiv
   zero := 0
@@ -343,15 +343,19 @@ instance orderedAddCommGroup : OrderedAddCommGroup Surreal where
   neg := Neg.neg
   neg_add_cancel := by rintro ⟨a⟩; exact Quotient.sound (neg_add_cancel_equiv a)
   add_comm := by rintro ⟨_⟩ ⟨_⟩; exact Quotient.sound add_comm_equiv
+  nsmul := nsmulRec
+  zsmul := zsmulRec
+
+instance partialOrder : PartialOrder Surreal where
   le := (· ≤ ·)
   lt := (· < ·)
   le_refl := by rintro ⟨_⟩; apply @le_rfl PGame
   le_trans := by rintro ⟨_⟩ ⟨_⟩ ⟨_⟩; apply @le_trans PGame
   lt_iff_le_not_le := by rintro ⟨_, ox⟩ ⟨_, oy⟩; apply @lt_iff_le_not_le PGame
   le_antisymm := by rintro ⟨_⟩ ⟨_⟩ h₁ h₂; exact Quotient.sound ⟨h₁, h₂⟩
+
+instance isOrderedAddMonoid : IsOrderedAddMonoid Surreal where
   add_le_add_left := by rintro ⟨_⟩ ⟨_⟩ hx ⟨_⟩; exact @add_le_add_left PGame _ _ _ _ _ hx _
-  nsmul := nsmulRec
-  zsmul := zsmulRec
 
 lemma mk_add {x y : PGame} (hx : x.Numeric) (hy : y.Numeric) :
     Surreal.mk (x + y) (hx.add hy) = Surreal.mk x hx + Surreal.mk y hy := by rfl
@@ -361,8 +365,8 @@ lemma mk_sub {x y : PGame} (hx : x.Numeric) (hy : y.Numeric) :
 
 lemma zero_def : 0 = mk 0 numeric_zero := by rfl
 
-noncomputable instance : LinearOrderedAddCommGroup Surreal :=
-  { Surreal.orderedAddCommGroup with
+noncomputable instance : LinearOrder Surreal :=
+  { Surreal.partialOrder with
     le_total := by
       rintro ⟨⟨x, ox⟩⟩ ⟨⟨y, oy⟩⟩
       exact or_iff_not_imp_left.2 fun h => (PGame.not_le.1 h).le oy ox

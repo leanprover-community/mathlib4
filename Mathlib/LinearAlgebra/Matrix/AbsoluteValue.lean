@@ -30,7 +30,8 @@ namespace Matrix
 
 open Equiv Finset
 
-variable {R S : Type*} [CommRing R] [Nontrivial R] [LinearOrderedCommRing S]
+variable {R S : Type*} [CommRing R] [Nontrivial R]
+  [CommRing S] [LinearOrder S] [IsStrictOrderedRing S]
 variable {n : Type*} [Fintype n] [DecidableEq n]
 
 theorem det_le {A : Matrix n n R} {abv : AbsoluteValue R S} {x : S} (hx : ∀ i j, abv (A i j) ≤ x) :

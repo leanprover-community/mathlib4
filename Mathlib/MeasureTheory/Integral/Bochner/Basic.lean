@@ -1233,6 +1233,9 @@ theorem integral_pos_of_integrable_nonneg_nonzero [TopologicalSpace α] [Measure
   (integral_pos_iff_support_of_nonneg f_nonneg f_int).2
     (IsOpen.measure_pos μ f_cont.isOpen_support ⟨x, f_x⟩)
 
+@[simp] lemma integral_count [MeasurableSingletonClass α] [Fintype α] (f : α → E) :
+    ∫ a, f a ∂.count = ∑ a, f a := by simp [integral_fintype]
+
 end Properties
 
 section IntegralTrim

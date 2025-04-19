@@ -35,14 +35,15 @@ open ContinuousLinearMap Filter Set
 /-- A proper cone is a pointed cone `K` that is closed. Proper cones have the nice property that
 they are equal to their double dual, see `ProperCone.dual_dual`.
 This makes them useful for defining cone programs and proving duality theorems. -/
-structure ProperCone (𝕜 : Type*) (E : Type*) [OrderedSemiring 𝕜] [AddCommMonoid E]
+structure ProperCone (𝕜 : Type*) (E : Type*)
+    [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜] [AddCommMonoid E]
     [TopologicalSpace E] [Module 𝕜 E] extends Submodule {c : 𝕜 // 0 ≤ c} E where
   isClosed' : IsClosed (carrier : Set E)
 
 namespace ProperCone
 section Module
 
-variable {𝕜 : Type*} [OrderedSemiring 𝕜]
+variable {𝕜 : Type*} [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
 variable {E : Type*} [AddCommMonoid E] [TopologicalSpace E] [Module 𝕜 E]
 
 /-- A `PointedCone` is defined as an alias of submodule. We replicate the abbreviation here and
@@ -83,7 +84,8 @@ end Module
 section PositiveCone
 
 variable (𝕜 E)
-variable [OrderedSemiring 𝕜] [OrderedAddCommGroup E] [Module 𝕜 E] [OrderedSMul 𝕜 E]
+variable [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
+  [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E] [Module 𝕜 E] [OrderedSMul 𝕜 E]
   [TopologicalSpace E] [OrderClosedTopology E]
 
 /-- The positive cone is the proper cone formed by the set of nonnegative elements in an ordered
@@ -104,7 +106,7 @@ end PositiveCone
 
 section Module
 
-variable {𝕜 : Type*} [OrderedSemiring 𝕜]
+variable {𝕜 : Type*} [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
 variable {E : Type*} [AddCommMonoid E] [TopologicalSpace E] [T1Space E] [Module 𝕜 E]
 
 instance : Zero (ProperCone 𝕜 E) :=
@@ -238,7 +240,7 @@ theorem hyperplane_separation (K : ProperCone ℝ E) {f : E →L[ℝ] F} {b : F}
       contrapose! h
 
       -- as `b ∉ K.map f`, there is a hyperplane `y` separating `b` from `K.map f`
-      let C := @PointedCone.toConvexCone ℝ F _ _ _ (K.map f)
+      let C := PointedCone.toConvexCone (𝕜 := ℝ) (E := F) (K.map f)
       obtain ⟨y, hxy, hyb⟩ :=
         @ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_nmem
         _ _ _ _ C (K.map f).nonempty (K.map f).isClosed b h

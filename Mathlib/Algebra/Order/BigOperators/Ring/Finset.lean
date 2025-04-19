@@ -85,7 +85,7 @@ end CommMonoidWithZero
 
 section OrderedSemiring
 
-variable [OrderedSemiring R] {f : ι → R} {s : Finset ι}
+variable [Semiring R] [PartialOrder R] [IsOrderedRing R] {f : ι → R} {s : Finset ι}
 
 lemma sum_sq_le_sq_sum_of_nonneg (hf : ∀ i ∈ s, 0 ≤ f i) :
     ∑ i ∈ s, f i ^ 2 ≤ (∑ i ∈ s, f i) ^ 2 := by
@@ -99,7 +99,7 @@ lemma sum_sq_le_sq_sum_of_nonneg (hf : ∀ i ∈ s, 0 ≤ f i) :
 end OrderedSemiring
 
 section OrderedCommSemiring
-variable [OrderedCommSemiring R] {f g : ι → R} {s t : Finset ι}
+variable [CommSemiring R] [PartialOrder R] [IsOrderedRing R] {f g : ι → R} {s t : Finset ι}
 
 /-- If `g, h ≤ f` and `g i + h i ≤ f i`, then the product of `f` over `s` is at least the
   sum of the products of `g` and `h`. This is the version for `OrderedCommSemiring`. -/
@@ -117,12 +117,13 @@ lemma prod_add_prod_le {i : ι} {f g h : ι → R} (hi : i ∈ s) (h2i : g i + h
 
 end OrderedCommSemiring
 
-theorem sum_mul_self_eq_zero_iff [LinearOrderedSemiring R] [ExistsAddOfLE R] (s : Finset ι)
+theorem sum_mul_self_eq_zero_iff [Semiring R] [LinearOrder R] [IsStrictOrderedRing R]
+    [ExistsAddOfLE R] (s : Finset ι)
     (f : ι → R) : ∑ i ∈ s, f i * f i = 0 ↔ ∀ i ∈ s, f i = 0 := by
   rw [sum_eq_zero_iff_of_nonneg fun _ _ ↦ mul_self_nonneg _]
   simp
 
-lemma abs_prod [LinearOrderedCommRing R] (s : Finset ι) (f : ι → R) :
+lemma abs_prod [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] (s : Finset ι) (f : ι → R) :
     |∏ x ∈ s, f x| = ∏ x ∈ s, |f x| :=
   map_prod absHom _ _
 
@@ -140,7 +141,6 @@ variable [CommSemiring R] [PartialOrder R] [CanonicallyOrderedAdd R]
     0 < ∏ i ∈ s, f i ↔ (∀ i ∈ s, (0 : R) < f i) :=
   CanonicallyOrderedAdd.multiset_prod_pos.trans Multiset.forall_mem_map_iff
 
-attribute [local instance] CanonicallyOrderedAdd.toOrderedCommMonoid in
 /-- If `g, h ≤ f` and `g i + h i ≤ f i`, then the product of `f` over `s` is at least the
   sum of the products of `g` and `h`. This is the version for `CanonicallyOrderedAdd`.
 -/
@@ -161,7 +161,8 @@ end CanonicallyOrderedAdd
 This is written in terms of sequences `f`, `g`, and `r`, where `r` is a stand-in for
 `√(f i * g i)`. See `sum_mul_sq_le_sq_mul_sq` for the more usual form in terms of squared
 sequences. -/
-lemma sum_sq_le_sum_mul_sum_of_sq_eq_mul [LinearOrderedCommSemiring R] [ExistsAddOfLE R]
+lemma sum_sq_le_sum_mul_sum_of_sq_eq_mul [CommSemiring R] [LinearOrder R] [IsStrictOrderedRing R]
+    [ExistsAddOfLE R]
     (s : Finset ι) {r f g : ι → R} (hf : ∀ i ∈ s, 0 ≤ f i) (hg : ∀ i ∈ s, 0 ≤ g i)
     (ht : ∀ i ∈ s, r i ^ 2 = f i * g i) : (∑ i ∈ s, r i) ^ 2 ≤ (∑ i ∈ s, f i) * ∑ i ∈ s, g i := by
   obtain h | h := (sum_nonneg hg).eq_or_gt
@@ -186,7 +187,8 @@ lemma sum_sq_le_sum_mul_sum_of_sq_eq_mul [LinearOrderedCommSemiring R] [ExistsAd
       _ = _ := by simp_rw [sum_add_distrib, ← sum_mul]; ring
 
 /-- **Cauchy-Schwarz inequality** for finsets, squared version. -/
-lemma sum_mul_sq_le_sq_mul_sq [LinearOrderedCommSemiring R] [ExistsAddOfLE R] (s : Finset ι)
+lemma sum_mul_sq_le_sq_mul_sq [CommSemiring R] [LinearOrder R] [IsStrictOrderedRing R]
+    [ExistsAddOfLE R] (s : Finset ι)
     (f g : ι → R) : (∑ i ∈ s, f i * g i) ^ 2 ≤ (∑ i ∈ s, f i ^ 2) * ∑ i ∈ s, g i ^ 2 :=
   sum_sq_le_sum_mul_sum_of_sq_eq_mul s
     (fun _ _ ↦ sq_nonneg _) (fun _ _ ↦ sq_nonneg _) (fun _ _ ↦ mul_pow ..)
@@ -195,7 +197,8 @@ lemma sum_mul_sq_le_sq_mul_sq [LinearOrderedCommSemiring R] [ExistsAddOfLE R] (s
 
 This is a specialization of the Cauchy-Schwarz inequality with the sequences `f n / √(g n)` and
 `√(g n)`, though here it is proven without relying on square roots. -/
-theorem sq_sum_div_le_sum_sq_div [LinearOrderedSemifield R] [ExistsAddOfLE R] (s : Finset ι)
+theorem sq_sum_div_le_sum_sq_div [Semifield R] [LinearOrder R] [IsStrictOrderedRing R]
+    [ExistsAddOfLE R] (s : Finset ι)
     (f : ι → R) {g : ι → R} (hg : ∀ i ∈ s, 0 < g i) :
     (∑ i ∈ s, f i) ^ 2 / ∑ i ∈ s, g i ≤ ∑ i ∈ s, f i ^ 2 / g i := by
   have hg' : ∀ i ∈ s, 0 ≤ g i := fun i hi ↦ (hg i hi).le
@@ -211,20 +214,24 @@ end Finset
 
 section AbsoluteValue
 
-lemma AbsoluteValue.sum_le [Semiring R] [OrderedSemiring S] (abv : AbsoluteValue R S)
+lemma AbsoluteValue.sum_le [Semiring R] [Semiring S] [PartialOrder S] [IsOrderedRing S]
+    (abv : AbsoluteValue R S)
     (s : Finset ι) (f : ι → R) : abv (∑ i ∈ s, f i) ≤ ∑ i ∈ s, abv (f i) :=
   Finset.le_sum_of_subadditive abv (map_zero _) abv.add_le _ _
 
-lemma IsAbsoluteValue.abv_sum [Semiring R] [OrderedSemiring S] (abv : R → S) [IsAbsoluteValue abv]
+lemma IsAbsoluteValue.abv_sum [Semiring R] [Semiring S] [PartialOrder S] [IsOrderedRing S]
+    (abv : R → S) [IsAbsoluteValue abv]
     (f : ι → R) (s : Finset ι) : abv (∑ i ∈ s, f i) ≤ ∑ i ∈ s, abv (f i) :=
   (IsAbsoluteValue.toAbsoluteValue abv).sum_le _ _
 
-nonrec lemma AbsoluteValue.map_prod [CommSemiring R] [Nontrivial R] [LinearOrderedCommRing S]
+nonrec lemma AbsoluteValue.map_prod [CommSemiring R] [Nontrivial R]
+    [CommRing S] [LinearOrder S] [IsStrictOrderedRing S]
     (abv : AbsoluteValue R S) (f : ι → R) (s : Finset ι) :
     abv (∏ i ∈ s, f i) = ∏ i ∈ s, abv (f i) :=
   map_prod abv f s
 
-lemma IsAbsoluteValue.map_prod [CommSemiring R] [Nontrivial R] [LinearOrderedCommRing S]
+lemma IsAbsoluteValue.map_prod [CommSemiring R] [Nontrivial R]
+    [CommRing S] [LinearOrder S] [IsStrictOrderedRing S]
     (abv : R → S) [IsAbsoluteValue abv] (f : ι → R) (s : Finset ι) :
     abv (∏ i ∈ s, f i) = ∏ i ∈ s, abv (f i) :=
   (IsAbsoluteValue.toAbsoluteValue abv).map_prod _ _

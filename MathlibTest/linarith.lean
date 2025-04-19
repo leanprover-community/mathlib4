@@ -14,10 +14,12 @@ def testSorryTac : TacticM Unit := do
   let t ← `(test_sorry)
   closeMainGoalUsing `sorry fun _ _ => elabTerm t e
 
-example {α} [LinearOrderedCommRing α] {a b : α} (h : a < b) (w : b < a) : False := by
+example {α} [CommRing α] [LinearOrder α] [IsStrictOrderedRing α]
+    {a b : α} (h : a < b) (w : b < a) : False := by
   linarith
 
-example {α : Type} (_inst : (a : Prop) → Decidable a) [LinearOrderedCommRing α]
+example {α : Type} (_inst : (a : Prop) → Decidable a)
+    [CommRing α] [LinearOrder α] [IsStrictOrderedRing α]
     {a b c : α}
     (ha : a < 0)
     (hb : ¬b = 0)
@@ -33,7 +35,8 @@ example (e b c a v0 v1 : Rat) (h1 : v0 = 5*a) (h2 : v1 = 3*b) (h3 : v0 + v1 + c 
     v0 + 5 + (v1 - 3) + (c - 2) = 10 := by
   linarith
 
-example {α} [LinearOrderedCommRing α] (e b c a v0 v1 : α) (h1 : v0 = 5*a) (h2 : v1 = 3*b)
+example {α} [CommRing α] [LinearOrder α] [IsStrictOrderedRing α]
+    (e b c a v0 v1 : α) (h1 : v0 = 5*a) (h2 : v1 = 3*b)
     (h3 : v0 + v1 + c = 10) : v0 + 5 + (v1 - 3) + (c - 2) = 10 := by
   linarith
 
@@ -49,18 +52,20 @@ example (A B : Rat) (h : 0 < A * B) : 0 < 8*A*B := by
 example (A B : Rat) (h : 0 < A * B) : 0 < A*8*B := by
   linarith
 
-example {α} [LinearOrderedCommRing α] (x : α) : 0 ≤ x := by
+example {α} [CommRing α] [LinearOrder α] [IsStrictOrderedRing α] (x : α) : 0 ≤ x := by
   have h : 0 ≤ x := test_sorry
   linarith
 
-example {α} [LinearOrderedCommRing α] (x : α) : 0 ≤ x := by
+example {α} [CommRing α] [LinearOrder α] [IsStrictOrderedRing α] (x : α) : 0 ≤ x := by
   have h : 0 ≤ x := test_sorry
   linarith [h]
 
-example {α} [LinearOrderedCommRing α] (u v r s t : α) (h : 0 < u*(t*v + t*r + s)) :
+example {α} [CommRing α] [LinearOrder α] [IsStrictOrderedRing α]
+    (u v r s t : α) (h : 0 < u*(t*v + t*r + s)) :
     0 < (t*(r + v) + s)*3*u := by linarith
 
-example {α} [LinearOrderedCommRing α] (A B : α) (h : 0 < A * B) : 0 < 8*A*B := by
+example {α} [CommRing α] [LinearOrder α] [IsStrictOrderedRing α]
+    (A B : α) (h : 0 < A * B) : 0 < 8*A*B := by
   linarith
 
 example (s : Set ℕ) (_h : s = ∅) : 0 ≤ 1 := by linarith
@@ -98,7 +103,7 @@ example (x : Rat) (h : 0 < x) : 0 < x/2/3 := by linarith
 
 example (x : Rat) (h : 0 < x) : 0 < x/(2/3) := by linarith
 
-variable {K : Type*} [LinearOrderedField K]
+variable {K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
 
 example (a : K) (ha : 10 / (8 + 2) ≤ a) : 1 ≤ a := by linarith
 
@@ -291,7 +296,7 @@ in several places used off-the-shelf library lemmas requiring low-level typeclas
 After a tweak to rely only on custom `linarith` clones of these lemmas taking high-level typeclasses,
 this now (November 2024) takes 1647 heartbeats (63 ms on a good laptop). -/
 set_option maxHeartbeats 2000 in
-example {K : Type*} [LinearOrderedField K] {x y : K}
+example {K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K] {x y : K}
     (h : x + y = 10) (h' : x + 2 * y ≤ 18) (h : x < 2) : False := by
   linarith (config := {discharger := testSorryTac})
 
@@ -499,7 +504,9 @@ end
 
 axiom T : Type
 
-@[instance] axiom T_zero : OrderedRing T
+@[instance] axiom T.ring : Ring T
+@[instance] axiom T.partialOrder : PartialOrder T
+@[instance] axiom T.isOrderedRing : IsOrderedRing T
 
 namespace T
 
@@ -549,7 +556,7 @@ lemma bar (x y : Int) (h : 0 ≤ y ∧ 1 ≤ x) : 1 ≤ y + x * x := by linarith
 -- -- issue https://github.com/leanprover-community/mathlib4/pull/9822
 -- lemma mytest (j : ℕ) (h : 0 < j) : j-1 < j := by linarith
 
-example {α} [LinearOrderedCommRing α] (h : ∃ x : α, 0 ≤ x) : True := by
+example {α} [CommRing α] [LinearOrder α] [IsStrictOrderedRing α] (h : ∃ x : α, 0 ≤ x) : True := by
   obtain ⟨x, h⟩ := h
   have : 0 ≤ x := by linarith
   trivial
@@ -573,24 +580,27 @@ example (n : Nat) (h1 : ¬n = 1) (h2 : n ≥ 1) : n ≥ 2 := by
 universe u v
 -- simulate the type of MvPolynomial
 def P : Type u → Type v → Sort (max (u+1) (v+1)) := test_sorry
-noncomputable instance {c d} : LinearOrderedField (P c d) := test_sorry
+noncomputable instance {c d} : Field (P c d) := test_sorry
+noncomputable instance {c d} : LinearOrder (P c d) := test_sorry
+noncomputable instance {c d} : IsStrictOrderedRing (P c d) := test_sorry
 
 example (p : P PUnit.{u+1} PUnit.{v+1}) (h : 0 < p) : 0 < 2 * p := by
   linarith
 
 example (n : Nat) : n + 1 ≥ (1 / 2 : ℚ) := by linarith
 
-example {α : Type} [LinearOrderedCommRing α] (n : Nat) : (5 : α) - (n : α) ≤ (6 : α) := by
+example {α : Type} [CommRing α] [LinearOrder α] [IsStrictOrderedRing α] (n : Nat) : (5 : α) - (n : α) ≤ (6 : α) := by
   linarith
 
-example {α : Type} [LinearOrderedCommRing α] (n : Nat) : -(n : α) ≤ 0 := by
+example {α : Type} [CommRing α] [LinearOrder α] [IsStrictOrderedRing α] (n : Nat) : -(n : α) ≤ 0 := by
   linarith
 
-example {α : Type} [LinearOrderedCommRing α]
+example {α : Type} [CommRing α] [LinearOrder α] [IsStrictOrderedRing α]
     (n : Nat) (a : α) (h : a ≥ 2) : a * (n : α) + 5 ≥ 4 := by nlinarith
 example (x : ℚ) (h : x * (2⁻¹ + 2 / 3) = 1) : x = 6 / 7 := by linarith
 
-example {α} [LinearOrderedCommSemiring α] (x : α) (_ : 0 ≤ x) : 0 ≤ 1 := by linarith
+example {α} [CommSemiring α] [LinearOrder α] [IsStrictOrderedRing α] (x : α) (_ : 0 ≤ x) :
+    0 ≤ 1 := by linarith
 
 example (k : ℤ) (h : k < 1) (h₁ : -1 < k) : k = 0 := by
   -- Make h₁'s type be a metavariable. At one point this caused the strengthenStrictInt

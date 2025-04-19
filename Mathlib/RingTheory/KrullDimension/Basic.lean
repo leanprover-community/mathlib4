@@ -88,6 +88,8 @@ proof_wanted MvPolynomial.fin_ringKrullDim_eq_add_of_isNoetherianRing
 
 section Zero
 
+-- See `Mathlib/RingTheory/KrullDimension/Zero.lean` for further results.
+
 lemma Ring.krullDimLE_zero_iff : Ring.KrullDimLE 0 R ↔ ∀ I : Ideal R, I.IsPrime → I.IsMaximal := by
   simp_rw [Ring.KrullDimLE, Order.krullDimLE_iff, Nat.cast_zero,
     Order.krullDim_nonpos_iff_forall_isMax,
@@ -99,6 +101,10 @@ lemma Ring.KrullDimLE.mk₀ (H : ∀ I : Ideal R, I.IsPrime → I.IsMaximal) : R
 
 lemma Ideal.isMaximal_of_isPrime [Ring.KrullDimLE 0 R] (I : Ideal R) [I.IsPrime] : I.IsMaximal :=
   Ring.krullDimLE_zero_iff.mp ‹_› I ‹_›
+
+/-- Also see `Ideal.IsPrime.isMaximal` for the analogous statement for dedekind domains. -/
+lemma Ideal.IsPrime.isMaximal' [Ring.KrullDimLE 0 R] {I : Ideal R} (hI : I.IsPrime) : I.IsMaximal :=
+  I.isMaximal_of_isPrime
 
 instance (priority := 100) (I : Ideal R) [I.IsPrime] [Ring.KrullDimLE 0 R] : I.IsMaximal :=
   I.isMaximal_of_isPrime

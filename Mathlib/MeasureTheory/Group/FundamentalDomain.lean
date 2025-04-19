@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Alex Kontorovich, Heather Macbeth
 -/
 import Mathlib.MeasureTheory.Group.Action
-import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.MeasureTheory.Group.Pointwise
+import Mathlib.MeasureTheory.Integral.Lebesgue.MeasurePreserving
+import Mathlib.MeasureTheory.Integral.SetIntegral
 
 /-!
 # Fundamental domain of a group action
@@ -318,7 +319,7 @@ protected theorem measure_eq (hs : IsFundamentalDomain G s μ) (ht : IsFundament
   simpa only [setLIntegral_one] using hs.setLIntegral_eq ht (fun _ => 1) fun _ _ => rfl
 
 @[to_additive]
-protected theorem aEStronglyMeasurable_on_iff {β : Type*} [TopologicalSpace β]
+protected theorem aestronglyMeasurable_on_iff {β : Type*} [TopologicalSpace β]
     [PseudoMetrizableSpace β] (hs : IsFundamentalDomain G s μ) (ht : IsFundamentalDomain G t μ)
     {f : α → β} (hf : ∀ (g : G) (x), f (g • x) = f x) :
     AEStronglyMeasurable f (μ.restrict s) ↔ AEStronglyMeasurable f (μ.restrict t) :=
@@ -342,6 +343,12 @@ protected theorem aEStronglyMeasurable_on_iff {β : Type*} [TopologicalSpace β]
       simp only [← aestronglyMeasurable_sum_measure_iff, ← hs.restrict_restrict,
         hs.sum_restrict_of_ac restrict_le_self.absolutelyContinuous]
 
+@[deprecated (since := "2025-04-09")]
+alias aEStronglyMeasurable_on_iff := MeasureTheory.IsFundamentalDomain.aestronglyMeasurable_on_iff
+@[deprecated (since := "2025-04-09")]
+alias _root_.MeasureTheory.IsAddFundamentalDomain.aEStronglyMeasurable_on_iff :=
+  MeasureTheory.IsAddFundamentalDomain.aestronglyMeasurable_on_iff
+
 @[to_additive]
 protected theorem hasFiniteIntegral_on_iff (hs : IsFundamentalDomain G s μ)
     (ht : IsFundamentalDomain G t μ) {f : α → E} (hf : ∀ (g : G) (x), f (g • x) = f x) :
@@ -353,7 +360,7 @@ protected theorem hasFiniteIntegral_on_iff (hs : IsFundamentalDomain G s μ)
 @[to_additive]
 protected theorem integrableOn_iff (hs : IsFundamentalDomain G s μ) (ht : IsFundamentalDomain G t μ)
     {f : α → E} (hf : ∀ (g : G) (x), f (g • x) = f x) : IntegrableOn f s μ ↔ IntegrableOn f t μ :=
-  and_congr (hs.aEStronglyMeasurable_on_iff ht hf) (hs.hasFiniteIntegral_on_iff ht hf)
+  and_congr (hs.aestronglyMeasurable_on_iff ht hf) (hs.hasFiniteIntegral_on_iff ht hf)
 
 variable [NormedSpace ℝ E]
 

@@ -164,7 +164,7 @@ end LinearOrder
 
 section LinearOrderedAddCommGroup
 
-variable [LinearOrderedAddCommGroup α] [CompactIccSpace α]
+variable [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α] [CompactIccSpace α]
 
 /-- If `f` is locally integrable, `‖f(-x)‖ = ‖f(x)‖`, and `f =O[atTop] g`, for some
 `g` integrable at `atTop`, then `f` is integrable. -/

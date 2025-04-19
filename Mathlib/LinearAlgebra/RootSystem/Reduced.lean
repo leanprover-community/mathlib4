@@ -158,8 +158,8 @@ lemma pairing_two_two_iff :
 lemma pairing_neg_two_neg_two_iff :
     P.pairing i j = -2 ∧ P.pairing j i = -2 ↔ P.root i = -P.root j := by
   simp only [← neg_eq_iff_eq_neg]
-  simpa [eq_comm (a := -P.root i), root_eq_neg_iff] using
-    P.pairing_two_two_iff i (P.reflection_perm j j)
+  simpa [eq_comm (a := -P.root i), eq_comm (b := j)] using
+    P.pairing_two_two_iff (P.reflection_perm i i) j
 
 variable [NoZeroSMulDivisors R N]
 
@@ -186,13 +186,13 @@ lemma pairing_neg_one_neg_four_iff' (h2 : IsSMulRegular R (2 : R)) :
 
 /-- See also `RootPairing.pairingIn_one_four_iff`. -/
 @[simp]
-lemma pairing_one_four_iff [NoZeroDivisors R] :
+lemma pairing_one_four_iff [IsDomain R] :
     P.pairing i j = 1 ∧ P.pairing j i = 4 ↔ P.root j = (2 : R) • P.root i :=
   P.pairing_one_four_iff' i j <| smul_right_injective R two_ne_zero
 
 /-- See also `RootPairing.pairingIn_neg_one_neg_four_iff`. -/
 @[simp]
-lemma pairing_neg_one_neg_four_iff [NoZeroDivisors R] :
+lemma pairing_neg_one_neg_four_iff [IsDomain R] :
     P.pairing i j = -1 ∧ P.pairing j i = -4 ↔ P.root j = (-2 : R) • P.root i :=
   P.pairing_neg_one_neg_four_iff' i j <| smul_right_injective R two_ne_zero
 
@@ -200,7 +200,7 @@ section IsValuedIn
 
 open FaithfulSMul
 
-variable [LinearOrderedCommRing S] [Algebra S R] [FaithfulSMul S R] [P.IsValuedIn S]
+variable [CommRing S] [Algebra S R] [FaithfulSMul S R] [P.IsValuedIn S]
 omit [NoZeroSMulDivisors R N]
 variable {i j}
 
@@ -226,6 +226,7 @@ lemma pairingIn_two_two_iff :
   simp only [← P.pairing_two_two_iff, ← P.algebraMap_pairingIn S, ← map_ofNat (algebraMap S R),
     (algebraMap_injective S R).eq_iff]
 
+@[simp]
 lemma pairingIn_neg_two_neg_two_iff :
     P.pairingIn S i j = -2 ∧ P.pairingIn S j i = -2 ↔ P.root i = -P.root j := by
   simp only [← P.pairing_neg_two_neg_two_iff, ← P.algebraMap_pairingIn S,
@@ -233,13 +234,13 @@ lemma pairingIn_neg_two_neg_two_iff :
 
 variable [NoZeroSMulDivisors R N]
 
-lemma pairingIn_one_four_iff [NoZeroDivisors R] :
+lemma pairingIn_one_four_iff [IsDomain R] :
     P.pairingIn S i j = 1 ∧ P.pairingIn S j i = 4 ↔ P.root j = (2 : R) • P.root i := by
   rw [← P.pairing_one_four_iff, ← P.algebraMap_pairingIn S, ← P.algebraMap_pairingIn S,
     ← map_one (algebraMap S R), ← map_ofNat (algebraMap S R), (algebraMap_injective S R).eq_iff,
     (algebraMap_injective S R).eq_iff]
 
-lemma pairingIn_neg_one_neg_four_iff [NoZeroDivisors R] :
+lemma pairingIn_neg_one_neg_four_iff [IsDomain R] :
     P.pairingIn S i j = -1 ∧ P.pairingIn S j i = -4 ↔ P.root j = (-2 : R) • P.root i := by
   rw [← P.pairing_neg_one_neg_four_iff, ← P.algebraMap_pairingIn S, ← P.algebraMap_pairingIn S,
     ← map_one (algebraMap S R), ← map_ofNat (algebraMap S R), ← map_neg, ← map_neg,

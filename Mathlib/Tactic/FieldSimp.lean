@@ -45,7 +45,7 @@ partial def discharge (prop : Expr) : SimpM (Option Expr) :=
     let pf? ← match prop with
     | ~q(($e : $α) ≠ $b) =>
         try
-          let res ← Mathlib.Meta.NormNum.derive (α := (q(Prop) : Q(Type))) prop
+          let res ← Mathlib.Meta.NormNum.derive prop
           match res with
           | .isTrue pf => pure (some pf)
           | _ => pure none

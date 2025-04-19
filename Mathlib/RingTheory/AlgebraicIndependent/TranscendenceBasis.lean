@@ -52,16 +52,19 @@ theorem exists_isTranscendenceBasis_superset {s : Set A}
   simpa only [subset_univ, and_true, ← isTranscendenceBasis_iff_maximal]
     using exists_maximal_algebraicIndependent s _ (subset_univ _) hs
 
-theorem exists_isTranscendenceBasis (h : Injective (algebraMap R A)) :
+variable (A)
+theorem exists_isTranscendenceBasis [FaithfulSMul R A] :
     ∃ s : Set A, IsTranscendenceBasis R ((↑) : s → A) := by
-  simpa only [empty_subset, true_and] using
-    exists_isTranscendenceBasis_superset ((algebraicIndependent_empty_iff R A).mpr h)
+  simpa only [empty_subset, true_and] using exists_isTranscendenceBasis_superset
+    ((algebraicIndependent_empty_iff R A).mpr (FaithfulSMul.algebraMap_injective R A))
 
 /-- `Type` version of `exists_isTranscendenceBasis`. -/
-theorem exists_isTranscendenceBasis' (h : Injective (algebraMap R A)) :
+theorem exists_isTranscendenceBasis' [FaithfulSMul R A] :
     ∃ (ι : Type w) (x : ι → A), IsTranscendenceBasis R x :=
-  have ⟨s, h⟩ := exists_isTranscendenceBasis R h
+  have ⟨s, h⟩ := exists_isTranscendenceBasis R A
   ⟨s, Subtype.val, h⟩
+
+variable {A}
 
 open Cardinal in
 theorem trdeg_eq_iSup_cardinalMk_isTranscendenceBasis :
@@ -493,12 +496,10 @@ variable (R S A)
 
 @[stacks 030H] theorem lift_trdeg_add_eq [Nontrivial R] [NoZeroDivisors A] [FaithfulSMul R S]
     [FaithfulSMul S A] : lift.{w} (trdeg R S) + lift.{v} (trdeg S A) = lift.{v} (trdeg R A) := by
-  have hRS := FaithfulSMul.algebraMap_injective R S
-  have hSA := FaithfulSMul.algebraMap_injective S A
-  have ⟨s, hs⟩ := exists_isTranscendenceBasis _ hRS
-  have ⟨t, ht⟩ := exists_isTranscendenceBasis _ hSA
-  have := hSA.noZeroDivisors _ (map_zero _) (map_mul _)
-  have := hRS.nontrivial
+  have ⟨s, hs⟩ := exists_isTranscendenceBasis R S
+  have ⟨t, ht⟩ := exists_isTranscendenceBasis S A
+  have := (FaithfulSMul.algebraMap_injective S A).noZeroDivisors _ (map_zero _) (map_mul _)
+  have := (FaithfulSMul.algebraMap_injective R S).nontrivial
   rw [← hs.cardinalMk_eq_trdeg, ← ht.cardinalMk_eq_trdeg, ← lift_umax.{w}, add_comm,
     ← (hs.sumElim_comp ht).lift_cardinalMk_eq_trdeg, mk_sum, lift_add, lift_lift, lift_lift]
 

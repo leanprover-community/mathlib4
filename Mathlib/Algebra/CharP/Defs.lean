@@ -3,10 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Joey van Langen, Casper Putz
 -/
-import Mathlib.Algebra.Order.Group.Int
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Nat.Find
 import Mathlib.Data.Nat.Prime.Defs
+import Mathlib.Order.Lattice
 
 /-!
 # Characteristic of semirings
@@ -47,6 +47,11 @@ variable [CharP R p] {a b : ℕ}
 lemma cast_eq_zero_iff' (R : Type*) [AddMonoidWithOne R] (p : ℕ) [CharP R p] (a : ℕ) :
     (a : R) = 0 ↔ p ∣ a := cast_eq_zero_iff R p a
 
+lemma _root_.CharP.ofNat_eq_zero' (p : ℕ) [CharP R p]
+    (a : ℕ) [a.AtLeastTwo] (h : p ∣ a) :
+    (ofNat(a) : R) = 0 := by
+  rwa [← CharP.cast_eq_zero_iff R p] at h
+
 variable {R} in
 lemma congr {q : ℕ} (h : p = q) : CharP R q := h ▸ ‹CharP R p›
 
@@ -74,7 +79,7 @@ variable [AddGroupWithOne R] (p : ℕ) [CharP R p] {a b : ℤ}
 lemma intCast_eq_zero_iff (a : ℤ) : (a : R) = 0 ↔ (p : ℤ) ∣ a := by
   rcases lt_trichotomy a 0 with (h | rfl | h)
   · rw [← neg_eq_zero, ← Int.cast_neg, ← Int.dvd_neg]
-    lift -a to ℕ using neg_nonneg.mpr (le_of_lt h) with b
+    lift -a to ℕ using Int.neg_nonneg.mpr (le_of_lt h) with b
     rw [Int.cast_natCast, CharP.cast_eq_zero_iff R p, Int.natCast_dvd_natCast]
   · simp only [Int.cast_zero, eq_self_iff_true, Int.dvd_zero]
   · lift a to ℕ using le_of_lt h with b

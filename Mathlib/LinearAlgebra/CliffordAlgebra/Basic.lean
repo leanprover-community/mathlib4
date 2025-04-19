@@ -197,16 +197,15 @@ theorem induction {C : CliffordAlgebra Q → Prop}
     ⟨(CliffordAlgebra.ι Q).codRestrict (Subalgebra.toSubmodule s) ι,
       fun m => Subtype.eq <| ι_sq_scalar Q m⟩
   -- the mapping through the subalgebra is the identity
-  have of_id : AlgHom.id R (CliffordAlgebra Q) = s.val.comp (lift Q of) := by
+  have of_id : s.val.comp (lift Q of) = AlgHom.id R (CliffordAlgebra Q) := by
     ext x
     simp [of]
     -- porting note: `simp` should fire with the following lemma automatically
     have := LinearMap.codRestrict_apply s.toSubmodule (CliffordAlgebra.ι Q) x (h := ι)
     exact this
   -- finding a proof is finding an element of the subalgebra
-  -- Porting note: was `convert Subtype.prop (lift Q of a); exact AlgHom.congr_fun of_id a`
-  rw [← AlgHom.id_apply (R := R) a, of_id]
-  exact Subtype.prop (lift Q of a)
+  rw [← AlgHom.id_apply (R := R) a, ← of_id]
+  exact (lift Q of a).prop
 
 theorem mul_add_swap_eq_polar_of_forall_mul_self_eq {A : Type*} [Ring A] [Algebra R A]
     (f : M →ₗ[R] A) (hf : ∀ x, f x * f x = algebraMap _ _ (Q x)) (a b : M) :

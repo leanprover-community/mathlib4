@@ -27,9 +27,11 @@ directions continuous. We denote homeomorphisms with the notation `≃ₜ`.
 * `Equiv.toHomeomorph`: an equivalence between topological spaces respecting openness
   is a homeomorphism.
 
+* `IsHomeomorph`: the predicate that a function is a homeomorphism
+
 -/
 
-open Set Topology
+open Set Topology Filter
 
 variable {X Y W Z : Type*}
 
@@ -341,6 +343,20 @@ def homeomorphOfUnique [Unique X] [Unique Y] : X ≃ₜ Y :=
     continuous_toFun := continuous_const
     continuous_invFun := continuous_const }
 
+@[simp]
+theorem map_nhds_eq (h : X ≃ₜ Y) (x : X) : map h (𝓝 x) = 𝓝 (h x) :=
+  h.isEmbedding.map_nhds_of_mem _ (by simp)
+
+theorem symm_map_nhds_eq (h : X ≃ₜ Y) (x : X) : map h.symm (𝓝 (h x)) = 𝓝 x := by
+  rw [h.symm.map_nhds_eq, h.symm_apply_apply]
+
+theorem nhds_eq_comap (h : X ≃ₜ Y) (x : X) : 𝓝 x = comap h (𝓝 (h x)) :=
+  h.isInducing.nhds_eq_comap x
+
+@[simp]
+theorem comap_nhds_eq (h : X ≃ₜ Y) (y : Y) : comap h (𝓝 y) = 𝓝 (h.symm y) := by
+  rw [h.nhds_eq_comap, h.apply_symm_apply]
+
 end Homeomorph
 
 namespace Equiv
@@ -412,3 +428,38 @@ instance : HomeomorphClass (α ≃ₜ β) α β where
   inv_continuous e := e.continuous_invFun
 
 end HomeomorphClass
+
+section IsHomeomorph
+
+variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] {f : X → Y}
+
+/-- Predicate saying that `f` is a homeomorphism.
+
+This should be used only when `f` is a concrete function whose continuous inverse is not easy to
+write down. Otherwise, `Homeomorph` should be preferred as it bundles the continuous inverse.
+
+Having both `Homeomorph` and `IsHomeomorph` is justified by the fact that so many function
+properties are unbundled in the topology part of the library, and by the fact that a homeomorphism
+is not merely a continuous bijection, that is `IsHomeomorph f` is not equivalent to
+`Continuous f ∧ Bijective f` but to `Continuous f ∧ Bijective f ∧ IsOpenMap f`. -/
+structure IsHomeomorph (f : X → Y) : Prop where
+  continuous : Continuous f
+  isOpenMap : IsOpenMap f
+  bijective : Function.Bijective f
+
+protected theorem Homeomorph.isHomeomorph (h : X ≃ₜ Y) : IsHomeomorph h :=
+  ⟨h.continuous, h.isOpenMap, h.bijective⟩
+
+namespace IsHomeomorph
+
+protected lemma injective (hf : IsHomeomorph f) : Function.Injective f := hf.bijective.injective
+protected lemma surjective (hf : IsHomeomorph f) : Function.Surjective f := hf.bijective.surjective
+
+protected lemma id : IsHomeomorph (@id X) := ⟨continuous_id, .id, Function.bijective_id⟩
+
+lemma comp {g : Y → Z} (hg : IsHomeomorph g) (hf : IsHomeomorph f) : IsHomeomorph (g ∘ f) :=
+  ⟨hg.1.comp hf.1, hg.2.comp hf.2, hg.3.comp hf.3⟩
+
+end IsHomeomorph
+
+end IsHomeomorph

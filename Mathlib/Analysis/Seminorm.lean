@@ -180,8 +180,14 @@ theorem add_apply (p q : Seminorm 𝕜 E) (x : E) : (p + q) x = p x + q x :=
 instance instAddMonoid : AddMonoid (Seminorm 𝕜 E) :=
   DFunLike.coe_injective.addMonoid _ rfl coe_add fun _ _ => by rfl
 
-instance instOrderedCancelAddCommMonoid : OrderedCancelAddCommMonoid (Seminorm 𝕜 E) :=
-  DFunLike.coe_injective.orderedCancelAddCommMonoid _ rfl coe_add fun _ _ => rfl
+instance instAddCommMonoid : AddCommMonoid (Seminorm 𝕜 E) :=
+  DFunLike.coe_injective.addCommMonoid _ rfl coe_add fun _ _ => by rfl
+
+instance instPartialOrder : PartialOrder (Seminorm 𝕜 E) :=
+  PartialOrder.lift _ DFunLike.coe_injective
+
+instance instIsOrderedCancelAddMonoid : IsOrderedCancelAddMonoid (Seminorm 𝕜 E) :=
+  DFunLike.coe_injective.isOrderedCancelAddMonoid _ rfl coe_add fun _ _ => rfl
 
 instance instMulAction [Monoid R] [MulAction R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] :
     MulAction R (Seminorm 𝕜 E) :=
@@ -230,9 +236,6 @@ theorem smul_sup [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] (r 
     simpa only [← smul_eq_mul, ← NNReal.smul_def, smul_one_smul ℝ≥0 r (_ : ℝ)] using
       mul_max_of_nonneg x y (r • (1 : ℝ≥0) : ℝ≥0).coe_nonneg
   ext fun _ => real.smul_max _ _
-
-instance instPartialOrder : PartialOrder (Seminorm 𝕜 E) :=
-  PartialOrder.lift _ DFunLike.coe_injective
 
 @[simp, norm_cast]
 theorem coe_le_coe {p q : Seminorm 𝕜 E} : (p : E → ℝ) ≤ q ↔ p ≤ q :=

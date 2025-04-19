@@ -138,7 +138,7 @@ variable {ι : Type*} (f : ι → ℕ → ℂ) (S : Finset ι) (s : ℂ)
 
 @[simp]
 lemma LSeries.term_sum_apply (n : ℕ) :
-    term (∑ i ∈ S, f i) s n  = ∑ i ∈ S, term (f i) s n := by
+    term (∑ i ∈ S, f i) s n = ∑ i ∈ S, term (f i) s n := by
   rcases eq_or_ne n 0 with hn | hn <;>
   simp [hn, Finset.sum_div]
 

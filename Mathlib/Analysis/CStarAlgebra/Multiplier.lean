@@ -517,9 +517,6 @@ theorem isUniformEmbedding_toProdMulOpposite :
     IsUniformEmbedding (toProdMulOpposite (𝕜 := 𝕜) (A := A)) :=
   isUniformEmbedding_comap toProdMulOpposite_injective
 
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_toProdMulOpposite := isUniformEmbedding_toProdMulOpposite
-
 instance [CompleteSpace A] : CompleteSpace 𝓜(𝕜, A) := by
   rw [completeSpace_iff_isComplete_range isUniformEmbedding_toProdMulOpposite.isUniformInducing]
   apply IsClosed.isComplete

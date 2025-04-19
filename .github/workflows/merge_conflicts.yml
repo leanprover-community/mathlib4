@@ -13,4 +13,5 @@ jobs:
         uses: eps1lon/actions-label-merge-conflict@1df065ebe6e3310545d4f4c4e862e43bdca146f0 # v3.0.3
         with:
           dirtyLabel: "merge-conflict"
+          commentOnDirty: "This pull request has conflicts, please merge `master` and resolve them."
           repoToken: "${{ secrets.MERGE_CONFLICTS_TOKEN }}"

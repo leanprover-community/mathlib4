@@ -34,7 +34,7 @@ theorem mul_mem_nonunits_right [CommMonoid α] : b ∈ nonunits α → a * b ∈
 theorem mul_mem_nonunits_left [CommMonoid α] : a ∈ nonunits α → a * b ∈ nonunits α :=
   mt isUnit_of_mul_isUnit_left
 
-theorem zero_mem_nonunits [Semiring α] : 0 ∈ nonunits α ↔ (0 : α) ≠ 1 :=
+theorem zero_mem_nonunits [MonoidWithZero α] : 0 ∈ nonunits α ↔ (0 : α) ≠ 1 :=
   not_congr isUnit_zero_iff
 
 @[simp 1001] -- increased priority to appease `simpNF`

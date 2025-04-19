@@ -232,7 +232,7 @@ def toMonoidWithZeroHom {R : Type*} [CommMonoidWithZero R] [Nontrivial R] (χ : 
   map_mul' := χ.map_mul'
 
 /-- If the domain is a ring `R`, then `χ (ringChar R) = 0`. -/
-theorem map_ringChar {R : Type*} [CommRing R] [Nontrivial R] (χ : MulChar R R') :
+theorem map_ringChar {R : Type*} [CommSemiring R] [Nontrivial R] (χ : MulChar R R') :
     χ (ringChar R) = 0 := by rw [ringChar.Nat.cast_ringChar, χ.map_zero]
 
 noncomputable instance hasOne : One (MulChar R R') :=
@@ -287,7 +287,8 @@ theorem inv_apply_eq_inv (χ : MulChar R R') (a : R) : χ⁻¹ a = Ring.inverse 
 
 /-- The inverse of a multiplicative character `χ`, applied to `a`, is the inverse of `χ a`.
 Variant when the target is a field -/
-theorem inv_apply_eq_inv' {R' : Type*} [Field R'] (χ : MulChar R R') (a : R) : χ⁻¹ a = (χ a)⁻¹ :=
+theorem inv_apply_eq_inv' {R' : Type*} [CommGroupWithZero R'] (χ : MulChar R R') (a : R) :
+    χ⁻¹ a = (χ a)⁻¹ :=
   (inv_apply_eq_inv χ a).trans <| Ring.inverse_eq_inv (χ a)
 
 /-- When the domain has a zero, then the inverse of a multiplicative character `χ`,
@@ -308,7 +309,7 @@ theorem inv_apply {R : Type*} [CommMonoidWithZero R] (χ : MulChar R R') (a : R)
 
 /-- When the domain has a zero, then the inverse of a multiplicative character `χ`,
 applied to `a`, is `χ` applied to the inverse of `a`. -/
-theorem inv_apply' {R : Type*} [Field R] (χ : MulChar R R') (a : R) : χ⁻¹ a = χ a⁻¹ :=
+theorem inv_apply' {R : Type*} [CommGroupWithZero R] (χ : MulChar R R') (a : R) : χ⁻¹ a = χ a⁻¹ :=
   (inv_apply χ a).trans <| congr_arg _ (Ring.inverse_eq_inv a)
 
 /-- The product of a character with its inverse is the trivial character. -/
@@ -419,7 +420,7 @@ lemma ringHomComp_one (f : R' →+* R'') : (1 : MulChar R R').ringHomComp f = 1 
   ext1
   simp only [MulChar.ringHomComp_apply, MulChar.one_apply_coe, map_one]
 
-lemma ringHomComp_inv {R : Type*} [CommRing R] (χ : MulChar R R') (f : R' →+* R'') :
+lemma ringHomComp_inv {R : Type*} [CommMonoidWithZero R] (χ : MulChar R R') (f : R' →+* R'') :
     (χ.ringHomComp f)⁻¹ = χ⁻¹.ringHomComp f := by
   ext1
   simp only [inv_apply, Ring.inverse_unit, ringHomComp_apply]

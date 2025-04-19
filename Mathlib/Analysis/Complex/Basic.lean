@@ -112,9 +112,6 @@ theorem antilipschitz_equivRealProd : AntilipschitzWith (NNReal.sqrt 2) equivRea
 theorem isUniformEmbedding_equivRealProd : IsUniformEmbedding equivRealProd :=
   antilipschitz_equivRealProd.isUniformEmbedding lipschitz_equivRealProd.uniformContinuous
 
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_equivRealProd := isUniformEmbedding_equivRealProd
-
 instance : CompleteSpace ℂ :=
   (completeSpace_congr isUniformEmbedding_equivRealProd).mpr inferInstance
 

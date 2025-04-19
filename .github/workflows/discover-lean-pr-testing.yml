@@ -24,6 +24,13 @@ jobs:
         git config --global user.name "github-actions"
         git config --global user.email "github-actions@github.com"
 
+    - name: Configure Lean
+      uses: leanprover/lean-action@f3ad22e9ca29cb9475bc9bee9afd1f39bb52bf6d # v1.1.2
+      with:
+        auto-config: false
+        use-github-cache: false
+        use-mathlib-cache: false
+
     - name: Determine old and new lean-toolchain
       id: determine-toolchains
       run: |
@@ -122,21 +129,84 @@ jobs:
           echo "branches_exist=true" >> "$GITHUB_ENV"
         fi
 
-    - name: Prepare Zulip message
-      id: zulip-message
+    - name: Execute merge script for each branch
+      id: execute-merges
+      if: env.branches_exist == 'true'
       run: |
         BRANCHES="${{ steps.find-branches.outputs.branches }}"
+
+        # Initialize arrays to track results
+        SUCCESSFUL_MERGES=""
+        FAILED_MERGES=""
+
+        # Ensure the merge script is executable
+        chmod +x scripts/merge-lean-testing-pr.sh
+
+        # Process each branch
+        for BRANCH in $BRANCHES; do
+          # Extract PR number from branch name
+          PR_NUMBER=$(echo "$BRANCH" | grep -oP '\d+$')
+          GITHUB_DIFF="https://github.com/leanprover-community/mathlib4/compare/nightly-testing...lean-pr-testing-$PR_NUMBER"
+
+          echo "Attempting to merge branch: $BRANCH (PR #$PR_NUMBER)"
+
+          # Reset to a clean state
+          git reset --hard HEAD
+          git checkout nightly-testing
+
+          # Run the merge script and capture exit code
+          if ./scripts/merge-lean-testing-pr.sh "$PR_NUMBER"; then
+            echo "✅ Successfully merged $BRANCH"
+            SUCCESSFUL_MERGES="$SUCCESSFUL_MERGES$PR_NUMBER|$GITHUB_DIFF|$BRANCH "
+          else
+            echo "❌ Failed to merge $BRANCH"
+            FAILED_MERGES="$FAILED_MERGES$PR_NUMBER|$GITHUB_DIFF|$BRANCH "
+
+            # Clean up - reset to a clean state
+            git reset --hard HEAD
+            git checkout nightly-testing
+          fi
+        done
+
+        # Output the results
+        echo "successful_merges=$SUCCESSFUL_MERGES" >> "$GITHUB_OUTPUT"
+        echo "failed_merges=$FAILED_MERGES" >> "$GITHUB_OUTPUT"
+
+    - name: Prepare Zulip message
+      id: zulip-message
+      if: env.branches_exist == 'true'
+      run: |
+        SUCCESSFUL_MERGES="${{ steps.execute-merges.outputs.successful_merges }}"
+        FAILED_MERGES="${{ steps.execute-merges.outputs.failed_merges }}"
+
         {
-          printf $'msg<<EOF\nWe will need to merge the following branches into `nightly-testing`:\n'
-          printf $'```bash\n'
-          for BRANCH in $BRANCHES; do
-            PR_NUMBER=$(echo "$BRANCH" | grep -oP '\d+$')
-            GITHUB_DIFF="https://github.com/leanprover-community/mathlib4/compare/nightly-testing...lean-pr-testing-$PR_NUMBER"
-            printf $'# Diff: %s\n' "$GITHUB_DIFF"
-            printf $'scripts/merge-lean-testing-pr.sh %s   # %s\n' "$PR_NUMBER" "$BRANCH"
-            printf '\n'
-          done
-          printf $'```\n'
+          printf $'msg<<EOF\n'
+
+          # Report successful merges
+          if [ -n "$SUCCESSFUL_MERGES" ]; then
+            printf $'### ✅ Successfully merged branches:\n\n'
+            for MERGE_INFO in $SUCCESSFUL_MERGES; do
+              IFS='|' read -r PR_NUMBER GITHUB_DIFF BRANCH <<< "$MERGE_INFO"
+              printf $'- lean#%s ([diff](%s))\n' "$PR_NUMBER" "$GITHUB_DIFF"
+            done
+            printf $'\n'
+          else
+            printf $'No branches were successfully merged.\n\n'
+          fi
+
+          # Report failed merges
+          if [ -n "$FAILED_MERGES" ]; then
+            printf $'### ❌ Failed merges:\n\nThe following branches need to be merged manually:\n\n```bash\n'
+            for MERGE_INFO in $FAILED_MERGES; do
+              IFS='|' read -r PR_NUMBER GITHUB_DIFF BRANCH <<< "$MERGE_INFO"
+              printf $'# Diff: %s\n' "$GITHUB_DIFF"
+              printf $'scripts/merge-lean-testing-pr.sh %s   # %s\n\n' "$PR_NUMBER" "$BRANCH"
+            done
+            printf $'```\n'
+          else
+            printf $'All branches were successfully merged! 🎉\n'
+          fi
+
           printf "EOF"
         } >> "$GITHUB_OUTPUT"
 

@@ -29,7 +29,7 @@ mixed space with enough symmetries, see `volume_eq_two_pi_pow_mul_integral` and
 
 * `mixedEmbedding.polarSpaceCoord`: the polar coordinate change of variables between the mixed
   space `ℝ^r₁ × ℂ^r₂` and the polar space `ℝ^(r₁ + r₂) × ℝ^r₂` defined by sending `x` to
-  `x w` or `‖x w‖` depending on wether `w` is real or complex for the first component, and
+  `x w` or `‖x w‖` depending on whether `w` is real or complex for the first component, and
   to `Arg (x w)`, `w` complex, for the second component.
 
 * `mixedEmbedding.integral_comp_polarSpaceCoord_symm`: the change of variables formula for
@@ -295,7 +295,7 @@ theorem volume_preserving_homeoRealMixedSpacePolarSpace [NumberField K] :
 
 /--
 The polar coordinate partial homeomorphism between the mixed space `ℝ^r₁ × ℂ^r₂` and the polar
-space `ℝ^(r₁ + r₂) × ℝ^r₂` defined by sending `x` to `x w` or `‖x w‖` depending on wether `w` is
+space `ℝ^(r₁ + r₂) × ℝ^r₂` defined by sending `x` to `x w` or `‖x w‖` depending on whether `w` is
 real or complex for the first component, and to `Arg (x w)`, `w` complex, for the second component.
 -/
 @[simps!]
@@ -347,7 +347,7 @@ variable {K}
 
 variable {A : Set (mixedSpace K)}
 
-theorem normAtComplexPlaces_polarSpaceCoord_symm  [NumberField K] (x : polarSpace K) :
+theorem normAtComplexPlaces_polarSpaceCoord_symm [NumberField K] (x : polarSpace K) :
     normAtComplexPlaces ((polarSpaceCoord K).symm x) =
       normAtComplexPlaces (mixedSpaceOfRealSpace x.1) := by
   ext w

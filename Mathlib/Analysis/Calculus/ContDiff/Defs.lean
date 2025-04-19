@@ -357,9 +357,6 @@ theorem ContDiffWithinAt.differentiableWithinAt' (h : ContDiffWithinAt 𝕜 n f 
   exact (differentiableWithinAt_inter (IsOpen.mem_nhds t_open xt)).1 <|
     ((H.mono tu).differentiableOn le_rfl) x ⟨mem_insert x s, xt⟩
 
-@[deprecated (since := "2024-10-10")]
-alias ContDiffWithinAt.differentiable_within_at' := ContDiffWithinAt.differentiableWithinAt'
-
 theorem ContDiffWithinAt.differentiableWithinAt (h : ContDiffWithinAt 𝕜 n f s x) (hn : 1 ≤ n) :
     DifferentiableWithinAt 𝕜 f s x :=
   (h.differentiableWithinAt' hn).mono (subset_insert x s)

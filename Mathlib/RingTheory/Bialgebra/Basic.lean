@@ -30,6 +30,10 @@ are surprising to mathematicians -- see for example its definition of a group.
 Note that this design decision is also compatible with that of `Coalgebra`. The lengthy
 docstring for these convoluted fields attempts to explain what is going on.
 
+The constructor `Bialgebra.ofAlgHom` is dual to the default constructor: For `R` is a commutative
+semiring and `A` a `R`-algebra, it consumes the counit and comultiplication as algebra homomorphisms
+that satisfy the coalgebra axioms to define a bialgebra structure on `A`.
+
 ## References
 
 * <https://en.wikipedia.org/wiki/Bialgebra>
@@ -156,3 +160,32 @@ instance toBialgebra : Bialgebra R R where
   comul_one := rfl
 
 end CommSemiring
+
+namespace Bialgebra
+
+variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+
+/-- If `R` is a commutative semiring and `A` is an `R`-algebra,
+then `Bialgebra.ofAlgHom` consumes the counit and comultiplication
+as algebra homomorphisms that satisfy the coalgebra axioms to define
+a bialgebra structure on `A`. -/
+noncomputable
+abbrev ofAlgHom (comul : A →ₐ[R] (A ⊗[R] A)) (counit : A →ₐ[R] R)
+    (h_coassoc : (Algebra.TensorProduct.assoc R A A A).toAlgHom.comp
+      ((Algebra.TensorProduct.map comul (.id R A)).comp comul)
+      = (Algebra.TensorProduct.map (.id R A) comul).comp comul)
+    (h_rTensor : (Algebra.TensorProduct.map counit (.id R A)).comp comul
+      = (Algebra.TensorProduct.lid R A).symm)
+    (h_lTensor : (Algebra.TensorProduct.map (.id R A) counit).comp comul
+      = (Algebra.TensorProduct.rid R R A).symm) :
+    Bialgebra R A :=
+  letI : Coalgebra R A := {
+    comul := comul
+    counit := counit
+    coassoc := congr(($h_coassoc).toLinearMap)
+    rTensor_counit_comp_comul := congr(($h_rTensor).toLinearMap)
+    lTensor_counit_comp_comul := congr(($h_lTensor).toLinearMap)
+  }
+  .mk' _ _ (map_one counit) (map_mul counit _ _) (map_one comul) (map_mul comul _ _)
+
+end Bialgebra

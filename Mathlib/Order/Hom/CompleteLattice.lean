@@ -193,9 +193,6 @@ instance (priority := 100) OrderIsoClass.tosInfHomClass [CompleteLattice α]
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.toCompleteLatticeHomClass [CompleteLattice α]
     [CompleteLattice β] [OrderIsoClass F α β] : CompleteLatticeHomClass F α β :=
-  -- Porting note: Used to be:
-    -- { OrderIsoClass.tosSupHomClass, OrderIsoClass.toLatticeHomClass,
-    -- show sInfHomClass F α β from inferInstance with }
   { OrderIsoClass.tosSupHomClass, OrderIsoClass.tosInfHomClass with }
 
 end Equiv

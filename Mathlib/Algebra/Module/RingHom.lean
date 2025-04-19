@@ -63,7 +63,8 @@ variable {M}
 
 end AddCommMonoid
 
-/-- A ring homomorphism `f : R →+* M` defines a module structure by `r • x = f r * x`. -/
+/-- A ring homomorphism `f : R →+* M` defines a module structure by `r • x = f r * x`.
+See note [reducible non-instances]. -/
 abbrev RingHom.toModule [Semiring R] [Semiring S] (f : R →+* S) : Module R S :=
   Module.compHom S f
 

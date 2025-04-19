@@ -302,6 +302,10 @@ def polarBilin : BilinMap R M N :=
   LinearMap.mk₂ R (polar Q) (polar_add_left Q) (polar_smul_left Q) (polar_add_right Q)
   (polar_smul_right Q)
 
+lemma polarSym2_map_smul {ι} (Q : QuadraticMap R M N) (g : ι → M) (l : ι → R) (p : Sym2 ι) :
+    polarSym2 Q (p.map (l • g)) = (p.map l).mul • polarSym2 Q (p.map g) := by
+  obtain ⟨_, _⟩ := p; simp [← smul_assoc, mul_comm]
+
 variable [CommSemiring S] [Algebra S R] [Module S M] [IsScalarTower S R M] [Module S N]
     [IsScalarTower S R N]
 
@@ -939,7 +943,6 @@ lemma associated_left_inverse' {B₁ : BilinMap R M N} (hB₁ : B₁.flip = B₁
   ext _ y
   rw [associated_toQuadraticMap, ← LinearMap.flip_apply _ y, hB₁, invOf_smul_eq_iff, two_smul]
 
--- Porting note: moved from below to golf the next theorem
 theorem associated_eq_self_apply (x : M) : associatedHom S Q x x = Q x := by
   rw [associated_apply, map_add_self, ← three_add_one_eq_four, ← two_add_one_eq_three, add_smul,
     add_smul, one_smul, add_sub_cancel_right, add_sub_cancel_right, two_smul, ← two_smul R,
@@ -973,15 +976,12 @@ instance canLift' :
 bilinear form is non-zero, i.e. there exists `x` such that `Q x ≠ 0`. -/
 theorem exists_quadraticMap_ne_zero {Q : QuadraticMap R M N}
     -- Porting note: added implicit argument
-    (hB₁ : associated' (R := R) (N := N) Q ≠ 0) :
+    (hB₁ : associated' (N := N) Q ≠ 0) :
     ∃ x, Q x ≠ 0 := by
   rw [← not_forall]
   intro h
   apply hB₁
   rw [(QuadraticMap.ext h : Q = 0), LinearMap.map_zero]
-
-@[deprecated (since := "2024-10-05")] alias exists_quadraticForm_ne_zero :=
-  exists_quadraticMap_ne_zero
 
 end AssociatedHom
 
@@ -1112,7 +1112,7 @@ variable [CommRing R] [AddCommGroup M] [Module R M]
 theorem separatingLeft_of_anisotropic [Invertible (2 : R)] (Q : QuadraticMap R M R)
     (hB : Q.Anisotropic) :
     -- Porting note: added implicit argument
-    (QuadraticMap.associated' (R := R) (N := R) Q).SeparatingLeft := fun x hx ↦ hB _ <| by
+    (QuadraticMap.associated' (N := R) Q).SeparatingLeft := fun x hx ↦ hB _ <| by
   rw [← hx x]
   exact (associated_eq_self_apply _ _ x).symm
 
@@ -1131,7 +1131,8 @@ def PosDef (Q₂ : QuadraticMap R₂ M N) : Prop :=
   ∀ x, x ≠ 0 → 0 < Q₂ x
 
 
-theorem PosDef.smul {R} [LinearOrderedCommRing R] [Module R M] [Module R N] [PosSMulStrictMono R N]
+theorem PosDef.smul {R} [CommRing R] [LinearOrder R]
+    [Module R M] [Module R N] [PosSMulStrictMono R N]
     {Q : QuadraticMap R M N} (h : PosDef Q) {a : R} (a_pos : 0 < a) : PosDef (a • Q) :=
   fun x hx => smul_pos a_pos (h x hx)
 
@@ -1159,7 +1160,8 @@ theorem PosDef.add [AddLeftStrictMono N]
     PosDef (Q + Q') :=
   fun x hx => add_pos (hQ x hx) (hQ' x hx)
 
-theorem linMulLinSelfPosDef {R} [LinearOrderedCommRing R] [Module R M] [LinearOrderedSemiring A]
+theorem linMulLinSelfPosDef {R} [CommRing R] [Module R M]
+    [Semiring A] [LinearOrder A] [IsStrictOrderedRing A]
     [ExistsAddOfLE A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A] (f : M →ₗ[R] A)
     (hf : LinearMap.ker f = ⊥) : PosDef (linMulLin (A := A) f f) :=
   fun _x hx => mul_self_pos.2 fun h => hx <| LinearMap.ker_eq_bot'.mp hf _ h

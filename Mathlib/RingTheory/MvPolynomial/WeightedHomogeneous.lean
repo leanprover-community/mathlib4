@@ -456,24 +456,24 @@ variable (R w)
 
 open DirectSum
 
-theorem DirectSum.coeLinearMap_eq_dfinsupp_sum [DecidableEq σ] [DecidableEq R] [DecidableEq M]
+theorem DirectSum.coeLinearMap_eq_dfinsuppSum [DecidableEq σ] [DecidableEq R] [DecidableEq M]
     (x : DirectSum M fun i : M => ↥(weightedHomogeneousSubmodule R w i)) :
     (coeLinearMap fun i : M => weightedHomogeneousSubmodule R w i) x =
       DFinsupp.sum x (fun _ x => ↑x) := by
-  rw [_root_.DirectSum.coeLinearMap_eq_dfinsupp_sum]
+  rw [_root_.DirectSum.coeLinearMap_eq_dfinsuppSum]
 
 theorem DirectSum.coeAddMonoidHom_eq_support_sum [DecidableEq σ] [DecidableEq R] [DecidableEq M]
     (x : DirectSum M fun i : M => ↥(weightedHomogeneousSubmodule R w i)) :
     (DirectSum.coeAddMonoidHom fun i : M => weightedHomogeneousSubmodule R w i) x =
       DFinsupp.sum x (fun _ x => ↑x) :=
-  DirectSum.coeLinearMap_eq_dfinsupp_sum R w x
+  DirectSum.coeLinearMap_eq_dfinsuppSum R w x
 
 theorem DirectSum.coeLinearMap_eq_finsum [DecidableEq M]
     (x : DirectSum M fun i : M => ↥(weightedHomogeneousSubmodule R w i)) :
     (DirectSum.coeLinearMap fun i : M => weightedHomogeneousSubmodule R w i) x =
       finsum fun m => x m := by
   classical
-  rw [DirectSum.coeLinearMap_eq_dfinsupp_sum, DFinsupp.sum, finsum_eq_sum_of_support_subset]
+  rw [DirectSum.coeLinearMap_eq_dfinsuppSum, DFinsupp.sum, finsum_eq_sum_of_support_subset]
   apply DirectSum.support_subset
 
 theorem weightedHomogeneousComponent_directSum [DecidableEq M]
@@ -481,7 +481,7 @@ theorem weightedHomogeneousComponent_directSum [DecidableEq M]
     (weightedHomogeneousComponent w m)
       ((DirectSum.coeLinearMap fun i : M => weightedHomogeneousSubmodule R w i) x) = x m := by
   classical
-  rw [DirectSum.coeLinearMap_eq_dfinsupp_sum, DFinsupp.sum, map_sum]
+  rw [DirectSum.coeLinearMap_eq_dfinsuppSum, DFinsupp.sum, map_sum]
   convert @Finset.sum_eq_single M (MvPolynomial σ R) _ (DFinsupp.support x) _ m _ _
   · rw [weightedHomogeneousComponent_of_isWeightedHomogeneous_same (x m).prop]
   · intro n _ hmn
@@ -495,7 +495,8 @@ end AddCommMonoid
 
 section OrderedAddCommMonoid
 
-variable [OrderedAddCommMonoid M] {w : σ → M} (φ : MvPolynomial σ R)
+variable [AddCommMonoid M] [PartialOrder M]
+  {w : σ → M} (φ : MvPolynomial σ R)
 
 /-- If `M` is a canonically `OrderedAddCommMonoid`, then the `weightedHomogeneousComponent`
   of weighted degree `0` of a polynomial is its constant coefficient. -/
@@ -519,6 +520,7 @@ theorem weightedHomogeneousComponent_zero [CanonicallyOrderedAdd M] [NoZeroSMulD
 def NonTorsionWeight (w : σ → M) :=
   ∀ n x, n • w x = (0 : M) → n = 0
 
+omit [PartialOrder M] in
 theorem nonTorsionWeight_of [NoZeroSMulDivisors ℕ M] (hw : ∀ i : σ, w i ≠ 0) :
     NonTorsionWeight w :=
   fun _ x hnx => (smul_eq_zero_iff_left (hw x)).mp hnx
@@ -545,7 +547,8 @@ end OrderedAddCommMonoid
 
 section LinearOrderedAddCommMonoid
 
-variable [LinearOrderedAddCommMonoid M] [CanonicallyOrderedAdd M] {w : σ → M} (φ : MvPolynomial σ R)
+variable [AddCommMonoid M] [LinearOrder M] [CanonicallyOrderedAdd M]
+  {w : σ → M} (φ : MvPolynomial σ R)
 
 /-- A multivatiate polynomial is weighted homogeneous of weighted degree zero if and only if
   its weighted total degree is equal to zero. -/

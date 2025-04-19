@@ -213,9 +213,6 @@ theorem isUniformEmbedding_addEquiv {𝕜} [NontriviallyNormedField 𝕜] :
   comap_uniformity := rfl
   injective := (addEquiv 𝕜 A).injective
 
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_addEquiv := isUniformEmbedding_addEquiv
-
 /-- `Unitization 𝕜 A` is complete whenever `𝕜` and `A` are also. -/
 instance instCompleteSpace [CompleteSpace 𝕜] [CompleteSpace A] :
     CompleteSpace (Unitization 𝕜 A) :=

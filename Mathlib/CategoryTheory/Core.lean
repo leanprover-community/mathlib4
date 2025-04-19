@@ -40,8 +40,8 @@ instance coreCategory : Groupoid.{v₁} (Core C) where
 
 namespace Core
 
-@[simp]
 /- Porting note: abomination -/
+@[simp]
 theorem id_hom (X : C) : Iso.hom (coreCategory.id X) = @CategoryStruct.id C _ X := by
   rfl
 

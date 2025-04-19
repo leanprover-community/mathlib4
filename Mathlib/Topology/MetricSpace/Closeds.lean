@@ -236,9 +236,6 @@ theorem NonemptyCompacts.ToCloseds.isUniformEmbedding :
     IsUniformEmbedding (@NonemptyCompacts.toCloseds α _ _) :=
   Isometry.isUniformEmbedding fun _ _ => rfl
 
-@[deprecated (since := "2024-10-01")]
-alias NonemptyCompacts.ToCloseds.uniformEmbedding := NonemptyCompacts.ToCloseds.isUniformEmbedding
-
 /-- The range of `NonemptyCompacts.toCloseds` is closed in a complete space -/
 theorem NonemptyCompacts.isClosed_in_closeds [CompleteSpace α] :
     IsClosed (range <| @NonemptyCompacts.toCloseds α _ _) := by

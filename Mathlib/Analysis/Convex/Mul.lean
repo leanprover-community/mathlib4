@@ -24,7 +24,9 @@ open Set
 variable {𝕜 E F : Type*}
 
 section LinearOrderedCommRing
-variable [LinearOrderedCommRing 𝕜] [LinearOrderedCommRing E] [LinearOrderedAddCommGroup F]
+variable [CommRing 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+  [CommRing E] [LinearOrder E] [IsStrictOrderedRing E]
+  [AddCommGroup F] [LinearOrder F] [IsOrderedAddMonoid F]
   [Module 𝕜 E] [Module 𝕜 F] [Module E F] [IsScalarTower 𝕜 E F] [SMulCommClass 𝕜 E F]
   [OrderedSMul 𝕜 F] [OrderedSMul E F] {s : Set 𝕜} {f : 𝕜 → E} {g : 𝕜 → F}
 
@@ -163,7 +165,7 @@ protected lemma Even.convexOn_pow {n : ℕ} (hn : Even n) : ConvexOn 𝕜 univ f
 end LinearOrderedCommRing
 
 section LinearOrderedField
-variable [LinearOrderedField 𝕜]
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
 
 open Int in
 /-- `x^m`, `m : ℤ` is convex on `(0, +∞)` for all `m`. -/

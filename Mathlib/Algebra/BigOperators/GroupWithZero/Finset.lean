@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Group.Support
+import Mathlib.Algebra.GroupWithZero.Units.Basic
+import Mathlib.Data.Set.Lattice
 
 /-!
 # Big operators on a finset in groups with zero

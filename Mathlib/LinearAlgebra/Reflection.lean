@@ -126,19 +126,13 @@ lemma bijOn_reflection_of_mapsTo {Φ : Set M} (h : f x = 2) (h' : MapsTo (reflec
     BijOn (reflection h) Φ Φ :=
   (invOn_reflection_of_mapsTo h).bijOn h' h'
 
--- If `reflection` instead demanded a linear form `f` such that `f x = 1` rather than `f x = 2`,
--- (and was thus defined as `y ↦ y - (2 * f y) • x`) then we could avoid `Invertible (2 : R)` here.
-lemma _root_.Submodule.mem_invtSubmodule_reflection_of_mem [Invertible (2 : R)] (h : f x = 2)
+lemma _root_.Submodule.mem_invtSubmodule_reflection_of_mem (h : f x = 2)
     (p : Submodule R M) (hx : x ∈ p) :
     p ∈ End.invtSubmodule (reflection h) := by
   suffices ∀ y ∈ p, reflection h y ∈ p from
     (End.mem_invtSubmodule _).mpr fun y hy ↦ by simpa using this y hy
   intro y hy
-  set z := (2 : R) • y - f y • x with hz₀
-  have hz₁ : z ∈ p := sub_mem (p.smul_mem _ hy) (p.smul_mem _ hx)
-  have hz₂ : (2 : R) • reflection h y = z - f y • x := by simp only [reflection_apply, hz₀]; module
-  rw [← p.smul_mem_iff'' (r := (2 : R)), hz₂]
-  exact sub_mem hz₁ <| p.smul_mem _ hx
+  simpa only [reflection_apply, p.sub_mem_iff_right hy] using p.smul_mem (f y) hx
 
 /-! ### Powers of the product of two reflections
 
