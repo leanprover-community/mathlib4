@@ -31,6 +31,7 @@ open UnitDisc
 
 namespace UnitDisc
 
+/-- Coercion to `ℂ`. -/
 @[coe] protected def coe : 𝔻 → ℂ := Subtype.val
 
 instance instCommSemigroup : CommSemigroup UnitDisc := by unfold UnitDisc; infer_instance
