@@ -71,3 +71,9 @@ macro_rules
     if rules.isSome then `(tactic| repeat1 ($tac;)) else `(tactic| $tac)
 
 end Mathlib.Tactic.NoncommRing
+
+/-!
+We register `noncomm_ring` with the `hint` tactic.
+-/
+
+register_hint noncomm_ring
