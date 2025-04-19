@@ -153,7 +153,7 @@ an integral, without any integrability condition. -/
 lemma toReal_klDiv_of_measure_eq (h : μ ≪ ν) (h_eq : μ univ = ν univ) :
     (klDiv μ ν).toReal = ∫ a, llr μ ν a ∂μ := by
   by_cases h_int : Integrable (llr μ ν) μ
-  · simp [toReal_klDiv h h_int, h_eq]
+  · simp [toReal_klDiv h h_int, h_eq, measureReal_def]
   · rw [klDiv_of_not_integrable h_int, integral_undef h_int, ENNReal.toReal_top]
 
 lemma toReal_klDiv_eq_integral_klFun (h : μ ≪ ν) :
@@ -172,7 +172,7 @@ section Inequalities
 variable [IsFiniteMeasure μ] [IsFiniteMeasure ν]
 
 lemma integral_llr_add_mul_log_nonneg (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν) μ) :
-    0 ≤ ∫ x, llr μ ν x ∂μ + μ.real univ * log ν.real univ + 1 - μ.real univ := by
+    0 ≤ ∫ x, llr μ ν x ∂μ + μ.real univ * log (ν.real univ) + 1 - μ.real univ := by
   by_cases hμ : μ = 0
   · simp [hμ]
   by_cases hν : ν = 0
@@ -202,14 +202,14 @@ lemma mul_log_le_toReal_klDiv (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν
     μ.real univ * log (μ.real univ / ν.real univ) + ν.real univ - μ.real univ
       ≤ (klDiv μ ν).toReal := by
   by_cases hμ : μ = 0
-  · simp [hμ]
+  · simp [hμ, measureReal_def]
   by_cases hν : ν = 0
   · refine absurd ?_ hμ
     rw [hν] at hμν
     exact Measure.absolutelyContinuous_zero_iff.mp hμν
   refine (le_of_eq ?_).trans (mul_klFun_le_toReal_klDiv hμν h_int)
   have : ν.real univ * (μ.real univ / ν.real univ) = μ.real univ := by
-    rw [mul_div_cancel₀]; simp [ENNReal.toReal_eq_zero_iff, hν]
+    rw [mul_div_cancel₀]; simp [ENNReal.toReal_eq_zero_iff, hν, measureReal_def]
   rw [klFun, mul_sub, mul_add, mul_one, ← mul_assoc, this]
 
 lemma mul_log_le_klDiv (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
