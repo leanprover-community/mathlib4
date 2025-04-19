@@ -148,8 +148,7 @@ theorem restrictNormalHom_continuous (L : IntermediateField k K) [Normal k L] :
   intro N hN
   rw [map_one, krullTopology_mem_nhds_one_iff] at hN
   obtain ⟨L', _, hO⟩ := hN
-  let _ : FiniteDimensional k L' :=
-    Module.Finite.equiv <| AlgEquiv.toLinearEquiv <| IntermediateField.liftAlgEquiv L'
+  have := Module.Finite.equiv <| AlgEquiv.toLinearEquiv <| IntermediateField.liftAlgEquiv L'
   apply mem_nhds_iff.mpr
   use (IntermediateField.lift L').fixingSubgroup
   constructor
