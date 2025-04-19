@@ -413,29 +413,43 @@ namespace Transcendental
 
 section
 
-variable (S) {a : A} (ha : Transcendental R a)
+variable (S) [NoZeroDivisors S] {a : A} (ha : Transcendental R a)
 include ha
 
-lemma extendScalars_of_isIntegral [NoZeroDivisors S] [Algebra.IsIntegral R S] :
+lemma extendScalars_of_isIntegral [Algebra.IsIntegral R S] :
     Transcendental S a := by
   contrapose ha
   rw [Transcendental, not_not] at ha ⊢
   exact ha.restrictScalars_of_isIntegral _
 
-lemma extendScalars [NoZeroDivisors S] [Algebra.IsAlgebraic R S] : Transcendental S a := by
+lemma extendScalars [Algebra.IsAlgebraic R S] : Transcendental S a := by
   contrapose ha
   rw [Transcendental, not_not] at ha ⊢
   exact ha.restrictScalars _
 
 end
 
-variable {a : S} (ha : Transcendental R a)
+variable [NoZeroDivisors S] {a : S} (ha : Transcendental R a)
 include ha
 
-protected lemma integralClosure [NoZeroDivisors S] : Transcendental (integralClosure R S) a :=
+protected lemma integralClosure  : Transcendental (integralClosure R S) a :=
   ha.extendScalars_of_isIntegral _
 
-lemma subalgebraAlgebraicClosure [IsDomain R] [NoZeroDivisors S] :
+lemma subalgebraAlgebraicClosure [IsDomain R] :
     Transcendental (Subalgebra.algebraicClosure R S) a := ha.extendScalars _
 
 end Transcendental
+
+namespace Algebra
+
+variable (R S) [NoZeroDivisors S] [FaithfulSMul R S] {a : A}
+
+protected theorem IsIntegral.transcendental_iff [Algebra.IsIntegral R S] :
+    Transcendental R a ↔ Transcendental S a :=
+  ⟨(·.extendScalars_of_isIntegral _), (·.restrictScalars (FaithfulSMul.algebraMap_injective R S))⟩
+
+protected theorem IsAlgebraic.transcendental_iff [Algebra.IsAlgebraic R S] :
+    Transcendental R a ↔ Transcendental S a :=
+  ⟨(·.extendScalars _), (·.restrictScalars (FaithfulSMul.algebraMap_injective R S))⟩
+
+end Algebra

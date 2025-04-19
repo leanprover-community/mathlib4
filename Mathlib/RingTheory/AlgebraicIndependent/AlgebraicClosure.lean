@@ -84,10 +84,6 @@ namespace Algebra
 variable (R) [FaithfulSMul R S]
 omit hx
 
-protected theorem IsIntegral.transcendental_iff [Algebra.IsIntegral R S] :
-    Transcendental R x ↔ Transcendental S x :=
-  ⟨(·.extendScalars_of_isIntegral _), (·.restrictScalars (FaithfulSMul.algebraMap_injective R S))⟩
-
 protected theorem IsIntegral.algebraicIndependent_iff [Algebra.IsIntegral R S] :
     AlgebraicIndependent R x ↔ AlgebraicIndependent S x :=
   ⟨(·.extendScalars_of_isIntegral _),
@@ -96,10 +92,6 @@ protected theorem IsIntegral.algebraicIndependent_iff [Algebra.IsIntegral R S] :
 protected theorem IsIntegral.isTranscendenceBasis_iff [Algebra.IsIntegral R S] :
     IsTranscendenceBasis R x ↔ IsTranscendenceBasis S x := by
   simp_rw [IsTranscendenceBasis, IsIntegral.algebraicIndependent_iff R S]
-
-protected theorem IsAlgebraic.transcendental_iff [Algebra.IsAlgebraic R S] :
-    Transcendental R x ↔ Transcendental S x :=
-  ⟨(·.extendScalars _), (·.restrictScalars (FaithfulSMul.algebraMap_injective R S))⟩
 
 protected theorem IsAlgebraic.algebraicIndependent_iff [Algebra.IsAlgebraic R S] :
     AlgebraicIndependent R x ↔ AlgebraicIndependent S x :=
@@ -119,7 +111,7 @@ variable {ι F E R S : Type*} {s : Set E}
 variable [Field F] [Field E] [Algebra F E]
 variable [CommRing R] [Algebra R F] [Algebra R E] [IsScalarTower R F E]
 
-attribute [local instance] algebraAdjoinAdjoin
+open scoped algebraAdjoinAdjoin
 
 section Ring
 
@@ -127,19 +119,19 @@ variable [Ring S] [Algebra E S]
 
 theorem isAlgebraic_adjoin_iff {x : S} :
     IsAlgebraic (adjoin F s) x ↔ IsAlgebraic (Algebra.adjoin F s) x :=
-  (Algebra.IsAlgebraic.isAlgebraic_iff ..).symm
+  (IsAlgebraic.isAlgebraic_iff ..).symm
 
 theorem isAlgebraic_adjoin_iff_top :
     Algebra.IsAlgebraic (adjoin F s) S ↔ Algebra.IsAlgebraic (Algebra.adjoin F s) S :=
-  (Algebra.IsAlgebraic.isAlgebraic_iff_top ..).symm
+  (IsAlgebraic.isAlgebraic_iff_top ..).symm
 
 theorem isAlgebraic_adjoin_iff_bot :
     Algebra.IsAlgebraic R (adjoin F s) ↔ Algebra.IsAlgebraic R (Algebra.adjoin F s) :=
-  (Algebra.IsAlgebraic.isAlgebraic_iff_bot ..).symm
+  (IsAlgebraic.isAlgebraic_iff_bot ..).symm
 
 theorem transcendental_adjoin_iff {x : S} :
     Transcendental (adjoin F s) x ↔ Transcendental (Algebra.adjoin F s) x :=
-  (Algebra.IsAlgebraic.transcendental_iff ..).symm
+  (IsAlgebraic.transcendental_iff ..).symm
 
 end Ring
 

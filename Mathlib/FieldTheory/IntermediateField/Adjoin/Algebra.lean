@@ -24,28 +24,30 @@ variable (F : Type*) [Field F] {E : Type*} [Field E] [Algebra F E] (S : Set E)
 theorem algebra_adjoin_le_adjoin : Algebra.adjoin F S ≤ (adjoin F S).toSubalgebra :=
   Algebra.adjoin_le (subset_adjoin _ _)
 
-abbrev algebraAdjoinAdjoin : Algebra (Algebra.adjoin F S) (adjoin F S) :=
+namespace algebraAdjoinAdjoin
+
+/-- `IntermediateField.adjoin` as an algebra over `Algebra.adjoin`. -/
+scoped instance : Algebra (Algebra.adjoin F S) (adjoin F S) :=
   (Subalgebra.inclusion <| algebra_adjoin_le_adjoin F S).toAlgebra
 
-attribute [local instance] algebraAdjoinAdjoin
-
-instance (X) [SMul X F] [SMul X E] [IsScalarTower X F E] :
+scoped instance (X) [SMul X F] [SMul X E] [IsScalarTower X F E] :
     IsScalarTower X (Algebra.adjoin F S) (adjoin F S) :=
-  Subalgebra.instIsScalarTowerSubtypeMem_1 (algebra_adjoin_le_adjoin F S) _
+  Subalgebra.inclusion.instIsScalarTowerSubtypeMem (algebra_adjoin_le_adjoin F S) _
 
-instance (X) [MulAction E X] : IsScalarTower (Algebra.adjoin F S) (adjoin F S) X :=
-  Subalgebra.instIsScalarTowerSubtypeMem_2 (algebra_adjoin_le_adjoin F S) _
+scoped instance (X) [MulAction E X] : IsScalarTower (Algebra.adjoin F S) (adjoin F S) X :=
+  Subalgebra.inclusion.instIsScalarTowerSubtypeMem_1 (algebra_adjoin_le_adjoin F S) _
 
-instance : FaithfulSMul (Algebra.adjoin F S) (adjoin F S) :=
-  Subalgebra.instFaithfulSMulSubtypeMem (algebra_adjoin_le_adjoin F S)
+scoped instance : FaithfulSMul (Algebra.adjoin F S) (adjoin F S) :=
+  Subalgebra.inclusion.instFaithfulSMulSubtypeMem (algebra_adjoin_le_adjoin F S)
 
-instance : IsFractionRing (Algebra.adjoin F S) (adjoin F S) := by
-  refine .of_field _ _ fun ⟨z, hz⟩ ↦ ?_
-  have ⟨x, hx, y, hy, eq⟩ := mem_adjoin_iff_div.mp hz
-  exact ⟨⟨x, hx⟩, ⟨y, hy⟩, Subtype.ext eq⟩
+scoped instance : IsFractionRing (Algebra.adjoin F S) (adjoin F S) :=
+  .of_field _ _ fun ⟨z, hz⟩ ↦ have ⟨x, hx, y, hy, eq⟩ := mem_adjoin_iff_div.mp hz
+    ⟨⟨x, hx⟩, ⟨y, hy⟩, Subtype.ext eq⟩
 
-instance : Algebra.IsAlgebraic (Algebra.adjoin F S) (adjoin F S) :=
+scoped instance : Algebra.IsAlgebraic (Algebra.adjoin F S) (adjoin F S) :=
   IsLocalization.isAlgebraic _ (nonZeroDivisors (Algebra.adjoin F S))
+
+end algebraAdjoinAdjoin
 
 theorem adjoin_eq_algebra_adjoin (inv_mem : ∀ x ∈ Algebra.adjoin F S, x⁻¹ ∈ Algebra.adjoin F S) :
     (adjoin F S).toSubalgebra = Algebra.adjoin F S :=
