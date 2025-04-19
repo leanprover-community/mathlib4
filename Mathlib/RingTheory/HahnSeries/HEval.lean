@@ -7,7 +7,9 @@ import Mathlib.RingTheory.HahnSeries.Summable
 import Mathlib.RingTheory.PowerSeries.Basic
 
 /-!
-# A summable family given by a power series
+# Evaluation of power series in Hahn Series
+We describe a class of ring homomorphisms from formal power series to Hahn series,
+given by substitution of the generating variable to an element of strictly positive order.
 
 ## Main Definitions
  * `HahnSeries.SummableFamily.powerSeriesFamily`: A summable family of Hahn series whose elements
@@ -149,6 +151,22 @@ def heval : PowerSeries R →ₐ[R] HahnSeries Γ R where
 theorem heval_mul {a b : PowerSeries R} :
     heval hx (a * b) = (heval hx a) * heval hx b :=
   map_mul (heval hx) a b
+
+theorem heval_C (hx : 0 < x.orderTop) (r : R) :
+    heval hx (C R r) = r • 1 := by
+  ext g
+  simp only [heval_apply, coeff_hsum, smulFamily_toFun, powers_toFun, smul_ite,
+    HahnSeries.coeff_smul, HahnSeries.coeff_one, smul_eq_mul, mul_ite, mul_one, mul_zero]
+  rw [finsum_eq_single _ 0 (fun n hn ↦ by simp [hx, coeff_ne_zero_C hn])]
+  by_cases hg : g = 0 <;> · simp
+
+theorem heval_X (hx : 0 < x.orderTop) :
+    heval hx X = x := by
+  rw [X_eq, monomial_eq_mk, heval_apply, powerSeriesFamily, smulFamily]
+  simp only [coeff_mk, powers_toFun, hx, ↓reduceIte, ite_smul, one_smul, zero_smul]
+  ext g
+  rw [coeff_hsum, finsum_eq_single _ 1 (fun n hn ↦ (by simp [eq_toFun, hn]))]
+  simp [eq_toFun]
 
 theorem heval_unit (u : (PowerSeries R)ˣ) : IsUnit (heval hx u) := by
   refine isUnit_iff_exists_inv.mpr ?_
