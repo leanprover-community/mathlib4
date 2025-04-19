@@ -67,7 +67,8 @@ variable [Preorder α] {a b c : α}
 This lemma only exists to serve as an order dual counterpart to `Preorder.le_trans`.
 -/
 @[order_dual existing Preorder.le_trans]
-lemma Preorder.le_trans' (a b c : α) (h₁ : b ≤ a) (h₂ : c ≤ b) : c ≤ a := Preorder.le_trans c b a h₂ h₁
+lemma Preorder.le_trans' (a b c : α) (h₁ : b ≤ a) (h₂ : c ≤ b) : c ≤ a :=
+Preorder.le_trans c b a h₂ h₁
 
 /-- The relation `≤` on a preorder is reflexive. -/
 @[refl, simp] lemma le_refl : ∀ a : α, a ≤ a := Preorder.le_refl
@@ -205,9 +206,18 @@ namespace Decidable
 
 variable [DecidableLE α]
 
-@[order_dual lt_or_eq_of_leOD]
+-- @[order_dual lt_or_eq_of_leOD]
 lemma lt_or_eq_of_le (hab : a ≤ b) : a < b ∨ a = b :=
   if hba : b ≤ a then Or.inr (le_antisymm hab hba) else Or.inl (lt_of_le_not_le hab hba)
+
+@[order_dual existing lt_or_eq_of_le]
+-- TODO: want order_dual to be able to turn the above into the following
+-- order_dual can't transform the DecidableLE instance properly in "if then else"
+lemma lt_or_eq_of_leOD (hab : b ≤ a) : b < a ∨ a = b :=
+  if hba : a ≤ b then Or.inr (le_antisymmOD hab hba) else Or.inl (lt_of_le_not_le hab hba)
+
+-- set_option pp.all true in #print lt_or_eq_of_le
+-- set_option pp.all true in #print lt_or_eq_of_leOD
 
 @[order_dual eq_or_lt_of_leOD]
 lemma eq_or_lt_of_le (hab : a ≤ b) : a = b ∨ a < b :=

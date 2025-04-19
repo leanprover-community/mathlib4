@@ -78,8 +78,8 @@ class LinearOrder (α : Type*) extends PartialOrder α, Min α, Max α, Ord α w
 
 attribute [order_dual existing] LinearOrder.toMax
 attribute [order_dual self (reorder := 3 4)] LinearOrder.le_total
-attribute [order_dual self (reorder := 3 4)] LinearOrder.decidableLE
-attribute [order_dual self (reorder := 3 4)] LinearOrder.decidableLT
+-- attribute [order_dual self (reorder := 3 4)] LinearOrder.decidableLE
+-- attribute [order_dual self (reorder := 3 4)] LinearOrder.decidableLT
 attribute [order_dual existing] LinearOrder.min_def
 
 variable [LinearOrder α] {a b c : α}
@@ -118,9 +118,12 @@ lemma le_of_not_lt (h : ¬b < a) : a ≤ b :=
 @[order_dual self (reorder := 3 4)]
 lemma le_of_not_gt : ¬a > b → a ≤ b := le_of_not_lt
 
-@[order_dual lt_or_leOD]
 lemma lt_or_le (a b : α) : a < b ∨ b ≤ a :=
   if hba : b ≤ a then Or.inr hba else Or.inl <| lt_of_not_ge hba
+
+@[order_dual existing lt_or_le]
+lemma lt_or_leOD (a b : α) : b < a ∨ a ≤ b :=
+  if hab : a ≤ b then Or.inr hab else Or.inl <| lt_of_not_ge hab
 
 @[order_dual le_or_ltOD]
 lemma le_or_lt (a b : α) : a ≤ b ∨ b < a := (lt_or_le b a).symm
@@ -129,8 +132,10 @@ lemma lt_or_ge : ∀ a b : α, a < b ∨ a ≥ b := lt_or_le
 @[order_dual le_or_gtOD]
 lemma le_or_gt : ∀ a b : α, a ≤ b ∨ a > b := le_or_lt
 
-@[order_dual lt_or_gt_of_neOD]
 lemma lt_or_gt_of_ne (h : a ≠ b) : a < b ∨ a > b := by simpa [h] using lt_trichotomy a b
+
+@[order_dual existing lt_or_gt_of_ne]
+lemma lt_or_gt_of_neOD (h : a ≠ b) : b < a ∨ b > a := by simpa [h] using lt_trichotomyOD a b
 
 @[order_dual ne_iff_lt_or_gtOD]
 lemma ne_iff_lt_or_gt : a ≠ b ↔ a < b ∨ a > b := ⟨lt_or_gt_of_ne, (Or.elim · ne_of_lt ne_of_gt)⟩
