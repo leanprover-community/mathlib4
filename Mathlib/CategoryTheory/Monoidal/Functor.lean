@@ -240,6 +240,7 @@ end LaxMonoidal
 /-- A functor `F : C ⥤ D` between monoidal categories is oplax monoidal if it is
 equipped with morphisms `η : F.obj (𝟙_ C) ⟶ 𝟙 _D` and `δ X Y : F.obj (X ⊗ Y) ⟶ F.obj X ⊗ F.obj Y`,
 satisfying the appropriate coherences. -/
+@[ext]
 class OplaxMonoidal where
   /-- counit morphism -/
   η' : F.obj (𝟙_ C) ⟶ 𝟙_ D

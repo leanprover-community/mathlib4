@@ -667,7 +667,7 @@ instance (X Y : C) : IsIso (δ F X Y) :=
   δ_of_chosenFiniteProducts F X Y ▸ isIso_prodComparison_of_preservesLimit_pair F X Y
 
 omit [F.OplaxMonoidal] in
-/-- Any functor between cartesian-monoidal categories induces is oplax monoidal.
+/-- Any functor between cartesian-monoidal categories is oplax monoidal.
 
 This is not made an instance because it would create a diamond for the oplax monoidal structure on
 the identity and composition of functors. -/
@@ -690,6 +690,14 @@ def ofChosenFiniteProducts : F.OplaxMonoidal where
     · simp only [rightUnitor_inv_fst, Category.assoc, whiskerLeft_fst,
         prodComparison_fst, ← F.map_comp, F.map_id]
     · exact toUnit_unique _ _
+
+omit [F.OplaxMonoidal] in
+/-- Any functor between cartesian-monoidal categories is oplax monoidal in a unique way. -/
+instance : Subsingleton F.OplaxMonoidal where
+  allEq a b := by
+    ext1
+    · exact toUnit_unique _ _
+    · ext1; ext1; rw [← δ, ← δ, δ_of_chosenFiniteProducts, δ_of_chosenFiniteProducts]
 
 end OplaxMonoidal
 
