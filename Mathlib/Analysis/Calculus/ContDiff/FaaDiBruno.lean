@@ -334,19 +334,6 @@ def extendLeft (c : OrderedFinpartition n) : OrderedFinpartition (n + 1) where
   simp [extendLeft]
   apply @range_const _ _ (by simp; infer_instance)
 
-lemma _root_.Fin.cons_const {α : Type*} (a : α) (n : ℕ) :
-    (Fin.cons a fun _ ↦ a : Fin (n + 1) → α) = fun _ ↦ a :=
-  funext <| Fin.forall_fin_succ.mpr ⟨rfl, fun _ ↦ rfl⟩
-
-@[simp]
-lemma extendLeft_atomic : (atomic n).extendLeft = atomic (n + 1) := by
-  simp only [extendLeft, atomic, comp_def, mk.injEq, Nat.add_left_inj, cons_const, heq_eq_eq,
-    true_and]
-  refine hfunext rfl fun i ↦ ?_
-  simp only [heq_eq_eq, forall_eq']
-  refine .symm <| Fin.heq_fun_iff (by simp [cons_const]) |>.mpr <| forall_fin_one.mpr ?_
-  cases i using Fin.cases <;> simp
-
 /-- Extend an ordered partition of `n` entries, by adding to the `i`-th part a new point to the
 left. -/
 @[simps -fullyApplied length partSize]
