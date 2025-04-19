@@ -6,8 +6,6 @@ Authors: Andrew Yang, Antoine Chambert-Loir
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.RingTheory.Ideal.Maps
 
-#align_import algebra.algebra.subalgebra.basic from "leanprover-community/mathlib"@"b915e9392ecb2a861e1e766f0e1df6ac481188ca"
-
 /-!
 # More operations on subalgebras
 
@@ -17,6 +15,7 @@ and `Mathlib.RingTheory.Ideal.Operations` are somewhat of a grab-bag of definiti
 whatever ends up in the intersection.
 -/
 
+assert_not_exists Cardinal
 
 namespace AlgHom
 
@@ -41,8 +40,6 @@ theorem mem_of_finset_sum_eq_one_of_pow_smul_mem
     {ι : Type*} (ι' : Finset ι) (s : ι → S) (l : ι → S)
     (e : ∑ i ∈ ι', l i * s i = 1) (hs : ∀ i, s i ∈ S') (hl : ∀ i, l i ∈ S') (x : S)
     (H : ∀ i, ∃ n : ℕ, (s i ^ n : S) • x ∈ S') : x ∈ S' := by
-  -- Porting note: needed to add this instance
-  let _i : Algebra { x // x ∈ S' } { x // x ∈ S' } := Algebra.id _
   suffices x ∈ Subalgebra.toSubmodule (Algebra.ofId S' S).range by
     obtain ⟨x, rfl⟩ := this
     exact x.2
@@ -66,13 +63,11 @@ theorem mem_of_finset_sum_eq_one_of_pow_smul_mem
   rw [← tsub_add_cancel_of_le (show n i ≤ N from Finset.le_sup hi), pow_add, mul_smul]
   refine Submodule.smul_mem _ (⟨_, pow_mem (hs i) _⟩ : S') ?_
   exact ⟨⟨_, hn i⟩, rfl⟩
-#align subalgebra.mem_of_finset_sum_eq_one_of_pow_smul_mem Subalgebra.mem_of_finset_sum_eq_one_of_pow_smul_mem
 
 theorem mem_of_span_eq_top_of_smul_pow_mem
-    (s : Set S) (l : s →₀ S) (hs : Finsupp.total s S S (↑) l = 1)
+    (s : Set S) (l : s →₀ S) (hs : Finsupp.linearCombination S ((↑) : s → S) l = 1)
     (hs' : s ⊆ S') (hl : ∀ i, l i ∈ S') (x : S) (H : ∀ r : s, ∃ n : ℕ, (r : S) ^ n • x ∈ S') :
     x ∈ S' :=
   mem_of_finset_sum_eq_one_of_pow_smul_mem S' l.support (↑) l hs (fun x => hs' x.2) hl x H
-#align subalgebra.mem_of_span_eq_top_of_smul_pow_mem Subalgebra.mem_of_span_eq_top_of_smul_pow_mem
 
 end Subalgebra

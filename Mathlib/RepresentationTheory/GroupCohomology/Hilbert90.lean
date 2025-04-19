@@ -5,7 +5,6 @@ Authors: Amelia Livingston
 -/
 import Mathlib.FieldTheory.Fixed
 import Mathlib.RepresentationTheory.GroupCohomology.LowDegree
-import Mathlib.LinearAlgebra.LinearIndependent
 
 /-!
 # Hilbert's Theorem 90
@@ -55,7 +54,7 @@ variable {K L : Type*} [Field K] [Field L] [Algebra K L] [FiniteDimensional K L]
 
 /-- Given `f : Aut_K(L) → Lˣ`, the sum `∑ f(φ) • φ` for `φ ∈ Aut_K(L)`, as a function `L → L`. -/
 noncomputable def aux (f : (L ≃ₐ[K] L) → Lˣ) : L → L :=
-  Finsupp.total (L ≃ₐ[K] L) (L → L) L (fun φ => φ)
+  Finsupp.linearCombination L (fun φ : L ≃ₐ[K] L ↦ (φ : L → L))
     (Finsupp.equivFunOnFinite.symm (fun φ => (f φ : L)))
 
 theorem aux_ne_zero (f : (L ≃ₐ[K] L) → Lˣ) : aux f ≠ 0 :=
@@ -83,7 +82,7 @@ theorem isMulOneCoboundary_of_isMulOneCocycle_of_aut_to_units
 /- Let `z : L` be such that `∑ f(h) * h(z) ≠ 0`, for `h ∈ Aut_K(L)` -/
   obtain ⟨z, hz⟩ : ∃ z, aux f z ≠ 0 :=
     not_forall.1 (fun H => aux_ne_zero f <| funext <| fun x => H x)
-  have : aux f z = ∑ h, f h * h z := by simp [aux, Finsupp.total, Finsupp.sum_fintype]
+  have : aux f z = ∑ h, f h * h z := by simp [aux, Finsupp.linearCombination, Finsupp.sum_fintype]
 /- Let `β = (∑ f(h) * h(z))⁻¹.` -/
   use (Units.mk0 (aux f z) hz)⁻¹
   intro g
@@ -102,10 +101,10 @@ variable (K L : Type) [Field K] [Field L] [Algebra K L] [FiniteDimensional K L]
 first group cohomology `H¹(Aut_K(L), Lˣ)` is trivial. -/
 noncomputable instance H1ofAutOnUnitsUnique : Unique (H1 (Rep.ofAlgebraAutOnUnits K L)) where
   default := 0
-  uniq := fun a => Quotient.inductionOn' a fun x => (Submodule.Quotient.mk_eq_zero _).2 <| by
+  uniq := fun a => Quotient.inductionOn' a fun x => (H1π_eq_zero_iff _).2 <| by
     refine (oneCoboundariesOfIsMulOneCoboundary ?_).2
     rcases isMulOneCoboundary_of_isMulOneCocycle_of_aut_to_units x.1
-      (isMulOneCocycle_of_oneCocycles x) with ⟨β, hβ⟩
+      (isMulOneCocycle_of_mem_oneCocycles _ x.2) with ⟨β, hβ⟩
     use β
 
 end groupCohomology

@@ -1,9 +1,9 @@
 /-
-Copyright (c) 2023 Kim Liesinger. All rights reserved.
+Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Liesinger
+Authors: Kim Morrison
 -/
-import Batteries.Data.String.Basic
+import Mathlib.Init
 import Lean.Meta.Tactic.TryThis
 import Batteries.Linter.UnreachableTactic
 import Qq.Match
@@ -30,16 +30,17 @@ open Lean.Meta.Tactic.TryThis
 
 namespace Mathlib.Tactic.Says
 
+/-- If this option is `true`, verify for `X says Y` that `X says` outputs `Y`. -/
 register_option says.verify : Bool :=
   { defValue := false
     group := "says"
-    descr := "For every appearance of the `X says Y` combinator, \
-      re-verify that running `X` produces `Try this: Y`." }
+    descr := "Verify the output" }
 
+/-- This option is only used in CI to negate `says.verify`. -/
 register_option says.no_verify_in_CI : Bool :=
   { defValue := false
     group := "says"
-    descr := "Disable reverification, even if `the `CI` environment variable is set." }
+    descr := "Disable reverification, even if the `CI` environment variable is set." }
 
 open Parser Tactic
 
@@ -132,4 +133,8 @@ elab_rules : tactic
   | some result, false =>
     evalTactic result
 
-initialize Std.Linter.UnreachableTactic.addIgnoreTacticKind `Mathlib.Tactic.Says.says
+initialize Batteries.Linter.UnreachableTactic.addIgnoreTacticKind `Mathlib.Tactic.Says.says
+
+end Says
+
+end Mathlib.Tactic

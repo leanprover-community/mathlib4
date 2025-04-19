@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
 import Mathlib.Algebra.CharP.Basic
+import Mathlib.Algebra.CharP.Lemmas
 import Mathlib.GroupTheory.Perm.Cycle.Type
 import Mathlib.RingTheory.Coprime.Lemmas
-
-#align_import algebra.char_p.char_and_card from "leanprover-community/mathlib"@"2fae5fd7f90711febdadf19c44dc60fae8834d1b"
 
 /-!
 # Characteristic and cardinality
@@ -45,14 +44,12 @@ theorem isUnit_iff_not_dvd_char_of_ringChar_ne_zero (R : Type*) [CommRing R] (p 
     push_cast at hab
     rw [hch, mul_zero, add_zero, mul_comm] at hab
     exact isUnit_of_mul_eq_one (p : R) a hab
-#align is_unit_iff_not_dvd_char_of_ring_char_ne_zero isUnit_iff_not_dvd_char_of_ringChar_ne_zero
 
 /-- A prime `p` is a unit in a finite commutative ring `R`
 iff it does not divide the characteristic. -/
 theorem isUnit_iff_not_dvd_char (R : Type*) [CommRing R] (p : ℕ) [Fact p.Prime] [Finite R] :
     IsUnit (p : R) ↔ ¬p ∣ ringChar R :=
   isUnit_iff_not_dvd_char_of_ringChar_ne_zero R p <| CharP.char_ne_zero_of_finite R (ringChar R)
-#align is_unit_iff_not_dvd_char isUnit_iff_not_dvd_char
 
 /-- The prime divisors of the characteristic of a finite commutative ring are exactly
 the prime divisors of its cardinality. -/
@@ -73,12 +70,15 @@ theorem prime_dvd_char_iff_dvd_card {R : Type*} [CommRing R] [Fintype R] (p : �
   apply_fun (· * ·) u at hr₁
   rw [mul_zero, ← mul_assoc, hu, one_mul] at hr₁
   exact mt AddMonoid.addOrderOf_eq_one_iff.mpr (ne_of_eq_of_ne hr (Nat.Prime.ne_one Fact.out)) hr₁
-#align prime_dvd_char_iff_dvd_card prime_dvd_char_iff_dvd_card
 
-/-- A prime that does not divide the cardinality of a finite commutative ring `R`
-is a unit in `R`. -/
+/-- A prime that divides the cardinality of a finite commutative ring `R`
+isn't a unit in `R`. -/
 theorem not_isUnit_prime_of_dvd_card {R : Type*} [CommRing R] [Fintype R] (p : ℕ) [Fact p.Prime]
     (hp : p ∣ Fintype.card R) : ¬IsUnit (p : R) :=
   mt (isUnit_iff_not_dvd_char R p).mp
     (Classical.not_not.mpr ((prime_dvd_char_iff_dvd_card p).mpr hp))
-#align not_is_unit_prime_of_dvd_card not_isUnit_prime_of_dvd_card
+
+lemma charP_of_card_eq_prime {R : Type*} [NonAssocRing R] [Fintype R] (p : ℕ) [hp : Fact p.Prime]
+    (hR : Fintype.card R = p) : CharP R p :=
+  have := Fintype.one_lt_card_iff_nontrivial.1 (hR ▸ hp.1.one_lt)
+  (CharP.charP_iff_prime_eq_zero hp.1).2 (hR ▸ Nat.cast_card_eq_zero R)
