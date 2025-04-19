@@ -28,8 +28,24 @@ lemma Dominated.image_of_monotone {s₁ s₂ : Set α} (h : Dominated s₁ s₂)
   rw [← hcfa]
   exact ⟨d, ⟨hdd, Hf hcd⟩⟩
 
+lemma Dominated.image_of_antitone {s₁ s₂ : Set α} (h : Dominated s₁ s₂) (Hf : Antitone f) :
+    Codominated (f '' s₁) (f '' s₂) := fun a ha => by
+  obtain ⟨c, hcs, hcfa⟩ := ha
+  obtain ⟨d, hdd, hcd⟩ := h c hcs
+  simp only [mem_image, exists_exists_and_eq_and]
+  rw [← hcfa]
+  exact ⟨d, ⟨hdd, Hf hcd⟩⟩
+
 lemma Codominated.image_of_monotone {s₁ s₂ : Set α} (h : Codominated s₁ s₂) (Hf : Monotone f) :
     Codominated (f '' s₁) (f '' s₂) := fun a ha => by
+  obtain ⟨c, hcs, hcfa⟩ := ha
+  obtain ⟨d, hdd, hcd⟩ := h c hcs
+  simp only [mem_image, exists_exists_and_eq_and]
+  rw [← hcfa]
+  exact ⟨d, ⟨hdd, Hf hcd⟩⟩
+
+lemma Codominated.image_of_antitone {s₁ s₂ : Set α} (h : Codominated s₁ s₂) (Hf : Antitone f) :
+    Dominated (f '' s₁) (f '' s₂) := fun a ha => by
   obtain ⟨c, hcs, hcfa⟩ := ha
   obtain ⟨d, hdd, hcd⟩ := h c hcs
   simp only [mem_image, exists_exists_and_eq_and]
