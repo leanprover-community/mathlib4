@@ -363,6 +363,7 @@ theorem sup_eq_top_iff : p ⊔ p' = ⊤ ↔ ∀ m : M, ∃ u ∈ p, ∃ v ∈ p'
 
 end
 
+@[simp]
 theorem mem_span_singleton_self (x : M) : x ∈ R ∙ x :=
   subset_span rfl
 
