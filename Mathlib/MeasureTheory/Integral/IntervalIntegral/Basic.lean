@@ -575,26 +575,32 @@ theorem norm_integral_min_max (f : ℝ → E) :
     ‖∫ x in min a b..max a b, f x ∂μ‖ = ‖∫ x in a..b, f x ∂μ‖ := by
   cases le_total a b <;> simp [*, integral_symm a b]
 
-theorem norm_integral_eq_norm_integral_Ioc (f : ℝ → E) :
+theorem norm_integral_eq_norm_integral_uIoc (f : ℝ → E) :
     ‖∫ x in a..b, f x ∂μ‖ = ‖∫ x in Ι a b, f x ∂μ‖ := by
   rw [← norm_integral_min_max, integral_of_le min_le_max, uIoc]
 
+@[deprecated (since := "2025-04-19")]
+alias norm_integral_eq_norm_integral_Ioc := norm_integral_eq_norm_integral_uIoc
+
 theorem abs_integral_eq_abs_integral_uIoc (f : ℝ → ℝ) :
     |∫ x in a..b, f x ∂μ| = |∫ x in Ι a b, f x ∂μ| :=
-  norm_integral_eq_norm_integral_Ioc f
+  norm_integral_eq_norm_integral_uIoc f
 
-theorem norm_integral_le_integral_norm_Ioc : ‖∫ x in a..b, f x ∂μ‖ ≤ ∫ x in Ι a b, ‖f x‖ ∂μ :=
+theorem norm_integral_le_integral_norm_uIoc : ‖∫ x in a..b, f x ∂μ‖ ≤ ∫ x in Ι a b, ‖f x‖ ∂μ :=
   calc
-    ‖∫ x in a..b, f x ∂μ‖ = ‖∫ x in Ι a b, f x ∂μ‖ := norm_integral_eq_norm_integral_Ioc f
+    ‖∫ x in a..b, f x ∂μ‖ = ‖∫ x in Ι a b, f x ∂μ‖ := norm_integral_eq_norm_integral_uIoc f
     _ ≤ ∫ x in Ι a b, ‖f x‖ ∂μ := norm_integral_le_integral_norm f
 
+@[deprecated (since := "2025-04-19")]
+alias norm_integral_le_integral_norm_Ioc := norm_integral_le_integral_norm_uIoc
+
 theorem norm_integral_le_abs_integral_norm : ‖∫ x in a..b, f x ∂μ‖ ≤ |∫ x in a..b, ‖f x‖ ∂μ| := by
-  simp only [← Real.norm_eq_abs, norm_integral_eq_norm_integral_Ioc]
+  simp only [← Real.norm_eq_abs, norm_integral_eq_norm_integral_uIoc]
   exact le_trans (norm_integral_le_integral_norm _) (le_abs_self _)
 
 theorem norm_integral_le_integral_norm (h : a ≤ b) :
     ‖∫ x in a..b, f x ∂μ‖ ≤ ∫ x in a..b, ‖f x‖ ∂μ :=
-  norm_integral_le_integral_norm_Ioc.trans_eq <| by rw [uIoc_of_le h, integral_of_le h]
+  norm_integral_le_integral_norm_uIoc.trans_eq <| by rw [uIoc_of_le h, integral_of_le h]
 
 nonrec theorem norm_integral_le_of_norm_le {g : ℝ → ℝ} (h : ∀ᵐ t ∂μ.restrict <| Ι a b, ‖f t‖ ≤ g t)
     (hbound : IntervalIntegrable g μ a b) : ‖∫ t in a..b, f t ∂μ‖ ≤ |∫ t in a..b, g t ∂μ| := by
@@ -604,10 +610,10 @@ nonrec theorem norm_integral_le_of_norm_le {g : ℝ → ℝ} (h : ∀ᵐ t ∂μ
 
 theorem norm_integral_le_of_norm_le_const_ae {a b C : ℝ} {f : ℝ → E}
     (h : ∀ᵐ x, x ∈ Ι a b → ‖f x‖ ≤ C) : ‖∫ x in a..b, f x‖ ≤ C * |b - a| := by
-  rw [norm_integral_eq_norm_integral_Ioc]
+  rw [norm_integral_eq_norm_integral_uIoc]
   convert norm_setIntegral_le_of_norm_le_const_ae' _ h using 1
-  · rw [Real.volume_real_Ioc_of_le inf_le_sup, max_sub_min_eq_abs]
-  · simp only [Real.volume_Ioc, ENNReal.ofReal_lt_top]
+  · rw [uIoc, Real.volume_real_Ioc_of_le inf_le_sup, max_sub_min_eq_abs]
+  · simp [uIoc, Real.volume_Ioc]
 
 theorem norm_integral_le_of_norm_le_const {a b C : ℝ} {f : ℝ → E} (h : ∀ x ∈ Ι a b, ‖f x‖ ≤ C) :
     ‖∫ x in a..b, f x‖ ≤ C * |b - a| :=
