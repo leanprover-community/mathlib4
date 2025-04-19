@@ -162,13 +162,15 @@ def countableConcat (γ : (n : ℕ) → Path (s n) (s (n + 1))) (x : X)
   source' := by simp [countableConcatFun]
   target' := by simp [countableConcatFun]
 
+private lemma one_sub_half_div_two_pow_mem_unitInterval {t : I} {n : ℕ} :
+    (1 - (t : ℝ) / 2) / 2 ^ n ∈ I :=
+  ⟨div_nonneg (by linarith [t.2.2]) (by simp), (div_le_one₀ (by simp)).2 <| by
+    linarith [one_le_pow₀ (M₀ := ℝ) one_le_two (n := n), t.2.1]⟩
+
 /-- Evaluating `Path.countableConcat` at 1-(1-t/2)/2^n yields `γ n t`. -/
 lemma countableConcat_applyAt {γ : (n : ℕ) → Path (s n) (s (n + 1))} {x : X}
     (hγx : ∀ u ∈ 𝓝 x, ∃ n : ℕ, ∀ m, n ≤ m → ∀ t, γ m t ∈ u) (n : ℕ) (t : I) :
-    countableConcat γ x hγx (σ ⟨(1 - t / 2) / 2 ^ n,
-      div_nonneg (by linarith [t.2.2]) (by simp),
-      (div_le_one₀ (by simp)).2 <| by
-        linarith [one_le_pow₀ (M₀ := ℝ) one_le_two (n := n), t.2.1]⟩) =
+    countableConcat γ x hγx (σ ⟨(1 - t / 2) / 2 ^ n, one_sub_half_div_two_pow_mem_unitInterval⟩) =
     γ n t := by
   rw [countableConcat, coe_mk_mk]
   refine (countableConcatFun_eqOn γ n ⟨?_, ?_⟩).trans ?_
