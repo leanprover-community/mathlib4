@@ -22,11 +22,11 @@ open CategoryTheory
 
 open Lean Meta Elab Tactic
 
-/-- Find appearances of `CategoryStruct.comp C inst X Y Z f g`, and apply `f` to each. -/
+/-- Find appearances of `@CategoryStruct.comp C inst X Y Z f g`, and apply `f` to each. -/
 def forEachComposition (e : Expr) (f : Expr → MetaM Unit) : MetaM Unit := do
   e.forEach (fun e ↦ if e.isAppOfArity ``CategoryStruct.comp 7 then f e else pure ())
 
-/-- Given a composition `CategoryStruct.comp _ _ X Y Z f g`,
+/-- Given a composition `@CategoryStruct.comp _ _ X Y Z f g`,
 infer the types of `f` and `g` and check whether their sources and targets agree,
 at "instances and reducible" transparency, with `X`, `Y`, and `Z`,
 reporting any discrepancies. -/
@@ -61,7 +61,7 @@ def checkCompositionsTac : TacticM Unit := withMainContext do
   checkCompositions e
 
 /-- For each composition `f ≫ g` in the goal,
-which internally is represented as `CategoryStruct.comp C inst X Y Z f g`,
+which internally is represented as `@CategoryStruct.comp C inst X Y Z f g`,
 infer the types of `f` and `g` and check whether their sources and targets agree
 with `X`, `Y`, and `Z` at "instances and reducible" transparency,
 reporting any discrepancies.
