@@ -133,7 +133,7 @@ theorem isGLB_congr (h : lowerBounds s = lowerBounds t) : IsGLB s a ↔ IsGLB t 
 theorem upperBounds_mono_set ⦃s t : Set α⦄ (hst : s ⊆ t) : upperBounds t ⊆ upperBounds s :=
   fun _ hb _ h => hb <| hst h
 
-lemma upperBounds_subset_of_dominated {s₁ s₂ : Set α} (h : Dominated (· ≤ ·) s₁ s₂) :
+lemma upperBounds_mono_of_dominated {s₁ s₂ : Set α} (h : Dominated (· ≤ ·) s₁ s₂) :
     upperBounds s₂ ⊆ upperBounds s₁ := fun c hc d hd => by
   obtain ⟨e, he₁, he₂⟩ := h _ hd
   exact Preorder.le_trans d e c he₂ (hc he₁)
