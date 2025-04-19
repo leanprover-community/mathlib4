@@ -125,8 +125,8 @@ dual order, in order to easily transfer theorems between `height` and `coheight`
 -/
 lemma coheight_eq (a : α) :
     coheight a = ⨆ (p : LTSeries α) (_ : a ≤ p.head), (p.length : ℕ∞) := by
-  apply Equiv.iSup_congr ⟨RelSeries.reverse, RelSeries.reverse, RelSeries.reverse_reverse,
-    RelSeries.reverse_reverse⟩
+  apply Equiv.iSup_congr ⟨RelSeries.reverse, RelSeries.reverse, fun _ ↦ RelSeries.reverse_reverse _,
+    fun _ ↦ RelSeries.reverse_reverse _⟩
   congr! 1
 
 lemma height_le_iff {a : α} {n : ℕ∞} :
@@ -176,8 +176,8 @@ lemma coheight_eq_iSup_head_eq (a : α) :
     coheight a = ⨆ (p : LTSeries α) (_ : p.head = a), ↑(p.length) := by
   show height (α := αᵒᵈ) a = ⨆ (p : LTSeries α) (_ : p.head = a), ↑(p.length)
   rw [height_eq_iSup_last_eq]
-  apply Equiv.iSup_congr ⟨RelSeries.reverse, RelSeries.reverse, RelSeries.reverse_reverse,
-    RelSeries.reverse_reverse⟩
+  apply Equiv.iSup_congr ⟨RelSeries.reverse, RelSeries.reverse, fun _ ↦ RelSeries.reverse_reverse _,
+    fun _ ↦ RelSeries.reverse_reverse _⟩
   simp
 
 /--
@@ -388,7 +388,7 @@ lemma height_eq_iSup_lt_height (x : α) : height x = ⨆ y < x, height y + 1 := 
     | zero => simp
     | succ n =>
       apply le_iSup_of_le p.eraseLast.last
-      apply le_iSup_of_le (by rw [← hp]; apply RelSeries.eraseLast_last_rel_last _ (by omega))
+      refine le_iSup_of_le (by rw [← hp]; exact RelSeries.eraseLast_last_rel_last _ (by omega)) _
       rw [height_add_const]
       apply le_iSup₂_of_le p.eraseLast (by rfl) (by simp [hlen])
   · apply iSup₂_le; intro y hyx
