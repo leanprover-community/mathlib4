@@ -285,5 +285,5 @@ open TopologicalSpace in
 instance (priority := 100) DiscreteTopology.metrizableSpace
     {α} [TopologicalSpace α] [DiscreteTopology α] :
     MetrizableSpace α := by
-  obtain rfl := DiscreteTopology.eq_bot (α := α)
+  obtain rfl := DiscreteTopology.eq_bot α
   exact @UniformSpace.metrizableSpace α ⊥ (isCountablyGenerated_principal _) _

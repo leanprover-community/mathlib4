@@ -242,7 +242,7 @@ theorem IsUniformEmbedding.isDenseEmbedding {f : α → β} (h : IsUniformEmbedd
 theorem isClosedEmbedding_of_spaced_out {α} [TopologicalSpace α] [DiscreteTopology α]
     [T0Space β] {f : α → β} {s : Set (β × β)} (hs : s ∈ 𝓤 β)
     (hf : Pairwise fun x y => (f x, f y) ∉ s) : IsClosedEmbedding f := by
-  rcases @DiscreteTopology.eq_bot α _ _ with rfl; let _ : UniformSpace α := ⊥
+  rcases DiscreteTopology.eq_bot α with rfl; let _ : UniformSpace α := ⊥
   exact
     { (isUniformEmbedding_of_spaced_out hs hf).isEmbedding with
       isClosed_range := isClosed_range_of_spaced_out hs hf }
