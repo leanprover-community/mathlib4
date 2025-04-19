@@ -41,11 +41,23 @@ assert_not_exists CompleteLattice
 
 open Set OrderDual
 
-variable {α : Type*} {P Q : α → Prop} {a x y : α}
+variable {ι α : Type*}
 
 section LE
+variable [LE α] {f : ι → α} {i j : ι}
 
+@[simp] lemma minimalFor_eq_iff : MinimalFor (· = j) f i ↔ i = j := by simp +contextual [MinimalFor]
+@[simp] lemma maximalFor_eq_iff : MaximalFor (· = j) f i ↔ i = j := by simp +contextual [MaximalFor]
+
+end LE
+
+variable {P Q : α → Prop} {a x y : α}
+
+section LE
 variable [LE α]
+
+@[simp] lemma minimalFor_id : MinimalFor P id x ↔ Minimal P x := .rfl
+@[simp] lemma maximalFor_id : MaximalFor P id x ↔ Maximal P x := .rfl
 
 @[simp] theorem minimal_toDual : Minimal (fun x ↦ P (ofDual x)) (toDual x) ↔ Maximal P x :=
   Iff.rfl
