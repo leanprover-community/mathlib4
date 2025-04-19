@@ -150,6 +150,12 @@ theorem Set.Finite.lt_ciInf_iff {s : Set ι} {f : ι → α} (hs : s.Finite)
     rw [← hx]
     exact H _ hmem
 
+theorem Set.Finite.le_ciSup₂_of_le {ι : Sort*} {κ : ι → Prop} {f : ∀ i, κ i → α}
+    (h_fin : (Set.range fun i : ι ↦ ⨆ j : κ i, f i j).Finite) (i : ι) (j : κ i) (h : a ≤ f i j) :
+    a ≤ ⨆ (i) (j), f i j :=
+  le_ciSup_of_le h_fin.bddAbove i
+    (le_ciSup_of_le (Set.finite_range fun j : κ i ↦ f i j).bddAbove j h)
+
 section ListMultiset
 
 lemma List.iSup_mem_map_of_exists_sSup_empty_le {l : List ι} (f : ι → α)
@@ -230,6 +236,10 @@ lemma sup_univ_eq_ciSup [Fintype ι] (f : ι → α) : univ.sup f = ⨆ i, f i :
   le_antisymm
     (Finset.sup_le fun _ _ => le_ciSup (finite_range _).bddAbove _)
     (ciSup_le' fun _ => Finset.le_sup (mem_univ _))
+
+theorem sup_eq_ciSup (s : Finset β) (f : β → α) :
+    s.sup f = ⨆ b : s, f b :=
+  Finset.isLUB_sup.unique <| isLUB_ciSup_set' (s.finite_toSet.image _).bddAbove
 
 end ConditionallyCompleteLinearOrderBot
 

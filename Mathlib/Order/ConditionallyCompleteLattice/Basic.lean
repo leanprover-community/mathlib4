@@ -577,6 +577,9 @@ theorem isLUB_csSup' {s : Set α} (hs : BddAbove s) : IsLUB s (sSup s) := by
   · simp only [csSup_empty, isLUB_empty]
   · exact isLUB_csSup hne hs
 
+lemma isLUB_ciSup_set' {f : β → α} {s : Set β} (hf : BddAbove (f '' s)) :
+    IsLUB (f '' s) (⨆ i : s, f i) := by rw [← sSup_image']; exact isLUB_csSup' hf
+
 /-- In conditionally complete orders with a bottom element, the nonempty condition can be omitted
 from `csSup_le_iff`. -/
 theorem csSup_le_iff' {s : Set α} (hs : BddAbove s) {a : α} : sSup s ≤ a ↔ ∀ x ∈ s, x ≤ a :=

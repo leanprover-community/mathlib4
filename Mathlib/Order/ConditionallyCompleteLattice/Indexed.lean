@@ -132,6 +132,10 @@ theorem le_ciSup_set {f : β → α} {s : Set β} (H : BddAbove (f '' s)) {c : �
     f c ≤ ⨆ i : s, f i :=
   (le_csSup H <| mem_image_of_mem f hc).trans_eq sSup_image'
 
+theorem lt_ciSup_of_lt {f : ι → α} (H : BddAbove (Set.range f)) (i : ι) (h : a < f i) :
+    a < iSup f :=
+  lt_of_lt_of_le h (le_ciSup H i)
+
 /-- The indexed infimum of two functions are comparable if the functions are pointwise comparable -/
 theorem ciInf_mono {f g : ι → α} (B : BddBelow (range f)) (H : ∀ x, f x ≤ g x) : iInf f ≤ iInf g :=
   ciSup_mono (α := αᵒᵈ) B H
@@ -494,6 +498,15 @@ lemma ciSup_or' (p q : Prop) (f : p ∨ q → α) :
   by_cases hp : p <;>
   by_cases hq : q <;>
   simp [hp, hq]
+
+theorem ciSup₂_le [Nonempty ι] {κ : ι → Prop} {f : ∀ i, κ i → α} {a : α} (h : ∀ i j, f i j ≤ a) :
+    ⨆ (i) (j), f i j ≤ a := by
+  apply ciSup_le
+  intro x
+  by_cases hx : κ x
+  · haveI : Nonempty (κ x) := ⟨hx⟩
+    exact ciSup_le fun hx' => h _ _
+  · simp only [hx, ciSup_false, bot_le]
 
 end ConditionallyCompleteLinearOrderBot
 
