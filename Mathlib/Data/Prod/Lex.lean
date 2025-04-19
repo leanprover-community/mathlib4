@@ -70,7 +70,7 @@ instance [LT α] [LT β] [WellFoundedLT α] [WellFoundedLT β] : WellFoundedRela
 /-- Dictionary / lexicographic preorder for pairs. -/
 instance instPreorder (α β : Type*) [Preorder α] [Preorder β] : Preorder (α ×ₗ β) where
   le_refl := refl_of <| Prod.Lex _ _
-  le_trans := fun _ _ _ => trans_of <| Prod.Lex _ _
+  le_trans _ _ _ := trans_of <| Prod.Lex _ _
   lt_iff_le_not_le x₁ x₂ := by aesop (add simp [le_iff, lt_iff, lt_iff_le_not_le])
 
 /-- See also `monotone_fst_ofLex` for a version stated in terms of `Monotone`. -/
@@ -151,7 +151,7 @@ end PartialOrderPreorder
 /-- Dictionary / lexicographic partial order for pairs. -/
 instance instPartialOrder (α β : Type*) [PartialOrder α] [PartialOrder β] :
     PartialOrder (α ×ₗ β) where
-  le_antisymm _ _ := antisymm (r := Prod.Lex _ _)
+  le_antisymm _ _ := antisymm_of (Prod.Lex _ _)
 
 instance instOrdLexProd [Ord α] [Ord β] : Ord (α ×ₗ β) := lexOrd
 
