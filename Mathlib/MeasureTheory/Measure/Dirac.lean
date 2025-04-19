@@ -5,7 +5,6 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.MeasureTheory.MeasurableSpace.CountablyGenerated
 import Mathlib.MeasureTheory.Measure.MutuallySingular
-import Mathlib.MeasureTheory.Measure.Real
 import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
 import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
 import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
