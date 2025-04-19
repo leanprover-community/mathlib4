@@ -43,8 +43,6 @@ This file expands on the development in the core library.
 * `Fin.valEmbedding` : coercion to natural numbers as an `Embedding`;
 * `Fin.succEmb` : `Fin.succ` as an `Embedding`;
 * `Fin.castLEEmb h` : `Fin.castLE` as an `Embedding`, embed `Fin n` into `Fin m`, `h : n ≤ m`;
-* `Fin.natAdd_castLEEmb` as an `Embedding` from `Fin n` to `Fin m`, `natAdd_castLEEmb m hmn i`
-adds `m - n` to `i`, generalizes `addNatEmb`.
 * `finCongr` : `Fin.cast` as an `Equiv`, equivalence between `Fin n` and `Fin m` when `n = m`;
 * `Fin.castAddEmb m` : `Fin.castAdd` as an `Embedding`, embed `Fin n` into `Fin (n+m)`;
 * `Fin.castSuccEmb` : `Fin.castSucc` as an `Embedding`, embed `Fin n` into `Fin (n+1)`;
@@ -1442,6 +1440,8 @@ theorem exists_eq_add_of_lt {n : ℕ} {a b : Fin (n + 1)} (h : a < b) :
 lemma pos_of_ne_zero {n : ℕ} {a : Fin (n + 1)} (h : a ≠ 0) :
     0 < a :=
   Nat.pos_of_ne_zero (val_ne_of_ne h)
+
+instance {n : ℕ} {i: Fin n} : NeZero (n - i.1) := NeZero.of_pos (by omega)
 
 lemma sub_succ_le_sub_of_le {n : ℕ} {u v : Fin (n + 2)} (h : u < v) : v - (u + 1) < v - u := by
   fin_omega
