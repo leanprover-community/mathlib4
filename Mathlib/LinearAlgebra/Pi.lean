@@ -46,7 +46,6 @@ universe i
 
 variable [Semiring R] [AddCommMonoid M₂] [Module R M₂] [AddCommMonoid M₃] [Module R M₃]
   {φ : ι → Type i} [(i : ι) → AddCommMonoid (φ i)] [(i : ι) → Module R (φ i)]
-  {ψ : ι → Type*} [(i : ι) → AddCommMonoid (ψ i)] [(i : ι) → Module R (ψ i)]
 
 /-- `pi` construction for linear functions. From a family of linear functions it produces a linear
 function into a family of modules. -/
@@ -111,10 +110,6 @@ instance CompatibleSMul.pi (R S M N ι : Type*) [Semiring S]
     [AddCommMonoid M] [AddCommMonoid N] [SMul R M] [SMul R N] [Module S M] [Module S N]
     [LinearMap.CompatibleSMul M N R S] : LinearMap.CompatibleSMul M (ι → N) R S where
   map_smul f r m := by ext i; apply ((LinearMap.proj i).comp f).map_smul_of_tower
-
-/-- `Pi.map` as a `LinearMap`. -/
-@[simps!] def piMap (f : Π i, φ i →ₗ[R] ψ i) : (Π i, φ i) →ₗ[R] Π i, ψ i :=
-  .pi fun i ↦ f i ∘ₗ .proj i
 
 /-- Linear map between the function spaces `I → M₂` and `I → M₃`, induced by a linear map `f`
 between `M₂` and `M₃`. -/
