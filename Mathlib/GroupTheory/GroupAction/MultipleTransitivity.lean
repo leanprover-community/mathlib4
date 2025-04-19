@@ -712,7 +712,6 @@ theorem isMultiplyPretransitive :
   rcases lt_or_ge (Nat.card α) 2 with h2 | h2
   · rw [Nat.sub_eq_zero_of_le (le_of_lt h2)]
     apply is_zero_pretransitive
-  have h2eq : Nat.card α - 2 + 2 = Nat.card α := Nat.sub_add_cancel h2
   have h2le : Nat.card α - 2 ≤ Nat.card α := sub_le (Nat.card α) 2
   exact {
     exists_smul_eq x y := by
