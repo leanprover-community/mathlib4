@@ -15,7 +15,7 @@ using the Lebesgue integral.
 
 We define the convolution of two functions using the Lebesgue integral (in the additive case)
 by the formula `(f ⋆ₗ[μ] g) x = ∫⁻ y, (f y) * (g (-y + x)) ∂μ`. This does not agree with the
-formula used by MeasureTheory.convolution for convolution of two functions, however it does agree
+formula used by `MeasureTheory.convolution` for convolution of two functions, however it does agree
 when the domain of `f` and `g` is a commutative group. The main reason for this is so that
 (under sufficient conditions) if `{μ ν π : Measure G} {f g : G → ℝ≥0∞}` are such that
 `μ = π.withDensity f`, `ν = π.withDensity g` where `π` is left-invariant then
