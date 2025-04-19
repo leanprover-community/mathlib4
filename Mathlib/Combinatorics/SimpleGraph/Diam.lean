@@ -189,6 +189,7 @@ lemma exists_edist_eq_ediam_of_ne_top [Nonempty α] (h : G.ediam ≠ ⊤) :
     ∃ u v, G.edist u v = G.ediam :=
   ENat.exists_eq_iSup₂_of_lt_top h.lt_top
 
+-- Note: Neither `Finite α` nor `G.ediam ≠ ⊤` implies the other.
 lemma exists_edist_eq_ediam_of_finite [Nonempty α] [Finite α] :
     ∃ u v, G.edist u v = G.ediam :=
   Prod.exists'.mp <| ediam_def ▸ exists_eq_ciSup_of_finite
