@@ -194,6 +194,12 @@ instance permUnique [Subsingleton α] : Unique (Perm α) :=
 theorem Perm.subsingleton_eq_refl [Subsingleton α] (e : Perm α) : e = Equiv.refl α :=
   Subsingleton.elim _ _
 
+protected theorem nontrivial {α β} (e : α ≃ β) [Nontrivial β] : Nontrivial α :=
+  e.surjective.nontrivial
+
+theorem nontrivial_congr {α β} (e : α ≃ β) : Nontrivial α ↔ Nontrivial β :=
+  ⟨fun _ ↦ e.symm.nontrivial, fun _ ↦ e.nontrivial⟩
+
 /-- Transfer `DecidableEq` across an equivalence. -/
 protected def decidableEq (e : α ≃ β) [DecidableEq β] : DecidableEq α :=
   e.injective.decidableEq
