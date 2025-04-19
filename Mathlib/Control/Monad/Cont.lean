@@ -158,8 +158,8 @@ instance [MonadCont m] : MonadCont (OptionT m) where
 instance [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (OptionT m) where
   callCC_bind_right := by
     refine fun _ _ => OptionT.ext ?_
-    simp [callCC, Option.elimM, callCC_bind_right]
-    exact bind_congr fun | some _ => rfl | none => by simp [@callCC_dummy m _]
+    simpa [callCC, Option.elimM, callCC_bind_right] using
+      bind_congr fun | some _ => rfl | none => by simp [@callCC_dummy m _]
   callCC_bind_left := by
     intros
     simp only [callCC, OptionT.callCC, OptionT.goto_mkLabel, bind_pure_comp, OptionT.run_bind,

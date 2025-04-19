@@ -309,7 +309,7 @@ theorem DiophList.forall (l : List (Set <| α → ℕ)) (d : l.Forall Dioph) :
     let ⟨γ, pl, ple⟩ := IH dl
     ⟨β ⊕ γ, p.map (inl ⊗ inr ∘ inl)::pl.map fun q => q.map (inl ⊗ inr ∘ inr),
       fun v => by
-      simp; exact
+      simpa using
         Iff.trans (and_congr (pe v) (ple v))
           ⟨fun ⟨⟨m, hm⟩, ⟨n, hn⟩⟩ =>
             ⟨m ⊗ n, by
@@ -367,7 +367,8 @@ theorem ex_dioph {S : Set (α ⊕ β → ℕ)} : Dioph S → Dioph {v | ∃ x, v
       ⟨fun ⟨x, hx⟩ =>
         let ⟨t, ht⟩ := (pe _).1 hx
         ⟨x ⊗ t, by
-          simp; rw [show (v ⊗ x ⊗ t) ∘ ((inl ⊗ inr ∘ inl) ⊗ inr ∘ inr) = (v ⊗ x) ⊗ t from
+          simp only [Poly.map_apply]
+          rw [show (v ⊗ x ⊗ t) ∘ ((inl ⊗ inr ∘ inl) ⊗ inr ∘ inr) = (v ⊗ x) ⊗ t from
             funext fun s => by rcases s with a | b <;> try { cases a <;> rfl }; rfl]
           exact ht⟩,
         fun ⟨t, ht⟩ =>

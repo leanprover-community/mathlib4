@@ -61,11 +61,11 @@ open Function
 
 @[simp]
 theorem mem_toList [FinEnum α] (x : α) : x ∈ toList α := by
-  simp [toList]; exists equiv x; simp
+  simp only [toList, List.mem_map, List.mem_finRange, true_and]; exists equiv x; simp
 
 @[simp]
 theorem nodup_toList [FinEnum α] : List.Nodup (toList α) := by
-  simp [toList]; apply List.Nodup.map <;> [apply Equiv.injective; apply List.nodup_finRange]
+  simp only [toList]; apply List.Nodup.map <;> [apply Equiv.injective; apply List.nodup_finRange]
 
 /-- create a `FinEnum` instance using a surjection -/
 def ofSurjective {β} (f : β → α) [DecidableEq α] [FinEnum β] (h : Surjective f) : FinEnum α :=
@@ -266,6 +266,7 @@ instance pfunFinEnum (p : Prop) [Decidable p] (α : p → Type) [∀ hp, FinEnum
     FinEnum (∀ hp : p, α hp) :=
   if hp : p then
     ofList ((toList (α hp)).map fun x _ => x) (by intro x; simpa using ⟨x hp, rfl⟩)
-  else ofList [fun hp' => (hp hp').elim] (by intro; simp; ext hp'; cases hp hp')
+  else ofList [fun hp' => (hp hp').elim]
+    (by intro; simp only [mem_cons, not_mem_nil, or_false]; ext hp'; cases hp hp')
 
 end List
