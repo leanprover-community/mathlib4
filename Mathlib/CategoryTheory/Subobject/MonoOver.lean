@@ -25,6 +25,7 @@ We provide
 * `def pullback [HasPullbacks C] (f : X ⟶ Y) : MonoOver Y ⥤ MonoOver X`
 * `def map (f : X ⟶ Y) [Mono f] : MonoOver X ⥤ MonoOver Y`
 * `def «exists» [HasImages C] (f : X ⟶ Y) : MonoOver X ⥤ MonoOver Y`
+
 and prove their basic properties and relationships.
 
 ## Notes
