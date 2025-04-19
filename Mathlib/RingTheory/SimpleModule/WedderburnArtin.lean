@@ -23,7 +23,7 @@ theorem IsSimpleRing.tfae [IsSimpleRing R] : List.TFAE
     have ⟨_, h⟩ := isSimpleRing_iff_isTwoSided_imp.mp ‹IsSimpleRing R›
     simp_rw [← isFullyInvariant_iff_isTwoSided] at h
     have := isSimpleModule_iff_isAtom.mpr hI
-    obtain eq | eq := h _ (isFullyInvariant_isotypicComponent R R I)
+    obtain eq | eq := h _ (.isotypicComponent R R I)
     · exact (hI.bot_lt.not_le <| (le_sSup <| by exact ⟨.refl ..⟩).trans_eq eq).elim
     exact .congr (.symm <| .trans (.ofEq _ _ eq) Submodule.topEquiv)
   tfae_finish
@@ -81,7 +81,77 @@ theorem exists_algEquiv_matrix_divisionRing_finite [Module.Finite R₀ R] :
       (_ : Module.Finite R₀ D), Nonempty (R ≃ₐ[R₀] Matrix (Fin n) (Fin n) D) := by
   have ⟨n, hn, I, _, ⟨e⟩⟩ := exists_algEquiv_matrix_end_mulOpposite R₀ R
   have := Module.Finite.equiv e.toLinearEquiv
-  classical exact ⟨n, hn, _, _, _, .of_surjective (Matrix.entryLinearMap R₀
-    (Module.End R I)ᵐᵒᵖ (0 : Fin n) (0 : Fin n)) fun f ↦ ⟨fun _ _ ↦ f, rfl⟩, ⟨e⟩⟩
+  classical exact ⟨n, hn, _, _, _, .of_surjective
+    (Matrix.entryLinearMap R₀ _ (0 : Fin n) (0 : Fin n)) fun f ↦ ⟨fun _ _ ↦ f, rfl⟩, ⟨e⟩⟩
 
 end IsSimpleRing
+
+namespace IsSemisimpleModule
+
+open Module (End)
+
+variable (R) (M : Type*) [AddCommGroup M] [Module R₀ M] [Module R M] [IsScalarTower R₀ R M]
+  [IsSemisimpleModule R M] [Module.Finite R M]
+
+theorem exists_end_algEquiv :
+    ∃ (n : ℕ) (S : Fin n → Submodule R M) (d : Fin n → ℕ),
+      (∀ i, IsSimpleModule R (S i)) ∧ (∀ i, NeZero (d i)) ∧
+      Nonempty (End R M ≃ₐ[R₀] Π i, Matrix (Fin (d i)) (Fin (d i)) (End R (S i))) := by
+  choose d pos S _ simple e using fun c : isotypicComponents R M ↦
+    (IsIsotypic.isotypicComponents c.2).submodule_linearEquiv_fun
+  classical exact ⟨_, _, _, fun _ ↦ simple _, fun _ ↦ pos _, ⟨.trans (endAlgEquiv R₀ R M) <| .trans
+    (.piCongrRight fun c ↦ ((e c).some.algConj R₀).trans (endVecAlgEquivMatrixEnd ..)) <|
+    (.piCongrLeft' R₀ _ (Finite.equivFin _))⟩⟩
+
+theorem exists_end_ringEquiv :
+    ∃ (n : ℕ) (S : Fin n → Submodule R M) (d : Fin n → ℕ),
+      (∀ i, IsSimpleModule R (S i)) ∧ (∀ i, NeZero (d i)) ∧
+      Nonempty (End R M ≃+* Π i, Matrix (Fin (d i)) (Fin (d i)) (End R (S i))) :=
+  have ⟨n, S, d, hS, hd, ⟨e⟩⟩ := exists_end_algEquiv ℕ R M; ⟨n, S, d, hS, hd, ⟨e⟩⟩
+
+end IsSemisimpleModule
+
+namespace IsSemisimpleRing
+
+variable (R) [IsSemisimpleRing R]
+
+theorem exists_algEquiv_pi_matrix_end_mulOpposite :
+    ∃ (n : ℕ) (S : Fin n → Ideal R) (d : Fin n → ℕ),
+      (∀ i, IsSimpleModule R (S i)) ∧ (∀ i, NeZero (d i)) ∧
+      Nonempty (R ≃ₐ[R₀] Π i, Matrix (Fin (d i)) (Fin (d i)) (Module.End R (S i))ᵐᵒᵖ) :=
+  have ⟨n, S, d, hS, hd, ⟨e⟩⟩ := IsSemisimpleModule.exists_end_algEquiv R₀ R R
+  ⟨n, S, d, hS, hd, ⟨.trans (.opOp R₀ R) <| .trans (.op <| .trans (.moduleEndSelf R₀) e) <|
+    .trans (.piMulOpposite _ _) (.piCongrRight fun _ ↦ .symm .mopMatrix)⟩⟩
+
+theorem exists_algEquiv_pi_matrix_divisionRing :
+    ∃ (n : ℕ) (D : Fin n → Type u) (d : Fin n → ℕ) (_ : ∀ i, DivisionRing (D i))
+      (_ : ∀ i, Algebra R₀ (D i)), (∀ i, NeZero (d i)) ∧
+      Nonempty (R ≃ₐ[R₀] Π i, Matrix (Fin (d i)) (Fin (d i)) (D i)) := by
+  have ⟨n, S, d, _, hd, ⟨e⟩⟩ := exists_algEquiv_pi_matrix_end_mulOpposite R₀ R
+  classical exact ⟨n, _, d, inferInstance, inferInstance, hd, ⟨e⟩⟩
+
+theorem exists_algEquiv_pi_matrix_divisionRing_finite [Module.Finite R₀ R] :
+    ∃ (n : ℕ) (D : Fin n → Type u) (d : Fin n → ℕ) (_ : ∀ i, DivisionRing (D i))
+      (_ : ∀ i, Algebra R₀ (D i)) (_ : ∀ i, Module.Finite R₀ (D i)), (∀ i, NeZero (d i)) ∧
+      Nonempty (R ≃ₐ[R₀] Π i, Matrix (Fin (d i)) (Fin (d i)) (D i)) := by
+  have ⟨n, D, d, _, _, hd, ⟨e⟩⟩ := exists_algEquiv_pi_matrix_divisionRing R₀ R
+  have := Module.Finite.equiv e.toLinearEquiv
+  refine ⟨n, D, d, _, _, fun i ↦ ?_, hd, ⟨e⟩⟩
+  let l := Matrix.entryLinearMap R₀ (D i) 0 0 ∘ₗ
+    .proj (φ := fun i ↦ Matrix (Fin (d i)) (Fin (d i)) _) i
+  exact .of_surjective l fun x ↦ ⟨fun j _ _ ↦ Function.update (fun _ ↦ 0) i x j, by simp [l]⟩
+
+theorem exists_ringEquiv_pi_matrix_end_mulOpposite :
+    ∃ (n : ℕ) (D : Fin n → Ideal R) (d : Fin n → ℕ),
+      (∀ i, IsSimpleModule R (D i)) ∧ (∀ i, NeZero (d i)) ∧
+      Nonempty (R ≃+* Π i, Matrix (Fin (d i)) (Fin (d i)) (Module.End R (D i))ᵐᵒᵖ) :=
+  have ⟨n, S, d, hS, hd, ⟨e⟩⟩ := exists_algEquiv_pi_matrix_end_mulOpposite ℕ R
+  ⟨n, S, d, hS, hd, ⟨e⟩⟩
+
+theorem exists_ringEquiv_pi_matrix_divisionRing :
+    ∃ (n : ℕ) (D : Fin n → Type u) (d : Fin n → ℕ) (_ : ∀ i, DivisionRing (D i)),
+      (∀ i, NeZero (d i)) ∧ Nonempty (R ≃+* Π i, Matrix (Fin (d i)) (Fin (d i)) (D i)) :=
+  have ⟨n, D, d, _, _, hd, ⟨e⟩⟩ := exists_algEquiv_pi_matrix_divisionRing ℕ R
+  ⟨n, D, d, _, hd, ⟨e⟩⟩
+
+end IsSemisimpleRing

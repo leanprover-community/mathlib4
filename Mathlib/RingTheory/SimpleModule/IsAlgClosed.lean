@@ -10,10 +10,20 @@ import Mathlib.RingTheory.SimpleModule.WedderburnArtin
 # Wedderburn-Artin Theorem over an algebraically closed field
 -/
 
-theorem IsSimpleRing.exists_algEquiv_matrix_of_isAlgClosed (F R) [Field F] [IsAlgClosed F]
-    [Ring R] [IsSimpleRing R] [Algebra F R] [FiniteDimensional F R] :
+variable (F R : Type*) [Field F] [IsAlgClosed F] [Ring R] [Algebra F R]
+
+theorem IsSimpleRing.exists_algEquiv_matrix_of_isAlgClosed
+    [IsSimpleRing R] [FiniteDimensional F R] :
     ∃ (n : ℕ) (_ : NeZero n), Nonempty (R ≃ₐ[F] Matrix (Fin n) (Fin n) F) :=
   have := IsArtinianRing.of_finite F R
   have ⟨n, hn, D, _, _, _, ⟨e⟩⟩ := exists_algEquiv_matrix_divisionRing_finite F R
   ⟨n, hn, ⟨e.trans <| .mapMatrix <| .symm <| .ofBijective (Algebra.ofId F D)
     IsAlgClosed.algebraMap_bijective_of_isIntegral⟩⟩
+
+theorem IsSemisimpleRing.exists_algEquiv_matrix_of_isAlgClosed
+    [IsSemisimpleRing R] [FiniteDimensional F R] :
+    ∃ (n : ℕ) (d : Fin n → ℕ), (∀ i, NeZero (d i)) ∧
+      Nonempty (R ≃ₐ[F] Π i, Matrix (Fin (d i)) (Fin (d i)) F) :=
+  have ⟨n, D, d, _, _, _, hd, ⟨e⟩⟩ := exists_algEquiv_pi_matrix_divisionRing_finite F R
+  ⟨n, d, hd, ⟨e.trans <| .piCongrRight fun i ↦ .mapMatrix <| .symm <| .ofBijective
+    (Algebra.ofId F (D i)) IsAlgClosed.algebraMap_bijective_of_isIntegral⟩⟩

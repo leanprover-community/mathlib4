@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Equiv
+import Mathlib.Algebra.Algebra.Opposite
 
 /-!
 # The R-algebra structure on families of R-algebras
@@ -123,7 +124,7 @@ end AlgHom
 
 namespace AlgEquiv
 
-variable {R ι : Type*} {A₁ A₂ A₃ : ι → Type*}
+variable {R ι ι' : Type*} {A₁ A₂ A₃ : ι → Type*} (e : ι ≃ ι')
 variable [CommSemiring R] [∀ i, Semiring (A₁ i)] [∀ i, Semiring (A₂ i)] [∀ i, Semiring (A₃ i)]
 variable [∀ i, Algebra R (A₁ i)] [∀ i, Algebra R (A₂ i)] [∀ i, Algebra R (A₃ i)]
 
@@ -156,5 +157,26 @@ theorem piCongrRight_symm (e : ∀ i, A₁ i ≃ₐ[R] A₂ i) :
 theorem piCongrRight_trans (e₁ : ∀ i, A₁ i ≃ₐ[R] A₂ i) (e₂ : ∀ i, A₂ i ≃ₐ[R] A₃ i) :
     (piCongrRight e₁).trans (piCongrRight e₂) = piCongrRight fun i ↦ (e₁ i).trans (e₂ i) :=
   rfl
+
+variable (R A₁)
+
+/-- Transport dependent functions through an equivalence of the base space.
+
+This is `Equiv.piCongrLeft'` as an `AlgEquiv`. -/
+@[simps!] def piCongrLeft' : ((i : ι) → A₁ i) ≃ₐ[R] ((i : ι') → A₁ (e.symm i)) where
+  __ := RingEquiv.piCongrLeft' A₁ e
+  commutes' _ := rfl
+
+/-- Transport dependent functions through an equivalence of the base space.
+
+This is `Equiv.piCongrLeft` as a `RingEquiv`. -/
+@[simps!] def piCongrLeft (e : ι' ≃ ι) : ((i : ι') → A₁ (e i)) ≃ₐ[R] ((i : ι) → A₁ i) :=
+  (AlgEquiv.piCongrLeft' R A₁ e.symm).symm
+
+/-- The opposite of a direct product is isomorphic to the direct product of the opposites as
+algebras. -/
+def piMulOpposite : (Π i, A₁ i)ᵐᵒᵖ ≃ₐ[R] Π i, (A₁ i)ᵐᵒᵖ where
+  __ := RingEquiv.piMulOpposite A₁
+  commutes' _ := rfl
 
 end AlgEquiv
