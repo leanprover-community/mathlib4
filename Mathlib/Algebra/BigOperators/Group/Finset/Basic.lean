@@ -84,7 +84,7 @@ theorem prod_eq_one (h : ∀ x ∈ s, f x = 1) : ∏ x ∈ s, f x = 1 := calc
 
 /-- In a monoid whose only unit is `1`, a product is equal to `1` iff all factors are `1`. -/
 @[to_additive (attr := simp)
-"In a monoid whose only unit is `0`, a sum is equal to `0` iff all terms are `0`."]
+"In an additive monoid whose only unit is `0`, a sum is equal to `0` iff all terms are `0`."]
 lemma prod_eq_one_iff [Subsingleton Mˣ] : ∏ i ∈ s, f i = 1 ↔ ∀ i ∈ s, f i = 1 := by
   induction' s using Finset.cons_induction with i s hi ih <;> simp [*]
 
@@ -125,7 +125,7 @@ theorem prod_filter_mul_prod_filter_not
 @[to_additive]
 lemma prod_filter_not_mul_prod_filter (s : Finset ι) (p : ι → Prop) [DecidablePred p]
     [∀ x, Decidable (¬p x)] (f : ι → M) :
-    (∏ x ∈ s.filter fun x ↦ ¬p x, f x) * ∏ x ∈ s.filter p, f x = ∏ x ∈ s, f x := by
+    (∏ x ∈ s with ¬p x, f x) * ∏ x ∈ s with p x, f x = ∏ x ∈ s, f x := by
   rw [mul_comm, prod_filter_mul_prod_filter_not]
 
 @[to_additive]
@@ -526,11 +526,6 @@ theorem prod_range_add (f : ℕ → M) (n m : ℕ) :
   | zero => simp
   | succ m hm => rw [Nat.add_succ, prod_range_succ, prod_range_succ, hm, mul_assoc]
 
-@[to_additive]
-theorem prod_range_add_div_prod_range {ι : Type*} [CommGroup ι] (f : ℕ → ι) (n m : ℕ) :
-    (∏ k ∈ range (n + m), f k) / ∏ k ∈ range n, f k = ∏ k ∈ Finset.range m, f (n + k) :=
-  div_eq_of_eq_mul' (prod_range_add f n m)
-
 @[to_additive sum_range_one]
 theorem prod_range_one (f : ℕ → M) : ∏ k ∈ range 1, f k = f 0 := by
   rw [range_one, prod_singleton]
@@ -687,8 +682,7 @@ theorem prod_comp [DecidableEq κ] (f : κ → M) (g : ι → κ) :
 @[to_additive "A sum can be partitioned into a sum of sums, each equivalent under a setoid."]
 theorem prod_partition (R : Setoid ι) [DecidableRel R.r] :
     ∏ x ∈ s, f x = ∏ xbar ∈ s.image (Quotient.mk _), ∏ y ∈ s with ⟦y⟧ = xbar, f y := by
-  classical
-  convert (Finset.prod_image' f fun x _hx => ?_).symm
+  refine (Finset.prod_image' f fun x _hx => ?_).symm
   rfl
 
 /-- If we can partition a product into subsets that cancel out, then the whole product cancels. -/
@@ -810,8 +804,7 @@ conclusion is the same as in `prod_image`. -/
 @[to_additive (attr := simp)
 "A version of `Finset.sum_map` and `Finset.sum_image`, but we do not assume that `f` is
 injective. Rather, we assume that the images of `f` are disjoint on `I`, and `g ⊥ = 0`. The
-conclusion is the same as in `sum_image`."
-]
+conclusion is the same as in `sum_image`."]
 lemma prod_image_of_disjoint [DecidableEq ι] [PartialOrder ι] [OrderBot ι] {f : κ → ι} {g : ι → M}
     (hg_bot : g ⊥ = 1) {I : Finset κ} (hf_disj : (I : Set κ).PairwiseDisjoint f) :
     ∏ s ∈ I.image f, g s = ∏ i ∈ I, g (f i) := by
@@ -824,10 +817,9 @@ theorem prod_unique_nonempty [Unique ι] (s : Finset ι) (f : ι → M) (h : s.N
    ∏ x ∈ s, f x = f default := by
   rw [h.eq_singleton_default, Finset.prod_singleton]
 
-
-theorem prod_dvd_prod_of_dvd {S : Finset ι} (g1 g2 : ι → M) (h : ∀ a ∈ S, g1 a ∣ g2 a) :
-    S.prod g1 ∣ S.prod g2 := by
-  induction S using Finset.cons_induction with
+lemma prod_dvd_prod_of_dvd (f g : ι → M) (h : ∀ i ∈ s, f i ∣ g i) :
+    ∏ i ∈ s, f i ∣ ∏ i ∈ s, g i := by
+  induction s using Finset.cons_induction with
   | empty => simp
   | cons a T haT IH =>
     rw [Finset.prod_cons, Finset.prod_cons]
@@ -884,6 +876,11 @@ lemma eq_prod_range_div' (f : ℕ → G) (n : ℕ) :
     f n = ∏ i ∈ range (n + 1), if i = 0 then f 0 else f i / f (i - 1) := by
   conv_lhs => rw [Finset.eq_prod_range_div f]
   simp [Finset.prod_range_succ', mul_comm]
+
+@[to_additive]
+lemma prod_range_add_div_prod_range (f : ℕ → G) (n m : ℕ) :
+    (∏ k ∈ range (n + m), f k) / ∏ k ∈ range n, f k = ∏ k ∈ Finset.range m, f (n + k) :=
+  div_eq_of_eq_mul' (prod_range_add f n m)
 
 @[to_additive (attr := simp)]
 lemma prod_sdiff_eq_div (h : s₁ ⊆ s₂) : ∏ x ∈ s₂ \ s₁, f x = (∏ x ∈ s₂, f x) / ∏ x ∈ s₁, f x := by
