@@ -270,7 +270,7 @@ variable {B : Type*} [PartialOrder B] [NonUnitalRing B] [TopologicalSpace B] [St
   [NonnegSpectrumClass ℝ B] [NonnegSpectrumClass ℝ (A × B)]
 
 lemma sqrt_map_prod {a : A} {b : B} (ha : 0 ≤ a := by cfc_tac) (hb : 0 ≤ b := by cfc_tac) :
-    sqrt (⟨a, b⟩ : A × B) = ⟨sqrt a, sqrt b⟩ := by
+    sqrt (a, b) = (sqrt a, sqrt b) := by
   simp only [sqrt_eq_nnrpow]
   exact nnrpow_map_prod
 
