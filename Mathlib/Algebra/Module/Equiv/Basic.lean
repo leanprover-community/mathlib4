@@ -482,6 +482,8 @@ end Neg
 
 section Semiring
 
+section
+
 open LinearMap
 
 variable {M₂₁ M₂₂ : Type*} [Semiring R] [AddCommMonoid M₁] [AddCommMonoid M₂]
@@ -512,6 +514,26 @@ See `LinearEquiv.conj` for the linear version of this isomorphism. -/
 def conjRingEquiv (e : M₁ ≃ₗ[R] M₂) : Module.End R M₁ ≃+* Module.End R M₂ where
   __ := arrowCongrAddEquiv e e
   map_mul' _ _ := by ext; simp [arrowCongrAddEquiv]
+
+end
+
+section Module
+
+variable {R : Type*} [Semiring R]
+  {E G : Type*} [AddCommMonoid E] [Module R E] [AddCommMonoid G] [Module R G] [Unique G]
+
+variable (R E G) in
+/-- The natural equivalence `E × G ≃ₗ[𝕜] E` for any `Unique` type `G`.
+This is `Equiv.prodUnique` as a linear equivalence. -/
+def prodUnique : (E × G) ≃ₗ[R] E where
+  toEquiv := Equiv.prodUnique E G
+  map_add' x y := by simp
+  map_smul' r x := by simp
+
+@[simp]
+lemma coe_prodUnique : (prodUnique R E G : (E × G) ≃ E) = Equiv.prodUnique E G := rfl
+
+end Module
 
 end Semiring
 
