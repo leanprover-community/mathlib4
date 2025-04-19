@@ -5,6 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.RingTheory.Finiteness.Finsupp
 import Mathlib.RingTheory.Ideal.Maps
+import Mathlib.RingTheory.Nilpotent.Lemmas
 
 /-!
 # Finitely generated ideals
@@ -87,5 +88,10 @@ lemma exists_pow_le_of_le_radical_of_fg {R : Type*} [CommSemiring R] {I J : Idea
     obtain ⟨n₂, hn₂⟩ := h₂ (le_sup_right.trans hJ)
     use n₁ + n₂
     exact Ideal.sup_pow_add_le_pow_sup_pow.trans (sup_le hn₁ hn₂)
+
+lemma isNilpotent_iff_le_nilradical {R : Type*} [CommSemiring R] {I : Ideal R} (hI : I.FG) :
+  IsNilpotent I ↔ I ≤ nilradical R :=
+⟨fun ⟨n, hn⟩ _ hx => ⟨n, hn ▸ Ideal.pow_mem_pow hx n⟩,
+  fun h => let ⟨n, hn⟩ := exists_pow_le_of_le_radical_of_fg h hI; ⟨n, le_bot_iff.mp hn⟩⟩
 
 end Ideal

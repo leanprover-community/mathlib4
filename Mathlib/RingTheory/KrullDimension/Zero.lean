@@ -99,6 +99,14 @@ theorem Ring.KrullDimLE.eq_maximalIdeal_of_isPrime [IsLocalRing R] (J : Ideal R)
   (((Ring.krullDimLE_zero_and_isLocalRing_tfae R).out 0 1 rfl rfl).mp ⟨‹_›, ‹_›⟩).unique
     ‹_› inferInstance
 
+lemma Ring.KrullDimLE.radical_eq_maximalIdeal [IsLocalRing R] (I : Ideal R) (hI : I ≠ ⊤) :
+    I.radical = IsLocalRing.maximalIdeal R := by
+  rw [Ideal.radical_eq_sInf]
+  refine (sInf_le ?_).antisymm (le_sInf ?_)
+  · exact ⟨IsLocalRing.le_maximalIdeal hI, inferInstance⟩
+  · rintro J ⟨h₁, h₂⟩
+    exact (Ring.KrullDimLE.eq_maximalIdeal_of_isPrime J).ge
+
 variable (R) in
 theorem Ring.KrullDimLE.subsingleton_primeSpectrum [IsLocalRing R] :
     Subsingleton (PrimeSpectrum R) :=
