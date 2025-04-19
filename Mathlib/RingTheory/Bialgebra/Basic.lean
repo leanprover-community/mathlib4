@@ -189,3 +189,20 @@ abbrev ofAlgHom (comul : A →ₐ[R] (A ⊗[R] A)) (counit : A →ₐ[R] R)
   .mk' _ _ (map_one counit) (map_mul counit _ _) (map_one comul) (map_mul comul _ _)
 
 end Bialgebra
+
+namespace Bialgebra
+
+variable (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Bialgebra R A]
+
+lemma algebraMap_injective : Function.Injective (algebraMap R A) :=
+  fun a b eq  ↦ by rw [← counit_algebraMap (A := A) a, ← counit_algebraMap (A := A) b, eq]
+
+include R in
+/--
+A bialgebra over a nontrivial ring is nontrivial.
+-/
+lemma nontrivial [Nontrivial R] : Nontrivial A :=
+  Set.nontrivial_of_nontrivial (s := (algebraMap R A) '' ⊤) ((Set.image_nontrivial
+  (algebraMap_injective R A)).mpr Set.nontrivial_univ)
+
+end Bialgebra
