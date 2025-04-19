@@ -3,7 +3,7 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.LinearAlgebra.RootSystem.Defs
+import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
 import Mathlib.LinearAlgebra.RootSystem.WeylGroup
 
 /-!
@@ -138,7 +138,7 @@ lemma two_mul_apply_root_root :
 values in `S`, this is the associated `S`-bilinear form on the `S`-span of the roots. -/
 def posForm :
     LinearMap.BilinForm S (span S (range P.root)) :=
-  LinearMap.restrictScalarsRange (span S (range P.root)).subtype (span S (range P.root)).subtype
+  LinearMap.restrictScalarsRange₂ (span S (range P.root)).subtype (span S (range P.root)).subtype
   (Algebra.linearMap S R) (FaithfulSMul.algebraMap_injective S R) B.form
   (fun ⟨x, hx⟩ ⟨y, hy⟩ ↦ by
     apply LinearMap.BilinMap.apply_apply_mem_of_mem_span

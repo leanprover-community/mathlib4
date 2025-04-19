@@ -3,7 +3,7 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.RootSystem.Defs
+import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
 
 /-!
 # Bases for root pairings / systems
@@ -104,12 +104,12 @@ lemma span_int_coroot_support :
 
 @[simp]
 lemma span_root_support :
-    span R (P.root '' b.support) = P.rootSpan := by
+    span R (P.root '' b.support) = P.rootSpan R := by
   rw [← span_span_of_tower (R := ℤ), span_int_root_support, span_span_of_tower]
 
 @[simp]
 lemma span_coroot_support :
-    span R (P.coroot '' b.support) = P.corootSpan :=
+    span R (P.coroot '' b.support) = P.corootSpan R :=
   b.flip.span_root_support
 
 open Finsupp in
