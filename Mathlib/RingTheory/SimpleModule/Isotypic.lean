@@ -5,7 +5,6 @@ Authors: Junyan Xu
 -/
 import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Order.CompleteSublattice
-import Mathlib.RingTheory.Noetherian.Basic
 import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
