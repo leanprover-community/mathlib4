@@ -58,23 +58,29 @@ theorem map_fst' (f : α → γ) (g : β → δ) : Prod.fst ∘ map f g = f ∘ 
 theorem map_snd' (f : α → γ) (g : β → δ) : Prod.snd ∘ map f g = g ∘ Prod.snd :=
   funext <| map_snd f g
 
--- Porting note: `@[simp]` tag removed because auto-generated `mk.injEq` simplifies LHS
--- @[simp]
-theorem mk.inj_iff {a₁ a₂ : α} {b₁ b₂ : β} : (a₁, b₁) = (a₂, b₂) ↔ a₁ = a₂ ∧ b₁ = b₂ :=
-  Iff.of_eq (mk.injEq _ _ _ _)
+theorem mk_inj {a₁ a₂ : α} {b₁ b₂ : β} : (a₁, b₁) = (a₂, b₂) ↔ a₁ = a₂ ∧ b₁ = b₂ := by simp
 
-theorem mk.inj_left {α β : Type*} (a : α) : Function.Injective (Prod.mk a : β → α × β) := by
+@[deprecated (since := "2025-03-06")] alias mk.inj_iff := mk_inj
+
+theorem mk_right_injective {α β : Type*} (a : α) : (mk a : β → α × β).Injective := by
   intro b₁ b₂ h
-  simpa only [true_and, Prod.mk.inj_iff, eq_self_iff_true] using h
+  simpa only [true_and, Prod.mk_inj, eq_self_iff_true] using h
 
-theorem mk.inj_right {α β : Type*} (b : β) :
-    Function.Injective (fun a ↦ Prod.mk a b : α → α × β) := by
+@[deprecated (since := "2025-03-06")] alias mk.inj_left := mk_right_injective
+
+theorem mk_left_injective {α β : Type*} (b : β) : (fun a ↦ mk a b : α → α × β).Injective := by
   intro b₁ b₂ h
-  simpa only [and_true, eq_self_iff_true, mk.inj_iff] using h
+  simpa only [and_true, eq_self_iff_true, mk_inj] using h
 
-lemma mk_inj_left {a : α} {b₁ b₂ : β} : (a, b₁) = (a, b₂) ↔ b₁ = b₂ := (mk.inj_left _).eq_iff
+@[deprecated (since := "2025-03-06")] alias mk.inj_right := mk_left_injective
 
-lemma mk_inj_right {a₁ a₂ : α} {b : β} : (a₁, b) = (a₂, b) ↔ a₁ = a₂ := (mk.inj_right _).eq_iff
+lemma mk_right_inj {a : α} {b₁ b₂ : β} : (a, b₁) = (a, b₂) ↔ b₁ = b₂ :=
+    (mk_right_injective _).eq_iff
+
+lemma mk_left_inj {a₁ a₂ : α} {b : β} : (a₁, b) = (a₂, b) ↔ a₁ = a₂ := (mk_left_injective _).eq_iff
+
+@[deprecated (since := "2025-03-06")] alias mk_inj_left := mk_right_inj
+@[deprecated (since := "2025-03-06")] alias mk_inj_right := mk_left_inj
 
 theorem map_def {f : α → γ} {g : β → δ} : Prod.map f g = fun p : α × β ↦ (f p.1, g p.2) :=
   funext fun p ↦ Prod.ext (map_fst f g p) (map_snd f g p)
@@ -194,6 +200,14 @@ instance IsTrichotomous [IsTrichotomous α r] [IsTrichotomous β s] :
   { exact Or.inl (Lex.left _ _ hij) }
   { exact (trichotomous_of (s) a b).imp3 (Lex.right _) (congr_arg _) (Lex.right _) }
   { exact Or.inr (Or.inr <| Lex.left _ _ hji) }⟩
+
+instance [IsAsymm α r] [IsAsymm β s] :
+    IsAsymm (α × β) (Prod.Lex r s) where
+  asymm
+  | (_a₁, _a₂), (_b₁, _b₂), .left _ _ h₁, .left _ _ h₂ => IsAsymm.asymm _ _ h₂ h₁
+  | (_a₁, _a₂), (_, _b₂), .left _ _ h₁, .right _ _ => IsAsymm.asymm _ _ h₁ h₁
+  | (_a₁, _a₂), (_, _b₂), .right _ _, .left _ _ h₂ => IsAsymm.asymm _ _ h₂ h₂
+  | (_a₁, _a₂), (_, _b₂), .right _ h₁, .right _ h₂ => IsAsymm.asymm _ _ h₁ h₂
 
 end Prod
 

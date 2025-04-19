@@ -7,10 +7,7 @@ import Mathlib.Topology.Compactness.Compact
 /-!
 # Locally compact spaces
 
-We define the following classes of topological spaces:
-* `WeaklyLocallyCompactSpace`: every point `x` has a compact neighborhood.
-* `LocallyCompactSpace`: for every point `x`, every open neighborhood of `x` contains a compact
-  neighborhood of `x`. The definition is formulated in terms of the neighborhood filter.
+This file contains basic results about locally compact spaces.
 -/
 
 open Set Filter Topology TopologicalSpace

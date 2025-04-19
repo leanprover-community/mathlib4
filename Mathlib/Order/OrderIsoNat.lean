@@ -223,7 +223,7 @@ theorem WellFoundedGT.monotone_chain_condition' [Preorder α] [h : WellFoundedGT
 
 /-- A stronger version of the **monotone chain** condition for partial orders.
 
-See `wellFoundedGT_iff_monotone_chain_condition'` for a version on preorders.  -/
+See `wellFoundedGT_iff_monotone_chain_condition'` for a version on preorders. -/
 theorem wellFoundedGT_iff_monotone_chain_condition [PartialOrder α] :
     WellFoundedGT α ↔ ∀ a : ℕ →o α, ∃ n, ∀ m, n ≤ m → a n = a m :=
   wellFoundedGT_iff_monotone_chain_condition'.trans <| by
@@ -265,7 +265,7 @@ theorem WellFoundedGT.iSup_eq_monotonicSequenceLimit [CompleteLattice α]
   refine (iSup_le fun m => ?_).antisymm (le_iSup a _)
   rcases le_or_lt m (monotonicSequenceLimitIndex a) with hm | hm
   · exact a.monotone hm
-  · cases' WellFoundedGT.monotone_chain_condition' a with n hn
+  · obtain ⟨n, hn⟩ := WellFoundedGT.monotone_chain_condition' a
     have : n ∈ {n | ∀ m, n ≤ m → a n = a m} := fun k hk => (a.mono hk).eq_of_not_lt (hn k hk)
     exact (Nat.sInf_mem ⟨n, this⟩ m hm.le).ge
 
@@ -292,3 +292,14 @@ theorem exists_covBy_seq_of_wellFoundedLT_wellFoundedGT (α) [Preorder α]
     by_contra!
     exact (RelEmbedding.natGT a fun n ↦ (cov n (this n)).1).not_wellFounded_of_decreasing_seq wfg.wf
   exact ⟨_, wellFounded_lt.min_mem _ H, fun i h ↦ cov _ fun h' ↦ wellFounded_lt.not_lt_min _ H h' h⟩
+
+theorem exists_covBy_seq_of_wellFoundedLT_wellFoundedGT_of_le {α : Type*} [PartialOrder α]
+    [wfl : WellFoundedLT α] [wfg : WellFoundedGT α] {x y : α} (h : x ≤ y) :
+    ∃ a : ℕ → α, a 0 = x ∧ ∃ n, a n = y ∧ ∀ i < n, a i ⋖ a (i + 1) := by
+  let S := Set.Icc x y
+  let hS : BoundedOrder S :=
+    { top := ⟨y, h, le_rfl⟩, le_top x := x.2.2, bot := ⟨x, le_rfl, h⟩, bot_le x := x.2.1 }
+  obtain ⟨a, h₁, n, h₂, e⟩ := exists_covBy_seq_of_wellFoundedLT_wellFoundedGT S
+  simp only [isMin_iff_eq_bot, Subtype.ext_iff, isMax_iff_eq_top] at h₁ h₂
+  exact ⟨Subtype.val ∘ a, h₁, n, h₂, fun i hi ↦ ⟨(e i hi).1, fun c hc h ↦ (e i hi).2
+    (c := ⟨c, (a i).2.1.trans hc.le, h.le.trans (a _).2.2⟩) hc h⟩⟩

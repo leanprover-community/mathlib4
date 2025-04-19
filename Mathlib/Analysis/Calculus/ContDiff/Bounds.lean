@@ -3,7 +3,7 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Basic
+import Mathlib.Analysis.Calculus.ContDiff.Operations
 import Mathlib.Data.Finset.Sym
 import Mathlib.Data.Nat.Choose.Cast
 import Mathlib.Data.Nat.Choose.Multinomial
@@ -112,7 +112,7 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear_aux {Du Eu 
     have A' : ContDiffOn 𝕜 n (fun y => B.precompL Du (fderivWithin 𝕜 f s y) (g y)) s :=
       (B.precompL Du).isBoundedBilinearMap.contDiff.comp₂_contDiffOn (hf.fderivWithin hs In)
         (hg.of_le (Nat.cast_le.2 (Nat.le_succ n)))
-    rw [iteratedFDerivWithin_add_apply' A A' hs hx]
+    rw [iteratedFDerivWithin_add_apply' (A.contDiffWithinAt hx) (A'.contDiffWithinAt hx) hs hx]
     apply (norm_add_le _ _).trans ((add_le_add I1 I2).trans (le_of_eq ?_))
     simp_rw [← mul_add, mul_assoc]
     congr 1
@@ -435,8 +435,6 @@ theorem norm_iteratedFDerivWithin_comp_le_aux {Fu Gu : Type u} [NormedAddCommGro
     -- We are left with trivial algebraic manipulations to see that this is smaller than
     -- the claimed bound.
     _ = ∑ i ∈ Finset.range (n + 1),
-      -- Porting note: had to insert a few more explicit type ascriptions in this and similar
-      -- expressions.
         (n ! : ℝ) * ((i ! : ℝ)⁻¹ * i !) * C * (D ^ i * D ^ (n - i + 1)) * ((n - i)! : ℝ)⁻¹ := by
       congr! 1 with i hi
       simp only [Nat.cast_choose ℝ (Finset.mem_range_succ_iff.1 hi), div_eq_inv_mul, mul_inv]

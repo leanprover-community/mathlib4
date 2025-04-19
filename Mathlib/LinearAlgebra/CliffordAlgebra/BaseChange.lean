@@ -156,8 +156,7 @@ attribute [ext] TensorProduct.ext
 theorem toBaseChange_comp_ofBaseChange (Q : QuadraticForm R V) :
     (toBaseChange A Q).comp (ofBaseChange A Q) = AlgHom.id _ _ := by
   ext v
-  change toBaseChange A Q (ofBaseChange A Q (1 ⊗ₜ[R] ι Q v)) = 1 ⊗ₜ[R] ι Q v
-  rw [ofBaseChange_tmul_ι, toBaseChange_ι]
+  simp
 
 @[simp] theorem toBaseChange_ofBaseChange (Q : QuadraticForm R V) (x : A ⊗[R] CliffordAlgebra Q) :
     toBaseChange A Q (ofBaseChange A Q x) = x :=

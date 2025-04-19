@@ -36,8 +36,8 @@ namespace MultilinearMap
 section Semiring
 variable {M : ∀ i, κ i → Type uM} {N : Type uN}
 
-variable [DecidableEq ι] [Fintype ι] [Semiring R]
-variable [∀ i k, AddCommMonoid (M i k)] [ AddCommMonoid N]
+variable [Finite ι] [Semiring R]
+variable [∀ i k, AddCommMonoid (M i k)] [AddCommMonoid N]
 variable [∀ i k, Module R (M i k)] [Module R N]
 
 /-- Two multilinear maps from finitely supported functions are equal if they agree on the
@@ -53,6 +53,7 @@ theorem dfinsupp_ext [∀ i, DecidableEq (κ i)]
   ext x
   show f (fun i ↦ x i) = g (fun i ↦ x i)
   classical
+  cases nonempty_fintype ι
   rw [funext (fun i ↦ Eq.symm (DFinsupp.sum_single (f := x i)))]
   simp_rw [DFinsupp.sum, MultilinearMap.map_sum_finset]
   congr! 1 with p
@@ -97,11 +98,9 @@ def dfinsuppFamily
         refine ⟨fun i _ => p i, fun i => (s i).prop _ |>.resolve_right ?_, rfl⟩
         exact mt ((f p).map_coord_zero (m := fun i => x i _) i) h⟩}
   map_update_add' {dec} m i x y := DFinsupp.ext fun p => by
-    cases Subsingleton.elim dec (by infer_instance)
     dsimp
     simp_rw [Function.apply_update (fun i m => m (p i)) m, DFinsupp.add_apply, (f p).map_update_add]
   map_update_smul' {dec} m i c x := DFinsupp.ext fun p => by
-    cases Subsingleton.elim dec (by infer_instance)
     dsimp
     simp_rw [Function.apply_update (fun i m => m (p i)) m, DFinsupp.smul_apply,
       (f p).map_update_smul]

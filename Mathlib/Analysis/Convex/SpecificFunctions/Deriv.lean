@@ -50,7 +50,8 @@ theorem Even.strictConvexOn_pow {n : ℕ} (hn : Even n) (h : n ≠ 0) :
   exact StrictMono.const_mul (Odd.strictMono_pow <| Nat.Even.sub_odd h hn <| Nat.odd_iff.2 rfl)
     (Nat.cast_pos.2 h)
 
-theorem Finset.prod_nonneg_of_card_nonpos_even {α β : Type*} [LinearOrderedCommRing β] {f : α → β}
+theorem Finset.prod_nonneg_of_card_nonpos_even {α β : Type*}
+    [CommRing β] [LinearOrder β] [IsStrictOrderedRing β] {f : α → β}
     [DecidablePred fun x => f x ≤ 0] {s : Finset α} (h0 : Even (s.filter fun x => f x ≤ 0).card) :
     0 ≤ ∏ x ∈ s, f x :=
   calc
@@ -113,7 +114,7 @@ theorem hasDerivAt_sqrt_mul_log {x : ℝ} (hx : x ≠ 0) :
 
 theorem deriv_sqrt_mul_log (x : ℝ) :
     deriv (fun x => √x * log x) x = (2 + log x) / (2 * √x) := by
-  cases' lt_or_le 0 x with hx hx
+  rcases lt_or_le 0 x with hx | hx
   · exact (hasDerivAt_sqrt_mul_log hx.ne').deriv
   · rw [sqrt_eq_zero_of_nonpos hx, mul_zero, div_zero]
     refine HasDerivWithinAt.deriv_eq_zero ?_ (uniqueDiffOn_Iic 0 x hx)

@@ -61,8 +61,8 @@ private theorem cuspFunction_eqOn_const_of_nonpos_wt (hk : k ≤ 0) (f : F) :
     rcases eq_or_ne q 0 with rfl | hq'
     · refine ⟨0, by simpa only [norm_zero] using exp_nonneg _, le_rfl⟩
     · obtain ⟨ξ, hξ, hξ₂⟩ := exists_one_half_le_im_and_norm_le hk f
-        ⟨_, im_invQParam_pos_of_abs_lt_one Real.zero_lt_one (mem_ball_zero_iff.mp hq) hq'⟩
-      exact ⟨_, abs_qParam_le_of_one_half_le_im hξ,
+        ⟨_, im_invQParam_pos_of_norm_lt_one Real.zero_lt_one (mem_ball_zero_iff.mp hq) hq'⟩
+      exact ⟨_, norm_qParam_le_of_one_half_le_im hξ,
         by simpa only [← eq_cuspFunction 1 f, Nat.cast_one, coe_mk_subtype,
           qParam_right_inv one_ne_zero hq'] using hξ₂⟩
 
@@ -70,8 +70,8 @@ private theorem levelOne_nonpos_wt_const (hk : k ≤ 0) (f : F) :
     ⇑f = Function.const _ (cuspFunction 1 f 0) := by
   ext z
   have hQ : 𝕢 1 z ∈ (Metric.ball 0 1) := by
-    simpa only [Metric.mem_ball, dist_zero_right, Complex.norm_eq_abs, neg_mul, mul_zero, div_one,
-      Real.exp_zero] using (abs_qParam_lt_iff zero_lt_one 0 z.1).mpr z.2
+    simpa only [Metric.mem_ball, dist_zero_right, neg_mul, mul_zero, div_one, Real.exp_zero]
+      using (norm_qParam_lt_iff zero_lt_one 0 z.1).mpr z.2
   simpa only [← eq_cuspFunction 1 f z, Nat.cast_one, Function.const_apply] using
     (cuspFunction_eqOn_const_of_nonpos_wt hk f) hQ
 

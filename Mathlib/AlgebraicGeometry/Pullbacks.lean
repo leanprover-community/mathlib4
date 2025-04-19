@@ -82,12 +82,12 @@ theorem t_id (i : 𝒰.J) : t 𝒰 f g i i = 𝟙 _ := by
     · simp only [Category.assoc, t_fst_snd]
   · rw [← cancel_mono (𝒰.map i)]; simp only [pullback.condition, t_snd, Category.assoc]
 
-/-- The inclusion map of `V i j = (Uᵢ ×[Z] Y) ×[X] Uⱼ ⟶ Uᵢ ×[Z] Y`-/
+/-- The inclusion map of `V i j = (Uᵢ ×[Z] Y) ×[X] Uⱼ ⟶ Uᵢ ×[Z] Y` -/
 abbrev fV (i j : 𝒰.J) : v 𝒰 f g i j ⟶ pullback (𝒰.map i ≫ f) g :=
   pullback.fst _ _
 
 /-- The map `((Xᵢ ×[Z] Y) ×[X] Xⱼ) ×[Xᵢ ×[Z] Y] ((Xᵢ ×[Z] Y) ×[X] Xₖ)` ⟶
-  `((Xⱼ ×[Z] Y) ×[X] Xₖ) ×[Xⱼ ×[Z] Y] ((Xⱼ ×[Z] Y) ×[X] Xᵢ)` needed for gluing   -/
+ `((Xⱼ ×[Z] Y) ×[X] Xₖ) ×[Xⱼ ×[Z] Y] ((Xⱼ ×[Z] Y) ×[X] Xᵢ)` needed for gluing -/
 def t' (i j k : 𝒰.J) :
     pullback (fV 𝒰 f g i j) (fV 𝒰 f g i k) ⟶ pullback (fV 𝒰 f g j k) (fV 𝒰 f g j i) := by
   refine (pullbackRightPullbackFstIso ..).hom ≫ ?_
@@ -191,7 +191,7 @@ theorem cocycle (i j k : 𝒰.J) : t' 𝒰 f g i j k ≫ t' 𝒰 f g j k i ≫ t
     · simp_rw [Category.assoc, cocycle_snd_snd 𝒰 f g i j k]
 
 /-- Given `Uᵢ ×[Z] Y`, this is the glued fibered product `X ×[Z] Y`. -/
-@[simps U V f t t', simps (config := .lemmasOnly) J]
+@[simps U V f t t', simps -isSimp J]
 def gluing : Scheme.GlueData.{u} where
   J := 𝒰.J
   U i := pullback (𝒰.map i ≫ f) g
@@ -451,7 +451,7 @@ instance : HasPullbacks Scheme :=
 instance isAffine_of_isAffine_isAffine_isAffine {X Y Z : Scheme}
     (f : X ⟶ Z) (g : Y ⟶ Z) [IsAffine X] [IsAffine Y] [IsAffine Z] :
     IsAffine (pullback f g) :=
-  isAffine_of_isIso
+  .of_isIso
     (pullback.map f g (Spec.map (Γ.map f.op)) (Spec.map (Γ.map g.op))
         X.toSpecΓ Y.toSpecΓ Z.toSpecΓ
         (Scheme.toSpecΓ_naturality f) (Scheme.toSpecΓ_naturality g) ≫
@@ -547,7 +547,7 @@ def diagonalCover : (pullback.diagonalObj f).OpenCover :=
   (openCoverOfBase 𝒰 f f).bind
     fun i ↦ openCoverOfLeftRight (𝒱 i) (𝒱 i) (𝒰.pullbackHom _ _) (𝒰.pullbackHom _ _)
 
-/-- The image of `𝒱 i j₁ ×[𝒰 i] 𝒱 i j₂` in `diagonalCover` with `j₁ = j₂`  -/
+/-- The image of `𝒱 i j₁ ×[𝒰 i] 𝒱 i j₂` in `diagonalCover` with `j₁ = j₂` -/
 noncomputable
 def diagonalCoverDiagonalRange : (pullback.diagonalObj f).Opens :=
   ⨆ i : Σ i, (𝒱 i).J, ((diagonalCover f 𝒰 𝒱).map ⟨i.1, i.2, i.2⟩).opensRange
@@ -613,7 +613,7 @@ variable (R S T : Type u) [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [
 open TensorProduct Algebra.TensorProduct CommRingCat RingHomClass
 
 /-- The isomorphism between the fiber product of two schemes `Spec S` and `Spec T`
-over a scheme `Spec R` and the `Spec` of the tensor product `S ⊗[R] T`.-/
+over a scheme `Spec R` and the `Spec` of the tensor product `S ⊗[R] T`. -/
 noncomputable
 def pullbackSpecIso :
     pullback (Spec.map (CommRingCat.ofHom (algebraMap R S)))

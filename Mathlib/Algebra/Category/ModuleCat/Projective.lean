@@ -5,7 +5,7 @@ Authors: Markus Himmel, Kim Morrison
 -/
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.Algebra.Module.Projective
-import Mathlib.CategoryTheory.Preadditive.Projective
+import Mathlib.CategoryTheory.Preadditive.Projective.Basic
 import Mathlib.Data.Finsupp.SMul
 import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 

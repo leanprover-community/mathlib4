@@ -318,7 +318,7 @@ private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₃
         measurableSet_Ioi]
       · exact h₁.mono_set <| Set.Ioc_subset_Ioi_self.trans Set.Ioi_subset_Ici_self
       · exact h₁.mono_set <| Set.Ioi_subset_Ici_self.trans <| Set.Ici_subset_Ici.mpr hT₁
-    -- The first part can be bounded by `C`  using `h₄`.
+    -- The first part can be bounded by `C` using `h₄`.
     _ ≤ (s - 1) * s * C + s * ((s - 1) * ∫ t in Set.Ioi T, ‖S t - l * t‖ * t ^ (-s - 1)) := by
       rw [mul_add, ← mul_assoc, mul_comm s]
       exact add_le_add_right (mul_le_mul_of_nonneg_left h₄ hs') _

@@ -3,10 +3,13 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.Order.Group.OrderIso
-import Mathlib.Data.Set.Pointwise.SMul
-import Mathlib.Order.Filter.AtTopBot
+import Mathlib.Algebra.Order.Monoid.Defs
+import Mathlib.Algebra.Ring.Defs
+import Mathlib.Order.Filter.AtTopBot.Map
+import Mathlib.Order.Filter.Finite
 import Mathlib.Order.Filter.NAry
 import Mathlib.Order.Filter.Ultrafilter.Defs
 
@@ -129,8 +132,6 @@ theorem tendsto_one {a : Filter β} {f : β → α} : Tendsto f a 1 ↔ ∀ᶠ x
 theorem one_prod_one [One β] : (1 : Filter α) ×ˢ (1 : Filter β) = 1 :=
   prod_pure_pure
 
-@[deprecated (since := "2024-08-16")] alias zero_sum_zero := zero_prod_zero
-
 /-- `pure` as a `OneHom`. -/
 @[to_additive "`pure` as a `ZeroHom`."]
 def pureOneHom : OneHom α (Filter α) where
@@ -231,7 +232,8 @@ theorem inv_le_self : f⁻¹ ≤ f ↔ f⁻¹ = f :=
 end InvolutiveInv
 
 @[to_additive (attr := simp)]
-lemma inv_atTop {G : Type*} [OrderedCommGroup G] : (atTop : Filter G)⁻¹ = atBot :=
+lemma inv_atTop {G : Type*} [CommGroup G] [PartialOrder G] [IsOrderedMonoid G] :
+    (atTop : Filter G)⁻¹ = atBot :=
   (OrderIso.inv G).map_atTop
 
 /-! ### Filter addition/multiplication -/
@@ -1007,19 +1009,19 @@ instance smulCommClass [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
     SMulCommClass (Filter α) (Filter β) (Filter γ) :=
   ⟨fun _ _ _ => map₂_left_comm smul_comm⟩
 
-@[to_additive vaddAssocClass]
+@[to_additive]
 instance isScalarTower [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower α β (Filter γ) :=
   ⟨fun a b f => by simp only [← Filter.map_smul, map_map, smul_assoc]; rfl⟩
 
-@[to_additive vaddAssocClass']
+@[to_additive]
 instance isScalarTower' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower α (Filter β) (Filter γ) :=
   ⟨fun a f g => by
     refine (map_map₂_distrib_left fun _ _ => ?_).symm
     exact (smul_assoc a _ _).symm⟩
 
-@[to_additive vaddAssocClass'']
+@[to_additive]
 instance isScalarTower'' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower (Filter α) (Filter β) (Filter γ) :=
   ⟨fun _ _ _ => map₂_assoc smul_assoc⟩

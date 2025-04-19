@@ -122,6 +122,7 @@ theorem ker_restrict [AddCommMonoid M₁] [Module R M₁] {p : Submodule R M} {q
 theorem ker_zero : ker (0 : M →ₛₗ[τ₁₂] M₂) = ⊤ :=
   eq_top_iff'.2 fun x => by simp
 
+@[simp]
 theorem ker_eq_top {f : M →ₛₗ[τ₁₂] M₂} : ker f = ⊤ ↔ f = 0 :=
   ⟨fun h => ext fun _ => mem_ker.1 <| h.symm ▸ trivial, fun h => h.symm ▸ ker_zero⟩
 
@@ -172,12 +173,9 @@ theorem injOn_of_disjoint_ker {p : Submodule R M} {s : Set M} (h : s ⊆ p)
     (hd : Disjoint p (ker f)) : Set.InjOn f s := fun _ hx _ hy =>
   disjoint_ker'.1 hd _ (h hx) _ (h hy)
 
-variable (F)
-
+variable (F) in
 theorem _root_.LinearMapClass.ker_eq_bot : ker f = ⊥ ↔ Injective f := by
   simpa [disjoint_iff_inf_le] using disjoint_ker' (f := f) (p := ⊤)
-
-variable {F}
 
 theorem ker_eq_bot {f : M →ₛₗ[τ₁₂] M₂} : ker f = ⊥ ↔ Injective f :=
   LinearMapClass.ker_eq_bot _

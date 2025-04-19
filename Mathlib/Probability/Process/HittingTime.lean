@@ -285,7 +285,7 @@ variable {u : ι → Ω → β} {s : Set β}
 
 theorem hitting_bot_le_iff {i n : ι} {ω : Ω} (hx : ∃ j, j ≤ n ∧ u j ω ∈ s) :
     hitting u s ⊥ n ω ≤ i ↔ ∃ j ≤ i, u j ω ∈ s := by
-  cases' lt_or_le i n with hi hi
+  rcases lt_or_le i n with hi | hi
   · rw [hitting_le_iff_of_lt _ hi]
     simp
   · simp only [(hitting_le ω).trans hi, true_iff]

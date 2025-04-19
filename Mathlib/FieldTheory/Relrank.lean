@@ -55,11 +55,13 @@ theorem relrank_eq_of_inf_eq (h : A ⊓ C = B ⊓ C) : relrank A C = relrank B C
 theorem relfinrank_eq_of_inf_eq (h : A ⊓ C = B ⊓ C) : relfinrank A C = relfinrank B C :=
   congr(toNat $(relrank_eq_of_inf_eq h))
 
+/-- If `A ≤ B`, then `Subfield.relrank A B` is `[B : A]`. -/
 theorem relrank_eq_rank_of_le (h : A ≤ B) : relrank A B = Module.rank A (extendScalars h) := by
   rw [relrank]
   have := inf_of_le_left h
   congr!
 
+/-- If `A ≤ B`, then `Subfield.relfinrank A B` is `[B : A]`. -/
 theorem relfinrank_eq_finrank_of_le (h : A ≤ B) : relfinrank A B = finrank A (extendScalars h) :=
   congr(toNat $(relrank_eq_rank_of_le h))
 
