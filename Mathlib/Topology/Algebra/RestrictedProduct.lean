@@ -149,17 +149,21 @@ namespace RestrictedProduct
 
 open scoped RestrictedProduct
 
-variable {𝓕 𝓖 : Filter ι} {S T : Set ι}
+variable {𝓕 𝓖 : Filter ι}
 
 instance : DFunLike (Πʳ i, [R i, A i]_[𝓕]) ι R where
   coe x i := x.1 i
   coe_injective' _ _ := Subtype.ext
 
+@[ext]
+lemma ext {x y :  Πʳ i, [R i, A i]_[𝓕]} (h : ∀ i, x i = y i) : x = y :=
+  Subtype.ext <| funext h
+
 lemma range_coe :
     range ((↑) : Πʳ i, [R i, A i]_[𝓕] → Π i, R i) = {x | ∀ᶠ i in 𝓕, x i ∈ A i} :=
   Subtype.range_val_subtype
 
-lemma range_coe_principal :
+lemma range_coe_principal {S : Set ι} :
     range ((↑) : Πʳ i, [R i, A i]_[𝓟 S] → Π i, R i) = S.pi A :=
   range_coe R A
 
@@ -236,6 +240,16 @@ instance [Π i, Monoid (R i)] [∀ i, SubmonoidClass (S i) (R i)] :
     Pow (Πʳ i, [R i, B i]_[𝓕]) ℕ where
   pow x n := ⟨fun i ↦ x i ^ n, x.2.mono fun _ hi ↦ pow_mem hi n⟩
 
+instance [Π i, AddMonoid (R i)] [∀ i, AddSubmonoidClass (S i) (R i)] :
+    AddMonoid (Πʳ i, [R i, B i]_[𝓕]) :=
+  haveI : ∀ i, SMulMemClass (S i) ℕ (R i) := fun _ ↦ AddSubmonoidClass.nsmulMemClass
+  DFunLike.coe_injective.addMonoid _ rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+
+@[to_additive existing]
+instance [Π i, Monoid (R i)] [∀ i, SubmonoidClass (S i) (R i)] :
+    Monoid (Πʳ i, [R i, B i]_[𝓕]) :=
+  DFunLike.coe_injective.monoid _ rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+
 instance [Π i, DivInvMonoid (R i)] [∀ i, SubgroupClass (S i) (R i)] :
     Pow (Πʳ i, [R i, B i]_[𝓕]) ℤ where
   pow x n := ⟨fun i ↦ x i ^ n, x.2.mono fun _ hi ↦ zpow_mem hi n⟩
@@ -267,6 +281,82 @@ instance [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)] :
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
 
 end Algebra
+
+section projection
+
+variable {S : ι → Type*}
+variable [Π i, SetLike (S i) (R i)]
+variable {B : Π i, S i}
+
+def projection (j : ι) (x : Πʳ i, [R i, B i]_[𝓕]) : R j := x j
+
+@[to_additive]
+def projectionMonoidHom (j : ι) [Π i, Monoid (R i)] [∀ i, SubmonoidClass (S i) (R i)] :
+    (Πʳ i, [R i, B i]_[𝓕]) →* R j where
+      toFun := projection R j
+      map_one' := rfl
+      map_mul' _ _ := rfl
+
+def projectionRingHom (j : ι) [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)] :
+    (Πʳ i, [R i, B i]_[𝓕]) →+* R j where
+      __ := projectionMonoidHom R j
+      __ := projectionAddMonoidHom R j
+
+end projection
+
+section map
+
+variable {ι₁ ι₂ : Type*}
+variable (R₁ : ι₁ → Type*) (R₂ : ι₂ → Type*)
+variable {𝓕₁ : Filter ι₁} {𝓕₂ : Filter ι₂}
+variable {S₁ : ι₁ → Type*} {S₂ : ι₂ → Type*}
+variable [Π i, SetLike (S₁ i) (R₁ i)] [Π j, SetLike (S₂ j) (R₂ j)]
+variable {B₁ : Π i, S₁ i} {B₂ : Π j, S₂ j}
+variable (f : ι₂ → ι₁) (hf : 𝓕₂.Tendsto f 𝓕₁)
+
+section set
+
+variable (φ : ∀ j, R₁ (f j) → R₂ j) (hφ : ∀ᶠ j in 𝓕₂, φ j '' B₁ (f j) ⊆ B₂ j)
+
+def map (x : Πʳ i, [R₁ i, B₁ i]_[𝓕₁]) : Πʳ j, [R₂ j, B₂ j]_[𝓕₂] := ⟨fun j ↦ φ j (x (f j)), by
+  apply mem_of_superset (𝓕₂.inter_mem hφ (hf x.2))
+  simp only [image_subset_iff, SetLike.mem_coe, preimage_setOf_eq]
+  rintro _ ⟨h1, h2⟩
+  exact h1 h2
+  ⟩
+end set
+
+section monoid
+
+variable [Π i, Monoid (R₁ i)] [Π i, Monoid (R₂ i)] [∀ i, SubmonoidClass (S₁ i) (R₁ i)]
+    [∀ i, SubmonoidClass (S₂ i) (R₂ i)] (φ : ∀ j, R₁ (f j) →* R₂ j)
+    (hφ : ∀ᶠ j in 𝓕₂, (φ j) '' (B₁ (f j)) ≤ B₂ j)
+
+@[to_additive]
+def mapMonoidHom : Πʳ i, [R₁ i, B₁ i]_[𝓕₁] →* Πʳ j, [R₂ j, B₂ j]_[𝓕₂] where
+  toFun := map R₁ R₂ f hf (fun j r ↦ φ j r) hφ
+  map_one' := by
+    ext i
+    exact map_one (φ i)
+  map_mul' x y := by
+    ext i
+    exact map_mul (φ i) _ _
+
+end monoid
+
+section ring
+
+variable [Π i, Ring (R₁ i)] [Π i, Ring (R₂ i)] [∀ i, SubringClass (S₁ i) (R₁ i)]
+    [∀ i, SubringClass (S₂ i) (R₂ i)] (φ : ∀ j, R₁ (f j) →+* R₂ j)
+    (hφ : ∀ᶠ j in 𝓕₂, (φ j) '' (B₁ (f j)) ≤ B₂ j)
+
+def mapRingHom : Πʳ i, [R₁ i, B₁ i]_[𝓕₁] →+* Πʳ j, [R₂ j, B₂ j]_[𝓕₂] where
+  __ := mapMonoidHom R₁ R₂ f hf (fun j ↦ φ j) hφ
+  __ := mapAddMonoidHom R₁ R₂ f hf (fun j ↦ φ j) hφ
+
+end ring
+
+end map
 
 section Topology
 /-!
@@ -545,13 +635,13 @@ theorem isOpenEmbedding_structureMap :
 include hAopen in
 theorem nhds_eq_map_inclusion {S : Set ι} (hS : cofinite ≤ 𝓟 S)
     (x : Πʳ i, [R i, A i]_[𝓟 S]) :
-    (𝓝 (inclusion R A hS x)) = map (inclusion R A hS) (𝓝 x) := by
+    (𝓝 (inclusion R A hS x)) = (𝓝 x).map (inclusion R A hS) := by
   rw [isOpenEmbedding_inclusion_principal hAopen hS |>.map_nhds_eq x]
 
 include hAopen in
 theorem nhds_eq_map_structureMap
     (x : Π i, A i) :
-    (𝓝 (structureMap R A cofinite x)) = map (structureMap R A cofinite) (𝓝 x) := by
+    (𝓝 (structureMap R A cofinite x)) = (𝓝 x).map (structureMap R A cofinite) := by
   rw [isOpenEmbedding_structureMap hAopen |>.map_nhds_eq x]
 
 include hAopen in
@@ -707,13 +797,13 @@ section cofinite
 
 theorem nhds_zero_eq_map_ofPre [Π i, Zero (R i)] [∀ i, ZeroMemClass (S i) (R i)]
     (hBopen : ∀ i, IsOpen (B i : Set (R i))) (hT : cofinite ≤ 𝓟 T) :
-    (𝓝 (inclusion R (fun i ↦ B i) hT 0)) = map (inclusion R (fun i ↦ B i) hT) (𝓝 0) :=
+    (𝓝 (inclusion R (fun i ↦ B i) hT 0)) = (𝓝 0).map (inclusion R (fun i ↦ B i) hT) :=
   nhds_eq_map_inclusion hBopen hT 0
 
 theorem nhds_zero_eq_map_structureMap [Π i, Zero (R i)] [∀ i, ZeroMemClass (S i) (R i)]
     (hBopen : ∀ i, IsOpen (B i : Set (R i))) :
     (𝓝 (structureMap R (fun i ↦ B i) cofinite 0)) =
-      map (structureMap R (fun i ↦ B i) cofinite) (𝓝 0) :=
+       (𝓝 0).map (structureMap R (fun i ↦ B i) cofinite) :=
   nhds_eq_map_structureMap hBopen 0
 
 -- TODO: Make `IsOpen` a class like `IsClosed` ?
