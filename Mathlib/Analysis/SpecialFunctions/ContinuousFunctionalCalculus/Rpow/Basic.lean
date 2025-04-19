@@ -331,7 +331,7 @@ lemma nnrpow_eq_rpow {a : A} {x : ℝ≥0} (hx : 0 < x) : a ^ x = a ^ (x : ℝ) 
 
 lemma sqrt_eq_rpow {a : A} : sqrt a = a ^ (1 / 2 : ℝ) := by
   have : a ^ (1 / 2 : ℝ) = a ^ ((1 / 2 : ℝ≥0) : ℝ) := rfl
-  rw [this, ← nnrpow_eq_rpow (by norm_num), sqrt_eq_nnrpow (A := A)]
+  rw [this, ← nnrpow_eq_rpow (by simp), sqrt_eq_nnrpow (A := A)]
 
 lemma sqrt_eq_cfc {a : A} : sqrt a = cfc NNReal.sqrt a := by
   unfold sqrt
@@ -363,7 +363,7 @@ lemma sqrt_rpow {a : A} {x : ℝ} (h : 0 ∉ spectrum ℝ≥0 a)
 lemma rpow_sqrt (a : A) (x : ℝ) (h : 0 ∉ spectrum ℝ≥0 a)
     (ha : 0 ≤ a := by cfc_tac) : (sqrt a) ^ x = a ^ (x / 2) := by
   rw [sqrt_eq_rpow, div_eq_mul_inv, one_mul,
-      rpow_rpow _ _ _ h (by norm_num), inv_mul_eq_div]
+      rpow_rpow _ _ _ h (by simp), inv_mul_eq_div]
 
 lemma sqrt_rpow_nnreal {a : A} {x : ℝ≥0} : sqrt (a ^ (x : ℝ)) = a ^ (x / 2 : ℝ) := by
   by_cases htriv : 0 ≤ a
@@ -385,7 +385,7 @@ lemma rpow_sqrt_nnreal {a : A} {x : ℝ≥0}
     simp [hx, rpow_zero _ ha', rpow_zero _ ha]
   case neg =>
     have h₁ : 0 ≤ (x : ℝ) := by exact NNReal.zero_le_coe
-    rw [sqrt_eq_rpow, rpow_rpow_of_exponent_nonneg _ _ _ (by norm_num) h₁, one_div_mul_eq_div]
+    rw [sqrt_eq_rpow, rpow_rpow_of_exponent_nonneg _ _ _ (by simp) h₁, one_div_mul_eq_div]
 
 end unital_vs_nonunital
 

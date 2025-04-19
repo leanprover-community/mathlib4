@@ -37,7 +37,7 @@ def solutionSet : Set ℝ := {α : ℝ | ∃ m : ℤ, α = 2 * m}
 lemma condition_two_mul_int (m : ℤ) : Condition (2 * m) := by
   rintro n -
   suffices (n : ℤ) ∣ ∑ i ∈ Finset.Icc 0 n, ⌊((i * (2 * m) : ℤ) : ℝ)⌋ by
-    rw [← Nat.Icc_insert_succ_left n.zero_le, Finset.sum_insert_zero (by norm_num)] at this
+    rw [← Nat.Icc_insert_succ_left n.zero_le, Finset.sum_insert_zero (by simp)] at this
     exact_mod_cast this
   simp_rw [Int.floor_intCast, ← Finset.sum_mul, ← Nat.Ico_succ_right, ← Finset.range_eq_Ico,
            ← mul_assoc]
@@ -57,7 +57,7 @@ lemma condition_sub_two_mul_int_iff {α : ℝ} (m : ℤ) : Condition (α - 2 * m
   simp
 
 lemma condition_toIcoMod_iff {α : ℝ} :
-    Condition (toIcoMod (by norm_num : (0 : ℝ) < 2) 0 α) ↔ Condition α := by
+    Condition (toIcoMod (by simp : (0 : ℝ) < 2) 0 α) ↔ Condition α := by
   rw [toIcoMod, zsmul_eq_mul, mul_comm, condition_sub_two_mul_int_iff]
 
 namespace Condition

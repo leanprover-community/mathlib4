@@ -139,7 +139,7 @@ lemma isLittleO_self_div_log_id :
                     _ = (fun (_ : ℕ) => ((1 : ℝ) ^ 2))     := by simp
                     _ =o[atTop] (fun (n : ℕ) => (log n)^2) :=
                           IsLittleO.pow (IsLittleO.natCast_atTop
-                            <| isLittleO_const_log_atTop) (by norm_num)
+                            <| isLittleO_const_log_atTop) (by simp)
          _ = (fun (n : ℕ) => (n : ℝ)) := by ext; simp
 
 variable {α : Type*} [Fintype α] {T : ℕ → ℝ} {g : ℝ → ℝ} {a b : α → ℝ} {r : α → ℕ → ℕ}
@@ -196,7 +196,7 @@ lemma bi_min_div_two_lt_one : b (min_bi b) / 2 < 1 := by
   calc b (min_bi b) / 2 < b (min_bi b) := by aesop (add safe apply div_two_lt_of_pos)
                       _ < 1 := R.b_lt_one _
 
-lemma bi_min_div_two_pos : 0 < b (min_bi b) / 2 := div_pos (R.b_pos _) (by norm_num)
+lemma bi_min_div_two_pos : 0 < b (min_bi b) / 2 := div_pos (R.b_pos _) (by simp)
 
 lemma exists_eventually_const_mul_le_r :
     ∃ c ∈ Set.Ioo (0 : ℝ) 1, ∀ᶠ (n : ℕ) in atTop, ∀ i, c * n ≤ r i n := by

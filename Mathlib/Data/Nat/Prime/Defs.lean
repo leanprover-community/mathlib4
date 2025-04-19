@@ -152,7 +152,7 @@ Below (`decidablePrime'`) we will define a faster variant to be used by the comp
 (e.g. in `#eval` or `by native_decide`).
 
 If you need to prove that a particular number is prime, in any case
-you should not use `by decide`, but rather `by norm_num`, which is
+you should not use `by decide`, but rather `by simp`, which is
 much faster.
 -/
 instance decidablePrime (p : ℕ) : Decidable (Prime p) :=
