@@ -5,6 +5,7 @@ Authors: Rémy Degenne, Sébastien Gouëzel
 -/
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.MeasureTheory.Function.LpSpace.Basic
+import Mathlib.MeasureTheory.Measure.Real
 import Mathlib.Order.Filter.IndicatorFunction
 
 /-!
