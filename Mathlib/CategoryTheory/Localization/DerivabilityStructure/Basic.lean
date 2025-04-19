@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Localization.Resolution
-import Mathlib.CategoryTheory.GuitartExact.VerticalComposition
+import Mathlib.CategoryTheory.Localization.Opposite
+import Mathlib.CategoryTheory.GuitartExact.Opposite
 
 /-!
 # Derivability structures
@@ -39,7 +40,6 @@ not depend of the choice of the localization functors.
 ## TODO
 
 * Construct derived functors using derivability structures
-* Define the notion of left derivability structures
 * Construct the injective derivability structure in order to derive functor from
   the bounded below homotopy category in an abelian category with enough injectives
 * Construct the projective derivability structure in order to derive functor from
@@ -125,6 +125,59 @@ instance [W₁.ContainsIdentities] : (LocalizerMorphism.id W₁).IsRightDerivabi
     (Iso.refl _)]
   dsimp
   exact TwoSquare.guitartExact_id W₁.Q
+
+/-- A localizer morphism `Φ : LocalizerMorphism W₁ W₂` is a left derivability
+structure if it has left resolutions and the 2-square where the top and bottom functors
+are localizations functors for `W₁` and `W₂` are Guitart exact. -/
+class IsLeftDerivabilityStructure : Prop where
+  hasLeftResolutions : Φ.HasLeftResolutions := by infer_instance
+  guitartExact' : TwoSquare.GuitartExact ((Φ.catCommSq W₁.Q W₂.Q).iso).inv
+
+attribute [instance] IsLeftDerivabilityStructure.hasLeftResolutions
+  IsLeftDerivabilityStructure.guitartExact'
+
+lemma isLeftDerivabilityStructure_iff_op :
+    Φ.IsLeftDerivabilityStructure ↔
+      Φ.op.IsRightDerivabilityStructure := by
+  let F := Φ.localizedFunctor W₁.Q W₂.Q
+  let e : Φ.functor ⋙ W₂.Q ≅ W₁.Q ⋙ F := (Φ.catCommSq W₁.Q W₂.Q).iso
+  let e' : Φ.functor.op ⋙ W₂.Q.op ≅ W₁.Q.op ⋙ F.op := NatIso.op e.symm
+  have eq : TwoSquare.GuitartExact e'.hom ↔ TwoSquare.GuitartExact e.inv :=
+    TwoSquare.guitartExact_op_iff _
+  constructor
+  · rintro ⟨_, _⟩
+    rwa [Φ.op.isRightDerivabilityStructure_iff _ _ _ e', eq]
+  · intro
+    have : Φ.HasLeftResolutions := by
+      rw [hasLeftResolutions_iff_op]
+      infer_instance
+    refine ⟨inferInstance, ?_⟩
+    rw [← eq]
+    exact Φ.op.guitartExact_of_isRightDerivabilityStructure' _ _ _ e'
+
+lemma isLeftDerivabilityStructure_iff [Φ.HasLeftResolutions] (e : Φ.functor ⋙ L₂ ≅ L₁ ⋙ F) :
+    Φ.IsLeftDerivabilityStructure ↔ TwoSquare.GuitartExact e.inv := by
+  rw [isLeftDerivabilityStructure_iff_op,
+    Φ.op.isRightDerivabilityStructure_iff L₁.op L₂.op F.op (NatIso.op e.symm),
+    ← TwoSquare.guitartExact_op_iff e.inv]
+  rfl
+
+lemma guitartExact_of_isLeftDerivabilityStructure' [h : Φ.IsLeftDerivabilityStructure]
+    (e : Φ.functor ⋙ L₂ ≅ L₁ ⋙ F) : TwoSquare.GuitartExact e.inv := by
+  simpa only [Φ.isLeftDerivabilityStructure_iff L₁ L₂ F e] using h
+
+lemma guitartExact_of_isLeftDerivabilityStructure [Φ.IsLeftDerivabilityStructure] :
+    TwoSquare.GuitartExact ((Φ.catCommSq L₁ L₂).iso).inv :=
+  guitartExact_of_isLeftDerivabilityStructure' _ _ _ _ _
+
+instance [W₁.ContainsIdentities] : (LocalizerMorphism.id W₁).HasLeftResolutions :=
+  fun X₂ => ⟨LeftResolution.mk (𝟙 X₂) (W₁.id_mem X₂)⟩
+
+instance [W₁.ContainsIdentities] : (LocalizerMorphism.id W₁).IsLeftDerivabilityStructure := by
+  rw [(LocalizerMorphism.id W₁).isLeftDerivabilityStructure_iff W₁.Q W₁.Q (𝟭 W₁.Localization)
+    (Iso.refl _)]
+  dsimp
+  exact TwoSquare.guitartExact_id' W₁.Q
 
 end LocalizerMorphism
 
