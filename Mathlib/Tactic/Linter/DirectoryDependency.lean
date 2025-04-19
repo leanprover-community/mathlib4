@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Lean.Elab.Command
+import Lean.Elab.ParseImportsFast
 
 /-! # The `directoryDependency` linter
 
@@ -11,6 +12,14 @@ The `directoryDependency` linter detects imports between directories that are su
 independent. By specifying that one directory does not import from another, we can improve the
 modularity of Mathlib.
 -/
+
+-- XXX: is there a better long-time place for this
+/-- Parse all imports in a text file at `path` and return just their names:
+this is just a thin wrapper around `Lean.parseImports'`.
+Omit `Init` (which is part of the prelude). -/
+def findImports (path : System.FilePath) : IO (Array Lean.Name) := do
+  return (← Lean.parseImports' (← IO.FS.readFile path) path.toString)
+    |>.map (fun imp ↦ imp.module) |>.erase `Init
 
 /-- Find the longest prefix of `n` such that `f` returns `some` (or return `none` otherwise). -/
 def Lean.Name.findPrefix {α} (f : Name → Option α) (n : Name) : Option α := do
@@ -25,6 +34,13 @@ def Lean.Name.prefixes (n : Name) : NameSet :=
     | anonymous => ∅
     | str n' _ => n'.prefixes
     | num n' _ => n'.prefixes
+
+/-- Return the immediate prefix of `n` (if any). -/
+def Lean.Name.prefix? (n : Name) : Option Name :=
+  match n with
+    | anonymous => none
+    | str n' _ => some n'
+    | num n' _ => some n'
 
 /-- Collect all prefixes of names in `ns` into a single `NameSet`. -/
 def Lean.Name.collectPrefixes (ns : Array Name) : NameSet :=
@@ -117,10 +133,104 @@ def findAny (r : NamePrefixRel) (n₁ : Name) (ns : Array Name) : Option (Name �
         pure ()
     none
 
+/-- Does `r` contain any entries with key `n`? -/
+def containsKey (r : NamePrefixRel) (n : Name) : Bool := NameMap.contains r n
+
 /-- Is a prefix of `n₁` related to a prefix of `n₂`? -/
 def contains (r : NamePrefixRel) (n₁ n₂ : Name) : Bool := (r.find n₁ n₂).isSome
 
 end NamePrefixRel
+
+-- TODO: move the following three lists to a JSON file, for easier evolution over time!
+-- TODO: add/extend tests for this linter, to verify the change in behaviour
+
+-- Future: investigate moving further directories to this allow-list, such as
+-- `Mathlib.Testing`, `Mathlib.Control` and `Mathlib.Data`
+
+-- TODO: enforce that allowed and forbidden keys are disjoint
+
+/-- `allowedImportDirs` relates module prefixes, specifying that modules with the first prefix
+are only allowed to import modules in the second directory.
+For directories which are low in the import hierarchy, this opt-out approach is both more ergonomic
+(fewer updates needed) and needs less configuration.
+
+We always allow imports of `Init`, `Std` and `Mathlib.Init` (as well as their transitive dependencies.)
+-/
+def allowedImportDirs : NamePrefixRel := .ofArray #[
+  (`Mathlib.Util, `Batteries),
+  (`Mathlib.Util, `Mathlib.Lean),
+  (`Mathlib.Util, `Mathlib.Tactic),
+  -- TODO: reduce this dependency by upstreaming `Data.String.Defs to batteries
+  (`Mathlib.Util.FormatTable, `Mathlib.Data.String.Defs),
+
+  (`Mathlib.Lean, `Batteries.CodeAction),
+  (`Mathlib.Lean, `Batteries.Tactic.Lint),
+  -- TODO: decide if this is acceptable or should be split in a more fine-grained way
+  (`Mathlib.Lean, `Batteries),
+  (`Mathlib.Lean.Expr, `Mathlib.Util),
+  (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Util),
+  -- Fine-grained exceptions: TODO decide if these are fine, or should be scoped more broadly.
+  (`Mathlib.Lean.CoreM, `Mathlib.Tactic.ToExpr),
+  (`Mathlib.Lean.CoreM, `Mathlib.Util.WhatsNew),
+  (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Tactic.Lemma),
+  (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Tactic.TypeStar),
+  (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Tactic.ToAdditive),
+  (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Tactic), -- split this up further?
+  (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Data), -- split this up further?
+  (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Algebra.Notation),
+  (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Data.Notation),
+  (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Data.Array),
+  (`Mathlib.Lean.Meta.CongrTheorems, `Mathlib.Data),
+  (`Mathlib.Lean.Meta.CongrTheorems, `Mathlib.Order.Defs.Unbundled),
+  (`Mathlib.Lean.Meta.CongrTheorems, `Mathlib.Logic),
+  (`Mathlib.Lean.Meta.CongrTheorems, `Mathlib.Tactic),
+  (`Mathlib.Lean.Expr.ExtraRecognizers, `Mathlib.Data),
+  (`Mathlib.Lean.Expr.ExtraRecognizers, `Mathlib.Order),
+  (`Mathlib.Lean.Expr.ExtraRecognizers, `Mathlib.Logic),
+  (`Mathlib.Lean.Expr.ExtraRecognizers, `Mathlib.Tactic),
+
+  (`Mathlib.Tactic.Linter, `Batteries),
+  -- The Mathlib.Tactic.Linter *module* imports all linters, hence requires all the imports.
+  -- For more fine-grained exceptions of the next two imports, one needs to rename that file.
+  (`Mathlib.Tactic.Linter, `ImportGraph),
+  (`Mathlib.Tactic.Linter, `Mathlib.Tactic.MinImports),
+  (`Mathlib.Tactic.Linter.TextBased, `Mathlib.Data.Nat.Notation),
+
+  (`Mathlib.Logic, `Batteries),
+  -- XXX: should this import be allowed on a more fine-grained level?
+  (`Mathlib.Logic, `Mathlib.Control),
+  (`Mathlib.Logic, `Mathlib.Lean),
+  (`Mathlib.Logic, `Mathlib.Util),
+  (`Mathlib.Logic, `Mathlib.Tactic),
+  (`Mathlib.Logic, `Mathlib.Algebra.Notation),
+  (`Mathlib.Logic, `Mathlib.Algebra.NeZero),
+  -- XXX: should this import be allowed only on a more fine-grained level (or at all)?
+  (`Mathlib.Logic, `Mathlib.Data),
+  -- XXX: should this import be allowed only on a more fine-grained level (or at all)?
+  (`Mathlib.Logic, `Mathlib.Order),
+  -- Particular modules with larger imports.
+  (`Mathlib.Logic.Hydra, `Mathlib.GroupTheory),
+  (`Mathlib.Logic.Hydra, `Mathlib.Algebra),
+  (`Mathlib.Logic.Encodable.Pi, `Mathlib.Algebra),
+  (`Mathlib.Logic.Equiv.Fin.Rotate, `Mathlib.Algebra.Group),
+  (`Mathlib.Logic.Equiv.Array, `Mathlib.Algebra),
+  (`Mathlib.Logic.Equiv.Finset, `Mathlib.Algebra),
+  (`Mathlib.Logic.Godel.GodelBetaFunction, `Mathlib.Algebra),
+  (`Mathlib.Logic.Small.List, `Mathlib.Algebra),
+
+  (`Mathlib.Testing, `Batteries),
+  -- XXX: is this intended? just a single transitive import
+  (`Mathlib.Testing, `Mathlib.GroupTheory),
+  -- XXX: is this intended? just a handful of transitive imports
+  (`Mathlib.Testing, `Mathlib.Control),
+  (`Mathlib.Testing, `Mathlib.Algebra),
+  (`Mathlib.Testing, `Mathlib.Data),
+  (`Mathlib.Testing, `Mathlib.Logic),
+  (`Mathlib.Testing, `Mathlib.Order),
+  (`Mathlib.Testing, `Mathlib.Lean),
+  (`Mathlib.Testing, `Mathlib.Tactic),
+  (`Mathlib.Testing, `Mathlib.Util),
+]
 
 /-- `forbiddenImportDirs` relates module prefixes, specifying that modules with the first prefix
 should not import modules with the second prefix (except if specifically allowed in
@@ -313,27 +423,6 @@ def forbiddenImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.LinearAlgebra, `Mathlib.ModelTheory),
   (`Mathlib.LinearAlgebra, `Mathlib.Probability),
   (`Mathlib.LinearAlgebra, `Mathlib.Testing),
-  (`Mathlib.Logic, `Mathlib.AlgebraicGeometry),
-  (`Mathlib.Logic, `Mathlib.AlgebraicTopology),
-  (`Mathlib.Logic, `Mathlib.Analysis),
-  (`Mathlib.Logic, `Mathlib.CategoryTheory),
-  (`Mathlib.Logic, `Mathlib.Combinatorics),
-  (`Mathlib.Logic, `Mathlib.Computability),
-  (`Mathlib.Logic, `Mathlib.Condensed),
-  (`Mathlib.Logic, `Mathlib.Dynamics),
-  (`Mathlib.Logic, `Mathlib.FieldTheory),
-  (`Mathlib.Logic, `Mathlib.Geometry),
-  (`Mathlib.Logic, `Mathlib.InformationTheory),
-  (`Mathlib.Logic, `Mathlib.LinearAlgebra),
-  (`Mathlib.Logic, `Mathlib.MeasureTheory),
-  (`Mathlib.Logic, `Mathlib.ModelTheory),
-  (`Mathlib.Logic, `Mathlib.NumberTheory),
-  (`Mathlib.Logic, `Mathlib.Probability),
-  (`Mathlib.Logic, `Mathlib.RepresentationTheory),
-  (`Mathlib.Logic, `Mathlib.RingTheory),
-  (`Mathlib.Logic, `Mathlib.SetTheory),
-  (`Mathlib.Logic, `Mathlib.Testing),
-  (`Mathlib.Logic, `Mathlib.Topology),
   (`Mathlib.MeasureTheory, `Mathlib.AlgebraicGeometry),
   (`Mathlib.MeasureTheory, `Mathlib.AlgebraicTopology),
   (`Mathlib.MeasureTheory, `Mathlib.Computability),
@@ -420,27 +509,6 @@ def forbiddenImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.SetTheory, `Mathlib.Probability),
   (`Mathlib.SetTheory, `Mathlib.RepresentationTheory),
   (`Mathlib.SetTheory, `Mathlib.Testing),
-  (`Mathlib.Testing, `Mathlib.AlgebraicGeometry),
-  (`Mathlib.Testing, `Mathlib.AlgebraicTopology),
-  (`Mathlib.Testing, `Mathlib.Analysis),
-  (`Mathlib.Testing, `Mathlib.CategoryTheory),
-  (`Mathlib.Testing, `Mathlib.Combinatorics),
-  (`Mathlib.Testing, `Mathlib.Computability),
-  (`Mathlib.Testing, `Mathlib.Condensed),
-  (`Mathlib.Testing, `Mathlib.Dynamics),
-  (`Mathlib.Testing, `Mathlib.FieldTheory),
-  (`Mathlib.Testing, `Mathlib.Geometry),
-  (`Mathlib.Testing, `Mathlib.InformationTheory),
-  (`Mathlib.Testing, `Mathlib.LinearAlgebra),
-  (`Mathlib.Testing, `Mathlib.MeasureTheory),
-  (`Mathlib.Testing, `Mathlib.ModelTheory),
-  (`Mathlib.Testing, `Mathlib.NumberTheory),
-  (`Mathlib.Testing, `Mathlib.Probability),
-  (`Mathlib.Testing, `Mathlib.RepresentationTheory),
-  (`Mathlib.Testing, `Mathlib.RingTheory),
-  (`Mathlib.Testing, `Mathlib.SetTheory),
-  (`Mathlib.Testing, `Mathlib.Testing),
-  (`Mathlib.Testing, `Mathlib.Topology),
   (`Mathlib.Topology, `Mathlib.AlgebraicGeometry),
   (`Mathlib.Topology, `Mathlib.Computability),
   (`Mathlib.Topology, `Mathlib.Condensed),
@@ -472,25 +540,77 @@ end DirectoryDependency
 
 open DirectoryDependency
 
-@[inherit_doc Mathlib.Linter.linter.directoryDependency]
-def directoryDependencyCheck (mainModule : Name) : CommandElabM (Option MessageData) := do
-  unless Linter.getLinterValue linter.directoryDependency (← getOptions) do
-    return none
-  let env ← getEnv
-  let imports := env.allImportedModuleNames
+#guard Lean.Name.isPrefixOf `Mathlib.Util `Mathlib.Util.Basic == true
+
+/-- Check if one of the imports `imports` to `mainModule` is forbidden by `forbiddenImportDirs`;
+if so, return an error describing how the import transitively arises. -/
+def _checkBlocklist (env : Environment) (mainModule : Name) (imports : Array Name) : Option MessageData := Id.run do
   match forbiddenImportDirs.findAny mainModule imports with
   | some (n₁, n₂) => do
     if let some imported := n₂.prefixToName imports then
       if !overrideAllowedImportDirs.contains mainModule imported then
-        let mut msg := m!"Modules starting with {n₁} are not allowed to import modules starting with {n₂}.
-This module depends on {imported}\n"
+        let mut msg := m!"Modules starting with {n₁} are not allowed to import modules starting with {n₂}. \
+        This module depends on {imported}\n"
         for dep in env.importPath imported do
           msg := msg ++ m!"which is imported by {dep},\n"
-        return some <| msg ++ m!"which is imported by this module.
-(Exceptions can be added to `overrideAllowedImportDirs`.)"
+        return some (msg ++ m!"which is imported by this module. \
+          (Exceptions can be added to `overrideAllowedImportDirs`.)")
+      else none
     else
-      return some m!"Internal error in `directoryDependency` linter: this module claims to depend on a module starting with {n₂} but a module with that prefix was not found in the import graph."
-  | none => pure ()
-  return none
+      return some m!"Internal error in `directoryDependency` linter: this module claims to depend \
+      on a module starting with {n₂} but a module with that prefix was not found in the import graph."
+  | none => none
+
+@[inherit_doc Mathlib.Linter.linter.directoryDependency]
+def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array MessageData) := do
+  unless Linter.getLinterValue linter.directoryDependency (← getOptions) do
+    return #[]
+  let env ← getEnv
+  let imports := env.allImportedModuleNames
+
+  -- If this module is in the allow-list, we only allow imports from directories specified there.
+  -- Collect all prefixes which have a matching entry.
+  let matchingPrefixes := mainModule.prefixes.filter (fun prf ↦ allowedImportDirs.containsKey prf)
+  if matchingPrefixes.isEmpty then
+    -- Otherwise, we fall back to the blocklist `forbiddenImportDirs`.
+    if let some msg := _checkBlocklist env mainModule imports then return #[msg] else return #[]
+  else
+    -- We always allow imports in the same directory (for each matching prefix),
+    -- from `Init`, `Lean` and `Std`, as well as imports in `Aesop`, `Qq`, `Plausible`,
+    -- `ImportGraph`, `ProofWidgets` or `LeanSearchClient` (as these are imported in Tactic.Common).
+    -- We also allow transitive imports of Mathlib.Init, as well as Mathlib.Init itself.
+    let initImports := (← findImports ("Mathlib" / "Init.lean")).append
+      #[`Mathlib.Init, `Mathlib.Tactic.DeclarationNames]
+    let exclude := [
+      `Init, `Std, `Lean,
+      `Aesop, `Qq, `Plausible, `ImportGraph, `ProofWidgets, `LeanSearchClient
+    ]
+    let importsToCheck := imports.filter (fun imp ↦ !exclude.any (·.isPrefixOf imp))
+      |>.filter (fun imp ↦ !matchingPrefixes.any (·.isPrefixOf imp))
+      |>.filter (!initImports.contains ·)
+
+    -- Find all prefixes which are allowed for one of these directories.
+    let mut allRules := NameSet.empty
+    for prfix in matchingPrefixes do
+      let some rules := RBMap.find? allowedImportDirs prfix | unreachable!
+      allRules := allRules.append rules
+    -- Error about those imports which are not covered by allRules.
+    let mut messages := #[]
+    for imported in importsToCheck do
+      if !allowedImportDirs.contains mainModule imported then
+        let importPath := env.importPath imported
+        let mut msg := m!"Module {mainModule} depends on {imported},\n\
+        but is only allowed to import modules starting with one of {allRules.toArray.qsort (·.toString < ·.toString)}.\n\
+        Note: module {imported}"
+        match importPath.toList with
+        | [] => msg := msg ++ " is directly imported by this module."
+        | a :: rest =>
+          msg := msg ++ s!" is imported by {a},\n"
+          for dep in rest do
+            msg := msg ++ m!"which is imported by {dep},\n"
+          msg :=msg ++ m!"which is imported by this module."
+          -- XXX: is this true? "(Exceptions can be added to `overrideAllowedImportDirs`.)"
+        messages := messages.push msg
+    return messages
 
 end Mathlib.Linter
