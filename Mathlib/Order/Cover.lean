@@ -11,10 +11,11 @@ import Mathlib.Order.Interval.Set.WithBotTop
 /-!
 # The covering relation
 
-This file defines the covering relation in an order. `b` is said to cover `a` if `a < b` and there
-is no element in between. We say that `b` weakly covers `a` if `a ≤ b` and there is no element
-between `a` and `b`. In a partial order this is equivalent to `a ⋖ b ∨ a = b`, in a preorder this
-is equivalent to `a ⋖ b ∨ (a ≤ b ∧ b ≤ a)`
+This file proves properties of the covering relation in an order.
+We say that `b` *covers* `a` if `a < b` and there is no element in between.
+We say that `b` *weakly covers* `a` if `a ≤ b` and there is no element between `a` and `b`.
+In a partial order this is equivalent to `a ⋖ b ∨ a = b`,
+in a preorder this is equivalent to `a ⋖ b ∨ (a ≤ b ∧ b ≤ a)`
 
 ## Notation
 
@@ -32,15 +33,6 @@ section WeaklyCovers
 section Preorder
 
 variable [Preorder α] [Preorder β] {a b c : α}
-
-/-- `WCovBy a b` means that `a = b` or `b` covers `a`.
-This means that `a ≤ b` and there is no element in between.
--/
-def WCovBy (a b : α) : Prop :=
-  a ≤ b ∧ ∀ ⦃c⦄, a < c → ¬c < b
-
-/-- Notation for `WCovBy a b`. -/
-infixl:50 " ⩿ " => WCovBy
 
 theorem WCovBy.le (h : a ⩿ b) : a ≤ b :=
   h.1
@@ -196,13 +188,6 @@ end WeaklyCovers
 section LT
 
 variable [LT α] {a b : α}
-
-/-- `CovBy a b` means that `b` covers `a`: `a < b` and there is no element in between. -/
-def CovBy (a b : α) : Prop :=
-  a < b ∧ ∀ ⦃c⦄, a < c → ¬c < b
-
-/-- Notation for `CovBy a b`. -/
-infixl:50 " ⋖ " => CovBy
 
 theorem CovBy.lt (h : a ⋖ b) : a < b :=
   h.1
