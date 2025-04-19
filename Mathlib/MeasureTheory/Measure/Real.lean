@@ -288,7 +288,7 @@ theorem sum_measureReal_preimage_singleton (s : Finset β) {f : α → β}
 
 /-- If `s` is a `Finset`, then the sums of the real measures of the singletons in the set is the
 real measure of the set. -/
-@[simp] theorem sum_realMeasure_singleton [MeasurableSingletonClass α] [SigmaFinite μ]
+@[simp] theorem sum_measureReal_singleton [MeasurableSingletonClass α] [SigmaFinite μ]
     (s : Finset α) :
     (∑ b ∈ s, μ.real {b}) = μ.real s := by
   simp [measureReal_def, ← ENNReal.toReal_sum (fun _ _ ↦ ne_of_lt measure_singleton_lt_top)]
