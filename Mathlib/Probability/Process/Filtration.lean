@@ -382,7 +382,7 @@ def piFinset : @Filtration (Π i, X i) (Finset ι) _ pi where
   seq s := pi.comap s.restrict
   mono' s t hst := by
     simp only
-    rw [restrict₂_comp_restrict hst, ← comap_comp]
+    rw [← restrict₂_comp_restrict hst, ← comap_comp]
     exact comap_mono (measurable_restrict₂ hst).comap_le
   le' s := s.measurable_restrict.comap_le
 
