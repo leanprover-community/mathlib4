@@ -3,8 +3,8 @@ Copyright (c) 2023 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.MeasureTheory.Integral.Bochner
-import Mathlib.Topology.ContinuousMap.Bounded.Basic
+import Mathlib.MeasureTheory.Integral.Bochner.Basic
+import Mathlib.Topology.ContinuousMap.Bounded.Normed
 
 /-!
 # Integration of bounded continuous functions

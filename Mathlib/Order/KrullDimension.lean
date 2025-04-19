@@ -5,6 +5,7 @@ Authors: Jujian Zhang, Fangming Li, Joachim Breitner
 -/
 
 import Mathlib.Algebra.Order.Group.Int
+import Mathlib.Algebra.Order.SuccPred.WithBot
 import Mathlib.Data.ENat.Lattice
 import Mathlib.Data.Int.Basic
 import Mathlib.Order.Atoms
@@ -562,6 +563,15 @@ lemma krullDim_nonneg [Nonempty α] : 0 ≤ krullDim α := krullDim_nonneg_iff.m
 
 @[deprecated (since := "2024-12-22")] alias krullDim_nonneg_of_nonempty := krullDim_nonneg
 
+theorem krullDim_ne_bot_iff : krullDim α ≠ ⊥ ↔ Nonempty α := by
+  rw [ne_eq, krullDim_eq_bot_iff, not_isEmpty_iff]
+
+theorem bot_lt_krullDim_iff : ⊥ < krullDim α ↔ Nonempty α := by
+  rw [bot_lt_iff_ne_bot, krullDim_ne_bot_iff]
+
+theorem bot_lt_krullDim [Nonempty α] : ⊥ < krullDim α :=
+  bot_lt_krullDim_iff.mpr ‹_›
+
 lemma krullDim_nonpos_iff_forall_isMax : krullDim α ≤ 0 ↔ ∀ x : α, IsMax x := by
   simp only [krullDim, iSup_le_iff, isMax_iff_forall_not_lt]
   refine ⟨fun H x y h ↦ (H ⟨1, ![x, y],
@@ -859,6 +869,8 @@ lemma KrullDimLE.mono {n m : ℕ} (e : n ≤ m) (α : Type*) [Preorder α] [Krul
     KrullDimLE m α :=
   ⟨KrullDimLE.krullDim_le (n := n).trans (Nat.cast_le.mpr e)⟩
 
+instance {α} [Preorder α] [Subsingleton α] : KrullDimLE 0 α := ⟨krullDim_nonpos_of_subsingleton⟩
+
 end typeclass
 
 /-!
@@ -867,18 +879,15 @@ end typeclass
 
 section calculations
 
+lemma krullDim_eq_one_iff_of_boundedOrder {α : Type*} [PartialOrder α] [BoundedOrder α] :
+    krullDim α = 1 ↔ IsSimpleOrder α := by
+  rw [le_antisymm_iff, krullDim_le_one_iff, WithBot.one_le_iff_pos,
+    Order.krullDim_pos_iff_of_orderBot, isSimpleOrder_iff]
+  simp only [isMin_iff_eq_bot, isMax_iff_eq_top, and_comm]
+
 @[simp] lemma krullDim_of_isSimpleOrder {α : Type*} [PartialOrder α] [BoundedOrder α]
-    [IsSimpleOrder α] : krullDim α = 1 := by
-  rw [krullDim]
-  let q : LTSeries α := ⟨1, (fun n ↦ if n = 0 then ⊥ else ⊤), by simp [Fin.fin_one_eq_zero]⟩
-  refine le_antisymm (iSup_le fun p ↦ ?_) (le_iSup (fun p ↦ (p.length : WithBot ℕ∞)) q)
-  by_contra h; simp only [Nat.cast_le_one, not_le] at h
-  have h2 : 2 < p.length + 1 := add_lt_add_right h 1
-  have h0' : 0 < p.length := one_pos.trans h
-  have h1 : 1 < p.length + 1 := one_le_two.trans_lt h2
-  have : p ⟨1, h1⟩ = ⊤ := IsSimpleOrder.eq_top_of_lt (p.step ⟨0, h0'⟩)
-  have : p ⟨1, h1⟩ < p ⟨2, h2⟩ := p.step ⟨1, h⟩
-  simp_all
+    [IsSimpleOrder α] : krullDim α = 1 :=
+  krullDim_eq_one_iff_of_boundedOrder.mpr ‹_›
 
 variable {α : Type*} [Preorder α]
 
@@ -946,7 +955,7 @@ lemma krullDim_int : krullDim ℤ = ⊤ := krullDim_of_noMaxOrder ..
     let p' : LTSeries α := {
       length := p.length - 1
       toFun := fun ⟨i, hi⟩ => (p ⟨i+1, by omega⟩).unbot (by
-        apply LT.lt.ne_bot (a := p.head)
+        apply ne_bot_of_gt (a := p.head)
         apply p.strictMono
         exact compare_gt_iff_gt.mp rfl)
       step := fun i => by simpa [WithBot.unbot_lt_iff] using p.step ⟨i + 1, by omega⟩ }
