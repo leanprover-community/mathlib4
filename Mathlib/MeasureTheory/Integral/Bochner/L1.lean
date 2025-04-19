@@ -319,6 +319,52 @@ theorem integral_add_measure {ν} (f : α →ₛ E) (hf : Integrable f (μ + ν)
   rw [lt_top_iff_ne_top, Measure.coe_add, Pi.add_apply, ENNReal.add_ne_top] at hμνs
   rw [weightedSMul_add_measure _ _ hμνs.1 hμνs.2]
 
+section Order
+
+variable [PartialOrder F] [IsOrderedAddMonoid F] [OrderedSMul ℝ F]
+
+lemma integral_nonneg {f : α →ₛ F} (hf : 0 ≤ᵐ[μ] f) :
+    0 ≤ f.integral μ := by
+  rw [integral_eq]
+  apply Finset.sum_nonneg
+  rw [forall_mem_range]
+  intro y
+  by_cases hy : 0 ≤ f y
+  · positivity
+  · suffices μ (f ⁻¹' {f y}) = 0 by simp [this]
+    rw [← nonpos_iff_eq_zero]
+    refine le_of_le_of_eq (measure_mono fun x hx ↦ ?_) (ae_iff.mp hf)
+    simp only [Set.mem_preimage, mem_singleton_iff, mem_setOf_eq] at hx ⊢
+    exact hx ▸ hy
+
+lemma integral_mono {f g : α →ₛ F} (h : f ≤ᵐ[μ] g) (hf : Integrable f μ) (hg : Integrable g μ) :
+    f.integral μ ≤ g.integral μ := by
+  rw [← sub_nonneg, ← integral_sub hg hf]
+  rw [← sub_nonneg_ae] at h
+  exact integral_nonneg h
+
+lemma integral_mono_measure {ν} {f : α →ₛ F} (hf : 0 ≤ᵐ[ν] f) (hμν : μ ≤ ν) (hfν : Integrable f ν) :
+    f.integral μ ≤ f.integral ν := by
+  simp only [integral_eq]
+  apply Finset.sum_le_sum
+  simp only [forall_mem_range]
+  intro x
+  by_cases hx : 0 ≤ f x
+  · obtain (hx | hx) := hx.eq_or_lt
+    · simp [← hx]
+    gcongr
+    · exact integrable_iff.mp hfν (f x) hx.ne' |>.ne
+    · exact hμν _
+  · suffices ν (f ⁻¹' {f x}) = 0 by
+      have : μ (f ⁻¹' {f x}) = 0 := by simpa using (hμν _ |>.trans_eq this)
+      simp_all
+    rw [← nonpos_iff_eq_zero]
+    refine le_of_le_of_eq (measure_mono fun y hy ↦ ?_) (ae_iff.mp hf)
+    simp only [Set.mem_preimage, mem_singleton_iff, mem_setOf_eq] at hy ⊢
+    exact hy ▸ hx
+
+end Order
+
 end Integral
 
 end SimpleFunc
