@@ -69,6 +69,9 @@ lemma insert_Icc_right_eq_Icc_succ (h : a ≤ succ b) :
     insert (succ b) (Icc a b) = Icc a (succ b) := by
   ext x; simp [or_and_left, le_succ_iff_eq_or_le]; aesop
 
+@[deprecated (since := "2025-04-19")]
+alias insert_Icc_eq_Icc_succ_right := insert_Icc_right_eq_Icc_succ
+
 lemma insert_Ico_right_eq_Ico_succ_of_not_isMax (h : a ≤ b) (hb : ¬ IsMax b) :
     insert b (Ico a b) = Ico a (succ b) := by
   rw [Ico_succ_right_of_not_isMax hb, ← Ico_insert_right h]
@@ -155,6 +158,9 @@ lemma insert_Icc_pred_right_eq_Icc (h : a ≤ b) : insert b (Icc a (pred b)) = I
 lemma insert_Icc_left_eq_Icc_pred (h : pred a ≤ b) :
     insert (pred a) (Icc a b) = Icc (pred a) b := by
   ext x; simp [or_and_left, pred_le_iff_eq_or_le]; aesop
+
+@[deprecated (since := "2025-04-19")]
+alias insert_Icc_eq_Icc_pred_left := insert_Icc_left_eq_Icc_pred
 
 lemma insert_Ioc_left_eq_Ioc_pred_of_not_isMin (h : a ≤ b) (ha : ¬ IsMin a) :
     insert a (Ioc a b) = Ioc (pred a) b := by
