@@ -32,10 +32,8 @@ variable (F : Type*) [Field F] {E : Type*} [Field E] [Algebra F E] {S : Set E}
 theorem mem_adjoin_range_iff {ι : Type*} (i : ι → E) (x : E) :
     x ∈ adjoin F (Set.range i) ↔ ∃ r s : MvPolynomial ι F,
       x = MvPolynomial.aeval i r / MvPolynomial.aeval i s := by
-  simp_rw [adjoin, mem_mk, Subring.mem_toSubsemiring, Subfield.mem_toSubring,
-    Subfield.mem_closure_iff, ← Algebra.adjoin_eq_ring_closure, Subalgebra.mem_toSubring,
-    Algebra.adjoin_range_eq_range_aeval, AlgHom.mem_range, exists_exists_eq_and]
-  tauto
+  simp_rw [mem_adjoin_iff_div, Algebra.adjoin_range_eq_range_aeval,
+    AlgHom.mem_range, exists_exists_eq_and]
 
 theorem mem_adjoin_iff (x : E) :
     x ∈ adjoin F S ↔ ∃ r s : MvPolynomial S F,
@@ -44,10 +42,8 @@ theorem mem_adjoin_iff (x : E) :
 
 theorem mem_adjoin_simple_iff {α : E} (x : E) :
     x ∈ adjoin F {α} ↔ ∃ r s : F[X], x = aeval α r / aeval α s := by
-  simp only [adjoin, mem_mk, Subring.mem_toSubsemiring, Subfield.mem_toSubring,
-    Subfield.mem_closure_iff, ← Algebra.adjoin_eq_ring_closure, Subalgebra.mem_toSubring,
-    Algebra.adjoin_singleton_eq_range_aeval, AlgHom.mem_range, exists_exists_eq_and]
-  tauto
+  simp only [mem_adjoin_iff_div, Algebra.adjoin_singleton_eq_range_aeval,
+    AlgHom.mem_range, exists_exists_eq_and]
 
 variable {F}
 
