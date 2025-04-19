@@ -32,10 +32,10 @@ noncomputable def mconv (μ : Measure M) (ν : Measure M) :
     Measure M := Measure.map (fun x : M × M ↦ x.1 * x.2) (μ.prod ν)
 
 /-- Scoped notation for the multiplicative convolution of measures. -/
-scoped[MeasureTheory] infixl:80 " ∗ " => MeasureTheory.Measure.mconv
+scoped[MeasureTheory] infixr:80 " ∗ " => MeasureTheory.Measure.mconv
 
 /-- Scoped notation for the additive convolution of measures. -/
-scoped[MeasureTheory] infixl:80 " ∗ " => MeasureTheory.Measure.conv
+scoped[MeasureTheory] infixr:80 " ∗ " => MeasureTheory.Measure.conv
 
 @[to_additive]
 theorem lintegral_mconv [MeasurableMul₂ M] {μ ν : Measure M} [SFinite ν]
