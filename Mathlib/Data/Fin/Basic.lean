@@ -1141,8 +1141,7 @@ lemma succAbove_left_injective : Injective (@succAbove n) := fun _ _ h => by
 
 @[simp] lemma zero_succAbove {n : ℕ} (i : Fin n) : (0 : Fin (n + 1)).succAbove i = i.succ := rfl
 
-@[simp] lemma succ_succAbove_zero {n : ℕ} [NeZero n] (i : Fin n) : succAbove i.succ 0 = 0 :=
-  succAbove_of_castSucc_lt i.succ 0 (by simp only [castSucc_zero', succ_pos])
+lemma succ_succAbove_zero {n : ℕ} [NeZero n] (i : Fin n) : succAbove i.succ 0 = 0 := by simp
 
 /-- `succ` commutes with `succAbove`. -/
 @[simp] lemma succ_succAbove_succ {n : ℕ} (i : Fin (n + 1)) (j : Fin n) :
@@ -1262,7 +1261,7 @@ lemma predAbove_castPred_self (p : Fin (n + 1)) (hp : p ≠ last n) :
   · exact i.elim0
   · rw [predAbove_of_le_castSucc _ _ (zero_le _), castPred_zero]
 
-@[simp] lemma predAbove_zero_succ [NeZero n] {i : Fin n} : predAbove 0 i.succ = i := by
+lemma predAbove_zero_succ [NeZero n] {i : Fin n} : predAbove 0 i.succ = i := by
   rw [predAbove_succ_of_le _ _ (Fin.zero_le' _)]
 
 @[simp]
@@ -1283,7 +1282,7 @@ lemma predAbove_zero [NeZero n] {i : Fin (n + 1)} :
 @[simp] lemma predAbove_right_last {i : Fin (n + 1)} : predAbove i (last (n + 1)) = last n := by
   rw [predAbove_of_castSucc_lt _ _ (castSucc_lt_last _), pred_last]
 
-@[simp] lemma predAbove_last_castSucc {i : Fin (n + 1)} : predAbove (last n) (i.castSucc) = i := by
+lemma predAbove_last_castSucc {i : Fin (n + 1)} : predAbove (last n) (i.castSucc) = i := by
   rw [predAbove_of_le_castSucc _ _ (castSucc_le_castSucc_iff.mpr (le_last _)), castPred_castSucc]
 
 @[simp] lemma predAbove_last_of_ne_last {i : Fin (n + 2)} (hi : i ≠ last (n + 1)) :
