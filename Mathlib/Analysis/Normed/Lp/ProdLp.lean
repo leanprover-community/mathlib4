@@ -844,8 +844,7 @@ section NormedSpace
 
 /-- The product of two normed spaces is a normed space, with the `L^p` norm. -/
 instance instProdNormedSpace [NormedField 𝕜] [NormedSpace 𝕜 α] [NormedSpace 𝕜 β] :
-    NormedSpace 𝕜 (WithLp p (α × β)) where
-  norm_smul_le := norm_smul_le
+    NormedSpace 𝕜 (WithLp p (α × β)) := .of_isBoundedSMul
 
 end NormedSpace
 

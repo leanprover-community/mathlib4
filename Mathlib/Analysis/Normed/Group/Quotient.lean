@@ -517,8 +517,8 @@ instance Submodule.Quotient.instIsBoundedSMul (𝕜 : Type*)
         _ ≤ _ := (sub_lt_iff_lt_add'.mp h.1).le
 
 instance Submodule.Quotient.normedSpace (𝕜 : Type*) [NormedField 𝕜] [NormedSpace 𝕜 M] [SMul 𝕜 R]
-    [IsScalarTower 𝕜 R M] : NormedSpace 𝕜 (M ⧸ S) where
-  norm_smul_le := norm_smul_le
+    [IsScalarTower 𝕜 R M] : NormedSpace 𝕜 (M ⧸ S) :=
+  .of_isBoundedSMul
 
 end Submodule
 

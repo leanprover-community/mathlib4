@@ -298,7 +298,6 @@ instance instL1NormedSpace : NormedSpace 𝕜 (tsze R M) :=
   inferInstanceAs <| NormedSpace 𝕜 (WithLp 1 <| R × M)
 
 instance instL1NormedAlgebra : NormedAlgebra 𝕜 (tsze R M) where
-  norm_smul_le := _root_.norm_smul_le
 
 end Algebra
 

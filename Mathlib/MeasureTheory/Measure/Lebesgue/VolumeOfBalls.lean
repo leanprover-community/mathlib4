@@ -86,8 +86,7 @@ theorem MeasureTheory.measure_lt_one_eq_integral_div_gamma {p : ℝ} (hp : 0 < p
     edist := fun x y => .ofReal (g (x - y))
     edist_dist := fun _ _ => rfl
     eq_of_dist_eq_zero := by convert fun _ _ h => eq_of_sub_eq_zero (h4 h) }
-  letI : NormedSpace ℝ F :=
-  { norm_smul_le := fun _ _ ↦ h5 _ _ }
+  letI : NormedSpace ℝ F := .of_norm_smul_le h5
   -- We put the new topology on F
   letI : TopologicalSpace F := UniformSpace.toTopologicalSpace
   letI : MeasurableSpace F := borel F
@@ -129,8 +128,7 @@ theorem MeasureTheory.measure_le_eq_lt [Nontrivial E] (r : ℝ) :
     edist := fun x y => .ofReal (g (x - y))
     edist_dist := fun _ _ => rfl
     eq_of_dist_eq_zero := by convert fun _ _ h => eq_of_sub_eq_zero (h4 h) }
-  letI : NormedSpace ℝ F :=
-  { norm_smul_le := fun _ _ ↦ h5 _ _ }
+  letI : NormedSpace ℝ F := .of_norm_smul_le h5
   -- We put the new topology on F
   letI : TopologicalSpace F := UniformSpace.toTopologicalSpace
   letI : MeasurableSpace F := borel F

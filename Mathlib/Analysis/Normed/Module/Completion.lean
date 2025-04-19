@@ -30,8 +30,8 @@ namespace Completion
 variable (𝕜 E : Type*)
 
 instance [NormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] :
-    NormedSpace 𝕜 (Completion E) where
-  norm_smul_le := norm_smul_le
+    NormedSpace 𝕜 (Completion E) :=
+  .of_isBoundedSMul
 
 section Module
 
@@ -82,7 +82,6 @@ instance [SeminormedCommRing A] : NormedCommRing (Completion A) where
 
 instance [NormedField 𝕜] [SeminormedCommRing A] [NormedAlgebra 𝕜 A] :
     NormedAlgebra 𝕜 (Completion A) where
-  norm_smul_le := norm_smul_le
 
 instance [NormedField A] [CompletableTopField A] :
     NormedField (UniformSpace.Completion A) where

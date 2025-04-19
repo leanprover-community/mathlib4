@@ -235,10 +235,10 @@ noncomputable instance instNormedRing : NormedRing (Unitization 𝕜 A) where
 /-- Pull back the normed algebra structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
 algebra homomorphism `Unitization.splitMul 𝕜 A`. -/
 instance instNormedAlgebra : NormedAlgebra 𝕜 (Unitization 𝕜 A) where
-  norm_smul_le k x := by
+  norm_smul k x := by
     rw [norm_def, map_smul]
     -- Note: this used to be `rw [norm_smul, ← norm_def]` before https://github.com/leanprover-community/mathlib4/pull/8386
-    exact (norm_smul k (splitMul 𝕜 A x)).le
+    exact norm_smul k (splitMul 𝕜 A x)
 
 instance instNormOneClass : NormOneClass (Unitization 𝕜 A) where
   norm_one := by simpa only [norm_eq_sup, fst_one, norm_one, snd_one, map_one, map_zero,
