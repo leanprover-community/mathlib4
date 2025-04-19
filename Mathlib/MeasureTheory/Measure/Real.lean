@@ -10,8 +10,8 @@ import Mathlib.Tactic.Finiteness
 /-!
 # Measures as real-valued functions
 
-Given a measure `μ`, we have defined `μ.real` as the function sending a set `s` to `μ.real s`. In
-this file, we develop a basic API around this notion.
+Given a measure `μ`, we have defined `μ.real` as the function sending a set `s` to `(μ s).toReal`.
+In this file, we develop a basic API around this notion.
 
 We essentially copy relevant lemmas from the files `MeasureSpaceDef.lean`, `NullMeasurable.lean` and
 `MeasureSpace.lean`, and adapt them by replacing in their name `measure` with `measureReal`.
