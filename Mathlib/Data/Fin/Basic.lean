@@ -60,9 +60,11 @@ This file expands on the development in the core library.
 -/
 
 
-assert_not_exists Monoid Fintype
+assert_not_exists Monoid Finset
 
 open Fin Nat Function
+
+attribute [simp] Fin.succ_ne_zero Fin.castSucc_lt_last
 
 /-- Elimination principle for the empty set `Fin 0`, dependent version. -/
 def finZeroElim {α : Fin 0 → Sort*} (x : Fin 0) : α x :=
@@ -648,6 +650,10 @@ theorem forall_fin_succ' {P : Fin (n + 1) → Prop} :
 -- to match `Fin.eq_zero_or_eq_succ`
 theorem eq_castSucc_or_eq_last {n : Nat} (i : Fin (n + 1)) :
     (∃ j : Fin n, i = j.castSucc) ∨ i = last n := i.lastCases (Or.inr rfl) (Or.inl ⟨·, rfl⟩)
+
+@[simp]
+theorem castSucc_ne_last {n : ℕ} (i : Fin n) : i.castSucc ≠ .last n :=
+  Fin.ne_of_lt i.castSucc_lt_last
 
 theorem exists_fin_succ' {P : Fin (n + 1) → Prop} :
     (∃ i, P i) ↔ (∃ i : Fin n, P i.castSucc) ∨ P (.last _) :=
