@@ -57,7 +57,7 @@ scoped[MeasureTheory] notation:67 f " ⋆ₗ " g:66  => MeasureTheory.lconvoluti
 /- The definition of multiplicative convolution of functions. -/
 @[to_additive "The definition of additive convolution of functions"]
 theorem mlconvolution_def {f g : G → ℝ≥0∞} {μ : Measure G} {x : G}:
-    (f ⋆ₗ[μ] g) x = ∫⁻ y, (f y) * (g (y⁻¹ * x)) ∂μ := by rfl
+    (f ⋆ₗ[μ] g) x = ∫⁻ y, (f y) * (g (y⁻¹ * x)) ∂μ := rfl
 
 /-- Convolution of the zero function with a function returns the zero function. -/
 @[to_additive (attr := simp)]
