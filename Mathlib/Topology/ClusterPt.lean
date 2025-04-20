@@ -191,7 +191,7 @@ theorem accPt_principal_iff_nhdsWithin : AccPt x (𝓟 s) ↔ (𝓝[s \ {x}] x).
 theorem AccPt.mono {F G : Filter X} (h : AccPt x F) (hFG : F ≤ G) : AccPt x G :=
   NeBot.mono h (inf_le_inf_left _ hFG)
 
-theorem AccPt.clusterPt (x : X) (F : Filter X) (h : AccPt x F) : ClusterPt x F :=
+theorem AccPt.clusterPt {x : X} {F : Filter X} (h : AccPt x F) : ClusterPt x F :=
   (accPt_iff_clusterPt.mp h).mono inf_le_right
 
 theorem clusterPt_principal {x : X} {C : Set X} :

@@ -279,7 +279,7 @@ theorem tangentCone_nonempty_of_properSpace [ProperSpace E]
       ∃ u, StrictAnti u ∧ (∀ (n : ℕ), 0 < u n) ∧ Tendsto u atTop (𝓝 (0 : ℝ)) :=
     exists_seq_strictAnti_tendsto (0 : ℝ)
   have A n : ∃ y ∈ closedBall x (u n) ∩ s, y ≠ x :=
-    (accPt_iff_nhds _ _).mp hx _ (closedBall_mem_nhds _ (u_pos n))
+    (accPt_iff_nhds).mp hx _ (closedBall_mem_nhds _ (u_pos n))
   choose v hv hvx using A
   choose hvu hvs using hv
   let d := fun n ↦ v n - x
@@ -332,7 +332,7 @@ theorem tangentCone_eq_univ {s : Set 𝕜} {x : 𝕜} (hx : AccPt x (𝓟 s)) :
       ∃ u, StrictAnti u ∧ (∀ (n : ℕ), 0 < u n) ∧ Tendsto u atTop (𝓝 (0 : ℝ)) :=
     exists_seq_strictAnti_tendsto (0 : ℝ)
   have A n : ∃ y ∈ closedBall x (u n) ∩ s, y ≠ x :=
-    (accPt_iff_nhds _ _).mp hx _ (closedBall_mem_nhds _ (u_pos n))
+    accPt_iff_nhds.mp hx _ (closedBall_mem_nhds _ (u_pos n))
   choose v hv hvx using A
   choose hvu hvs using hv
   let d := fun n ↦ v n - x
@@ -569,7 +569,7 @@ alias ⟨_, AccPt.uniqueDiffWithinAt⟩ := uniqueDiffWithinAt_iff_accPt
 theorem uniqueDiffWithinAt_or_nhdsWithin_eq_bot (s : Set 𝕜) (x : 𝕜) :
     UniqueDiffWithinAt 𝕜 s x ∨ 𝓝[s \ {x}] x = ⊥ :=
   (em (AccPt x (𝓟 s))).imp AccPt.uniqueDiffWithinAt fun h ↦ by
-    rwa [AccPt, ← nhdsWithin_inter', ← diff_eq_compl_inter, not_neBot] at h
+    rwa [accPt_principal_iff_nhdsWithin, not_neBot] at h
 
 end Real
 
