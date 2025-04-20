@@ -137,7 +137,7 @@ theorem upperBounds_mono_set ⦃s t : Set α⦄ (hst : s ⊆ t) : upperBounds t 
 lemma upperBounds_mono_of_dominated {s₁ s₂ : Set α} (h : Dominated s₁ s₂) :
     upperBounds s₂ ⊆ upperBounds s₁ := fun c hc d hd => by
   obtain ⟨e, he₁, he₂⟩ := h _ hd
-  exact Preorder.le_trans d e c he₂ (hc he₁)
+  exact he₂.trans (hc he₁)
 
 theorem lowerBounds_mono_set ⦃s t : Set α⦄ (hst : s ⊆ t) : lowerBounds t ⊆ lowerBounds s :=
   fun _ hb _ h => hb <| hst h
