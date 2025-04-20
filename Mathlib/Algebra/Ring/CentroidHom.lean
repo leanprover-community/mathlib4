@@ -492,8 +492,6 @@ lemma _root_.NonUnitalNonAssocSemiring.mem_center_iff (a : α) :
     constructor
     case comm => exact (congr($hc.symm ·))
     case left_assoc => simpa [e1] using (map_mul_right T · ·)
-    case mid_assoc => exact fun b c ↦ by simpa [e1 c, e2 b] using
-      (map_mul_right T b c).symm.trans <| map_mul_left T b c
     case right_assoc => simpa [e2] using (map_mul_left T · ·)
 
 end NonUnitalNonAssocSemiring
