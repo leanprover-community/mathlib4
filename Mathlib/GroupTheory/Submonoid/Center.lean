@@ -135,11 +135,9 @@ variable {M} {N : Type*}
     [MulEquivClass F M N] (e : F) {x : M} (hx : x ∈ Set.center M) : e x ∈ Set.center N := by
   let e := MulEquivClass.toMulEquiv e
   show e x ∈ Set.center N
-  have := (isMulCentral_iff _).mp hx
-  simp_rw [commute_iff_eq] at this
   constructor <;>
-  (intros; apply e.symm.injective;
-    simp only [map_mul, e.symm_apply_apply, this, ← hx.right_comm])
+  (intros; apply e.symm.injective; simp only
+    [map_mul, e.symm_apply_apply, (hx.comm _).eq, (isMulCentral_iff _).mp hx, ← hx.right_comm])
 
 @[to_additive] theorem _root_.MulEquivClass.apply_mem_center_iff {F} [EquivLike F M N]
     [Mul M] [Mul N] [MulEquivClass F M N] (e : F) {x : M} :

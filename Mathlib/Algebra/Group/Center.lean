@@ -56,7 +56,7 @@ structure IsMulCentral [Mul M] (z : M) : Prop where
   comm (a : M) : Commute z a
   /-- associative property for left multiplication -/
   left_assoc (b c : M) : z * (b * c) = (z * b) * c
-  /-- middle associative multiplication property -/
+  /-- associative property for right multiplication -/
   right_assoc (a b : M) : (a * b) * z = a * (b * z)
 
 attribute [mk_iff] IsMulCentral IsAddCentral
@@ -170,8 +170,7 @@ variable [Semigroup M] {a b : M}
 @[to_additive]
 theorem _root_.Semigroup.mem_center_iff {z : M} :
     z ∈ Set.center M ↔ ∀ g, g * z = z * g := ⟨fun a g ↦ by rw [IsMulCentral.comm a g],
-  fun h ↦ ⟨fun _ ↦ (Commute.eq (h _)).symm,
-  fun _ _ ↦ (mul_assoc z _ _).symm, fun _ _ ↦ mul_assoc _ _ z⟩ ⟩
+  fun h ↦ ⟨fun _ ↦ (h _).symm, fun _ _ ↦ (mul_assoc z _ _).symm, fun _ _ ↦ mul_assoc _ _ z⟩ ⟩
 
 @[to_additive (attr := simp) add_mem_addCentralizer]
 lemma mul_mem_centralizer (ha : a ∈ centralizer S) (hb : b ∈ centralizer S) :
