@@ -33,7 +33,7 @@ variable {S M G : Type*}
 
 /-- `x` is semiconjugate to `y` by `a`, if `a * x = y * a`. -/
 @[to_additive "`x` is additive semiconjugate to `y` by `a` if `a + x = y + a`"]
-def SemiconjBy [Mul M] (a x y : M) : Prop :=
+abbrev SemiconjBy [Mul M] (a x y : M) : Prop :=
   a * x = y * a
 
 namespace SemiconjBy
