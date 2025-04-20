@@ -743,9 +743,14 @@ instance (priority := 100) SecondCountableTopology.toHereditarilyLindelof
     use t, htc
     exact subset_of_subset_of_eq hcover (id htu.symm)
 
+theorem Set.Countable.isHereditarilyLindelof {s : Set X} (hs : s.Countable) :
+    IsHereditarilyLindelof s := fun _ hst =>
+  have := (hs.mono hst).to_subtype
+  isLindelof_iff_LindelofSpace.2 inferInstance
+
 instance (priority := 100) Countable.toHereditarilyLindelof [Countable X] :
     HereditarilyLindelofSpace X where
-  isHereditarilyLindelof_univ _ _ := isLindelof_iff_LindelofSpace.2 inferInstance
+  isHereditarilyLindelof_univ := Set.countable_univ.isHereditarilyLindelof
 
 lemma eq_open_union_countable [HereditarilyLindelofSpace X] {ι : Type u} (U : ι → Set X)
     (h : ∀ i, IsOpen (U i)) : ∃ t : Set ι, t.Countable ∧ ⋃ i∈t, U i = ⋃ i, U i := by
