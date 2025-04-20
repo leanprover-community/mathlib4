@@ -97,9 +97,7 @@ theorem weightedSMul_add_measure {m : MeasurableSpace α} (μ ν : Measure α) {
 theorem weightedSMul_smul_measure {m : MeasurableSpace α} (μ : Measure α) (c : ℝ≥0∞) {s : Set α} :
     (weightedSMul (c • μ) s : F →L[ℝ] F) = c.toReal • weightedSMul μ s := by
   ext1 x
-  push_cast
-  simp_rw [Pi.smul_apply, weightedSMul_apply]
-  simp [smul_smul]
+  simp [weightedSMul_apply, smul_smul]
 
 theorem weightedSMul_congr (s t : Set α) (hst : μ s = μ t) :
     (weightedSMul μ s : F →L[ℝ] F) = weightedSMul μ t := by

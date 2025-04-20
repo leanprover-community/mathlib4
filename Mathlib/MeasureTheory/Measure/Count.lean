@@ -129,14 +129,14 @@ theorem count_singleton [MeasurableSingletonClass α] (a : α) : count ({a} : Se
   count_singleton' (measurableSet_singleton a)
 
 @[simp]
-theorem _root_.MeasureTheory.measureReal_count_singleton'
+theorem _root_.MeasureTheory.count_real_singleton'
     {a : α} (ha : MeasurableSet ({a} : Set α)) :
     count.real ({a} : Set α) = 1 := by
   rw [measureReal_def, count_singleton' ha, ENNReal.toReal_one]
 
-theorem _root_.MeasureTheory.measureReal_count_singleton [MeasurableSingletonClass α] (a : α) :
+theorem _root_.MeasureTheory.count_real_singleton [MeasurableSingletonClass α] (a : α) :
     count.real ({a} : Set α) = 1 :=
-  measureReal_count_singleton' (measurableSet_singleton a)
+  count_real_singleton' (measurableSet_singleton a)
 
 theorem count_injective_image' {f : β → α} (hf : Function.Injective f) {s : Set β}
     (s_mble : MeasurableSet s) (fs_mble : MeasurableSet (f '' s)) : count (f '' s) = count s := by
