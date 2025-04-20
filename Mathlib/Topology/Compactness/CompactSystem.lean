@@ -395,34 +395,124 @@ example (s : Set α) : s = ∅ ↔ s ⊆ ∅ := by
 
 example : 0 ≤ 0 := by exact Nat.zero_le 0
 
-example (s : ℕ → Set α) : ⋂ j, ⋂ (hj : j < 0),  s j = univ := by
-  exact iInter_eq_univ.mpr (fun i ↦ iInter_eq_univ.mpr (fun hi ↦ False.elim
-    <| not_succ_le_zero i hi))
+example (s : ℕ → Set α) : ⋂ (j : Fin 0),  s j = univ := by
+  refine iInter_eq_univ.mpr (fun ⟨i, hi⟩  ↦ ?_)
+  exfalso
+  exact not_succ_le_zero i hi
+
+
+variable {p : Set α → Prop} (hp : IsCompactSystem p) {L : ℕ → Finset (Set α)}
+  (hL : ∀ (n : ℕ) (d : Set α) (hd : d ∈ (L n).toSet), p d)
+  (hc : ∀ (n : ℕ), ⋂ (k : Fin (n + 1)), (⋃₀ (L k).toSet) ≠ ∅)
+
+noncomputable def r {n : ℕ} (K : (k : Fin (n + 1)) → (L k)) :=
+  ∀ N, ⋂ (k : Fin (n + 1)), (K k) ∩ ⋂ (k : Fin N), (⋃₀ (L (n + 1 +k)).toSet) ≠ ∅
+
+lemma get_element_0 (hL : ∀ (n : ℕ) (d : Set α) (hd : d ∈ (L n).toSet), p d)
+    (hc : ∀ (N : ℕ), ⋂ (k : Fin (N + 1)), (⋃₀ (L k).toSet) ≠ ∅) : ∃ (K : (k : Fin 1) → (L k)),
+    r K := by
+  sorry
+
+def join {n : ℕ} (K' : (k : Fin (n + 1)) → (L k)) (K : L (n + 1)) : (k : Fin (n + 2)) → (L k) := by
+  let K'' (k : Fin (n + 2)) (hk : ¬ k.val < n + 1) : L k := by
+    have h : L k = L (n + 1) := by
+      congr
+      apply Nat.eq_of_le_of_lt_succ
+      simp? at hk
+      exact hk
+      exact k.prop
+    rw [h]
+    exact K
+  exact fun k ↦ dite (k.val < n + 1) (fun c ↦ K' ⟨k.val, c⟩) (fun c ↦ K'' k c)
+
+-- ℳ∀⊢ℍ
+
+-- ℳ∀⊢ℍ
+
+
+lemma get_element_succ (hL : ∀ (n : ℕ) (d : Set α) (hd : d ∈ (L n).toSet), p d)
+    (hc : ∀ (n : ℕ), ⋂ (k : Fin (n + 1)), (⋃₀ (L k).toSet) ≠ ∅)
+    (n : ℕ) (K' : (k : Fin (n + 1)) → (L k)) (hK' : r K') : ∃ (K : (L (n + 1))), r (join K' K) := by
+  sorry
+
+def su : ℕ → ℕ
+  | 0 => 1
+  | n + 1 => ∑ (k : Fin n), su k
+termination_by n => n
+decreasing_by
+  refine Fin.val_lt_of_le k ?_
+  exact le_succ n
+
+noncomputable def main' (hL : ∀ (n : ℕ) (d : Set α) (hd : d ∈ (L n).toSet), p d)
+    (hc : ∀ (n : ℕ), ⋂ (k : Fin (n + 1)), (⋃₀ (L k).toSet) ≠ ∅) : (j : ℕ) → (L j)
+  | 0 => (get_element_0 hL hc).choose 0
+  | n + 1 => by
+    let K' : (j : Fin (n + 1)) → (L j):= fun j ↦ (main' hL hc j)
+    have hK' : r K' := by sorry
+    exact (get_element_succ hL hc n K' hK').choose
+
+
+
+noncomputable def main' : (j : ℕ) → (L j) → ∀ (N : ℕ), (main' j) ∩ ⋂ k, ⋂ (_ : k < N), ⋃₀ ↑(L k) ≠ ∅
+    | 0 => by
+      have h : ∃ (K : L 0), ∀ N, (K : Set α) ∩ ⋂ (k < N), (⋃₀ (L k).toSet) ≠ ∅ := by
+        sorry
+      exact ⟨h.choose, h.choose_spec⟩
+    | succ n => by
+      have h : ∃ (K : L (n + 1)), ∀ N, ⋂ (j ≤ n), (main' j : Set α) ∩ K ∩ ⋂ (k < N),
+        (⋃₀ (L (n + 1 + k)).toSet) ≠ ∅ := by
+        sorry
+      exact h.choose
+
+
 
 theorem main' (p : Set α → Prop) (hp : IsCompactSystem p) (L : ℕ → Finset (Set α))
     (hL : ∀ (n : ℕ) (d : Set α) (hd : d ∈ (L n).toSet), p d)
     (hc : ∀ (n : ℕ), ⋂ (k ≤ n), (⋃₀ (L k).toSet) ≠ ∅) :
-    ∃ (K : (j : ℕ) → (L j)), (∀ n N, ⋂ (j ≤ n), (K j) ∩ ⋂ (k ≤ N),
+    ∃ (K : (j : ℕ) → (L j)), (∀ n N, ⋂ (j ≤ n), (K j) ∩ ⋂ (k < N),
       ⋃₀ (L (n + 1 + k)).toSet ≠ ∅) := by
-  -- `q K n` is true, if `K ∩ ⋂ (k ≤ n), ⋃₀ (L k) ≠ ∅`
-  let q : (L 0) → ℕ → Prop := fun (K : (L 0)) n ↦ (K : Set α) ∩ ⋂ (k ≤ n), (⋃₀ (L k).toSet) ≠ ∅
+  have h : 0 = 0 := by rfl
 
-  have hq (n : ℕ) : ∃ (K : (L 0)), q K n := by
+
+
+  -- `q K N` is true, if `K ∩ ⋂ (k < N), ⋃₀ (L k) ≠ ∅`
+  let q : (L 0) → ℕ → Prop := fun (K : (L 0)) n ↦ (K : Set α) ∩ ⋂ (k < n), (⋃₀ (L k).toSet) ≠ ∅
+
+  have hq (N : ℕ) : ∃ (K : (L 0)), q K N := by
     by_contra! h
     push_neg at h
     rw [← iUnion_eq_empty] at h
-    have f : ⋃ (i : { x // x ∈ L 0 }), ↑i ∩ ⋂ k, ⋂ (_ : k ≤ n), ⋃₀ ↑(L k) = (⋃ (i : { x // x ∈ L 0 }), ↑i) ∩ ⋂ k, ⋂ (_ : k ≤ n), ⋃₀ (L k).toSet := by
+    have f : ⋃ (i : { x // x ∈ L 0 }), ↑i ∩ ⋂ k, ⋂ (_ : k < N), ⋃₀ ↑(L k) = (⋃ (i : { x // x ∈ L 0 }), ↑i) ∩ ⋂ k, ⋂ (_ : k < N), ⋃₀ (L k).toSet := by
       rw [iUnion_inter]
     rw [f] at h
-    have g : (⋃ (i : { x // x ∈ L 0 }), ↑i) ∩ ⋂ k, ⋂ (_ : k ≤ n), ⋃₀ (L k).toSet = ⋂ k, ⋂ (_ : k ≤ n), ⋃₀ (L k).toSet := by
+    have g : (⋃ (i : { x // x ∈ L 0 }), ↑i) ∩ ⋂ k, ⋂ (_ : k ≤ N), ⋃₀ (L k).toSet = ⋂ k, ⋂ (_ : k ≤ N), ⋃₀ (L k).toSet := by
       apply inter_eq_self_of_subset_right
       have f : ⋃ (i : { x // x ∈ (L 0) }), ↑i = ⋃₀ (L 0).toSet := by
         rw [sUnion_eq_iUnion]
         rfl
       rw [f]
-      refine biInter_subset_of_mem (Nat.zero_le n)
+      refine biInter_subset_of_mem (Nat.zero_le N)
     rw [g] at h
-    apply (hc n) h
+    apply (hc N) h
+
+
+
+
+
+  -- `r K n` is true, if `∀ N, ⋂ (j ≤ n), (K j) ∩ ⋂ (k < N), ⋃₀ (L (n + 1 + k)) ≠ ∅`.
+  let r : ((n : ℕ) → (k : ℕ) → (hk : k ≤ n) → (L k)) → ℕ → Prop := fun K n ↦ ∀ N, ⋂ (j ≤ n), (K j) ∩ ⋂ (k < N), ⋃₀ (L (n + 1 + k)).toSet ≠ ∅
+
+  have hr0 (n : ℕ) : ∃ (K : (n : ℕ) → (L n)), r K 0 := by
+    sorry
+
+  have hrn (n : ℕ) : ∃ (K : (n : ℕ) → (L n)), ∀ n, r K n → ∃ (K' : (n : ℕ) → (L n)), (∀ k ≤ n, K' k = K k) ∧ r K' (n + 1) := by
+    sorry
+
+  have hrn' (n : ℕ) (k : ℕ) (hk : k ≤ n) : ∃ (K : (L (n + 1))), ∀ n, r K n → ∃ (K' : (n : ℕ) → (L n)), (∀ k ≤ n, K' k = K k) ∧ r K' (n + 1) := by
+    sorry
+
+
+
   have hq' (K : (L 0)) (n : ℕ) : q K (n + 1) → q K n := by
     intro c d
     apply c
@@ -524,12 +614,20 @@ theorem main' (p : Set α → Prop) (hp : IsCompactSystem p) (L : ℕ → Finset
   sorry
 
 
+def ack : Nat → Nat → Nat
+  | 0,      n      => n + 1
+  | m + 1, 0      => ack m 1
+  | m + 1, n + 1  => ack m (ack (m + 1) n)
+
+
+def myMax (a b : Nat) : Nat :=
+  if a < b then myMax b a else a
 
 
 
-    sorry
 
-  rfl
+
+
 
 
 
