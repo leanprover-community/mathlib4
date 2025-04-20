@@ -399,6 +399,10 @@ def reindexₐ [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A] [M
 theorem conjTranspose_zero [AddMonoid A] [StarAddMonoid A] :
     conjTranspose (0 : CStarMatrix m n A) = 0 := by ext; simp
 
+theorem algebraMap_apply [Fintype n] [DecidableEq n] [CommSemiring R] [Semiring A]
+    [Algebra R A] {r : R} {i j : n} :
+    (algebraMap R (CStarMatrix n n A) r) i j = if i = j then algebraMap R A r else 0 := rfl
+
 end basic
 
 section blocks
@@ -488,8 +492,36 @@ theorem fromBlocks_mul [Fintype l] [Fintype m] [NonUnitalNonAssocSemiring α]
       fromBlocks (A * A' + B * C') (A * B' + B * D') (C * A' + D * C') (C * B' + D * D') :=
   Matrix.fromBlocks_multiply A B C D A' B' C' D'
 
-/-- Take a pair of matrices `(A, B)` and turn them into a block diagonal with `A` and `B` as
-the two blocks. -/
+@[simp]
+theorem fromBlocks_one [DecidableEq l] [DecidableEq m] [Zero α] [One α] :
+    fromBlocks (1 : CStarMatrix l l α) 0 0 (1 : CStarMatrix m m α) = 1 :=
+  Matrix.fromBlocks_one
+
+@[simp]
+theorem fromBlocks_algebraMap {R : Type*} [Fintype l] [Fintype m] [DecidableEq l]
+    [DecidableEq m] [CommSemiring R]
+    [Semiring α] [Algebra R α] {r : R} :
+    fromBlocks (algebraMap R (CStarMatrix l l α) r) 0 0 (algebraMap R (CStarMatrix m m α) r)
+      = algebraMap R (CStarMatrix (l ⊕ m) (l ⊕ m) α) r := by
+  ext i j
+  cases i
+  case h.inl i =>
+    cases j
+    case inl j =>
+      by_cases hij : i = j
+      · simp [algebraMap_apply, hij]
+      · simp [algebraMap_apply, hij]
+    case inr j => simp [algebraMap_apply]
+  case h.inr i =>
+    cases j
+    case inl j => simp [algebraMap_apply]
+    case inr j =>
+      by_cases hij : i = j
+      · simp [algebraMap_apply, hij]
+      · simp [algebraMap_apply, hij]
+
+/-- Take a pair of matrices `(A, B)` and turn them into a 2×2 block diagonal matrix with `A` and
+`B` as the two blocks. -/
 @[simps]
 def prodToBlocksₙ (R : Type*) [Fintype n] [Fintype m] [NonUnitalNonAssocSemiring α]
     [StarAddMonoid α] [Monoid R] [DistribMulAction R α] :
@@ -501,18 +533,14 @@ def prodToBlocksₙ (R : Type*) [Fintype n] [Fintype m] [NonUnitalNonAssocSemiri
   map_mul' := fun _ _ => by simp [fromBlocks_mul]
   map_star' := fun _ => by simp [fromBlocks_star]
 
-/-- Take a pair of matrices `(A, B)` and turn them into a block diagonal with `A` and `B` as
-the two blocks. -/
+/-- Take a pair of matrices `(A, B)` and turn them into a 2×2 block diagonal matrix with `A` and
+`B` as the two blocks. -/
 def prodToBlocks (R : Type*) [Fintype n] [Fintype m] [DecidableEq n] [DecidableEq m] [Semiring α]
     [StarAddMonoid α] [CommSemiring R] [Algebra R α] :
     CStarMatrix n n α × CStarMatrix m m α →⋆ₐ[R] CStarMatrix (n ⊕ m) (n ⊕ m) α :=
   { prodToBlocksₙ R with
-    map_one' := by
-      simp [prodToBlocksₙ]
-      sorry
-    commutes' r := by
-      simp [prodToBlocksₙ]
-      sorry }
+    map_one' := by simp [prodToBlocksₙ]
+    commutes' r := by simp [prodToBlocksₙ, fromBlocks_algebraMap] }
 
 end blocks
 
