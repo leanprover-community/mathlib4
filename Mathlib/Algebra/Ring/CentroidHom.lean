@@ -521,7 +521,7 @@ variable [NonAssocSemiring α]
 def centerIsoCentroid : Subsemiring.center α ≃+* CentroidHom α :=
   { centerToCentroid with
     invFun := fun T ↦
-      ⟨T 1, by refine ⟨?_, ?_, ?_, ?_⟩; all_goals simp [← map_mul_left, ← map_mul_right]⟩
+      ⟨T 1, by constructor <;> simp [commute_iff_eq, ← map_mul_left, ← map_mul_right]⟩
     left_inv := fun z ↦ Subtype.ext <| by simp only [MulHom.toFun_eq_coe,
       NonUnitalRingHom.coe_toMulHom, centerToCentroid_apply, mul_one]
     right_inv := fun T ↦ CentroidHom.ext <| fun _ => by rw [MulHom.toFun_eq_coe,
