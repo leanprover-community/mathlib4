@@ -49,8 +49,8 @@ Other:
 - `setToFun_congr_ae (h : f =ᵐ[μ] g) : setToFun μ T hT f = setToFun μ T hT g`
 - `setToFun_measure_zero (h : μ = 0) : setToFun μ T hT f = 0`
 
-If the space is a `NormedLatticeAddCommGroup` and `T` is such that `0 ≤ T s x` for `0 ≤ x`, we
-also prove order-related properties:
+If the space is also an ordered additive group with an order closed topology and `T` is such that
+`0 ≤ T s x` for `0 ≤ x`, we also prove order-related properties:
 - `setToFun_mono_left (h : ∀ s x, T s x ≤ T' s x) : setToFun μ T hT f ≤ setToFun μ T' hT' f`
 - `setToFun_nonneg (hf : 0 ≤ᵐ[μ] f) : 0 ≤ setToFun μ T hT f`
 - `setToFun_mono (hfg : f ≤ᵐ[μ] g) : setToFun μ T hT f ≤ setToFun μ T hT g`
@@ -223,8 +223,8 @@ theorem setToL1S_const [IsFiniteMeasure μ] {T : Set α → E →L[ℝ] F}
 section Order
 
 variable {G'' G' : Type*}
-  [NormedAddCommGroup G'] [Lattice G'] [IsOrderedAddMonoid G'] [NormedSpace ℝ G']
-  [NormedAddCommGroup G''] [Lattice G''] [IsOrderedAddMonoid G''] [NormedSpace ℝ G'']
+  [NormedAddCommGroup G'] [PartialOrder G'] [IsOrderedAddMonoid G'] [NormedSpace ℝ G']
+  [NormedAddCommGroup G''] [PartialOrder G''] [IsOrderedAddMonoid G''] [NormedSpace ℝ G'']
   {T : Set α → G'' →L[ℝ] G'}
 
 theorem setToL1S_mono_left {T T' : Set α → E →L[ℝ] G''} (hTT' : ∀ s x, T s x ≤ T' s x)
@@ -344,8 +344,8 @@ theorem setToL1SCLM_const [IsFiniteMeasure μ] {T : Set α → E →L[ℝ] F} {C
 section Order
 
 variable {G' G'' : Type*}
-  [NormedAddCommGroup G''] [Lattice G''] [IsOrderedAddMonoid G''] [NormedSpace ℝ G'']
-  [NormedAddCommGroup G'] [Lattice G'] [IsOrderedAddMonoid G'] [NormedSpace ℝ G']
+  [NormedAddCommGroup G''] [PartialOrder G''] [IsOrderedAddMonoid G''] [NormedSpace ℝ G'']
+  [NormedAddCommGroup G'] [PartialOrder G'] [IsOrderedAddMonoid G'] [NormedSpace ℝ G']
 
 theorem setToL1SCLM_mono_left {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
     (hT : DominatedFinMeasAdditive μ T C) (hT' : DominatedFinMeasAdditive μ T' C')
@@ -512,9 +512,9 @@ theorem setToL1_const [IsFiniteMeasure μ] (hT : DominatedFinMeasAdditive μ T C
 section Order
 
 variable {G' G'' : Type*}
-  [NormedAddCommGroup G''] [Lattice G''] [HasSolidNorm G''] [IsOrderedAddMonoid G'']
+  [NormedAddCommGroup G''] [PartialOrder G''] [OrderClosedTopology G''] [IsOrderedAddMonoid G'']
   [NormedSpace ℝ G''] [CompleteSpace G'']
-  [NormedAddCommGroup G'] [Lattice G'] [NormedSpace ℝ G']
+  [NormedAddCommGroup G'] [PartialOrder G'] [NormedSpace ℝ G']
 
 theorem setToL1_mono_left' {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
     (hT : DominatedFinMeasAdditive μ T C) (hT' : DominatedFinMeasAdditive μ T' C')
@@ -784,9 +784,9 @@ theorem setToFun_const [IsFiniteMeasure μ] (hT : DominatedFinMeasAdditive μ T 
 section Order
 
 variable {G' G'' : Type*}
-  [NormedAddCommGroup G''] [Lattice G''] [HasSolidNorm G''] [IsOrderedAddMonoid G'']
+  [NormedAddCommGroup G''] [PartialOrder G''] [OrderClosedTopology G''] [IsOrderedAddMonoid G'']
   [NormedSpace ℝ G''] [CompleteSpace G'']
-  [NormedAddCommGroup G'] [Lattice G'] [NormedSpace ℝ G']
+  [NormedAddCommGroup G'] [PartialOrder G'] [NormedSpace ℝ G']
 
 theorem setToFun_mono_left' {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
     (hT : DominatedFinMeasAdditive μ T C) (hT' : DominatedFinMeasAdditive μ T' C')

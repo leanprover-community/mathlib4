@@ -33,7 +33,11 @@ namespace Lp
 
 section Order
 
-variable [NormedAddCommGroup E] [Lattice E]
+variable [NormedAddCommGroup E]
+
+section PartialOrder
+
+variable [PartialOrder E]
 
 theorem coeFn_le (f g : Lp E p μ) : f ≤ᵐ[μ] g ↔ f ≤ g := by
   rw [← Subtype.coe_le_coe, ← AEEqFun.coeFn_le]
@@ -45,7 +49,7 @@ theorem coeFn_nonneg (f : Lp E p μ) : 0 ≤ᵐ[μ] f ↔ 0 ≤ f := by
   · rwa [h2]
   · rwa [← h2]
 
-variable [HasSolidNorm E] [IsOrderedAddMonoid E]
+variable [OrderClosedTopology E] [IsOrderedAddMonoid E]
 
 instance instAddLeftMono : AddLeftMono (Lp E p μ) := by
   refine ⟨fun f g₁ g₂ hg₁₂ => ?_⟩
@@ -56,6 +60,12 @@ instance instAddLeftMono : AddLeftMono (Lp E p μ) := by
 
 instance instIsOrderedAddMonoid : IsOrderedAddMonoid (Lp E p μ) :=
   { add_le_add_left := fun _ _ => add_le_add_left }
+
+end PartialOrder
+
+section Lattice
+
+variable [Lattice E] [HasSolidNorm E] [IsOrderedAddMonoid E]
 
 theorem _root_.MeasureTheory.MemLp.sup {f g : α → E} (hf : MemLp f p μ) (hg : MemLp g p μ) :
     MemLp (f ⊔ g) p μ :=
@@ -106,6 +116,8 @@ instance instHasSolidNorm [Fact (1 ≤ p)] :
       filter_upwards [hfg, Lp.coeFn_abs f, Lp.coeFn_abs g] with x hx hxf hxg
       rw [hxf, hxg] at hx
       exact HasSolidNorm.solid hx }
+
+end Lattice
 
 end Order
 

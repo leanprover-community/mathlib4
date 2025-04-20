@@ -559,22 +559,13 @@ theorem integral_eq_integral_pos_part_sub_integral_neg_part {f : α → ℝ} (hf
 
 section Order
 
-variable [PartialOrder E] [IsOrderedAddMonoid E] [OrderedSMul ℝ E] [ClosedIciTopology E]
+variable [PartialOrder E] [IsOrderedAddMonoid E] [OrderedSMul ℝ E] [OrderClosedTopology E]
 
 /-- The integral of a function which is nonnegative almost everywhere is nonnegative. -/
 lemma integral_nonneg_of_ae {f : α → E} (hf : 0 ≤ᵐ[μ] f) :
-    0 ≤ ∫ x, f x ∂μ := by
-  borelize E
-  refine (em (Integrable f μ)).elim (fun hf_int ↦ ?_) fun h ↦ (by simp [integral_undef h])
-  obtain ⟨g, hg, hg_nonneg, hfg⟩ := hf_int.1.exists_stronglyMeasurable_range_subset
-    isClosed_Ici.measurableSet (Set.nonempty_Ici (a := 0)) hf
-  rw [integral_congr_ae hfg]
-  rw [integrable_congr hfg] at hf_int
-  have := hg.separableSpace_range_union_singleton (b := 0)
-  refine ge_of_tendsto
-    (tendsto_integral_approxOn_of_measurable_of_range_subset hg.measurable hf_int _ le_rfl) <|
-    .of_forall fun n ↦ SimpleFunc.integral_nonneg ?_
-  exact Eventually.of_forall <| SimpleFunc.approxOn_range_nonneg hg_nonneg n
+    0 ≤ ∫ x, f x ∂μ :=
+  integral_eq_setToFun f ▸ setToFun_nonneg (dominatedFinMeasAdditive_weightedSMul μ)
+    (fun s _ _ => weightedSMul_nonneg s) hf
 
 lemma integral_nonneg {f : α → E} (hf : 0 ≤ f) :
     0 ≤ ∫ x, f x ∂μ :=
@@ -609,9 +600,8 @@ lemma integral_mono_of_nonneg {f g : α → E} (hf : 0 ≤ᵐ[μ] f) (hgi : Inte
   · exact integral_mono_ae hfi hgi h
   · exact integral_undef hfi ▸ integral_nonneg_of_ae (hf.trans h)
 
-omit [ClosedIciTopology E] in
-lemma integral_mono_measure [OrderClosedTopology E] {f : α → E} {ν : Measure α} (hle : μ ≤ ν)
-    (hf : 0 ≤ᶠ[ae ν] f) (hfi : Integrable f ν) : ∫ (a : α), f a ∂μ ≤ ∫ (a : α), f a ∂ν := by
+lemma integral_mono_measure {f : α → E} {ν : Measure α} (hle : μ ≤ ν)
+    (hf : 0 ≤ᵐ[ν] f) (hfi : Integrable f ν) : ∫ (a : α), f a ∂μ ≤ ∫ (a : α), f a ∂ν := by
   borelize E
   obtain ⟨g, hg, hg_nonneg, hfg⟩ := hfi.1.exists_stronglyMeasurable_range_subset
     isClosed_Ici.measurableSet (Set.nonempty_Ici (a := 0)) hf
