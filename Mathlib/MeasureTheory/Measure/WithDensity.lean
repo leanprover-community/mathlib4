@@ -642,9 +642,7 @@ theorem prod_withDensity_left₀ {f : α → ℝ≥0∞} (hf : AEMeasurable f μ
   · refine lintegral_congr (fun x ↦ ?_)
     rw [Pi.mul_apply, ← lintegral_const_mul'' _ (by fun_prop)]
     simp
-  any_goals fun_prop (disch:= intro _ hs; simp [hs])
-  apply Measurable.aemeasurable
-  fun_prop
+  all_goals fun_prop (disch:= intro _ hs; simp [hs])
 
 theorem prod_withDensity_left {f : α → ℝ≥0∞} (hf : Measurable f) :
     (μ.withDensity f).prod ν = (μ.prod ν).withDensity (fun z ↦ f z.1) :=
