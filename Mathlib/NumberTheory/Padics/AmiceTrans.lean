@@ -194,4 +194,19 @@ noncomputable def Amice_iso :(C(ℤ_[p],ℤ_[p]) →L[ℤ_[p]]  ℤ_[p] ) ≃ₗ
           exact rfl
         rw[this,sh b b]
         simp
+noncomputable def Amice_iso_2:( C(ℤ_[p],ℤ_[p])→L[ℤ_[p]] ℤ_[p])
+ ≃ₗ[ℤ_[p]] ℤ_[p]⟦X⟧ where
+   toFun a:=PowerSeries.mk (Amice_iso a)
+   map_add'  _ _:=by
+       simp
+       exact rfl
+   map_smul' a b:=by
+       simp
+       exact rfl
+   invFun a := Amice_iso.symm (fun n=> a.coeff  ℤ_[p] n)
+   left_inv r :=by
+     simp
+   right_inv  g :=by
+     ext n
+     simp
 end PadicInt

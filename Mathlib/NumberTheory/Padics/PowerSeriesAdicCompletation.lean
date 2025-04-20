@@ -223,6 +223,10 @@ lemma ss: LinearMap.ker ((AdicCompletion.mk (IsLocalRing.maximalIdeal ℤ_[p]) �
 #check Submodule.liftQ (LinearMap.ker ((AdicCompletion.mk (IsLocalRing.maximalIdeal ℤ_[p]) ℤ_[p])))
  (Cauchy.seq_map (p:=p)) (ss (p:=p))
 
+
+
+   -- exact (LinearMap.ker (AdicCompletion.mk (IsLocalRing.maximalIdeal ℤ_[p]) ℤ_[p])).mkQ
+
 noncomputable def FunctionTrans_1:(AdicCompletion.AdicCauchySequence
 (IsLocalRing.maximalIdeal ℤ_[p]) ℤ_[p] ⧸
     LinearMap.ker (AdicCompletion.mk (IsLocalRing.maximalIdeal ℤ_[p]) ℤ_[p]))≃ₗ[ℤ_[p]]
@@ -241,10 +245,50 @@ noncomputable abbrev p_sequence_coeff (a:ℤ ):=
 lemma Tends_to_Zero_0(f:(AdicCompletion (IsLocalRing.maximalIdeal ℤ_[p]) (ℤ_[p]⸨X⸩)))
 :Filter.Tendsto (fun n:ℕ => p_sequence_coeff (-n:ℤ ) f) Filter.atTop
 (nhds 0):=by
-
-  sorry
+  have:=by
+   exact AdicCompletion.mk_surjective (IsLocalRing.maximalIdeal ℤ_[p]) ℤ_[p]⸨X⸩
+  unfold Function.Surjective at this
+  rcases (this f) with ⟨r,rs⟩
+  have :(fun n:ℕ => p_sequence_coeff (-n:ℤ ) f)=
+    (fun n:ℕ => cauchy_sequence_coeff (p:=p) (-n:ℤ ) r) :=by
+      ext n
+      have: (p_sequence_coeff_0 (-n:ℤ ) f)=
+       (LinearMap.ker (AdicCompletion.mk
+        (IsLocalRing.maximalIdeal ℤ_[p]) ℤ_[p])).mkQ
+         ((AdicCompletion.AdicCauchySequence.map  (IsLocalRing.maximalIdeal ℤ_[p])
+           (HahnSeries.coeff_map_0 (p:=p) (-n:ℤ ))) r ):=by
+           rw[← rs]
+           simp
+           unfold FunctionTrans_1
+           exact
+             (LinearEquiv.symm_apply_eq
+                   ((AdicCompletion.mk (IsLocalRing.maximalIdeal ℤ_[p])
+                         ℤ_[p]).quotKerEquivOfSurjective
+                     FunctionTrans_1._proof_25)).mpr
+               rfl
+      simp
+      simp at this
+      rw[this]
+      simp
+  rw[this]
+  exact cauchy_sequence_coeff_tends_to_zero r
+lemma Tends_to_Zero_1(f:(AdicCompletion (IsLocalRing.maximalIdeal ℤ_[p]) (ℤ_[p]⸨X⸩)))
+:Filter.Tendsto (fun n:ℕ => p_sequence_coeff (-((n+1):ℕ ):ℤ ) f) Filter.atTop
+(nhds 0):=by
+  have:=Tends_to_Zero_0  (p:=p) f
+  rw[NormedAddCommGroup.tendsto_atTop] at this
+  refine NormedAddCommGroup.tendsto_atTop.mpr ?_
+  intro h sh
+  simp only [sub_zero]
+  choose e se using (this h sh)
+  use e
+  intro r sf
+  have:=se (r+1) (Nat.le_add_right_of_le sf)
+  simp only [sub_zero] at this
+  exact this
 lemma Tends_to_Zero(a:(AdicCompletion (IsLocalRing.maximalIdeal ℤ_[p]) (ℤ_[p]⸨X⸩)))
-:Filter.Tendsto (fun n:ℕ => p_sequence_coeff (-n-1:ℤ ) a-p_sequence_coeff (-n-2:ℤ ) a) Filter.atTop
+:Filter.Tendsto (fun n:ℕ => p_sequence_coeff (-((n+1):ℕ ):ℤ ) a
+-p_sequence_coeff (-((n+2):ℕ ):ℤ ) a) Filter.atTop
 (nhds 0):=by
   have:=Tends_to_Zero_0  (p:=p) a
   rw[NormedAddCommGroup.tendsto_atTop] at this
@@ -255,13 +299,23 @@ lemma Tends_to_Zero(a:(AdicCompletion (IsLocalRing.maximalIdeal ℤ_[p]) (ℤ_[p
   use e
   intro r sf
   rw[sub_eq_add_neg]
-  have  := nonarchimedean ((p_sequence_coeff (-↑r - 1)) a)  (-(p_sequence_coeff (-↑r - 2)) a)
-  have m : ‖(p_sequence_coeff (-↑r - 1)) a‖ ⊔ ‖-(p_sequence_coeff (-↑r - 2)) a‖ <h :=by sorry
-  sorry
+  have  := nonarchimedean ((p_sequence_coeff (-↑(r+ 1))) a)  (-(p_sequence_coeff (-↑(r+ 2))) a)
+  have m : ‖(p_sequence_coeff (-↑(r+ 1))) a‖ ⊔ ‖-(p_sequence_coeff (-↑(r+ 2))) a‖ <h :=by
+    refine max_lt ?_ ?_
+    · have:=se (r+1) (Nat.le_add_right_of_le sf)
+      simp only [sub_zero] at this
+      exact this
+    · have:=se (r+2) (Nat.le_add_right_of_le sf)
+      simp only [sub_zero] at this
+      simp only [norm_neg]
+      exact this
+
+  exact lt_of_le_of_lt this m
+
 noncomputable def FunctionTrans_2: (AdicCompletion (IsLocalRing.maximalIdeal ℤ_[p])
  (ℤ_[p]⸨X⸩)) →ₗ[ℤ_[p]]
  C₀(ℕ, ℤ_[p]) where
-   toFun a :=⟨⟨(fun n:ℕ => p_sequence_coeff (-n-1:ℤ ) a-p_sequence_coeff (-n-2:ℤ ) a)
+   toFun a :=⟨⟨(fun n:ℕ => p_sequence_coeff (-((n+1):ℕ ):ℤ ) a-p_sequence_coeff (-((n+2):ℕ ):ℤ ) a)
     ,continuous_of_discreteTopology⟩, cocompact_eq_atTop (α := ℕ) ▸ Tends_to_Zero a⟩
    map_add'  a b:=by
      ext n
@@ -271,20 +325,28 @@ noncomputable def FunctionTrans_2: (AdicCompletion (IsLocalRing.maximalIdeal ℤ
      ext s
      simp
      ring
-noncomputable def Amice_power:( C(ℤ_[p],ℤ_[p])→L[ℤ_[p]] ℤ_[p])
- ≃ₗ[ℤ_[p]] ℤ_[p]⟦X⟧ where
-   toFun a:=PowerSeries.mk (Amice_iso a)
-   map_add'  _ _:=by
-       simp
-       exact rfl
+noncomputable def Adic_Complection_equiv_srmm: (AdicCompletion (IsLocalRing.maximalIdeal ℤ_[p])
+ (ℤ_[p]⸨X⸩)) ≃ₗ[ℤ_[p]]
+ C₀(ℕ, ℤ_[p])×(ℕ  → ℤ_[p]) where
+   toFun a:=⟨⟨⟨fun n:ℕ => p_sequence_coeff (-((n+1):ℕ ):ℤ ) a, continuous_of_discreteTopology⟩,
+    cocompact_eq_atTop (α := ℕ) ▸ Tends_to_Zero_1 a ⟩,fun n => p_sequence_coeff n a⟩
+   map_add' a b:=by
+     ext s
+     ·simp
+     ·simp
+
    map_smul' a b:=by
-       simp
-       exact rfl
-   invFun a := Amice_iso.symm (fun n=> a.coeff  ℤ_[p] n)
+     ext s
+     ·simp
+     ·simp
+
+   invFun := sorry
    left_inv := sorry
    right_inv := sorry
-lemma exact :Function.Exact (Amice_Trans_in_P (p:=p) ∘ₗ Amice_power.toLinearMap)
+
+lemma exact :Function.Exact (Amice_Trans_in_P (p:=p) ∘ₗ Amice_iso_2.toLinearMap)
   ( (mahlerEquiv (p:=p) ℤ_[p]).symm.toLinearMap ∘ₗ FunctionTrans_2 (p:=p) ) :=by
    refine  LinearMap.exact_iff.mpr ?_
+
 
    sorry
