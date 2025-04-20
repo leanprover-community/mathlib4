@@ -105,6 +105,15 @@ lemma IsIrreducible.mk' {K : Type*} [Field K] [Module K M] [Module K N] [Nontriv
     replace ne_bot : q.dualAnnihilator ≠ ⊤ := by simpa
     simpa using h ne_bot
 
+lemma exist_set_root_not_disjoint_and_le_ker_coroot'_of_invtSubmodule
+    [NeZero (2 : R)] [NoZeroSMulDivisors R M] (q : Submodule R M)
+    (hq : ∀ i, q ∈ invtSubmodule (P.reflection i)) :
+    ∃ Φ : Set ι, (∀ i ∈ Φ, ¬ Disjoint q (R ∙ P.root i)) ∧ (∀ i ∉ Φ, q ≤ ker (P.coroot' i)) := by
+  refine ⟨{i | ¬ Disjoint q (R ∙ P.root i)}, by simp, fun i hi ↦ ?_⟩
+  simp only [mem_setOf_eq, not_not] at hi
+  rw [← Submodule.mem_invtSubmodule_reflection_iff (by simp) hi]
+  exact hq i
+
 variable [NeZero (2 : R)] [P.IsIrreducible]
 
 lemma span_orbit_eq_top (i : ι) :
