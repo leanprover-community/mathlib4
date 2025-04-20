@@ -124,7 +124,7 @@ theorem mgf_const' (c : ℝ) : mgf (fun _ => c) μ t = μ.real Set.univ * exp (t
   simp only [mgf, integral_const, smul_eq_mul]
 
 theorem mgf_const (c : ℝ) [IsProbabilityMeasure μ] : mgf (fun _ => c) μ t = exp (t * c) := by
-  simp [mgf_const']
+  simp
 
 @[simp]
 theorem cgf_const' [IsFiniteMeasure μ] (hμ : μ ≠ 0) (c : ℝ) :
