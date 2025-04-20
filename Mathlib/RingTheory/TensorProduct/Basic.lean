@@ -1504,3 +1504,5 @@ lemma Algebra.TensorProduct.includeLeft_surjective
   TensorProduct.flip_mk_surjective _ h
 
 end
+
+set_option linter.style.longFile 1700
