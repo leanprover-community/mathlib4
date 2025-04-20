@@ -96,6 +96,10 @@ theorem transpose_apply (M : CStarMatrix m n A) (i j) : transpose M i j = M j i 
 def conjTranspose [Star A] (M : CStarMatrix m n A) : CStarMatrix n m A :=
   M.transpose.map star
 
+@[simp]
+theorem conjTranspose_apply [Star A] (M : CStarMatrix m n A) (i j) :
+    conjTranspose M i j = star (M j i) := rfl
+
 instance instStar [Star A] : Star (CStarMatrix n n A) where
   star M := M.conjTranspose
 
@@ -289,6 +293,22 @@ theorem mul_smul {l : Type*} [Fintype n] [Monoid R] [AddCommMonoid A] [Mul A] [D
     [SMulCommClass R A A] (M : CStarMatrix m n A) (a : R) (N : CStarMatrix n l A) :
     M * (a • N) = a • (M * N) := Matrix.mul_smul M a N
 
+@[simp]
+protected theorem mul_zero {o : Type*} [Fintype n] [Fintype o] [NonUnitalNonAssocSemiring A]
+    (M : CStarMatrix m n A) : M * (0 : CStarMatrix n o A) = 0 := Matrix.mul_zero _
+
+@[simp]
+protected theorem zero_mul {l : Type*} [Fintype l] [Fintype m] [NonUnitalNonAssocSemiring A]
+    (M : CStarMatrix m n A) : (0 : CStarMatrix l m A) * M = 0 := Matrix.zero_mul _
+
+protected theorem mul_add {o : Type*} [Fintype n] [NonUnitalNonAssocSemiring A]
+    (L : CStarMatrix m n A) (M N : CStarMatrix n o A) :
+    L * (M + N) = L * M + L * N := Matrix.mul_add _ _ _
+
+protected theorem add_mul {l : Type*} [Fintype m] [NonUnitalNonAssocSemiring A]
+    (L M : CStarMatrix l m A) (N : CStarMatrix m n A) :
+    (L + M) * N = L * N + M * N := Matrix.add_mul _ _ _
+
 instance instNonUnitalNonAssocSemiring [Fintype n] [NonUnitalNonAssocSemiring A] :
     NonUnitalNonAssocSemiring (CStarMatrix n n A) :=
   inferInstanceAs <| NonUnitalNonAssocSemiring (Matrix n n A)
@@ -375,6 +395,10 @@ def reindexₐ [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A] [M
       rw [Matrix.star_apply, Matrix.star_apply]
       simp [Matrix.submatrix_apply] }
 
+@[simp]
+theorem conjTranspose_zero [AddMonoid A] [StarAddMonoid A] :
+    conjTranspose (0 : CStarMatrix m n A) = 0 := by ext; simp
+
 end basic
 
 section blocks
@@ -439,6 +463,13 @@ theorem fromBlocks_neg [Neg R] (A : CStarMatrix n l R) (B : CStarMatrix n m R)
     -fromBlocks A B C D = fromBlocks (-A) (-B) (-C) (-D) :=
   Matrix.fromBlocks_neg A B C D
 
+theorem fromBlocks_star [Star R] (A : CStarMatrix n n R) (B : CStarMatrix n m R)
+    (C : CStarMatrix m n R) (D : CStarMatrix m m R) :
+    star (fromBlocks A B C D) =
+      fromBlocks (star A) (C.conjTranspose) (B.conjTranspose) (star D) := by
+  ext i j
+  cases i <;> cases j <;> simp [fromBlocks] <;> rfl
+
 @[simp]
 theorem fromBlocks_zero [Zero α] : fromBlocks (0 : CStarMatrix n l α) 0 0
     (0 : CStarMatrix o m α) = 0 := Matrix.fromBlocks_zero
@@ -449,13 +480,39 @@ theorem fromBlocks_add [Add α] (A : CStarMatrix n l α) (B : CStarMatrix n m α
     fromBlocks A B C D + fromBlocks A' B' C' D' = fromBlocks (A + A') (B + B') (C + C') (D + D') :=
   Matrix.fromBlocks_add  A B C D A' B' C' D'
 
-theorem fromBlocks_multiply [Fintype l] [Fintype m] [NonUnitalNonAssocSemiring α]
+theorem fromBlocks_mul [Fintype l] [Fintype m] [NonUnitalNonAssocSemiring α]
     (A : CStarMatrix n l α) (B : CStarMatrix n m α) (C : CStarMatrix o l α) (D : CStarMatrix o m α)
     (A' : CStarMatrix l p α) (B' : CStarMatrix l q α) (C' : CStarMatrix m p α)
     (D' : CStarMatrix m q α) :
     fromBlocks A B C D * fromBlocks A' B' C' D' =
       fromBlocks (A * A' + B * C') (A * B' + B * D') (C * A' + D * C') (C * B' + D * D') :=
   Matrix.fromBlocks_multiply A B C D A' B' C' D'
+
+/-- Take a pair of matrices `(A, B)` and turn them into a block diagonal with `A` and `B` as
+the two blocks. -/
+@[simps]
+def prodToBlocksₙ (R : Type*) [Fintype n] [Fintype m] [NonUnitalNonAssocSemiring α]
+    [StarAddMonoid α] [Monoid R] [DistribMulAction R α] :
+    CStarMatrix n n α × CStarMatrix m m α →⋆ₙₐ[R] CStarMatrix (n ⊕ m) (n ⊕ m) α where
+  toFun := fun (A, B) => fromBlocks A 0 0 B
+  map_smul' := fun _ _ => by simp [fromBlocks_smul]
+  map_zero' := by simp
+  map_add' := fun _ _ => by simp [fromBlocks_add]
+  map_mul' := fun _ _ => by simp [fromBlocks_mul]
+  map_star' := fun _ => by simp [fromBlocks_star]
+
+/-- Take a pair of matrices `(A, B)` and turn them into a block diagonal with `A` and `B` as
+the two blocks. -/
+def prodToBlocks (R : Type*) [Fintype n] [Fintype m] [DecidableEq n] [DecidableEq m] [Semiring α]
+    [StarAddMonoid α] [CommSemiring R] [Algebra R α] :
+    CStarMatrix n n α × CStarMatrix m m α →⋆ₐ[R] CStarMatrix (n ⊕ m) (n ⊕ m) α :=
+  { prodToBlocksₙ R with
+    map_one' := by
+      simp [prodToBlocksₙ]
+      sorry
+    commutes' r := by
+      simp [prodToBlocksₙ]
+      sorry }
 
 end blocks
 
