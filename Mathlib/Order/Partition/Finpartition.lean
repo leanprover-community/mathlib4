@@ -638,8 +638,10 @@ def ofSetSetoid (s : Setoid α) (x : Finset α) [DecidableRel s.r] : Finpartitio
   parts := x.image fun a ↦ {b ∈ x | s.r a b}
   supIndep := by
     suffices ∀ (a b c d : α), s a d → s b d → (s a c ↔ s b c) by
-      simp [supIndep_iff_pairwiseDisjoint, Set.PairwiseDisjoint, Set.Pairwise, onFun,
-        disjoint_iff_ne, filter_inj', @not_imp_comm (_ ↔ _)]
+      simp only [supIndep_iff_pairwiseDisjoint, Set.PairwiseDisjoint, Set.Pairwise, coe_image,
+        Set.mem_image, mem_coe, ne_eq, onFun, id_eq, disjoint_iff_ne, forall_mem_not_eq,
+        forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, mem_filter, not_and, filter_inj',
+        not_forall, Classical.not_imp, @not_imp_comm (_ ↔ _), Decidable.not_not]
       intro _ _ _ _ _ _ _ _ ha _ hb
       exact ⟨(s.trans' hb <| s.trans' (s.symm' ha) ·), (s.trans' ha <| s.trans' (s.symm' hb) ·)⟩
     simp +contextual [← Quotient.eq]
