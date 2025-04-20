@@ -183,7 +183,6 @@ lemma invtsubmodule_to_root_subset {K : Type*} [Field K] [NeZero (2 : K)] [Modul
       exact False.elim (this (Submodule.disjoint_span_singleton_of_not_mem s₃))
     have hu := h₂ Φ (Set.nonempty_iff_ne_empty.mpr hΦ) b' c
     subst hu
-    rw [eq_top_mono (span_le.mpr b')
-    (by rw [image_univ, span_root_eq_top])]
+    rw [eq_top_mono (span_le.mpr b') (by rw [image_univ, span_root_eq_top])]
 
 end RootSystem
