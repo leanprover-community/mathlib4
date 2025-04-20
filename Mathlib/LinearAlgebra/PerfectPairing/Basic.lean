@@ -48,6 +48,10 @@ variable {R M N}
 
 namespace PerfectPairing
 
+@[deprecated (since := "2025-04-20")] alias toLin := toLinearMap
+@[deprecated (since := "2025-04-20")] alias bijectiveLeft := bijective_left
+@[deprecated (since := "2025-04-20")] alias bijectiveRight := bijective_right
+
 /-- If the coefficients are a field, and one of the spaces is finite-dimensional, it is sufficient
 to check only injectivity instead of bijectivity of the bilinear form. -/
 def mkOfInjective {K V W : Type*}
@@ -82,6 +86,8 @@ instance instFunLike : FunLike (PerfectPairing R M N) M (N →ₗ[R] R) where
 
 @[simp]
 lemma toLinearMap_apply (p : PerfectPairing R M N) (x : M) : p.toLinearMap x = p x := rfl
+
+@[deprecated (since := "2025-04-20")] alias toLin_apply := toLinearMap_apply
 
 @[simp]
 lemma mk_apply_apply {f : M →ₗ[R] N →ₗ[R] R} {hl} {hr} {x : M} :
