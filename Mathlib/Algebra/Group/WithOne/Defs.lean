@@ -113,7 +113,7 @@ lemma recOneCoe_coe {C : WithOne α → Sort*} (h₁ h₂) (a : α) :
 def unone : ∀ {x : WithOne α}, x ≠ 1 → α | (x : α), _ => x
 
 @[to_additive (attr := simp) unzero_coe]
-theorem unone_coe {x : α} (hx : (x : WithOne α) ≠ 1) : unone hx = x :=
+theorem unone_coe (x : α) (hx : (x : WithOne α) ≠ 1) : unone hx = x :=
   rfl
 
 @[to_additive (attr := simp) coe_unzero]

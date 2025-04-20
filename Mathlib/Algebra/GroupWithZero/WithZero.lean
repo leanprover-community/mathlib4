@@ -38,6 +38,10 @@ instance one : One (WithZero α) where
 -- We give this higher priority so that unzero_coe doesn't trigger.
 @[simp high] lemma unzero_one (hx : (1 : WithZero α) ≠ 0) : unzero hx = 1 := rfl
 
+lemma unzero_ofNat_one (hx : ((OfNat.ofNat 1) : WithZero α) ≠ 0) :
+    unzero hx = 1 := by
+  simp
+
 end One
 
 section Mul
