@@ -48,8 +48,11 @@ lemma schwarzianWithin_ofNat (n : ℕ) [OfNat 𝕜 n] : schwarzianWithin (ofNat(
 lemma schwarzian_ofNat (n : ℕ) [OfNat 𝕜 n] : 𝓢 (ofNat(n) : 𝕜 → 𝕜) = 0 :=
   schwarzian_const _
 
+lemma schwarzian_const_mul_apply (c x : 𝕜) : 𝓢 (c * ·) x = 0 := by
+  simp [schwarzian_def, iteratedDeriv_eq_iterate, deriv_const_mul_field' (v := (·))]
+
 lemma schwarzian_id_apply (x : 𝕜) : 𝓢 id x = 0 := by
-  simp [schwarzian_def, iteratedDeriv_eq_iterate]
+  simpa using schwarzian_const_mul_apply 1 x
 
 @[simp] lemma schwarzian_id : 𝓢 (id : 𝕜 → 𝕜) = 0 := funext schwarzian_id_apply
 
