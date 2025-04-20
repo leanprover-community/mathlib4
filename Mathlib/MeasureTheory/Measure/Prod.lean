@@ -757,7 +757,7 @@ theorem AEMeasurable.snd [SFinite ν] {f : β → γ} (hf : AEMeasurable f ν) :
 theorem AEMeasurable.lintegral_prod_right' [SFinite ν] {f : α × β → ℝ≥0∞}
     (hf : AEMeasurable f (μ.prod ν)) : AEMeasurable (fun x => ∫⁻ y, f (x, y) ∂ν) μ := by
   obtain ⟨g , hg, hfg⟩ := hf
-  refine ⟨fun x ↦ ∫⁻ y, g (x, y) ∂ν, (by fun_prop), ?_⟩
+  refine ⟨fun x ↦ ∫⁻ y, g (x, y) ∂ν ,(by fun_prop) , ?_⟩
   exact Eventually.mono (Measure.ae_ae_of_ae_prod hfg) fun x hfg' ↦ lintegral_congr_ae hfg'
 
 @[fun_prop, measurability]
@@ -771,8 +771,8 @@ theorem AEMeasurable.lintegral_prod_left' [SFinite ν] [SFinite μ] {f : α × �
   hf.prod_swap.lintegral_prod_right'
 
 @[fun_prop, measurability]
-theorem AEMeasurable.lintegral_prod_left [SFinite μ] {f : α → β → ℝ≥0∞}
-    (hf : Measurable f.uncurry) : Measurable fun y => ∫⁻ x, f x y ∂μ :=
+theorem AEMeasurable.lintegral_prod_left [SFinite ν] [SFinite μ] {f : α → β → ℝ≥0∞}
+    (hf : AEMeasurable f.uncurry (μ.prod ν)) : AEMeasurable (fun y => ∫⁻ x, f x y ∂μ) ν :=
   hf.lintegral_prod_left'
 
 end
