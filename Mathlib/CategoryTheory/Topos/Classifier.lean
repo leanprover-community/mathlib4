@@ -45,6 +45,10 @@ Let `C` refer to a category with a terminal object.
   category `C` has a subobject classifier if and only if the subobjects presheaf
   `CategoryTheory.Subobject.presheaf C` is representable (Proposition 1 in Section I.3 of [MM92]).
 
+* When a category has all pullbacks, the type of subobject classifiers is equivalent to the
+  type of representing objects for the functor `B => Subobject B`, and the proposition of
+  having a subobject classifier is equivalent to the proposition that this functor is representable.
+
 ## References
 
 * [S. MacLane and I. Moerdijk, *Sheaves in Geometry and Logic*][MM92]
@@ -54,6 +58,7 @@ Let `C` refer to a category with a terminal object.
 universe u v u₀ v₀
 
 namespace CategoryTheory
+section variable [HasTerminal C]
 
 open Category Limits Functor IsPullback
 
@@ -72,6 +77,7 @@ variable (C : Type u) [Category.{v} C]
 ```
 An equivalent formulation replaces `Ω₀` with the terminal object.
 -/
+@[ext]
 structure Classifier where
   /-- The domain of the truth morphism -/
   Ω₀ : C
@@ -198,6 +204,13 @@ lemma unique (χ' : X ⟶ Ω C) (hχ' : IsPullback m (Classifier.χ₀ _ U) χ' 
 instance truthIsSplitMono : IsSplitMono (truth C) :=
   Classifier.isTerminalΩ₀.isSplitMono_from _
 
+lemma χ_id (X : C) : χ (𝟙 X) = terminal.from X ≫ truth C := by
+  rw [← Category.id_comp (χ _), comm]
+
+@[simp]
+lemma χ_comp_id {X Y : C} (f : X ⟶ Y) : f ≫ χ (𝟙 Y) = χ (𝟙 X) := by
+  simp [χ_id]
+
 /-- `truth C` is a regular monomorphism (because it is split). -/
 noncomputable instance truthIsRegularMono : RegularMono (truth C) :=
   RegularMono.ofIsSplitMono (truth C)
@@ -235,6 +248,8 @@ instance reflectsIsomorphismsOp (D : Type u₀) [Category.{v₀} D] (F : Cᵒᵖ
     [Functor.Faithful F] :
     Functor.ReflectsIsomorphisms F :=
   reflectsIsomorphisms_of_reflectsMonomorphisms_of_reflectsEpimorphisms F
+
+#check IsPullback.isoPullback
 
 end
 end HasClassifier
