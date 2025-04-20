@@ -632,7 +632,7 @@ end SFinite
 
 section Prod
 
-variable {β : Type*} {mβ : MeasurableSpace β} {μ : Measure α} {ν : Measure β} [SFinite ν]
+variable {β : Type*} {mβ : MeasurableSpace β} {ν : Measure β} [SFinite ν]
 
 theorem prod_withDensity_left₀ {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) :
     (μ.withDensity f).prod ν = (μ.prod ν).withDensity (fun z ↦ f z.1) := by
