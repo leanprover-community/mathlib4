@@ -108,7 +108,7 @@ private theorem descend_spec {c u : Set α} (Pcu : P c u) :
         compRel_mono (compRel_mono (descend_descends s) subset_rfl) (descend_descends s)
       _ ⊆ uu := hn
 
-instance UniformSpace.completelyRegularSpace : CompletelyRegularSpace α where
+instance UniformSpace.toCompletelyRegularSpace : CompletelyRegularSpace α where
   completely_regular x K hK hx := by
     obtain ⟨O, hOu, hOo, hbO⟩ := isOpen_iff_isOpen_ball_subset.mp hK.isOpen_compl x hx
     have hcu := (descend (descend ⟨O, hOu⟩)).2
