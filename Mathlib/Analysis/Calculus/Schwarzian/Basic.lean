@@ -1,6 +1,18 @@
+/-
+Copyright (c) 2025 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov
+-/
 import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
 import Mathlib.Analysis.Calculus.IteratedDeriv.FaaDiBruno
 import Mathlib.Analysis.Calculus.Deriv.ZPow
+
+/-!
+# Schwarzian derivative
+
+In this file we define the Schwarzian derivative of a $C^3$ function at a point as
+$$ S(f)()=\frac{2f'''(x)f'(x) - 3(f''(x))^2}{2f'(x)^2}. $$
+-/
 
 open scoped Filter BigOperators Topology
 open Set Function
