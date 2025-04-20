@@ -8,11 +8,12 @@ import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.RingTheory.LaurentSeries
 import Mathlib.RingTheory.AdicCompletion.Functoriality
 import Mathlib.Algebra.Exact
+import Mathlib.Topology.ContinuousMap.ZeroAtBot
 
 set_option maxHeartbeats 1000000000000000000000000000000000000000000
 set_option synthInstance.maxHeartbeats 1000000000000000000000000000000
 
-open Finset IsUltrametricDist NNReal Filter  CauSeq
+open Finset IsUltrametricDist NNReal Filter  CauSeq  zero_atBot
 
 
 open scoped fwdDiff ZeroAtInfty Topology
@@ -23,6 +24,12 @@ variable {N : Type*} [AddCommGroup N] [Module R N]
 variable {P : Type*} [AddCommGroup P] [Module R P]
 variable {T : Type*} [AddCommGroup T] [Module (AdicCompletion I R) T]
 
+/-
+theorem NormedAddCommGroup.tendsto_atBot [Nonempty α] [Preorder α] [IsDirected α (· ≥  ·)]
+    {β : Type*} [SeminormedAddCommGroup β] {f : α → β} {b : β} :
+    Tendsto f atBot (𝓝 b) ↔ ∀ ε, 0 < ε → ∃ N, ∀ n, N ≥ n → ‖f n - b‖ < ε :=
+  (atBot_basis.tendsto_iff Metric.nhds_basis_ball).trans (by simp [dist_eq_norm])
+  -/
 namespace LinearMap
 noncomputable def adicCompletionAux (f : M →ₗ[R] N) :
     AdicCompletion I M →ₗ[R] AdicCompletion I N :=
@@ -87,7 +94,7 @@ lemma CauchyL (b:ℝ)(a:CauSeq ℤ_[p] norm)(hs:∃ m ,∀ n≥ m , ‖a.val n�
        exact le_add_of_le_add_left this (hm (max m i)  ( Nat.le_max_left m i))
    (expose_names; exact this this_1)
 
-
+#check C_₀(ℤ,ℤ_[p])
 
 
 noncomputable def Cauchy.seq_map :AdicCompletion.AdicCauchySequence
@@ -241,7 +248,10 @@ noncomputable abbrev p_sequence_coeff (a:ℤ ):=
     Submodule.liftQ (LinearMap.ker ((AdicCompletion.mk (IsLocalRing.maximalIdeal ℤ_[p]) ℤ_[p])))
  (Cauchy.seq_map (p:=p)) (ss (p:=p))∘ₗ (p_sequence_coeff_0 a)
 
-#check p_sequence_coeff (p:=p) (1)
+
+lemma Tends_to_Zero_3(f:(AdicCompletion (IsLocalRing.maximalIdeal ℤ_[p]) (ℤ_[p]⸨X⸩)))
+:Tendsto (fun n ↦ (p_sequence_coeff n) f) atBot (𝓝 0):=by
+  sorry
 lemma Tends_to_Zero_0(f:(AdicCompletion (IsLocalRing.maximalIdeal ℤ_[p]) (ℤ_[p]⸨X⸩)))
 :Filter.Tendsto (fun n:ℕ => p_sequence_coeff (-n:ℤ ) f) Filter.atTop
 (nhds 0):=by
@@ -325,20 +335,29 @@ noncomputable def FunctionTrans_2: (AdicCompletion (IsLocalRing.maximalIdeal ℤ
      ext s
      simp
      ring
+#check C₀(ℤ, ℤ_[p])
+
+noncomputable def Adic_Complection_tofun : C_₀(ℤ,ℤ_[p]) →ₗ[ℤ_[p]]
+ (AdicCompletion.AdicCauchySequence (IsLocalRing.maximalIdeal ℤ_[p])
+ (ℤ_[p]⸨X⸩)) where
+   toFun a:=sorry
+   map_add' := sorry
+   map_smul' := sorry
 noncomputable def Adic_Complection_equiv_srmm: (AdicCompletion (IsLocalRing.maximalIdeal ℤ_[p])
  (ℤ_[p]⸨X⸩)) ≃ₗ[ℤ_[p]]
- C₀(ℕ, ℤ_[p])×(ℕ  → ℤ_[p]) where
-   toFun a:=⟨⟨⟨fun n:ℕ => p_sequence_coeff (-((n+1):ℕ ):ℤ ) a, continuous_of_discreteTopology⟩,
-    cocompact_eq_atTop (α := ℕ) ▸ Tends_to_Zero_1 a ⟩,fun n => p_sequence_coeff n a⟩
+ C_₀(ℤ,ℤ_[p]) where
+   toFun a:={
+     toFun n:= p_sequence_coeff n a
+     continuous_toFun := continuous_of_discreteTopology
+     zero_atBot' := sorry
+   }
    map_add' a b:=by
      ext s
-     ·simp
-     ·simp
+     simp
 
    map_smul' a b:=by
      ext s
-     ·simp
-     ·simp
+     simp
 
    invFun := sorry
    left_inv := sorry
