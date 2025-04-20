@@ -5721,7 +5721,6 @@ import Mathlib.Topology.Algebra.Algebra.Rat
 import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Basic
 import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Limits
 import Mathlib.Topology.Algebra.ClopenNhdofOne
-import Mathlib.Topology.Algebra.ClosedSubgroup
 import Mathlib.Topology.Algebra.ConstMulAction
 import Mathlib.Topology.Algebra.Constructions
 import Mathlib.Topology.Algebra.Constructions.DomMulAct
@@ -5731,6 +5730,7 @@ import Mathlib.Topology.Algebra.Equicontinuity
 import Mathlib.Topology.Algebra.Field
 import Mathlib.Topology.Algebra.FilterBasis
 import Mathlib.Topology.Algebra.Group.Basic
+import Mathlib.Topology.Algebra.Group.ClosedSubgroup
 import Mathlib.Topology.Algebra.Group.Compact
 import Mathlib.Topology.Algebra.Group.CompactOpen
 import Mathlib.Topology.Algebra.Group.Defs

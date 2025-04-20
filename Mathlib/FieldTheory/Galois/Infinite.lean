@@ -5,7 +5,7 @@ Authors: Nailin Guan
 -/
 import Mathlib.FieldTheory.KrullTopology
 import Mathlib.FieldTheory.Galois.GaloisClosure
-import Mathlib.Topology.Algebra.ClosedSubgroup
+import Mathlib.Topology.Algebra.Group.ClosedSubgroup
 /-!
 
 # The Fundamental Theorem of Infinite Galois Theory
