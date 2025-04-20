@@ -444,7 +444,7 @@ variable
 lemma Ideal.map_includeLeft_eq (I : Ideal A) :
     (I.map (Algebra.TensorProduct.includeLeft : A →ₐ[R] A ⊗[R] B)).restrictScalars R
       = LinearMap.range (LinearMap.rTensor B (Submodule.subtype (I.restrictScalars R))) := by
-  rw [← Submodule.carrier_inj]
+  rw [← SetLike.coe_set_eq]
   apply le_antisymm
   · intro x
     simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
@@ -512,7 +512,7 @@ lemma Ideal.map_includeLeft_eq (I : Ideal A) :
 lemma Ideal.map_includeRight_eq (I : Ideal B) :
     (I.map (Algebra.TensorProduct.includeRight : B →ₐ[R] A ⊗[R] B)).restrictScalars R
       = LinearMap.range (LinearMap.lTensor A (Submodule.subtype (I.restrictScalars R))) := by
-  rw [← Submodule.carrier_inj]
+  rw [← SetLike.coe_set_eq]
   apply le_antisymm
   · intro x
     simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
