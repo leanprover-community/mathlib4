@@ -453,4 +453,58 @@ theorem isRepresentable_hasClassifier_iff [HasPullbacks C] :
     exact Classifier.SubobjectRepresentableBy.classifier h
 
 end Representability
+end
+
+
+open Function Classical in
+
+/-- The classifying object of `Type u` is `ULift Bool`. -/
+noncomputable instance : Classifier (Type u) where
+  Ω := ULift Bool
+  truth := fun _ ↦ ⟨true⟩
+  χ {α β} f [_] := extend f (fun _ ↦ ⟨true⟩) (fun _ ↦ ⟨false⟩)
+  isPullback {α β} f hf := by
+    rw [mono_iff_injective] at hf
+    refine IsPullback.of_iso_pullback ⟨by ext a; simp [hf.extend_apply]⟩
+        (?iso ≪≫ (Types.pullbackIsoPullback _ _).symm) ?h₁ (by ext x ⟨⟨⟩⟩)
+    case iso =>
+      · exact {
+          hom a := ⟨⟨f a, default⟩, by simp [hf.extend_apply]⟩
+          inv | ⟨⟨b, _⟩, hb⟩ => Exists.choose (by simpa [extend] using hb)
+          hom_inv_id := by
+            ext a
+            simp only [types_comp_apply, types_id_apply]
+            generalize_proofs h
+            exact hf h.choose_spec
+          inv_hom_id := by
+            ext ⟨⟨b, -⟩, hb⟩ ⟨⟨⟩⟩
+            simp only [types_comp_apply, types_id_apply]
+            generalize_proofs h
+            exact h.choose_spec }
+    case h₁ => ext x; simp
+  uniq {α β} f hf χ' hχ' := by
+    rw [mono_iff_injective] at hf
+    ext1 b
+    have hχ'_w a : χ' (f a) = ⟨true⟩ := congrFun hχ'.w a
+    simp_rw [extend]
+    split <;> rename_i hb
+    · obtain ⟨a, rfl⟩ := hb
+      simp [hχ'_w]
+    · push_neg at hb
+      by_contra hχ'_b
+      simp_rw [ULift.ext_iff, Bool.not_eq_false] at hχ'_b
+      have := hχ'.isLimit.fac ⟨Option α,
+      { app | .left => (Option.map f · |>.getD b)
+            | .right => terminal.from _
+            | .one => fun _ ↦ ⟨true⟩,
+        naturality := by
+          rintro _ _ (I | L | R) <;> {ext (none | a) <;> simp [hχ'_w, ← hχ'_b]} }⟩
+      simp only at this
+      have uniq_term := inferInstanceAs (Unique (⊤_ (Type u)))
+      have all_eq (x y : ⊤_ (Type u)) : x = y :=
+        uniq_term.eq_default _ |>.trans <| uniq_term.default_eq _
+      replace this := congrFun (this .left) none
+      simpa using hb _ this
+
+
 end CategoryTheory
