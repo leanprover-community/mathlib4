@@ -497,16 +497,21 @@ theorem HasFDerivWithinAt.of_nhdsWithin_eq_bot (h : 𝓝[s\{x}] x = ⊥) : HasFD
 /-- If `x` is not in the closure of `s`, then `f` has any derivative at `x` within `s`,
 as this statement is empty. -/
 theorem HasFDerivWithinAt.of_not_mem_closure (h : x ∉ closure s) : HasFDerivWithinAt f f' s x :=
-  .of_not_accPt fun h' ↦ h <| (h'.clusterPt _).mem_closure
+  .of_not_accPt (h ·.clusterPt.mem_closure)
 
 @[deprecated (since := "2025-04-20")]
 alias hasFDerivWithinAt_of_nmem_closure := HasFDerivWithinAt.of_not_mem_closure
 
+theorem fderivWithin_zero_of_not_accPt (h : ¬AccPt x (𝓟 s)) : fderivWithin 𝕜 f s x = 0 := by
+  rw [fderivWithin, if_pos (.of_not_accPt h)]
+
+set_option linter.deprecated false in
+@[deprecated fderivWithin_zero_of_not_accPt (since := "2025-04-20")]
 theorem fderivWithin_zero_of_isolated (h : 𝓝[s \ {x}] x = ⊥) : fderivWithin 𝕜 f s x = 0 := by
   rw [fderivWithin, if_pos (.of_nhdsWithin_eq_bot h)]
 
-theorem fderivWithin_zero_of_nmem_closure (h : x ∉ closure s) : fderivWithin 𝕜 f s x = 0 := by
-  rw [fderivWithin, if_pos (hasFDerivWithinAt_of_nmem_closure h)]
+theorem fderivWithin_zero_of_nmem_closure (h : x ∉ closure s) : fderivWithin 𝕜 f s x = 0 :=
+  fderivWithin_zero_of_not_accPt (h ·.clusterPt.mem_closure)
 
 theorem DifferentiableWithinAt.hasFDerivWithinAt (h : DifferentiableWithinAt 𝕜 f s x) :
     HasFDerivWithinAt f (fderivWithin 𝕜 f s x) s x := by
