@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios, Yaël Dillies
 -/
 import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Data.Int.Cast.Defs
-import Mathlib.Order.SuccPred.Basic
+import Mathlib.Order.SuccPred.Limit
+import Mathlib.Order.SuccPred.WithBot
 
 /-!
 # Interaction between successors and arithmetic
@@ -138,6 +140,64 @@ theorem covBy_iff_sub_one_eq [Sub α] [One α] [PredSubOrder α] [NoMinOrder α]
   rw [← pred_eq_sub_one]
   exact pred_eq_iff_covBy.symm
 
+theorem IsSuccPrelimit.add_one_lt [Add α] [One α] [SuccAddOrder α]
+    (hx : IsSuccPrelimit x) (hy : y < x) : y + 1 < x := by
+  rw [← succ_eq_add_one]
+  exact hx.succ_lt hy
+
+theorem IsPredPrelimit.lt_sub_one [Sub α] [One α] [PredSubOrder α]
+    (hx : IsPredPrelimit x) (hy : x < y) : x < y - 1 := by
+  rw [← pred_eq_sub_one]
+  exact hx.lt_pred hy
+
+theorem IsSuccLimit.add_one_lt [Add α] [One α] [SuccAddOrder α]
+    (hx : IsSuccLimit x) (hy : y < x) : y + 1 < x :=
+  hx.isSuccPrelimit.add_one_lt hy
+
+theorem IsPredLimit.lt_sub_one [Sub α] [One α] [PredSubOrder α]
+    (hx : IsPredLimit x) (hy : x < y) : x < y - 1 :=
+  hx.isPredPrelimit.lt_sub_one hy
+
+theorem IsSuccPrelimit.add_natCast_lt [AddMonoidWithOne α] [SuccAddOrder α]
+    (hx : IsSuccPrelimit x) (hy : y < x) : ∀ n : ℕ, y + n < x
+  | 0 => by simpa
+  | n + 1 => by
+    rw [Nat.cast_add_one, ← add_assoc]
+    exact hx.add_one_lt (hx.add_natCast_lt hy n)
+
+theorem IsPredPrelimit.lt_sub_natCast [AddCommGroupWithOne α] [PredSubOrder α]
+    (hx : IsPredPrelimit x) (hy : x < y) : ∀ n : ℕ, x < y - n
+  | 0 => by simpa
+  | n + 1 => by
+    rw [Nat.cast_add_one, ← sub_sub]
+    exact hx.lt_sub_one (hx.lt_sub_natCast hy n)
+
+theorem IsSuccLimit.add_natCast_lt [AddMonoidWithOne α] [SuccAddOrder α]
+    (hx : IsSuccLimit x) (hy : y < x) : ∀ n : ℕ, y + n < x :=
+  hx.isSuccPrelimit.add_natCast_lt hy
+
+theorem IsPredLimit.lt_sub_natCast [AddCommGroupWithOne α] [PredSubOrder α]
+    (hx : IsPredLimit x) (hy : x < y) : ∀ n : ℕ, x < y - n :=
+  hx.isPredPrelimit.lt_sub_natCast hy
+
+theorem IsSuccLimit.natCast_lt [AddMonoidWithOne α] [SuccAddOrder α] [CanonicallyOrderedAdd α]
+    (hx : IsSuccLimit x) : ∀ n : ℕ, n < x := by
+  simpa [bot_eq_zero] using hx.add_natCast_lt hx.bot_lt
+
+theorem not_isSuccLimit_natCast [AddMonoidWithOne α] [SuccAddOrder α] [CanonicallyOrderedAdd α]
+    (n : ℕ) : ¬ IsSuccLimit (n : α) :=
+  fun h ↦ (h.natCast_lt n).false
+
+@[simp]
+theorem succ_eq_zero [AddZeroClass α] [CanonicallyOrderedAdd α] [One α] [NoMaxOrder α]
+    [SuccAddOrder α] {a : WithBot α} : WithBot.succ a = 0 ↔ a = ⊥ := by
+  cases a
+  · simp [bot_eq_zero]
+  · rename_i a
+    simp only [WithBot.succ_coe, WithBot.coe_ne_bot, iff_false]
+    by_contra h
+    simpa [h] using max_of_succ_le (a := a)
+
 end PartialOrder
 
 section LinearOrder
@@ -183,3 +243,73 @@ theorem lt_one_iff_nonpos [AddMonoidWithOne α] [ZeroLEOneClass α] [NeZero (1 :
 end LinearOrder
 
 end Order
+
+section Monotone
+variable {α β : Type*} [PartialOrder α] [Preorder β]
+
+section SuccAddOrder
+variable [Add α] [One α] [SuccAddOrder α] [IsSuccArchimedean α] {s : Set α} {f : α → β}
+
+lemma monotoneOn_of_le_add_one (hs : s.OrdConnected) :
+    (∀ a, ¬ IsMax a → a ∈ s → a + 1 ∈ s → f a ≤ f (a + 1)) → MonotoneOn f s := by
+  simpa [Order.succ_eq_add_one] using monotoneOn_of_le_succ hs (f := f)
+
+lemma antitoneOn_of_add_one_le (hs : s.OrdConnected) :
+    (∀ a, ¬ IsMax a → a ∈ s → a + 1 ∈ s → f (a + 1) ≤ f a) → AntitoneOn f s := by
+  simpa [Order.succ_eq_add_one] using antitoneOn_of_succ_le hs (f := f)
+
+lemma strictMonoOn_of_lt_add_one (hs : s.OrdConnected) :
+    (∀ a, ¬ IsMax a → a ∈ s → a + 1 ∈ s → f a < f (a + 1)) → StrictMonoOn f s := by
+  simpa [Order.succ_eq_add_one] using strictMonoOn_of_lt_succ hs (f := f)
+
+lemma strictAntiOn_of_add_one_lt (hs : s.OrdConnected) :
+    (∀ a, ¬ IsMax a → a ∈ s → a + 1 ∈ s → f (a + 1) < f a) → StrictAntiOn f s := by
+  simpa [Order.succ_eq_add_one] using strictAntiOn_of_succ_lt hs (f := f)
+
+lemma monotone_of_le_add_one : (∀ a, ¬ IsMax a → f a ≤ f (a + 1)) → Monotone f := by
+  simpa [Order.succ_eq_add_one] using monotone_of_le_succ (f := f)
+
+lemma antitone_of_add_one_le : (∀ a, ¬ IsMax a → f (a + 1) ≤ f a) → Antitone f := by
+  simpa [Order.succ_eq_add_one] using antitone_of_succ_le (f := f)
+
+lemma strictMono_of_lt_add_one : (∀ a, ¬ IsMax a → f a < f (a + 1)) → StrictMono f := by
+  simpa [Order.succ_eq_add_one] using strictMono_of_lt_succ (f := f)
+
+lemma strictAnti_of_add_one_lt : (∀ a, ¬ IsMax a → f (a + 1) < f a) → StrictAnti f := by
+  simpa [Order.succ_eq_add_one] using strictAnti_of_succ_lt (f := f)
+
+end SuccAddOrder
+
+section PredSubOrder
+variable [Sub α] [One α] [PredSubOrder α] [IsPredArchimedean α] {s : Set α} {f : α → β}
+
+lemma monotoneOn_of_sub_one_le (hs : s.OrdConnected) :
+    (∀ a, ¬ IsMin a → a ∈ s → a - 1 ∈ s → f (a - 1) ≤ f a) → MonotoneOn f s := by
+  simpa [Order.pred_eq_sub_one] using monotoneOn_of_pred_le hs (f := f)
+
+lemma antitoneOn_of_le_sub_one (hs : s.OrdConnected) :
+    (∀ a, ¬ IsMin a → a ∈ s → a - 1 ∈ s → f a ≤ f (a - 1)) → AntitoneOn f s := by
+  simpa [Order.pred_eq_sub_one] using antitoneOn_of_le_pred hs (f := f)
+
+lemma strictMonoOn_of_sub_one_lt (hs : s.OrdConnected) :
+    (∀ a, ¬ IsMin a → a ∈ s → a - 1 ∈ s → f (a - 1) < f a) → StrictMonoOn f s := by
+  simpa [Order.pred_eq_sub_one] using strictMonoOn_of_pred_lt hs (f := f)
+
+lemma strictAntiOn_of_lt_sub_one (hs : s.OrdConnected) :
+    (∀ a, ¬ IsMin a → a ∈ s → a - 1 ∈ s → f a < f (a - 1)) → StrictAntiOn f s := by
+  simpa [Order.pred_eq_sub_one] using strictAntiOn_of_lt_pred hs (f := f)
+
+lemma monotone_of_sub_one_le : (∀ a, ¬ IsMin a → f (a - 1) ≤ f a) → Monotone f := by
+  simpa [Order.pred_eq_sub_one] using monotone_of_pred_le (f := f)
+
+lemma antitone_of_le_sub_one : (∀ a, ¬ IsMin a → f a ≤ f (a - 1)) → Antitone f := by
+  simpa [Order.pred_eq_sub_one] using antitone_of_le_pred (f := f)
+
+lemma strictMono_of_sub_one_lt : (∀ a, ¬ IsMin a → f (a - 1) < f a) → StrictMono f := by
+  simpa [Order.pred_eq_sub_one] using strictMono_of_pred_lt (f := f)
+
+lemma strictAnti_of_lt_sub_one : (∀ a, ¬ IsMin a → f a < f (a - 1)) → StrictAnti f := by
+  simpa [Order.pred_eq_sub_one] using strictAnti_of_lt_pred (f := f)
+
+end PredSubOrder
+end Monotone

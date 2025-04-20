@@ -42,7 +42,7 @@ theorem mem_sumLift₂ :
       (∃ a₁ b₁ c₁, a = inl a₁ ∧ b = inl b₁ ∧ c = inl c₁ ∧ c₁ ∈ f a₁ b₁) ∨
         ∃ a₂ b₂ c₂, a = inr a₂ ∧ b = inr b₂ ∧ c = inr c₂ ∧ c₂ ∈ g a₂ b₂ := by
   constructor
-  · cases' a with a a <;> cases' b with b b
+  · rcases a with a | a <;> rcases b with b | b
     · rw [sumLift₂, mem_map]
       rintro ⟨c, hc, rfl⟩
       exact Or.inl ⟨a, b, c, rfl, rfl, rfl, hc⟩
@@ -191,10 +191,7 @@ lemma sumLexLift_nonempty :
       (∃ a₁ b₁, a = inl a₁ ∧ b = inl b₁ ∧ (f₁ a₁ b₁).Nonempty) ∨
         (∃ a₁ b₂, a = inl a₁ ∧ b = inr b₂ ∧ ((g₁ a₁ b₂).Nonempty ∨ (g₂ a₁ b₂).Nonempty)) ∨
           ∃ a₂ b₂, a = inr a₂ ∧ b = inr b₂ ∧ (f₂ a₂ b₂).Nonempty := by
-  -- porting note (#10745): was `simp [nonempty_iff_ne_empty, sumLexLift_eq_empty, not_and_or]`.
-  -- Could add `-exists_and_left, -not_and, -exists_and_right` but easier to squeeze.
-  simp only [nonempty_iff_ne_empty, Ne, sumLexLift_eq_empty, not_and_or, exists_prop,
-    not_forall]
+  simp only [nonempty_iff_ne_empty, Ne, sumLexLift_eq_empty, not_and_or, exists_prop, not_forall]
 
 end SumLexLift
 end Finset
@@ -217,12 +214,12 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder (α ⊕ β) where
   finsetIco := sumLift₂ Ico Ico
   finsetIoc := sumLift₂ Ioc Ioc
   finsetIoo := sumLift₂ Ioo Ioo
-  finset_mem_Icc := by rintro (a | a) (b | b) (x | x) <;> simp
-  finset_mem_Ico := by rintro (a | a) (b | b) (x | x) <;> simp
-  finset_mem_Ioc := by rintro (a | a) (b | b) (x | x) <;> simp
-  finset_mem_Ioo := by rintro (a | a) (b | b) (x | x) <;> simp
+  finset_mem_Icc := by simp
+  finset_mem_Ico := by simp
+  finset_mem_Ioc := by simp
+  finset_mem_Ioo := by simp
 
-variable (a₁ a₂ : α) (b₁ b₂ : β) (a b : α ⊕ β)
+variable (a₁ a₂ : α) (b₁ b₂ : β)
 
 theorem Icc_inl_inl : Icc (inl a₁ : α ⊕ β) (inl a₂) = (Icc a₁ a₂).map Embedding.inl :=
   rfl
@@ -292,16 +289,7 @@ variable [Preorder α] [Preorder β] [OrderTop α] [OrderBot β] [LocallyFiniteO
 local elab "simp_lex" : tactic => do
   Lean.Elab.Tactic.evalTactic <| ← `(tactic|
     refine toLex.surjective.forall₃.2 ?_;
-    rintro (a | a) (b | b) (c | c) <;> simp only
-      [sumLexLift_inl_inl, sumLexLift_inl_inr, sumLexLift_inr_inl, sumLexLift_inr_inr,
-        inl_le_inl_iff, inl_le_inr, not_inr_le_inl, inr_le_inr_iff, inl_lt_inl_iff, inl_lt_inr,
-        not_inr_lt_inl, inr_lt_inr_iff, mem_Icc, mem_Ico, mem_Ioc, mem_Ioo, mem_Ici, mem_Ioi,
-        mem_Iic, mem_Iio, Equiv.coe_toEmbedding, toLex_inj, exists_false, and_false, false_and,
-        map_empty, not_mem_empty, true_and, inl_mem_disjSum, inr_mem_disjSum, and_true, ofLex_toLex,
-        mem_map, Embedding.coeFn_mk, exists_prop, exists_eq_right, Embedding.inl_apply,
-        -- Porting note: added
-        inl.injEq, inr.injEq, reduceCtorEq]
-  )
+    rintro (a | a) (b | b) (c | c) <;> simp)
 
 instance locallyFiniteOrder : LocallyFiniteOrder (α ⊕ₗ β) where
   finsetIcc a b :=

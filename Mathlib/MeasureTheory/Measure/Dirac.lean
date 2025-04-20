@@ -3,9 +3,11 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.MeasureTheory.Measure.Typeclasses
-import Mathlib.MeasureTheory.Measure.MutuallySingular
 import Mathlib.MeasureTheory.MeasurableSpace.CountablyGenerated
+import Mathlib.MeasureTheory.Measure.MutuallySingular
+import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
+import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
+import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
 
 /-!
 # Dirac measure
@@ -61,6 +63,7 @@ theorem map_dirac {f : α → β} (hf : Measurable f) (a : α) : (dirac a).map f
   classical
   exact ext fun s hs => by simp [hs, map_apply hf hs, hf hs, indicator_apply]
 
+@[simp]
 lemma map_const (μ : Measure α) (c : β) : μ.map (fun _ ↦ c) = (μ Set.univ) • dirac c := by
   ext s hs
   simp only [aemeasurable_const, measurable_const, Measure.coe_smul, Pi.smul_apply,
@@ -79,6 +82,22 @@ theorem restrict_singleton (μ : Measure α) (a : α) : μ.restrict {a} = μ {a}
     simp [*]
   · have : s ∩ {a} = ∅ := inter_singleton_eq_empty.2 ha
     simp [*]
+
+/-- Two measures on a countable space are equal if they agree on singletons. -/
+theorem ext_of_singleton [Countable α] {μ ν : Measure α} (h : ∀ a, μ {a} = ν {a}) : μ = ν :=
+  ext_of_sUnion_eq_univ (countable_range singleton) (by aesop) (by aesop)
+
+/-- Two measures on a countable space are equal if and only if they agree on singletons. -/
+theorem ext_iff_singleton [Countable α] {μ ν : Measure α} : μ = ν ↔ ∀ a, μ {a} = ν {a} :=
+  ⟨fun h _ ↦ h ▸ rfl, ext_of_singleton⟩
+
+theorem _root_.MeasureTheory.ext_iff_measureReal_singleton [Countable α]
+    {μ1 μ2 : Measure α} [SigmaFinite μ1] [SigmaFinite μ2] :
+    μ1 = μ2 ↔ ∀ x, μ1.real {x} = μ2.real {x} := by
+  rw [Measure.ext_iff_singleton]
+  congr! with x
+  rw [measureReal_def, measureReal_def, ENNReal.toReal_eq_toReal_iff]
+  simp [measure_singleton_lt_top, ne_of_lt]
 
 /-- If `f` is a map with countable codomain, then `μ.map f` is a sum of Dirac measures. -/
 theorem map_eq_sum [Countable β] [MeasurableSingletonClass β] (μ : Measure α) (f : α → β)
@@ -127,6 +146,11 @@ theorem ae_eq_dirac' [MeasurableSingletonClass β] {a : α} {f : α → β} (hf 
 
 theorem ae_eq_dirac [MeasurableSingletonClass α] {a : α} (f : α → δ) :
     f =ᵐ[dirac a] const α (f a) := by simp [Filter.EventuallyEq]
+
+@[fun_prop]
+lemma aemeasurable_dirac [MeasurableSingletonClass α] {a : α} {f : α → β} :
+    AEMeasurable f (Measure.dirac a) :=
+  ⟨fun _ ↦ f a, measurable_const, ae_eq_dirac f⟩
 
 instance Measure.dirac.isProbabilityMeasure {x : α} : IsProbabilityMeasure (dirac x) :=
   ⟨dirac_apply_of_mem <| mem_univ x⟩

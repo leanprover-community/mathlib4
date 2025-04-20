@@ -70,8 +70,6 @@ structure HomologyMapData where
 
 namespace HomologyMapData
 
-attribute [nolint simpNF] mk.injEq
-
 variable {φ h₁ h₂}
 
 @[reassoc]
@@ -405,8 +403,7 @@ lemma LeftHomologyData.homologyIso_leftHomologyData [S.HasHomology] :
 lemma RightHomologyData.homologyIso_rightHomologyData [S.HasHomology] :
     S.rightHomologyData.homologyIso = S.rightHomologyIso.symm := by
   ext
-  dsimp [homologyIso, rightHomologyIso]
-  erw [rightHomologyMap'_id, comp_id]
+  simp [homologyIso, rightHomologyIso]
 
 variable {S}
 
@@ -1038,6 +1035,18 @@ lemma homologyMap_op [HasHomology S₁] [HasHomology S₂] :
   simp only [assoc, rightHomologyMap'_op, op_comp, ← leftHomologyMap'_comp_assoc, id_comp,
     opMap_id, comp_id, HomologyData.op_left]
 
+@[reassoc]
+lemma homologyOpIso_hom_naturality [S₁.HasHomology] [S₂.HasHomology] :
+    homologyMap (opMap φ) ≫ (S₁.homologyOpIso).hom =
+      S₂.homologyOpIso.hom ≫ (homologyMap φ).op := by
+  simp [homologyMap_op]
+
+@[reassoc]
+lemma homologyOpIso_inv_naturality [S₁.HasHomology] [S₂.HasHomology] :
+    (homologyMap φ).op ≫ (S₁.homologyOpIso).inv =
+      S₂.homologyOpIso.inv ≫ homologyMap (opMap φ) := by
+  simp [homologyMap_op]
+
 variable (C)
 
 /-- The natural isomorphism `(homologyFunctor C).op ≅ opFunctor C ⋙ homologyFunctor Cᵒᵖ`
@@ -1045,7 +1054,7 @@ which relates the homology in `C` and in `Cᵒᵖ`. -/
 noncomputable def homologyFunctorOpNatIso [CategoryWithHomology C] :
     (homologyFunctor C).op ≅ opFunctor C ⋙ homologyFunctor Cᵒᵖ :=
   NatIso.ofComponents (fun S => S.unop.homologyOpIso.symm)
-    (by simp [homologyMap_op])
+    (fun _ ↦ homologyOpIso_inv_naturality _)
 
 variable {C} {A : C}
 
@@ -1162,6 +1171,53 @@ instance epi_homologyMap_of_epi_cyclesMap
     [S₁.HasHomology] [S₂.HasHomology] [Epi (cyclesMap φ)] :
     Epi (homologyMap φ) :=
   epi_homologyMap_of_epi_cyclesMap' φ inferInstance
+
+/-- Given a short complex `S` such that `S.HasHomology`, this is the canonical
+left homology data for `S` whose `K` and `H` fields are
+respectively `S.cycles` and `S.homology`. -/
+@[simps!]
+noncomputable def LeftHomologyData.canonical [S.HasHomology] : S.LeftHomologyData where
+  K := S.cycles
+  H := S.homology
+  i := S.iCycles
+  π := S.homologyπ
+  wi := by simp
+  hi := S.cyclesIsKernel
+  wπ := S.toCycles_comp_homologyπ
+  hπ := S.homologyIsCokernel
+
+/-- Computation of the `f'` field of `LeftHomologyData.canonical`. -/
+@[simp]
+lemma LeftHomologyData.canonical_f' [S.HasHomology] :
+    (LeftHomologyData.canonical S).f' = S.toCycles := rfl
+
+/-- Given a short complex `S` such that `S.HasHomology`, this is the canonical
+right homology data for `S` whose `Q` and `H` fields are
+respectively `S.opcycles` and `S.homology`. -/
+@[simps!]
+noncomputable def RightHomologyData.canonical [S.HasHomology] : S.RightHomologyData where
+  Q := S.opcycles
+  H := S.homology
+  p := S.pOpcycles
+  ι := S.homologyι
+  wp := by simp
+  hp := S.opcyclesIsCokernel
+  wι := S.homologyι_comp_fromOpcycles
+  hι := S.homologyIsKernel
+
+/-- Computation of the `g'` field of `RightHomologyData.canonical`. -/
+@[simp]
+lemma RightHomologyData.canonical_g' [S.HasHomology] :
+    (RightHomologyData.canonical S).g' = S.fromOpcycles := rfl
+
+/-- Given a short complex `S` such that `S.HasHomology`, this is the canonical
+homology data for `S` whose `left.K`, `left/right.H` and `right.Q` fields are
+respectively `S.cycles`, `S.homology` and `S.opcycles`. -/
+@[simps!]
+noncomputable def HomologyData.canonical [S.HasHomology] : S.HomologyData where
+  left := LeftHomologyData.canonical S
+  right := RightHomologyData.canonical S
+  iso := Iso.refl _
 
 end ShortComplex
 

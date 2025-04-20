@@ -17,11 +17,7 @@ Here we collect properties of C⋆-algebra homomorphisms.
 -/
 
 open CStarAlgebra in
-lemma IsSelfAdjoint.map_spectrum_real {F A B : Type*}
-    [NormedRing A] [CompleteSpace A] [StarRing A] [CStarRing A]
-    [NormedAlgebra ℂ A] [StarModule ℂ A]
-    [NormedRing B] [CompleteSpace B] [StarRing B] [CStarRing B]
-    [NormedAlgebra ℂ B] [StarModule ℂ B]
+lemma IsSelfAdjoint.map_spectrum_real {F A B : Type*} [CStarAlgebra A] [CStarAlgebra B]
     [FunLike F A B] [AlgHomClass F ℂ A B] [StarHomClass F A B]
     {a : A} (ha : IsSelfAdjoint a) (φ : F) (hφ : Function.Injective φ) :
     spectrum ℝ (φ a) = spectrum ℝ a := by
@@ -48,11 +44,7 @@ lemma IsSelfAdjoint.map_spectrum_real {F A B : Type*}
 
 namespace NonUnitalStarAlgHom
 
-variable {F A B : Type*}
-variable [NonUnitalNormedRing A] [CompleteSpace A] [StarRing A] [CStarRing A]
-variable [NormedSpace ℂ A] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A] [StarModule ℂ A]
-variable [NonUnitalNormedRing B] [CompleteSpace B] [StarRing B] [CStarRing B]
-variable [NormedSpace ℂ B] [IsScalarTower ℂ B B] [SMulCommClass ℂ B B] [StarModule ℂ B]
+variable {F A B : Type*} [NonUnitalCStarAlgebra A] [NonUnitalCStarAlgebra B]
 variable [FunLike F A B] [NonUnitalAlgHomClass F ℂ A B] [StarHomClass F A B]
 
 open CStarAlgebra Unitization in
@@ -65,7 +57,7 @@ lemma norm_map (φ : F) (hφ : Function.Injective φ) (a : A) : ‖φ a‖ = ‖
     simpa [norm_inr] using this (starMap_injective (φ := (φ : A →⋆ₙₐ[ℂ] B)) hφ) a
   intro ψ hψ a
   -- to show `‖ψ a‖ = ‖a‖`, by the C⋆-property it suffices to show `‖ψ (star a * a)‖ = ‖star a * a‖`
-  rw [← sq_eq_sq (by positivity) (by positivity)]
+  rw [← sq_eq_sq₀ (by positivity) (by positivity)]
   simp only [sq, ← CStarRing.norm_star_mul_self, ← map_star, ← map_mul]
   /- since `star a * a` is selfadjoint, it has the same `ℝ`-spectrum as `ψ (star a * a)`.
   Since the spectral radius over `ℝ` coincides with the norm, `‖ψ (star a * a)‖ = ‖star a * a‖`. -/

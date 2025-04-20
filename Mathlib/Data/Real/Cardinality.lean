@@ -3,9 +3,9 @@ Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
+import Mathlib.Algebra.Order.Group.Pointwise.Interval
 import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Data.Rat.Denumerable
-import Mathlib.Data.Set.Pointwise.Interval
+import Mathlib.Data.Rat.Cardinal
 import Mathlib.SetTheory.Cardinal.Continuum
 
 /-!
@@ -34,7 +34,7 @@ We conclude that all intervals with distinct endpoints have cardinality continuu
 
 ## Notation
 
-* `𝔠` : notation for `Cardinal.Continuum` in locale `Cardinal`, defined in `SetTheory.Continuum`.
+* `𝔠` : notation for `Cardinal.continuum` in locale `Cardinal`, defined in `SetTheory.Continuum`.
 
 ## Tags
 continuum, cardinality, reals, cardinality of the reals
@@ -94,16 +94,15 @@ def cantorFunction (c : ℝ) (f : ℕ → Bool) : ℝ :=
 
 theorem cantorFunction_le (h1 : 0 ≤ c) (h2 : c < 1) (h3 : ∀ n, f n → g n) :
     cantorFunction c f ≤ cantorFunction c g := by
-  apply tsum_le_tsum _ (summable_cantor_function f h1 h2) (summable_cantor_function g h1 h2)
+  apply (summable_cantor_function f h1 h2).tsum_le_tsum _ (summable_cantor_function g h1 h2)
   intro n; cases h : f n
   · simp [h, cantorFunctionAux_nonneg h1]
   replace h3 : g n = true := h3 n h; simp [h, h3]
 
 theorem cantorFunction_succ (f : ℕ → Bool) (h1 : 0 ≤ c) (h2 : c < 1) :
     cantorFunction c f = cond (f 0) 1 0 + c * cantorFunction c fun n => f (n + 1) := by
-  rw [cantorFunction, tsum_eq_zero_add (summable_cantor_function f h1 h2)]
-  rw [cantorFunctionAux_succ, tsum_mul_left, cantorFunctionAux, _root_.pow_zero]
-  rfl
+  rw [cantorFunction, (summable_cantor_function f h1 h2).tsum_eq_zero_add]
+  rw [cantorFunctionAux_succ, tsum_mul_left, cantorFunctionAux, pow_zero, cantorFunction]
 
 /-- `cantorFunction c` is strictly increasing with if `0 < c < 1/2`, if we endow `ℕ → Bool` with a
 lexicographic order. The lexicographic order doesn't exist for these infinitary products, so we
@@ -121,7 +120,7 @@ theorem increasing_cantorFunction (h1 : 0 < c) (h2 : c < 1 / 2) {n : ℕ} {f g :
       cases n
       · rw [fn] at hn
         contradiction
-      apply rfl
+      simp [f_max]
     let g_min : ℕ → Bool := fun n => Nat.rec true (fun _ _ => false) n
     have hg_min : ∀ n, g_min n → g n := by
       intro n hn
@@ -143,7 +142,7 @@ theorem increasing_cantorFunction (h1 : 0 < c) (h2 : c < 1 / 2) {n : ℕ} {f g :
       · intro n hn
         cases n
         · contradiction
-        rfl
+        simp [g_min]
       · exact cantorFunctionAux_zero _
   rw [cantorFunction_succ f (le_of_lt h1) h3, cantorFunction_succ g (le_of_lt h1) h3]
   rw [hn 0 <| zero_lt_succ n]
@@ -156,14 +155,8 @@ theorem cantorFunction_injective (h1 : 0 < c) (h2 : c < 1 / 2) :
     Function.Injective (cantorFunction c) := by
   intro f g hfg
   classical
-    by_contra h
-    revert hfg
-    have : ∃ n, f n ≠ g n := by
-      rw [← not_forall]
-      intro h'
-      apply h
-      ext
-      apply h'
+    contrapose hfg with h
+    have : ∃ n, f n ≠ g n := Function.ne_iff.mp h
     let n := Nat.find this
     have hn : ∀ k : ℕ, k < n → f k = g k := by
       intro k hk
@@ -200,9 +193,12 @@ theorem mk_real : #ℝ = 𝔠 := by
 theorem mk_univ_real : #(Set.univ : Set ℝ) = 𝔠 := by rw [mk_univ, mk_real]
 
 /-- **Non-Denumerability of the Continuum**: The reals are not countable. -/
-theorem not_countable_real : ¬(Set.univ : Set ℝ).Countable := by
-  rw [← le_aleph0_iff_set_countable, not_le, mk_univ_real]
-  apply cantor
+instance : Uncountable ℝ := by
+  rw [← aleph0_lt_mk_iff, mk_real]
+  exact aleph0_lt_continuum
+
+theorem not_countable_real : ¬(Set.univ : Set ℝ).Countable :=
+  not_countable_univ
 
 /-- The cardinality of the interval (a, ∞). -/
 theorem mk_Ioi_real (a : ℝ) : #(Ioi a) = 𝔠 := by
@@ -249,7 +245,7 @@ theorem mk_Ioo_real {a b : ℝ} (h : a < b) : #(Ioo a b) = 𝔠 := by
   replace h := sub_pos_of_lt h
   have h2 : #(Inv.inv '' Ioo 0 (b - a)) ≤ #(Ioo 0 (b - a)) := mk_image_le
   refine le_trans ?_ h2
-  rw [image_inv, inv_Ioo_0_left h, mk_Ioi_real]
+  rw [image_inv_eq_inv, inv_Ioo_0_left h, mk_Ioi_real]
 
 /-- The cardinality of the interval [a, b). -/
 theorem mk_Ico_real {a b : ℝ} (h : a < b) : #(Ico a b) = 𝔠 :=

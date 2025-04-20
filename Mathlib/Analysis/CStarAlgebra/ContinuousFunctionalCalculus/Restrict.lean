@@ -15,15 +15,15 @@ The main declaration in this file is:
   positive elements from the one for normal elements.
 
 This will allow us to take an instance of the
-`ContinuousFunctionalCalculus ℂ IsStarNormal` and produce both of the instances
-`ContinuousFunctionalCalculus ℝ IsSelfAdjoint` and `ContinuousFunctionalCalculus ℝ≥0 (0 ≤ ·)`
+`ContinuousFunctionalCalculus ℂ A IsStarNormal` and produce both of the instances
+`ContinuousFunctionalCalculus ℝ A IsSelfAdjoint` and `ContinuousFunctionalCalculus ℝ≥0 A (0 ≤ ·)`
 simply by proving:
 
 1. `IsSelfAdjoint x ↔ IsStarNormal x ∧ SpectrumRestricts Complex.re x`,
 2. `0 ≤ x ↔ IsSelfAdjoint x ∧ SpectrumRestricts Real.toNNReal x`.
 -/
 
-open Set
+open Set Topology
 
 namespace SpectrumRestricts
 
@@ -53,8 +53,8 @@ universe u v w
 calculus over the larger scalar ring descends to the smaller one. -/
 @[simps!]
 def starAlgHom {R : Type u} {S : Type v} {A : Type w} [Semifield R]
-    [StarRing R] [TopologicalSpace R] [TopologicalSemiring R] [ContinuousStar R] [Semifield S]
-    [StarRing S] [TopologicalSpace S] [TopologicalSemiring S] [ContinuousStar S] [Ring A]
+    [StarRing R] [TopologicalSpace R] [IsTopologicalSemiring R] [ContinuousStar R] [Semifield S]
+    [StarRing S] [TopologicalSpace S] [IsTopologicalSemiring S] [ContinuousStar S] [Ring A]
     [StarRing A] [Algebra R S] [Algebra R A] [Algebra S A]
     [IsScalarTower R S A] [StarModule R S] [ContinuousSMul R S] {a : A}
     (φ : C(spectrum S a, S) →⋆ₐ[S] A) {f : C(S, R)} (h : SpectrumRestricts a f) :
@@ -66,8 +66,8 @@ def starAlgHom {R : Type u} {S : Type v} {A : Type w} [Semifield R]
           fun x (hx : x ∈ spectrum S a) => h.subset_preimage hx⟩
 
 variable {R S A : Type*} {p q : A → Prop}
-variable [Semifield R] [StarRing R] [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R]
-variable [Semifield S] [StarRing S] [MetricSpace S] [TopologicalSemiring S] [ContinuousStar S]
+variable [Semifield R] [StarRing R] [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R]
+variable [Semifield S] [StarRing S] [MetricSpace S] [IsTopologicalSemiring S] [ContinuousStar S]
 variable [Ring A] [StarRing A] [Algebra S A]
 variable [Algebra R S] [Algebra R A] [IsScalarTower R S A] [StarModule R S] [ContinuousSMul R S]
 
@@ -79,34 +79,34 @@ lemma starAlgHom_id {a : A} {φ : C(spectrum S a, S) →⋆ₐ[S] A} {f : C(S, R
   ext x
   exact h.rightInvOn x.2
 
-variable [TopologicalSpace A] [ContinuousFunctionalCalculus S q]
+variable [TopologicalSpace A] [ContinuousFunctionalCalculus S A q]
 variable [CompleteSpace R]
 
 lemma isClosedEmbedding_starAlgHom {a : A} {φ : C(spectrum S a, S) →⋆ₐ[S] A}
     (hφ : IsClosedEmbedding φ) {f : C(S, R)} (h : SpectrumRestricts a f)
     (halg : IsUniformEmbedding (algebraMap R S)) :
     IsClosedEmbedding (h.starAlgHom φ) :=
-  hφ.comp <| IsUniformEmbedding.toIsClosedEmbedding <| .comp
+  hφ.comp <| IsUniformEmbedding.isClosedEmbedding <| .comp
     (ContinuousMap.isUniformEmbedding_comp _ halg)
     (UniformEquiv.arrowCongr h.homeomorph.symm (.refl _) |>.isUniformEmbedding)
 
 @[deprecated (since := "2024-10-20")]
 alias closedEmbedding_starAlgHom := isClosedEmbedding_starAlgHom
 
-/-- Given a `ContinuousFunctionalCalculus S q`. If we form the predicate `p` for `a : A`
+/-- Given a `ContinuousFunctionalCalculus S A q`. If we form the predicate `p` for `a : A`
 characterized by: `q a` and the spectrum of `a` restricts to the scalar subring `R` via
 `f : C(S, R)`, then we can get a restricted functional calculus
-`ContinuousFunctionalCalculus R p`. -/
+`ContinuousFunctionalCalculus R A p`. -/
 protected theorem cfc (f : C(S, R)) (halg : IsUniformEmbedding (algebraMap R S)) (h0 : p 0)
     (h : ∀ a, p a ↔ q a ∧ SpectrumRestricts a f) :
-    ContinuousFunctionalCalculus R p where
+    ContinuousFunctionalCalculus R A p where
   predicate_zero := h0
   spectrum_nonempty a ha := ((h a).mp ha).2.image ▸
     (ContinuousFunctionalCalculus.spectrum_nonempty a ((h a).mp ha).1 |>.image f)
   compactSpace_spectrum a := by
     have := ContinuousFunctionalCalculus.compactSpace_spectrum (R := S) a
     rw [← isCompact_iff_compactSpace] at this ⊢
-    simpa using halg.toIsClosedEmbedding.isCompact_preimage this
+    simpa using halg.isClosedEmbedding.isCompact_preimage this
   exists_cfc_of_predicate a ha := by
     refine ⟨((h a).mp ha).2.starAlgHom (cfcHom ((h a).mp ha).1 (R := S)),
       ?hom_isClosedEmbedding, ?hom_id, ?hom_map_spectrum, ?predicate_hom⟩
@@ -140,7 +140,7 @@ protected theorem cfc (f : C(S, R)) (halg : IsUniformEmbedding (algebraMap R S))
       obtain ⟨r, rfl⟩ := hs
       simp [((h a).mp ha).2.left_inv _]
 
-variable [ContinuousFunctionalCalculus R p] [UniqueContinuousFunctionalCalculus R A]
+variable [ContinuousFunctionalCalculus R A p] [ContinuousMap.UniqueHom R A]
 
 lemma cfcHom_eq_restrict (f : C(S, R)) (halg : IsUniformEmbedding (algebraMap R S))
     {a : A} (hpa : p a) (hqa : q a) (h : SpectrumRestricts a f) :
@@ -160,9 +160,9 @@ lemma cfc_eq_restrict (f : C(S, R)) (halg : IsUniformEmbedding (algebraMap R S))
     simp [Function.comp, Subtype.val_injective.extend_apply]
   · have : ¬ ContinuousOn (fun x ↦ algebraMap R S (g (f x)) : S → S) (spectrum S a) := by
       refine fun hg' ↦ hg ?_
-      rw [halg.embedding.continuousOn_iff]
-      simpa [halg.embedding.continuousOn_iff, Function.comp_def, h.left_inv _] using
-        hg'.comp halg.embedding.continuous.continuousOn (fun _ : R ↦ spectrum.algebraMap_mem S)
+      rw [halg.isEmbedding.continuousOn_iff]
+      simpa [halg.isEmbedding.continuousOn_iff, Function.comp_def, h.left_inv _] using
+        hg'.comp halg.isEmbedding.continuous.continuousOn (fun _ : R ↦ spectrum.algebraMap_mem S)
     rw [cfc_apply_of_not_continuousOn a hg, cfc_apply_of_not_continuousOn a this]
 
 end SpectrumRestricts
@@ -195,8 +195,8 @@ open ContinuousMapZero
 continuous functional calculus over the larger scalar ring descends to the smaller one. -/
 @[simps!]
 def nonUnitalStarAlgHom {R : Type u} {S : Type v} {A : Type w} [Semifield R]
-    [StarRing R] [TopologicalSpace R] [TopologicalSemiring R] [ContinuousStar R] [Field S]
-    [StarRing S] [TopologicalSpace S] [TopologicalRing S] [ContinuousStar S] [NonUnitalRing A]
+    [StarRing R] [TopologicalSpace R] [IsTopologicalSemiring R] [ContinuousStar R] [Field S]
+    [StarRing S] [TopologicalSpace S] [IsTopologicalRing S] [ContinuousStar S] [NonUnitalRing A]
     [StarRing A] [Algebra R S] [Module R A] [Module S A] [IsScalarTower S A A] [SMulCommClass S A A]
     [IsScalarTower R S A] [StarModule R S] [ContinuousSMul R S] {a : A}
     (φ : C(σₙ S a, S)₀ →⋆ₙₐ[S] A) {f : C(S, R)} (h : QuasispectrumRestricts a f) :
@@ -208,8 +208,8 @@ def nonUnitalStarAlgHom {R : Type u} {S : Type v} {A : Type w} [Semifield R]
           fun x (hx : x ∈ σₙ S a) => h.subset_preimage hx⟩, Subtype.ext h.map_zero⟩
 
 variable {R S A : Type*} {p q : A → Prop}
-variable [Semifield R] [StarRing R] [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R]
-variable [Field S] [StarRing S] [MetricSpace S] [TopologicalRing S] [ContinuousStar S]
+variable [Semifield R] [StarRing R] [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R]
+variable [Field S] [StarRing S] [MetricSpace S] [IsTopologicalRing S] [ContinuousStar S]
 variable [NonUnitalRing A] [StarRing A] [Module S A] [IsScalarTower S A A]
 variable [SMulCommClass S A A]
 variable [Algebra R S] [Module R A] [IsScalarTower R S A] [StarModule R S] [ContinuousSMul R S]
@@ -222,7 +222,7 @@ lemma nonUnitalStarAlgHom_id {a : A} {φ : C(σₙ S a, S)₀ →⋆ₙₐ[S] A}
   ext x
   exact h.rightInvOn x.2
 
-variable [TopologicalSpace A] [NonUnitalContinuousFunctionalCalculus S q]
+variable [TopologicalSpace A] [NonUnitalContinuousFunctionalCalculus S A q]
 variable [CompleteSpace R]
 
 lemma isClosedEmbedding_nonUnitalStarAlgHom {a : A} {φ : C(σₙ S a, S)₀ →⋆ₙₐ[S] A}
@@ -230,7 +230,7 @@ lemma isClosedEmbedding_nonUnitalStarAlgHom {a : A} {φ : C(σₙ S a, S)₀ →
     (halg : IsUniformEmbedding (algebraMap R S)) :
     IsClosedEmbedding (h.nonUnitalStarAlgHom φ) := by
   have : h.homeomorph.symm 0 = 0 := Subtype.ext (map_zero <| algebraMap _ _)
-  refine hφ.comp <| IsUniformEmbedding.toIsClosedEmbedding <| .comp
+  refine hφ.comp <| IsUniformEmbedding.isClosedEmbedding <| .comp
     (ContinuousMapZero.isUniformEmbedding_comp _ halg)
     (UniformEquiv.arrowCongrLeft₀ h.homeomorph.symm this |>.isUniformEmbedding)
 
@@ -239,18 +239,18 @@ alias closedEmbedding_nonUnitalStarAlgHom := isClosedEmbedding_nonUnitalStarAlgH
 
 variable [IsScalarTower R A A] [SMulCommClass R A A]
 
-/-- Given a `NonUnitalContinuousFunctionalCalculus S q`. If we form the predicate `p` for `a : A`
+/-- Given a `NonUnitalContinuousFunctionalCalculus S A q`. If we form the predicate `p` for `a : A`
 characterized by: `q a` and the quasispectrum of `a` restricts to the scalar subring `R` via
 `f : C(S, R)`, then we can get a restricted functional calculus
-`NonUnitalContinuousFunctionalCalculus R p`. -/
+`NonUnitalContinuousFunctionalCalculus R A p`. -/
 protected theorem cfc (f : C(S, R)) (halg : IsUniformEmbedding (algebraMap R S)) (h0 : p 0)
     (h : ∀ a, p a ↔ q a ∧ QuasispectrumRestricts a f) :
-    NonUnitalContinuousFunctionalCalculus R p where
+    NonUnitalContinuousFunctionalCalculus R A p where
   predicate_zero := h0
   compactSpace_quasispectrum a := by
     have := NonUnitalContinuousFunctionalCalculus.compactSpace_quasispectrum (R := S) a
     rw [← isCompact_iff_compactSpace] at this ⊢
-    simpa using halg.toIsClosedEmbedding.isCompact_preimage this
+    simpa using halg.isClosedEmbedding.isCompact_preimage this
   exists_cfc_of_predicate a ha := by
     refine ⟨((h a).mp ha).2.nonUnitalStarAlgHom (cfcₙHom ((h a).mp ha).1 (R := S)),
       ?hom_isClosedEmbedding, ?hom_id, ?hom_map_spectrum, ?predicate_hom⟩
@@ -288,8 +288,8 @@ protected theorem cfc (f : C(S, R)) (halg : IsUniformEmbedding (algebraMap R S))
       obtain ⟨r, rfl⟩ := hs
       simp [((h a).mp ha).2.left_inv _]
 
-variable [NonUnitalContinuousFunctionalCalculus R p]
-variable [UniqueNonUnitalContinuousFunctionalCalculus R A]
+variable [NonUnitalContinuousFunctionalCalculus R A p]
+variable [ContinuousMapZero.UniqueHom R A]
 
 lemma cfcₙHom_eq_restrict (f : C(S, R)) (halg : IsUniformEmbedding (algebraMap R S)) {a : A}
     (hpa : p a) (hqa : q a) (h : QuasispectrumRestricts a f) :
@@ -312,9 +312,9 @@ lemma cfcₙ_eq_restrict (f : C(S, R)) (halg : IsUniformEmbedding (algebraMap R 
     obtain (hg | hg) := hg
     · have : ¬ ContinuousOn (fun x ↦ algebraMap R S (g (f x)) : S → S) (σₙ S a) := by
         refine fun hg' ↦ hg ?_
-        rw [halg.embedding.continuousOn_iff]
-        simpa [halg.embedding.continuousOn_iff, Function.comp_def, h.left_inv _] using
-          hg'.comp halg.embedding.continuous.continuousOn
+        rw [halg.isEmbedding.continuousOn_iff]
+        simpa [halg.isEmbedding.continuousOn_iff, Function.comp_def, h.left_inv _] using
+          hg'.comp halg.isEmbedding.continuous.continuousOn
           (fun _ : R ↦ quasispectrum.algebraMap_mem S)
       rw [cfcₙ_apply_of_not_continuousOn a hg, cfcₙ_apply_of_not_continuousOn a this]
     · rw [cfcₙ_apply_of_not_map_zero a hg, cfcₙ_apply_of_not_map_zero a (by simpa [h.map_zero])]

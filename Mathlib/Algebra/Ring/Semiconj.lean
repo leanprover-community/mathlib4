@@ -61,13 +61,9 @@ section
 
 variable [MulOneClass R] [HasDistribNeg R]
 
--- Porting note: `simpNF` told me to remove `simp` attribute
-theorem neg_one_right (a : R) : SemiconjBy a (-1) (-1) :=
-  (one_right a).neg_right
+theorem neg_one_right (a : R) : SemiconjBy a (-1) (-1) := by simp
 
--- Porting note: `simpNF` told me to remove `simp` attribute
-theorem neg_one_left (x : R) : SemiconjBy (-1) x x :=
-  (SemiconjBy.one_left x).neg_left
+theorem neg_one_left (x : R) : SemiconjBy (-1) x x := by simp
 
 end
 

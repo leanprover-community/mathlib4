@@ -3,6 +3,7 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.RingTheory.Ideal.BigOperators
 import Mathlib.RingTheory.FiniteType
 
 /-!
@@ -26,8 +27,6 @@ implies that the rees algebra over a noetherian ring is still noetherian.
 universe u v
 
 variable {R M : Type u} [CommRing R] [AddCommGroup M] [Module R M] (I : Ideal R)
-
-open Polynomial
 
 open Polynomial
 
@@ -70,7 +69,7 @@ theorem mem_reesAlgebra_iff_support (f : R[X]) :
 
 theorem reesAlgebra.monomial_mem {I : Ideal R} {i : ℕ} {r : R} :
     monomial i r ∈ reesAlgebra I ↔ r ∈ I ^ i := by
-  simp (config := { contextual := true }) [mem_reesAlgebra_iff_support, coeff_monomial, ←
+  simp +contextual [mem_reesAlgebra_iff_support, coeff_monomial, ←
     imp_iff_not_or]
 
 theorem monomial_mem_adjoin_monomial {I : Ideal R} {n : ℕ} {r : R} (hr : r ∈ I ^ n) :

@@ -371,7 +371,7 @@ where
         let cinfo ← getConstInfo congrTheorem.theoremName
         let us ← cinfo.levelParams.mapM fun _ => mkFreshLevelMVar
         let proof := mkConst congrTheorem.theoremName us
-        let ptype ← instantiateTypeLevelParams cinfo us
+        let ptype ← instantiateTypeLevelParams cinfo.toConstantVal us
         applyCongrThm? config mvarId ptype proof
       if let some mvars := res then
         return mvars
@@ -424,11 +424,6 @@ def Lean.MVarId.congrImplies?' (mvarId : MVarId) : MetaM (Option (List MVarId)) 
     let [mvarId₁, mvarId₂] ← mvarId.apply (← mkConstWithFreshMVarLevels ``implies_congr')
       | throwError "unexpected number of goals"
     return [mvarId₁, mvarId₂]
-
-protected theorem FastSubsingleton.helim {α β : Sort u} [FastSubsingleton α]
-    (h₂ : α = β) (a : α) (b : β) : HEq a b := by
-  have : Subsingleton α := FastSubsingleton.inst
-  exact Subsingleton.helim h₂ a b
 
 /--
 Try to apply `Subsingleton.helim` if the goal is a `HEq`. Tries synthesizing a `Subsingleton`
@@ -549,7 +544,7 @@ where
             return ← loop mvar.mvarId!
         if let some patt ← CongrMetaM.nextPattern then
           let gs ← Term.TermElabM.run' <| Lean.Elab.Tactic.RCases.rintro #[patt] none mvarId
-          List.join <$> gs.mapM loop
+          List.flatten <$> gs.mapM loop
         else
           let (_, mvarId) ← mvarId.intro1
           loop mvarId
@@ -733,12 +728,12 @@ This is somewhat like `congr`.
 
 See `Congr!.Config` for all options.
 -/
-syntax (name := congr!) "congr!" (Parser.Tactic.config)? (ppSpace num)?
+syntax (name := congr!) "congr!" Parser.Tactic.optConfig (ppSpace num)?
   (" with" (ppSpace colGt rintroPat)*)? : tactic
 
 elab_rules : tactic
-| `(tactic| congr! $[$cfg:config]? $[$n]? $[with $ps?*]?) => do
-  let config ← elabConfig (mkOptionalNode cfg)
+| `(tactic| congr! $cfg:optConfig $[$n]? $[with $ps?*]?) => do
+  let config ← elabConfig cfg
   let patterns := (Lean.Elab.Tactic.RCases.expandRIntroPats (ps?.getD #[])).toList
   liftMetaTactic fun g ↦
     let depth := n.map (·.getNat)

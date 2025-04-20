@@ -5,7 +5,7 @@ Authors: Gabriel Moise, Yaël Dillies, Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Finite
 import Mathlib.Data.Finset.Sym
-import Mathlib.Data.Matrix.Basic
+import Mathlib.Data.Matrix.Mul
 
 /-!
 # Incidence matrix of a simple graph
@@ -41,10 +41,9 @@ incidence matrix for each `SimpleGraph α` has the same type.
   arbitrary orientation of a simple graph.
 -/
 
+assert_not_exists Field
 
 open Finset Matrix SimpleGraph Sym2
-
-open Matrix
 
 namespace SimpleGraph
 
@@ -94,18 +93,14 @@ theorem incMatrix_apply_eq_zero_iff : G.incMatrix R a e = 0 ↔ e ∉ G.incidenc
   simp only [incMatrix_apply, Set.indicator_apply_eq_zero, Pi.one_apply, one_ne_zero]
 
 theorem incMatrix_apply_eq_one_iff : G.incMatrix R a e = 1 ↔ e ∈ G.incidenceSet a := by
-  -- Porting note: was `convert one_ne_zero.ite_eq_left_iff; infer_instance`
-  unfold incMatrix Set.indicator
-  simp only [Pi.one_apply]
-  apply Iff.intro <;> intro h
-  · split at h <;> simp_all only [zero_ne_one]
-  · simp_all only [ite_true]
+  convert one_ne_zero.ite_eq_left_iff
+  infer_instance
 
 end MulZeroOneClass
 
 section NonAssocSemiring
 
-variable [NonAssocSemiring R] {a b : α} {e : Sym2 α}
+variable [NonAssocSemiring R] {a : α} {e : Sym2 α}
 
 theorem sum_incMatrix_apply [Fintype (Sym2 α)] [Fintype (neighborSet G a)] :
     ∑ e, G.incMatrix R a e = G.degree a := by
@@ -158,7 +153,7 @@ end NonAssocSemiring
 
 section Semiring
 
-variable [Fintype (Sym2 α)] [Semiring R] {a b : α} {e : Sym2 α}
+variable [Fintype (Sym2 α)] [Semiring R] {a b : α}
 
 theorem incMatrix_mul_transpose_apply_of_adj (h : G.Adj a b) :
     (G.incMatrix R * (G.incMatrix R)ᵀ) a b = (1 : R) := by

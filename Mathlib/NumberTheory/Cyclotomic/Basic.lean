@@ -111,8 +111,7 @@ variable {A B}
 /-- If `(⊥ : SubAlgebra A B) = ⊤`, then `IsCyclotomicExtension ∅ A B`. -/
 theorem singleton_zero_of_bot_eq_top (h : (⊥ : Subalgebra A B) = ⊤) :
     IsCyclotomicExtension ∅ A B := by
--- Porting note: Lean3 is able to infer `A`.
-  refine (iff_adjoin_eq_top _ A _).2
+  refine (iff_adjoin_eq_top _ _ _).2
     ⟨fun s hs => by simp at hs, _root_.eq_top_iff.2 fun x hx => ?_⟩
   rw [← h] at hx
   simpa using hx
@@ -124,7 +123,7 @@ theorem trans (C : Type w) [CommRing C] [Algebra A C] [Algebra B C] [IsScalarTow
     [hS : IsCyclotomicExtension S A B] [hT : IsCyclotomicExtension T B C]
     (h : Function.Injective (algebraMap B C)) : IsCyclotomicExtension (S ∪ T) A C := by
   refine ⟨fun hn => ?_, fun x => ?_⟩
-  · cases' hn with hn hn
+  · rcases hn with hn | hn
     · obtain ⟨b, hb⟩ := ((isCyclotomicExtension_iff _ _ _).1 hS).1 hn
       refine ⟨algebraMap B C b, ?_⟩
       exact hb.map_of_injective h
@@ -152,8 +151,7 @@ theorem subsingleton_iff [Subsingleton B] : IsCyclotomicExtension S A B ↔ S = 
     rw [mem_singleton_iff, ← PNat.coe_eq_one_iff]
     exact mod_cast hζ.unique (IsPrimitiveRoot.of_subsingleton ζ)
   · rintro (rfl | rfl)
--- Porting note: `R := A` was not needed.
-    · exact ⟨fun h => h.elim, fun x => by convert (mem_top (R := A) : x ∈ ⊤)⟩
+    · exact ⟨fun h => h.elim, fun x => by convert (mem_top : x ∈ ⊤)⟩
     · rw [iff_singleton]
       exact ⟨⟨0, IsPrimitiveRoot.of_subsingleton 0⟩,
         fun x => by convert (mem_top (R := A) : x ∈ ⊤)⟩
@@ -299,19 +297,18 @@ theorem finite_of_singleton [IsDomain B] [h : IsCyclotomicExtension {n} A B] :
 /-- If `S` is finite and `IsCyclotomicExtension S A B`, then `B` is a finite `A`-algebra. -/
 protected theorem finite [IsDomain B] [h₁ : Finite S] [h₂ : IsCyclotomicExtension S A B] :
     Module.Finite A B := by
-  cases' nonempty_fintype S with h
-  revert h₂ A B
-  refine Set.Finite.induction_on h₁ (fun A B => ?_) @fun n S _ _ H A B => ?_
-  · intro _ _ _ _ _
+  rw [finite_coe_iff] at h₁
+  induction S, h₁ using Set.Finite.induction_on generalizing h₂ A B with
+  | empty =>
     refine Module.finite_def.2 ⟨({1} : Finset B), ?_⟩
     simp [← top_toSubmodule, ← empty, toSubmodule_bot, Submodule.one_eq_span]
-  · intro _ _ _ _ h
+  | @insert n S _ _ H =>
     haveI : IsCyclotomicExtension S A (adjoin A {b : B | ∃ n : ℕ+, n ∈ S ∧ b ^ (n : ℕ) = 1}) :=
       union_left _ (insert n S) _ _ (subset_insert n S)
     haveI := H A (adjoin A {b : B | ∃ n : ℕ+, n ∈ S ∧ b ^ (n : ℕ) = 1})
     have : Module.Finite (adjoin A {b : B | ∃ n : ℕ+, n ∈ S ∧ b ^ (n : ℕ) = 1}) B := by
-      rw [← union_singleton] at h
-      letI := @union_right S {n} A B _ _ _ h
+      rw [← union_singleton] at h₂
+      let _ := union_right S {n} A B
       exact finite_of_singleton n _ _
     exact Module.Finite.trans (adjoin A {b : B | ∃ n : ℕ+, n ∈ S ∧ b ^ (n : ℕ) = 1}) _
 
@@ -353,7 +350,7 @@ theorem adjoin_roots_cyclotomic_eq_adjoin_nth_roots [IsDomain B] {ζ : B} {n : �
     rw [IsRoot.def, ← map_cyclotomic n (algebraMap A B), eval_map, ← aeval_def]
     exact hx.2
   · simp only [mem_singleton_iff, exists_eq_left, mem_setOf_eq] at hx
-    obtain ⟨i, _, rfl⟩ := hζ.eq_pow_of_pow_eq_one hx n.pos
+    obtain ⟨i, _, rfl⟩ := hζ.eq_pow_of_pow_eq_one hx
     refine SetLike.mem_coe.2 (Subalgebra.pow_mem _ (subset_adjoin ?_) _)
     rw [mem_rootSet', map_cyclotomic, aeval_def, ← eval_map, map_cyclotomic, ← IsRoot]
     exact ⟨cyclotomic_ne_zero n B, hζ.isRoot_cyclotomic n.pos⟩
@@ -362,7 +359,7 @@ theorem adjoin_roots_cyclotomic_eq_adjoin_root_cyclotomic {n : ℕ+} [IsDomain B
     (hζ : IsPrimitiveRoot ζ n) : adjoin A ((cyclotomic n A).rootSet B) = adjoin A {ζ} := by
   refine le_antisymm (adjoin_le fun x hx => ?_) (adjoin_mono fun x hx => ?_)
   · suffices hx : x ^ n.1 = 1 by
-      obtain ⟨i, _, rfl⟩ := hζ.eq_pow_of_pow_eq_one hx n.pos
+      obtain ⟨i, _, rfl⟩ := hζ.eq_pow_of_pow_eq_one hx
       exact SetLike.mem_coe.2 (Subalgebra.pow_mem _ (subset_adjoin <| mem_singleton ζ) _)
     refine (isRoot_of_unity_iff n.pos B).2 ?_
     refine ⟨n, Nat.mem_divisors_self n n.ne_zero, ?_⟩
@@ -485,15 +482,12 @@ def CyclotomicField : Type w :=
 
 namespace CyclotomicField
 
--- Porting note: could not be derived
 instance : Field (CyclotomicField n K) := by
   delta CyclotomicField; infer_instance
 
--- Porting note: could not be derived
 instance algebra : Algebra K (CyclotomicField n K) := by
   delta CyclotomicField; infer_instance
 
--- Porting note: could not be derived
 instance : Inhabited (CyclotomicField n K) := by
   delta CyclotomicField; infer_instance
 
@@ -509,7 +503,6 @@ instance isCyclotomicExtension [NeZero ((n : ℕ) : K)] :
     exists_root_of_splits (algebraMap K (CyclotomicField n K)) (SplittingField.splits _)
       (degree_cyclotomic_pos n K n.pos).ne'
   rw [← eval_map, ← IsRoot.def, map_cyclotomic, isRoot_cyclotomic_iff] at hζ
--- Porting note: the first `?_` was `forall_eq.2 ⟨ζ, hζ⟩` that now fails.
   refine ⟨?_, ?_⟩
   · simp only [mem_singleton_iff, forall_eq]
     exact ⟨ζ, hζ⟩
@@ -532,7 +525,7 @@ section CyclotomicRing
 instance CyclotomicField.algebraBase : Algebra A (CyclotomicField n K) :=
   SplittingField.algebra' (cyclotomic n K)
 
-/-- Ensure there are no diamonds when `A = ℤ` but there are `reducible_and_instances` #10906 -/
+/-- Ensure there are no diamonds when `A = ℤ` but there are `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906 -/
 example : Ring.toIntAlgebra (CyclotomicField n ℚ) = CyclotomicField.algebraBase _ _ _ := rfl
 
 instance CyclotomicField.algebra' {R : Type*} [CommRing R] [Algebra R K] :
@@ -542,13 +535,12 @@ instance CyclotomicField.algebra' {R : Type*} [CommRing R] [Algebra R K] :
 instance {R : Type*} [CommRing R] [Algebra R K] : IsScalarTower R K (CyclotomicField n K) :=
   SplittingField.isScalarTower _
 
-instance CyclotomicField.noZeroSMulDivisors [IsFractionRing A K] :
-    NoZeroSMulDivisors A (CyclotomicField n K) := by
-  refine NoZeroSMulDivisors.of_algebraMap_injective ?_
-  rw [IsScalarTower.algebraMap_eq A K (CyclotomicField n K)]
+instance [IsFractionRing A K] : NoZeroSMulDivisors A (CyclotomicField n K) := by
+  rw [NoZeroSMulDivisors.iff_faithfulSMul, faithfulSMul_iff_algebraMap_injective,
+    IsScalarTower.algebraMap_eq A K (CyclotomicField n K)]
   exact
-    (Function.Injective.comp (NoZeroSMulDivisors.algebraMap_injective K (CyclotomicField n K))
-      (IsFractionRing.injective A K) : _)
+    (Function.Injective.comp (FaithfulSMul.algebraMap_injective K (CyclotomicField n K))
+      (IsFractionRing.injective A K) :)
 
 /-- If `A` is a domain with fraction field `K` and `n : ℕ+`, we define `CyclotomicRing n A K` as
 the `A`-subalgebra of `CyclotomicField n K` generated by the roots of `X ^ n - 1`. If `n`
@@ -556,19 +548,15 @@ is nonzero in `A`, it has the instance `IsCyclotomicExtension {n} A (CyclotomicR
 @[nolint unusedArguments]
 def CyclotomicRing : Type w :=
   adjoin A {b : CyclotomicField n K | b ^ (n : ℕ) = 1}
---deriving CommRing, IsDomain, Inhabited
 
 namespace CyclotomicRing
 
--- Porting note: could not be derived
 instance : CommRing (CyclotomicRing n A K) := by
   delta CyclotomicRing; infer_instance
 
--- Porting note: could not be derived
 instance : IsDomain (CyclotomicRing n A K) := by
   delta CyclotomicRing; infer_instance
 
--- Porting note: could not be derived
 instance : Inhabited (CyclotomicRing n A K) := by
   delta CyclotomicRing; infer_instance
 
@@ -577,7 +565,7 @@ instance algebraBase : Algebra A (CyclotomicRing n A K) :=
   (adjoin A _).algebra
 
 -- Ensure that there is no diamonds with ℤ.
--- but there is at `reducible_and_instances` #10906
+-- but there is at `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
 example {n : ℕ+} : CyclotomicRing.algebraBase n ℤ ℚ = Ring.toIntAlgebra _ := rfl
 
 instance [IsFractionRing A K] :
@@ -586,7 +574,7 @@ instance [IsFractionRing A K] :
 
 theorem algebraBase_injective [IsFractionRing A K] :
     Function.Injective <| algebraMap A (CyclotomicRing n A K) :=
-  NoZeroSMulDivisors.algebraMap_injective _ _
+  FaithfulSMul.algebraMap_injective _ _
 
 instance : Algebra (CyclotomicRing n A K) (CyclotomicField n K) :=
   (adjoin A _).toAlgebra
@@ -596,7 +584,7 @@ theorem adjoin_algebra_injective :
   Subtype.val_injective
 
 instance : NoZeroSMulDivisors (CyclotomicRing n A K) (CyclotomicField n K) :=
-  NoZeroSMulDivisors.of_algebraMap_injective (adjoin_algebra_injective n A K)
+  NoZeroSMulDivisors.iff_algebraMap_injective.mpr (adjoin_algebra_injective n A K)
 
 instance : IsScalarTower A (CyclotomicRing n A K) (CyclotomicField n K) :=
   IsScalarTower.subalgebra' _ _ _ _
@@ -606,8 +594,8 @@ instance isCyclotomicExtension [IsFractionRing A K] [NeZero ((n : ℕ) : A)] :
   exists_prim_root := @fun a han => by
     rw [mem_singleton_iff] at han
     subst a
-    haveI := NeZero.of_noZeroSMulDivisors A K n
-    haveI := NeZero.of_noZeroSMulDivisors A (CyclotomicField n K) n
+    have := NeZero.of_faithfulSMul A K n
+    have := NeZero.of_faithfulSMul A (CyclotomicField n K) n
     obtain ⟨μ, hμ⟩ := (CyclotomicField.isCyclotomicExtension n K).exists_prim_root (mem_singleton n)
     refine ⟨⟨μ, subset_adjoin ?_⟩, ?_⟩
     · apply (isRoot_of_unity_iff n.pos (CyclotomicField n K)).mpr
@@ -640,7 +628,6 @@ instance [IsFractionRing A K] [IsDomain A] [NeZero ((n : ℕ) : A)] :
         (hx := ((IsCyclotomicExtension.iff_singleton n K (CyclotomicField n K)).1
             (CyclotomicField.isCyclotomicExtension n K)).2 x)
         (fun y hy => ?_) (fun k => ?_) ?_ ?_
--- Porting note: the last goal was `by simpa` that now fails.
     · exact ⟨⟨⟨y, subset_adjoin hy⟩, 1⟩, by simp; rfl⟩
     · have : IsLocalization (nonZeroDivisors A) K := inferInstance
       replace := this.surj

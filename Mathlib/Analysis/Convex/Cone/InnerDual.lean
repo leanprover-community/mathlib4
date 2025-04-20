@@ -27,12 +27,7 @@ We prove the following theorems:
   [Farkas lemma](https://en.wikipedia.org/wiki/Farkas%27_lemma#Geometric_interpretation).
 -/
 
-open Set LinearMap
-
-open scoped Classical
-open Pointwise
-
-variable {𝕜 E F G : Type*}
+open Set LinearMap Pointwise
 
 /-! ### The dual cone -/
 
@@ -75,6 +70,8 @@ theorem innerDualCone_univ : (univ : Set H).innerDualCone = 0 := by
     exact eq_singleton_iff_unique_mem.mpr ⟨fun x _ => (inner_zero_right _).ge, this⟩
   exact fun x hx => by simpa [← real_inner_self_nonpos] using hx (-x) (mem_univ _)
 
+variable {s t} in
+@[gcongr]
 theorem innerDualCone_le_innerDualCone (h : t ⊆ s) : s.innerDualCone ≤ t.innerDualCone :=
   fun _ hy x hx => hy x (h hx)
 

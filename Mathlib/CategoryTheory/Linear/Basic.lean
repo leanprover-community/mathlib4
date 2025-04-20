@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Algebra.Defs
+import Mathlib.Algebra.Group.Invertible.Defs
 import Mathlib.Algebra.Module.Equiv.Defs
 import Mathlib.CategoryTheory.Preadditive.Basic
 
@@ -62,12 +63,12 @@ namespace CategoryTheory.Linear
 variable {C : Type u} [Category.{v} C] [Preadditive C]
 
 instance preadditiveNatLinear : Linear ℕ C where
-  smul_comp X Y Z r f g := by exact (Preadditive.rightComp X g).map_nsmul f r
-  comp_smul X Y Z f r g := by exact (Preadditive.leftComp Z f).map_nsmul g r
+  smul_comp X _Y _Z r f g := by exact (Preadditive.rightComp X g).map_nsmul f r
+  comp_smul _X _Y Z f r g := by exact (Preadditive.leftComp Z f).map_nsmul g r
 
 instance preadditiveIntLinear : Linear ℤ C where
-  smul_comp X Y Z r f g := by exact (Preadditive.rightComp X g).map_zsmul f r
-  comp_smul X Y Z f r g := by exact (Preadditive.leftComp Z f).map_zsmul g r
+  smul_comp X _Y _Z r f g := by exact (Preadditive.rightComp X g).map_zsmul f r
+  comp_smul _X _Y Z f r g := by exact (Preadditive.leftComp Z f).map_zsmul g r
 
 section End
 

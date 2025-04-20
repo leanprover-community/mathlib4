@@ -50,7 +50,7 @@ so we may as well get this done first.)
 -/
 theorem polynomialFunctions_closure_eq_top (a b : ℝ) :
     (polynomialFunctions (Set.Icc a b)).topologicalClosure = ⊤ := by
-  cases' lt_or_le a b with h h
+  rcases lt_or_le a b with h | h
   -- (Otherwise it's easy; we'll deal with that later.)
   · -- We can pullback continuous functions on `[a,b]` to continuous functions on `[0,1]`,
     -- by precomposing with an affine map.
@@ -58,7 +58,7 @@ theorem polynomialFunctions_closure_eq_top (a b : ℝ) :
       compRightAlgHom ℝ ℝ (iccHomeoI a b h).symm
     -- This operation is itself a homeomorphism
     -- (with respect to the norm topologies on continuous functions).
-    let W' : C(Set.Icc a b, ℝ) ≃ₜ C(I, ℝ) := compRightHomeomorph ℝ (iccHomeoI a b h).symm
+    let W' : C(Set.Icc a b, ℝ) ≃ₜ C(I, ℝ) := (iccHomeoI a b h).arrowCongr (.refl _)
     have w : (W : C(Set.Icc a b, ℝ) → C(I, ℝ)) = W' := rfl
     -- Thus we take the statement of the Weierstrass approximation theorem for `[0,1]`,
     have p := polynomialFunctions_closure_eq_top'

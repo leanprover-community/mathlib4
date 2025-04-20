@@ -70,119 +70,92 @@ instance fullMonoidalSubcategory : MonoidalCategory (FullSubcategory P) :=
 /-- The forgetful monoidal functor from a full monoidal subcategory into the original category
 ("forgetting" the condition).
 -/
-@[simps]
-def fullMonoidalSubcategoryInclusion : MonoidalFunctor (FullSubcategory P) C where
-  toFunctor := fullSubcategoryInclusion P
-  ε := 𝟙 _
-  μ _ _ := 𝟙 _
+instance fullSubcategoryInclusionMonoidal : (fullSubcategoryInclusion P).Monoidal :=
+  Functor.CoreMonoidal.toMonoidal
+    { εIso := Iso.refl _
+      μIso := fun _ _ ↦ Iso.refl _ }
 
-instance fullMonoidalSubcategory.full : (fullMonoidalSubcategoryInclusion P).Full :=
-  FullSubcategory.full P
+open Functor.LaxMonoidal Functor.OplaxMonoidal
 
-instance fullMonoidalSubcategory.faithful :
-    (fullMonoidalSubcategoryInclusion P).Faithful :=
-  FullSubcategory.faithful P
+@[simp] lemma fullSubcategoryInclusion_ε : ε (fullSubcategoryInclusion P) = 𝟙 _ := rfl
+@[simp] lemma fullSubcategoryInclusion_η : ε (fullSubcategoryInclusion P) = 𝟙 _ := rfl
+@[simp] lemma fullSubcategoryInclusion_μ (X Y : FullSubcategory P) :
+    μ (fullSubcategoryInclusion P) X Y = 𝟙 _ := rfl
+@[simp] lemma fullSubcategoryInclusion_δ (X Y : FullSubcategory P) :
+    δ (fullSubcategoryInclusion P) X Y = 𝟙 _ := rfl
 
 section
 
 variable [Preadditive C]
 
-instance fullMonoidalSubcategoryInclusion_additive :
-    (fullMonoidalSubcategoryInclusion P).toFunctor.Additive :=
-  Functor.fullSubcategoryInclusion_additive _
-
 instance [MonoidalPreadditive C] : MonoidalPreadditive (FullSubcategory P) :=
-  monoidalPreadditive_of_faithful (fullMonoidalSubcategoryInclusion P)
+  monoidalPreadditive_of_faithful (fullSubcategoryInclusion P)
 
 variable (R : Type*) [Ring R] [Linear R C]
 
-instance fullMonoidalSubcategoryInclusion_linear :
-    (fullMonoidalSubcategoryInclusion P).toFunctor.Linear R :=
-  Functor.fullSubcategoryInclusionLinear R _
-
 instance [MonoidalPreadditive C] [MonoidalLinear R C] : MonoidalLinear R (FullSubcategory P) :=
-  monoidalLinearOfFaithful R (fullMonoidalSubcategoryInclusion P)
+  monoidalLinearOfFaithful R (fullSubcategoryInclusion P)
 
 end
 
-variable {P} {P' : C → Prop} [MonoidalPredicate P']
+section
 
--- needed for `aesop_cat`
-attribute [local simp] FullSubcategory.comp_def FullSubcategory.id_def in
+variable {P} {P' : C → Prop} [MonoidalPredicate P'] (h : ∀ ⦃X⦄, P X → P' X)
+
 /-- An implication of predicates `P → P'` induces a monoidal functor between full monoidal
 subcategories. -/
-@[simps]
-def fullMonoidalSubcategory.map (h : ∀ ⦃X⦄, P X → P' X) :
-    MonoidalFunctor (FullSubcategory P) (FullSubcategory P') where
-  toFunctor := FullSubcategory.map h
-  ε := 𝟙 _
-  μ _ _ := 𝟙 _
+instance  : (FullSubcategory.map h).Monoidal :=
+  Functor.CoreMonoidal.toMonoidal
+    { εIso := Iso.refl _
+      μIso := fun _ _ ↦ Iso.refl _ }
 
-instance fullMonoidalSubcategory.map_full (h : ∀ ⦃X⦄, P X → P' X) :
-    (fullMonoidalSubcategory.map h).Full where
-  map_surjective f := ⟨f, rfl⟩
+@[simp] lemma fullSubcategory_map_ε : ε (FullSubcategory.map h) = 𝟙 _ := rfl
+@[simp] lemma fullSubcategory_map_η : η (FullSubcategory.map h) = 𝟙 _ := rfl
+@[simp] lemma fullSubcategory_map_μ (X Y : FullSubcategory P) :
+    μ (FullSubcategory.map h) X Y = 𝟙 _ := rfl
+@[simp] lemma fullSubcategory_map_δ (X Y : FullSubcategory P) :
+    δ (FullSubcategory.map h) X Y = 𝟙 _ := rfl
 
-instance fullMonoidalSubcategory.map_faithful (h : ∀ ⦃X⦄, P X → P' X) :
-    (fullMonoidalSubcategory.map h).Faithful where
+end
 
 section Braided
 
-variable (P) [BraidedCategory C]
+variable [BraidedCategory C]
 
 /-- The braided structure on a full subcategory inherited by the braided structure on `C`.
 -/
 instance fullBraidedSubcategory : BraidedCategory (FullSubcategory P) :=
-  braidedCategoryOfFaithful (fullMonoidalSubcategoryInclusion P)
+  braidedCategoryOfFaithful (fullSubcategoryInclusion P)
     (fun X Y =>
       ⟨(β_ X.1 Y.1).hom, (β_ X.1 Y.1).inv, (β_ X.1 Y.1).hom_inv_id, (β_ X.1 Y.1).inv_hom_id⟩)
-    fun X Y => by aesop_cat
+    fun X Y => by simp
 
 /-- The forgetful braided functor from a full braided subcategory into the original category
 ("forgetting" the condition).
 -/
-@[simps!]
-def fullBraidedSubcategoryInclusion : BraidedFunctor (FullSubcategory P) C where
-  toMonoidalFunctor := fullMonoidalSubcategoryInclusion P
-  braided X Y := by rw [IsIso.eq_inv_comp]; aesop_cat
-
-instance fullBraidedSubcategory.full : (fullBraidedSubcategoryInclusion P).Full :=
-  fullMonoidalSubcategory.full P
-
-instance fullBraidedSubcategory.faithful : (fullBraidedSubcategoryInclusion P).Faithful :=
-  fullMonoidalSubcategory.faithful P
+instance : (fullSubcategoryInclusion P).Braided where
 
 variable {P}
 
 /-- An implication of predicates `P → P'` induces a braided functor between full braided
 subcategories. -/
-@[simps!]
-def fullBraidedSubcategory.map (h : ∀ ⦃X⦄, P X → P' X) :
-    BraidedFunctor (FullSubcategory P) (FullSubcategory P') where
-  toMonoidalFunctor := fullMonoidalSubcategory.map h
-  braided X Y := by rw [IsIso.eq_inv_comp]; aesop_cat
-
-instance fullBraidedSubcategory.mapFull (h : ∀ ⦃X⦄, P X → P' X) :
-    (fullBraidedSubcategory.map h).Full :=
-  fullMonoidalSubcategory.map_full h
-
-instance fullBraidedSubcategory.map_faithful (h : ∀ ⦃X⦄, P X → P' X) :
-    (fullBraidedSubcategory.map h).Faithful :=
-  fullMonoidalSubcategory.map_faithful h
+instance {P' : C → Prop} [MonoidalPredicate P'] (h : ∀ ⦃X⦄, P X → P' X) :
+    (FullSubcategory.map h).Braided where
 
 end Braided
 
 section Symmetric
 
-variable (P) [SymmetricCategory C]
+variable [SymmetricCategory C]
 
 instance fullSymmetricSubcategory : SymmetricCategory (FullSubcategory P) :=
-  symmetricCategoryOfFaithful (fullBraidedSubcategoryInclusion P)
+  symmetricCategoryOfFaithful (fullSubcategoryInclusion P)
 
 end Symmetric
 
 section Closed
 
-variable (P) [MonoidalClosed C]
+variable [MonoidalClosed C]
 
 /-- A property `C → Prop` is a closed predicate if it is closed under taking internal homs
 -/

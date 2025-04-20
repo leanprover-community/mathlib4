@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Kim Morrison, Joël Riou
 -/
 import Mathlib.Algebra.Homology.Additive
-import Mathlib.CategoryTheory.Abelian.InjectiveResolution
+import Mathlib.CategoryTheory.Abelian.Injective.Resolution
 
 /-!
 # Right-derived functors
@@ -38,11 +38,11 @@ and show how to compute the components.
 ## TODO
 
 * refactor `Functor.rightDerived` (and `Functor.leftDerived`) when the necessary
-material enters mathlib: derived categories, injective/projective derivability
-structures, existence of derived functors from derivability structures.
-Eventually, we shall get a right derived functor
-`F.rightDerivedFunctorPlus : DerivedCategory.Plus C ⥤ DerivedCategory.Plus D`,
-and `F.rightDerived` shall be redefined using `F.rightDerivedFunctorPlus`.
+  material enters mathlib: derived categories, injective/projective derivability
+  structures, existence of derived functors from derivability structures.
+  Eventually, we shall get a right derived functor
+  `F.rightDerivedFunctorPlus : DerivedCategory.Plus C ⥤ DerivedCategory.Plus D`,
+  and `F.rightDerived` shall be redefined using `F.rightDerivedFunctorPlus`.
 
 -/
 

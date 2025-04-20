@@ -210,13 +210,7 @@ as an object of `C`. -/
 @[simps]
 noncomputable def autGaloisSystem : PointedGaloisObject F ⥤ Grp.{u₂} where
   obj := fun A ↦ Grp.of <| Aut (A : C)
-  map := fun {A B} f ↦ (autMapHom f : Aut (A : C) →* Aut (B : C))
-  map_id := fun A ↦ by
-    ext (σ : Aut A.obj)
-    simp
-  map_comp {A B C} f g := by
-    ext (σ : Aut A.obj)
-    simp
+  map := fun {A B} f ↦ Grp.ofHom (autMapHom f)
 
 /-- The limit of `autGaloisSystem`. -/
 noncomputable def AutGalois : Type (max u₁ u₂) :=
@@ -449,7 +443,7 @@ instance FiberFunctor.isPretransitive_of_isConnected (X : C) [IsConnected X] :
     MulAction.IsPretransitive (Aut F) (F.obj X) where
   exists_smul_eq x y := by
     let F' : C ⥤ FintypeCat.{u₂} := F ⋙ FintypeCat.uSwitch.{w, u₂}
-    letI : FiberFunctor F' := FiberFunctor.compRight _
+    letI : FiberFunctor F' := FiberFunctor.comp_right _
     let e (Y : C) : F'.obj Y ≃ F.obj Y := (F.obj Y).uSwitchEquiv
     set x' : F'.obj X := (e X).symm x with hx'
     set y' : F'.obj X := (e X).symm y with hy'

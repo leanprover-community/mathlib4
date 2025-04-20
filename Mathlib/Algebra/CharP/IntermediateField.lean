@@ -3,9 +3,8 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.Algebra.CharP.ExpChar
+import Mathlib.Algebra.CharP.Algebra
 import Mathlib.FieldTheory.IntermediateField.Basic
-import Mathlib.Algebra.EuclideanDomain.Field
 
 /-!
 

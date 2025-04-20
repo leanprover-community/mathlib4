@@ -3,9 +3,8 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Yaël Dillies
 -/
-import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.BooleanAlgebra
 import Mathlib.Data.SetLike.Basic
-import Mathlib.Order.GaloisConnection
 import Mathlib.Order.Hom.Basic
 
 /-!
@@ -254,7 +253,7 @@ variable [CompleteLattice α] (c : ClosureOperator α)
 @[simps!]
 def ofCompletePred (p : α → Prop) (hsinf : ∀ s, (∀ a ∈ s, p a) → p (sInf s)) : ClosureOperator α :=
   ofPred (fun a ↦ ⨅ b : {b // a ≤ b ∧ p b}, b) p
-    (fun a ↦ by set_option tactic.skipAssignedInstances false in simp [forall_swap])
+    (fun a ↦ by simp (config := {contextual := true}))
     (fun _ ↦ hsinf _ <| forall_mem_range.2 fun b ↦ b.2.2)
     (fun _ b hab hb ↦ iInf_le_of_le ⟨b, hab, hb⟩ le_rfl)
 
@@ -387,7 +386,7 @@ variable [PartialOrder α] [PartialOrder β] {u : β → α} (l : LowerAdjoint u
 theorem mem_closed_iff_closure_le (x : α) : x ∈ l.closed ↔ u (l x) ≤ x :=
   l.closureOperator.isClosed_iff_closure_le
 
-@[simp, nolint simpNF] -- Porting note: lemma does prove itself, seems to be a linter error
+@[simp]
 theorem closure_is_closed (x : α) : u (l x) ∈ l.closed :=
   l.idempotent x
 
@@ -483,8 +482,6 @@ theorem closure_union_closure (x y : α) : l (l x ∪ l y) = l (x ∪ y) := by
 theorem closure_iUnion_closure (f : ι → α) : l (⋃ i, l (f i)) = l (⋃ i, f i) :=
   SetLike.coe_injective <| l.closure_iSup_closure _
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[simp]
 theorem closure_iUnion₂_closure (f : ∀ i, κ i → α) :
     l (⋃ (i) (j), l (f i j)) = l (⋃ (i) (j), f i j) :=

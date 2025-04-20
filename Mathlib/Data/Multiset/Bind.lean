@@ -3,8 +3,7 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.BigOperators.Group.Multiset
-import Mathlib.Data.Multiset.Dedup
+import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
 
 /-!
 # Bind operation for multisets
@@ -19,8 +18,7 @@ This file defines a few basic operations on `Multiset`, notably the monadic bind
 * `Multiset.sigma`: Disjoint sum of multisets in a sigma type.
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists MulAction
+assert_not_exists MonoidWithZero MulAction
 
 universe v
 
@@ -30,15 +28,14 @@ namespace Multiset
 
 /-! ### Join -/
 
-
 /-- `join S`, where `S` is a multiset of multisets, is the lift of the list join
   operation, that is, the union of all the sets.
      join {{1, 2}, {1, 2}, {0, 1}} = {0, 1, 1, 1, 2, 2} -/
 def join : Multiset (Multiset α) → Multiset α :=
   sum
 
-theorem coe_join :
-    ∀ L : List (List α), join (L.map ((↑) : List α → Multiset α) : Multiset (Multiset α)) = L.join
+theorem coe_join : ∀ L : List (List α), join (L.map ((↑) : List α → Multiset α) :
+    Multiset (Multiset α)) = L.flatten
   | [] => rfl
   | l :: L => by
       exact congr_arg (fun s : Multiset α => ↑l + s) (coe_join L)
@@ -62,7 +59,7 @@ theorem singleton_join (a) : join ({a} : Multiset (Multiset α)) = a :=
 @[simp]
 theorem mem_join {a S} : a ∈ @join α S ↔ ∃ s ∈ S, a ∈ s :=
   Multiset.induction_on S (by simp) <| by
-    simp (config := { contextual := true }) [or_and_right, exists_or]
+    simp +contextual [or_and_right, exists_or]
 
 @[simp]
 theorem card_join (S) : card (@join α S) = sum (map card S) :=
@@ -100,8 +97,8 @@ def bind (s : Multiset α) (f : α → Multiset β) : Multiset β :=
   (s.map f).join
 
 @[simp]
-theorem coe_bind (l : List α) (f : α → List β) : (@bind α β l fun a => f a) = l.bind f := by
-  rw [List.bind, ← coe_join, List.map_map]
+theorem coe_bind (l : List α) (f : α → List β) : (@bind α β l fun a => f a) = l.flatMap f := by
+  rw [List.flatMap, ← coe_join, List.map_map]
   rfl
 
 @[simp]
@@ -127,7 +124,7 @@ theorem bind_add : (s.bind fun a => f a + g a) = s.bind f + s.bind g := by simp 
 theorem bind_cons (f : α → β) (g : α → Multiset β) :
     (s.bind fun a => f a ::ₘ g a) = map f s + s.bind g :=
   Multiset.induction_on s (by simp)
-    (by simp (config := { contextual := true }) [add_comm, add_left_comm, add_assoc])
+    (by simp +contextual [add_comm, add_left_comm, add_assoc])
 
 @[simp]
 theorem bind_singleton (f : α → β) : (s.bind fun x => ({f x} : Multiset β)) = map f s :=
@@ -141,7 +138,7 @@ theorem mem_bind {b s} {f : α → Multiset β} : b ∈ bind s f ↔ ∃ a ∈ s
 theorem card_bind : card (s.bind f) = (s.map (card ∘ f)).sum := by simp [bind]
 
 theorem bind_congr {f g : α → Multiset β} {m : Multiset α} :
-    (∀ a ∈ m, f a = g a) → bind m f = bind m g := by simp (config := { contextual := true }) [bind]
+    (∀ a ∈ m, f a = g a) → bind m f = bind m g := by simp +contextual [bind]
 
 theorem bind_hcongr {β' : Type v} {m : Multiset α} {f : α → Multiset β} {f' : α → Multiset β'}
     (h : β = β') (hf : ∀ a ∈ m, HEq (f a) (f' a)) : HEq (bind m f) (bind m f') := by
@@ -154,24 +151,25 @@ theorem map_bind (m : Multiset α) (n : α → Multiset β) (f : β → γ) :
 
 theorem bind_map (m : Multiset α) (n : β → Multiset γ) (f : α → β) :
     bind (map f m) n = bind m fun a => n (f a) :=
-  Multiset.induction_on m (by simp) (by simp (config := { contextual := true }))
+  Multiset.induction_on m (by simp) (by simp +contextual)
 
 theorem bind_assoc {s : Multiset α} {f : α → Multiset β} {g : β → Multiset γ} :
     (s.bind f).bind g = s.bind fun a => (f a).bind g :=
-  Multiset.induction_on s (by simp) (by simp (config := { contextual := true }))
+  Multiset.induction_on s (by simp) (by simp +contextual)
 
 theorem bind_bind (m : Multiset α) (n : Multiset β) {f : α → β → Multiset γ} :
     ((bind m) fun a => (bind n) fun b => f a b) = (bind n) fun b => (bind m) fun a => f a b :=
-  Multiset.induction_on m (by simp) (by simp (config := { contextual := true }))
+  Multiset.induction_on m (by simp) (by simp +contextual)
 
 theorem bind_map_comm (m : Multiset α) (n : Multiset β) {f : α → β → γ} :
     ((bind m) fun a => n.map fun b => f a b) = (bind n) fun b => m.map fun a => f a b :=
-  Multiset.induction_on m (by simp) (by simp (config := { contextual := true }))
+  Multiset.induction_on m (by simp) (by simp +contextual)
 
 @[to_additive (attr := simp)]
 theorem prod_bind [CommMonoid β] (s : Multiset α) (t : α → Multiset β) :
     (s.bind t).prod = (s.map fun a => (t a).prod).prod := by simp [bind]
 
+open scoped Relator in
 theorem rel_bind {r : α → β → Prop} {p : γ → δ → Prop} {s t} {f : α → Multiset γ}
     {g : β → Multiset δ} (h : (r ⇒ Rel p) f g) (hst : Rel r s t) :
     Rel p (s.bind f) (t.bind g) := by
@@ -195,20 +193,23 @@ theorem le_bind {α β : Type*} {f : α → Multiset β} (S : Multiset α) {x : 
   rw [count_bind, hm', sum_cons]
   exact Nat.le_add_right _ _
 
--- Porting note (#11119): @[simp] removed because not in normal form
+@[simp]
 theorem attach_bind_coe (s : Multiset α) (f : α → Multiset β) :
     (s.attach.bind fun i => f i) = s.bind f :=
   congr_arg join <| attach_map_val' _ _
 
 variable {f s t}
 
+open scoped Function in -- required for scoped `on` notation
 @[simp] lemma nodup_bind :
-    Nodup (bind s f) ↔ (∀ a ∈ s, Nodup (f a)) ∧ s.Pairwise fun a b => Disjoint (f a) (f b) := by
+    Nodup (bind s f) ↔ (∀ a ∈ s, Nodup (f a)) ∧ s.Pairwise (Disjoint on f) := by
   have : ∀ a, ∃ l : List β, f a = l := fun a => Quot.induction_on (f a) fun l => ⟨l, rfl⟩
   choose f' h' using this
   have : f = fun a ↦ ofList (f' a) := funext h'
   have hd : Symmetric fun a b ↦ List.Disjoint (f' a) (f' b) := fun a b h ↦ h.symm
-  exact Quot.induction_on s <| by simp [this, List.nodup_bind, pairwise_coe_iff_pairwise hd]
+  exact Quot.induction_on s <| by
+    unfold Function.onFun
+    simp [this, List.nodup_flatMap, pairwise_coe_iff_pairwise hd]
 
 @[simp]
 lemma dedup_bind_dedup [DecidableEq α] [DecidableEq β] (s : Multiset α) (f : α → Multiset β) :
@@ -216,8 +217,17 @@ lemma dedup_bind_dedup [DecidableEq α] [DecidableEq β] (s : Multiset α) (f : 
   ext x
   -- Porting note: was `simp_rw [count_dedup, mem_bind, mem_dedup]`
   simp_rw [count_dedup]
-  refine if_congr ?_ rfl rfl
+  congr 1
   simp
+
+variable (op : α → α → α) [hc : Std.Commutative op] [ha : Std.Associative op]
+
+theorem fold_bind {ι : Type*} (s : Multiset ι) (t : ι → Multiset α) (b : ι → α) (b₀ : α) :
+    (s.bind t).fold op ((s.map b).fold op b₀) =
+    (s.map fun i => (t i).fold op (b i)).fold op b₀ := by
+  induction' s using Multiset.induction_on with a ha ih
+  · rw [zero_bind, map_zero, map_zero, fold_zero]
+  · rw [cons_bind, map_cons, map_cons, fold_cons_left, fold_cons_left, fold_add, ih]
 
 end Bind
 

@@ -36,9 +36,8 @@ using a norm on the fiber model if this helps.
 
 noncomputable section
 
+open Bundle Set ContinuousLinearMap Topology
 open scoped Bundle
-
-open Bundle Set ContinuousLinearMap
 
 variable {𝕜₁ : Type*} [NontriviallyNormedField 𝕜₁] {𝕜₂ : Type*} [NontriviallyNormedField 𝕜₂]
   (σ : 𝕜₁ →+* 𝕜₂)
@@ -53,7 +52,7 @@ variable {F₂ : Type*} [NormedAddCommGroup F₂] [NormedSpace 𝕜₂ F₂] (E�
 /-- A reducible type synonym for the bundle of continuous (semi)linear maps. For some reason, it
 helps with instance search.
 
-Porting note: after the port is done, we may want to remove this definition.
+TODO: we may want to remove this definition?
 -/
 protected abbrev Bundle.ContinuousLinearMap [∀ x, TopologicalSpace (E₁ x)]
     [∀ x, TopologicalSpace (E₂ x)] : B → Type _ := fun x => E₁ x →SL[σ] E₂ x
@@ -118,7 +117,7 @@ def continuousLinearMap :
     rw [Trivialization.symmL_continuousLinearMapAt, Trivialization.symmL_continuousLinearMapAt]
     exacts [h₁, h₂]
   right_inv' := fun ⟨x, f⟩ ⟨⟨h₁, h₂⟩, _⟩ => by
-    simp only [Prod.mk_inj_left]
+    simp only [Prod.mk_right_inj]
     ext v
     dsimp only [comp_apply]
     rw [Trivialization.continuousLinearMapAt_symmL, Trivialization.continuousLinearMapAt_symmL]
@@ -130,7 +129,7 @@ def continuousLinearMap :
   target_eq := rfl
   proj_toFun _ _ := rfl
 
--- Porting note (#11215): TODO: see if Lean 4 can generate this instance without a hint
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: see if Lean 4 can generate this instance without a hint
 instance continuousLinearMap.isLinear [∀ x, ContinuousAdd (E₂ x)] [∀ x, ContinuousSMul 𝕜₂ (E₂ x)] :
     (Pretrivialization.continuousLinearMap σ e₁ e₂).IsLinear 𝕜₂ where
   linear x _ :=
@@ -182,7 +181,7 @@ open Pretrivialization
 variable (F₁ E₁ F₂ E₂)
 variable [∀ x : B, TopologicalSpace (E₁ x)] [FiberBundle F₁ E₁] [VectorBundle 𝕜₁ F₁ E₁]
 variable [∀ x : B, TopologicalSpace (E₂ x)] [FiberBundle F₂ E₂] [VectorBundle 𝕜₂ F₂ E₂]
-variable [∀ x, TopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜₂ (E₂ x)]
+variable [∀ x, IsTopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜₂ (E₂ x)]
 variable [RingHomIsometric σ]
 
 /-- The continuous `σ`-semilinear maps between two topological vector bundles form a
@@ -209,7 +208,7 @@ def Bundle.ContinuousLinearMap.vectorPrebundle :
     exact ⟨continuousLinearMapCoordChange σ e₁ e₁' e₂ e₂',
       continuousOn_continuousLinearMapCoordChange,
       continuousLinearMapCoordChange_apply σ e₁ e₁' e₂ e₂'⟩
-  totalSpaceMk_inducing := by
+  totalSpaceMk_isInducing := by
     intro b
     let L₁ : E₁ b ≃L[𝕜₁] F₁ :=
       (trivializationAt F₁ E₁ b).continuousLinearEquivAt 𝕜₁ b
@@ -218,7 +217,7 @@ def Bundle.ContinuousLinearMap.vectorPrebundle :
       (trivializationAt F₂ E₂ b).continuousLinearEquivAt 𝕜₂ b
         (mem_baseSet_trivializationAt _ _ _)
     let φ : (E₁ b →SL[σ] E₂ b) ≃L[𝕜₂] F₁ →SL[σ] F₂ := L₁.arrowCongrSL L₂
-    have : Inducing fun x => (b, φ x) := inducing_const_prod.mpr φ.toHomeomorph.inducing
+    have : IsInducing fun x => (b, φ x) := isInducing_const_prod.mpr φ.toHomeomorph.isInducing
     convert this
     ext f
     dsimp [Pretrivialization.continuousLinearMap_apply]

@@ -20,7 +20,8 @@ complement is convex.
 
 open Set
 
-variable {𝕜 E ι : Type*} [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s t : Set E}
+variable {𝕜 E : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+  [AddCommGroup E] [Module 𝕜 E] {s t : Set E}
 
 /-- In a tetrahedron with vertices `x`, `y`, `p`, `q`, any segment `[u, v]` joining the opposite
 edges `[x, p]` and `[y, q]` passes through any triangle of vertices `p`, `q`, `z` where
@@ -67,8 +68,7 @@ theorem not_disjoint_segment_convexHull_triple {p q u v x y z : E} (hz : z ∈ s
       ((az * av * bu) • p + ((bz * au * bv) • q + (au * av) • (az • x + bz • y)))
     · module
     congr 3
-    simp only [w, z, smul_add, List.foldr, Matrix.cons_val_succ', Fin.mk_one,
-      Matrix.cons_val_one, Matrix.head_cons, add_zero]
+    simp [w, z]
 
 /-- **Stone's Separation Theorem** -/
 theorem exists_convex_convex_compl_subset (hs : Convex 𝕜 s) (ht : Convex 𝕜 t) (hst : Disjoint s t) :

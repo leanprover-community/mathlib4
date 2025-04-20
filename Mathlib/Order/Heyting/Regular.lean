@@ -3,7 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.GaloisConnection
+import Mathlib.Order.GaloisConnection.Basic
 
 /-!
 # Heyting regular elements
@@ -94,7 +94,6 @@ variable {α}
 
 namespace Regular
 
--- Porting note: `val` and `prop` are new
 /-- The coercion `Regular α → α` -/
 @[coe] def val : Regular α → α :=
   Subtype.val
@@ -116,7 +115,7 @@ instance top : Top (Regular α) :=
 instance bot : Bot (Regular α) :=
   ⟨⟨⊥, isRegular_bot⟩⟩
 
-instance inf : Inf (Regular α) :=
+instance inf : Min (Regular α) :=
   ⟨fun a b => ⟨a ⊓ b, a.2.inf b.2⟩⟩
 
 instance himp : HImp (Regular α) :=
@@ -226,7 +225,6 @@ theorem isRegular_of_boolean : ∀ a : α, IsRegular a :=
   compl_compl
 
 /-- A decidable proposition is intuitionistically Heyting-regular. -/
--- Porting note: removed @[nolint decidable_classical]
 theorem isRegular_of_decidable (p : Prop) [Decidable p] : IsRegular p :=
   propext <| Decidable.not_not
 

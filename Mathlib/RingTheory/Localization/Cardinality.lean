@@ -3,8 +3,9 @@ Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
-import Mathlib.SetTheory.Cardinal.Arithmetic
-import Mathlib.RingTheory.Artinian
+import Mathlib.RingTheory.Localization.FractionRing
+import Mathlib.GroupTheory.MonoidLocalization.Cardinality
+import Mathlib.RingTheory.OreLocalization.Cardinality
 
 /-!
 # Cardinality of localizations
@@ -16,9 +17,9 @@ submonoid, then your localization is trivial (see `IsLocalization.uniqueOfZeroMe
 
 ## Main statements
 
-* `IsLocalization.card_le`: A localization has cardinality no larger than the base ring.
-* `IsLocalization.card`: If you don't localize at zero-divisors, the localization of a ring has
-  cardinality equal to its base ring,
+* `IsLocalization.cardinalMk_le`: A localization has cardinality no larger than the base ring.
+* `IsLocalization.cardinalMk`: If you don't localize at zero-divisors, the localization of a ring
+  has cardinality equal to its base ring.
 
 -/
 
@@ -27,27 +28,78 @@ open Cardinal nonZeroDivisors
 
 universe u v
 
+section CommSemiring
+
+variable {R : Type u} [CommSemiring R] {L : Type v} [CommSemiring L] [Algebra R L]
+
 namespace IsLocalization
 
-variable {R : Type u} [CommRing R] {L : Type u} [CommRing L] [Algebra R L]
+theorem lift_cardinalMk_le (S : Submonoid R) [IsLocalization S L] :
+    Cardinal.lift.{u} #L ≤ Cardinal.lift.{v} #R := by
+  have := Localization.cardinalMk_le S
+  rwa [← lift_le.{v}, lift_mk_eq'.2 ⟨(Localization.algEquiv S L).toEquiv⟩] at this
 
 /-- A localization always has cardinality less than or equal to the base ring. -/
-theorem card_le (S : Submonoid R) [IsLocalization S L] : #L ≤ #R := by
-  classical
-    cases fintypeOrInfinite R
-    · exact Cardinal.mk_le_of_surjective (IsArtinianRing.localization_surjective S _)
-    rw [← Cardinal.mul_eq_self <| Cardinal.aleph0_le_mk R]
-    set f : R × R → L := fun aa => IsLocalization.mk' _ aa.1 (if h : aa.2 ∈ S then ⟨aa.2, h⟩ else 1)
-    refine @Cardinal.mk_le_of_surjective _ _ f fun a => ?_
-    obtain ⟨x, y, h⟩ := IsLocalization.mk'_surjective S a
-    use (x, y)
-    dsimp [f]
-    rwa [dif_pos <| show ↑y ∈ S from y.2, SetLike.eta]
+theorem cardinalMk_le {L : Type u} [CommSemiring L] [Algebra R L]
+    (S : Submonoid R) [IsLocalization S L] : #L ≤ #R := by
+  simpa using lift_cardinalMk_le (L := L) S
+
+@[deprecated (since := "2024-10-30")] alias card_le := cardinalMk_le
+
+end IsLocalization
+
+end CommSemiring
+
+section CommRing
+
+variable {R : Type u} [CommRing R] {L : Type v} [CommRing L] [Algebra R L]
+
+namespace Localization
+
+theorem cardinalMk {S : Submonoid R} (hS : S ≤ R⁰) : #(Localization S) = #R := by
+  apply OreLocalization.cardinalMk
+  convert hS using 1
+  ext x
+  rw [mem_nonZeroDivisorsRight_iff, mem_nonZeroDivisors_iff]
+  congr! 3
+  rw [mul_comm]
+
+end Localization
+
+namespace IsLocalization
 
 variable (L)
 
+theorem lift_cardinalMk (S : Submonoid R) [IsLocalization S L] (hS : S ≤ R⁰) :
+    Cardinal.lift.{u} #L = Cardinal.lift.{v} #R := by
+  have := Localization.cardinalMk hS
+  rwa [← lift_inj.{u, v}, lift_mk_eq'.2 ⟨(Localization.algEquiv S L).toEquiv⟩] at this
+
 /-- If you do not localize at any zero-divisors, localization preserves cardinality. -/
-theorem card (S : Submonoid R) [IsLocalization S L] (hS : S ≤ R⁰) : #R = #L :=
-  (Cardinal.mk_le_of_injective (IsLocalization.injective L hS)).antisymm (card_le S)
+theorem cardinalMk (L : Type u) [CommRing L] [Algebra R L]
+    (S : Submonoid R) [IsLocalization S L] (hS : S ≤ R⁰) : #L = #R := by
+  simpa using lift_cardinalMk L S hS
+
+@[deprecated (since := "2024-10-30")] alias card := cardinalMk
 
 end IsLocalization
+
+@[simp]
+theorem Cardinal.mk_fractionRing (R : Type u) [CommRing R] : #(FractionRing R) = #R :=
+  IsLocalization.cardinalMk (FractionRing R) R⁰ le_rfl
+
+alias FractionRing.cardinalMk := Cardinal.mk_fractionRing
+
+namespace IsFractionRing
+
+variable (R L)
+
+theorem lift_cardinalMk [IsFractionRing R L] : Cardinal.lift.{u} #L = Cardinal.lift.{v} #R :=
+  IsLocalization.lift_cardinalMk L _ le_rfl
+
+theorem cardinalMk (L : Type u) [CommRing L] [Algebra R L] [IsFractionRing R L] : #L = #R :=
+  IsLocalization.cardinalMk L _ le_rfl
+
+end IsFractionRing
+
+end CommRing

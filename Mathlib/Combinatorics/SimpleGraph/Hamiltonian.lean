@@ -3,8 +3,8 @@ Copyright (c) 2023 Bhavik Mehta, Rishi Mehta, Linus Sommer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Rishi Mehta, Linus Sommer
 -/
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.List.Count
+import Mathlib.Algebra.GroupWithZero.Nat
+import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Combinatorics.SimpleGraph.Path
 
 /-!
@@ -52,7 +52,7 @@ lemma IsPath.isHamiltonian_iff (hp : p.IsPath) : p.IsHamiltonian ↔ ∀ w, w �
   ⟨(·.mem_support), hp.isHamiltonian_of_mem⟩
 
 section
-variable [Fintype α] [Fintype β]
+variable [Fintype α]
 
 /-- The support of a hamiltonian walk is the entire vertex set. -/
 lemma IsHamiltonian.support_toFinset (hp : p.IsHamiltonian) : p.support.toFinset = Finset.univ := by
@@ -67,7 +67,7 @@ lemma IsHamiltonian.length_eq (hp : p.IsHamiltonian) : p.length = Fintype.card �
 end
 
 /-- A hamiltonian cycle is a cycle that visits every vertex once. -/
-structure IsHamiltonianCycle (p : G.Walk a a) extends p.IsCycle : Prop where
+structure IsHamiltonianCycle (p : G.Walk a a) : Prop extends p.IsCycle where
   isHamiltonian_tail : p.tail.IsHamiltonian
 
 variable {p : G.Walk a a}
@@ -93,7 +93,7 @@ lemma isHamiltonianCycle_isCycle_and_isHamiltonian_tail  :
 
 lemma isHamiltonianCycle_iff_isCycle_and_support_count_tail_eq_one :
     p.IsHamiltonianCycle ↔ p.IsCycle ∧ ∀ a, (support p).tail.count a = 1 := by
-  simp (config := { contextual := true }) [isHamiltonianCycle_isCycle_and_isHamiltonian_tail,
+  simp +contextual [isHamiltonianCycle_isCycle_and_isHamiltonian_tail,
     IsHamiltonian, support_tail, IsCycle.not_nil, exists_prop]
 
 /-- A hamiltonian cycle visits every vertex. -/
@@ -114,7 +114,7 @@ lemma IsHamiltonianCycle.count_support_self (hp : p.IsHamiltonianCycle) :
 
 lemma IsHamiltonianCycle.support_count_of_ne (hp : p.IsHamiltonianCycle) (h : a ≠ b) :
     p.support.count b = 1 := by
-  rw [← cons_support_tail p hp.1.not_nil, List.count_cons_of_ne h.symm, hp.isHamiltonian_tail]
+  rw [← cons_support_tail p hp.1.not_nil, List.count_cons_of_ne h, hp.isHamiltonian_tail]
 
 end Walk
 

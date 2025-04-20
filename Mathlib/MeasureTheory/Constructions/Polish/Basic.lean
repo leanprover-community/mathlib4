@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Felix Weilacher
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
-import Mathlib.Topology.CountableSeparatingOn
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 import Mathlib.Topology.MetricSpace.Perfect
+import Mathlib.Topology.Separation.CountableSeparatingOn
 
 /-!
 # The Borel sigma-algebra on Polish spaces
@@ -203,7 +204,7 @@ theorem analyticSet_iff_exists_polishSpace_range {s : Set α} :
   constructor
   · intro h
     rw [AnalyticSet] at h
-    cases' h with h h
+    rcases h with h | h
     · refine ⟨Empty, inferInstance, inferInstance, Empty.elim, continuous_bot, ?_⟩
       rw [h]
       exact range_eq_empty _
@@ -251,7 +252,7 @@ theorem AnalyticSet.iInter [hι : Nonempty ι] [Countable ι] [T2Space α] {s : 
     apply Subset.antisymm
     · rintro y ⟨x, rfl⟩
       refine mem_iInter.2 fun n => ?_
-      have : f n ((x : γ) n) = F x := (mem_iInter.1 x.2 n : _)
+      have : f n ((x : γ) n) = F x := (mem_iInter.1 x.2 n :)
       rw [← this, ← f_range n]
       exact mem_range_self _
     · intro y hy
@@ -262,7 +263,7 @@ theorem AnalyticSet.iInter [hι : Nonempty ι] [Countable ι] [T2Space α] {s : 
       choose x hx using A
       have xt : x ∈ t := by
         refine mem_iInter.2 fun n => ?_
-        simp [hx]
+        simp [γ, t, F, hx]
       refine ⟨⟨x, xt⟩, ?_⟩
       exact hx i₀
   rw [← F_range]
@@ -280,7 +281,7 @@ theorem AnalyticSet.iUnion [Countable ι] {s : ι → Set α} (hs : ∀ n, Analy
   let F : γ → α := fun ⟨n, x⟩ ↦ f n x
   have F_cont : Continuous F := continuous_sigma f_cont
   have F_range : range F = ⋃ n, s n := by
-    simp only [γ, range_sigma_eq_iUnion_range, f_range]
+    simp only [γ, F, range_sigma_eq_iUnion_range, f_range]
   rw [← F_range]
   exact analyticSet_range_of_polishSpace F_cont
 
@@ -615,7 +616,7 @@ theorem Continuous.map_borel_eq {X Y : Type*} [TopologicalSpace X] [PolishSpace 
 instance Quotient.borelSpace {X : Type*} [TopologicalSpace X] [PolishSpace X] [MeasurableSpace X]
     [BorelSpace X] {s : Setoid X} [T0Space (Quotient s)] [SecondCountableTopology (Quotient s)] :
     BorelSpace (Quotient s) :=
-  ⟨continuous_quotient_mk'.map_eq_borel (surjective_quotient_mk' _)⟩
+  ⟨continuous_quotient_mk'.map_eq_borel Quotient.mk'_surjective⟩
 
 /-- When the subgroup `N < G` is not necessarily `Normal`, we have a `CosetSpace` as opposed
 to `QuotientGroup` (the next `instance`).
@@ -629,7 +630,7 @@ instance CosetSpace.borelSpace {G : Type*} [TopologicalSpace G] [PolishSpace G] 
 
 @[to_additive]
 instance QuotientGroup.borelSpace {G : Type*} [TopologicalSpace G] [PolishSpace G] [Group G]
-    [TopologicalGroup G] [MeasurableSpace G] [BorelSpace G] {N : Subgroup G} [N.Normal]
+    [IsTopologicalGroup G] [MeasurableSpace G] [BorelSpace G] {N : Subgroup G} [N.Normal]
     [IsClosed (N : Set G)] : BorelSpace (G ⧸ N) :=
   ⟨continuous_mk.map_eq_borel mk_surjective⟩
 
@@ -664,7 +665,7 @@ theorem measurableSet_range_of_continuous_injective {β : Type*} [TopologicalSpa
     the image `f '' (s i)` would be included in `v` by continuity of `f`, so its closure would be
     contained in the closure of `v`, and therefore it would be disjoint from `w`. This is a
     contradiction since `x` belongs both to this closure and to `w`. -/
-  letI := upgradePolishSpace γ
+  letI := TopologicalSpace.upgradeIsCompletelyMetrizable γ
   obtain ⟨b, b_count, b_nonempty, hb⟩ :
     ∃ b : Set (Set γ), b.Countable ∧ ∅ ∉ b ∧ IsTopologicalBasis b := exists_countable_basis γ
   haveI : Encodable b := b_count.toEncodable
@@ -740,10 +741,10 @@ theorem measurableSet_range_of_continuous_injective {β : Type*} [TopologicalSpa
       by_contra! h
       have A : x ∈ q ⟨(s m, s n), h⟩ \ q ⟨(s n, s m), h.symm⟩ :=
         haveI := mem_iInter.1 (hxs m).2 (s n)
-        (mem_iInter.1 this h : _)
+        (mem_iInter.1 this h :)
       have B : x ∈ q ⟨(s n, s m), h.symm⟩ \ q ⟨(s m, s n), h⟩ :=
         haveI := mem_iInter.1 (hxs n).2 (s m)
-        (mem_iInter.1 this h.symm : _)
+        (mem_iInter.1 this h.symm :)
       exact A.2 B.1
     -- the points `y n` are nearby, and therefore they form a Cauchy sequence.
     have cauchy_y : CauchySeq y := by
@@ -929,7 +930,7 @@ theorem measurableSet_exists_tendsto [TopologicalSpace γ] [PolishSpace γ] [Mea
     MeasurableSet { x | ∃ c, Tendsto (fun n => f n x) l (𝓝 c) } := by
   rcases l.eq_or_neBot with rfl | hl
   · simp
-  letI := upgradePolishSpace γ
+  letI := TopologicalSpace.upgradeIsCompletelyMetrizable γ
   rcases l.exists_antitone_basis with ⟨u, hu⟩
   simp_rw [← cauchy_map_iff_exists_tendsto]
   change MeasurableSet { x | _ ∧ _ }

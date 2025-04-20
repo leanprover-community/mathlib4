@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Devon Tuma
 -/
 import Mathlib.Probability.ProbabilityMassFunction.Monad
+import Mathlib.Control.ULiftable
 
 /-!
 # Specific Constructions of Probability Mass Functions
@@ -23,7 +24,7 @@ and `filter` uses this to filter the support of a `PMF` and re-normalize the new
 
 -/
 
-universe u
+universe u v
 
 namespace PMF
 
@@ -31,7 +32,6 @@ noncomputable section
 
 variable {α β γ : Type*}
 
-open scoped Classical
 open NNReal ENNReal Finset MeasureTheory
 
 section Map
@@ -44,6 +44,7 @@ variable (f : α → β) (p : PMF α) (b : β)
 
 theorem monad_map_eq_map {α β : Type u} (f : α → β) (p : PMF α) : f <$> p = p.map f := rfl
 
+open scoped Classical in
 @[simp]
 theorem map_apply : (map f p) b = ∑' a, if b = f a then p a else 0 := by simp [map]
 
@@ -81,6 +82,7 @@ variable (s : Set β)
 @[simp]
 theorem toOuterMeasure_map_apply : (p.map f).toOuterMeasure s = p.toOuterMeasure (f ⁻¹' s) := by
   simp [map, Set.indicator, toOuterMeasure_apply p (f ⁻¹' s)]
+  rfl
 
 variable {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
 
@@ -109,6 +111,7 @@ variable (q : PMF (α → β)) (p : PMF α) (b : β)
 
 theorem monad_seq_eq_seq {α β : Type u} (q : PMF (α → β)) (p : PMF α) : q <*> p = q.seq p := rfl
 
+open scoped Classical in
 @[simp]
 theorem seq_apply : (seq q p) b = ∑' (f : α → β) (a : α), if b = f a then q f * p a else 0 := by
   simp only [seq, mul_boole, bind_apply, pure_apply]
@@ -133,6 +136,21 @@ instance : LawfulMonad PMF := LawfulMonad.mk'
   (id_map := id_map)
   (pure_bind := pure_bind)
   (bind_assoc := bind_bind)
+
+/--
+This instance allows `do` notation for `PMF` to be used across universes, for instance as
+```lean4
+example {R : Type u} [Ring R] (x : PMF ℕ) : PMF R := do
+  let ⟨n⟩ ← ULiftable.up x
+  pure n
+```
+where `x` is in universe `0`, but the return value is in universe `u`.
+-/
+instance : ULiftable PMF.{u} PMF.{v} where
+  congr e :=
+    { toFun := map e, invFun := map e.symm
+      left_inv := fun a => by simp [map_comp, map_id]
+      right_inv := fun a => by simp [map_comp, map_id] }
 
 section OfFinset
 
@@ -191,6 +209,7 @@ theorem support_ofFintype : (ofFintype f h).support = Function.support f := rfl
 
 theorem mem_support_ofFintype_iff (a : α) : a ∈ (ofFintype f h).support ↔ f a ≠ 0 := Iff.rfl
 
+open scoped Classical in
 @[simp]
 lemma map_ofFintype [Fintype β] (f : α → ℝ≥0∞) (h : ∑ a, f a = 1) (g : α → β) :
     (ofFintype f h).map g = ofFintype (fun b ↦ ∑ a with g a = b, f a)

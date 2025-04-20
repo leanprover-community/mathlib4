@@ -14,7 +14,7 @@ import Mathlib.CategoryTheory.Abelian.Basic
 
 open CategoryTheory CategoryTheory.Limits Opposite
 
-universe v u
+universe w v u
 
 noncomputable section
 
@@ -58,7 +58,8 @@ def subobjectIsoSubobjectOp [Abelian C] (X : C) : Subobject X ≃o (Subobject (o
     · simp only [monoLift_comp]
 
 /-- A well-powered abelian category is also well-copowered. -/
-instance wellPowered_opposite [Abelian C] [WellPowered C] : WellPowered Cᵒᵖ where
+instance wellPowered_opposite [Abelian C] [LocallySmall.{w} C] [WellPowered.{w} C] :
+    WellPowered.{w} Cᵒᵖ where
   subobject_small X :=
     (small_congr (subobjectIsoSubobjectOp (unop X)).toEquiv).1 inferInstance
 
