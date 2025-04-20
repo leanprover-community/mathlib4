@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.Analysis.Normed.Order.Lattice
+import Mathlib.MeasureTheory.Function.ConvergenceInMeasure
 import Mathlib.MeasureTheory.Function.LpSpace.Basic
 
 /-!
@@ -60,6 +61,14 @@ instance instAddLeftMono : AddLeftMono (Lp E p μ) := by
 
 instance instIsOrderedAddMonoid : IsOrderedAddMonoid (Lp E p μ) :=
   { add_le_add_left := fun _ _ => add_le_add_left }
+
+instance [Fact (1 ≤ p)] : OrderClosedTopology (Lp E p μ) where
+  isClosed_le' := isClosed_le_of_isClosed_nonneg <| IsSeqClosed.isClosed <|
+      fun f f₀ (hf : ∀ n, 0 ≤ f n) h_tendsto ↦ by
+    simp only [← coeFn_nonneg] at hf ⊢
+    obtain ⟨φ, -, hφ⟩ := tendstoInMeasure_of_tendsto_Lp h_tendsto |>.exists_seq_tendsto_ae
+    filter_upwards [countable_iInter_mem.mpr hf, hφ] with x hx hφx
+    exact ge_of_tendsto' hφx fun _ ↦ Set.mem_iInter.mp hx _
 
 end PartialOrder
 
