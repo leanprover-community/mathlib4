@@ -42,7 +42,7 @@ file `Mathlib.MeasureTheory.Integral.SetToL1`).
   * `norm_integral_le_integral_norm` : `‖∫ x, f x ∂μ‖ ≤ ∫ x, ‖f x‖ ∂μ`
 
 2. Basic order properties of the Bochner integral on functions of type `α → E`, where `α` is a
-   measure space and `E` is a real ordered Banach space..
+   measure space and `E` is a real ordered Banach space.
 
   * `integral_nonneg_of_ae` : `0 ≤ᵐ[μ] f → 0 ≤ ∫ x, f x ∂μ`
   * `integral_nonpos_of_ae` : `f ≤ᵐ[μ] 0 → ∫ x, f x ∂μ ≤ 0`
