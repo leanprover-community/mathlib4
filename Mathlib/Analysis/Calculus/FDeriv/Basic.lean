@@ -129,6 +129,8 @@ section TVS
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
 variable {F : Type*} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
+variable {X : Type*} [AddTorsor E X] [TopologicalSpace X]
+variable {Y : Type*} [AddTorsor F Y]
 
 /-- A function `f` has the continuous linear map `f'` as derivative along the filter `L` if
 `f x' = f x + f' (x' - x) + o (x' - x)` when `x'` converges along the filter `L`. This definition
@@ -136,20 +138,20 @@ is designed to be specialized for `L = 𝓝 x` (in `HasFDerivAt`), giving rise t
 of Fréchet derivative, and for `L = 𝓝[s] x` (in `HasFDerivWithinAt`), giving rise to
 the notion of Fréchet derivative along the set `s`. -/
 @[mk_iff hasFDerivAtFilter_iff_isLittleOTVS]
-structure HasFDerivAtFilter (f : E → F) (f' : E →L[𝕜] F) (x : E) (L : Filter E) : Prop where
+structure HasFDerivAtFilter (f : X → Y) (f' : E →L[𝕜] F) (x : X) (L : Filter X) : Prop where
   of_isLittleOTVS ::
-    isLittleOTVS : (fun x' => f x' - f x - f' (x' - x)) =o[𝕜;L] (fun x' => x' - x)
+    isLittleOTVS : (fun x' => (f x' -ᵥ f x) - f' (x' -ᵥ x)) =o[𝕜;L] (fun x' => x' -ᵥ x)
 
 /-- A function `f` has the continuous linear map `f'` as derivative at `x` within a set `s` if
 `f x' = f x + f' (x' - x) + o (x' - x)` when `x'` tends to `x` inside `s`. -/
 @[fun_prop]
-def HasFDerivWithinAt (f : E → F) (f' : E →L[𝕜] F) (s : Set E) (x : E) :=
+def HasFDerivWithinAt (f : X → Y) (f' : E →L[𝕜] F) (s : Set X) (x : X) :=
   HasFDerivAtFilter f f' x (𝓝[s] x)
 
 /-- A function `f` has the continuous linear map `f'` as derivative at `x` if
 `f x' = f x + f' (x' - x) + o (x' - x)` when `x'` tends to `x`. -/
 @[fun_prop]
-def HasFDerivAt (f : E → F) (f' : E →L[𝕜] F) (x : E) :=
+def HasFDerivAt (f : X → Y) (f' : E →L[𝕜] F) (x : X) :=
   HasFDerivAtFilter f f' x (𝓝 x)
 
 /-- A function `f` has derivative `f'` at `a` in the sense of *strict differentiability*
@@ -157,30 +159,30 @@ if `f x - f y - f' (x - y) = o(x - y)` as `x, y → a`. This form of differentia
 e.g., by the inverse function theorem. Any `C^1` function on a vector space over `ℝ` is strictly
 differentiable but this definition works, e.g., for vector spaces over `p`-adic numbers. -/
 @[fun_prop, mk_iff hasStrictFDerivAt_iff_isLittleOTVS]
-structure HasStrictFDerivAt (f : E → F) (f' : E →L[𝕜] F) (x : E) where
+structure HasStrictFDerivAt (f : X → Y) (f' : E →L[𝕜] F) (x : X) where
   of_isLittleOTVS ::
     isLittleOTVS :
-      (fun p : E × E => f p.1 - f p.2 - f' (p.1 - p.2))
-        =o[𝕜;𝓝 (x, x)] (fun p : E × E => p.1 - p.2)
+      (fun p : X × X => f p.1 -ᵥ f p.2 - f' (p.1 -ᵥ p.2))
+        =o[𝕜;𝓝 (x, x)] (fun p : X × X => p.1 -ᵥ p.2)
 
 variable (𝕜)
 
 /-- A function `f` is differentiable at a point `x` within a set `s` if it admits a derivative
 there (possibly non-unique). -/
 @[fun_prop]
-def DifferentiableWithinAt (f : E → F) (s : Set E) (x : E) :=
+def DifferentiableWithinAt (f : X → Y) (s : Set X) (x : X) :=
   ∃ f' : E →L[𝕜] F, HasFDerivWithinAt f f' s x
 
 /-- A function `f` is differentiable at a point `x` if it admits a derivative there (possibly
 non-unique). -/
 @[fun_prop]
-def DifferentiableAt (f : E → F) (x : E) :=
+def DifferentiableAt (f : X → Y) (x : X) :=
   ∃ f' : E →L[𝕜] F, HasFDerivAt f f' x
 
 open scoped Classical in
 /-- If `f` has a derivative at `x` within `s`, then `fderivWithin 𝕜 f s x` is such a derivative.
 Otherwise, it is set to `0`. We also set it to be zero, if zero is one of possible derivatives. -/
-irreducible_def fderivWithin (f : E → F) (s : Set E) (x : E) : E →L[𝕜] F :=
+irreducible_def fderivWithin (f : X → Y) (s : Set X) (x : X) : E →L[𝕜] F :=
   if HasFDerivWithinAt f (0 : E →L[𝕜] F) s x
     then 0
   else if h : DifferentiableWithinAt 𝕜 f s x
@@ -189,25 +191,25 @@ irreducible_def fderivWithin (f : E → F) (s : Set E) (x : E) : E →L[𝕜] F 
 
 /-- If `f` has a derivative at `x`, then `fderiv 𝕜 f x` is such a derivative. Otherwise, it is
 set to `0`. -/
-irreducible_def fderiv (f : E → F) (x : E) : E →L[𝕜] F :=
+irreducible_def fderiv (f : X → Y) (x : X) : E →L[𝕜] F :=
   fderivWithin 𝕜 f univ x
 
 /-- `DifferentiableOn 𝕜 f s` means that `f` is differentiable within `s` at any point of `s`. -/
 @[fun_prop]
-def DifferentiableOn (f : E → F) (s : Set E) :=
+def DifferentiableOn (f : X → Y) (s : Set X) :=
   ∀ x ∈ s, DifferentiableWithinAt 𝕜 f s x
 
 /-- `Differentiable 𝕜 f` means that `f` is differentiable at any point. -/
 @[fun_prop]
-def Differentiable (f : E → F) :=
+def Differentiable (f : X → Y) :=
   ∀ x, DifferentiableAt 𝕜 f x
 
 variable {𝕜}
-variable {f f₀ f₁ g : E → F}
+variable {f f₀ f₁ g : X → Y}
 variable {f' f₀' f₁' g' : E →L[𝕜] F}
-variable {x : E}
-variable {s t : Set E}
-variable {L L₁ L₂ : Filter E}
+variable {x : X}
+variable {s t : Set X}
+variable {L L₁ L₂ : Filter X}
 
 theorem fderivWithin_zero_of_not_differentiableWithinAt (h : ¬DifferentiableWithinAt 𝕜 f s x) :
     fderivWithin 𝕜 f s x = 0 := by
@@ -224,29 +226,34 @@ section
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {X : Type*}
+variable {Y : Type*}
 
-variable {f f₀ f₁ g : E → F}
+variable {f f₀ f₁ g : X → Y}
 variable {f' f₀' f₁' g' : E →L[𝕜] F}
-variable {x : E}
-variable {s t : Set E}
-variable {L L₁ L₂ : Filter E}
+variable {x : X}
+variable {s t : Set X}
+variable {L L₁ L₂ : Filter X}
 
-theorem hasFDerivAtFilter_iff_isLittleO :
-    HasFDerivAtFilter f f' x L ↔ (fun x' => f x' - f x - f' (x' - x)) =o[L] fun x' => x' - x :=
+theorem hasFDerivAtFilter_iff_isLittleO [AddTorsor E X] [AddTorsor F Y] :
+    HasFDerivAtFilter f f' x L ↔ (fun x' => f x' -ᵥ f x - f' (x' -ᵥ x)) =o[L] fun x' => x' -ᵥ x :=
   (hasFDerivAtFilter_iff_isLittleOTVS ..).trans isLittleOTVS_iff_isLittleO
 
 alias ⟨HasFDerivAtFilter.isLittleO, HasFDerivAtFilter.of_isLittleO⟩ :=
   hasFDerivAtFilter_iff_isLittleO
 
-theorem hasStrictFDerivAt_iff_isLittleO :
+theorem hasStrictFDerivAt_iff_isLittleO [AddTorsor E X] [AddTorsor F Y] [TopologicalSpace X] :
     HasStrictFDerivAt f f' x ↔
-      (fun p : E × E => f p.1 - f p.2 - f' (p.1 - p.2)) =o[𝓝 (x, x)] fun p : E × E => p.1 - p.2 :=
+      (fun p : X × X => f p.1 -ᵥ f p.2 - f' (p.1 -ᵥ p.2)) =o[𝓝 (x, x)]
+        fun p : X × X => p.1 -ᵥ p.2 :=
   (hasStrictFDerivAt_iff_isLittleOTVS ..).trans isLittleOTVS_iff_isLittleO
 
 alias ⟨HasStrictFDerivAt.isLittleO, HasStrictFDerivAt.of_isLittleO⟩ :=
   hasStrictFDerivAt_iff_isLittleO
 
 section DerivativeUniqueness
+
+variable [AddTorsor E X] [AddTorsor F Y] [TopologicalSpace X]
 
 /- In this section, we discuss the uniqueness of the derivative.
 We prove that the definitions `UniqueDiffWithinAt` and `UniqueDiffOn` indeed imply the
@@ -257,35 +264,36 @@ and `c n * d n` tends to `v`, then `c n * (f (x + d n) - f x)` tends to `f' v`. 
 this fact, for functions having a derivative within a set. Its specific formulation is useful for
 tangent cone related discussions. -/
 theorem HasFDerivWithinAt.lim (h : HasFDerivWithinAt f f' s x) {α : Type*} (l : Filter α)
-    {c : α → 𝕜} {d : α → E} {v : E} (dtop : ∀ᶠ n in l, x + d n ∈ s)
+    {c : α → 𝕜} {d : α → E} {v : E} (dtop : ∀ᶠ n in l, d n +ᵥ x ∈ s)
     (clim : Tendsto (fun n => ‖c n‖) l atTop) (cdlim : Tendsto (fun n => c n • d n) l (𝓝 v)) :
-    Tendsto (fun n => c n • (f (x + d n) - f x)) l (𝓝 (f' v)) := by
-  have tendsto_arg : Tendsto (fun n => x + d n) l (𝓝[s] x) := by
-    conv in 𝓝[s] x => rw [← add_zero x]
-    rw [nhdsWithin, tendsto_inf]
-    constructor
-    · apply tendsto_const_nhds.add (tangentConeAt.lim_zero l clim cdlim)
-    · rwa [tendsto_principal]
-  have : (fun y => f y - f x - f' (y - x)) =o[𝓝[s] x] fun y => y - x := h.isLittleO
-  have : (fun n => f (x + d n) - f x - f' (x + d n - x)) =o[l] fun n => x + d n - x :=
+    Tendsto (fun n => c n • (f (d n +ᵥ x) -ᵥ f x)) l (𝓝 (f' v)) := by
+  have tendsto_arg : Tendsto (fun n => d n +ᵥ x) l (𝓝[s] x) := by
+    sorry
+    -- conv in 𝓝[s] x => rw [← add_zero x]
+    -- rw [nhdsWithin, tendsto_inf]
+    -- constructor
+    -- · apply tendsto_const_nhds.add (tangentConeAt.lim_zero l clim cdlim)
+    -- · rwa [tendsto_principal]
+  have : (fun y => f y -ᵥ f x - f' (y -ᵥ x)) =o[𝓝[s] x] fun y => y -ᵥ x := h.isLittleO
+  have : (fun n => f (d n +ᵥ x) -ᵥ f x - f' ((d n +ᵥ x) -ᵥ x)) =o[l] fun n => (d n +ᵥ x) -ᵥ x :=
     this.comp_tendsto tendsto_arg
-  have : (fun n => f (x + d n) - f x - f' (d n)) =o[l] d := by simpa only [add_sub_cancel_left]
-  have : (fun n => c n • (f (x + d n) - f x - f' (d n))) =o[l] fun n => c n • d n :=
+  have : (fun n => f (d n +ᵥ x) -ᵥ f x - f' (d n)) =o[l] d := by simpa only [vadd_vsub]
+  have : (fun n => c n • (f (d n +ᵥ x) -ᵥ f x - f' (d n))) =o[l] fun n => c n • d n :=
     (isBigO_refl c l).smul_isLittleO this
-  have : (fun n => c n • (f (x + d n) - f x - f' (d n))) =o[l] fun _ => (1 : ℝ) :=
+  have : (fun n => c n • (f (d n +ᵥ x) -ᵥ f x - f' (d n))) =o[l] fun _ => (1 : ℝ) :=
     this.trans_isBigO (cdlim.isBigO_one ℝ)
-  have L1 : Tendsto (fun n => c n • (f (x + d n) - f x - f' (d n))) l (𝓝 0) :=
+  have L1 : Tendsto (fun n => c n • (f (d n +ᵥ x) -ᵥ f x - f' (d n))) l (𝓝 0) :=
     (isLittleO_one_iff ℝ).1 this
   have L2 : Tendsto (fun n => f' (c n • d n)) l (𝓝 (f' v)) :=
     Tendsto.comp f'.cont.continuousAt cdlim
   have L3 :
-    Tendsto (fun n => c n • (f (x + d n) - f x - f' (d n)) + f' (c n • d n)) l (𝓝 (0 + f' v)) :=
+    Tendsto (fun n => c n • (f (d n +ᵥ x) -ᵥ f x - f' (d n)) + f' (c n • d n)) l (𝓝 (0 + f' v)) :=
     L1.add L2
   have :
-    (fun n => c n • (f (x + d n) - f x - f' (d n)) + f' (c n • d n)) = fun n =>
-      c n • (f (x + d n) - f x) := by
+    (fun n => c n • (f (d n +ᵥ x) -ᵥ f x - f' (d n)) + f' (c n • d n)) = fun n =>
+      c n • (f (d n +ᵥ x) -ᵥ f x) := by
     ext n
-    simp [smul_add, smul_sub]
+    simp [smul_sub]
   rwa [this, zero_add] at L3
 
 /-- If `f'` and `f₁'` are two derivatives of `f` within `s` at `x`, then they are equal on the
@@ -310,29 +318,52 @@ section FDerivProperties
 
 /-! ### Basic properties of the derivative -/
 
+variable [MetricSpace X] [NormedAddTorsor E X]
+
+section AddTorsorRange
+variable [AddTorsor F Y]
 
 theorem hasFDerivAtFilter_iff_tendsto :
     HasFDerivAtFilter f f' x L ↔
-      Tendsto (fun x' => ‖x' - x‖⁻¹ * ‖f x' - f x - f' (x' - x)‖) L (𝓝 0) := by
-  have h : ∀ x', ‖x' - x‖ = 0 → ‖f x' - f x - f' (x' - x)‖ = 0 := fun x' hx' => by
-    rw [sub_eq_zero.1 (norm_eq_zero.1 hx')]
-    simp
+      Tendsto (fun x' => ‖x' -ᵥ x‖⁻¹ * ‖f x' -ᵥ f x - f' (x' -ᵥ x)‖) L (𝓝 0) := by
+  have h : ∀ x', ‖x' -ᵥ x‖ = 0 → ‖f x' -ᵥ f x - f' (x' -ᵥ x)‖ = 0 := fun x' hx' => by
+    simp only [norm_eq_zero, vsub_eq_zero_iff_eq] at hx'
+    simp [hx']
   rw [hasFDerivAtFilter_iff_isLittleO, ← isLittleO_norm_left, ← isLittleO_norm_right,
     isLittleO_iff_tendsto h]
   exact tendsto_congr fun _ => div_eq_inv_mul _ _
 
 theorem hasFDerivWithinAt_iff_tendsto :
     HasFDerivWithinAt f f' s x ↔
-      Tendsto (fun x' => ‖x' - x‖⁻¹ * ‖f x' - f x - f' (x' - x)‖) (𝓝[s] x) (𝓝 0) :=
+      Tendsto (fun x' => ‖x' -ᵥ x‖⁻¹ * ‖f x' -ᵥ f x - f' (x' -ᵥ x)‖) (𝓝[s] x) (𝓝 0) :=
   hasFDerivAtFilter_iff_tendsto
 
 theorem hasFDerivAt_iff_tendsto :
-    HasFDerivAt f f' x ↔ Tendsto (fun x' => ‖x' - x‖⁻¹ * ‖f x' - f x - f' (x' - x)‖) (𝓝 x) (𝓝 0) :=
+    HasFDerivAt f f' x ↔ Tendsto (fun x' => ‖x' -ᵥ x‖⁻¹ * ‖f x' -ᵥ f x - f' (x' -ᵥ x)‖)
+      (𝓝 x) (𝓝 0) :=
   hasFDerivAtFilter_iff_tendsto
 
+--XXX pull out
+theorem map_vadd_left_nhds_zero {G : Type*} [SeminormedAddCommGroup G]
+  {P : Type*} [PseudoMetricSpace P] [NormedAddTorsor G P]
+  (x : P) : map (· +ᵥ x : G → P) (𝓝 0) = 𝓝 x := by
+    ext1 s
+    constructor
+    · intro hs
+      rw [mem_map] at hs
+      have h : Continuous (fun (y : P) ↦ (y -ᵥ x : G)) :=
+        (continuous_id'.vsub continuous_const)
+      replace h := h.continuousAt.preimage_mem_nhds (x := x)
+        (t := (fun (x_1 : G) ↦ x_1 +ᵥ x) ⁻¹' s) (vsub_self x ▸ hs)
+      rwa [Function.LeftInverse.preimage_preimage] at h
+      exact (vsub_vadd · _)
+    · intro hs
+      rw [mem_map]
+      exact (continuous_id'.vadd continuous_const).continuousAt.preimage_mem_nhds (by simpa)
+
 theorem hasFDerivAt_iff_isLittleO_nhds_zero :
-    HasFDerivAt f f' x ↔ (fun h : E => f (x + h) - f x - f' h) =o[𝓝 0] fun h => h := by
-  rw [HasFDerivAt, hasFDerivAtFilter_iff_isLittleO, ← map_add_left_nhds_zero x, isLittleO_map]
+    HasFDerivAt f f' x ↔ (fun h : E => f (h +ᵥ x) -ᵥ f x - f' h) =o[𝓝 0] fun h => h := by
+  rw [HasFDerivAt, hasFDerivAtFilter_iff_isLittleO, ← map_vadd_left_nhds_zero, isLittleO_map]
   simp [Function.comp_def]
 
 nonrec theorem HasFDerivAtFilter.mono (h : HasFDerivAtFilter f f' x L₂) (hst : L₁ ≤ L₂) :
@@ -390,12 +421,12 @@ lemma hasFDerivWithinAt_of_isOpen (h : IsOpen s) (hx : x ∈ s) :
     HasFDerivWithinAt f f' s x ↔ HasFDerivAt f f' x :=
   hasFDerivWithinAt_of_mem_nhds (h.mem_nhds hx)
 
-theorem hasFDerivWithinAt_insert {y : E} :
+theorem hasFDerivWithinAt_insert {y : X} :
     HasFDerivWithinAt f f' (insert y s) x ↔ HasFDerivWithinAt f f' s x := by
   rcases eq_or_ne x y with (rfl | h)
   · simp_rw [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleOTVS]
     apply isLittleOTVS_insert
-    simp only [sub_self, map_zero]
+    simp only [vsub_self, map_zero, sub_self]
   refine ⟨fun h => h.mono <| subset_insert y s, fun hf => hf.mono_of_mem_nhdsWithin ?_⟩
   simp_rw [nhdsWithin_insert_of_ne h, self_mem_nhdsWithin]
 
@@ -405,17 +436,17 @@ protected theorem HasFDerivWithinAt.insert (h : HasFDerivWithinAt g g' s x) :
     HasFDerivWithinAt g g' (insert x s) x :=
   h.insert'
 
-theorem hasFDerivWithinAt_diff_singleton (y : E) :
+theorem hasFDerivWithinAt_diff_singleton (y : X) :
     HasFDerivWithinAt f f' (s \ {y}) x ↔ HasFDerivWithinAt f f' s x := by
   rw [← hasFDerivWithinAt_insert, insert_diff_singleton, hasFDerivWithinAt_insert]
 
 theorem HasStrictFDerivAt.isBigO_sub (hf : HasStrictFDerivAt f f' x) :
-    (fun p : E × E => f p.1 - f p.2) =O[𝓝 (x, x)] fun p : E × E => p.1 - p.2 :=
+    (fun p : X × X => f p.1 -ᵥ f p.2) =O[𝓝 (x, x)] fun p : X × X => p.1 -ᵥ p.2 :=
   hf.isLittleO.isBigO.congr_of_sub.2 (f'.isBigO_comp _ _)
 
 theorem HasFDerivAtFilter.isBigO_sub (h : HasFDerivAtFilter f f' x L) :
-    (fun x' => f x' - f x) =O[L] fun x' => x' - x :=
-  h.isLittleO.isBigO.congr_of_sub.2 (f'.isBigO_sub _ _)
+    (fun x' => f x' -ᵥ f x) =O[L] fun x' => x' -ᵥ x :=
+  h.isLittleO.isBigO.congr_of_sub.2 (f'.isBigO_comp _ _)
 
 @[fun_prop]
 protected theorem HasStrictFDerivAt.hasFDerivAt (hf : HasStrictFDerivAt f f' x) :
@@ -427,6 +458,10 @@ protected theorem HasStrictFDerivAt.differentiableAt (hf : HasStrictFDerivAt f f
     DifferentiableAt 𝕜 f x :=
   hf.hasFDerivAt.differentiableAt
 
+end AddTorsorRange
+
+variable [MetricSpace Y] [NormedAddTorsor F Y]
+
 /-- If `f` is strictly differentiable at `x` with derivative `f'` and `K > ‖f'‖₊`, then `f` is
 `K`-Lipschitz in a neighborhood of `x`. -/
 theorem HasStrictFDerivAt.exists_lipschitzOnWith_of_nnnorm_lt (hf : HasStrictFDerivAt f f' x)
@@ -434,8 +469,11 @@ theorem HasStrictFDerivAt.exists_lipschitzOnWith_of_nnnorm_lt (hf : HasStrictFDe
   have := hf.isLittleO.add_isBigOWith (f'.isBigOWith_comp _ _) hK
   simp only [sub_add_cancel, IsBigOWith] at this
   rcases exists_nhds_square this with ⟨U, Uo, xU, hU⟩
+  -- use U
+  -- use Uo.mem_nhds xU
+  -- rw [lipschitzOnWith_iff_norm_vsub_le]
   exact
-    ⟨U, Uo.mem_nhds xU, lipschitzOnWith_iff_norm_sub_le.2 fun x hx y hy => hU (mk_mem_prod hx hy)⟩
+    ⟨U, Uo.mem_nhds xU, lipschitzOnWith_iff_norm_vsub_le.2 fun x hx y hy => hU (mk_mem_prod hx hy)⟩
 
 /-- If `f` is strictly differentiable at `x` with derivative `f'`, then `f` is Lipschitz in a
 neighborhood of `x`. See also `HasStrictFDerivAt.exists_lipschitzOnWith_of_nnnorm_lt` for a
@@ -1020,7 +1058,7 @@ This include the constant functions `0`, `1`, `Nat.cast n`, `Int.cast z`, and ot
 theorem hasStrictFDerivAt_const (c : F) (x : E) :
     HasStrictFDerivAt (fun _ => c) (0 : E →L[𝕜] F) x :=
   .of_isLittleOTVS <| (IsLittleOTVS.zero _ _).congr_left fun _ => by
-    simp only [zero_apply, sub_self, Pi.zero_apply]
+    simp only [Pi.zero_apply, vsub_eq_sub, sub_self, zero_apply]
 
 @[fun_prop]
 theorem hasStrictFDerivAt_zero (x : E) :
@@ -1045,7 +1083,7 @@ theorem hasStrictFDerivAt_ofNat (n : ℕ) [OfNat F n] (x : E) :
 theorem hasFDerivAtFilter_const (c : F) (x : E) (L : Filter E) :
     HasFDerivAtFilter (fun _ => c) (0 : E →L[𝕜] F) x L :=
   .of_isLittleOTVS <| (IsLittleOTVS.zero _ _).congr_left fun _ => by
-    simp only [zero_apply, sub_self, Pi.zero_apply]
+    simp only [Pi.zero_apply, vsub_eq_sub, sub_self, zero_apply]
 
 theorem hasFDerivAtFilter_zero (x : E) (L : Filter E) :
     HasFDerivAtFilter (0 : E → F) (0 : E →L[𝕜] F) x L := hasFDerivAtFilter_const _ _ _
