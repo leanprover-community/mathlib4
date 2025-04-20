@@ -6,11 +6,10 @@ Authors: Alex Kontorovich, Heather Macbeth
 import Mathlib.Algebra.Group.Pointwise.Set.Lattice
 import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
 import Mathlib.Algebra.Module.ULift
-import Mathlib.Algebra.Order.Group.Synonym
+import Mathlib.Algebra.Order.Nonneg.Module
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.Topology.Algebra.Constructions
 import Mathlib.Topology.Algebra.Support
-import Mathlib.Topology.Bases
 
 /-!
 # Monoid actions continuous in the second variable
@@ -534,3 +533,9 @@ theorem set_smul_mem_nhds_zero_iff {s : Set α} {c : G₀} (hc : c ≠ 0) :
 end DistribMulAction
 
 end nhds
+
+variable {R α : Type*} [Semiring R] [PartialOrder R] [SMul R α] [TopologicalSpace α]
+  [ContinuousConstSMul R α]
+
+instance : ContinuousConstSMul {r : R // 0 ≤ r} α where
+  continuous_const_smul r := continuous_const_smul r.1
