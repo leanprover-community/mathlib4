@@ -753,6 +753,28 @@ theorem AEMeasurable.snd [SFinite ν] {f : β → γ} (hf : AEMeasurable f ν) :
     AEMeasurable (fun z : α × β => f z.2) (μ.prod ν) :=
   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_snd
 
+@[fun_prop, measurability]
+theorem AEMeasurable.lintegral_prod_right' [SFinite ν] {f : α × β → ℝ≥0∞}
+    (hf : AEMeasurable f (μ.prod ν)) : AEMeasurable (fun x => ∫⁻ y, f (x, y) ∂ν) μ := by
+  obtain ⟨g , hg, hfg⟩ := hf
+  refine ⟨fun x ↦ ∫⁻ (y : β), g (x, y) ∂ν, (by fun_prop), ?_⟩
+  refine Eventually.mono (Measure.ae_ae_of_ae_prod hfg) fun x hfg' ↦ lintegral_congr_ae hfg'
+
+@[fun_prop, measurability]
+theorem AEMeasurable.lintegral_prod_right [SFinite ν] {f : α → β → ℝ≥0∞}
+    (hf : Measurable f.uncurry) : Measurable fun x => ∫⁻ y, f x y ∂ν :=
+  hf.lintegral_prod_right'
+
+@[fun_prop, measurability]
+theorem AEMeasurable.lintegral_prod_left' [SFinite μ] {f : α × β → ℝ≥0∞} (hf : Measurable f) :
+    Measurable fun y => ∫⁻ x, f (x, y) ∂μ :=
+  (measurable_swap_iff.mpr hf).lintegral_prod_right'
+
+@[fun_prop, measurability]
+theorem AEMeasurable.lintegral_prod_left [SFinite μ] {f : α → β → ℝ≥0∞}
+    (hf : Measurable f.uncurry) : Measurable fun y => ∫⁻ x, f x y ∂μ :=
+  hf.lintegral_prod_left'
+
 end
 
 namespace MeasureTheory
