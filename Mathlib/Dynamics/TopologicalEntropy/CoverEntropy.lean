@@ -56,13 +56,6 @@ with a `liminf` and a `limsup`.
 cover, entropy
 
 ## TODO
-The most painful part of many manipulations involving topological entropy is going from
-`coverMincard` to `coverEntropyInfEntourage`/`coverEntropyEntourage`. It involves a logarithm,
-a division, a `liminf`/`limsup`, and multiple coercions. The best thing to do would be to write
-a file on "exponential growth" to make a clean pathway from estimates on `coverMincard`
-to estimates on `coverEntropyInf`/`coverEntropy`. It would also be useful
-in other similar contexts, including the definition of entropy using nets.
-
 Get versions of the topological entropy on (pseudo-e)metric spaces.
 -/
 

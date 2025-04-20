@@ -5,7 +5,7 @@ Authors: Damien Thomine, Pietro Monticone
 -/
 import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Topology.Constructions.SumProd
-import Mathlib.Topology.UniformSpace.Defs
+import Mathlib.Topology.UniformSpace.Basic
 
 /-!
 # Dynamical entourages
@@ -68,7 +68,7 @@ lemma ball_dynEntourage_mem_nhds [UniformSpace X] {T : X → X} (h : Continuous 
     ball x (dynEntourage T U n) ∈ nhds x := by
   rw [dynEntourage_eq_inter_Ico T U n, ball_iInter, Filter.iInter_mem, Subtype.forall]
   intro k _
-  simp only [map_iterate, ball_preimage]
+  simp only [map_iterate, _root_.ball_preimage]
   exact (h.iterate k).continuousAt.preimage_mem_nhds (ball_mem_nhds (T^[k] x) U_uni)
 
 lemma idRel_subset_dynEntourage (T : X → X) {U : Set (X × X)} (h : idRel ⊆ U) (n : ℕ) :
