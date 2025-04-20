@@ -692,13 +692,13 @@ instance {X : ι → Type*} [Countable ι] [∀ i, TopologicalSpace (X i)] [∀ 
     rw [Sigma.univ]
     exact isLindelof_iUnion fun i => isLindelof_range continuous_sigmaMk
 
-instance Quot.LindelofSpace {r : X → X → Prop} [LindelofSpace X] : LindelofSpace (Quot r) where
+instance Quot.instLindelofSpace {r : X → X → Prop} [LindelofSpace X] : LindelofSpace (Quot r) where
   isLindelof_univ := by
     rw [← range_quot_mk]
     exact isLindelof_range continuous_quot_mk
 
-instance Quotient.LindelofSpace {s : Setoid X} [LindelofSpace X] : LindelofSpace (Quotient s) :=
-  Quot.LindelofSpace
+instance Quotient.instLindelofSpace {s : Setoid X} [LindelofSpace X] : LindelofSpace (Quotient s) :=
+  Quot.instLindelofSpace
 
 /-- A continuous image of a Lindelöf set is a Lindelöf set within the codomain. -/
 theorem LindelofSpace.of_continuous_surjective {f : X → Y} [LindelofSpace X] (hf : Continuous f)
@@ -898,15 +898,15 @@ instance (priority := 100) Countable.toHereditarilyLindelofSpace [Countable X] :
     HereditarilyLindelofSpace X where
   isHereditarilyLindelof_univ := Set.countable_univ.isHereditarilyLindelof
 
-instance Quot.HereditarilyLindelofSpace {r : X → X → Prop} [HereditarilyLindelofSpace X] :
+instance Quot.instHereditarilyLindelofSpace {r : X → X → Prop} [HereditarilyLindelofSpace X] :
     HereditarilyLindelofSpace (Quot r) where
   isHereditarilyLindelof_univ := by
     rw [← range_quot_mk]
     exact isHereditarilyLindelof_range continuous_quot_mk
 
-instance Quotient.HereditarilyLindelofSpace {s : Setoid X} [HereditarilyLindelofSpace X] :
+instance Quotient.instHereditarilyLindelofSpace {s : Setoid X} [HereditarilyLindelofSpace X] :
     HereditarilyLindelofSpace (Quotient s) :=
-  Quot.HereditarilyLindelofSpace
+  Quot.instHereditarilyLindelofSpace
 
 /-- A continuous image of a Hereditarily Lindelöf space is a Hereditarily Lindelöf space. -/
 theorem HereditarilyLindelofSpace.of_continuous_surjective {f : X → Y} [HereditarilyLindelofSpace X]
@@ -925,7 +925,7 @@ lemma exists_countable_biUnion_eq_iUnion_of_forall_isOpen [HereditarilyLindelofS
 @[deprecated (since := "2025-04-20")]
 alias eq_open_union_countable := exists_countable_biUnion_eq_iUnion_of_forall_isOpen
 
-instance Subtype.HereditarilyLindelofSpace
+instance Subtype.instHereditarilyLindelofSpace
     [HereditarilyLindelofSpace X] (p : X → Prop) : HereditarilyLindelofSpace {x // p x} := by
   apply isHereditarilyLindelof_iff_HereditarilyLindelofSpace.mp
   exact isHereditarilyLindelof_univ.isHereditarilyLindelof_subset (subset_univ {x | p x})
