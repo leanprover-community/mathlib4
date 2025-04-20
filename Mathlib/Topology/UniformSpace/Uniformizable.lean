@@ -73,8 +73,7 @@ private def P (c : Set α) (u : Set α) :=
     IsOpen uc ∧ IsSymmetricRel uc ∧ uc ∈ 𝓤 α ∧ c = closure (Prod.mk x ⁻¹' uc) ∧
     IsOpen uu ∧ u = Prod.mk x ⁻¹' uu ∧ s ○ uc ○ s ⊆ uu
 
-private theorem descend_spec {c u : Set α}
-    (Pcu : P c u) (hcu : c ⊆ u) :
+private theorem descend_spec {c u : Set α} (Pcu : P c u) :
     ∃ (v : Set α), IsOpen v ∧ c ⊆ v ∧ closure v ⊆ u ∧ P c v ∧ P (closure v) u := by
   obtain ⟨x, uc, uu, s, huc, symmuc, ucu, rfl, huu, rfl, hn⟩ := Pcu
   have ho : IsOpen (descend s ○ uc ○ descend s) :=
@@ -139,7 +138,7 @@ instance UniformSpace.completelyRegularSpace : CompletelyRegularSpace α where
       closed_C := isClosed_closure
       open_U := hOo.preimage (Continuous.prodMk_right x)
       subset := (closure_minimal (preimage_mono hoC) (isClosed_ball x hC)).trans (preimage_mono hCO)
-      hP _ Pcu _ hcu := descend_spec Pcu hcu
+      hP _ Pcu _ _ := descend_spec Pcu
       P_C_U := by
         exact ⟨x, descend ⟨C, hCu⟩, O, _, hoo, hosymm, hou, rfl, hOo, rfl,
           (compRel_mono (compRel_mono subset_rfl (hoC.trans hCc))
