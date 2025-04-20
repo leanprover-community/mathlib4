@@ -34,8 +34,8 @@ then the property holds for every finitely generated modules.
 * `associatedPrimes.subset_union_of_exact` : If `0 → M → M' → M''` is an exact sequence,
 then the set of associated primes of `M'` is contained in the union of those of `M` and `M''`.
 
-* `associatedPrimes.finite` : There are only finitely many associated primes of a finitely generated module
-over a Noetherian ring.
+* `associatedPrimes.finite` : There are only finitely many associated primes of a
+finitely generated module over a Noetherian ring.
 
 -/
 
@@ -120,18 +120,19 @@ namespace Submodule
 variable {R M M₁ : Type*} [Semiring R] [AddCommMonoid M] [AddCommMonoid M₁]
   [Module R M] [Module R M₁] (q : Submodule R M₁) (f : M →ₗ[R] M₁)
 
+/-- For a linear map `f`, the map from `q.comap f` to `q` for a submodule `q`
+obtained from restricting `f` -/
 def comapRestrict : ↥(q.comap f) →ₗ[R] ↥q :=
-  f.restrict fun x hx ↦ by simpa only [mem_comap] using hx
+  f.restrict fun _ hx ↦ mem_comap.mp hx
 
 @[simp]
-theorem comapRestrict_coe_apply (x : q.comap f) : (q.comapRestrict f) x = f x := by
-  simp [comapRestrict]
+theorem comapRestrict_coe_apply (x : q.comap f) : (q.comapRestrict f) x = f x := rfl
 
 theorem comapRestrict_surjective_of_surjective (hf : Function.Surjective f) :
     Function.Surjective (q.comapRestrict f) := fun y ↦ by
   obtain ⟨x, hx⟩ := hf y
-  use ⟨x, by rw [mem_comap, hx]; exact y.2⟩
-  apply_fun _ using Subtype.val_injective
+  use ⟨x, mem_comap.mpr (hx ▸ y.2)⟩
+  apply Subtype.val_injective
   simp [hx]
 
 end Submodule
