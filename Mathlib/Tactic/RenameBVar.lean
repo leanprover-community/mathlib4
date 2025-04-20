@@ -4,13 +4,19 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Patrick Massot
 -/
 
-import Lean
+import Lean.Elab.Tactic.Location
 import Mathlib.Util.Tactic
 import Mathlib.Lean.Expr.Basic
 
+/-!
+# The `rename_bvar` tactic
+
+This file defines the `rename_bvar` tactic, for renaming bound variables.
+-/
+
 namespace Mathlib.Tactic
 
-open Lean Meta Parser Elab Tactic
+open Lean Parser Elab Tactic
 
 /-- Renames a bound variable in a hypothesis. -/
 def renameBVarHyp (mvarId : MVarId) (fvarId : FVarId) (old new : Name) :
@@ -23,19 +29,20 @@ def renameBVarTarget (mvarId : MVarId) (old new : Name) : MetaM Unit :=
   modifyTarget mvarId fun e ↦ e.renameBVar old new
 
 /--
-* `rename_bvar old new` renames all bound variables named `old` to `new` in the target.
-* `rename_bvar old new at h` does the same in hypothesis `h`.
+* `rename_bvar old → new` renames all bound variables named `old` to `new` in the target.
+* `rename_bvar old → new at h` does the same in hypothesis `h`.
 
 ```lean
 example (P : ℕ → ℕ → Prop) (h : ∀ n, ∃ m, P n m) : ∀ l, ∃ m, P l m := by
-  rename_bvar n q at h -- h is now ∀ (q : ℕ), ∃ (m : ℕ), P q m,
-  rename_bvar m n -- target is now ∀ (l : ℕ), ∃ (n : ℕ), P k n,
+  rename_bvar n → q at h -- h is now ∀ (q : ℕ), ∃ (m : ℕ), P q m,
+  rename_bvar m → n -- target is now ∀ (l : ℕ), ∃ (n : ℕ), P k n,
   exact h -- Lean does not care about those bound variable names
 ```
 Note: name clashes are resolved automatically.
 -/
 elab "rename_bvar " old:ident " → " new:ident loc?:(location)? : tactic => do
   let mvarId ← getMainGoal
+  instantiateMVarDeclMVars mvarId
   match loc? with
   | none => renameBVarTarget mvarId old.getId new.getId
   | some loc =>
@@ -43,3 +50,5 @@ elab "rename_bvar " old:ident " → " new:ident loc?:(location)? : tactic => do
       (fun fvarId ↦ renameBVarHyp mvarId fvarId old.getId new.getId)
       (renameBVarTarget mvarId old.getId new.getId)
       fun _ ↦ throwError "unexpected location syntax"
+
+end Mathlib.Tactic
