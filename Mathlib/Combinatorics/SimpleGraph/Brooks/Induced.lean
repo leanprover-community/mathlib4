@@ -105,7 +105,7 @@ variable {G}
 `C₂ : G.PartColoring n t` extends `C₁ : G.PartColoring n s` if `s ⊆ t` and `C₂` agrees with `C₁`
 on `s`
 -/
-def PartColoring.extends (C₂ : G.PartColoring n t) (C₁ : G.PartColoring n s) : Prop :=
+abbrev PartColoring.extends (C₂ : G.PartColoring n t) (C₁ : G.PartColoring n s) : Prop :=
   s ⊆ t ∧ ∀ ⦃v⦄, v ∈ s → C₂ v = C₁ v
 
 namespace PartColoring
@@ -118,7 +118,7 @@ lemma extends_trans {C₃ : G.PartColoring n u} {C₂ : G.PartColoring n t} {C�
   rw [← h1.2 hv, h2.2 (h1.1 hv)]
 
 @[simp]
-def copy (C : G.PartColoring n s) (h : s = t) :  G.PartColoring n t where
+def copy (C : G.PartColoring n s) (h : s = t) : G.PartColoring n t where
   toFun := C.toFun
   map_rel' := by
     subst h
@@ -136,6 +136,11 @@ theorem copy_copy {s t u} (C : G.PartColoring n s) (hs : s = t) (ht : t = u) :
 @[simp]
 lemma copy_def (C: G.PartColoring n s) (h : s = t) {v : α} :
   (C.copy h) v  = C v := rfl
+
+@[simp]
+lemma copy_extends {C₂ : G.PartColoring n t} {C₁ : G.PartColoring n s} (hc : C₂.extends C₁)
+  {h : t = u} : (C₂.copy h).extends C₁ :=
+    ⟨fun _ hx ↦ h ▸ hc.1 hx, fun _ hv ↦ by rw [copy_def]; exact hc.2 hv⟩
 
 def toColoring (C : G.PartColoring n Set.univ) : G.Coloring (Fin n) :=
     ⟨C, fun hab ↦ C.valid (by simpa using hab)⟩
@@ -159,6 +164,7 @@ lemma isPartColorable_zero_iff {s : Set α} : G.PartColorable 0 s ↔ IsEmpty α
   rw [PartColorable, colorable_zero_iff]
 
 variable {G} {n : ℕ} [DecidablePred (· ∈ s)] [DecidablePred (· ∈ t)]
+
 /--
 We can combine colorings of `s` and `t` if `∀ v w, v ∈ s → w ∈ t \ s → G.Adj v w → C₁ v ≠ C₂ w`
 -/
@@ -197,30 +203,39 @@ lemma PartColoring.union_extends (C₁ : G.PartColoring n s) (C₂ : G.PartColor
   intro v hv
   rw [union_def, if_pos hv]
 
+@[simp]
+lemma PartColoring.union_extends' (C₁ : G.PartColoring n s) (C₂ : G.PartColoring n t)
+    (h : ∀ ⦃v w⦄, v ∈ s → w ∈ t \ s → G.Adj v w → C₁ v ≠ C₂ w) (hd : Disjoint s t) :
+    (C₁.union C₂ h).extends C₂ := by
+  refine ⟨Set.subset_union_right, ?_⟩
+  intro v hv
+  rw [union_def, if_neg (hd.not_mem_of_mem_right hv)]
+
 /-- The extension of a coloring of `s` to `insert a s` -/
 def PartColoring.insertNotAdj {a : α}  [DecidableEq α] (C₁ : G.PartColoring n s)
-    (h : ∀ ⦃v⦄, v ∈ s → ¬ G.Adj a v) (c : Fin n) : G.PartColoring n (s ∪ {a}) :=
-  C₁.union (G.partColoringOfSingleton a c) (by
+    (h : ∀ ⦃v⦄, v ∈ s → ¬ G.Adj a v) (c : Fin n) : G.PartColoring n (insert a s) :=
+  ((G.partColoringOfSingleton a c).union C₁ (by
     simp only [Set.mem_singleton_iff, Set.mem_diff, and_imp]
-    rintro _ _ h' rfl _ had _
-    exact h h' had.symm)
+    rintro _ _ rfl h' _ had _
+    exact h h' had)).copy (by simp [Set.union_comm])
 
 @[simp]
 lemma PartColoring.insertNotAdj_def {a v : α} {c : Fin n} [DecidableEq α]
     (C₁ : G.PartColoring n s) (h : ∀ ⦃v⦄, v ∈ s → ¬ G.Adj a v) :
-    (C₁.insertNotAdj h c) v = ite (v ∈ s) (C₁ v) c := rfl
+    (C₁.insertNotAdj h c) v = ite (v = a) c (C₁ v) := by
+  rw [insertNotAdj, copy_def, union_def]
+  simp
 
 lemma PartColoring.insertNotAdj_extends {a : α} {c : Fin n} [DecidableEq α]
-    (C₁ : G.PartColoring n s) (h : ∀ ⦃v⦄, v ∈ s → ¬ G.Adj a v) :
-  (C₁.insertNotAdj h c).extends C₁ := C₁.union_extends ..
+    (C₁ : G.PartColoring n s) (h : ∀ ⦃v⦄, v ∈ s → ¬ G.Adj a v)  :
+  (C₁.insertNotAdj h c).extends (G.partColoringOfSingleton a c) :=
+    copy_extends (union_extends ..)
 
 lemma PartColoring.insertNotAdj_extends' {a : α} {c : Fin n} [DecidableEq α]
-    (C₁ : G.PartColoring n s) (h : ∀ ⦃v⦄, v ∈ s → ¬ G.Adj a v) (ha : a ∉ s):
-  ((C₁.insertNotAdj h c).copy (show s ∪ {a} = {a} ∪ s by simp)).extends
-    (G.partColoringOfSingleton a c) := by
-  refine ⟨by simp, ?_⟩
-  simp only [Set.mem_singleton_iff, Set.singleton_union, partColoringOfSingleton_def, forall_eq]
-  rw [PartColoring.copy_def, PartColoring.insertNotAdj_def, if_neg ha]
+    (C₁ : G.PartColoring n s) (h : ∀ ⦃v⦄, v ∈ s → ¬ G.Adj a v) (ha : a ∉ s) :
+  (C₁.insertNotAdj h c).extends C₁ :=
+    copy_extends (union_extends' _ _ _ (Set.disjoint_singleton_left.mpr ha))
+
 
 -- lemma  PartColorable.insertNotAdj {b : α} {hs : G.PartColorable n s}
 --     (h : ∀ v, v ∈ s → ¬ G.Adj b v) : G.PartColorable n (insert b s) := by
