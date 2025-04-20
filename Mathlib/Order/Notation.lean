@@ -99,6 +99,8 @@ private def hasLinearOrder (u : Level) (α : Q(Type u)) (cls : Q(Type u → Type
   try
     withNewMCtxDepth do
     -- `isDefEq` may call type class search to instantiate `mvar`, so we need the local instances
+    -- In Lean 4.19 the pretty printer clears local instances, so we re-add them here.
+    -- TODO(Jovan): remove
     withLocalInstances (← getLCtx).decls.toList.reduceOption do
       let mvar ← mkFreshExprMVarQ q($(linearOrderExpr u) $α) (kind := .synthetic)
       let inst' : Q($cls $α) := q($toCls $α $mvar)
