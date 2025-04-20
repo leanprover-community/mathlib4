@@ -176,8 +176,7 @@ lemma invtsubmodule_to_root_subset {K : Type*} [Field K] [NeZero (2 : K)] [Modul
     rw [Submodule.dualCoannihilator_top (R := K) (M := M)] at h₁
     exact False.elim (h₀ ((Submodule.eq_bot_iff q).mpr h₁))
   · have b' : P.root '' Φ ⊆ q := by
-      intro v hv
-      obtain ⟨i, s₁, s₂⟩ := hv
+      intro v ⟨i, s₁, s₂⟩
       have := b i s₁
       rw [s₂] at this
       by_contra! s₃
