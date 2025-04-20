@@ -49,14 +49,14 @@ noncomputable def ascPochhammer : ℕ → S[X]
   | 0 => 1
   | n + 1 => X * (ascPochhammer n).comp (X + 1)
 
-@[simp]
+@[simp, grind]
 theorem ascPochhammer_zero : ascPochhammer S 0 = 1 :=
   rfl
 
-@[simp]
+@[simp, grind]
 theorem ascPochhammer_one : ascPochhammer S 1 = X := by simp [ascPochhammer]
 
-theorem ascPochhammer_succ_left (n : ℕ) :
+@[grind] theorem ascPochhammer_succ_left (n : ℕ) :
     ascPochhammer S (n + 1) = X * (ascPochhammer S n).comp (X + 1) := by
   rw [ascPochhammer]
 
@@ -73,12 +73,10 @@ section
 
 variable {S} {T : Type v} [Semiring T]
 
-@[simp]
+@[simp, grind]
 theorem ascPochhammer_map (f : S →+* T) (n : ℕ) :
     (ascPochhammer S n).map f = ascPochhammer T n := by
-  induction n with
-  | zero => simp
-  | succ n ih => simp [ih, ascPochhammer_succ_left, map_comp]
+  induction n with grind
 
 theorem ascPochhammer_eval₂ (f : S →+* T) (n : ℕ) (t : T) :
     (ascPochhammer T n).eval t = (ascPochhammer S n).eval₂ f t := by

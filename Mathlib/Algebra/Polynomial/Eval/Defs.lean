@@ -464,32 +464,32 @@ variable (f : R →+* S)
 def map : R[X] → S[X] :=
   eval₂ (C.comp f) X
 
-@[simp]
+@[simp, grind]
 theorem map_C : (C a).map f = C (f a) :=
   eval₂_C _ _
 
-@[simp]
+@[simp, grind]
 theorem map_X : X.map f = X :=
   eval₂_X _ _
 
-@[simp]
+@[simp, grind]
 theorem map_monomial {n a} : (monomial n a).map f = monomial n (f a) := by
   dsimp only [map]
   rw [eval₂_monomial, ← C_mul_X_pow_eq_monomial]; rfl
 
-@[simp]
+@[simp, grind]
 protected theorem map_zero : (0 : R[X]).map f = 0 :=
   eval₂_zero _ _
 
-@[simp]
+@[simp, grind]
 protected theorem map_add : (p + q).map f = p.map f + q.map f :=
   eval₂_add _ _
 
-@[simp]
+@[simp, grind]
 protected theorem map_one : (1 : R[X]).map f = 1 :=
   eval₂_one _ _
 
-@[simp]
+@[simp, grind]
 protected theorem map_mul : (p * q).map f = p.map f * q.map f := by
   rw [map, eval₂_mul_noncomm]
   exact fun k => (commute_X _).symm
@@ -541,6 +541,7 @@ protected theorem map_list_prod (L : List R[X]) : L.prod.map f = (L.map <| map f
 protected theorem map_pow (n : ℕ) : (p ^ n).map f = p.map f ^ n :=
   (mapRingHom f).map_pow _ _
 
+@[grind _=_]
 theorem eval_map (x : S) : (p.map f).eval x = p.eval₂ f x :=
   (eval₂_eq_eval_map f).symm
 
@@ -548,6 +549,7 @@ protected theorem map_sum {ι : Type*} (g : ι → R[X]) (s : Finset ι) :
     (∑ i ∈ s, g i).map f = ∑ i ∈ s, (g i).map f :=
   map_sum (mapRingHom f) _ _
 
+@[grind _=_]
 theorem map_comp (p q : R[X]) : map f (p.comp q) = (map f p).comp (map f q) :=
   Polynomial.induction_on p (by simp only [map_C, forall_const, C_comp, eq_self_iff_true])
     (by

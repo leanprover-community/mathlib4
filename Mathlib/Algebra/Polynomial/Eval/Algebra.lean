@@ -46,7 +46,7 @@ theorem eval₂_pow' (n : ℕ) :
   | zero => simp only [pow_zero, eval₂_one]
   | succ n ih => rw [pow_succ, pow_succ, eval₂_mul', ih]
 
-@[simp]
+@[simp, grind _=_]
 theorem eval₂_comp' : eval₂ (algebraMap R S) x (p.comp q) =
     eval₂ (algebraMap R S) (eval₂ (algebraMap R S) x q) p := by
   induction p using Polynomial.induction_on' with
