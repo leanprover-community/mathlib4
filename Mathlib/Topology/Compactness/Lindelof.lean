@@ -915,12 +915,16 @@ theorem HereditarilyLindelofSpace.of_continuous_surjective {f : X → Y} [Heredi
     rw [← Set.image_univ_of_surjective hsur]
     exact IsHereditarilyLindelof.image isHereditarilyLindelof_univ hf
 
-lemma eq_open_union_countable [HereditarilyLindelofSpace X] {ι : Type u} (U : ι → Set X)
-    (h : ∀ i, IsOpen (U i)) : ∃ t : Set ι, t.Countable ∧ ⋃ i ∈ t, U i = ⋃ i, U i := by
+lemma open_union_eq_countable_union [HereditarilyLindelofSpace X] {ι : Type u} (U : ι → Set X)
+    (h : ∀ i, IsOpen (U i)) : ∃ t : Set ι, t.Countable ∧ ⋃ i, U i = ⋃ i ∈ t, U i := by
   have := isHereditarilyLindelof_univ.isLindelof_subset (subset_univ (⋃ i, U i))
   rcases isLindelof_iff_countable_subcover.mp this U h (Eq.subset rfl) with ⟨t, ⟨htc, htu⟩⟩
-  use t, htc
-  apply eq_of_subset_of_subset (iUnion₂_subset_iUnion (fun i ↦ i ∈ t) fun i ↦ U i) htu
+  exact ⟨t, htc, htu.antisymm (iUnion₂_subset_iUnion (· ∈ t) U)⟩
+
+@[deprecated open_union_eq_countable_union (since := "2025-04-20")]
+lemma eq_open_union_countable [HereditarilyLindelofSpace X] {ι : Type u} (U : ι → Set X)
+    (h : ∀ i, IsOpen (U i)) : ∃ t : Set ι, t.Countable ∧ ⋃ i ∈ t, U i = ⋃ i, U i := by
+  simpa only [eq_comm] using open_union_eq_countable_union U h
 
 instance Subtype.HereditarilyLindelofSpace
     [HereditarilyLindelofSpace X] (p : X → Prop) : HereditarilyLindelofSpace {x // p x} := by
