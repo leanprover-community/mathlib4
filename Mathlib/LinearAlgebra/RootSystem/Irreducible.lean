@@ -147,52 +147,19 @@ lemma span_root_image_eq_top_of_forall_orthogonal (s : Set ι)
   apply IsIrreducible.eq_top_of_invtSubmodule_reflection _ hq
   simpa using ⟨hne.choose, hne.choose_spec, P.ne_zero _⟩
 
-section FieldCharacterization
-
-lemma root_mem_or_subset_ker_coroot {K : Type*} [Field K] [Module K M] [Module K N]
-    (q : Submodule K M) (P : RootPairing ι K M N) (i : ι)
-    (h₁ : q ∈ invtSubmodule (P.reflection i)) :
-    P.root i ∈ q ∨ q ≤ ker (P.coroot' i) := by
-  by_cases h_root : P.root i ∈ q
-  · left
-    exact h_root
-  right
-  intro v hv
-  by_cases h_zero : v = 0
-  · subst h_zero
-    simp only [Submodule.zero_mem]
-  have : (P.coroot' i) v • P.root i ∈ q := by
-    simpa using (Submodule.sub_mem_iff_right q hv).mp (h₁ hv)
-  by_contra h_ne
-  have : P.root i ∈ q := by
-    have := Submodule.smul_mem q (((P.coroot' i) v)⁻¹) this
-    rwa [inv_smul_smul₀ h_ne] at this
-  contradiction
-
-lemma root_subset_characterization {K : Type*} [Field K] [Module K M] [Module K N]
-    (q : Submodule K M) (P : RootPairing ι K M N)
-    (h₁ : ∀ i, q ∈ invtSubmodule (P.reflection i)) :
-    ∃ (Φ : Set ι), (∀ i ∈ Φ, P.root i ∈ q) ∧ (∀ i ∉ Φ, q ≤ ker (P.coroot' i)) := by
-  use {i | P.root i ∈ q}
-  constructor
-  · exact fun _ => id
-  intro i hi
-  exact (root_mem_or_subset_ker_coroot q P i (h₁ i)).resolve_left hi
-
-end FieldCharacterization
-
 end RootPairing
 
 namespace RootSystem
 
-lemma invtsubmodule_to_root_subset {K : Type*} [Field K] [Module K M] [Module K N]
+lemma invtsubmodule_to_root_subset {K : Type*} [Field K] [NeZero (2 : K)] [Module K M] [Module K N]
     (P : RootSystem ι K M N)
     (q : Submodule K M)
     (h₀ : q ≠ ⊥)
     (h₁ : ∀ i, q ∈ invtSubmodule (P.reflection i))
     (h₂ : ∀ Φ, Φ.Nonempty → P.root '' Φ ⊆ q → (∀ i ∉ Φ, q ≤ ker (P.coroot' i)) → Φ = univ) :
     q = ⊤ := by
-  obtain ⟨Φ, b, c⟩ := RootPairing.root_subset_characterization q P.toRootPairing h₁
+  obtain ⟨Φ, b, c⟩ :=
+    P.toRootPairing.exist_set_root_not_disjoint_and_le_ker_coroot'_of_invtSubmodule q h₁
   by_cases hΦ : Φ = ∅
   · subst hΦ
     simp only [mem_empty_iff_false, not_false_eq_true, forall_const] at c
@@ -208,9 +175,16 @@ lemma invtsubmodule_to_root_subset {K : Type*} [Field K] [Module K M] [Module K 
       exact fun _ a ↦ h₂ (this a)
     rw [Submodule.dualCoannihilator_top (R := K) (M := M)] at h₁
     exact False.elim (h₀ ((Submodule.eq_bot_iff q).mpr h₁))
-  have hu := h₂ Φ (Set.nonempty_iff_ne_empty.mpr hΦ) (image_subset_iff.mpr b) c
-  subst hu
-  rw [eq_top_mono (span_le.mpr (image_subset_iff.mpr b))
-  (by rw [image_univ, span_root_eq_top])]
+  · have b' : P.root '' Φ ⊆ q := by
+      intro v hv
+      obtain ⟨i, s₁, s₂⟩ := hv
+      have := b i s₁
+      rw [s₂] at this
+      by_contra! s₃
+      exact False.elim (this (Submodule.disjoint_span_singleton_of_not_mem s₃))
+    have hu := h₂ Φ (Set.nonempty_iff_ne_empty.mpr hΦ) b' c
+    subst hu
+    rw [eq_top_mono (span_le.mpr b')
+    (by rw [image_univ, span_root_eq_top])]
 
 end RootSystem
