@@ -8,3 +8,6 @@ See the `Mathlib.Analysis.Convex.Cone` folder for the results that need a norm o
 
 The convex cone topics currently covered are:
 * Convex cones
+* Pointed cones
+* Proper cones
+* Dual cone along a perfect bilinear pairing
