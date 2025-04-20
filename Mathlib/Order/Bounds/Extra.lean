@@ -20,7 +20,7 @@ universe u v
 variable {α : Type u} {β : Type v}
 variable [Preorder α] [Preorder β] {f : α → β}
 
-lemma Dominated.image_of_monotone {s₁ s₂ : Set α} (h : Dominated s₁ s₂) (Hf : Monotone f) :
+lemma Set.Dominated.image_of_monotone {s₁ s₂ : Set α} (h : Dominated s₁ s₂) (Hf : Monotone f) :
     Dominated (f '' s₁) (f '' s₂) := fun a ha => by
   obtain ⟨c, hcs, hcfa⟩ := ha
   obtain ⟨d, hdd, hcd⟩ := h c hcs
@@ -28,7 +28,7 @@ lemma Dominated.image_of_monotone {s₁ s₂ : Set α} (h : Dominated s₁ s₂)
   rw [← hcfa]
   exact ⟨d, ⟨hdd, Hf hcd⟩⟩
 
-lemma Dominated.image_of_antitone {s₁ s₂ : Set α} (h : Dominated s₁ s₂) (Hf : Antitone f) :
+lemma Set.Dominated.image_of_antitone {s₁ s₂ : Set α} (h : Dominated s₁ s₂) (Hf : Antitone f) :
     Codominated (f '' s₁) (f '' s₂) := fun a ha => by
   obtain ⟨c, hcs, hcfa⟩ := ha
   obtain ⟨d, hdd, hcd⟩ := h c hcs
@@ -36,7 +36,7 @@ lemma Dominated.image_of_antitone {s₁ s₂ : Set α} (h : Dominated s₁ s₂)
   rw [← hcfa]
   exact ⟨d, ⟨hdd, Hf hcd⟩⟩
 
-lemma Codominated.image_of_monotone {s₁ s₂ : Set α} (h : Codominated s₁ s₂) (Hf : Monotone f) :
+lemma Set.Codominated.image_of_monotone {s₁ s₂ : Set α} (h : Codominated s₁ s₂) (Hf : Monotone f) :
     Codominated (f '' s₁) (f '' s₂) := fun a ha => by
   obtain ⟨c, hcs, hcfa⟩ := ha
   obtain ⟨d, hdd, hcd⟩ := h c hcs
@@ -44,7 +44,7 @@ lemma Codominated.image_of_monotone {s₁ s₂ : Set α} (h : Codominated s₁ s
   rw [← hcfa]
   exact ⟨d, ⟨hdd, Hf hcd⟩⟩
 
-lemma Codominated.image_of_antitone {s₁ s₂ : Set α} (h : Codominated s₁ s₂) (Hf : Antitone f) :
+lemma Set.Codominated.image_of_antitone {s₁ s₂ : Set α} (h : Codominated s₁ s₂) (Hf : Antitone f) :
     Dominated (f '' s₁) (f '' s₂) := fun a ha => by
   obtain ⟨c, hcs, hcfa⟩ := ha
   obtain ⟨d, hdd, hcd⟩ := h c hcs
@@ -63,6 +63,5 @@ lemma DirectedOn.dominated_fst_image_prod_snd_image {d : Set (α × β)}
 lemma Monotone.upperBounds_image_of_directedOn_prod {γ : Type*} [Preorder γ] {g : α × β → γ}
     (Hg : Monotone g) {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) :
     upperBounds (g '' d) = upperBounds (g '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) := le_antisymm
-  (upperBounds_mono_of_dominated
-    (fun _ ha => (Dominated.image_of_monotone hd.dominated_fst_image_prod_snd_image Hg) _ ha))
+  (upperBounds_mono_of_dominated (hd.dominated_fst_image_prod_snd_image.image_of_monotone Hg))
   (upperBounds_mono_set (image_mono subset_fst_image_prod_snd_image))
