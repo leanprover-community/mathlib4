@@ -200,7 +200,7 @@ theorem of_smul_measure {c : ℝ≥0∞} (hc_ne_top : c ≠ ∞) (hT : Dominated
   have hcμs : c • μ s ≠ ∞ := mt (h s hs) hμs.ne
   rw [smul_eq_mul] at hcμs
   refine (hT.2 s hs hcμs.lt_top).trans (le_of_eq ?_)
-  simp
+  simp only [measureReal_ennreal_smul_apply]
   ring
 
 theorem of_measure_le_smul {μ' : Measure α} {c : ℝ≥0∞} (hc : c ≠ ∞) (h : μ ≤ c • μ')
