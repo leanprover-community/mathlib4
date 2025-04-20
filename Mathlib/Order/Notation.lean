@@ -109,14 +109,18 @@ private def hasLinearOrder (u : Level) (α : Q(Type u)) (cls : Q(Type u → Type
     -- For instance, if `LinearOrder` is not yet imported.
     return false
 
-/-- Annotate the syntax `stx` with the go-to-def information of `target`. -/
-def withGoToDef (stx : Term) (target : Name) : DelabM Term := do
+/-- Annotates `stx` with the go-to-def information of `target`. -/
+def annotateGoToDef (stx : Term) (target : Name) : DelabM Term := do
   let module := (← findModuleOf? target).getD (← getEnv).mainModule
   let some range ← findDeclarationRanges? target | return stx
   let stx ← annotateCurPos stx
   let location := { module, range := range.selectionRange }
   addDelabTermInfo (← getPos) stx (← getExpr) (location? := some location)
   return stx
+
+/-- Annotates `stx` with the go-to-def information of the notation used in `stx`. -/
+def annotateGoToSyntaxDef (stx : Term) : DelabM Term := do
+  annotateGoToDef stx stx.raw.getKind
 
 /-- Delaborate `max x y` into `x ⊔ y` if the type is not a linear order. -/
 @[delab app.Max.max]
@@ -128,7 +132,7 @@ def delabSup : Delab := do
   let x ← withNaryArg 2 delab
   let y ← withNaryArg 3 delab
   let stx ← `($x ⊔ $y)
-  withGoToDef stx ``«term_⊔_»
+  annotateGoToSyntaxDef stx
 
 /-- Delaborate `min x y` into `x ⊓ y` if the type is not a linear order. -/
 @[delab app.Min.min]
@@ -140,7 +144,7 @@ def delabInf : Delab := do
   let x ← withNaryArg 2 delab
   let y ← withNaryArg 3 delab
   let stx ← `($x ⊓ $y)
-  withGoToDef stx ``«term_⊓_»
+  annotateGoToSyntaxDef stx
 
 end Mathlib.Meta
 
