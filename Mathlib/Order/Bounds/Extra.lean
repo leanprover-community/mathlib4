@@ -52,7 +52,7 @@ lemma Codominated.image_of_antitone {s₁ s₂ : Set α} (h : Codominated s₁ s
   rw [← hcfa]
   exact ⟨d, ⟨hdd, Hf hcd⟩⟩
 
-lemma DirectedOn.dominated_fst_image_times_snd_image {d : Set (α × β)}
+lemma DirectedOn.dominated_fst_image_prod_snd_image {d : Set (α × β)}
     (hd : DirectedOn (· ≤ ·) d) : Dominated ((Prod.fst '' d) ×ˢ (Prod.snd '' d)) d :=
   fun ⟨p₁, p₂⟩ hp => by
     simp at hp
