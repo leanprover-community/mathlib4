@@ -25,7 +25,18 @@ def distribNotOnceAt (hypFVar : Expr) (g : MVarId) : MetaM AssertAfterResult := 
   let .fvar fvarId := hypFVar | throwError "not fvar {hypFVar}"
   let h ← fvarId.getDecl
   let e : Q(Prop) ← (do guard <| ← Meta.isProp h.type; pure h.type)
-  let replace (p : Expr) := g.replace h.fvarId p
+  let replace (p : Expr) : MetaM AssertAfterResult := do
+    commitIfNoEx do
+      let result ← g.assertAfter fvarId h.userName (← inferType p) p
+      /-
+        We attempt to clear the old hypothesis. Doing so is crucial for
+        avoiding infinite loops. On failure, we roll back the MetaM state
+        and ignore this hypothesis. See
+        https://github.com/leanprover-community/mathlib4/issues/10590.
+      -/
+      let newGoal ← result.mvarId.clear fvarId
+      return { result with mvarId := newGoal }
+
   match e with
   | ~q(¬ ($a : Prop) = $b) => do
     let h' : Q(¬$a = $b) := h.toExpr
@@ -35,36 +46,36 @@ def distribNotOnceAt (hypFVar : Expr) (g : MVarId) : MetaM AssertAfterResult := 
     replace q(Eq.to_iff $h')
   | ~q(¬ (($a : Prop) ∧ $b)) => do
     let h' : Q(¬($a ∧ $b)) := h.toExpr
-    let _inst ← synthInstanceQ (q(Decidable $b) : Q(Type))
-    replace q(Decidable.not_and_iff_or_not_not'.mp $h')
+    let _inst ← synthInstanceQ q(Decidable $b)
+    replace q(Decidable.not_and_iff_not_or_not'.mp $h')
   | ~q(¬ (($a : Prop) ∨ $b)) => do
     let h' : Q(¬($a ∨ $b)) := h.toExpr
     replace q(not_or.mp $h')
   | ~q(¬ (($a : Prop) ≠ $b)) => do
     let h' : Q(¬($a ≠ $b)) := h.toExpr
-    let _inst ← synthInstanceQ (q(Decidable ($a = $b)) : Q(Type))
+    let _inst ← synthInstanceQ q(Decidable ($a = $b))
     replace q(Decidable.of_not_not $h')
   | ~q(¬¬ ($a : Prop)) => do
     let h' : Q(¬¬$a) := h.toExpr
-    let _inst ← synthInstanceQ (q(Decidable $a) : Q(Type))
+    let _inst ← synthInstanceQ q(Decidable $a)
     replace q(Decidable.of_not_not $h')
   | ~q(¬ ((($a : Prop)) → $b)) => do
     let h' : Q(¬($a → $b)) := h.toExpr
-    let _inst ← synthInstanceQ (q(Decidable $a) : Q(Type))
+    let _inst ← synthInstanceQ q(Decidable $a)
     replace q(Decidable.not_imp_iff_and_not.mp $h')
   | ~q(¬ (($a : Prop) ↔ $b)) => do
     let h' : Q(¬($a ↔ $b)) := h.toExpr
-    let _inst ← synthInstanceQ (q(Decidable $b) : Q(Type))
+    let _inst ← synthInstanceQ q(Decidable $b)
     replace q(Decidable.not_iff.mp $h')
   | ~q(($a : Prop) ↔ $b) => do
     let h' : Q($a ↔ $b) := h.toExpr
-    let _inst ← synthInstanceQ (q(Decidable $b) : Q(Type))
+    let _inst ← synthInstanceQ q(Decidable $b)
     replace q(Decidable.iff_iff_and_or_not_and_not.mp $h')
   | ~q((((($a : Prop)) → False) : Prop)) =>
     throwError "distribNot found nothing to work on with negation"
   | ~q((((($a : Prop)) → $b) : Prop)) => do
     let h' : Q($a → $b) := h.toExpr
-    let _inst ← synthInstanceQ (q(Decidable $a) : Q(Type))
+    let _inst ← synthInstanceQ q(Decidable $a)
     replace q(Decidable.not_or_of_imp $h')
   | _ => throwError "distribNot found nothing to work on"
 
@@ -203,8 +214,10 @@ The Lean 3 version of this tactic by default attempted to avoid classical reason
 where possible. This Lean 4 version makes no such attempt. The `itauto` tactic
 is designed for that purpose.
 -/
-syntax (name := tauto) "tauto" (config)? : tactic
+syntax (name := tauto) "tauto" optConfig : tactic
 
-elab_rules : tactic | `(tactic| tauto $[$cfg:config]?) => do
-  let _cfg ← elabConfig (mkOptionalNode cfg)
+elab_rules : tactic | `(tactic| tauto $cfg:optConfig) => do
+  let _cfg ← elabConfig cfg
   tautology
+
+end Mathlib.Tactic.Tauto
