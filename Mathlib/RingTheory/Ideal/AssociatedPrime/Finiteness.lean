@@ -3,12 +3,12 @@ Copyright (c) 2025 Jinzhao Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jinzhao Pan
 -/
-import Mathlib.Algebra.Module.LocalizedModule.Exact
-import Mathlib.Algebra.Module.Torsion
+import Mathlib.Algebra.Exact
+import Mathlib.LinearAlgebra.Isomorphisms
+import Mathlib.Order.RelSeries
 import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
-import Mathlib.RingTheory.Ideal.Height
-import Mathlib.RingTheory.Length
-import Mathlib.RingTheory.Support
+import Mathlib.RingTheory.Noetherian.Basic
+import Mathlib.RingTheory.Spectrum.Prime.Defs
 
 /-!
 
