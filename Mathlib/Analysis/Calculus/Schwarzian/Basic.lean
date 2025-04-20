@@ -87,7 +87,7 @@ lemma schwarzian_zpow_apply {m : ℤ} (hm : (m : 𝕜) ≠ 0) (x : 𝕜) :
   have hm' : m ≠ 0 := ne_of_apply_ne (Int.cast (R := 𝕜)) <| by simpa
   simp? [schwarzian_def, deriv_zpow, iteratedDeriv_eq_iterate, Finset.prod_range_succ] says
     simp only [schwarzian_def, iteratedDeriv_eq_iterate, iter_deriv_zpow', Finset.prod_range_succ,
-      Finset.range_one, Finset.prod_singleton, CharP.cast_eq_zero, sub_zero, Nat.cast_one,
+      Finset.range_one, Finset.prod_singleton, Nat.cast_zero, sub_zero, Nat.cast_one,
       Nat.cast_ofNat, deriv_zpow, neg_sub]
   rcases eq_or_ne x 0 with rfl | hx
   · rcases eq_or_ne m 1 with rfl | hm₁
