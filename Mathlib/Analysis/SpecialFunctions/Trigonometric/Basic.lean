@@ -129,6 +129,15 @@ theorem cos_pi_div_two : cos (π / 2) = 0 := by
   rw [Real.pi, mul_div_cancel_left₀ _ (two_ne_zero' ℝ)]
   exact (Classical.choose_spec exists_cos_eq_zero).2
 
+@[simp]
+theorem cos_pi_mul_inv_two : cos (π * 2⁻¹) = 0 := by
+  convert cos_pi_div_two using 1
+
+@[simp]
+theorem cos_inv_two_mul_pi : cos (2⁻¹ * π) = 0 := by
+  convert cos_pi_div_two using 2
+  ring
+
 theorem one_le_pi_div_two : (1 : ℝ) ≤ π / 2 := by
   rw [Real.pi, mul_div_cancel_left₀ _ (two_ne_zero' ℝ)]
   exact (Classical.choose_spec exists_cos_eq_zero).1.1
@@ -424,6 +433,15 @@ theorem sin_pi_div_two : sin (π / 2) = 1 :=
   this.resolve_right fun h =>
     show ¬(0 : ℝ) < -1 by norm_num <|
       h ▸ sin_pos_of_pos_of_lt_pi pi_div_two_pos (half_lt_self pi_pos)
+
+@[simp]
+theorem sin_pi_mul_inv_two : sin (π * 2⁻¹) = 1 := by
+  convert sin_pi_div_two using 1
+
+@[simp]
+theorem sin_inv_two_mul_pi : sin (2⁻¹ * π) = 1 := by
+  convert sin_pi_div_two using 2
+  ring
 
 theorem sin_add_pi_div_two (x : ℝ) : sin (x + π / 2) = cos x := by simp [sin_add]
 
@@ -857,6 +875,15 @@ theorem tan_pi_div_four : tan (π / 4) = 1 := by
 theorem tan_pi_div_two : tan (π / 2) = 0 := by simp [tan_eq_sin_div_cos]
 
 @[simp]
+theorem tan_pi_mul_inv_two : tan (π * 2⁻¹) = 0 := by
+  convert tan_pi_div_two using 1
+
+@[simp]
+theorem tan_inv_two_mul_pi : tan (2⁻¹ * π) = 0 := by
+  convert tan_pi_div_two using 2
+  ring
+
+@[simp]
 theorem tan_pi_div_six : tan (π / 6) = 1 / sqrt 3 := by
   rw [tan_eq_sin_div_cos, sin_pi_div_six, cos_pi_div_six]
   ring
@@ -995,10 +1022,28 @@ theorem cos_pi_div_two : cos (π / 2) = 0 :=
     _ = 0 := by simp
 
 @[simp]
+theorem cos_pi_mul_inv_two : cos (π * 2⁻¹) = 0 := by
+  convert cos_pi_div_two using 1
+
+@[simp]
+theorem cos_inv_two_mul_pi : cos (2⁻¹ * π) = 0 := by
+  convert cos_pi_div_two using 2
+  ring
+
+@[simp]
 theorem sin_pi_div_two : sin (π / 2) = 1 :=
   calc
     sin (π / 2) = Real.sin (π / 2) := by rw [ofReal_sin]; simp
     _ = 1 := by simp
+
+@[simp]
+theorem sin_pi_mul_inv_two : sin (π * 2⁻¹) = 1 := by
+  convert sin_pi_div_two using 1
+
+@[simp]
+theorem sin_inv_two_mul_pi : sin (2⁻¹ * π) = 1 := by
+  convert sin_pi_div_two using 2
+  ring
 
 @[simp]
 theorem sin_pi : sin π = 0 := by rw [← ofReal_sin, Real.sin_pi]; simp
