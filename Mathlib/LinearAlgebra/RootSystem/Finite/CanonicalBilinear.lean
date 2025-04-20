@@ -106,11 +106,11 @@ lemma toPerfectPairing_apply_CoPolarization (x : N) :
   exact P.flip.toPerfectPairing_apply_apply_Polarization x y
 
 lemma flip_comp_polarization_eq_rootForm :
-    P.flip.toLin ∘ₗ P.Polarization = P.RootForm := by
+    P.flip.toLinearMap ∘ₗ P.Polarization = P.RootForm := by
   ext; simp [rootForm_apply_apply, RootPairing.flip]
 
 lemma self_comp_coPolarization_eq_corootForm :
-    P.toLin ∘ₗ P.CoPolarization = P.CorootForm := by
+    P.toLinearMap ∘ₗ P.CoPolarization = P.CorootForm := by
   ext; simp [corootForm_apply_apply]
 
 lemma polarization_apply_eq_zero_iff (m : M) :
