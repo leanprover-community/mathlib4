@@ -57,7 +57,6 @@ between diagrams whose colimits define the values of `plus`. -/
 def diagramNatTrans {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (X : C) : J.diagram P X ⟶ J.diagram Q X where
   app W :=
     Multiequalizer.lift _ _ (fun _ => Multiequalizer.ι _ _ ≫ η.app _) (fun i => by
-      dsimp only
       erw [Category.assoc, Category.assoc, ← η.naturality, ← η.naturality,
         Multiequalizer.condition_assoc]
       rfl)

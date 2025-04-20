@@ -253,8 +253,6 @@ variable {X : Type*} [AddGroup X] [DistribMulAction R X]
 @[irreducible]
 protected def neg : X[S⁻¹] → X[S⁻¹] :=
   liftExpand (fun (r : X) (s : S) => -r /ₒ s) fun r t s ht => by
-    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
-    beta_reduce
     rw [← smul_neg, ← OreLocalization.expand]
 
 instance instNegOreLocalization : Neg X[S⁻¹] :=

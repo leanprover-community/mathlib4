@@ -139,7 +139,6 @@ theorem card_sigma : #(Σ n, L.Term (α ⊕ (Fin n))) = max ℵ₀ #(α ⊕ (Σ 
 
 instance [Encodable α] [Encodable (Σ i, L.Functions i)] : Encodable (L.Term α) :=
   Encodable.ofLeftInjection listEncode (fun l => (listDecode l).head?.join) fun t => by
-    simp only
     rw [← flatMap_singleton listEncode, listDecode_encode_list]
     simp only [Option.join, head?_cons, Option.pure_def, Option.bind_eq_bind, Option.some_bind,
       id_eq]

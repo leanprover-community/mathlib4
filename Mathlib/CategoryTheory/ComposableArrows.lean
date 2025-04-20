@@ -197,7 +197,6 @@ def isoMk {F G : ComposableArrows C n} (app : ∀ i, F.obj i ≅ G.obj i)
     F ≅ G where
   hom := homMk (fun i => (app i).hom) w
   inv := homMk (fun i => (app i).inv) (fun i hi => by
-    dsimp only
     rw [← cancel_epi ((app _).hom), ← reassoc_of% (w i hi), Iso.hom_inv_id, comp_id,
       Iso.hom_inv_id_assoc])
 

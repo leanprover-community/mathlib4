@@ -124,7 +124,6 @@ def Cofix.dest {α : TypeVec n} : Cofix F α → F (α.append1 (Cofix F α)) :=
   Quot.lift (fun x => appendFun id (Quot.mk Mcongr) <$$> abs (M.dest q.P x))
     (by
       rintro x y ⟨r, pr, rxy⟩
-      dsimp
       have : ∀ x y, r x y → Mcongr x y := by
         intro x y h
         exact ⟨r, pr, h⟩

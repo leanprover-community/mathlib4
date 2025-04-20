@@ -578,6 +578,7 @@ theorem sInf_le {A : C} (s : Set (Subobject A)) (f) (hf : f ∈ s) : sInf s ≤ 
     simp only [Category.comp_id, Category.assoc, ← underlyingIso_hom_comp_eq_mk,
       Subobject.arrow_congr, congrArg_mpr_hom_left, Iso.cancel_iso_hom_left]
     convert limit.w (wideCospan s) (WidePullbackShape.Hom.term _)
+    apply arrow_congr
     simp
 
 theorem le_sInf {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈ s, f ≤ g) :
@@ -616,7 +617,7 @@ theorem le_sSup {A : C} (s : Set (Subobject A)) (f) (hf : f ∈ s) : f ≤ sSup 
   · refine eqToHom ?_ ≫ Sigma.ι _ ⟨equivShrink (Subobject A) f, by simpa [Set.mem_image] using hf⟩
       ≫ factorThruImage _ ≫ (underlyingIso _).inv
     exact (congr_arg (fun X : Subobject A => (X : C)) (Equiv.symm_apply_apply _ _).symm)
-  · simp [sSup, smallCoproductDesc]
+  · simp [sSup, smallCoproductDesc, arrow_congr]
 
 theorem symm_apply_mem_iff_mem_image {α β : Type*} (e : α ≃ β) (s : Set α) (x : β) :
     e.symm x ∈ s ↔ x ∈ e '' s :=

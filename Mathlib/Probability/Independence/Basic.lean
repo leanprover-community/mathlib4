@@ -637,7 +637,7 @@ theorem iIndepFun_iff_map_fun_eq_pi_map [Fintype ι] {β : ι → Type*}
     simpa [hm] using hS Finset.univ (sets := h)
   · intro h S s hs
     specialize h₀ (s := fun i ↦ if i ∈ S then s i else univ)
-      fun i ↦ by beta_reduce; split_ifs with hiS <;> simp [hiS, hs]
+      fun i ↦ by split_ifs with hiS <;> simp [hiS, hs]
     simp only [apply_ite, preimage_univ, measure_univ, Finset.prod_ite_mem, Finset.univ_inter,
       Finset.prod_ite, Finset.filter_univ_mem, iInter_ite, iInter_univ, inter_univ, h,
       Measure.pi_pi] at h₀

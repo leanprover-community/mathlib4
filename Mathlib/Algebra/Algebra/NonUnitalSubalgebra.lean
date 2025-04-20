@@ -1007,7 +1007,6 @@ noncomputable def iSupLift [Nonempty ι] (K : ι → NonUnitalSubalgebra R A) (d
           Set.iUnionLift (fun i => ↑(K i)) (fun i x => f i x)
             (fun i j x hxi hxj => by
               let ⟨k, hik, hjk⟩ := dir i j
-              simp only
               rw [hf i k hik, hf j k hjk]
               rfl)
             _ (by rw [coe_iSup_of_directed dir])
