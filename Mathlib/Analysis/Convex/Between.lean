@@ -810,17 +810,13 @@ theorem wbtw_iff_sameRay_vsub {x y z : P} : Wbtw R x y z ↔ SameRay R (y -ᵥ x
     field_simp [(add_pos hr₁ hr₂).ne', hr₂.ne']
     ring
 
-theorem AffineIndependent.not_wbtw {a b c : P} (hT : AffineIndependent R ![a, b, c]) :
-    ¬ Wbtw R a b c := by
-  rw [affineIndependent_iff_not_collinear_set] at hT
-  exact mt (·.collinear) hT
-
 theorem AffineIndependent.not_wbtw_of_injective {ι} (i j k : ι)
     (h : Function.Injective ![i, j, k]) {T : ι → P} (hT : AffineIndependent R T) :
     ¬ Wbtw R (T i) (T j) (T k) := by
-  refine AffineIndependent.not_wbtw ?_
-  convert hT.comp_embedding ⟨_, h⟩ using 1
-  exact FinVec.map_eq _ ![i, j, k]
+  replace hT := hT.comp_embedding ⟨_, h⟩
+  rw [affineIndependent_iff_not_collinear] at hT
+  contrapose! hT
+  simp [Set.range_comp, Set.image_insert_eq, hT.symm.collinear]
 
 variable (R)
 
