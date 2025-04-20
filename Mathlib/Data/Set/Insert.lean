@@ -347,6 +347,10 @@ theorem disjoint_insert_right : Disjoint s (insert a t) ↔ a ∉ s ∧ Disjoint
   obtain ⟨y, hy⟩ := exists_ne x
   exact ⟨y, by simp [hy]⟩
 
+@[simp]
+theorem singleton_ne_univ [Nontrivial α] (a : α) : {a} ≠ univ :=
+  nonempty_compl.mp (nonempty_compl_of_nontrivial a)
+
 theorem mem_compl_singleton_iff {a x : α} : x ∈ ({a} : Set α)ᶜ ↔ x ≠ a :=
   Iff.rfl
 

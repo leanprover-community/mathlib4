@@ -482,6 +482,14 @@ theorem DifferentiableWithinAt.differentiableAt (h : DifferentiableWithinAt 𝕜
 
 /-- If `x` is isolated in `s`, then `f` has any derivative at `x` within `s`,
 as this statement is empty. -/
+theorem HasFDerivWithinAt.of_not_accPt (h : 𝓝[s\{x}] x = ⊥) :
+    HasFDerivWithinAt f f' s x := by
+  rw [← hasFDerivWithinAt_diff_singleton x, HasFDerivWithinAt, h,
+    hasFDerivAtFilter_iff_isLittleOTVS]
+  exact .bot
+
+/-- If `x` is isolated in `s`, then `f` has any derivative at `x` within `s`,
+as this statement is empty. -/
 theorem HasFDerivWithinAt.of_nhdsWithin_eq_bot (h : 𝓝[s\{x}] x = ⊥) :
     HasFDerivWithinAt f f' s x := by
   rw [← hasFDerivWithinAt_diff_singleton x, HasFDerivWithinAt, h,
