@@ -72,8 +72,8 @@ definitional control). -/
 def restrict :
     PerfectPairing R M' N' where
   toLin := p.toLin.compl₁₂ i j
-  bijectiveLeft := p.restrict_aux i j hi hj hij
-  bijectiveRight := p.flip.restrict_aux j i hj hi hij.flip
+  bijective_left := p.restrict_aux i j hi hj hij
+  bijective_right := p.flip.restrict_aux j i hj hi hij.flip
 
 @[simp]
 lemma restrict_apply_apply (x : M') (y : N') :
@@ -115,7 +115,7 @@ private lemma restrictScalarsAux_injective
     | zero => simp
     | add => rw [← p.toLin_apply, map_add]; aesop
     | smul => rw [← p.toLin_apply, map_smul]; aesop
-  rw [← i.map_eq_zero_iff hi, ← p.toLin.map_eq_zero_iff p.bijectiveLeft.injective]
+  rw [← i.map_eq_zero_iff hi, ← p.toLin.map_eq_zero_iff p.bijective_left.injective]
   ext n
   simpa using hx n
 
@@ -145,9 +145,9 @@ def restrictScalars
     (hp : ∀ m n, p (i m) (j n) ∈ (algebraMap S R).range) :
     PerfectPairing S M' N' :=
   { toLin := p.restrictScalarsAux i j hp
-    bijectiveLeft := ⟨p.restrictScalarsAux_injective i j hi hN hp,
+    bijective_left := ⟨p.restrictScalarsAux_injective i j hi hN hp,
       p.restrictScalarsAux_surjective i j h₁ hp⟩
-    bijectiveRight := ⟨p.flip.restrictScalarsAux_injective j i hj hM (fun m n ↦ hp n m),
+    bijective_right := ⟨p.flip.restrictScalarsAux_injective j i hj hM (fun m n ↦ hp n m),
       p.flip.restrictScalarsAux_surjective j i h₂ (fun m n ↦ hp n m)⟩}
 
 end RestrictScalars

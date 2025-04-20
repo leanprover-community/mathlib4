@@ -81,7 +81,7 @@ lemma injOn_dualMap_subtype_span_root_coroot [NoZeroSMulDivisors ℤ M] :
   have := injOn_dualMap_subtype_span_range_range (finite_range P.root)
     (c := P.toLin.flip ∘ P.coroot) P.root_coroot_two P.mapsTo_reflection_root
   rintro - ⟨i, rfl⟩ - ⟨j, rfl⟩ hij
-  exact P.bijectiveRight.injective <| this (mem_range_self i) (mem_range_self j) hij
+  exact P.bijective_right.injective <| this (mem_range_self i) (mem_range_self j) hij
 
 /-- In characteristic zero if there is no torsion, the correspondence between roots and coroots is
 unique.
@@ -143,7 +143,7 @@ private lemma coroot_eq_coreflection_of_root_eq' [CharZero R] [NoZeroSMulDivisor
       LinearMap.smul_apply]
     rw [mul_comm (p (root i) (coroot j))]
     abel
-  suffices p.flip (coroot k) = p.flip (coroot l) from p.bijectiveRight.injective this
+  suffices p.flip (coroot k) = p.flip (coroot l) from p.bijective_right.injective this
   have _i : NoZeroSMulDivisors ℤ M := NoZeroSMulDivisors.int_of_charZero R M
   have := injOn_dualMap_subtype_span_range_range (finite_range root)
     (c := p.flip ∘ coroot) hp hr
@@ -202,7 +202,7 @@ protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
   clear! P₁ P₂
   rintro P₁ P₂ he hr - ⟨i, rfl⟩
   use i
-  apply P₁.bijectiveRight.injective
+  apply P₁.bijective_right.injective
   apply Dual.eq_of_preReflection_mapsTo (finite_range P₁.root) P₁.span_root_eq_top
   · exact hr ▸ he ▸ P₂.coroot_root_two i
   · exact hr ▸ he ▸ P₂.mapsTo_reflection_root i
@@ -231,7 +231,7 @@ private lemma coroot_eq_coreflection_of_root_eq_of_span_eq_top [CharZero R] [NoZ
     simp [α, β, α', β', sα, sβ, sα', ← preReflection_preReflection β (p.flip β') hpi,
       preReflection_apply] -- v4.7.0-rc1 issues
   have hk₀ : root k ≠ 0 := fun h ↦ by simpa [h, ← PerfectPairing.toLin_apply] using hp k
-  apply p.bijectiveRight.injective
+  apply p.bijective_right.injective
   apply Dual.eq_of_preReflection_mapsTo (finite_range root) hsp (hp k) (hs k)
   · simp [map_sub, α, β, α', β', sα, sβ, sα', hk, preReflection_apply, hp i, hp j, mul_two,
       mul_comm (p α β')]
