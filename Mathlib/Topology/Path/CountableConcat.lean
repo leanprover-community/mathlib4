@@ -15,11 +15,10 @@ through some convergent sequence of points.
 
 ## Main definitions
 
-* `Path.countableConcat γ x hb hγ` is the concatenation of countably many paths `γ n` leading up to
-  some point `x`, given an antitone neighbourhood basis `b : ℕ → Set X` at `x` such that `γ n` lies
-  in `b n` for all `n`.
+* `Path.countableConcat γ x hγx`: the concatenation of countably many paths `γ n` leading up to
+  some point `x`, given that these paths converge in some precise sense (`hγx`) to `x`.
 * `Path.countableConcat_eq_trans`: the recurrence relation fulfilled by `Path.countableConcat`,
-  showing that `Path.countableConcat γ x hb hγ` is the concatenation of `γ 0` with the countable
+  showing that `Path.countableConcat γ x hγx` is the concatenation of `γ 0` with the countable
   concatenation with the remaining paths.
 * `Path.map_countableConcat`: countable concatenation commutes with `Path.map`, i.e. the image of a
   countable concatenation of paths is the concatenation of the images.
