@@ -310,7 +310,7 @@ theorem linearIndependent_of_ne_zero_of_inner_eq_zero {ι : Type*} {v : ι → E
   have h' : g i * inner (v i) (v i) = inner (v i) (∑ j ∈ s, g j • v j) := by
     rw [inner_sum]
     symm
-    convert Finset.sum_eq_single (β := 𝕜) i ?_ ?_
+    convert Finset.sum_eq_single (M := 𝕜) i ?_ ?_
     · rw [inner_smul_right]
     · intro j _hj hji
       rw [inner_smul_right, ho hji.symm, mul_zero]

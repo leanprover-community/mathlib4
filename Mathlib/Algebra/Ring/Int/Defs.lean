@@ -41,7 +41,7 @@ instance instCommRing : CommRing ℤ where
 
 -- Note that the built-in `Lean.Grind.CommRing` instance is *not* definitionally equal to the one
 -- constructed from Mathlib's `CommRing ℤ` instance,
--- because the `ofNat` field constructed in Mathlib is definited differently at 0 and 1.
+-- because the `ofNat` field constructed in Mathlib is defined differently at 0 and 1.
 -- Hence the following example would fail:
 -- example : CommRing.toGrindCommRing (α := Int) = Lean.Grind.instCommRingInt := by
 --   with_reducible_and_instances rfl
