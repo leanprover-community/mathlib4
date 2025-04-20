@@ -331,7 +331,6 @@ theorem Set.Countable.isLindelof_biUnion {s : Set ι} {f : ι → Set X} (hs : s
     intro x hx
     exact mem_biUnion is ((hr i is).2 hx)
 
-
 theorem Set.Finite.isLindelof_biUnion {s : Set ι} {f : ι → Set X} (hs : s.Finite)
     (hf : ∀ i ∈ s, IsLindelof (f i)) : IsLindelof (⋃ i ∈ s, f i) :=
   Set.Countable.isLindelof_biUnion (countable hs) hf
@@ -485,8 +484,7 @@ instance (priority := 10) Subsingleton.lindelofSpace [Subsingleton X] : Lindelof
 theorem isLindelof_univ_iff : IsLindelof (univ : Set X) ↔ LindelofSpace X :=
   ⟨fun h => ⟨h⟩, fun h => h.1⟩
 
-theorem isLindelof_univ [h : LindelofSpace X] : IsLindelof (univ : Set X) :=
-  h.isLindelof_univ
+export LindelofSpace (isLindelof_univ)
 
 theorem cluster_point_of_Lindelof [LindelofSpace X] (f : Filter X) [NeBot f]
     [CountableInterFilter f] : ∃ x, ClusterPt x f := by
@@ -508,8 +506,8 @@ theorem IsClosed.isLindelof [LindelofSpace X] (h : IsClosed s) : IsLindelof s :=
   isLindelof_univ.of_isClosed_subset h (subset_univ _)
 
 /-- A compact set `s` is Lindelöf. -/
-theorem IsCompact.isLindelof (hs : IsCompact s) :
-    IsLindelof s := by tauto
+theorem IsCompact.isLindelof (hs : IsCompact s) : IsLindelof s :=
+  fun _ _ _ ht => hs.exists_clusterPt ht
 
 /-- A σ-compact set `s` is Lindelöf -/
 theorem IsSigmaCompact.isLindelof (hs : IsSigmaCompact s) :
@@ -521,12 +519,12 @@ theorem IsSigmaCompact.isLindelof (hs : IsSigmaCompact s) :
   exact isLindelof_iUnion hl
 
 /-- A compact space `X` is Lindelöf. -/
-instance (priority := 100) [CompactSpace X] : LindelofSpace X :=
-  { isLindelof_univ := isCompact_univ.isLindelof}
+instance (priority := 100) [CompactSpace X] : LindelofSpace X where
+  isLindelof_univ := isCompact_univ.isLindelof
 
 /-- A sigma-compact space `X` is Lindelöf. -/
-instance (priority := 100) [SigmaCompactSpace X] : LindelofSpace X :=
-  { isLindelof_univ := isSigmaCompact_univ.isLindelof}
+instance (priority := 100) [SigmaCompactSpace X] : LindelofSpace X where
+  isLindelof_univ := isSigmaCompact_univ.isLindelof
 
 /-- `X` is a non-Lindelöf topological space if it is not a Lindelöf space. -/
 class NonLindelofSpace (X : Type*) [TopologicalSpace X] : Prop where
@@ -560,13 +558,12 @@ theorem nonLindelofSpace_of_neBot (_ : NeBot (Filter.coLindelof X)) : NonLindelo
 theorem Filter.coLindelof_neBot_iff : NeBot (Filter.coLindelof X) ↔ NonLindelofSpace X :=
   ⟨nonLindelofSpace_of_neBot, fun _ => inferInstance⟩
 
-
 theorem not_LindelofSpace_iff : ¬LindelofSpace X ↔ NonLindelofSpace X :=
   ⟨fun h₁ => ⟨fun h₂ => h₁ ⟨h₂⟩⟩, fun ⟨h₁⟩ ⟨h₂⟩ => h₁ h₂⟩
 
 /-- A compact space `X` is Lindelöf. -/
-instance (priority := 100) [CompactSpace X] : LindelofSpace X :=
-  { isLindelof_univ := isCompact_univ.isLindelof}
+instance (priority := 100) [CompactSpace X] : LindelofSpace X where
+  isLindelof_univ := isCompact_univ.isLindelof
 
 theorem countable_of_Lindelof_of_discrete [LindelofSpace X] [DiscreteTopology X] : Countable X :=
   countable_univ_iff.mp isLindelof_univ.countable_of_discrete
@@ -600,7 +597,7 @@ theorem isLindelof_diagonal [LindelofSpace X] : IsLindelof (diagonal X) :=
   @range_diag X ▸ isLindelof_range (continuous_id.prodMk continuous_id)
 
 /-- If `f : X → Y` is an inducing map, the image `f '' s` of a set `s` is Lindelöf
-  if and only if `s` is compact. -/
+  if and only if `s` is Lindelöf. -/
 theorem Topology.IsInducing.isLindelof_iff {f : X → Y} (hf : IsInducing f) :
     IsLindelof s ↔ IsLindelof (f '' s) := by
   refine ⟨fun hs => hs.image hf.continuous, fun hs F F_ne_bot _ F_le => ?_⟩
@@ -671,8 +668,10 @@ protected theorem Topology.IsClosedEmbedding.nonLindelofSpace [NonLindelofSpace 
 alias ClosedEmbedding.nonLindelofSpace := IsClosedEmbedding.nonLindelofSpace
 
 protected theorem Topology.IsClosedEmbedding.LindelofSpace [h : LindelofSpace Y] {f : X → Y}
-    (hf : IsClosedEmbedding f) : LindelofSpace X :=
-  ⟨by rw [hf.isInducing.isLindelof_iff, image_univ]; exact hf.isClosed_range.isLindelof⟩
+    (hf : IsClosedEmbedding f) : LindelofSpace X where
+  isLindelof_univ := by
+    rw [hf.isInducing.isLindelof_iff, image_univ]
+    exact hf.isClosed_range.isLindelof
 
 @[deprecated (since := "2024-10-20")]
 alias ClosedEmbedding.LindelofSpace := IsClosedEmbedding.LindelofSpace
@@ -706,32 +705,183 @@ theorem LindelofSpace.of_continuous_surjective {f : X → Y} [LindelofSpace X] (
     (hsur : Function.Surjective f) : LindelofSpace Y where
   isLindelof_univ := by
     rw [← Set.image_univ_of_surjective hsur]
-    exact IsLindelof.image (isLindelof_univ_iff.mpr ‹_›) hf
+    exact IsLindelof.image isLindelof_univ hf
 
-/-- A set `s` is Hereditarily Lindelöf if every subset is a Lindelof set. We require this only
-for open sets in the definition, and then conclude that this holds for all sets by ADD. -/
+/-- A set `s` is Hereditarily Lindelöf if every subset is a Lindelof set. -/
 def IsHereditarilyLindelof (s : Set X) :=
   ∀ t ⊆ s, IsLindelof t
+
+lemma IsHereditarilyLindelof.isLindelof_subset (hs : IsHereditarilyLindelof s) (ht : t ⊆ s) :
+    IsLindelof t := hs t ht
+
+lemma IsHereditarilyLindelof.isHereditarilyLindelof_subset (hs : IsHereditarilyLindelof s)
+    (ht : t ⊆ s) : IsHereditarilyLindelof t := fun u hu => hs u (hu.trans ht)
+
+lemma IsHereditarilyLindelof.isLindelof (hs : IsHereditarilyLindelof s) :
+    IsLindelof s := hs.isLindelof_subset Subset.rfl
+
+/-- A continuous image of a Hereditarily Lindelöf set is a Hereditarily Lindelöf set. -/
+theorem IsHereditarilyLindelof.image_of_continuousOn {f : X → Y} (hs : IsHereditarilyLindelof s)
+    (hf : ContinuousOn f s) : IsHereditarilyLindelof (f '' s) := by
+  intro t hst
+  rw [← inter_eq_left.mpr hst, ← image_preimage_inter]
+  exact ((hs.isLindelof_subset inter_subset_right).image_of_continuousOn
+    (hf.mono inter_subset_right))
+
+/-- A continuous image of a Hereditraily Lindelöf set is a
+Hereditarily Lindelöf set within the codomain. -/
+theorem IsHereditarilyLindelof.image {f : X → Y} (hs : IsHereditarilyLindelof s)
+    (hf : Continuous f) : IsHereditarilyLindelof (f '' s) :=
+  hs.image_of_continuousOn hf.continuousOn
+
+theorem Set.Subsingleton.isHereditarilyLindelof (hs : s.Subsingleton) : IsHereditarilyLindelof s :=
+  fun _ h => (hs.anti h).isLindelof
+
+/-- The empty set is a Hereditarily Lindelof set. -/
+@[simp]
+theorem isHereditarilyLindelof_empty : IsHereditarilyLindelof (∅ : Set X) :=
+  subsingleton_empty.isHereditarilyLindelof
+
+/-- A singleton set is a Lindelof set. -/
+@[simp]
+theorem isHereditarilyLindelof_singleton {x : X} : IsHereditarilyLindelof ({x} : Set X) :=
+  subsingleton_singleton.isHereditarilyLindelof
+
+theorem Set.Countable.isHereditarilyLindelof_biUnion {s : Set ι} {f : ι → Set X} (hs : s.Countable)
+    (hf : ∀ i ∈ s, IsHereditarilyLindelof (f i)) : IsHereditarilyLindelof (⋃ i ∈ s, f i) := by
+  intro t hst
+  rw [← inter_eq_left.mpr hst, inter_iUnion₂]
+  exact hs.isLindelof_biUnion fun i hi => (hf i hi).isLindelof_subset inter_subset_right
+
+theorem Set.Finite.isHereditarilyLindelof_biUnion {s : Set ι} {f : ι → Set X} (hs : s.Finite)
+    (hf : ∀ i ∈ s, IsHereditarilyLindelof (f i)) : IsHereditarilyLindelof (⋃ i ∈ s, f i) :=
+  hs.countable.isHereditarilyLindelof_biUnion hf
+
+theorem Finset.isHereditarilyLindelof_biUnion (s : Finset ι) {f : ι → Set X}
+    (hf : ∀ i ∈ s, IsHereditarilyLindelof (f i)) : IsHereditarilyLindelof (⋃ i ∈ s, f i) :=
+  s.finite_toSet.isHereditarilyLindelof_biUnion hf
+
+theorem isHereditrailyLindelof_accumulate {K : ℕ → Set X}
+    (hK : ∀ n, IsHereditarilyLindelof (K n)) (n : ℕ) : IsHereditarilyLindelof (Accumulate K n) :=
+  (finite_le_nat n).isHereditarilyLindelof_biUnion fun k _ => hK k
+
+theorem Set.Countable.isHereditarilyLindelof_sUnion {S : Set (Set X)} (hf : S.Countable)
+    (hc : ∀ s ∈ S, IsHereditarilyLindelof s) : IsHereditarilyLindelof (⋃₀ S) := by
+  rw [sUnion_eq_biUnion]; exact hf.isHereditarilyLindelof_biUnion hc
+
+theorem Set.Finite.isHereditarilyLindelof_sUnion {S : Set (Set X)} (hf : S.Finite)
+    (hc : ∀ s ∈ S, IsHereditarilyLindelof s) : IsHereditarilyLindelof (⋃₀ S) := by
+  rw [sUnion_eq_biUnion]; exact hf.isHereditarilyLindelof_biUnion hc
+
+theorem isHereditarilyLindelof_iUnion {ι : Sort*} {f : ι → Set X} [Countable ι]
+    (h : ∀ i, IsHereditarilyLindelof (f i)) : IsHereditarilyLindelof (⋃ i, f i) :=
+  (countable_range f).isHereditarilyLindelof_sUnion (forall_mem_range.2 h)
+
+theorem Set.Countable.isHereditarilyLindelof (hs : s.Countable) : IsHereditarilyLindelof s :=
+  biUnion_of_singleton s ▸ hs.isHereditarilyLindelof_biUnion
+    fun _ _ => isHereditarilyLindelof_singleton
+
+theorem Set.Finite.isHereditarilyLindelof (hs : s.Finite) : IsHereditarilyLindelof s :=
+  hs.countable.isHereditarilyLindelof
+
+theorem isHereditarilyLindelof_iff_countable [DiscreteTopology X] :
+    IsHereditarilyLindelof s ↔ s.Countable :=
+  ⟨fun h => h.isLindelof.countable_of_discrete, fun h => h.isHereditarilyLindelof⟩
+
+theorem IsHereditarilyLindelof.union (hs : IsHereditarilyLindelof s)
+    (ht : IsHereditarilyLindelof t) : IsHereditarilyLindelof (s ∪ t) := by
+  rw [union_eq_iUnion]; exact isHereditarilyLindelof_iUnion fun b => by cases b <;> assumption
+
+protected theorem IsHereditarilyLindelof.insert (hs : IsHereditarilyLindelof s) (a) :
+    IsHereditarilyLindelof (insert a s) :=
+  isHereditarilyLindelof_singleton.union hs
+
+/-- If `f : X → Y` is an inducing map, the image `f '' s` of a set `s` is Hereditarily Lindelöf
+  if and only if `s` is Hereditarily Lindelöf. -/
+theorem Topology.IsInducing.isHereditarilyLindelof_iff {f : X → Y} (hf : IsInducing f) :
+    IsHereditarilyLindelof s ↔ IsHereditarilyLindelof (f '' s) := by
+  refine ⟨fun hs => hs.image hf.continuous, fun hs t hst => ?_⟩
+  rw [hf.isLindelof_iff]
+  exact hs.isLindelof_subset (image_mono hst)
+
+/-- If `f : X → Y` is an embedding, the image `f '' s` of a set `s` is Lindelöf
+if and only if `s` is Lindelöf. -/
+theorem Topology.IsEmbedding.isHereditarilyLindelof_iff {f : X → Y} (hf : IsEmbedding f) :
+    IsHereditarilyLindelof s ↔ IsHereditarilyLindelof (f '' s) :=
+  hf.isInducing.isHereditarilyLindelof_iff
+
+/-- The preimage of a Hereditarily Lindelöf set under
+an inducing map is a Hereditarily Lindelöf set. -/
+theorem Topology.IsInducing.isHereditarilyLindelof_preimage {f : X → Y} (hf : IsInducing f)
+    {K : Set Y} (hK : IsHereditarilyLindelof K) : IsHereditarilyLindelof (f ⁻¹' K) := by
+  rw [hf.isHereditarilyLindelof_iff, image_preimage_eq_inter_range]
+  exact hK.isHereditarilyLindelof_subset inter_subset_left
+
+/-- The preimage of a Lindelöf set under a closed embedding is a Lindelöf set. -/
+theorem Topology.IsEmbedding.isHereditarilyLindelof_preimage {f : X → Y} (hf : IsEmbedding f)
+    {K : Set Y} (hK : IsHereditarilyLindelof K) : IsHereditarilyLindelof (f ⁻¹' K) :=
+  hf.isInducing.isHereditarilyLindelof_preimage hK
+
+/-- Sets of subtype are Lindelöf iff the image under a coercion is. -/
+theorem Subtype.isHereditarilyLindelof_iff {p : X → Prop} {s : Set { x // p x }} :
+    IsHereditarilyLindelof s ↔ IsHereditarilyLindelof ((↑) '' s : Set X) :=
+  IsEmbedding.subtypeVal.isHereditarilyLindelof_iff
+
+theorem isHereditarilyLindelof_iff_isHereditarilyLindelof_univ :
+    IsHereditarilyLindelof s ↔ IsHereditarilyLindelof (univ : Set s) := by
+  rw [Subtype.isHereditarilyLindelof_iff, image_univ, Subtype.range_coe]
+
+instance {X : ι → Type*} [Countable ι] [∀ i, TopologicalSpace (X i)] [∀ i, LindelofSpace (X i)] :
+    LindelofSpace (Σi, X i) where
+  isLindelof_univ := by
+    rw [Sigma.univ]
+    exact isLindelof_iUnion fun i => isLindelof_range continuous_sigmaMk
 
 /-- Type class for Hereditarily Lindelöf spaces. -/
 class HereditarilyLindelofSpace (X : Type*) [TopologicalSpace X] : Prop where
   /-- In a Hereditarily Lindelöf space, `Set.univ` is a Hereditarily Lindelöf set. -/
   isHereditarilyLindelof_univ : IsHereditarilyLindelof (univ : Set X)
 
-lemma IsHereditarilyLindelof.isLindelof_subset (hs : IsHereditarilyLindelof s) (ht : t ⊆ s) :
-    IsLindelof t := hs t ht
+export HereditarilyLindelofSpace (isHereditarilyLindelof_univ)
 
-lemma IsHereditarilyLindelof.isLindelof (hs : IsHereditarilyLindelof s) :
-    IsLindelof s := hs.isLindelof_subset Subset.rfl
+theorem isHereditarilyLindelof_univ_iff :
+    IsHereditarilyLindelof (univ : Set X) ↔ HereditarilyLindelofSpace X :=
+  ⟨fun h => ⟨h⟩, fun h => h.1⟩
+
+theorem isHereditarilyLindelof_range [HereditarilyLindelofSpace X] {f : X → Y} (hf : Continuous f) :
+    IsHereditarilyLindelof (range f) := by
+  rw [← image_univ]; exact isHereditarilyLindelof_univ.image hf
+
+theorem isHereditarilyLindelof_iff_HereditarilyLindelofSpace :
+    IsHereditarilyLindelof s ↔ HereditarilyLindelofSpace s :=
+  isHereditarilyLindelof_iff_isHereditarilyLindelof_univ.trans isHereditarilyLindelof_univ_iff
+
+lemma IsHereditarilyLindelof.of_coe [HereditarilyLindelofSpace s] : IsHereditarilyLindelof s :=
+  isHereditarilyLindelof_iff_HereditarilyLindelofSpace.mpr ‹_›
+
+protected theorem Topology.IsEmbedding.HereditarilyLindelofSpace
+    [h : HereditarilyLindelofSpace Y] {f : X → Y}
+    (hf : IsEmbedding f) : HereditarilyLindelofSpace X where
+  isHereditarilyLindelof_univ := by
+    rw [hf.isInducing.isHereditarilyLindelof_iff]
+    exact isHereditarilyLindelof_univ.isHereditarilyLindelof_subset (subset_univ (f '' univ))
+
+/-- The disjoint union of two Hereditarily Lindelöf spaces is Hereditarily Lindelöf. -/
+instance [HereditarilyLindelofSpace X] [HereditarilyLindelofSpace Y] :
+    HereditarilyLindelofSpace (X ⊕ Y) where
+  isHereditarilyLindelof_univ := by
+    rw [← range_inl_union_range_inr]
+    exact (isHereditarilyLindelof_range continuous_inl).union
+      (isHereditarilyLindelof_range continuous_inr)
 
 instance (priority := 100) HereditarilyLindelof.to_Lindelof [HereditarilyLindelofSpace X] :
     LindelofSpace X where
   isLindelof_univ := HereditarilyLindelofSpace.isHereditarilyLindelof_univ.isLindelof
 
+@[deprecated "Use `isHereditarilyLindelof_univ` and `IsHereditarilyLindelof.isLindelof_subset`"
+  (since := "2025-04-19")]
 theorem HereditarilyLindelof_LindelofSets [HereditarilyLindelofSpace X] (s : Set X) :
-    IsLindelof s := by
-  apply HereditarilyLindelofSpace.isHereditarilyLindelof_univ
-  exact subset_univ s
+    IsLindelof s := isHereditarilyLindelof_univ.isLindelof_subset (subset_univ s)
 
 instance (priority := 100) SecondCountableTopology.toHereditarilyLindelof
     [SecondCountableTopology X] : HereditarilyLindelofSpace X where
@@ -741,27 +891,40 @@ instance (priority := 100) SecondCountableTopology.toHereditarilyLindelof
     have := @isOpen_iUnion_countable X _ _ ι U hι
     rcases this with ⟨t, ⟨htc, htu⟩⟩
     use t, htc
-    exact subset_of_subset_of_eq hcover (id htu.symm)
+    exact subset_of_subset_of_eq hcover htu.symm
 
-theorem Set.Countable.isHereditarilyLindelof {s : Set X} (hs : s.Countable) :
-    IsHereditarilyLindelof s := fun _ hst =>
-  have := (hs.mono hst).to_subtype
-  isLindelof_iff_LindelofSpace.2 inferInstance
-
-instance (priority := 100) Countable.toHereditarilyLindelof [Countable X] :
+/-- Countable topological spaces are Hereditarily Lindelof. -/
+instance (priority := 100) Countable.toHereditarilyLindelofSpace [Countable X] :
     HereditarilyLindelofSpace X where
   isHereditarilyLindelof_univ := Set.countable_univ.isHereditarilyLindelof
 
+instance Quot.HereditarilyLindelofSpace {r : X → X → Prop} [HereditarilyLindelofSpace X] :
+    HereditarilyLindelofSpace (Quot r) where
+  isHereditarilyLindelof_univ := by
+    rw [← range_quot_mk]
+    exact isHereditarilyLindelof_range continuous_quot_mk
+
+instance Quotient.HereditarilyLindelofSpace {s : Setoid X} [HereditarilyLindelofSpace X] :
+    HereditarilyLindelofSpace (Quotient s) :=
+  Quot.HereditarilyLindelofSpace
+
+/-- A continuous image of a Hereditarily Lindelöf space is a Hereditarily Lindelöf space. -/
+theorem HereditarilyLindelofSpace.of_continuous_surjective {f : X → Y} [HereditarilyLindelofSpace X]
+    (hf : Continuous f) (hsur : Function.Surjective f) : HereditarilyLindelofSpace Y where
+  isHereditarilyLindelof_univ := by
+    rw [← Set.image_univ_of_surjective hsur]
+    exact IsHereditarilyLindelof.image isHereditarilyLindelof_univ hf
+
 lemma eq_open_union_countable [HereditarilyLindelofSpace X] {ι : Type u} (U : ι → Set X)
-    (h : ∀ i, IsOpen (U i)) : ∃ t : Set ι, t.Countable ∧ ⋃ i∈t, U i = ⋃ i, U i := by
-  have : IsLindelof (⋃ i, U i) := HereditarilyLindelof_LindelofSets (⋃ i, U i)
+    (h : ∀ i, IsOpen (U i)) : ∃ t : Set ι, t.Countable ∧ ⋃ i ∈ t, U i = ⋃ i, U i := by
+  have := isHereditarilyLindelof_univ.isLindelof_subset (subset_univ (⋃ i, U i))
   rcases isLindelof_iff_countable_subcover.mp this U h (Eq.subset rfl) with ⟨t, ⟨htc, htu⟩⟩
   use t, htc
   apply eq_of_subset_of_subset (iUnion₂_subset_iUnion (fun i ↦ i ∈ t) fun i ↦ U i) htu
 
-instance HereditarilyLindelof.lindelofSpace_subtype [HereditarilyLindelofSpace X] (p : X → Prop) :
-    LindelofSpace {x // p x} := by
-  apply isLindelof_iff_LindelofSpace.mp
-  exact HereditarilyLindelof_LindelofSets fun x ↦ p x
+instance Subtype.HereditarilyLindelofSpace
+    [HereditarilyLindelofSpace X] (p : X → Prop) : HereditarilyLindelofSpace {x // p x} := by
+  apply isHereditarilyLindelof_iff_HereditarilyLindelofSpace.mp
+  exact isHereditarilyLindelof_univ.isHereditarilyLindelof_subset (subset_univ {x | p x})
 
 end Lindelof
