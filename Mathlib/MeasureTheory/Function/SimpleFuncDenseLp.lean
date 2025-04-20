@@ -709,7 +709,7 @@ variable {G : Type*} [NormedAddCommGroup G]
 theorem coeFn_le [PartialOrder G] (f g : Lp.simpleFunc G p μ) : (f : α → G) ≤ᵐ[μ] g ↔ f ≤ g := by
   rw [← Subtype.coe_le_coe, ← Lp.coeFn_le]
 
-instance instAddLeftMono [PartialOrder G] [ClosedIciTopology G] [IsOrderedAddMonoid G] :
+instance instAddLeftMono [PartialOrder G] [IsOrderedAddMonoid G] :
     AddLeftMono (Lp.simpleFunc G p μ) := by
   refine ⟨fun f g₁ g₂ hg₁₂ => ?_⟩
   exact add_le_add_left hg₁₂ f

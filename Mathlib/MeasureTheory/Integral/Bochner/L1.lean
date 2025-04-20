@@ -140,7 +140,7 @@ theorem dominatedFinMeasAdditive_weightedSMul {_ : MeasurableSpace α} (μ : Mea
     DominatedFinMeasAdditive μ (weightedSMul μ : Set α → F →L[ℝ] F) 1 :=
   ⟨weightedSMul_union, fun s _ _ => (norm_weightedSMul_le s).trans (one_mul _).symm.le⟩
 
-theorem weightedSMul_nonneg [PartialOrder F] [IsOrderedAddMonoid F] [OrderedSMul ℝ F]
+theorem weightedSMul_nonneg [PartialOrder F] [OrderedSMul ℝ F]
     (s : Set α) (x : F) (hx : 0 ≤ x) : 0 ≤ weightedSMul μ s x := by
   simp only [weightedSMul, Algebra.id.smul_eq_mul, coe_smul', _root_.id, coe_id', Pi.smul_apply]
   exact smul_nonneg toReal_nonneg hx
