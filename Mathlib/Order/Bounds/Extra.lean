@@ -20,7 +20,7 @@ universe u v
 variable {α : Type u} {β : Type v}
 variable [Preorder α] [Preorder β] {f : α → β}
 
-lemma Set.Dominated.image_of_monotone {s₁ s₂ : Set α} (h : Dominated s₁ s₂) (Hf : Monotone f) :
+lemma Dominated.image_of_monotone {s₁ s₂ : Set α} (h : Dominated s₁ s₂) (Hf : Monotone f) :
     Dominated (f '' s₁) (f '' s₂) := fun a ha => by
   obtain ⟨c, hcs, hcfa⟩ := ha
   obtain ⟨d, hdd, hcd⟩ := h c hcs
@@ -28,7 +28,7 @@ lemma Set.Dominated.image_of_monotone {s₁ s₂ : Set α} (h : Dominated s₁ s
   rw [← hcfa]
   exact ⟨d, ⟨hdd, Hf hcd⟩⟩
 
-lemma Set.Dominated.image_of_antitone {s₁ s₂ : Set α} (h : Dominated s₁ s₂) (Hf : Antitone f) :
+lemma Dominated.image_of_antitone {s₁ s₂ : Set α} (h : Dominated s₁ s₂) (Hf : Antitone f) :
     Codominated (f '' s₁) (f '' s₂) := fun a ha => by
   obtain ⟨c, hcs, hcfa⟩ := ha
   obtain ⟨d, hdd, hcd⟩ := h c hcs
@@ -36,7 +36,7 @@ lemma Set.Dominated.image_of_antitone {s₁ s₂ : Set α} (h : Dominated s₁ s
   rw [← hcfa]
   exact ⟨d, ⟨hdd, Hf hcd⟩⟩
 
-lemma Set.Codominated.image_of_monotone {s₁ s₂ : Set α} (h : Codominated s₁ s₂) (Hf : Monotone f) :
+lemma Codominated.image_of_monotone {s₁ s₂ : Set α} (h : Codominated s₁ s₂) (Hf : Monotone f) :
     Codominated (f '' s₁) (f '' s₂) := fun a ha => by
   obtain ⟨c, hcs, hcfa⟩ := ha
   obtain ⟨d, hdd, hcd⟩ := h c hcs
@@ -44,7 +44,7 @@ lemma Set.Codominated.image_of_monotone {s₁ s₂ : Set α} (h : Codominated s�
   rw [← hcfa]
   exact ⟨d, ⟨hdd, Hf hcd⟩⟩
 
-lemma Set.Codominated.image_of_antitone {s₁ s₂ : Set α} (h : Codominated s₁ s₂) (Hf : Antitone f) :
+lemma Codominated.image_of_antitone {s₁ s₂ : Set α} (h : Codominated s₁ s₂) (Hf : Antitone f) :
     Dominated (f '' s₁) (f '' s₂) := fun a ha => by
   obtain ⟨c, hcs, hcfa⟩ := ha
   obtain ⟨d, hdd, hcd⟩ := h c hcs

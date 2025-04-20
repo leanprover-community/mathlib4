@@ -22,8 +22,8 @@ Given a type `X` and a predicate `p : X → Prop`:
 * `{f x y | (x : X) (y : Y)} : Set Z` : a more concise notation for `{z : Z | ∃ x y, f x y = z}`
 * `{a ∈ S | p a} : Set X` : given `S : Set X`, the subset of `S` consisting of
    its elements satisfying `p`
-* `Set.Dominated s₁ s₂` : for all `a` in `s₁` there exists `b` in `s₂` such that `a ≤ b`
-* `Set.Codominated s₁ s₂` : for all `a` in `s₁` there exists `b` in `s₂` such that `a ≥ b`.
+* `Dominated s₁ s₂` : for all `a` in `s₁` there exists `b` in `s₂` such that `a ≤ b`
+* `Codominated s₁ s₂` : for all `a` in `s₁` there exists `b` in `s₂` such that `a ≥ b`.
 
 ## Implementation issues
 
@@ -262,6 +262,8 @@ to the dot notation. -/
 protected def Nonempty (s : Set α) : Prop :=
   ∃ x, x ∈ s
 
+end Set
+
 /-- A set `s₁` is said to be dominated by a set `s₂` if, for all `a` in `s₁` there exists `b` in
 `s₂` such that `a ≤ b`.
 -/
@@ -271,5 +273,3 @@ def Dominated [LE α] (s₁ s₂ : Set α) := ∀ a ∈ s₁, ∃ b ∈ s₂, a 
 `s₂` such that `a ≥ b`.
 -/
 def Codominated [LE α] (s₁ s₂ : Set α) := ∀ a ∈ s₁, ∃ b ∈ s₂, a ≥ b
-
-end Set
