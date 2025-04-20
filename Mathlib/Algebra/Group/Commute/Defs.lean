@@ -30,7 +30,7 @@ variable {G M S : Type*}
 
 /-- Two elements commute if `a * b = b * a`. -/
 @[to_additive "Two elements additively commute if `a + b = b + a`"]
-def Commute [Mul S] (a b : S) : Prop :=
+abbrev Commute [Mul S] (a b : S) : Prop :=
   SemiconjBy a b b
 
 /--
