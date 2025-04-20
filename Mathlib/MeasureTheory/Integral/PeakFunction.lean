@@ -292,7 +292,7 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_measure_n
     have t'_pos : 0 < t' := t_pos.trans_lt tt'
     obtain ⟨v, v_open, x₀_v, hv⟩ : ∃ v : Set α, IsOpen v ∧ x₀ ∈ v ∧ v ∩ s ⊆ c ⁻¹' Ioi t' :=
       _root_.continuousOn_iff.1 hc x₀ h₀ (Ioi t') isOpen_Ioi t'x₀
-    have M : ∀ n, ∀ x ∈ s \ u, φ n x ≤ (μ.real (v ∩ s)) ⁻¹ * (t / t') ^ n := by
+    have M : ∀ n, ∀ x ∈ s \ u, φ n x ≤ (μ.real (v ∩ s))⁻¹ * (t / t') ^ n := by
       intro n x hx
       have B : t' ^ n * μ.real (v ∩ s) ≤ ∫ y in s, c y ^ n ∂μ :=
         calc
