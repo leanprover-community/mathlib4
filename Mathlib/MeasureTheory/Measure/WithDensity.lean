@@ -628,30 +628,55 @@ theorem sFinite_of_absolutelyContinuous {ν : Measure α} [SFinite ν] (hμν : 
     restrict_compl_sigmaFiniteSetWRT hμν]
   infer_instance
 
-theorem prod_withDensity₀ {β : Type*} {mβ : MeasurableSpace β}
-    {μ : Measure α} {ν : Measure β} [SFinite ν] {f : α → ℝ≥0∞} {g : β → ℝ≥0∞}
-    (hf : AEMeasurable f μ) (hg : AEMeasurable g ν) : (μ.withDensity f).prod (ν.withDensity g)
-    = (μ.prod ν).withDensity (fun (x,y) ↦ f x * g y) := by
-  apply ext_of_lintegral
-  intro φ hφ
-  rw [lintegral_prod _ hφ.aemeasurable, lintegral_withDensity_eq_lintegral_mul₀ hf
-      (by apply Measurable.aemeasurable; fun_prop),
-      lintegral_withDensity_eq_lintegral_mul₀ (by fun_prop (disch:= intro _ hs; simp [hs]))
-      hφ.aemeasurable, lintegral_prod _ (by fun_prop (disch:= intro _ hs; simp [hs]))]
-  refine lintegral_congr (fun x ↦ ?_)
-  rw [Pi.mul_apply, lintegral_withDensity_eq_lintegral_mul₀ hg (by fun_prop),
-       ← lintegral_const_mul'' _ (by fun_prop)]
-  refine lintegral_congr (fun x ↦ ?_)
-  simp
-  ring
-
-theorem prod_withDensity {β : Type*} {mβ : MeasurableSpace β}
-    {μ : Measure α} {ν : Measure β} [SFinite ν] {f : α → ℝ≥0∞} {g : β → ℝ≥0∞}
-    (hf : Measurable f) (hg : Measurable g) : (μ.withDensity f).prod (ν.withDensity g)
-    = (μ.prod ν).withDensity (fun (x,y) ↦ f x * g y) := by
-  apply prod_withDensity₀ hf.aemeasurable hg.aemeasurable
-
 end SFinite
+
+section Prod
+
+variable {β : Type*} {mβ : MeasurableSpace β} {μ : Measure α} {ν : Measure β} [SFinite ν]
+
+theorem prod_withDensity_left₀ {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) :
+    (μ.withDensity f).prod ν = (μ.prod ν).withDensity (fun z ↦ f z.1) := by
+  refine ext_of_lintegral _ fun φ hφ ↦ ?_
+  rw [lintegral_prod _ hφ.aemeasurable, lintegral_withDensity_eq_lintegral_mul₀ hf ?_,
+    lintegral_withDensity_eq_lintegral_mul₀ ?_ hφ.aemeasurable, lintegral_prod _ ?_]
+  · refine lintegral_congr (fun x ↦ ?_)
+    rw [Pi.mul_apply, ← lintegral_const_mul'' _ (by fun_prop)]
+    simp
+  · fun_prop (disch:= intro _ hs; simp [hs])
+  · fun_prop (disch:= intro _ hs; simp [hs])
+  · apply Measurable.aemeasurable
+    fun_prop
+
+theorem prod_withDensity_left {f : α → ℝ≥0∞} (hf : Measurable f) :
+    (μ.withDensity f).prod ν = (μ.prod ν).withDensity (fun z ↦ f z.1) :=
+  prod_withDensity_left₀ hf.aemeasurable
+
+theorem prod_withDensity_right₀ {g : β → ℝ≥0∞} (hg : AEMeasurable g ν) :
+    μ.prod (ν.withDensity g) = (μ.prod ν).withDensity (fun z ↦ g z.2) := by
+  refine ext_of_lintegral _ fun φ hφ ↦ ?_
+  rw[lintegral_prod _ hφ.aemeasurable, lintegral_withDensity_eq_lintegral_mul₀ _ hφ.aemeasurable,
+    lintegral_prod _ _]
+  · refine lintegral_congr (fun x ↦ ?_)
+    rw[lintegral_withDensity_eq_lintegral_mul₀ hg (by fun_prop)]
+    simp
+  all_goals fun_prop (disch:= intro _ hs; simp [hs])
+
+theorem prod_withDensity_right {g : β → ℝ≥0∞} (hg : Measurable g) :
+    μ.prod (ν.withDensity g) = (μ.prod ν).withDensity (fun z ↦ g z.2) :=
+  prod_withDensity_right₀ hg.aemeasurable
+
+theorem prod_withDensity₀  {f : α → ℝ≥0∞} {g : β → ℝ≥0∞}
+    (hf : AEMeasurable f μ) (hg : AEMeasurable g ν) :
+    (μ.withDensity f).prod (ν.withDensity g) = (μ.prod ν).withDensity (fun z ↦ f z.1 * g z.2) := by
+  rw[prod_withDensity_left₀ hf, prod_withDensity_right₀ hg, ← withDensity_mul₀ ?_ ?_, mul_comm]
+  · congr
+  all_goals fun_prop (disch:= intro _ hs; simp [hs])
+
+theorem prod_withDensity {f : α → ℝ≥0∞} {g : β → ℝ≥0∞} (hf : Measurable f) (hg : Measurable g) :
+    (μ.withDensity f).prod (ν.withDensity g) = (μ.prod ν).withDensity (fun z ↦ f z.1 * g z.2) :=
+  prod_withDensity₀ hf.aemeasurable hg.aemeasurable
+
+end Prod
 
 variable [TopologicalSpace α] [OpensMeasurableSpace α] [IsLocallyFiniteMeasure μ]
 
