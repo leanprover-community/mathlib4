@@ -200,7 +200,7 @@ lemma isFiniteMeasure (h : HasSubgaussianMGF X c κ ν) :
 lemma measure_univ_le_one (h : HasSubgaussianMGF X c κ ν) :
     ∀ᵐ ω' ∂ν, κ ω' Set.univ ≤ 1 := by
   filter_upwards [h.isFiniteMeasure, h.mgf_le] with ω' h h_mgf
-  suffices (κ ω' Set.univ).toReal ≤ 1 by
+  suffices (κ ω').real Set.univ ≤ 1 by
     rwa [← ENNReal.ofReal_one, ENNReal.le_ofReal_iff_toReal_le (measure_ne_top _ _) zero_le_one]
   simpa [mgf] using h_mgf 0
 
@@ -225,7 +225,7 @@ protected lemma of_rat (h_int : ∀ t : ℝ, Integrable (fun ω ↦ exp (t * X �
 lemma fun_zero [IsFiniteMeasure ν] [IsZeroOrMarkovKernel κ] :
     HasSubgaussianMGF (fun _ ↦ 0) 0 κ ν where
   integrable_exp_mul := by simp
-  mgf_le := by simpa using ae_of_all _ fun _ ↦ toReal_prob_le_one
+  mgf_le := by simpa using ae_of_all _ fun _ ↦ measureReal_le_one
 
 @[simp]
 lemma zero [IsFiniteMeasure ν] [IsZeroOrMarkovKernel κ] : HasSubgaussianMGF 0 0 κ ν := fun_zero
@@ -272,9 +272,9 @@ lemma of_map {Ω'' : Type*} {mΩ'' : MeasurableSpace Ω''} {κ : Kernel Ω' Ω''
 section ChernoffBound
 
 lemma measure_ge_le_exp_add (h : HasSubgaussianMGF X c κ ν) (ε : ℝ) :
-    ∀ᵐ ω' ∂ν, ∀ t, 0 ≤ t → (κ ω' {ω | ε ≤ X ω}).toReal ≤ exp (- t * ε + c * t ^ 2 / 2) := by
+    ∀ᵐ ω' ∂ν, ∀ t, 0 ≤ t → (κ ω').real {ω | ε ≤ X ω} ≤ exp (- t * ε + c * t ^ 2 / 2) := by
   filter_upwards [h.mgf_le, h.ae_forall_integrable_exp_mul, h.isFiniteMeasure] with ω' h1 h2 _ t ht
-  calc (κ ω' {ω | ε ≤ X ω}).toReal
+  calc (κ ω').real {ω | ε ≤ X ω}
   _ ≤ exp (-t * ε) * mgf X (κ ω') t := measure_ge_le_exp_mul_mgf ε ht (h2 t)
   _ ≤ exp (-t * ε + c * t ^ 2 / 2) := by
     rw [exp_add]
@@ -283,7 +283,7 @@ lemma measure_ge_le_exp_add (h : HasSubgaussianMGF X c κ ν) (ε : ℝ) :
 
 /-- Chernoff bound on the right tail of a sub-Gaussian random variable. -/
 lemma measure_ge_le (h : HasSubgaussianMGF X c κ ν) {ε : ℝ} (hε : 0 ≤ ε) :
-    ∀ᵐ ω' ∂ν, (κ ω' {ω | ε ≤ X ω}).toReal ≤ exp (- ε ^ 2 / (2 * c)) := by
+    ∀ᵐ ω' ∂ν, (κ ω').real {ω | ε ≤ X ω} ≤ exp (- ε ^ 2 / (2 * c)) := by
   by_cases hc0 : c = 0
   · filter_upwards [h.measure_univ_le_one] with ω' h
     simp only [hc0, NNReal.coe_zero, mul_zero, div_zero, exp_zero]
@@ -291,7 +291,7 @@ lemma measure_ge_le (h : HasSubgaussianMGF X c κ ν) {ε : ℝ} (hε : 0 ≤ ε
     simp only [ENNReal.ofReal_one]
     exact (measure_mono (Set.subset_univ _)).trans h
   filter_upwards [measure_ge_le_exp_add h ε] with ω' h
-  calc (κ ω' {ω | ε ≤ X ω}).toReal
+  calc (κ ω').real {ω | ε ≤ X ω}
   -- choose the minimizer of the r.h.s. of `h` for `t ≥ 0`. That is, `t = ε / c`.
   _ ≤ exp (- (ε / c) * ε + c * (ε / c) ^ 2 / 2) := h (ε / c) (by positivity)
   _ = exp (- ε ^ 2 / (2 * c)) := by congr; field_simp; ring
@@ -518,7 +518,7 @@ section ChernoffBound
 
 /-- Chernoff bound on the right tail of a sub-Gaussian random variable. -/
 lemma measure_ge_le (h : HasSubgaussianMGF X c μ) {ε : ℝ} (hε : 0 ≤ ε) :
-    (μ {ω | ε ≤ X ω}).toReal ≤ exp (- ε ^ 2 / (2 * c)) := by
+    μ.real {ω | ε ≤ X ω} ≤ exp (- ε ^ 2 / (2 * c)) := by
   rw [HasSubgaussianMGF_iff_kernel] at h
   simpa using h.measure_ge_le hε
 
@@ -577,13 +577,13 @@ lemma sum_of_iIndepFun {ι : Type*} {X : ι → Ω → ℝ} (h_indep : iIndepFun
 lemma measure_sum_ge_le_of_iIndepFun {ι : Type*} {X : ι → Ω → ℝ} (h_indep : iIndepFun X μ)
     {c : ι → ℝ≥0}
     {s : Finset ι} (h_subG : ∀ i ∈ s, HasSubgaussianMGF (X i) (c i) μ) {ε : ℝ} (hε : 0 ≤ ε) :
-    (μ {ω | ε ≤ ∑ i ∈ s, X i ω}).toReal ≤ exp (- ε ^ 2 / (2 * ∑ i ∈ s, c i)) :=
+    μ.real {ω | ε ≤ ∑ i ∈ s, X i ω} ≤ exp (- ε ^ 2 / (2 * ∑ i ∈ s, c i)) :=
   (sum_of_iIndepFun h_indep h_subG).measure_ge_le hε
 
 /-- **Hoeffding inequality** for sub-Gaussian random variables. -/
 lemma measure_sum_range_ge_le_of_iIndepFun {X : ℕ → Ω → ℝ} (h_indep : iIndepFun X μ) {c : ℝ≥0}
     {n : ℕ} (h_subG : ∀ i < n, HasSubgaussianMGF (X i) c μ) {ε : ℝ} (hε : 0 ≤ ε) :
-    (μ {ω | ε ≤ ∑ i ∈ Finset.range n, X i ω}).toReal ≤ exp (- ε ^ 2 / (2 * n * c)) := by
+    μ.real {ω | ε ≤ ∑ i ∈ Finset.range n, X i ω} ≤ exp (- ε ^ 2 / (2 * n * c)) := by
   have h := (sum_of_iIndepFun h_indep (c := fun _ ↦ c)
     (s := Finset.range n) (by simpa)).measure_ge_le hε
   simpa [← mul_assoc] using h
@@ -650,7 +650,7 @@ lemma measure_sum_ge_le_of_HasCondSubgaussianMGF [IsZeroOrProbabilityMeasure μ]
     (h_adapted : Adapted ℱ Y) (h0 : HasSubgaussianMGF (Y 0) (cY 0) μ) (n : ℕ)
     (h_subG : ∀ i < n - 1, HasCondSubgaussianMGF (ℱ i) (ℱ.le i) (Y (i + 1)) (cY (i + 1)) μ)
     {ε : ℝ} (hε : 0 ≤ ε) :
-    (μ {ω | ε ≤ ∑ i ∈ Finset.range n, Y i ω}).toReal
+    μ.real {ω | ε ≤ ∑ i ∈ Finset.range n, Y i ω}
       ≤ exp (- ε ^ 2 / (2 * ∑ i ∈ Finset.range n, cY i)) :=
   (HasSubgaussianMGF_sum_of_HasCondSubgaussianMGF h_adapted h0 n h_subG).measure_ge_le hε
 
