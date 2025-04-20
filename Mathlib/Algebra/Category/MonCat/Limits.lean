@@ -6,7 +6,7 @@ Authors: Kim Morrison
 import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.Algebra.Small.Group
 import Mathlib.CategoryTheory.Limits.Creates
-import Mathlib.CategoryTheory.Limits.Types
+import Mathlib.CategoryTheory.Limits.Types.Limits
 
 /-!
 # The category of (commutative) (additive) monoids has all limits

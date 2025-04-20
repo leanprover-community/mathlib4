@@ -5,7 +5,7 @@ Authors: Michael Jendrusch, Kim Morrison
 -/
 import Mathlib.CategoryTheory.Monoidal.Functor
 import Mathlib.CategoryTheory.ChosenFiniteProducts
-import Mathlib.CategoryTheory.Limits.Shapes.Types
+import Mathlib.CategoryTheory.Limits.Types.Shapes
 
 /-!
 # The category of types is a (symmetric) monoidal category

@@ -456,7 +456,7 @@ instance {n : ℕ} : Inhabited (Composition n) :=
 
 @[simp]
 theorem ones_length (n : ℕ) : (ones n).length = n :=
-  List.length_replicate n 1
+  List.length_replicate
 
 @[simp]
 theorem ones_blocks (n : ℕ) : (ones n).blocks = replicate n (1 : ℕ) :=
@@ -740,7 +740,7 @@ theorem map_length_splitWrtComposition (l : List α) (c : Composition l.length) 
 theorem length_pos_of_mem_splitWrtComposition {l l' : List α} {c : Composition l.length}
     (h : l' ∈ l.splitWrtComposition c) : 0 < length l' := by
   have : l'.length ∈ (l.splitWrtComposition c).map List.length :=
-    List.mem_map_of_mem List.length h
+    List.mem_map_of_mem h
   rw [map_length_splitWrtComposition] at this
   exact c.blocks_pos this
 
@@ -857,28 +857,15 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
   right_inv := by
     intro s
     ext i
-    have : 1 + (i : ℕ) ≠ n := by
+    have : (i : ℕ) + 1 ≠ n := by
       apply ne_of_lt
-      convert add_lt_add_left i.is_lt 1
-      rw [add_comm]
+      convert add_lt_add_right i.is_lt 1
       apply (Nat.succ_pred_eq_of_pos _).symm
-      exact (zero_le i.val).trans_lt (i.2.trans_le (Nat.sub_le n 1))
+      exact Nat.lt_of_lt_pred (Fin.pos i)
     simp only [add_comm, Fin.ext_iff, Fin.val_zero, Fin.val_last, exists_prop, Set.toFinset_setOf,
       Finset.mem_univ, forall_true_left, Finset.mem_filter, add_eq_zero, and_false,
       add_left_inj, false_or, true_and, reduceCtorEq]
-    erw [Set.mem_setOf_eq]
-    simp only [Finset.mem_val]
-    constructor
-    · intro h
-      rcases h with n | h
-      · rw [add_comm] at this
-        contradiction
-      · obtain ⟨w, h₁, h₂⟩ := h
-        rw [← Fin.ext_iff] at h₂
-        rwa [h₂]
-    · intro h
-      apply Or.inr
-      use i, h
+    simp_rw [this, false_or, ← Fin.ext_iff, exists_eq_right']
 
 instance compositionAsSetFintype (n : ℕ) : Fintype (CompositionAsSet n) :=
   Fintype.ofEquiv _ (compositionAsSetEquiv n).symm
@@ -944,7 +931,7 @@ def blocks (c : CompositionAsSet n) : List ℕ :=
 
 @[simp]
 theorem blocks_length : c.blocks.length = c.length :=
-  length_ofFn _
+  length_ofFn
 
 theorem blocks_partial_sum {i : ℕ} (h : i < c.boundaries.card) :
     (c.blocks.take i).sum = c.boundary ⟨i, h⟩ := by

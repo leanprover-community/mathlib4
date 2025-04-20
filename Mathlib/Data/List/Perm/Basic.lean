@@ -54,21 +54,21 @@ theorem getElem_cons_eraseIdx_perm {n : ℕ} (h : n < l.length) :
   simpa [h] using (set_perm_cons_eraseIdx h l[n]).symm
 
 theorem perm_insertIdx_iff_of_le {l₁ l₂ : List α} {m n : ℕ} (hm : m ≤ l₁.length)
-    (hn : n ≤ l₂.length) (a : α) : insertIdx m a l₁ ~ insertIdx n a l₂ ↔ l₁ ~ l₂ := by
+    (hn : n ≤ l₂.length) (a : α) : l₁.insertIdx m a ~ l₂.insertIdx n a ↔ l₁ ~ l₂ := by
   rw [rel_congr_left (perm_insertIdx _ _ hm), rel_congr_right (perm_insertIdx _ _ hn), perm_cons]
 
 alias ⟨_, Perm.insertIdx_of_le⟩ := perm_insertIdx_iff_of_le
 
 @[simp]
 theorem perm_insertIdx_iff {l₁ l₂ : List α} {n : ℕ} {a : α} :
-    insertIdx n a l₁ ~ insertIdx n a l₂ ↔ l₁ ~ l₂ := by
+    l₁.insertIdx n a ~ l₂.insertIdx n a ↔ l₁ ~ l₂ := by
   wlog hle : length l₁ ≤ length l₂ generalizing l₁ l₂
   · rw [perm_comm, this (le_of_not_le hle), perm_comm]
   cases Nat.lt_or_ge (length l₁) n with
   | inl hn₁ =>
-    rw [insertIdx_of_length_lt _ _ _ hn₁]
+    rw [insertIdx_of_length_lt hn₁]
     cases Nat.lt_or_ge (length l₂) n with
-    | inl hn₂ => rw [insertIdx_of_length_lt _ _ _ hn₂]
+    | inl hn₂ => rw [insertIdx_of_length_lt hn₂]
     | inr hn₂ =>
       apply iff_of_false
       · intro h
@@ -80,7 +80,7 @@ theorem perm_insertIdx_iff {l₁ l₂ : List α} {n : ℕ} {a : α} :
 
 @[gcongr]
 protected theorem Perm.insertIdx {l₁ l₂ : List α} (h : l₁ ~ l₂) (n : ℕ) (a : α) :
-    insertIdx n a l₁ ~ insertIdx n a l₂ :=
+    l₁.insertIdx n a ~ l₂.insertIdx n a :=
   perm_insertIdx_iff.mpr h
 
 theorem perm_eraseIdx_of_getElem?_eq {l₁ l₂ : List α} {m n : ℕ} (h : l₁[m]? = l₂[n]?) :
@@ -190,8 +190,6 @@ theorem Perm.foldl_op_eq {l₁ l₂ : List α} {a : α} (h : l₁ ~ l₂) : (l�
 
 theorem Perm.foldr_op_eq {l₁ l₂ : List α} {a : α} (h : l₁ ~ l₂) : l₁.foldr op a = l₂.foldr op a :=
   h.foldr_eq _
-
-@[deprecated (since := "2024-09-28")] alias Perm.fold_op_eq := Perm.foldl_op_eq
 
 end
 

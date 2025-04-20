@@ -21,9 +21,7 @@ namespace Nat
 
 /-! ### Instances -/
 
-instance instLinearOrderedCommSemiring : LinearOrderedCommSemiring ℕ where
-  __ := instCommSemiring
-  __ := instLinearOrder
+instance instIsStrictOrderedRing : IsStrictOrderedRing ℕ where
   add_le_add_left := @Nat.add_le_add_left
   le_of_add_le_add_left := @Nat.le_of_add_le_add_left
   zero_le_one := Nat.le_of_lt (Nat.zero_lt_succ 0)
@@ -32,22 +30,8 @@ instance instLinearOrderedCommSemiring : LinearOrderedCommSemiring ℕ where
   exists_pair_ne := ⟨0, 1, ne_of_lt Nat.zero_lt_one⟩
 
 instance instLinearOrderedCommMonoidWithZero : LinearOrderedCommMonoidWithZero ℕ where
-  __ := instLinearOrderedCommSemiring
-  __ : CommMonoidWithZero ℕ := inferInstance
+  zero_le_one := zero_le_one
   mul_le_mul_left _ _ h c := Nat.mul_le_mul_left c h
-
-/-!
-### Extra instances to short-circuit type class resolution
-
-These also prevent non-computable instances being used to construct these instances non-computably.
--/
-
-instance instLinearOrderedSemiring : LinearOrderedSemiring ℕ := inferInstance
-instance instStrictOrderedSemiring : StrictOrderedSemiring ℕ := inferInstance
-instance instStrictOrderedCommSemiring : StrictOrderedCommSemiring ℕ := inferInstance
-instance instOrderedSemiring : OrderedSemiring ℕ := StrictOrderedSemiring.toOrderedSemiring'
-instance instOrderedCommSemiring : OrderedCommSemiring ℕ :=
-  StrictOrderedCommSemiring.toOrderedCommSemiring'
 
 /-! ### Miscellaneous lemmas -/
 
