@@ -151,7 +151,7 @@ noncomputable section
 
 universe u
 
-variable {E : Type u} [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E]
+variable {E : Type u} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 namespace Complex
 
@@ -306,12 +306,13 @@ theorem circleIntegral_sub_center_inv_smul_eq_of_differentiable_on_annulus_off_c
   set g : ℂ → ℂ := (c + exp ·)
   have hdg : Differentiable ℂ g := differentiable_exp.const_add _
   replace hs : (g ⁻¹' s).Countable := (hs.preimage (add_right_injective c)).preimage_cexp
-  have h_maps : MapsTo g R A := by rintro z ⟨h, -⟩; simpa [g, A, dist_eq, abs_exp, hle] using h.symm
+  have h_maps : MapsTo g R A := by
+    rintro z ⟨h, -⟩; simpa [g, A, dist_eq, norm_exp, hle] using h.symm
   replace hc : ContinuousOn (f ∘ g) R := hc.comp hdg.continuous.continuousOn h_maps
   replace hd : ∀ z ∈ Ioo (min a b) (max a b) ×ℂ Ioo (min 0 (2 * π)) (max 0 (2 * π)) \ g ⁻¹' s,
       DifferentiableAt ℂ (f ∘ g) z := by
     refine fun z hz => (hd (g z) ⟨?_, hz.2⟩).comp z (hdg _)
-    simpa [g, dist_eq, abs_exp, hle, and_comm] using hz.1.1
+    simpa [g, dist_eq, norm_exp, hle, and_comm] using hz.1.1
   simpa [g, circleMap, exp_periodic _, sub_eq_zero, ← exp_add] using
     integral_boundary_rect_eq_zero_of_differentiable_on_off_countable _ ⟨a, 0⟩ ⟨b, 2 * π⟩ _ hs hc hd
 
@@ -332,6 +333,8 @@ theorem circleIntegral_eq_of_differentiable_on_annulus_off_countable {c : ℂ} {
         ((continuousOn_id.sub continuousOn_const).smul hc) fun z hz =>
         (differentiableAt_id.sub_const _).smul (hd z hz))
     _ = ∮ z in C(c, r), f z := circleIntegral.integral_sub_inv_smul_sub_smul _ _ _ _
+
+variable [CompleteSpace E]
 
 /-- **Cauchy integral formula** for the value at the center of a disc. If `f` is continuous on a
 punctured closed disc of radius `R`, is differentiable at all but countably many points of the
@@ -392,12 +395,15 @@ theorem circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable {R
     (hc.mono diff_subset) (fun z hz => hd z ⟨hz.1.1, hz.2⟩)
     (hc.continuousAt <| closedBall_mem_nhds _ h0).continuousWithinAt
 
+omit [CompleteSpace E] in
 /-- **Cauchy-Goursat theorem** for a disk: if `f : ℂ → E` is continuous on a closed disk
 `{z | ‖z - c‖ ≤ R}` and is complex differentiable at all but countably many points of its interior,
 then the integral $\oint_{|z-c|=R}f(z)\,dz$ equals zero. -/
 theorem circleIntegral_eq_zero_of_differentiable_on_off_countable {R : ℝ} (h0 : 0 ≤ R) {f : ℂ → E}
     {c : ℂ} {s : Set ℂ} (hs : s.Countable) (hc : ContinuousOn f (closedBall c R))
     (hd : ∀ z ∈ ball c R \ s, DifferentiableAt ℂ f z) : (∮ z in C(c, R), f z) = 0 := by
+  wlog hE : CompleteSpace E generalizing
+  · simp [circleIntegral, intervalIntegral, integral, hE]
   rcases h0.eq_or_lt with (rfl | h0); · apply circleIntegral.integral_radius_zero
   calc
     (∮ z in C(c, R), f z) = ∮ z in C(c, R), (z - c)⁻¹ • (z - c) • f z :=
@@ -581,6 +587,10 @@ differentiable on `s`. -/
 protected theorem _root_.DifferentiableOn.contDiffOn {s : Set ℂ} {f : ℂ → E} {n : WithTop ℕ∞}
     (hd : DifferentiableOn ℂ f s) (hs : IsOpen s) : ContDiffOn ℂ n f s :=
   (hd.analyticOnNhd hs).contDiffOn_of_completeSpace
+
+theorem _root_.DifferentiableOn.deriv {s : Set ℂ} {f : ℂ → E} (hd : DifferentiableOn ℂ f s)
+    (hs : IsOpen s) : DifferentiableOn ℂ (deriv f) s :=
+  (hd.analyticOnNhd hs).deriv.differentiableOn
 
 /-- A complex differentiable function `f : ℂ → E` is analytic at every point. -/
 protected theorem _root_.Differentiable.analyticAt {f : ℂ → E} (hf : Differentiable ℂ f) (z : ℂ) :

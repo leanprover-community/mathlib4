@@ -51,9 +51,9 @@ theorem HasTrivialRadical.eq_bot_of_isSolvable [HasTrivialRadical R L]
     (I : LieIdeal R L) [hI : IsSolvable I] : I = ⊥ :=
   sSup_eq_bot.mp radical_eq_bot _ hI
 
-@[simp]
-theorem HasTrivialRadical.center_eq_bot [HasTrivialRadical R L] : center R L = ⊥ :=
-  HasTrivialRadical.eq_bot_of_isSolvable _
+instance [HasTrivialRadical R L] : LieModule.IsFaithful R L L := by
+  rw [isFaithful_self_iff]
+  exact HasTrivialRadical.eq_bot_of_isSolvable _
 
 variable {R L} in
 theorem hasTrivialRadical_of_no_solvable_ideals (h : ∀ I : LieIdeal R L, IsSolvable I → I = ⊥) :
@@ -227,7 +227,7 @@ lemma finitelyAtomistic : ∀ s : Finset (LieIdeal R L), ↑s ⊆ {I : LieIdeal 
   -- Since `x` was arbitrary, we have shown that `I` is contained in the supremum of `s'`.
   suffices ⟨y, hy⟩ ∈ LieAlgebra.center R J by
     have _inst := isSimple_of_isAtom J (hs hJs)
-    rw [HasTrivialRadical.center_eq_bot R J, LieSubmodule.mem_bot] at this
+    rw [center_eq_bot R J, LieSubmodule.mem_bot] at this
     apply_fun Subtype.val at this
     dsimp at this
     rwa [this, zero_add]
@@ -304,18 +304,13 @@ instance (priority := 100) IsSimple.instIsSemisimple [IsSimple R L] :
 /-- An abelian Lie algebra with trivial radical is trivial. -/
 theorem subsingleton_of_hasTrivialRadical_lie_abelian [HasTrivialRadical R L] [h : IsLieAbelian L] :
     Subsingleton L := by
-  rw [isLieAbelian_iff_center_eq_top R L, HasTrivialRadical.center_eq_bot] at h
+  rw [isLieAbelian_iff_center_eq_top R L, center_eq_bot] at h
   exact (LieSubmodule.subsingleton_iff R L L).mp (subsingleton_of_bot_eq_top h)
 
 theorem abelian_radical_of_hasTrivialRadical [HasTrivialRadical R L] :
     IsLieAbelian (radical R L) := by
   rw [HasTrivialRadical.radical_eq_bot]; exact LieIdeal.isLieAbelian_of_trivial ..
 
-/-- The two properties shown to be equivalent here are possible definitions for a Lie algebra
-to be reductive.
-
-Note that there is absolutely [no agreement](https://mathoverflow.net/questions/284713/) on what
-the label 'reductive' should mean when the coefficients are not a field of characteristic zero. -/
 theorem abelian_radical_iff_solvable_is_abelian [IsNoetherian R L] :
     IsLieAbelian (radical R L) ↔ ∀ I : LieIdeal R L, IsSolvable I → IsLieAbelian I := by
   constructor

@@ -70,7 +70,8 @@ lemma Even.trans_dvd (ha : Even a) (hab : a ∣ b) : Even b :=
 
 lemma Dvd.dvd.even (hab : a ∣ b) (ha : Even a) : Even b := ha.trans_dvd hab
 
-@[simp] lemma range_two_mul (α) [Semiring α] : Set.range (fun x : α ↦ 2 * x) = {a | Even a} := by
+@[simp] lemma range_two_mul (α) [NonAssocSemiring α] :
+    Set.range (fun x : α ↦ 2 * x) = {a | Even a} := by
   ext x
   simp [eq_comm, two_mul, Even]
 
@@ -142,8 +143,7 @@ lemma Odd.pow (ha : Odd a) : ∀ {n : ℕ}, Odd (a ^ n)
 lemma Odd.pow_add_pow_eq_zero [IsCancelAdd α] (hn : Odd n) (hab : a + b = 0) :
     a ^ n + b ^ n = 0 := by
   obtain ⟨k, rfl⟩ := hn
-  induction' k with k ih
-  · simpa
+  induction k with | zero => simpa | succ k ih => ?_
   have : a ^ 2 = b ^ 2 := add_right_cancel <|
     calc
       a ^ 2 + a * b = 0 := by rw [sq, ← mul_add, hab, mul_zero]
@@ -206,12 +206,6 @@ lemma not_odd_iff : ¬Odd n ↔ n % 2 = 0 := by rw [odd_iff, mod_two_not_eq_one]
 @[simp] lemma not_even_iff_odd : ¬Even n ↔ Odd n := by rw [not_even_iff, odd_iff]
 
 @[simp] lemma not_odd_zero : ¬Odd 0 := not_odd_iff.mpr rfl
-
-@[deprecated not_odd_iff_even (since := "2024-08-21")]
-lemma even_iff_not_odd : Even n ↔ ¬Odd n := by rw [not_odd_iff, even_iff]
-
-@[deprecated not_even_iff_odd (since := "2024-08-21")]
-lemma odd_iff_not_even : Odd n ↔ ¬Even n := by rw [not_even_iff, odd_iff]
 
 lemma _root_.Odd.not_two_dvd_nat (h : Odd n) : ¬(2 ∣ n) := by
   rwa [← even_iff_two_dvd, not_even_iff_odd]
@@ -306,7 +300,6 @@ end
 example (m n : ℕ) (h : Even m) : ¬Even (n + 3) ↔ Even (m ^ 2 + m + n) := by
   simp [*, two_ne_zero, parity_simps]
 
-/- Porting note: the `simp` lemmas about `bit*` no longer apply. -/
 example : ¬Even 25394535 := by decide
 
 end Nat
@@ -350,14 +343,25 @@ lemma iterate_eq_id (hf : Involutive f) (hne : f ≠ id) : f^[n] = id ↔ Even n
 end Involutive
 end Function
 
-lemma neg_one_pow_eq_ite {R : Type*} [Monoid R] [HasDistribNeg R] {n : ℕ} :
-    (-1 : R) ^ n = ite (Even n) 1 (-1) := by
+section DistribNeg
+
+variable {R : Type*} [Monoid R] [HasDistribNeg R] {m n : ℕ}
+
+lemma neg_one_pow_eq_ite : (-1 : R) ^ n = if Even n then 1 else (-1) := by
   cases even_or_odd n with
   | inl h => rw [h.neg_one_pow, if_pos h]
   | inr h => rw [h.neg_one_pow, if_neg (by simpa using h)]
 
-lemma neg_one_pow_eq_one_iff_even {R : Type*} [Monoid R] [HasDistribNeg R] {n : ℕ}
-    (h : (-1 : R) ≠ 1) : (-1 : R) ^ n = 1 ↔ Even n := by simp [neg_one_pow_eq_ite, h]
+lemma neg_one_pow_congr (h : Even m ↔ Even n) : (-1 : R) ^ m = (-1) ^ n := by
+  simp [h, neg_one_pow_eq_ite]
+
+lemma neg_one_pow_eq_one_iff_even (h : (-1 : R) ≠ 1) :
+    (-1 : R) ^ n = 1 ↔ Even n := by simp [neg_one_pow_eq_ite, h]
+
+lemma neg_one_pow_eq_neg_one_iff_odd (h : (-1 : R) ≠ 1) :
+    (-1 : R) ^ n = -1 ↔ Odd n := by simp [neg_one_pow_eq_ite, h.symm]
+
+end DistribNeg
 
 section CharTwo
 

@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.AlgebraicGeometry.Pullbacks
+import Mathlib.AlgebraicGeometry.Limits
 import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.Data.List.TFAE
 
@@ -91,7 +92,7 @@ For `HasAffineProperty P Q` and `f : X ⟶ Y`, we provide these API lemmas:
 -/
 
 
-universe u
+universe u v
 
 open TopologicalSpace CategoryTheory CategoryTheory.Limits Opposite
 
@@ -294,6 +295,11 @@ lemma isLocalAtTarget [P.IsMultiplicative]
     · exact hP _ _
     · exact fun H ↦ P.comp_mem _ _ H (of_isOpenImmersion _)
 
+lemma sigmaDesc {X : Scheme.{u}} {ι : Type v} [Small.{u} ι] {Y : ι → Scheme.{u}}
+    {f : ∀ i, Y i ⟶ X} (hf : ∀ i, P (f i)) : P (Sigma.desc f) := by
+  rw [IsLocalAtSource.iff_of_openCover (P := P) (sigmaOpenCover _)]
+  exact fun i ↦ by simp [hf]
+
 section IsLocalAtSourceAndTarget
 
 /-- If `P` is local at the source and the target, then restriction on both source and target
@@ -362,18 +368,18 @@ theorem arrow_mk_iso_iff
     (P : AffineTargetMorphismProperty) [P.toProperty.RespectsIso]
     {X Y X' Y' : Scheme} {f : X ⟶ Y} {f' : X' ⟶ Y'}
     (e : Arrow.mk f ≅ Arrow.mk f') {h : IsAffine Y} :
-    letI : IsAffine Y' := isAffine_of_isIso (Y := Y) e.inv.right
+    letI : IsAffine Y' := .of_isIso (Y := Y) e.inv.right
     P f ↔ P f' := by
   rw [← P.toProperty_apply, ← P.toProperty_apply, P.toProperty.arrow_mk_iso_iff e]
 
 theorem respectsIso_mk {P : AffineTargetMorphismProperty}
     (h₁ : ∀ {X Y Z} (e : X ≅ Y) (f : Y ⟶ Z) [IsAffine Z], P f → P (e.hom ≫ f))
     (h₂ : ∀ {X Y Z} (e : Y ≅ Z) (f : X ⟶ Y) [IsAffine Y],
-      P f → @P _ _ (f ≫ e.hom) (isAffine_of_isIso e.inv)) :
+      P f → @P _ _ (f ≫ e.hom) (.of_isIso e.inv)) :
     P.toProperty.RespectsIso := by
   apply MorphismProperty.RespectsIso.mk
   · rintro X Y Z e f ⟨a, h⟩; exact ⟨a, h₁ e f h⟩
-  · rintro X Y Z e f ⟨a, h⟩; exact ⟨isAffine_of_isIso e.inv, h₂ e f h⟩
+  · rintro X Y Z e f ⟨a, h⟩; exact ⟨.of_isIso e.inv, h₂ e f h⟩
 
 instance respectsIso_of
     (P : MorphismProperty Scheme) [P.RespectsIso] :
@@ -641,5 +647,22 @@ lemma isLocalAtSource
 end HasAffineProperty
 
 end targetAffineLocally
+
+open MorphismProperty
+
+lemma hasOfPostcompProperty_isOpenImmersion_of_morphismRestrict (P : MorphismProperty Scheme)
+    [P.RespectsIso] (H : ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens), P f → P (f ∣_ U)) :
+    P.HasOfPostcompProperty @IsOpenImmersion where
+  of_postcomp {X Y Z} f g hg hfg := by
+    have : (f ≫ g) ⁻¹ᵁ g.opensRange = ⊤ := by simp
+    have : f = X.topIso.inv ≫ (X.isoOfEq this).inv ≫ (f ≫ g) ∣_ g.opensRange ≫
+        (IsOpenImmersion.isoOfRangeEq g.opensRange.ι g (by simp)).hom := by
+      simp [← cancel_mono g]
+    simp_rw [this, cancel_left_of_respectsIso (P := P), cancel_right_of_respectsIso (P := P)]
+    exact H _ _ hfg
+
+instance (P : MorphismProperty Scheme) [P.IsStableUnderBaseChange] :
+    P.HasOfPostcompProperty @IsOpenImmersion :=
+  HasOfPostcompProperty.of_le P (.monomorphisms Scheme) (fun _ _ f _ ↦ inferInstanceAs (Mono f))
 
 end AlgebraicGeometry

@@ -172,7 +172,8 @@ regarded as junk. -/
 def Matrix.ToLieAlgebra :=
   FreeLieAlgebra R _ ⧸ CartanMatrix.Relations.toIdeal R A
 
--- Porting note: the following were derived automatically in mathlib3.
+-- The `LieRing, Inhabited, LieAlgebra` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 instance Matrix.ToLieAlgebra.instLieRing : LieRing (Matrix.ToLieAlgebra R A) :=
   inferInstanceAs (LieRing (FreeLieAlgebra R _ ⧸ CartanMatrix.Relations.toIdeal R A))
 

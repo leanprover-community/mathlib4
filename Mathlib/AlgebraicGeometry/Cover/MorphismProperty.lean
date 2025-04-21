@@ -54,7 +54,7 @@ structure Cover (P : MorphismProperty Scheme.{u}) (X : Scheme.{u}) where
   obj (j : J) : Scheme
   /-- the components map to `X` -/
   map (j : J) : obj j ⟶ X
-  /-- given a point of `x : X`, `f x` is the index of the component which contains `x`  -/
+  /-- given a point of `x : X`, `f x` is the index of the component which contains `x` -/
   f (x : X) : J
   /-- the components cover `X` -/
   covers (x : X) : x ∈ Set.range (map (f x)).base
@@ -291,7 +291,7 @@ structure AffineCover (P : MorphismProperty Scheme.{u}) (X : Scheme.{u}) where
   obj (j : J) : CommRingCat.{u}
   /-- the components map to `X` -/
   map (j : J) : Spec (obj j) ⟶ X
-  /-- given a point of `x : X`, `f x` is the index of the component which contains `x`  -/
+  /-- given a point of `x : X`, `f x` is the index of the component which contains `x` -/
   f (x : X) : J
   /-- the components cover `X` -/
   covers (x : X) : x ∈ Set.range (map (f x)).base
@@ -301,6 +301,7 @@ structure AffineCover (P : MorphismProperty Scheme.{u}) (X : Scheme.{u}) where
 /-- The cover associated to an affine cover. -/
 @[simps]
 def AffineCover.cover {X : Scheme.{u}} (𝒰 : X.AffineCover P) : X.Cover P where
+  obj j := Spec (𝒰.obj j)
   J := 𝒰.J
   map := 𝒰.map
   f := 𝒰.f

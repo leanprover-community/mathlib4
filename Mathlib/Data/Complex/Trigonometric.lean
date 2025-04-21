@@ -150,9 +150,7 @@ theorem cosh_sub : cosh (x - y) = cosh x * cosh y - sinh x * sinh y := by
   simp [sub_eq_add_neg, cosh_add, sinh_neg, cosh_neg]
 
 theorem sinh_conj : sinh (conj x) = conj (sinh x) := by
-  rw [sinh, ← RingHom.map_neg, exp_conj, exp_conj, ← RingHom.map_sub, sinh, map_div₀]
-  -- Porting note: not nice
-  simp [← one_add_one_eq_two]
+  rw [sinh, ← RingHom.map_neg, exp_conj, exp_conj, ← RingHom.map_sub, sinh, map_div₀, map_ofNat]
 
 @[simp]
 theorem ofReal_sinh_ofReal_re (x : ℝ) : ((sinh x).re : ℂ) = sinh x :=
@@ -169,9 +167,7 @@ theorem sinh_ofReal_re (x : ℝ) : (sinh x).re = Real.sinh x :=
   rfl
 
 theorem cosh_conj : cosh (conj x) = conj (cosh x) := by
-  rw [cosh, ← RingHom.map_neg, exp_conj, exp_conj, ← RingHom.map_add, cosh, map_div₀]
-  -- Porting note: not nice
-  simp [← one_add_one_eq_two]
+  rw [cosh, ← RingHom.map_neg, exp_conj, exp_conj, ← RingHom.map_add, cosh, map_div₀, map_ofNat]
 
 theorem ofReal_cosh_ofReal_re (x : ℝ) : ((cosh x).re : ℂ) = cosh x :=
   conj_eq_iff_re.1 <| by rw [← cosh_conj, conj_ofReal]
@@ -553,7 +549,7 @@ theorem cos_neg : cos (-x) = cos x := by simp [cos, exp_neg]
 
 @[simp]
 theorem cos_abs : cos |x| = cos x := by
-  cases le_total x 0 <;> simp only [*, _root_.abs_of_nonneg, abs_of_nonpos, cos_neg]
+  cases le_total x 0 <;> simp only [*, abs_of_nonneg, abs_of_nonpos, cos_neg]
 
 nonrec theorem cos_add : cos (x + y) = cos x * cos y - sin x * sin y :=
   ofReal_injective <| by simp [cos_add]
@@ -707,7 +703,7 @@ theorem cosh_neg : cosh (-x) = cosh x :=
 
 @[simp]
 theorem cosh_abs : cosh |x| = cosh x := by
-  cases le_total x 0 <;> simp [*, _root_.abs_of_nonneg, abs_of_nonpos]
+  cases le_total x 0 <;> simp [*, abs_of_nonneg, abs_of_nonpos]
 
 nonrec theorem cosh_add : cosh (x + y) = cosh x * cosh y + sinh x * sinh y := by
   rw [← ofReal_inj]; simp [cosh_add]
@@ -796,30 +792,25 @@ open Complex Finset
 
 theorem cos_bound {x : ℝ} (hx : |x| ≤ 1) : |cos x - (1 - x ^ 2 / 2)| ≤ |x| ^ 4 * (5 / 96) :=
   calc
-    |cos x - (1 - x ^ 2 / 2)| = Complex.abs (Complex.cos x - (1 - (x : ℂ) ^ 2 / 2)) := by
-      rw [← abs_ofReal]; simp
-    _ = Complex.abs ((Complex.exp (x * I) + Complex.exp (-x * I) - (2 - (x : ℂ) ^ 2)) / 2) := by
+    |cos x - (1 - x ^ 2 / 2)| = ‖Complex.cos x - (1 - (x : ℂ) ^ 2 / 2)‖ := by
+      rw [← Real.norm_eq_abs, ← norm_real]; simp
+    _ = ‖(Complex.exp (x * I) + Complex.exp (-x * I) - (2 - (x : ℂ) ^ 2)) / 2‖ := by
       simp [Complex.cos, sub_div, add_div, neg_div, div_self (two_ne_zero' ℂ)]
-    _ = abs
-          (((Complex.exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial) +
-              (Complex.exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial)) / 2) :=
-      (congr_arg Complex.abs
-        (congr_arg (fun x : ℂ => x / 2)
-          (by
-            simp only [sum_range_succ, neg_mul, pow_succ, pow_zero, mul_one, range_zero, sum_empty,
-              Nat.factorial, Nat.cast_one, ne_eq, one_ne_zero, not_false_eq_true, div_self,
-              zero_add, div_one, Nat.mul_one, Nat.cast_succ, Nat.cast_mul, Nat.cast_ofNat, mul_neg,
-              neg_neg]
-            apply Complex.ext <;> simp [div_eq_mul_inv, normSq] <;> ring_nf
-            )))
-    _ ≤ abs ((Complex.exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial) / 2) +
-          abs ((Complex.exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial) / 2) := by
-      rw [add_div]; exact Complex.abs.add_le _ _
-    _ = abs (Complex.exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial) / 2 +
-          abs (Complex.exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial) / 2 := by
+    _ = ‖((Complex.exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial) +
+              (Complex.exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial)) / 2‖ :=
+      (congr_arg (‖·‖ : ℂ → ℝ)
+        (congr_arg (fun x : ℂ => x / 2) (by
+          simp only [neg_mul, pow_succ, pow_zero, sum_range_succ, range_zero, sum_empty,
+          Nat.factorial, Nat.cast_succ, zero_add, mul_one, Nat.mul_one, mul_neg, neg_neg]
+          apply Complex.ext <;> simp [div_eq_mul_inv, normSq] <;> ring_nf)))
+    _ ≤ ‖(Complex.exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial) / 2‖ +
+          ‖(Complex.exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial) / 2‖ := by
+      rw [add_div]; exact norm_add_le _ _
+    _ = ‖Complex.exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial‖ / 2 +
+          ‖Complex.exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial‖ / 2 := by
       simp [map_div₀]
-    _ ≤ Complex.abs (x * I) ^ 4 * (Nat.succ 4 * ((Nat.factorial 4) * (4 : ℕ) : ℝ)⁻¹) / 2 +
-          Complex.abs (-x * I) ^ 4 * (Nat.succ 4 * ((Nat.factorial 4) * (4 : ℕ) : ℝ)⁻¹) / 2 := by
+    _ ≤ ‖x * I‖ ^ 4 * (Nat.succ 4 * ((Nat.factorial 4) * (4 : ℕ) : ℝ)⁻¹) / 2 +
+          ‖-x * I‖ ^ 4 * (Nat.succ 4 * ((Nat.factorial 4) * (4 : ℕ) : ℝ)⁻¹) / 2 := by
       gcongr
       · exact Complex.exp_bound (by simpa) (by decide)
       · exact Complex.exp_bound (by simpa) (by decide)
@@ -827,30 +818,29 @@ theorem cos_bound {x : ℝ} (hx : |x| ≤ 1) : |cos x - (1 - x ^ 2 / 2)| ≤ |x|
 
 theorem sin_bound {x : ℝ} (hx : |x| ≤ 1) : |sin x - (x - x ^ 3 / 6)| ≤ |x| ^ 4 * (5 / 96) :=
   calc
-    |sin x - (x - x ^ 3 / 6)| = Complex.abs (Complex.sin x - (x - x ^ 3 / 6 : ℝ)) := by
-      rw [← abs_ofReal]; simp
-    _ = Complex.abs (((Complex.exp (-x * I) - Complex.exp (x * I)) * I -
-          (2 * x - x ^ 3 / 3 : ℝ)) / 2) := by
+    |sin x - (x - x ^ 3 / 6)| = ‖Complex.sin x - (x - x ^ 3 / 6 : ℝ)‖ := by
+      rw [← Real.norm_eq_abs, ← norm_real]; simp
+    _ = ‖((Complex.exp (-x * I) - Complex.exp (x * I)) * I -
+          (2 * x - x ^ 3 / 3 : ℝ)) / 2‖ := by
       simp [Complex.sin, sub_div, add_div, neg_div, mul_div_cancel_left₀ _ (two_ne_zero' ℂ),
         div_div, show (3 : ℂ) * 2 = 6 by norm_num]
-    _ = Complex.abs (((Complex.exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial) -
-                (Complex.exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial)) * I / 2) :=
-      (congr_arg Complex.abs
+    _ = ‖((Complex.exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial) -
+                (Complex.exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial)) * I / 2‖ :=
+      (congr_arg (‖·‖ : ℂ → ℝ)
         (congr_arg (fun x : ℂ => x / 2)
           (by
-            simp only [sum_range_succ, neg_mul, pow_succ, pow_zero, mul_one, ofReal_sub, ofReal_mul,
-              ofReal_ofNat, ofReal_div, range_zero, sum_empty, Nat.factorial, Nat.cast_one, ne_eq,
-              one_ne_zero, not_false_eq_true, div_self, zero_add, div_one, mul_neg, neg_neg,
-              Nat.mul_one, Nat.cast_succ, Nat.cast_mul, Nat.cast_ofNat]
+            simp only [neg_mul, pow_succ, pow_zero, ofReal_sub, ofReal_mul, ofReal_ofNat,
+              ofReal_div, sum_range_succ, range_zero, sum_empty, Nat.factorial, Nat.cast_succ,
+              zero_add, mul_neg, mul_one, neg_neg, Nat.mul_one]
             apply Complex.ext <;> simp [div_eq_mul_inv, normSq]; ring)))
-    _ ≤ abs ((Complex.exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial) * I / 2) +
-          abs (-((Complex.exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial) * I) / 2) := by
-      rw [sub_mul, sub_eq_add_neg, add_div]; exact Complex.abs.add_le _ _
-    _ = abs (Complex.exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial) / 2 +
-          abs (Complex.exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial) / 2 := by
+    _ ≤ ‖(Complex.exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial) * I / 2‖ +
+          ‖-((Complex.exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial) * I) / 2‖ := by
+      rw [sub_mul, sub_eq_add_neg, add_div]; exact norm_add_le _ _
+    _ = ‖Complex.exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial‖ / 2 +
+          ‖Complex.exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial‖ / 2 := by
       simp [add_comm, map_div₀]
-    _ ≤ Complex.abs (x * I) ^ 4 * (Nat.succ 4 * (Nat.factorial 4 * (4 : ℕ) : ℝ)⁻¹) / 2 +
-          Complex.abs (-x * I) ^ 4 * (Nat.succ 4 * (Nat.factorial 4 * (4 : ℕ) : ℝ)⁻¹) / 2 := by
+    _ ≤ ‖x * I‖ ^ 4 * (Nat.succ 4 * (Nat.factorial 4 * (4 : ℕ) : ℝ)⁻¹) / 2 +
+          ‖-x * I‖ ^ 4 * (Nat.succ 4 * (Nat.factorial 4 * (4 : ℕ) : ℝ)⁻¹) / 2 := by
       gcongr
       · exact Complex.exp_bound (by simpa) (by decide)
       · exact Complex.exp_bound (by simpa) (by decide)
@@ -878,28 +868,28 @@ theorem sin_pos_of_pos_of_le_one {x : ℝ} (hx0 : 0 < x) (hx : x ≤ 1) : 0 < si
                 · calc
                     |x| ^ 4 ≤ |x| ^ 1 :=
                       pow_le_pow_of_le_one (abs_nonneg _)
-                        (by rwa [_root_.abs_of_nonneg (le_of_lt hx0)]) (by decide)
-                    _ = x := by simp [_root_.abs_of_nonneg (le_of_lt hx0)]
+                        (by rwa [abs_of_nonneg (le_of_lt hx0)]) (by decide)
+                    _ = x := by simp [abs_of_nonneg (le_of_lt hx0)]
                 · calc
                     x ^ 3 ≤ x ^ 1 := pow_le_pow_of_le_one (le_of_lt hx0) hx (by decide)
                     _ = x := pow_one _
             _ < x := by linarith)
     _ ≤ sin x :=
-      sub_le_comm.1 (abs_sub_le_iff.1 (sin_bound (by rwa [_root_.abs_of_nonneg (le_of_lt hx0)]))).2
+      sub_le_comm.1 (abs_sub_le_iff.1 (sin_bound (by rwa [abs_of_nonneg (le_of_lt hx0)]))).2
 
 theorem sin_pos_of_pos_of_le_two {x : ℝ} (hx0 : 0 < x) (hx : x ≤ 2) : 0 < sin x :=
   have : x / 2 ≤ 1 := (div_le_iff₀ (by norm_num)).mpr (by simpa)
   calc
     0 < 2 * sin (x / 2) * cos (x / 2) :=
       mul_pos (mul_pos (by norm_num) (sin_pos_of_pos_of_le_one (half_pos hx0) this))
-        (cos_pos_of_le_one (by rwa [_root_.abs_of_nonneg (le_of_lt (half_pos hx0))]))
+        (cos_pos_of_le_one (by rwa [abs_of_nonneg (le_of_lt (half_pos hx0))]))
     _ = sin x := by rw [← sin_two_mul, two_mul, add_halves]
 
-theorem cos_one_le : cos 1 ≤ 2 / 3 :=
+theorem cos_one_le : cos 1 ≤ 5 / 9 :=
   calc
     cos 1 ≤ |(1 : ℝ)| ^ 4 * (5 / 96) + (1 - 1 ^ 2 / 2) :=
       sub_le_iff_le_add.1 (abs_sub_le_iff.1 (cos_bound (by simp))).1
-    _ ≤ 2 / 3 := by norm_num
+    _ ≤ 5 / 9 := by norm_num
 
 theorem cos_one_pos : 0 < cos 1 :=
   cos_pos_of_le_one (le_of_eq abs_one)
@@ -907,7 +897,7 @@ theorem cos_one_pos : 0 < cos 1 :=
 theorem cos_two_neg : cos 2 < 0 :=
   calc cos 2 = cos (2 * 1) := congr_arg cos (mul_one _).symm
     _ = _ := Real.cos_two_mul 1
-    _ ≤ 2 * (2 / 3) ^ 2 - 1 := by
+    _ ≤ 2 * (5 / 9) ^ 2 - 1 := by
       gcongr
       · exact cos_one_pos.le
       · apply cos_one_le
@@ -934,18 +924,24 @@ end Mathlib.Meta.Positivity
 namespace Complex
 
 @[simp]
-theorem abs_cos_add_sin_mul_I (x : ℝ) : abs (cos x + sin x * I) = 1 := by
+theorem norm_cos_add_sin_mul_I (x : ℝ) : ‖cos x + sin x * I‖ = 1 := by
   have := Real.sin_sq_add_cos_sq x
-  simp_all [add_comm, abs, normSq, sq, sin_ofReal_re, cos_ofReal_re, mul_re]
+  simp_all [add_comm, norm_def, normSq, sq, sin_ofReal_re, cos_ofReal_re, mul_re]
 
 @[simp]
-theorem abs_exp_ofReal_mul_I (x : ℝ) : abs (exp (x * I)) = 1 := by
-  rw [exp_mul_I, abs_cos_add_sin_mul_I]
+theorem norm_exp_ofReal_mul_I (x : ℝ) : ‖exp (x * I)‖ = 1 := by
+  rw [exp_mul_I, norm_cos_add_sin_mul_I]
 
-theorem abs_exp (z : ℂ) : abs (exp z) = Real.exp z.re := by
-  rw [exp_eq_exp_re_mul_sin_add_cos, map_mul, abs_exp_ofReal, abs_cos_add_sin_mul_I, mul_one]
+theorem norm_exp (z : ℂ) : ‖exp z‖ = Real.exp z.re := by
+  rw [exp_eq_exp_re_mul_sin_add_cos, Complex.norm_mul, norm_exp_ofReal, norm_cos_add_sin_mul_I,
+    mul_one]
 
-theorem abs_exp_eq_iff_re_eq {x y : ℂ} : abs (exp x) = abs (exp y) ↔ x.re = y.re := by
-  rw [abs_exp, abs_exp, Real.exp_eq_exp]
+theorem norm_exp_eq_iff_re_eq {x y : ℂ} : ‖exp x‖ = ‖exp y‖ ↔ x.re = y.re := by
+  rw [norm_exp, norm_exp, Real.exp_eq_exp]
+
+@[deprecated (since := "2025-02-16")] alias abs_cos_add_sin_mul_I := norm_cos_add_sin_mul_I
+@[deprecated (since := "2025-02-16")] alias abs_exp_ofReal_mul_I := norm_exp_ofReal_mul_I
+@[deprecated (since := "2025-02-16")] alias abs_exp := norm_exp
+@[deprecated (since := "2025-02-16")] alias abs_exp_eq_iff_re_eq := norm_exp_eq_iff_re_eq
 
 end Complex

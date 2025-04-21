@@ -55,7 +55,7 @@ theorem Gamma_mul_add_mul_le_rpow_Gamma_mul_rpow_Gamma {s t a b : ℝ} (hs : 0 <
   -- We will apply Hölder's inequality, for the conjugate exponents `p = 1 / a`
   -- and `q = 1 / b`, to the functions `f a s` and `f b t`, where `f` is as follows:
   let f : ℝ → ℝ → ℝ → ℝ := fun c u x => exp (-c * x) * x ^ (c * (u - 1))
-  have e : IsConjExponent (1 / a) (1 / b) := Real.isConjExponent_one_div ha hb hab
+  have e : HolderConjugate (1 / a) (1 / b) := Real.holderConjugate_one_div ha hb hab
   have hab' : b = 1 - a := by linarith
   have hst : 0 < a * s + b * t := by positivity
   -- some properties of f:
@@ -72,13 +72,13 @@ theorem Gamma_mul_add_mul_le_rpow_Gamma_mul_rpow_Gamma {s t a b : ℝ} (hs : 0 <
   -- show `f c u` is in `ℒp` for `p = 1/c`:
   have f_mem_Lp :
     ∀ {c u : ℝ} (hc : 0 < c) (hu : 0 < u),
-      Memℒp (f c u) (ENNReal.ofReal (1 / c)) (volume.restrict (Ioi 0)) := by
+      MemLp (f c u) (ENNReal.ofReal (1 / c)) (volume.restrict (Ioi 0)) := by
     intro c u hc hu
     have A : ENNReal.ofReal (1 / c) ≠ 0 := by
       rwa [Ne, ENNReal.ofReal_eq_zero, not_le, one_div_pos]
     have B : ENNReal.ofReal (1 / c) ≠ ∞ := ENNReal.ofReal_ne_top
-    rw [← memℒp_norm_rpow_iff _ A B, ENNReal.toReal_ofReal (one_div_nonneg.mpr hc.le),
-      ENNReal.div_self A B, memℒp_one_iff_integrable]
+    rw [← memLp_norm_rpow_iff _ A B, ENNReal.toReal_ofReal (one_div_nonneg.mpr hc.le),
+      ENNReal.div_self A B, memLp_one_iff_integrable]
     · apply Integrable.congr (GammaIntegral_convergent hu)
       refine eventuallyEq_of_mem (self_mem_ae_restrict measurableSet_Ioi) fun x hx => ?_
       dsimp only
@@ -182,9 +182,6 @@ theorem f_add_nat_ge (hf_conv : ConvexOn ℝ (Ioi 0) f)
       (by linarith : (n : ℝ) - 1 < (n : ℝ)) (by linarith)
   rw [add_sub_cancel_left, sub_sub_cancel, div_one] at c
   have : f (↑n - 1) = f n - log (↑n - 1) := by
-    -- Porting note: was
-    -- nth_rw_rhs 1 [(by ring : (n : ℝ) = ↑n - 1 + 1)]
-    -- rw [hf_feq npos, add_sub_cancel]
     rw [eq_sub_iff_add_eq, ← hf_feq npos, sub_add_cancel]
   rwa [this, le_div_iff₀ hx, sub_sub_cancel, le_sub_iff_add_le, mul_comm _ x, add_comm] at c
 
@@ -401,8 +398,6 @@ theorem doublingGamma_log_convex_Ioi : ConvexOn ℝ (Ioi (0 : ℝ)) (log ∘ dou
       using 1
     · simpa only [zero_div] using (preimage_const_mul_Ioi (0 : ℝ) one_half_pos).symm
     · ext1 x
-      -- Porting note: was
-      -- change log (Gamma (x / 2)) = log (Gamma ((1 / 2 : ℝ) • x))
       simp only [LinearMap.coe_toAffineMap, Function.comp_apply, DistribMulAction.toLinearMap_apply]
       rw [smul_eq_mul, mul_comm, mul_one_div]
   · refine ConvexOn.subset ?_ (Ioi_subset_Ioi <| neg_one_lt_zero.le) (convex_Ioi _)

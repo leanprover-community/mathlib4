@@ -61,7 +61,7 @@ instance DivisionRing.hasRankNullity : HasRankNullity.{u₀} K where
   rank_quotient_add_rank := rank_quotient_add_rank_of_divisionRing
   exists_set_linearIndependent V _ _ := by
     let b := Module.Free.chooseBasis K V
-    refine ⟨range b, ?_, b.linearIndependent.to_subtype_range⟩
+    refine ⟨range b, ?_, b.linearIndependent.linearIndepOn_id⟩
     rw [← lift_injective.eq_iff, mk_range_eq_of_injective b.injective,
       Module.Free.rank_eq_card_chooseBasisIndex]
 
@@ -97,7 +97,7 @@ theorem rank_add_rank_split (db : V₂ →ₗ[K] V) (eb : V₃ →ₗ[K] V) (cd 
     rintro ⟨d, e⟩
     have h := eq₂ d (-e)
     simp only [add_eq_zero_iff_eq_neg, LinearMap.prod_apply, mem_ker, SetLike.mem_coe,
-      Prod.mk.inj_iff, coprod_apply, map_neg, neg_apply, LinearMap.mem_range, Pi.prod] at h ⊢
+      Prod.mk_inj, coprod_apply, map_neg, neg_apply, LinearMap.mem_range, Pi.prod] at h ⊢
     intro hde
     rcases h hde with ⟨c, h₁, h₂⟩
     refine ⟨c, h₁, ?_⟩

@@ -51,9 +51,9 @@ theorem unzip_swap (l : List (α × β)) : unzip (l.map Prod.swap) = (unzip l).s
 @[congr]
 theorem zipWith_congr (f g : α → β → γ) (la : List α) (lb : List β)
     (h : List.Forall₂ (fun a b => f a b = g a b) la lb) : zipWith f la lb = zipWith g la lb := by
-  induction' h with a b as bs hfg _ ih
-  · rfl
-  · exact congr_arg₂ _ hfg ih
+  induction h with
+  | nil => rfl
+  | cons hfg _ ih => exact congr_arg₂ _ hfg ih
 
 theorem zipWith_zipWith_left (f : δ → γ → ε) (g : α → β → δ) :
     ∀ (la : List α) (lb : List β) (lc : List γ),
@@ -93,7 +93,7 @@ theorem zipWith3_same_right (f : α → β → β → γ) :
   | _ :: as, _ :: bs => congr_arg (cons _) <| zipWith3_same_right f as bs
 
 instance (f : α → α → β) [IsSymmOp f] : IsSymmOp (zipWith f) :=
-  ⟨zipWith_comm_of_comm f IsSymmOp.symm_op⟩
+  ⟨fun _ _ => zipWith_comm_of_comm IsSymmOp.symm_op⟩
 
 @[simp]
 theorem length_revzip (l : List α) : length (revzip l) = length l := by
@@ -101,7 +101,7 @@ theorem length_revzip (l : List α) : length (revzip l) = length l := by
 
 @[simp]
 theorem unzip_revzip (l : List α) : (revzip l).unzip = (l, l.reverse) :=
-  unzip_zip (length_reverse l).symm
+  unzip_zip length_reverse.symm
 
 @[simp]
 theorem revzip_map_fst (l : List α) : (revzip l).map Prod.fst = l := by
@@ -117,18 +117,9 @@ theorem reverse_revzip (l : List α) : reverse l.revzip = revzip l.reverse := by
 
 theorem revzip_swap (l : List α) : (revzip l).map Prod.swap = revzip l.reverse := by simp [revzip]
 
-theorem get?_zipWith' (f : α → β → γ) (l₁ : List α) (l₂ : List β) (i : ℕ) :
-    (zipWith f l₁ l₂).get? i = ((l₁.get? i).map f).bind fun g => (l₂.get? i).map g := by
-  simp [getElem?_zipWith']
-
-theorem get?_zipWith_eq_some (f : α → β → γ) (l₁ : List α) (l₂ : List β) (z : γ) (i : ℕ) :
-    (zipWith f l₁ l₂).get? i = some z ↔
-      ∃ x y, l₁.get? i = some x ∧ l₂.get? i = some y ∧ f x y = z := by
-  simp [getElem?_zipWith_eq_some]
-
-theorem get?_zip_eq_some (l₁ : List α) (l₂ : List β) (z : α × β) (i : ℕ) :
-    (zip l₁ l₂).get? i = some z ↔ l₁.get? i = some z.1 ∧ l₂.get? i = some z.2 := by
-  simp [getElem?_zip_eq_some]
+@[deprecated (since := "2025-02-14")] alias get?_zipWith' := getElem?_zipWith'
+@[deprecated (since := "2025-02-14")] alias get?_zipWith_eq_some := getElem?_zipWith_eq_some
+@[deprecated (since := "2025-02-14")] alias get?_zip_eq_some := getElem?_zip_eq_some
 
 theorem mem_zip_inits_tails {l : List α} {init tail : List α} :
     (init, tail) ∈ zip l.inits l.tails ↔ init ++ tail = l := by
@@ -138,7 +129,7 @@ theorem mem_zip_inits_tails {l : List α} {init tail : List α} :
     · rintro (⟨rfl, rfl⟩ | ⟨_, _, h, rfl, rfl⟩)
       · simp
       · simp [ih.mp h]
-    · cases' init with hd' tl'
+    · rcases init with - | ⟨hd', tl'⟩
       · rintro rfl
         simp
       · intro h

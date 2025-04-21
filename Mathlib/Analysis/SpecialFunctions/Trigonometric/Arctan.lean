@@ -212,7 +212,7 @@ lemma arctan_ne_mul_pi_div_two {x : ℝ} : ∀ (k : ℤ), arctan x ≠ (2 * k + 
   norm_cast at lb ub; change -1 < _ at lb; omega
 
 lemma arctan_add_arctan_lt_pi_div_two {x y : ℝ} (h : x * y < 1) : arctan x + arctan y < π / 2 := by
-  cases' le_or_lt y 0 with hy hy
+  rcases le_or_lt y 0 with hy | hy
   · rw [← add_zero (π / 2), ← arctan_zero]
     exact add_lt_add_of_lt_of_le (arctan_lt_pi_div_two _) (tanOrderIso.symm.monotone hy)
   · rw [← lt_div_iff₀ hy, ← inv_eq_one_div] at h

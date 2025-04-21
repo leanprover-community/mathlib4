@@ -104,18 +104,14 @@ abbrev IdemSemiring.ofSemiring [Semiring α] (h : ∀ a : α, a + a = a) : IdemS
     le := fun a b ↦ a + b = b
     le_refl := h
     le_trans := fun a b c hab hbc ↦ by
-      simp only
       rw [← hbc, ← add_assoc, hab]
     le_antisymm := fun a b hab hba ↦ by rwa [← hba, add_comm]
     sup := (· + ·)
     le_sup_left := fun a b ↦ by
-      simp only
       rw [← add_assoc, h]
     le_sup_right := fun a b ↦ by
-      simp only
       rw [add_comm, add_assoc, h]
     sup_le := fun a b c hab hbc ↦ by
-      simp only
       rwa [add_assoc, hbc]
     bot := 0
     bot_le := zero_add }
@@ -127,19 +123,18 @@ variable [IdemSemiring α] {a b c : α}
 theorem add_eq_sup (a b : α) : a + b = a ⊔ b :=
   IdemSemiring.add_eq_sup _ _
 
--- Porting note: This simp theorem often leads to timeout when `α` has rich structure.
---               So, this theorem should be scoped.
 scoped[Computability] attribute [simp] add_eq_sup
 
 theorem add_idem (a : α) : a + a = a := by simp
 
 lemma natCast_eq_one {n : ℕ} (nezero : n ≠ 0) : (n : α) = 1 := by
-  induction n, Nat.one_le_iff_ne_zero.mpr nezero using Nat.le_induction with
+  rw [← Nat.one_le_iff_ne_zero] at nezero
+  induction n, nezero using Nat.le_induction with
   | base => exact Nat.cast_one
   | succ x _ hx => rw [Nat.cast_add, hx, Nat.cast_one, add_idem 1]
 
 lemma ofNat_eq_one {n : ℕ} [n.AtLeastTwo] : (ofNat(n) : α) = 1 :=
-  natCast_eq_one <| Nat.not_eq_zero_of_lt Nat.AtLeastTwo.prop
+  natCast_eq_one <| Nat.ne_zero_of_lt Nat.AtLeastTwo.prop
 
 theorem nsmul_eq_self : ∀ {n : ℕ} (_ : n ≠ 0) (a : α), n • a = a
   | 0, h => (h rfl).elim
@@ -160,10 +155,9 @@ theorem add_le (ha : a ≤ c) (hb : b ≤ c) : a + b ≤ c :=
   add_le_iff.2 ⟨ha, hb⟩
 
 -- See note [lower instance priority]
-instance (priority := 100) IdemSemiring.toOrderedAddCommMonoid :
-    OrderedAddCommMonoid α :=
-  { ‹IdemSemiring α› with
-    add_le_add_left := fun a b hbc c ↦ by
+instance (priority := 100) IdemSemiring.toIsOrderedAddMonoid :
+    IsOrderedAddMonoid α :=
+  { add_le_add_left := fun a b hbc c ↦ by
       simp_rw [add_eq_sup]
       exact sup_le_sup_left hbc _ }
 

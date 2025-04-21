@@ -3,7 +3,7 @@ Copyright (c) 2022 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.MeasureTheory.Integral.IntervalIntegral
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 /-!
 # The layer cake formula / Cavalieri's principle / tail probability formula
@@ -109,7 +109,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable_of_sigmaFinite
       ∫⁻ t in Ioi 0, μ {a : α | t ≤ f a} * ENNReal.ofReal (g t) := by
   have g_intble' : ∀ t : ℝ, 0 ≤ t → IntervalIntegrable g volume 0 t := by
     intro t ht
-    cases' eq_or_lt_of_le ht with h h
+    rcases eq_or_lt_of_le ht with h | h
     · simp [← h]
     · exact g_intble t h
   have integrand_eq : ∀ ω,
@@ -123,7 +123,6 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable_of_sigmaFinite
     exact intervalIntegral.integral_of_le (f_nn ω)
   rw [lintegral_congr integrand_eq]
   simp_rw [← lintegral_indicator measurableSet_Ioc]
-  -- Porting note: was part of `simp_rw` on the previous line, but didn't trigger.
   rw [← lintegral_indicator measurableSet_Ioi, lintegral_lintegral_swap]
   · apply congr_arg
     funext s
@@ -515,7 +514,7 @@ See `MeasureTheory.lintegral_eq_lintegral_meas_lt` for a version with Lebesgue i
 instead. -/
 theorem Integrable.integral_eq_integral_meas_lt
     (f_intble : Integrable f μ) (f_nn : 0 ≤ᵐ[μ] f) :
-    ∫ ω, f ω ∂μ = ∫ t in Set.Ioi 0, ENNReal.toReal (μ {a : α | t < f a}) := by
+    ∫ ω, f ω ∂μ = ∫ t in Set.Ioi 0, μ.real {a : α | t < f a} := by
   have key := lintegral_eq_lintegral_meas_lt μ f_nn f_intble.aemeasurable
   have lhs_finite : ∫⁻ (ω : α), ENNReal.ofReal (f ω) ∂μ < ∞ := Integrable.lintegral_lt_top f_intble
   have rhs_finite : ∫⁻ (t : ℝ) in Set.Ioi 0, μ {a | t < f a} < ∞ := by simp only [← key, lhs_finite]
@@ -524,19 +523,19 @@ theorem Integrable.integral_eq_integral_meas_lt
   convert (ENNReal.toReal_eq_toReal lhs_finite.ne rhs_finite.ne).mpr key
   · exact integral_eq_lintegral_of_nonneg_ae f_nn f_intble.aestronglyMeasurable
   · have aux := @integral_eq_lintegral_of_nonneg_ae _ _ ((volume : Measure ℝ).restrict (Set.Ioi 0))
-      (fun t ↦ ENNReal.toReal (μ {a : α | t < f a})) ?_ ?_
+      (fun t ↦ μ.real {a : α | t < f a}) ?_ ?_
     · rw [aux]
       congr 1
       apply setLIntegral_congr_fun measurableSet_Ioi (Eventually.of_forall _)
       exact fun t t_pos ↦ ENNReal.ofReal_toReal (rhs_integrand_finite t t_pos).ne
-    · exact Eventually.of_forall (fun x ↦ by simp only [Pi.zero_apply, ENNReal.toReal_nonneg])
+    · exact Eventually.of_forall (fun x ↦ by positivity)
     · apply Measurable.aestronglyMeasurable
       refine Measurable.ennreal_toReal ?_
       exact Antitone.measurable (fun _ _ hst ↦ measure_mono (fun _ h ↦ lt_of_le_of_lt hst h))
 
 theorem Integrable.integral_eq_integral_meas_le
     (f_intble : Integrable f μ) (f_nn : 0 ≤ᵐ[μ] f) :
-    ∫ ω, f ω ∂μ = ∫ t in Set.Ioi 0, ENNReal.toReal (μ {a : α | t ≤ f a}) := by
+    ∫ ω, f ω ∂μ = ∫ t in Set.Ioi 0, μ.real {a : α | t ≤ f a} := by
   rw [Integrable.integral_eq_integral_meas_lt f_intble f_nn]
   apply integral_congr_ae
   filter_upwards [meas_le_ae_eq_meas_lt μ (volume.restrict (Ioi 0)) f] with t ht
@@ -544,7 +543,7 @@ theorem Integrable.integral_eq_integral_meas_le
 
 lemma Integrable.integral_eq_integral_Ioc_meas_le {f : α → ℝ} {M : ℝ}
     (f_intble : Integrable f μ) (f_nn : 0 ≤ᵐ[μ] f) (f_bdd : f ≤ᵐ[μ] (fun _ ↦ M)) :
-    ∫ ω, f ω ∂μ = ∫ t in Ioc 0 M, ENNReal.toReal (μ {a : α | t ≤ f a}) := by
+    ∫ ω, f ω ∂μ = ∫ t in Ioc 0 M, μ.real {a : α | t ≤ f a} := by
   rw [f_intble.integral_eq_integral_meas_le f_nn]
   rw [setIntegral_eq_of_subset_of_ae_diff_eq_zero
       nullMeasurableSet_Ioi Ioc_subset_Ioi_self ?_]
@@ -553,7 +552,7 @@ lemma Integrable.integral_eq_integral_Ioc_meas_le {f : α → ℝ} {M : ℝ}
   have obs : μ {a | M < f a} = 0 := by
     rw [measure_zero_iff_ae_nmem]
     filter_upwards [f_bdd] with a ha using not_lt.mpr ha
-  rw [ENNReal.toReal_eq_zero_iff]
+  rw [measureReal_def, ENNReal.toReal_eq_zero_iff]
   exact Or.inl <| measure_mono_null (fun a ha ↦ lt_of_lt_of_le htM ha) obs
 
 end LayercakeIntegral

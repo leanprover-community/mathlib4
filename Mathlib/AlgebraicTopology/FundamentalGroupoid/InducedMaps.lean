@@ -136,7 +136,7 @@ many of the paths do not have defeq starting/ending points, so we end up needing
 /-- Interpret a homotopy `H : C(I × X, Y)` as a map `C(ULift I × X, Y)` -/
 def uliftMap : C(TopCat.of (ULift.{u} I × X), Y) :=
   ⟨fun x => H (x.1.down, x.2),
-    H.continuous.comp ((continuous_uLift_down.comp continuous_fst).prod_mk continuous_snd)⟩
+    H.continuous.comp ((continuous_uliftDown.comp continuous_fst).prodMk continuous_snd)⟩
 
 theorem ulift_apply (i : ULift.{u} I) (x : X) : H.uliftMap (i, x) = H (i.down, x) :=
   rfl
@@ -193,7 +193,7 @@ theorem eq_diag_path : (πₘ (TopCat.ofHom f)).map p ≫ ⟦H.evalAt x₁⟧ = 
     (⟦H.evalAt x₀⟧ ≫ (πₘ (TopCat.ofHom g)).map p :
     fromTop (f x₀) ⟶ fromTop (g x₁)) = H.diagonalPath' p := by
   rw [H.apply_zero_path, H.apply_one_path, H.evalAt_eq]
-  erw [H.evalAt_eq] -- Porting note: `rw` didn't work, so using `erw`
+  erw [H.evalAt_eq]
   dsimp only [prodToProdTopI]
   constructor
   · slice_lhs 2 4 => rw [eqToHom_trans, eqToHom_refl] -- Porting note: this ↓ `simp` didn't do this
@@ -222,7 +222,6 @@ def homotopicMapsNatIso : @Quiver.Hom _ Functor.category.toQuiver
     (πₘ (TopCat.ofHom f))
     (πₘ (TopCat.ofHom g)) where
   app x := ⟦H.evalAt x.as⟧
-  -- Porting note: Turned `rw` into `erw` in the line below
   naturality x y p := by erw [(H.eq_diag_path p).1, (H.eq_diag_path p).2]
 
 instance : IsIso (homotopicMapsNatIso H) := by apply NatIso.isIso_of_isIso_app

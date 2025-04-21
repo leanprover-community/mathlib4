@@ -61,9 +61,6 @@ lemma ext {X : TopCat} {P Q : Presheaf C X} {f g : P ⟶ Q}
   induction U with | _ U => ?_
   apply w
 
-attribute [local instance] CategoryTheory.HasForget.hasCoeToSort
-  CategoryTheory.HasForget.instFunLike
-
 /-- attribute `sheaf_restrict` to mark lemmas related to restricting sheaves -/
 macro "sheaf_restrict" : attr =>
   `(attr|aesop safe 50 apply (rule_sets := [$(Lean.mkIdent `Restrict):ident]))
@@ -98,46 +95,49 @@ example {X} [CompleteLattice X] (v : Nat → X) (w x y z : X) (e : v 0 = v 1) (_
     (h₀ : v 1 ≤ x) (_ : x ≤ z ⊓ w) (h₂ : x ≤ y ⊓ z) : v 0 ≤ y := by
   restrict_tac
 
+variable {X : TopCat} {C : Type*} [Category C] {FC : C → C → Type*} {CC : C → Type*}
+variable [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory C FC]
+
 /-- The restriction of a section along an inclusion of open sets.
 For `x : F.obj (op V)`, we provide the notation `x |_ₕ i` (`h` stands for `hom`) for `i : U ⟶ V`,
 and the notation `x |_ₗ U ⟪i⟫` (`l` stands for `le`) for `i : U ≤ V`.
 -/
-def restrict {X : TopCat} {C : Type*} [Category C] [HasForget C] {F : X.Presheaf C}
-    {V : Opens X} (x : F.obj (op V)) {U : Opens X} (h : U ⟶ V) : F.obj (op U) :=
+def restrict {F : X.Presheaf C}
+    {V : Opens X} (x : ToType (F.obj (op V))) {U : Opens X} (h : U ⟶ V) : ToType (F.obj (op U)) :=
   F.map h.op x
 
 /-- restriction of a section along an inclusion -/
 scoped[AlgebraicGeometry] infixl:80 " |_ₕ " => TopCat.Presheaf.restrict
 /-- restriction of a section along a subset relation -/
 scoped[AlgebraicGeometry] notation:80 x " |_ₗ " U " ⟪" e "⟫ " =>
-  @TopCat.Presheaf.restrict _ _ _ _ _ _ x U (@homOfLE (Opens _) _ U _ e)
+  @TopCat.Presheaf.restrict _ _ _ _ _ _ _ _ _ x U (@homOfLE (Opens _) _ U _ e)
 
 open AlgebraicGeometry
 
 /-- The restriction of a section along an inclusion of open sets.
 For `x : F.obj (op V)`, we provide the notation `x |_ U`, where the proof `U ≤ V` is inferred by
 the tactic `Top.presheaf.restrict_tac'` -/
-abbrev restrictOpen {X : TopCat} {C : Type*} [Category C] [HasForget C] {F : X.Presheaf C}
-    {V : Opens X} (x : F.obj (op V)) (U : Opens X)
+abbrev restrictOpen {F : X.Presheaf C}
+    {V : Opens X} (x : ToType (F.obj (op V))) (U : Opens X)
     (e : U ≤ V := by restrict_tac) :
-    F.obj (op U) :=
+    ToType (F.obj (op U)) :=
   x |_ₗ U ⟪e⟫
 
 /-- restriction of a section to open subset -/
 scoped[AlgebraicGeometry] infixl:80 " |_ " => TopCat.Presheaf.restrictOpen
 
-theorem restrict_restrict {X : TopCat} {C : Type*} [Category C] [HasForget C]
-    {F : X.Presheaf C} {U V W : Opens X} (e₁ : U ≤ V) (e₂ : V ≤ W) (x : F.obj (op W)) :
+theorem restrict_restrict
+    {F : X.Presheaf C} {U V W : Opens X} (e₁ : U ≤ V) (e₂ : V ≤ W) (x : ToType (F.obj (op W))) :
     x |_ V |_ U = x |_ U := by
   delta restrictOpen restrict
-  rw [← CategoryTheory.comp_apply, ← Functor.map_comp]
+  rw [← ConcreteCategory.comp_apply, ← Functor.map_comp]
   rfl
 
-theorem map_restrict {X : TopCat} {C : Type*} [Category C] [HasForget C]
-    {F G : X.Presheaf C} (e : F ⟶ G) {U V : Opens X} (h : U ≤ V) (x : F.obj (op V)) :
+theorem map_restrict
+    {F G : X.Presheaf C} (e : F ⟶ G) {U V : Opens X} (h : U ≤ V) (x : ToType (F.obj (op V))) :
     e.app _ (x |_ U) = e.app _ x |_ U := by
   delta restrictOpen restrict
-  rw [← CategoryTheory.comp_apply, NatTrans.naturality, CategoryTheory.comp_apply]
+  rw [← ConcreteCategory.comp_apply, NatTrans.naturality, ConcreteCategory.comp_apply]
 
 open CategoryTheory.Limits
 

@@ -10,8 +10,8 @@ import Mathlib.LinearAlgebra.DirectSum.Finsupp
 import Mathlib.LinearAlgebra.TensorProduct.Quotient
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.RingTheory.Finiteness.Cardinality
-import Mathlib.RingTheory.Finiteness.TensorProduct
 import Mathlib.RingTheory.Ideal.Quotient.Operations
+import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
 # Indices of ideals
@@ -72,7 +72,7 @@ lemma Submodule.index_smul_le [Finite (R ⧸ I)]
   have H : LinearMap.range (Finsupp.linearCombination R (α := s) (↑)) = N := by
     rw [Finsupp.range_linearCombination, ← hs, Subtype.range_val]; rfl
   let f : (s →₀ R) →ₗ[R] N := (Finsupp.linearCombination R (↑)).codRestrict _
-    (Set.range_subset_iff (s := N.carrier).mp <| by exact H.le)
+    (fun c => by rw [← H, LinearMap.mem_range]; exact exists_apply_eq_apply _ _)
   have hf : Function.Surjective f := fun x ↦ by
     obtain ⟨y, hy⟩ := H.ge x.2; exact ⟨y, Subtype.ext hy⟩
   have : Function.Surjective
@@ -82,6 +82,17 @@ lemma Submodule.index_smul_le [Finite (R ⧸ I)]
   simp only [Nat.card_eq_fintype_card, Fintype.card_finsupp, Fintype.card_coe, le_rfl]
 
 variable {I}
+
+lemma Ideal.finite_quotient_prod {ι : Type*} (I : ι → Ideal R) (s : Finset ι)
+    (hI : ∀ i ∈ s, (I i).FG) (hI' : ∀ i ∈ s, Finite (R ⧸ I i)) : Finite (R ⧸ (∏ i ∈ s, I i)) := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp only [Finset.prod_empty, one_eq_top]; infer_instance
+  | @insert a s has IH =>
+    rw [Finset.prod_insert has, mul_comm]
+    have := hI' a (by simp)
+    have := IH (fun i hi ↦ hI _ (by simp [hi])) (fun i hi ↦ hI' _ (by simp [hi]))
+    exact Submodule.finite_quotient_smul _ (hI a (by simp))
 
 lemma Ideal.finite_quotient_pow (hI : I.FG) [Finite (R ⧸ I)] (n) : Finite (R ⧸ I ^ n) := by
   induction n with

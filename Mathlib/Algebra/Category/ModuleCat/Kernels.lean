@@ -25,8 +25,7 @@ variable {M N : ModuleCat.{v} R} (f : M ⟶ N)
 
 /-- The kernel cone induced by the concrete kernel. -/
 def kernelCone : KernelFork f :=
-  -- Porting note: previously proven by tidy
-  KernelFork.ofι (ofHom f.hom.ker.subtype) <| by ext x; cases x; assumption
+  KernelFork.ofι (ofHom f.hom.ker.subtype) <| by aesop
 
 /-- The kernel of a linear map is a kernel in the categorical sense. -/
 def kernelIsLimit : IsLimit (kernelCone f) :=
@@ -36,8 +35,8 @@ def kernelIsLimit : IsLimit (kernelCone f) :=
       LinearMap.codRestrict (LinearMap.ker f.hom) (Fork.ι s).hom fun c =>
         LinearMap.mem_ker.2 <| by
           -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-          erw [← @Function.comp_apply _ _ _ f (Fork.ι s) c, ← LinearMap.coe_comp]
-          rw [← ModuleCat.hom_comp, Fork.condition, HasZeroMorphisms.comp_zero (Fork.ι s) N]
+          erw [← ConcreteCategory.comp_apply]
+          rw [Fork.condition, HasZeroMorphisms.comp_zero (Fork.ι s) N]
           rfl)
     (fun _ => hom_ext <| LinearMap.subtype_comp_codRestrict _ _ _) fun s m h =>
       hom_ext <| LinearMap.ext fun x => Subtype.ext_iff_val.2 (by simp [← h]; rfl)
@@ -120,6 +119,6 @@ theorem range_mkQ_cokernelIsoRangeQuotient_inv :
 theorem cokernel_π_ext {M N : ModuleCat.{u} R} (f : M ⟶ N) {x y : N} (m : M) (w : x = y + f m) :
     cokernel.π f x = cokernel.π f y := by
   subst w
-  simpa only [map_add, add_right_eq_self] using cokernel.condition_apply f m
+  simpa only [map_add, add_eq_left] using cokernel.condition_apply f m
 
 end ModuleCat

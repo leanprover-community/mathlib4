@@ -3,17 +3,20 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+import Mathlib.Algebra.Group.Action.End
 import Mathlib.Algebra.Group.Action.Pi
+import Mathlib.CategoryTheory.Action.Basic
 import Mathlib.CategoryTheory.FintypeCat
 import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.GroupTheory.QuotientGroup.Defs
-import Mathlib.CategoryTheory.Action.Basic
 
 /-!
 # Constructors for `Action V G` for some concrete categories
 
 We construct `Action (Type u) G` from a `[MulAction G X]` instance and give some applications.
 -/
+
+assert_not_exists Field
 
 universe u v
 
@@ -22,9 +25,9 @@ open CategoryTheory Limits
 namespace Action
 
 /-- Bundles a type `H` with a multiplicative action of `G` as an `Action`. -/
-def ofMulAction (G H : Type u) [Monoid G] [MulAction G H] : Action (Type u) (MonCat.of G) where
+def ofMulAction (G H : Type u) [Monoid G] [MulAction G H] : Action (Type u) G where
   V := H
-  ρ := MonCat.ofHom <| @MulAction.toEndHom _ _ _ (by assumption)
+  ρ := @MulAction.toEndHom _ _ _ (by assumption)
 
 @[simp]
 theorem ofMulAction_apply {G H : Type u} [Monoid G] [MulAction G H] (g : G) (x : H) :
@@ -56,12 +59,12 @@ def ofMulActionLimitCone {ι : Type v} (G : Type max v u) [Monoid G] (F : ι →
 
 /-- The `G`-set `G`, acting on itself by left multiplication. -/
 @[simps!]
-def leftRegular (G : Type u) [Monoid G] : Action (Type u) (MonCat.of G) :=
+def leftRegular (G : Type u) [Monoid G] : Action (Type u) G :=
   Action.ofMulAction G G
 
 /-- The `G`-set `Gⁿ`, acting on itself by left multiplication. -/
 @[simps!]
-def diagonal (G : Type u) [Monoid G] (n : ℕ) : Action (Type u) (MonCat.of G) :=
+def diagonal (G : Type u) [Monoid G] (n : ℕ) : Action (Type u) G :=
   Action.ofMulAction G (Fin n → G)
 
 /-- We have `Fin 1 → G ≅ G` as `G`-sets, with `G` acting by left multiplication. -/
@@ -78,9 +81,9 @@ instance (G : Type*) (X : Type*) [Monoid G] [MulAction G X] [Fintype X] :
 
 /-- Bundles a finite type `H` with a multiplicative action of `G` as an `Action`. -/
 def ofMulAction (G : Type u) (H : FintypeCat.{u}) [Monoid G] [MulAction G H] :
-    Action FintypeCat (MonCat.of G) where
+    Action FintypeCat G where
   V := H
-  ρ := MonCat.ofHom <| @MulAction.toEndHom _ _ _ (by assumption)
+  ρ := @MulAction.toEndHom _ _ _ (by assumption)
 
 @[simp]
 theorem ofMulAction_apply {G : Type u} {H : FintypeCat.{u}} [Monoid G] [MulAction G H]
@@ -101,10 +104,9 @@ def toEndHom [N.Normal] : G →* End (G ⧸ₐ N) where
   toFun v := {
     hom := Quotient.lift (fun σ ↦ ⟦σ * v⁻¹⟧) <| fun a b h ↦ Quotient.sound <| by
       apply (QuotientGroup.leftRel_apply).mpr
-      simp only [mul_inv_rev, inv_inv]
-      convert_to v * (a⁻¹ * b) * v⁻¹ ∈ N
-      · group
-      · exact Subgroup.Normal.conj_mem ‹_› _ (QuotientGroup.leftRel_apply.mp h) _
+      -- We avoid `group` here to minimize imports while low in the hierarchy;
+      -- typically it would be better to invoke the tactic.
+      simpa [mul_assoc] using Subgroup.Normal.conj_mem ‹_› _ (QuotientGroup.leftRel_apply.mp h) _
     comm := fun (g : G) ↦ by
       ext (x : G ⧸ N)
       induction' x using Quotient.inductionOn with x
@@ -167,22 +169,22 @@ end FintypeCat
 
 section ToMulAction
 
-variable {V : Type (u + 1)} [LargeCategory V] [HasForget V]
+variable {V : Type (u + 1)} [LargeCategory V] {FV : V → V → Type*} {CV : V → Type*}
+variable [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)] [ConcreteCategory V FV]
 
-instance instMulAction {G : MonCat.{u}} (X : Action V G) :
-    MulAction G ((CategoryTheory.forget _).obj X) where
-  smul g x := ((CategoryTheory.forget _).map (X.ρ g)) x
+instance instMulAction {G : Type u} [Monoid G] (X : Action V G) :
+    MulAction G (ToType X) where
+  smul g x := ConcreteCategory.hom (X.ρ g) x
   one_smul x := by
-    show ((CategoryTheory.forget _).map (X.ρ 1)) x = x
+    show ConcreteCategory.hom (X.ρ 1) x = x
     simp
   mul_smul g h x := by
-    show (CategoryTheory.forget V).map (X.ρ (g * h)) x =
-      ((CategoryTheory.forget V).map (X.ρ h) ≫ (CategoryTheory.forget V).map (X.ρ g)) x
+    show ConcreteCategory.hom (X.ρ (g * h)) x =
+      ConcreteCategory.hom (X.ρ g) ((ConcreteCategory.hom (X.ρ h)) x)
     simp
 
 /- Specialize `instMulAction` to assist typeclass inference. -/
-instance {G : MonCat.{u}} (X : Action FintypeCat G) : MulAction G X.V := Action.instMulAction X
-instance {G : Type u} [Group G] (X : Action FintypeCat (MonCat.of G)) : MulAction G X.V :=
+instance {G : Type u} [Monoid G] (X : Action FintypeCat G) : MulAction G X.V :=
   Action.instMulAction X
 
 end ToMulAction
