@@ -20,7 +20,7 @@ variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
 structure Mod_ (A : Mon_ C) where
   /-- The underlying object in the ambient monoidal category -/
   X : C
-  /-- The smulion morphism of the module object -/
+  /-- The action morphism of the module object -/
   smul : A.X ⊗ X ⟶ X
   one_smul : A.one ▷ X ≫ smul = (λ_ X).hom := by aesop_cat
   assoc : A.mul ▷ X ≫ smul = (α_ A.X A.X X).hom ≫ A.X ◁ smul ≫ smul := by aesop_cat
@@ -125,7 +125,7 @@ def comap {A B : Mon_ C} (f : A ⟶ B) : Mod_ B ⥤ Mod_ A where
         slice_rhs 2 3 => rw [← g.smul_hom]
         rw [Category.assoc] }
 
--- Lots more could be said about `comap`, e.g. how it intersmuls with
+-- Lots more could be said about `comap`, e.g. how it interacts with
 -- identities, compositions, and equalities of monoid object morphisms.
 end Mod_
 
@@ -135,16 +135,16 @@ open CategoryTheory Mon_Class MonoidalCategory
 
 variable (M : C) [Mon_Class M]
 
-/-- An smulion of a monoid object `M` on an object `X` is the data of a map `smul : M ⊗ X ⟶ X` that
+/-- An action of a monoid object `M` on an object `X` is the data of a map `smul : M ⊗ X ⟶ X` that
 satisfies unitality and associativity with multiplication.
 
-See `Mulsmulion` for the non-categorical version. -/
+See `MulAction` for the non-categorical version. -/
 class Mod_Class (X : C) where
-  /-- The smulion map -/
+  /-- The action map -/
   smul : M ⊗ X ⟶ X
-  /-- The identity smuls trivially. -/
+  /-- The identity acts trivially. -/
   one_smul (X) : η ▷ X ≫ smul = (λ_ X).hom := by aesop_cat
-  /-- The smulion map is compatible with multiplication. -/
+  /-- The action map is compatible with multiplication. -/
   mul_smul (X) : μ ▷ X ≫ smul = (α_ M M X).hom ≫ M ◁ smul ≫ smul := by aesop_cat
 
 attribute [reassoc (attr := simp)] Mod_Class.mul_smul Mod_Class.one_smul
@@ -159,7 +159,7 @@ open Mon_Class
 theorem assoc_flip (X : C) [Mod_Class M X] : M ◁ γ ≫ γ[X] = (α_ M M X).inv ≫ μ[M] ▷ X ≫ γ := by
   simp
 
-/-- The smulion of a monoid object on itself. -/
+/-- The action of a monoid object on itself. -/
 -- See note [reducible non instances]
 abbrev regular : Mod_Class M M where smul := μ
 
