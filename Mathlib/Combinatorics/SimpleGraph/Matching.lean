@@ -356,7 +356,7 @@ lemma IsCycles.existsUnique_ne_adj (h : G.IsCycles) (hadj : G.Adj v w) :
   aesop
 
 lemma IsCycles.toSimpleGraph (c : G.ConnectedComponent) (h : G.IsCycles) :
-    (c.toSimpleGraph).spanningCoe.IsCycles := by
+    c.toSimpleGraph.spanningCoe.IsCycles := by
   intro v ⟨w, hw⟩
   rw [mem_neighborSet, c.adj_spanningCoe_toSimpleGraph] at hw
   rw [← h ⟨w, hw.2⟩]
