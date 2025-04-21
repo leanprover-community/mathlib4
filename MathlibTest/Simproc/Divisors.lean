@@ -1,4 +1,5 @@
 import Mathlib.Tactic.Simproc.Divisors
+import Mathlib.NumberTheory.Primorial
 
 open Nat
 
@@ -9,10 +10,13 @@ example : Nat.divisors 1710 = {1, 2, 3, 5, 6, 9, 10, 15, 18, 19, 30, 38, 45, 57,
 example : Nat.divisors 57 = {1, 3, 19, 57} := by
   simp only [Nat.divisorsEq]
 
-#eval  (Nat.divisors <| 6 !).card
-
 example : (Nat.divisors <| 6 !).card = 30 := by
   simp [Nat.divisorsEq, Nat.factorial_succ]
+
+example : (Nat.divisors <| primorial 12).card = 32 := by
+  --TODO(Paul-Lez): seems like we need a simproc for computing `primorial`!
+  have : primorial 12 = 2310 := rfl
+  simp [Nat.divisorsEq, this]
 
 example : (Nat.divisors <| 2^20).card = 21 := by
   simp [Nat.divisorsEq, Nat.factorial_succ]
