@@ -71,6 +71,10 @@ theorem toSphere_apply_univ : μ.toSphere univ = dim E * μ (ball 0 1) := by
   nontriviality E
   rw [toSphere_apply_univ', measure_diff_null (measure_singleton _)]
 
+@[simp]
+theorem toSphere_real_apply_univ : μ.toSphere.real univ = dim E * μ.real (ball 0 1) := by
+  simp [measureReal_def]
+
 instance : IsFiniteMeasure μ.toSphere where
   measure_univ_lt_top := by
     rw [toSphere_apply_univ']
@@ -143,16 +147,16 @@ lemma integrable_fun_norm_addHaar {f : ℝ → F} :
 
 
 lemma integral_fun_norm_addHaar (f : ℝ → F) :
-    ∫ x, f (‖x‖) ∂μ = dim E • (μ (ball 0 1)).toReal • ∫ y in Ioi 0, y ^ (dim E - 1) • f y := calc
+    ∫ x, f (‖x‖) ∂μ = dim E • μ.real (ball 0 1) • ∫ y in Ioi 0, y ^ (dim E - 1) • f y := calc
   ∫ x, f (‖x‖) ∂μ = ∫ x : ({0}ᶜ : Set E), f (‖x.1‖) ∂(μ.comap (↑)) := by
     rw [integral_subtype_comap (measurableSet_singleton _).compl fun x ↦ f (‖x‖),
       restrict_compl_singleton]
   _ = ∫ x : sphere (0 : E) 1 × Ioi (0 : ℝ), f x.2 ∂μ.toSphere.prod (.volumeIoiPow (dim E - 1)) :=
     μ.measurePreserving_homeomorphUnitSphereProd.integral_comp (Homeomorph.measurableEmbedding _)
       (f ∘ Subtype.val ∘ Prod.snd)
-  _ = (μ.toSphere univ).toReal • ∫ x : Ioi (0 : ℝ), f x ∂.volumeIoiPow (dim E - 1) :=
+  _ = μ.toSphere.real univ • ∫ x : Ioi (0 : ℝ), f x ∂.volumeIoiPow (dim E - 1) :=
     integral_fun_snd (f ∘ Subtype.val)
-  _ = dim E • (μ (ball 0 1)).toReal • ∫ y in Ioi (0 : ℝ), y ^ (dim E - 1) • f y := by
+  _ = dim E • μ.real (ball 0 1) • ∫ y in Ioi (0 : ℝ), y ^ (dim E - 1) • f y := by
     simp only [Measure.volumeIoiPow, ENNReal.ofReal]
     rw [integral_withDensity_eq_integral_smul, μ.toSphere_apply_univ,
       ENNReal.toReal_mul, ENNReal.toReal_natCast, ← nsmul_eq_mul, smul_assoc,
