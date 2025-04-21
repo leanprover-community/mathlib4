@@ -19,7 +19,7 @@ variable {C : Type u} [Category.{v} C] [ChosenFiniteProducts C]
 @[simps]
 def Mod_.trivialAction (M : Mon_ C) (X : C) : Mod_ M where
   X := X
-  act := snd M.X X
+  smul := snd M.X X
 
 /-- Every object is a module over a monoid object via the trivial action. -/
 @[reducible] def Mon_Class.trivialAction (M : C) [Mon_Class M] (X : C) : Mod_Class M X where
