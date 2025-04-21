@@ -194,6 +194,7 @@ lemma coverEntropy_biUnion_le (s : Set ι) (T : X → X) (F : ι → Set X) :
     ⨆ i ∈ s, coverEntropy T (F i) ≤ coverEntropy T (⋃ i ∈ s, F i) :=
   iSup₂_le fun _ i_s ↦ coverEntropy_monotone T (subset_biUnion_of_mem i_s)
 
+/-- Topological entropy `CoverEntropy T` as a `SupBotHom` function of the subset. -/
 noncomputable def coverEntropy_supBotHom (T : X → X) :
     SupBotHom (Set X) EReal where
   toFun := coverEntropy T
@@ -215,3 +216,4 @@ lemma coverEntropy_finite_biUnion {T : X → X} {F : ι → Set X} {s : Finset �
 end Union
 
 end Dynamics
+#lint
