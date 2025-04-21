@@ -149,7 +149,7 @@ theorem Convex.starConvex_iff (hs : Convex 𝕜 s) (h : s.Nonempty) : StarConvex
 protected theorem Set.Subsingleton.convex {s : Set E} (h : s.Subsingleton) : Convex 𝕜 s :=
   convex_iff_pairwise_pos.mpr (h.pairwise _)
 
-theorem convex_singleton (c : E) : Convex 𝕜 ({c} : Set E) :=
+@[simp] theorem convex_singleton (c : E) : Convex 𝕜 ({c} : Set E) :=
   subsingleton_singleton.convex
 
 theorem convex_zero : Convex 𝕜 (0 : Set E) :=
