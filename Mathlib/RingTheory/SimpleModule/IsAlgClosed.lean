@@ -7,7 +7,7 @@ import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.RingTheory.SimpleModule.WedderburnArtin
 
 /-!
-# Wedderburn-Artin Theorem over an algebraically closed field
+# Wedderburn–Artin Theorem over an algebraically closed field
 -/
 
 variable (F R : Type*) [Field F] [IsAlgClosed F] [Ring R] [Algebra F R]
@@ -20,7 +20,7 @@ theorem IsSimpleRing.exists_algEquiv_matrix_of_isAlgClosed
   ⟨n, hn, ⟨e.trans <| .mapMatrix <| .symm <| .ofBijective (Algebra.ofId F D)
     IsAlgClosed.algebraMap_bijective_of_isIntegral⟩⟩
 
-theorem IsSemisimpleRing.exists_algEquiv_matrix_of_isAlgClosed
+theorem IsSemisimpleRing.exists_algEquiv_pi_matrix_of_isAlgClosed
     [IsSemisimpleRing R] [FiniteDimensional F R] :
     ∃ (n : ℕ) (d : Fin n → ℕ), (∀ i, NeZero (d i)) ∧
       Nonempty (R ≃ₐ[F] Π i, Matrix (Fin (d i)) (Fin (d i)) F) :=

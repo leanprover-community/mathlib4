@@ -8,13 +8,38 @@ import Mathlib.RingTheory.SimpleModule.Isotypic
 import Mathlib.RingTheory.SimpleRing.Congr
 
 /-!
-# Wedderburn-Artin Theorem
+# Wedderburn–Artin Theorem
+
+## Main results
+
+* `IsSimpleRing.tfae`: a simple ring is semisimple iff it is artinian,
+  iff it has a minimal left ideal.
+
+* `isSimpleRing_isArtinianRing_iff`: a ring is simple Artinian iff it is semisimple, isotypic,
+  and nontrivial.
+
+* `IsSimpleRing.exists_algEquiv_matrix_end_mulOpposite`: a simple Artinian algebra is
+  isomorphic to a (finite-dimensional) matrix algebra over a division algebra. The division
+  algebra is the opoposite of the endomorphism algebra of a simple (i.e., minimal) left ideal.
+
+* `IsSemisimpleRing.exists_algEquiv_pi_matrix_end_mulOpposite`: a semisimple algebra is
+  isomorphic to a finite direct product of matrix algebras over division algebras. The division
+  algebras are the opoposites of the endomorphism algebras of the simple (i.e., minimal)
+  left ideals.
+
+* `IsSimpleRing.exists_algEquiv_matrix_divisionRing_finite`,
+  `IsSemisimpleRing.exists_algEquiv_pi_matrix_divisionRing_finite`:
+  if the simple Artinian / semisimple algebra is finite as a module over a base ring, then the
+  division algebra(s) are also finite over the same ring.
+  If the base ring is an algebraically closed field, the only finite-dimensional division algebra
+  over it is itself, and we obtain `IsSimpleRing.exists_algEquiv_matrix_of_isAlgClosed` and
+  `IsSemisimpleRing.exists_algEquiv_pi_matrix_of_isAlgClosed` (in a later file).
+
 -/
 
 universe u
 variable (R₀ : Type*) {R : Type u} [CommSemiring R₀] [Ring R] [Algebra R₀ R]
 
-/-- A simple ring is semisimple iff it is artinian, iff it has a minimal left ideal. -/
 theorem IsSimpleRing.tfae [IsSimpleRing R] : List.TFAE
     [IsSemisimpleRing R, IsArtinianRing R, ∃ I : Ideal R, IsAtom I] := by
   tfae_have 1 → 2 := fun _ ↦ inferInstance

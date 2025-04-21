@@ -9,6 +9,35 @@ import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Isotypic modules and isotypic components
+
+## Main definitions
+
+* `IsIsotypicOfType R M S` means that all simple submodules of the `R`-module `M`
+  are isomorphic to `S`. Such a module `M` is isomorphic to a finsupp over `S`,
+  see `IsIsotypicOfType.linearEquiv_finsupp`.
+
+* `IsIsotypic R M` means that all simple submodules of the `R`-module `M`
+  are isomorphic to each other.
+
+* `isotypicComponent R M S` is the sum of all submodules of `M` isomorphic to `S`.
+
+* `isotypicComponents R M` is the set of all nontrivial isotypic components of `M`
+  (where `S` is taken to be simple submodules).
+
+* `Submodule.IsFullyInvariant N` means that the submodule `N` of an `R`-module `M` is mapped into
+  itself by all endomorphisms of `M`. The `fullyInvariantSubmodule`s of `M` form a complete
+  lattice, which is atomic if `M` is semisimple, in which case the atoms are the isotypic
+  components of `M`. A fully invariant submodule of a semiring as a module over itself
+  is simply a two-sided ideal, see `isFullyInvariant_iff_isTwoSided`.
+
+* `iSupIndep.ringEquiv`, `iSupIndep.algEquiv`: if `M` is the direct sum of fully invariant
+  submodules `Nᵢ`, then `End R M` is isomorphic to `Π i, End R Nᵢ`. This can be applied to
+  the isotypic components of a semisimple module `M`, yielding `IsSemisimpleModule.endAlgEquiv`.
+
+## Keywords
+
+isotypic component, fully invariant submodule
+
 -/
 
 universe u
@@ -125,57 +154,6 @@ theorem IsIsotypic.submodule_linearEquiv_fun {m : Submodule R M} [Module.Finite 
   ⟨n, hn, _, m.map_subtype_le S, .congr e'.symm, ⟨e.trans <| .piCongrRight fun _ ↦ e'⟩⟩
 
 end Finsupp
-
-/-- A submodule `N` an `R`-module `M` is fully invariant if `N` is mapped into itself by all
-`R`-linear endomorphisms of `M`.
-
-If `M` is semisimple, this is equivalent to `N` being a sum of isotypic components of `M`:
-see `isFullyInvariant_iff_sSup_isotypicComponents`. -/
-def Submodule.IsFullyInvariant (N : Submodule R M) : Prop :=
-  ∀ f : Module.End R M, N ≤ N.comap f
-
-theorem isFullyInvariant_iff_isTwoSided {I : Ideal R} : I.IsFullyInvariant ↔ I.IsTwoSided := by
-  simpa only [Submodule.IsFullyInvariant, ← MulOpposite.opEquiv.trans (RingEquiv.moduleEndSelf R
-    |>.toEquiv) |>.forall_congr_right, SetLike.le_def, I.isTwoSided_iff] using forall_comm
-
-variable (R M) in
-/-- The fully invariant submodules of a module form a complete sublattice in the lattice of
-submodules. -/
-def fullyInvariantSubmodule : CompleteSublattice (Submodule R M) :=
-  .mk' { N : Submodule R M | N.IsFullyInvariant }
-    (fun _s hs f ↦ sSup_le fun _N hN ↦ (hs hN f).trans <| Submodule.comap_mono <| le_sSup hN)
-    fun _s hs f ↦ Submodule.map_le_iff_le_comap.mp <| le_sInf fun _N hN ↦
-      Submodule.map_le_iff_le_comap.mpr <| (sInf_le hN).trans (hs hN f)
-
-theorem mem_fullyInvariantSubmodule_iff {m : Submodule R M} :
-    m ∈ fullyInvariantSubmodule R M ↔ m.IsFullyInvariant := Iff.rfl
-
-section Equiv
-
-variable {ι : Type*} [DecidableEq ι] {N : ι → Submodule R M}
-  (ind : iSupIndep N) (iSup_top : ⨆ i, N i = ⊤) (invar : ∀ i, (N i).IsFullyInvariant)
-
-/-- If an `R`-module `M` is the direct sum of fully invariant submodules `Nᵢ`,
-then `End R M` is isomorphic to `Π i, End R Nᵢ` as a ring. -/
-noncomputable def iSupIndep.ringEquiv : Module.End R M ≃+* Π i, Module.End R (N i) where
-  toFun f i := f.restrict (invar i f)
-  invFun f := letI e := ind.linearEquiv iSup_top; e ∘ₗ DFinsupp.mapRange.linearMap f ∘ₗ e.symm
-  left_inv f := LinearMap.ext fun x ↦ by
-    exact Submodule.iSup_induction _ (motive := (_ = f ·)) (iSup_top ▸ Submodule.mem_top (x := x))
-      (fun i x h ↦ by simp [ind.linearEquiv_symm_apply _ h]) (by simp)
-      fun _ _ h₁ h₂ ↦ by simpa only [map_add] using congr($h₁ + $h₂)
-  right_inv f := by ext i x; simp [ind.linearEquiv_symm_apply _ x.2]
-  map_add' _ _ := rfl
-  map_mul' _ _ := rfl
-
-/-- If an `R`-module `M` is the direct sum of fully invariant submodules `Nᵢ`,
-then `End R M` is isomorphic to `Π i, End R Nᵢ` as an algebra. -/
-noncomputable def iSupIndep.algEquiv [Module R₀ M] [IsScalarTower R₀ R M] :
-    Module.End R M ≃ₐ[R₀] Π i, Module.End R (N i) where
-  __ := ind.ringEquiv iSup_top invar
-  commutes' _ := rfl
-
-end Equiv
 
 variable (R M S)
 
@@ -326,6 +304,63 @@ theorem LinearMap.le_comap_isotypicComponent (f : M →ₗ[R] N) :
   sSup_le fun m ⟨e⟩ ↦ Submodule.map_le_iff_le_comap.mp <|
     have := IsSimpleModule.congr e
     (m.map_le_isotypicComponent f).trans_eq e.isotypicComponent_eq
+
+section IsFullyInvariant
+
+variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+
+/-- A submodule `N` an `R`-module `M` is fully invariant if `N` is mapped into itself by all
+`R`-linear endomorphisms of `M`.
+
+If `M` is semisimple, this is equivalent to `N` being a sum of isotypic components of `M`:
+see `isFullyInvariant_iff_sSup_isotypicComponents`. -/
+def Submodule.IsFullyInvariant (N : Submodule R M) : Prop :=
+  ∀ f : Module.End R M, N ≤ N.comap f
+
+theorem isFullyInvariant_iff_isTwoSided {I : Ideal R} : I.IsFullyInvariant ↔ I.IsTwoSided := by
+  simpa only [Submodule.IsFullyInvariant, ← MulOpposite.opEquiv.trans (RingEquiv.moduleEndSelf R
+    |>.toEquiv) |>.forall_congr_right, SetLike.le_def, I.isTwoSided_iff] using forall_comm
+
+variable (R M) in
+/-- The fully invariant submodules of a module form a complete sublattice in the lattice of
+submodules. -/
+def fullyInvariantSubmodule : CompleteSublattice (Submodule R M) :=
+  .mk' { N : Submodule R M | N.IsFullyInvariant }
+    (fun _s hs f ↦ sSup_le fun _N hN ↦ (hs hN f).trans <| Submodule.comap_mono <| le_sSup hN)
+    fun _s hs f ↦ Submodule.map_le_iff_le_comap.mp <| le_sInf fun _N hN ↦
+      Submodule.map_le_iff_le_comap.mpr <| (sInf_le hN).trans (hs hN f)
+
+theorem mem_fullyInvariantSubmodule_iff {m : Submodule R M} :
+    m ∈ fullyInvariantSubmodule R M ↔ m.IsFullyInvariant := Iff.rfl
+
+end IsFullyInvariant
+
+section Equiv
+
+variable {ι : Type*} [DecidableEq ι] {N : ι → Submodule R M}
+  (ind : iSupIndep N) (iSup_top : ⨆ i, N i = ⊤) (invar : ∀ i, (N i).IsFullyInvariant)
+
+/-- If an `R`-module `M` is the direct sum of fully invariant submodules `Nᵢ`,
+then `End R M` is isomorphic to `Π i, End R Nᵢ` as a ring. -/
+noncomputable def iSupIndep.ringEquiv : Module.End R M ≃+* Π i, Module.End R (N i) where
+  toFun f i := f.restrict (invar i f)
+  invFun f := letI e := ind.linearEquiv iSup_top; e ∘ₗ DFinsupp.mapRange.linearMap f ∘ₗ e.symm
+  left_inv f := LinearMap.ext fun x ↦ by
+    exact Submodule.iSup_induction _ (motive := (_ = f ·)) (iSup_top ▸ Submodule.mem_top (x := x))
+      (fun i x h ↦ by simp [ind.linearEquiv_symm_apply _ h]) (by simp)
+      fun _ _ h₁ h₂ ↦ by simpa only [map_add] using congr($h₁ + $h₂)
+  right_inv f := by ext i x; simp [ind.linearEquiv_symm_apply _ x.2]
+  map_add' _ _ := rfl
+  map_mul' _ _ := rfl
+
+/-- If an `R`-module `M` is the direct sum of fully invariant submodules `Nᵢ`,
+then `End R M` is isomorphic to `Π i, End R Nᵢ` as an algebra. -/
+noncomputable def iSupIndep.algEquiv [Module R₀ M] [IsScalarTower R₀ R M] :
+    Module.End R M ≃ₐ[R₀] Π i, Module.End R (N i) where
+  __ := ind.ringEquiv iSup_top invar
+  commutes' _ := rfl
+
+end Equiv
 
 variable (R M S) in
 protected theorem Submodule.IsFullyInvariant.isotypicComponent :
