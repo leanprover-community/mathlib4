@@ -284,7 +284,7 @@ Analysis:
     adjoint operator: 'LinearPMap.adjoint'
     self-adjoint operator: 'IsSelfAdjoint'
     orthogonal projection: 'Submodule.orthogonalProjection'
-    reflection: 'reflection'
+    reflection: 'Submodule.reflection'
     orthogonal complement: 'Submodule.orthogonal'
     existence of Hilbert basis: 'exists_hilbertBasis'
     eigenvalues from Rayleigh quotient: 'IsSelfAdjoint.hasEigenvector_of_isLocalExtrOn'
