@@ -5691,7 +5691,6 @@ import Mathlib.Topology.Algebra.InfiniteSum.Nonarchimedean
 import Mathlib.Topology.Algebra.InfiniteSum.Order
 import Mathlib.Topology.Algebra.InfiniteSum.Real
 import Mathlib.Topology.Algebra.InfiniteSum.Ring
-import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
 import Mathlib.Topology.Algebra.IntermediateField
 import Mathlib.Topology.Algebra.IsOpenUnits
 import Mathlib.Topology.Algebra.IsUniformGroup.Basic

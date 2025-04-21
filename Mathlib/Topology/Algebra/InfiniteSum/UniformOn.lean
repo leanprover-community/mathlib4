@@ -1,4 +1,5 @@
-import Mathlib
+import Mathlib.Analysis.Asymptotics.Lemmas
+import Mathlib.Topology.Algebra.UniformConvergence
 
 noncomputable section
 
@@ -22,6 +23,10 @@ variable [ UniformSpace α]
 @[to_additive]
 def HasProdUniformlyOn : Prop :=
   HasProd (fun i ↦ UniformOnFun.ofFun {s} (f i)) (UniformOnFun.ofFun {s} g)
+
+@[to_additive]
+def HasProdLocallyUniformlyOn [TopologicalSpace β] : Prop :=
+  ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, HasProdUniformlyOn f g t
 
 /-- `MultipliableUniformlyOn f` means that `f` converges uniformly on `s` to some infinite product.
 Use `tprodUniformlyOn` to get the value. -/
@@ -80,6 +85,47 @@ lemma HasProdUniformlyOn_iff_TendstoUniformlyOn {f : ι → β → α} {g : β �
   next i hi =>
   simp
 
+@[to_additive]
+lemma HasProdLocallyUniformlyOn.TendstoLocallyUniformlyOn [TopologicalSpace β]
+    {f : ι → β → α} {g : β → α} {s : Set β} (h : HasProdLocallyUniformlyOn f g s) :
+    TendstoLocallyUniformlyOn (fun (s : Finset ι) b ↦ ∏ i ∈ s, f i b) g atTop s := by
+  simp_rw [HasProdLocallyUniformlyOn, HasProdUniformlyOn, HasProd] at *
+  rw [tendstoLocallyUniformlyOn_iff_forall_tendsto]
+  intro x hx
+  obtain ⟨t, ht, htr⟩ := h x hx
+  have V := UniformOnFun.tendsto_iff_tendstoUniformlyOn
+        (F := (fun s_1 ↦ ∏ b ∈ s_1, (UniformOnFun.ofFun {t}) (f b)))
+          (f:= (UniformOnFun.ofFun {t} g)) (p := atTop)
+  simp only [ofFun_prod, Set.mem_singleton_iff, UniformOnFun.toFun_ofFun, forall_eq] at *
+  rw [V] at htr
+  rw [tendstoUniformlyOn_iff_tendsto] at htr
+  simp at *
+  apply htr.mono_left
+  refine prod_mono (fun ⦃U⦄ a ↦ a) ?_
+  exact le_principal_iff.mpr ht
+
+@[to_additive]
+lemma HasProdLocallyUniformlyOn_iff_TendstoLocallyUniformlyOn [TopologicalSpace β]
+    [LocallyCompactSpace β] [Preorder ι] {f : ι → β → α} {g : β → α} {s : Set β} (hs : IsOpen s) :
+    HasProdLocallyUniformlyOn f g s ↔
+    TendstoLocallyUniformlyOn (fun (s : Finset ι) b ↦ ∏ i ∈ s, f i b) g atTop s := by
+  refine ⟨fun h ↦ HasProdLocallyUniformlyOn.TendstoLocallyUniformlyOn h, ?_⟩
+  simp_rw [HasProdLocallyUniformlyOn, HasProdUniformlyOn, HasProd] at *
+  have AA := (tendstoLocallyUniformlyOn_TFAE (fun s b ↦ ∏ i ∈ s, f i b) g atTop hs).out 2 0
+  rw [← AA]
+  intro h x hx
+  obtain ⟨r, hr, htr⟩ := h x hx
+  refine ⟨r, hr, ?_ ⟩
+  have H := UniformOnFun.tendsto_iff_tendstoUniformlyOn
+      (F := (fun s_1 ↦ ∏ b ∈ s_1, (UniformOnFun.ofFun {r}) (f b)))
+        (f:= (UniformOnFun.ofFun {r} g)) (p := atTop)
+  simp only [ofFun_prod, Set.mem_singleton_iff, UniformOnFun.toFun_ofFun, forall_eq] at *
+  rw [H]
+  apply htr.congr
+  filter_upwards with v x hx
+  simp
+
+
 variable { F : Type*} [NormedCommGroup F] [CompleteSpace F] {u : α → ℝ}
 
 open Metric
@@ -87,15 +133,6 @@ open Metric
 variable {a a₁ a₂ : ℝ} {ι : Type*}
 
 
-/- theorem exists_le_hasProd_of_le {f g : β → ℝ} {r : ℝ} (hgf : ∀ b, g b ≤ f b) (hfr : HasProd f r) :
-    ∃ p ≤ r, HasProd g p := by
-  have : (∏' b, (g b : ℝ)) ≤ r := by
-    refine hasProd_le hgf  --ENNReal.summable.hasSum (ENNReal.hasSum_coe.2 hfr)
-
-    --exact ENNReal.coe_le_coe.2 (hgf _)
-  let ⟨p, Eq, hpr⟩ := ENNReal.le_coe_iff.1 this
-  ⟨p, hpr, ENNReal.hasSum_coe.1 <| Eq ▸ ENNReal.summable.hasSum⟩
-  sorry -/
 
 
 theorem Multipliable.of_nonneg_of_le {f g : β → F} (hgf : ∀ b, ‖g b‖ ≤ ‖f b‖ )
@@ -108,7 +145,7 @@ theorem Multipliable.of_nonneg_of_le {f g : β → F} (hgf : ∀ b, ‖g b‖ �
   apply Asymptotics.IsLittleO.trans_tendsto _ hf
 
   sorry
-
+/-
 theorem tendstoUniformlyOn_tsum_new {f : α → β → F} (hu : Multipliable u) {s : Set β}
     (hfu : ∀ n x, x ∈ s → ‖f n x‖ ≤ u n) :
     HasProdUniformlyOn f (fun x => ∏' n, f n x) s := by
@@ -121,7 +158,6 @@ theorem tendstoUniformlyOn_tsum_new {f : α → β → F} (hu : Multipliable u) 
   apply lt_of_le_of_lt _ ht
   apply (norm_tsum_le_tsum_norm (A.subtype _)).trans
   exact tsum_le_tsum (fun n => hfu _ _ hx) (A.subtype _) (hu.subtype _)
-
+ -/
 
 end HasProdUniformlyOn
-#min_imports
