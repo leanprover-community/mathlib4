@@ -143,15 +143,21 @@ class Mod_Class (X : C) where
   /-- The action map -/
   smul : M ⊗ X ⟶ X
   /-- The identity acts trivially. -/
-  one_smul (X) : (η ▷ X) ≫ smul = (λ_ X).hom := by aesop_cat
+  one_smul (X) : η ▷ X ≫ smul = (λ_ X).hom := by aesop_cat
   /-- The action map is compatible with multiplication. -/
-  mul_smul (X) : (μ ▷ X) ≫ smul = (α_ M M X).hom ≫ (M ◁ smul) ≫ smul := by aesop_cat
+  mul_smul (X) : μ ▷ X ≫ smul = (α_ M M X).hom ≫ M ◁ smul ≫ smul := by aesop_cat
 
 attribute [reassoc (attr := simp)] Mod_Class.mul_smul Mod_Class.one_smul
 
 @[inherit_doc] scoped[Mon_Class] notation "γ" => Mod_Class.smul
+@[inherit_doc] scoped[Mon_Class] notation "γ["X"]" => Mod_Class.smul (X := X)
 
 namespace Mod_Class
+
+open Mon_Class
+
+theorem assoc_flip (X : C) [Mod_Class M X] :
+  (M ◁ γ) ≫ γ[X] = (α_ M M X).inv ≫ μ[M] ▷ X ≫ γ := by simp
 
 /-- The action of a monoid object on itself. -/
 -- See note [reducible non instances]
