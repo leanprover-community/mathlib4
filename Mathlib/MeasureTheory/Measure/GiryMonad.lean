@@ -235,11 +235,6 @@ theorem bind_congr_right {μ : Measure α} {f g : α → Measure β} (h : f =ᵐ
     μ.bind f = μ.bind g :=
   congrArg join <| map_congr h
 
-theorem bind_apply_le {m : Measure α} (f : α → Measure β) {s : Set β} (hs : MeasurableSet s) :
-    bind m f s ≤ ∫⁻ a, f a s ∂m := by
-  rw [bind, join_apply hs]
-  apply lintegral_map_le
-
 @[simp]
 lemma bind_const {m : Measure α} {ν : Measure β} : m.bind (fun _ ↦ ν) = m Set.univ • ν := by
   simp [bind]
