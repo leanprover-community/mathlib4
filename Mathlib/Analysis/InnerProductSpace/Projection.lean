@@ -14,13 +14,13 @@ import Mathlib.Algebra.DirectSum.Decomposition
 # The orthogonal projection
 
 Given a nonempty complete subspace `K` of an inner product space `E`, this file constructs
-`orthogonalProjection K : E →L[𝕜] K`, the orthogonal projection of `E` onto `K`.  This map
-satisfies: for any point `u` in `E`, the point `v = orthogonalProjection K u` in `K` minimizes the
+`K.orthogonalProjection : E →L[𝕜] K`, the orthogonal projection of `E` onto `K`.  This map
+satisfies: for any point `u` in `E`, the point `v = K.orthogonalProjection u` in `K` minimizes the
 distance `‖u - v‖` to `u`.
 
 Also a linear isometry equivalence `reflection K : E ≃ₗᵢ[𝕜] E` is constructed, by choosing, for
 each `u : E`, the point `reflection K u` to satisfy
-`u + (reflection K u) = 2 • orthogonalProjection K u`.
+`u + (reflection K u) = 2 • K.orthogonalProjection u`.
 
 Basic API for `orthogonalProjection` and `reflection` is developed.
 
@@ -437,7 +437,7 @@ theorem orthogonalProjectionFn_norm_sq (v : E) :
   convert norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero (v - p) p h' using 2 <;> simp
 
 /-- The orthogonal projection onto a complete subspace. -/
-def orthogonalProjection : E →L[𝕜] K :=
+def Submodule.orthogonalProjection : E →L[𝕜] K :=
   LinearMap.mkContinuous
     { toFun := fun v => ⟨orthogonalProjectionFn K v, orthogonalProjectionFn_mem v⟩
       map_add' := fun x y => by
@@ -469,18 +469,18 @@ variable {K}
 
 @[simp]
 theorem orthogonalProjectionFn_eq (v : E) :
-    orthogonalProjectionFn K v = (orthogonalProjection K v : E) :=
+    orthogonalProjectionFn K v = (K.orthogonalProjection v : E) :=
   rfl
 
 /-- The characterization of the orthogonal projection. -/
 @[simp]
 theorem orthogonalProjection_inner_eq_zero (v : E) :
-    ∀ w ∈ K, ⟪v - orthogonalProjection K v, w⟫ = 0 :=
+    ∀ w ∈ K, ⟪v - K.orthogonalProjection v, w⟫ = 0 :=
   orthogonalProjectionFn_inner_eq_zero v
 
 /-- The difference of `v` from its orthogonal projection onto `K` is in `Kᗮ`. -/
 @[simp]
-theorem sub_orthogonalProjection_mem_orthogonal (v : E) : v - orthogonalProjection K v ∈ Kᗮ := by
+theorem sub_orthogonalProjection_mem_orthogonal (v : E) : v - K.orthogonalProjection v ∈ Kᗮ := by
   intro w hw
   rw [inner_eq_zero_symm]
   exact orthogonalProjection_inner_eq_zero _ _ hw
@@ -488,71 +488,71 @@ theorem sub_orthogonalProjection_mem_orthogonal (v : E) : v - orthogonalProjecti
 /-- The orthogonal projection is the unique point in `K` with the
 orthogonality property. -/
 theorem eq_orthogonalProjection_of_mem_of_inner_eq_zero {u v : E} (hvm : v ∈ K)
-    (hvo : ∀ w ∈ K, ⟪u - v, w⟫ = 0) : (orthogonalProjection K u : E) = v :=
+    (hvo : ∀ w ∈ K, ⟪u - v, w⟫ = 0) : (K.orthogonalProjection u : E) = v :=
   eq_orthogonalProjectionFn_of_mem_of_inner_eq_zero hvm hvo
 
 /-- A point in `K` with the orthogonality property (here characterized in terms of `Kᗮ`) must be the
 orthogonal projection. -/
 theorem eq_orthogonalProjection_of_mem_orthogonal {u v : E} (hv : v ∈ K)
-    (hvo : u - v ∈ Kᗮ) : (orthogonalProjection K u : E) = v :=
+    (hvo : u - v ∈ Kᗮ) : (K.orthogonalProjection u : E) = v :=
   eq_orthogonalProjectionFn_of_mem_of_inner_eq_zero hv <| (Submodule.mem_orthogonal' _ _).1 hvo
 
 /-- A point in `K` with the orthogonality property (here characterized in terms of `Kᗮ`) must be the
 orthogonal projection. -/
 theorem eq_orthogonalProjection_of_mem_orthogonal' {u v z : E}
-    (hv : v ∈ K) (hz : z ∈ Kᗮ) (hu : u = v + z) : (orthogonalProjection K u : E) = v :=
+    (hv : v ∈ K) (hz : z ∈ Kᗮ) (hu : u = v + z) : (K.orthogonalProjection u : E) = v :=
   eq_orthogonalProjection_of_mem_orthogonal hv (by simpa [hu] )
 
 @[simp]
 theorem orthogonalProjection_orthogonal_val (u : E) :
-    (orthogonalProjection Kᗮ u : E) = u - orthogonalProjection K u :=
+    (Kᗮ.orthogonalProjection u : E) = u - K.orthogonalProjection u :=
   eq_orthogonalProjection_of_mem_orthogonal' (sub_orthogonalProjection_mem_orthogonal _)
-    (K.le_orthogonal_orthogonal (orthogonalProjection K u).2) <| by simp
+    (K.le_orthogonal_orthogonal (K.orthogonalProjection u).2) <| by simp
 
 theorem orthogonalProjection_orthogonal (u : E) :
-    orthogonalProjection Kᗮ u =
-      ⟨u - orthogonalProjection K u, sub_orthogonalProjection_mem_orthogonal _⟩ :=
+    Kᗮ.orthogonalProjection u =
+      ⟨u - K.orthogonalProjection u, sub_orthogonalProjection_mem_orthogonal _⟩ :=
   Subtype.eq <| orthogonalProjection_orthogonal_val _
 
 /-- The orthogonal projection of `y` on `U` minimizes the distance `‖y - x‖` for `x ∈ U`. -/
 theorem orthogonalProjection_minimal {U : Submodule 𝕜 E} [HasOrthogonalProjection U] (y : E) :
-    ‖y - orthogonalProjection U y‖ = ⨅ x : U, ‖y - x‖ := by
+    ‖y - U.orthogonalProjection y‖ = ⨅ x : U, ‖y - x‖ := by
   rw [norm_eq_iInf_iff_inner_eq_zero _ (Submodule.coe_mem _)]
   exact orthogonalProjection_inner_eq_zero _
 
 /-- The orthogonal projections onto equal subspaces are coerced back to the same point in `E`. -/
 theorem eq_orthogonalProjection_of_eq_submodule {K' : Submodule 𝕜 E} [HasOrthogonalProjection K']
-    (h : K = K') (u : E) : (orthogonalProjection K u : E) = (orthogonalProjection K' u : E) := by
+    (h : K = K') (u : E) : (K.orthogonalProjection u : E) = (K'.orthogonalProjection u : E) := by
   subst h; rfl
 
 /-- The orthogonal projection sends elements of `K` to themselves. -/
 @[simp]
-theorem orthogonalProjection_mem_subspace_eq_self (v : K) : orthogonalProjection K v = v := by
+theorem orthogonalProjection_mem_subspace_eq_self (v : K) : K.orthogonalProjection v = v := by
   ext
   apply eq_orthogonalProjection_of_mem_of_inner_eq_zero <;> simp
 
 /-- A point equals its orthogonal projection if and only if it lies in the subspace. -/
-theorem orthogonalProjection_eq_self_iff {v : E} : (orthogonalProjection K v : E) = v ↔ v ∈ K := by
+theorem orthogonalProjection_eq_self_iff {v : E} : (K.orthogonalProjection v : E) = v ↔ v ∈ K := by
   refine ⟨fun h => ?_, fun h => eq_orthogonalProjection_of_mem_of_inner_eq_zero h ?_⟩
   · rw [← h]
     simp
   · simp
 
 @[simp]
-theorem orthogonalProjection_eq_zero_iff {v : E} : orthogonalProjection K v = 0 ↔ v ∈ Kᗮ := by
+theorem orthogonalProjection_eq_zero_iff {v : E} : K.orthogonalProjection v = 0 ↔ v ∈ Kᗮ := by
   refine ⟨fun h ↦ ?_, fun h ↦ Subtype.eq <| eq_orthogonalProjection_of_mem_orthogonal
     (zero_mem _) ?_⟩
   · simpa [h] using sub_orthogonalProjection_mem_orthogonal (K := K) v
   · simpa
 
 @[simp]
-theorem ker_orthogonalProjection : LinearMap.ker (orthogonalProjection K) = Kᗮ := by
+theorem ker_orthogonalProjection : LinearMap.ker (K.orthogonalProjection) = Kᗮ := by
   ext; exact orthogonalProjection_eq_zero_iff
 
 theorem LinearIsometry.map_orthogonalProjection {E E' : Type*} [NormedAddCommGroup E]
     [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 E'] (f : E →ₗᵢ[𝕜] E')
     (p : Submodule 𝕜 E) [HasOrthogonalProjection p] [HasOrthogonalProjection (p.map f.toLinearMap)]
-    (x : E) : f (orthogonalProjection p x) = orthogonalProjection (p.map f.toLinearMap) (f x) := by
+    (x : E) : f (p.orthogonalProjection x) = (p.map f.toLinearMap).orthogonalProjection (f x) := by
   refine (eq_orthogonalProjection_of_mem_of_inner_eq_zero ?_ fun y hy => ?_).symm
   · refine Submodule.apply_coe_mem_map _ _
   rcases hy with ⟨x', hx', rfl : f x' = y⟩
@@ -561,7 +561,7 @@ theorem LinearIsometry.map_orthogonalProjection {E E' : Type*} [NormedAddCommGro
 theorem LinearIsometry.map_orthogonalProjection' {E E' : Type*} [NormedAddCommGroup E]
     [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 E'] (f : E →ₗᵢ[𝕜] E')
     (p : Submodule 𝕜 E) [HasOrthogonalProjection p] [HasOrthogonalProjection (p.map f)] (x : E) :
-    f (orthogonalProjection p x) = orthogonalProjection (p.map f) (f x) :=
+    f (p.orthogonalProjection x) = (p.map f).orthogonalProjection (f x) :=
   have : HasOrthogonalProjection (p.map f.toLinearMap) := ‹_›
   f.map_orthogonalProjection p x
 
@@ -569,26 +569,26 @@ theorem LinearIsometry.map_orthogonalProjection' {E E' : Type*} [NormedAddCommGr
 theorem orthogonalProjection_map_apply {E E' : Type*} [NormedAddCommGroup E]
     [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 E'] (f : E ≃ₗᵢ[𝕜] E')
     (p : Submodule 𝕜 E) [HasOrthogonalProjection p] (x : E') :
-    (orthogonalProjection (p.map (f.toLinearEquiv : E →ₗ[𝕜] E')) x : E') =
-      f (orthogonalProjection p (f.symm x)) := by
+    ((p.map (f.toLinearEquiv : E →ₗ[𝕜] E')).orthogonalProjection x : E') =
+      f (p.orthogonalProjection (f.symm x)) := by
   simpa only [f.coe_toLinearIsometry, f.apply_symm_apply] using
     (f.toLinearIsometry.map_orthogonalProjection' p (f.symm x)).symm
 
 /-- The orthogonal projection onto the trivial submodule is the zero map. -/
 @[simp]
-theorem orthogonalProjection_bot : orthogonalProjection (⊥ : Submodule 𝕜 E) = 0 := by ext
+theorem orthogonalProjection_bot : (⊥ : Submodule 𝕜 E).orthogonalProjection = 0 := by ext
 
 variable (K)
 
 /-- The orthogonal projection has norm `≤ 1`. -/
-theorem orthogonalProjection_norm_le : ‖orthogonalProjection K‖ ≤ 1 :=
+theorem orthogonalProjection_norm_le : ‖K.orthogonalProjection‖ ≤ 1 :=
   LinearMap.mkContinuous_norm_le _ (by norm_num) _
 
 variable (𝕜)
 
 theorem smul_orthogonalProjection_singleton {v : E} (w : E) :
-    ((‖v‖ ^ 2 : ℝ) : 𝕜) • (orthogonalProjection (𝕜 ∙ v) w : E) = ⟪v, w⟫ • v := by
-  suffices ((orthogonalProjection (𝕜 ∙ v) (((‖v‖ : 𝕜) ^ 2) • w)) : E) = ⟪v, w⟫ • v by
+    ((‖v‖ ^ 2 : ℝ) : 𝕜) • ((𝕜 ∙ v).orthogonalProjection w : E) = ⟪v, w⟫ • v := by
+  suffices (((𝕜 ∙ v).orthogonalProjection (((‖v‖ : 𝕜) ^ 2) • w)) : E) = ⟪v, w⟫ • v by
     simpa using this
   apply eq_orthogonalProjection_of_mem_of_inner_eq_zero
   · rw [Submodule.mem_span_singleton]
@@ -598,20 +598,20 @@ theorem smul_orthogonalProjection_singleton {v : E} (w : E) :
 
 /-- Formula for orthogonal projection onto a single vector. -/
 theorem orthogonalProjection_singleton {v : E} (w : E) :
-    (orthogonalProjection (𝕜 ∙ v) w : E) = (⟪v, w⟫ / ((‖v‖ ^ 2 : ℝ) : 𝕜)) • v := by
+    ((𝕜 ∙ v).orthogonalProjection w : E) = (⟪v, w⟫ / ((‖v‖ ^ 2 : ℝ) : 𝕜)) • v := by
   by_cases hv : v = 0
   · rw [hv, eq_orthogonalProjection_of_eq_submodule (Submodule.span_zero_singleton 𝕜)]
     simp
   have hv' : ‖v‖ ≠ 0 := ne_of_gt (norm_pos_iff.mpr hv)
   have key :
-    (((‖v‖ ^ 2 : ℝ) : 𝕜)⁻¹ * ((‖v‖ ^ 2 : ℝ) : 𝕜)) • ((orthogonalProjection (𝕜 ∙ v) w) : E) =
+    (((‖v‖ ^ 2 : ℝ) : 𝕜)⁻¹ * ((‖v‖ ^ 2 : ℝ) : 𝕜)) • (((𝕜 ∙ v).orthogonalProjection w) : E) =
       (((‖v‖ ^ 2 : ℝ) : 𝕜)⁻¹ * ⟪v, w⟫) • v := by
     simp [mul_smul, smul_orthogonalProjection_singleton 𝕜 w, -map_pow]
   convert key using 1 <;> field_simp [hv']
 
 /-- Formula for orthogonal projection onto a single unit vector. -/
 theorem orthogonalProjection_unit_singleton {v : E} (hv : ‖v‖ = 1) (w : E) :
-    (orthogonalProjection (𝕜 ∙ v) w : E) = ⟪v, w⟫ • v := by
+    ((𝕜 ∙ v).orthogonalProjection w : E) = ⟪v, w⟫ • v := by
   rw [← smul_orthogonalProjection_singleton 𝕜 w]
   simp [hv]
 
@@ -624,7 +624,7 @@ variable [HasOrthogonalProjection K]
 /-- Auxiliary definition for `reflection`: the reflection as a linear equivalence. -/
 def reflectionLinearEquiv : E ≃ₗ[𝕜] E :=
   LinearEquiv.ofInvolutive
-    (2 • (K.subtype.comp (orthogonalProjection K).toLinearMap) - LinearMap.id) fun x => by
+    (2 • (K.subtype.comp (K.orthogonalProjection).toLinearMap) - LinearMap.id) fun x => by
     simp [two_smul]
 
 /-- Reflection in a complete subspace of an inner product space.  The word "reflection" is
@@ -636,7 +636,7 @@ def reflection : E ≃ₗᵢ[𝕜] E :=
   { reflectionLinearEquiv K with
     norm_map' := by
       intro x
-      let w : K := orthogonalProjection K x
+      let w : K := K.orthogonalProjection x
       let v := x - w
       have : ⟪v, w⟫ = 0 := orthogonalProjection_inner_eq_zero x w w.2
       convert norm_sub_eq_norm_add this using 2
@@ -651,7 +651,7 @@ def reflection : E ≃ₗᵢ[𝕜] E :=
 variable {K}
 
 /-- The result of reflecting. -/
-theorem reflection_apply (p : E) : reflection K p = 2 • (orthogonalProjection K p : E) - p :=
+theorem reflection_apply (p : E) : reflection K p = 2 • (K.orthogonalProjection p : E) - p :=
   rfl
 
 /-- Reflection is its own inverse. -/
@@ -752,7 +752,7 @@ theorem Submodule.sup_orthogonal_of_completeSpace [HasOrthogonalProjection K] : 
 /-- If `K` is complete, any `v` in `E` can be expressed as a sum of elements of `K` and `Kᗮ`. -/
 theorem Submodule.exists_add_mem_mem_orthogonal [HasOrthogonalProjection K] (v : E) :
     ∃ y ∈ K, ∃ z ∈ Kᗮ, v = y + z :=
-  ⟨orthogonalProjection K v, Subtype.coe_prop _, v - orthogonalProjection K v,
+  ⟨K.orthogonalProjection v, Subtype.coe_prop _, v - K.orthogonalProjection v,
     sub_orthogonalProjection_mem_orthogonal _, by simp⟩
 
 /-- If `K` admits an orthogonal projection, then the orthogonal complement of its orthogonal
@@ -805,26 +805,26 @@ theorem Submodule.orthogonal_eq_bot_iff [HasOrthogonalProjection K] : Kᗮ = ⊥
 
 /-- The orthogonal projection onto `K` of an element of `Kᗮ` is zero. -/
 theorem orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero [HasOrthogonalProjection K]
-    {v : E} (hv : v ∈ Kᗮ) : orthogonalProjection K v = 0 := by
+    {v : E} (hv : v ∈ Kᗮ) : K.orthogonalProjection v = 0 := by
   ext
   convert eq_orthogonalProjection_of_mem_orthogonal (K := K) _ _ <;> simp [hv]
 
 /-- The projection into `U` from an orthogonal submodule `V` is the zero map. -/
 theorem Submodule.IsOrtho.orthogonalProjection_comp_subtypeL {U V : Submodule 𝕜 E}
-    [HasOrthogonalProjection U] (h : U ⟂ V) : orthogonalProjection U ∘L V.subtypeL = 0 :=
+    [HasOrthogonalProjection U] (h : U ⟂ V) : U.orthogonalProjection ∘L V.subtypeL = 0 :=
   ContinuousLinearMap.ext fun v =>
     orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero <| h.symm v.prop
 
 /-- The projection into `U` from `V` is the zero map if and only if `U` and `V` are orthogonal. -/
 theorem orthogonalProjection_comp_subtypeL_eq_zero_iff {U V : Submodule 𝕜 E}
-    [HasOrthogonalProjection U] : orthogonalProjection U ∘L V.subtypeL = 0 ↔ U ⟂ V :=
+    [HasOrthogonalProjection U] : U.orthogonalProjection ∘L V.subtypeL = 0 ↔ U ⟂ V :=
   ⟨fun h u hu v hv => by
     convert orthogonalProjection_inner_eq_zero v u hu using 2
-    have : orthogonalProjection U v = 0 := DFunLike.congr_fun h (⟨_, hv⟩ : V)
+    have : U.orthogonalProjection v = 0 := DFunLike.congr_fun h (⟨_, hv⟩ : V)
     rw [this, Submodule.coe_zero, sub_zero], Submodule.IsOrtho.orthogonalProjection_comp_subtypeL⟩
 
 theorem orthogonalProjection_eq_linear_proj [HasOrthogonalProjection K] (x : E) :
-    orthogonalProjection K x =
+    K.orthogonalProjection x =
       K.linearProjOfIsCompl _ Submodule.isCompl_orthogonal_of_completeSpace x := by
   have : IsCompl K Kᗮ := Submodule.isCompl_orthogonal_of_completeSpace
   conv_lhs => rw [← Submodule.linear_proj_add_linearProjOfIsCompl_eq_self this x]
@@ -832,7 +832,7 @@ theorem orthogonalProjection_eq_linear_proj [HasOrthogonalProjection K] (x : E) 
     orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero (Submodule.coe_mem _), add_zero]
 
 theorem orthogonalProjection_coe_linearMap_eq_linearProj [HasOrthogonalProjection K] :
-    (orthogonalProjection K : E →ₗ[𝕜] K) =
+    (K.orthogonalProjection : E →ₗ[𝕜] K) =
       K.linearProjOfIsCompl _ Submodule.isCompl_orthogonal_of_completeSpace :=
   LinearMap.ext <| orthogonalProjection_eq_linear_proj
 
@@ -843,13 +843,13 @@ theorem reflection_mem_subspace_orthogonalComplement_eq_neg [HasOrthogonalProjec
 
 /-- The orthogonal projection onto `Kᗮ` of an element of `K` is zero. -/
 theorem orthogonalProjection_mem_subspace_orthogonal_precomplement_eq_zero
-    [HasOrthogonalProjection Kᗮ] {v : E} (hv : v ∈ K) : orthogonalProjection Kᗮ v = 0 :=
+    [HasOrthogonalProjection Kᗮ] {v : E} (hv : v ∈ K) : Kᗮ.orthogonalProjection v = 0 :=
   orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero (K.le_orthogonal_orthogonal hv)
 
 /-- If `U ≤ V`, then projecting on `V` and then on `U` is the same as projecting on `U`. -/
 theorem orthogonalProjection_orthogonalProjection_of_le {U V : Submodule 𝕜 E}
     [HasOrthogonalProjection U] [HasOrthogonalProjection V] (h : U ≤ V) (x : E) :
-    orthogonalProjection U (orthogonalProjection V x) = orthogonalProjection U x :=
+    U.orthogonalProjection (V.orthogonalProjection x) = U.orthogonalProjection x :=
   Eq.symm <| by
     simpa only [sub_eq_zero, map_sub] using
       orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero
@@ -861,15 +861,15 @@ the orthogonal projection of `x` on `U i` tends to the orthogonal projection of 
 theorem orthogonalProjection_tendsto_closure_iSup {ι : Type*} [Preorder ι]
     (U : ι → Submodule 𝕜 E) [∀ i, HasOrthogonalProjection (U i)]
     [HasOrthogonalProjection (⨆ i, U i).topologicalClosure] (hU : Monotone U) (x : E) :
-    Filter.Tendsto (fun i => (orthogonalProjection (U i) x : E)) atTop
-      (𝓝 (orthogonalProjection (⨆ i, U i).topologicalClosure x : E)) := by
+    Filter.Tendsto (fun i => ((U i).orthogonalProjection x : E)) atTop
+      (𝓝 ((⨆ i, U i).topologicalClosure.orthogonalProjection x : E)) := by
   refine .of_neBot_imp fun h ↦ ?_
   cases atTop_neBot_iff.mp h
-  let y := (orthogonalProjection (⨆ i, U i).topologicalClosure x : E)
-  have proj_x : ∀ i, orthogonalProjection (U i) x = orthogonalProjection (U i) y := fun i =>
+  let y := ((⨆ i, U i).topologicalClosure.orthogonalProjection x : E)
+  have proj_x : ∀ i, (U i).orthogonalProjection x = (U i).orthogonalProjection y := fun i =>
     (orthogonalProjection_orthogonalProjection_of_le
         ((le_iSup U i).trans (iSup U).le_topologicalClosure) _).symm
-  suffices ∀ ε > 0, ∃ I, ∀ i ≥ I, ‖(orthogonalProjection (U i) y : E) - y‖ < ε by
+  suffices ∀ ε > 0, ∃ I, ∀ i ≥ I, ‖((U i).orthogonalProjection y : E) - y‖ < ε by
     simpa only [proj_x, NormedAddCommGroup.tendsto_atTop] using this
   intro ε hε
   obtain ⟨a, ha, hay⟩ : ∃ a ∈ ⨆ i, U i, dist y a < ε := by
@@ -889,7 +889,7 @@ and a fixed `x : E`, the orthogonal projection of `x` on `U i` tends to `x` alon
 theorem orthogonalProjection_tendsto_self {ι : Type*} [Preorder ι]
     (U : ι → Submodule 𝕜 E) [∀ t, HasOrthogonalProjection (U t)] (hU : Monotone U) (x : E)
     (hU' : ⊤ ≤ (⨆ t, U t).topologicalClosure) :
-    Filter.Tendsto (fun t => (orthogonalProjection (U t) x : E)) atTop (𝓝 x) := by
+    Filter.Tendsto (fun t => ((U t).orthogonalProjection x : E)) atTop (𝓝 x) := by
   have : HasOrthogonalProjection (⨆ i, U i).topologicalClosure := by
     rw [top_unique hU']
     infer_instance
@@ -948,7 +948,7 @@ theorem reflection_mem_subspace_orthogonal_precomplement_eq_neg [HasOrthogonalPr
 
 /-- The orthogonal projection onto `(𝕜 ∙ v)ᗮ` of `v` is zero. -/
 theorem orthogonalProjection_orthogonalComplement_singleton_eq_zero (v : E) :
-    orthogonalProjection (𝕜 ∙ v)ᗮ v = 0 :=
+    (𝕜 ∙ v)ᗮ.orthogonalProjection v = 0 :=
   orthogonalProjection_mem_subspace_orthogonal_precomplement_eq_zero
     (Submodule.mem_span_singleton_self v)
 
@@ -1006,52 +1006,52 @@ end FiniteDimensional
 /-- If the orthogonal projection to `K` is well-defined, then a vector splits as the sum of its
 orthogonal projections onto a complete submodule `K` and onto the orthogonal complement of `K`. -/
 theorem orthogonalProjection_add_orthogonalProjection_orthogonal [HasOrthogonalProjection K]
-    (w : E) : (orthogonalProjection K w : E) + (orthogonalProjection Kᗮ w : E) = w := by
+    (w : E) : (K.orthogonalProjection w : E) + (Kᗮ.orthogonalProjection w : E) = w := by
   simp
 
 /-- The Pythagorean theorem, for an orthogonal projection. -/
 theorem norm_sq_eq_add_norm_sq_projection (x : E) (S : Submodule 𝕜 E) [HasOrthogonalProjection S] :
-    ‖x‖ ^ 2 = ‖orthogonalProjection S x‖ ^ 2 + ‖orthogonalProjection Sᗮ x‖ ^ 2 :=
+    ‖x‖ ^ 2 = ‖S.orthogonalProjection x‖ ^ 2 + ‖Sᗮ.orthogonalProjection x‖ ^ 2 :=
   calc
-    ‖x‖ ^ 2 = ‖(orthogonalProjection S x : E) + orthogonalProjection Sᗮ x‖ ^ 2 := by
+    ‖x‖ ^ 2 = ‖(S.orthogonalProjection x : E) + Sᗮ.orthogonalProjection x‖ ^ 2 := by
       rw [orthogonalProjection_add_orthogonalProjection_orthogonal]
-    _ = ‖orthogonalProjection S x‖ ^ 2 + ‖orthogonalProjection Sᗮ x‖ ^ 2 := by
+    _ = ‖S.orthogonalProjection x‖ ^ 2 + ‖Sᗮ.orthogonalProjection x‖ ^ 2 := by
       simp only [sq]
       exact norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero _ _ <|
-        (S.mem_orthogonal _).1 (orthogonalProjection Sᗮ x).2 _ (orthogonalProjection S x).2
+        (S.mem_orthogonal _).1 (Sᗮ.orthogonalProjection x).2 _ (S.orthogonalProjection x).2
 
 /-- In a complete space `E`, the projection maps onto a complete subspace `K` and its orthogonal
 complement sum to the identity. -/
 theorem id_eq_sum_orthogonalProjection_self_orthogonalComplement [HasOrthogonalProjection K] :
     ContinuousLinearMap.id 𝕜 E =
-      K.subtypeL.comp (orthogonalProjection K) + Kᗮ.subtypeL.comp (orthogonalProjection Kᗮ) := by
+      K.subtypeL.comp (K.orthogonalProjection) + Kᗮ.subtypeL.comp (Kᗮ.orthogonalProjection) := by
   ext w
   exact (orthogonalProjection_add_orthogonalProjection_orthogonal K w).symm
 
 -- Porting note: The priority should be higher than `Submodule.coe_inner`.
 @[simp high]
 theorem inner_orthogonalProjection_eq_of_mem_right [HasOrthogonalProjection K] (u : K) (v : E) :
-    ⟪orthogonalProjection K v, u⟫ = ⟪v, u⟫ :=
+    ⟪K.orthogonalProjection v, u⟫ = ⟪v, u⟫ :=
   calc
-    ⟪orthogonalProjection K v, u⟫ = ⟪(orthogonalProjection K v : E), u⟫ := K.coe_inner _ _
-    _ = ⟪(orthogonalProjection K v : E), u⟫ + ⟪v - orthogonalProjection K v, u⟫ := by
+    ⟪K.orthogonalProjection v, u⟫ = ⟪(K.orthogonalProjection v : E), u⟫ := K.coe_inner _ _
+    _ = ⟪(K.orthogonalProjection v : E), u⟫ + ⟪v - K.orthogonalProjection v, u⟫ := by
       rw [orthogonalProjection_inner_eq_zero _ _ (Submodule.coe_mem _), add_zero]
     _ = ⟪v, u⟫ := by rw [← inner_add_left, add_sub_cancel]
 
 -- Porting note: The priority should be higher than `Submodule.coe_inner`.
 @[simp high]
 theorem inner_orthogonalProjection_eq_of_mem_left [HasOrthogonalProjection K] (u : K) (v : E) :
-    ⟪u, orthogonalProjection K v⟫ = ⟪(u : E), v⟫ := by
+    ⟪u, K.orthogonalProjection v⟫ = ⟪(u : E), v⟫ := by
   rw [← inner_conj_symm, ← inner_conj_symm (u : E), inner_orthogonalProjection_eq_of_mem_right]
 
 /-- The orthogonal projection is self-adjoint. -/
 theorem inner_orthogonalProjection_left_eq_right [HasOrthogonalProjection K] (u v : E) :
-    ⟪↑(orthogonalProjection K u), v⟫ = ⟪u, orthogonalProjection K v⟫ := by
+    ⟪↑(K.orthogonalProjection u), v⟫ = ⟪u, K.orthogonalProjection v⟫ := by
   rw [← inner_orthogonalProjection_eq_of_mem_left, inner_orthogonalProjection_eq_of_mem_right]
 
 /-- The orthogonal projection is symmetric. -/
 theorem orthogonalProjection_isSymmetric [HasOrthogonalProjection K] :
-    (K.subtypeL ∘L orthogonalProjection K : E →ₗ[𝕜] E).IsSymmetric :=
+    (K.subtypeL ∘L K.orthogonalProjection : E →ₗ[𝕜] E).IsSymmetric :=
   inner_orthogonalProjection_left_eq_right K
 
 open Module
@@ -1229,7 +1229,7 @@ open DirectSum
 /-- If `x` lies within an orthogonal family `v`, it can be expressed as a sum of projections. -/
 theorem OrthogonalFamily.sum_projection_of_mem_iSup [Fintype ι] {V : ι → Submodule 𝕜 E}
     [∀ i, CompleteSpace (V i)] (hV : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ)
-    (x : E) (hx : x ∈ iSup V) : (∑ i, (orthogonalProjection (V i) x : E)) = x := by
+    (x : E) (hx : x ∈ iSup V) : (∑ i, ((V i).orthogonalProjection x : E)) = x := by
   induction hx using Submodule.iSup_induction' with
   | mem i x hx =>
     refine
@@ -1248,7 +1248,7 @@ is just the coefficient of that direct sum. -/
 theorem OrthogonalFamily.projection_directSum_coeAddHom [DecidableEq ι] {V : ι → Submodule 𝕜 E}
     (hV : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) (x : ⨁ i, V i) (i : ι)
     [CompleteSpace (V i)] :
-    orthogonalProjection (V i) (DirectSum.coeAddMonoidHom V x) = x i := by
+    (V i).orthogonalProjection (DirectSum.coeAddMonoidHom V x) = x i := by
   induction x using DirectSum.induction_on with
   | zero => simp
   | of j x =>
@@ -1268,13 +1268,13 @@ theorem OrthogonalFamily.projection_directSum_coeAddHom [DecidableEq ι] {V : ι
 /-- If a family of submodules is orthogonal and they span the whole space, then the orthogonal
 projection provides a means to decompose the space into its submodules.
 
-The projection function is `decompose V x i = orthogonalProjection (V i) x`.
+The projection function is `decompose V x i = (V i).orthogonalProjection x`.
 
 See note [reducible non-instances]. -/
 abbrev OrthogonalFamily.decomposition [DecidableEq ι] [Fintype ι] {V : ι → Submodule 𝕜 E}
     [∀ i, CompleteSpace (V i)] (hV : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ)
     (h : iSup V = ⊤) : DirectSum.Decomposition V where
-  decompose' x := DFinsupp.equivFunOnFintype.symm fun i => orthogonalProjection (V i) x
+  decompose' x := DFinsupp.equivFunOnFintype.symm fun i => (V i).orthogonalProjection x
   left_inv x := by
     dsimp only
     letI := fun i => Classical.decEq (V i)

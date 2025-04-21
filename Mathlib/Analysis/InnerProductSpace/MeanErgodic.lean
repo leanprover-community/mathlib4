@@ -84,7 +84,7 @@ converge to the orthogonal projection of `x` to the subspace of fixed points of 
 theorem ContinuousLinearMap.tendsto_birkhoffAverage_orthogonalProjection (f : E →L[𝕜] E)
     (hf : ‖f‖ ≤ 1) (x : E) :
     Tendsto (birkhoffAverage 𝕜 f _root_.id · x) atTop
-      (𝓝 <| orthogonalProjection (LinearMap.eqLocus f 1) x) := by
+      (𝓝 <| (LinearMap.eqLocus f 1).orthogonalProjection x) := by
   /- Due to the previous theorem, it suffices to verify
   that the range of `f - 1` is dense in the orthogonal complement
   to the submodule of fixed points of `f`. -/

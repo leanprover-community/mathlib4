@@ -65,9 +65,8 @@ variable (E 𝕜)
 
 /-- Conditional expectation of a function in L2 with respect to a sigma-algebra -/
 noncomputable def condExpL2 (hm : m ≤ m0) : (α →₂[μ] E) →L[𝕜] lpMeas E 𝕜 m 2 μ :=
-  @orthogonalProjection 𝕜 (α →₂[μ] E) _ _ _ (lpMeas E 𝕜 m 2 μ)
-    haveI : Fact (m ≤ m0) := ⟨hm⟩
-    inferInstance
+  haveI : Fact (m ≤ m0) := ⟨hm⟩
+  (lpMeas E 𝕜 m 2 μ).orthogonalProjection
 
 @[deprecated (since := "2025-01-21")] alias condexpL2 := condExpL2
 
