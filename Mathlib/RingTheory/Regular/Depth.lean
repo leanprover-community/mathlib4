@@ -255,8 +255,7 @@ lemma mono_of_mono (a : R) {k : ℕ} (kpos : k > 0) (i : ℕ) {M N : ModuleCat.{
     by_cases eq0 : k = 0
     · rw [eq0, pow_zero, one_mul]
       exact f_mono
-    · have := Nat.zero_lt_of_ne_zero eq0
-      have eq_comp :
+    · have eq_comp :
         (AddCommGrp.ofHom ((Ext.mk₀ (SMul_ShortComplex M (a ^ k * a)).f).postcomp N (add_zero i))) =
         (AddCommGrp.ofHom ((Ext.mk₀ (SMul_ShortComplex M (a ^ k)).f).postcomp N (add_zero i))) ≫
         (AddCommGrp.ofHom ((Ext.mk₀ (SMul_ShortComplex M a).f).postcomp N (add_zero i))) := by
@@ -291,7 +290,6 @@ lemma lemma222_4_to_1 [IsNoetherianRing R] (I : Ideal R) (n : ℕ) (N : ModuleCa
         absurd Nntr
         exact not_nontrivial_iff_subsingleton.mpr (subsingleton_of_forall_eq 0 hk)
       simp only [isRegular_cons_iff] at reg
-      have reg_pow : IsSMulRegular M (a ^ k) := IsSMulRegular.pow k reg.1
       let M' := (QuotSMulTop a M)
       have le_smul : a • ⊤ ≤ I • (⊤ : Submodule R M) := by
         rw [← Submodule.ideal_span_singleton_smul]
