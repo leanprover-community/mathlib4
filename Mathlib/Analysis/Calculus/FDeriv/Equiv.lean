@@ -406,7 +406,7 @@ theorem PartialHomeomorph.hasFDerivAt_symm (f : PartialHomeomorph E F) {f' : E �
   htff'.of_local_left_inverse (f.symm.continuousAt ha) (f.eventually_right_inverse ha)
 
 theorem HasFDerivWithinAt.eventually_ne (h : HasFDerivWithinAt f f' s x)
-    (hf' : ∃ C, ∀ z, ‖z‖ ≤ C * ‖f' z‖) : ∀ᶠ z in 𝓝[s \ { x }] x, f z ≠ c := by
+    (hf' : ∃ C, ∀ z, ‖z‖ ≤ C * ‖f' z‖) : ∀ᶠ z in 𝓝[s \ {x}] x, f z ≠ c := by
   rcases eq_or_ne (f x) c with rfl | hc
   · rw [nhdsWithin, diff_eq, ← inf_principal, ← inf_assoc, eventually_inf_principal]
     have A : (fun z => z - x) =O[𝓝[s] x] fun z => f' (z - x) :=
