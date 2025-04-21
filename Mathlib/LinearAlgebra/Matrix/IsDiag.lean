@@ -69,12 +69,12 @@ theorem IsDiag.map [Zero α] [Zero β] {A : Matrix n n α} (ha : A.IsDiag) {f : 
   intro i j h
   simp [ha h, hf]
 
-theorem IsDiag.neg [AddGroup α] {A : Matrix n n α} (ha : A.IsDiag) : (-A).IsDiag := by
+theorem IsDiag.neg [SubtractionMonoid α] {A : Matrix n n α} (ha : A.IsDiag) : (-A).IsDiag := by
   intro i j h
   simp [ha h]
 
 @[simp]
-theorem isDiag_neg_iff [AddGroup α] {A : Matrix n n α} : (-A).IsDiag ↔ A.IsDiag :=
+theorem isDiag_neg_iff [SubtractionMonoid α] {A : Matrix n n α} : (-A).IsDiag ↔ A.IsDiag :=
   ⟨fun ha _ _ h => neg_eq_zero.1 (ha h), IsDiag.neg⟩
 
 theorem IsDiag.add [AddZeroClass α] {A B : Matrix n n α} (ha : A.IsDiag) (hb : B.IsDiag) :
@@ -82,18 +82,18 @@ theorem IsDiag.add [AddZeroClass α] {A B : Matrix n n α} (ha : A.IsDiag) (hb :
   intro i j h
   simp [ha h, hb h]
 
-theorem IsDiag.sub [AddGroup α] {A B : Matrix n n α} (ha : A.IsDiag) (hb : B.IsDiag) :
+theorem IsDiag.sub [SubtractionMonoid α] {A B : Matrix n n α} (ha : A.IsDiag) (hb : B.IsDiag) :
     (A - B).IsDiag := by
   intro i j h
   simp [ha h, hb h]
 
-theorem IsDiag.smul [Monoid R] [AddMonoid α] [DistribMulAction R α] (k : R) {A : Matrix n n α}
+theorem IsDiag.smul [Zero α] [SMulZeroClass R α] (k : R) {A : Matrix n n α}
     (ha : A.IsDiag) : (k • A).IsDiag := by
   intro i j h
   simp [ha h]
 
 @[simp]
-theorem isDiag_smul_one (n) [Semiring α] [DecidableEq n] (k : α) :
+theorem isDiag_smul_one (n) [MulZeroOneClass α] [DecidableEq n] (k : α) :
     (k • (1 : Matrix n n α)).IsDiag :=
   isDiag_one.smul k
 
@@ -104,12 +104,12 @@ theorem IsDiag.transpose [Zero α] {A : Matrix n n α} (ha : A.IsDiag) : Aᵀ.Is
 theorem isDiag_transpose_iff [Zero α] {A : Matrix n n α} : Aᵀ.IsDiag ↔ A.IsDiag :=
   ⟨IsDiag.transpose, IsDiag.transpose⟩
 
-theorem IsDiag.conjTranspose [Semiring α] [StarRing α] {A : Matrix n n α} (ha : A.IsDiag) :
-    Aᴴ.IsDiag :=
+theorem IsDiag.conjTranspose [NonUnitalNonAssocSemiring α] [StarRing α] {A : Matrix n n α}
+    (ha : A.IsDiag) : Aᴴ.IsDiag :=
   ha.transpose.map (star_zero _)
 
 @[simp]
-theorem isDiag_conjTranspose_iff [Semiring α] [StarRing α] {A : Matrix n n α} :
+theorem isDiag_conjTranspose_iff [NonUnitalNonAssocSemiring α] [StarRing α] {A : Matrix n n α} :
     Aᴴ.IsDiag ↔ A.IsDiag :=
   ⟨fun ha => by
     convert ha.conjTranspose

@@ -53,7 +53,7 @@ theorem eLpNorm_add_le {f g : α → E} (hf : AEStronglyMeasurable f μ) (hg : A
   by_cases hp_top : p = ∞
   · simp [hp_top, eLpNormEssSup_add_le]
   have hp1_real : 1 ≤ p.toReal := by
-    rwa [← ENNReal.one_toReal, ENNReal.toReal_le_toReal ENNReal.one_ne_top hp_top]
+    rwa [← ENNReal.toReal_one, ENNReal.toReal_le_toReal ENNReal.one_ne_top hp_top]
   repeat rw [eLpNorm_eq_eLpNorm' hp0 hp_top]
   exact eLpNorm'_add_le hf hg hp1_real
 
@@ -76,7 +76,7 @@ theorem LpAddConst_lt_top (p : ℝ≥0∞) : LpAddConst p < ∞ := by
   rw [LpAddConst]
   split_ifs with h
   · apply ENNReal.rpow_lt_top_of_nonneg _ ENNReal.ofNat_ne_top
-    rw [one_div, sub_nonneg, ← ENNReal.toReal_inv, ← ENNReal.one_toReal]
+    rw [one_div, sub_nonneg, ← ENNReal.toReal_inv, ← ENNReal.toReal_one]
     exact ENNReal.toReal_mono (by simpa using h.1.ne') (ENNReal.one_le_inv.2 h.2.le)
   · exact ENNReal.one_lt_top
 

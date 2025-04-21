@@ -96,7 +96,7 @@ injectivity `Equiv.Perm.OnCycleFactors.kerParam_injective`, its range
 
 -/
 
-open scoped Pointwise
+open scoped Finset Pointwise
 
 namespace Equiv.Perm
 
@@ -166,7 +166,7 @@ theorem coe_toPermHom (k : centralizer {g}) (c : g.cycleFactorsFinset) :
 
 The equality is proved by `Equiv.Perm.OnCycleFactors.range_toPermHom_eq_range_toPermHom'`. -/
 def range_toPermHom' : Subgroup (Perm g.cycleFactorsFinset) where
-  carrier := {τ | ∀ c, (τ c).val.support.card = c.val.support.card}
+  carrier := {τ | ∀ c, #(τ c).val.support = #c.val.support}
   one_mem' := by
     simp only [Set.mem_setOf_eq, coe_one, id_eq, eq_self_iff_true, imp_true_iff]
   mul_mem' hσ hτ := by
@@ -183,8 +183,7 @@ def range_toPermHom' : Subgroup (Perm g.cycleFactorsFinset) where
 
 variable {g} in
 theorem mem_range_toPermHom'_iff {τ : Perm g.cycleFactorsFinset} :
-    τ ∈ range_toPermHom' g ↔
-      ∀ c, (τ c).val.support.card = c.val.support.card :=
+    τ ∈ range_toPermHom' g ↔ ∀ c, #(τ c).val.support = #c.val.support :=
   Iff.rfl
 
 variable (k : centralizer {g})
@@ -383,8 +382,7 @@ theorem ofPermHom_support :
     · simpa only [H, iff_false, not_not] using ⟨c, H, mem_support.mp hc⟩
 
 theorem card_ofPermHom_support :
-    (ofPermHom a τ).support.card =
-      ∑ c ∈ (τ : Perm g.cycleFactorsFinset).support, c.val.support.card := by
+    #(ofPermHom a τ).support = ∑ c ∈ (τ : Perm g.cycleFactorsFinset).support, #c.val.support := by
   rw [ofPermHom_support, Finset.card_biUnion]
   intro c _ d _ h
   apply Equiv.Perm.Disjoint.disjoint_support
@@ -437,7 +435,7 @@ namespace OnCycleFactors
 open Basis BigOperators Nat Equiv.Perm Equiv Subgroup
 
 theorem mem_range_toPermHom_iff {τ} : τ ∈ (toPermHom g).range ↔
-    ∀ c, (τ c).val.support.card = c.val.support.card := by
+    ∀ c, #(τ c).val.support = #c.val.support := by
   constructor
   · rintro ⟨k, rfl⟩ c
     rw [coe_toPermHom, Equiv.Perm.support_conj]
@@ -447,8 +445,8 @@ theorem mem_range_toPermHom_iff {τ} : τ ∈ (toPermHom g).range ↔
 
 /-- Unapplied variant of `Equiv.Perm.mem_range_toPermHom_iff` -/
 theorem mem_range_toPermHom_iff' {τ} : τ ∈ (toPermHom g).range ↔
-    (fun (c : g.cycleFactorsFinset) ↦ c.val.support.card) ∘ τ =
-      fun (c : g.cycleFactorsFinset) ↦ c.val.support.card := by
+    (fun (c : g.cycleFactorsFinset) ↦ #c.val.support) ∘ τ =
+      fun (c : g.cycleFactorsFinset) ↦ #c.val.support := by
   rw [mem_range_toPermHom_iff, funext_iff]
   simp only [Finset.coe_sort_coe, Subtype.forall, Function.comp_apply]
 
@@ -462,7 +460,7 @@ theorem nat_card_range_toPermHom :
     Nat.card (toPermHom g).range =
       ∏ n ∈ g.cycleType.toFinset, (g.cycleType.count n)! := by
   classical
-  set sc := fun (c : g.cycleFactorsFinset) ↦ c.val.support.card with hsc
+  set sc := fun (c : g.cycleFactorsFinset) ↦ #c.val.support with hsc
   suffices Fintype.card (toPermHom g).range =
     Fintype.card { k : Perm g.cycleFactorsFinset | sc ∘ k = sc } by
     simp only [Nat.card_eq_fintype_card, this, Set.coe_setOf, DomMulAct.stabilizer_card', hsc,
@@ -668,14 +666,14 @@ theorem card_isConj_eq :
 variable (α)
 
 theorem card_of_cycleType_eq_zero_iff {m : Multiset ℕ} :
-    ({g | g.cycleType = m} : Finset (Perm α)).card = 0
+    #({g | g.cycleType = m} : Finset (Perm α)) = 0
       ↔ ¬ ((m.sum ≤ Fintype.card α ∧ ∀ a ∈ m, 2 ≤ a)) := by
   rw [Finset.card_eq_zero, Finset.filter_eq_empty_iff,
     ← exists_with_cycleType_iff, not_exists]
   aesop
 
 theorem card_of_cycleType_mul_eq (m : Multiset ℕ) :
-    ({g | g.cycleType = m} : Finset (Perm α)).card *
+    #({g | g.cycleType = m} : Finset (Perm α)) *
       ((Fintype.card α - m.sum)! * m.prod * (∏ n ∈ m.toFinset, (m.count n)!)) =
       if (m.sum ≤ Fintype.card α ∧ ∀ a ∈ m, 2 ≤ a) then (Fintype.card α)! else 0 := by
   split_ifs with hm
@@ -691,7 +689,7 @@ theorem card_of_cycleType_mul_eq (m : Multiset ℕ) :
 
 /-- Cardinality of the `Finset` of `Equiv.Perm α` of given `cycleType` -/
 theorem card_of_cycleType (m : Multiset ℕ) :
-    ({g | g.cycleType = m} : Finset (Perm α)).card =
+    #({g | g.cycleType = m} : Finset (Perm α)) =
       if m.sum ≤ Fintype.card α ∧ ∀ a ∈ m, 2 ≤ a then
         (Fintype.card α)! /
           ((Fintype.card α - m.sum)! * m.prod * (∏ n ∈ m.toFinset, (m.count n)!))
@@ -710,9 +708,9 @@ open Fintype in
 variable {α} in
 /-- The number of cycles of given length -/
 lemma card_of_cycleType_singleton {n : ℕ} (hn' : 2 ≤ n) (hα : n ≤ card α) :
-    ({g | g.cycleType = {n}} : Finset (Perm α)).card = (n - 1)! * (choose (card α) n) := by
+    #({g | g.cycleType = {n}} : Finset (Perm α)) = (n - 1)! * (choose (card α) n) := by
   have hn₀ : n ≠ 0 := by omega
-  have aux : n ! = (n - 1)! * n := by rw [mul_comm, mul_factorial_pred (by omega)]
+  have aux : n ! = (n - 1)! * n := by rw [mul_comm, mul_factorial_pred hn₀]
   rw [mul_comm, ← Nat.mul_left_inj hn₀, mul_assoc, ← aux, ← Nat.mul_left_inj (factorial_ne_zero _),
     Nat.choose_mul_factorial_mul_factorial hα, mul_assoc]
   simpa [ite_and, if_pos hα, if_pos hn', mul_comm _ n, mul_assoc]

@@ -329,7 +329,7 @@ lemma tendsto_log_nhdsGT_zero : Tendsto log (𝓝[>] 0) atBot := by
 alias tendsto_log_nhdsWithin_zero_right := tendsto_log_nhdsGT_zero
 
 theorem tendsto_log_nhdsNE_zero : Tendsto log (𝓝[≠] 0) atBot := by
-  simpa [comp_def] using tendsto_log_nhdsGT_zero.comp tendsto_abs_nhdsWithin_zero
+  simpa [comp_def] using tendsto_log_nhdsGT_zero.comp tendsto_abs_nhdsNE_zero
 
 @[deprecated (since := "2025-03-18")]
 alias tendsto_log_nhdsWithin_zero := tendsto_log_nhdsNE_zero
@@ -382,7 +382,7 @@ theorem log_nat_eq_sum_factorization (n : ℕ) :
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp -- relies on junk values of `log` and `Nat.factorization`
   · simp only [← log_pow, ← Nat.cast_pow]
-    rw [← Finsupp.log_prod, ← Nat.cast_finsupp_prod, Nat.factorization_prod_pow_eq_self hn]
+    rw [← Finsupp.log_prod, ← Nat.cast_finsuppProd, Nat.factorization_prod_pow_eq_self hn]
     intro p hp
     rw [pow_eq_zero (Nat.cast_eq_zero.1 hp), Nat.factorization_zero_right]
 

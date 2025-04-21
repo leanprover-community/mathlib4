@@ -75,8 +75,8 @@ open Valued
 
 /-- The topology coming from a valuation on a division ring makes it a topological division ring
     [BouAC, VI.5.1 middle of Proposition 1] -/
-instance (priority := 100) Valued.topologicalDivisionRing [Valued K Γ₀] :
-    TopologicalDivisionRing K :=
+instance (priority := 100) Valued.isTopologicalDivisionRing [Valued K Γ₀] :
+    IsTopologicalDivisionRing K :=
   { (by infer_instance : IsTopologicalRing K) with
     continuousAt_inv₀ := by
       intro x x_ne s s_in
@@ -275,7 +275,6 @@ noncomputable def extensionValuation : Valuation (hat K) Γ₀ where
     rw [← v.map_zero (R := K), ← Valued.extension_extends (0 : K)]
     rfl
   map_one' := by
-    simp only
     rw [← Completion.coe_one, Valued.extension_extends (1 : K)]
     exact Valuation.map_one _
   map_mul' x y := by
