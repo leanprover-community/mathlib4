@@ -333,10 +333,6 @@ end Limit
 
 section Adjunction
 
-instance (priority := low) {R : Type*} [TopologicalSpace R] {A : Type*} [Add A] [SMul R A] :
-    letI := moduleTopology R A; IsModuleTopology R A :=
-  letI := moduleTopology R A; ⟨rfl⟩
-
 /-- The functor equipping a module with the finest possible topology.
 This is left adjoint to the forgetful functor. -/
 def withModuleTopology : ModuleCat R ⥤ TopModuleCat R where
