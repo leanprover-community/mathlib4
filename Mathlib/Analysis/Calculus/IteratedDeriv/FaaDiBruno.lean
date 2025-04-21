@@ -108,7 +108,6 @@ theorem iteratedDerivWithin_vcomp_three
     fin_cases j <;> rfl
   congr <;> ext x <;> fin_cases x <;> simp [this]
 
-
 theorem iteratedDeriv_vcomp_three (hg : ContDiffAt 𝕜 3 g (f x)) (hf : ContDiffAt 𝕜 3 f x) :
     iteratedDeriv 3 (g ∘ f) x =
       iteratedFDeriv 𝕜 3 g (f x) (fun _ ↦ deriv f x) +
