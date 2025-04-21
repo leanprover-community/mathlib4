@@ -205,8 +205,8 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
   set a : ℝ := innerSL _ v x
   set y := (ℝ ∙ v)ᗮ.orthogonalProjection x
   have split : ↑x = a • v + ↑y := by
-    convert (orthogonalProjection_add_orthogonalProjection_orthogonal (ℝ ∙ v) x).symm
-    exact (orthogonalProjection_unit_singleton ℝ hv x).symm
+    convert ((ℝ ∙ v).orthogonalProjection_add_orthogonalProjection_orthogonal x).symm
+    exact (Submodule.orthogonalProjection_unit_singleton ℝ hv x).symm
   have hvy : ⟪v, y⟫_ℝ = 0 := Submodule.mem_orthogonal_singleton_iff_inner_right.mp y.2
   have pythag : 1 = a ^ 2 + ‖y‖ ^ 2 := by
     have hvy' : ⟪a • v, y⟫_ℝ = 0 := by simp only [inner_smul_left, hvy, mul_zero]
@@ -228,9 +228,9 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
 
 theorem stereo_right_inv (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : stereoToFun v (stereoInvFun hv w) = w := by
   simp only [stereoToFun, stereoInvFun, stereoInvFunAux, smul_add, map_add, map_smul, innerSL_apply,
-    orthogonalProjection_mem_subspace_eq_self]
+    Submodule.orthogonalProjection_mem_subspace_eq_self]
   have h₁ : (ℝ ∙ v)ᗮ.orthogonalProjection v = 0 :=
-    orthogonalProjection_orthogonalComplement_singleton_eq_zero v
+    Submodule.orthogonalProjection_orthogonalComplement_singleton_eq_zero v
   -- Porting note: was innerSL _ and now just inner
   have h₂ : inner v w = (0 : ℝ) := Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.2
   -- Porting note: was innerSL _ and now just inner
@@ -283,7 +283,7 @@ theorem stereographic_target (hv : ‖v‖ = 1) : (stereographic hv).target = Se
 @[simp]
 theorem stereographic_apply_neg (v : sphere (0 : E) 1) :
     stereographic (norm_eq_of_mem_sphere v) (-v) = 0 := by
-  simp [stereographic_apply, orthogonalProjection_orthogonalComplement_singleton_eq_zero]
+  simp [stereographic_apply, Submodule.orthogonalProjection_orthogonalComplement_singleton_eq_zero]
 
 @[simp]
 theorem stereographic_neg_apply (v : sphere (0 : E) 1) :

@@ -167,8 +167,8 @@ theorem _root_.Submodule.adjoint_subtypeL (U : Submodule 𝕜 E) [CompleteSpace 
   symm
   rw [eq_adjoint_iff]
   intro x u
-  rw [U.coe_inner, inner_orthogonalProjection_left_eq_right,
-    orthogonalProjection_mem_subspace_eq_self]
+  rw [U.coe_inner, U.inner_orthogonalProjection_left_eq_right,
+    U.orthogonalProjection_mem_subspace_eq_self]
   rfl
 
 theorem _root_.Submodule.adjoint_orthogonalProjection (U : Submodule 𝕜 E) [CompleteSpace U] :
@@ -273,7 +273,7 @@ theorem _root_.LinearMap.IsSymmetric.isSelfAdjoint {A : E →L[𝕜] E}
 /-- The orthogonal projection is self-adjoint. -/
 theorem _root_.orthogonalProjection_isSelfAdjoint (U : Submodule 𝕜 E) [CompleteSpace U] :
     IsSelfAdjoint (U.subtypeL ∘L U.orthogonalProjection) :=
-  (orthogonalProjection_isSymmetric U).isSelfAdjoint
+  U.orthogonalProjection_isSymmetric.isSelfAdjoint
 
 theorem conj_orthogonalProjection {T : E →L[𝕜] E} (hT : IsSelfAdjoint T) (U : Submodule 𝕜 E)
     [CompleteSpace U] :
