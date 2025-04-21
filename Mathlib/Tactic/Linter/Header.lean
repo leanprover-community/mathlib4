@@ -75,8 +75,8 @@ It returns the array of all `import` identifiers in `s`. -/
 partial
 def getImportIds (s : Syntax) : Array Syntax :=
   let rest : Array Syntax := (s.getArgs.map getImportIds).flatten
-  if s.isOfKind ``Lean.Parser.Module.import then
-    rest.push s[1]
+  if let `(Lean.Parser.Module.import| import $n) := s then
+    rest.push n
   else
     rest
 
