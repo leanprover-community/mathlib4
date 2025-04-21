@@ -68,6 +68,14 @@ abbrev degreeIn (s : Set α) [DecidablePred (· ∈ s)] (a : α) [Fintype (G.nei
 lemma degreeIn_eq (s : Set α) [DecidablePred (· ∈ s)] (a : α) [Fintype (G.neighborSet a)] :
   G.degreeIn s a = ((⊤ : Subgraph G).induce s).degree a := by simp
 
+open Finset
+@[simp]
+lemma degreeIn_insert_eq (s : Set α) (a : α) [DecidablePred (· ∈ s)] [DecidableEq α]
+    [Fintype (G.neighborSet a)] :
+    G.degreeIn (insert a s) a = #((G.neighborFinset a).filter (· ∈ s)) := by
+  rw [← neighborFinsetIn_insert_eq]
+  rfl
+
 variable {t : Set α} [DecidablePred (· ∈ t)]
 
 variable {a : α}  [Fintype (G.neighborSet a)]
@@ -256,8 +264,28 @@ variable [DecidableRel G.Adj]
 lemma PartColoring.greedy_of_degreeIn_lt (C₁ : G.PartColoring n s) (a : α)
     [Fintype (G.neighborSet a)] (h : G.degreeIn (insert a s) a < n) :
     (((G.neighborFinset a).filter (· ∈ s)).image C₁)ᶜ.Nonempty := by
+  contrapose! h
+  simp only [Finset.not_nonempty_iff_eq_empty, Finset.compl_eq_empty_iff] at h
+  have := Finset.card_image_le (f:=C₁) (s := {x ∈ G.neighborFinset a | x ∈ s})
+  simp only [h, Finset.card_univ, Fintype.card_fin] at this
+  rwa [degreeIn_insert_eq]
 
-  sorry
+
+lemma PartColoring.greedy_of_degreeIn_le_notInj{u v : α} (C₁ : G.PartColoring n s) (a : α)
+    [Fintype (G.neighborSet a)] (h : G.degreeIn (insert a s) a ≤ n) (hus : u ∈ s) (hvs : v ∈ s)
+    (hu : G.Adj a u) (hv : G.Adj a v) (hne : u ≠ v) (heq : C₁ u = C₁ v) :
+    (((G.neighborFinset a).filter (· ∈ s)).image C₁)ᶜ.Nonempty := by
+  cases h.lt_or_eq with
+  | inl h => exact greedy_of_degreeIn_lt C₁ a h
+  | inr h =>
+  contrapose! hne
+  simp only [Finset.not_nonempty_iff_eq_empty, Finset.compl_eq_empty_iff] at hne
+  rw [degreeIn_insert_eq, ← Fintype.card_fin n, ← Finset.card_univ] at h
+  have h' := congr_arg Finset.card hne
+  rw [← h] at h'
+  exact Finset.injOn_of_card_image_eq h' (by simpa using ⟨hu, hus⟩) (by simpa using ⟨hv, hvs⟩) heq
+
+
 -- -- /--
 -- -- If we have an n-coloring of G on s then we can extend it to an n-coloring of `insert a s`
 -- unless
