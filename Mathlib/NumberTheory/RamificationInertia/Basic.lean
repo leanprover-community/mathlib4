@@ -5,6 +5,7 @@ Authors: Anne Baanen
 -/
 import Mathlib.LinearAlgebra.Dimension.DivisionRing
 import Mathlib.RingTheory.DedekindDomain.Ideal
+import Mathlib.RingTheory.Finiteness.Quotient
 
 /-!
 # Ramification index and inertia degree
@@ -91,7 +92,7 @@ theorem ramificationIdx_spec {n : ℕ} (hle : map f p ≤ P ^ n) (hgt : ¬map f 
 
 theorem ramificationIdx_lt {n : ℕ} (hgt : ¬map f p ≤ P ^ n) : ramificationIdx f p P < n := by
   classical
-  cases' n with n n
+  rcases n with - | n
   · simp at hgt
   · rw [Nat.lt_succ_iff]
     have : ∀ k, map f p ≤ P ^ k → k ≤ n := by
@@ -126,7 +127,7 @@ theorem le_comap_pow_ramificationIdx : p ≤ comap f (P ^ ramificationIdx f p P)
 theorem le_comap_of_ramificationIdx_ne_zero (h : ramificationIdx f p P ≠ 0) : p ≤ comap f P :=
   Ideal.map_le_iff_le_comap.mp <| le_pow_ramificationIdx.trans <| Ideal.pow_le_self <| h
 
-variable {S₁: Type*} [CommRing S₁] [Algebra R S₁]
+variable {S₁ : Type*} [CommRing S₁] [Algebra R S₁]
 
 variable (p) in
 lemma ramificationIdx_comap_eq [Algebra R S] (e : S ≃ₐ[R] S₁) (P : Ideal S₁) :
@@ -252,8 +253,7 @@ variable (K)
 
 open scoped Matrix
 
-variable {K}
-
+variable {K} in
 /-- If `b` mod `p` spans `S/p` as `R/p`-space, then `b` itself spans `Frac(S)` as `K`-space.
 
 Here,
@@ -353,7 +353,6 @@ theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [
     rw [Submodule.restrictScalars_mem, IsScalarTower.algebraMap_apply R S L] at hx
     exact IsFractionRing.ideal_span_singleton_map_subset R hRL span_d hx
 
-variable (K)
 variable [hRK : IsFractionRing R K]
 
 /-- Let `V` be a vector space over `K = Frac(R)`, `S / R` a ring extension
@@ -504,11 +503,11 @@ noncomputable def quotientToQuotientRangePowQuotSuccAux {i : ℕ} {a : S} (a_mem
   Quotient.map' (fun x : S => ⟨_, Ideal.mem_map_of_mem _ (Ideal.mul_mem_right x _ a_mem)⟩)
     fun x y h => by
     rw [Submodule.quotientRel_def] at h ⊢
-    simp only [_root_.map_mul, LinearMap.mem_range]
+    simp only [map_mul, LinearMap.mem_range]
     refine ⟨⟨_, Ideal.mem_map_of_mem _ (Ideal.mul_mem_mul a_mem h)⟩, ?_⟩
     ext
     rw [powQuotSuccInclusion_apply_coe, Subtype.coe_mk, Submodule.coe_sub, Subtype.coe_mk,
-      Subtype.coe_mk, _root_.map_mul, map_sub, mul_sub]
+      Subtype.coe_mk, map_mul, map_sub, mul_sub]
 
 theorem quotientToQuotientRangePowQuotSuccAux_mk {i : ℕ} {a : S} (a_mem : a ∈ P ^ i) (x : S) :
     quotientToQuotientRangePowQuotSuccAux p P a_mem (Submodule.Quotient.mk x) =
@@ -535,7 +534,7 @@ noncomputable def quotientToQuotientRangePowQuotSucc
       quotientToQuotientRangePowQuotSuccAux_mk]
     refine congr_arg Submodule.Quotient.mk ?_
     ext
-    simp only [mul_assoc, _root_.map_mul, Quotient.mk_eq_mk, Submodule.coe_smul_of_tower,
+    simp only [mul_assoc, map_mul, Quotient.mk_eq_mk, Submodule.coe_smul_of_tower,
       Algebra.smul_def, Quotient.algebraMap_quotient_pow_ramificationIdx]
     ring
 
@@ -621,7 +620,6 @@ theorem rank_pow_quot [IsDedekindDomain S] [p.IsMaximal] [P.IsPrime] (hP0 : P �
     (i : ℕ) (hi : i ≤ e) :
     Module.rank (R ⧸ p) (Ideal.map (Ideal.Quotient.mk (P ^ e)) (P ^ i)) =
       (e - i) • Module.rank (R ⧸ p) (S ⧸ P) := by
--- Porting note: Lean cannot figure out what to prove by itself
   let Q : ℕ → Prop :=
     fun i => Module.rank (R ⧸ p) { x // x ∈ map (Quotient.mk (P ^ e)) (P ^ i) }
       = (e - i) • Module.rank (R ⧸ p) (S ⧸ P)
@@ -700,8 +698,6 @@ instance Factors.fact_ramificationIdx_neZero (P : (factors (map (algebraMap R S)
     NeZero (ramificationIdx (algebraMap R S) p P) :=
   ⟨Factors.ramificationIdx_ne_zero p P⟩
 
-set_option synthInstance.checkSynthOrder false
--- Porting note: this is okay since, as noted above, in this file the value of `f` can be inferred
 attribute [local instance] Quotient.algebraQuotientOfRamificationIdxNeZero
 
 open scoped Classical in
@@ -828,11 +824,11 @@ theorem ramificationIdx_tower [IsDedekindDomain S] [IsDedekindDomain T] {f : R �
   rcases eq_prime_pow_mul_coprime hf0 P with ⟨I, hcp, heq⟩
   have hcp : ⊤ = map g P ⊔ map g I := by rw [← map_sup, hcp, map_top g]
   have hntq : ¬ ⊤ ≤ Q := fun ht ↦ IsPrime.ne_top hqm (Iff.mpr (eq_top_iff_one Q) (ht trivial))
-  nth_rw 1 [heq, map_mul, Ideal.map_pow, normalizedFactors_mul (pow_ne_zero _ hg0) <| by
+  nth_rw 1 [heq, Ideal.map_mul, Ideal.map_pow, normalizedFactors_mul (pow_ne_zero _ hg0) <| by
     by_contra h
     simp only [h, Submodule.zero_eq_bot, bot_le, sup_of_le_left] at hcp
     exact hntq (hcp.trans_le hg), Multiset.count_add, normalizedFactors_pow, Multiset.count_nsmul]
-  exact add_right_eq_self.mpr <| Decidable.byContradiction fun h ↦ hntq <| hcp.trans_le <|
+  exact add_eq_left.mpr <| Decidable.byContradiction fun h ↦ hntq <| hcp.trans_le <|
     sup_le hg <| le_of_dvd <| dvd_of_mem_normalizedFactors <| Multiset.count_ne_zero.mp h
 
 variable [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]

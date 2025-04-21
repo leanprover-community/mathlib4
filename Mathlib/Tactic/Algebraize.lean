@@ -183,7 +183,7 @@ def addProperties (t : Array Expr) : TacticM Unit := withMainContext do
 
       let cinfo ← getConstInfo p
       let n ← getExpectedNumArgs cinfo.type
-      let pargs := Array.mkArray n (none : Option Expr)
+      let pargs := Array.replicate n (none : Option Expr)
       /- If the attribute points to the corresponding `Algebra` property itself, we assume that it
       is definitionally the same as the `RingHom` property. Then, we just need to construct its type
       and the local declaration will already give a valid term. -/

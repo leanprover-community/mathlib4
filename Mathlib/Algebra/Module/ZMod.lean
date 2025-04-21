@@ -3,6 +3,8 @@ Copyright (c) 2023 Lawrence Wu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lawrence Wu
 -/
+import Mathlib.Algebra.Module.LinearMap.Defs
+import Mathlib.Algebra.Module.Submodule.Defs
 import Mathlib.GroupTheory.Sylow
 
 /-!
@@ -79,6 +81,14 @@ theorem toZModLinearMap_injective : Function.Injective <| toZModLinearMap n (M :
 
 @[simp]
 theorem coe_toZModLinearMap (f : M →+ M₁) : ⇑(f.toZModLinearMap n) = f := rfl
+
+/-- `AddMonoidHom.toZModLinearMap` as an equivalence. -/
+def toZModLinearMapEquiv : (M →+ M₁) ≃+ (M →ₗ[ZMod n] M₁) where
+  toFun f := f.toZModLinearMap n
+  invFun g := g
+  left_inv f := rfl
+  right_inv g := rfl
+  map_add' f₁ f₂ := by ext; simp
 
 end AddMonoidHom
 

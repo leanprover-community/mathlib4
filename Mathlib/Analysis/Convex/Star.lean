@@ -3,9 +3,9 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
 import Mathlib.Algebra.Module.LinearMap.Prod
 import Mathlib.Algebra.Order.Module.Synonym
-import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Analysis.Convex.Segment
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.Module
@@ -55,7 +55,7 @@ variable {𝕜 E F : Type*}
 
 section OrderedSemiring
 
-variable [OrderedSemiring 𝕜]
+variable [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
 
 section AddCommMonoid
 
@@ -65,9 +65,12 @@ section SMul
 
 variable (𝕜) [SMul 𝕜 E] [SMul 𝕜 F] (x : E) (s : Set E)
 
+-- TODO: remove `[IsOrderedRing 𝕜]` and `@[nolint unusedArguments]`.
 /-- Star-convexity of sets. `s` is star-convex at `x` if every segment from `x` to a point in `s` is
 contained in `s`. -/
-def StarConvex : Prop :=
+@[nolint unusedArguments]
+def StarConvex (𝕜 : Type*) {E : Type*} [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
+    [AddCommMonoid E] [SMul 𝕜 E] (x : E) (s : Set E) : Prop :=
   ∀ ⦃y : E⦄, y ∈ s → ∀ ⦃a b : 𝕜⦄, 0 ≤ a → 0 ≤ b → a + b = 1 → a • x + b • y ∈ s
 
 variable {𝕜 x s} {t : Set E}
@@ -109,6 +112,10 @@ theorem starConvex_iInter {ι : Sort*} {s : ι → Set E} (h : ∀ i, StarConvex
     StarConvex 𝕜 x (⋂ i, s i) :=
   sInter_range s ▸ starConvex_sInter <| forall_mem_range.2 h
 
+theorem starConvex_iInter₂ {ι : Sort*} {κ : ι → Sort*} {s : (i : ι) → κ i → Set E}
+    (h : ∀ i j, StarConvex 𝕜 x (s i j)) : StarConvex 𝕜 x (⋂ (i) (j), s i j) :=
+  starConvex_iInter fun i => starConvex_iInter (h i)
+
 theorem StarConvex.union (hs : StarConvex 𝕜 x s) (ht : StarConvex 𝕜 x t) :
     StarConvex 𝕜 x (s ∪ t) := by
   rintro y (hy | hy) a b ha hb hab
@@ -121,6 +128,10 @@ theorem starConvex_iUnion {ι : Sort*} {s : ι → Set E} (hs : ∀ i, StarConve
   rw [mem_iUnion] at hy ⊢
   obtain ⟨i, hy⟩ := hy
   exact ⟨i, hs i hy ha hb hab⟩
+
+theorem starConvex_iUnion₂ {ι : Sort*} {κ : ι → Sort*} {s : (i : ι) → κ i → Set E}
+    (h : ∀ i j, StarConvex 𝕜 x (s i j)) : StarConvex 𝕜 x (⋃ (i) (j), s i j) :=
+  starConvex_iUnion fun i => starConvex_iUnion (h i)
 
 theorem starConvex_sUnion {S : Set (Set E)} (hS : ∀ s ∈ S, StarConvex 𝕜 x s) :
     StarConvex 𝕜 x (⋃₀ S) := by
@@ -251,7 +262,7 @@ end OrderedSemiring
 
 section OrderedCommSemiring
 
-variable [OrderedCommSemiring 𝕜]
+variable [CommSemiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
 
 section AddCommMonoid
 
@@ -259,6 +270,9 @@ variable [AddCommMonoid E] [AddCommMonoid F] [Module 𝕜 E] [Module 𝕜 F] {x 
 
 theorem StarConvex.smul (hs : StarConvex 𝕜 x s) (c : 𝕜) : StarConvex 𝕜 (c • x) (c • s) :=
   hs.linear_image <| LinearMap.lsmul _ _ c
+
+theorem StarConvex.zero_smul (hs : StarConvex 𝕜 0 s) (c : 𝕜) : StarConvex 𝕜 0 (c • s) := by
+  simpa using hs.smul c
 
 theorem StarConvex.preimage_smul {c : 𝕜} (hs : StarConvex 𝕜 (c • x) s) :
     StarConvex 𝕜 x ((fun z => c • z) ⁻¹' s) :=
@@ -275,7 +289,7 @@ end OrderedCommSemiring
 
 section OrderedRing
 
-variable [OrderedRing 𝕜]
+variable [Ring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
 
 section AddCommMonoid
 
@@ -339,7 +353,8 @@ end AddCommGroup
 
 section OrderedAddCommGroup
 
-variable [OrderedAddCommGroup E] [Module 𝕜 E] [OrderedSMul 𝕜 E] {x y : E}
+variable [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E] [Module 𝕜 E] [OrderedSMul 𝕜 E]
+  {x y : E}
 
 /-- If `x < y`, then `(Set.Iic x)ᶜ` is star convex at `y`. -/
 lemma starConvex_compl_Iic (h : x < y) : StarConvex 𝕜 y (Iic x)ᶜ := by
@@ -363,7 +378,7 @@ end OrderedRing
 
 section LinearOrderedField
 
-variable [LinearOrderedField 𝕜]
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
 
 section AddCommGroup
 
@@ -402,7 +417,8 @@ section OrdConnected
 
 /-- If `s` is an order-connected set in an ordered module over an ordered semiring
 and all elements of `s` are comparable with `x ∈ s`, then `s` is `StarConvex` at `x`. -/
-theorem Set.OrdConnected.starConvex [OrderedSemiring 𝕜] [OrderedAddCommMonoid E] [Module 𝕜 E]
+theorem Set.OrdConnected.starConvex [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
+    [AddCommMonoid E] [PartialOrder E] [IsOrderedAddMonoid E] [Module 𝕜 E]
     [OrderedSMul 𝕜 E] {x : E} {s : Set E} (hs : s.OrdConnected) (hx : x ∈ s)
     (h : ∀ y ∈ s, x ≤ y ∨ y ≤ x) : StarConvex 𝕜 x s := by
   intro y hy a b ha hb hab
@@ -422,7 +438,8 @@ theorem Set.OrdConnected.starConvex [OrderedSemiring 𝕜] [OrderedAddCommMonoid
       a • x + b • y ≤ a • x + b • x := by gcongr
       _ = x := Convex.combo_self hab _
 
-theorem starConvex_iff_ordConnected [LinearOrderedField 𝕜] {x : 𝕜} {s : Set 𝕜} (hx : x ∈ s) :
+theorem starConvex_iff_ordConnected [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+    {x : 𝕜} {s : Set 𝕜} (hx : x ∈ s) :
     StarConvex 𝕜 x s ↔ s.OrdConnected := by
   simp_rw [ordConnected_iff_uIcc_subset_left hx, starConvex_iff_segment_subset, segment_eq_uIcc]
 

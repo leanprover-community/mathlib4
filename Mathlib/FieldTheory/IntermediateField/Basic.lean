@@ -94,6 +94,14 @@ theorem coe_toSubfield : (S.toSubfield : Set L) = S :=
   rfl
 
 @[simp]
+theorem coe_type_toSubalgebra : (S.toSubalgebra : Type _) = S :=
+  rfl
+
+@[simp]
+theorem coe_type_toSubfield : (S.toSubfield : Type _) = S :=
+  rfl
+
+@[simp]
 theorem mem_mk (s : Subsemiring L) (hK : ∀ x, algebraMap K L x ∈ s) (hi) (x : L) :
     x ∈ IntermediateField.mk (Subalgebra.mk s hK) hi ↔ x ∈ s :=
   Iff.rfl
@@ -228,6 +236,9 @@ protected theorem coe_pow (x : S) (n : ℕ) : (↑(x ^ n : S) : L) = (x : L) ^ n
 end InheritedLemmas
 
 theorem natCast_mem (n : ℕ) : (n : L) ∈ S := by simpa using intCast_mem S n
+
+instance instSMulMemClass : SMulMemClass (IntermediateField K L) K L where
+  smul_mem := fun _ _ hx ↦ IntermediateField.smul_mem _ hx
 
 end IntermediateField
 
@@ -378,7 +389,7 @@ instance isScalarTower {R} [Semiring R] [SMul R K] [Module R L] [IsScalarTower R
   inferInstanceAs (IsScalarTower R K S.toSubalgebra)
 
 @[simp]
-theorem coe_smul {R} [Semiring R] [SMul R K] [Module R L] [IsScalarTower R K L] (r : R) (x : S) :
+theorem coe_smul {R} [SMul R K] [SMul R L] [IsScalarTower R K L] (r : R) (x : S) :
     ↑(r • x : S) = (r • (x : L)) :=
   rfl
 
@@ -515,7 +526,7 @@ theorem fieldRange_val : S.val.fieldRange = S :=
 instance AlgHom.inhabited : Inhabited (S →ₐ[K] L) :=
   ⟨S.val⟩
 
-theorem aeval_coe {R : Type*} [CommRing R] [Algebra R K] [Algebra R L] [IsScalarTower R K L]
+theorem aeval_coe {R : Type*} [CommSemiring R] [Algebra R K] [Algebra R L] [IsScalarTower R K L]
     (x : S) (P : R[X]) : aeval (x : L) P = aeval x P :=
   aeval_algHom_apply (S.val.restrictScalars R) x P
 
@@ -596,10 +607,6 @@ section Tower
 def lift {F : IntermediateField K L} (E : IntermediateField K F) : IntermediateField K L :=
   E.map (val F)
 
-instance {F : IntermediateField K L} :
-    CoeOut (IntermediateField K F) (IntermediateField K L) :=
-  ⟨lift⟩
-
 theorem lift_injective (F : IntermediateField K L) : Function.Injective F.lift :=
   map_injective F.val
 
@@ -611,7 +618,7 @@ theorem mem_lift {F : IntermediateField K L} {E : IntermediateField K F} (x : F)
     x.1 ∈ lift E ↔ x ∈ E :=
   Subtype.val_injective.mem_set_image
 
-/--The algEquiv between an intermediate field and its lift-/
+/-- The algEquiv between an intermediate field and its lift -/
 def liftAlgEquiv {E : IntermediateField K L} (F : IntermediateField K E) : ↥F ≃ₐ[K] lift F where
   toFun x := ⟨x.1.1, (mem_lift x.1).mpr x.2⟩
   invFun x := ⟨⟨x.1, lift_le F x.2⟩, (mem_lift ⟨x.1, lift_le F x.2⟩).mp x.2⟩

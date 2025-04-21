@@ -262,7 +262,7 @@ theorem irreducible (hx : IsIntegral A x) : Irreducible (minpoly A x) := by
   by_contra! h
   have heval := congr_arg (Polynomial.aeval x) he
   rw [aeval A x, aeval_mul, mul_eq_zero] at heval
-  cases' heval with heval heval
+  rcases heval with heval | heval
   · exact aeval_ne_zero_of_dvdNotUnit_minpoly hx hf ⟨hf.ne_zero, g, h.2, he.symm⟩ heval
   · refine aeval_ne_zero_of_dvdNotUnit_minpoly hx hg ⟨hg.ne_zero, f, h.1, ?_⟩ heval
     rw [mul_comm, he]

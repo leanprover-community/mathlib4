@@ -36,10 +36,11 @@ lemma LinearIndependent.linearIndependent_of_exact_of_retraction
     revert hy
     generalize f y = x
     intro hy
-    induction' hy using Submodule.span_induction with m hm
-    · obtain ⟨i, rfl⟩ := hm
-      apply hsa
-    all_goals simp_all
+    induction hy using Submodule.span_induction with
+    | mem m hm => obtain ⟨i, rfl⟩ := hm; apply hsa
+    | zero => simp_all
+    | add => simp_all
+    | smul => simp_all
   replace hs := DFunLike.congr_fun hs y
   simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.id_coe, id_eq] at hs
   rw [← hs, hz, map_zero]

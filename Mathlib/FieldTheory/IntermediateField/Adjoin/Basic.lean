@@ -9,11 +9,11 @@ import Mathlib.FieldTheory.IntermediateField.Algebraic
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.SplittingField.IsSplittingField
 import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
+import Mathlib.LinearAlgebra.Dual.Lemmas
 import Mathlib.RingTheory.Adjoin.Dimension
-import Mathlib.RingTheory.Finiteness.TensorProduct
 import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.RingTheory.TensorProduct.Finite
 import Mathlib.SetTheory.Cardinal.Subfield
-import Mathlib.LinearAlgebra.Dual
 
 /-!
 # Adjoining Elements to Fields
@@ -369,12 +369,14 @@ noncomputable def adjoinRootEquivAdjoin (h : IsIntegral F α) :
         refine Subfield.closure_le.mpr (Set.union_subset (fun x hx => ?_) ?_)
         · obtain ⟨y, hy⟩ := hx
           refine ⟨y, ?_⟩
-          -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-          erw [RingHom.comp_apply, AdjoinRoot.lift_of (aeval_gen_minpoly F α)]
+          rw [RingHom.comp_apply]
+          dsimp only [coe_type_toSubfield]
+          rw [AdjoinRoot.lift_of (aeval_gen_minpoly F α)]
           exact hy
         · refine Set.singleton_subset_iff.mpr ⟨AdjoinRoot.root (minpoly F α), ?_⟩
-          -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-          erw [RingHom.comp_apply, AdjoinRoot.lift_root (aeval_gen_minpoly F α)]
+          rw [RingHom.comp_apply]
+          dsimp only [coe_type_toSubfield]
+          rw [AdjoinRoot.lift_root (aeval_gen_minpoly F α)]
           rfl)
 
 theorem adjoinRootEquivAdjoin_apply_root (h : IsIntegral F α) :
@@ -397,7 +399,9 @@ variable {L : Type*} [Field L] [Algebra K L]
 where `d` is the degree of the minimal polynomial of `x`. -/
 noncomputable def powerBasisAux {x : L} (hx : IsIntegral K x) :
     Basis (Fin (minpoly K x).natDegree) K K⟮x⟯ :=
-  (AdjoinRoot.powerBasis (minpoly.ne_zero hx)).basis.map (adjoinRootEquivAdjoin K hx).toLinearEquiv
+  (AdjoinRoot.powerBasis (minpoly.ne_zero hx)).basis
+    |>.map (adjoinRootEquivAdjoin K hx).toLinearEquiv
+    |>.reindex (finCongr rfl)
 
 /-- The power basis `1, x, ..., x ^ (d - 1)` for `K⟮x⟯`,
 where `d` is the degree of the minimal polynomial of `x`. -/
@@ -407,8 +411,8 @@ noncomputable def adjoin.powerBasis {x : L} (hx : IsIntegral K x) : PowerBasis K
   dim := (minpoly K x).natDegree
   basis := powerBasisAux hx
   basis_eq_pow i := by
-    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-    erw [powerBasisAux, Basis.map_apply, PowerBasis.basis_eq_pow, AlgEquiv.toLinearEquiv_apply,
+    rw [powerBasisAux, Basis.reindex_apply, Basis.map_apply, PowerBasis.basis_eq_pow,
+      finCongr_symm, finCongr_apply, Fin.cast_eq_self, AlgEquiv.toLinearEquiv_apply,
       map_pow, AdjoinRoot.powerBasis_gen, adjoinRootEquivAdjoin_apply_root]
 
 theorem adjoin.finiteDimensional {x : L} (hx : IsIntegral K x) : FiniteDimensional K K⟮x⟯ :=
@@ -448,12 +452,15 @@ theorem adjoin_minpoly_coeff_of_exists_primitive_element
     apply Subtype.mem
   have dvd_g : minpoly K' α ∣ g.toSubring K'.toSubring (subset_adjoin F _) := by
     apply minpoly.dvd
-    erw [aeval_def, eval₂_eq_eval_map, g.map_toSubring K'.toSubring, eval_map, ← aeval_def]
+    rw [aeval_def, eval₂_eq_eval_map]
+    erw [g.map_toSubring K'.toSubring]
+    rw [eval_map, ← aeval_def]
     exact minpoly.aeval K α
   have finrank_eq : ∀ K : IntermediateField F E, finrank K E = natDegree (minpoly K α) := by
     intro K
     have := adjoin.finrank (.of_finite K α)
-    erw [adjoin_eq_top_of_adjoin_eq_top F hprim, finrank_top K E] at this
+    rw [adjoin_eq_top_of_adjoin_eq_top F hprim] at this
+    erw [finrank_top K E] at this
     exact this
   refine eq_of_le_of_finrank_le' hsub ?_
   simp_rw [finrank_eq]
@@ -493,7 +500,7 @@ theorem _root_.minpoly.degree_le (x : L) [FiniteDimensional K L] :
   degree_le_of_natDegree_le (minpoly.natDegree_le x)
 
 /-- If `x : L` is an integral element in a field extension `L` over `K`, then the degree of the
-  minimal polynomial of `x` over `K` divides `[L : K]`.-/
+  minimal polynomial of `x` over `K` divides `[L : K]`. -/
 theorem _root_.minpoly.degree_dvd {x : L} (hx : IsIntegral K x) :
     (minpoly K x).natDegree ∣ finrank K L := by
   rw [dvd_iff_exists_eq_mul_left, ← IntermediateField.adjoin.finrank hx]
@@ -658,7 +665,7 @@ theorem algEquivOfEq_apply_root {p q : K[X]} (hp : p ≠ 0) (h_eq : p = q) :
   rw [← coe_algHom, algEquivOfEq_toAlgHom, liftHom_root]
 
 /-- The canonical algebraic equivalence between `AdjoinRoot p` and `AdjoinRoot q`,
-where the two polynomials `p q : K[X]` are associated.-/
+where the two polynomials `p q : K[X]` are associated. -/
 noncomputable def algEquivOfAssociated {p q : K[X]} (hp : p ≠ 0) (hpq : Associated p q) :
     AdjoinRoot p ≃ₐ[K] AdjoinRoot q :=
   ofAlgHom (liftHom p (root q) (by simp only [aeval_eq, mk_eq_zero, hpq.symm.dvd] ))

@@ -274,7 +274,7 @@ theorem induction3 {α : solvableByRad F E} {n : ℕ} (hn : n ≠ 0) (hα : P (�
   let p := minpoly F (α ^ n)
   have hp : p.comp (X ^ n) ≠ 0 := by
     intro h
-    cases' comp_eq_zero_iff.mp h with h' h'
+    rcases comp_eq_zero_iff.mp h with h' | h'
     · exact minpoly.ne_zero (isIntegral (α ^ n)) h'
     · exact hn (by rw [← @natDegree_C F, ← h'.2, natDegree_X_pow])
   apply gal_isSolvable_of_splits
@@ -318,8 +318,8 @@ theorem induction2 {α β γ : solvableByRad F E} (hγ : γ ∈ F⟮α, β⟯) (
     simp only [map_zero, _root_.map_eq_zero]
     -- Porting note: end of the proof was `exact minpoly.aeval F γ`.
     apply Subtype.val_injective
-    -- This used to be `simp`, but we need `erw` and `simp` after https://github.com/leanprover/lean4/pull/2644
-    erw [Polynomial.aeval_subalgebra_coe (minpoly F γ)]
+    dsimp only [← coe_type_toSubalgebra]
+    rw [Polynomial.aeval_subalgebra_coe (minpoly F γ)]
     simp
   rw [P, key]
   refine gal_isSolvable_of_splits ⟨Normal.splits ?_ (f ⟨γ, hγ⟩)⟩ (gal_mul_isSolvable hα hβ)

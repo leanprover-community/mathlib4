@@ -46,7 +46,7 @@ numbers.
 subsemigroup, subsemigroups
 -/
 
-assert_not_exists CompleteLattice MonoidWithZero
+assert_not_exists RelIso CompleteLattice MonoidWithZero
 
 variable {M : Type*} {N : Type*}
 
@@ -94,11 +94,22 @@ namespace Subsemigroup
 instance : SetLike (Subsemigroup M) M :=
   ⟨Subsemigroup.carrier, fun p q h => by cases p; cases q; congr⟩
 
-@[to_additive]
-instance : MulMemClass (Subsemigroup M) M where mul_mem := fun {_ _ _} => Subsemigroup.mul_mem' _
-
 initialize_simps_projections Subsemigroup (carrier → coe, as_prefix coe)
 initialize_simps_projections AddSubsemigroup (carrier → coe, as_prefix coe)
+
+/-- The actual `Subsemigroup` obtained from an element of a `MulMemClass`. -/
+@[to_additive (attr := simps) "The actual `AddSubsemigroup` obtained from an element of a
+`AddMemClass`"]
+def ofClass {S M : Type*} [Mul M] [SetLike S M] [MulMemClass S M] (s : S) : Subsemigroup M :=
+  ⟨s, MulMemClass.mul_mem⟩
+
+@[to_additive]
+instance (priority := 100) : CanLift (Set M) (Subsemigroup M) (↑)
+    (fun s ↦ ∀ {x y}, x ∈ s → y ∈ s → x * y ∈ s) where
+  prf s h := ⟨{ carrier := s, mul_mem' := h }, rfl⟩
+
+@[to_additive]
+instance : MulMemClass (Subsemigroup M) M where mul_mem := fun {_ _ _} => Subsemigroup.mul_mem' _
 
 @[to_additive (attr := simp)]
 theorem mem_carrier {s : Subsemigroup M} {x : M} : x ∈ s.carrier ↔ x ∈ s :=
@@ -269,6 +280,16 @@ instance toCommSemigroup {M} [CommSemigroup M] {A : Type*} [SetLike A M] [MulMem
 `AddSubsemigroup` `M` to `M`."]
 def subtype : S' →ₙ* M where
   toFun := Subtype.val; map_mul' := fun _ _ => rfl
+
+variable {S'} in
+@[to_additive (attr := simp)]
+lemma subtype_apply (x : S') :
+    MulMemClass.subtype S' x = x := rfl
+
+@[to_additive]
+lemma subtype_injective :
+    Function.Injective (MulMemClass.subtype S') :=
+  Subtype.coe_injective
 
 @[to_additive (attr := simp)]
 theorem coe_subtype : (MulMemClass.subtype S' : S' → M) = Subtype.val :=

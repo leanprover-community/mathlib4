@@ -85,7 +85,7 @@ theorem PreservesCoimage.hom_coimageImageComparison :
   simp [← Functor.map_comp, ← Iso.eq_inv_comp, ← cancel_epi (Abelian.coimage.π (F.map f)),
     ← cancel_mono (Abelian.image.ι (F.map f))]
 
-/-- If a functor preserves kernels and cokernels, it perserves coimage-image comparisons. -/
+/-- If a functor preserves kernels and cokernels, it preserves coimage-image comparisons. -/
 @[simps!]
 def PreservesCoimageImageComparison.iso :
     Arrow.mk (F.map (coimageImageComparison f)) ≅ Arrow.mk (coimageImageComparison (F.map f)) :=
