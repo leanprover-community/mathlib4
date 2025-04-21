@@ -919,7 +919,7 @@ lemma exists_countable_biUnion_eq_iUnion_of_forall_isOpen [HereditarilyLindelofS
     {ι : Type u} (U : ι → Set X) (h : ∀ i, IsOpen (U i)) :
     ∃ t : Set ι, t.Countable ∧ ⋃ i ∈ t, U i = ⋃ i, U i := by
   have := isHereditarilyLindelof_univ.isLindelof_subset (subset_univ (⋃ i, U i))
-  rcases isLindelof_iff_countable_subcover.mp this U h (Eq.subset rfl) with ⟨t, ⟨htc, htu⟩⟩
+  rcases isLindelof_iff_countable_subcover.mp this U h subset_rfl with ⟨t, htc, htu⟩
   exact ⟨t, htc, (iUnion₂_subset_iUnion (· ∈ t) U).antisymm htu⟩
 
 @[deprecated (since := "2025-04-20")]
