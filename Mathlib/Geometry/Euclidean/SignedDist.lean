@@ -168,7 +168,7 @@ lemma abs_signedDist_eq_dist_iff_vsub_mem_span :
   by_cases h : v = 0
   · simp [h, eq_comm (a := (0:ℝ)), eq_comm (a := (0:V))]
   rw [inv_mul_eq_iff_eq_mul₀ (by positivity)]
-  have := (@norm_inner_eq_norm_tfae ℝ _ _ _ _ v (q -ᵥ p)).out 0 2
+  have := (norm_inner_eq_norm_tfae ℝ v (q -ᵥ p)).out 0 2
   rw [Real.norm_eq_abs] at this
   rw [this]
   simp [h, eq_comm]
