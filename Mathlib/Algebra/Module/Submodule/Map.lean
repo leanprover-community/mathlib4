@@ -266,7 +266,7 @@ def submoduleOf (p q : Submodule R M) : Submodule R q :=
   Submodule.comap q.subtype p
 
 /-- If `p ≤ q`, then `p` as a subgroup of `q` is isomorphic to `p`. -/
-def submoduleOfEquivOfLe {q : Submodule R M} (h : p ≤ q) : p.submoduleOf q ≃ₗ[R] p where
+def submoduleOfEquivOfLe {p q : Submodule R M} (h : p ≤ q) : p.submoduleOf q ≃ₗ[R] p where
   toFun m := ⟨m.1, m.2⟩
   invFun m := ⟨⟨m.1, h m.2⟩, m.2⟩
   left_inv _ := Subtype.ext rfl
