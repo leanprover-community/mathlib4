@@ -8,7 +8,6 @@ import Mathlib.RingTheory.EuclideanDomain
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Polynomial.Content
-import Mathlib.Algebra.Group.Pointwise.Finset.BigOperators
 
 
 /-!
