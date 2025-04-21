@@ -103,7 +103,7 @@ lemma exist_mem_ann_isSMulRegular_of_hom_subsingleton_nontrivial [IsNoetherianRi
   by_contra! h
   have hexist : ∃ p ∈ associatedPrimes R M, Module.annihilator R N ≤ p := by
     rcases associatedPrimes.nonempty R M with ⟨Ia, hIa⟩
-    apply (Ideal.subset_union_prime_finite (AssociatedPrimes.finite_of_noetherian R M) Ia Ia _).mp
+    apply (Ideal.subset_union_prime_finite (associatedPrimes.finite R M) Ia Ia _).mp
     · rw [biUnion_associatedPrimes_eq_compl_regular R M]
       exact fun r hr ↦ h r hr
     · exact fun I hin _ _ ↦ IsAssociatedPrime.isPrime hin
