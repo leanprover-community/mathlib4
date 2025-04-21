@@ -7,6 +7,7 @@ Authors: Frédéric Dupuis
 import Mathlib.Analysis.CStarAlgebra.Module.Constructions
 import Mathlib.Analysis.Matrix
 import Mathlib.Topology.UniformSpace.Matrix
+import Mathlib.Algebra.Order.Star.Algebra
 
 /-!
 # Matrices with entries in a C⋆-algebra
@@ -375,7 +376,7 @@ def reindexₗ {l o : Type*} [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid
 
 /-- The natural map that reindexes a matrix's rows and columns with equivalent types is an
 equivalence. -/
-def reindexₐ (R) [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A] [Module R A]
+def reindexₐ (R) (A) [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A] [Module R A]
     [Star A] (e : m ≃ n) : CStarMatrix m m A ≃⋆ₐ[R] CStarMatrix n n A :=
   { reindexₗ e e with
     map_mul' M N := by
@@ -397,7 +398,7 @@ def reindexₐ (R) [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A
 
 lemma mapₗ_reindexₐ [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A] [Module R A]
     [Star A] [AddCommMonoid B] [Mul B] [Module R B] [Star B] {e : m ≃ n} {M : CStarMatrix m m A}
-    (φ : A →ₗ[R] B) : reindexₐ R e (M.mapₗ φ) = ((reindexₐ R e M).mapₗ φ) := by
+    (φ : A →ₗ[R] B) : reindexₐ R B e (M.mapₗ φ) = ((reindexₐ R A e M).mapₗ φ) := by
   sorry
 
 @[simp]
@@ -538,8 +539,8 @@ def prodToBlocksₙ (R : Type*) (n) (m) (α) [Fintype n] [Fintype m] [NonUnitalN
   map_mul' := fun _ _ => by simp [fromBlocks_mul]
   map_star' := fun _ => by simp [fromBlocks_star]
 
-lemma prodToBlocksₙ_injective {R : Type*} (n) (m) (α) [Fintype n] [Fintype m] [NonUnitalNonAssocSemiring α]
-    [StarAddMonoid α] [Monoid R] [DistribMulAction R α] :
+lemma prodToBlocksₙ_injective {R : Type*} (n) (m) (α) [Fintype n] [Fintype m]
+    [NonUnitalNonAssocSemiring α] [StarAddMonoid α] [Monoid R] [DistribMulAction R α] :
     Function.Injective (prodToBlocksₙ R n m α) := by
   intro ⟨a₁, a₂⟩ ⟨b₁, b₂⟩ hab
   simp only [prodToBlocksₙ, MonoidHom.coe_id, fromBlocks, NonUnitalStarAlgHom.coe_mk',
@@ -876,6 +877,10 @@ instance instPartialOrder :
 instance instStarOrderedRing :
     StarOrderedRing (CStarMatrix n n A) := CStarAlgebra.spectralOrderedRing _
 
+lemma prodToBlocksₙ_strictMono [DecidableEq n] [DecidableEq m] :
+    StrictMono (prodToBlocksₙ ℂ n m A) :=
+  (prodToBlocksₙ ℂ n m A).strictMono_of_injective (prodToBlocksₙ_injective n m A)
+
 @[gcongr]
 lemma fromBlocks_diagonal_le {n m : Type*} [Fintype n] [Fintype m] [DecidableEq n] [DecidableEq m]
     {a a' : CStarMatrix n n A} {b b' : CStarMatrix m m A} (ha : a ≤ a') (hb : b ≤ b') :
@@ -888,6 +893,9 @@ lemma fromBlocks_diagonal_le {n m : Type*} [Fintype n] [Fintype m] [DecidableEq 
 lemma fromBlocks_diagonal_le_iff {n m : Type*} [Fintype n] [Fintype m] [DecidableEq n]
     [DecidableEq m] {a a' : CStarMatrix n n A} {b b' : CStarMatrix m m A} :
     fromBlocks a 0 0 b ≤ fromBlocks a' 0 0 b' ↔ a ≤ a' ∧ b ≤ b' := by
+  let φ := prodToBlocksₙ ℂ n m A
+  change φ (a, b) ≤ φ (a', b') ↔ (a, b).1 ≤ a' ∧ (a, b).2 ≤ b'
+  rw [prodToBlocksₙ_strictMono.le_iff_le]
   refine ⟨fun h => ⟨?a, ?b⟩, fun ⟨ha, hb⟩ => fromBlocks_diagonal_le ha hb⟩
   case a =>
     sorry

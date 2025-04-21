@@ -40,39 +40,33 @@ variable {F A₁ A₂ : Type*} {k : ℕ}  [NonUnitalCStarAlgebra A₁]
   [StarOrderedRing A₂]
   [FunLike F A₁ A₂] [KPositiveMapClass F k A₁ A₂]
 
-open CStarMatrix in
-lemma map_cstarMatrix_nonneg {n : Type*} [Fintype n] [DecidableEq n] (hn : Fintype.card n ≤ k) (φ : F)
-    (M : CStarMatrix n n A₁) (hM : 0 ≤ M) : 0 ≤ M.mapₗ (φ : A₁ →ₗ[ℂ] A₂) := by
-  let m := k - Fintype.card n
-  let e : n ⊕ (Fin m) ≃ Fin k := Fintype.equivFinOfCardEq <| by
-    simp only [Fintype.card_sum, Fintype.card_fin]
-    omega
-  set M' := M.mapₗ (φ : A₁ →ₗ[ℂ] A₂) with hM'
-  have h₃ : 0 ≤ reindexₐ ℂ e
-      ((fromBlocks M 0 0 (0 : CStarMatrix (Fin m) (Fin m) A₁)).mapₗ (φ : A₁ →ₗ[ℂ] A₂)) := by
-    rw [mapₗ_reindexₐ]
-    apply map_cstarMatrix_nonneg'
-    apply map_nonneg
-    exact fromBlocks_diagonal_nonneg hM le_rfl
-  --rw [fromBlocks_map] at h₃
-  --rw [map_le_map_iff] at h₃  -- COME ON!!
-  have hmain : 0 ≤ M.mapₗ (φ : A₁ →ₗ[ℂ] A₂) ∧ (0 : CStarMatrix (Fin m) (Fin m) A₂) ≤ 0 := by
-    rw [← fromBlocks_diagonal_le_iff]
-    simp only [fromBlocks_zero, mapₗ_apply, LinearMap.coe_coe]
-
-
-    sorry
-  exact hmain.1
-  --have h₁ : (0 : CStarMatrix (Fin m) (Fin m) A₁) ≤ 0 := le_rfl
-
-
-  --have h₂ : 0 ≤ (fromBlocks M 0 0 (0 : CStarMatrix (Fin m) (Fin m) A₁)).mapₗ (φ : A₁ →ₗ[ℂ] A₂) := by
-
-
-
-  --  sorry
-  --have h₁ : 0 ≤ fromBlocks M 0 0 (0 : CStarMatrix (Fin m) (Fin m) A₁) := by sorry
-  --sorry
+--open CStarMatrix in
+--lemma map_cstarMatrix_nonneg {n : Type*} [Fintype n] [DecidableEq n] (hn : Fintype.card n ≤ k) (φ : F)
+--    (M : CStarMatrix n n A₁) (hM : 0 ≤ M) : 0 ≤ M.mapₗ (φ : A₁ →ₗ[ℂ] A₂) := by
+--  let m := k - Fintype.card n
+--  let e : n ⊕ (Fin m) ≃ Fin k := Fintype.equivFinOfCardEq <| by
+--    simp only [Fintype.card_sum, Fintype.card_fin]
+--    omega
+--  set M' := M.mapₗ (φ : A₁ →ₗ[ℂ] A₂) with hM'
+--  have h₃ : 0 ≤ reindexₐ ℂ e
+--      ((fromBlocks M 0 0 (0 : CStarMatrix (Fin m) (Fin m) A₁)).mapₗ (φ : A₁ →ₗ[ℂ] A₂)) := by
+--    rw [mapₗ_reindexₐ]
+--    apply map_cstarMatrix_nonneg'
+--    apply map_nonneg
+--    exact fromBlocks_diagonal_nonneg hM le_rfl
+--  rw [← OrderIsoClass.map_le_map_iff (reindexₐ ℂ A₁ e).symm] at h₃
+--  --rw [fromBlocks_map] at h₃
+--  --rw [map_le_map_iff] at h₃  -- COME ON!!
+--  have hmain : 0 ≤ M.mapₗ (φ : A₁ →ₗ[ℂ] A₂) ∧ (0 : CStarMatrix (Fin m) (Fin m) A₂) ≤ 0 := by
+--    rw [← fromBlocks_diagonal_le_iff]
+--    simp only [fromBlocks_zero, mapₗ_apply, LinearMap.coe_coe]
+--    sorry
+--  exact hmain.1
+--  --have h₁ : (0 : CStarMatrix (Fin m) (Fin m) A₁) ≤ 0 := le_rfl
+--  --have h₂ : 0 ≤ (fromBlocks M 0 0 (0 : CStarMatrix (Fin m) (Fin m) A₁)).mapₗ (φ : A₁ →ₗ[ℂ] A₂) := by
+--  --sorry
+--  --have h₁ : 0 ≤ fromBlocks M 0 0 (0 : CStarMatrix (Fin m) (Fin m) A₁) := by sorry
+--  --sorry
 
 /-- Reinterpret an element of a type of k-positive linear maps as a k-positive linear map. -/
 def toKPositiveLinearMap (f : F) : KPositiveMap k A₁ A₂ :=
