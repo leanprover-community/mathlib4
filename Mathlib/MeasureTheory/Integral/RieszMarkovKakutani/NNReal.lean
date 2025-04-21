@@ -34,8 +34,7 @@ variable (Λ : C_c(X, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0)
 
 namespace NNRealRMK
 
-theorem lintegral_rieszMeasure_eq [Nonempty X] (f : C_c(X, ℝ≥0)) :
-    ∫⁻ (x : X), f x ∂(rieszMeasure Λ) = Λ f := by
+theorem lintegral_rieszMeasure_eq (f : C_c(X, ℝ≥0)) : ∫⁻ (x : X), f x ∂(rieszMeasure Λ) = Λ f := by
   rw [lintegral_coe_eq_integral, ← ENNReal.ofNNReal_toNNReal]
   · simp only [ENNReal.coe_inj]
     rw [Real.toNNReal_of_nonneg (by apply integral_nonneg; intro x; simp),
