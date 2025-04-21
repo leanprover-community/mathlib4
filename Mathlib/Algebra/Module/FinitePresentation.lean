@@ -583,6 +583,20 @@ noncomputable def Module.FinitePresentation.linearEquivMap [Module.FinitePresent
   IsLocalizedModule.linearEquiv S (LocalizedModule.mkLinearMap S (M →ₗ[R] N))
   (IsLocalizedModule.map S (LocalizedModule.mkLinearMap S M) (LocalizedModule.mkLinearMap S N))
 
+@[simp, nolint simpNF]
+lemma Module.FinitePresentation.linearEquivMap_apply [Module.FinitePresentation R M]
+    (f : M →ₗ[R] N) : Module.FinitePresentation.linearEquivMap S
+    ((LocalizedModule.mkLinearMap S (M →ₗ[R] N)) f) = (IsLocalizedModule.map S
+    (LocalizedModule.mkLinearMap S M) (LocalizedModule.mkLinearMap S N)) f :=
+  IsLocalizedModule.linearEquiv_apply S _ _ f
+
+@[simp]
+lemma Module.FinitePresentation.linearEquivMap_symm_apply [Module.FinitePresentation R M]
+    (f : M →ₗ[R] N) : (Module.FinitePresentation.linearEquivMap S).symm ((IsLocalizedModule.map S
+    (LocalizedModule.mkLinearMap S M) (LocalizedModule.mkLinearMap S N)) f) =
+    (LocalizedModule.mkLinearMap S (M →ₗ[R] N)) f :=
+  IsLocalizedModule.linearEquiv_symm_apply S _ _ f
+
 /--
 Let `M` be a finitely presented `R`-module, `N` a `R`-module, `S : Submonoid R`.
 The linear equivalence between the `M →ₗ[R] N` localized at `S` and
@@ -594,5 +608,20 @@ noncomputable def Module.FinitePresentation.linearEquivMapExtendScalars
   (IsLocalizedModule.mapExtendScalars S (LocalizedModule.mkLinearMap S M)
     (LocalizedModule.mkLinearMap S N) (Localization S))
 
+@[simp, nolint simpNF]
+lemma Module.FinitePresentation.linearEquivMapExtendScalars_apply [Module.FinitePresentation R M]
+    (f : M →ₗ[R] N) : Module.FinitePresentation.linearEquivMapExtendScalars S
+    ((LocalizedModule.mkLinearMap S (M →ₗ[R] N)) f) = (IsLocalizedModule.mapExtendScalars S
+    (LocalizedModule.mkLinearMap S M) (LocalizedModule.mkLinearMap S N) (Localization S)) f :=
+  IsLocalizedModule.linearEquiv_apply S _ _ f
+
+@[simp]
+lemma Module.FinitePresentation.linearEquivMapExtendScalars_symm_apply
+    [Module.FinitePresentation R M] (f : M →ₗ[R] N) :
+    (Module.FinitePresentation.linearEquivMapExtendScalars S).symm
+    ((IsLocalizedModule.mapExtendScalars S (LocalizedModule.mkLinearMap S M)
+    (LocalizedModule.mkLinearMap S N) (Localization S)) f) =
+    (LocalizedModule.mkLinearMap S (M →ₗ[R] N)) f :=
+  IsLocalizedModule.linearEquiv_symm_apply S _ _ f
 
 end CommRing
