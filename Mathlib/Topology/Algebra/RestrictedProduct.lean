@@ -834,7 +834,7 @@ theorem nhds_zero_eq_map_ofPre [Π i, Zero (R i)] [∀ i, ZeroMemClass (S i) (R 
 theorem nhds_zero_eq_map_structureMap [Π i, Zero (R i)] [∀ i, ZeroMemClass (S i) (R i)]
     (hBopen : ∀ i, IsOpen (B i : Set (R i))) :
     (𝓝 (structureMap R (fun i ↦ B i) cofinite 0)) =
-       .map (structureMap R (fun i ↦ B i) cofinite) (𝓝 0) :=
+      .map (structureMap R (fun i ↦ B i) cofinite) (𝓝 0) :=
   nhds_eq_map_structureMap hBopen 0
 
 -- TODO: Make `IsOpen` a class like `IsClosed` ?
