@@ -22,8 +22,8 @@ structure Mod_ (A : Mon_ C) where
   X : C
   /-- The smulion morphism of the module object -/
   smul : A.X ⊗ X ⟶ X
-  one_smul : (A.one ▷ X) ≫ smul = (λ_ X).hom := by aesop_cat
-  assoc : (A.mul ▷ X) ≫ smul = (α_ A.X A.X X).hom ≫ (A.X ◁ smul) ≫ smul := by aesop_cat
+  one_smul : A.one ▷ X ≫ smul = (λ_ X).hom := by aesop_cat
+  assoc : A.mul ▷ X ≫ smul = (α_ A.X A.X X).hom ≫ A.X ◁ smul ≫ smul := by aesop_cat
 
 attribute [reassoc (attr := simp)] Mod_.one_smul Mod_.assoc
 
@@ -32,14 +32,14 @@ namespace Mod_
 variable {A : Mon_ C} (M : Mod_ A)
 
 theorem assoc_flip :
-    (A.X ◁ M.smul) ≫ M.smul = (α_ A.X A.X M.X).inv ≫ (A.mul ▷ M.X) ≫ M.smul := by simp
+    A.X ◁ M.smul ≫ M.smul = (α_ A.X A.X M.X).inv ≫ A.mul ▷ M.X ≫ M.smul := by simp
 
 /-- A morphism of module objects. -/
 @[ext]
 structure Hom (M N : Mod_ A) where
   /-- The underlying morphism -/
   hom : M.X ⟶ N.X
-  smul_hom : M.smul ≫ hom = (A.X ◁ hom) ≫ N.smul := by aesop_cat
+  smul_hom : M.smul ≫ hom = A.X ◁ hom ≫ N.smul := by aesop_cat
 
 attribute [reassoc (attr := simp)] Hom.smul_hom
 
@@ -102,7 +102,7 @@ between the categories of module objects.
 def comap {A B : Mon_ C} (f : A ⟶ B) : Mod_ B ⥤ Mod_ A where
   obj M :=
     { X := M.X
-      smul := (f.hom ▷ M.X) ≫ M.smul
+      smul := f.hom ▷ M.X ≫ M.smul
       one_smul := by
         slice_lhs 1 2 => rw [← comp_whiskerRight]
         rw [f.one_hom, one_smul]
@@ -175,6 +175,6 @@ end Mod_Class
 @[simps]
 def Mod_.mk' (X : C) [Mod_Class M X] : Mod_ (.mk' M) where
   X := X
-  smul := (Mod_Class.smul : M ⊗ X ⟶ X)
+  smul := γ[M]
 
 end Mod_Class
