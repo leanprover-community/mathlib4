@@ -375,8 +375,8 @@ def reindexₗ {l o : Type*} [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid
 
 /-- The natural map that reindexes a matrix's rows and columns with equivalent types is an
 equivalence. -/
-def reindexₐ [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A] [Module R A] [Star A]
-    (e : m ≃ n) : CStarMatrix m m A ≃⋆ₐ[R] CStarMatrix n n A :=
+def reindexₐ (R) [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A] [Module R A]
+    [Star A] (e : m ≃ n) : CStarMatrix m m A ≃⋆ₐ[R] CStarMatrix n n A :=
   { reindexₗ e e with
     map_mul' M N := by
       ext i j
@@ -394,6 +394,11 @@ def reindexₐ [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A] [M
       dsimp
       rw [Matrix.star_apply, Matrix.star_apply]
       simp [Matrix.submatrix_apply] }
+
+lemma mapₗ_reindexₐ [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A] [Module R A]
+    [Star A] [AddCommMonoid B] [Mul B] [Module R B] [Star B] {e : m ≃ n} {M : CStarMatrix m m A}
+    (φ : A →ₗ[R] B) : reindexₐ R e (M.mapₗ φ) = ((reindexₐ R e M).mapₗ φ) := by
+  sorry
 
 @[simp]
 theorem conjTranspose_zero [AddMonoid A] [StarAddMonoid A] :
@@ -523,7 +528,7 @@ theorem fromBlocks_algebraMap {R : Type*} [Fintype l] [Fintype m] [DecidableEq l
 /-- Take a pair of matrices `(A, B)` and turn them into a 2×2 block diagonal matrix with `A` and
 `B` as the two blocks. -/
 @[simps]
-def prodToBlocksₙ (R : Type*) [Fintype n] [Fintype m] [NonUnitalNonAssocSemiring α]
+def prodToBlocksₙ (R : Type*) (n) (m) (α) [Fintype n] [Fintype m] [NonUnitalNonAssocSemiring α]
     [StarAddMonoid α] [Monoid R] [DistribMulAction R α] :
     CStarMatrix n n α × CStarMatrix m m α →⋆ₙₐ[R] CStarMatrix (n ⊕ m) (n ⊕ m) α where
   toFun := fun (A, B) => fromBlocks A 0 0 B
@@ -533,12 +538,21 @@ def prodToBlocksₙ (R : Type*) [Fintype n] [Fintype m] [NonUnitalNonAssocSemiri
   map_mul' := fun _ _ => by simp [fromBlocks_mul]
   map_star' := fun _ => by simp [fromBlocks_star]
 
+lemma prodToBlocksₙ_injective {R : Type*} (n) (m) (α) [Fintype n] [Fintype m] [NonUnitalNonAssocSemiring α]
+    [StarAddMonoid α] [Monoid R] [DistribMulAction R α] :
+    Function.Injective (prodToBlocksₙ R n m α) := by
+  intro ⟨a₁, a₂⟩ ⟨b₁, b₂⟩ hab
+  simp only [prodToBlocksₙ, MonoidHom.coe_id, fromBlocks, NonUnitalStarAlgHom.coe_mk',
+    NonUnitalAlgHom.coe_mk, EmbeddingLike.apply_eq_iff_eq, Matrix.fromBlocks_inj, true_and] at hab
+  exact Prod.mk_inj.mpr hab
+
 /-- Take a pair of matrices `(A, B)` and turn them into a 2×2 block diagonal matrix with `A` and
 `B` as the two blocks. -/
-def prodToBlocks (R : Type*) [Fintype n] [Fintype m] [DecidableEq n] [DecidableEq m] [Semiring α]
+def prodToBlocks (R : Type*) (n) (m) (α) [Fintype n] [Fintype m] [DecidableEq n] [DecidableEq m]
+    [Semiring α]
     [StarAddMonoid α] [CommSemiring R] [Algebra R α] :
     CStarMatrix n n α × CStarMatrix m m α →⋆ₐ[R] CStarMatrix (n ⊕ m) (n ⊕ m) α :=
-  { prodToBlocksₙ R with
+  { prodToBlocksₙ R n m α with
     map_one' := by simp [prodToBlocksₙ]
     commutes' r := by simp [prodToBlocksₙ, fromBlocks_algebraMap] }
 
@@ -861,6 +875,31 @@ instance instPartialOrder :
     PartialOrder (CStarMatrix n n A) := CStarAlgebra.spectralOrder _
 instance instStarOrderedRing :
     StarOrderedRing (CStarMatrix n n A) := CStarAlgebra.spectralOrderedRing _
+
+@[gcongr]
+lemma fromBlocks_diagonal_le {n m : Type*} [Fintype n] [Fintype m] [DecidableEq n] [DecidableEq m]
+    {a a' : CStarMatrix n n A} {b b' : CStarMatrix m m A} (ha : a ≤ a') (hb : b ≤ b') :
+    fromBlocks a 0 0 b ≤ fromBlocks a' 0 0 b' := by
+  let φ := prodToBlocksₙ ℂ n m A
+  change φ (a, b) ≤ φ (a', b')
+  gcongr
+  simp [ha, hb]
+
+lemma fromBlocks_diagonal_le_iff {n m : Type*} [Fintype n] [Fintype m] [DecidableEq n]
+    [DecidableEq m] {a a' : CStarMatrix n n A} {b b' : CStarMatrix m m A} :
+    fromBlocks a 0 0 b ≤ fromBlocks a' 0 0 b' ↔ a ≤ a' ∧ b ≤ b' := by
+  refine ⟨fun h => ⟨?a, ?b⟩, fun ⟨ha, hb⟩ => fromBlocks_diagonal_le ha hb⟩
+  case a =>
+    sorry
+  case b =>
+    sorry
+
+lemma fromBlocks_diagonal_nonneg {n m : Type*} [Fintype n] [Fintype m] [DecidableEq n]
+    [DecidableEq m] {a : CStarMatrix n n A} {b : CStarMatrix m m A} (ha : 0 ≤ a) (hb : 0 ≤ b) :
+    0 ≤ fromBlocks a 0 0 b := by
+  convert_to fromBlocks 0 0 0 0 ≤ fromBlocks a 0 0 b
+  · simp
+  · exact fromBlocks_diagonal_le ha hb
 
 end non_unital
 
