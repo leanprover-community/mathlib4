@@ -134,6 +134,21 @@ lemma _root_.Submodule.mem_invtSubmodule_reflection_of_mem (h : f x = 2)
   intro y hy
   simpa only [reflection_apply, p.sub_mem_iff_right hy] using p.smul_mem (f y) hx
 
+lemma _root_.Submodule.mem_invtSubmodule_reflection_iff [NeZero (2 : R)] [NoZeroSMulDivisors R M]
+    (h : f x = 2) {p : Submodule R M} (hp : Disjoint p (R ∙ x)) :
+    p ∈ End.invtSubmodule (reflection h) ↔ p ≤ LinearMap.ker f := by
+  refine ⟨fun h' y hy ↦ ?_, fun h' y hy ↦ ?_⟩
+  · have hx : x ≠ 0 := by rintro rfl; exact two_ne_zero (α := R) <| by simp [← h]
+    suffices f y • x ∈ p by
+      have aux : f y • x ∈ p ⊓ (R ∙ x) := ⟨this, Submodule.mem_span_singleton.mpr ⟨f y, rfl⟩⟩
+      rw [hp.eq_bot, Submodule.mem_bot, smul_eq_zero] at aux
+      exact aux.resolve_right hx
+    specialize h' hy
+    simp only [Submodule.mem_comap, LinearEquiv.coe_coe, reflection_apply] at h'
+    simpa using p.sub_mem h' hy
+  · have hy' : f y = 0 := by simpa using h' hy
+    simpa [reflection_apply, hy']
+
 /-! ### Powers of the product of two reflections
 
 Let $M$ be a module over a commutative ring $R$. Let $x, y \in M$ and $f, g \in M^*$ with
