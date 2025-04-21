@@ -204,81 +204,88 @@ lemma PartColoring.union_extends (C₁ : G.PartColoring n s) (C₂ : G.PartColor
   rw [union_def, if_pos hv]
 
 @[simp]
-lemma PartColoring.union_extends' (C₁ : G.PartColoring n s) (C₂ : G.PartColoring n t)
-    (h : ∀ ⦃v w⦄, v ∈ s → w ∈ t \ s → G.Adj v w → C₁ v ≠ C₂ w) (hd : Disjoint s t) :
+lemma PartColoring.union_extends_disjoint (hd : Disjoint s t) (C₁ : G.PartColoring n s)
+    (C₂ : G.PartColoring n t) (h : ∀ ⦃v w⦄, v ∈ s → w ∈ t \ s → G.Adj v w → C₁ v ≠ C₂ w) :
     (C₁.union C₂ h).extends C₂ := by
   refine ⟨Set.subset_union_right, ?_⟩
   intro v hv
   rw [union_def, if_neg (hd.not_mem_of_mem_right hv)]
+variable [DecidableEq α]
 
-/-- The extension of a coloring of `s` to `insert a s` -/
-def PartColoring.insertNotAdj {a : α}  [DecidableEq α] (C₁ : G.PartColoring n s)
-    (h : ∀ ⦃v⦄, v ∈ s → ¬ G.Adj a v) (c : Fin n) : G.PartColoring n (insert a s) :=
+/-- The extension of a coloring of `s` to `insert a s` using a color `c` that is not used by a
+neighbor of `a` in `s` -/
+protected def PartColoring.insert (a : α) (c : Fin n) (C₁ : G.PartColoring n s)
+    (h : ∀ ⦃v⦄, v ∈ s → G.Adj a v → C₁ v ≠ c) : G.PartColoring n (insert a s) :=
   ((G.partColoringOfSingleton a c).union C₁ (by
     simp only [Set.mem_singleton_iff, Set.mem_diff, and_imp]
-    rintro _ _ rfl h' _ had _
-    exact h h' had)).copy (by simp [Set.union_comm])
+    rintro _ _ rfl h' h1 had h2
+    exact h h' had h2.symm)).copy (by simp [Set.union_comm])
+
+variable {a v : α} {c : Fin n}
 
 @[simp]
-lemma PartColoring.insertNotAdj_def {a v : α} {c : Fin n} [DecidableEq α]
-    (C₁ : G.PartColoring n s) (h : ∀ ⦃v⦄, v ∈ s → ¬ G.Adj a v) :
-    (C₁.insertNotAdj h c) v = ite (v = a) c (C₁ v) := by
-  rw [insertNotAdj, copy_def, union_def]
+lemma PartColoring.insert_def (C₁ : G.PartColoring n s) (h : ∀ ⦃v⦄, v ∈ s → G.Adj a v → C₁ v ≠ c) :
+    (C₁.insert a c h) v = ite (v = a) c (C₁ v) := by
+  rw [PartColoring.insert, copy_def, union_def]
   simp
 
-lemma PartColoring.insertNotAdj_extends {a : α} {c : Fin n} [DecidableEq α]
-    (C₁ : G.PartColoring n s) (h : ∀ ⦃v⦄, v ∈ s → ¬ G.Adj a v)  :
-  (C₁.insertNotAdj h c).extends (G.partColoringOfSingleton a c) :=
-    copy_extends (union_extends ..)
+@[simp]
+lemma PartColoring.insert_extends {c : Fin n} (C₁ : G.PartColoring n s)
+    (h : ∀ ⦃v⦄, v ∈ s → G.Adj a v → C₁ v ≠ c) :
+    (C₁.insert a c h).extends (G.partColoringOfSingleton a c) := copy_extends (union_extends ..)
 
-lemma PartColoring.insertNotAdj_extends' {a : α} {c : Fin n} [DecidableEq α]
-    (C₁ : G.PartColoring n s) (h : ∀ ⦃v⦄, v ∈ s → ¬ G.Adj a v) (ha : a ∉ s) :
-  (C₁.insertNotAdj h c).extends C₁ :=
-    copy_extends (union_extends' _ _ _ (Set.disjoint_singleton_left.mpr ha))
+@[simp]
+lemma PartColoring.insert_extends_disjoint (C₁ : G.PartColoring n s)
+    (h : ∀ ⦃v⦄, v ∈ s → G.Adj a v → C₁ v ≠ c) (ha : a ∉ s) : (C₁.insert a c h).extends C₁ :=
+  copy_extends <| union_extends_disjoint (Set.disjoint_singleton_left.mpr ha) ..
 
+/-- If there is an unused color in the neighborhood of `a` under the coloring of `s` by `C₁` then
+we can color `insert a s` greedily. -/
+protected abbrev PartColoring.greedy (C₁ : G.PartColoring n s) (a : α) [Fintype (G.neighborSet a)]
+    (h : (((G.neighborFinset a).filter (· ∈ s)).image C₁)ᶜ.Nonempty) :
+    G.PartColoring n (insert a s) := by
+  let c := Finset.min' _ h
+  have h' : ∀ ⦃v⦄, v ∈ s → G.Adj a v → C₁ v ≠ c := by
+    intro v hv had he
+    apply Finset.mem_compl.1 <| Finset.min'_mem _ h
+    exact Finset.mem_image.2 ⟨v, Finset.mem_filter.2 ⟨(G.mem_neighborFinset ..).2 had, hv⟩, he⟩
+  exact C₁.insert a c h'
 
--- lemma  PartColorable.insertNotAdj {b : α} {hs : G.PartColorable n s}
---     (h : ∀ v, v ∈ s → ¬ G.Adj b v) : G.PartColorable n (insert b s) := by
---   rw [Set.insert_eq]
---   have hlt : 0 < n := by
---     cases n with
---     | zero => rw [isPartColorable_zero_iff] at hs; exfalso; exact IsEmpty.false b
---     | succ n => exact Nat.zero_lt_succ _
---   obtain ⟨C₂⟩ := hs
---   classical
---   exact ⟨(G.partColoringOfSingleton hlt b).union C₂ (by
---     simp only [Set.mem_singleton_iff, Set.mem_diff, and_imp]
---     rintro _ _ rfl hs _ had _; exact h _ hs had)⟩
+variable [DecidableRel G.Adj]
 
-variable {a : α}  [DecidableEq α]
+lemma PartColoring.greedy_of_degreeIn_lt (C₁ : G.PartColoring n s) (a : α)
+    [Fintype (G.neighborSet a)] (h : G.degreeIn (insert a s) a < n) :
+    (((G.neighborFinset a).filter (· ∈ s)).image C₁)ᶜ.Nonempty := by
 
-/--
-If we have an n-coloring of G on s then we can extend it to an n-coloring of `insert a s` unless
--/
-lemma not_partColorable_insert (h : ¬ G.PartColorable n (insert a s))
-    (C : G.PartColoring n s) : Set.SurjOn C {x | x ∈ s ∧ G.Adj a x} Set.univ := by
-  contrapose! h
-  rw [Set.SurjOn] at h
-  obtain ⟨c, hc⟩ : ∃ c, ∀ x, G.Adj a x ∧ x ∈ s → C x ≠ c:= by
-    contrapose! h;
-    intro c _
-    obtain ⟨x, hx1, hx2⟩ := h c
-    simp only [Set.mem_image, Set.mem_setOf_eq]
-    use x
-    exact ⟨hx1.symm, hx2⟩
-  let C' := C.union (G.partColoringOfSingleton a c) (by
-    simp only [Set.mem_diff, Set.mem_singleton_iff, ne_eq, and_imp, forall_eq_apply_imp_iff]
-    intro v hv ha hadj
-    apply hc _ ⟨hadj.symm ,hv⟩)
-  exact ⟨C'.copy (by simp)⟩
+  sorry
+-- -- /--
+-- -- If we have an n-coloring of G on s then we can extend it to an n-coloring of `insert a s`
+-- unless
+-- -- -/
+-- -- lemma not_partColorable_insert (h : ¬ G.PartColorable n (insert a s))
+-- --     (C : G.PartColoring n s) : Set.SurjOn C {x | x ∈ s ∧ G.Adj a x} Set.univ := by
+-- --   contrapose! h
+-- --   rw [Set.SurjOn] at h
+-- --   obtain ⟨c, hc⟩ : ∃ c, ∀ x, G.Adj a x ∧ x ∈ s → C x ≠ c:= by
+-- --     contrapose! h;
+-- --     intro c _
+-- --     obtain ⟨x, hx1, hx2⟩ := h c
+-- --     simp only [Set.mem_image, Set.mem_setOf_eq]
+-- --     use x
+-- --     exact ⟨hx1.symm, hx2⟩
+-- --   let C' := C.union (G.partColoringOfSingleton a c) (by
+-- --     simp only [Set.mem_diff, Set.mem_singleton_iff, ne_eq, and_imp, forall_eq_apply_imp_iff]
+-- --     intro v hv ha hadj
+-- --     apply hc _ ⟨hadj.symm ,hv⟩)
+-- --   exact ⟨C'.copy (by simp)⟩
 
-variable [Fintype (G.neighborSet a)] in
-lemma not_partColorable_insert' (h : ¬ G.PartColorable n (insert a s))
-    (C : G.PartColoring n s) : Set.SurjOn C ((G.neighborFinset a).filter (· ∈ s))
-    (Finset.univ : Finset (Fin n)) := by
-  convert not_partColorable_insert h C
-  · ext x; aesop
-  · exact Finset.coe_univ
+-- variable [Fintype (G.neighborSet a)] in
+-- lemma not_partColorable_insert' (h : ¬ G.PartColorable n (insert a s))
+--     (C : G.PartColoring n s) : Set.SurjOn C ((G.neighborFinset a).filter (· ∈ s))
+--     (Finset.univ : Finset (Fin n)) := by
+--   convert not_partColorable_insert h C
+--   · ext x; aesop
+--   · exact Finset.coe_univ
 
 -- lemma PartColorable_le_degreeIn_insert [DecidableRel G.Adj] (C : G.PartColoring n s)
 --   (h : G.degreeIn (insert a s) a < n) : G.PartColorable n (insert a s) := by
@@ -300,7 +307,6 @@ lemma extend_le_degreeOn (C : G.PartialColoring s) (a : α) : C.extend a ≤ G.d
 lemma extend_lt_degree (C : G.PartialColoring s) {a v : α} (h1 : G.Adj a v) (h2 : v ∉ s) :
     C.extend a < G.degree a :=
   (extend_le_degreeOn _ _).trans_lt (degreeOn_lt_degree ⟨(mem_neighborFinset ..).2 h1, h2⟩)
-
 
 lemma extend_eq_degreeOn (h : C.extend a = G.degreeOn s a) :
     ((G.neighborFinset a ∩ s) : Set α).InjOn C := by
