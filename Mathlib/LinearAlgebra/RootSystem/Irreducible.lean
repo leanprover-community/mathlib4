@@ -151,38 +151,26 @@ end RootPairing
 
 namespace RootSystem
 
-lemma invtsubmodule_to_root_subset {K : Type*} [Field K] [NeZero (2 : K)] [Module K M] [Module K N]
+/-
+Note that this actually holds for `RootPairing` provided we:
+ * assume `RootPairing.IsBalanced`,
+ * replace the assumption `q ≠ ⊥` with `¬ Disjoint P.rootSpan q`,
+ * replace the conclusion `q = ⊤` with `P.rootSpan ≤ q`.
+-/
+lemma eq_top_of_mem_invtSubmodule_of_forall_eq_univ
+    {K : Type*} [Field K] [NeZero (2 : K)] [Module K M] [Module K N]
     (P : RootSystem ι K M N)
     (q : Submodule K M)
     (h₀ : q ≠ ⊥)
     (h₁ : ∀ i, q ∈ invtSubmodule (P.reflection i))
     (h₂ : ∀ Φ, Φ.Nonempty → P.root '' Φ ⊆ q → (∀ i ∉ Φ, q ≤ ker (P.coroot' i)) → Φ = univ) :
     q = ⊤ := by
-  obtain ⟨Φ, b, c⟩ :=
-    P.toRootPairing.exist_set_root_not_disjoint_and_le_ker_coroot'_of_invtSubmodule q h₁
-  by_cases hΦ : Φ = ∅
-  · subst hΦ
-    simp only [mem_empty_iff_false, not_false_eq_true, forall_const] at c
-    have h₁ : q ≤ Submodule.dualCoannihilator ⊤ := by
-      have : q ≤ ⨅ i, LinearMap.ker (P.coroot' i) := by
-        intro v hv
-        rw [Submodule.mem_iInf]
-        exact fun i ↦ c i hv
-      rw [RootPairing.iInf_ker_coroot'_eq] at this
-      have h₂ : (span K (range P.coroot')).dualCoannihilator ≤
-          (⊤ : Submodule K (Module.Dual K M)).dualCoannihilator := by
-        simp only [RootPairing.span_coroot'_eq_top, le_refl]
-      exact fun _ a ↦ h₂ (this a)
-    rw [Submodule.dualCoannihilator_top (R := K) (M := M)] at h₁
-    exact False.elim (h₀ ((Submodule.eq_bot_iff q).mpr h₁))
-  · have b' : P.root '' Φ ⊆ q := by
-      intro v ⟨i, s₁, s₂⟩
-      have := b i s₁
-      rw [s₂] at this
-      by_contra! s₃
-      exact False.elim (this (Submodule.disjoint_span_singleton_of_not_mem s₃))
-    have hu := h₂ Φ (Set.nonempty_iff_ne_empty.mpr hΦ) b' c
-    subst hu
-    rw [eq_top_mono (span_le.mpr b') (by rw [image_univ, span_root_eq_top])]
+  obtain ⟨Φ, b, c⟩ := P.exist_set_root_not_disjoint_and_le_ker_coroot'_of_invtSubmodule q h₁
+  rcases Φ.eq_empty_or_nonempty with rfl | hΦ
+  · replace c : q ≤ ⨅ i, LinearMap.ker (P.coroot' i) := by simpa using c
+    simp [h₀, ← P.corootSpan_dualAnnihilator_map_eq_iInf_ker_coroot'] at c
+  · replace b : P.root '' Φ ⊆ q := by
+      simpa [Submodule.disjoint_span_singleton' (P.ne_zero _)] using b
+    simpa [h₂ Φ hΦ b c, ← span_le] using b
 
 end RootSystem
