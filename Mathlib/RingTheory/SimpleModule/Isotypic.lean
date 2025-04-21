@@ -400,7 +400,7 @@ theorem mem_isotypicComponents_iff {m : Submodule R M} :
 
 /-- Sets of isotypic components in a semisimple module are in order-preserving 1-1
 correspondence with fully invariant submodules. Consequently, the fully invariant submodules
-form a complete Boolean algebra. -/
+form a complete atomic Boolean algebra. -/
 @[simps] def OrderIso.setIsotypicComponents :
     Set (isotypicComponents R M) ≃o fullyInvariantSubmodule R M where
   toFun s := ⨆ c ∈ s, ⟨c, .of_mem_isotypicComponents c.2⟩
@@ -430,18 +430,18 @@ theorem sSup_isotypicComponents : sSup (isotypicComponents R M) = ⊤ :=
 
 namespace IsSemisimpleModule
 
-variable (R M) [Module R₀ M] [IsScalarTower R₀ R M]
+variable (R M) [Module R₀ M] [IsScalarTower R₀ R M] [DecidableEq (isotypicComponents R M)]
 
 /-- The endomorphism algebra of a semisimple module is the direct product of the endomorphism
 algebras of its isotypic components. -/
-noncomputable def endAlgEquiv [DecidableEq (isotypicComponents R M)] :
+noncomputable def endAlgEquiv :
     Module.End R M ≃ₐ[R₀] Π c : isotypicComponents R M, Module.End R c.1 :=
   ((sSupIndep_iff _).mp <| sSupIndep_isotypicComponents R M).algEquiv R₀
     ((sSup_eq_iSup' _).symm.trans <| sSup_isotypicComponents R M) (.of_mem_isotypicComponents ·.2)
 
 /-- The endomorphism ring of a semisimple module is the direct product of the endomorphism rings
 of its isotypic components. -/
-noncomputable def endRingEquiv [DecidableEq (isotypicComponents R M)] :
+noncomputable def endRingEquiv :
     Module.End R M ≃+* Π c : isotypicComponents R M, Module.End R c.1 :=
   ((sSupIndep_iff _).mp <| sSupIndep_isotypicComponents R M).ringEquiv
     ((sSup_eq_iSup' _).symm.trans <| sSup_isotypicComponents R M) (.of_mem_isotypicComponents ·.2)
