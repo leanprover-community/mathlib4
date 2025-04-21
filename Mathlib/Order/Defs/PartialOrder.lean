@@ -59,16 +59,10 @@ class Preorder (α : Type*) extends LE α, LT α where
   lt := fun a b => a ≤ b ∧ ¬b ≤ a
   lt_iff_le_not_le : ∀ a b : α, a < b ↔ a ≤ b ∧ ¬b ≤ a := by intros; rfl
 
+attribute [order_dual self (reorder := 3 5, 6 7)] Preorder.le_trans
 attribute [order_dual self (reorder := 3 4)] Preorder.lt_iff_le_not_le
 
 variable [Preorder α] {a b c : α}
-
-/--
-This lemma only exists to serve as an order dual counterpart to `Preorder.le_trans`.
--/
-@[order_dual existing Preorder.le_trans]
-lemma Preorder.le_trans' (a b c : α) (h₁ : b ≤ a) (h₂ : c ≤ b) : c ≤ a :=
-Preorder.le_trans c b a h₂ h₁
 
 /-- The relation `≤` on a preorder is reflexive. -/
 @[refl, simp] lemma le_refl : ∀ a : α, a ≤ a := Preorder.le_refl
@@ -77,7 +71,7 @@ Preorder.le_trans c b a h₂ h₁
 lemma le_rfl : a ≤ a := le_refl a
 
 /-- The relation `≤` on a preorder is transitive. -/
-@[order_dual ge_trans]
+@[order_dual self (attr := trans) (reorder := 3 5, 6 7)]
 lemma le_trans : a ≤ b → b ≤ c → a ≤ c := Preorder.le_trans _ _ _
 
 @[order_dual self (reorder := 3 4)]
@@ -104,30 +98,28 @@ alias LT.lt.not_le := not_le_of_lt
 @[order_dual self (reorder := 3 4)]
 alias LE.le.not_lt := not_lt_of_le
 
+@[order_dual self (attr := trans) (reorder := 3 5, 6 7)]
+lemma ge_trans : a ≥ b → b ≥ c → a ≥ c := fun h₁ h₂ => le_trans h₂ h₁
+
 lemma lt_irrefl (a : α) : ¬a < a := fun h ↦ not_le_of_lt h le_rfl
 lemma gt_irrefl (a : α) : ¬a > a := lt_irrefl _
 
--- @[order_dual (attr := trans) gt_of_gt_of_ge]
+@[order_dual (attr := trans) (reorder := 3 5, 6 7) lt_of_le_of_lt]
 lemma lt_of_lt_of_le (hab : a < b) (hbc : b ≤ c) : a < c :=
   lt_of_le_not_le (le_trans (le_of_lt hab) hbc) fun hca ↦ not_le_of_lt hab (le_trans hbc hca)
 
--- @[order_dual (attr := trans) gt_of_ge_of_gt]
-lemma lt_of_le_of_lt (hab : a ≤ b) (hbc : b < c) : a < c :=
-  lt_of_le_not_le (le_trans hab (le_of_lt hbc)) fun hca ↦ not_le_of_lt hbc (le_trans hca hab)
-
--- don't use order_dual to generate theorems which have short proofs
-@[order_dual existing (attr := trans) lt_of_lt_of_le]
+@[order_dual (attr := trans) (reorder := 3 5, 6 7) gt_of_ge_of_gt]
 lemma gt_of_gt_of_ge (h₁ : a > b) (h₂ : b ≥ c) : a > c := lt_of_le_of_lt h₂ h₁
-@[order_dual existing (attr := trans) lt_of_le_of_lt]
-lemma gt_of_ge_of_gt (h₁ : a ≥ b) (h₂ : b > c) : a > c := lt_of_lt_of_le h₂ h₁
 
+@[order_dual self (reorder := 3 5, 6 7)]
 lemma lt_trans (hab : a < b) (hbc : b < c) : a < c := lt_of_lt_of_le hab (le_of_lt hbc)
-@[order_dual existing (attr := trans) lt_trans]
+@[order_dual self (reorder := 3 5, 6 7)]
 lemma gt_trans : a > b → b > c → a > c := fun h₁ h₂ => lt_trans h₂ h₁
 
-@[order_dual ne_of_gt]
+@[order_dual ne_of_ltOD]
 lemma ne_of_lt (h : a < b) : a ≠ b := fun he => absurd h (he ▸ lt_irrefl a)
--- lemma ne_of_gt (h : b < a) : a ≠ b := fun he => absurd h (he ▸ lt_irrefl a)
+@[order_dual ne_of_gtOD]
+lemma ne_of_gt (h : b < a) : a ≠ b := fun he => absurd h (he ▸ lt_irrefl a)
 @[order_dual self (reorder := 3 4)]
 lemma lt_asymm (h : a < b) : ¬b < a := fun h1 : b < a => lt_irrefl a (lt_trans h h1)
 
@@ -170,28 +162,21 @@ section PartialOrder
 class PartialOrder (α : Type*) extends Preorder α where
   le_antisymm : ∀ a b : α, a ≤ b → b ≤ a → a = b
 
--- attribute [order_dual (reorder := 5 6) ge_antisymm] PartialOrder.le_antisymm
+attribute [order_dual self (reorder := 5 6)] PartialOrder.le_antisymm
 
 variable [PartialOrder α] {a b : α}
 
-/--
-This lemma only exists to serve as an order dual counterpart to `Preorder.le_antisymm`.
--/
-@[order_dual existing PartialOrder.le_antisymm]
-lemma PartialOrder.le_antisymm' (h₁ : b ≤ a) (h₂ : a ≤ b) : a = b :=
-PartialOrder.le_antisymm _ _ h₂ h₁
-
-@[order_dual le_antisymmOD]
+@[order_dual self (reorder := 5 6)]
 lemma le_antisymm : a ≤ b → b ≤ a → a = b := PartialOrder.le_antisymm _ _
 
-@[order_dual eq_of_le_of_leOD]
+@[order_dual self (reorder := 5 6)]
 alias eq_of_le_of_le := le_antisymm
 
 @[order_dual le_antisymm_iffOD]
 lemma le_antisymm_iff : a = b ↔ a ≤ b ∧ b ≤ a :=
   ⟨fun e => ⟨le_of_eq e, le_of_eq e.symm⟩, fun ⟨h1, h2⟩ => le_antisymm h1 h2⟩
 
-@[order_dual lt_of_le_of_ne']
+@[order_dual lt_of_le_of_neOD]
 lemma lt_of_le_of_ne : a ≤ b → a ≠ b → a < b := fun h₁ h₂ =>
   lt_of_le_not_le h₁ <| mt (le_antisymm h₁) h₂
 
@@ -202,22 +187,21 @@ def decidableEqOfDecidableLE [DecidableLE α] : DecidableEq α
       if hba : b ≤ a then isTrue (le_antisymm hab hba) else isFalse fun heq => hba (heq ▸ le_refl _)
     else isFalse fun heq => hab (heq ▸ le_refl _)
 
+-- These type classes are redundant, but they are needed for `order_dual`.
+/-- Abbreviation for `DecidableRel (· > · : α → α → Prop)`. It is equivalent to `DecidableLT`. -/
+@[order_dual existing DecidableLT]
+abbrev DecidableGT (α : Type*) [LT α] := DecidableRel (GT.gt : α → α → Prop)
+/-- Abbreviation for `DecidableRel (· ≥ · : α → α → Prop)`. It is equivalent to `DecidableLE`. -/
+@[order_dual existing DecidableLE]
+abbrev DecidableGE (α : Type*) [LE α] := DecidableRel (GE.ge : α → α → Prop)
+
 namespace Decidable
 
 variable [DecidableLE α]
 
--- @[order_dual lt_or_eq_of_leOD]
+@[order_dual lt_or_eq_of_leOD]
 lemma lt_or_eq_of_le (hab : a ≤ b) : a < b ∨ a = b :=
   if hba : b ≤ a then Or.inr (le_antisymm hab hba) else Or.inl (lt_of_le_not_le hab hba)
-
-@[order_dual existing lt_or_eq_of_le]
--- TODO: want order_dual to be able to turn the above into the following
--- order_dual can't transform the DecidableLE instance properly in "if then else"
-lemma lt_or_eq_of_leOD (hab : b ≤ a) : b < a ∨ a = b :=
-  if hba : a ≤ b then Or.inr (le_antisymmOD hab hba) else Or.inl (lt_of_le_not_le hab hba)
-
--- set_option pp.all true in #print lt_or_eq_of_le
--- set_option pp.all true in #print lt_or_eq_of_leOD
 
 @[order_dual eq_or_lt_of_leOD]
 lemma eq_or_lt_of_le (hab : a ≤ b) : a = b ∨ a < b :=
@@ -229,7 +213,9 @@ lemma le_iff_lt_or_eq : a ≤ b ↔ a < b ∨ a = b :=
 
 end Decidable
 
+@[order_dual lt_or_eq_of_leOD]
 lemma lt_or_eq_of_le : a ≤ b → a < b ∨ a = b := open scoped Classical in Decidable.lt_or_eq_of_le
+@[order_dual le_iff_lt_or_eqOD]
 lemma le_iff_lt_or_eq : a ≤ b ↔ a < b ∨ a = b := open scoped Classical in Decidable.le_iff_lt_or_eq
 
 end PartialOrder

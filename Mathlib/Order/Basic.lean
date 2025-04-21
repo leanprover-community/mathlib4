@@ -131,7 +131,7 @@ lemma ge_of_eq (h : a = b) : b ≤ a := le_of_eq h.symm
 
 @[simp] lemma lt_self_iff_false (x : α) : x < x ↔ False := ⟨lt_irrefl x, False.elim⟩
 
-@[order_dual transOD]
+@[order_dual self (reorder := 3 5, 6 7)]
 alias LE.le.trans := le_trans
 alias LE.le.trans' := le_trans'
 alias LT.lt.trans := lt_trans
