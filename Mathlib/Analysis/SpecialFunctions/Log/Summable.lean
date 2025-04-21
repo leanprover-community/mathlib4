@@ -30,7 +30,7 @@ lemma multipliable_of_summable_log (hfn : ∀ n, f n ≠ 0) (hf : Summable fun i
     Multipliable f :=
   ⟨_, hasProd_of_hasSum_log hfn hf.hasSum⟩
 
-/-- Alternate verson of `Complex.multipliable_of_summable_log` assuming only that the terms are
+/-- Alternate version of `Complex.multipliable_of_summable_log` assuming only that the terms are
 eventually non-zero. -/
 lemma multipliable_of_summable_log' (hfn : ∀ᶠ i in cofinite, f i ≠ 0)
     (hf : Summable fun i ↦ log (f i)) : Multipliable f := by
@@ -73,7 +73,7 @@ lemma multipliable_of_summable_log (hfn : ∀ i, 0 < f i) (hf : Summable fun i �
     Multipliable f :=
   ⟨_, hasProd_of_hasSum_log hfn hf.hasSum⟩
 
-/-- Alternate verson of `Real.multipliable_of_summable_log` assuming only that positivity holds
+/-- Alternate version of `Real.multipliable_of_summable_log` assuming only that positivity holds
 eventually. -/
 lemma multipliable_of_summable_log' (hfn : ∀ᶠ i in cofinite, 0 < f i)
     (hf : Summable fun i ↦ log (f i)) : Multipliable f := by
