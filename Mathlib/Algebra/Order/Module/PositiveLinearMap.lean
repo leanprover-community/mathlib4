@@ -49,6 +49,16 @@ def toPositiveLinearMap (f : F) : E₁ →ₚ[R] E₂ :=
 instance instCoeToLinearMap : CoeHead F (E₁ →ₚ[R] E₂) where
   coe f := toPositiveLinearMap f
 
+lemma mk₀ {F' E₁' E₂' : Type*} [FunLike F' E₁' E₂'] [AddCommGroup E₁'] [PartialOrder E₁']
+    [AddCommGroup E₂'] [PartialOrder E₂'] [Module R E₁'] [Module R E₂']
+    [LinearMapClass F' R E₁' E₂'] [IsOrderedAddMonoid E₁'] [IsOrderedAddMonoid E₂']
+    (h : ∀ f : F', ∀ x, 0 ≤ x → 0 ≤ f x) : PositiveLinearMapClass F' R E₁' E₂' where
+  map_rel := by
+    intro f a b hab
+    rw [← sub_nonneg] at hab ⊢
+    have : 0 ≤ f (b - a) := h f (b - a) hab
+    simpa using this
+
 end PositiveLinearMapClass
 
 namespace PositiveLinearMap

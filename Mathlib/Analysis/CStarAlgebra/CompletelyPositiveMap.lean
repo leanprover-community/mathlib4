@@ -119,12 +119,20 @@ def toCompletelyPositiveLinearMap (f : F) : A₁ →CP A₂ :=
 instance instCoeToCompletelyPositiveMap : CoeHead F (A₁ →CP A₂) where
   coe f := toCompletelyPositiveLinearMap f
 
-/-- A completely positive map is k-positive for every k. This cannot be instance for arbitrary
-`k`, and we only provide instances for 1 and 2 below. -/
-lemma toKPositiveMapClass (k : ℕ) : KPositiveMapClass F k A₁ A₂ where
-  map_cstarMatrix_nonneg' f M hM := map_cstarMatrix_nonneg' k f M hM
+instance instPositiveLinearMapClass : PositiveLinearMapClass F ℂ A₁ A₂ := .mk₀ <| by
+  intro f a ha
+  let Ma := CStarMatrix.toOneByOne ℂ A₁ a
+  have h₁ : 0 ≤ Ma := by sorry
+  have h₂ : 0 ≤ Ma.map f := CompletelyPositiveMapClass.map_cstarMatrix_nonneg' 1 f Ma h₁
+  sorry
 
-instance toTwoPositiveMapClass : KPositiveMapClass F 2 A₁ A₂ := toKPositiveMapClass 2
-instance toOnePositiveMapClass : KPositiveMapClass F 1 A₁ A₂ := toKPositiveMapClass 1
+
+--/-- A completely positive map is k-positive for every k. This cannot be instance for arbitrary
+--`k`, and we only provide instances for 1 and 2 below. -/
+--lemma toKPositiveMapClass (k : ℕ) : KPositiveMapClass F k A₁ A₂ where
+--  map_cstarMatrix_nonneg' f M hM := map_cstarMatrix_nonneg' k f M hM
+--
+--instance toTwoPositiveMapClass : KPositiveMapClass F 2 A₁ A₂ := toKPositiveMapClass 2
+--instance toOnePositiveMapClass : KPositiveMapClass F 1 A₁ A₂ := toKPositiveMapClass 1
 
 end CompletelyPositiveMapClass
