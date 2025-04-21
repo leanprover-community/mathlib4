@@ -291,7 +291,7 @@ theorem orthogonalProjectionFn_eq {s : AffineSubspace ℝ P} [Nonempty s]
 @[simp]
 theorem orthogonalProjection_linear {s : AffineSubspace ℝ P} [Nonempty s]
     [HasOrthogonalProjection s.direction] :
-    (orthogonalProjection s).linear = _root_.orthogonalProjection s.direction :=
+    (orthogonalProjection s).linear = s.direction.orthogonalProjection :=
   rfl
 
 /-- The intersection of the subspace and the orthogonal subspace
@@ -398,7 +398,7 @@ theorem vsub_orthogonalProjection_mem_direction_orthogonal (s : AffineSubspace �
 part of the orthogonal projection. -/
 theorem orthogonalProjection_vsub_orthogonalProjection (s : AffineSubspace ℝ P) [Nonempty s]
     [HasOrthogonalProjection s.direction] (p : P) :
-    _root_.orthogonalProjection s.direction (p -ᵥ orthogonalProjection s p) = 0 := by
+    s.direction.orthogonalProjection (p -ᵥ orthogonalProjection s p) = 0 := by
   apply orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero
   intro c hc
   rw [← neg_vsub_eq_vsub_rev, inner_neg_right,
@@ -505,7 +505,7 @@ def reflection (s : AffineSubspace ℝ P) [Nonempty s] [HasOrthogonalProjection 
     (by
       intro p
       let v := p -ᵥ ↑(Classical.arbitrary s)
-      let a : V := _root_.orthogonalProjection s.direction v
+      let a : V := s.direction.orthogonalProjection v
       let b : P := ↑(Classical.arbitrary s)
       have key : ((a +ᵥ b) -ᵥ (v +ᵥ b)) +ᵥ (a +ᵥ b) = (a + a - v) +ᵥ (b -ᵥ b) +ᵥ b := by
         rw [← add_vadd, vsub_vadd_eq_vsub_sub, vsub_vadd, vadd_vsub]
@@ -531,7 +531,7 @@ theorem eq_reflection_of_eq_subspace {s s' : AffineSubspace ℝ P} [Nonempty s] 
 @[simp]
 theorem reflection_reflection (s : AffineSubspace ℝ P) [Nonempty s]
     [HasOrthogonalProjection s.direction] (p : P) : reflection s (reflection s p) = p := by
-  have : ∀ a : s, ∀ b : V, (_root_.orthogonalProjection s.direction) b = 0 →
+  have : ∀ a : s, ∀ b : V, (s.direction.orthogonalProjection) b = 0 →
       reflection s (reflection s (b +ᵥ (a : P))) = b +ᵥ (a : P) := by
     intro _ _ h
     simp [reflection, h]
