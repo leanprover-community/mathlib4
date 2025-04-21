@@ -86,7 +86,7 @@ variable {c x : F} {R : ℝ}
 /-- Formula for the Fréchet derivative of `EuclideanGeometry.inversion c R`. -/
 theorem hasFDerivAt_inversion (hx : x ≠ c) :
     HasFDerivAt (inversion c R)
-      ((R / dist x c) ^ 2 • (reflection (ℝ ∙ (x - c))ᗮ : F →L[ℝ] F)) x := by
+      ((R / dist x c) ^ 2 • ((ℝ ∙ (x - c))ᗮ.reflection : F →L[ℝ] F)) x := by
   rcases add_left_surjective c x with ⟨x, rfl⟩
   have : HasFDerivAt (inversion c R) (?_ : F →L[ℝ] F) (c + x) := by
     simp +unfoldPartialApp only [inversion]
