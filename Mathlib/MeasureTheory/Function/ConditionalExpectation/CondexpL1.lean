@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL2
+import Mathlib.MeasureTheory.Measure.Real
 
 /-! # Conditional expectation in L1
 
@@ -129,8 +130,9 @@ theorem condExpIndL1Fin_smul' [NormedSpace ℝ F] [SMulCommClass ℝ 𝕜 F] (hs
 @[deprecated (since := "2025-01-21")] alias condexpIndL1Fin_smul' := condExpIndL1Fin_smul'
 
 theorem norm_condExpIndL1Fin_le (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : G) :
-    ‖condExpIndL1Fin hm hs hμs x‖ ≤ (μ s).toReal * ‖x‖ := by
-  rw [L1.norm_eq_integral_norm, ← ENNReal.toReal_ofReal (norm_nonneg x), ← ENNReal.toReal_mul,
+    ‖condExpIndL1Fin hm hs hμs x‖ ≤ μ.real s * ‖x‖ := by
+  rw [L1.norm_eq_integral_norm, ← ENNReal.toReal_ofReal (norm_nonneg x), measureReal_def,
+    ← ENNReal.toReal_mul,
     ← ENNReal.ofReal_le_iff_le_toReal (ENNReal.mul_ne_top hμs ENNReal.ofReal_ne_top),
     ofReal_integral_norm_eq_lintegral_enorm]
   swap; · rw [← memLp_one_iff_integrable]; exact Lp.memLp _
@@ -239,7 +241,7 @@ theorem condExpIndL1_smul' [NormedSpace ℝ F] [SMulCommClass ℝ 𝕜 F] (c : �
 
 @[deprecated (since := "2025-01-21")] alias condexpIndL1_smul' := condExpIndL1_smul'
 
-theorem norm_condExpIndL1_le (x : G) : ‖condExpIndL1 hm μ s x‖ ≤ (μ s).toReal * ‖x‖ := by
+theorem norm_condExpIndL1_le (x : G) : ‖condExpIndL1 hm μ s x‖ ≤ μ.real s * ‖x‖ := by
   by_cases hs : MeasurableSet s
   swap
   · simp_rw [condExpIndL1_of_not_measurableSet hs]; rw [Lp.norm_zero]
@@ -326,12 +328,12 @@ theorem condExpInd_smul' [NormedSpace ℝ F] [SMulCommClass ℝ 𝕜 F] (c : �
 
 @[deprecated (since := "2025-01-21")] alias condexpInd_smul' := condExpInd_smul'
 
-theorem norm_condExpInd_apply_le (x : G) : ‖condExpInd G hm μ s x‖ ≤ (μ s).toReal * ‖x‖ :=
+theorem norm_condExpInd_apply_le (x : G) : ‖condExpInd G hm μ s x‖ ≤ μ.real s * ‖x‖ :=
   norm_condExpIndL1_le x
 
 @[deprecated (since := "2025-01-21")] alias norm_condexpInd_apply_le := norm_condExpInd_apply_le
 
-theorem norm_condExpInd_le : ‖(condExpInd G hm μ s : G →L[ℝ] α →₁[μ] G)‖ ≤ (μ s).toReal :=
+theorem norm_condExpInd_le : ‖(condExpInd G hm μ s : G →L[ℝ] α →₁[μ] G)‖ ≤ μ.real s :=
   ContinuousLinearMap.opNorm_le_bound _ ENNReal.toReal_nonneg norm_condExpInd_apply_le
 
 @[deprecated (since := "2025-01-21")] alias norm_condexpInd_le := norm_condExpInd_le
@@ -364,12 +366,12 @@ alias dominatedFinMeasAdditive_condexpInd := dominatedFinMeasAdditive_condExpInd
 variable {G}
 
 theorem setIntegral_condExpInd (hs : MeasurableSet[m] s) (ht : MeasurableSet t) (hμs : μ s ≠ ∞)
-    (hμt : μ t ≠ ∞) (x : G') : ∫ a in s, condExpInd G' hm μ t x a ∂μ = (μ (t ∩ s)).toReal • x :=
+    (hμt : μ t ≠ ∞) (x : G') : ∫ a in s, condExpInd G' hm μ t x a ∂μ = μ.real (t ∩ s) • x :=
   calc
     ∫ a in s, condExpInd G' hm μ t x a ∂μ = ∫ a in s, condExpIndSMul hm ht hμt x a ∂μ :=
       setIntegral_congr_ae (hm s hs)
         ((condExpInd_ae_eq_condExpIndSMul hm ht hμt x).mono fun _ hx _ => hx)
-    _ = (μ (t ∩ s)).toReal • x := setIntegral_condExpIndSMul hs ht hμs hμt x
+    _ = μ.real (t ∩ s) • x := setIntegral_condExpIndSMul hs ht hμs hμt x
 
 @[deprecated (since := "2025-01-21")] alias setIntegral_condexpInd := setIntegral_condExpInd
 
