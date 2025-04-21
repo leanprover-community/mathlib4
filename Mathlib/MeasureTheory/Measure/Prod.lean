@@ -3,9 +3,6 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Dynamics.Ergodic.MeasurePreserving
-import Mathlib.MeasureTheory.Integral.Lebesgue
-import Mathlib.MeasureTheory.MeasurableSpace.Prod
 import Mathlib.MeasureTheory.Measure.GiryMonad
 import Mathlib.MeasureTheory.Measure.OpenPos
 
@@ -234,7 +231,7 @@ variable [SFinite ν]
 
 theorem prod_apply {s : Set (α × β)} (hs : MeasurableSet s) :
     μ.prod ν s = ∫⁻ x, ν (Prod.mk x ⁻¹' s) ∂μ := by
-  simp_rw [Measure.prod, bind_apply hs (Measurable.map_prodMk_left (ν := ν)),
+  simp_rw [Measure.prod, bind_apply hs (Measurable.map_prodMk_left (ν := ν)).aemeasurable,
     map_apply measurable_prodMk_left hs]
 
 /-- The product measure of the product of two sets is the product of their measures. Note that we
@@ -326,8 +323,27 @@ theorem ae_measure_lt_top {s : Set (α × β)} (hs : MeasurableSet s) (h2s : (μ
   rw [prod_apply hs] at h2s
   exact ae_lt_top (measurable_measure_prodMk_left hs) h2s
 
-/-- Note: the assumption `hs` cannot be dropped. For a counterexample, see
-  Walter Rudin *Real and Complex Analysis*, example (c) in section 8.9. -/
+omit [SFinite ν] in
+/-- If `μ`-a.e. section `{y | (x, y) ∈ s}` of a measurable set have `ν` measure zero,
+then `s` has `μ.prod ν` measure zero.
+
+This implication requires `s` to be measurable but does not require `ν` to be s-finite.
+See also `measure_prod_null` and `measure_ae_null_of_prod_null` below. -/
+theorem measure_prod_null_of_ae_null {s : Set (α × β)} (hsm : MeasurableSet s)
+    (hs : (fun x => ν (Prod.mk x ⁻¹' s)) =ᵐ[μ] 0) : μ.prod ν s = 0 := by
+  rw [← nonpos_iff_eq_zero]
+  calc
+    μ.prod ν s ≤ ∫⁻ x, ν (Prod.mk x ⁻¹' s) ∂μ := prod_apply_le hsm
+    _ = 0 := by simp [lintegral_congr_ae hs]
+
+/-- A measurable set `s` has `μ.prod ν` measure zero, where `ν` is an s-finite measure,
+if and only if `μ`-a.e. section `{y | (x, y) ∈ s}` of `s` have `ν` measure zero.
+
+See `measure_ae_null_of_prod_null` for the forward implication without the measurability assumption
+and `measure_prod_null_of_ae_null` for the reverse implication without the s-finiteness assumption.
+
+Note: the assumption `hs` cannot be dropped. For a counterexample, see
+Walter Rudin *Real and Complex Analysis*, example (c) in section 8.9. -/
 theorem measure_prod_null {s : Set (α × β)} (hs : MeasurableSet s) :
     μ.prod ν s = 0 ↔ (fun x => ν (Prod.mk x ⁻¹' s)) =ᵐ[μ] 0 := by
   rw [prod_apply hs, lintegral_eq_zero_iff (measurable_measure_prodMk_left hs)]
@@ -344,10 +360,12 @@ theorem measure_ae_null_of_prod_null {s : Set (α × β)} (h : μ.prod ν s = 0)
         ht,
       Eventually.of_forall fun x => zero_le _⟩
 
+omit [SFinite ν] in
 theorem AbsolutelyContinuous.prod [SFinite ν'] (h1 : μ ≪ μ') (h2 : ν ≪ ν') :
     μ.prod ν ≪ μ'.prod ν' := by
   refine AbsolutelyContinuous.mk fun s hs h2s => ?_
-  rw [measure_prod_null hs] at h2s ⊢
+  apply measure_prod_null_of_ae_null hs
+  rw [measure_prod_null hs] at h2s
   exact (h2s.filter_mono h1.ae_le).mono fun _ h => h2 h
 
 /-- Note: the converse is not true. For a counterexample, see
@@ -373,14 +391,21 @@ theorem ae_prod_mem_iff_ae_ae_mem {s : Set (α × β)} (hs : MeasurableSet s) :
     (∀ᵐ z ∂μ.prod ν, z ∈ s) ↔ ∀ᵐ x ∂μ, ∀ᵐ y ∂ν, (x, y) ∈ s :=
   measure_prod_null hs.compl
 
+omit [SFinite ν] in
 theorem quasiMeasurePreserving_fst : QuasiMeasurePreserving Prod.fst (μ.prod ν) μ := by
   refine ⟨measurable_fst, AbsolutelyContinuous.mk fun s hs h2s => ?_⟩
-  rw [map_apply measurable_fst hs, ← prod_univ, prod_prod, h2s, zero_mul]
+  rw [map_apply measurable_fst hs, ← prod_univ, ← nonpos_iff_eq_zero]
+  refine (prod_prod_le _ _).trans_eq ?_
+  rw [h2s, zero_mul]
 
+omit [SFinite ν] in
 theorem quasiMeasurePreserving_snd : QuasiMeasurePreserving Prod.snd (μ.prod ν) ν := by
   refine ⟨measurable_snd, AbsolutelyContinuous.mk fun s hs h2s => ?_⟩
-  rw [map_apply measurable_snd hs, ← univ_prod, prod_prod, h2s, mul_zero]
+  rw [map_apply measurable_snd hs, ← univ_prod, ← nonpos_iff_eq_zero]
+  refine (prod_prod_le _ _).trans_eq ?_
+  rw [h2s, mul_zero]
 
+omit [SFinite ν] in
 lemma set_prod_ae_eq {s s' : Set α} {t t' : Set β} (hs : s =ᵐ[μ] s') (ht : t =ᵐ[ν] t') :
     (s ×ˢ t : Set (α × β)) =ᵐ[μ.prod ν] (s' ×ˢ t' : Set (α × β)) :=
   (quasiMeasurePreserving_fst.preimage_ae_eq hs).inter
@@ -392,6 +417,7 @@ lemma measure_prod_compl_eq_zero {s : Set α} {t : Set β}
   rw [Set.compl_prod_eq_union, measure_union_null_iff]
   simp [s_ae_univ, t_ae_univ]
 
+omit [SFinite ν] in
 lemma _root_.MeasureTheory.NullMeasurableSet.prod {s : Set α} {t : Set β}
     (s_mble : NullMeasurableSet s μ) (t_mble : NullMeasurableSet t ν) :
     NullMeasurableSet (s ×ˢ t) (μ.prod ν) :=
@@ -754,13 +780,21 @@ theorem AEMeasurable.prod_swap [SFinite μ] [SFinite ν] {f : β × α → γ}
   rw [← Measure.prod_swap] at hf
   exact hf.comp_measurable measurable_swap
 
--- TODO: make this theorem usable with `fun_prop`
-theorem AEMeasurable.fst [SFinite ν] {f : α → γ} (hf : AEMeasurable f μ) :
-    AEMeasurable (fun z : α × β => f z.1) (μ.prod ν) :=
+theorem MeasureTheory.NullMeasurable.comp_fst {f : α → γ} (hf : NullMeasurable f μ) :
+    NullMeasurable (fun z : α × β => f z.1) (μ.prod ν) :=
   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_fst
 
 -- TODO: make this theorem usable with `fun_prop`
-theorem AEMeasurable.snd [SFinite ν] {f : β → γ} (hf : AEMeasurable f ν) :
+theorem AEMeasurable.fst {f : α → γ} (hf : AEMeasurable f μ) :
+    AEMeasurable (fun z : α × β => f z.1) (μ.prod ν) :=
+  hf.comp_quasiMeasurePreserving quasiMeasurePreserving_fst
+
+theorem MeasureTheory.NullMeasurable.comp_snd {f : β → γ} (hf : NullMeasurable f ν) :
+    NullMeasurable (fun z : α × β => f z.2) (μ.prod ν) :=
+  hf.comp_quasiMeasurePreserving quasiMeasurePreserving_snd
+
+-- TODO: make this theorem usable with `fun_prop`
+theorem AEMeasurable.snd {f : β → γ} (hf : AEMeasurable f ν) :
     AEMeasurable (fun z : α × β => f z.2) (μ.prod ν) :=
   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_snd
 
@@ -770,51 +804,34 @@ namespace MeasureTheory
 
 /-! ### The Lebesgue integral on a product -/
 
-
 variable [SFinite ν]
 
 theorem lintegral_prod_swap [SFinite μ] (f : α × β → ℝ≥0∞) :
     ∫⁻ z, f z.swap ∂ν.prod μ = ∫⁻ z, f z ∂μ.prod ν :=
   measurePreserving_swap.lintegral_comp_emb MeasurableEquiv.prodComm.measurableEmbedding f
 
-/-- **Tonelli's Theorem**: For `ℝ≥0∞`-valued measurable functions on `α × β`,
-  the integral of `f` is equal to the iterated integral. -/
-theorem lintegral_prod_of_measurable :
-    ∀ (f : α × β → ℝ≥0∞), Measurable f → ∫⁻ z, f z ∂μ.prod ν = ∫⁻ x, ∫⁻ y, f (x, y) ∂ν ∂μ := by
-  have m := @measurable_prodMk_left
-  refine Measurable.ennreal_induction
-    (motive := fun f ↦ ∫⁻ z, f z ∂μ.prod ν = ∫⁻ x, ∫⁻ y, f (x, y) ∂ν ∂μ) ?_ ?_ ?_
-  · intro c s hs
-    conv_rhs =>
-      enter [2, x, 2, y]
-      rw [← indicator_comp_right, const_def, const_comp, ← const_def]
-    conv_rhs =>
-      enter [2, x]
-      rw [lintegral_indicator (m (x := x) hs), lintegral_const,
-        Measure.restrict_apply MeasurableSet.univ, univ_inter]
-    simp [hs, lintegral_const_mul, measurable_measure_prodMk_left (ν := ν) hs, prod_apply]
-  · rintro f g - hf _ h2f h2g
-    simp only [Pi.add_apply]
-    conv_lhs => rw [lintegral_add_left hf]
-    conv_rhs => enter [2, x]; erw [lintegral_add_left (hf.comp (m (x := x)))]
-    simp [lintegral_add_left, Measurable.lintegral_prod_right', hf, h2f, h2g]
-  · intro f hf h2f h3f
-    have kf : ∀ x n, Measurable fun y => f n (x, y) := fun x n => (hf n).comp m
-    have k2f : ∀ x, Monotone fun n y => f n (x, y) := fun x i j hij y => h2f hij (x, y)
-    have lf : ∀ n, Measurable fun x => ∫⁻ y, f n (x, y) ∂ν := fun n => (hf n).lintegral_prod_right'
-    have l2f : Monotone fun n x => ∫⁻ y, f n (x, y) ∂ν := fun i j hij x =>
-      lintegral_mono (k2f x hij)
-    simp only [lintegral_iSup hf h2f, lintegral_iSup (kf _), k2f, lintegral_iSup lf l2f, h3f]
-
 /-- **Tonelli's Theorem**: For `ℝ≥0∞`-valued almost everywhere measurable functions on `α × β`,
   the integral of `f` is equal to the iterated integral. -/
 theorem lintegral_prod (f : α × β → ℝ≥0∞) (hf : AEMeasurable f (μ.prod ν)) :
     ∫⁻ z, f z ∂μ.prod ν = ∫⁻ x, ∫⁻ y, f (x, y) ∂ν ∂μ := by
-  have A : ∫⁻ z, f z ∂μ.prod ν = ∫⁻ z, hf.mk f z ∂μ.prod ν := lintegral_congr_ae hf.ae_eq_mk
-  have B : (∫⁻ x, ∫⁻ y, f (x, y) ∂ν ∂μ) = ∫⁻ x, ∫⁻ y, hf.mk f (x, y) ∂ν ∂μ := by
-    apply lintegral_congr_ae
-    filter_upwards [ae_ae_of_ae_prod hf.ae_eq_mk] with _ ha using lintegral_congr_ae ha
-  rw [A, B, lintegral_prod_of_measurable _ hf.measurable_mk]
+  rw [Measure.prod] at *
+  rw [lintegral_bind Measurable.map_prodMk_left.aemeasurable hf]
+  apply lintegral_congr_ae
+  filter_upwards [Measurable.map_prodMk_left.aemeasurable.ae_of_bind hf] with a ha
+  exact lintegral_map' ha (by fun_prop)
+
+/-- **Tonelli's Theorem**: For `ℝ≥0∞`-valued measurable functions on `α × β`,
+  the integral of `f` is equal to the iterated integral. -/
+@[deprecated lintegral_prod (since := "2025-04-06")]
+theorem lintegral_prod_of_measurable (f : α × β → ℝ≥0∞) (hf : Measurable f) :
+    ∫⁻ z, f z ∂μ.prod ν = ∫⁻ x, ∫⁻ y, f (x, y) ∂ν ∂μ :=
+  lintegral_prod f hf.aemeasurable
+
+omit [SFinite ν] in
+theorem lintegral_prod_le (f : α × β → ℝ≥0∞) :
+    ∫⁻ z, f z ∂μ.prod ν ≤ ∫⁻ x, ∫⁻ y, f (x, y) ∂ν ∂μ := by
+  rw [Measure.prod]
+  exact (lintegral_bind_le _ _ _).trans <| lintegral_mono fun a ↦ lintegral_map_le _ _
 
 /-- **Tonelli's Theorem for set integrals**: For `ℝ≥0∞`-valued almost everywhere measurable
 functions on `s ×ˢ t`, the integral of `f` on `s ×ˢ t` is equal to the iterated integral on `s`

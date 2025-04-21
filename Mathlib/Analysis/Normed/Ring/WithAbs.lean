@@ -24,7 +24,7 @@ open Topology
 
 noncomputable section
 
-variable {R S : Type*} [OrderedSemiring S]
+variable {R S : Type*} [Semiring S] [PartialOrder S]
 
 /-- Type synonym for a semiring which depends on an absolute value. This is a function that takes
 an absolute value on a semiring and returns the semiring. We use this to assign and infer instances
