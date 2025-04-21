@@ -654,7 +654,7 @@ theorem prod_withDensity_right₀ {g : β → ℝ≥0∞} (hg : AEMeasurable g �
   rw [lintegral_prod _ hφ.aemeasurable, lintegral_withDensity_eq_lintegral_mul₀ _ hφ.aemeasurable,
     lintegral_prod]
   · refine lintegral_congr (fun x ↦ ?_)
-    rw[lintegral_withDensity_eq_lintegral_mul₀ hg (by fun_prop)]
+    rw [lintegral_withDensity_eq_lintegral_mul₀ hg (by fun_prop)]
     simp
   all_goals fun_prop (disch:= intro _ hs; simp [hs])
 
