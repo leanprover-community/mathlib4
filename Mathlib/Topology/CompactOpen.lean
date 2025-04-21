@@ -75,6 +75,21 @@ lemma continuous_compactOpen {f : X → C(Y, Z)} :
     Continuous f ↔ ∀ K, IsCompact K → ∀ U, IsOpen U → IsOpen {x | MapsTo (f x) K U} :=
   continuous_generateFrom_iff.trans forall_mem_image2
 
+protected lemma hasBasis_nhds (f : C(X, Y)) :
+    (𝓝 f).HasBasis
+      (fun S : Set (Set X × Set Y) ↦
+        S.Finite ∧ ∀ K U, (K, U) ∈ S → IsCompact K ∧ IsOpen U ∧ MapsTo f K U)
+      (⋂ KU ∈ ·, {g : C(X, Y) | MapsTo g KU.1 KU.2}) := by
+  refine ⟨fun s ↦ ?_⟩
+  simp_rw [nhds_compactOpen, iInf_comm.{_, 0, _ + 1}, iInf_prod', iInf_and']
+  simp [mem_biInf_principal, and_assoc]
+
+protected lemma mem_nhds_iff {f : C(X, Y)} {s : Set C(X, Y)} :
+    s ∈ 𝓝 f ↔ ∃ S : Set (Set X × Set Y), S.Finite ∧
+      (∀ K U, (K, U) ∈ S → IsCompact K ∧ IsOpen U ∧ MapsTo f K U) ∧
+      {g : C(X, Y) | ∀ K U, (K, U) ∈ S → MapsTo g K U} ⊆ s := by
+  simp [f.hasBasis_nhds.mem_iff, ← setOf_forall, and_assoc]
+
 section Functorial
 
 /-- `C(X, ·)` is a functor. -/
@@ -194,17 +209,9 @@ instance [LocallyCompactPair X Y] : ContinuousEval C(X, Y) X Y where
     rcases exists_mem_nhds_isCompact_mapsTo f.continuous (hU.mem_nhds hx) with ⟨K, hxK, hK, hKU⟩
     filter_upwards [prod_mem_nhds (eventually_mapsTo hK hU hKU) hxK] using fun _ h ↦ h.1 h.2
 
-@[deprecated (since := "2024-10-01")] protected alias continuous_eval := continuous_eval
-
 instance : ContinuousEvalConst C(X, Y) X Y where
   continuous_eval_const x :=
     continuous_def.2 fun U hU ↦ by simpa using isOpen_setOf_mapsTo isCompact_singleton hU
-
-@[deprecated (since := "2024-10-01")] protected alias continuous_eval_const := continuous_eval_const
-
-@[deprecated continuous_coeFun (since := "2024-10-01")]
-theorem continuous_coe : Continuous ((⇑) : C(X, Y) → (X → Y)) :=
-  continuous_coeFun
 
 lemma isClosed_setOf_mapsTo {t : Set Y} (ht : IsClosed t) (s : Set X) :
     IsClosed {f : C(X, Y) | MapsTo f s t} :=

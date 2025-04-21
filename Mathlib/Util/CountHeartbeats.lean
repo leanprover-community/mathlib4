@@ -24,6 +24,9 @@ open Lean Elab Command Meta
 
 namespace Mathlib.CountHeartbeats
 
+-- This file mentions bare `set_option maxHeartbeats` by design: do not warn about this.
+set_option linter.style.setOption false
+
 open Tactic
 
 /--
@@ -84,6 +87,7 @@ Round down the number `n` to the nearest thousand, if `approx` is `true`.
 def roundDownIf (n : Nat) (approx : Bool) : String :=
   if approx then s!"approximately {(n / 1000) * 1000}" else s!"{n}"
 
+set_option linter.style.maxHeartbeats false in
 /--
 `#count_heartbeats in cmd` counts the heartbeats used in the enclosed command `cmd`.
 Use `#count_heartbeats` to count the heartbeats in *all* the following declarations.
@@ -137,6 +141,7 @@ elab "count_heartbeats" : tactic =>
 elab "count_heartbeats" : command =>
   logWarning "`count_heartbeats` has been renamed to `#count_heartbeats`"
 
+set_option linter.style.maxHeartbeats false in
 /--
 Guard the minimal number of heartbeats used in the enclosed command.
 
@@ -168,6 +173,7 @@ elab "guard_min_heartbeats " approx:(&"approximately ")? n:(num)? "in" ppLine cm
       logInfo m!"Used {roundDownIf elapsed approx.isSome} heartbeats, \
                 which is less than the minimum of {n}."
 
+set_option linter.style.maxHeartbeats false in
 /--
 Run a command, optionally restoring the original state, and report just the number of heartbeats.
 -/

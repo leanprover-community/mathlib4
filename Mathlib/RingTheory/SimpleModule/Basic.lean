@@ -117,7 +117,7 @@ theorem span_singleton_eq_top {m : M} (hm : m ≠ 0) : Submodule.span R {m} = �
   (eq_bot_or_eq_top _).resolve_left fun h ↦ hm (h.le <| Submodule.mem_span_singleton_self m)
 
 instance (S : Submodule R M) : S.IsPrincipal where
-  principal' := by
+  principal := by
     obtain rfl | rfl := eq_bot_or_eq_top S
     · exact ⟨0, Submodule.span_zero.symm⟩
     have := IsSimpleModule.nontrivial R M
