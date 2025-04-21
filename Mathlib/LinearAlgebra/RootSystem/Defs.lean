@@ -603,12 +603,8 @@ lemma corootSpan_dualAnnihilator_map_eq_iInf_ker_coroot' :
 
 lemma rootSpan_dualAnnihilator_map_eq :
     P.rootSpan.dualAnnihilator.map P.toDualRight.symm =
-      (span R (range P.root')).dualCoannihilator := by
-  apply SetLike.coe_injective
-  rw [Submodule.coe_dualCoannihilator_span, P.rootSpan_dualAnnihilator_map_eq_iInf_ker_root']
-  ext x
-  simp only [Submodule.iInf_coe, mem_iInter, SetLike.mem_coe, LinearMap.mem_ker, mem_range,
-    forall_exists_index, forall_apply_eq_imp_iff, mem_setOf_eq]
+      (span R (range P.root')).dualCoannihilator :=
+  SetLike.coe_injective <| by ext; simp [P.rootSpan_dualAnnihilator_map_eq_iInf_ker_root']
 
 lemma corootSpan_dualAnnihilator_map_eq :
     P.corootSpan.dualAnnihilator.map P.toDualLeft.symm =
