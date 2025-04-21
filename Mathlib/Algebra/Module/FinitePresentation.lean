@@ -535,7 +535,7 @@ Let `M` be a finitely presented `R`-module, `N` a `R`-module, `S : Submonoid R`.
 The linear equivalence between the `M →ₗ[R] N` localized at `S` and
 `LocalizedModule S M →ₗ[Localization S] LocalizedModule S N`
 -/
-noncomputable def Module.FinitePresentation.LinearEquiv_mapExtendScalars
+noncomputable def Module.FinitePresentation.linearEquivMapExtendScalars
     [Module.FinitePresentation R M] :=
   IsLocalizedModule.linearEquiv S (LocalizedModule.mkLinearMap S (M →ₗ[R] N))
   (IsLocalizedModule.mapExtendScalars S (LocalizedModule.mkLinearMap S M)
