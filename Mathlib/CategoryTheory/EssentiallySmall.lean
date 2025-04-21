@@ -190,6 +190,10 @@ noncomputable instance [Small.{w} C] : Category.{v} (Shrink.{w} C) :=
 noncomputable def equivalence [Small.{w} C] : C ≌ Shrink.{w} C :=
   (Equivalence.induced _).symm
 
+instance [Small.{w'} C] [LocallySmall.{w} C] :
+    LocallySmall.{w} (Shrink.{w'} C) :=
+  locallySmall_of_faithful.{w} (equivalence.{w'} C).inverse
+
 end Shrink
 
 /-- A category is essentially small if and only if

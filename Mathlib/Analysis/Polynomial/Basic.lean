@@ -27,7 +27,7 @@ open Asymptotics Polynomial Topology
 
 namespace Polynomial
 
-variable {𝕜 : Type*} [NormedLinearOrderedField 𝕜] (P Q : 𝕜[X])
+variable {𝕜 : Type*} [NormedField 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] (P Q : 𝕜[X])
 
 theorem eventually_no_roots (hP : P ≠ 0) : ∀ᶠ x in atTop, ¬P.IsRoot x :=
   atTop_le_cofinite <| (finite_setOf_isRoot hP).compl_mem_cofinite
@@ -136,13 +136,13 @@ theorem div_tendsto_zero_iff_degree_lt (hQ : Q ≠ 0) :
   refine ⟨fun h => ?_, div_tendsto_zero_of_degree_lt P Q⟩
   by_cases hPQ : P.leadingCoeff / Q.leadingCoeff = 0
   · simp only [div_eq_mul_inv, inv_eq_zero, mul_eq_zero] at hPQ
-    cases' hPQ with hP0 hQ0
+    rcases hPQ with hP0 | hQ0
     · rw [leadingCoeff_eq_zero.1 hP0, degree_zero]
       exact bot_lt_iff_ne_bot.2 fun hQ' => hQ (degree_eq_bot.1 hQ')
     · exact absurd (leadingCoeff_eq_zero.1 hQ0) hQ
   · have := (isEquivalent_atTop_div P Q).tendsto_nhds h
     rw [tendsto_const_mul_zpow_atTop_nhds_iff hPQ] at this
-    cases' this with h h
+    rcases this with h | h
     · exact absurd h.2 hPQ
     · rw [sub_lt_iff_lt_add, zero_add, Int.ofNat_lt] at h
       exact degree_lt_degree h.1
@@ -211,7 +211,7 @@ theorem isBigO_of_degree_le (h : P.degree ≤ Q.degree) :
   · have hq : Q ≠ 0 := ne_zero_of_degree_ge_degree h hp
     have hPQ : ∀ᶠ x : 𝕜 in atTop, eval x Q = 0 → eval x P = 0 :=
       Filter.mem_of_superset (Polynomial.eventually_no_roots Q hq) fun x h h' => absurd h' h
-    cases' le_iff_lt_or_eq.mp h with h h
+    rcases le_iff_lt_or_eq.mp h with h | h
     · exact isBigO_of_div_tendsto_nhds hPQ 0 (div_tendsto_zero_of_degree_lt P Q h)
     · exact isBigO_of_div_tendsto_nhds hPQ _ (div_tendsto_leadingCoeff_div_of_degree_eq P Q h)
 

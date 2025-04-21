@@ -29,8 +29,6 @@ universe u
 
 open CategoryTheory Limits CompHausLike
 
-attribute [local instance] HasForget.instFunLike
-
 namespace CompHaus
 
 open List in

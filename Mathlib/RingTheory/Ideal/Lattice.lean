@@ -32,6 +32,14 @@ namespace Ideal
 
 variable [Semiring α] (I : Ideal α) {a b : α}
 
+instance (priority := low) : IsTwoSided (⊥ : Ideal α) :=
+  ⟨fun _ h ↦ by rw [h, zero_mul]; exact zero_mem _⟩
+
+instance (priority := low) : IsTwoSided (⊤ : Ideal α) := ⟨fun _ _ ↦ trivial⟩
+
+instance (priority := low) {ι} (I : ι → Ideal α) [∀ i, (I i).IsTwoSided] : (⨅ i, I i).IsTwoSided :=
+  ⟨fun _ h ↦ (Submodule.mem_iInf _).mpr (mul_mem_right _ _ <| (Submodule.mem_iInf _).mp h ·)⟩
+
 theorem eq_top_of_unit_mem (x y : α) (hx : x ∈ I) (h : y * x = 1) : I = ⊤ :=
   eq_top_iff.2 fun z _ =>
     calc

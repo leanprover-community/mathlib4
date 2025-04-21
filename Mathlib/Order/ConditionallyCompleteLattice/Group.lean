@@ -12,6 +12,25 @@ import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
 
 -/
 
+open Set
+
+section Mul
+
+variable {α : Type*} {ι : Sort*} [Nonempty ι] [ConditionallyCompleteLattice α] [Mul α]
+
+@[to_additive]
+lemma ciSup_mul_le_ciSup_mul_ciSup [MulLeftMono α] [MulRightMono α]
+    {f g : ι → α} (hf : BddAbove (range f)) (hg : BddAbove (range g)) :
+    ⨆ i, f i * g i ≤ (⨆ i, f i) * ⨆ i, g i :=
+  ciSup_le fun i ↦ mul_le_mul' (le_ciSup hf i) (le_ciSup hg i)
+
+@[to_additive]
+lemma ciInf_mul_ciInf_le_ciInf_mul [MulLeftMono α] [MulRightMono α]
+    {f g : ι → α} (hf : BddBelow (range f)) (hg : BddBelow (range g)) :
+    (⨅ i, f i) * ⨅ i, g i ≤ ⨅ i, f i * g i :=
+  le_ciInf fun i ↦ mul_le_mul' (ciInf_le hf i) (ciInf_le hg i)
+
+end Mul
 
 section Group
 

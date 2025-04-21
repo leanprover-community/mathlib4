@@ -42,7 +42,6 @@ theorem cons_zero : cons y s 0 = y :=
 
 @[simp]
 theorem cons_succ : cons y s i.succ = s i :=
-  -- Porting note: was Fin.cons_succ _ _ _
   rfl
 
 @[simp]

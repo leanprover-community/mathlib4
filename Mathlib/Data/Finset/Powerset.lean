@@ -3,7 +3,8 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Lattice.Fold
+import Mathlib.Data.Finset.Card
+import Mathlib.Data.Finset.Lattice.Union
 import Mathlib.Data.Multiset.Powerset
 import Mathlib.Data.Set.Pairwise.Lattice
 
@@ -86,7 +87,7 @@ theorem powerset_insert [DecidableEq α] (s : Finset α) (a : α) :
   · constructor
     · exact fun H => Or.inr ⟨_, H, insert_erase h⟩
     · intro H
-      cases' H with H H
+      rcases H with H | H
       · exact Subset.trans (erase_subset a t) H
       · rcases H with ⟨u, hu⟩
         rw [← hu.2]
@@ -296,7 +297,9 @@ theorem powersetCard_sup [DecidableEq α] (u : Finset α) (n : ℕ) (hn : n < u.
 theorem powersetCard_map {β : Type*} (f : α ↪ β) (n : ℕ) (s : Finset α) :
     powersetCard n (s.map f) = (powersetCard n s).map (mapEmbedding f).toEmbedding :=
   ext fun t => by
-    simp only [card_map, mem_powersetCard, le_eq_subset, gt_iff_lt, mem_map, mapEmbedding_apply]
+    -- `le_eq_subset` is a dangerous lemma since it turns the type `↪o` into `(· ⊆ ·) ↪r (· ⊆ ·)`,
+    -- which makes `simp` have trouble working with `mapEmbedding_apply`.
+    simp only [mem_powersetCard, mem_map, RelEmbedding.coe_toEmbedding, mapEmbedding_apply]
     constructor
     · classical
       intro h
@@ -308,10 +311,7 @@ theorem powersetCard_map {β : Type*} (f : α ↪ β) (n : ℕ) (s : Finset α) 
       refine ⟨_, ?_, this⟩
       rw [← card_map f, this, h.2]; simp
     · rintro ⟨a, ⟨has, rfl⟩, rfl⟩
-      dsimp [RelEmbedding.coe_toEmbedding]
-      -- Porting note: Why is `rw` required here and not `simp`?
-      rw [mapEmbedding_apply]
-      simp [has]
+      simp only [map_subset_map, has, card_map, and_self]
 
 end powersetCard
 

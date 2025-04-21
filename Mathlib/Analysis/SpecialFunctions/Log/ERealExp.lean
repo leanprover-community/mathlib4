@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pietro Monticone, Rémy Degenne, Lorenzo Luccioli
 -/
 import Mathlib.Data.Complex.Exponential
-import Mathlib.Data.Real.EReal
+import Mathlib.Data.EReal.Basic
 
 /-!
 # Extended Nonnegative Real Exponential

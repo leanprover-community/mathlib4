@@ -26,14 +26,14 @@ by `A`, we define a `CommShift` structure by `A` on `OppositeShift.functor A F`.
 way, we can make this an instance and reserve `F.op` for the `CommShift` instance by
 the modified shift in the case of (pre)triangulated categories.
 
-Similarly,if `τ` is a natural transformation between functors `F,G : C ⥤ D`, we define
+Similarly, if `τ` is a natural transformation between functors `F,G : C ⥤ D`, we define
 a type synonym for `τ.op` called
 `OppositeShift.natTrans A τ : OppositeShift.functor A F ⟶ OppositeShift.functor A G`.
 When `τ` has a `CommShift` structure by `A` (i.e. is compatible with `CommShift` structures
 on `F` and `G`), we define a `CommShift` structure by `A` on `OppositeShift.natTrans A τ`.
 
 Finally, if we have an adjunction `F ⊣ G` (with `G : D ⥤ C`), we define a type synonym
-`OppositeShift.adjunction A adj :  OppositeShift.functor A G ⊣ OppositeShift.functor A F`
+`OppositeShift.adjunction A adj : OppositeShift.functor A G ⊣ OppositeShift.functor A F`
 for `adj.op`, and we show that, if `adj` compatible with `CommShift` structures
 on `F` and `G`, then `OppositeShift.adjunction A adj` is also compatible with the pulled back
 `CommShift` structures.
@@ -168,7 +168,6 @@ noncomputable instance commShiftOp [CommShift F A] :
     CommShift (OppositeShift.functor A F) A where
   iso a := (NatIso.op (F.commShiftIso a)).symm
   zero := by
-    simp only
     rw [commShiftIso_zero]
     ext
     simp only [op_obj, comp_obj, Iso.symm_hom, NatIso.op_inv, NatTrans.op_app,
@@ -176,7 +175,6 @@ noncomputable instance commShiftOp [CommShift F A] :
     erw [oppositeShiftFunctorZero_inv_app, oppositeShiftFunctorZero_hom_app]
     rfl
   add a b := by
-    simp only
     rw [commShiftIso_add]
     ext
     simp only [op_obj, comp_obj, Iso.symm_hom, NatIso.op_inv, NatTrans.op_app,
@@ -196,7 +194,6 @@ noncomputable def commShiftUnop
     [CommShift (OppositeShift.functor A F) A] : CommShift F A where
   iso a := NatIso.removeOp ((OppositeShift.functor A F).commShiftIso a).symm
   zero := by
-    simp only
     rw [commShiftIso_zero]
     ext
     simp only [comp_obj, NatIso.removeOp_hom, Iso.symm_hom, NatTrans.removeOp_app, op_obj,
@@ -204,7 +201,6 @@ noncomputable def commShiftUnop
     erw [oppositeShiftFunctorZero_hom_app, oppositeShiftFunctorZero_inv_app]
     rfl
   add a b := by
-    simp only
     rw [commShiftIso_add]
     ext
     simp only [comp_obj, NatIso.removeOp_hom, Iso.symm_hom, NatTrans.removeOp_app, op_obj,
@@ -274,7 +270,7 @@ end NatTrans
 The adjunction `adj`, seen as an adjunction between `OppositeShift.functor G`
 and `OppositeShift.functor F`.
 -/
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp]
 def OppositeShift.adjunction {F} {G : D ⥤ C} (adj : F ⊣ G) :
     OppositeShift.functor A G ⊣ OppositeShift.functor A F where
   unit := (NatTrans.OppositeShift.natIsoId D A).hom ≫

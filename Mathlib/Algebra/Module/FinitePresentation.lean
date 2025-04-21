@@ -5,12 +5,12 @@ Authors: Andrew Yang
 -/
 import Mathlib.Algebra.Small.Module
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.LinearAlgebra.Isomorphisms
+import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.RingTheory.Finiteness.Projective
-import Mathlib.RingTheory.Finiteness.TensorProduct
 import Mathlib.RingTheory.Localization.BaseChange
 import Mathlib.RingTheory.Noetherian.Basic
+import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
 
@@ -241,12 +241,94 @@ lemma Module.finitePresentation_of_ker [Module.FinitePresentation R N]
     LinearMap.ker_eq_bot.mpr (Submodule.injective_subtype (LinearMap.ker l)), Submodule.comap_bot]
   exact (Module.FinitePresentation.fg_ker f hf).map (Submodule.subtype _)
 
+/-- Given a split exact sequence `0 → M → N → P → 0` with `N` finitely presented,
+then `M` is also finitely presented. -/
+lemma Module.finitePresentation_of_split_exact
+    {P : Type*} [AddCommGroup P] [Module R P]
+    [Module.FinitePresentation R N]
+    (f : M →ₗ[R] N) (g : N →ₗ[R] P) (l : P →ₗ[R] N) (hl : g ∘ₗ l = .id)
+    (hf : Function.Injective f) (H : Function.Exact f g) :
+    Module.FinitePresentation R M := by
+  have hg : Function.Surjective g := Function.LeftInverse.surjective (DFunLike.congr_fun hl)
+  have := Module.Finite.of_surjective g hg
+  obtain ⟨e, rfl, rfl⟩ := ((Function.Exact.split_tfae' H).out 0 2 rfl rfl).mp
+    ⟨hf, l, hl⟩
+  refine Module.finitePresentation_of_surjective (LinearMap.fst _ _ _ ∘ₗ e.toLinearMap)
+    (Prod.fst_surjective.comp e.surjective) ?_
+  rw [LinearMap.ker_comp, Submodule.comap_equiv_eq_map_symm,
+    LinearMap.exact_iff.mp Function.Exact.inr_fst, ← Submodule.map_top]
+  exact .map _ (.map _ (Module.Finite.fg_top))
+
+/-- Given an exact sequence `0 → M → N → P → 0`
+with `N` finitely presented and `P` projective, then `M` is also finitely presented. -/
+lemma Module.finitePresentation_of_projective_of_exact
+    {P : Type*} [AddCommGroup P] [Module R P]
+    [Module.FinitePresentation R N] [Module.Projective R P]
+    (f : M →ₗ[R] N) (g : N →ₗ[R] P)
+    (hf : Function.Injective f) (hg : Function.Surjective g) (H : Function.Exact f g) :
+    Module.FinitePresentation R M :=
+  have ⟨l, hl⟩ := Module.projective_lifting_property g .id hg
+  Module.finitePresentation_of_split_exact f g l hl hf H
+
+lemma Module.FinitePresentation.of_equiv (e : M ≃ₗ[R] N) [Module.FinitePresentation R M] :
+    Module.FinitePresentation R N := by
+  simp [← Module.FinitePresentation.fg_ker_iff e.toLinearMap e.surjective, Submodule.fg_bot]
+
+lemma LinearEquiv.finitePresentation_iff (e : M ≃ₗ[R] N) :
+    Module.FinitePresentation R M ↔ Module.FinitePresentation R N :=
+  ⟨fun _ ↦ .of_equiv e, fun _ ↦ .of_equiv e.symm⟩
+
+namespace Module.FinitePresentation
+
+variable (M) in
+instance (priority := 900) of_subsingleton [Subsingleton M] :
+    Module.FinitePresentation R M :=
+  .of_equiv (default : (Fin 0 → R) ≃ₗ[R] M)
+
+variable (M N) in
+instance prod [Module.FinitePresentation R M] [Module.FinitePresentation R N] :
+    Module.FinitePresentation R (M × N) := by
+  have hf : Function.Surjective (LinearMap.fst R M N) := LinearMap.fst_surjective
+  have : FinitePresentation R ↥(LinearMap.ker (LinearMap.fst R M N)) := by
+    rw [LinearMap.ker_fst]
+    exact .of_equiv (LinearEquiv.ofInjective (LinearMap.inr R M N) LinearMap.inr_injective)
+  apply Module.finitePresentation_of_ker (.fst R M N) hf
+
+instance pi {ι : Type*} (M : ι → Type*)
+    [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)] [∀ i, Module.FinitePresentation R (M i)]
+    [Finite ι] : Module.FinitePresentation R (∀ i, M i) := by
+  refine Module.pi_induction' (motive := fun N _ _ ↦ Module.FinitePresentation R N)
+      (motive' := fun N _ _ ↦ Module.FinitePresentation R N) R ?_ ?_ ?_ ?_ M inferInstance
+  · exact fun e (hN : Module.FinitePresentation _ _) ↦ .of_equiv e
+  · exact fun e (hN : Module.FinitePresentation _ _) ↦ .of_equiv e
+  · infer_instance
+  · introv hN hN'
+    infer_instance
+
+end Module.FinitePresentation
+
 end Ring
 
 section CommRing
 
 variable {R M N N'} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 variable [AddCommGroup N'] [Module R N'] (S : Submonoid R) (f : N →ₗ[R] N') [IsLocalizedModule S f]
+
+variable (R M) in
+lemma Module.FinitePresentation.trans (S : Type*) [CommRing S] [Algebra R S]
+    [Module S M] [IsScalarTower R S M] [Module.FinitePresentation R S]
+    [Module.FinitePresentation S M] : Module.FinitePresentation R M := by
+  obtain ⟨n, K, e, hK⟩ := Module.FinitePresentation.exists_fin S M
+  let f : (Fin n → S) →ₗ[R] M := (e.symm ∘ₗ K.mkQ).restrictScalars R
+  refine Module.finitePresentation_of_surjective f (fun m ↦ ?_) ?_
+  · obtain ⟨a, ha⟩ := K.mkQ_surjective (e m)
+    exact ⟨a, by simp [f, ha]⟩
+  · have : Module.Finite S
+        (Submodule.restrictScalars R (LinearMap.ker (e.symm.toLinearMap ∘ₗ K.mkQ))) := by
+      show Module.Finite S (LinearMap.ker (e.symm.toLinearMap ∘ₗ K.mkQ))
+      simpa [Finite.iff_fg]
+    simp only [f, LinearMap.ker_restrictScalars, ← Module.Finite.iff_fg]
+    exact Module.Finite.trans S _
 
 open TensorProduct in
 instance {A} [CommRing A] [Algebra R A] [Module.FinitePresentation R M] :

@@ -116,7 +116,7 @@ class IsGood : Prop where
   cofibration_i : Cofibration P.i := by infer_instance
 
 /-- A good cylinder object `P` is very good if `P.σ` is a (trivial) fibration. -/
-class IsVeryGood extends P.IsGood : Prop where
+class IsVeryGood : Prop extends P.IsGood where
   fibration_σ : Fibration P.σ := by infer_instance
 
 attribute [instance] IsGood.cofibration_i IsVeryGood.fibration_σ

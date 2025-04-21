@@ -3,9 +3,10 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Violeta Hernández Palacios, Grayson Burton, Floris van Doorn
 -/
+import Mathlib.Order.Antisymmetrization
+import Mathlib.Order.Hom.WithTopBot
 import Mathlib.Order.Interval.Set.OrdConnected
 import Mathlib.Order.Interval.Set.WithBotTop
-import Mathlib.Order.Antisymmetrization
 
 /-!
 # The covering relation
@@ -223,9 +224,6 @@ theorem denselyOrdered_iff_forall_not_covBy : DenselyOrdered α ↔ ∀ a b : α
   ⟨fun h _ _ => @not_covBy _ _ _ _ h, fun h =>
     ⟨fun _ _ hab => exists_lt_lt_of_not_covBy hab <| h _ _⟩⟩
 
-@[deprecated (since := "2024-04-04")]
-alias densely_ordered_iff_forall_not_covBy := denselyOrdered_iff_forall_not_covBy
-
 @[simp]
 theorem toDual_covBy_toDual_iff : toDual b ⋖ toDual a ↔ a ⋖ b :=
   and_congr_right' <| forall_congr' fun _ => forall_swap
@@ -442,6 +440,19 @@ lemma LT.lt.exists_disjoint_Iio_Ioi (h : a < b) :
     exact ⟨c, ha, c, hb, fun _ h₁ _ => lt_trans h₁⟩
 
 end LinearOrder
+
+namespace Bool
+
+@[simp] theorem wcovBy_iff : ∀ {a b : Bool}, a ⩿ b ↔ a ≤ b := by unfold WCovBy; decide
+@[simp] theorem covBy_iff : ∀ {a b : Bool}, a ⋖ b ↔ a < b := by unfold CovBy; decide
+
+instance instDecidableRelWCovBy : DecidableRel (· ⩿ · : Bool → Bool → Prop) := fun _ _ ↦
+  decidable_of_iff _ wcovBy_iff.symm
+
+instance instDecidableRelCovBy : DecidableRel (· ⋖ · : Bool → Bool → Prop) := fun _ _ ↦
+  decidable_of_iff _ covBy_iff.symm
+
+end Bool
 
 namespace Set
 variable {s t : Set α} {a : α}

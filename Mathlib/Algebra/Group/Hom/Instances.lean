@@ -78,7 +78,7 @@ theorem AddMonoid.End.zero_apply [AddCommMonoid M] (m : M) : (0 : AddMonoid.End 
   rfl
 
 -- Note: `@[simp]` omitted because `(1 : AddMonoid.End M) = id` by `AddMonoid.End.coe_one`
-theorem AddMonoid.End.one_apply [AddCommMonoid M] (m : M) : (1 : AddMonoid.End M) m = m :=
+theorem AddMonoid.End.one_apply [AddZeroClass M] (m : M) : (1 : AddMonoid.End M) m = m :=
   rfl
 
 instance AddMonoid.End.instAddCommGroup [AddCommGroup M] : AddCommGroup (AddMonoid.End M) :=
@@ -92,9 +92,6 @@ instance AddMonoid.End.instIntCast [AddCommGroup M] : IntCast (AddMonoid.End M) 
 theorem AddMonoid.End.intCast_apply [AddCommGroup M] (z : ℤ) (m : M) :
     (↑z : AddMonoid.End M) m = z • m :=
   rfl
-
-@[deprecated (since := "2024-04-17")]
-alias AddMonoid.End.int_cast_apply := AddMonoid.End.intCast_apply
 
 @[to_additive (attr := simp)] lemma MonoidHom.pow_apply {M N : Type*} [MulOneClass M]
     [CommMonoid N] (f : M →* N) (n : ℕ) (x : M) :
