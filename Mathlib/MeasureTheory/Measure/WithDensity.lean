@@ -651,8 +651,8 @@ theorem prod_withDensity_left {f : α → ℝ≥0∞} (hf : Measurable f) :
 theorem prod_withDensity_right₀ {g : β → ℝ≥0∞} (hg : AEMeasurable g ν) :
     μ.prod (ν.withDensity g) = (μ.prod ν).withDensity (fun z ↦ g z.2) := by
   refine ext_of_lintegral _ fun φ hφ ↦ ?_
-  rw[lintegral_prod _ hφ.aemeasurable, lintegral_withDensity_eq_lintegral_mul₀ _ hφ.aemeasurable,
-    lintegral_prod _ _]
+  rw [lintegral_prod _ hφ.aemeasurable, lintegral_withDensity_eq_lintegral_mul₀ _ hφ.aemeasurable,
+    lintegral_prod]
   · refine lintegral_congr (fun x ↦ ?_)
     rw[lintegral_withDensity_eq_lintegral_mul₀ hg (by fun_prop)]
     simp
