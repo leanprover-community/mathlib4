@@ -637,8 +637,8 @@ variable {β : Type*} {mβ : MeasurableSpace β} {ν : Measure β} [SFinite ν]
 theorem prod_withDensity_left₀ {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) :
     (μ.withDensity f).prod ν = (μ.prod ν).withDensity (fun z ↦ f z.1) := by
   refine ext_of_lintegral _ fun φ hφ ↦ ?_
-  rw [lintegral_prod _ hφ.aemeasurable, lintegral_withDensity_eq_lintegral_mul₀ hf ?_,
-    lintegral_withDensity_eq_lintegral_mul₀ ?_ hφ.aemeasurable, lintegral_prod _ ?_]
+  rw [lintegral_prod _ hφ.aemeasurable, lintegral_withDensity_eq_lintegral_mul₀ hf,
+    lintegral_withDensity_eq_lintegral_mul₀ _ hφ.aemeasurable, lintegral_prod]
   · refine lintegral_congr (fun x ↦ ?_)
     rw [Pi.mul_apply, ← lintegral_const_mul'' _ (by fun_prop)]
     simp
