@@ -648,7 +648,7 @@ lemma decompose_ij (i j : Fin (q * q)) : i = j ↔
 def ρ : Fin (q * q) → ℂ := fun i => by
   let a : ℕ := (finProdFinEquiv.symm.1 i).1 + 1
   let b : ℕ := (finProdFinEquiv.symm.1 i).2 + 1
-  exact (a + (b • β)) * log α
+  exact (a + (b • β)) * Complex.log α
 
 include hirr htriv in
 lemma hdistinct : ∀ (i j : Fin (q * q)), i ≠ j → ρ α β q i ≠ ρ α β q j := by
@@ -1000,24 +1000,50 @@ lemma sys_coeffs_bar :
     have : σ γ' = α^β := by {
       rw [habc.2.2]}
     rw [this]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    have : Complex.exp (Complex.log α) = α := by {
+      apply Complex.exp_log
+      exact htriv.1}
+    --rw [cpow_def_of_ne_zero]
+    rw [← cpow_nat_mul]
+    have : cexp ((↑a + b • β) * Complex.log α * ↑l) = α ^ (a * l) * α ^ (↑(b * l) * β) ↔
+      cexp ((↑a + b • β) * Complex.log α * ↑l) = α ^ ((a * l) + (↑(b * l) * β)) := by {
+        rw [cpow_add]
+        simp only [nsmul_eq_mul, Nat.cast_mul]
+        norm_cast
+        exact htriv.1
+      }
+    rw [this]
+    rw [cpow_def_of_ne_zero]
+    have : Complex.log α * (↑a * ↑l + ↑(b * l) * β) = (↑a + b • β) * Complex.log α * ↑l := by {
+      --nth_rw 2 [mul_add]
+      -- rw [add_mul]
+      -- rw [this]
+      have :  Complex.log α * (↑a * ↑l + ↑(l * b) * β) =
+        Complex.log α * (↑a * ↑l + ↑(b * l) * β) := by {
+        nth_rw 4 [mul_comm]
+      }
+      rw [← this]
+      have : ( ↑(l * b) * β) =
+         ( ↑((b * β) * l)) := by {
+          simp only [Nat.cast_mul]
+          exact mul_rotate (↑l) (↑b) β
+         }
+      rw [this]
+      have : (↑a * ↑l + ((b * β) * l)) = ((↑a  + (b * β)) * l) := by {
+        exact Eq.symm (RightDistribClass.right_distrib (↑a) (↑b * β) ↑l)
+      }
+      rw [this]
+      rw [mul_comm]
+      rw [mul_assoc]
+      nth_rw 3 [mul_comm]
+      rw [← mul_assoc]
+      rw [nsmul_eq_mul]
+    }
+    rw [this]
+    exact htriv.1
   }
 
 
-#exit
 lemma sys_coeffs_foo :
   let l : ℕ := (finProdFinEquiv.symm.1 u).1 + 1
   let k : ℕ := (finProdFinEquiv.symm.1 u).2
@@ -1035,11 +1061,9 @@ lemma sys_coeffs_foo :
   rw [mul_assoc]
   simp only [mul_eq_mul_left_iff, map_eq_zero, FaithfulSMul.algebraMap_eq_zero_iff]
   left
-  exact sys_coeffs_bar α β htriv K σ α' β' γ' habc q u t
-}
+  exact sys_coeffs_bar α β htriv K σ α' β' γ' habc q u t}
 
 --lemma sys_coeffs_eq_ : (log α)^(k : ℤ)  * logaRy(l) = sorry
-#check apply_eq_zero_of_lt_order
 
 include α β σ hq0 h2mq hd hirr htriv σ α' β' γ' habc h2mq  in
 lemma iteratedDeriv_vanishes :
