@@ -104,7 +104,7 @@ lemma exist_mem_ann_isSMulRegular_of_hom_subsingleton_nontrivial [IsNoetherianRi
   by_contra! h
   have hexist : ∃ p ∈ associatedPrimes R M, Module.annihilator R N ≤ p := by
     rcases associatedPrimes.nonempty R M with ⟨Ia, hIa⟩
-    apply (Ideal.subset_union_prime_finite (AssociatedPrimes.finite_of_noetherian R M) Ia Ia _).mp
+    apply (Ideal.subset_union_prime_finite (associatedPrimes.finite R M) Ia Ia _).mp
     · rw [biUnion_associatedPrimes_eq_compl_regular R M]
       exact fun r hr ↦ h r hr
     · exact fun I hin _ _ ↦ IsAssociatedPrime.isPrime hin
@@ -204,7 +204,7 @@ lemma lemma222_3_to_4 [IsNoetherianRing R] (I : Ideal R) (n : ℕ) :
     rw [Module.support_eq_zeroLocus, PrimeSpectrum.zeroLocus_eq_iff] at h_supp'
     have : Subsingleton (N →ₗ[R] M) :=
       let _ := h_ext 0 n.zero_lt_succ
-      let _ : Subsingleton (N ⟶ M) := (homEquiv₀_hom N M).symm.subsingleton
+      let _ : Subsingleton (N ⟶ M) := Ext.addEquiv₀.symm.subsingleton
       (ModuleCat.homAddEquiv (M := N) (N := M)).symm.subsingleton
     rcases exist_mem_ann_isSMulRegular_of_hom_subsingleton this with ⟨x, mem_ann, hx⟩
     have := Ideal.le_radical mem_ann
@@ -317,7 +317,7 @@ lemma lemma222_4_to_1 [IsNoetherianRing R] (I : Ideal R) (n : ℕ) (N : ModuleCa
         have : Subsingleton (N →ₗ[R] M) := hom_subsingleton_of_mem_ann_isSMulRegular
           (IsSMulRegular.pow k reg.1) hk
         have : Subsingleton (N ⟶ M) := ModuleCat.homEquiv.subsingleton
-        exact (homEquiv₀_hom N M).subsingleton
+        exact Ext.addEquiv₀.subsingleton
       · have lt : i - 1 < n := by omega
         let g := (AddCommGrp.ofHom ((Ext.mk₀ (SMul_ShortComplex M a).f).postcomp N (add_zero i)))
         have mono_g : Mono g := by
