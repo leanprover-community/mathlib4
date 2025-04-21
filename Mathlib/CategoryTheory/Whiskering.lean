@@ -225,6 +225,11 @@ lemma isoWhiskerLeft_symm (F : C ⥤ D) {G H : D ⥤ E} (α : G ≅ H) :
     (isoWhiskerLeft F α).symm = isoWhiskerLeft F α.symm :=
   rfl
 
+@[simp]
+lemma isoWhiskerLeft_refl (F : C ⥤ D) (G : D ⥤ E) :
+    isoWhiskerLeft F (Iso.refl G) = Iso.refl _ :=
+  rfl
+
 /-- If `α : G ≅ H` then
 `isoWhiskerRight α F : (G ⋙ F) ≅ (H ⋙ F)` has components `F.map_iso (α.app X)`.
 -/
@@ -244,6 +249,11 @@ theorem isoWhiskerRight_inv {G H : C ⥤ D} (α : G ≅ H) (F : D ⥤ E) :
 lemma isoWhiskerRight_symm {G H : C ⥤ D} (α : G ≅ H) (F : D ⥤ E) :
     (isoWhiskerRight α F).symm = isoWhiskerRight α.symm F :=
   rfl
+
+@[simp]
+lemma isoWhiskerRight_refl (F : C ⥤ D) (G : D ⥤ E) :
+    isoWhiskerRight (Iso.refl F) G = Iso.refl _ := by
+  aesop_cat
 
 instance isIso_whiskerLeft (F : C ⥤ D) {G H : D ⥤ E} (α : G ⟶ H) [IsIso α] :
     IsIso (whiskerLeft F α) :=
