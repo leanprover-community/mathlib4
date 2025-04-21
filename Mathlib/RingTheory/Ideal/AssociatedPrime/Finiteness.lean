@@ -51,8 +51,7 @@ omit [Module.Finite A M]
 /-- A `Prop` asserting that two submodules `N₁, N₂` satisfy `N₁ ≤ N₂` and
 `N₂ / N₁` is isomorphic to `A / p` for some prime ideal `p` of `A`. -/
 def Submodule.IsQuotientEquivQuotientPrime (N₁ N₂ : Submodule A M) :=
-  ∃ (h : N₁ ≤ N₂) (p : PrimeSpectrum A),
-    Nonempty ((↥N₂ ⧸ LinearMap.range (Submodule.inclusion h)) ≃ₗ[A] A ⧸ p.1)
+  N₁ ≤ N₂ ∧ ∃ (p : PrimeSpectrum A), Nonempty ((↥N₂ ⧸ N₁.submoduleOf N₂) ≃ₗ[A] A ⧸ p.1)
 
 private theorem aux (h : N ≠ ⊤) :
     ∃ (p : PrimeSpectrum A) (f : A ⧸ p.1 →ₗ[A] M ⧸ N), Function.Injective f := by
@@ -148,11 +147,7 @@ private theorem isQuotientEquivQuotientPrime_auxSeq_of_ne_top (h : auxSeq A M n 
     ((LinearMap.range (auxLinearMap h)).comapRestrict (auxSeq A M n).mkQ
       |>.quotKerEquivOfSurjective ((LinearMap.range (auxLinearMap h))
         |>.comapRestrict_surjective_of_surjective _ (auxSeq A M n).mkQ_surjective))
-  rw [Submodule.comapRestrict, LinearMap.ker_restrict, Submodule.ker_mkQ]
-  ext ⟨x, _⟩
-  simp only [LinearMap.mem_range, Subtype.exists, Submodule.mem_comap, Submodule.subtype_apply]
-  refine ⟨fun ⟨a, h1, h2⟩ ↦ ?_, fun h2 ↦ ⟨x, h2, rfl⟩⟩
-  rwa [← show a = x from congr($(h2).1)]
+  simp [Submodule.submoduleOf, Submodule.comapRestrict, LinearMap.ker_restrict, Submodule.ker_mkQ]
 
 end
 
@@ -218,12 +213,9 @@ theorem IsNoetherianRing.induction_on_isQuotientEquivQuotientPrime
   | succ n ih =>
     specialize ih (n.lt_add_one.trans h)
     obtain ⟨hle, p, ⟨f⟩⟩ := s.step ⟨n, (add_lt_add_iff_right _).1 h⟩
-    replace ih := equiv _ _ (LinearEquiv.ofInjective (Submodule.inclusion hle)
-      (Submodule.inclusion_injective hle)) ih
-    exact exact _ _ _ (LinearMap.range (Submodule.inclusion hle)).subtype
-      (LinearMap.range (Submodule.inclusion hle)).mkQ
-      (Submodule.injective_subtype _) (Submodule.mkQ_surjective _)
-      (LinearMap.exact_subtype_mkQ (LinearMap.range (Submodule.inclusion hle))) ih (quotient _ p f)
+    replace ih := equiv _ _ (Submodule.submoduleOfEquivOfLe hle).symm ih
+    exact exact _ _ _ _ _ (Submodule.injective_subtype _) (Submodule.mkQ_surjective _)
+      (LinearMap.exact_subtype_mkQ _) ih (quotient _ p f)
 
 /-- If `0 → M → M' → M''` is an exact sequence, then the set of associated primes of `M'` is
 contained in the union of those of `M` and `M''`. -/
