@@ -587,29 +587,37 @@ lemma corootSpan_mem_invtSubmodule_coreflection (i : ι) :
     P.corootSpan ∈ Module.End.invtSubmodule (P.coreflection i) :=
   P.flip.rootSpan_mem_invtSubmodule_reflection i
 
-lemma coe_rootSpan_dualAnnihilator_map :
-    P.rootSpan.dualAnnihilator.map P.toDualRight.symm = {x | ∀ i, P.root' i x = 0} := by
+lemma rootSpan_dualAnnihilator_map_eq_iInf_ker_root' :
+    P.rootSpan.dualAnnihilator.map P.toDualRight.symm = ⨅ i, LinearMap.ker (P.root' i) := by
+  suffices P.rootSpan.dualAnnihilator.map P.toDualRight.symm = {x | ∀ i, P.root' i x = 0} from
+    SetLike.coe_injective <| by ext; simp [this]
   ext x
   rw [rootSpan, Submodule.map_coe, Submodule.coe_dualAnnihilator_span]
   change x ∈ P.toDualRight.toEquiv.symm '' _ ↔ _
   rw [← Equiv.setOf_apply_symm_eq_image_setOf, Equiv.symm_symm]
   simp [Set.range_subset_iff]
 
-lemma coe_corootSpan_dualAnnihilator_map :
-    P.corootSpan.dualAnnihilator.map P.toDualLeft.symm = {x | ∀ i, P.coroot' i x = 0} :=
-  P.flip.coe_rootSpan_dualAnnihilator_map
+lemma corootSpan_dualAnnihilator_map_eq_iInf_ker_coroot' :
+    P.corootSpan.dualAnnihilator.map P.toDualLeft.symm = ⨅ i, LinearMap.ker (P.coroot' i) :=
+  P.flip.rootSpan_dualAnnihilator_map_eq_iInf_ker_root'
 
 lemma rootSpan_dualAnnihilator_map_eq :
     P.rootSpan.dualAnnihilator.map P.toDualRight.symm =
-      (span R (range P.root')).dualCoannihilator := by
-  apply SetLike.coe_injective
-  rw [Submodule.coe_dualCoannihilator_span, coe_rootSpan_dualAnnihilator_map]
-  simp
+      (span R (range P.root')).dualCoannihilator :=
+  SetLike.coe_injective <| by ext; simp [P.rootSpan_dualAnnihilator_map_eq_iInf_ker_root']
 
 lemma corootSpan_dualAnnihilator_map_eq :
     P.corootSpan.dualAnnihilator.map P.toDualLeft.symm =
       (span R (range P.coroot')).dualCoannihilator :=
   P.flip.rootSpan_dualAnnihilator_map_eq
+
+lemma iInf_ker_root'_eq :
+    ⨅ i, LinearMap.ker (P.root' i) = (span R (range P.root')).dualCoannihilator := by
+  rw [← rootSpan_dualAnnihilator_map_eq, rootSpan_dualAnnihilator_map_eq_iInf_ker_root']
+
+lemma iInf_ker_coroot'_eq :
+    ⨅ i, LinearMap.ker (P.coroot' i) = (span R (range P.coroot')).dualCoannihilator :=
+  P.flip.iInf_ker_root'_eq
 
 lemma mem_range_root_of_mem_range_reflection_of_mem_range_root
     {r : M ≃ₗ[R] M} {α : M} (hr : r ∈ range P.reflection) (hα : α ∈ range P.root) :
@@ -681,6 +689,26 @@ lemma _root_.RootSystem.reflection_perm_eq_reflection_perm_iff (P : RootSystem �
   refine ⟨fun h ↦ ?_, fun h ↦ Equiv.ext fun k ↦ P.root.injective <| by simp [h]⟩
   ext x
   exact (P.reflection_perm_eq_reflection_perm_iff_of_span i j).mp h x <| by simp
+
+@[simp] lemma toDualLeft_comp_root : P.toDualLeft ∘ P.root = P.root' := rfl
+
+@[simp] lemma toDualRight_comp_root : P.toDualRight ∘ P.coroot = P.coroot' := rfl
+
+@[simp] lemma rootSpan_map_toDualLeft :
+    P.rootSpan.map P.toDualLeft = span R (range P.root') := by
+  rw [rootSpan, Submodule.map_span, ← image_univ, ← image_comp, image_univ, toDualLeft_comp_root]
+
+@[simp] lemma corootSpan_map_toDualRight :
+    P.corootSpan.map P.toDualRight = span R (range P.coroot') :=
+  P.flip.rootSpan_map_toDualLeft
+
+@[simp] lemma span_root'_eq_top (P : RootSystem ι R M N) :
+    span R (range P.root') = ⊤ := by
+  simp [← rootSpan_map_toDualLeft]
+
+@[simp] lemma span_coroot'_eq_top (P : RootSystem ι R M N) :
+    span R (range P.coroot') = ⊤ :=
+  span_root'_eq_top P.flip
 
 /-- The Coxeter Weight of a pair gives the weight of an edge in a Coxeter diagram, when it is
 finite.  It is `4 cos² θ`, where `θ` describes the dihedral angle between hyperplanes. -/
