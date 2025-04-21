@@ -303,4 +303,5 @@ instance instSMulCommClass {R : Type*} [Semiring R] [NonUnitalNonAssocSemiring �
     rw [← smul_eq_mul, ← smul_eq_mul, smul_comm]
 
 end AlgebraicStructure
+
 end ZeroAtBotContinuousMap
