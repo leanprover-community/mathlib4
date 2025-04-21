@@ -153,7 +153,7 @@ lemma signedDist_vadd_right_swap : signedDist v p (w +ᵥ q) = signedDist v (-w 
 lemma abs_signedDist_le_dist : |signedDist v p q| ≤ dist p q := by
   rw [signedDist_apply_apply]
   by_cases h : v = 0
-  · simp [h, dist_nonneg]
+  · simp [h]
   · convert abs_real_inner_le_norm (‖v‖⁻¹ • v) (q -ᵥ p)
     field_simp [norm_smul, dist_eq_norm_vsub']
 
