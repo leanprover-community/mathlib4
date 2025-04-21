@@ -35,15 +35,15 @@ open CategoryTheory ConcreteCategory
 /-- The category of topological modules. -/
 structure TopModuleCat extends ModuleCat.{v} R where
   /-- The underlying topological space. -/
-  [isTopologicalSpace : TopologicalSpace carrier]
-  [isIsTopologicalAddGroup : IsTopologicalAddGroup carrier]
-  [isContinuousSMul : ContinuousSMul R carrier]
+  [topologicalSpace : TopologicalSpace carrier]
+  [isTopologicalAddGroup : IsTopologicalAddGroup carrier]
+  [continuousSMul : ContinuousSMul R carrier]
 
 namespace TopModuleCat
 
 noncomputable instance : CoeSort (TopModuleCat.{v} R) (Type v) := ⟨fun M ↦ M.toModuleCat⟩
 
-attribute [instance] TopModuleCat.isTopologicalSpace isIsTopologicalAddGroup isContinuousSMul
+attribute [instance] topologicalSpace isTopologicalAddGroup continuousSMul
 
 /-- Make an object in `TopModuleCat R` from an unbundled topological module. -/
 def of (M : Type v) [AddCommGroup M] [Module R M] [TopologicalSpace M] [ContinuousAdd M]
@@ -130,6 +130,7 @@ instance {X Y : TopModuleCat R} : AddCommGroup (X ⟶ Y) where
 instance : Preadditive (TopModuleCat R) where
   add_comp _ _ _ _ _ _  := ConcreteCategory.ext (ContinuousLinearMap.comp_add _ _ _)
   comp_add _ _ _ _ _ _  := ConcreteCategory.ext (ContinuousLinearMap.add_comp _ _ _)
+
 section
 
 variable {M₁ M₂ : TopModuleCat R}
@@ -137,7 +138,10 @@ variable {M₁ M₂ : TopModuleCat R}
 @[simp] lemma hom_zero : (0 : M₁ ⟶ M₂).hom = 0 := rfl
 @[simp] lemma hom_zero_apply (m : M₁) : (0 : M₁ ⟶ M₂).hom m = 0 := rfl
 @[simp] lemma hom_add (φ₁ φ₂ : M₁ ⟶ M₂) : (φ₁ + φ₂).hom = φ₁.hom + φ₂.hom := rfl
+@[simp] lemma hom_neg (φ : M₁ ⟶ M₂) : (- φ).hom = - φ.hom := rfl
 @[simp] lemma hom_sub (φ₁ φ₂ : M₁ ⟶ M₂) : (φ₁ - φ₂).hom = φ₁.hom - φ₂.hom := rfl
+@[simp] lemma hom_nsmul (n : ℕ) (φ : M₁ ⟶ M₂) : (n • φ).hom = n • φ.hom := rfl
+@[simp] lemma hom_zsmul (n : ℤ) (φ : M₁ ⟶ M₂) : (n • φ).hom = n • φ.hom := rfl
 
 end
 
@@ -198,7 +202,7 @@ variable {M : ModuleCat R} {I : Type*} {X : I → TopModuleCat R} (f : ∀ i, (X
 finest topology that makes it into a topological module and makes every maps continuous. -/
 def coinduced : TopModuleCat R :=
   letI : TopologicalSpace M := sInf { t | @ContinuousSMul R M _ _ t ∧ @ContinuousAdd M t _ ∧
-      ∀ i, (X i).isTopologicalSpace.coinduced (f i) ≤ t }
+      ∀ i, (X i).topologicalSpace.coinduced (f i) ≤ t }
   have : ContinuousAdd M := continuousAdd_sInf fun _ hs ↦ hs.2.1
   have : ContinuousSMul R M := continuousSMul_sInf fun _ hs ↦ hs.1
   .of R M
@@ -258,7 +262,7 @@ variable {M : ModuleCat R} {I : Type*} {X : I → TopModuleCat R} (f : ∀ i, M 
 /-- The induced topology on `M` from a family of continuous linear map from `M`, which is the
 coarsest topology that makes every map continuous. -/
 def induced : TopModuleCat R :=
-  letI : TopologicalSpace M := ⨅ i, (X i).isTopologicalSpace.induced (f i)
+  letI : TopologicalSpace M := ⨅ i, (X i).topologicalSpace.induced (f i)
   have : ContinuousAdd M := continuousAdd_iInf fun _ ↦ continuousAdd_induced _
   have : ContinuousSMul R M := continuousSMul_iInf fun _ ↦ continuousSMul_induced _
   .of R M
