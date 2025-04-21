@@ -42,7 +42,7 @@ def CStarMatrix (m : Type*) (n : Type*) (A : Type*) := Matrix m n A
 
 namespace CStarMatrix
 
-variable {m n A B R S : Type*}
+variable {m n R S A B : Type*}
 
 section basic
 
@@ -103,6 +103,8 @@ theorem conjTranspose_apply [Star A] (M : CStarMatrix m n A) (i j) :
 
 instance instStar [Star A] : Star (CStarMatrix n n A) where
   star M := M.conjTranspose
+
+lemma star_eq_conjTranspose [Star A] {M : CStarMatrix n n A} : star M = M.conjTranspose := rfl
 
 instance instInvolutiveStar [InvolutiveStar A] : InvolutiveStar (CStarMatrix n n A) where
   star_involutive := star_involutive (R := Matrix n n A)
@@ -399,7 +401,7 @@ def reindexₐ (R) (A) [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [M
 lemma mapₗ_reindexₐ [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A] [Module R A]
     [Star A] [AddCommMonoid B] [Mul B] [Module R B] [Star B] {e : m ≃ n} {M : CStarMatrix m m A}
     (φ : A →ₗ[R] B) : reindexₐ R B e (M.mapₗ φ) = ((reindexₐ R A e M).mapₗ φ) := by
-  sorry
+  ext; simp [reindexₐ, reindexₗ]
 
 @[simp]
 theorem conjTranspose_zero [AddMonoid A] [StarAddMonoid A] :
@@ -408,6 +410,21 @@ theorem conjTranspose_zero [AddMonoid A] [StarAddMonoid A] :
 theorem algebraMap_apply [Fintype n] [DecidableEq n] [CommSemiring R] [Semiring A]
     [Algebra R A] {r : R} {i j : n} :
     (algebraMap R (CStarMatrix n n A) r) i j = if i = j then algebraMap R A r else 0 := rfl
+
+variable (R) (A) in
+def toOneByOne [Semiring R] [AddCommMonoid A] [Mul A] [Star A] [Module R A] :
+    A ≃⋆ₐ[R] CStarMatrix (Fin 1) (Fin 1) A where
+  toFun a := fun x y => a
+  invFun M := M 0 0
+  left_inv := by intro; simp
+  right_inv := by
+    intro
+    ext i j
+    simp [Subsingleton.elim i 0, Subsingleton.elim j 0]
+  map_mul' _ _ := by ext; simp [mul_apply]
+  map_add' _ _ := by ext; simp
+  map_star' _ := by ext; simp [star_eq_conjTranspose]
+  map_smul' _ _ := by ext; simp
 
 end basic
 
@@ -889,18 +906,6 @@ lemma fromBlocks_diagonal_le {n m : Type*} [Fintype n] [Fintype m] [DecidableEq 
   change φ (a, b) ≤ φ (a', b')
   gcongr
   simp [ha, hb]
-
-lemma fromBlocks_diagonal_le_iff {n m : Type*} [Fintype n] [Fintype m] [DecidableEq n]
-    [DecidableEq m] {a a' : CStarMatrix n n A} {b b' : CStarMatrix m m A} :
-    fromBlocks a 0 0 b ≤ fromBlocks a' 0 0 b' ↔ a ≤ a' ∧ b ≤ b' := by
-  let φ := prodToBlocksₙ ℂ n m A
-  change φ (a, b) ≤ φ (a', b') ↔ (a, b).1 ≤ a' ∧ (a, b).2 ≤ b'
-  rw [prodToBlocksₙ_strictMono.le_iff_le]
-  refine ⟨fun h => ⟨?a, ?b⟩, fun ⟨ha, hb⟩ => fromBlocks_diagonal_le ha hb⟩
-  case a =>
-    sorry
-  case b =>
-    sorry
 
 lemma fromBlocks_diagonal_nonneg {n m : Type*} [Fintype n] [Fintype m] [DecidableEq n]
     [DecidableEq m] {a : CStarMatrix n n A} {b : CStarMatrix m m A} (ha : 0 ≤ a) (hb : 0 ≤ b) :

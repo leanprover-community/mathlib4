@@ -25,6 +25,22 @@ variable {R A B : Type*} [CommSemiring R] [StarRing R] [NonUnitalRing A] [NonUni
   [StarOrderedRing A] [PartialOrder B] [StarOrderedRing B]
   [StarModule R B]
 
+namespace NonUnitalStarSubalgebra
+
+lemma starOrderedRing (S : NonUnitalStarSubalgebra R A) : StarOrderedRing S where
+  le_iff := by
+    intro x y
+    constructor
+    case mp =>
+      intro hxy
+      
+      sorry
+    case mpr =>
+      sorry
+
+
+end NonUnitalStarSubalgebra
+
 lemma NonUnitalStarAlgHom.strictMono_of_injective {f : A →⋆ₙₐ[R] B}
     (hf : Function.Injective f) : StrictMono f := by
   rw [strictMono_iff_map_pos]
