@@ -232,6 +232,20 @@ protected theorem IsMin.isBot [IsDirected α (· ≥ ·)] (h : IsMin a) : IsBot 
 protected theorem IsMax.isTop [IsDirected α (· ≤ ·)] (h : IsMax a) : IsTop a :=
   h.toDual.isBot
 
+theorem NoBotOrder.noMinOrder_of_isDirected [IsDirected α (· ≥ ·)] [NoBotOrder α] :
+    NoMinOrder α where
+  exists_lt x := by
+    obtain ⟨y, hxy⟩ := exists_not_ge x
+    obtain ⟨z, hzx, hzy⟩ := exists_le_le x y
+    exact ⟨z, lt_of_le_not_le hzx fun hxz => hxy (hxz.trans hzy)⟩
+
+theorem NoTopOrder.noMaxOrder_of_isDirected [IsDirected α (· ≤ ·)] [NoTopOrder α] :
+    NoMaxOrder α where
+  exists_gt x := by
+    obtain ⟨y, hyx⟩ := exists_not_le x
+    obtain ⟨z, hxz, hyz⟩ := exists_ge_ge x y
+    exact ⟨z, lt_of_le_not_le hxz fun hzx => hyx (hyz.trans hzx)⟩
+
 lemma DirectedOn.is_bot_of_is_min {s : Set α} (hd : DirectedOn (· ≥ ·) s)
     {m} (hm : m ∈ s) (hmin : ∀ a ∈ s, a ≤ m → m ≤ a) : ∀ a ∈ s, m ≤ a := fun a as =>
   let ⟨x, xs, xm, xa⟩ := hd m hm a as
