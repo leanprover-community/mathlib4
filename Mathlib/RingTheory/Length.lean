@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.Algebra.Exact
+import Mathlib.LinearAlgebra.Basis.VectorSpace
+import Mathlib.LinearAlgebra.Dimension.Finite
 import Mathlib.Order.KrullDimension
 import Mathlib.RingTheory.FiniteLength
 
@@ -19,7 +21,7 @@ import Mathlib.RingTheory.FiniteLength
 
 -/
 
-variable (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
+variable (R M : Type*) [Ring R] [AddCommGroup M] [Module R M]
 
 /-- The length of a module, defined as the krull dimension of its submodule lattice. -/
 noncomputable
@@ -44,9 +46,14 @@ lemma Module.length_eq_zero_iff : Module.length R M = 0 ↔ Subsingleton M := by
   rw [← WithBot.coe_inj, Module.coe_length, WithBot.coe_zero,
     Order.krullDim_eq_zero_iff_of_orderTop, Submodule.subsingleton_iff]
 
-@[nontriviality]
+@[simp, nontriviality]
 lemma Module.length_eq_zero [Subsingleton M] : Module.length R M = 0 :=
   Module.length_eq_zero_iff.mpr ‹_›
+
+@[simp, nontriviality]
+lemma Module.length_eq_zero_of_subsingleton_ring [Subsingleton R] : Module.length R M = 0 :=
+  have := Module.subsingleton R M
+  Module.length_eq_zero
 
 lemma Module.length_pos_iff : 0 < Module.length R M ↔ Nontrivial M := by
   rw [pos_iff_ne_zero, ne_eq, Module.length_eq_zero_iff, not_subsingleton_iff_nontrivial]
@@ -111,7 +118,7 @@ lemma LinearEquiv.length_eq {N : Type*} [AddCommGroup N] [Module R N] (e : M ≃
   rw [Module.coe_length, Module.coe_length,
     Order.krullDim_eq_of_orderIso (Submodule.orderIsoMapComap e)]
 
-@[simp] lemma Module.length_bot :
+lemma Module.length_bot :
     Module.length R (⊥ : Submodule R M) = 0 :=
   Module.length_eq_zero
 
@@ -143,7 +150,7 @@ lemma Module.length_eq_add_of_exact :
         ← Module.length_compositionSeries r
           (by simpa [r, t', ht₁, -Submodule.map_bot] using Submodule.map_bot f)
           (by simpa [r, s', hs₂, -Submodule.comap_top] using Submodule.comap_top g)]
-      rfl
+      simp_rw [r, RelSeries.smash_length, Nat.cast_add, s', t', RelSeries.map_length]
     · have := mt (IsFiniteLength.of_injective · hf) hN
       rw [← Module.length_ne_top_iff, ne_eq, not_not] at hN this
       rw [hN, this, top_add]
@@ -162,3 +169,96 @@ lemma Module.length_le_of_surjective : Module.length R P ≤ Module.length R M :
   rw [Module.length_eq_add_of_exact (LinearMap.ker g).subtype g (Submodule.subtype_injective _) hg
     (LinearMap.exact_subtype_ker_map g)]
   exact le_add_self
+
+variable (R M N) in
+@[simp]
+lemma Module.length_prod :
+    Module.length R (M × N) = Module.length R M + Module.length R N :=
+  Module.length_eq_add_of_exact _ _ LinearMap.inl_injective LinearMap.snd_surjective .inl_snd
+
+variable (R) in
+@[simp]
+lemma Module.length_pi_of_fintype : ∀ {ι : Type*} [Fintype ι]
+    (M : ι → Type*) [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)],
+    Module.length R (Π i, M i) = ∑ i, Module.length R (M i) := by
+  apply Fintype.induction_empty_option
+  · intro α β _ e IH M _ _
+    let _ : Fintype α := .ofEquiv β e.symm
+    rw [← (LinearEquiv.piCongrLeft R M e).length_eq, IH, e.sum_comp (length R <| M ·)]
+  · intro M _ _
+    simp [Module.length_eq_zero]
+  · intro ι _ IH M _ _
+    rw [(LinearEquiv.piOptionEquivProd _).length_eq, Module.length_prod, IH, add_comm,
+      Fintype.sum_option, add_comm]
+
+@[simp]
+lemma Module.length_finsupp {ι : Type*} :
+    Module.length R (ι →₀ M) = ENat.card ι * Module.length R M := by
+  cases finite_or_infinite ι
+  · cases nonempty_fintype ι
+    simp [(Finsupp.linearEquivFunOnFinite R M ι).length_eq]
+  nontriviality M
+  rw [ENat.card_eq_top_of_infinite, ENat.top_mul length_pos.ne', ENat.eq_top_iff_forall_ge]
+  intro m
+  obtain ⟨s, hs⟩ := Infinite.exists_subset_card_eq ι m
+  have : length R (s →₀ M) = ↑m * length R M := by
+    simp [(Finsupp.linearEquivFunOnFinite R M _).length_eq, hs]
+  refine le_trans ?_ (Module.length_le_of_injective (Finsupp.lmapDomain M R ((↑) : s → ι))
+    (Finsupp.mapDomain_injective Subtype.val_injective))
+  rw [this]
+  exact ENat.self_le_mul_right _ length_pos.ne'
+
+@[simp]
+lemma Module.length_pi {ι : Type*} :
+    Module.length R (ι → M) = ENat.card ι * Module.length R M := by
+  cases finite_or_infinite ι
+  · cases nonempty_fintype ι
+    simp
+  nontriviality M
+  rw [ENat.card_eq_top_of_infinite, ENat.top_mul length_pos.ne', ← top_le_iff]
+  refine le_trans ?_ (Module.length_le_of_injective Finsupp.lcoeFun DFunLike.coe_injective)
+  simp [ENat.top_mul length_pos.ne']
+
+attribute [nontriviality] rank_subsingleton'
+
+variable (R M) in
+lemma Module.length_of_free [Module.Free R M] :
+    Module.length R M = (Module.rank R M).toENat * Module.length R R := by
+  let b := Module.Free.chooseBasis R M
+  nontriviality R
+  nontriviality M
+  by_cases H : Module.length R R = ⊤
+  · rw [b.repr.length_eq, Module.length_finsupp, H, ENat.mul_top', ENat.mul_top']
+    congr 1
+    simp [ENat.card_eq_zero_iff_empty, rank_pos_of_free.ne']
+  rw [← ne_eq, Module.length_ne_top_iff, isFiniteLength_iff_isNoetherian_isArtinian] at H
+  cases H
+  let b := Module.Free.chooseBasis R M
+  rw [b.repr.length_eq, Module.length_finsupp, Free.rank_eq_card_chooseBasisIndex, ENat.card]
+
+variable (R M) in
+lemma Module.length_of_free_of_finite
+    [StrongRankCondition R] [Module.Free R M] [Module.Finite R M] :
+    Module.length R M = Module.finrank R M * Module.length R R := by
+  rw [length_of_free, Cardinal.toENat_eq_nat.mpr (finrank_eq_rank _ _).symm]
+
+lemma Module.length_eq_one_iff :
+    Module.length R M = 1 ↔ IsSimpleModule R M := by
+  rw [← WithBot.coe_inj, Module.coe_length, WithBot.coe_one,
+    Order.krullDim_eq_one_iff_of_boundedOrder]
+
+variable (R M) in
+@[simp]
+lemma Module.length_eq_one [IsSimpleModule R M] :
+    Module.length R M = 1 :=
+  Module.length_eq_one_iff.mpr ‹_›
+
+lemma Module.length_eq_rank
+    (K M : Type*) [DivisionRing K] [AddCommGroup M] [Module K M] :
+    Module.length K M = (Module.rank K M).toENat := by
+  simp [Module.length_of_free]
+
+lemma Module.length_eq_finrank
+    (K M : Type*) [DivisionRing K] [AddCommGroup M] [Module K M] [Module.Finite K M] :
+    Module.length K M = Module.finrank K M := by
+  simp [Module.length_of_free]

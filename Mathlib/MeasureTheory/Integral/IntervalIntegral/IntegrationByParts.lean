@@ -5,7 +5,7 @@ Authors: Yury Kudryashov, Patrick Massot, Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Calculus.Deriv.Mul
 import Mathlib.Analysis.Calculus.Deriv.Slope
-import Mathlib.MeasureTheory.Integral.FundThmCalculus
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 
 /-!
 # Integration by parts and by substitution

@@ -277,7 +277,7 @@ variable (h : DualBases e ε)
 include h
 
 theorem dual_lc (l : ι →₀ R) (i : ι) : ε i (DualBases.lc e l) = l i := by
-  rw [lc, _root_.map_finsupp_sum, Finsupp.sum_eq_single i (g := fun a b ↦ (ε i) (b • e a))]
+  rw [lc, _root_.map_finsuppSum, Finsupp.sum_eq_single i (g := fun a b ↦ (ε i) (b • e a))]
   · simp [h.eval_same, smul_eq_mul]
   · intro q _ q_ne
     simp [h.eval_of_ne q_ne.symm, smul_eq_mul]

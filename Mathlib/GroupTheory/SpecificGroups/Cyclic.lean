@@ -67,14 +67,15 @@ instance (priority := 100) isCyclic_of_subsingleton [Group α] [Subsingleton α]
   ⟨⟨1, fun _ => ⟨0, Subsingleton.elim _ _⟩⟩⟩
 
 @[simp]
-theorem isCyclic_multiplicative_iff [AddGroup α] : IsCyclic (Multiplicative α) ↔ IsAddCyclic α :=
+theorem isCyclic_multiplicative_iff [SubNegMonoid α] :
+    IsCyclic (Multiplicative α) ↔ IsAddCyclic α :=
   ⟨fun H ↦ ⟨H.1⟩, fun H ↦ ⟨H.1⟩⟩
 
 instance isCyclic_multiplicative [AddGroup α] [IsAddCyclic α] : IsCyclic (Multiplicative α) :=
   isCyclic_multiplicative_iff.mpr inferInstance
 
 @[simp]
-theorem isAddCyclic_additive_iff [Group α] : IsAddCyclic (Additive α) ↔ IsCyclic α :=
+theorem isAddCyclic_additive_iff [DivInvMonoid α] : IsAddCyclic (Additive α) ↔ IsCyclic α :=
   ⟨fun H ↦ ⟨H.1⟩, fun H ↦ ⟨H.1⟩⟩
 
 instance isAddCyclic_additive [Group α] [IsCyclic α] : IsAddCyclic (Additive α) :=
@@ -97,7 +98,7 @@ proof of `CommGroup`. -/
 def IsCyclic.commGroup [hg : Group α] [IsCyclic α] : CommGroup α :=
   { hg with mul_comm := commutative.comm }
 
-instance [Group G] (H : Subgroup G) [IsCyclic H] : H.IsCommutative :=
+instance [Group G] (H : Subgroup G) [IsCyclic H] : IsMulCommutative H :=
   ⟨IsCyclic.commutative⟩
 
 variable [Group α] [Group G] [Group G']
