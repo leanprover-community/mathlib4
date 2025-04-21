@@ -252,7 +252,6 @@ theorem isoWhiskerLeft_trans (F : C ⥤ D) {G H K : D ⥤ E} (α : G ≅ H) (β 
     isoWhiskerLeft F (α ≪≫ β) = isoWhiskerLeft F α ≪≫ isoWhiskerLeft F β :=
   rfl
 
-@[simp]
 theorem isoWhiskerLeft_trans_assoc (F : C ⥤ D) {G H K : D ⥤ E} (α : G ≅ H) (β : H ≅ K)
     {K' : C ⥤ E} (γ : F ⋙ K ≅ K') :
     isoWhiskerLeft F (α ≪≫ β) ≪≫ γ = isoWhiskerLeft F α ≪≫ isoWhiskerLeft F β ≪≫ γ := by
@@ -263,7 +262,6 @@ theorem isoWhiskerRight_trans {G H K : C ⥤ D} (α : G ≅ H) (β : H ≅ K) (F
     isoWhiskerRight (α ≪≫ β) F = isoWhiskerRight α F ≪≫ isoWhiskerRight β F :=
   ((whiskeringRight C D E).obj F).mapIso_trans α β
 
-@[simp]
 theorem isoWhiskerRight_trans_assoc {G H K : C ⥤ D} (α : G ≅ H) (β : H ≅ K) (F : D ⥤ E)
     {K' : C ⥤ E} (γ : K ⋙ F ≅ K'):
     isoWhiskerRight (α ≪≫ β) F ≪≫ γ = isoWhiskerRight α F ≪≫ isoWhiskerRight β F ≪≫ γ := by
