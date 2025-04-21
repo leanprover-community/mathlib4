@@ -26,23 +26,11 @@ lemma hasProd_of_hasSum_log (hfn : ∀ i, f i ≠ 0) (hf : HasSum (fun i ↦ log
     HasProd f (exp a) :=
   hf.cexp.congr (by simp [exp_log, hfn])
 
-lemma multipliable_of_summable_log (hfn : ∀ n, f n ≠ 0) (hf : Summable fun i ↦ log (f i)) :
-    Multipliable f :=
-  ⟨_, hasProd_of_hasSum_log hfn hf.hasSum⟩
-
-/-- Alternate version of `Complex.multipliable_of_summable_log` assuming only that the terms are
-eventually non-zero. -/
-lemma multipliable_of_summable_log' (hfn : ∀ᶠ i in cofinite, f i ≠ 0)
-    (hf : Summable fun i ↦ log (f i)) : Multipliable f := by
-  have : Summable fun i ↦ log (if f i ≠ 0 then f i else 1) := by
-    apply hf.congr_cofinite
-    filter_upwards [hfn] with i hi using by simp [hi]
-  have : Multipliable fun i ↦ if f i ≠ 0 then f i else 1 := by
-    refine multipliable_of_summable_log (fun i ↦ ?_) this
-    split_ifs with h <;> simp [h]
-  refine this.congr_cofinite₀ (fun i ↦ ?_) ?_
-  · split_ifs with h <;> simp [h]
-  · filter_upwards [hfn] with i hi using by simp [hi]
+lemma multipliable_of_summable_log (hf : Summable fun i ↦ log (f i)) :
+    Multipliable f := by
+  by_cases hfn : ∃ n, f n = 0
+  · exact multipliable_of_exists_eq_zero hfn
+  · exact ⟨_, hasProd_of_hasSum_log (not_exists.mp hfn) hf.hasSum⟩
 
 /-- The exponential of a convergent sum of complex logs is the corresponding infinite product. -/
 lemma cexp_tsum_eq_tprod (hfn : ∀ i, f i ≠ 0) (hf : Summable fun i ↦ log (f i)) :
@@ -55,10 +43,8 @@ lemma summable_log_one_add_of_summable {f : ι → ℂ} (hf : Summable f) :
   filter_upwards [hf.norm.tendsto_cofinite_zero.eventually_le_const one_half_pos] with i hi
     using norm_log_one_add_half_le_self hi
 
-lemma multipliable_one_add_of_summable (hf : Summable f) : Multipliable (fun i ↦ 1 + f i) := by
-  by_cases hff : ∃ i, 1 + f i = 0
-  · exact (hasProd_zero_of_exists_eq_zero hff).multipliable
-  · exact multipliable_of_summable_log (by simpa using hff) (summable_log_one_add_of_summable hf)
+lemma multipliable_one_add_of_summable (hf : Summable f) : Multipliable (fun i ↦ 1 + f i) :=
+  multipliable_of_summable_log (summable_log_one_add_of_summable hf)
 
 end Complex
 
