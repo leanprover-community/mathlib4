@@ -420,7 +420,7 @@ lemma colimitQuotientCoproduct_eq_desc {J : Type w} [Category.{w} J] {C : Type u
     colimitQuotientCoproduct F = Sigma.desc (colimit.ι F) := by
   apply colimit.hom_ext
   intro ⟨j⟩
-  simp [ι_colimitQuotientCoproduct
+  simp [ι_colimitQuotientCoproduct]
 
 /-- Any category with coproducts and coequalizers has all colimits. -/
 @[stacks 002P]
