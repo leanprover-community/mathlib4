@@ -439,7 +439,7 @@ theorem has_fderiv_at_filter_real_equiv {L : Filter E} :
   simp [norm_smul]
 
 theorem HasFDerivAt.lim_real (hf : HasFDerivAt f f' x) (v : E) :
-    Tendsto (fun c : ℝ => c • (f (x + c⁻¹ • v) - f x)) atTop (𝓝 (f' v)) := by
+    Tendsto (fun c : ℝ => c • (f (c⁻¹ • v + x) - f x)) atTop (𝓝 (f' v)) := by
   apply hf.lim v
   rw [tendsto_atTop_atTop]
   exact fun b => ⟨b, fun a ha => le_trans ha (le_abs_self _)⟩
@@ -455,10 +455,10 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
 /-- The image of a tangent cone under the differential of a map is included in the tangent cone to
 the image. -/
 theorem HasFDerivWithinAt.mapsTo_tangent_cone {x : E} (h : HasFDerivWithinAt f f' s x) :
-    MapsTo f' (tangentConeAt 𝕜 s x) (tangentConeAt 𝕜 (f '' s) (f x)) := by
+    MapsTo f' (tangentConeAt 𝕜 s x) (tangentConeAt 𝕜  (f '' s) (f x)) := by
   rintro v ⟨c, d, dtop, clim, cdlim⟩
   refine
-    ⟨c, fun n => f (x + d n) - f x, mem_of_superset dtop ?_, clim, h.lim atTop dtop clim cdlim⟩
+    ⟨c, fun n => f (d n + x) - f x, mem_of_superset dtop ?_, clim, h.lim atTop dtop clim cdlim⟩
   simp +contextual [-mem_image, mem_image_of_mem]
 
 /-- If a set has the unique differentiability property at a point x, then the image of this set

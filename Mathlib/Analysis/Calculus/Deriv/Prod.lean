@@ -117,7 +117,7 @@ variable {φ : 𝕜 → F' 0} {φs : 𝕜 → ∀ i, F' (Fin.succ i)}
 
 theorem hasStrictDerivAt_finCons {φ' : Π i, F' i} :
     HasStrictDerivAt (fun x => Fin.cons (φ x) (φs x)) φ' x ↔
-      HasStrictDerivAt φ (φ' 0) x ∧ HasStrictDerivAt φs (fun i => φ' i.succ) x :=
+      HasStrictDerivAt φ (φ' 0) x ∧ HasStrictDerivAt φs (fun i : Fin n => φ' i.succ) x :=
   hasStrictFDerivAt_finCons
 
 /-- A variant of `hasStrictDerivAt_finCons` where the derivative variables are free on the RHS
@@ -134,7 +134,7 @@ theorem HasStrictDerivAt.finCons {φ' : F' 0} {φs' : Π i, F' (Fin.succ i)}
 
 theorem hasDerivAtFilter_finCons {φ' : Π i, F' i} {l : Filter 𝕜} :
     HasDerivAtFilter (fun x => Fin.cons (φ x) (φs x)) φ' x l ↔
-      HasDerivAtFilter φ (φ' 0) x l ∧ HasDerivAtFilter φs (fun i => φ' i.succ) x l :=
+      HasDerivAtFilter φ (φ' 0) x l ∧ HasDerivAtFilter φs (fun i : Fin n => φ' i.succ) x l :=
   hasFDerivAtFilter_finCons
 
 /-- A variant of `hasDerivAtFilter_finCons` where the derivative variables are free on the RHS
@@ -151,7 +151,7 @@ theorem HasDerivAtFilter.finCons {φ' : F' 0} {φs' : Π i, F' (Fin.succ i)} {l 
 
 theorem hasDerivAt_finCons {φ' : Π i, F' i} :
     HasDerivAt (fun x => Fin.cons (φ x) (φs x)) φ' x ↔
-      HasDerivAt φ (φ' 0) x ∧ HasDerivAt φs (fun i => φ' i.succ) x :=
+      HasDerivAt φ (φ' 0) x ∧ HasDerivAt φs (fun i : Fin n => φ' i.succ) x :=
   hasDerivAtFilter_finCons
 
 /-- A variant of `hasDerivAt_finCons` where the derivative variables are free on the RHS
@@ -168,7 +168,7 @@ theorem HasDerivAt.finCons {φ' : F' 0} {φs' : Π i, F' (Fin.succ i)}
 
 theorem hasDerivWithinAt_finCons {φ' : Π i, F' i} :
     HasDerivWithinAt (fun x => Fin.cons (φ x) (φs x)) φ' s x ↔
-      HasDerivWithinAt φ (φ' 0) s x ∧ HasDerivWithinAt φs (fun i => φ' i.succ) s x :=
+      HasDerivWithinAt φ (φ' 0) s x ∧ HasDerivWithinAt φs (fun i : Fin n => φ' i.succ) s x :=
   hasDerivAtFilter_finCons
 
 /-- A variant of `hasDerivWithinAt_finCons` where the derivative variables are free on the RHS
