@@ -288,13 +288,6 @@ variable {S : ι → Type*}
 variable [Π i, SetLike (S i) (R i)]
 variable {B : Π i, S i}
 
-/-- `RestrictedProduct.eval j` is the function from the restricted
-product `Πʳ i, [R i, B i]_[𝓕]` to the
-component `R j`. See also `evalMonoidHom`, `evalAddMonoidHom` and `evalRingHom` for
-evaluation as a monoid or ring homomorphism when `R i` is a monoid or ring.
--/
-def eval (j : ι) (x : Πʳ i, [R i, B i]_[𝓕]) : R j := x j
-
 /-- `RestrictedProduct.evalMonoidHom j` is the monoid homomorphism from the restricted
 product `Πʳ i, [R i, B i]_[𝓕]` to the component `R j`.
 -/
@@ -302,17 +295,17 @@ product `Πʳ i, [R i, B i]_[𝓕]` to the component `R j`.
 product `Πʳ i, [R i, B i]_[𝓕]` to the component `R j`."]
 def evalMonoidHom (j : ι) [Π i, Monoid (R i)] [∀ i, SubmonoidClass (S i) (R i)] :
     (Πʳ i, [R i, B i]_[𝓕]) →* R j where
-      toFun := eval R j
-      map_one' := rfl
-      map_mul' _ _ := rfl
+  toFun x := x j
+  map_one' := rfl
+  map_mul' _ _ := rfl
 
 /-- `RestrictedProduct.evalRingHom j` is the ring homomorphism from the restricted
 product `Πʳ i, [R i, B i]_[𝓕]` to the component `R j`.
 -/
 def evalRingHom (j : ι) [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)] :
     (Πʳ i, [R i, B i]_[𝓕]) →+* R j where
-      __ := evalMonoidHom R j
-      __ := evalAddMonoidHom R j
+  __ := evalMonoidHom R j
+  __ := evalAddMonoidHom R j
 
 end eval
 
@@ -343,8 +336,8 @@ def map (x : Πʳ i, [R₁ i, A₁ i]_[𝓕₁]) : Πʳ j, [R₂ j, A₂ j]_[�
   apply mem_of_superset (𝓕₂.inter_mem hφ (hf x.2))
   simp only [SetLike.mem_coe, preimage_setOf_eq]
   rintro _ ⟨h1, h2⟩
-  exact h1 h2
-  ⟩
+  exact h1 h2⟩
+
 end set
 
 section monoid
