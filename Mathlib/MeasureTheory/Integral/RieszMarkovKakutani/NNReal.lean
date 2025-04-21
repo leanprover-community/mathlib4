@@ -24,10 +24,9 @@ inequalities by `le_antisymm`, yet for `C_c(X, ℝ≥0)` there is no `Neg`.
 
 noncomputable section
 
-open scoped BoundedContinuousFunction NNReal ENNReal
+open scoped NNReal
 
-open Set Function TopologicalSpace CompactlySupported CompactlySupportedContinuousMap
-  MeasureTheory
+open CompactlySupported CompactlySupportedContinuousMap MeasureTheory
 
 variable {X : Type*} [TopologicalSpace X] [T2Space X] [LocallyCompactSpace X] [MeasurableSpace X]
   [BorelSpace X]
@@ -35,23 +34,18 @@ variable (Λ : C_c(X, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0)
 
 namespace NNRealRMK
 
-theorem lintegral_rieszMeasure_eq [Nonempty X] : ∀ (f : C_c(X, ℝ≥0)),
+theorem lintegral_rieszMeasure_eq [Nonempty X] (f : C_c(X, ℝ≥0)) :
     ∫⁻ (x : X), f x ∂(rieszMeasure Λ) = Λ f := by
-  intro f
   rw [lintegral_coe_eq_integral, ← ENNReal.ofNNReal_toNNReal]
   · simp only [ENNReal.coe_inj]
-    rw [Real.toNNReal_of_nonneg (by
-                                 apply integral_nonneg
-                                 intro x
-                                 simp only [Pi.zero_apply, NNReal.zero_le_coe]),
-      ← NNReal.coe_inj, eq_toRealLinear_toReal f,
+    rw [Real.toNNReal_of_nonneg (by apply integral_nonneg; intro x; simp),
+      ← NNReal.coe_inj, ← eq_toRealLinear_toReal f,
       ← RealRMK.integral_rieszMeasure (nonneg_toRealLinear Λ) f.toReal]
     · simp only [toReal_apply, NNReal.coe_mk]
       congr
-      exact eq_toNNRealLinear_toRealLinear Λ
+      exact Eq.symm (eq_toNNRealLinear_toRealLinear Λ)
   rw [rieszMeasure]
-  apply Continuous.integrable_of_hasCompactSupport
-  · continuity
-  · apply HasCompactSupport.comp_left f.hasCompactSupport rfl
+  exact Continuous.integrable_of_hasCompactSupport (by continuity)
+    (HasCompactSupport.comp_left f.hasCompactSupport rfl)
 
 end NNRealRMK
