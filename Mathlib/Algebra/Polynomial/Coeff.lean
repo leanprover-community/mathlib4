@@ -6,6 +6,7 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.Algebra.CharP.Defs
 
 /-!
 # Theory of univariate polynomials
@@ -362,5 +363,9 @@ theorem intCast_inj {m n : ℤ} {R : Type*} [Ring R] [CharZero R] : (↑m : R[X]
 end cast
 
 instance charZero [CharZero R] : CharZero R[X] where cast_injective _x _y := natCast_inj.mp
+
+instance charP {p : ℕ} [CharP R p] : CharP R[X] p where
+  cast_eq_zero_iff n := by
+    rw [← CharP.cast_eq_zero_iff R, ← C_inj (R := R), map_natCast, C_0]
 
 end Polynomial

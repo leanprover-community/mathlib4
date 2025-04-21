@@ -143,7 +143,7 @@ theorem lift_rank_add_lift_rank_le_rank_prod [Nontrivial R] :
     lift.{v'} (Module.rank R M) + lift.{v} (Module.rank R M') ≤ Module.rank R (M × M') := by
   rw [← rank_ulift, ← rank_ulift]
   exact (rank_add_rank_le_rank_prod R _).trans_eq
-    (ULift.moduleEquiv.prod ULift.moduleEquiv).rank_eq
+    (ULift.moduleEquiv.prodCongr ULift.moduleEquiv).rank_eq
 
 variable {R M M'}
 variable [StrongRankCondition R] [Module.Free R M] [Module.Free R M'] [Module.Free R M₁]

@@ -114,9 +114,8 @@ theorem coe_to_intFractPair {b : ℤ} {fr : K} :
 
 end coe
 
--- Note: this could be relaxed to something like `LinearOrderedDivisionRing` in the future.
--- Fix a discrete linear ordered field with `floor` function.
-variable [Field K] [LinearOrder K] [FloorRing K]
+-- Fix a discrete linear ordered division ring with `floor` function.
+variable [DivisionRing K] [LinearOrder K] [FloorRing K]
 
 /-- Creates the integer and fractional part of a value `v`, i.e. `⟨⌊v⌋, v - ⌊v⌋⟩`. -/
 protected def of (v : K) : IntFractPair K :=
@@ -156,7 +155,7 @@ extract it and put the tail of the stream in the sequence part.
 
 This is just an intermediate representation and users should not (need to) directly interact with
 it. The setup of rewriting/simplification lemmas that make the definitions easy to use is done in
-`Algebra.ContinuedFractions.Computation.Translations`.
+`Mathlib.Algebra.ContinuedFractions.Computation.Translations`.
 -/
 protected def seq1 (v : K) : Stream'.Seq1 <| IntFractPair K :=
   ⟨IntFractPair.of v, -- the head
@@ -170,7 +169,7 @@ end IntFractPair
 
 /-- Returns the `GenContFract` of a value. In fact, the returned gcf is also a `ContFract` that
 terminates if and only if `v` is rational
-(see `Algebra.ContinuedFractions.Computation.TerminatesIffRat`).
+(see `Mathlib.Algebra.ContinuedFractions.Computation.TerminatesIffRat`).
 
 The continued fraction representation of `v` is given by `[⌊v⌋; b₀, b₁, b₂,...]`, where
 `[b₀; b₁, b₂,...]` recursively is the continued fraction representation of `1 / (v - ⌊v⌋)`. This
@@ -179,7 +178,7 @@ process stops when the fractional part `v - ⌊v⌋` hits 0 at some step.
 The implementation uses `IntFractPair.stream` to obtain the partial denominators of the continued
 fraction. Refer to said function for more details about the computation process.
 -/
-protected def of [Field K] [LinearOrder K] [FloorRing K] (v : K) : GenContFract K :=
+protected def of [DivisionRing K] [LinearOrder K] [FloorRing K] (v : K) : GenContFract K :=
   let ⟨h, s⟩ := IntFractPair.seq1 v -- get the sequence of integer and fractional parts.
   ⟨h.b, -- the head is just the first integer part
     s.map fun p => ⟨1, p.b⟩⟩ -- the sequence consists of the remaining integer parts as the partial
