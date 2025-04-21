@@ -110,28 +110,6 @@ private theorem auxSeq_eq_auxSeq_succ_iff : auxSeq A M n = auxSeq A M (n + 1) �
   ⟨not_imp_not.1 fun h ↦ (lt_auxSeq_succ_of_ne_top h).ne,
     fun h ↦ h.trans (auxSeq_succ_of_eq_top h).symm⟩
 
-namespace Submodule
-
-variable {R M M₁ : Type*} [Semiring R] [AddCommMonoid M] [AddCommMonoid M₁]
-  [Module R M] [Module R M₁] (q : Submodule R M₁) (f : M →ₗ[R] M₁)
-
-/-- For a linear map `f`, the map from `q.comap f` to `q` for a submodule `q`
-obtained from restricting `f` -/
-def comapRestrict : ↥(q.comap f) →ₗ[R] ↥q :=
-  f.restrict fun _ hx ↦ mem_comap.mp hx
-
-@[simp]
-theorem comapRestrict_coe_apply (x : q.comap f) : (q.comapRestrict f) x = f x := rfl
-
-theorem comapRestrict_surjective_of_surjective (hf : Function.Surjective f) :
-    Function.Surjective (q.comapRestrict f) := fun y ↦ by
-  obtain ⟨x, hx⟩ := hf y
-  use ⟨x, mem_comap.mpr (hx ▸ y.2)⟩
-  apply Subtype.val_injective
-  simp [hx]
-
-end Submodule
-
 private theorem isQuotientEquivQuotientPrime_auxSeq_of_ne_top (h : auxSeq A M n ≠ ⊤) :
     (auxSeq A M n).IsQuotientEquivQuotientPrime (auxSeq A M (n + 1)) := by
   rw [auxSeq_succ_of_ne_top h]
