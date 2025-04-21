@@ -318,7 +318,7 @@ variable {A₁ : (i : ι₁) → Set (R₁ i)} {A₂ : (i : ι₂) → Set (R₂
 variable {S₁ : ι₁ → Type*} {S₂ : ι₂ → Type*}
 variable [Π i, SetLike (S₁ i) (R₁ i)] [Π j, SetLike (S₂ j) (R₂ j)]
 variable {B₁ : Π i, S₁ i} {B₂ : Π j, S₂ j}
-variable (f : ι₂ → ι₁) (hf : 𝓕₂.Tendsto f 𝓕₁)
+variable (f : ι₂ → ι₁) (hf : Tendsto f 𝓕₂ 𝓕₁)
 
 section set
 
@@ -666,13 +666,13 @@ theorem isOpenEmbedding_structureMap :
 include hAopen in
 theorem nhds_eq_map_inclusion {S : Set ι} (hS : cofinite ≤ 𝓟 S)
     (x : Πʳ i, [R i, A i]_[𝓟 S]) :
-    (𝓝 (inclusion R A hS x)) = (𝓝 x).map (inclusion R A hS) := by
+    (𝓝 (inclusion R A hS x)) = .map (inclusion R A hS) (𝓝 x) := by
   rw [isOpenEmbedding_inclusion_principal hAopen hS |>.map_nhds_eq x]
 
 include hAopen in
 theorem nhds_eq_map_structureMap
     (x : Π i, A i) :
-    (𝓝 (structureMap R A cofinite x)) = (𝓝 x).map (structureMap R A cofinite) := by
+    (𝓝 (structureMap R A cofinite x)) = .map (structureMap R A cofinite) (𝓝 x) := by
   rw [isOpenEmbedding_structureMap hAopen |>.map_nhds_eq x]
 
 include hAopen in
@@ -828,13 +828,13 @@ section cofinite
 
 theorem nhds_zero_eq_map_ofPre [Π i, Zero (R i)] [∀ i, ZeroMemClass (S i) (R i)]
     (hBopen : ∀ i, IsOpen (B i : Set (R i))) (hT : cofinite ≤ 𝓟 T) :
-    (𝓝 (inclusion R (fun i ↦ B i) hT 0)) = (𝓝 0).map (inclusion R (fun i ↦ B i) hT) :=
+    (𝓝 (inclusion R (fun i ↦ B i) hT 0)) = .map (inclusion R (fun i ↦ B i) hT) (𝓝 0) :=
   nhds_eq_map_inclusion hBopen hT 0
 
 theorem nhds_zero_eq_map_structureMap [Π i, Zero (R i)] [∀ i, ZeroMemClass (S i) (R i)]
     (hBopen : ∀ i, IsOpen (B i : Set (R i))) :
     (𝓝 (structureMap R (fun i ↦ B i) cofinite 0)) =
-       (𝓝 0).map (structureMap R (fun i ↦ B i) cofinite) :=
+       .map (structureMap R (fun i ↦ B i) cofinite) (𝓝 0) :=
   nhds_eq_map_structureMap hBopen 0
 
 -- TODO: Make `IsOpen` a class like `IsClosed` ?
