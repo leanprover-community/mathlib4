@@ -791,9 +791,8 @@ noncomputable def toRealLinearMap : C_c(α, ℝ≥0) →ₗ[ℝ≥0] C_c(α, ℝ
 @[simp, norm_cast]
 lemma coe_toRealLinearMap : (toRealLinearMap : C_c(α, ℝ≥0) → C_c(α, ℝ)) = toReal := rfl
 
-@[simp] lemma toRealLinearMap_apply (f : C_c(α, ℝ≥0)) : toRealLinearMap f = f.toReal := rfl
+lemma toRealLinearMap_apply (f : C_c(α, ℝ≥0)) : toRealLinearMap f = f.toReal := rfl
 
-@[simp]
 lemma toRealLinearMap_apply_apply (f : C_c(α, ℝ≥0)) (x : α) :
     toRealLinearMap f x = (f x).toReal := by simp
 
