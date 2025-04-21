@@ -1029,6 +1029,8 @@ theorem toLinearMap_restrictScalars (f : M₁ →L[A] M₂) :
 @[simp]
 theorem coe_restrictScalars (f : M₁ →L[A] M₂) : ⇑(f.restrictScalars R) = f := rfl
 
+@[deprecated (since := "2025-04-21")] alias coe_restrictScalars' := coe_restrictScalars
+
 @[simp]
 theorem toContinuousAddMonoidHom_restrictScalars (f : M₁ →L[A] M₂) :
     ↑(f.restrictScalars R) = (f : ContinuousAddMonoidHom M₁ M₂) := rfl
