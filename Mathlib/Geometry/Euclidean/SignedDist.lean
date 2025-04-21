@@ -33,7 +33,7 @@ variable [NormedAddTorsor V P]
 
 namespace AffineSubspace
 
-variable (s : AffineSubspace ℝ P) [Nonempty s] [HasOrthogonalProjection s.direction] (p : P)
+variable (s : AffineSubspace ℝ P) [Nonempty s] [s.direction.HasOrthogonalProjection] (p : P)
 
 /-- The signed distance between `s` and a point, in the direction of the reference point `p`.
 This is expected to be used when `p` does not lie in `s` (in the degenerate case where `p` lies
