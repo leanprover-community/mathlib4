@@ -12,7 +12,7 @@ import Mathlib.Order.CompletePartialOrder
 import Mathlib.RingTheory.Regular.RegularSequence
 
 /-!
-# The categorical constructions for IsSMulRegular
+# Categorical constructions for `IsSMulRegular`
 -/
 
 universe u v w
@@ -23,7 +23,7 @@ open CategoryTheory Ideal Pointwise
 
 /-- The short complex `M → M → M⧸xM` given by an element `x : R`. -/
 @[simps]
-def SMul_ShortComplex (r : R) :
+def smulShortComplex (r : R) :
     ShortComplex (ModuleCat R) where
   X₁ := M
   X₂ := M
@@ -37,21 +37,24 @@ def SMul_ShortComplex (r : R) :
       ModuleCat.hom_zero, LinearMap.zero_apply, Submodule.Quotient.mk_eq_zero]
     exact Submodule.smul_mem_pointwise_smul m r ⊤ trivial
 
-lemma SMul_ShortComplex_exact (r : R) : (SMul_ShortComplex M r).Exact := by
-  simp only [SMul_ShortComplex, ShortComplex.ShortExact.moduleCat_exact_iff_function_exact,
-    ModuleCat.hom_ofHom]
+lemma smulShortComplex_function_exact (r : R) :
+    Function.Exact (r • LinearMap.id : M →ₗ[R] M) (r • (⊤ : Submodule R M)).mkQ := by
   intro x
   simp [Submodule.mem_smul_pointwise_iff_exists, Submodule.ideal_span_singleton_smul r ⊤,
     Submodule.mem_smul_pointwise_iff_exists]
 
-instance SMul_ShortComplex_g_epi (r : R) : Epi (SMul_ShortComplex M r).g := by
-  simpa [SMul_ShortComplex, ModuleCat.epi_iff_surjective] using Submodule.mkQ_surjective _
+lemma smulShortComplex_exact (r : R) : (smulShortComplex M r).Exact := by
+  simp only [smulShortComplex, ShortComplex.ShortExact.moduleCat_exact_iff_function_exact,
+    ModuleCat.hom_ofHom, smulShortComplex_function_exact]
+
+instance smulShortComplex_g_epi (r : R) : Epi (smulShortComplex M r).g := by
+  simpa [smulShortComplex, ModuleCat.epi_iff_surjective] using Submodule.mkQ_surjective _
 
 variable {M} in
-lemma IsSMulRegular.SMul_ShortComplex_shortExact {r : R} (reg : IsSMulRegular M r) :
-    (SMul_ShortComplex M r).ShortExact where
-  exact := SMul_ShortComplex_exact M r
-  mono_f := by simpa [SMul_ShortComplex, ModuleCat.mono_iff_injective] using reg
+lemma IsSMulRegular.smulShortComplex_shortExact {r : R} (reg : IsSMulRegular M r) :
+    (smulShortComplex M r).ShortExact where
+  exact := smulShortComplex_exact M r
+  mono_f := by simpa [smulShortComplex, ModuleCat.mono_iff_injective] using reg
 
 section FromPR
 
