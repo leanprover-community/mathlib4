@@ -368,3 +368,71 @@ lemma lemma222 [IsNoetherianRing R] (I : Ideal R) [Small.{v} (R ⧸ I)] (n : ℕ
     intro h4 N ⟨Nntr, Nfin, Nsupp⟩ i hi
     exact lemma222_4_to_1 I n N Nntr Nfin Nsupp M Mntr Mfin smul_lt h4 i hi
   tfae_finish
+
+variable {M N : ModuleCat.{max u v} R} [UnivLE.{max u v, w}]
+
+--lemma_213
+noncomputable def addEquivHomQuotientRegularExt {rs : List R} (hr : IsWeaklyRegular M rs)
+    (h : ∀ r : R, r ∈ rs → r ∈ Module.annihilator R N) :
+    (N →ₗ[R] M ⧸ (ofList rs • ⊤ : Submodule R M)) ≃+ Ext.{w} N M rs.length := by
+  generalize h' : rs.length = n
+  induction' n with n hn generalizing M rs
+  · rw [List.length_eq_zero_iff] at h'
+    rw [h', ofList_nil, Submodule.bot_smul]
+    let e' : (M ⧸ (⊥ : Submodule R M)) ≃ₗ[R] M := Submodule.quotEquivOfEqBot (⊥ : Submodule R M) rfl
+    let e : (N →ₗ[R] (M ⧸ (⊥ : Submodule R M))) ≃ₗ[R] (N →ₗ[R] M) :=
+      LinearEquiv.congrRight (Submodule.quotEquivOfEqBot (⊥ : Submodule R M) rfl)
+    let e1 : (N →ₗ[R] M) ≃+ (N ⟶ M) := AddEquiv.symm ModuleCat.homAddEquiv
+    exact e.toAddEquiv.trans <| e1.trans <| Ext.addEquiv₀.symm
+  · have h_left_subsingleton : Subsingleton (Ext.{w} N M n) := by
+      let equiv : (N →ₗ[R] M ⧸ (ofList (rs.take n) • (⊤ : Submodule R M))) ≃+ Ext.{w} N M n := by
+        apply hn (M := M) (rs := rs.take n)
+        · refine (RingTheory.Sequence.isWeaklyRegular_iff M _).mpr (fun i hi ↦ ?_)
+          have : i < rs.length := lt_of_lt_of_le hi (List.length_take_le' n rs)
+          have h1 : (List.take n rs)[i] = rs[i] := List.getElem_take
+          have h2 : List.take i (List.take n rs) = List.take i rs := by
+            rw [List.take_take]
+            congr 1
+            simpa [inf_eq_left, ← Nat.lt_succ_iff, h'] using this
+          rw [h1, h2]
+          exact (RingTheory.Sequence.isWeaklyRegular_iff M rs).mp hr _ _
+        · intro _ h''
+          exact h _ (List.mem_of_mem_take h'')
+        · apply List.length_take_of_le
+          simp [h']
+      rw [equiv.symm.toEquiv.subsingleton_congr]
+      apply hom_subsingleton_of_mem_ann_isSMulRegular (r := rs[n])
+      · exact (RingTheory.Sequence.isWeaklyRegular_iff M rs).mp hr ..
+      · exact h _ <| List.getElem_mem _
+    match rs with
+    | [] => absurd h'; simp
+    | r :: rs =>
+      let ih : (N →ₗ[R] M ⧸ (ofList (r :: rs) • ⊤ : Submodule R M)) ≃+
+          Ext.{w} N (ModuleCat.of R (QuotSMulTop r M)) n := by
+        have h1 : IsWeaklyRegular (ModuleCat.of R (QuotSMulTop r M)) rs :=
+          ((isWeaklyRegular_cons_iff M r rs).mp hr).2
+        have h2 : ∀ r ∈ rs, r ∈ Module.annihilator R N :=
+          fun _ hr ↦ h _ <| List.mem_cons_of_mem _ hr
+        have h3 : rs.length = n := by simpa using h'
+        refine AddEquiv.trans
+          (show _ ≃ₗ[R] _ from LinearEquiv.congrRight ?_).toAddEquiv (hn h1 h2 h3)
+        rw [ofList_cons]
+        dsimp
+        let f : M →ₗ[R] ((QuotSMulTop r M) ⧸ ofList rs • (⊤ : Submodule R (QuotSMulTop r M))) :=
+          ((ofList rs) • (⊤ : Submodule R (QuotSMulTop r M))).mkQ ∘ₗ (r • (⊤ : Submodule R M)).mkQ
+        refine (Submodule.quotEquivOfEq _ _ ?_).trans (f.quotKerEquivOfSurjective ?_)
+        · simp only [f, LinearMap.ker_comp, Submodule.ker_mkQ]
+          rw [← Submodule.smul_top_eq_comap_smul_top_of_surjective _ _ (Submodule.mkQ_surjective _)]
+          simp [← Submodule.ideal_span_singleton_smul r ⊤, Submodule.sup_smul, sup_comm]
+        · simp only [LinearMap.coe_comp, f]
+          exact Function.Surjective.comp (Submodule.mkQ_surjective _) (Submodule.mkQ_surjective _)
+      refine ih.trans ?_
+      have h4 : IsSMulRegular M r := ((isWeaklyRegular_cons_iff M r rs).mp hr).1
+      let S := Ext.covariantSequence N h4.SMul_ShortComplex_shortExact n (n + 1) rfl
+      let hS := Ext.covariantSequence_exact N h4.SMul_ShortComplex_shortExact n (n + 1) rfl
+      have : Subsingleton (S.obj' 1 (by omega)) := h_left_subsingleton
+      have h5 : S.map' 1 (1 + 1) (by omega) (by omega) = 0 :=
+        IsZero.eq_zero_of_src (AddCommGrp.isZero_of_subsingleton _) _
+      have isIso := ComposableArrows.Exact.isIso_map' hS 1 (by omega) h5
+        (ext_hom_eq_zero_of_mem_ann (h r List.mem_cons_self) (n + 1))
+      exact (asIso (S.map' (1 + 1) (1 + 2) _ _)).addCommGroupIsoToAddEquiv
