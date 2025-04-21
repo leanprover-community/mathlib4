@@ -136,7 +136,7 @@ def pseudofunctorRight (C : Type u₁) [Category.{v₁} C] :
     ext x
     cases x
     all_goals
-      dsimp [mapCompRight, mapCompLeft, leftUnitor]
+      dsimp [mapCompRight, leftUnitor]
       simp only [mapWhiskerLeft_app, Functor.id_obj, Category.assoc]
       repeat rw [NatTrans.comp_app]
       simp
@@ -145,7 +145,7 @@ def pseudofunctorRight (C : Type u₁) [Category.{v₁} C] :
     ext x
     cases x
     all_goals
-      dsimp [mapCompRight, mapCompLeft, rightUnitor]
+      dsimp [mapCompRight, rightUnitor]
       simp only [mapWhiskerLeft_app, Functor.id_obj, Category.assoc]
       repeat rw [NatTrans.comp_app]
       simp
@@ -165,7 +165,7 @@ def pseudofunctorLeft (D : Type u₂) [Category.{v₂} D] :
     ext x
     cases x
     all_goals
-      dsimp [mapCompRight, mapCompLeft, leftUnitor]
+      dsimp [mapCompLeft, leftUnitor]
       simp only [mapWhiskerLeft_app, Functor.id_obj, Category.assoc]
       repeat rw [NatTrans.comp_app]
       simp
@@ -174,7 +174,7 @@ def pseudofunctorLeft (D : Type u₂) [Category.{v₂} D] :
     ext x
     cases x
     all_goals
-      dsimp [mapCompRight, mapCompLeft, rightUnitor]
+      dsimp [mapCompLeft, rightUnitor]
       simp only [mapWhiskerLeft_app, Functor.id_obj, Category.assoc]
       repeat rw [NatTrans.comp_app]
       simp
