@@ -403,6 +403,13 @@ theorem quasiMeasurePreserving_mul [IsMulLeftInvariant ν] :
   Measure.QuasiMeasurePreserving.comp quasiMeasurePreserving_snd
   (measurePreserving_prod_mul μ ν).quasiMeasurePreserving
 
+/-- The map `(x, y) ↦ y * x` is quasi-measure-preserving. -/
+@[to_additive "The map `(x, y) ↦ y + x` is quasi-measure-preserving."]
+theorem quasiMeasurePreserving_mul_swap [IsMulLeftInvariant μ] :
+    QuasiMeasurePreserving (fun p : G × G => p.2 * p.1) (μ.prod ν) μ :=
+  Measure.QuasiMeasurePreserving.comp quasiMeasurePreserving_snd
+  (measurePreserving_prod_mul_swap μ ν).quasiMeasurePreserving
+
 section MeasurableInv
 
 variable [MeasurableInv G]
