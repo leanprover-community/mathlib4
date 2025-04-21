@@ -216,4 +216,3 @@ lemma coverEntropy_finite_biUnion {T : X → X} {F : ι → Set X} {s : Finset �
 end Union
 
 end Dynamics
-#lint
