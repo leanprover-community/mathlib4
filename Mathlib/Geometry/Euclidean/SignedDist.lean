@@ -145,7 +145,7 @@ lemma signedDist_vadd_left_swap : signedDist v (w +ᵥ p) q = signedDist v p (-w
 lemma signedDist_vadd_right_swap : signedDist v p (w +ᵥ q) = signedDist v (-w +ᵥ p) q := by
   rw [signedDist_vadd_left_swap, neg_neg]
 
-@[simp] lemma signedDist_vadd_vadd : signedDist v (w +ᵥ p) (w +ᵥ q) = signedDist v p q := by
+lemma signedDist_vadd_vadd : signedDist v (w +ᵥ p) (w +ᵥ q) = signedDist v p q := by
   rw [signedDist_vadd_left_swap, neg_vadd_vadd]
 
 -- Lemmas relating `signedDist` to `dist`
