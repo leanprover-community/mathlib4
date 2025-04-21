@@ -195,8 +195,8 @@ theorem variance_def' [IsProbabilityMeasure μ] {X : Ω → ℝ} (hX : MemLp X 2
   · apply hX.integrable_sq.add
     apply integrable_const
   · exact ((hX.integrable one_le_two).const_mul 2).mul_const' _
-  simp only [Pi.pow_apply, integral_const, measure_univ, ENNReal.toReal_one, smul_eq_mul, one_mul,
-    Pi.mul_apply, Pi.ofNat_apply, Nat.cast_ofNat, integral_mul_right, integral_mul_left]
+  simp only [integral_const, measureReal_univ_eq_one, smul_eq_mul, one_mul, integral_mul_right,
+    integral_mul_left, Pi.pow_apply]
   ring
 
 theorem variance_le_expectation_sq [IsProbabilityMeasure μ] {X : Ω → ℝ}
