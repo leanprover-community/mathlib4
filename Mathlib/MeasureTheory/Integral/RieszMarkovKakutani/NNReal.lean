@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yoh Tanimoto
 -/
 
-import Mathlib.MeasureTheory.Integral.RealRMK
+import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
 
 /-!
 #  Riesz–Markov–Kakutani representation theorem for `NNReal`
@@ -45,7 +45,7 @@ theorem lintegral_rieszMeasure_eq [Nonempty X] : ∀ (f : C_c(X, ℝ≥0)),
                                  intro x
                                  simp only [Pi.zero_apply, NNReal.zero_le_coe]),
       ← NNReal.coe_inj, eq_toRealLinear_toReal f,
-      ← RealRMK.integral_rieszMeasure (toRealLinear Λ) (nonneg_toRealLinear Λ)]
+      ← RealRMK.integral_rieszMeasure (nonneg_toRealLinear Λ) f.toReal]
     · simp only [toReal_apply, NNReal.coe_mk]
       congr
       exact eq_toNNRealLinear_toRealLinear Λ
