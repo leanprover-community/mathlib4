@@ -75,6 +75,35 @@ theorem integer_valuation_le_one (x : S.integer K) {v : HeightOneSpectrum R} (hv
     v.valuation K x ≤ 1 :=
   x.property v hv
 
+/-- If `S` is the whole set of places of `K`, then the `S`-integers are the whole of `K`. -/
+@[simp] lemma set_integer_top : (univ : Set (HeightOneSpectrum R)).integer K = ⊤ := by
+  ext
+  tauto
+
+/--
+If `S` is the empty set, then the `S`-integers are the minimal `R`-subalgebra of `K` (which is
+just `R` itself).
+-/
+@[simp]
+lemma set_integer_empty : (∅ : Set (HeightOneSpectrum R)).integer K = ⊥ := by
+  ext x
+  simp only [integer, mem_empty_iff_false, not_false_eq_true, true_implies]
+  refine ⟨IsDedekindDomain.HeightOneSpectrum.mem_integers_of_valuation_le_one K x, ?_⟩
+  rintro ⟨y, rfl⟩ v
+  exact v.valuation_le_one y
+
+variable (R) in
+/-- Canonical `R`-algebra isomorphism from `R` to the `∅`-integers of `K`. -/
+noncomputable def setIntegerEmptyEquiv : R ≃ₐ[R] (∅ : Set (HeightOneSpectrum R)).integer K :=
+  .ofBijective ((Algebra.ofId R K : R →ₐ[R] K).codRestrict _
+    (fun r ↦ by simpa only [set_integer_empty] using ⟨r, rfl⟩))
+    ⟨fun x y ↦ by simp [← SetLike.coe_eq_coe, Algebra.ofId_apply],
+      fun ⟨x, hx⟩ ↦ by simpa [← SetLike.coe_eq_coe, set_integer_empty, Algebra.mem_bot] using hx⟩
+
+lemma setIntegerEmptyEquiv_apply (r : R) :
+    setIntegerEmptyEquiv R K r = algebraMap R K r :=
+  rfl
+
 /-! ## `S`-units -/
 
 
