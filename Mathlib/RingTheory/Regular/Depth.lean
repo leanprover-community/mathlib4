@@ -153,9 +153,8 @@ lemma exist_mem_ann_isSMulRegular_of_hom_subsingleton_nontrivial [IsNoetherianRi
   absurd hom0
   let _ := Module.finitePresentation_of_finite R N
   contrapose! f_ne0
-  exact (LinearEquiv.map_eq_zero_iff
-    (Module.FinitePresentation.LinearEquiv_mapExtendScalars p'.asIdeal.primeCompl).symm).mp
-      (Subsingleton.eq_zero _)
+  exact (Module.FinitePresentation.linearEquivMapExtendScalars
+    p'.asIdeal.primeCompl).symm.map_eq_zero_iff.mp (Subsingleton.eq_zero _)
 
 --lemma_212_b
 lemma exist_mem_ann_isSMulRegular_of_hom_subsingleton [IsNoetherianRing R]
