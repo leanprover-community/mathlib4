@@ -19,7 +19,8 @@ namespace CategoryTheory.Join
 
 variable (C D : Type*) [Category C] [Category D]
 
-/-- The category of `Join.inclLeft C D`-costructured arrows with target `right d` is equivalent to C. -/
+/-- The category of `Join.inclLeft C D`-costructured arrows with target `right d` is equivalent to
+`C`. -/
 def costructuredArrowEquiv (d : D) : CostructuredArrow (inclLeft C D) (right d) ≌ C where
   functor := CostructuredArrow.proj (inclLeft C D) (right d)
   inverse :=
@@ -28,7 +29,8 @@ def costructuredArrowEquiv (d : D) : CostructuredArrow (inclLeft C D) (right d) 
   unitIso := NatIso.ofComponents (fun _ ↦ CostructuredArrow.isoMk (Iso.refl _))
   counitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
-/-- The category of `Join.inclRight C D`-structured arrows with source `left c` is equivalent to D. -/
+/-- The category of `Join.inclRight C D`-structured arrows with source `left c` is equivalent to
+`D`. -/
 def structuredArrowEquiv (c : C) : StructuredArrow (left c) (inclRight C D) ≌ D where
   functor := StructuredArrow.proj (left c) (inclRight C D)
   inverse :=
@@ -40,11 +42,11 @@ def structuredArrowEquiv (c : C) : StructuredArrow (left c) (inclRight C D) ≌ 
 instance [IsConnected C] : (inclLeft C D).Initial where
   out x := match x with
     |.left _ => isConnected_of_isTerminal _ CostructuredArrow.mkIdTerminal
-    |.right d => isConnected_of_equivalent (CostructuredArrowEquiv C D d).symm
+    |.right d => isConnected_of_equivalent (costructuredArrowEquiv C D d).symm
 
 instance [IsConnected D] : (inclRight C D).Final where
   out x := match x with
-    |.left c => isConnected_of_equivalent (StructuredArrowEquiv C D c).symm
+    |.left c => isConnected_of_equivalent (structuredArrowEquiv C D c).symm
     |.right _ => isConnected_of_isInitial _ (StructuredArrow.mkIdInitial (T := inclRight C D))
 
 end CategoryTheory.Join
