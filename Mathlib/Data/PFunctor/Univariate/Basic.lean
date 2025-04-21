@@ -15,7 +15,7 @@ pfunctor/M.lean.)
 
 -- "W", "Idx"
 
-universe u v v₁ v₂ v₃
+universe u u₁ u₂ u₃ u₄ v v₁ v₂ v₃
 
 /-- A polynomial functor `P` is given by a type `A` and a family `B` of types over `A`. `P` maps
 any type `α` to a new type `P α`, which is defined as the sigma type `Σ x, P.B x → α`.
@@ -27,23 +27,23 @@ elements of `α`.
 @[pp_with_univ]
 structure PFunctor where
   /-- The head type -/
-  A : Type u
+  A : Type u₁
   /-- The child family of types -/
-  B : A → Type u
+  B : A → Type u₂
 
 namespace PFunctor
 
 instance : Inhabited PFunctor :=
   ⟨⟨default, default⟩⟩
 
-variable (P : PFunctor.{u}) {α : Type v₁} {β : Type v₂} {γ : Type v₃}
+variable (P : PFunctor.{u₁, u₂}) {α : Type v₁} {β : Type v₂} {γ : Type v₃}
 
 /-- Applying `P` to an object of `Type` -/
 @[coe]
 def Obj (α : Type v) :=
   Σ x : P.A, P.B x → α
 
-instance : CoeFun PFunctor.{u} (fun _ => Type v → Type (max u v)) where
+instance : CoeFun PFunctor.{u₁, u₂} (fun _ => Type v → Type (max u₁ u₂ v)) where
   coe := Obj
 
 /-- Applying `P` to a morphism of `Type` -/
@@ -53,7 +53,7 @@ def map (f : α → β) : P α → P β :=
 instance Obj.inhabited [Inhabited P.A] [Inhabited α] : Inhabited (P α) :=
   ⟨⟨default, default⟩⟩
 
-instance : Functor.{v, max u v} P.Obj where map := @map P
+instance : Functor.{v, max u₁ u₂ v} P.Obj where map := @map P
 
 /-- We prefer `PFunctor.map` to `Functor.map` because it is universe-polymorphic. -/
 @[simp]
@@ -72,7 +72,7 @@ protected theorem id_map : ∀ x : P α, P.map id x = x := fun ⟨_, _⟩ => rfl
 protected theorem map_map (f : α → β) (g : β → γ) :
     ∀ x : P α, P.map g (P.map f x) = P.map (g ∘ f) x := fun ⟨_, _⟩ => rfl
 
-instance : LawfulFunctor.{v, max u v} P.Obj where
+instance : LawfulFunctor.{v, max u₁ u₂ v} P.Obj where
   map_const := rfl
   id_map x := P.id_map x
   comp_map f g x := P.map_map f g x |>.symm
@@ -146,15 +146,17 @@ Composition of polynomial functors.
 namespace PFunctor
 
 /-- functor composition for polynomial functors -/
-def comp (P₂ P₁ : PFunctor.{u}) : PFunctor.{u} :=
+def comp (P₂ : PFunctor.{u₃, u₄}) (P₁ : PFunctor.{u₁, u₂}) : PFunctor.{max u₁ u₃ u₄, max u₂ u₄} :=
   ⟨Σ a₂ : P₂.1, P₂.2 a₂ → P₁.1, fun a₂a₁ => Σ u : P₂.2 a₂a₁.1, P₁.2 (a₂a₁.2 u)⟩
 
 /-- constructor for composition -/
-def comp.mk (P₂ P₁ : PFunctor.{u}) {α : Type} (x : P₂ (P₁ α)) : comp P₂ P₁ α :=
+def comp.mk (P₂ : PFunctor.{u₃, u₄}) (P₁ : PFunctor.{u₁, u₂}) {α : Type v} (x : P₂ (P₁ α)) :
+    comp P₂ P₁ α :=
   ⟨⟨x.1, Sigma.fst ∘ x.2⟩, fun a₂a₁ => (x.2 a₂a₁.1).2 a₂a₁.2⟩
 
 /-- destructor for composition -/
-def comp.get (P₂ P₁ : PFunctor.{u}) {α : Type} (x : comp P₂ P₁ α) : P₂ (P₁ α) :=
+def comp.get (P₂ : PFunctor.{u₃, u₄}) (P₁ : PFunctor.{u₁, u₂}) {α : Type v} (x : comp P₂ P₁ α) :
+    P₂ (P₁ α) :=
   ⟨x.1.1, fun a₂ => ⟨x.1.2 a₂, fun a₁ => x.2 ⟨a₂, a₁⟩⟩⟩
 
 end PFunctor
@@ -164,7 +166,7 @@ Lifting predicates and relations.
 -/
 namespace PFunctor
 
-variable {P : PFunctor.{u}}
+variable {P : PFunctor.{u₁, u₂}}
 
 open Functor
 
