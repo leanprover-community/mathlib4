@@ -237,11 +237,7 @@ theorem stereo_right_inv (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : stereoToFun v
   have h₃ : inner v v = (1 : ℝ) := by simp [real_inner_self_eq_norm_mul_norm, hv]
   rw [h₁, h₂, h₃]
   match_scalars
-  -- TODO(https://github.com/leanprover-community/mathlib4/issues/15486): used to be `field_simp`, but was really slow
-  -- replaced by `simp only ...` to speed up. Reinstate `field_simp` once it is faster.
-  simp (disch := field_simp_discharge) only [add_div', add_sub_sub_cancel, div_div,
-    div_div_eq_mul_div, div_eq_iff, div_mul_eq_mul_div, inv_eq_one_div,
-    mul_div_assoc', mul_one, mul_zero, one_mul, smul_eq_mul, sub_div', zero_add, zero_div, zero_mul]
+  field_simp
   ring
 
 /-- Stereographic projection from the unit sphere in `E`, centred at a unit vector `v` in `E`;
