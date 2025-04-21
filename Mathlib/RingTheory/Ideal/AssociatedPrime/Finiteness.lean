@@ -3,7 +3,6 @@ Copyright (c) 2025 Jinzhao Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jinzhao Pan
 -/
-import Mathlib.Algebra.Exact
 import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.Order.RelSeries
 import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
@@ -17,25 +16,24 @@ import Mathlib.RingTheory.Spectrum.Prime.Defs
 In this file we proved that any finitely generated module over a noetherian ring have finitely many
 associated primes.
 
-# Main definitions and results
+## Main results
 
-* `IsNoetherianRing.exists_relSeries_isQuotientEquivQuotientPrime` : If `A` is a Noetherian ring
-and `M` is a finitely generated `A`-module, then there exists a chain of submodules
-`0 = M₀ ≤ M₁ ≤ M₂ ≤ ... ≤ Mₙ = M` of `M`, such that for each `0 ≤ i < n`,
-`Mᵢ₊1 / Mᵢ` is isomorphic to `A / pᵢ` for some prime ideal `pᵢ` of `A`.
+* `IsNoetherianRing.exists_relSeries_isQuotientEquivQuotientPrime`: If `A` is a Noetherian ring
+  and `M` is a finitely generated `A`-module, then there exists a chain of submodules
+  `0 = M₀ ≤ M₁ ≤ M₂ ≤ ... ≤ Mₙ = M` of `M`, such that for each `0 ≤ i < n`,
+  `Mᵢ₊₁ / Mᵢ` is isomorphic to `A / pᵢ` for some prime ideal `pᵢ` of `A`.
 
-* `IsNoetherianRing.induction_on_isQuotientEquivQuotientPrime` : If a property on
-finitely generated modules over a Noetherian ring satisfies that:
-- it holds for zero module,
-- it holds for any module isomorphic to some `A ⧸ p` where `p` is a prime ideal of `A`,
-- it is stable by short exact sequences,
-then the property holds for every finitely generated modules.
+* `IsNoetherianRing.induction_on_isQuotientEquivQuotientPrime`: If a property on
+  finitely generated modules over a Noetherian ring satisfies that:
 
-* `associatedPrimes.subset_union_of_exact` : If `0 → M → M' → M''` is an exact sequence,
-then the set of associated primes of `M'` is contained in the union of those of `M` and `M''`.
+  - it holds for zero module,
+  - it holds for any module isomorphic to some `A ⧸ p` where `p` is a prime ideal of `A`,
+  - it is stable by short exact sequences,
 
-* `associatedPrimes.finite` : There are only finitely many associated primes of a
-finitely generated module over a Noetherian ring.
+  then the property holds for every finitely generated modules.
+
+* `associatedPrimes.finite`: There are only finitely many associated primes of a
+  finitely generated module over a Noetherian ring.
 
 -/
 
@@ -56,11 +54,9 @@ def Submodule.IsQuotientEquivQuotientPrime (N₁ N₂ : Submodule A M) :=
 private theorem aux (h : N ≠ ⊤) :
     ∃ (p : PrimeSpectrum A) (f : A ⧸ p.1 →ₗ[A] M ⧸ N), Function.Injective f := by
   have := Submodule.Quotient.nontrivial_of_lt_top _ h.lt_top
-  have H := associatedPrimes.nonempty A (M ⧸ N)
-  have hprime := (AssociatePrimes.mem_iff.1 H.some_mem).1
-  obtain ⟨a, ha⟩ := (AssociatePrimes.mem_iff.1 H.some_mem).2
-  exact ⟨⟨_, hprime⟩, Submodule.liftQ _ _ ha.le,
-    LinearMap.ker_eq_bot.1 (Submodule.ker_liftQ_eq_bot' _ _ ha)⟩
+  have h := (associatedPrimes.nonempty A (M ⧸ N)).some_mem
+  rw [AssociatePrimes.mem_iff, isAssociatedPrime_iff_exists_injective_linearMap] at h
+  exact ⟨⟨_, h.1⟩, h.2⟩
 
 private noncomputable def auxP (h : N ≠ ⊤) : PrimeSpectrum A := (aux h).choose
 
@@ -155,7 +151,7 @@ variable (A M)
 
 /-- If `A` is a Noetherian ring and `M` is a finitely generated `A`-module, then there exists
 a chain of submodules `0 = M₀ ≤ M₁ ≤ M₂ ≤ ... ≤ Mₙ = M` of `M`, such that for each `0 ≤ i < n`,
-`Mᵢ₊1 / Mᵢ` is isomorphic to `A / pᵢ` for some prime ideal `pᵢ` of `A`. -/
+`Mᵢ₊₁ / Mᵢ` is isomorphic to `A / pᵢ` for some prime ideal `pᵢ` of `A`. -/
 @[stacks 00L0]
 theorem IsNoetherianRing.exists_relSeries_isQuotientEquivQuotientPrime :
     ∃ s : RelSeries (Submodule.IsQuotientEquivQuotientPrime (A := A) (M := M)),
@@ -216,50 +212,6 @@ theorem IsNoetherianRing.induction_on_isQuotientEquivQuotientPrime
     replace ih := equiv _ _ (Submodule.submoduleOfEquivOfLe hle).symm ih
     exact exact _ _ _ _ _ (Submodule.injective_subtype _) (Submodule.mkQ_surjective _)
       (LinearMap.exact_subtype_mkQ _) ih (quotient _ p f)
-
-/-- If `0 → M → M' → M''` is an exact sequence, then the set of associated primes of `M'` is
-contained in the union of those of `M` and `M''`. -/
-@[stacks 02M3 "second part"]
-theorem associatedPrimes.subset_union_of_exact
-    {R : Type*} [CommRing R] {M : Type*} [AddCommGroup M] [Module R M]
-    {M' : Type*} [AddCommGroup M'] [Module R M'] {M'' : Type*} [AddCommGroup M''] [Module R M'']
-    (f : M →ₗ[R] M') (g : M' →ₗ[R] M'') (hf : Function.Injective f) (hfg : Function.Exact f g) :
-    associatedPrimes R M' ⊆ associatedPrimes R M ∪ associatedPrimes R M'' := by
-  rintro p ⟨_, x, hx⟩
-  by_cases h : ∃ a ∈ p.primeCompl, ∃ y : M, f y = a • x
-  · obtain ⟨a, ha, y, h⟩ := h
-    refine Or.inl ⟨‹_›, y, le_antisymm (fun b hb ↦ ?_) (fun b hb ↦ ?_)⟩
-    · rw [hx] at hb
-      rw [LinearMap.mem_ker, LinearMap.toSpanSingleton_apply] at hb ⊢
-      apply_fun _ using hf
-      rw [map_smul, map_zero, h, smul_comm, hb, smul_zero]
-    · rw [LinearMap.mem_ker, LinearMap.toSpanSingleton_apply] at hb
-      apply_fun f at hb
-      rw [map_smul, map_zero, h, ← mul_smul, ← LinearMap.toSpanSingleton_apply,
-        ← LinearMap.mem_ker, ← hx] at hb
-      contrapose! hb
-      exact p.primeCompl.mul_mem hb ha
-  · push_neg at h
-    refine Or.inr ⟨‹_›, g x, le_antisymm (fun b hb ↦ ?_) (fun b hb ↦ ?_)⟩
-    · rw [hx] at hb
-      rw [LinearMap.mem_ker, LinearMap.toSpanSingleton_apply] at hb ⊢
-      rw [← map_smul, hb, map_zero]
-    · rw [LinearMap.mem_ker, LinearMap.toSpanSingleton_apply, ← map_smul, ← LinearMap.mem_ker,
-        hfg.linearMap_ker_eq] at hb
-      obtain ⟨y, hy⟩ := hb
-      by_contra! H
-      exact h b H y hy
-
-/-- The set of associated primes of the product of two modules is equal to
-the union of those of the two modules. -/
-@[stacks 02M3 "third part"]
-theorem associatedPrimes.prod
-    (R : Type*) [CommRing R] (M : Type*) [AddCommGroup M] [Module R M]
-    (M' : Type*) [AddCommGroup M'] [Module R M'] :
-    associatedPrimes R (M × M') = associatedPrimes R M ∪ associatedPrimes R M' :=
-  (subset_union_of_exact (.inl R M M') (.snd R M M') LinearMap.inl_injective .inl_snd).antisymm
-    (Set.union_subset_iff.2 ⟨subset_of_injective (.inl R M M') LinearMap.inl_injective,
-      subset_of_injective (.inr R M M') LinearMap.inr_injective⟩)
 
 /-- There are only finitely many associated primes of a finitely generated module
 over a Noetherian ring. -/
