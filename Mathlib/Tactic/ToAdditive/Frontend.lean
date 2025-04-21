@@ -165,7 +165,9 @@ The transport process generally works by taking all the names of
 identifiers appearing in the name, type, and body of a declaration and
 creating a new declaration by mapping those names to additive versions
 using a simple string-based dictionary and also using all declarations
-that have previously been labeled with `to_additive`.
+that have previously been labeled with `to_additive`. The dictionary is `ToAdditive.nameDict`
+and can be found in the `Tactic.ToAdditive.Frontend` file. If you introduce a new name which
+should be translated by `to_additive` you should add the translation to this dictionary.
 
 In the `mul_comm'` example above, `to_additive` maps:
 * `mul_comm'` to `add_comm'`,
@@ -993,6 +995,8 @@ def nameDict : String → List String
   | "gpfree"      => ["apfree"]
   | "quantale"    => ["add", "Quantale"]
   | "square"      => ["even"]
+  | "mconv"       => ["conv"]
+  | "irreducible" => ["add", "Irreducible"]
   | x             => [x]
 
 /--
@@ -1073,6 +1077,8 @@ def fixAbbreviation : List String → List String
   | "Is"::"Of"::"Fin"::"Order"::s     => "IsOfFinAddOrder" :: fixAbbreviation s
   | "is" :: "Central" :: "Scalar" :: s  => "isCentralVAdd" :: fixAbbreviation s
   | "Is" :: "Central" :: "Scalar" :: s  => "IsCentralVAdd" :: fixAbbreviation s
+  | "is" :: "Scalar" :: "Tower" :: s  => "vaddAssocClass" :: fixAbbreviation s
+  | "Is" :: "Scalar" :: "Tower" :: s  => "VAddAssocClass" :: fixAbbreviation s
   | "function" :: "_" :: "add" :: "Semiconj" :: s
                                       => "function" :: "_" :: "semiconj" :: fixAbbreviation s
   | "function" :: "_" :: "add" :: "Commute" :: s

@@ -111,7 +111,7 @@ end MeasureTheory.Measure
 This section provides a predicate for a kernel to disintegrate a kernel. It also proves that if `κ`
 is an s-finite kernel from a countable `α` such that each measure `κ a` is disintegrated by some
 kernel, then `κ` itself is disintegrated by a kernel, namely
-`ProbabilityTheory.Kernel.condKernelCountable`..
+`ProbabilityTheory.Kernel.condKernelCountable`.
 -/
 
 namespace ProbabilityTheory.Kernel
@@ -160,9 +160,7 @@ lemma IsCondKernel.isProbabilityMeasure_ae [IsFiniteKernel κ.fst] [κ.IsCondKer
     have : ∫⁻ b, s.indicator (fun _ ↦ r) b ∂(κ.fst a) ≤ κ.fst a s :=
       (lintegral_mono h_2_le).trans_eq (h_eq s hs)
     rw [lintegral_indicator_const hs] at this
-    by_contra h_ne_zero
-    rw [← not_lt] at this
-    refine this ?_
+    contrapose! this with h_ne_zero
     conv_lhs => rw [← one_mul (κ.fst a s)]
     exact ENNReal.mul_lt_mul_right' h_ne_zero (measure_ne_top _ _) hr
   · rw [ae_const_le_iff_forall_lt_measure_zero]
@@ -177,9 +175,7 @@ lemma IsCondKernel.isProbabilityMeasure_ae [IsFiniteKernel κ.fst] [κ.IsCondKer
     have : κ.fst a s ≤ ∫⁻ b, s.indicator (fun _ ↦ r) b ∂(κ.fst a) :=
       (h_eq s hs).symm.trans_le (lintegral_mono h_2_le)
     rw [lintegral_indicator_const hs] at this
-    by_contra h_ne_zero
-    rw [← not_lt] at this
-    refine this ?_
+    contrapose! this with h_ne_zero
     conv_rhs => rw [← one_mul (κ.fst a s)]
     exact ENNReal.mul_lt_mul_right' h_ne_zero (measure_ne_top _ _) hr
 
