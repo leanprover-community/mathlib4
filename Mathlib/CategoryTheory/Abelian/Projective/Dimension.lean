@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExactSequences
+import Mathlib.Algebra.Homology.DerivedCategory.Ext.HasEnoughProjectives
 
 /-!
 # Projective dimension
@@ -109,6 +109,15 @@ instance [HasProjectiveDimensionLT X n] :
     HasProjectiveDimensionLT X n.succ :=
   inferInstanceAs (HasProjectiveDimensionLT X (n + 1))
 
+instance [Projective X] : HasProjectiveDimensionLT X 1 := by
+  letI := HasExt.standard C
+  change HasProjectiveDimensionLT X 1
+  rw [hasProjectiveDimensionLT_iff]
+  intro i hi Y e
+  obtain _ | i := i
+  · simp at hi
+  · exact e.eq_zero_of_projective
+
 end
 
 lemma Retract.hasProjectiveDimensionLT {X Y : C} (h : Retract X Y) (n : ℕ)
@@ -169,9 +178,7 @@ lemma hasProjectiveDimensionLT_X₁ (h₂ : HasProjectiveDimensionLT S.X₂ n)
     (Ext.eq_zero_of_hasProjectiveDimensionLT _ (n + 1) (by omega))
   rw [x₂.eq_zero_of_hasProjectiveDimensionLT n (by omega), Ext.comp_zero]
 
--- When we know `HasProjectiveDimensionLT S.X₂ 1` is equivalent to `Projective S.X₂`,
--- the assumption `h₂` can be changed to `h₂ : Projective S.X₂`.
-lemma hasProjectiveDimensionLT_X₃_iff (n : ℕ) (h₂ : HasProjectiveDimensionLT S.X₂ 1) :
+lemma hasProjectiveDimensionLT_X₃_iff (n : ℕ) (h₂ : Projective S.X₂) :
     HasProjectiveDimensionLT S.X₃ (n + 2) ↔ HasProjectiveDimensionLT S.X₁ (n + 1) :=
   ⟨fun _ ↦ hS.hasProjectiveDimensionLT_X₁ (n + 1) inferInstance inferInstance,
     fun _ ↦ hS.hasProjectiveDimensionLT_X₃ (n + 1) inferInstance inferInstance⟩
