@@ -120,7 +120,7 @@ instance limitSubobjectProduct_mono [HasLimitsOfSize.{w, w} C] (F : J ⥤ C) :
     Mono (limitSubobjectProduct F) :=
   mono_comp _ _
 
-@[simp, reassoc] -- simp can prove the reassoc
+@[reassoc]
 lemma limitSubobjectProduct_π {J : Type w} [Category.{w} J] {C : Type u} [Category.{v} C]
     [HasLimitsOfSize.{w, w} C] (F : J ⥤ C) (j : J) :
     limitSubobjectProduct F ≫ Pi.π F.obj j = limit.π F j := by
@@ -135,7 +135,7 @@ lemma limitSubobjectProduct_eq_lift {J : Type w} [Category.{w} J] {C : Type u} [
     limitSubobjectProduct F = Pi.lift (limit.π F) := by
   apply limit.hom_ext
   intro ⟨j⟩
-  simp
+  simp [limitSubobjectProduct_π]
 
 /-- Any category with products and equalizers has all limits. -/
 @[stacks 002N]
@@ -405,7 +405,7 @@ instance colimitQuotientCoproduct_epi [HasColimitsOfSize.{w, w} C] (F : J ⥤ C)
     Epi (colimitQuotientCoproduct F) :=
   epi_comp _ _
 
-@[simp, reassoc]
+@[reassoc]
 lemma ι_colimitQuotientCoproduct {J : Type w} [Category.{w} J] {C : Type u} [Category.{v} C]
     [HasColimitsOfSize.{w, w} C] (F : J ⥤ C) (j : J) :
     Sigma.ι F.obj j ≫ colimitQuotientCoproduct F = colimit.ι F j := by
@@ -420,7 +420,7 @@ lemma colimitQuotientCoproduct_eq_desc {J : Type w} [Category.{w} J] {C : Type u
     colimitQuotientCoproduct F = Sigma.desc (colimit.ι F) := by
   apply colimit.hom_ext
   intro ⟨j⟩
-  simp
+  simp [ι_colimitQuotientCoproduct
 
 /-- Any category with coproducts and coequalizers has all colimits. -/
 @[stacks 002P]
