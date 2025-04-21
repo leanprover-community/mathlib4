@@ -117,7 +117,7 @@ lemma signedDist_triangle_left : signedDist v p q - signedDist v p r = signedDis
 lemma signedDist_triangle_right : signedDist v p r - signedDist v q r = signedDist v p q := by
   rw [sub_eq_iff_eq_add, signedDist_triangle]
 
--- Lemmas about offsetting the point argument of `signedDist` with `+ᵥ`
+-- Lemmas about offsetting the point arguments of `signedDist` with `+ᵥ`
 
 lemma signedDist_vadd_left :
     signedDist v (w +ᵥ p) q = -inner (‖v‖⁻¹ • v) w + signedDist v p q := by
