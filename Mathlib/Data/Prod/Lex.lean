@@ -172,9 +172,9 @@ instance [Ord α] [Ord β] [TransOrd α] [TransOrd β] : TransOrd (α ×ₗ β) 
 instance linearOrder (α β : Type*) [LinearOrder α] [LinearOrder β] : LinearOrder (α ×ₗ β) :=
   { Prod.Lex.partialOrder α β with
     le_total := total_of (Prod.Lex _ _)
-    decidableLE := Prod.Lex.decidable _ _
-    decidableLT := Prod.Lex.decidable _ _
-    decidableEq := instDecidableEqLex _
+    toDecidableLE := Prod.Lex.decidable _ _
+    toDecidableLT := Prod.Lex.decidable _ _
+    toDecidableEq := instDecidableEqLex _
     compare_eq_compareOfLessAndEq := fun a b => by
       have : DecidableLT (α ×ₗ β) := Prod.Lex.decidable _ _
       have : BEqOrd (α ×ₗ β) := ⟨by
