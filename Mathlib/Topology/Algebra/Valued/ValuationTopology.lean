@@ -165,6 +165,14 @@ theorem isOpen_ball (r : Γ₀) : IsOpen (X := R) {x | v x < r} := by
   exact ⟨Units.mk0 _ hr,
     fun y hy => (sub_add_cancel y x).symm ▸ (v.map_add _ x).trans_lt (max_lt hy hx)⟩
 
+/-- An open ball centred at the origin in a valued ring is closed. -/
+theorem isClosed_ball (r : Γ₀) : IsClosed (X := R) {x | v x < r} := by
+  rcases eq_or_ne r 0 with rfl|hr
+  · simp
+  exact AddSubgroup.isClosed_of_isOpen
+    (Valuation.ltAddSubgroup v (Units.mk0 r hr))
+    (isOpen_ball _ _)
+
 /-- A closed ball centred at the origin in a valued ring is open. -/
 theorem isOpen_closedball {r : Γ₀} (hr : r ≠ 0) : IsOpen (X := R) {x | v x ≤ r} := by
   rw [isOpen_iff_mem_nhds]
@@ -173,6 +181,19 @@ theorem isOpen_closedball {r : Γ₀} (hr : r ≠ 0) : IsOpen (X := R) {x | v x 
   simp only [setOf_subset_setOf]
   exact ⟨Units.mk0 _ hr,
     fun y hy => (sub_add_cancel y x).symm ▸ le_trans (v.map_add _ _) (max_le (le_of_lt hy) hx)⟩
+
+/-- A closed ball centred at the origin in a valued ring is closed. -/
+theorem isClosed_closedBall (r : Γ₀) : IsClosed (X := R) {x | v x ≤ r} := by
+  rw [← isOpen_compl_iff, isOpen_iff_mem_nhds]
+  intro x hx
+  rw [mem_nhds]
+  simp only [le_zero_iff, mem_compl_iff, mem_setOf_eq] at hx ⊢
+  have hx' : v x ≠ 0 := by
+    intro hz
+    simp [hz] at hx
+  refine ⟨Units.mk0 _ hx', fun y hy hy' => ne_of_lt hy ?_⟩
+  rw [map_sub_swap]
+  exact Valuation.map_sub_eq_of_lt_left _ <| lt_of_le_of_lt hy' (lt_of_not_ge hx)
 
 /-- A sphere centred at the origin in a valued ring is open. -/
 theorem isOpen_sphere {r : Γ₀} (hr : r ≠ 0) : IsOpen (X := R) {x | v x = r} := by
@@ -192,5 +213,14 @@ theorem integer_isOpen : IsOpen (_i.v.integer : Set R) :=
 theorem valuationSubring_isOpen (K : Type u) [Field K] [hv : Valued K Γ₀] :
     IsOpen (hv.v.valuationSubring : Set K) :=
   integer_isOpen K
+
+/-- The closed unit ball of a valued ring is closed. -/
+theorem integer_isClosed : IsClosed (_i.v.integer : Set R) :=
+  isClosed_closedBall _ _
+
+/-- The valuation subring of a valued field is closed. -/
+theorem valuationSubring_isClosed (K : Type u) [Field K] [hv : Valued K Γ₀] :
+    IsClosed (hv.v.valuationSubring : Set K) :=
+  integer_isClosed K
 
 end Valued
