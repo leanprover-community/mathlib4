@@ -138,16 +138,17 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
   -- If a nolints file is explicitly provided, it must exist.
   -- If the file is omitted, we try to find one in scripts/nolints-style.txt
   -- and otherwise proceed without any style exceptions.
-  if let some filename := args.positionalArg? "nolints-file" then
+  if let some filename := args.flag? "nolints-file" then
     if !(← System.FilePath.pathExists filename.value) then
       IO.eprintln s!"error: path {filename.value} does not exist"
       return 1
     styleExceptions := ← IO.FS.lines filename.value
   else
+
     if ← System.FilePath.pathExists ("scripts" / "nolints-style.txt") then
       styleExceptions := ← IO.FS.lines ("scripts" / "nolints-style.txt")
     else
-      IO.eprintln s!"warning: a file scripts/nolints-style.txt does not exist"
+      IO.eprintln s!"warning: a file 'scripts/nolints-style.txt' does not exist"
   let mut numberErrors ← lintModules styleExceptions allModuleNames style isMathlib fix
   -- If we are linting mathlib, also check the init imports and for undocumented scripts.
   if libraries.contains "Mathlib" then
