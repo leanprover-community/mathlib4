@@ -90,6 +90,8 @@ theorem IsUnit.ringInverse {x : M₀} (h : IsUnit x) : IsUnit (inverse x) :=
   match h with
   | ⟨u, hu⟩ => hu ▸ ⟨u⁻¹, (inverse_unit u).symm⟩
 
+@[deprecated (since := "2025-04-22")] alias IsUnit.ring_inverse := IsUnit.ringInverse
+
 theorem inverse_of_isUnit {x : M₀} (h : IsUnit x) : inverse x = ((h.unit⁻¹ : M₀ˣ) : M₀) := dif_pos h
 
 /-- By definition, if `x` is not invertible then `inverse x = 0`. -/
@@ -143,6 +145,8 @@ end Ring
 theorem IsUnit.ringInverse {a : M₀} : IsUnit a → IsUnit (Ring.inverse a)
   | ⟨u, hu⟩ => hu ▸ ⟨u⁻¹, (Ring.inverse_unit u).symm⟩
 
+@[deprecated (since := "2025-04-22")] alias IsUnit.ring_inverse := IsUnit.ringInverse
+
 @[simp]
 theorem isUnit_ringInverse {a : M₀} : IsUnit (Ring.inverse a) ↔ IsUnit a :=
   ⟨fun h => by
@@ -153,6 +157,8 @@ theorem isUnit_ringInverse {a : M₀} : IsUnit (Ring.inverse a) ↔ IsUnit a :=
       exact not_isUnit_zero
       ,
     IsUnit.ringInverse⟩
+
+@[deprecated (since := "2025-04-22")] alias isUnit_ring_inverse := isUnit_ringInverse
 
 namespace Units
 
