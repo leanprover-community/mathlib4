@@ -3,15 +3,11 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wanyi He, Jiedong Jiang, Jingting Wang, Andrew Yang, Shouxin Zhang
 -/
+import Mathlib.RingTheory.HopkinsLevitzki
 import Mathlib.RingTheory.Ideal.Height
-import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.RingTheory.Localization.Submodule
-import Mathlib.RingTheory.Finiteness.Ideal
-import Mathlib.Order.KrullDimension
-import Mathlib.Order.Atoms
-import Mathlib.RingTheory.KrullDimension.Zero
 import Mathlib.RingTheory.Nakayama
-import Mathlib.RingTheory.Artinian.Ring
+
 /-!
 # Krull's Height Theorem
 
@@ -288,3 +284,5 @@ lemma Ideal.height_le_iff_exists_minimalPrimes  (p : Ideal R) [p.IsPrime]
     exact le_trans
       (Ideal.height_le_spanRank_toENat_of_mem_minimal_primes I p hp)
       (by simpa using (Cardinal.toENat.monotone' hI))
+
+#min_imports

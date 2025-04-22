@@ -7,8 +7,6 @@ import Mathlib.Algebra.Field.Equiv
 import Mathlib.RingTheory.Artinian.Module
 import Mathlib.RingTheory.Localization.Defs
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-import Mathlib.RingTheory.HopkinsLevitzki
-import Mathlib.RingTheory.KrullDimension.Zero
 
 /-!
 # Artinian rings
@@ -118,12 +116,3 @@ instance : IsArtinianRing (Localization S) :=
 end Localization
 
 end IsArtinianRing
-
-lemma isArtinianRing_iff_isNilpotent_maximalIdeal (R : Type*) [CommRing R] [IsNoetherianRing R]
-    [IsLocalRing R] : IsArtinianRing R ↔ IsNilpotent (IsLocalRing.maximalIdeal R) := by
-  rw [isArtinianRing_iff_krullDimLE_zero,
-    Ideal.isNilpotent_iff_le_nilradical (IsNoetherian.noetherian _),
-    ← and_iff_left (a := Ring.KrullDimLE 0 R) ‹IsLocalRing R›,
-    (Ring.krullDimLE_zero_and_isLocalRing_tfae R).out 0 3 rfl rfl,
-    IsLocalRing.isMaximal_iff, le_antisymm_iff, and_iff_right]
-  exact IsLocalRing.le_maximalIdeal (by simp [nilradical, Ideal.radical_eq_top])
