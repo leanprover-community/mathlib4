@@ -166,7 +166,19 @@ We always allow imports of `Init`, `Lean`, `Std`, `Qq` and
 def allowedImportDirs : NamePrefixRel := .ofArray #[
   -- This is used to test the linter.
   (`MathlibTest.DirectoryDependencyLinter, `Mathlib.Lean),
-  (`MathlibTest, `Mathlib.Lean),
+  -- Mathlib.Tactic has large transitive imports: just allow all of mathlib,
+  -- as we don't care about the details a lo
+  (`MathlibTest.Header, `Mathlib),
+  (`MathlibTest.Header, `Aesop),
+  (`MathlibTest.Header, `ImportGraph),
+  (`MathlibTest.Header, `LeanSearchClient),
+  (`MathlibTest.Header, `Plausible),
+  (`MathlibTest.Header, `ProofWidgets),
+  (`MathlibTest.Header, `Qq),
+  -- (`MathlibTest.Header, `Mathlib.Tactic),
+  -- (`MathlibTest.Header, `Mathlib.Deprecated),
+  (`MathlibTest.Header, `Batteries),
+  (`MathlibTest.Header, `Lake),
 
   (`Mathlib.Util, `Batteries),
   (`Mathlib.Util, `Mathlib.Lean),
