@@ -36,6 +36,15 @@ lemma IsCompact.exists_mapClusterPt {ι : Type*} (hs : IsCompact s) {f : Filter 
     {u : ι → X} (hf : Filter.map u f ≤ 𝓟 s) :
     ∃ x ∈ s, MapClusterPt x f u := hs hf
 
+lemma IsCompact.exists_clusterPt_of_frequently {l : Filter X} (hs : IsCompact s)
+    (hl : ∃ᶠ x in l, x ∈ s) : ∃ a ∈ s, ClusterPt a l :=
+  let ⟨a, has, ha⟩ := @hs _ (frequently_mem_iff_neBot.mp hl) inf_le_right
+  ⟨a, has, ha.mono inf_le_left⟩
+
+lemma IsCompact.exists_mapClusterPt_of_frequently {l : Filter ι} {f : ι → X} (hs : IsCompact s)
+    (hf : ∃ᶠ x in l, f x ∈ s) : ∃ a ∈ s, MapClusterPt a l f :=
+  hs.exists_clusterPt_of_frequently hf
+
 /-- The complement to a compact set belongs to a filter `f` if it belongs to each filter
 `𝓝 x ⊓ f`, `x ∈ s`. -/
 theorem IsCompact.compl_mem_sets (hs : IsCompact s) {f : Filter X} (hf : ∀ x ∈ s, sᶜ ∈ 𝓝 x ⊓ f) :
