@@ -103,7 +103,6 @@ theorem isReduced_iff_reduce_eq : IsReduced L ↔ reduce L = L where
 
 @[to_additive]
 theorem isReduced_toWord {x : FreeGroup α} : IsReduced (x.toWord) := by
-  rw [isReduced_iff_reduce_eq]
-  simp
+  simp [isReduced_iff_reduce_eq]
 
 end FreeGroup
