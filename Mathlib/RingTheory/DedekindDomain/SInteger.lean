@@ -25,8 +25,8 @@ This file defines the subalgebra of `S`-integers of `K` and the subgroup of `S`-
 ## Main statements
 
  * `Set.unitEquivUnitsInteger`: `S`-units are units of `S`-integers.
+ * `IsDedekindDomain.integer_empty`: proof that `∅`-integers is the usual ring of integers.
  * TODO: proof that `S`-units is the kernel of a map to a product.
- * TODO: proof that `∅`-integers is the usual ring of integers.
  * TODO: finite generation of `S`-units and Dirichlet's `S`-unit theorem.
 
 ## References
