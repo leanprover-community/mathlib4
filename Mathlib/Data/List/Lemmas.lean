@@ -45,9 +45,6 @@ theorem injOn_insertIdx_index_of_not_mem (l : List α) (x : α) (hx : x ∉ l) :
       · simpa [Nat.succ_le_succ_iff] using hn
       · simpa [Nat.succ_le_succ_iff] using hm
 
-@[deprecated (since := "2024-10-21")]
-alias injOn_insertNth_index_of_not_mem := injOn_insertIdx_index_of_not_mem
-
 theorem foldr_range_subset_of_range_subset {f : β → α → α} {g : γ → α → α}
     (hfg : Set.range f ⊆ Set.range g) (a : α) : Set.range (foldr f a) ⊆ Set.range (foldr g a) := by
   rintro _ ⟨l, rfl⟩

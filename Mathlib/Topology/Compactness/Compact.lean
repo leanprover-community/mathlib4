@@ -868,18 +868,12 @@ theorem Topology.IsClosedEmbedding.isCompact_preimage (hf : IsClosedEmbedding f)
     {K : Set Y} (hK : IsCompact K) : IsCompact (f ⁻¹' K) :=
   hf.isInducing.isCompact_preimage (hf.isClosed_range) hK
 
-@[deprecated (since := "2024-10-20")]
-alias ClosedEmbedding.isCompact_preimage := IsClosedEmbedding.isCompact_preimage
-
 /-- A closed embedding is proper, ie, inverse images of compact sets are contained in compacts.
 Moreover, the preimage of a compact set is compact, see `IsClosedEmbedding.isCompact_preimage`. -/
 theorem Topology.IsClosedEmbedding.tendsto_cocompact (hf : IsClosedEmbedding f) :
     Tendsto f (Filter.cocompact X) (Filter.cocompact Y) :=
   Filter.hasBasis_cocompact.tendsto_right_iff.mpr fun _K hK =>
     (hf.isCompact_preimage hK).compl_mem_cocompact
-
-@[deprecated (since := "2024-10-20")]
-alias ClosedEmbedding.tendsto_cocompact := IsClosedEmbedding.tendsto_cocompact
 
 /-- Sets of subtype are compact iff the image under a coercion is. -/
 theorem Subtype.isCompact_iff {p : X → Prop} {s : Set { x // p x }} :
@@ -903,15 +897,9 @@ protected theorem Topology.IsClosedEmbedding.noncompactSpace [NoncompactSpace X]
     (hf : IsClosedEmbedding f) : NoncompactSpace Y :=
   noncompactSpace_of_neBot hf.tendsto_cocompact.neBot
 
-@[deprecated (since := "2024-10-20")]
-alias ClosedEmbedding.noncompactSpace := IsClosedEmbedding.noncompactSpace
-
 protected theorem Topology.IsClosedEmbedding.compactSpace [h : CompactSpace Y] {f : X → Y}
     (hf : IsClosedEmbedding f) : CompactSpace X :=
   ⟨by rw [hf.isInducing.isCompact_iff, image_univ]; exact hf.isClosed_range.isCompact⟩
-
-@[deprecated (since := "2024-10-20")]
-alias ClosedEmbedding.compactSpace := IsClosedEmbedding.compactSpace
 
 theorem IsCompact.prod {t : Set Y} (hs : IsCompact s) (ht : IsCompact t) :
     IsCompact (s ×ˢ t) := by

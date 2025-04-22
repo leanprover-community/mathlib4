@@ -162,9 +162,6 @@ theorem isNormal_derivFamily [Small.{u} ι] (f : ι → Ordinal.{u} → Ordinal.
     exact le_nfpFamily _ _
   · simp_rw [derivFamily_limit _ h, Ordinal.iSup_le_iff, Subtype.forall, Set.mem_Iio]
 
-@[deprecated isNormal_derivFamily (since := "2024-10-11")]
-alias derivFamily_isNormal := isNormal_derivFamily
-
 theorem derivFamily_strictMono [Small.{u} ι] (f : ι → Ordinal.{u} → Ordinal.{u}) :
     StrictMono (derivFamily f) :=
   (isNormal_derivFamily f).strictMono
@@ -368,9 +365,6 @@ theorem isNormal_derivBFamily {o : Ordinal} (f : ∀ b < o, Ordinal → Ordinal)
     IsNormal (derivBFamily o f) :=
   isNormal_derivFamily _
 
-@[deprecated isNormal_derivBFamily (since := "2024-10-11")]
-alias derivBFamily_isNormal := isNormal_derivBFamily
-
 set_option linter.deprecated false in
 @[deprecated "No deprecation message was provided." (since := "2024-10-14")]
 theorem derivBFamily_fp {i hi} (H : IsNormal (f i hi)) (a : Ordinal) :
@@ -516,9 +510,6 @@ theorem deriv_limit (f) {o} : IsLimit o → deriv f o = ⨆ a : {a // a < o}, de
 
 theorem isNormal_deriv (f) : IsNormal (deriv f) :=
   isNormal_derivFamily _
-
-@[deprecated isNormal_deriv (since := "2024-10-11")]
-alias deriv_isNormal := isNormal_deriv
 
 theorem deriv_strictMono (f) : StrictMono (deriv f) :=
   derivFamily_strictMono _

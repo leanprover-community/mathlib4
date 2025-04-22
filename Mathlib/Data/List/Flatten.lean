@@ -67,8 +67,6 @@ lemma length_flatMap' (l : List α) (f : α → List β) :
     length (l.flatMap f) = Nat.sum (map (length ∘ f) l) := by
   rw [List.flatMap, length_flatten', map_map]
 
-@[deprecated (since := "2024-10-16")] alias length_bind' := length_flatMap'
-
 set_option linter.deprecated false in
 /-- See `List.countP_flatMap` for the corresponding statement using `List.sum`. -/
 @[deprecated "Use `List.countP_flatMap`." (since := "2024-10-17")]
@@ -76,15 +74,11 @@ lemma countP_flatMap' (p : β → Bool) (l : List α) (f : α → List β) :
     countP p (l.flatMap f) = Nat.sum (map (countP p ∘ f) l) := by
   rw [List.flatMap, countP_flatten', map_map]
 
-@[deprecated (since := "2024-10-16")] alias countP_bind' := countP_flatMap'
-
 set_option linter.deprecated false in
 /-- See `List.count_flatMap` for the corresponding statement using `List.sum`. -/
 @[deprecated "Use `List.count_flatMap`." (since := "2024-10-17")]
 lemma count_flatMap' [BEq β] (l : List α) (f : α → List β) (x : β) :
     count x (l.flatMap f) = Nat.sum (map (count x ∘ f) l) := countP_flatMap' _ _ _
-
-@[deprecated (since := "2024-10-16")] alias count_bind' := count_flatMap'
 
 set_option linter.deprecated false in
 /-- In a join, taking the first elements up to an index which is the sum of the lengths of the
@@ -139,16 +133,11 @@ theorem drop_take_succ_flatten_eq_getElem' (L : List (List α)) (i : Nat) (h : i
   simp only [this, length_map, take_sum_flatten', drop_sum_flatten',
     drop_take_succ_eq_cons_getElem, h, flatten, append_nil]
 
-@[deprecated (since := "2024-10-15")]
-alias drop_take_succ_join_eq_getElem' := drop_take_succ_flatten_eq_getElem'
-
 theorem flatten_drop_length_sub_one {L : List (List α)} (h : L ≠ []) :
     (L.drop (L.length - 1)).flatten = L.getLast h := by
   induction L using List.reverseRecOn
   · cases h rfl
   · simp
-
-@[deprecated (since := "2024-10-15")] alias join_drop_length_sub_one := flatten_drop_length_sub_one
 
 /-- We can rebracket `x ++ (l₁ ++ x) ++ (l₂ ++ x) ++ ... ++ (lₙ ++ x)` to
 `(x ++ l₁) ++ (x ++ l₂) ++ ... ++ (x ++ lₙ) ++ x` where `L = [l₁, l₂, ..., lₙ]`. -/
@@ -158,7 +147,5 @@ theorem append_flatten_map_append (L : List (List α)) (x : List α) :
   | nil => rw [map_nil, flatten, append_nil, map_nil, flatten, nil_append]
   | cons _ _ ih =>
     rw [map_cons, flatten, map_cons, flatten, append_assoc, ih, append_assoc, append_assoc]
-
-@[deprecated (since := "2024-10-15")] alias append_join_map_append := append_flatten_map_append
 
 end List

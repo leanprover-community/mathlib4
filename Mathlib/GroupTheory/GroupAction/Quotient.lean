@@ -123,10 +123,6 @@ attribute [deprecated AddAction.Quotient.coe_vadd_out (since := "2024-10-19")]
 AddAction.Quotient.coe_vadd_out'
 
 
-@[deprecated (since := "2024-10-19")]
-alias _root_.QuotientGroup.out'_conj_pow_minimalPeriod_mem :=
-  QuotientGroup.out_conj_pow_minimalPeriod_mem
-
 end QuotientAction
 
 open QuotientGroup

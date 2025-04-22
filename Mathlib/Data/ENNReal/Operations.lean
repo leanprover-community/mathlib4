@@ -39,8 +39,6 @@ protected theorem mul_right_mono : Monotone (· * a) := mul_right_mono
 protected lemma pow_right_strictMono {n : ℕ} (hn : n ≠ 0) : StrictMono fun a : ℝ≥0∞ ↦ a ^ n :=
   WithTop.pow_right_strictMono hn
 
-@[deprecated (since := "2024-10-15")] alias pow_strictMono := ENNReal.pow_right_strictMono
-
 @[gcongr] protected lemma pow_lt_pow_left (hab : a < b) {n : ℕ} (hn : n ≠ 0) : a ^ n < b ^ n :=
   WithTop.pow_lt_pow_left hab hn
 
