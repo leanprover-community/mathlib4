@@ -85,6 +85,8 @@ instance automorphismGroup : Group (M ≃ₗ[R] M) where
 @[simp]
 lemma coe_one : ↑(1 : M ≃ₗ[R] M) = id := rfl
 
+lemma one_eq_refl : (1 : M ≃ₗ[R] M) = refl R M := rfl
+
 @[simp]
 lemma coe_toLinearMap_one : (↑(1 : M ≃ₗ[R] M) : M →ₗ[R] M) = LinearMap.id := rfl
 
