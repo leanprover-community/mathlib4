@@ -40,9 +40,9 @@ variable [Semiring R] [Semiring R₂] [Semiring R₃] [Semiring S]
 variable [AddCommMonoid M] [Module R M]
 variable [AddCommMonoid N] [Module R₂ N]
 variable [AddCommMonoid P] [Module R₃ P]
-variable {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R} [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
-variable {σ₂₃ : R₂ →+* R₃} {σ₃₂ : R₃ →+* R₂} [RingHomInvPair σ₂₃ σ₃₂] [RingHomInvPair σ₃₂ σ₂₃]
-variable {σ₁₃ : R →+* R₃} {σ₃₁ : R₃ →+* R} [RingHomInvPair σ₁₃ σ₃₁] [RingHomInvPair σ₃₁ σ₁₃]
+variable {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R}
+variable {σ₂₃ : R₂ →+* R₃} {σ₃₂ : R₃ →+* R₂}
+variable {σ₁₃ : R →+* R₃} {σ₃₁ : R₃ →+* R}
 variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₃₂ σ₂₁ σ₃₁]
 
 section LinearEquivFunOnFinite
@@ -197,6 +197,12 @@ theorem mapRange.linearMap_toAddMonoidHom (f : M →ₛₗ[σ₁₂] N) :
       (mapRange.addMonoidHom f.toAddMonoidHom : (α →₀ M) →+ _) :=
   AddMonoidHom.ext fun _ => rfl
 
+section Equiv
+
+variable [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
+variable [RingHomInvPair σ₂₃ σ₃₂] [RingHomInvPair σ₃₂ σ₂₃]
+variable [RingHomInvPair σ₁₃ σ₃₁] [RingHomInvPair σ₃₁ σ₁₃]
+
 /-- `Finsupp.mapRange` as a `LinearEquiv`. -/
 @[simps apply]
 def mapRange.linearEquiv (e : M ≃ₛₗ[σ₁₂] N) : (α →₀ M) ≃ₛₗ[σ₁₂] α →₀ N :=
@@ -231,6 +237,8 @@ theorem mapRange.linearEquiv_toLinearMap (f : M ≃ₛₗ[σ₁₂] N) :
     (mapRange.linearEquiv f).toLinearMap =
     (mapRange.linearMap f.toLinearMap : (α →₀ M) →ₛₗ[σ₁₂] _) :=
   LinearMap.ext fun _ => rfl
+
+end Equiv
 
 section Prod
 
