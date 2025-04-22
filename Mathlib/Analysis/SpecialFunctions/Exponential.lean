@@ -66,7 +66,7 @@ variable {𝕂 𝔸 : Type*} [NontriviallyNormedField 𝕂] [NormedRing 𝔸] [N
 /-- The exponential in a Banach algebra `𝔸` over a normed field `𝕂` has strict Fréchet derivative
 `1 : 𝔸 →L[𝕂] 𝔸` at zero, as long as it converges on a neighborhood of zero. -/
 theorem hasStrictFDerivAt_exp_zero_of_radius_pos (h : 0 < (expSeries 𝕂 𝔸).radius) :
-    HasStrictFDerivAt (exp 𝕂) (1 : 𝔸 →L[𝕂] 𝔸) 0 := by
+    HasStrictFDerivAt (exp 𝕂) (1 : 𝔸 →L[𝕂] 𝔸) (0 : 𝔸) := by
   convert (hasFPowerSeriesAt_exp_zero_of_radius_pos h).hasStrictFDerivAt
   ext x
   change x = expSeries 𝕂 𝔸 1 fun _ => x
@@ -75,7 +75,7 @@ theorem hasStrictFDerivAt_exp_zero_of_radius_pos (h : 0 < (expSeries 𝕂 𝔸).
 /-- The exponential in a Banach algebra `𝔸` over a normed field `𝕂` has Fréchet derivative
 `1 : 𝔸 →L[𝕂] 𝔸` at zero, as long as it converges on a neighborhood of zero. -/
 theorem hasFDerivAt_exp_zero_of_radius_pos (h : 0 < (expSeries 𝕂 𝔸).radius) :
-    HasFDerivAt (exp 𝕂) (1 : 𝔸 →L[𝕂] 𝔸) 0 :=
+    HasFDerivAt (exp 𝕂) (1 : 𝔸 →L[𝕂] 𝔸) (0 : 𝔸) :=
   (hasStrictFDerivAt_exp_zero_of_radius_pos h).hasFDerivAt
 
 end AnyFieldAnyAlgebra
@@ -94,15 +94,14 @@ theorem hasFDerivAt_exp_of_mem_ball [CharZero 𝕂] {x : 𝔸}
   have hpos : 0 < (expSeries 𝕂 𝔸).radius := (zero_le _).trans_lt hx
   rw [hasFDerivAt_iff_isLittleO_nhds_zero]
   suffices
-    (fun h => exp 𝕂 x * (exp 𝕂 (0 + h) - exp 𝕂 0 - ContinuousLinearMap.id 𝕂 𝔸 h)) =ᶠ[𝓝 0] fun h =>
-      exp 𝕂 (x + h) - exp 𝕂 x - exp 𝕂 x • ContinuousLinearMap.id 𝕂 𝔸 h by
+    (fun h => exp 𝕂 x * (exp 𝕂 (h + 0) - exp 𝕂 0 - ContinuousLinearMap.id 𝕂 𝔸 h)) =ᶠ[𝓝 0] fun h =>
+      exp 𝕂 (h + x) - exp 𝕂 x - exp 𝕂 x • ContinuousLinearMap.id 𝕂 𝔸 h by
     refine (IsLittleO.const_mul_left ?_ _).congr' this (EventuallyEq.refl _ _)
-    rw [← hasFDerivAt_iff_isLittleO_nhds_zero]
-    exact hasFDerivAt_exp_zero_of_radius_pos hpos
+    exact hasFDerivAt_iff_isLittleO_nhds_zero.1 (hasFDerivAt_exp_zero_of_radius_pos hpos)
   have : ∀ᶠ h in 𝓝 (0 : 𝔸), h ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius :=
     EMetric.ball_mem_nhds _ hpos
   filter_upwards [this] with _ hh
-  rw [exp_add_of_mem_ball hx hh, exp_zero, zero_add, ContinuousLinearMap.id_apply, smul_eq_mul]
+  rw [exp_add_of_mem_ball hh hx, exp_zero, add_zero, ContinuousLinearMap.id_apply, smul_eq_mul]
   ring
 
 /-- The exponential map in a commutative Banach algebra `𝔸` over a normed field `𝕂` of
@@ -136,13 +135,13 @@ theorem hasDerivAt_exp_of_mem_ball [CharZero 𝕂] {x : 𝕂}
 /-- The exponential map in a complete normed field `𝕂` of characteristic zero has strict derivative
 `1` at zero, as long as it converges on a neighborhood of zero. -/
 theorem hasStrictDerivAt_exp_zero_of_radius_pos (h : 0 < (expSeries 𝕂 𝕂).radius) :
-    HasStrictDerivAt (exp 𝕂) (1 : 𝕂) 0 :=
+    HasStrictDerivAt (exp 𝕂) (1 : 𝕂) (0 : 𝕂) :=
   (hasStrictFDerivAt_exp_zero_of_radius_pos h).hasStrictDerivAt
 
 /-- The exponential map in a complete normed field `𝕂` of characteristic zero has derivative
 `1` at zero, as long as it converges on a neighborhood of zero. -/
 theorem hasDerivAt_exp_zero_of_radius_pos (h : 0 < (expSeries 𝕂 𝕂).radius) :
-    HasDerivAt (exp 𝕂) (1 : 𝕂) 0 :=
+    HasDerivAt (exp 𝕂) (1 : 𝕂) (0 : 𝕂) :=
   (hasStrictDerivAt_exp_zero_of_radius_pos h).hasDerivAt
 
 end deriv
@@ -153,12 +152,12 @@ variable {𝕂 𝔸 : Type*} [RCLike 𝕂] [NormedRing 𝔸] [NormedAlgebra 𝕂
 
 /-- The exponential in a Banach algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ` has strict Fréchet derivative
 `1 : 𝔸 →L[𝕂] 𝔸` at zero. -/
-theorem hasStrictFDerivAt_exp_zero : HasStrictFDerivAt (exp 𝕂) (1 : 𝔸 →L[𝕂] 𝔸) 0 :=
+theorem hasStrictFDerivAt_exp_zero : HasStrictFDerivAt (exp 𝕂) (1 : 𝔸 →L[𝕂] 𝔸) (0 : 𝔸) :=
   hasStrictFDerivAt_exp_zero_of_radius_pos (expSeries_radius_pos 𝕂 𝔸)
 
 /-- The exponential in a Banach algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ` has Fréchet derivative
 `1 : 𝔸 →L[𝕂] 𝔸` at zero. -/
-theorem hasFDerivAt_exp_zero : HasFDerivAt (exp 𝕂) (1 : 𝔸 →L[𝕂] 𝔸) 0 :=
+theorem hasFDerivAt_exp_zero : HasFDerivAt (exp 𝕂) (1 : 𝔸 →L[𝕂] 𝔸) (0 : 𝔸) :=
   hasStrictFDerivAt_exp_zero.hasFDerivAt
 
 end RCLikeAnyAlgebra
@@ -194,11 +193,11 @@ theorem hasDerivAt_exp {x : 𝕂} : HasDerivAt (exp 𝕂) (exp 𝕂 x) x :=
   hasStrictDerivAt_exp.hasDerivAt
 
 /-- The exponential map in `𝕂 = ℝ` or `𝕂 = ℂ` has strict derivative `1` at zero. -/
-theorem hasStrictDerivAt_exp_zero : HasStrictDerivAt (exp 𝕂) (1 : 𝕂) 0 :=
+theorem hasStrictDerivAt_exp_zero : HasStrictDerivAt (exp 𝕂) (1 : 𝕂) (0 : 𝕂) :=
   hasStrictDerivAt_exp_zero_of_radius_pos (expSeries_radius_pos 𝕂 𝕂)
 
 /-- The exponential map in `𝕂 = ℝ` or `𝕂 = ℂ` has derivative `1` at zero. -/
-theorem hasDerivAt_exp_zero : HasDerivAt (exp 𝕂) (1 : 𝕂) 0 :=
+theorem hasDerivAt_exp_zero : HasDerivAt (exp 𝕂) (1 : 𝕂) (0 : 𝕂) :=
   hasStrictDerivAt_exp_zero.hasDerivAt
 
 end DerivRCLike
@@ -259,16 +258,15 @@ theorem hasFDerivAt_exp_smul_const_of_mem_ball (x : 𝔸) (t : 𝕊)
   have hpos : 0 < (expSeries 𝕂 𝔸).radius := (zero_le _).trans_lt htx
   rw [hasFDerivAt_iff_isLittleO_nhds_zero]
   suffices (fun (h : 𝕊) => exp 𝕂 (t • x) *
-      (exp 𝕂 ((0 + h) • x) - exp 𝕂 ((0 : 𝕊) • x) - ((1 : 𝕊 →L[𝕂] 𝕊).smulRight x) h)) =ᶠ[𝓝 0]
+      (exp 𝕂 ((h + 0) • x) - exp 𝕂 ((0 : 𝕊) • x) - ((1 : 𝕊 →L[𝕂] 𝕊).smulRight x) h)) =ᶠ[𝓝 0]
         fun h =>
-          exp 𝕂 ((t + h) • x) - exp 𝕂 (t • x) - (exp 𝕂 (t • x) • (1 : 𝕊 →L[𝕂] 𝕊).smulRight x) h by
+          exp 𝕂 ((h + t) • x) - exp 𝕂 (t • x) - (exp 𝕂 (t • x) • (1 : 𝕊 →L[𝕂] 𝕊).smulRight x) h by
     apply (IsLittleO.const_mul_left _ _).congr' this (EventuallyEq.refl _ _)
-    rw [← hasFDerivAt_iff_isLittleO_nhds_zero (f := fun u => exp 𝕂 (u • x))
-      (f' := (1 : 𝕊 →L[𝕂] 𝕊).smulRight x) (x := 0)]
     have : HasFDerivAt (exp 𝕂) (1 : 𝔸 →L[𝕂] 𝔸) ((1 : 𝕊 →L[𝕂] 𝕊).smulRight x 0) := by
       rw [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply, zero_smul]
       exact hasFDerivAt_exp_zero_of_radius_pos hpos
-    exact this.comp 0 ((1 : 𝕊 →L[𝕂] 𝕊).smulRight x).hasFDerivAt
+    exact hasFDerivAt_iff_isLittleO_nhds_zero.1 <|
+      this.comp 0 ((1 : 𝕊 →L[𝕂] 𝕊).smulRight x).hasFDerivAt
   have : Tendsto (fun h : 𝕊 => h • x) (𝓝 0) (𝓝 0) := by
     rw [← zero_smul 𝕊 x]
     exact tendsto_id.smul_const x
@@ -276,8 +274,8 @@ theorem hasFDerivAt_exp_smul_const_of_mem_ball (x : 𝔸) (t : 𝕊)
     this.eventually (EMetric.ball_mem_nhds _ hpos)
   filter_upwards [this] with h hh
   have : Commute (t • x) (h • x) := ((Commute.refl x).smul_left t).smul_right h
-  rw [add_smul t h, exp_add_of_commute_of_mem_ball this htx hh, zero_add, zero_smul, exp_zero,
-    ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply,
+  rw [add_comm h t, add_smul t h, exp_add_of_commute_of_mem_ball this htx hh, add_zero, zero_smul,
+    exp_zero, ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply,
     ContinuousLinearMap.smul_apply, ContinuousLinearMap.smulRight_apply,
     ContinuousLinearMap.one_apply, smul_eq_mul, mul_sub_left_distrib, mul_sub_left_distrib, mul_one]
 

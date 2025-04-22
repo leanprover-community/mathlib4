@@ -47,10 +47,8 @@ variable {H : Type*} [NormedAddCommGroup H] [NormedSpace 𝕜 H] {c : E → G �
 @[fun_prop]
 theorem HasStrictFDerivAt.clm_comp (hc : HasStrictFDerivAt c c' x) (hd : HasStrictFDerivAt d d' x) :
     HasStrictFDerivAt (fun y => (c y).comp (d y))
-      ((compL 𝕜 F G H (c x)).comp d' + ((compL 𝕜 F G H).flip (d x)).comp c') x := by
-  have := isBoundedBilinearMap_comp.hasStrictFDerivAt (c x, d x)
-  have := this.comp x (hc.prodMk hd)
-  exact this
+      ((compL 𝕜 F G H (c x)).comp d' + ((compL 𝕜 F G H).flip (d x)).comp c') x :=
+  (isBoundedBilinearMap_comp.hasStrictFDerivAt (c x, d x)).comp x (hc.prodMk hd)
 
 #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
   `by exact` to solve unification issues. -/
@@ -59,7 +57,7 @@ theorem HasFDerivWithinAt.clm_comp (hc : HasFDerivWithinAt c c' s x)
     (hd : HasFDerivWithinAt d d' s x) :
     HasFDerivWithinAt (fun y => (c y).comp (d y))
       ((compL 𝕜 F G H (c x)).comp d' + ((compL 𝕜 F G H).flip (d x)).comp c') s x := by
-  exact (isBoundedBilinearMap_comp.hasFDerivAt (c x, d x) :).comp_hasFDerivWithinAt x (hc.prodMk hd)
+  exact (isBoundedBilinearMap_comp.hasFDerivAt (c x, d x)).comp_hasFDerivWithinAt x (hc.prodMk hd)
 
 #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
   `by exact` to solve unification issues. -/
@@ -810,9 +808,10 @@ TODO (low prio): prove a version without assumption `[HasSummableGeomSeries R]` 
 of units. -/
 @[fun_prop]
 theorem hasFDerivAt_ring_inverse (x : Rˣ) :
-    HasFDerivAt Ring.inverse (-mulLeftRight 𝕜 R ↑x⁻¹ ↑x⁻¹) x :=
-  have : (fun t : R => Ring.inverse (↑x + t) - ↑x⁻¹ + ↑x⁻¹ * t * ↑x⁻¹) =o[𝓝 0] id :=
-    (inverse_add_norm_diff_second_order x).trans_isLittleO (isLittleO_norm_pow_id one_lt_two)
+    HasFDerivAt Ring.inverse (-mulLeftRight 𝕜 R ↑x⁻¹ ↑x⁻¹) (x : R) :=
+  have : (fun t : R => Ring.inverse (t + ↑x) - ↑x⁻¹ + ↑x⁻¹ * t * ↑x⁻¹) =o[𝓝 0] id := by
+    simp_rw [add_comm _ (x : R)]
+    exact (inverse_add_norm_diff_second_order x).trans_isLittleO (isLittleO_norm_pow_id one_lt_two)
   by simpa [hasFDerivAt_iff_isLittleO_nhds_zero] using this
 
 @[fun_prop]
@@ -833,7 +832,7 @@ theorem fderiv_inverse (x : Rˣ) : fderiv 𝕜 (@Ring.inverse R _) x = -mulLeftR
   (hasFDerivAt_ring_inverse x).fderiv
 
 theorem hasStrictFDerivAt_ring_inverse (x : Rˣ) :
-    HasStrictFDerivAt Ring.inverse (-mulLeftRight 𝕜 R ↑x⁻¹ ↑x⁻¹) x := by
+    HasStrictFDerivAt Ring.inverse (-mulLeftRight 𝕜 R ↑x⁻¹ ↑x⁻¹) (x : R) := by
   convert (analyticAt_inverse (𝕜 := 𝕜) x).hasStrictFDerivAt
   exact (fderiv_inverse x).symm
 
