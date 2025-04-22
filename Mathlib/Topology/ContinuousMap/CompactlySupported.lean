@@ -861,8 +861,7 @@ simp [toRealLinear_apply, nnrealPart_neg_eq_zero_of_nonneg g hg]
 @[simp]
 lemma eq_toRealLinear_toReal {Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0} (f : C_c(α, ℝ≥0)) :
     (toRealLinear Λ) (toReal f) = Λ f:= by
-  rw [toRealLinear_apply]
-  simp
+  simp [toRealLinear_apply]
 
 @[simp]
 lemma eq_toNNRealLinear_toRealLinear (Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0) :
