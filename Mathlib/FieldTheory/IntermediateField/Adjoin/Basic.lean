@@ -789,16 +789,16 @@ theorem finiteDimensional_adjoin_pair (hx : IsIntegral K x) (hy : IsIntegral K y
 
 variable (K x y)
 
-theorem mem_adjoinPair_left : x ∈ K⟮x, y⟯ := subset_adjoin K {x, y} (Set.mem_insert x {y})
+theorem mem_adjoin_pair_left : x ∈ K⟮x, y⟯ := subset_adjoin K {x, y} (Set.mem_insert x {y})
 
-theorem mem_adjoinPair_right : y ∈ K⟮x, y⟯ :=
+theorem mem_adjoin_pair_right : y ∈ K⟮x, y⟯ :=
   subset_adjoin K {x, y} (Set.mem_insert_of_mem x (Set.mem_singleton y))
 
 /-- The first generator of an intermediate field of the form `K⟮x, y⟯`. -/
-def AdjoinPair.gen₁ : K⟮x, y⟯ := ⟨x, mem_adjoinPair_left K x y⟩
+def AdjoinPair.gen₁ : K⟮x, y⟯ := ⟨x, mem_adjoin_pair_left K x y⟩
 
 /-- The second generator of an intermediate field of the form `K⟮x, y⟯`. -/
-def AdjoinPair.gen₂ : K⟮x, y⟯ := ⟨y, mem_adjoinPair_right K x y⟩
+def AdjoinPair.gen₂ : K⟮x, y⟯ := ⟨y, mem_adjoin_pair_right K x y⟩
 
 theorem AdjoinPair.algebraMap_gen₁ : (algebraMap (↥K⟮x, y⟯) L) (gen₁ K x y) = x := rfl
 

@@ -203,12 +203,15 @@ namespace IntermediateField
 
 variable {K L : Type*} [Field K] [Field L] [Algebra K L] (E : IntermediateField K L)
 
+theorem AdjoinSimple.is_algebraicClosure {x : L} (hx : IsIntegral K x) :
+    IsAlgClosure K (AlgebraicClosure ↥K⟮x⟯) :=
+  have : Algebra.IsAlgebraic K K⟮x⟯ := (isAlgebraic_adjoin_simple hx)
+  ⟨AlgebraicClosure.isAlgClosed ↥K⟮x⟯,
+    Algebra.IsAlgebraic.trans K K⟮x⟯ (AlgebraicClosure ↥K⟮x⟯)⟩
+
 theorem AdjoinSimple.normal_algebraicClosure {x : L} (hx : IsIntegral K x) :
     Normal K (AlgebraicClosure K⟮x⟯) :=
-  have : IsAlgClosure K (AlgebraicClosure ↥K⟮x⟯) := by
-    have : Algebra.IsAlgebraic K K⟮x⟯ := (isAlgebraic_adjoin_simple hx)
-    exact ⟨AlgebraicClosure.isAlgClosed ↥K⟮x⟯,
-      Algebra.IsAlgebraic.trans K K⟮x⟯ (AlgebraicClosure ↥K⟮x⟯)⟩
+  have : IsAlgClosure K (AlgebraicClosure ↥K⟮x⟯) := AdjoinSimple.is_algebraicClosure hx
   IsAlgClosure.normal _ _
 
 theorem AdjoinDouble.normal_algebraicClosure {x y : L} (hx : IsIntegral K x)
