@@ -82,10 +82,11 @@ instance automorphismGroup : Group (M ≃ₗ[R] M) where
   one_mul _ := ext fun _ ↦ rfl
   inv_mul_cancel f := ext <| f.left_inv
 
+lemma one_eq_refl : (1 : M ≃ₗ[R] M) = refl R M := rfl
+lemma mul_eq_trans (f g : M ≃ₗ[R] M) : f * g = g.trans f := rfl
+
 @[simp]
 lemma coe_one : ↑(1 : M ≃ₗ[R] M) = id := rfl
-
-lemma one_eq_refl : (1 : M ≃ₗ[R] M) = refl R M := rfl
 
 @[simp]
 lemma coe_toLinearMap_one : (↑(1 : M ≃ₗ[R] M) : M →ₗ[R] M) = LinearMap.id := rfl
