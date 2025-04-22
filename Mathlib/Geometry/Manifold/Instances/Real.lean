@@ -244,9 +244,13 @@ def modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
         uniqueDiffOn_Ici 0
     simpa only [singleton_pi] using this
   convex_interior_range h := by
-    rw [range_euclideanHalfSpace]
+    dsimp
+    erw [range_euclideanHalfSpace]
+    -- issue: the above lemma uses scalar multiplication from WithLp (as one should),
+    -- but this lemma takes the scalar multiplication from an SMulZero instance instead.
+    -- Not sure why this happens!
     convert EuclideanHalfSpace.interior_convex (n := n)
-    sorry -- not sure yet why this comes up
+    sorry
   target_subset_closure_interior := by simp
   continuous_toFun := continuous_subtype_val
   continuous_invFun := by
@@ -280,7 +284,7 @@ def modelWithCornersEuclideanQuadrant (n : ℕ) :
   convex_interior_range h := by
     rw [range_euclideanQuadrant]
     convert EuclideanQuadrant.interior_convex
-    sorry -- not sure why this comes up
+    sorry -- same issue as above
   continuous_toFun := continuous_subtype_val
   continuous_invFun := Continuous.subtype_mk
     (continuous_pi fun i => (continuous_id.max continuous_const).comp (continuous_apply i)) _
