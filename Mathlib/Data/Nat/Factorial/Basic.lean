@@ -12,6 +12,8 @@ import Mathlib.Tactic.Monotonicity.Attr
 # Factorial and variants
 
 This file defines the factorial, along with the ascending and descending variants.
+For the proof that the factorial of `n` counts the permutations of an `n`-element set,
+see `Fintype.card_perm`.
 
 ## Main declarations
 
@@ -452,7 +454,7 @@ lemma two_pow_mul_factorial_le_factorial_two_mul (n : ℕ) : 2 ^ n * n ! ≤ (2 
   rw [Nat.mul_comm, Nat.two_mul]
   calc
     _ ≤ (n + 1)! * (n + 2) ^ (n + 1) :=
-      Nat.mul_le_mul_left _ (pow_le_pow_left (le_add_left _ _) _)
+      Nat.mul_le_mul_left _ (Nat.pow_le_pow_left (le_add_left _ _) _)
     _ ≤ _ := Nat.factorial_mul_pow_le_factorial
 
 end Nat
