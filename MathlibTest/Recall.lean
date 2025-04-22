@@ -17,7 +17,9 @@ section
 variable {𝕜 : Type _} [NontriviallyNormedField 𝕜]
 variable {E : Type _} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
 variable {F : Type _} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
-recall HasFDerivAt (f : E → F) (f' : E →L[𝕜] F) (x : E) :=
+variable {X : Type _} [AddTorsor E X] [TopologicalSpace X]
+variable {Y : Type _} [AddTorsor F Y] [TopologicalSpace Y]
+recall HasFDerivAt (f : X → Y) (f' : E →L[𝕜] F) (x : X) :=
   HasFDerivAtFilter f f' x (nhds x)
 end
 
