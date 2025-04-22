@@ -65,9 +65,8 @@ variable (E 𝕜)
 
 /-- Conditional expectation of a function in L2 with respect to a sigma-algebra -/
 noncomputable def condExpL2 (hm : m ≤ m0) : (α →₂[μ] E) →L[𝕜] lpMeas E 𝕜 m 2 μ :=
-  @orthogonalProjection 𝕜 (α →₂[μ] E) _ _ _ (lpMeas E 𝕜 m 2 μ)
-    haveI : Fact (m ≤ m0) := ⟨hm⟩
-    inferInstance
+  haveI : Fact (m ≤ m0) := ⟨hm⟩
+  (lpMeas E 𝕜 m 2 μ).orthogonalProjection
 
 @[deprecated (since := "2025-01-21")] alias condexpL2 := condExpL2
 
@@ -100,7 +99,7 @@ alias integrable_condexpL2_of_isFiniteMeasure := integrable_condExpL2_of_isFinit
 
 theorem norm_condExpL2_le_one (hm : m ≤ m0) : ‖@condExpL2 α E 𝕜 _ _ _ _ _ _ μ hm‖ ≤ 1 :=
   haveI : Fact (m ≤ m0) := ⟨hm⟩
-  orthogonalProjection_norm_le _
+  Submodule.orthogonalProjection_norm_le _
 
 @[deprecated (since := "2025-01-21")] alias norm_condexpL2_le_one := norm_condExpL2_le_one
 
@@ -128,7 +127,7 @@ theorem norm_condExpL2_coe_le (hm : m ≤ m0) (f : α →₂[μ] E) :
 theorem inner_condExpL2_left_eq_right (hm : m ≤ m0) {f g : α →₂[μ] E} :
     ⟪(condExpL2 E 𝕜 hm f : α →₂[μ] E), g⟫₂ = ⟪f, (condExpL2 E 𝕜 hm g : α →₂[μ] E)⟫₂ :=
   haveI : Fact (m ≤ m0) := ⟨hm⟩
-  inner_orthogonalProjection_left_eq_right _ f g
+  Submodule.inner_orthogonalProjection_left_eq_right _ f g
 
 @[deprecated (since := "2025-01-21")]
 alias inner_condexpL2_left_eq_right := inner_condExpL2_left_eq_right
@@ -143,7 +142,7 @@ theorem condExpL2_indicator_of_measurable (hm : m ≤ m0) (hs : MeasurableSet[m]
     mem_lpMeas_indicatorConstLp hm hs hμs
   let ind := (⟨indicatorConstLp 2 (hm s hs) hμs c, h_mem⟩ : lpMeas E 𝕜 m 2 μ)
   have h_coe_ind : (ind : α →₂[μ] E) = indicatorConstLp 2 (hm s hs) hμs c := rfl
-  have h_orth_mem := orthogonalProjection_mem_subspace_eq_self ind
+  have h_orth_mem := Submodule.orthogonalProjection_mem_subspace_eq_self ind
   rw [← h_coe_ind, h_orth_mem]
 
 @[deprecated (since := "2025-01-21")]
@@ -154,7 +153,8 @@ theorem inner_condExpL2_eq_inner_fun (hm : m ≤ m0) (f g : α →₂[μ] E)
     ⟪(condExpL2 E 𝕜 hm f : α →₂[μ] E), g⟫₂ = ⟪f, g⟫₂ := by
   symm
   rw [← sub_eq_zero, ← inner_sub_left, condExpL2]
-  simp only [mem_lpMeas_iff_aestronglyMeasurable.mpr hg, orthogonalProjection_inner_eq_zero f g]
+  simp only [mem_lpMeas_iff_aestronglyMeasurable.mpr hg,
+    Submodule.orthogonalProjection_inner_eq_zero f g]
 
 @[deprecated (since := "2025-01-21")]
 alias inner_condexpL2_eq_inner_fun := inner_condExpL2_eq_inner_fun
