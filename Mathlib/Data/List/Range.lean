@@ -84,14 +84,6 @@ theorem ranges_length (l : List ℕ) :
     simp only [Function.comp_apply, length_map]
 
 set_option linter.deprecated false in
-/-- See `List.ranges_flatten` for the version about `List.sum`. -/
-@[deprecated "Use `List.ranges_flatten`." (since := "2024-10-17")]
-lemma ranges_flatten' : ∀ l : List ℕ, l.ranges.flatten = range (Nat.sum l)
-  | [] => rfl
-  | a :: l => by
-    simp only [ranges, flatten_cons, ← map_flatten, ranges_flatten', Nat.sum_cons, range_add]
-
-set_option linter.deprecated false in
 /-- Any entry of any member of `l.ranges` is strictly smaller than `Nat.sum l`.
 See `List.mem_mem_ranges_iff_lt_sum` for the version about `List.sum`. -/
 @[deprecated "Use `List.mem_mem_ranges_iff_lt_sum`." (since := "2024-11-18")]

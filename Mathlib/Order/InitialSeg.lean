@@ -349,16 +349,6 @@ theorem transInitial_apply (f : r ≺i s) (g : s ≼i t) (a : α) : f.transIniti
 theorem transInitial_top (f : r ≺i s) (g : s ≼i t) : (f.transInitial g).top = g f.top :=
   rfl
 
-set_option linter.deprecated false in
-@[deprecated transInitial_apply (since := "2024-10-20")]
-theorem lt_le_apply (f : r ≺i s) (g : s ≼i t) (a : α) : (f.ltLe g) a = g (f a) :=
-  rfl
-
-set_option linter.deprecated false in
-@[deprecated transInitial_top (since := "2024-10-20")]
-theorem lt_le_top (f : r ≺i s) (g : s ≼i t) : (f.ltLe g).top = g f.top :=
-  rfl
-
 /-- Composition of two principal segment embeddings as a principal segment embedding -/
 @[trans]
 protected def trans [IsTrans γ t] (f : r ≺i s) (g : s ≺i t) : r ≺i t :=
@@ -383,16 +373,6 @@ theorem relIsoTrans_apply (f : r ≃r s) (g : s ≺i t) (a : α) : relIsoTrans f
 
 @[simp]
 theorem relIsoTrans_top (f : r ≃r s) (g : s ≺i t) : (relIsoTrans f g).top = g.top :=
-  rfl
-
-set_option linter.deprecated false in
-@[deprecated transInitial_top (since := "2024-10-20")]
-theorem equivLT_apply (f : r ≃r s) (g : s ≺i t) (a : α) : (equivLT f g) a = g (f a) :=
-  rfl
-
-set_option linter.deprecated false in
-@[deprecated transInitial_top (since := "2024-10-20")]
-theorem equivLT_top (f : r ≃r s) (g : s ≺i t) : (equivLT f g).top = g.top :=
   rfl
 
 /-- Composition of a principal segment embedding with a relation isomorphism, as a principal segment
@@ -512,12 +492,6 @@ theorem transPrincipal_apply [IsWellOrder β s] [IsTrans γ t] (f : r ≼i s) (g
   obtain f' | f' := f.principalSumRelIso
   · rw [PrincipalSeg.trans_apply, f.eq_principalSeg]
   · rw [PrincipalSeg.relIsoTrans_apply, f.eq_relIso]
-
-set_option linter.deprecated false in
-@[deprecated transPrincipal_apply (since := "2024-10-20")]
-theorem leLT_apply [IsWellOrder β s] [IsTrans γ t] (f : r ≼i s) (g : s ≺i t) (a : α) :
-    f.leLT g a = g (f a) :=
-  transPrincipal_apply f g a
 
 end InitialSeg
 

@@ -490,9 +490,6 @@ protected theorem Topology.IsClosedEmbedding.t4Space [TopologicalSpace Y] [T4Spa
   toT1Space := hf.isEmbedding.t1Space
   toNormalSpace := hf.normalSpace
 
-@[deprecated (since := "2024-10-20")]
-alias ClosedEmbedding.t4Space := IsClosedEmbedding.t4Space
-
 protected theorem Homeomorph.t4Space [TopologicalSpace Y] [T4Space X] (h : X ≃ₜ Y) : T4Space Y :=
   h.symm.isClosedEmbedding.t4Space
 

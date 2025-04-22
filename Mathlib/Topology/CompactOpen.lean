@@ -140,14 +140,6 @@ protected def _root_.Homeomorph.arrowCongr (φ : X ≃ₜ Z) (ψ : Y ≃ₜ T) :
   continuous_toFun := continuous_postcomp _ |>.comp <| continuous_precomp _
   continuous_invFun := continuous_postcomp _ |>.comp <| continuous_precomp _
 
-variable (Z) in
-/-- Precomposition by a homeomorphism is itself a homeomorphism between spaces of continuous maps.
--/
-@[deprecated Homeomorph.arrowCongr (since := "2024-10-19")]
-def compRightHomeomorph (f : X ≃ₜ Y) :
-    C(Y, Z) ≃ₜ C(X, Z) :=
-  .arrowCongr f.symm (.refl _)
-
 variable [LocallyCompactPair Y Z]
 
 /-- Composition is a continuous map from `C(X, Y) × C(Y, Z)` to `C(X, Z)`,

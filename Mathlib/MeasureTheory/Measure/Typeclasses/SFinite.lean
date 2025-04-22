@@ -34,11 +34,6 @@ noncomputable def sfiniteSeq (μ : Measure α) [h : SFinite μ] : ℕ → Measur
 instance isFiniteMeasure_sfiniteSeq [h : SFinite μ] (n : ℕ) : IsFiniteMeasure (sfiniteSeq μ n) :=
   h.1.choose_spec.1 n
 
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-10-11")]
-instance isFiniteMeasure_sFiniteSeq [SFinite μ] (n : ℕ) : IsFiniteMeasure (sFiniteSeq μ n) :=
-  isFiniteMeasure_sfiniteSeq n
-
 lemma sum_sfiniteSeq (μ : Measure α) [h : SFinite μ] : sum (sfiniteSeq μ) = μ :=
   h.1.choose_spec.2.symm
 
