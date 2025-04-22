@@ -663,11 +663,11 @@ inversion is `C^n`, for all `n`. -/
 theorem contDiffAt_map_inverse [CompleteSpace E] (e : E ≃L[𝕜] F) :
     ContDiffAt 𝕜 n inverse (e : E →L[𝕜] F) := by
   nontriviality E
-  -- first, we use the lemma `to_ringInverse` to rewrite in terms of `Ring.inverse` in the ring
+  -- first, we use the lemma `inverse_eq_ringInverse` to rewrite in terms of `Ring.inverse` in the ring
   -- `E →L[𝕜] E`
   let O₁ : (E →L[𝕜] E) → F →L[𝕜] E := fun f => f.comp (e.symm : F →L[𝕜] E)
   let O₂ : (E →L[𝕜] F) → E →L[𝕜] E := fun f => (e.symm : F →L[𝕜] E).comp f
-  have : ContinuousLinearMap.inverse = O₁ ∘ Ring.inverse ∘ O₂ := funext (to_ringInverse e)
+  have : ContinuousLinearMap.inverse = O₁ ∘ Ring.inverse ∘ O₂ := funext (inverse_eq_ringInverse e)
   rw [this]
   -- `O₁` and `O₂` are `ContDiff`,
   -- so we reduce to proving that `Ring.inverse` is `ContDiff`
