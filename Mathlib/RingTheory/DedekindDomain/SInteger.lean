@@ -41,8 +41,6 @@ S integer, S-integer, S unit, S-unit
 -/
 
 
-namespace Set
-
 noncomputable section
 
 open IsDedekindDomain
@@ -56,6 +54,7 @@ variable {R : Type u} [CommRing R] [IsDedekindDomain R]
 
 /-! ## `S`-integers -/
 
+namespace Set
 
 /-- The `R`-subalgebra of `S`-integers of `K`. -/
 @[simps!]
@@ -80,6 +79,12 @@ theorem integer_valuation_le_one (x : S.integer K) {v : HeightOneSpectrum R} (hv
   ext
   tauto
 
+end Set
+
+namespace IsDedekindDomain
+
+variable (R)
+
 /--
 If `S` is the empty set, then the `S`-integers are the minimal `R`-subalgebra of `K` (which is
 just `R` itself).
@@ -87,25 +92,27 @@ just `R` itself).
 @[simp]
 lemma integer_empty : (∅ : Set (HeightOneSpectrum R)).integer K = ⊥ := by
   ext x
-  simp only [integer, mem_empty_iff_false, not_false_eq_true, true_implies]
-  refine ⟨IsDedekindDomain.HeightOneSpectrum.mem_integers_of_valuation_le_one K x, ?_⟩
+  simp only [Set.integer, Set.mem_empty_iff_false, not_false_eq_true, true_implies]
+  refine ⟨HeightOneSpectrum.mem_integers_of_valuation_le_one K x, ?_⟩
   rintro ⟨y, rfl⟩ v
   exact v.valuation_le_one y
 
-variable (R) in
 /-- Canonical `R`-algebra isomorphism from `R` to the `∅`-integers of `K`. -/
-noncomputable def setIntegerEmptyEquiv : R ≃ₐ[R] (∅ : Set (HeightOneSpectrum R)).integer K :=
-  .ofBijective ((Algebra.ofId R K : R →ₐ[R] K).codRestrict _
-    (fun r ↦ by simpa only [set_integer_empty] using ⟨r, rfl⟩))
-    ⟨fun x y ↦ by simp [← SetLike.coe_eq_coe, Algebra.ofId_apply],
-      fun ⟨x, hx⟩ ↦ by simpa [← SetLike.coe_eq_coe, set_integer_empty, Algebra.mem_bot] using hx⟩
+noncomputable def integerEmptyEquiv : R ≃ₐ[R] (∅ : Set (HeightOneSpectrum R)).integer K :=
+  (Algebra.botEquivOfInjective <| IsFractionRing.injective ..).symm.trans
+    (Subalgebra.equivOfEq _ _ (integer_empty R K).symm)
 
-lemma setIntegerEmptyEquiv_apply (r : R) :
-    setIntegerEmptyEquiv R K r = algebraMap R K r :=
+variable {R} in
+lemma integerEmptyEquiv_apply (r : R) :
+    integerEmptyEquiv R K r = algebraMap R K r :=
   rfl
+
+end IsDedekindDomain
+
 
 /-! ## `S`-units -/
 
+namespace Set
 
 /-- The subgroup of `S`-units of `Kˣ`. -/
 @[simps!]
@@ -143,7 +150,5 @@ def unitEquivUnitsInteger : S.unit K ≃* (S.integer K)ˣ where
   left_inv _ := by ext; rfl
   right_inv _ := by ext; rfl
   map_mul' _ _ := by ext; rfl
-
-end
 
 end Set
