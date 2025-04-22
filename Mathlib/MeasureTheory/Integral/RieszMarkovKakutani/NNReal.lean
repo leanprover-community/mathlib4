@@ -12,9 +12,12 @@ import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
 This file will prove the Riesz-Markov-Kakutani representation theorem on a locally compact
 T2 space `X` for `NNReal`-linear functionals `Λ`.
 
-The measure is first defined through `rieszContent` for `toNNRealLinear`-version of `Λ`.
-The result is first proved for `Real`-linear Λ because in a standard proof one has to prove the
-inequalities by `le_antisymm`, yet for `C_c(X, ℝ≥0)` there is no `Neg`.
+## Implementation notes
+
+The proof depends on the version of the theorem for `Real`-linear functional Λ because in a standard
+proof one has to prove the inequalities by `le_antisymm`, yet for `C_c(X, ℝ≥0)` there is no `Neg`.
+Here we prove the result by writing `ℝ≥0`-linear `Λ` in terms of `ℝ`-linear `toRealLinear Λ` and by
+reducing the statement to the `ℝ`-version of the theorem.
 
 ## References
 
