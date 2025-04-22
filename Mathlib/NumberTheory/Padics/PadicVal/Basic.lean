@@ -77,7 +77,7 @@ theorem self (hp : 1 < p) : padicValNat p p = 1 := by
 theorem eq_zero_of_not_dvd {n : ℕ} (h : ¬p ∣ n) : padicValNat p n = 0 :=
   eq_zero_iff.2 <| Or.inr <| Or.inr h
 
-open Nat.maxPowDiv
+open Nat.maxPowDvd
 
 theorem maxPowDiv_eq_emultiplicity {p n : ℕ} (hp : 1 < p) (hn : 0 < n) :
     p.maxPowDiv n = emultiplicity p n := by
