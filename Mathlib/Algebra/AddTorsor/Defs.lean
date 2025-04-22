@@ -165,6 +165,11 @@ theorem vadd_eq_vadd_iff_neg_add_eq_vsub {v₁ v₂ : G} {p₁ p₂ : P} :
 theorem vadd_vsub_vadd_cancel_right (v₁ v₂ : G) (p : P) : (v₁ +ᵥ p) -ᵥ (v₂ +ᵥ p) = v₁ - v₂ := by
   rw [vsub_vadd_eq_vsub_sub, vadd_vsub_assoc, vsub_self, add_zero]
 
+@[simp]
+lemma vadd_eq_right (g : G) (p : P) :
+    g +ᵥ p = p ↔ g = 0 := by
+  rw [← vsub_eq_zero_iff_eq, vadd_vsub]
+
 end General
 
 namespace Equiv

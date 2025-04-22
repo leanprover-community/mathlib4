@@ -146,21 +146,6 @@ theorem tangentCone_congr (h : 𝓝[s] x = 𝓝[t] x) : tangentConeAt 𝕜 s x =
 theorem tangentCone_inter_nhds (ht : t ∈ 𝓝 x) : tangentConeAt 𝕜 (s ∩ t) x = tangentConeAt 𝕜 s x :=
   tangentCone_congr (nhdsWithin_restrict' _ ht).symm
 
---XXX pull out
-lemma eventually_nhds_norm_smul_vsub_lt {𝕜 : Type u_1} {E : Type u_3}
-  [NormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] {F : Type u_4}
-  [PseudoMetricSpace F] [NormedAddTorsor E F]
-  (c : 𝕜) (x : F) {ε : ℝ} (h : 0 < ε) :
-    ∀ᶠ (y : F) in nhds x, ‖c • (y -ᵥ x)‖ < ε := by
-  --apply eventually_nhds_norm_smul_sub_lt
-  sorry
-
---XXX pull out
-@[simp]
-lemma vadd_eq_right {G : Type*} {P : Type*} [AddGroup G] [AddTorsor G P] (g : G) (p : P) :
-    g +ᵥ p = p ↔ g = 0 := by
-  rw [← vsub_eq_zero_iff_eq, vadd_vsub]
-
 /-- The tangent cone of a product contains the tangent cone of its left factor. -/
 theorem subset_tangentCone_prod_left {t : Set Q} {y : Q} (ht : y ∈ closure t) :
     LinearMap.inl 𝕜 E F '' tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 (s ×ˢ t) (x, y) := by

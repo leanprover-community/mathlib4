@@ -71,7 +71,7 @@ alias ⟨LipschitzOnWith.norm_div_le, _⟩ := lipschitzOnWith_iff_norm_div_le
 
 attribute [to_additive] LipschitzOnWith.norm_div_le
 
---XXX clean up variables maybe?
+--TODO clean up variables maybe?
 /-- A version of `lipschitzOnWith_iff_norm_sub_le` stated for functions on `NormedAddTorsor`. -/
 theorem lipschitzOnWith_iff_norm_vsub_le {E F : Type*} [SeminormedAddCommGroup E]
   [SeminormedAddCommGroup F] {P Q : Type*} [PseudoMetricSpace P] [NormedAddTorsor E P]
