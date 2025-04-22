@@ -134,13 +134,21 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
   -- file could re-use an outdated version of the nolints file.
   -- (For syntax linters, such a bug actually occurred in mathlib.)
   -- This script is re-run each time, hence is immune to such issues.
-  let nolintsFile : System.FilePath := match args.positionalArg? "nolints-file" with
-  | some filename => filename.value
-  | none => "scripts" / "nolints-style.txt"
-  if !(← System.FilePath.pathExists nolintsFile) then
-    IO.eprintln s!"error: path {nolintsFile} does not exist"
-    return 1
-  let mut numberErrors ← lintModules (← IO.FS.lines nolintsFile) allModuleNames style fix
+  let mut styleExceptions : Array String := #[]
+  -- If a nolints file is explicitly provided, it must exist.
+  -- If the file is omitted, we try to find one in scripts/nolints-style.txt
+  -- and otherwise proceed without any style exceptions.
+  if let some filename := args.positionalArg? "nolints-file" then
+    if !(← System.FilePath.pathExists filename.value) then
+      IO.eprintln s!"error: path {filename.value} does not exist"
+      return 1
+    styleExceptions := ← IO.FS.lines filename.value
+  else
+    if ← System.FilePath.pathExists ("scripts" / "nolints-style.txt") then
+      styleExceptions := ← IO.FS.lines ("scripts" / "nolints-style.txt")
+    else
+      IO.eprintln s!"warning: a file scripts/nolints-style.txt does not exist"
+  let mut numberErrors ← lintModules styleExceptions allModuleNames style fix
   -- If we are linting mathlib, also check the init imports and for undocumented scripts.
   if libraries.contains "Mathlib" then
     if ← checkInitImports then numberErrors := numberErrors + 1
@@ -166,7 +174,8 @@ def lintStyle : Cmd := `[Cli|
                 otherwise, produce human-readable output"
     fix;        "Automatically fix the style error, if possible"
     "nolints-file": String; "Path to a file with linter exceptions: \
-                if omitted, scripts/nolints-style.txt is assumed"
+              if omitted, the file is optional: we look for one at scripts/nolints-style.txt, \
+              but if no file is found, we proceed with no linter exceptions"
 
   ARGS:
     ...libraries: String; "Run linters precisely in these libraries\n\
