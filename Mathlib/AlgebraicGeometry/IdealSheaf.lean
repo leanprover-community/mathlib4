@@ -709,7 +709,7 @@ lemma Hom.support_ker (f : X.Hom Y) [QuasiCompact f] :
       ← Scheme.ΓSpecIso_inv_naturality]
     simp only [CommRingCat.hom_comp, PrimeSpectrum.comap_comp, ContinuousMap.coe_comp]
     exact closure_mono (Set.range_comp_subset_range _ (Spec.map φ).base)
-  · rw [(support _).closed.closure_subset_iff]
+  · rw [(support _).isClosed.closure_subset_iff]
     exact f.range_subset_ker_support
 
 end ker
