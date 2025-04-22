@@ -184,7 +184,7 @@ theorem accPt_iff_frequently {x : X} {C : Set X} : AccPt x (𝓟 C) ↔ ∃ᶠ y
   simp [accPt_principal_iff_clusterPt, clusterPt_principal_iff_frequently, and_comm]
 
 theorem accPt_principal_iff_nhdsWithin : AccPt x (𝓟 s) ↔ (𝓝[s \ {x}] x).NeBot := by
-  simp [accPt_iff_nhds, nhdsWithin, inf_principal_neBot_iff, Set.Nonempty, and_assoc]
+  rw [accPt_principal_iff_clusterPt, ClusterPt, nhdsWithin]
 
 /-- If `x` is an accumulation point of `F` and `F ≤ G`, then
 `x` is an accumulation point of `G`. -/
