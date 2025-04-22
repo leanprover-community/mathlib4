@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov, Paul Lezeau
 -/
 import Mathlib.Data.Set.NAry
-import Mathlib.Order.Bounds.Defs
+import Mathlib.Order.Bounds.Basic
 
 /-!
 
@@ -419,6 +419,39 @@ theorem IsGreatest.isLeast_image2_of_isLeast (ha : IsGreatest s a) (hb : IsLeast
 end AntitoneMonotone
 
 end Image2
+
+section Dominated
+variable {α β : Type*} [Preorder α] [Preorder β] {s t : Set α} {f : α → β}
+
+lemma Dominated.image_of_monotone (hst : Dominated s t) (hf : Monotone f) :
+    Dominated (f '' s) (f '' t) := by
+  simp only [Dominated, forall_mem_image, exists_mem_image]
+  rintro a ha
+  obtain ⟨b, hb, hab⟩ := hst ha
+  exact ⟨b, hb, hf hab⟩
+
+lemma Dominated.image_of_antitone (hst : Dominated s t) (hf : Antitone f) :
+    Codominated (f '' s) (f '' t) := by
+  simp only [Codominated, forall_mem_image, exists_mem_image]
+  rintro a ha
+  obtain ⟨b, hb, hab⟩ := hst ha
+  exact ⟨b, hb, hf hab⟩
+
+lemma Codominated.image_of_monotone (hst : Codominated s t) (hf : Monotone f) :
+    Codominated (f '' s) (f '' t) := by
+  simp only [Codominated, forall_mem_image, exists_mem_image]
+  rintro a ha
+  obtain ⟨b, hb, hba⟩ := hst ha
+  exact ⟨b, hb, hf hba⟩
+
+lemma Codominated.image_of_antitone (hst : Codominated s t) (hf : Antitone f) :
+    Dominated (f '' s) (f '' t) := by
+  simp only [Dominated, forall_mem_image, exists_mem_image]
+  rintro a ha
+  obtain ⟨b, hb, hba⟩ := hst ha
+  exact ⟨b, hb, hf hba⟩
+
+end Dominated
 
 section Prod
 

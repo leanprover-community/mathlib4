@@ -18,6 +18,8 @@ In this file we define:
 * `IsLUB s a`, `IsGLB s a` : `a` is a least upper bound (resp., a greatest lower bound)
   of `s`; for a partial order, it is unique if exists.
 * `IsCofinal s`: for every `a`, there exists a member of `s` greater or equal to it.
+* `Dominated s t` : for all `a ∈ s` there exists `b ∈ t` such that `a ≤ b`
+* `Codominated s t` : for all `a ∈ s` there exists `b ∈ t` such that `b ≤ a`
 -/
 
 variable {α : Type*} [LE α]
@@ -57,3 +59,11 @@ def IsGLB (s : Set α) : α → Prop :=
 /-- A set is cofinal when for every `x : α` there exists `y ∈ s` with `x ≤ y`. -/
 def IsCofinal (s : Set α) : Prop :=
   ∀ x, ∃ y ∈ s, x ≤ y
+
+/-- A set `s` is said to be dominated by a set `t` if, for all `a` in `s` there exists `b` in
+`t` such that `a ≤ b`. -/
+def Dominated (s t : Set α) := ∀  ⦃a⦄, a ∈ s → ∃ b ∈ t, a ≤ b
+
+/-- A set `s` is said to be dominated by a set `t` if, for all `a` in `s` there exists `b` in
+`t` such that `b ≤ a`. -/
+def Codominated (s t : Set α) := ∀ ⦃a⦄, a ∈ s → ∃ b ∈ t, b ≤ a

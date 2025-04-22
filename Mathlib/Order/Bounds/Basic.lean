@@ -26,7 +26,7 @@ variable {α : Type u} {γ : Type v}
 
 section
 
-variable [Preorder α] {s t : Set α} {a b : α}
+variable [Preorder α] {s t u : Set α} {a b : α}
 
 theorem mem_upperBounds : a ∈ upperBounds s ↔ ∀ x ∈ s, x ≤ a :=
   Iff.rfl
@@ -125,6 +125,37 @@ theorem isLUB_congr (h : upperBounds s = upperBounds t) : IsLUB s a ↔ IsLUB t 
 theorem isGLB_congr (h : lowerBounds s = lowerBounds t) : IsGLB s a ↔ IsGLB t a := by
   rw [IsGLB, IsGLB, h]
 
+@[simp] lemma Dominated.of_subset (hst : s ⊆ t) : Dominated s t := fun a ha ↦ ⟨a, hst ha, le_rfl⟩
+
+@[simp] lemma Codominated.of_subset (hst : s ⊆ t) : Codominated s t :=
+  fun a ha ↦ ⟨a, hst ha, le_rfl⟩
+
+alias HasSubset.Subset.dominated := Dominated.of_subset
+alias HasSubset.Subset.codominated := Codominated.of_subset
+
+@[simp, refl] protected lemma Dominated.rfl : Dominated s s := .of_subset .rfl
+@[simp, refl] protected lemma Codominated.rfl : Codominated s s := .of_subset .rfl
+
+protected lemma Dominated.trans (hst : Dominated s t) (htu : Dominated t u) :
+    Dominated s u :=
+  fun _a ha ↦ let ⟨_b, hb, hab⟩ := hst ha; let ⟨c, hc, hbc⟩ := htu hb; ⟨c, hc, hab.trans hbc⟩
+
+protected lemma Codominated.trans (hst : Codominated s t) (htu : Codominated t u) :
+    Codominated s u :=
+  fun _a ha ↦ let ⟨_b, hb, hba⟩ := hst ha; let ⟨c, hc, hcb⟩ := htu hb; ⟨c, hc, hcb.trans hba⟩
+
+protected lemma Dominated.mono_left (hst : s ⊆ t) (htu : Dominated t u) : Dominated s u :=
+  hst.dominated.trans htu
+
+protected lemma Codominated.mono_left (hst : s ⊆ t) (htu : Codominated t u) : Codominated s u :=
+  hst.codominated.trans htu
+
+protected lemma Dominated.mono_right (htu : t ⊆ u) (hst : Dominated s t) : Dominated s u :=
+  hst.trans htu.dominated
+
+protected lemma Codominated.mono_right (htu : t ⊆ u) (hst : Codominated s t) : Codominated s u :=
+  hst.trans htu.codominated
+
 /-!
 ### Monotonicity
 -/
@@ -135,6 +166,14 @@ theorem upperBounds_mono_set ⦃s t : Set α⦄ (hst : s ⊆ t) : upperBounds t 
 
 theorem lowerBounds_mono_set ⦃s t : Set α⦄ (hst : s ⊆ t) : lowerBounds t ⊆ lowerBounds s :=
   fun _ hb _ h => hb <| hst h
+
+@[gcongr]
+lemma upperBounds_mono_of_dominated (hst : Dominated s t) : upperBounds t ⊆ upperBounds s :=
+  fun _a ha _b hb ↦ let ⟨_c, hc, hbc⟩ := hst hb; hbc.trans (ha hc)
+
+@[gcongr]
+lemma lowerBounds_mono_of_dominated (hst : Codominated s t) : lowerBounds t ⊆ lowerBounds s :=
+  fun _a ha _b hb ↦ let ⟨_c, hc, hcb⟩ := hst hb; hcb.trans' (ha hc)
 
 theorem upperBounds_mono_mem ⦃a b⦄ (hab : a ≤ b) : a ∈ upperBounds s → b ∈ upperBounds s :=
   fun ha _ h => le_trans (ha h) hab
