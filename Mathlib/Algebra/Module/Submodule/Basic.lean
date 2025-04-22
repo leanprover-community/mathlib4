@@ -23,9 +23,7 @@ submodule, subspace, linear map
 
 open Function
 
-universe u'' u' u v w
-
-variable {G : Type u''} {S : Type u'} {R : Type u} {M : Type v} {ι : Type w}
+variable {G : Type*} {S : Type*} {R : Type*} {M : Type*} {ι : Type*}
 
 namespace Submodule
 
@@ -169,5 +167,5 @@ theorem smul_mem_iff (s0 : s ≠ 0) : s • x ∈ p ↔ x ∈ p :=
 end Submodule
 
 /-- Subspace of a vector space. Defined to equal `Submodule`. -/
-abbrev Subspace (R : Type u) (M : Type v) [DivisionRing R] [AddCommGroup M] [Module R M] :=
+abbrev Subspace (R : Type*) (M : Type*) [DivisionRing R] [AddCommGroup M] [Module R M] :=
   Submodule R M

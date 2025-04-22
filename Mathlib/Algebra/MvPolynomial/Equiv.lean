@@ -43,9 +43,7 @@ noncomputable section
 
 open Polynomial Set Function Finsupp AddMonoidAlgebra
 
-universe u v w x
-
-variable {R : Type u} {S₁ : Type v} {S₂ : Type w} {S₃ : Type x}
+variable {R : Type*} {S₁ : Type*} {S₂ : Type*} {S₃ : Type*}
 
 namespace MvPolynomial
 
@@ -462,7 +460,7 @@ theorem finSuccEquiv_apply (p : MvPolynomial (Fin (n + 1)) R) :
         (fun i : Fin (n + 1) => Fin.cases Polynomial.X (fun k => Polynomial.C (X k)) i) p := by
   rw [← finSuccEquiv_eq, RingHom.coe_coe]
 
-theorem finSuccEquiv_comp_C_eq_C {R : Type u} [CommSemiring R] (n : ℕ) :
+theorem finSuccEquiv_comp_C_eq_C {R : Type*} [CommSemiring R] (n : ℕ) :
     (↑(MvPolynomial.finSuccEquiv R n).symm : Polynomial (MvPolynomial (Fin n) R) →+* _).comp
         (Polynomial.C.comp MvPolynomial.C) =
       (MvPolynomial.C : R →+* MvPolynomial (Fin n.succ) R) := by

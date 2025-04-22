@@ -13,11 +13,9 @@ which is a natural isomorphism `single C c j ⋙ homologyFunctor C c j ≅ 𝟭 
 
 -/
 
-universe v u
-
 open CategoryTheory Category Limits ZeroObject
 
-variable {C : Type u} [Category.{v} C] [HasZeroMorphisms C] [HasZeroObject C]
+variable {C : Type*} [Category C] [HasZeroMorphisms C] [HasZeroObject C]
   {ι : Type*} [DecidableEq ι] (c : ComplexShape ι) (j : ι)
 
 namespace HomologicalComplex

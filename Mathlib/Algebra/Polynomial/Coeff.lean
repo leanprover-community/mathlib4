@@ -26,9 +26,7 @@ open Polynomial
 
 namespace Polynomial
 
-universe u v
-
-variable {R : Type u} {S : Type v} {a b : R} {n m : ℕ}
+variable {R :Type*} {S : Type*} {a b : R} {n m : ℕ}
 variable [Semiring R] {p q r : R[X]}
 
 section Coeff

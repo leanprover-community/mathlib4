@@ -10,9 +10,7 @@ import Mathlib.Algebra.Ring.Defs
 
 -/
 
-universe u
-
-variable {R : Type u}
+variable {R : Type*}
 
 /-- `-⅟a` is the inverse of `-a` -/
 def invertibleNeg [Mul R] [One R] [HasDistribNeg R] (a : R) [Invertible a] : Invertible (-a) :=

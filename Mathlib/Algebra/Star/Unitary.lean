@@ -219,8 +219,6 @@ end Ring
 
 section UnitaryConjugate
 
-universe u
-
 variable {R A : Type*} [CommSemiring R] [Ring A] [Algebra R A] [StarMul A]
 
 /-- Unitary conjugation preserves the spectrum, star on left. -/

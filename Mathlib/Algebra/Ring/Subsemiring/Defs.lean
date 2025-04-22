@@ -14,8 +14,6 @@ ring homomorphisms.
 
 assert_not_exists RelIso
 
-universe u v w
-
 section AddSubmonoidWithOneClass
 
 /-- `AddSubmonoidWithOneClass S R` says `S` is a type of subsets `s ≤ R` that contain `0`, `1`,
@@ -44,23 +42,23 @@ instance (priority := 74) AddSubmonoidWithOneClass.toAddMonoidWithOne
 
 end AddSubmonoidWithOneClass
 
-variable {R : Type u} {S : Type v} [NonAssocSemiring R]
+variable {R : Type*} {S : Type*} [NonAssocSemiring R]
 
 section SubsemiringClass
 
 /-- `SubsemiringClass S R` states that `S` is a type of subsets `s ⊆ R` that
 are both a multiplicative and an additive submonoid. -/
-class SubsemiringClass (S : Type*) (R : outParam (Type u)) [NonAssocSemiring R]
+class SubsemiringClass (S : Type*) (R : outParam (Type*)) [NonAssocSemiring R]
   [SetLike S R] : Prop extends SubmonoidClass S R, AddSubmonoidClass S R
 
 -- See note [lower instance priority]
 instance (priority := 100) SubsemiringClass.addSubmonoidWithOneClass (S : Type*)
-    (R : Type u) {_ : NonAssocSemiring R} [SetLike S R] [h : SubsemiringClass S R] :
+    (R : Type*) {_ : NonAssocSemiring R} [SetLike S R] [h : SubsemiringClass S R] :
     AddSubmonoidWithOneClass S R :=
   { h with }
 
 instance (priority := 100) SubsemiringClass.nonUnitalSubsemiringClass (S : Type*)
-    (R : Type u) [NonAssocSemiring R] [SetLike S R] [SubsemiringClass S R] :
+    (R : Type*) [NonAssocSemiring R] [SetLike S R] [SubsemiringClass S R] :
     NonUnitalSubsemiringClass S R where
   mul_mem := mul_mem
 
@@ -125,7 +123,7 @@ variable [NonAssocSemiring S]
 
 /-- A subsemiring of a semiring `R` is a subset `s` that is both a multiplicative and an additive
 submonoid. -/
-structure Subsemiring (R : Type u) [NonAssocSemiring R] extends Submonoid R, AddSubmonoid R
+structure Subsemiring (R : Type*) [NonAssocSemiring R] extends Submonoid R, AddSubmonoid R
 
 /-- Reinterpret a `Subsemiring` as a `Submonoid`. -/
 add_decl_doc Subsemiring.toSubmonoid

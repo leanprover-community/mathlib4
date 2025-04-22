@@ -12,13 +12,10 @@ import Mathlib.Algebra.Group.Action.Pi
 This file defines instances for NoZeroSMulDivisors on Pi types.
 -/
 
-
-universe u v
-
-variable {I : Type u}
+variable {I : Type*}
 
 -- The indexing type
-variable {f : I → Type v}
+variable {f : I → Type*}
 
 instance Pi.noZeroSMulDivisors (α) [Zero α] [∀ i, Zero <| f i]
     [∀ i, SMulWithZero α <| f i] [∀ i, NoZeroSMulDivisors α <| f i] :

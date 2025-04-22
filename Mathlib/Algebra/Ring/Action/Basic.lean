@@ -34,12 +34,10 @@ group action
 
 assert_not_exists Equiv.Perm.equivUnitsEnd Prod.fst_mul
 
-universe u v
-
 /-- Typeclass for multiplicative actions by monoids on semirings.
 
 This combines `DistribMulAction` with `MulDistribMulAction`. -/
-class MulSemiringAction (M : Type u) (R : Type v) [Monoid M] [Semiring R] extends
+class MulSemiringAction (M : Type*) (R : Type*) [Monoid M] [Semiring R] extends
   DistribMulAction M R where
   /-- Multipliying `1` by a scalar gives `1` -/
   smul_one : ∀ g : M, (g • (1 : R) : R) = 1
@@ -49,7 +47,7 @@ class MulSemiringAction (M : Type u) (R : Type v) [Monoid M] [Semiring R] extend
 section Semiring
 
 variable (M N : Type*) [Monoid M] [Monoid N]
-variable (R : Type v) [Semiring R]
+variable (R : Type*) [Semiring R]
 
 -- note we could not use `extends` since these typeclasses are made with `old_structure_cmd`
 instance (priority := 100) MulSemiringAction.toMulDistribMulAction

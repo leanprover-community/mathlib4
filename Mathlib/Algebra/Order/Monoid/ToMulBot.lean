@@ -14,9 +14,7 @@ element then making it multiplicative.
 -/
 
 
-universe u
-
-variable {α : Type u}
+variable {α : Type*}
 
 namespace WithZero
 

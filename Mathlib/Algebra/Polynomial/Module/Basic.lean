@@ -13,7 +13,7 @@ In this file, we define the polynomial module for an `R`-module `M`, i.e. the `R
 This is defined as a type alias `PolynomialModule R M := ℕ →₀ M`, since there might be different
 module structures on `ℕ →₀ M` of interest. See the docstring of `PolynomialModule` for details.
 -/
-universe u v
+
 open Polynomial
 
 /-- The `R[X]`-module `M[X]` for an `R`-module `M`.
@@ -99,11 +99,11 @@ lemma smul_def (f : R[X]) (m : PolynomialModule R M) :
     f • m = aeval (Finsupp.lmapDomain M R Nat.succ) f m := by
   rfl
 
-instance (M : Type u) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower S R M] :
+instance (M : Type*) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower S R M] :
     IsScalarTower S R (PolynomialModule R M) :=
   Finsupp.isScalarTower _ _
 
-instance isScalarTower' (M : Type u) [AddCommGroup M] [Module R M] [Module S M]
+instance isScalarTower' (M : Type*) [AddCommGroup M] [Module R M] [Module S M]
     [IsScalarTower S R M] : IsScalarTower S R[X] (PolynomialModule R M) := by
   haveI : IsScalarTower R R[X] (PolynomialModule R M) :=
     inferInstanceAs <| IsScalarTower R R[X] <| Module.AEval' <| Finsupp.lmapDomain M R Nat.succ

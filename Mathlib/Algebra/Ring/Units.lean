@@ -13,9 +13,7 @@ import Mathlib.Algebra.Ring.Hom.Defs
 -/
 
 
-universe u v w x
-
-variable {α : Type u} {β : Type v} {R : Type x}
+variable {α : Type*} {β : Type*} {R : Type*}
 
 open Function
 

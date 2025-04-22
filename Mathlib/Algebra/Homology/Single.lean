@@ -21,9 +21,7 @@ an augmented exact complex of projectives.)
 
 open CategoryTheory Category Limits ZeroObject
 
-universe v u
-
-variable (V : Type u) [Category.{v} V] [HasZeroMorphisms V] [HasZeroObject V]
+variable (V : Type*) [Category V] [HasZeroMorphisms V] [HasZeroObject V]
 
 namespace HomologicalComplex
 

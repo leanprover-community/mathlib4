@@ -14,9 +14,7 @@ noncomputable section
 
 open CategoryTheory Limits HomologicalComplex
 
-universe v u
-
-variable {V : Type u} [Category.{v} V]
+variable {V : Type*} [Category V]
 
 namespace ChainComplex
 

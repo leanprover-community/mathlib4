@@ -22,9 +22,7 @@ open Polynomial
 
 namespace Polynomial
 
-universe u v y
-
-variable {R : Type u} {S : Type v} {a b : R} {m n : ℕ} {ι : Type y}
+variable {R : Type*} {S : Type*} {a b : R} {m n : ℕ} {ι : Type*}
 
 section Semiring
 
@@ -426,7 +424,7 @@ theorem monic_X_pow_sub {n : ℕ} (H : degree p < n) : Monic (X ^ n - p) := by
   simpa [sub_eq_add_neg] using monic_X_pow_add (show degree (-p) < n by rwa [← degree_neg p] at H)
 
 /-- `X ^ n - a` is monic. -/
-theorem monic_X_pow_sub_C {R : Type u} [Ring R] (a : R) {n : ℕ} (h : n ≠ 0) :
+theorem monic_X_pow_sub_C {R : Type*} [Ring R] (a : R) {n : ℕ} (h : n ≠ 0) :
     (X ^ n - C a).Monic := by
   simpa only [map_neg, ← sub_eq_add_neg] using monic_X_pow_add_C (-a) h
 

@@ -685,9 +685,7 @@ theorem induction_on [Semiring k] [Monoid G] {p : MonoidAlgebra k G → Prop} (f
 
 section
 
-universe ui
-
-variable {ι : Type ui}
+variable {ι : Type*}
 
 open Finset in
 theorem prod_single [CommSemiring k] [CommMonoid G] {s : Finset ι} {a : ι → G} {b : ι → k} :
@@ -1412,9 +1410,7 @@ end Algebra
 
 section
 
-universe ui
-
-variable {ι : Type ui}
+variable {ι : Type*}
 
 open Finset in
 theorem prod_single [CommSemiring k] [AddCommMonoid G] {s : Finset ι} {a : ι → G} {b : ι → k} :

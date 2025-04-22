@@ -18,12 +18,10 @@ This file defines instances for ring, semiring and related structures on Pi Type
 
 namespace Pi
 
-universe u v w
-
-variable {I : Type u}
+variable {I : Type*}
 
 -- The indexing type
-variable {f : I → Type v}
+variable {f : I → Type*}
 
 variable (i : I)
 
@@ -92,12 +90,12 @@ instance commRing [∀ i, CommRing <| f i] : CommRing (∀ i : I, f i) :=
 homomorphism `Pi.nonUnitalRingHom f : γ →+* Π a, β a` given by
 `Pi.nonUnitalRingHom f x b = f b x`. -/
 @[simps]
-protected def nonUnitalRingHom {γ : Type w} [∀ i, NonUnitalNonAssocSemiring (f i)]
+protected def nonUnitalRingHom {γ : Type*} [∀ i, NonUnitalNonAssocSemiring (f i)]
     [NonUnitalNonAssocSemiring γ] (g : ∀ i, γ →ₙ+* f i) : γ →ₙ+* ∀ i, f i :=
   { Pi.mulHom fun i => (g i).toMulHom, Pi.addMonoidHom fun i => (g i).toAddMonoidHom with
     toFun := fun x b => g b x }
 
-theorem nonUnitalRingHom_injective {γ : Type w} [Nonempty I]
+theorem nonUnitalRingHom_injective {γ : Type*} [Nonempty I]
     [∀ i, NonUnitalNonAssocSemiring (f i)] [NonUnitalNonAssocSemiring γ] (g : ∀ i, γ →ₙ+* f i)
     (hg : ∀ i, Function.Injective (g i)) : Function.Injective (Pi.nonUnitalRingHom g) :=
   mulHom_injective (fun i => (g i).toMulHom) hg
@@ -105,12 +103,12 @@ theorem nonUnitalRingHom_injective {γ : Type w} [Nonempty I]
 /-- A family of ring homomorphisms `f a : γ →+* β a` defines a ring homomorphism
 `Pi.ringHom f : γ →+* Π a, β a` given by `Pi.ringHom f x b = f b x`. -/
 @[simps]
-protected def ringHom {γ : Type w} [∀ i, NonAssocSemiring (f i)] [NonAssocSemiring γ]
+protected def ringHom {γ : Type*} [∀ i, NonAssocSemiring (f i)] [NonAssocSemiring γ]
     (g : ∀ i, γ →+* f i) : γ →+* ∀ i, f i :=
   { Pi.monoidHom fun i => (g i).toMonoidHom, Pi.addMonoidHom fun i => (g i).toAddMonoidHom with
     toFun := fun x b => g b x }
 
-theorem ringHom_injective {γ : Type w} [Nonempty I] [∀ i, NonAssocSemiring (f i)]
+theorem ringHom_injective {γ : Type*} [Nonempty I] [∀ i, NonAssocSemiring (f i)]
     [NonAssocSemiring γ] (g : ∀ i, γ →+* f i) (hg : ∀ i, Function.Injective (g i)) :
     Function.Injective (Pi.ringHom g) :=
   monoidHom_injective (fun i => (g i).toMonoidHom) hg
@@ -119,14 +117,12 @@ end Pi
 
 section NonUnitalRingHom
 
-universe u v
-
-variable {I : Type u}
+variable {I : Type*}
 
 /-- Evaluation of functions into an indexed collection of non-unital rings at a point is a
 non-unital ring homomorphism. This is `Function.eval` as a `NonUnitalRingHom`. -/
 @[simps!]
-def Pi.evalNonUnitalRingHom (f : I → Type v) [∀ i, NonUnitalNonAssocSemiring (f i)] (i : I) :
+def Pi.evalNonUnitalRingHom (f : I → Type*) [∀ i, NonUnitalNonAssocSemiring (f i)] (i : I) :
     (∀ i, f i) →ₙ+* f i :=
   { Pi.evalMulHom f i, Pi.evalAddMonoidHom f i with }
 
@@ -146,14 +142,12 @@ end NonUnitalRingHom
 
 section RingHom
 
-universe u v
-
-variable {I : Type u}
+variable {I : Type*}
 
 /-- Evaluation of functions into an indexed collection of rings at a point is a ring
 homomorphism. This is `Function.eval` as a `RingHom`. -/
 @[simps!]
-def Pi.evalRingHom (f : I → Type v) [∀ i, NonAssocSemiring (f i)] (i : I) : (∀ i, f i) →+* f i :=
+def Pi.evalRingHom (f : I → Type*) [∀ i, NonAssocSemiring (f i)] (i : I) : (∀ i, f i) →+* f i :=
   { Pi.evalMonoidHom f i, Pi.evalAddMonoidHom f i with }
 
 instance (f : I → Type*) [∀ i, Semiring (f i)] (i) :

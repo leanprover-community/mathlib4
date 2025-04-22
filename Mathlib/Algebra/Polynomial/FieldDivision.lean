@@ -24,9 +24,7 @@ open Polynomial
 
 namespace Polynomial
 
-universe u v w y z
-
-variable {R : Type u} {S : Type v} {k : Type y} {A : Type z} {a b : R} {n : ℕ}
+variable {R : Type*} {S : Type*} {k : Type*} {A : Type*} {a b : R} {n : ℕ}
 
 section CommRing
 

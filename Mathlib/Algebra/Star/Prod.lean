@@ -13,9 +13,7 @@ We put a `Star` structure on product types that operates elementwise.
 -/
 
 
-universe u v w
-
-variable {R : Type u} {S : Type v}
+variable {R : Type*} {S : Type*}
 
 namespace Prod
 
@@ -50,7 +48,7 @@ instance [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S] [StarRing R
   { inferInstanceAs (StarAddMonoid (R × S)),
     inferInstanceAs (StarMul (R × S)) with }
 
-instance {α : Type w} [SMul α R] [SMul α S] [Star α] [Star R] [Star S]
+instance {α : Type*} [SMul α R] [SMul α S] [Star α] [Star R] [Star S]
     [StarModule α R] [StarModule α S] : StarModule α (R × S) where
   star_smul _ _ := Prod.ext (star_smul _ _) (star_smul _ _)
 

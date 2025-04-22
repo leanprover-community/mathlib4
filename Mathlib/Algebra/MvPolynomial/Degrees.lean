@@ -52,9 +52,7 @@ noncomputable section
 
 open Set Function Finsupp AddMonoidAlgebra
 
-universe u v w
-
-variable {R : Type u} {S : Type v}
+variable {R : Type*} {S : Type*}
 
 namespace MvPolynomial
 

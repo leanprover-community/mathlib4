@@ -19,9 +19,7 @@ import Mathlib.Algebra.Ring.Subring.Basic
 
 namespace Polynomial
 
-universe u v w y
-
-variable {R : Type u} {S : Type v} {T : Type w} {ι : Type y} {a b : R} {m n : ℕ}
+variable {R : Type*} {S : Type*} {T : Type*} {ι : Type*} {a b : R} {m n : ℕ}
 
 variable [Semiring R] {p q r : R[X]} [Semiring S]
 variable (f : R →+* S)

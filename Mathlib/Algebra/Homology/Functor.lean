@@ -17,15 +17,13 @@ In fact this is an equivalence of categories.
 -/
 
 
-universe v u
-
 open CategoryTheory
 
 open CategoryTheory.Limits
 
 namespace HomologicalComplex
 
-variable {V : Type u} [Category.{v} V] [HasZeroMorphisms V]
+variable {V : Type*} [Category V] [HasZeroMorphisms V]
 variable {ι : Type*} {c : ComplexShape ι}
 
 /-- A complex of functors gives a functor to complexes. -/

@@ -9,9 +9,7 @@ import Mathlib.Algebra.Order.Monoid.Defs
 
 /-! # Ordered monoid structures on the order dual. -/
 
-universe u
-
-variable {α : Type u}
+variable {α : Type*}
 
 open Function
 

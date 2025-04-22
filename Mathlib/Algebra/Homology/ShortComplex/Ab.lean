@@ -27,13 +27,11 @@ is exact iff any element in the kernel of `S.g` belongs to the image of `S.f`.
 
 -/
 
-universe u
-
 namespace CategoryTheory
 
 namespace ShortComplex
 
-variable (S : ShortComplex Ab.{u})
+variable (S : ShortComplex Ab)
 
 @[simp]
 lemma ab_zero_apply (x : S.X₁) : S.g (S.f x) = 0 := by

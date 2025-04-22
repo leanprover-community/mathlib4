@@ -13,9 +13,7 @@ import Mathlib.Order.BoundedOrder.Basic
 # Canonically ordered monoids
 -/
 
-universe u
-
-variable {α : Type u}
+variable {α : Type*}
 
 /-- An ordered additive monoid is `CanonicallyOrderedAdd`
   if the ordering coincides with the subtractibility relation,

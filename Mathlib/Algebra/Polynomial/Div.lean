@@ -26,9 +26,7 @@ open Finset
 
 namespace Polynomial
 
-universe u v w z
-
-variable {R : Type u} {S : Type v} {T : Type w} {A : Type z} {a b : R} {n : ℕ}
+variable {R : Type*} {S : Type*} {T : Type*} {A : Type*} {a b : R} {n : ℕ}
 
 section Semiring
 

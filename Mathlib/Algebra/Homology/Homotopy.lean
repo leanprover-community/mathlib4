@@ -14,14 +14,12 @@ We define chain homotopies, and prove that homotopic chain maps induce the same 
 -/
 
 
-universe v u
-
 noncomputable section
 
 open CategoryTheory Category Limits HomologicalComplex
 
 variable {ι : Type*}
-variable {V : Type u} [Category.{v} V] [Preadditive V]
+variable {V : Type*} [Category V] [Preadditive V]
 variable {c : ComplexShape ι} {C D E : HomologicalComplex V c}
 variable (f g : C ⟶ D) (h k : D ⟶ E) (i : ι)
 
@@ -725,7 +723,7 @@ def trans {C D E : HomologicalComplex V c} (f : HomotopyEquiv C D) (g : Homotopy
     ((f.homotopyInvHomId.compRightId g.hom).compLeft g.inv).trans g.homotopyInvHomId
 
 /-- An isomorphism of complexes induces a homotopy equivalence. -/
-def ofIso {ι : Type*} {V : Type u} [Category.{v} V] [Preadditive V] {c : ComplexShape ι}
+def ofIso {ι : Type*} {V : Type*} [Category V] [Preadditive V] {c : ComplexShape ι}
     {C D : HomologicalComplex V c} (f : C ≅ D) : HomotopyEquiv C D :=
   ⟨f.hom, f.inv, Homotopy.ofEq f.3, Homotopy.ofEq f.4⟩
 

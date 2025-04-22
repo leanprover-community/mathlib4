@@ -15,13 +15,12 @@ generalising statements from groups/rings/fields that don't mention negation or 
 monoids/semirings/semifields.
 -/
 
-universe u
-variable {α : Type u}
+variable {α : Type*}
 
 /-- An `OrderedAddCommMonoid` with one-sided 'subtraction' in the sense that
 if `a ≤ b`, then there is some `c` for which `a + c = b`. This is a weaker version
 of the condition on canonical orderings defined by `CanonicallyOrderedAddCommMonoid`. -/
-class ExistsAddOfLE (α : Type u) [Add α] [LE α] : Prop where
+class ExistsAddOfLE (α : Type*) [Add α] [LE α] : Prop where
   /-- For `a ≤ b`, there is a `c` so `b = a + c`. -/
   exists_add_of_le : ∀ {a b : α}, a ≤ b → ∃ c : α, b = a + c
 
@@ -29,7 +28,7 @@ class ExistsAddOfLE (α : Type u) [Add α] [LE α] : Prop where
 if `a ≤ b`, there is some `c` for which `a * c = b`. This is a weaker version
 of the condition on canonical orderings defined by `CanonicallyOrderedCommMonoid`. -/
 @[to_additive]
-class ExistsMulOfLE (α : Type u) [Mul α] [LE α] : Prop where
+class ExistsMulOfLE (α : Type*) [Mul α] [LE α] : Prop where
   /-- For `a ≤ b`, `a` left divides `b` -/
   exists_mul_of_le : ∀ {a b : α}, a ≤ b → ∃ c : α, b = a * c
 
@@ -38,7 +37,7 @@ export ExistsAddOfLE (exists_add_of_le)
 
 -- See note [lower instance priority]
 @[to_additive]
-instance (priority := 100) Group.existsMulOfLE (α : Type u) [Group α] [LE α] : ExistsMulOfLE α :=
+instance (priority := 100) Group.existsMulOfLE (α : Type*) [Group α] [LE α] : ExistsMulOfLE α :=
   ⟨fun {a b} _ => ⟨a⁻¹ * b, (mul_inv_cancel_left _ _).symm⟩⟩
 
 section MulOneClass

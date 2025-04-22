@@ -34,19 +34,17 @@ Our star rings are actually star non-unital, non-associative, semirings, but of 
 
 assert_not_exists Finset Subgroup Rat.instField
 
-universe u v w
-
 open MulOpposite
 
 /-- Notation typeclass (with no default notation!) for an algebraic structure with a star operation.
 -/
-class Star (R : Type u) where
+class Star (R : Type*) where
   star : R → R
 
 -- https://github.com/leanprover/lean4/issues/2096
 compile_def% Star.star
 
-variable {R : Type u}
+variable {R : Type*}
 
 export Star (star)
 
@@ -65,7 +63,7 @@ attribute [aesop safe apply (rule_sets := [SetLike])] star_mem
 
 namespace StarMemClass
 
-variable {S : Type w} [Star R] [SetLike S R] [hS : StarMemClass S R] (s : S)
+variable {S : Type*} [Star R] [SetLike S R] [hS : StarMemClass S R] (s : S)
 
 instance instStar : Star s where
   star r := ⟨star (r : R), star_mem r.prop⟩
@@ -76,7 +74,7 @@ end StarMemClass
 
 /-- Typeclass for a star operation with is involutive.
 -/
-class InvolutiveStar (R : Type u) extends Star R where
+class InvolutiveStar (R : Type*) extends Star R where
   /-- Involutive condition. -/
   star_involutive : Function.Involutive star
 
@@ -108,7 +106,7 @@ theorem star_eq_iff_star_eq [InvolutiveStar R] {r s : R} : star r = s ↔ star s
 
 /-- Typeclass for a trivial star operation. This is mostly meant for `ℝ`.
 -/
-class TrivialStar (R : Type u) [Star R] : Prop where
+class TrivialStar (R : Type*) [Star R] : Prop where
   /-- Condition that star is trivial -/
   star_trivial : ∀ r : R, star r = r
 
@@ -119,7 +117,7 @@ attribute [simp] star_trivial
 /-- A `*`-magma is a magma `R` with an involutive operation `star`
 such that `star (r * s) = star s * star r`.
 -/
-class StarMul (R : Type u) [Mul R] extends InvolutiveStar R where
+class StarMul (R : Type*) [Mul R] extends InvolutiveStar R where
   /-- `star` skew-distributes over multiplication. -/
   star_mul : ∀ r s : R, star (r * s) = star s * star r
 
@@ -217,7 +215,7 @@ end
 
 /-- A `*`-additive monoid `R` is an additive monoid with an involutive `star` operation which
 preserves addition. -/
-class StarAddMonoid (R : Type u) [AddMonoid R] extends InvolutiveStar R where
+class StarAddMonoid (R : Type*) [AddMonoid R] extends InvolutiveStar R where
   /-- `star` commutes with addition -/
   star_add : ∀ r s : R, star (r + s) = star r + star s
 
@@ -263,7 +261,7 @@ theorem star_zsmul [AddGroup R] [StarAddMonoid R] (n : ℤ) (x : R) : star (n �
 /-- A `*`-ring `R` is a non-unital, non-associative (semi)ring with an involutive `star` operation
 which is additive which makes `R` with its multiplicative structure into a `*`-multiplication
 (i.e. `star (r * s) = star s * star r`). -/
-class StarRing (R : Type u) [NonUnitalNonAssocSemiring R] extends StarMul R where
+class StarRing (R : Type*) [NonUnitalNonAssocSemiring R] extends StarMul R where
   /-- `star` commutes with addition -/
   star_add : ∀ r s : R, star (r + s) = star r + star s
 
@@ -397,7 +395,7 @@ If used as `[CommRing R] [StarRing R] [Semiring A] [StarRing A] [Algebra R A]`, 
 star algebra.
 -/
 
-class StarModule (R : Type u) (A : Type v) [Star R] [Star A] [SMul R A] : Prop where
+class StarModule (R : Type*) (A : Type*) [Star R] [Star A] [SMul R A] : Prop where
   /-- `star` commutes with scalar multiplication -/
   star_smul : ∀ (r : R) (a : A), star (r • a) = star r • star a
 

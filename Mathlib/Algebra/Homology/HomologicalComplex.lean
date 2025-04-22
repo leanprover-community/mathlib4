@@ -35,12 +35,10 @@ Defined in terms of these we have `C.dFrom i : C.X i ⟶ C.xNext i` and
 -/
 
 
-universe v u
-
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
 
 variable {ι : Type*}
-variable (V : Type u) [Category.{v} V] [HasZeroMorphisms V]
+variable (V : Type*) [Category V] [HasZeroMorphisms V]
 
 /-- A `HomologicalComplex V c` with a "shape" controlled by `c : ComplexShape ι`
 has chain groups `X i` (objects in `V`) indexed by `i : ι`,

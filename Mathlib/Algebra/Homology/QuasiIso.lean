@@ -17,13 +17,11 @@ A chain map is a quasi-isomorphism if it induces isomorphisms on homology.
 
 open CategoryTheory Limits
 
-universe v u
-
 open HomologicalComplex
 
 section
 
-variable {ι : Type*} {C : Type u} [Category.{v} C] [HasZeroMorphisms C]
+variable {ι : Type*} {C : Type*} [Category C] [HasZeroMorphisms C]
   {c : ComplexShape ι} {K L M K' L' : HomologicalComplex C c}
 
 /-- A morphism of homological complexes `f : K ⟶ L` is a quasi-isomorphism in degree `i`
@@ -327,7 +325,7 @@ end
 
 section
 
-variable {ι : Type*} {C : Type u} [Category.{v} C] [Preadditive C]
+variable {ι : Type*} {C : Type*} [Category C] [Preadditive C]
   {c : ComplexShape ι} {K L : HomologicalComplex C c}
   (e : HomotopyEquiv K L) [∀ i, K.HasHomology i] [∀ i, L.HasHomology i]
 

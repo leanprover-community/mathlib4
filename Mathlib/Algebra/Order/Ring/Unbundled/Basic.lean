@@ -116,9 +116,7 @@ assert_not_exists OrderedCommMonoid MonoidHom
 
 open Function
 
-universe u
-
-variable {R : Type u} {α : Type*}
+variable {R : Type*} {α : Type*}
 
 /-! Note that `OrderDual` does not satisfy any of the ordered ring typeclasses due to the
 `zero_le_one` field. -/

@@ -23,8 +23,6 @@ open Function Set
 
 open scoped Pointwise
 
-universe u
-
 variable {ι α : Type*}
 
 /-! ### One/zero -/
@@ -485,7 +483,7 @@ protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = pure a ∧ t = pur
   · rintro ⟨b, c, rfl, rfl, h⟩
     rw [pure_mul_pure, h, pure_one]
 
-instance subtractionCommMonoid {α : Type u}
+instance subtractionCommMonoid {α : Type*}
     [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α] :
     SubtractionCommMonoid (NonemptyInterval α) :=
   { NonemptyInterval.addCommMonoid with
@@ -536,7 +534,7 @@ protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = pure a ∧ t = pur
       WithBot.coe_inj, NonemptyInterval.coe_eq_pure]
     exact NonemptyInterval.mul_eq_one_iff
 
-instance subtractionCommMonoid {α : Type u}
+instance subtractionCommMonoid {α : Type*}
     [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α] :
     SubtractionCommMonoid (Interval α) :=
   { Interval.addCommMonoid with

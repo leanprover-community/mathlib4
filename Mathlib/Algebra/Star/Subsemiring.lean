@@ -16,7 +16,7 @@ universe v
 
 /-- A (unital) star subsemiring is a non-associative ring which is closed under the `star`
 operation. -/
-structure StarSubsemiring (R : Type v) [NonAssocSemiring R] [Star R] : Type v
+structure StarSubsemiring (R : Type*) [NonAssocSemiring R] [Star R] : Type _
     extends Subsemiring R where
   /-- The `carrier` of a `StarSubsemiring` is closed under the `star` operation. -/
   star_mem' {a} : a ∈ carrier → star a ∈ carrier
@@ -28,14 +28,14 @@ namespace StarSubsemiring
 /-- Reinterpret a `StarSubsemiring` as a `Subsemiring`. -/
 add_decl_doc StarSubsemiring.toSubsemiring
 
-instance setLike {R : Type v} [NonAssocSemiring R] [Star R] :
+instance setLike {R : Type*} [NonAssocSemiring R] [Star R] :
     SetLike (StarSubsemiring R) R where
   coe {s} := s.carrier
   coe_injective' p q h := by obtain ⟨⟨⟨⟨_, _⟩, _⟩, _⟩, _⟩ := p; cases q; congr
 
 initialize_simps_projections StarSubsemiring (carrier → coe, as_prefix coe)
 
-variable {R : Type v} [NonAssocSemiring R] [StarRing R]
+variable {R : Type*} [NonAssocSemiring R] [StarRing R]
 
 /-- The actual `StarSubsemiring` obtained from an element of a `StarSubsemiringClass`. -/
 @[simps]

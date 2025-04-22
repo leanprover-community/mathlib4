@@ -15,9 +15,7 @@ import Mathlib.Algebra.Ring.Parity
 
 open Function
 
-universe u
-
-variable {R : Type u}
+variable {R : Type*}
 
 set_option linter.deprecated false in
 /-- A canonically ordered commutative semiring is an ordered, commutative semiring in which `a ≤ b`
