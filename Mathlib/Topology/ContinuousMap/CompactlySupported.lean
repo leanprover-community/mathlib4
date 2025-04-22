@@ -695,9 +695,7 @@ lemma nnrealPart_smul_neg (f : C_c(α, ℝ)) (a : ℝ) (ha : a < 0):
 lemma add_nnrealPart_le_nnrealPart_add (f g : C_c(α, ℝ)) :
     (f + g).nnrealPart ≤ f.nnrealPart + g.nnrealPart := by
   intro x
-  simp only [ContinuousMap.toFun_eq_coe, coe_toContinuousMap, nnrealPart_apply, coe_add,
-    Pi.add_apply, ContinuousMap.add_apply]
-  exact Real.toNNReal_add_le
+  simpa using Real.toNNReal_add_le
 
 lemma exists_add_nnrealPart_add_eq (f g : C_c(α, ℝ)) : ∃ (h : C_c(α, ℝ≥0)),
     (f + g).nnrealPart + h = f.nnrealPart + g.nnrealPart ∧
