@@ -218,7 +218,7 @@ theorem toWord_one : (1 : FreeGroup α).toWord = [] :=
 
 @[to_additive]
 theorem toWord_mul (x y : FreeGroup α) : toWord (x * y) = reduce (toWord x ++ toWord y) := by
-  rw [← mk_toWord (x := x), ← mk_toWord (x:= y)]
+  rw [← mk_toWord (x := x), ← mk_toWord (x := y)]
   simp
 
 @[to_additive]
