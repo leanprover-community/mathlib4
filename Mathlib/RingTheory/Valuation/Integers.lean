@@ -29,7 +29,7 @@ def integer : Subring R where
   carrier := { x | v x ≤ 1 }
   one_mem' := le_of_eq v.map_one
   mul_mem' {x y} hx hy := by simp only [Set.mem_setOf_eq, map_mul, mul_le_one' hx hy]
-  zero_mem' := by simp only [Set.mem_setOf_eq, _root_.map_zero, zero_le']
+  zero_mem' := by simp only [Set.mem_setOf_eq, map_zero, zero_le']
   add_mem' {x y} hx hy := le_trans (v.map_add x y) (max_le hx hy)
   neg_mem' {x} hx := by simp only [Set.mem_setOf_eq] at hx; simpa only [Set.mem_setOf_eq, map_neg]
 
@@ -240,6 +240,13 @@ lemma not_denselyOrdered_of_isPrincipalIdealRing [IsPrincipalIdealRing O] (hv : 
   exact hy.not_le <| hx ⟨hy₁, mem_range_self _⟩
 
 end Integers
+
+open Integers in
+theorem Integer.not_isUnit_iff_valuation_lt_one {x : v.integer} : ¬IsUnit x ↔ v x < 1 := by
+  rw [← not_le, not_iff_not, isUnit_iff_valuation_eq_one (F := F) (Γ₀ := Γ₀),
+    le_antisymm_iff]
+  exacts [and_iff_right x.2, integer.integers v]
+
 
 end Field
 
