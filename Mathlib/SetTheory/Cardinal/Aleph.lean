@@ -233,9 +233,6 @@ theorem omega0_lt_omega1 : ω < ω₁ := by
   rw [← omega_zero, omega_lt_omega]
   exact zero_lt_one
 
-@[deprecated omega0_lt_omega1 (since := "2024-10-11")]
-alias omega_lt_omega1 := omega0_lt_omega1
-
 theorem isNormal_omega : IsNormal omega :=
   isNormal_preOmega.trans (isNormal_add_right _)
 
@@ -452,16 +449,6 @@ theorem exists_aleph {c : Cardinal} : ℵ₀ ≤ c ↔ ∃ o, c = ℵ_ o :=
       rw [aleph_eq_preAleph, Ordinal.add_sub_cancel_of_le, preAleph.apply_symm_apply]
       rwa [← aleph0_le_preAleph, preAleph.apply_symm_apply]⟩,
     fun ⟨o, e⟩ => e.symm ▸ aleph0_le_aleph _⟩
-
-@[deprecated isNormal_preOmega (since := "2024-10-11")]
-theorem preAleph_isNormal : IsNormal (ord ∘ preAleph) := by
-  convert isNormal_preOmega
-  exact funext ord_preAleph
-
-@[deprecated isNormal_omega (since := "2024-10-11")]
-theorem aleph_isNormal : IsNormal (ord ∘ aleph) := by
-  convert isNormal_omega
-  exact funext ord_aleph
 
 @[simp]
 theorem succ_aleph0 : succ ℵ₀ = ℵ₁ := by
@@ -734,10 +721,6 @@ theorem beth_ne_zero (o : Ordinal) : ℶ_ o ≠ 0 :=
 
 theorem isNormal_beth : IsNormal (ord ∘ beth) :=
   isNormal_preBeth.trans (isNormal_add_right ω)
-
-@[deprecated isNormal_beth (since := "2024-10-11")]
-theorem beth_normal : IsNormal.{u} fun o => (beth o).ord :=
-  isNormal_beth
 
 theorem isStrongLimit_beth {o : Ordinal} (H : IsSuccPrelimit o) : IsStrongLimit (ℶ_ o) := by
   rcases eq_or_ne o 0 with (rfl | h)
