@@ -249,6 +249,8 @@ lemma reachable_boxProd {x y : α × β} :
   · intro ⟨⟨w₁⟩, ⟨w₂⟩⟩
     exact ⟨(w₁.boxProdLeft _ _).append (w₂.boxProdRight _ _)⟩
 
+@[deprecated (since := "2025-04-22")] alias boxProd_reachable := reachable_boxProd
+
 @[simp]
 lemma edist_boxProd (x y : α × β) :
     (G □ H).edist x y = G.edist x.1 y.1 + H.edist x.2 y.2 := by
@@ -272,5 +274,7 @@ lemma edist_boxProd (x y : α × β) :
     · have ⟨w, hw⟩ := exists_walk_of_edist_ne_top h
       rw [← hw, Walk.length_boxProd]
       exact add_le_add (edist_le w.ofBoxProdLeft) (edist_le w.ofBoxProdRight)
+
+@[deprecated (since := "2025-04-22")] alias boxProd_edist := edist_boxProd
 
 end SimpleGraph
