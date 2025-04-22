@@ -116,8 +116,8 @@ instance coeMultisetPNatNat : Coe (Multiset ℕ+) (Multiset ℕ) :=
   ⟨fun v => v.map (↑)⟩
 
 theorem coePNat_nat (v : PrimeMultiset) : ((v : Multiset ℕ+) : Multiset ℕ) = (v : Multiset ℕ) := by
-  change (v.map ((↑) : Nat.Primes → ℕ+)).map Subtype.val = v.map Subtype.val
-  rw [Multiset.map_map]
+  simp only [toPNatMultiset, toNatMultiset, Multiset.map_map, Function.comp_def]
+  -- TODO missing lemma
   congr
 
 /-- The product of a `PrimeMultiset`, as a `ℕ+`. -/
@@ -151,7 +151,8 @@ theorem to_ofPNatMultiset (v : Multiset ℕ+) (h) : (ofPNatMultiset v h : Multis
   dsimp [ofPNatMultiset, toPNatMultiset]
   have : (fun (p : ℕ+) (h : p.Prime) => ((↑) : Nat.Primes → ℕ+) ⟨p, h⟩) = fun p _ => id p := by
     funext p h
-    apply Subtype.eq
+    apply PNat.eq
+    simp -- TODO missing simp lemma
     rfl
   rw [Multiset.map_pmap, this, Multiset.pmap_eq_map, Multiset.map_id]
 
@@ -267,6 +268,7 @@ theorem factorMultiset_pow (n : ℕ+) (m : ℕ) :
 theorem factorMultiset_ofPrime (p : Nat.Primes) :
     (p : ℕ+).factorMultiset = PrimeMultiset.ofPrime p := by
   apply factorMultisetEquiv.symm.injective
+  -- TODO missing API
   change (p : ℕ+).factorMultiset.prod = (PrimeMultiset.ofPrime p).prod
   rw [(p : ℕ+).prod_factorMultiset, PrimeMultiset.prod_ofPrime]
 
