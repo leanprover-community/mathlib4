@@ -224,9 +224,11 @@ theorem lintegral_laverage (μ : Measure α) [IsFiniteMeasure μ] (f : α → �
     ∫⁻ _x, ⨍⁻ a, f a ∂μ ∂μ = ∫⁻ x, f x ∂μ := by
   simp
 
-theorem setLintegral_setLaverage (μ : Measure α) [IsFiniteMeasure μ] (f : α → ℝ≥0∞) (s : Set α) :
+theorem setLIntegral_setLaverage (μ : Measure α) [IsFiniteMeasure μ] (f : α → ℝ≥0∞) (s : Set α) :
     ∫⁻ _x in s, ⨍⁻ a in s, f a ∂μ ∂μ = ∫⁻ x in s, f x ∂μ :=
   lintegral_laverage _ _
+
+@[deprecated (since := "2025-04-22")] alias setLintegral_setLaverage := setLIntegral_setLaverage
 
 end ENNReal
 
