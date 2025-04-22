@@ -15,6 +15,8 @@ This file concerns adjoint triples `F ⊣ G ⊣ H` of functors `F H : C ⥤ D`, 
 Currently, the only result is that `F` is fully faithful if and only if `H` is fully faithful.
 -/
 
+open CategoryTheory Limits
+
 namespace CategoryTheory.Adjunction
 
 variable {C D : Type*} [Category C] [Category D]
@@ -52,79 +54,6 @@ noncomputable def fullyFaithfulEquiv : F.FullyFaithful ≃ H.FullyFaithful where
     adj₁.fullyFaithfulLOfIsIsoUnit
   left_inv _ := Subsingleton.elim _ _
   right_inv _ := Subsingleton.elim _ _
-
-end CategoryTheory.Adjunction
-
-open CategoryTheory Limits
-
--- TODO: move these somewhere else
-section Misc
-
-/-- When `f` is an isomorphism, `f ≫ g` is epic iff `g` is.
-TODO: should this and the following lemmas be simp lemmas? might cause slowdowns because it triggers
-instance searches for `IsIso` whenever `simp` is used on a goal containing `Mono (f ≫ g)`. -/
-lemma CategoryTheory.epi_isIso_comp_iff {C : Type*} [Category C] {X Y Z : C} (f : X ⟶ Y) [IsIso f]
-    (g : Y ⟶ Z) : Epi (f ≫ g) ↔ Epi g := by
-  refine ⟨fun h ↦ ?_, fun h ↦ inferInstance⟩
-  simpa using (inferInstance : Epi (inv f ≫ f ≫ g))
-
-/-- When `g` is an isomorphism, `f ≫ g` is epic iff `f` is. -/
-lemma CategoryTheory.epi_comp_isIso_iff {C : Type*} [Category C] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
-    [IsIso g] : Epi (f ≫ g) ↔ Epi f := by
-  refine ⟨fun h ↦ ?_, fun h ↦ inferInstance⟩
-  simpa using (inferInstance : Epi ((f ≫ g) ≫ inv g ))
-
-/-- When `f` is an isomorphism, `f ≫ g` is monic iff `g` is. -/
-lemma CategoryTheory.mono_isIso_comp_iff {C : Type*} [Category C] {X Y Z : C} (f : X ⟶ Y) [IsIso f]
-    (g : Y ⟶ Z) : Mono (f ≫ g) ↔ Mono g := by
-  refine ⟨fun h ↦ ?_, fun h ↦ inferInstance⟩
-  simpa using (inferInstance : Mono (inv f ≫ f ≫ g))
-
-/-- When `g` is an isomorphism, `f ≫ g` is monic iff `f` is. -/
-lemma CategoryTheory.mono_comp_isIso_iff {C : Type*} [Category C] {X Y Z : C} (f : X ⟶ Y)
-    (g : Y ⟶ Z) [IsIso g] : Mono (f ≫ g) ↔ Mono f := by
-  refine ⟨fun h ↦ ?_, fun h ↦ inferInstance⟩
-  simpa using (inferInstance : Mono ((f ≫ g) ≫ inv g ))
-
-/-- For any natural transformation `f : F ⟶ G`, if `X` and `Y` are isomorphic, the component of
-`f` at `X` is epic iff the component of `f` at `Y` is. -/
-lemma CategoryTheory.NatTrans.epi_app_congr_iso {C D : Type*} [Category C] [Category D]
-    {F G : C ⥤ D} {f : F ⟶ G} {X Y : C} (α : X ≅ Y) : Epi (f.app X) ↔ Epi (f.app Y) := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rw [(IsIso.eq_inv_comp _).2 <| f.naturality α.hom]; infer_instance
-  · rw [(IsIso.eq_inv_comp _).2 <| f.naturality α.inv]; infer_instance
-
-/-- For any natural transformation `f : F ⟶ G`, if `X` and `Y` are isomorphic, the component of
-`f` at `X` is monic iff the component of `f` at `Y` is. -/
-lemma CategoryTheory.NatTrans.mono_app_congr_iso {C D : Type*} [Category C] [Category D]
-    {F G : C ⥤ D} {f : F ⟶ G} {X Y : C} (α : X ≅ Y) : Mono (f.app X) ↔ Mono (f.app Y) := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rw [(IsIso.eq_inv_comp _).2 <| f.naturality α.hom]; infer_instance
-  · rw [(IsIso.eq_inv_comp _).2 <| f.naturality α.inv]; infer_instance
-
-/-- For any natural isomorphism `α : F ≅ G` and morphism `f : X ⟶ Y`, `F.map f` is epic
-iff `G.map f` is. -/
-lemma CategoryTheory.Functor.epi_map_congr_iso {C D : Type*} [Category C] [Category D]
-    {F G : C ⥤ D} {X Y : C} (f : X ⟶ Y) (α : F ≅ G) : Epi (F.map f) ↔ Epi (G.map f) := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rw [← (IsIso.inv_comp_eq _).2 <| α.hom.naturality f]; infer_instance
-  · rw [← (IsIso.inv_comp_eq _).2 <| α.inv.naturality f]; infer_instance
-
-/-- For any natural isomorphism `α : F ≅ G` and morphism `f : X ⟶ Y`, `F.map f` is monic
-iff `G.map f` is. -/
-lemma CategoryTheory.Functor.mono_map_congr_iso {C D : Type*} [Category C] [Category D]
-    {F G : C ⥤ D} {X Y : C} (f : X ⟶ Y) (α : F ≅ G) : Mono (F.map f) ↔ Mono (G.map f) := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rw [← (IsIso.inv_comp_eq _).2 <| α.hom.naturality f]; infer_instance
-  · rw [← (IsIso.inv_comp_eq _).2 <| α.inv.naturality f]; infer_instance
-
-end Misc
-
-namespace CategoryTheory.Adjunction
-
-variable {C D : Type*} [Category C] [Category D]
-variable {F H : C ⥤ D} {G : D ⥤ C}
-variable (adj₁ : F ⊣ G) (adj₂ : G ⊣ H)
 
 section InnerFullyFaithful
 
