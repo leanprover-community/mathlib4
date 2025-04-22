@@ -8,7 +8,6 @@ import Mathlib.Tactic.FunProp.Types
 import Mathlib.Tactic.FunProp.FunctionData
 import Mathlib.Lean.Meta.RefinedDiscrTree
 import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
-import Batteries.Data.RBMap.Alter
 
 /-!
 ## `fun_prop` environment extensions storing theorems for `fun_prop`
@@ -16,6 +15,7 @@ import Batteries.Data.RBMap.Alter
 
 namespace Mathlib
 open Lean Meta
+open Std (TreeMap)
 
 namespace Meta.FunProp
 
@@ -173,7 +173,7 @@ set_option linter.style.docString false in
 structure FunctionTheorems where
   /-- map: function name → function property → function theorem -/
   theorems :
-    Batteries.RBMap Name (Batteries.RBMap Name (Array FunctionTheorem) compare) compare := {}
+    TreeMap Name (TreeMap Name (Array FunctionTheorem) compare) compare := {}
   deriving Inhabited
 
 
@@ -206,8 +206,8 @@ set_option linter.style.docString false in
 /-- -/
 def getTheoremsForFunction (funName : Name) (funPropName : Name) :
     CoreM (Array FunctionTheorem) := do
-  return (functionTheoremsExt.getState (← getEnv)).theorems.findD funName {}
-    |>.findD funPropName #[]
+  return (functionTheoremsExt.getState (← getEnv)).theorems.getD funName {}
+    |>.getD funPropName #[]
 
 
 --------------------------------------------------------------------------------

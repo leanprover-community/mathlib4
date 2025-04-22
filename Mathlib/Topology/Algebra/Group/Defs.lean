@@ -91,8 +91,8 @@ end ContinuousInv
 continuous.
 
 When you declare an instance that does not already have a `UniformSpace` instance,
-you should also provide an instance of `UniformSpace` and `UniformAddGroup` using
-`IsTopologicalAddGroup.toUniformSpace` and `uniformAddGroup_of_addCommGroup`. -/
+you should also provide an instance of `UniformSpace` and `IsUniformAddGroup` using
+`IsTopologicalAddGroup.toUniformSpace` and `isUniformAddGroup_of_addCommGroup`. -/
 class IsTopologicalAddGroup (G : Type u) [TopologicalSpace G] [AddGroup G] : Prop
     extends ContinuousAdd G, ContinuousNeg G
 
@@ -103,8 +103,8 @@ class IsTopologicalAddGroup (G : Type u) [TopologicalSpace G] [AddGroup G] : Pro
 continuous.
 
 When you declare an instance that does not already have a `UniformSpace` instance,
-you should also provide an instance of `UniformSpace` and `UniformGroup` using
-`IsTopologicalGroup.toUniformSpace` and `uniformGroup_of_commGroup`. -/
+you should also provide an instance of `UniformSpace` and `IsUniformGroup` using
+`IsTopologicalGroup.toUniformSpace` and `isUniformGroup_of_commGroup`. -/
 @[to_additive]
 class IsTopologicalGroup (G : Type*) [TopologicalSpace G] [Group G] : Prop
     extends ContinuousMul G, ContinuousInv G

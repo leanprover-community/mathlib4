@@ -99,8 +99,10 @@ structure RootPairing extends PerfectPairing R M N where
 /-- A root datum is a root pairing with coefficients in the integers and for which the root and
 coroot spaces are finitely-generated free Abelian groups.
 
-Note that the latter assumptions `[Free ℤ X₁] [Finite ℤ X₁] [Free ℤ X₂] [Finite ℤ X₂]` should be
-supplied as mixins. -/
+Note that the latter assumptions `[Finite ℤ X₁] [Finite ℤ X₂]` should be supplied as mixins, and
+that freeness follows automatically since two finitely-generated Abelian groups in perfect pairing
+are necessarily free. Moreover Lean knows this, e.g., via `PerfectPairing.reflexive_left`,
+`Module.instNoZeroSMulDivisorsOfIsDomain`, `Module.free_of_finite_type_torsion_free'`. -/
 abbrev RootDatum (X₁ X₂ : Type*) [AddCommGroup X₁] [AddCommGroup X₂] := RootPairing ι ℤ X₁ X₂
 
 /-- A root system is a root pairing for which the roots and coroots span their ambient modules.
@@ -415,14 +417,14 @@ of a root / coroot. -/
 variable {i j} in
 @[simp]
 lemma root_eq_neg_iff :
-    P.root i = - P.root j ↔ j = P.reflection_perm i i := by
+    P.root i = - P.root j ↔ i = P.reflection_perm j j := by
   refine ⟨fun h ↦ P.root.injective ?_, fun h ↦ by simp [h]⟩
-  rw [root_reflection_perm, reflection_apply_self, h, neg_neg]
+  rw [root_reflection_perm, reflection_apply_self, h]
 
 variable {i j} in
 @[simp]
 lemma coroot_eq_neg_iff :
-    P.coroot i = - P.coroot j ↔ j = P.reflection_perm i i :=
+    P.coroot i = - P.coroot j ↔ i = P.reflection_perm j j :=
   P.flip.root_eq_neg_iff
 
 lemma neg_mem_range_root_iff {x : M} :
@@ -585,29 +587,37 @@ lemma corootSpan_mem_invtSubmodule_coreflection (i : ι) :
     P.corootSpan ∈ Module.End.invtSubmodule (P.coreflection i) :=
   P.flip.rootSpan_mem_invtSubmodule_reflection i
 
-lemma coe_rootSpan_dualAnnihilator_map :
-    P.rootSpan.dualAnnihilator.map P.toDualRight.symm = {x | ∀ i, P.root' i x = 0} := by
+lemma rootSpan_dualAnnihilator_map_eq_iInf_ker_root' :
+    P.rootSpan.dualAnnihilator.map P.toDualRight.symm = ⨅ i, LinearMap.ker (P.root' i) := by
+  suffices P.rootSpan.dualAnnihilator.map P.toDualRight.symm = {x | ∀ i, P.root' i x = 0} from
+    SetLike.coe_injective <| by ext; simp [this]
   ext x
   rw [rootSpan, Submodule.map_coe, Submodule.coe_dualAnnihilator_span]
   change x ∈ P.toDualRight.toEquiv.symm '' _ ↔ _
   rw [← Equiv.setOf_apply_symm_eq_image_setOf, Equiv.symm_symm]
   simp [Set.range_subset_iff]
 
-lemma coe_corootSpan_dualAnnihilator_map :
-    P.corootSpan.dualAnnihilator.map P.toDualLeft.symm = {x | ∀ i, P.coroot' i x = 0} :=
-  P.flip.coe_rootSpan_dualAnnihilator_map
+lemma corootSpan_dualAnnihilator_map_eq_iInf_ker_coroot' :
+    P.corootSpan.dualAnnihilator.map P.toDualLeft.symm = ⨅ i, LinearMap.ker (P.coroot' i) :=
+  P.flip.rootSpan_dualAnnihilator_map_eq_iInf_ker_root'
 
 lemma rootSpan_dualAnnihilator_map_eq :
     P.rootSpan.dualAnnihilator.map P.toDualRight.symm =
-      (span R (range P.root')).dualCoannihilator := by
-  apply SetLike.coe_injective
-  rw [Submodule.coe_dualCoannihilator_span, coe_rootSpan_dualAnnihilator_map]
-  simp
+      (span R (range P.root')).dualCoannihilator :=
+  SetLike.coe_injective <| by ext; simp [P.rootSpan_dualAnnihilator_map_eq_iInf_ker_root']
 
 lemma corootSpan_dualAnnihilator_map_eq :
     P.corootSpan.dualAnnihilator.map P.toDualLeft.symm =
       (span R (range P.coroot')).dualCoannihilator :=
   P.flip.rootSpan_dualAnnihilator_map_eq
+
+lemma iInf_ker_root'_eq :
+    ⨅ i, LinearMap.ker (P.root' i) = (span R (range P.root')).dualCoannihilator := by
+  rw [← rootSpan_dualAnnihilator_map_eq, rootSpan_dualAnnihilator_map_eq_iInf_ker_root']
+
+lemma iInf_ker_coroot'_eq :
+    ⨅ i, LinearMap.ker (P.coroot' i) = (span R (range P.coroot')).dualCoannihilator :=
+  P.flip.iInf_ker_root'_eq
 
 lemma mem_range_root_of_mem_range_reflection_of_mem_range_root
     {r : M ≃ₗ[R] M} {α : M} (hr : r ∈ range P.reflection) (hα : α ∈ range P.root) :
@@ -680,6 +690,26 @@ lemma _root_.RootSystem.reflection_perm_eq_reflection_perm_iff (P : RootSystem �
   ext x
   exact (P.reflection_perm_eq_reflection_perm_iff_of_span i j).mp h x <| by simp
 
+@[simp] lemma toDualLeft_comp_root : P.toDualLeft ∘ P.root = P.root' := rfl
+
+@[simp] lemma toDualRight_comp_root : P.toDualRight ∘ P.coroot = P.coroot' := rfl
+
+@[simp] lemma rootSpan_map_toDualLeft :
+    P.rootSpan.map P.toDualLeft = span R (range P.root') := by
+  rw [rootSpan, Submodule.map_span, ← image_univ, ← image_comp, image_univ, toDualLeft_comp_root]
+
+@[simp] lemma corootSpan_map_toDualRight :
+    P.corootSpan.map P.toDualRight = span R (range P.coroot') :=
+  P.flip.rootSpan_map_toDualLeft
+
+@[simp] lemma span_root'_eq_top (P : RootSystem ι R M N) :
+    span R (range P.root') = ⊤ := by
+  simp [← rootSpan_map_toDualLeft]
+
+@[simp] lemma span_coroot'_eq_top (P : RootSystem ι R M N) :
+    span R (range P.coroot') = ⊤ :=
+  span_root'_eq_top P.flip
+
 /-- The Coxeter Weight of a pair gives the weight of an edge in a Coxeter diagram, when it is
 finite.  It is `4 cos² θ`, where `θ` describes the dihedral angle between hyperplanes. -/
 def coxeterWeight : R := pairing P i j * pairing P j i
@@ -706,9 +736,6 @@ def IsOrthogonal : Prop := pairing P i j = 0 ∧ pairing P j i = 0
 lemma isOrthogonal_symm : IsOrthogonal P i j ↔ IsOrthogonal P j i := by
   simp only [IsOrthogonal, and_comm]
 
-lemma IsOrthogonal.symm (h : IsOrthogonal P i j) : IsOrthogonal P j i :=
-  ⟨h.2, h.1⟩
-
 lemma isOrthogonal_comm (h : IsOrthogonal P i j) : Commute (P.reflection i) (P.reflection j) := by
   rw [commute_iff_eq]
   ext v
@@ -717,5 +744,82 @@ lemma isOrthogonal_comm (h : IsOrthogonal P i j) : Commute (P.reflection i) (P.r
   simp only [LinearEquiv.coe_coe, reflection_apply, PerfectPairing.flip_apply_apply, map_sub,
     map_smul, root_coroot_eq_pairing, h, zero_smul, sub_zero]
   abel
+
+variable {P i j}
+
+lemma IsOrthogonal.flip (h : IsOrthogonal P i j) : IsOrthogonal P.flip i j := ⟨h.2, h.1⟩
+
+lemma IsOrthogonal.symm (h : IsOrthogonal P i j) : IsOrthogonal P j i := ⟨h.2, h.1⟩
+
+lemma IsOrthogonal.reflection_apply_left (h : IsOrthogonal P i j) :
+    P.reflection j (P.root i) = P.root i := by
+  simp [reflection_apply, h.1]
+
+lemma IsOrthogonal.reflection_apply_right (h : IsOrthogonal P j i) :
+    P.reflection j (P.root i) = P.root i :=
+  h.symm.reflection_apply_left
+
+lemma IsOrthogonal.coreflection_apply_left (h : IsOrthogonal P i j) :
+    P.coreflection j (P.coroot i) = P.coroot i :=
+  h.flip.reflection_apply_left
+
+lemma IsOrthogonal.coreflection_apply_right (h : IsOrthogonal P j i) :
+    P.coreflection j (P.coroot i) = P.coroot i :=
+  h.flip.reflection_apply_right
+
+lemma isFixedPt_reflection_of_isOrthogonal {s : Set ι} (hj : ∀ i ∈ s, P.IsOrthogonal j i)
+    {x : M} (hx : x ∈ span R (P.root '' s)) :
+    IsFixedPt (P.reflection j) x := by
+  rw [IsFixedPt]
+  induction hx using Submodule.span_induction with
+  | zero => rw [map_zero]
+  | add u v hu hv hu' hv' => rw [map_add, hu', hv']
+  | smul t u hu hu' => rw [map_smul, hu']
+  | mem u hu =>
+      obtain ⟨i, his, rfl⟩ := hu
+      exact IsOrthogonal.reflection_apply_right <| hj i his
+
+lemma reflection_perm_eq_of_pairing_eq_zero (h : P.pairing j i = 0) :
+    P.reflection_perm i j = j :=
+  P.root.injective <| by simp [reflection_apply, h]
+
+lemma reflection_perm_eq_of_pairing_eq_zero' (h : P.pairing i j = 0) :
+    P.reflection_perm i j = j :=
+  P.flip.reflection_perm_eq_of_pairing_eq_zero h
+
+lemma reflection_perm_eq_iff_smul_root :
+    P.reflection_perm i j = j ↔ P.pairing j i • P.root i = 0 :=
+  ⟨fun h ↦ by simpa [h] using P.reflection_perm_root i j,
+    fun h ↦ P.root.injective <| by simp [reflection_apply, h]⟩
+
+lemma reflection_perm_eq_iff_smul_coroot :
+    P.reflection_perm i j = j ↔ P.pairing i j • P.coroot i = 0 :=
+  P.flip.reflection_perm_eq_iff_smul_root
+
+lemma pairing_zero_iff [NeZero (2 : R)] [NoZeroSMulDivisors R M] :
+    P.pairing i j = 0 ↔ P.pairing j i = 0 := by
+  suffices ∀ {i j : ι}, P.pairing i j = 0 → P.pairing j i = 0 from ⟨this, this⟩
+  intro i j h
+  simpa [P.ne_zero i, reflection_perm_eq_iff_smul_root] using
+    P.reflection_perm_eq_of_pairing_eq_zero' h
+
+lemma pairing_zero_iff' [NeZero (2 : R)] [IsDomain R] :
+    P.pairing i j = 0 ↔ P.pairing j i = 0 := by
+  have := P.reflexive_left
+  exact pairing_zero_iff
+
+lemma coxeterWeight_zero_iff_isOrthogonal [NeZero (2 : R)] [IsDomain R] :
+    P.coxeterWeight i j = 0 ↔ P.IsOrthogonal i j := by
+  have := P.reflexive_left
+  simp [coxeterWeight, IsOrthogonal, P.pairing_zero_iff (i := i) (j := j)]
+
+lemma isOrthogonal_iff_pairing_eq_zero [NeZero (2 : R)] [NoZeroSMulDivisors R M] :
+    P.IsOrthogonal i j ↔ P.pairing i j = 0 :=
+  ⟨fun h ↦ h.1, fun h ↦ ⟨h, pairing_zero_iff.mp h⟩⟩
+
+lemma isFixedPt_reflection_perm_iff [NeZero (2 : R)] [NoZeroSMulDivisors R M] :
+    IsFixedPt (P.reflection_perm i) j ↔ P.pairing i j = 0 := by
+  refine ⟨fun h ↦ ?_, P.reflection_perm_eq_of_pairing_eq_zero'⟩
+  simpa [P.ne_zero i, pairing_zero_iff, IsFixedPt, reflection_perm_eq_iff_smul_root] using h
 
 end RootPairing

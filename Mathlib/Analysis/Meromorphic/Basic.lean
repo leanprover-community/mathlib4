@@ -142,6 +142,13 @@ lemma congr {f g : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (hfg : f =ᶠ
   · simp
   · rw [hz (Set.mem_compl_singleton_iff.mp hn), pow_succ', mul_smul]
 
+/--
+If two functions agree on a punctured neighborhood, then one is meromorphic iff the other is so.
+-/
+lemma meromorphicAt_congr {f g : 𝕜 → E} {x : 𝕜} (h : f =ᶠ[𝓝[≠] x] g) :
+    MeromorphicAt f x ↔ MeromorphicAt g x :=
+  ⟨fun hf ↦ hf.congr h, fun hg ↦ hg.congr h.symm⟩
+
 @[fun_prop]
 lemma inv {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) : MeromorphicAt f⁻¹ x := by
   rcases hf with ⟨m, hf⟩
@@ -245,9 +252,6 @@ def MeromorphicOn (f : 𝕜 → E) (U : Set 𝕜) : Prop := ∀ x ∈ U, Meromor
 lemma AnalyticOnNhd.meromorphicOn {f : 𝕜 → E} {U : Set 𝕜} (hf : AnalyticOnNhd 𝕜 f U) :
     MeromorphicOn f U :=
   fun x hx ↦ (hf x hx).meromorphicAt
-
-@[deprecated (since := "2024-09-26")]
-alias AnalyticOn.meromorphicOn := AnalyticOnNhd.meromorphicOn
 
 namespace MeromorphicOn
 

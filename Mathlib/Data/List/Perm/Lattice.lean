@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Data.List.Forall2
-import Mathlib.Data.Set.Pairwise.Basic
 import Mathlib.Data.List.TakeDrop
 import Mathlib.Data.List.Lattice
 import Mathlib.Data.List.Nodup
