@@ -73,7 +73,7 @@ theorem IsReduced.min (h : IsReduced L₁) : Red L₁ L₂ ↔ L₂ = L₁ :=
   Relation.reflTransGen_iff_eq fun _ => h.not_step
 
 @[to_additive]
-theorem IsReduced.cons_append_chain {x : α × Bool} {L₁ L₂ : List (α × Bool)} (h : L₁ ≠ [])
+theorem IsReduced.cons_append {x : α × Bool} {L₁ L₂ : List (α × Bool)} (h : L₁ ≠ [])
     (h₁ : IsReduced (x :: L₁)) (h₁₂ : IsReduced (L₁ ++ L₂)) : IsReduced (x :: L₁ ++ L₂) := by
   induction L₁ <;> simp_all
 
@@ -83,7 +83,7 @@ theorem IsReduced.append_chain {L₁ L₂ L₃ : List (α × Bool)} (h : L₂ �
   induction L₁
   case nil => simp [h₂₃]
   case cons head tail ih =>
-    exact h₁₂.cons_append_chain (by simp [h]) (ih (h₁₂.infix ⟨[head], [], by simp⟩))
+    exact h₁₂.cons_append (by simp [h]) (ih (h₁₂.infix ⟨[head], [], by simp⟩))
 
 variable [DecidableEq α]
 
