@@ -154,18 +154,16 @@ are only allowed to import modules in the second directory.
 For directories which are low in the import hierarchy, this opt-out approach is both more ergonomic
 (fewer updates needed) and needs less configuration.
 
-We always allow imports of `Init`, `Std` and `Mathlib.Init` (as well as their transitive dependencies.)
+We always allow imports of `Init`, `Lean`, `Std`, `Qq` and
+`Mathlib.Init` (as well as their transitive dependencies.)
 -/
 def allowedImportDirs : NamePrefixRel := .ofArray #[
-  (`Mathlib.Util, `Lean),
-  (`Mathlib.Util, `Qq),
   (`Mathlib.Util, `Batteries),
   (`Mathlib.Util, `Mathlib.Lean),
   (`Mathlib.Util, `Mathlib.Tactic),
   -- TODO: reduce this dependency by upstreaming `Data.String.Defs to batteries
   (`Mathlib.Util.FormatTable, `Mathlib.Data.String.Defs),
 
-  (`Mathlib.Lean, `Lean),
   (`Mathlib.Lean, `Batteries.CodeAction),
   (`Mathlib.Lean, `Batteries.Tactic.Lint),
   -- TODO: decide if this is acceptable or should be split in a more fine-grained way
@@ -194,7 +192,6 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Lean.Expr.ExtraRecognizers, `Mathlib.Tactic),
 
   (`Mathlib.Tactic.Linter, `Batteries),
-  (`Mathlib.Tactic.Linter, `Lean),
   -- The Mathlib.Tactic.Linter *module* imports all linters, hence requires all the imports.
   -- For more fine-grained exceptions of the next two imports, one needs to rename that file.
   (`Mathlib.Tactic.Linter, `ImportGraph),
@@ -588,11 +585,14 @@ def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array MessageDa
     if let some msg := _checkBlocklist env mainModule imports then return #[msg] else return #[]
   else
     -- We always allow imports in the same directory (for each matching prefix),
-    -- and from `Init` and `Std`.
+    -- and from `Init`, `Lean`, `Std` and `Qq`.
     -- We also allow transitive imports of Mathlib.Init, as well as Mathlib.Init itself.
     let initImports := (← findImports ("Mathlib" / "Init.lean")).append
       #[`Mathlib.Init, `Mathlib.Tactic.DeclarationNames]
-    let importsToCheck := imports.filter (fun imp ↦ !(`Init).isPrefixOf imp && !(`Std).isPrefixOf imp)
+    let exclude := [
+      `Init, `Std, `Lean, `Qq,
+    ]
+    let importsToCheck := imports.filter (fun imp ↦ !exclude.any (·.isPrefixOf imp))
       |>.filter (fun imp ↦ !matchingPrefixes.any (·.isPrefixOf imp))
       |>.filter (!initImports.contains ·)
 
