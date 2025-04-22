@@ -1,4 +1,5 @@
 import Mathlib.Combinatorics.SimpleGraph.Brooks.Induced
+import Mathlib.Combinatorics.SimpleGraph.Finsubgraph
 set_option linter.style.header false
 namespace SimpleGraph
 variable {α : Type*} {G : SimpleGraph α}
@@ -89,10 +90,10 @@ lemma Walk.IsCycle.support_rotate_tail_tail_eq [DecidableEq α] {u : α} {c : G.
       (hc.rotate hr).mem_tail_tail_support_iff, mem_support_rotate_iff]
 
 open PartColoring
-variable {k : ℕ} [DecidableRel G.Adj] [DecidableEq α] [LocallyFinite G]
+variable {k : ℕ} [DecidableRel G.Adj] [DecidableEq α]
 
-theorem BrooksPart (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, G.degree v ≤ k)
-    (s : Finset α) : G.PartColorable k s := by
+theorem BrooksPart [LocallyFinite G] (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1))
+    (hbdd : ∀ v, G.degree v ≤ k) (s : Finset α) : G.PartColorable k s := by
   induction hn : #s using Nat.strong_induction_on generalizing s with
   | h n ih =>
   -- Case 0 : there is v ∈ s with d_s(v) < k, so we can extend a k-coloring of
@@ -289,9 +290,30 @@ theorem BrooksPart (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, G.d
   · -- `s` is empty so easy to `k`-color
     exact ⟨fun _ ↦ ⟨0, by omega⟩, by simp_all [hem]⟩
 
-theorem Brooks_three_le [Fintype α] (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1))
+theorem Brooks_three_le_fintype [Fintype α] (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1))
     (hbdd : ∀ v, G.degree v ≤ k) : G.Colorable k := by
   obtain ⟨C : G.PartColoring k _⟩ := BrooksPart hk hc hbdd (univ : Finset α)
   exact ⟨(C.copy coe_univ).toColoring⟩
+
+omit [DecidableRel G.Adj]
+theorem Brooks_three_le' [LocallyFinite G] (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1))
+    (hbdd : ∀ v, G.degree v ≤ k) : G.Colorable k := by
+  apply nonempty_hom_of_forall_finite_subgraph_hom
+  intro G' hf
+  classical
+  have hc' : G'.coe.CliqueFree (k + 1) := by
+    contrapose! hc
+    rw [not_cliqueFree_iff]
+    exact ⟨⟨G'.hom.comp (topEmbeddingOfNotCliqueFree hc).toHom, Hom.injective_of_top_hom _⟩, by
+      simp only [Function.Embedding.coeFn_mk, top_adj]
+      intro a b
+      constructor <;> intro h
+      · rintro rfl; exact G.loopless _ h
+      · rw [← top_adj] at h
+        exact Hom.map_adj _ h⟩
+  have hbdd' : ∀ v, G'.coe.degree v ≤ k := by
+    intro v; rw [Subgraph.coe_degree]; exact (Subgraph.degree_le ..).trans (hbdd ..)
+  haveI : Fintype ↑G'.verts := hf.fintype
+  exact (Brooks_three_le_fintype hk hc' (by convert hbdd')).some
 
 end SimpleGraph
