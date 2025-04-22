@@ -23,17 +23,15 @@ in this file.
 
 -/
 
-universe u v w u₁
-
 namespace DirectSum
 
 open DirectSum Finsupp
 
 section General
 
-variable {R : Type u} [Semiring R]
-variable {ι : Type v}
-variable {M : ι → Type w} [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
+variable {R : Type*} [Semiring R]
+variable {ι : Type*}
+variable {M : ι → Type*} [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
 
 instance : Module R (⨁ i, M i) :=
   DFinsupp.module
@@ -95,7 +93,7 @@ theorem support_smul [∀ (i : ι) (x : M i), Decidable (x ≠ 0)] (c : R) (v : 
     (c • v).support ⊆ v.support :=
   DFinsupp.support_smul _ _
 
-variable {N : Type u₁} [AddCommMonoid N] [Module R N]
+variable {N : Type*} [AddCommMonoid N] [Module R N]
 variable (φ : ∀ i, M i →ₗ[R] N)
 variable (R ι N)
 
@@ -177,7 +175,7 @@ theorem linearEquivFunOnFintype_symm_coe [Fintype ι] (f : ⨁ i, M i) :
   simp [linearEquivFunOnFintype]
 
 /-- The natural linear equivalence between `⨁ _ : ι, M` and `M` when `Unique ι`. -/
-protected def lid (M : Type v) (ι : Type* := PUnit) [AddCommMonoid M] [Module R M] [Unique ι] :
+protected def lid (M : Type*) (ι : Type* := PUnit) [AddCommMonoid M] [Module R M] [Unique ι] :
     (⨁ _ : ι, M) ≃ₗ[R] M :=
   { DirectSum.id M ι, toModule R ι M fun _ ↦ LinearMap.id with }
 
@@ -288,7 +286,7 @@ lemma range_lmap :
 end AddCommMonoid
 
 section AddCommGroup
-variable {R : Type u} {ι : Type v} {M : ι → Type w} {N : ι → Type*}
+variable {R : Type*} {ι : Type*} {M : ι → Type*} {N : ι → Type*}
 
 lemma ker_map [∀ i, AddCommGroup (M i)] [∀ i, AddCommMonoid (N i)] (f : ∀ i, M i →+ N i) :
     (map f).ker =
@@ -321,7 +319,7 @@ end CongrLeft
 
 section Sigma
 
-variable {α : ι → Type*} {δ : ∀ i, α i → Type w}
+variable {α : ι → Type*} {δ : ∀ i, α i → Type*}
 variable [DecidableEq ι] [∀ i j, AddCommMonoid (δ i j)] [∀ i j, Module R (δ i j)]
 
 /-- `curry` as a linear map. -/
@@ -350,7 +348,7 @@ end Sigma
 
 section Option
 
-variable {α : Option ι → Type w} [∀ i, AddCommMonoid (α i)] [∀ i, Module R (α i)]
+variable {α : Option ι → Type*} [∀ i, AddCommMonoid (α i)] [∀ i, Module R (α i)]
 
 /-- Linear isomorphism obtained by separating the term of index `none` of a direct sum over
 `Option ι`. -/
@@ -366,8 +364,8 @@ section Submodule
 
 section Semiring
 
-variable {R : Type u} [Semiring R]
-variable {ι : Type v} [dec_ι : DecidableEq ι]
+variable {R : Type*} [Semiring R]
+variable {ι : Type*} [dec_ι : DecidableEq ι]
 variable {M : Type*} [AddCommMonoid M] [Module R M]
 variable (A : ι → Submodule R M)
 
@@ -495,8 +493,8 @@ end Semiring
 
 section Ring
 
-variable {R : Type u} [Ring R]
-variable {ι : Type v} [dec_ι : DecidableEq ι]
+variable {R : Type*} [Ring R]
+variable {ι : Type*} [dec_ι : DecidableEq ι]
 variable {M : Type*} [AddCommGroup M] [Module R M]
 
 /-- Note that this is not generally true for `[Semiring R]`; see

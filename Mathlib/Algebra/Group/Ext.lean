@@ -29,10 +29,8 @@ assert_not_exists MonoidWithZero DenselyOrdered
 
 open Function
 
-universe u
-
 @[to_additive (attr := ext)]
-theorem Monoid.ext {M : Type u} ⦃m₁ m₂ : Monoid M⦄
+theorem Monoid.ext {M : Type*} ⦃m₁ m₂ : Monoid M⦄
     (h_mul : (letI := m₁; HMul.hMul : M → M → M) = (letI := m₂; HMul.hMul : M → M → M)) :
     m₁ = m₂ := by
   have : m₁.toMulOneClass = m₂.toMulOneClass := MulOneClass.ext h_mul
@@ -48,7 +46,7 @@ theorem Monoid.ext {M : Type u} ⦃m₁ m₂ : Monoid M⦄
   congr
 
 @[to_additive]
-theorem CommMonoid.toMonoid_injective {M : Type u} :
+theorem CommMonoid.toMonoid_injective {M : Type*} :
     Function.Injective (@CommMonoid.toMonoid M) := by
   rintro ⟨⟩ ⟨⟩ h
   congr
@@ -59,31 +57,31 @@ theorem CommMonoid.ext {M : Type*} ⦃m₁ m₂ : CommMonoid M⦄
   CommMonoid.toMonoid_injective <| Monoid.ext h_mul
 
 @[to_additive]
-theorem LeftCancelMonoid.toMonoid_injective {M : Type u} :
+theorem LeftCancelMonoid.toMonoid_injective {M : Type*} :
     Function.Injective (@LeftCancelMonoid.toMonoid M) := by
   rintro @⟨@⟨⟩⟩ @⟨@⟨⟩⟩ h
   congr <;> injection h
 
 @[to_additive (attr := ext)]
-theorem LeftCancelMonoid.ext {M : Type u} ⦃m₁ m₂ : LeftCancelMonoid M⦄
+theorem LeftCancelMonoid.ext {M : Type*} ⦃m₁ m₂ : LeftCancelMonoid M⦄
     (h_mul : (letI := m₁; HMul.hMul : M → M → M) = (letI := m₂; HMul.hMul : M → M → M)) :
     m₁ = m₂ :=
   LeftCancelMonoid.toMonoid_injective <| Monoid.ext h_mul
 
 @[to_additive]
-theorem RightCancelMonoid.toMonoid_injective {M : Type u} :
+theorem RightCancelMonoid.toMonoid_injective {M : Type*} :
     Function.Injective (@RightCancelMonoid.toMonoid M) := by
   rintro @⟨@⟨⟩⟩ @⟨@⟨⟩⟩ h
   congr <;> injection h
 
 @[to_additive (attr := ext)]
-theorem RightCancelMonoid.ext {M : Type u} ⦃m₁ m₂ : RightCancelMonoid M⦄
+theorem RightCancelMonoid.ext {M : Type*} ⦃m₁ m₂ : RightCancelMonoid M⦄
     (h_mul : (letI := m₁; HMul.hMul : M → M → M) = (letI := m₂; HMul.hMul : M → M → M))  :
     m₁ = m₂ :=
   RightCancelMonoid.toMonoid_injective <| Monoid.ext h_mul
 
 @[to_additive]
-theorem CancelMonoid.toLeftCancelMonoid_injective {M : Type u} :
+theorem CancelMonoid.toLeftCancelMonoid_injective {M : Type*} :
     Function.Injective (@CancelMonoid.toLeftCancelMonoid M) := by
   rintro ⟨⟩ ⟨⟩ h
   congr
@@ -95,7 +93,7 @@ theorem CancelMonoid.ext {M : Type*} ⦃m₁ m₂ : CancelMonoid M⦄
   CancelMonoid.toLeftCancelMonoid_injective <| LeftCancelMonoid.ext h_mul
 
 @[to_additive]
-theorem CancelCommMonoid.toCommMonoid_injective {M : Type u} :
+theorem CancelCommMonoid.toCommMonoid_injective {M : Type*} :
     Function.Injective (@CancelCommMonoid.toCommMonoid M) := by
   rintro @⟨@⟨@⟨⟩⟩⟩ @⟨@⟨@⟨⟩⟩⟩ h
   congr <;> {

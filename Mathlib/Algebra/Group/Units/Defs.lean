@@ -32,16 +32,14 @@ assert_not_exists Multiplicative MonoidWithZero DenselyOrdered
 
 open Function
 
-universe u
-
-variable {α : Type u}
+variable {α : Type*}
 
 /-- Units of a `Monoid`, bundled version. Notation: `αˣ`.
 
 An element of a `Monoid` is a unit if it has a two-sided inverse.
 This version bundles the inverse element so that it can be computed.
 For a predicate see `IsUnit`. -/
-structure Units (α : Type u) [Monoid α] where
+structure Units (α : Type*) [Monoid α] where
   /-- The underlying value in the base `Monoid`. -/
   val : α
   /-- The inverse value of `val` in the base `Monoid`. -/
@@ -62,7 +60,7 @@ postfix:1024 "ˣ" => Units
 An element of an `AddMonoid` is a unit if it has a two-sided additive inverse.
 This version bundles the inverse element so that it can be computed.
 For a predicate see `isAddUnit`. -/
-structure AddUnits (α : Type u) [AddMonoid α] where
+structure AddUnits (α : Type*) [AddMonoid α] where
   /-- The underlying value in the base `AddMonoid`. -/
   val : α
   /-- The additive inverse value of `val` in the base `AddMonoid`. -/

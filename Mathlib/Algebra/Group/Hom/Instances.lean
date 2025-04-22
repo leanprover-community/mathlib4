@@ -21,9 +21,7 @@ Finally, we provide the `Ring` structure on `AddMonoid.End`.
 
 assert_not_exists AddMonoidWithOne Ring
 
-universe uM uN uP uQ
-
-variable {M : Type uM} {N : Type uN} {P : Type uP} {Q : Type uQ}
+variable {M : Type*} {N : Type*} {P : Type*} {Q : Type*}
 
 /-- `(M →* N)` is a `CommMonoid` if `N` is commutative. -/
 @[to_additive "`(M →+ N)` is an `AddCommMonoid` if `N` is commutative."]

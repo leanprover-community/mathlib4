@@ -27,7 +27,7 @@ to the subfield it generates, and prove that it is a Galois insertion.
 
 Notation used here:
 
-`(K : Type u) [DivisionRing K] (L : Type u) [DivisionRing L] (f g : K →+* L)`
+`(K : Type*) [DivisionRing K] (L : Type*) [DivisionRing L] (f g : K →+* L)`
 `(A : Subfield K) (B : Subfield L) (s : Set K)`
 
 * `Subfield K` : the type of subfields of a division ring `K`.
@@ -43,10 +43,7 @@ Lattice inclusion (e.g. `≤` and `⊓`) is used rather than set notation (`⊆`
 subfield, subfields
 -/
 
-
-universe u v w
-
-variable {K : Type u} {L : Type v} {M : Type w}
+variable {K : Type*} {L : Type*} {M : Type*}
 variable [DivisionRing K] [DivisionRing L] [DivisionRing M]
 
 /-- `SubfieldClass S K` states `S` is a type of subsets `s ⊆ K` closed under field operations. -/
@@ -127,7 +124,7 @@ end SubfieldClass
   multiplicative submonoid and an additive subgroup. Note in particular that it shares the
   same 0 and 1 as R. -/
 @[stacks 09FD "second part"]
-structure Subfield (K : Type u) [DivisionRing K] extends Subring K where
+structure Subfield (K : Type*) [DivisionRing K] extends Subring K where
   /-- A subfield is closed under multiplicative inverses. -/
   inv_mem' : ∀ x ∈ carrier, x⁻¹ ∈ carrier
 

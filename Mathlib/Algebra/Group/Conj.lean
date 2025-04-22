@@ -14,9 +14,7 @@ See also `MulAut.conj` and `Quandle.conj`.
 
 assert_not_exists MonoidWithZero Multiset MulAction
 
-universe u v
-
-variable {α : Type u} {β : Type v}
+variable {α : Type*} {β : Type*}
 
 section Monoid
 

@@ -31,9 +31,7 @@ This file is similar to `Order.Synonym`.
 
 assert_not_exists MonoidWithZero DenselyOrdered MonoidHom Finite
 
-universe u v
-
-variable {α : Type u} {β : Type v}
+variable {α : Type*} {β : Type*}
 
 /-- If `α` carries some multiplicative structure, then `Additive α` carries the corresponding
 additive structure. -/

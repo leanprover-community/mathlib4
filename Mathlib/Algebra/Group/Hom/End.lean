@@ -19,9 +19,7 @@ They are separate, and if someone would like to split this file in two that may 
 -/
 
 
-universe uM
-
-variable {M : Type uM}
+variable {M : Type*}
 
 namespace AddMonoid.End
 

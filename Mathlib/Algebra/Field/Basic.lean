@@ -15,8 +15,6 @@ import Mathlib.Order.Synonym
 
 open Function OrderDual Set
 
-universe u
-
 variable {K L : Type*}
 
 section DivisionSemiring

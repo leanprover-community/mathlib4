@@ -24,9 +24,11 @@ we obtain a presentation of `M₃`, see `Presentation.ofExact`.
 
 -/
 
+universe w w₁ w₂₀ w₂₁ v₁ v₂ v₃ u
+
 namespace Module
 
-variable {A : Type*} [Ring A] {M₁ : Type*} {M₂ : Type*} {M₃ : Type*}
+variable {A : Type u} [Ring A] {M₁ : Type v₁} {M₂ : Type v₂} {M₃ : Type v₃}
   [AddCommGroup M₁] [Module A M₁] [AddCommGroup M₂] [Module A M₂]
   [AddCommGroup M₃] [Module A M₃]
 
@@ -34,7 +36,8 @@ namespace Presentation
 
 section Cokernel
 
-variable (pres₂ : Presentation A M₂) (f : M₁ →ₗ[A] M₂) {ι : Type*} (g₁ : ι → M₁)
+variable (pres₂ : Presentation.{w₂₀, w₂₁} A M₂) (f : M₁ →ₗ[A] M₂)
+  {ι : Type w₁} (g₁ : ι → M₁)
 
 /-- Given a linear map `f : M₁ →ₗ[A] M₂`, a presentation of `M₂` and a choice
 of generators of `M₁`, this structure specifies a lifting of the image by `f`
@@ -93,7 +96,7 @@ namespace cokernelSolution
 
 /-- The cokernel can be defined by generators and relations. -/
 noncomputable def isPresentationCore :
-    Relations.Solution.IsPresentationCore
+    Relations.Solution.IsPresentationCore.{w}
       (pres₂.cokernelSolution data) where
   desc s := (LinearMap.range f).liftQ (pres₂.desc
     { var := s.var
@@ -132,7 +135,7 @@ of `M₃` that is obtained from a presentation `pres₂` of `M₂`, a choice of 
 `g₁ : ι → M₁` of `M₁`, and an additional data in a `Presentation.CokernelData` structure. -/
 @[simps!]
 noncomputable def ofExact {f : M₁ →ₗ[A] M₂} {g : M₂ →ₗ[A] M₃}
-    (pres₂ : Presentation A M₂) {ι : Type*} {g₁ : ι → M₁}
+    (pres₂ : Presentation.{w₂₀, w₂₁} A M₂) {ι : Type w₁} {g₁ : ι → M₁}
     (data : pres₂.CokernelData f g₁)
     (hfg : Function.Exact f g) (hg : Function.Surjective g)
     (hg₁ : Submodule.span A (Set.range g₁) = ⊤) :

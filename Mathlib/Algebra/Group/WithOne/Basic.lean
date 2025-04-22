@@ -21,9 +21,7 @@ that were not available in `Algebra/Group/WithOne/Defs`.
 
 assert_not_exists MonoidWithZero DenselyOrdered
 
-universe u v w
-
-variable {α : Type u} {β : Type v} {γ : Type w}
+variable {α : Type*} {β : Type*} {γ : Type*}
 
 namespace WithOne
 

@@ -75,12 +75,10 @@ invertible, inverse element, invOf, a half, one half, a third, one third, ½, �
 
 assert_not_exists MonoidWithZero DenselyOrdered
 
-universe u
-
-variable {α : Type u}
+variable {α : Type*}
 
 /-- `Invertible a` gives a two-sided multiplicative inverse of `a`. -/
-class Invertible [Mul α] [One α] (a : α) : Type u where
+class Invertible [Mul α] [One α] (a : α) : Type _ where
   /-- The inverse of an `Invertible` element -/
   invOf : α
   /-- `invOf a` is a left inverse of `a` -/
@@ -142,7 +140,7 @@ theorem invOf_eq_right_inv [Monoid α] {a b : α} [Invertible a] (hac : a * b = 
 theorem invOf_eq_left_inv [Monoid α] {a b : α} [Invertible a] (hac : b * a = 1) : ⅟ a = b :=
   (left_inv_eq_right_inv hac (mul_invOf_self _)).symm
 
-theorem invertible_unique {α : Type u} [Monoid α] (a b : α) [Invertible a] [Invertible b]
+theorem invertible_unique {α : Type*} [Monoid α] (a b : α) [Invertible a] [Invertible b]
     (h : a = b) : ⅟ a = ⅟ b := by
   apply invOf_eq_right_inv
   rw [h, mul_invOf_self]

@@ -25,15 +25,13 @@ where all `A i` are `R`-modules. This is the extra structure needed to promote `
 -/
 
 
-universe uι uR uA uB
-
-variable {ι : Type uι}
+variable {ι : Type*}
 
 namespace DirectSum
 
 open DirectSum
 
-variable (R : Type uR) (A : ι → Type uA) {B : Type uB}
+variable (R : Type*) (A : ι → Type*) {B : Type*}
 variable [CommSemiring R] [∀ i, AddCommMonoid (A i)] [∀ i, Module R (A i)]
 variable [AddMonoid ι] [GSemiring A]
 
