@@ -497,6 +497,9 @@ lemma drop_sum_flatten (L : List (List α)) (i : ℕ) :
   · simp
   · cases i <;> simp [take_append, *]
 
+@[deprecated (since := "2024-10-25")] alias take_sum_join' := take_sum_flatten
+@[deprecated (since := "2024-10-25")] alias drop_sum_join' := drop_sum_flatten
+
 end List
 
 
