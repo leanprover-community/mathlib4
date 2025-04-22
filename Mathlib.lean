@@ -484,6 +484,7 @@ import Mathlib.Algebra.Homology.ConcreteCategory
 import Mathlib.Algebra.Homology.DerivedCategory.Basic
 import Mathlib.Algebra.Homology.DerivedCategory.ExactFunctor
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
+import Mathlib.Algebra.Homology.DerivedCategory.Ext.Biprod
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExactSequences
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExtClass
 import Mathlib.Algebra.Homology.DerivedCategory.Fractions
@@ -2467,6 +2468,7 @@ import Mathlib.CategoryTheory.Sites.Pretopology
 import Mathlib.CategoryTheory.Sites.Pullback
 import Mathlib.CategoryTheory.Sites.Sheaf
 import Mathlib.CategoryTheory.Sites.SheafCohomology.Basic
+import Mathlib.CategoryTheory.Sites.SheafCohomology.MayerVietoris
 import Mathlib.CategoryTheory.Sites.SheafHom
 import Mathlib.CategoryTheory.Sites.SheafOfTypes
 import Mathlib.CategoryTheory.Sites.Sheafification
