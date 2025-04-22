@@ -483,7 +483,8 @@ end ComplementsConnected
 
 section LinearOrderedField
 
-variable {𝕜 : Type*} [LinearOrderedField 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+  [TopologicalSpace 𝕜] [OrderTopology 𝕜]
 
 theorem Convex.nontrivial_iff_nonempty_interior {s : Set 𝕜} (hs : Convex 𝕜 s) :
     s.Nontrivial ↔ (interior s).Nonempty := by
