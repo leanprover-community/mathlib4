@@ -49,13 +49,13 @@ variable {R} in
 theorem exists_isTranscendenceBasis_superset {s : Set A}
     (hs : AlgebraicIndepOn R id s) :
     ∃ t, s ⊆ t ∧ IsTranscendenceBasis R ((↑) : t → A) := by
-  simpa only [subset_univ, and_true, ← isTranscendenceBasis_iff_maximal]
+  simpa [← isTranscendenceBasis_iff_maximal]
     using exists_maximal_algebraicIndependent s _ (subset_univ _) hs
 
 variable (A)
 theorem exists_isTranscendenceBasis [FaithfulSMul R A] :
     ∃ s : Set A, IsTranscendenceBasis R ((↑) : s → A) := by
-  simpa only [empty_subset, true_and] using exists_isTranscendenceBasis_superset
+  simpa using exists_isTranscendenceBasis_superset
     ((algebraicIndependent_empty_iff R A).mpr (FaithfulSMul.algebraMap_injective R A))
 
 /-- `Type` version of `exists_isTranscendenceBasis`. -/
