@@ -15,7 +15,8 @@ open Subgraph
 
 variable {α : Type*} (G : SimpleGraph α)
 
-abbrev neighborSetIn (s : Set α) (a : α) :=
+@[simp]
+def neighborSetIn (s : Set α) (a : α) :=
   ((⊤ : Subgraph G).induce s).spanningCoe.neighborSet a
 
 lemma mem_neighborSetIn {s : Set α} {a v : α} :
@@ -110,6 +111,7 @@ lemma degreeIn_lt_degree {v : α} (hv : v ∈ G.neighborSet a ∧ v ∉ s) :
 end withDecRel
 variable {s t : Set α} {n : ℕ}
 /-- A `PartColoring n s` of `G` is a coloring of all vertices of `G` that is valid on the set `s` -/
+
 abbrev PartColoring (n : ℕ) (s : Set α) :=
   ((⊤ : Subgraph G).induce s).spanningCoe.Coloring (Fin n)
 
@@ -125,11 +127,11 @@ abbrev PartColoring.extends (C₂ : G.PartColoring n t) (C₁ : G.PartColoring n
 
 namespace PartColoring
 
-@[refl,simp]
+@[refl, simp]
 lemma extends_refl {C₁ : G.PartColoring n s} : C₁.extends C₁ := ⟨subset_refl _,fun _ _ ↦ rfl⟩
 
 variable {u : Set α}
-@[trans,simp]
+@[trans, simp]
 lemma extends_trans {C₃ : G.PartColoring n u} {C₂ : G.PartColoring n t} {C₁ : G.PartColoring n s}
     (h1 : C₂.extends C₁) (h2: C₃.extends C₂) : C₃.extends C₁ := by
   refine ⟨subset_trans h1.1 h2.1,?_⟩
@@ -146,11 +148,11 @@ def copy (C : G.PartColoring n s) (h : s = t) : G.PartColoring n t where
 @[simp]
 theorem copy_rfl  (C : G.PartColoring n s)  : C.copy rfl = C := rfl
 
-@[simp]
-theorem copy_copy {s t u} (C : G.PartColoring n s) (hs : s = t) (ht : t = u) :
-    (C.copy hs).copy ht = C.copy (hs.trans ht) := by
-  subst_vars
-  rfl
+-- @[simp]
+-- theorem copy_copy {s t u} (C : G.PartColoring n s) (hs : s = t) (ht : t = u) :
+--     (C.copy hs).copy ht = C.copy (hs.trans ht) := by
+--   subst_vars
+--   rfl
 
 @[simp]
 lemma copy_def (C: G.PartColoring n s) (h : s = t) {v : α} :
@@ -188,7 +190,7 @@ def partColoringOfNotAdj {n : ℕ} {a b : α} (h : ¬ G.Adj a b) (c : Fin n) :
 @[simp]
 lemma partColoringOfSingleton_def {n : ℕ} {a v : α} {c : Fin n} :
   G.partColoringOfSingleton a c v = c := rfl
-  
+
 /-- `G.PartColorable n s` is the predicate for existence of a `PartColoring n s` of `G`. -/
 abbrev PartColorable (n : ℕ) (s : Set α) := ((⊤ : Subgraph G).induce s).spanningCoe.Colorable n
 
@@ -279,7 +281,7 @@ lemma PartColoring.insert_extends_not_mem (C₁ : G.PartColoring n s)
 
 /-- If there is an unused color in the neighborhood of `a` under the coloring of `s` by `C₁` then
 we can color `insert a s` greedily. -/
-protected abbrev PartColoring.greedy (C₁ : G.PartColoring n s) (a : α) [Fintype (G.neighborSet a)]
+abbrev PartColoring.greedy (C₁ : G.PartColoring n s) (a : α) [Fintype (G.neighborSet a)]
     (h : (((G.neighborFinset a).filter (· ∈ s)).image C₁)ᶜ.Nonempty) :
     G.PartColoring n (insert a s) := by
   let c := Finset.min' _ h
@@ -377,7 +379,7 @@ lemma PartColoring.of_tail_path_extends {u v : α} {p : G.Walk u v} [LocallyFini
       ext; simp [or_left_comm]
 
 /-- We can color greedily along a path to extend a coloring of `s` to a coloring of
-`s ∪ p.support.toFinset` if the vertices in the path have bounded degree and the start of the path
+`s ∪ {a | a ∈ p.support}` if the vertices in the path have bounded degree and the start of the path
 has two neighbors in `s` that are already colored with the same color. -/
 def PartColoring.of_path_not_inj {u v x y : α} {p : G.Walk u v} [LocallyFinite G]
     (C₁ : G.PartColoring n s) (hp : p.IsPath) (hbdd : ∀ x, x ∈ p.support → G.degree x ≤ n)
@@ -424,22 +426,20 @@ theorem Brooks1_aux (hj : xⱼ ∈ p.support) (hj2 : G.Adj xⱼ x₂) :
   ext; aesop
 
 variable {k : ℕ} [LocallyFinite G]
-theorem Brooks1_exists {x₁ x₂ x₃ x₄ xⱼ xᵣ : α} {p : G.Walk xᵣ x₄} (hk : 3 ≤ k)
-    (hbdd : ∀ v, G.degree v ≤ k) (hp : p.IsPath) (hj : xⱼ ∈ p.support) (hj2 : G.Adj xⱼ x₂)
-    (h21 : G.Adj x₂ x₁) (h23 : G.Adj x₂ x₃) (hne : x₁ ≠ x₃) (h13 : ¬ G.Adj x₁ x₃)
-    (h1 : x₁ ∉ p.support) (h2 : x₂ ∉ p.support) (h3 : x₃ ∉ p.support) :
-   G.PartColorable k ({a | a ∈ p.support} ∪ {x₃, x₂, x₁}) := by
-  have hdj := hp.dropUntil hj
+theorem Brooks1 (hk : 3 ≤ k) (hbdd : ∀ v, G.degree v ≤ k) (hp : p.IsPath) (hj : xⱼ ∈ p.support)
+    (hj2 : G.Adj xⱼ x₂) (h21 : G.Adj x₂ x₁) (h23 : G.Adj x₂ x₃) (hne : x₁ ≠ x₃)
+    (h13 : ¬ G.Adj x₁ x₃) (h1 : x₁ ∉ p.support) (h2 : x₂ ∉ p.support) (h3 : x₃ ∉ p.support) :
+    G.PartColorable k ({a | a ∈ p.support} ∪ {x₃, x₂, x₁}) := by
   have htp := ((concat_isPath_iff _ hj2).2 ⟨hp.takeUntil hj,
-              fun a ↦ h2 ((support_takeUntil_subset p hj) a)⟩).reverse
+              fun a ↦ h2 ((p.support_takeUntil_subset hj) a)⟩).reverse
   have hdis1 : Disjoint {x₁, x₃} {a | a ∈ (p.dropUntil xⱼ hj).support} := by
     simp only [Set.disjoint_insert_left, Set.mem_setOf_eq, Set.disjoint_singleton_left]
     exact ⟨fun h ↦ h1 (p.support_dropUntil_subset hj h) ,
           fun h ↦ h3 (p.support_dropUntil_subset hj h)⟩
   let C₀ := (G.partColoringOfNotAdj h13 ⟨0, show 0 < k by omega⟩)
-  let C₁ := C₀.of_tail_path hdj (fun _ _ ↦ hbdd _) hdis1
+  let C₁ := C₀.of_tail_path (hp.dropUntil hj) (fun _ _ ↦ hbdd _) hdis1
   have hj213 : C₁ x₁ = C₁ x₃ := by
-    have := (C₀.of_tail_path_extends hdj (fun _ _ ↦ hbdd _) hdis1)
+    have := (C₀.of_tail_path_extends (hp.dropUntil hj) (fun _ _ ↦ hbdd _) hdis1)
     rw [this.2 (by simp), this.2 (by simp)]; rfl
   exact ⟨(C₁.of_path_not_inj htp (fun _ _ ↦ hbdd _) (by
     apply Set.disjoint_union_left.2
@@ -449,7 +449,7 @@ theorem Brooks1_exists {x₁ x₂ x₃ x₄ xⱼ xᵣ : α} {p : G.Walk xᵣ x�
       ((support_takeUntil_subset p hj) a)⟩⟩,?_⟩
     apply Set.disjoint_right.2
     rintro a (rfl | ha)
-    · exact fun h ↦   h2 ((support_dropUntil_subset p hj) <| List.mem_of_mem_tail h)
+    · exact fun h ↦ h2 (p.support_dropUntil_subset hj <| List.mem_of_mem_tail h)
     · rw [← take_spec p hj, append_isPath_iff] at hp; exact fun h ↦ hp.2.2 ha h)
     (by simp) (by simp) h21 h23 hne hj213).copy ((Brooks1_aux hj hj2))⟩
 

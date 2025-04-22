@@ -89,7 +89,7 @@ lemma Walk.IsCycle.support_rotate_tail_tail_eq [DecidableEq α] {u : α} {c : G.
       (hc.rotate hr).mem_tail_tail_support_iff, mem_support_rotate_iff]
 
 open PartColoring
-variable {k : ℕ} [Fintype α] [DecidableRel G.Adj] [DecidableEq α]
+variable {k : ℕ} [DecidableRel G.Adj] [DecidableEq α] [LocallyFinite G]
 
 theorem BrooksPart (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, G.degree v ≤ k)
     (s : Finset α) : G.PartColorable k s := by
@@ -142,18 +142,15 @@ theorem BrooksPart (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, G.d
     have h41 : v41.IsPath := by
       rw [cons_isPath_iff]
       simpa using ⟨⟨h1.1.ne, h3.1.ne, hne.symm⟩, h34.symm.ne, h4, fun hf ↦ hnadj (hf ▸ h34.symm)⟩
-    have v41sup : v41.support = [v₄, v₃, v₂, v₁] := by
-      rw [support_cons, support_cons, support_cons, support_nil]
+    have v41sup : v41.support = [v₄, v₃, v₂, v₁] := rfl
     have mv41 : ∀ y, y ∈ v41.support → y = v₄ ∨ y = v₃ ∨ y = v₂ ∨ y = v₁ := by simp [v41sup]
     have v41s : ∀ y, y ∈ v41.support → y ∈ s := by
       intro y hy
-      cases mv41 y hy with
-      | inl h => exact h ▸ (hin _ h3.2 _ h34)
-      | inr h => cases h with
-                | inl h => exact h ▸ h3.2
-                | inr h => cases h with
-                           | inl h => exact h ▸ hv₂
-                           | inr h => exact h ▸ h1.2
+      obtain (rfl | rfl | rfl | rfl) := mv41 y hy
+      · exact (hin _ h3.2 _ h34)
+      · exact h3.2
+      · exact hv₂
+      · exact h1.2
     -- Now extend `v₁v₂v₃v₄` to a maximal path in `s` i.e. a path `v₁ ⋯ vᵣ`
     -- with all neighbors of `vᵣ` in the path
     obtain ⟨vᵣ, q, hq, hss, hmax⟩ : ∃ vᵣ, ∃ q : G.Walk vᵣ v₄, (q.append v41).IsPath ∧
@@ -165,7 +162,6 @@ theorem BrooksPart (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, G.d
         (hbdd vᵣ).trans (hd vᵣ (hs _ (start_mem_support ..))).symm.le
       exact hnb x hx <| this <| (mem_neighborSet ..).2 hx
     have hdisj2 := (append_isPath_iff.1 hq).2.2
---    sorry
     -- either this path is the whole of `s` or it is a proper subset
     by_cases hr : {a | a ∈ ((q.append v41)).support} = s
     · --Main Case 1 the path is all of s
@@ -175,22 +171,21 @@ theorem BrooksPart (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, G.d
       have h1q := fun hf ↦ hdisj2 hf ((mem_cons_of_mem _ <| mem_cons_of_mem _ <| mem_cons_self ..))
       have h2q := fun hf ↦ hdisj2 hf (mem_cons_of_mem _ <| mem_cons_self ..)
       have h3q := fun hf ↦ hdisj2 hf (mem_cons_self ..)
-      have hj123: vⱼ ∉ ({v₃ , v₂, v₁} : Finset α) := by simpa using ⟨hj.2.2.1, hj.1.symm.ne, hj.2.1⟩
+      have hj123: vⱼ ∉ [v₃ , v₂, v₁] := by simpa using ⟨hj.2.2.1, hj.1.symm.ne, hj.2.1⟩
       have hvjq : vⱼ ∈ q.support := by
         rw [Set.ext_iff] at hr
-        simp only [List.mem_cons, not_mem_nil, or_false, Set.mem_setOf_eq, mem_coe, mem_insert,
-          Finset.mem_singleton, not_or] at hr hj123
-        apply ((hr vⱼ).2 hj.2.2.2).resolve_right (by push_neg; exact hj123)
+        apply ((hr vⱼ).2 hj.2.2.2).resolve_right hj123
       change {a | a ∈ q.support} ∪ {a | a ∈ [v₃,v₂,v₁] } = s at hr
-      have : {a | a ∈ [v₃,v₂,v₁] } = {v₃,v₂,v₁} := by ext; simp
+      have : {a | a ∈ [v₃,v₂,v₁] } = {v₃, v₂, v₁} := by ext; simp
       rw [this] at hr
       simp_rw [← hr]
-      simpa using Brooks1_exists hk hbdd hq.of_append_left hvjq hj.1.symm h1.1
+      simpa using Brooks1 hk hbdd hq.of_append_left hvjq hj.1.symm h1.1
                     h3.1.symm hne hnadj h1q h2q h3q
     · -- Main case 2 the path is a proper subset of s
       -- in which case we can build a cycle `c` from `vᵣ` such that all the neighbors
       -- of `vᵣ` lie in `c`
-      have hr' : (q.append v41).support.toFinset ≠ s := by rw [←coe_toFinset] at hr; norm_cast at hr
+      have hr' : (q.append v41).support.toFinset ≠ s := by
+        rw [← coe_toFinset] at hr; norm_cast at hr
       have hssf := Finset.ssubset_iff_subset_ne.2 ⟨fun y hy ↦ hss _ <| mem_toFinset.1 hy, hr'⟩
       have h1 := Nat.lt_of_succ_lt <| hk.trans (hbdd' _ <| hss _ <| start_mem_support ..).symm.le
       let p := (q.append v41).reverse
@@ -213,10 +208,9 @@ theorem BrooksPart (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, G.d
         apply Finset.ssubset_of_subset_of_ssubset _ hssf
         intro y hy
         rw [mem_toFinset, support_cons] at *
-        cases hy with
-        | head _ => exact start_mem_support ..
-        | tail _ hy =>
-          have := (support_drop_subset _ _) hy
+        obtain ( rfl | hy ) := List.mem_cons.1 hy
+        · exact start_mem_support ..
+        · have := (support_drop_subset _ _) hy
           rwa [support_reverse, mem_reverse] at this
       -- `c` is not empty
       -- so we will be able to color `c` and `s \ c` by induction if needed
@@ -228,7 +222,6 @@ theorem BrooksPart (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, G.d
       -- Two subcases either `c` has a neighbor in `s \ c` or not
       by_cases hnbc : ∃ x, x ∈ c.support ∧ ∃ y, y ∈ s \ c.support.toFinset ∧ G.Adj x y
       · obtain ⟨x, hx, y, hy, had⟩ := hnbc
-  --      sorry
         -- `x ∈ c` has a neighbor `y ∈ s \ c` (but `vᵣ ∈ c` has no neighbors in `s \ c`)
         -- so there is a first dart `d = (d₁, d₂)` in `c` such that `d₁` is adjacent
         -- to something `s \ c` and `d₂` is not
@@ -273,8 +266,8 @@ theorem BrooksPart (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, G.d
           refine ⟨?_, disjoint_of_subset_right hps sdiff_disjoint⟩
           rw [mem_toFinset, hcy.snd_eq_snd_of_rotate_fst_dart hd]
           exact (hcy.rotate hr).snd_not_mem_tail_tail_support
-        rw [←disjoint_coe, List.coe_toFinset, coe_insert] at hdisj
-        -- We know that when extending a coloring greedily along a path whose end point
+        rw [← disjoint_coe, List.coe_toFinset, coe_insert] at hdisj
+        -- When extending a coloring greedily along a path whose end point
         -- already has two neighbors colored with the same color we never need to use
         -- more that `k` colors along the path.
         have hex : C₂ d.toProd.2 = C₂ y := by
@@ -292,12 +285,12 @@ theorem BrooksPart (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, G.d
           ((hnbc _ (by simpa using hv) _ (by simpa using hw)) had).elim)).copy (by
             ext; simp only [coe_toFinset, coe_sdiff, Set.union_diff_self, Set.mem_union,
               Set.mem_setOf_eq, mem_coe, or_iff_right_iff_imp]
-            intro hc; apply hsub.1; exact mem_toFinset.mpr hc)⟩
+            exact fun hc ↦ hsub.1 <| mem_toFinset.mpr hc)⟩
   · -- `s` is empty so easy to `k`-color
     exact ⟨fun _ ↦ ⟨0, by omega⟩, by simp_all [hem]⟩
 
-theorem Brooks_three_le (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, G.degree v ≤ k) :
-    G.Colorable k := by
+theorem Brooks_three_le [Fintype α] (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1))
+    (hbdd : ∀ v, G.degree v ≤ k) : G.Colorable k := by
   obtain ⟨C : G.PartColoring k _⟩ := BrooksPart hk hc hbdd (univ : Finset α)
   exact ⟨(C.copy coe_univ).toColoring⟩
 
