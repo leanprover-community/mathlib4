@@ -13,13 +13,11 @@ In this file, we show that for any `n : ℤ`, the functor
 
 -/
 
-universe w v u
-
 open CategoryTheory
 
 namespace DerivedCategory
 
-variable (C : Type u) [Category.{v} C] [Abelian C] [HasDerivedCategory.{w} C]
+variable (C : Type*) [Category C] [Abelian C] [HasDerivedCategory C]
 
 /-- The canonical isomorphism
 `DerivedCateogry.singleFunctor C n ⋙ DerivedCateogry.homologyFunctor C n ≅ 𝟭 C` -/
