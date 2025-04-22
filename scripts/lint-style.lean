@@ -116,9 +116,9 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
   if (args.variableArgsAs? String).isNone then
     IO.eprintln "error: invalid input, library arguments must be strings"
     return 1
-  let libraries := match args.variableArgsAs! String with
-  | #[] => #["Archive", "Counterexamples", "Mathlib"]
-  | lib => lib
+  let (isMathlib, libraries) := match args.variableArgsAs! String with
+  | #[] => (true, #["Archive", "Counterexamples", "Mathlib"])
+  | lib => (lib.any (· == "Mathlib"), lib)
   -- Read all module names to lint.
   let mut allModuleNames := #[]
   for s in libraries do
@@ -148,7 +148,7 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
       styleExceptions := ← IO.FS.lines ("scripts" / "nolints-style.txt")
     else
       IO.eprintln s!"warning: a file scripts/nolints-style.txt does not exist"
-  let mut numberErrors ← lintModules styleExceptions allModuleNames style fix
+  let mut numberErrors ← lintModules styleExceptions allModuleNames style isMathlib fix
   -- If we are linting mathlib, also check the init imports and for undocumented scripts.
   if libraries.contains "Mathlib" then
     if ← checkInitImports then numberErrors := numberErrors + 1
