@@ -161,10 +161,16 @@ structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Ty
   uniqueDiffOn' : UniqueDiffOn 𝕜 toPartialEquiv.target
   target_subset_closure_interior : toPartialEquiv.target ⊆ closure (interior toPartialEquiv.target)
   convex_interior_range: ∀ h: IsRCLikeNormedField 𝕜,
-    letI := h.rclike 𝕜; letI : NormedSpace ℝ E := sorry;
+    letI := h.rclike 𝕜;
+    letI : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E
     Convex ℝ (interior (range toPartialEquiv))
   continuous_toFun : Continuous toFun := by continuity
   continuous_invFun : Continuous invFun := by continuity
+
+lemma ModelWithCorners.range_eq_target {𝕜 E H : Type*} [NontriviallyNormedField 𝕜]
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) :
+    range I.toPartialEquiv = I.target := by
+  rw [← I.image_source_eq_target, I.source_eq, image_univ.symm]
 
 /-- If a model with corners has full range, all three technical conditions are satisfied. -/
 def ModelWithCorners.of_range_univ (𝕜 : Type*) [NontriviallyNormedField 𝕜]
@@ -177,15 +183,11 @@ def ModelWithCorners.of_range_univ (𝕜 : Type*) [NontriviallyNormedField 𝕜]
   target_subset_closure_interior := by simp [htarget]
   convex_interior_range := by
     intro h
-    -- Should this be a separate lemma?
     have : range φ = φ.target := by rw [← φ.image_source_eq_target, hsource, image_univ.symm]
-    simp [htarget, this]
-    -- have : NormedSpace ℝ E := by
-    --   have := h.rclike
-    --   -- This instance fails to be inferred: something is wrong!
-    --   --have : NormedSpace 𝕜 E := by convert inst; sorry -- diamond here?
-    --   sorry -- exact foo 𝕜 E
-    sorry -- exact convex_univ: synthesized and inferred instances are not equal
+    simp only [this, htarget, interior_univ]
+    letI := h.rclike 𝕜;
+    letI := NormedSpace.restrictScalars ℝ 𝕜 E
+    exact convex_univ
 
 attribute [simp, mfld_simps] ModelWithCorners.source_eq
 
@@ -429,11 +431,15 @@ def ModelWithCorners.prod {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Ty
       simp only [PartialEquiv.prod_target, target_eq, interior_prod_eq, closure_prod_eq]
       exact Set.prod_mono I.range_subset_closure_interior I'.range_subset_closure_interior
     convex_interior_range h := by
-      dsimp
-      -- the range of the inner function is the product of ranges
-      -- the interior of the product is the product of interiors
-      -- the product of convex sets is convex
-      sorry
+      dsimp only [PartialEquiv.prod_target]
+      -- Without this lemma, only `erw` works...
+      -- XXX: is there a more conceptual proof? what's a good name?
+      have : range (fun (x : ModelProd H H') ↦ (I x.1, I' x.2)) = range (Prod.map I I') := rfl
+      rw [this]
+      rw [Set.range_prod_map, interior_prod_eq]
+      letI := h.rclike;
+      letI := NormedSpace.restrictScalars ℝ 𝕜 E; letI := NormedSpace.restrictScalars ℝ 𝕜 E'
+      exact (I.convex_interior_range h).prod (I'.convex_interior_range h)
     continuous_toFun := I.continuous_toFun.prodMap I'.continuous_toFun
     continuous_invFun := I.continuous_invFun.prodMap I'.continuous_invFun }
 
@@ -450,7 +456,12 @@ def ModelWithCorners.pi {𝕜 : Type u} [NontriviallyNormedField 𝕜] {ι : Typ
   target_subset_closure_interior := by
     simp only [PartialEquiv.pi_target, target_eq, finite_univ, interior_pi_set, closure_pi_set]
     exact Set.pi_mono (fun i _ ↦ (I i).range_subset_closure_interior)
-  convex_interior_range h := sorry
+  convex_interior_range h := by
+    dsimp only [PartialEquiv.pi_apply, toPartialEquiv_coe]
+    rw [Set.range_piMap, interior_pi_set finite_univ]
+    letI := h.rclike;
+    letI := fun i ↦ NormedSpace.restrictScalars ℝ 𝕜 (E i);
+    exact convex_pi fun i _hi ↦ (I i).convex_interior_range h
   continuous_toFun := continuous_pi fun i => (I i).continuous.comp (continuous_apply i)
   continuous_invFun := continuous_pi fun i => (I i).continuous_symm.comp (continuous_apply i)
 
