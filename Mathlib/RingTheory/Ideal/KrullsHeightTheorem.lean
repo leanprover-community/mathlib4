@@ -284,5 +284,3 @@ lemma Ideal.height_le_iff_exists_minimalPrimes  (p : Ideal R) [p.IsPrime]
     exact le_trans
       (Ideal.height_le_spanRank_toENat_of_mem_minimal_primes I p hp)
       (by simpa using (Cardinal.toENat.monotone' hI))
-
-#min_imports
