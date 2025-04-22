@@ -21,9 +21,7 @@ Given a type `X` and a predicate `p : X → Prop`:
 * `{a | p a} : Set X` : a more concise notation for `{a : X | p a}`
 * `{f x y | (x : X) (y : Y)} : Set Z` : a more concise notation for `{z : Z | ∃ x y, f x y = z}`
 * `{a ∈ S | p a} : Set X` : given `S : Set X`, the subset of `S` consisting of
-   its elements satisfying `p`
-* `Dominated s₁ s₂` : for all `a` in `s₁` there exists `b` in `s₂` such that `a ≤ b`
-* `Codominated s₁ s₂` : for all `a` in `s₁` there exists `b` in `s₂` such that `a ≥ b`.
+   its elements satisfying `p`.
 
 ## Implementation issues
 
