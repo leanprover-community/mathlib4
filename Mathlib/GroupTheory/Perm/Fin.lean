@@ -295,14 +295,16 @@ lemma range_natAdd_castLEEmb {n m : ℕ} (hmn : n ≤ m) :
     fun xin ↦ ⟨subNat (m := m - n) (Fin.cast (Nat.add_sub_of_le hmn).symm y)
     (Nat.sub_le_of_le_add xin), by simp⟩⟩
 
+@[simp] theorem val_add_one_of_lt' {n : ℕ} [NeZero n] {i j : Fin n} (hij : i < j) :
+    (i + 1).1 = i.1 + 1 := by
+  simpa [Fin.val_add] using ((Nat.mod_eq_iff_lt (Ne.symm (NeZero.ne' n))).mpr (by omega))
+
 /-- `cycleIcc i j hij` is the cycle `(i i+1 .... j)` leaving `(0 ... i-1)` and `(j+1 ... n-1)`
 unchanged.
 -/
-@[simps!]
 def cycleIcc {n : ℕ} {i j : Fin n} (hij : i ≤ j): Perm (Fin n) :=
   have : (j - i).1 < n - i.1 := by simp [sub_val_of_le hij, Nat.sub_lt_sub_right hij j.isLt]
-  (cycleRange (Fin.castLT (j - i) this)).extendDomain
-    (natAdd_castLEEmb n (by simp)).toEquivRange
+  (cycleRange (Fin.castLT (j - i) this)).extendDomain (natAdd_castLEEmb n (by simp)).toEquivRange
 
 theorem cycleIcc_of_gt {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h : k < i) : (cycleIcc hij) k = k :=
   Perm.extendDomain_apply_not_subtype ((j - i).castLT _).cycleRange
@@ -322,6 +324,7 @@ private lemma cycleIcc_simp_lemma {n : ℕ} {i k : Fin n} (h : i <= k)
  ⟨k, kin⟩) = subNat i.1 (Fin.cast (by omega) k) (by simp [h]) := by
   simpa [symm_apply_eq] using eq_of_val_eq (by simp; omega)
 
+@[simp]
 theorem cycleIcc_of_le {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h : j < k) :
     (cycleIcc hij) k = k := by
   have kin : k ∈ Set.range ⇑(natAdd_castLEEmb n (cycleIcc._proof_7 (i := i))) := by simp; omega
@@ -354,13 +357,14 @@ theorem cycleIcc_of_lt {n : ℕ} {i j k : Fin n} (hij : i ≤ j) (h1 : i <= k) (
     [NeZero n] : (cycleIcc hij) k = k + 1 := by
   simp [cycleIcc_of hij h1 (Fin.le_of_lt h2), Fin.ne_of_lt h2]
 
+@[simp]
 theorem cycleIcc_of_eq {n : ℕ} {i j : Fin n} (hij : i ≤ j) [NeZero n] :
     (cycleIcc hij) j = i := by
   simp [cycleIcc_of hij hij (Fin.ge_of_eq rfl)]
 
 @[simp]
 theorem sign_cycleIcc {n : ℕ} {i j : Fin n} (hij : i ≤ j) :
-  Perm.sign (cycleIcc hij) = (-1) ^ (j - i : ℕ) := by
+    Perm.sign (cycleIcc hij) = (-1) ^ (j - i : ℕ) := by
   simp [cycleIcc, sub_val_of_le hij]
 
 private lemma nezero_simp_lemma {n : ℕ} {i j : Fin n} (hij : i < j) :
