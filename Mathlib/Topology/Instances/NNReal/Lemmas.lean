@@ -238,21 +238,6 @@ theorem iSup_pow {ι : Sort*} [Nonempty ι] {f : ι → ℝ≥0} (hf_bdd : BddAb
   · simp [hn]
   · simpa using (NNReal.powOrderIso n hn).map_ciSup hf_bdd
 
---TODO: move
-theorem bddAbove_range_pow {α β : Type*} [Nonempty α] {u : α → β} [MonoidWithZero β] [Preorder β]
-    [ZeroLEOneClass β] [PosMulMono β] [MulPosMono β] (hu : BddAbove (Set.range u)) (hu0 : 0 ≤ u)
-    (n : ℕ) : BddAbove (Set.range (fun i ↦ u i ^ n)) := by
-  obtain ⟨B, hB⟩ := hu
-  use B ^ n
-  rintro x ⟨y, rfl⟩
-  exact pow_le_pow_left₀ (hu0 y) (hB (mem_range_self y)) n
--- Mathlib.Algebra.Order.GroupWithZero.Bounds
-/-[Mathlib.Data.Int.LeastGreatest, Mathlib.Algebra.BigOperators.Finprod, Mathlib.Data.ENat.Basic,
- Mathlib.Algebra.Order.Nonneg.Ring, Mathlib.Algebra.Order.Field.Basic,
- Mathlib.Order.Filter.AtTopBot.Ring, Mathlib.Data.Sign, Mathlib.Data.NNRat.Defs,
- Mathlib.Order.SuccPred.LinearLocallyFinite, Mathlib.Data.Int.Interval,
- Mathlib.SetTheory.Cardinal.Order, Mathlib.Algebra.Order.Module.Pointwise]-/
-
 end NNReal
 
 open NNReal in
