@@ -3,11 +3,8 @@ Copyright (c) 2025 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Analysis.Asymptotics.Lemmas
-import Mathlib.Topology.Algebra.UniformConvergence
-import Mathlib.Topology.Sets.Compacts
 import Mathlib.Analysis.Calculus.UniformLimitsDeriv
-import Mathlib.Analysis.Complex.LocallyUniformLimit
+import Mathlib.Analysis.InnerProductSpace.Basic
 
 /-!
 # Infinite sum and products that converge uniformly on a set
