@@ -23,6 +23,7 @@ section CommRing
 
 variable {R : Type u} {Γ₀ : Type v} [CommRing R] [LinearOrderedCommGroupWithZero Γ₀]
 variable {v : Valuation R Γ₀} {O : Type w} [CommRing O] [Algebra O R] (hv : Integers v O)
+include hv
 
 open Polynomial
 
@@ -35,9 +36,9 @@ theorem mem_of_integral {x : R} (hx : IsIntegral O x) : x ∈ v.integer :=
     refine v.map_sum_lt' (zero_lt_one.trans_le (one_le_pow_of_one_le' hvx.le _)) fun i hi => ?_
     rw [eval₂_mul, eval₂_pow, eval₂_C, eval₂_X, v.map_mul, v.map_pow, ←
       one_mul (v x ^ p.natDegree)]
-    cases' (hv.2 <| p.coeff i).lt_or_eq with hvpi hvpi
-    · exact mul_lt_mul₀ hvpi (pow_lt_pow_right₀ hvx <| Finset.mem_range.1 hi)
-    · erw [hvpi]; rw [one_mul, one_mul]; exact pow_lt_pow_right₀ hvx (Finset.mem_range.1 hi)
+    rcases (hv.2 <| p.coeff i).lt_or_eq with hvpi | hvpi
+    · exact mul_lt_mul'' hvpi (pow_lt_pow_right₀ hvx <| Finset.mem_range.1 hi) zero_le' zero_le'
+    · rw [hvpi, one_mul, one_mul]; exact pow_lt_pow_right₀ hvx (Finset.mem_range.1 hi)
 
 protected theorem integralClosure : integralClosure O R = ⊥ :=
   bot_unique fun _ hr =>
@@ -49,10 +50,11 @@ end CommRing
 section FractionField
 
 variable {K : Type u} {Γ₀ : Type v} [Field K] [LinearOrderedCommGroupWithZero Γ₀]
-variable {v : Valuation K Γ₀} {O : Type w} [CommRing O] [IsDomain O]
+variable {v : Valuation K Γ₀} {O : Type w} [CommRing O]
 variable [Algebra O K] [IsFractionRing O K]
 variable (hv : Integers v O)
 
+include hv in
 theorem integrallyClosed : IsIntegrallyClosed O :=
   (IsIntegrallyClosed.integralClosure_eq_bot_iff K).mp (Valuation.Integers.integralClosure hv)
 

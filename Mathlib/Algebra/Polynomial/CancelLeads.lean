@@ -3,7 +3,6 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.Polynomial.Degree.Definitions
 import Mathlib.Algebra.Polynomial.Degree.Lemmas
 import Mathlib.Tactic.ComputeDegree
 
@@ -64,7 +63,7 @@ theorem natDegree_cancelLeads_lt_of_natDegree_le_natDegree_of_comm
       add_comm _ p.natDegree]
     simp only [coeff_mul_X_pow, coeff_neg, coeff_C_mul, add_tsub_cancel_left, coeff_add]
     rw [add_comm p.natDegree, tsub_add_cancel_of_le h, ← leadingCoeff, ← leadingCoeff, comm,
-      add_right_neg]
+      add_neg_cancel]
 
 end Ring
 

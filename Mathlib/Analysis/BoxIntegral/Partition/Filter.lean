@@ -163,18 +163,14 @@ prepartition (and consider the special case `π = ⊥` separately if needed).
 integral, rectangular box, partition, filter
 -/
 
-
 open Set Function Filter Metric Finset Bool
-
-open scoped Classical
-open Topology Filter NNReal
+open scoped Topology Filter NNReal
 
 noncomputable section
 
 namespace BoxIntegral
 
-variable {ι : Type*} [Fintype ι] {I J : Box ι} {c c₁ c₂ : ℝ≥0} {r r₁ r₂ : (ι → ℝ) → Ioi (0 : ℝ)}
-  {π π₁ π₂ : TaggedPrepartition I}
+variable {ι : Type*} [Fintype ι] {I J : Box ι} {c c₁ c₂ : ℝ≥0}
 
 open TaggedPrepartition
 
@@ -226,11 +222,11 @@ without additional integrability assumptions, see the module docstring for detai
 instance : Inhabited IntegrationParams :=
   ⟨⊥⟩
 
-instance : DecidableRel ((· ≤ ·) : IntegrationParams → IntegrationParams → Prop) :=
-  fun _ _ => And.decidable
+instance : DecidableLE (IntegrationParams) :=
+  fun _ _ => inferInstanceAs (Decidable (_ ∧ _))
 
 instance : DecidableEq IntegrationParams :=
-  fun x y => decidable_of_iff _ (IntegrationParams.ext_iff x y).symm
+  fun _ _ => decidable_of_iff _ IntegrationParams.ext_iff.symm
 
 /-- The `BoxIntegral.IntegrationParams` corresponding to the Riemann integral. In the
 corresponding filter, we require that the diameters of all boxes `J` of a tagged partition are
@@ -316,7 +312,7 @@ def toFilterDistortioniUnion (l : IntegrationParams) (I : Box ι) (c : ℝ≥0) 
 /-- A set `s : Set (TaggedPrepartition I)` belongs to `l.toFilteriUnion I π₀` if for any `c : ℝ≥0`
 there exists a function `r : ℝⁿ → (0, ∞)` (or a constant `r` if `l.bRiemann = true`) such that `s`
 contains each prepartition `π` such that `l.MemBaseSet I c r π` and `π.iUnion = π₀.iUnion`. -/
-def toFilteriUnion (l : IntegrationParams) (I : Box ι) (π₀ : Prepartition I) :=
+def toFilteriUnion (I : Box ι) (π₀ : Prepartition I) :=
   ⨆ c : ℝ≥0, l.toFilterDistortioniUnion I c π₀
 
 theorem rCond_of_bRiemann_eq_false {ι} (l : IntegrationParams) (hl : l.bRiemann = false)
@@ -327,25 +323,30 @@ theorem toFilter_inf_iUnion_eq (l : IntegrationParams) (I : Box ι) (π₀ : Pre
     l.toFilter I ⊓ 𝓟 { π | π.iUnion = π₀.iUnion } = l.toFilteriUnion I π₀ :=
   (iSup_inf_principal _ _).symm
 
-theorem MemBaseSet.mono' (I : Box ι) (h : l₁ ≤ l₂) (hc : c₁ ≤ c₂) {π : TaggedPrepartition I}
+variable {r₁ r₂ : (ι → ℝ) → Ioi (0 : ℝ)} {π π₁ π₂ : TaggedPrepartition I}
+
+variable (I) in
+theorem MemBaseSet.mono' (h : l₁ ≤ l₂) (hc : c₁ ≤ c₂)
     (hr : ∀ J ∈ π, r₁ (π.tag J) ≤ r₂ (π.tag J)) (hπ : l₁.MemBaseSet I c₁ r₁ π) :
     l₂.MemBaseSet I c₂ r₂ π :=
   ⟨hπ.1.mono' hr, fun h₂ => hπ.2 (le_iff_imp.1 h.2.1 h₂),
     fun hD => (hπ.3 (le_iff_imp.1 h.2.2 hD)).trans hc,
     fun hD => (hπ.4 (le_iff_imp.1 h.2.2 hD)).imp fun _ hπ => ⟨hπ.1, hπ.2.trans hc⟩⟩
 
+variable (I) in
 @[mono]
-theorem MemBaseSet.mono (I : Box ι) (h : l₁ ≤ l₂) (hc : c₁ ≤ c₂) {π : TaggedPrepartition I}
+theorem MemBaseSet.mono (h : l₁ ≤ l₂) (hc : c₁ ≤ c₂)
     (hr : ∀ x ∈ Box.Icc I, r₁ x ≤ r₂ x) (hπ : l₁.MemBaseSet I c₁ r₁ π) : l₂.MemBaseSet I c₂ r₂ π :=
   hπ.mono' I h hc fun J _ => hr _ <| π.tag_mem_Icc J
 
-theorem MemBaseSet.exists_common_compl (h₁ : l.MemBaseSet I c₁ r₁ π₁) (h₂ : l.MemBaseSet I c₂ r₂ π₂)
+theorem MemBaseSet.exists_common_compl
+    (h₁ : l.MemBaseSet I c₁ r₁ π₁) (h₂ : l.MemBaseSet I c₂ r₂ π₂)
     (hU : π₁.iUnion = π₂.iUnion) :
     ∃ π : Prepartition I, π.iUnion = ↑I \ π₁.iUnion ∧
       (l.bDistortion → π.distortion ≤ c₁) ∧ (l.bDistortion → π.distortion ≤ c₂) := by
   wlog hc : c₁ ≤ c₂ with H
   · simpa [hU, _root_.and_comm] using
-      @H _ _ I J c c₂ c₁ r r₂ r₁ π π₂ π₁ _ l₂ l₁ h₂ h₁ hU.symm (le_of_not_le hc)
+      @H _ _ I c₂ c₁ l r₂ r₁ π₂ π₁ h₂ h₁ hU.symm (le_of_not_le hc)
   by_cases hD : (l.bDistortion : Prop)
   · rcases h₁.4 hD with ⟨π, hπU, hπc⟩
     exact ⟨π, hπU, fun _ => hπc, fun _ => hπc.trans hc⟩
@@ -361,8 +362,11 @@ protected theorem MemBaseSet.unionComplToSubordinate (hπ₁ : l.MemBaseSet I c 
     fun h => (distortion_unionComplToSubordinate _ _ _ _).trans_le (max_le (hπ₁.3 h) (hc h)),
     fun _ => ⟨⊥, by simp⟩⟩
 
+variable {r : (ι → ℝ) → Ioi (0 : ℝ)}
+
 protected theorem MemBaseSet.filter (hπ : l.MemBaseSet I c r π) (p : Box ι → Prop) :
     l.MemBaseSet I c r (π.filter p) := by
+  classical
   refine ⟨fun J hJ => hπ.1 J (π.mem_filter.1 hJ).1, fun hH J hJ => hπ.2 hH J (π.mem_filter.1 hJ).1,
     fun hD => (distortion_filter_le _ _).trans (hπ.3 hD), fun hD => ?_⟩
   rcases hπ.4 hD with ⟨π₁, hπ₁U, hc⟩
@@ -405,19 +409,19 @@ nonrec theorem RCond.min {ι : Type*} {r₁ r₂ : (ι → ℝ) → Ioi (0 : ℝ
     (h₂ : l.RCond r₂) : l.RCond fun x => min (r₁ x) (r₂ x) :=
   fun hR x => congr_arg₂ min (h₁ hR x) (h₂ hR x)
 
-@[mono]
+@[gcongr, mono]
 theorem toFilterDistortion_mono (I : Box ι) (h : l₁ ≤ l₂) (hc : c₁ ≤ c₂) :
     l₁.toFilterDistortion I c₁ ≤ l₂.toFilterDistortion I c₂ :=
   iInf_mono fun _ =>
     iInf_mono' fun hr =>
       ⟨hr.mono h, principal_mono.2 fun _ => MemBaseSet.mono I h hc fun _ _ => le_rfl⟩
 
-@[mono]
+@[gcongr, mono]
 theorem toFilter_mono (I : Box ι) {l₁ l₂ : IntegrationParams} (h : l₁ ≤ l₂) :
     l₁.toFilter I ≤ l₂.toFilter I :=
   iSup_mono fun _ => toFilterDistortion_mono I h le_rfl
 
-@[mono]
+@[gcongr, mono]
 theorem toFilteriUnion_mono (I : Box ι) {l₁ l₂ : IntegrationParams} (h : l₁ ≤ l₂)
     (π₀ : Prepartition I) : l₁.toFilteriUnion I π₀ ≤ l₂.toFilteriUnion I π₀ :=
   iSup_mono fun _ => inf_le_inf_right _ <| toFilterDistortion_mono _ h le_rfl
@@ -512,7 +516,7 @@ theorem eventually_isPartition (l : IntegrationParams) (I : Box ι) :
     ∀ᶠ π in l.toFilteriUnion I ⊤, TaggedPrepartition.IsPartition π :=
   eventually_iSup.2 fun _ =>
     eventually_inf_principal.2 <|
-      eventually_of_forall fun π h =>
+      Eventually.of_forall fun π h =>
         π.isPartition_iff_iUnion_eq.2 (h.trans Prepartition.iUnion_top)
 
 end IntegrationParams

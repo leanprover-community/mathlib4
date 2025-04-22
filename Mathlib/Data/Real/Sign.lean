@@ -69,9 +69,6 @@ theorem sign_intCast (z : ℤ) : sign (z : ℝ) = ↑(Int.sign z) := by
   · rw [Int.cast_zero, sign_zero, Int.sign_zero, Int.cast_zero]
   · rw [sign_of_pos (Int.cast_pos.mpr hp), Int.sign_eq_one_of_pos hp, Int.cast_one]
 
-@[deprecated (since := "2024-04-17")]
-alias sign_int_cast := sign_intCast
-
 theorem sign_neg {r : ℝ} : sign (-r) = -sign r := by
   obtain hn | rfl | hp := lt_trichotomy r (0 : ℝ)
   · rw [sign_of_neg hn, sign_of_pos (neg_pos.mpr hn), neg_neg]
@@ -104,8 +101,8 @@ theorem inv_sign (r : ℝ) : (sign r)⁻¹ = sign r := by
 @[simp]
 theorem sign_inv (r : ℝ) : sign r⁻¹ = sign r := by
   obtain hn | rfl | hp := lt_trichotomy r (0 : ℝ)
-  · rw [sign_of_neg hn, sign_of_neg (inv_lt_zero (α := ℝ) |>.mpr hn)]
+  · rw [sign_of_neg hn, sign_of_neg (inv_lt_zero.mpr hn)]
   · rw [sign_zero, inv_zero, sign_zero]
-  · rw [sign_of_pos hp, sign_of_pos (inv_pos (α := ℝ) |>.mpr hp)]
+  · rw [sign_of_pos hp, sign_of_pos (inv_pos.mpr hp)]
 
 end Real

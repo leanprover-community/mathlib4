@@ -3,9 +3,9 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Sébastien Gouëzel
 -/
-
 import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
+import Mathlib.Dynamics.Ergodic.MeasurePreserving
+import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
 import Mathlib.MeasureTheory.Measure.WithDensity
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 
@@ -17,8 +17,8 @@ functions, started in `Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic`.
 
 ## References
 
-* Hytönen, Tuomas, Jan Van Neerven, Mark Veraar, and Lutz Weis. Analysis in Banach spaces.
-  Springer, 2016.
+* [Hytönen, Tuomas, Jan Van Neerven, Mark Veraar, and Lutz Weis. Analysis in Banach spaces.
+  Springer, 2016.][Hytonen_VanNeerven_Veraar_Wies_2016]
 
 -/
 
@@ -26,6 +26,10 @@ open MeasureTheory Filter Set ENNReal NNReal
 
 variable {α β γ : Type*} {m : MeasurableSpace α} {μ : Measure α} [TopologicalSpace β]
   [TopologicalSpace γ] {f g : α → β}
+
+lemma aestronglyMeasurable_dirac [MeasurableSingletonClass α] {a : α} {f : α → β} :
+    AEStronglyMeasurable f (Measure.dirac a) :=
+  ⟨fun _ ↦ f a, stronglyMeasurable_const, ae_eq_dirac f⟩
 
 theorem MeasureTheory.AEStronglyMeasurable.comp_measurePreserving
     {γ : Type*} {_ : MeasurableSpace γ} {_ : MeasurableSpace α} {f : γ → α} {μ : Measure γ}
@@ -46,7 +50,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 theorem aestronglyMeasurable_smul_const_iff {f : α → 𝕜} {c : E} (hc : c ≠ 0) :
     AEStronglyMeasurable (fun x => f x • c) μ ↔ AEStronglyMeasurable f μ :=
-  (closedEmbedding_smul_left hc).toEmbedding.aestronglyMeasurable_comp_iff
+  (isClosedEmbedding_smul_left hc).isEmbedding.aestronglyMeasurable_comp_iff
 
 end NormedSpace
 
@@ -96,6 +100,6 @@ theorem aestronglyMeasurable_withDensity_iff {E : Type*} [NormedAddCommGroup E]
     refine ⟨fun x => (f x : ℝ)⁻¹ • g' x, hf.coe_nnreal_real.inv.stronglyMeasurable.smul g'meas, ?_⟩
     rw [EventuallyEq, ae_withDensity_iff hf.coe_nnreal_ennreal]
     filter_upwards [hg'] with x hx h'x
-    rw [← hx, smul_smul, _root_.inv_mul_cancel, one_smul]
+    rw [← hx, smul_smul, inv_mul_cancel₀, one_smul]
     simp only [Ne, ENNReal.coe_eq_zero] at h'x
     simpa only [NNReal.coe_eq_zero, Ne] using h'x

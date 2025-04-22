@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 import Mathlib.CategoryTheory.Linear.Basic
@@ -28,7 +28,7 @@ variable (R : Type*) [Semiring R]
 
 /-- An additive functor `F` is `R`-linear provided `F.map` is an `R`-module morphism. -/
 class Functor.Linear {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
-  [Linear R C] [Linear R D] (F : C ⥤ D) [F.Additive] : Prop where
+  [Linear R C] [Linear R D] (F : C ⥤ D) : Prop where
   /-- the functor induces a linear map on morphisms -/
   map_smul : ∀ {X Y : C} (f : X ⟶ Y) (r : R), F.map (r • f) = r • F.map f := by aesop_cat
 
@@ -40,7 +40,7 @@ section
 
 variable {R}
 variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
-  [CategoryTheory.Linear R C] [CategoryTheory.Linear R D] (F : C ⥤ D) [Additive F] [Linear R F]
+  [CategoryTheory.Linear R C] [CategoryTheory.Linear R D] (F : C ⥤ D) [Linear R F]
 
 @[simp]
 theorem map_smul {X Y : C} (r : R) (f : X ⟶ Y) : F.map (r • f) = r • F.map f :=
@@ -53,9 +53,9 @@ theorem map_units_smul {X Y : C} (r : Rˣ) (f : X ⟶ Y) : F.map (r • f) = r �
 instance : Linear R (𝟭 C) where
 
 instance {E : Type*} [Category E] [Preadditive E] [CategoryTheory.Linear R E] (G : D ⥤ E)
-    [Additive G] [Linear R G] : Linear R (F ⋙ G) where
+    [Linear R G] : Linear R (F ⋙ G) where
 
-variable (R)
+variable (R) [F.Additive]
 
 /-- `F.mapLinearMap` is an `R`-linear map whose underlying function is `F.map`. -/
 @[simps]
@@ -103,7 +103,7 @@ namespace Equivalence
 variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Linear R C] [Preadditive D]
   [Linear R D]
 
-instance inverseLinear (e : C ≌ D) [e.functor.Additive] [e.functor.Linear R] :
+instance inverseLinear (e : C ≌ D) [e.functor.Linear R] :
   e.inverse.Linear R where
     map_smul r f := by
       apply e.functor.map_injective

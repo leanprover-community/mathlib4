@@ -59,7 +59,8 @@ end TensorAlgebra
 def TensorAlgebra :=
   RingQuot (TensorAlgebra.Rel R M)
 
--- Porting note: Expanded `deriving Inhabited, Semiring, Algebra`
+-- The `Inhabited, Semiring, Algebra` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 instance : Inhabited (TensorAlgebra R M) := RingQuot.instInhabited _
 instance : Semiring (TensorAlgebra R M) := RingQuot.instSemiring _
 
@@ -72,8 +73,8 @@ instance instAlgebra {R A M} [CommSemiring R] [AddCommMonoid M] [CommSemiring A]
   RingQuot.instAlgebra _
 
 -- verify there is no diamond
--- but doesn't work at `reducible_and_instances` #10906
-example : (algebraNat : Algebra ℕ (TensorAlgebra R M)) = instAlgebra := rfl
+-- but doesn't work at `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
+example : (Semiring.toNatAlgebra : Algebra ℕ (TensorAlgebra R M)) = instAlgebra := rfl
 
 instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommMonoid M] [CommSemiring A]
     [Algebra R A] [Algebra S A] [Module R M] [Module S M] [Module A M]
@@ -93,9 +94,9 @@ instance {S : Type*} [CommRing S] [Module S M] : Ring (TensorAlgebra S M) :=
   RingQuot.instRing (Rel S M)
 
 -- verify there is no diamond
--- but doesn't work at `reducible_and_instances` #10906
+-- but doesn't work at `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
 variable (S M : Type) [CommRing S] [AddCommGroup M] [Module S M] in
-example : (algebraInt _ : Algebra ℤ (TensorAlgebra S M)) = instAlgebra := rfl
+example : (Ring.toIntAlgebra _ : Algebra ℤ (TensorAlgebra S M)) = instAlgebra := rfl
 
 variable {M}
 
@@ -115,7 +116,6 @@ theorem ringQuot_mkAlgHom_freeAlgebra_ι_eq_ι (m : M) :
   rw [ι]
   rfl
 
--- Porting note: Changed `irreducible_def` to `def` to get `@[simps symm_apply]` to work
 /-- Given a linear map `f : M → A` where `A` is an `R`-algebra, `lift R f` is the unique lift
 of `f` to a morphism of `R`-algebras `TensorAlgebra R M → A`.
 -/
@@ -177,7 +177,7 @@ theorem hom_ext {A : Type*} [Semiring A] [Algebra R A] {f g : TensorAlgebra R M 
 
 -- This proof closely follows `FreeAlgebra.induction`
 /-- If `C` holds for the `algebraMap` of `r : R` into `TensorAlgebra R M`, the `ι` of `x : M`,
-and is preserved under addition and muliplication, then it holds for all of `TensorAlgebra R M`.
+and is preserved under addition and multiplication, then it holds for all of `TensorAlgebra R M`.
 -/
 @[elab_as_elim]
 theorem induction {C : TensorAlgebra R M → Prop}
@@ -190,8 +190,6 @@ theorem induction {C : TensorAlgebra R M → Prop}
       mul_mem' := @mul
       add_mem' := @add
       algebraMap_mem' := algebraMap }
-  -- Porting note: Added `h`. `h` is needed for `of`.
-  let h : AddCommMonoid s := inferInstanceAs (AddCommMonoid (Subalgebra.toSubmodule s))
   let of : M →ₗ[R] s := (TensorAlgebra.ι R).codRestrict (Subalgebra.toSubmodule s) ι
   -- the mapping through the subalgebra is the identity
   have of_id : AlgHom.id R (TensorAlgebra R M) = s.val.comp (lift R of) := by
@@ -288,7 +286,7 @@ theorem ι_ne_one [Nontrivial R] (x : M) : ι R x ≠ 1 := by
 theorem ι_range_disjoint_one :
     Disjoint (LinearMap.range (ι R : M →ₗ[R] TensorAlgebra R M))
       (1 : Submodule R (TensorAlgebra R M)) := by
-  rw [Submodule.disjoint_def]
+  rw [Submodule.disjoint_def, Submodule.one_eq_range]
   rintro _ ⟨x, hx⟩ ⟨r, rfl⟩
   rw [Algebra.linearMap_apply, ι_eq_algebraMap_iff] at hx
   rw [hx.2, map_zero]

@@ -3,7 +3,9 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Order.Heyting.Basic
 import Mathlib.Order.Hom.Basic
+import Mathlib.Order.WithBot
 
 /-!
 # Orders on a sum type
@@ -25,7 +27,7 @@ type synonym.
 -/
 
 
-variable {α β γ δ : Type*}
+variable {α β γ : Type*}
 
 namespace Sum
 
@@ -157,7 +159,7 @@ variable [Preorder α] [Preorder β]
 
 instance instPreorderSum : Preorder (α ⊕ β) :=
   { instLESum, instLTSum with
-    le_refl := fun x => LiftRel.refl _ _ _,
+    le_refl := fun _ => LiftRel.refl _ _ _,
     le_trans := fun _ _ _ => LiftRel.trans _ _,
     lt_iff_le_not_le := fun a b => by
       refine ⟨fun hab => ⟨hab.mono (fun _ _ => le_of_lt) fun _ _ => le_of_lt, ?_⟩, ?_⟩
@@ -374,8 +376,9 @@ instance partialOrder [PartialOrder α] [PartialOrder β] : PartialOrder (α ⊕
 instance linearOrder [LinearOrder α] [LinearOrder β] : LinearOrder (α ⊕ₗ β) :=
   { Lex.partialOrder with
     le_total := total_of (Lex (· ≤ ·) (· ≤ ·)),
-    decidableLE := instDecidableRelSumLex,
-    decidableEq := instDecidableEqSum }
+    toDecidableLE := instDecidableRelSumLex,
+    toDecidableLT := instDecidableRelSumLex,
+    toDecidableEq := instDecidableEqSum }
 
 /-- The lexicographical bottom of a sum is the bottom of the left component. -/
 instance orderBot [LE α] [OrderBot α] [LE β] :
@@ -651,7 +654,7 @@ def orderIsoPUnitSumLex : WithBot α ≃o PUnit ⊕ₗ α :=
   ⟨(Equiv.optionEquivSumPUnit α).trans <| (Equiv.sumComm _ _).trans toLex, fun {a b} => by
     simp only [Equiv.optionEquivSumPUnit, Option.elim, Equiv.trans_apply, Equiv.coe_fn_mk,
       Equiv.sumComm_apply, swap, Lex.toLex_le_toLex, le_refl]
-    cases' a <;> cases' b
+    cases a <;> cases b
     · simp only [elim_inr, lex_inl_inl, bot_le, le_rfl]
     · simp only [elim_inr, elim_inl, Lex.sep, bot_le]
     · simp only [elim_inl, elim_inr, lex_inr_inl, false_iff]
@@ -688,7 +691,7 @@ def orderIsoSumLexPUnit : WithTop α ≃o α ⊕ₗ PUnit :=
   ⟨(Equiv.optionEquivSumPUnit α).trans toLex, fun {a b} => by
     simp only [Equiv.optionEquivSumPUnit, Option.elim, Equiv.trans_apply, Equiv.coe_fn_mk,
       Lex.toLex_le_toLex, le_refl, lex_inr_inr, le_top]
-    cases' a <;> cases' b
+    cases a <;> cases b
     · simp only [lex_inr_inr, le_top]
     · simp only [lex_inr_inl, false_iff]
       exact not_top_le_coe _

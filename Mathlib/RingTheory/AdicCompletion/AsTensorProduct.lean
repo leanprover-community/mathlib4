@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
 import Mathlib.LinearAlgebra.TensorProduct.Pi
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.RingTheory.AdicCompletion.Exactness
-import Mathlib.RingTheory.Flat.Algebra
+import Mathlib.RingTheory.Flat.Basic
 
 /-!
 
@@ -101,7 +101,7 @@ private lemma piEquivOfFintype_comp_ofTensorProduct_eq :
   ext i j k
   suffices h : (if j = i then 1 else 0) = (if j = i then 1 else 0 : AdicCompletion I R).val k by
     simpa [Pi.single_apply, -smul_eq_mul, -Algebra.id.smul_eq_mul]
-  split <;> simp only [smul_eq_mul, val_zero, val_one]
+  split <;> simp
 
 private lemma ofTensorProduct_eq :
     ofTensorProduct I (ι → R) = (piEquivOfFintype I (ι := ι) (fun _ : ι ↦ R)).symm.toLinearMap ∘ₗ
@@ -170,7 +170,6 @@ section Noetherian
 
 variable {R : Type u} [CommRing R] (I : Ideal R)
 variable (M : Type u) [AddCommGroup M] [Module R M]
-variable [IsNoetherianRing R]
 
 /-!
 
@@ -203,7 +202,7 @@ open CategoryTheory
 
 section
 
-variable {ι : Type} [Fintype ι] [DecidableEq ι] (f : (ι → R) →ₗ[R] M) (hf : Function.Surjective f)
+variable {ι : Type} (f : (ι → R) →ₗ[R] M)
 
 /- The first horizontal arrow in the top row. -/
 private
@@ -216,20 +215,25 @@ private def lTensorf :
     AdicCompletion I R ⊗[R] (ι → R) →ₗ[AdicCompletion I R] AdicCompletion I R ⊗[R] M :=
   AlgebraTensorModule.map LinearMap.id f
 
-private lemma if_exact : Function.Exact (LinearMap.ker f).subtype f := fun x ↦
-  ⟨fun hx ↦ ⟨⟨x, hx⟩, rfl⟩, by rintro ⟨x, rfl⟩; exact x.property⟩
+variable (hf : Function.Surjective f)
+
+section
+include hf
 
 private lemma tens_exact : Function.Exact (lTensorKerIncl I M f) (lTensorf I M f) :=
-  lTensor_exact (AdicCompletion I R) (if_exact M f) hf
+  lTensor_exact (AdicCompletion I R) (f.exact_subtype_ker_map) hf
 
 private lemma tens_surj : Function.Surjective (lTensorf I M f) :=
   LinearMap.lTensor_surjective (AdicCompletion I R) hf
 
-private lemma adic_exact : Function.Exact (map I (LinearMap.ker f).subtype) (map I f) :=
-  map_exact (Submodule.injective_subtype _) (if_exact M f) hf
+private lemma adic_exact [IsNoetherianRing R] [Fintype ι] :
+    Function.Exact (map I (LinearMap.ker f).subtype) (map I f) :=
+  map_exact (Submodule.injective_subtype _) (f.exact_subtype_ker_map) hf
 
 private lemma adic_surj : Function.Surjective (map I f) :=
   map_surjective I hf
+
+end
 
 /- Instance to speed up instance inference. -/
 private instance : AddCommGroup (AdicCompletion I R ⊗[R] (LinearMap.ker f)) :=
@@ -249,11 +253,13 @@ private def secondRow : ComposableArrows (ModuleCat (AdicCompletion I R)) 4 :=
     (ModuleCat.ofHom (0 : _ →ₗ[AdicCompletion I R] PUnit))
     (ModuleCat.ofHom (0 : _ →ₗ[AdicCompletion I R] PUnit))
 
+include hf
+
 private lemma firstRow_exact : (firstRow I M f).Exact where
-  zero k _ := match k with
-    | 0 => (tens_exact I M f hf).linearMap_comp_eq_zero
-    | 1 => LinearMap.zero_comp _
-    | 2 => LinearMap.zero_comp 0
+  zero
+    | 0, _ => ModuleCat.hom_ext (tens_exact I M f hf).linearMap_comp_eq_zero
+    | 1, _ => ModuleCat.hom_ext (LinearMap.zero_comp _)
+    | 2, _ => ModuleCat.hom_ext (LinearMap.zero_comp 0)
   exact k _ := by
     rw [ShortComplex.moduleCat_exact_iff]
     match k with
@@ -261,11 +267,11 @@ private lemma firstRow_exact : (firstRow I M f).Exact where
     | 1 => intro x _; exact (tens_surj I M f hf) x
     | 2 => intro _ _; exact ⟨0, rfl⟩
 
-private lemma secondRow_exact : (secondRow I M f).Exact where
-  zero k _ := match k with
-    | 0 => (adic_exact I M f hf).linearMap_comp_eq_zero
-    | 1 => LinearMap.zero_comp (map I f)
-    | 2 => LinearMap.zero_comp 0
+private lemma secondRow_exact [Fintype ι] [IsNoetherianRing R] : (secondRow I M f).Exact where
+  zero
+    | 0, _ => ModuleCat.hom_ext (adic_exact I M f hf).linearMap_comp_eq_zero
+    | 1, _ => ModuleCat.hom_ext (LinearMap.zero_comp (map I f))
+    | 2, _ => ModuleCat.hom_ext (LinearMap.zero_comp 0)
   exact k _ := by
     rw [ShortComplex.moduleCat_exact_iff]
     match k with
@@ -281,12 +287,13 @@ private def firstRowToSecondRow : firstRow I M f ⟶ secondRow I M f :=
     (ModuleCat.ofHom (ofTensorProduct I M))
     (ModuleCat.ofHom 0)
     (ModuleCat.ofHom 0)
-    (ofTensorProduct_naturality I <| (LinearMap.ker f).subtype).symm
-    (ofTensorProduct_naturality I f).symm
+    (ModuleCat.hom_ext (ofTensorProduct_naturality I <| (LinearMap.ker f).subtype).symm)
+    (ModuleCat.hom_ext (ofTensorProduct_naturality I f).symm)
     rfl
     rfl
 
-private lemma ofTensorProduct_iso : IsIso (ModuleCat.ofHom (ofTensorProduct I M)) := by
+private lemma ofTensorProduct_iso [Fintype ι] [IsNoetherianRing R] :
+    IsIso (ModuleCat.ofHom (ofTensorProduct I M)) := by
   refine Abelian.isIso_of_epi_of_isIso_of_isIso_of_mono
     (firstRow_exact I M f hf) (secondRow_exact I M f hf) (firstRowToSecondRow I M f) ?_ ?_ ?_ ?_
   · apply ConcreteCategory.epi_of_surjective
@@ -301,16 +308,20 @@ private lemma ofTensorProduct_iso : IsIso (ModuleCat.ofHom (ofTensorProduct I M)
     rfl
 
 private
-lemma ofTensorProduct_bijective_of_map_from_fin : Function.Bijective (ofTensorProduct I M) := by
+lemma ofTensorProduct_bijective_of_map_from_fin [Fintype ι] [IsNoetherianRing R] :
+    Function.Bijective (ofTensorProduct I M) := by
   have : IsIso (ModuleCat.ofHom (ofTensorProduct I M)) :=
     ofTensorProduct_iso I M f hf
   exact ConcreteCategory.bijective_of_isIso (ModuleCat.ofHom (ofTensorProduct I M))
 
 end
 
+variable [IsNoetherianRing R]
+
 /-- If `R` is a Noetherian ring and `M` is a finite `R`-module, then the natural map
 given by `AdicCompletion.ofTensorProduct` is an isomorphism. -/
-theorem ofTensorProduct_bijective_of_finite_of_isNoetherian [Module.Finite R M] :
+theorem ofTensorProduct_bijective_of_finite_of_isNoetherian
+    [Module.Finite R M] :
     Function.Bijective (ofTensorProduct I M) := by
   obtain ⟨n, f, hf⟩ := Module.Finite.exists_fin' R M
   exact ofTensorProduct_bijective_of_map_from_fin I M f hf
@@ -322,6 +333,10 @@ def ofTensorProductEquivOfFiniteNoetherian [Module.Finite R M] :
   LinearEquiv.ofBijective (ofTensorProduct I M)
     (ofTensorProduct_bijective_of_finite_of_isNoetherian I M)
 
+lemma coe_ofTensorProductEquivOfFiniteNoetherian [Module.Finite R M] :
+    ofTensorProductEquivOfFiniteNoetherian I M = ofTensorProduct I M :=
+  rfl
+
 @[simp]
 lemma ofTensorProductEquivOfFiniteNoetherian_apply [Module.Finite R M]
     (x : AdicCompletion I R ⊗[R] M) :
@@ -329,7 +344,8 @@ lemma ofTensorProductEquivOfFiniteNoetherian_apply [Module.Finite R M]
   rfl
 
 @[simp]
-lemma ofTensorProductEquivOfFiniteNoetherian_symm_of [Module.Finite R M] (x : M) :
+lemma ofTensorProductEquivOfFiniteNoetherian_symm_of
+    [Module.Finite R M] (x : M) :
     (ofTensorProductEquivOfFiniteNoetherian I M).symm ((of I M) x) = 1 ⊗ₜ x := by
   have h : (of I M) x = ofTensorProductEquivOfFiniteNoetherian I M (1 ⊗ₜ x) := by
     simp
@@ -346,7 +362,7 @@ lemma tensor_map_id_left_eq_map :
       (ofTensorProductEquivOfFiniteNoetherian I N).symm.toLinearMap ∘ₗ
       map I f ∘ₗ
       (ofTensorProductEquivOfFiniteNoetherian I M).toLinearMap := by
-  erw [ofTensorProduct_naturality I f]
+  rw [coe_ofTensorProductEquivOfFiniteNoetherian, ofTensorProduct_naturality I f]
   ext x
   simp
 
@@ -363,8 +379,8 @@ lemma tensor_map_id_left_injective_of_injective (hf : Function.Injective f) :
 end
 
 /-- Adic completion of a Noetherian ring `R` is flat over `R`. -/
-instance flat_of_isNoetherian [IsNoetherianRing R] : Algebra.Flat R (AdicCompletion I R) where
-  out := (Module.Flat.iff_lTensor_injective' R (AdicCompletion I R)).mpr <| fun J ↦
+instance flat_of_isNoetherian [IsNoetherianRing R] : Module.Flat R (AdicCompletion I R) :=
+  Module.Flat.iff_lTensor_injective'.mpr fun J ↦
     tensor_map_id_left_injective_of_injective I (Submodule.injective_subtype J)
 
 end Noetherian

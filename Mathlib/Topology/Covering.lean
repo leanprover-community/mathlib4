@@ -21,8 +21,7 @@ This file defines covering maps.
   assumed to be surjective, so the fibers are even allowed to be empty.
 -/
 
-
-open Bundle
+open Bundle Topology
 
 variable {E X : Type*} [TopologicalSpace E] [TopologicalSpace X] (f : E → X) (s : Set X)
 
@@ -63,7 +62,7 @@ theorem to_isEvenlyCovered_preimage {x : X} {I : Type*} [TopologicalSpace I]
     (h : IsEvenlyCovered f x I) : IsEvenlyCovered f x (f ⁻¹' {x}) :=
   let ⟨_, h2⟩ := h
   ⟨((Classical.choose h2).preimageSingletonHomeomorph
-          (Classical.choose_spec h2)).embedding.discreteTopology,
+          (Classical.choose_spec h2)).isEmbedding.discreteTopology,
     _, h.mem_toTrivialization_baseSet⟩
 
 end IsEvenlyCovered
@@ -87,7 +86,7 @@ protected theorem continuousAt (hf : IsCoveringMapOn f s) {x : E} (hx : f x ∈ 
   (hf (f x) hx).continuousAt
 
 protected theorem continuousOn (hf : IsCoveringMapOn f s) : ContinuousOn f (f ⁻¹' s) :=
-  ContinuousAt.continuousOn fun _ => hf.continuousAt
+  continuousOn_of_forall_continuousAt fun _ => hf.continuousAt
 
 protected theorem isLocalHomeomorphOn (hf : IsCoveringMapOn f s) :
     IsLocalHomeomorphOn f (f ⁻¹' s) := by
@@ -108,8 +107,8 @@ protected theorem isLocalHomeomorphOn (hf : IsCoveringMapOn f s) :
           map_target' := fun p hp => ⟨hp, rfl⟩
           left_inv' := fun p hp => Prod.ext rfl hp.2.symm
           right_inv' := fun p _ => rfl
-          continuousOn_toFun := continuous_fst.continuousOn
-          continuousOn_invFun := (continuous_id'.prod_mk continuous_const).continuousOn },
+          continuousOn_toFun := continuousOn_fst
+          continuousOn_invFun := by fun_prop },
       ⟨he, by rwa [e.toPartialHomeomorph.symm_symm, e.proj_toFun x he],
         (hf (f x) hx).toTrivialization_apply⟩,
       fun p h => (e.proj_toFun p h.1).symm⟩
@@ -141,6 +140,7 @@ theorem mk (F : X → Type*) [∀ x, TopologicalSpace (F x)] [∀ x, DiscreteTop
 
 variable {f}
 variable (hf : IsCoveringMap f)
+include hf
 
 protected theorem continuous : Continuous f :=
   continuous_iff_continuousOn_univ.mpr hf.isCoveringMapOn.continuousOn
@@ -151,8 +151,11 @@ protected theorem isLocalHomeomorph : IsLocalHomeomorph f :=
 protected theorem isOpenMap : IsOpenMap f :=
   hf.isLocalHomeomorph.isOpenMap
 
-protected theorem quotientMap (hf' : Function.Surjective f) : QuotientMap f :=
-  hf.isOpenMap.to_quotientMap hf.continuous hf'
+theorem isQuotientMap (hf' : Function.Surjective f) : IsQuotientMap f :=
+  hf.isOpenMap.isQuotientMap hf.continuous hf'
+
+@[deprecated (since := "2024-10-22")]
+alias quotientMap := isQuotientMap
 
 protected theorem isSeparatedMap : IsSeparatedMap f :=
   fun e₁ e₂ he hne ↦ by
@@ -166,21 +169,21 @@ protected theorem isSeparatedMap : IsSeparatedMap f :=
     refine Prod.ext ?_ (h₁.2.symm.trans h₂.2)
     rwa [t.proj_toFun e₁ he₁, t.proj_toFun e₂ he₂]
 
-variable {A} [TopologicalSpace A] {s : Set A} (hs : IsPreconnected s) {g g₁ g₂ : A → E}
+variable {A} [TopologicalSpace A] {s : Set A} {g g₁ g₂ : A → E}
 
 theorem eq_of_comp_eq [PreconnectedSpace A] (h₁ : Continuous g₁) (h₂ : Continuous g₂)
     (he : f ∘ g₁ = f ∘ g₂) (a : A) (ha : g₁ a = g₂ a) : g₁ = g₂ :=
   hf.isSeparatedMap.eq_of_comp_eq hf.isLocalHomeomorph.isLocallyInjective h₁ h₂ he a ha
 
-theorem eqOn_of_comp_eqOn (h₁ : ContinuousOn g₁ s) (h₂ : ContinuousOn g₂ s)
-    (he : s.EqOn (f ∘ g₁) (f ∘ g₂)) {a : A} (has : a ∈ s) (ha : g₁ a = g₂ a) : s.EqOn g₁ g₂ :=
-  hf.isSeparatedMap.eqOn_of_comp_eqOn hf.isLocalHomeomorph.isLocallyInjective hs h₁ h₂ he has ha
-
 theorem const_of_comp [PreconnectedSpace A] (cont : Continuous g)
     (he : ∀ a a', f (g a) = f (g a')) (a a') : g a = g a' :=
   hf.isSeparatedMap.const_of_comp hf.isLocalHomeomorph.isLocallyInjective cont he a a'
 
-theorem constOn_of_comp (cont : ContinuousOn g s)
+theorem eqOn_of_comp_eqOn (hs : IsPreconnected s) (h₁ : ContinuousOn g₁ s) (h₂ : ContinuousOn g₂ s)
+    (he : s.EqOn (f ∘ g₁) (f ∘ g₂)) {a : A} (has : a ∈ s) (ha : g₁ a = g₂ a) : s.EqOn g₁ g₂ :=
+  hf.isSeparatedMap.eqOn_of_comp_eqOn hf.isLocalHomeomorph.isLocallyInjective hs h₁ h₂ he has ha
+
+theorem constOn_of_comp (hs : IsPreconnected s) (cont : ContinuousOn g s)
     (he : ∀ a ∈ s, ∀ a' ∈ s, f (g a) = f (g a'))
     {a a'} (ha : a ∈ s) (ha' : a' ∈ s) : g a = g a' :=
   hf.isSeparatedMap.constOn_of_comp hf.isLocalHomeomorph.isLocallyInjective hs cont he ha ha'

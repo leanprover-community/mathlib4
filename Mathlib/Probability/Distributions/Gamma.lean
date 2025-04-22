@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Josha Dekker
 -/
 import Mathlib.Probability.Notation
-import Mathlib.Probability.Cdf
+import Mathlib.Probability.CDF
 import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
 
 /-! # Gamma distributions over ℝ
@@ -30,8 +30,8 @@ open MeasureTheory Real Set Filter Topology
 lemma lintegral_Iic_eq_lintegral_Iio_add_Icc {y z : ℝ} (f : ℝ → ℝ≥0∞) (hzy : z ≤ y) :
     ∫⁻ x in Iic y, f x = (∫⁻ x in Iio z, f x) + ∫⁻ x in Icc z y, f x := by
   rw [← Iio_union_Icc_eq_Iic hzy, lintegral_union measurableSet_Icc]
-  rw [Set.disjoint_iff]
-  rintro x ⟨h1 : x < _, h2, _⟩
+  simp_rw [Set.disjoint_iff_forall_ne, mem_Iio, mem_Icc]
+  intros
   linarith
 
 namespace ProbabilityTheory
@@ -49,8 +49,9 @@ def gammaPDF (a r x : ℝ) : ℝ≥0∞ :=
   ENNReal.ofReal (gammaPDFReal a r x)
 
 lemma gammaPDF_eq (a r x : ℝ) :
-    gammaPDF a r x = ENNReal.ofReal (if 0 ≤ x then
-    r ^ a / (Gamma a) * x ^ (a-1) * exp (-(r * x)) else 0) := rfl
+    gammaPDF a r x =
+      ENNReal.ofReal (if 0 ≤ x then r ^ a / (Gamma a) * x ^ (a-1) * exp (-(r * x)) else 0) :=
+  rfl
 
 lemma gammaPDF_of_neg {a r x : ℝ} (hx : x < 0) : gammaPDF a r x = 0 := by
   simp only [gammaPDF_eq, if_neg (not_le.mpr hx), ENNReal.ofReal_zero]
@@ -139,7 +140,8 @@ def gammaCDFReal (a r : ℝ) : StieltjesFunction :=
 lemma gammaCDFReal_eq_integral {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (x : ℝ) :
     gammaCDFReal a r x = ∫ x in Iic x, gammaPDFReal a r x := by
   have : IsProbabilityMeasure (gammaMeasure a r) := isProbabilityMeasureGamma ha hr
-  rw [gammaCDFReal, cdf_eq_toReal, gammaMeasure, withDensity_apply _ measurableSet_Iic]
+  rw [gammaCDFReal, cdf_eq_real, gammaMeasure, measureReal_def,
+    withDensity_apply _ measurableSet_Iic]
   refine (integral_eq_lintegral_of_nonneg_ae ?_ ?_).symm
   · exact ae_of_all _ fun b ↦ by simp only [Pi.zero_apply, gammaPDFReal_nonneg ha hr]
   · exact (measurable_gammaPDFReal a r).aestronglyMeasurable.restrict
@@ -147,8 +149,8 @@ lemma gammaCDFReal_eq_integral {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (x : ℝ) :
 lemma gammaCDFReal_eq_lintegral {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (x : ℝ) :
     gammaCDFReal a r x = ENNReal.toReal (∫⁻ x in Iic x, gammaPDF a r x) := by
   have : IsProbabilityMeasure (gammaMeasure a r) := isProbabilityMeasureGamma ha hr
-  simp only [gammaPDF, gammaCDFReal, cdf_eq_toReal]
-  simp only [gammaMeasure, measurableSet_Iic, withDensity_apply, gammaPDF]
+  simp only [gammaPDF, gammaCDFReal, cdf_eq_real]
+  simp only [gammaMeasure, measurableSet_Iic, withDensity_apply, gammaPDF, measureReal_def]
 
 end GammaCDF
 

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yaël Dillies
 -/
 import Mathlib.Algebra.GeomSum
-import Mathlib.Algebra.Order.Archimedean
+import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Algebra.Order.CauSeq.Basic
 
 /-!
@@ -16,13 +16,14 @@ This file proves some more lemmas about basic Cauchy sequences that involve fini
 open Finset IsAbsoluteValue
 
 namespace IsCauSeq
-variable {α β : Type*} [LinearOrderedField α] [Ring β] {abv : β → α} [IsAbsoluteValue abv]
+variable {α β : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α] [Ring β]
+  {abv : β → α} [IsAbsoluteValue abv]
   {f g : ℕ → β} {a : ℕ → α}
 
 lemma of_abv_le (n : ℕ) (hm : ∀ m, n ≤ m → abv (f m) ≤ a m) :
     IsCauSeq abs (fun n ↦ ∑ i ∈ range n, a i) → IsCauSeq abv fun n ↦ ∑ i ∈ range n, f i := by
   intro hg ε ε0
-  cases' hg (ε / 2) (div_pos ε0 (by norm_num)) with i hi
+  obtain ⟨i, hi⟩ := hg (ε / 2) (div_pos ε0 (by norm_num))
   exists max n i
   intro j ji
   have hi₁ := hi j (le_trans (le_max_right n i) ji)
@@ -94,7 +95,7 @@ theorem _root_.cauchy_product (ha : IsCauSeq abs fun m ↦ ∑ n ∈ range m, ab
         abv (f i) * abv ((∑ k ∈ range (K - i), g k) - ∑ k ∈ range K, g k)) ≤
       ∑ i ∈ range (max N M + 1), abv (f i) * (ε / (2 * P)) := by
     gcongr with m hmJ
-    refine le_of_lt $ hN (K - m) (le_tsub_of_add_le_left $ hK.trans' ?_) K hKN.le
+    refine le_of_lt <| hN (K - m) (le_tsub_of_add_le_left <| hK.trans' ?_) K hKN.le
     rw [two_mul]
     gcongr
     · exact (mem_range.1 hmJ).le
@@ -121,9 +122,9 @@ theorem _root_.cauchy_product (ha : IsCauSeq abs fun m ↦ ∑ n ∈ range m, ab
         (by rw [← sum_mul, mul_comm]; gcongr)
   rw [sum_range_sub_sum_range (le_of_lt hNMK)]
   calc
-    (∑ i ∈ (range K).filter fun k ↦ max N M + 1 ≤ k,
+    (∑ i ∈ range K with max N M + 1 ≤ i,
           abv (f i) * abv ((∑ k ∈ range (K - i), g k) - ∑ k ∈ range K, g k)) ≤
-        ∑ i ∈ (range K).filter fun k ↦ max N M + 1 ≤ k, abv (f i) * (2 * Q) := by
+        ∑ i ∈ range K with max N M + 1 ≤ i, abv (f i) * (2 * Q) := by
         gcongr
         rw [sub_eq_add_neg]
         refine le_trans (abv_add _ _ _) ?_
@@ -133,8 +134,9 @@ theorem _root_.cauchy_product (ha : IsCauSeq abs fun m ↦ ∑ n ∈ range m, ab
         rw [← sum_mul, ← sum_range_sub_sum_range (le_of_lt hNMK)]
         have := lt_of_le_of_lt (abv_nonneg _ _) (hQ 0)
         gcongr
-        exact (le_abs_self _).trans_lt $ hM _ ((Nat.le_succ_of_le (le_max_right _ _)).trans hNMK.le)
-          _  $ Nat.le_succ_of_le $ le_max_right _ _
+        exact (le_abs_self _).trans_lt <|
+          hM _ ((Nat.le_succ_of_le (le_max_right _ _)).trans hNMK.le) _ <|
+            Nat.le_succ_of_le <| le_max_right _ _
 
 variable [Archimedean α]
 
@@ -155,7 +157,7 @@ lemma of_decreasing_bounded (f : ℕ → α) {a : α} {m : ℕ} (ham : ∀ n ≥
   have hl0 : l ≠ 0 := fun hl0 ↦
     not_lt_of_ge (ham m le_rfl)
       (lt_of_lt_of_le (by have := hl m (le_refl m); simpa [hl0] using this) (le_abs_self (f m)))
-  cases' not_forall.1 (Nat.find_min h (Nat.pred_lt hl0)) with i hi
+  obtain ⟨i, hi⟩ := not_forall.1 (Nat.find_min h (Nat.pred_lt hl0))
   rw [Classical.not_imp, not_lt] at hi
   exists i
   intro j hj
@@ -172,7 +174,7 @@ lemma of_decreasing_bounded (f : ℕ → α) {a : α} {m : ℕ} (ham : ∀ n ≥
 
 lemma of_mono_bounded (f : ℕ → α) {a : α} {m : ℕ} (ham : ∀ n ≥ m, |f n| ≤ a)
     (hnm : ∀ n ≥ m, f n ≤ f n.succ) : IsCauSeq abs f :=
-  (of_decreasing_bounded (-f) (a := a) (m := m) (by simpa using ham) $ by simpa using hnm).of_neg
+  (of_decreasing_bounded (-f) (a := a) (m := m) (by simpa using ham) <| by simpa using hnm).of_neg
 
 lemma geo_series [Nontrivial β] (x : β) (hx1 : abv x < 1) :
     IsCauSeq abv fun n ↦ ∑ m ∈ range n, x ^ m := by
@@ -181,13 +183,13 @@ lemma geo_series [Nontrivial β] (x : β) (hx1 : abv x < 1) :
   simp only [abv_pow abv, geom_sum_eq hx1']
   conv in _ / _ => rw [← neg_div_neg_eq, neg_sub, neg_sub]
   have : 0 < 1 - abv x := sub_pos.2 hx1
-  refine @of_mono_bounded _ _ _ _ ((1 : α) / (1 - abv x)) 0 ?_ ?_
+  refine of_mono_bounded _ (a := (1 : α) / (1 - abv x)) (m := 0) ?_ ?_
   · intro n _
     rw [abs_of_nonneg]
     · gcongr
       exact sub_le_self _ (abv_pow abv x n ▸ abv_nonneg _ _)
     refine div_nonneg (sub_nonneg.2 ?_) (sub_nonneg.2 <| le_of_lt hx1)
-    exact pow_le_one _ (by positivity) hx1.le
+    exact pow_le_one₀ (by positivity) hx1.le
   · intro n _
     rw [← one_mul (abv x ^ n), pow_succ']
     gcongr
@@ -212,7 +214,7 @@ lemma series_ratio_test {f : ℕ → β} (n : ℕ) (r : α) (hr0 : 0 ≤ r) (hr1
     positivity
   · have kn : k + n.succ ≥ n.succ := by
       rw [← zero_add n.succ]; exact add_le_add (Nat.zero_le _) (by simp)
-    erw [hk, Nat.succ_add, pow_succ r, ← mul_assoc]
+    rw [hk, Nat.succ_add, pow_succ r, ← mul_assoc]
     refine
       le_trans (by rw [mul_comm] <;> exact h _ (Nat.le_of_succ_le kn))
         (mul_le_mul_of_nonneg_right ?_ hr0)

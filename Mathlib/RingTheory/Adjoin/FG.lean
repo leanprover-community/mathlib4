@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.Algebra.EuclideanDomain.Int
-import Mathlib.Algebra.MvPolynomial.Basic
+import Mathlib.Algebra.MvPolynomial.Eval
+import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.RingTheory.PrincipalIdealDomain
 
@@ -58,17 +59,17 @@ theorem fg_trans (h1 : (adjoin R s).toSubmodule.FG) (h2 : (adjoin (adjoin R s) t
     change r ∈ adjoin R (s ∪ t) at hr
     rw [adjoin_union_eq_adjoin_adjoin] at hr
     change r ∈ Subalgebra.toSubmodule (adjoin (adjoin R s) t) at hr
-    rw [← hq', ← Set.image_id q, Finsupp.mem_span_image_iff_total (adjoin R s)] at hr
+    rw [← hq', ← Set.image_id q, Finsupp.mem_span_image_iff_linearCombination (adjoin R s)] at hr
     rcases hr with ⟨l, hlq, rfl⟩
-    have := @Finsupp.total_apply A A (adjoin R s)
+    have := @Finsupp.linearCombination_apply A A (adjoin R s)
     rw [this, Finsupp.sum]
     refine sum_mem ?_
     intro z hz
     change (l z).1 * _ ∈ _
     have : (l z).1 ∈ Subalgebra.toSubmodule (adjoin R s) := (l z).2
-    rw [← hp', ← Set.image_id p, Finsupp.mem_span_image_iff_total R] at this
+    rw [← hp', ← Set.image_id p, Finsupp.mem_span_image_iff_linearCombination R] at this
     rcases this with ⟨l2, hlp, hl⟩
-    have := @Finsupp.total_apply A A R
+    have := @Finsupp.linearCombination_apply A A R
     rw [this] at hl
     rw [← hl, Finsupp.sum_mul]
     refine sum_mem ?_
@@ -103,7 +104,7 @@ theorem fg_of_fg_toSubmodule {S : Subalgebra R A} : S.toSubmodule.FG → S.FG :=
   fun ⟨t, ht⟩ ↦ ⟨t, le_antisymm
     (Algebra.adjoin_le fun x hx ↦ show x ∈ Subalgebra.toSubmodule S from ht ▸ subset_span hx) <|
     show Subalgebra.toSubmodule S ≤ Subalgebra.toSubmodule (Algebra.adjoin R ↑t) from fun x hx ↦
-      span_le.mpr (fun x hx ↦ Algebra.subset_adjoin hx)
+      span_le.mpr (fun _ hx ↦ Algebra.subset_adjoin hx)
         (show x ∈ span R ↑t by
           rw [ht]
           exact hx)⟩
@@ -129,11 +130,10 @@ theorem FG.prod {S : Subalgebra R A} {T : Subalgebra R B} (hS : S.FG) (hT : T.FG
 
 section
 
-open scoped Classical
-
-theorem FG.map {S : Subalgebra R A} (f : A →ₐ[R] B) (hs : S.FG) : (S.map f).FG :=
+theorem FG.map {S : Subalgebra R A} (f : A →ₐ[R] B) (hs : S.FG) : (S.map f).FG := by
   let ⟨s, hs⟩ := hs
-  ⟨s.image f, by rw [Finset.coe_image, Algebra.adjoin_image, hs]⟩
+  classical
+  exact ⟨s.image f, by rw [Finset.coe_image, Algebra.adjoin_image, hs]⟩
 
 end
 

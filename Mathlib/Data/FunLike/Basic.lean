@@ -5,6 +5,7 @@ Authors: Anne Baanen
 -/
 import Mathlib.Logic.Function.Basic
 import Mathlib.Util.CompileInductive
+import Mathlib.Tactic.Simps.NotationClass
 
 /-!
 # Typeclass for a type `F` with an injective map to `A → B`
@@ -17,7 +18,7 @@ There is the "D"ependent version `DFunLike` and the non-dependent version `FunLi
 
 A typical type of morphisms should be declared as:
 ```
-structure MyHom (A B : Type*) [MyClass A] [MyClass B] :=
+structure MyHom (A B : Type*) [MyClass A] [MyClass B] where
   (toFun : A → B)
   (map_op' : ∀ (x y : A), toFun (MyClass.op x y) = MyClass.op (toFun x) (toFun y))
 
@@ -79,7 +80,7 @@ The second step is to add instances of your new `MyHomClass` for all types exten
 Typically, you can just declare a new class analogous to `MyHomClass`:
 
 ```
-structure CoolerHom (A B : Type*) [CoolClass A] [CoolClass B] extends MyHom A B :=
+structure CoolerHom (A B : Type*) [CoolClass A] [CoolClass B] extends MyHom A B where
   (map_cool' : toFun CoolClass.cool = CoolClass.cool)
 
 class CoolerHomClass (F : Type*) (A B : outParam Type*) [CoolClass A] [CoolClass B]
@@ -117,19 +118,13 @@ instead of linearly increasing the work per `MyHom`-related declaration.
 
 ## Design rationale
 
-The current form of FunLike was set up in pull request #8386:
+The current form of FunLike was set up in pull request https://github.com/leanprover-community/mathlib4/pull/8386:
 https://github.com/leanprover-community/mathlib4/pull/8386
 We made `FunLike` *unbundled*: child classes don't extend `FunLike`, they take a `[FunLike F A B]`
 parameter instead. This suits the instance synthesis algorithm better: it's easy to verify a type
 does **not** have a `FunLike` instance by checking the discrimination tree once instead of searching
 the entire `extends` hierarchy.
 -/
-
--- This instance should have low priority, to ensure we follow the chain
--- `DFunLike → CoeFun`
--- Porting note: this is an elaboration detail from Lean 3, we are going to disable it
--- until it is clearer what the Lean 4 elaborator needs.
--- attribute [instance, priority 10] coe_fn_trans
 
 /-- The class `DFunLike F α β` expresses that terms of type `F` have an
 injective coercion to (dependent) functions from `α` to `β`.
@@ -174,7 +169,6 @@ run_cmd Lean.Elab.Command.liftTermElabM do
   Lean.Meta.registerCoercion ``DFunLike.coe
     (some { numArgs := 5, coercee := 4, type := .coeFun })
 
--- @[simp] -- Porting note: this loops in lean 4
 theorem coe_eq_coe_fn : (DFunLike.coe (F := F)) = (fun f => ↑f) := rfl
 
 theorem coe_injective : Function.Injective (fun f : F ↦ (f : ∀ a : α, β a)) :=
@@ -194,7 +188,7 @@ theorem ext (f g : F) (h : ∀ x : α, f x = g x) : f = g :=
   DFunLike.coe_injective' (funext h)
 
 theorem ext_iff {f g : F} : f = g ↔ ∀ x, f x = g x :=
-  coe_fn_eq.symm.trans Function.funext_iff
+  coe_fn_eq.symm.trans funext_iff
 
 protected theorem congr_fun {f g : F} (h₁ : f = g) (x : α) : f x = g x :=
   congr_fun (congr_arg _ h₁) x
@@ -226,6 +220,14 @@ protected theorem congr {f g : F} {x y : α} (h₁ : f = g) (h₂ : x = y) : f x
 
 protected theorem congr_arg (f : F) {x y : α} (h₂ : x = y) : f x = f y :=
   congr_arg _ h₂
+
+theorem dite_apply {P : Prop} [Decidable P] (f : P → F) (g : ¬P → F) (x : α) :
+    (if h : P then f h else g h) x = if h : P then f h x else g h x := by
+  split_ifs <;> rfl
+
+theorem ite_apply {P : Prop} [Decidable P] (f g : F) (x : α) :
+    (if P then f else g) x = if P then f x else g x :=
+  dite_apply _ _ _
 
 end DFunLike
 

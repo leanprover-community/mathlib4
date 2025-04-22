@@ -6,6 +6,7 @@ Authors: Patrick Massot
 
 import Mathlib.Tactic.Widget.SelectPanelUtils
 import Mathlib.Tactic.CongrM
+import Batteries.Lean.Position
 
 /-! # CongrM widget
 
@@ -23,7 +24,7 @@ open Lean Meta Server ProofWidgets
 def makeCongrMString (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
     (_ : SelectInsertParams) : MetaM (String × String × Option (String.Pos × String.Pos)) := do
   let subexprPos := getGoalLocations pos
-  unless goalType.isAppOf `Eq || goalType.isAppOf `Iff do
+  unless goalType.isAppOf ``Eq || goalType.isAppOf ``Iff do
     throwError "The goal must be an equality or iff."
   let mut goalTypeWithMetaVars := goalType
   for pos in subexprPos do

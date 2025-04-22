@@ -76,8 +76,7 @@ theorem lcm_insert [DecidableEq β] {b : β} :
 theorem lcm_singleton {b : β} : ({b} : Finset β).lcm f = normalize (f b) :=
   Multiset.lcm_singleton
 
--- Porting note: Priority changed for `simpNF`
-@[simp 1100]
+@[local simp] -- This will later be provable by other `simp` lemmas.
 theorem normalize_lcm : normalize (s.lcm f) = s.lcm f := by simp [lcm_def]
 
 theorem lcm_union [DecidableEq β] : (s₁ ∪ s₂).lcm f = GCDMonoid.lcm (s₁.lcm f) (s₂.lcm f) :=
@@ -97,7 +96,7 @@ theorem lcm_mono (h : s₁ ⊆ s₂) : s₁.lcm f ∣ s₂.lcm f :=
 
 theorem lcm_image [DecidableEq β] {g : γ → β} (s : Finset γ) :
     (s.image g).lcm f = s.lcm (f ∘ g) := by
-  classical induction' s using Finset.induction with c s _ ih <;> simp [*]
+  classical induction s using Finset.induction <;> simp [*]
 
 theorem lcm_eq_lcm_image [DecidableEq α] : s.lcm f = (s.image f).lcm id :=
   Eq.symm <| lcm_image _
@@ -149,8 +148,7 @@ theorem gcd_insert [DecidableEq β] {b : β} :
 theorem gcd_singleton {b : β} : ({b} : Finset β).gcd f = normalize (f b) :=
   Multiset.gcd_singleton
 
--- Porting note: Priority changed for `simpNF`
-@[simp 1100]
+@[local simp] -- This will later be provable by other `simp` lemmas.
 theorem normalize_gcd : normalize (s.gcd f) = s.gcd f := by simp [gcd_def]
 
 theorem gcd_union [DecidableEq β] : (s₁ ∪ s₂).gcd f = GCDMonoid.gcd (s₁.gcd f) (s₂.gcd f) :=
@@ -170,7 +168,7 @@ theorem gcd_mono (h : s₁ ⊆ s₂) : s₂.gcd f ∣ s₁.gcd f :=
 
 theorem gcd_image [DecidableEq β] {g : γ → β} (s : Finset γ) :
     (s.image g).gcd f = s.gcd (f ∘ g) := by
-  classical induction' s using Finset.induction with c s _ ih <;> simp [*]
+  classical induction s using Finset.induction <;> simp [*]
 
 theorem gcd_eq_gcd_image [DecidableEq α] : s.gcd f = (s.image f).gcd id :=
   Eq.symm <| gcd_image _
@@ -188,16 +186,14 @@ theorem gcd_eq_zero_iff : s.gcd f = 0 ↔ ∀ x : β, x ∈ s → f x = 0 := by
     rcases as with ⟨b, ⟨bs, rfl⟩⟩
     apply h b (mem_def.1 bs)
 
-/- Porting note: The change from `p : α → Prop` to `p : α → Bool` made this slightly less nice with
-all the `decide`s around. -/
 theorem gcd_eq_gcd_filter_ne_zero [DecidablePred fun x : β ↦ f x = 0] :
-    s.gcd f = (s.filter fun x ↦ f x ≠ 0).gcd f := by
+    s.gcd f = {x ∈ s | f x ≠ 0}.gcd f := by
   classical
-    trans ((s.filter fun x ↦ f x = 0) ∪ s.filter fun x ↦ (f x ≠ 0)).gcd f
+    trans ({x ∈ s | f x = 0} ∪ {x ∈ s | f x ≠ 0}).gcd f
     · rw [filter_union_filter_neg_eq]
     rw [gcd_union]
     refine Eq.trans (?_ : _ = GCDMonoid.gcd (0 : α) ?_) (?_ : GCDMonoid.gcd (0 : α) _ = _)
-    · exact (gcd (filter (fun x => (f x ≠ 0)) s) f)
+    · exact gcd {x ∈ s | f x ≠ 0} f
     · refine congr (congr rfl <| s.induction_on ?_ ?_) (by simp)
       · simp
       · intro a s _ h

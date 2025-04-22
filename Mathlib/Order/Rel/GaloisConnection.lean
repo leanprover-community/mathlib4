@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anthony Bordg
 -/
 import Mathlib.Data.Rel
-import Mathlib.Order.GaloisConnection
 
 /-!
 # The Galois Connection Induced by a Relation
@@ -51,7 +50,7 @@ def rightDual (I : Set β) : Set α := {a : α | ∀ ⦃b⦄, b ∈ I → R a b}
 
 /-- The pair of functions `toDual ∘ leftDual` and `rightDual ∘ ofDual` forms a Galois connection. -/
 theorem gc_leftDual_rightDual : GaloisConnection (toDual ∘ R.leftDual) (R.rightDual ∘ ofDual) :=
-  fun J I ↦ ⟨fun h a ha b hb ↦ h (by simpa) ha, fun h b hb a ha ↦ h (by simpa) hb⟩
+  fun _ _ ↦ ⟨fun h _ ha _ hb ↦ h (by simpa) ha, fun h _ hb _ ha ↦ h (by simpa) hb⟩
 
 /-! ### Induced equivalences between fixed points -/
 
@@ -81,8 +80,8 @@ theorem rightDual_mem_leftFixedPoint (I : Set β) : R.rightDual I ∈ R.leftFixe
 def equivFixedPoints : R.leftFixedPoints ≃ R.rightFixedPoints where
   toFun := fun ⟨J, _⟩ => ⟨R.leftDual J, R.leftDual_mem_rightFixedPoint J⟩
   invFun := fun ⟨I, _⟩ => ⟨R.rightDual I, R.rightDual_mem_leftFixedPoint I⟩
-  left_inv J := by cases' J with J hJ; rw [Subtype.mk.injEq, hJ]
-  right_inv I := by cases' I with I hI; rw [Subtype.mk.injEq, hI]
+  left_inv J := by obtain ⟨J, hJ⟩ := J; rw [Subtype.mk.injEq, hJ]
+  right_inv I := by obtain ⟨I, hI⟩ := I; rw [Subtype.mk.injEq, hI]
 
 theorem rightDual_leftDual_le_of_le {J J' : Set α} (h : J' ∈ R.leftFixedPoints) (h₁ : J ≤ J') :
     R.rightDual (R.leftDual J) ≤ J' := by

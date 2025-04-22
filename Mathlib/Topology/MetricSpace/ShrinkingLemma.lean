@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov
+Authors: Yury Kudryashov
 -/
 import Mathlib.Topology.EMetricSpace.Paracompact
 import Mathlib.Topology.MetricSpace.Basic
@@ -27,7 +27,7 @@ open Set Metric
 open Topology
 
 variable {α : Type u} {ι : Type v} [MetricSpace α] [ProperSpace α] {c : ι → α}
-variable {x : α} {r : ℝ} {s : Set α}
+variable {s : Set α}
 
 /-- **Shrinking lemma** for coverings by open balls in a proper metric space. A point-finite open
 cover of a closed subset of a proper metric space by open balls can be shrunk to a new cover by

@@ -14,7 +14,6 @@ function. This property, called `AEMeasurable f μ`, is defined in the file `Mea
 We discuss several of its properties that are analogous to properties of measurable functions.
 -/
 
-open scoped Classical
 open MeasureTheory MeasureTheory.Measure Filter Set Function ENNReal
 
 variable {ι α β γ δ R : Type*} {m0 : MeasurableSpace α} [MeasurableSpace β] [MeasurableSpace γ]
@@ -40,7 +39,7 @@ theorem aemeasurable_id'' (μ : Measure α) {m : MeasurableSpace α} (hm : m ≤
     @AEMeasurable α α m m0 id μ :=
   @Measurable.aemeasurable α α m0 m id μ (measurable_id'' hm)
 
-lemma aemeasurable_of_map_neZero {mβ : MeasurableSpace β} {μ : Measure α}
+lemma aemeasurable_of_map_neZero {μ : Measure α}
     {f : α → β} (h : NeZero (μ.map f)) :
     AEMeasurable f μ := by
   by_contra h'
@@ -72,6 +71,7 @@ theorem ae_inf_principal_eq_mk {s} (h : AEMeasurable f (μ.restrict s)) : f =ᶠ
 @[measurability]
 theorem sum_measure [Countable ι] {μ : ι → Measure α} (h : ∀ i, AEMeasurable f (μ i)) :
     AEMeasurable f (sum μ) := by
+  classical
   nontriviality β
   inhabit β
   set s : ι → Set α := fun i => toMeasurable (μ i) { x | f x ≠ (h i).mk f x }
@@ -141,7 +141,7 @@ theorem _root_.aemeasurable_union_iff {s t : Set α} :
   simp only [union_eq_iUnion, aemeasurable_iUnion_iff, Bool.forall_bool, cond, and_comm]
 
 @[measurability]
-theorem smul_measure [Monoid R] [DistribMulAction R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+theorem smul_measure [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
     (h : AEMeasurable f μ) (c : R) : AEMeasurable f (c • μ) :=
   ⟨h.mk f, h.measurable_mk, ae_smul_measure h.ae_eq_mk c⟩
 
@@ -169,13 +169,17 @@ theorem map_map_of_aemeasurable {g : β → γ} {f : α → β} (hg : AEMeasurab
     map_apply_of_aemeasurable (hg.comp_aemeasurable hf) hs, preimage_comp]
 
 @[fun_prop, measurability]
-theorem prod_mk {f : α → β} {g : α → γ} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
+theorem prodMk {f : α → β} {g : α → γ} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (fun x => (f x, g x)) μ :=
-  ⟨fun a => (hf.mk f a, hg.mk g a), hf.measurable_mk.prod_mk hg.measurable_mk,
-    EventuallyEq.prod_mk hf.ae_eq_mk hg.ae_eq_mk⟩
+  ⟨fun a => (hf.mk f a, hg.mk g a), hf.measurable_mk.prodMk hg.measurable_mk,
+    hf.ae_eq_mk.prodMk hg.ae_eq_mk⟩
+
+@[deprecated (since := "2025-03-05")]
+alias prod_mk := prodMk
 
 theorem exists_ae_eq_range_subset (H : AEMeasurable f μ) {t : Set β} (ht : ∀ᵐ x ∂μ, f x ∈ t)
     (h₀ : t.Nonempty) : ∃ g, Measurable g ∧ range g ⊆ t ∧ f =ᵐ[μ] g := by
+  classical
   let s : Set α := toMeasurable μ { x | f x = H.mk f x ∧ f x ∈ t }ᶜ
   let g : α → β := piecewise s (fun _ => h₀.some) (H.mk f)
   refine ⟨g, ?_, ?_, ?_⟩
@@ -186,17 +190,17 @@ theorem exists_ae_eq_range_subset (H : AEMeasurable f μ) {t : Set β} (ht : ∀
     · simp only [g, hx, piecewise_eq_of_not_mem, not_false_iff]
       contrapose! hx
       apply subset_toMeasurable
-      simp (config := { contextual := true }) only [hx, mem_compl_iff, mem_setOf_eq, not_and,
+      simp +contextual only [hx, mem_compl_iff, mem_setOf_eq, not_and,
         not_false_iff, imp_true_iff]
   · have A : μ (toMeasurable μ { x | f x = H.mk f x ∧ f x ∈ t }ᶜ) = 0 := by
       rw [measure_toMeasurable, ← compl_mem_ae_iff, compl_compl]
       exact H.ae_eq_mk.and ht
     filter_upwards [compl_mem_ae_iff.2 A] with x hx
     rw [mem_compl_iff] at hx
-    simp only [g, hx, piecewise_eq_of_not_mem, not_false_iff]
+    simp only [s, g, hx, piecewise_eq_of_not_mem, not_false_iff]
     contrapose! hx
     apply subset_toMeasurable
-    simp only [hx, mem_compl_iff, mem_setOf_eq, false_and_iff, not_false_iff]
+    simp only [hx, mem_compl_iff, mem_setOf_eq, false_and, not_false_iff]
 
 theorem exists_measurable_nonneg {β} [Preorder β] [Zero β] {mβ : MeasurableSpace β} {f : α → β}
     (hf : AEMeasurable f μ) (f_nn : ∀ᵐ t ∂μ, 0 ≤ f t) : ∃ g, Measurable g ∧ 0 ≤ g ∧ f =ᵐ[μ] g := by
@@ -207,7 +211,7 @@ theorem subtype_mk (h : AEMeasurable f μ) {s : Set β} {hfs : ∀ x, f x ∈ s}
     AEMeasurable (codRestrict f s hfs) μ := by
   nontriviality α; inhabit α
   obtain ⟨g, g_meas, hg, fg⟩ : ∃ g : α → β, Measurable g ∧ range g ⊆ s ∧ f =ᵐ[μ] g :=
-    h.exists_ae_eq_range_subset (eventually_of_forall hfs) ⟨_, hfs default⟩
+    h.exists_ae_eq_range_subset (Eventually.of_forall hfs) ⟨_, hfs default⟩
   refine ⟨codRestrict g s fun x => hg (mem_range_self _), Measurable.subtype_mk g_meas, ?_⟩
   filter_upwards [fg] with x hx
   simpa [Subtype.ext_iff]
@@ -247,7 +251,7 @@ theorem aemeasurable_restrict_iff_comap_subtype {s : Set α} (hs : MeasurableSet
     {f : α → β} : AEMeasurable f (μ.restrict s) ↔ AEMeasurable (f ∘ (↑) : s → β) (comap (↑) μ) := by
   rw [← map_comap_subtype_coe hs, (MeasurableEmbedding.subtype_coe hs).aemeasurable_map_iff]
 
-@[to_additive] -- @[to_additive (attr := simp)] -- Porting note (#10618): simp can prove this
+@[to_additive]
 theorem aemeasurable_one [One β] : AEMeasurable (fun _ : α => (1 : β)) μ :=
   measurable_one.aemeasurable
 
@@ -285,7 +289,7 @@ theorem aemeasurable_Ioi_of_forall_Ioc {β} {mβ : MeasurableSpace β} [LinearOr
     exact fun y _ => (hu_tendsto.eventually (eventually_ge_atTop y)).exists
   rw [Ioi_eq_iUnion, aemeasurable_iUnion_iff]
   intro n
-  cases' lt_or_le x (u n) with h h
+  rcases lt_or_le x (u n) with h | h
   · exact g_meas (u n) h
   · rw [Ioc_eq_empty (not_lt.mpr h), Measure.restrict_empty]
     exact aemeasurable_zero_measure
@@ -317,6 +321,7 @@ theorem aemeasurable_indicator_iff₀ {s} (hs : NullMeasurableSet s μ) :
 value `b` on a set `A` and `0` elsewhere. -/
 lemma aemeasurable_indicator_const_iff {s} [MeasurableSingletonClass β] (b : β) [NeZero b] :
     AEMeasurable (s.indicator (fun _ ↦ b)) μ ↔ NullMeasurableSet s μ := by
+  classical
   constructor <;> intro h
   · convert h.nullMeasurable (MeasurableSet.singleton (0 : β)).compl
     rw [indicator_const_preimage_eq_union s {0}ᶜ b]
@@ -358,6 +363,7 @@ theorem MeasureTheory.Measure.map_mono_of_aemeasurable {f : α → δ} (h : μ �
 then the function is a.e.-measurable. -/
 lemma MeasureTheory.NullMeasurable.aemeasurable {f : α → β}
     [hc : MeasurableSpace.CountablyGenerated β] (h : NullMeasurable f μ) : AEMeasurable f μ := by
+  classical
   nontriviality β; inhabit β
   rcases hc.1 with ⟨S, hSc, rfl⟩
   choose! T hTf hTm hTeq using fun s hs ↦ (h <| .basic s hs).exists_measurable_subset_ae_eq
@@ -410,7 +416,7 @@ lemma map_sum {ι : Type*} {m : ι → Measure α} {f : α → β} (hf : AEMeasu
 
 instance (μ : Measure α) (f : α → β) [SFinite μ] : SFinite (μ.map f) := by
   by_cases H : AEMeasurable f μ
-  · rw [← sum_sFiniteSeq μ] at H ⊢
+  · rw [← sum_sfiniteSeq μ] at H ⊢
     rw [map_sum H]
     infer_instance
   · rw [map_of_not_aemeasurable H]

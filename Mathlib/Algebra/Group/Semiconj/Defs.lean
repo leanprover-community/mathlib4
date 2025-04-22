@@ -2,12 +2,11 @@
 Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-Some proofs and docs came from `algebra/commute` (c) Neil Strickland
 -/
+-- Some proofs and docs came from mathlib3 `src/algebra/commute.lean` (c) Neil Strickland
+
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Init.Logic
-import Mathlib.Tactic.Cases
+import Mathlib.Order.Defs.Unbundled
 
 /-!
 # Semiconjugate elements of a semigroup
@@ -28,8 +27,7 @@ This file provides only basic operations (`mul_left`, `mul_right`, `inv_right` e
 operations (`pow_right`, field inverse etc) are in the files that define corresponding notions.
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 variable {S M G : Type*}
 
@@ -104,22 +102,24 @@ variable [Monoid M]
 
 @[to_additive (attr := simp)]
 theorem pow_right {a x y : M} (h : SemiconjBy a x y) (n : ℕ) : SemiconjBy a (x ^ n) (y ^ n) := by
-  induction' n with n ih
-  · rw [pow_zero, pow_zero]
+  induction n with
+  | zero =>
+    rw [pow_zero, pow_zero]
     exact SemiconjBy.one_right _
-  · rw [pow_succ, pow_succ]
+  | succ n ih =>
+    rw [pow_succ, pow_succ]
     exact ih.mul_right h
 
 end Monoid
 
 section Group
 
-variable [Group G] {a x y : G}
+variable [Group G]
 
 /-- `a` semiconjugates `x` to `a * x * a⁻¹`. -/
 @[to_additive "`a` semiconjugates `x` to `a + x + -a`."]
 theorem conj_mk (a x : G) : SemiconjBy a x (a * x * a⁻¹) := by
-  unfold SemiconjBy; rw [mul_assoc, inv_mul_self, mul_one]
+  unfold SemiconjBy; rw [mul_assoc, inv_mul_cancel, mul_one]
 
 @[to_additive (attr := simp)]
 theorem conj_iff {a x y b : G} :

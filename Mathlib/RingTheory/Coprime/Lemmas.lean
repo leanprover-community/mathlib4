@@ -3,7 +3,7 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Ken Lee, Chris Hughes
 -/
-import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Int.GCD
 import Mathlib.RingTheory.Coprime.Basic
@@ -22,6 +22,8 @@ lemmas about `Pow` since these are easiest to prove via `Finset.prod`.
 
 universe u v
 
+open scoped Function -- required for scoped `on` notation
+
 section IsCoprime
 
 variable {R : Type u} {I : Type v} [CommSemiring R] {x y z : R} {s : I → R} {t : Finset I}
@@ -31,8 +33,8 @@ section
 theorem Int.isCoprime_iff_gcd_eq_one {m n : ℤ} : IsCoprime m n ↔ Int.gcd m n = 1 := by
   constructor
   · rintro ⟨a, b, h⟩
-    have : 1 = m * a + n * b := by rwa [mul_comm m, mul_comm n, eq_comm]
-    exact Nat.dvd_one.mp (Int.gcd_dvd_iff.mpr ⟨a, b, this⟩)
+    refine Nat.dvd_one.mp (Int.gcd_dvd_iff.mpr ⟨a, b, ?_⟩)
+    rwa [mul_comm m, mul_comm n, eq_comm]
   · rw [← Int.ofNat_inj, IsCoprime, Int.gcd_eq_gcd_ab, mul_comm m, mul_comm n, Nat.cast_one]
     intro h
     exact ⟨_, _, h⟩
@@ -151,8 +153,9 @@ theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) 
       use fun i ↦ if i = a then u else v * μ i
       have hμ' : (∑ i ∈ t, v * ((μ i * ∏ j ∈ t \ {i}, s j) * s a)) = v * s a := by
         rw [← mul_sum, ← sum_mul, hμ, one_mul]
-      rw [sum_cons, cons_eq_insert, sdiff_singleton_eq_erase, erase_insert hat, if_pos rfl,
-        ← huv, ← hμ', sum_congr rfl]
+      rw [sum_cons, cons_eq_insert, sdiff_singleton_eq_erase, erase_insert hat]
+      simp only [↓reduceIte, ite_mul]
+      rw [← huv, ← hμ', sum_congr rfl]
       intro x hx
       rw [mul_assoc, if_neg fun ha : x = a ↦ hat (ha.casesOn hx)]
       rw [mul_assoc]
@@ -166,7 +169,6 @@ theorem exists_sum_eq_one_iff_pairwise_coprime' [Fintype I] [Nonempty I] [Decida
   convert exists_sum_eq_one_iff_pairwise_coprime Finset.univ_nonempty (s := s) using 1
   simp only [Function.onFun, pairwise_subtype_iff_pairwise_finset', coe_univ, Set.pairwise_univ]
 
--- Porting note: a lot of the capitalization wasn't working
 theorem pairwise_coprime_iff_coprime_prod [DecidableEq I] :
     Pairwise (IsCoprime on fun i : t ↦ s i) ↔ ∀ i ∈ t, IsCoprime (s i) (∏ j ∈ t \ {i}, s j) := by
   refine ⟨fun hp i hi ↦ IsCoprime.prod_right_iff.mpr fun j hj ↦ ?_, fun hp ↦ ?_⟩
@@ -195,8 +197,6 @@ theorem IsCoprime.pow_left_iff (hm : 0 < m) : IsCoprime (x ^ m) y ↔ IsCoprime 
   refine ⟨fun h ↦ ?_, IsCoprime.pow_left⟩
   rw [← Finset.card_range m, ← Finset.prod_const] at h
   exact h.of_prod_left 0 (Finset.mem_range.mpr hm)
-  -- Porting note: I'm not sure why `finset` didn't get corrected automatically to `Finset`
-  -- by Mathport, nor whether this is an issue
 
 theorem IsCoprime.pow_right_iff (hm : 0 < m) : IsCoprime x (y ^ m) ↔ IsCoprime x y :=
   isCoprime_comm.trans <| (IsCoprime.pow_left_iff hm).trans <| isCoprime_comm

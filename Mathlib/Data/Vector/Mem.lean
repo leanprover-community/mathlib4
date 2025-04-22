@@ -15,19 +15,17 @@ In particular we can avoid some assumptions about types being `Inhabited`,
   and make more general statements about `head` and `tail`.
 -/
 
-namespace Mathlib
+namespace List
 
 namespace Vector
 
 variable {α β : Type*} {n : ℕ} (a a' : α)
 
 @[simp]
-theorem get_mem (i : Fin n) (v : Vector α n) : v.get i ∈ v.toList := by
-  rw [get_eq_get]
-  exact List.get_mem _ _ _
+theorem get_mem (i : Fin n) (v : Vector α n) : v.get i ∈ v.toList := List.get_mem _ _
 
 theorem mem_iff_get (v : Vector α n) : a ∈ v.toList ↔ ∃ i, v.get i = a := by
-  simp only [List.mem_iff_get, Fin.exists_iff, Vector.get_eq_get]
+  simp only [List.mem_iff_get, Fin.exists_iff, Vector.get_eq_get_toList]
   exact
     ⟨fun ⟨i, hi, h⟩ => ⟨i, by rwa [toList_length] at hi, h⟩, fun ⟨i, hi, h⟩ =>
       ⟨i, by rwa [toList_length], h⟩⟩
@@ -58,16 +56,16 @@ theorem mem_cons_of_mem (v : Vector α n) (ha' : a' ∈ v.toList) : a' ∈ (a ::
   (Vector.mem_cons_iff a a' v).2 (Or.inr ha')
 
 theorem mem_of_mem_tail (v : Vector α n) (ha : a ∈ v.tail.toList) : a ∈ v.toList := by
-  induction' n with n _
-  · exact False.elim (Vector.not_mem_zero a v.tail ha)
-  · exact (mem_succ_iff a v).2 (Or.inr ha)
+  induction n with
+  | zero => exact False.elim (Vector.not_mem_zero a v.tail ha)
+  | succ n _ => exact (mem_succ_iff a v).2 (Or.inr ha)
 
 theorem mem_map_iff (b : β) (v : Vector α n) (f : α → β) :
     b ∈ (v.map f).toList ↔ ∃ a : α, a ∈ v.toList ∧ f a = b := by
   rw [Vector.toList_map, List.mem_map]
 
 theorem not_mem_map_zero (b : β) (v : Vector α 0) (f : α → β) : b ∉ (v.map f).toList := by
-  simpa only [Vector.eq_nil v, Vector.map_nil, Vector.toList_nil] using List.not_mem_nil b
+  simpa only [Vector.eq_nil v, Vector.map_nil, Vector.toList_nil] using List.not_mem_nil
 
 theorem mem_map_succ_iff (b : β) (v : Vector α (n + 1)) (f : α → β) :
     b ∈ (v.map f).toList ↔ f v.head = b ∨ ∃ a : α, a ∈ v.tail.toList ∧ f a = b := by
@@ -75,4 +73,4 @@ theorem mem_map_succ_iff (b : β) (v : Vector α (n + 1)) (f : α → β) :
 
 end Vector
 
-end Mathlib
+end List

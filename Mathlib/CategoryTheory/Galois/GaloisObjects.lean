@@ -7,7 +7,8 @@ import Mathlib.CategoryTheory.Galois.Basic
 import Mathlib.CategoryTheory.Limits.FintypeCat
 import Mathlib.CategoryTheory.Limits.Preserves.Limits
 import Mathlib.CategoryTheory.Limits.Shapes.SingleObj
-import Mathlib.Logic.Equiv.TransferInstance
+import Mathlib.GroupTheory.GroupAction.Basic
+import Mathlib.Algebra.Equiv.TransferInstance
 
 /-!
 # Galois objects in Galois categories
@@ -35,12 +36,12 @@ open Limits Functor
 
 noncomputable instance {G : Type v} [Group G] [Finite G] :
     PreservesColimitsOfShape (SingleObj G) FintypeCat.incl.{w} := by
-  choose G' hg hf e using Finite.exists_type_zero_nonempty_mulEquiv G
-  exact Limits.preservesColimitsOfShapeOfEquiv (Classical.choice e).toSingleObjEquiv.symm _
+  choose G' hg hf e using Finite.exists_type_univ_nonempty_mulEquiv G
+  exact Limits.preservesColimitsOfShape_of_equiv (Classical.choice e).toSingleObjEquiv.symm _
 
 /-- A connected object `X` of `C` is Galois if the quotient `X / Aut X` is terminal. -/
-class IsGalois {C : Type u₁} [Category.{u₂, u₁} C] [GaloisCategory C] (X : C)
-    extends IsConnected X : Prop where
+class IsGalois {C : Type u₁} [Category.{u₂, u₁} C] [GaloisCategory C] (X : C) : Prop
+    extends IsConnected X where
   quotientByAutTerminal : Nonempty (IsTerminal <| colimit <| SingleObj.functor <| Aut.toEnd X)
 
 variable {C : Type u₁} [Category.{u₂, u₁} C]
@@ -83,7 +84,7 @@ theorem isGalois_iff_pretransitive (X : C) [IsConnected X] :
   rw [isGalois_iff_aux, Equiv.nonempty_congr <| quotientByAutTerminalEquivUniqueQuotient F X]
   exact (MulAction.pretransitive_iff_unique_quotient_of_nonempty (Aut X) (F.obj X)).symm
 
-/-- If `X` is Galois, the quotient `X / Aut X` is terminal.  -/
+/-- If `X` is Galois, the quotient `X / Aut X` is terminal. -/
 noncomputable def isTerminalQuotientOfIsGalois (X : C) [IsGalois X] :
     IsTerminal <| colimit <| SingleObj.functor <| Aut.toEnd X :=
   Nonempty.some IsGalois.quotientByAutTerminal
@@ -94,6 +95,17 @@ instance isPretransitive_of_isGalois (X : C) [IsGalois X] :
     MulAction.IsPretransitive (Aut X) (F.obj X) := by
   rw [← isGalois_iff_pretransitive]
   infer_instance
+
+lemma stabilizer_normal_of_isGalois (X : C) [IsGalois X] (x : F.obj X) :
+    Subgroup.Normal (MulAction.stabilizer (Aut F) x) where
+  conj_mem n ninstab g := by
+    rw [MulAction.mem_stabilizer_iff]
+    show g • n • (g⁻¹ • x) = x
+    have : ∃ (φ : Aut X), F.map φ.hom x = g⁻¹ • x :=
+      MulAction.IsPretransitive.exists_smul_eq x (g⁻¹ • x)
+    obtain ⟨φ, h⟩ := this
+    rw [← h, mulAction_naturality, ninstab, h]
+    simp
 
 theorem evaluation_aut_surjective_of_isGalois (A : C) [IsGalois A] (a : F.obj A) :
     Function.Surjective (fun f : Aut A ↦ F.map f.hom a) :=
@@ -146,8 +158,8 @@ lemma comp_autMap {A B : C} [IsConnected A] [IsGalois B] (f : A ⟶ B) (σ : Aut
   (exists_autMap f σ).choose_spec.left
 
 @[simp]
-lemma comp_autMap_apply {A B : C} [IsConnected A] [IsGalois B] (f : A ⟶ B) (σ : Aut A)
-    (a : F.obj A) :
+lemma comp_autMap_apply (F : C ⥤ FintypeCat.{w}) {A B : C} [IsConnected A] [IsGalois B]
+    (f : A ⟶ B) (σ : Aut A) (a : F.obj A) :
     F.map (autMap f σ).hom (F.map f a) = F.map f (F.map σ.hom a) := by
   simpa [-comp_autMap] using congrFun (F.congr_map (comp_autMap f σ)) a
 
