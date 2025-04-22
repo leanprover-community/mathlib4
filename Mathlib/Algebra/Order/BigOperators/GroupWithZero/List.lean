@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stuart Presnell, Daniel Weber
 -/
 import Mathlib.Algebra.BigOperators.Group.List.Defs
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled
 import Mathlib.Algebra.Order.Hom.Basic
 
 /-!
@@ -59,8 +58,8 @@ theorem prod_map_le_prod_map₀ {ι : Type*} {s : List ι} (f : ι → R) (g : �
       simp [ha]
     · apply (h0 _ _).trans (h _ _) <;> simp
 
-theorem prod_map_le_pow_lenght {F L : Type*} [MulPosMono R] [AddCommGroup L] [FunLike F L R]
-    [NonnegHomClass F L R] {f : F} {y : L} {t : List L} (hf : ∀ x : R, x ∈ List.map f t → x ≤ f y) :
+theorem prod_map_le_pow_lenght {F L : Type*} [MulPosMono R] [FunLike F L R] [NonnegHomClass F L R]
+    {f : F} {y : L} {t : List L} (hf : ∀ x : R, x ∈ List.map f t → x ≤ f y) :
     (List.map f t).prod ≤ f y ^ length t := by
   induction t with
   | nil => simp
