@@ -76,7 +76,7 @@ theorem PowerBasis.norm_gen_eq_prod_roots [Algebra R F] (pb : PowerBasis R S)
     ← coeff_map,
     prod_roots_eq_coeff_zero_of_monic_of_splits (this.map _) ((splits_id_iff_splits _).2 hf),
     this.natDegree_map, map_pow, ← mul_assoc, ← mul_pow]
-  simp only [map_neg, _root_.map_one, neg_mul, neg_neg, one_pow, one_mul]
+  simp only [map_neg, map_one, neg_mul, neg_neg, one_pow, one_mul]
 
 end EqProdRoots
 
@@ -265,7 +265,7 @@ lemma norm_eq_of_ringEquiv {A B C : Type*} [CommRing A] [CommRing B] [Ring C]
     congr
     ext i j
     simp [leftMulMatrix_apply, LinearMap.toMatrix_apply]
-  rw [norm_eq_one_of_not_exists_basis _ h, norm_eq_one_of_not_exists_basis, _root_.map_one]
+  rw [norm_eq_one_of_not_exists_basis _ h, norm_eq_one_of_not_exists_basis, map_one]
   intro ⟨s, ⟨b⟩⟩
   exact h ⟨s, ⟨b.mapCoeffs e (by simp [Algebra.smul_def, ← he])⟩⟩
 
@@ -279,7 +279,7 @@ lemma norm_eq_of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommRing A₁] [Ring
     simp [e']
   intros c x
   apply e₂.symm.injective
-  simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, _root_.map_mul,
+  simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, map_mul,
     RingEquiv.symm_apply_apply, commutes]
 
 end EqProdEmbeddings

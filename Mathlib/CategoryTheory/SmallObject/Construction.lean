@@ -152,6 +152,8 @@ noncomputable def attachCellsιFunctorObj :
   g₁ := functorObjTop f πX
   g₂ := ρFunctorObj f πX
   isPushout := IsPushout.of_hasPushout (functorObjTop f πX) (functorObjLeft f πX)
+  cofan₁ := _
+  cofan₂ := _
 
 section Small
 

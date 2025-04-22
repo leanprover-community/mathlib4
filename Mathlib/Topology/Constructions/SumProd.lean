@@ -179,8 +179,6 @@ theorem Continuous.prodMap {f : Z → X} {g : W → Y} (hf : Continuous f) (hg :
     Continuous (Prod.map f g) :=
   hf.fst'.prodMk hg.snd'
 
-@[deprecated (since := "2024-10-05")] alias Continuous.prod_map := Continuous.prodMap
-
 /-- A version of `continuous_inf_dom_left` for binary functions -/
 theorem continuous_inf_dom_left₂ {X Y Z} {f : X → Y → Z} {ta1 ta2 : TopologicalSpace X}
     {tb1 tb2 : TopologicalSpace Y} {tc1 : TopologicalSpace Z}
@@ -260,6 +258,12 @@ theorem nhdsWithin_prod_eq (x : X) (y : Y) (s : Set X) (t : Set Y) :
 
 instance Prod.instNeBotNhdsWithinIio [Preorder X] [Preorder Y] {x : X × Y}
     [hx₁ : (𝓝[<] x.1).NeBot] [hx₂ : (𝓝[<] x.2).NeBot] : (𝓝[<] x).NeBot := by
+  refine (hx₁.prod hx₂).mono ?_
+  rw [← nhdsWithin_prod_eq]
+  exact nhdsWithin_mono _ fun _ ⟨h₁, h₂⟩ ↦ Prod.lt_iff.2 <| .inl ⟨h₁, h₂.le⟩
+
+instance Prod.instNeBotNhdsWithinIoi [Preorder X] [Preorder Y] {x : X × Y}
+    [hx₁: (𝓝[>] x.1).NeBot] [hx₂ : (𝓝[>] x.2).NeBot] : (𝓝[>] x).NeBot := by
   refine (hx₁.prod hx₂).mono ?_
   rw [← nhdsWithin_prod_eq]
   exact nhdsWithin_mono _ fun _ ⟨h₁, h₂⟩ ↦ Prod.lt_iff.2 <| .inl ⟨h₁, h₂.le⟩
@@ -363,15 +367,11 @@ theorem ContinuousAt.prodMap {f : X → Z} {g : Y → W} {p : X × Y} (hf : Cont
     (hg : ContinuousAt g p.snd) : ContinuousAt (Prod.map f g) p :=
   hf.fst''.prodMk hg.snd''
 
-@[deprecated (since := "2024-10-05")] alias ContinuousAt.prod_map := ContinuousAt.prodMap
-
 /-- A version of `ContinuousAt.prodMap` that avoids `Prod.fst`/`Prod.snd`
 by assuming that the point is `(x, y)`. -/
 theorem ContinuousAt.prodMap' {f : X → Z} {g : Y → W} {x : X} {y : Y} (hf : ContinuousAt f x)
     (hg : ContinuousAt g y) : ContinuousAt (Prod.map f g) (x, y) :=
   hf.prodMap hg
-
-@[deprecated (since := "2024-10-05")] alias ContinuousAt.prod_map' := ContinuousAt.prodMap'
 
 theorem ContinuousAt.comp₂ {f : Y × Z → W} {g : X → Y} {h : X → Z} {x : X}
     (hf : ContinuousAt f (g x, h x)) (hg : ContinuousAt g x) (hh : ContinuousAt h x) :
@@ -564,16 +564,12 @@ theorem DenseRange.prodMap {ι : Type*} {κ : Type*} {f : ι → Y} {g : κ → 
     (hg : DenseRange g) : DenseRange (Prod.map f g) := by
   simpa only [DenseRange, prod_range_range_eq] using hf.prod hg
 
-@[deprecated (since := "2024-10-05")] alias DenseRange.prod_map := DenseRange.prodMap
-
 lemma Topology.IsInducing.prodMap {f : X → Y} {g : Z → W} (hf : IsInducing f) (hg : IsInducing g) :
     IsInducing (Prod.map f g) :=
   isInducing_iff_nhds.2 fun (x, z) => by simp_rw [Prod.map_def, nhds_prod_eq, hf.nhds_eq_comap,
     hg.nhds_eq_comap, prod_comap_comap_eq]
 
 @[deprecated (since := "2024-10-28")] alias Inducing.prodMap := IsInducing.prodMap
-
-@[deprecated (since := "2024-10-05")] alias Inducing.prod_map := IsInducing.prodMap
 
 @[simp]
 lemma Topology.isInducing_const_prod {x : X} {f : Y → Z} :
@@ -596,9 +592,6 @@ lemma Topology.IsEmbedding.prodMap {f : X → Y} {g : Z → W} (hf : IsEmbedding
   toIsInducing := hf.isInducing.prodMap hg.isInducing
   injective := hf.injective.prodMap hg.injective
 
-@[deprecated (since := "2024-10-08")] alias Embedding.prodMap := Topology.IsEmbedding.prodMap
-@[deprecated (since := "2024-10-05")] alias Embedding.prod_map := Topology.IsEmbedding.prodMap
-
 protected theorem IsOpenMap.prodMap {f : X → Y} {g : Z → W} (hf : IsOpenMap f) (hg : IsOpenMap g) :
     IsOpenMap (Prod.map f g) := by
   rw [isOpenMap_iff_nhds_le]
@@ -606,16 +599,12 @@ protected theorem IsOpenMap.prodMap {f : X → Y} {g : Z → W} (hf : IsOpenMap 
   rw [nhds_prod_eq, nhds_prod_eq, ← Filter.prod_map_map_eq']
   exact Filter.prod_mono (hf.nhds_le a) (hg.nhds_le b)
 
-@[deprecated (since := "2024-10-05")] alias IsOpenMap.prod := IsOpenMap.prodMap
-
 protected lemma Topology.IsOpenEmbedding.prodMap {f : X → Y} {g : Z → W} (hf : IsOpenEmbedding f)
     (hg : IsOpenEmbedding g) : IsOpenEmbedding (Prod.map f g) :=
   .of_isEmbedding_isOpenMap (hf.1.prodMap hg.1) (hf.isOpenMap.prodMap hg.isOpenMap)
 
 @[deprecated (since := "2024-10-18")]
 alias OpenEmbedding.prodMap := IsOpenEmbedding.prodMap
-
-@[deprecated (since := "2024-10-05")] alias IsOpenEmbedding.prod := IsOpenEmbedding.prodMap
 
 lemma isEmbedding_graph {f : X → Y} (hf : Continuous f) : IsEmbedding fun x => (x, f x) :=
   .of_comp (continuous_id.prodMk hf) continuous_fst .id

@@ -178,10 +178,10 @@ theorem ofFunction_union_of_top_of_nonempty_inter {s t : Set α}
     μ s + μ t ≤ (∑' i : I s, μ (f i)) + ∑' i : I t, μ (f i) :=
       add_le_add (hI _ subset_union_left) (hI _ subset_union_right)
     _ = ∑' i : ↑(I s ∪ I t), μ (f i) :=
-      (tsum_union_disjoint (f := fun i => μ (f i)) hd ENNReal.summable ENNReal.summable).symm
+      (ENNReal.summable.tsum_union_disjoint (f := fun i => μ (f i)) hd ENNReal.summable).symm
     _ ≤ ∑' i, μ (f i) :=
-      (tsum_le_tsum_of_inj (↑) Subtype.coe_injective (fun _ _ => zero_le _) (fun _ => le_rfl)
-        ENNReal.summable ENNReal.summable)
+      (ENNReal.summable.tsum_le_tsum_of_inj (↑) Subtype.coe_injective (fun _ _ => zero_le _)
+        (fun _ => le_rfl) ENNReal.summable)
     _ ≤ ∑' i, m (f i) := ENNReal.tsum_le_tsum fun i => ofFunction_le _
 
 theorem comap_ofFunction {β} (f : β → α) (h : Monotone m ∨ Surjective f) :

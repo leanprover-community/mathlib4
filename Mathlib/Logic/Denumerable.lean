@@ -238,7 +238,7 @@ theorem ofNat_surjective : Surjective (ofNat s)
       simp [List.mem_filter, Subtype.ext_iff_val, ht]
     cases hmax : List.maximum t with
     | bot =>
-      refine ⟨0, le_antisymm bot_le (le_of_not_gt fun h => List.not_mem_nil (⊥ : s) ?_)⟩
+      refine ⟨0, le_antisymm bot_le (le_of_not_gt fun h => List.not_mem_nil (a := (⊥ : s)) ?_)⟩
       rwa [← List.maximum_eq_bot.1 hmax, hmt]
     | coe m =>
       have wf : ↑m < x := by simpa using hmt.mp (List.maximum_mem hmax)
