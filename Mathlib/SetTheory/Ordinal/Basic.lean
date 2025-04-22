@@ -315,7 +315,7 @@ instance : LinearOrder Ordinal :=
   {inferInstanceAs (PartialOrder Ordinal) with
     le_total := fun a b => Quotient.inductionOn₂ a b fun ⟨_, r, _⟩ ⟨_, s, _⟩ =>
       (InitialSeg.total r s).recOn (fun f => Or.inl ⟨f⟩) fun f => Or.inr ⟨f⟩
-    decidableLE := Classical.decRel _ }
+    toDecidableLE := Classical.decRel _ }
 
 theorem _root_.InitialSeg.ordinal_type_le {α β} {r : α → α → Prop} {s : β → β → Prop}
     [IsWellOrder α r] [IsWellOrder β s] (h : r ≼i s) : type r ≤ type s :=
@@ -403,15 +403,6 @@ def typein (r : α → α → Prop) [IsWellOrder α r] : @PrincipalSeg α Ordina
   · refine inductionOn a ?_
     rintro β s wo ⟨g⟩
     exact ⟨_, g.subrelIso.ordinal_type_eq⟩
-
-@[deprecated typein (since := "2024-10-09")]
-alias typein.principalSeg := typein
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-10-09")]
-theorem typein.principalSeg_coe (r : α → α → Prop) [IsWellOrder α r] :
-    (typein.principalSeg r : α → Ordinal) = typein r :=
-  rfl
 
 @[simp]
 theorem type_subrel (r : α → α → Prop) [IsWellOrder α r] (a : α) :
@@ -755,11 +746,6 @@ theorem lift_card (a) : Cardinal.lift.{u, v} (card a) = card (lift.{u} a) :=
 theorem mem_range_lift_of_le {a : Ordinal.{u}} {b : Ordinal.{max u v}} (h : b ≤ lift.{v} a) :
     b ∈ Set.range lift.{v} :=
   liftInitialSeg.mem_range_of_le h
-
-@[deprecated mem_range_lift_of_le (since := "2024-10-07")]
-theorem lift_down {a : Ordinal.{u}} {b : Ordinal.{max u v}} (h : b ≤ lift.{v, u} a) :
-    ∃ a', lift.{v,u} a' = b :=
-  mem_range_lift_of_le h
 
 theorem le_lift_iff {a : Ordinal.{u}} {b : Ordinal.{max u v}} :
     b ≤ lift.{v} a ↔ ∃ a' ≤ a, lift.{v} a' = b :=
@@ -1383,11 +1369,6 @@ theorem mem_range_lift_of_card_le {a : Cardinal.{u}} {b : Ordinal.{max u v}}
     (h : card b ≤ Cardinal.lift.{v, u} a) : b ∈ Set.range lift.{v, u} := by
   rw [card_le_iff, ← lift_succ, ← lift_ord] at h
   exact mem_range_lift_of_le h.le
-
-@[deprecated mem_range_lift_of_card_le (since := "2024-10-07")]
-theorem lift_down' {a : Cardinal.{u}} {b : Ordinal.{max u v}}
-    (h : card.{max u v} b ≤ Cardinal.lift.{v, u} a) : ∃ a', lift.{v, u} a' = b :=
-  mem_range_lift_of_card_le h
 
 @[simp]
 theorem card_eq_ofNat {o} {n : ℕ} [n.AtLeastTwo] :

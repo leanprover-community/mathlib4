@@ -72,7 +72,7 @@ theorem isOfFinOrder_iff_pow_eq_one : IsOfFinOrder x ↔ ∃ n, 0 < n ∧ x ^ n 
 @[to_additive] alias ⟨IsOfFinOrder.exists_pow_eq_one, _⟩ := isOfFinOrder_iff_pow_eq_one
 
 @[to_additive]
-lemma isOfFinOrder_iff_zpow_eq_one {G} [Group G] {x : G} :
+lemma isOfFinOrder_iff_zpow_eq_one {G} [DivisionMonoid G] {x : G} :
     IsOfFinOrder x ↔ ∃ (n : ℤ), n ≠ 0 ∧ x ^ n = 1 := by
   rw [isOfFinOrder_iff_pow_eq_one]
   refine ⟨fun ⟨n, hn, hn'⟩ ↦ ⟨n, Int.natCast_ne_zero_iff_pos.mpr hn, zpow_natCast x n ▸ hn'⟩,
@@ -1095,7 +1095,7 @@ variable [Monoid α] [Monoid β] {x : α × β} {a : α} {b : β}
 
 @[to_additive]
 protected theorem Prod.orderOf (x : α × β) : orderOf x = (orderOf x.1).lcm (orderOf x.2) :=
-  minimalPeriod_prod_map _ _ _
+  minimalPeriod_prodMap _ _ _
 
 @[to_additive]
 theorem orderOf_fst_dvd_orderOf : orderOf x.1 ∣ orderOf x :=

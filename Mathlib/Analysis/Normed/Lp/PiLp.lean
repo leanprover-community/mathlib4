@@ -802,7 +802,7 @@ def sumPiLpEquivProdLpPiLp :
   toLinearEquiv :=
     WithLp.linearEquiv p _ _
       ≪≫ₗ LinearEquiv.sumPiEquivProdPi _ _ _ α
-      ≪≫ₗ LinearEquiv.prod (WithLp.linearEquiv p _ _).symm (WithLp.linearEquiv p _ _).symm
+      ≪≫ₗ LinearEquiv.prodCongr (WithLp.linearEquiv p _ _).symm (WithLp.linearEquiv p _ _).symm
       ≪≫ₗ (WithLp.linearEquiv p _ _).symm
   norm_map' := (WithLp.equiv p _).symm.surjective.forall.2 fun x => by
     obtain rfl | hp := p.dichotomy
