@@ -74,38 +74,25 @@ theorem integer_valuation_le_one (x : S.integer K) {v : HeightOneSpectrum R} (hv
     v.valuation K x ≤ 1 :=
   x.property v hv
 
-/-- If `S` is the whole set of places of `K`, then the `S`-integers are the whole of `K`. -/
-@[simp] lemma integer_univ : (univ : Set (HeightOneSpectrum R)).integer K = ⊤ := by
-  ext
-  tauto
-
 end Set
 
 namespace IsDedekindDomain
 
 variable (R)
 
-/--
-If `S` is the empty set, then the `S`-integers are the minimal `R`-subalgebra of `K` (which is
-just `R` itself).
--/
-@[simp]
-lemma integer_empty : (∅ : Set (HeightOneSpectrum R)).integer K = ⊥ := by
+/-- If `S` is the whole set of places of `K`, then the `S`-integers are the whole of `K`. -/
+@[simp] lemma integer_univ : (Set.univ : Set (HeightOneSpectrum R)).integer K = ⊤ := by
+  ext
+  tauto
+
+/-- If `S` is the empty set, then the `S`-integers are the minimal `R`-subalgebra of `K` (which is
+just `R` itself, via `Algebra.botEquivOfInjective` and `IsFractionRing.injective`). -/
+@[simp] lemma integer_empty : (∅ : Set (HeightOneSpectrum R)).integer K = ⊥ := by
   ext x
   simp only [Set.integer, Set.mem_empty_iff_false, not_false_eq_true, true_implies]
   refine ⟨HeightOneSpectrum.mem_integers_of_valuation_le_one K x, ?_⟩
   rintro ⟨y, rfl⟩ v
   exact v.valuation_le_one y
-
-/-- Canonical `R`-algebra isomorphism from `R` to the `∅`-integers of `K`. -/
-noncomputable def integerEmptyEquiv : R ≃ₐ[R] (∅ : Set (HeightOneSpectrum R)).integer K :=
-  (Algebra.botEquivOfInjective <| IsFractionRing.injective ..).symm.trans
-    (Subalgebra.equivOfEq _ _ (integer_empty R K).symm)
-
-variable {R} in
-lemma integerEmptyEquiv_apply (r : R) :
-    integerEmptyEquiv R K r = algebraMap R K r :=
-  rfl
 
 end IsDedekindDomain
 
