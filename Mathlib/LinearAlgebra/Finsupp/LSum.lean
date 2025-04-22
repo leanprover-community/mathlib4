@@ -61,7 +61,6 @@ variable [AddCommMonoid N] [Module R₂ N]
 variable [AddCommMonoid P] [Module R₃ P]
 
 variable {σ : R →+* R₂} {σ_inv : R₂ →+* R}
-variable [RingHomInvPair σ σ_inv] [RingHomInvPair σ_inv σ]
 
 section CompatibleSMul
 
@@ -203,6 +202,10 @@ theorem domLCongr_single {α₁ : Type*} {α₂ : Type*} (e : α₁ ≃ α₂) (
     (Finsupp.domLCongr e : _ ≃ₗ[R] _) (Finsupp.single i m) = Finsupp.single (e i) m := by
   simp
 
+section Equiv
+
+variable [RingHomInvPair σ σ_inv] [RingHomInvPair σ_inv σ]
+
 /-- An equivalence of domain and a linear equivalence of codomain induce a linear equivalence of the
 corresponding finitely supported functions. -/
 def lcongr {ι κ : Sort _} (e₁ : ι ≃ κ) (e₂ : M ≃ₛₗ[σ] N) : (ι →₀ M) ≃ₛₗ[σ] κ →₀ N :=
@@ -227,6 +230,8 @@ theorem lcongr_symm {ι κ : Sort _} (e₁ : ι ≃ κ) (e₂ : M ≃ₛₗ[σ] 
     (lcongr e₁ e₂).symm = lcongr e₁.symm e₂.symm := by
   ext
   rfl
+
+end Equiv
 
 end Finsupp
 
