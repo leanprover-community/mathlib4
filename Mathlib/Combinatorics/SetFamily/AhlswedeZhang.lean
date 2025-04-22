@@ -17,7 +17,8 @@ import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
 
 This file proves the Ahlswede-Zhang identity, which is a nontrivial relation between the size of the
 "truncated unions"  of a set family. It sharpens the Lubell-Yamamoto-Meshalkin inequality
-`Finset.sum_card_slice_div_choose_le_one`, by making explicit the correction term.
+`Finset.lubell_yamamoto_meshalkin_inequality_sum_card_div_choose`, by making explicit the correction
+term.
 
 For a set family `𝒜` over a ground set of size `n`, the Ahlswede-Zhang identity states that the sum
 of `|⋂ B ∈ 𝒜, B ⊆ A, B|/(|A| * n.choose |A|)` over all set `A` is exactly `1`. This implies the LYM
