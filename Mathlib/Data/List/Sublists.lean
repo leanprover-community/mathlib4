@@ -249,11 +249,13 @@ theorem sublistsLen_sublist_sublists' :
 theorem sublistsLen_sublist_of_sublist (n) {l₁ l₂ : List α} (h : l₁ <+ l₂) :
     sublistsLen n l₁ <+ sublistsLen n l₂ := by
   induction' n with n IHn generalizing l₁ l₂; · simp
-  induction' h with l₁ l₂ a _ IH l₁ l₂ a s IH; · rfl
-  · refine IH.trans ?_
+  induction h with
+  | slnil => rfl
+  | cons a _ IH =>
+    refine IH.trans ?_
     rw [sublistsLen_succ_cons]
     apply sublist_append_left
-  · simpa only [sublistsLen_succ_cons] using IH.append ((IHn s).map _)
+  | cons₂ a s IH => simpa only [sublistsLen_succ_cons] using IH.append ((IHn s).map _)
 
 theorem length_of_sublistsLen :
     ∀ {n} {l l' : List α}, l' ∈ sublistsLen n l → length l' = n
@@ -266,13 +268,15 @@ theorem length_of_sublistsLen :
 
 theorem mem_sublistsLen_self {l l' : List α} (h : l' <+ l) :
     l' ∈ sublistsLen (length l') l := by
-  induction' h with l₁ l₂ a s IH l₁ l₂ a s IH
-  · simp
-  · rcases l₁ with - | ⟨b, l₁⟩
+  induction h with
+  | slnil => simp
+  | @cons l₁ l₂ a s IH =>
+    rcases l₁ with - | ⟨b, l₁⟩
     · simp
     · rw [length, sublistsLen_succ_cons]
       exact mem_append_left _ IH
-  · rw [length, sublistsLen_succ_cons]
+  | cons₂ a s IH =>
+    rw [length, sublistsLen_succ_cons]
     exact mem_append_right _ (mem_map.2 ⟨_, IH, rfl⟩)
 
 @[simp]
