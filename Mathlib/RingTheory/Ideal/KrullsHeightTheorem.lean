@@ -97,11 +97,9 @@ lemma Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes
     (I : Ideal R) [I.IsPrincipal] (p : Ideal R) (hp : p ∈ I.minimalPrimes) : p.height ≤ 1 := by
   have := hp.1.1
   let f := algebraMap R (Localization.AtPrime p)
-  have := @Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes_of_isLocalRing _ _ _ _
-    (I.map f) ⟨⟨f (Submodule.IsPrincipal.generator I), ?_⟩⟩ ?_
+  have := Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes_of_isLocalRing (I.map f) ?_
   · rwa [← IsLocalization.height_comap p.primeCompl,
      Localization.AtPrime.comap_maximalIdeal] at this
-  · rw [← Set.image_singleton, ← Ideal.span, ← Ideal.map_span, Ideal.span_singleton_generator I]
   · rwa [IsLocalization.minimalPrimes_map p.primeCompl (Localization.AtPrime p) I,
       Set.mem_preimage, Localization.AtPrime.comap_maximalIdeal]
 
