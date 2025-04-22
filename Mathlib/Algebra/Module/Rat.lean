@@ -11,8 +11,6 @@ import Mathlib.Algebra.Field.Rat
 # Basic results about modules over the rationals.
 -/
 
-universe u v
-
 variable {M M₂ : Type*}
 
 theorem map_nnratCast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type*} [FunLike F M M₂]
@@ -63,16 +61,16 @@ theorem ratCast_smul_eq {E : Type*} (R S : Type*) [AddCommGroup E] [DivisionRing
     [DivisionRing S] [Module R E] [Module S E] (r : ℚ) (x : E) : (r : R) • x = (r : S) • x :=
   map_ratCast_smul (AddMonoidHom.id E) R S r x
 
-instance IsScalarTower.nnrat {R : Type u} {M : Type v} [Semiring R] [AddCommMonoid M] [Module R M]
+instance IsScalarTower.nnrat {R : Type*} {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
     [Module ℚ≥0 R] [Module ℚ≥0 M] : IsScalarTower ℚ≥0 R M where
   smul_assoc r x y := map_nnrat_smul ((smulAddHom R M).flip y) r x
 
-instance IsScalarTower.rat {R : Type u} {M : Type v} [Ring R] [AddCommGroup M] [Module R M]
+instance IsScalarTower.rat {R : Type*} {M : Type*} [Ring R] [AddCommGroup M] [Module R M]
     [Module ℚ R] [Module ℚ M] : IsScalarTower ℚ R M where
   smul_assoc r x y := map_rat_smul ((smulAddHom R M).flip y) r x
 
 section
-variable {α : Type u} {M : Type v}
+variable {α : Type*} {M : Type*}
 
 instance SMulCommClass.nnrat [Monoid α] [AddCommMonoid M] [DistribMulAction α M] [Module ℚ≥0 M] :
     SMulCommClass ℚ≥0 α M where

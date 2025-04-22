@@ -13,18 +13,16 @@ Given presentations of two `A`-modules `M₁` and `M₂`, we obtain a presentati
 
 -/
 
-universe w w₁₀ w₁₁ w₂₀ w₂₁ u v₁ v₂
-
 namespace Module
 
 open TensorProduct
 
-variable {A : Type u} [CommRing A] {M₁ : Type v₁} {M₂ : Type v₂}
+variable {A : Type*} [CommRing A] {M₁ : Type*} {M₂ : Type*}
   [AddCommGroup M₁] [AddCommGroup M₂] [Module A M₁] [Module A M₂]
 
 namespace Relations
 
-variable (relations₁ : Relations.{w₁₀, w₁₁} A) (relations₂ : Relations.{w₂₀, w₂₁} A)
+variable (relations₁ : Relations A) (relations₂ : Relations A)
 
 /-- The tensor product of systems of linear equations. -/
 @[simps]
@@ -62,7 +60,7 @@ variable {solution₁ solution₂} (h₁ : solution₁.IsPresentation) (h₂ : s
 
 /-- The tensor product of two modules admits a presentation by generators and relations. -/
 noncomputable def isPresentationCoreTensor :
-    Solution.IsPresentationCore.{w} (solution₁.tensor solution₂) where
+    Solution.IsPresentationCore (solution₁.tensor solution₂) where
   desc s := uncurry _ _ _ _ (h₁.desc
     { var := fun g₁ ↦ h₂.desc
         { var := fun g₂ ↦ s.var ⟨g₁, g₂⟩
@@ -96,7 +94,7 @@ end Relations
 
 namespace Presentation
 
-variable (pres₁ : Presentation.{w₁₀, w₁₁} A M₁) (pres₂ : Presentation.{w₂₀, w₂₁} A M₂)
+variable (pres₁ : Presentation A M₁) (pres₂ : Presentation A M₂)
 
 /-- The presentation of the `A`-module `M₁ ⊗[A] M₂` that is deduced from
 a presentation of `M₁` and a presentation of `M₂`. -/

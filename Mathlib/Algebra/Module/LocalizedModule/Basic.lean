@@ -38,10 +38,8 @@ localize `M` by `S`. This gives us a `Localization S`-module.
 
 namespace LocalizedModule
 
-universe u v
-
-variable {R : Type u} [CommSemiring R] (S : Submonoid R)
-variable (M : Type v) [AddCommMonoid M] [Module R M]
+variable {R : Type*} [CommSemiring R] (S : Submonoid R)
+variable (M : Type*) [AddCommMonoid M] [Module R M]
 variable (T : Type*) [CommSemiring T] [Algebra R T] [IsLocalization S T]
 
 /-- The equivalence relation on `M × S` where `(m1, s1) ≈ (m2, s2)` if and only if
@@ -72,7 +70,7 @@ example {R} [CommSemiring R] (S : Submonoid R) : ⇑(Localization.r' S) = Locali
 /-- If `S` is a multiplicative subset of a ring `R` and `M` an `R`-module, then
 we can localize `M` by `S`.
 -/
-def _root_.LocalizedModule : Type max u v :=
+def _root_.LocalizedModule : Type _ :=
   Quotient (r.setoid S M)
 
 section
@@ -523,8 +521,6 @@ end
 end LocalizedModule
 
 section IsLocalizedModule
-
-universe u v
 
 variable {R : Type*} [CommSemiring R] (S : Submonoid R)
 variable {M M' M'' : Type*} [AddCommMonoid M] [AddCommMonoid M'] [AddCommMonoid M'']

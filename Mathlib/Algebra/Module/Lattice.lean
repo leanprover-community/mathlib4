@@ -42,8 +42,6 @@ generated condition is replaced by having the discrete topology. This is for exa
 for complex tori.
 -/
 
-universe u
-
 variable {R : Type*} [CommRing R]
 
 open Pointwise
@@ -108,7 +106,7 @@ section Field
 
 variable {K : Type*} [Field K] [Algebra R K]
 
-lemma _root_.Submodule.span_range_eq_top_of_injective_of_rank_le {M N : Type u} [IsDomain R]
+lemma _root_.Submodule.span_range_eq_top_of_injective_of_rank_le {M N : Type _} [IsDomain R]
     [IsFractionRing R K] [AddCommGroup M] [Module R M]
     [AddCommGroup N] [Module R N] [Module K N] [IsScalarTower R K N] [Module.Finite K N]
     {f : M →ₗ[R] N} (hf : Function.Injective f) (h : Module.rank K N ≤ Module.rank R M) :

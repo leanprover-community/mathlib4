@@ -21,11 +21,9 @@ including the action of `Module.End` on the module we are considering endomorphi
 
 -/
 
-universe u v
-
 /-- Linear endomorphisms of a module, with associated ring structure
 `Module.End.semiring` and algebra structure `Module.End.algebra`. -/
-abbrev Module.End (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] [Module R M] :=
+abbrev Module.End (R : Type*) (M : Type*) [Semiring R] [AddCommMonoid M] [Module R M] :=
   M →ₗ[R] M
 
 variable {R R₂ S M M₁ M₂ M₃ N₁ : Type*}

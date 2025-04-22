@@ -20,8 +20,6 @@ assert_not_exists Nonneg.inv Multiset
 
 open Function Set
 
-universe u v
-
 variable {α R M M₂ : Type*}
 
 @[simp]

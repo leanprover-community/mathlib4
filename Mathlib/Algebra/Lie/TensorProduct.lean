@@ -18,9 +18,7 @@ lie module, tensor product, universal property
 
 suppress_compilation
 
-universe u v w w₁ w₂ w₃
-
-variable {R : Type u} [CommRing R]
+variable {R : Type*} [CommRing R]
 
 open LieModule
 
@@ -30,7 +28,7 @@ open scoped TensorProduct
 
 namespace LieModule
 
-variable {L : Type v} {M : Type w} {N : Type w₁} {P : Type w₂} {Q : Type w₃}
+variable {L : Type*} {M : Type*} {N : Type*} {P : Type*} {Q : Type*}
 variable [LieRing L] [LieAlgebra R L]
 variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 variable [AddCommGroup N] [Module R N] [LieRingModule L N] [LieModule R L N]
@@ -161,7 +159,7 @@ namespace LieModule
 
 open scoped TensorProduct
 
-variable (R) (L : Type v) (M : Type w)
+variable (R) (L : Type*) (M : Type*)
 variable [LieRing L] [LieAlgebra R L]
 variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
@@ -186,7 +184,7 @@ open TensorProduct.LieModule
 
 open LieModule
 
-variable {L : Type v} {M : Type w}
+variable {L : Type*} {M : Type*}
 variable [LieRing L] [LieAlgebra R L]
 variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 variable (I : LieIdeal R L) (N : LieSubmodule R L M)

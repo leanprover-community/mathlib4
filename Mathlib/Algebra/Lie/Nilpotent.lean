@@ -29,11 +29,9 @@ carries a natural concept of nilpotency. We define these here via the lower cent
 lie algebra, lower central series, nilpotent, max nilpotent ideal
 -/
 
-universe u v w w₁ w₂
-
 section NilpotentModules
 
-variable {R : Type u} {L : Type v} {M : Type w}
+variable {R : Type*} {L : Type*} {M : Type*}
 variable [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup M] [Module R M]
 variable [LieRingModule L M]
 variable (k : ℕ) (N : LieSubmodule R L M)
@@ -161,7 +159,7 @@ end LieSubmodule
 
 namespace LieModule
 
-variable {M₂ : Type w₁} [AddCommGroup M₂] [Module R M₂] [LieRingModule L M₂] [LieModule R L M₂]
+variable {M₂ : Type*} [AddCommGroup M₂] [Module R M₂] [LieRingModule L M₂] [LieModule R L M₂]
 variable (R L M)
 
 theorem antitone_lowerCentralSeries : Antitone <| lowerCentralSeries R L M := by
@@ -742,7 +740,7 @@ end LieModule
 
 end NilpotentModules
 
-instance (priority := 100) LieAlgebra.isSolvable_of_isNilpotent (L : Type v)
+instance (priority := 100) LieAlgebra.isSolvable_of_isNilpotent (L : Type*)
     [LieRing L] [hL : LieModule.IsNilpotent L L] :
     LieAlgebra.IsSolvable L := by
   obtain ⟨k, h⟩ : ∃ k, LieModule.lowerCentralSeries ℤ L L k = ⊥ := hL.nilpotent_int
@@ -751,12 +749,12 @@ instance (priority := 100) LieAlgebra.isSolvable_of_isNilpotent (L : Type v)
 
 section NilpotentAlgebras
 
-variable (R : Type u) (L : Type v) (L' : Type w)
+variable (R : Type*) (L : Type*) (L' : Type*)
 variable [CommRing R] [LieRing L] [LieAlgebra R L] [LieRing L'] [LieAlgebra R L']
 
 /-- We say a Lie ring is nilpotent when it is nilpotent as a Lie module over itself via the
 adjoint representation. -/
-abbrev LieRing.IsNilpotent (L : Type v) [LieRing L] : Prop :=
+abbrev LieRing.IsNilpotent (L : Type*) [LieRing L] : Prop :=
   LieModule.IsNilpotent L L
 
 open LieRing
@@ -936,7 +934,7 @@ end LieIdeal
 
 section OfAssociative
 
-variable (R : Type u) {A : Type v} [CommRing R] [Ring A] [Algebra R A]
+variable (R : Type*) {A : Type*} [CommRing R] [Ring A] [Algebra R A]
 
 theorem _root_.LieAlgebra.ad_nilpotent_of_nilpotent {a : A} (h : IsNilpotent a) :
     IsNilpotent (LieAlgebra.ad R A a) := by
@@ -948,7 +946,7 @@ theorem _root_.LieAlgebra.ad_nilpotent_of_nilpotent {a : A} (h : IsNilpotent a) 
 
 variable {R}
 
-theorem _root_.LieSubalgebra.isNilpotent_ad_of_isNilpotent_ad {L : Type v} [LieRing L]
+theorem _root_.LieSubalgebra.isNilpotent_ad_of_isNilpotent_ad {L : Type*} [LieRing L]
     [LieAlgebra R L] (K : LieSubalgebra R L) {x : K} (h : IsNilpotent (LieAlgebra.ad R L ↑x)) :
     IsNilpotent (LieAlgebra.ad R K x) := by
   obtain ⟨n, hn⟩ := h
@@ -989,7 +987,7 @@ namespace LieAlgebra
 
 open LieModule
 
-variable (R : Type u) (L : Type v)
+variable (R : Type*) (L : Type*)
 variable [CommRing R] [LieRing L] [LieAlgebra R L]
 
 /-- The max nilpotent ideal of a Lie algebra. It is defined as the max nilpotent Lie submodule of

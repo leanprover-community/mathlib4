@@ -16,9 +16,7 @@ direct sum of its `p i ^ e i`-torsion submodules for some prime ideals `p i` and
 -/
 
 
-universe u v
-
-variable {R : Type u} [CommRing R] [IsDomain R] {M : Type v} [AddCommGroup M] [Module R M]
+variable {R : Type*} [CommRing R] [IsDomain R] {M : Type*} [AddCommGroup M] [Module R M]
 
 open scoped DirectSum
 

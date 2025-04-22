@@ -51,9 +51,7 @@ namespace Submodule
 
 section Defs
 
-universe u
-
-variable {R : Type*} {M : Type u} [Semiring R] [AddCommMonoid M] [Module R M]
+variable {R : Type*} {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
 
 open Cardinal
 
@@ -73,10 +71,10 @@ lemma spanRank_toENat_eq_iInf_encard (p : Submodule R M) : p.spanRank.toENat =
   · refine le_iInf₂ (fun s hs ↦ ?_)
     rw [Set.encard, ENat.card]
     exact toENat.monotone' (ciInf_le' _ (⟨s, hs⟩ : {s : Set M // span R s = p}))
-  · have := congrFun toENat_comp_ofENat.{u}.symm (⨅ (s : Set M) (_ : span R s = p), s.encard)
+  · have := congrFun toENat_comp_ofENat.symm (⨅ (s : Set M) (_ : span R s = p), s.encard)
     rw [id_eq] at this; rw [this]
     refine toENat.monotone' (le_ciInf fun s ↦ ?_)
-    have : ofENat.{u} (⨅ (s' : Set M), ⨅ (_ : span R s' = p), s'.encard) ≤ ofENat s.1.encard :=
+    have : ofENat (⨅ (s' : Set M), ⨅ (_ : span R s' = p), s'.encard) ≤ ofENat s.1.encard :=
       ofENatHom.monotone' (le_trans (ciInf_le' _ s.1) (ciInf_le' _ s.2))
     apply le_trans this
     rw [Set.encard, ENat.card]
@@ -217,7 +215,7 @@ open Cardinal
 
 universe u v w
 
-variable {R : Type u} {M : Type v} [Semiring R] [AddCommMonoid M] [Module R M]
+variable {R : Type*} {M : Type v} [Semiring R] [AddCommMonoid M] [Module R M]
 
 lemma Basis.mk_eq_spanRank [RankCondition R] {ι : Type*} (v : Basis ι R M) :
     #(Set.range v) = (⊤ : Submodule R M).spanRank := by

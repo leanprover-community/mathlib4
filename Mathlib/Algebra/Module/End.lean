@@ -18,8 +18,6 @@ assert_not_exists RelIso Multiset Set.indicator Pi.single_smul₀ Field
 
 open Function Set
 
-universe u v
-
 variable {R S M M₂ : Type*}
 
 section AddCommMonoid
@@ -117,6 +115,6 @@ theorem map_intCast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [FunLi
     (x : ℤ) (a : M) :
     f ((x : R) • a) = (x : S) • f a := by simp only [Int.cast_smul_eq_zsmul, map_zsmul]
 
-instance AddCommGroup.intIsScalarTower {R : Type u} {M : Type v} [Ring R] [AddCommGroup M]
+instance AddCommGroup.intIsScalarTower {R : Type*} {M : Type*} [Ring R] [AddCommGroup M]
     [Module R M] : IsScalarTower ℤ R M where
   smul_assoc n x y := ((smulAddHom R M).flip y).map_zsmul x n

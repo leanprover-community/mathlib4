@@ -33,23 +33,21 @@ lie algebra, non-unital, non-associative
 -/
 
 
-universe u v w
-
-variable (R : Type u) (L : Type v) [CommRing R] [LieRing L] [LieAlgebra R L]
+variable (R : Type*) (L : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
 
 /-- Type synonym for turning a `LieRing` into a `NonUnitalNonAssocRing`.
 
 A `LieRing` can be regarded as a `NonUnitalNonAssocRing` by turning its
 `Bracket` (denoted `⁅, ⁆`) into a `Mul` (denoted `*`). -/
-def CommutatorRing (L : Type v) : Type v := L
+def CommutatorRing (L : Type*) : Type _ := L
 
 instance : NonUnitalNonAssocRing (CommutatorRing L) := LieRing.toNonUnitalNonAssocRing L
 
 namespace LieAlgebra
 
-instance (L : Type v) [Nonempty L] : Nonempty (CommutatorRing L) := ‹Nonempty L›
+instance (L : Type*) [Nonempty L] : Nonempty (CommutatorRing L) := ‹Nonempty L›
 
-instance (L : Type v) [Inhabited L] : Inhabited (CommutatorRing L) := ‹Inhabited L›
+instance (L : Type*) [Inhabited L] : Inhabited (CommutatorRing L) := ‹Inhabited L›
 
 instance : LieRing (CommutatorRing L) := show LieRing L by infer_instance
 
@@ -69,7 +67,7 @@ end LieAlgebra
 namespace LieHom
 
 variable {R L}
-variable {L₂ : Type w} [LieRing L₂] [LieAlgebra R L₂]
+variable {L₂ : Type*} [LieRing L₂] [LieAlgebra R L₂]
 
 /-- Regarding the `LieRing` of a `LieAlgebra` as a `NonUnitalNonAssocRing`, we can
 regard a `LieHom` as a `NonUnitalAlgHom`. -/
