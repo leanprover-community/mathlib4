@@ -427,7 +427,37 @@ theorem orderIsoRpow_symm_eq (y : ℝ) (hy : 0 < y) :
 theorem _root_.Real.nnnorm_rpow_of_nonneg {x y : ℝ} (hx : 0 ≤ x) : ‖x ^ y‖₊ = ‖x‖₊ ^ y := by
   ext; exact Real.norm_rpow_of_nonneg hx
 
+theorem iSup_pow_of_ne_zero {ι : Sort*} [Nonempty ι] (f : ι → ℝ≥0) {n : ℕ} (hn : n ≠ 0) :
+    (⨆ i : ι, f i) ^ n = ⨆ i : ι, f i ^ n := by
+  by_cases hf : BddAbove (range f)
+  · exact iSup_pow hf n
+  · rw [iSup_of_not_bddAbove hf, zero_pow hn, iSup_of_not_bddAbove]
+    rw [not_bddAbove_iff'] at hf ⊢
+    intro x
+    obtain ⟨y, ⟨a, rfl⟩, hax⟩ := hf (x ^ (1/(n : ℝ)))
+    refine ⟨(f a) ^ n, by simp [Set.mem_range, zero_le, exists_apply_eq_apply], ?_⟩
+    rw [← pow_le_pow_iff_left₀ (by positivity) (by positivity) hn] at hax
+    have hn' : (n : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr hn
+    simpa only [one_div, inv_mul_cancel₀ hn', ← rpow_natCast, ← rpow_mul, rpow_one] using hax
+
 end NNReal
+
+open NNReal in
+theorem Real.iSup_pow_of_ne_zero {ι : Sort*} [Nonempty ι] {f : ι → ℝ} (hf : ∀ i, 0 ≤ f i) {n : ℕ}
+  (hn : n ≠ 0) : (⨆ i : ι, f i) ^ n = ⨆ i : ι, f i ^ n := by
+  by_cases hf_bdd : BddAbove (range f)
+  · exact iSup_pow hf_bdd hf n
+  · rw [Real.iSup_of_not_bddAbove hf_bdd, zero_pow hn, Real.iSup_of_not_bddAbove]
+    rw [not_bddAbove_iff] at hf_bdd ⊢
+    intro x
+    obtain ⟨y, ⟨a, rfl⟩, hax⟩ := hf_bdd (x ^ (1/(n : ℝ)))
+    refine ⟨(f a) ^ n, by simp [Set.mem_range, zero_le, exists_apply_eq_apply], ?_⟩
+    have hn' : 0 < (n : ℝ) := by sorry
+    by_cases hx : 0 ≤ x
+    · rw [← Real.rpow_lt_rpow_iff (rpow_nonneg hx _) (hf a) hn'] at hax
+      simpa only [one_div, ← rpow_mul hx, inv_mul_cancel₀ (ne_of_gt hn'), rpow_one,
+        rpow_natCast] using hax
+    · exact lt_of_lt_of_le (not_le.mp hx) (pow_nonneg (hf a) n)
 
 namespace ENNReal
 
@@ -935,6 +965,35 @@ theorem rpow_left_bijective {x : ℝ} (hx : x ≠ 0) : Function.Bijective fun y 
 
 lemma _root_.Real.enorm_rpow_of_nonneg {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) :
     ‖x ^ y‖ₑ = ‖x‖ₑ ^ y := by simp [enorm, nnnorm_rpow_of_nonneg hx, coe_rpow_of_nonneg _ hy]
+
+open NNReal in
+theorem iSup_pow_of_ne_zero {ι : Type*} [Nonempty ι] (f : ι → ℝ≥0∞) {n : ℕ} (hn : n ≠ 0) :
+    (⨆ i : ι, f i) ^ n = ⨆ i : ι, f i ^ n := by
+  by_cases hf : ∃ (B : ℝ≥0), ∀ i, f i ≤ B
+  · exact iSup_pow hf n
+  · simp only [not_exists, not_forall, not_le] at hf
+    have hl : (⨆ i, f i) ^ n = ⊤ := by
+      rw [pow_eq_top_iff]
+      refine ⟨?_, hn⟩
+      rw [iSup_eq_top]
+      intro x hx
+      obtain ⟨i, hi⟩ := hf x.toNNReal
+      use i
+      rwa [coe_toNNReal (ne_of_lt hx)] at hi
+    have hr : ⨆ i, f i ^ n = ⊤ := by
+      rw [iSup_eq_top]
+      intro x hx
+      obtain ⟨i, hi⟩ := hf (x.toNNReal ^ (1/(n : ℝ)))
+      have hi' : (x.toNNReal ^ (1 / (n : ℝ)) : ℝ≥0∞) ^ n < (f i) ^ n := by
+        refine ENNReal.pow_lt_pow_left ?_ hn
+        convert hi
+        rw [ENNReal.coe_rpow_def, if_neg]
+        simp only [one_div, inv_neg'', not_and, not_lt, Nat.cast_nonneg, implies_true]
+      use i
+      have hn' : (n : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr hn
+      simpa only [one_div, inv_mul_cancel₀ hn', ← rpow_natCast, ← rpow_mul, rpow_one,
+        coe_toNNReal (ne_of_lt hx)] using hi'
+    rw [hl, hr]
 
 end ENNReal
 
