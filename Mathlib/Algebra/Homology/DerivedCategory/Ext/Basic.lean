@@ -35,10 +35,6 @@ Then, for `C := Sheaf X.etale AddCommGrp.{u}`, we will have
 (as `C` has enough injectives). Then, the `Ext` groups between étale
 sheaves over `X` shall be in `Type u`.
 
-## TODO
-* compute `Ext X Y 0`
-* construct the contravariant long exact sequences of `Ext`.
-
 -/
 
 assert_not_exists TwoSidedIdeal
@@ -68,13 +64,12 @@ lemma hasExt_iff [HasDerivedCategory.{w'} C] :
     exact (small_congr ((shiftFunctorZero _ ℤ).app
       ((singleFunctor C 0).obj X)).homFromEquiv).1 (h X Y 0 n)
   · intro h X Y a b
-    by_cases hab : a ≤ b
+    obtain hab | hab := le_or_lt a b
     · refine (small_congr ?_).1 (h X Y (b - a) (by simpa))
       exact (Functor.FullyFaithful.ofFullyFaithful
         (shiftFunctor _ a)).homEquiv.trans
         ((shiftFunctorAdd' _ _ _ _ (Int.sub_add_cancel b a)).symm.app _).homToEquiv
-    · simp only [not_le] at hab
-      suffices Subsingleton ((Q.obj ((CochainComplex.singleFunctor C 0).obj X))⟦a⟧ ⟶
+    · suffices Subsingleton ((Q.obj ((CochainComplex.singleFunctor C 0).obj X))⟦a⟧ ⟶
           (Q.obj ((CochainComplex.singleFunctor C 0).obj Y))⟦b⟧) from inferInstance
       constructor
       intro x y
@@ -458,9 +453,7 @@ lemma hasExt_iff_small_ext :
   · intro h X Y n
     exact h X Y n (by simp)
   · intro h X Y n hn
-    obtain ⟨k, hk⟩ := Int.le.dest hn
-    simp only [zero_add] at hk
-    subst hk
-    exact h X Y k
+    lift n to ℕ using hn
+    exact h X Y n
 
 end CategoryTheory

@@ -3,8 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.HasEnoughProjectives
+import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
 
 /-!
 # Projective dimension
@@ -111,7 +110,6 @@ instance [HasProjectiveDimensionLT X n] :
 
 instance [Projective X] : HasProjectiveDimensionLT X 1 := by
   letI := HasExt.standard C
-  change HasProjectiveDimensionLT X 1
   rw [hasProjectiveDimensionLT_iff]
   intro i hi Y e
   obtain _ | i := i

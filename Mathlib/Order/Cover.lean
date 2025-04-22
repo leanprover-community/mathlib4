@@ -441,6 +441,19 @@ lemma LT.lt.exists_disjoint_Iio_Ioi (h : a < b) :
 
 end LinearOrder
 
+namespace Bool
+
+@[simp] theorem wcovBy_iff : ∀ {a b : Bool}, a ⩿ b ↔ a ≤ b := by unfold WCovBy; decide
+@[simp] theorem covBy_iff : ∀ {a b : Bool}, a ⋖ b ↔ a < b := by unfold CovBy; decide
+
+instance instDecidableRelWCovBy : DecidableRel (· ⩿ · : Bool → Bool → Prop) := fun _ _ ↦
+  decidable_of_iff _ wcovBy_iff.symm
+
+instance instDecidableRelCovBy : DecidableRel (· ⋖ · : Bool → Bool → Prop) := fun _ _ ↦
+  decidable_of_iff _ covBy_iff.symm
+
+end Bool
+
 namespace Set
 variable {s t : Set α} {a : α}
 
