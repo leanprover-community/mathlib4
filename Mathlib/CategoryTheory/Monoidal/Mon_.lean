@@ -78,8 +78,8 @@ variable {M N : C} [Mon_Class M] [Mon_Class N]
 
 /-- The property that a morphism between monoid objects is a monoid morphism. -/
 class IsMon_Hom (f : M ⟶ N) : Prop where
-  one_hom : η ≫ f = η := by aesop_cat
-  mul_hom : μ ≫ f = (f ⊗ f) ≫ μ := by aesop_cat
+  one_hom (f) : η ≫ f = η := by aesop_cat
+  mul_hom (f) : μ ≫ f = (f ⊗ f) ≫ μ := by aesop_cat
 
 attribute [reassoc (attr := simp)] IsMon_Hom.one_hom IsMon_Hom.mul_hom
 
@@ -166,6 +166,10 @@ structure Hom (M N : Mon_ C) where
   one_hom : M.one ≫ hom = N.one := by aesop_cat
   mul_hom : M.mul ≫ hom = (hom ⊗ hom) ≫ N.mul := by aesop_cat
 
+/-- Construct a morphism `M ⟶ N` of `Mon_ C` from a map `f : M ⟶ N` and a `IsMon_Hom f` instance. -/
+abbrev Hom.mk' {M N : C} [Mon_Class M] [Mon_Class N] (f : M ⟶ N) [IsMon_Hom f] :
+    Hom (.mk' M) (.mk' N) := .mk f
+
 attribute [reassoc (attr := simp)] Hom.one_hom Hom.mul_hom
 
 /-- The identity morphism on a monoid object. -/
@@ -185,6 +189,8 @@ instance : Category (Mon_ C) where
   Hom M N := Hom M N
   id := id
   comp f g := comp f g
+
+instance {M N : Mon_ C} (f : M ⟶ N) : IsMon_Hom f.hom := ⟨f.2, f.3⟩
 
 @[ext]
 lemma ext {X Y : Mon_ C} {f g : X ⟶ Y} (w : f.hom = g.hom) : f = g :=
@@ -255,13 +261,33 @@ end Mon_
 
 namespace CategoryTheory.Functor
 
-variable {C} {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
+variable {C} {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D] (F : C ⥤ D)
 
-#adaptation_note /-- https://github.com/leanprover/lean4/pull/6053
-we needed to increase the `maxHeartbeats` limit if we didn't write an explicit proof for
-`map_id` and `map_comp`.
+section LaxMonoidal
+variable [F.LaxMonoidal] (X Y : C) [Mon_Class X] [Mon_Class Y] (f : X ⟶ Y) [IsMon_Hom f]
 
-This may indicate a configuration problem in Aesop. -/
+/-- The image of a monoid object under a lax monoidal functor is a monoid object. -/
+abbrev obj.instMon_Class : Mon_Class (F.obj X) where
+  one := ε F ≫ F.map η
+  mul := LaxMonoidal.μ F X X ≫ F.map μ
+  one_mul' := by simp [← F.map_comp]
+  mul_one' := by simp [← F.map_comp]
+  mul_assoc' := by
+    simp_rw [comp_whiskerRight, Category.assoc, μ_natural_left_assoc,
+      MonoidalCategory.whiskerLeft_comp, Category.assoc, μ_natural_right_assoc]
+    slice_lhs 3 4 => rw [← F.map_comp, Mon_Class.mul_assoc]
+    simp
+
+attribute [local instance] obj.instMon_Class
+
+@[reassoc, simp] lemma obj.η_def : (η : 𝟙_ D ⟶ F.obj X) = ε F ≫ F.map η := rfl
+
+@[reassoc, simp] lemma obj.μ_def : μ = LaxMonoidal.μ F X X ≫ F.map μ := rfl
+
+instance map.instIsMon_Hom : IsMon_Hom (F.map f) where
+  one_hom := by simp [← map_comp]
+  mul_hom := by simp [← map_comp]
+
 -- TODO: mapMod F A : Mod A ⥤ Mod (F.mapMon A)
 /-- A lax monoidal functor takes monoid objects to monoid objects.
 
@@ -269,6 +295,8 @@ That is, a lax monoidal functor `F : C ⥤ D` induces a functor `Mon_ C ⥤ Mon_
 -/
 @[simps]
 def mapMon (F : C ⥤ D) [F.LaxMonoidal] : Mon_ C ⥤ Mon_ D where
+  -- TODO: The following could be, but it leads to weird `erw`s later down the file
+  -- obj A := .mk' (F.obj A.X)
   obj A :=
     { X := F.obj A.X
       one := ε F ≫ F.map A.one
@@ -286,18 +314,40 @@ def mapMon (F : C ⥤ D) [F.LaxMonoidal] : Mon_ C ⥤ Mon_ D where
           MonoidalCategory.whiskerLeft_comp, Category.assoc, μ_natural_right_assoc]
         slice_lhs 3 4 => rw [← F.map_comp, A.mul_assoc]
         simp }
-  map f :=
-    { hom := F.map f.hom
-      one_hom := by dsimp; rw [Category.assoc, ← F.map_comp, f.one_hom]
-      mul_hom := by
-        rw [Category.assoc, μ_natural_assoc, ← F.map_comp, ← F.map_comp,
-          f.mul_hom] }
-  map_id _ := by -- the `aesop_cat` autoparam solves this but it's slow
-    simp only [Mon_.id_hom', map_id]
-    rfl
-  map_comp _ _ := by -- the `aesop_cat` autoparam solves this but it's slow
-    simp only [Mon_.comp_hom', map_comp]
-    rfl
+  map f := .mk' (F.map f.hom)
+
+protected instance Faithful.mapMon [F.Faithful] : F.mapMon.Faithful where
+  map_injective {_X _Y} _f _g hfg := Mon_.Hom.ext <| map_injective congr(($hfg).hom)
+
+end LaxMonoidal
+
+section Monoidal
+variable [F.Monoidal]
+
+attribute [local instance] obj.instMon_Class
+
+protected instance Full.mapMon [F.Full] [F.Faithful] : F.mapMon.Full where
+  map_surjective {X Y} f :=
+    let ⟨g, hg⟩ := F.map_surjective f.hom
+    ⟨{
+      hom := g
+      one_hom := F.map_injective <| by simpa [← hg, cancel_epi] using f.one_hom
+      mul_hom := F.map_injective <| by simpa [← hg, cancel_epi] using f.mul_hom
+    }, Mon_.Hom.ext hg⟩
+
+instance FullyFaithful.isMon_Hom_preimage (hF : F.FullyFaithful) {X Y : C}
+    [Mon_Class X] [Mon_Class Y] (f : F.obj X ⟶ F.obj Y) [IsMon_Hom f] :
+    IsMon_Hom (hF.preimage f) where
+  one_hom := hF.map_injective <| by simp [← obj.η_def_assoc, ← obj.η_def, ← cancel_epi (ε F)]
+  mul_hom := hF.map_injective <| by
+    simp [← obj.μ_def_assoc, ← obj.μ_def, ← μ_natural_assoc, ← cancel_epi (LaxMonoidal.μ F ..)]
+
+/-- If `F : C ⥤ D` is a fully faithful monoidal functor, then `Mon(F) : Mon C ⥤ Mon D` is fully
+faithful too. -/
+protected def FullyFaithful.mapMon (hF : F.FullyFaithful) : F.mapMon.FullyFaithful where
+  preimage {X Y} f := .mk' <| hF.preimage f.hom
+
+end Monoidal
 
 variable (C D)
 
@@ -361,7 +411,7 @@ def unitIso :
 /-- Implementation of `Mon_.equivLaxMonoidalFunctorPUnit`. -/
 @[simps!]
 def counitIso : monToLaxMonoidal C ⋙ laxMonoidalToMon C ≅ 𝟭 (Mon_ C) :=
-  NatIso.ofComponents (fun F ↦ mkIso (Iso.refl _))
+  NatIso.ofComponents fun F ↦ mkIso (Iso.refl _)
 
 end EquivLaxMonoidalFunctorPUnit
 

@@ -235,8 +235,8 @@ theorem single_order_mul_powerSeriesPart (x : R⸨X⸩) :
   ext n
   rw [← sub_add_cancel n x.order, coeff_single_mul_add, sub_add_cancel, one_mul]
   by_cases h : x.order ≤ n
-  · rw [Int.eq_natAbs_of_zero_le (sub_nonneg_of_le h), coeff_coe_powerSeries,
-      powerSeriesPart_coeff, ← Int.eq_natAbs_of_zero_le (sub_nonneg_of_le h),
+  · rw [Int.eq_natAbs_of_nonneg (sub_nonneg_of_le h), coeff_coe_powerSeries,
+      powerSeriesPart_coeff, ← Int.eq_natAbs_of_nonneg (sub_nonneg_of_le h),
       add_sub_cancel]
   · rw [ofPowerSeries_apply, embDomain_notin_range]
     · contrapose! h
@@ -459,7 +459,7 @@ theorem coe_X : ((X : RatFunc F) : F⸨X⸩) = single 1 1 := by
      PowerSeries.coe_one, div_one]
   simp only [ofPowerSeries_X]  -- Porting note: added
 
-theorem single_one_eq_pow {R : Type _} [Ring R] (n : ℕ) :
+theorem single_one_eq_pow {R : Type _} [Semiring R] (n : ℕ) :
     single (n : ℤ) (1 : R) = single (1 : ℤ) 1 ^ n := by
   induction' n with n h_ind
   · simp
@@ -473,12 +473,11 @@ theorem single_inv (d : ℤ) {α : F} (hα : α ≠ 0) :
 
 theorem single_zpow (n : ℤ) :
     single (n : ℤ) (1 : F) = single (1 : ℤ) 1 ^ n := by
-  cases n with
-  | ofNat n => apply single_one_eq_pow
-  | negSucc n =>
-    rw [Int.negSucc_coe, Int.ofNat_add, Nat.cast_one, ← inv_one,
-      single_inv (n + 1 : ℤ) one_ne_zero, zpow_neg, ← Nat.cast_one, ← Int.ofNat_add,
-      Nat.cast_one, inv_inj, zpow_natCast, single_one_eq_pow, inv_one]
+  match n with
+  | (n : ℕ) => apply single_one_eq_pow
+  | -(n + 1 : ℕ) =>
+    rw [← Nat.cast_one, ← inv_one, single_inv _ one_ne_zero, zpow_neg, ← Nat.cast_one, Nat.cast_one,
+      inv_inj, zpow_natCast, single_one_eq_pow, inv_one]
 
 instance : Algebra (RatFunc F) F⸨X⸩ := RingHom.toAlgebra (coeAlgHom F).toRingHom
 
@@ -590,8 +589,8 @@ theorem valuation_single_zpow (s : ℤ) :
     obtain s | s := s
     · rw [Int.ofNat_eq_coe, ← HahnSeries.ofPowerSeries_X_pow] at this
       rw [Int.ofNat_eq_coe, ← this, PowerSeries.coe_pow, valuation_X_pow]
-    · simp only [Int.negSucc_coe, neg_neg, ← HahnSeries.ofPowerSeries_X_pow, PowerSeries.coe_pow,
-        valuation_X_pow, ofAdd_neg, WithZero.coe_inv, inv_inv]
+    · simp only [Int.negSucc_eq, ← Int.natCast_succ, neg_neg, ← HahnSeries.ofPowerSeries_X_pow,
+        PowerSeries.coe_pow, valuation_X_pow, ofAdd_neg, WithZero.coe_inv, inv_inv]
   · simp only [Valuation.ne_zero_iff, ne_eq, one_ne_zero, not_false_iff, HahnSeries.single_ne_zero]
 
 /- The coefficients of a power series vanish in degree strictly less than its valuation. -/
