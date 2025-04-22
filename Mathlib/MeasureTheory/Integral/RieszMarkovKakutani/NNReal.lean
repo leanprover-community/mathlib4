@@ -22,8 +22,6 @@ inequalities by `le_antisymm`, yet for `C_c(X, ℝ≥0)` there is no `Neg`.
 
 -/
 
-noncomputable section
-
 open scoped NNReal
 
 open CompactlySupported CompactlySupportedContinuousMap MeasureTheory
