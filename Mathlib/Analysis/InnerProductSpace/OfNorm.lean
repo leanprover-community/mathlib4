@@ -128,6 +128,8 @@ theorem inner_.conj_inner_symm (x y : E) : conj (inner_ 𝕜 y x) = inner_ 𝕜 
   rw [h₁, h₂]
   ring
 
+@[deprecated (since := "2025-04-22")] alias inner_.conj_symm := inner_.conj_inner_symm
+
 variable [InnerProductSpaceable E]
 
 private theorem add_left_aux1 (x y z : E) :
