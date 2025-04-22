@@ -139,6 +139,15 @@ def containsKey (r : NamePrefixRel) (n : Name) : Bool := NameMap.contains r n
 /-- Is a prefix of `n₁` related to a prefix of `n₂`? -/
 def contains (r : NamePrefixRel) (n₁ n₂ : Name) : Bool := (r.find n₁ n₂).isSome
 
+/-- Look up all names `m` which are values of some prefix of `n` under this relation. -/
+def getAllLeft (r : NamePrefixRel) (n : Name) : NameSet := Id.run do
+  let matchingPrefixes := n.prefixes.filter (fun prf ↦ r.containsKey prf)
+  let mut allRules := NameSet.empty
+  for prfix in matchingPrefixes do
+    let some rules := RBMap.find? r prfix | unreachable!
+    allRules := allRules.append rules
+  allRules
+
 end NamePrefixRel
 
 -- TODO: add/extend tests for this linter, to ensure the allow-list works
@@ -551,7 +560,7 @@ open DirectoryDependency
 
 /-- Check if one of the imports `imports` to `mainModule` is forbidden by `forbiddenImportDirs`;
 if so, return an error describing how the import transitively arises. -/
-def _checkBlocklist (env : Environment) (mainModule : Name) (imports : Array Name) : Option MessageData := Id.run do
+private def checkBlocklist (env : Environment) (mainModule : Name) (imports : Array Name) : Option MessageData := Id.run do
   match forbiddenImportDirs.findAny mainModule imports with
   | some (n₁, n₂) => do
     if let some imported := n₂.prefixToName imports then
@@ -580,7 +589,7 @@ def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array MessageDa
   let matchingPrefixes := mainModule.prefixes.filter (fun prf ↦ allowedImportDirs.containsKey prf)
   if matchingPrefixes.isEmpty then
     -- Otherwise, we fall back to the blocklist `forbiddenImportDirs`.
-    if let some msg := _checkBlocklist env mainModule imports then return #[msg] else return #[]
+    if let some msg := checkBlocklist env mainModule imports then return #[msg] else return #[]
   else
     -- We always allow imports in the same directory (for each matching prefix),
     -- and from `Init`, `Lean`, `Std` and `Qq`.
@@ -595,11 +604,8 @@ def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array MessageDa
       |>.filter (!initImports.contains ·)
 
     -- Find all prefixes which are allowed for one of these directories.
-    let mut allRules := NameSet.empty
-    for prfix in matchingPrefixes do
-      let some rules := RBMap.find? allowedImportDirs prfix | unreachable!
-      allRules := allRules.append rules
-    -- Error about those imports which are not covered by allRules.
+    let allRules := allowedImportDirs.getAllLeft mainModule
+    -- Error about those imports which are not covered by allowedImportDirs.
     let mut messages := #[]
     for imported in importsToCheck do
       if !allowedImportDirs.contains mainModule imported then
