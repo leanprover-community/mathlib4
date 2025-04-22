@@ -19,13 +19,11 @@ on the auxiliary object appearing in the fraction.
 
 -/
 
-universe w v u
-
 open CategoryTheory Category Limits
 
 namespace DerivedCategory
 
-variable {C : Type u} [Category.{v} C] [Abelian C] [HasDerivedCategory.{w} C]
+variable {C : Type*} [Category C] [Abelian C] [HasDerivedCategory C]
 
 instance : (HomotopyCategory.quasiIso C (ComplexShape.up ℤ)).HasLeftCalculusOfFractions := by
   rw [HomotopyCategory.quasiIso_eq_subcategoryAcyclic_W]
