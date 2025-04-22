@@ -363,10 +363,12 @@ theorem ae_prod_mem_iff_ae_ae_mem {s : Set (α × β)} (hs : MeasurableSet s) :
     (∀ᵐ z ∂μ.prod ν, z ∈ s) ↔ ∀ᵐ x ∂μ, ∀ᵐ y ∂ν, (x, y) ∈ s :=
   measure_prod_null hs.compl
 
+@[fun_prop]
 theorem quasiMeasurePreserving_fst : QuasiMeasurePreserving Prod.fst (μ.prod ν) μ := by
   refine ⟨measurable_fst, AbsolutelyContinuous.mk fun s hs h2s => ?_⟩
   rw [map_apply measurable_fst hs, ← prod_univ, prod_prod, h2s, zero_mul]
 
+@[fun_prop]
 theorem quasiMeasurePreserving_snd : QuasiMeasurePreserving Prod.snd (μ.prod ν) ν := by
   refine ⟨measurable_snd, AbsolutelyContinuous.mk fun s hs h2s => ?_⟩
   rw [map_apply measurable_snd hs, ← univ_prod, prod_prod, h2s, mul_zero]
