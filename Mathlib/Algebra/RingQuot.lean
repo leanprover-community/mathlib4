@@ -22,12 +22,10 @@ Since everything runs in parallel for quotients of `R`-algebras, we do that case
 
 assert_not_exists Star.star
 
-universe uR uS uT uA u₄
-
-variable {R : Type uR} [Semiring R]
-variable {S : Type uS} [CommSemiring S]
-variable {T : Type uT}
-variable {A : Type uA} [Semiring A] [Algebra S A]
+variable {R : Type*} [Semiring R]
+variable {S : Type*} [CommSemiring S]
+variable {T : Type*}
+variable {A : Type*} [Semiring A] [Algebra S A]
 
 namespace RingCon
 
@@ -60,13 +58,13 @@ theorem Rel.add_right {r : R → R → Prop} ⦃a b c : R⦄ (h : Rel r b c) : R
   rw [add_comm a b, add_comm a c]
   exact Rel.add_left h
 
-theorem Rel.neg {R : Type uR} [Ring R] {r : R → R → Prop} ⦃a b : R⦄ (h : Rel r a b) :
+theorem Rel.neg {R : Type*} [Ring R] {r : R → R → Prop} ⦃a b : R⦄ (h : Rel r a b) :
     Rel r (-a) (-b) := by simp only [neg_eq_neg_one_mul a, neg_eq_neg_one_mul b, Rel.mul_right h]
 
-theorem Rel.sub_left {R : Type uR} [Ring R] {r : R → R → Prop} ⦃a b c : R⦄ (h : Rel r a b) :
+theorem Rel.sub_left {R : Type*} [Ring R] {r : R → R → Prop} ⦃a b c : R⦄ (h : Rel r a b) :
     Rel r (a - c) (b - c) := by simp only [sub_eq_add_neg, h.add_left]
 
-theorem Rel.sub_right {R : Type uR} [Ring R] {r : R → R → Prop} ⦃a b c : R⦄ (h : Rel r b c) :
+theorem Rel.sub_right {R : Type*} [Ring R] {r : R → R → Prop} ⦃a b c : R⦄ (h : Rel r b c) :
     Rel r (a - b) (a - c) := by simp only [sub_eq_add_neg, h.neg.add_right]
 
 theorem Rel.smul {r : A → A → Prop} (k : S) ⦃a b : A⦄ (h : Rel r a b) : Rel r (k • a) (k • b) := by
@@ -157,10 +155,10 @@ private irreducible_def add : RingQuot r → RingQuot r → RingQuot r
 private irreducible_def mul : RingQuot r → RingQuot r → RingQuot r
   | ⟨a⟩, ⟨b⟩ => ⟨Quot.map₂ (· * ·) Rel.mul_right Rel.mul_left a b⟩
 
-private irreducible_def neg {R : Type uR} [Ring R] (r : R → R → Prop) : RingQuot r → RingQuot r
+private irreducible_def neg {R : Type*} [Ring R] (r : R → R → Prop) : RingQuot r → RingQuot r
   | ⟨a⟩ => ⟨Quot.map (fun a ↦ -a) Rel.neg a⟩
 
-private irreducible_def sub {R : Type uR} [Ring R] (r : R → R → Prop) :
+private irreducible_def sub {R : Type*} [Ring R] (r : R → R → Prop) :
   RingQuot r → RingQuot r → RingQuot r
   | ⟨a⟩, ⟨b⟩ => ⟨Quot.map₂ Sub.sub Rel.sub_right Rel.sub_left a b⟩
 
@@ -199,10 +197,10 @@ instance : Mul (RingQuot r) :=
 instance : NatPow (RingQuot r) :=
   ⟨fun x n ↦ npow r n x⟩
 
-instance {R : Type uR} [Ring R] (r : R → R → Prop) : Neg (RingQuot r) :=
+instance {R : Type*} [Ring R] (r : R → R → Prop) : Neg (RingQuot r) :=
   ⟨neg r⟩
 
-instance {R : Type uR} [Ring R] (r : R → R → Prop) : Sub (RingQuot r) :=
+instance {R : Type*} [Ring R] (r : R → R → Prop) : Sub (RingQuot r) :=
   ⟨sub r⟩
 
 instance [Algebra S R] : SMul S (RingQuot r) :=
@@ -228,13 +226,13 @@ theorem pow_quot {a} {n : ℕ} : (⟨Quot.mk _ a⟩ ^ n : RingQuot r) = ⟨Quot.
   show npow r _ _ = _
   rw [npow_def]
 
-theorem neg_quot {R : Type uR} [Ring R] (r : R → R → Prop) {a} :
+theorem neg_quot {R : Type*} [Ring R] (r : R → R → Prop) {a} :
     (-⟨Quot.mk _ a⟩ : RingQuot r) = ⟨Quot.mk _ (-a)⟩ := by
   show neg r _ = _
   rw [neg_def]
   rfl
 
-theorem sub_quot {R : Type uR} [Ring R] (r : R → R → Prop) {a b} :
+theorem sub_quot {R : Type*} [Ring R] (r : R → R → Prop) {a b} :
     (⟨Quot.mk _ a⟩ - ⟨Quot.mk _ b⟩ : RingQuot r) = ⟨Quot.mk _ (a - b)⟩ := by
   show sub r _ _ = _
   rw [sub_def]
@@ -324,10 +322,10 @@ instance instSemiring (r : R → R → Prop) : Semiring (RingQuot r) where
   __ := instMonoidWithZero r
 
 -- can't be irreducible, causes diamonds in ℤ-algebras
-private def intCast {R : Type uR} [Ring R] (r : R → R → Prop) (z : ℤ) : RingQuot r :=
+private def intCast {R : Type*} [Ring R] (r : R → R → Prop) (z : ℤ) : RingQuot r :=
   ⟨Quot.mk _ z⟩
 
-instance instRing {R : Type uR} [Ring R] (r : R → R → Prop) : Ring (RingQuot r) :=
+instance instRing {R : Type*} [Ring R] (r : R → R → Prop) : Ring (RingQuot r) :=
   { RingQuot.instSemiring r with
     neg := Neg.neg
     neg_add_cancel := by
@@ -354,14 +352,14 @@ instance instRing {R : Type uR} [Ring R] (r : R → R → Prop) : Ring (RingQuot
       simp_rw [neg_def]
       exact congrArg (Quot.mk _) (Int.cast_negSucc n) }
 
-instance instCommSemiring {R : Type uR} [CommSemiring R] (r : R → R → Prop) :
+instance instCommSemiring {R : Type*} [CommSemiring R] (r : R → R → Prop) :
   CommSemiring (RingQuot r) :=
   { RingQuot.instSemiring r with
     mul_comm := by
       rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
       simp [mul_quot, mul_comm] }
 
-instance {R : Type uR} [CommRing R] (r : R → R → Prop) : CommRing (RingQuot r) :=
+instance {R : Type*} [CommRing R] (r : R → R → Prop) : CommRing (RingQuot r) :=
   { RingQuot.instCommSemiring r, RingQuot.instRing r with }
 
 instance instInhabited (r : R → R → Prop) : Inhabited (RingQuot r) :=
@@ -471,7 +469,7 @@ agrees with the quotient by the appropriate ideal.
 -/
 
 
-variable {B : Type uR} [CommRing B]
+variable {B : Type*} [CommRing B]
 
 /-- The universal ring homomorphism from `RingQuot r` to `B ⧸ Ideal.ofRel r`. -/
 def ringQuotToIdealQuotient (r : B → B → Prop) : RingQuot r →+* B ⧸ Ideal.ofRel r :=
@@ -550,7 +548,7 @@ theorem mkAlgHom_surjective (s : A → A → Prop) : Function.Surjective (mkAlgH
   rintro ⟨⟨a⟩⟩
   use a
 
-variable {B : Type u₄} [Semiring B] [Algebra S B]
+variable {B : Type*} [Semiring B] [Algebra S B]
 
 @[ext 1100]
 theorem ringQuot_ext' {s : A → A → Prop} (f g : RingQuot s →ₐ[S] B)

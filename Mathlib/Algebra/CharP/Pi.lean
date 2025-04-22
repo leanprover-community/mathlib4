@@ -11,11 +11,9 @@ import Mathlib.Algebra.Ring.Pi
 -/
 
 
-universe u v
-
 namespace CharP
 
-instance pi (ι : Type u) [hi : Nonempty ι] (R : Type v) [Semiring R] (p : ℕ) [CharP R p] :
+instance pi (ι : Type*) [hi : Nonempty ι] (R : Type*) [Semiring R] (p : ℕ) [CharP R p] :
     CharP (ι → R) p :=
   ⟨fun x =>
     let ⟨i⟩ := hi
@@ -27,7 +25,7 @@ instance pi (ι : Type u) [hi : Nonempty ι] (R : Type v) [Semiring R] (p : ℕ)
           fun h => map_natCast (Pi.evalRingHom (fun _ : ι => R) i) x ▸ by rw [h, RingHom.map_zero]⟩⟩
 
 -- diamonds
-instance pi' (ι : Type u) [Nonempty ι] (R : Type v) [CommRing R] (p : ℕ) [CharP R p] :
+instance pi' (ι : Type*) [Nonempty ι] (R : Type*) [CommRing R] (p : ℕ) [CharP R p] :
     CharP (ι → R) p :=
   CharP.pi ι R p
 

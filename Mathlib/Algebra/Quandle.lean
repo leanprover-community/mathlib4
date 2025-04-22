@@ -85,12 +85,10 @@ rack, quandle
 
 open MulOpposite
 
-universe u v
-
 /-- A *Shelf* is a structure with a self-distributive binary operation.
 The binary operation is regarded as a left action of the type on itself.
 -/
-class Shelf (α : Type u) where
+class Shelf (α : Type*) where
   /-- The action of the `Shelf` over `α` -/
   act : α → α → α
   /-- A verification that `act` is self-distributive -/
@@ -100,7 +98,7 @@ class Shelf (α : Type u) where
 A *unital shelf* is a shelf equipped with an element `1` such that, for all elements `x`,
 we have both `x ◃ 1` and `1 ◃ x` equal `x`.
 -/
-class UnitalShelf (α : Type u) extends Shelf α, One α where
+class UnitalShelf (α : Type*) extends Shelf α, One α where
   one_act : ∀ a : α, act 1 a = a
   act_one : ∀ a : α, act a 1 = a
 
@@ -121,7 +119,7 @@ element's action is invertible.
 The notations `x ◃ y` and `x ◃⁻¹ y` denote the action and the
 inverse action, respectively, and they are right associative.
 -/
-class Rack (α : Type u) extends Shelf α where
+class Rack (α : Type*) extends Shelf α where
   /-- The inverse actions of the elements -/
   invAct : α → α → α
   /-- Proof of left inverse -/
@@ -508,13 +506,13 @@ well-founded recursion.
 
 /-- Free generators of the enveloping group.
 -/
-inductive PreEnvelGroup (R : Type u) : Type u
+inductive PreEnvelGroup (R : Type*) : Type _
   | unit : PreEnvelGroup R
   | incl (x : R) : PreEnvelGroup R
   | mul (a b : PreEnvelGroup R) : PreEnvelGroup R
   | inv (a : PreEnvelGroup R) : PreEnvelGroup R
 
-instance PreEnvelGroup.inhabited (R : Type u) : Inhabited (PreEnvelGroup R) :=
+instance PreEnvelGroup.inhabited (R : Type*) : Inhabited (PreEnvelGroup R) :=
   ⟨PreEnvelGroup.unit⟩
 
 open PreEnvelGroup
@@ -524,7 +522,7 @@ open PreEnvelGroup
 is well-defined.  The relation `PreEnvelGroupRel` is the `Prop`-valued version,
 which is used to define `EnvelGroup` itself.
 -/
-inductive PreEnvelGroupRel' (R : Type u) [Rack R] : PreEnvelGroup R → PreEnvelGroup R → Type u
+inductive PreEnvelGroupRel' (R : Type*) [Rack R] : PreEnvelGroup R → PreEnvelGroup R → Type _
   | refl {a : PreEnvelGroup R} : PreEnvelGroupRel' R a a
   | symm {a b : PreEnvelGroup R} (hab : PreEnvelGroupRel' R a b) : PreEnvelGroupRel' R b a
   | trans {a b c : PreEnvelGroup R} (hab : PreEnvelGroupRel' R a b)
@@ -540,33 +538,33 @@ inductive PreEnvelGroupRel' (R : Type u) [Rack R] : PreEnvelGroup R → PreEnvel
   | act_incl (x y : R) :
     PreEnvelGroupRel' R (mul (mul (incl x) (incl y)) (inv (incl x))) (incl (x ◃ y))
 
-instance PreEnvelGroupRel'.inhabited (R : Type u) [Rack R] :
+instance PreEnvelGroupRel'.inhabited (R : Type*) [Rack R] :
     Inhabited (PreEnvelGroupRel' R unit unit) :=
   ⟨PreEnvelGroupRel'.refl⟩
 
 /--
 The `PreEnvelGroupRel` relation as a `Prop`.  Used as the relation for `PreEnvelGroup.setoid`.
 -/
-inductive PreEnvelGroupRel (R : Type u) [Rack R] : PreEnvelGroup R → PreEnvelGroup R → Prop
+inductive PreEnvelGroupRel (R : Type*) [Rack R] : PreEnvelGroup R → PreEnvelGroup R → Prop
   | rel {a b : PreEnvelGroup R} (r : PreEnvelGroupRel' R a b) : PreEnvelGroupRel R a b
 
 /-- A quick way to convert a `PreEnvelGroupRel'` to a `PreEnvelGroupRel`.
 -/
-theorem PreEnvelGroupRel'.rel {R : Type u} [Rack R] {a b : PreEnvelGroup R} :
+theorem PreEnvelGroupRel'.rel {R : Type*} [Rack R] {a b : PreEnvelGroup R} :
     PreEnvelGroupRel' R a b → PreEnvelGroupRel R a b := PreEnvelGroupRel.rel
 
 @[refl]
-theorem PreEnvelGroupRel.refl {R : Type u} [Rack R] {a : PreEnvelGroup R} :
+theorem PreEnvelGroupRel.refl {R : Type*} [Rack R] {a : PreEnvelGroup R} :
     PreEnvelGroupRel R a a :=
   PreEnvelGroupRel.rel PreEnvelGroupRel'.refl
 
 @[symm]
-theorem PreEnvelGroupRel.symm {R : Type u} [Rack R] {a b : PreEnvelGroup R} :
+theorem PreEnvelGroupRel.symm {R : Type*} [Rack R] {a b : PreEnvelGroup R} :
     PreEnvelGroupRel R a b → PreEnvelGroupRel R b a
   | ⟨r⟩ => r.symm.rel
 
 @[trans]
-theorem PreEnvelGroupRel.trans {R : Type u} [Rack R] {a b c : PreEnvelGroup R} :
+theorem PreEnvelGroupRel.trans {R : Type*} [Rack R] {a b c : PreEnvelGroup R} :
     PreEnvelGroupRel R a b → PreEnvelGroupRel R b c → PreEnvelGroupRel R a c
   | ⟨rab⟩, ⟨rbc⟩ => (rab.trans rbc).rel
 

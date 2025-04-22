@@ -82,15 +82,13 @@ the second approach only when you need to weaken a condition on either `R` or `A
 
 assert_not_exists Field Finset Module.End
 
-universe u v w u₁ v₁
-
 section Prio
 
 /-- An associative unital `R`-algebra is a semiring `A` equipped with a map into its center `R → A`.
 
 See the implementation notes in this file for discussion of the details of this definition.
 -/
-class Algebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends SMul R A where
+class Algebra (R : Type*) (A : Type*) [CommSemiring R] [Semiring A] extends SMul R A where
   /-- Embedding `R →+* A` given by `Algebra` structure.
   Use `algebraMap` from the root namespace instead. -/
   protected algebraMap : R →+* A
@@ -100,7 +98,7 @@ class Algebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends SM
 end Prio
 
 /-- Embedding `R →+* A` given by `Algebra` structure. -/
-def algebraMap (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Algebra R A] : R →+* A :=
+def algebraMap (R : Type*) (A : Type*) [CommSemiring R] [Semiring A] [Algebra R A] : R →+* A :=
   Algebra.algebraMap
 
 /-- Coercion from a commutative semiring to an algebra over this semiring. -/
@@ -199,7 +197,7 @@ theorem RingHom.algebraMap_toAlgebra {R S} [CommSemiring R] [CommSemiring S] (i 
 
 namespace Algebra
 
-variable {R : Type u} {S : Type v} {A : Type w} {B : Type*}
+variable {R : Type*} {S : Type*} {A : Type*} {B : Type*}
 
 /-- Let `R` be a commutative semiring, let `A` be a semiring with a `Module R` structure.
 If `(r • 1) * x = x * (r • 1) = r • x` for all `r : R` and `x : A`, then `A` is an `Algebra`

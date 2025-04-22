@@ -16,11 +16,9 @@ More lemmas about `adjoin` can be found in `Mathlib.RingTheory.Adjoin.Basic`.
 
 assert_not_exists Polynomial
 
-universe u u' v w w'
-
 namespace Algebra
 
-variable (R : Type u) {A : Type v} {B : Type w}
+variable (R : Type*) {A : Type*} {B : Type*}
 variable [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
 /-- The minimal subalgebra that includes `s`. -/
@@ -297,7 +295,7 @@ namespace Subalgebra
 
 open Algebra
 
-variable {R : Type u} {A : Type v} {B : Type w}
+variable {R : Type*} {A : Type*} {B : Type*}
 variable [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 variable (S : Subalgebra R A)
 
@@ -405,11 +403,9 @@ end MapComap
 
 section Adjoin
 
-universe uR uS uA uB
-
 open Submodule Subsemiring
 
-variable {R : Type uR} {S : Type uS} {A : Type uA} {B : Type uB}
+variable {R : Type*} {S : Type*} {A : Type*} {B : Type*}
 
 namespace Algebra
 

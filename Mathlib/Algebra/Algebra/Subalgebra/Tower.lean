@@ -29,9 +29,7 @@ compatibility condition `(r • s) • a = r • (s • a)`.
 
 open Pointwise
 
-universe u v w u₁ v₁
-
-variable (R : Type u) (S : Type v) (A : Type w) (B : Type u₁) (M : Type v₁)
+variable (R : Type*) (S : Type*) (A : Type*) (B : Type*) (M : Type*)
 
 namespace Algebra
 

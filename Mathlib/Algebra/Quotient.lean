@@ -33,17 +33,15 @@ ideal quotient, quotient ring
 -/
 
 
-universe u v
-
 /-- `HasQuotient A B` is a notation typeclass that allows us to write `A ⧸ b` for `b : B`.
 This allows the usual notation for quotients of algebraic structures,
 such as groups, modules and rings.
 
 `A` is a parameter, despite being unused in the definition below, so it appears in the notation.
 -/
-class HasQuotient (A : outParam <| Type u) (B : Type v) where
+class HasQuotient (A : outParam <| Type*) (B : Type*) where
   /-- auxiliary quotient function, the one used will have `A` explicit -/
-  quotient' : B → Type max u v
+  quotient' : B → Type*
 
 -- Will be provided by e.g. `Ideal.Quotient.inhabited`
 /-- `HasQuotient.Quotient A b` (denoted as `A ⧸ b`) is the quotient
@@ -53,8 +51,8 @@ This differs from `HasQuotient.quotient'` in that the `A` argument is
  explicit, which is necessary to make Lean show the notation in the
  goal state.
 -/
-abbrev HasQuotient.Quotient (A : outParam <| Type u) {B : Type v}
-    [HasQuotient A B] (b : B) : Type max u v :=
+abbrev HasQuotient.Quotient (A : outParam <| Type*) {B : Type*}
+    [HasQuotient A B] (b : B) : Type* :=
   HasQuotient.quotient' b
 
 /-- Quotient notation based on the `HasQuotient` typeclass -/
