@@ -133,8 +133,8 @@ theorem isGLB_congr (h : lowerBounds s = lowerBounds t) : IsGLB s a ↔ IsGLB t 
 alias HasSubset.Subset.dominated := Dominated.of_subset
 alias HasSubset.Subset.codominated := Codominated.of_subset
 
-@[simp, refl] protected lemma Dominated.rfl : Dominated s s := .of_subset .rfl
-@[simp, refl] protected lemma Codominated.rfl : Codominated s s := .of_subset .rfl
+@[refl] protected lemma Dominated.rfl : Dominated s s := .of_subset .rfl
+@[refl] protected lemma Codominated.rfl : Codominated s s := .of_subset .rfl
 
 protected lemma Dominated.trans (hst : Dominated s t) (htu : Dominated t u) :
     Dominated s u :=
