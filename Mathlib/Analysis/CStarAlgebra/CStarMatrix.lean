@@ -411,6 +411,22 @@ lemma mapₗ_reindexₐ [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [
     (φ : A →ₗ[R] B) : reindexₐ R B e (M.mapₗ φ) = ((reindexₐ R A e M).mapₗ φ) := by
   ext; simp [reindexₐ, reindexₗ]
 
+/-- Applying a non-unital ⋆-algebra homomorphism to every entry of a matrix is itself a
+⋆-algebra homomorphism on matrices. -/
+def mapₙₐ [Fintype n] [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A]
+    [Star A] [NonUnitalNonAssocSemiring B] [Module R B] [Star B] (f : A →⋆ₙₐ[R] B) :
+    CStarMatrix n n A →⋆ₙₐ[R] CStarMatrix n n B where
+  toFun := fun M => M.mapₗ (f : A →ₗ[R] B)
+  map_smul' := by simp
+  map_zero' := by simp [map_zero]
+  map_add' := by simp [map_add]
+  map_mul' M N := by
+    ext
+    simp only [mapₗ_apply, map, LinearMap.coe_coe, ofMatrix_apply]
+    simp_rw [mul_apply, map_sum, map_mul]
+    rfl
+  map_star' M := by ext; simp [map, star_apply, map_star]
+
 @[simp]
 theorem conjTranspose_zero [AddMonoid A] [StarAddMonoid A] :
     conjTranspose (0 : CStarMatrix m n A) = 0 := by ext; simp

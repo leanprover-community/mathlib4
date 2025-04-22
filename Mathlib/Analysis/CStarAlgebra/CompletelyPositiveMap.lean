@@ -10,7 +10,7 @@ import Mathlib.Analysis.CStarAlgebra.CStarMatrix
 /-! # Completely positive maps
 
 A positive linear map `φ : A₁ →ₗ[ℂ] A₂` (where `A₁` and `A₂` are C⋆-algebras) is called
-*completely positive* if `CStarMatrix.mapₗ (Fin k) (Fin k) φ` (i.e. applying `φ` to all
+*completely positive (CP)* if `CStarMatrix.mapₗ (Fin k) (Fin k) φ` (i.e. applying `φ` to all
 entries of a k × k matrix) is also positive for every `k ∈ ℕ`.
 
 This file defines completely positive maps and develops their basic API.
@@ -18,6 +18,10 @@ This file defines completely positive maps and develops their basic API.
 ## Main results
 
 + Non-unital star algebra homomorphisms are completely positive.
+
+## Notation
+
++ `A₁ →CP A₂` denotes the type of CP maps from `A₁` to `A₂`.
 -/
 
 structure CompletelyPositiveMap (A₁ : Type*) (A₂ : Type*) [NonUnitalCStarAlgebra A₁]
