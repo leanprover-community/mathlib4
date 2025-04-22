@@ -76,10 +76,10 @@ open AEEqFun Lp.simpleFunc Lp
 namespace SimpleFunc
 
 theorem norm_eq_sum_mul (f : α →₁ₛ[μ] G) :
-    ‖f‖ = ∑ x ∈ (toSimpleFunc f).range, (μ (toSimpleFunc f ⁻¹' {x})).toReal * ‖x‖ := by
+    ‖f‖ = ∑ x ∈ (toSimpleFunc f).range, μ.real (toSimpleFunc f ⁻¹' {x}) * ‖x‖ := by
   rw [norm_toSimpleFunc, eLpNorm_one_eq_lintegral_enorm]
   have h_eq := SimpleFunc.map_apply (‖·‖ₑ) (toSimpleFunc f)
-  simp_rw [← h_eq]
+  simp_rw [← h_eq, measureReal_def]
   rw [SimpleFunc.lintegral_eq_lintegral, SimpleFunc.map_lintegral, ENNReal.toReal_sum]
   · congr
     ext1 x
@@ -198,7 +198,7 @@ theorem setToL1S_smul {E} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpac
   exact smul_toSimpleFunc c f
 
 theorem norm_setToL1S_le (T : Set α → E →L[ℝ] F) {C : ℝ}
-    (hT_norm : ∀ s, MeasurableSet s → μ s < ∞ → ‖T s‖ ≤ C * (μ s).toReal) (f : α →₁ₛ[μ] E) :
+    (hT_norm : ∀ s, MeasurableSet s → μ s < ∞ → ‖T s‖ ≤ C * μ.real s) (f : α →₁ₛ[μ] E) :
     ‖setToL1S T f‖ ≤ C * ‖f‖ := by
   rw [setToL1S, norm_eq_sum_mul f]
   exact
