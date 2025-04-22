@@ -141,13 +141,10 @@ def contains (r : NamePrefixRel) (n₁ n₂ : Name) : Bool := (r.find n₁ n₂)
 
 end NamePrefixRel
 
+-- TODO: add/extend tests for this linter, to ensure the allow-list works
 -- TODO: move the following three lists to a JSON file, for easier evolution over time!
--- TODO: add/extend tests for this linter, to verify the change in behaviour
-
--- Future: investigate moving further directories to this allow-list, such as
--- `Mathlib.Testing`, `Mathlib.Control` and `Mathlib.Data`
-
--- TODO: enforce that allowed and forbidden keys are disjoint
+-- Future: enforce that allowed and forbidden keys are disjoint
+-- Future: move further directories to use this allow-list instead of the blocklist
 
 /-- `allowedImportDirs` relates module prefixes, specifying that modules with the first prefix
 are only allowed to import modules in the second directory.
