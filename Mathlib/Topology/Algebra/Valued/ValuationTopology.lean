@@ -187,23 +187,17 @@ theorem isClosed_closedBall (r : Γ₀) : IsClosed (X := R) {x | v x ≤ r} := b
   rw [← isOpen_compl_iff, isOpen_iff_mem_nhds]
   intro x hx
   rw [mem_nhds]
-  simp only [le_zero_iff, mem_compl_iff, mem_setOf_eq] at hx ⊢
-  have hx' : v x ≠ 0 := by
-    intro hz
-    simp [hz] at hx
-  refine ⟨Units.mk0 _ hx', fun y hy hy' => ne_of_lt hy ?_⟩
-  rw [map_sub_swap]
-  exact Valuation.map_sub_eq_of_lt_left _ <| lt_of_le_of_lt hy' (lt_of_not_ge hx)
+  have hx' : v x ≠ 0 := ne_of_gt <| lt_of_le_of_lt zero_le' <| lt_of_not_ge hx
+  exact ⟨Units.mk0 _ hx', fun y hy hy' => ne_of_lt hy <| map_sub_swap v x y ▸
+      (Valuation.map_sub_eq_of_lt_left _ <| lt_of_le_of_lt hy' (lt_of_not_ge hx))⟩
 
 /-- A sphere centred at the origin in a valued ring is open. -/
 theorem isOpen_sphere {r : Γ₀} (hr : r ≠ 0) : IsOpen (X := R) {x | v x = r} := by
-  rw [isOpen_iff_mem_nhds]
-  intro x hx
-  rw [mem_nhds]
-  simp only [mem_setOf_eq, setOf_subset_setOf] at hx ⊢
-  refine ⟨Units.mk0 _ hr, fun y hy => (sub_add_cancel y x).symm ▸ ?_⟩
-  rwa [v.map_add_eq_of_lt_right]
-  simpa [hx] using hy
+  have h : {x : R | v x = r} = {x | v x ≤ r} \ {x | v x < r} := by
+    ext x
+    simp [← le_antisymm_iff]
+  rw [h]
+  exact IsOpen.sdiff (isOpen_closedball _ hr) (isClosed_ball _ _)
 
 /-- The closed unit ball in a valued ring is open. -/
 theorem integer_isOpen : IsOpen (_i.v.integer : Set R) :=
