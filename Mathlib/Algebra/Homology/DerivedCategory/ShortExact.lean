@@ -19,13 +19,11 @@ in the derived category of `C`.
 
 assert_not_exists TwoSidedIdeal
 
-universe w v u
-
 open CategoryTheory Category Pretriangulated
 
 namespace DerivedCategory
 
-variable {C : Type u} [Category.{v} C] [Abelian C] [HasDerivedCategory.{w} C]
+variable {C : Type*} [Category C] [Abelian C] [HasDerivedCategory C]
   {S : ShortComplex (CochainComplex C ℤ)} (hS : S.ShortExact)
 
 /-- The connecting homomorphism `Q.obj (S.X₃) ⟶ (Q.obj S.X₁)⟦(1 : ℤ)⟧`
