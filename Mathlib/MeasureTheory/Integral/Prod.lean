@@ -145,14 +145,15 @@ namespace Measure
 variable [SFinite ν]
 
 theorem integrable_measure_prodMk_left {s : Set (α × β)} (hs : MeasurableSet s)
-    (h2s : (μ.prod ν) s ≠ ∞) : Integrable (fun x => (ν (Prod.mk x ⁻¹' s)).toReal) μ := by
+    (h2s : (μ.prod ν) s ≠ ∞) : Integrable (fun x => ν.real (Prod.mk x ⁻¹' s)) μ := by
   refine ⟨(measurable_measure_prodMk_left hs).ennreal_toReal.aemeasurable.aestronglyMeasurable, ?_⟩
-  simp_rw [hasFiniteIntegral_iff_enorm, enorm_eq_ofReal toReal_nonneg]
+  simp_rw [hasFiniteIntegral_iff_enorm, measureReal_def, enorm_eq_ofReal toReal_nonneg]
   convert h2s.lt_top using 1
   rw [prod_apply hs]
   apply lintegral_congr_ae
   filter_upwards [ae_measure_lt_top hs h2s] with x hx
-  rw [lt_top_iff_ne_top] at hx; simp [ofReal_toReal, hx]
+  rw [lt_top_iff_ne_top] at hx
+  simp [ofReal_toReal, hx]
 
 @[deprecated (since := "2025-03-05")]
 alias MeasureTheory.Measure.integrable_measure_prod_mk_left := integrable_measure_prodMk_left
@@ -429,6 +430,7 @@ theorem integral_prod (f : α × β → E) (hf : Integrable f (μ.prod ν)) :
   · intro c s hs h2s
     simp_rw [integral_indicator hs, ← indicator_comp_right, Function.comp_def,
       integral_indicator (measurable_prodMk_left hs), setIntegral_const, integral_smul_const,
+      measureReal_def,
       integral_toReal (measurable_measure_prodMk_left hs).aemeasurable
         (ae_measure_lt_top hs h2s.ne)]
     rw [prod_apply hs]
@@ -490,10 +492,10 @@ theorem setIntegral_prod_mul {L : Type*} [RCLike L] (f : α → L) (g : β → L
   rw [← Measure.prod_restrict s t]
   apply integral_prod_mul
 
-theorem integral_fun_snd (f : β → E) : ∫ z, f z.2 ∂μ.prod ν = (μ univ).toReal • ∫ y, f y ∂ν := by
+theorem integral_fun_snd (f : β → E) : ∫ z, f z.2 ∂μ.prod ν = μ.real univ • ∫ y, f y ∂ν := by
   simpa using integral_prod_smul (1 : α → ℝ) f
 
-theorem integral_fun_fst (f : α → E) : ∫ z, f z.1 ∂μ.prod ν = (ν univ).toReal • ∫ x, f x ∂μ := by
+theorem integral_fun_fst (f : α → E) : ∫ z, f z.1 ∂μ.prod ν = ν.real univ • ∫ x, f x ∂μ := by
   rw [← integral_prod_swap]
   apply integral_fun_snd
 
