@@ -143,7 +143,7 @@ instance (priority := low) {X : Scheme.{u}} [Subsingleton X] : IsAffine X := by
   obtain ⟨_, ⟨U, hU : IsAffine _, rfl⟩, hxU, -⟩ :=
     (isBasis_affine_open X).exists_subset_of_mem_open (a := x) (by trivial) isOpen_univ
   obtain rfl : U = ⊤ := by ext y; simpa [Subsingleton.elim y x]
-  exact isAffine_of_isIso (Scheme.topIso X).inv
+  exact .of_isIso (Scheme.topIso X).inv
 
 end Initial
 
