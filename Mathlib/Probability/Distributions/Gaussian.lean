@@ -363,10 +363,16 @@ end Transformations
 
 section CharacteristicFunction
 
-lemma integral_exp_mul_gaussianReal {μ : ℝ} {v : ℝ≥0} {z : ℂ} :
-    ∫ x, cexp (z * x) ∂(gaussianReal μ v) = cexp (z * μ + v * z ^ 2 / 2) := by
+open Real Complex
+
+variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {p : Measure Ω} {μ : ℝ} {v : ℝ≥0} {X : Ω → ℝ}
+
+/-- The complex moment generating function of a Gaussian distribution with mean `μ` and variance `v`
+is given by `z ↦ exp (z * μ + v * z ^ 2 / 2)`. -/
+theorem complexMGF_id_gaussianReal (z : ℂ) :
+    complexMGF id (gaussianReal μ v) z = cexp (z * μ + v * z ^ 2 / 2) := by
   by_cases hv : v = 0
-  · simp [hv]
+  · simp [complexMGF, hv]
   calc ∫ x, cexp (z * x) ∂gaussianReal μ v
     _ = ∫ x, gaussianPDFReal μ v x * cexp (z * x) ∂ℙ := by
       simp_rw [integral_gaussianReal_eq_integral_smul hv, Complex.real_smul]
@@ -393,16 +399,6 @@ lemma integral_exp_mul_gaussianReal {μ : ℝ} {v : ℝ≥0} {z : ℂ} :
       have : (v : ℂ) ≠ 0 := by simpa
       field_simp
       ring
-
-open Real Complex
-
-variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {p : Measure Ω} {μ : ℝ} {v : ℝ≥0} {X : Ω → ℝ}
-
-/-- The complex moment generating function of a Gaussian distribution with mean `μ` and variance `v`
-is given by `z ↦ exp (z * μ + v * z ^ 2 / 2)`. -/
-theorem complexMGF_id_gaussianReal (z : ℂ) :
-    complexMGF id (gaussianReal μ v) z = cexp (z * μ + v * z ^ 2 / 2) :=
-  integral_exp_mul_gaussianReal
 
 /-- The complex moment generating function of a random variable with Gaussian distribution
 with mean `μ` and variance `v` is given by `z ↦ exp (z * μ + v * z ^ 2 / 2)`. -/
