@@ -76,7 +76,7 @@ theorem integer_valuation_le_one (x : S.integer K) {v : HeightOneSpectrum R} (hv
   x.property v hv
 
 /-- If `S` is the whole set of places of `K`, then the `S`-integers are the whole of `K`. -/
-@[simp] lemma set_integer_top : (univ : Set (HeightOneSpectrum R)).integer K = ⊤ := by
+@[simp] lemma integer_univ : (univ : Set (HeightOneSpectrum R)).integer K = ⊤ := by
   ext
   tauto
 
@@ -85,7 +85,7 @@ If `S` is the empty set, then the `S`-integers are the minimal `R`-subalgebra of
 just `R` itself).
 -/
 @[simp]
-lemma set_integer_empty : (∅ : Set (HeightOneSpectrum R)).integer K = ⊥ := by
+lemma integer_empty : (∅ : Set (HeightOneSpectrum R)).integer K = ⊥ := by
   ext x
   simp only [integer, mem_empty_iff_false, not_false_eq_true, true_implies]
   refine ⟨IsDedekindDomain.HeightOneSpectrum.mem_integers_of_valuation_le_one K x, ?_⟩
