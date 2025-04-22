@@ -587,7 +587,8 @@ namespace ContinuousLinearEquiv
 
 section Semilinear
 
-variable {𝕜 𝕜₂ 𝕜₃ 𝕜₄ E F G H : Type*} [AddCommGroup E] [AddCommGroup F] [AddCommGroup G] [AddCommGroup H]
+variable {𝕜 𝕜₂ 𝕜₃ 𝕜₄ E F G H : Type*}
+  [AddCommGroup E] [AddCommGroup F] [AddCommGroup G] [AddCommGroup H]
   [NormedField 𝕜] [NormedField 𝕜₂] [NormedField 𝕜₃] [NormedField 𝕜₄]
   [Module 𝕜 E] [Module 𝕜₂ F] [Module 𝕜₃ G] [Module 𝕜₄ H]
   [TopologicalSpace E] [TopologicalSpace F] [TopologicalSpace G] [TopologicalSpace H]
