@@ -12,9 +12,9 @@ This provides some results and constructions for adjunctions between functors on
 preadditive categories:
 * If one of the adjoint functors is additive, so is the other.
 * If one of the adjoint functors is additive, the equivalence `Adjunction.homEquiv` lifts to
-an additive equivalence `Adjunction.homAddEquiv`.
+  an additive equivalence `Adjunction.homAddEquiv`.
 * We also give a version of this additive equivalence as an isomorphism of `preadditiveYoneda`
-functors (analogous to `Adjunction.compYonedaIso`), in `Adjunction.compPreadditiveYonedaIso`.
+  functors (analogous to `Adjunction.compYonedaIso`), in `Adjunction.compPreadditiveYonedaIso`.
 
 -/
 
