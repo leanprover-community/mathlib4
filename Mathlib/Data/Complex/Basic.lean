@@ -398,9 +398,6 @@ def imAddGroupHom : ℂ →+ ℝ where
 theorem coe_imAddGroupHom : (imAddGroupHom : ℂ → ℝ) = im :=
   rfl
 
-section
-end
-
 /-! ### Cast lemmas -/
 
 instance instNNRatCast : NNRatCast ℂ where nnratCast q := ofReal q
