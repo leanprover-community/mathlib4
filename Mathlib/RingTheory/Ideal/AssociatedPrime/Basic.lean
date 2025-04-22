@@ -3,6 +3,7 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.Algebra.Exact
 import Mathlib.LinearAlgebra.Span.Basic
 import Mathlib.RingTheory.Ideal.IsPrimary
 import Mathlib.RingTheory.Ideal.Quotient.Operations
@@ -39,6 +40,16 @@ open LinearMap
 /-- `IsAssociatedPrime I M` if the prime ideal `I` is the annihilator of some `x : M`. -/
 def IsAssociatedPrime : Prop :=
   I.IsPrime ∧ ∃ x : M, I = ker (toSpanSingleton R M x)
+
+theorem isAssociatedPrime_iff_exists_injective_linearMap :
+    IsAssociatedPrime I M ↔ I.IsPrime ∧ ∃ (f : R ⧸ I →ₗ[R] M), Function.Injective f := by
+  rw [IsAssociatedPrime]
+  congr! 1
+  refine ⟨fun ⟨_, h⟩ ↦ ⟨Submodule.liftQ _ _ h.le, ker_eq_bot.1 (Submodule.ker_liftQ_eq_bot' _ _ h)⟩,
+    fun ⟨f, h⟩ ↦ ⟨(f ∘ₗ Submodule.mkQ I) 1, ?_⟩⟩
+  have := I.ker_mkQ ▸ ker_comp_of_ker_eq_bot (Submodule.mkQ I) (ker_eq_bot_of_injective h)
+  convert this.symm using 2
+  ext; simp
 
 variable (R)
 
@@ -92,8 +103,53 @@ theorem exists_le_isAssociatedPrime_of_isNoetherianRing [H : IsNoetherianRing R]
   rwa [H₁.eq_of_not_lt (h₃ _ ⟨l.trans H₁, H₂, _, rfl⟩),
     mem_ker, toSpanSingleton_apply, smul_comm, smul_smul]
 
+/-- If `M → M'` is injective, then the set of associated primes of `M` is
+contained in that of `M'`. -/
+@[stacks 02M3 "first part"]
 theorem associatedPrimes.subset_of_injective (hf : Function.Injective f) :
     associatedPrimes R M ⊆ associatedPrimes R M' := fun _I h => h.map_of_injective f hf
+
+/-- If `0 → M → M' → M''` is an exact sequence, then the set of associated primes of `M'` is
+contained in the union of those of `M` and `M''`. -/
+@[stacks 02M3 "second part"]
+theorem associatedPrimes.subset_union_of_exact
+    {M'' : Type*} [AddCommGroup M''] [Module R M'']
+    (g : M' →ₗ[R] M'') (hf : Function.Injective f) (hfg : Function.Exact f g) :
+    associatedPrimes R M' ⊆ associatedPrimes R M ∪ associatedPrimes R M'' := by
+  rintro p ⟨_, x, hx⟩
+  by_cases h : ∃ a ∈ p.primeCompl, ∃ y : M, f y = a • x
+  · obtain ⟨a, ha, y, h⟩ := h
+    refine Or.inl ⟨‹_›, y, le_antisymm (fun b hb ↦ ?_) (fun b hb ↦ ?_)⟩
+    · rw [hx] at hb
+      rw [LinearMap.mem_ker, LinearMap.toSpanSingleton_apply] at hb ⊢
+      apply_fun _ using hf
+      rw [map_smul, map_zero, h, smul_comm, hb, smul_zero]
+    · rw [LinearMap.mem_ker, LinearMap.toSpanSingleton_apply] at hb
+      apply_fun f at hb
+      rw [map_smul, map_zero, h, ← mul_smul, ← LinearMap.toSpanSingleton_apply,
+        ← LinearMap.mem_ker, ← hx] at hb
+      contrapose! hb
+      exact p.primeCompl.mul_mem hb ha
+  · push_neg at h
+    refine Or.inr ⟨‹_›, g x, le_antisymm (fun b hb ↦ ?_) (fun b hb ↦ ?_)⟩
+    · rw [hx] at hb
+      rw [LinearMap.mem_ker, LinearMap.toSpanSingleton_apply] at hb ⊢
+      rw [← map_smul, hb, map_zero]
+    · rw [LinearMap.mem_ker, LinearMap.toSpanSingleton_apply, ← map_smul, ← LinearMap.mem_ker,
+        hfg.linearMap_ker_eq] at hb
+      obtain ⟨y, hy⟩ := hb
+      by_contra! H
+      exact h b H y hy
+
+variable (R M M') in
+/-- The set of associated primes of the product of two modules is equal to
+the union of those of the two modules. -/
+@[stacks 02M3 "third part"]
+theorem associatedPrimes.prod :
+    associatedPrimes R (M × M') = associatedPrimes R M ∪ associatedPrimes R M' :=
+  (subset_union_of_exact (.inl R M M') (.snd R M M') LinearMap.inl_injective .inl_snd).antisymm
+    (Set.union_subset_iff.2 ⟨subset_of_injective (.inl R M M') LinearMap.inl_injective,
+      subset_of_injective (.inr R M M') LinearMap.inr_injective⟩)
 
 theorem LinearEquiv.AssociatedPrimes.eq (l : M ≃ₗ[R] M') :
     associatedPrimes R M = associatedPrimes R M' :=
