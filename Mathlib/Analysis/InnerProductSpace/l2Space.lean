@@ -487,9 +487,9 @@ theorem coe_toOrthonormalBasis [Fintype ι] (b : HilbertBasis ι 𝕜 E) :
 
 protected theorem hasSum_orthogonalProjection {U : Submodule 𝕜 E} [CompleteSpace U]
     (b : HilbertBasis ι 𝕜 U) (x : E) :
-    HasSum (fun i => ⟪(b i : E), x⟫ • b i) (orthogonalProjection U x) := by
+    HasSum (fun i => ⟪(b i : E), x⟫ • b i) (U.orthogonalProjection x) := by
   simpa only [b.repr_apply_apply, inner_orthogonalProjection_eq_of_mem_left] using
-    b.hasSum_repr (orthogonalProjection U x)
+    b.hasSum_repr (U.orthogonalProjection x)
 
 theorem finite_spans_dense [DecidableEq E] (b : HilbertBasis ι 𝕜 E) :
     (⨆ J : Finset ι, span 𝕜 (J.image b : Set E)).topologicalClosure = ⊤ :=
