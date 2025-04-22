@@ -29,37 +29,41 @@ variable {α β ι : Type*}
 
 section HasProdUniformlyOn
 
-variable [CommMonoid α] {f : ι → β → α} {g : β → α} {𝔖 : Set (Set β)}
+variable [CommMonoid α] {𝔖 : Set (Set β)}
 
 @[to_additive, simp]
 lemma UniformOnFun.ofFun_prod (f : ι → β → α) (i : Finset ι) :
     ∏ b ∈ i, (UniformOnFun.ofFun 𝔖) (f b) = (UniformOnFun.ofFun 𝔖) (∏ b ∈ i, f b) := rfl
 
+variable  {f : ι → β → α} {g : β → α}
+
 variable [UniformSpace α]
 
-/-- `HasProdUniformlyOn f g 𝔖` means that the (potentially infinite) product of the `f b` for
-`b : β` converges uniformly on `s ∈ 𝔖` to `g`. -/
-@[to_additive]
+/-- `HasProdUniformlyOn f g 𝔖` means that the (potentially infinite) product `∏' i, f i b`
+for `b : β` converges uniformly on `s ∈ 𝔖` to `g`. -/
+@[to_additive "`HasSumUniformlyOn f g 𝔖` means that the (potentially infinite) sum `∑' i, f i b`
+for `b : β` converges uniformly on `s ∈ 𝔖` to `g`."]
 def HasProdUniformlyOn (f : ι → β → α) (g : β → α) (𝔖 : Set (Set β)) : Prop :=
   HasProd (fun i ↦ UniformOnFun.ofFun 𝔖 (f i)) (UniformOnFun.ofFun 𝔖 g)
 
-/-- `HasProdLocallyUniformlyOn f g` means that the (potentially infinite) product of
+/-- `HasProdLocallyUniformlyOn f g` means that the (potentially infinite) product
 the `∏' i, f i b` for `b : β` converges locally uniformly on `s` to `g b`. -/
-@[to_additive]
+@[to_additive "`HasProdLocallyUniformlyOn f g` means that the (potentially infinite) sum
+the `∑' i, f i b` for `b : β` converges locally uniformly on `s` to `g b`."]
 def HasProdLocallyUniformlyOn (f : ι → β → α) (g : β → α) (s : Set β) [TopologicalSpace β] : Prop :=
   ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, HasProdUniformlyOn f g {t}
 
 /-- `MultipliableUniformlyOn f 𝔖` means that `f` converges uniformly on `s` to some infinite
 product. -/
 @[to_additive "`SummableUniformlyOn f s` means that `f` converges uniformly on `s` to some
-infinite product."]
+infinite sum."]
 def MultipliableUniformlyOn (f : ι → β → α) (𝔖 : Set (Set β)) : Prop :=
   ∃ g, HasProdUniformlyOn f g 𝔖
 
 /-- `MultipliableLocallyUniformlyOn f s` means that `f` converges locally uniformly on `s` to some
 infinite product. -/
-@[to_additive "`SummableUniformlyOn f s` means that `f` converges uniformly on `s` to some
-infinite product. "]
+@[to_additive "`SummableUniformlyOn f s` means that `f` converges locally uniformly on `s` to some
+infinite sum. "]
 def MultipliableLocallyUniformlyOn (f : ι → β → α) (s : Set β) [TopologicalSpace β] : Prop :=
   ∃ g, HasProdLocallyUniformlyOn f g s
 
