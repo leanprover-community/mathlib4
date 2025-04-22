@@ -560,10 +560,7 @@ set_option linter.deprecated false in
 theorem aleph'_pos {o : Ordinal} (ho : 0 < o) : 0 < aleph' o := by
   rwa [← aleph'_zero, aleph'_lt]
 
-set_option linter.deprecated false in
-@[deprecated preAleph_isNormal (since := "2024-10-22")]
-theorem aleph'_isNormal : IsNormal (ord ∘ aleph') :=
-  preAleph_isNormal
+@[deprecated (since := "2024-10-22")] alias aleph'_isNormal := isNormal_preOmega
 
 end deprecated
 

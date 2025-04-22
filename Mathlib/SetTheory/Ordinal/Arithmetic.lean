@@ -477,7 +477,7 @@ theorem isNormal_add_right (a : Ordinal) : IsNormal (a + ·) :=
 theorem isLimit_add (a) {b} : IsLimit b → IsLimit (a + b) :=
   (isNormal_add_right a).isLimit
 
-alias IsLimit.add := add_isLimit
+alias IsLimit.add := isLimit_add
 
 /-! ### Subtraction on ordinals -/
 
