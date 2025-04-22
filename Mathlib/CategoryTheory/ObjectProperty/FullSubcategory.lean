@@ -167,8 +167,8 @@ end ObjectProperty
 
 @[deprecated (since := "2025-03-04")] alias FullSubcategory := ObjectProperty.FullSubcategory
 @[deprecated (since := "2025-03-04")] alias fullSubcategoryInclusion := ObjectProperty.ι
-@[deprecated  (since := "2025-03-04")] alias fullSubcategoryInclusion.obj := ObjectProperty.ι_obj
-@[deprecated  (since := "2025-03-04")] alias fullSubcategoryInclusion.map := ObjectProperty.ι_map
+@[deprecated (since := "2025-03-04")] alias fullSubcategoryInclusion.obj := ObjectProperty.ι_obj
+@[deprecated (since := "2025-03-04")] alias fullSubcategoryInclusion.map := ObjectProperty.ι_map
 @[deprecated (since := "2025-03-04")] alias fullyFaithfulFullSubcategoryInclusion :=
   ObjectProperty.fullyFaithfulι
 @[deprecated (since := "2025-03-04")] alias FullSubcategory.map := ObjectProperty.ιOfLE
