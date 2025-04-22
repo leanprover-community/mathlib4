@@ -220,6 +220,14 @@ theorem of_sub_of [Sub A] (f g : Matrix m n A) : ofMatrix f - ofMatrix g = ofMat
 @[simp] theorem smul_of [SMul R A] (r : R) (f : Matrix m n A) :
     r • ofMatrix f = ofMatrix (r • f) := rfl
 
+theorem star_apply [Star A] {f : CStarMatrix n n A} {i j : n} :
+    (star f) i j = star (f j i) := by
+  rw [star_eq_conjTranspose, conjTranspose_apply]
+
+theorem star_apply_of_isSelfAdjoint [Star A] {f : CStarMatrix n n A} (hf : IsSelfAdjoint f)
+    {i j : n} : star (f i j) = f j i := by
+  rw [← star_apply, IsSelfAdjoint.star_eq hf]
+
 instance instStarAddMonoid [AddMonoid A] [StarAddMonoid A] : StarAddMonoid (CStarMatrix n n A) where
   star_add := star_add (R := Matrix n n A)
 
