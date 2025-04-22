@@ -96,7 +96,7 @@ theorem HasDerivAt.eventually_ne (h : HasDerivAt f f' x) (hf' : f' ≠ 0):
 theorem HasDerivAt.tendsto_nhdsNE (h : HasDerivAt f f' x) (hf' : f' ≠ 0) :
     Tendsto f (𝓝[≠] x) (𝓝[≠] f x) :=
   tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ h.continuousAt.continuousWithinAt
-    (h.eventually_ne_self hf')
+    (h.eventually_ne hf')
 
 @[deprecated (since := "2025-03-02")]
 alias HasDerivAt.tendsto_punctured_nhds := HasDerivAt.tendsto_nhdsNE
