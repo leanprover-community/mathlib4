@@ -427,8 +427,8 @@ noncomputable def addEquivHomQuotientRegularExt {rs : List R} (hr : IsWeaklyRegu
           exact Function.Surjective.comp (Submodule.mkQ_surjective _) (Submodule.mkQ_surjective _)
       refine ih.trans ?_
       have h4 : IsSMulRegular M r := ((isWeaklyRegular_cons_iff M r rs).mp hr).1
-      let S := Ext.covariantSequence N h4.SMul_ShortComplex_shortExact n (n + 1) rfl
-      let hS := Ext.covariantSequence_exact N h4.SMul_ShortComplex_shortExact n (n + 1) rfl
+      let S := Ext.covariantSequence N h4.smulShortComplex_shortExact n (n + 1) rfl
+      let hS := Ext.covariantSequence_exact N h4.smulShortComplex_shortExact n (n + 1) rfl
       have : Subsingleton (S.obj' 1 (by omega)) := h_left_subsingleton
       have h5 : S.map' 1 (1 + 1) (by omega) (by omega) = 0 :=
         IsZero.eq_zero_of_src (AddCommGrp.isZero_of_subsingleton _) _
