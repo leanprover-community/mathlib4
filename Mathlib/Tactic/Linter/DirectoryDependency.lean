@@ -164,6 +164,10 @@ We always allow imports of `Init`, `Lean`, `Std`, `Qq` and
 `Mathlib.Init` (as well as their transitive dependencies.)
 -/
 def allowedImportDirs : NamePrefixRel := .ofArray #[
+  -- This is used to test the linter.
+  (`MathlibTest.DirectoryDependencyLinter, `Mathlib.Lean),
+  (`MathlibTest, `Mathlib.Lean),
+
   (`Mathlib.Util, `Batteries),
   (`Mathlib.Util, `Mathlib.Lean),
   (`Mathlib.Util, `Mathlib.Tactic),
@@ -555,8 +559,6 @@ def overrideAllowedImportDirs : NamePrefixRel := .ofArray #[
 end DirectoryDependency
 
 open DirectoryDependency
-
-#guard Lean.Name.isPrefixOf `Mathlib.Util `Mathlib.Util.Basic == true
 
 /-- Check if one of the imports `imports` to `mainModule` is forbidden by `forbiddenImportDirs`;
 if so, return an error describing how the import transitively arises. -/
