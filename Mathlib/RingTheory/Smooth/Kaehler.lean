@@ -347,7 +347,7 @@ def retractionKerCotangentToTensorEquivSection :
     obtain ⟨x, rfl⟩ := Ideal.toCotangent_surjective _ x
     exact (tensorKaehlerQuotKerSqEquiv_tmul_D 1 x.1).symm
   refine Equiv.trans ?_ (retractionKerToTensorEquivSection (R := R) h₂ h₁)
-  refine ⟨fun ⟨l, hl⟩ ↦ ⟨⟨(e₁.toLinearMap ∘ₗ l ∘ₗ e₂.toLinearMap).toAddMonoidHom, ?_⟩, ?_⟩,
+  refine ⟨fun ⟨l, hl⟩ ↦ ⟨⟨e₁.toLinearMap ∘ₗ l ∘ₗ e₂.toLinearMap, ?_⟩, ?_⟩,
     fun ⟨l, hl⟩ ↦ ⟨e₁.symm.toLinearMap ∘ₗ l.restrictScalars P ∘ₗ e₂.symm.toLinearMap, ?_⟩, ?_, ?_⟩
   · rintro x y
     obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
@@ -472,7 +472,7 @@ theorem Algebra.FormallySmooth.iff_subsingleton_and_projective :
     (Generators.self R S).algebraMap_surjective).trans (and_congr ?_ Iff.rfl)
   show Function.Injective (Generators.self R S).toExtension.cotangentComplex ↔ _
   rw [← LinearMap.ker_eq_bot, ← Submodule.subsingleton_iff_eq_bot]
-  rfl
+  simp [H1Cotangent, Extension.H1Cotangent]
 
 instance [Algebra.FormallySmooth R S] : Subsingleton (Algebra.H1Cotangent R S) :=
   (Algebra.FormallySmooth.iff_subsingleton_and_projective.mp ‹_›).1
