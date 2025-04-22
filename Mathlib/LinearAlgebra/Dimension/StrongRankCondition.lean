@@ -62,7 +62,7 @@ theorem mk_eq_mk_of_basis (v : Basis ι R M) (v' : Basis ι' R M) :
   cases fintypeOrInfinite ι
   · -- `v` is a finite basis, so by `basis_finite_of_finite_spans` so is `v'`.
     -- haveI : Finite (range v) := Set.finite_range v
-    haveI := basis_finite_of_finite_spans _ (Set.finite_range v) v.span_eq v'
+    haveI := basis_finite_of_finite_spans (Set.finite_range v) v.span_eq v'
     cases nonempty_fintype ι'
     -- We clean up a little:
     rw [Cardinal.mk_fintype, Cardinal.mk_fintype]
@@ -121,7 +121,7 @@ but still assumes we have a finite spanning set.
 theorem basis_le_span' {ι : Type*} (b : Basis ι R M) {w : Set M} [Fintype w] (s : span R w = ⊤) :
     #ι ≤ Fintype.card w := by
   haveI := nontrivial_of_invariantBasisNumber R
-  haveI := basis_finite_of_finite_spans w (toFinite _) s b
+  haveI := basis_finite_of_finite_spans w.toFinite s b
   cases nonempty_fintype ι
   rw [Cardinal.mk_fintype ι]
   simp only [Nat.cast_le]
@@ -290,7 +290,7 @@ theorem linearIndependent_le_span'' {ι : Type v} {v : ι → M} (i : LinearInde
 
 /-- Let `R` satisfy the strong rank condition. If `m` elements of a free rank `n` `R`-module are
 linearly independent, then `m ≤ n`. -/
-theorem Basis.card_le_card_of_linearIndependent_aux {R : Type*} [Ring R] [StrongRankCondition R]
+theorem Basis.card_le_card_of_linearIndependent_aux {R : Type*} [Semiring R] [StrongRankCondition R]
     (n : ℕ) {m : ℕ} (v : Fin m → Fin n → R) : LinearIndependent R v → m ≤ n := fun h => by
   simpa using linearIndependent_le_basis (Pi.basisFun R (Fin n)) v h
 

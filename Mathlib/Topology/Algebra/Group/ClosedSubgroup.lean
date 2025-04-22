@@ -11,8 +11,8 @@ import Mathlib.Topology.Algebra.Group.Basic
 /-!
 # Closed subgroups of a topological group
 
-This files builds the SemilatticeInf `ClosedSubgroup G` of closed subgroups in a
-topological group `G`, and its additive version `ClosedAddSubgroup`.
+This files builds the frame of closed subgroups in a topological group `G`,
+and its additive version `ClosedAddSubgroup`.
 
 # Main definitions and results
 
@@ -20,6 +20,9 @@ topological group `G`, and its additive version `ClosedAddSubgroup`.
 
 * `finindex_closedSubgroup_isOpen` : A closed subgroup with finite index is open.
 
+## TODO
+
+Actually provide the `Order.Frame (ClosedSubgroup G)` instance.
 -/
 
 section

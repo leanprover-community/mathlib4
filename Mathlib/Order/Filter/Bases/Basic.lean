@@ -703,6 +703,7 @@ protected theorem HasBasis.top_prod (h : lb.HasBasis pb sb) :
 protected theorem HasBasis.prod_top (h : la.HasBasis pa sa) :
     (la ×ˢ ⊤ : Filter (α × β)).HasBasis pa (sa · ×ˢ univ) := by
   simpa only [principal_univ] using h.prod_principal univ
+
 theorem HasBasis.prod_same_index {p : ι → Prop} {sb : ι → Set β} (hla : la.HasBasis p sa)
     (hlb : lb.HasBasis p sb) (h_dir : ∀ {i j}, p i → p j → ∃ k, p k ∧ sa k ⊆ sa i ∧ sb k ⊆ sb j) :
     (la ×ˢ lb).HasBasis p fun i => sa i ×ˢ sb i := by

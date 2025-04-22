@@ -145,17 +145,17 @@ instance smulCommClass [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
     SMulCommClass (Set α) (Set β) (Set γ) :=
   ⟨fun _ _ _ ↦ image2_left_comm smul_comm⟩
 
-@[to_additive vaddAssocClass]
+@[to_additive]
 instance isScalarTower [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower α β (Set γ) where
   smul_assoc a b T := by simp only [← image_smul, image_image, smul_assoc]
 
-@[to_additive vaddAssocClass']
+@[to_additive]
 instance isScalarTower' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower α (Set β) (Set γ) :=
   ⟨fun _ _ _ ↦ image2_image_left_comm <| smul_assoc _⟩
 
-@[to_additive vaddAssocClass'']
+@[to_additive]
 instance isScalarTower'' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower (Set α) (Set β) (Set γ) where
   smul_assoc _ _ _ := image2_assoc smul_assoc

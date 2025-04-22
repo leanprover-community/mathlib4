@@ -334,7 +334,7 @@ theorem trans_toLinearEquiv (e₁ : M₁ ≃SL[σ₁₂] M₂) (e₂ : M₂ ≃S
 /-- Product of two continuous linear equivalences. The map comes from `Equiv.prodCongr`. -/
 def prod [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] (e : M₁ ≃L[R₁] M₂) (e' : M₃ ≃L[R₁] M₄) :
     (M₁ × M₃) ≃L[R₁] M₂ × M₄ :=
-  { e.toLinearEquiv.prod e'.toLinearEquiv with
+  { e.toLinearEquiv.prodCongr e'.toLinearEquiv with
     continuous_toFun := e.continuous_toFun.prodMap e'.continuous_toFun
     continuous_invFun := e.continuous_invFun.prodMap e'.continuous_invFun }
 
@@ -991,8 +991,7 @@ lemma IsInvertible.inverse_apply_eq {f : M →L[R] M₂} {x : M} {y : M₂} (hf 
   · rcases hf with ⟨A, rfl⟩
     simp only [ContinuousLinearEquiv.comp_coe, inverse_equiv, ContinuousLinearEquiv.coe_inj]
     rfl
-  · rw [inverse_of_not_isInvertible (by simp [hf]), inverse_of_not_isInvertible hf]
-    rfl
+  · rw [inverse_of_not_isInvertible (by simp [hf]), inverse_of_not_isInvertible hf, zero_comp]
 
 @[simp] lemma inverse_comp_equiv {e : M₃ ≃L[R] M} {f : M →L[R] M₂} :
     (f ∘L e).inverse = (e.symm : M →L[R] M₃) ∘L f.inverse := by
@@ -1000,8 +999,7 @@ lemma IsInvertible.inverse_apply_eq {f : M →L[R] M₂} {x : M} {y : M₂} (hf 
   · rcases hf with ⟨A, rfl⟩
     simp only [ContinuousLinearEquiv.comp_coe, inverse_equiv, ContinuousLinearEquiv.coe_inj]
     rfl
-  · rw [inverse_of_not_isInvertible (by simp [hf]), inverse_of_not_isInvertible hf]
-    simp
+  · rw [inverse_of_not_isInvertible (by simp [hf]), inverse_of_not_isInvertible hf, comp_zero]
 
 lemma IsInvertible.inverse_comp_of_left {g : M₂ →L[R] M₃} {f : M →L[R] M₂}
     (hg : g.IsInvertible) : (g ∘L f).inverse = f.inverse ∘L g.inverse := by
