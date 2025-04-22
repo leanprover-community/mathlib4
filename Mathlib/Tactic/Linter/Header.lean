@@ -216,7 +216,7 @@ def isInMathlib (modName : Name) : IO Bool := do
   let mlPath := ("Mathlib" : System.FilePath).addExtension "lean"
   if ← mlPath.pathExists then
     let ml ← parseImports' (← IO.FS.readFile mlPath) ""
-    return (ml.map (·.module == modName)).any (·)
+    return (ml.imports.map (·.module == modName)).any (·)
   else return false
 
 /-- `inMathlibRef` is
@@ -327,7 +327,7 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- so we trigger a "no module doc-string" warning.
     let fil ← getFileName
     let (stx, _) ← Parser.parseHeader { input := fm.source, fileName := fil, fileMap := fm }
-    parseUpToHere (stx.getTailPos?.getD default) "\nsection")
+    parseUpToHere (stx.raw.getTailPos?.getD default) "\nsection")
   let importIds := getImportIds upToStx
   -- Report on broad or duplicate imports.
   broadImportsCheck importIds mainModule

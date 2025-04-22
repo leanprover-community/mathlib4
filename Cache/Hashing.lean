@@ -72,7 +72,7 @@ parsing imports from `content` should fail. It is intended to be the file's name
 def getFileImports (content : String) (fileName : String := "") :
     CacheM <| Array (Name × FilePath) := do
   let sp := (← read).srcSearchPath
-  let fileImports : Array Import ← Lean.parseImports' content fileName
+  let fileImports : Array Import := (← Lean.parseImports' content fileName).imports
   fileImports
     |>.filter (isPartOfMathlibCache ·.module)
     |>.mapM fun imp => do
