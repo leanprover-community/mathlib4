@@ -71,7 +71,7 @@ theorem vsub_eq_sub {G : Type*} [AddGroup G] (g₁ g₂ : G) : g₁ -ᵥ g₂ = 
 
 section General
 
-variable {G : Type*} {P : Type*} [AddGroup G] [T : AddTorsor G P]
+variable {G P : Type*} [AddGroup G] [T : AddTorsor G P]
 
 /-- Adding the result of subtracting from another point produces that
 point. -/
@@ -169,7 +169,7 @@ end General
 
 namespace Equiv
 
-variable {G : Type*} {P : Type*} [AddGroup G] [AddTorsor G P]
+variable {G P : Type*} [AddGroup G] [AddTorsor G P]
 
 /-- `v ↦ v +ᵥ p` as an equivalence. -/
 def vaddConst (p : P) : G ≃ P where

@@ -59,7 +59,7 @@ noncomputable section
 
 open scoped NNReal ENNReal Function
 
-variable {𝕜 𝕜' : Type*} {α : Type*} {E : α → Type*} {p q : ℝ≥0∞} [∀ i, NormedAddCommGroup (E i)]
+variable {𝕜 𝕜' α : Type*} {E : α → Type*} {p q : ℝ≥0∞} [∀ i, NormedAddCommGroup (E i)]
 
 /-!
 ### `Memℓp` predicate

@@ -463,7 +463,7 @@ alias CompleteLattice.independent_map_orderIso_iff := iSupIndep_map_orderIso_iff
 
 /-- If the elements of a set are independent, then any element is disjoint from the `iSup` of some
 subset of the rest. -/
-theorem iSupIndep.disjoint_biSup {ι : Type*} {α : Type*} [CompleteLattice α] {t : ι → α}
+theorem iSupIndep.disjoint_biSup {ι α : Type*} [CompleteLattice α] {t : ι → α}
     (ht : iSupIndep t) {x : ι} {y : Set ι} (hx : x ∉ y) : Disjoint (t x) (⨆ i ∈ y, t i) :=
   Disjoint.mono_right (biSup_mono fun _ hi => (ne_of_mem_of_not_mem hi hx :)) (ht x)
 

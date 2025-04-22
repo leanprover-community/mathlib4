@@ -65,7 +65,7 @@ open Multiset Subtype Function
 
 universe u
 
-variable {α : Type*} {β : Type*} {γ : Type*}
+variable {α β γ : Type*}
 
 /-- `Finset α` is the type of finite sets of elements of `α`. It is implemented
   as a multiset (a list up to permutation) which has no duplicate elements. -/

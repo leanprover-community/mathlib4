@@ -560,7 +560,7 @@ theorem Dense.prod {s : Set X} {t : Set Y} (hs : Dense s) (ht : Dense t) : Dense
   exact ⟨hs x.1, ht x.2⟩
 
 /-- If `f` and `g` are maps with dense range, then `Prod.map f g` has dense range. -/
-theorem DenseRange.prodMap {ι : Type*} {κ : Type*} {f : ι → Y} {g : κ → Z} (hf : DenseRange f)
+theorem DenseRange.prodMap {ι κ : Type*} {f : ι → Y} {g : κ → Z} (hf : DenseRange f)
     (hg : DenseRange g) : DenseRange (Prod.map f g) := by
   simpa only [DenseRange, prod_range_range_eq] using hf.prod hg
 

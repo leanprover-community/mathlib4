@@ -17,7 +17,7 @@ open Finsupp
 
 namespace Ideal
 
-variable {R : Type*} {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
 
 /-- The image of a finitely generated ideal is finitely generated.
 

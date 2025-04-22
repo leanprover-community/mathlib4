@@ -31,7 +31,7 @@ structure CFilter (α σ : Type*) [PartialOrder α] where
   inf_le_left : ∀ a b : σ, f (inf a b) ≤ f a
   inf_le_right : ∀ a b : σ, f (inf a b) ≤ f b
 
-variable {α : Type*} {β : Type*} {σ : Type*} {τ : Type*}
+variable {α β σ τ : Type*}
 
 instance [Inhabited α] [SemilatticeInf α] : Inhabited (CFilter α α) :=
   ⟨{  f := id

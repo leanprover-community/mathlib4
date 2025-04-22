@@ -41,7 +41,7 @@ noncomputable section
 /-- If `Γ` is linearly ordered and `R` has zero, then `HahnSeries Γ R` consists of
   formal series over `Γ` with coefficients in `R`, whose supports are well-founded. -/
 @[ext]
-structure HahnSeries (Γ : Type*) (R : Type*) [PartialOrder Γ] [Zero R] where
+structure HahnSeries (Γ R : Type*) [PartialOrder Γ] [Zero R] where
   /-- The coefficient function of a Hahn Series. -/
   coeff : Γ → R
   isPWO_support' : (Function.support coeff).IsPWO

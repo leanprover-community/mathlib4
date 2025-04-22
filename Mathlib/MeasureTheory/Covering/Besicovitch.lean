@@ -188,7 +188,7 @@ end SatelliteConfig
 
 
 /-- A ball package is a family of balls in a metric space with positive bounded radii. -/
-structure BallPackage (β : Type*) (α : Type*) where
+structure BallPackage (β α : Type*) where
   /-- Centers of the balls -/
   c : β → α
   /-- Radii of the balls -/
@@ -213,7 +213,7 @@ instance BallPackage.instInhabited (α : Type*) : Inhabited (BallPackage α α) 
 together with enough data to proceed with the Besicovitch greedy algorithm. We register this in
 a single structure to make sure that all our constructions in this algorithm only depend on
 one variable. -/
-structure TauPackage (β : Type*) (α : Type*) extends BallPackage β α where
+structure TauPackage (β α : Type*) extends BallPackage β α where
   /-- Parameter used by the Besicovitch greedy algorithm -/
   τ : ℝ
   one_lt_tau : 1 < τ

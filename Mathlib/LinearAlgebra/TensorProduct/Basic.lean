@@ -1248,7 +1248,7 @@ end Semiring
 section Ring
 
 variable {R : Type*} [CommSemiring R]
-variable {M : Type*} {N : Type*} {P : Type*} {Q : Type*} {S : Type*}
+variable {M N P Q S : Type*}
 variable [AddCommGroup M] [AddCommGroup N] [AddCommGroup P] [AddCommGroup Q] [AddCommGroup S]
 variable [Module R M] [Module R N] [Module R P] [Module R Q] [Module R S]
 

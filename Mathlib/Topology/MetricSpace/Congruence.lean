@@ -26,7 +26,7 @@ For more details see the [Zulip discussion](https://leanprover.zulipchat.com/#na
 * `v₁ ≅ v₂`: for `Congruent v₁ v₂`.
 -/
 
-variable {ι ι' : Type*} {P₁ P₂ P₃ : Type*} {v₁ : ι → P₁} {v₂ : ι → P₂} {v₃ : ι → P₃}
+variable {ι ι' P₁ P₂ P₃ : Type*} {v₁ : ι → P₁} {v₂ : ι → P₂} {v₃ : ι → P₃}
 
 section PseudoEMetricSpace
 

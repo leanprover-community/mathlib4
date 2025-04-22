@@ -56,7 +56,7 @@ namespace Simplex
 
 open Finset AffineSubspace EuclideanGeometry PointsWithCircumcenterIndex
 
-variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
 
 /-- The Monge point of a simplex (in 2 or more dimensions) is a
@@ -404,7 +404,7 @@ namespace Triangle
 
 open EuclideanGeometry Finset Simplex AffineSubspace Module
 
-variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
 
 /-- The orthocenter of a triangle is the intersection of its
@@ -575,7 +575,7 @@ namespace EuclideanGeometry
 
 open Affine AffineSubspace Module
 
-variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
 
 /-- Four points form an orthocentric system if they consist of the

@@ -27,7 +27,7 @@ noncomputable section
 
 open Filter Set Topology
 
-variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
+variable {α β γ δ : Type*}
 
 /-- `i : α → β` is "dense inducing" if it has dense range and the topology on `α`
   is the one induced by `i` from the topology on `β`. -/

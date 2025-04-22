@@ -51,7 +51,7 @@ internally graded ring
 
 open DirectSum
 
-variable {ι : Type*} {σ S R : Type*}
+variable {ι σ S R : Type*}
 
 theorem SetLike.algebraMap_mem_graded [Zero ι] [CommSemiring S] [Semiring R] [Algebra S R]
     (A : ι → Submodule S R) [SetLike.GradedOne A] (s : S) : algebraMap S R s ∈ A 0 := by

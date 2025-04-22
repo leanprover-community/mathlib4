@@ -257,7 +257,7 @@ end Set
 
 namespace Pi
 
-variable {A : Type*} {B : Type*} [DecidableEq A] [One B] {a : A} {b : B}
+variable {A B : Type*} [DecidableEq A] [One B] {a : A} {b : B}
 
 open Function
 

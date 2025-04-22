@@ -51,13 +51,13 @@ section
 
 /-- Like `Finsupp.mapDomain_zero`, but for the `1` we define in this file -/
 @[simp]
-theorem mapDomain_one {α : Type*} {β : Type*} {α₂ : Type*} [Semiring β] [One α] [One α₂]
+theorem mapDomain_one {α β α₂ : Type*} [Semiring β] [One α] [One α₂]
     {F : Type*} [FunLike F α α₂] [OneHomClass F α α₂] (f : F) :
     (mapDomain f (1 : MonoidAlgebra β α) : MonoidAlgebra β α₂) = (1 : MonoidAlgebra β α₂) := by
   simp_rw [one_def, mapDomain_single, map_one]
 
 /-- Like `Finsupp.mapDomain_add`, but for the convolutive multiplication we define in this file -/
-theorem mapDomain_mul {α : Type*} {β : Type*} {α₂ : Type*} [Semiring β] [Mul α] [Mul α₂]
+theorem mapDomain_mul {α β α₂ : Type*} [Semiring β] [Mul α] [Mul α₂]
     {F : Type*} [FunLike F α α₂] [MulHomClass F α α₂] (f : F) (x y : MonoidAlgebra β α) :
     mapDomain f (x * y) = mapDomain f x * mapDomain f y := by
   simp_rw [mul_def, mapDomain_sum, mapDomain_single, map_mul]
@@ -110,14 +110,14 @@ variable [Semiring k]
 
 /-- Like `Finsupp.mapDomain_zero`, but for the `1` we define in this file -/
 @[simp]
-theorem mapDomain_one {α : Type*} {β : Type*} {α₂ : Type*} [Semiring β] [Zero α] [Zero α₂]
+theorem mapDomain_one {α β α₂ : Type*} [Semiring β] [Zero α] [Zero α₂]
     {F : Type*} [FunLike F α α₂] [ZeroHomClass F α α₂] (f : F) :
     (mapDomain f (1 : AddMonoidAlgebra β α) : AddMonoidAlgebra β α₂) =
       (1 : AddMonoidAlgebra β α₂) := by
   simp_rw [one_def, mapDomain_single, map_zero]
 
 /-- Like `Finsupp.mapDomain_add`, but for the convolutive multiplication we define in this file -/
-theorem mapDomain_mul {α : Type*} {β : Type*} {α₂ : Type*} [Semiring β] [Add α] [Add α₂]
+theorem mapDomain_mul {α β α₂ : Type*} [Semiring β] [Add α] [Add α₂]
     {F : Type*} [FunLike F α α₂] [AddHomClass F α α₂] (f : F) (x y : AddMonoidAlgebra β α) :
     mapDomain f (x * y) = mapDomain f x * mapDomain f y := by
   simp_rw [mul_def, mapDomain_sum, mapDomain_single, map_add]

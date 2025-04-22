@@ -18,7 +18,7 @@ linear algebra, vector space, module
 
 -/
 
-variable {R : Type*} {M : Type*} [Semiring R]
+variable {R M : Type*} [Semiring R]
 
 namespace IsLinearMap
 

@@ -57,7 +57,7 @@ noncomputable def spectralRadius (𝕜 : Type*) {A : Type*} [NormedField 𝕜] [
     (a : A) : ℝ≥0∞ :=
   ⨆ k ∈ spectrum 𝕜 a, ‖k‖₊
 
-variable {𝕜 : Type*} {A : Type*}
+variable {𝕜 A : Type*}
 
 namespace spectrum
 

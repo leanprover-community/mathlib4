@@ -547,7 +547,7 @@ end UniformFun
 
 namespace UniformOnFun
 
-variable {α β : Type*} {γ ι : Type*}
+variable {α β γ ι : Type*}
 variable {s : Set α} {p : Filter ι}
 
 local notation "𝒰(" α ", " β ", " u ")" => @UniformFun.uniformSpace α β u

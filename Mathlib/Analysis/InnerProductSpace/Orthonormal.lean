@@ -289,7 +289,7 @@ local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
 section
 
-variable {ι : Type*} {ι' : Type*} {ι'' : Type*}
+variable {ι ι' ι'' : Type*}
 variable {E' : Type*} [SeminormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
 variable {E'' : Type*} [SeminormedAddCommGroup E''] [InnerProductSpace 𝕜 E'']
 
@@ -393,7 +393,7 @@ end
 
 section
 
-variable {ι : Type*} {ι' : Type*} {E' : Type*} [SeminormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
+variable {ι ι' E' : Type*} [SeminormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
 
 @[simp]
 theorem Orthonormal.equiv_refl {v : Basis ι 𝕜 E} (hv : Orthonormal 𝕜 v) :

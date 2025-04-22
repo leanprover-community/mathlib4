@@ -27,7 +27,7 @@ universe u v w u'
 
 section
 
-variable {R : Type*} {M : Type*} [Ring R] [TopologicalSpace R] [TopologicalSpace M]
+variable {R M : Type*} [Ring R] [TopologicalSpace R] [TopologicalSpace M]
   [AddCommGroup M] [Module R M]
 
 theorem ContinuousSMul.of_nhds_zero [IsTopologicalRing R] [IsTopologicalAddGroup M]
@@ -43,7 +43,7 @@ end
 
 section
 
-variable {R : Type*} {M : Type*} [Ring R] [TopologicalSpace R] [TopologicalSpace M]
+variable {R M : Type*} [Ring R] [TopologicalSpace R] [TopologicalSpace M]
   [AddCommGroup M] [ContinuousAdd M] [Module R M] [ContinuousSMul R M]
 
 /-- If `M` is a topological module over `R` and `0` is a limit of invertible elements of `R`, then
@@ -234,7 +234,7 @@ end Submodule
 
 section Pi
 
-theorem LinearMap.continuous_on_pi {ι : Type*} {R : Type*} {M : Type*} [Finite ι] [Semiring R]
+theorem LinearMap.continuous_on_pi {ι R M : Type*} [Finite ι] [Semiring R]
     [TopologicalSpace R] [AddCommMonoid M] [Module R M] [TopologicalSpace M] [ContinuousAdd M]
     [ContinuousSMul R M] (f : (ι → R) →ₗ[R] M) : Continuous f := by
   cases nonempty_fintype ι

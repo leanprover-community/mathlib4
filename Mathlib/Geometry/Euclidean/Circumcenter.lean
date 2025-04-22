@@ -33,7 +33,7 @@ open RealInnerProductSpace
 
 namespace EuclideanGeometry
 
-variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
 
 open AffineSubspace
@@ -235,7 +235,7 @@ namespace Simplex
 
 open Finset AffineSubspace EuclideanGeometry
 
-variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
 
 /-- The circumsphere of a simplex. -/
@@ -669,7 +669,7 @@ namespace EuclideanGeometry
 
 open Affine AffineSubspace Module
 
-variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
 
 /-- Given a nonempty affine subspace, whose direction is complete,

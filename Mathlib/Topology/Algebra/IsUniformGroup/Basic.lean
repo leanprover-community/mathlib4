@@ -33,7 +33,7 @@ section IsUniformGroup
 
 open Filter Set
 
-variable {α : Type*} {β : Type*}
+variable {α β : Type*}
 
 variable [UniformSpace α] [Group α] [IsUniformGroup α]
 
@@ -281,7 +281,7 @@ open Filter Set Function
 
 namespace IsDenseInducing
 
-variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
+variable {α β γ δ : Type*}
 variable {G : Type*}
 
 -- β is a dense subgroup of α, inclusion is denoted by e

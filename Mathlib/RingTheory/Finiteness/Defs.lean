@@ -32,7 +32,7 @@ open Finsupp
 
 namespace Submodule
 
-variable {R : Type*} {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
 
 open Set
 
@@ -84,7 +84,7 @@ end Submodule
 
 namespace Ideal
 
-variable {R : Type*} {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
 
 /-- An ideal of `R` is finitely generated if it is the span of a finite subset of `R`.
 

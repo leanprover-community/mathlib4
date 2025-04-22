@@ -35,14 +35,14 @@ open Set LinearMap
 
 namespace Finsupp
 
-variable {α : Type*} {M : Type*} {N : Type*} {P : Type*} {R : Type*} {S : Type*}
+variable {α M N P R S : Type*}
 variable [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M]
 variable [AddCommMonoid N] [Module R N]
 variable [AddCommMonoid P] [Module R P]
 
 section LinearEquivFunOnFinite
 
-variable (R : Type*) {S : Type*} (M : Type*) (α : Type*)
+variable (R : Type*) {S : Type*} (M α : Type*)
 variable [Finite α] [AddCommMonoid M] [Semiring R] [Module R M]
 
 /-- Given `Finite α`, `linearEquivFunOnFinite R` is the natural `R`-linear equivalence between
@@ -129,7 +129,7 @@ theorem lapply_comp_lsingle_of_ne (a a' : α) (h : a ≠ a') :
 
 section LMapDomain
 
-variable {α' : Type*} {α'' : Type*} (M R)
+variable {α' α'' : Type*} (M R)
 
 /-- Interpret `Finsupp.mapDomain` as a linear map. -/
 def lmapDomain (f : α → α') : (α →₀ M) →ₗ[R] α' →₀ M where
@@ -256,7 +256,7 @@ end Prod
 
 end Finsupp
 
-variable {R : Type*} {M : Type*} {N : Type*}
+variable {R M N : Type*}
 variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
 
 open Finsupp

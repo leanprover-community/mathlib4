@@ -21,7 +21,7 @@ open Set Filter Topology TopologicalSpace
 
 universe u v
 
-variable {X : Type*} {Y : Type*} {ι : Type*}
+variable {X Y ι : Type*}
 variable [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X}
 
 /-- A subset `s ⊆ X` is called **σ-compact** if it is the union of countably many compact sets. -/

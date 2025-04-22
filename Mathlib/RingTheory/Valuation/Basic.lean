@@ -230,7 +230,7 @@ theorem comap_apply {S : Type*} [Ring S] (f : S →+* R) (v : Valuation R Γ₀)
 theorem comap_id : v.comap (RingHom.id R) = v :=
   ext fun _r => rfl
 
-theorem comap_comp {S₁ : Type*} {S₂ : Type*} [Ring S₁] [Ring S₂] (f : S₁ →+* S₂) (g : S₂ →+* R) :
+theorem comap_comp {S₁ S₂ : Type*} [Ring S₁] [Ring S₂] (f : S₁ →+* S₂) (g : S₂ →+* R) :
     v.comap (g.comp f) = (v.comap g).comap f :=
   ext fun _r => rfl
 
@@ -615,7 +615,7 @@ end AddMonoid
 
 namespace AddValuation
 
-variable {Γ₀ : Type*} {Γ'₀ : Type*}
+variable {Γ₀ Γ'₀ : Type*}
 
 section Basic
 
@@ -764,7 +764,7 @@ def comap {S : Type*} [Ring S] (f : S →+* R) (v : AddValuation R Γ₀) : AddV
 theorem comap_id : v.comap (RingHom.id R) = v :=
   Valuation.comap_id v
 
-theorem comap_comp {S₁ : Type*} {S₂ : Type*} [Ring S₁] [Ring S₂] (f : S₁ →+* S₂) (g : S₂ →+* R) :
+theorem comap_comp {S₁ S₂ : Type*} [Ring S₁] [Ring S₂] (f : S₁ →+* S₂) (g : S₂ →+* R) :
     v.comap (g.comp f) = (v.comap g).comap f :=
   Valuation.comap_comp v f g
 

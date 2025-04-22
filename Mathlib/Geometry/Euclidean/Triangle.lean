@@ -246,7 +246,7 @@ This section develops some geometrical definitions and results on
 open InnerProductGeometry
 open scoped EuclideanGeometry
 
-variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
 
 /-- **Law of cosines** (cosine rule), angle-at-point form. -/

@@ -110,7 +110,7 @@ def starLinearEquiv (R : Type*) {A : Type*} [CommSemiring R] [StarRing R] [AddCo
 
 section SelfSkewAdjoint
 
-variable (R : Type*) (A : Type*) [Semiring R] [StarMul R] [TrivialStar R] [AddCommGroup A]
+variable (R A : Type*) [Semiring R] [StarMul R] [TrivialStar R] [AddCommGroup A]
   [Module R A] [StarAddMonoid A] [StarModule R A]
 
 /-- The self-adjoint elements of a star module, as a submodule. -/

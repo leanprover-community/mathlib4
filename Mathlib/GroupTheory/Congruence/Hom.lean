@@ -25,7 +25,7 @@ quotient monoid
 -/
 
 
-variable (M : Type*) {N : Type*} {P : Type*}
+variable (M : Type*) {N P : Type*}
 
 open Function Setoid
 

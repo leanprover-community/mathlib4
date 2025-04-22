@@ -112,7 +112,7 @@ alias IsUniformInducing.inducing := IsUniformInducing.isInducing
 
 @[deprecated (since := "2024-10-28")] alias UniformInducing.inducing := IsUniformInducing.isInducing
 
-theorem IsUniformInducing.prod {α' : Type*} {β' : Type*} [UniformSpace α'] [UniformSpace β']
+theorem IsUniformInducing.prod {α' β' : Type*} [UniformSpace α'] [UniformSpace β']
     {e₁ : α → α'} {e₂ : β → β'} (h₁ : IsUniformInducing e₁) (h₂ : IsUniformInducing e₂) :
     IsUniformInducing fun p : α × β => (e₁ p.1, e₂ p.2) :=
   ⟨by simp [Function.comp_def, uniformity_prod, ← h₁.1, ← h₂.1, comap_inf, comap_comap]⟩
@@ -271,7 +271,7 @@ theorem isUniformEmbedding_subtypeEmb (p : α → Prop) {e : α → β} (ue : Is
         ue.comap_uniformity.symm]
     injective := (de.subtype p).injective }
 
-theorem IsUniformEmbedding.prod {α' : Type*} {β' : Type*} [UniformSpace α'] [UniformSpace β']
+theorem IsUniformEmbedding.prod {α' β' : Type*} [UniformSpace α'] [UniformSpace β']
     {e₁ : α → α'} {e₂ : β → β'} (h₁ : IsUniformEmbedding e₁) (h₂ : IsUniformEmbedding e₂) :
     IsUniformEmbedding fun p : α × β => (e₁ p.1, e₂ p.2) where
   toIsUniformInducing := h₁.isUniformInducing.prod h₂.isUniformInducing
@@ -416,7 +416,7 @@ instance CompleteSpace.sum [CompleteSpace α] [CompleteSpace β] : CompleteSpace
 
 end
 
-theorem isUniformEmbedding_comap {α : Type*} {β : Type*} {f : α → β} [u : UniformSpace β]
+theorem isUniformEmbedding_comap {α β : Type*} {f : α → β} [u : UniformSpace β]
     (hf : Function.Injective f) : @IsUniformEmbedding α β (UniformSpace.comap f u) u f :=
   @IsUniformEmbedding.mk _ _ (UniformSpace.comap f u) _ _
     (@IsUniformInducing.mk _ _ (UniformSpace.comap f u) _ _ rfl) hf
@@ -438,7 +438,7 @@ theorem Embedding.to_isUniformEmbedding {α β} [TopologicalSpace α] [u : Unifo
 
 section UniformExtension
 
-variable {α : Type*} {β : Type*} {γ : Type*} [UniformSpace α] [UniformSpace β] [UniformSpace γ]
+variable {α β γ : Type*} [UniformSpace α] [UniformSpace β] [UniformSpace γ]
   {e : β → α} (h_e : IsUniformInducing e) (h_dense : DenseRange e) {f : β → γ}
   (h_f : UniformContinuous f)
 

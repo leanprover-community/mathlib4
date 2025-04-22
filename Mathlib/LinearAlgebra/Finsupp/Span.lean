@@ -20,7 +20,7 @@ open Set LinearMap Submodule
 
 namespace Finsupp
 
-variable {α : Type*} {M : Type*} {N : Type*} {P : Type*} {R : Type*} {S : Type*}
+variable {α M N P R S : Type*}
 variable [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M]
 variable [AddCommMonoid N] [Module R N]
 variable [AddCommMonoid P] [Module R P]
@@ -70,7 +70,7 @@ theorem span_single_image (s : Set M) (a : α) :
 
 end Finsupp
 
-variable {R : Type*} {M : Type*} {N : Type*}
+variable {R M N : Type*}
 variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
 
 open Finsupp

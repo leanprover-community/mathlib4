@@ -72,7 +72,7 @@ variable {R : Type u} {S₁ : Type v} {S₂ : Type w} {S₃ : Type x}
 
 /-- Multivariate polynomial, where `σ` is the index set of the variables and
   `R` is the coefficient ring -/
-def MvPolynomial (σ : Type*) (R : Type*) [CommSemiring R] :=
+def MvPolynomial (σ R : Type*) [CommSemiring R] :=
   AddMonoidAlgebra R (σ →₀ ℕ)
 
 namespace MvPolynomial
@@ -207,7 +207,7 @@ theorem C_mul : (C (a * a') : MvPolynomial σ R) = C a * C a' :=
 theorem C_pow (a : R) (n : ℕ) : (C (a ^ n) : MvPolynomial σ R) = C a ^ n :=
   map_pow _ _ _
 
-theorem C_injective (σ : Type*) (R : Type*) [CommSemiring R] :
+theorem C_injective (σ R : Type*) [CommSemiring R] :
     Function.Injective (C : R → MvPolynomial σ R) :=
   Finsupp.single_injective _
 
@@ -228,15 +228,15 @@ theorem C_inj {σ : Type*} (R : Type*) [CommSemiring R] (r s : R) :
 lemma C_ne_zero : (C a : MvPolynomial σ R) ≠ 0 ↔ a ≠ 0 :=
   C_eq_zero.ne
 
-instance nontrivial_of_nontrivial (σ : Type*) (R : Type*) [CommSemiring R] [Nontrivial R] :
+instance nontrivial_of_nontrivial (σ R : Type*) [CommSemiring R] [Nontrivial R] :
     Nontrivial (MvPolynomial σ R) :=
   inferInstanceAs (Nontrivial <| AddMonoidAlgebra R (σ →₀ ℕ))
 
-instance infinite_of_infinite (σ : Type*) (R : Type*) [CommSemiring R] [Infinite R] :
+instance infinite_of_infinite (σ R : Type*) [CommSemiring R] [Infinite R] :
     Infinite (MvPolynomial σ R) :=
   Infinite.of_injective C (C_injective _ _)
 
-instance infinite_of_nonempty (σ : Type*) (R : Type*) [Nonempty σ] [CommSemiring R]
+instance infinite_of_nonempty (σ R : Type*) [Nonempty σ] [CommSemiring R]
     [Nontrivial R] : Infinite (MvPolynomial σ R) :=
   Infinite.of_injective ((fun s : σ →₀ ℕ => monomial s 1) ∘ Finsupp.single (Classical.arbitrary σ))
     <| (monomial_left_injective one_ne_zero).comp (Finsupp.single_injective _)

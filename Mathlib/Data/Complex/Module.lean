@@ -49,7 +49,7 @@ open ComplexConjugate
 
 open scoped SMul
 
-variable {R : Type*} {S : Type*}
+variable {R S : Type*}
 
 attribute [local ext] Complex.ext
 

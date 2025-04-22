@@ -18,7 +18,7 @@ namespace Subalgebra
 
 section Pointwise
 
-variable {R : Type*} {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 
 theorem mul_toSubmodule_le (S T : Subalgebra R A) :
     (Subalgebra.toSubmodule S)* (Subalgebra.toSubmodule T) ≤ Subalgebra.toSubmodule (S ⊔ T) := by
@@ -41,7 +41,7 @@ theorem isIdempotentElem_toSubmodule (S : Subalgebra R A) :
 @[deprecated (since := "2025-01-12")] alias mul_self := isIdempotentElem_toSubmodule
 
 /-- When `A` is commutative, `Subalgebra.mul_toSubmodule_le` is strict. -/
-theorem mul_toSubmodule {R : Type*} {A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
+theorem mul_toSubmodule {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
     (S T : Subalgebra R A) : (Subalgebra.toSubmodule S) * (Subalgebra.toSubmodule T)
         = Subalgebra.toSubmodule (S ⊔ T) := by
   refine le_antisymm (mul_toSubmodule_le _ _) ?_

@@ -113,7 +113,7 @@ theorem hasBasis_pi_same_index {κ : Type*} {p : κ → Prop} {s : Π i : ι, κ
   · rintro ⟨I, k⟩ ⟨hI, hk⟩
     exact ⟨⟨I, fun _ ↦ k⟩, ⟨hI, fun _ _ ↦ hk⟩, subset_rfl⟩
 
-theorem HasBasis.pi_self {α : Type*} {κ : Type*} {f : Filter α} {p : κ → Prop} {s : κ → Set α}
+theorem HasBasis.pi_self {α κ : Type*} {f : Filter α} {p : κ → Prop} {s : κ → Set α}
     (h : f.HasBasis p s) :
     (pi fun _ ↦ f).HasBasis (fun Ik : Set ι × κ ↦ Ik.1.Finite ∧ p Ik.2)
       (fun Ik ↦ Ik.1.pi (fun _ ↦ s Ik.2)) := by

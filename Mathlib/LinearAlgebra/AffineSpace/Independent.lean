@@ -40,7 +40,7 @@ open scoped Affine
 
 section AffineIndependent
 
-variable (k : Type*) {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
+variable (k : Type*) {V P : Type*} [Ring k] [AddCommGroup V] [Module k V]
 variable [AffineSpace V P] {ι : Type*}
 
 /-- An indexed family is said to be affinely independent if no
@@ -545,7 +545,7 @@ end AffineIndependent
 
 section DivisionRing
 
-variable {k : Type*} {V : Type*} {P : Type*} [DivisionRing k] [AddCommGroup V] [Module k V]
+variable {k V P : Type*} [DivisionRing k] [AddCommGroup V] [Module k V]
 variable [AffineSpace V P] {ι : Type*}
 
 /-- An affinely independent set of points can be extended to such a
@@ -712,7 +712,7 @@ end DivisionRing
 
 section Ordered
 
-variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [LinearOrder k] [IsStrictOrderedRing k]
+variable {k V P : Type*} [Ring k] [LinearOrder k] [IsStrictOrderedRing k]
   [AddCommGroup V]
 variable [Module k V] [AffineSpace V P] {ι : Type*}
 
@@ -897,7 +897,7 @@ namespace Affine
 
 namespace Simplex
 
-variable {k : Type*} {V : Type*} {P : Type*} [DivisionRing k] [AddCommGroup V] [Module k V]
+variable {k V P : Type*} [DivisionRing k] [AddCommGroup V] [Module k V]
   [AffineSpace V P]
 
 /-- The centroid of a face of a simplex as the centroid of a subset of

@@ -44,7 +44,7 @@ noncomputable section
 open Filter Function Metric TopologicalSpace Set Topology
 open scoped Uniformity
 
-variable {α : Type*} {β : Type*}
+variable {α β : Type*}
 
 /-! ### Basic properties of Polish spaces -/
 

@@ -19,7 +19,7 @@ assert_not_imported Mathlib.Algebra.NeZero
 variable {α M N P : Type*}
 
 -- monoids
-variable {G : Type*} {H : Type*}
+variable {G H : Type*}
 
 -- groups
 variable {F : Type*}

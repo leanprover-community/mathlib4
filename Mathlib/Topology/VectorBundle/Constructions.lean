@@ -34,7 +34,7 @@ open Bundle Set FiberBundle
 
 namespace Bundle.Trivial
 
-variable (𝕜 : Type*) (B : Type*) (F : Type*) [NontriviallyNormedField 𝕜] [NormedAddCommGroup F]
+variable (𝕜 B F : Type*) [NontriviallyNormedField 𝕜] [NormedAddCommGroup F]
   [NormedSpace 𝕜 F] [TopologicalSpace B]
 
 instance trivialization.isLinear : (trivialization B F).IsLinear 𝕜 where

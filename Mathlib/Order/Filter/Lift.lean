@@ -355,7 +355,7 @@ theorem tendsto_prod_self_iff {f : α × α → β} {x : Filter α} {y : Filter 
     Filter.Tendsto f (x ×ˢ x) y ↔ ∀ W ∈ y, ∃ U ∈ x, ∀ x x' : α, x ∈ U → x' ∈ U → f (x, x') ∈ W := by
   simp only [tendsto_def, mem_prod_same_iff, prod_sub_preimage_iff, exists_prop]
 
-variable {α₁ : Type*} {α₂ : Type*} {β₁ : Type*} {β₂ : Type*}
+variable {α₁ α₂ β₁ β₂ : Type*}
 
 theorem prod_lift_lift {f₁ : Filter α₁} {f₂ : Filter α₂} {g₁ : Set α₁ → Filter β₁}
     {g₂ : Set α₂ → Filter β₂} (hg₁ : Monotone g₁) (hg₂ : Monotone g₂) :

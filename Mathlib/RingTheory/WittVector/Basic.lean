@@ -50,7 +50,7 @@ noncomputable section
 open MvPolynomial Function
 
 variable {p : ℕ} {R S : Type*} [CommRing R] [CommRing S]
-variable {α : Type*} {β : Type*}
+variable {α β : Type*}
 
 local notation "𝕎" => WittVector p
 local notation "W_" => wittPolynomial p

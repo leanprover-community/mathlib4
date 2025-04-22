@@ -42,7 +42,7 @@ instance finPi (n) (π : Fin n → Type*) [∀ i, Encodable (π i)] : Encodable 
 -- TODO: Unify with `fintypePi` and find a better name
 /-- When `α` is finite and `β` is encodable, `α → β` is encodable too. Because the encoding is not
 unique, we wrap it in `Trunc` to preserve computability. -/
-def fintypeArrow (α : Type*) (β : Type*) [DecidableEq α] [Fintype α] [Encodable β] :
+def fintypeArrow (α β : Type*) [DecidableEq α] [Fintype α] [Encodable β] :
     Trunc (Encodable (α → β)) :=
   (Fintype.truncEquivFin α).map fun f =>
     Encodable.ofEquiv (Fin (Fintype.card α) → β) <| Equiv.arrowCongr f (Equiv.refl _)

@@ -582,7 +582,7 @@ end Subgroup
 
 namespace MonoidHom
 
-variable {N : Type*} {P : Type*} [Group N] [Group P] (K : Subgroup G)
+variable {N P : Type*} [Group N] [Group P] (K : Subgroup G)
 
 open Subgroup
 
@@ -591,7 +591,7 @@ section Ker
 variable {M : Type*} [MulOneClass M]
 
 @[to_additive prodMap_comap_prod]
-theorem prodMap_comap_prod {G' : Type*} {N' : Type*} [Group G'] [Group N'] (f : G →* N)
+theorem prodMap_comap_prod {G' N' : Type*} [Group G'] [Group N'] (f : G →* N)
     (g : G' →* N') (S : Subgroup N) (S' : Subgroup N') :
     (S.prod S').comap (prodMap f g) = (S.comap f).prod (S'.comap g) :=
   SetLike.coe_injective <| Set.preimage_prod_map_prod f g _ _
@@ -600,7 +600,7 @@ theorem prodMap_comap_prod {G' : Type*} {N' : Type*} [Group G'] [Group N'] (f : 
 alias _root_.AddMonoidHom.sumMap_comap_sum := AddMonoidHom.prodMap_comap_prod
 
 @[to_additive ker_prodMap]
-theorem ker_prodMap {G' : Type*} {N' : Type*} [Group G'] [Group N'] (f : G →* N) (g : G' →* N') :
+theorem ker_prodMap {G' N' : Type*} [Group G'] [Group N'] (f : G →* N) (g : G' →* N') :
     (prodMap f g).ker = f.ker.prod g.ker := by
   rw [← comap_bot, ← comap_bot, ← comap_bot, ← prodMap_comap_prod, bot_prod_bot]
 

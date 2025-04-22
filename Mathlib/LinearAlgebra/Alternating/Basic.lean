@@ -407,7 +407,7 @@ end AlternatingMap
 
 namespace LinearMap
 
-variable {S : Type*} {N₂ : Type*} [AddCommMonoid N₂] [Module R N₂]
+variable {S N₂ : Type*} [AddCommMonoid N₂] [Module R N₂]
 
 /-- Composing an alternating map with a linear map on the left gives again an alternating map. -/
 def compAlternatingMap (g : N →ₗ[R] N₂) (f : M [⋀^ι]→ₗ[R] N) : M [⋀^ι]→ₗ[R] N₂ where
@@ -855,7 +855,7 @@ section Basis
 open AlternatingMap
 
 variable {ι₁ : Type*} [Finite ι]
-variable {R' : Type*} {N₁ N₂ : Type*} [CommSemiring R'] [AddCommMonoid N₁] [AddCommMonoid N₂]
+variable {R' N₁ N₂ : Type*} [CommSemiring R'] [AddCommMonoid N₁] [AddCommMonoid N₂]
 variable [Module R' N₁] [Module R' N₂]
 
 /-- Two alternating maps indexed by a `Fintype` are equal if they are equal when all arguments
@@ -878,7 +878,7 @@ end Basis
 
 section Currying
 
-variable {R' : Type*} {M'' M₂'' N'' N₂'' : Type*} [CommSemiring R'] [AddCommMonoid M'']
+variable {R' M'' M₂'' N'' N₂'' : Type*} [CommSemiring R'] [AddCommMonoid M'']
   [AddCommMonoid M₂''] [AddCommMonoid N''] [AddCommMonoid N₂''] [Module R' M''] [Module R' M₂'']
   [Module R' N''] [Module R' N₂'']
 

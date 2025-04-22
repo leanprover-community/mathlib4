@@ -31,7 +31,7 @@ if all monomials occurring in `φ` have degree `n`.
 
 namespace MvPolynomial
 
-variable {σ : Type*} {τ : Type*} {R : Type*} {S : Type*}
+variable {σ τ R S : Type*}
 
 /-
 TODO

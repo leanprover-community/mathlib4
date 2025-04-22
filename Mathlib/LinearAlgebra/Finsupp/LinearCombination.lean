@@ -34,7 +34,7 @@ open Set LinearMap Submodule
 
 namespace Finsupp
 
-variable {α : Type*} {M : Type*} {N : Type*} {P : Type*} {R : Type*} {S : Type*}
+variable {α M N P R S : Type*}
 variable [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M]
 variable [AddCommMonoid N] [Module R N]
 variable [AddCommMonoid P] [Module R P]
@@ -42,7 +42,7 @@ variable [AddCommMonoid P] [Module R P]
 section LinearCombination
 
 variable (R)
-variable {α' : Type*} {M' : Type*} [AddCommMonoid M'] [Module R M'] (v : α → M) {v' : α' → M'}
+variable {α' M' : Type*} [AddCommMonoid M'] [Module R M'] (v : α → M) {v' : α' → M'}
 
 /-- Interprets (l : α →₀ R) as a linear combination of the elements in the family (v : α → M) and
     evaluates this linear combination. -/
@@ -397,7 +397,7 @@ end SpanRange
 
 end Fintype
 
-variable {R : Type*} {M : Type*} {N : Type*}
+variable {R M N : Type*}
 variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
 
 open Finsupp

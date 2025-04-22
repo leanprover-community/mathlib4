@@ -176,7 +176,7 @@ def Primrec {α β} [Primcodable α] [Primcodable β] (f : α → β) : Prop :=
 
 namespace Primrec
 
-variable {α : Type*} {β : Type*} {σ : Type*}
+variable {α β σ : Type*}
 variable [Primcodable α] [Primcodable β] [Primcodable σ]
 
 open Nat.Primrec
@@ -345,7 +345,7 @@ def PrimrecRel {α β} [Primcodable α] [Primcodable β] (s : α → β → Prop
 
 namespace Primrec₂
 
-variable {α : Type*} {β : Type*} {σ : Type*}
+variable {α β σ : Type*}
 variable [Primcodable α] [Primcodable β] [Primcodable σ]
 
 theorem mk {f : α → β → σ} (hf : Primrec fun p : α × β => f p.1 p.2) : Primrec₂ f := hf
@@ -393,7 +393,7 @@ end Primrec₂
 
 section Comp
 
-variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*} {σ : Type*}
+variable {α β γ δ σ : Type*}
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable δ] [Primcodable σ]
 
 theorem Primrec.comp₂ {f : γ → σ} {g : α → β → γ} (hf : Primrec f) (hg : Primrec₂ g) :
@@ -434,7 +434,7 @@ theorem PrimrecRel.of_eq {α β} [Primcodable α] [Primcodable β] {r s : α →
 
 namespace Primrec₂
 
-variable {α : Type*} {β : Type*} {σ : Type*}
+variable {α β σ : Type*}
 variable [Primcodable α] [Primcodable β] [Primcodable σ]
 
 open Nat.Primrec
@@ -461,7 +461,7 @@ end Primrec₂
 
 namespace Primrec
 
-variable {α : Type*} {β : Type*} {σ : Type*}
+variable {α β σ : Type*}
 variable [Primcodable α] [Primcodable β] [Primcodable σ]
 
 theorem to₂ {f : α × β → σ} (hf : Primrec f) : Primrec₂ fun a b => f (a, b) :=
@@ -718,7 +718,7 @@ end Primrec
 
 section
 
-variable {α : Type*} {β : Type*} {σ : Type*}
+variable {α β σ : Type*}
 variable [Primcodable α] [Primcodable β] [Primcodable σ]
 variable (H : Nat.Primrec fun n => Encodable.encode (@decode (List β) _ n))
 
@@ -783,7 +783,7 @@ end
 
 namespace Primcodable
 
-variable {α : Type*} {β : Type*}
+variable {α β : Type*}
 variable [Primcodable α] [Primcodable β]
 
 open Primrec
@@ -833,7 +833,7 @@ end Primcodable
 
 namespace Primrec
 
-variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
+variable {α β γ σ : Type*}
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
 theorem sumInl : Primrec (@Sum.inl α β) :=
@@ -1136,7 +1136,7 @@ end Primcodable
 
 namespace Primrec
 
-variable {α : Type*} {β : Type*} {σ : Type*}
+variable {α β σ : Type*}
 variable [Primcodable α] [Primcodable β] [Primcodable σ]
 
 theorem subtype_val {p : α → Prop} [DecidablePred p] {hp : PrimrecPred p} :

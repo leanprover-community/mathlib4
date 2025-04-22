@@ -97,10 +97,10 @@ notation:100 E₁ " ×ᵇ " E₂ => fun x => E₁ x × E₂ x
 
 /-- `Bundle.Trivial B F` is the trivial bundle over `B` of fiber `F`. -/
 @[reducible, nolint unusedArguments]
-def Trivial (B : Type*) (F : Type*) : B → Type _ := fun _ => F
+def Trivial (B F : Type*) : B → Type _ := fun _ => F
 
 /-- The trivial bundle, unlike other bundles, has a canonical projection on the fiber. -/
-def TotalSpace.trivialSnd (B : Type*) (F : Type*) : TotalSpace F (Bundle.Trivial B F) → F :=
+def TotalSpace.trivialSnd (B F : Type*) : TotalSpace F (Bundle.Trivial B F) → F :=
   TotalSpace.snd
 
 /-- A trivial bundle is equivalent to the product `B × F`. -/

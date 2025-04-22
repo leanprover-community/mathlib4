@@ -55,7 +55,7 @@ open scoped ENNReal NNReal
 
 section Defs
 
-variable (α : Type*) (β : Type*) [PseudoEMetricSpace α] [PseudoEMetricSpace β]
+variable (α β : Type*) [PseudoEMetricSpace α] [PseudoEMetricSpace β]
 
 /-- A dilation is a map that uniformly scales the edistance between any two points. -/
 structure Dilation where
@@ -74,7 +74,7 @@ end Defs
 
 namespace Dilation
 
-variable {α : Type*} {β : Type*} {γ : Type*} {F : Type*}
+variable {α β γ F : Type*}
 
 section Setup
 

@@ -258,7 +258,7 @@ protected theorem Computable₂.partrec₂ {α β σ} [Primcodable α] [Primcoda
 
 namespace Computable
 
-variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
+variable {α β γ σ : Type*}
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
 theorem of_eq {f g : α → σ} (hf : Computable f) (H : ∀ n, f n = g n) : Computable g :=
@@ -375,7 +375,7 @@ end Computable
 
 namespace Partrec
 
-variable {α : Type*} {β : Type*} {σ : Type*} [Primcodable α] [Primcodable β] [Primcodable σ]
+variable {α β σ : Type*} [Primcodable α] [Primcodable β] [Primcodable σ]
 
 open Computable
 
@@ -432,7 +432,7 @@ end Partrec
 
 namespace Partrec₂
 
-variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*} {σ : Type*}
+variable {α β γ δ σ : Type*}
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable δ] [Primcodable σ]
 
 theorem unpaired {f : ℕ → ℕ →. α} : Partrec (Nat.unpaired f) ↔ Partrec₂ f :=
@@ -454,7 +454,7 @@ end Partrec₂
 
 namespace Computable
 
-variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
+variable {α β γ σ : Type*}
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
 nonrec theorem comp {f : β → σ} {g : α → β} (hf : Computable f) (hg : Computable g) :
@@ -469,7 +469,7 @@ end Computable
 
 namespace Computable₂
 
-variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*} {σ : Type*}
+variable {α β γ δ σ : Type*}
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable δ] [Primcodable σ]
 
 theorem mk {f : α → β → σ} (hf : Computable fun p : α × β => f p.1 p.2) : Computable₂ f := hf
@@ -486,7 +486,7 @@ end Computable₂
 
 namespace Partrec
 
-variable {α : Type*} {σ : Type*} [Primcodable α] [Primcodable σ]
+variable {α σ : Type*} [Primcodable α] [Primcodable σ]
 
 open Computable
 
@@ -547,7 +547,7 @@ theorem Vector.mOfFn_part_some {α n} :
 
 namespace Computable
 
-variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
+variable {α β γ σ : Type*}
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
 theorem option_some_iff {f : α → σ} : (Computable fun a => Option.some (f a)) ↔ Computable f :=
@@ -670,7 +670,7 @@ end Computable
 
 namespace Partrec
 
-variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
+variable {α β γ σ : Type*}
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
 open Computable

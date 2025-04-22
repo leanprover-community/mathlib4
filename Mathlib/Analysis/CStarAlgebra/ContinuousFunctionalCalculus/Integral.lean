@@ -35,7 +35,7 @@ open scoped ContinuousMapZero
 
 section unital
 
-variable {X : Type*} {𝕜 : Type*} {A : Type*} {p : A → Prop} [RCLike 𝕜]
+variable {X 𝕜 A : Type*} {p : A → Prop} [RCLike 𝕜]
   [MeasurableSpace X] {μ : Measure X}
   [NormedRing A] [StarRing A] [NormedAlgebra 𝕜 A] [NormedAlgebra ℝ A] [CompleteSpace A]
   [ContinuousFunctionalCalculus 𝕜 A p]
@@ -89,7 +89,7 @@ end unital
 
 section nonunital
 
-variable {X : Type*} {𝕜 : Type*} {A : Type*} {p : A → Prop} [RCLike 𝕜]
+variable {X 𝕜 A : Type*} {p : A → Prop} [RCLike 𝕜]
   [MeasurableSpace X] {μ : Measure X} [NonUnitalNormedRing A] [StarRing A] [CompleteSpace A]
   [NormedSpace 𝕜 A] [NormedSpace ℝ A] [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A]
   [NonUnitalContinuousFunctionalCalculus 𝕜 A p]

@@ -38,7 +38,7 @@ open Multiset Subtype Function
 
 universe u
 
-variable {α : Type*} {β : Type*}
+variable {α β : Type*}
 
 namespace Finset
 

@@ -70,7 +70,7 @@ open Pointwise
 
 namespace MulAction
 
-variable (G : Type*) (X : Type*)
+variable (G X : Type*)
 
 -- Note : if the action is degenerate, singletons may not be blocks.
 /-- An additive action is preprimitive if it is pretransitive and

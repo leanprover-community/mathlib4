@@ -139,7 +139,7 @@ alias ClosedEmbedding := IsClosedEmbedding
 /-- A function between topological spaces is a quotient map if it is surjective,
   and for all `s : Set Y`, `s` is open iff its preimage is an open set. -/
 @[mk_iff isQuotientMap_iff']
-structure IsQuotientMap {X : Type*} {Y : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
+structure IsQuotientMap {X Y : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
     (f : X → Y) : Prop where
   surjective : Function.Surjective f
   eq_coinduced : tY = tX.coinduced f

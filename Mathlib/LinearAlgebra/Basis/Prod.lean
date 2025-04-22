@@ -20,7 +20,7 @@ universe u
 
 open Function Set Submodule Finsupp
 
-variable {ι : Type*} {ι' : Type*} {R : Type*} {R₂ : Type*} {M : Type*} {M' : Type*}
+variable {ι ι' R R₂ M M' : Type*}
 
 section Module
 

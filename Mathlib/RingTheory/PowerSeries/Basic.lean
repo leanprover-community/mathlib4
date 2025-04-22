@@ -493,7 +493,7 @@ theorem eq_X_mul_shift_add_const (φ : R⟦X⟧) :
 
 section Map
 
-variable {S : Type*} {T : Type*} [Semiring S] [Semiring T]
+variable {S T : Type*} [Semiring S] [Semiring T]
 variable (f : R →+* S) (g : S →+* T)
 
 /-- The map between formal power series induced by a map on the coefficients. -/

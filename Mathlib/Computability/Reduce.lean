@@ -106,7 +106,7 @@ theorem transitive_oneOneReducible {α} [Primcodable α] : Transitive (@OneOneRe
 
 namespace ComputablePred
 
-variable {α : Type*} {β : Type*} [Primcodable α] [Primcodable β]
+variable {α β : Type*} [Primcodable α] [Primcodable β]
 
 open Computable
 

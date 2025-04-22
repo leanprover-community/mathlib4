@@ -45,10 +45,10 @@ section Semiring
 -- the `ₗ` subscript variables are for special cases about linear (as opposed to semilinear) maps
 variable {R : Type*} [Semiring R] {S : Type*} [Semiring S]
 variable {R₂ : Type*} [Semiring R₂] {S₂ : Type*} [Semiring S₂]
-variable {M : Type*} {N : Type*} {P : Type*}
-variable {M₂ : Type*} {N₂ : Type*} {P₂ : Type*}
+variable {M N P : Type*}
+variable {M₂ N₂ P₂ : Type*}
 variable {Pₗ : Type*}
-variable {M' : Type*} {P' : Type*}
+variable {M' P' : Type*}
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
 variable [AddCommMonoid M₂] [AddCommMonoid N₂] [AddCommMonoid P₂] [AddCommMonoid Pₗ]
 variable [AddCommGroup M'] [AddCommGroup P']
@@ -211,8 +211,8 @@ section CommSemiring
 
 variable {R : Type*} [CommSemiring R] {R₂ : Type*} [CommSemiring R₂]
 variable {R₃ : Type*} [CommSemiring R₃] {R₄ : Type*} [CommSemiring R₄]
-variable {M : Type*} {N : Type*} {P : Type*} {Q : Type*}
-variable {Mₗ : Type*} {Nₗ : Type*} {Pₗ : Type*} {Qₗ Qₗ' : Type*}
+variable {M N P Q : Type*}
+variable {Mₗ Nₗ Pₗ Qₗ Qₗ' : Type*}
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q]
 variable [AddCommMonoid Mₗ] [AddCommMonoid Nₗ] [AddCommMonoid Pₗ]
 variable [AddCommMonoid Qₗ] [AddCommMonoid Qₗ']

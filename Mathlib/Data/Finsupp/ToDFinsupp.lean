@@ -58,7 +58,7 @@ these arguments are also present on the `noncomputable` equivs.
 -/
 
 
-variable {ι : Type*} {R : Type*} {M : Type*}
+variable {ι R M : Type*}
 
 /-! ### Basic definitions and lemmas -/
 

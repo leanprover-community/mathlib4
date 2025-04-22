@@ -32,7 +32,7 @@ forms specifically.
 
 universe u v w
 
-variable {ι : Type*} {R : Type*} {M₁ M₂ N₁ N₂ P : Type*} {Mᵢ Nᵢ : ι → Type*}
+variable {ι R M₁ M₂ N₁ N₂ P : Type*} {Mᵢ Nᵢ : ι → Type*}
 
 
 namespace QuadraticMap

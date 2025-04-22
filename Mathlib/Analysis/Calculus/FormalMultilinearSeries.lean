@@ -40,7 +40,7 @@ variable [Semiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] 
 /-- A formal multilinear series over a field `𝕜`, from `E` to `F`, is given by a family of
 multilinear maps from `E^n` to `F` for all `n`. -/
 @[nolint unusedArguments]
-def FormalMultilinearSeries (𝕜 : Type*) (E : Type*) (F : Type*) [Semiring 𝕜] [AddCommMonoid E]
+def FormalMultilinearSeries (𝕜 E F : Type*) [Semiring 𝕜] [AddCommMonoid E]
     [Module 𝕜 E] [TopologicalSpace E] [ContinuousAdd E] [ContinuousConstSMul 𝕜 E]
     [AddCommMonoid F] [Module 𝕜 F] [TopologicalSpace F] [ContinuousAdd F]
     [ContinuousConstSMul 𝕜 F] :=

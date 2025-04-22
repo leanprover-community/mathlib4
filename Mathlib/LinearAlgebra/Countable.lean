@@ -15,7 +15,7 @@ noncomputable section
 
 namespace Finsupp
 
-variable {M : Type*} {R : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+variable {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
 
 /-- If `R` is countable, then any `R`-submodule spanned by a countable family of vectors is
 countable. -/

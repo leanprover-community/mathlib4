@@ -19,7 +19,7 @@ We first establish results about arbitrary index types, `ι` and `ι'`, and then
 -/
 
 
-variable {R : Type*} {ι : Type*} {ι' : Type*} [NormedRing R]
+variable {R ι ι' : Type*} [NormedRing R]
 
 open scoped Topology
 

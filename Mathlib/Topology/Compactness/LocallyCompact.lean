@@ -12,7 +12,7 @@ This file contains basic results about locally compact spaces.
 
 open Set Filter Topology TopologicalSpace
 
-variable {X : Type*} {Y : Type*} {ι : Type*}
+variable {X Y ι : Type*}
 variable [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X}
 
 instance [WeaklyLocallyCompactSpace X] [WeaklyLocallyCompactSpace Y] :
@@ -83,7 +83,7 @@ theorem LocallyCompactSpace.of_hasBasis {ι : X → Type*} {p : ∀ x, ι x → 
     let ⟨i, hp, ht⟩ := (h x).mem_iff.1 ht
     ⟨s x i, (h x).mem_of_mem hp, ht, hc x i hp⟩⟩
 
-instance Prod.locallyCompactSpace (X : Type*) (Y : Type*) [TopologicalSpace X]
+instance Prod.locallyCompactSpace (X Y : Type*) [TopologicalSpace X]
     [TopologicalSpace Y] [LocallyCompactSpace X] [LocallyCompactSpace Y] :
     LocallyCompactSpace (X × Y) :=
   have := fun x : X × Y => (compact_basis_nhds x.1).prod_nhds' (compact_basis_nhds x.2)

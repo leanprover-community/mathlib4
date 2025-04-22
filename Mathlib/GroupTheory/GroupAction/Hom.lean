@@ -58,7 +58,7 @@ assert_not_exists Submonoid
 section MulActionHom
 
 variable {M' : Type*}
-variable {M : Type*} {N : Type*} {P : Type*}
+variable {M N P : Type*}
 variable (φ : M → N) (ψ : N → P) (χ : M → P)
 variable (X : Type*) [SMul M X] [SMul M' X]
 variable (Y : Type*) [SMul N Y] [SMul M' Y]

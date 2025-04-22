@@ -75,7 +75,7 @@ namespace FintypeCat
 
 /-- If `X` is a type with `[Fintype X]` and `G` acts on `X`, then `G` also acts on
 `FintypeCat.of X`. -/
-instance (G : Type*) (X : Type*) [Monoid G] [MulAction G X] [Fintype X] :
+instance (G X : Type*) [Monoid G] [MulAction G X] [Fintype X] :
     MulAction G (FintypeCat.of X) :=
   inferInstanceAs <| MulAction G X
 

@@ -45,7 +45,7 @@ namespace Monoid
 
 open CoprodI Subgroup Coprod Function List
 
-variable {ι : Type*} {G : ι → Type*} {H : Type*} {K : Type*} [Monoid K]
+variable {ι : Type*} {G : ι → Type*} {H K : Type*} [Monoid K]
 
 /-- The relation we quotient by to form the pushout -/
 def PushoutI.con [∀ i, Monoid (G i)] [Monoid H] (φ : ∀ i, H →* G i) :

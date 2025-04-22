@@ -68,7 +68,7 @@ open Function Set Filter Topology TopologicalSpace
 
 universe u v
 
-variable {X : Type*} {Y : Type*} [TopologicalSpace X]
+variable {X Y : Type*} [TopologicalSpace X]
 
 section Separation
 

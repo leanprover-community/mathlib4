@@ -96,7 +96,7 @@ lemma rel_not : (Iff ⇒ Iff) Not Not :=
 lemma bi_total_eq {α : Type u₁} : Relator.BiTotal (@Eq α) :=
   { left := fun a => ⟨a, rfl⟩, right := fun a => ⟨a, rfl⟩ }
 
-variable {α : Type*} {β : Type*} {γ : Type*}
+variable {α β γ : Type*}
 variable {r : α → β → Prop}
 
 lemma LeftUnique.flip (h : LeftUnique r) : RightUnique (flip r) :=

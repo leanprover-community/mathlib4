@@ -20,7 +20,7 @@ open scoped Pointwise
 
 section General
 
-variable {G : Type*} {P : Type*} [AddGroup G] [T : AddTorsor G P]
+variable {G P : Type*} [AddGroup G] [T : AddTorsor G P]
 
 namespace Set
 
@@ -65,7 +65,7 @@ end General
 
 section comm
 
-variable {G : Type*} {P : Type*} [AddCommGroup G] [AddTorsor G P]
+variable {G P : Type*} [AddCommGroup G] [AddTorsor G P]
 
 /-- Cancellation subtracting the results of two subtractions. -/
 @[simp]
@@ -156,7 +156,7 @@ end Pi
 
 namespace Equiv
 
-variable (G : Type*) (P : Type*) [AddGroup G] [AddTorsor G P]
+variable (G P : Type*) [AddGroup G] [AddTorsor G P]
 
 @[simp]
 theorem constVAdd_zero : constVAdd P (0 : G) = 1 :=

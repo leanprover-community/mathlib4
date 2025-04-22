@@ -37,7 +37,7 @@ open scoped ComplexOrder Topology Uniformity Bornology Matrix NNReal InnerProduc
 
 /-- Type copy `Matrix m n A` meant for matrices with entries in a C⋆-algebra. This is
 a C⋆-algebra when `m = n`. -/
-def CStarMatrix (m : Type*) (n : Type*) (A : Type*) := Matrix m n A
+def CStarMatrix (m n A : Type*) := Matrix m n A
 
 namespace CStarMatrix
 

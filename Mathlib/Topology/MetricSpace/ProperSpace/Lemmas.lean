@@ -23,7 +23,7 @@ This file contains some more involved results about `ProperSpace`s.
 
 open Set Metric
 
-variable {α : Type*} {β : Type*} [PseudoMetricSpace α] [ProperSpace α] {x : α} {r : ℝ} {s : Set α}
+variable {α β : Type*} [PseudoMetricSpace α] [ProperSpace α] {x : α} {r : ℝ} {s : Set α}
 
 /-- If a nonempty ball in a proper space includes a closed set `s`, then there exists a nonempty
 ball with the same center and a strictly smaller radius that includes `s`. -/

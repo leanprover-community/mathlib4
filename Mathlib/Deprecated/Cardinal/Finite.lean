@@ -42,7 +42,7 @@ theorem card_sum (α β : Type*) :
     PartENat.card (α ⊕ β) = PartENat.card α + PartENat.card β := by
   simp only [PartENat.card, Cardinal.mk_sum, map_add, Cardinal.toPartENat_lift]
 
-theorem card_congr {α : Type*} {β : Type*} (f : α ≃ β) : PartENat.card α = PartENat.card β :=
+theorem card_congr {α β : Type*} (f : α ≃ β) : PartENat.card α = PartENat.card β :=
   Cardinal.toPartENat_congr f
 
 @[simp] lemma card_ulift (α : Type*) : card (ULift α) = card α := card_congr Equiv.ulift

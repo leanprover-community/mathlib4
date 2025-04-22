@@ -22,7 +22,7 @@ filter, germ
 
 namespace Filter.Germ
 
-variable {α : Type*} {β : Type*} {l : Filter α}
+variable {α β : Type*} {l : Filter α}
 
 @[to_additive]
 instance instIsOrderedMonoid [CommMonoid β] [PartialOrder β] [IsOrderedMonoid β] :

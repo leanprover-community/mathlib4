@@ -108,7 +108,7 @@ instance (priority := 100) complete_of_proper [ProperSpace α] : CompleteSpace �
     exact ⟨y, hy⟩⟩
 
 /-- A binary product of proper spaces is proper. -/
-instance prod_properSpace {α : Type*} {β : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β]
+instance prod_properSpace {α β : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β]
     [ProperSpace α] [ProperSpace β] : ProperSpace (α × β) where
   isCompact_closedBall := by
     rintro ⟨x, y⟩ r

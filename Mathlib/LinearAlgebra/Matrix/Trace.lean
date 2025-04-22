@@ -27,7 +27,7 @@ open Matrix
 
 namespace Matrix
 
-variable {ι m n p : Type*} {α R S : Type*}
+variable {ι m n p α R S : Type*}
 variable [Fintype m] [Fintype n] [Fintype p]
 
 section AddCommMonoid
@@ -234,7 +234,7 @@ end Fin
 
 namespace StdBasisMatrix
 
-variable {l m n : Type*} {R α : Type*} [DecidableEq l] [DecidableEq m] [DecidableEq n]
+variable {l m n R α : Type*} [DecidableEq l] [DecidableEq m] [DecidableEq n]
 variable [Fintype n] [AddCommMonoid α] (i j : n) (c : α)
 
 @[simp]

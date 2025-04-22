@@ -999,7 +999,7 @@ end VectorSpace
 
 namespace TensorProduct
 
-variable (R A : Type*) (M : Type*) (N : Type*)
+variable (R A M N : Type*)
 variable {ι κ : Type*}
 variable [DecidableEq ι] [DecidableEq κ]
 variable [Fintype ι] [Fintype κ]

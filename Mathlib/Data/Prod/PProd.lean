@@ -16,7 +16,7 @@ variable {α β γ δ : Sort*}
 
 namespace PProd
 
-def mk.injArrow {α : Type*} {β : Type*} {x₁ : α} {y₁ : β} {x₂ : α} {y₂ : β} :
+def mk.injArrow {α β : Type*} {x₁ : α} {y₁ : β} {x₂ : α} {y₂ : β} :
     (x₁, y₁) = (x₂, y₂) → ∀ ⦃P : Sort*⦄, (x₁ = x₂ → y₁ = y₂ → P) → P :=
   fun h₁ _ h₂ ↦ Prod.noConfusion h₁ h₂
 

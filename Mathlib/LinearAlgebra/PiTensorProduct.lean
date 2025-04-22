@@ -921,7 +921,7 @@ open PiTensorProduct
 
 open TensorProduct
 
-variable {ι : Type*} {R : Type*} [CommRing R]
+variable {ι R : Type*} [CommRing R]
 variable {s : ι → Type*} [∀ i, AddCommGroup (s i)] [∀ i, Module R (s i)]
 
 /- Unlike for the binary tensor product, we require `R` to be a `CommRing` here, otherwise

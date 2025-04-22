@@ -349,7 +349,7 @@ theorem derivWithin_finset_prod
 
 end HasDeriv
 
-variable {ι : Type*} {𝔸' : Type*} [NormedCommRing 𝔸'] [NormedAlgebra 𝕜 𝔸']
+variable {ι 𝔸' : Type*} [NormedCommRing 𝔸'] [NormedAlgebra 𝕜 𝔸']
   {u : Finset ι} {f : ι → 𝕜 → 𝔸'}
 
 @[fun_prop]

@@ -24,9 +24,36 @@ universe u v w
 
 namespace Finsupp
 
+section Ring
+
+variable {R M ι : Type*}
+variable [Ring R] [AddCommGroup M] [Module R M]
+
+theorem linearIndependent_single {φ : ι → Type*} {f : ∀ ι, φ ι → M}
+    (hf : ∀ i, LinearIndependent R (f i)) :
+    LinearIndependent R fun ix : Σi, φ i => single ix.1 (f ix.1 ix.2) := by
+  apply @linearIndependent_iUnion_finite R _ _ _ _ ι φ fun i x => single i (f i x)
+  · intro i
+    have h_disjoint : Disjoint (span R (range (f i))) (ker (lsingle i)) := by
+      rw [ker_lsingle]
+      exact disjoint_bot_right
+    apply (hf i).map h_disjoint
+  · intro i t _ hit
+    refine (disjoint_lsingle_lsingle {i} t (disjoint_singleton_left.2 hit)).mono ?_ ?_
+    · rw [span_le]
+      simp only [iSup_singleton]
+      rw [range_coe]
+      apply range_comp_subset_range _ (lsingle i)
+    · refine iSup₂_mono fun i hi => ?_
+      rw [span_le, range_coe]
+      apply range_comp_subset_range _ (lsingle i)
+
+end Ring
+
+>>>>>>> 34ca39a48e (refactor: group Type* declarations)
 section Semiring
 
-variable {R : Type*} {M : Type*} {ι : Type*}
+variable {R M ι : Type*}
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 theorem linearIndependent_single {φ : ι → Type*} (f : ∀ ι, φ ι → M)
@@ -137,7 +164,7 @@ end Ring
 end Finsupp
 
 namespace DFinsupp
-variable {ι : Type*} {R : Type*} {M : ι → Type*}
+variable {ι R : Type*} {M : ι → Type*}
 variable [Semiring R] [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
 
 /-- The direct sum of free modules is free.

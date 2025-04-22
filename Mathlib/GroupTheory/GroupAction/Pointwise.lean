@@ -36,7 +36,7 @@ section MulActionSemiHomClass
 
 section SMul
 
-variable {M N F : Type*} {α β : Type*} {σ : M → N} [SMul M α] [SMul N β] [FunLike F α β]
+variable {M N F α β : Type*} {σ : M → N} [SMul M α] [SMul N β] [FunLike F α β]
   [MulActionSemiHomClass F σ α β] {f : F} {s : Set α} {t : Set β}
 
 @[to_additive (attr := simp)]
@@ -80,7 +80,7 @@ end SMul
 
 section Monoid
 
-variable {M N F : Type*} {α β : Type*} {σ : M → N} [Monoid M] [Monoid N]
+variable {M N F α β : Type*} {σ : M → N} [Monoid M] [Monoid N]
   [MulAction M α] [MulAction N β] [FunLike F α β] [MulActionSemiHomClass F σ α β]
   {f : F} {s : Set α} {t : Set β} {c : M}
 

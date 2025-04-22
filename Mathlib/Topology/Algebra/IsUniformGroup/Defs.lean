@@ -35,7 +35,7 @@ section IsUniformGroup
 
 open Filter Set
 
-variable {α : Type*} {β : Type*}
+variable {α β : Type*}
 
 /-- A uniform group is a group in which multiplication and inversion are uniformly continuous. -/
 class IsUniformGroup (α : Type*) [UniformSpace α] [Group α] : Prop where
@@ -485,7 +485,7 @@ open Filter Set Function
 
 section
 
-variable {α : Type*} {β : Type*} {hom : Type*}
+variable {α β hom : Type*}
 variable [TopologicalSpace α] [Group α] [IsTopologicalGroup α]
 
 -- β is a dense subgroup of α, inclusion is denoted by e
@@ -508,7 +508,7 @@ end
 
 namespace IsDenseInducing
 
-variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
+variable {α β γ δ : Type*}
 variable {G : Type*}
 
 -- β is a dense subgroup of α, inclusion is denoted by e

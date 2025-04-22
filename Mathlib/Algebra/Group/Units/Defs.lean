@@ -352,7 +352,7 @@ end Monoid
 
 section IsUnit
 
-variable {M : Type*} {N : Type*}
+variable {M N : Type*}
 
 /-- An element `a : M` of a `Monoid` is a unit if it has a two-sided inverse.
 The actual definition says that `a` is equal to some `u : Mˣ`, where

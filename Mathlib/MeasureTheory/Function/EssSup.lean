@@ -197,7 +197,7 @@ theorem essSup_mono_measure {f : α → β} (hμν : ν ≪ μ) : essSup f ν �
   refine limsup_le_limsup_of_le (Measure.ae_le_iff_absolutelyContinuous.mpr hμν) ?_ ?_
   all_goals isBoundedDefault
 
-theorem essSup_mono_measure' {α : Type*} {β : Type*} {_ : MeasurableSpace α}
+theorem essSup_mono_measure' {α β : Type*} {_ : MeasurableSpace α}
     {μ ν : MeasureTheory.Measure α} [CompleteLattice β] {f : α → β} (hμν : ν ≤ μ) :
     essSup f ν ≤ essSup f μ :=
   essSup_mono_measure (Measure.absolutelyContinuous_of_le hμν)

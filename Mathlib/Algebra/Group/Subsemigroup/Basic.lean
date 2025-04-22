@@ -43,7 +43,7 @@ subsemigroup, subsemigroups
 assert_not_exists MonoidWithZero
 
 -- Only needed for notation
-variable {M : Type*} {N : Type*}
+variable {M N : Type*}
 
 section NonAssoc
 

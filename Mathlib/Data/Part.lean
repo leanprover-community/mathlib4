@@ -57,7 +57,7 @@ structure Part.{u} (α : Type u) : Type u where
 
 namespace Part
 
-variable {α : Type*} {β : Type*} {γ : Type*}
+variable {α β γ : Type*}
 
 /-- Convert a `Part α` with a decidable domain to an option -/
 def toOption (o : Part α) [Decidable o.Dom] : Option α :=

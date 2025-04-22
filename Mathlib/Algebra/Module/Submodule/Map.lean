@@ -27,8 +27,8 @@ submodule, subspace, linear map, pushforward, pullback
 
 open Function Pointwise Set
 
-variable {R : Type*} {R₁ : Type*} {R₂ : Type*} {R₃ : Type*}
-variable {M : Type*} {M₁ : Type*} {M₂ : Type*} {M₃ : Type*}
+variable {R R₁ R₂ R₃ : Type*}
+variable {M M₁ M₂ M₃ : Type*}
 
 namespace Submodule
 
@@ -481,7 +481,7 @@ end Submodule
 
 namespace Submodule
 
-variable {K : Type*} {V : Type*} {V₂ : Type*}
+variable {K V V₂ : Type*}
 variable [Semifield K]
 variable [AddCommMonoid V] [Module K V]
 variable [AddCommMonoid V₂] [Module K V₂]

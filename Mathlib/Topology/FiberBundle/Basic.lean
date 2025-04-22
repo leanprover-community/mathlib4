@@ -391,7 +391,7 @@ Trivialization changes from `i` to `j` are given by continuous maps `coordChange
 `baseSet i ∩ baseSet j` to the set of homeomorphisms of `F`, but we express them as maps
 `B → F → F` and require continuity on `(baseSet i ∩ baseSet j) × F` to avoid the topology on the
 space of continuous maps on `F`. -/
-structure FiberBundleCore (ι : Type*) (B : Type*) [TopologicalSpace B] (F : Type*)
+structure FiberBundleCore (ι B : Type*) [TopologicalSpace B] (F : Type*)
     [TopologicalSpace F] where
   baseSet : ι → Set B
   isOpen_baseSet : ∀ i, IsOpen (baseSet i)

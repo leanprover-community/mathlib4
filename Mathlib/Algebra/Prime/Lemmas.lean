@@ -36,7 +36,7 @@ variable [CommMonoidWithZero M]
 
 section Map
 
-variable [CommMonoidWithZero N] {F : Type*} {G : Type*} [FunLike F M N]
+variable [CommMonoidWithZero N] {F G : Type*} [FunLike F M N]
 variable [MonoidWithZeroHomClass F M N] [FunLike G N M] [MulHomClass G N M]
 variable (f : F) (g : G) {p : M}
 

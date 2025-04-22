@@ -30,7 +30,7 @@ group, semidirect product
 
 open Subgroup
 
-variable (N : Type*) (G : Type*) {H : Type*} [Group N] [Group G] [Group H]
+variable (N G : Type*) {H : Type*} [Group N] [Group G] [Group H]
 
 -- Don't generate sizeOf and injectivity lemmas, which the `simpNF` linter will complain about.
 set_option genSizeOfSpec false in

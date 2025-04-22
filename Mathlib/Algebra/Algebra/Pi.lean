@@ -99,7 +99,7 @@ end Pi
 
 /-- A special case of `Pi.algebra` for non-dependent types. Lean struggles to elaborate
 definitions elsewhere in the library without this. -/
-instance Function.algebra {R : Type*} (ι : Type*) (A : Type*) [CommSemiring R] [Semiring A]
+instance Function.algebra {R : Type*} (ι A : Type*) [CommSemiring R] [Semiring A]
     [Algebra R A] : Algebra R (ι → A) :=
   Pi.algebra _ _
 

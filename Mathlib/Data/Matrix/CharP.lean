@@ -16,7 +16,7 @@ with nonempty index type have the same characteristic.
 
 open Matrix
 
-variable {n : Type*} {R : Type*} [AddMonoidWithOne R]
+variable {n R : Type*} [AddMonoidWithOne R]
 
 instance Matrix.charP [DecidableEq n] [Nonempty n] (p : ℕ) [CharP R p] :
     CharP (Matrix n n R) p where

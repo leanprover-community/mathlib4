@@ -42,10 +42,10 @@ form to which the tactics reduce module expressions.
 
 (It is not a full "normal form" because the scalars, i.e. `R` components, are not themselves
 ring-normalized. But this partial normal form is more convenient for our purposes.) -/
-def NF (R : Type*) (M : Type*) := List (R × M)
+def NF (R M : Type*) := List (R × M)
 
 namespace NF
-variable {S : Type*} {R : Type*} {M : Type*}
+variable {S R M : Type*}
 
 /-- Augment a `Module.NF R M` object `l`, i.e. a list of pairs in `R × M`, by prepending another
 pair `p : R × M`. -/

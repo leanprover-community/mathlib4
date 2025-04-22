@@ -317,7 +317,7 @@ namespace EuclideanGeometry
 
 open InnerProductGeometry
 
-variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
 
 /-- **Pythagorean theorem**, if-and-only-if angle-at-point form. -/

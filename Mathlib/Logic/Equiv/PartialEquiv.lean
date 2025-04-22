@@ -108,13 +108,13 @@ end Tactic.MfldSetTac
 
 open Function Set
 
-variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
+variable {α β γ δ : Type*}
 
 /-- Local equivalence between subsets `source` and `target` of `α` and `β` respectively. The
 (global) maps `toFun : α → β` and `invFun : β → α` map `source` to `target` and conversely, and are
 inverse to each other there. The values of `toFun` outside of `source` and of `invFun` outside of
 `target` are irrelevant. -/
-structure PartialEquiv (α : Type*) (β : Type*) where
+structure PartialEquiv (α β : Type*) where
   /-- The global function which has a partial inverse. Its value outside of the `source` subset is
   irrelevant. -/
   toFun : α → β
@@ -791,7 +791,7 @@ theorem refl_prod_refl :
   ext ⟨x, y⟩ <;> simp
 
 @[simp, mfld_simps]
-theorem prod_trans {η : Type*} {ε : Type*} (e : PartialEquiv α β) (f : PartialEquiv β γ)
+theorem prod_trans {η ε : Type*} (e : PartialEquiv α β) (f : PartialEquiv β γ)
     (e' : PartialEquiv δ η) (f' : PartialEquiv η ε) :
     (e.prod e').trans (f.prod f') = (e.trans f).prod (e'.trans f') := by
   ext ⟨x, y⟩ <;> simp [Set.ext_iff]; tauto

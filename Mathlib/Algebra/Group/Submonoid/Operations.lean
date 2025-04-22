@@ -789,13 +789,13 @@ theorem mker_one : mker (1 : M →* N) = ⊤ := by
   simp [mem_mker]
 
 @[to_additive prod_map_comap_prod']
-theorem prod_map_comap_prod' {M' : Type*} {N' : Type*} [MulOneClass M'] [MulOneClass N']
+theorem prod_map_comap_prod' {M' N' : Type*} [MulOneClass M'] [MulOneClass N']
     (f : M →* N) (g : M' →* N') (S : Submonoid N) (S' : Submonoid N') :
     (S.prod S').comap (prodMap f g) = (S.comap f).prod (S'.comap g) :=
   SetLike.coe_injective <| Set.preimage_prod_map_prod f g _ _
 
 @[to_additive mker_prod_map]
-theorem mker_prod_map {M' : Type*} {N' : Type*} [MulOneClass M'] [MulOneClass N'] (f : M →* N)
+theorem mker_prod_map {M' N' : Type*} [MulOneClass M'] [MulOneClass N'] (f : M →* N)
     (g : M' →* N') : mker (prodMap f g) = f.mker.prod (mker g) := by
   rw [← comap_bot', ← comap_bot', ← comap_bot', ← prod_map_comap_prod', bot_prod_bot]
 

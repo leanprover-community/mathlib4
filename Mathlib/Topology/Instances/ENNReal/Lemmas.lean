@@ -21,7 +21,7 @@ noncomputable section
 open Filter Function Metric Set Topology
 open scoped Finset ENNReal NNReal
 
-variable {α : Type*} {β : Type*} {γ : Type*}
+variable {α β γ : Type*}
 
 namespace ENNReal
 

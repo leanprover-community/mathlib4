@@ -22,7 +22,7 @@ universe u v w u'
 
 section
 
-variable {R : Type*} {M : Type*} [Ring R] [TopologicalSpace R] [TopologicalSpace M]
+variable {R M : Type*} [Ring R] [TopologicalSpace R] [TopologicalSpace M]
   [AddCommGroup M] [ContinuousAdd M] [Module R M] [ContinuousSMul R M]
 
 variable (R M)
@@ -30,7 +30,7 @@ variable (R M)
 /-- Continuous linear equivalences between modules. We only put the type classes that are necessary
 for the definition, although in applications `M` and `M₂` will be topological modules over the
 topological semiring `R`. -/
-structure ContinuousLinearEquiv {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
+structure ContinuousLinearEquiv {R S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
     {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : Type*) [TopologicalSpace M]
     [AddCommMonoid M] (M₂ : Type*) [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M]
     [Module S M₂] extends M ≃ₛₗ[σ] M₂ where
@@ -73,7 +73,7 @@ abbrev ContinuousLinearEquivClass (F : Type*) (R : outParam Type*) [Semiring R]
 
 namespace ContinuousSemilinearEquivClass
 
-variable (F : Type*) {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
+variable (F : Type*) {R S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
   {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
   (M : Type*) [TopologicalSpace M] [AddCommMonoid M]
   (M₂ : Type*) [TopologicalSpace M₂] [AddCommMonoid M₂]
@@ -127,7 +127,7 @@ namespace ContinuousLinearEquiv
 
 section AddCommMonoid
 
-variable {R₁ : Type*} {R₂ : Type*} {R₃ : Type*} [Semiring R₁] [Semiring R₂] [Semiring R₃]
+variable {R₁ R₂ R₃ : Type*} [Semiring R₁] [Semiring R₂] [Semiring R₃]
   {σ₁₂ : R₁ →+* R₂} {σ₂₁ : R₂ →+* R₁} [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
   {σ₂₃ : R₂ →+* R₃} {σ₃₂ : R₃ →+* R₂} [RingHomInvPair σ₂₃ σ₃₂] [RingHomInvPair σ₃₂ σ₂₃]
   {σ₁₃ : R₁ →+* R₃} {σ₃₁ : R₃ →+* R₁} [RingHomInvPair σ₁₃ σ₃₁] [RingHomInvPair σ₃₁ σ₁₃]
@@ -878,7 +878,7 @@ end ContinuousLinearEquiv
 
 namespace ContinuousLinearMap
 
-variable {R : Type*} {M M₂ M₃ : Type*}
+variable {R M M₂ M₃ : Type*}
   [TopologicalSpace M] [TopologicalSpace M₂] [TopologicalSpace M₃]
 
 section

@@ -81,7 +81,7 @@ theorem Finset.exists_eq_pow_of_mul_eq_pow_of_coprime {ι R : Type*} [CommSemiri
 
 end CancelMonoidWithZero
 
-variable {R : Type*} {G : Type*}
+variable {R G : Type*}
 
 section Ring
 

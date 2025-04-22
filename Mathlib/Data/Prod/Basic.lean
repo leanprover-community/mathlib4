@@ -15,7 +15,7 @@ This file proves various simple lemmas about `Prod`.
 It also defines better delaborators for product projections.
 -/
 
-variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
+variable {α β γ δ : Type*}
 
 namespace Prod
 

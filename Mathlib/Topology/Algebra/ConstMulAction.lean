@@ -52,7 +52,7 @@ actions, including (semi)modules and algebras.
 
 Note that both `ContinuousConstSMul α α` and `ContinuousConstSMul αᵐᵒᵖ α` are
 weaker versions of `ContinuousMul α`. -/
-class ContinuousConstSMul (Γ : Type*) (T : Type*) [TopologicalSpace T] [SMul Γ T] : Prop where
+class ContinuousConstSMul (Γ T : Type*) [TopologicalSpace T] [SMul Γ T] : Prop where
   /-- The scalar multiplication `(•) : Γ → T → T` is continuous in the second argument. -/
   continuous_const_smul : ∀ γ : Γ, Continuous fun x : T => γ • x
 
@@ -62,7 +62,7 @@ including (semi)modules and algebras.
 
 Note that both `ContinuousConstVAdd α α` and `ContinuousConstVAdd αᵐᵒᵖ α` are
 weaker versions of `ContinuousVAdd α`. -/
-class ContinuousConstVAdd (Γ : Type*) (T : Type*) [TopologicalSpace T] [VAdd Γ T] : Prop where
+class ContinuousConstVAdd (Γ T : Type*) [TopologicalSpace T] [VAdd Γ T] : Prop where
   /-- The additive action `(+ᵥ) : Γ → T → T` is continuous in the second argument. -/
   continuous_const_vadd : ∀ γ : Γ, Continuous fun x : T => γ +ᵥ x
 
@@ -419,7 +419,7 @@ end IsUnit
 is properly discontinuous, that is, for any pair of compact sets `K, L` in `T`, only finitely many
 `γ:Γ` move `K` to have nontrivial intersection with `L`.
 -/
-class ProperlyDiscontinuousSMul (Γ : Type*) (T : Type*) [TopologicalSpace T] [SMul Γ T] :
+class ProperlyDiscontinuousSMul (Γ T : Type*) [TopologicalSpace T] [SMul Γ T] :
     Prop where
   /-- Given two compact sets `K` and `L`, `γ • K ∩ L` is nonempty for finitely many `γ`. -/
   finite_disjoint_inter_image :
@@ -429,7 +429,7 @@ class ProperlyDiscontinuousSMul (Γ : Type*) (T : Type*) [TopologicalSpace T] [S
 is properly discontinuous, that is, for any pair of compact sets `K, L` in `T`, only finitely many
 `γ:Γ` move `K` to have nontrivial intersection with `L`.
 -/
-class ProperlyDiscontinuousVAdd (Γ : Type*) (T : Type*) [TopologicalSpace T] [VAdd Γ T] :
+class ProperlyDiscontinuousVAdd (Γ T : Type*) [TopologicalSpace T] [VAdd Γ T] :
   Prop where
   /-- Given two compact sets `K` and `L`, `γ +ᵥ K ∩ L` is nonempty for finitely many `γ`. -/
   finite_disjoint_inter_image :

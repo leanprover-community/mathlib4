@@ -38,7 +38,7 @@ structure Ctop (α σ : Type*) where
   inter_mem : ∀ a b x h, x ∈ f (inter a b x h)
   inter_sub : ∀ a b x h, f (inter a b x h) ⊆ f a ∩ f b
 
-variable {α : Type*} {β : Type*} {σ : Type*} {τ : Type*}
+variable {α β σ τ : Type*}
 
 instance : Inhabited (Ctop α (Set α)) :=
   ⟨{  f := id

@@ -55,7 +55,7 @@ end PreorderSemiring
 
 section OrderedRing
 
-variable {𝕜 : Type*} {E : Type*} [TopologicalSpace 𝕜] [Ring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E]
+variable {𝕜 E : Type*} [TopologicalSpace 𝕜] [Ring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E]
   [TopologicalSpace E] [Module 𝕜 E] {l : E →L[𝕜] 𝕜} {A B C : Set E} {x : E}
 
 /-- A useful way to build exposed sets from intersecting `A` with half-spaces (modelled by an
@@ -204,7 +204,7 @@ end OrderedRing
 
 section LinearOrderedRing
 
-variable {𝕜 : Type*} {E : Type*} [TopologicalSpace 𝕜]
+variable {𝕜 E : Type*} [TopologicalSpace 𝕜]
   [Ring 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommMonoid E]
   [TopologicalSpace E] [Module 𝕜 E] {A B : Set E}
 

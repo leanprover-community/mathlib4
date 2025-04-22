@@ -37,15 +37,15 @@ assert_not_exists Field Pi.module
 
 open Function
 
-variable {R : Type*} {R₁ : Type*} {R₂ : Type*} {R₃ : Type*}
-variable {S : Type*} {M : Type*} {M₁ : Type*} {M₂ : Type*} {M₃ : Type*}
-variable {N₁ : Type*} {N₂ : Type*}
+variable {R R₁ R₂ R₃ : Type*}
+variable {S M M₁ M₂ M₃ : Type*}
+variable {N₁ N₂ : Type*}
 
 section
 
 /-- A linear equivalence is an invertible linear map. -/
-structure LinearEquiv {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
-  {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : Type*) (M₂ : Type*)
+structure LinearEquiv {R S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
+  {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M M₂ : Type*)
   [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] extends LinearMap σ M M₂, M ≃+ M₂
 
 attribute [coe] LinearEquiv.toLinearMap
@@ -248,16 +248,16 @@ def symm (e : M ≃ₛₗ[σ] M₂) : M₂ ≃ₛₗ[σ'] M :=
     map_smul' := fun r x ↦ by rw [map_smulₛₗ] }
 
 /-- See Note [custom simps projection] -/
-def Simps.apply {R : Type*} {S : Type*} [Semiring R] [Semiring S]
+def Simps.apply {R S : Type*} [Semiring R] [Semiring S]
     {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
-    {M : Type*} {M₂ : Type*} [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂]
+    {M M₂ : Type*} [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂]
     (e : M ≃ₛₗ[σ] M₂) : M → M₂ :=
   e
 
 /-- See Note [custom simps projection] -/
-def Simps.symm_apply {R : Type*} {S : Type*} [Semiring R] [Semiring S]
+def Simps.symm_apply {R S : Type*} [Semiring R] [Semiring S]
     {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
-    {M : Type*} {M₂ : Type*} [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂]
+    {M M₂ : Type*} [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂]
     (e : M ≃ₛₗ[σ] M₂) : M₂ → M :=
   e.symm
 

@@ -45,7 +45,7 @@ theorem fg_of_isUnit {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] {
 
 section Mul
 
-variable {R : Type*} {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 variable {M N : Submodule R A}
 
 theorem FG.mul (hm : M.FG) (hn : N.FG) : (M * N).FG := by

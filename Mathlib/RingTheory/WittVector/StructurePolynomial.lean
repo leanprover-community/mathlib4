@@ -95,7 +95,7 @@ open Finsupp (single)
 -- We disable this locally, and probably it should be disabled globally in mathlib.
 attribute [-simp] coe_eval₂Hom
 
-variable {p : ℕ} {R : Type*} {idx : Type*} [CommRing R]
+variable {p : ℕ} {R idx : Type*} [CommRing R]
 
 open scoped Witt
 

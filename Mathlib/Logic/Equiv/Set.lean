@@ -32,7 +32,7 @@ variable {α : Sort u} {β : Sort v} {γ : Sort w}
 namespace EquivLike
 
 @[simp]
-theorem range_eq_univ {α : Type*} {β : Type*} {E : Type*} [EquivLike E α β] (e : E) :
+theorem range_eq_univ {α β E : Type*} [EquivLike E α β] (e : E) :
     range e = univ :=
   eq_univ_of_forall (EquivLike.toEquiv e).surjective
 
@@ -40,7 +40,7 @@ end EquivLike
 
 namespace Equiv
 
-theorem range_eq_univ {α : Type*} {β : Type*} (e : α ≃ β) :
+theorem range_eq_univ {α β : Type*} (e : α ≃ β) :
     range e = univ :=
   EquivLike.range_eq_univ e
 
@@ -598,7 +598,7 @@ end Equiv
 
 /-- If a function is a bijection between two sets `s` and `t`, then it induces an
 equivalence between the types `↥s` and `↥t`. -/
-noncomputable def Set.BijOn.equiv {α : Type*} {β : Type*} {s : Set α} {t : Set β} (f : α → β)
+noncomputable def Set.BijOn.equiv {α β : Type*} {s : Set α} {t : Set β} (f : α → β)
     (h : BijOn f s t) : s ≃ t :=
   Equiv.ofBijective _ h.bijective
 

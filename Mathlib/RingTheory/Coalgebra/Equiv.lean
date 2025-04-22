@@ -179,7 +179,7 @@ def Simps.apply {R : Type*} [CommSemiring R] {α β : Type*}
 
 /-- See Note [custom simps projection] -/
 def Simps.symm_apply {R : Type*} [CommSemiring R]
-    {A : Type*} {B : Type*} [AddCommMonoid A] [AddCommMonoid B] [Module R A] [Module R B]
+    {A B : Type*} [AddCommMonoid A] [AddCommMonoid B] [Module R A] [Module R B]
     [CoalgebraStruct R A] [CoalgebraStruct R B]
     (e : A ≃ₗc[R] B) : B → A :=
   e.symm

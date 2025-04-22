@@ -115,7 +115,7 @@ private theorem supOfBasis_nonneg : 0 ≤ supOfBasis K := by
   simp only [supOfBasis, le_sup'_iff, mem_univ, and_self,
     exists_const, house_nonneg]
 
-variable {α : Type*} {β : Type*} (a : Matrix α β (𝓞 K))
+variable {α β : Type*} (a : Matrix α β (𝓞 K))
 
 /-- `a' K a` returns the integer coefficients of the basis vector in the
   expansion of the product of an algebraic integer and a basis vectors. -/

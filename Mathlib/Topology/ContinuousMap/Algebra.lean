@@ -33,7 +33,7 @@ assert_not_exists StoneCech
 
 namespace ContinuousFunctions
 
-variable {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
+variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 variable {f g : { f : α → β | Continuous f }}
 
 instance : CoeFun { f : α → β | Continuous f } fun _ => α → β :=
@@ -43,7 +43,7 @@ end ContinuousFunctions
 
 namespace ContinuousMap
 
-variable {α : Type*} {β : Type*} {γ : Type*}
+variable {α β γ : Type*}
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 
 /-! ### `mul` and `add` -/
@@ -222,7 +222,7 @@ section Subtype
 
 /-- The `Submonoid` of continuous maps `α → β`. -/
 @[to_additive "The `AddSubmonoid` of continuous maps `α → β`. "]
-def continuousSubmonoid (α : Type*) (β : Type*) [TopologicalSpace α] [TopologicalSpace β]
+def continuousSubmonoid (α β : Type*) [TopologicalSpace α] [TopologicalSpace β]
     [MulOneClass β] [ContinuousMul β] : Submonoid (α → β) where
   carrier := { f : α → β | Continuous f }
   one_mem' := @continuous_const _ _ _ _ 1
@@ -230,7 +230,7 @@ def continuousSubmonoid (α : Type*) (β : Type*) [TopologicalSpace α] [Topolog
 
 /-- The subgroup of continuous maps `α → β`. -/
 @[to_additive "The `AddSubgroup` of continuous maps `α → β`. "]
-def continuousSubgroup (α : Type*) (β : Type*) [TopologicalSpace α] [TopologicalSpace β] [Group β]
+def continuousSubgroup (α β : Type*) [TopologicalSpace α] [TopologicalSpace β] [Group β]
     [IsTopologicalGroup β] : Subgroup (α → β) :=
   { continuousSubmonoid α β with inv_mem' := fun fc => Continuous.inv fc }
 
@@ -390,12 +390,12 @@ the structure of a ring.
 section Subtype
 
 /-- The subsemiring of continuous maps `α → β`. -/
-def continuousSubsemiring (α : Type*) (R : Type*) [TopologicalSpace α] [TopologicalSpace R]
+def continuousSubsemiring (α R : Type*) [TopologicalSpace α] [TopologicalSpace R]
     [NonAssocSemiring R] [IsTopologicalSemiring R] : Subsemiring (α → R) :=
   { continuousAddSubmonoid α R, continuousSubmonoid α R with }
 
 /-- The subring of continuous maps `α → β`. -/
-def continuousSubring (α : Type*) (R : Type*) [TopologicalSpace α] [TopologicalSpace R] [Ring R]
+def continuousSubring (α R : Type*) [TopologicalSpace α] [TopologicalSpace R] [Ring R]
     [IsTopologicalRing R] : Subring (α → R) :=
   { continuousAddSubgroup α R, continuousSubsemiring α R with }
 
@@ -403,71 +403,71 @@ end Subtype
 
 namespace ContinuousMap
 
-instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
+instance {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
     [NonUnitalNonAssocSemiring β] [IsTopologicalSemiring β] : NonUnitalNonAssocSemiring C(α, β) :=
   coe_injective.nonUnitalNonAssocSemiring _ coe_zero coe_add coe_mul coe_nsmul
 
-instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [NonUnitalSemiring β]
+instance {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [NonUnitalSemiring β]
     [IsTopologicalSemiring β] : NonUnitalSemiring C(α, β) :=
   coe_injective.nonUnitalSemiring _ coe_zero coe_add coe_mul coe_nsmul
 
-instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [AddMonoidWithOne β]
+instance {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [AddMonoidWithOne β]
     [ContinuousAdd β] : AddMonoidWithOne C(α, β) :=
   coe_injective.addMonoidWithOne _ coe_zero coe_one coe_add coe_nsmul coe_natCast
 
-instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [NonAssocSemiring β]
+instance {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [NonAssocSemiring β]
     [IsTopologicalSemiring β] : NonAssocSemiring C(α, β) :=
   coe_injective.nonAssocSemiring _ coe_zero coe_one coe_add coe_mul coe_nsmul coe_natCast
 
-instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [Semiring β]
+instance {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [Semiring β]
     [IsTopologicalSemiring β] : Semiring C(α, β) :=
   coe_injective.semiring _ coe_zero coe_one coe_add coe_mul coe_nsmul coe_pow coe_natCast
 
-instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
+instance {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
     [NonUnitalNonAssocRing β] [IsTopologicalRing β] : NonUnitalNonAssocRing C(α, β) :=
   coe_injective.nonUnitalNonAssocRing _ coe_zero coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
 
-instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [NonUnitalRing β]
+instance {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [NonUnitalRing β]
     [IsTopologicalRing β] : NonUnitalRing C(α, β) :=
   coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
 
-instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [NonAssocRing β]
+instance {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [NonAssocRing β]
     [IsTopologicalRing β] : NonAssocRing C(α, β) :=
   coe_injective.nonAssocRing _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
     coe_natCast coe_intCast
 
-instance instRing {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [Ring β]
+instance instRing {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [Ring β]
     [IsTopologicalRing β] : Ring C(α, β) :=
   coe_injective.ring _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul coe_pow
     coe_natCast coe_intCast
 
-instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
+instance {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
     [NonUnitalCommSemiring β] [IsTopologicalSemiring β] : NonUnitalCommSemiring C(α, β) :=
   coe_injective.nonUnitalCommSemiring _ coe_zero coe_add coe_mul coe_nsmul
 
-instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [CommSemiring β]
+instance {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [CommSemiring β]
     [IsTopologicalSemiring β] : CommSemiring C(α, β) :=
   coe_injective.commSemiring _ coe_zero coe_one coe_add coe_mul coe_nsmul coe_pow coe_natCast
 
-instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [NonUnitalCommRing β]
+instance {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [NonUnitalCommRing β]
     [IsTopologicalRing β] : NonUnitalCommRing C(α, β) :=
   coe_injective.nonUnitalCommRing _ coe_zero coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
 
-instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [CommRing β]
+instance {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [CommRing β]
     [IsTopologicalRing β] : CommRing C(α, β) :=
   coe_injective.commRing _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
     coe_pow coe_natCast coe_intCast
 
-instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [LocallyCompactSpace α]
+instance {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [LocallyCompactSpace α]
     [NonUnitalSemiring β] [IsTopologicalSemiring β] : IsTopologicalSemiring C(α, β) where
 
-instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [LocallyCompactSpace α]
+instance {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [LocallyCompactSpace α]
     [NonUnitalRing β] [IsTopologicalRing β] : IsTopologicalRing C(α, β) where
 
 /-- Composition on the left by a (continuous) homomorphism of topological semirings, as a
 `RingHom`.  Similar to `RingHom.compLeft`. -/
 @[simps!]
-protected def _root_.RingHom.compLeftContinuous (α : Type*) {β : Type*} {γ : Type*}
+protected def _root_.RingHom.compLeftContinuous (α : Type*) {β γ : Type*}
     [TopologicalSpace α]
     [TopologicalSpace β] [Semiring β] [IsTopologicalSemiring β] [TopologicalSpace γ] [Semiring γ]
     [IsTopologicalSemiring γ] (g : β →+* γ) (hg : Continuous g) : C(α, β) →+* C(α, γ) :=
@@ -475,7 +475,7 @@ protected def _root_.RingHom.compLeftContinuous (α : Type*) {β : Type*} {γ : 
 
 /-- Coercion to a function as a `RingHom`. -/
 @[simps!]
-def coeFnRingHom {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [Semiring β]
+def coeFnRingHom {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [Semiring β]
     [IsTopologicalSemiring β] : C(α, β) →+* α → β :=
   { (coeFnMonoidHom : C(α, β) →* _),
     (coeFnAddMonoidHom : C(α, β) →+ _) with }
@@ -513,7 +513,7 @@ end Subtype
 
 namespace ContinuousMap
 
-variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] {R R₁ : Type*} {M : Type*}
+variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] {R R₁ M : Type*}
   [TopologicalSpace M] {M₂ : Type*} [TopologicalSpace M₂]
 
 @[to_additive]

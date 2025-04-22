@@ -20,9 +20,7 @@ open Set Topology Filter NNReal
 namespace Asymptotics
 
 
-variable {α : Type*} {β : Type*} {E : Type*} {F : Type*} {G : Type*} {E' : Type*}
-  {F' : Type*} {G' : Type*} {E'' : Type*} {F'' : Type*} {G'' : Type*} {E''' : Type*}
-  {R : Type*} {R' : Type*} {𝕜 : Type*} {𝕜' : Type*}
+variable {α β E F G E' F' G' E'' F'' G'' E''' R R' 𝕜 𝕜' : Type*}
 
 variable [Norm E] [Norm F] [Norm G]
 variable [SeminormedAddCommGroup E'] [SeminormedAddCommGroup F'] [SeminormedAddCommGroup G']
@@ -189,7 +187,7 @@ theorem IsLittleO.trans_tendsto (hfg : f'' =o[l] g'') (hg : Tendsto g'' l (𝓝 
 lemma isLittleO_id_one [One F''] [NeZero (1 : F'')] : (fun x : E'' => x) =o[𝓝 0] (1 : E'' → F'') :=
   isLittleO_id_const one_ne_zero
 
-theorem continuousAt_iff_isLittleO {α : Type*} {E : Type*} [NormedRing E] [NormOneClass E]
+theorem continuousAt_iff_isLittleO {α E : Type*} [NormedRing E] [NormOneClass E]
     [TopologicalSpace α] {f : α → E} {x : α} :
     (ContinuousAt f x) ↔ (fun (y : α) ↦ f y - f x) =o[𝓝 x] (fun (_ : α) ↦ (1 : E)) := by
   simp [ContinuousAt, ← tendsto_sub_nhds_zero_iff]
@@ -679,7 +677,7 @@ lemma Asymptotics.IsBigO.comp_summable_norm {ι E F : Type*}
 
 namespace PartialHomeomorph
 
-variable {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
+variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 variable {E : Type*} [Norm E] {F : Type*} [Norm F]
 
 /-- Transfer `IsBigOWith` over a `PartialHomeomorph`. -/
@@ -710,7 +708,7 @@ end PartialHomeomorph
 
 namespace Homeomorph
 
-variable {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
+variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 variable {E : Type*} [Norm E] {F : Type*} [Norm F]
 
 open Asymptotics

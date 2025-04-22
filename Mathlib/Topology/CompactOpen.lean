@@ -428,7 +428,7 @@ open ContinuousMap
 
 namespace Homeomorph
 
-variable {X : Type*} {Y : Type*} {Z : Type*}
+variable {X Y Z : Type*}
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
 /-- Currying as a homeomorphism between the function spaces `C(X × Y, Z)` and `C(X, C(Y, Z))`. -/

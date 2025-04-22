@@ -19,7 +19,7 @@ open scoped Topology InnerProductSpace
 
 namespace ContinuousLinearMapWOT
 
-variable {𝕜 : Type*} {E : Type*} {F : Type*} [RCLike 𝕜] [AddCommGroup E] [TopologicalSpace E]
+variable {𝕜 E F : Type*} [RCLike 𝕜] [AddCommGroup E] [TopologicalSpace E]
   [Module 𝕜 E] [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
 
 @[ext]

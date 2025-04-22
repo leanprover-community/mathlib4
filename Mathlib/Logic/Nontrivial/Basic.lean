@@ -16,7 +16,7 @@ import Mathlib.Tactic.Attr.Register
 Results about `Nontrivial`.
 -/
 
-variable {α : Type*} {β : Type*}
+variable {α β : Type*}
 
 -- `x` and `y` are explicit here, as they are often needed to guide typechecking of `h`.
 theorem nontrivial_of_lt [Preorder α] (x y : α) (h : x < y) : Nontrivial α :=

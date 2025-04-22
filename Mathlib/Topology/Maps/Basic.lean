@@ -46,7 +46,7 @@ open Set Filter Function
 
 open TopologicalSpace Topology Filter
 
-variable {X : Type*} {Y : Type*} {Z : Type*} {ι : Type*} {f : X → Y} {g : Y → Z}
+variable {X Y Z ι : Type*} {f : X → Y} {g : Y → Z}
 
 namespace Topology
 section IsInducing

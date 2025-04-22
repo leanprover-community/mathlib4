@@ -314,7 +314,7 @@ theorem algebraMap_finiteType_iff_algebra_finiteType {R A : Type*} [CommRing R] 
 
 section MonoidAlgebra
 
-variable {R : Type*} {M : Type*}
+variable {R M : Type*}
 
 namespace AddMonoidAlgebra
 

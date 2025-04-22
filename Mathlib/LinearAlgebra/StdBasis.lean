@@ -220,7 +220,7 @@ end Module
 
 namespace Module.Free
 
-variable {ι : Type*} (R : Type*) (M : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
+variable {ι : Type*} (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
 
 /-- The product of finitely many free modules is free. -/
 instance _root_.Module.Free.pi (M : ι → Type*) [Finite ι] [∀ i : ι, AddCommMonoid (M i)]

@@ -14,7 +14,7 @@ import Mathlib.Tactic.Positivity
 
 open Mathlib.Tactic.LinearCombination
 
-variable {V : Type*} {K : Type*} {t u v w x y z : V} {a b c d e f μ ν ρ : K}
+variable {V K : Type*} {t u v w x y z : V} {a b c d e f μ ν ρ : K}
 
 /-! ### `ℕ` (most tests copied from the `abel` tactic) -/
 

@@ -465,7 +465,7 @@ theorem multiset_sum_sum_index [AddCommMonoid M] [AddCommMonoid N] (f : Multiset
   Multiset.induction_on f rfl fun a s ih => by
     rw [Multiset.sum_cons, Multiset.map_cons, Multiset.sum_cons, sum_add_index' h₀ h₁, ih]
 
-theorem support_sum_eq_biUnion {α : Type*} {ι : Type*} {M : Type*} [DecidableEq α]
+theorem support_sum_eq_biUnion {α ι M : Type*} [DecidableEq α]
     [AddCommMonoid M] {g : ι → α →₀ M} (s : Finset ι)
     (h : ∀ i₁ i₂, i₁ ≠ i₂ → Disjoint (g i₁).support (g i₂).support) :
     (∑ i ∈ s, g i).support = s.biUnion fun i => (g i).support := by

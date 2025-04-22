@@ -48,7 +48,7 @@ submonoid, submonoids
 
 assert_not_exists RelIso CompleteLattice MonoidWithZero
 
-variable {M : Type*} {N : Type*}
+variable {M N : Type*}
 
 section NonAssoc
 

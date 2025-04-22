@@ -30,7 +30,7 @@ structure Semiquot (α : Type*) where mk' ::
 
 namespace Semiquot
 
-variable {α : Type*} {β : Type*}
+variable {α β : Type*}
 
 instance : Membership α (Semiquot α) :=
   ⟨fun q a => a ∈ q.s⟩

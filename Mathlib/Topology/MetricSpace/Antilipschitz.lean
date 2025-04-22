@@ -86,7 +86,7 @@ if `K` is given by a long formula, and we want to reuse this value. -/
 @[nolint unusedArguments]
 protected def k (_hf : AntilipschitzWith K f) : ℝ≥0 := K
 
-protected theorem injective {α : Type*} {β : Type*} [EMetricSpace α] [PseudoEMetricSpace β]
+protected theorem injective {α β : Type*} [EMetricSpace α] [PseudoEMetricSpace β]
     {K : ℝ≥0} {f : α → β} (hf : AntilipschitzWith K f) : Function.Injective f := fun x y h => by
   simpa only [h, edist_self, mul_zero, edist_le_zero] using hf x y
 
@@ -159,7 +159,7 @@ theorem isClosed_range {α β : Type*} [PseudoEMetricSpace α] [EMetricSpace β]
     IsClosed (range f) :=
   (hf.isComplete_range hfc).isClosed
 
-theorem isClosedEmbedding {α : Type*} {β : Type*} [EMetricSpace α] [EMetricSpace β] {K : ℝ≥0}
+theorem isClosedEmbedding {α β : Type*} [EMetricSpace α] [EMetricSpace β] {K : ℝ≥0}
     {f : α → β} [CompleteSpace α] (hf : AntilipschitzWith K f) (hfc : UniformContinuous f) :
     IsClosedEmbedding f :=
   { (hf.isUniformEmbedding hfc).isEmbedding with isClosed_range := hf.isClosed_range hfc }

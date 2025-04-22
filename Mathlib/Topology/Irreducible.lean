@@ -30,7 +30,7 @@ https://ncatlab.org/nlab/show/too+simple+to+be+simple#relationship_to_biased_def
 
 open Set Topology
 
-variable {X : Type*} {Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X}
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X}
 
 section Preirreducible
 

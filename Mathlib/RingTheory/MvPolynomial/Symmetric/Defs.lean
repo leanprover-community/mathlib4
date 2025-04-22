@@ -93,7 +93,7 @@ end Multiset
 
 namespace MvPolynomial
 
-variable {σ τ : Type*} {R S : Type*}
+variable {σ τ R S : Type*}
 
 /-- A `MvPolynomial φ` is symmetric if it is invariant under
 permutations of its variables by the `rename` operation -/

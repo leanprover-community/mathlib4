@@ -777,7 +777,7 @@ section Topology
 
 -- Let `M` be a topological manifold over the field 𝕜.
 variable
-  {E : Type*} {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {E 𝕜 : Type*} [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 

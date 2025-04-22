@@ -214,7 +214,7 @@ end NormedDivisionRing
 
 section Pi
 
-variable {𝕜 : Type*} {ι : Type*} {E : ι → Type*}
+variable {𝕜 ι : Type*} {E : ι → Type*}
 variable [NormedDivisionRing 𝕜] [∀ i, AddCommGroup (E i)] [∀ i, Module 𝕜 (E i)]
 
 /-- The extended gauge of a point `x` in an indexed product

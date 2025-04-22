@@ -82,7 +82,7 @@ end Ring
 
 section IsDomain
 
-variable {ι : Type*} {R : Type*} [CommRing R] [IsDomain R]
+variable {ι R : Type*} [CommRing R] [IsDomain R]
 variable {M : Type*} [AddCommGroup M] [Module R M] {b : ι → M}
 
 open Submodule.IsPrincipal Set Submodule
@@ -100,7 +100,7 @@ section PrincipalIdealDomain
 
 open Submodule.IsPrincipal Set Submodule
 
-variable {ι : Type*} {R : Type*} [CommRing R]
+variable {ι R : Type*} [CommRing R]
 variable {M : Type*} [AddCommGroup M] [Module R M] {b : ι → M}
 
 section StrongRankCondition

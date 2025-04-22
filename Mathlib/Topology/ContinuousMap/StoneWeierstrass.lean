@@ -352,7 +352,7 @@ section RCLike
 open RCLike
 
 -- Redefine `X`, since for the next lemma it need not be compact
-variable {𝕜 : Type*} {X : Type*} [RCLike 𝕜] [TopologicalSpace X]
+variable {𝕜 X : Type*} [RCLike 𝕜] [TopologicalSpace X]
 
 open ContinuousMap
 

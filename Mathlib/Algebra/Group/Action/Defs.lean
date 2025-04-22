@@ -72,7 +72,7 @@ lemma op_smul_eq_mul {α : Type*} [Mul α] (a b : α) : MulOpposite.op a • b =
 lemma MulOpposite.smul_eq_mul_unop [Mul α] (a : αᵐᵒᵖ) (b : α) : a • b = b * a.unop := rfl
 
 /-- Type class for additive monoid actions. -/
-class AddAction (G : Type*) (P : Type*) [AddMonoid G] extends VAdd G P where
+class AddAction (G P : Type*) [AddMonoid G] extends VAdd G P where
   /-- Zero is a neutral element for `+ᵥ` -/
   protected zero_vadd : ∀ p : P, (0 : G) +ᵥ p = p
   /-- Associativity of `+` and `+ᵥ` -/
@@ -80,7 +80,7 @@ class AddAction (G : Type*) (P : Type*) [AddMonoid G] extends VAdd G P where
 
 /-- Typeclass for multiplicative actions by monoids. This generalizes group actions. -/
 @[to_additive (attr := ext)]
-class MulAction (α : Type*) (β : Type*) [Monoid α] extends SMul α β where
+class MulAction (α β : Type*) [Monoid α] extends SMul α β where
   /-- One is the neutral element for `•` -/
   protected one_smul : ∀ b : β, (1 : α) • b = b
   /-- Associativity of `•` and `*` -/

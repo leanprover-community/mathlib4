@@ -19,8 +19,8 @@ import Mathlib.Algebra.Module.Prod
 
 open Function
 
-variable {R : Type*} {R₂ : Type*}
-variable {K : Type*} {S : Type*} {M : Type*} {M₁ : Type*} {M₂ : Type*} {M₃ : Type*}
+variable {R R₂ : Type*}
+variable {K S M M₁ M₂ M₃ : Type*}
 
 section AddCommMonoid
 

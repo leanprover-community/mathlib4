@@ -856,7 +856,7 @@ instance {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* 
   (extendRestrictScalarsAdj f).isRightAdjoint
 
 noncomputable instance preservesLimit_restrictScalars
-    {R : Type*} {S : Type*} [Ring R] [Ring S] (f : R →+* S) {J : Type*} [Category J]
+    {R S : Type*} [Ring R] [Ring S] (f : R →+* S) {J : Type*} [Category J]
     (F : J ⥤ ModuleCat.{v} S) [Small.{v} (F ⋙ forget _).sections] :
     PreservesLimit F (restrictScalars f) :=
   ⟨fun {c} hc => ⟨by

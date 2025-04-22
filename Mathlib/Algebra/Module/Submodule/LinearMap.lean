@@ -122,8 +122,8 @@ end
 
 section
 
-variable {R : Type*} {R₁ : Type*} {R₂ : Type*} {R₃ : Type*}
-variable {M : Type*} {M₁ : Type*} {M₂ : Type*} {M₃ : Type*}
+variable {R R₁ R₂ R₃ : Type*}
+variable {M M₁ M₂ M₃ : Type*}
 variable {ι : Type*}
 
 namespace LinearMap
@@ -297,7 +297,7 @@ namespace Submodule
 
 section AddCommMonoid
 
-variable {R : Type*} {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] {p p' : Submodule R M}
+variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] {p p' : Submodule R M}
 
 /-- If two submodules `p` and `p'` satisfy `p ⊆ p'`, then `inclusion p p'` is the linear map version
 of this inclusion. -/

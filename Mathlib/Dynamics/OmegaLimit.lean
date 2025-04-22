@@ -38,7 +38,7 @@ open Set Function Filter Topology
 -/
 section omegaLimit
 
-variable {τ : Type*} {α : Type*} {β : Type*} {ι : Type*}
+variable {τ α β ι : Type*}
 
 /-- The ω-limit of a set `s` under `ϕ` with respect to a filter `f` is `⋂ u ∈ f, cl (ϕ u s)`. -/
 def omegaLimit [TopologicalSpace β] (f : Filter τ) (ϕ : τ → α → β) (s : Set α) : Set β :=

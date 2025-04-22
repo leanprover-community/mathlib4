@@ -326,7 +326,7 @@ end
 
 section
 
-variable {𝕜 : Type*} {γ : Type*} [NormedField 𝕜] [SeminormedRing γ] [NormedAlgebra 𝕜 γ]
+variable {𝕜 γ : Type*} [NormedField 𝕜] [SeminormedRing γ] [NormedAlgebra 𝕜 γ]
 
 instance : NormedAlgebra 𝕜 C(α, γ) :=
   { ContinuousMap.normedSpace, ContinuousMap.algebra with }
@@ -443,7 +443,7 @@ Furthermore, if `α` is compact and `β` is a C⋆-ring, then `C(α, β)` is a C
 
 section NormedSpace
 
-variable {α : Type*} {β : Type*}
+variable {α β : Type*}
 variable [TopologicalSpace α] [SeminormedAddCommGroup β] [StarAddMonoid β] [NormedStarGroup β]
 
 theorem _root_.BoundedContinuousFunction.mkOfCompact_star [CompactSpace α] (f : C(α, β)) :
@@ -459,7 +459,7 @@ end NormedSpace
 
 section CStarRing
 
-variable {α : Type*} {β : Type*}
+variable {α β : Type*}
 variable [TopologicalSpace α] [CompactSpace α]
 
 instance [NonUnitalNormedRing β] [StarRing β] [CStarRing β] : CStarRing C(α, β) where

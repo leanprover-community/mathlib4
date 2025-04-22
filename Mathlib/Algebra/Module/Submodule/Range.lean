@@ -29,10 +29,10 @@ linear algebra, vector space, module, range
 
 open Function
 
-variable {R : Type*} {R₂ : Type*} {R₃ : Type*}
+variable {R R₂ R₃ : Type*}
 variable {K : Type*}
-variable {M : Type*} {M₂ : Type*} {M₃ : Type*}
-variable {V : Type*} {V₂ : Type*}
+variable {M M₂ M₃ : Type*}
+variable {V V₂ : Type*}
 
 namespace LinearMap
 
@@ -100,7 +100,7 @@ theorem map_le_range [RingHomSurjective τ₁₂] {f : F} {p : Submodule R M} : 
   SetLike.coe_mono (Set.image_subset_range f p)
 
 @[simp]
-theorem range_neg {R : Type*} {R₂ : Type*} {M : Type*} {M₂ : Type*} [Semiring R] [Ring R₂]
+theorem range_neg {R R₂ M M₂ : Type*} [Semiring R] [Ring R₂]
     [AddCommMonoid M] [AddCommGroup M₂] [Module R M] [Module R₂ M₂] {τ₁₂ : R →+* R₂}
     [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) : LinearMap.range (-f) = LinearMap.range f := by
   change range ((-LinearMap.id : M₂ →ₗ[R₂] M₂).comp f) = _

@@ -10,8 +10,8 @@ import Mathlib.Algebra.Module.Submodule.Range
 
 open Function
 
-variable {R : Type*} {R₁ : Type*} {R₂ : Type*} {R₃ : Type*}
-variable {M : Type*} {M₁ : Type*} {M₂ : Type*} {M₃ : Type*}
+variable {R R₁ R₂ R₃ : Type*}
+variable {M M₁ M₂ M₃ : Type*}
 variable {N : Type*}
 
 namespace LinearEquiv

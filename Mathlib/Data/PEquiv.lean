@@ -412,7 +412,7 @@ end PEquiv
 
 namespace Equiv
 
-variable {α : Type*} {β : Type*} {γ : Type*}
+variable {α β γ : Type*}
 
 /-- Turns an `Equiv` into a `PEquiv` of the whole type. -/
 def toPEquiv (f : α ≃ β) : α ≃. β where

@@ -24,7 +24,7 @@ open Set LinearMap
 
 namespace Finsupp
 
-variable {α : Type*} {M : Type*} {N : Type*} {P : Type*} {R : Type*} {S : Type*}
+variable {α M N P R S : Type*}
 variable [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M]
 variable [AddCommMonoid N] [Module R N]
 variable [AddCommMonoid P] [Module R P]

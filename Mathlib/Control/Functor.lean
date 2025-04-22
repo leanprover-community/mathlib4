@@ -66,7 +66,7 @@ namespace Functor
 `α` has a monoid structure, `Const α` has an `Applicative` instance.
 (If `α` has an additive monoid structure, see `Functor.AddConst`.) -/
 @[nolint unusedArguments]
-def Const (α : Type*) (_β : Type*) :=
+def Const (α _β : Type*) :=
   α
 
 /-- `Const.mk` is the canonical map `α → Const α β` (the identity), and
