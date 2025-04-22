@@ -209,6 +209,27 @@ theorem le_comap_pow_of_le_comap (p : Submodule R M) {f : M →ₗ[R] M} (h : p 
   | zero => simp [LinearMap.one_eq_id]
   | succ k ih => simp [LinearMap.iterate_succ, comap_comp, h.trans (comap_mono ih)]
 
+section comapRestrict
+
+variable [Module R M₂] (q : Submodule R M₂) (f : M →ₗ[R] M₂)
+
+/-- For a linear map `f`, the map from `Submodule.comap q f` to `q` for a submodule `q`
+obtained from restricting `f` using `LinearMap.restrict`. -/
+def comapRestrict : ↥(q.comap f) →ₗ[R] ↥q :=
+  f.restrict fun _ hx ↦ mem_comap.mp hx
+
+@[simp]
+theorem comapRestrict_coe_apply (x : q.comap f) : (q.comapRestrict f) x = f x := rfl
+
+theorem comapRestrict_surjective_of_surjective (hf : Function.Surjective f) :
+    Function.Surjective (q.comapRestrict f) := fun y ↦ by
+  obtain ⟨x, hx⟩ := hf y
+  use ⟨x, mem_comap.mpr (hx ▸ y.2)⟩
+  apply Subtype.val_injective
+  simp [hx]
+
+end comapRestrict
+
 section
 
 variable [RingHomSurjective σ₁₂]
@@ -258,6 +279,23 @@ theorem map_comap_le [RingHomSurjective σ₁₂] (f : F) (q : Submodule R₂ M�
 
 theorem le_comap_map [RingHomSurjective σ₁₂] (f : F) (p : Submodule R M) : p ≤ comap f (map f p) :=
   (gc_map_comap f).le_u_l _
+
+section submoduleOf
+
+/-- For any `R` submodules `p` and `q`, `p ⊓ q` as a submodule of `q`. -/
+def submoduleOf (p q : Submodule R M) : Submodule R q :=
+  Submodule.comap q.subtype p
+
+/-- If `p ≤ q`, then `p` as a subgroup of `q` is isomorphic to `p`. -/
+def submoduleOfEquivOfLe {p q : Submodule R M} (h : p ≤ q) : p.submoduleOf q ≃ₗ[R] p where
+  toFun m := ⟨m.1, m.2⟩
+  invFun m := ⟨⟨m.1, h m.2⟩, m.2⟩
+  left_inv _ := Subtype.ext rfl
+  right_inv _ := Subtype.ext rfl
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+end submoduleOf
 
 section GaloisInsertion
 
