@@ -41,8 +41,9 @@ theorem isReduced_cons {a b: (α × Bool)} :
   List.chain'_cons
 
 @[to_additive]
-theorem IsReduced.not_step : IsReduced L₁ → ¬ Red.Step L₁ L₂
-| red, step => by induction step; simp [IsReduced] at red
+theorem IsReduced.not_step (h : IsReduced L₁) : ¬ Red.Step L₁ L₂ := fun step ↦ by
+  induction step
+  simp [IsReduced] at h
 
 @[to_additive]
 theorem isReduced_not_step_iff : IsReduced L₁ ↔ ∀ L₂, ¬ Red.Step L₁ L₂ where
@@ -55,61 +56,50 @@ theorem isReduced_not_step_iff : IsReduced L₁ ↔ ∀ L₂, ¬ Red.Step L₁ L
       | nil => exact isReduced_singleton
       | cons y l' =>
         rw [isReduced_cons]
-        constructor
-        · intro ⟨eq1, eq2⟩
-          obtain ⟨x1, x2⟩ := x
-          obtain ⟨y1, y2⟩ := y
-          simp only at eq1 eq2
-          apply hL l'
-          rw [eq1, ← eq2]
-          apply Red.Step.cons_not
-        · apply ih
-          intro L₂ step
-          apply hL (x :: L₂)
-          exact Red.Step.cons step
+        refine ⟨fun ⟨eq₁, eq₂⟩ ↦ ?_, ih <| fun L₂ step => hL (x :: L₂) <| Red.Step.cons step⟩
+        obtain ⟨x₁, x₂⟩ := x
+        obtain ⟨y₁, y₂⟩ := y
+        simp only at eq₁ eq₂
+        apply hL l'
+        rw [eq₁, ← eq₂]
+        apply Red.Step.cons_not
+
 
 @[to_additive]
-theorem IsReduced.infix : IsReduced L₂ → L₁ <:+: L₂ → IsReduced L₁ := Chain'.infix
+theorem IsReduced.infix (h : IsReduced L₂) (h' : L₁ <:+: L₂) : IsReduced L₁ := Chain'.infix h h'
 
 @[to_additive]
 theorem IsReduced.min (h : IsReduced L₁) : Red L₁ L₂ ↔ L₂ = L₁ :=
   Relation.reflTransGen_iff_eq fun _ => h.not_step
 
 @[to_additive]
-theorem IsReduced.cons_append_chain {x : α × Bool} {L₁ L₂ : List (α × Bool)} (h : L₁ ≠ []) :
-    IsReduced (x :: L₁) → IsReduced (L₁ ++ L₂) → IsReduced (x :: L₁ ++ L₂) := by
-  intro h1 h2
-  induction L₁
-  · contradiction
-  · apply isReduced_cons.mp at h1
-    apply isReduced_cons.mpr
-    tauto
+theorem IsReduced.cons_append_chain {x : α × Bool} {L₁ L₂ : List (α × Bool)} (h : L₁ ≠ [])
+    (h₁ : IsReduced (x :: L₁)) (h₁₂ : IsReduced (L₁ ++ L₂)) : IsReduced (x :: L₁ ++ L₂) := by
+  induction L₁ <;> simp_all
 
 @[to_additive]
-theorem IsReduced.append_chain {L₁ L₂ L₃ : List (α × Bool)} (h : L₂ ≠ []) :
-    IsReduced (L₁ ++ L₂) → IsReduced (L₂ ++ L₃) → IsReduced (L₁ ++ L₂ ++ L₃) := by
-  intro h1 h2
+theorem IsReduced.append_chain {L₁ L₂ L₃ : List (α × Bool)} (h : L₂ ≠ [])
+  (h₁₂ : IsReduced (L₁ ++ L₂)) (h₂₃ : IsReduced (L₂ ++ L₃)) : IsReduced (L₁ ++ L₂ ++ L₃) := by
   induction L₁
-  case nil => simp [h2]
+  case nil => simp [h₂₃]
   case cons head tail ih =>
-    refine h1.cons_append_chain (by simp [h]) (ih (h1.infix ⟨[head], [], by simp⟩))
+    exact h₁₂.cons_append_chain (by simp [h]) (ih (h₁₂.infix ⟨[head], [], by simp⟩))
 
 variable [DecidableEq α]
 
 @[to_additive]
-theorem isReduced_iff_reduce_eq : IsReduced L ↔ reduce L = L := by
-  constructor
-  · intro h
+theorem isReduced_iff_reduce_eq : IsReduced L ↔ reduce L = L where
+  mp h := by
     rw [← h.min]
     exact reduce.red
-  · intro h
+  mpr h := by
     unfold IsReduced
     rw [List.chain'_iff_forall_rel_of_append_cons_cons]
     intro ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ l₁ l₂ hl hx
     simp only at hl hx
     rw [hx.1, ← hx.2] at hl
     nth_rw 2 [hl] at h
-    apply reduce.not h
+    exact reduce.not h
 
 @[to_additive]
 theorem isReduced_toWord {x : FreeGroup α} : IsReduced (x.toWord) := by
