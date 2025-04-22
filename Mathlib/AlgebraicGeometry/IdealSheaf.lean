@@ -53,8 +53,11 @@ variable {X : Scheme.{u}}
 /--
 A structure that contains the data to uniquely define an ideal sheaf, consisting of
 1. an ideal `I(U) ≤ Γ(X, U)` for every affine open `U`
-2. a proof that `I(D(f)) = I(U)_f` for every affine open `U` and every section `f : Γ(X, U)`.
-3. a subset of `X` equal to the support
+2. a proof that `I(D(f)) = I(U)_f` for every affine open `U` and every section `f : Γ(X, U)`
+3. a subset of `X` equal to the support.
+
+Also see `Scheme.IdealSheafData.mkOfMemSupportIff` for a constructor with the condition on the
+support being (usually) easier to prove.
 -/
 structure IdealSheafData (X : Scheme.{u}) : Type u where
   /-- The component of an ideal sheaf at an affine open. -/
@@ -63,7 +66,7 @@ structure IdealSheafData (X : Scheme.{u}) : Type u where
   map_ideal_basicOpen : ∀ (U : X.affineOpens) (f : Γ(X, U)),
     (ideal U).map (X.presheaf.map (homOfLE <| X.basicOpen_le f).op).hom =
       ideal (X.affineBasicOpen f)
-  /-- The support of an ideal sheaf. Also see `IdealSheafData.mem_support_iff_of_mem`. -/
+  /-- The support of an ideal sheaf. Use `IdealSheafData.support` instead for most occasions. -/
   supportSet : Set X := ⋂ U, X.zeroLocus (U := U.1) (ideal U)
   supportSet_eq_iInter_zeroLocus : supportSet = ⋂ U, X.zeroLocus (U := U.1) (ideal U) := by rfl
 
@@ -76,14 +79,6 @@ protected lemma ext {I J : X.IdealSheafData} (h : I.ideal = J.ideal) : I = J := 
   subst h
   congr
   rw [hs, ht]
-
-@[reducible]
-def copy {I : X.IdealSheafData} (I' : ∀ U : X.affineOpens, Ideal Γ(X, U)) (hI' : I' = I.ideal)
-    (s : Set X) (hs : s = I.supportSet) : X.IdealSheafData where
-  ideal := I'
-  map_ideal_basicOpen := hI' ▸ I.map_ideal_basicOpen
-  supportSet := s
-  supportSet_eq_iInter_zeroLocus := hs ▸ hI' ▸ I.supportSet_eq_iInter_zeroLocus
 
 section Order
 
@@ -307,10 +302,13 @@ lemma coe_support_inter (I : IdealSheafData X) (U : X.affineOpens) :
     (I.support : Set X) ∩ U = X.zeroLocus (U := U.1) (I.ideal U) ∩ U :=
   I.supportSet_inter U
 
+/-- Custom simps projection for `IdealSheafData`. -/
 def Simps.coe_support : Set X := I.support
 
 initialize_simps_projections IdealSheafData (supportSet → coe_support, as_prefix coe_support)
 
+/-- A useful constructor of `IdealSheafData`
+with the condition on `supportSet` being easier to check. -/
 @[simps ideal coe_support]
 def mkOfMemSupportIff
     (ideal : ∀ U : X.affineOpens, Ideal Γ(X, U))
@@ -447,9 +445,9 @@ lemma radical_inf {I J : IdealSheafData X} :
   ext U : 2
   simp only [radical_ideal, ideal_inf, Pi.inf_apply, Ideal.radical_inf]
 
-/-- The vanishing ideal sheaf of a set,
-which is the largest ideal sheaf whose support contains a subset.
-When the set `Z` is closed, the reduced induced scheme structure is the quotient of this ideal. -/
+/-- The vanishing ideal sheaf of a closed set,
+which is the largest ideal sheaf whose support is equal to it.
+The reduced induced scheme structure on the closed set is the quotient of this ideal. -/
 @[simps! ideal coe_support]
 nonrec def vanishingIdeal (Z : Closeds X) : IdealSheafData X :=
   mkOfMemSupportIff
@@ -492,7 +490,7 @@ nonrec def vanishingIdeal (Z : Closeds X) : IdealSheafData X :=
       · rw [← U.2.fromSpec_image_zeroLocus, zeroLocus_vanishingIdeal_eq_closure,
           ← U.2.fromSpec.isOpenEmbedding.isOpenMap.preimage_closure_eq_closure_preimage
             U.2.fromSpec.base.1.2,
-          Set.image_preimage_eq_inter_range, Z.closed.closure_eq, IsAffineOpen.range_fromSpec]
+          Set.image_preimage_eq_inter_range, Z.isClosed.closure_eq, IsAffineOpen.range_fromSpec]
         simp [hxU]
       · simp [hxU])
 
@@ -711,7 +709,7 @@ lemma Hom.support_ker (f : X.Hom Y) [QuasiCompact f] :
       ← Scheme.ΓSpecIso_inv_naturality]
     simp only [CommRingCat.hom_comp, PrimeSpectrum.comap_comp, ContinuousMap.coe_comp]
     exact closure_mono (Set.range_comp_subset_range _ (Spec.map φ).base)
-  · rw [(support _).closed.closure_subset_iff]
+  · rw [(support _).isClosed.closure_subset_iff]
     exact f.range_subset_ker_support
 
 /-- The functor taking a morphism into `Y` to its kernel as an ideal sheaf on `Y`. -/

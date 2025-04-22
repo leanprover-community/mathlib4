@@ -78,6 +78,9 @@ lemma algebraMap_pow_isUnit (n : ℕ) : IsUnit (algebraMap R S x ^ n) :=
 lemma algebraMap_isUnit : IsUnit (algebraMap R S x) :=
   IsLocalization.map_units _ (⟨x, 1, by simp⟩ : Submonoid.powers x)
 
+lemma algebraMap_isUnit_iff {y : R} : IsUnit (algebraMap R S y) ↔ ∃ n, y ∣ x ^ n :=
+  (IsLocalization.algebraMap_isUnit_iff <| .powers x).trans <| by simp [Submonoid.mem_powers_iff]
+
 lemma surj (z : S) : ∃ (n : ℕ) (a : R), z * algebraMap R S x ^ n = algebraMap R S a := by
   obtain ⟨⟨a, ⟨-, n, rfl⟩⟩, h⟩ := IsLocalization.surj (Submonoid.powers x) z
   use n, a
@@ -366,7 +369,7 @@ noncomputable abbrev awayLift (f : R →+* P) (r : R) (hr : IsUnit (f r)) :
     Localization.Away r →+* P :=
   IsLocalization.Away.lift r hr
 
-lemma awayLift_mk {A : Type*} [CommRing A] (f : R →+* A) (r : R)
+lemma awayLift_mk {A : Type*} [CommSemiring A] (f : R →+* A) (r : R)
     (a : R) (v : A) (hv : f r * v = 1) (j : ℕ) :
     Localization.awayLift f r (isUnit_iff_exists_inv.mpr ⟨v, hv⟩)
       (Localization.mk a ⟨r ^ j, j, rfl⟩) = f a * v ^ j := by
@@ -440,7 +443,7 @@ theorem existsUnique_algebraMap_eq_of_span_eq_top (s : Set R) (span_eq : Ideal.s
   have eq2 a b : r a * b ^ N = r b * a ^ N := by
     rw [pow_add, mul_mul_mul_comm, ← mul_pow, eq2,
       mul_comm a.1, mul_pow, mul_mul_mul_comm, ← pow_add]
-  have ⟨c, eq1⟩ := (mem_span_range_iff_exists_fun _).mp <|
+  have ⟨c, eq1⟩ := (Submodule.mem_span_range_iff_exists_fun _).mp <|
     (Ideal.eq_top_iff_one _).mp <| (Set.image_eq_range _ _ ▸ Ideal.span_pow_eq_top _ span_eq N)
   refine ⟨∑ b, c b * r b, fun a ↦ ((Away.algebraMap_isUnit a.1).pow N).mul_left_inj.mp ?_⟩
   simp_rw [← map_pow, eq, ← map_mul, Finset.sum_mul, mul_assoc, eq2 _ a, mul_left_comm (c _),

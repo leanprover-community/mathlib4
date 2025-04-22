@@ -569,6 +569,8 @@ noncomputable instance FractionalIdeal.semifield : Semifield (FractionalIdeal A�
   nnqsmul := _
   nnqsmul_def := fun _ _ => rfl
 
+#adaptation_note /-- 2025-03-29 for lean4#7717 had to add `mul_left_cancel_of_ne_zero` field.
+TODO(kmill) There is trouble calculating the type of the `IsLeftCancelMulZero` parent. -/
 /-- Fractional ideals have cancellative multiplication in a Dedekind domain.
 
 Although this instance is a direct consequence of the instance
@@ -578,6 +580,7 @@ a computable alternative.
 instance FractionalIdeal.cancelCommMonoidWithZero :
     CancelCommMonoidWithZero (FractionalIdeal A⁰ K) where
   __ : CommSemiring (FractionalIdeal A⁰ K) := inferInstance
+  mul_left_cancel_of_ne_zero := mul_left_cancel₀
 
 instance Ideal.cancelCommMonoidWithZero : CancelCommMonoidWithZero (Ideal A) :=
   { Function.Injective.cancelCommMonoidWithZero (coeIdealHom A⁰ (FractionRing A)) coeIdeal_injective
@@ -623,9 +626,9 @@ instance : WfDvdMonoid (Ideal A) where
 instance Ideal.uniqueFactorizationMonoid : UniqueFactorizationMonoid (Ideal A) :=
   { irreducible_iff_prime := by
       intro P
-      exact ⟨fun hirr => ⟨hirr.ne_zero, hirr.not_unit, fun I J => by
+      exact ⟨fun hirr => ⟨hirr.ne_zero, hirr.not_isUnit, fun I J => by
         have : P.IsMaximal := by
-          refine ⟨⟨mt Ideal.isUnit_iff.mpr hirr.not_unit, ?_⟩⟩
+          refine ⟨⟨mt Ideal.isUnit_iff.mpr hirr.not_isUnit, ?_⟩⟩
           intro J hJ
           obtain ⟨_J_ne, H, hunit, P_eq⟩ := Ideal.dvdNotUnit_iff_lt.mpr hJ
           exact Ideal.isUnit_iff.mp ((hirr.isUnit_or_isUnit P_eq).resolve_right hunit)
