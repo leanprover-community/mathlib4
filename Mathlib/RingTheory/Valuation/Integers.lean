@@ -239,14 +239,13 @@ lemma not_denselyOrdered_of_isPrincipalIdealRing [IsPrincipalIdealRing O] (hv : 
   obtain ⟨z, rfl⟩ := hv.exists_of_le_one hy₁.le
   exact hy.not_le <| hx ⟨hy₁, mem_range_self _⟩
 
-end Integers
-
-open Integers in
-theorem Integer.not_isUnit_iff_valuation_lt_one {x : v.integer} : ¬IsUnit x ↔ v x < 1 := by
+theorem not_isUnit_iff_valuation_lt_one (hv : Integers v O) {x : O} :
+    ¬IsUnit x ↔ v (algebraMap O F x) < 1 := by
   rw [← not_le, not_iff_not, isUnit_iff_valuation_eq_one (F := F) (Γ₀ := Γ₀),
     le_antisymm_iff]
-  exacts [and_iff_right x.2, integer.integers v]
+  exacts [and_iff_right (hv.map_le_one x), hv]
 
+end Integers
 
 end Field
 
