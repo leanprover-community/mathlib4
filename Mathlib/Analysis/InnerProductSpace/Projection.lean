@@ -1035,7 +1035,7 @@ theorem norm_sq_eq_add_norm_sq_projection (x : E) (S : Submodule 𝕜 E) [S.HasO
 complement sum to the identity. -/
 theorem id_eq_sum_orthogonalProjection_self_orthogonalComplement [K.HasOrthogonalProjection] :
     ContinuousLinearMap.id 𝕜 E =
-      K.subtypeL.comp K.orthogonalProjection + Kᗮ.subtypeL.comp (Kᗮ.orthogonalProjection) := by
+      K.subtypeL.comp K.orthogonalProjection + Kᗮ.subtypeL.comp Kᗮ.orthogonalProjection := by
   ext w
   exact (K.orthogonalProjection_add_orthogonalProjection_orthogonal w).symm
 

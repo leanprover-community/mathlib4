@@ -260,11 +260,11 @@ nonrec def orthogonalProjection (s : AffineSubspace ℝ P) [Nonempty s]
   toFun p := ⟨orthogonalProjectionFn s p, orthogonalProjectionFn_mem p⟩
   linear := s.direction.orthogonalProjection
   map_vadd' p v := by
-    have hs : ((s.direction.orthogonalProjection) v : V) +ᵥ orthogonalProjectionFn s p ∈ s :=
+    have hs : (s.direction.orthogonalProjection v : V) +ᵥ orthogonalProjectionFn s p ∈ s :=
       vadd_mem_of_mem_direction (s.direction.orthogonalProjection v).2
         (orthogonalProjectionFn_mem p)
     have ho :
-      ((s.direction.orthogonalProjection) v : V) +ᵥ orthogonalProjectionFn s p ∈
+      (s.direction.orthogonalProjection v : V) +ᵥ orthogonalProjectionFn s p ∈
         mk' (v +ᵥ p) s.directionᗮ := by
       rw [← vsub_right_mem_direction_iff_mem (self_mem_mk' _ _) _, direction_mk',
         vsub_vadd_eq_vsub_sub, vadd_vsub_assoc, add_comm, add_sub_assoc]
@@ -273,7 +273,7 @@ nonrec def orthogonalProjection (s : AffineSubspace ℝ P) [Nonempty s]
       intro w hw
       rw [← neg_sub, inner_neg_left, Submodule.orthogonalProjection_inner_eq_zero _ w hw, neg_zero]
     have hm :
-      ((s.direction.orthogonalProjection) v : V) +ᵥ orthogonalProjectionFn s p ∈
+      (s.direction.orthogonalProjection v : V) +ᵥ orthogonalProjectionFn s p ∈
         ({orthogonalProjectionFn s (v +ᵥ p)} : Set P) := by
       rw [← inter_eq_singleton_orthogonalProjectionFn (v +ᵥ p)]
       exact Set.mem_inter hs ho
@@ -532,7 +532,7 @@ theorem eq_reflection_of_eq_subspace {s s' : AffineSubspace ℝ P} [Nonempty s] 
 @[simp]
 theorem reflection_reflection (s : AffineSubspace ℝ P) [Nonempty s]
     [s.direction.HasOrthogonalProjection] (p : P) : reflection s (reflection s p) = p := by
-  have : ∀ a : s, ∀ b : V, (s.direction.orthogonalProjection) b = 0 →
+  have : ∀ a : s, ∀ b : V, s.direction.orthogonalProjection b = 0 →
       reflection s (reflection s (b +ᵥ (a : P))) = b +ᵥ (a : P) := by
     intro _ _ h
     simp [reflection, h]

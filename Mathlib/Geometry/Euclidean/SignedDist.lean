@@ -51,7 +51,7 @@ lemma signedInfDist_apply (x : P) :
 lemma signedInfDist_linear : (s.signedInfDist p).linear =
     (innerₗ V (‖p -ᵥ orthogonalProjection s p‖⁻¹ • (p -ᵥ orthogonalProjection s p))).comp
       (LinearMap.id (R := ℝ) (M := V) -
-        s.direction.subtype.comp (s.direction.orthogonalProjection).toLinearMap) :=
+        s.direction.subtype.comp s.direction.orthogonalProjection.toLinearMap) :=
   rfl
 
 lemma signedInfDist_linear_apply (v : V) : (s.signedInfDist p).linear v =
