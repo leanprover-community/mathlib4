@@ -215,7 +215,7 @@ theorem exp_decay_of_zero_at_inf (hh : 0 < h) (hf : Periodic f h)
   suffices cuspFunction h f =O[_] id by
     simpa only [comp_def, eq_cuspFunction hh.ne' hf, id_eq, norm_qParam]
       using (this.comp_tendsto (qParam_tendsto hh)).norm_right
-  simpa only [cuspFunction_zero_of_zero_at_inf hh h_zer, sub_zero] using
+  simpa only [cuspFunction_zero_of_zero_at_inf hh h_zer, vsub_eq_sub, sub_zero] using
     (differentiableAt_cuspFunction_zero hh hf h_hol h_zer.boundedAtFilter).isBigO_sub.mono
       nhdsWithin_le_nhds
 
