@@ -57,8 +57,8 @@ open Opposite
 
 open scoped AlgebraicGeometry
 
-variable {C : Type u} [Category.{v} C]
-variable [HasColimits.{v} C]
+variable {C : Type u} [Category C]
+variable [HasColimitsOfSize.{v, v} C]
 variable {X Y Z : TopCat.{v}}
 
 namespace TopCat.Presheaf
