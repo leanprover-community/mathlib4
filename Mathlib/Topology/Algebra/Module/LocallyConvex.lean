@@ -231,7 +231,8 @@ instance LinearOrderedSemiring.toLocallyConvexSpace {R : Type*} [TopologicalSpac
 
 end LinearOrderedSemiring
 
-lemma Convex.eventually_nhdsWithin_segment {E 𝕜 : Type*} [OrderedSemiring 𝕜]
+lemma Convex.eventually_nhdsWithin_segment {E 𝕜 : Type*}
+    [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
     [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] [LocallyConvexSpace 𝕜 E]
     {s : Set E} (hs : Convex 𝕜 s) {x₀ : E} (hx₀s : x₀ ∈ s)
     {p : E → Prop} (h : ∀ᶠ x in 𝓝[s] x₀, p x) :
