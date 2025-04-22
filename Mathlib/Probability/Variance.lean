@@ -195,8 +195,8 @@ theorem variance_def' [IsProbabilityMeasure μ] {X : Ω → ℝ} (hX : MemLp X 2
   · apply hX.integrable_sq.add
     apply integrable_const
   · exact ((hX.integrable one_le_two).const_mul 2).mul_const' _
-  simp only [Pi.pow_apply, integral_const, measure_univ, ENNReal.toReal_one, smul_eq_mul, one_mul,
-    Pi.mul_apply, Pi.ofNat_apply, Nat.cast_ofNat, integral_mul_right, integral_mul_left]
+  simp only [integral_const, measureReal_univ_eq_one, smul_eq_mul, one_mul, integral_mul_right,
+    integral_mul_left, Pi.pow_apply]
   ring
 
 theorem variance_le_expectation_sq [IsProbabilityMeasure μ] {X : Ω → ℝ}
@@ -330,7 +330,7 @@ theorem IndepFun.variance_sum [IsProbabilityMeasure μ] {ι : Type*} {X : ι →
         variance_def' (memLp_finset_sum' _ fun i hi => hs _ (mem_insert_of_mem hi))]
       ring
     _ = variance (X k) μ + variance (∑ i ∈ s, X i) μ := by
-      simp_rw [Pi.mul_apply, Pi.ofNat_apply, Nat.cast_ofNat, sum_apply, mul_sum, mul_assoc,
+      simp_rw [Pi.mul_apply, Pi.ofNat_apply, sum_apply, mul_sum, mul_assoc,
         add_eq_left]
       rw [integral_finset_sum s fun i hi => ?_]; swap
       · apply Integrable.const_mul _ (2 : ℝ)

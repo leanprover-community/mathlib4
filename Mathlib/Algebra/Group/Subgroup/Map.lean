@@ -152,6 +152,7 @@ theorem mem_map_equiv {f : G ≃* N} {K : Subgroup G} {x : N} :
 
 -- The simpNF linter says that the LHS can be simplified via `Subgroup.mem_map`.
 -- However this is a higher priority lemma.
+-- It seems the side condition `hf` is not applied by `simpNF`.
 -- https://github.com/leanprover/std4/issues/207
 @[to_additive (attr := simp 1100, nolint simpNF)]
 theorem mem_map_iff_mem {f : G →* N} (hf : Function.Injective f) {K : Subgroup G} {x : G} :
@@ -345,15 +346,19 @@ theorem subgroupOf_eq_top {H K : Subgroup G} : H.subgroupOf K = ⊤ ↔ K ≤ H 
 variable (H : Subgroup G)
 
 @[to_additive]
-instance map_isCommutative (f : G →* G') [H.IsCommutative] : (H.map f).IsCommutative :=
+instance map_isMulCommutative (f : G →* G') [IsMulCommutative H] : IsMulCommutative (H.map f) :=
   ⟨⟨by
       rintro ⟨-, a, ha, rfl⟩ ⟨-, b, hb, rfl⟩
       rw [Subtype.ext_iff, coe_mul, coe_mul, Subtype.coe_mk, Subtype.coe_mk, ← map_mul, ← map_mul]
       exact congr_arg f (Subtype.ext_iff.mp (mul_comm (⟨a, ha⟩ : H) ⟨b, hb⟩))⟩⟩
 
+@[deprecated (since := "2025-04-09")] alias map_isCommutative := map_isMulCommutative
+@[deprecated (since := "2025-04-09")] alias _root_.AddSubgroup.map_isCommutative :=
+  AddSubgroup.map_isAddCommutative
+
 @[to_additive]
-theorem comap_injective_isCommutative {f : G' →* G} (hf : Injective f) [H.IsCommutative] :
-    (H.comap f).IsCommutative :=
+theorem comap_injective_isMulCommutative {f : G' →* G} (hf : Injective f) [IsMulCommutative H] :
+    IsMulCommutative (H.comap f) :=
   ⟨⟨fun a b =>
       Subtype.ext
         (by
@@ -361,9 +366,18 @@ theorem comap_injective_isCommutative {f : G' →* G} (hf : Injective f) [H.IsCo
           rwa [Subtype.ext_iff, coe_mul, coe_mul, coe_mk, coe_mk, ← map_mul, ← map_mul,
             hf.eq_iff] at this)⟩⟩
 
+@[deprecated (since := "2025-04-09")] alias comap_injective_isCommutative :=
+  comap_injective_isMulCommutative
+@[deprecated (since := "2025-04-09")] alias _root_.AddSubgroup.comap_injective_isCommutative :=
+  AddSubgroup.comap_injective_isAddCommutative
+
 @[to_additive]
-instance subgroupOf_isCommutative [H.IsCommutative] : (H.subgroupOf K).IsCommutative :=
-  H.comap_injective_isCommutative Subtype.coe_injective
+instance subgroupOf_isMulCommutative [IsMulCommutative H] : IsMulCommutative (H.subgroupOf K) :=
+  H.comap_injective_isMulCommutative Subtype.coe_injective
+
+@[deprecated (since := "2025-04-09")] alias subgroupOf_isCommutative := subgroupOf_isMulCommutative
+@[deprecated (since := "2025-04-09")] alias _root_.AddSubgroup.addSubgroupOf_isCommutative :=
+  AddSubgroup.addSubgroupOf_isAddCommutative
 
 end Subgroup
 

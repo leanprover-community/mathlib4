@@ -37,8 +37,8 @@ This construction shows up unrelatedly twice in the theory of Roth numbers:
 
 open Finset Function Sum3
 
-variable {α β γ 𝕜 : Type*} [LinearOrderedField 𝕜] {t : Finset (α × β × γ)} {a a' : α} {b b' : β}
-  {c c' : γ} {x : α × β × γ}
+variable {α β γ 𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+  {t : Finset (α × β × γ)} {a a' : α} {b b' : β} {c c' : γ} {x : α × β × γ}
 
 namespace SimpleGraph
 namespace TripartiteFromTriangles
