@@ -64,13 +64,13 @@ theorem summable_mul_of_summable_norm' {f : ι → R} {g : ι' → R}
 theorem tsum_mul_tsum_of_summable_norm [CompleteSpace R] {f : ι → R} {g : ι' → R}
     (hf : Summable fun x => ‖f x‖) (hg : Summable fun x => ‖g x‖) :
     ((∑' x, f x) * ∑' y, g y) = ∑' z : ι × ι', f z.1 * g z.2 :=
-  tsum_mul_tsum hf.of_norm hg.of_norm (summable_mul_of_summable_norm hf hg)
+  hf.of_norm.tsum_mul_tsum hg.of_norm (summable_mul_of_summable_norm hf hg)
 
 theorem tsum_mul_tsum_of_summable_norm' {f : ι → R} {g : ι' → R}
     (hf : Summable fun x => ‖f x‖) (h'f : Summable f)
     (hg : Summable fun x => ‖g x‖) (h'g : Summable g) :
     ((∑' x, f x) * ∑' y, g y) = ∑' z : ι × ι', f z.1 * g z.2 :=
-  tsum_mul_tsum h'f h'g (summable_mul_of_summable_norm' hf h'f hg h'g)
+  h'f.tsum_mul_tsum h'g (summable_mul_of_summable_norm' hf h'f hg h'g)
 
 /-! ### `ℕ`-indexed families (Cauchy product)
 
@@ -112,13 +112,13 @@ theorem summable_sum_mul_antidiagonal_of_summable_norm' {f g : ℕ → R}
 theorem tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm [CompleteSpace R] {f g : ℕ → R}
     (hf : Summable fun x => ‖f x‖) (hg : Summable fun x => ‖g x‖) :
     ((∑' n, f n) * ∑' n, g n) = ∑' n, ∑ kl ∈ antidiagonal n, f kl.1 * g kl.2 :=
-  tsum_mul_tsum_eq_tsum_sum_antidiagonal hf.of_norm hg.of_norm (summable_mul_of_summable_norm hf hg)
+  hf.of_norm.tsum_mul_tsum_eq_tsum_sum_antidiagonal hg.of_norm (summable_mul_of_summable_norm hf hg)
 
 theorem tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm' {f g : ℕ → R}
     (hf : Summable fun x => ‖f x‖) (h'f : Summable f)
     (hg : Summable fun x => ‖g x‖) (h'g : Summable g) :
     ((∑' n, f n) * ∑' n, g n) = ∑' n, ∑ kl ∈ antidiagonal n, f kl.1 * g kl.2 :=
-  tsum_mul_tsum_eq_tsum_sum_antidiagonal h'f h'g (summable_mul_of_summable_norm' hf h'f hg h'g)
+  h'f.tsum_mul_tsum_eq_tsum_sum_antidiagonal  h'g (summable_mul_of_summable_norm' hf h'f hg h'g)
 
 theorem summable_norm_sum_mul_range_of_summable_norm {f g : ℕ → R} (hf : Summable fun x => ‖f x‖)
     (hg : Summable fun x => ‖g x‖) : Summable fun n => ‖∑ k ∈ range (n + 1), f k * g (n - k)‖ := by

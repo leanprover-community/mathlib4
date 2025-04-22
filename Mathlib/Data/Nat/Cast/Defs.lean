@@ -169,11 +169,11 @@ theorem binCast_eq [AddMonoidWithOne R] (n : ℕ) :
         rw [h1, Nat.add_comm 1, Nat.succ_mul, Nat.one_mul]
         simp only [Nat.cast_add, Nat.cast_one]
 
-theorem cast_two [AddMonoidWithOne R] : ((2 : ℕ) : R) = (2 : R) := rfl
+theorem cast_two [NatCast R] : ((2 : ℕ) : R) = (2 : R) := rfl
 
-theorem cast_three [AddMonoidWithOne R] : ((3 : ℕ) : R) = (3 : R) := rfl
+theorem cast_three [NatCast R] : ((3 : ℕ) : R) = (3 : R) := rfl
 
-theorem cast_four [AddMonoidWithOne R] : ((4 : ℕ) : R) = (4 : R) := rfl
+theorem cast_four [NatCast R] : ((4 : ℕ) : R) = (4 : R) := rfl
 
 attribute [simp, norm_cast] Int.natAbs_ofNat
 
@@ -189,7 +189,6 @@ protected abbrev AddMonoidWithOne.binary [AddMonoid R] [One R] : AddMonoidWithOn
     natCast := Nat.binCast,
     natCast_zero := by simp only [Nat.binCast, Nat.cast],
     natCast_succ := fun n => by
-      dsimp only [NatCast.natCast]
       letI : AddMonoidWithOne R := AddMonoidWithOne.unary
       rw [Nat.binCast_eq, Nat.binCast_eq, Nat.cast_succ] }
 

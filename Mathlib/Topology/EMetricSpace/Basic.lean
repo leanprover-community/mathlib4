@@ -67,17 +67,11 @@ theorem isUniformInducing_iff [PseudoEMetricSpace β] {f : α → β} :
     ((uniformity_basis_edist.comap _).le_basis_iff uniformity_basis_edist).trans <| by
       simp only [subset_def, Prod.forall]; rfl
 
-@[deprecated (since := "2024-10-05")]
-alias uniformInducing_iff := isUniformInducing_iff
-
 /-- ε-δ characterization of uniform embeddings on pseudoemetric spaces -/
 nonrec theorem isUniformEmbedding_iff [PseudoEMetricSpace β] {f : α → β} :
     IsUniformEmbedding f ↔ Function.Injective f ∧ UniformContinuous f ∧
       ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, edist (f a) (f b) < ε → edist a b < δ :=
   (isUniformEmbedding_iff _).trans <| and_comm.trans <| Iff.rfl.and isUniformInducing_iff
-
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_iff := isUniformEmbedding_iff
 
 /-- If a map between pseudoemetric spaces is a uniform embedding then the edistance between `f x`
 and `f y` is controlled in terms of the distance between `x` and `y`.
@@ -89,9 +83,6 @@ theorem controlled_of_isUniformEmbedding [PseudoEMetricSpace β] {f : α → β}
     (∀ ε > 0, ∃ δ > 0, ∀ {a b : α}, edist a b < δ → edist (f a) (f b) < ε) ∧
       ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, edist (f a) (f b) < ε → edist a b < δ :=
   ⟨uniformContinuous_iff.1 h.uniformContinuous, (isUniformEmbedding_iff.1 h).2.2⟩
-
-@[deprecated (since := "2024-10-01")]
-alias controlled_of_uniformEmbedding := controlled_of_isUniformEmbedding
 
 /-- ε-δ characterization of Cauchy sequences on pseudoemetric spaces -/
 protected theorem cauchy_iff {f : Filter α} :
@@ -240,14 +231,11 @@ instance (priority := 100) EMetricSpace.instT0Space : T0Space γ where
 
 /-- A map between emetric spaces is a uniform embedding if and only if the edistance between `f x`
 and `f y` is controlled in terms of the distance between `x` and `y` and conversely. -/
-theorem EMetric.isUniformEmbedding_iff' [EMetricSpace β] {f : γ → β} :
+theorem EMetric.isUniformEmbedding_iff' [PseudoEMetricSpace β] {f : γ → β} :
     IsUniformEmbedding f ↔
       (∀ ε > 0, ∃ δ > 0, ∀ {a b : γ}, edist a b < δ → edist (f a) (f b) < ε) ∧
         ∀ δ > 0, ∃ ε > 0, ∀ {a b : γ}, edist (f a) (f b) < ε → edist a b < δ := by
   rw [isUniformEmbedding_iff_isUniformInducing, isUniformInducing_iff, uniformContinuous_iff]
-
-@[deprecated (since := "2024-10-01")]
-alias EMetric.uniformEmbedding_iff' := EMetric.isUniformEmbedding_iff'
 
 /-- If a `PseudoEMetricSpace` is a T₀ space, then it is an `EMetricSpace`. -/
 -- TODO: make it an instance?
@@ -341,7 +329,7 @@ theorem lebesgue_number_lemma_of_emetric_nhds' {c : (x : α) → x ∈ s → Set
     using uniformity_basis_edist.lebesgue_number_lemma_nhds' hs hc
 
 theorem lebesgue_number_lemma_of_emetric_nhds {c : α → Set α} (hs : IsCompact s)
-  (hc : ∀ x ∈ s, c x ∈ 𝓝 x) : ∃ δ > 0, ∀ x ∈ s, ∃ y, ball x δ ⊆ c y := by
+    (hc : ∀ x ∈ s, c x ∈ 𝓝 x) : ∃ δ > 0, ∀ x ∈ s, ∃ y, ball x δ ⊆ c y := by
   simpa only [ball, UniformSpace.ball, preimage_setOf_eq, edist_comm]
     using uniformity_basis_edist.lebesgue_number_lemma_nhds hs hc
 

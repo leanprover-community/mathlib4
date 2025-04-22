@@ -107,13 +107,13 @@ theorem reverse.commutes (r : R) :
   op_injective <| reverseOp.commutes r
 
 @[simp]
-theorem reverse.map_one : reverse (1 : CliffordAlgebra Q) = 1 :=
-  op_injective (_root_.map_one reverseOp)
+protected theorem reverse.map_one : reverse (1 : CliffordAlgebra Q) = 1 :=
+  op_injective (map_one reverseOp)
 
 @[simp]
-theorem reverse.map_mul (a b : CliffordAlgebra Q) :
+protected theorem reverse.map_mul (a b : CliffordAlgebra Q) :
     reverse (a * b) = reverse b * reverse a :=
-  op_injective (_root_.map_mul reverseOp a b)
+  op_injective (map_mul reverseOp a b)
 
 @[simp]
 theorem reverse_involutive : Function.Involutive (reverse (Q := Q)) :=
