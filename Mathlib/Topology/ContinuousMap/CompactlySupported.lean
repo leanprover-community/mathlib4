@@ -656,9 +656,7 @@ lemma nnrealPart_apply (f : C_c(α, ℝ)) (x : α) :
 
 lemma nnrealPart_neg_eq_zero_of_nonneg (f : C_c(α, ℝ)) (hf : 0 ≤ f) : (-f).nnrealPart = 0 := by
   ext x
-  simp only [nnrealPart_apply, coe_neg, Pi.neg_apply, Real.coe_toNNReal', coe_zero, Pi.zero_apply,
-    NNReal.coe_zero, sup_eq_right, Left.neg_nonpos_iff]
-  exact hf x
+  simpa using hf x
 
 lemma nnrealPart_smul_pos (f : C_c(α, ℝ)) (a : ℝ) (ha : 0 < a):
     (a • f).nnrealPart = a.toNNReal • f.nnrealPart := by
