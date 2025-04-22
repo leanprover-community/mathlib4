@@ -750,7 +750,7 @@ lemma Set.Infinite.exists_accPt_cofinite_inf_principal_of_subset_isCompact
     {K : Set X} (hs : s.Infinite) (hK : IsCompact K) (hsub : s ⊆ K) :
     ∃ x ∈ K, AccPt x (cofinite ⊓ 𝓟 s) :=
   (@hK _ hs.cofinite_inf_principal_neBot (inf_le_right.trans <| principal_mono.2 hsub)).imp
-    fun x hx ↦ by rwa [acc_iff_cluster, inf_comm, inf_right_comm,
+    fun x hx ↦ by rwa [accPt_iff_clusterPt, inf_comm, inf_right_comm,
       (finite_singleton _).cofinite_inf_principal_compl]
 
 lemma Set.Infinite.exists_accPt_of_subset_isCompact {K : Set X} (hs : s.Infinite)
