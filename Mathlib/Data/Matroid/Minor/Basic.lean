@@ -121,8 +121,8 @@ lemma delete_empty (M : Matroid α) : M ＼ ∅ = M := by
   exact empty_disjoint _
 
 lemma delete_delete_eq_delete_diff (M : Matroid α) (D₁ D₂ : Set α) :
-    M ＼ D₁ ＼ D₂ = M ＼ D₁ ＼ (D₂ \ D₁) :=
-  by simp
+    M ＼ D₁ ＼ D₂ = M ＼ D₁ ＼ (D₂ \ D₁) := by
+  simp
 
 lemma IsRestriction.restrict_delete_of_disjoint (h : N ≤r M) (hX : Disjoint X N.E) :
     N ≤r (M ＼ X) := by

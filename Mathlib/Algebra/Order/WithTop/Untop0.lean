@@ -78,11 +78,9 @@ Elements of ordered additive commutative groups are nonnegative iff their untop�
 @[simp]
 lemma untop₀_nonneg [OrderedAddCommGroup α] {a : WithTop α} :
     0 ≤ a.untop₀ ↔ 0 ≤ a := by
-  by_cases ha : a = ⊤
-  · rw [ha]
-    tauto
-  lift a to α using ha
-  simp
+  cases a with
+  | top => tauto
+  | coe a => simp
 
 /-!
 ## Simplifying Lemmas in cases where α is a LinearOrderedAddCommGroup
@@ -91,9 +89,9 @@ lemma untop₀_nonneg [OrderedAddCommGroup α] {a : WithTop α} :
 @[simp]
 lemma untop₀_neg [LinearOrderedAddCommGroup α] (a : WithTop α) :
     (-a).untop₀ = -a.untop₀ := by
-  by_cases ha : a = ⊤
-  · simp [ha]
-  · lift a to α using ha
+  cases a with
+  | top => simp
+  | coe a =>
     rw [← LinearOrderedAddCommGroup.coe_neg, untop₀_coe]
     simp
 

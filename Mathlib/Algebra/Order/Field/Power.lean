@@ -134,9 +134,8 @@ lemma zpow_eq_zpow_iff_of_ne_zero₀ (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b �
     simp only [Int.ofNat_eq_coe, ne_eq, Nat.cast_eq_zero, zpow_natCast, Int.even_coe_nat] at *
     exact pow_eq_pow_iff_of_ne_zero hn
   | Int.negSucc m => by
-    rw [show Int.negSucc m = -↑(m + 1) by rfl] at *
-    simp only [ne_eq, neg_eq_zero, Nat.cast_eq_zero, zpow_neg, zpow_natCast, inv_inj, even_neg,
-      Int.even_coe_nat] at *
+    simp only [← neg_ofNat_succ, ne_eq, neg_eq_zero, Nat.cast_eq_zero, zpow_neg, zpow_natCast,
+      inv_inj, even_neg, Int.even_coe_nat] at *
     exact pow_eq_pow_iff_of_ne_zero hn
 
 lemma zpow_eq_zpow_iff_cases₀ : a ^ n = b ^ n ↔ n = 0 ∨ a = b ∨ a = -b ∧ Even n := by
@@ -153,8 +152,7 @@ lemma zpow_eq_neg_zpow_iff₀ (hb : b ≠ 0) : a ^ n = -b ^ n ↔ a = -b ∧ Odd
   | Int.ofNat m => by
     simp [pow_eq_neg_pow_iff, hb]
   | Int.negSucc m => by
-    rw [show Int.negSucc m = -↑(m + 1) by rfl]
-    simp [-Nat.cast_add, -Int.natCast_add, neg_inv, pow_eq_neg_pow_iff, hb]
+    simp [← neg_ofNat_succ, -Nat.cast_add, -Int.natCast_add, neg_inv, pow_eq_neg_pow_iff, hb]
 
 lemma zpow_eq_neg_one_iff₀ : a ^ n = -1 ↔ a = -1 ∧ Odd n := by
   simpa using zpow_eq_neg_zpow_iff₀ (α := α) one_ne_zero

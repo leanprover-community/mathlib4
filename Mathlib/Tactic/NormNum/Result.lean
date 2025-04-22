@@ -361,7 +361,7 @@ def Result.toRat' {α : Q(Type u)} {e : Q($α)}
   | .isNegNat _ lit proof =>
     have proof : Q(@IsInt _ DivisionRing.toRing $e (.negOfNat $lit)) := proof
     some ⟨-lit.natLit!, q(.negOfNat $lit), q(nat_lit 1),
-      (q(@IsInt.to_isRat _ DivisionRing.toRing _ _ $proof) : Expr)⟩
+      q(@IsInt.to_isRat _ DivisionRing.toRing _ _ $proof)⟩
   | .isRat _ q n d proof => some ⟨q, n, d, proof⟩
 
 /--
