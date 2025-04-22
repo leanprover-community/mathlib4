@@ -3,7 +3,8 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn, Mario Carneiro, Martin Dvorak
 -/
-import Mathlib.Data.List.Induction
+import Mathlib.Tactic.GCongr.Core
+import Mathlib.Util.AssertExists
 
 /-!
 # Join of a list of lists
@@ -42,11 +43,12 @@ protected theorem Sublist.flatMap {l₁ l₂ : List α} (h : l₁ <+ l₂) (f : 
 left with a list of length `1` made of the `i`-th element of the original list. -/
 theorem drop_take_succ_eq_cons_getElem (L : List α) (i : Nat) (h : i < L.length) :
     (L.take (i + 1)).drop i = [L[i]] := by
-  induction' L with head tail ih generalizing i
-  · exact (Nat.not_succ_le_zero i h).elim
-  rcases i with _ | i
-  · simp
-  · simpa using ih _ (by simpa using h)
+  induction L generalizing i with
+  | nil => exact (Nat.not_succ_le_zero i h).elim
+  | cons head tail ih =>
+    rcases i with _ | i
+    · simp
+    · simpa using ih _ (by simpa using h)
 
 /-- We can rebracket `x ++ (l₁ ++ x) ++ (l₂ ++ x) ++ ... ++ (lₙ ++ x)` to
 `(x ++ l₁) ++ (x ++ l₂) ++ ... ++ (x ++ lₙ) ++ x` where `L = [l₁, l₂, ..., lₙ]`. -/
