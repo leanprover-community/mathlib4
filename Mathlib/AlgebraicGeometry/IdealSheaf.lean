@@ -490,7 +490,7 @@ nonrec def vanishingIdeal (Z : Closeds X) : IdealSheafData X :=
       · rw [← U.2.fromSpec_image_zeroLocus, zeroLocus_vanishingIdeal_eq_closure,
           ← U.2.fromSpec.isOpenEmbedding.isOpenMap.preimage_closure_eq_closure_preimage
             U.2.fromSpec.base.1.2,
-          Set.image_preimage_eq_inter_range, Z.closed.closure_eq, IsAffineOpen.range_fromSpec]
+          Set.image_preimage_eq_inter_range, Z.isClosed.closure_eq, IsAffineOpen.range_fromSpec]
         simp [hxU]
       · simp [hxU])
 
