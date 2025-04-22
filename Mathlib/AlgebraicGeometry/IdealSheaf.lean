@@ -1088,7 +1088,7 @@ private lemma range_glueData_ι (U : X.affineOpens) :
     range_glueDataObjι_ι, Set.image_preimage_eq_inter_range, range_gluedTo,
     ← coe_support_inter, Set.inter_comm]
 
-/-- (Implementation) identifying `Spec(Γ(X, U)/U)` with its image in `Spec(𝒪ₓ/I)`. -/
+/-- (Implementation) identifying `Spec(Γ(X, U)/I(U))` with its image in `Spec(𝒪ₓ/I)`. -/
 private noncomputable
 def glueDataObjIso (U : X.affineOpens) :
     I.glueDataObj U ≅ I.gluedTo ⁻¹ᵁ U :=
@@ -1113,7 +1113,7 @@ private instance : IsPreimmersion I.gluedTo := by
 
 private instance : QuasiCompact I.gluedTo :=
   ⟨fun _ _ ↦ (Topology.IsClosedEmbedding.isProperMap
-    ⟨I.gluedTo.isEmbedding, I.range_gluedTo ▸ I.support.closed⟩).isCompact_preimage⟩
+    ⟨I.gluedTo.isEmbedding, I.range_gluedTo ▸ I.support.isClosed⟩).isCompact_preimage⟩
 
 /-- (Implementation) The underlying space of `Spec(𝒪ₓ/I)` is homeomorphic to the support of `I`. -/
 private noncomputable
@@ -1178,7 +1178,7 @@ private lemma opensRange_glueData_ι_subschemeIso_inv (U : X.affineOpens) :
     ← coe_homeoOfIso_symm, ← homeoOfIso_symm, ← Homeomorph.coe_symm_toEquiv,
     ← Set.preimage_equiv_eq_image_symm]
 
-/-- The subscheme associated to an ideal sheaf `I` is covered by `Spec(Γ(X, U)/I)`. -/
+/-- The subscheme associated to an ideal sheaf `I` is covered by `Spec(Γ(X, U)/I(U))`. -/
 noncomputable
 def subschemeCover : I.subscheme.AffineOpenCover where
   J := X.affineOpens
@@ -1201,7 +1201,7 @@ lemma subschemeCover_map_subschemeι (U : X.affineOpens) :
     I.subschemeCover.map U ≫ I.subschemeι = I.glueDataObjι U ≫ U.1.ι := by
   simp [subschemeCover, subschemeι_def]
 
-/-- Γ() -/
+/-- `Γ(𝒪ₓ/I, U) ≅ 𝒪ₓ(U)/I(U)`. -/
 noncomputable
 def subschemeObjIso (U : X.affineOpens) :
     Γ(I.subscheme, I.subschemeι ⁻¹ᵁ U) ≅ .of (Γ(X, U) ⧸ I.ideal U) :=
