@@ -341,7 +341,7 @@ private lemma LFunction_isBigO_horizontal_of_eq_zero {y : ℝ} (hy : y ≠ 0 ∨
   simp_rw [add_comm (1 : ℂ), add_assoc]
   have := (χ.differentiableAt_LFunction _ <| one_add_I_mul_ne_one_or χ hy).hasDerivAt
   rw [← zero_add (1 + _)] at this
-  simpa only [zero_add, h, sub_zero]
+  simpa only [zero_add, h, sub_zero, vsub_eq_sub]
     using (Complex.isBigO_comp_ofReal_nhds
       (this.comp_add_const 0 _).differentiableAt.isBigO_sub) |>.mono nhdsWithin_le_nhds
 
