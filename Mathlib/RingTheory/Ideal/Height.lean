@@ -219,8 +219,8 @@ lemma Ideal.height_le_iff {p : Ideal R} {n : ℕ} [p.IsPrime] :
     convert h q hq hqp; rw [Ideal.height_eq_primeHeight, Ideal.primeHeight]
 
 lemma Ideal.height_le_iff_covBy {p : Ideal R} {n : ℕ} [p.IsPrime] [IsNoetherianRing R] :
-  p.height ≤ n ↔ ∀ q : Ideal R, q.IsPrime → q < p →
-    (∀ q' : Ideal R, q'.IsPrime → q < q' → ¬ q' < p) → q.height < n := by
+    p.height ≤ n ↔ ∀ q : Ideal R, q.IsPrime → q < p →
+      (∀ q' : Ideal R, q'.IsPrime → q < q' → ¬ q' < p) → q.height < n := by
   rw [Ideal.height_le_iff]
   constructor
   · intro H q hq e _
