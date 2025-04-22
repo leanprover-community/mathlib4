@@ -426,7 +426,9 @@ example (s : Lean.Grind.CommRing α) : CommRing α :=
     nsmul := nsmulRec
     zsmul := zsmulRec
     natCast_succ n := Lean.Grind.CommRing.natCast_succ n
-    intCast := sorry }
+    intCast := sorry
+    intCast_ofNat := sorry
+    intCast_negSucc := sorry }
 
 /-- A domain is a nontrivial semiring such that multiplication by a non zero element
 is cancellative on both sides. In other words, a nontrivial semiring `R` satisfying
