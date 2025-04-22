@@ -60,7 +60,7 @@ instance hasOne : One I :=
 
 instance : ZeroLEOneClass I := ⟨zero_le_one (α := ℝ)⟩
 
-instance : BoundedOrder I := have : Fact ((0 : ℝ) ≤ 1) := ⟨zero_le_one⟩; inferInstance
+instance : CompleteLattice I := have : Fact ((0 : ℝ) ≤ 1) := ⟨zero_le_one⟩; inferInstance
 
 lemma univ_eq_Icc : (univ : Set I) = Icc (0 : I) (1 : I) := Icc_bot_top.symm
 
@@ -106,6 +106,17 @@ theorem symm_bijective : Function.Bijective (symm : I → I) := symm_involutive.
 @[simp]
 theorem coe_symm_eq (x : I) : (σ x : ℝ) = 1 - x :=
   rfl
+
+@[simp]
+theorem symm_projIcc (x : ℝ) :
+    symm (projIcc 0 1 zero_le_one x) = projIcc 0 1 zero_le_one (1 - x) := by
+  ext
+  rcases le_total x 0 with h₀ | h₀
+  · simp [projIcc_of_le_left, projIcc_of_right_le, h₀]
+  · rcases le_total x 1 with h₁ | h₁
+    · lift x to I using ⟨h₀, h₁⟩
+      simp_rw [← coe_symm_eq, projIcc_val]
+    · simp [projIcc_of_le_left, projIcc_of_right_le, h₁]
 
 @[continuity, fun_prop]
 theorem continuous_symm : Continuous σ :=
@@ -235,7 +246,8 @@ section partition
 
 namespace Set.Icc
 
-variable {α} [LinearOrderedAddCommGroup α] {a b c d : α} (h : a ≤ b) {δ : α}
+variable {α} [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
+  {a b c d : α} (h : a ≤ b) {δ : α}
 
 -- TODO: Set.projIci, Set.projIic
 /-- `Set.projIcc` is a contraction. -/
@@ -254,6 +266,7 @@ lemma _root_.Set.abs_projIcc_sub_projIcc : (|projIcc a b h c - projIcc a b h d| 
 `[a,b]`, which is initially equally spaced but eventually stays at the right endpoint `b`. -/
 def addNSMul (δ : α) (n : ℕ) : Icc a b := projIcc a b h (a + n • δ)
 
+omit [IsOrderedAddMonoid α] in
 lemma addNSMul_zero : addNSMul h δ 0 = a := by
   rw [addNSMul, zero_smul, add_zero, projIcc_left]
 
@@ -342,7 +355,8 @@ end Tactic.Interactive
 
 section
 
-variable {𝕜 : Type*} [LinearOrderedField 𝕜] [TopologicalSpace 𝕜] [IsTopologicalRing 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+  [TopologicalSpace 𝕜] [IsTopologicalRing 𝕜]
 
 -- We only need the ordering on `𝕜` here to avoid talking about flipping the interval over.
 -- At the end of the day I only care about `ℝ`, so I'm hesitant to put work into generalizing.

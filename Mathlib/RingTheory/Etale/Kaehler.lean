@@ -333,7 +333,7 @@ lemma tensorH1CotangentOfIsLocalization_toLinearMap
     LinearEquiv.coe_coe, LinearMap.liftBaseChange_tmul, one_smul]
   simp only [tensorH1CotangentOfIsLocalization, Generators.toExtension_Ring,
     Generators.toExtension_commRing, Generators.self_vars, Generators.toExtension_algebra₂,
-    Generators.self_algebra, AlgHom.toRingHom_eq_coe, Extension.tensorH1Cotangent,
+    AlgHom.toRingHom_eq_coe, Extension.tensorH1Cotangent,
     LinearEquiv.ofBijective_apply, LinearMap.liftBaseChange_tmul, one_smul,
     Extension.equivH1CotangentOfFormallySmooth,  LinearEquiv.trans_apply]
   letI P : Extension R S := (Generators.self R S).toExtension

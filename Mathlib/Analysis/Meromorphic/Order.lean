@@ -118,7 +118,7 @@ When seen as meromorphic functions, analytic functions have nonnegative order.
 -/
 theorem _root_.AnalyticAt.meromorphicAt_order_nonneg (hf : AnalyticAt 𝕜 f x) :
     0 ≤ hf.meromorphicAt.order := by
-  simp [hf.meromorphicAt_order, (by rfl : (0 : WithTop ℤ) = (0 : ℕ∞).map _)]
+  simp [hf.meromorphicAt_order]
 
 /-!
 ## Order at a Point: Behaviour under Ring Operations
