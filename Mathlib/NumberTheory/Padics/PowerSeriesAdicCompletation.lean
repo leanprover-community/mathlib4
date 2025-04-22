@@ -276,7 +276,9 @@ lemma cauchy_sequence_coeff_tends_to_zero'
 lemma esg (n:ℤ)(f:(AdicCompletion (IsLocalRing.maximalIdeal ℤ_[p]) (ℤ_[p]⸨X⸩)))
 (r : AdicCompletion.AdicCauchySequence (IsLocalRing.maximalIdeal ℤ_[p]) ℤ_[p]⸨X⸩)
 (rs : (AdicCompletion.mk (IsLocalRing.maximalIdeal ℤ_[p]) ℤ_[p]⸨X⸩) r = f):
-  (p_sequence_coeff_0 n f)=
+ p_sequence_coeff n f=cauchy_sequence_coeff (p:=p) n r
+:=by
+  have:(p_sequence_coeff_0 n f)=
        (LinearMap.ker (AdicCompletion.mk
         (IsLocalRing.maximalIdeal ℤ_[p]) ℤ_[p])).mkQ
          ((AdicCompletion.AdicCauchySequence.map  (IsLocalRing.maximalIdeal ℤ_[p])
@@ -290,6 +292,10 @@ lemma esg (n:ℤ)(f:(AdicCompletion (IsLocalRing.maximalIdeal ℤ_[p]) (ℤ_[p]�
                          ℤ_[p]).quotKerEquivOfSurjective
                      FunctionTrans_1._proof_25)).mpr
                rfl
+  simp
+  simp at this
+  rw[this]
+  simp
 lemma Tends_to_Zero'(f:(AdicCompletion (IsLocalRing.maximalIdeal ℤ_[p]) (ℤ_[p]⸨X⸩)))
 :Tendsto (fun n ↦ (p_sequence_coeff n) f) atBot (𝓝 0):=by
   have:=by
@@ -299,11 +305,8 @@ lemma Tends_to_Zero'(f:(AdicCompletion (IsLocalRing.maximalIdeal ℤ_[p]) (ℤ_[
   have :(fun n ↦  p_sequence_coeff n f)=
     (fun n  ↦  cauchy_sequence_coeff (p:=p) n r) :=by
       ext n
-      have:=esg n f r rs
-      simp
-      simp at this
-      rw[this]
-      simp
+      rw[esg n f r rs]
+
   rw[this]
   exact cauchy_sequence_coeff_tends_to_zero' r
 
@@ -442,6 +445,20 @@ noncomputable def Adic_Complection_tofun : C_₀(ℤ,ℤ_[p]) →
 
    }
 
+lemma help1 (r:
+ AdicCompletion.AdicCauchySequence (IsLocalRing.maximalIdeal ℤ_[p]) ℤ_[p]⸨X⸩)(s:ℤ):
+ IsCauSeq norm ( fun n ↦ (r n).coeff s ) :=by sorry
+
+lemma help2 (r:
+ AdicCompletion.AdicCauchySequence (IsLocalRing.maximalIdeal ℤ_[p]) ℤ_[p]⸨X⸩):
+∀ ε >0 , ∃ N ,∀ n≥ N ,∀  (s:ℤ),‖(r n).coeff s-
+ CauSeq.lim ⟨fun n ↦ (r n).coeff s, help1 r s⟩‖ <  ε  :=by
+ intro ε hε
+ obtain ⟨m, hm⟩ := exists_pow_neg_lt p hε
+ use m
+ intro s hs s_1
+
+ sorry
 lemma ds3(a:AdicCompletion (IsLocalRing.maximalIdeal ℤ_[p])
  (ℤ_[p]⸨X⸩)) :AdicCompletion.mk (IsLocalRing.maximalIdeal ℤ_[p]) ℤ_[p]⸨X⸩
     (Adic_Complection_tofun ⟨⟨(fun n => (p_sequence_coeff n a)),
@@ -455,15 +472,94 @@ lemma ds3(a:AdicCompletion (IsLocalRing.maximalIdeal ℤ_[p])
   rw[rs]
   simp only [
     AdicCompletion.AdicCauchySequence.sub_apply,← SModEq.sub_mem]
+  use 0
+  intro g sefg
+  have: (p:ℝ)^(-g:ℤ)>0 :=by sorry
+
+  choose seg theg  using (help2 r ((p:ℝ)^(-g:ℤ)) this)
+  use (max g seg)
+  constructor
+  · exact Nat.le_max_left g seg
+  · use g
+    constructor
+    · exact Nat.le_refl g
+    · refine powerseries_equiv_2 g  _ _ ?_
+      intro s
+      unfold HahnSeries.coeff_map_0 Adic_Complection_tofun
+      simp only [
+        ZeroAtBotContinuousMap.coe_mk,  LinearMap.coe_mk, AddHom.coe_mk,
+        HahnSeries.ofSuppBddBelow_coeff]
+      have:=esg s a r rs
+      rcases Decidable.em (‖(p_sequence_coeff s) a‖≤ (p:ℝ)^(-(max g seg):ℤ)) with r3|r4
+      · simp only [r3]
+        simp only [↓reduceIte, zero_sub, neg_mem_iff]
+        rw[this] at r3
+        unfold cauchy_sequence_coeff Cauchy.seq_map Cauchy_p_adic HahnSeries.coeff_map_0
+         AdicCompletion.AdicCauchySequence.map at r3
+        simp only[Ideal.span_singleton_pow, ← norm_le_pow_iff_mem_span_pow,
+        LinearMap.coe_mk, AddHom.coe_mk, LinearMap.coe_comp, Function.comp_apply] at r3
+        simp only[Ideal.span_singleton_pow, ← norm_le_pow_iff_mem_span_pow]
+        have ln:=theg (max g seg) (Nat.le_max_right g seg) s
+        have :=norm_add_le  ((r (g ⊔ seg)).coeff s -
+         CauSeq.lim ⟨fun n ↦ (r n).coeff s,  help1 r s⟩)
+          (CauSeq.lim ⟨fun n ↦ (r n).coeff s,  help1 r s⟩)
+        rw[sub_add_cancel] at this
+        have ln2:=add_lt_add_of_lt_of_le ln r3
+        have:=lt_of_le_of_lt this ln2
+        have gf:(p:ℝ) ^ (-g:ℤ) + (p:ℝ)^ (-(g ⊔ seg):ℤ) ≤ (p:ℝ) ^ (-(g:ℤ)+ 1) :=by sorry
+        have:‖(r (g ⊔ seg)).coeff s‖<(p:ℝ) ^ (-(g:ℤ)+ 1):=by sorry
+        exact (norm_le_pow_iff_norm_lt_pow_add_one ((r (g ⊔ seg)).coeff s) (-g:ℤ)).mpr this
+      · simp only [r4,↓reduceIte]
+        rw[esg s a r rs]
+        unfold cauchy_sequence_coeff Cauchy.seq_map Cauchy_p_adic HahnSeries.coeff_map_0
+         AdicCompletion.AdicCauchySequence.map
+        simp only[Ideal.span_singleton_pow, ← norm_le_pow_iff_mem_span_pow,
+        LinearMap.coe_mk, AddHom.coe_mk, LinearMap.coe_comp, Function.comp_apply]
+        have ln:=theg (max g seg) (Nat.le_max_right g seg) s
+        rw[← (neg_sub),norm_neg] at ln
+        exact le_of_lt ln
+lemma helper3 (a:CauSeq ℤ_[p] norm)(b:ℤ_[p])(hs :CauSeq.LimZero (a-const norm b)):
+ a.lim =b:=by
+  rw[← lim_eq_zero_iff ,← Mathlib.Tactic.RingNF.add_neg,← lim_add,lim_neg,lim_const ] at hs
+  calc
+  _=(a.lim+ (-b))+b :=by ring
+  _=_:=by
+    rw[hs]
+    simp
+
+lemma ds4(a:C_₀(ℤ,ℤ_[p]))(r:ℤ) :p_sequence_coeff r
+ (AdicCompletion.mk (IsLocalRing.maximalIdeal ℤ_[p])
+ ℤ_[p]⸨X⸩ (Adic_Complection_tofun a))= a r:=by
+  have:=esg r (AdicCompletion.mk (IsLocalRing.maximalIdeal ℤ_[p])
+ ℤ_[p]⸨X⸩ (Adic_Complection_tofun a)) (Adic_Complection_tofun a) rfl
+  rw[this]
+  unfold cauchy_sequence_coeff AdicCompletion.AdicCauchySequence.map
+   Cauchy.seq_map Cauchy_p_adic  HahnSeries.coeff_map_0 Adic_Complection_tofun
+  simp only [LinearMap.coe_mk, AddHom.coe_mk,LinearMap.coe_comp,
+    Function.comp_apply, HahnSeries.ofSuppBddBelow_coeff]
+  refine helper3 _ _ ?_
+  unfold CauSeq.LimZero
+  intro s hs
+  rcases (LE.le.eq_or_gt (norm_nonneg (a r))) with r1|r2
+  · use 0
+    intro e sr
+    simp only [ sub_apply, const_apply]
+    rw[r1]
+    simp
+    rw[r1]
+    exact hs
+  · obtain ⟨m, hm⟩ := exists_pow_neg_lt p r2
+    use m
+    intro t tm
+    simp only [ sub_apply, const_apply]
+    have:¬  ‖a r‖ ≤ (p:ℝ) ^ (-t:ℤ):=by sorry
+    simp only[this]
+    simp
+    exact hs
+
 
   --refine powerseries_equiv_2 m  _ _ ?_
 
-
-
-
-
-
-  sorry
 noncomputable def Adic_Complection_equiv_srmm: (AdicCompletion (IsLocalRing.maximalIdeal ℤ_[p])
  (ℤ_[p]⸨X⸩)) ≃ₗ[ℤ_[p]]
  C_₀(ℤ,ℤ_[p]) where
@@ -475,19 +571,16 @@ noncomputable def Adic_Complection_equiv_srmm: (AdicCompletion (IsLocalRing.maxi
    map_add' a b:=by
      ext s
      simp
-
    map_smul' a b:=by
      ext s
      simp
-
    invFun a :=AdicCompletion.mk (IsLocalRing.maximalIdeal ℤ_[p]) ℤ_[p]⸨X⸩
     (Adic_Complection_tofun a)
-   left_inv r:=by
+   left_inv r:=by exact ds3 r
+   right_inv m:= by
+    ext n
+    exact ds4  m n
 
-
-
-     sorry
-   right_inv := sorry
 
 lemma exact :Function.Exact (Amice_Trans_in_P (p:=p) ∘ₗ Amice_iso_2.toLinearMap)
   ( (mahlerEquiv (p:=p) ℤ_[p]).symm.toLinearMap ∘ₗ FunctionTrans_2 (p:=p) ) :=by
