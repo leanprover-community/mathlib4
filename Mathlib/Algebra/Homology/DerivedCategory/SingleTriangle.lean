@@ -21,9 +21,11 @@ the associated distinguished triangle in the derived category:
 
 assert_not_exists TwoSidedIdeal
 
+universe w v u
+
 namespace CategoryTheory
 
-variable {C : Type*} [Category C] [Abelian C] [HasDerivedCategory C]
+variable {C : Type u} [Category.{v} C] [Abelian C] [HasDerivedCategory.{w} C]
 
 open Category DerivedCategory Pretriangulated
 

@@ -15,10 +15,12 @@ and `homologyFunctor` is additive.
 -/
 
 
+universe v u
+
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits HomologicalComplex
 
 variable {ι : Type*}
-variable {V : Type*} [Category V] [Preadditive V]
+variable {V : Type u} [Category.{v} V] [Preadditive V]
 variable {W : Type*} [Category W] [Preadditive W]
 variable {W₁ W₂ : Type*} [Category W₁] [Category W₂] [HasZeroMorphisms W₁] [HasZeroMorphisms W₂]
 variable {c : ComplexShape ι} {C D : HomologicalComplex V c}

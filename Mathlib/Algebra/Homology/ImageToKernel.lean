@@ -16,10 +16,12 @@ we have `image_le_kernel f g w : imageSubobject f ≤ kernelSubobject g`
 
 -/
 
+universe v u w
+
 open CategoryTheory CategoryTheory.Limits
 
 variable {ι : Type*}
-variable {V : Type*} [Category V] [HasZeroMorphisms V]
+variable {V : Type u} [Category.{v} V] [HasZeroMorphisms V]
 
 noncomputable section
 

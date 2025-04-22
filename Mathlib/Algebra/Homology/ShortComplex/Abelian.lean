@@ -25,11 +25,13 @@ coimage-image isomorphism in abelian categories.
 
 -/
 
+universe v u
+
 namespace CategoryTheory
 
 open Category Limits
 
-variable {C : Type*} [Category C] [Abelian C] (S : ShortComplex C)
+variable {C : Type u} [Category.{v} C] [Abelian C] (S : ShortComplex C)
 
 namespace ShortComplex
 

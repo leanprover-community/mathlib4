@@ -32,7 +32,7 @@ in the file `CategoryTheory.Localization.Triangulated`.
 
 ## Implementation notes
 
-If `C : Type*` and `Category.{v} C`, the constructed localized category of cochain
+If `C : Type u` and `Category.{v} C`, the constructed localized category of cochain
 complexes with respect to quasi-isomorphisms has morphisms in `Type (max u v)`.
 However, in certain circumstances, it shall be possible to prove that they are `v`-small
 (when `C` is a Grothendieck abelian category (e.g. the category of modules over a ring),
@@ -59,9 +59,11 @@ with the one defined in `Algebra.Homology.HomologySequence`.
 
 assert_not_exists TwoSidedIdeal
 
+universe w v u
+
 open CategoryTheory Limits Pretriangulated
 
-variable (C : Type*) [Category C] [Abelian C]
+variable (C : Type u) [Category.{v} C] [Abelian C]
 
 namespace HomotopyCategory
 
@@ -99,23 +101,23 @@ end HomotopyCategory
 /-- The assumption that a localized category for
 `(HomologicalComplex.quasiIso C (ComplexShape.up ℤ))` has been chosen, and that the morphisms
 in this chosen category are in `Type w`. -/
-abbrev HasDerivedCategory := MorphismProperty.HasLocalization
+abbrev HasDerivedCategory := MorphismProperty.HasLocalization.{w}
   (HomologicalComplex.quasiIso C (ComplexShape.up ℤ))
 
 /-- The derived category obtained using the constructed localized category of cochain complexes
 with respect to quasi-isomorphisms. This should be used only while proving statements
 which do not involve the derived category. -/
-def HasDerivedCategory.standard : HasDerivedCategory C :=
+def HasDerivedCategory.standard : HasDerivedCategory.{max u v} C :=
   MorphismProperty.HasLocalization.standard _
 
-variable [HasDerivedCategory C]
+variable [HasDerivedCategory.{w} C]
 
 /-- The derived category of an abelian category. -/
-def DerivedCategory : Type _ := HomologicalComplexUpToQuasiIso C (ComplexShape.up ℤ)
+def DerivedCategory : Type (max u v) := HomologicalComplexUpToQuasiIso C (ComplexShape.up ℤ)
 
 namespace DerivedCategory
 
-instance : Category (DerivedCategory C) := by
+instance : Category.{w} (DerivedCategory C) := by
   dsimp [DerivedCategory]
   infer_instance
 
