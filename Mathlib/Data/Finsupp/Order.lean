@@ -36,7 +36,7 @@ section Zero
 variable [Zero α]
 
 section OrderedAddCommMonoid
-variable [OrderedAddCommMonoid β] {f : ι →₀ α} {h₁ h₂ : ι → α → β}
+variable [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β] {f : ι →₀ α} {h₁ h₂ : ι → α → β}
 
 @[gcongr]
 lemma sum_le_sum (h : ∀ i ∈ f.support, h₁ i (f i) ≤ h₂ i (f i)) : f.sum h₁ ≤ f.sum h₂ :=
@@ -94,7 +94,7 @@ lemma single_mono : Monotone (single i : α → ι →₀ α) := fun _ _ ↦ sin
 @[simp] lemma single_nonneg : 0 ≤ single i a ↔ 0 ≤ a := by classical exact Pi.single_nonneg
 @[simp] lemma single_nonpos : single i a ≤ 0 ↔ a ≤ 0 := by classical exact Pi.single_nonpos
 
-variable [OrderedAddCommMonoid β]
+variable [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β]
 
 lemma sum_le_sum_index [DecidableEq ι] {f₁ f₂ : ι →₀ α} {h : ι → α → β} (hf : f₁ ≤ f₂)
     (hh : ∀ i ∈ f₁.support ∪ f₂.support, Monotone (h i))
@@ -150,11 +150,11 @@ end Zero
 /-! ### Algebraic order structures -/
 
 section OrderedAddCommMonoid
-variable [OrderedAddCommMonoid α] {i : ι} {f : ι → κ} {g g₁ g₂ : ι →₀ α}
+variable [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α]
+  {i : ι} {f : ι → κ} {g g₁ g₂ : ι →₀ α}
 
-instance orderedAddCommMonoid : OrderedAddCommMonoid (ι →₀ α) :=
-  { Finsupp.instAddCommMonoid, Finsupp.partialorder with
-    add_le_add_left := fun _a _b h c s => add_le_add_left (h s) (c s) }
+instance isOrderedAddMonoid : IsOrderedAddMonoid (ι →₀ α) :=
+  { add_le_add_left := fun _a _b h c s => add_le_add_left (h s) (c s) }
 
 lemma mapDomain_mono : Monotone (mapDomain f : (ι →₀ α) → (κ →₀ α)) := by
   classical exact fun g₁ g₂ h ↦ sum_le_sum_index h (fun _ _ ↦ single_mono) (by simp)
@@ -167,12 +167,11 @@ lemma mapDomain_nonpos (hg : g ≤ 0) : g.mapDomain f ≤ 0 := by simpa using ma
 
 end OrderedAddCommMonoid
 
-instance orderedCancelAddCommMonoid [OrderedCancelAddCommMonoid α] :
-    OrderedCancelAddCommMonoid (ι →₀ α) :=
-  { Finsupp.orderedAddCommMonoid with
-    le_of_add_le_add_left := fun _f _g _i h s => le_of_add_le_add_left (h s) }
+instance isOrderedCancelAddMonoid [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α] :
+    IsOrderedCancelAddMonoid (ι →₀ α) :=
+  { le_of_add_le_add_left := fun _f _g _i h s => le_of_add_le_add_left (h s) }
 
-instance addLeftReflectLE [OrderedAddCommMonoid α] [AddLeftReflectLE α] :
+instance addLeftReflectLE [AddCommMonoid α] [PartialOrder α] [AddLeftReflectLE α] :
     AddLeftReflectLE (ι →₀ α) :=
   ⟨fun _f _g _h H x => le_of_add_le_add_left <| H x⟩
 

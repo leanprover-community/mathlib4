@@ -1095,7 +1095,7 @@ variable [Monoid α] [Monoid β] {x : α × β} {a : α} {b : β}
 
 @[to_additive]
 protected theorem Prod.orderOf (x : α × β) : orderOf x = (orderOf x.1).lcm (orderOf x.2) :=
-  minimalPeriod_prod_map _ _ _
+  minimalPeriod_prodMap _ _ _
 
 @[to_additive]
 theorem orderOf_fst_dvd_orderOf : orderOf x.1 ∣ orderOf x :=

@@ -30,17 +30,6 @@ instance instIsOrderedCancelMonoid
       fun _ _ _ h ↦ ⟨le_of_mul_le_mul_left' h.1, le_of_mul_le_mul_left' h.2⟩ }
 
 @[to_additive]
-instance [OrderedCommMonoid α] [OrderedCommMonoid β] : OrderedCommMonoid (α × β) where
-  mul_le_mul_left _ _ h _ := ⟨mul_le_mul_left' h.1 _, mul_le_mul_left' h.2 _⟩
-
-@[to_additive]
-instance instOrderedCancelCommMonoid [OrderedCancelCommMonoid α] [OrderedCancelCommMonoid β] :
-    OrderedCancelCommMonoid (α × β) :=
-  { (inferInstance : OrderedCommMonoid (α × β)) with
-    le_of_mul_le_mul_left :=
-      fun _ _ _ h ↦ ⟨le_of_mul_le_mul_left' h.1, le_of_mul_le_mul_left' h.2⟩ }
-
-@[to_additive]
 instance [LE α] [LE β] [Mul α] [Mul β] [ExistsMulOfLE α] [ExistsMulOfLE β] :
     ExistsMulOfLE (α × β) :=
   ⟨fun h =>
@@ -75,30 +64,6 @@ instance isOrderedCancelMonoid [CommMonoid α] [PartialOrder α] [IsOrderedCance
   le_of_mul_le_mul_left _ _ _ hxyz := (le_iff.1 hxyz).elim
     (fun hxy => left _ _ <| lt_of_mul_lt_mul_left' hxy)
     (fun hxy => le_iff.2 <| Or.inr ⟨mul_left_cancel hxy.1, le_of_mul_le_mul_left' hxy.2⟩)
-
-@[to_additive]
-instance orderedCommMonoid [OrderedCommMonoid α]
-    [MulLeftStrictMono α] [OrderedCommMonoid β] :
-    OrderedCommMonoid (α ×ₗ β) where
-  mul_le_mul_left _ _ hxy z := (le_iff.1 hxy).elim
-    (fun hxy => left _ _ <| mul_lt_mul_left' hxy _)
-    -- Note: the `congr_arg` used to be `rw [hxy.1]` before https://github.com/leanprover-community/mathlib4/pull/8386
-    -- but the definition of `Mul.mul` got unfolded differently.
-    (fun hxy => le_iff.2 <| Or.inr ⟨congr_arg (z.1 * ·) hxy.1, mul_le_mul_left' hxy.2 _⟩)
-
-@[to_additive]
-instance orderedCancelCommMonoid [OrderedCancelCommMonoid α] [OrderedCancelCommMonoid β] :
-    OrderedCancelCommMonoid (α ×ₗ β) where
-  mul_le_mul_left _ _ := mul_le_mul_left'
-  le_of_mul_le_mul_left _ _ _ hxyz := (le_iff.1 hxyz).elim
-    (fun hxy => left _ _ <| lt_of_mul_lt_mul_left' hxy)
-    (fun hxy => le_iff.2 <| Or.inr ⟨mul_left_cancel hxy.1, le_of_mul_le_mul_left' hxy.2⟩)
-
-@[to_additive]
-instance linearOrderedCancelCommMonoid [LinearOrderedCancelCommMonoid α]
-    [LinearOrderedCancelCommMonoid β] : LinearOrderedCancelCommMonoid (α ×ₗ β) where
-  __ : LinearOrder (α ×ₗ β) := inferInstance
-  __ : OrderedCancelCommMonoid (α ×ₗ β) := inferInstance
 
 end Lex
 

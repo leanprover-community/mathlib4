@@ -510,20 +510,20 @@ theorem condExpIndSMul_empty {x : G} : condExpIndSMul hm MeasurableSet.empty
 
 theorem setIntegral_condExpL2_indicator (hs : MeasurableSet[m] s) (ht : MeasurableSet t)
     (hμs : μ s ≠ ∞) (hμt : μ t ≠ ∞) :
-    ∫ x in s, (condExpL2 ℝ ℝ hm (indicatorConstLp 2 ht hμt 1) : α → ℝ) x ∂μ = (μ (t ∩ s)).toReal :=
+    ∫ x in s, (condExpL2 ℝ ℝ hm (indicatorConstLp 2 ht hμt 1) : α → ℝ) x ∂μ = μ.real (t ∩ s) :=
   calc
     ∫ x in s, (condExpL2 ℝ ℝ hm (indicatorConstLp 2 ht hμt 1) : α → ℝ) x ∂μ =
         ∫ x in s, indicatorConstLp 2 ht hμt (1 : ℝ) x ∂μ :=
       @integral_condExpL2_eq α _ ℝ _ _ _ _ _ _ _ _ _ hm (indicatorConstLp 2 ht hμt (1 : ℝ)) hs hμs
-    _ = (μ (t ∩ s)).toReal • (1 : ℝ) := setIntegral_indicatorConstLp (hm s hs) ht hμt 1
-    _ = (μ (t ∩ s)).toReal := by rw [smul_eq_mul, mul_one]
+    _ = μ.real (t ∩ s) • (1 : ℝ) := setIntegral_indicatorConstLp (hm s hs) ht hμt 1
+    _ = μ.real (t ∩ s) := by rw [smul_eq_mul, mul_one]
 
 @[deprecated (since := "2025-01-21")]
 alias setIntegral_condexpL2_indicator := setIntegral_condExpL2_indicator
 
 theorem setIntegral_condExpIndSMul (hs : MeasurableSet[m] s) (ht : MeasurableSet t)
     (hμs : μ s ≠ ∞) (hμt : μ t ≠ ∞) (x : G') :
-    ∫ a in s, (condExpIndSMul hm ht hμt x) a ∂μ = (μ (t ∩ s)).toReal • x :=
+    ∫ a in s, (condExpIndSMul hm ht hμt x) a ∂μ = μ.real (t ∩ s) • x :=
   calc
     ∫ a in s, (condExpIndSMul hm ht hμt x) a ∂μ =
         ∫ a in s, (condExpL2 ℝ ℝ hm (indicatorConstLp 2 ht hμt 1) : α → ℝ) a • x ∂μ :=
@@ -531,7 +531,7 @@ theorem setIntegral_condExpIndSMul (hs : MeasurableSet[m] s) (ht : MeasurableSet
         ((condExpIndSMul_ae_eq_smul hm ht hμt x).mono fun _ hx _ => hx)
     _ = (∫ a in s, (condExpL2 ℝ ℝ hm (indicatorConstLp 2 ht hμt 1) : α → ℝ) a ∂μ) • x :=
       (integral_smul_const _ x)
-    _ = (μ (t ∩ s)).toReal • x := by rw [setIntegral_condExpL2_indicator hs ht hμs hμt]
+    _ = μ.real (t ∩ s) • x := by rw [setIntegral_condExpL2_indicator hs ht hμs hμt]
 
 @[deprecated (since := "2025-01-21")] alias setIntegral_condexpIndSMul := setIntegral_condExpIndSMul
 
