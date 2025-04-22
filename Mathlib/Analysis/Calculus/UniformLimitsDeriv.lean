@@ -323,7 +323,7 @@ theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
     specialize this ε hε
     rw [eventually_curry_iff] at this
     simp only at this
-    exact (eventually_const.mp this).mono (by simp only [imp_self, forall_const])
+    exact (eventually_const.mp this).mono (by simp)
   -- With the new quantifier in hand, we can perform the famous `ε/3` proof. Specifically,
   -- we will break up the limit (the difference functions minus the derivative go to 0) into 3:
   --   * The difference functions of the `f n` converge *uniformly* to the difference functions
@@ -366,7 +366,7 @@ theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
     rw [hasFDerivAt_iff_tendsto, Metric.tendsto_nhds] at this
     refine (this ε hε).mono fun y hy => ?_
     rw [dist_eq_norm] at hy ⊢
-    simp only [sub_zero, map_sub, norm_mul, norm_inv, norm_norm] at hy ⊢
+    simp only [vsub_eq_sub, sub_zero, map_sub, norm_mul, norm_inv, norm_norm] at hy ⊢
     rw [norm_smul, norm_inv, RCLike.norm_coe_norm]
     exact hy
   · -- hfg' after specializing to `x` and applying the definition of the operator norm
