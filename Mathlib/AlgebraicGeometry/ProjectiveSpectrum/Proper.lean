@@ -186,6 +186,7 @@ O ←---- 𝒜_{(x₀)}                𝒜_{(x)}
 ```
 This is the underlying algebraic statement of the valuative criterion for `Proj A`.
 -/
+@[stacks 01MF "algebraic part"]
 theorem valuativeCriterion_existence_aux
     {O : Type*} [CommRing O] [IsDomain O] [ValuationRing O]
     {K : Type*} [Field K] [Algebra O K] [IsFractionRing O K]
@@ -341,7 +342,7 @@ theorem valuativeCriterion_existence_aux
     symm
     exact awayMap_fromZeroRingHom 𝒜 (hxdi i₀) rfl a
 
-open HomogeneousLocalization in
+@[stacks 01MF]
 lemma valuativeCriterion_existence [Algebra.FiniteType (𝒜 0) A] :
     ValuativeCriterion.Existence (Proj.toSpecZero 𝒜) := by
   rintro ⟨O, K, i₁, i₂, w⟩
