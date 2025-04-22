@@ -165,7 +165,7 @@ lemma integral_llr_tilted_left [IsProbabilityMeasure μ] [SigmaFinite ν]
         rw [integral_add ?_ h_int]
         swap; · exact hf.sub (integrable_const _)
         rw [integral_sub hf (integrable_const _)]
-        simp only [integral_const, measure_univ, ENNReal.toReal_one, smul_eq_mul, one_mul]
+        simp only [integral_const, measureReal_univ_eq_one, smul_eq_mul, one_mul]
   _ = ∫ x, llr μ ν x ∂μ + ∫ x, f x ∂μ - log (∫ x, exp (f x) ∂μ) := by abel
 
 lemma llr_tilted_right [SigmaFinite μ] [SigmaFinite ν]
@@ -202,7 +202,7 @@ lemma integral_llr_tilted_right [IsProbabilityMeasure μ] [SigmaFinite ν]
         swap; · exact hfμ.neg.add (integrable_const _)
         rw [integral_add ?_ (integrable_const _)]
         swap; · exact hfμ.neg
-        simp only [integral_const, measure_univ, ENNReal.toReal_one, smul_eq_mul, one_mul]
+        simp only [integral_const, measureReal_univ_eq_one, smul_eq_mul, one_mul]
   _ = ∫ x, llr μ ν x ∂μ - ∫ x, f x ∂μ + log (∫ x, exp (f x) ∂ν) := by abel
 
 end llr_tilted

@@ -338,7 +338,20 @@ lemma eq_bot_iff_forall_le [NoMinOrder α] : x = ⊥ ↔ ∀ b : α, x ≤ b := 
 @[deprecated (since := "2025-03-19")] alias forall_lt_iff_eq_bot := eq_bot_iff_forall_lt
 @[deprecated (since := "2025-03-19")] alias forall_le_iff_eq_bot := eq_bot_iff_forall_le
 
+lemma forall_le_coe_iff_le [NoMinOrder α] : (∀ a : α, y ≤ a → x ≤ a) ↔ x ≤ y := by
+  obtain _ | y := y
+  · simp [WithBot.none_eq_bot, eq_bot_iff_forall_le]
+  · exact ⟨fun h ↦ h _ le_rfl, fun hmn a ham ↦ hmn.trans ham⟩
+
 end Preorder
+
+section PartialOrder
+variable [PartialOrder α] [NoMinOrder α] {x y : WithBot α}
+
+lemma eq_of_forall_le_coe_iff (h : ∀ a : α, x ≤ a ↔ y ≤ a) : x = y :=
+  le_antisymm (forall_le_coe_iff_le.mp fun a ↦ (h a).2) (forall_le_coe_iff_le.mp fun a ↦ (h a).1)
+
+end PartialOrder
 
 instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (WithBot α) where
   sup
@@ -822,12 +835,18 @@ lemma eq_top_iff_forall_ge [NoMaxOrder α] : y = ⊤ ↔ ∀ a : α, a ≤ y :=
 @[deprecated (since := "2025-03-19")] alias forall_gt_iff_eq_top := eq_top_iff_forall_gt
 @[deprecated (since := "2025-03-19")] alias forall_ge_iff_eq_top := eq_top_iff_forall_ge
 
-lemma forall_coe_le_iff_le [NoMaxOrder α] {x y : WithTop α} : (∀ a : α, a ≤ x → a ≤ y) ↔ x ≤ y := by
-  obtain _ | x := x
-  · simp [WithTop.none_eq_top, eq_top_iff_forall_ge]
-  · exact ⟨fun h ↦ h _ le_rfl, fun hmn a ham ↦ ham.trans hmn⟩
+lemma forall_coe_le_iff_le [NoMaxOrder α] : (∀ a : α, a ≤ x → a ≤ y) ↔ x ≤ y :=
+  WithBot.forall_le_coe_iff_le (α := αᵒᵈ)
 
 end Preorder
+
+section PartialOrder
+variable [PartialOrder α] [NoMaxOrder α] {x y : WithTop α}
+
+lemma eq_of_forall_coe_le_iff (h : ∀ a : α, a ≤ x ↔ a ≤ y) : x = y :=
+  WithBot.eq_of_forall_le_coe_iff (α := αᵒᵈ) h
+
+end PartialOrder
 
 instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (WithTop α) where
   inf
