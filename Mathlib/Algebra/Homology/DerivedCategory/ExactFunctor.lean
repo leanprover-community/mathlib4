@@ -16,12 +16,10 @@ abelian categories, then there is an induced triangulated functor
 
 assert_not_exists TwoSidedIdeal
 
-universe w₁ w₂ v₁ v₂ u₁ u₂
-
 open CategoryTheory Category Limits
 
-variable {C₁ : Type u₁} [Category.{v₁} C₁] [Abelian C₁] [HasDerivedCategory.{w₁} C₁]
-  {C₂ : Type u₂} [Category.{v₂} C₂] [Abelian C₂] [HasDerivedCategory.{w₂} C₂]
+variable {C₁ : Type*} [Category C₁] [Abelian C₁] [HasDerivedCategory C₁]
+  {C₂ : Type*} [Category C₂] [Abelian C₂] [HasDerivedCategory C₂]
   (F : C₁ ⥤ C₂) [F.Additive] [PreservesFiniteLimits F] [PreservesFiniteColimits F]
 
 namespace CategoryTheory.Functor
