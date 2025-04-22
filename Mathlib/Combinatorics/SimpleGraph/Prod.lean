@@ -240,7 +240,7 @@ theorem degree_boxProd (x : α × β)
 
 @[deprecated (since := "2025-03-29")] alias boxProd_degree := degree_boxProd
 
-lemma boxProd_reachable {x y : α × β} :
+lemma reachable_boxProd {x y : α × β} :
     (G □ H).Reachable x y ↔ G.Reachable x.1 y.1 ∧ H.Reachable x.2 y.2 := by
   classical
   constructor
@@ -250,7 +250,7 @@ lemma boxProd_reachable {x y : α × β} :
     exact ⟨(w₁.boxProdLeft _ _).append (w₂.boxProdRight _ _)⟩
 
 @[simp]
-lemma boxProd_edist (x y : α × β) :
+lemma edist_boxProd (x y : α × β) :
     (G □ H).edist x y = G.edist x.1 y.1 + H.edist x.2 y.2 := by
   classical
   -- The case `(G □ H).edist x y = ⊤` is used twice, so better to factor it out.
