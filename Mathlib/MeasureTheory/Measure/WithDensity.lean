@@ -662,7 +662,7 @@ theorem prod_withDensity_right {g : β → ℝ≥0∞} (hg : Measurable g) :
     μ.prod (ν.withDensity g) = (μ.prod ν).withDensity (fun z ↦ g z.2) :=
   prod_withDensity_right₀ hg.aemeasurable
 
-theorem prod_withDensity₀  {f : α → ℝ≥0∞} {g : β → ℝ≥0∞}
+theorem prod_withDensity₀ {f : α → ℝ≥0∞} {g : β → ℝ≥0∞}
     (hf : AEMeasurable f μ) (hg : AEMeasurable g ν) :
     (μ.withDensity f).prod (ν.withDensity g) = (μ.prod ν).withDensity (fun z ↦ f z.1 * g z.2) := by
   rw [prod_withDensity_left₀ hf, prod_withDensity_right₀ hg, ← withDensity_mul₀, mul_comm]
