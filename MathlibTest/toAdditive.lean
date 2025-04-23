@@ -314,6 +314,22 @@ theorem isUnit'_iff_exists_inv' [CommMonoid M] {a : M} : IsUnit' a ↔ ∃ b, b 
 @[to_additive (reorder := 3 4 5)]
 def reorderMulThree {α : Type _} [Mul α] (x y z : α) : α := x * y * z
 
+/-! Test a permutation that is too big for the list of arguments. -/
+/--
+info: reorderForall tried to reorder a list that was too small:
+{α : Type u_1} → [inst : Mul α] → α → α → α → α
+[α, inst✝, x, y, z]
+[[2, 3, 50]]
+---
+info: reorderLambda tried to reorder a list that was too small:
+fun {α} [Mul α] x y z => x * y * z
+[α, inst✝, x, y, z]
+[[2, 3, 50]]
+-/
+#guard_msgs in
+@[to_additive (reorder := 3 4 51)]
+def reorderMulThree' {α : Type _} [Mul α] (x y z : α) : α := x * y * z
+
 example {α : Type _} [Add α] (x y z : α) : reorderAddThree z x y = x + y + z := rfl
 
 
