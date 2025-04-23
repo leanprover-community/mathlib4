@@ -25,7 +25,7 @@ TODO (slightly easier): prove that `((profiniteSolid 𝔽ₚ).obj S).IsSolid` fo
 
 universe u
 
-variable (R : Type (u+1)) [Ring R]
+variable (R : Type (u + 1)) [Ring R]
 
 open CategoryTheory Limits Profinite Condensed
 

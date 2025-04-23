@@ -41,8 +41,8 @@ notation:50 A " ≃ₗc[" R "] " B => CoalgEquiv R A B
 from `A` to `B`. -/
 class CoalgEquivClass (F : Type*) (R A B : outParam Type*) [CommSemiring R]
     [AddCommMonoid A] [AddCommMonoid B] [Module R A] [Module R B]
-    [CoalgebraStruct R A] [CoalgebraStruct R B] [EquivLike F A B]
-    extends CoalgHomClass F R A B, SemilinearEquivClass F (RingHom.id R) A B : Prop
+    [CoalgebraStruct R A] [CoalgebraStruct R B] [EquivLike F A B] : Prop
+    extends CoalgHomClass F R A B, SemilinearEquivClass F (RingHom.id R) A B
 
 namespace CoalgEquivClass
 
@@ -86,6 +86,7 @@ theorem toCoalgHom_injective : Function.Injective (toCoalgHom : (A ≃ₗc[R] B)
   fun _ _ H => toEquiv_injective <| Equiv.ext <| CoalgHom.congr_fun H
 
 instance : EquivLike (A ≃ₗc[R] B) A B where
+  coe e := e.toFun
   inv := CoalgEquiv.invFun
   coe_injective' _ _ h _ := toCoalgHom_injective (DFunLike.coe_injective h)
   left_inv := CoalgEquiv.left_inv

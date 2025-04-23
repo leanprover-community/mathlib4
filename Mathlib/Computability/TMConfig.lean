@@ -197,7 +197,7 @@ It is implemented as:
 The idea is that the initial state is `0 :: v`, and the `fix` keeps `n :: v` as its internal state;
 it calls `f (n :: v)` as the exit test and `n+1 :: v` as the next state. At the end we get
 `n+1 :: v` where `n` is the desired output, and `pred (n+1 :: v) = [n]` returns the result.
- -/
+-/
 def rfind (f : Code) : Code :=
   comp pred <| comp (fix <| cons f <| cons succ tail) zero'
 

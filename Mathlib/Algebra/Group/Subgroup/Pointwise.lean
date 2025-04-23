@@ -3,6 +3,8 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import Mathlib.Algebra.Group.Action.End
+import Mathlib.Algebra.Group.Pointwise.Set.Lattice
 import Mathlib.Algebra.Group.Subgroup.MulOppositeLemmas
 import Mathlib.Algebra.Group.Submonoid.Pointwise
 import Mathlib.GroupTheory.GroupAction.ConjAct
@@ -25,6 +27,7 @@ the file `Mathlib.Algebra.Group.Submonoid.Pointwise`.
 Where possible, try to keep them in sync.
 -/
 
+assert_not_exists GroupWithZero
 
 open Set
 
@@ -225,15 +228,23 @@ theorem sup_eq_closure_mul (H K : Subgroup G) : H ⊔ K = closure ((H : Set G) *
     ((closure_mul_le _ _).trans <| by rw [closure_eq, closure_eq])
 
 @[to_additive]
-theorem set_mul_normal_comm (s : Set G) (N : Subgroup G) [hN : N.Normal] :
-    s * (N : Set G) = (N : Set G) * s := by
+theorem set_mul_normalizer_comm (S : Set G) (N : Subgroup G) (hLE : S ⊆ N.normalizer) :
+    S * N = N * S := by
   rw [← iUnion_mul_left_image, ← iUnion_mul_right_image]
-  simp only [image_mul_left, image_mul_right, Set.preimage, SetLike.mem_coe, hN.mem_comm_iff]
+  simp only [image_mul_left, image_mul_right, Set.preimage]
+  congr! 5 with s hs x
+  exact (mem_normalizer_iff'.mp (inv_mem (hLE hs)) x).symm
 
-/-- The carrier of `H ⊔ N` is just `↑H * ↑N` (pointwise set product) when `N` is normal. -/
+@[to_additive]
+theorem set_mul_normal_comm (S : Set G) (N : Subgroup G) [hN : N.Normal] :
+    S * (N : Set G) = (N : Set G) * S := set_mul_normalizer_comm S N subset_normalizer_of_normal
+
+/-- The carrier of `H ⊔ N` is just `↑H * ↑N` (pointwise set product)
+when `H` is a subgroup of the normalizer of `N` in `G`. -/
 @[to_additive "The carrier of `H ⊔ N` is just `↑H + ↑N` (pointwise set addition)
-when `N` is normal."]
-theorem mul_normal (H N : Subgroup G) [hN : N.Normal] : (↑(H ⊔ N) : Set G) = H * N := by
+when `H` is a subgroup of the normalizer of `N` in `G`."]
+theorem coe_mul_of_left_le_normalizer_right (H N : Subgroup G) (hLE : H ≤ N.normalizer) :
+    (↑(H ⊔ N) : Set G) = H * N := by
   rw [sup_eq_closure_mul]
   refine Set.Subset.antisymm (fun x hx => ?_) subset_closure
   induction hx using closure_induction'' with
@@ -242,19 +253,33 @@ theorem mul_normal (H N : Subgroup G) [hN : N.Normal] : (↑(H ⊔ N) : Set G) =
   | inv_mem x hx =>
     obtain ⟨x, hx, y, hy, rfl⟩ := hx
     simpa only [mul_inv_rev, mul_assoc, inv_inv, inv_mul_cancel_left]
-      using mul_mem_mul (inv_mem hx) (hN.conj_mem _ (inv_mem hy) x)
+      using mul_mem_mul (inv_mem hx) ((mem_normalizer_iff.mp (hLE hx) y⁻¹).mp (inv_mem hy))
   | mul x' x' _ _ hx hx' =>
     obtain ⟨x, hx, y, hy, rfl⟩ := hx
     obtain ⟨x', hx', y', hy', rfl⟩ := hx'
     refine ⟨x * x', mul_mem hx hx', x'⁻¹ * y * x' * y', mul_mem ?_ hy', ?_⟩
-    · simpa using hN.conj_mem _ hy x'⁻¹
+    · exact (mem_normalizer_iff''.mp (hLE hx') y).mp hy
     · simp only [mul_assoc, mul_inv_cancel_left]
+
+/-- The carrier of `N ⊔ H` is just `↑N * ↑H` (pointwise set product) when
+`H` is a subgroup of the normalizer of `N` in `G`. -/
+@[to_additive "The carrier of `N ⊔ H` is just `↑N + ↑H` (pointwise set addition)
+when `H` is a subgroup of the normalizer of `N` in `G`."]
+theorem coe_mul_of_right_le_normalizer_left (N H : Subgroup G) (hLE : H ≤ N.normalizer) :
+    (↑(N ⊔ H) : Set G) = N * H := by
+  rw [← set_mul_normalizer_comm _ _ hLE, sup_comm, coe_mul_of_left_le_normalizer_right _ _ hLE]
+
+/-- The carrier of `H ⊔ N` is just `↑H * ↑N` (pointwise set product) when `N` is normal. -/
+@[to_additive "The carrier of `H ⊔ N` is just `↑H + ↑N` (pointwise set addition)
+when `N` is normal."]
+theorem mul_normal (H N : Subgroup G) [hN : N.Normal] : (↑(H ⊔ N) : Set G) = H * N :=
+  coe_mul_of_left_le_normalizer_right H N le_normalizer_of_normal
 
 /-- The carrier of `N ⊔ H` is just `↑N * ↑H` (pointwise set product) when `N` is normal. -/
 @[to_additive "The carrier of `N ⊔ H` is just `↑N + ↑H` (pointwise set addition)
 when `N` is normal."]
-theorem normal_mul (N H : Subgroup G) [N.Normal] : (↑(N ⊔ H) : Set G) = N * H := by
-  rw [← set_mul_normal_comm, sup_comm, mul_normal]
+theorem normal_mul (N H : Subgroup G) [N.Normal] : (↑(N ⊔ H) : Set G) = N * H :=
+  coe_mul_of_right_le_normalizer_left N H le_normalizer_of_normal
 
 @[to_additive]
 theorem mul_inf_assoc (A B C : Subgroup G) (h : A ≤ C) :
@@ -432,8 +457,10 @@ theorem Normal.conjAct {H : Subgroup G} (hH : H.Normal) (g : ConjAct G) : g • 
   (this g).antisymm <| (smul_inv_smul g H).symm.trans_le (map_mono <| this _)
 
 @[simp]
-theorem smul_normal (g : G) (H : Subgroup G) [h : Normal H] : MulAut.conj g • H = H :=
+theorem Normal.conj_smul_eq_self (g : G) (H : Subgroup G) [h : Normal H] : MulAut.conj g • H = H :=
   h.conjAct g
+
+@[deprecated (since := "2025-03-01")] alias smul_normal := Normal.conj_smul_eq_self
 
 theorem Normal.of_conjugate_fixed {H : Subgroup G} (h : ∀ g : G, (MulAut.conj g) • H = H) :
     H.Normal := by
@@ -452,175 +479,4 @@ theorem normalCore_eq_iInf_conjAct (H : Subgroup G) :
   simpa only [ConjAct.toConjAct_inv, inv_inv] using h x⁻¹
 
 end Group
-
-section GroupWithZero
-
-variable [GroupWithZero α] [MulDistribMulAction α G]
-
-@[simp]
-theorem smul_mem_pointwise_smul_iff₀ {a : α} (ha : a ≠ 0) (S : Subgroup G) (x : G) :
-    a • x ∈ a • S ↔ x ∈ S :=
-  smul_mem_smul_set_iff₀ ha (S : Set G) x
-
-theorem mem_pointwise_smul_iff_inv_smul_mem₀ {a : α} (ha : a ≠ 0) (S : Subgroup G) (x : G) :
-    x ∈ a • S ↔ a⁻¹ • x ∈ S :=
-  mem_smul_set_iff_inv_smul_mem₀ ha (S : Set G) x
-
-theorem mem_inv_pointwise_smul_iff₀ {a : α} (ha : a ≠ 0) (S : Subgroup G) (x : G) :
-    x ∈ a⁻¹ • S ↔ a • x ∈ S :=
-  mem_inv_smul_set_iff₀ ha (S : Set G) x
-
-@[simp]
-theorem pointwise_smul_le_pointwise_smul_iff₀ {a : α} (ha : a ≠ 0) {S T : Subgroup G} :
-    a • S ≤ a • T ↔ S ≤ T :=
-  smul_set_subset_smul_set_iff₀ ha
-
-theorem pointwise_smul_le_iff₀ {a : α} (ha : a ≠ 0) {S T : Subgroup G} : a • S ≤ T ↔ S ≤ a⁻¹ • T :=
-  smul_set_subset_iff₀ ha
-
-theorem le_pointwise_smul_iff₀ {a : α} (ha : a ≠ 0) {S T : Subgroup G} : S ≤ a • T ↔ a⁻¹ • S ≤ T :=
-  subset_smul_set_iff₀ ha
-
-end GroupWithZero
-
 end Subgroup
-
-namespace AddSubgroup
-
-section Monoid
-
-variable [Monoid α] [DistribMulAction α A]
-
-/-- The action on an additive subgroup corresponding to applying the action to every element.
-
-This is available as an instance in the `Pointwise` locale. -/
-protected def pointwiseMulAction : MulAction α (AddSubgroup A) where
-  smul a S := S.map (DistribMulAction.toAddMonoidEnd _ _ a)
-  one_smul S := by
-    change S.map _ = S
-    simpa only [map_one] using S.map_id
-  mul_smul _ _ S :=
-    (congr_arg (fun f : AddMonoid.End A => S.map f) (MonoidHom.map_mul _ _ _)).trans
-      (S.map_map _ _).symm
-
-scoped[Pointwise] attribute [instance] AddSubgroup.pointwiseMulAction
-
-theorem pointwise_smul_def {a : α} (S : AddSubgroup A) :
-    a • S = S.map (DistribMulAction.toAddMonoidEnd _ _ a) :=
-  rfl
-
-@[simp]
-theorem coe_pointwise_smul (a : α) (S : AddSubgroup A) : ↑(a • S) = a • (S : Set A) :=
-  rfl
-
-@[simp]
-theorem pointwise_smul_toAddSubmonoid (a : α) (S : AddSubgroup A) :
-    (a • S).toAddSubmonoid = a • S.toAddSubmonoid :=
-  rfl
-
-theorem smul_mem_pointwise_smul (m : A) (a : α) (S : AddSubgroup A) : m ∈ S → a • m ∈ a • S :=
-  (Set.smul_mem_smul_set : _ → _ ∈ a • (S : Set A))
-
-theorem mem_smul_pointwise_iff_exists (m : A) (a : α) (S : AddSubgroup A) :
-    m ∈ a • S ↔ ∃ s : A, s ∈ S ∧ a • s = m :=
-  (Set.mem_smul_set : m ∈ a • (S : Set A) ↔ _)
-
-instance pointwise_isCentralScalar [DistribMulAction αᵐᵒᵖ A] [IsCentralScalar α A] :
-    IsCentralScalar α (AddSubgroup A) :=
-  ⟨fun _ S => (congr_arg fun f => S.map f) <| AddMonoidHom.ext <| op_smul_eq_smul _⟩
-
-end Monoid
-
-section Group
-
-variable [Group α] [DistribMulAction α A]
-
-open Pointwise
-
-@[simp]
-theorem smul_mem_pointwise_smul_iff {a : α} {S : AddSubgroup A} {x : A} : a • x ∈ a • S ↔ x ∈ S :=
-  smul_mem_smul_set_iff
-
-theorem mem_pointwise_smul_iff_inv_smul_mem {a : α} {S : AddSubgroup A} {x : A} :
-    x ∈ a • S ↔ a⁻¹ • x ∈ S :=
-  mem_smul_set_iff_inv_smul_mem
-
-theorem mem_inv_pointwise_smul_iff {a : α} {S : AddSubgroup A} {x : A} : x ∈ a⁻¹ • S ↔ a • x ∈ S :=
-  mem_inv_smul_set_iff
-
-@[simp]
-theorem pointwise_smul_le_pointwise_smul_iff {a : α} {S T : AddSubgroup A} :
-    a • S ≤ a • T ↔ S ≤ T :=
-  smul_set_subset_smul_set_iff
-
-theorem pointwise_smul_le_iff {a : α} {S T : AddSubgroup A} : a • S ≤ T ↔ S ≤ a⁻¹ • T :=
-  smul_set_subset_iff_subset_inv_smul_set
-
-theorem le_pointwise_smul_iff {a : α} {S T : AddSubgroup A} : S ≤ a • T ↔ a⁻¹ • S ≤ T :=
-  subset_smul_set_iff
-
-end Group
-
-section GroupWithZero
-
-variable [GroupWithZero α] [DistribMulAction α A]
-
-open Pointwise
-
-@[simp]
-theorem smul_mem_pointwise_smul_iff₀ {a : α} (ha : a ≠ 0) (S : AddSubgroup A) (x : A) :
-    a • x ∈ a • S ↔ x ∈ S :=
-  smul_mem_smul_set_iff₀ ha (S : Set A) x
-
-theorem mem_pointwise_smul_iff_inv_smul_mem₀ {a : α} (ha : a ≠ 0) (S : AddSubgroup A) (x : A) :
-    x ∈ a • S ↔ a⁻¹ • x ∈ S :=
-  mem_smul_set_iff_inv_smul_mem₀ ha (S : Set A) x
-
-theorem mem_inv_pointwise_smul_iff₀ {a : α} (ha : a ≠ 0) (S : AddSubgroup A) (x : A) :
-    x ∈ a⁻¹ • S ↔ a • x ∈ S :=
-  mem_inv_smul_set_iff₀ ha (S : Set A) x
-
-@[simp]
-theorem pointwise_smul_le_pointwise_smul_iff₀ {a : α} (ha : a ≠ 0) {S T : AddSubgroup A} :
-    a • S ≤ a • T ↔ S ≤ T :=
-  smul_set_subset_smul_set_iff₀ ha
-
-theorem pointwise_smul_le_iff₀ {a : α} (ha : a ≠ 0) {S T : AddSubgroup A} :
-    a • S ≤ T ↔ S ≤ a⁻¹ • T :=
-  smul_set_subset_iff₀ ha
-
-theorem le_pointwise_smul_iff₀ {a : α} (ha : a ≠ 0) {S T : AddSubgroup A} :
-    S ≤ a • T ↔ a⁻¹ • S ≤ T :=
-  subset_smul_set_iff₀ ha
-
-end GroupWithZero
-
-section Semiring
-variable {R M : Type*} [Semiring R] [AddCommGroup M] [Module R M]
-
-@[simp] protected lemma zero_smul (s : AddSubgroup M) : (0 : R) • s = ⊥ := by
-  simp [eq_bot_iff_forall, pointwise_smul_def]
-
-end Semiring
-
-section Mul
-
-variable {R : Type*} [NonUnitalNonAssocRing R]
-
-/-- For additive subgroups `S` and `T` of a ring, the product of `S` and `T` as submonoids
-is automatically a subgroup, which we define as the product of `S` and `T` as subgroups. -/
-protected def mul : Mul (AddSubgroup R) where
-  mul M N :=
-  { __ := M.toAddSubmonoid * N.toAddSubmonoid
-    neg_mem' := fun h ↦ AddSubmonoid.mul_induction_on h
-      (fun m hm n hn ↦ by rw [← neg_mul]; exact AddSubmonoid.mul_mem_mul (M.neg_mem hm) hn)
-      fun r₁ r₂ h₁ h₂ ↦ by rw [neg_add]; exact (M.1 * N.1).add_mem h₁ h₂ }
-
-scoped[Pointwise] attribute [instance] AddSubgroup.mul
-
-theorem mul_toAddSubmonoid (M N : AddSubgroup R) :
-    (M * N).toAddSubmonoid = M.toAddSubmonoid * N.toAddSubmonoid := rfl
-
-end Mul
-
-end AddSubgroup

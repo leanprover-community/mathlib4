@@ -3,7 +3,8 @@ Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yury Kudryashov
 -/
-import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Order.Interval.Set.LinearOrder
 
 /-!
 # Extra lemmas about intervals
@@ -43,6 +44,10 @@ theorem Iic_disjoint_Ioc (h : a ≤ b) : Disjoint (Iic a) (Ioc b c) :=
   (Iic_disjoint_Ioi h).mono le_rfl Ioc_subset_Ioi_self
 
 @[simp]
+theorem Ioc_disjoint_Ioc_of_le {d : α} (h : b ≤ c) : Disjoint (Ioc a b) (Ioc c d) :=
+  (Iic_disjoint_Ioc h).mono Ioc_subset_Iic_self le_rfl
+
+@[deprecated Ioc_disjoint_Ioc_of_le (since := "2025-03-04")]
 theorem Ioc_disjoint_Ioc_same : Disjoint (Ioc a b) (Ioc b c) :=
   (Iic_disjoint_Ioc le_rfl).mono Ioc_subset_Iic_self le_rfl
 
@@ -126,7 +131,7 @@ theorem Ico_disjoint_Ico : Disjoint (Ico a₁ a₂) (Ico b₁ b₂) ↔ min a₂
 @[simp]
 theorem Ioc_disjoint_Ioc : Disjoint (Ioc a₁ a₂) (Ioc b₁ b₂) ↔ min a₂ b₂ ≤ max a₁ b₁ := by
   have h : _ ↔ min (toDual a₁) (toDual b₁) ≤ max (toDual a₂) (toDual b₂) := Ico_disjoint_Ico
-  simpa only [dual_Ico] using h
+  simpa only [Ico_toDual] using h
 
 @[simp]
 theorem Ioo_disjoint_Ioo [DenselyOrdered α] :

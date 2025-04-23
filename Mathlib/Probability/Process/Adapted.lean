@@ -75,12 +75,9 @@ end Adapted
 theorem adapted_const (f : Filtration ι m) (x : β) : Adapted f fun _ _ => x := fun _ =>
   stronglyMeasurable_const
 
-variable (β)
-
+variable (β) in
 theorem adapted_zero [Zero β] (f : Filtration ι m) : Adapted f (0 : ι → Ω → β) := fun i =>
   @stronglyMeasurable_zero Ω β (f i) _ _
-
-variable {β}
 
 theorem Filtration.adapted_natural [MetrizableSpace β] [mβ : MeasurableSpace β] [BorelSpace β]
     {u : ι → Ω → β} (hum : ∀ i, StronglyMeasurable[m] (u i)) :
@@ -112,7 +109,7 @@ protected theorem adapted (h : ProgMeasurable f u) : Adapted f u := by
   have : u i = (fun p : Set.Iic i × Ω => u p.1 p.2) ∘ fun x => (⟨i, Set.mem_Iic.mpr le_rfl⟩, x) :=
     rfl
   rw [this]
-  exact (h i).comp_measurable measurable_prod_mk_left
+  exact (h i).comp_measurable measurable_prodMk_left
 
 protected theorem comp {t : ι → Ω → ι} [TopologicalSpace ι] [BorelSpace ι] [MetrizableSpace ι]
     (h : ProgMeasurable f u) (ht : ProgMeasurable f t) (ht_le : ∀ i ω, t i ω ≤ i) :
@@ -122,7 +119,7 @@ protected theorem comp {t : ι → Ω → ι} [TopologicalSpace ι] [BorelSpace 
     (fun p : ↥(Set.Iic i) × Ω => u (p.fst : ι) p.snd) ∘ fun p : ↥(Set.Iic i) × Ω =>
       (⟨t (p.fst : ι) p.snd, Set.mem_Iic.mpr ((ht_le _ _).trans p.fst.prop)⟩, p.snd) := rfl
   rw [this]
-  exact (h i).comp_measurable ((ht i).measurable.subtype_mk.prod_mk measurable_snd)
+  exact (h i).comp_measurable ((ht i).measurable.subtype_mk.prodMk measurable_snd)
 
 section Arithmetic
 

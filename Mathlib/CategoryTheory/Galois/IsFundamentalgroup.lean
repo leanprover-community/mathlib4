@@ -221,8 +221,8 @@ variable (G : Type*) [Group G] [∀ (X : C), MulAction G (F.obj X)]
 is a fundamental group of `F`, if `G` acts transitively on the fibers of Galois objects,
 the action on `F.obj X` is continuous for all `X : C` and the only trivially acting element of `G`
 is the identity. -/
-class IsFundamentalGroup [TopologicalSpace G] [IsTopologicalGroup G] [CompactSpace G]
-    extends IsNaturalSMul F G : Prop where
+class IsFundamentalGroup [TopologicalSpace G] [IsTopologicalGroup G] [CompactSpace G] : Prop
+    extends IsNaturalSMul F G where
   transitive_of_isGalois (X : C) [IsGalois X] : MulAction.IsPretransitive G (F.obj X)
   continuous_smul (X : C) : ContinuousSMul G (F.obj X)
   non_trivial' (g : G) : (∀ (X : C) (x : F.obj X), g • x = x) → g = 1

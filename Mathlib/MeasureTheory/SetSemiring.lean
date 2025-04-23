@@ -6,7 +6,6 @@ Authors: Rémy Degenne, Peter Pfaffelhuber
 import Mathlib.Data.Nat.Lattice
 import Mathlib.Data.Set.Accumulate
 import Mathlib.Data.Set.Pairwise.Lattice
-import Mathlib.Order.CompleteLattice
 import Mathlib.MeasureTheory.PiSystem
 
 /-! # Semirings and rings of sets
@@ -442,8 +441,8 @@ end IsSetSemiring
 It is then also stable by intersection (see `IsSetRing.inter_mem`). -/
 structure IsSetRing (C : Set (Set α)) : Prop where
   empty_mem : ∅ ∈ C
-  union_mem ⦃s t⦄ : s ∈ C → t ∈ C → s ∪ t ∈ C
-  diff_mem ⦃s t⦄ : s ∈ C → t ∈ C → s \ t ∈ C
+  union_mem ⦃s t : Set α⦄ : s ∈ C → t ∈ C → s ∪ t ∈ C
+  diff_mem ⦃s t : Set α⦄ : s ∈ C → t ∈ C → s \ t ∈ C
 
 namespace IsSetRing
 
