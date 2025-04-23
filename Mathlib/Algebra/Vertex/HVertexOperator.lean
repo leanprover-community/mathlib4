@@ -38,7 +38,7 @@ here allows us to consider composites and scalar-multiply by multivariable Laure
 
 noncomputable section
 
-variable {Γ Γ₁ Γ₂ R U V W X Y : Type*}
+variable {Γ Γ₁ Γ₂ R S U V W X Y : Type*}
 
 /-- A heterogeneous `Γ`-vertex operator over a commutator ring `R` is an `R`-linear map from an
 `R`-module `V` to `Γ`-Hahn series with coefficients in an `R`-module `W`. -/
@@ -278,9 +278,8 @@ def ResLeft.linearMap (g' : Γ₁):
 theorem coeff_left_lex_supp.isPWO (A : HVertexOperator (Γ ×ₗ Γ₁) R V W) (g' : Γ₁) (v : V) :
     (Function.support (fun (g : Γ) => (coeff A (toLex (g, g'))) v)).IsPWO := by
   refine Set.IsPWO.mono (Set.PartiallyWellOrderedOn.imageProdLex (A v).isPWO_support') ?_
-  simp_all only [coeff_apply, Function.support_subset_iff, ne_eq, Set.mem_image,
-    Function.mem_support]
-  exact fun x a ↦ Exists.intro (toLex (x, g')) { left := a, right := rfl }
+  simp only [coeff_apply, Function.support_subset_iff, ne_eq, Set.mem_image, Function.mem_support]
+  exact fun x h ↦ Exists.intro (toLex (x, g')) ⟨h, rfl⟩
 
 /-- The restriction of a heterogeneous vertex operator on a lex product to an element of the right
 factor. -/
@@ -301,8 +300,17 @@ def ResRight.linearMap (g' : Γ₁) :
 
 end Products
 
-section PiLex -- Order.PiLex
+section rLex
 
+/-- A type synonym -/
+def rLex := Γ × Γ₁
+
+-- Use Data.Prod.RevLex
+
+end rLex
+
+section PiLex -- Order.PiLex
+-- use Prod.swap?
 /-! We consider permutations on Lex Pi types. We need this for the following situation:
 To describe locality of vertex operators, we want to say that
 `(X - Y) ^ N • A(X) B(Y) = (X - Y) ^ N • B(Y) A(X)`. However, the left side naturally lies in
@@ -313,7 +321,7 @@ switching variables. One way to phrase this is that applying `(HahnModule.of R).
 
 One way to look at locality is that for any `u ∈ V`, we have `Y ^ k • A(X)B(Y)u ∈ V((X))[[Y]]` for
 suitably large `k`, and `X ^ m • B(Y)A(X)u ∈ V((Y))[[X]]` for suitably large `m`.  We conclude that
-locality means there are `k,m,N` such that both `X ^ m * Y ^ k * (X - Y) ^ N • A(X) B(Y) u` and
+locality means there are `k, m, N` such that both `X ^ m * Y ^ k * (X - Y) ^ N • A(X) B(Y) u` and
 `X ^ m * Y ^ k * (X - Y) ^ N • B(Y) A(X) u` lie in `V[[X,Y]]`, and are equal there.
 
 One problem is that I want to say that `(X - Y) ^ N` expanded in `R((X))((Y))` is the same as
@@ -360,7 +368,7 @@ change from `X` to `X + Y` here?), and `IsWeakAssociate` if they associate after
 suitable binomials.  In general, associativity of intertwining operators needs some analytic input,
 like from differential equations?
 
-
+Maybe have type aliases for different orders?
 
 theorem `Pi.lex_desc` {α} [Preorder ι] [DecidableEq ι] [Preorder α] {f : ι → α} {i j : ι}
     (h₁ : i ≤ j) (h₂ : f j < f i) : toLex (f ∘ Equiv.swap i j) < toLex f := sorry
@@ -391,20 +399,22 @@ end PiLex
 
 section binomialPow
 
-variable [LinearOrder Γ] [AddCommGroup Γ] [IsOrderedCancelAddMonoid Γ] [CommRing R]
-  [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W] [PartialOrder Γ₁] [AddAction Γ Γ₁]
-  [IsOrderedCancelVAdd Γ Γ₁]
+variable [LinearOrder Γ] [AddCommGroup Γ] [IsOrderedAddMonoid Γ] [CommRing R] [CommRing S]
+[BinomialRing S] [Module S Γ] [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W]
+[PartialOrder Γ₁] [AddAction Γ Γ₁] [IsOrderedCancelVAdd Γ Γ₁]  [Module S W] [Algebra S R]
+[IsScalarTower S R W]
 
-theorem exists_binomialPow_smul_support_bound {g g' : Γ} (g₁ : Γ₁) (h : g < g') (n : ℤ)
+omit [BinomialRing S] [Module S W] [Algebra S R] in
+theorem exists_binomialPow_smul_support_bound {g g' : Γ} (g₁ : Γ₁) (h : g < g') (n : S)
     (A : HVertexOperator Γ₁ R V W) (v : V) :
     ∃ (k : ℕ), ∀ (m : ℕ) (_ : k < m),
       (-(n • g) - m • (g' - g)) +ᵥ g₁ ∉ ((HahnModule.of R).symm (A v)).support :=
-  Set.PartiallyWellOrderedOn.exists_nat_gt_not_mem (· ≤ ·) ((HahnModule.of R).symm (A v)).support
+  Set.PartiallyWellOrderedOn.exists_not_mem_of_gt (· ≤ ·) ((HahnModule.of R).symm (A v)).support
     ((HahnModule.of R).symm (A v)).isPWO_support (fun k ↦ ((-(n • g) - k • (g' - g)) +ᵥ g₁))
     fun _ _ hkl ↦ not_le_of_lt <| VAdd.vadd_lt_vadd_of_lt_of_le
       (sub_lt_sub_left (nsmul_lt_nsmul_left (sub_pos.mpr h) hkl) (-(n • g))) <| Preorder.le_refl g₁
 
-theorem binomialPow_smul_coeff {g g' : Γ} (g₁ : Γ₁) (h : g < g') (n : ℤ)
+theorem binomialPow_smul_coeff {g g' : Γ} (g₁ : Γ₁) (h : g < g') (n : S)
     (A : HVertexOperator Γ₁ R V W) (v : V) :
     ((HahnModule.of R).symm (HahnSeries.binomialPow (A := R) g g' n • A v)).coeff g₁ =
       ∑ᶠ m : ℕ, Int.negOnePow m • Ring.choose n m •
@@ -465,8 +475,8 @@ theorem binomialPow_smul_coeff {g g' : Γ} (g₁ : Γ₁) (h : g < g') (n : ℤ)
         exact (hkn hk).elim
       · intro k hks
         simp only [f]
-        rw [HahnSeries.binomialPow_coeff_eq R h n k, ← coeff_apply, Int.smul_one_eq_cast,
-          smul_assoc, Int.cast_smul_eq_zsmul]
+        rw [HahnSeries.binomialPow_coeff_eq R h n k, ← coeff_apply, ← smul_assoc, ← smul_assoc,
+          smul_one_smul]
   · refine Function.support_subset_iff'.mpr ?_
     intro k hk
     rw [Finset.mem_coe, Finset.mem_range, Nat.not_lt_eq, Order.add_one_le_iff] at hk

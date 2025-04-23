@@ -577,7 +577,7 @@ theorem exists_strictMono' [NoMaxOrder α] (a : α) : ∃ f : ℕ → α, Strict
 theorem exists_strictAnti' [NoMinOrder α] (a : α) : ∃ f : ℕ → α, StrictAnti f ∧ f 0 = a :=
   exists_strictMono' (OrderDual.toDual a)
 
-theorem exists_subsequence {P : ℕ → Prop} (h : ∀ N, ∃ n > N, P n) :
+theorem exists_strictMono_subsequence {P : ℕ → Prop} (h : ∀ N, ∃ n > N, P n) :
     ∃ φ : ℕ → ℕ, StrictMono φ ∧ ∀ n, P (φ n) := by
   have : NoMaxOrder {n // P n} :=
     ⟨fun n ↦ Exists.intro ⟨(h n.1).choose, (h n.1).choose_spec.2⟩ (h n.1).choose_spec.1⟩
