@@ -509,7 +509,7 @@ def uncurrySum (f : ContinuousMultilinearMap 𝕜 (fun _ : ι => G)
     (ContinuousMultilinearMap 𝕜 (fun _ : ι' => G) G')) :
     ContinuousMultilinearMap 𝕜 (fun _ : ι ⊕ ι' => G) G' :=
   MultilinearMap.mkContinuous
-      (toMultilinearMapLinear.compMultilinearMap f.toMultilinearMap).uncurrySum ‖f‖ fun m => by
+    (toMultilinearMapLinear.compMultilinearMap f.toMultilinearMap).uncurrySum ‖f‖ fun m => by
     simpa [Fintype.prod_sum_type, mul_assoc] using
       (f (m ∘ Sum.inl)).le_of_opNorm_le (f.le_opNorm _) (m ∘ Sum.inr)
 
