@@ -71,25 +71,6 @@ lemma SetWhereLe.compl {μ ν : Measure X} [IsFiniteMeasure μ] [IsFiniteMeasure
 
 end SignedMeasure
 
-namespace VectorMeasure
-
-variable {X : Type*} [m : MeasurableSpace X]
-variable (μ ν : VectorMeasure X ℝ) (s : Set X)
-
-@[simp]
-theorem restrict_add_restrict_compl (μ : VectorMeasure X ℝ) {s : Set X} (hs : MeasurableSet s) :
-    μ.restrict s + μ.restrict sᶜ = μ := by
-  ext A hA
-  rw [add_apply, restrict_apply _ hs hA, restrict_apply _ hs.compl hA,
-    ← of_union _ (hA.inter hs) (hA.inter hs.compl)]
-
-  · simp [Set.inter_union_compl]
-  · refine Disjoint.inter_left' A ?_
-    refine Disjoint.inter_right' A ?_
-    apply disjoint_compl_right
-
-end VectorMeasure
-
 lemma exists_SetWhereLeSignedMeasure (μ ν : Measure X) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     ∃ s : Set X, SignedMeasure.SetWhereLe μ ν s := by
   obtain ⟨s, hs, h₂, h₃⟩ := (ν.toSignedMeasure - μ.toSignedMeasure).exists_compl_positive_negative

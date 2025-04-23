@@ -843,6 +843,26 @@ end
 
 section
 
+variable {M : Type*} [TopologicalSpace M]
+  [AddCommMonoid M] [PartialOrder M] [OrderClosedTopology M] [ContinuousAdd M]
+variable (v : VectorMeasure α M) {i : Set α}
+
+@[simp]
+theorem restrict_add_restrict_compl (hi : MeasurableSet i) :
+    v.restrict i + v.restrict iᶜ = v := by
+  ext A hA
+  rw [add_apply, restrict_apply _ hi hA, restrict_apply _ hi.compl hA,
+    ← of_union _ (hA.inter hi) (hA.inter hi.compl)]
+
+  · simp [Set.inter_union_compl]
+  · refine Disjoint.inter_left' A ?_
+    refine Disjoint.inter_right' A ?_
+    apply disjoint_compl_right
+
+end
+
+section
+
 variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [PartialOrder M]
 variable (v w : VectorMeasure α M) {i j : Set α}
 
