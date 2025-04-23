@@ -198,9 +198,6 @@ theorem isOpenEmbedding_of_injective (hf : IsLocalHomeomorph f) (hi : f.Injectiv
     IsOpenEmbedding f :=
   .of_continuous_injective_isOpenMap hf.continuous hi hf.isOpenMap
 
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_of_injective := isOpenEmbedding_of_injective
-
 /-- A bijective local homeomorphism is a homeomorphism. -/
 noncomputable def toHomeomorph_of_bijective (hf : IsLocalHomeomorph f) (hb : f.Bijective) :
     X ≃ₜ Y :=
