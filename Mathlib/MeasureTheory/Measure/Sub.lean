@@ -56,6 +56,14 @@ theorem zero_sub : 0 - μ = 0 :=
 theorem sub_self : μ - μ = 0 :=
   sub_eq_zero_of_le le_rfl
 
+@[simp]
+theorem sub_zero : μ - 0 = μ := by
+  rw [sub_def]
+  apply le_antisymm
+  · simp only [add_zero]; exact sInf_le (by simp)
+  · simp [add_zero]
+
+
 /-- This application lemma only works in special circumstances. Given knowledge of
 when `μ ≤ ν` and `ν ≤ μ`, a more general application lemma can be written. -/
 theorem sub_apply [IsFiniteMeasure ν] (h₁ : MeasurableSet s) (h₂ : ν ≤ μ) :
