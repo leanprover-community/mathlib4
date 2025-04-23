@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tim Baumann, Stephen Morgan, Kim Morrison, Floris van Doorn
 -/
 import Mathlib.CategoryTheory.Functor.FullyFaithful
-import Mathlib.CategoryTheory.FullSubcategory
+import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 import Mathlib.CategoryTheory.Whiskering
 import Mathlib.CategoryTheory.EssentialImage
 import Mathlib.Tactic.CategoryTheory.Slice
@@ -619,17 +619,20 @@ noncomputable instance inducedFunctorOfEquiv {C' : Type*} (e : C' ≃ D) :
 noncomputable instance fullyFaithfulToEssImage (F : C ⥤ D) [F.Full] [F.Faithful] :
     IsEquivalence F.toEssImage where
 
-/-- A biimplication of properties on the objects of a category `C` induces an equivalence of the
+end Equivalence
+
+/-- An equality of properties of objects of a category `C` induces an equivalence of the
 respective induced full subcategories of `C`. -/
 @[simps]
-def ofFullSubcategory {Z Z' : C → Prop} (h : ∀ X, Z X ↔ Z' X) :
-    FullSubcategory Z ≌ FullSubcategory Z' where
-  functor := FullSubcategory.map (fun _ => (h _).mp)
-  inverse := FullSubcategory.map (fun _ => (h _).mpr)
-  unitIso := NatIso.ofComponents (fun X => Iso.refl _)
-  counitIso := NatIso.ofComponents (fun X => Iso.refl _)
+def ObjectProperty.fullSubcategoryCongr {P P' : ObjectProperty C} (h : P = P') :
+    P.FullSubcategory ≌ P'.FullSubcategory where
+  functor := ObjectProperty.ιOfLE h.le
+  inverse := ObjectProperty.ιOfLE h.symm.le
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
 
-end Equivalence
+@[deprecated (since := "2025-03-04")]
+alias Equivalence.ofFullSubcategory := ObjectProperty.fullSubcategoryCongr
 
 namespace Iso
 
