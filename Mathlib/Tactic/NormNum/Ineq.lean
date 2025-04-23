@@ -43,7 +43,7 @@ def inferOrderedRing (α : Q(Type u)) : MetaM <|
 
 /-- Helper function to synthesize typed `Semifield α` `LinearOrder α` `IsStrictOrderedRing α`
 expressions. -/
-def inferLinearOrderedField (α : Q(Type u)) : MetaM <|
+def inferLinearOrderedSemifield (α : Q(Type u)) : MetaM <|
     (_ : Q(Semifield $α)) × (_ : Q(LinearOrder $α)) × Q(IsStrictOrderedRing $α) :=
   let go := do
     let semifield ← synthInstanceQ q(Semifield $α)
@@ -94,7 +94,7 @@ theorem isNNRat_lt_true [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] 
     have hb : 0 < ⅟(db : α) := pos_invOf_of_invertible_cast db
     have h := (mul_lt_mul_of_pos_left · hb) <| mul_lt_mul_of_pos_right h ha
     rw [← mul_assoc, Nat.commute_cast] at h
-    simp? at h says simp only [Nat.cast_mul, Nat.cast_ofNat, mul_mul_invOf_self_cancel'] at h
+    simp? at h says simp only [Nat.cast_mul, mul_invOf_cancel_right'] at h
     rwa [Nat.commute_cast] at h
 
 theorem isNNRat_le_false [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] [Nontrivial α]
@@ -272,10 +272,13 @@ where
       return .isFalse q(isInt_lt_false $pa $pb $r)
   let rec nnratArm : MetaM (Result e) := do
     -- We need a division ring with an order, and `LinearOrderedField` is the closest mathlib has.
-    let _i ← inferLinearOrderedSemifield α
+    /-
+       NOTE: after the ordered algebra refactor, this is not true anymore,
+       so there may be a better typeclass
+    -/
+    let ⟨_, _, _⟩ ← inferLinearOrderedSemifield α
     assumeInstancesCommute
     haveI' : $e =Q ($a < $b) := ⟨⟩
-    guard <|← withNewMCtxDepth <| isDefEq f q(LT.lt (α := $α))
     let ⟨qa, na, da, pa⟩ ← ra.toNNRat' q(Semifield.toDivisionSemiring)
     let ⟨qb, nb, db, pb⟩ ← rb.toNNRat' q(Semifield.toDivisionSemiring)
     if qa < qb then
@@ -286,6 +289,10 @@ where
       return .isFalse q(isNNRat_lt_false $pa $pb $r)
   let rec ratArm : MetaM (Result e) := do
     -- We need a division ring with an order, and `LinearOrderedField` is the closest mathlib has.
+    /-
+       NOTE: after the ordered algebra refactor, this is not true anymore,
+       so there may be a better typeclass
+    -/
     let ⟨_, _, _i⟩ ← inferLinearOrderedField α
     assumeInstancesCommute
     haveI' : $e =Q ($a < $b) := ⟨⟩
