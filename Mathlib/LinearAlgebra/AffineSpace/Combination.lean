@@ -609,15 +609,15 @@ variable (k)
 
 /-- Weights for expressing a single point as an affine combination. -/
 def affineCombinationSingleWeights [DecidableEq ι] (i : ι) : ι → k :=
-  Function.update (Function.const ι 0) i 1
+  Pi.single i 1
 
 @[simp]
 theorem affineCombinationSingleWeights_apply_self [DecidableEq ι] (i : ι) :
-    affineCombinationSingleWeights k i i = 1 := by simp [affineCombinationSingleWeights]
+    affineCombinationSingleWeights k i i = 1 := Pi.single_eq_same _ _
 
 @[simp]
 theorem affineCombinationSingleWeights_apply_of_ne [DecidableEq ι] {i j : ι} (h : j ≠ i) :
-    affineCombinationSingleWeights k i j = 0 := by simp [affineCombinationSingleWeights, h]
+    affineCombinationSingleWeights k i j = 0 := Pi.single_eq_of_ne h _
 
 @[simp]
 theorem sum_affineCombinationSingleWeights [DecidableEq ι] {i : ι} (h : i ∈ s) :

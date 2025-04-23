@@ -105,6 +105,15 @@ lemma IsIrreducible.mk' {K : Type*} [Field K] [Module K M] [Module K N] [Nontriv
     replace ne_bot : q.dualAnnihilator ≠ ⊤ := by simpa
     simpa using h ne_bot
 
+lemma exist_set_root_not_disjoint_and_le_ker_coroot'_of_invtSubmodule
+    [NeZero (2 : R)] [NoZeroSMulDivisors R M] (q : Submodule R M)
+    (hq : ∀ i, q ∈ invtSubmodule (P.reflection i)) :
+    ∃ Φ : Set ι, (∀ i ∈ Φ, ¬ Disjoint q (R ∙ P.root i)) ∧ (∀ i ∉ Φ, q ≤ ker (P.coroot' i)) := by
+  refine ⟨{i | ¬ Disjoint q (R ∙ P.root i)}, by simp, fun i hi ↦ ?_⟩
+  simp only [mem_setOf_eq, not_not] at hi
+  rw [← Submodule.mem_invtSubmodule_reflection_iff (by simp) hi]
+  exact hq i
+
 variable [NeZero (2 : R)] [P.IsIrreducible]
 
 lemma span_orbit_eq_top (i : ι) :
@@ -138,64 +147,30 @@ lemma span_root_image_eq_top_of_forall_orthogonal (s : Set ι)
   apply IsIrreducible.eq_top_of_invtSubmodule_reflection _ hq
   simpa using ⟨hne.choose, hne.choose_spec, P.ne_zero _⟩
 
-section FieldCharacterization
-
-lemma root_mem_or_subset_ker_coroot {K : Type*} [Field K] [Module K M] [Module K N]
-    (q : Submodule K M) (P : RootPairing ι K M N) (i : ι)
-    (h₁ : q ∈ invtSubmodule (P.reflection i)) :
-    P.root i ∈ q ∨ q ≤ ker (P.coroot' i) := by
-  by_cases h_root : P.root i ∈ q
-  · left
-    exact h_root
-  right
-  intro v hv
-  by_cases h_zero : v = 0
-  · subst h_zero
-    simp only [Submodule.zero_mem]
-  have : (P.coroot' i) v • P.root i ∈ q := by
-    simpa using (Submodule.sub_mem_iff_right q hv).mp (h₁ hv)
-  by_contra h_ne
-  have : P.root i ∈ q := by
-    have := Submodule.smul_mem q (((P.coroot' i) v)⁻¹) this
-    rwa [inv_smul_smul₀ h_ne] at this
-  contradiction
-
-lemma root_subset_characterization {K : Type*} [Field K] [Module K M] [Module K N]
-    (q : Submodule K M) (P : RootPairing ι K M N)
-    (h₁ : ∀ i, q ∈ invtSubmodule (P.reflection i)) :
-    ∃ (Φ : Set ι), (∀ i ∈ Φ, P.root i ∈ q) ∧ (∀ i ∉ Φ, q ≤ ker (P.coroot' i)) := by
-  use {i | P.root i ∈ q}
-  constructor
-  · exact fun _ => id
-  intro i hi
-  exact (root_mem_or_subset_ker_coroot q P i (h₁ i)).resolve_left hi
-
-end FieldCharacterization
-
 end RootPairing
 
 namespace RootSystem
 
-lemma invtsubmodule_to_root_subset {K : Type*} [Field K] [Module K M] [Module K N]
+/-
+Note that this actually holds for `RootPairing` provided we:
+ * assume `RootPairing.IsBalanced`,
+ * replace the assumption `q ≠ ⊥` with `¬ Disjoint P.rootSpan q`,
+ * replace the conclusion `q = ⊤` with `P.rootSpan ≤ q`.
+-/
+lemma eq_top_of_mem_invtSubmodule_of_forall_eq_univ
+    {K : Type*} [Field K] [NeZero (2 : K)] [Module K M] [Module K N]
     (P : RootSystem ι K M N)
     (q : Submodule K M)
     (h₀ : q ≠ ⊥)
     (h₁ : ∀ i, q ∈ invtSubmodule (P.reflection i))
     (h₂ : ∀ Φ, Φ.Nonempty → P.root '' Φ ⊆ q → (∀ i ∉ Φ, q ≤ ker (P.coroot' i)) → Φ = univ) :
     q = ⊤ := by
-  obtain ⟨Φ, b, c⟩ := RootPairing.root_subset_characterization q P.toRootPairing h₁
-  by_cases hΦ : Φ = ∅
-  · subst hΦ
-    simp only [mem_empty_iff_false, not_false_eq_true, forall_const] at c
-    obtain ⟨v₁, ⟨v₂, v₃⟩⟩ := (Submodule.ne_bot_iff q).1 h₀
-    have : ∀ d : Module.Dual K M, d v₁ = 0 := by
-      intro d
-      exact RootPairing.dual_vanish_aux P v₁ (fun i => c i v₂) d
-    have := (Module.forall_dual_apply_eq_zero_iff K v₁).1 this
-    exact False.elim (v₃ this)
-  have hu := h₂ Φ (Set.nonempty_iff_ne_empty.mpr hΦ) (image_subset_iff.mpr b) c
-  subst hu
-  rw [eq_top_mono (span_le.mpr (image_subset_iff.mpr b))
-  (by rw [image_univ, span_root_eq_top])]
+  obtain ⟨Φ, b, c⟩ := P.exist_set_root_not_disjoint_and_le_ker_coroot'_of_invtSubmodule q h₁
+  rcases Φ.eq_empty_or_nonempty with rfl | hΦ
+  · replace c : q ≤ ⨅ i, LinearMap.ker (P.coroot' i) := by simpa using c
+    simp [h₀, ← P.corootSpan_dualAnnihilator_map_eq_iInf_ker_coroot'] at c
+  · replace b : P.root '' Φ ⊆ q := by
+      simpa [Submodule.disjoint_span_singleton' (P.ne_zero _)] using b
+    simpa [h₂ Φ hΦ b c, ← span_le] using b
 
 end RootSystem

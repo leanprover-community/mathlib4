@@ -24,6 +24,9 @@ open Lean Elab Command Meta
 
 namespace Mathlib.CountHeartbeats
 
+-- This file mentions bare `set_option maxHeartbeats` by design: do not warn about this.
+set_option linter.style.setOption false
+
 open Tactic
 
 /--

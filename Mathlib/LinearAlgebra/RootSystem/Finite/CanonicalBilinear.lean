@@ -106,11 +106,11 @@ lemma toPerfectPairing_apply_CoPolarization (x : N) :
   exact P.flip.toPerfectPairing_apply_apply_Polarization x y
 
 lemma flip_comp_polarization_eq_rootForm :
-    P.flip.toLin ∘ₗ P.Polarization = P.RootForm := by
+    P.flip.toLinearMap ∘ₗ P.Polarization = P.RootForm := by
   ext; simp [rootForm_apply_apply, RootPairing.flip]
 
 lemma self_comp_coPolarization_eq_corootForm :
-    P.toLin ∘ₗ P.CoPolarization = P.CorootForm := by
+    P.toLinearMap ∘ₗ P.CoPolarization = P.CorootForm := by
   ext; simp [corootForm_apply_apply]
 
 lemma polarization_apply_eq_zero_iff (m : M) :
@@ -211,10 +211,10 @@ theorem range_polarization_domRestrict_le_span_coroot :
 
 theorem corootSpan_dualAnnihilator_le_ker_rootForm :
     P.corootSpan.dualAnnihilator.map P.toDualLeft.symm ≤ LinearMap.ker P.RootForm := by
-  rw [← SetLike.coe_subset_coe, coe_corootSpan_dualAnnihilator_map]
+  rw [P.corootSpan_dualAnnihilator_map_eq_iInf_ker_coroot']
   intro x hx
-  simp only [coroot', PerfectPairing.flip_apply_apply, mem_setOf_eq] at hx
   ext y
+  simp only [coroot', Submodule.mem_iInf, LinearMap.mem_ker, PerfectPairing.flip_apply_apply] at hx
   simp [rootForm_apply_apply, hx]
 
 theorem rootSpan_dualAnnihilator_le_ker_rootForm :
