@@ -98,9 +98,7 @@ lemma natCast_le_order_iff (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} :
   split_ifs with h
   · simpa using ⟨0, analyticAt_const .., by simpa⟩
   · let m := (hf.exists_eventuallyEq_pow_smul_nonzero_iff.mpr h).choose
-    obtain ⟨g, hg, hg_ne, hm⟩ : ∃ g, AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧
-        ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ m • g z :=
-      (hf.exists_eventuallyEq_pow_smul_nonzero_iff.mpr h).choose_spec
+    obtain ⟨g, hg, hg_ne, hm⟩ := (hf.exists_eventuallyEq_pow_smul_nonzero_iff.mpr h).choose_spec
     rw [ENat.coe_le_coe]
     refine ⟨fun hmn ↦ ⟨fun z ↦ (z - z₀) ^ (m - n) • g z, by fun_prop, ?_⟩, fun ⟨h, hh, hfh⟩ ↦ ?_⟩
     · filter_upwards [hm] with z hz using by rwa [← mul_smul, ← pow_add, Nat.add_sub_of_le hmn]
