@@ -27,7 +27,7 @@ namespace Algebraic
 
 theorem infinite_of_charZero (R A : Type*) [CommRing R] [Ring A] [Algebra R A]
     [CharZero A] : { x : A | IsAlgebraic R x }.Infinite := by
-  letI := Algebra.nontrivial_of_nontrivial R A
+  letI := MulActionWithZero.nontrivial R A
   exact infinite_of_injective_forall_mem Nat.cast_injective isAlgebraic_nat
 
 theorem aleph0_le_cardinalMk_of_charZero (R A : Type*) [CommRing R] [Ring A]

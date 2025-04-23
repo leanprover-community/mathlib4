@@ -116,10 +116,6 @@ theorem mem_algebraMapSubmonoid_of_mem {S : Type*} [Semiring S] [Algebra R S] {M
     (x : M) : algebraMap R S x ∈ algebraMapSubmonoid S M :=
   Set.mem_image_of_mem (algebraMap R S) x.2
 
-theorem nontrivial_of_nontrivial (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
-    [Nontrivial A] : Nontrivial R :=
-  domain_nontrivial (algebraMap R A) algebraMap.coe_zero algebraMap.coe_one
-
 end Semiring
 
 section CommSemiring
