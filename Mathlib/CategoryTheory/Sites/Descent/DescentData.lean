@@ -35,6 +35,8 @@ lemma mapComp_rfl : F.mapComp' f g _ rfl = F.mapComp f g := rfl
 
 end
 
+-- TODO: this will look slightly better after `LocallyDiscrete Cᵒᵖ`
+-- is replaced by any bicategory satisfying `IsLocallyDiscrete`.
 variable {C : Type u} [Category.{v} C]
   (F : Pseudofunctor (LocallyDiscrete Cᵒᵖ) Cat.{v', u'})
   {ι : Type w} (X : ι → C)
@@ -85,6 +87,9 @@ def toDescentDataOfIsTerminal (X₀ : C) (hX₀ : IsTerminal X₀) :
           (F.mapComp' (hX₀.from (X i₂)).op.toLoc f₂.op.toLoc (hX₀.from Y).op.toLoc
             (by rw [← Quiver.Hom.comp_toLoc, ← op_comp, IsTerminal.comp_from])).app A
       iso_comp Y' Y g i₁ i₂ f₁ f₂ := by
+        ext
+        dsimp
+        simp only [Functor.map_comp, assoc]
         sorry }
   map {A B} f :=
     { hom i := (F.map _).map f
