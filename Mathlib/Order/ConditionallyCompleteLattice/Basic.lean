@@ -437,7 +437,7 @@ instance Pi.conditionallyCompleteLattice {ι : Type*} {α : ι → Type*}
 
 section ConditionallyCompleteLinearOrder
 
-variable [ConditionallyCompleteLinearOrder α] {s : Set α} {a b : α}
+variable [ConditionallyCompleteLinearOrder α] {f : ι → α} {s : Set α} {a b : α}
 
 /-- When `b < sSup s`, there is an element `a` in `s` with `b < a`, if `s` is nonempty and the order
 is a linear order. -/
@@ -456,19 +456,31 @@ theorem lt_csSup_iff (hb : BddAbove s) (hs : s.Nonempty) : a < sSup s ↔ ∃ b 
 theorem csInf_lt_iff (hb : BddBelow s) (hs : s.Nonempty) : sInf s < a ↔ ∃ b ∈ s, b < a :=
   isGLB_lt_iff <| isGLB_csInf hs hb
 
-theorem csSup_of_not_bddAbove {s : Set α} (hs : ¬BddAbove s) : sSup s = sSup ∅ :=
+@[simp] lemma csSup_of_not_bddAbove (hs : ¬BddAbove s) : sSup s = sSup ∅ :=
   ConditionallyCompleteLinearOrder.csSup_of_not_bddAbove s hs
 
-theorem csSup_eq_univ_of_not_bddAbove {s : Set α} (hs : ¬BddAbove s) : sSup s = sSup univ := by
+@[simp] lemma ciSup_of_not_bddAbove (hf : ¬BddAbove (range f)) : ⨆ i, f i = sSup ∅ :=
+  csSup_of_not_bddAbove hf
+
+lemma csSup_eq_univ_of_not_bddAbove (hs : ¬BddAbove s) : sSup s = sSup univ := by
   rw [csSup_of_not_bddAbove hs, csSup_of_not_bddAbove (s := univ)]
   contrapose! hs
   exact hs.mono (subset_univ _)
 
-theorem csInf_of_not_bddBelow {s : Set α} (hs : ¬BddBelow s) : sInf s = sInf ∅ :=
+lemma ciSup_eq_univ_of_not_bddAbove (hf : ¬BddAbove (range f)) : ⨆ i, f i = sSup univ :=
+  csSup_eq_univ_of_not_bddAbove hf
+
+@[simp] lemma csInf_of_not_bddBelow (hs : ¬BddBelow s) : sInf s = sInf ∅ :=
   ConditionallyCompleteLinearOrder.csInf_of_not_bddBelow s hs
 
-theorem csInf_eq_univ_of_not_bddBelow {s : Set α} (hs : ¬BddBelow s) : sInf s = sInf univ :=
+@[simp] lemma ciInf_of_not_bddBelow (hf : ¬BddBelow (range f)) : ⨅ i, f i = sInf ∅ :=
+  csInf_of_not_bddBelow hf
+
+lemma csInf_eq_univ_of_not_bddBelow (hs : ¬BddBelow s) : sInf s = sInf univ :=
   csSup_eq_univ_of_not_bddAbove (α := αᵒᵈ) hs
+
+lemma ciInf_eq_univ_of_not_bddBelow (hf : ¬BddBelow (range f)) : ⨅ i, f i = sInf univ :=
+  csInf_eq_univ_of_not_bddBelow hf
 
 /-- When every element of a set `s` is bounded by an element of a set `t`, and conversely, then
 `s` and `t` have the same supremum. This holds even when the sets may be empty or unbounded. -/
