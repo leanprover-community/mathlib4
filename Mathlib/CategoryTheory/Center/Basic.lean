@@ -42,9 +42,10 @@ lemma mul_app (x y : CatCenter C) (X : C) : (x * y).app X = x.app X ≫ y.app X 
   rw [mul_app']
   exact x.naturality (y.app X)
 
-lemma mul_comm (x y : CatCenter C) : x * y = y * x := by
-  ext X
-  rw [mul_app' x y, mul_app y x]
+instance : IsMulCommutative (CatCenter C) where
+  is_comm := ⟨fun x y ↦ by
+    ext X
+    rw [mul_app' x y, mul_app y x]⟩
 
 end CatCenter
 

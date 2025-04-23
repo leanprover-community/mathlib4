@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 import Mathlib.Order.Filter.Tendsto
-import Mathlib.Topology.Bases
 import Mathlib.Data.Set.Accumulate
 import Mathlib.Topology.Bornology.Basic
+import Mathlib.Topology.ContinuousOn
 import Mathlib.Topology.Ultrafilter
 import Mathlib.Topology.Defs.Ultrafilter
+
 /-!
 # Compact sets and compact spaces
 
@@ -34,6 +35,15 @@ lemma IsCompact.exists_clusterPt (hs : IsCompact s) {f : Filter X} [NeBot f] (hf
 lemma IsCompact.exists_mapClusterPt {ι : Type*} (hs : IsCompact s) {f : Filter ι} [NeBot f]
     {u : ι → X} (hf : Filter.map u f ≤ 𝓟 s) :
     ∃ x ∈ s, MapClusterPt x f u := hs hf
+
+lemma IsCompact.exists_clusterPt_of_frequently {l : Filter X} (hs : IsCompact s)
+    (hl : ∃ᶠ x in l, x ∈ s) : ∃ a ∈ s, ClusterPt a l :=
+  let ⟨a, has, ha⟩ := @hs _ (frequently_mem_iff_neBot.mp hl) inf_le_right
+  ⟨a, has, ha.mono inf_le_left⟩
+
+lemma IsCompact.exists_mapClusterPt_of_frequently {l : Filter ι} {f : ι → X} (hs : IsCompact s)
+    (hf : ∃ᶠ x in l, f x ∈ s) : ∃ a ∈ s, MapClusterPt a l f :=
+  hs.exists_clusterPt_of_frequently hf
 
 /-- The complement to a compact set belongs to a filter `f` if it belongs to each filter
 `𝓝 x ⊓ f`, `x ∈ s`. -/
@@ -491,50 +501,6 @@ theorem exists_subset_nhds_of_isCompact' [Nonempty ι] {V : ι → Set X}
   have : ¬⋂ i : ι, V i ⊆ W := by simpa [← iInter_inter, inter_compl_nonempty_iff]
   contradiction
 
-lemma eq_finite_iUnion_of_isTopologicalBasis_of_isCompact_open (b : ι → Set X)
-    (hb : IsTopologicalBasis (Set.range b)) (U : Set X) (hUc : IsCompact U) (hUo : IsOpen U) :
-    ∃ s : Set ι, s.Finite ∧ U = ⋃ i ∈ s, b i := by
-  obtain ⟨Y, f, e, hf⟩ := hb.open_eq_iUnion hUo
-  choose f' hf' using hf
-  have : b ∘ f' = f := funext hf'
-  subst this
-  obtain ⟨t, ht⟩ :=
-    hUc.elim_finite_subcover (b ∘ f') (fun i => hb.isOpen (Set.mem_range_self _)) (by rw [e])
-  classical
-  refine ⟨t.image f', Set.toFinite _, le_antisymm ?_ ?_⟩
-  · refine Set.Subset.trans ht ?_
-    simp only [Set.iUnion_subset_iff]
-    intro i hi
-    simpa using subset_iUnion₂ (s := fun i _ => b (f' i)) i hi
-  · apply Set.iUnion₂_subset
-    rintro i hi
-    obtain ⟨j, -, rfl⟩ := Finset.mem_image.mp hi
-    rw [e]
-    exact Set.subset_iUnion (b ∘ f') j
-
-lemma eq_sUnion_finset_of_isTopologicalBasis_of_isCompact_open (b : Set (Set X))
-    (hb : IsTopologicalBasis b) (U : Set X) (hUc : IsCompact U) (hUo : IsOpen U) :
-    ∃ s : Finset b, U = s.toSet.sUnion := by
-  have hb' : b = range (fun i ↦ i : b → Set X) := by simp
-  rw [hb'] at hb
-  choose s hs hU using eq_finite_iUnion_of_isTopologicalBasis_of_isCompact_open _ hb U hUc hUo
-  have : Finite s := hs
-  let _ : Fintype s := Fintype.ofFinite _
-  use s.toFinset
-  simp [hU]
-
-/-- If `X` has a basis consisting of compact opens, then an open set in `X` is compact open iff
-  it is a finite union of some elements in the basis -/
-theorem isCompact_open_iff_eq_finite_iUnion_of_isTopologicalBasis (b : ι → Set X)
-    (hb : IsTopologicalBasis (Set.range b)) (hb' : ∀ i, IsCompact (b i)) (U : Set X) :
-    IsCompact U ∧ IsOpen U ↔ ∃ s : Set ι, s.Finite ∧ U = ⋃ i ∈ s, b i := by
-  constructor
-  · exact fun ⟨h₁, h₂⟩ ↦ eq_finite_iUnion_of_isTopologicalBasis_of_isCompact_open _ hb U h₁ h₂
-  · rintro ⟨s, hs, rfl⟩
-    constructor
-    · exact hs.isCompact_biUnion fun i _ => hb' i
-    · exact isOpen_biUnion fun i _ => hb.isOpen (Set.mem_range_self _)
-
 namespace Filter
 
 theorem hasBasis_cocompact : (cocompact X).HasBasis IsCompact compl :=
@@ -784,7 +750,7 @@ lemma Set.Infinite.exists_accPt_cofinite_inf_principal_of_subset_isCompact
     {K : Set X} (hs : s.Infinite) (hK : IsCompact K) (hsub : s ⊆ K) :
     ∃ x ∈ K, AccPt x (cofinite ⊓ 𝓟 s) :=
   (@hK _ hs.cofinite_inf_principal_neBot (inf_le_right.trans <| principal_mono.2 hsub)).imp
-    fun x hx ↦ by rwa [acc_iff_cluster, inf_comm, inf_right_comm,
+    fun x hx ↦ by rwa [accPt_iff_clusterPt, inf_comm, inf_right_comm,
       (finite_singleton _).cofinite_inf_principal_compl]
 
 lemma Set.Infinite.exists_accPt_of_subset_isCompact {K : Set X} (hs : s.Infinite)

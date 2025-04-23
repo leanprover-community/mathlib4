@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.FundamentalCone
+import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.PolarCoord
 import Mathlib.NumberTheory.NumberField.Units.Regulator
 
 /-!
@@ -12,7 +13,7 @@ import Mathlib.NumberTheory.NumberField.Units.Regulator
 In this file, we study the subset `NormLeOne` of the `fundamentalCone` of elements `x` with
 `mixedEmbedding.norm x ≤ 1`.
 
-Mainly, we prove that this is bounded, its frontier has volume zero and compute its volume.
+Mainly, we prove that it is bounded, its frontier has volume zero and compute its volume.
 
 ## Strategy of proof
 
@@ -46,6 +47,12 @@ The proof is loosely based on the strategy given in [D. Marcus, *Number Fields*]
   It is the map that sends `x : realSpace K` to `Real.exp (x w₀) * ∏_{i ≠ w₀} |ηᵢ| ^ x i`, see
   `expMapBasis_apply'`. Then, we prove a change of variable formula for `expMapBasis`, see
   `setLIntegral_expMapBasis_image`.
+
+6. We define a set `paramSet` in `realSpace K` and prove that
+  `normAtAllPlaces '' (normLeOne K) = expMapBasis (paramSet K)`, see
+  `normAtAllPlaces_normLeOne_eq_image`. Using this, `setLIntegral_expMapBasis_image` and the results
+  from `mixedEmbedding.polarCoord`, we can then compute the volume of `normLeOne K`, see
+  `volume_normLeOne`.
 
 ## Spaces and maps
 
@@ -126,6 +133,11 @@ abbrev normLeOne : Set (mixedSpace K) := fundamentalCone K ∩ {x | mixedEmbeddi
 variable {K} in
 theorem mem_normLeOne {x : mixedSpace K} :
     x ∈ normLeOne K ↔ x ∈ fundamentalCone K ∧ mixedEmbedding.norm x ≤ 1 := Set.mem_sep_iff
+
+theorem measurableSet_normLeOne :
+    MeasurableSet (normLeOne K) :=
+  (measurableSet_fundamentalCone K).inter <|
+    measurableSet_le (mixedEmbedding.continuous_norm K).measurable measurable_const
 
 theorem normLeOne_eq_primeage_image :
     normLeOne K = normAtAllPlaces⁻¹' (normAtAllPlaces '' (normLeOne K)) := by
@@ -407,8 +419,6 @@ end completeBasis
 
 noncomputable section expMapBasis
 
-open ENNReal MeasureTheory
-
 variable [NumberField K]
 
 variable {K}
@@ -456,6 +466,14 @@ theorem expMapBasis_apply' (x : realSpace K) :
     expMap_sum, expMap_smul, expMap_basis_of_ne, Pi.smul_def, smul_eq_mul, prod_apply, Pi.pow_apply,
     normAtAllPlaces_mixedEmbedding]
 
+open scoped Classical in
+theorem expMapBasis_apply'' (x : realSpace K) :
+    expMapBasis x = Real.exp (x w₀) • expMapBasis (fun i ↦ if i = w₀ then 0 else x i) := by
+ rw [expMapBasis_apply', expMapBasis_apply', if_pos rfl, smul_smul, ← Real.exp_add, add_zero]
+ conv_rhs =>
+   enter [2, w, 2, i]
+   rw [if_neg i.prop]
+
 theorem prod_expMapBasis_pow (x : realSpace K) :
     ∏ w, (expMapBasis x w) ^ w.mult = Real.exp (x w₀) ^ Module.finrank ℚ K := by
   simp_rw [expMapBasis_apply', Pi.smul_def, smul_eq_mul, mul_pow, prod_mul_distrib,
@@ -464,6 +482,44 @@ theorem prod_expMapBasis_pow (x : realSpace K) :
   simp_rw [Real.rpow_pow_comm (apply_nonneg _ _), Real.finset_prod_rpow _ _
     fun _ _ ↦ pow_nonneg (apply_nonneg _ _) _, prod_eq_abs_norm, Units.norm, Rat.cast_one,
     Real.one_rpow, prod_const_one, mul_one]
+
+theorem norm_expMapBasis (x : realSpace K) :
+    mixedEmbedding.norm (mixedSpaceOfRealSpace (expMapBasis x)) =
+      Real.exp (x w₀) ^ Module.finrank ℚ K := by
+  simpa only [mixedEmbedding.norm_apply,
+    normAtPlace_mixedSpaceOfRealSpace (expMapBasis_pos _ _).le] using prod_expMapBasis_pow x
+
+theorem norm_expMapBasis_ne_zero (x : realSpace K) :
+    mixedEmbedding.norm (mixedSpaceOfRealSpace (expMapBasis x)) ≠ 0 :=
+  norm_expMapBasis x ▸ pow_ne_zero _ (Real.exp_ne_zero _)
+
+open scoped Classical in
+theorem logMap_expMapBasis (x : realSpace K) :
+    logMap (mixedSpaceOfRealSpace (expMapBasis x)) ∈
+        ZSpan.fundamentalDomain ((basisUnitLattice K).ofZLatticeBasis ℝ (unitLattice K))
+      ↔ ∀ w, w ≠ w₀ → x w ∈ Set.Ico 0 1 := by
+  classical
+  simp_rw [ZSpan.mem_fundamentalDomain, equivFinRank.forall_congr_left, Subtype.forall]
+  refine forall₂_congr fun w hw ↦ ?_
+  rw [expMapBasis_apply'', map_smul, logMap_real_smul (norm_expMapBasis_ne_zero _)
+    (Real.exp_ne_zero _), expMapBasis_apply, logMap_expMap (by rw [← expMapBasis_apply,
+    norm_expMapBasis, if_pos rfl, Real.exp_zero, one_pow]), Basis.equivFun_symm_apply,
+    Fintype.sum_eq_add_sum_subtype_ne _ w₀, if_pos rfl, zero_smul, zero_add]
+  conv_lhs =>
+    enter [2, 1, 2, w, 2, i]
+    rw [if_neg i.prop]
+  simp_rw [sum_apply, ← sum_fn, map_sum, Pi.smul_apply, ← Pi.smul_def, map_smul,
+    completeBasis_apply_of_ne, expMap_symm_apply, normAtAllPlaces_mixedEmbedding,
+    ← logEmbedding_component, logEmbedding_fundSystem, Finsupp.coe_finset_sum, Finsupp.coe_smul,
+    sum_apply, Pi.smul_apply, Basis.ofZLatticeBasis_repr_apply, Basis.repr_self,
+    Finsupp.single_apply, EmbeddingLike.apply_eq_iff_eq, Int.cast_ite, Int.cast_one, Int.cast_zero,
+    smul_ite, smul_eq_mul, mul_one, mul_zero, Fintype.sum_ite_eq']
+
+theorem normAtAllPlaces_image_preimage_expMapBasis (s : Set (realSpace K)) :
+    normAtAllPlaces '' (normAtAllPlaces ⁻¹' (expMapBasis '' s)) = expMapBasis '' s := by
+  apply normAtAllPlaces_image_preimage_of_nonneg
+  rintro _ ⟨x, _, rfl⟩ w
+  exact (expMapBasis_pos _ _).le
 
 open scoped Classical in
 theorem prod_deriv_expMap_single (x : realSpace K) :
@@ -505,7 +561,9 @@ theorem abs_det_fderiv_expMapBasis (x : realSpace K) :
     abs_inv, abs_prod, abs_of_nonneg (expMapBasis_nonneg _ _), Nat.abs_ofNat]
   ring
 
-variable {S}
+variable {K}
+
+open ENNReal MeasureTheory
 
 open scoped Classical in
 theorem setLIntegral_expMapBasis_image {s : Set (realSpace K)} (hs : MeasurableSet s)
@@ -530,5 +588,88 @@ theorem setLIntegral_expMapBasis_image {s : Set (realSpace K)} (hs : MeasurableS
   ring
 
 end expMapBasis
+
+section paramSet
+
+variable [NumberField K]
+
+open scoped Classical in
+/--
+The set that parametrizes `normAtAllPlaces '' (normLeOne K)`, see
+`normAtAllPlaces_normLeOne_eq_image`.
+-/
+abbrev paramSet : Set (realSpace K) :=
+  Set.univ.pi fun w ↦ if w = w₀ then Set.Iic 0 else Set.Ico 0 1
+
+theorem measurableSet_paramSet :
+    MeasurableSet (paramSet K) := by
+  refine MeasurableSet.univ_pi fun _ ↦ ?_
+  split_ifs
+  · exact measurableSet_Iic
+  · exact measurableSet_Ico
+
+theorem normAtAllPlaces_normLeOne_eq_image :
+    normAtAllPlaces '' (normLeOne K) = expMapBasis '' (paramSet K) := by
+  ext x
+  by_cases hx : ∀ w, 0 < x w
+  · rw [← expMapBasis.right_inv (Set.mem_univ_pi.mpr hx), (injective_expMapBasis K).mem_set_image]
+    simp only [normAtAllPlaces_normLeOne, Set.mem_inter_iff, Set.mem_setOf_eq, expMapBasis_nonneg,
+      Set.mem_preimage, logMap_expMapBasis, implies_true, and_true, norm_expMapBasis,
+      pow_le_one_iff_of_nonneg (Real.exp_nonneg _) Module.finrank_pos.ne', Real.exp_le_one_iff,
+      ne_eq, pow_eq_zero_iff', Real.exp_ne_zero, false_and, not_false_eq_true,  Set.mem_univ_pi]
+    refine ⟨fun ⟨h₁, h₂⟩ w ↦ ?_, fun h ↦ ⟨fun w hw ↦ by simpa [hw] using h w, by simpa using h w₀⟩⟩
+    · split_ifs with hw
+      · exact hw ▸ h₂
+      · exact h₁ w hw
+  · refine ⟨?_, ?_⟩
+    · rintro ⟨a, ⟨ha, _⟩, rfl⟩
+      exact (hx fun w ↦ fundamentalCone.normAtPlace_pos_of_mem ha w).elim
+    · rintro ⟨a, _, rfl⟩
+      exact (hx fun w ↦ expMapBasis_pos a w).elim
+
+theorem normLeOne_eq_preimage :
+    normLeOne K = normAtAllPlaces⁻¹' (expMapBasis '' (paramSet K)) := by
+  rw [normLeOne_eq_primeage_image, normAtAllPlaces_normLeOne_eq_image]
+
+open ENNReal MeasureTheory
+
+theorem setLIntegral_paramSet_exp {n : ℕ} (hn : 0 < n) :
+    ∫⁻ (x : realSpace K) in paramSet K, .ofReal (Real.exp (x w₀ * n)) = (n : ℝ≥0∞)⁻¹ := by
+  classical
+  have hn : 0 < (n : ℝ) := Nat.cast_pos.mpr hn
+  rw [volume_pi, paramSet, Measure.restrict_pi_pi, lintegral_eq_lmarginal_univ 0,
+    lmarginal_erase' _ (by fun_prop) (Finset.mem_univ w₀), if_pos rfl]
+  simp_rw [Function.update_self, lmarginal, lintegral_const, Measure.pi_univ, if_neg
+    (Finset.ne_of_mem_erase (Subtype.prop _)), Measure.restrict_apply_univ, Real.volume_Ico,
+    sub_zero, ofReal_one, prod_const_one, mul_one, mul_comm _ (n : ℝ)]
+  rw [← ofReal_integral_eq_lintegral_ofReal (integrableOn_exp_mul_Iic hn _), integral_exp_mul_Iic
+    hn, mul_zero, Real.exp_zero, ofReal_div_of_pos hn, ofReal_one, ofReal_natCast, one_div]
+  filter_upwards with _ using Real.exp_nonneg _
+
+end paramSet
+
+section main_results
+
+variable [NumberField K]
+
+open ENNReal MeasureTheory
+
+open scoped Classical in
+theorem volume_normLeOne : volume (normLeOne K) =
+    2 ^ nrRealPlaces K * NNReal.pi ^ nrComplexPlaces K * .ofReal (regulator K) := by
+  rw [volume_eq_two_pow_mul_two_pi_pow_mul_integral (normLeOne_eq_primeage_image K).symm
+    (measurableSet_normLeOne K), normLeOne_eq_preimage,
+    normAtAllPlaces_image_preimage_expMapBasis,
+    setLIntegral_expMapBasis_image (measurableSet_paramSet K) (by fun_prop)]
+  simp_rw [ENNReal.inv_mul_cancel_right
+    (Finset.prod_ne_zero_iff.mpr fun _ _ ↦ ofReal_ne_zero_iff.mpr (expMapBasis_pos _ _))
+    (prod_ne_top fun _ _ ↦ ofReal_ne_top)]
+  rw [setLIntegral_paramSet_exp K Module.finrank_pos, ofReal_mul zero_le_two, mul_pow,
+    ofReal_ofNat, ENNReal.mul_inv_cancel_right (Nat.cast_ne_zero.mpr Module.finrank_pos.ne')
+    (natCast_ne_top _), coe_nnreal_eq, NNReal.coe_real_pi, mul_mul_mul_comm, ← ENNReal.inv_pow,
+    ← mul_assoc, ← mul_assoc, ENNReal.inv_mul_cancel_right (pow_ne_zero _ two_ne_zero)
+    (pow_ne_top ENNReal.ofNat_ne_top)]
+
+end main_results
 
 end NumberField.mixedEmbedding.fundamentalCone
