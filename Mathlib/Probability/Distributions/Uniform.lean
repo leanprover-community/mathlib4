@@ -302,16 +302,16 @@ section Measure
 
 variable (s : Set α)
 
-open scoped Classical in
-theorem toOuterMeasure_uniformOfFintype_apply :
+theorem toOuterMeasure_uniformOfFintype_apply [Fintype s] :
     (uniformOfFintype α).toOuterMeasure s = Fintype.card s / Fintype.card α := by
-  rw [uniformOfFintype, toOuterMeasure_uniformOfFinset_apply,Fintype.card_ofFinset]
-  rfl
+  classical
+  rw [uniformOfFintype, toOuterMeasure_uniformOfFinset_apply, Fintype.card_subtype,
+    Finset.card_univ]
 
-open scoped Classical in
-theorem toMeasure_uniformOfFintype_apply [MeasurableSpace α] (hs : MeasurableSet s) :
+theorem toMeasure_uniformOfFintype_apply [MeasurableSpace α] (hs : MeasurableSet s) [Fintype s] :
     (uniformOfFintype α).toMeasure s = Fintype.card s / Fintype.card α := by
-  simp [uniformOfFintype, hs]
+  classical
+  simp [uniformOfFintype, Fintype.card_subtype, hs]
 
 end Measure
 
