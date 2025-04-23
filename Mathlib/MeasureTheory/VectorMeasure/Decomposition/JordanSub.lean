@@ -13,7 +13,7 @@ This file develops the Jordan decomposition of the signed measure `μ - ν` for 
 and `ν`, expressing it as the pair `(μ - ν, ν - μ)` of mutually singular finite measures.
 
 The key tool is the Hahn decomposition theorem, which yields a measurable partition of the space
-where `μ ≥ ν` and `ν ≥ μ`, and the measure difference behaves like a signed measure difference.
+where `μ ≤ ν` and `ν ≤ μ`, and the measure difference behaves like a signed measure difference.
 
 ## Main results
 
