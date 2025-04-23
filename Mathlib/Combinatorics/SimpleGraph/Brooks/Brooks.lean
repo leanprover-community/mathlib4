@@ -321,9 +321,8 @@ theorem colorable_of_cliqueFree_forall_degree_le [LocallyFinite G] {k : ℕ} (hk
   apply nonempty_hom_of_forall_finite_subgraph_hom
   intro G' hf
   classical
-  have hbd' : ∀ v, G'.coe.degree v ≤ k := by
-    intro v; rw [Subgraph.coe_degree]; exact (Subgraph.degree_le ..).trans (hbd ..)
+  have h' := fun v ↦ G'.coe_degree v ▸ (Subgraph.degree_le ..).trans (hbd ..)
   haveI : Fintype ↑G'.verts := hf.fintype
-  exact ((BrooksPart hk (hc.comap' G'.hom) hbd' univ).some.copy coe_univ).toColoring
+  exact ((BrooksPart hk (hc.comap' G'.hom) h' univ).some.copy coe_univ).toColoring
 
 end SimpleGraph
