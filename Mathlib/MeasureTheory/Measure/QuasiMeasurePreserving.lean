@@ -44,7 +44,7 @@ structure QuasiMeasurePreserving {m0 : MeasurableSpace α} (f : α → β)
 
 namespace QuasiMeasurePreserving
 
-/-- Theorem for fun_prop -/
+/-- Theorem for fun_prop. -/
 @[fun_prop]
 theorem quasiMeasurePreserving_measurable {μ' : Measure β} (f : α → β)
     (hf : QuasiMeasurePreserving f μ μ') : Measurable f := hf.measurable
