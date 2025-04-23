@@ -186,7 +186,7 @@ local instance : CategoryTheory.HasExt.{w} (ModuleCat.{v} R) :=
   --CategoryTheory.HasExt.standard (ModuleCat.{v} R)
   CategoryTheory.hasExt_of_enoughProjectives.{w} (ModuleCat.{v} R)
 
-open Pointwise
+open Pointwise ModuleCat
 
 lemma lemma222_3_to_4 [IsNoetherianRing R] (I : Ideal R) (n : ℕ) :
     ∀ M : ModuleCat.{v} R, Nontrivial M → Module.Finite R M →
