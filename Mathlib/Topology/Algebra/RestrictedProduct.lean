@@ -333,10 +333,7 @@ sending `A₁ (f j)` into `A₂ j` for an `𝓕₂`-large set of `j`'s.
 See also `mapMonoidHom`, `mapAddMonoidHom` and `mapRingHom` for variants.
 -/
 def map (x : Πʳ i, [R₁ i, A₁ i]_[𝓕₁]) : Πʳ j, [R₂ j, A₂ j]_[𝓕₂] := ⟨fun j ↦ φ j (x (f j)), by
-  apply mem_of_superset (𝓕₂.inter_mem hφ (hf x.2))
-  simp only [SetLike.mem_coe, preimage_setOf_eq]
-  rintro _ ⟨h1, h2⟩
-  exact h1 h2⟩
+  filter_upwards [hf.eventually x.2, hφ] using fun _ h1 h2 ↦ h2 h1⟩
 
 end set
 
@@ -349,14 +346,15 @@ variable [Π i, Monoid (R₁ i)] [Π i, Monoid (R₂ i)] [∀ i, SubmonoidClass 
 /--
 Given two restricted products `Πʳ (i : ι₁), [R₁ i, B₁ i]_[𝓕₁]` and `Πʳ (j : ι₂), [R₂ j, B₂ j]_[𝓕₂]`,
 `RestrictedProduct.mapMonoidHom` gives a monoid homomorphism between them. The data needed is a
-function `f : ι₂ → ι₁` such that `𝓕₂` tends to `𝓕₁` along `f`, and functions `φ j : R₁ (f j) → R₂ j`
-sending `A₁ (f j)` into `A₂ j` for an `𝓕₂`-large set of `j`'s.
+function `f : ι₂ → ι₁` such that `𝓕₂` tends to `𝓕₁` along `f`, and monoid homomorphisms
+`φ j : R₁ (f j) → R₂ j` sending `B₁ (f j)` into `B₂ j` for an `𝓕₂`-large set of `j`'s.
 -/
 @[to_additive "
 Given two restricted products `Πʳ (i : ι₁), [R₁ i, B₁ i]_[𝓕₁]` and `Πʳ (j : ι₂), [R₂ j, B₂ j]_[𝓕₂]`,
 `RestrictedProduct.mapAddMonoidHom` gives a additive monoid homomorphism between them. The data
 needed is a function `f : ι₂ → ι₁` such that `𝓕₂` tends to `𝓕₁` along `f`, and
-functions `φ j : R₁ (f j) → R₂ j` sending `A₁ (f j)` into `A₂ j` for an `𝓕₂`-large set of `j`'s.
+additive monoid homomorphisms `φ j : R₁ (f j) → R₂ j` sending `B₁ (f j)` into `B₂ j` for
+an `𝓕₂`-large set of `j`'s.
 "]
 def mapMonoidHom : Πʳ i, [R₁ i, B₁ i]_[𝓕₁] →* Πʳ j, [R₂ j, B₂ j]_[𝓕₂] where
   toFun := map R₁ R₂ f hf (fun j r ↦ φ j r) hφ
@@ -378,8 +376,8 @@ variable [Π i, Ring (R₁ i)] [Π i, Ring (R₂ i)] [∀ i, SubringClass (S₁ 
 /--
 Given two restricted products `Πʳ (i : ι₁), [R₁ i, B₁ i]_[𝓕₁]` and `Πʳ (j : ι₂), [R₂ j, B₂ j]_[𝓕₂]`,
 `RestrictedProduct.mapRingHom` gives a ring homomorphism between them. The data needed is a
-function `f : ι₂ → ι₁` such that `𝓕₂` tends to `𝓕₁` along `f`, and functions `φ j : R₁ (f j) → R₂ j`
-sending `A₁ (f j)` into `A₂ j` for an `𝓕₂`-large set of `j`'s.
+function `f : ι₂ → ι₁` such that `𝓕₂` tends to `𝓕₁` along `f`, and ring homomorphisms
+`φ j : R₁ (f j) → R₂ j` sending `B₁ (f j)` into `B₂ j` for an `𝓕₂`-large set of `j`'s.
 -/
 def mapRingHom : Πʳ i, [R₁ i, B₁ i]_[𝓕₁] →+* Πʳ j, [R₂ j, B₂ j]_[𝓕₂] where
   __ := mapMonoidHom R₁ R₂ f hf (fun j ↦ φ j) hφ
