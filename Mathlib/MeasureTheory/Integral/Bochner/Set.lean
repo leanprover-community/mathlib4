@@ -65,21 +65,12 @@ theorem setIntegral_congr_fun₀ (hs : NullMeasurableSet s μ) (h : EqOn f g s) 
     ∫ x in s, f x ∂μ = ∫ x in s, g x ∂μ :=
   setIntegral_congr_ae₀ hs <| Eventually.of_forall h
 
-@[deprecated (since := "2024-10-12")]
-alias setIntegral_congr₀ := setIntegral_congr_fun₀
-
 theorem setIntegral_congr_fun (hs : MeasurableSet s) (h : EqOn f g s) :
     ∫ x in s, f x ∂μ = ∫ x in s, g x ∂μ :=
   setIntegral_congr_ae hs <| Eventually.of_forall h
 
-@[deprecated (since := "2024-10-12")]
-alias setIntegral_congr := setIntegral_congr_fun
-
 theorem setIntegral_congr_set (hst : s =ᵐ[μ] t) : ∫ x in s, f x ∂μ = ∫ x in t, f x ∂μ := by
   rw [Measure.restrict_congr_set hst]
-
-@[deprecated (since := "2024-10-12")]
-alias setIntegral_congr_set_ae := setIntegral_congr_set
 
 theorem integral_union_ae (hst : AEDisjoint μ s t) (ht : NullMeasurableSet t μ)
     (hfs : IntegrableOn f s μ) (hft : IntegrableOn f t μ) :
@@ -89,9 +80,6 @@ theorem integral_union_ae (hst : AEDisjoint μ s t) (ht : NullMeasurableSet t μ
 theorem setIntegral_union (hst : Disjoint s t) (ht : MeasurableSet t) (hfs : IntegrableOn f s μ)
     (hft : IntegrableOn f t μ) : ∫ x in s ∪ t, f x ∂μ = ∫ x in s, f x ∂μ + ∫ x in t, f x ∂μ :=
   integral_union_ae hst.aedisjoint ht.nullMeasurableSet hfs hft
-
-@[deprecated (since := "2024-10-12")]
-alias integral_union := setIntegral_union
 
 theorem integral_diff (ht : MeasurableSet t) (hfs : IntegrableOn f s μ) (hts : t ⊆ s) :
     ∫ x in s \ t, f x ∂μ = ∫ x in s, f x ∂μ - ∫ x in t, f x ∂μ := by
@@ -134,13 +122,7 @@ theorem integral_fintype_iUnion {ι : Type*} [Fintype ι] {s : ι → Set X}
 theorem setIntegral_empty : ∫ x in ∅, f x ∂μ = 0 := by
   rw [Measure.restrict_empty, integral_zero_measure]
 
-@[deprecated (since := "2024-10-12")]
-alias integral_empty := setIntegral_empty
-
 theorem setIntegral_univ : ∫ x in univ, f x ∂μ = ∫ x, f x ∂μ := by rw [Measure.restrict_univ]
-
-@[deprecated (since := "2024-10-12")]
-alias integral_univ := setIntegral_univ
 
 theorem integral_add_compl₀ (hs : NullMeasurableSet s μ) (hfi : Integrable f μ) :
     ∫ x in s, f x ∂μ + ∫ x in sᶜ, f x ∂μ = ∫ x, f x ∂μ := by
@@ -482,9 +464,6 @@ theorem _root_.Topology.IsClosedEmbedding.setIntegral_map [TopologicalSpace X] [
     [MeasurableSpace Y] [TopologicalSpace Y] [BorelSpace Y] {g : X → Y} {f : Y → E} (s : Set Y)
     (hg : IsClosedEmbedding g) : ∫ y in s, f y ∂Measure.map g μ = ∫ x in g ⁻¹' s, f (g x) ∂μ :=
   hg.measurableEmbedding.setIntegral_map _ _
-
-@[deprecated (since := "2024-10-20")]
-alias _root_.ClosedEmbedding.setIntegral_map := IsClosedEmbedding.setIntegral_map
 
 theorem MeasurePreserving.setIntegral_preimage_emb {Y} {_ : MeasurableSpace Y} {f : X → Y} {ν}
     (h₁ : MeasurePreserving f μ ν) (h₂ : MeasurableEmbedding f) (g : Y → E) (s : Set Y) :
