@@ -15,9 +15,11 @@ Given an `A`-module `M`, we provide its tautological presentation:
 
 -/
 
+universe w v u
+
 namespace Module
 
-variable (A : Type*) [Ring A] (M : Type*) [AddCommGroup M] [Module A M]
+variable (A : Type u) [Ring A] (M : Type v) [AddCommGroup M] [Module A M]
 
 namespace Presentation
 
@@ -37,7 +39,7 @@ noncomputable def tautologicalRelations : Relations A where
 
 variable {A M} in
 /-- Solutions of `tautologicalRelations A M` in an `A`-module `N` identify to `M →ₗ[A] N`. -/
-def tautologicalRelationsSolutionEquiv {N : Type*} [AddCommGroup N] [Module A N] :
+def tautologicalRelationsSolutionEquiv {N : Type w} [AddCommGroup N] [Module A N] :
     (tautologicalRelations A M).Solution N ≃ (M →ₗ[A] N) where
   toFun s :=
     { toFun := s.var
@@ -62,7 +64,7 @@ def tautologicalSolution : (tautologicalRelations A M).Solution M :=
 
 /-- Any `A`-module admits a tautological presentation by generators and relations. -/
 def tautologicalSolutionIsPresentationCore :
-    Relations.Solution.IsPresentationCore (tautologicalSolution A M) where
+    Relations.Solution.IsPresentationCore.{w} (tautologicalSolution A M) where
   desc s := tautologicalRelationsSolutionEquiv s
   postcomp_desc _ := rfl
   postcomp_injective h := by

@@ -14,9 +14,11 @@ it admits a presentation with finitely many generators and relations.
 
 -/
 
+universe w₀ w₁ v u
+
 namespace Module
 
-variable {A : Type*} [Ring A] {M : Type*} [AddCommGroup M] [Module A M]
+variable {A : Type u} [Ring A] {M : Type v} [AddCommGroup M] [Module A M]
 
 namespace Presentation
 
@@ -36,13 +38,13 @@ end Presentation
 
 lemma finitePresentation_iff_exists_presentation :
     Module.FinitePresentation A M ↔
-      ∃ (pres : Presentation A M), Finite pres.G ∧ Finite pres.R := by
+      ∃ (pres : Presentation.{w₀, w₁} A M), Finite pres.G ∧ Finite pres.R := by
   constructor
   · intro
-    obtain ⟨G : Type _, _, var, hG⟩ :=
+    obtain ⟨G : Type w₀, _, var, hG⟩ :=
       Submodule.fg_iff_exists_finite_generating_family.1
         (finite_def.1 (inferInstanceAs (Module.Finite A M)))
-    obtain ⟨R : Type _, _, relation, hR⟩ :=
+    obtain ⟨R : Type w₁, _, relation, hR⟩ :=
       Submodule.fg_iff_exists_finite_generating_family.1
         (Module.FinitePresentation.fg_ker (Finsupp.linearCombination A var) (by
           rw [← LinearMap.range_eq_top, Finsupp.range_linearCombination, hG]))

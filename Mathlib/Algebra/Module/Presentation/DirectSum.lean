@@ -17,13 +17,15 @@ a presentation of `ι →₀ M`.
 
 -/
 
+universe w' w₀ w₁ w v u
+
 namespace Module
 
 open DirectSum
 
-variable {A : Type*} [Ring A] {ι : Type*} [DecidableEq ι]
-  (relations : ι → Relations A)
-  {M : ι → Type*} [∀ i, AddCommGroup (M i)] [∀ i, Module A (M i)]
+variable {A : Type u} [Ring A] {ι : Type w} [DecidableEq ι]
+  (relations : ι → Relations.{w₀, w₁} A)
+  {M : ι → Type v} [∀ i, AddCommGroup (M i)] [∀ i, Module A (M i)]
 
 namespace Relations
 
@@ -40,7 +42,7 @@ noncomputable def directSum : Relations A where
 namespace Solution
 
 variable {relations}
-variable {N : Type*} [AddCommGroup N] [Module A N]
+variable {N : Type v} [AddCommGroup N] [Module A N]
 
 /-- Given an `A`-module `N` and a family `relations : ι → Relations A`,
 the data of a solution of `Relations.directSum relations` in `N`
@@ -82,7 +84,7 @@ variable {solution : ∀ (i : ι), (relations i).Solution (M i)}
 
 /-- The direct sum admits a presentation by generators and relations. -/
 noncomputable def directSum.isRepresentationCore :
-    Solution.IsPresentationCore (directSum solution) where
+    Solution.IsPresentationCore.{w'} (directSum solution) where
   desc s := DirectSum.toModule _ _ _ (fun i ↦ (h i).desc (directSumEquiv s i))
   postcomp_desc s := by ext ⟨i, g⟩; simp
   postcomp_injective h' := by
@@ -117,8 +119,8 @@ lemma directSum_var (pres : ∀ (i : ι), Presentation A (M i)) (i : ι) (g : (p
 
 section
 
-variable {N : Type*} [AddCommGroup N] [Module A N]
-  (pres : Presentation A N) (ι : Type*) [DecidableEq ι] [DecidableEq N]
+variable {N : Type v} [AddCommGroup N] [Module A N]
+  (pres : Presentation A N) (ι : Type w) [DecidableEq ι] [DecidableEq N]
 
 /-- The obvious presentation of the module `ι →₀ N` that is deduced from a presentation
 of the module `N`. -/

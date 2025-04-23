@@ -28,9 +28,11 @@ that `Mₙ(A) ≃ₐ[K] Mₘ(B)`.
 Brauer group, Central simple algebra, Galois Cohomology
 -/
 
+universe u v
+
 /-- `CSA` is the set of all finite dimensional central simple algebras over field `K`, for its
   generalisation over a `CommRing` please find `IsAzumaya` in `Mathlib.Algebra.Azumaya.Defs`. -/
-structure CSA (K : Type*) [Field K] extends AlgebraCat K where
+structure CSA (K : Type u) [Field K] extends AlgebraCat.{v} K where
   /-- Any member of `CSA` is central. -/
   [isCentral : Algebra.IsCentral K carrier]
   /-- Any member of `CSA` is simple. -/
@@ -38,9 +40,9 @@ structure CSA (K : Type*) [Field K] extends AlgebraCat K where
   /-- Any member of `CSA` is finite-dimensional. -/
   [fin_dim : FiniteDimensional K carrier]
 
-variable {K : Type*} [Field K]
+variable {K : Type u} [Field K]
 
-instance : CoeSort (CSA K) (Type*) := ⟨(·.carrier)⟩
+instance : CoeSort (CSA.{u, v} K) (Type v) := ⟨(·.carrier)⟩
 
 attribute [instance] CSA.isCentral CSA.isSimple CSA.fin_dim
 
