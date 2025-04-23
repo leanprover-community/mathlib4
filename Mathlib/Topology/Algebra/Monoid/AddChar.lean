@@ -10,7 +10,7 @@ import Mathlib.Topology.DenseEmbedding
 # Additive characters of topological monoids
 -/
 
-lemma DenseRange.addChar_eq_of_apply_one_eq {A M : Type*} [TopologicalSpace A] [AddMonoidWithOne A]
+lemma DenseRange.addChar_eq_of_eval_one_eq {A M : Type*} [TopologicalSpace A] [AddMonoidWithOne A]
     [Monoid M] [TopologicalSpace M] [T2Space M] (hdr : DenseRange ((↑) : ℕ → A))
     {κ₁ κ₂ : AddChar A M} (hκ₁ : Continuous κ₁) (hκ₂ : Continuous κ₂) (h : κ₁ 1 = κ₂ 1) :
     κ₁ = κ₂ := by

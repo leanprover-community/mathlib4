@@ -116,27 +116,6 @@ theorem insertIdx_injective (n : ℕ) (x : α) :
   | zero => simp
   | succ n IH => rintro (_ | ⟨a, as⟩) (_ | ⟨b, bs⟩) h <;> simpa [IH.eq_iff] using h
 
-@[deprecated (since := "2024-10-21")] alias insertNth_zero := insertIdx_zero
-@[deprecated (since := "2024-10-21")] alias insertNth_succ_nil := insertIdx_succ_nil
-@[deprecated (since := "2024-10-21")] alias insertNth_succ_cons := insertIdx_succ_cons
-@[deprecated (since := "2024-10-21")] alias length_insertNth := length_insertIdx
-@[deprecated (since := "2024-10-21")] alias removeNth_insertIdx := eraseIdx_insertIdx
-@[deprecated (since := "2024-10-21")] alias insertNth_eraseIdx_of_ge := insertIdx_eraseIdx_of_ge
-@[deprecated (since := "2024-10-21")] alias insertNth_eraseIdx_of_le := insertIdx_eraseIdx_of_le
-@[deprecated (since := "2024-10-21")] alias insertNth_comm := insertIdx_comm
-@[deprecated (since := "2024-10-21")] alias mem_insertNth := mem_insertIdx
-@[deprecated (since := "2024-10-21")] alias insertNth_of_length_lt := insertIdx_of_length_lt
-@[deprecated (since := "2024-10-21")] alias insertNth_length_self := insertIdx_length_self
-@[deprecated (since := "2024-10-21")] alias length_le_length_insertNth := length_le_length_insertIdx
-@[deprecated (since := "2024-10-21")] alias length_insertNth_le_succ := length_insertIdx_le_succ
-@[deprecated (since := "2024-10-21")] alias getElem_insertNth_of_lt := getElem_insertIdx_of_lt
-@[deprecated (since := "2024-10-21")] alias get_insertNth_of_lt := get_insertIdx_of_lt
-@[deprecated (since := "2024-10-21")] alias getElem_insertNth_self := getElem_insertIdx_self
-@[deprecated (since := "2024-10-21")] alias get_insertNth_self := get_insertIdx_self
-@[deprecated (since := "2024-10-21")] alias getElem_insertNth_add_succ := getElem_insertIdx_add_succ
-@[deprecated (since := "2024-10-21")] alias get_insertNth_add_succ := get_insertIdx_add_succ
-@[deprecated (since := "2024-10-21")] alias insertNth_injective := insertIdx_injective
-
 end InsertIdx
 
 end List
