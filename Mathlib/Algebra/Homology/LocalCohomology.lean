@@ -131,12 +131,12 @@ def idealPowersDiagram (J : Ideal R) : ℕᵒᵖ ⥤ Ideal R where
 
 /-- The full subcategory of all ideals with radical containing `J` -/
 def SelfLERadical (J : Ideal R) : Type u :=
-  FullSubcategory fun J' : Ideal R => J ≤ J'.radical
+  ObjectProperty.FullSubcategory fun J' : Ideal R => J ≤ J'.radical
 
 -- The `Category` instance should be constructed by a deriving handler.
 -- https://github.com/leanprover-community/mathlib4/issues/380
 instance (J : Ideal R) : Category (SelfLERadical J) :=
-  (FullSubcategory.category _)
+  (ObjectProperty.FullSubcategory.category _)
 
 instance SelfLERadical.inhabited (J : Ideal R) : Inhabited (SelfLERadical J) where
   default := ⟨J, Ideal.le_radical⟩
@@ -144,7 +144,7 @@ instance SelfLERadical.inhabited (J : Ideal R) : Inhabited (SelfLERadical J) whe
 /-- The diagram of all ideals with radical containing `J`, represented as a functor.
 This is the "largest" diagram that computes local cohomology with support in `J`. -/
 def selfLERadicalDiagram (J : Ideal R) : SelfLERadical J ⥤ Ideal R :=
-  fullSubcategoryInclusion _
+  ObjectProperty.ι _
 
 end Diagrams
 
@@ -191,7 +191,7 @@ variable {R : Type u} [CommRing R]
 /-- Lifting `idealPowersDiagram J` from a diagram valued in `ideals R` to a diagram
 valued in `SelfLERadical J`. -/
 def idealPowersToSelfLERadical (J : Ideal R) : ℕᵒᵖ ⥤ SelfLERadical J :=
-  FullSubcategory.lift _ (idealPowersDiagram J) fun k => by
+  ObjectProperty.lift _ (idealPowersDiagram J) fun k => by
     change _ ≤ (J ^ unop k).radical
     rcases unop k with - | n
     · simp [Ideal.radical_top, pow_zero, Ideal.one_eq_top, le_top]
@@ -227,7 +227,7 @@ def isoSelfLERadical (J : Ideal.{u} R) [IsNoetherian.{u,u} R R] (i : ℕ) :
 /-- Casting from the full subcategory of ideals with radical containing `J` to the full
 subcategory of ideals with radical containing `K`. -/
 def SelfLERadical.cast (hJK : J.radical = K.radical) : SelfLERadical J ⥤ SelfLERadical K :=
-  FullSubcategory.map fun L hL => by
+  ObjectProperty.ιOfLE fun L hL => by
     rw [← Ideal.radical_le_radical_iff] at hL ⊢
     exact hJK.symm.trans_le hL
 

@@ -104,6 +104,16 @@ lemma re_complexMGF_ofReal' : (fun x : ℝ ↦ (complexMGF X μ x).re) = mgf X �
   ext x
   exact re_complexMGF_ofReal x
 
+lemma complexMGF_id_mul_I {μ : Measure ℝ} (t : ℝ) :
+    complexMGF id μ (t * I) = charFun μ t := by
+  simp only [complexMGF, id_eq, charFun, RCLike.inner_apply, conj_trivial, ofReal_mul]
+  congr with x
+  ring_nf
+
+lemma complexMGF_mul_I (hX : AEMeasurable X μ) (t : ℝ) :
+    complexMGF X μ (t * I) = charFun (μ.map X) t := by
+  rw [← complexMGF_id_map hX, complexMGF_id_mul_I]
+
 section Analytic
 
 /-- For `z : ℂ` with `z.re ∈ interior (integrableExpSet X μ)`, the derivative of the function
