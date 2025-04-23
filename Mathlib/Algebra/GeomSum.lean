@@ -483,7 +483,7 @@ theorem geom_sum_pos_and_lt_one [Ring R] [PartialOrder R] [IsStrictOrderedRing R
     ⟨mul_lt_one_of_nonneg_of_lt_one_left (neg_nonneg.2 hx.le) (neg_lt_iff_pos_add'.2 hx') ihn.2.le,
       mul_neg_of_neg_of_pos hx ihn.1⟩
 
-theorem geom_sum_alternating_of_le_neg_one [Ring R] [PartialOrder R] [IsStrictOrderedRing R]
+theorem geom_sum_alternating_of_le_neg_one [Ring R] [PartialOrder R] [IsOrderedRing R]
     (hx : x + 1 ≤ 0) (n : ℕ) :
     if Even n then (∑ i ∈ range n, x ^ i) ≤ 0 else 1 ≤ ∑ i ∈ range n, x ^ i := by
   have hx0 : x ≤ 0 := (le_add_of_nonneg_right zero_le_one).trans hx
