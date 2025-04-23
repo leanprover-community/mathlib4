@@ -1008,7 +1008,7 @@ instance [SFinite ρ] : SFinite ρ.snd := by
   infer_instance
 
 instance snd.instIsFiniteMeasure [IsFiniteMeasure ρ] : IsFiniteMeasure ρ.snd := by
-  rw [snd]''
+  rw [snd]
   infer_instance
 
 instance snd.instIsProbabilityMeasure [IsProbabilityMeasure ρ] : IsProbabilityMeasure ρ.snd where
