@@ -12,7 +12,7 @@ import Mathlib.Topology.Algebra.RestrictedProduct
 We define the ring of finite adèles of a Dedekind domain `R`.
 
 ## Main definitions
-- `DedekindDomain.FiniteAdeleRing` : The finite adèle ring of `R`, defined as the
+- `IsDedekindDomain.FiniteAdeleRing` : The finite adèle ring of `R`, defined as the
   restricted product `Πʳ_v K_v`. We give this ring a `K`-algebra structure.
 
 ## Implementation notes
