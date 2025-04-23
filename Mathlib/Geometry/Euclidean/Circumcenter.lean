@@ -387,7 +387,7 @@ attribute [local instance] AffineSubspace.toAddTorsor
 
 /-- The orthogonal projection of a point `p` onto the hyperplane spanned by the simplex's points. -/
 def orthogonalProjectionSpan {n : ℕ} (s : Simplex ℝ P n) :
-    P →ᵃ[ℝ] affineSpan ℝ (Set.range s.points) :=
+    P →ᴬ[ℝ] affineSpan ℝ (Set.range s.points) :=
   orthogonalProjection (affineSpan ℝ (Set.range s.points))
 
 /-- Adding a vector to a point in the given subspace, then taking the
