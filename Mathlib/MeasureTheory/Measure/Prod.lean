@@ -811,18 +811,18 @@ theorem MeasureTheory.NullMeasurable.comp_fst {f : α → γ} (hf : NullMeasurab
   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_fst
 
 -- TODO: make this theorem usable with `fun_prop`
-theorem AEMeasurable.fst' {f : α → γ} (hf : AEMeasurable f μ) :
-    AEMeasurable (fun z : α × β => f z.1) (μ.prod ν) :=
-  hf.comp_quasiMeasurePreserving quasiMeasurePreserving_fst
+-- theorem AEMeasurable.fst' {f : α → γ} (hf : AEMeasurable f μ) :
+--     AEMeasurable (fun z : α × β => f z.1) (μ.prod ν) :=
+--   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_fst
 
 theorem MeasureTheory.NullMeasurable.comp_snd {f : β → γ} (hf : NullMeasurable f ν) :
     NullMeasurable (fun z : α × β => f z.2) (μ.prod ν) :=
   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_snd
 
 -- TODO: make this theorem usable with `fun_prop`
-theorem AEMeasurable.snd' {f : β → γ} (hf : AEMeasurable f ν) :
-    AEMeasurable (fun z : α × β => f z.2) (μ.prod ν) :=
-  hf.comp_quasiMeasurePreserving quasiMeasurePreserving_snd
+-- theorem AEMeasurable.snd' {f : β → γ} (hf : AEMeasurable f ν) :
+--     AEMeasurable (fun z : α × β => f z.2) (μ.prod ν) :=
+--   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_snd
 
 end
 
@@ -914,7 +914,8 @@ theorem lintegral_lintegral_swap [SFinite μ] ⦃f : α → β → ℝ≥0∞⦄
 
 theorem lintegral_prod_mul {f : α → ℝ≥0∞} {g : β → ℝ≥0∞} (hf : AEMeasurable f μ)
     (hg : AEMeasurable g ν) : ∫⁻ z, f z.1 * g z.2 ∂μ.prod ν = (∫⁻ x, f x ∂μ) * ∫⁻ y, g y ∂ν := by
-  simp [lintegral_prod _ (hf.fst'.mul hg.snd'), lintegral_lintegral_mul hf hg]
+  rw [lintegral_prod _ (by fun_prop)]
+  simp [lintegral_lintegral_mul hf hg]
 
 /-! ### Marginals of a measure defined on a product -/
 
