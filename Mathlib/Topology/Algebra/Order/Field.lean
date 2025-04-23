@@ -212,7 +212,7 @@ theorem Filter.Tendsto.inv_tendsto_nhdsGT_zero (h : Tendsto f l (𝓝[>] 0)) : T
 alias Filter.Tendsto.inv_tendsto_zero := Filter.Tendsto.inv_tendsto_nhdsGT_zero
 
 theorem Filter.Tendsto.inv_tendsto_nhdsLT_zero (h : Tendsto f l (𝓝[<] 0)) : Tendsto f⁻¹ l atBot :=
-  tendsto_inv_.comp h
+  tendsto_inv_nhdsLT_zero.comp h
 
 /-- If `g` tends to zero and there exists a constant `C : 𝕜` such that eventually `|f x| ≤ C`,
   then the product `f * g` tends to zero. -/
