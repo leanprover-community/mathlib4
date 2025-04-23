@@ -1,16 +1,19 @@
 import Mathlib.CategoryTheory.Monad.Comonadicity
+import Mathlib.CategoryTheory.Monad.Monadicity
 import Mathlib.CategoryTheory.Preadditive.LeftExact
 import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
-import Mathlib.RingTheory.Flat.Algebra
+import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
+import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
 import Mathlib.RingTheory.Flat.Basic
+import Mathlib.RingTheory.RingHom.Flat
 
 noncomputable section
 
 open CategoryTheory Comonad ModuleCat Limits MonoidalCategory
 
-variable {A B : Type} [CommRing.{0} A] [CommRing.{0} B] (f : A →+* B) [f.Flat]
+variable {A B : Type} [CommRing.{0} A] [CommRing.{0} B] (f : A →+* B) (hf : f.Flat)
   -- [(extendScalars f).ReflectsIsomorphisms] -- `f` is faithfully flat.
 
 example : ModuleCat A ⥤ ModuleCat B := ModuleCat.extendScalars f
@@ -21,25 +24,70 @@ example : extendScalars f ⋙ restrictScalars f ≅
     tensorLeft ((restrictScalars f).obj (ModuleCat.of B B)) :=
   Iso.refl _
 
-instance : Module.Flat A ((restrictScalars f).obj (ModuleCat.of B B)) :=
-  -- algebraize f
-  let _ : Algebra A B := f.toAlgebra
-  (inferInstance : f.Flat).1.1
+instance : Module.Flat A ((restrictScalars f).obj (ModuleCat.of B B)) := hf
 
-instance : PreservesFiniteLimits <| tensorLeft ((restrictScalars f).obj (ModuleCat.of B B)) :=
-  sorry -- This is in a PR
+instance (M : ModuleCat.{0} A) [Module.Flat A M] :
+    PreservesFiniteLimits <| tensorLeft M := by
+  have h1 := (Functor.preservesFiniteLimits_tfae (tensorLeft M)).out 0 3
+  have h2 := ((Functor.preservesFiniteColimits_tfae (tensorLeft M)).out 0 3).mpr
+    (inferInstanceAs <| PreservesFiniteColimits (tensorLeft M))
+  rw [← h1]
+  intro S hS
+  refine ⟨(h2 S hS).1, ?_⟩
+  have := hS.mono_f
+  rw [ModuleCat.mono_iff_injective] at this ⊢
+  apply Module.Flat.lTensor_preserves_injective_linearMap
+  exact this
 
-instance : PreservesFiniteLimits (extendScalars f) := by
-  have : PreservesFiniteLimits (extendScalars f ⋙ restrictScalars f) :=
-    inferInstanceAs
-      (PreservesFiniteLimits <| tensorLeft ((restrictScalars f).obj (ModuleCat.of B B)))
-  apply preservesFiniteLimitsOfReflectsOfPreserves (extendScalars f) (restrictScalars f)
+include hf in
+lemma ModuleCat.preservesFiniteLimits_tensorLeft_of_flat :
+    PreservesFiniteLimits <| tensorLeft ((restrictScalars f).obj (ModuleCat.of B B)) := by
+  algebraize [f]
+  change PreservesFiniteLimits <| tensorLeft (ModuleCat.of A B)
+  infer_instance
 
-def extendScalarsComonadic : ComonadicLeftAdjoint (extendScalars f) := by
+instance : (restrictScalars f).ReflectsIsomorphisms :=
+  have : (restrictScalars f ⋙ CategoryTheory.forget (ModuleCat A)).ReflectsIsomorphisms :=
+    inferInstanceAs (CategoryTheory.forget _).ReflectsIsomorphisms
+  reflectsIsomorphisms_of_comp _ (CategoryTheory.forget _)
+
+include hf in
+lemma ModuleCat.preservesFiniteLimits_extendScalars_of_flat :
+    PreservesFiniteLimits (extendScalars.{_, _, 0} f) := by
+  have : PreservesFiniteLimits (extendScalars.{0} f ⋙ restrictScalars f) := by
+    apply ModuleCat.preservesFiniteLimits_tensorLeft_of_flat
+    exact hf
+  exact preservesFiniteLimits_of_reflects_of_preserves (extendScalars f) (restrictScalars f)
+
+@[simp]
+lemma Module.FaithfullyFlat.lTensor_bijective_iff_bijective {R M : Type*}
+    [CommRing R] [AddCommGroup M] [Module R M] {N N' : Type*}
+    [AddCommGroup N] [AddCommGroup N'] [Module R N] [Module R N']
+    (f : N →ₗ[R] N')
+    [Module.FaithfullyFlat R M] :
+    Function.Bijective (f.lTensor M) ↔ Function.Bijective f := by
+  simp [Function.Bijective]
+
+include hf in
+lemma ModuleCat.reflectsIsomorphisms_extendScalars_of_flat
+    (hs : Function.Surjective f.specComap) :
+    (extendScalars.{_, _, 0} f).ReflectsIsomorphisms := by
+  constructor
+  intro M N g h
+  rw [ConcreteCategory.isIso_iff_bijective] at h ⊢
+  algebraize [f]
+  have : Module.Flat A B := hf
+  have : Module.FaithfullyFlat A B :=
+    Module.FaithfullyFlat.of_specComap_surjective hs
+  replace h : Function.Bijective (LinearMap.lTensor B g.hom) := h
+  rwa [Module.FaithfullyFlat.lTensor_bijective_iff_bijective] at h
+
+def extendScalarsComonadic (hs : Function.Surjective f.specComap) :
+    ComonadicLeftAdjoint (extendScalars f) := by
   apply (config := {allowSynthFailures := true})
-    monadicOfHasPreservesGSplitCoequalizersOfReflectsIsomorphisms (G := restrictScalars f)
+    Comonad.comonadicOfHasPreservesFSplitEqualizersOfReflectsIsomorphisms (G := restrictScalars f)
   · exact (extendRestrictScalarsAdj f)
-  · sorry -- This follows from `f` being faithfully flat.
+  · exact reflectsIsomorphisms_extendScalars_of_flat f hf hs
   · constructor
     intros
     infer_instance
@@ -47,11 +95,14 @@ def extendScalarsComonadic : ComonadicLeftAdjoint (extendScalars f) := by
         PreservesLimit (parallelPair g (0 : M ⟶ N)) (extendScalars f) by
       constructor
       intros
-      apply CategoryTheory.Functor.preservesEqualizerOfPreservesKernels
+      apply CategoryTheory.Functor.preservesEqualizer_of_preservesKernels
+    have : PreservesFiniteLimits (extendScalars f) :=
+      preservesFiniteLimits_extendScalars_of_flat f hf
     intro M N g
     infer_instance
 
 example : Comonad (ModuleCat B) := (extendRestrictScalarsAdj f).toComonad
 
-example (Q : Coalgebra (extendRestrictScalarsAdj f).toComonad) : ModuleCat A :=
-  (comparison (extendScalarsComonadic f).adj).asEquivalence.inverse.obj Q
+example (hs : Function.Surjective f.specComap)
+    (Q : Coalgebra (extendRestrictScalarsAdj f).toComonad) : ModuleCat A :=
+  (comparison (extendScalarsComonadic f hf hs).adj).asEquivalence.inverse.obj Q
