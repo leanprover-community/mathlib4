@@ -56,9 +56,9 @@ end ModuleCat
 
 variable {M} in
 lemma IsSMulRegular.smulShortComplex_shortExact {r : R} (reg : IsSMulRegular M r) :
-    (smulShortComplex M r).ShortExact where
-  exact := smulShortComplex_exact M r
-  mono_f := by simpa [smulShortComplex, ModuleCat.mono_iff_injective] using reg
+    (ModuleCat.smulShortComplex M r).ShortExact where
+  exact := ModuleCat.smulShortComplex_exact M r
+  mono_f := by simpa [ModuleCat.smulShortComplex, ModuleCat.mono_iff_injective] using reg
 
 section FromPR
 
