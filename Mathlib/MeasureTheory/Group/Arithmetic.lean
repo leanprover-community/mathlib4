@@ -468,7 +468,7 @@ instance (priority := 100) MeasurableDiv.toMeasurableInv [MeasurableSpace α] [G
     [MeasurableDiv α] : MeasurableInv α where
   measurable_inv := by simpa using measurable_const_div (1 : α)
 
-/-- We say that the action of `M` on `α` has `MeasurableCpnstVAdd` if for each `c` the map
+/-- We say that the action of `M` on `α` has `MeasurableConstVAdd` if for each `c` the map
 `x ↦ c +ᵥ x` is a measurable function. -/
 class MeasurableConstVAdd (M α : Type*) [VAdd M α] [MeasurableSpace α] : Prop where
   measurable_const_vadd : ∀ c : M, Measurable (c +ᵥ · : α → α)
@@ -667,11 +667,10 @@ theorem measurableSMul₂_iterateMulAct : MeasurableSMul₂ (IterateMulAct f) α
 end IterateMulAct
 
 section MulAction
+variable {G G₀ M β α : Type*} [MeasurableSpace β] [MeasurableSpace α] {f : α → β} {μ : Measure α}
 
-variable {M β α : Type*} [MeasurableSpace M] [MeasurableSpace β] [Monoid M] [MulAction M β]
-  [MeasurableSMul M β] [MeasurableSpace α] {f : α → β} {μ : Measure α}
-
-variable {G : Type*} [Group G] [MeasurableSpace G] [MulAction G β] [MeasurableSMul G β]
+section Group
+variable {G : Type*} [Group G] [MulAction G β] [MeasurableConstSMul G β]
 
 @[to_additive]
 theorem measurable_const_smul_iff (c : G) : (Measurable fun x => c • f x) ↔ Measurable f :=
@@ -682,14 +681,17 @@ theorem aemeasurable_const_smul_iff (c : G) :
     AEMeasurable (fun x => c • f x) μ ↔ AEMeasurable f μ :=
   ⟨fun h => by simpa [inv_smul_smul, Pi.smul_def] using h.const_smul c⁻¹, fun h => h.const_smul c⟩
 
-@[to_additive]
-instance Units.instMeasurableSpace : MeasurableSpace Mˣ := MeasurableSpace.comap ((↑) : Mˣ → M) ‹_›
+end Group
+
+section Monoid
+variable [Monoid M] [MulAction M β]
+
+section MeasurableConstSMul
+variable [MeasurableConstSMul M β]
 
 @[to_additive]
-instance Units.measurableSMul : MeasurableSMul Mˣ β where
+instance Units.instMeasurableConstSMul : MeasurableConstSMul Mˣ β where
   measurable_const_smul c := measurable_const_smul (c : M)
-  measurable_smul_const x :=
-    (measurable_smul_const x : Measurable fun c : M => c • x).comp MeasurableSpace.le_map_comap
 
 @[to_additive]
 nonrec theorem IsUnit.measurable_const_smul_iff {c : M} (hc : IsUnit c) :
@@ -703,8 +705,24 @@ nonrec theorem IsUnit.aemeasurable_const_smul_iff {c : M} (hc : IsUnit c) :
   let ⟨u, hu⟩ := hc
   hu ▸ aemeasurable_const_smul_iff u
 
-variable {G₀ : Type*} [GroupWithZero G₀] [MeasurableSpace G₀] [MulAction G₀ β]
-  [MeasurableSMul G₀ β]
+end MeasurableConstSMul
+
+section MeasurableSMul
+variable [MeasurableSpace M] [MeasurableSMul M β]
+
+@[to_additive]
+instance Units.instMeasurableSpace : MeasurableSpace Mˣ := .comap Units.val ‹_›
+
+@[to_additive]
+instance Units.measurableSMul : MeasurableSMul Mˣ β where
+  measurable_smul_const x :=
+    (measurable_smul_const x : Measurable fun c : M => c • x).comp MeasurableSpace.le_map_comap
+
+end MeasurableSMul
+end Monoid
+
+section GroupWithZero
+variable [GroupWithZero G₀] [MeasurableSpace G₀] [MulAction G₀ β] [MeasurableSMul G₀ β]
 
 theorem measurable_const_smul_iff₀ {c : G₀} (hc : c ≠ 0) :
     (Measurable fun x => c • f x) ↔ Measurable f :=
@@ -714,6 +732,7 @@ theorem aemeasurable_const_smul_iff₀ {c : G₀} (hc : c ≠ 0) :
     AEMeasurable (fun x => c • f x) μ ↔ AEMeasurable f μ :=
   (IsUnit.mk0 c hc).aemeasurable_const_smul_iff
 
+end GroupWithZero
 end MulAction
 
 /-!
