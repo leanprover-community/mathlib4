@@ -282,6 +282,18 @@ lemma Odd.strictMono_pow (hn : Odd n) : StrictMono fun a : R => a ^ n := by
   refine lt_of_add_lt_add_right (a := a + b) ?_
   rwa [add_rotate', ← hbd, add_zero, add_left_comm, ← add_assoc, ← hac, zero_add]
 
+lemma Odd.pow_injective {n : ℕ} (hn : Odd n) : Injective (· ^ n : R → R) :=
+  hn.strictMono_pow.injective
+
+lemma Odd.pow_lt_pow {n : ℕ} (hn : Odd n) {a b : R} : a^n < b^n ↔ a < b :=
+  hn.strictMono_pow.lt_iff_lt
+
+lemma Odd.pow_le_pow {n : ℕ} (hn : Odd n) {a b : R} : a^n ≤ b^n ↔ a ≤ b :=
+  hn.strictMono_pow.le_iff_le
+
+lemma Odd.pow_eq_pow {n : ℕ} (hn : Odd n) {a b : R} : a^n = b^n ↔ a = b :=
+  hn.pow_injective.eq_iff
+
 lemma sq_pos_iff {a : R} : 0 < a ^ 2 ↔ a ≠ 0 := even_two.pow_pos_iff two_ne_zero
 
 alias ⟨_, sq_pos_of_ne_zero⟩ := sq_pos_iff
@@ -289,9 +301,5 @@ alias pow_two_pos_of_ne_zero := sq_pos_of_ne_zero
 
 lemma pow_four_le_pow_two_of_pow_two_le (h : a ^ 2 ≤ b) : a ^ 4 ≤ b ^ 2 :=
   (pow_mul a 2 2).symm ▸ pow_le_pow_left₀ (sq_nonneg a) h 2
-
-@[simp]
-lemma pow_eq_iff_eq {n : ℕ} (hn : Odd n) {a b : R} : a^n = b^n ↔ a = b :=
-  ⟨fun h ↦ (Odd.strictMono_pow hn).injective h, fun h ↦ congrFun (congrArg HPow.hPow h) n⟩
 
 end LinearOrderedSemiring
