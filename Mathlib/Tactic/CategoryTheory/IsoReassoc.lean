@@ -6,19 +6,20 @@ Authors: Robin Carlier
 import Mathlib.CategoryTheory.Iso
 
 /-!
-# The `iso_reassoc` attribute
+# Extension of `reassoc` to isomorphisms.
 
 We extend `reassoc` for equality of isomorphisms.
-Adding `@[iso_reassoc]` to a lemma named `F` of shape `∀ .., f = g`,
+Adding `@[reassoc]` to a lemma named `F` of shape `∀ .., f = g`,
 where `f g : X ≅ Y` in some category will create a new lemma named `F_assoc` of shape
 `∀ .. {Z : C} (h : Y ≅ Z), f ≪≫ h = g ≪≫ h`
 but with the conclusions simplified using basic propertions in isomorphisms in a category
-(`Iso.trans_refl`, `Iso.refl_trans`, `Iso.trans_assoc`, `Iso.trans_symm`).
+(`Iso.trans_refl`, `Iso.refl_trans`, `Iso.trans_assoc`, `Iso.trans_symm`,
+`Iso.symm_self_id` and `Iso.self_symm_id`).
 
 This is useful for generating lemmas which the simplifier can use even on expressions
 that are already right associated.
 
-We provide an `iso_reassoc_of%` elaborator.
+We also extend the `reassoc_of%` term elaborator.
 -/
 
 open Lean Meta Elab Tactic
@@ -29,7 +30,7 @@ namespace CategoryTheory
 variable {C : Type*} [Category C]
 
 /-- A variant of `eq_whisker` with a more convenient argument order for use in tactics. -/
-theorem iso_eq_whisker {X Y : C} {f g : X ≅ Y} (w : f = g) {Z : C} (h : Y ≅ Z) :
+theorem Iso.eq_whisker {X Y : C} {f g : X ≅ Y} (w : f = g) {Z : C} (h : Y ≅ Z) :
     f ≪≫ h = g ≪≫ h := by rw [w]
 
 /-- Simplify an expression using only the axioms of a groupoid. -/
@@ -45,35 +46,14 @@ produce the equation `∀ {Z} (h : Y ⟶ Z), f ≫ h = g ≫ h`,
 but with compositions fully right associated and identities removed.
 -/
 def isoReassocExpr (e : Expr) : MetaM Expr := do
-  mapForallTelescope (fun e => do simpType categoryIsoSimp (← mkAppM ``iso_eq_whisker #[e])) e
+  mapForallTelescope (fun e => do simpType categoryIsoSimp (← mkAppM ``Iso.eq_whisker #[e])) e
 
 /--
-Adding `@[iso_reassoc]` to a lemma named `F` of shape `∀ .., f = g`, where `f g : X ≅ Y` are
-isomorphisms in some category, will create a new lemma named `F_assoc` of shape
-`∀ .. {Z : C} (h : Y ≅ Z), f ≪≫ h = g ≪≫ h`
-but with the conclusions simplified using the axioms for a category
-(`Category.comp_id`, `Category.id_comp`, and `Category.assoc`).
-So, for example, if the conclusion of `F` is `a ≪≫ b = g` then
-the conclusion of `F_assoc` will be `a ≪≫ (b ≪≫ h) = g ≪≫ h` (note that `≪≫` reassociates
-to the right so the brackets will not appear in the statement).
-
-This attribute is useful for generating lemmas which the simplifier can use even on expressions
-that are already right associated.
-
-Note that if you want both the lemma and the reassociated lemma to be
-`simp` lemmas, you should tag the lemma `@[reassoc (attr := simp)]`.
-The variant `@[simp, reassoc]` on a lemma `F` will tag `F` with `@[simp]`,
-but not `F_assoc` (this is sometimes useful).
+Update the `reassoc` attribute to use `isoReassocExpr` on equality of isomorphisms, and
+`reassocExpr` on equality of morphisms.
 -/
-syntax (name := iso_reassoc)
-  "iso_reassoc" (" (" &"attr" " := " Parser.Term.attrInstance,* ")")? : attr
-
-initialize registerBuiltinAttribute {
-  name := `iso_reassoc
-  descr := ""
-  applicationTime := .afterCompilation
-  add := fun src ref kind => match ref with
-  | `(attr| iso_reassoc $[(attr := $stx?,*)]?) => MetaM.run' do
+initialize reassocImplRef.set fun src ref kind => match ref with
+  | `(attr| reassoc $[(attr := $stx?,*)]?) => MetaM.run' do
     if (kind != AttributeKind.global) then
       throwError "`iso_reassoc` can only be used as a global attribute"
     addRelatedDecl src "_assoc" ref stx? fun type value levels => do
@@ -85,26 +65,19 @@ initialize registerBuiltinAttribute {
           | some _ => isoReassocExpr e
           | _ => reassocExpr e
         | _ =>
-          throwError "`iso_reassoc` can only be used on lemmas about equality of (iso)morphisms.")
+          throwError "`iso_reassoc` can only be used on terms about equality of (iso)morphisms.")
       pure (t, levels)
-  | _ => throwUnsupportedSyntax }
+  | _ => throwUnsupportedSyntax
 
 open Term in
-/--
-`iso_reassoc_of% t`, where `t` is
-an equation `f = g` between isomorphisms `X ≅ Y` in a category (possibly after a `∀` binder),
-produces the equation `∀ {Z} (h : Y ≅ Z), f ≪≫ h = g ≪≫ h`,
-but with compositions fully right associated, identities removed, and compositions with an
-inverse cancelled.
--/
-elab "iso_reassoc_of% " t:term : term => do
+initialize reassocOfImplRef.set fun t => do
   let e ← elabTerm t none
-  forallTelescope e (fun _ e' => do
+  forallTelescope (← inferType e) (fun _ e' => do
     match e'.eq? with
     | some (t, _, _) =>
       match t.app4? ``Iso with
       | some _ => isoReassocExpr e
       | _ =>  reassocExpr e
-    | _ => throwError "`iso_reassoc` can only be used on lemmas whose conclusions are equalities.")
+    | _ => throwError "`reassoc` can only be used on terms about equality of (iso)morphisms.")
 
 end CategoryTheory
