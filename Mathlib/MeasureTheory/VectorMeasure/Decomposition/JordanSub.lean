@@ -155,13 +155,14 @@ lemma ofSignedMeasure_setWhereLe (hs : SignedMeasure.SetWhereLe μ ν s) : SetWh
         ← toSignedMeasure_restrict_eq_restrict_toSigned hs.measurable.compl]
     simp [hs.ge_on_compl]
 
-lemma toSignedMeasure_setWhereLe (hs : SetWhereLe μ ν s) : SignedMeasure.SetWhereLe μ ν s := by
-  constructor
-  · exact hs.measurable
-  · rw [toSignedMeasure_restrict_eq_restrict_toSigned hs.measurable,
+lemma toSignedMeasure_setWhereLe (hs : SetWhereLe μ ν s) : SignedMeasure.SetWhereLe μ ν s where
+  measurable := hs.measurable
+  le_on := by
+    rw [toSignedMeasure_restrict_eq_restrict_toSigned hs.measurable,
         toSignedMeasure_restrict_eq_restrict_toSigned hs.measurable]
     exact toSignedMeasure_le_iff.mpr hs.le_on
-  · rw [toSignedMeasure_restrict_eq_restrict_toSigned hs.measurable.compl,
+  ge_on_compl := by
+    rw [toSignedMeasure_restrict_eq_restrict_toSigned hs.measurable.compl,
         toSignedMeasure_restrict_eq_restrict_toSigned hs.measurable.compl]
     exact toSignedMeasure_le_iff.mpr hs.ge_on_compl
 
