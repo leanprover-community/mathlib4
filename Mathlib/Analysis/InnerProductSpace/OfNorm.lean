@@ -30,7 +30,7 @@ and use the parallelogram identity
 
 $$‖x + y‖^2 + ‖x - y‖^2 = 2 (‖x‖^2 + ‖y‖^2)$$
 
-to prove it is an inner product, i.e., that it is conjugate-symmetric (`inner_.conj_inner_symm`) and
+to prove it is an inner product, i.e., that it is conjugate-symmetric (`inner_.conj_symm`) and
 linear in the first argument. `add_left` is proved by judicious application of the parallelogram
 identity followed by tedious arithmetic. `smul_left` is proved step by step, first noting that
 $\langle λ x, y \rangle = λ \langle x, y \rangle$ for $λ ∈ ℕ$, $λ = -1$, hence $λ ∈ ℤ$ and $λ ∈ ℚ$
@@ -112,7 +112,7 @@ theorem inner_.norm_sq (x : E) : ‖x‖ ^ 2 = re (inner_ 𝕜 x x) := by
   rw [h₁, h₂]
   ring
 
-theorem inner_.conj_inner_symm (x y : E) : conj (inner_ 𝕜 y x) = inner_ 𝕜 x y := by
+theorem inner_.conj_symm (x y : E) : conj (inner_ 𝕜 y x) = inner_ 𝕜 x y := by
   simp only [inner_, map_sub, map_add, map_mul, map_inv₀, map_ofNat, conj_ofReal, conj_I]
   rw [add_comm y x, norm_sub_rev]
   by_cases hI : (I : 𝕜) = 0
@@ -127,8 +127,6 @@ theorem inner_.conj_inner_symm (x y : E) : conj (inner_ 𝕜 y x) = inner_ 𝕜 
     linear_combination (norm := module) -hI' • y
   rw [h₁, h₂]
   ring
-
-@[deprecated (since := "2025-04-22")] alias inner_.conj_symm := inner_.conj_inner_symm
 
 variable [InnerProductSpaceable E]
 
@@ -232,7 +230,7 @@ noncomputable def InnerProductSpace.ofNorm
   haveI : InnerProductSpaceable E := ⟨h⟩
   { inner := inner_ 𝕜
     norm_sq_eq_re_inner := inner_.norm_sq
-    conj_inner_symm := inner_.conj_inner_symm
+    conj_inner_symm := inner_.conj_symm
     add_left := InnerProductSpaceable.add_left
     smul_left := fun _ _ _ => innerProp _ _ _ }
 
@@ -246,7 +244,7 @@ parallelogram identity can be given a compatible inner product. Do
 theorem nonempty_innerProductSpace : Nonempty (InnerProductSpace 𝕜 E) :=
   ⟨{  inner := inner_ 𝕜
       norm_sq_eq_re_inner := inner_.norm_sq
-      conj_inner_symm := inner_.conj_inner_symm
+      conj_inner_symm := inner_.conj_symm
       add_left := add_left
       smul_left := fun _ _ _ => innerProp _ _ _ }⟩
 

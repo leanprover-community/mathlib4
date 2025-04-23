@@ -299,7 +299,7 @@ theorem re_inner_self_nonpos {x : E} : re ⟪x, x⟫ ≤ 0 ↔ x = 0 := by
 
 @[simp]
 lemma re_inner_self_pos {x : E} : 0 < re ⟪x, x⟫ ↔ x ≠ 0 := by
-  simpa [-inner_self_nonpos] using inner_self_nonpos (𝕜 := 𝕜) (x := x).not
+  simpa [-re_inner_self_nonpos] using re_inner_self_nonpos (𝕜 := 𝕜) (x := x).not
 
 @[deprecated (since := "2025-04-22")] alias inner_self_nonpos := re_inner_self_nonpos
 @[deprecated (since := "2025-04-22")] alias inner_self_pos := re_inner_self_pos
