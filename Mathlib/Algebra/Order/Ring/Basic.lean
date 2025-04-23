@@ -290,6 +290,7 @@ alias pow_two_pos_of_ne_zero := sq_pos_of_ne_zero
 lemma pow_four_le_pow_two_of_pow_two_le (h : a ^ 2 ≤ b) : a ^ 4 ≤ b ^ 2 :=
   (pow_mul a 2 2).symm ▸ pow_le_pow_left₀ (sq_nonneg a) h 2
 
+@[simp]
 lemma pow_eq_iff_eq {n : ℕ} (hn : Odd n) {a b : R} : a^n = b^n ↔ a = b :=
   ⟨fun h ↦ (Odd.strictMono_pow hn).injective h, fun h ↦ congrFun (congrArg HPow.hPow h) n⟩
 
