@@ -20,7 +20,7 @@ We are only interested on Dedekind domains of Krull dimension 1 (i.e., not field
 field, its finite adèle ring is just defined to be the trivial ring.
 
 ## References
-* [J.W.S. Cassels, A. Frölich, *Algebraic Number Theory*][cassels1967algebraic]
+* [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
 
 ## Tags
 finite adèle ring, dedekind domain
