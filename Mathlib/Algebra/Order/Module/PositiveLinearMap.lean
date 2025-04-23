@@ -29,17 +29,12 @@ add_decl_doc PositiveLinearMap.toOrderHom
 /-- Notation for a `PositiveLinearMap`. -/
 notation:25 E " →ₚ[" R:25 "] " F:0 => PositiveLinearMap R E F
 
-/-- A positive linear map is a linear map that is also an order homomorphism. -/
-class PositiveLinearMapClass (F : Type*) (R : outParam Type*) (E₁ E₂ : Type*) [Semiring R]
-    [AddCommMonoid E₁] [PartialOrder E₁] [AddCommMonoid E₂] [PartialOrder E₂]
-    [Module R E₁] [Module R E₂]
-    [FunLike F E₁ E₂] extends LinearMapClass F R E₁ E₂, OrderHomClass F E₁ E₂
-
 namespace PositiveLinearMapClass
 
 variable {F R E₁ E₂ : Type*} [Semiring R]
   [AddCommMonoid E₁] [PartialOrder E₁] [AddCommMonoid E₂] [PartialOrder E₂]
-  [Module R E₁] [Module R E₂] [FunLike F E₁ E₂] [PositiveLinearMapClass F R E₁ E₂]
+  [Module R E₁] [Module R E₂] [FunLike F E₁ E₂] [LinearMapClass F R E₁ E₂]
+  [OrderHomClass F E₁ E₂]
 
 /-- Reinterpret an element of a type of positive linear maps as a positive linear map. -/
 def toPositiveLinearMap (f : F) : E₁ →ₚ[R] E₂ :=
@@ -49,10 +44,10 @@ def toPositiveLinearMap (f : F) : E₁ →ₚ[R] E₂ :=
 instance instCoeToLinearMap : CoeHead F (E₁ →ₚ[R] E₂) where
   coe f := toPositiveLinearMap f
 
-lemma mk₀ {F' E₁' E₂' : Type*} [FunLike F' E₁' E₂'] [AddCommGroup E₁'] [PartialOrder E₁']
-    [AddCommGroup E₂'] [PartialOrder E₂'] [Module R E₁'] [Module R E₂']
+lemma _root_.OrderHomClass.ofLinear {F' E₁' E₂' : Type*} [FunLike F' E₁' E₂'] [AddCommGroup E₁']
+    [PartialOrder E₁'] [AddCommGroup E₂'] [PartialOrder E₂'] [Module R E₁'] [Module R E₂']
     [LinearMapClass F' R E₁' E₂'] [IsOrderedAddMonoid E₁'] [IsOrderedAddMonoid E₂']
-    (h : ∀ f : F', ∀ x, 0 ≤ x → 0 ≤ f x) : PositiveLinearMapClass F' R E₁' E₂' where
+    (h : ∀ f : F', ∀ x, 0 ≤ x → 0 ≤ f x) : OrderHomClass F' E₁' E₂' where
   map_rel := by
     intro f a b hab
     rw [← sub_nonneg] at hab ⊢
@@ -78,12 +73,12 @@ instance : FunLike (E₁ →ₚ[R] E₂) E₁ E₂ where
     apply DFunLike.coe_injective'
     exact h
 
-instance : PositiveLinearMapClass (E₁ →ₚ[R] E₂) R E₁ E₂ where
+instance : LinearMapClass (E₁ →ₚ[R] E₂) R E₁ E₂ where
   map_add f := map_add f.toLinearMap
   map_smulₛₗ f := f.toLinearMap.map_smul'
+
+instance : OrderHomClass (E₁ →ₚ[R] E₂) E₁ E₂ where
   map_rel f := fun {_ _} hab => f.monotone' hab
-
-
 
 @[simp]
 lemma map_smul_of_tower {S : Type*} [SMul S E₁] [SMul S E₂]

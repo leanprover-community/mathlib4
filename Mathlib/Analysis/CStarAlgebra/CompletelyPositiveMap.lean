@@ -31,12 +31,11 @@ structure CompletelyPositiveMap (A₁ : Type*) (A₂ : Type*) [NonUnitalCStarAlg
       0 ≤ M.mapₗ toLinearMap
 
 class CompletelyPositiveMapClass (F : Type*) (A₁ : Type*) (A₂ : Type*)
-    [FunLike F A₁ A₂] [NonUnitalCStarAlgebra A₁] [NonUnitalCStarAlgebra A₂] [PartialOrder A₁]
-    [PartialOrder A₂] [StarOrderedRing A₁] [StarOrderedRing A₂]
-    extends LinearMapClass F ℂ A₁ A₂ where
+    [NonUnitalCStarAlgebra A₁] [NonUnitalCStarAlgebra A₂] [PartialOrder A₁]
+    [PartialOrder A₂] [StarOrderedRing A₁] [StarOrderedRing A₂] [FunLike F A₁ A₂]
+    extends OrderHomClass F A₁ A₂ where
   map_cstarMatrix_nonneg' (k : ℕ) (φ : F) (M : CStarMatrix (Fin k) (Fin k) A₁) (hM : 0 ≤ M) :
-    0 ≤ M.mapₗ (φ : A₁ →ₗ[ℂ] A₂)
-
+    0 ≤ M.map φ
 
 /-- Notation for a `CompletelyPositiveMap`. -/
 notation:25 A₁ " →CP " A₂:0 => CompletelyPositiveMap A₁ A₂
@@ -46,29 +45,53 @@ namespace CompletelyPositiveMapClass
 variable {F A₁ A₂ : Type*} [NonUnitalCStarAlgebra A₁]
   [NonUnitalCStarAlgebra A₂] [PartialOrder A₁] [PartialOrder A₂] [StarOrderedRing A₁]
   [StarOrderedRing A₂]
-  [FunLike F A₁ A₂] [CompletelyPositiveMapClass F A₁ A₂]
+  [FunLike F A₁ A₂] [LinearMapClass F ℂ A₁ A₂]
 
 /-- Reinterpret an element of a type of completely positive maps as a completely positive linear
   map. -/
-def toCompletelyPositiveLinearMap (f : F) : A₁ →CP A₂ :=
+def toCompletelyPositiveLinearMap [CompletelyPositiveMapClass F A₁ A₂] (f : F) : A₁ →CP A₂ :=
   { (f : A₁ →ₗ[ℂ] A₂) with
     map_cstarMatrix_nonneg' k M hM := CompletelyPositiveMapClass.map_cstarMatrix_nonneg' k f M hM }
 
 /-- Reinterpret an element of a type of completely positive maps as a completely positive linear
   map. -/
-instance instCoeToCompletelyPositiveMap : CoeHead F (A₁ →CP A₂) where
+instance instCoeToCompletelyPositiveMap [CompletelyPositiveMapClass F A₁ A₂] :
+    CoeHead F (A₁ →CP A₂) where
   coe f := toCompletelyPositiveLinearMap f
 
 open CStarMatrix in
-/-- A completely positive map is also positive. -/
-instance instPositiveLinearMapClass : PositiveLinearMapClass F ℂ A₁ A₂ := .mk₀ <| by
+/-- A completely positive map is also an order homomorphism. -/
+lemma _root_.OrderHomClass.of_map_cstarMatrix_nonneg
+    (h : ∀ (k : ℕ) (f : F) (M : CStarMatrix (Fin k) (Fin k) A₁), 0 ≤ M → 0 ≤ M.map f) :
+    OrderHomClass F A₁ A₂ := .ofLinear <| by
   intro f a ha
   let Ma := toOneByOne ℂ A₁ a
   have h₁ : 0 ≤ Ma := map_nonneg (toOneByOne ℂ A₁) ha
-  have h₂ : 0 ≤ Ma.map f := CompletelyPositiveMapClass.map_cstarMatrix_nonneg' 1 f Ma h₁
+  have h₂ : 0 ≤ Ma.map f := h 1 f Ma h₁
   have h₃ : f a = (toOneByOne ℂ A₂).symm (toOneByOne ℂ A₂ (f a)) := rfl
   rw [h₃]
   exact map_nonneg (toOneByOne ℂ A₂).symm h₂
+
+open CStarMatrix in
+lemma of_map_cstarMatrix_nonneg
+    (h : ∀ (k : ℕ) (f : F) (M : CStarMatrix (Fin k) (Fin k) A₁), 0 ≤ M → 0 ≤ M.map f) :
+    CompletelyPositiveMapClass F A₁ A₂ :=
+  { OrderHomClass.of_map_cstarMatrix_nonneg h with
+    map_cstarMatrix_nonneg' := h }
+
+open CStarMatrix in
+lemma map_cstarMatrix_nonneg [CompletelyPositiveMapClass F A₁ A₂] {n : Type*} [Fintype n]
+    (φ : F) (M : CStarMatrix n n A₁) (hM : 0 ≤ M) : 0 ≤ M.map φ := by
+  let k := Fintype.card n
+  let e := Fintype.equivFinOfCardEq (rfl : Fintype.card n = k)
+  have hmain : 0 ≤ (reindexₐ ℂ A₁ e M).mapₗ (φ : A₁ →ₗ[ℂ] A₂) := by
+    refine CompletelyPositiveMapClass.map_cstarMatrix_nonneg' k _ _ (map_nonneg _ hM)
+  rw [← mapₗ_reindexₐ] at hmain
+  have hrw :
+      reindexₐ ℂ A₂ e.symm ((reindexₐ ℂ A₂ e) (M.map (φ : A₁ → A₂))) = M.map (φ : A₁ → A₂) := by
+    simp
+  rw [← hrw]
+  exact map_nonneg _ hmain
 
 end CompletelyPositiveMapClass
 
@@ -78,24 +101,12 @@ variable {F A₁ A₂ : Type*} [NonUnitalCStarAlgebra A₁]
   [NonUnitalCStarAlgebra A₂] [PartialOrder A₁] [PartialOrder A₂] [StarOrderedRing A₁]
   [StarOrderedRing A₂]
   [FunLike F A₁ A₂]
-  [LinearMapClass F ℂ A₁ A₂]  -- This is implied by `NonUnitalAlgHomClass` but it fails without it
   [NonUnitalAlgHomClass F ℂ A₁ A₂] [StarHomClass F A₁ A₂]
 
 open CStarMatrix CFC in
 instance instCompletelyPositiveMapClass : CompletelyPositiveMapClass F A₁ A₂ where
   map_cstarMatrix_nonneg' k f M hM := by
-    let fM : CStarMatrix (Fin k) (Fin k) A₂ := ofMatrix fun i j => f (sqrt M i j)
-    have hfM : fM * fM = ofMatrix fun i j ↦ ∑ x, f (sqrt M i x) * f (sqrt M x j) := by
-      ext
-      simp [mul_apply, fM]
-    have hfM' : fM = star fM := by
-      ext
-      simp [fM, star_eq_conjTranspose, ← map_star]
-      rw [star_apply_of_isSelfAdjoint (by cfc_tac)]
-    rw [← sqrt_mul_sqrt_self M, mapₗ]
-    dsimp
-    simp only [map, mul_apply, map_sum, map_mul, ← hfM]
-    nth_rewrite 1 [hfM']
-    exact star_mul_self_nonneg fM
+    change 0 ≤ (mapₙₐ (f : A₁ →⋆ₙₐ[ℂ] A₂)) M
+    exact map_nonneg _ hM
 
 end NonUnitalStarAlgHomClass

@@ -411,8 +411,14 @@ lemma mapₗ_reindexₐ [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [
     (φ : A →ₗ[R] B) : reindexₐ R B e (M.mapₗ φ) = ((reindexₐ R A e M).mapₗ φ) := by
   ext; simp [reindexₐ, reindexₗ]
 
+@[simp]
+lemma reindexₐ_symm [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A] [Module R A]
+    [Star A] {e : m ≃ n} : reindexₐ R A e.symm = (reindexₐ R A e).symm := by
+  simp [reindexₐ, reindexₗ]
+
 /-- Applying a non-unital ⋆-algebra homomorphism to every entry of a matrix is itself a
 ⋆-algebra homomorphism on matrices. -/
+@[simps]
 def mapₙₐ [Fintype n] [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A]
     [Star A] [NonUnitalNonAssocSemiring B] [Module R B] [Star B] (f : A →⋆ₙₐ[R] B) :
     CStarMatrix n n A →⋆ₙₐ[R] CStarMatrix n n B where
