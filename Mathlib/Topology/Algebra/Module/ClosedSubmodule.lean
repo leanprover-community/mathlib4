@@ -32,10 +32,16 @@ variable (R M) in
 @[ext]
 structure ClosedSubmodule extends Submodule R M, Closeds M where
 
-attribute [coe] ClosedSubmodule.toSubmodule
-
 namespace ClosedSubmodule
 variable {s t : ClosedSubmodule R M} {x : M}
+
+attribute [coe] toSubmodule toCloseds
+
+/-- Reinterpret a closed submodule as a submodule. -/
+add_decl_doc toSubmodule
+
+/-- Reinterpret a closed submodule as a closed set. -/
+add_decl_doc toCloseds
 
 lemma toSubmodule_injective : Injective (toSubmodule : ClosedSubmodule R M → Submodule R M) :=
   fun s t h ↦ by cases s; congr!
