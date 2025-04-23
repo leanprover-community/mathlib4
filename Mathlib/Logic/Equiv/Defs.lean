@@ -468,8 +468,6 @@ def arrowCongr' {α₁ β₁ α₂ β₂ : Type*} (hα : α₁ ≃ α₂) (hβ :
 
 @[simp] theorem conj_symm (e : α ≃ β) : e.conj.symm = e.symm.conj := rfl
 
-@[deprecated (since := "2025-04-22")] alias conj_symm := conj_inner_symm
-
 @[simp] theorem conj_trans (e₁ : α ≃ β) (e₂ : β ≃ γ) :
     (e₁.trans e₂).conj = e₁.conj.trans e₂.conj := rfl
 
