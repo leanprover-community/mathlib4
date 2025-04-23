@@ -31,12 +31,20 @@ open UnitDisc
 
 namespace UnitDisc
 
+/-- Coercion to `ℂ`. -/
+@[coe] protected def coe : 𝔻 → ℂ := Subtype.val
+
 instance instCommSemigroup : CommSemigroup UnitDisc := by unfold UnitDisc; infer_instance
+instance instSemigroupWithZero : SemigroupWithZero UnitDisc := by unfold UnitDisc; infer_instance
+instance instIsCancelMulZero : IsCancelMulZero UnitDisc := by unfold UnitDisc; infer_instance
 instance instHasDistribNeg : HasDistribNeg UnitDisc := by unfold UnitDisc; infer_instance
-instance instCoe : Coe UnitDisc ℂ := ⟨Subtype.val⟩
+instance instCoe : Coe UnitDisc ℂ := ⟨UnitDisc.coe⟩
 
 theorem coe_injective : Injective ((↑) : 𝔻 → ℂ) :=
   Subtype.coe_injective
+
+@[simp, norm_cast]
+theorem coe_inj {z w : 𝔻} : (z : ℂ) = w ↔ z = w := Subtype.val_inj
 
 theorem norm_lt_one (z : 𝔻) : ‖(z : ℂ)‖ < 1 :=
   mem_ball_zero_iff.1 z.2
@@ -81,12 +89,6 @@ theorem mk_coe (z : 𝔻) (hz : ‖(z : ℂ)‖ < 1 := z.norm_lt_one) : mk z hz 
 theorem mk_neg (z : ℂ) (hz : ‖-z‖ < 1) : mk (-z) hz = -mk z (norm_neg z ▸ hz) :=
   rfl
 
-instance : SemigroupWithZero 𝔻 :=
-  { instCommSemigroup with
-    zero := mk 0 <| norm_zero.trans_lt one_pos
-    zero_mul := fun _ => coe_injective <| zero_mul _
-    mul_zero := fun _ => coe_injective <| mul_zero _ }
-
 @[simp]
 theorem coe_zero : ((0 : 𝔻) : ℂ) = 0 :=
   rfl
@@ -94,6 +96,9 @@ theorem coe_zero : ((0 : 𝔻) : ℂ) = 0 :=
 @[simp]
 theorem coe_eq_zero {z : 𝔻} : (z : ℂ) = 0 ↔ z = 0 :=
   coe_injective.eq_iff' coe_zero
+
+@[simp] theorem mk_zero : mk 0 (by simp) = 0 := rfl
+@[simp] theorem mk_eq_zero {z : ℂ} (hz : ‖z‖ < 1) : mk z hz = 0 ↔ z = 0 := by simp [← coe_inj]
 
 instance : Inhabited 𝔻 :=
   ⟨0⟩
@@ -171,8 +176,6 @@ theorem im_neg (z : 𝔻) : (-z).im = -z.im :=
 def conj (z : 𝔻) : 𝔻 :=
   mk (conj' ↑z) <| (norm_conj z).symm ▸ z.norm_lt_one
 
--- Porting note: removed `norm_cast` because this is a bad `norm_cast` lemma
--- because both sides have a head coe
 @[simp]
 theorem coe_conj (z : 𝔻) : (z.conj : ℂ) = conj' ↑z :=
   rfl

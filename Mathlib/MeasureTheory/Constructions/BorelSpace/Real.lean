@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 import Mathlib.MeasureTheory.MeasurableSpace.Prod
+import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
 import Mathlib.Topology.Instances.Real.Lemmas
 
 /-!
@@ -511,9 +512,9 @@ private lemma measurable_const_mul (c : EReal) : Measurable fun (x : EReal) ↦ 
     refine Measurable.piecewise (measurableSet_singleton _) measurable_const ?_
     exact Measurable.piecewise measurableSet_Iio measurable_const measurable_const
   induction c with
-  | h_bot => rwa [h1]
-  | h_real c => exact (measurable_id.const_mul _).coe_real_ereal
-  | h_top =>
+  | bot => rwa [h1]
+  | coe c => exact (measurable_id.const_mul _).coe_real_ereal
+  | top =>
     simp_rw [← neg_bot, neg_mul]
     apply Measurable.neg
     rwa [h1]

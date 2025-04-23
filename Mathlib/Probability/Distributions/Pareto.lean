@@ -133,7 +133,7 @@ section ParetoCDF
 lemma paretoCDFReal_eq_integral (ht : 0 < t) (hr : 0 < r) (x : ℝ) :
     cdf (paretoMeasure t r) x = ∫ x in Iic x, paretoPDFReal t r x := by
   have : IsProbabilityMeasure (paretoMeasure t r) := isProbabilityMeasure_paretoMeasure ht hr
-  rw [cdf_eq_toReal, paretoMeasure, withDensity_apply _ measurableSet_Iic]
+  rw [cdf_eq_real, paretoMeasure, measureReal_def, withDensity_apply _ measurableSet_Iic]
   refine (integral_eq_lintegral_of_nonneg_ae ?_ ?_).symm
   · exact ae_of_all _ fun _ ↦ by simp only [Pi.zero_apply, paretoPDFReal_nonneg ht.le hr.le]
   · exact (measurable_paretoPDFReal t r).aestronglyMeasurable.restrict
@@ -141,7 +141,7 @@ lemma paretoCDFReal_eq_integral (ht : 0 < t) (hr : 0 < r) (x : ℝ) :
 lemma paretoCDFReal_eq_lintegral (ht : 0 < t) (hr : 0 < r) (x : ℝ) :
     cdf (paretoMeasure t r) x = ENNReal.toReal (∫⁻ x in Iic x, paretoPDF t r x) := by
   have : IsProbabilityMeasure (paretoMeasure t r) := isProbabilityMeasure_paretoMeasure ht hr
-  rw [cdf_eq_toReal, paretoMeasure, withDensity_apply _ measurableSet_Iic]
+  rw [cdf_eq_real, paretoMeasure, measureReal_def, withDensity_apply _ measurableSet_Iic]
 
 end ParetoCDF
 end ProbabilityTheory

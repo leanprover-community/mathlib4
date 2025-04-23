@@ -128,17 +128,13 @@ end IsCodirected
 ### Sequences
 -/
 
-theorem extraction_of_frequently_atTop' {P : ℕ → Prop} (h : ∀ N, ∃ n > N, P n) :
-    ∃ φ : ℕ → ℕ, StrictMono φ ∧ ∀ n, P (φ n) := by
-  choose u hu hu' using h
-  refine ⟨fun n => u^[n + 1] 0, strictMono_nat_of_lt_succ fun n => ?_, fun n => ?_⟩
-  · exact Trans.trans (hu _) (Function.iterate_succ_apply' _ _ _).symm
-  · simpa only [Function.iterate_succ_apply'] using hu' _
+@[deprecated (since := "2025-04-20")] alias extraction_of_frequently_atTop' :=
+  Nat.exists_strictMono_subsequence
 
 theorem extraction_of_frequently_atTop {P : ℕ → Prop} (h : ∃ᶠ n in atTop, P n) :
     ∃ φ : ℕ → ℕ, StrictMono φ ∧ ∀ n, P (φ n) := by
   rw [frequently_atTop'] at h
-  exact extraction_of_frequently_atTop' h
+  exact Nat.exists_strictMono_subsequence h
 
 theorem extraction_of_eventually_atTop {P : ℕ → Prop} (h : ∀ᶠ n in atTop, P n) :
     ∃ φ : ℕ → ℕ, StrictMono φ ∧ ∀ n, P (φ n) :=
@@ -180,7 +176,6 @@ lemma exists_le_of_tendsto_atTop (h : Tendsto u atTop atTop) (a : α) (b : β) :
     (eventually_ge_atTop a).and (h.eventually <| eventually_ge_atTop b)
   exact this.exists
 
--- @[nolint ge_or_gt] -- Porting note: restore attribute
 theorem exists_le_of_tendsto_atBot (h : Tendsto u atTop atBot) :
     ∀ a b, ∃ a' ≥ a, u a' ≤ b := exists_le_of_tendsto_atTop (β := βᵒᵈ) h
 
@@ -190,7 +185,6 @@ theorem exists_lt_of_tendsto_atTop [NoMaxOrder β] (h : Tendsto u atTop atTop) (
   rcases exists_le_of_tendsto_atTop h a b' with ⟨a', ha', ha''⟩
   exact ⟨a', ha', lt_of_lt_of_le hb' ha''⟩
 
--- @[nolint ge_or_gt] -- Porting note: restore attribute
 theorem exists_lt_of_tendsto_atBot [NoMinOrder β] (h : Tendsto u atTop atBot) :
     ∀ a b, ∃ a' ≥ a, u a' < b := exists_lt_of_tendsto_atTop (β := βᵒᵈ) h
 

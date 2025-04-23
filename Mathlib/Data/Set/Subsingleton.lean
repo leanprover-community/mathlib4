@@ -127,8 +127,6 @@ protected def Nontrivial (s : Set α) : Prop :=
 theorem nontrivial_of_mem_mem_ne {x y} (hx : x ∈ s) (hy : y ∈ s) (hxy : x ≠ y) : s.Nontrivial :=
   ⟨x, hx, y, hy, hxy⟩
 
--- Porting note: following the pattern for `Exists`, we have renamed `some` to `choose`.
-
 /-- Extract witnesses from s.nontrivial. This function might be used instead of case analysis on the
 argument. Note that it makes a proof depend on the classical.choice axiom. -/
 protected noncomputable def Nontrivial.choose (hs : s.Nontrivial) : α × α :=

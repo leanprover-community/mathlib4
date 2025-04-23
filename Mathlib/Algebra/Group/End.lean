@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Equiv.TypeTags
 import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Data.Set.Basic
 import Mathlib.Tactic.Common
+import Mathlib.Algebra.Group.Prod
 
 /-!
 # Monoids of endomorphisms, groups of automorphisms
@@ -526,10 +527,10 @@ theorem swap_eq_one_iff {i j : α} : swap i j = (1 : Perm α) ↔ i = j :=
   swap_eq_refl_iff
 
 theorem swap_mul_eq_iff {i j : α} {σ : Perm α} : swap i j * σ = σ ↔ i = j := by
-  rw [mul_left_eq_self, swap_eq_one_iff]
+  rw [mul_eq_right, swap_eq_one_iff]
 
 theorem mul_swap_eq_iff {i j : α} {σ : Perm α} : σ * swap i j = σ ↔ i = j := by
-  rw [mul_right_eq_self, swap_eq_one_iff]
+  rw [mul_eq_left, swap_eq_one_iff]
 
 theorem swap_mul_swap_mul_swap {x y z : α} (hxy : x ≠ y) (hxz : x ≠ z) :
     swap y z * swap x y * swap y z = swap z x := by
@@ -805,18 +806,18 @@ def conj [AddGroup G] : G →+ Additive (AddAut G) where
     rfl
 
 @[simp]
-theorem conj_apply [AddGroup G] (g h : G) : conj g h = g + h + -g :=
+theorem conj_apply [AddGroup G] (g h : G) : (conj g).toMul h = g + h + -g :=
   rfl
 
 @[simp]
-theorem conj_symm_apply [AddGroup G] (g h : G) : (conj g).symm h = -g + h + g :=
+theorem conj_symm_apply [AddGroup G] (g h : G) : (conj g).toMul.symm h = -g + h + g :=
   rfl
 
 @[simp]
 theorem conj_inv_apply [AddGroup G] (g h : G) : (conj g).toMul⁻¹ h = -g + h + g :=
   rfl
 
-theorem neg_conj_apply [AddGroup G] (g h : G) : (-conj g) h = -g + h + g := by
+theorem neg_conj_apply [AddGroup G] (g h : G) : (-conj g).toMul h = -g + h + g := by
   simp
 
 /-- Isomorphic additive groups have isomorphic automorphism groups. -/

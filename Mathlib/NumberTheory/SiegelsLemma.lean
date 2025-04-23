@@ -146,13 +146,13 @@ private lemma card_S_lt_card_T [DecidableEq α] [DecidableEq β]
         linarith only [h]
       · simp only [mul_neg, sum_neg_distrib, sub_neg_eq_add, add_le_add_iff_right]
         have h1 : n * max 1 ‖A‖ * B = ∑ _ : β, max 1 ‖A‖ * B := by
-          simp only [sum_const, card_univ, nsmul_eq_mul]
+          simp
           ring
         simp_rw [h1, ← Finset.sum_add_distrib, ← mul_add, mul_comm (max 1 ‖A‖), ← Int.cast_add]
         gcongr with j _
         rw [posPart_add_negPart (A i j), Int.cast_abs]
         exact le_trans (norm_entry_le_entrywise_sup_norm A) (le_max_right ..)
-  _  = (n * max 1 ‖A‖ * B + 1) ^ m := by simp only [prod_const, card_univ]
+  _  = (n * max 1 ‖A‖ * B + 1) ^ m := by simp
   _  ≤ (n * max 1 ‖A‖) ^ m * (B + 1) ^ m := by
         rw [← mul_pow, mul_add, mul_one]
         gcongr
@@ -184,9 +184,9 @@ theorem exists_ne_zero_int_vec_norm_le
   refine ⟨x - y, sub_ne_zero.mpr hneq, by simp only [mulVec_sub, sub_eq_zero, hfeq], ?_⟩
   -- Inequality
   have n_mul_norm_A_pow_e_nonneg : 0 ≤ (n * max 1 ‖A‖) ^ e := by positivity
-  rw [← norm_col (ι := Unit), norm_le_iff n_mul_norm_A_pow_e_nonneg]
+  rw [← norm_replicateCol (ι := Unit), norm_le_iff n_mul_norm_A_pow_e_nonneg]
   intro i j
-  simp only [col_apply, Pi.sub_apply]
+  simp only [replicateCol_apply, Pi.sub_apply]
   rw [Int.norm_eq_abs, ← Int.cast_abs]
   refine le_trans ?_ (Nat.floor_le n_mul_norm_A_pow_e_nonneg)
   norm_cast

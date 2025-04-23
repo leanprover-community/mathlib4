@@ -100,7 +100,7 @@ lemma mem_coeSubmodule_conductor {L} [CommRing L] [Algebra S L] [Algebra R L]
       obtain ⟨y, _, e⟩ := H 1
       rw [map_one, mul_one] at e
       subst e
-      simp only [← _root_.map_mul, (FaithfulSMul.algebraMap_injective S L).eq_iff,
+      simp only [← map_mul, (FaithfulSMul.algebraMap_injective S L).eq_iff,
         exists_eq_right] at H
       exact ⟨_, H, rfl⟩
   · rw [AlgHom.map_adjoin, Set.image_singleton]; rfl
@@ -161,7 +161,7 @@ theorem comap_map_eq_map_adjoin_of_coprime_conductor
           (show z ∈ I.map (algebraMap R S) by rwa [Ideal.mem_comap] at hy))
       use a + algebraMap R R<x> q * ⟨z, hz⟩
       refine ⟨Ideal.add_mem (I.map (algebraMap R R<x>)) ha.left ?_, by
-          simp only [ha.right, map_add, _root_.map_mul, add_right_inj]; rfl⟩
+          simp only [ha.right, map_add, map_mul, add_right_inj]; rfl⟩
       rw [mul_comm]
       exact Ideal.mul_mem_left (I.map (algebraMap R R<x>)) _ (Ideal.mem_map_of_mem _ hq)
     refine ⟨fun h => ?_,
@@ -378,7 +378,7 @@ theorem normalizedFactorsMapEquivNormalizedFactorsMinPolyMk_symm_apply_eq_span
   rw [mem_comap, Ideal.mem_span_singleton] at ha
   obtain ⟨a', ha'⟩ := ha
   obtain ⟨b, hb⟩ := Ideal.Quotient.mk_surjective a'
-  rw [← hb, ← _root_.map_mul, Quotient.mk_eq_mk_iff_sub_mem] at ha'
+  rw [← hb, ← map_mul, Quotient.mk_eq_mk_iff_sub_mem] at ha'
   rw [union_comm, span_union, span_eq, mem_span_singleton_sup]
   exact ⟨b, a - Q.aeval x * b, ha', by ring⟩
 

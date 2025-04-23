@@ -232,12 +232,6 @@ theorem grundyValue_eq_sInf_moveLeft (G : PGame) :
     grundyValue G = sInf (Set.range (grundyValue ∘ G.moveLeft))ᶜ := by
   rw [grundyValue]; rfl
 
-set_option linter.deprecated false in
-@[deprecated grundyValue_eq_sInf_moveLeft (since := "2024-09-16")]
-theorem grundyValue_eq_mex_left (G : PGame) :
-    grundyValue G = Ordinal.mex fun i => grundyValue (G.moveLeft i) :=
-  grundyValue_eq_sInf_moveLeft G
-
 theorem grundyValue_ne_moveLeft {G : PGame} (i : G.LeftMoves) :
     grundyValue (G.moveLeft i) ≠ grundyValue G := by
   conv_rhs => rw [grundyValue_eq_sInf_moveLeft]
@@ -317,12 +311,6 @@ theorem grundyValue_eq_sInf_moveRight (G : PGame) [G.Impartial] :
   iterate 3 apply congr_arg
   ext i
   exact @grundyValue_neg _ (@Impartial.moveRight_impartial ⟨l, r, L, R⟩ _ _)
-
-set_option linter.deprecated false in
-@[deprecated grundyValue_eq_sInf_moveRight (since := "2024-09-16")]
-theorem grundyValue_eq_mex_right (G : PGame) [G.Impartial] :
-    grundyValue G = Ordinal.mex.{u, u} fun i => grundyValue (G.moveRight i) :=
-  grundyValue_eq_sInf_moveRight G
 
 theorem grundyValue_ne_moveRight {G : PGame} [G.Impartial] (i : G.RightMoves) :
     grundyValue (G.moveRight i) ≠ grundyValue G := by

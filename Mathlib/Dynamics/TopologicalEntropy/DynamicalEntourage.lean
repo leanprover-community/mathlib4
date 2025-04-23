@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damien Thomine, Pietro Monticone
 -/
 import Mathlib.Order.Interval.Finset.Nat
-import Mathlib.Topology.Constructions
+import Mathlib.Topology.Constructions.SumProd
 import Mathlib.Topology.UniformSpace.Defs
 
 /-!

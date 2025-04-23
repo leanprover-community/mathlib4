@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Order.Chain
+import Mathlib.Order.CompleteLattice.Chain
 import Mathlib.Order.Minimal
 
 /-!
@@ -118,10 +118,6 @@ theorem zorn_le₀ (s : Set α) (ih : ∀ c ⊆ s, IsChain (· ≤ ·) c → ∃
 theorem zorn_le_nonempty₀ (s : Set α)
     (ih : ∀ c ⊆ s, IsChain (· ≤ ·) c → ∀ y ∈ c, ∃ ub ∈ s, ∀ z ∈ c, z ≤ ub) (x : α) (hxs : x ∈ s) :
     ∃ m, x ≤ m ∧ Maximal (· ∈ s) m := by
-  -- Porting note: the first three lines replace the following two lines in mathlib3.
-  -- The mathlib3 `rcases` supports holes for proof obligations, this is not yet implemented in 4.
-  -- rcases zorn_preorder₀ ({ y ∈ s | x ≤ y }) fun c hcs hc => ?_ with ⟨m, ⟨hms, hxm⟩, hm⟩
-  -- · exact ⟨m, hms, hxm, fun z hzs hmz => hm _ ⟨hzs, hxm.trans hmz⟩ hmz⟩
   have H := zorn_le₀ ({ y ∈ s | x ≤ y }) fun c hcs hc => ?_
   · rcases H with ⟨m, ⟨hms, hxm⟩, hm⟩
     exact ⟨m, hxm, hms, fun z hzs hmz => @hm _ ⟨hzs, hxm.trans hmz⟩ hmz⟩
@@ -161,10 +157,6 @@ theorem zorn_superset_nonempty (S : Set (Set α))
 /-- Every chain is contained in a maximal chain. This generalizes Hausdorff's maximality principle.
 -/
 theorem IsChain.exists_maxChain (hc : IsChain r c) : ∃ M, @IsMaxChain _ r M ∧ c ⊆ M := by
-  -- Porting note: the first three lines replace the following two lines in mathlib3.
-  -- The mathlib3 `obtain` supports holes for proof obligations, this is not yet implemented in 4.
-  -- obtain ⟨M, ⟨_, hM₀⟩, hM₁, hM₂⟩ :=
-  --   zorn_subset_nonempty { s | c ⊆ s ∧ IsChain r s } _ c ⟨Subset.rfl, hc⟩
   have H := zorn_subset_nonempty { s | c ⊆ s ∧ IsChain r s } ?_ c ⟨Subset.rfl, hc⟩
   · obtain ⟨M, hcM, hM⟩ := H
     exact ⟨M, ⟨hM.prop.2, fun d hd hMd ↦ hM.eq_of_subset ⟨hcM.trans hMd, hd⟩ hMd⟩, hcM⟩
