@@ -714,7 +714,7 @@ def IsHereditarilyLindelof (s : Set X) :=
 lemma IsHereditarilyLindelof.isLindelof_subset (hs : IsHereditarilyLindelof s) (ht : t ⊆ s) :
     IsLindelof t := hs t ht
 
-lemma IsHereditarilyLindelof.isHereditarilyLindelof_subset (hs : IsHereditarilyLindelof s)
+protected lemma IsHereditarilyLindelof.subset (hs : IsHereditarilyLindelof s)
     (ht : t ⊆ s) : IsHereditarilyLindelof t := fun u hu => hs u (hu.trans ht)
 
 lemma IsHereditarilyLindelof.isLindelof (hs : IsHereditarilyLindelof s) :
