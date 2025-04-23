@@ -7,7 +7,7 @@ import Mathlib.NumberTheory.NumberField.House
 import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 import Mathlib.Analysis.Analytic.IteratedFDeriv
 import Mathlib.Analysis.Complex.Basic
-import Mathlib.Analysis.Meromorphic.Order
+import Mathlib.Analysis.Analytic.Order
 
 set_option autoImplicit true
 set_option linter.style.multiGoal false
@@ -44,7 +44,7 @@ lemma isNumberField_adjoin_alg_numbers (α β γ : ℂ)
     cases' hb with hb hc; · simp_rw [hb, isAlgebraic_iff_isIntegral.1 hβ]
     simp_rw [mem_singleton_iff.1 hc, isAlgebraic_iff_isIntegral.1 hγ])}
 
-#check canonicalEmbedding
+--#check canonicalEmbedding
 
 lemma getElemsInNF (α β γ : ℂ) (hα : IsAlgebraic ℚ α)
     (hβ : IsAlgebraic ℚ β) (hγ : IsAlgebraic ℚ γ) :
@@ -73,6 +73,47 @@ lemma getElemsInNF (α β γ : ℂ) (hα : IsAlgebraic ℚ α)
     hac ((adjoin_le_adjoin_more α γ hα hγ).2 hx)⟩
 
 open Differentiable
+
+theorem zero_if_order_inf : ∀ (f : ℂ → ℂ) z (hf : ∀ z, AnalyticAt ℂ f z),
+  (∀ z, f z = 0) → AnalyticAt.order (hf z) = ⊤ := by
+  intros f z hf h0
+  rw [AnalyticAt.order_eq_top_iff]
+  refine (AnalyticAt.frequently_eq_iff_eventually_eq (hf z) ?_).mp ?_
+  · exact analyticAt_const
+  · refine Filter.Frequently.of_forall ?_
+    · intros x
+      exact h0 x
+
+theorem order_inf_if_zero: ∀ (f : ℂ → ℂ) z (hf : ∀ z, AnalyticAt ℂ f z),
+ AnalyticAt.order (hf z) = ⊤  → (∀ z, f z = 0) := by
+  intros f z hf hr
+  have := AnalyticAt.order_eq_top_iff (hf z)
+  rw [this] at hr
+  rw [← AnalyticAt.frequently_eq_iff_eventually_eq (hf z)] at hr
+  have hfon : AnalyticOnNhd ℂ f univ := by {
+    unfold AnalyticOnNhd
+    intros x hx
+    simp_all only}
+  have :=  AnalyticOnNhd.eqOn_zero_of_preconnected_of_frequently_eq_zero (hfon) ?_ ?_ hr
+  · exact fun z ↦ this trivial
+  · exact isPreconnected_univ
+  · exact trivial
+  · exact analyticAt_const
+
+lemma iterated_deriv_eq_zero_iff_order_eq_n :
+  ∀ n (f : ℂ → ℂ) z (hf : ∀ z, AnalyticAt ℂ f z) (ho : AnalyticAt.order (hf z) ≠ ⊤),
+  (∀ k < n, iteratedDeriv k f z = 0) ∧ (iteratedDeriv k f z ≠ 0) ↔ AnalyticAt.order (hf z) = n := by
+  sorry
+
+lemma iterated_deriv_eq_zero_imp_n_leq_order : ∀ (f : ℂ → ℂ) z₀ (hf : ∀ z, AnalyticAt ℂ f z),
+ (∀ k < n, iteratedDeriv k f z₀ = 0) → n ≤ AnalyticAt.order (hf z₀) := by sorry
+
+lemma analytic_iter_deriv_eq_order_sub_one (k : ℕ) (f : ℂ → ℂ) (hf : ∀ z, AnalyticAt ℂ f z) :
+   ∀ z : ℂ, AnalyticAt ℂ (iteratedDeriv k f) z := sorry
+
+lemma eq_order_sub_one (k : ℕ) (f : ℂ → ℂ) (hf : ∀ z, AnalyticAt ℂ f z)
+ (hfdev : ∀ z : ℂ, AnalyticAt ℂ (iteratedDeriv k f) z) :
+  ∀ z : ℂ, AnalyticAt.order (hfdev z) = AnalyticAt.order (hf z) - 1 := sorry
 
 lemma cexp_mul : deriv (fun x => cexp (c * x)) x = c * cexp (c * x) := by
   change deriv (fun x => exp ((fun x => c * x) x)) x = c * exp (c * x)
@@ -151,7 +192,7 @@ def c' (α : K) : ℤ := c'_both α
 
 lemma c'_IsIntegral (α : K) : IsIntegral ℤ (c' K α • α) := (c'_both α).2.2
 
-def h := Module.finrank ℚ K
+abbrev h := Module.finrank ℚ K
 
 def m := 2 * h K + 2
 
@@ -752,7 +793,6 @@ open Differentiable Complex
 def R : Fin (q*q) → ℂ → ℂ := fun _ x =>
   ∑ t, σ ((η α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq) t) * exp (ρ α β q t * x)
 
-
 def iteratedDeriv_of_R (k : ℕ):
   iteratedDeriv k (fun x => (R α β hirr htriv K σ hd α' β' γ' habc q u hq0 h2mq t) x) =
  fun x => ∑ t, (σ ((η α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq) t)) *
@@ -791,7 +831,7 @@ simp_all only [Pi.zero_apply, iteratedFDeriv_zero_fun, ContinuousMultilinearMap.
 
 include α β hirr htriv in
 lemma vecMul_of_R_zero (k : ℕ)
-  (hR : R α β hirr htriv K σ hd α' β' γ' habc q u hq0 h2mq  t = 0) :
+  (hR : R α β hirr htriv K σ hd α' β' γ' habc q u hq0 h2mq t = 0) :
   (V α β q).vecMul (fun t =>
   σ ((η α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq) t)) = 0 := by
   unfold V
@@ -886,46 +926,11 @@ lemma R_nonzero (k : ℕ) :
   simp only [ne_eq, Pi.zero_apply, map_zero, FaithfulSMul.algebraMap_eq_zero_iff]
   exact HC
 
-def min_value_over_finset {γ : Type _} (f : Π _ : Finset.range (m K + 1), γ)
-  [Fintype s] [Nonempty s] [LinearOrder γ] : γ := by
-  apply Finset.min' (f '' Set.univ).toFinset
-  simp only [Set.image_univ, Set.toFinset_range, Finset.image_nonempty,
-    univ_eq_attach, attach_nonempty_iff]
-  exact nonempty_range_succ
 
-instance nonemptyFinsetRangeOfm : Nonempty (Finset (Finset.range ((m K + 1)))) :=
-  instNonemptyOfInhabited
 
-open FormalMultilinearSeries
 
-#check MeromorphicAt.order
 
-lemma IsAnalyticRAtl :
-  AnalyticAt ℂ (R α β hirr htriv K σ hd α' β' γ' habc q u hq0 h2mq t) u.1 := by
-  apply Differentiable.analyticAt (sum fun _ _ =>
-  (differentiable_const _).mul
-    (differentiable_exp.comp ((differentiable_const _).mul differentiable_id')))
 
-lemma IsMeromorphicRAtl :
-  MeromorphicAt (R α β hirr htriv K σ hd α' β' γ' habc q u hq0 h2mq t) u.1 := by
-  refine AnalyticAt.meromorphicAt ?_
-  exact IsAnalyticRAtl α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
-
--- include α β σ K σ α' β' γ' u
--- def r : ℕ := by
---   apply @min_value_over_finset K _ _ _ _ _ _ (nonemptyFinsetRangeOfm K) _
---   exact fun x =>
---   order (IsAnalyticRAtl α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq).choose
-
-include α β σ K σ α' β' γ' u
-def r : ℤ := by
-  apply @min_value_over_finset K _ _ _ _ _ _ (nonemptyFinsetRangeOfm K) _
-  intros x
-  have := MeromorphicAt.order (IsMeromorphicRAtl α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq)
-  unfold WithTop at this
-  match this with
-  | some value => exact value
-  | none => exact 0
 
 
 --order (IsAnalyticRAtl α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq).choose
@@ -1003,7 +1008,6 @@ lemma sys_coeffs_bar :
     have : Complex.exp (Complex.log α) = α := by {
       apply Complex.exp_log
       exact htriv.1}
-    --rw [cpow_def_of_ne_zero]
     rw [← cpow_nat_mul]
     have : cexp ((↑a + b • β) * Complex.log α * ↑l) = α ^ (a * l) * α ^ (↑(b * l) * β) ↔
       cexp ((↑a + b • β) * Complex.log α * ↑l) = α ^ ((a * l) + (↑(b * l) * β)) := by {
@@ -1015,14 +1019,7 @@ lemma sys_coeffs_bar :
     rw [this]
     rw [cpow_def_of_ne_zero]
     have : Complex.log α * (↑a * ↑l + ↑(b * l) * β) = (↑a + b • β) * Complex.log α * ↑l := by {
-      --nth_rw 2 [mul_add]
-      -- rw [add_mul]
-      -- rw [this]
-      have :  Complex.log α * (↑a * ↑l + ↑(l * b) * β) =
-        Complex.log α * (↑a * ↑l + ↑(b * l) * β) := by {
-        nth_rw 4 [mul_comm]
-      }
-      rw [← this]
+      nth_rw 4 [mul_comm]
       have : ( ↑(l * b) * β) =
          ( ↑((b * β) * l)) := by {
           simp only [Nat.cast_mul]
@@ -1040,9 +1037,7 @@ lemma sys_coeffs_bar :
       rw [nsmul_eq_mul]
     }
     rw [this]
-    exact htriv.1
-  }
-
+    exact htriv.1}
 
 lemma sys_coeffs_foo :
   let l : ℕ := (finProdFinEquiv.symm.1 u).1 + 1
@@ -1063,8 +1058,6 @@ lemma sys_coeffs_foo :
   left
   exact sys_coeffs_bar α β htriv K σ α' β' γ' habc q u t}
 
---lemma sys_coeffs_eq_ : (log α)^(k : ℤ)  * logaRy(l) = sorry
-
 include α β σ hq0 h2mq hd hirr htriv σ α' β' γ' habc h2mq  in
 lemma iteratedDeriv_vanishes :
   let l : ℕ := (finProdFinEquiv.symm.1 u).1 + 1
@@ -1072,7 +1065,6 @@ lemma iteratedDeriv_vanishes :
   l < n K q →
   iteratedDeriv k (R α β hirr htriv K σ hd α' β' γ' habc q u hq0 h2mq t) l = 0 := by stop
   intros l k hl
-  --apply iteratedDeriv_of_R_is_zero
   rw [iteratedDeriv_of_R]
   simp only
   have : ( (log α)^(-k : ℤ)) * ∑ t, σ ↑(η α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq t)
@@ -1154,8 +1146,8 @@ lemma iteratedDeriv_vanishes :
   --   ↔  ∑ x, ↑(c_coeffs K α' β' γ' q) * sys_coeffs K α' β' γ' q x u *
   --(↑(η α β hirr htriv K σ hd α' β' γ' habc q u x hq0 h2mq x)) = 0 := sorry
 
-
-  -- have h1 : ∑ x, (η α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq x) * sys_coeffs K α' β' γ' q x u = 0 ↔
+  -- have h1 : ∑ x, (η α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq x) *
+  -- sys_coeffs K α' β' γ' q x u = 0 ↔
   --   ∑ x, ↑(c_coeffs K α' β' γ' q) * sys_coeffs K α' β' γ' q x u *
   --(↑(η α β hirr htriv K σ hd α' β' γ' habc q u x hq0 h2mq x)) = 0 := by {
   --   rw [mul_sum]
@@ -1168,11 +1160,15 @@ lemma iteratedDeriv_vanishes :
   --   have := (c₁IsInt K α' β' γ' q u x hq0 h2mq)
   --   simp only [nsmul_eq_mul] at this
   --   exact this
-  -- })⟩ * η x  : 𝓞 K) = 0 ↔ ∑ x, ↑(c_coeffs K α' β' γ' q) * sys_coeffs K α' β' γ' q x u * (η x : 𝓞 K) = 0 := by {
+  -- })⟩ * η x  : 𝓞 K) = 0 ↔ ∑ x, ↑(c_coeffs K α' β' γ' q) *
+  --sys_coeffs K α' β' γ' q x u * (η x : 𝓞 K) = 0 := by {
   --   rw [← h1]
-  --   simp_all only [Equiv.toFun_as_coe, finProdFinEquiv_symm_apply, Fin.coe_divNat, Fin.coe_modNat, Int.ofNat_emod,
-  --     zpow_neg, Nat.cast_add, Nat.cast_one, mul_zero, mul_eq_zero, inv_eq_zero, or_iff_right_iff_imp, ne_eq,
-  --     nsmul_eq_mul, Nat.cast_mul, Nat.cast_pow, Pi.zero_apply, Real.rpow_natCast, Finset.mem_univ, map_zero, l, k]}
+  --   simp_all only [Equiv.toFun_as_coe, finProdFinEquiv_symm_apply, Fin.coe_divNat,
+   --Fin.coe_modNat, Int.ofNat_emod,
+  --     zpow_neg, Nat.cast_add, Nat.cast_one, mul_zero, mul_eq_zero, inv_eq_zero,
+  --or_iff_right_iff_imp, ne_eq,
+  --     nsmul_eq_mul, Nat.cast_mul, Nat.cast_pow, Pi.zero_apply, Real.rpow_natCast,
+  -- Finset.mem_univ, map_zero, l, k]}
   -- rw [h2] at hMt0
   -- have h3 : ∑ x, ↑(c_coeffs K α' β' γ' q) * sys_coeffs K α' β' γ' q x u * (η x : 𝓞 K) = 0 ↔
   --   ↑(c_coeffs K α' β' γ' q) *  ∑ x, sys_coeffs K α' β' γ' q x u * (η x : 𝓞 K) = 0 := by {
@@ -1223,7 +1219,8 @@ lemma iteratedDeriv_vanishes :
   --   have := (c₁IsInt K α' β' γ' q u x hq0 h2mq)
   --   simp only [nsmul_eq_mul] at this
   --   exact this
-  -- })⟩ * η x  : 𝓞 K) = ∑ x, ↑(c_coeffs K α' β' γ' q) * sys_coeffs K α' β' γ' q x u * (η x : 𝓞 K) := by {
+  -- })⟩ * η x  : 𝓞 K) = ∑ x, ↑(c_coeffs K α' β' γ' q) *
+    --sys_coeffs K α' β' γ' q x u * (η x : 𝓞 K) := by {
   --    simp only [map_sum]
   --    rw [Finset.sum_congr rfl]
   --    intros x hx
@@ -1237,41 +1234,26 @@ lemma iteratedDeriv_vanishes :
   -- simp only [nsmul_eq_mul, Pi.zero_apply] at hMt0
   -- rw [← mul_sum] at hMt0
 
-
-
   -- intros x hx
   -- simp only [nsmul_eq_mul] at hMt0
-  -- simp only [map_mul, Equiv.toFun_as_coe, finProdFinEquiv_symm_apply, Fin.coe_divNat, Nat.cast_add,
-  --   Nat.cast_one, Fin.coe_modNat, nsmul_eq_mul, map_pow, map_add, map_natCast, map_one, mul_eq_zero,
+  -- simp only [map_mul, Equiv.toFun_as_coe, finProdFinEquiv_symm_apply,
+  -- Fin.coe_divNat, Nat.cast_add,
+  --   Nat.cast_one, Fin.coe_modNat, nsmul_eq_mul, map_pow, map_add,
+  --map_natCast, map_one, mul_eq_zero,
   --   map_eq_zero, FaithfulSMul.algebraMap_eq_zero_iff, pow_eq_zero_iff', ne_eq,
   --   AddLeftCancelMonoid.add_eq_zero, Nat.div_eq_zero_iff, one_ne_zero, and_false, or_self,
   --   not_false_eq_true, pow_eq_zero_iff]
   -- left
-
-
-
-
-
-
-
-
-
-
-
 
  -- rw [← mul_right_inj']
 --· exact Complex.log α
     --exact sys_coeffs_foo α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq l k
   --· exact log_zero_zero α htriv
 
-
   -- obtain ⟨η, ⟨htneq0, ⟨hMt0,hbound⟩⟩⟩ :=
   --   applylemma82 α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
   -- unfold A at hMt0
   -- simp only [zsmul_eq_mul, Int.cast_mul, Int.cast_pow] at hMt0
-
-
-
 
 -- from lemma 8.2
 -- lemma l : order R l ≥ n
@@ -1284,53 +1266,69 @@ lemma R_analyt_at_point (point : ℕ) :
   (differentiable_const _).mul
     (differentiable_exp.comp ((differentiable_const _).mul differentiable_id')))
 
-def PowerSeries_of_R_at_l := by
-  let l : ℕ := (finProdFinEquiv.symm.1 u).1 + 1
-  exact (R_analyt_at_point α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq l).choose
-
 --#check apply_eq_zero_of_lt_order
 
-theorem PowerSeries_of_R_at_l_eq_zero :
- n K q < (PowerSeries_of_R_at_l α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq).order →
-   PowerSeries_of_R_at_l α β hirr htriv K σ hd α' β' γ'
-   habc q u t hq0 h2mq (n K q) = 0 := by {
-    apply apply_eq_zero_of_lt_order}
+-- theorem PowerSeries_of_R_at_l_eq_zero :
+--  n K q < (PowerSeries_of_R_at_l α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq).order →
+--    PowerSeries_of_R_at_l α β hirr htriv K σ hd α' β' γ'
+--    habc q u t hq0 h2mq (n K q) = 0 := by {
+--     apply apply_eq_zero_of_lt_order}
 
+def min_value_over_finset {γ : Type _} (f : Π _ : Finset.range (m K + 1), γ)
+  [Fintype s] [Nonempty s] [LinearOrder γ] : γ := by
+  apply Finset.min' (f '' Set.univ).toFinset
+  simp only [Set.image_univ, Set.toFinset_range, Finset.image_nonempty,
+    univ_eq_attach, attach_nonempty_iff]
+  exact nonempty_range_succ
+
+instance nonemptyFinsetRangeOfm : Nonempty (Finset (Finset.range ((m K + 1)))) :=
+  instNonemptyOfInhabited
+
+lemma IsAnalyticRAtl :
+  AnalyticAt ℂ (R α β hirr htriv K σ hd α' β' γ' habc q u hq0 h2mq t) u.1 := by
+  apply Differentiable.analyticAt (sum fun _ _ =>
+  (differentiable_const _).mul
+    (differentiable_exp.comp ((differentiable_const _).mul differentiable_id')))
+
+include α β σ K σ α' β' γ' u
+def r : ℕ∞ := by
+  apply @min_value_over_finset K _ _ _ _ _ _ (nonemptyFinsetRangeOfm K) _
+  exact fun x =>
+  AnalyticAt.order
+    (IsAnalyticRAtl α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq)
+
+def order := AnalyticAt.order
+  (IsAnalyticRAtl α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq)
+
+
+
+
+
+
+
+
+
+
+
+--one the board
 lemma foo :
   let l : ℕ := (finProdFinEquiv.symm.1 u).1 + 1
   let k : ℕ := (finProdFinEquiv.symm.1 u).2
   let r := r α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
   let R := R α β hirr htriv K σ hd α' β' γ' habc q u hq0 h2mq  t
-  let order_of_R_power_series := order (R_analyt_at_point α β hirr htriv K σ hd α' β' γ'
-   habc q u t hq0 h2mq l).choose
 
-  k < n K q → iteratedDeriv k R l = 0 → order_of_R_power_series ≥ n K q := by {
-  intros l k r R order_of_R_power_series hk hderiv
-  simp only [ge_iff_le]
+  k < n K q → iteratedDeriv k R l = 0 →
+  order α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq ≥ n K q := by {
+  intros l k r R order hk hderiv
   --apply PowerSeries_of_R_at_l_eq_zero
   sorry
   }
 
-lemma order_R_at_l :
-  let k : ℕ := (finProdFinEquiv.symm.1 u).2
-  let l : ℕ := (finProdFinEquiv.symm.1 u).1 + 1
-  let R := R α β hirr htriv K σ hd α' β' γ' habc q u hq0 h2mq  t
-  let order_of_R_power_series_at_l := order (R_analyt_at_point α β hirr htriv K σ hd α' β' γ'
-  habc q u t hq0 h2mq l).choose
-
-  k < n K q → order_of_R_power_series_at_l ≥ n K q := by {
-    intros k l R hR hk
-    unfold hR
-    apply foo α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
-    simp only [Equiv.toFun_as_coe, finProdFinEquiv_symm_apply, Fin.coe_modNat]
-    exact hk
-    change iteratedDeriv k R l = _
-    sorry
-    }
-
 lemma rgeqn : let r := r α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
   r ≥ n K q := sorry
 
+
+--on the board 1st lemma
 lemma exists_nonzero_iteratedFDeriv :
   let r := r α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
   let R := R α β hirr htriv K σ hd α' β' γ' habc q u hq0 h2mq  t
@@ -1339,7 +1337,38 @@ lemma exists_nonzero_iteratedFDeriv :
 def l₀ : Fin (m K) :=
   (exists_nonzero_iteratedFDeriv α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq).choose
 
-def cρ := (c₁ K α' β' γ')^(r α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq).toNat *
+
+
+#exit
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def cρ := (c₁ K α' β' γ')^(r α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq) *
   (c₁ K α' β' γ')^(2*m K * q)
 
 abbrev sys_coeffs' :
@@ -1363,7 +1392,6 @@ lemma rho_nonzero :
   --rw [← ne_eq]
   --unfold η
 
-
 lemma cρ_ne_zero : cρ α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq ≠ 0 := by
   unfold cρ
   intros H
@@ -1380,16 +1408,6 @@ lemma ρ_is_int : IsIntegral ℤ (cρ α β hirr htriv K σ hd α' β' γ' habc 
   unfold rho
   unfold cρ
   sorry
- -- apply IsIntegral.smul
-  --· exact RingOfIntegers.isIntegral_coe (η α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq)
-
-lemma foo' : IsIntegral (𝓞 K) (cρ α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
-  • rho α β hirr htriv K σ hd α' β' γ' habc q u hq0 h2mq) := by {
-  apply IsIntegral.smul
-  unfold rho
-  sorry
-  --exact isIntegral_algebraMap
-  }
 
 def c1ρ : (𝓞 K) := RingOfIntegers.restrict _
   (fun _ => (ρ_is_int α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq)) ℤ
@@ -1403,6 +1421,50 @@ def c₅ : ℝ := c₁ K α' β' γ' ^ ((h K : ℤ) * (2 * m K * q))
 -- The norm of an algebraic integer is again an integer,
 -- because it is equal (up to sign)
 -- to the constant term of the characteristic polynomial.
+
+lemma eq5first :
+  let r := r α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
+  let ρ := rho α β hirr htriv K σ hd α' β' γ' habc q u hq0 h2mq
+  let c₁ := (c₁ K α' β' γ')
+  let c1ρ := c1ρ α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
+  let cρ := cρ α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
+
+  norm (Algebra.norm ℤ c1ρ) = (cρ ^ h K : ℤ)• (Algebra.norm ℤ ρ)  := by {
+  intros r ρ c₁ c1ρ cρ
+  unfold c1ρ
+  unfold _root_.c1ρ
+
+
+
+  -- rw [le_iff_eq_or_lt]
+  -- left
+  have H := Algebra.norm_algebraMap_of_basis (house.newBasis K)
+  specialize H cρ
+  simp only [algebraMap_int_eq, eq_intCast] at H
+  rw [Embeddings.card] at H
+  simp only [Int.cast_natCast] at H
+  rw [← H]
+  simp only [nsmul_eq_mul, zsmul_eq_mul]
+  sorry
+
+
+
+
+
+  -- have hnorm : norm ((c ^ h K : ℝ)) = (c ^ h K : ℝ) := by {
+  --   simp only [norm_pow, Real.norm_natCast]
+  -- }
+  -- rw [← hnorm]
+
+  --rw [← hnorm] at this
+  -- have : (cρ ^ h K : ℝ) = cρ ^ h K := by {
+  --   simp only [norm_pow, Real.norm_natCast]
+  -- }
+  --simp only [Int.cast_natCast] at H
+
+  }
+
+
 lemma eq5 :
   let r := r α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq;
   let ρ := rho α β hirr htriv K σ hd α' β' γ' habc q u hq0 h2mq;
@@ -1435,45 +1497,45 @@ lemma eq5 :
       trans
       · have : (0 : ℝ) < 1 := by {simp only [zero_lt_one]}
         apply this
-      · apply one_lt_pow₀
-        · apply one_lt_pow₀
-          · sorry
-          · simp only [ne_eq, mul_eq_zero, OfNat.ofNat_ne_zero, false_or, not_or]
-            constructor
-            · have : h K > 0 := by {
-                unfold h
-                exact Module.finrank_pos}
-              simp_all only [gt_iff_lt, ne_eq]
-              obtain ⟨left, right⟩ := htriv
-              obtain ⟨left_1, right_1⟩ := habc
-              obtain ⟨left_2, right_1⟩ := right_1
-              subst left_2 left_1
-              apply Aesop.BuiltinRules.not_intro
-              intro a
-              simp_all only [lt_self_iff_false]
-            · constructor
-              have : m K > 0 := by {
-                unfold m
-                simp only [gt_iff_lt, lt_add_iff_pos_left, add_pos_iff, Nat.ofNat_pos,
-                  mul_pos_iff_of_pos_left, or_true]}
-              simp_all only [gt_iff_lt, ne_eq]
-              obtain ⟨left, right⟩ := htriv
-              obtain ⟨left_1, right_1⟩ := habc
-              obtain ⟨left_2, right_1⟩ := right_1
-              subst left_2 left_1
-              apply Aesop.BuiltinRules.not_intro
-              intro a
-              simp_all only [lt_self_iff_false]
-              · exact Nat.ne_zero_of_lt hq0
-        · have : r > 0 := sorry
-          simp_all only [gt_iff_lt, ne_eq, r]
-          obtain ⟨left, right⟩ := htriv
-          obtain ⟨left_1, right_1⟩ := habc
-          obtain ⟨left_2, right_1⟩ := right_1
-          subst left_1 left_2
-          apply Aesop.BuiltinRules.not_intro
-          intro a
-          simp_all only [lt_self_iff_false]
+      · sorry--apply one_lt_pow₀
+        -- · apply one_lt_pow₀
+        --   · sorry
+        --   · simp only [ne_eq, mul_eq_zero, OfNat.ofNat_ne_zero, false_or, not_or]
+        --     constructor
+        --     · have : h K > 0 := by {
+        --         unfold h
+        --         exact Module.finrank_pos}
+        --       simp_all only [gt_iff_lt, ne_eq]
+        --       obtain ⟨left, right⟩ := htriv
+        --       obtain ⟨left_1, right_1⟩ := habc
+        --       obtain ⟨left_2, right_1⟩ := right_1
+        --       subst left_2 left_1
+        --       apply Aesop.BuiltinRules.not_intro
+        --       intro a
+        --       simp_all only [lt_self_iff_false]
+        --     · constructor
+        --       have : m K > 0 := by {
+        --         unfold m
+        --         simp only [gt_iff_lt, lt_add_iff_pos_left, add_pos_iff, Nat.ofNat_pos,
+        --           mul_pos_iff_of_pos_left, or_true]}
+        --       simp_all only [gt_iff_lt, ne_eq]
+        --       obtain ⟨left, right⟩ := htriv
+        --       obtain ⟨left_1, right_1⟩ := habc
+        --       obtain ⟨left_2, right_1⟩ := right_1
+        --       subst left_2 left_1
+        --       apply Aesop.BuiltinRules.not_intro
+        --       intro a
+        --       simp_all only [lt_self_iff_false]
+        --       · exact Nat.ne_zero_of_lt hq0
+        -- · have : r > 0 := sorry
+        --   simp_all only [gt_iff_lt, ne_eq, r]
+        --   obtain ⟨left, right⟩ := htriv
+        --   obtain ⟨left_1, right_1⟩ := habc
+        --   obtain ⟨left_2, right_1⟩ := right_1
+        --   subst left_1 left_2
+        --   apply Aesop.BuiltinRules.not_intro
+        --   intro a
+        --   simp_all only [lt_self_iff_false]
     · sorry
   · --simp only [RingOfIntegers.restrict, zsmul_eq_mul, RingOfIntegers.map_mk]
     --rw [Algebra.norm_algebraMap]
@@ -1482,18 +1544,19 @@ lemma eq5 :
     simp only [algebraMap_int_eq, eq_intCast] at this
     rw [Embeddings.card] at this
     --exact this
-    have : abs (Algebra.norm ℤ c1ρ) = abs (Algebra.norm ℤ cρ) * abs (Algebra.norm ℤ ρ) := by {
-      simp (config := { unfoldPartialApp := true }) only [c1ρ, _root_.c1ρ]
-      --simp only [RingOfIntegers.restrict, zsmul_eq_mul, RingOfIntegers.map_mk]
-      rw [← abs_mul]
-      unfold Algebra.norm
-      simp only [AlgHom.toRingHom_eq_coe, RingHom.toMonoidHom_eq_coe, AlgHom.toRingHom_toMonoidHom,
-        MonoidHom.coe_comp, MonoidHom.coe_coe, Algebra.coe_lmul_eq_mul, Function.comp_apply,
-        LinearMap.det_ring, LinearMap.mul_apply_apply, mul_one, c1ρ]
-      sorry
+    -- have : abs (Algebra.norm ℤ c1ρ) = abs (Algebra.norm ℚ cρ) * abs (Algebra.norm ℤ ρ) := by {
+    --   simp (config := { unfoldPartialApp := true }) only [c1ρ, _root_.c1ρ]
+    --   --simp only [RingOfIntegers.restrict, zsmul_eq_mul, RingOfIntegers.map_mk]
+    --   rw [← abs_mul]
+    --   unfold Algebra.norm
+    --   simp only [AlgHom.toRingHom_eq_coe, RingHom.toMonoidHom_eq_coe,
+    -- AlgHom.toRingHom_toMonoidHom,
+    --     MonoidHom.coe_comp, MonoidHom.coe_coe, Algebra.coe_lmul_eq_mul, Function.comp_apply,
+    --     LinearMap.det_ring, LinearMap.mul_apply_apply, mul_one, c1ρ]
+      --sorry
       --rw [← LinearMap.mul_apply]
       --rw [LinearMap.det.map_mul]
-     }
+    -- }
     sorry
   simp only [Int.cast_abs, c1ρ]
   sorry
@@ -1514,7 +1577,7 @@ lemma eq5 :
 
 
 
-
+#exit
 
 
 
@@ -1563,7 +1626,7 @@ lemma eq6 :
        _ ≤ ((c₄ ^ (n K q : ℝ))* (n K q)^ ((1/2)*(n K q +1))) * (t * (c₆* q)^r*(c₇)^(q : ℤ)) := ?_
        _ ≤ c₈^r * r^( r + 3/2) := ?_
 
-  · exact fromlemma82_bound α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
+  · sorry--exact fromlemma82_bound α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
   · have : (c₄ ^ (n K q : ℝ)) * ((n K q)^((1/2)*((n K q)+1)))
            = ((c₄ ^ (n K q : ℝ)) * ((n K q)^((1/2)*((n K q)+1)) )) * 1 := by {
             simp only [Real.rpow_natCast,
@@ -1593,7 +1656,7 @@ def S : ℂ → ℂ := fun z => by
   let l₀ : ℕ := l₀ α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
   let R := R α β hirr htriv K σ hd α' β' γ' habc q u hq0 h2mq  t
   exact
-  R z * (r.toNat.factorial)* (((z - l₀) ^ (-r:ℤ))
+  R z * (r.factorial)* (((z - l₀) ^ (-r:ℤ))
     * (∏ k ∈ range (m K) \ { l₀ }, ((l₀ - k)/ (z - k)) ^ r))
 
 lemma holS :
@@ -1686,7 +1749,7 @@ lemma abs_R :
   let r := r α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
   let l₀ := l₀ α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
   let S := S α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
-  let ρ := rho α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
+  let ρ := rho α β hirr htriv K σ hd α' β' γ' habc q u hq0 h2mq
   let η := η α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
   let c₄ := c₄ K hd α' β' γ' q
 
@@ -1818,7 +1881,7 @@ lemma abs_z_k (k : Fin (m K)) :
   let r := r α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
   let l₀ : ℕ := l₀ α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
   let S := S α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
-  let ρ := rho α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
+  let ρ := rho α β hirr htriv K σ hd α' β' γ' habc q u hq0 h2mq
   let η := η α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
 
   ∀ (hz : z ∈ Metric.sphere 0 (m K *(1 + (r/q)))), (m K)*r/q ≤ norm (z-k : ℂ) := by
@@ -1903,7 +1966,7 @@ def hρ :
   let r := r α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
   let l₀ := l₀ α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
   let S := S α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
-  let ρ := rho α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
+  let ρ := rho α β hirr htriv K σ hd α' β' γ' habc q u hq0 h2mq
   let η := η α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
   σ ρ  = ((2 * Real.pi)⁻¹ * ∮ (z : ℂ) in
     C(0, m K* (1 + ↑r / ↑q)), (z - ↑l₀)⁻¹ * S z) := sorry
@@ -1913,7 +1976,7 @@ lemma eq8 :
   let r := r α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
   let l₀ := l₀ α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
   let S := S α β hirr htriv  K σ hd α' β' γ' habc q u t hq0 h2mq
-  let ρ := rho α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
+  let ρ := rho α β hirr htriv K σ hd α' β' γ' habc q u hq0 h2mq
   let η := η α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
 
   norm (σ ρ) ≤ (c₁₃)^r*r^(r*(3-m K)/2 +3/2) := by
@@ -1947,7 +2010,7 @@ lemma use6and8 :
 
   intros r l₀ S
 
-  have : ((h K -1) * (r + 3/2) + (3-m K) * r * 1/2 + 3/2 : ℕ) =
+  have : ((h K -1) * (r + 3/2) + (3-m K) * r * 1/2 + 3/2) =
     ((-r : ℤ)/2 + 3 * h K/2) := by {
       sorry
     }
@@ -1956,14 +2019,14 @@ lemma use6and8 :
        _ = ((c₁₄)^r) * r^ ((-r : ℤ)/2 + 3 * h K/2) := ?_
   · sorry
   · rw [← this]
-    norm_cast
+    sorry
 
 def c₁₅ : ℝ := c₁₄ * c₅ K α' β' γ' q
 
 include α β σ hq0 h2mq hd hirr htriv K σ α' β' γ' habc h2mq t in
 theorem main : ∃ r ≥ n K q, r ^ ((r - 3 * (h K)) / 2) ≥ c₁₅ K α' β' γ' q ^ r := by
 
-  use r α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
+  use (r α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq)
   constructor
   sorry
   --use r_geq_n K α β hirr htriv σ hd α' β' γ' habc q u t hq0 h2mq
@@ -1978,8 +2041,8 @@ lemma use5 :
 
   intros r l₀ S
 
-  calc _ < c₁₄^r * c₅ K α' β' γ' q ^r := ?_
-       _ = c₁₅ K α' β' γ' q ^r := ?_
+  calc _ < c₁₄^r * (c₅ K α' β' γ' q) ^r := ?_
+       _ = (c₁₅ K α' β' γ' q) ^r := ?_
   · sorry
   · rw [← mul_pow]
     simp only [c₁₅]
