@@ -213,6 +213,14 @@ theorem _root_.Continuous.aestronglyMeasurable [TopologicalSpace α] [OpensMeasu
     AEStronglyMeasurable f μ :=
   hf.stronglyMeasurable.aestronglyMeasurable
 
+protected theorem fst {f : α → β × γ} (hf : AEStronglyMeasurable[m] f μ) :
+    AEStronglyMeasurable[m] (fun x ↦ (f x).fst) μ :=
+  ⟨fun a ↦ (hf.mk f a).fst, hf.stronglyMeasurable_mk.fst, hf.ae_eq_mk.fst⟩
+
+protected theorem snd {f : α → β × γ} (hf : AEStronglyMeasurable[m] f μ) :
+    AEStronglyMeasurable[m] (fun x ↦ (f x).snd) μ :=
+  ⟨fun a ↦ (hf.mk f a).snd, hf.stronglyMeasurable_mk.snd, hf.ae_eq_mk.snd⟩
+
 protected theorem prodMk {f : α → β} {g : α → γ} (hf : AEStronglyMeasurable[m] f μ)
     (hg : AEStronglyMeasurable[m] g μ) : AEStronglyMeasurable[m] (fun x => (f x, g x)) μ :=
   ⟨fun x => (hf.mk f x, hg.mk g x), hf.stronglyMeasurable_mk.prodMk hg.stronglyMeasurable_mk,
