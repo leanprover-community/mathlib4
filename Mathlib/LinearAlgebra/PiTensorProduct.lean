@@ -868,7 +868,7 @@ def tmulEquivDep :
       ext
       dsimp
       simp only [lift.tprod, domCoprodDep_apply, lift.tmul, LinearMap.coe_mk, AddHom.coe_mk,
-        currySumEquiv_apply]
+        currySum_apply]
       congr
       ext (_ | _) <;> simp)
     (TensorProduct.ext (by aesop))
@@ -893,25 +893,10 @@ section tmulEquiv
 /-- Equivalence between a `TensorProduct` of `PiTensorProduct`s and a single
 `PiTensorProduct` indexed by a `Sum` type.
 
-<<<<<<< HEAD
 See `PiTensorProduct.tmulEquivDep` for the dependent version. -/
 def tmulEquiv :
     (⨂[R] (_ : ι), M)  ⊗[R] (⨂[R] (_ : ι₂), M) ≃ₗ[R] ⨂[R] (_ : ι ⊕ ι₂), M :=
   tmulEquivDep R (fun _ ↦ M)
-=======
-For simplicity, this is defined only for homogeneously- (rather than dependently-) typed components.
--/
-def tmulEquiv : ((⨂[R] _ : ι, M) ⊗[R] ⨂[R] _ : ι₂, M) ≃ₗ[R] ⨂[R] _ : ι ⊕ ι₂, M :=
-  LinearEquiv.ofLinear tmul tmulSymm
-    (by
-      ext x
-      dsimp
-      simp only [tmulSymm_apply, tmul_apply, ← Function.comp_def x, Sum.elim_comp_inl_inr])
-    (by
-      ext x y
-      dsimp
-      simp only [tmul_apply, tmulSymm_apply, Sum.elim_inl, Sum.elim_inr])
->>>>>>> origin
 
 @[simp]
 theorem tmulEquiv_apply (a : ι → M) (b : ι₂ → M) :
