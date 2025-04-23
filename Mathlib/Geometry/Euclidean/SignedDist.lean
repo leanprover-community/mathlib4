@@ -33,7 +33,7 @@ variable [NormedAddTorsor V P]
 
 namespace AffineSubspace
 
-variable (s : AffineSubspace ℝ P) [Nonempty s] [HasOrthogonalProjection s.direction] (p : P)
+variable (s : AffineSubspace ℝ P) [Nonempty s] [s.direction.HasOrthogonalProjection] (p : P)
 
 /-- The signed distance between `s` and a point, in the direction of the reference point `p`.
 This is expected to be used when `p` does not lie in `s` (in the degenerate case where `p` lies
@@ -51,12 +51,12 @@ lemma signedInfDist_apply (x : P) :
 lemma signedInfDist_linear : (s.signedInfDist p).linear =
     (innerₗ V (‖p -ᵥ orthogonalProjection s p‖⁻¹ • (p -ᵥ orthogonalProjection s p))).comp
       (LinearMap.id (R := ℝ) (M := V) -
-        s.direction.subtype.comp (_root_.orthogonalProjection s.direction).toLinearMap) :=
+        s.direction.subtype.comp s.direction.orthogonalProjection.toLinearMap) :=
   rfl
 
 lemma signedInfDist_linear_apply (v : V) : (s.signedInfDist p).linear v =
     ⟪‖p -ᵥ orthogonalProjection s p‖⁻¹ • (p -ᵥ orthogonalProjection s p),
-     v - _root_.orthogonalProjection s.direction v⟫ :=
+     v - s.direction.orthogonalProjection v⟫ :=
   rfl
 
 @[simp] lemma signedInfDist_apply_self : s.signedInfDist p p = ‖p -ᵥ orthogonalProjection s p‖ := by
