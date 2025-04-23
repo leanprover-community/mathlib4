@@ -914,7 +914,6 @@ theorem lintegral_lintegral_swap [SFinite μ] ⦃f : α → β → ℝ≥0∞⦄
 
 theorem lintegral_prod_mul {f : α → ℝ≥0∞} {g : β → ℝ≥0∞} (hf : AEMeasurable f μ)
     (hg : AEMeasurable g ν) : ∫⁻ z, f z.1 * g z.2 ∂μ.prod ν = (∫⁻ x, f x ∂μ) * ∫⁻ y, g y ∂ν := by
-  have :  AEMeasurable (fun a ↦ f a.1 * g a.2) (μ.prod ν) := by fun_prop
   simp [lintegral_prod _ (hf.fst'.mul hg.snd'), lintegral_lintegral_mul hf hg]
 
 /-! ### Marginals of a measure defined on a product -/
