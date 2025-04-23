@@ -1,10 +1,10 @@
+/-
+Copyright (c) 2025 John Talbot. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: John Talbot
+-/
 import Mathlib.Combinatorics.SimpleGraph.Brooks.Induced
 import Mathlib.Combinatorics.SimpleGraph.Finsubgraph
-set_option linter.style.header false
-namespace SimpleGraph
-variable {α : Type*} {G : SimpleGraph α}
-open List Walk Finset
-
 
 /-!
 ## Brooks' Theorem (for 3 ≤ k)
@@ -57,6 +57,9 @@ We consider two cases:
    `k` greedily is at `vₘ`, but this is fine since `vₘ` has 2 neighbors of the same color, namely
    `w` and `vₘ₊₁`.
 --------------------------------------------/
+namespace SimpleGraph
+variable {α : Type*} {G : SimpleGraph α}
+open List Walk Finset
 
 /-- If a path `q : G.Walk u v` is contained in a Finset `s` then we can extend it to a path `p ++ q`
 contained in `s`, where `p : G.Walk x u` and `x` has no neighbors in `s` outside of `p ++ q`. -/
@@ -90,9 +93,8 @@ lemma Walk.IsCycle.support_rotate_tail_tail_eq [DecidableEq α] {u : α} {c : G.
       (hc.rotate hr).mem_tail_tail_support_iff, mem_support_rotate_iff]
 
 open PartColoring
-variable {k : ℕ} [DecidableRel G.Adj] [DecidableEq α]
 
-theorem BrooksPart [LocallyFinite G] (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1))
+theorem BrooksPart [LocallyFinite G] {k : ℕ} (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1))
     (hbdd : ∀ v, G.degree v ≤ k) (s : Finset α) : G.PartColorable k s := by
   induction hn : #s using Nat.strong_induction_on generalizing s with
   | h n ih =>
@@ -103,8 +105,7 @@ theorem BrooksPart [LocallyFinite G] (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1))
   · obtain ⟨v, hv, hlt⟩ := hd
     have hie : insert v (s.erase v : Set α) = s := by
       rw [← coe_insert, insert_erase hv]
-    obtain ⟨C : G.PartColoring k _⟩ :=
-                    ih _ ((card_erase_lt_of_mem hv).trans_le hn.le) _ rfl
+    obtain ⟨C⟩ := ih _ ((card_erase_lt_of_mem hv).trans_le hn.le) _ rfl
     exact ⟨(C.greedy v (C.nonempty_of_degreeIn_lt _ (by simp_rw [hie]; exact hlt))).copy hie⟩
   -- So all vertices in `s` have d_s(v) = k (and hence have no neighbors outside `s`)
   push_neg at hd
@@ -233,7 +234,7 @@ theorem BrooksPart [LocallyFinite G] (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1))
         have d2 : ∀ b ∈ s \ c.support.toFinset, ¬ G.Adj d.toProd.2 b := by
           contrapose! hd2; exact hd2
         -- We color `s \ c` by induction
-        obtain ⟨C₁ : G.PartColoring k _⟩ := ih _ hsdcard _ rfl
+        obtain ⟨C₁⟩ := ih _ hsdcard _ rfl
         -- we then extend this coloring to `d₂` by coloring `d₂` with the color of `y`
         -- the neighbor of `d₁` (so now `d₁` is a vertex on `c` that has two neigbors
         -- colored with the same color)
@@ -279,41 +280,25 @@ theorem BrooksPart [LocallyFinite G] (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1))
       · -- The cycle `c` has no edges into `s \ c` and so we can now color
         -- `c` and `s \ c` by induction and then join the colorings together
         push_neg at hnbc
-        obtain ⟨C₁ : G.PartColoring k c.support.toFinset⟩ :=
-            ih _ ((card_lt_card hsub).trans_le hn.le)  _ rfl
-        obtain ⟨C₂⟩ := ih _ hsdcard _ rfl
+        let ⟨C₁⟩ := ih _ ((card_lt_card hsub).trans_le hn.le)  _ rfl
+        let ⟨C₂⟩ := ih _ hsdcard _ rfl
         exact ⟨(C₁.union C₂ (fun _ _ hv hw had ↦
           ((hnbc _ (by simpa using hv) _ (by simpa using hw)) had).elim)).copy (by
             ext; simp only [coe_toFinset, coe_sdiff, Set.union_diff_self, Set.mem_union,
               Set.mem_setOf_eq, mem_coe, or_iff_right_iff_imp]
             exact fun hc ↦ hsub.1 <| mem_toFinset.mpr hc)⟩
   · -- `s` is empty so easy to `k`-color
-    exact ⟨fun _ ↦ ⟨0, by omega⟩, by simp_all [hem]⟩
+    exact ⟨fun _ ↦ ⟨0, by omega⟩, by simp_all⟩
 
-theorem Brooks_three_le_fintype [Fintype α] (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1))
-    (hbdd : ∀ v, G.degree v ≤ k) : G.Colorable k := by
-  obtain ⟨C : G.PartColoring k _⟩ := BrooksPart hk hc hbdd (univ : Finset α)
-  exact ⟨(C.copy coe_univ).toColoring⟩
-
-omit [DecidableRel G.Adj]
-theorem Brooks_three_le' [LocallyFinite G] (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1))
+theorem Brooks_three_le [LocallyFinite G] {k : ℕ} (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1))
     (hbdd : ∀ v, G.degree v ≤ k) : G.Colorable k := by
   apply nonempty_hom_of_forall_finite_subgraph_hom
   intro G' hf
   classical
-  have hc' : G'.coe.CliqueFree (k + 1) := by
-    contrapose! hc
-    rw [not_cliqueFree_iff]
-    exact ⟨⟨G'.hom.comp (topEmbeddingOfNotCliqueFree hc).toHom, Hom.injective_of_top_hom _⟩, by
-      simp only [Function.Embedding.coeFn_mk, top_adj]
-      intro a b
-      constructor <;> intro h
-      · rintro rfl; exact G.loopless _ h
-      · rw [← top_adj] at h
-        exact Hom.map_adj _ h⟩
   have hbdd' : ∀ v, G'.coe.degree v ≤ k := by
     intro v; rw [Subgraph.coe_degree]; exact (Subgraph.degree_le ..).trans (hbdd ..)
   haveI : Fintype ↑G'.verts := hf.fintype
-  exact (Brooks_three_le_fintype hk hc' (by convert hbdd')).some
+  let C : G'.coe.PartColoring .. := (BrooksPart hk (hc.comap' G'.hom) hbdd' Finset.univ).some
+  exact (C.copy coe_univ).toColoring
 
 end SimpleGraph

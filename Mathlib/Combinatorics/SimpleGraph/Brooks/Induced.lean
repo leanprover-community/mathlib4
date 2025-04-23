@@ -1,24 +1,28 @@
-
+/-
+Copyright (c) 2025 John Talbot. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: John Talbot
+-/
 import Mathlib.Combinatorics.SimpleGraph.Subgraph
 import Mathlib.Combinatorics.SimpleGraph.Path
 import Mathlib.Combinatorics.SimpleGraph.Coloring
-set_option linter.style.header false
 
-/-
-
+/-!
 Develop some API for induced subgraphs as SimpleGraphs, i.e.
-`(⊤ : Subgraph G).induce s).spanningCoe`
-and partial colorings of `G` as colorings of these.
+`(⊤ : Subgraph G).induce s).spanningCoe` and partial colorings of `G` as colorings of these.
 -/
+
 namespace SimpleGraph
 open Subgraph
 
 variable {α : Type*} (G : SimpleGraph α)
-
+/- The neighbors of `a` in `G.induce s` as a `SimpleGraph α`-/
 @[simp]
 def neighborSetIn (s : Set α) (a : α) :=
   ((⊤ : Subgraph G).induce s).spanningCoe.neighborSet a
 
+variable {G}
+@[simp]
 lemma mem_neighborSetIn {s : Set α} {a v : α} :
   v ∈ G.neighborSetIn s a ↔ a ∈ s ∧ v ∈ s ∧ G.Adj a v := by simp
 
@@ -29,9 +33,8 @@ lemma neighborSetIn_eq_inter_of_mem {s : Set α} {a : α} (ha : a ∈ s) :
 @[simp]
 lemma neighborSetIn_insert_eq (s : Set α) (a : α) :
     G.neighborSetIn (insert a s) a = {x | x ∈ s ∧ G.Adj a x} := by
-  ext x; rw [mem_neighborSetIn]; simp only [Set.mem_insert_iff, true_or, true_and, Set.mem_setOf_eq,
-    and_congr_left_iff, or_iff_right_iff_imp]
-  rintro h rfl; exact (G.loopless _ h).elim
+  rw [neighborSetIn_eq_inter_of_mem (Set.mem_insert ..)]
+  aesop
 
 section withDecRel
 
@@ -46,7 +49,6 @@ instance finiteAt {G' : Subgraph G} (v : α) [DecidableRel G'.Adj]
 instance finiteAtCoe {G' : Subgraph G} (v : α) [DecidableRel G'.Adj]
     [Fintype (G.neighborSet v)] : Fintype (G'.spanningCoe.neighborSet v) := by
   apply Set.fintypeSubset (G.neighborSet v) (G'.neighborSet_subset v)
-
 
 abbrev neighborFinsetIn (s : Set α) (a : α)[DecidablePred (· ∈ s)]  [Fintype (G.neighborSet a)] :=
   ((⊤ : Subgraph G).induce s).spanningCoe.neighborFinset a
@@ -63,6 +65,7 @@ lemma neighborFinsetIn_insert_eq (s : Set α) (a : α) [DecidablePred (· ∈ s)
     | inr h' => exact ⟨h.2, h'⟩
   · exact ⟨Or.inr h.2, h.1⟩
 
+variable (G) in
 abbrev degreeIn (s : Set α) [DecidablePred (· ∈ s)] (a : α) [Fintype (G.neighborSet a)]  :=
   ((⊤ : Subgraph G).induce s).spanningCoe.degree a
 
@@ -83,10 +86,7 @@ lemma degreeIn_insert_lt_degree {s : Set α} {a v : α} (h : G.Adj a v) (hv : v 
   rw [degreeIn_insert_eq, ← card_neighborFinset_eq_degree]
   exact card_lt_card <| Finset.filter_ssubset.2 ⟨v, (G.mem_neighborFinset ..).2 h, hv⟩
 
-
-variable {t : Set α} [DecidablePred (· ∈ t)]
-
-variable {a : α}  [Fintype (G.neighborSet a)]
+variable {t : Set α} [DecidablePred (· ∈ t)] {a : α} [Fintype (G.neighborSet a)]
 
 lemma degreeIn_mono (h : s ⊆ t) : G.degreeIn s a ≤ G.degreeIn t a := by
   rw [degreeIn_eq, degreeIn_eq]
@@ -108,16 +108,14 @@ lemma degreeIn_lt_degree {v : α} (hv : v ∈ G.neighborSet a ∧ v ∉ s) :
     G.degreeIn s a < G.degree a :=
   lt_of_le_of_ne (G.degreeIn_le_degree a)
     fun h ↦ hv.2 <| G.neighborSet_subset_of_degree_le_degreeIn h.symm.le hv.1
-end withDecRel
-variable {s t : Set α} {n : ℕ}
-/-- A `PartColoring n s` of `G` is a coloring of all vertices of `G` that is valid on the set `s` -/
 
-abbrev PartColoring (n : ℕ) (s : Set α) :=
-  ((⊤ : Subgraph G).induce s).spanningCoe.Coloring (Fin n)
+end withDecRel
+
+variable {s t : Set α} {n : ℕ} (G)
+/-- A `PartColoring n s` of `G` is a coloring of all vertices of `G` that is valid on the set `s` -/
+abbrev PartColoring (n : ℕ) (s : Set α) := ((⊤ : Subgraph G).induce s).spanningCoe.Coloring (Fin n)
 
 variable {G}
-
-
 /--
 `C₂ : G.PartColoring n t` extends `C₁ : G.PartColoring n s` if `s ⊆ t` and `C₂` agrees with `C₁`
 on `s`
@@ -138,6 +136,7 @@ lemma extends_trans {C₃ : G.PartColoring n u} {C₂ : G.PartColoring n t} {C�
   intro v hv
   rw [← h1.2 hv, h2.2 (h1.1 hv)]
 
+/-- Construct a `G.PartColoring n t` from `C : G.PartColoring n s` and proof that `s = t` -/
 @[simp]
 def copy (C : G.PartColoring n s) (h : s = t) : G.PartColoring n t where
   toFun := C.toFun
@@ -148,11 +147,11 @@ def copy (C : G.PartColoring n s) (h : s = t) : G.PartColoring n t where
 @[simp]
 theorem copy_rfl  (C : G.PartColoring n s)  : C.copy rfl = C := rfl
 
--- @[simp]
--- theorem copy_copy {s t u} (C : G.PartColoring n s) (hs : s = t) (ht : t = u) :
---     (C.copy hs).copy ht = C.copy (hs.trans ht) := by
---   subst_vars
---   rfl
+@[simp]
+theorem copy_copy {s t u} (C : G.PartColoring n s) (hs : s = t) (ht : t = u) :
+    (C.copy hs).copy ht = C.copy (hs.trans ht) := by
+  subst_vars
+  rfl
 
 @[simp]
 lemma copy_def (C: G.PartColoring n s) (h : s = t) {v : α} :
@@ -163,6 +162,7 @@ lemma copy_extends {C₂ : G.PartColoring n t} {C₁ : G.PartColoring n s} (hc :
   {h : t = u} : (C₂.copy h).extends C₁ :=
     ⟨fun _ hx ↦ h ▸ hc.1 hx, fun _ hv ↦ by rw [copy_def]; exact hc.2 hv⟩
 
+/-- A `G.PartColoring n Set.univ` is a `G.Coloring (Fin n)` -/
 def toColoring (C : G.PartColoring n Set.univ) : G.Coloring (Fin n) :=
     ⟨C, fun hab ↦ C.valid (by simpa using hab)⟩
 
@@ -175,7 +175,7 @@ def partColoringOfSingleton {n : ℕ} (a : α) (c : Fin n) : G.PartColoring n ({
   toFun := fun _ ↦ c
   map_rel':= by simp
 
-/-- We can color `{a}` with any valid color -/
+/-- We can color `{a, b}` with any valid color if `¬ G.Adj a b` -/
 def partColoringOfNotAdj {n : ℕ} {a b : α} (h : ¬ G.Adj a b) (c : Fin n) :
     G.PartColoring n ({a, b} : Set α) where
   toFun := fun _ ↦ c
@@ -192,15 +192,13 @@ lemma partColoringOfSingleton_def {n : ℕ} {a v : α} {c : Fin n} :
   G.partColoringOfSingleton a c v = c := rfl
 
 /-- `G.PartColorable n s` is the predicate for existence of a `PartColoring n s` of `G`. -/
-abbrev PartColorable (n : ℕ) (s : Set α) := ((⊤ : Subgraph G).induce s).spanningCoe.Colorable n
-
-lemma isPartColorable_zero_iff {s : Set α} : G.PartColorable 0 s ↔ IsEmpty α  := by
-  rw [PartColorable, colorable_zero_iff]
+abbrev PartColorable (n : ℕ) (s : Set α) := Nonempty (G.PartColoring n s)
 
 variable {G} {n : ℕ} [DecidablePred (· ∈ s)] [DecidablePred (· ∈ t)]
-
 /--
-We can combine colorings of `s` and `t` if `∀ v w, v ∈ s → w ∈ t \ s → G.Adj v w → C₁ v ≠ C₂ w`
+We can combine colorings `C₁` of `s` and `C₂` of `t` if they are compatible i.e.
+`∀ v w, v ∈ s → w ∈ t \ s → G.Adj v w → C₁ v ≠ C₂ w` to get a coloring of `s ∪ t`.
+This will extend `C₁` and, if `Disjoint s t`, it will extend `C₂`
 -/
 def PartColoring.union (C₁ : G.PartColoring n s) (C₂ : G.PartColoring n t)
     (h : ∀ ⦃v w⦄, v ∈ s → w ∈ t \ s → G.Adj v w → C₁ v ≠ C₂ w) : G.PartColoring n (s ∪ t) where
@@ -256,12 +254,6 @@ protected def PartColoring.insert (a : α) (c : Fin n) (C₁ : G.PartColoring n 
     exact h h' had h2.symm)).copy (by simp [Set.union_comm])
 
 variable {a v : α} {c : Fin n}
-/-
-
-def insertNotAdj {b : α} (C : G.PartialColoring s) (h : ∀ v, v ∈ s → ¬ G.Adj b v) (a : α) :
-    G.PartialColoring (insert b s) where
-  col   := fun v ↦ ite (v = b) (C a) (C v)
--/
 
 @[simp]
 lemma PartColoring.insert_def (C₁ : G.PartColoring n s) (h : ∀ ⦃v⦄, v ∈ s → G.Adj a v → C₁ v ≠ c) :
@@ -297,7 +289,6 @@ lemma PartColoring.greedy_extends_not_mem (C₁ : G.PartColoring n s) (ha : a �
 lemma PartColoring.greedy_extends (C₁ : G.PartColoring n s) [Fintype (G.neighborSet a)] (h) :
   (C₁.greedy a h).extends (G.partColoringOfSingleton a (Finset.min' _ h)) := C₁.insert_extends _
 
-
 variable [DecidableRel G.Adj]
 
 lemma PartColoring.nonempty_of_degreeIn_lt (C₁ : G.PartColoring n s) (a : α)
@@ -308,7 +299,6 @@ lemma PartColoring.nonempty_of_degreeIn_lt (C₁ : G.PartColoring n s) (a : α)
   have := Finset.card_image_le (f:=C₁) (s := {x ∈ G.neighborFinset a | x ∈ s})
   simp only [h, Finset.card_univ, Fintype.card_fin] at this
   rwa [degreeIn_insert_eq]
-
 
 lemma PartColoring.nonempty_of_degreeIn_le_not_inj {u v : α} (C₁ : G.PartColoring n s) (a : α)
     [Fintype (G.neighborSet a)] (h : G.degreeIn (insert a s) a ≤ n) (hus : u ∈ s) (hvs : v ∈ s)
