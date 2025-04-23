@@ -443,7 +443,7 @@ lemma invtSubmodule_reflection:
   obtain ⟨q, h₀, h₁, h₃⟩ := this
   suffices h₂ : ∀ Φ, Φ.Nonempty → S.root '' Φ ⊆ q → (∀ i ∉ Φ, q ≤ LinearMap.ker (S.coroot' i)) →
       Φ = Set.univ by
-    have := (S.invtsubmodule_to_root_subset q h₁ h₀) h₂
+    have := (S.eq_top_of_mem_invtSubmodule_of_forall_eq_univ q h₁ h₀) h₂
     apply False.elim (h₃ this)
   intro Φ hΦ₁ hΦ₂ hΦ₃
   by_contra hc
