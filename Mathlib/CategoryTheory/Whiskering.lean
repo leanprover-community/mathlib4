@@ -221,6 +221,15 @@ theorem isoWhiskerLeft_inv (F : C ⥤ D) {G H : D ⥤ E} (α : G ≅ H) :
     (isoWhiskerLeft F α).inv = whiskerLeft F α.inv :=
   rfl
 
+lemma isoWhiskerLeft_symm (F : C ⥤ D) {G H : D ⥤ E} (α : G ≅ H) :
+    (isoWhiskerLeft F α).symm = isoWhiskerLeft F α.symm :=
+  rfl
+
+@[simp]
+lemma isoWhiskerLeft_refl (F : C ⥤ D) (G : D ⥤ E) :
+    isoWhiskerLeft F (Iso.refl G) = Iso.refl _ :=
+  rfl
+
 /-- If `α : G ≅ H` then
 `isoWhiskerRight α F : (G ⋙ F) ≅ (H ⋙ F)` has components `F.map_iso (α.app X)`.
 -/
@@ -237,6 +246,15 @@ theorem isoWhiskerRight_inv {G H : C ⥤ D} (α : G ≅ H) (F : D ⥤ E) :
     (isoWhiskerRight α F).inv = whiskerRight α.inv F :=
   rfl
 
+lemma isoWhiskerRight_symm {G H : C ⥤ D} (α : G ≅ H) (F : D ⥤ E) :
+    (isoWhiskerRight α F).symm = isoWhiskerRight α.symm F :=
+  rfl
+
+@[simp]
+lemma isoWhiskerRight_refl (F : C ⥤ D) (G : D ⥤ E) :
+    isoWhiskerRight (Iso.refl F) G = Iso.refl _ := by
+  aesop_cat
+
 instance isIso_whiskerLeft (F : C ⥤ D) {G H : D ⥤ E} (α : G ⟶ H) [IsIso α] :
     IsIso (whiskerLeft F α) :=
   (isoWhiskerLeft F (asIso α)).isIso_hom
@@ -244,6 +262,21 @@ instance isIso_whiskerLeft (F : C ⥤ D) {G H : D ⥤ E} (α : G ⟶ H) [IsIso �
 instance isIso_whiskerRight {G H : C ⥤ D} (α : G ⟶ H) (F : D ⥤ E) [IsIso α] :
     IsIso (whiskerRight α F) :=
   (isoWhiskerRight (asIso α) F).isIso_hom
+
+@[simp]
+theorem isoWhiskerLeft_trans (F : C ⥤ D) {G H K : D ⥤ E} (α : G ≅ H) (β : H ≅ K) :
+    isoWhiskerLeft F (α ≪≫ β) = isoWhiskerLeft F α ≪≫ isoWhiskerLeft F β :=
+  rfl
+
+@[simp]
+theorem isoWhiskerRight_trans {G H K : C ⥤ D} (α : G ≅ H) (β : H ≅ K) (F : D ⥤ E) :
+    isoWhiskerRight (α ≪≫ β) F = isoWhiskerRight α F ≪≫ isoWhiskerRight β F :=
+  ((whiskeringRight C D E).obj F).mapIso_trans α β
+
+theorem isoWhiskerLeft_trans_isoWhiskerRight {F G : C ⥤ D} {H K : D ⥤ E} (α : F ≅ G) (β : H ≅ K) :
+    isoWhiskerLeft F β ≪≫ isoWhiskerRight α K = isoWhiskerRight α H ≪≫ isoWhiskerLeft G β := by
+  ext
+  simp
 
 variable {B : Type u₄} [Category.{v₄} B]
 
@@ -265,6 +298,30 @@ theorem whiskerRight_left (F : B ⥤ C) {G H : C ⥤ D} (α : G ⟶ H) (K : D �
       (Functor.associator _ _ _).inv := by
   aesop_cat
 
+@[simp]
+theorem isoWhiskerLeft_twice (F : B ⥤ C) (G : C ⥤ D) {H K : D ⥤ E} (α : H ≅ K) :
+    isoWhiskerLeft F (isoWhiskerLeft G α) =
+    (Functor.associator _ _ _).symm ≪≫ isoWhiskerLeft (F ⋙ G) α ≪≫ Functor.associator _ _ _ := by
+  aesop_cat
+
+@[simp]
+theorem isoWhiskerRight_twice {H K : B ⥤ C} (F : C ⥤ D) (G : D ⥤ E) (α : H ≅ K) :
+    isoWhiskerRight (isoWhiskerRight α F) G =
+    Functor.associator _ _ _ ≪≫ isoWhiskerRight α (F ⋙ G) ≪≫ (Functor.associator _ _ _).symm := by
+  aesop_cat
+
+theorem isoWhiskerRight_left (F : B ⥤ C) {G H : C ⥤ D} (α : G ≅ H) (K : D ⥤ E) :
+    isoWhiskerRight (isoWhiskerLeft F α) K =
+    Functor.associator _ _ _ ≪≫ isoWhiskerLeft F (isoWhiskerRight α K) ≪≫
+      Functor.associator _ _ _ := by
+  aesop_cat
+
+theorem isoWhiskerLeft_right (F : B ⥤ C) {G H : C ⥤ D} (α : G ≅ H) (K : D ⥤ E) :
+    isoWhiskerLeft F (isoWhiskerRight α K) =
+    (Functor.associator _ _ _).symm ≪≫ isoWhiskerRight (isoWhiskerLeft F α) K ≪≫
+      (Functor.associator _ _ _).symm := by
+  aesop_cat
+
 end
 
 namespace Functor
@@ -274,6 +331,15 @@ universe u₅ v₅
 variable {A : Type u₁} [Category.{v₁} A] {B : Type u₂} [Category.{v₂} B]
   {C : Type u₃} [Category.{v₃} C] {D : Type u₄} [Category.{v₄} D] {E : Type u₅} [Category.{v₅} E]
   (F : A ⥤ B) (G : B ⥤ C) (H : C ⥤ D) (K : D ⥤ E)
+
+theorem triangleIso :
+    associator F (𝟭 B) G ≪≫ isoWhiskerLeft F (leftUnitor G) =
+      isoWhiskerRight (rightUnitor F) G := by aesop_cat
+
+theorem pentagonIso :
+    isoWhiskerRight (associator F G H) K ≪≫
+        associator F (G ⋙ H) K ≪≫ isoWhiskerLeft F (associator G H K) =
+      associator (F ⋙ G) H K ≪≫ associator F G (H ⋙ K) := by aesop_cat
 
 theorem triangle :
     (associator F (𝟭 B) G).hom ≫ whiskerLeft F (leftUnitor G).hom =

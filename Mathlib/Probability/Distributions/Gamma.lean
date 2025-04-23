@@ -140,7 +140,8 @@ def gammaCDFReal (a r : ℝ) : StieltjesFunction :=
 lemma gammaCDFReal_eq_integral {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (x : ℝ) :
     gammaCDFReal a r x = ∫ x in Iic x, gammaPDFReal a r x := by
   have : IsProbabilityMeasure (gammaMeasure a r) := isProbabilityMeasureGamma ha hr
-  rw [gammaCDFReal, cdf_eq_toReal, gammaMeasure, withDensity_apply _ measurableSet_Iic]
+  rw [gammaCDFReal, cdf_eq_real, gammaMeasure, measureReal_def,
+    withDensity_apply _ measurableSet_Iic]
   refine (integral_eq_lintegral_of_nonneg_ae ?_ ?_).symm
   · exact ae_of_all _ fun b ↦ by simp only [Pi.zero_apply, gammaPDFReal_nonneg ha hr]
   · exact (measurable_gammaPDFReal a r).aestronglyMeasurable.restrict
@@ -148,8 +149,8 @@ lemma gammaCDFReal_eq_integral {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (x : ℝ) :
 lemma gammaCDFReal_eq_lintegral {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (x : ℝ) :
     gammaCDFReal a r x = ENNReal.toReal (∫⁻ x in Iic x, gammaPDF a r x) := by
   have : IsProbabilityMeasure (gammaMeasure a r) := isProbabilityMeasureGamma ha hr
-  simp only [gammaPDF, gammaCDFReal, cdf_eq_toReal]
-  simp only [gammaMeasure, measurableSet_Iic, withDensity_apply, gammaPDF]
+  simp only [gammaPDF, gammaCDFReal, cdf_eq_real]
+  simp only [gammaMeasure, measurableSet_Iic, withDensity_apply, gammaPDF, measureReal_def]
 
 end GammaCDF
 
