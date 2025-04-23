@@ -97,11 +97,11 @@ noncomputable def isColimitColimitCocone : IsColimit (colimitCocone F) where
 instance : HasColimit F := ⟨_, isColimitColimitCocone F⟩
 
 noncomputable instance : PreservesColimit F (forget₂ _ AddCommGrp) :=
-  preservesColimitOfPreservesColimitCocone (isColimitColimitCocone F) (colimit.isColimit _)
+  preservesColimit_of_preserves_colimit_cocone (isColimitColimitCocone F) (colimit.isColimit _)
 
 noncomputable instance reflectsColimit :
     ReflectsColimit F (forget₂ (ModuleCat.{w'} R) AddCommGrp) :=
-  reflectsColimitOfReflectsIsomorphisms _ _
+  reflectsColimit_of_reflectsIsomorphisms _ _
 
 end HasColimit
 
@@ -126,15 +126,15 @@ noncomputable instance forget₂PreservesColimitsOfSize
 
 noncomputable instance
     [HasColimitsOfSize.{u, v} AddCommGrpMax.{w, w'}] :
-    PreservesColimitsOfSize.{u, v} (forget₂ (ModuleCatMax.{w, w'} R) AddCommGrp) where
+    PreservesColimitsOfSize.{u, v} (forget₂ (ModuleCat.{max w w'} R) AddCommGrp) where
 
 instance : HasFiniteColimits (ModuleCat.{w'} R) := inferInstance
 
 -- Sanity checks, just to make sure typeclass search can find the instances we want.
-example (R : Type u) [Ring R] : HasColimits (ModuleCatMax.{v, u} R) :=
+example (R : Type u) [Ring R] : HasColimits (ModuleCat.{max v u} R) :=
   inferInstance
 
-example (R : Type u) [Ring R] : HasColimits (ModuleCatMax.{u, v} R) :=
+example (R : Type u) [Ring R] : HasColimits (ModuleCat.{max u v} R) :=
   inferInstance
 
 example (R : Type u) [Ring R] : HasColimits (ModuleCat.{u} R) :=

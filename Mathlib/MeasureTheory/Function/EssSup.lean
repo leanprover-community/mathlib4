@@ -96,11 +96,11 @@ variable [MeasurableSingletonClass α]
 
 @[simp] lemma essSup_uniformOn_eq_ciSup [Finite α] (hf : BddAbove (Set.range f)) :
     essSup f (uniformOn univ) = ⨆ a, f a :=
-  essSup_eq_ciSup (by simp [uniformOn, cond_apply, Set.finite_univ]) hf
+  essSup_eq_ciSup (by simpa [uniformOn, cond_apply]) hf
 
 @[simp] lemma essInf_cond_count_eq_ciInf [Finite α] (hf : BddBelow (Set.range f)) :
     essInf f (uniformOn univ) = ⨅ a, f a :=
-  essInf_eq_ciInf (by simp [uniformOn, cond_apply, Set.finite_univ]) hf
+  essInf_eq_ciInf (by simpa [uniformOn, cond_apply]) hf
 
 end ConditionallyCompleteLattice
 
@@ -288,7 +288,7 @@ theorem essSup_mul_le (f g : α → ℝ≥0∞) : essSup (f * g) μ ≤ essSup f
 theorem essSup_add_le (f g : α → ℝ≥0∞) : essSup (f + g) μ ≤ essSup f μ + essSup g μ :=
   limsup_add_le f g
 
-theorem essSup_liminf_le {ι} [Countable ι] [LinearOrder ι] (f : ι → α → ℝ≥0∞) :
+theorem essSup_liminf_le {ι} [Countable ι] [Preorder ι] (f : ι → α → ℝ≥0∞) :
     essSup (fun x => atTop.liminf fun n => f n x) μ ≤
       atTop.liminf fun n => essSup (fun x => f n x) μ := by
   simp_rw [essSup]

@@ -14,7 +14,7 @@ the morphism `WithZeroMultInt.toNNReal`.
 ## Main Definitions
 
 * `WithZeroMultInt.toNNReal` : The `MonoidWithZeroHom` from `ℤₘ₀ → ℝ≥0` sending `0 ↦ 0` and
-  `x ↦ e^(Multiplicative.toAdd (WithZero.unzero hx)` when `x ≠ 0`, for a nonzero `e : ℝ≥0`.
+  `x ↦ e^((WithZero.unzero hx).toAdd)` when `x ≠ 0`, for a nonzero `e : ℝ≥0`.
 
 ## Main Results
 
@@ -26,6 +26,8 @@ the morphism `WithZeroMultInt.toNNReal`.
 WithZero, multiplicative, nnreal
 -/
 
+assert_not_exists Finset
+
 noncomputable section
 
 open scoped NNReal
@@ -35,21 +37,20 @@ open Multiplicative WithZero
 namespace WithZeroMulInt
 
 /-- Given a nonzero `e : ℝ≥0`, this is the map `ℤₘ₀ → ℝ≥0` sending `0 ↦ 0` and
-  `x ↦ e^(Multiplicative.toAdd (WithZero.unzero hx)` when `x ≠ 0` as a `MonoidWithZeroHom`. -/
+  `x ↦ e^(WithZero.unzero hx).toAdd` when `x ≠ 0` as a `MonoidWithZeroHom`. -/
 def toNNReal {e : ℝ≥0} (he : e ≠ 0) : ℤₘ₀ →*₀ ℝ≥0 where
-  toFun := fun x ↦ if hx : x = 0 then 0 else e ^ Multiplicative.toAdd (WithZero.unzero hx)
+  toFun := fun x ↦ if hx : x = 0 then 0 else e ^ (WithZero.unzero hx).toAdd
   map_zero' := rfl
   map_one' := by
     simp only [dif_neg one_ne_zero]
     erw [toAdd_one, zpow_zero]
   map_mul' x y := by
-    simp only
     by_cases hxy : x * y = 0
-    · cases' zero_eq_mul.mp (Eq.symm hxy) with hx hy
+    · rcases zero_eq_mul.mp (Eq.symm hxy) with hx | hy
       --either x = 0 or y = 0
       · rw [dif_pos hxy, dif_pos hx, MulZeroClass.zero_mul]
       · rw [dif_pos hxy, dif_pos hy, MulZeroClass.mul_zero]
-    · cases' mul_ne_zero_iff.mp hxy with hx hy
+    · obtain ⟨hx, hy⟩ := mul_ne_zero_iff.mp hxy
       --  x Equiv≠ 0 and y ≠ 0
       rw [dif_neg hxy, dif_neg hx, dif_neg hy, ← zpow_add' (Or.inl he), ← toAdd_mul]
       congr
@@ -61,7 +62,7 @@ theorem toNNReal_pos_apply {e : ℝ≥0} (he : e ≠ 0) {x : ℤₘ₀} (hx : x 
   split_ifs; rfl
 
 theorem toNNReal_neg_apply {e : ℝ≥0} (he : e ≠ 0) {x : ℤₘ₀} (hx : x ≠ 0) :
-    toNNReal he x = e ^ Multiplicative.toAdd (WithZero.unzero hx) := by
+    toNNReal he x = e ^ (WithZero.unzero hx).toAdd := by
   simp only [toNNReal, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
   split_ifs
   · tauto
@@ -98,14 +99,10 @@ theorem toNNReal_eq_one_iff {e : ℝ≥0} (m : ℤₘ₀) (he0 : e ≠ 0) (he1 :
 
 theorem toNNReal_lt_one_iff {e : ℝ≥0} {m : ℤₘ₀} (he : 1 < e) :
     toNNReal (ne_zero_of_lt he) m < 1 ↔ m < 1 := by
-  have : 1 = (toNNReal (ne_zero_of_lt he)) 1 := rfl
-  simp_rw [this]
-  exact StrictMono.lt_iff_lt (toNNReal_strictMono he)
+  rw [← (toNNReal_strictMono he).lt_iff_lt, map_one]
 
 theorem toNNReal_le_one_iff {e : ℝ≥0} {m : ℤₘ₀} (he : 1 < e) :
     toNNReal (ne_zero_of_lt he) m ≤ 1 ↔ m ≤ 1 := by
-  have : 1 = (toNNReal (ne_zero_of_lt he)) 1 := rfl
-  simp_rw [this]
-  exact StrictMono.le_iff_le (toNNReal_strictMono he)
+  rw [← (toNNReal_strictMono he).le_iff_le, map_one]
 
 end WithZeroMulInt

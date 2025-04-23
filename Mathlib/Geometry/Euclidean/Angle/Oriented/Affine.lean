@@ -45,11 +45,8 @@ def oangle (p₁ p₂ p₃ : P) : Real.Angle :=
 /-- Oriented angles are continuous when neither end point equals the middle point. -/
 theorem continuousAt_oangle {x : P × P × P} (hx12 : x.1 ≠ x.2.1) (hx32 : x.2.2 ≠ x.2.1) :
     ContinuousAt (fun y : P × P × P => ∡ y.1 y.2.1 y.2.2) x := by
-  let f : P × P × P → V × V := fun y => (y.1 -ᵥ y.2.1, y.2.2 -ᵥ y.2.1)
-  have hf1 : (f x).1 ≠ 0 := by simp [hx12]
-  have hf2 : (f x).2 ≠ 0 := by simp [hx32]
-  exact (o.continuousAt_oangle hf1 hf2).comp ((continuous_fst.vsub continuous_snd.fst).prod_mk
-    (continuous_snd.snd.vsub continuous_snd.fst)).continuousAt
+  unfold oangle
+  fun_prop (disch := simp [*])
 
 /-- The angle ∡AAB at a point. -/
 @[simp]
@@ -616,9 +613,7 @@ theorem _root_.Collinear.oangle_sign_of_sameRay_vsub {p₁ p₂ p₃ p₄ : P} (
     have hco : IsConnected s :=
       haveI : ConnectedSpace line[ℝ, p₁, p₂] := AddTorsor.connectedSpace _ _
       (isConnected_univ.prod (isConnected_setOf_sameRay_and_ne_zero
-        (vsub_ne_zero.2 hp₁p₂.symm))).image _
-        (continuous_fst.subtype_val.prod_mk (continuous_const.prod_mk
-          (continuous_snd.vadd continuous_fst.subtype_val))).continuousOn
+        (vsub_ne_zero.2 hp₁p₂.symm))).image _ (by fun_prop)
     have hf : ContinuousOn (fun p : P × P × P => ∡ p.1 p.2.1 p.2.2) s := by
       refine continuousOn_of_forall_continuousAt fun p hp => continuousAt_oangle ?_ ?_
       all_goals
@@ -713,8 +708,8 @@ theorem _root_.AffineSubspace.SSameSide.oangle_sign_eq {s : AffineSubspace ℝ P
     (∡ p₁ p₄ p₂).sign = (∡ p₁ p₃ p₂).sign := by
   by_cases h : p₁ = p₂; · simp [h]
   let sp : Set (P × P × P) := (fun p : P => (p₁, p, p₂)) '' {p | s.SSameSide p₃ p}
-  have hc : IsConnected sp := (isConnected_setOf_sSameSide hp₃p₄.2.1 hp₃p₄.nonempty).image _
-    (continuous_const.prod_mk (Continuous.Prod.mk_left _)).continuousOn
+  have hc : IsConnected sp :=
+    (isConnected_setOf_sSameSide hp₃p₄.2.1 hp₃p₄.nonempty).image _ (by fun_prop)
   have hf : ContinuousOn (fun p : P × P × P => ∡ p.1 p.2.1 p.2.2) sp := by
     refine continuousOn_of_forall_continuousAt fun p hp => continuousAt_oangle ?_ ?_
     all_goals

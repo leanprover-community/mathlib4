@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Algebra.GroupWithZero.Indicator
-import Mathlib.Topology.ContinuousOn
-import Mathlib.Topology.Instances.ENNReal
+import Mathlib.Topology.Piecewise
+import Mathlib.Topology.Instances.ENNReal.Lemmas
 
 /-!
 # Semicontinuous maps
@@ -324,15 +324,9 @@ theorem lowerSemicontinuous_iff_isClosed_epigraph {f : α → γ} :
           simpa using (eventually_principal.2 fun (_ : α × γ) ↦ id).filter_mono h
     _ = y := h'.2.liminf_eq
   · rw [lowerSemicontinuous_iff_isClosed_preimage]
-    exact fun hf y ↦ hf.preimage (Continuous.Prod.mk_left y)
-
-@[deprecated (since := "2024-03-02")]
-alias lowerSemicontinuous_iff_IsClosed_epigraph := lowerSemicontinuous_iff_isClosed_epigraph
+    exact fun hf y ↦ hf.preimage (.prodMk_left y)
 
 alias ⟨LowerSemicontinuous.isClosed_epigraph, _⟩ := lowerSemicontinuous_iff_isClosed_epigraph
-
-@[deprecated (since := "2024-03-02")]
-alias LowerSemicontinuous.IsClosed_epigraph := LowerSemicontinuous.isClosed_epigraph
 
 end
 
@@ -413,8 +407,8 @@ end
 
 section
 
-variable {ι : Type*} {γ : Type*} [LinearOrderedAddCommMonoid γ] [TopologicalSpace γ]
-  [OrderTopology γ]
+variable {ι : Type*} {γ : Type*} [AddCommMonoid γ] [LinearOrder γ] [IsOrderedAddMonoid γ]
+  [TopologicalSpace γ] [OrderTopology γ]
 
 /-- The sum of two lower semicontinuous functions is lower semicontinuous. Formulated with an
 explicit continuity assumption on addition, for application to `EReal`. The unprimed version of
@@ -542,11 +536,12 @@ theorem lowerSemicontinuousWithinAt_sum {f : ι → α → γ} {a : Finset ι}
     (ha : ∀ i ∈ a, LowerSemicontinuousWithinAt (f i) s x) :
     LowerSemicontinuousWithinAt (fun z => ∑ i ∈ a, f i z) s x := by
   classical
-    induction' a using Finset.induction_on with i a ia IH
-    · exact lowerSemicontinuousWithinAt_const
-    · simp only [ia, Finset.sum_insert, not_false_iff]
+    induction a using Finset.induction_on with
+    | empty => exact lowerSemicontinuousWithinAt_const
+    | insert ia IH =>
+      simp only [ia, Finset.sum_insert, not_false_iff]
       exact
-        LowerSemicontinuousWithinAt.add (ha _ (Finset.mem_insert_self i a))
+        LowerSemicontinuousWithinAt.add (ha _ (Finset.mem_insert_self ..))
           (IH fun j ja => ha j (Finset.mem_insert_of_mem ja))
 
 theorem lowerSemicontinuousAt_sum {f : ι → α → γ} {a : Finset ι}
@@ -909,8 +904,8 @@ end
 
 section
 
-variable {ι : Type*} {γ : Type*} [LinearOrderedAddCommMonoid γ] [TopologicalSpace γ]
-  [OrderTopology γ]
+variable {ι : Type*} {γ : Type*} [AddCommMonoid γ] [LinearOrder γ] [IsOrderedAddMonoid γ]
+  [TopologicalSpace γ] [OrderTopology γ]
 
 /-- The sum of two upper semicontinuous functions is upper semicontinuous. Formulated with an
 explicit continuity assumption on addition, for application to `EReal`. The unprimed version of
@@ -919,7 +914,7 @@ theorem UpperSemicontinuousWithinAt.add' {f g : α → γ} (hf : UpperSemicontin
     (hg : UpperSemicontinuousWithinAt g s x)
     (hcont : ContinuousAt (fun p : γ × γ => p.1 + p.2) (f x, g x)) :
     UpperSemicontinuousWithinAt (fun z => f z + g z) s x :=
-  @LowerSemicontinuousWithinAt.add' α _ x s γᵒᵈ _ _ _ _ _ hf hg hcont
+  LowerSemicontinuousWithinAt.add' (γ := γᵒᵈ) hf hg hcont
 
 /-- The sum of two upper semicontinuous functions is upper semicontinuous. Formulated with an
 explicit continuity assumption on addition, for application to `EReal`. The unprimed version of
@@ -982,7 +977,7 @@ theorem UpperSemicontinuous.add {f g : α → γ} (hf : UpperSemicontinuous f)
 theorem upperSemicontinuousWithinAt_sum {f : ι → α → γ} {a : Finset ι}
     (ha : ∀ i ∈ a, UpperSemicontinuousWithinAt (f i) s x) :
     UpperSemicontinuousWithinAt (fun z => ∑ i ∈ a, f i z) s x :=
-  @lowerSemicontinuousWithinAt_sum α _ x s ι γᵒᵈ _ _ _ _ f a ha
+  lowerSemicontinuousWithinAt_sum (γ := γᵒᵈ) ha
 
 theorem upperSemicontinuousAt_sum {f : ι → α → γ} {a : Finset ι}
     (ha : ∀ i ∈ a, UpperSemicontinuousAt (f i) x) :
@@ -1082,7 +1077,7 @@ theorem continuousWithinAt_iff_lower_upperSemicontinuousWithinAt {f : α → γ}
     by_cases Hu : ∃ u, f x < u
     · rcases exists_Ico_subset_of_mem_nhds hv Hu with ⟨u, fxu, hu⟩
       filter_upwards [h₁ l lfx, h₂ u fxu] with a lfa fau
-      cases' le_or_gt (f a) (f x) with h h
+      rcases le_or_gt (f a) (f x) with h | h
       · exact hl ⟨lfa, h⟩
       · exact hu ⟨le_of_lt h, fau⟩
     · simp only [not_exists, not_lt] at Hu

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Anne Baanen
 -/
 import Mathlib.Algebra.Algebra.Equiv
-import Mathlib.LinearAlgebra.Span
+import Mathlib.LinearAlgebra.Span.Basic
 
 /-!
 # Towers of algebras
@@ -200,7 +200,7 @@ theorem coe_restrictScalars' (f : A →ₐ[S] B) : (restrictScalars R f : A → 
 
 theorem restrictScalars_injective :
     Function.Injective (restrictScalars R : (A →ₐ[S] B) → A →ₐ[R] B) := fun _ _ h =>
-  AlgHom.ext (AlgHom.congr_fun h : _)
+  AlgHom.ext (AlgHom.congr_fun h :)
 
 end AlgHom
 
@@ -223,7 +223,7 @@ theorem coe_restrictScalars' (f : A ≃ₐ[S] B) : (restrictScalars R f : A → 
 
 theorem restrictScalars_injective :
     Function.Injective (restrictScalars R : (A ≃ₐ[S] B) → A ≃ₐ[R] B) := fun _ _ h =>
-  AlgEquiv.ext (AlgEquiv.congr_fun h : _)
+  AlgEquiv.ext (AlgEquiv.congr_fun h :)
 
 end AlgEquiv
 

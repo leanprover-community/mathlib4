@@ -16,11 +16,11 @@ We prove basic properties of local rings.
 
 variable {R S : Type*}
 
-section CommSemiring
-
-variable [CommSemiring R]
-
 namespace IsLocalRing
+
+section Semiring
+
+variable [Semiring R]
 
 theorem of_isUnit_or_isUnit_of_isUnit_add [Nontrivial R]
     (h : ∀ a b : R, IsUnit (a + b) → IsUnit a ∨ IsUnit b) : IsLocalRing R :=
@@ -28,8 +28,15 @@ theorem of_isUnit_or_isUnit_of_isUnit_add [Nontrivial R]
 
 /-- A semiring is local if it is nontrivial and the set of nonunits is closed under the addition. -/
 theorem of_nonunits_add [Nontrivial R]
-    (h : ∀ a b : R, a ∈ nonunits R → b ∈ nonunits R → a + b ∈ nonunits R) : IsLocalRing R :=
-  ⟨fun {a b} hab => or_iff_not_and_not.2 fun H => h a b H.1 H.2 <| hab.symm ▸ isUnit_one⟩
+    (h : ∀ a b : R, a ∈ nonunits R → b ∈ nonunits R → a + b ∈ nonunits R) : IsLocalRing R where
+  isUnit_or_isUnit_of_add_one {a b} hab :=
+    or_iff_not_and_not.2 fun H => h a b H.1 H.2 <| hab.symm ▸ isUnit_one
+
+end Semiring
+
+section CommSemiring
+
+variable [CommSemiring R]
 
 /-- A semiring is local if it has a unique maximal ideal. -/
 theorem of_unique_max_ideal (h : ∃! I : Ideal R, I.IsMaximal) : IsLocalRing R :=
@@ -65,8 +72,6 @@ theorem isUnit_or_isUnit_of_isUnit_add {a b : R} (h : IsUnit (a + b)) : IsUnit a
 theorem nonunits_add {a b : R} (ha : a ∈ nonunits R) (hb : b ∈ nonunits R) : a + b ∈ nonunits R :=
   fun H => not_or_intro ha hb (isUnit_or_isUnit_of_isUnit_add H)
 
-end IsLocalRing
-
 @[deprecated (since := "2024-11-11")]
 alias LocalRing.of_isUnit_or_isUnit_of_isUnit_add := IsLocalRing.of_isUnit_or_isUnit_of_isUnit_add
 
@@ -87,15 +92,19 @@ alias LocalRing.nonunits_add := IsLocalRing.nonunits_add
 
 end CommSemiring
 
-namespace IsLocalRing
+section Ring
 
-variable [CommRing R]
+variable [Ring R]
 
 theorem of_isUnit_or_isUnit_one_sub_self [Nontrivial R] (h : ∀ a : R, IsUnit a ∨ IsUnit (1 - a)) :
     IsLocalRing R :=
   ⟨fun {a b} hab => add_sub_cancel_left a b ▸ hab.symm ▸ h a⟩
 
-variable [IsLocalRing R]
+end Ring
+
+section CommRing
+
+variable [CommRing R] [IsLocalRing R]
 
 theorem isUnit_or_isUnit_one_sub_self (a : R) : IsUnit a ∨ IsUnit (1 - a) :=
   isUnit_or_isUnit_of_isUnit_add <| (add_sub_cancel a 1).symm ▸ isUnit_one
@@ -106,7 +115,7 @@ theorem isUnit_of_mem_nonunits_one_sub_self (a : R) (h : 1 - a ∈ nonunits R) :
 theorem isUnit_one_sub_self_of_mem_nonunits (a : R) (h : a ∈ nonunits R) : IsUnit (1 - a) :=
   or_iff_not_imp_left.1 (isUnit_or_isUnit_one_sub_self a) h
 
-theorem of_surjective' [CommRing S] [Nontrivial S] (f : R →+* S) (hf : Function.Surjective f) :
+theorem of_surjective' [Ring S] [Nontrivial S] (f : R →+* S) (hf : Function.Surjective f) :
     IsLocalRing S :=
   of_isUnit_or_isUnit_one_sub_self (by
     intro b
@@ -131,6 +140,8 @@ alias LocalRing.isUnit_one_sub_self_of_mem_nonunits :=
 
 @[deprecated (since := "2024-11-11")]
 alias LocalRing.of_surjective' := IsLocalRing.of_surjective'
+
+end CommRing
 
 end IsLocalRing
 

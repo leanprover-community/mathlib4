@@ -22,7 +22,6 @@ open CategoryTheory.Limits
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {C : Type u₁} [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
-  (E : Type u₃) [Category.{v₃} E]
 
 noncomputable section
 

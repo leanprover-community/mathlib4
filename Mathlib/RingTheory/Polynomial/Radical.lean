@@ -6,6 +6,7 @@ Authors: Jineon Baek, Seewoo Lee
 import Mathlib.Algebra.Polynomial.FieldDivision
 import Mathlib.RingTheory.Polynomial.Wronskian
 import Mathlib.RingTheory.Radical
+import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicative
 
 /-!
 # Radical of a polynomial
@@ -17,6 +18,15 @@ See `RingTheory.Radical` for the definition of `radical` and `divRadical`.
 open Polynomial UniqueFactorizationMonoid UniqueFactorizationDomain EuclideanDomain
 
 variable {k : Type*} [Field k] [DecidableEq k]
+
+theorem degree_radical_le {a : k[X]} (h : a ≠ 0) :
+  (radical a).degree ≤ a.degree := degree_le_of_dvd (radical_dvd_self a) h
+
+theorem natDegree_radical_le {a : k[X]} :
+    (radical a).natDegree ≤ a.natDegree := by
+  by_cases ha : a = 0
+  · simp [ha]
+  · exact natDegree_le_of_dvd (radical_dvd_self a) ha
 
 theorem divRadical_dvd_derivative (a : k[X]) : divRadical a ∣ derivative a := by
   induction a using induction_on_coprime

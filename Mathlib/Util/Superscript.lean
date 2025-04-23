@@ -99,7 +99,7 @@ returns `i`, by binary search. -/
 def partitionPoint (lo := 0) (hi := as.size) : Nat :=
   if lo < hi then
     let m := (lo + hi)/2
-    let a := as.get! m
+    let a := as[m]!
     if leftOfPartition a then
       partitionPoint (m+1) hi
     else
@@ -251,6 +251,17 @@ def superscript.parenthesizer := Superscript.scriptParser.parenthesizer ``supers
 def superscript.formatter :=
   Superscript.scriptParser.formatter "superscript" .superscript ``superscript
 
+/-- Shorthand for `superscript(term)`.
+
+This is needed because the initializer below does not always run, and if it has not run then
+downstream parsers using the combinators will crash.
+
+See https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/Non-builtin.20parser.20aliases/near/365125476
+for some context. -/
+@[term_parser]
+def superscriptTerm := leading_parser (withAnonymousAntiquot := false) superscript termParser
+
+initialize register_parser_alias superscript
 
 /--
 The parser `subscript(term)` parses a subscript. Basic usage is:
@@ -276,12 +287,16 @@ def subscript.parenthesizer := Superscript.scriptParser.parenthesizer ``subscrip
 @[combinator_formatter subscript]
 def subscript.formatter := Superscript.scriptParser.formatter "subscript" .subscript ``subscript
 
-initialize
-  registerAlias `superscript ``superscript superscript
-  registerAliasCore Formatter.formatterAliasesRef `superscript superscript.formatter
-  registerAliasCore Parenthesizer.parenthesizerAliasesRef `superscript superscript.parenthesizer
-  registerAlias `subscript ``subscript subscript
-  registerAliasCore Formatter.formatterAliasesRef `subscript subscript.formatter
-  registerAliasCore Parenthesizer.parenthesizerAliasesRef `subscript subscript.parenthesizer
+/-- Shorthand for `subscript(term)`.
+
+This is needed because the initializer below does not always run, and if it has not run then
+downstream parsers using the combinators will crash.
+
+See https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/Non-builtin.20parser.20aliases/near/365125476
+for some context. -/
+@[term_parser]
+def subscriptTerm := leading_parser (withAnonymousAntiquot := false) subscript termParser
+
+initialize register_parser_alias subscript
 
 end Mathlib.Tactic

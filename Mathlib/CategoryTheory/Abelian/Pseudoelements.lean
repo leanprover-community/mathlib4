@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Abelian.Exact
-import Mathlib.CategoryTheory.Comma.Over
+import Mathlib.CategoryTheory.Comma.Over.Basic
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
 
 /-!
@@ -29,9 +29,10 @@ their action on pseudoelements. Thus, a usual style of proofs in abelian categor
 First, we construct some morphism using universal properties, and then we use diagram chasing
 of pseudoelements to verify that is has some desirable property such as exactness.
 
-It should be noted that the Freyd-Mitchell embedding theorem gives a vastly stronger notion of
-pseudoelement (in particular one that gives extensionality). However, this theorem is quite
-difficult to prove and probably out of reach for a formal proof for the time being.
+It should be noted that the Freyd-Mitchell embedding theorem
+(see `CategoryTheory.Abelian.FreydMitchell`) gives a vastly stronger notion of
+pseudoelement (in particular one that gives extensionality) and this file should be updated to
+go use that instead!
 
 ## Main results
 
@@ -389,7 +390,7 @@ theorem sub_of_eq_image {P Q : C} (f : P ⟶ Q) (x y : P) :
   Quotient.inductionOn₂ x y fun a a' h =>
     match Quotient.exact h with
     | ⟨R, p, q, ep, _, comm⟩ =>
-      let a'' : R ⟶ P := ↑(p ≫ a.hom) - ↑(q ≫ a'.hom)
+      let a'' : R ⟶ P := (p ≫ a.hom : R ⟶ P) - (q ≫ a'.hom : R ⟶ P)
       ⟨a'',
         ⟨show ⟦(a'' ≫ f : Over Q)⟧ = ⟦↑(0 : Q ⟶ Q)⟧ by
             dsimp at comm
@@ -426,21 +427,21 @@ section Module
 
 /-- In the category `Module R`, if `x` and `y` are pseudoequal, then the range of the associated
 morphisms is the same. -/
-theorem ModuleCat.eq_range_of_pseudoequal {R : Type*} [CommRing R] {G : ModuleCat R} {x y : Over G}
-    (h : PseudoEqual G x y) : LinearMap.range x.hom = LinearMap.range y.hom := by
+theorem ModuleCat.eq_range_of_pseudoequal {R : Type*} [Ring R] {G : ModuleCat R} {x y : Over G}
+    (h : PseudoEqual G x y) : LinearMap.range x.hom.hom = LinearMap.range y.hom.hom := by
   obtain ⟨P, p, q, hp, hq, H⟩ := h
   refine Submodule.ext fun a => ⟨fun ha => ?_, fun ha => ?_⟩
   · obtain ⟨a', ha'⟩ := ha
     obtain ⟨a'', ha''⟩ := (ModuleCat.epi_iff_surjective p).1 hp a'
     refine ⟨q a'', ?_⟩
-    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-    erw [← LinearMap.comp_apply, ← ModuleCat.comp_def, ← H,
-      ModuleCat.comp_def, LinearMap.comp_apply, ha'', ha']
+    dsimp at ha' ⊢
+    rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, ← H,
+      ModuleCat.hom_comp, LinearMap.comp_apply, ha'', ha']
   · obtain ⟨a', ha'⟩ := ha
     obtain ⟨a'', ha''⟩ := (ModuleCat.epi_iff_surjective q).1 hq a'
     refine ⟨p a'', ?_⟩
-    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-    erw [← LinearMap.comp_apply, ← ModuleCat.comp_def, H, ModuleCat.comp_def, LinearMap.comp_apply,
+    dsimp at ha' ⊢
+    rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, H, ModuleCat.hom_comp, LinearMap.comp_apply,
       ha'', ha']
 
 end Module

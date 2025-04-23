@@ -62,7 +62,6 @@ theorem projIic_of_le (hx : b ≤ x) : projIic b x = ⟨b, le_rfl⟩ := Subtype.
 theorem projIcc_of_le_left (hx : x ≤ a) : projIcc a b h x = ⟨a, left_mem_Icc.2 h⟩ := by
   simp [projIcc, hx, hx.trans h]
 
-
 theorem projIcc_of_right_le (hx : b ≤ x) : projIcc a b h x = ⟨b, right_mem_Icc.2 h⟩ := by
   simp [projIcc, hx, h]
 
@@ -236,7 +235,7 @@ function from $[a, b]$ to the whole line is equal to the original function. -/
 theorem IccExtend_eq_self (f : α → β) (ha : ∀ x < a, f x = f a) (hb : ∀ x, b < x → f x = f b) :
     IccExtend h (f ∘ (↑)) = f := by
   ext x
-  cases' lt_or_le x a with hxa hax
+  rcases lt_or_le x a with hxa | hax
   · simp [IccExtend_of_le_left _ _ hxa.le, ha x hxa]
   · rcases le_or_lt x b with hxb | hbx
     · lift x to Icc a b using ⟨hax, hxb⟩

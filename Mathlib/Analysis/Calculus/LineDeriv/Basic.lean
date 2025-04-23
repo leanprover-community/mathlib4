@@ -213,13 +213,13 @@ theorem hasLineDerivAt_iff_tendsto_slope_zero :
 
 alias ⟨HasLineDerivAt.tendsto_slope_zero, _⟩ := hasLineDerivAt_iff_tendsto_slope_zero
 
-theorem HasLineDerivAt.tendsto_slope_zero_right [PartialOrder 𝕜] (h : HasLineDerivAt 𝕜 f f' x v) :
+theorem HasLineDerivAt.tendsto_slope_zero_right [Preorder 𝕜] (h : HasLineDerivAt 𝕜 f f' x v) :
     Tendsto (fun (t : 𝕜) ↦ t⁻¹ • (f (x + t • v) - f x)) (𝓝[>] 0) (𝓝 f') :=
-  h.tendsto_slope_zero.mono_left (nhds_right'_le_nhds_ne 0)
+  h.tendsto_slope_zero.mono_left (nhdsGT_le_nhdsNE 0)
 
-theorem HasLineDerivAt.tendsto_slope_zero_left [PartialOrder 𝕜] (h : HasLineDerivAt 𝕜 f f' x v) :
+theorem HasLineDerivAt.tendsto_slope_zero_left [Preorder 𝕜] (h : HasLineDerivAt 𝕜 f f' x v) :
     Tendsto (fun (t : 𝕜) ↦ t⁻¹ • (f (x + t • v) - f x)) (𝓝[<] 0) (𝓝 f') :=
-  h.tendsto_slope_zero.mono_left (nhds_left'_le_nhds_ne 0)
+  h.tendsto_slope_zero.mono_left (nhdsLT_le_nhdsNE 0)
 
 theorem HasLineDerivWithinAt.hasLineDerivAt'
     (h : HasLineDerivWithinAt 𝕜 f f' s x v) (hs : ∀ᶠ t : 𝕜 in 𝓝 0, x + t • v ∈ s) :

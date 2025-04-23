@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
 import Mathlib.Tactic.FunProp.FunctionData
-import Batteries.Data.RBMap.Basic
 
 /-!
 ## `funProp`
@@ -15,6 +14,7 @@ this file defines environment extension for `funProp`
 
 namespace Mathlib
 open Lean Meta
+open Std (TreeSet)
 
 namespace Meta.FunProp
 
@@ -87,7 +87,7 @@ structure Context where
   /-- fun_prop config -/
   config : Config := {}
   /-- Name to unfold -/
-  constToUnfold : Batteries.RBSet Name Name.quickCmp :=
+  constToUnfold : TreeSet Name Name.quickCmp :=
     .ofArray defaultNamesToUnfold _
   /-- Custom discharger to satisfy theorem hypotheses. -/
   disch : Expr → MetaM (Option Expr) := fun _ => pure .none
@@ -97,8 +97,10 @@ structure Context where
 /-- `fun_prop` state -/
 structure State where
   /-- Simp's cache is used as the `fun_prop` tactic is designed to be used inside of simp and
-  utilize its cache -/
+  utilize its cache. It holds successful goals. -/
   cache : Simp.Cache := {}
+  /-- Cache storing failed goals such that they are not tried again. -/
+  failureCache : ExprSet := {}
   /-- Count the number of steps and stop when maxSteps is reached. -/
   numSteps := 0
   /-- Log progress and failures messages that should be displayed to the user at the end. -/

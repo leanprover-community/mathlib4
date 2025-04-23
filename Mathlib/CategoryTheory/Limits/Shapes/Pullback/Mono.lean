@@ -18,7 +18,7 @@ the dual statements between pushouts and epimorphisms.
 API as `pullback.fst_of_mono` and `pullback.snd_of_mono`.
 
 * A pullback cone is a limit iff its composition with a monomorphism is a limit. This is available
-as `IsLimitOfCompMono` and `pullbackIsPullbackOfCompMono` respectively.
+  as `IsLimitOfCompMono` and `pullbackIsPullbackOfCompMono` respectively.
 
 * Monomorphisms admit kernel pairs, this is `has_kernel_pair_of_mono`.
 
@@ -112,7 +112,7 @@ def isLimitOfCompMono (f : X ⟶ W) (g : Y ⟶ W) (i : W ⟶ Z) [Mono i] (s : Pu
     ⟨l, h₁, h₂⟩
   refine ⟨l, h₁, h₂, ?_⟩
   intro m hm₁ hm₂
-  exact (PullbackCone.IsLimit.hom_ext H (hm₁.trans h₁.symm) (hm₂.trans h₂.symm) : _)
+  exact (PullbackCone.IsLimit.hom_ext H (hm₁.trans h₁.symm) (hm₂.trans h₂.symm) :)
 
 end PullbackCone
 
@@ -160,11 +160,7 @@ instance hasPullback_of_right_factors_mono : HasPullback i (f ≫ i) := by
 
 instance pullback_snd_iso_of_right_factors_mono :
     IsIso (pullback.snd i (f ≫ i)) := by
-  #adaptation_note /-- nightly-testing 2024-04-01
-  this could not be placed directly in the `show from` without `dsimp` -/
   have := limit.isoLimitCone_hom_π ⟨_, pullbackIsPullbackOfCompMono (𝟙 _) f i⟩ WalkingCospan.right
-  dsimp only [cospan_right, id_eq, eq_mpr_eq_cast, PullbackCone.mk_pt, PullbackCone.mk_π_app,
-    Functor.const_obj_obj, cospan_one] at this
   convert (congrArg IsIso (show _ ≫ pullback.snd (𝟙 Z) f = _ from this)).mp inferInstance
   · exact (Category.id_comp _).symm
   · exact (Category.id_comp _).symm
@@ -176,11 +172,7 @@ instance hasPullback_of_left_factors_mono : HasPullback (f ≫ i) i := by
 
 instance pullback_snd_iso_of_left_factors_mono :
     IsIso (pullback.fst (f ≫ i) i) := by
-  #adaptation_note /-- nightly-testing 2024-04-01
-  this could not be placed directly in the `show from` without `dsimp` -/
   have := limit.isoLimitCone_hom_π ⟨_, pullbackIsPullbackOfCompMono f (𝟙 _) i⟩ WalkingCospan.left
-  dsimp only [cospan_left, id_eq, eq_mpr_eq_cast, PullbackCone.mk_pt, PullbackCone.mk_π_app,
-    Functor.const_obj_obj, cospan_one] at this
   convert (congrArg IsIso (show _ ≫ pullback.fst f (𝟙 Z) = _ from this)).mp inferInstance
   · exact (Category.id_comp _).symm
   · exact (Category.id_comp _).symm
@@ -299,7 +291,7 @@ def isColimitOfEpiComp (f : X ⟶ Y) (g : X ⟶ Z) (h : W ⟶ X) [Epi h] (s : Pu
     ⟨l, h₁, h₂⟩
   refine ⟨l, h₁, h₂, ?_⟩
   intro m hm₁ hm₂
-  exact (PushoutCocone.IsColimit.hom_ext H (hm₁.trans h₁.symm) (hm₂.trans h₂.symm) : _)
+  exact (PushoutCocone.IsColimit.hom_ext H (hm₁.trans h₁.symm) (hm₂.trans h₂.symm) :)
 
 end PushoutCocone
 

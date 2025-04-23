@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
 import Mathlib.Algebra.Polynomial.Cardinal
-import Mathlib.RingTheory.Algebraic
+import Mathlib.RingTheory.Algebraic.Basic
 
 /-!
 ### Cardinality of algebraic numbers
@@ -66,7 +66,7 @@ theorem cardinalMk_lift_of_infinite [Infinite R] :
     Cardinal.lift.{u} #{ x : A // IsAlgebraic R x } = Cardinal.lift.{v} #R :=
   ((cardinalMk_lift_le_max R A).trans_eq (max_eq_left <| aleph0_le_mk _)).antisymm <|
     lift_mk_le'.2 ⟨⟨fun x => ⟨algebraMap R A x, isAlgebraic_algebraMap _⟩, fun _ _ h =>
-      NoZeroSMulDivisors.algebraMap_injective R A (Subtype.ext_iff.1 h)⟩⟩
+      FaithfulSMul.algebraMap_injective R A (Subtype.ext_iff.1 h)⟩⟩
 
 @[deprecated (since := "2024-11-10")]
 alias cardinal_mk_lift_of_infinite := cardinalMk_lift_of_infinite

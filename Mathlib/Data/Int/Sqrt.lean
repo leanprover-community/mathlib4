@@ -3,9 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Data.Int.Defs
 import Mathlib.Data.Nat.Sqrt
 import Mathlib.Tactic.Common
+import Mathlib.Data.Int.Init
 
 /-!
 # Square root of integers
@@ -36,9 +36,8 @@ theorem sqrt_nonneg (n : ℤ) : 0 ≤ sqrt n :=
 @[simp, norm_cast]
 theorem sqrt_natCast (n : ℕ) : Int.sqrt (n : ℤ) = Nat.sqrt n := by rw [sqrt, toNat_ofNat]
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem sqrt_ofNat (n : ℕ) : Int.sqrt (no_index (OfNat.ofNat n) : ℤ) = Nat.sqrt (OfNat.ofNat n) :=
+theorem sqrt_ofNat (n : ℕ) : Int.sqrt ofNat(n) = Nat.sqrt ofNat(n) :=
   sqrt_natCast _
 
 end Int

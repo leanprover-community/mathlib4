@@ -5,6 +5,9 @@ Authors: Kenny Lau
 -/
 import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.RingTheory.Polynomial.Content
+import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
+import Mathlib.RingTheory.UniqueFactorizationDomain.Finite
+import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
 
 /-!
 # Unique factorization for univariate and multivariate polynomials
@@ -125,9 +128,10 @@ instance (priority := 100) uniqueFactorizationMonoid :
   exact
     ⟨w.map (rename (↑)), fun b hb =>
       let ⟨b', hb', he⟩ := Multiset.mem_map.1 hb
-      he ▸ (prime_rename_iff ↑s).2 (h b' hb'),
+      he ▸ (prime_rename_iff (σ := σ) ↑s).2 (h b' hb'),
       Units.map (@rename s σ D _ (↑)).toRingHom.toMonoidHom u, by
-      erw [Multiset.prod_hom, ← map_mul, hw]⟩
+      rw [Multiset.prod_hom, Units.coe_map, AlgHom.toRingHom_eq_coe, RingHom.toMonoidHom_eq_coe,
+        AlgHom.toRingHom_toMonoidHom, MonoidHom.coe_coe, ← map_mul, hw]⟩
 
 end MvPolynomial
 
