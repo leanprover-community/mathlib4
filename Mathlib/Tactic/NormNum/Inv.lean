@@ -6,7 +6,6 @@ Authors: Mario Carneiro
 import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Data.Rat.Cast.CharZero
 import Mathlib.Algebra.Field.Basic
-import Mathlib.Data.NNRat.Lemmas
 
 /-!
 # `norm_num` plugins for `Rat.cast` and `⁻¹`.
