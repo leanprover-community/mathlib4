@@ -42,7 +42,7 @@ because the more bundled version usually does not work with dot notation.
 * `OrderHom.onDiag`: restrict a monotone map `α →o α →o β` to the diagonal;
 * `OrderHom.fst`: projection `Prod.fst : α × β → α` as a bundled monotone map;
 * `OrderHom.snd`: projection `Prod.snd : α × β → β` as a bundled monotone map;
-* `OrderHom.prodMap`: `prod.map f g` as a bundled monotone map;
+* `OrderHom.prodMap`: `Prod.map f g` as a bundled monotone map;
 * `Pi.evalOrderHom`: evaluation of a function at a point `Function.eval i` as a bundled
   monotone map;
 * `OrderHom.coeFnHom`: coercion to function as a bundled monotone map;
@@ -413,7 +413,7 @@ def prodIso : (α →o β × γ) ≃o (α →o β) × (α →o γ) where
   right_inv _ := rfl
   map_rel_iff' := forall_and.symm
 
-/-- `Prod.map` of two `OrderHom`s as an `OrderHom`. -/
+/-- `Prod.map` of two `OrderHom`s as an `OrderHom` -/
 @[simps]
 def prodMap (f : α →o β) (g : γ →o δ) : α × γ →o β × δ :=
   ⟨Prod.map f g, fun _ _ h => ⟨f.mono h.1, g.mono h.2⟩⟩
