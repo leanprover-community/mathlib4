@@ -708,7 +708,7 @@ theorem lsub_typein (o : Ordinal) : lsub.{u, u} (typein (α := o.toType) (· < �
     (by
       by_contra! h
       -- Porting note: `nth_rw` → `conv_rhs` & `rw`
-      conv_rhs at h => rw [← type_lt o]
+      conv_rhs at h => rw [← type_toType o]
       simpa [typein_enum] using lt_lsub.{u, u} (typein (· < ·)) (enum (· < ·) ⟨_, h⟩))
 
 set_option linter.deprecated false in

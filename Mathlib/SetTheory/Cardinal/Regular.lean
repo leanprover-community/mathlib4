@@ -99,12 +99,6 @@ theorem isRegular_preAleph_succ {o : Ordinal} (h : ω ≤ o) : IsRegular (preAle
   rw [preAleph_succ]
   exact isRegular_succ (aleph0_le_preAleph.2 h)
 
-set_option linter.deprecated false in
-@[deprecated isRegular_preAleph_succ (since := "2024-10-22")]
-theorem isRegular_aleph'_succ {o : Ordinal} (h : ω ≤ o) : IsRegular (aleph' (succ o)) := by
-  rw [aleph'_succ]
-  exact isRegular_succ (aleph0_le_aleph'.2 h)
-
 theorem isRegular_aleph_succ (o : Ordinal) : IsRegular (ℵ_ (succ o)) := by
   rw [aleph_succ]
   exact isRegular_succ (aleph0_le_aleph o)

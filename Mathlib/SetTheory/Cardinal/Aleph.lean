@@ -368,14 +368,8 @@ theorem ord_aleph (o : Ordinal) : (ℵ_ o).ord = ω_ o :=
 theorem aleph_lt_aleph {o₁ o₂ : Ordinal} : ℵ_ o₁ < ℵ_ o₂ ↔ o₁ < o₂ :=
   aleph.lt_iff_lt
 
-@[deprecated aleph_lt_aleph (since := "2024-10-22")]
-alias aleph_lt := aleph_lt_aleph
-
 theorem aleph_le_aleph {o₁ o₂ : Ordinal} : ℵ_ o₁ ≤ ℵ_ o₂ ↔ o₁ ≤ o₂ :=
   aleph.le_iff_le
-
-@[deprecated aleph_le_aleph (since := "2024-10-22")]
-alias aleph_le := aleph_le_aleph
 
 theorem aleph_max (o₁ o₂ : Ordinal) : ℵ_ (max o₁ o₂) = max (ℵ_ o₁) (ℵ_ o₂) :=
   aleph.monotone.map_max
@@ -428,10 +422,6 @@ theorem isLimit_omega (o : Ordinal) : Ordinal.IsLimit (ω_ o) := by
   rw [← ord_aleph]
   exact isLimit_ord (aleph0_le_aleph _)
 
-@[deprecated isLimit_omega (since := "2024-10-24")]
-theorem ord_aleph_isLimit (o : Ordinal) : (ℵ_ o).ord.IsLimit :=
-  isLimit_ord <| aleph0_le_aleph _
-
 @[simp]
 theorem range_aleph : range aleph = Set.Ici ℵ₀ := by
   ext c
@@ -441,14 +431,6 @@ theorem range_aleph : range aleph = Set.Ici ℵ₀ := by
 
 theorem mem_range_aleph_iff {c : Cardinal} : c ∈ range aleph ↔ ℵ₀ ≤ c := by
   rw [range_aleph, mem_Ici]
-
-@[deprecated mem_range_aleph_iff (since := "2024-10-24")]
-theorem exists_aleph {c : Cardinal} : ℵ₀ ≤ c ↔ ∃ o, c = ℵ_ o :=
-  ⟨fun h =>
-    ⟨preAleph.symm c - ω, by
-      rw [aleph_eq_preAleph, Ordinal.add_sub_cancel_of_le, preAleph.apply_symm_apply]
-      rwa [← aleph0_le_preAleph, preAleph.apply_symm_apply]⟩,
-    fun ⟨o, e⟩ => e.symm ▸ aleph0_le_aleph _⟩
 
 @[simp]
 theorem succ_aleph0 : succ ℵ₀ = ℵ₁ := by
@@ -487,82 +469,6 @@ theorem lift_eq_aleph1 {c : Cardinal.{u}} : lift.{v} c = ℵ₁ ↔ c = ℵ₁ :
 
 theorem lt_omega_iff_card_lt {x o : Ordinal} : x < ω_ o ↔ x.card < ℵ_ o := by
   rw [← (isInitial_omega o).card_lt_card, card_omega]
-
-section deprecated
-
-set_option linter.docPrime false
-
-@[deprecated preAleph (since := "2024-10-22")]
-noncomputable alias aleph' := preAleph
-
-set_option linter.deprecated false in
-@[deprecated preAleph_lt_preAleph (since := "2024-10-22")]
-theorem aleph'_lt {o₁ o₂ : Ordinal} : aleph' o₁ < aleph' o₂ ↔ o₁ < o₂ :=
-  aleph'.lt_iff_lt
-
-set_option linter.deprecated false in
-@[deprecated preAleph_le_preAleph (since := "2024-10-22")]
-theorem aleph'_le {o₁ o₂ : Ordinal} : aleph' o₁ ≤ aleph' o₂ ↔ o₁ ≤ o₂ :=
-  aleph'.le_iff_le
-
-set_option linter.deprecated false in
-@[deprecated preAleph_max (since := "2024-10-22")]
-theorem aleph'_max (o₁ o₂ : Ordinal) : aleph' (max o₁ o₂) = max (aleph' o₁) (aleph' o₂) :=
-  aleph'.monotone.map_max
-
-set_option linter.deprecated false in
-@[deprecated preAleph_zero (since := "2024-10-22")]
-theorem aleph'_zero : aleph' 0 = 0 :=
-  aleph'.map_bot
-
-set_option linter.deprecated false in
-@[deprecated preAleph_succ (since := "2024-10-22")]
-theorem aleph'_succ (o : Ordinal) : aleph' (succ o) = succ (aleph' o) :=
-  aleph'.map_succ o
-
-set_option linter.deprecated false in
-@[deprecated preAleph_nat (since := "2024-10-22")]
-theorem aleph'_nat : ∀ n : ℕ, aleph' n = n :=
-  preAleph_nat
-
-set_option linter.deprecated false in
-@[deprecated lift_preAleph (since := "2024-10-22")]
-theorem lift_aleph' (o : Ordinal.{u}) : lift.{v} (aleph' o) = aleph' (Ordinal.lift.{v} o) :=
-  lift_preAleph o
-
-set_option linter.deprecated false in
-@[deprecated preAleph_le_of_isLimit (since := "2024-10-22")]
-theorem aleph'_le_of_limit {o : Ordinal} (l : o.IsLimit) {c} :
-    aleph' o ≤ c ↔ ∀ o' < o, aleph' o' ≤ c :=
-  preAleph_le_of_isLimit l
-
-set_option linter.deprecated false in
-@[deprecated preAleph_limit (since := "2024-10-22")]
-theorem aleph'_limit {o : Ordinal} (ho : o.IsLimit) : aleph' o = ⨆ a : Iio o, aleph' a :=
-  preAleph_limit ho
-
-set_option linter.deprecated false in
-@[deprecated preAleph_omega0 (since := "2024-10-22")]
-theorem aleph'_omega0 : aleph' ω = ℵ₀ :=
-  preAleph_omega0
-
-@[deprecated aleph_eq_preAleph (since := "2024-10-22")]
-theorem aleph_eq_aleph' (o : Ordinal) : ℵ_ o = preAleph (ω + o) :=
-  rfl
-
-set_option linter.deprecated false in
-@[deprecated aleph0_le_preAleph (since := "2024-10-22")]
-theorem aleph0_le_aleph' {o : Ordinal} : ℵ₀ ≤ aleph' o ↔ ω ≤ o := by
-  rw [← aleph'_omega0, aleph'_le]
-
-set_option linter.deprecated false in
-@[deprecated preAleph_pos (since := "2024-10-22")]
-theorem aleph'_pos {o : Ordinal} (ho : 0 < o) : 0 < aleph' o := by
-  rwa [← aleph'_zero, aleph'_lt]
-
-@[deprecated (since := "2024-10-22")] alias aleph'_isNormal := isNormal_preOmega
-
-end deprecated
 
 /-! ### Beth cardinals -/
 

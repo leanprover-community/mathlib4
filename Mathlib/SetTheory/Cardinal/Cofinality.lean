@@ -86,24 +86,7 @@ theorem cof_eq {α β : Type u} {r : α → α → Prop} {s} [IsRefl β s] (f : 
     Order.cof r = Order.cof s :=
   lift_inj.1 (f.cof_eq_lift)
 
-@[deprecated cof_eq (since := "2024-10-22")]
-theorem cof_le {α β : Type u} {r : α → α → Prop} {s} [IsRefl β s] (f : r ≃r s) :
-    Order.cof r ≤ Order.cof s :=
-  f.cof_eq.le
-
 end RelIso
-
-/-- Cofinality of a strict order `≺`. This is the smallest cardinality of a set `S : Set α` such
-that `∀ a, ∃ b ∈ S, ¬ b ≺ a`. -/
-@[deprecated Order.cof (since := "2024-10-22")]
-def StrictOrder.cof (r : α → α → Prop) : Cardinal :=
-  Order.cof (swap rᶜ)
-
-/-- The set in the definition of `Order.StrictOrder.cof` is nonempty. -/
-@[deprecated "No deprecation message was provided." (since := "2024-10-22")]
-theorem StrictOrder.cof_nonempty (r : α → α → Prop) [IsIrrefl α r] :
-    { c | ∃ S : Set α, Unbounded r S ∧ #S = c }.Nonempty :=
-  @Order.cof_nonempty α _ (IsRefl.swap rᶜ)
 
 /-! ### Cofinality of ordinals -/
 
@@ -618,10 +601,6 @@ theorem cof_preOmega {o : Ordinal} (ho : IsSuccPrelimit o) : (preOmega o).cof = 
 @[simp]
 theorem cof_omega {o : Ordinal} (ho : o.IsLimit) : (ω_ o).cof = o.cof :=
   isNormal_omega.cof_eq ho
-
-@[deprecated (since := "2024-10-22")] alias preAleph_cof := cof_preOmega
-@[deprecated (since := "2024-10-22")] alias aleph'_cof := cof_preOmega
-@[deprecated (since := "2024-10-22")] alias aleph_cof := cof_omega
 
 @[simp]
 theorem cof_omega0 : cof ω = ℵ₀ :=
