@@ -184,11 +184,7 @@ lemma toSignedMeasure_restrict_sub (hs : SignedMeasure.SetWhereLe μ ν s) :
     ((ν - μ).restrict s).toSignedMeasure =
       ν.toSignedMeasure.restrict s - μ.toSignedMeasure.restrict s := by
   have hmeas := hs.measurable
-  have hle : μ.restrict s ≤ ν.restrict s := by
-    rw [toSignedMeasure_le_iff.symm]
-    rw [← toSignedMeasure_restrict_eq_restrict_toSigned hmeas,
-        ← toSignedMeasure_restrict_eq_restrict_toSigned hmeas]
-    exact hs.le_on
+  have hle : μ.restrict s ≤ ν.restrict s := (setWhereLe_iff_setWhereLeSignedMeasure.2 hs).le_on
   rw [eq_sub_iff_add_eq, toSignedMeasure_restrict_eq_restrict_toSigned hmeas, ← toSignedMeasure_add]
   have h_restrict := @restrict_sub_eq_restrict_sub_restrict _ _ ν μ s hmeas
   simp only [h_restrict]
