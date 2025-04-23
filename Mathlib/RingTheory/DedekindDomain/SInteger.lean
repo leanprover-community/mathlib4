@@ -25,14 +25,14 @@ This file defines the subalgebra of `S`-integers of `K` and the subgroup of `S`-
 ## Main statements
 
  * `Set.unitEquivUnitsInteger`: `S`-units are units of `S`-integers.
- * `IsDedekindDomain.integer_empty`: proof that `∅`-integers is the usual ring of integers.
+ * `IsDedekindDomain.integer_empty`: `∅`-integers is the usual ring of integers.
  * TODO: proof that `S`-units is the kernel of a map to a product.
  * TODO: finite generation of `S`-units and Dirichlet's `S`-unit theorem.
 
 ## References
 
  * [D Marcus, *Number Fields*][marcus1977number]
- * [J W S Cassels, A Frölich, *Algebraic Number Theory*][cassels1967algebraic]
+ * [J W S Cassels, A Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
  * [J Neukirch, *Algebraic Number Theory*][Neukirch1992]
 
 ## Tags
