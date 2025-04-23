@@ -47,6 +47,7 @@ suppress_compilation
 
 universe u v w
 
+open Function
 open scoped TensorProduct
 
 /-- A bialgebra over a commutative (semi)ring `R` is both an algebra and a coalgebra over `R`, such
