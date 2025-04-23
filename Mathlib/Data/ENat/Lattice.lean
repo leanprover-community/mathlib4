@@ -234,9 +234,7 @@ lemma iSup_add_iSup_of_monotone {ι : Type*} [Preorder ι] [IsDirected ι (· �
 
 lemma smul_iSup {R} [SMul R ℕ∞] [IsScalarTower R ℕ∞ ℕ∞] (f : ι → ℕ∞) (c : R) :
     c • ⨆ i, f i = ⨆ i, c • f i := by
-  have hc (n : ℕ∞) : c • n = (c • 1) * n := by rw [← smul_eq_mul, smul_assoc, one_smul]
-  rw [hc, mul_iSup]
-  simp
+  simpa using mul_iSup (c • 1) f
 
 lemma smul_sSup {R} [SMul R ℕ∞] [IsScalarTower R ℕ∞ ℕ∞] (s : Set ℕ∞) (c : R) :
     c • sSup s = ⨆ a ∈ s, c • a := by
