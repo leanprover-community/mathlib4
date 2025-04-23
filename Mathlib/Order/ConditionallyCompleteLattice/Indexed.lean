@@ -501,12 +501,10 @@ lemma ciSup_or' (p q : Prop) (f : p ∨ q → α) :
 
 theorem ciSup₂_le [Nonempty ι] {κ : ι → Prop} {f : ∀ i, κ i → α} {a : α} (h : ∀ i j, f i j ≤ a) :
     ⨆ (i) (j), f i j ≤ a := by
-  apply ciSup_le
-  intro x
-  by_cases hx : κ x
-  · haveI : Nonempty (κ x) := ⟨hx⟩
-    exact ciSup_le fun hx' => h _ _
-  · simp only [hx, ciSup_false, bot_le]
+  refine ciSup_le fun x ↦ ?_
+  obtain hκ | hκ := isEmpty_or_nonempty (κ x)
+  · simp
+  · exact ciSup_le (h x)
 
 end ConditionallyCompleteLinearOrderBot
 
