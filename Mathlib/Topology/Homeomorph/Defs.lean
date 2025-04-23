@@ -253,14 +253,8 @@ protected theorem isClosedMap (h : X ≃ₜ Y) : IsClosedMap h := fun _ => h.isC
 theorem isOpenEmbedding (h : X ≃ₜ Y) : IsOpenEmbedding h :=
   .of_isEmbedding_isOpenMap h.isEmbedding h.isOpenMap
 
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding := isOpenEmbedding
-
 theorem isClosedEmbedding (h : X ≃ₜ Y) : IsClosedEmbedding h :=
   .of_isEmbedding_isClosedMap h.isEmbedding h.isClosedMap
-
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding := isClosedEmbedding
 
 theorem preimage_closure (h : X ≃ₜ Y) (s : Set Y) : h ⁻¹' closure s = closure (h ⁻¹' s) :=
   h.isOpenMap.preimage_closure_eq_closure_preimage h.continuous _

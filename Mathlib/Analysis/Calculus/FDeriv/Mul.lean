@@ -809,16 +809,18 @@ operation is the linear map `fun t ↦ - x⁻¹ * t * x⁻¹`.
 TODO (low prio): prove a version without assumption `[HasSummableGeomSeries R]` but within the set
 of units. -/
 @[fun_prop]
-theorem hasFDerivAt_ring_inverse (x : Rˣ) :
+theorem hasFDerivAt_ringInverse (x : Rˣ) :
     HasFDerivAt Ring.inverse (-mulLeftRight 𝕜 R ↑x⁻¹ ↑x⁻¹) x :=
   have : (fun t : R => Ring.inverse (↑x + t) - ↑x⁻¹ + ↑x⁻¹ * t * ↑x⁻¹) =o[𝓝 0] id :=
     (inverse_add_norm_diff_second_order x).trans_isLittleO (isLittleO_norm_pow_id one_lt_two)
   by simpa [hasFDerivAt_iff_isLittleO_nhds_zero] using this
 
+@[deprecated (since := "2025-04-22")] alias hasFDerivAt_ring_inverse := hasFDerivAt_ringInverse
+
 @[fun_prop]
 theorem differentiableAt_inverse {x : R} (hx : IsUnit x) :
     DifferentiableAt 𝕜 (@Ring.inverse R _) x :=
-  let ⟨u, hu⟩ := hx; hu ▸ (hasFDerivAt_ring_inverse u).differentiableAt
+  let ⟨u, hu⟩ := hx; hu ▸ (hasFDerivAt_ringInverse u).differentiableAt
 
 @[fun_prop]
 theorem differentiableWithinAt_inverse {x : R} (hx : IsUnit x) (s : Set R) :
@@ -830,12 +832,15 @@ theorem differentiableOn_inverse : DifferentiableOn 𝕜 (@Ring.inverse R _) {x 
   fun _x hx => differentiableWithinAt_inverse hx _
 
 theorem fderiv_inverse (x : Rˣ) : fderiv 𝕜 (@Ring.inverse R _) x = -mulLeftRight 𝕜 R ↑x⁻¹ ↑x⁻¹ :=
-  (hasFDerivAt_ring_inverse x).fderiv
+  (hasFDerivAt_ringInverse x).fderiv
 
-theorem hasStrictFDerivAt_ring_inverse (x : Rˣ) :
+theorem hasStrictFDerivAt_ringInverse (x : Rˣ) :
     HasStrictFDerivAt Ring.inverse (-mulLeftRight 𝕜 R ↑x⁻¹ ↑x⁻¹) x := by
   convert (analyticAt_inverse (𝕜 := 𝕜) x).hasStrictFDerivAt
   exact (fderiv_inverse x).symm
+
+@[deprecated (since := "2025-04-22")]
+alias hasStrictFDerivAt_ring_inverse := hasStrictFDerivAt_ringInverse
 
 variable {h : E → R} {z : E} {S : Set E}
 
@@ -877,7 +882,7 @@ differentiable, with derivative the linear map `fun t ↦ - x⁻¹ * t * x⁻¹`
 the commutative case, see `hasStrictFDerivAt_inv`. -/
 theorem hasStrictFDerivAt_inv' {x : R} (hx : x ≠ 0) :
     HasStrictFDerivAt Inv.inv (-mulLeftRight 𝕜 R x⁻¹ x⁻¹) x := by
-  simpa using hasStrictFDerivAt_ring_inverse (Units.mk0 _ hx)
+  simpa using hasStrictFDerivAt_ringInverse (Units.mk0 _ hx)
 
 /-- At an invertible element `x` of a normed division algebra `R`, the Fréchet derivative of the
 inversion operation is the linear map `fun t ↦ - x⁻¹ * t * x⁻¹`. For a nicer formula in the
@@ -885,7 +890,7 @@ commutative case, see `hasFDerivAt_inv`. -/
 @[fun_prop]
 theorem hasFDerivAt_inv' {x : R} (hx : x ≠ 0) :
     HasFDerivAt Inv.inv (-mulLeftRight 𝕜 R x⁻¹ x⁻¹) x := by
-  simpa using hasFDerivAt_ring_inverse (Units.mk0 _ hx)
+  simpa using hasFDerivAt_ringInverse (Units.mk0 _ hx)
 
 @[fun_prop]
 theorem differentiableAt_inv {x : R} (hx : x ≠ 0) : DifferentiableAt 𝕜 Inv.inv x :=

@@ -1241,10 +1241,6 @@ end Discriminant
 
 end QuadraticMap
 
-namespace QuadraticMap
-
-end QuadraticMap
-
 namespace LinearMap
 
 namespace BilinForm

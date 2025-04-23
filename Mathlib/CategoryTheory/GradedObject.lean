@@ -484,10 +484,6 @@ lemma hasMap_comp [(X.mapObj p).HasMap q] : X.HasMap r :=
 
 end
 
-section HasZeroMorphisms
-
-end HasZeroMorphisms
-
 variable [HasZeroMorphisms C] [DecidableEq J] (i : I) (j : J)
 
 /-- The canonical inclusion `X i ⟶ X.mapObj p j` when `p i = j`, the zero morphism otherwise. -/
