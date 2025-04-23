@@ -524,8 +524,8 @@ instance measurableSMul₂_of_mul (M : Type*) [Mul M] [MeasurableSpace M] [Measu
   ⟨measurable_mul⟩
 
 @[to_additive]
-instance Submonoid.instMeasurableConstSMul {M α} [MeasurableSpace M] [MeasurableSpace α] [Monoid M]
-    [MulAction M α] [MeasurableConstSMul M α] (s : Submonoid M) : MeasurableConstSMul s α where
+instance Submonoid.instMeasurableConstSMul {M α} [MeasurableSpace α] [Monoid M] [MulAction M α]
+    [MeasurableConstSMul M α] (s : Submonoid M) : MeasurableConstSMul s α where
   measurable_const_smul c := by simpa only using measurable_const_smul (c : M)
 
 @[to_additive]
@@ -534,8 +534,8 @@ instance Submonoid.instMeasurableSMul {M α} [MeasurableSpace M] [MeasurableSpac
   measurable_smul_const x := (measurable_smul_const (M := M) x).comp measurable_subtype_coe
 
 @[to_additive]
-instance Subgroup.instMeasurableConstSMul {G α} [MeasurableSpace G] [MeasurableSpace α] [Group G]
-    [MulAction G α] [MeasurableConstSMul G α] (s : Subgroup G) : MeasurableConstSMul s α :=
+instance Subgroup.instMeasurableConstSMul {G α} [MeasurableSpace α] [Group G] [MulAction G α]
+    [MeasurableConstSMul G α] (s : Subgroup G) : MeasurableConstSMul s α :=
   s.toSubmonoid.instMeasurableConstSMul
 
 @[to_additive]
