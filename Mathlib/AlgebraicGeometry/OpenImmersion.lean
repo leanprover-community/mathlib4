@@ -75,9 +75,6 @@ variable {X Y : Scheme.{u}} (f : Scheme.Hom X Y) [H : IsOpenImmersion f]
 theorem isOpenEmbedding : IsOpenEmbedding f.base :=
   H.base_open
 
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding := isOpenEmbedding
-
 /-- The image of an open immersion as an open set. -/
 @[simps]
 def opensRange : Y.Opens :=

@@ -167,10 +167,7 @@ theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support 
     rw [sub_add_cancel_left, norm_neg, hw'_nm, ← div_div, div_lt_iff₀ (norm_pos_iff.mpr hw_ne), ←
       div_lt_iff₀' hδ1, div_div]
     exact (lt_add_of_pos_left _ one_half_pos).trans_le hw_bd
-  have bdA2 := norm_setIntegral_le_of_norm_le_const (hB_vol.trans_lt ENNReal.coe_lt_top) bdA ?_
-  swap
-  · apply Continuous.aestronglyMeasurable
-    exact continuous_norm.comp <| hf1.sub <| hf1.comp <| continuous_id'.add continuous_const
+  have bdA2 := norm_setIntegral_le_of_norm_le_const (hB_vol.trans_lt ENNReal.coe_lt_top) bdA
   have : ‖_‖ = ∫ v : V in A, ‖f v - f (v + i w)‖ :=
     Real.norm_of_nonneg (setIntegral_nonneg mA fun x _ => norm_nonneg _)
   rw [this] at bdA2

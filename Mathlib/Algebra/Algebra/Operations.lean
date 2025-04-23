@@ -69,10 +69,10 @@ section Module
 variable {R : Type u} [Semiring R] {A : Type v} [Semiring A] [Module R A]
 
 -- TODO: Why is this in a file about `Algebra`?
-/-- `1 : Submodule R A` is the submodule `R ∙ 1` of A.
-TODO: potentially change this back to `LinearMap.range (Algebra.linearMap R A)`
-once a version of `Algebra` without the `commutes'` field is introduced.
-See issue https://github.com/leanprover-community/mathlib4/issues/18110.
+-- TODO: potentially change this back to `LinearMap.range (Algebra.linearMap R A)`
+-- once a version of `Algebra` without the `commutes'` field is introduced.
+-- See issue https://github.com/leanprover-community/mathlib4/issues/18110.
+/-- `1 : Submodule R A` is the submodule `R ∙ 1` of `A`.
 -/
 instance one : One (Submodule R A) :=
   ⟨LinearMap.range (LinearMap.toSpanSingleton R A 1)⟩

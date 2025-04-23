@@ -314,7 +314,12 @@ lemma eq_top_iff_forall_ne : n = ⊤ ↔ ∀ m : ℕ, ↑m ≠ n := WithTop.eq_t
 lemma eq_top_iff_forall_gt : n = ⊤ ↔ ∀ m : ℕ, m < n := WithTop.eq_top_iff_forall_gt
 lemma eq_top_iff_forall_ge : n = ⊤ ↔ ∀ m : ℕ, m ≤ n := WithTop.eq_top_iff_forall_ge
 
+/-- Version of `WithTop.forall_coe_le_iff_le` using `Nat.cast` rather than `WithTop.some`. -/
 lemma forall_natCast_le_iff_le : (∀ a : ℕ, a ≤ m → a ≤ n) ↔ m ≤ n := WithTop.forall_coe_le_iff_le
+
+/-- Version of `WithTop.eq_of_forall_coe_le_iff` using `Nat.cast` rather than `WithTop.some`. -/
+lemma eq_of_forall_natCast_le_iff (hm : ∀ a : ℕ, a ≤ m ↔ a ≤ n) : m = n :=
+  WithTop.eq_of_forall_coe_le_iff hm
 
 protected lemma exists_nat_gt (hn : n ≠ ⊤) : ∃ m : ℕ, n < m := by
   simp_rw [lt_iff_not_ge n]

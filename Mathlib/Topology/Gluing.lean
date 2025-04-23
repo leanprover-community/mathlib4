@@ -269,9 +269,6 @@ theorem ι_isOpenEmbedding (i : D.J) : IsOpenEmbedding (𝖣.ι i) :=
   .of_continuous_injective_isOpenMap (𝖣.ι i).hom.continuous_toFun (D.ι_injective i) fun U h =>
     D.open_image_open i ⟨U, h⟩
 
-@[deprecated (since := "2024-10-18")]
-alias ι_openEmbedding := ι_isOpenEmbedding
-
 /-- A family of gluing data consists of
 1. An index type `J`
 2. A bundled topological space `U i` for each `i : J`.
@@ -419,9 +416,6 @@ theorem fromOpenSubsetsGlue_isOpenMap : IsOpenMap (fromOpenSubsetsGlue U) := by
 theorem fromOpenSubsetsGlue_isOpenEmbedding : IsOpenEmbedding (fromOpenSubsetsGlue U) :=
   .of_continuous_injective_isOpenMap (ContinuousMap.continuous_toFun _)
     (fromOpenSubsetsGlue_injective U) (fromOpenSubsetsGlue_isOpenMap U)
-
-@[deprecated (since := "2024-10-18")]
-alias fromOpenSubsetsGlue_openEmbedding := fromOpenSubsetsGlue_isOpenEmbedding
 
 theorem range_fromOpenSubsetsGlue : Set.range (fromOpenSubsetsGlue U) = ⋃ i, (U i : Set α) := by
   ext
