@@ -262,7 +262,7 @@ theorem sum_prob_mem_Ioc_le {X : Ω → ℝ} (hint : Integrable X) (hnonneg : 0 
       _ ≤ 𝔼[X] + 1 := by
         refine add_le_add le_rfl ?_
         rw [intervalIntegral.integral_of_le (Nat.cast_nonneg _)]
-        simp only [integral_const, Measure.restrict_apply', measurableSet_Ioc, Set.univ_inter,
+        simp only [integral_const, measureReal_restrict_apply', measurableSet_Ioc, Set.univ_inter,
           Algebra.id.smul_eq_mul, mul_one]
         rw [← ENNReal.toReal_one]
         exact ENNReal.toReal_mono ENNReal.one_ne_top prob_le_one
@@ -275,9 +275,7 @@ theorem sum_prob_mem_Ioc_le {X : Ω → ℝ} (hint : Integrable X) (hnonneg : 0 
     ∑ j ∈ range K, ℙ {ω | X ω ∈ Set.Ioc (j : ℝ) N} =
         ∑ j ∈ range K, ENNReal.ofReal (∫ _ in Set.Ioc (j : ℝ) N, (1 : ℝ) ∂ρ) := by simp_rw [B]
     _ = ENNReal.ofReal (∑ j ∈ range K, ∫ _ in Set.Ioc (j : ℝ) N, (1 : ℝ) ∂ρ) := by
-      rw [ENNReal.ofReal_sum_of_nonneg]
-      simp only [integral_const, Algebra.id.smul_eq_mul, mul_one, ENNReal.toReal_nonneg,
-        imp_true_iff]
+      simp [ENNReal.ofReal_sum_of_nonneg]
     _ = ENNReal.ofReal (∑ j ∈ range K, ∫ _ in (j : ℝ)..N, (1 : ℝ) ∂ρ) := by
       congr 1
       refine sum_congr rfl fun j hj => ?_

@@ -122,7 +122,7 @@ lemma F_nat_zero_le {a : ℝ} (ha : 0 ≤ a) {t : ℝ} (ht : 0 < t) :
 lemma F_nat_zero_zero_sub_le {t : ℝ} (ht : 0 < t) :
     ‖F_nat 0 0 t - 1‖ ≤ rexp (-π * t) / (1 - rexp (-π * t)) := by
   convert F_nat_zero_le zero_le_one ht using 2
-  · rw [F_nat, tsum_eq_zero_add (summable_f_nat 0 0 ht), f_nat, Nat.cast_zero, add_zero, pow_zero,
+  · rw [F_nat, (summable_f_nat 0 0 ht).tsum_eq_zero_add, f_nat, Nat.cast_zero, add_zero, pow_zero,
       one_mul, pow_two, mul_zero, mul_zero, zero_mul, exp_zero, add_comm, add_sub_cancel_right]
     simp_rw [F_nat, f_nat, Nat.cast_add, Nat.cast_one, add_zero]
   · rw [one_pow, mul_one]

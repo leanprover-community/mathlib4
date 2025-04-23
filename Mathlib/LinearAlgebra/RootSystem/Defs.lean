@@ -79,7 +79,7 @@ structure RootPairing extends PerfectPairing R M N where
   root : ι ↪ M
   /-- A parametrized family of dual vectors, called coroots. -/
   coroot : ι ↪ N
-  root_coroot_two : ∀ i, toLin (root i) (coroot i) = 2
+  root_coroot_two : ∀ i, toLinearMap (root i) (coroot i) = 2
   /-- A parametrized family of permutations, induced by reflections. This corresponds to the
       classical requirement that the symmetry attached to each root (later defined in
       `RootPairing.reflection`) leave the whole set of roots stable: as explained above, we
@@ -117,8 +117,11 @@ variable {ι R M N}
 variable (P : RootPairing ι R M N) (i j : ι)
 
 @[simp]
-lemma toLin_toPerfectPairing (x : M) (y : N) : P.toLin x y = P.toPerfectPairing x y :=
-  rfl
+lemma toLinearMap_eq_toPerfectPairing (x : M) (y : N) :
+    P.toLinearMap x y = P.toPerfectPairing x y := rfl
+
+@[deprecated (since := "2025-04-20")]
+alias toLin_toPerfectPairing := toLinearMap_eq_toPerfectPairing
 
 /-- If we interchange the roles of `M` and `N`, we still have a root pairing. -/
 protected def flip : RootPairing ι R N M :=
@@ -204,14 +207,14 @@ lemma root'_coroot_eq_pairing : P.root' i (P.coroot j) = P.pairing i j :=
 lemma root_coroot'_eq_pairing : P.coroot' i (P.root j) = P.pairing j i :=
   rfl
 
-lemma coroot_root_eq_pairing : P.toLin.flip (P.coroot i) (P.root j) = P.pairing j i := by
+lemma coroot_root_eq_pairing : P.toLinearMap.flip (P.coroot i) (P.root j) = P.pairing j i := by
   simp
 
 @[simp]
 lemma pairing_same : P.pairing i i = 2 := P.root_coroot_two i
 
 lemma coroot_root_two :
-    P.toLin.flip (P.coroot i) (P.root i) = 2 := by
+    P.toLinearMap.flip (P.coroot i) (P.root i) = 2 := by
   simp
 
 /-- The reflection associated to a root. -/
@@ -344,7 +347,7 @@ lemma coreflection_eq_flip_reflection :
   rfl
 
 lemma reflection_dualMap_eq_coreflection :
-    (P.reflection i).dualMap ∘ₗ P.toLin.flip = P.toLin.flip ∘ₗ P.coreflection i := by
+    (P.reflection i).dualMap ∘ₗ P.toLinearMap.flip = P.toLinearMap.flip ∘ₗ P.coreflection i := by
   ext n m
   simp [map_sub, coreflection_apply, reflection_apply, mul_comm (P.toPerfectPairing m (P.coroot i))]
 
@@ -368,9 +371,9 @@ lemma pairing_reflection_perm (i j k : ι) :
   simp only [pairing, root', coroot_reflection_perm, root_reflection_perm]
   simp only [coreflection_apply_coroot, map_sub, map_smul, smul_eq_mul,
     reflection_apply_root]
-  simp only [← toLin_toPerfectPairing, map_smul, LinearMap.smul_apply, map_sub, map_smul,
+  simp [← toLinearMap_eq_toPerfectPairing, map_smul, LinearMap.smul_apply, map_sub, map_smul,
     LinearMap.sub_apply, smul_eq_mul]
-  simp only [PerfectPairing.toLin_apply, root'_coroot_eq_pairing, sub_right_inj, mul_comm]
+  simp [mul_comm]
 
 @[simp]
 lemma toDualLeft_conj_reflection :
@@ -387,15 +390,15 @@ lemma toDualRight_conj_coreflection :
 lemma pairing_reflection_perm_self_left (P : RootPairing ι R M N) (i j : ι) :
     P.pairing (P.reflection_perm i i) j = - P.pairing i j := by
   rw [pairing, root', ← reflection_perm_root, root'_coroot_eq_pairing, pairing_same, two_smul,
-    sub_add_cancel_left, ← toLin_toPerfectPairing, LinearMap.map_neg₂, toLin_toPerfectPairing,
-    root'_coroot_eq_pairing]
+    sub_add_cancel_left, ← toLinearMap_eq_toPerfectPairing, LinearMap.map_neg₂,
+    toLinearMap_eq_toPerfectPairing, root'_coroot_eq_pairing]
 
 @[simp]
 lemma pairing_reflection_perm_self_right (i j : ι) :
     P.pairing i (P.reflection_perm j j) = - P.pairing i j := by
   rw [pairing, ← reflection_perm_coroot, root_coroot_eq_pairing, pairing_same, two_smul,
-    sub_add_cancel_left, ← toLin_toPerfectPairing, map_neg, toLin_toPerfectPairing,
-    root_coroot_eq_pairing]
+    sub_add_cancel_left, ← toLinearMap_eq_toPerfectPairing, map_neg,
+    toLinearMap_eq_toPerfectPairing, root_coroot_eq_pairing]
 
 /-- The indexing set of a root pairing carries an involutive negation, corresponding to the negation
 of a root / coroot. -/
@@ -492,14 +495,15 @@ lemma pairing_smul_coroot_eq (k : ι) (hij : P.reflection_perm i = P.reflection_
 lemma two_nsmul_reflection_eq_of_perm_eq (hij : P.reflection_perm i = P.reflection_perm j) :
     2 • ⇑(P.reflection i) = 2 • P.reflection j := by
   ext x
-  suffices 2 • P.toLin x (P.coroot i) • P.root i = 2 • P.toLin x (P.coroot j) • P.root j by
+  suffices
+      2 • P.toLinearMap x (P.coroot i) • P.root i = 2 • P.toLinearMap x (P.coroot j) • P.root j by
     simpa [reflection_apply, smul_sub]
-  calc 2 • P.toLin x (P.coroot i) • P.root i
-      = P.toLin x (P.coroot i) • ((2 : R) • P.root i) := ?_
-    _ = P.toLin x (P.coroot i) • (P.pairing i j • P.root j) := ?_
-    _ = P.toLin x (P.pairing i j • P.coroot i) • (P.root j) := ?_
-    _ = P.toLin x ((2 : R) • P.coroot j) • (P.root j) := ?_
-    _ = 2 • P.toLin x (P.coroot j) • P.root j := ?_
+  calc 2 • P.toLinearMap x (P.coroot i) • P.root i
+      = P.toLinearMap x (P.coroot i) • ((2 : R) • P.root i) := ?_
+    _ = P.toLinearMap x (P.coroot i) • (P.pairing i j • P.root j) := ?_
+    _ = P.toLinearMap x (P.pairing i j • P.coroot i) • (P.root j) := ?_
+    _ = P.toLinearMap x ((2 : R) • P.coroot j) • (P.root j) := ?_
+    _ = 2 • P.toLinearMap x (P.coroot j) • P.root j := ?_
   · rw [smul_comm, ← Nat.cast_smul_eq_nsmul R, Nat.cast_ofNat]
   · rw [P.pairing_smul_root_eq j i i hij.symm, pairing_same]
   · rw [← smul_comm, ← smul_assoc, map_smul]
@@ -533,6 +537,26 @@ lemma _root_.RootSystem.reflection_perm_eq_reflection_perm_iff (P : RootSystem �
   refine ⟨fun h ↦ ?_, fun h ↦ Equiv.ext fun k ↦ P.root.injective <| by simp [h]⟩
   ext x
   exact (P.reflection_perm_eq_reflection_perm_iff_of_span i j).mp h x <| by simp
+
+@[simp] lemma toDualLeft_comp_root : P.toDualLeft ∘ P.root = P.root' := rfl
+
+@[simp] lemma toDualRight_comp_root : P.toDualRight ∘ P.coroot = P.coroot' := rfl
+
+@[simp] lemma rootSpan_map_toDualLeft :
+    P.rootSpan.map P.toDualLeft = span R (range P.root') := by
+  rw [rootSpan, Submodule.map_span, ← image_univ, ← image_comp, image_univ, toDualLeft_comp_root]
+
+@[simp] lemma corootSpan_map_toDualRight :
+    P.corootSpan.map P.toDualRight = span R (range P.coroot') :=
+  P.flip.rootSpan_map_toDualLeft
+
+@[simp] lemma span_root'_eq_top (P : RootSystem ι R M N) :
+    span R (range P.root') = ⊤ := by
+  simp [← rootSpan_map_toDualLeft]
+
+@[simp] lemma span_coroot'_eq_top (P : RootSystem ι R M N) :
+    span R (range P.coroot') = ⊤ :=
+  span_root'_eq_top P.flip
 
 /-- The Coxeter Weight of a pair gives the weight of an edge in a Coxeter diagram, when it is
 finite.  It is `4 cos² θ`, where `θ` describes the dihedral angle between hyperplanes. -/

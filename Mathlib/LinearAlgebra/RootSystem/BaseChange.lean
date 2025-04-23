@@ -70,7 +70,7 @@ def restrictScalars' :
       (injective_subtype _) (injective_subtype _) (by simpa using IsBalanced.isPerfectCompl)
       (fun x y ↦ LinearMap.BilinMap.apply_apply_mem_of_mem_span
         (LinearMap.range (Algebra.linearMap K L)) (range P.root) (range P.coroot)
-        ((LinearMap.restrictScalarsₗ K L _ _ _) ∘ₗ (P.toPerfectPairing.toLin.restrictScalars K))
+        (LinearMap.restrictScalarsₗ K L _ _ _ ∘ₗ P.toPerfectPairing.toLinearMap.restrictScalars K)
         (by rintro - ⟨i, rfl⟩ - ⟨j, rfl⟩; exact hP i j) _ _ x.property y.property))
     root := ⟨fun i ↦ ⟨_, subset_span (mem_range_self i)⟩, fun i j h ↦ by simpa using h⟩
     coroot := ⟨fun i ↦ ⟨_, subset_span (mem_range_self i)⟩, fun i j h ↦ by simpa using h⟩
