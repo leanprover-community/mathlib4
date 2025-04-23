@@ -129,7 +129,7 @@ theorem toSignedMeasure_le_iff : μ.toSignedMeasure ≤ ν.toSignedMeasure ↔ �
   · intro h A hA
     simp only [toSignedMeasure_apply, hA, ↓reduceIte, ne_eq, measure_ne_top, not_false_eq_true,
       ENNReal.toReal_le_toReal]
-    exact h
+    exact h A
 
 @[simp]
 theorem sub_zero {μ : Measure X} : μ - 0 = μ := by
