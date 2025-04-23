@@ -640,9 +640,44 @@ lemma ds4(a:C_₀(ℤ,ℤ_[p]))(r:ℤ) :p_sequence_coeff r
     simp
     exact hs
 
+lemma help4 (b:ℤ_[p])(a:ℤ_[p]⸨X⸩): b•a= (b•1)*a:=by
+ ext n
+ simp
 
+ sorry
+lemma help5 (b:ℤ_[p])(a c: ℤ_[p]⸨X⸩): b•(a*c)= (b•1)*(a*c):=by sorry
   --refine powerseries_equiv_2 m  _ _ ?_
+protected def ringCon (m:ℕ) : RingCon ℤ_[p]⸨X⸩ where
+  __ := QuotientAddGroup.con ((IsLocalRing.maximalIdeal ℤ_[p] ^ m •
+    ⊤ : Submodule ℤ_[p] ℤ_[p]⸨X⸩)).toAddSubgroup
+  mul' {a₁ b₁ a₂ b₂} h₁ h₂ := by
+    rw [Submodule.quotientRel_def,
+     maximalIdeal_eq_span_p,Ideal.span_singleton_pow,Submodule.ideal_span_singleton_smul,
+     ← Submodule.singleton_set_smul,Submodule.mem_singleton_set_smul ]
+      at h₁ h₂ ⊢
+    choose h1  s1 h11 using h₁
+    choose h2  s2 h12 using h₂
+    use ((p:ℤ_[p])^m • h1*h2 + h1 * b₂ + b₁*h2)
+    simp
+    calc
+     _=( a₁ - b₁ +b₁ )*( a₂ - b₂ +b₂)- b₁*b₂ :=by ring
+     _=((p:ℤ_[p])^m • h1 +b₁ )*( (p:ℤ_[p])^m • h2+b₂)- b₁*b₂:=by rw[h11,h12]
+     _=_ :=by
+       rw[help4,help4 _ h2 ,help5]
+       rw[help5 _ h1  b₂,help5 _ b₁ h2 ]
+       ring_nf
 
+noncomputable instance ring  (m:ℕ): Ring ( ℤ_[p]⸨X⸩  ⧸
+ (IsLocalRing.maximalIdeal ℤ_[p] ^ m •
+    ⊤ : Submodule ℤ_[p] ℤ_[p]⸨X⸩)) := fast_instance%
+  { __ : AddCommGroup ( ℤ_[p]⸨X⸩  ⧸
+ (IsLocalRing.maximalIdeal ℤ_[p] ^ m •
+    ⊤ : Submodule ℤ_[p] ℤ_[p]⸨X⸩)) := inferInstance
+
+    __ : Ring (PadicInt.ringCon (p:=p) m).Quotient := inferInstance }
+
+instance commRing {R} [CommRing R] (I : Ideal R) : CommRing (R ⧸ I) := fast_instance%
+  { mul_comm := by rintro ⟨a⟩ ⟨b⟩; exact congr_arg _ (mul_comm a b) }
 noncomputable def Adic_Complection_equiv_srmm: (AdicCompletion (IsLocalRing.maximalIdeal ℤ_[p])
  (ℤ_[p]⸨X⸩)) ≃ₗ[ℤ_[p]]
  C_₀(ℤ,ℤ_[p]) where
