@@ -786,7 +786,7 @@ theorem snd {f : α → β × γ} (hf : QuasiMeasurePreserving f μ (ν.prod τ)
 
 @[fun_prop]
 theorem prod_map {ω : Type*} {mω : MeasurableSpace ω} {υ : Measure ω}
-    [SFinite μ] [SFinite ν] [SFinite τ] [SFinite υ] {f : α → β} {g : γ → ω}
+    [SFinite μ] [SFinite τ] [SFinite υ] {f : α → β} {g : γ → ω}
     (hf : QuasiMeasurePreserving f μ ν) (hg : QuasiMeasurePreserving g τ υ) :
     QuasiMeasurePreserving (Prod.map f g) (μ.prod τ) (ν.prod υ) := by
   refine ⟨by fun_prop, ?_⟩
@@ -811,7 +811,7 @@ theorem MeasureTheory.NullMeasurable.comp_fst {f : α → γ} (hf : NullMeasurab
   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_fst
 
 -- TODO: make this theorem usable with `fun_prop`
-theorem AEMeasurable.fst {f : α → γ} (hf : AEMeasurable f μ) :
+theorem AEMeasurable.fst' {f : α → γ} (hf : AEMeasurable f μ) :
     AEMeasurable (fun z : α × β => f z.1) (μ.prod ν) :=
   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_fst
 
@@ -820,7 +820,7 @@ theorem MeasureTheory.NullMeasurable.comp_snd {f : β → γ} (hf : NullMeasurab
   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_snd
 
 -- TODO: make this theorem usable with `fun_prop`
-theorem AEMeasurable.snd {f : β → γ} (hf : AEMeasurable f ν) :
+theorem AEMeasurable.snd' {f : β → γ} (hf : AEMeasurable f ν) :
     AEMeasurable (fun z : α × β => f z.2) (μ.prod ν) :=
   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_snd
 
@@ -914,7 +914,8 @@ theorem lintegral_lintegral_swap [SFinite μ] ⦃f : α → β → ℝ≥0∞⦄
 
 theorem lintegral_prod_mul {f : α → ℝ≥0∞} {g : β → ℝ≥0∞} (hf : AEMeasurable f μ)
     (hg : AEMeasurable g ν) : ∫⁻ z, f z.1 * g z.2 ∂μ.prod ν = (∫⁻ x, f x ∂μ) * ∫⁻ y, g y ∂ν := by
-  simp [lintegral_prod _ (hf.fst.mul hg.snd), lintegral_lintegral_mul hf hg]
+  have :  AEMeasurable (fun a ↦ f a.1 * g a.2) (μ.prod ν) := by fun_prop
+  simp [lintegral_prod _ (hf.fst'.mul hg.snd'), lintegral_lintegral_mul hf hg]
 
 /-! ### Marginals of a measure defined on a product -/
 
@@ -1007,7 +1008,7 @@ instance [SFinite ρ] : SFinite ρ.snd := by
   infer_instance
 
 instance snd.instIsFiniteMeasure [IsFiniteMeasure ρ] : IsFiniteMeasure ρ.snd := by
-  rw [snd]
+  rw [snd]''
   infer_instance
 
 instance snd.instIsProbabilityMeasure [IsProbabilityMeasure ρ] : IsProbabilityMeasure ρ.snd where
