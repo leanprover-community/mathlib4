@@ -63,7 +63,7 @@ theorem ι_map {X Y} {f : X ⟶ Y} : P.ι.map f = f :=
   rfl
 
 /-- The inclusion of a full subcategory is fully faithful. -/
-abbrev fullyFaithfulι  :
+abbrev fullyFaithfulι :
     P.ι.FullyFaithful :=
   fullyFaithfulInducedFunctor _
 
