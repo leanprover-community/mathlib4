@@ -191,18 +191,17 @@ abbrev ofAlgHom (comul : A →ₐ[R] (A ⊗[R] A)) (counit : A →ₐ[R] R)
 end Bialgebra
 
 namespace Bialgebra
+variable {R A : Type*} [CommSemiring R] [Semiring A] [Bialgebra R A]
 
-variable (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Bialgebra R A]
+variable (A) in
+lemma algebraMap_injective : Injective (algebraMap R A) := RightInverse.injective counit_algebraMap
 
-lemma algebraMap_injective : Function.Injective (algebraMap R A) :=
-  fun a b eq  ↦ by rw [← counit_algebraMap (A := A) a, ← counit_algebraMap (A := A) b, eq]
+lemma counit_surjective : Surjective (counit : A →ₗ[R] R) :=
+  RightInverse.surjective counit_algebraMap
 
 include R in
-/--
-A bialgebra over a nontrivial ring is nontrivial.
--/
-lemma nontrivial [Nontrivial R] : Nontrivial A :=
-  Set.nontrivial_of_nontrivial (s := (algebraMap R A) '' ⊤) ((Set.image_nontrivial
-  (algebraMap_injective R A)).mpr Set.nontrivial_univ)
+variable (R) in
+/-- A bialgebra over a nontrivial ring is nontrivial. -/
+lemma nontrivial [Nontrivial R] : Nontrivial A := (algebraMap_injective (R := R) _).nontrivial
 
 end Bialgebra
