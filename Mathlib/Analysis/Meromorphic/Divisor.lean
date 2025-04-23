@@ -78,7 +78,7 @@ lemma divisor_apply {f : 𝕜 → E} (hf : MeromorphicOn f U) (hz : z ∈ U) :
 If `f₁` is meromorphic on `U`, if `f₂` agrees with `f₁` on a codiscrete subset of `U` and outside of
 `U`, then `f₁` and `f₂` induce the same divisors on `U`.
 -/
-theorem divisor_congr_codiscreteWithin {f₁ f₂ : 𝕜 → E} (hf₁ : MeromorphicOn f₁ U)
+theorem divisor_congr_codiscreteWithin_of_eqOn_compl {f₁ f₂ : 𝕜 → E} (hf₁ : MeromorphicOn f₁ U)
     (h₁ : f₁ =ᶠ[Filter.codiscreteWithin U] f₂) (h₂ : Set.EqOn f₁ f₂ Uᶜ) :
     divisor f₁ U = divisor f₂ U := by
   ext x
@@ -95,7 +95,7 @@ theorem divisor_congr_codiscreteWithin {f₁ f₂ : 𝕜 → E} (hf₁ : Meromor
 If `f₁` is meromorphic on an open set `U`, if `f₂` agrees with `f₁` on a codiscrete subset of `U`,
 then `f₁` and `f₂` induce the same divisors on`U`.
 -/
-theorem divisor_congr_codiscreteWithin_open {f₁ f₂ : 𝕜 → E} (hf₁ : MeromorphicOn f₁ U)
+theorem divisor_congr_codiscreteWithin {f₁ f₂ : 𝕜 → E} (hf₁ : MeromorphicOn f₁ U)
     (h₁ : f₁ =ᶠ[Filter.codiscreteWithin U] f₂) (h₂ : IsOpen U) :
     divisor f₁ U = divisor f₂ U := by
   ext x
