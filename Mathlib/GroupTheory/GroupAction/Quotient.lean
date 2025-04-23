@@ -104,29 +104,6 @@ theorem _root_.QuotientGroup.out_conj_pow_minimalPeriod_mem (a : α) (q : α ⧸
   rw [mul_assoc, ← QuotientGroup.eq, QuotientGroup.out_eq', ← smul_eq_mul, Quotient.mk_smul_out,
     eq_comm, pow_smul_eq_iff_minimalPeriod_dvd]
 
-@[to_additive]
-alias Quotient.mk_smul_out' := Quotient.mk_smul_out
-
--- `alias` doesn't add the deprecation suggestion to the `to_additive` version
--- see https://github.com/leanprover-community/mathlib4/issues/19424
-attribute [deprecated Quotient.mk_smul_out (since := "2024-10-19")] Quotient.mk_smul_out'
-attribute [deprecated AddAction.Quotient.mk_vadd_out (since := "2024-10-19")]
-AddAction.Quotient.mk_vadd_out'
-
-@[to_additive]
-alias Quotient.coe_smul_out' := Quotient.coe_smul_out
-
--- `alias` doesn't add the deprecation suggestion to the `to_additive` version
--- see https://github.com/leanprover-community/mathlib4/issues/19424
-attribute [deprecated Quotient.coe_smul_out (since := "2024-10-19")] Quotient.coe_smul_out'
-attribute [deprecated AddAction.Quotient.coe_vadd_out (since := "2024-10-19")]
-AddAction.Quotient.coe_vadd_out'
-
-
-@[deprecated (since := "2024-10-19")]
-alias _root_.QuotientGroup.out'_conj_pow_minimalPeriod_mem :=
-  QuotientGroup.out_conj_pow_minimalPeriod_mem
-
 end QuotientAction
 
 open QuotientGroup
