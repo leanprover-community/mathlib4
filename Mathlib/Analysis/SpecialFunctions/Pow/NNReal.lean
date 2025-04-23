@@ -936,35 +936,6 @@ theorem rpow_left_bijective {x : ℝ} (hx : x ≠ 0) : Function.Bijective fun y 
 lemma _root_.Real.enorm_rpow_of_nonneg {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) :
     ‖x ^ y‖ₑ = ‖x‖ₑ ^ y := by simp [enorm, nnnorm_rpow_of_nonneg hx, coe_rpow_of_nonneg _ hy]
 
-open NNReal in
-theorem iSup_pow_of_ne_zero {ι : Type*} (f : ι → ℝ≥0∞) {n : ℕ} (hn : n ≠ 0) :
-    (⨆ i : ι, f i) ^ n = ⨆ i : ι, f i ^ n := by
-  by_cases hf : ∃ (B : ℝ≥0), ∀ i, f i ≤ B
-  · obtain hι | hι := isEmpty_or_nonempty ι
-    · simp [hι, hn]
-    · exact iSup_pow hf n
-  · push_neg at hf
-    have hl : (⨆ i, f i) ^ n = ⊤ := by
-      rw [pow_eq_top_iff]
-      refine ⟨?_, hn⟩
-      rw [iSup_eq_top]
-      intro x hx
-      obtain ⟨i, hi⟩ := hf x.toNNReal
-      use i
-      rwa [coe_toNNReal (ne_of_lt hx)] at hi
-    rw [hl, eq_comm, iSup_eq_top]
-    intro x hx
-    obtain ⟨i, hi⟩ := hf (x.toNNReal ^ (1/(n : ℝ)))
-    have hi' : (x.toNNReal ^ (1 / (n : ℝ)) : ℝ≥0∞) ^ n < (f i) ^ n := by
-      refine ENNReal.pow_lt_pow_left ?_ hn
-      convert hi
-      rw [ENNReal.coe_rpow_def, if_neg]
-      simp only [one_div, inv_neg'', not_and, not_lt, Nat.cast_nonneg, implies_true]
-    use i
-    have hn' : (n : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr hn
-    simpa only [one_div, inv_mul_cancel₀ hn', ← rpow_natCast, ← rpow_mul, rpow_one,
-      coe_toNNReal (ne_of_lt hx)] using hi'
-
 end ENNReal
 
 -- Porting note(https://github.com/leanprover-community/mathlib4/issues/6038): restore
