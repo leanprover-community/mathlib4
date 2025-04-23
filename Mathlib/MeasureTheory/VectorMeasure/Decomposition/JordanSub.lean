@@ -140,13 +140,8 @@ theorem sub_zero {μ : Measure X} : μ - 0 = μ := by
   · simp [add_zero]
 
 lemma sub_eq_zero_of_le_on {μ ν : Measure X} (hs : SetWhereLe μ ν s) : (μ - ν) s = 0 := by
-  have : μ.restrict s ≤ ν.restrict s + 0 := by simp [hs.le_on]
-  replace this := Measure.sub_le_of_le_add this
-  simp only [sub_zero] at this
-  replace this := sub_eq_zero_of_le this
-  rw [← restrict_sub_eq_restrict_sub_restrict hs.measurable] at this
-  simp only [restrict_eq_zero] at this
-  exact this
+  rw [← restrict_eq_zero, restrict_sub_eq_restrict_sub_restrict hs.measurable]
+  exact sub_eq_zero_of_le hs.le_on
 
 lemma ofSignedMeasure_setWhereLe (hs : SignedMeasure.SetWhereLe μ ν s) : SetWhereLe μ ν s := by
   constructor
