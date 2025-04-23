@@ -229,7 +229,7 @@ def normNumPositivity (e : Q($α)) : MetaM (Strictness zα pα e) := catchNone d
     else -- should not be reachable, but just in case
       haveI' w : decide ($n = 0) =Q true := ⟨⟩
       pure (.nonnegative q(nonneg_of_isNNRat $p $w))
-  | .isNegNNRat _i q n d p =>
+  | .isNegNNRat _i _q _n _d _p =>
     let _a ← synthInstanceQ q(Ring $α)
     let _a ← synthInstanceQ q(LinearOrder $α)
     let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
