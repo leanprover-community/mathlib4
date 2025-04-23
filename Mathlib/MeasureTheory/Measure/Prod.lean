@@ -811,8 +811,8 @@ theorem AEMeasurable.snd {f : β → γ} (hf : AEMeasurable f ν) :
 theorem AEMeasurable.lintegral_prod_right' [SFinite ν] {f : α × β → ℝ≥0∞}
     (hf : AEMeasurable f (μ.prod ν)) : AEMeasurable (fun x ↦ ∫⁻ y, f (x, y) ∂ν) μ := by
   obtain ⟨g, hg, hfg⟩ := hf
-  refine ⟨fun x ↦ ∫⁻ y, g (x, y) ∂ν , (by fun_prop) , ?_⟩
-  exact Eventually.mono (Measure.ae_ae_of_ae_prod hfg) fun x hfg' ↦ lintegral_congr_ae hfg'
+  refine ⟨fun x ↦ ∫⁻ y, g (x, y) ∂ν, by fun_prop, ?_⟩
+  exact (ae_ae_of_ae_prod hfg).mono fun x hfg' ↦ lintegral_congr_ae hfg'
 
 @[fun_prop, measurability]
 theorem AEMeasurable.lintegral_prod_right [SFinite ν] {f : α → β → ℝ≥0∞}
