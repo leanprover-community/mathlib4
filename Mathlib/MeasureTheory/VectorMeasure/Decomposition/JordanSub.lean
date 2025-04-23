@@ -28,7 +28,6 @@ where `μ ≤ ν` and `ν ≤ μ`, and the measure difference behaves like a sig
 * `setWhereLe_iff_setWhereLeSignedMeasure`:
   The set-theoretic condition for `μ ≥ ν` is equivalent to its reformulation using signed measures.
 -/
-
 open scoped MeasureTheory ENNReal NNReal
 
 namespace MeasureTheory
@@ -63,7 +62,7 @@ class SetWhereLe (μ ν : Measure X) [IsFiniteMeasure μ] [IsFiniteMeasure ν] (
   le_on : μ.toSignedMeasure.restrict s ≤  ν.toSignedMeasure.restrict s
   ge_on_compl : ν.toSignedMeasure.restrict sᶜ ≤  μ.toSignedMeasure.restrict sᶜ
 
-instance SetWhereLe.compl_symm {μ ν : Measure X} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+instance SetWhereLe.compl {μ ν : Measure X} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     {s : Set X} [h : SetWhereLe μ ν s] : SetWhereLe ν μ sᶜ where
   measurable := h.measurable.compl
   le_on := h.ge_on_compl
@@ -130,7 +129,7 @@ theorem toSignedMeasure_le_iff : μ.toSignedMeasure ≤ ν.toSignedMeasure ↔ �
   · intro h A hA
     simp only [toSignedMeasure_apply, hA, ↓reduceIte, ne_eq, measure_ne_top, not_false_eq_true,
       ENNReal.toReal_le_toReal]
-    exact h A
+    exact h
 
 @[simp]
 theorem sub_zero {μ : Measure X} : μ - 0 = μ := by
@@ -143,14 +142,15 @@ lemma sub_eq_zero_of_le_on {μ ν : Measure X} (hs : SetWhereLe μ ν s) : (μ -
   rw [← restrict_eq_zero, restrict_sub_eq_restrict_sub_restrict hs.measurable]
   exact sub_eq_zero_of_le hs.le_on
 
-lemma ofSignedMeasure_setWhereLe (hs : SignedMeasure.SetWhereLe μ ν s) : SetWhereLe μ ν s := by
-  constructor
-  · exact hs.measurable
-  · rw [toSignedMeasure_le_iff.symm, ← sub_nonneg,
+lemma ofSignedMeasure_setWhereLe (hs : SignedMeasure.SetWhereLe μ ν s) : SetWhereLe μ ν s where
+  measurable := hs.measurable
+  le_on := by
+    rw [toSignedMeasure_le_iff.symm, ← sub_nonneg,
         ← toSignedMeasure_restrict_eq_restrict_toSigned hs.measurable,
         ← toSignedMeasure_restrict_eq_restrict_toSigned hs.measurable]
     simp [hs.le_on]
-  · rw [toSignedMeasure_le_iff.symm, ← sub_nonneg,
+  ge_on_compl := by
+    rw [toSignedMeasure_le_iff.symm, ← sub_nonneg,
         ← toSignedMeasure_restrict_eq_restrict_toSigned hs.measurable.compl,
         ← toSignedMeasure_restrict_eq_restrict_toSigned hs.measurable.compl]
     simp [hs.ge_on_compl]
