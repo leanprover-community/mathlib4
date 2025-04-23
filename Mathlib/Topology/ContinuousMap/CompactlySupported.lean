@@ -837,14 +837,14 @@ noncomputable def toRealLinear (Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0) :
   map_smul' a f := by
     apply Or.elim3 (lt_trichotomy 0 a)
     · intro ha
-      rw [RingHom.id_apply, smul_eq_mul, ← (smul_neg a f), nnrealPart_smul_pos f a ha, 
+      rw [RingHom.id_apply, smul_eq_mul, ← (smul_neg a f), nnrealPart_smul_pos f a ha,
         nnrealPart_smul_pos (-f) a ha]
       simp [sup_of_le_left (le_of_lt ha), mul_sub]
     · intro ha
       simp [← ha]
     · intro ha
-      simp only [RingHom.id_apply, smul_eq_mul, ← (smul_neg a f), nnrealPart_smul_neg f a ha, 
-        nnrealPart_smul_neg (-f) a ha, map_smul, NNReal.coe_mul, Real.coe_toNNReal', neg_neg, 
+      simp only [RingHom.id_apply, smul_eq_mul, ← (smul_neg a f), nnrealPart_smul_neg f a ha,
+        nnrealPart_smul_neg (-f) a ha, map_smul, NNReal.coe_mul, Real.coe_toNNReal', neg_neg,
         sup_of_le_left (neg_nonneg.mpr (le_of_lt ha))]
       ring
 
@@ -856,7 +856,7 @@ lemma nonneg_toRealLinear (Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0) (g : C
 simp [toRealLinear_apply, nnrealPart_neg_eq_zero_of_nonneg g hg]
 
 @[simp]
-lemma eq_toRealLinear_toReal {Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0} (f : C_c(α, ℝ≥0)) :
+lemma eq_toRealLinear_toReal (Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0) (f : C_c(α, ℝ≥0)) :
     (toRealLinear Λ) (toReal f) = Λ f:= by
   simp [toRealLinear_apply]
 

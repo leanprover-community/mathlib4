@@ -35,11 +35,14 @@ variable (Λ : C_c(X, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0)
 
 namespace NNRealRMK
 
-theorem lintegral_rieszMeasure_eq (f : C_c(X, ℝ≥0)) : ∫⁻ (x : X), f x ∂(rieszMeasure Λ) = Λ f := by
+/-- The **Riesz-Markov-Kakutani representation theorem**: given a positive linear functional `Λ`,
+the (lower) Lebesgue integral of `f` with respect to the `rieszMeasure` associated to `Λ` is equal
+to `Λ f`. -/
+theorem lintegral_rieszMeasure (f : C_c(X, ℝ≥0)) : ∫⁻ (x : X), f x ∂(rieszMeasure Λ) = Λ f := by
   rw [lintegral_coe_eq_integral, ← ENNReal.ofNNReal_toNNReal]
   · simp only [ENNReal.coe_inj]
     rw [Real.toNNReal_of_nonneg (by apply integral_nonneg; intro x; simp),
-      ← NNReal.coe_inj, ← eq_toRealLinear_toReal f,
+      ← NNReal.coe_inj, ← eq_toRealLinear_toReal Λ f,
       ← RealRMK.integral_rieszMeasure (nonneg_toRealLinear Λ) f.toReal]
     · simp only [toReal_apply, NNReal.coe_mk]
       congr
