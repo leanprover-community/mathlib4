@@ -54,6 +54,8 @@ variable [TopologicalSpace R] [TopologicalSpace S]
 /-- Points at which evaluation of power series is well behaved -/
 abbrev HasEval (a : S) := IsTopologicallyNilpotent a
 
+theorem hasEval_def (a : S) : HasEval a ↔ IsTopologicallyNilpotent a := .rfl
+
 theorem hasEval_iff {a : S} :
     HasEval a ↔ MvPowerSeries.HasEval (fun (_ : Unit) ↦ a) :=
   ⟨fun ha ↦ ⟨fun _ ↦ ha, by simp⟩, fun ha ↦ ha.hpow default⟩

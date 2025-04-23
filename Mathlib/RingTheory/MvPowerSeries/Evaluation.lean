@@ -60,6 +60,7 @@ variable {φ : R →+* S}
 open WithPiTopology
 
 /-- Families at which power series can be consistently evaluated -/
+@[mk_iff hasEval_def]
 structure HasEval (a : σ → S) : Prop where
   hpow : ∀ s, IsTopologicallyNilpotent (a s)
   tendsto_zero : Tendsto a cofinite (𝓝 0)
@@ -94,9 +95,9 @@ theorem HasEval.map (hφ : Continuous φ) {a : σ → R} (ha : HasEval a) :
   hpow s := (ha.hpow s).map hφ
   tendsto_zero := (map_zero φ ▸ hφ.tendsto 0).comp ha.tendsto_zero
 
-protected theorem HasEval.X:
+protected theorem HasEval.X :
     HasEval (fun s ↦ (MvPowerSeries.X s : MvPowerSeries σ R)) where
-  hpow s := tendsto_pow_zero_of_constantCoeff_zero (constantCoeff_X s)
+  hpow s := isTopologicallyNilpotent_of_constantCoeff_zero (constantCoeff_X s)
   tendsto_zero := variables_tendsto_zero
 
 variable [IsTopologicalRing S] [IsLinearTopology S S]
@@ -116,6 +117,7 @@ theorem mem_hasEvalIdeal_iff {a : σ → S} :
 /-- The inclusion of polynomials into power series has dense image -/
 theorem _root_.MvPolynomial.toMvPowerSeries_denseRange :
     DenseRange (toMvPowerSeries (R := R) (σ := σ)) := fun f => by
+  classical
   have : Tendsto (fun d ↦ (trunc' R d f : MvPowerSeries σ R)) atTop (𝓝 f) := by
     rw [tendsto_iff_coeff_tendsto]
     refine fun d ↦ tendsto_atTop_of_eventually_const fun n (hdn : d ≤ n) ↦ ?_
@@ -159,6 +161,7 @@ theorem _root_.MvPolynomial.toMvPowerSeries_uniformContinuous
     [IsUniformAddGroup R] [IsUniformAddGroup S] [IsLinearTopology S S]
     (hφ : Continuous φ) (ha : HasEval a) :
     UniformContinuous (MvPolynomial.eval₂Hom φ a) := by
+  classical
   apply uniformContinuous_of_continuousAt_zero
   rw [ContinuousAt, map_zero, IsLinearTopology.hasBasis_ideal.tendsto_right_iff]
   intro I hI

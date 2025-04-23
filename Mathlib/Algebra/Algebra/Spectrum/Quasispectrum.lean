@@ -3,7 +3,7 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Algebra.Spectrum
+import Mathlib.Algebra.Algebra.Spectrum.Basic
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.Algebra.Unitization
 
@@ -198,6 +198,10 @@ lemma isQuasiregular_iff {x : R} :
       apply equiv.symm.injective
       assumption
 
+lemma isQuasiregular_iff' {x : R} : IsQuasiregular x ↔ IsUnit (PreQuasiregular.equiv x) := by
+  simp only [IsQuasiregular, IsUnit, Equiv.apply_symm_apply,
+    ← PreQuasiregular.equiv (R := R).injective.eq_iff]
+
 end PreQuasiregular
 
 lemma IsQuasiregular.map {F R S : Type*} [NonUnitalSemiring R] [NonUnitalSemiring S]
@@ -384,7 +388,8 @@ lemma quasispectrum.mul_comm {R A : Type*} [CommRing R] [NonUnitalRing A] [Modul
 
 /-- A class for `𝕜`-algebras with a partial order where the ordering is compatible with the
 (quasi)spectrum. -/
-class NonnegSpectrumClass (𝕜 A : Type*) [OrderedCommSemiring 𝕜] [NonUnitalRing A] [PartialOrder A]
+class NonnegSpectrumClass (𝕜 A : Type*) [CommSemiring 𝕜] [PartialOrder 𝕜]
+    [NonUnitalRing A] [PartialOrder A]
     [Module 𝕜 A] : Prop where
   quasispectrum_nonneg_of_nonneg : ∀ a : A, 0 ≤ a → ∀ x ∈ quasispectrum 𝕜 a, 0 ≤ x
 
@@ -392,7 +397,7 @@ export NonnegSpectrumClass (quasispectrum_nonneg_of_nonneg)
 
 namespace NonnegSpectrumClass
 
-lemma iff_spectrum_nonneg {𝕜 A : Type*} [LinearOrderedSemifield 𝕜] [Ring A] [PartialOrder A]
+lemma iff_spectrum_nonneg {𝕜 A : Type*} [Semifield 𝕜] [LinearOrder 𝕜] [Ring A] [PartialOrder A]
     [Algebra 𝕜 A] : NonnegSpectrumClass 𝕜 A ↔ ∀ a : A, 0 ≤ a → ∀ x ∈ spectrum 𝕜 a, 0 ≤ x := by
   simp [show NonnegSpectrumClass 𝕜 A ↔ _ from ⟨fun ⟨h⟩ ↦ h, (⟨·⟩)⟩,
     quasispectrum_eq_spectrum_union_zero]
@@ -401,7 +406,8 @@ alias ⟨_, of_spectrum_nonneg⟩ := iff_spectrum_nonneg
 
 end NonnegSpectrumClass
 
-lemma spectrum_nonneg_of_nonneg {𝕜 A : Type*} [OrderedCommSemiring 𝕜] [Ring A] [PartialOrder A]
+lemma spectrum_nonneg_of_nonneg {𝕜 A : Type*} [CommSemiring 𝕜] [PartialOrder 𝕜]
+    [Ring A] [PartialOrder A]
     [Algebra 𝕜 A] [NonnegSpectrumClass 𝕜 A] ⦃a : A⦄ (ha : 0 ≤ a) ⦃x : 𝕜⦄ (hx : x ∈ spectrum 𝕜 a) :
     0 ≤ x :=
   NonnegSpectrumClass.quasispectrum_nonneg_of_nonneg a ha x (spectrum_subset_quasispectrum 𝕜 a hx)

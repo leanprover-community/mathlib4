@@ -145,9 +145,6 @@ lemma add_pow_eq_mul_pow_add_pow_div_char :
     (x + y) ^ n = (x + y) ^ (n % p) * (x ^ p + y ^ p) ^ (n / p) :=
   add_pow_eq_mul_pow_add_pow_div_expChar ..
 
-@[deprecated (since := "2024-10-21")]
-alias add_pow_eq_add_pow_mod_mul_pow_add_pow_div := add_pow_eq_mul_pow_add_pow_div_char
-
 end CharP
 end CommSemiring
 

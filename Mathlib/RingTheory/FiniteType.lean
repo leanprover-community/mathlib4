@@ -482,7 +482,7 @@ theorem fg_of_finiteType [CommRing R] [Nontrivial R] [h : FiniteType R R[M]] :
 
 /-- An additive group `G` is finitely generated if and only if `R[G]` is of
 finite type. -/
-theorem finiteType_iff_group_fg {G : Type*} [AddCommGroup G] [CommRing R] [Nontrivial R] :
+theorem finiteType_iff_group_fg {G : Type*} [AddGroup G] [CommRing R] [Nontrivial R] :
     FiniteType R R[G] ↔ AddGroup.FG G := by
   simpa [AddGroup.fg_iff_addMonoid_fg] using finiteType_iff_fg
 

@@ -185,9 +185,6 @@ instance : MetricSpace v.FunSpace :=
 theorem isUniformInducing_toContinuousMap : IsUniformInducing (@toContinuousMap _ _ _ v) :=
   ⟨rfl⟩
 
-@[deprecated (since := "2024-10-05")]
-alias uniformInducing_toContinuousMap := isUniformInducing_toContinuousMap
-
 theorem range_toContinuousMap :
     range toContinuousMap =
       {f : C(Icc v.tMin v.tMax, E) | f v.t₀ = v.x₀ ∧ LipschitzWith v.C f} := by
@@ -264,7 +261,7 @@ theorem dist_next_apply_le_of_le {f₁ f₂ : FunSpace v} {n : ℕ} {d : ℝ}
   simp only [dist_eq_norm, next_apply, add_sub_add_left_eq_sub, ←
     intervalIntegral.integral_sub (intervalIntegrable_vComp _ _ _)
       (intervalIntegrable_vComp _ _ _),
-    norm_integral_eq_norm_integral_Ioc] at *
+    norm_integral_eq_norm_integral_uIoc] at *
   calc
     ‖∫ τ in Ι (v.t₀ : ℝ) t, f₁.vComp τ - f₂.vComp τ‖ ≤
         ∫ τ in Ι (v.t₀ : ℝ) t, v.L * ((v.L * |τ - v.t₀|) ^ n / n ! * d) := by

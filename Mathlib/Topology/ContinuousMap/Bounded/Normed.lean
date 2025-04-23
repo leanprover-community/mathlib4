@@ -490,7 +490,8 @@ end NormedAlgebra
 
 section NormedLatticeOrderedGroup
 
-variable [TopologicalSpace α] [NormedLatticeAddCommGroup β]
+variable [TopologicalSpace α]
+  [NormedAddCommGroup β] [Lattice β] [HasSolidNorm β] [IsOrderedAddMonoid β]
 
 instance instPartialOrder : PartialOrder (α →ᵇ β) :=
   PartialOrder.lift (fun f => f.toFun) (by simp [Injective])
@@ -533,18 +534,19 @@ instance instLattice : Lattice (α →ᵇ β) := DFunLike.coe_injective.lattice 
 @[simp, norm_cast] lemma coe_posPart (f : α →ᵇ β) : ⇑f⁺ = (⇑f)⁺ := rfl
 @[simp, norm_cast] lemma coe_negPart (f : α →ᵇ β) : ⇑f⁻ = (⇑f)⁻ := rfl
 
-instance instNormedLatticeAddCommGroup : NormedLatticeAddCommGroup (α →ᵇ β) :=
-  { instSeminormedAddCommGroup with
-    add_le_add_left := by
-      intro f g h₁ h t
-      simp only [coe_toContinuousMap, Pi.add_apply, add_le_add_iff_left, coe_add]
-      exact h₁ _
-    solid := by
+instance instHasSolidNorm : HasSolidNorm (α →ᵇ β) :=
+  { solid := by
       intro f g h
       have i1 : ∀ t, ‖f t‖ ≤ ‖g t‖ := fun t => HasSolidNorm.solid (h t)
       rw [norm_le (norm_nonneg _)]
-      exact fun t => (i1 t).trans (norm_coe_le_norm g t)
-    eq_of_dist_eq_zero }
+      exact fun t => (i1 t).trans (norm_coe_le_norm g t) }
+
+instance instIsOrderedAddMonoid : IsOrderedAddMonoid (α →ᵇ β) :=
+  { add_le_add_left := by
+      intro f g h₁ h t
+      simp only [ContinuousMap.toFun_eq_coe, coe_toContinuousMap, coe_add, Pi.add_apply,
+        add_le_add_iff_left]
+      exact h₁ _ }
 
 end NormedLatticeOrderedGroup
 
