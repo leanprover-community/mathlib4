@@ -62,8 +62,6 @@ namespace CategoryTheory.Abelian
 
 open CategoryTheory.Abelian.Ext DerivedCategory
 
-variable {C : Type u} [Category.{v} C] [Abelian C] [HasExt.{w} C] (X Y : C)
-
 namespace Ext
 
 variable {C : Type u} [Category.{v} C] [Abelian C] [HasExt.{w} C]
@@ -82,9 +80,9 @@ end Ring
 
 section CommRing
 
-variable (R : Type*) [CommRing R]
+variable (R : Type*) [CommRing R] [Linear R C]
 
-noncomputable def bilinearCompOfLinear [Linear R C] (X Y Z : C) (a b c : ℕ) (h : a + b = c) :
+noncomputable def bilinearCompOfLinear (X Y Z : C) (a b c : ℕ) (h : a + b = c) :
     Ext.{w} X Y a →ₗ[R] Ext.{w} Y Z b →ₗ[R] Ext.{w} X Z c where
   toFun α :=
     { toFun := fun β ↦ α.comp β h
@@ -95,7 +93,7 @@ noncomputable def bilinearCompOfLinear [Linear R C] (X Y Z : C) (a b c : ℕ) (h
     simp
   map_smul' := sorry
 
-noncomputable def postcompOfLinear [Linear R C] {Y Z : C} {a b n : ℕ} (f : Ext.{w} Y Z n) (X : C)
+noncomputable def postcompOfLinear {Y Z : C} {a b n : ℕ} (f : Ext.{w} Y Z n) (X : C)
     (h : a + n = b) : Ext.{w} X Y a →ₗ[R] Ext.{w} X Z b :=
   (bilinearCompOfLinear R X Y Z a n b h).flip f
 
