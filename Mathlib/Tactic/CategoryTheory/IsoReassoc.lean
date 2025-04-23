@@ -76,11 +76,11 @@ Update the `reassoc_of%` elaborator to use `isoReassocExpr` on equality of isos,
 initialize reassocOfImplRef.set fun t => do
   let e ← elabTerm t none
   forallTelescope (← inferType e) (fun _ e' => do
-    match e'.eq? with
+    match (← whnf e').eq? with
     | some (t, _, _) =>
       match t.app4? ``Iso with
       | some _ => isoReassocExpr e
-      | _ =>  reassocExpr e
+      | _ => reassocExpr e
     | _ => throwError "`reassoc` can only be used on terms about equality of (iso)morphisms.")
 
 end CategoryTheory
