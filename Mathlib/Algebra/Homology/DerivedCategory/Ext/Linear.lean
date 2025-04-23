@@ -2,7 +2,7 @@ import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
 import Mathlib.Algebra.Homology.DerivedCategory.Linear
 
 
-universe w t v u
+universe w' w t v u
 
 namespace CategoryTheory
 
@@ -49,6 +49,14 @@ lemma smul_comp {X Y Z : C} {a b : ℕ} (α : Ext X Y a) (β : Ext Y Z b)
     (r • α).comp β h = r • α.comp β h := by
   letI := HasDerivedCategory.standard C
   aesop
+
+open DerivedCategory in
+@[simps]
+noncomputable def homLinearEquiv [HasDerivedCategory.{w'} C] :
+    Ext X Y n ≃ₗ[R]
+      ShiftedHom ((singleFunctor C 0).obj X) ((singleFunctor C 0).obj Y) (n : ℤ) where
+  __ := homAddEquiv
+  map_smul' := by simp
 
 end Ring
 
