@@ -44,8 +44,7 @@ namespace CompletelyPositiveMapClass
 
 variable {F A₁ A₂ : Type*} [NonUnitalCStarAlgebra A₁]
   [NonUnitalCStarAlgebra A₂] [PartialOrder A₁] [PartialOrder A₂] [StarOrderedRing A₁]
-  [StarOrderedRing A₂]
-  [FunLike F A₁ A₂] [LinearMapClass F ℂ A₁ A₂]
+  [StarOrderedRing A₂] [FunLike F A₁ A₂] [LinearMapClass F ℂ A₁ A₂]
 
 /-- Reinterpret an element of a type of completely positive maps as a completely positive linear
   map. -/
@@ -84,8 +83,8 @@ lemma map_cstarMatrix_nonneg [CompletelyPositiveMapClass F A₁ A₂] {n : Type*
     (φ : F) (M : CStarMatrix n n A₁) (hM : 0 ≤ M) : 0 ≤ M.map φ := by
   let k := Fintype.card n
   let e := Fintype.equivFinOfCardEq (rfl : Fintype.card n = k)
-  have hmain : 0 ≤ (reindexₐ ℂ A₁ e M).mapₗ (φ : A₁ →ₗ[ℂ] A₂) := by
-    refine CompletelyPositiveMapClass.map_cstarMatrix_nonneg' k _ _ (map_nonneg _ hM)
+  have hmain : 0 ≤ (reindexₐ ℂ A₁ e M).mapₗ (φ : A₁ →ₗ[ℂ] A₂) :=
+    CompletelyPositiveMapClass.map_cstarMatrix_nonneg' k _ _ (map_nonneg _ hM)
   rw [← mapₗ_reindexₐ] at hmain
   have hrw :
       reindexₐ ℂ A₂ e.symm ((reindexₐ ℂ A₂ e) (M.map (φ : A₁ → A₂))) = M.map (φ : A₁ → A₂) := by
@@ -99,9 +98,7 @@ namespace NonUnitalStarAlgHomClass
 
 variable {F A₁ A₂ : Type*} [NonUnitalCStarAlgebra A₁]
   [NonUnitalCStarAlgebra A₂] [PartialOrder A₁] [PartialOrder A₂] [StarOrderedRing A₁]
-  [StarOrderedRing A₂]
-  [FunLike F A₁ A₂]
-  [NonUnitalAlgHomClass F ℂ A₁ A₂] [StarHomClass F A₁ A₂]
+  [StarOrderedRing A₂] [FunLike F A₁ A₂] [NonUnitalAlgHomClass F ℂ A₁ A₂] [StarHomClass F A₁ A₂]
 
 open CStarMatrix CFC in
 instance instCompletelyPositiveMapClass : CompletelyPositiveMapClass F A₁ A₂ where
