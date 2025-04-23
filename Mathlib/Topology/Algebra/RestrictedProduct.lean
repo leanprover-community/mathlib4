@@ -438,6 +438,10 @@ theorem continuous_coe :
   continuous_iSup_dom.mpr fun _ ↦ continuous_iSup_dom.mpr fun _ ↦
     continuous_coinduced_dom.mpr continuous_induced_dom
 
+theorem continuous_eval (i : ι) :
+    Continuous (fun (x : Πʳ i, [R i, A i]_[𝓕]) ↦ x i) :=
+  continuous_apply _ |>.comp continuous_coe
+
 theorem continuous_inclusion {𝓖 : Filter ι} (h : 𝓕 ≤ 𝓖) :
     Continuous (inclusion R A h) := by
   simp_rw [continuous_iff_coinduced_le, topologicalSpace, coinduced_iSup, coinduced_compose]
@@ -893,5 +897,41 @@ instance [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)] [∀ i, IsTopolo
 end cofinite
 
 end Compatibility
+
+section map_continuous
+
+variable {ι₁ ι₂ : Type*}
+variable (R₁ : ι₁ → Type*) (R₂ : ι₂ → Type*)
+variable [∀ i, TopologicalSpace (R₁ i)] [∀ i, TopologicalSpace (R₂ i)]
+variable {𝓕₁ : Filter ι₁} {𝓕₂ : Filter ι₂}
+variable {A₁ : (i : ι₁) → Set (R₁ i)} {A₂ : (i : ι₂) → Set (R₂ i)}
+variable {S₁ : ι₁ → Type*} {S₂ : ι₂ → Type*}
+variable [Π i, SetLike (S₁ i) (R₁ i)] [Π j, SetLike (S₂ j) (R₂ j)]
+variable {B₁ : Π i, S₁ i} {B₂ : Π j, S₂ j}
+variable (f : ι₂ → ι₁) (hf : Tendsto f 𝓕₂ 𝓕₁)
+
+section set
+
+variable (φ : ∀ j, R₁ (f j) → R₂ j) (hφ : ∀ᶠ j in 𝓕₂, A₁ (f j) ⊆ φ j ⁻¹' A₂ j)
+
+theorem map_continuous (φ_cont : ∀ j, Continuous (φ j)) : Continuous (map R₁ R₂ f hf φ hφ) := by
+  rw [continuous_dom]
+  intro S hS
+  set T := f ⁻¹' S ∩ {j | A₁ (f j) ⊆ φ j ⁻¹' A₂ j}
+  have hT : 𝓕₂ ≤ 𝓟 T := by
+    rw [le_principal_iff] at hS ⊢
+    exact inter_mem (hf hS) hφ
+  have hf' : Tendsto f (𝓟 T) (𝓟 S) := by aesop
+  have hφ' : ∀ᶠ j in 𝓟 T, A₁ (f j) ⊆ φ j ⁻¹' (A₂ j) := by aesop
+  have key : map R₁ R₂ f hf φ hφ ∘ inclusion R₁ A₁ hS =
+      inclusion R₂ A₂ hT ∘ map R₁ R₂ f hf' φ hφ' := rfl
+  rw [key]
+  exact continuous_inclusion _ |>.comp <|
+    continuous_rng_of_principal.mpr <|
+    continuous_pi fun j ↦ φ_cont j |>.comp <| continuous_eval (f j)
+
+end set
+
+end map_continuous
 
 end RestrictedProduct
