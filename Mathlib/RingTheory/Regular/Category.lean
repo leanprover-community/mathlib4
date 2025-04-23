@@ -21,6 +21,8 @@ variable {R : Type u} [CommRing R] (M : ModuleCat.{v} R)
 
 open CategoryTheory Ideal Pointwise
 
+namespace ModuleCat
+
 /-- The short complex `M → M → M⧸xM` given by an element `x : R`. -/
 @[simps]
 def smulShortComplex (r : R) :
@@ -37,7 +39,7 @@ def smulShortComplex (r : R) :
       ModuleCat.hom_zero, LinearMap.zero_apply, Submodule.Quotient.mk_eq_zero]
     exact Submodule.smul_mem_pointwise_smul m r ⊤ trivial
 
-lemma smulShortComplex_function_exact (r : R) :
+lemma smulShortComplex_function_exact (M : Type v) [AddCommGroup M] [Module R M] (r : R) :
     Function.Exact (r • LinearMap.id : M →ₗ[R] M) (r • (⊤ : Submodule R M)).mkQ := by
   intro x
   simp [Submodule.mem_smul_pointwise_iff_exists, Submodule.ideal_span_singleton_smul r ⊤,
@@ -49,6 +51,8 @@ lemma smulShortComplex_exact (r : R) : (smulShortComplex M r).Exact := by
 
 instance smulShortComplex_g_epi (r : R) : Epi (smulShortComplex M r).g := by
   simpa [smulShortComplex, ModuleCat.epi_iff_surjective] using Submodule.mkQ_surjective _
+
+end ModuleCat
 
 variable {M} in
 lemma IsSMulRegular.smulShortComplex_shortExact {r : R} (reg : IsSMulRegular M r) :
