@@ -299,6 +299,11 @@ def evalMonoidHom (j : ι) [Π i, Monoid (R i)] [∀ i, SubmonoidClass (S i) (R 
   map_one' := rfl
   map_mul' _ _ := rfl
 
+@[simp]
+lemma evalMonoidHom_apply [Π i, Monoid (R i)] [∀ i, SubmonoidClass (S i) (R i)]
+    (x : Πʳ i, [R i, B i]_[𝓕]) (j : ι) : evalMonoidHom R j x = x j :=
+  rfl
+
 /-- `RestrictedProduct.evalRingHom j` is the ring homomorphism from the restricted
 product `Πʳ i, [R i, B i]_[𝓕]` to the component `R j`.
 -/
@@ -306,6 +311,11 @@ def evalRingHom (j : ι) [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)] :
     (Πʳ i, [R i, B i]_[𝓕]) →+* R j where
   __ := evalMonoidHom R j
   __ := evalAddMonoidHom R j
+
+@[simp]
+lemma evalRingHom_apply [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)]
+    (x : Πʳ i, [R i, B i]_[𝓕]) (j : ι) : evalRingHom R j x = x j :=
+  rfl
 
 end eval
 
@@ -325,7 +335,7 @@ section set
 variable (φ : ∀ j, R₁ (f j) → R₂ j) (hφ : ∀ᶠ j in 𝓕₂, A₁ (f j) ⊆ φ j ⁻¹' A₂ j)
 
 /--
-Given two restricted products `Πʳ (i : ι₁), [R₁ i, B₁ i]_[𝓕₁]` and `Πʳ (j : ι₂), [R₂ j, B₂ j]_[𝓕₂]`,
+Given two restricted products `Πʳ (i : ι₁), [R₁ i, A₁ i]_[𝓕₁]` and `Πʳ (j : ι₂), [R₂ j, A₂ j]_[𝓕₂]`,
 `RestrictedProduct.map` gives a function between them. The data needed is a function `f : ι₂ → ι₁`
 such that `𝓕₂` tends to `𝓕₁` along `f`, and functions `φ j : R₁ (f j) → R₂ j`
 sending `A₁ (f j)` into `A₂ j` for an `𝓕₂`-large set of `j`'s.
@@ -334,6 +344,22 @@ See also `mapMonoidHom`, `mapAddMonoidHom` and `mapRingHom` for variants.
 -/
 def map (x : Πʳ i, [R₁ i, A₁ i]_[𝓕₁]) : Πʳ j, [R₂ j, A₂ j]_[𝓕₂] := ⟨fun j ↦ φ j (x (f j)), by
   filter_upwards [hf.eventually x.2, hφ] using fun _ h1 h2 ↦ h2 h1⟩
+
+lemma map_id (x : Πʳ i, [R₁ i, A₁ i]_[𝓕₁]) : map R₁ R₁ id
+  (fun ⦃_⦄ a ↦ a : Tendsto id 𝓕₁ 𝓕₁) (fun _ t ↦ t)
+  (Eventually.of_forall fun _ ↦ (fun ⦃_⦄ a ↦ a)) x = x := rfl
+
+lemma map_comp {ι₃} (R₃ : ι₃ → Type*) {𝓕₃ : Filter ι₃} {A₃ : (i : ι₃) → Set (R₃ i)} (g : ι₃ → ι₂)
+    (hg : Tendsto g 𝓕₃ 𝓕₂) (ψ : ∀ k, R₂ (g k) → R₃ k) (hψ : ∀ᶠ k in 𝓕₃, A₂ (g k) ⊆ ψ k ⁻¹' A₃ k) :
+    map R₁ R₃ (f ∘ g) (hf.comp hg) (fun k t ↦ ψ k (φ (g k) t)) (by
+      filter_upwards [hψ, hg hφ] with k h23 h12 t ht1
+      exact h23 (h12 ht1)) =
+    (map R₂ R₃ g hg ψ hψ) ∘ (map R₁ R₂ f hf φ hφ) := rfl
+
+@[simp]
+lemma map_apply (x : Πʳ i, [R₁ i, A₁ i]_[𝓕₁]) (j : ι₂) :
+    x.map R₁ R₂ f hf φ hφ j = φ j (x (f j)) :=
+  rfl
 
 end set
 
@@ -365,6 +391,11 @@ def mapMonoidHom : Πʳ i, [R₁ i, B₁ i]_[𝓕₁] →* Πʳ j, [R₂ j, B₂
     ext i
     exact map_mul (φ i) _ _
 
+@[to_additive (attr := simp)]
+lemma mapMonoidHom_apply (x : Πʳ i, [R₁ i, B₁ i]_[𝓕₁]) (j : ι₂) :
+    x.mapMonoidHom R₁ R₂ f hf φ hφ j = φ j (x (f j)) :=
+  rfl
+
 end monoid
 
 section ring
@@ -382,6 +413,11 @@ function `f : ι₂ → ι₁` such that `𝓕₂` tends to `𝓕₁` along `f`,
 def mapRingHom : Πʳ i, [R₁ i, B₁ i]_[𝓕₁] →+* Πʳ j, [R₂ j, B₂ j]_[𝓕₂] where
   __ := mapMonoidHom R₁ R₂ f hf (fun j ↦ φ j) hφ
   __ := mapAddMonoidHom R₁ R₂ f hf (fun j ↦ φ j) hφ
+
+@[simp]
+lemma mapRingHom_apply (x : Πʳ i, [R₁ i, B₁ i]_[𝓕₁]) (j : ι₂) :
+    x.mapRingHom R₁ R₂ f hf φ hφ j = φ j (x (f j)) :=
+  rfl
 
 end ring
 
@@ -713,7 +749,7 @@ theorem continuous_dom_prod_right {X Y : Type*} [TopologicalSpace X] [Topologica
   have hxS : ∀ i ∈ S, x i ∈ A i := fun i hi ↦ hi
   rcases exists_inclusion_eq_of_eventually R A hS hxS with ⟨x', hxx'⟩
   rw [← hxx', nhds_prod_eq, nhds_eq_map_inclusion hAopen hS x',
-    ← map_id (f := 𝓝 y), prod_map_map_eq, ← nhds_prod_eq, tendsto_map'_iff]
+    ← Filter.map_id (f := 𝓝 y), prod_map_map_eq, ← nhds_prod_eq, tendsto_map'_iff]
   exact H S hS |>.tendsto ⟨x', y⟩
 
 -- TODO: get from the previous one instead of copy-pasting
@@ -734,7 +770,7 @@ theorem continuous_dom_prod_left {X Y : Type*} [TopologicalSpace X] [Topological
   have hxS : ∀ i ∈ S, x i ∈ A i := fun i hi ↦ hi
   rcases exists_inclusion_eq_of_eventually R A hS hxS with ⟨x', hxx'⟩
   rw [← hxx', nhds_prod_eq, nhds_eq_map_inclusion hAopen hS x',
-    ← map_id (f := 𝓝 y), prod_map_map_eq, ← nhds_prod_eq, tendsto_map'_iff]
+    ← Filter.map_id (f := 𝓝 y), prod_map_map_eq, ← nhds_prod_eq, tendsto_map'_iff]
   exact H S hS |>.tendsto ⟨y, x'⟩
 
 include hAopen in
