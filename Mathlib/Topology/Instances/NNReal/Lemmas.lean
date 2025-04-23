@@ -37,6 +37,8 @@ noncomputable section
 
 open Filter Metric Set TopologicalSpace Topology
 
+variable {ι : Sort*} {n : ℕ}
+
 namespace NNReal
 
 variable {α : Type*}
@@ -232,46 +234,45 @@ theorem tendsto_of_antitone {f : ℕ → ℝ≥0} (h_ant : Antitone f) :
 
 end Monotone
 
-theorem iSup_pow {ι : Sort*} [Nonempty ι] {f : ι → ℝ≥0} (hf_bdd : BddAbove (range f)) (n : ℕ) :
-    (⨆ i : ι, f i) ^ n = ⨆ i : ι, f i ^ n := by
+lemma iSup_pow_of_ne_zero (hn : n ≠ 0) (f : ι → ℝ≥0) :
+    (⨆ i : ι, f i) ^ n = ⨆ i : ι, f i ^ n := (NNReal.powOrderIso n hn).map_ciSup' _
+
+lemma iSup_pow [Nonempty ι] (f : ι → ℝ≥0) (n : ℕ) : (⨆ i, f i) ^ n = ⨆ i, f i ^ n := by
   by_cases hn : n = 0
   · simp [hn]
-  · simpa using (NNReal.powOrderIso n hn).map_ciSup hf_bdd
+  · exact iSup_pow_of_ne_zero hn _
 
 end NNReal
 
-open NNReal in
-theorem Real.iSup_pow {ι : Sort*} [Nonempty ι] {f : ι → ℝ} (hf_bdd : BddAbove (range f))
-    (hf : ∀ i, 0 ≤ f i) (n : ℕ) : (⨆ i : ι, f i) ^ n = ⨆ i : ι, f i ^ n := by
-  let g : ι → ℝ≥0 := fun i ↦ ⟨f i, hf i⟩
-  have hg_bdd : BddAbove (range g) := by
-    obtain ⟨B, hB⟩ := hf_bdd
-    simp only [mem_upperBounds, mem_range, forall_exists_index, forall_apply_eq_imp_iff] at hB
-    have hB0 : 0 ≤ B := by
-      set i : ι := Classical.choice (inferInstance)
-      exact le_trans (hf i) (hB i)
-    use ⟨B, hB0⟩
-    simp only [mem_upperBounds, mem_range, forall_exists_index, forall_apply_eq_imp_iff]
-    exact fun i ↦ hB i
-  simpa [g, ← NNReal.coe_inj] using NNReal.iSup_pow hg_bdd n
+namespace ENNReal
+
+attribute [simp] ENNReal.top_pow
+
+/-- `x ↦ x ^ n` as an order isomorphism of `ℝ≥0∞`.
+
+See also `ENNReal.orderIsoRpow`. -/
+def powOrderIso (n : ℕ) (hn : n ≠ 0) : ℝ≥0∞ ≃o ℝ≥0∞ :=
+  (NNReal.powOrderIso n hn).withTopCongr.copy (· ^ n) _
+    (by cases n; (· cases hn rfl); · ext (_ | _) <;> rfl) rfl
+
+lemma iSup_pow_of_ne_zero (hn : n ≠ 0) (f : ι → ℝ≥0∞) : (⨆ i : ι, f i) ^ n = ⨆ i : ι, f i ^ n :=
+  (powOrderIso n hn).map_iSup _
 
 open NNReal ENNReal in
-theorem ENNReal.iSup_pow {ι : Type*} [Nonempty ι] {f : ι → ℝ≥0∞}
-    (hf_bdd : ∃ (B : ℝ≥0), ∀ i, f i ≤ B) (n : ℕ) : (⨆ i : ι, f i) ^ n = ⨆ i : ι, f i ^ n := by
-  obtain ⟨B, hB⟩ := hf_bdd
-  have hf_bdd' : BddAbove (range fun i ↦ (f i).toNNReal) := by
-    use B
-    simp only [mem_upperBounds, mem_range, forall_exists_index, forall_apply_eq_imp_iff]
-    exact_mod_cast fun i ↦ le_trans coe_toNNReal_le_self (hB i)
-  have hf : ∀ i, f i = ↑(f i).toNNReal := fun i ↦ by
-    rw [ENNReal.coe_toNNReal (ne_of_lt (lt_of_le_of_lt (hB i) coe_lt_top))]
-  have hl : (⨆ i, (f i)) ^ n = ((((⨆ i, (f i).toNNReal)) ^ n : ℝ≥0) : ℝ≥0∞) := by
-    rw [ENNReal.coe_pow, ENNReal.coe_iSup hf_bdd']
-    congr
-    ext i
-    rw [← hf i]
-  have hr : ⨆ i, (f i) ^ n = ⨆ i, ((f i).toNNReal : ℝ≥0∞) ^ n  := by
-    congr
-    ext i
-    rw [← hf i]
-  rw [hl, hr, NNReal.iSup_pow hf_bdd', ENNReal.coe_iSup (hf_bdd'.range_comp (pow_left_mono n))]; rfl
+lemma iSup_pow [Nonempty ι] (f : ι → ℝ≥0∞) (n : ℕ) : (⨆ i, f i) ^ n = ⨆ i, f i ^ n := by
+  by_cases hn : n = 0
+  · simp [hn]
+  · exact iSup_pow_of_ne_zero hn _
+
+end ENNReal
+
+open NNReal in
+lemma Real.iSup_pow [Nonempty ι] {f : ι → ℝ} (hf : ∀ i, 0 ≤ f i) (n : ℕ) :
+    (⨆ i, f i) ^ n = ⨆ i, f i ^ n := by
+  lift f to ι → ℝ≥0 using hf; dsimp; exact mod_cast NNReal.iSup_pow f n
+
+lemma Real.iSup_pow_of_ne_zero {f : ι → ℝ} (hf : ∀ i, 0 ≤ f i) (hn : n ≠ 0) :
+    (⨆ i, f i) ^ n = ⨆ i, f i ^ n := by
+  cases isEmpty_or_nonempty ι
+  · simp [hn]
+  · exact iSup_pow hf _

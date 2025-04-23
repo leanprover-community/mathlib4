@@ -427,30 +427,7 @@ theorem orderIsoRpow_symm_eq (y : ℝ) (hy : 0 < y) :
 theorem _root_.Real.nnnorm_rpow_of_nonneg {x y : ℝ} (hx : 0 ≤ x) : ‖x ^ y‖₊ = ‖x‖₊ ^ y := by
   ext; exact Real.norm_rpow_of_nonneg hx
 
-theorem iSup_pow_of_ne_zero {ι : Sort*} (f : ι → ℝ≥0) {n : ℕ} (hn : n ≠ 0) :
-    (⨆ i : ι, f i) ^ n = ⨆ i : ι, f i ^ n := by
-  by_cases hf : BddAbove (range f)
-  · obtain hι | hι := isEmpty_or_nonempty ι
-    · simp [hι, hn]
-    · exact iSup_pow hf n
-  · rw [iSup_of_not_bddAbove hf, zero_pow hn, iSup_of_not_bddAbove]
-    rw [not_bddAbove_iff'] at hf ⊢
-    intro x
-    obtain ⟨y, ⟨a, rfl⟩, hax⟩ := hf (x ^ (1/(n : ℝ)))
-    refine ⟨(f a) ^ n, by simp [Set.mem_range, zero_le, exists_apply_eq_apply], ?_⟩
-    rw [← pow_le_pow_iff_left₀ (by positivity) (by positivity) hn] at hax
-    have hn' : (n : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr hn
-    simpa only [one_div, inv_mul_cancel₀ hn', ← rpow_natCast, ← rpow_mul, rpow_one] using hax
-
 end NNReal
-
-open NNReal in
-theorem Real.iSup_pow_of_ne_zero {ι : Sort*} {f : ι → ℝ} (hf : ∀ i, 0 ≤ f i) {n : ℕ}
-    (hn : n ≠ 0) : (⨆ i : ι, f i) ^ n = ⨆ i : ι, f i ^ n := by
-  lift f to ι → ℝ≥0 using hf
-  have := NNReal.iSup_pow_of_ne_zero f hn
-  rw [Subtype.ext_iff] at this
-  simpa
 
 namespace ENNReal
 

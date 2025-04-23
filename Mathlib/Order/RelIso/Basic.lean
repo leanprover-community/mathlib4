@@ -705,6 +705,21 @@ protected theorem surjective (e : r ≃r s) : Surjective e :=
 theorem eq_iff_eq (f : r ≃r s) {a b} : f a = f b ↔ a = b :=
   f.injective.eq_iff
 
+/-- Copy of a `RelIso` with a new `toFun` and `invFun` equal to the old ones.
+Useful to fix definitional equalities. -/
+def copy (e : r ≃r s) (f : α → β) (g : β → α) (hf : f = e) (hg : g = e.symm) : r ≃r s where
+  toFun := f
+  invFun := g
+  left_inv _ := by simp [hf, hg]
+  right_inv _ := by simp [hf, hg]
+  map_rel_iff' := by simp [hf, e.map_rel_iff]
+
+@[simp, norm_cast]
+lemma coe_copy (e : r ≃r s) (f : α → β) (g : β → α) (hf hg) : e.copy f g hf hg = f := rfl
+
+lemma copy_eq (e : r ≃r s) (f : α → β) (g : β → α) (hf hg) : e.copy f g hf hg = e :=
+  DFunLike.coe_injective hf
+
 /-- Any equivalence lifts to a relation isomorphism between `s` and its preimage. -/
 protected def preimage (f : α ≃ β) (s : β → β → Prop) : f ⁻¹'o s ≃r s :=
   ⟨f, Iff.rfl⟩
