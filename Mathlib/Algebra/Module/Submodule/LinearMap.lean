@@ -169,6 +169,34 @@ theorem subtype_comp_codRestrict (p : Submodule R₂ M₂) (h : ∀ b, f b ∈ p
     p.subtype.comp (codRestrict p f h) = f :=
   ext fun _ => rfl
 
+/-- A linear map `f : M → M₂` whose values lie in the image of an injective linear map
+`p : M₂' → M₂` admits a unique lift to a linear map `M → M₂'`. -/
+noncomputable def codLift {M₂' : Type*} [AddCommMonoid M₂'] [Module R₂ M₂'] (f : M →ₛₗ[σ₁₂] M₂)
+    (p : M₂' →ₗ[R₂] M₂) (hp : Injective p) (h : ∀ c, f c ∈ range p) :
+    M →ₛₗ[σ₁₂] M₂' where
+  toFun c := (h c).choose
+  map_add' b c := by
+    have := LinearMap.map_add f b c
+    rw [← (h c).choose_spec, ← (h b).choose_spec, ← (h (b + c)).choose_spec, ← map_add p] at this
+    exact hp this
+  map_smul' r c := by
+    have := LinearMap.map_smulₛₗ f r c
+    rw [← (h c).choose_spec, ← (h (r • c)).choose_spec, ← map_smul_of_tower] at this
+    exact hp this
+
+@[simp]
+theorem codLift_apply {M₂' : Type*} [AddCommMonoid M₂'] [Module R₂ M₂'] (p : M₂' →ₗ[R₂] M₂)
+    (f : M →ₛₗ[σ₁₂] M₂) (hp : Injective p) (h : ∀ c, f c ∈ range p) (x : M) :
+    (f.codLift p hp h x) = (h x).choose :=
+  rfl
+
+@[simp]
+theorem comp_codLift {M₂' : Type*} [AddCommMonoid M₂'] [Module R₂ M₂'] (p : M₂' →ₗ[R₂] M₂)
+    (f : M →ₛₗ[σ₁₂] M₂) (hp : Injective p) (h : ∀ c, f c ∈ range p) :
+    p.comp (f.codLift p hp h) = f := by
+  ext x
+  rw [comp_apply, codLift_apply, (h x).choose_spec]
+
 /-- Restrict domain and codomain of a linear map. -/
 def restrict (f : M →ₗ[R] M₁) {p : Submodule R M} {q : Submodule R M₁} (hf : ∀ x ∈ p, f x ∈ q) :
     p →ₗ[R] q :=
