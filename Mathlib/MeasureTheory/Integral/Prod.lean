@@ -168,17 +168,17 @@ open MeasureTheory.Measure
 
 section
 
-nonrec theorem MeasureTheory.AEStronglyMeasurable.prod_swap {γ : Type*} [TopologicalSpace γ]
+protected theorem MeasureTheory.AEStronglyMeasurable.prod_swap {γ : Type*} [TopologicalSpace γ]
     [SFinite μ] [SFinite ν] {f : β × α → γ} (hf : AEStronglyMeasurable f (ν.prod μ)) :
     AEStronglyMeasurable (fun z : α × β => f z.swap) (μ.prod ν) := by
   rw [← prod_swap] at hf
   exact hf.comp_measurable measurable_swap
 
-theorem MeasureTheory.AEStronglyMeasurable.fst {γ} [TopologicalSpace γ] {f : α → γ}
+protected theorem MeasureTheory.AEStronglyMeasurable.fst {γ} [TopologicalSpace γ] {f : α → γ}
     (hf : AEStronglyMeasurable f μ) : AEStronglyMeasurable (fun z : α × β => f z.1) (μ.prod ν) :=
   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_fst
 
-theorem MeasureTheory.AEStronglyMeasurable.snd {γ} [TopologicalSpace γ] {f : β → γ}
+protected theorem MeasureTheory.AEStronglyMeasurable.snd {γ} [TopologicalSpace γ] {f : β → γ}
     (hf : AEStronglyMeasurable f ν) : AEStronglyMeasurable (fun z : α × β => f z.2) (μ.prod ν) :=
   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_snd
 
@@ -200,6 +200,24 @@ theorem MeasureTheory.AEStronglyMeasurable.prodMk_left {γ : Type*} [SFinite ν]
 @[deprecated (since := "2025-03-05")]
 alias MeasureTheory.AEStronglyMeasurable.prod_mk_left :=
   MeasureTheory.AEStronglyMeasurable.prodMk_left
+
+theorem MeasureTheory.AEStronglyMeasurable.prodMk_right {γ : Type*} [SFinite μ] [SFinite ν]
+    [TopologicalSpace γ] {f : α × β → γ} (hf : AEStronglyMeasurable f (μ.prod ν)) :
+    ∀ᵐ y ∂ν, AEStronglyMeasurable (fun x => f (x, y)) μ :=
+  hf.prod_swap.prodMk_left
+
+protected theorem MeasureTheory.AEStronglyMeasurable.of_comp_snd {γ} [TopologicalSpace γ]
+    {f : β → γ} [SFinite ν] (hf : AEStronglyMeasurable (fun z : α × β => f z.2) (μ.prod ν))
+    (hμ : μ ≠ 0) : AEStronglyMeasurable f ν := by
+  have := NeZero.mk hμ
+  obtain ⟨y, hy⟩ := hf.prodMk_left.exists
+  exact hy
+
+protected theorem MeasureTheory.AEStronglyMeasurable.of_comp_fst {γ} [TopologicalSpace γ]
+    {f : α → γ} [SFinite μ] [SFinite ν]
+    (hf : AEStronglyMeasurable (fun z : α × β => f z.1) (μ.prod ν)) (hν : ν ≠ 0) :
+    AEStronglyMeasurable f μ :=
+  hf.prod_swap.of_comp_snd hν
 
 end
 
@@ -345,21 +363,16 @@ theorem Integrable.comp_snd [IsFiniteMeasure μ] {f : β → E} (hf : Integrable
       lintegral_mul_const' _ _ (measure_ne_top _ _)]
     exact ENNReal.mul_lt_top hf.2 (measure_lt_top _ _)
 
-theorem Integrable.of_comp_fst {f : α → E} (hf : Integrable (f ·.1) (μ.prod ν)) (hν : ν ≠ 0) :
-    Integrable f μ := by
-  have := hf.1.prodMk_left
-  sorry
-
 theorem Integrable.of_comp_snd {f : β → E} (hf : Integrable (f ·.2) (μ.prod ν)) (hμ : μ ≠ 0) :
     Integrable f ν := by
   rcases hf with ⟨hf_meas, hf_fin⟩
-  constructor
-  · have := NeZero.mk hμ
-    simpa using hf_meas.prodMk_left
-  · simp only [HasFiniteIntegral, lintegral_prod _ hf_meas.enorm, lintegral_const,
-      ENNReal.mul_lt_top_iff, measure_univ_eq_zero, hμ, or_false] at hf_fin ⊢
+  use hf_meas.of_comp_snd hμ
+  have := hf_meas.enorm
+  aesop (add simp [HasFiniteIntegral, lintegral_prod, ENNReal.mul_lt_top_iff])
 
-  sorry
+theorem Integrable.of_comp_fst [SFinite μ] {f : α → E} (hf : Integrable (f ·.1) (μ.prod ν))
+    (hν : ν ≠ 0) : Integrable f μ :=
+  hf.swap.of_comp_snd hν
 
 end
 
