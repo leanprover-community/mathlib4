@@ -34,7 +34,7 @@ but it may be worth re-examining this to make it easier in the future; see the T
 * `Finset` versions of the lemmas about sets.
 
 * API to allow for easily expressing min/maximality with respect to an arbitrary non-`LE` relation.
-
+* API for `MinimalFor`/`MaximalFor`
 -/
 
 assert_not_exists CompleteLattice

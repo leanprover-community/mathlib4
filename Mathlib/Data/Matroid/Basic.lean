@@ -124,7 +124,6 @@ There are a few design decisions worth discussing.
   The tactic `aesop_mat` exists specifically to discharge such goals
   with minimal fuss (using default values).
   The tactic works fairly well, but has room for improvement.
-  Even though the carrier set is written `M.E`,
 
   A related decision is to not have matroids themselves be a typeclass.
   This would make things be notationally simpler
