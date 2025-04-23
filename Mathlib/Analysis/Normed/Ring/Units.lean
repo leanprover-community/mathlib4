@@ -201,9 +201,6 @@ theorem isOpenEmbedding_val : IsOpenEmbedding (val : Rˣ → R) where
     (fun _ ⟨u, hu⟩ ↦ hu ▸ (inverse_continuousAt u).continuousWithinAt) Ring.inverse_unit
   isOpen_range := Units.isOpen
 
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_val := isOpenEmbedding_val
-
 /-- In a normed ring with summable geometric series, the coercion from `Rˣ` (equipped with the
 induced topology from the embedding in `R × R`) to `R` is an open map. -/
 theorem isOpenMap_val : IsOpenMap (val : Rˣ → R) :=

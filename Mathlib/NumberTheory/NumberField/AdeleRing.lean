@@ -37,7 +37,7 @@ noncomputable section
 
 namespace NumberField
 
-open InfinitePlace AbsoluteValue.Completion InfinitePlace.Completion DedekindDomain IsDedekindDomain
+open InfinitePlace AbsoluteValue.Completion InfinitePlace.Completion IsDedekindDomain
 
 /-! ## The infinite adele ring
 

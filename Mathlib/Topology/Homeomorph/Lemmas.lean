@@ -448,10 +448,6 @@ alias embedding := isEmbedding
 @[deprecated (since := "2024-10-22")]
 alias quotientMap := isQuotientMap
 
-@[deprecated (since := "2024-10-20")] alias closedEmbedding := isClosedEmbedding
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding := isOpenEmbedding
-
 end IsHomeomorph
 
 /-- A map is a homeomorphism iff it is the map underlying a bundled homeomorphism `h : X ≃ₜ Y`. -/

@@ -99,12 +99,6 @@ theorem isRegular_preAleph_succ {o : Ordinal} (h : ω ≤ o) : IsRegular (preAle
   rw [preAleph_succ]
   exact isRegular_succ (aleph0_le_preAleph.2 h)
 
-set_option linter.deprecated false in
-@[deprecated isRegular_preAleph_succ (since := "2024-10-22")]
-theorem isRegular_aleph'_succ {o : Ordinal} (h : ω ≤ o) : IsRegular (aleph' (succ o)) := by
-  rw [aleph'_succ]
-  exact isRegular_succ (aleph0_le_aleph'.2 h)
-
 theorem isRegular_aleph_succ (o : Ordinal) : IsRegular (ℵ_ (succ o)) := by
   rw [aleph_succ]
   exact isRegular_succ (aleph0_le_aleph o)
@@ -197,22 +191,6 @@ theorem nfpFamily_lt_ord_of_isRegular {ι} {f : ι → Ordinal → Ordinal} {c} 
     a < c.ord → nfpFamily.{u, u} f a < c.ord :=
   nfpFamily_lt_ord_lift_of_isRegular hc (by rwa [lift_id]) hc' hf
 
-set_option linter.deprecated false in
-@[deprecated nfpFamily_lt_ord_lift_of_isRegular (since := "2024-10-14")]
-theorem nfpBFamily_lt_ord_lift_of_isRegular {o : Ordinal} {f : ∀ a < o, Ordinal → Ordinal} {c}
-    (hc : IsRegular c) (ho : Cardinal.lift.{v, u} o.card < c) (hc' : c ≠ ℵ₀)
-    (hf : ∀ (i hi), ∀ b < c.ord, f i hi b < c.ord) {a} :
-    a < c.ord → nfpBFamily.{u, v} o f a < c.ord :=
-  nfpFamily_lt_ord_lift_of_isRegular hc (by rwa [mk_toType]) hc' fun _ => hf _ _
-
-set_option linter.deprecated false in
-@[deprecated nfpFamily_lt_ord_of_isRegular (since := "2024-10-14")]
-theorem nfpBFamily_lt_ord_of_isRegular {o : Ordinal} {f : ∀ a < o, Ordinal → Ordinal} {c}
-    (hc : IsRegular c) (ho : o.card < c) (hc' : c ≠ ℵ₀)
-    (hf : ∀ (i hi), ∀ b < c.ord, f i hi b < c.ord) {a} :
-    a < c.ord → nfpBFamily.{u, u} o f a < c.ord :=
-  nfpBFamily_lt_ord_lift_of_isRegular hc (by rwa [lift_id]) hc' hf
-
 theorem nfp_lt_ord_of_isRegular {f : Ordinal → Ordinal} {c} (hc : IsRegular c) (hc' : c ≠ ℵ₀)
     (hf : ∀ i < c.ord, f i < c.ord) {a} : a < c.ord → nfp f a < c.ord :=
   nfp_lt_ord (by rw [hc.cof_eq]; exact lt_of_le_of_ne hc.1 hc'.symm) hf
@@ -247,21 +225,6 @@ theorem derivFamily_lt_ord {ι} {f : ι → Ordinal → Ordinal} {c} (hc : IsReg
     (hc' : c ≠ ℵ₀) (hf : ∀ (i), ∀ b < c.ord, f i b < c.ord) {a} :
     a < c.ord → derivFamily.{u, u} f a < c.ord :=
   derivFamily_lt_ord_lift hc (by rwa [lift_id]) hc' hf
-
-set_option linter.deprecated false in
-@[deprecated derivFamily_lt_ord_lift (since := "2024-10-14")]
-theorem derivBFamily_lt_ord_lift {o : Ordinal} {f : ∀ a < o, Ordinal → Ordinal} {c}
-    (hc : IsRegular c) (hι : Cardinal.lift.{v, u} o.card < c) (hc' : c ≠ ℵ₀)
-    (hf : ∀ (i hi), ∀ b < c.ord, f i hi b < c.ord) {a} :
-    a < c.ord → derivBFamily.{u, v} o f a < c.ord :=
-  derivFamily_lt_ord_lift hc (by rwa [mk_toType]) hc' fun _ => hf _ _
-
-set_option linter.deprecated false in
-@[deprecated derivFamily_lt_ord (since := "2024-10-14")]
-theorem derivBFamily_lt_ord {o : Ordinal} {f : ∀ a < o, Ordinal → Ordinal} {c} (hc : IsRegular c)
-    (hι : o.card < c) (hc' : c ≠ ℵ₀) (hf : ∀ (i hi), ∀ b < c.ord, f i hi b < c.ord) {a} :
-    a < c.ord → derivBFamily.{u, u} o f a < c.ord :=
-  derivBFamily_lt_ord_lift hc (by rwa [lift_id]) hc' hf
 
 theorem deriv_lt_ord {f : Ordinal.{u} → Ordinal} {c} (hc : IsRegular c) (hc' : c ≠ ℵ₀)
     (hf : ∀ i < c.ord, f i < c.ord) {a} : a < c.ord → deriv f a < c.ord :=
