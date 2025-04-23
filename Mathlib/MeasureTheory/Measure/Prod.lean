@@ -775,17 +775,17 @@ theorem prod_of_left {α β γ} [MeasurableSpace α] [MeasurableSpace β] [Measu
           MeasurableEquiv.prodComm).quasiMeasurePreserving
 
 @[fun_prop]
-theorem fst {f : α → β × γ} (hf : QuasiMeasurePreserving f μ (ν.prod τ)) :
+protected theorem fst {f : α → β × γ} (hf : QuasiMeasurePreserving f μ (ν.prod τ)) :
     QuasiMeasurePreserving (fun x ↦(f x).1) μ ν :=
   (quasiMeasurePreserving_fst (μ := ν) (ν := τ)).comp hf
 
 @[fun_prop]
-theorem snd {f : α → β × γ} (hf : QuasiMeasurePreserving f μ (ν.prod τ)) :
+protected theorem snd {f : α → β × γ} (hf : QuasiMeasurePreserving f μ (ν.prod τ)) :
     QuasiMeasurePreserving (fun x ↦(f x).2) μ τ :=
   (quasiMeasurePreserving_snd (μ := ν) (ν := τ)).comp hf
 
 @[fun_prop]
-theorem prod_map {ω : Type*} {mω : MeasurableSpace ω} {υ : Measure ω}
+protected theorem prod_map {ω : Type*} {mω : MeasurableSpace ω} {υ : Measure ω}
     [SFinite μ] [SFinite τ] [SFinite υ] {f : α → β} {g : γ → ω}
     (hf : QuasiMeasurePreserving f μ ν) (hg : QuasiMeasurePreserving g τ υ) :
     QuasiMeasurePreserving (Prod.map f g) (μ.prod τ) (ν.prod υ) := by
@@ -810,19 +810,17 @@ theorem MeasureTheory.NullMeasurable.comp_fst {f : α → γ} (hf : NullMeasurab
     NullMeasurable (fun z : α × β => f z.1) (μ.prod ν) :=
   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_fst
 
--- TODO: make this theorem usable with `fun_prop`
--- theorem AEMeasurable.fst' {f : α → γ} (hf : AEMeasurable f μ) :
---     AEMeasurable (fun z : α × β => f z.1) (μ.prod ν) :=
---   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_fst
+theorem AEMeasurable.comp_fst {f : α → γ} (hf : AEMeasurable f μ) :
+    AEMeasurable (fun z : α × β => f z.1) (μ.prod ν) :=
+  hf.comp_quasiMeasurePreserving quasiMeasurePreserving_fst
 
 theorem MeasureTheory.NullMeasurable.comp_snd {f : β → γ} (hf : NullMeasurable f ν) :
     NullMeasurable (fun z : α × β => f z.2) (μ.prod ν) :=
   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_snd
 
--- TODO: make this theorem usable with `fun_prop`
--- theorem AEMeasurable.snd' {f : β → γ} (hf : AEMeasurable f ν) :
---     AEMeasurable (fun z : α × β => f z.2) (μ.prod ν) :=
---   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_snd
+theorem AEMeasurable.comp_snd {f : β → γ} (hf : AEMeasurable f ν) :
+    AEMeasurable (fun z : α × β => f z.2) (μ.prod ν) :=
+  hf.comp_quasiMeasurePreserving quasiMeasurePreserving_snd
 
 end
 

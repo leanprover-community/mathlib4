@@ -170,12 +170,14 @@ theorem map_map_of_aemeasurable {g : β → γ} {f : α → β} (hg : AEMeasurab
     map_apply_of_aemeasurable (hg.comp_aemeasurable hf) hs, preimage_comp]
 
 @[fun_prop, measurability]
-theorem fst {f : α → β × γ} (hf :AEMeasurable f μ) : AEMeasurable (fun x ↦ (f x).fst) μ := by
-  exact ⟨fun a ↦ (hf.mk f a).fst, hf.measurable_mk.fst, hf.ae_eq_mk.fst⟩
+protected theorem fst {f : α → β × γ} (hf :AEMeasurable f μ) :
+    AEMeasurable (fun x ↦ (f x).fst) μ :=
+  ⟨fun a ↦ (hf.mk f a).fst, hf.measurable_mk.fst, hf.ae_eq_mk.fst⟩
 
 @[fun_prop, measurability]
-theorem snd {f : α → β × γ} (hf :AEMeasurable f μ) : AEMeasurable (fun x ↦ (f x).snd) μ := by
-  exact ⟨fun a ↦ (hf.mk f a).snd, hf.measurable_mk.snd, hf.ae_eq_mk.snd⟩
+protected theorem snd {f : α → β × γ} (hf :AEMeasurable f μ) :
+    AEMeasurable (fun x ↦ (f x).snd) μ :=
+  ⟨fun a ↦ (hf.mk f a).snd, hf.measurable_mk.snd, hf.ae_eq_mk.snd⟩
 
 @[fun_prop, measurability]
 theorem prodMk {f : α → β} {g : α → γ} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
