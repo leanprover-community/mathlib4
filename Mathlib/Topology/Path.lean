@@ -114,7 +114,7 @@ theorem coe_mk : ⇑(γ : C(I, X)) = γ :=
   rfl
 
 /-- Any function `φ : Π (a : α), Path (x a) (y a)` can be seen as a function `α × I → X`. -/
-instance insHasUncurryPath {α : Type*} {x y : α → X} :
+instance instHasUncurryPath {α : Type*} {x y : α → X} :
     HasUncurry (∀ a : α, Path (x a) (y a)) (α × I) X :=
   ⟨fun φ p => φ p.1 p.2⟩
 
