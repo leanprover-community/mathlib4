@@ -354,8 +354,6 @@ protected theorem snd {m : MeasurableSpace α} [TopologicalSpace β] [Topologica
   rw [← nhds_prod_eq]
   exact hf.tendsto_approx x
 
---protected theorem snd
-
 protected theorem prodMk {m : MeasurableSpace α} [TopologicalSpace β] [TopologicalSpace γ]
     {f : α → β} {g : α → γ} (hf : StronglyMeasurable f) (hg : StronglyMeasurable g) :
     StronglyMeasurable fun x => (f x, g x) := by
