@@ -170,7 +170,8 @@ theorem fourier_norm [Fact (0 < T)] (n : ℤ) : ‖@fourier T n‖ = 1 := by
 /-- For `n ≠ 0`, a translation by `T / 2 / n` negates the function `fourier n`. -/
 theorem fourier_add_half_inv_index {n : ℤ} (hn : n ≠ 0) (hT : 0 < T) (x : AddCircle T) :
     @fourier T n (x + ↑(T / 2 / n)) = -fourier n x := by
-  rw [fourier_apply, zsmul_add, ← QuotientAddGroup.mk_zsmul, toCircle_add, coe_mul_unitSphere]
+  rw [fourier_apply, zsmul_add, ← QuotientAddGroup.mk_zsmul, toCircle_add,
+    Metric.unitSphere.coe_mul]
   have : (n : ℂ) ≠ 0 := by simpa using hn
   have : (@toCircle T (n • (T / 2 / n) : ℝ) : ℂ) = -1 := by
     rw [zsmul_eq_mul, toCircle, Function.Periodic.lift_coe, Circle.coe_exp]
@@ -259,7 +260,7 @@ theorem orthonormal_fourier : Orthonormal ℂ (@fourierLp T _ 2 _) := by
   split_ifs with h
   · simp_rw [h, add_neg_cancel]
     have : ⇑(@fourier T 0) = (fun _ => 1 : AddCircle T → ℂ) := by ext1; exact fourier_zero
-    rw [this, integral_const, measure_univ, ENNReal.toReal_one, Complex.real_smul,
+    rw [this, integral_const, measureReal_univ_eq_one, Complex.real_smul,
       Complex.ofReal_one, mul_one]
   have hij : j + -i ≠ 0 := by
     exact sub_ne_zero.mpr (Ne.symm h)

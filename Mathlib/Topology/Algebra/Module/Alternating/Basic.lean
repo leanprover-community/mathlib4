@@ -334,7 +334,7 @@ theorem _root_.ContinuousLinearMap.compContinuousAlternatingMap_coe (g : N →L[
 
 /-- A continuous linear equivalence of domains
 defines an equivalence between continuous alternating maps. -/
-@[simps apply]
+@[simps -fullyApplied apply]
 def _root_.ContinuousLinearEquiv.continuousAlternatingMapCongrLeftEquiv (e : M ≃L[R] M') :
     M [⋀^ι]→L[R] N ≃ M' [⋀^ι]→L[R] N where
   toFun f := f.compContinuousLinearMap ↑e.symm
@@ -342,13 +342,13 @@ def _root_.ContinuousLinearEquiv.continuousAlternatingMapCongrLeftEquiv (e : M �
   left_inv f := by ext; simp [Function.comp_def]
   right_inv f := by ext; simp [Function.comp_def]
 
-@[deprecated (since := "2024-11-26")]
+@[deprecated (since := "2025-04-16")]
 alias _root_.ContinuousLinearEquiv.continuousAlternatingMapComp :=
   ContinuousLinearEquiv.continuousAlternatingMapCongrLeftEquiv
 
 /-- A continuous linear equivalence of codomains
 defines an equivalence between continuous alternating maps. -/
-@[simps apply]
+@[simps -fullyApplied apply]
 def _root_.ContinuousLinearEquiv.continuousAlternatingMapCongrRightEquiv (e : N ≃L[R] N') :
     M [⋀^ι]→L[R] N ≃ M [⋀^ι]→L[R] N' where
   toFun := (e : N →L[R] N').compContinuousAlternatingMap
@@ -356,7 +356,7 @@ def _root_.ContinuousLinearEquiv.continuousAlternatingMapCongrRightEquiv (e : N 
   left_inv f := by ext; simp [(· ∘ ·)]
   right_inv f := by ext; simp [(· ∘ ·)]
 
-@[deprecated (since := "2024-11-26")]
+@[deprecated (since := "2025-04-16")]
 alias _root_.ContinuousLinearEquiv.compContinuousAlternatingMap :=
   ContinuousLinearEquiv.continuousAlternatingMapCongrRightEquiv
 
@@ -371,6 +371,10 @@ define an equivalence between the spaces of continuous alternating maps. -/
 def _root_.ContinuousLinearEquiv.continuousAlternatingMapCongrEquiv
     (e : M ≃L[R] M') (e' : N ≃L[R] N') : M [⋀^ι]→L[R] N ≃ M' [⋀^ι]→L[R] N' :=
   e.continuousAlternatingMapCongrLeftEquiv.trans e'.continuousAlternatingMapCongrRightEquiv
+
+@[deprecated (since := "2025-04-16")]
+alias _root_.ContinuousLinearEquiv.continuousAlternatingMapCongr :=
+  ContinuousLinearEquiv.continuousAlternatingMapCongrEquiv
 
 /-- `ContinuousAlternatingMap.pi` as an `Equiv`. -/
 @[simps]
