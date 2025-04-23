@@ -960,10 +960,12 @@ lemma _root_.Real.enorm_rpow_of_nonneg {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y)
     ‖x ^ y‖ₑ = ‖x‖ₑ ^ y := by simp [enorm, nnnorm_rpow_of_nonneg hx, coe_rpow_of_nonneg _ hy]
 
 open NNReal in
-theorem iSup_pow_of_ne_zero {ι : Type*} [Nonempty ι] (f : ι → ℝ≥0∞) {n : ℕ} (hn : n ≠ 0) :
+theorem iSup_pow_of_ne_zero {ι : Type*} (f : ι → ℝ≥0∞) {n : ℕ} (hn : n ≠ 0) :
     (⨆ i : ι, f i) ^ n = ⨆ i : ι, f i ^ n := by
   by_cases hf : ∃ (B : ℝ≥0), ∀ i, f i ≤ B
-  · exact iSup_pow hf n
+  · obtain hι | hι := isEmpty_or_nonempty ι
+    · simp [hι, hn]
+    · exact iSup_pow hf n
   · push_neg at hf
     have hl : (⨆ i, f i) ^ n = ⊤ := by
       rw [pow_eq_top_iff]
