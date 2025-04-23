@@ -7,6 +7,7 @@ import Mathlib.Algebra.GroupWithZero.Invertible
 import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Nat.Cast.Commute
+import Mathlib.Data.Rat.Lemmas
 import Mathlib.Tactic.NormNum.Core
 import Mathlib.Tactic.HaveI
 import Mathlib.Tactic.ClearExclamation
@@ -254,7 +255,16 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       haveI' : $e =Q $a + $b := ⟨⟩
       haveI' : $f =Q HAdd.hAdd := ⟨⟩
       let ⟨qa, na, da, pa⟩ ← ra.toNNRat' dsα; let ⟨qb, nb, db, pb⟩ ← rb.toNNRat' dsα
-      let qc := qa + qb
+      let qc := ⟨qa + qb, by
+        rw [← Rat.num_nonneg]
+        refine Int.nonneg_of_mul_nonneg_left ?_ (Int.natCast_pos.mpr (Rat.den_pos qa))
+        refine Int.nonneg_of_mul_nonneg_left ?_ (Int.natCast_pos.mpr (Rat.den_pos qb))
+        rw [Rat.add_num_den']
+        exact Int.mul_nonneg
+          (Int.add_nonneg
+            (Int.mul_nonneg (Rat.num_nonneg.mpr qa.prop) (Int.natCast_nonneg _))
+            (Int.mul_nonneg (Rat.num_nonneg.mpr qb.prop) (Int.natCast_nonneg _)))
+          (Int.natCast_nonneg _)⟩
       let dd := qa.den * qb.den
       let k := dd / qc.den
       have t1 : Q(ℕ) := mkRawNatLit (k * qc.num)
@@ -477,7 +487,14 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
     let rec nnratArm (dsα : Q(DivisionSemiring $α)) : Option (Result _) := do
       assumeInstancesCommute
       let ⟨qa, na, da, pa⟩ ← ra.toNNRat' dsα; let ⟨qb, nb, db, pb⟩ ← rb.toNNRat' dsα
-      let qc := qa * qb
+      let qc := ⟨qa * qb, by
+        rw [← Rat.num_nonneg]
+        refine Int.nonneg_of_mul_nonneg_left ?_ (Int.natCast_pos.mpr (Rat.den_pos qa))
+        refine Int.nonneg_of_mul_nonneg_left ?_ (Int.natCast_pos.mpr (Rat.den_pos qb))
+        rw [Rat.mul_num_den']
+        exact Int.mul_nonneg
+          (Int.mul_nonneg (Rat.num_nonneg.mpr qa.prop) (Rat.num_nonneg.mpr qb.prop))
+          (Int.natCast_nonneg _)⟩
       let dd := qa.den * qb.den
       let k := dd / qc.den
       have nc : Q(ℕ) := mkRawNatLit qc.num

@@ -202,7 +202,11 @@ def evalPow : NormNumExt where eval {u α} e := do
       assumeInstancesCommute
       have ⟨nc, r1⟩ := evalNatPow na nb
       have ⟨dc, r2⟩ := evalNatPow da nb
-      let qc := ⟨mkRat nc.natLit! dc.natLit!, by simp⟩
+      let qc := ⟨mkRat nc.natLit! dc.natLit!, by
+        rw [← Rat.num_nonneg, Rat.mkRat_eq_divInt, Rat.num_mk]
+        exact Int.ediv_nonneg
+           (Int.mul_nonneg (Int.sign_nonneg_iff.mpr (Int.natCast_nonneg _)) (Int.natCast_nonneg _))
+           (Int.natCast_nonneg _)⟩
       return .isNNRat dα qc nc dc q(isNNRat_pow (f := $f) (.refl $f) $pa $pb $r1 $r2)
     | .isNegNNRat dα qa na da pa =>
       assumeInstancesCommute

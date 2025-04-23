@@ -6,7 +6,8 @@ Authors: Mario Carneiro
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.GroupWithZero.Invertible
 import Mathlib.Data.Sigma.Basic
-import Mathlib.Data.NNRat.Defs
+import Mathlib.Algebra.Ring.Nat
+import Mathlib.Data.Rat.Defs
 import Mathlib.Data.Int.Cast.Basic
 import Qq.MetaM
 
@@ -284,6 +285,8 @@ inductive Result' where
   /-- Untyped version of `Result.isNegNat`. -/
   | isNegNat (inst lit proof : Expr)
   /-- Untyped version of `Result.isNNRat`. -/
+  -- NOTE: consider changing `q` to be `Rat`
+  -- or removing the `assert_not_exists RelIso` in the `Pow` file
   | isNNRat (inst : Expr) (q : NNRat) (n d proof : Expr)
   /-- Untyped version of `Result.isNegNNRat`. -/
   | isNegNNRat (inst : Expr) (q : Rat) (n d proof : Expr)
@@ -420,7 +423,7 @@ def Result.toNNRat' {α : Q(Type u)} {e : Q($α)}
     Result e → Option (NNRat × (n : Q(ℕ)) × (d : Q(ℕ)) × Q(IsNNRat $e $n $d))
   | .isNat _ lit proof =>
     have proof : Q(@IsNat _ instAddMonoidWithOne' $e $lit) := proof
-    some ⟨lit.natLit!, q($lit), q(nat_lit 1), q(($proof).to_isNNRat)⟩
+    some ⟨⟨lit.natLit!, by simp [← Rat.num_nonneg]⟩, q($lit), q(nat_lit 1), q(($proof).to_isNNRat)⟩
   | .isNNRat _ q n d proof => some ⟨q, n, d, proof⟩
   | _ => none
 
