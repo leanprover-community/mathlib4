@@ -1366,10 +1366,6 @@ protected def piRingEquiv [Fintype ι] : M₂ ≃ₗ[R] MultilinearMap R (fun _ 
 
 end CommSemiring
 
-end MultilinearMap
-
-namespace MultilinearMap
-
 section Submodule
 
 variable [Ring R] [∀ i, AddCommMonoid (M₁ i)] [AddCommMonoid M'] [AddCommMonoid M₂]
