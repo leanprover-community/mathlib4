@@ -548,17 +548,17 @@ lemma Measurable.const_smul (hg : Measurable g) (c : M) : Measurable (c • g) :
 /-- Compositional version of `Measurable.const_smul` for use by `fun_prop`. -/
 @[to_additive (attr := fun_prop)
 "Compositional version of `Measurable.const_vadd` for use by `fun_prop`."]
-lemma Measurable.const_smul' {g : α → β → X} {h : α → β} (hg : Measurable ↿g) (hh : Measurable h)
+lemma Measurable.fun_const_smul {g : α → β → X} {h : α → β} (hg : Measurable ↿g) (hh : Measurable h)
     (c : M) : Measurable fun a ↦ (c • g a) (h a) :=
   (hg.comp <| measurable_id.prodMk hh).const_smul _
 
 @[to_additive (attr := fun_prop, measurability)]
-lemma AEMeasurable.const_smul' (hg : AEMeasurable g μ) (c : M) : AEMeasurable (c • g ·) μ :=
+lemma AEMeasurable.fun_const_smul (hg : AEMeasurable g μ) (c : M) : AEMeasurable (c • g ·) μ :=
   (measurable_const_smul c).comp_aemeasurable hg
 
 @[to_additive (attr := fun_prop, measurability)]
 lemma AEMeasurable.const_smul (hf : AEMeasurable g μ) (c : M) : AEMeasurable (c • g) μ :=
-  hf.const_smul' c
+  hf.fun_const_smul c
 
 @[to_additive]
 instance Pi.instMeasurableConstSMul {ι : Type*} {α : ι → Type*} [∀ i, SMul M (α i)]

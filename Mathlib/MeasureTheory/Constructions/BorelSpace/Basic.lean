@@ -506,7 +506,7 @@ instance (priority := 100) ContinuousInv.measurableInv [Inv γ] [ContinuousInv �
     MeasurableInv γ := ⟨continuous_inv.measurable⟩
 
 @[to_additive]
-instance (priority := 100) ContinuousConstSMul.to_measurableConstSMul {M α} [TopologicalSpace α]
+instance (priority := 100) ContinuousConstSMul.toMeasurableConstSMul {M α} [TopologicalSpace α]
     [MeasurableSpace α] [BorelSpace α] [SMul M α] [ContinuousConstSMul M α] :
     MeasurableConstSMul M α where
   measurable_const_smul _ := (continuous_const_smul _).measurable
