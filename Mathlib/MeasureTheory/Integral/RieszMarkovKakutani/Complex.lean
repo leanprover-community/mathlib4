@@ -25,6 +25,26 @@ proof which depends on 6.12)
 - 6.16: Duality of `L^1` and `L^∞` (not in Mathlib [https://leanprover.zulipchat.com/#narrow/channel/217875-Is-there-code-for-X.3F/topic/Lp.20duality/near/495207025])
 -/
 
+section TotalVariation
+
+open MeasureTheory BigOperators ENNReal
+
+variable {X : Type*} [MeasurableSpace X]
+  {V 𝕜 : Type*} [SeminormedAddCommGroup V]  (𝕜 : Type*) [NormedField 𝕜] [NormedSpace 𝕜 V]
+  (μ : VectorMeasure X V)
+
+noncomputable def supTotalVariation : Measure X where
+  measureOf (s : Set X) :=
+    ⨆ E ∈ {E' : ℕ → Set X | (∀ n, MeasurableSet (E' n)) ∧ Pairwise (Function.onFun Disjoint s) ∧
+                            ⋃ n, E' n = s}, ∑' n, ENNReal.ofReal ‖μ (E n)‖
+  empty := by
+    simp only [Set.iUnion_eq_empty, Set.mem_setOf_eq, iSup_eq_zero, ENNReal.tsum_eq_zero, and_imp]
+    intro E hE hEP hEempty n
+    simp [hEempty n]
+  mono := sorry
+  iUnion_nat := sorry
+  m_iUnion := sorry
+  trim_le := sorry
 
 /-- **Theorem**
 Let `Φ` be a linear functional on `C_0(X, ℂ)`. Suppsoe that `μ`, `μ'` are complex Borel measures
