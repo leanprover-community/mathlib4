@@ -29,7 +29,6 @@ namespace CategoryTheory
 
 variable {C : Type*} [Category C]
 
-/-- A variant of `eq_whisker` with a more convenient argument order for use in tactics. -/
 theorem Iso.eq_whisker {X Y : C} {f g : X ≅ Y} (w : f = g) {Z : C} (h : Y ≅ Z) :
     f ≪≫ h = g ≪≫ h := by rw [w]
 
@@ -41,9 +40,9 @@ def categoryIsoSimp (e : Expr) : MetaM Simp.Result :=
     (config := { decide := false })
 
 /--
-Given an equation `f = g` between morphisms `X ⟶ Y` in a category (possibly after a `∀` binder),
-produce the equation `∀ {Z} (h : Y ⟶ Z), f ≫ h = g ≫ h`,
-but with compositions fully right associated and identities removed.
+Given an equation `f = g` between isomorphisms `X ≅ Y` in a category (possibly after a `∀` binder),
+produce the equation `∀ {Z} (h : Y ≅ Z), f ≪≫ h = g ≪≫ h`,
+but with compositions fully right associated, identities removed, and functors applied.
 -/
 def isoReassocExpr (e : Expr) : MetaM Expr := do
   mapForallTelescope (fun e => do simpType categoryIsoSimp (← mkAppM ``Iso.eq_whisker #[e])) e
@@ -70,6 +69,10 @@ initialize reassocImplRef.set fun src ref kind => match ref with
   | _ => throwUnsupportedSyntax
 
 open Term in
+/--
+Update the `reassoc_of%` elaborator to use `isoReassocExpr` on equality of isos, and
+`reassocExpr` otherwise.
+-/
 initialize reassocOfImplRef.set fun t => do
   let e ← elabTerm t none
   forallTelescope (← inferType e) (fun _ e' => do
