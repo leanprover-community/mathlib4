@@ -1,4 +1,4 @@
-import MetaCompute.V2.Certify
+import Mathlib.V2.Certify
 
 -- basic certificates
 example : Nat.Prime 19 := by pratt mathematica {19, 2, {2, {3, 2, {2}}}}

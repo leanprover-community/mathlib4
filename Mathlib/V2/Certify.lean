@@ -1,8 +1,8 @@
-import MetaCompute.V2.PrattLemmas
+import Mathlib.V2.PrattLemmas
 import Batteries.Tactic.NoMatch
 import Mathlib.Lean.Message
 import Mathlib.Tactic.NormNum.Prime
-import MetaCompute.V2.PowMod
+import Mathlib.V2.PowMod
 
 open Nat
 

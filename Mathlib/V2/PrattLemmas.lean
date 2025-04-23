@@ -1,4 +1,4 @@
-import MetaCompute.V2.PowMod
+import Mathlib.V2.PowMod
 import Mathlib.NumberTheory.LucasPrimality
 
 def pratt_predicate (p a x : ℕ) : Prop := ∀ q ∈ x.primeFactors, powMod a ((p - 1) / q) p ≠ 1
