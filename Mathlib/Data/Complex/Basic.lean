@@ -80,8 +80,6 @@ def ofReal (r : ℝ) : ℂ :=
 instance : Coe ℝ ℂ :=
   ⟨ofReal⟩
 
-@[deprecated (since := "2024-10-12")] alias ofReal' := ofReal
-
 @[simp, norm_cast]
 theorem ofReal_re (r : ℝ) : Complex.re (r : ℂ) = r :=
   rfl
@@ -399,9 +397,6 @@ def imAddGroupHom : ℂ →+ ℝ where
 @[simp]
 theorem coe_imAddGroupHom : (imAddGroupHom : ℂ → ℝ) = im :=
   rfl
-
-section
-end
 
 /-! ### Cast lemmas -/
 

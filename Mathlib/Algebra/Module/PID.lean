@@ -202,7 +202,7 @@ theorem torsion_by_prime_power_decomposition (hN : Module.IsTorsion' N (Submonoi
             ULift.moduleEquiv.toLinearMap) (R ∙ s j).injective_subtype ?_ ?_).symm.trans
           (((quotTorsionOfEquivSpanSingleton R N (s j)).symm.trans
           (quotEquivOfEq (torsionOf R N (s j)) _
-          (Ideal.torsionOf_eq_span_pow_pOrder hp hN (s j)))).prod
+          (Ideal.torsionOf_eq_span_pow_pOrder hp hN (s j)))).prodCongr
           (ULift.moduleEquiv))).trans
           (@DirectSum.lequivProdDirectSum R _ _
           (fun i => R ⧸ R ∙ p ^ @Option.rec _ (fun _ => ℕ) (pOrder hN <| s j) k i) _ _).symm).trans
@@ -271,7 +271,7 @@ theorem equiv_free_prod_directSum [h' : Module.Finite R N] :
   refine
     ⟨n, I, fI, p, hp, e,
       ⟨(lequivProdOfRightSplitExact (torsion R N).injective_subtype ?_ hf).symm.trans <|
-          (h.prod g).trans <| LinearEquiv.prodComm.{u, u} R _ (Fin n →₀ R) ⟩⟩
+          (h.prodCongr g).trans <| LinearEquiv.prodComm.{u, u} R _ (Fin n →₀ R) ⟩⟩
   rw [range_subtype, ker_mkQ]
 
 end Module

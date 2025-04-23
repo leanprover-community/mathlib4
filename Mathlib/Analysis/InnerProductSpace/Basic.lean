@@ -297,9 +297,15 @@ variable {𝕜}
 theorem inner_self_nonpos {x : E} : re ⟪x, x⟫ ≤ 0 ↔ x = 0 := by
   rw [← norm_sq_eq_inner, (sq_nonneg _).le_iff_eq, sq_eq_zero_iff, norm_eq_zero]
 
+@[simp]
+theorem inner_self_pos {x : E} : 0 < re ⟪x, x⟫ ↔ x ≠ 0 := by
+  simpa [-inner_self_nonpos] using inner_self_nonpos (𝕜 := 𝕜) (x := x).not
+
 open scoped InnerProductSpace in
-theorem real_inner_self_nonpos {x : F} : ⟪x, x⟫_ℝ ≤ 0 ↔ x = 0 :=
-  @inner_self_nonpos ℝ F _ _ _ x
+theorem real_inner_self_nonpos {x : F} : ⟪x, x⟫_ℝ ≤ 0 ↔ x = 0 := inner_self_nonpos (𝕜 := ℝ)
+
+open scoped InnerProductSpace in
+theorem real_inner_self_pos {x : F} : 0 < ⟪x, x⟫_ℝ ↔ x ≠ 0 := inner_self_pos (𝕜 := ℝ)
 
 /-- A family of vectors is linearly independent if they are nonzero
 and orthogonal. -/
