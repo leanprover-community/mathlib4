@@ -93,7 +93,7 @@ end VectorMeasure
 lemma exists_SetWhereLeSignedMeasure (μ ν : Measure X) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     ∃ s : Set X, SignedMeasure.SetWhereLe μ ν s := by
   obtain ⟨s, hs, h₂, h₃⟩ := (ν.toSignedMeasure - μ.toSignedMeasure).exists_compl_positive_negative
-  simp at h₂ h₃
+  simp [VectorMeasure.restrict_sub] at h₂ h₃
   exact ⟨s, hs, h₂, h₃⟩
 
 namespace Measure
