@@ -5,8 +5,6 @@ Authors: Oliver Nash
 -/
 import Mathlib.Algebra.DirectSum.LinearMap
 import Mathlib.Algebra.Lie.Weights.Cartan
-import Mathlib.Data.Int.Interval
-import Mathlib.LinearAlgebra.Trace
 import Mathlib.RingTheory.Finiteness.Nilpotent
 
 /-!
