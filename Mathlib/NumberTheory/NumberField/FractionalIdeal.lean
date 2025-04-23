@@ -61,7 +61,7 @@ instance (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
     · refine Submonoid.mul_mem _ hd (mem_nonZeroDivisors_of_ne_zero ?_)
       rw [Nat.cast_ne_zero, ne_eq, Ideal.absNorm_eq_zero_iff]
       exact FractionalIdeal.num_eq_zero_iff.not.mpr <| Units.ne_zero I
-    · simp_rw [LinearMap.coe_restrictScalars, Submodule.coeSubtype] at h ⊢
+    · simp_rw [LinearMap.coe_restrictScalars, Submodule.coe_subtype] at h ⊢
       rw [← h]
       simp only [Submonoid.mk_smul, zsmul_eq_mul, Int.cast_mul, Int.cast_natCast, algebraMap_int_eq,
         eq_intCast, map_intCast]
@@ -89,7 +89,7 @@ theorem mem_span_basisOfFractionalIdeal {I : (FractionalIdeal (𝓞 K)⁰ K)ˣ} 
   rw [basisOfFractionalIdeal, (fractionalIdealBasis K I.1).ofIsLocalizedModule_span ℚ ℤ⁰ _]
   simp
 
-open FiniteDimensional in
+open Module in
 theorem fractionalIdeal_rank (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
     finrank ℤ I = finrank ℤ (𝓞 K) := by
   rw [finrank_eq_card_chooseBasisIndex, RingOfIntegers.rank,

@@ -46,8 +46,8 @@ notation:25 A " →ₗc[" R "] " B => CoalgHom R A B
 from `A` to `B`. -/
 class CoalgHomClass (F : Type*) (R A B : outParam Type*)
     [CommSemiring R] [AddCommMonoid A] [Module R A] [AddCommMonoid B] [Module R B]
-    [CoalgebraStruct R A] [CoalgebraStruct R B] [FunLike F A B]
-    extends SemilinearMapClass F (RingHom.id R) A B : Prop where
+    [CoalgebraStruct R A] [CoalgebraStruct R B] [FunLike F A B] : Prop
+    extends SemilinearMapClass F (RingHom.id R) A B where
   counit_comp : ∀ f : F, counit ∘ₗ (f : A →ₗ[R] B) = counit
   map_comp_comul : ∀ f : F, TensorProduct.map (f : A →ₗ[R] B)
     (f : A →ₗ[R] B) ∘ₗ comul = comul ∘ₗ (f : A →ₗ[R] B)
@@ -200,7 +200,7 @@ variable (R A)
 
 variable {R A}
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(CoalgHom.id R A) = id :=
   rfl
 
@@ -238,13 +238,13 @@ theorem map_smul_of_tower {R'} [SMul R' A] [SMul R' B] [LinearMap.CompatibleSMul
     (x : A) : φ (r • x) = r • φ x :=
   φ.toLinearMap.map_smul_of_tower r x
 
-@[simps (config := .lemmasOnly) toSemigroup_toMul_mul toOne_one]
+@[simps -isSimp toSemigroup_toMul_mul toOne_one]
 instance End : Monoid (A →ₗc[R] A) where
   mul := comp
-  mul_assoc ϕ ψ χ := rfl
+  mul_assoc _ _ _ := rfl
   one := CoalgHom.id R A
-  one_mul ϕ := ext fun x => rfl
-  mul_one ϕ := ext fun x => rfl
+  one_mul _ := ext fun _ => rfl
+  mul_one _ := ext fun _ => rfl
 
 @[simp]
 theorem one_apply (x : A) : (1 : A →ₗc[R] A) x = x :=
@@ -307,17 +307,5 @@ def Repr.induced {a : A} (repr : Repr R a)
   right := φ ∘ repr.right
   eq := (congr($((CoalgHomClass.map_comp_comul φ).symm) a).trans <|
       by rw [LinearMap.comp_apply, ← repr.eq, map_sum]; rfl).symm
-
-@[simp]
-lemma sum_tmul_counit_apply_eq
-    {F : Type*} [FunLike F A B] [CoalgHomClass F R A B] (φ : F) {a : A} (repr : Repr R a) :
-    ∑ i ∈ repr.index, counit (R := R) (repr.left i) ⊗ₜ φ (repr.right i) = 1 ⊗ₜ[R] φ a := by
-  simp [← sum_counit_tmul_eq (repr.induced φ)]
-
-@[simp]
-lemma sum_tmul_apply_counit_eq
-    {F : Type*} [FunLike F A B] [CoalgHomClass F R A B] (φ : F) {a : A} (repr : Repr R a) :
-    ∑ i ∈ repr.index, φ (repr.left i) ⊗ₜ counit (R := R) (repr.right i) = φ a ⊗ₜ[R] 1 := by
-  simp [← sum_tmul_counit_eq (repr.induced φ)]
 
 end Coalgebra

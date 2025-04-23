@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 -/
+import Mathlib.Data.Finsupp.Lex
 import Mathlib.Algebra.MvPolynomial.Degrees
 
 /-!
@@ -97,7 +98,7 @@ theorem vars_add_subset [DecidableEq σ] (p q : MvPolynomial σ R) :
     (p + q).vars ⊆ p.vars ∪ q.vars := by
   intro x hx
   simp only [vars_def, Finset.mem_union, Multiset.mem_toFinset] at hx ⊢
-  simpa using Multiset.mem_of_le (degrees_add _ _) hx
+  simpa using Multiset.mem_of_le degrees_add_le hx
 
 theorem vars_add_of_disjoint [DecidableEq σ] (h : Disjoint p.vars q.vars) :
     (p + q).vars = p.vars ∪ q.vars := by
@@ -109,7 +110,7 @@ section Mul
 
 theorem vars_mul [DecidableEq σ] (φ ψ : MvPolynomial σ R) : (φ * ψ).vars ⊆ φ.vars ∪ ψ.vars := by
   simp_rw [vars_def, ← Multiset.toFinset_add, Multiset.toFinset_subset]
-  exact Multiset.subset_of_le (degrees_mul φ ψ)
+  exact Multiset.subset_of_le degrees_mul_le
 
 @[simp]
 theorem vars_one : (1 : MvPolynomial σ R).vars = ∅ :=
@@ -139,7 +140,7 @@ theorem vars_prod {ι : Type*} [DecidableEq σ] {s : Finset ι} (f : ι → MvPo
 
 section IsDomain
 
-variable {A : Type*} [CommRing A] [IsDomain A]
+variable {A : Type*} [CommRing A] [NoZeroDivisors A]
 
 theorem vars_C_mul (a : A) (ha : a ≠ 0) (φ : MvPolynomial σ A) :
     (C a * φ : MvPolynomial σ A).vars = φ.vars := by
@@ -148,7 +149,7 @@ theorem vars_C_mul (a : A) (ha : a ≠ 0) (φ : MvPolynomial σ A) :
   apply exists_congr
   intro d
   apply and_congr _ Iff.rfl
-  rw [coeff_C_mul, mul_ne_zero_iff, eq_true ha, true_and_iff]
+  rw [coeff_C_mul, mul_ne_zero_iff, eq_true ha, true_and]
 
 end IsDomain
 
@@ -193,7 +194,8 @@ section Map
 variable [CommSemiring S] (f : R →+* S)
 variable (p)
 
-theorem vars_map : (map f p).vars ⊆ p.vars := by classical simp [vars_def, degrees_map]
+theorem vars_map : (map f p).vars ⊆ p.vars := by
+  classical simp [vars_def, Multiset.subset_of_le degrees_map_le]
 
 variable {f}
 
@@ -306,7 +308,35 @@ theorem mem_vars_rename (f : σ → τ) (φ : MvPolynomial σ R) {j : τ} (h : j
   classical
   simpa only [exists_prop, Finset.mem_image] using vars_rename f φ h
 
+lemma aeval_ite_mem_eq_self (q : MvPolynomial σ R) {s : Set σ} (hs : q.vars.toSet ⊆ s)
+    [∀ i, Decidable (i ∈ s)] :
+    MvPolynomial.aeval (fun i ↦ if i ∈ s then .X i else 0) q = q := by
+  rw [MvPolynomial.as_sum q, MvPolynomial.aeval_sum]
+  refine Finset.sum_congr rfl fun u hu ↦ ?_
+  rw [MvPolynomial.aeval_monomial, MvPolynomial.monomial_eq]
+  congr 1
+  exact Finsupp.prod_congr (fun i hi ↦ by simp [hs ((MvPolynomial.mem_vars _).mpr ⟨u, hu, hi⟩)])
+
 end EvalVars
+
+section Lex
+
+variable [LinearOrder σ]
+
+lemma leadingCoeff_toLex : p.leadingCoeff toLex = p.coeff (ofLex <| p.supDegree toLex) := by
+  rw [leadingCoeff]
+  apply congr_arg p.coeff
+  apply toLex.injective
+  rw [Function.rightInverse_invFun toLex.surjective, toLex_ofLex]
+
+lemma supDegree_toLex_C (r : R) : supDegree toLex (C (σ := σ) r) = 0 := by
+  classical
+    exact (supDegree_single _ r).trans (ite_eq_iff'.mpr ⟨fun _ => rfl, fun _ => rfl⟩)
+
+lemma leadingCoeff_toLex_C (r : R) : leadingCoeff toLex (C (σ := σ) r) = r :=
+  leadingCoeff_single toLex.injective _ r
+
+end Lex
 
 end CommSemiring
 

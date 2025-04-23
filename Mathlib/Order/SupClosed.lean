@@ -3,10 +3,11 @@ Copyright (c) 2023 Yaël Dillies, Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Christopher Hoskin
 -/
-import Mathlib.Data.Finset.Lattice
-import Mathlib.Data.Set.Finite
+import Mathlib.Data.Finset.Lattice.Prod
+import Mathlib.Data.Finset.Powerset
+import Mathlib.Data.Set.Finite.Basic
 import Mathlib.Order.Closure
-import Mathlib.Order.UpperLower.Basic
+import Mathlib.Order.ConditionallyCompleteLattice.Finset
 
 /-!
 # Sets closed under join/meet
@@ -29,7 +30,7 @@ is automatically complete. All dually for `⊓`.
   greatest lower bound is automatically complete.
 -/
 
-variable {F α β : Type*}
+variable {ι : Sort*} {F α β : Type*}
 
 section SemilatticeSup
 variable [SemilatticeSup α] [SemilatticeSup β]
@@ -78,6 +79,17 @@ lemma SupClosed.prod {t : Set β} (hs : SupClosed s) (ht : SupClosed t) : SupClo
 lemma supClosed_pi {ι : Type*} {α : ι → Type*} [∀ i, SemilatticeSup (α i)] {s : Set ι}
     {t : ∀ i, Set (α i)} (ht : ∀ i ∈ s, SupClosed (t i)) : SupClosed (s.pi t) :=
   fun _a ha _b hb _i hi ↦ ht _ hi (ha _ hi) (hb _ hi)
+
+lemma SupClosed.insert_upperBounds {s : Set α} {a : α} (hs : SupClosed s) (ha : a ∈ upperBounds s) :
+    SupClosed (insert a s) := by
+  rw [SupClosed]
+  aesop
+
+lemma SupClosed.insert_lowerBounds {s : Set α} {a : α} (h : SupClosed s) (ha : a ∈ lowerBounds s) :
+    SupClosed (insert a s) := by
+  rw [SupClosed]
+  have ha' : ∀ b ∈ s, a ≤ b := fun _ a ↦ ha a
+  aesop
 
 end Set
 
@@ -143,6 +155,17 @@ lemma InfClosed.prod {t : Set β} (hs : InfClosed s) (ht : InfClosed t) : InfClo
 lemma infClosed_pi {ι : Type*} {α : ι → Type*} [∀ i, SemilatticeInf (α i)] {s : Set ι}
     {t : ∀ i, Set (α i)} (ht : ∀ i ∈ s, InfClosed (t i)) : InfClosed (s.pi t) :=
   fun _a ha _b hb _i hi ↦ ht _ hi (ha _ hi) (hb _ hi)
+
+lemma InfClosed.insert_upperBounds {s : Set α} {a : α} (hs : InfClosed s) (ha : a ∈ upperBounds s) :
+    InfClosed (insert a s) := by
+  rw [InfClosed]
+  have ha' : ∀ b ∈ s, b ≤ a := fun _ a ↦ ha a
+  aesop
+
+lemma InfClosed.insert_lowerBounds {s : Set α} {a : α} (h : InfClosed s) (ha : a ∈ lowerBounds s) :
+    InfClosed (insert a s) := by
+  rw [InfClosed]
+  aesop
 
 end Set
 
@@ -306,7 +329,7 @@ lemma supClosure_min : s ⊆ t → SupClosed t → supClosure s ⊆ t := supClos
 protected lemma Set.Finite.supClosure (hs : s.Finite) : (supClosure s).Finite := by
   lift s to Finset α using hs
   classical
-  refine ((s.powerset.filter Finset.Nonempty).attach.image
+  refine ({t ∈ s.powerset | t.Nonempty}.attach.image
     fun t ↦ t.1.sup' (mem_filter.1 t.2).2 id).finite_toSet.subset ?_
   rintro _ ⟨t, ht, hts, rfl⟩
   simp only [id_eq, coe_image, mem_image, mem_coe, mem_attach, true_and, Subtype.exists,
@@ -378,7 +401,7 @@ lemma infClosure_min : s ⊆ t → InfClosed t → infClosure s ⊆ t := infClos
 protected lemma Set.Finite.infClosure (hs : s.Finite) : (infClosure s).Finite := by
   lift s to Finset α using hs
   classical
-  refine ((s.powerset.filter Finset.Nonempty).attach.image
+  refine ({t ∈ s.powerset | t.Nonempty}.attach.image
     fun t ↦ t.1.inf' (mem_filter.1 t.2).2 id).finite_toSet.subset ?_
   rintro _ ⟨t, ht, hts, rfl⟩
   simp only [id_eq, coe_image, mem_image, mem_coe, mem_attach, true_and, Subtype.exists,
@@ -469,7 +492,7 @@ end DistribLattice
 def SemilatticeSup.toCompleteSemilatticeSup [SemilatticeSup α] (sSup : Set α → α)
     (h : ∀ s, SupClosed s → IsLUB s (sSup s)) : CompleteSemilatticeSup α where
   sSup := fun s => sSup (supClosure s)
-  le_sSup s a ha := (h _ supClosed_supClosure).1 <| subset_supClosure ha
+  le_sSup _ _ ha := (h _ supClosed_supClosure).1 <| subset_supClosure ha
   sSup_le s a ha := (isLUB_le_iff <| h _ supClosed_supClosure).2 <| by rwa [upperBounds_supClosure]
 
 /-- A meet-semilattice where every inf-closed set has a greatest lower bound is automatically
@@ -477,5 +500,68 @@ complete. -/
 def SemilatticeInf.toCompleteSemilatticeInf [SemilatticeInf α] (sInf : Set α → α)
     (h : ∀ s, InfClosed s → IsGLB s (sInf s)) : CompleteSemilatticeInf α where
   sInf := fun s => sInf (infClosure s)
-  sInf_le s a ha := (h _ infClosed_infClosure).1 <| subset_infClosure ha
+  sInf_le _ _ ha := (h _ infClosed_infClosure).1 <| subset_infClosure ha
   le_sInf s a ha := (le_isGLB_iff <| h _ infClosed_infClosure).2 <| by rwa [lowerBounds_infClosure]
+
+
+section ConditionallyCompleteLattice
+variable [ConditionallyCompleteLattice α] {f : ι → α} {s t : Set α}
+
+lemma SupClosed.iSup_mem_of_nonempty [Finite ι] [Nonempty ι] (hs : SupClosed s)
+    (hf : ∀ i, f i ∈ s) : ⨆ i, f i ∈ s := by
+  cases nonempty_fintype (PLift ι)
+  rw [← iSup_plift_down, ← Finset.sup'_univ_eq_ciSup]
+  exact hs.finsetSup'_mem Finset.univ_nonempty fun _ _ ↦ hf _
+
+lemma InfClosed.iInf_mem_of_nonempty [Finite ι] [Nonempty ι] (hs : InfClosed s)
+    (hf : ∀ i, f i ∈ s) : ⨅ i, f i ∈ s := hs.dual.iSup_mem_of_nonempty hf
+
+lemma SupClosed.sSup_mem_of_nonempty (hs : SupClosed s) (ht : t.Finite) (ht' : t.Nonempty)
+    (hts : t ⊆ s) : sSup t ∈ s := by
+  have := ht.to_subtype
+  have := ht'.to_subtype
+  rw [sSup_eq_iSup']
+  exact hs.iSup_mem_of_nonempty (by simpa)
+
+lemma InfClosed.sInf_mem_of_nonempty (hs : InfClosed s) (ht : t.Finite) (ht' : t.Nonempty)
+    (hts : t ⊆ s) : sInf t ∈ s := hs.dual.sSup_mem_of_nonempty ht ht' hts
+
+end ConditionallyCompleteLattice
+
+variable [CompleteLattice α] {f : ι → α} {s t : Set α}
+
+lemma SupClosed.biSup_mem_of_nonempty {ι : Type*} {t : Set ι} {f : ι → α} (hs : SupClosed s)
+    (ht : t.Finite) (ht' : t.Nonempty) (hf : ∀ i ∈ t, f i ∈ s) : ⨆ i ∈ t, f i ∈ s := by
+  rw [← sSup_image]
+  exact hs.sSup_mem_of_nonempty (ht.image _) (by simpa) (by simpa)
+
+lemma InfClosed.biInf_mem_of_nonempty {ι : Type*} {t : Set ι} {f : ι → α} (hs : InfClosed s)
+    (ht : t.Finite) (ht' : t.Nonempty) (hf : ∀ i ∈ t, f i ∈ s) : ⨅ i ∈ t, f i ∈ s :=
+  hs.dual.biSup_mem_of_nonempty ht ht' hf
+
+lemma SupClosed.iSup_mem [Finite ι] (hs : SupClosed s) (hbot : ⊥ ∈ s) (hf : ∀ i, f i ∈ s) :
+    ⨆ i, f i ∈ s := by
+  cases isEmpty_or_nonempty ι
+  · simpa [iSup_of_empty]
+  · exact hs.iSup_mem_of_nonempty hf
+
+lemma InfClosed.iInf_mem [Finite ι] (hs : InfClosed s) (htop : ⊤ ∈ s) (hf : ∀ i, f i ∈ s) :
+    ⨅ i, f i ∈ s := hs.dual.iSup_mem htop hf
+
+lemma SupClosed.sSup_mem (hs : SupClosed s) (ht : t.Finite) (hbot : ⊥ ∈ s) (hts : t ⊆ s) :
+    sSup t ∈ s := by
+  have := ht.to_subtype
+  rw [sSup_eq_iSup']
+  exact hs.iSup_mem hbot (by simpa)
+
+lemma InfClosed.sInf_mem (hs : InfClosed s) (ht : t.Finite) (htop : ⊤ ∈ s) (hts : t ⊆ s) :
+    sInf t ∈ s := hs.dual.sSup_mem ht htop hts
+
+lemma SupClosed.biSup_mem {ι : Type*} {t : Set ι} {f : ι → α} (hs : SupClosed s)
+    (ht : t.Finite) (hbot : ⊥ ∈ s) (hf : ∀ i ∈ t, f i ∈ s) : ⨆ i ∈ t, f i ∈ s := by
+  rw [← sSup_image]
+  exact hs.sSup_mem (ht.image _) hbot (by simpa)
+
+lemma InfClosed.biInf_mem {ι : Type*} {t : Set ι} {f : ι → α} (hs : InfClosed s)
+    (ht : t.Finite) (htop : ⊤ ∈ s) (hf : ∀ i ∈ t, f i ∈ s) : ⨅ i ∈ t, f i ∈ s :=
+  hs.dual.biSup_mem ht htop hf

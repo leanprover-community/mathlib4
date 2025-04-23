@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.InjSurj
+import Mathlib.Tactic.FastInstance
 
 /-!
 # Algebraic structures on the set of positive numbers
@@ -19,11 +20,11 @@ open Function
 
 namespace Positive
 
-variable {M R K : Type*}
+variable {M R : Type*}
 
 section AddBasic
 
-variable [AddMonoid M] [Preorder M] [CovariantClass M M (· + ·) (· < ·)]
+variable [AddMonoid M] [Preorder M] [AddLeftStrictMono M]
 
 instance : Add { x : M // 0 < x } :=
   ⟨fun x y => ⟨x + y, add_pos x.2 y.2⟩⟩
@@ -32,55 +33,48 @@ instance : Add { x : M // 0 < x } :=
 theorem coe_add (x y : { x : M // 0 < x }) : ↑(x + y) = (x + y : M) :=
   rfl
 
-instance addSemigroup : AddSemigroup { x : M // 0 < x } :=
+instance addSemigroup : AddSemigroup { x : M // 0 < x } := fast_instance%
   Subtype.coe_injective.addSemigroup _ coe_add
 
 instance addCommSemigroup {M : Type*} [AddCommMonoid M] [Preorder M]
-    [CovariantClass M M (· + ·) (· < ·)] : AddCommSemigroup { x : M // 0 < x } :=
+    [AddLeftStrictMono M] : AddCommSemigroup { x : M // 0 < x } := fast_instance%
   Subtype.coe_injective.addCommSemigroup _ coe_add
 
 instance addLeftCancelSemigroup {M : Type*} [AddLeftCancelMonoid M] [Preorder M]
-    [CovariantClass M M (· + ·) (· < ·)] : AddLeftCancelSemigroup { x : M // 0 < x } :=
+    [AddLeftStrictMono M] : AddLeftCancelSemigroup { x : M // 0 < x } := fast_instance%
   Subtype.coe_injective.addLeftCancelSemigroup _ coe_add
 
 instance addRightCancelSemigroup {M : Type*} [AddRightCancelMonoid M] [Preorder M]
-    [CovariantClass M M (· + ·) (· < ·)] : AddRightCancelSemigroup { x : M // 0 < x } :=
+    [AddLeftStrictMono M] : AddRightCancelSemigroup { x : M // 0 < x } := fast_instance%
   Subtype.coe_injective.addRightCancelSemigroup _ coe_add
 
-instance covariantClass_add_lt :
-    CovariantClass { x : M // 0 < x } { x : M // 0 < x } (· + ·) (· < ·) :=
+instance addLeftStrictMono : AddLeftStrictMono { x : M // 0 < x } :=
   ⟨fun _ y z hyz => Subtype.coe_lt_coe.1 <| add_lt_add_left (show (y : M) < z from hyz) _⟩
 
-instance covariantClass_swap_add_lt [CovariantClass M M (swap (· + ·)) (· < ·)] :
-    CovariantClass { x : M // 0 < x } { x : M // 0 < x } (swap (· + ·)) (· < ·) :=
+instance addRightStrictMono [AddRightStrictMono M] : AddRightStrictMono { x : M // 0 < x } :=
   ⟨fun _ y z hyz => Subtype.coe_lt_coe.1 <| add_lt_add_right (show (y : M) < z from hyz) _⟩
 
-instance contravariantClass_add_lt [ContravariantClass M M (· + ·) (· < ·)] :
-    ContravariantClass { x : M // 0 < x } { x : M // 0 < x } (· + ·) (· < ·) :=
+instance addLeftReflectLT [AddLeftReflectLT M] : AddLeftReflectLT { x : M // 0 < x } :=
   ⟨fun _ _ _ h => Subtype.coe_lt_coe.1 <| lt_of_add_lt_add_left h⟩
 
-instance contravariantClass_swap_add_lt [ContravariantClass M M (swap (· + ·)) (· < ·)] :
-    ContravariantClass { x : M // 0 < x } { x : M // 0 < x } (swap (· + ·)) (· < ·) :=
+instance addRightReflectLT [AddRightReflectLT M] : AddRightReflectLT { x : M // 0 < x } :=
   ⟨fun _ _ _ h => Subtype.coe_lt_coe.1 <| lt_of_add_lt_add_right h⟩
 
-instance contravariantClass_add_le [ContravariantClass M M (· + ·) (· ≤ ·)] :
-    ContravariantClass { x : M // 0 < x } { x : M // 0 < x } (· + ·) (· ≤ ·) :=
+instance addLeftReflectLE [AddLeftReflectLE M] : AddLeftReflectLE { x : M // 0 < x } :=
   ⟨fun _ _ _ h => Subtype.coe_le_coe.1 <| le_of_add_le_add_left h⟩
 
-instance contravariantClass_swap_add_le [ContravariantClass M M (swap (· + ·)) (· ≤ ·)] :
-    ContravariantClass { x : M // 0 < x } { x : M // 0 < x } (swap (· + ·)) (· ≤ ·) :=
+instance addRightReflectLE [AddRightReflectLE M] : AddRightReflectLE { x : M // 0 < x } :=
   ⟨fun _ _ _ h => Subtype.coe_le_coe.1 <| le_of_add_le_add_right h⟩
 
 end AddBasic
 
-instance covariantClass_add_le [AddMonoid M] [PartialOrder M]
-    [CovariantClass M M (· + ·) (· < ·)] :
-    CovariantClass { x : M // 0 < x } { x : M // 0 < x } (· + ·) (· ≤ ·) :=
+instance addLeftMono [AddMonoid M] [PartialOrder M] [AddLeftStrictMono M] :
+    AddLeftMono { x : M // 0 < x } :=
   ⟨@fun _ _ _ h₁ => StrictMono.monotone (fun _ _ h => add_lt_add_left h _) h₁⟩
 
 section Mul
 
-variable [StrictOrderedSemiring R]
+variable [Semiring R] [PartialOrder R] [IsStrictOrderedRing R]
 
 instance : Mul { x : R // 0 < x } :=
   ⟨fun x y => ⟨x * y, mul_pos x.2 y.2⟩⟩
@@ -97,10 +91,10 @@ theorem val_pow (x : { x : R // 0 < x }) (n : ℕ) :
     ↑(x ^ n) = (x : R) ^ n :=
   rfl
 
-instance : Semigroup { x : R // 0 < x } :=
+instance : Semigroup { x : R // 0 < x } := fast_instance%
   Subtype.coe_injective.semigroup Subtype.val val_mul
 
-instance : Distrib { x : R // 0 < x } :=
+instance : Distrib { x : R // 0 < x } := fast_instance%
   Subtype.coe_injective.distrib _ coe_add val_mul
 
 instance : One { x : R // 0 < x } :=
@@ -110,26 +104,27 @@ instance : One { x : R // 0 < x } :=
 theorem val_one : ((1 : { x : R // 0 < x }) : R) = 1 :=
   rfl
 
-instance : Monoid { x : R // 0 < x } :=
+instance : Monoid { x : R // 0 < x } := fast_instance%
   Subtype.coe_injective.monoid _ val_one val_mul val_pow
 
 end Mul
 
 section mul_comm
 
-instance orderedCommMonoid [StrictOrderedCommSemiring R] :
-    OrderedCommMonoid { x : R // 0 < x } :=
-  { Subtype.partialOrder _,
-    Subtype.coe_injective.commMonoid (M₂ := R) (Subtype.val) val_one val_mul val_pow with
-    mul_le_mul_left := fun _ _ hxy c =>
+instance commMonoid [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R] :
+    CommMonoid { x : R // 0 < x } := fast_instance%
+  Subtype.coe_injective.commMonoid (M₂ := R) (Subtype.val) val_one val_mul val_pow
+
+instance isOrderedMonoid [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R] :
+    IsOrderedMonoid { x : R // 0 < x } :=
+  { mul_le_mul_left := fun _ _ hxy c =>
       Subtype.coe_le_coe.1 <| mul_le_mul_of_nonneg_left hxy c.2.le }
 
 /-- If `R` is a nontrivial linear ordered commutative semiring, then `{x : R // 0 < x}` is a linear
 ordered cancellative commutative monoid. -/
-instance linearOrderedCancelCommMonoid [LinearOrderedCommSemiring R] :
-    LinearOrderedCancelCommMonoid { x : R // 0 < x } :=
-  { Subtype.instLinearOrder _, Positive.orderedCommMonoid with
-    le_of_mul_le_mul_left := fun a _ _ h => Subtype.coe_le_coe.1 <| (mul_le_mul_left a.2).1 h }
+instance isOrderedCancelMonoid [CommSemiring R] [LinearOrder R] [IsStrictOrderedRing R] :
+    IsOrderedCancelMonoid { x : R // 0 < x } :=
+  { le_of_mul_le_mul_left := fun a _ _ h => Subtype.coe_le_coe.1 <| (mul_le_mul_left a.2).1 h }
 
 end mul_comm
 

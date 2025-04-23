@@ -3,10 +3,10 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import Mathlib.Algebra.Group.Action.Faithful
 import Mathlib.Algebra.Group.Action.Opposite
 import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.GroupWithZero.NeZero
-import Mathlib.Algebra.SMulWithZero
 
 /-!
 # Scalar actions on and by `Mᵐᵒᵖ`
@@ -27,7 +27,7 @@ With `open scoped RightActions`, this provides:
 * `p <+ᵥ v` as an alias for `AddOpposite.op v +ᵥ p`
 -/
 
-variable {R M N α : Type*}
+variable {M α : Type*}
 
 /-! ### Actions _on_ the opposite type
 

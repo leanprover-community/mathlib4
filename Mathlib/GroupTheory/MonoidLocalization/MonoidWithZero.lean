@@ -3,8 +3,11 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
+import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.Regular.Basic
 import Mathlib.GroupTheory.MonoidLocalization.Basic
+import Mathlib.RingTheory.OreLocalization.Basic
+import Mathlib.Algebra.GroupWithZero.Units.Basic
 
 /-!
 # Localizations of commutative monoids with zeroes
@@ -51,8 +54,6 @@ theorem LocalizationMap.subsingleton (f : Submonoid.LocalizationMap S N) (h : 0 
 /-- The type of homomorphisms between monoids with zero satisfying the characteristic predicate:
 if `f : M →*₀ N` satisfies this predicate, then `N` is isomorphic to the localization of `M` at
 `S`. -/
--- Porting note(#5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
 structure LocalizationWithZeroMap extends LocalizationMap S N where
   map_zero' : toFun 0 = 0
 
@@ -103,11 +104,18 @@ noncomputable def lift (f : LocalizationWithZeroMap S N) (g : M →*₀ P)
     (hg : ∀ y : S, IsUnit (g y)) : N →*₀ P :=
   { @LocalizationMap.lift _ _ _ _ _ _ _ f.toLocalizationMap g.toMonoidHom hg with
     map_zero' := by
-      erw [LocalizationMap.lift_spec f.toLocalizationMap hg 0 0]
-      rw [mul_zero, ← map_zero g, ← g.toMonoidHom_coe]
+      dsimp only [OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe]
+      rw [LocalizationMap.lift_spec f.toLocalizationMap hg 0 0, mul_zero, ← map_zero g,
+        ← g.toMonoidHom_coe]
       refine f.toLocalizationMap.eq_of_eq hg ?_
       rw [LocalizationMap.sec_zero_fst]
       exact f.toMonoidWithZeroHom.map_zero.symm }
+
+lemma lift_def (f : LocalizationWithZeroMap S N) (g : M →*₀ P) (hg : ∀ y : S, IsUnit (g y)) :
+    ⇑(f.lift g hg) = f.toLocalizationMap.lift (g := ↑g) hg := rfl
+
+lemma lift_apply (f : LocalizationWithZeroMap S N) (g : M →*₀ P) (hg : ∀ y : S, IsUnit (g y)) (x) :
+    (f.lift g hg) x = g (f.sec x).1 * (IsUnit.liftRight (g.restrict S) hg (f.sec x).2)⁻¹ := rfl
 
 /-- Given a Localization map `f : M →*₀ N` for a Submonoid `S ⊆ M`,
 if `M` is left cancellative monoid with zero, and all elements of `S` are
@@ -158,9 +166,6 @@ theorem isLeftRegular_of_le_isCancelMulZero (f : LocalizationWithZeroMap S N)
   have : IsLeftCancelMulZero N :=
     leftCancelMulZero_of_le_isLeftRegular f (fun x h' => (h h').left)
   exact IsLeftCancelMulZero.to_isCancelMulZero
-
-@[deprecated isLeftRegular_of_le_isCancelMulZero (since := "2024-01-16")]
-alias isLeftRegular_of_le_IsCancelMulZero := isLeftRegular_of_le_isCancelMulZero
 
 end LocalizationWithZeroMap
 

@@ -3,9 +3,9 @@ Copyright (c) 2022 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.Data.ENNReal.Basic
-import Mathlib.Topology.ContinuousFunction.Bounded
+import Mathlib.Data.ENNReal.Lemmas
 import Mathlib.Topology.MetricSpace.Thickening
+import Mathlib.Topology.ContinuousMap.Bounded.Basic
 
 /-!
 # Thickened indicators
@@ -60,7 +60,7 @@ theorem continuous_thickenedIndicatorAux {δ : ℝ} (δ_pos : 0 < δ) (E : Set �
 
 theorem thickenedIndicatorAux_le_one (δ : ℝ) (E : Set α) (x : α) :
     thickenedIndicatorAux δ E x ≤ 1 := by
-  apply @tsub_le_self _ _ _ _ (1 : ℝ≥0∞)
+  apply tsub_le_self (α := ℝ≥0∞)
 
 theorem thickenedIndicatorAux_lt_top {δ : ℝ} {E : Set α} {x : α} :
     thickenedIndicatorAux δ E x < ∞ :=
@@ -86,7 +86,7 @@ theorem thickenedIndicatorAux_zero {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) {x 
   have key := tsub_le_tsub
     (@rfl _ (1 : ℝ≥0∞)).le (ENNReal.div_le_div x_out (@rfl _ (ENNReal.ofReal δ : ℝ≥0∞)).le)
   rw [ENNReal.div_self (ne_of_gt (ENNReal.ofReal_pos.mpr δ_pos)) ofReal_ne_top] at key
-  simpa using key
+  simpa [tsub_self] using key
 
 theorem thickenedIndicatorAux_mono {δ₁ δ₂ : ℝ} (hle : δ₁ ≤ δ₂) (E : Set α) :
     thickenedIndicatorAux δ₁ E ≤ thickenedIndicatorAux δ₂ E :=
@@ -128,7 +128,7 @@ theorem thickenedIndicatorAux_tendsto_indicator_closure {δseq : ℕ → ℝ}
     specialize δseq_lim ε ε_pos
     simp only [dist_zero_right, Real.norm_eq_abs, eventually_atTop] at δseq_lim
     rcases δseq_lim with ⟨N, hN⟩
-    apply @tendsto_atTop_of_eventually_const _ _ _ _ _ _ _ N
+    apply tendsto_atTop_of_eventually_const (i₀ := N)
     intro n n_large
     have key : x ∉ thickening ε E := by simpa only [thickening, mem_setOf_eq, not_lt] using ε_lt.le
     refine le_antisymm ?_ bot_le
@@ -172,7 +172,7 @@ theorem thickenedIndicator_le_one {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) (x :
 
 theorem thickenedIndicator_one_of_mem_closure {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) {x : α}
     (x_mem : x ∈ closure E) : thickenedIndicator δ_pos E x = 1 := by
-  rw [thickenedIndicator_apply, thickenedIndicatorAux_one_of_mem_closure δ E x_mem, one_toNNReal]
+  rw [thickenedIndicator_apply, thickenedIndicatorAux_one_of_mem_closure δ E x_mem, toNNReal_one]
 
 lemma one_le_thickenedIndicator_apply' {X : Type _} [PseudoEMetricSpace X]
     {δ : ℝ} (δ_pos : 0 < δ) {F : Set X} {x : X} (hxF : x ∈ closure F) :
@@ -190,7 +190,7 @@ theorem thickenedIndicator_one {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) {x : α
 
 theorem thickenedIndicator_zero {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) {x : α}
     (x_out : x ∉ thickening δ E) : thickenedIndicator δ_pos E x = 0 := by
-  rw [thickenedIndicator_apply, thickenedIndicatorAux_zero δ_pos E x_out, zero_toNNReal]
+  rw [thickenedIndicator_apply, thickenedIndicatorAux_zero δ_pos E x_out, toNNReal_zero]
 
 theorem indicator_le_thickenedIndicator {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) :
     (E.indicator fun _ => (1 : ℝ≥0)) ≤ thickenedIndicator δ_pos E := by
@@ -225,7 +225,7 @@ theorem thickenedIndicator_tendsto_indicator_closure {δseq : ℕ → ℝ} (δse
   intro x
   rw [show indicator (closure E) (fun _ => (1 : ℝ≥0)) x =
         (indicator (closure E) (fun _ => (1 : ℝ≥0∞)) x).toNNReal
-      by refine (congr_fun (comp_indicator_const 1 ENNReal.toNNReal zero_toNNReal) x).symm]
+      by refine (congr_fun (comp_indicator_const 1 ENNReal.toNNReal toNNReal_zero) x).symm]
   refine Tendsto.comp (tendsto_toNNReal ?_) (key x)
   by_cases x_mem : x ∈ closure E <;> simp [x_mem]
 

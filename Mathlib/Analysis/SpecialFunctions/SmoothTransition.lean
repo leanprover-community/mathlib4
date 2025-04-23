@@ -72,7 +72,7 @@ theorem tendsto_polynomial_inv_mul_zero (p : ℝ[X]) :
   refine tendsto_const_nhds.if ?_
   simp only [not_le]
   have : Tendsto (fun x ↦ p.eval x⁻¹ / exp x⁻¹) (𝓝[>] 0) (𝓝 0) :=
-    p.tendsto_div_exp_atTop.comp tendsto_inv_zero_atTop
+    p.tendsto_div_exp_atTop.comp tendsto_inv_nhdsGT_zero
   refine this.congr' <| mem_of_superset self_mem_nhdsWithin fun x hx ↦ ?_
   simp [expNegInvGlue, hx.out.not_le, exp_neg, div_eq_mul_inv]
 
@@ -108,12 +108,13 @@ theorem contDiff_polynomial_eval_inv_mul {n : ℕ∞} (p : ℝ[X]) :
   induction m generalizing p with
   | zero => exact contDiff_zero.2 <| continuous_polynomial_eval_inv_mul _
   | succ m ihm =>
-    refine contDiff_succ_iff_deriv.2 ⟨differentiable_polynomial_eval_inv_mul _, ?_⟩
+    rw [show ((m + 1 : ℕ) : WithTop ℕ∞) = m + 1 from rfl]
+    refine contDiff_succ_iff_deriv.2 ⟨differentiable_polynomial_eval_inv_mul _, by simp, ?_⟩
     convert ihm (X ^ 2 * (p - derivative (R := ℝ) p)) using 2
     exact (hasDerivAt_polynomial_eval_inv_mul p _).deriv
 
 /-- The function `expNegInvGlue` is smooth. -/
-protected theorem contDiff {n} : ContDiff ℝ n expNegInvGlue := by
+protected theorem contDiff {n : ℕ∞} : ContDiff ℝ n expNegInvGlue := by
   simpa using contDiff_polynomial_eval_inv_mul 1
 
 end expNegInvGlue
@@ -174,12 +175,12 @@ theorem lt_one_of_lt_one (h : x < 1) : smoothTransition x < 1 :=
 theorem pos_of_pos (h : 0 < x) : 0 < smoothTransition x :=
   div_pos (expNegInvGlue.pos_of_pos h) (pos_denom x)
 
-protected theorem contDiff {n} : ContDiff ℝ n smoothTransition :=
+protected theorem contDiff {n : ℕ∞} : ContDiff ℝ n smoothTransition :=
   expNegInvGlue.contDiff.div
     (expNegInvGlue.contDiff.add <| expNegInvGlue.contDiff.comp <| contDiff_const.sub contDiff_id)
     fun x => (pos_denom x).ne'
 
-protected theorem contDiffAt {x n} : ContDiffAt ℝ n smoothTransition x :=
+protected theorem contDiffAt {x : ℝ} {n : ℕ∞} : ContDiffAt ℝ n smoothTransition x :=
   smoothTransition.contDiff.contDiffAt
 
 protected theorem continuous : Continuous smoothTransition :=

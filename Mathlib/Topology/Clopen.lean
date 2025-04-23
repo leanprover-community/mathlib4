@@ -3,8 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Topology.ContinuousOn
 import Mathlib.Data.Set.BoolIndicator
+import Mathlib.Topology.ContinuousOn
 
 /-!
 # Clopen sets
@@ -102,6 +102,10 @@ theorem isClopen_inter_of_disjoint_cover_clopen {s a b : Set X} (h : IsClopen s)
   rintro x ⟨hx₁, hx₂⟩
   exact ⟨hx₁, by simpa [not_mem_of_mem_compl hx₂] using cover hx₁⟩
 
+theorem isClopen_of_disjoint_cover_open {a b : Set X} (cover : univ ⊆ a ∪ b)
+    (ha : IsOpen a) (hb : IsOpen b) (hab : Disjoint a b) : IsClopen a :=
+  univ_inter a ▸ isClopen_inter_of_disjoint_cover_clopen isClopen_univ cover ha hb hab
+
 @[simp]
 theorem isClopen_discrete [DiscreteTopology X] (s : Set X) : IsClopen s :=
   ⟨isClosed_discrete _, isOpen_discrete _⟩
@@ -114,11 +118,14 @@ theorem isClopen_range_inr : IsClopen (range (Sum.inr : Y → X ⊕ Y)) :=
 
 theorem isClopen_range_sigmaMk {X : ι → Type*} [∀ i, TopologicalSpace (X i)] {i : ι} :
     IsClopen (Set.range (@Sigma.mk ι X i)) :=
-  ⟨closedEmbedding_sigmaMk.isClosed_range, openEmbedding_sigmaMk.isOpen_range⟩
+  ⟨IsClosedEmbedding.sigmaMk.isClosed_range, IsOpenEmbedding.sigmaMk.isOpen_range⟩
 
-protected theorem QuotientMap.isClopen_preimage {f : X → Y} (hf : QuotientMap f) {s : Set Y} :
-    IsClopen (f ⁻¹' s) ↔ IsClopen s :=
+protected theorem Topology.IsQuotientMap.isClopen_preimage {f : X → Y} (hf : IsQuotientMap f)
+    {s : Set Y} : IsClopen (f ⁻¹' s) ↔ IsClopen s :=
   and_congr hf.isClosed_preimage hf.isOpen_preimage
+
+@[deprecated (since := "2024-10-22")]
+alias QuotientMap.isClopen_preimage := IsQuotientMap.isClopen_preimage
 
 theorem continuous_boolIndicator_iff_isClopen (U : Set X) :
     Continuous U.boolIndicator ↔ IsClopen U := by

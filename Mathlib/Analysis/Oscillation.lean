@@ -3,8 +3,9 @@ Copyright (c) 2024 James Sundstrom. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: James Sundstrom
 -/
-import Mathlib.Topology.EMetricSpace.Diam
+import Mathlib.Data.ENNReal.Real
 import Mathlib.Order.WellFoundedSet
+import Mathlib.Topology.EMetricSpace.Diam
 
 /-!
 # Oscillation
@@ -51,11 +52,11 @@ namespace ContinuousWithinAt
 
 theorem oscillationWithin_eq_zero [TopologicalSpace E] {f : E → F} {D : Set E}
     {x : E} (hf : ContinuousWithinAt f D x) : oscillationWithin f D x = 0 := by
-  refine le_antisymm (le_of_forall_pos_le_add fun ε hε _ ↦ ?_) (zero_le _)
+  refine le_antisymm (_root_.le_of_forall_pos_le_add fun ε hε ↦ ?_) (zero_le _)
   rw [zero_add]
   have : ball (f x) (ε / 2) ∈ (𝓝[D] x).map f := hf <| ball_mem_nhds _ (by simp [ne_of_gt hε])
   refine (biInf_le diam this).trans (le_of_le_of_eq diam_ball ?_)
-  exact (ENNReal.mul_div_cancel' (by norm_num) (by norm_num))
+  exact (ENNReal.mul_div_cancel (by norm_num) (by norm_num))
 
 end ContinuousWithinAt
 
@@ -106,7 +107,7 @@ theorem uniform_oscillationWithin (comp : IsCompact K) (hK : ∀ x ∈ K, oscill
       ⟨ENNReal.ofReal ((a - r) / 2), by simp [ar], ?_⟩
     refine fun y hy ↦ ⟨a - (a - r) / 2, by linarith,
       le_trans (diam_mono (image_mono fun z hz ↦ ?_)) ha⟩
-    refine ⟨lt_of_le_of_lt (edist_triangle z y x) (lt_of_lt_of_eq (add_lt_add hz.1 hy) ?_),
+    refine ⟨lt_of_le_of_lt (edist_triangle z y x) (lt_of_lt_of_eq (ENNReal.add_lt_add hz.1 hy) ?_),
       hz.2⟩
     rw [← ofReal_add (by linarith) (by linarith), sub_add_cancel]
   have S_cover : K ⊆ ⋃ r > 0, S r := by

@@ -48,7 +48,7 @@ Generalize so that it also applies to `ℝ × ℝ`, for example.
 open Filter MeasureTheory Metric Set
 open scoped Topology
 
-variable {ι : Type*} [Fintype ι] {s : Set (ι → ℝ)} {x y : ι → ℝ} {δ : ℝ}
+variable {ι : Type*} [Fintype ι] {s : Set (ι → ℝ)} {x : ι → ℝ}
 
 /-- If we can fit a small ball inside a set `s` intersected with any neighborhood of `x`, then the
 density of `s` near `x` is not `0`.

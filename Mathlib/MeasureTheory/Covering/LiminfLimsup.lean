@@ -28,7 +28,8 @@ open Set Filter Metric MeasureTheory TopologicalSpace
 
 open scoped NNReal ENNReal Topology
 
-variable {α : Type*} [MetricSpace α] [SecondCountableTopology α] [MeasurableSpace α] [BorelSpace α]
+variable {α : Type*}
+variable [PseudoMetricSpace α] [SecondCountableTopology α] [MeasurableSpace α] [BorelSpace α]
 variable (μ : Measure α) [IsLocallyFiniteMeasure μ] [IsUnifLocDoublingMeasure μ]
 
 /-- This is really an auxiliary result en route to `blimsup_cthickening_ae_le_of_eventually_mul_le`
@@ -229,7 +230,7 @@ theorem blimsup_cthickening_ae_eq_blimsup_thickening {p : ℕ → Prop} {s : ℕ
     (blimsup (fun i => cthickening (r i) (s i)) atTop p : Set α) =ᵐ[μ]
       (blimsup (fun i => thickening (r i) (s i)) atTop p : Set α) := by
   refine eventuallyLE_antisymm_iff.mpr ⟨?_, HasSubset.Subset.eventuallyLE (?_ : _ ≤ _)⟩
-  · rw [eventuallyLE_congr (blimsup_cthickening_mul_ae_eq μ p s (@one_half_pos ℝ _) r hr).symm
+  · rw [eventuallyLE_congr (blimsup_cthickening_mul_ae_eq μ p s (one_half_pos (α := ℝ)) r hr).symm
       EventuallyEq.rfl]
     apply HasSubset.Subset.eventuallyLE
     change _ ≤ _

@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
-import Mathlib.Algebra.CharP.Two
-import Mathlib.Data.ZMod.Basic
 
 /-!
 # `QuadraticForm R M` and `Subtype LinearMap.IsSymm` are distinct notions in characteristic 2

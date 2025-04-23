@@ -1,11 +1,12 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Bhavik Mehta, Adam Topaz
+Authors: Kim Morrison, Bhavik Mehta, Adam Topaz
 -/
 import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.Functor.FullyFaithful
-import Mathlib.CategoryTheory.Functor.ReflectsIso
+import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
 
 /-!
 # Monads
@@ -112,12 +113,12 @@ instance : Quiver (Monad C) where
 instance : Quiver (Comonad C) where
   Hom := ComonadHom
 
--- Porting note (#10688): added to ease automation
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): added to ease automation
 @[ext]
 lemma MonadHom.ext' {T₁ T₂ : Monad C} (f g : T₁ ⟶ T₂) (h : f.app = g.app) : f = g :=
   MonadHom.ext h
 
--- Porting note (#10688): added to ease automation
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): added to ease automation
 @[ext]
 lemma ComonadHom.ext' {T₁ T₂ : Comonad C} (f g : T₁ ⟶ T₂) (h : f.app = g.app) : f = g :=
   ComonadHom.ext h
@@ -350,6 +351,34 @@ def transport {F : C ⥤ C} (T : Comonad C) (i : (T : C ⥤ C) ≅ F) : Comonad 
     simp only [NatTrans.naturality_assoc]
     congr 3
     simp only [← Functor.map_comp, i.hom.naturality]
+
+end Comonad
+
+namespace Monad
+
+lemma map_unit_app (T : Monad C) (X : C) [IsIso T.μ] :
+    T.map (T.η.app X) = T.η.app (T.obj X) := by
+  simp [← cancel_mono (T.μ.app _)]
+
+lemma isSplitMono_iff_isIso_unit (T : Monad C) (X : C) [IsIso T.μ] :
+    IsSplitMono (T.η.app X) ↔ IsIso (T.η.app X) := by
+  refine ⟨fun _ ↦ ⟨retraction (T.η.app X), by simp, ?_⟩, fun _ ↦ inferInstance⟩
+  erw [← map_id, ← IsSplitMono.id (T.η.app X), map_comp, T.map_unit_app X, T.η.naturality]
+  rfl
+
+end Monad
+
+namespace Comonad
+
+lemma map_counit_app (T : Comonad C) (X : C) [IsIso T.δ] :
+    T.map (T.ε.app X) = T.ε.app (T.obj X) := by
+  simp [← cancel_epi (T.δ.app _)]
+
+lemma isSplitEpi_iff_isIso_counit (T : Comonad C) (X : C) [IsIso T.δ] :
+    IsSplitEpi (T.ε.app X) ↔ IsIso (T.ε.app X) := by
+  refine ⟨fun _ ↦ ⟨section_ (T.ε.app X), ?_, by simp⟩, fun _ ↦ inferInstance⟩
+  erw [← map_id, ← IsSplitEpi.id (T.ε.app X), map_comp, T.map_counit_app X, T.ε.naturality]
+  rfl
 
 end Comonad
 

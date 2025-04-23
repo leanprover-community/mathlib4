@@ -3,9 +3,10 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Logic.Equiv.Nat
-import Mathlib.Logic.Equiv.Fin
 import Mathlib.Data.Countable.Defs
+import Mathlib.Data.Fin.Tuple.Basic
+import Mathlib.Data.ENat.Defs
+import Mathlib.Logic.Equiv.Nat
 
 /-!
 # Countable types
@@ -13,6 +14,7 @@ import Mathlib.Data.Countable.Defs
 In this file we provide basic instances of the `Countable` typeclass defined elsewhere.
 -/
 
+assert_not_exists Monoid
 
 universe u v w
 
@@ -57,7 +59,7 @@ variable {α : Type u} {β : Type v} {π : α → Type w}
 instance [Countable α] [Countable β] : Countable (α ⊕ β) := by
   rcases exists_injective_nat α with ⟨f, hf⟩
   rcases exists_injective_nat β with ⟨g, hg⟩
-  exact (Equiv.natSumNatEquivNat.injective.comp <| hf.sum_map hg).countable
+  exact (Equiv.natSumNatEquivNat.injective.comp <| hf.sumMap hg).countable
 
 instance Sum.uncountable_inl [Uncountable α] : Uncountable (α ⊕ β) :=
   inl_injective.uncountable
@@ -66,7 +68,7 @@ instance Sum.uncountable_inr [Uncountable β] : Uncountable (α ⊕ β) :=
   inr_injective.uncountable
 
 instance Option.instCountable [Countable α] : Countable (Option α) :=
-  Countable.of_equiv _ (Equiv.optionEquivSumPUnit.{_, 0} α).symm
+  Countable.of_equiv _ (Equiv.optionEquivSumPUnit.{0, _} α).symm
 
 instance WithTop.instCountable [Countable α] : Countable (WithTop α) := Option.instCountable
 instance WithBot.instCountable [Countable α] : Countable (WithBot α) := Option.instCountable
@@ -85,11 +87,24 @@ instance [Countable α] [Countable β] : Countable (α × β) := by
 
 instance [Uncountable α] [Nonempty β] : Uncountable (α × β) := by
   inhabit β
-  exact (Prod.mk.inj_right default).uncountable
+  exact (Prod.mk_left_injective default).uncountable
 
 instance [Nonempty α] [Uncountable β] : Uncountable (α × β) := by
   inhabit α
-  exact (Prod.mk.inj_left default).uncountable
+  exact (Prod.mk_right_injective default).uncountable
+
+lemma countable_left_of_prod_of_nonempty [Nonempty β] (h : Countable (α × β)) : Countable α := by
+  contrapose h
+  rw [not_countable_iff] at *
+  infer_instance
+
+lemma countable_right_of_prod_of_nonempty [Nonempty α] (h : Countable (α × β)) : Countable β := by
+  contrapose h
+  rw [not_countable_iff] at *
+  infer_instance
+
+lemma countable_prod_swap [Countable (α × β)] : Countable (β × α) :=
+  Countable.of_equiv _ (Equiv.prodComm α β)
 
 instance [Countable α] [∀ a, Countable (π a)] : Countable (Sigma π) := by
   rcases exists_injective_nat α with ⟨f, hf⟩

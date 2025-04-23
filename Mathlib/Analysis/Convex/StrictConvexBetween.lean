@@ -5,6 +5,7 @@ Authors: Joseph Myers
 -/
 import Mathlib.Analysis.Convex.Between
 import Mathlib.Analysis.Convex.StrictConvexSpace
+import Mathlib.Analysis.Normed.Affine.AddTorsor
 import Mathlib.Analysis.Normed.Affine.Isometry
 
 /-!
@@ -58,13 +59,13 @@ theorem Collinear.wbtw_of_dist_eq_of_dist_le {p p₁ p₂ p₃ : P} {r : ℝ}
     · simp [hp₃p₂]
     have hs : Sbtw ℝ p₂ p₃ p₁ := ⟨hw, hp₃p₂, hp₁p₃.symm⟩
     have hs' := hs.dist_lt_max_dist p
-    rw [hp₁, hp₃, lt_max_iff, lt_self_iff_false, or_false_iff] at hs'
+    rw [hp₁, hp₃, lt_max_iff, lt_self_iff_false, or_false] at hs'
     exact False.elim (hp₂.not_lt hs')
   · by_cases hp₁p₂ : p₁ = p₂
     · simp [hp₁p₂]
     have hs : Sbtw ℝ p₃ p₁ p₂ := ⟨hw, hp₁p₃, hp₁p₂⟩
     have hs' := hs.dist_lt_max_dist p
-    rw [hp₁, hp₃, lt_max_iff, lt_self_iff_false, false_or_iff] at hs'
+    rw [hp₁, hp₃, lt_max_iff, lt_self_iff_false, false_or] at hs'
     exact False.elim (hp₂.not_lt hs')
 
 /-- Given three collinear points, two (not equal) with distance `r` from `p` and one with
@@ -104,7 +105,7 @@ variable {E F PE PF : Type*} [NormedAddCommGroup E] [NormedAddCommGroup F] [Norm
 lemma eq_lineMap_of_dist_eq_mul_of_dist_eq_mul (hxy : dist x y = r * dist x z)
     (hyz : dist y z = (1 - r) * dist x z) : y = AffineMap.lineMap x z r := by
   have : y -ᵥ x ∈ [(0 : E) -[ℝ] z -ᵥ x] := by
-    rw [mem_segment_iff_wbtw, ← dist_add_dist_eq_iff, dist_zero_left, dist_vsub_cancel_right,
+    rw [mem_segment_iff_wbtw, ← dist_add_dist_eq_iff, dist_zero, dist_vsub_cancel_right,
       ← dist_eq_norm_vsub', ← dist_eq_norm_vsub', hxy, hyz, ← add_mul, add_sub_cancel,
       one_mul]
   obtain rfl | hne := eq_or_ne x z

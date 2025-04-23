@@ -31,7 +31,7 @@ modulo `2 * π` as equalities of `(2 : ℤ) • θ`.
 
 noncomputable section
 
-open FiniteDimensional Complex
+open Module Complex
 
 open scoped Real RealInnerProductSpace ComplexConjugate
 
@@ -52,6 +52,7 @@ def oangle (x y : V) : Real.Angle :=
   Complex.arg (o.kahler x y)
 
 /-- Oriented angles are continuous when the vectors involved are nonzero. -/
+@[fun_prop]
 theorem continuousAt_oangle {x : V × V} (hx1 : x.1 ≠ 0) (hx2 : x.2 ≠ 0) :
     ContinuousAt (fun y : V × V => o.oangle y.1 y.2) x := by
   refine (Complex.continuousAt_arg_coe_angle ?_).comp ?_
@@ -223,12 +224,10 @@ theorem oangle_neg_self_right {x : V} (hx : x ≠ 0) : o.oangle x (-x) = π := b
   simp [oangle_neg_right, hx]
 
 /-- Twice the angle between the negation of a vector and that vector is 0. -/
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem two_zsmul_oangle_neg_self_left (x : V) : (2 : ℤ) • o.oangle (-x) x = 0 := by
   by_cases hx : x = 0 <;> simp [hx]
 
 /-- Twice the angle between a vector and its negation is 0. -/
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem two_zsmul_oangle_neg_self_right (x : V) : (2 : ℤ) • o.oangle x (-x) = 0 := by
   by_cases hx : x = 0 <;> simp [hx]
 
@@ -423,7 +422,7 @@ theorem eq_iff_norm_eq_and_oangle_eq_zero (x y : V) : x = y ↔ ‖x‖ = ‖y�
     have : ‖y‖ ≠ 0 := by simpa using hy
     obtain rfl : r = 1 := by
       apply mul_right_cancel₀ this
-      simpa [norm_smul, _root_.abs_of_nonneg hr] using h₁
+      simpa [norm_smul, abs_of_nonneg hr] using h₁
     simp
 
 /-- Two vectors with equal norms are equal if and only if they have zero angle between them. -/
@@ -444,10 +443,7 @@ theorem oangle_add {x y z : V} (hx : x ≠ 0) (hy : y ≠ 0) (hz : z ≠ 0) :
   simp_rw [oangle]
   rw [← Complex.arg_mul_coe_angle, o.kahler_mul y x z]
   · congr 1
-    convert Complex.arg_real_mul _ (_ : 0 < ‖y‖ ^ 2) using 2
-    · norm_cast
-    · have : 0 < ‖y‖ := by simpa using hy
-      positivity
+    exact mod_cast Complex.arg_real_mul _ (by positivity : 0 < ‖y‖ ^ 2)
   · exact o.kahler_ne_zero hx hy
   · exact o.kahler_ne_zero hy hz
 
@@ -523,7 +519,8 @@ theorem oangle_map (x y : V') (f : V ≃ₗᵢ[ℝ] V') :
 
 @[simp]
 protected theorem _root_.Complex.oangle (w z : ℂ) :
-    Complex.orientation.oangle w z = Complex.arg (conj w * z) := by simp [oangle]
+    Complex.orientation.oangle w z = Complex.arg (conj w * z) := by
+  simp [oangle, mul_comm z]
 
 /-- The oriented angle on an oriented real inner product space of dimension 2 can be evaluated in
 terms of a complex-number representation of the space. -/
@@ -543,11 +540,9 @@ theorem inner_eq_norm_mul_norm_mul_cos_oangle (x y : V) :
     ⟪x, y⟫ = ‖x‖ * ‖y‖ * Real.Angle.cos (o.oangle x y) := by
   by_cases hx : x = 0; · simp [hx]
   by_cases hy : y = 0; · simp [hy]
-  have : ‖x‖ ≠ 0 := by simpa using hx
-  have : ‖y‖ ≠ 0 := by simpa using hy
-  rw [oangle, Real.Angle.cos_coe, Complex.cos_arg, o.abs_kahler]
+  rw [oangle, Real.Angle.cos_coe, Complex.cos_arg, o.norm_kahler]
   · simp only [kahler_apply_apply, real_smul, add_re, ofReal_re, mul_re, I_re, ofReal_im]
-    -- TODO(#15486): used to be `field_simp`; replaced by `simp only ...` to speed up
+    -- TODO(https://github.com/leanprover-community/mathlib4/issues/15486): used to be `field_simp`; replaced by `simp only ...` to speed up
     -- Reinstate `field_simp` once it is faster.
     simp (disch := field_simp_discharge) only [mul_zero, I_im, mul_one, sub_self, add_zero,
       mul_div_assoc', mul_div_cancel_left₀]
@@ -757,19 +752,8 @@ outside of that proof. -/
 theorem oangle_smul_add_right_eq_zero_or_eq_pi_iff {x y : V} (r : ℝ) :
     o.oangle x (r • x + y) = 0 ∨ o.oangle x (r • x + y) = π ↔
     o.oangle x y = 0 ∨ o.oangle x y = π := by
-  simp_rw [oangle_eq_zero_or_eq_pi_iff_not_linearIndependent, Fintype.not_linearIndependent_iff]
-  -- Porting note: at this point all occurrences of the bound variable `i` are of type
-  -- `Fin (Nat.succ (Nat.succ 0))`, but `Fin.sum_univ_two` and `Fin.exists_fin_two` expect it to be
-  -- `Fin 2` instead. Hence all the `conv`s.
-  -- Was `simp_rw [Fin.sum_univ_two, Fin.exists_fin_two]`
-  conv_lhs => enter [1, g, 1, 1, 2, i]; tactic => change Fin 2 at i
-  conv_lhs => enter [1, g]; rw [Fin.sum_univ_two]
-  conv_rhs => enter [1, g, 1, 1, 2, i]; tactic => change Fin 2 at i
-  conv_rhs => enter [1, g]; rw [Fin.sum_univ_two]
-  conv_lhs => enter [1, g, 2, 1, i]; tactic => change Fin 2 at i
-  conv_lhs => enter [1, g]; rw [Fin.exists_fin_two]
-  conv_rhs => enter [1, g, 2, 1, i]; tactic => change Fin 2 at i
-  conv_rhs => enter [1, g]; rw [Fin.exists_fin_two]
+  simp_rw [oangle_eq_zero_or_eq_pi_iff_not_linearIndependent, Fintype.not_linearIndependent_iff,
+    Fin.sum_univ_two, Fin.exists_fin_two]
   refine ⟨fun h => ?_, fun h => ?_⟩
   · rcases h with ⟨m, h, hm⟩
     change m 0 • x + m 1 • (r • x + y) = 0 at h
@@ -804,10 +788,9 @@ theorem oangle_sign_smul_add_right (x y : V) (r : ℝ) :
     intro r'
     rwa [← o.oangle_smul_add_right_eq_zero_or_eq_pi_iff r', not_or] at h
   let s : Set (V × V) := (fun r' : ℝ => (x, r' • x + y)) '' Set.univ
-  have hc : IsConnected s := isConnected_univ.image _ (continuous_const.prod_mk
-    ((continuous_id.smul continuous_const).add continuous_const)).continuousOn
+  have hc : IsConnected s := isConnected_univ.image _ (by fun_prop)
   have hf : ContinuousOn (fun z : V × V => o.oangle z.1 z.2) s := by
-    refine ContinuousAt.continuousOn fun z hz => o.continuousAt_oangle ?_ ?_
+    refine continuousOn_of_forall_continuousAt fun z hz => o.continuousAt_oangle ?_ ?_
     all_goals
       simp_rw [s, Set.mem_image] at hz
       obtain ⟨r', -, rfl⟩ := hz
@@ -912,7 +895,6 @@ theorem oangle_sign_sub_left_swap (x y : V) : (o.oangle (x - y) x).sign = (o.oan
 /-- The sign of the angle between a vector, and a linear combination of that vector with a second
 vector, is the sign of the factor by which the second vector is multiplied in that combination
 multiplied by the sign of the angle between the two vectors. -/
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem oangle_sign_smul_add_smul_right (x y : V) (r₁ r₂ : ℝ) :
     (o.oangle x (r₁ • x + r₂ • y)).sign = SignType.sign r₂ * (o.oangle x y).sign := by
   rw [← o.oangle_sign_smul_add_right x (r₁ • x + r₂ • y) (-r₁)]
@@ -921,7 +903,6 @@ theorem oangle_sign_smul_add_smul_right (x y : V) (r₁ r₂ : ℝ) :
 /-- The sign of the angle between a linear combination of two vectors and the second vector is
 the sign of the factor by which the first vector is multiplied in that combination multiplied by
 the sign of the angle between the two vectors. -/
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem oangle_sign_smul_add_smul_left (x y : V) (r₁ r₂ : ℝ) :
     (o.oangle (r₁ • x + r₂ • y) y).sign = SignType.sign r₁ * (o.oangle x y).sign := by
   simp_rw [o.oangle_rev y, Real.Angle.sign_neg, add_comm (r₁ • x), oangle_sign_smul_add_smul_right,
@@ -961,7 +942,7 @@ theorem abs_oangle_sub_left_toReal_lt_pi_div_two {x y : V} (h : ‖x‖ = ‖y�
     nth_rw 2 [← one_smul ℝ y] at hr
     rw [← add_smul] at hr
     rw [← hr, norm_smul, Real.norm_eq_abs, abs_of_pos (Left.add_pos_of_nonneg_of_pos hr0 one_pos),
-      mul_left_eq_self₀, or_iff_left (norm_ne_zero_iff.2 hy), add_left_eq_self] at h
+      mul_left_eq_self₀, or_iff_left (norm_ne_zero_iff.2 hy), add_eq_right] at h
     rw [h, zero_add, one_smul] at hr
     exact False.elim (hn hr.symm)
   · exact hs

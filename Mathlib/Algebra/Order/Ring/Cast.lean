@@ -27,7 +27,7 @@ variable {R : Type*}
 namespace Int
 section OrderedAddCommGroupWithOne
 
-variable [AddCommGroupWithOne R] [PartialOrder R] [CovariantClass R R (· + ·) (· ≤ ·)]
+variable [AddCommGroupWithOne R] [PartialOrder R] [AddLeftMono R]
 variable [ZeroLEOneClass R]
 
 lemma cast_mono : Monotone (Int.cast : ℤ → R) := by
@@ -36,6 +36,8 @@ lemma cast_mono : Monotone (Int.cast : ℤ → R) := by
   lift n - m to ℕ using h with k hk
   rw [← sub_nonneg, ← cast_sub, ← hk, cast_natCast]
   exact k.cast_nonneg'
+
+@[gcongr] protected lemma GCongr.intCast_mono {m n : ℤ} (hmn : m ≤ n) : (m : R) ≤ n := cast_mono hmn
 
 variable [NeZero (1 : R)] {m n : ℤ}
 
@@ -53,6 +55,8 @@ lemma cast_strictMono : StrictMono (fun x : ℤ => (x : R)) :=
 
 @[simp, norm_cast] lemma cast_lt : (m : R) < n ↔ m < n := cast_strictMono.lt_iff_lt
 
+@[gcongr] protected alias ⟨_, GCongr.intCast_strictMono⟩ := Int.cast_lt
+
 @[simp] lemma cast_nonpos : (n : R) ≤ 0 ↔ n ≤ 0 := by rw [← cast_zero, cast_le]
 
 @[simp] lemma cast_pos : (0 : R) < n ↔ 0 < n := by rw [← cast_zero, cast_lt]
@@ -62,7 +66,7 @@ lemma cast_strictMono : StrictMono (fun x : ℤ => (x : R)) :=
 end OrderedAddCommGroupWithOne
 
 section LinearOrderedRing
-variable [LinearOrderedRing R] {a b n : ℤ} {x : R}
+variable [Ring R] [LinearOrder R] [IsStrictOrderedRing R] {a b n : ℤ} {x : R}
 
 @[simp, norm_cast]
 lemma cast_min : ↑(min a b) = (min a b : R) := Monotone.map_min cast_mono
@@ -96,6 +100,8 @@ lemma nneg_mul_add_sq_of_abs_le_one (n : ℤ) (hx : |x| ≤ 1) : (0 : R) ≤ n *
   · simp [le_total 0 x]
   · exact Or.inl ⟨mod_cast h.le, hnx h⟩
 
+-- TODO: move to a better place
+omit [LinearOrder R] [IsStrictOrderedRing R] in
 lemma cast_natAbs : (n.natAbs : R) = |n| := by
   cases n
   · simp
@@ -110,8 +116,8 @@ open OrderDual
 
 namespace OrderDual
 
-instance instIntCast             [IntCast R]             : IntCast Rᵒᵈ             := ‹_›
-instance instAddGroupWithOne     [AddGroupWithOne R]     : AddGroupWithOne Rᵒᵈ     := ‹_›
+instance instIntCast [IntCast R] : IntCast Rᵒᵈ := ‹_›
+instance instAddGroupWithOne [AddGroupWithOne R] : AddGroupWithOne Rᵒᵈ := ‹_›
 instance instAddCommGroupWithOne [AddCommGroupWithOne R] : AddCommGroupWithOne Rᵒᵈ := ‹_›
 
 end OrderDual
@@ -124,8 +130,8 @@ end OrderDual
 
 namespace Lex
 
-instance instIntCast             [IntCast R]             : IntCast (Lex R)             := ‹_›
-instance instAddGroupWithOne     [AddGroupWithOne R]     : AddGroupWithOne (Lex R)     := ‹_›
+instance instIntCast [IntCast R] : IntCast (Lex R) := ‹_›
+instance instAddGroupWithOne [AddGroupWithOne R] : AddGroupWithOne (Lex R) := ‹_›
 instance instAddCommGroupWithOne [AddCommGroupWithOne R] : AddCommGroupWithOne (Lex R) := ‹_›
 
 end Lex

@@ -5,6 +5,7 @@ Authors: Yury Kudryashov, Heather Macbeth
 -/
 import Mathlib.Analysis.Normed.Field.UnitBall
 import Mathlib.Analysis.Normed.Module.Basic
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
 # Multiplicative actions of/on balls and spheres
@@ -31,8 +32,8 @@ instance mulActionClosedBallBall : MulAction (closedBall (0 : 𝕜) 1) (ball (0 
         simpa only [norm_smul, one_mul] using
           mul_lt_mul' (mem_closedBall_zero_iff.1 c.2) (mem_ball_zero_iff.1 x.2) (norm_nonneg _)
             one_pos⟩
-  one_smul x := Subtype.ext <| one_smul 𝕜 _
-  mul_smul c₁ c₂ x := Subtype.ext <| mul_smul _ _ _
+  one_smul _c₂ := Subtype.ext <| one_smul 𝕜 _
+  mul_smul _ _ _ := Subtype.ext <| mul_smul _ _ _
 
 instance continuousSMul_closedBall_ball : ContinuousSMul (closedBall (0 : 𝕜) 1) (ball (0 : E) r) :=
   ⟨(continuous_subtype_val.fst'.smul continuous_subtype_val.snd').subtype_mk _⟩
@@ -45,8 +46,8 @@ instance mulActionClosedBallClosedBall :
         simpa only [norm_smul, one_mul] using
           mul_le_mul (mem_closedBall_zero_iff.1 c.2) (mem_closedBall_zero_iff.1 x.2) (norm_nonneg _)
             zero_le_one⟩
-  one_smul x := Subtype.ext <| one_smul 𝕜 _
-  mul_smul c₁ c₂ x := Subtype.ext <| mul_smul _ _ _
+  one_smul _ := Subtype.ext <| one_smul 𝕜 _
+  mul_smul _ _ _ := Subtype.ext <| mul_smul _ _ _
 
 instance continuousSMul_closedBall_closedBall :
     ContinuousSMul (closedBall (0 : 𝕜) 1) (closedBall (0 : E) r) :=
@@ -79,8 +80,8 @@ instance mulActionSphereSphere : MulAction (sphere (0 : 𝕜) 1) (sphere (0 : E)
       mem_sphere_zero_iff_norm.2 <| by
         rw [norm_smul, mem_sphere_zero_iff_norm.1 c.coe_prop, mem_sphere_zero_iff_norm.1 x.coe_prop,
           one_mul]⟩
-  one_smul x := Subtype.ext <| one_smul _ _
-  mul_smul c₁ c₂ x := Subtype.ext <| mul_smul _ _ _
+  one_smul _ := Subtype.ext <| one_smul _ _
+  mul_smul _ _ _ := Subtype.ext <| mul_smul _ _ _
 
 instance continuousSMul_sphere_sphere : ContinuousSMul (sphere (0 : 𝕜) 1) (sphere (0 : E) r) :=
   ⟨(continuous_subtype_val.fst'.smul continuous_subtype_val.snd').subtype_mk _⟩

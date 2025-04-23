@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lu-Ming Zhang
 -/
 import Mathlib.LinearAlgebra.Matrix.Trace
+import Mathlib.Data.Matrix.Basic
 
 /-!
 # Hadamard product of matrices
@@ -30,32 +31,29 @@ hadamard product, hadamard
 -/
 
 
-variable {α β γ m n : Type*}
-variable {R : Type*}
+variable {α m n R : Type*}
 
 namespace Matrix
 
-open Matrix
-
-/-- `Matrix.hadamard` defines the Hadamard product,
+/-- `Matrix.hadamard` (denoted as `⊙` within the Matrix namespace) defines the Hadamard product,
     which is the pointwise product of two matrices of the same size. -/
 def hadamard [Mul α] (A : Matrix m n α) (B : Matrix m n α) : Matrix m n α :=
   of fun i j => A i j * B i j
 
--- TODO: set as an equation lemma for `hadamard`, see mathlib4#3024
+-- TODO: set as an equation lemma for `hadamard`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
 theorem hadamard_apply [Mul α] (A : Matrix m n α) (B : Matrix m n α) (i j) :
     hadamard A B i j = A i j * B i j :=
   rfl
 
-scoped infixl:100 " ⊙ " => Matrix.hadamard
+@[inherit_doc] scoped infixl:100 " ⊙ " => Matrix.hadamard
 
 section BasicProperties
 
 variable (A : Matrix m n α) (B : Matrix m n α) (C : Matrix m n α)
 
 -- commutativity
-theorem hadamard_comm [CommSemigroup α] : A ⊙ B = B ⊙ A :=
+theorem hadamard_comm [CommMagma α] : A ⊙ B = B ⊙ A :=
   ext fun _ _ => mul_comm _ _
 
 -- associativity
@@ -111,6 +109,22 @@ theorem one_hadamard : (1 : Matrix n n α) ⊙ M = diagonal fun i => M i i := by
 
 end One
 
+section stdBasisMatrix
+
+variable [DecidableEq m] [DecidableEq n] [MulZeroClass α]
+
+theorem stdBasisMatrix_hadamard_stdBasisMatrix_eq (i : m) (j : n) (a b : α) :
+    stdBasisMatrix i j a ⊙ stdBasisMatrix i j b = stdBasisMatrix i j (a * b) :=
+  ext fun _ _ => (apply_ite₂ _ _ _ _ _ _).trans (congr_arg _ <| zero_mul 0)
+
+theorem stdBasisMatrix_hadamard_stdBasisMatrix_of_ne
+    {ia : m} {ja : n} {ib : m} {jb : n} (h : ¬(ia = ib ∧ ja = jb)) (a b : α) :
+    stdBasisMatrix ia ja a ⊙ stdBasisMatrix ib jb b = 0 := by
+  rw [not_and_or] at h
+  cases h <;> (simp only [stdBasisMatrix]; aesop)
+
+end stdBasisMatrix
+
 section Diagonal
 
 variable [DecidableEq n] [MulZeroClass α]
@@ -124,7 +138,7 @@ end Diagonal
 section trace
 
 variable [Fintype m] [Fintype n]
-variable (R) [Semiring α] [Semiring R] [Module R α]
+variable (R) [Semiring α]
 
 theorem sum_hadamard_eq : (∑ i : m, ∑ j : n, (A ⊙ B) i j) = trace (A * Bᵀ) :=
   rfl

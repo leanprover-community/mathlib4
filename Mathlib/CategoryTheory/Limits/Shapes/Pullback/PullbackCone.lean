@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2018 Scott Morrison. All rights reserved.
+Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Markus Himmel, Bhavik Mehta, Andrew Yang, Emily Riehl, Calle Sönne
+Authors: Kim Morrison, Markus Himmel, Bhavik Mehta, Andrew Yang, Emily Riehl, Calle Sönne
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Cospan
 
@@ -219,8 +219,8 @@ lemma IsLimit.lift_snd {t : PullbackCone f g} (ht : IsLimit t) {W : C} (h : W �
     (w : h ≫ f = k ≫ g) : IsLimit.lift ht h k w ≫ snd t = k := ht.fac _ _
 
 /-- If `t` is a limit pullback cone over `f` and `g` and `h : W ⟶ X` and `k : W ⟶ Y` are such that
-    `h ≫ f = k ≫ g`, then we have `l : W ⟶ t.pt` satisfying `l ≫ fst t = h` and `l ≫ snd t = k`.
-    -/
+`h ≫ f = k ≫ g`, then we have `l : W ⟶ t.pt` satisfying `l ≫ fst t = h` and `l ≫ snd t = k`.
+-/
 def IsLimit.lift' {t : PullbackCone f g} (ht : IsLimit t) {W : C} (h : W ⟶ X) (k : W ⟶ Y)
     (w : h ≫ f = k ≫ g) : { l : W ⟶ t.pt // l ≫ fst t = h ∧ l ≫ snd t = k } :=
   ⟨IsLimit.lift ht h k w, by simp⟩
@@ -286,7 +286,7 @@ composing with `diagramIsoCospan`. -/
 def PullbackCone.isoMk {F : WalkingCospan ⥤ C} (t : Cone F) :
     (Cones.postcompose (diagramIsoCospan.{v} _).hom).obj t ≅
       PullbackCone.mk (t.π.app WalkingCospan.left) (t.π.app WalkingCospan.right)
-        ((t.π.naturality inl).symm.trans (t.π.naturality inr : _)) :=
+        ((t.π.naturality inl).symm.trans (t.π.naturality inr :)) :=
   Cones.ext (Iso.refl _) <| by
     rintro (_ | (_ | _)) <;>
       · dsimp
@@ -408,7 +408,7 @@ theorem IsColimit.hom_ext {t : PushoutCocone f g} (ht : IsColimit t) {W : C} {k 
 -- Porting note: `IsColimit.desc` and the two following simp lemmas were introduced to ease the port
 /-- If `t` is a colimit pushout cocone over `f` and `g` and `h : Y ⟶ W` and `k : Z ⟶ W` are
     morphisms satisfying `f ≫ h = g ≫ k`, then we have a factorization `l : t.pt ⟶ W` such that
-    `inl t ≫ l = h` and `inr t ≫ l = k`, see `IsColimit.inl_desc` and `IsColimit.inr_desc`-/
+    `inl t ≫ l = h` and `inr t ≫ l = k`, see `IsColimit.inl_desc` and `IsColimit.inr_desc`. -/
 def IsColimit.desc {t : PushoutCocone f g} (ht : IsColimit t) {W : C} (h : Y ⟶ W) (k : Z ⟶ W)
     (w : f ≫ h = g ≫ k) : t.pt ⟶ W :=
   ht.desc (PushoutCocone.mk _ _ w)

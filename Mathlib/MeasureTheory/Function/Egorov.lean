@@ -15,15 +15,14 @@ convergence in measure.
 
 ## Main results
 
-* `MeasureTheory.Egorov`: Egorov's theorem which shows that a sequence of almost everywhere
-  convergent functions converges uniformly except on an arbitrarily small set.
+* `MeasureTheory.tendstoUniformlyOn_of_ae_tendsto`: Egorov's theorem which shows that a sequence of
+  almost everywhere convergent functions converges uniformly except on an arbitrarily small set.
 
 -/
 
 
 noncomputable section
 
-open scoped Classical
 open MeasureTheory NNReal ENNReal Topology
 
 namespace MeasureTheory
@@ -42,7 +41,7 @@ This definition is useful for Egorov's theorem. -/
 def notConvergentSeq [Preorder ι] (f : ι → α → β) (g : α → β) (n : ℕ) (j : ι) : Set α :=
   ⋃ (k) (_ : j ≤ k), { x | 1 / (n + 1 : ℝ) < dist (f k x) (g x) }
 
-variable {n : ℕ} {i j : ι} {s : Set α} {ε : ℝ} {f : ι → α → β} {g : α → β}
+variable {n : ℕ} {j : ι} {s : Set α} {ε : ℝ} {f : ι → α → β} {g : α → β}
 
 theorem mem_notConvergentSeq_iff [Preorder ι] {x : α} :
     x ∈ notConvergentSeq f g n j ↔ ∃ k ≥ j, 1 / (n + 1 : ℝ) < dist (f k x) (g x) := by
@@ -75,13 +74,13 @@ theorem measure_notConvergentSeq_tendsto_zero [SemilatticeSup ι] [Countable ι]
     (hf : ∀ n, StronglyMeasurable (f n)) (hg : StronglyMeasurable g) (hsm : MeasurableSet s)
     (hs : μ s ≠ ∞) (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) (n : ℕ) :
     Tendsto (fun j => μ (s ∩ notConvergentSeq f g n j)) atTop (𝓝 0) := by
-  cases' isEmpty_or_nonempty ι with h h
+  rcases isEmpty_or_nonempty ι with h | h
   · have : (fun j => μ (s ∩ notConvergentSeq f g n j)) = fun j => 0 := by
       simp only [eq_iff_true_of_subsingleton]
     rw [this]
     exact tendsto_const_nhds
   rw [← measure_inter_notConvergentSeq_eq_zero hfg n, Set.inter_iInter]
-  refine tendsto_measure_iInter
+  refine tendsto_measure_iInter_atTop
     (fun n ↦ (hsm.inter <| notConvergentSeq_measurableSet hf hg).nullMeasurableSet)
     (fun k l hkl => Set.inter_subset_inter_right _ <| notConvergentSeq_antitone hkl)
     ⟨h.some, ne_top_of_le_ne_top hs (measure_mono Set.inter_subset_left)⟩
@@ -171,7 +170,7 @@ theorem tendstoUniformlyOn_diff_iUnionNotConvergentSeq (hε : 0 < ε)
 
 end Egorov
 
-variable [SemilatticeSup ι] [Nonempty ι] [Countable ι] {γ : Type*} [TopologicalSpace γ]
+variable [SemilatticeSup ι] [Nonempty ι] [Countable ι]
   {f : ι → α → β} {g : α → β} {s : Set α}
 
 /-- **Egorov's theorem**: If `f : ι → α → β` is a sequence of strongly measurable functions that

@@ -31,6 +31,8 @@ We follow the signs conventions appearing in the introduction of
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 open CategoryTheory Category Limits Preadditive
 
 universe v u
@@ -491,7 +493,7 @@ lemma δ_comp {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochai
   dsimp
   rw [z₁.comp_v _ (add_assoc n₁ n₂ 1).symm p _ q rfl (by omega),
     Cochain.comp_v _ _ (show n₁ + 1 + n₂ = n₁ + n₂ + 1 by omega) p (p+n₁+1) q
-      (by linarith) (by omega),
+      (by omega) (by omega),
     δ_v (n₁ + n₂) _ rfl (z₁.comp z₂ rfl) p q hpq (p + n₁ + n₂) _ (by omega) rfl,
     z₁.comp_v z₂ rfl p _ _ rfl rfl,
     z₁.comp_v z₂ rfl (p+1) (p+n₁+1) q (by omega) (by omega),
@@ -529,8 +531,7 @@ lemma δ_ofHom {p : ℤ} (φ : F ⟶ G) : δ 0 p (Cochain.ofHom φ) = 0 := by
     ext
     simp
   · rw [δ_shape]
-    intro
-    exact h (by omega)
+    omega
 
 @[simp]
 lemma δ_ofHomotopy {φ₁ φ₂ : F ⟶ G} (h : Homotopy φ₁ φ₂) :
@@ -562,18 +563,12 @@ open HomComplex
 
 /-- The cochain complex of homomorphisms between two cochain complexes `F` and `G`.
 In degree `n : ℤ`, it consists of the abelian group `HomComplex.Cochain F G n`. -/
--- We also constructed the `d_apply` lemma using `@[simps]`
--- until we made `AddCommGrp.coe_of` a simp lemma,
--- after which the simp normal form linter complains.
--- It was not used a simp lemma in Mathlib.
--- Possible solution: higher priority function coercions that remove the `of`?
--- @[simp]
-@[simps! X]
+@[simps! X d_hom_apply]
 def HomComplex : CochainComplex AddCommGrp ℤ where
   X i := AddCommGrp.of (Cochain F G i)
   d i j := AddCommGrp.ofHom (δ_hom ℤ F G i j)
-  shape _ _ hij := by ext; apply δ_shape _ _ hij
-  d_comp_d' _ _ _ _ _  := by ext; apply δ_δ
+  shape _ _ hij := by ext; simp [δ_shape _ _ hij]
+  d_comp_d' _ _ _ _ _  := by ext; simp [δ_δ]
 
 namespace HomComplex
 
@@ -797,18 +792,18 @@ def map : Cochain ((Φ.mapHomologicalComplex _).obj K) ((Φ.mapHomologicalComple
 lemma map_v (p q : ℤ) (hpq : p + n = q) : (z.map Φ).v p q hpq = Φ.map (z.v p q hpq) := rfl
 
 @[simp]
-lemma map_add : (z + z').map Φ = z.map Φ + z'.map Φ := by aesop_cat
+protected lemma map_add : (z + z').map Φ = z.map Φ + z'.map Φ := by aesop_cat
 
 @[simp]
-lemma map_neg : (-z).map Φ = -z.map Φ := by aesop_cat
+protected lemma map_neg : (-z).map Φ = -z.map Φ := by aesop_cat
 
 @[simp]
-lemma map_sub : (z - z').map Φ = z.map Φ - z'.map Φ := by aesop_cat
+protected lemma map_sub : (z - z').map Φ = z.map Φ - z'.map Φ := by aesop_cat
 
 variable (K L n)
 
 @[simp]
-lemma map_zero : (0 : Cochain K L n).map Φ = 0 := by aesop_cat
+protected lemma map_zero : (0 : Cochain K L n).map Φ = 0 := by aesop_cat
 
 @[simp]
 lemma map_comp {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂) (h : n₁ + n₂ = n₁₂)

@@ -27,25 +27,18 @@ open Function
 namespace AddHom
 
 /-- Left multiplication by an element of a type with distributive multiplication is an `AddHom`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def mulLeft [Distrib R] (r : R) : AddHom R R where
   toFun := (r * ·)
   map_add' := mul_add r
 
 /-- Left multiplication by an element of a type with distributive multiplication is an `AddHom`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def mulRight [Distrib R] (r : R) : AddHom R R where
   toFun a := a * r
   map_add' _ _ := add_mul _ _ r
 
 end AddHom
-
-section AddHomClass
-
-variable {α β F : Type*} [NonAssocSemiring α] [NonAssocSemiring β]
-  [FunLike F α β] [AddHomClass F α β]
-
-end AddHomClass
 
 namespace AddMonoidHom
 
@@ -105,7 +98,7 @@ end HasDistribNeg
 
 section NonUnitalCommRing
 
-variable {α : Type*} [NonUnitalCommRing α] {a b c : α}
+variable {α : Type*} [NonUnitalCommRing α]
 
 attribute [local simp] add_assoc add_comm add_left_comm mul_comm
 
@@ -131,37 +124,25 @@ section NoZeroDivisors
 
 variable (α)
 
-lemma IsLeftCancelMulZero.to_noZeroDivisors [NonUnitalNonAssocRing α] [IsLeftCancelMulZero α] :
-    NoZeroDivisors α :=
-  { eq_zero_or_eq_zero_of_mul_eq_zero := fun {x y} h ↦ by
-      by_cases hx : x = 0
-      { left
-        exact hx }
-      { right
-        rw [← sub_zero (x * y), ← mul_zero x, ← mul_sub] at h
-        have := (IsLeftCancelMulZero.mul_left_cancel_of_ne_zero) hx h
-        rwa [sub_zero] at this } }
+lemma IsLeftCancelMulZero.to_noZeroDivisors [MulZeroClass α]
+    [IsLeftCancelMulZero α] : NoZeroDivisors α where
+  eq_zero_or_eq_zero_of_mul_eq_zero {x _} h :=
+    or_iff_not_imp_left.mpr fun ne ↦ mul_left_cancel₀ ne ((mul_zero x).symm ▸ h)
 
-lemma IsRightCancelMulZero.to_noZeroDivisors [NonUnitalNonAssocRing α] [IsRightCancelMulZero α] :
-    NoZeroDivisors α :=
-  { eq_zero_or_eq_zero_of_mul_eq_zero := fun {x y} h ↦ by
-      by_cases hy : y = 0
-      { right
-        exact hy }
-      { left
-        rw [← sub_zero (x * y), ← zero_mul y, ← sub_mul] at h
-        have := (IsRightCancelMulZero.mul_right_cancel_of_ne_zero) hy h
-        rwa [sub_zero] at this } }
+lemma IsRightCancelMulZero.to_noZeroDivisors [MulZeroClass α]
+    [IsRightCancelMulZero α] : NoZeroDivisors α where
+  eq_zero_or_eq_zero_of_mul_eq_zero {_ y} h :=
+    or_iff_not_imp_right.mpr fun ne ↦ mul_right_cancel₀ ne ((zero_mul y).symm ▸ h)
 
 instance (priority := 100) NoZeroDivisors.to_isCancelMulZero
     [NonUnitalNonAssocRing α] [NoZeroDivisors α] :
-    IsCancelMulZero α :=
-  { mul_left_cancel_of_ne_zero := fun ha h ↦ by
-      rw [← sub_eq_zero, ← mul_sub] at h
-      exact sub_eq_zero.1 ((eq_zero_or_eq_zero_of_mul_eq_zero h).resolve_left ha)
-    mul_right_cancel_of_ne_zero := fun hb h ↦ by
-      rw [← sub_eq_zero, ← sub_mul] at h
-      exact sub_eq_zero.1 ((eq_zero_or_eq_zero_of_mul_eq_zero h).resolve_right hb) }
+    IsCancelMulZero α where
+  mul_left_cancel_of_ne_zero ha h := by
+    rw [← sub_eq_zero, ← mul_sub] at h
+    exact sub_eq_zero.1 ((eq_zero_or_eq_zero_of_mul_eq_zero h).resolve_left ha)
+  mul_right_cancel_of_ne_zero hb h := by
+    rw [← sub_eq_zero, ← sub_mul] at h
+    exact sub_eq_zero.1 ((eq_zero_or_eq_zero_of_mul_eq_zero h).resolve_right hb)
 
 /-- In a ring, `IsCancelMulZero` and `NoZeroDivisors` are equivalent. -/
 lemma isCancelMulZero_iff_noZeroDivisors [NonUnitalNonAssocRing α] :
@@ -172,7 +153,7 @@ lemma NoZeroDivisors.to_isDomain [Ring α] [h : Nontrivial α] [NoZeroDivisors �
     IsDomain α :=
   { NoZeroDivisors.to_isCancelMulZero α, h with .. }
 
-instance (priority := 100) IsDomain.to_noZeroDivisors [Ring α] [IsDomain α] :
+instance (priority := 100) IsDomain.to_noZeroDivisors [Semiring α] [IsDomain α] :
     NoZeroDivisors α :=
   IsRightCancelMulZero.to_noZeroDivisors α
 
@@ -202,3 +183,43 @@ lemma noZeroDivisors_iff_isDomain_or_subsingleton [Ring α] :
   rw [← isCancelMulZero_iff_noZeroDivisors, isCancelMulZero_iff_isDomain_or_subsingleton]
 
 end NoZeroDivisors
+
+section DivisionMonoid
+variable [DivisionMonoid R] [HasDistribNeg R] {a b : R}
+
+lemma one_div_neg_one_eq_neg_one : (1 : R) / -1 = -1 :=
+  have : -1 * -1 = (1 : R) := by rw [neg_mul_neg, one_mul]
+  Eq.symm (eq_one_div_of_mul_eq_one_right this)
+
+lemma one_div_neg_eq_neg_one_div (a : R) : 1 / -a = -(1 / a) :=
+  calc
+    1 / -a = 1 / (-1 * a) := by rw [neg_eq_neg_one_mul]
+    _ = 1 / a * (1 / -1) := by rw [one_div_mul_one_div_rev]
+    _ = 1 / a * -1 := by rw [one_div_neg_one_eq_neg_one]
+    _ = -(1 / a) := by rw [mul_neg, mul_one]
+
+lemma div_neg_eq_neg_div (a b : R) : b / -a = -(b / a) :=
+  calc
+    b / -a = b * (1 / -a) := by rw [← inv_eq_one_div, division_def]
+    _ = b * -(1 / a) := by rw [one_div_neg_eq_neg_one_div]
+    _ = -(b * (1 / a)) := by rw [neg_mul_eq_mul_neg]
+    _ = -(b / a) := by rw [mul_one_div]
+
+lemma neg_div (a b : R) : -b / a = -(b / a) := by
+  rw [neg_eq_neg_one_mul, mul_div_assoc, ← neg_eq_neg_one_mul]
+
+@[field_simps]
+lemma neg_div' (a b : R) : -(b / a) = -b / a := by simp [neg_div]
+
+@[simp]
+lemma neg_div_neg_eq (a b : R) : -a / -b = a / b := by rw [div_neg_eq_neg_div, neg_div, neg_neg]
+
+lemma neg_inv : -a⁻¹ = (-a)⁻¹ := by rw [inv_eq_one_div, inv_eq_one_div, div_neg_eq_neg_div]
+
+lemma div_neg (a : R) : a / -b = -(a / b) := by rw [← div_neg_eq_neg_div]
+
+lemma inv_neg : (-a)⁻¹ = -a⁻¹ := by rw [neg_inv]
+
+lemma inv_neg_one : (-1 : R)⁻¹ = -1 := by rw [← neg_inv, inv_one]
+
+end DivisionMonoid

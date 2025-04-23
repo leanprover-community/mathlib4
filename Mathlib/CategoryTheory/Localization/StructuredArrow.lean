@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Localization.HomEquiv
 import Mathlib.CategoryTheory.Localization.Opposite
-import Mathlib.CategoryTheory.Comma.StructuredArrow
+import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 
 /-!
 # Induction principles for structured and costructured arrows

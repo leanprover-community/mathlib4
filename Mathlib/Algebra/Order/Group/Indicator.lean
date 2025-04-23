@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Indicator
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 import Mathlib.Algebra.Order.Group.Synonym
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
@@ -20,7 +19,7 @@ assert_not_exists MonoidWithZero
 
 open Set
 
-variable {ι : Sort*} {α β M : Type*}
+variable {ι : Sort*} {α M : Type*}
 
 namespace Function
 variable [One M]
@@ -59,7 +58,7 @@ end Function
 namespace Set
 
 section LE
-variable [LE M] [One M] {s t : Set α} {f g : α → M} {a : α} {y : M}
+variable [LE M] [One M] {s : Set α} {f g : α → M} {a : α} {y : M}
 
 @[to_additive]
 lemma mulIndicator_apply_le' (hfg : a ∈ s → f a ≤ y) (hg : a ∉ s → 1 ≤ y) :
@@ -83,7 +82,7 @@ lemma le_mulIndicator (hfg : ∀ a ∈ s, f a ≤ g a) (hf : ∀ a ∉ s, f a �
 end LE
 
 section Preorder
-variable [Preorder M] [One M] {s t : Set α} {f g : α → M} {a : α} {y : M}
+variable [Preorder M] [One M] {s t : Set α} {f g : α → M} {a : α}
 
 @[to_additive indicator_apply_nonneg]
 lemma one_le_mulIndicator_apply (h : a ∈ s → 1 ≤ f a) : 1 ≤ mulIndicator s f a :=
@@ -106,18 +105,25 @@ lemma mulIndicator_le_mulIndicator' (h : a ∈ s → f a ≤ g a) :
     mulIndicator s f a ≤ mulIndicator s g a :=
   mulIndicator_rel_mulIndicator le_rfl h
 
-@[to_additive]
+@[to_additive (attr := mono, gcongr)]
 lemma mulIndicator_le_mulIndicator (h : f a ≤ g a) : mulIndicator s f a ≤ mulIndicator s g a :=
   mulIndicator_rel_mulIndicator le_rfl fun _ ↦ h
 
-attribute [mono] mulIndicator_le_mulIndicator indicator_le_indicator
+@[to_additive (attr := gcongr)]
+lemma mulIndicator_mono (h : f ≤ g) : s.mulIndicator f ≤ s.mulIndicator g :=
+  fun _ ↦ mulIndicator_le_mulIndicator (h _)
 
 @[to_additive]
-lemma mulIndicator_le_mulIndicator_of_subset (h : s ⊆ t) (hf : ∀ a, 1 ≤ f a) (a : α) :
+lemma mulIndicator_le_mulIndicator_apply_of_subset (h : s ⊆ t) (hf : 1 ≤ f a) :
     mulIndicator s f a ≤ mulIndicator t f a :=
   mulIndicator_apply_le'
     (fun ha ↦ le_mulIndicator_apply (fun _ ↦ le_rfl) fun hat ↦ (hat <| h ha).elim) fun _ ↦
-    one_le_mulIndicator_apply fun _ ↦ hf _
+    one_le_mulIndicator_apply fun _ ↦ hf
+
+@[to_additive]
+lemma mulIndicator_le_mulIndicator_of_subset (h : s ⊆ t) (hf : 1 ≤ f) :
+    mulIndicator s f ≤ mulIndicator t f :=
+  fun _ ↦ mulIndicator_le_mulIndicator_apply_of_subset h (hf _)
 
 @[to_additive]
 lemma mulIndicator_le_self' (hf : ∀ x ∉ s, 1 ≤ f x) : mulIndicator s f ≤ f :=
@@ -143,7 +149,7 @@ lemma indicator_nonpos_le_indicator (s : Set α) (f : α → M) :
 end LinearOrder
 
 section CompleteLattice
-variable [CompleteLattice M] [One M] {s t : Set α} {f g : α → M} {a : α} {y : M}
+variable [CompleteLattice M] [One M]
 
 @[to_additive]
 lemma mulIndicator_iUnion_apply (h1 : (⊥ : M) = 1) (s : ι → Set α) (f : α → M) (x : α) :
@@ -174,11 +180,28 @@ lemma mulIndicator_iInter_apply (h1 : (⊥ : M) = 1) (s : ι → Set α) (f : α
     refine le_antisymm (by simp only [← h1, le_iInf_iff, bot_le, forall_const]) ?_
     simpa [mulIndicator_of_not_mem hj] using (iInf_le (fun i ↦ (s i).mulIndicator f) j) x
 
+@[to_additive]
+lemma iSup_mulIndicator {ι : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)] {f : ι → α → M}
+    {s : ι → Set α} (h1 : (⊥ : M) = 1) (hf : Monotone f) (hs : Monotone s) :
+    ⨆ i, (s i).mulIndicator (f i) = (⋃ i, s i).mulIndicator (⨆ i, f i) := by
+  simp only [le_antisymm_iff, iSup_le_iff]
+  refine ⟨fun i ↦ (mulIndicator_mono (le_iSup _ _)).trans (mulIndicator_le_mulIndicator_of_subset
+    (subset_iUnion _ _) (fun _ ↦ by simp [← h1])), fun a ↦ ?_⟩
+  by_cases ha : a ∈ ⋃ i, s i
+  · obtain ⟨i, hi⟩ : ∃ i, a ∈ s i := by simpa using ha
+    rw [mulIndicator_of_mem ha, iSup_apply, iSup_apply]
+    refine iSup_le fun j ↦ ?_
+    obtain ⟨k, hik, hjk⟩ := exists_ge_ge i j
+    refine le_iSup_of_le k <| (hf hjk _).trans_eq ?_
+    rw [mulIndicator_of_mem (hs hik hi)]
+  · rw [mulIndicator_of_not_mem ha, ← h1]
+    exact bot_le
+
 end CompleteLattice
 
-section CanonicallyOrderedCommMonoid
+section CanonicallyOrderedMul
 
-variable [CanonicallyOrderedCommMonoid M]
+variable [Monoid M] [PartialOrder M] [CanonicallyOrderedMul M]
 
 @[to_additive]
 lemma mulIndicator_le_self (s : Set α) (f : α → M) : mulIndicator s f ≤ f :=
@@ -194,10 +217,10 @@ lemma mulIndicator_le {s : Set α} {f g : α → M} (hfg : ∀ a ∈ s, f a ≤ 
     mulIndicator s f ≤ g :=
   mulIndicator_le' hfg fun _ _ ↦ one_le _
 
-end CanonicallyOrderedCommMonoid
+end CanonicallyOrderedMul
 
-section LinearOrderedCommGroup
-variable [LinearOrderedCommGroup M]
+section LatticeOrderedCommGroup
+variable [CommGroup M] [Lattice M]
 
 open scoped symmDiff
 
@@ -206,5 +229,5 @@ lemma mabs_mulIndicator_symmDiff (s t : Set α) (f : α → M) (x : α) :
     |mulIndicator (s ∆ t) f x|ₘ = |mulIndicator s f x / mulIndicator t f x|ₘ :=
   apply_mulIndicator_symmDiff mabs_inv s t f x
 
-end LinearOrderedCommGroup
+end LatticeOrderedCommGroup
 end Set

@@ -1,10 +1,11 @@
 /-
 Copyright (c) 2021 David Wärn,. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: David Wärn, Scott Morrison
+Authors: David Wärn, Kim Morrison
 -/
-import Mathlib.Combinatorics.Quiver.Basic
+import Mathlib.Combinatorics.Quiver.Prefunctor
 import Mathlib.Logic.Lemmas
+import Batteries.Data.List.Basic
 
 /-!
 # Paths in quivers
@@ -15,7 +16,7 @@ family. We define composition of paths and the action of prefunctors on paths.
 
 open Function
 
-universe v v₁ v₂ u u₁ u₂
+universe v v₁ v₂ v₃ u u₁ u₂ u₃
 
 namespace Quiver
 
@@ -24,7 +25,7 @@ inductive Path {V : Type u} [Quiver.{v} V] (a : V) : V → Sort max (u + 1) v
   | nil : Path a a
   | cons : ∀ {b c : V}, Path a b → (b ⟶ c) → Path a c
 
--- See issue lean4#2049
+-- See issue https://github.com/leanprover/lean4/issues/2049
 compile_inductive% Path
 
 /-- An arrow viewed as a path of length one. -/
@@ -70,6 +71,11 @@ theorem eq_of_length_zero (p : Path a b) (hzero : p.length = 0) : a = b := by
   cases p
   · rfl
   · cases Nat.succ_ne_zero _ hzero
+
+theorem eq_nil_of_length_zero (p : Path a a) (hzero : p.length = 0) : p = nil := by
+  cases p
+  · rfl
+  · simp at hzero
 
 /-- Composition of paths. -/
 def comp {a b : V} : ∀ {c}, Path a b → Path b c → Path a c
@@ -138,6 +144,22 @@ theorem comp_inj_left {p₁ p₂ : Path a b} {q : Path b c} : p₁.comp q = p₂
 theorem comp_inj_right {p : Path a b} {q₁ q₂ : Path b c} : p.comp q₁ = p.comp q₂ ↔ q₁ = q₂ :=
   p.comp_injective_right.eq_iff
 
+lemma eq_toPath_comp_of_length_eq_succ (p : Path a b) {n : ℕ}
+    (hp : p.length = n + 1) :
+    ∃ (c : V) (f : a ⟶ c) (q : Quiver.Path c b) (_ : q.length = n),
+      p = f.toPath.comp q := by
+  induction p generalizing n with
+  | nil => simp at hp
+  | @cons c d p q h =>
+    cases n
+    · rw [length_cons, Nat.zero_add, Nat.add_left_eq_self] at hp
+      obtain rfl := eq_of_length_zero p hp
+      obtain rfl := eq_nil_of_length_zero p hp
+      exact ⟨d, q, nil, rfl, rfl⟩
+    · rw [length_cons, Nat.add_right_cancel_iff] at hp
+      obtain ⟨x, q'', p'', hl, rfl⟩ := h hp
+      exact ⟨x, q'', p''.cons q, by simpa, rfl⟩
+
 /-- Turn a path into a list. The list contains `a` at its head, but not `b` a priori. -/
 @[simp]
 def toList : ∀ {b : V}, Path a b → List V
@@ -204,5 +226,19 @@ theorem mapPath_comp {a b : V} (p : Path a b) :
 @[simp]
 theorem mapPath_toPath {a b : V} (f : a ⟶ b) : F.mapPath f.toPath = (F.map f).toPath :=
   rfl
+
+@[simp]
+theorem mapPath_id {a b : V} : (p : Path a b) → (𝟭q V).mapPath p = p
+  | Path.nil => rfl
+  | Path.cons q e => by dsimp; rw [mapPath_id q]
+
+variable {U : Type u₃} [Quiver.{v₃} U] (G : W ⥤q U)
+
+@[simp]
+theorem mapPath_comp_apply {a b : V} (p : Path a b) :
+    (F ⋙q G).mapPath p = G.mapPath (F.mapPath p) := by
+  induction p with
+  | nil => rfl
+  | cons x y h => simp [h]
 
 end Prefunctor

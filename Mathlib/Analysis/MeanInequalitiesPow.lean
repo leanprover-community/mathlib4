@@ -61,23 +61,6 @@ theorem pow_arith_mean_le_arith_mean_pow_of_even (w z : ι → ℝ) (hw : ∀ i 
     (∑ i ∈ s, w i * z i) ^ n ≤ ∑ i ∈ s, w i * z i ^ n :=
   hn.convexOn_pow.map_sum_le hw hw' fun _ _ => Set.mem_univ _
 
-/-- Specific case of Jensen's inequality for sums of powers -/
-theorem pow_sum_div_card_le_sum_pow {f : ι → ℝ} (n : ℕ) (hf : ∀ a ∈ s, 0 ≤ f a) :
-    (∑ x ∈ s, f x) ^ (n + 1) / (s.card : ℝ) ^ n ≤ ∑ x ∈ s, f x ^ (n + 1) := by
-  rcases s.eq_empty_or_nonempty with (rfl | hs)
-  · simp_rw [Finset.sum_empty, zero_pow n.succ_ne_zero, zero_div]; rfl
-  · have hs0 : 0 < (s.card : ℝ) := Nat.cast_pos.2 hs.card_pos
-    suffices (∑ x ∈ s, f x / s.card) ^ (n + 1) ≤ ∑ x ∈ s, f x ^ (n + 1) / s.card by
-      rwa [← Finset.sum_div, ← Finset.sum_div, div_pow, pow_succ (s.card : ℝ), ← div_div,
-        div_le_iff₀ hs0, div_mul, div_self hs0.ne', div_one] at this
-    have :=
-      @ConvexOn.map_sum_le ℝ ℝ ℝ ι _ _ _ _ _ _ (Set.Ici 0) (fun x => x ^ (n + 1)) s
-        (fun _ => 1 / s.card) ((↑) ∘ f) (convexOn_pow (n + 1)) ?_ ?_ fun i hi =>
-        Set.mem_Ici.2 (hf i hi)
-    · simpa only [inv_mul_eq_div, one_div, Algebra.id.smul_eq_mul] using this
-    · simp only [one_div, inv_nonneg, Nat.cast_nonneg, imp_true_iff]
-    · simpa only [one_div, Finset.sum_const, nsmul_eq_mul] using mul_inv_cancel₀ hs0.ne'
-
 theorem zpow_arith_mean_le_arith_mean_zpow (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
     (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 < z i) (m : ℤ) :
     (∑ i ∈ s, w i * z i) ^ m ≤ ∑ i ∈ s, w i * z i ^ m :=
@@ -111,11 +94,6 @@ theorem pow_arith_mean_le_arith_mean_pow (w z : ι → ℝ≥0) (hw' : ∑ i ∈
     Real.pow_arith_mean_le_arith_mean_pow s _ _ (fun i _ => (w i).coe_nonneg)
       (mod_cast hw') (fun i _ => (z i).coe_nonneg) n
 
-theorem pow_sum_div_card_le_sum_pow (f : ι → ℝ≥0) (n : ℕ) :
-    (∑ x ∈ s, f x) ^ (n + 1) / (s.card : ℝ) ^ n ≤ ∑ x ∈ s, f x ^ (n + 1) := by
-  simpa only [← NNReal.coe_le_coe, NNReal.coe_sum, Nonneg.coe_div, NNReal.coe_pow] using
-    @Real.pow_sum_div_card_le_sum_pow ι s (((↑) : ℝ≥0 → ℝ) ∘ f) n fun _ _ => NNReal.coe_nonneg _
-
 /-- Weighted generalized mean inequality, version for sums over finite sets, with `ℝ≥0`-valued
 functions and real exponents. -/
 theorem rpow_arith_mean_le_arith_mean_rpow (w z : ι → ℝ≥0) (hw' : ∑ i ∈ s, w i = 1) {p : ℝ}
@@ -141,7 +119,7 @@ theorem rpow_add_le_mul_rpow_add_rpow (z₁ z₂ : ℝ≥0) {p : ℝ} (hp : 1 �
   · simp only [one_div, inv_mul_cancel_left₀, Ne, mul_eq_zero, two_ne_zero, one_ne_zero,
       not_false_iff]
   · have A : p - 1 ≠ 0 := ne_of_gt (sub_pos.2 h'p)
-    simp only [mul_rpow, rpow_sub' _ A, div_eq_inv_mul, rpow_one, mul_one]
+    simp only [mul_rpow, rpow_sub' A, div_eq_inv_mul, rpow_one, mul_one]
     ring
 
 /-- Weighted generalized mean inequality, version for sums over finite sets, with `ℝ≥0`-valued
@@ -206,6 +184,36 @@ theorem rpow_add_le_add_rpow {p : ℝ} (a b : ℝ≥0) (hp : 0 ≤ p) (hp1 : p �
 
 end NNReal
 
+namespace Real
+
+lemma add_rpow_le_rpow_add {p : ℝ} {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (hp1 : 1 ≤ p) :
+     a ^ p + b ^ p ≤ (a + b) ^ p := by
+  lift a to NNReal using ha
+  lift b to NNReal using hb
+  exact_mod_cast NNReal.add_rpow_le_rpow_add a b hp1
+
+lemma rpow_add_rpow_le_add {p : ℝ} {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (hp1 : 1 ≤ p) :
+    (a ^ p + b ^ p) ^ (1 / p) ≤ a + b := by
+  lift a to NNReal using ha
+  lift b to NNReal using hb
+  exact_mod_cast NNReal.rpow_add_rpow_le_add a b hp1
+
+lemma rpow_add_rpow_le {p q : ℝ} {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (hp_pos : 0 < p)
+    (hpq : p ≤ q) :
+    (a ^ q + b ^ q) ^ (1 / q) ≤ (a ^ p + b ^ p) ^ (1 / p) := by
+  lift a to NNReal using ha
+  lift b to NNReal using hb
+  exact_mod_cast NNReal.rpow_add_rpow_le a b hp_pos hpq
+
+lemma rpow_add_le_add_rpow {p : ℝ} {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (hp : 0 ≤ p)
+    (hp1 : p ≤ 1) :
+    (a + b) ^ p ≤ a ^ p + b ^ p := by
+  lift a to NNReal using ha
+  lift b to NNReal using hb
+  exact_mod_cast NNReal.rpow_add_le_add_rpow a b hp hp1
+
+end Real
+
 namespace ENNReal
 
 /-- Weighted generalized mean inequality, version for sums over finite sets, with `ℝ≥0∞`-valued
@@ -221,7 +229,7 @@ theorem rpow_arith_mean_le_arith_mean_rpow (w z : ι → ℝ≥0∞) (hw' : ∑ 
   · -- first, prove `(∑ i ∈ s, w i * z i) ^ p = ⊤ → ∑ i ∈ s, (w i * z i ^ p) = ⊤`
     rw [rpow_eq_top_iff, sum_eq_top, sum_eq_top]
     intro h
-    simp only [and_false_iff, hp_not_neg, false_or_iff] at h
+    simp only [and_false, hp_not_neg, false_or] at h
     rcases h.left with ⟨a, H, ha⟩
     use a, H
     rwa [← h_top_iff_rpow_top a H]
@@ -241,7 +249,7 @@ theorem rpow_arith_mean_le_arith_mean_rpow (w z : ι → ℝ≥0∞) (hw' : ∑ 
       specialize h_top i hi
       rwa [Ne, ← h_top_iff_rpow_top i hi]
     -- put the `.toNNReal` inside the sums.
-    simp_rw [toNNReal_sum h_top_rpow, ← toNNReal_rpow, toNNReal_sum h_top, toNNReal_mul, ←
+    simp_rw [toNNReal_sum h_top_rpow, toNNReal_rpow, toNNReal_sum h_top, toNNReal_mul,
       toNNReal_rpow]
     -- use corresponding nnreal result
     refine
@@ -268,8 +276,8 @@ theorem rpow_add_le_mul_rpow_add_rpow (z₁ z₂ : ℝ≥0∞) {p : ℝ} (hp : 1
     (z₁ + z₂) ^ p ≤ (2 : ℝ≥0∞) ^ (p - 1) * (z₁ ^ p + z₂ ^ p) := by
   convert rpow_arith_mean_le_arith_mean2_rpow (1 / 2) (1 / 2) (2 * z₁) (2 * z₂)
       (ENNReal.add_halves 1) hp using 1
-  · simp [← mul_assoc, ENNReal.inv_mul_cancel two_ne_zero two_ne_top]
-  · simp only [mul_rpow_of_nonneg _ _ (zero_le_one.trans hp), rpow_sub _ _ two_ne_zero two_ne_top,
+  · simp [← mul_assoc, ENNReal.inv_mul_cancel two_ne_zero ofNat_ne_top]
+  · simp only [mul_rpow_of_nonneg _ _ (zero_le_one.trans hp), rpow_sub _ _ two_ne_zero ofNat_ne_top,
       ENNReal.div_eq_inv_mul, rpow_one, mul_one]
     ring
 
@@ -282,7 +290,7 @@ theorem add_rpow_le_rpow_add {p : ℝ} (a b : ℝ≥0∞) (hp1 : 1 ≤ p) : a ^ 
   obtain ⟨ha_top, hb_top⟩ := add_ne_top.mp h_top
   lift a to ℝ≥0 using ha_top
   lift b to ℝ≥0 using hb_top
-  simpa [← ENNReal.coe_rpow_of_nonneg _ hp_pos.le] using
+  simpa [ENNReal.coe_rpow_of_nonneg _ hp_pos.le] using
     ENNReal.coe_le_coe.2 (NNReal.add_rpow_le_rpow_add a b hp1)
 
 theorem rpow_add_rpow_le_add {p : ℝ} (a b : ℝ≥0∞) (hp1 : 1 ≤ p) :

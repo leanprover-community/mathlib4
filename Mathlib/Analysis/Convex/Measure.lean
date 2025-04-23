@@ -3,8 +3,8 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Convex.Topology
 import Mathlib.Analysis.Normed.Affine.AddTorsorBases
+import Mathlib.Analysis.Normed.Module.Convex
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 
 /-!
@@ -18,7 +18,7 @@ convex set in `E`. Then the frontier of `s` has measure zero (see `Convex.addHaa
 
 open MeasureTheory MeasureTheory.Measure Set Metric Filter Bornology
 
-open FiniteDimensional (finrank)
+open Module (finrank)
 
 open scoped Topology NNReal ENNReal
 
@@ -31,7 +31,7 @@ namespace Convex
 theorem addHaar_frontier (hs : Convex ℝ s) : μ (frontier s) = 0 := by
   /- If `s` is included in a hyperplane, then `frontier s ⊆ closure s` is included in the same
     hyperplane, hence it has measure zero. -/
-  cases' ne_or_eq (affineSpan ℝ s) ⊤ with hspan hspan
+  rcases ne_or_eq (affineSpan ℝ s) ⊤ with hspan | hspan
   · refine measure_mono_null ?_ (addHaar_affineSubspace _ _ hspan)
     exact frontier_subset_closure.trans
       (closure_minimal (subset_affineSpan _ _) (affineSpan ℝ s).closed_of_finiteDimensional)
@@ -64,7 +64,7 @@ theorem addHaar_frontier (hs : Convex ℝ s) : μ (frontier s) = 0 := by
   /- Due to `Convex.closure_subset_image_homothety_interior_of_one_lt`, for any `r > 1` we have
     `closure s ⊆ homothety x r '' interior s`, hence `μ (closure s) ≤ r ^ d * μ (interior s)`,
     where `d = finrank ℝ E`. -/
-  set d : ℕ := FiniteDimensional.finrank ℝ E
+  set d : ℕ := Module.finrank ℝ E
   have : ∀ r : ℝ≥0, 1 < r → μ (closure s) ≤ ↑(r ^ d) * μ (interior s) := fun r hr ↦ by
     refine (measure_mono <|
       hs.closure_subset_image_homothety_interior_of_one_lt hx r hr).trans_eq ?_

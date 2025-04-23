@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Algebra.Pi
+import Mathlib.Algebra.GroupWithZero.Indicator
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.Topology.LocallyConstant.Basic
 
@@ -247,7 +248,7 @@ section Algebra
 variable [CommSemiring R] [Semiring Y] [Algebra R Y]
 
 instance : Algebra R (LocallyConstant X Y) where
-  toRingHom := constRingHom.comp <| algebraMap R Y
+  algebraMap := constRingHom.comp <| algebraMap R Y
   commutes' := by
     intros
     ext

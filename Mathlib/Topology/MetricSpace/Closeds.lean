@@ -38,11 +38,11 @@ variable {α : Type u} [EMetricSpace α] {s : Set α}
 on the type of closed subsets -/
 instance Closeds.emetricSpace : EMetricSpace (Closeds α) where
   edist s t := hausdorffEdist (s : Set α) t
-  edist_self s := hausdorffEdist_self
-  edist_comm s t := hausdorffEdist_comm
-  edist_triangle s t u := hausdorffEdist_triangle
+  edist_self _ := hausdorffEdist_self
+  edist_comm _ _ := hausdorffEdist_comm
+  edist_triangle _ _ _ := hausdorffEdist_triangle
   eq_of_edist_eq_zero {s t} h :=
-    Closeds.ext <| (hausdorffEdist_zero_iff_eq_of_closed s.closed t.closed).1 h
+    Closeds.ext <| (hausdorffEdist_zero_iff_eq_of_closed s.isClosed t.isClosed).1 h
 
 /-- The edistance to a closed set depends continuously on the point and the set -/
 theorem continuous_infEdist_hausdorffEdist :
@@ -224,17 +224,17 @@ instance Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
 where the edistance is the Hausdorff edistance -/
 instance NonemptyCompacts.emetricSpace : EMetricSpace (NonemptyCompacts α) where
   edist s t := hausdorffEdist (s : Set α) t
-  edist_self s := hausdorffEdist_self
-  edist_comm s t := hausdorffEdist_comm
-  edist_triangle s t u := hausdorffEdist_triangle
+  edist_self _ := hausdorffEdist_self
+  edist_comm _ _ := hausdorffEdist_comm
+  edist_triangle _ _ _ := hausdorffEdist_triangle
   eq_of_edist_eq_zero {s t} h := NonemptyCompacts.ext <| by
     have : closure (s : Set α) = closure t := hausdorffEdist_zero_iff_closure_eq_closure.1 h
     rwa [s.isCompact.isClosed.closure_eq, t.isCompact.isClosed.closure_eq] at this
 
 /-- `NonemptyCompacts.toCloseds` is a uniform embedding (as it is an isometry) -/
-theorem NonemptyCompacts.ToCloseds.uniformEmbedding :
-    UniformEmbedding (@NonemptyCompacts.toCloseds α _ _) :=
-  Isometry.uniformEmbedding fun _ _ => rfl
+theorem NonemptyCompacts.ToCloseds.isUniformEmbedding :
+    IsUniformEmbedding (@NonemptyCompacts.toCloseds α _ _) :=
+  Isometry.isUniformEmbedding fun _ _ => rfl
 
 /-- The range of `NonemptyCompacts.toCloseds` is closed in a complete space -/
 theorem NonemptyCompacts.isClosed_in_closeds [CompleteSpace α] :
@@ -253,7 +253,7 @@ theorem NonemptyCompacts.isClosed_in_closeds [CompleteSpace α] :
     rw [edist_comm] at Dst
     -- since `t` is nonempty, so is `s`
     exact nonempty_of_hausdorffEdist_ne_top ht.1 (ne_of_lt Dst)
-  · refine isCompact_iff_totallyBounded_isComplete.2 ⟨?_, s.closed.isComplete⟩
+  · refine isCompact_iff_totallyBounded_isComplete.2 ⟨?_, s.isClosed.isComplete⟩
     refine totallyBounded_iff.2 fun ε (εpos : 0 < ε) => ?_
     -- we have to show that s is covered by finitely many eballs of radius ε
     -- pick a nonempty compact set t at distance at most ε/2 of s
@@ -278,14 +278,14 @@ theorem NonemptyCompacts.isClosed_in_closeds [CompleteSpace α] :
 from the same statement for closed subsets -/
 instance NonemptyCompacts.completeSpace [CompleteSpace α] : CompleteSpace (NonemptyCompacts α) :=
   (completeSpace_iff_isComplete_range
-        NonemptyCompacts.ToCloseds.uniformEmbedding.toUniformInducing).2 <|
+        NonemptyCompacts.ToCloseds.isUniformEmbedding.isUniformInducing).2 <|
     NonemptyCompacts.isClosed_in_closeds.isComplete
 
 /-- In a compact space, the type of nonempty compact subsets is compact. This follows from
 the same statement for closed subsets -/
 instance NonemptyCompacts.compactSpace [CompactSpace α] : CompactSpace (NonemptyCompacts α) :=
   ⟨by
-    rw [NonemptyCompacts.ToCloseds.uniformEmbedding.embedding.isCompact_iff, image_univ]
+    rw [NonemptyCompacts.ToCloseds.isUniformEmbedding.isEmbedding.isCompact_iff, image_univ]
     exact NonemptyCompacts.isClosed_in_closeds.isCompact⟩
 
 /-- In a second countable space, the type of nonempty compact subsets is second countable -/
@@ -394,11 +394,9 @@ theorem lipschitz_infDist_set (x : α) : LipschitzWith 1 fun s : NonemptyCompact
     exact infDist_le_infDist_add_hausdorffDist (edist_ne_top t s)
 
 theorem lipschitz_infDist : LipschitzWith 2 fun p : α × NonemptyCompacts α => infDist p.1 p.2 := by
-  -- Porting note: Changed tactic from `exact` to `convert`, because Lean had trouble with 2 = 1 + 1
-  convert @LipschitzWith.uncurry α (NonemptyCompacts α) ℝ _ _ _
-    (fun (x : α) (s : NonemptyCompacts α) => infDist x s) 1 1
-    (fun s => lipschitz_infDist_pt ↑s) lipschitz_infDist_set
-  norm_num
+  rw [← one_add_one_eq_two]
+  exact LipschitzWith.uncurry
+    (fun s : NonemptyCompacts α => lipschitz_infDist_pt (s : Set α)) lipschitz_infDist_set
 
 theorem uniformContinuous_infDist_Hausdorff_dist :
     UniformContinuous fun p : α × NonemptyCompacts α => infDist p.1 p.2 :=

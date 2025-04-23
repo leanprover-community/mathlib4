@@ -75,7 +75,7 @@ If `η : F ⟶ G` is a natural transformation then we obtain a morphism of funct
 `sheafCompose J F ⟶ sheafCompose J G` by whiskering with `η` on the level of presheaves.
 -/
 def sheafCompose_map : sheafCompose J F ⟶ sheafCompose J G where
-  app := fun X => .mk <| whiskerLeft _ η
+  app := fun _ => .mk <| whiskerLeft _ η
 
 @[simp]
 lemma sheafCompose_id : sheafCompose_map (F := F) J (𝟙 _) = 𝟙 _ := rfl
@@ -97,8 +97,8 @@ def multicospanComp : (S.index (P ⋙ F)).multicospan ≅ (S.index P).multicospa
   NatIso.ofComponents
     (fun t =>
       match t with
-      | WalkingMulticospan.left a => Iso.refl _
-      | WalkingMulticospan.right b => Iso.refl _)
+      | WalkingMulticospan.left _ => Iso.refl _
+      | WalkingMulticospan.right _ => Iso.refl _)
     (by
       rintro (a | b) (a | b) (f | f | f)
       all_goals aesop_cat)
@@ -141,13 +141,15 @@ instance hasSheafCompose_of_preservesLimitsOfSize [PreservesLimitsOfSize.{v₁, 
 
 variable {J}
 
-lemma Sheaf.isSeparated [ConcreteCategory A] [J.HasSheafCompose (forget A)]
+lemma Sheaf.isSeparated {FA : A → A → Type*} {CA : A → Type*}
+    [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory A FA] [J.HasSheafCompose (forget A)]
     (F : Sheaf J A) : Presheaf.IsSeparated J F.val := by
   rintro X S hS x y h
   exact (Presieve.isSeparated_of_isSheaf _ _ ((isSheaf_iff_isSheaf_of_type _ _).1
     ((sheafCompose J (forget A)).obj F).2) S hS).ext (fun _ _ hf => h _ _ hf)
 
-lemma Presheaf.IsSheaf.isSeparated {F : Cᵒᵖ ⥤ A} [ConcreteCategory A]
+lemma Presheaf.IsSheaf.isSeparated {F : Cᵒᵖ ⥤ A} {FA : A → A → Type*} {CA : A → Type*}
+    [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory A FA]
     [J.HasSheafCompose (forget A)] (hF : Presheaf.IsSheaf J F) :
     Presheaf.IsSeparated J F :=
   Sheaf.isSeparated ⟨F, hF⟩

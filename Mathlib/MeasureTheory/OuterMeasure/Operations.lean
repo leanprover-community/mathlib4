@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Algebra.Order.Group.Indicator
 import Mathlib.MeasureTheory.OuterMeasure.Basic
 
 /-!
@@ -38,7 +39,7 @@ instance instZero : Zero (OuterMeasure α) :=
   ⟨{  measureOf := fun _ => 0
       empty := rfl
       mono := by intro _ _ _; exact le_refl 0
-      iUnion_nat := fun s _ => zero_le _ }⟩
+      iUnion_nat := fun _ _ => zero_le _ }⟩
 
 @[simp]
 theorem coe_zero : ⇑(0 : OuterMeasure α) = 0 :=
@@ -51,7 +52,7 @@ instance instAdd : Add (OuterMeasure α) :=
   ⟨fun m₁ m₂ =>
     { measureOf := fun s => m₁ s + m₂ s
       empty := show m₁ ∅ + m₂ ∅ = 0 by simp [OuterMeasure.empty]
-      mono := fun {s₁ s₂} h => add_le_add (m₁.mono h) (m₂.mono h)
+      mono := fun {_ _} h => add_le_add (m₁.mono h) (m₂.mono h)
       iUnion_nat := fun s _ =>
         calc
           m₁ (⋃ i, s i) + m₂ (⋃ i, s i) ≤ (∑' i, m₁ (s i)) + ∑' i, m₂ (s i) :=
@@ -75,12 +76,11 @@ instance instSMul : SMul R (OuterMeasure α) :=
     { measureOf := fun s => c • m s
       empty := by simp only [measure_empty]; rw [← smul_one_mul c]; simp
       mono := fun {s t} h => by
-        simp only
         rw [← smul_one_mul c, ← smul_one_mul c (m t)]
-        exact ENNReal.mul_left_mono (m.mono h)
+        exact mul_left_mono (m.mono h)
       iUnion_nat := fun s _ => by
         simp_rw [← smul_one_mul c (m _), ENNReal.tsum_mul_left]
-        exact ENNReal.mul_left_mono (measure_iUnion_le _) }⟩
+        exact mul_left_mono (measure_iUnion_le _) }⟩
 
 @[simp]
 theorem coe_smul (c : R) (m : OuterMeasure α) : ⇑(c • m) = c • ⇑m :=
@@ -135,9 +135,9 @@ theorem coe_bot : (⊥ : OuterMeasure α) = 0 :=
 
 instance instPartialOrder : PartialOrder (OuterMeasure α) where
   le m₁ m₂ := ∀ s, m₁ s ≤ m₂ s
-  le_refl a s := le_rfl
-  le_trans a b c hab hbc s := le_trans (hab s) (hbc s)
-  le_antisymm a b hab hba := ext fun s => le_antisymm (hab s) (hba s)
+  le_refl _ _ := le_rfl
+  le_trans _ _ _ hab hbc s := le_trans (hab s) (hbc s)
+  le_antisymm _ _ hab hba := ext fun s => le_antisymm (hab s) (hba s)
 
 instance orderBot : OrderBot (OuterMeasure α) :=
   { bot := 0,
@@ -152,7 +152,7 @@ instance instSupSet : SupSet (OuterMeasure α) :=
   ⟨fun ms =>
     { measureOf := fun s => ⨆ m ∈ ms, (m : OuterMeasure α) s
       empty := nonpos_iff_eq_zero.1 <| iSup₂_le fun m _ => le_of_eq m.empty
-      mono := fun {s₁ s₂} hs => iSup₂_mono fun m _ => m.mono hs
+      mono := fun {_ _} hs => iSup₂_mono fun m _ => m.mono hs
       iUnion_nat := fun f _ =>
         iSup₂_le fun m hm =>
           calc
@@ -164,7 +164,7 @@ instance instSupSet : SupSet (OuterMeasure α) :=
 instance instCompleteLattice : CompleteLattice (OuterMeasure α) :=
   { OuterMeasure.orderBot,
     completeLatticeOfSup (OuterMeasure α) fun ms =>
-      ⟨fun m hm s => by apply le_iSup₂ m hm, fun m hm s => iSup₂_le fun m' hm' => hm hm' s⟩ with }
+      ⟨fun m hm s => by apply le_iSup₂ m hm, fun _ hm s => iSup₂_le fun _ hm' => hm hm' s⟩ with }
 
 @[simp]
 theorem sSup_apply (ms : Set (OuterMeasure α)) (s : Set α) :
@@ -200,10 +200,10 @@ def map {β} (f : α → β) : OuterMeasure α →ₗ[ℝ≥0∞] OuterMeasure �
   toFun m :=
     { measureOf := fun s => m (f ⁻¹' s)
       empty := m.empty
-      mono := fun {s t} h => m.mono (preimage_mono h)
+      mono := fun {_ _} h => m.mono (preimage_mono h)
       iUnion_nat := fun s _ => by simpa using measure_iUnion_le fun i => f ⁻¹' s i }
-  map_add' m₁ m₂ := coe_fn_injective rfl
-  map_smul' c m := coe_fn_injective rfl
+  map_add' _ _ := coe_fn_injective rfl
+  map_smul' _ _ := coe_fn_injective rfl
 
 @[simp]
 theorem map_apply {β} (f : α → β) (m : OuterMeasure α) (s : Set β) : map f m s = m (f ⁻¹' s) :=
@@ -237,7 +237,7 @@ instance instLawfulFunctor : LawfulFunctor OuterMeasure := by constructor <;> in
 def dirac (a : α) : OuterMeasure α where
   measureOf s := indicator s (fun _ => 1) a
   empty := by simp
-  mono {s t} h := indicator_le_indicator_of_subset h (fun _ => zero_le _) a
+  mono {_ _} h := indicator_le_indicator_of_subset h (fun _ => zero_le _) a
   iUnion_nat s _ := calc
     indicator (⋃ n, s n) 1 a = ⨆ n, indicator (s n) 1 a :=
       indicator_iUnion_apply (M := ℝ≥0∞) rfl _ _ _
@@ -251,7 +251,7 @@ theorem dirac_apply (a : α) (s : Set α) : dirac a s = indicator s (fun _ => 1)
 def sum {ι} (f : ι → OuterMeasure α) : OuterMeasure α where
   measureOf s := ∑' i, f i s
   empty := by simp
-  mono {s t} h := ENNReal.tsum_le_tsum fun i => measure_mono h
+  mono {_ _} h := ENNReal.tsum_le_tsum fun _ => measure_mono h
   iUnion_nat s _ := by
     rw [ENNReal.tsum_comm]; exact ENNReal.tsum_le_tsum fun i => measure_iUnion_le _
 
@@ -268,10 +268,10 @@ def comap {β} (f : α → β) : OuterMeasure β →ₗ[ℝ≥0∞] OuterMeasure
   toFun m :=
     { measureOf := fun s => m (f '' s)
       empty := by simp
-      mono := fun {s t} h => m.mono <| image_subset f h
+      mono := fun {_ _} h => m.mono <| image_subset f h
       iUnion_nat := fun s _ => by simpa only [image_iUnion] using measure_iUnion_le _ }
-  map_add' m₁ m₂ := rfl
-  map_smul' c m := rfl
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
 
 @[simp]
 theorem comap_apply {β} (f : α → β) (m : OuterMeasure β) (s : Set α) : comap f m s = m (f '' s) :=
@@ -341,7 +341,7 @@ theorem top_apply {s : Set α} (h : s.Nonempty) : (⊤ : OuterMeasure α) s = �
   let ⟨a, as⟩ := h
   top_unique <| le_trans (by simp [smul_dirac_apply, as]) (le_iSup₂ (∞ • dirac a) trivial)
 
-theorem top_apply' (s : Set α) : (⊤ : OuterMeasure α) s = ⨅ h : s = ∅, 0 :=
+theorem top_apply' (s : Set α) : (⊤ : OuterMeasure α) s = ⨅ _ : s = ∅, 0 :=
   s.eq_empty_or_nonempty.elim (fun h => by simp [h]) fun h => by simp [h, h.ne_empty]
 
 @[simp]
