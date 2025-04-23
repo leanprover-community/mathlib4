@@ -197,6 +197,7 @@ protected theorem comp (hg : IsLocalHomeomorph g) (hf : IsLocalHomeomorph f) :
 theorem isOpenEmbedding_of_injective (hf : IsLocalHomeomorph f) (hi : f.Injective) :
     IsOpenEmbedding f :=
   .of_continuous_injective_isOpenMap hf.continuous hi hf.isOpenMap
+
 @[deprecated (since := "2024-10-18")]
 alias openEmbedding_of_injective := isOpenEmbedding_of_injective
 
