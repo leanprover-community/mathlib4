@@ -292,6 +292,6 @@ lemma pow_four_le_pow_two_of_pow_two_le (h : a ^ 2 ≤ b) : a ^ 4 ≤ b ^ 2 :=
 
 @[simp]
 lemma pow_eq_iff_eq {n : ℕ} (hn : Odd n) {a b : R} : a^n = b^n ↔ a = b :=
-  ⟨fun h ↦ (Odd.strictMono_pow hn).injective h, pow_congr _ _ _⟩
+  ⟨fun h ↦ (Odd.strictMono_pow hn).injective h, fun h ↦ congrFun (congrArg HPow.hPow h) n⟩
 
 end LinearOrderedSemiring
