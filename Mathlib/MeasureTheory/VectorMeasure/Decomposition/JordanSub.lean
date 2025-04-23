@@ -46,7 +46,7 @@ structure SetWhereLe (μ ν : Measure X) (s : Set X) : Prop where
   le_on : μ.restrict s ≤ ν.restrict s
   ge_on_compl : ν.restrict sᶜ ≤ μ.restrict sᶜ
 
-def SetWhereLe.compl {μ ν : Measure X} {s : Set X}
+lemma SetWhereLe.compl {μ ν : Measure X} {s : Set X}
     (h : SetWhereLe μ ν s) : SetWhereLe ν μ sᶜ where
   measurable := h.measurable.compl
   le_on := h.ge_on_compl
@@ -63,7 +63,7 @@ where
   le_on : μ.toSignedMeasure.restrict s ≤  ν.toSignedMeasure.restrict s
   ge_on_compl : ν.toSignedMeasure.restrict sᶜ ≤  μ.toSignedMeasure.restrict sᶜ
 
-def SetWhereLe.compl {μ ν : Measure X} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+lemma SetWhereLe.compl {μ ν : Measure X} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     {s : Set X} (h : SetWhereLe μ ν s) : SetWhereLe ν μ sᶜ where
   measurable := h.measurable.compl
   le_on := h.ge_on_compl
