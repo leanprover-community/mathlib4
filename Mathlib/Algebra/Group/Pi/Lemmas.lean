@@ -6,6 +6,7 @@ Authors: Simon Hudon, Patrick Massot
 import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Group.Hom.Instances
 import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Algebra.Group.Torsion
 import Mathlib.Data.Set.Piecewise
 import Mathlib.Logic.Pairwise
 
@@ -22,9 +23,7 @@ universe u v w
 
 variable {ι α : Type*}
 variable {I : Type u}
-
--- The indexing type
-variable {f : I → Type v}
+variable {f : I → Type v} {M : ι → Type*}
 
 variable (i : I)
 
@@ -36,6 +35,10 @@ theorem Set.range_one {α β : Type*} [One β] [Nonempty α] : Set.range (1 : α
 theorem Set.preimage_one {α β : Type*} [One β] (s : Set β) [Decidable ((1 : β) ∈ s)] :
     (1 : α → β) ⁻¹' s = if (1 : β) ∈ s then Set.univ else ∅ :=
   Set.preimage_const 1 s
+
+instance Pi.instIsMulTorsionFree [∀ i, Monoid (M i)] [∀ i, IsMulTorsionFree (M i)] :
+    IsMulTorsionFree (∀ i, M i) where
+  pow_left_injective n hn a b hab := by ext i; exact pow_left_injective hn <| congr_fun hab i
 
 namespace Pi
 
