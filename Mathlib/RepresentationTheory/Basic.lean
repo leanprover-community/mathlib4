@@ -113,7 +113,8 @@ You should use `asModuleEquiv : ρ.asModule ≃+ V` to translate terms.
 def asModule (_ : Representation k G V) :=
   V
 
--- Porting note: no derive handler
+-- The `AddCommMonoid` and `Module` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 instance : AddCommMonoid (ρ.asModule) := inferInstanceAs <| AddCommMonoid V
 
 instance : Inhabited ρ.asModule where
@@ -125,7 +126,6 @@ a module over `MonoidAlgebra k G`.
 noncomputable instance instModuleAsModule : Module (MonoidAlgebra k G) ρ.asModule :=
   Module.compHom V (asAlgebraHom ρ).toRingHom
 
--- Porting note: ρ.asModule doesn't unfold now
 instance : Module k ρ.asModule := inferInstanceAs <| Module k V
 
 /-- The additive equivalence from the `Module (MonoidAlgebra k G)` to the original vector space
@@ -435,14 +435,8 @@ def linHom : Representation k G (V →ₗ[k] W) where
     { toFun := fun f => ρW g ∘ₗ f ∘ₗ ρV g⁻¹
       map_add' := fun f₁ f₂ => by simp_rw [add_comp, comp_add]
       map_smul' := fun r f => by simp_rw [RingHom.id_apply, smul_comp, comp_smul] }
-  map_one' :=
-    LinearMap.ext fun x => by
-      dsimp -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11227):now needed
-      simp_rw [inv_one, map_one, one_eq_id, comp_id, id_comp]
-  map_mul' g h :=
-    LinearMap.ext fun x => by
-      dsimp -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11227):now needed
-      simp_rw [mul_inv_rev, map_mul, mul_eq_comp, comp_assoc]
+  map_one' := ext fun x => by simp [one_eq_id]
+  map_mul' g h := ext fun x => by simp [mul_eq_comp, comp_assoc]
 
 @[simp]
 theorem linHom_apply (g : G) (f : V →ₗ[k] W) : (linHom ρV ρW) g f = ρW g ∘ₗ f ∘ₗ ρV g⁻¹ :=
@@ -458,14 +452,8 @@ def dual : Representation k G (Module.Dual k V) where
       map_smul' := fun r f => by
         ext
         simp only [coe_comp, Function.comp_apply, smul_apply, RingHom.id_apply] }
-  map_one' := by
-    ext
-    dsimp -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11227):now needed
-    simp only [coe_comp, Function.comp_apply, map_one, inv_one, coe_mk, one_apply]
-  map_mul' g h := by
-    ext
-    dsimp -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11227):now needed
-    simp only [coe_comp, Function.comp_apply, mul_inv_rev, map_mul, coe_mk, mul_apply]
+  map_one' := by ext; simp
+  map_mul' g h := by ext; simp
 
 @[simp]
 theorem dual_apply (g : G) : (dual ρV) g = Module.Dual.transpose (R := k) (ρV g⁻¹) :=

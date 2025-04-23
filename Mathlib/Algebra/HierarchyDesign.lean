@@ -229,3 +229,23 @@ See also [mathlib#1561](https://github.com/leanprover-community/mathlib/issues/1
 Therefore, if we create an instance that always applies, we set the priority of these instances to
 100 (or something similar, which is below the default value of 1000).
 -/
+
+library_note "instance argument order"/--
+When type class inference applies an instance, it attempts to solve the sub-goals from left to
+right (it used to be from right to left in lean 3). For example in
+```
+instance {p : α → Sort*} [∀ x, IsEmpty (p x)] [Nonempty α] : IsEmpty (∀ x, p x)
+```
+we make sure to write `[∀ x, IsEmpty (p x)]` on the left of `[Nonempty α]` to avoid an expensive
+search for `Nonempty α` when there is no instance for `∀ x, IsEmpty (p x)`.
+
+This helps to speed up failing type class searches, for example those triggered by `simp` lemmas.
+
+In some situations, we can't reorder type class assumptions because one depends on the other,
+for example in
+```
+instance {G : Type*} [Group G] [IsKleinFour G] : IsAddKleinFour (Additive G)
+```
+where the `Group G` instance appears in `IsKleinFour G`. Future work may be done to improve the
+type class synthesis order in this situation.
+-/

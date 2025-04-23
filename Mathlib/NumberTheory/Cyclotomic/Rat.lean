@@ -6,6 +6,7 @@ Authors: Riccardo Brasca
 import Mathlib.NumberTheory.Cyclotomic.Discriminant
 import Mathlib.RingTheory.Polynomial.Eisenstein.IsIntegral
 import Mathlib.RingTheory.Ideal.Norm.AbsNorm
+import Mathlib.RingTheory.Prime
 
 /-!
 # Ring of integers of `p ^ n`-th cyclotomic fields
@@ -179,20 +180,16 @@ lemma coe_toInteger {k : ℕ+} (hζ : IsPrimitiveRoot ζ k) : hζ.toInteger.1 = 
 /-- `𝓞 K ⧸ Ideal.span {ζ - 1}` is finite. -/
 lemma finite_quotient_toInteger_sub_one [NumberField K] {k : ℕ+} (hk : 1 < k)
     (hζ : IsPrimitiveRoot ζ k) : Finite (𝓞 K ⧸ Ideal.span {hζ.toInteger - 1}) := by
-  refine (finite_iff_nonempty_fintype _).2 ⟨?_⟩
-  refine Ideal.fintypeQuotientOfFreeOfNeBot _ (fun h ↦ ?_)
+  refine Ideal.finiteQuotientOfFreeOfNeBot _ (fun h ↦ ?_)
   simp only [Ideal.span_singleton_eq_bot, sub_eq_zero, ← Subtype.coe_inj] at h
   exact hζ.ne_one hk (RingOfIntegers.ext_iff.1 h)
 
 /-- We have that `𝓞 K ⧸ Ideal.span {ζ - 1}` has cardinality equal to the norm of `ζ - 1`.
 
 See the results below to compute this norm in various cases. -/
-lemma card_quotient_toInteger_sub_one [NumberField K] {k : ℕ+} (hk : 1 < k)
-    (hζ : IsPrimitiveRoot ζ k) :
+lemma card_quotient_toInteger_sub_one [NumberField K] {k : ℕ+} (hζ : IsPrimitiveRoot ζ k) :
     Nat.card (𝓞 K ⧸ Ideal.span {hζ.toInteger - 1}) =
       (Algebra.norm ℤ (hζ.toInteger - 1)).natAbs := by
-  have := hζ.finite_quotient_toInteger_sub_one hk
-  let _ := Fintype.ofFinite (𝓞 K ⧸ Ideal.span {hζ.toInteger - 1})
   rw [← Submodule.cardQuot_apply, ← Ideal.absNorm_apply, Ideal.absNorm_span_singleton]
 
 lemma toInteger_isPrimitiveRoot {k : ℕ+} (hζ : IsPrimitiveRoot ζ k) :
@@ -498,7 +495,7 @@ theorem finite_quotient_span_sub_one [hcycl : IsCyclotomicExtension {p ^ (k + 1)
     (hζ : IsPrimitiveRoot ζ ↑(p ^ (k + 1))) :
     Finite (𝓞 K ⧸ Ideal.span {hζ.toInteger - 1}) := by
   have : NumberField K := IsCyclotomicExtension.numberField {p ^ (k + 1)} ℚ K
-  refine Fintype.finite <| Ideal.fintypeQuotientOfFreeOfNeBot _ (fun h ↦ ?_)
+  refine Ideal.finiteQuotientOfFreeOfNeBot _ (fun h ↦ ?_)
   simp only [Ideal.span_singleton_eq_bot, sub_eq_zero, ← Subtype.coe_inj] at h
   exact hζ.ne_one (one_lt_pow₀ hp.1.one_lt (Nat.zero_ne_add_one k).symm)
     (RingOfIntegers.ext_iff.1 h)
@@ -517,7 +514,7 @@ lemma toInteger_sub_one_dvd_prime [hcycl : IsCyclotomicExtension {p ^ (k + 1)} �
   by_cases htwo : p ^ (k + 1) = 2
   · replace htwo : (p : ℕ) ^ (k + 1) = 2 := by exact_mod_cast htwo
     have ⟨hp2, hk⟩ := (Nat.Prime.pow_eq_iff Nat.prime_two).1 htwo
-    simp only [add_left_eq_self] at hk
+    simp only [add_eq_right] at hk
     have hζ' : ζ = -1 := by
       refine IsPrimitiveRoot.eq_neg_one_of_two_right ?_
       rwa [hk, zero_add, pow_one, hp2] at hζ

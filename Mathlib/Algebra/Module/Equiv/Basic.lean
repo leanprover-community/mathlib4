@@ -82,6 +82,9 @@ instance automorphismGroup : Group (M ≃ₗ[R] M) where
   one_mul _ := ext fun _ ↦ rfl
   inv_mul_cancel f := ext <| f.left_inv
 
+lemma one_eq_refl : (1 : M ≃ₗ[R] M) = refl R M := rfl
+lemma mul_eq_trans (f g : M ≃ₗ[R] M) : f * g = g.trans f := rfl
+
 @[simp]
 lemma coe_one : ↑(1 : M ≃ₗ[R] M) = id := rfl
 
@@ -724,6 +727,7 @@ namespace LinearEquiv
 
 This is `Equiv.sumPiEquivProdPi` as a `LinearEquiv`.
 -/
+@[simps -fullyApplied +simpRhs]
 def sumPiEquivProdPi (R : Type*) [Semiring R] (S T : Type*) (A : S ⊕ T → Type*)
     [∀ st, AddCommMonoid (A st)] [∀ st, Module R (A st)] :
     (Π (st : S ⊕ T), A st) ≃ₗ[R] (Π (s : S), A (.inl s)) × (Π (t : T), A (.inr t)) where

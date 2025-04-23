@@ -49,7 +49,8 @@ lemma order_eq_top_iff (hf : AnalyticAt 𝕜 f z₀) : hf.order = ⊤ ↔ ∀ᶠ
 
 /-- The order of an analytic function `f` at `z₀` equals a natural number `n` iff `f` can locally
 be written as `f z = (z - z₀) ^ n • g z`, where `g` is analytic and does not vanish at `z₀`. -/
-lemma order_eq_nat_iff (hf : AnalyticAt 𝕜 f z₀) (n : ℕ) : hf.order = ↑n ↔
+lemma order_eq_nat_iff {n : ℕ} (hf : AnalyticAt 𝕜 f z₀) :
+    hf.order = ↑n ↔
     ∃ (g : 𝕜 → E), AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧ ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ n • g z := by
   unfold order
   split_ifs with h
@@ -61,8 +62,12 @@ lemma order_eq_nat_iff (hf : AnalyticAt 𝕜 f z₀) (n : ℕ) : hf.order = ↑n
     refine ⟨fun hn ↦ (WithTop.coe_inj.mp hn : h.choose = n) ▸ h.choose_spec, fun h' ↦ ?_⟩
     rw [unique_eventuallyEq_pow_smul_nonzero h.choose_spec h']
 
-/-- The order of an analytic function `f` at `z₀` is finite iff `f` can locally be written as
-`f z = (z - z₀) ^ order • g z`, where `g` is analytic and does not vanish at `z₀`. -/
+/-- The order of an analytic function `f` at `z₀` is finite iff `f` can locally be written as `f z =
+  (z - z₀) ^ order • g z`, where `g` is analytic and does not vanish at `z₀`.
+
+See `MeromorphicNFAt.order_eq_zero_iff` for an analogous statement about meromorphic functions in
+normal form.
+-/
 lemma order_ne_top_iff (hf : AnalyticAt 𝕜 f z₀) :
     hf.order ≠ ⊤ ↔ ∃ (g : 𝕜 → E), AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0
       ∧ f =ᶠ[𝓝 z₀] fun z ↦ (z - z₀) ^ (hf.order.toNat) • g z := by
@@ -93,7 +98,7 @@ theorem order_congr (hf₁ : AnalyticAt 𝕜 f₁ z₀) (h : f₁ =ᶠ[𝓝 z₀
 /-- The order of an analytic function `f` at `z₀` is zero iff `f` does not vanish at `z₀`. -/
 lemma order_eq_zero_iff (hf : AnalyticAt 𝕜 f z₀) :
     hf.order = 0 ↔ f z₀ ≠ 0 := by
-  rw [← ENat.coe_zero, order_eq_nat_iff hf 0]
+  rw [← ENat.coe_zero, hf.order_eq_nat_iff]
   constructor
   · intro ⟨g, _, _, hg⟩
     simpa [hg.self_of_nhds]
@@ -104,6 +109,29 @@ lemma apply_eq_zero_of_order_toNat_ne_zero (hf : AnalyticAt 𝕜 f z₀) :
     hf.order.toNat ≠ 0 → f z₀ = 0 := by
   simp [hf.order_eq_zero_iff]
   tauto
+
+/-- Characterization of which natural numbers are `≤ hf.order`. Useful for avoiding case splits,
+since it applies whether or not the order is `∞`. -/
+lemma natCast_le_order_iff (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} :
+    n ≤ hf.order ↔ ∃ g, AnalyticAt 𝕜 g z₀ ∧ ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ n • g z := by
+  unfold order
+  split_ifs with h
+  · simpa using ⟨0, analyticAt_const .., by simpa⟩
+  · let m := (hf.exists_eventuallyEq_pow_smul_nonzero_iff.mpr h).choose
+    obtain ⟨g, hg, hg_ne, hm⟩ := (hf.exists_eventuallyEq_pow_smul_nonzero_iff.mpr h).choose_spec
+    rw [ENat.coe_le_coe]
+    refine ⟨fun hmn ↦ ⟨fun z ↦ (z - z₀) ^ (m - n) • g z, by fun_prop, ?_⟩, fun ⟨h, hh, hfh⟩ ↦ ?_⟩
+    · filter_upwards [hm] with z hz using by rwa [← mul_smul, ← pow_add, Nat.add_sub_of_le hmn]
+    · contrapose! hg_ne
+      have : ContinuousAt (fun z ↦ (z - z₀) ^ (n - m) • h z) z₀ := by fun_prop
+      rw [tendsto_nhds_unique_of_eventuallyEq (l := 𝓝[≠] z₀)
+        hg.continuousAt.continuousWithinAt this.continuousWithinAt ?_]
+      · simp [m, Nat.sub_ne_zero_of_lt hg_ne]
+      · filter_upwards [self_mem_nhdsWithin, hm.filter_mono nhdsWithin_le_nhds,
+          hfh.filter_mono nhdsWithin_le_nhds] with z hz hf' hf''
+        rw [← inv_smul_eq_iff₀ (pow_ne_zero _ <| sub_ne_zero_of_ne hz), hf'', smul_comm,
+          ← mul_smul] at hf'
+        rw [pow_sub₀ _ (sub_ne_zero_of_ne hz) (by omega), ← hf']
 
 /-!
 ## Vanishing Order at a Point: Elementary Computations

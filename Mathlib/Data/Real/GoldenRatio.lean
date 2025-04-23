@@ -120,16 +120,16 @@ theorem neg_one_lt_goldConj : -1 < ψ := by
 /-- The golden ratio is irrational. -/
 theorem gold_irrational : Irrational φ := by
   have := Nat.Prime.irrational_sqrt (show Nat.Prime 5 by norm_num)
-  have := this.rat_add 1
-  convert this.rat_mul (show (0.5 : ℚ) ≠ 0 by norm_num)
+  have := this.ratCast_add 1
+  convert this.ratCast_mul (show (0.5 : ℚ) ≠ 0 by norm_num)
   norm_num
   field_simp
 
 /-- The conjugate of the golden ratio is irrational. -/
 theorem goldConj_irrational : Irrational ψ := by
   have := Nat.Prime.irrational_sqrt (show Nat.Prime 5 by norm_num)
-  have := this.rat_sub 1
-  convert this.rat_mul (show (0.5 : ℚ) ≠ 0 by norm_num)
+  have := this.ratCast_sub 1
+  convert this.ratCast_mul (show (0.5 : ℚ) ≠ 0 by norm_num)
   norm_num
   field_simp
 
@@ -190,8 +190,7 @@ theorem Real.coe_fib_eq' :
       ring_nf
       rw [mul_inv_cancel₀]; norm_num
   · exact fib_isSol_fibRec
-  · -- Porting note: Rewrote this proof
-    suffices LinearRecurrence.IsSolution fibRec
+  · suffices LinearRecurrence.IsSolution fibRec
         ((fun n ↦ (√5)⁻¹ * φ ^ n) - (fun n ↦ (√5)⁻¹ * ψ ^ n)) by
       convert this
       rw [Pi.sub_apply]

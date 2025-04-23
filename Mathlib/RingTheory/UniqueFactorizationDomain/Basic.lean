@@ -4,10 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
 import Mathlib.Algebra.BigOperators.Associated
-import Mathlib.Algebra.GroupWithZero.Action.Defs
-import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.ENat.Basic
-import Mathlib.Data.Multiset.OrderedMonoid
 import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
 
 /-!
@@ -51,10 +48,6 @@ instance wfDvdMonoid_associates : WfDvdMonoid (Associates α) :=
 theorem wellFoundedLT_associates : WellFoundedLT (Associates α) :=
   ⟨Subrelation.wf dvdNotUnit_of_lt wellFounded_dvdNotUnit⟩
 
-@[deprecated wellFoundedLT_associates (since := "2024-09-02")]
-theorem wellFounded_associates : WellFounded ((· < ·) : Associates α → Associates α → Prop) :=
-  Subrelation.wf dvdNotUnit_of_lt wellFounded_dvdNotUnit
-
 end WfDvdMonoid
 
 theorem WfDvdMonoid.of_wellFoundedLT_associates [CancelCommMonoidWithZero α]
@@ -62,15 +55,6 @@ theorem WfDvdMonoid.of_wellFoundedLT_associates [CancelCommMonoidWithZero α]
   WfDvdMonoid.of_wfDvdMonoid_associates
     ⟨by
       convert h.wf
-      ext
-      exact Associates.dvdNotUnit_iff_lt⟩
-
-@[deprecated WfDvdMonoid.of_wellFoundedLT_associates (since := "2024-09-02")]
-theorem WfDvdMonoid.of_wellFounded_associates [CancelCommMonoidWithZero α]
-    (h : WellFounded ((· < ·) : Associates α → Associates α → Prop)) : WfDvdMonoid α :=
-  WfDvdMonoid.of_wfDvdMonoid_associates
-    ⟨by
-      convert h
       ext
       exact Associates.dvdNotUnit_iff_lt⟩
 
@@ -124,12 +108,12 @@ end UniqueFactorizationMonoid
 
 /-- If an irreducible has a prime factorization,
   then it is an associate of one of its prime factors. -/
-theorem prime_factors_irreducible [CancelCommMonoidWithZero α] {a : α} {f : Multiset α}
+theorem prime_factors_irreducible [CommMonoidWithZero α] {a : α} {f : Multiset α}
     (ha : Irreducible a) (pfa : (∀ b ∈ f, Prime b) ∧ f.prod ~ᵤ a) : ∃ p, a ~ᵤ p ∧ f = {p} := by
   haveI := Classical.decEq α
   refine @Multiset.induction_on _
     (fun g => (g.prod ~ᵤ a) → (∀ b ∈ g, Prime b) → ∃ p, a ~ᵤ p ∧ g = {p}) f ?_ ?_ pfa.2 pfa.1
-  · intro h; exact (ha.not_unit (associated_one_iff_isUnit.1 (Associated.symm h))).elim
+  · intro h; exact (ha.not_isUnit (associated_one_iff_isUnit.1 (Associated.symm h))).elim
   · rintro p s _ ⟨u, hu⟩ hs
     use p
     have hs0 : s = 0 := by
@@ -236,10 +220,10 @@ theorem factors_mul {x y : α} (hx : x ≠ 0) (hy : y ≠ 0) :
 theorem factors_pow {x : α} (n : ℕ) :
     Multiset.Rel Associated (factors (x ^ n)) (n • factors x) := by
   match n with
-  | 0 => rw [zero_smul, pow_zero, factors_one, Multiset.rel_zero_right]
+  | 0 => rw [zero_nsmul, pow_zero, factors_one, Multiset.rel_zero_right]
   | n+1 =>
     by_cases h0 : x = 0
-    · simp [h0, zero_pow n.succ_ne_zero, smul_zero]
+    · simp [h0, zero_pow n.succ_ne_zero, nsmul_zero]
     · rw [pow_succ', succ_nsmul']
       refine Multiset.Rel.trans _ (factors_mul h0 (pow_ne_zero n h0)) ?_
       refine Multiset.Rel.add ?_ <| factors_pow n
@@ -474,8 +458,5 @@ theorem exists_reduced_factors' (a b : R) (hb : b ≠ 0) :
     ∃ a' b' c', IsRelPrime a' b' ∧ c' * a' = a ∧ c' * b' = b :=
   let ⟨b', a', c', no_factor, hb, ha⟩ := exists_reduced_factors b hb a
   ⟨a', b', c', fun _ hpb hpa => no_factor hpa hpb, ha, hb⟩
-
-@[deprecated (since := "2024-09-21")] alias pow_right_injective := pow_injective_of_not_isUnit
-@[deprecated (since := "2024-09-21")] alias pow_eq_pow_iff := pow_inj_of_not_isUnit
 
 end UniqueFactorizationMonoid

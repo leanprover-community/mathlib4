@@ -13,7 +13,7 @@ import Mathlib.Algebra.Module.Projective
 import Mathlib.LinearAlgebra.DirectSum.TensorProduct
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-import Mathlib.RingTheory.Finiteness.Cardinality
+import Mathlib.RingTheory.Finiteness.Small
 import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
@@ -81,7 +81,7 @@ variable {R : Type u} {M : Type v} {N P Q : Type*} [CommSemiring R] [AddCommMono
   [AddCommMonoid N] [Module R N] [AddCommMonoid P] [Module R P] [AddCommMonoid Q] [Module R Q]
 
 theorem _root_.LinearMap.rTensor_injective_of_fg {f : N →ₗ[R] P}
-    (h :  ∀ (N' : Submodule R N) (P' : Submodule R P),
+    (h : ∀ (N' : Submodule R N) (P' : Submodule R P),
       N'.FG → P'.FG → ∀ h : N' ≤ P'.comap f, Function.Injective ((f.restrict h).rTensor M)) :
     Function.Injective (f.rTensor M) := fun x y eq ↦ by
   have ⟨N', Nfg, sub⟩ := Submodule.exists_fg_le_subset_range_rTensor_subtype {x, y} (by simp)
