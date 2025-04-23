@@ -161,7 +161,7 @@ theorem dist_integral_mulExpNegMulSq_comp_le (f : E →ᵇ ℝ)
   by_cases hPP' : P = 0 ∧ P' = 0
   · simp only [hPP', integral_zero_measure, sub_self, abs_zero, gt_iff_lt, Nat.ofNat_pos,
     mul_nonneg_iff_of_pos_left, (le_of_lt (sqrt_pos_of_pos hε))]
-  let const : ℝ := (max (P Set.univ).toReal (P' Set.univ).toReal)
+  let const : ℝ := (max (P.real Set.univ) (P'.real Set.univ))
   have pos_of_measure : 0 < const := by
     rw [not_and_or] at hPP'
     rcases hPP' with hP0 | hP'0

@@ -108,9 +108,6 @@ lemma isClosedEmbedding_toContinuousMap [T1Space R] :
     rw [range_toContinuousMap]
     exact isClosed_singleton.preimage <| continuous_eval_const 0
 
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_toContinuousMap := isClosedEmbedding_toContinuousMap
-
 @[fun_prop]
 lemma continuous_comp_left {X Y Z : Type*} [TopologicalSpace X]
     [TopologicalSpace Y] [TopologicalSpace Z] [Zero X] [Zero Y] [Zero Z] (f : C(X, Y)₀) :

@@ -290,9 +290,6 @@ protected theorem image_eq (s : Set H) : I '' s = I.symm ⁻¹' s ∩ range I :=
 theorem isClosedEmbedding : IsClosedEmbedding I :=
   I.leftInverse.isClosedEmbedding I.continuous_symm I.continuous
 
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding := isClosedEmbedding
-
 theorem isClosed_range : IsClosed (range I) :=
   I.isClosedEmbedding.isClosed_range
 
@@ -868,10 +865,6 @@ theorem Topology.IsOpenEmbedding.isManifold_singleton {𝕜 E H : Type*}
 
 @[deprecated (since := "2025-01-09")]
 alias Topology.IsOpenEmbedding.singleton_smoothManifoldWithCorners :=
-  Topology.IsOpenEmbedding.isManifold_singleton
-
-@[deprecated (since := "2024-10-18")]
-alias OpenEmbedding.singleton_smoothManifoldWithCorners :=
   Topology.IsOpenEmbedding.isManifold_singleton
 
 namespace TopologicalSpace.Opens

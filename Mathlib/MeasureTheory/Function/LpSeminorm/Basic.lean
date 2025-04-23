@@ -1465,7 +1465,7 @@ theorem MemLp.exists_eLpNorm_indicator_compl_lt {β : Type*} [NormedAddCommGroup
   · use ∅; simp [pos_iff_ne_zero.2 hε] -- first take care of `p = 0`
   · obtain ⟨s, hsm, hs, hε⟩ :
         ∃ s, MeasurableSet s ∧ μ s < ∞ ∧ ∫⁻ a in sᶜ, (‖f a‖ₑ) ^ p.toReal ∂μ < ε ^ p.toReal := by
-      apply exists_setLintegral_compl_lt
+      apply exists_setLIntegral_compl_lt
       · exact ((eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top hp₀ hp_top).1 hf.2).ne
       · simp [*]
     refine ⟨s, hsm, hs, ?_⟩
