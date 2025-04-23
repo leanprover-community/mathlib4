@@ -105,7 +105,7 @@ theorem leibniz : X (f * f') = f • X f' + f' • X f :=
   X.leibniz' _ _
 
 instance : Zero (LeftInvariantDerivation I G) :=
-  ⟨⟨0, fun g => by simp only [_root_.map_zero]⟩⟩
+  ⟨⟨0, fun g => by simp only [map_zero]⟩⟩
 
 instance : Inhabited (LeftInvariantDerivation I G) :=
   ⟨0⟩

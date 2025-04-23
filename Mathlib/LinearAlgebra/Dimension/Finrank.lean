@@ -57,9 +57,7 @@ noncomputable def finrank (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R
 @[deprecated (since := "2024-10-01")] protected alias _root_.FiniteDimensional.finrank := finrank
 
 theorem finrank_eq_of_rank_eq {n : ℕ} (h : Module.rank R M = ↑n) : finrank R M = n := by
-  apply_fun toNat at h
-  rw [toNat_natCast] at h
-  exact mod_cast h
+  simp [finrank, h]
 
 lemma rank_eq_one_iff_finrank_eq_one : Module.rank R M = 1 ↔ finrank R M = 1 :=
   Cardinal.toNat_eq_one.symm
@@ -102,17 +100,14 @@ open Module
 
 namespace LinearEquiv
 
-variable {R M M₂ : Type*} [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂]
-variable [Module R M] [Module R M₂]
-
 /-- The dimension of a finite dimensional space is preserved under linear equivalence. -/
-theorem finrank_eq (f : M ≃ₗ[R] M₂) : finrank R M = finrank R M₂ := by
+theorem finrank_eq (f : M ≃ₗ[R] N) : finrank R M = finrank R N := by
   unfold finrank
   rw [← Cardinal.toNat_lift, f.lift_rank_eq, Cardinal.toNat_lift]
 
 /-- Pushforwards of finite-dimensional submodules along a `LinearEquiv` have the same finrank. -/
-theorem finrank_map_eq (f : M ≃ₗ[R] M₂) (p : Submodule R M) :
-    finrank R (p.map (f : M →ₗ[R] M₂)) = finrank R p :=
+theorem finrank_map_eq (f : M ≃ₗ[R] N) (p : Submodule R M) :
+    finrank R (p.map (f : M →ₗ[R] N)) = finrank R p :=
   (f.submoduleMap p).finrank_eq.symm
 
 end LinearEquiv
@@ -131,4 +126,4 @@ variable (R M)
 @[simp]
 theorem finrank_top : finrank R (⊤ : Submodule R M) = finrank R M := by
   unfold finrank
-  simp [rank_top]
+  simp

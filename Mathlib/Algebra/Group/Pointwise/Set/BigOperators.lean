@@ -90,7 +90,7 @@ theorem list_prod_mem_list_prod (t : List ι) (f : ι → Set α) (g : ι → α
   induction' t with h tl ih
   · simp_rw [List.map_nil, List.prod_nil, Set.mem_one]
   · simp_rw [List.map_cons, List.prod_cons]
-    exact mul_mem_mul (hg h <| List.mem_cons_self _ _)
+    exact mul_mem_mul (hg h List.mem_cons_self)
       (ih fun i hi ↦ hg i <| List.mem_cons_of_mem _ hi)
 
 /-- An n-ary version of `Set.mul_subset_mul`. -/
@@ -100,7 +100,7 @@ theorem list_prod_subset_list_prod (t : List ι) (f₁ f₂ : ι → Set α) (hf
   induction' t with h tl ih
   · rfl
   · simp_rw [List.map_cons, List.prod_cons]
-    exact mul_subset_mul (hf h <| List.mem_cons_self _ _)
+    exact mul_subset_mul (hf h List.mem_cons_self)
       (ih fun i hi ↦ hf i <| List.mem_cons_of_mem _ hi)
 
 @[to_additive]

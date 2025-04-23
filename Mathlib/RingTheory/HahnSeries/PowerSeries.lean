@@ -159,7 +159,6 @@ def toMvPowerSeries {σ : Type*} [Finite σ] : HahnSeries (σ →₀ ℕ) R ≃+
     simp
   map_mul' f g := by
     ext n
-    simp only [MvPowerSeries.coeff_mul]
     classical
       change (f * g).coeff n = _
       simp_rw [coeff_mul]

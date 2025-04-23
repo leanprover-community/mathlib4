@@ -290,6 +290,8 @@ def mapMon (F : C ⥤ D) [F.LaxMonoidal] : Mon_ C ⥤ Mon_ D where
     { hom := F.map f.hom
       one_hom := by dsimp; rw [Category.assoc, ← F.map_comp, f.one_hom]
       mul_hom := by
+        #adaptation_note /-- 2025-03-29 needed to add dsimp for lean4#7717 -/
+        dsimp
         rw [Category.assoc, μ_natural_assoc, ← F.map_comp, ← F.map_comp,
           f.mul_hom] }
   map_id _ := by -- the `aesop_cat` autoparam solves this but it's slow

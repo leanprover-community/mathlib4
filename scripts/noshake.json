@@ -319,7 +319,6 @@
   ["Mathlib.Algebra.Group.ZeroOne", "Mathlib.Tactic.Bound.Init"],
   "Mathlib.Tactic.Bound":
   ["Mathlib.Algebra.Order.AbsoluteValue",
-   "Mathlib.Algebra.Order.Floor",
    "Mathlib.Analysis.Analytic.Basic",
    "Mathlib.Tactic.Bound.Init"],
   "Mathlib.Tactic.Basic":
@@ -328,6 +327,8 @@
   "Mathlib.Tactic.ArithMult": ["Mathlib.Tactic.ArithMult.Init"],
   "Mathlib.Tactic.Algebraize": ["Mathlib.Algebra.Algebra.Tower"],
   "Mathlib.RingTheory.SimpleModule.Basic": ["Mathlib.Data.Matrix.Mul"],
+  "Mathlib.RingTheory.PowerSeries.Evaluation":
+  ["Mathlib.RingTheory.PowerSeries.PiTopology"],
   "Mathlib.RingTheory.PowerSeries.Basic":
   ["Mathlib.Algebra.CharP.Defs", "Mathlib.Tactic.MoveAdd"],
   "Mathlib.RingTheory.MvPowerSeries.Basic":
@@ -342,14 +343,13 @@
   ["Mathlib.LinearAlgebra.FreeModule.IdealQuotient"],
   "Mathlib.RingTheory.Finiteness.Defs":
   ["Mathlib.Data.Finsupp.Defs", "Mathlib.Tactic.Algebraize"],
-  "Mathlib.RingTheory.Binomial": ["Mathlib.Algebra.Order.Floor"],
   "Mathlib.RingTheory.Adjoin.Basic": ["Mathlib.LinearAlgebra.Finsupp.SumProd"],
   "Mathlib.RepresentationTheory.FdRep":
   ["Mathlib.CategoryTheory.Monoidal.Rigid.Braided"],
   "Mathlib.RepresentationTheory.FDRep":
   ["Mathlib.CategoryTheory.Monoidal.Rigid.Braided"],
   "Mathlib.Probability.Notation":
-  ["Mathlib.MeasureTheory.Decomposition.Lebesgue",
+  ["Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue",
    "Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic"],
   "Mathlib.Probability.Kernel.Proper":
   ["Mathlib.Probability.Kernel.Composition.CompNotation"],
@@ -414,6 +414,7 @@
   "Mathlib.Data.Nat.Init": ["Batteries.Tactic.Init"],
   "Mathlib.Data.Nat.Find": ["Batteries.WF"],
   "Mathlib.Data.Multiset.Bind": ["Mathlib.Algebra.GroupWithZero.Action.Defs"],
+  "Mathlib.Data.Matroid.Minor.Basic": ["Mathlib.Tactic.TautoSet"],
   "Mathlib.Data.List.Sigma": ["Batteries.Tactic.Congr"],
   "Mathlib.Data.List.Rotate": ["Mathlib.Data.Quot"],
   "Mathlib.Data.List.Range": ["Batteries.Data.Nat.Lemmas"],

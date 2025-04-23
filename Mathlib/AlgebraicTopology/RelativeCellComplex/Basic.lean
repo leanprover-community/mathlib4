@@ -83,7 +83,7 @@ lemma hom_ext {Z : C} {φ₁ φ₂ : Y ⟶ Z} (h₀ : f ≫ φ₁ = f ≫ φ₂)
     apply (c.attachCells j hj).hom_ext
     · simpa using hj'
     · intro i
-      simpa only [Category.assoc, Cells.ι] using h ({ hj := hj, k := i })
+      simpa only [Category.assoc, Cells.ι] using h ({ hj := hj, k := i, .. })
   | hl j hj hj' =>
     exact (c.F.isColimitOfIsWellOrderContinuous j hj).hom_ext
       (fun ⟨k, hk⟩ ↦ by simpa using hj' k hk)

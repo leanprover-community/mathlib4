@@ -167,7 +167,7 @@ def listUniqueEquiv (α : Type*) [Unique α] : List α ≃ ℕ where
   toFun := List.length
   invFun n := List.replicate n default
   left_inv u := List.length_injective (by simp)
-  right_inv n := List.length_replicate n _
+  right_inv n := List.length_replicate
 
 /-- The type lists on unit is canonically equivalent to the natural numbers. -/
 @[deprecated listUniqueEquiv (since := "2025-02-17")]

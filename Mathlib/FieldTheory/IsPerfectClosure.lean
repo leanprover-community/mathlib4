@@ -313,7 +313,7 @@ def lift : L →+* M where
   map_mul' x1 x2 := by
     obtain ⟨n1, y1, h1⟩ := IsPRadical.pow_mem i p x1
     obtain ⟨n2, y2, h2⟩ := IsPRadical.pow_mem i p x2
-    simp only; rw [liftAux_apply i j p _ _ _ h1, liftAux_apply i j p _ _ _ h2,
+    rw [liftAux_apply i j p _ _ _ h1, liftAux_apply i j p _ _ _ h2,
       liftAux_apply i j p (x1 * x2) (n1 + n2) (y1 ^ p ^ n2 * y2 ^ p ^ n1) (by rw [map_mul,
         map_pow, map_pow, h1, h2, ← pow_mul, ← pow_add, ← pow_mul, ← pow_add,
         add_comm n2, mul_pow]),
@@ -325,7 +325,7 @@ def lift : L →+* M where
   map_add' x1 x2 := by
     obtain ⟨n1, y1, h1⟩ := IsPRadical.pow_mem i p x1
     obtain ⟨n2, y2, h2⟩ := IsPRadical.pow_mem i p x2
-    simp only; rw [liftAux_apply i j p _ _ _ h1, liftAux_apply i j p _ _ _ h2,
+    rw [liftAux_apply i j p _ _ _ h1, liftAux_apply i j p _ _ _ h2,
       liftAux_apply i j p (x1 + x2) (n1 + n2) (y1 ^ p ^ n2 + y2 ^ p ^ n1) (by rw [map_add,
         map_pow, map_pow, h1, h2, ← pow_mul, ← pow_add, ← pow_mul, ← pow_add,
         add_comm n2, add_pow_expChar_pow]),

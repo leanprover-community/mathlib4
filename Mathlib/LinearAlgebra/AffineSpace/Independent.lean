@@ -647,11 +647,8 @@ theorem AffineIndependent.affineIndependent_of_not_mem_span {p : ι → P} {i : 
       have hw' : ∑ x ∈ s', w' x = 1 := by
         simp_rw [w', s', Finset.sum_subtype_eq_sum_filter]
         rw [← s.sum_filter_add_sum_filter_not (· ≠ i)] at hwm
-        simp_rw [Classical.not_not] at hwm
-        -- Porting note: this `erw` used to be part of the `simp_rw`
-        erw [Finset.filter_eq'] at hwm
-        simp_rw [if_pos his.1, Finset.sum_singleton, hwmi, ← sub_eq_add_neg, sub_eq_zero] at hwm
-        exact hwm
+        simpa only [not_not, Finset.filter_eq' _ i, if_pos his.1, sum_singleton, hwmi,
+          add_neg_eq_zero] using hwm
       rw [← s.affineCombination_eq_of_weightedVSub_eq_zero_of_eq_neg_one hms his.1 hwmi, ←
         (Subtype.range_coe : _ = { x | x ≠ i }), ← Set.range_comp, ←
         s.affineCombination_subtype_eq_filter]

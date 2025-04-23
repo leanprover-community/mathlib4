@@ -602,7 +602,7 @@ theorem prime_card [Finite α] : (Nat.card α).Prime := by
   refine (IsSimpleOrder.eq_bot_or_eq_top (Subgroup.zpowers (g ^ n))).symm.imp ?_ ?_
   · intro h
     have hgo := orderOf_pow (n := n) g
-    rw [orderOf_eq_card_of_forall_mem_zpowers hg, Nat.gcd_eq_right_iff_dvd.1 hn,
+    rw [orderOf_eq_card_of_forall_mem_zpowers hg, Nat.gcd_eq_right_iff_dvd.2 hn,
       orderOf_eq_card_of_forall_mem_zpowers, eq_comm,
       Nat.div_eq_iff_eq_mul_left (Nat.pos_of_dvd_of_pos hn h0) hn] at hgo
     · exact (mul_left_cancel₀ (ne_of_gt h0) ((mul_one (Nat.card α)).trans hgo)).symm

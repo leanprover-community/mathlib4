@@ -143,8 +143,8 @@ the transfer homomorphism is `transfer ϕ : G →+ A`."]
 noncomputable def transfer [FiniteIndex H] : G →* A :=
   let T : H.LeftTransversal := default
   { toFun := fun g => diff ϕ T (g • T)
-    map_one' := by beta_reduce; rw [one_smul, diff_self]
-    map_mul' := fun g h => by dsimp only; rw [mul_smul, ← diff_mul_diff, smul_diff_smul] }
+    map_one' := by rw [one_smul, diff_self]
+    map_mul' := fun g h => by rw [mul_smul, ← diff_mul_diff, smul_diff_smul] }
 
 variable (T : H.LeftTransversal)
 

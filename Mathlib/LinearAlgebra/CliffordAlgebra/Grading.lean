@@ -148,7 +148,7 @@ theorem evenOdd_induction (n : ZMod 2) {motive : ∀ x, x ∈ evenOdd Q n → Pr
           motive (ι Q m₁ * ι Q m₂ * x)
             (zero_add n ▸ SetLike.mul_mem_graded (ι_mul_ι_mem_evenOdd_zero Q m₁ m₂) hx))
     (x : CliffordAlgebra Q) (hx : x ∈ evenOdd Q n) : motive x hx := by
-  apply Submodule.iSup_induction' (C := motive) _ _ (range_ι_pow 0 (Submodule.zero_mem _)) add
+  apply Submodule.iSup_induction' (motive := motive) _ _ (range_ι_pow 0 (Submodule.zero_mem _)) add
   refine Subtype.rec ?_
   simp_rw [ZMod.natCast_eq_iff, add_comm n.val]
   rintro n' ⟨k, rfl⟩ xv

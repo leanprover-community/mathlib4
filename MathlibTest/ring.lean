@@ -221,3 +221,7 @@ example (x : ℝ) (f : ℝ → ℝ) : True := by
     ring_nf
     ring_nf!
   trivial
+
+-- Test that `ring_nf` doesn't get confused about bound variables
+example : (fun x : ℝ => x * x^2) = (fun y => y^2 * y) := by
+  ring_nf

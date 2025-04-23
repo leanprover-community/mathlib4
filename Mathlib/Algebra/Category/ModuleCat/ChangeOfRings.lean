@@ -390,7 +390,7 @@ variable (M : Type v) [AddCommMonoid M] [Module R M]
 instance hasSMul : SMul S <| (restrictScalars f).obj (of _ S) →ₗ[R] M where
   smul s g :=
     { toFun := fun s' : S => g (s' * s : S)
-      map_add' := fun x y : S => by dsimp; rw [add_mul, map_add]
+      map_add' := fun x y : S => by rw [add_mul, map_add]
       map_smul' := fun r (t : S) => by
         -- Porting note: needed some erw's even after dsimp to clean things up
         dsimp
@@ -774,9 +774,8 @@ def Counit.map {Y} : (restrictScalars f ⋙ extendScalars f).obj Y ⟶ Y :=
           rw [smul_eq_mul, mul_smul] }
     map_add' := fun _ _ => by rw [map_add]
     map_smul' := fun s z => by
-      letI m1 : Module R S := Module.compHom S f
-      letI m2 : Module R Y := Module.compHom Y f
-      dsimp only
+      let m1 : Module R S := Module.compHom S f
+      let m2 : Module R Y := Module.compHom Y f
       induction z using TensorProduct.induction_on with
       | zero => rw [smul_zero, map_zero, smul_zero]
       | tmul s' y =>

@@ -5,6 +5,7 @@ Authors: Jujian Zhang, Fangming Li, Joachim Breitner
 -/
 
 import Mathlib.Algebra.Order.Group.Int
+import Mathlib.Algebra.Order.SuccPred.WithBot
 import Mathlib.Data.ENat.Lattice
 import Mathlib.Data.Int.Basic
 import Mathlib.Order.Atoms
@@ -605,8 +606,40 @@ lemma krullDim_nonpos_of_subsingleton [Subsingleton α] : krullDim α ≤ 0 := b
   rw [krullDim_nonpos_iff_forall_isMax]
   exact fun x y h ↦ (Subsingleton.elim x y).ge
 
+lemma krullDim_eq_zero [Nonempty α] [Subsingleton α] :
+    krullDim α = 0 :=
+  le_antisymm krullDim_nonpos_of_subsingleton krullDim_nonneg
+
 lemma krullDim_eq_zero_of_unique [Unique α] : krullDim α = 0 :=
   le_antisymm krullDim_nonpos_of_subsingleton krullDim_nonneg
+
+section PartialOrder
+
+variable {α : Type*} [PartialOrder α]
+
+lemma krullDim_eq_zero_iff_of_orderBot [OrderBot α] :
+    krullDim α = 0 ↔ Subsingleton α :=
+  ⟨fun H ↦ subsingleton_of_forall_eq ⊥ fun _ ↦ le_bot_iff.mp
+    (krullDim_nonpos_iff_forall_isMax.mp H.le ⊥ bot_le), fun _ ↦ Order.krullDim_eq_zero⟩
+
+lemma krullDim_pos_iff_of_orderBot [OrderBot α] :
+    0 < krullDim α ↔ Nontrivial α := by
+  rw [← not_subsingleton_iff_nontrivial, ← Order.krullDim_eq_zero_iff_of_orderBot,
+    ← ne_eq, ← lt_or_lt_iff_ne, or_iff_right]
+  simp [Order.krullDim_nonneg]
+
+lemma krullDim_eq_zero_iff_of_orderTop [OrderTop α] :
+    krullDim α = 0 ↔ Subsingleton α :=
+  ⟨fun H ↦ subsingleton_of_forall_eq ⊤ fun _ ↦ top_le_iff.mp
+    (krullDim_nonpos_iff_forall_isMin.mp H.le ⊤ le_top), fun _ ↦ Order.krullDim_eq_zero⟩
+
+lemma krullDim_pos_iff_of_orderTop [OrderTop α] :
+    0 < krullDim α ↔ Nontrivial α := by
+  rw [← not_subsingleton_iff_nontrivial, ← Order.krullDim_eq_zero_iff_of_orderTop,
+    ← ne_eq, ← lt_or_lt_iff_ne, or_iff_right]
+  simp [Order.krullDim_nonneg]
+
+end PartialOrder
 
 lemma krullDim_eq_length_of_finiteDimensionalOrder [FiniteDimensionalOrder α] :
     krullDim α = (LTSeries.longestOf α).length :=
@@ -827,6 +860,8 @@ lemma KrullDimLE.mono {n m : ℕ} (e : n ≤ m) (α : Type*) [Preorder α] [Krul
     KrullDimLE m α :=
   ⟨KrullDimLE.krullDim_le (n := n).trans (Nat.cast_le.mpr e)⟩
 
+instance {α} [Preorder α] [Subsingleton α] : KrullDimLE 0 α := ⟨krullDim_nonpos_of_subsingleton⟩
+
 end typeclass
 
 /-!
@@ -835,18 +870,15 @@ end typeclass
 
 section calculations
 
+lemma krullDim_eq_one_iff_of_boundedOrder {α : Type*} [PartialOrder α] [BoundedOrder α] :
+    krullDim α = 1 ↔ IsSimpleOrder α := by
+  rw [le_antisymm_iff, krullDim_le_one_iff, WithBot.one_le_iff_pos,
+    Order.krullDim_pos_iff_of_orderBot, isSimpleOrder_iff]
+  simp only [isMin_iff_eq_bot, isMax_iff_eq_top, and_comm]
+
 @[simp] lemma krullDim_of_isSimpleOrder {α : Type*} [PartialOrder α] [BoundedOrder α]
-    [IsSimpleOrder α] : krullDim α = 1 := by
-  rw [krullDim]
-  let q : LTSeries α := ⟨1, (fun n ↦ if n = 0 then ⊥ else ⊤), by simp [Fin.fin_one_eq_zero]⟩
-  refine le_antisymm (iSup_le fun p ↦ ?_) (le_iSup (fun p ↦ (p.length : WithBot ℕ∞)) q)
-  by_contra h; simp only [Nat.cast_le_one, not_le] at h
-  have h2 : 2 < p.length + 1 := add_lt_add_right h 1
-  have h0' : 0 < p.length := one_pos.trans h
-  have h1 : 1 < p.length + 1 := one_le_two.trans_lt h2
-  have : p ⟨1, h1⟩ = ⊤ := IsSimpleOrder.eq_top_of_lt (p.step ⟨0, h0'⟩)
-  have : p ⟨1, h1⟩ < p ⟨2, h2⟩ := p.step ⟨1, h⟩
-  simp_all
+    [IsSimpleOrder α] : krullDim α = 1 :=
+  krullDim_eq_one_iff_of_boundedOrder.mpr ‹_›
 
 variable {α : Type*} [Preorder α]
 

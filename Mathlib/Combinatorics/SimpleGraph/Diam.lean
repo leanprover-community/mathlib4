@@ -98,7 +98,7 @@ lemma ediam_eq_top_of_not_preconnected (h : ¬G.Preconnected) : G.ediam = ⊤ :=
     tauto
 
 lemma preconnected_of_ediam_ne_top (h : G.ediam ≠ ⊤) : G.Preconnected :=
-  not_not.mp <| mt G.ediam_eq_top_of_not_preconnected h
+  Not.imp_symm G.ediam_eq_top_of_not_preconnected h
 
 lemma connected_of_ediam_ne_top [Nonempty α] (h : G.ediam ≠ ⊤) : G.Connected :=
   G.connected_iff.mpr ⟨preconnected_of_ediam_ne_top h, ‹_›⟩

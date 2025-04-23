@@ -143,9 +143,11 @@ lemma mul_iSup (a : ℕ∞) (f : ι → ℕ∞) : a * ⨆ i, f i = ⨆ i, a * f 
   cases d with
   | top => simp
   | coe d =>
-  obtain htop | hlt := (le_top (a := ⨆ i, f i)).eq_or_lt
-  · obtain ⟨i, hi : d < f i⟩ := (iSup_eq_top ..).1 htop d (by simp)
-    exact False.elim <| (((h i).trans_lt hi).trans_le (ENat.self_le_mul_left _ hne)).ne rfl
+  have hlt : ⨆ i, f i < ⊤ := by
+    rw [lt_top_iff_ne_top]
+    intro htop
+    obtain ⟨i, hi : d < f i⟩ := (iSup_eq_top ..).1 htop d (by simp)
+    exact (((h i).trans_lt hi).trans_le (ENat.self_le_mul_left _ hne)).false
   obtain ⟨j, hj⟩ := exists_eq_iSup_of_lt_top hlt
   rw [← hj]
   apply h

@@ -57,8 +57,8 @@ open scoped FinsetFamily
 variable {α β : Type*}
 
 section Finset
-variable [DecidableEq α] [LinearOrderedCommSemiring β] {𝒜 : Finset (Finset α)}
-  {a : α} {f f₁ f₂ f₃ f₄ : Finset α → β} {s t u : Finset α}
+variable [DecidableEq α] [CommSemiring β] [LinearOrder β] [IsStrictOrderedRing β]
+  {𝒜 : Finset (Finset α)} {a : α} {f f₁ f₂ f₃ f₄ : Finset α → β} {s t u : Finset α}
 
 /-- The `n = 1` case of the Ahlswede-Daykin inequality. Note that we can't just expand everything
 out and bound termwise since `c₀ * d₁` appears twice on the RHS of the assumptions while `c₁ * d₀`
@@ -101,12 +101,14 @@ private lemma filter_collapse_eq (ha : a ∉ s) (𝒜 : Finset (Finset α)) :
         (if insert a s ∈ 𝒜 then {insert a s} else ∅) := by
   ext t; split_ifs <;> simp [erase_eq_iff ha] <;> aesop
 
+omit [LinearOrder β] [IsStrictOrderedRing β] in
 lemma collapse_eq (ha : a ∉ s) (𝒜 : Finset (Finset α)) (f : Finset α → β) :
     collapse 𝒜 a f s = (if s ∈ 𝒜 then f s else 0) +
       if insert a s ∈ 𝒜 then f (insert a s) else 0 := by
   rw [collapse, filter_collapse_eq ha]
   split_ifs <;> simp [(ne_of_mem_of_not_mem' (mem_insert_self a s) ha).symm, *]
 
+omit [LinearOrder β] [IsStrictOrderedRing β] in
 lemma collapse_of_mem (ha : a ∉ s) (ht : t ∈ 𝒜) (hu : u ∈ 𝒜) (hts : t = s)
     (hus : u = insert a s) : collapse 𝒜 a f s = f t + f u := by
   subst hts; subst hus; simp_rw [collapse_eq ha, if_pos ht, if_pos hu]
@@ -211,6 +213,7 @@ lemma collapse_modular [ExistsAddOfLE β]
   · simp_rw [add_zero, zero_mul]
     exact mul_nonneg (collapse_nonneg h₃ _) <| collapse_nonneg h₄ _
 
+omit [LinearOrder β] [IsStrictOrderedRing β] in
 lemma sum_collapse (h𝒜 : 𝒜 ⊆ (insert a u).powerset) (hu : a ∉ u) :
     ∑ s ∈ u.powerset, collapse 𝒜 a f s = ∑ s ∈ 𝒜, f s := by
   calc
@@ -265,8 +268,8 @@ private lemma four_functions_theorem_aux (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂)
 end Finset
 
 section DistribLattice
-variable [DistribLattice α] [LinearOrderedCommSemiring β] [ExistsAddOfLE β]
-  (f f₁ f₂ f₃ f₄ g μ : α → β)
+variable [DistribLattice α] [CommSemiring β] [LinearOrder β] [IsStrictOrderedRing β]
+  [ExistsAddOfLE β] (f f₁ f₂ f₃ f₄ g μ : α → β)
 
 /-- The **Four Functions Theorem**, aka **Ahlswede-Daykin Inequality**. -/
 lemma four_functions_theorem [DecidableEq α] (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h₃ : 0 ≤ f₃) (h₄ : 0 ≤ f₄)

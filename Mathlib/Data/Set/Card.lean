@@ -212,19 +212,19 @@ theorem Finite.finite_of_encard_le {s : Set α} {t : Set β} (hs : s.Finite)
     (h : t.encard ≤ s.encard) : t.Finite :=
   encard_lt_top_iff.1 (h.trans_lt hs.encard_lt_top)
 
-theorem Finite.eq_of_subset_of_encard_le (ht : t.Finite) (hst : s ⊆ t) (hts : t.encard ≤ s.encard) :
+lemma Finite.eq_of_subset_of_encard_le' (ht : t.Finite) (hst : s ⊆ t) (hts : t.encard ≤ s.encard) :
     s = t := by
   rw [← zero_add (a := encard s), ← encard_diff_add_encard_of_subset hst] at hts
   have hdiff := WithTop.le_of_add_le_add_right (ht.subset hst).encard_lt_top.ne hts
   rw [nonpos_iff_eq_zero, encard_eq_zero, diff_eq_empty] at hdiff
   exact hst.antisymm hdiff
 
-theorem Finite.eq_of_subset_of_encard_le' (hs : s.Finite) (hst : s ⊆ t)
+theorem Finite.eq_of_subset_of_encard_le (hs : s.Finite) (hst : s ⊆ t)
     (hts : t.encard ≤ s.encard) : s = t :=
-  (hs.finite_of_encard_le hts).eq_of_subset_of_encard_le hst hts
+  (hs.finite_of_encard_le hts).eq_of_subset_of_encard_le' hst hts
 
-theorem Finite.encard_lt_encard (ht : t.Finite) (h : s ⊂ t) : s.encard < t.encard :=
-  (encard_mono h.subset).lt_of_ne (fun he ↦ h.ne (ht.eq_of_subset_of_encard_le h.subset he.symm.le))
+theorem Finite.encard_lt_encard (hs : s.Finite) (h : s ⊂ t) : s.encard < t.encard :=
+  (encard_mono h.subset).lt_of_ne fun he ↦ h.ne (hs.eq_of_subset_of_encard_le h.subset he.symm.le)
 
 theorem encard_strictMono [Finite α] : StrictMono (encard : Set α → ℕ∞) :=
   fun _ _ h ↦ (toFinite _).encard_lt_encard h
@@ -303,7 +303,7 @@ theorem encard_pair {x y : α} (hne : x ≠ y) : ({x, y} : Set α).encard = 2 :=
 theorem encard_eq_one : s.encard = 1 ↔ ∃ x, s = {x} := by
   refine ⟨fun h ↦ ?_, fun ⟨x, hx⟩ ↦ by rw [hx, encard_singleton]⟩
   obtain ⟨x, hx⟩ := nonempty_of_encard_ne_zero (s := s) (by rw [h]; simp)
-  exact ⟨x, ((finite_singleton x).eq_of_subset_of_encard_le' (by simpa) (by simp [h])).symm⟩
+  exact ⟨x, ((finite_singleton x).eq_of_subset_of_encard_le (by simpa) (by simp [h])).symm⟩
 
 theorem encard_le_one_iff_eq : s.encard ≤ 1 ↔ s = ∅ ∨ ∃ x, s = {x} := by
   rw [le_iff_lt_or_eq, lt_iff_not_le, ENat.one_le_iff_ne_zero, not_not, encard_eq_zero,
@@ -425,7 +425,7 @@ theorem Finite.injOn_of_encard_image_eq (hs : s.Finite) (h : (f '' s).encard = s
   · rw [s.eq_empty_of_isEmpty]; simp
   rw [← (f.invFunOn_injOn_image s).encard_image] at h
   rw [injOn_iff_invFunOn_image_image_eq_self]
-  exact hs.eq_of_subset_of_encard_le (f.invFunOn_image_image_subset s) h.symm.le
+  exact hs.eq_of_subset_of_encard_le' (f.invFunOn_image_image_subset s) h.symm.le
 
 theorem encard_preimage_of_injective_subset_range (hf : f.Injective) (ht : t ⊆ range f) :
     (f ⁻¹' t).encard = t.encard := by
@@ -469,7 +469,7 @@ theorem Finite.exists_bijOn_of_encard_eq [Nonempty β] (hs : s.Finite) (h : s.en
     ∃ (f : α → β), BijOn f s t := by
   obtain ⟨f, hf, hinj⟩ := hs.exists_injOn_of_encard_le h.le; use f
   convert hinj.bijOn_image
-  rw [(hs.image f).eq_of_subset_of_encard_le' (image_subset_iff.mpr hf)
+  rw [(hs.image f).eq_of_subset_of_encard_le (image_subset_iff.mpr hf)
     (h.symm.trans hinj.encard_image.symm).le]
 
 end Function
@@ -713,7 +713,7 @@ theorem ncard_inter_le_ncard_right (s t : Set α) (ht : t.Finite := by toFinite_
 
 theorem eq_of_subset_of_ncard_le (h : s ⊆ t) (h' : t.ncard ≤ s.ncard)
     (ht : t.Finite := by toFinite_tac) : s = t :=
-  ht.eq_of_subset_of_encard_le h
+  ht.eq_of_subset_of_encard_le' h
     (by rwa [← Nat.cast_le (α := ℕ∞), ht.cast_ncard_eq, (ht.subset h).cast_ncard_eq] at h')
 
 theorem subset_iff_eq_of_ncard_le (h : t.ncard ≤ s.ncard) (ht : t.Finite := by toFinite_tac) :
@@ -731,7 +731,7 @@ theorem sep_of_ncard_eq {a : α} {P : α → Prop} (h : { x ∈ s | P x }.ncard 
 theorem ncard_lt_ncard (h : s ⊂ t) (ht : t.Finite := by toFinite_tac) :
     s.ncard < t.ncard := by
   rw [← Nat.cast_lt (α := ℕ∞), ht.cast_ncard_eq, (ht.subset h.subset).cast_ncard_eq]
-  exact ht.encard_lt_encard h
+  exact (ht.subset h.subset).encard_lt_encard h
 
 theorem ncard_strictMono [Finite α] : @StrictMono (Set α) _ _ _ ncard :=
   fun _ _ h ↦ ncard_lt_ncard h

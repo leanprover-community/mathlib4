@@ -236,7 +236,7 @@ and `S` is an extension of `R` that is finite and free as a module. -/
 def relNorm : Ideal S →*₀ Ideal R where
   toFun := spanNorm R
   map_zero' := spanNorm_bot R
-  map_one' := by dsimp only; rw [one_eq_top, spanNorm_top R, one_eq_top]
+  map_one' := by rw [one_eq_top, spanNorm_top R, one_eq_top]
   map_mul' := spanNorm_mul R
 
 theorem relNorm_apply (I : Ideal S) :

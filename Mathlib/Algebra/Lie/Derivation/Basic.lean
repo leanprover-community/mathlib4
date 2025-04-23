@@ -3,9 +3,6 @@ Copyright (c) 2024 Frédéric Marbach. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Marbach
 -/
-import Mathlib.Algebra.Algebra.Rat
-import Mathlib.Algebra.Lie.BaseChange
-import Mathlib.Algebra.Lie.Basic
 import Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
 import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Algebra.Lie.Subalgebra
@@ -390,13 +387,13 @@ end Inner
 
 section ExpNilpotent
 
-variable {R L : Type*} [Field R] [CharZero R] [LieRing L] [LieAlgebra R L] (D : LieDerivation R L L)
+variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] [LieAlgebra ℚ L]
+  (D : LieDerivation R L L)
 
 /-- In characteristic zero, the exponential of a nilpotent derivation is a Lie algebra
 automorphism. -/
 noncomputable def exp (h : IsNilpotent D.toLinearMap) :
     L ≃ₗ⁅R⁆ L :=
-  let _i : LieAlgebra ℚ L := LieAlgebra.RestrictScalars.lieAlgebra ℚ R L
   { toLinearMap := IsNilpotent.exp D.toLinearMap
     map_lie' := by
       let _i := LieRing.toNonUnitalNonAssocRing L
@@ -411,12 +408,13 @@ noncomputable def exp (h : IsNilpotent D.toLinearMap) :
       simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ← LinearMap.comp_apply,
         ← LinearMap.mul_eq_comp, h.exp_mul_exp_neg_self, LinearMap.one_apply] }
 
-lemma exp_apply [Module ℚ L] (h : IsNilpotent D.toLinearMap) :
-    exp D h = IsNilpotent.exp D.toLinearMap := by
-  ext x
-  dsimp [exp]
-  convert rfl
-  subsingleton
+lemma exp_apply (h : IsNilpotent D.toLinearMap) :
+    exp D h = IsNilpotent.exp D.toLinearMap :=
+  rfl
+
+lemma exp_map_apply (h : IsNilpotent D.toLinearMap) (l : L) :
+    exp D h l = IsNilpotent.exp D.toLinearMap l :=
+  DFunLike.congr_fun (exp_apply D h) l
 
 end ExpNilpotent
 

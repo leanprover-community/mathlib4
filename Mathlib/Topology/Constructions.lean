@@ -439,6 +439,18 @@ theorem Continuous.restrictPreimage {f : X → Y} {s : Set Y} (h : Continuous f)
     Continuous (s.restrictPreimage f) :=
   h.restrict _
 
+lemma Topology.IsEmbedding.restrict {f : X → Y}
+    (hf : IsEmbedding f) {s : Set X} {t : Set Y} (H : s.MapsTo f t) :
+    IsEmbedding H.restrict :=
+  .of_comp (hf.continuous.restrict H) continuous_subtype_val (hf.comp .subtypeVal)
+
+lemma Topology.IsOpenEmbedding.restrict {f : X → Y}
+    (hf : IsOpenEmbedding f) {s : Set X} {t : Set Y} (H : s.MapsTo f t) (hs : IsOpen s) :
+    IsOpenEmbedding H.restrict :=
+  ⟨hf.isEmbedding.restrict H, (by
+    rw [MapsTo.range_restrict]
+    exact continuous_subtype_val.1 _ (hf.isOpenMap _ hs))⟩
+
 theorem Topology.IsInducing.codRestrict {e : X → Y} (he : IsInducing e) {s : Set Y}
     (hs : ∀ x, e x ∈ s) : IsInducing (codRestrict e s hs) :=
   he.of_comp (he.continuous.codRestrict hs) continuous_subtype_val

@@ -148,6 +148,15 @@ instance _root_.Module.Free.dfinsupp [∀ i : ι, Module.Free R (M i)] : Module.
 
 end DFinsupp
 
+lemma Module.Free.trans {R S M : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
+    [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower R S M] [Module.Free S M]
+    [Module.Free R S] : Module.Free R M :=
+  let e : (ChooseBasisIndex S M →₀ S) ≃ₗ[R] ChooseBasisIndex S M →₀ (ChooseBasisIndex R S →₀ R) :=
+    Finsupp.mapRange.linearEquiv (chooseBasis R S).repr
+  let e : M ≃ₗ[R] ChooseBasisIndex S M →₀ (ChooseBasisIndex R S →₀ R) :=
+    (chooseBasis S M).repr.restrictScalars R ≪≫ₗ e
+  .of_equiv e.symm
+
 /-! TODO: move this section to an earlier file. -/
 
 

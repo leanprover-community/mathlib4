@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Action.Defs
+import Mathlib.Algebra.Order.Floor.Semiring
 import Mathlib.Algebra.Order.Group.Units
 import Mathlib.Algebra.Order.Ring.Pow
 import Mathlib.Data.Int.LeastGreatest
 import Mathlib.Data.Rat.Floor
-import Mathlib.Data.NNRat.Defs
 
 /-!
 # Archimedean groups and fields.

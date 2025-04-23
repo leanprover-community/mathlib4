@@ -521,6 +521,8 @@ theorem norm_conj (z : K) : ‖conj z‖ = ‖z‖ := by simp only [← sqrt_nor
 
 @[simp, rclike_simps] lemma nnnorm_conj (z : K) : ‖conj z‖₊ = ‖z‖₊ := by simp [nnnorm]
 
+@[simp, rclike_simps] lemma enorm_conj (z : K) : ‖conj z‖ₑ = ‖z‖ₑ := by simp [enorm]
+
 instance (priority := 100) : CStarRing K where
   norm_mul_self_le x := le_of_eq <| ((norm_mul _ _).trans <| congr_arg (· * ‖x‖) (norm_conj _)).symm
 
@@ -885,6 +887,8 @@ lemma instPosMulReflectLE : PosMulReflectLE K where
   elim a b c h := by
     obtain ⟨a', ha1, ha2⟩ := pos_iff_exists_ofReal.mp a.2
     rw [← sub_nonneg]
+    #adaptation_note /-- 2025-03-29 need beta reduce for lean4#7717 -/
+    beta_reduce at h
     rw [← ha2, ← sub_nonneg, ← mul_sub, le_iff_lt_or_eq] at h
     rcases h with h | h
     · rw [ofReal_mul_pos_iff] at h
