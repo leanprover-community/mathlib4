@@ -223,7 +223,7 @@ def normNumPositivity (e : Q($α)) : MetaM (Strictness zα pα e) := catchNone d
     let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
     assumeInstancesCommute
     have p : Q(NormNum.IsNNRat $e $n $d) := p
-    if 0 < q.val then
+    if 0 < q then
       haveI' w : decide (0 < $n) =Q true := ⟨⟩
       pure (.positive q(pos_of_isNNRat $p $w))
     else -- should not be reachable, but just in case
