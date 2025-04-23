@@ -44,6 +44,11 @@ structure QuasiMeasurePreserving {m0 : MeasurableSpace α} (f : α → β)
 
 namespace QuasiMeasurePreserving
 
+/-- Theorem for fun_prop -/
+@[fun_prop]
+theorem quasiMeasurePreserving_measurable {μ' : Measure β} (f : α → β)
+    (hf : QuasiMeasurePreserving f μ μ') : Measurable f := hf.measurable
+
 @[fun_prop]
 protected theorem id {_m0 : MeasurableSpace α} (μ : Measure α) : QuasiMeasurePreserving id μ μ :=
   ⟨measurable_id, map_id.absolutelyContinuous⟩
@@ -205,6 +210,10 @@ end Pointwise
 end Measure
 
 open Measure
+
+theorem NullMeasurable.comp_quasiMeasurePreserving {ν : Measure β}
+    {f : α → β} {g : β → γ} (hg : NullMeasurable g ν) (hf : QuasiMeasurePreserving f μ ν) :
+    NullMeasurable (g ∘ f) μ := fun _s hs ↦ (hg hs).preimage hf
 
 theorem NullMeasurableSet.mono_ac (h : NullMeasurableSet s μ) (hle : ν ≪ μ) :
     NullMeasurableSet s ν :=
