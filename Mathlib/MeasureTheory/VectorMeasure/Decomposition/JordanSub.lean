@@ -171,7 +171,7 @@ theorem sub_toSignedMeasure_eq_toSignedMeasure_sub :
   have partition₂ := VectorMeasure.restrict_add_restrict_compl (ν - μ).toSignedMeasure hs.measurable
 
   rw [toSignedMeasure_restrict_eq_restrict_toSigned _ _ hs.measurable,
-      toSignedMeasure_restrict_eq_restrict_toSigned _ _ hs.measurable.compl] 
+      toSignedMeasure_restrict_eq_restrict_toSigned _ _ hs.measurable.compl]
       at partition₁ partition₂
 
   rw [h₁', h₂] at partition₁
