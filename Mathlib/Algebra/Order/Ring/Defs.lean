@@ -190,8 +190,8 @@ instance (priority := 100) IsStrictOrderedRing.toIsOrderedRing : IsOrderedRing R
   mul_le_mul_of_nonneg_left _ _ _ := mul_le_mul_of_nonneg_left
   mul_le_mul_of_nonneg_right _ _ _ := mul_le_mul_of_nonneg_right
 
--- see Note [lower instance priority]
-instance (priority := 100) AddMonoidWithOne.toCharZero {R}
+-- not an instance to avoid looping with `NeZero.charZero_one`
+theorem AddMonoidWithOne.toCharZero {R}
     [AddMonoidWithOne R] [PartialOrder R] [ZeroLEOneClass R]
     [NeZero (1 : R)] [AddLeftStrictMono R] : CharZero R where
   cast_injective :=
@@ -199,7 +199,7 @@ instance (priority := 100) AddMonoidWithOne.toCharZero {R}
 
 -- see Note [lower instance priority]
 instance (priority := 100) IsStrictOrderedRing.toCharZero :
-    CharZero R := inferInstance
+    CharZero R := AddMonoidWithOne.toCharZero
 
 -- see Note [lower instance priority]
 instance (priority := 100) IsStrictOrderedRing.toNoMaxOrder : NoMaxOrder R :=
