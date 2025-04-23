@@ -3,7 +3,8 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn, Mario Carneiro, Martin Dvorak
 -/
-import Mathlib.Data.List.Induction
+import Mathlib.Tactic.GCongr.Core
+import Mathlib.Util.AssertExists
 
 /-!
 # Join of a list of lists
@@ -112,7 +113,5 @@ theorem append_flatten_map_append (L : List (List α)) (x : List α) :
   | nil => rw [map_nil, flatten, append_nil, map_nil, flatten, nil_append]
   | cons _ _ ih =>
     rw [map_cons, flatten, map_cons, flatten, append_assoc, ih, append_assoc, append_assoc]
-
-@[deprecated (since := "2024-10-15")] alias append_join_map_append := append_flatten_map_append
 
 end List

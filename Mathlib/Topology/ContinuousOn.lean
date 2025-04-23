@@ -717,9 +717,6 @@ theorem ContinuousWithinAt.mono_of_mem_nhdsWithin (h : ContinuousWithinAt f t x)
     ContinuousWithinAt f s x :=
   h.mono_left (nhdsWithin_le_of_mem hs)
 
-@[deprecated (since := "2024-10-18")]
-alias ContinuousWithinAt.mono_of_mem := ContinuousWithinAt.mono_of_mem_nhdsWithin
-
 /-- If two sets coincide around `x`, then being continuous within one or the other at `x` is
 equivalent. See also `continuousWithinAt_congr_set'` which requires that the sets coincide
 locally away from a point `y`, in a T1 space. -/
@@ -727,15 +724,9 @@ theorem continuousWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
     ContinuousWithinAt f s x ↔ ContinuousWithinAt f t x := by
   simp only [ContinuousWithinAt, nhdsWithin_eq_iff_eventuallyEq.mpr h]
 
-@[deprecated (since := "2024-10-18")]
-alias continuousWithinAt_congr_nhds := continuousWithinAt_congr_set
-
 theorem ContinuousWithinAt.congr_set (hf : ContinuousWithinAt f s x) (h : s =ᶠ[𝓝 x] t) :
     ContinuousWithinAt f t x :=
   (continuousWithinAt_congr_set h).1 hf
-
-@[deprecated (since := "2024-10-18")]
-alias ContinuousWithinAt.congr_nhds := ContinuousWithinAt.congr_set
 
 theorem continuousWithinAt_inter' (h : t ∈ 𝓝[s] x) :
     ContinuousWithinAt f (s ∩ t) x ↔ ContinuousWithinAt f s x := by
@@ -1326,9 +1317,6 @@ theorem Topology.IsOpenEmbedding.map_nhdsWithin_preimage_eq {f : α → β} (hf 
   rw [hf.isEmbedding.map_nhdsWithin_eq, image_preimage_eq_inter_range]
   apply nhdsWithin_eq_nhdsWithin (mem_range_self _) hf.isOpen_range
   rw [inter_assoc, inter_self]
-
-@[deprecated (since := "2024-10-18")]
-alias OpenEmbedding.map_nhdsWithin_preimage_eq := IsOpenEmbedding.map_nhdsWithin_preimage_eq
 
 theorem Topology.IsQuotientMap.continuousOn_isOpen_iff {f : α → β} {g : β → γ} (h : IsQuotientMap f)
     {s : Set β} (hs : IsOpen s) : ContinuousOn g s ↔ ContinuousOn (g ∘ f) (f ⁻¹' s) := by

@@ -825,8 +825,6 @@ lemma pow_subset_pow_mul_of_sq_subset_mul (hst : s ^ 2 ⊆ t * s) (hn : n ≠ 0)
 @[to_additive (attr := simp) nsmul_empty]
 lemma empty_pow (hn : n ≠ 0) : (∅ : Finset α) ^ n = ∅ := match n with | n + 1 => by simp [pow_succ]
 
-@[deprecated (since := "2024-10-21")] alias empty_nsmul := nsmul_empty
-
 @[to_additive]
 lemma Nonempty.pow (hs : s.Nonempty) : ∀ {n}, (s ^ n).Nonempty
   | 0 => by simp
