@@ -263,8 +263,8 @@ variable {s t : 𝕜 → 𝕜} {f g : 𝕜 → E} {U : Set 𝕜}
 If `f` is meromorphic on `U`, if `g` agrees with `f` on a codiscrete subset of `U` and outside of
 `U`, then `g` is also meromorphic on `U`.
 -/
-theorem congr_codiscreteWithin_of_eqOn_compl (hf : MeromorphicOn f U) (h₁ : f =ᶠ[codiscreteWithin U] g)
-    (h₂ : Set.EqOn f g Uᶜ) :
+theorem congr_codiscreteWithin_of_eqOn_compl (hf : MeromorphicOn f U)
+    (h₁ : f =ᶠ[codiscreteWithin U] g) (h₂ : Set.EqOn f g Uᶜ) :
     MeromorphicOn g U := by
   intro x hx
   apply (hf x hx).congr

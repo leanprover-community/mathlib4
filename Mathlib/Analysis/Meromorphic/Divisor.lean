@@ -82,7 +82,7 @@ theorem divisor_congr_codiscreteWithin_of_eqOn_compl {f₁ f₂ : 𝕜 → E} (h
     (h₁ : f₁ =ᶠ[Filter.codiscreteWithin U] f₂) (h₂ : Set.EqOn f₁ f₂ Uᶜ) :
     divisor f₁ U = divisor f₂ U := by
   ext x
-  by_cases hx : x ∈ U <;> simp [hf₁, hf₁.congr_codiscreteWithin h₁ h₂, hx]
+  by_cases hx : x ∈ U <;> simp [hf₁, hf₁.congr_codiscreteWithin_of_eqOn_compl h₁ h₂, hx]
   · congr 1
     apply (hf₁ x hx).order_congr
     simp_rw [EventuallyEq, Filter.Eventually, mem_codiscreteWithin,
@@ -99,7 +99,7 @@ theorem divisor_congr_codiscreteWithin {f₁ f₂ : 𝕜 → E} (hf₁ : Meromor
     (h₁ : f₁ =ᶠ[Filter.codiscreteWithin U] f₂) (h₂ : IsOpen U) :
     divisor f₁ U = divisor f₂ U := by
   ext x
-  by_cases hx : x ∈ U <;> simp [hf₁, hf₁.congr_codiscreteWithin_open h₁ h₂, hx]
+  by_cases hx : x ∈ U <;> simp [hf₁, hf₁.congr_codiscreteWithin h₁ h₂, hx]
   · congr 1
     apply (hf₁ x hx).order_congr
     simp_rw [EventuallyEq, Filter.Eventually, mem_codiscreteWithin,
