@@ -366,22 +366,23 @@ theorem CliqueFree.mono (h : m ≤ n) : G.CliqueFree m → G.CliqueFree n := by
 theorem CliqueFree.anti (h : G ≤ H) : H.CliqueFree n → G.CliqueFree n :=
   forall_imp fun _ ↦ mt <| IsNClique.mono h
 
--- If a graph is cliquefree, any graph that embeds into it is also cliquefree. -/
+/--
+If `G` is cliquefree and `f : H →g G` then `H` is also cliquefree.
+-/
 theorem CliqueFree.comap' {H : SimpleGraph β} (f : H →g G) : G.CliqueFree n → H.CliqueFree n := by
   intro hc
   contrapose! hc
   rw [not_cliqueFree_iff]
-  use ⟨f.comp (topEmbeddingOfNotCliqueFree hc).toHom, Hom.injective_of_top_hom _⟩
+  use ⟨f.comp (topEmbeddingOfNotCliqueFree hc), Hom.injective_of_top_hom _⟩
   intro _ _
   constructor <;> intro h
   · rintro rfl; exact G.loopless _ h
-  · simp only [Function.Embedding.coeFn_mk]
+  · rw [Function.Embedding.coeFn_mk]
     exact Hom.map_adj _ h
 
 /-- If a graph is cliquefree, any graph that embeds into it is also cliquefree. -/
 theorem CliqueFree.comap {H : SimpleGraph β} (f : H ↪g G) : G.CliqueFree n → H.CliqueFree n :=
   fun hc ↦ hc.comap' f.toHom
-
 
 @[simp] theorem cliqueFree_map_iff {f : α ↪ β} [Nonempty α] :
     (G.map f).CliqueFree n ↔ G.CliqueFree n := by
