@@ -142,11 +142,11 @@ variable (Φ)
 
 instance nonempty (j : J) : Nonempty (Φ.Iteration j) := by
   induction j using SuccOrder.limitRecOn with
-  | hm i hi =>
+  | isMin i hi =>
       obtain rfl : i = ⊥ := by simpa using hi
       exact ⟨mkOfBot Φ J⟩
-  | hs i hi hi' => exact ⟨mkOfSucc hi hi'.some⟩
-  | hl i hi hi' => exact ⟨mkOfLimit hi (fun a ha ↦ (hi' a ha).some)⟩
+  | succ i hi hi' => exact ⟨mkOfSucc hi hi'.some⟩
+  | isSuccLimit i hi hi' => exact ⟨mkOfLimit hi (fun a ha ↦ (hi' a ha).some)⟩
 
 end Iteration
 

@@ -134,9 +134,9 @@ theorem integrableOn_congr_fun (hst : EqOn f g s) (hs : MeasurableSet s) :
 
 theorem Integrable.integrableOn (h : Integrable f μ) : IntegrableOn f s μ := h.restrict
 
-theorem IntegrableOn.restrict (h : IntegrableOn f s μ) (hs : MeasurableSet s) :
-    IntegrableOn f s (μ.restrict t) := by
-  rw [IntegrableOn, Measure.restrict_restrict hs]; exact h.mono_set inter_subset_left
+theorem IntegrableOn.restrict (h : IntegrableOn f s μ) : IntegrableOn f s (μ.restrict t) := by
+  dsimp only [IntegrableOn] at h ⊢
+  exact h.mono_measure <| Measure.restrict_mono_measure Measure.restrict_le_self _
 
 theorem IntegrableOn.inter_of_restrict (h : IntegrableOn f s (μ.restrict t)) :
     IntegrableOn f (s ∩ t) μ := by
@@ -221,6 +221,15 @@ theorem _root_.MeasurableEmbedding.integrableOn_iff_comap [MeasurableSpace β] {
     IntegrableOn f s μ ↔ IntegrableOn (f ∘ e) (e ⁻¹' s) (μ.comap e) := by
   simp_rw [← he.integrableOn_map_iff, he.map_comap, IntegrableOn,
     Measure.restrict_restrict_of_subset hs]
+
+theorem _root_.MeasurableEmbedding.integrableOn_range_iff_comap [MeasurableSpace β] {e : α → β}
+    (he : MeasurableEmbedding e) {f : β → E} {μ : Measure β} :
+    IntegrableOn f (range e) μ ↔ Integrable (f ∘ e) (μ.comap e) := by
+  rw [he.integrableOn_iff_comap .rfl, preimage_range, integrableOn_univ]
+
+theorem integrableOn_iff_comap_subtypeVal (hs : MeasurableSet s) :
+    IntegrableOn f s μ ↔ Integrable (f ∘ (↑) : s → E) (μ.comap (↑)) := by
+  rw [← (MeasurableEmbedding.subtype_coe hs).integrableOn_range_iff_comap, Subtype.range_val]
 
 theorem integrableOn_map_equiv [MeasurableSpace β] (e : α ≃ᵐ β) {f : β → E} {μ : Measure α}
     {s : Set β} : IntegrableOn f s (μ.map e) ↔ IntegrableOn (f ∘ e) (e ⁻¹' s) μ := by

@@ -165,7 +165,9 @@ The transport process generally works by taking all the names of
 identifiers appearing in the name, type, and body of a declaration and
 creating a new declaration by mapping those names to additive versions
 using a simple string-based dictionary and also using all declarations
-that have previously been labeled with `to_additive`.
+that have previously been labeled with `to_additive`. The dictionary is `ToAdditive.nameDict`
+and can be found in the `Tactic.ToAdditive.Frontend` file. If you introduce a new name which
+should be translated by `to_additive` you should add the translation to this dictionary.
 
 In the `mul_comm'` example above, `to_additive` maps:
 * `mul_comm'` to `add_comm'`,
@@ -955,45 +957,48 @@ capitalization of the input. Input and first element should therefore be lower-c
 2nd element should be capitalized properly.
 -/
 def nameDict : String → List String
-  | "one"         => ["zero"]
-  | "mul"         => ["add"]
-  | "smul"        => ["vadd"]
-  | "inv"         => ["neg"]
-  | "div"         => ["sub"]
-  | "prod"        => ["sum"]
-  | "hmul"        => ["hadd"]
-  | "hsmul"       => ["hvadd"]
-  | "hdiv"        => ["hsub"]
-  | "hpow"        => ["hsmul"]
-  | "finprod"     => ["finsum"]
-  | "tprod"       => ["tsum"]
-  | "pow"         => ["nsmul"]
-  | "npow"        => ["nsmul"]
-  | "zpow"        => ["zsmul"]
-  | "mabs"        => ["abs"]
-  | "monoid"      => ["add", "Monoid"]
-  | "submonoid"   => ["add", "Submonoid"]
-  | "group"       => ["add", "Group"]
-  | "subgroup"    => ["add", "Subgroup"]
-  | "semigroup"   => ["add", "Semigroup"]
-  | "magma"       => ["add", "Magma"]
-  | "haar"        => ["add", "Haar"]
-  | "prehaar"     => ["add", "Prehaar"]
-  | "unit"        => ["add", "Unit"]
-  | "units"       => ["add", "Units"]
-  | "cyclic"      => ["add", "Cyclic"]
-  | "rootable"    => ["divisible"]
-  | "semigrp"     => ["add", "Semigrp"]
-  | "grp"         => ["add", "Grp"]
-  | "commute"     => ["add", "Commute"]
-  | "semiconj"    => ["add", "Semiconj"]
-  | "zpowers"     => ["zmultiples"]
-  | "powers"      => ["multiples"]
-  | "multipliable"=> ["summable"]
-  | "gpfree"      => ["apfree"]
-  | "quantale"    => ["add", "Quantale"]
-  | "square"      => ["even"]
-  | x             => [x]
+  | "one"           => ["zero"]
+  | "mul"           => ["add"]
+  | "smul"          => ["vadd"]
+  | "inv"           => ["neg"]
+  | "div"           => ["sub"]
+  | "prod"          => ["sum"]
+  | "hmul"          => ["hadd"]
+  | "hsmul"         => ["hvadd"]
+  | "hdiv"          => ["hsub"]
+  | "hpow"          => ["hsmul"]
+  | "finprod"       => ["finsum"]
+  | "tprod"         => ["tsum"]
+  | "pow"           => ["nsmul"]
+  | "npow"          => ["nsmul"]
+  | "zpow"          => ["zsmul"]
+  | "mabs"          => ["abs"]
+  | "monoid"        => ["add", "Monoid"]
+  | "submonoid"     => ["add", "Submonoid"]
+  | "group"         => ["add", "Group"]
+  | "subgroup"      => ["add", "Subgroup"]
+  | "semigroup"     => ["add", "Semigroup"]
+  | "magma"         => ["add", "Magma"]
+  | "haar"          => ["add", "Haar"]
+  | "prehaar"       => ["add", "Prehaar"]
+  | "unit"          => ["add", "Unit"]
+  | "units"         => ["add", "Units"]
+  | "cyclic"        => ["add", "Cyclic"]
+  | "rootable"      => ["divisible"]
+  | "semigrp"       => ["add", "Semigrp"]
+  | "grp"           => ["add", "Grp"]
+  | "commute"       => ["add", "Commute"]
+  | "semiconj"      => ["add", "Semiconj"]
+  | "zpowers"       => ["zmultiples"]
+  | "powers"        => ["multiples"]
+  | "multipliable"  => ["summable"]
+  | "gpfree"        => ["apfree"]
+  | "quantale"      => ["add", "Quantale"]
+  | "square"        => ["even"]
+  | "mconv"         => ["conv"]
+  | "irreducible"   => ["add", "Irreducible"]
+  | "mlconvolution" => ["lconvolution"]
+  | x               => [x]
 
 /--
 Turn each element to lower-case, apply the `nameDict` and
@@ -1073,6 +1078,8 @@ def fixAbbreviation : List String → List String
   | "Is"::"Of"::"Fin"::"Order"::s     => "IsOfFinAddOrder" :: fixAbbreviation s
   | "is" :: "Central" :: "Scalar" :: s  => "isCentralVAdd" :: fixAbbreviation s
   | "Is" :: "Central" :: "Scalar" :: s  => "IsCentralVAdd" :: fixAbbreviation s
+  | "is" :: "Scalar" :: "Tower" :: s  => "vaddAssocClass" :: fixAbbreviation s
+  | "Is" :: "Scalar" :: "Tower" :: s  => "VAddAssocClass" :: fixAbbreviation s
   | "function" :: "_" :: "add" :: "Semiconj" :: s
                                       => "function" :: "_" :: "semiconj" :: fixAbbreviation s
   | "function" :: "_" :: "add" :: "Commute" :: s
