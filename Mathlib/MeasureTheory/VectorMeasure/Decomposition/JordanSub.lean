@@ -125,11 +125,11 @@ theorem toSignedMeasure_le_iff : μ.toSignedMeasure ≤ ν.toSignedMeasure ↔ �
     intro A hA
     specialize h A hA
     simp only [toSignedMeasure_apply, hA, ↓reduceIte, ne_eq, measure_ne_top,
-      not_false_eq_true, ENNReal.toReal_le_toReal] at h
+      not_false_eq_true, ENNReal.toReal_le_toReal, Measure.real] at h
     exact h
   · intro h A hA
     simp only [toSignedMeasure_apply, hA, ↓reduceIte, ne_eq, measure_ne_top, not_false_eq_true,
-      ENNReal.toReal_le_toReal]
+      ENNReal.toReal_le_toReal, Measure.real]
     exact h A
 
 @[simp]
