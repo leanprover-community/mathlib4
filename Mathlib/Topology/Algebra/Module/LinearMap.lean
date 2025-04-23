@@ -1023,13 +1023,11 @@ def restrictScalars (f : M₁ →L[A] M₂) : M₁ →L[R] M₂ :=
   ⟨(f : M₁ →ₗ[A] M₂).restrictScalars R, f.continuous⟩
 
 @[simp]
-theorem toLinearMap_restrictScalars (f : M₁ →L[A] M₂) :
+theorem coe_restrictScalars (f : M₁ →L[A] M₂) :
     (f.restrictScalars R : M₁ →ₗ[R] M₂) = (f : M₁ →ₗ[A] M₂).restrictScalars R := rfl
 
 @[simp]
-theorem coe_restrictScalars (f : M₁ →L[A] M₂) : ⇑(f.restrictScalars R) = f := rfl
-
-@[deprecated (since := "2025-04-21")] alias coe_restrictScalars' := coe_restrictScalars
+theorem coe_restrictScalars' (f : M₁ →L[A] M₂) : ⇑(f.restrictScalars R) = f := rfl
 
 @[simp]
 theorem toContinuousAddMonoidHom_restrictScalars (f : M₁ →L[A] M₂) :
