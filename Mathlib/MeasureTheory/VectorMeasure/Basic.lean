@@ -621,19 +621,18 @@ theorem restrict_add (v w : VectorMeasure α M) (i : Set α) :
     simp [restrict_apply _ hi hj]
   · simp [restrict_not_measurable _ hi]
 
-variable {M : Type*} [AddCommGroup M] [TopologicalSpace M] [IsTopologicalAddGroup M]
 
-@[simp]
-theorem restrict_neg (v : VectorMeasure α M) (i : Set α) :
+theorem restrict_neg {M : Type*} [AddCommGroup M] [TopologicalSpace M] [IsTopologicalAddGroup M]
+  (v : VectorMeasure α M) (i : Set α) :
     (-v).restrict i = -(v.restrict i) := by
   by_cases hi : MeasurableSet i
   · ext j hj; simp [restrict_apply _ hi hj]
   · simp [restrict_not_measurable _ hi]
 
-@[simp]
-theorem restrict_sub (v w : VectorMeasure α M) (i : Set α) :
+theorem restrict_sub {M : Type*} [AddCommGroup M] [TopologicalSpace M] [IsTopologicalAddGroup M]
+  (v w : VectorMeasure α M) (i : Set α) :
     (v - w).restrict i = v.restrict i - w.restrict i := by
-  simp [sub_eq_add_neg, restrict_add]
+  simp [sub_eq_add_neg, restrict_add, restrict_neg]
 
 
 /-- `VectorMeasure.restrict` as an additive monoid homomorphism. -/
