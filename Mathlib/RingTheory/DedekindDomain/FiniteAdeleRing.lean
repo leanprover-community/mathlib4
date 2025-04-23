@@ -65,15 +65,11 @@ end IsDedekindDomain
 
 noncomputable section
 
-open Function Set IsDedekindDomain IsDedekindDomain.HeightOneSpectrum
+open Function Set IsDedekindDomain.HeightOneSpectrum
 
-variable (R : Type*) [CommRing R] [IsDedekindDomain R] {K : Type*}
-    [Field K] [Algebra R K] [IsFractionRing R K]
+namespace IsDedekindDomain
 
-namespace DedekindDomain
-
-variable (R K : Type*) [CommRing R] [IsDedekindDomain R] [Field K] [Algebra R K]
-  [IsFractionRing R K] (v : HeightOneSpectrum R)
+variable (K)
 
 open scoped RestrictedProduct
 
@@ -128,12 +124,7 @@ instance : DFunLike (FiniteAdeleRing R K) (HeightOneSpectrum R) (adicCompletion 
   coe a := a.1
   coe_injective' _a _b h := ext K (congrFun h)
 
-open scoped algebraMap -- coercion from R to `FiniteAdeleRing R K`
-
 section Topology
-
-open nonZeroDivisors
-open scoped Multiplicative
 
 instance : IsTopologicalRing (FiniteAdeleRing R K) :=
     haveI : Fact (∀ (v : HeightOneSpectrum R),
@@ -145,4 +136,4 @@ end Topology
 
 end FiniteAdeleRing
 
-end DedekindDomain
+end IsDedekindDomain
