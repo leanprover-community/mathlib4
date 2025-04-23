@@ -70,7 +70,6 @@ instance : Category (F.DescentData X) where
   comp {D₁ D₂ D₃} φ ψ :=
     { hom i := φ.hom i ≫ ψ.hom i
       comm Y i₁ i₂ f₁ f₂ := by
-        dsimp
         simp only [Functor.map_comp, assoc]
         rw [ψ.comm, φ.comm_assoc] }
 
@@ -82,11 +81,9 @@ def toDescentDataOfIsTerminal (X₀ : C) (hX₀ : IsTerminal X₀) :
     { obj i := (F.map (hX₀.from (X i)).op.toLoc).obj A
       iso Y i₁ i₂ f₁ f₂ :=
         (F.mapComp' (hX₀.from (X i₁)).op.toLoc f₁.op.toLoc (hX₀.from Y).op.toLoc
-            --(by rw [← Quiver.Hom.comp_toLoc, ← op_comp, IsTerminal.comp_from])
-            sorry).symm.app A ≪≫
+            (by rw [← Quiver.Hom.comp_toLoc, ← op_comp, IsTerminal.comp_from])).symm.app A ≪≫
           (F.mapComp' (hX₀.from (X i₂)).op.toLoc f₂.op.toLoc (hX₀.from Y).op.toLoc
-            --(by rw [← Quiver.Hom.comp_toLoc, ← op_comp, IsTerminal.comp_from])
-            sorry).app A
+            (by rw [← Quiver.Hom.comp_toLoc, ← op_comp, IsTerminal.comp_from])).app A
       iso_comp Y' Y g i₁ i₂ f₁ f₂ := by
         sorry }
   map {A B} f :=
