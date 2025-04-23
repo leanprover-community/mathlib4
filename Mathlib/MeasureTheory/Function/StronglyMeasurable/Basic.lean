@@ -341,20 +341,18 @@ protected theorem mono {m m' : MeasurableSpace α} [TopologicalSpace β]
 protected theorem fst {m : MeasurableSpace α} [TopologicalSpace β] [TopologicalSpace γ]
     {f : α → β × γ} (hf : StronglyMeasurable f) : StronglyMeasurable fun x ↦ (f x).1 := by
   refine ⟨fun n ↦ (hf.approx n).map Prod.fst, fun x ↦ ?_⟩
-  have happrox := hf.tendsto_approx x
-  have : f x = ((f x).1, (f x).2) := rfl
-  rw[this, nhds_prod_eq] at happrox
-  have := Tendsto.fst happrox
-  simp [this]
+  simp only [comp_apply]
+  apply Tendsto.fst
+  rw [← nhds_prod_eq]
+  exact hf.tendsto_approx x
 
 protected theorem snd {m : MeasurableSpace α} [TopologicalSpace β] [TopologicalSpace γ]
     {f : α → β × γ} (hf : StronglyMeasurable f) : StronglyMeasurable fun x ↦ (f x).2 := by
   refine ⟨fun n ↦ (hf.approx n).map Prod.snd, fun x ↦ ?_⟩
-  have happrox := hf.tendsto_approx x
-  have : f x = ((f x).1, (f x).2) := rfl
-  rw[this, nhds_prod_eq] at happrox
-  have := Tendsto.snd happrox
-  simp [this]
+  simp only [comp_apply]
+  apply Tendsto.snd
+  rw [← nhds_prod_eq]
+  exact hf.tendsto_approx x
 
 --protected theorem snd
 
@@ -362,7 +360,6 @@ protected theorem prodMk {m : MeasurableSpace α} [TopologicalSpace β] [Topolog
     {f : α → β} {g : α → γ} (hf : StronglyMeasurable f) (hg : StronglyMeasurable g) :
     StronglyMeasurable fun x => (f x, g x) := by
   refine ⟨fun n => SimpleFunc.pair (hf.approx n) (hg.approx n), fun x => ?_⟩
-  have := (hf.tendsto_approx x)
   rw [nhds_prod_eq]
   exact Tendsto.prodMk (hf.tendsto_approx x) (hg.tendsto_approx x)
 
