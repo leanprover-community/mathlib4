@@ -542,22 +542,6 @@ lemma _root_.RootSystem.reflection_perm_eq_reflection_perm_iff (P : RootSystem �
 
 @[simp] lemma toDualRight_comp_root : P.toDualRight ∘ P.coroot = P.coroot' := rfl
 
-@[simp] lemma rootSpan_map_toDualLeft :
-    P.rootSpan.map P.toDualLeft = span R (range P.root') := by
-  rw [rootSpan, Submodule.map_span, ← image_univ, ← image_comp, image_univ, toDualLeft_comp_root]
-
-@[simp] lemma corootSpan_map_toDualRight :
-    P.corootSpan.map P.toDualRight = span R (range P.coroot') :=
-  P.flip.rootSpan_map_toDualLeft
-
-@[simp] lemma span_root'_eq_top (P : RootSystem ι R M N) :
-    span R (range P.root') = ⊤ := by
-  simp [← rootSpan_map_toDualLeft]
-
-@[simp] lemma span_coroot'_eq_top (P : RootSystem ι R M N) :
-    span R (range P.coroot') = ⊤ :=
-  span_root'_eq_top P.flip
-
 /-- The Coxeter Weight of a pair gives the weight of an edge in a Coxeter diagram, when it is
 finite.  It is `4 cos² θ`, where `θ` describes the dihedral angle between hyperplanes. -/
 def coxeterWeight : R := pairing P i j * pairing P j i

@@ -207,29 +207,53 @@ lemma corootSpan_mem_invtSubmodule_coreflection (i : ι) :
     P.corootSpan R ∈ Module.End.invtSubmodule (P.coreflection i) :=
   P.flip.rootSpan_mem_invtSubmodule_reflection i
 
-lemma coe_rootSpan_dualAnnihilator_map :
-    (P.rootSpan R).dualAnnihilator.map P.toDualRight.symm = {x | ∀ i, P.root' i x = 0} := by
+lemma rootSpan_dualAnnihilator_map_eq_iInf_ker_root' :
+    (P.rootSpan R).dualAnnihilator.map P.toDualRight.symm = ⨅ i, LinearMap.ker (P.root' i) := by
+  suffices (P.rootSpan R).dualAnnihilator.map P.toDualRight.symm = {x | ∀ i, P.root' i x = 0} from
+    SetLike.coe_injective <| by ext; simp [this]
   ext x
   rw [rootSpan, Submodule.map_coe, Submodule.coe_dualAnnihilator_span]
   change x ∈ P.toDualRight.toEquiv.symm '' _ ↔ _
   rw [← Equiv.setOf_apply_symm_eq_image_setOf, Equiv.symm_symm]
   simp [Set.range_subset_iff]
 
-lemma coe_corootSpan_dualAnnihilator_map :
-    (P.corootSpan R).dualAnnihilator.map P.toDualLeft.symm = {x | ∀ i, P.coroot' i x = 0} :=
-  P.flip.coe_rootSpan_dualAnnihilator_map
+lemma corootSpan_dualAnnihilator_map_eq_iInf_ker_coroot' :
+    (P.corootSpan R).dualAnnihilator.map P.toDualLeft.symm = ⨅ i, LinearMap.ker (P.coroot' i) :=
+  P.flip.rootSpan_dualAnnihilator_map_eq_iInf_ker_root'
 
 lemma rootSpan_dualAnnihilator_map_eq :
     (P.rootSpan R).dualAnnihilator.map P.toDualRight.symm =
-      (span R (range P.root')).dualCoannihilator := by
-  apply SetLike.coe_injective
-  rw [Submodule.coe_dualCoannihilator_span, coe_rootSpan_dualAnnihilator_map]
-  simp
+      (span R (range P.root')).dualCoannihilator :=
+  SetLike.coe_injective <| by ext; simp [P.rootSpan_dualAnnihilator_map_eq_iInf_ker_root']
 
 lemma corootSpan_dualAnnihilator_map_eq :
     (P.corootSpan R).dualAnnihilator.map P.toDualLeft.symm =
       (span R (range P.coroot')).dualCoannihilator :=
   P.flip.rootSpan_dualAnnihilator_map_eq
+
+lemma iInf_ker_root'_eq :
+    ⨅ i, LinearMap.ker (P.root' i) = (span R (range P.root')).dualCoannihilator := by
+  rw [← rootSpan_dualAnnihilator_map_eq, rootSpan_dualAnnihilator_map_eq_iInf_ker_root']
+
+lemma iInf_ker_coroot'_eq :
+    ⨅ i, LinearMap.ker (P.coroot' i) = (span R (range P.coroot')).dualCoannihilator :=
+  P.flip.iInf_ker_root'_eq
+
+@[simp] lemma rootSpan_map_toDualLeft :
+    (P.rootSpan R).map P.toDualLeft = span R (range P.root') := by
+  rw [rootSpan, Submodule.map_span, ← image_univ, ← image_comp, image_univ, toDualLeft_comp_root]
+
+@[simp] lemma corootSpan_map_toDualRight :
+    (P.corootSpan R).map P.toDualRight = span R (range P.coroot') :=
+  P.flip.rootSpan_map_toDualLeft
+
+@[simp] lemma span_root'_eq_top (P : RootSystem ι R M N) :
+    span R (range P.root') = ⊤ := by
+  simp [← rootSpan_map_toDualLeft]
+
+@[simp] lemma span_coroot'_eq_top (P : RootSystem ι R M N) :
+    span R (range P.coroot') = ⊤ :=
+  span_root'_eq_top P.flip
 
 /-- A variant of `RootPairing.coxeterWeight` for root pairings which are valued in a smaller set of
 coefficients.
