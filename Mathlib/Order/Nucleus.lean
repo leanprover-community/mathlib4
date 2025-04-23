@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chriara Cimino, Christian Krause
 -/
 import Mathlib.Order.Closure
-import Mathlib.Order.Hom.Bounded
-import Mathlib.Order.Hom.Lattice
+import Mathlib.Order.Hom.CompleteLattice
 
 /-!
 # Nucleus
@@ -21,7 +20,7 @@ https://ncatlab.org/nlab/show/sublocale
 https://ncatlab.org/nlab/show/nucleus
 -/
 
-open Order InfHom
+open Order InfHom Set
 
 variable {X : Type*}
 
@@ -195,6 +194,40 @@ instance : HeytingAlgebra (Nucleus X) where
 instance : Order.Frame (Nucleus X) where
    __ := Nucleus.instHeytingAlgebra
    __ := Nucleus.instCompleteLattice
+
+lemma mem_range : x ∈ range n ↔ n x = x where
+  mp := by rintro ⟨x, rfl⟩; exact idempotent
+  mpr h := ⟨x, h⟩
+
+/-- See `Nucleus.giRestrict` for the public-facing version. -/
+private def giAux (n : Nucleus X) : GaloisInsertion (rangeFactorization n) Subtype.val where
+  choice x hx := ⟨x, mem_range.2 <| hx.antisymm n.le_apply⟩
+  gc x y := ClosureOperator.IsClosed.closure_le_iff (c := n.toClosureOperator) <| mem_range.1 y.2
+  le_l_u x := le_apply
+  choice_eq x hx := by ext; exact le_apply.antisymm hx
+
+instance : CompleteLattice (range n) := n.giAux.liftCompleteLattice
+
+instance range.instFrameMinimalAxioms : Frame.MinimalAxioms (range n) where
+  inf_sSup_le_iSup_inf a s := by
+    simp_rw [← Subtype.coe_le_coe, iSup_subtype', iSup, sSup, n.giAux.gc.u_inf]
+    rw [rangeFactorization_coe, ← mem_range.1 a.prop, ← map_inf]
+    apply n.monotone
+    simp_rw [inf_sSup_eq, sSup_image, iSup_range, iSup_image, iSup_subtype', n.giAux.gc.u_inf,
+      le_rfl]
+
+instance : Frame (range n) := .ofMinimalAxioms range.instFrameMinimalAxioms
+
+/-- Restrict a nucleus to its range. -/
+@[simps] def restrict (n : Nucleus X) : FrameHom X (range n) where
+  toFun := rangeFactorization n
+  map_inf' a b := by ext; exact map_inf
+  map_top' := by ext; exact map_top n
+  map_sSup' s := by rw [n.giAux.gc.l_sSup, sSup_image]
+
+/-- The restriction of a nucleus to its range forms a Galois insertion with the forgetful map from
+the range to the original frame. -/
+def giRestrict (n : Nucleus X) : GaloisInsertion n.restrict Subtype.val := n.giAux
 
 end Frame
 end Nucleus
