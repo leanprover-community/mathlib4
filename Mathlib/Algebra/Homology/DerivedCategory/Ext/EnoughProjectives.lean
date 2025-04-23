@@ -17,7 +17,7 @@ However, the main lemma `hasExt_of_enoughProjectives` is not made an instance:
 for a given category `C`, there may be different reasonable choices for the universe `w`,
 and if we have two `HasExt.{w₁}` and `HasExt.{w₂}` instances, we would have
 to specify the universe explicitly almost everywhere, which would be an inconvenience.
-Then, we must be very selective regarding `HasExt` instances.
+So we must be very selective regarding `HasExt` instances.
 
 -/
 
@@ -86,7 +86,6 @@ open Limits
 
 variable {C : Type u} [Category.{v} C] [Abelian C]
 
-
 namespace Abelian.Ext
 
 open DerivedCategory
@@ -112,15 +111,12 @@ lemma hasExt_of_enoughProjectives [LocallySmall.{w} C] [EnoughProjectives C] :
     have := hasExt_of_hasDerivedCategory C
     rw [hasExt_iff_small_ext.{w}]
     intro X Y n
-    revert X Y
-    induction n with
+    induction n generalizing X Y with
     | zero =>
-      intro X Y
       rw [small_congr Ext.homEquiv₀]
       infer_instance
     | succ n hn =>
-      intro X₃ Y
-      let S := ShortComplex.mk _ _ (kernel.condition (Projective.π X₃))
+      let S := ShortComplex.mk _ _ (kernel.condition (Projective.π X))
       have hS : S.ShortExact :=
         { exact := ShortComplex.exact_of_f_is_kernel _ (kernelIsKernel S.g) }
       have : Function.Surjective (Ext.precomp hS.extClass Y (add_comm 1 n)) := fun x₃ ↦
