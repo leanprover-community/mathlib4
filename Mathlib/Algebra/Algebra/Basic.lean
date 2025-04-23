@@ -19,11 +19,13 @@ import Mathlib.Data.Int.CharZero
 This file could usefully be split further.
 -/
 
+universe u v w u₁ v₁
+
 open Function
 
 namespace Algebra
 
-variable {R : Type*} {A : Type*}
+variable {R : Type u} {A : Type w}
 
 section Semiring
 
@@ -32,7 +34,7 @@ variable [Semiring A] [Algebra R A]
 
 section PUnit
 
-instance _root_.PUnit.algebra : Algebra R PUnit where
+instance _root_.PUnit.algebra : Algebra R PUnit.{v + 1} where
   algebraMap :=
   { toFun _ := PUnit.unit
     map_one' := rfl
@@ -161,7 +163,7 @@ open scoped Algebra
 
 namespace Module
 
-variable (R : Type*) (S : Type*) (M : Type*)
+variable (R : Type u) (S : Type v) (M : Type w)
 variable [CommSemiring R] [Semiring S] [AddCommMonoid M] [Module R M] [Module S M]
 variable [SMulCommClass S R M] [SMul R S] [IsScalarTower R S M]
 
@@ -179,7 +181,7 @@ theorem algebraMap_end_apply (a : R) (m : M) : algebraMap R (End S M) a m = a �
   rfl
 
 @[simp]
-theorem ker_algebraMap_end (K : Type*) (V : Type*) [Semifield K] [AddCommMonoid V] [Module K V]
+theorem ker_algebraMap_end (K : Type u) (V : Type v) [Semifield K] [AddCommMonoid V] [Module K V]
     (a : K) (ha : a ≠ 0) : LinearMap.ker ((algebraMap K (End K V)) a) = ⊥ :=
   LinearMap.ker_smul _ _ ha
 
@@ -428,7 +430,7 @@ variable (R)
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to `CompatibleSMul`
 /-- `A`-linearly coerce an `R`-linear map from `M` to `A` to a function, given an algebra `A` over
 a commutative semiring `R` and `M` a module over `R`. -/
-def ltoFun (R : Type*) (M : Type*) (A : Type*) [CommSemiring R] [AddCommMonoid M] [Module R M]
+def ltoFun (R : Type u) (M : Type v) (A : Type w) [CommSemiring R] [AddCommMonoid M] [Module R M]
     [CommSemiring A] [Algebra R A] : (M →ₗ[R] A) →ₗ[A] M → A where
   toFun f := f.toFun
   map_add' _ _ := rfl
