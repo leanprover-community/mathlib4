@@ -624,8 +624,7 @@ def groupCohomology.projectiveResolution : ProjectiveResolution (Rep.trivial k G
   π := εToSingle₀ k G
 
 instance : EnoughProjectives (Rep k G) :=
-  Rep.equivalenceModuleMonoidAlgebra.enoughProjectives_iff.2
-    ModuleCat.moduleCat_enoughProjectives.{u}
+  Rep.equivalenceModuleMonoidAlgebra.enoughProjectives_iff.2 ModuleCat.enoughProjectives
 
 /-- Given a `k`-linear `G`-representation `V`, `Extⁿ(k, V)` (where `k` is a trivial `k`-linear
 `G`-representation) is isomorphic to the `n`th cohomology group of `Hom(P, V)`, where `P` is the

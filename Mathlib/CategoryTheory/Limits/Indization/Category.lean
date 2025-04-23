@@ -298,7 +298,7 @@ variable (C : Type u) [SmallCategory C] [HasFiniteColimits C]
 /-- For small finitely cocomplete categories `C : Type u`, the category of Ind-objects `Ind C` is
 equivalent to the category of left-exact functors `Cᵒᵖ ⥤ Type u` -/
 noncomputable def Ind.leftExactFunctorEquivalence : Ind C ≌ LeftExactFunctor Cᵒᵖ (Type u) :=
-  (Ind.equivalence _).trans <| Equivalence.ofObjectPropertyEq
+  (Ind.equivalence _).trans <| ObjectProperty.fullSubcategoryCongr
     (by ext; apply isIndObject_iff_preservesFiniteLimits)
 
 end Small

@@ -607,10 +607,6 @@ section Tower
 def lift {F : IntermediateField K L} (E : IntermediateField K F) : IntermediateField K L :=
   E.map (val F)
 
-instance {F : IntermediateField K L} :
-    CoeOut (IntermediateField K F) (IntermediateField K L) :=
-  ⟨lift⟩
-
 theorem lift_injective (F : IntermediateField K L) : Function.Injective F.lift :=
   map_injective F.val
 
