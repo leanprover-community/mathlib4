@@ -345,17 +345,6 @@ See also `mapMonoidHom`, `mapAddMonoidHom` and `mapRingHom` for variants.
 def map (x : Πʳ i, [R₁ i, A₁ i]_[𝓕₁]) : Πʳ j, [R₂ j, A₂ j]_[𝓕₂] := ⟨fun j ↦ φ j (x (f j)), by
   filter_upwards [hf.eventually x.2, hφ] using fun _ h1 h2 ↦ h2 h1⟩
 
-lemma map_id (x : Πʳ i, [R₁ i, A₁ i]_[𝓕₁]) : map R₁ R₁ id
-  (fun ⦃_⦄ a ↦ a : Tendsto id 𝓕₁ 𝓕₁) (fun _ t ↦ t)
-  (Eventually.of_forall fun _ ↦ (fun ⦃_⦄ a ↦ a)) x = x := rfl
-
-lemma map_comp {ι₃} (R₃ : ι₃ → Type*) {𝓕₃ : Filter ι₃} {A₃ : (i : ι₃) → Set (R₃ i)} (g : ι₃ → ι₂)
-    (hg : Tendsto g 𝓕₃ 𝓕₂) (ψ : ∀ k, R₂ (g k) → R₃ k) (hψ : ∀ᶠ k in 𝓕₃, A₂ (g k) ⊆ ψ k ⁻¹' A₃ k) :
-    map R₁ R₃ (f ∘ g) (hf.comp hg) (fun k t ↦ ψ k (φ (g k) t)) (by
-      filter_upwards [hψ, hg hφ] with k h23 h12 t ht1
-      exact h23 (h12 ht1)) =
-    (map R₂ R₃ g hg ψ hψ) ∘ (map R₁ R₂ f hf φ hφ) := rfl
-
 @[simp]
 lemma map_apply (x : Πʳ i, [R₁ i, A₁ i]_[𝓕₁]) (j : ι₂) :
     x.map R₁ R₂ f hf φ hφ j = φ j (x (f j)) :=
