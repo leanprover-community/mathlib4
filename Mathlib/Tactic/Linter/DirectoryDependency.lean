@@ -167,7 +167,7 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   -- This is used to test the linter.
   (`MathlibTest.DirectoryDependencyLinter, `Mathlib.Lean),
   -- Mathlib.Tactic has large transitive imports: just allow all of mathlib,
-  -- as we don't care about the details a lo
+  -- as we don't care about the details a lot.
   (`MathlibTest.Header, `Mathlib),
   (`MathlibTest.Header, `Aesop),
   (`MathlibTest.Header, `ImportGraph),
@@ -633,8 +633,8 @@ def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array MessageDa
           msg := msg ++ s!" is imported by {a},\n"
           for dep in rest do
             msg := msg ++ m!"which is imported by {dep},\n"
-          msg :=msg ++ m!"which is imported by this module."
-          -- XXX: is this true? "(Exceptions can be added to `overrideAllowedImportDirs`.)"
+          msg := msg ++ m!"which is imported by this module."
+          msg := msg ++ "(Exceptions can be added to `allowedImportDirs`.)"
         messages := messages.push msg
     return messages
 
