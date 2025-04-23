@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jingting Wang, Wanyi He, Nailin Guan
 -/
 import Mathlib.Algebra.Category.ModuleCat.Projective
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.HasEnoughProjectives
+import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
 import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 import Mathlib.CategoryTheory.EffectiveEpi.RegularEpi
 import Mathlib.Combinatorics.Quiver.ReflQuiver
