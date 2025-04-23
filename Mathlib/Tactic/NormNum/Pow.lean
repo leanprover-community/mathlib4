@@ -202,7 +202,7 @@ def evalPow : NormNumExt where eval {u α} e := do
       assumeInstancesCommute
       have ⟨nc, r1⟩ := evalNatPow na nb
       have ⟨dc, r2⟩ := evalNatPow da nb
-      let qc := ⟨mkRat nc.natLit! dc.natLit!, by rw [Rat.mkRat_eq]; sorry⟩
+      let qc := ⟨mkRat nc.natLit! dc.natLit!, by simp⟩
       return .isNNRat dα qc nc dc q(isNNRat_pow (f := $f) (.refl $f) $pa $pb $r1 $r2)
     | .isNegNNRat dα qa na da pa =>
       assumeInstancesCommute
@@ -236,13 +236,13 @@ theorem isNNRat_zpow_pos {α : Type*} [DivisionSemiring α] {a : α} {b : ℤ} {
     {num : ℕ} {den : ℕ}
     (pb : IsNat b nb) (pe' : IsNNRat (a^nb) num den) :
     IsNNRat (a^b) num den := by
-  rwa [pb.out, zpow_coe_nat]
+  rwa [pb.out, zpow_natCast]
 
 theorem isNNRat_zpow_neg {α : Type*} [DivisionSemiring α] {a : α} {b : ℤ} {nb : ℕ}
     {num : ℕ} {den : ℕ}
     (pb : IsInt b (Int.negOfNat nb)) (pe' : IsNNRat ((a^nb)⁻¹) num den) :
     IsNNRat (a^b) num den := by
-  rwa [pb.out, Int.cast_negOfNat, zpow_neg, zpow_coe_nat]
+  rwa [pb.out, Int.cast_negOfNat, zpow_neg, zpow_natCast]
 
 theorem isRat_zpow_pos {α : Type*} [DivisionRing α] {a : α} {b : ℤ} {nb : ℕ}
     {num : ℤ} {den : ℕ}
