@@ -837,18 +837,15 @@ noncomputable def toRealLinear (Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0) :
   map_smul' a f := by
     apply Or.elim3 (lt_trichotomy 0 a)
     · intro ha
-      simp only [RingHom.id_apply, smul_eq_mul]
-      rw [← (smul_neg a f), nnrealPart_smul_pos f a ha, nnrealPart_smul_pos (-f) a ha]
-      simp only [map_smul, smul_eq_mul, NNReal.coe_mul, Real.coe_toNNReal']
-      rw [sup_of_le_left (le_of_lt ha), mul_sub]
+      rw [RingHom.id_apply, smul_eq_mul, ← (smul_neg a f), nnrealPart_smul_pos f a ha, 
+        nnrealPart_smul_pos (-f) a ha]
+      simp [sup_of_le_left (le_of_lt ha), mul_sub]
     · intro ha
-      rw [← ha]
-      simp
+      simp [← ha]
     · intro ha
-      simp only [RingHom.id_apply, smul_eq_mul]
-      rw [← (smul_neg a f), nnrealPart_smul_neg f a ha, nnrealPart_smul_neg (-f) a ha]
-      simp only [map_smul, smul_eq_mul, NNReal.coe_mul, Real.coe_toNNReal', neg_neg]
-      rw [sup_of_le_left (neg_nonneg.mpr (le_of_lt ha))]
+      simp only [RingHom.id_apply, smul_eq_mul, ← (smul_neg a f), nnrealPart_smul_neg f a ha, 
+        nnrealPart_smul_neg (-f) a ha, map_smul, NNReal.coe_mul, Real.coe_toNNReal', neg_neg, 
+        sup_of_le_left (neg_nonneg.mpr (le_of_lt ha))]
       ring
 
 lemma toRealLinear_apply {Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0} (f : C_c(α, ℝ)) :
