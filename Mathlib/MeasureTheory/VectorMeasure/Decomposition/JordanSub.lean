@@ -57,7 +57,7 @@ end Measure
 namespace SignedMeasure
 
 /-- The set where `μ ≥ ν`, reformulated via nonnegativity of signed measure differences. -/
-structure SetWhereLe (μ ν : Measure X) [IsFiniteMeasure μ] [IsFiniteMeasure ν] (s : Set X) : Prop 
+structure SetWhereLe (μ ν : Measure X) [IsFiniteMeasure μ] [IsFiniteMeasure ν] (s : Set X) : Prop
 where
   measurable : MeasurableSet s
   le_on : μ.toSignedMeasure.restrict s ≤  ν.toSignedMeasure.restrict s
