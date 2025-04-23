@@ -41,13 +41,13 @@ variable {μ ν : Measure X} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
 namespace Measure
 
 /-- The set where `μ ≤ ν`, defined via measurable set and measure restriction comparisons. -/
-class SetWhereLe (μ ν : Measure X) (s : Set X) : Prop where
+structure SetWhereLe (μ ν : Measure X) (s : Set X) : Prop where
   measurable : MeasurableSet s
   le_on : μ.restrict s ≤ ν.restrict s
   ge_on_compl : ν.restrict sᶜ ≤ μ.restrict sᶜ
 
 instance SetWhereLe.compl {μ ν : Measure X} {s : Set X}
-    [h : SetWhereLe μ ν s] : SetWhereLe ν μ sᶜ where
+    (h : SetWhereLe μ ν s) : SetWhereLe ν μ sᶜ where
   measurable := h.measurable.compl
   le_on := h.ge_on_compl
   ge_on_compl := by rw [compl_compl]; exact h.le_on
@@ -57,13 +57,13 @@ end Measure
 namespace SignedMeasure
 
 /-- The set where `μ ≥ ν`, reformulated via nonnegativity of signed measure differences. -/
-class SetWhereLe (μ ν : Measure X) [IsFiniteMeasure μ] [IsFiniteMeasure ν] (s : Set X) : Prop where
+structure SetWhereLe (μ ν : Measure X) [IsFiniteMeasure μ] [IsFiniteMeasure ν] (s : Set X) : Prop where
   measurable : MeasurableSet s
   le_on : μ.toSignedMeasure.restrict s ≤  ν.toSignedMeasure.restrict s
   ge_on_compl : ν.toSignedMeasure.restrict sᶜ ≤  μ.toSignedMeasure.restrict sᶜ
 
 instance SetWhereLe.compl {μ ν : Measure X} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
-    {s : Set X} [h : SetWhereLe μ ν s] : SetWhereLe ν μ sᶜ where
+    {s : Set X} (h : SetWhereLe μ ν s) : SetWhereLe ν μ sᶜ where
   measurable := h.measurable.compl
   le_on := h.ge_on_compl
   ge_on_compl := by rw [compl_compl]; exact h.le_on
@@ -178,7 +178,7 @@ theorem mutually_singular_measure_sub :
   obtain ⟨s, hs⟩ := exists_SetWhereLeSignedMeasure μ ν
   exact ⟨s, hs.measurable,
     sub_eq_zero_of_le_on' hs,
-    sub_eq_zero_of_le_on' inferInstance⟩
+    sub_eq_zero_of_le_on' hs.compl⟩
 
 lemma toSignedMeasure_restrict_sub (hs : SignedMeasure.SetWhereLe μ ν s) :
     ((ν - μ).restrict s).toSignedMeasure =
@@ -195,7 +195,7 @@ theorem sub_toSignedMeasure_eq_toSignedMeasure_sub :
     μ.toSignedMeasure - ν.toSignedMeasure =
       (μ - ν).toSignedMeasure - (ν - μ).toSignedMeasure := by
   obtain ⟨s, hs⟩ := exists_SetWhereLeSignedMeasure μ ν
-  let hsc : SignedMeasure.SetWhereLe ν μ sᶜ := inferInstance
+  let hsc := hs.compl
 
   have h₁ := toSignedMeasure_restrict_sub hs
   have h₂ := toSignedMeasure_restrict_sub hsc
