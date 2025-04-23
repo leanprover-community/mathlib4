@@ -47,7 +47,7 @@ class SetWhereLe (μ ν : Measure X) (s : Set X) : Prop where
   le_on : μ.restrict s ≤ ν.restrict s
   ge_on_compl : ν.restrict sᶜ ≤ μ.restrict sᶜ
 
-instance SetWhereLe.compl_symm {μ ν : Measure X} {s : Set X}
+instance SetWhereLe.compl {μ ν : Measure X} {s : Set X}
     [h : SetWhereLe μ ν s] : SetWhereLe ν μ sᶜ where
   measurable := h.measurable.compl
   le_on := h.ge_on_compl
