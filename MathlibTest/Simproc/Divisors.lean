@@ -18,7 +18,7 @@ example : (Nat.divisors <| primorial 12).card = 32 := by
   have : primorial 12 = 2310 := rfl
   simp [Nat.divisorsEq, this]
 
-example : (Nat.divisors <| 2^20).card = 21 := by
+example : (Nat.divisors <| 2^13).card = 14 := by
   simp [Nat.divisorsEq, Nat.factorial_succ]
 
 example : 2 ≤ Finset.card (Nat.divisors 3) := by
