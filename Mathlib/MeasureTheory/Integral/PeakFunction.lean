@@ -292,13 +292,11 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_measure_n
     have t'_pos : 0 < t' := t_pos.trans_lt tt'
     obtain ⟨v, v_open, x₀_v, hv⟩ : ∃ v : Set α, IsOpen v ∧ x₀ ∈ v ∧ v ∩ s ⊆ c ⁻¹' Ioi t' :=
       _root_.continuousOn_iff.1 hc x₀ h₀ (Ioi t') isOpen_Ioi t'x₀
-    have M : ∀ n, ∀ x ∈ s \ u, φ n x ≤ (μ (v ∩ s)).toReal⁻¹ * (t / t') ^ n := by
+    have M : ∀ n, ∀ x ∈ s \ u, φ n x ≤ (μ.real (v ∩ s))⁻¹ * (t / t') ^ n := by
       intro n x hx
-      have B : t' ^ n * (μ (v ∩ s)).toReal ≤ ∫ y in s, c y ^ n ∂μ :=
+      have B : t' ^ n * μ.real (v ∩ s) ≤ ∫ y in s, c y ^ n ∂μ :=
         calc
-          t' ^ n * (μ (v ∩ s)).toReal = ∫ _ in v ∩ s, t' ^ n ∂μ := by
-            simp only [integral_const, Measure.restrict_apply, MeasurableSet.univ, univ_inter,
-              Algebra.id.smul_eq_mul, mul_comm]
+          t' ^ n * μ.real (v ∩ s) = ∫ _ in v ∩ s, t' ^ n ∂μ := by simp [mul_comm]
           _ ≤ ∫ y in v ∩ s, c y ^ n ∂μ := by
             apply setIntegral_mono_on _ _ (v_open.measurableSet.inter hs.measurableSet) _
             · apply integrableOn_const.2 (Or.inr _)
@@ -315,8 +313,8 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_measure_n
       · exact hnc _ hx.1
       · exact ht x hx
     have N :
-      Tendsto (fun n => (μ (v ∩ s)).toReal⁻¹ * (t / t') ^ n) atTop
-        (𝓝 ((μ (v ∩ s)).toReal⁻¹ * 0)) := by
+      Tendsto (fun n => (μ.real (v ∩ s))⁻¹ * (t / t') ^ n) atTop
+        (𝓝 ((μ.real (v ∩ s))⁻¹ * 0)) := by
       apply Tendsto.mul tendsto_const_nhds _
       apply tendsto_pow_atTop_nhds_zero_of_lt_one (div_nonneg t_pos t'_pos.le)
       exact (div_lt_one t'_pos).2 tt'

@@ -184,7 +184,8 @@ lemma IsPreconnected.preperfect_of_nontrivial [T1Space α] {U : Set α} (hu : U.
     apply subset_closure
     simp [hy]
   · apply Set.Nonempty.right at h
-    rw [Set.singleton_inter_nonempty, mem_closure_iff_clusterPt, ← acc_principal_iff_cluster] at h
+    rw [Set.singleton_inter_nonempty, mem_closure_iff_clusterPt,
+      ← accPt_principal_iff_clusterPt] at h
     exact h
 
 end Preperfect
