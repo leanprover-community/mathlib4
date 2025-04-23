@@ -4,11 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Limits.Presheaf
-import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
-import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Closed.Cartesian
-
-#align_import category_theory.closed.types from "leanprover-community/mathlib"@"024a4231815538ac739f52d08dd20a55da0d6b23"
+import Mathlib.CategoryTheory.Monoidal.Types.Basic
+import Mathlib.CategoryTheory.ChosenFiniteProducts.FunctorCategory
 
 /-!
 # Cartesian closure of Type
@@ -23,7 +21,7 @@ namespace CategoryTheory
 
 noncomputable section
 
-open Category Limits
+open Category Limits MonoidalCategory
 
 universe v₁ v₂ u₁ u₂
 
@@ -31,33 +29,51 @@ variable {C : Type v₂} [Category.{v₁} C]
 
 section CartesianClosed
 
-instance (X : Type v₁) : IsLeftAdjoint (Types.binaryProductFunctor.obj X) where
-  right :=
-    { obj := fun Y => X ⟶ Y
-      map := fun f g => g ≫ f }
-  adj :=
-    Adjunction.mkOfUnitCounit
-      { unit := { app := fun Z (z : Z) x => ⟨x, z⟩ }
-        counit := { app := fun Z xf => xf.2 xf.1 } }
+/-- The adjunction `tensorLeft.obj X ⊣ coyoneda.obj (Opposite.op X)`
+for any `X : Type v₁`. -/
+def Types.tensorProductAdjunction (X : Type v₁) :
+    tensorLeft X ⊣ coyoneda.obj (Opposite.op X) where
+  unit := { app := fun Z (z : Z) x => ⟨x, z⟩ }
+  counit := { app := fun _ xf => xf.2 xf.1 }
 
--- Porting note: this instance should be moved to a higher file.
-instance : HasFiniteProducts (Type v₁) :=
-  hasFiniteProducts_of_hasProducts.{v₁} _
+instance (X : Type v₁) : (tensorLeft X).IsLeftAdjoint :=
+  ⟨_, ⟨Types.tensorProductAdjunction X⟩⟩
 
-instance : CartesianClosed (Type v₁) :=
-  CartesianClosed.mk _
-    (fun X => Adjunction.leftAdjointOfNatIso (Types.binaryProductIsoProd.app X))
-
--- porting note: in mathlib3, the assertion was for `(C ⥤ Type u₁)`, but then Lean4 was
--- confused with universes. It makes no harm to relax the universe assumptions here.
-instance {C : Type u₁} [Category.{v₁} C] : HasFiniteProducts (C ⥤ Type u₂) :=
-  hasFiniteProducts_of_hasProducts _
+instance : CartesianClosed (Type v₁) := CartesianClosed.mk _
+  (fun X => Exponentiable.mk _ _ (Types.tensorProductAdjunction X))
 
 instance {C : Type v₁} [SmallCategory C] : CartesianClosed (C ⥤ Type v₁) :=
   CartesianClosed.mk _
-    (fun F =>
-      letI := FunctorCategory.prodPreservesColimits F
-      isLeftAdjointOfPreservesColimits (prod.functor.obj F))
+    (fun F => by
+      haveI : ∀ X : Type v₁, PreservesColimits (tensorLeft X) := by infer_instance
+      letI : PreservesColimits (tensorLeft F) := ⟨by infer_instance⟩
+      have := Presheaf.isLeftAdjoint_of_preservesColimits (tensorLeft F)
+      exact Exponentiable.mk _ _ (Adjunction.ofIsLeftAdjoint (tensorLeft F)))
+
+-- TODO: once we have `MonoidalClosed` instances for functor categories into general monoidal
+-- closed categories, replace this with that, as it will be a more explicit construction.
+/-- This is not a good instance because of the universe levels. Below is the instance where the
+target category is `Type (max u₁ v₁)`. -/
+def cartesianClosedFunctorToTypes {C : Type u₁} [Category.{v₁} C] :
+    CartesianClosed (C ⥤ Type (max u₁ v₁ u₂)) :=
+  let e : (ULiftHom.{max u₁ v₁ u₂} (ULift.{max u₁ v₁ u₂} C)) ⥤ Type (max u₁ v₁ u₂) ≌
+      C ⥤ Type (max u₁ v₁ u₂) :=
+      Functor.asEquivalence ((whiskeringLeft _ _ _).obj
+        (ULift.equivalence.trans ULiftHom.equiv).functor)
+  cartesianClosedOfEquiv e
+
+-- TODO: once we have `MonoidalClosed` instances for functor categories into general monoidal
+-- closed categories, replace this with that, as it will be a more explicit construction.
+instance {C : Type u₁} [Category.{v₁} C] : CartesianClosed (C ⥤ Type (max u₁ v₁)) :=
+  cartesianClosedFunctorToTypes
+
+-- TODO: once we have `MonoidalClosed` instances for functor categories into general monoidal
+-- closed categories, replace this with that, as it will be a more explicit construction.
+instance {C : Type u₁} [Category.{v₁} C] [EssentiallySmall.{v₁} C] :
+    CartesianClosed (C ⥤ Type v₁) :=
+  let e : (SmallModel C) ⥤ Type v₁ ≌ C ⥤ Type v₁ :=
+    Functor.asEquivalence ((whiskeringLeft _ _ _).obj (equivSmallModel _).functor)
+  cartesianClosedOfEquiv e
 
 end CartesianClosed
 

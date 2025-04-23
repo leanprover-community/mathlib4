@@ -42,7 +42,7 @@ lemma quasiIso_iff (φ : S₁ ⟶ S₂) :
     exact ⟨h⟩
 
 instance quasiIso_of_isIso (φ : S₁ ⟶ S₂) [IsIso φ] : QuasiIso φ :=
-  ⟨IsIso.of_iso (homologyMapIso (asIso φ))⟩
+  ⟨(homologyMapIso (asIso φ)).isIso_hom⟩
 
 instance quasiIso_comp (φ : S₁ ⟶ S₂) (φ' : S₂ ⟶ S₃) [hφ : QuasiIso φ] [hφ' : QuasiIso φ'] :
     QuasiIso (φ ≫ φ') := by
@@ -87,7 +87,7 @@ lemma quasiIso_of_arrow_mk_iso (φ : S₁ ⟶ S₂) (φ' : S₃ ⟶ S₄) (e : A
   suffices φ' = α ≫ φ ≫ β by
     rw [this]
     infer_instance
-  simp only [Arrow.w_mk_right_assoc, Arrow.mk_left, Arrow.mk_right, Arrow.mk_hom,
+  simp only [α, β, Arrow.w_mk_right_assoc, Arrow.mk_left, Arrow.mk_right, Arrow.mk_hom,
     ← Arrow.comp_right, e.inv_hom_id, Arrow.id_right, comp_id]
 
 lemma quasiIso_iff_of_arrow_mk_iso (φ : S₁ ⟶ S₂) (φ' : S₃ ⟶ S₄) (e : Arrow.mk φ ≅ Arrow.mk φ') :
@@ -165,7 +165,7 @@ lemma quasiIso_unopMap {S₁ S₂ : ShortComplex Cᵒᵖ} [S₁.HasHomology] [S�
   infer_instance
 
 lemma quasiIso_iff_isIso_liftCycles (φ : S₁ ⟶ S₂)
-    (hf₁ : S₁.f = 0) (hg₁ : S₁.g = 0) (hf₂ : S₂.f = 0) [S₁.HasHomology] [S₂.HasHomology] :
+    (hf₁ : S₁.f = 0) (hg₁ : S₁.g = 0) (hf₂ : S₂.f = 0) :
     QuasiIso φ ↔ IsIso (S₂.liftCycles φ.τ₂ (by rw [φ.comm₂₃, hg₁, zero_comp])) := by
   let H : LeftHomologyMapData φ (LeftHomologyData.ofZeros S₁ hf₁ hg₁)
       (LeftHomologyData.ofIsLimitKernelFork S₂ hf₂ _ S₂.cyclesIsKernel) :=
@@ -174,7 +174,7 @@ lemma quasiIso_iff_isIso_liftCycles (φ : S₁ ⟶ S₂)
   exact H.quasiIso_iff
 
 lemma quasiIso_iff_isIso_descOpcycles (φ : S₁ ⟶ S₂)
-    (hg₁ : S₁.g = 0) (hf₂ : S₂.f = 0) (hg₂ : S₂.g = 0) [S₁.HasHomology] [S₂.HasHomology] :
+    (hg₁ : S₁.g = 0) (hf₂ : S₂.f = 0) (hg₂ : S₂.g = 0) :
     QuasiIso φ ↔ IsIso (S₁.descOpcycles φ.τ₂ (by rw [← φ.comm₁₂, hf₂, comp_zero])) := by
   let H : RightHomologyMapData φ
       (RightHomologyData.ofIsColimitCokernelCofork S₁ hg₁ _ S₁.opcyclesIsCokernel)

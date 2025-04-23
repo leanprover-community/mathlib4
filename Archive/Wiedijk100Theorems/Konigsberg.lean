@@ -5,8 +5,7 @@ Authors: Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Trails
 import Mathlib.Tactic.DeriveFintype
-
-#align_import wiedijk_100_theorems.konigsberg from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
+import Mathlib.Tactic.NormNum
 
 /-!
 # The Königsberg bridges problem
@@ -26,7 +25,6 @@ inductive Verts : Type
   -- The bridges
   | B1 | B2 | B3 | B4 | B5 | B6 | B7
   deriving DecidableEq, Fintype
-#align konigsberg.verts Konigsberg.Verts
 
 open Verts
 
@@ -37,14 +35,12 @@ def edges : List (Verts × Verts) :=
    (B1, V2), (B2, V2), (B3, V4), (B4, V3), (B5, V3),
    (V2, B6), (B6, V4),
    (V3, B7), (B7, V4)]
-#align konigsberg.edges Konigsberg.edges
 
 /-- The adjacency relation for the Königsberg graph. -/
 def adj (v w : Verts) : Bool := (v, w) ∈ edges || (w, v) ∈ edges
-#align konigsberg.adj Konigsberg.adj
 
 /-- The Königsberg graph structure. While the Königsberg bridge problem
-is usually described using a multigraph, the we use a "mediant" construction
+is usually described using a multigraph, we use a "mediant" construction
 to transform it into a simple graph -- every edge in the multigraph is subdivided
 into a path of two edges. This construction preserves whether a graph is Eulerian.
 
@@ -59,7 +55,6 @@ def graph : SimpleGraph Verts where
   loopless := by
     dsimp [Irreflexive, adj]
     decide
-#align konigsberg.graph Konigsberg.graph
 
 instance : DecidableRel graph.Adj := fun a b => inferInstanceAs <| Decidable (adj a b)
 
@@ -68,11 +63,9 @@ proved in `Konigsberg.degree_eq_degree`. -/
 def degree : Verts → ℕ
   | V1 => 5 | V2 => 3 | V3 => 3 | V4 => 3
   | B1 => 2 | B2 => 2 | B3 => 2 | B4 => 2 | B5 => 2 | B6 => 2 | B7 => 2
-#align konigsberg.degree Konigsberg.degree
 
 @[simp]
 lemma degree_eq_degree (v : Verts) : graph.degree v = degree v := by cases v <;> rfl
-#align konigsberg.degree_eq_degree Konigsberg.degree_eq_degree
 
 lemma not_even_degree_iff (w : Verts) : ¬Even (degree w) ↔ w = V1 ∨ w = V2 ∨ w = V3 ∨ w = V4 := by
   cases w <;> decide
@@ -80,7 +73,7 @@ lemma not_even_degree_iff (w : Verts) : ¬Even (degree w) ↔ w = V1 ∨ w = V2 
 lemma setOf_odd_degree_eq :
     {v | Odd (graph.degree v)} = {Verts.V1, Verts.V2, Verts.V3, Verts.V4} := by
   ext w
-  simp [not_even_degree_iff]
+  simp [not_even_degree_iff, ← Nat.not_even_iff_odd]
 
 /-- The Königsberg graph is not Eulerian. -/
 theorem not_isEulerian {u v : Verts} (p : graph.Walk u v) (h : p.IsEulerian) : False := by
@@ -88,7 +81,6 @@ theorem not_isEulerian {u v : Verts} (p : graph.Walk u v) (h : p.IsEulerian) : F
   have h' := setOf_odd_degree_eq
   apply_fun Fintype.card at h'
   rw [h'] at h
-  norm_num at h
-#align konigsberg.not_is_eulerian Konigsberg.not_isEulerian
+  simp at h
 
 end Konigsberg
