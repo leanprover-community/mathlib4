@@ -332,7 +332,7 @@ variable (f : ι₂ → ι₁) (hf : Tendsto f 𝓕₂ 𝓕₁)
 
 section set
 
-variable (φ : ∀ j, R₁ (f j) → R₂ j) (hφ : ∀ᶠ j in 𝓕₂, A₁ (f j) ⊆ φ j ⁻¹' A₂ j)
+variable (φ : ∀ j, R₁ (f j) → R₂ j) (hφ : ∀ᶠ j in 𝓕₂, (A₁ (f j)).MapsTo (φ j) (A₂ j))
 
 /--
 Given two restricted products `Πʳ (i : ι₁), [R₁ i, A₁ i]_[𝓕₁]` and `Πʳ (j : ι₂), [R₂ j, A₂ j]_[𝓕₂]`,
