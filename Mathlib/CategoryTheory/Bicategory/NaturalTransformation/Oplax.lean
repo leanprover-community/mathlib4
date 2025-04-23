@@ -68,6 +68,8 @@ structure OplaxTrans (F G : OplaxFunctor B C) where
 attribute [reassoc (attr := simp)] OplaxTrans.naturality_naturality OplaxTrans.naturality_id
   OplaxTrans.naturality_comp
 
+@[deprecated (since := "2025-04-23")] alias _root_.CategoryTheory.OplaxNatTrans := OplaxTrans
+
 namespace OplaxTrans
 
 variable {F : OplaxFunctor B C} {G H : OplaxFunctor B C} (η : OplaxTrans F G) (θ : OplaxTrans G H)
@@ -153,7 +155,6 @@ def vcomp : OplaxTrans F H where
                           _ ◁ (α_ _ _ _).hom ≫ (α_ _ _ _).inv := by
         rw [whisker_exchange_assoc]; simp
       _ = _ := by simp
-
 
 @[simps! id_app id_naturality comp_app comp_naturality]
 instance : CategoryStruct (OplaxFunctor B C) where

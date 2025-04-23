@@ -79,11 +79,10 @@ structure StrongOplaxTrans (F G : OplaxFunctor B C) where
         (α_ _ _ _).inv ≫ (naturality f).hom ▷ G.map g ≫ (α_ _ _ _).hom := by
     aesop_cat
 
+@[deprecated (since := "2025-04-23")] alias StrongOplaxNatTrans := StrongOplaxTrans
+
 attribute [nolint docBlame] CategoryTheory.StrongOplaxTrans.app
   CategoryTheory.StrongOplaxTrans.naturality
-  CategoryTheory.StrongOplaxTrans.naturality_naturality
-  CategoryTheory.StrongOplaxTrans.naturality_id
-  CategoryTheory.StrongOplaxTrans.naturality_comp
 
 attribute [reassoc (attr := simp)] StrongOplaxTrans.naturality_naturality
   StrongOplaxTrans.naturality_id StrongOplaxTrans.naturality_comp
