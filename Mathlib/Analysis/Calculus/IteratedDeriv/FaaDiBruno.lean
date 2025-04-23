@@ -9,7 +9,7 @@ import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 /-!
 # Iterated derivatives of compositions
 
-In this file we specialize the Faa Di Bruno formula to one-dimensional domain
+In this file we specialize Faà di Bruno's formula to one-dimensional domain
 to deduce formulae for `iteratedDerivWithin k (g ∘ f) s x` for `k = 2` and `k = 3`.
 
 We use
@@ -20,8 +20,14 @@ We use
 ## TODO
 
 - What `UniqueDiffOn` assumptions can be discarded?
+- In case of dimension 1 (and, more generally, in case of symmetric iterated derivatives),
+  some terms are equal.
+  Add versions of Faà di Bruno's formula that take the symmetries into account.
 - Can we generalize `scomp`/`comp` to `f : 𝕜 → 𝕜'`,
   where `𝕜'` is a normed algebra over `𝕜`? E.g., `𝕜 = ℝ`, `𝕜' = ℂ`.
+
+Before starting to work on these TODOs, please contact Yury Kudryashov
+who may have partial progress towards some of them.
 -/
 
 open Function Set
@@ -102,7 +108,6 @@ theorem iteratedDerivWithin_vcomp_three
     fin_cases j <;> rfl
   congr <;> ext x <;> fin_cases x <;> simp [this]
 
-
 theorem iteratedDeriv_vcomp_three (hg : ContDiffAt 𝕜 3 g (f x)) (hf : ContDiffAt 𝕜 3 f x) :
     iteratedDeriv 3 (g ∘ f) x =
       iteratedFDeriv 𝕜 3 g (f x) (fun _ ↦ deriv f x) +
@@ -120,6 +125,24 @@ section scomp
 
 variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {g : 𝕜 → E} {f : 𝕜 → 𝕜} {s : Set 𝕜} {t : Set 𝕜} {x : 𝕜} {n : WithTop ℕ∞} {i : ℕ}
+
+theorem iteratedDerivWithin_scomp_eq_sum_orderedFinpartition
+    (hg : ContDiffWithinAt 𝕜 n g t (f x)) (hf : ContDiffWithinAt 𝕜 n f s x)
+    (ht : UniqueDiffOn 𝕜 t) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) (hst : MapsTo f s t) (hi : i ≤ n) :
+    iteratedDerivWithin i (g ∘ f) s x =
+      ∑ c : OrderedFinpartition i,
+        (∏ j, iteratedDerivWithin (c.partSize j) f s x) •
+          iteratedDerivWithin c.length g t (f x) := by
+  rw [iteratedDerivWithin_vcomp_eq_sum_orderedFinpartition hg hf ht hs hx hst hi]
+  simp only [iteratedFDerivWithin_apply_eq_iteratedDerivWithin_mul_prod]
+
+theorem iteratedDeriv_scomp_eq_sum_orderedFinpartition
+    (hg : ContDiffAt 𝕜 n g (f x)) (hf : ContDiffAt 𝕜 n f x) (hi : i ≤ n) :
+    iteratedDeriv i (g ∘ f) x =
+      ∑ c : OrderedFinpartition i,
+        (∏ j, iteratedDeriv (c.partSize j) f x) • iteratedDeriv c.length g (f x) := by
+  rw [iteratedDeriv_vcomp_eq_sum_orderedFinpartition hg hf hi]
+  simp only [iteratedFDeriv_apply_eq_iteratedDeriv_mul_prod]
 
 theorem iteratedDerivWithin_scomp_two
     (hg : ContDiffWithinAt 𝕜 2 g t (f x)) (hf : ContDiffWithinAt 𝕜 2 f s x)
@@ -169,6 +192,23 @@ section comp
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {g f : 𝕜 → 𝕜} {s t : Set 𝕜} {x : 𝕜} {n : WithTop ℕ∞} {i : ℕ}
+
+theorem iteratedDerivWithin_comp_eq_sum_orderedFinpartition
+    (hg : ContDiffWithinAt 𝕜 n g t (f x)) (hf : ContDiffWithinAt 𝕜 n f s x)
+    (ht : UniqueDiffOn 𝕜 t) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) (hst : MapsTo f s t) (hi : i ≤ n) :
+    iteratedDerivWithin i (g ∘ f) s x =
+      ∑ c : OrderedFinpartition i,
+        iteratedDerivWithin c.length g t (f x) * ∏ j, iteratedDerivWithin (c.partSize j) f s x := by
+  rw [iteratedDerivWithin_scomp_eq_sum_orderedFinpartition hg hf ht hs hx hst hi]
+  simp only [smul_eq_mul, mul_comm]
+
+theorem iteratedDeriv_comp_eq_sum_orderedFinpartition
+    (hg : ContDiffAt 𝕜 n g (f x)) (hf : ContDiffAt 𝕜 n f x) (hi : i ≤ n) :
+    iteratedDeriv i (g ∘ f) x =
+      ∑ c : OrderedFinpartition i,
+        iteratedDeriv c.length g (f x) * ∏ j, iteratedDeriv (c.partSize j) f x := by
+  rw [iteratedDeriv_scomp_eq_sum_orderedFinpartition hg hf hi]
+  simp only [smul_eq_mul, mul_comm]
 
 theorem iteratedDerivWithin_comp_two
     (hg : ContDiffWithinAt 𝕜 2 g t (f x)) (hf : ContDiffWithinAt 𝕜 2 f s x)

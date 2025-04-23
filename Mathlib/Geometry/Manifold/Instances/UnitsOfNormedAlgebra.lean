@@ -70,6 +70,6 @@ instance : LieGroup 𝓘(𝕜, R) n Rˣ where
     rw [this, ContMDiff]
     refine fun x => ContMDiffAt.comp x ?_ (contMDiff_val x)
     rw [contMDiffAt_iff_contDiffAt]
-    exact contDiffAt_ring_inverse _ _
+    exact contDiffAt_ringInverse _ _
 
 end Units
