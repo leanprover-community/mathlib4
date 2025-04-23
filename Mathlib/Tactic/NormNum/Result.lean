@@ -269,7 +269,7 @@ theorem IsRat.of_raw (α) [DivisionRing α] (n : ℤ) (d : ℕ)
   ⟨this, by simp [div_eq_mul_inv]⟩
 
 theorem IsNNRat.den_nz {α} [DivisionSemiring α] {a n d} : IsNNRat (a : α) n d → (d : α) ≠ 0
-  | ⟨_, _⟩ => nonzero_of_invertible (d : α)
+  | ⟨_, _⟩ => Invertible.ne_zero (d : α)
 
 theorem IsRat.den_nz {α} [DivisionRing α] {a n d} : IsRat (a : α) n d → (d : α) ≠ 0
   | ⟨_, _⟩ => Invertible.ne_zero (d : α)
