@@ -32,7 +32,7 @@ namespace TopologicalSpace
 structure Closeds (α : Type*) [TopologicalSpace α] where
   /-- the carrier set, i.e. the points in this set -/
   carrier : Set α
-  closed' : IsClosed carrier
+  isClosed' : IsClosed carrier
 
 namespace Closeds
 
@@ -43,8 +43,10 @@ instance : SetLike (Closeds α) α where
 instance : CanLift (Set α) (Closeds α) (↑) IsClosed where
   prf s hs := ⟨⟨s, hs⟩, rfl⟩
 
-theorem closed (s : Closeds α) : IsClosed (s : Set α) :=
-  s.closed'
+theorem isClosed (s : Closeds α) : IsClosed (s : Set α) :=
+  s.isClosed'
+
+@[deprecated (since := "2025-04-20")] alias closed := isClosed
 
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : Closeds α) : Set α := s
@@ -68,7 +70,7 @@ protected def closure (s : Set α) : Closeds α :=
 theorem mem_closure {s : Set α} {x : α} : x ∈ Closeds.closure s ↔ x ∈ closure s := .rfl
 
 theorem gc : GaloisConnection Closeds.closure ((↑) : Closeds α → Set α) := fun _ U =>
-  ⟨subset_closure.trans, fun h => closure_minimal h U.closed⟩
+  ⟨subset_closure.trans, fun h => closure_minimal h U.isClosed⟩
 
 /-- The galois coinsertion between sets and opens. -/
 def gi : GaloisInsertion (@Closeds.closure α _) (↑) where
