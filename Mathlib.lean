@@ -4480,6 +4480,7 @@ import Mathlib.NumberTheory.NumberField.Units.Basic
 import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
 import Mathlib.NumberTheory.NumberField.Units.Regulator
 import Mathlib.NumberTheory.Ostrowski
+import Mathlib.NumberTheory.Padics.AddChar
 import Mathlib.NumberTheory.Padics.Hensel
 import Mathlib.NumberTheory.Padics.MahlerBasis
 import Mathlib.NumberTheory.Padics.PadicIntegers
@@ -5797,6 +5798,7 @@ import Mathlib.Topology.Algebra.Module.UniformConvergence
 import Mathlib.Topology.Algebra.Module.WeakBilin
 import Mathlib.Topology.Algebra.Module.WeakDual
 import Mathlib.Topology.Algebra.Monoid
+import Mathlib.Topology.Algebra.Monoid.AddChar
 import Mathlib.Topology.Algebra.Monoid.Defs
 import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Topology.Algebra.MvPolynomial
