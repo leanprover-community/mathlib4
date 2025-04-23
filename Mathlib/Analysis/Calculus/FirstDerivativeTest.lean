@@ -3,8 +3,8 @@ Copyright (c) 2024 Bjørn Kjos-Hanssen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bjørn Kjos-Hanssen, Patrick Massot, Floris van Doorn
 -/
-import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.Topology.Order.OrderClosedExtr
+import Mathlib.Analysis.Calculus.Deriv.MeanValue
 /-!
 # The First-Derivative Test
 
