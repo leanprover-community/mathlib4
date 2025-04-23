@@ -18,7 +18,7 @@ open Submodule (span)
 
 /-- A linear equivalence which preserves a finite spanning set must have finite order. -/
 lemma LinearEquiv.isOfFinOrder_of_finite_of_span_eq_top_of_mapsTo
-    {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
+    {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
     {Φ : Set M} (hΦ₁ : Φ.Finite) (hΦ₂ : span R Φ = ⊤) {e : M ≃ₗ[R] M} (he : MapsTo e Φ Φ) :
     IsOfFinOrder e := by
   replace he : BijOn e Φ Φ := (hΦ₁.injOn_iff_bijOn_of_mapsTo he).mp e.injective.injOn

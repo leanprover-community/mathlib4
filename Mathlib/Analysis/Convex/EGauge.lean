@@ -324,7 +324,7 @@ lemma egauge_ball_le_of_one_lt_norm (hc : 1 < ‖c‖) (h₀ : r ≠ 0 ∨ ‖x�
     · simpa [enorm, ← NNReal.coe_eq_zero] using h₀
   · rcases eq_or_ne ‖x‖ 0 with hx | hx
     · have hx' : ‖x‖ₑ = 0 := by simpa [enorm, ← coe_nnnorm, NNReal.coe_eq_zero] using hx
-      simp [egauge_eq_zero_iff, hx']
+      simp only [hx', mul_zero, ENNReal.zero_div, nonpos_iff_eq_zero, egauge_eq_zero_iff]
       refine (frequently_iff_neBot.2 (inferInstance : NeBot (𝓝[≠] (0 : 𝕜)))).mono fun c hc ↦ ?_
       simp [mem_smul_set_iff_inv_smul_mem₀ hc, norm_smul, hx, hr]
     · rcases rescale_to_shell_semi_normed hc hr hx with ⟨a, ha₀, har, -, hainv⟩

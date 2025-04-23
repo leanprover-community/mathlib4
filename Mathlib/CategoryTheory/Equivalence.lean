@@ -132,6 +132,26 @@ theorem Equivalence_mk'_counitInv (functor inverse unit_iso counit_iso f) :
     (⟨functor, inverse, unit_iso, counit_iso, f⟩ : C ≌ D).counitInv = counit_iso.inv :=
   rfl
 
+@[reassoc]
+theorem counit_naturality (e : C ≌ D) {X Y : D} (f : X ⟶ Y) :
+    e.functor.map (e.inverse.map f) ≫ e.counit.app Y = e.counit.app X ≫ f :=
+  e.counit.naturality f
+
+@[reassoc]
+theorem unit_naturality (e : C ≌ D) {X Y : C} (f : X ⟶ Y) :
+    e.unit.app X ≫ e.inverse.map (e.functor.map f) = f ≫ e.unit.app Y :=
+  (e.unit.naturality f).symm
+
+@[reassoc]
+theorem counitInv_naturality (e : C ≌ D) {X Y : D} (f : X ⟶ Y) :
+    e.counitInv.app X ≫ e.functor.map (e.inverse.map f) = f ≫ e.counitInv.app Y :=
+  (e.counitInv.naturality f).symm
+
+@[reassoc]
+theorem unitInv_naturality (e : C ≌ D) {X Y : C} (f : X ⟶ Y) :
+    e.inverse.map (e.functor.map f) ≫ e.unitInv.app Y = e.unitInv.app X ≫ f :=
+  e.unitInv.naturality f
+
 @[reassoc (attr := simp)]
 theorem functor_unit_comp (e : C ≌ D) (X : C) :
     e.functor.map (e.unit.app X) ≫ e.counit.app (e.functor.obj X) = 𝟙 (e.functor.obj X) :=
@@ -163,23 +183,31 @@ theorem unit_inverse_comp (e : C ≌ D) (Y : D) :
   dsimp
   rw [← Iso.hom_inv_id_assoc (e.unitIso.app _) (e.inverse.map (e.functor.map _)), Iso.app_hom,
     Iso.app_inv]
-  slice_lhs 2 3 => erw [e.unit.naturality]
-  slice_lhs 1 2 => erw [e.unit.naturality]
+  slice_lhs 2 3 => rw [← e.unit_naturality]
+  slice_lhs 1 2 => rw [← e.unit_naturality]
   slice_lhs 4 4 =>
     rw [← Iso.hom_inv_id_assoc (e.inverse.mapIso (e.counitIso.app _)) (e.unitInv.app _)]
   slice_lhs 3 4 =>
-    erw [← map_comp e.inverse]
-    erw [e.counit.naturality]
-    erw [(e.counitIso.app _).hom_inv_id, map_id]
-  erw [id_comp]
-  slice_lhs 2 3 => erw [← map_comp e.inverse, e.counitIso.inv.naturality, map_comp]
-  slice_lhs 3 4 => erw [e.unitInv.naturality]
-  slice_lhs 4 5 => erw [← map_comp (e.functor ⋙ e.inverse), (e.unitIso.app _).hom_inv_id, map_id]
-  erw [id_comp]
-  slice_lhs 3 4 => erw [← e.unitInv.naturality]
+    dsimp only [Functor.mapIso_hom, Iso.app_hom]
+    rw [← map_comp e.inverse, e.counit_naturality, e.counitIso.hom_inv_id_app]
+    dsimp only [Functor.comp_obj]
+    rw [map_id]
+  dsimp only [comp_obj, id_obj]
+  rw [id_comp]
   slice_lhs 2 3 =>
-    erw [← map_comp e.inverse, ← e.counitIso.inv.naturality, (e.counitIso.app _).hom_inv_id,
-      map_id]
+    dsimp only [Functor.mapIso_inv, Iso.app_inv]
+    rw [← map_comp e.inverse, ← e.counitInv_naturality, map_comp]
+  slice_lhs 3 4 => rw [e.unitInv_naturality]
+  slice_lhs 4 5 =>
+    rw [← map_comp e.inverse, ← map_comp e.functor, e.unitIso.hom_inv_id_app]
+    dsimp only [Functor.id_obj]
+    rw [map_id, map_id]
+  dsimp only [comp_obj, id_obj]
+  rw [id_comp]
+  slice_lhs 3 4 => rw [← e.unitInv_naturality]
+  slice_lhs 2 3 =>
+    rw [← map_comp e.inverse, e.counitInv_naturality, e.counitIso.hom_inv_id_app]
+  dsimp only [Functor.comp_obj]
   simp
 
 @[reassoc (attr := simp)]

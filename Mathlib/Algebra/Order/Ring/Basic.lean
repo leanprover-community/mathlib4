@@ -64,9 +64,6 @@ theorem pow_add_pow_le (hx : 0 ≤ x) (hy : 0 ≤ y) (hn : n ≠ 0) : x ^ n + y 
 
 attribute [bound] pow_le_one₀ one_le_pow₀
 
-@[deprecated (since := "2024-10-04")] alias pow_right_mono := pow_right_mono₀
-@[deprecated (since := "2024-10-04")] alias pow_le_pow_right := pow_le_pow_right₀
-
 @[deprecated pow_le_pow_left₀ (since := "2024-11-13")]
 theorem pow_le_pow_left {a b : R} (ha : 0 ≤ a) (hab : a ≤ b) : ∀ n, a ^ n ≤ b ^ n :=
   pow_le_pow_left₀ ha hab
@@ -77,14 +74,6 @@ lemma pow_add_pow_le' (ha : 0 ≤ a) (hb : 0 ≤ b) : a ^ n + b ^ n ≤ 2 * (a +
     (pow_le_pow_left₀ hb (le_add_of_nonneg_left ha) _)
 
 end OrderedSemiring
-
--- See note [reducible non instances]
-/-- Turn an ordered domain into a strict ordered ring. -/
-abbrev OrderedRing.toStrictOrderedRing (α : Type*)
-    [OrderedRing α] [NoZeroDivisors α] [Nontrivial α] : StrictOrderedRing α where
-  __ := ‹OrderedRing α›
-  __ := ‹NoZeroDivisors α›
-  mul_pos _ _ ap bp := (mul_nonneg ap.le bp.le).lt_of_ne' (mul_ne_zero ap.ne' bp.ne')
 
 section StrictOrderedSemiring
 
@@ -150,10 +139,6 @@ lemma pow_le_pow_iff_left (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : n ≠ 0) : a ^ n �
 @[deprecated pow_lt_pow_iff_left₀ (since := "2024-11-12")]
 lemma pow_lt_pow_iff_left (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : n ≠ 0) : a ^ n < b ^ n ↔ a < b :=
   pow_lt_pow_iff_left₀ ha hb hn
-
-@[deprecated pow_left_inj₀ (since := "2024-11-12")]
-lemma pow_left_inj (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b :=
-  pow_left_inj₀ ha hb hn
 
 @[deprecated pow_right_injective₀ (since := "2024-11-12")]
 lemma pow_right_injective (ha₀ : 0 < a) (ha₁ : a ≠ 1) : Injective (a ^ ·) :=
@@ -257,7 +242,7 @@ lemma Even.pow_pos (hn : Even n) (ha : a ≠ 0) : 0 < a ^ n :=
   (hn.pow_nonneg _).lt_of_ne' (pow_ne_zero _ ha)
 
 lemma Even.pow_pos_iff (hn : Even n) (h₀ : n ≠ 0) : 0 < a ^ n ↔ a ≠ 0 := by
-  obtain ⟨k, rfl⟩ := hn; rw [pow_add, mul_self_pos (α := R), pow_ne_zero_iff (by simpa using h₀)]
+  obtain ⟨k, rfl⟩ := hn; rw [pow_add, mul_self_pos, pow_ne_zero_iff (by simpa using h₀)]
 
 lemma Odd.pow_neg_iff (hn : Odd n) : a ^ n < 0 ↔ a < 0 := by
   refine ⟨lt_imp_lt_of_le_imp_le (pow_nonneg · _), fun ha ↦ ?_⟩
