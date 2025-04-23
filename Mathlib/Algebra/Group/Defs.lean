@@ -648,7 +648,7 @@ lemma pow_right_comm (a : M) (m n : ℕ) : (a ^ m) ^ n = (a ^ n) ^ m := by
   rw [← pow_mul, Nat.mul_comm, pow_mul]
 
 @[to_additive ns_mul_congr]
-lemma pow_congr (a b : M) (n : ℕ) (h : a = b) : a ^ n = b ^ n :=
+lemma pow_congr {a b : M} (n : ℕ) (h : a = b) : a ^ n = b ^ n :=
   congrFun (congrArg HPow.hPow h) n
 
 end Monoid
