@@ -79,6 +79,23 @@ theorem convex_iff_pointwise_add_subset :
       exact hA hu hv ha hb hab)
     fun h _ hx _ hy _ _ ha hb hab => (h ha hb hab) (Set.add_mem_add ⟨_, hx, rfl⟩ ⟨_, hy, rfl⟩)
 
+theorem Convex.iff_pointwise_add_mem : Convex 𝕜 s ↔
+    ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → ∀ ⦃a b : 𝕜⦄, 0 ≤ a → 0 ≤ b → a + b = 1 → a • x + b • y ∈ s := by
+  rw [convex_iff_pointwise_add_subset]
+  constructor
+  case mp =>
+    intro hs x hx y hy a b ha hb hab
+    apply hs ha hb hab
+    rw [Set.mem_add]
+    exact ⟨a • x, smul_mem_smul_set hx, b • y, smul_mem_smul_set hy, rfl⟩
+  case mpr =>
+    intro h a b ha hb hab
+    intro z hz
+    rw [Set.mem_add] at hz
+    obtain ⟨z₁, hz₁, z₂, hz₂, hz₂'⟩ := hz
+
+    sorry
+
 alias ⟨Convex.set_combo_subset, _⟩ := convex_iff_pointwise_add_subset
 
 theorem convex_empty : Convex 𝕜 (∅ : Set E) := fun _ => False.elim

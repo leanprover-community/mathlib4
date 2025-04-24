@@ -617,6 +617,51 @@ lemma integral_mono_measure {f : α → E} {ν : Measure α} (hle : μ ≤ ν)
     (Eventually.of_forall <| SimpleFunc.approxOn_range_nonneg hg_nonneg n) hle
     (SimpleFunc.integrable_approxOn_range _ hfi n)
 
+lemma integral_monotoneOn_of_integrand_ae {β : Type*} [Preorder β] {f : α → β → E}
+    {s : Set β} (hf_mono : ∀ᵐ x ∂μ, MonotoneOn (f x) s)
+    (hf_int : ∀ a ∈ s, Integrable (f · a) μ) : MonotoneOn (fun b => ∫ x, f x b ∂μ) s := by
+  intro a ha b hb hab
+  refine integral_mono_ae (hf_int a ha) (hf_int b hb) ?_
+  filter_upwards [hf_mono] with x hx
+  exact hx ha hb hab
+
+lemma integral_antitoneOn_of_integrand_ae {β : Type*} [Preorder β] {f : α → β → E}
+    {s : Set β} (hf_anti : ∀ᵐ x ∂μ, AntitoneOn (f x) s)
+    (hf_int : ∀ a ∈ s, Integrable (f · a) μ) : AntitoneOn (fun b => ∫ x, f x b ∂μ) s := by
+  intro a ha b hb hab
+  refine integral_mono_ae (hf_int b hb) (hf_int a ha) ?_
+  filter_upwards [hf_anti] with x hx
+  exact hx ha hb hab
+
+open Pointwise in
+lemma integral_convexOn_of_integrand_ae {β : Type*} [AddCommMonoid β] [PartialOrder β]
+    [Module ℝ β] [IsOrderedAddMonoid β] {f : α → β → E} {s : Set β} (hs : Convex ℝ s)
+    (hf_conv : ∀ᵐ x ∂μ, ConvexOn ℝ s (f x)) (hf_int : ∀ a ∈ s, Integrable (f · a) μ) :
+    ConvexOn ℝ s (fun b => ∫ x, f x b ∂μ) := by
+  refine ⟨hs, ?_⟩
+  intro a ha b hb p q hp hq hpq
+  calc ∫ x, f x (p • a + q • b) ∂μ ≤ ∫ x, p • f x a + q • f x b ∂μ := by
+                  refine integral_mono_ae ?lhs ?rhs ?ae_le
+                  case lhs =>
+                    refine hf_int _ ?_
+                    --rw [convex_iff_pointwise_add_subset] at hs
+
+                    --refine hs hp hq hpq ?_
+                    --apply Set.add_smul_subset
+                    --simp [hpq]
+
+                    sorry
+                  case rhs =>
+                    exact Integrable.add
+                        (Integrable.smul _ (hf_int a ha)) (Integrable.smul _ (hf_int b hb))
+                  case ae_le =>
+                    filter_upwards [hf_conv] with x hx
+                    exact hx.2 ha hb hp hq hpq
+            _ = ∫ x, p • f x a ∂μ + ∫ x, q • f x b ∂μ := by
+                  exact integral_add
+                    (Integrable.smul _ (hf_int a ha)) (Integrable.smul _ (hf_int b hb))
+            _ = p • ∫ x, f x a ∂μ + q • ∫ x, f x b ∂μ := by simp [integral_smul]
+
 end Order
 
 theorem lintegral_coe_eq_integral (f : α → ℝ≥0) (hfi : Integrable (fun x => (f x : ℝ)) μ) :
