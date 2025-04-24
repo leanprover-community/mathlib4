@@ -1138,15 +1138,16 @@ variable [LinearOrder G₀] {a b c d : G₀}
 section PosMulMono
 variable [PosMulMono G₀]
 
-@[simp] lemma inv_neg'' : a⁻¹ < 0 ↔ a < 0 := by
+@[simp] lemma inv_lt_zero : a⁻¹ < 0 ↔ a < 0 := by
   have := PosMulMono.toPosMulReflectLT (α := G₀); simp only [← not_le, inv_nonneg]
 
 @[simp] lemma inv_nonpos : a⁻¹ ≤ 0 ↔ a ≤ 0 := by
   have := PosMulMono.toPosMulReflectLT (α := G₀); simp only [← not_lt, inv_pos]
 
-alias inv_lt_zero := inv_neg''
+@[deprecated (since := "2025-04-22")]
+alias inv_neg'' :=  inv_lt_zero
 
-lemma one_div_neg : 1 / a < 0 ↔ a < 0 := one_div a ▸ inv_neg''
+lemma one_div_neg : 1 / a < 0 ↔ a < 0 := one_div a ▸ inv_lt_zero
 lemma one_div_nonpos : 1 / a ≤ 0 ↔ a ≤ 0 := one_div a ▸ inv_nonpos
 
 lemma div_nonpos_of_nonneg_of_nonpos (ha : 0 ≤ a) (hb : b ≤ 0) : a / b ≤ 0 := by
