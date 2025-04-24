@@ -138,32 +138,20 @@ lemma star_mem_range_charAlgHom (he : Continuous e) (hL : Continuous fun p : V �
   simp only [charAlgHom_apply, Finsupp.support_embDomain, Finset.sum_map,
     Finsupp.embDomain_apply, star_apply, star_sum, star_mul', Circle.star_addChar]
   rw [Finsupp.support_mapRange_of_injective (star_zero _) y star_injective]
-  simp_rw [← map_neg (L u)]
-  rfl
+  simp [z, f]
 
 /-- The star-subalgebra of polynomials. -/
 noncomputable
 def charPoly (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2) :
     StarSubalgebra ℂ (V →ᵇ ℂ) where
   toSubalgebra := (charAlgHom he hL).range
-  star_mem' := by
-    intro x hx
-    exact star_mem_range_charAlgHom he hL hx
+  star_mem' hx := star_mem_range_charAlgHom he hL hx
 
 lemma mem_charPoly (f : V →ᵇ ℂ) :
     f ∈ charPoly he hL
       ↔ ∃ w : AddMonoidAlgebra ℂ W, f = fun x ↦ ∑ a ∈ w.support, w a * (e (L x a) : ℂ) := by
   change f ∈ (charAlgHom he hL).range ↔ _
-  rw [AlgHom.mem_range]
-  constructor
-  · rintro ⟨y, rfl⟩
-    refine ⟨y, ?_⟩
-    ext
-    simp
-  · rintro ⟨y, h⟩
-    refine ⟨y, ?_⟩
-    ext
-    simp [h]
+  simp [BoundedContinuousFunction.ext_iff, funext_iff, eq_comm]
 
 lemma char_mem_charPoly (w : W) : char he hL w ∈ charPoly he hL := by
   rw [mem_charPoly]
