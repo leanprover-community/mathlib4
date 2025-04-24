@@ -787,17 +787,12 @@ theorem flatten_splitWrtCompositionAux {ns : List ℕ} :
     · simp
     · rw [length_drop, ← h, add_tsub_cancel_left]
 
-@[deprecated (since := "2024-10-15")]
-alias join_splitWrtCompositionAux := flatten_splitWrtCompositionAux
-
 /-- If one splits a list along a composition, and then flattens the sublists, one gets back the
 original list. -/
 @[simp]
 theorem flatten_splitWrtComposition (l : List α) (c : Composition l.length) :
     (l.splitWrtComposition c).flatten = l :=
   flatten_splitWrtCompositionAux c.blocks_sum
-
-@[deprecated (since := "2024-10-15")] alias join_splitWrtComposition := flatten_splitWrtComposition
 
 /-- If one joins a list of lists and then splits the flattening along the right composition,
 one gets back the original list of lists. -/
@@ -806,9 +801,6 @@ theorem splitWrtComposition_flatten (L : List (List α)) (c : Composition L.flat
     (h : map length L = c.blocks) : splitWrtComposition (flatten L) c = L := by
   simp only [eq_self_iff_true, and_self_iff, eq_iff_flatten_eq, flatten_splitWrtComposition,
     map_length_splitWrtComposition, h]
-
-@[deprecated (since := "2024-10-15")]
-alias splitWrtComposition_join := splitWrtComposition_flatten
 
 end List
 
