@@ -138,7 +138,7 @@ theorem HasFiniteIntegral.congr' {f : α → β} {g : α → γ} (hf : HasFinite
 
 theorem HasFiniteIntegral.congr'_enorm {f : α → ε} {g : α → ε'} (hf : HasFiniteIntegral f μ)
     (h : ∀ᵐ a ∂μ, ‖f a‖ₑ = ‖g a‖ₑ) : HasFiniteIntegral g μ :=
-  hf.mono_enorm  <| EventuallyEq.le <| EventuallyEq.symm h
+  hf.mono_enorm <| EventuallyEq.le <| EventuallyEq.symm h
 
 theorem hasFiniteIntegral_congr' {f : α → β} {g : α → γ} (h : ∀ᵐ a ∂μ, ‖f a‖ = ‖g a‖) :
     HasFiniteIntegral f μ ↔ HasFiniteIntegral g μ :=
@@ -161,7 +161,7 @@ theorem hasFiniteIntegral_const_iff {c : β} :
   simp [hasFiniteIntegral_iff_enorm, lintegral_const, lt_top_iff_ne_top, ENNReal.mul_eq_top,
     or_iff_not_imp_left, isFiniteMeasure_iff]
 
-theorem hasFiniteIntegral_const_iff_enorm {c : ε} (hc : ‖c‖ₑ ≠ ⊤) :
+theorem hasFiniteIntegral_const_iff_enorm {c : ε} (hc : ‖c‖ₑ ≠ ∞) :
     HasFiniteIntegral (fun _ : α => c) μ ↔ ‖c‖ₑ = 0 ∨ IsFiniteMeasure μ := by
   simp [hasFiniteIntegral_iff_enorm, lintegral_const, lt_top_iff_ne_top, ENNReal.mul_eq_top,
     or_iff_not_imp_left, isFiniteMeasure_iff]
@@ -238,7 +238,7 @@ theorem hasFiniteIntegral_zero_measure {m : MeasurableSpace α} (f : α → ε) 
 
 variable (α μ) in
 @[simp]
-theorem hasFiniteIntegral_zero {ε} [TopologicalSpace ε] [ENormedAddMonoid ε] :
+theorem hasFiniteIntegral_zero {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε] :
     HasFiniteIntegral (fun _ : α => (0 : ε)) μ := by
   simp [hasFiniteIntegral_iff_enorm]
 
@@ -299,7 +299,7 @@ theorem all_ae_tendsto_ofReal_norm (h : ∀ᵐ a ∂μ, Tendsto (fun n => F n a)
     ∀ᵐ a ∂μ, Tendsto (fun n => ENNReal.ofReal ‖F n a‖) atTop <| 𝓝 <| ENNReal.ofReal ‖f a‖ :=
   h.mono fun _ h => tendsto_ofReal <| Tendsto.comp (Continuous.tendsto continuous_norm _) h
 
-theorem all_ae_tendsto_ofReal_norm' (h : ∀ᵐ a ∂μ, Tendsto (fun n ↦ F' n a) atTop <| 𝓝 <| f' a) :
+theorem ae_tendsto_enorm (h : ∀ᵐ a ∂μ, Tendsto (fun n ↦ F' n a) atTop <| 𝓝 <| f' a) :
     ∀ᵐ a ∂μ, Tendsto (fun n ↦ ‖F' n a‖ₑ) atTop <| 𝓝 <| ‖f' a‖ₑ :=
   h.mono fun _ h ↦ Tendsto.comp (Continuous.tendsto continuous_enorm _) h
 
@@ -312,7 +312,7 @@ theorem all_ae_ofReal_f_le_bound (h_bound : ∀ n, ∀ᵐ a ∂μ, ‖F n a‖ �
   intro a tendsto_norm F_le_bound
   exact le_of_tendsto' tendsto_norm F_le_bound
 
-theorem all_ae_ofReal_f_le_bound_enorm (h_bound : ∀ n, ∀ᵐ a ∂μ, ‖F' n a‖ₑ ≤ bound' a)
+theorem ae_enorm_le_bound (h_bound : ∀ n, ∀ᵐ a ∂μ, ‖F' n a‖ₑ ≤ bound' a)
     (h_lim : ∀ᵐ a ∂μ, Tendsto (fun n ↦ F' n a) atTop (𝓝 (f' a))) :
     ∀ᵐ a ∂μ, ‖f' a‖ₑ ≤ bound' a := by
   rw [← ae_all_iff] at h_bound
@@ -347,7 +347,7 @@ theorem hasFiniteIntegral_of_dominated_convergence_enorm
       lintegral_mono_ae <| all_ae_ofReal_f_le_bound_enorm h_bound h_lim
     _ < ∞ := bound_hasFiniteIntegral
 
--- TODO: generalise this `f` and `F` taking values in a new class `ENormedSubMonoid`
+-- TODO: generalise this to `f` and `F` taking values in a new class `ENormedSubmonoid`
 theorem tendsto_lintegral_norm_of_dominated_convergence
     (F_measurable : ∀ n, AEStronglyMeasurable (F n) μ)
     (bound_hasFiniteIntegral : HasFiniteIntegral bound μ)
