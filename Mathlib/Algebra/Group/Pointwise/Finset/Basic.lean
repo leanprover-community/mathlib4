@@ -747,12 +747,12 @@ theorem singletonMonoidHom_apply (a : α) : singletonMonoidHom a = {a} :=
 /-- The coercion from `Finset` to `Set` as a `MonoidHom`. -/
 @[to_additive "The coercion from `Finset` to `set` as an `AddMonoidHom`."]
 noncomputable def coeMonoidHom : Finset α →* Set α where
-  toFun := CoeTC.coe
+  toFun := (↑)
   map_one' := coe_one
   map_mul' := coe_mul
 
 @[to_additive (attr := simp)]
-theorem coe_coeMonoidHom : (coeMonoidHom : Finset α → Set α) = CoeTC.coe :=
+theorem coe_coeMonoidHom : (coeMonoidHom : Finset α → Set α) = (↑) :=
   rfl
 
 @[to_additive (attr := simp)]
@@ -818,8 +818,6 @@ lemma pow_subset_pow_mul_of_sq_subset_mul (hst : s ^ 2 ⊆ t * s) (hn : n ≠ 0)
 
 @[to_additive (attr := simp) nsmul_empty]
 lemma empty_pow (hn : n ≠ 0) : (∅ : Finset α) ^ n = ∅ := match n with | n + 1 => by simp [pow_succ]
-
-@[deprecated (since := "2024-10-21")] alias empty_nsmul := nsmul_empty
 
 @[to_additive]
 lemma Nonempty.pow (hs : s.Nonempty) : ∀ {n}, (s ^ n).Nonempty

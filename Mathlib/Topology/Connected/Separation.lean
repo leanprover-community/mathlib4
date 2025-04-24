@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.Topology.Separation.Hausdorff
+import Mathlib.Topology.Connected.TotallyDisconnected
 /-!
 
 # Separation and (dis)connectedness properties of topological spaces.
