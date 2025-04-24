@@ -9,11 +9,11 @@ import Mathlib.Analysis.InnerProductSpace.Basic
 /-!
 # Infinite sum and products that converge uniformly on a set
 
-This file defines the notion of uniform convergence of infinite sums and products of functions
-on a family of sets of `β`.
+This file defines the notion of uniform convergence of infinite sums and products of functions,
+on a given family of subsets of their domain.
+
 It also defines the notion of local uniform convergence of infinite sums and products of functions
 on a set.
-
 -/
 
 noncomputable section
@@ -22,33 +22,30 @@ open Filter Function
 
 open scoped Topology
 
-variable {α β ι : Type*}
+variable {α β ι : Type*} [CommMonoid α]  {f : ι → β → α} {g : β → α} {𝔖 : Set (Set β)}
+  {x : β} {s : Set β} {I : Finset ι}
 
-section HasProdUniformlyOn
+section prelim
 
-variable [CommMonoid α] {𝔖 : Set (Set β)}
+variable (F I) in
+@[to_additive (attr := simp)]
+lemma UniformOnFun.ofFun_prod : ∏ i ∈ I, ofFun 𝔖 (f i) = ofFun 𝔖 (∏ i ∈ I, f i) :=
+  rfl
 
-@[to_additive, simp]
-lemma UniformOnFun.ofFun_prod (f : ι → β → α) (i : Finset ι) :
-    ∏ b ∈ i, (UniformOnFun.ofFun 𝔖) (f b) = (UniformOnFun.ofFun 𝔖) (∏ b ∈ i, f b) := rfl
-
-variable  {f : ι → β → α} {g : β → α}
+end prelim
 
 variable [UniformSpace α]
+
+section UniformlyOn
+
+variable (f g 𝔖)
 
 /-- `HasProdUniformlyOn f g 𝔖` means that the (potentially infinite) product `∏' i, f i b`
 for `b : β` converges uniformly on `s ∈ 𝔖` to `g`. -/
 @[to_additive "`HasSumUniformlyOn f g 𝔖` means that the (potentially infinite) sum `∑' i, f i b`
 for `b : β` converges uniformly on `s ∈ 𝔖` to `g`."]
-def HasProdUniformlyOn (f : ι → β → α) (g : β → α) (𝔖 : Set (Set β)) : Prop :=
+def HasProdUniformlyOn : Prop :=
   HasProd (fun i ↦ UniformOnFun.ofFun 𝔖 (f i)) (UniformOnFun.ofFun 𝔖 g)
-
-/-- `HasProdLocallyUniformlyOn f g` means that the (potentially infinite) product
-the `∏' i, f i b` for `b : β` converges locally uniformly on `s` to `g b`. -/
-@[to_additive "`HasProdLocallyUniformlyOn f g` means that the (potentially infinite) sum
-the `∑' i, f i b` for `b : β` converges locally uniformly on `s` to `g b`."]
-def HasProdLocallyUniformlyOn (f : ι → β → α) (g : β → α) (s : Set β) [TopologicalSpace β] : Prop :=
-  ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, HasProdUniformlyOn f g {t}
 
 /-- `MultipliableUniformlyOn f 𝔖` means that `f` converges uniformly on `s` to some infinite
 product. -/
@@ -57,125 +54,102 @@ infinite sum."]
 def MultipliableUniformlyOn (f : ι → β → α) (𝔖 : Set (Set β)) : Prop :=
   ∃ g, HasProdUniformlyOn f g 𝔖
 
-/-- `MultipliableLocallyUniformlyOn f s` means that `f` converges locally uniformly on `s` to some
-infinite product. -/
-@[to_additive "`SummableUniformlyOn f s` means that `f` converges locally uniformly on `s` to some
-infinite sum. "]
-def MultipliableLocallyUniformlyOn (f : ι → β → α) (s : Set β) [TopologicalSpace β] : Prop :=
-  ∃ g, HasProdLocallyUniformlyOn f g s
-
-@[to_additive]
-theorem HasProdUniformlyOn.multipliable (h : HasProdUniformlyOn f g 𝔖) :
-    Multipliable (fun i ↦ UniformOnFun.ofFun 𝔖 (f i)) :=
-  ⟨(UniformOnFun.ofFun 𝔖 g), h⟩
+variable {f g 𝔖}
 
 @[to_additive]
 theorem HasProdUniformlyOn.multipliableUniformlyOn (h : HasProdUniformlyOn f g 𝔖) :
     MultipliableUniformlyOn f 𝔖 := ⟨g, h⟩
 
 @[to_additive]
-theorem HasProdLocallyUniformlyOn.multipliableLocallyUniformlyOn [TopologicalSpace β] (s : Set β)
-    (h : HasProdLocallyUniformlyOn f g s) : MultipliableLocallyUniformlyOn f s := ⟨g, h⟩
+lemma hasProdUniformlyOn_iff_tendstoUniformlyOn : HasProdUniformlyOn f g 𝔖 ↔
+    ∀ s ∈ 𝔖, TendstoUniformlyOn (fun (I : Finset ι) b ↦ ∏ i ∈ I, f i b) g atTop s := by
+  simpa [HasProdUniformlyOn, HasProd, UniformOnFun.ofFun_prod, Finset.prod_fn] using
+    UniformOnFun.tendsto_iff_tendstoUniformlyOn
 
 @[to_additive]
-lemma hasProdUniformlyOn_iff_tendstoUniformlyOn  : HasProdUniformlyOn f g 𝔖 ↔
-    ∀ s ∈ 𝔖, TendstoUniformlyOn (fun (s : Finset ι) b ↦ ∏ i ∈ s, f i b) g atTop s := by
-  rw [HasProdUniformlyOn, HasProd] at *
-  have H := UniformOnFun.tendsto_iff_tendstoUniformlyOn
-    (F := (fun s_1 ↦ ∏ b ∈ s_1, (UniformOnFun.ofFun 𝔖) (f b)))
-    (f:= (UniformOnFun.ofFun 𝔖 g)) (p := atTop)
-  simp only [Set.mem_singleton_iff, UniformOnFun.toFun_ofFun, forall_eq] at H
-  convert H
-  simp
+theorem HasProdUniformlyOn.hasProd (h : HasProdUniformlyOn f g 𝔖) (hs : s ∈ 𝔖) (hx : x ∈ s) :
+    HasProd (f · x) (g x) :=
+  (hasProdUniformlyOn_iff_tendstoUniformlyOn.mp h s hs).tendsto_at hx
 
 @[to_additive]
-theorem HasProdUniformlyOn.tprod_eqOn [T2Space α]
-  (h : HasProdUniformlyOn f g 𝔖) : ∀ s ∈ 𝔖, Set.EqOn (fun x ↦ ∏' b, f b x) g s := by
-  intro s hs x hx
-  rw [hasProdUniformlyOn_iff_tendstoUniformlyOn] at h
-  apply HasProd.tprod_eq
-  apply (h s hs).tendsto_at hx
+theorem HasProdUniformlyOn.tprod_eqOn [T2Space α] (h : HasProdUniformlyOn f g 𝔖) (hs : s ∈ 𝔖) :
+    s.EqOn (∏' b, f b ·) g :=
+  fun _ hx ↦ (h.hasProd hs hx).tprod_eq
 
 @[to_additive]
-theorem HasProdUniformlyOn.pointwise_multipliable
-  (h : HasProdUniformlyOn f g 𝔖) : ∀ s ∈ 𝔖, ∀ x ∈ s, Multipliable (fun i ↦ f i x) := by
-  intro s hs x hx
-  rw [hasProdUniformlyOn_iff_tendstoUniformlyOn] at h
-  apply HasProd.multipliable (a := g x)
-  exact (h s hs).tendsto_at hx
+theorem MultipliableUniformlyOn.multipliable (h : MultipliableUniformlyOn f 𝔖)
+    (hs : s ∈ 𝔖) (hx : x ∈ s) : Multipliable (f · x) :=
+  match h with | ⟨_, hg⟩ => (hg.hasProd hs hx).multipliable
+
+end UniformlyOn
+
+section LocallyUniformlyOn
+
+variable (f g s) [TopologicalSpace β]
+
+/-- `HasProdLocallyUniformlyOn f g s` means that the (potentially infinite) product `∏' i, f i b`
+for `b : β` converges locally uniformly on `s` to `g b`. -/
+@[to_additive "`HasProdLocallyUniformlyOn f g s` means that the (potentially infinite) sum
+`∑' i, f i b` for `b : β` converges locally uniformly on `s` to `g b`."]
+def HasProdLocallyUniformlyOn : Prop := ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, HasProdUniformlyOn f g {t}
+
+/-- `MultipliableLocallyUniformlyOn f s` means that the product `∏' i, f i b` converges locally
+uniformly on `s` to something. -/
+@[to_additive "`SummableUniformlyOn f s` means that `∑' i, f i b` converges locally uniformly on
+`s` to something."]
+def MultipliableLocallyUniformlyOn : Prop := ∃ g, HasProdLocallyUniformlyOn f g s
+
+variable {f g s}
 
 @[to_additive]
-theorem MultipliableUniformlyOn.pointwise_multipliable
-  (h : MultipliableUniformlyOn f 𝔖) : ∀ s ∈ 𝔖, ∀ x ∈ s, Multipliable (fun i ↦ f i x) := by
-  obtain ⟨g, hg⟩ := h
-  apply hg.pointwise_multipliable
+theorem HasProdLocallyUniformlyOn.multipliableLocallyUniformlyOn
+    (h : HasProdLocallyUniformlyOn f g s) : MultipliableLocallyUniformlyOn f s :=
+  ⟨g, h⟩
 
 @[to_additive]
-lemma HasProdLocallyUniformlyOn.tendstoLocallyUniformlyOn [TopologicalSpace β] (s : Set β)
-   (h : HasProdLocallyUniformlyOn f g s) :
-   TendstoLocallyUniformlyOn (fun (v : Finset ι) b ↦ ∏ i ∈ v, f i b) g atTop s := by
-  simp_rw [HasProdLocallyUniformlyOn, HasProdUniformlyOn, HasProd,
-    tendstoLocallyUniformlyOn_iff_forall_tendsto] at *
-  intro x hx
-  obtain ⟨t, ht, htr⟩ := h x hx
-  have H := UniformOnFun.tendsto_iff_tendstoUniformlyOn
-        (F := (fun s_1 ↦ ∏ b ∈ s_1, (UniformOnFun.ofFun {t}) (f b)))
-          (f:= (UniformOnFun.ofFun {t} g)) (p := atTop)
-  simp only [UniformOnFun.ofFun_prod, Set.mem_singleton_iff, UniformOnFun.toFun_ofFun,
-    forall_eq] at *
-  rw [H, tendstoUniformlyOn_iff_tendsto] at htr
-  simp only [comp_apply, UniformOnFun.toFun_ofFun, Finset.prod_apply] at *
-  apply htr.mono_left (prod_mono (fun ⦃U⦄ a ↦ a) (le_principal_iff.mpr ht))
+theorem HasProdLocallyUniformlyOn.hasProd (h : HasProdLocallyUniformlyOn f g s) (hx : x ∈ s) :
+    HasProd (f · x) (g x) :=
+  match h x hx with | ⟨_, ht, hft⟩ => hft.hasProd rfl (mem_of_mem_nhdsWithin hx ht)
 
 @[to_additive]
-lemma hasProdLocallyUniformlyOn_iff_tendstoLocallyUniformlyOn [TopologicalSpace β] {s : Set β}
-    [LocallyCompactSpace β] (hs : IsOpen s) : HasProdLocallyUniformlyOn f g s ↔
-    TendstoLocallyUniformlyOn (fun (v : Finset ι) b ↦ ∏ i ∈ v, f i b) g atTop s := by
-  refine ⟨fun h ↦ HasProdLocallyUniformlyOn.tendstoLocallyUniformlyOn s h, ?_⟩
-  simp_rw [HasProdLocallyUniformlyOn, HasProdUniformlyOn, HasProd] at *
-  have H := (tendstoLocallyUniformlyOn_TFAE (fun s b ↦ ∏ i ∈ s, f i b) g atTop hs).out 2 0
-  rw [← H]
-  intro h x hx
-  obtain ⟨r, hr, htr⟩ := h x hx
-  refine ⟨r, hr, ?_ ⟩
-  have H2 := UniformOnFun.tendsto_iff_tendstoUniformlyOn
-      (F := (fun s_1 ↦ ∏ b ∈ s_1, (UniformOnFun.ofFun {r}) (f b)))
-        (f:= (UniformOnFun.ofFun {r} g)) (p := atTop)
-  simp only [UniformOnFun.ofFun_prod, Set.mem_singleton_iff, UniformOnFun.toFun_ofFun,
-    forall_eq] at *
-  rw [H2]
-  apply htr.congr
-  filter_upwards with v x hx
-  simp
-
-@[to_additive]
-theorem HasProdLocallyUniformlyOn.pointwise_multipliable [TopologicalSpace β]
-    [LocallyCompactSpace β] {s : Set β} (hs : IsOpen s) (h : HasProdLocallyUniformlyOn f g s) :
-    ∀ x ∈ s, Multipliable (fun i ↦ f i x) := by
-  intro x hx
-  rw [hasProdLocallyUniformlyOn_iff_tendstoLocallyUniformlyOn hs] at h
-  apply HasProd.multipliable (a := g x)
-  exact h.tendsto_at hx
-
-@[to_additive]
-theorem MultipliableLocallyUniformlyOn.pointwise_multipliable [TopologicalSpace β]
-    [LocallyCompactSpace β] {s : Set β} (hs : IsOpen s) (h : MultipliableLocallyUniformlyOn f s) :
-    ∀ x ∈ s, Multipliable (fun i ↦ f i x) := by
-  obtain ⟨g, hg⟩ := h
-  apply hg.pointwise_multipliable hs
+theorem MultipliableLocallyUniformlyOn.multipliable
+    (h : MultipliableLocallyUniformlyOn f s) (hx : x ∈ s) : Multipliable (f · x) :=
+  match h with | ⟨_, hg⟩ => (hg.hasProd hx).multipliable
 
 @[to_additive]
 theorem HasProdLocallyUniformlyOn.tprod_eqOn [T2Space α]
-    [TopologicalSpace β] [LocallyCompactSpace β] {s : Set β} (hs : IsOpen s)
-    (h : HasProdLocallyUniformlyOn f g s) : Set.EqOn (fun x ↦ ∏' b, f b x) g s := by
+    (h : HasProdLocallyUniformlyOn f g s) : Set.EqOn (∏' i, f i ·) g s :=
+  fun _ hx ↦ (h.hasProd hx).tprod_eq
+
+lemma tendstoLocallyUniformlyOn_of_forall_exists_nhd
+    {ι α β : Type*} [UniformSpace α] [TopologicalSpace β] {f : ι → β → α} {g : β → α}
+    {l : Filter ι} {s : Set β} (h : ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, TendstoUniformlyOn f g l t) :
+    TendstoLocallyUniformlyOn f g l s := by
+  rw [tendstoLocallyUniformlyOn_iff_forall_tendsto]
   intro x hx
-  rw [hasProdLocallyUniformlyOn_iff_tendstoLocallyUniformlyOn hs] at h
-  apply HasProd.tprod_eq
-  exact h.tendsto_at hx
+  obtain ⟨t, ht, htr⟩ := h x hx
+  simp only [tendstoUniformlyOn_iff_tendsto] at htr
+  exact htr.mono_left (prod_mono_right _ (le_principal_iff.mpr ht))
+
+@[to_additive]
+lemma HasProdLocallyUniformlyOn.tendstoLocallyUniformlyOn
+    (h : HasProdLocallyUniformlyOn f g s) :
+    TendstoLocallyUniformlyOn (fun (I : Finset ι) b ↦ ∏ i ∈ I, f i b) g atTop s := by
+  apply tendstoLocallyUniformlyOn_of_forall_exists_nhd
+  simpa [HasProdLocallyUniformlyOn, hasProdUniformlyOn_iff_tendstoUniformlyOn] using h
+
+@[to_additive]
+lemma hasProdLocallyUniformlyOn_iff_tendstoLocallyUniformlyOn [LocallyCompactSpace β]
+    (hs : IsOpen s) : HasProdLocallyUniformlyOn f g s ↔
+    TendstoLocallyUniformlyOn (fun (I : Finset ι) b ↦ ∏ i ∈ I, f i b) g atTop s := by
+  simp [(tendstoLocallyUniformlyOn_TFAE _ g _ hs).out 0 2, HasProdLocallyUniformlyOn,
+    hasProdUniformlyOn_iff_tendstoUniformlyOn]
+
+end LocallyUniformlyOn
 
 open Complex
 
-/-This is just a test of the defns -/
+/- This is just a test of the defns -/
 theorem derivWithin_tsum {α : Type*} (f : α → ℂ → ℂ) {s : Set ℂ}
     (hs : IsOpen s) {x : ℂ} (hx : x ∈ s)
     (hf : ∀ y ∈ s, Summable fun n : α ↦ f n y)
@@ -185,13 +159,11 @@ theorem derivWithin_tsum {α : Type*} (f : α → ℂ → ℂ) {s : Set ℂ}
   apply HasDerivWithinAt.derivWithin ?_ (IsOpen.uniqueDiffWithinAt hs hx)
   apply HasDerivAt.hasDerivWithinAt
   apply hasDerivAt_of_tendstoLocallyUniformlyOn hs _ _ (fun y hy ↦ Summable.hasSum (hf y hy)) hx
-  · use fun n : Finset α ↦ fun a ↦ ∑ i ∈ n, derivWithin (fun z ↦ f i z) s a
+  · exact fun n a ↦ ∑ i ∈ n, derivWithin (fun z ↦ f i z) s a
   · obtain ⟨g, hg⟩ := h
-    have ho := hg
-    rw [hasSumLocallyUniformlyOn_iff_tendstoLocallyUniformlyOn hs] at hg
-    apply hg.congr_right
+    apply hg.tendstoLocallyUniformlyOn.congr_right
     intro b hb
-    have hB := HasSumLocallyUniformlyOn.tsum_eqOn hs ho hb
+    have hB := HasSumLocallyUniformlyOn.tsum_eqOn hg hb
     apply hB.symm
   · filter_upwards
     intro t r hr
@@ -201,5 +173,3 @@ theorem derivWithin_tsum {α : Type*} (f : α → ℂ → ℂ) {s : Set ℂ}
     · apply DifferentiableWithinAt.hasDerivWithinAt
       apply (hf2 q r hr).differentiableWithinAt
     · exact IsOpen.mem_nhds hs hr
-
-end HasProdUniformlyOn
