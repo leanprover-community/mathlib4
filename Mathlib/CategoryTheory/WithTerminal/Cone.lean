@@ -45,13 +45,14 @@ def commaFromFunctorToOver {X : C} : (J ⥤ Over X) ⥤ Comma (𝟭 (J ⥤ C)) (
 /-- For any functor `K : J ⥤ Over X`, there is a canonical extension
 `WithTerminal J ⥤ C`, that sends `star` to `X`. -/
 @[simps!]
-def liftFromOver {X : C} : (J ⥤ Over X) ⥤ WithTerminal J ⥤ C :=
+def liftFromOverToWithTerminal {X : C} : (J ⥤ Over X) ⥤ WithTerminal J ⥤ C :=
   commaFromFunctorToOver ⋙ equivComma.inverse
 
 /-- The extension of a functor to over categories behaves well with compositions. -/
 @[simps]
 def extendCompose {X : C} (K : J ⥤ Over X) (F : C ⥤ D) :
-    (liftFromOver.obj K ⋙ F) ≅ liftFromOver.obj (K ⋙ (Over.post F)) where
+    liftFromOverToWithTerminal.obj K ⋙ F ≅
+    liftFromOverToWithTerminal.obj (K ⋙ Over.post F) where
   hom.app
   | star => 𝟙 _
   | of a => 𝟙 _
@@ -62,8 +63,9 @@ def extendCompose {X : C} (K : J ⥤ Over X) (F : C ⥤ D) :
 /-- A cone of a functor `K : J ⥤ Over X` consists of an object of `Over X`, together
 with morphisms. This same object is a cone of the extended functor
 `liftFromOver.obj K : WithTerminal J ⥤ C`. -/
-@[simps]
-private def coneLift {X : C} {K : J ⥤ Over X} : Cone K ⥤ Cone (liftFromOver.obj K) where
+@[simps!]
+def coneLift {X : C} {K : J ⥤ Over X} :
+    Cone K ⥤ Cone (liftFromOverToWithTerminal.obj K) where
   obj t := {
     pt := t.pt.left
     π.app
@@ -85,8 +87,9 @@ private def coneLift {X : C} {K : J ⥤ Over X} : Cone K ⥤ Cone (liftFromOver.
 /-- This is the inverse of the previous construction: a cone of an extended functor
 `liftFromOver.obj K : WithTerminal J ⥤ C` consists of an object of `C`, together
 with morphisms. This same object is a cone of the original functor `K : J ⥤ Over X`. -/
-@[simps]
-private def coneBack {X : C} {K : J ⥤ Over X} : Cone (liftFromOver.obj K) ⥤ Cone K where
+@[simps!]
+def coneBack {X : C} {K : J ⥤ Over X} :
+    Cone (liftFromOverToWithTerminal.obj K) ⥤ Cone K where
   obj t := {
     pt := .mk (t.π.app star)
     π.app a := {
@@ -107,7 +110,7 @@ A cone of `K` is an object of `Over X`, so it has the form `t ⟶ X`.
 Equivalently, a cone of `WithTerminal K` is an object `t : C`,
 and we can recover the structure morphism as `π.app X : t ⟶ X`. -/
 @[simps]
-def coneEquiv {X : C} (K : J ⥤ Over X) : Cone K ≌ Cone (liftFromOver.obj K) where
+def coneEquiv {X : C} (K : J ⥤ Over X) : Cone K ≌ Cone (liftFromOverToWithTerminal.obj K) where
   functor := coneLift
   inverse := coneBack
   unitIso := NatIso.ofComponents (fun t ↦ {
