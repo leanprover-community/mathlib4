@@ -77,7 +77,7 @@ theorem hasFiniteIntegral_restrict_of_bounded [NormedAddCommGroup E] {f : α →
   haveI : IsFiniteMeasure (μ.restrict s) := ⟨by rwa [Measure.restrict_apply_univ]⟩
   hasFiniteIntegral_of_bounded hf
 
-variable [NormedAddCommGroup E] {f g : α → E} {s t : Set α} {μ ν : Measure α}
+variable [NormedAddCommGroup E] {f g : α → ε} {s t : Set α} {μ ν : Measure α}
 
 /-- A function is `IntegrableOn` a set `s` if it is almost everywhere strongly measurable on `s`
 and if the integral of its pointwise norm over `s` is less than infinity. -/
