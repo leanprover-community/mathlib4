@@ -150,3 +150,5 @@ def algHomOfRightFDRepComp (η : Aut (forget k G)) : (G → k) →ₐ[k] (G → 
 end FiniteGroup
 
 end TannakaDuality
+
+end

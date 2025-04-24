@@ -15,11 +15,15 @@ set_option autoImplicit true
 -- We deliberately mock R and C here so that we don't have to import the deps
 axiom Real : Type
 notation "ℝ" => Real
-@[instance] axiom Real.linearOrderedRing : LinearOrderedField ℝ
+@[instance] axiom Real.field : Field ℝ
+@[instance] axiom Real.linearOrder : LinearOrder ℝ
+@[instance] axiom Real.isStrictOrderedRing : IsStrictOrderedRing ℝ
 
 axiom NNReal : Type
 notation "ℝ≥0" => NNReal
-@[instance] axiom NNReal.linearOrderedsemifield : LinearOrderedSemifield ℝ≥0
+@[instance] axiom NNReal.semifield : Semifield ℝ≥0
+@[instance] axiom NNReal.linearOrder : LinearOrder ℝ≥0
+@[instance] axiom NNReal.isStrictOrderedRing : IsStrictOrderedRing ℝ≥0
 
 axiom Complex : Type
 notation "ℂ" => Complex
@@ -224,7 +228,7 @@ section Order
 
 section Nat
 
-variable [OrderedSemiring α] [CharZero α]
+variable [Semiring α] [PartialOrder α] [IsOrderedRing α] [CharZero α]
 
 -- Normalize to True
 example : 1 ≤ 1 := by norm_num1
@@ -244,7 +248,7 @@ end Nat
 
 section Int
 
-variable [OrderedRing α] [Nontrivial α]
+variable [Ring α] [PartialOrder α] [IsOrderedRing α] [Nontrivial α]
 
 -- Normalize to True
 example : (1 : ℤ) ≤ 1 := by norm_num1
@@ -276,7 +280,7 @@ end Int
 
 section OrderedCharZeroRing
 
-variable [OrderedRing α] [CharZero α]
+variable [Ring α] [PartialOrder α] [IsOrderedRing α] [CharZero α]
 
 example : (-1 : α) < 2 := by norm_num1
 
@@ -284,7 +288,7 @@ end OrderedCharZeroRing
 
 section LinearOrderedRing
 
-variable [LinearOrderedRing α]
+variable [Ring α] [LinearOrder α] [IsStrictOrderedRing α]
 
 example : (1 : α) ≤ 1 := by norm_num1
 example : (-1 : α) ≤ -1 := by norm_num1
@@ -298,7 +302,7 @@ end LinearOrderedRing
 
 section Rat
 
-variable [LinearOrderedField α] [Nontrivial α]
+variable [Field α] [LinearOrder α] [IsStrictOrderedRing α] [Nontrivial α]
 
 -- Normalize to True
 example : (1 : ℚ) ≤ 1 := by norm_num1
@@ -508,7 +512,7 @@ section
 end
 
 section
-  variable [LinearOrderedField α]
+  variable [Field α] [LinearOrder α] [IsStrictOrderedRing α]
   example : (4 : α) / 2 = 2 := by norm_num1
   example : (4 : α) / 1 = 4 := by norm_num1
   example : (4 : α) / 3 = 4 / 3 := by norm_num1
@@ -573,7 +577,7 @@ attribute [-norm_num] Mathlib.Meta.NormNum.evalPow
 end norm_num_erase
 
 -- auto gen tests
-variable [LinearOrderedField α]
+variable [Field α] [LinearOrder α] [IsStrictOrderedRing α]
 example : ((25 * (1 / 1)) + (30 - 16)) = (39 : α) := by norm_num1
 example : ((19 * (- 2 - 3)) / 6) = (-95/6 : α) := by norm_num1
 example : - (3 * 28) = (-84 : α) := by norm_num1
@@ -680,7 +684,9 @@ example : 1 + 100 + a = a + 101 := by
   norm_num [add_comm]
 
 def R : Type u → Type v → Sort (max (u+1) (v+1)) := test_sorry
-noncomputable instance : LinearOrderedField (R a b) := test_sorry
+noncomputable instance : Field (R a b) := test_sorry
+noncomputable instance : LinearOrder (R a b) := test_sorry
+noncomputable instance : IsStrictOrderedRing (R a b) := test_sorry
 
 example : (1 : R PUnit.{u+1} PUnit.{v+1}) <= 2 := by
   norm_num

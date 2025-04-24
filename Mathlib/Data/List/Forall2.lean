@@ -87,7 +87,7 @@ theorem forall₂_cons_right_iff {b l u} :
 theorem forall₂_and_left {p : α → Prop} :
     ∀ l u, Forall₂ (fun a b => p a ∧ R a b) l u ↔ (∀ a ∈ l, p a) ∧ Forall₂ R l u
   | [], u => by
-    simp only [forall₂_nil_left_iff, forall_prop_of_false (not_mem_nil _), imp_true_iff, true_and]
+    simp only [forall₂_nil_left_iff, forall_prop_of_false not_mem_nil, imp_true_iff, true_and]
   | a :: l, u => by
     simp only [forall₂_and_left l, forall₂_cons_left_iff, forall_mem_cons, and_assoc,
       @and_comm _ (p a), @and_left_comm _ (p a), exists_and_left]
@@ -159,10 +159,12 @@ theorem forall₂_iff_zip {l₁ l₂} :
     Forall₂ R l₁ l₂ ↔ length l₁ = length l₂ ∧ ∀ {a b}, (a, b) ∈ zip l₁ l₂ → R a b :=
   ⟨fun h => ⟨Forall₂.length_eq h, @forall₂_zip _ _ _ _ _ h⟩, fun h => by
     obtain ⟨h₁, h₂⟩ := h
-    induction' l₁ with a l₁ IH generalizing l₂
-    · cases length_eq_zero_iff.1 h₁.symm
+    induction l₁ generalizing l₂ with
+    | nil =>
+      cases length_eq_zero_iff.1 h₁.symm
       constructor
-    · rcases l₂ with - | ⟨b, l₂⟩
+    | cons a l₁ IH =>
+      rcases l₂ with - | ⟨b, l₂⟩
       · simp at h₁
       · simp only [length_cons, succ.injEq] at h₁
         exact Forall₂.cons (h₂ <| by simp [zip])

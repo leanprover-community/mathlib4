@@ -7,6 +7,7 @@ import Mathlib.Order.Monotone.Odd
 import Mathlib.Analysis.Calculus.LogDeriv
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+import Mathlib.Analysis.Calculus.Deriv.MeanValue
 
 /-!
 # Differentiability of trigonometric functions

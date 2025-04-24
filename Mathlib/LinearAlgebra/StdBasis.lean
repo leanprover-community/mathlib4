@@ -3,10 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
+import Mathlib.Algebra.Algebra.Pi
 import Mathlib.LinearAlgebra.Finsupp.SumProd
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
-import Mathlib.LinearAlgebra.Pi
 
 /-!
 # The standard basis
@@ -79,11 +79,17 @@ theorem linearIndependent_single_one (ι R : Type*) [Ring R] [DecidableEq ι] :
   exact Pi.linearIndependent_single (fun (_ : ι) (_ : Unit) ↦ (1 : R))
     <| by simp +contextual [Fintype.linearIndependent_iff]
 
-theorem linearIndependent_single_ne_zero {ι R : Type*} [Ring R] [NoZeroDivisors R] [DecidableEq ι]
-    {v : ι → R} (hv : ∀ i, v i ≠ 0) : LinearIndependent R (fun i : ι ↦ Pi.single i (v i)) := by
+lemma linearIndependent_single_of_ne_zero {ι R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
+    [NoZeroSMulDivisors R M] [DecidableEq ι] {v : ι → M} (hv : ∀ i, v i ≠ 0) :
+    LinearIndependent R fun i : ι ↦ Pi.single i (v i) := by
   rw [← linearIndependent_equiv (Equiv.sigmaPUnit ι)]
-  exact Pi.linearIndependent_single (fun i (_ : Unit) ↦ v i)
-    <| by simp +contextual [Fintype.linearIndependent_iff, hv]
+  exact linearIndependent_single (fun i (_ : Unit) ↦ v i) <| by
+    simp +contextual [Fintype.linearIndependent_iff, hv]
+
+@[deprecated linearIndependent_single_of_ne_zero (since := "2025-04-14")]
+theorem linearIndependent_single_ne_zero {ι R : Type*} [Ring R] [NoZeroDivisors R] [DecidableEq ι]
+    {v : ι → R} (hv : ∀ i, v i ≠ 0) : LinearIndependent R (fun i : ι ↦ Pi.single i (v i)) :=
+  linearIndependent_single_of_ne_zero hv
 
 variable [Semiring R] [∀ i, AddCommMonoid (Ms i)] [∀ i, Module R (Ms i)]
 
@@ -162,6 +168,31 @@ end
 end Module
 
 end Pi
+
+/-- Let `k` be an integral domain and `G` an arbitrary finite set.
+Then any algebra morphism `φ : (G → k) →ₐ[k] k` is an evaluation map. -/
+lemma AlgHom.eq_piEvalAlgHom {k G : Type*} [CommSemiring k] [NoZeroDivisors k] [Nontrivial k]
+    [Finite G] (φ : (G → k) →ₐ[k] k) : ∃ (s : G), φ = Pi.evalAlgHom _ _ s := by
+  have h1 := map_one φ
+  classical
+  have := Fintype.ofFinite G
+  simp only [← Finset.univ_sum_single (1 : G → k), Pi.one_apply, map_sum] at h1
+  obtain ⟨s, hs⟩ : ∃ (s : G), φ (Pi.single s 1) ≠ 0 := by
+    by_contra
+    simp_all
+  have h2 : ∀ t ≠ s, φ (Pi.single t 1) = 0 := by
+    refine fun _ _ ↦ (eq_zero_or_eq_zero_of_mul_eq_zero ?_).resolve_left hs
+    rw [← map_mul]
+    convert map_zero φ
+    ext u
+    by_cases u = s <;> simp_all
+  have h3 : φ (Pi.single s 1) = 1 := by
+    rwa [Fintype.sum_eq_single s h2] at h1
+  use s
+  refine AlgHom.toLinearMap_injective ((Pi.basisFun k G).ext fun t ↦ ?_)
+  by_cases t = s <;> simp_all
+
+@[deprecated (since := "2025-04-15")] alias eval_of_algHom := AlgHom.eq_piEvalAlgHom
 
 namespace Module
 

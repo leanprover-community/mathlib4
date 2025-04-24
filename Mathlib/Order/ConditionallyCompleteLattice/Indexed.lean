@@ -589,6 +589,7 @@ end ConditionallyCompleteLattice
 section ConditionallyCompleteLinearOrderBot
 variable [ConditionallyCompleteLinearOrderBot α] [ConditionallyCompleteLinearOrderBot β]
 
+@[simp]
 lemma map_ciSup' (e : α ≃o β) (f : ι → α) : e (⨆ i, f i) = ⨆ i, e (f i) := by
   cases isEmpty_or_nonempty ι
   · simp [map_bot]

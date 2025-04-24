@@ -3,7 +3,8 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Nailin Guan
 -/
-import Mathlib.Topology.Algebra.Group.Basic
+import Mathlib.Algebra.Group.Equiv.Basic
+import Mathlib.Topology.Algebra.Group.Defs
 
 /-!
 
@@ -23,7 +24,6 @@ assert_not_exists ContinuousLinearEquiv
 section
 
 open Function Topology
-open scoped Pointwise
 
 variable (F A B C D E : Type*)
 variable [Monoid A] [Monoid B] [Monoid C] [Monoid D]
@@ -50,30 +50,6 @@ When you extend this structure,
 make sure to extend `ContinuousMapClass` and/or `MonoidHomClass`, if needed. -/
 @[to_additive "The type of continuous additive monoid homomorphisms from `A` to `B`."]
 structure ContinuousMonoidHom extends A →* B, C(A, B)
-
-section
-
-/-- `ContinuousAddMonoidHomClass F A B` states that `F` is a type of continuous additive monoid
-homomorphisms.
-
-Deprecated and changed from a `class` to a `structure`.
-Use `[AddMonoidHomClass F A B] [ContinuousMapClass F A B]` instead. -/
-structure ContinuousAddMonoidHomClass (A B : outParam Type*) [AddMonoid A] [AddMonoid B]
-    [TopologicalSpace A] [TopologicalSpace B] [FunLike F A B] : Prop
-    extends AddMonoidHomClass F A B, ContinuousMapClass F A B
-
-/-- `ContinuousMonoidHomClass F A B` states that `F` is a type of continuous monoid
-homomorphisms.
-
-Deprecated and changed from a `class` to a `structure`.
-Use `[MonoidHomClass F A B] [ContinuousMapClass F A B]` instead. -/
-@[to_additive (attr := deprecated "Use `[MonoidHomClass F A B] [ContinuousMapClass F A B]` instead."
-  (since := "2024-10-08"))]
-structure ContinuousMonoidHomClass (A B : outParam Type*) [Monoid A] [Monoid B]
-    [TopologicalSpace A] [TopologicalSpace B] [FunLike F A B] : Prop
-    extends MonoidHomClass F A B, ContinuousMapClass F A B
-
-end
 
 /-- Reinterpret a `ContinuousMonoidHom` as a `MonoidHom`. -/
 add_decl_doc ContinuousMonoidHom.toMonoidHom
@@ -161,14 +137,6 @@ theorem ext {f g : A →ₜ* B} (h : ∀ x, f x = g x) : f = g :=
 theorem toContinuousMap_injective : Injective (toContinuousMap : _ → C(A, B)) := fun f g h =>
   ext <| by convert DFunLike.ext_iff.1 h
 
-@[deprecated (since := "2024-10-08")] protected alias mk' := mk
-
-@[deprecated (since := "2024-10-08")]
-protected alias _root_.ContinuousAddMonoidHom.mk' := ContinuousAddMonoidHom.mk
-
-set_option linter.existingAttributeWarning false in
-attribute [to_additive existing] ContinuousMonoidHom.mk'
-
 /-- Composition of two continuous homomorphisms. -/
 @[to_additive (attr := simps!) "Composition of two continuous homomorphisms."]
 def comp (g : B →ₜ* C) (f : A →ₜ* B) : A →ₜ* C :=
@@ -189,13 +157,6 @@ def prod (f : A →ₜ* B) (g : A →ₜ* C) : A →ₜ* (B × C) :=
 def prodMap (f : A →ₜ* C) (g : B →ₜ* D) :
     (A × B) →ₜ* (C × D) :=
   ⟨f.toMonoidHom.prodMap g.toMonoidHom, f.continuous_toFun.prodMap g.continuous_toFun⟩
-
-@[deprecated (since := "2024-10-05")] alias prod_map := prodMap
-@[deprecated (since := "2024-10-05")]
-alias _root_.ContinuousAddMonoidHom.sum_map := ContinuousAddMonoidHom.prodMap
-
-set_option linter.existingAttributeWarning false in
-attribute [to_additive existing] prod_map
 
 variable (A B C D E)
 
