@@ -148,7 +148,7 @@ lemma IsTranscendenceBasis.algebraMap_comp
   have : Algebra.IsAlgebraic R' A := .trans _ S _
   exact .extendScalars e.injective
 
-lemma IsTranscendenceBasis.isAlgebraic_iff [IsDomain S]
+lemma IsTranscendenceBasis.isAlgebraic_iff [IsDomain S] [IsDomain A]
     {ι : Type*} {v : ι → A} (hv : IsTranscendenceBasis R v) :
     Algebra.IsAlgebraic S A ↔ ∀ i, IsAlgebraic S (v i) := by
   have := (algebraMap R S).domain_nontrivial
