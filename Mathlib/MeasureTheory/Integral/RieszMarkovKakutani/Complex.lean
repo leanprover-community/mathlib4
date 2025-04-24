@@ -45,22 +45,18 @@ noncomputable def supOuterMeasure : OuterMeasure X where
     · apply le_trans (biInf_le _ MeasurableSet.empty)
       simp only [Set.iUnion_eq_empty, nonpos_iff_eq_zero, iSup_eq_zero, ENNReal.tsum_eq_zero,
         and_imp]
-      intro E hE hEempty n
-      rw [hEempty n]
-      simp
+      intro _ _ hEempty n
+      simp [hEempty n]
     · simp
   mono := sorry
   iUnion_nat := sorry
 
-noncomputable def supTotalVariation : Measure X where
-  measureOf := (supOuterMeasure μ).trim
-  empty := (supOuterMeasure μ).trim.empty
-  mono := (supOuterMeasure μ).trim.mono
-  iUnion_nat := (supOuterMeasure μ).trim.iUnion_nat
-  m_iUnion := sorry
-  -- countable additivity for measurable sets, follow Rudin
-  -- use `OuterMeasure.trim_eq`
-  trim_le := le_of_eq (OuterMeasure.trim_trim (supOuterMeasure μ))
+noncomputable def supTotalVariation : Measure X :=
+  { (supOuterMeasure μ).trim with
+    m_iUnion := sorry
+    -- countable additivity for measurable sets, follow Rudin
+    -- use `OuterMeasure.trim_eq` for measurable sets
+    trim_le := le_of_eq (OuterMeasure.trim_trim (supOuterMeasure μ))}
 
 /-- **Theorem**
 Let `Φ` be a linear functional on `C_0(X, ℂ)`. Suppsoe that `μ`, `μ'` are complex Borel measures
