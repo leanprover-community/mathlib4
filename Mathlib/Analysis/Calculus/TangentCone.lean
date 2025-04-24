@@ -119,11 +119,13 @@ theorem tangentConeAt_closure : tangentConeAt 𝕜 (closure s) x = tangentConeAt
   obtain ⟨u, -, u_pos, u_lim⟩ :
       ∃ u, StrictAnti u ∧ (∀ (n : ℕ), 0 < u n) ∧ Tendsto u atTop (𝓝 (0 : ℝ)) :=
     exists_seq_strictAnti_tendsto (0 : ℝ)
-  have : ∀ᶠ n in atTop, ∃ d', x + d' ∈ s ∧ dist (c n • d n) (c n • d') < u n := by
+  have : ∀ᶠ n in atTop, ∃ d', d' +ᵥ x ∈ s ∧ dist (c n • d n) (c n • d') < u n := by
     filter_upwards [ctop.eventually_gt_atTop 0, ds] with n hn hns
     rcases Metric.mem_closure_iff.mp hns (u n / ‖c n‖) (div_pos (u_pos n) hn) with ⟨y, hys, hy⟩
-    refine ⟨y - x, by simpa, ?_⟩
-    rwa [dist_smul₀, ← dist_add_left x, add_sub_cancel, ← lt_div_iff₀' hn]
+    refine ⟨y -ᵥ x, by simpa, ?_⟩
+    rw [lt_div_iff₀' hn, dist_eq_norm_vsub] at hy
+    rw [dist_smul₀, ← vsub_vadd (d n) (y -ᵥ x), dist_vadd_left]
+    rwa [vsub_eq_sub, ← neg_vsub_eq_vsub_rev, sub_neg_eq_add, ← vadd_vsub_assoc]
   simp only [Filter.skolem, eventually_and] at this
   rcases this with ⟨d', hd's, hd'⟩
   exact ⟨c, d', hd's, ctop, clim.congr_dist
