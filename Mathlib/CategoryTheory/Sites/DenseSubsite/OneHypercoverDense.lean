@@ -39,7 +39,7 @@ attribute [reassoc] w
 
 variable {F}
 
-variable {X : C} (data : F.PreOneHypercoverDenseData X)
+variable {X : C} (data : PreOneHypercoverDenseData.{w} F X)
 
 @[simps]
 def toPreOneHypercover : PreOneHypercover X where
@@ -55,12 +55,16 @@ def toPreOneHypercover : PreOneHypercover X where
 /-- The sigma type of all `data.I₁ i₁ i₂` for `⟨i₁, i₂⟩ : data.I₀ × data.I₀`. -/
 abbrev I₁' : Type w := Sigma (fun (i : data.I₀ × data.I₀) => data.I₁ i.1 i.2)
 
+/-- The shape of the multiforks attached to `data : F.PreOneHypercoverDenseData X`. -/
 @[simps]
-def multicospanIndex (P : C₀ᵒᵖ ⥤ A) : MulticospanIndex A where
+def multicospanShape : MulticospanShape where
   L := data.I₀
   R := data.I₁'
-  fstTo j := j.1.1
-  sndTo j := j.1.2
+  fst j := j.1.1
+  snd j := j.1.2
+
+@[simps]
+def multicospanIndex (P : C₀ᵒᵖ ⥤ A) : MulticospanIndex data.multicospanShape A where
   left i := P.obj (Opposite.op (data.X i))
   right j := P.obj (Opposite.op (data.Y j.2))
   fst j := P.map ((data.p₁ j.2).op)
@@ -117,8 +121,8 @@ lemma isDenseSubsite_of_isOneHypercoverDense [F.IsLocallyFull J] [F.IsLocallyFai
   isCoverDense' := ⟨fun X ↦ by
     refine J.superset_covering ?_ ((F.oneHypercoverDenseData J₀ J X).mem₀)
     rintro Y _ ⟨_, a, _, h, rfl⟩
-    cases' h with i
-    exact ⟨{ fac := rfl}⟩⟩
+    cases h
+    exact ⟨{ fac := rfl, ..}⟩⟩
   functorPushforward_mem_iff := h
 
 end
@@ -211,7 +215,7 @@ variable {F J₀ J}
 
 section
 
-variable {X : C} (data : F.OneHypercoverDenseData J₀ J X)
+variable {X : C} (data : OneHypercoverDenseData.{w} F J₀ J X)
 
 lemma mem₁ (i₁ i₂ : data.I₀) {W : C} (p₁ : W ⟶ F.obj (data.X i₁)) (p₂ : W ⟶ F.obj (data.X i₂))
     (w : p₁ ≫ data.f i₁ = p₂ ≫ data.f i₂) : data.toPreOneHypercover.sieve₁ p₁ p₂ ∈ J W := by
@@ -259,7 +263,7 @@ def toOneHypercover {X : C} (data : F.OneHypercoverDenseData J₀ J X) :
   mem₀ := data.mem₀
   mem₁ := data.mem₁
 
-variable {X : C} (data : F.OneHypercoverDenseData J₀ J X) {X₀ : C₀} (f : F.obj X₀ ⟶ X)
+variable {X : C} (data : OneHypercoverDenseData.{w} F J₀ J X) {X₀ : C₀} (f : F.obj X₀ ⟶ X)
 
 structure SieveStruct {Y₀ : C₀} (g : Y₀ ⟶ X₀) where
   i₀ : data.I₀
@@ -316,8 +320,11 @@ noncomputable def liftAux (i : (data X).I₀) : s.pt ⟶ G.obj (op (F.obj ((data
   hG₀.amalgamate ⟨_, cover_lift F J₀ _ (J.pullback_stable ((data X).f i) S.2)⟩
       (fun ⟨W₀, a, ha⟩ ↦ s.ι ⟨_, F.map a ≫ (data X).f i, ha⟩) (by
         rintro ⟨W₀, a, ha⟩ ⟨Z₀, b, hb⟩ ⟨U₀, p₁, p₂, fac⟩
-        exact s.condition ⟨⟨_, _, ha⟩, ⟨_, _, hb⟩, ⟨_, F.map p₁, F.map p₂, by
-          simp only [← Functor.map_comp_assoc, fac]⟩⟩)
+        exact s.condition
+          { fst := ⟨_, _, ha⟩
+            snd := ⟨_, _, hb⟩
+            r := ⟨_, F.map p₁, F.map p₂, by
+                simp only [← Functor.map_comp_assoc, fac]⟩ })
 
 lemma liftAux_fac {i : (data X).I₀} {W₀ : C₀} (a : W₀ ⟶ (data X).X i)
     (ha : S (F.map a ≫ (data X).f i)) :
@@ -355,7 +362,7 @@ lemma fac (a : S.Arrow) :
       ⟨_, cover_lift F J₀ _
         (J.pullback_stable ((data a.Y).f i ≫ a.f) (data X).mem₀)⟩ _ _ (by
       rintro ⟨X₀, b, ⟨_, c, _, h, fac₁⟩⟩
-      cases' h with j
+      obtain ⟨j⟩ := h
       refine Presheaf.IsSheaf.hom_ext hG₀
         ⟨_, IsDenseSubsite.imageSieve_mem J₀ J F c⟩ _ _ ?_
       rintro ⟨Y₀, d, e, fac₂⟩
@@ -366,9 +373,11 @@ lemma fac (a : S.Arrow) :
       simp only [assoc, ← Functor.map_comp, ← op_comp, ← fac₁]
       conv_lhs => simp only [op_comp, Functor.map_comp, assoc, lift_map_assoc]
       rw [← Functor.map_comp, ← op_comp, ← fac₂, liftAux_fac _ _ _ he]
-      simpa using s.condition ⟨{ hf := he }, a,
-        ⟨_, 𝟙 _, F.map d ≫ F.map b ≫ (data a.Y).f i, by
-          simp only [fac₁, fac₂, assoc, id_comp]⟩⟩))
+      simpa using s.condition
+        { fst := { hf := he, .. }
+          snd := a
+          r := ⟨_, 𝟙 _, F.map d ≫ F.map b ≫ (data a.Y).f i, by
+            simp only [fac₁, fac₂, assoc, id_comp]⟩ }))
 
 variable {s}
 
@@ -406,7 +415,7 @@ end
 
 section
 
-variable (data : ∀ X, F.OneHypercoverDenseData J₀ J X)
+variable (data : ∀ X, OneHypercoverDenseData.{w} F J₀ J X)
   [HasLimitsOfSize.{w, w} A]
 
 namespace EssSurj
@@ -462,9 +471,11 @@ noncomputable abbrev presheafObjMultifork (X : C) :
   Multifork.ofι _ (presheafObj data G₀ X) (presheafObjπ data G₀ X)
     (fun _ ↦ presheafObj_condition _ _ _ _ _ _)
 
+-- to be moved
 def _root_.CategoryTheory.Limits.Multifork.isoMk {C : Type*} [Category C]
-    {I : MulticospanIndex C} {c₁ c₂ : Multifork I} (e : c₁.pt ≅ c₂.pt)
-    (h : ∀ (i : I.L), c₁.ι i = e.hom ≫ c₂.ι i := by aesop_cat) : c₁ ≅ c₂ :=
+    {S : MulticospanShape}
+    {I : MulticospanIndex S C} {c₁ c₂ : Multifork I} (e : c₁.pt ≅ c₂.pt)
+    (h : ∀ (i : S.L), c₁.ι i = e.hom ≫ c₂.ι i := by aesop_cat) : c₁ ≅ c₂ :=
   Cones.ext e (by rintro (_ | _) <;> simp [h])
 
 noncomputable def presheafObjIsLimit (X : C) :
@@ -543,8 +554,7 @@ noncomputable def presheafMap {X Y : C} (f : X ⟶ Y) :
         a = F.map ((data X).p₂ j) ≫ (data X).f i₂ ≫ f := ⟨_, rfl, (data X).w_assoc j _⟩
     refine Presheaf.IsSheaf.hom_ext G₀.cond
       ⟨_, cover_lift F J₀ _ (J.pullback_stable a (data Y).mem₀)⟩ _ _ ?_
-    rintro ⟨W₀, b, ⟨_, p, _, h, fac⟩⟩
-    cases' h with i
+    rintro ⟨W₀, b, ⟨_, p, _, ⟨i⟩, fac⟩⟩
     dsimp at fac ⊢
     simp only [assoc, ← map_comp, ← op_comp]
     rw [restriction_map (p := p), restriction_map (p := p)]
@@ -679,8 +689,7 @@ lemma inv_restriction {Y₀ : C₀} (f : F.obj Y₀ ⟶ F.obj X₀) :
   rintro ⟨W₀, a, b, fac₁⟩
   refine Presheaf.IsSheaf.hom_ext G₀.cond
     ⟨_, J₀.pullback_stable b (cover_lift F J₀ _ (data (F.obj X₀)).mem₀)⟩ _ _ ?_
-  rintro ⟨T₀, c, _, d, _, h, fac₂⟩
-  cases' h with i
+  rintro ⟨T₀, c, _, d, _, ⟨i⟩, fac₂⟩
   dsimp at i d fac₂ ⊢
   simp only [assoc, ← Functor.map_comp, ← op_comp]
   rw [restriction_map data G₀ f (c ≫ a) d
@@ -746,21 +755,22 @@ noncomputable def compPresheafIso : F.op ⋙ presheaf data G₀ ≅ G₀.val :=
     (fun f ↦ presheafObjObjIso_hom_naturality data G₀ f.unop)
 
 @[simps!]
-def _root_.CategoryTheory.Limits.multicospanIsoMk {L R : Type*} {fst snd : L → R}
-    {C : Type*} [Category C] {G₁ G₂ : WalkingMulticospan fst snd ⥤ C}
-    (e : ∀ (i : L), G₁.obj (.right i) ≅ G₂.obj (.right i))
-    (e' : ∀ (j : R), G₁.obj (.left j) ≅ G₂.obj (.left j))
-    (h₁ : ∀ (i : L), G₁.map (WalkingMulticospan.Hom.fst i) ≫ (e i).hom =
-      (e' (fst i)).hom ≫ G₂.map (WalkingMulticospan.Hom.fst i))
-    (h₂ : ∀ (i : L), G₁.map (WalkingMulticospan.Hom.snd i) ≫ (e i).hom =
-      (e' (snd i)).hom ≫ G₂.map (WalkingMulticospan.Hom.snd i)) :
+def _root_.CategoryTheory.Limits.multicospanIsoMk {J : MulticospanShape}
+    {C : Type*} [Category C] {G₁ G₂ : WalkingMulticospan J ⥤ C}
+    (e : ∀ (i : J.L), G₁.obj (.left i) ≅ G₂.obj (.left i))
+    (e' : ∀ (j : J.R), G₁.obj (.right j) ≅ G₂.obj (.right j))
+    (h₁ : ∀ (i : J.R), G₁.map (WalkingMulticospan.Hom.fst i) ≫ (e' i).hom =
+      (e (J.fst i)).hom ≫ G₂.map (WalkingMulticospan.Hom.fst i))
+    (h₂ : ∀ (i : J.R), G₁.map (WalkingMulticospan.Hom.snd i) ≫ (e' i).hom =
+      (e (J.snd i)).hom ≫ G₂.map (WalkingMulticospan.Hom.snd i)) :
     G₁ ≅ G₂ :=
   NatIso.ofComponents (fun x ↦ match x with
-    | .left j => e' j
-    | .right i => e i) (by
+    | .left i => e i
+    | .right j => e' j) (by
         rintro _ _ (_ | _ | _)
         · simp
-        · exact h₁ _
+        · dsimp
+          exact h₁ _
         · exact h₂ _)
 
 lemma isSheaf : Presheaf.IsSheaf J (presheaf data G₀) := by

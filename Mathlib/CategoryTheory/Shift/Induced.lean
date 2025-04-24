@@ -154,7 +154,6 @@ noncomputable def induced : HasShift D A :=
 
 end HasShift
 
-@[simp]
 lemma shiftFunctor_of_induced (a : A) :
     letI := HasShift.induced F A s i
     shiftFunctor D a = s a := by

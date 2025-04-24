@@ -67,7 +67,7 @@ theorem iUnionLift_inclusion {i : ι} (x : S i) (h : S i ⊆ T) :
   iUnionLift_mk x _
 
 theorem iUnionLift_of_mem (x : T) {i : ι} (hx : (x : α) ∈ S i) :
-    iUnionLift S f hf T hT x = f i ⟨x, hx⟩ := by cases' x with x hx; exact hf _ _ _ _ _
+    iUnionLift S f hf T hT x = f i ⟨x, hx⟩ := by obtain ⟨x, hx⟩ := x; exact hf _ _ _ _ _
 
 theorem preimage_iUnionLift (t : Set β) :
     iUnionLift S f hf T hT ⁻¹' t =
@@ -104,7 +104,7 @@ theorem iUnionLift_unary (u : T → T) (ui : ∀ i, S i → S i)
     (uβ : β → β) (h : ∀ (i) (x : S i), f i (ui i x) = uβ (f i x)) (x : T) :
     iUnionLift S f hf T (le_of_eq hT') (u x) = uβ (iUnionLift S f hf T (le_of_eq hT') x) := by
   subst hT'
-  cases' Set.mem_iUnion.1 x.prop with i hi
+  obtain ⟨i, hi⟩ := Set.mem_iUnion.1 x.prop
   rw [iUnionLift_of_mem x hi, ← h i]
   have : x = Set.inclusion (Set.subset_iUnion S i) ⟨x, hi⟩ := by
     cases x
@@ -125,8 +125,8 @@ theorem iUnionLift_binary (dir : Directed (· ≤ ·) S) (op : T → T → T) (o
     iUnionLift S f hf T (le_of_eq hT') (op x y) =
       opβ (iUnionLift S f hf T (le_of_eq hT') x) (iUnionLift S f hf T (le_of_eq hT') y) := by
   subst hT'
-  cases' Set.mem_iUnion.1 x.prop with i hi
-  cases' Set.mem_iUnion.1 y.prop with j hj
+  obtain ⟨i, hi⟩ := Set.mem_iUnion.1 x.prop
+  obtain ⟨j, hj⟩ := Set.mem_iUnion.1 y.prop
   rcases dir i j with ⟨k, hik, hjk⟩
   rw [iUnionLift_of_mem x (hik hi), iUnionLift_of_mem y (hjk hj), ← h k]
   have hx : x = Set.inclusion (Set.subset_iUnion S k) ⟨x, hik hi⟩ := by
@@ -146,7 +146,7 @@ variable {S : ι → Set α} {f : ∀ i, S i → β}
   {hS : iUnion S = univ}
 
 /-- Glue together functions defined on each of a collection `S` of sets that cover a type. See
-  also `Set.iUnionLift`.   -/
+also `Set.iUnionLift`. -/
 noncomputable def liftCover (S : ι → Set α) (f : ∀ i, S i → β)
     (hf : ∀ (i j) (x : α) (hxi : x ∈ S i) (hxj : x ∈ S j), f i ⟨x, hxi⟩ = f j ⟨x, hxj⟩)
     (hS : iUnion S = univ) (a : α) : β :=

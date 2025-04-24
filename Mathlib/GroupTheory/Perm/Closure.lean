@@ -73,7 +73,7 @@ theorem closure_cycle_adjacent_swap {σ : Perm α} (h1 : IsCycle σ) (h2 : σ.su
     rw [← h2, mem_support] at hx
     have hy : y ∈ univ := Finset.mem_univ y
     rw [← h2, mem_support] at hy
-    cases' IsCycle.exists_pow_eq h1 hx hy with n hn
+    obtain ⟨n, hn⟩ := IsCycle.exists_pow_eq h1 hx hy
     rw [← hn]
     exact step2 n
   have step4 : ∀ y z : α, swap y z ∈ H := by
@@ -95,7 +95,7 @@ theorem closure_cycle_coprime_swap {n : ℕ} {σ : Perm α} (h0 : Nat.Coprime n 
     (h1 : IsCycle σ) (h2 : σ.support = Finset.univ) (x : α) :
     closure ({σ, swap x ((σ ^ n) x)} : Set (Perm α)) = ⊤ := by
   rw [← Finset.card_univ, ← h2, ← h1.orderOf] at h0
-  cases' exists_pow_eq_self_of_coprime h0 with m hm
+  obtain ⟨m, hm⟩ := exists_pow_eq_self_of_coprime h0
   have h2' : (σ ^ n).support = univ := Eq.trans (support_pow_coprime h0) h2
   have h1' : IsCycle ((σ ^ n) ^ (m : ℤ)) := by rwa [← hm] at h1
   replace h1' : IsCycle (σ ^ n) :=
@@ -114,7 +114,7 @@ theorem closure_prime_cycle_swap {σ τ : Perm α} (h0 : (Fintype.card α).Prime
   rw [h5, ← hi]
   refine closure_cycle_coprime_swap
     (Nat.Coprime.symm (h0.coprime_iff_not_dvd.mpr fun h => h4 ?_)) h1 h2 x
-  cases' h with m hm
+  obtain ⟨m, hm⟩ := h
   rwa [hm, pow_mul, ← Finset.card_univ, ← h2, ← h1.orderOf, pow_orderOf_eq_one, one_pow,
     one_apply] at hi
 

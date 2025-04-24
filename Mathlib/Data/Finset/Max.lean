@@ -3,14 +3,14 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Data.Finset.Card
 import Mathlib.Data.Finset.Lattice.Fold
 
 /-!
 # Maximum and minimum of finite sets
 -/
 
-assert_not_exists OrderedCommMonoid
-assert_not_exists MonoidWithZero
+assert_not_exists OrderedCommMonoid MonoidWithZero
 
 open Function Multiset OrderDual
 
@@ -46,7 +46,7 @@ theorem max_insert {a : α} {s : Finset α} : (insert a s).max = max ↑a s.max 
 
 @[simp]
 theorem max_singleton {a : α} : Finset.max {a} = (a : WithBot α) := by
-  rw [← insert_emptyc_eq]
+  rw [← insert_empty_eq]
   exact max_insert
 
 theorem max_of_mem {s : Finset α} {a : α} (h : a ∈ s) : ∃ b : α, s.max = b := by
@@ -70,7 +70,7 @@ theorem mem_of_max {s : Finset α} : ∀ {a : α}, s.max = a → a ∈ s := by
     by_cases p : b = a
     · induction p
       exact mem_insert_self b s
-    · cases' max_choice (↑b) s.max with q q <;> rw [max_insert, q] at h
+    · rcases max_choice (↑b) s.max with q | q <;> rw [max_insert, q] at h
       · cases h
         cases p rfl
       · exact mem_insert_of_mem (ih h)
@@ -124,7 +124,7 @@ theorem min_insert {a : α} {s : Finset α} : (insert a s).min = min (↑a) s.mi
 
 @[simp]
 theorem min_singleton {a : α} : Finset.min {a} = (a : WithTop α) := by
-  rw [← insert_emptyc_eq]
+  rw [← insert_empty_eq]
   exact min_insert
 
 theorem min_of_mem {s : Finset α} {a : α} (h : a ∈ s) : ∃ b : α, s.min = b := by
@@ -186,7 +186,7 @@ def max' (s : Finset α) (H : s.Nonempty) : α :=
 variable (s : Finset α) (H : s.Nonempty) {x : α}
 
 theorem min'_mem : s.min' H ∈ s :=
-  mem_of_min <| by simp only [Finset.min, min', id_eq, coe_inf']; rfl
+  mem_of_min <| by simp only [Finset.min, min', id_eq, coe_inf', Function.comp_def]
 
 theorem min'_le (x) (H2 : x ∈ s) : s.min' ⟨x, H2⟩ ≤ x :=
   min_le_of_eq H2 (WithTop.coe_untop _ _).symm
@@ -206,7 +206,7 @@ theorem le_min'_iff {x} : x ≤ s.min' H ↔ ∀ y ∈ s, x ≤ y :=
 theorem min'_singleton (a : α) : ({a} : Finset α).min' (singleton_nonempty _) = a := by simp [min']
 
 theorem max'_mem : s.max' H ∈ s :=
-  mem_of_max <| by simp only [max', Finset.max, id_eq, coe_sup']; rfl
+  mem_of_max <| by simp only [max', Finset.max, id_eq, coe_sup', Function.comp_def]
 
 theorem le_max' (x) (H2 : x ∈ s) : x ≤ s.max' ⟨x, H2⟩ :=
   le_max_of_eq H2 (WithBot.coe_unbot _ _).symm
@@ -271,35 +271,25 @@ theorem map_toDual_max (s : Finset α) : s.max.map toDual = (s.image toDual).min
   rw [min_eq_inf_withTop, inf_image]
   exact congr_fun Option.map_id _
 
--- Porting note: new proofs without `convert` for the next four theorems.
-
 theorem ofDual_min' {s : Finset αᵒᵈ} (hs : s.Nonempty) :
     ofDual (min' s hs) = max' (s.image ofDual) (hs.image _) := by
   rw [← WithBot.coe_eq_coe]
-  simp only [min'_eq_inf', id_eq, ofDual_inf', Function.comp_apply, coe_sup', max'_eq_sup',
-    sup_image]
-  rfl
+  simp [min'_eq_inf', max'_eq_sup']
 
 theorem ofDual_max' {s : Finset αᵒᵈ} (hs : s.Nonempty) :
     ofDual (max' s hs) = min' (s.image ofDual) (hs.image _) := by
   rw [← WithTop.coe_eq_coe]
-  simp only [max'_eq_sup', id_eq, ofDual_sup', Function.comp_apply, coe_inf', min'_eq_inf',
-    inf_image]
-  rfl
+  simp [min'_eq_inf', max'_eq_sup']
 
 theorem toDual_min' {s : Finset α} (hs : s.Nonempty) :
     toDual (min' s hs) = max' (s.image toDual) (hs.image _) := by
   rw [← WithBot.coe_eq_coe]
-  simp only [min'_eq_inf', id_eq, toDual_inf', Function.comp_apply, coe_sup', max'_eq_sup',
-    sup_image]
-  rfl
+  simp [min'_eq_inf', max'_eq_sup']
 
 theorem toDual_max' {s : Finset α} (hs : s.Nonempty) :
     toDual (max' s hs) = min' (s.image toDual) (hs.image _) := by
   rw [← WithTop.coe_eq_coe]
-  simp only [max'_eq_sup', id_eq, toDual_sup', Function.comp_apply, coe_inf', min'_eq_inf',
-    inf_image]
-  rfl
+  simp [min'_eq_inf', max'_eq_sup']
 
 theorem max'_subset {s t : Finset α} (H : s.Nonempty) (hst : s ⊆ t) :
     s.max' H ≤ t.max' (H.mono hst) :=
@@ -391,11 +381,9 @@ theorem max_erase_ne_self {s : Finset α} : (s.erase x).max ≠ x := by
     exact WithBot.bot_ne_coe
 
 theorem min_erase_ne_self {s : Finset α} : (s.erase x).min ≠ x := by
-  -- Porting note: old proof `convert @max_erase_ne_self αᵒᵈ _ _ _`
-  convert @max_erase_ne_self αᵒᵈ _ (toDual x) (s.map toDual.toEmbedding) using 1
-  apply congr_arg -- Porting note: forces unfolding to see `Finset.min` is `Finset.max`
-  congr!
-  ext; simp only [mem_map_equiv]; exact Iff.rfl
+  apply mt (congr_arg (WithTop.map toDual))
+  rw [map_toDual_min, image_erase toDual.injective, WithTop.map_coe]
+  apply max_erase_ne_self
 
 theorem exists_next_right {x : α} {s : Finset α} (h : ∃ y ∈ s, x < y) :
     ∃ y ∈ s, x < y ∧ ∀ z ∈ s, x < z → y ≤ z :=
@@ -518,7 +506,7 @@ variable [LinearOrder α]
 
 theorem exists_max_image (s : Finset β) (f : β → α) (h : s.Nonempty) :
     ∃ x ∈ s, ∀ x' ∈ s, f x' ≤ f x := by
-  cases' max_of_nonempty (h.image f) with y hy
+  obtain ⟨y, hy⟩ := max_of_nonempty (h.image f)
   rcases mem_image.mp (mem_of_max hy) with ⟨x, hx, rfl⟩
   exact ⟨x, hx, fun x' hx' => le_max_of_eq (mem_image_of_mem f hx') hy⟩
 

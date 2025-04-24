@@ -3,10 +3,11 @@ Copyright (c) 2020 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
+import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Data.Finset.Prod
+import Mathlib.Data.SetLike.Basic
 import Mathlib.Data.Sym.Basic
 import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.Data.SetLike.Basic
 
 /-!
 # The symmetric square
@@ -44,7 +45,7 @@ symmetric square, unordered pairs, symmetric powers
 
 assert_not_exists MonoidWithZero
 
-open Mathlib (Vector)
+open List (Vector)
 open Finset Function Sym
 
 universe u
@@ -172,7 +173,7 @@ theorem eq_iff {x y z w : α} : s(x, y) = s(z, w) ↔ x = z ∧ y = w ∨ x = w 
 theorem mk_eq_mk_iff {p q : α × α} : Sym2.mk p = Sym2.mk q ↔ p = q ∨ p = q.swap := by
   cases p
   cases q
-  simp only [eq_iff, Prod.mk.inj_iff, Prod.swap_prod_mk]
+  simp only [eq_iff, Prod.mk_inj, Prod.swap_prod_mk]
 
 /-- The universal property of `Sym2`; symmetric functions of two arguments are equivalent to
 functions from `Sym2`. Note that when `β` is `Prop`, it can sometimes be more convenient to use
@@ -268,6 +269,14 @@ def _root_.Function.Embedding.sym2Map (f : α ↪ β) : Sym2 α ↪ Sym2 β wher
   toFun := map f
   inj' := map.injective f.injective
 
+lemma lift_comp_map {g : γ → α} (f : {f : α → α → β // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁}) :
+    lift f ∘ map g = lift ⟨fun (c₁ c₂ : γ) => f.val (g c₁) (g c₂), fun _ _ => f.prop _ _⟩ :=
+  lift.symm_apply_eq.mp rfl
+
+lemma lift_map_apply {g : γ → α} (f : {f : α → α → β // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁}) (p : Sym2 γ) :
+    lift f (map g p) = lift ⟨fun (c₁ c₂ : γ) => f.val (g c₁) (g c₂), fun _ _ => f.prop _ _⟩ p := by
+  conv_rhs => rw [← lift_comp_map, comp_apply]
+
 section Membership
 
 /-! ### Membership and set coercion -/
@@ -296,8 +305,8 @@ instance : SetLike (Sym2 α) α where
   coe z := { x | z.Mem x }
   coe_injective' z z' h := by
     simp only [Set.ext_iff, Set.mem_setOf_eq] at h
-    induction' z with x y
-    induction' z' with x' y'
+    obtain ⟨x, y⟩ := z
+    obtain ⟨x', y'⟩ := z'
     have hx := h x; have hy := h y; have hx' := h x'; have hy' := h y'
     simp only [mem_iff', eq_self_iff_true] at hx hy hx' hy'
     aesop
@@ -351,7 +360,7 @@ theorem other_mem {a : α} {z : Sym2 α} (h : a ∈ z) : Mem.other h ∈ z := by
 
 theorem mem_and_mem_iff {x y : α} {z : Sym2 α} (hne : x ≠ y) : x ∈ z ∧ y ∈ z ↔ z = s(x, y) := by
   constructor
-  · induction' z with x' y'
+  · cases z
     rw [mem_iff, mem_iff]
     aesop
   · rintro rfl
@@ -368,7 +377,7 @@ end Membership
 
 @[simp]
 theorem mem_map {f : α → β} {b : β} {z : Sym2 α} : b ∈ Sym2.map f z ↔ ∃ a, a ∈ z ∧ f a = b := by
-  induction' z with x y
+  cases z
   simp only [map_pair_eq, mem_iff, exists_eq_or_imp, exists_eq_left]
   aesop
 
@@ -417,39 +426,34 @@ lemma pmap_pair {P : α → Prop} (f : ∀ a, P a → β) (a b : α) (h : ∀ x 
 @[simp]
 lemma mem_pmap_iff {P : α → Prop} (f : ∀ a, P a → β) (z : Sym2 α) (h : ∀ a ∈ z, P a) (b : β) :
     b ∈ z.pmap f h ↔ ∃ (a : α) (ha : a ∈ z), b = f a (h a ha) := by
-  induction' z with x y
+  obtain ⟨x, y⟩ := z
   rw [pmap_pair f x y h]
   aesop
 
 lemma pmap_eq_map {P : α → Prop} (f : α → β) (z : Sym2 α) (h : ∀ a ∈ z, P a) :
     z.pmap (fun a _ => f a) h = z.map f := by
-  induction' z with x y
-  rfl
+  cases z; rfl
 
 lemma map_pmap {Q : β → Prop} (f : α → β) (g : ∀ b, Q b → γ) (z : Sym2 α) (h : ∀ b ∈ z.map f, Q b):
     (z.map f).pmap g h =
     z.pmap (fun a ha => g (f a) (h (f a) (mem_map.mpr ⟨a, ha, rfl⟩))) (fun _ ha => ha) := by
-  induction' z with x y
-  rfl
+  cases z; rfl
 
 lemma pmap_map {P : α → Prop} {Q : β → Prop} (f : ∀ a, P a → β) (g : β → γ)
     (z : Sym2 α) (h : ∀ a ∈ z, P a) (h' : ∀ b ∈ z.pmap f h, Q b) :
     (z.pmap f h).map g = z.pmap (fun a ha => g (f a (h a ha))) (fun _ ha ↦ ha) := by
-  induction' z with x y
-  rfl
+  cases z; rfl
 
 lemma pmap_pmap {P : α → Prop} {Q : β → Prop} (f : ∀ a, P a → β) (g : ∀ b, Q b → γ)
     (z : Sym2 α) (h : ∀ a ∈ z, P a) (h' : ∀ b ∈ z.pmap f h, Q b) :
     (z.pmap f h).pmap g h' = z.pmap (fun a ha => g (f a (h a ha))
     (h' _ ((mem_pmap_iff f z h _).mpr ⟨a, ha, rfl⟩))) (fun _ ha ↦ ha) := by
-  induction' z with x y
-  rfl
+  cases z; rfl
 
 @[simp]
 lemma pmap_subtype_map_subtypeVal {P : α → Prop} (s : Sym2 α) (h : ∀ a ∈ s, P a) :
     (s.pmap Subtype.mk h).map Subtype.val = s := by
-  induction' s with x y
-  rfl
+  cases s; rfl
 
 /--
 "Attach" a proof `P a` that holds for all the elements of `s` to produce a new Sym2 object
@@ -461,8 +465,7 @@ def attachWith {P : α → Prop} (s : Sym2 α) (h : ∀ a ∈ s, P a) : Sym2 {a 
 @[simp]
 lemma attachWith_map_subtypeVal {s : Sym2 α} {P : α → Prop} (h : ∀ a ∈ s, P a) :
     (s.attachWith h).map Subtype.val = s := by
-  induction' s with x y
-  rfl
+  cases s; rfl
 
 /-! ### Diagonal -/
 
@@ -498,7 +501,7 @@ theorem diag_isDiag (a : α) : IsDiag (diag a) :=
   Eq.refl a
 
 theorem IsDiag.mem_range_diag {z : Sym2 α} : IsDiag z → z ∈ Set.range (@diag α) := by
-  induction' z with x y
+  obtain ⟨x, y⟩ := z
   rintro (rfl : x = y)
   exact ⟨_, rfl⟩
 
@@ -560,6 +563,14 @@ theorem mem_fromRel_irrefl_other_ne {sym : Symmetric r} (irrefl : Irreflexive r)
 instance fromRel.decidablePred (sym : Symmetric r) [h : DecidableRel r] :
     DecidablePred (· ∈ Sym2.fromRel sym) := fun z => z.recOnSubsingleton fun _ => h _ _
 
+lemma fromRel_relationMap {r : α → α → Prop} (hr : Symmetric r) (f : α → β) :
+    fromRel (Relation.map_symmetric hr f) = Sym2.map f '' Sym2.fromRel hr := by
+  ext ⟨a, b⟩
+  simp only [fromRel_proj_prop, Relation.Map, Set.mem_image, Sym2.exists, map_pair_eq, Sym2.eq,
+    rel_iff', Prod.mk.injEq, Prod.swap_prod_mk, and_or_left, exists_or, iff_self_or,
+    forall_exists_index, and_imp]
+  exact fun c d hcd hc hd ↦ ⟨d, c, hr hcd, hd, hc⟩
+
 /-- The inverse to `Sym2.fromRel`. Given a set on `Sym2 α`, give a symmetric relation on `α`
 (see `Sym2.toRel_symmetric`). -/
 def ToRel (s : Set (Sym2 α)) (x y : α) : Prop :=
@@ -584,9 +595,9 @@ section SymEquiv
 /-! ### Equivalence to the second symmetric power -/
 
 
-attribute [local instance] Vector.Perm.isSetoid
+attribute [local instance] List.Vector.Perm.isSetoid
 
-private def fromVector : Vector α 2 → α × α
+private def fromVector : List.Vector α 2 → α × α
   | ⟨[a, b], _⟩ => (a, b)
 
 private theorem perm_card_two_iff {a₁ b₁ a₂ b₂ : α} :
@@ -614,14 +625,14 @@ def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2) where
     Quot.map fromVector
       (by
         rintro ⟨x, hx⟩ ⟨y, hy⟩ h
-        cases' x with _ x; · simp at hx
-        cases' x with _ x; · simp at hx
-        cases' x with _ x; swap
+        rcases x with - | ⟨_, x⟩; · simp at hx
+        rcases x with - | ⟨_, x⟩; · simp at hx
+        rcases x with - | ⟨_, x⟩; swap
         · exfalso
           simp at hx
-        cases' y with _ y; · simp at hy
-        cases' y with _ y; · simp at hy
-        cases' y with _ y; swap
+        rcases y with - | ⟨_, y⟩; · simp at hy
+        rcases y with - | ⟨_, y⟩; · simp at hy
+        rcases y with - | ⟨_, y⟩; swap
         · exfalso
           simp at hy
         rcases perm_card_two_iff.mp h with (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩)
@@ -630,12 +641,12 @@ def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2) where
   left_inv := by apply Sym2.ind; aesop (add norm unfold [Sym2.fromVector])
   right_inv x := by
     refine x.recOnSubsingleton fun x => ?_
-    cases' x with x hx
-    cases' x with _ x
+    obtain ⟨x, hx⟩ := x
+    obtain - | ⟨-, x⟩ := x
     · simp at hx
-    cases' x with _ x
+    rcases x with - | ⟨_, x⟩
     · simp at hx
-    cases' x with _ x
+    rcases x with - | ⟨_, x⟩
     swap
     · exfalso
       simp at hx
@@ -727,8 +738,7 @@ theorem other_invol {a : α} {z : Sym2 α} (ha : a ∈ z) (hb : Mem.other ha ∈
 
 theorem filter_image_mk_isDiag [DecidableEq α] (s : Finset α) :
     {a ∈ (s ×ˢ s).image Sym2.mk | a.IsDiag} = s.diag.image Sym2.mk := by
-  ext z
-  induction' z
+  ext ⟨x, y⟩
   simp only [mem_image, mem_diag, exists_prop, mem_filter, Prod.exists, mem_product]
   constructor
   · rintro ⟨⟨a, b, ⟨ha, hb⟩, h⟩, hab⟩
@@ -768,5 +778,21 @@ instance [Nontrivial α] : Nontrivial (Sym2 α) :=
 -- TODO: use a sort order if available, https://github.com/leanprover-community/mathlib/issues/18166
 unsafe instance [Repr α] : Repr (Sym2 α) where
   reprPrec s _ := f!"s({repr s.unquot.1}, {repr s.unquot.2})"
+
+lemma lift_smul_lift {α R N} [SMul R N] (f : { f : α → α → R // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁ })
+    (g : { g : α → α → N // ∀ a₁ a₂, g a₁ a₂ = g a₂ a₁ }) :
+    lift f • lift g = lift ⟨f.val • g.val, fun _ _ => by
+      rw [Pi.smul_apply', Pi.smul_apply', Pi.smul_apply', Pi.smul_apply', f.prop, g.prop]⟩ := by
+  ext ⟨i,j⟩
+  simp_all only [Pi.smul_apply', lift_mk]
+
+/--
+Multiplication as a function from `Sym2`.
+-/
+def mul {M} [CommMagma M] : Sym2 M → M := lift ⟨(· * ·), mul_comm⟩
+
+@[simp]
+lemma mul_mk {M} [CommMagma M] (xy : M × M) :
+    mul (.mk xy) = xy.1 * xy.2 := rfl
 
 end Sym2

@@ -512,7 +512,7 @@ namely `n^p (1 + ∑_{u < n} g(u) / u^(p+1))`. -/
 
 @[continuity]
 lemma continuous_sumCoeffsExp : Continuous (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) := by
-  refine continuous_finset_sum Finset.univ fun i _ => Continuous.mul (by continuity) ?_
+  refine continuous_finset_sum Finset.univ fun i _ => Continuous.mul (by fun_prop) ?_
   exact Continuous.rpow continuous_const continuous_id (fun x => Or.inl (ne_of_gt (R.b_pos i)))
 
 lemma strictAnti_sumCoeffsExp : StrictAnti (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) := by
@@ -532,8 +532,7 @@ lemma tendsto_zero_sumCoeffsExp : Tendsto (fun (p : ℝ) => ∑ i, a i * (b i) ^
 
 lemma tendsto_atTop_sumCoeffsExp : Tendsto (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) atBot atTop := by
   have h₁ : Tendsto (fun p : ℝ => (a (max_bi b) : ℝ) * b (max_bi b) ^ p) atBot atTop :=
-    Tendsto.mul_atTop (R.a_pos (max_bi b)) (by simp)
-      <| tendsto_rpow_atBot_of_base_lt_one _
+    Tendsto.const_mul_atTop (R.a_pos (max_bi b)) <| tendsto_rpow_atBot_of_base_lt_one _
       (by have := R.b_pos (max_bi b); linarith) (R.b_lt_one _)
   refine tendsto_atTop_mono (fun p => ?_) h₁
   refine Finset.single_le_sum (f := fun i => (a i : ℝ) * b i ^ p) (fun i _ => ?_) (mem_univ _)
@@ -843,7 +842,7 @@ lemma isEquivalent_deriv_rpow_p_mul_one_sub_smoothingFn {p : ℝ} (hp : p ≠ 0)
           (fun z => z ^ (p-1) / (log z ^ 2)) =o[atTop] fun z => z ^ (p-1) / 1 := by
                       simp_rw [div_eq_mul_inv]
                       refine IsBigO.mul_isLittleO (isBigO_refl _ _)
-                        (IsLittleO.inv_rev ?_ (by aesop (add safe Eventually.of_forall)))
+                        (IsLittleO.inv_rev ?_ (by simp))
                       rw [isLittleO_const_left]
                       refine Or.inr <| Tendsto.comp tendsto_norm_atTop_atTop ?_
                       exact Tendsto.comp (g := fun z => z ^ 2)
@@ -867,7 +866,7 @@ lemma isEquivalent_deriv_rpow_p_mul_one_add_smoothingFn {p : ℝ} (hp : p ≠ 0)
           (fun z => -(z ^ (p-1) / (log z ^ 2))) =o[atTop] fun z => z ^ (p-1) / 1 := by
                       simp_rw [isLittleO_neg_left, div_eq_mul_inv]
                       refine IsBigO.mul_isLittleO (isBigO_refl _ _)
-                        (IsLittleO.inv_rev ?_ (by aesop (add safe Eventually.of_forall)))
+                        (IsLittleO.inv_rev ?_ (by simp))
                       rw [isLittleO_const_left]
                       refine Or.inr <| Tendsto.comp tendsto_norm_atTop_atTop ?_
                       exact Tendsto.comp (g := fun z => z ^ 2)

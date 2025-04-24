@@ -124,7 +124,7 @@ theorem map_frobeniusPoly.key₂ {n i j : ℕ} (hi : i ≤ n) (hj : j < p ^ (n -
       tsub_add_cancel_of_le (le_tsub_of_add_le_right ((le_tsub_iff_left hi).mp h₁))]
   have hle : p ^ m ≤ j + 1 := h ▸ Nat.le_of_dvd j.succ_pos (pow_multiplicity_dvd _ _)
   exact ⟨(Nat.pow_le_pow_iff_right hp.1.one_lt).1 (hle.trans hj),
-     Nat.le_of_lt_succ ((Nat.lt_pow_self hp.1.one_lt m).trans_le hle)⟩
+     Nat.le_of_lt_succ ((m.lt_pow_self hp.1.one_lt).trans_le hle)⟩
 
 theorem map_frobeniusPoly (n : ℕ) :
     MvPolynomial.map (Int.castRingHom ℚ) (frobeniusPoly p n) = frobeniusPolyRat p n := by
@@ -202,16 +202,13 @@ theorem coeff_frobeniusFun (x : 𝕎 R) (n : ℕ) :
     coeff (frobeniusFun x) n = MvPolynomial.aeval x.coeff (frobeniusPoly p n) := by
   rw [frobeniusFun, coeff_mk]
 
-variable (p)
-
+variable (p) in
 /-- `frobeniusFun` is tautologically a polynomial function.
 
 See also `frobenius_isPoly`. -/
 -- Porting note: replaced `@[is_poly]` with `instance`.
 instance frobeniusFun_isPoly : IsPoly p fun R _ Rcr => @frobeniusFun p R _ Rcr :=
   ⟨⟨frobeniusPoly p, by intros; funext n; apply coeff_frobeniusFun⟩⟩
-
-variable {p}
 
 @[ghost_simps]
 theorem ghostComponent_frobeniusFun (n : ℕ) (x : 𝕎 R) :
@@ -242,8 +239,8 @@ def frobenius : 𝕎 R →+* 𝕎 R where
         (@IsPoly.comp p _ _ WittVector.oneIsPoly (frobeniusFun_isPoly p)) ?_ _ 0
     simp only [Function.comp_apply, map_one, forall_const]
     ghost_simp
-  map_add' := by dsimp only; ghost_calc _ _; ghost_simp
-  map_mul' := by dsimp only; ghost_calc _ _; ghost_simp
+  map_add' := by ghost_calc _ _; ghost_simp
+  map_mul' := by ghost_calc _ _; ghost_simp
 
 theorem coeff_frobenius (x : 𝕎 R) (n : ℕ) :
     coeff (frobenius x) n = MvPolynomial.aeval x.coeff (frobeniusPoly p n) :=
@@ -293,7 +290,7 @@ theorem frobenius_zmodp (x : 𝕎 (ZMod p)) : frobenius x = x := by
 variable (R)
 
 /-- `WittVector.frobenius` as an equiv. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def frobeniusEquiv [PerfectRing R p] : WittVector p R ≃+* WittVector p R :=
   { (WittVector.frobenius : WittVector p R →+* WittVector p R) with
     toFun := WittVector.frobenius

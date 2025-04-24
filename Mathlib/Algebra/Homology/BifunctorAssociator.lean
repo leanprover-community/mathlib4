@@ -34,6 +34,8 @@ the associator for the monoidal category structure on homological complexes.
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 open CategoryTheory Category Limits
 
 namespace HomologicalComplex
@@ -341,8 +343,8 @@ lemma d_eq (j j' : ι₄) [HasGoodTrifunctor₁₂Obj F₁₂ G K₁ K₂ K₃ c
   by_cases h₁ : c₁₂.Rel i₁₂ (c₁₂.next i₁₂)
   · by_cases h₂ : ComplexShape.π c₁₂ c₃ c₄ (c₁₂.next i₁₂, i₃) = j'
     · rw [mapBifunctor.d₁_eq _ _ _ _ h₁ _ _ h₂]
-      simp only [mapBifunctor.d_eq, Functor.map_add, NatTrans.app_add, Preadditive.add_comp,
-        smul_add, Preadditive.comp_add, Linear.comp_units_smul]
+      simp only [i₁₂, mapBifunctor.d_eq, Functor.map_add, NatTrans.app_add,
+        Preadditive.add_comp, smul_add, Preadditive.comp_add, Linear.comp_units_smul]
       congr 1
       · rw [← NatTrans.comp_app_assoc, ← Functor.map_comp,
           mapBifunctor.ι_D₁]
@@ -701,7 +703,8 @@ lemma d_eq :
       · rw [d₃_eq_zero]
         intro h₂
         apply h₁
-        simpa only [ComplexShape.next_π₂ c₂ c₂₃ i₂ h₂] using ComplexShape.rel_π₂ c₂ c₂₃ i₂ h₂
+        simpa only [i₂₃, ComplexShape.next_π₂ c₂ c₂₃ i₂ h₂]
+          using ComplexShape.rel_π₂ c₂ c₂₃ i₂ h₂
 
 end mapBifunctor₂₃
 

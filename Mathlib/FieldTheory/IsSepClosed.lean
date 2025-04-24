@@ -297,11 +297,9 @@ variable (K : Type u) [Field K] (L : Type v) (M : Type w) [Field L] [Field M]
 variable [Algebra K M] [IsSepClosure K M]
 variable [Algebra K L] [IsSepClosure K L]
 
+attribute [local instance] IsSepClosure.sep_closed in
 /-- A (random) isomorphism between two separable closures of `K`. -/
 noncomputable def equiv : L ≃ₐ[K] M :=
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added to replace local instance above
-  haveI : IsSepClosed L := IsSepClosure.sep_closed K
-  haveI : IsSepClosed M := IsSepClosure.sep_closed K
   AlgEquiv.ofBijective _ (Normal.toIsAlgebraic.algHom_bijective₂
     (IsSepClosed.lift : L →ₐ[K] M) (IsSepClosed.lift : M →ₐ[K] L)).1
 

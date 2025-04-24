@@ -34,7 +34,7 @@ theorem Module.free_of_isLocalizedModule {Rₛ Mₛ} [AddCommGroup Mₛ] [Module
     [CommRing Rₛ] [Algebra R Rₛ] [Module Rₛ Mₛ] [IsScalarTower R Rₛ Mₛ]
     (S) (f : M →ₗ[R] Mₛ) [IsLocalization S Rₛ] [IsLocalizedModule S f] [Module.Free R M] :
     Module.Free Rₛ Mₛ :=
-    Free.of_equiv (IsLocalizedModule.isBaseChange S Rₛ f).equiv
+  Free.of_equiv (IsLocalizedModule.isBaseChange S Rₛ f).equiv
 
 universe uR' uM' in
 /--
@@ -95,7 +95,7 @@ theorem LinearMap.split_surjective_of_localization_maximal
       conv_lhs => rw [← LinearMap.map_smul_of_tower]
       rw [← Submonoid.smul_def, IsLocalizedModule.mk'_cancel', IsLocalizedModule.mk'_cancel']
       apply LinearMap.restrictScalars_injective R
-      apply IsLocalizedModule.ringHom_ext I.primeCompl (LocalizedModule.mkLinearMap I.primeCompl N)
+      apply IsLocalizedModule.ext I.primeCompl (LocalizedModule.mkLinearMap I.primeCompl N)
       · exact IsLocalizedModule.map_units (LocalizedModule.mkLinearMap I.primeCompl N)
       ext
       simp only [LocalizedModule.map_mk, LinearMap.coe_comp, LinearMap.coe_restrictScalars,
@@ -111,7 +111,7 @@ theorem LinearMap.split_surjective_of_localization_maximal
       simp only [Module.algebraMap_end_apply, ← Submonoid.smul_def, IsLocalizedModule.mk'_cancel',
         ← LinearMap.map_smul_of_tower]
       apply LinearMap.restrictScalars_injective R
-      apply IsLocalizedModule.ringHom_ext I.primeCompl (LocalizedModule.mkLinearMap I.primeCompl N)
+      apply IsLocalizedModule.ext I.primeCompl (LocalizedModule.mkLinearMap I.primeCompl N)
       · exact IsLocalizedModule.map_units (LocalizedModule.mkLinearMap I.primeCompl N)
       ext
       simp only [coe_comp, coe_restrictScalars, Function.comp_apply,
@@ -121,7 +121,7 @@ theorem Module.projective_of_localization_maximal (H : ∀ (I : Ideal R) (_ : I.
     Module.Projective (Localization.AtPrime I) (LocalizedModule I.primeCompl M))
     [Module.FinitePresentation R M] : Module.Projective R M := by
   have : Module.Finite R M := by infer_instance
-  have : (⊤ : Submodule R M).FG := this.out
+  have : (⊤ : Submodule R M).FG := this.fg_top
   have : ∃ (s : Finset M), _ := this
   obtain ⟨s, hs⟩ := this
   let N := s →₀ R

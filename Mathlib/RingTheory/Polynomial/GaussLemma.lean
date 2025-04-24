@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
 import Mathlib.FieldTheory.SplittingField.Construction
-import Mathlib.RingTheory.Int.Basic
 import Mathlib.RingTheory.Localization.Integral
 import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
 import Mathlib.RingTheory.Polynomial.Content
@@ -120,7 +119,7 @@ theorem IsPrimitive.isUnit_iff_isUnit_map_of_injective : IsUnit f ↔ IsUnit (ma
 theorem IsPrimitive.irreducible_of_irreducible_map_of_injective (h_irr : Irreducible (map φ f)) :
     Irreducible f := by
   refine
-    ⟨fun h => h_irr.not_unit (IsUnit.map (mapRingHom φ) h), fun a b h =>
+    ⟨fun h => h_irr.not_isUnit (IsUnit.map (mapRingHom φ) h), fun a b h =>
       (h_irr.isUnit_or_isUnit <| by rw [h, Polynomial.map_mul]).imp ?_ ?_⟩
   all_goals apply ((isPrimitive_of_dvd hf _).isUnit_iff_isUnit_map_of_injective hinj).mpr
   exacts [Dvd.intro _ h.symm, Dvd.intro_left _ h.symm]
@@ -149,7 +148,7 @@ theorem Monic.irreducible_iff_irreducible_map_fraction_map [IsIntegrallyClosed R
   refine
     ⟨fun hp =>
       irreducible_iff.mpr
-        ⟨hp.not_unit.imp h.isPrimitive.isUnit_iff_isUnit_map.mpr, fun a b H =>
+        ⟨hp.not_isUnit.imp h.isPrimitive.isUnit_iff_isUnit_map.mpr, fun a b H =>
           or_iff_not_imp_left.mpr fun hₐ => ?_⟩,
       fun hp =>
       h.isPrimitive.irreducible_of_irreducible_map_of_injective (IsFractionRing.injective R K) hp⟩
@@ -237,7 +236,7 @@ theorem IsPrimitive.irreducible_iff_irreducible_map_fraction_map {p : R[X]} (hp 
     Irreducible p ↔ Irreducible (p.map (algebraMap R K)) := by
   -- Porting note: was `(IsFractionRing.injective _ _)`
   refine
-    ⟨fun hi => ⟨fun h => hi.not_unit (hp.isUnit_iff_isUnit_map.2 h), fun a b hab => ?_⟩,
+    ⟨fun hi => ⟨fun h => hi.not_isUnit (hp.isUnit_iff_isUnit_map.2 h), fun a b hab => ?_⟩,
       hp.irreducible_of_irreducible_map_of_injective (IsFractionRing.injective R K)⟩
   obtain ⟨⟨c, c0⟩, hc⟩ := integerNormalization_map_to_map R⁰ a
   obtain ⟨⟨d, d0⟩, hd⟩ := integerNormalization_map_to_map R⁰ b

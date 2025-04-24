@@ -66,7 +66,6 @@ abbrev toOrderBot [SemilatticeInf α] : OrderBot α where
 /-- Constructs the `⊤` of a finite nonempty `SemilatticeSup` -/
 abbrev toOrderTop [SemilatticeSup α] : OrderTop α where
   top := univ.sup' univ_nonempty id
-  -- Porting note: needed to make `id` explicit
   le_top a := le_sup' id <| mem_univ a
 
 -- See note [reducible non-instances]
@@ -80,8 +79,7 @@ section BoundedOrder
 
 variable (α)
 
-open scoped Classical
-
+open scoped Classical in
 -- See note [reducible non-instances]
 /-- A finite bounded lattice is complete. -/
 noncomputable abbrev toCompleteLattice [Lattice α] [BoundedOrder α] : CompleteLattice α where
@@ -116,7 +114,11 @@ noncomputable abbrev toCompleteDistribLattice [DistribLattice α] [BoundedOrder 
     CompleteDistribLattice α := .ofMinimalAxioms (toCompleteDistribLatticeMinimalAxioms _)
 
 -- See note [reducible non-instances]
-/-- A finite bounded linear order is complete. -/
+/-- A finite bounded linear order is complete.
+
+If the `α` is already a `BiheytingAlgebra`, then prefer to construct this instance manually using
+`Fintype.toCompleteLattice` instead, to avoid creating a diamond with
+`LinearOrder.toBiheytingAlgebra`. -/
 noncomputable abbrev toCompleteLinearOrder
     [LinearOrder α] [BoundedOrder α] : CompleteLinearOrder α :=
   { toCompleteLattice α, ‹LinearOrder α›, LinearOrder.toBiheytingAlgebra with }
@@ -126,6 +128,8 @@ noncomputable abbrev toCompleteLinearOrder
 noncomputable abbrev toCompleteBooleanAlgebra [BooleanAlgebra α] : CompleteBooleanAlgebra α where
   __ := ‹BooleanAlgebra α›
   __ := Fintype.toCompleteDistribLattice α
+  inf_sSup_le_iSup_inf _ _ := inf_sSup_eq.le
+  iInf_sup_le_sup_sInf _ _ := sup_sInf_eq.ge
 
 -- See note [reducible non-instances]
 /-- A finite boolean algebra is complete and atomic. -/
@@ -168,8 +172,6 @@ lemma Finite.exists_minimal_le [Finite α] (h : p a) : ∃ b, b ≤ a ∧ Minima
     Set.Finite.exists_minimal_wrt id {x | x ≤ a ∧ p x} (Set.toFinite _) ⟨a, rfl.le, h⟩
   exact ⟨b, hba, hb, fun x hx hxb ↦ (hbmin x ⟨hxb.trans hba, hx⟩ hxb).le⟩
 
-@[deprecated (since := "2024-09-23")] alias Finite.exists_ge_minimal := Finite.exists_minimal_le
-
 lemma Finite.exists_le_maximal [Finite α] (h : p a) : ∃ b, a ≤ b ∧ Maximal p b :=
   Finite.exists_minimal_le (α := αᵒᵈ) h
 
@@ -196,11 +198,13 @@ end PartialOrder
 noncomputable instance Fin.completeLinearOrder {n : ℕ} [NeZero n] : CompleteLinearOrder (Fin n) :=
   Fintype.toCompleteLinearOrder _
 
-noncomputable instance Bool.completeLinearOrder : CompleteLinearOrder Bool :=
-  Fintype.toCompleteLinearOrder _
-
 noncomputable instance Bool.completeBooleanAlgebra : CompleteBooleanAlgebra Bool :=
   Fintype.toCompleteBooleanAlgebra _
+
+noncomputable instance Bool.completeLinearOrder : CompleteLinearOrder Bool where
+  __ := Fintype.toCompleteLattice _
+  __ : BiheytingAlgebra Bool := inferInstance
+  __ : LinearOrder Bool := inferInstance
 
 noncomputable instance Bool.completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra Bool :=
   Fintype.toCompleteAtomicBooleanAlgebra _

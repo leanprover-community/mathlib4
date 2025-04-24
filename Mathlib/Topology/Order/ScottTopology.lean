@@ -169,7 +169,7 @@ instance : @IsScottHausdorff α D _ (scottHausdorff α D) :=
   @IsScottHausdorff.mk _ _ _ (scottHausdorff α D) rfl
 
 namespace IsScottHausdorff
-variable  {s : Set α}
+variable {s : Set α}
 
 lemma topology_eq [IsScottHausdorff α D] : ‹_› = scottHausdorff α D := topology_eq_scottHausdorff
 
@@ -177,7 +177,8 @@ variable {α D}
 
 lemma isOpen_iff [IsScottHausdorff α D] :
     IsOpen s ↔ ∀ ⦃d : Set α⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a : α⦄, IsLUB d a →
-      a ∈ s → ∃ b ∈ d, Ici b ∩ d ⊆ s := by rw [topology_eq_scottHausdorff (α := α) (D := D)]; rfl
+      a ∈ s → ∃ b ∈ d, Ici b ∩ d ⊆ s := by
+  simp [topology_eq_scottHausdorff (α := α) (D := D), IsOpen, scottHausdorff]
 
 lemma dirSupInaccOn_of_isOpen [IsScottHausdorff α D] (h : IsOpen s) : DirSupInaccOn D s :=
   fun d hd₀ hd₁ hd₂ a hda hd₃ ↦ by
@@ -307,7 +308,8 @@ lemma monotone_of_continuous [IsScott α D] (hf : Continuous f) : Monotone f := 
     have hu : IsOpen (f ⁻¹' u) := (isOpen_compl_iff.2 Topology.IsScott.isClosed_Iic).preimage hf
     rw [isOpen_iff_isUpperSet_and_dirSupInaccOn (D := D)] at hu
     obtain ⟨c, hcd, hfcb⟩ := hu.2 h₀ d₁ d₂ d₃ h
-    simp [upperBounds] at hb
+    simp only [upperBounds, mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
+      mem_setOf] at hb
     exact hfcb <| hb _ hcd
 
 end Preorder
@@ -422,7 +424,8 @@ variable [TopologicalSpace α]
 /-- If `α` is equipped with the Scott topology, then it is homeomorphic to `WithScott α`.
 -/
 def IsScott.withScottHomeomorph [IsScott α univ] : WithScott α ≃ₜ α :=
-  WithScott.ofScott.toHomeomorphOfIsInducing ⟨by erw [IsScott.topology_eq α univ, induced_id]; rfl⟩
+  WithScott.ofScott.toHomeomorphOfIsInducing ⟨by
+    rw [IsScott.topology_eq α univ]; erw [induced_id]; rfl⟩
 
 lemma IsScott.scottHausdorff_le [IsScott α univ] :
     scottHausdorff α univ ≤ ‹TopologicalSpace α› := by

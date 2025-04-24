@@ -37,11 +37,11 @@ theorem smul_mk_zero {β : Type*} [Monoid M] [AddMonoid β] [DistribMulAction M 
 end
 
 instance smulZeroClass {R M N : Type*} [Zero M] [Zero N] [SMulZeroClass R M] [SMulZeroClass R N] :
-    SMulZeroClass R (M × N) where smul_zero _ := mk.inj_iff.mpr ⟨smul_zero _, smul_zero _⟩
+    SMulZeroClass R (M × N) where smul_zero _ := by ext <;> exact smul_zero _
 
 instance distribSMul {R M N : Type*} [AddZeroClass M] [AddZeroClass N] [DistribSMul R M]
     [DistribSMul R N] : DistribSMul R (M × N) where
-  smul_add _ _ _ := mk.inj_iff.mpr ⟨smul_add _ _ _, smul_add _ _ _⟩
+  smul_add _ _ _ := by ext <;> exact smul_add ..
 
 instance distribMulAction {R : Type*} [Monoid R] [AddMonoid M] [AddMonoid N]
     [DistribMulAction R M] [DistribMulAction R N] : DistribMulAction R (M × N) :=
@@ -49,8 +49,8 @@ instance distribMulAction {R : Type*} [Monoid R] [AddMonoid M] [AddMonoid N]
 
 instance mulDistribMulAction {R : Type*} [Monoid R] [Monoid M] [Monoid N]
     [MulDistribMulAction R M] [MulDistribMulAction R N] : MulDistribMulAction R (M × N) where
-  smul_mul _ _ _ := mk.inj_iff.mpr ⟨smul_mul' _ _ _, smul_mul' _ _ _⟩
-  smul_one _ := mk.inj_iff.mpr ⟨smul_one _, smul_one _⟩
+  smul_mul _ _ _ := by ext <;> exact smul_mul' ..
+  smul_one _ := by ext <;> exact smul_one _
 
 end Prod
 

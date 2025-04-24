@@ -121,7 +121,7 @@ theorem card_eq_or_dvd : Nat.card G = 1 ∨ p ∣ Nat.card G := by
   cases finite_or_infinite G
   · obtain ⟨n, hn⟩ := iff_card.mp hG
     rw [hn]
-    cases' n with n n
+    rcases n with - | n
     · exact Or.inl rfl
     · exact Or.inr ⟨p ^ n, by rw [pow_succ']⟩
   · rw [Nat.card_eq_zero_of_infinite]
@@ -308,6 +308,32 @@ theorem disjoint_of_ne (p₁ p₂ : ℕ) [hp₁ : Fact p₁.Prime] [hp₂ : Fact
   rcases n₁.eq_zero_or_pos with (rfl | hn₁)
   · simpa using hn₁
   · exact absurd (eq_of_prime_pow_eq hp₁.out.prime hp₂.out.prime hn₁ this) hne
+
+theorem le_or_disjoint_of_coprime [hp : Fact p.Prime] {P : Subgroup G} (hP : IsPGroup p P)
+    {H : Subgroup G} [H.Normal] (h_cop : (Nat.card H).Coprime H.index) :
+    P ≤ H ∨ Disjoint H P := by
+  by_cases h1 : Nat.card H = 0
+  · rw [h1, Nat.coprime_zero_left, Subgroup.index_eq_one] at h_cop
+    rw [h_cop]
+    exact Or.inl le_top
+  by_cases h2 : H.index = 0
+  · rw [h2, Nat.coprime_zero_right, Subgroup.card_eq_one] at h_cop
+    rw [h_cop]
+    exact Or.inr disjoint_bot_left
+  have : Finite G := by
+    apply Nat.finite_of_card_ne_zero
+    rw [← H.card_mul_index]
+    exact mul_ne_zero h1 h2
+  have h3 : (Nat.card H).Coprime (Nat.card P) ∨ H.index.Coprime (Nat.card P) := by
+    obtain ⟨k, hk⟩ := hP.exists_card_eq
+    refine hk ▸ Or.imp hp.out.coprime_pow_of_not_dvd hp.out.coprime_pow_of_not_dvd ?_
+    contrapose! h_cop
+    exact Nat.Prime.not_coprime_iff_dvd.mpr ⟨p, hp.out, h_cop⟩
+  refine h3.symm.imp (fun h4 ↦ ?_) (fun h4 ↦ ?_)
+  · rw [← Subgroup.relindex_eq_one]
+    exact Nat.eq_one_of_dvd_coprimes h4 (H.relindex_dvd_index_of_normal P)
+      (Subgroup.relindex_dvd_card H P)
+  · exact disjoint_iff.mpr (Subgroup.inf_eq_bot_of_coprime h4)
 
 section P2comm
 

@@ -5,9 +5,13 @@ Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov
 -/
 import Mathlib.Data.Finite.Prod
 import Mathlib.Data.Fintype.Pi
-import Mathlib.Order.Filter.AtTopBot
+import Mathlib.Data.Set.Finite.Lemmas
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Order.Filter.CountablyGenerated
 import Mathlib.Order.Filter.Ker
 import Mathlib.Order.Filter.Pi
+import Mathlib.Order.Filter.Prod
+import Mathlib.Order.Filter.AtTopBot.Basic
 
 /-!
 # The cofinite filter
@@ -96,9 +100,13 @@ theorem le_cofinite_iff_compl_singleton_mem : l ≤ cofinite ↔ ∀ x, {x}ᶜ �
 theorem le_cofinite_iff_eventually_ne : l ≤ cofinite ↔ ∀ x, ∀ᶠ y in l, y ≠ x :=
   le_cofinite_iff_compl_singleton_mem
 
-/-- If `α` is a preorder with no maximal element, then `atTop ≤ cofinite`. -/
-theorem atTop_le_cofinite [Preorder α] [NoMaxOrder α] : (atTop : Filter α) ≤ cofinite :=
+/-- If `α` is a preorder with no top element, then `atTop ≤ cofinite`. -/
+theorem atTop_le_cofinite [Preorder α] [NoTopOrder α] : (atTop : Filter α) ≤ cofinite :=
   le_cofinite_iff_eventually_ne.mpr eventually_ne_atTop
+
+/-- If `α` is a preorder with no bottom element, then `atBot ≤ cofinite`. -/
+theorem atBot_le_cofinite [Preorder α] [NoBotOrder α] : (atBot : Filter α) ≤ cofinite :=
+  le_cofinite_iff_eventually_ne.mpr eventually_ne_atBot
 
 theorem comap_cofinite_le (f : α → β) : comap f cofinite ≤ cofinite :=
   le_cofinite_iff_eventually_ne.mpr fun x =>
@@ -238,6 +246,11 @@ theorem Function.Surjective.le_map_cofinite {f : α → β} (hf : Surjective f) 
 `Filter.comap_cofinite_le` and `Function.Injective.comap_cofinite_eq`. -/
 theorem Function.Injective.tendsto_cofinite {f : α → β} (hf : Injective f) :
     Tendsto f cofinite cofinite := fun _ h => h.preimage hf.injOn
+
+/-- For a function with finite fibres, inverse images of finite sets are finite. -/
+theorem Filter.Tendsto.cofinite_of_finite_preimage_singleton {f : α → β}
+    (hf : ∀ b, Finite (f ⁻¹' {b})) : Tendsto f cofinite cofinite :=
+  fun _ h => h.preimage' fun b _ ↦ hf b
 
 /-- The pullback of the `Filter.cofinite` under an injective function is equal to `Filter.cofinite`.
 See also `Filter.comap_cofinite_le` and `Function.Injective.tendsto_cofinite`. -/

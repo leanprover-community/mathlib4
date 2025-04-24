@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Data.Finset.Lattice.Fold
+import Mathlib.Data.Set.Pairwise.List
 
 /-!
 # Relations holding pairwise on finite sets
@@ -80,12 +81,14 @@ theorem pairwise_iff_coe_toFinset_pairwise (hn : l.Nodup) (hs : Symmetric r) :
   letI : IsSymm α r := ⟨hs⟩
   rw [coe_toFinset, hn.pairwise_coe]
 
-theorem pairwise_disjoint_of_coe_toFinset_pairwiseDisjoint {α ι} [SemilatticeInf α] [OrderBot α]
+open scoped Function -- required for scoped `on` notation
+
+theorem pairwise_disjoint_of_coe_toFinset_pairwiseDisjoint {α ι} [PartialOrder α] [OrderBot α]
     [DecidableEq ι] {l : List ι} {f : ι → α} (hl : (l.toFinset : Set ι).PairwiseDisjoint f)
     (hn : l.Nodup) : l.Pairwise (_root_.Disjoint on f) :=
   pairwise_of_coe_toFinset_pairwise hl hn
 
-theorem pairwiseDisjoint_iff_coe_toFinset_pairwise_disjoint {α ι} [SemilatticeInf α] [OrderBot α]
+theorem pairwiseDisjoint_iff_coe_toFinset_pairwise_disjoint {α ι} [PartialOrder α] [OrderBot α]
     [DecidableEq ι] {l : List ι} {f : ι → α} (hn : l.Nodup) :
     (l.toFinset : Set ι).PairwiseDisjoint f ↔ l.Pairwise (_root_.Disjoint on f) :=
   pairwise_iff_coe_toFinset_pairwise hn (symmetric_disjoint.comap f)

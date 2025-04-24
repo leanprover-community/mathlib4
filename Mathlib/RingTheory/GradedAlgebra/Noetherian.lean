@@ -15,7 +15,7 @@ also a Noetherian ring.
 
 variable {ι A σ : Type*}
 variable [Ring A] [IsNoetherianRing A]
-variable [DecidableEq ι] [CanonicallyOrderedAddCommMonoid ι]
+variable [DecidableEq ι] [AddCommMonoid ι] [PartialOrder ι] [CanonicallyOrderedAdd ι]
 variable [SetLike σ A] [AddSubgroupClass σ A]
 variable (𝒜 : ι → σ) [GradedRing 𝒜]
 

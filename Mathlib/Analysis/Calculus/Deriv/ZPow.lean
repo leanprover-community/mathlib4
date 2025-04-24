@@ -21,10 +21,8 @@ derivative, power
 
 universe u v w
 
-open scoped Classical
-open Topology Filter
-
-open Filter Asymptotics Set
+open Topology Filter Asymptotics Set
+open scoped Nat
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
 variable {E : Type v} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -121,12 +119,17 @@ theorem iter_deriv_pow' (n k : ℕ) :
   funext fun x => iter_deriv_pow n x k
 
 theorem iter_deriv_inv (k : ℕ) (x : 𝕜) :
-    deriv^[k] Inv.inv x = (∏ i ∈ Finset.range k, (-1 - i : 𝕜)) * x ^ (-1 - k : ℤ) := by
-  simpa only [zpow_neg_one, Int.cast_neg, Int.cast_one] using iter_deriv_zpow (-1) x k
+    deriv^[k] Inv.inv x = (-1) ^ k * k ! * x ^ (-1 - k : ℤ) := calc
+  deriv^[k] Inv.inv x = deriv^[k] (· ^ (-1 : ℤ)) x := by simp
+  _ = (∏ i ∈ Finset.range k, (-1 - i : 𝕜)) * x ^ (-1 - k : ℤ) := mod_cast iter_deriv_zpow (-1) x k
+  _ = (-1) ^ k * k ! * x ^ (-1 - k : ℤ) := by
+    simp only [← neg_add', Finset.prod_neg, ← Finset.prod_Ico_id_eq_factorial,
+      Finset.prod_Ico_eq_prod_range]
+    simp
 
 @[simp]
 theorem iter_deriv_inv' (k : ℕ) :
-    deriv^[k] Inv.inv = fun x : 𝕜 => (∏ i ∈ Finset.range k, (-1 - i : 𝕜)) * x ^ (-1 - k : ℤ) :=
+    deriv^[k] Inv.inv = fun x : 𝕜 => (-1) ^ k * k ! * x ^ (-1 - k : ℤ) :=
   funext (iter_deriv_inv k)
 
 variable {f : E → 𝕜} {t : Set E} {a : E}

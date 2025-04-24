@@ -3,14 +3,15 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Equiv.Basic
-import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.TypeTags.Hom
+import Mathlib.Algebra.Group.Equiv.Defs
+import Mathlib.Algebra.Notation.Prod
 
 /-!
 # Additive and multiplicative equivalences associated to `Multiplicative` and `Additive`.
 -/
 
+assert_not_exists Finite Fintype
 
 variable {ι G H : Type*}
 
@@ -183,3 +184,22 @@ def AddEquiv.prodAdditive [Mul G] [Mul H] :
   map_add' _ _ := rfl
 
 end
+
+section End
+
+variable {M : Type*}
+
+/-- `Monoid.End M` is equivalent to `AddMonoid.End (Additive M)`. -/
+@[simps! apply]
+def MulEquiv.Monoid.End [Monoid M] : Monoid.End M ≃* AddMonoid.End (Additive M) where
+  __ := MonoidHom.toAdditive
+  map_mul' := fun _ _ ↦ rfl
+
+/-- `AddMonoid.End M` is equivalent to `Monoid.End (Multiplicative M)`. -/
+@[simps! apply]
+def MulEquiv.AddMonoid.End [AddMonoid M] :
+    AddMonoid.End M ≃* _root_.Monoid.End (Multiplicative M) where
+  __ := AddMonoidHom.toMultiplicative
+  map_mul' := fun _ _ ↦ rfl
+
+end End

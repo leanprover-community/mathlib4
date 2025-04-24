@@ -9,7 +9,7 @@ import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 import Mathlib.Algebra.Homology.Square
 import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Square
-import Mathlib.CategoryTheory.Limits.Shapes.Types
+import Mathlib.CategoryTheory.Limits.Types.Shapes
 import Mathlib.CategoryTheory.Sites.Abelian
 import Mathlib.CategoryTheory.Sites.Adjunction
 import Mathlib.CategoryTheory.Sites.Sheafification
@@ -155,7 +155,7 @@ lemma isPushoutAddCommGrpFreeSheaf [HasWeakSheafify J AddCommGrp.{v}] :
         (S.map yoneda))
 
 /-- The condition that a Mayer-Vietoris square becomes a pullback square
-when we evaluate a presheaf on it. --/
+when we evaluate a presheaf on it. -/
 def SheafCondition {A : Type u'} [Category.{v'} A] (P : Cᵒᵖ ⥤ A) : Prop :=
   (S.toSquare.op.map P).IsPullback
 
