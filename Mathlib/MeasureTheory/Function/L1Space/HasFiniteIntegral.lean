@@ -199,6 +199,7 @@ theorem hasFiniteIntegral_of_bounded' [IsFiniteMeasure μ] {f : α → ε} {C : 
   (hasFiniteIntegral_const' (enorm_ne_top (x := C))).mono_e' hC
 
 -- TODO: generalise this to f with codomain ε
+-- requires generalising norm_le_pi_norm and friends to enorms
 theorem HasFiniteIntegral.of_finite [Finite α] [IsFiniteMeasure μ] {f : α → β} :
     HasFiniteIntegral f μ :=
   let ⟨_⟩ := nonempty_fintype α
