@@ -1,20 +1,21 @@
 /-
-Copyright (c) 2022 Scott Morrison. All rights reserved.
+Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Functor.Basic
-import Mathlib.Util.AddRelatedDecl
 import Mathlib.Lean.Meta.Simp
+import Mathlib.Tactic.Simps.Basic
+import Mathlib.Util.AddRelatedDecl
 
 /-!
 # The `reassoc` attribute
 
 Adding `@[reassoc]` to a lemma named `F` of shape `∀ .., f = g`,
 where `f g : X ⟶ Y` in some category
-will create a new lemmas named `F_assoc` of shape
+will create a new lemma named `F_assoc` of shape
 `∀ .. {Z : C} (h : Y ⟶ Z), f ≫ h = g ≫ h`
-but with the conclusions simplified used the axioms for a category
+but with the conclusions simplified using the axioms for a category
 (`Category.comp_id`, `Category.id_comp`, and `Category.assoc`).
 
 This is useful for generating lemmas which the simplifier can use even on expressions
@@ -30,7 +31,7 @@ namespace CategoryTheory
 
 variable {C : Type*} [Category C]
 
-/-- A variant of `eq_whisker` with a more convenient argument order for use in tactics.  -/
+/-- A variant of `eq_whisker` with a more convenient argument order for use in tactics. -/
 theorem eq_whisker' {X Y : C} {f g : X ⟶ Y} (w : f = g) {Z : C} (h : Y ⟶ Z) :
     f ≫ h = g ≫ h := by rw [w]
 
@@ -48,8 +49,25 @@ but with compositions fully right associated and identities removed.
 def reassocExpr (e : Expr) : MetaM Expr := do
   mapForallTelescope (fun e => do simpType categorySimp (← mkAppM ``eq_whisker' #[e])) e
 
-/-- Syntax for the `reassoc` attribute -/
-syntax (name := reassoc) "reassoc" (" (" &"attr" ":=" Parser.Term.attrInstance,* ")")? : attr
+/--
+Adding `@[reassoc]` to a lemma named `F` of shape `∀ .., f = g`, where `f g : X ⟶ Y` are
+morphisms in some category, will create a new lemma named `F_assoc` of shape
+`∀ .. {Z : C} (h : Y ⟶ Z), f ≫ h = g ≫ h`
+but with the conclusions simplified using the axioms for a category
+(`Category.comp_id`, `Category.id_comp`, and `Category.assoc`).
+So, for example, if the conclusion of `F` is `a ≫ b = g` then
+the conclusion of `F_assoc` will be `a ≫ (b ≫ h) = g ≫ h` (note that `≫` reassociates
+to the right so the brackets will not appear in the statement).
+
+This attribute is useful for generating lemmas which the simplifier can use even on expressions
+that are already right associated.
+
+Note that if you want both the lemma and the reassociated lemma to be
+`simp` lemmas, you should tag the lemma `@[reassoc (attr := simp)]`.
+The variant `@[simp, reassoc]` on a lemma `F` will tag `F` with `@[simp]`,
+but not `F_assoc` (this is sometimes useful).
+-/
+syntax (name := reassoc) "reassoc" (" (" &"attr" " := " Parser.Term.attrInstance,* ")")? : attr
 
 initialize registerBuiltinAttribute {
   name := `reassoc

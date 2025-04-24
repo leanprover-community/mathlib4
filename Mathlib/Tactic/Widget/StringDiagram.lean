@@ -4,390 +4,255 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
 import ProofWidgets.Component.PenroseDiagram
+import ProofWidgets.Component.Panel.Basic
 import ProofWidgets.Presentation.Expr
-import Mathlib.CategoryTheory.Monoidal.Category
+import ProofWidgets.Component.HtmlDisplay
+import Mathlib.Tactic.CategoryTheory.Bicategory.Normalize
+import Mathlib.Tactic.CategoryTheory.Monoidal.Normalize
 
-namespace Mathlib.Tactic.Widget.StringDiagram
+/-!
+# String Diagram Widget
+
+This file provides meta infrastructure for displaying string diagrams for morphisms in monoidal
+categories in the infoview. To enable the string diagram widget, you need to import this file and
+inserting `with_panel_widgets [Mathlib.Tactic.Widget.StringDiagram]` at the beginning of the
+proof. Alternatively, you can also write
+```lean
+open Mathlib.Tactic.Widget
+show_panel_widgets [local StringDiagram]
+```
+to enable the string diagram widget in the current section.
+
+We also have the `#string_diagram` command. For example,
+```lean
+#string_diagram MonoidalCategory.whisker_exchange
+```
+displays the string diagram for the exchange law of the left and right whiskerings.
+
+String diagrams are graphical representations of morphisms in monoidal categories, which are
+useful for rewriting computations. More precisely, objects in a monoidal category is represented
+by strings, and morphisms between two objects is represented by nodes connecting two strings
+associated with the objects. The tensor product `X ⊗ Y` corresponds to putting strings associated
+with `X` and `Y` horizontally (from left to right), and the composition of morphisms `f : X ⟶ Y`
+and `g : Y ⟶ Z` corresponds to connecting two nodes associated with `f` and `g` vertically (from
+top to bottom) by strings associated with `Y`.
+
+Currently, the string diagram widget provided in this file deals with equalities of morphisms
+in monoidal categories. It displays string diagrams corresponding to the morphisms for the
+left-hand and right-hand sides of the equality.
+
+Some examples can be found in `MathlibTest/StringDiagram.lean`.
+
+When drawing string diagrams, it is common to ignore associators and unitors. We follow this
+convention. To do this, we need to extract non-structural morphisms that are not associators
+and unitors from lean expressions. This operation is performed using the `Tactic.Monoidal.eval`
+function.
+
+A monoidal category can be viewed as a bicategory with a single object. The program in this
+file can also be used to display the string diagram for general bicategories (see the wip
+PR https://github.com/leanprover-community/mathlib4/pull/12107). With this in mind we will sometimes refer to objects and morphisms in monoidal
+categories as 1-morphisms and 2-morphisms respectively, borrowing the terminology of bicategories.
+Note that the relation between monoidal categories and bicategories is formalized in
+`Mathlib.CategoryTheory.Bicategory.SingleObj`, although the string diagram widget does not use
+it directly.
+
+-/
+
+namespace Mathlib.Tactic
 
 open Lean Meta Elab
 open CategoryTheory
 
-structure Atom₁ : Type where
-  e : Expr
+open BicategoryLike
 
-/-- Expressions for 1-morphisms. -/
-inductive Mor₁ : Type
-  | id : Expr → Mor₁
-  | comp : Mor₁ → Mor₁ → Mor₁
-  | of : Atom₁ → Mor₁
-  deriving Inhabited
+namespace Widget.StringDiagram
 
-def Mor₁.e : Mor₁ → MetaM Expr
-  | .id C => do
-    mkAppOptM ``MonoidalCategoryStruct.tensorUnit #[none, none, C]
-  | .comp f g => do
-    mkAppM ``MonoidalCategoryStruct.tensorObj #[← Mor₁.e f, ← Mor₁.e g]
-  | .of f => return f.e
+initialize registerTraceClass `string_diagram
 
-def Mor₁.toList : Mor₁ → List Expr
-  | .id _ => []
-  | .comp f g => f.toList ++ g.toList
-  | .of f => [f.e]
+/-! ## Objects in string diagrams -/
 
-partial def toMor₁ (e : Expr) : Mor₁ :=
-  match e.getAppFnArgs with
-  | (``MonoidalCategoryStruct.tensorUnit, #[_, _, C]) => Mor₁.id C
-  | (``MonoidalCategoryStruct.tensorObj, #[_, _, _, f, g]) => (toMor₁ f).comp (toMor₁ g)
-  | _ => Mor₁.of ⟨e⟩
+/-- Nodes for 2-morphisms in a string diagram. -/
+structure AtomNode : Type where
+  /-- The vertical position of the node in the string diagram. -/
+  vPos : ℕ
+  /-- The horizontal position of the node in the string diagram, counting strings in domains. -/
+  hPosSrc : ℕ
+  /-- The horizontal position of the node in the string diagram, counting strings in codomains. -/
+  hPosTar : ℕ
+  /-- The underlying expression of the node. -/
+  atom : Atom
 
-/- Expressions for atomic structural 2-morphisms. -/
-inductive StructuralAtom : Type
-  | associator (f g h : Mor₁) : StructuralAtom
-  | associatorInv (f g h : Mor₁) : StructuralAtom
-  | leftUnitor (f : Mor₁) : StructuralAtom
-  | leftUnitorInv (f : Mor₁) : StructuralAtom
-  | rightUnitor (f : Mor₁) : StructuralAtom
-  | rightUnitorInv (f : Mor₁) : StructuralAtom
-  | id (f : Mor₁) : StructuralAtom
-  deriving Inhabited
+/-- Nodes for identity 2-morphisms in a string diagram. -/
+structure IdNode : Type where
+  /-- The vertical position of the node in the string diagram. -/
+  vPos : ℕ
+  /-- The horizontal position of the node in the string diagram, counting strings in domains. -/
+  hPosSrc : ℕ
+  /-- The horizontal position of the node in the string diagram, counting strings in codomains. -/
+  hPosTar : ℕ
+  /-- The underlying expression of the node. -/
+  id : Atom₁
 
-def StructuralAtom.e : StructuralAtom → MetaM Expr
-  | .id f => do mkAppM ``CategoryStruct.id #[← f.e]
-  | .associator f g h => do
-    mkAppM ``Iso.hom #[← mkAppM ``MonoidalCategoryStruct.associator #[← f.e, ← g.e, ← h.e]]
-  | .associatorInv f g h => do
-    mkAppM ``Iso.inv #[← mkAppM ``MonoidalCategoryStruct.associator #[← f.e, ← g.e, ← h.e]]
-  | .leftUnitor f => do mkAppM ``Iso.hom #[← mkAppM ``MonoidalCategoryStruct.leftUnitor #[← f.e]]
-  | .leftUnitorInv f => do mkAppM ``Iso.inv #[← mkAppM ``MonoidalCategoryStruct.leftUnitor #[← f.e]]
-  | .rightUnitor f => do mkAppM ``Iso.hom #[← mkAppM ``MonoidalCategoryStruct.rightUnitor #[← f.e]]
-  | .rightUnitorInv f => do mkAppM ``Iso.inv #[← mkAppM ``MonoidalCategoryStruct.rightUnitor #[← f.e]]
+/-- Nodes in a string diagram. -/
+inductive Node : Type
+  | atom : AtomNode → Node
+  | id : IdNode → Node
 
-def structuralAtom? (e : Expr) : Option StructuralAtom := do
-  match e.getAppFnArgs with
-  | (``CategoryStruct.id, #[_, _, f]) => return .id (toMor₁ f)
-  | (``Iso.hom, #[_, _, _, _, η]) =>
-    match η.getAppFnArgs with
-    | (``MonoidalCategoryStruct.associator, #[_, _, _, f, g, h]) => return .associator (toMor₁ f) (toMor₁ g) (toMor₁ h)
-    | (``MonoidalCategoryStruct.leftUnitor, #[_, _, _, f]) => return .leftUnitor (toMor₁ f)
-    | (``MonoidalCategoryStruct.rightUnitor, #[_, _, _, f]) => return .rightUnitor (toMor₁ f)
-    | _ => none
-  | (``Iso.inv, #[_, _, _, _, η]) =>
-    match η.getAppFnArgs with
-    | (``MonoidalCategoryStruct.associator, #[_, _, _, f, g, h]) => return .associatorInv (toMor₁ f) (toMor₁ g) (toMor₁ h)
-    | (``MonoidalCategoryStruct.leftUnitor, #[_, _, _, f]) => return .leftUnitorInv (toMor₁ f)
-    | (``MonoidalCategoryStruct.rightUnitor, #[_, _, _, f]) => return .rightUnitorInv (toMor₁ f)
-    | _ => none
-  | _ => none
+/-- The underlying expression of a node. -/
+def Node.e : Node → Expr
+  | Node.atom n => n.atom.e
+  | Node.id n => n.id.e
 
-/-- Expressions for atomic (non-structural) 2-morphisms. -/
-structure Atom where
-  e : Expr
+/-- The domain of the 2-morphism associated with a node as a list
+(the first component is the node itself). -/
+def Node.srcList : Node → List (Node × Atom₁)
+  | Node.atom n => n.atom.src.toList.map (fun f ↦ (.atom n, f))
+  | Node.id n => [(.id n, n.id)]
 
-/-- Expressions for atomic 2-Morphisms. -/
-inductive Core : Type
-  | ofStructural : StructuralAtom → Core
-  | of : Atom → Core
-  deriving Inhabited
+/-- The codomain of the 2-morphism associated with a node as a list
+(the first component is the node itself). -/
+def Node.tarList : Node → List (Node × Atom₁)
+  | Node.atom n => n.atom.tgt.toList.map (fun f ↦ (.atom n, f))
+  | Node.id n => [(.id n, n.id)]
 
-def Core.e : Core → MetaM Expr
-  | .ofStructural η => η.e
-  | .of a => return a.e
+/-- The vertical position of a node in a string diagram. -/
+def Node.vPos : Node → ℕ
+  | Node.atom n => n.vPos
+  | Node.id n => n.vPos
 
-/-- Expressions of the form `η ▷ f₁ ▷ ... ▷ fₙ`. -/
-inductive WhiskerRightExpr : Type
-  | of (η : Core) : WhiskerRightExpr
-  | whisker (η : WhiskerRightExpr) (f : Atom₁) : WhiskerRightExpr
-  deriving Inhabited
+/-- The horizontal position of a node in a string diagram, counting strings in domains. -/
+def Node.hPosSrc : Node → ℕ
+  | Node.atom n => n.hPosSrc
+  | Node.id n => n.hPosSrc
 
-/-- Expressions of the form `f₁ ◁ ... ◁ fₙ ◁ η`. -/
-inductive WhiskerLeftExpr : Type
-  | of (η : WhiskerRightExpr) : WhiskerLeftExpr
-  | whisker (f : Atom₁) (η : WhiskerLeftExpr) : WhiskerLeftExpr
-  deriving Inhabited
+/-- The horizontal position of a node in a string diagram, counting strings in codomains. -/
+def Node.hPosTar : Node → ℕ
+  | Node.atom n => n.hPosTar
+  | Node.id n => n.hPosTar
 
-/-- Normalized expressions for 2-morphisms. -/
-inductive NormalExpr : Type
-  | id (f : Mor₁) : NormalExpr
-  | cons (head : WhiskerLeftExpr) (tail : NormalExpr) : NormalExpr
-  deriving Inhabited
+/-- Strings in a string diagram. -/
+structure Strand : Type where
+  /-- The horizontal position of the strand in the string diagram. -/
+  hPos : ℕ
+  /-- The start point of the strand in the string diagram. -/
+  startPoint : Node
+  /-- The end point of the strand in the string diagram. -/
+  endPoint : Node
+  /-- The underlying expression of the strand. -/
+  atom₁ : Atom₁
 
-/-- The domain of a morphism. -/
-def src (η : Expr) : MetaM Mor₁ := do
-  match (← inferType η).getAppFnArgs with
-  | (``Quiver.Hom, #[_, _, f, _]) => return toMor₁ f
-  | _ => throwError "{η} is not a morphism"
+/-- The vertical position of a strand in a string diagram. -/
+def Strand.vPos (s : Strand) : ℕ :=
+  s.startPoint.vPos
 
-/-- The codomain of a morphism. -/
-def tar (η : Expr) : MetaM Mor₁ := do
-  match (← inferType η).getAppFnArgs with
-  | (``Quiver.Hom, #[_, _, _, g]) => return toMor₁ g
-  | _ => throwError "{η} is not a morphism"
+end Widget.StringDiagram
 
-/-- The domain of a 2-morphism. -/
-def Core.src (η : Core) : MetaM Mor₁ := do StringDiagram.src (← η.e)
-/-- The codomain of a 2-morphism. -/
-def Core.tar (η : Core) : MetaM Mor₁ := do StringDiagram.tar (← η.e)
+namespace BicategoryLike
 
-/-- Construct a normalized expression from an atomic 2-morphism. -/
-def NormalExpr.mk (η : Core) : MetaM NormalExpr := do
-  return .cons (.of (.of η)) (.id (← η.tar))
+open Widget.StringDiagram
 
-/-- The domain of a 2-morphism. -/
-def WhiskerRightExpr.src : WhiskerRightExpr → MetaM Mor₁
-  | WhiskerRightExpr.of η => η.src
-  | WhiskerRightExpr.whisker η f => return (← WhiskerRightExpr.src η).comp (Mor₁.of f)
+/-- The list of nodes associated with a 2-morphism. The position is counted from the
+specified natural numbers. -/
+def WhiskerRight.nodes (v h₁ h₂ : ℕ) : WhiskerRight → List Node
+  | WhiskerRight.of η => [.atom ⟨v, h₁, h₂, η⟩]
+  | WhiskerRight.whisker _ η f =>
+    let ηs := η.nodes v h₁ h₂
+    let k₁ := (ηs.map (fun n ↦ n.srcList)).flatten.length
+    let k₂ := (ηs.map (fun n ↦ n.tarList)).flatten.length
+    let s : Node := .id ⟨v, h₁ + k₁, h₂ + k₂, f⟩
+    ηs ++ [s]
 
-/-- The codomain of a 2-morphism. -/
-def WhiskerRightExpr.tar : WhiskerRightExpr → MetaM Mor₁
-  | WhiskerRightExpr.of η => η.tar
-  | WhiskerRightExpr.whisker η f => return (← WhiskerRightExpr.tar η).comp (Mor₁.of f)
+/-- The list of nodes associated with a 2-morphism. The position is counted from the
+specified natural numbers. -/
+def HorizontalComp.nodes (v h₁ h₂ : ℕ) : HorizontalComp → List Node
+  | HorizontalComp.of η => η.nodes v h₁ h₂
+  | HorizontalComp.cons _ η ηs =>
+    let s₁ := η.nodes v h₁ h₂
+    let k₁ := (s₁.map (fun n ↦ n.srcList)).flatten.length
+    let k₂ := (s₁.map (fun n ↦ n.tarList)).flatten.length
+    let s₂ := ηs.nodes v (h₁ + k₁) (h₂ + k₂)
+    s₁ ++ s₂
 
-/-- The domain of a 2-morphism. -/
-def WhiskerLeftExpr.src : WhiskerLeftExpr → MetaM Mor₁
-  | WhiskerLeftExpr.of η => WhiskerRightExpr.src η
-  | WhiskerLeftExpr.whisker f η => return (Mor₁.of f).comp (← WhiskerLeftExpr.src η)
+/-- The list of nodes associated with a 2-morphism. The position is counted from the
+specified natural numbers. -/
+def WhiskerLeft.nodes (v h₁ h₂ : ℕ) : WhiskerLeft → List Node
+  | WhiskerLeft.of η => η.nodes v h₁ h₂
+  | WhiskerLeft.whisker _ f η =>
+    let s : Node := .id ⟨v, h₁, h₂, f⟩
+    let ss := η.nodes v (h₁ + 1) (h₂ + 1)
+    s :: ss
 
-/-- The codomain of a 2-morphism. -/
-def WhiskerLeftExpr.tar : WhiskerLeftExpr → MetaM Mor₁
-  | WhiskerLeftExpr.of η => WhiskerRightExpr.tar η
-  | WhiskerLeftExpr.whisker f η => return (Mor₁.of f).comp (← WhiskerLeftExpr.tar η)
+variable {ρ : Type} [MonadMor₁ (CoherenceM ρ)]
 
-def NormalExpr.src : NormalExpr → MetaM Mor₁
-  | NormalExpr.id f => return f
-  | NormalExpr.cons η _ => η.src
+/-- The list of nodes at the top of a string diagram. -/
+def topNodes (η : WhiskerLeft) : CoherenceM ρ (List Node) := do
+  return (← η.srcM).toList.mapIdx fun i f => .id ⟨0, i, i, f⟩
 
-def NormalExpr.tar : NormalExpr → MetaM Mor₁
-  | NormalExpr.id f => return f
-  | NormalExpr.cons _ θ => θ.tar
+/-- The list of nodes at the top of a string diagram. The position is counted from the
+specified natural number. -/
+def NormalExpr.nodesAux (v : ℕ) : NormalExpr → CoherenceM ρ (List (List Node))
+  | NormalExpr.nil _ α => return [(← α.srcM).toList.mapIdx fun i f => .id ⟨v, i, i, f⟩]
+  | NormalExpr.cons _ _ η ηs => do
+    let s₁ := η.nodes v 0 0
+    let s₂ ← ηs.nodesAux (v + 1)
+    return s₁ :: s₂
 
-/-- Evaluate the expression `η ≫ θ` into a normalized form. -/
-def evalComp : NormalExpr → NormalExpr → NormalExpr
-  | .id _, e => e
-  | e, .id _ => e
-  | .cons f g, e => .cons f (evalComp g e)
-
-def NormalExpr.associator (f g h : Mor₁) : MetaM NormalExpr := do
-  NormalExpr.mk (.ofStructural <| .associator f g h)
-
-def NormalExpr.associatorInv (f g h : Mor₁) : MetaM NormalExpr := do
-  NormalExpr.mk (.ofStructural <| .associatorInv f g h)
-
-def NormalExpr.leftUnitor (f : Mor₁) : MetaM NormalExpr := do
-  NormalExpr.mk (.ofStructural <| .leftUnitor f)
-
-def NormalExpr.leftUnitorInv (f : Mor₁) : MetaM NormalExpr := do
-  NormalExpr.mk (.ofStructural <| .leftUnitorInv f)
-
-def NormalExpr.rightUnitor (f : Mor₁) : MetaM NormalExpr := do
-  NormalExpr.mk (.ofStructural <| .rightUnitor f)
-
-def NormalExpr.rightUnitorInv (f : Mor₁) : MetaM NormalExpr := do
-  NormalExpr.mk (.ofStructural <| .rightUnitorInv f)
-
-/-- Evaluate the expression `f ◁ η` into a normalized form. -/
-partial def evalWhiskerLeftExpr : Mor₁ → NormalExpr → MetaM NormalExpr
-  | f, .id g => do
-    return .id (f.comp g)
-  | .of f, .cons η θ => do
-    let η' := WhiskerLeftExpr.whisker f η
-    let θ' ← evalWhiskerLeftExpr (.of f) θ
-    return .cons η' θ'
-  | .comp f g, η => do
-    let η' ← evalWhiskerLeftExpr f (← evalWhiskerLeftExpr g η)
-    let h ← η.src
-    let h' ← η.tar
-    return evalComp (← NormalExpr.associator f g h) (evalComp η' (← NormalExpr.associatorInv f g h'))
-  | .id _, η => do
-    let f ← η.src
-    let g ← η.tar
-    return evalComp (← NormalExpr.leftUnitor f) (evalComp η (← NormalExpr.leftUnitorInv g))
-
-/-- Evaluate the expression `η ▷ f` into a normalized form. -/
-partial def evalWhiskerRightExpr : NormalExpr → Mor₁ → MetaM NormalExpr
-  | .id f, .of g => do
-    return .id (f.comp (.of g))
-  | .cons (.of η) θ, .of f => do
-    let η' := WhiskerRightExpr.whisker η f
-    let θ' ← evalWhiskerRightExpr θ (.of f)
-    return .cons (.of η') θ'
-  | .cons (.whisker f η) θ, .of h => do
-    let g ← η.src
-    let g' ← η.tar
-    let η' ← evalWhiskerLeftExpr (.of f) (← evalWhiskerRightExpr (.cons η (.id g')) (.of h))
-    let θ' ← evalWhiskerRightExpr θ (.of h)
-    return evalComp (← NormalExpr.associator (.of f) g (.of h)) (evalComp η' (evalComp (← NormalExpr.associatorInv (.of f) g' (.of h)) θ'))
-  | η, .comp g h => do
-    let η' ← evalWhiskerRightExpr (← evalWhiskerRightExpr η g) h
-    let f ← η.src
-    let f' ← η.tar
-    return evalComp (← NormalExpr.associatorInv f g h) (evalComp η' (← NormalExpr.associator f' g h))
-  | η, .id _ => do
-    let f ← η.src
-    let g ← η.tar
-    return evalComp (← NormalExpr.rightUnitor f) (evalComp η (← NormalExpr.rightUnitorInv g))
-
-def WhiskerRightExpr.e : WhiskerRightExpr → MetaM Expr
-  | WhiskerRightExpr.of η => η.e
-  | WhiskerRightExpr.whisker η f => do
-    mkAppM ``MonoidalCategoryStruct.whiskerRight #[← η.e, f.e]
-
-def WhiskerLeftExpr.e : WhiskerLeftExpr → MetaM Expr
-  | WhiskerLeftExpr.of η => η.e
-  | WhiskerLeftExpr.whisker f η => do
-    mkAppM ``MonoidalCategoryStruct.whiskerLeft #[f.e, ← η.e]
-
-def NormalExpr.e : NormalExpr → MetaM Expr
-  | NormalExpr.id f => do mkAppM ``CategoryStruct.id #[← f.e]
-  | NormalExpr.cons η (NormalExpr.id _) => η.e
-  | NormalExpr.cons η θ => do mkAppM ``CategoryStruct.comp #[← η.e, ← θ.e]
-
-def NormalExpr.toList : NormalExpr → List WhiskerLeftExpr
-  | NormalExpr.id _ => []
-  | NormalExpr.cons η θ => η :: NormalExpr.toList θ
-
-def WhiskerRightExpr.core : WhiskerRightExpr → Core
-  | WhiskerRightExpr.of η => η
-  | WhiskerRightExpr.whisker η _ => η.core
-
-def WhiskerLeftExpr.core : WhiskerLeftExpr → Core
-  | WhiskerLeftExpr.of η => η.core
-  | WhiskerLeftExpr.whisker _ η => η.core
-
-def NormalExpr.structural? : NormalExpr → Option NormalExpr
-  | NormalExpr.id f => some (.id f)
-  | NormalExpr.cons η θ =>
-    match η.core, θ.structural? with
-    | .ofStructural _, some _ => some (.cons η θ)
-    | _, _ => none
-
-/-- Interpret an `Expr` term as a `Core` term. -/
-def toCore (e : Expr) : Core :=
-  match structuralAtom? e with
-  | some η => Core.ofStructural η
-  | none => Core.of ⟨e⟩
-
-def NormalExpr.of (η : Expr) : MetaM NormalExpr := do
-  return .cons (.of (.of (toCore η))) (.id <| ← StringDiagram.tar η)
-
-/-- Evaluate the expression of a 2-morphism into a normalized form. -/
-partial def eval (e : Expr) : MetaM NormalExpr := do
-  match e.getAppFnArgs with
-  | (``CategoryStruct.comp, #[_, _, _, _, _, η, θ]) => return evalComp (← eval η) (← eval θ)
-  | (``MonoidalCategoryStruct.whiskerLeft, #[_, _, _, f, _, _, η]) => evalWhiskerLeftExpr (toMor₁ f) (← eval η)
-  | (``MonoidalCategoryStruct.whiskerRight, #[_, _, _, _, _, η, h]) => evalWhiskerRightExpr (← eval η) (toMor₁ h)
-  | _ => NormalExpr.of e
-
-/-- Remove structural 2-morphisms. -/
-def removeStructural : List WhiskerLeftExpr → List WhiskerLeftExpr
-  | [] => []
-  | η :: ηs => match η.core with
-    | .ofStructural _ => removeStructural ηs
-    | _ => η :: removeStructural ηs
-
-/-- Return `[f₁, ..., fₙ]` for `f₁ ◁ ... ◁ fₙ ◁ η ▷ g₁ ▷ ... ▷ gₙ`. -/
-def leftMor₁List (η : WhiskerLeftExpr) : List Expr :=
-  match η with
-  | WhiskerLeftExpr.of _ => []
-  | WhiskerLeftExpr.whisker f η => f.e :: leftMor₁List η
-
-/-- Return `[gₙ, ..., g₁]` for `η ▷ g₁ ▷ ... ▷ gₙ`. -/
-def rightMor₁ListAux (η : WhiskerRightExpr) : List Expr :=
-  match η with
-  | WhiskerRightExpr.of _ => []
-  | WhiskerRightExpr.whisker η f => f.e :: rightMor₁ListAux η
-
-/-- Return `[gₙ, ..., g₁]` for `f₁ ◁ ... ◁ fₙ ◁ η ▷ g₁ ▷ ... ▷ gₙ`. -/
-def rightMor₁ListReversed (η : WhiskerLeftExpr) : List Expr :=
-  match η with
-  | WhiskerLeftExpr.of η => rightMor₁ListAux η
-  | WhiskerLeftExpr.whisker _ η => rightMor₁ListReversed η
-
-/-- Return `[g₁, ..., gₙ]` for `f₁ ◁ ... ◁ fₙ ◁ η ▷ g₁ ▷ ... ▷ gₙ`. -/
-def rightMor₁List (η : WhiskerLeftExpr) : List Expr :=
-  (rightMor₁ListReversed η).reverse
-
-def srcLists (η : WhiskerLeftExpr) : MetaM (List Expr × List Expr × List Expr) := do
-  return (leftMor₁List η, (← η.core.src).toList, rightMor₁List η)
-
-def tarLists (η : WhiskerLeftExpr) : MetaM (List Expr × List Expr × List Expr) := do
-  return (leftMor₁List η, (← η.core.tar).toList, rightMor₁List η)
+/-- The list of nodes associated with a 2-morphism. -/
+def NormalExpr.nodes (e : NormalExpr) : CoherenceM ρ (List (List Node)) :=
+  match e with
+  | NormalExpr.nil _ _ => return []
+  | NormalExpr.cons _ _ η _ => return (← topNodes η) :: (← e.nodesAux 1)
 
 /-- `pairs [a, b, c, d]` is `[(a, b), (b, c), (c, d)]`. -/
-def pairs {α : Type} : List α → List (α × α)
-  | [] => []
-  | [_] => []
-  | (x :: y :: ys) => (x, y) :: pairs (y :: ys)
+def pairs {α : Type} : List α → List (α × α) :=
+  fun l => l.zip (l.drop 1)
 
-/-- `enumerateFrom 2 [a, b, c, d]` is `[(2, a), (3, b), (4, c), (5, d)]`. -/
-def enumerateFrom {α : Type} (i : Nat) : List α → List (Nat × α)
-  | [] => []
-  | (x :: xs) => (i, x) :: enumerateFrom (i + 1) xs
+/-- The list of strands associated with a 2-morphism. -/
+def NormalExpr.strands (e : NormalExpr) : CoherenceM ρ (List (List Strand)) := do
+  let l ← e.nodes
+  (pairs l).mapM fun (x, y) ↦ do
+    let xs := (x.map (fun n ↦ n.tarList)).flatten
+    let ys := (y.map (fun n ↦ n.srcList)).flatten
+    -- sanity check
+    if xs.length ≠ ys.length then
+      throwError "The number of the start and end points of a string does not match."
+    (xs.zip ys).mapIdxM fun k ((n₁, f₁), (n₂, _)) => do
+      return ⟨n₁.hPosTar + k, n₁, n₂, f₁⟩
 
-/-- `enumerate [a, b, c, d]` is `[(0, a), (1, b), (2, c), (3, d)]`. -/
-def enumerate {α : Type} : List α → List (Nat × α) :=
-  enumerateFrom 0
+end BicategoryLike
 
+namespace Widget.StringDiagram
+
+/-- A type for Penrose variables. -/
 structure PenroseVar : Type where
+  /-- The identifier of the variable. -/
   ident : String
+  /-- The indices of the variable. -/
   indices : List ℕ
+  /-- The underlying expression of the variable. -/
   e : Expr
-  deriving Inhabited, BEq, Hashable
 
 instance : ToString PenroseVar :=
   ⟨fun v => v.ident ++ v.indices.foldl (fun s x => s ++ s!"_{x}") ""⟩
 
-/-- Expressions to display as labels in a diagram. -/
-abbrev ExprEmbeds := Array (String × Expr)
+/-- The penrose variable associated with a node. -/
+def Node.toPenroseVar (n : Node) : PenroseVar :=
+  ⟨"E", [n.vPos, n.hPosSrc, n.hPosTar], n.e⟩
+
+/-- The penrose variable associated with a strand. -/
+def Strand.toPenroseVar (s : Strand) : PenroseVar :=
+  ⟨"f", [s.vPos, s.hPos], s.atom₁.e⟩
 
 /-! ## Widget for general string diagrams -/
 
-open ProofWidgets
-
-structure DiagramState where
-  /-- The Penrose substance program.
-  Note that `embeds` are added lazily at the end. -/
-  sub : String := ""
-  /-- Components to display as labels in the diagram,
-  mapped as name ↦ (type, html). -/
-  embeds : HashMap String (String × Html) := .empty
-  /-- The start point of a string. -/
-  startPoint : HashMap PenroseVar PenroseVar := .empty
-  /-- The end point of a string. -/
-  endPoint : HashMap PenroseVar PenroseVar := .empty
-
-abbrev DiagramBuilderM := StateT DiagramState MetaM
-
-open scoped Jsx in
-def buildDiagram : DiagramBuilderM (Option Html) := do
-  let st ← get
-  if st.sub == "" && st.embeds.isEmpty then
-    return none
-  let mut sub := "AutoLabel All\n"
-  let mut embedHtmls := #[]
-  for (n, (tp, h)) in st.embeds.toArray do
-    sub := sub ++ s!"{tp} {n}\n"
-    embedHtmls := embedHtmls.push (n, h)
-  sub := sub ++ st.sub
-  return <PenroseDiagram
-    embeds={embedHtmls}
-    dsl={include_str ".."/".."/".."/"widget"/"src"/"penrose"/"monoidal.dsl"}
-    sty={include_str ".."/".."/".."/"widget"/"src"/"penrose"/"monoidal.sty"}
-    sub={sub} />
-
-/-- Add a substance `nm` of Penrose type `tp`,
-labelled by `h` to the substance program. -/
-def addEmbed (nm : String) (tp : String) (h : Html) : DiagramBuilderM Unit := do
-  modify fun st => { st with embeds := st.embeds.insert nm (tp, h )}
+open ProofWidgets Penrose DiagramBuilderM Lean.Server
 
 open scoped Jsx in
 /-- Add the variable `v` with the type `tp` to the substance program. -/
-def addPenroseVar (tp : String) (v : PenroseVar) : DiagramBuilderM Unit := do
+def addPenroseVar (tp : String) (v : PenroseVar) :
+    DiagramBuilderM Unit := do
   let h := <InteractiveCode fmt={← Widget.ppExprTagged v.e} />
   addEmbed (toString v) tp h
-
-/-- Add instruction `i` to the substance program. -/
-def addInstruction (i : String) : DiagramBuilderM Unit := do
-  modify fun st => { st with sub := st.sub ++ s!"{i}\n" }
 
 /-- Add constructor `tp v := nm (vs)` to the substance program. -/
 def addConstructor (tp : String) (v : PenroseVar) (nm : String) (vs : List PenroseVar) :
@@ -395,122 +260,195 @@ def addConstructor (tp : String) (v : PenroseVar) (nm : String) (vs : List Penro
   let vs' := ", ".intercalate (vs.map (fun v => toString v))
   addInstruction s!"{tp} {v} := {nm} ({vs'})"
 
-def DiagramBuilderM.run {α : Type} (x : DiagramBuilderM α) : MetaM α :=
-  x.run' {}
-
 open scoped Jsx in
 /-- Construct a string diagram from a Penrose `sub`stance program and expressions `embeds` to
 display as labels in the diagram. -/
-def mkStringDiag (e : Expr) : MetaM Html := do
-  DiagramBuilderM.run do
-    let l := removeStructural (← eval e).toList
-    /- Add 2-morphisms. -/
-    for (i, x) in enumerateFrom 1 l do
-      let v : PenroseVar := ⟨"E", [i], ← x.core.e⟩
-      addPenroseVar "Core" v
-      let (L, C, R) ← srcLists x
-      let C' := (← x.core.tar).toList
-      for (j, X) in enumerate L do
-        let v' : PenroseVar := ⟨"I_left", [i, j], X⟩
-        addPenroseVar "Id" v'
-        addInstruction s!"Left({v'}, {v})"
-        let v_mor : PenroseVar := ⟨"f", [i, j], X⟩
-        let v_mor' : PenroseVar := ⟨"f", [i + 1, j], X⟩
-        modify fun st => { st with
-          endPoint := st.endPoint.insert v_mor v'
-          startPoint := st.startPoint.insert v_mor' v' }
-      for (j, X) in enumerate R do
-        let v' : PenroseVar := ⟨"I_right", [i, j], X⟩
-        addPenroseVar "Id" v'
-        addInstruction s!"Left({v}, {v'})"
-        let v_mor : PenroseVar := ⟨"f", [i, j + L.length + C.length], X⟩
-        let v_mor' : PenroseVar := ⟨"f", [i + 1, j + L.length + C'.length], X⟩
-        modify fun st => { st with
-          endPoint := st.endPoint.insert v_mor v'
-          startPoint := st.startPoint.insert v_mor' v' }
-      for (j, X) in enumerate C do
-        let v_mor : PenroseVar := ⟨"f", [i, j + L.length], X⟩
-        modify fun st => { st with endPoint := st.endPoint.insert v_mor v }
-      for (j, X) in enumerate C' do
-        let v_mor' : PenroseVar := ⟨"f", [i + 1, j + L.length], X⟩
-        modify fun st => { st with startPoint := st.startPoint.insert v_mor' v }
-      /- Add constraints. -/
-      for (j, (X, Y)) in enumerate (pairs L) do
-        let v₁ : PenroseVar := ⟨"I_left", [i, j], X⟩
-        let v₂ : PenroseVar := ⟨"I_left", [i, j + 1], Y⟩
-        addInstruction s!"Left({v₁}, {v₂})"
-      /- Add constraints. -/
-      for (j, (X, Y)) in enumerate (pairs R) do
-        let v₁ : PenroseVar := ⟨"I_right", [i, j], X⟩
-        let v₂ : PenroseVar := ⟨"I_right", [i, j + 1], Y⟩
-        addInstruction s!"Left({v₁}, {v₂})"
-    /- Add constraints. -/
-    for (i, (x, y)) in enumerateFrom 1 (pairs l) do
-      let v₁ : PenroseVar := ⟨"E", [i], ← x.core.e⟩
-      let v₂ : PenroseVar := ⟨"E", [i + 1], ← y.core.e⟩
-      addInstruction s!"Above({v₁}, {v₂})"
-    /- The top of the diagram. -/
-    if let some x₀ := l.head? then
-      let v₀ : PenroseVar := ⟨"E", [1], ← x₀.core.e⟩
-      let (L, C, R) ← srcLists x₀
-      for (j, X) in enumerate (L ++ C ++ R) do
-        let v' : PenroseVar := ⟨"I_left", [0, j], X⟩
-        addPenroseVar "Id" v'
-        addInstruction s!"Above({v'}, {v₀})"
-        let v_mor : PenroseVar := ⟨"f", [1, j], X⟩
-        modify fun st => { st with startPoint := st.startPoint.insert v_mor v' }
-      for (j, (X, Y)) in enumerate (pairs (L ++ C ++ R)) do
-        let v₁ : PenroseVar := ⟨"I_left", [0, j], X⟩
-        let v₂ : PenroseVar := ⟨"I_left", [0, j + 1], Y⟩
-        addInstruction s!"Left({v₁}, {v₂})"
-    /- The bottom of the diagram. -/
-    if let some xₙ := l.getLast? then
-      let vₙ : PenroseVar := ⟨"E", [l.length], ← xₙ.core.e⟩
-      let (L, C', R) ← tarLists xₙ
-      for (j, X) in enumerate (L ++ C' ++ R) do
-        let v' : PenroseVar := ⟨"I_left", [l.length + 1, j], X⟩
-        addPenroseVar "Id" v'
-        addInstruction s!"Above({vₙ}, {v'})"
-        let v_mor : PenroseVar := ⟨"f", [l.length + 1, j], X⟩
-        modify fun st => { st with endPoint := st.endPoint.insert v_mor v' }
-      for (j, (X, Y)) in enumerate (pairs (L ++ C' ++ R)) do
-        let v₁ : PenroseVar := ⟨"I_left", [l.length + 1, j], X⟩
-        let v₂ : PenroseVar := ⟨"I_left", [l.length + 1, j + 1], Y⟩
-        addInstruction s!"Left({v₁}, {v₂})"
-    /- Add 1-morphisms as strings. -/
-    for (i, x) in enumerateFrom 1 l do
-      let (L, C, R) ← srcLists x
-      for (j, X) in enumerate (L ++ C ++ R) do
-        let v : PenroseVar := ⟨"f", [i, j], X⟩
-        let st ← get
-        if let .some vStart := st.startPoint.find? v then
-          if let .some vEnd := st.endPoint.find? v then
-            addConstructor "Mor1" v "MakeString" [vStart, vEnd]
-    /- Add strings in the last row. -/
-    if let some xₙ := l.getLast? then
-      let (L, C', R) ← tarLists xₙ
-      for (j, X) in enumerate (L ++ C' ++ R) do
-        let v : PenroseVar := ⟨"f", [l.length + 1, j], X⟩
-        let st ← get
-        if let .some vStart := st.startPoint.find? v then
-          if let .some vEnd := st.endPoint.find? v then
-            addConstructor "Mor1" v "MakeString" [vStart, vEnd]
-    match ← buildDiagram with
-    | some html => return html
-    | none => return <span>No 2-morphisms.</span>
+def mkStringDiagram (nodes : List (List Node)) (strands : List (List Strand)) :
+    DiagramBuilderM PUnit := do
+  /- Add 2-morphisms. -/
+  for x in nodes.flatten do
+    match x with
+    | .atom _ => do addPenroseVar "Atom" x.toPenroseVar
+    | .id _ => do addPenroseVar "Id" x.toPenroseVar
+  /- Add constraints. -/
+  for l in nodes do
+    for (x₁, x₂) in pairs l do
+      addInstruction s!"Left({x₁.toPenroseVar}, {x₂.toPenroseVar})"
+  /- Add constraints. -/
+  for (l₁, l₂) in pairs nodes do
+    if let .some x₁ := l₁.head? then
+      if let .some x₂ := l₂.head? then
+        addInstruction s!"Above({x₁.toPenroseVar}, {x₂.toPenroseVar})"
+  /- Add 1-morphisms as strings. -/
+  for l in strands do
+    for s in l do
+      addConstructor "Mor1" s.toPenroseVar
+        "MakeString" [s.startPoint.toPenroseVar, s.endPoint.toPenroseVar]
 
+/-- Penrose dsl file for string diagrams. -/
+def dsl :=
+  include_str ".."/".."/".."/"widget"/"src"/"penrose"/"monoidal.dsl"
+
+/-- Penrose sty file for string diagrams. -/
+def sty :=
+  include_str ".."/".."/".."/"widget"/"src"/"penrose"/"monoidal.sty"
+
+/-- The kind of the context. -/
+inductive Kind where
+  | monoidal : Kind
+  | bicategory : Kind
+  | none : Kind
+
+/-- The name of the context. -/
+def Kind.name : Kind → Name
+  | Kind.monoidal => `monoidal
+  | Kind.bicategory => `bicategory
+  | Kind.none => default
+
+/-- Given an expression, return the kind of the context. -/
+def mkKind (e : Expr) : MetaM Kind := do
+  let e ← instantiateMVars e
+  let e ← (match (← whnfR e).eq? with
+    | some (_, lhs, _) => return lhs
+    | none => return e)
+  let ctx? ← BicategoryLike.mkContext? (ρ := Bicategory.Context) e
+  match ctx? with
+  | .some _ => return .bicategory
+  | .none =>
+    let ctx? ← BicategoryLike.mkContext? (ρ := Monoidal.Context) e
+    match ctx? with
+    | .some _ => return .monoidal
+    | .none => return .none
+
+open scoped Jsx in
 /-- Given a 2-morphism, return a string diagram. Otherwise `none`. -/
 def stringM? (e : Expr) : MetaM (Option Html) := do
   let e ← instantiateMVars e
-  return some <| ← mkStringDiag e
+  let k ← mkKind e
+  let x : Option (List (List Node) × List (List Strand)) ← (match k with
+    | .monoidal => do
+      let .some ctx ← BicategoryLike.mkContext? (ρ := Monoidal.Context) e | return .none
+      CoherenceM.run (ctx := ctx) do
+        let e' := (← BicategoryLike.eval k.name (← MkMor₂.ofExpr e)).expr
+        return .some (← e'.nodes, ← e'.strands)
+    | .bicategory => do
+      let .some ctx ← BicategoryLike.mkContext? (ρ := Bicategory.Context) e | return .none
+      CoherenceM.run (ctx := ctx) do
+        let e' := (← BicategoryLike.eval k.name (← MkMor₂.ofExpr e)).expr
+        return .some (← e'.nodes, ← e'.strands)
+    | .none => return .none)
+  match x with
+  | .none => return none
+  | .some (nodes, strands) => do
+    DiagramBuilderM.run do
+      mkStringDiagram nodes strands
+      trace[string_diagram] "Penrose substance: \n{(← get).sub}"
+      match ← DiagramBuilderM.buildDiagram dsl sty with
+      | some html => return html
+      | none => return <span>No non-structural morphisms found.</span>
 
+open scoped Jsx in
+/-- Help function for displaying two string diagrams in an equality. -/
+def mkEqHtml (lhs rhs : Html) : Html :=
+  <div className="flex">
+    <div className="w-50">
+      <details «open»={true}>
+        <summary className="mv2 pointer">String diagram for LHS</summary> {lhs}
+      </details>
+    </div>
+    <div className="w-50">
+      <details «open»={true}>
+        <summary className="mv2 pointer">String diagram for RHS</summary> {rhs}
+      </details>
+    </div>
+  </div>
+
+/-- Given an equality between 2-morphisms, return a string diagram of the LHS and RHS.
+Otherwise `none`. -/
+def stringEqM? (e : Expr) : MetaM (Option Html) := do
+  let e ← instantiateMVars e
+  let some (_, lhs, rhs) := e.eq? | return none
+  let some lhs ← stringM? lhs | return none
+  let some rhs ← stringM? rhs | return none
+  return some <| mkEqHtml lhs rhs
+
+/-- Given an 2-morphism or equality between 2-morphisms, return a string diagram.
+Otherwise `none`. -/
+def stringMorOrEqM? (e : Expr) : MetaM (Option Html) := do
+  forallTelescopeReducing (← inferType e) fun xs a => do
+    if let some html ← stringM? (mkAppN e xs) then
+      return some html
+    else if let some html ← stringEqM? a then
+      return some html
+    else
+      return none
+
+/-- The `Expr` presenter for displaying string diagrams. -/
 @[expr_presenter]
 def stringPresenter : ExprPresenter where
   userName := "String diagram"
   layoutKind := .block
   present type := do
-    if let some d ← stringM? type then
-      return d
-    throwError "Couldn't find a string diagram."
+    if let some html ← stringMorOrEqM? type then
+      return html
+    throwError "Couldn't find a 2-morphism to display a string diagram."
 
-end Mathlib.Tactic.Widget.StringDiagram
+open scoped Jsx in
+/-- The RPC method for displaying string diagrams. -/
+@[server_rpc_method]
+def rpc (props : PanelWidgetProps) : RequestM (RequestTask Html) :=
+  RequestM.asTask do
+    let html : Option Html ← (do
+      if props.goals.isEmpty then
+        return none
+      let some g := props.goals[0]? | unreachable!
+      g.ctx.val.runMetaM {} do
+        g.mvarId.withContext do
+          let type ← g.mvarId.getType
+          stringEqM? type)
+    match html with
+    | none => return <span>No String Diagram.</span>
+    | some inner => return inner
+
+end StringDiagram
+
+open ProofWidgets
+
+/-- Display the string diagrams if the goal is an equality of morphisms in a monoidal category. -/
+@[widget_module]
+def StringDiagram : Component PanelWidgetProps :=
+  mk_rpc_widget% StringDiagram.rpc
+
+open Command
+
+/--
+Display the string diagram for a given term.
+
+Example usage:
+```
+/- String diagram for the equality theorem. -/
+#string_diagram MonoidalCategory.whisker_exchange
+
+/- String diagram for the morphism. -/
+variable {C : Type u} [Category.{v} C] [MonoidalCategory C] {X Y : C} (f : 𝟙_ C ⟶ X ⊗ Y) in
+#string_diagram f
+```
+-/
+syntax (name := stringDiagram) "#string_diagram " term : command
+
+@[command_elab stringDiagram, inherit_doc stringDiagram]
+def elabStringDiagramCmd : CommandElab := fun
+  | stx@`(#string_diagram $t:term) => do
+    let html ← runTermElabM fun _ => do
+      let e ← try mkConstWithFreshMVarLevels (← realizeGlobalConstNoOverloadWithInfo t)
+        catch _ => Term.levelMVarToParam (← instantiateMVars (← Term.elabTerm t none))
+      match ← StringDiagram.stringMorOrEqM? e with
+      | .some html => return html
+      | .none => throwError "could not find a morphism or equality: {e}"
+    liftCoreM <| Widget.savePanelWidgetInfo
+      (hash HtmlDisplay.javascript)
+      (return json% { html: $(← Server.RpcEncodable.rpcEncode html) })
+      stx
+  | stx => throwError "Unexpected syntax {stx}."
+
+end Mathlib.Tactic.Widget

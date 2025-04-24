@@ -3,7 +3,8 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.MetricSpace.Baire
+import Mathlib.Topology.Baire.Lemmas
+import Mathlib.Topology.Algebra.Group.Pointwise
 
 /-! # Open mapping theorem for morphisms of topological groups
 
@@ -23,7 +24,7 @@ open scoped Topology Pointwise
 open MulAction Set Function
 
 variable {G X : Type*} [TopologicalSpace G] [TopologicalSpace X]
-  [Group G] [TopologicalGroup G] [MulAction G X]
+  [Group G] [IsTopologicalGroup G] [MulAction G X]
   [SigmaCompactSpace G] [BaireSpace X] [T2Space X]
   [ContinuousSMul G X] [IsPretransitive G X]
 
@@ -44,10 +45,8 @@ theorem smul_singleton_mem_nhds_of_sigmaCompact
   if `V` is small enough. -/
   obtain ⟨V, V_mem, V_closed, V_symm, VU⟩ : ∃ V ∈ 𝓝 (1 : G), IsClosed V ∧ V⁻¹ = V ∧ V * V ⊆ U :=
     exists_closed_nhds_one_inv_eq_mul_subset hU
-  obtain ⟨s, s_count, hs⟩ : ∃ (s : Set G), s.Countable ∧ ⋃ g ∈ s, g • V = univ := by
-    apply countable_cover_nhds_of_sigma_compact (fun g ↦ ?_)
-    convert smul_mem_nhds g V_mem
-    simp only [smul_eq_mul, mul_one]
+  obtain ⟨s, s_count, hs⟩ : ∃ (s : Set G), s.Countable ∧ ⋃ g ∈ s, g • V = univ :=
+    countable_cover_nhds_of_sigmaCompact fun _ ↦ by simpa
   let K : ℕ → Set G := compactCovering G
   let F : ℕ × s → Set X := fun p ↦ (K p.1 ∩ (p.2 : G) • V) • ({x} : Set X)
   obtain ⟨⟨n, ⟨g, hg⟩⟩, hi⟩ : ∃ i, (interior (F i)).Nonempty := by
@@ -57,7 +56,7 @@ theorem smul_singleton_mem_nhds_of_sigmaCompact
     · rintro ⟨n, ⟨g, hg⟩⟩
       apply IsCompact.isClosed
       suffices H : IsCompact ((fun (g : G) ↦ g • x) '' (K n ∩ g • V)) by
-        simpa only [smul_singleton] using H
+        simpa only [F, smul_singleton] using H
       apply IsCompact.image
       · exact (isCompact_compactCovering G n).inter_right (V_closed.smul g)
       · exact continuous_id.smul continuous_const
@@ -65,13 +64,13 @@ theorem smul_singleton_mem_nhds_of_sigmaCompact
       obtain ⟨h, rfl⟩ : ∃ h, h • x = y := exists_smul_eq G x y
       obtain ⟨n, hn⟩ : ∃ n, h ∈ K n := exists_mem_compactCovering h
       obtain ⟨g, gs, hg⟩ : ∃ g ∈ s, h ∈ g • V := exists_set_mem_of_union_eq_top s _ hs _
-      simp only [smul_singleton, mem_iUnion, mem_image, mem_inter_iff, Prod.exists, Subtype.exists,
-        exists_prop]
+      simp only [F, smul_singleton, mem_iUnion, mem_image, mem_inter_iff, Prod.exists,
+        Subtype.exists, exists_prop]
       exact ⟨n, g, gs, h, ⟨hn, hg⟩, rfl⟩
   have I : (interior ((g • V) • {x})).Nonempty := by
     apply hi.mono
     apply interior_mono
-    exact smul_subset_smul_right (inter_subset_right _ _)
+    exact smul_subset_smul_right inter_subset_right
   obtain ⟨y, hy⟩ : (interior (V • ({x} : Set X))).Nonempty := by
     rw [smul_assoc, interior_smul] at I
     exact smul_set_nonempty.1 I
@@ -115,6 +114,6 @@ theorem MonoidHom.isOpenMap_of_sigmaCompact
   let A : MulAction G H := MulAction.compHom _ f
   have : ContinuousSMul G H := continuousSMul_compHom h'f
   have : IsPretransitive G H := isPretransitive_compHom hf
-  have : f = (fun (g : G) ↦ g • (1 : H)) := by simp [MulAction.compHom_smul_def]
+  have : f = (fun (g : G) ↦ g • (1 : H)) := by simp [A, MulAction.compHom_smul_def]
   rw [this]
   exact isOpenMap_smul_of_sigmaCompact _
