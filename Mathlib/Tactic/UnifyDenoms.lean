@@ -11,10 +11,9 @@ import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Int.Order.Lemmas
-import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Nat.Order.Lemmas
 import Mathlib.Tactic.FieldSimp
-import Std.Data.Nat.Lemmas
+import Batteries.Data.Nat.Lemmas
 
 /-!
 # `unify_denoms` and `unify_denoms!` tactics
@@ -31,9 +30,6 @@ The `unify_denoms!` tactic extends `unify_denoms` to work also on
 (in)equalities. In the case of inequalities, it assumes denominators are positive.
 --/
 
-/-
-The following lemmas are needed to manage divisions in the naturals:
--/
 
 open Lean Meta Elab Tactic Parser Tactic
 
@@ -85,14 +81,17 @@ macro_rules
   | (rw [EuclideanDomain.mul_div_cancel_left] $[at $location]?) -- a * b / a = b
   | (rw [EuclideanDomain.mul_div_mul_cancel] $[at $location]?) -- a * b / (a * c) = b / c
   | (rw [←EuclideanDomain.mul_div_assoc] $[at $location]?) -- x * (y / z) = x * y / z
+  | (rw [EuclideanDomain.div_mul_assoc] $[at $location]?) -- (x / y) * z = x * z * y
   | (rw [EuclideanDomain.div_div] $[at $location]?) -- x / y / z = x / (y * z)
+  | (rw [EuclideanDomain.div_div'] $[at $location]?) -- x / (y / z) = x * z / y
   | (rw [EuclideanDomain.div_add_div_of_dvd] $[at $location]?) -- x/y + z/t = (t*x + y*z)/(t*y)
   | (rw [EuclideanDomain.div_sub_div_of_dvd] $[at $location]?) -- x/y - z/t = (t*x - y*z)/(t*y)
   | (rw [←EuclideanDomain.add_mul_div_left] $[at $location]?) -- x / y + z = (x + y * z) / y
   | (rw [←EuclideanDomain.sub_mul_div_left] $[at $location]?) -- x / y - z = (x - y * z) / y
   | (rw [←EuclideanDomain.mul_add_div_left] $[at $location]?) -- x + y / z = (z * x + y) / z
   | (rw [←EuclideanDomain.mul_sub_div_left] $[at $location]?) ) -- x - y / z = (z * x - y) / z
-  try (any_goals assumption) ))
+  try (any_goals assumption)
+  try (any_goals omega)))
 
 /--
 `unify_denoms!` works as `unify_denoms`, but:
@@ -131,10 +130,10 @@ macro_rules
   | (rw [Nat.div_mul_div_comm] $[at $location]?)-- m / n * (k / l) = m * k / (n * l)
   | (rw [Nat.div_add_div_of_dvd] $[at $location]?) -- m / n + k / l = (m * l + n * k) / (n * l)
   | (rw [Nat.div_sub_div_of_dvd] $[at $location]?) -- m / n - k / l = (m * l - n * k) / (n * l)
-  | (rw [Nat.div_add_of_dvd] $[at $location]?) -- m / n + k = (m + n * k) / n
-  | (rw [Nat.div_sub_of_dvd] $[at $location]?) -- m / n - k = (m - n * k) / n
-  | (rw [←Nat.mul_add_div] $[at $location]?) -- m + n / k = (k * m + n) / k
-  | (rw [Nat.sub_div_of_dvd] $[at $location]?) -- m - n / k = (k * m - n) / k
+  | (rw [←Nat.add_mul_div_left] $[at $location]?) -- m / n + k = (m + n * k) / n
+  | (rw [←Nat.sub_mul_div] $[at $location]?) -- m / n - k = (m - n * k) / n
+  | (rw [Nat.add_div_of_dvd] $[at $location]?) -- m + n / k = (k * m + n) / k
+  | (rw [←Nat.mul_sub_div_of_dvd] $[at $location]?) -- m - n / k = (k * m - n) / k
   | (rw [Int.div_self] $[at $location]?) -- n / n = 1
   | (rw [Int.one_mul] $[at $location]?) -- 1 * n = n
   | (rw [Int.mul_one] $[at $location]?) -- 1 * n = n
@@ -143,14 +142,15 @@ macro_rules
   | (rw [EuclideanDomain.mul_div_cancel_left] $[at $location]?) -- a * b / a = b
   | (rw [EuclideanDomain.mul_div_mul_cancel] $[at $location]?) -- a * b / (a * c) = b / c
   | (rw [←EuclideanDomain.mul_div_assoc] $[at $location]?) -- x * (y / z) = x * y / z
+  | (rw [EuclideanDomain.div_mul_assoc] $[at $location]?) -- (x / y) * z = x * z * y
   | (rw [EuclideanDomain.div_div] $[at $location]?) -- x / y / z = x / (y * z)
+  | (rw [EuclideanDomain.div_div'] $[at $location]?) -- x / (y / z) = x * z / y
   | (rw [EuclideanDomain.div_add_div_of_dvd] $[at $location]?) -- x/y + z/t = (t*x + y*z)/(t*y)
   | (rw [EuclideanDomain.div_sub_div_of_dvd] $[at $location]?) -- x/y - z/t = (t*x - y*z)/(t*y)
   | (rw [←EuclideanDomain.add_mul_div_left] $[at $location]?) -- x / y + z = (x + y * z) / y
   | (rw [←EuclideanDomain.sub_mul_div_left] $[at $location]?) -- x / y - z = (x - y * z) / y
   | (rw [←EuclideanDomain.mul_add_div_left] $[at $location]?) -- x + y / z = (z * x + y) / z
-  | (rw [←EuclideanDomain.mul_sub_div_left] $[at $location]?) ) -- x - y / z = (z * x - y) / z
-----------------------------
+  | (rw [←EuclideanDomain.mul_sub_div_left] $[at $location]?)  -- x - y / z = (z * x - y) / z
   | (rw [mul_eq_zero] $[at $location]?) -- a * b = 0 ↔ a = 0 ∨ b = 0
   | (rw [eq_comm,mul_eq_zero] $[at $location]?) -- 0 = a * b ↔ a = 0 ∨ b = 0
   | (rw [div_eq_zero_iff] $[at $location]?) -- a / b = 0 ↔ a = 0 ∨ b = 0
@@ -182,4 +182,5 @@ macro_rules
   | (rw [Int.le_div_iff_of_dvd_of_pos] $[at $location]?) -- x ≤ y / z ↔ z * x ≤ y
   | (rw [Int.lt_div_iff_of_dvd_of_pos] $[at $location]?) -- x < y / z ↔ z * x < y
   | (push_neg $[at $location]?) )
-  try (any_goals assumption) ))
+  try (any_goals assumption)
+  try (any_goals omega)))

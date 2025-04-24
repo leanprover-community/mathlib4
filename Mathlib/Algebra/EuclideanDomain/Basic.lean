@@ -97,6 +97,9 @@ theorem mul_div_assoc (x : R) {y z : R} (h : z ∣ y) : x * y / z = x * (y / z) 
 protected theorem mul_div_cancel' {a b : R} (hb : b ≠ 0) (hab : b ∣ a) : b * (a / b) = a := by
   rw [← mul_div_assoc _ hab, mul_div_cancel_left₀ _ hb]
 
+lemma div_mul_assoc  {a b : R} (hba : b ∣ a) (c : R) : a / b * c = (a * c) / b := by
+  rw [mul_comm,← EuclideanDomain.mul_div_assoc _ hba, mul_comm]
+
 -- This generalizes `Int.div_one`, see note [simp-normal form]
 @[simp]
 theorem div_one (p : R) : p / 1 = p :=
@@ -397,6 +400,24 @@ theorem div_eq_div_iff_mul_eq_mul_of_dvd {x y z t : R} (h1 : y ≠ 0) (h2 : t �
   obtain ⟨a, ha⟩ := h4
   use y * a
   rw [ha, mul_comm, mul_assoc, mul_comm y a]
+
+lemma div_div' {a b c : R} (hcb : c ∣ b) (hbca : b / c ∣ a) : a / (b / c) = a * c / b := by
+  by_cases hb : b = 0
+  · simp [hb]
+  · obtain ⟨d, hd⟩ := hcb
+    rw [ div_eq_div_iff_mul_eq_mul_of_dvd _ hb hbca,div_mul_assoc,← mul_assoc,mul_comm _ c,
+    ← div_mul_assoc,div_self ,one_mul]
+    · intro hc
+      apply hb
+      rw [hd,hc,zero_mul]
+    · exact dvd_of_eq rfl
+    · use d
+    · obtain ⟨x, hx⟩ := hbca
+      rw [hd,hx]
+      use x
+      simp_all
+      rw [mul_rotate c d x]
+    simp_all
 
 end Div
 
