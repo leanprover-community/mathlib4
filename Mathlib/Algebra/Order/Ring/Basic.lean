@@ -291,7 +291,7 @@ lemma Odd.pow_lt_pow {n : ℕ} (hn : Odd n) {a b : R} : a^n < b^n ↔ a < b :=
 lemma Odd.pow_le_pow {n : ℕ} (hn : Odd n) {a b : R} : a^n ≤ b^n ↔ a ≤ b :=
   hn.strictMono_pow.le_iff_le
 
-lemma Odd.pow_eq_pow {n : ℕ} (hn : Odd n) {a b : R} : a^n = b^n ↔ a = b :=
+lemma Odd.pow_inj{n : ℕ} (hn : Odd n) {a b : R} : a^n = b^n ↔ a = b :=
   hn.pow_injective.eq_iff
 
 lemma sq_pos_iff {a : R} : 0 < a ^ 2 ↔ a ≠ 0 := even_two.pow_pos_iff two_ne_zero
