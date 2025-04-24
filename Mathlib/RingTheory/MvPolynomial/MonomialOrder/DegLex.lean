@@ -24,11 +24,7 @@ theorem degree_degLexDegree : (degLex.degree f).degree = f.totalDegree := by
   by_cases hf : f = 0
   · simp [hf]
   apply le_antisymm
-  · apply MvPolynomial.le_totalDegree
-    rw [MvPolynomial.mem_support_iff]
-    change degLex.leadingCoeff f ≠ 0
-    rw [leadingCoeff_ne_zero_iff]
-    exact hf
+  · exact le_totalDegree (degLex.degree_mem_support hf)
   · unfold MvPolynomial.totalDegree
     apply Finset.sup_le
     intro b hb
