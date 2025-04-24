@@ -497,6 +497,9 @@ theorem support_append {u v w : V} (p : G.Walk u v) (p' : G.Walk v w) :
 theorem support_reverse {u v : V} (p : G.Walk u v) : p.reverse.support = p.support.reverse := by
   induction p <;> simp [support_append, *]
 
+lemma mem_support_reverse {u v x : V} (p : G.Walk u v) : x ∈ p.reverse.support ↔ x ∈ p.support := by
+  simp [*]
+
 @[simp]
 theorem support_ne_nil {u v : V} (p : G.Walk u v) : p.support ≠ [] := by cases p <;> simp
 

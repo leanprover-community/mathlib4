@@ -434,14 +434,12 @@ lemma PartColoring.of_path_not_inj_extends {u v x y : α} {p : G.Walk u v} [Loca
   · nth_rw 2 [support_eq_cons]
     ext; simp [or_left_comm]
 
-
-
 section Colorings
 
 open ConnectedComponent Subgraph
 
 variable {α β : Type*} {n : ℕ} {G : SimpleGraph α}
-
+/-- Given a coloring of each component of `G` we can form a coloring of `G` -/
 def coloringOfComponents (h : ∀ (c : G.ConnectedComponent), (G.induce c.supp).Coloring β) :
     G.Coloring β := by
   exact ⟨fun v ↦ h (G.connectedComponentMk v) ⟨v, rfl⟩, by
@@ -473,7 +471,7 @@ lemma ConnectedComponent.induce_supp_connected (c : G.ConnectedComponent) :
       simpa using ⟨hu, hu ▸ (connectedComponentMk_eq_of_adj h).symm, h⟩
     · exact ih (hu ▸ (connectedComponentMk_eq_of_adj h).symm) hv
 
-/-- `G` is `n`-colorable if all its induced connected subgraphs are `n`-colorable -/
+/-- `G` is `n`-colorable iff all its induced connected subgraphs are `n`-colorable -/
 theorem colorable_iff_forall_induced_connected :
     (∀ s, (G.induce s).Connected → (G.induce s).Colorable n) ↔ G.Colorable n := by
   constructor <;> intro h
@@ -500,6 +498,16 @@ lemma two_colorable_of_no_odd_closed_walk (ho : ∀ u, ∀ (w : G.Walk u u), ¬ 
     ← add_assoc, Nat.odd_iff]
   have heq' := (ZMod.natCast_eq_natCast_iff' _ _ 2).1 heq
   omega
+
+variable {u v x: α} [DecidableEq α]
+
+-- def Walk.shortTake (w : G.Walk v v) (hx : x ∈ w.support) : G.Walk v v :=
+--   (w.takeUntil _ hx).append (w.reverse.takeUntil x (w.mem_support_reverse.2 hx)).reverse
+
+-- def Walk.shortDrop (w : G.Walk v v) (hx : x ∈ w.support) (hx2 : 1 < w.support.count x) :
+--   G.Walk x x :=
+--   (w.dropUntil _ hx).takeUntil x (by sorry)
+
 
 lemma exists_odd_cycle_of_odd_closed_walk {v} (w : G.Walk v v) (ho : Odd w.length) :
     ∃ x, ∃ (c : G.Walk x x), c.IsCycle ∧ Odd c.length := by
